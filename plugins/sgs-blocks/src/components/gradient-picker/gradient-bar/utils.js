@@ -29,7 +29,9 @@ export function isOverlapping(
 }
 
 export function addControlPoint( points, position, color, token ) {
-	const nextIndex = points.findIndex( ( point ) => point.position > position );
+	const nextIndex = points.findIndex(
+		( point ) => point.position > position
+	);
 	// Task 3 divergence: carry an optional `token` (palette link) on the new
 	// point alongside `color`/`position` — undefined for a custom colour,
 	// matching every other point's shape.
@@ -77,7 +79,12 @@ export function updateControlPointColor( points, index, newColor, token ) {
 	return updateControlPoint( points, index, newPoint );
 }
 
-export function updateControlPointColorByPosition( points, position, newColor, token ) {
+export function updateControlPointColorByPosition(
+	points,
+	position,
+	newColor,
+	token
+) {
 	const index = points.findIndex( ( point ) => point.position === position );
 	return updateControlPointColor( points, index, newColor, token );
 }

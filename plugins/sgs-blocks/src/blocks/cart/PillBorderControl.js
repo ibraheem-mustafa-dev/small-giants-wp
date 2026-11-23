@@ -30,8 +30,8 @@ const PILL_RADIUS_UNITS = [
  * exactly the object migration §6.1 exempts. It mounts immediately below the
  * composite instead, in the same panel.
  *
- * @param {Object}   root0                 Props.
- * @param {boolean}  root0.isPill          Whether triggerStyle is 'pill'.
+ * @param {Object}   root0                  Props.
+ * @param {boolean}  root0.isPill           Whether triggerStyle is 'pill'.
  * @param {string}   root0.pillBorderColour Flat colour (no gradient sibling — see
  *                                          block.json's `pill` element note).
  * @param {Object}   root0.pillBorderWidth  `{top,right,bottom,left}` box object, base tier only.
@@ -49,17 +49,28 @@ export default function PillBorderControl( {
 	pillBorderRadius,
 	setAttributes,
 } ) {
-	if ( ! isPill ) return null;
+	if ( ! isPill ) {
+		return null;
+	}
 
 	return (
-		<PanelBody title={ __( 'Pill border', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Pill border', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			<SgsBorderControl
 				widthValues={ pillBorderWidth ?? {} }
-				onWidthChange={ ( next ) => setAttributes( { pillBorderWidth: next } ) }
+				onWidthChange={ ( next ) =>
+					setAttributes( { pillBorderWidth: next } )
+				}
 				styleValue={ pillBorderStyle }
-				onStyleChange={ ( val ) => setAttributes( { pillBorderStyle: val } ) }
+				onStyleChange={ ( val ) =>
+					setAttributes( { pillBorderStyle: val } )
+				}
 				colourValue={ pillBorderColour }
-				onColourChange={ ( val ) => setAttributes( { pillBorderColour: val ?? '' } ) }
+				onColourChange={ ( val ) =>
+					setAttributes( { pillBorderColour: val ?? '' } )
+				}
 				colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
 				colourLinked
 				contrastAgainst={ contrastAgainst }
@@ -68,8 +79,13 @@ export default function PillBorderControl( {
 				label={ __( 'Border radius', 'sgs-blocks' ) }
 				value={ pillBorderRadius || '' }
 				units={ PILL_RADIUS_UNITS }
-				onChange={ ( val ) => setAttributes( { pillBorderRadius: val ?? '' } ) }
-				help={ __( 'Leave blank for the default (fully rounded).', 'sgs-blocks' ) }
+				onChange={ ( val ) =>
+					setAttributes( { pillBorderRadius: val ?? '' } )
+				}
+				help={ __(
+					'Leave blank for the default (fully rounded).',
+					'sgs-blocks'
+				) }
 				presets={ false }
 			/>
 		</PanelBody>

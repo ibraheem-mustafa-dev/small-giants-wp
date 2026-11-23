@@ -1,7 +1,15 @@
 import { __ } from '@wordpress/i18n';
 import { InspectorControls } from '@wordpress/block-editor';
-import { PanelBody, SelectControl, TextControl, ToggleControl } from '@wordpress/components';
-import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+import {
+	PanelBody,
+	SelectControl,
+	TextControl,
+	ToggleControl,
+} from '@wordpress/components';
+import {
+	ToggleGroupControl,
+	ToggleGroupControlOption,
+} from '../../components/primitives';
 import { fillRow } from '../../components';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
@@ -31,12 +39,17 @@ export default function GuidedPanel( { attributes, setAttributes } ) {
 
 	return (
 		<InspectorControls>
-			<PanelBody title={ __( 'Buy box type', 'sgs-blocks' ) } initialOpen={ false }>
+			<PanelBody
+				title={ __( 'Buy box type', 'sgs-blocks' ) }
+				initialOpen={ false }
+			>
 				<ToggleGroupControl
 					label={ __( 'Buy box type', 'sgs-blocks' ) }
 					value={ buyboxLayout || 'standard' }
 					isBlock
-					onChange={ ( val ) => setAttributes( { buyboxLayout: val } ) }
+					onChange={ ( val ) =>
+						setAttributes( { buyboxLayout: val } )
+					}
 					help={ __(
 						'Step by step walks the shopper through one attribute per screen behind a progress meter. Pick a set shows every picker at once, plus pick-several groups, a live preview and one summary.',
 						'sgs-blocks'
@@ -44,16 +57,27 @@ export default function GuidedPanel( { attributes, setAttributes } ) {
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 				>
-					<ToggleGroupControlOption value="standard" label={ __( 'Standard', 'sgs-blocks' ) } />
-					<ToggleGroupControlOption value="guided" label={ __( 'Step by step', 'sgs-blocks' ) } />
-					<ToggleGroupControlOption value="configurator" label={ __( 'Pick a set', 'sgs-blocks' ) } />
+					<ToggleGroupControlOption
+						value="standard"
+						label={ __( 'Standard', 'sgs-blocks' ) }
+					/>
+					<ToggleGroupControlOption
+						value="guided"
+						label={ __( 'Step by step', 'sgs-blocks' ) }
+					/>
+					<ToggleGroupControlOption
+						value="configurator"
+						label={ __( 'Pick a set', 'sgs-blocks' ) }
+					/>
 				</ToggleGroupControl>
 				{ isGuided && (
 					<>
 						<ToggleControl
 							label={ __( 'Auto-advance', 'sgs-blocks' ) }
 							checked={ guidedAutoAdvance !== false }
-							onChange={ ( val ) => setAttributes( { guidedAutoAdvance: val } ) }
+							onChange={ ( val ) =>
+								setAttributes( { guidedAutoAdvance: val } )
+							}
 							help={ __(
 								'Move to the next group a short beat after a choice is made (instant with reduced motion). Off — the shopper always presses Next.',
 								'sgs-blocks'
@@ -61,9 +85,14 @@ export default function GuidedPanel( { attributes, setAttributes } ) {
 							__nextHasNoMarginBottom
 						/>
 						<ToggleControl
-							label={ __( 'Include other attributes', 'sgs-blocks' ) }
+							label={ __(
+								'Include other attributes',
+								'sgs-blocks'
+							) }
 							checked={ guidedAnswerAttributes !== false }
-							onChange={ ( val ) => setAttributes( { guidedAnswerAttributes: val } ) }
+							onChange={ ( val ) =>
+								setAttributes( { guidedAnswerAttributes: val } )
+							}
 							help={ __(
 								'Also walk the product’s other visible attributes that do not change price (e.g. Topping, Dietary) as answer groups. Off — only the priced axes appear.',
 								'sgs-blocks'
@@ -74,27 +103,53 @@ export default function GuidedPanel( { attributes, setAttributes } ) {
 							label={ __( 'Back button label', 'sgs-blocks' ) }
 							value={ guidedBackLabel || '' }
 							placeholder={ __( 'Back', 'sgs-blocks' ) }
-							onChange={ ( val ) => setAttributes( { guidedBackLabel: val } ) }
+							onChange={ ( val ) =>
+								setAttributes( { guidedBackLabel: val } )
+							}
 							maxLength={ 20 }
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
-						<SgsFreeTextField type="rich" noLink
+						<SgsFreeTextField
+							type="rich"
+							noLink
 							label={ __( 'Next button label', 'sgs-blocks' ) }
 							value={ guidedNextLabel || '' }
 							placeholder={ __( 'Next', 'sgs-blocks' ) }
-							onChange={ ( val ) => setAttributes( { guidedNextLabel: val } ) }
+							onChange={ ( val ) =>
+								setAttributes( { guidedNextLabel: val } )
+							}
 							maxLength={ 20 }
 						/>
 						<SelectControl
 							label={ __( 'Meter style', 'sgs-blocks' ) }
 							value={ guidedMeterStyle || 'segments' }
 							options={ [
-								{ value: 'segments', label: __( 'Segments — index and chosen value', 'sgs-blocks' ) },
-								{ value: 'bar', label: __( 'Bar — a single filled progress track', 'sgs-blocks' ) },
-								{ value: 'dots', label: __( 'Dots — compact, always', 'sgs-blocks' ) },
+								{
+									value: 'segments',
+									label: __(
+										'Segments — index and chosen value',
+										'sgs-blocks'
+									),
+								},
+								{
+									value: 'bar',
+									label: __(
+										'Bar — a single filled progress track',
+										'sgs-blocks'
+									),
+								},
+								{
+									value: 'dots',
+									label: __(
+										'Dots — compact, always',
+										'sgs-blocks'
+									),
+								},
 							] }
-							onChange={ ( val ) => setAttributes( { guidedMeterStyle: val } ) }
+							onChange={ ( val ) =>
+								setAttributes( { guidedMeterStyle: val } )
+							}
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>

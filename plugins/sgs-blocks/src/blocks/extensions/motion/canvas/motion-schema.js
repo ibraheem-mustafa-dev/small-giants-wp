@@ -49,7 +49,9 @@ export function fields( def ) {
 					out[ key ] = {
 						node,
 						type: String( meta.fieldType ),
-						css: meta.cssProperty ? String( meta.cssProperty ) : null,
+						css: meta.cssProperty
+							? String( meta.cssProperty )
+							: null,
 						state: meta.state ? String( meta.state ) : null,
 						perDevice: Boolean( meta.perDevice ),
 					};
@@ -267,7 +269,9 @@ export function rules( selector, decls, extra = {} ) {
 		if ( entries.length === 0 && more.length === 0 ) {
 			return '';
 		}
-		const body = entries.map( ( [ prop, value ] ) => `${ prop }:${ value };` ).join( '' );
+		const body = entries
+			.map( ( [ prop, value ] ) => `${ prop }:${ value };` )
+			.join( '' );
 		// Per-item rules follow the tier's own rule inside the same wrapper (one specificity, source order decides).
 		const rule =
 			( entries.length === 0 ? '' : `${ selector }{${ body }}` ) +
@@ -275,7 +279,9 @@ export function rules( selector, decls, extra = {} ) {
 				.map(
 					( [ suffix, props ] ) =>
 						`${ selector }${ suffix }{${ Object.entries( props )
-							.map( ( [ prop, value ] ) => `${ prop }:${ value };` )
+							.map(
+								( [ prop, value ] ) => `${ prop }:${ value };`
+							)
 							.join( '' ) }}`
 				)
 				.join( '' );

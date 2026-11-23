@@ -62,7 +62,9 @@ export function loadLucide() {
 				? fetchJson( ASSETS.sgsIcons ).catch( () => ( {} ) )
 				: Promise.resolve( {} ),
 		] )
-			.then( ( [ map, tags, sgs ] ) => mergeSgsIcons( { map, tags }, sgs ) )
+			.then( ( [ map, tags, sgs ] ) =>
+				mergeSgsIcons( { map, tags }, sgs )
+			)
 			.catch( ( err ) => {
 				lucidePromise = null; // allow retry on next open
 				throw err;
@@ -129,7 +131,9 @@ export const ICON_SOURCES = [
  * @return {Array<{key:string,label:string,optIn?:boolean}>} Sources in tab order.
  */
 export function enabledIconSources( sources ) {
-	return ICON_SOURCES.filter( ( s ) => ( sources ? sources.includes( s.key ) : ! s.optIn ) );
+	return ICON_SOURCES.filter( ( s ) =>
+		sources ? sources.includes( s.key ) : ! s.optIn
+	);
 }
 
 /**
@@ -138,17 +142,79 @@ export function enabledIconSources( sources ) {
  * three big browsable libraries are Lucide + emoji + WordPress icons.
  */
 export const DASHICONS = [
-	'admin-home', 'admin-users', 'admin-settings', 'admin-tools', 'admin-site',
-	'awards', 'bell', 'book', 'businessman', 'businesswoman', 'calendar',
-	'calendar-alt', 'camera', 'cart', 'chart-area', 'chart-bar', 'chart-line',
-	'chart-pie', 'clipboard', 'clock', 'cloud', 'coffee', 'controls-play',
-	'desktop', 'download', 'edit', 'email', 'email-alt', 'external', 'facebook',
-	'flag', 'format-image', 'format-quote', 'format-video', 'groups', 'heart',
-	'id', 'index-card', 'info', 'instagram', 'laptop', 'lightbulb', 'location',
-	'location-alt', 'lock', 'megaphone', 'money-alt', 'nametag', 'no', 'palmtree',
-	'performance', 'phone', 'pressthis', 'products', 'shield', 'shield-alt',
-	'smartphone', 'smiley', 'star-filled', 'star-half', 'star-empty', 'sos',
-	'tablet', 'tag', 'thumbs-up', 'thumbs-down', 'tickets-alt', 'twitter',
-	'unlock', 'update', 'visibility', 'warning', 'welcome-learn-more', 'yes',
+	'admin-home',
+	'admin-users',
+	'admin-settings',
+	'admin-tools',
+	'admin-site',
+	'awards',
+	'bell',
+	'book',
+	'businessman',
+	'businesswoman',
+	'calendar',
+	'calendar-alt',
+	'camera',
+	'cart',
+	'chart-area',
+	'chart-bar',
+	'chart-line',
+	'chart-pie',
+	'clipboard',
+	'clock',
+	'cloud',
+	'coffee',
+	'controls-play',
+	'desktop',
+	'download',
+	'edit',
+	'email',
+	'email-alt',
+	'external',
+	'facebook',
+	'flag',
+	'format-image',
+	'format-quote',
+	'format-video',
+	'groups',
+	'heart',
+	'id',
+	'index-card',
+	'info',
+	'instagram',
+	'laptop',
+	'lightbulb',
+	'location',
+	'location-alt',
+	'lock',
+	'megaphone',
+	'money-alt',
+	'nametag',
+	'no',
+	'palmtree',
+	'performance',
+	'phone',
+	'pressthis',
+	'products',
+	'shield',
+	'shield-alt',
+	'smartphone',
+	'smiley',
+	'star-filled',
+	'star-half',
+	'star-empty',
+	'sos',
+	'tablet',
+	'tag',
+	'thumbs-up',
+	'thumbs-down',
+	'tickets-alt',
+	'twitter',
+	'unlock',
+	'update',
+	'visibility',
+	'warning',
+	'welcome-learn-more',
+	'yes',
 	'yes-alt',
 ];

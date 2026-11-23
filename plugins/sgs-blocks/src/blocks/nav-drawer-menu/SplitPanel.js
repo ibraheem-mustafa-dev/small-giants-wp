@@ -61,7 +61,9 @@ export default function SplitPanel( {
 	const splitIdUnresolved =
 		isSplitting &&
 		!! splitAfterItemId &&
-		! topLevelItems.some( ( item ) => item.identifier === splitAfterItemId );
+		! topLevelItems.some(
+			( item ) => item.identifier === splitAfterItemId
+		);
 
 	return (
 		<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ false }>
@@ -86,7 +88,10 @@ export default function SplitPanel( {
 						value: 'all',
 					},
 					{
-						label: __( 'Only rows that open a section', 'sgs-blocks' ),
+						label: __(
+							'Only rows that open a section',
+							'sgs-blocks'
+						),
 						value: 'with-submenu',
 					},
 				] }

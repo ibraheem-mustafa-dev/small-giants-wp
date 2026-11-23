@@ -16,14 +16,28 @@ import {
 	SgsLengthControl,
 	SgsBorderControl,
 	MediaElementPanel,
-	SsrPreviewGuard, ResponsiveOverride, SgsBoxControl, LinkUnderlineControl, ShadowControl } from '../../components';
+	SsrPreviewGuard,
+	ResponsiveOverride,
+	SgsBoxControl,
+	LinkUnderlineControl,
+	ShadowControl,
+} from '../../components';
 import { BUTTON_PRESETS } from '../button/presets';
 import { presetNames } from '../button/preset-names';
 import { LINK_SOURCES_NO_TOP } from '../../shared/link-source-options';
-import { ListingContentPanel, ListingShapePanel, ListingDotsPanel, ListingRowsPanel, ListingOverlaysPanel } from './listing-panels';
+import {
+	ListingContentPanel,
+	ListingShapePanel,
+	ListingDotsPanel,
+	ListingRowsPanel,
+	ListingOverlaysPanel,
+} from './listing-panels';
 import { cardPartColourRows } from './card-part-rows';
 
-const CARD_HOVER_SHADOW_KEYS = { hover: 'cardShadowHover', hoverColour: 'cardShadowColourHover' };
+const CARD_HOVER_SHADOW_KEYS = {
+	hover: 'cardShadowHover',
+	hoverColour: 'cardShadowColourHover',
+};
 import {
 	PanelBody,
 	SelectControl,
@@ -37,10 +51,15 @@ import {
 } from '@wordpress/components';
 import { useState, useEffect } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
-import { effectiveSourceMode, showsConnectedProduct } from './card-grid-context';
+import {
+	effectiveSourceMode,
+	showsConnectedProduct,
+} from './card-grid-context';
 import apiFetch from '@wordpress/api-fetch';
 import ServerSideRender from '../../components/ServerSideRender';
-import MediaSlotField, { LibraryButton } from '../../components/media/MediaSlotField.js';
+import MediaSlotField, {
+	LibraryButton,
+} from '../../components/media/MediaSlotField.js';
 import SlotPicture from '../../components/media/SlotPicture.js';
 import { desktopOf, firstUrl, sourceFromMedia } from './media-source.js';
 import {
@@ -50,8 +69,26 @@ import {
 	ToolsPanel,
 	ToolsPanelItem,
 } from '../../components/primitives';
-import { colourVar, SGS_LENGTH_UNITS, sgsNormaliseLength, resolveTextColourPreviewStyle, linkColourPreviewCss, linkUnderlinePreviewCss, textIndentPreviewCss, typographyPreviewCss, usePreviewTier, isCssGradient, sgsBorderPreview } from '../../utils';
-import { typedCardPreview, TypedMediaOverlays, TypedRating, TypedSwatches, attributeTagText } from './typed-canvas';
+import {
+	colourVar,
+	SGS_LENGTH_UNITS,
+	sgsNormaliseLength,
+	resolveTextColourPreviewStyle,
+	linkColourPreviewCss,
+	linkUnderlinePreviewCss,
+	textIndentPreviewCss,
+	typographyPreviewCss,
+	usePreviewTier,
+	isCssGradient,
+	sgsBorderPreview,
+} from '../../utils';
+import {
+	typedCardPreview,
+	TypedMediaOverlays,
+	TypedRating,
+	TypedSwatches,
+	attributeTagText,
+} from './typed-canvas';
 import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 import { RICH_TEXT_BODY, RICH_TEXT_PLAIN } from '../../utils/rich-text-formats';
 
@@ -77,9 +114,18 @@ const PICKER_RADIUS_UNITS = [
 
 /** Allowed CTA behaviour options — typed mode locks to 'learn-more'. */
 const CTA_BEHAVIOUR_OPTIONS = [
-	{ value: 'learn-more', label: __( 'Learn more (link to product page)', 'sgs-blocks' ) },
-	{ value: 'add-to-basket', label: __( 'Add to basket (cart proxy)', 'sgs-blocks' ) },
-	{ value: 'buy-now', label: __( 'Buy now (add + go to checkout)', 'sgs-blocks' ) },
+	{
+		value: 'learn-more',
+		label: __( 'Learn more (link to product page)', 'sgs-blocks' ),
+	},
+	{
+		value: 'add-to-basket',
+		label: __( 'Add to basket (cart proxy)', 'sgs-blocks' ),
+	},
+	{
+		value: 'buy-now',
+		label: __( 'Buy now (add + go to checkout)', 'sgs-blocks' ),
+	},
 ];
 
 /** CTA text alignment: empty keeps the stylesheet's centred default. */
@@ -114,7 +160,13 @@ const CTA_JUSTIFY_CONTENT = {
  * @param {Function} props.setAttributes Attribute setter.
  */
 function ProductSourcePanel( { attributes, setAttributes } ) {
-	const { sourceMode, productId, taxDisplayMode, linkedProductKind, linkedProductPosition } = attributes;
+	const {
+		sourceMode,
+		productId,
+		taxDisplayMode,
+		linkedProductKind,
+		linkedProductPosition,
+	} = attributes;
 	const [ wcOptions, setWcOptions ] = useState( [] );
 	const [ wcLoading, setWcLoading ] = useState( false );
 
@@ -212,32 +264,71 @@ function ProductSourcePanel( { attributes, setAttributes } ) {
 			{ 'wc-product' === sourceMode && productId > 0 && (
 				<>
 					<SelectControl
-						label={ __( 'Product shown on a product page', 'sgs-blocks' ) }
+						label={ __(
+							'Product shown on a product page',
+							'sgs-blocks'
+						) }
 						help={ __(
 							'Fixed shows the product connected above everywhere. A linked option shows the viewed product’s own Upsells, Cross-sells or Related products, chosen in WooCommerce under Linked products, and never the product being viewed. The product connected above is only the sample you see here in the editor.',
 							'sgs-blocks'
 						) }
 						value={ linkedProductKind || '' }
 						options={ [
-							{ label: __( 'Fixed: the connected product', 'sgs-blocks' ), value: '' },
-							{ label: __( 'Linked: an Upsell of the product being viewed', 'sgs-blocks' ), value: 'upsells' },
-							{ label: __( 'Linked: a Cross-sell of the product being viewed', 'sgs-blocks' ), value: 'cross-sells' },
-							{ label: __( 'Linked: a Related product of the product being viewed', 'sgs-blocks' ), value: 'related' },
+							{
+								label: __(
+									'Fixed: the connected product',
+									'sgs-blocks'
+								),
+								value: '',
+							},
+							{
+								label: __(
+									'Linked: an Upsell of the product being viewed',
+									'sgs-blocks'
+								),
+								value: 'upsells',
+							},
+							{
+								label: __(
+									'Linked: a Cross-sell of the product being viewed',
+									'sgs-blocks'
+								),
+								value: 'cross-sells',
+							},
+							{
+								label: __(
+									'Linked: a Related product of the product being viewed',
+									'sgs-blocks'
+								),
+								value: 'related',
+							},
 						] }
-						onChange={ ( value ) => setAttributes( { linkedProductKind: value } ) }
+						onChange={ ( value ) =>
+							setAttributes( { linkedProductKind: value } )
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
 					{ '' !== ( linkedProductKind || '' ) && (
 						<NumberControl
-							label={ __( 'Position in the list (1 = first)', 'sgs-blocks' ) }
+							label={ __(
+								'Position in the list (1 = first)',
+								'sgs-blocks'
+							) }
 							help={ __(
 								'With fewer linked products than this, the card shows one of WooCommerce’s related products instead; with none left it is left out.',
 								'sgs-blocks'
 							) }
 							value={ linkedProductPosition || 1 }
 							min={ 1 }
-							onChange={ ( v ) => setAttributes( { linkedProductPosition: Math.max( 1, parseInt( v, 10 ) || 1 ) } ) }
+							onChange={ ( v ) =>
+								setAttributes( {
+									linkedProductPosition: Math.max(
+										1,
+										parseInt( v, 10 ) || 1
+									),
+								} )
+							}
 							__next40pxDefaultSize
 							__nextHasNoMarginBottom
 						/>
@@ -251,15 +342,24 @@ function ProductSourcePanel( { attributes, setAttributes } ) {
 						value={ taxDisplayMode || 'auto' }
 						options={ [
 							{
-								label: __( 'Automatic (follow shop tax setting)', 'sgs-blocks' ),
+								label: __(
+									'Automatic (follow shop tax setting)',
+									'sgs-blocks'
+								),
 								value: 'auto',
 							},
 							{
-								label: __( 'Inclusive + "inc. VAT" suffix', 'sgs-blocks' ),
+								label: __(
+									'Inclusive + "inc. VAT" suffix',
+									'sgs-blocks'
+								),
 								value: 'inc-suffix',
 							},
 							{
-								label: __( 'Ex-VAT price + VAT amount (trade/B2B)', 'sgs-blocks' ),
+								label: __(
+									'Ex-VAT price + VAT amount (trade/B2B)',
+									'sgs-blocks'
+								),
 								value: 'ex-plus-vat',
 							},
 						] }
@@ -299,13 +399,19 @@ function ProductSourcePanel( { attributes, setAttributes } ) {
  * @param {?Object}  props.wcProduct     The connected WC product (or null).
  * @param {boolean}  props.loading       True while the product fetch is in flight.
  */
-function ProductOptionsPanel( { attributes, setAttributes, wcProduct, loading } ) {
+function ProductOptionsPanel( {
+	attributes,
+	setAttributes,
+	wcProduct,
+	loading,
+} ) {
 	const { visibleAxes } = attributes;
 	const axesLoading = loading;
 	const wcAxes = ( wcProduct?.attributes || [] )
 		.filter( ( a ) => a.variation )
 		.map( ( a ) => ( {
-			slug: a.slug || `pa_${ a.name.toLowerCase().replace( /\s+/g, '-' ) }`,
+			slug:
+				a.slug || `pa_${ a.name.toLowerCase().replace( /\s+/g, '-' ) }`,
 			label: a.name,
 		} ) );
 
@@ -424,44 +530,46 @@ function ContentOverridesPanel( { attributes, setAttributes, wcProduct } ) {
 		<>
 			<p style={ { marginTop: 0, marginBottom: 16 } }>
 				{ __(
-					"Replace individual live product details with your own text. Switching an override off keeps your text for later. Price always comes from the product.",
-					"sgs-blocks"
+					'Replace individual live product details with your own text. Switching an override off keeps your text for later. Price always comes from the product.',
+					'sgs-blocks'
 				) }
 			</p>
 			<ToolsPanel
-				label={ __( "Content overrides", "sgs-blocks" ) }
+				label={ __( 'Content overrides', 'sgs-blocks' ) }
 				resetAll={ () =>
 					setAttributes( {
 						overrideElements: [],
-						productName: "",
-						description: "",
-						trialTag: "",
-						featuredTag: "",
+						productName: '',
+						description: '',
+						trialTag: '',
+						featuredTag: '',
 						imageSource: undefined,
-						imageAlt: "",
-						ctaText: "",
-						ctaUrl: "",
+						imageAlt: '',
+						ctaText: '',
+						ctaUrl: '',
 					} )
 				}
 			>
 				{ /* Name */ }
 				<ToolsPanelItem
-					label={ __( "Override name", "sgs-blocks" ) }
-					hasValue={ () => isOn( "name" ) }
-					onDeselect={ () => toggle( "name", false ) }
+					label={ __( 'Override name', 'sgs-blocks' ) }
+					hasValue={ () => isOn( 'name' ) }
+					onDeselect={ () => toggle( 'name', false ) }
 					isShownByDefault
 				>
 					<ToggleControl
-						label={ __( "Override name", "sgs-blocks" ) }
-						checked={ isOn( "name" ) }
-						onChange={ ( on ) => toggle( "name", on ) }
-						help={ ! isOn( "name" ) ? liveHelp( liveName ) : undefined }
+						label={ __( 'Override name', 'sgs-blocks' ) }
+						checked={ isOn( 'name' ) }
+						onChange={ ( on ) => toggle( 'name', on ) }
+						help={
+							! isOn( 'name' ) ? liveHelp( liveName ) : undefined
+						}
 						__nextHasNoMarginBottom
 					/>
-					{ isOn( "name" ) && (
+					{ isOn( 'name' ) && (
 						<TextControl
-							label={ __( "Name", "sgs-blocks" ) }
-							value={ attributes.productName || "" }
+							label={ __( 'Name', 'sgs-blocks' ) }
+							value={ attributes.productName || '' }
 							onChange={ ( v ) =>
 								setAttributes( { productName: v } )
 							}
@@ -473,26 +581,26 @@ function ContentOverridesPanel( { attributes, setAttributes, wcProduct } ) {
 
 				{ /* Description */ }
 				<ToolsPanelItem
-					label={ __( "Override description", "sgs-blocks" ) }
-					hasValue={ () => isOn( "description" ) }
-					onDeselect={ () => toggle( "description", false ) }
+					label={ __( 'Override description', 'sgs-blocks' ) }
+					hasValue={ () => isOn( 'description' ) }
+					onDeselect={ () => toggle( 'description', false ) }
 					isShownByDefault
 				>
 					<ToggleControl
-						label={ __( "Override description", "sgs-blocks" ) }
-						checked={ isOn( "description" ) }
-						onChange={ ( on ) => toggle( "description", on ) }
+						label={ __( 'Override description', 'sgs-blocks' ) }
+						checked={ isOn( 'description' ) }
+						onChange={ ( on ) => toggle( 'description', on ) }
 						help={
-							! isOn( "description" )
+							! isOn( 'description' )
 								? liveHelp( liveDesc )
 								: undefined
 						}
 						__nextHasNoMarginBottom
 					/>
-					{ isOn( "description" ) && (
+					{ isOn( 'description' ) && (
 						<TextareaControl
-							label={ __( "Description", "sgs-blocks" ) }
-							value={ attributes.description || "" }
+							label={ __( 'Description', 'sgs-blocks' ) }
+							value={ attributes.description || '' }
 							onChange={ ( v ) =>
 								setAttributes( { description: v } )
 							}
@@ -503,69 +611,69 @@ function ContentOverridesPanel( { attributes, setAttributes, wcProduct } ) {
 
 				{ /* Badge: from each product in that mode */ }
 				{ ! fromProduct && (
-				<ToolsPanelItem
-					label={ __( "Override badge", "sgs-blocks" ) }
-					hasValue={ () => isOn( "badge" ) }
-					onDeselect={ () => toggle( "badge", false ) }
-				>
-					<ToggleControl
-						label={ __( "Override badge", "sgs-blocks" ) }
-						checked={ isOn( "badge" ) }
-						onChange={ ( on ) => toggle( "badge", on ) }
-						__nextHasNoMarginBottom
-					/>
-					{ isOn( "badge" ) &&
-						( badgeApplies ? (
-							<TextControl
-								label={ __( "Badge text", "sgs-blocks" ) }
-								value={ attributes[ badgeAttr ] || "" }
-								onChange={ ( v ) =>
-									setAttributes( { [ badgeAttr ]: v } )
-								}
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						) : (
-							<Notice status="info" isDismissible={ false }>
-								{ __(
-									"Badges show on the Trial and Featured variants. Choose one under Card.",
-									"sgs-blocks"
-								) }
-							</Notice>
-						) ) }
-				</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Override badge', 'sgs-blocks' ) }
+						hasValue={ () => isOn( 'badge' ) }
+						onDeselect={ () => toggle( 'badge', false ) }
+					>
+						<ToggleControl
+							label={ __( 'Override badge', 'sgs-blocks' ) }
+							checked={ isOn( 'badge' ) }
+							onChange={ ( on ) => toggle( 'badge', on ) }
+							__nextHasNoMarginBottom
+						/>
+						{ isOn( 'badge' ) &&
+							( badgeApplies ? (
+								<TextControl
+									label={ __( 'Badge text', 'sgs-blocks' ) }
+									value={ attributes[ badgeAttr ] || '' }
+									onChange={ ( v ) =>
+										setAttributes( { [ badgeAttr ]: v } )
+									}
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+							) : (
+								<Notice status="info" isDismissible={ false }>
+									{ __(
+										'Badges show on the Trial and Featured variants. Choose one under Card.',
+										'sgs-blocks'
+									) }
+								</Notice>
+							) ) }
+					</ToolsPanelItem>
 				) }
 
 				{ /* Image */ }
 				<ToolsPanelItem
-					label={ __( "Override image", "sgs-blocks" ) }
-					hasValue={ () => isOn( "image" ) }
-					onDeselect={ () => toggle( "image", false ) }
+					label={ __( 'Override image', 'sgs-blocks' ) }
+					hasValue={ () => isOn( 'image' ) }
+					onDeselect={ () => toggle( 'image', false ) }
 					isShownByDefault
 				>
 					<ToggleControl
-						label={ __( "Override image", "sgs-blocks" ) }
-						checked={ isOn( "image" ) }
-						onChange={ ( on ) => toggle( "image", on ) }
+						label={ __( 'Override image', 'sgs-blocks' ) }
+						checked={ isOn( 'image' ) }
+						onChange={ ( on ) => toggle( 'image', on ) }
 						help={ __(
 							'Sets the card’s default image. Variation photos still swap in when an option is selected.',
-							"sgs-blocks"
+							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom
 					/>
-					{ isOn( "image" ) && (
+					{ isOn( 'image' ) && (
 						<>
 							{ galleryImages.length > 0 && (
 								<div
 									style={ {
-										display: "flex",
-										flexWrap: "wrap",
+										display: 'flex',
+										flexWrap: 'wrap',
 										gap: 8,
-										margin: "8px 0",
+										margin: '8px 0',
 									} }
 									aria-label={ __(
-										"Product gallery images",
-										"sgs-blocks"
+										'Product gallery images',
+										'sgs-blocks'
 									) }
 								>
 									{ galleryImages.map( ( img, i ) => (
@@ -576,13 +684,14 @@ function ContentOverridesPanel( { attributes, setAttributes, wcProduct } ) {
 													// img is a WooCommerce REST product image object
 													// ({id,src,name,alt}) — img.id is a real WP
 													// attachment ID, not a synthetic gallery index.
-													imageSource: sourceFromMedia( img ),
-													imageAlt: img.alt || "",
+													imageSource:
+														sourceFromMedia( img ),
+													imageAlt: img.alt || '',
 												} )
 											}
 											aria-label={ `${ __(
-												"Use gallery image",
-												"sgs-blocks"
+												'Use gallery image',
+												'sgs-blocks'
 											) } ${ i + 1 }` }
 											style={ {
 												padding: 0,
@@ -590,21 +699,23 @@ function ContentOverridesPanel( { attributes, setAttributes, wcProduct } ) {
 												height: 48,
 												minWidth: 44,
 												minHeight: 44,
-												overflow: "hidden",
+												overflow: 'hidden',
 												borderRadius: 4,
 												border:
-													firstUrl( attributes.imageSource ) === img.src
-														? "2px solid var(--wp-admin-theme-color, #007cba)"
-														: "2px solid transparent",
+													firstUrl(
+														attributes.imageSource
+													) === img.src
+														? '2px solid var(--wp-admin-theme-color, #007cba)'
+														: '2px solid transparent',
 											} }
 										>
 											<img
 												src={ img.src }
-												alt={ img.alt || "" }
+												alt={ img.alt || '' }
 												style={ {
-													width: "100%",
-													height: "100%",
-													objectFit: "cover",
+													width: '100%',
+													height: '100%',
+													objectFit: 'cover',
 												} }
 											/>
 										</Button>
@@ -615,8 +726,15 @@ function ContentOverridesPanel( { attributes, setAttributes, wcProduct } ) {
 								attributes={ attributes }
 								setAttributes={ setAttributes }
 								prefix="image"
-								slot={ { prefix: 'image', kinds: [ 'image' ], context: 'content' } }
-								label={ __( "Choose another image", "sgs-blocks" ) }
+								slot={ {
+									prefix: 'image',
+									kinds: [ 'image' ],
+									context: 'content',
+								} }
+								label={ __(
+									'Choose another image',
+									'sgs-blocks'
+								) }
 							/>
 						</>
 					) }
@@ -624,52 +742,70 @@ function ContentOverridesPanel( { attributes, setAttributes, wcProduct } ) {
 
 				{ /* CTA: label from each product in that mode */ }
 				{ ! fromProduct && (
-				<ToolsPanelItem
-					label={ __( "Override button", "sgs-blocks" ) }
-					hasValue={ () => isOn( "cta" ) }
-					onDeselect={ () => toggle( "cta", false ) }
-					isShownByDefault
-				>
-					<ToggleControl
-						label={ __( "Override button", "sgs-blocks" ) }
-						checked={ isOn( "cta" ) }
-						onChange={ ( on ) => toggle( "cta", on ) }
-						__nextHasNoMarginBottom
-					/>
-					{ isOn( "cta" ) && (
-						<>
-							<SgsFreeTextField type="rich" noLink
-								label={ __( "Button text", "sgs-blocks" ) }
-								value={ attributes.ctaText || "" }
-								onChange={ ( v ) =>
-									setAttributes( { ctaText: v } )
-								}
-							/>
-							{ ( ctaBehaviour || "learn-more" ) ===
-							"learn-more" ? (
-								/* Spec 35 §2 LINK standard, searchOnly mode — ctaUrl
-								   is a bare string with no target/rel concept. */
-								<LinkPopoverField
-									label={ __( "Button link", "sgs-blocks" ) }
-									value={ attributes.ctaUrl || "" }
-									onChange={ ( url, extra ) =>
-										setAttributes( { ctaUrl: url, ...( extra ? { ctaUrlSource: extra.linkSource } : {} ) } )
+					<ToolsPanelItem
+						label={ __( 'Override button', 'sgs-blocks' ) }
+						hasValue={ () => isOn( 'cta' ) }
+						onDeselect={ () => toggle( 'cta', false ) }
+						isShownByDefault
+					>
+						<ToggleControl
+							label={ __( 'Override button', 'sgs-blocks' ) }
+							checked={ isOn( 'cta' ) }
+							onChange={ ( on ) => toggle( 'cta', on ) }
+							__nextHasNoMarginBottom
+						/>
+						{ isOn( 'cta' ) && (
+							<>
+								<SgsFreeTextField
+									type="rich"
+									noLink
+									label={ __( 'Button text', 'sgs-blocks' ) }
+									value={ attributes.ctaText || '' }
+									onChange={ ( v ) =>
+										setAttributes( { ctaText: v } )
 									}
-									linkSource={ attributes.ctaUrlSource || "" }
-									linkSources={ LINK_SOURCES_NO_TOP }
-									searchOnly
 								/>
-							) : (
-								<Notice status="info" isDismissible={ false }>
-									{ __(
-										"Only the button text is overridable for basket buttons — the button keeps its basket action.",
-										"sgs-blocks"
-									) }
-								</Notice>
-							) }
-						</>
-					) }
-				</ToolsPanelItem>
+								{ ( ctaBehaviour || 'learn-more' ) ===
+								'learn-more' ? (
+									/* Spec 35 §2 LINK standard, searchOnly mode — ctaUrl
+								   is a bare string with no target/rel concept. */
+									<LinkPopoverField
+										label={ __(
+											'Button link',
+											'sgs-blocks'
+										) }
+										value={ attributes.ctaUrl || '' }
+										onChange={ ( url, extra ) =>
+											setAttributes( {
+												ctaUrl: url,
+												...( extra
+													? {
+															ctaUrlSource:
+																extra.linkSource,
+													  }
+													: {} ),
+											} )
+										}
+										linkSource={
+											attributes.ctaUrlSource || ''
+										}
+										linkSources={ LINK_SOURCES_NO_TOP }
+										searchOnly
+									/>
+								) : (
+									<Notice
+										status="info"
+										isDismissible={ false }
+									>
+										{ __(
+											'Only the button text is overridable for basket buttons — the button keeps its basket action.',
+											'sgs-blocks'
+										) }
+									</Notice>
+								) }
+							</>
+						) }
+					</ToolsPanelItem>
 				) }
 			</ToolsPanel>
 		</>
@@ -677,7 +813,16 @@ function ContentOverridesPanel( { attributes, setAttributes, wcProduct } ) {
 }
 
 /** The atoms each slot's panels carry (block.json supports.sgs.mediaElements). */
-const IMAGE_ATOMS = [ 'source', 'meaning', 'object-fit', 'focal-point', 'sizing', 'shape', 'shadow', 'media-padding' ];
+const IMAGE_ATOMS = [
+	'source',
+	'meaning',
+	'object-fit',
+	'focal-point',
+	'sizing',
+	'shape',
+	'shadow',
+	'media-padding',
+];
 const THUMB_ATOMS = [ 'object-fit', 'shape' ];
 const LOGO_ATOMS = [ 'source', 'sizing' ];
 
@@ -704,13 +849,31 @@ function ctaPresetSeed( slug ) {
 		ctaColourTextHover: preset.colourTextHover,
 		ctaColourBorderHover: preset.borderColourHover,
 		ctaBorderStyle: preset.borderStyle,
-		ctaBorderWidth: { top: width, right: width, bottom: width, left: width },
-		ctaBorderRadius: { desktop: { topLeft: radius, topRight: radius, bottomLeft: radius, bottomRight: radius } },
+		ctaBorderWidth: {
+			top: width,
+			right: width,
+			bottom: width,
+			left: width,
+		},
+		ctaBorderRadius: {
+			desktop: {
+				topLeft: radius,
+				topRight: radius,
+				bottomLeft: radius,
+				bottomRight: radius,
+			},
+		},
 		ctaFontWeight: preset.fontWeight,
 	};
 }
 
-export default function Edit( { attributes, setAttributes, clientId, context, name } ) {
+export default function Edit( {
+	attributes,
+	setAttributes,
+	clientId,
+	context,
+	name,
+} ) {
 	const {
 		variantStyle,
 		sourceMode: storedSourceMode,
@@ -827,11 +990,16 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 	// grid, not the card, picks the product (card-grid-context.js).
 	const sourceMode = effectiveSourceMode( attributes, context );
 	const gridParents = useSelect(
-		( select ) => select( 'core/block-editor' ).getBlockParentsByBlockName( clientId, 'sgs/card-grid' ),
+		( select ) =>
+			select( 'core/block-editor' ).getBlockParentsByBlockName(
+				clientId,
+				'sgs/card-grid'
+			),
 		[ clientId ]
 	);
 	// Every attribute reaches the server preview; only the source mode is the grid item's.
-	const withItemSourceMode = ( attrs ) => ( sourceMode === storedSourceMode ? attrs : { ...attrs, sourceMode } );
+	const withItemSourceMode = ( attrs ) =>
+		sourceMode === storedSourceMode ? attrs : { ...attrs, sourceMode };
 	const isBound = sourceMode !== 'typed';
 
 	// Typed mode = the built-in element editor. The block has no InnerBlocks
@@ -889,9 +1057,7 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 	// isn't rendered — skip the check entirely in that case. The backgroundColour
 	// is used by render.php in both typed and bound modes.
 	const productCardContrastAgainst =
-		backgroundColour && ! backgroundColourGradient
-			? backgroundColour
-			: '';
+		backgroundColour && ! backgroundColourGradient ? backgroundColour : '';
 
 	// Typed-mode editor parity (R2c, B-3/B-8): card root colour/border are now
 	// block-private attrs (not the native style.color/__experimentalBorder
@@ -918,31 +1084,57 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 	if ( ! isBound ) {
 		Object.assign(
 			typedPreviewStyle,
-			resolveTextColourPreviewStyle( textColour, textColourGradient, resolveCardColourPreview )
+			resolveTextColourPreviewStyle(
+				textColour,
+				textColourGradient,
+				resolveCardColourPreview
+			)
 		);
-		if (
-			isCssGradient( backgroundColourGradient )
-		) {
+		if ( isCssGradient( backgroundColourGradient ) ) {
 			typedPreviewStyle.backgroundImage = backgroundColourGradient;
 		} else if ( backgroundColour ) {
-			typedPreviewStyle.backgroundColor = resolveCardColourPreview( backgroundColour );
+			typedPreviewStyle.backgroundColor =
+				resolveCardColourPreview( backgroundColour );
 		}
-		Object.assign( typedPreviewStyle, sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient }, cardTier ) );
+		Object.assign(
+			typedPreviewStyle,
+			sgsBorderPreview(
+				{
+					widthValues: borderWidth,
+					styleValue: borderStyle,
+					colourValue: borderColour,
+					colourGradientValue: borderColourGradient,
+				},
+				cardTier
+			)
+		);
 		// Radius, max width and the card-level custom properties at the previewed tier.
 		Object.assign( typedPreviewStyle, typedParts.root );
 		typedPreviewClasses.push( ...typedParts.rootClasses );
 		// Preset (palette-slug) colours are class-based — mirror render.php's re-add.
 		if ( attributes.textColor ) {
-			typedPreviewClasses.push( 'has-text-color', `has-${ attributes.textColor }-color` );
+			typedPreviewClasses.push(
+				'has-text-color',
+				`has-${ attributes.textColor }-color`
+			);
 		}
 		if ( attributes.backgroundColor ) {
-			typedPreviewClasses.push( 'has-background', `has-${ attributes.backgroundColor }-background-color` );
+			typedPreviewClasses.push(
+				'has-background',
+				`has-${ attributes.backgroundColor }-background-color`
+			);
 		}
 		if ( attributes.gradient ) {
-			typedPreviewClasses.push( 'has-background', `has-${ attributes.gradient }-gradient-background` );
+			typedPreviewClasses.push(
+				'has-background',
+				`has-${ attributes.gradient }-gradient-background`
+			);
 		}
 		if ( attributes.borderColor ) {
-			typedPreviewClasses.push( 'has-border-color', `has-${ attributes.borderColor }-border-color` );
+			typedPreviewClasses.push(
+				'has-border-color',
+				`has-${ attributes.borderColor }-border-color`
+			);
 		}
 	}
 
@@ -978,8 +1170,14 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 	const priceNotePreviewStyle = typedParts.priceNote;
 	// The buttons' own look (the built-in button kit, prefixes `cta` and `cta2`): the kit's canvas twin draws it at the device being edited.
 	// The alignment and the card's "no shadow" switch are this block's own.
-	const ctaKitStyle = buttonKitStyle( attributes, 'cta', { tier: cardTier, palette: pcPalette } );
-	const cta2KitStyle = buttonKitStyle( attributes, 'cta2', { tier: cardTier, palette: pcPalette } );
+	const ctaKitStyle = buttonKitStyle( attributes, 'cta', {
+		tier: cardTier,
+		palette: pcPalette,
+	} );
+	const cta2KitStyle = buttonKitStyle( attributes, 'cta2', {
+		tier: cardTier,
+		palette: pcPalette,
+	} );
 	const ctaPreviewStyle = {
 		...ctaKitStyle,
 		textAlign: ctaTextAlign || undefined,
@@ -1032,29 +1230,61 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 	}
 	const ctaHoverSelector = `.${ ctaPreviewUid } .sgs-product-card__cta--primary`;
 	const ctaHoverCss = ctaHoverDecls.length
-		? `${ ctaHoverSelector }:hover,${ ctaHoverSelector }:focus-visible{${ ctaHoverDecls.join( '' ) }}`
+		? `${ ctaHoverSelector }:hover,${ ctaHoverSelector }:focus-visible{${ ctaHoverDecls.join(
+				''
+		  ) }}`
 		: '';
 
 	// Description preview: two-state link colour (the RichText permits
 	// `core/link`) and the paragraph-after-paragraph text indent render.php
 	// emits on both description markups, in the same clientId-derived scope
 	// as the CTA hover CSS above.
-	const descLinkPreviewCss = linkUnderlinePreviewCss( `.${ ctaPreviewUid } .sgs-product-card__description`, { mode: descLinkUnderline, thickness: descLinkUnderlineThickness, colour: descLinkUnderlineColour, colourHover: descLinkUnderlineColourHover, offset: descLinkUnderlineOffset, linkGradient: descLinkColourGradient } )
-		+ linkUnderlinePreviewCss( `.${ ctaPreviewUid } .product-desc`, { mode: descLinkUnderline, thickness: descLinkUnderlineThickness, colour: descLinkUnderlineColour, colourHover: descLinkUnderlineColourHover, offset: descLinkUnderlineOffset, linkGradient: descLinkColourGradient } )
-		+ linkColourPreviewCss(
-		`.${ ctaPreviewUid } .sgs-product-card__description`,
-		descLinkColour,
-		descLinkColourHover,
-		attributes.descLinkColourGradient,
-		attributes.descLinkColourHoverGradient
-	) + linkColourPreviewCss(
-		`.${ ctaPreviewUid } .product-desc`,
-		descLinkColour,
-		descLinkColourHover,
-		attributes.descLinkColourGradient,
-		attributes.descLinkColourHoverGradient
-	) + textIndentPreviewCss( attributes, 'desc', `.${ ctaPreviewUid } .sgs-product-card__description`, cardTier )
-		+ textIndentPreviewCss( attributes, 'desc', `.${ ctaPreviewUid } .product-desc`, cardTier );
+	const descLinkPreviewCss =
+		linkUnderlinePreviewCss(
+			`.${ ctaPreviewUid } .sgs-product-card__description`,
+			{
+				mode: descLinkUnderline,
+				thickness: descLinkUnderlineThickness,
+				colour: descLinkUnderlineColour,
+				colourHover: descLinkUnderlineColourHover,
+				offset: descLinkUnderlineOffset,
+				linkGradient: descLinkColourGradient,
+			}
+		) +
+		linkUnderlinePreviewCss( `.${ ctaPreviewUid } .product-desc`, {
+			mode: descLinkUnderline,
+			thickness: descLinkUnderlineThickness,
+			colour: descLinkUnderlineColour,
+			colourHover: descLinkUnderlineColourHover,
+			offset: descLinkUnderlineOffset,
+			linkGradient: descLinkColourGradient,
+		} ) +
+		linkColourPreviewCss(
+			`.${ ctaPreviewUid } .sgs-product-card__description`,
+			descLinkColour,
+			descLinkColourHover,
+			attributes.descLinkColourGradient,
+			attributes.descLinkColourHoverGradient
+		) +
+		linkColourPreviewCss(
+			`.${ ctaPreviewUid } .product-desc`,
+			descLinkColour,
+			descLinkColourHover,
+			attributes.descLinkColourGradient,
+			attributes.descLinkColourHoverGradient
+		) +
+		textIndentPreviewCss(
+			attributes,
+			'desc',
+			`.${ ctaPreviewUid } .sgs-product-card__description`,
+			cardTier
+		) +
+		textIndentPreviewCss(
+			attributes,
+			'desc',
+			`.${ ctaPreviewUid } .product-desc`,
+			cardTier
+		);
 
 	// Bound mode: render.php (via ServerSideRender) supplies the full
 	// `.product-card` wrapper itself, so the editor wrapper must NOT also add
@@ -1064,13 +1294,37 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 	// saving rules only refresh when the server render does. These scoped rules
 	// paint both from the current attributes at once; #block-{clientId} keeps them
 	// to this instance and outranks the server render's .{uid} rules while editing.
-	const ladderSavingColour = isBound ? colourVar( attributes.valueLadderSavingColour ) : undefined;
+	const ladderSavingColour = isBound
+		? colourVar( attributes.valueLadderSavingColour )
+		: undefined;
 	const boundPreviewCss = isBound
-		? typographyPreviewCss( attributes, 'priceFromLabel', `#block-${ clientId } .price-from-label`, cardTier ) +
-			typographyPreviewCss( attributes, 'rrp', `#block-${ clientId } .sgs-product-card__rrp`, cardTier ) +
-			typographyPreviewCss( attributes, 'valueLadder', `#block-${ clientId } .product-card__value-ladder`, cardTier ) +
-			typographyPreviewCss( attributes, 'valueLadderSaving', `#block-${ clientId } .value-ladder__saving`, cardTier ) +
-			( ladderSavingColour ? `#block-${ clientId } .value-ladder__saving{color:${ ladderSavingColour };}` : '' )
+		? typographyPreviewCss(
+				attributes,
+				'priceFromLabel',
+				`#block-${ clientId } .price-from-label`,
+				cardTier
+		  ) +
+		  typographyPreviewCss(
+				attributes,
+				'rrp',
+				`#block-${ clientId } .sgs-product-card__rrp`,
+				cardTier
+		  ) +
+		  typographyPreviewCss(
+				attributes,
+				'valueLadder',
+				`#block-${ clientId } .product-card__value-ladder`,
+				cardTier
+		  ) +
+		  typographyPreviewCss(
+				attributes,
+				'valueLadderSaving',
+				`#block-${ clientId } .value-ladder__saving`,
+				cardTier
+		  ) +
+		  ( ladderSavingColour
+				? `#block-${ clientId } .value-ladder__saving{color:${ ladderSavingColour };}`
+				: '' )
 		: '';
 
 	const blockProps = useBlockProps(
@@ -1102,7 +1356,9 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 			.map( ( s ) => s.trim() )
 			.filter( Boolean );
 		// The default pill survives an edit to the list while its label is still present; otherwise the first is default.
-		const keptLabel = ( packSizes || [] ).find( ( p ) => p.selected )?.label;
+		const keptLabel = ( packSizes || [] ).find(
+			( p ) => p.selected
+		)?.label;
 		const selectedIndex = Math.max( 0, labels.indexOf( keptLabel ) );
 		setAttributes( {
 			packSizes: labels.map( ( label, i ) => ( {
@@ -1115,7 +1371,10 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 	function onDefaultPackSizeChange( value ) {
 		const chosen = parseInt( value, 10 );
 		setAttributes( {
-			packSizes: ( packSizes || [] ).map( ( p, i ) => ( { ...p, selected: i === chosen } ) ),
+			packSizes: ( packSizes || [] ).map( ( p, i ) => ( {
+				...p,
+				selected: i === chosen,
+			} ) ),
 		} );
 	}
 
@@ -1137,7 +1396,11 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 		setAttributes( {
 			colourSwatches: [
 				...list,
-				{ key: `swatch-${ list.length }`, label: '', colour: '#000000' },
+				{
+					key: `swatch-${ list.length }`,
+					label: '',
+					colour: '#000000',
+				},
 			],
 		} );
 	}
@@ -1192,19 +1455,23 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 					key: 'normal',
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: textColour,
-					onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
+					onChange: ( val ) =>
+						setAttributes( { textColour: val ?? '' } ),
 					linked: true,
 					gradientValue: textColourGradient,
-					onGradientChange: ( val ) => setAttributes( { textColourGradient: val ?? '' } ),
+					onGradientChange: ( val ) =>
+						setAttributes( { textColourGradient: val ?? '' } ),
 				},
 				{
 					key: 'hover',
 					label: __( 'Hover', 'sgs-blocks' ),
 					value: textColourHover,
-					onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
+					onChange: ( val ) =>
+						setAttributes( { textColourHover: val ?? '' } ),
 					linked: true,
 					gradientValue: textColourHoverGradient,
-					onGradientChange: ( val ) => setAttributes( { textColourHoverGradient: val ?? '' } ),
+					onGradientChange: ( val ) =>
+						setAttributes( { textColourHoverGradient: val ?? '' } ),
 				},
 			],
 		},
@@ -1216,24 +1483,30 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 					key: 'normal',
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: backgroundColour,
-					onChange: ( val ) => setAttributes( { backgroundColour: val ?? '' } ),
+					onChange: ( val ) =>
+						setAttributes( { backgroundColour: val ?? '' } ),
 					linked: true,
 					gradientValue: backgroundColourGradient,
 					onGradientChange: ( val ) =>
-						setAttributes( { backgroundColourGradient: val ?? '' } ),
+						setAttributes( {
+							backgroundColourGradient: val ?? '',
+						} ),
 				},
 				{
 					key: 'hover',
 					label: __( 'Hover', 'sgs-blocks' ),
 					value: backgroundColourHover,
-					onChange: ( val ) => setAttributes( { backgroundColourHover: val ?? '' } ),
+					onChange: ( val ) =>
+						setAttributes( { backgroundColourHover: val ?? '' } ),
 					linked: true,
 					gradientValue: backgroundColourHoverGradient,
 					onGradientChange: ( val ) =>
-						setAttributes( { backgroundColourHoverGradient: val ?? '' } ),
+						setAttributes( {
+							backgroundColourHoverGradient: val ?? '',
+						} ),
 				},
 			],
-		},
+		}
 	);
 	if ( isBuiltIn ) {
 		colourRows.push( {
@@ -1245,10 +1518,12 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 					key: 'normal',
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: titleColour,
-					onChange: ( val ) => setAttributes( { titleColour: val ?? '' } ),
+					onChange: ( val ) =>
+						setAttributes( { titleColour: val ?? '' } ),
 					linked: true,
 					gradientValue: titleColourGradient,
-					onGradientChange: ( val ) => setAttributes( { titleColourGradient: val ?? '' } ),
+					onGradientChange: ( val ) =>
+						setAttributes( { titleColourGradient: val ?? '' } ),
 				},
 			],
 		} );
@@ -1261,10 +1536,12 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 					key: 'normal',
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: descColour,
-					onChange: ( val ) => setAttributes( { descColour: val ?? '' } ),
+					onChange: ( val ) =>
+						setAttributes( { descColour: val ?? '' } ),
 					linked: true,
 					gradientValue: descColourGradient,
-					onGradientChange: ( val ) => setAttributes( { descColourGradient: val ?? '' } ),
+					onGradientChange: ( val ) =>
+						setAttributes( { descColourGradient: val ?? '' } ),
 				},
 			],
 		} );
@@ -1277,19 +1554,25 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 					key: 'normal',
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: descLinkColour,
-					onChange: ( val ) => setAttributes( { descLinkColour: val ?? '' } ),
+					onChange: ( val ) =>
+						setAttributes( { descLinkColour: val ?? '' } ),
 					linked: true,
 					gradientValue: descLinkColourGradient,
-					onGradientChange: ( val ) => setAttributes( { descLinkColourGradient: val ?? '' } ),
+					onGradientChange: ( val ) =>
+						setAttributes( { descLinkColourGradient: val ?? '' } ),
 				},
 				{
 					key: 'hover',
 					label: __( 'Hover', 'sgs-blocks' ),
 					value: descLinkColourHover,
-					onChange: ( val ) => setAttributes( { descLinkColourHover: val ?? '' } ),
+					onChange: ( val ) =>
+						setAttributes( { descLinkColourHover: val ?? '' } ),
 					linked: true,
 					gradientValue: descLinkColourHoverGradient,
-					onGradientChange: ( val ) => setAttributes( { descLinkColourHoverGradient: val ?? '' } ),
+					onGradientChange: ( val ) =>
+						setAttributes( {
+							descLinkColourHoverGradient: val ?? '',
+						} ),
 				},
 			],
 			after: (
@@ -1299,11 +1582,21 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 					colour={ descLinkUnderlineColour }
 					colourHover={ descLinkUnderlineColourHover }
 					offset={ descLinkUnderlineOffset }
-					onModeChange={ ( val ) => setAttributes( { descLinkUnderline: val } ) }
-					onThicknessChange={ ( val ) => setAttributes( { descLinkUnderlineThickness: val } ) }
-					onColourChange={ ( val ) => setAttributes( { descLinkUnderlineColour: val } ) }
-					onColourHoverChange={ ( val ) => setAttributes( { descLinkUnderlineColourHover: val } ) }
-					onOffsetChange={ ( val ) => setAttributes( { descLinkUnderlineOffset: val } ) }
+					onModeChange={ ( val ) =>
+						setAttributes( { descLinkUnderline: val } )
+					}
+					onThicknessChange={ ( val ) =>
+						setAttributes( { descLinkUnderlineThickness: val } )
+					}
+					onColourChange={ ( val ) =>
+						setAttributes( { descLinkUnderlineColour: val } )
+					}
+					onColourHoverChange={ ( val ) =>
+						setAttributes( { descLinkUnderlineColourHover: val } )
+					}
+					onOffsetChange={ ( val ) =>
+						setAttributes( { descLinkUnderlineOffset: val } )
+					}
 				/>
 			),
 		} );
@@ -1316,10 +1609,12 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 					key: 'normal',
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: priceColour,
-					onChange: ( val ) => setAttributes( { priceColour: val ?? '' } ),
+					onChange: ( val ) =>
+						setAttributes( { priceColour: val ?? '' } ),
 					linked: true,
 					gradientValue: priceColourGradient,
-					onGradientChange: ( val ) => setAttributes( { priceColourGradient: val ?? '' } ),
+					onGradientChange: ( val ) =>
+						setAttributes( { priceColourGradient: val ?? '' } ),
 				},
 			],
 		} );
@@ -1332,10 +1627,12 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 					key: 'normal',
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: priceNoteColour,
-					onChange: ( val ) => setAttributes( { priceNoteColour: val ?? '' } ),
+					onChange: ( val ) =>
+						setAttributes( { priceNoteColour: val ?? '' } ),
 					linked: true,
 					gradientValue: priceNoteColourGradient,
-					onGradientChange: ( val ) => setAttributes( { priceNoteColourGradient: val ?? '' } ),
+					onGradientChange: ( val ) =>
+						setAttributes( { priceNoteColourGradient: val ?? '' } ),
 				},
 			],
 		} );
@@ -1350,7 +1647,8 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 					key: 'normal',
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: attributes.valueLadderSavingColour,
-					onChange: ( val ) => setAttributes( { valueLadderSavingColour: val ?? '' } ),
+					onChange: ( val ) =>
+						setAttributes( { valueLadderSavingColour: val ?? '' } ),
 					linked: true,
 				},
 			],
@@ -1365,19 +1663,29 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 					key: 'normal',
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: attributes.tagBackgroundColour,
-					onChange: ( val ) => setAttributes( { tagBackgroundColour: val ?? '' } ),
+					onChange: ( val ) =>
+						setAttributes( { tagBackgroundColour: val ?? '' } ),
 					linked: true,
 					gradientValue: attributes.tagBackgroundColourGradient,
-					onGradientChange: ( val ) => setAttributes( { tagBackgroundColourGradient: val ?? '' } ),
+					onGradientChange: ( val ) =>
+						setAttributes( {
+							tagBackgroundColourGradient: val ?? '',
+						} ),
 				},
 				{
 					key: 'hover',
 					label: __( 'Hover', 'sgs-blocks' ),
 					value: attributes.tagBackgroundColourHover,
-					onChange: ( val ) => setAttributes( { tagBackgroundColourHover: val ?? '' } ),
+					onChange: ( val ) =>
+						setAttributes( {
+							tagBackgroundColourHover: val ?? '',
+						} ),
 					linked: true,
 					gradientValue: attributes.tagBackgroundColourHoverGradient,
-					onGradientChange: ( val ) => setAttributes( { tagBackgroundColourHoverGradient: val ?? '' } ),
+					onGradientChange: ( val ) =>
+						setAttributes( {
+							tagBackgroundColourHoverGradient: val ?? '',
+						} ),
 				},
 			],
 		} );
@@ -1390,10 +1698,12 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 					key: 'normal',
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: attributes.tagTextColour,
-					onChange: ( val ) => setAttributes( { tagTextColour: val ?? '' } ),
+					onChange: ( val ) =>
+						setAttributes( { tagTextColour: val ?? '' } ),
 					linked: true,
 					gradientValue: attributes.tagTextColourGradient,
-					onGradientChange: ( val ) => setAttributes( { tagTextColourGradient: val ?? '' } ),
+					onGradientChange: ( val ) =>
+						setAttributes( { tagTextColourGradient: val ?? '' } ),
 				},
 			],
 		} );
@@ -1410,7 +1720,8 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 					key: 'normal',
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: ratingColour,
-					onChange: ( val ) => setAttributes( { ratingColour: val ?? '' } ),
+					onChange: ( val ) =>
+						setAttributes( { ratingColour: val ?? '' } ),
 					linked: true,
 				},
 			],
@@ -1423,7 +1734,8 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 					key: 'normal',
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: brandColour,
-					onChange: ( val ) => setAttributes( { brandColour: val ?? '' } ),
+					onChange: ( val ) =>
+						setAttributes( { brandColour: val ?? '' } ),
 					linked: true,
 				},
 			],
@@ -1437,7 +1749,9 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: savingBadgeBackgroundColour,
 					onChange: ( val ) =>
-						setAttributes( { savingBadgeBackgroundColour: val ?? '' } ),
+						setAttributes( {
+							savingBadgeBackgroundColour: val ?? '',
+						} ),
 					linked: true,
 				},
 			],
@@ -1450,7 +1764,8 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 					key: 'normal',
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: savingBadgeTextColour,
-					onChange: ( val ) => setAttributes( { savingBadgeTextColour: val ?? '' } ),
+					onChange: ( val ) =>
+						setAttributes( { savingBadgeTextColour: val ?? '' } ),
 					linked: true,
 				},
 			],
@@ -1463,7 +1778,8 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 					key: 'normal',
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: attributeTagTextColour,
-					onChange: ( val ) => setAttributes( { attributeTagTextColour: val ?? '' } ),
+					onChange: ( val ) =>
+						setAttributes( { attributeTagTextColour: val ?? '' } ),
 					linked: true,
 				},
 			],
@@ -1476,7 +1792,10 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 					key: 'normal',
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: attributeTagBackgroundColour,
-					onChange: ( val ) => setAttributes( { attributeTagBackgroundColour: val ?? '' } ),
+					onChange: ( val ) =>
+						setAttributes( {
+							attributeTagBackgroundColour: val ?? '',
+						} ),
 					linked: true,
 				},
 			],
@@ -1492,10 +1811,14 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 					key: 'normal',
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: pickerLabelColour,
-					onChange: ( val ) => setAttributes( { pickerLabelColour: val ?? '' } ),
+					onChange: ( val ) =>
+						setAttributes( { pickerLabelColour: val ?? '' } ),
 					linked: true,
 					gradientValue: pickerLabelColourGradient,
-					onGradientChange: ( val ) => setAttributes( { pickerLabelColourGradient: val ?? '' } ),
+					onGradientChange: ( val ) =>
+						setAttributes( {
+							pickerLabelColourGradient: val ?? '',
+						} ),
 				},
 			],
 		},
@@ -1507,17 +1830,23 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 					key: 'normal',
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: pickerPillBgColour,
-					onChange: ( val ) => setAttributes( { pickerPillBgColour: val ?? '' } ),
+					onChange: ( val ) =>
+						setAttributes( { pickerPillBgColour: val ?? '' } ),
 					linked: true,
 					gradientValue: pickerPillBgColourGradient,
 					onGradientChange: ( val ) =>
-						setAttributes( { pickerPillBgColourGradient: val ?? '' } ),
+						setAttributes( {
+							pickerPillBgColourGradient: val ?? '',
+						} ),
 				},
 				{
 					key: 'selected',
 					label: __( 'Selected', 'sgs-blocks' ),
 					value: pickerPillSelectedBgColour,
-					onChange: ( val ) => setAttributes( { pickerPillSelectedBgColour: val ?? '' } ),
+					onChange: ( val ) =>
+						setAttributes( {
+							pickerPillSelectedBgColour: val ?? '',
+						} ),
 					linked: true,
 				},
 			],
@@ -1531,16 +1860,23 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 					key: 'normal',
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: pickerPillTextColour,
-					onChange: ( val ) => setAttributes( { pickerPillTextColour: val ?? '' } ),
+					onChange: ( val ) =>
+						setAttributes( { pickerPillTextColour: val ?? '' } ),
 					linked: true,
 					gradientValue: pickerPillTextColourGradient,
-					onGradientChange: ( val ) => setAttributes( { pickerPillTextColourGradient: val ?? '' } ),
+					onGradientChange: ( val ) =>
+						setAttributes( {
+							pickerPillTextColourGradient: val ?? '',
+						} ),
 				},
 				{
 					key: 'selected',
 					label: __( 'Selected', 'sgs-blocks' ),
 					value: pickerPillSelectedTextColour,
-					onChange: ( val ) => setAttributes( { pickerPillSelectedTextColour: val ?? '' } ),
+					onChange: ( val ) =>
+						setAttributes( {
+							pickerPillSelectedTextColour: val ?? '',
+						} ),
 					linked: true,
 				},
 			],
@@ -1553,14 +1889,18 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 					key: 'normal',
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: pickerPillBorderColour,
-					onChange: ( val ) => setAttributes( { pickerPillBorderColour: val ?? '' } ),
+					onChange: ( val ) =>
+						setAttributes( { pickerPillBorderColour: val ?? '' } ),
 					linked: true,
 				},
 				{
 					key: 'selected',
 					label: __( 'Selected', 'sgs-blocks' ),
 					value: pickerPillSelectedBorderColour,
-					onChange: ( val ) => setAttributes( { pickerPillSelectedBorderColour: val ?? '' } ),
+					onChange: ( val ) =>
+						setAttributes( {
+							pickerPillSelectedBorderColour: val ?? '',
+						} ),
 					linked: true,
 				},
 			],
@@ -1582,7 +1922,12 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 
 	return (
 		<>
-			<SgsColourPanel rows={ [ ...colourRows, ...cardPartColourRows( attributes, setAttributes ) ] } />
+			<SgsColourPanel
+				rows={ [
+					...colourRows,
+					...cardPartColourRows( attributes, setAttributes ),
+				] }
+			/>
 			<InspectorControls>
 				{ showsConnectedProduct( gridParents ) && (
 					<ProductSourcePanel
@@ -1592,7 +1937,10 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 				) }
 
 				{ /* ── Card panel (behaviour: variant + heading level + tag text) ── */ }
-				<PanelBody title={ __( 'Card', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Card', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SelectControl
 						label={ __( 'Variant style', 'sgs-blocks' ) }
 						value={ variantStyle }
@@ -1632,7 +1980,10 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 									{ value: 'h2', label: 'Heading 2' },
 									{ value: 'h3', label: 'Heading 3' },
 									{ value: 'h4', label: 'Heading 4' },
-									{ value: 'p', label: 'Paragraph (not a heading)' },
+									{
+										value: 'p',
+										label: 'Paragraph (not a heading)',
+									},
 								] }
 								onChange={ ( v ) =>
 									setAttributes( { headingLevel: v } )
@@ -1641,8 +1992,13 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 								__next40pxDefaultSize
 							/>
 							{ isTrial && (
-								<SgsFreeTextField type="rich" noLink
-									label={ __( 'Trial tag text', 'sgs-blocks' ) }
+								<SgsFreeTextField
+									type="rich"
+									noLink
+									label={ __(
+										'Trial tag text',
+										'sgs-blocks'
+									) }
 									value={ attributes.trialTag || '' }
 									onChange={ ( v ) =>
 										setAttributes( { trialTag: v } )
@@ -1650,8 +2006,13 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 								/>
 							) }
 							{ isFeatured && (
-								<SgsFreeTextField type="rich" noLink
-									label={ __( 'Featured tag text', 'sgs-blocks' ) }
+								<SgsFreeTextField
+									type="rich"
+									noLink
+									label={ __(
+										'Featured tag text',
+										'sgs-blocks'
+									) }
 									value={ attributes.featuredTag || '' }
 									onChange={ ( v ) =>
 										setAttributes( { featuredTag: v } )
@@ -1674,16 +2035,25 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 				     stays WP-native (style.border.radius) — the block declares
 				     __experimentalBorder.__experimentalSkipSerialization so it
 				     serialises scoped, not inline (mirrors sgs/heading + sgs/quote). ── */ }
-				<PanelBody title={ __( 'Card border', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Card border', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SgsBorderControl
 						widthValues={ borderWidth ?? {} }
-						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						onWidthChange={ ( next ) =>
+							setAttributes( { borderWidth: next } )
+						}
 						widthPresets={ [ '10', '20', '30' ] }
 						styleValue={ borderStyle }
-						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						onStyleChange={ ( val ) =>
+							setAttributes( { borderStyle: val } )
+						}
 						colourLabel={ __( 'Card border colour', 'sgs-blocks' ) }
 						colourValue={ borderColour }
-						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						onColourChange={ ( val ) =>
+							setAttributes( { borderColour: val ?? '' } )
+						}
 						colourGradientValue={ borderColourGradient }
 						onColourGradientChange={ ( val ) =>
 							setAttributes( { borderColourGradient: val ?? '' } )
@@ -1691,18 +2061,26 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 						colourLinked={ true }
 						contrastAgainst={ productCardContrastAgainst }
 						radiusValues={ {
-								base: attributes.borderRadius?.desktop ?? {},
-								tablet: attributes.borderRadius?.tablet ?? {},
-								mobile: attributes.borderRadius?.mobile ?? {},
-							} }
+							base: attributes.borderRadius?.desktop ?? {},
+							tablet: attributes.borderRadius?.tablet ?? {},
+							mobile: attributes.borderRadius?.mobile ?? {},
+						} }
 						onRadiusChange={ ( tier, next ) => {
 							const key = tier === 'base' ? 'desktop' : tier;
-							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+							setAttributes( {
+								borderRadius: {
+									...attributes.borderRadius,
+									[ key ]: next,
+								},
+							} );
 						} }
 					/>
 				</PanelBody>
 
-				<PanelBody title={ __( 'Card hover shadow', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Card hover shadow', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<ShadowControl
 						label={ __( 'Shadow on hover', 'sgs-blocks' ) }
 						attributes={ attributes }
@@ -1732,20 +2110,43 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
-<ResponsiveOverride
+						<ResponsiveOverride
 							label={ __( 'Price and RRP layout', 'sgs-blocks' ) }
 							value={ attributes.priceGroupLayout }
-							onChange={ ( obj ) => setAttributes( { priceGroupLayout: obj } ) }
+							onChange={ ( obj ) =>
+								setAttributes( { priceGroupLayout: obj } )
+							}
 						>
 							{ ( { ownValue, setOwnValue } ) => (
 								<SelectControl
-									label={ __( 'Price and RRP layout', 'sgs-blocks' ) }
+									label={ __(
+										'Price and RRP layout',
+										'sgs-blocks'
+									) }
 									hideLabelFromVision
 									value={ ownValue || '' }
 									options={ [
-										{ value: '', label: __( 'Default (inline)', 'sgs-blocks' ) },
-										{ value: 'inline', label: __( 'Inline: RRP beside the price while it fits', 'sgs-blocks' ) },
-										{ value: 'stacked', label: __( 'Stacked: RRP under the price', 'sgs-blocks' ) },
+										{
+											value: '',
+											label: __(
+												'Default (inline)',
+												'sgs-blocks'
+											),
+										},
+										{
+											value: 'inline',
+											label: __(
+												'Inline: RRP beside the price while it fits',
+												'sgs-blocks'
+											),
+										},
+										{
+											value: 'stacked',
+											label: __(
+												'Stacked: RRP under the price',
+												'sgs-blocks'
+											),
+										},
 									] }
 									onChange={ ( v ) => setOwnValue( v || '' ) }
 									__nextHasNoMarginBottom
@@ -1753,7 +2154,9 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 								/>
 							) }
 						</ResponsiveOverride>
-						<SgsFreeTextField type="rich" noLink
+						<SgsFreeTextField
+							type="rich"
+							noLink
 							label={ __( 'Price note', 'sgs-blocks' ) }
 							help={ __(
 								'Small text below the price, e.g. "8-pack · Free delivery over £35"',
@@ -1777,10 +2180,28 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 						/>
 						{ ( packSizes || [] ).length > 1 && (
 							<SelectControl
-								label={ __( 'Default pack size', 'sgs-blocks' ) }
-								help={ __( 'The pill that is selected when the card loads.', 'sgs-blocks' ) }
-								value={ String( Math.max( 0, ( packSizes || [] ).findIndex( ( p ) => p.selected ) ) ) }
-								options={ ( packSizes || [] ).map( ( p, i ) => ( { label: p.label, value: String( i ) } ) ) }
+								label={ __(
+									'Default pack size',
+									'sgs-blocks'
+								) }
+								help={ __(
+									'The pill that is selected when the card loads.',
+									'sgs-blocks'
+								) }
+								value={ String(
+									Math.max(
+										0,
+										( packSizes || [] ).findIndex(
+											( p ) => p.selected
+										)
+									)
+								) }
+								options={ ( packSizes || [] ).map(
+									( p, i ) => ( {
+										label: p.label,
+										value: String( i ),
+									} )
+								) }
 								onChange={ onDefaultPackSizeChange }
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
@@ -1804,20 +2225,43 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 								'sgs-blocks'
 							) }
 						</Notice>
-<ResponsiveOverride
+						<ResponsiveOverride
 							label={ __( 'Price and RRP layout', 'sgs-blocks' ) }
 							value={ attributes.priceGroupLayout }
-							onChange={ ( obj ) => setAttributes( { priceGroupLayout: obj } ) }
+							onChange={ ( obj ) =>
+								setAttributes( { priceGroupLayout: obj } )
+							}
 						>
 							{ ( { ownValue, setOwnValue } ) => (
 								<SelectControl
-									label={ __( 'Price and RRP layout', 'sgs-blocks' ) }
+									label={ __(
+										'Price and RRP layout',
+										'sgs-blocks'
+									) }
 									hideLabelFromVision
 									value={ ownValue || '' }
 									options={ [
-										{ value: '', label: __( 'Default (inline)', 'sgs-blocks' ) },
-										{ value: 'inline', label: __( 'Inline: RRP beside the price while it fits', 'sgs-blocks' ) },
-										{ value: 'stacked', label: __( 'Stacked: RRP under the price', 'sgs-blocks' ) },
+										{
+											value: '',
+											label: __(
+												'Default (inline)',
+												'sgs-blocks'
+											),
+										},
+										{
+											value: 'inline',
+											label: __(
+												'Inline: RRP beside the price while it fits',
+												'sgs-blocks'
+											),
+										},
+										{
+											value: 'stacked',
+											label: __(
+												'Stacked: RRP under the price',
+												'sgs-blocks'
+											),
+										},
 									] }
 									onChange={ ( v ) => setOwnValue( v || '' ) }
 									__nextHasNoMarginBottom
@@ -1844,15 +2288,14 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 								'sgs-blocks'
 							) }
 							help={ __(
-								'Optional. Enter a variation ID to let search engines index that one variation\'s URL instead of only the main product. Leave at 0 for the default (recommended).',
+								"Optional. Enter a variation ID to let search engines index that one variation's URL instead of only the main product. Leave at 0 for the default (recommended).",
 								'sgs-blocks'
 							) }
 							value={ indexVariationUrl }
 							min={ 0 }
 							onChange={ ( v ) =>
 								setAttributes( {
-									indexVariationUrl:
-										parseInt( v, 10 ) || 0,
+									indexVariationUrl: parseInt( v, 10 ) || 0,
 								} )
 							}
 							__next40pxDefaultSize
@@ -1931,10 +2374,7 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 							__nextHasNoMarginBottom
 						/>
 						<ToggleControl
-							label={ __(
-								'Show option pickers',
-								'sgs-blocks'
-							) }
+							label={ __( 'Show option pickers', 'sgs-blocks' ) }
 							help={ __(
 								'Off suppresses all option-picker renders (both variable-axis and non-variable pill paths) and falls through to the static From-price card appearance. Useful on collection grids where picker UI is unwanted.',
 								'sgs-blocks'
@@ -2028,9 +2468,9 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 				     panel above (rating/brand/savingBadge rows). */ }
 				<PanelBody
 					title={ __(
-					'Rating, brand, saving badge & attribute tag',
-					'sgs-blocks'
-				) }
+						'Rating, brand, saving badge & attribute tag',
+						'sgs-blocks'
+					) }
 					initialOpen={ false }
 				>
 					<ToggleControl
@@ -2072,7 +2512,9 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 								__nextHasNoMarginBottom
 							/>
 							{ 0 === ( reviewCount ?? 0 ) && (
-								<SgsFreeTextField type="rich" noLink
+								<SgsFreeTextField
+									type="rich"
+									noLink
 									label={ __(
 										'"No reviews yet" text',
 										'sgs-blocks'
@@ -2162,15 +2604,23 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 					/>
 					{ showSavingBadge && (
 						<>
-							<SgsFreeTextField type="rich" noLink
-								label={ __( 'Saving badge text', 'sgs-blocks' ) }
+							<SgsFreeTextField
+								type="rich"
+								noLink
+								label={ __(
+									'Saving badge text',
+									'sgs-blocks'
+								) }
 								value={ savingLabel || '' }
 								onChange={ ( v ) =>
 									setAttributes( { savingLabel: v } )
 								}
 							/>
 							<ToggleGroupControl
-								label={ __( 'Saving badge position', 'sgs-blocks' ) }
+								label={ __(
+									'Saving badge position',
+									'sgs-blocks'
+								) }
 								help={ __(
 									'Default matches the Frame Card design source (bottom-left).',
 									'sgs-blocks'
@@ -2201,16 +2651,27 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 								/>
 							</ToggleGroupControl>
 							<SgsBoxControl
-								label={ __( 'Saving badge padding', 'sgs-blocks' ) }
+								label={ __(
+									'Saving badge padding',
+									'sgs-blocks'
+								) }
 								values={ savingBadgePadding ?? {} }
 								presets
-								defaults={ spacingDefaultsFor( name, 'savingBadgePadding' ) }
+								defaults={ spacingDefaultsFor(
+									name,
+									'savingBadgePadding'
+								) }
 								onChange={ ( next ) =>
-									setAttributes( { savingBadgePadding: next } )
+									setAttributes( {
+										savingBadgePadding: next,
+									} )
 								}
 							/>
 							<SgsLengthControl
-								label={ __( 'Saving badge border radius', 'sgs-blocks' ) }
+								label={ __(
+									'Saving badge border radius',
+									'sgs-blocks'
+								) }
 								value={ savingBadgeBorderRadius ?? '' }
 								units={ SGS_LENGTH_UNITS }
 								presets={ false }
@@ -2264,7 +2725,8 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 									label={ __( 'Tag', 'sgs-blocks' ) }
 								/>
 							</ToggleGroupControl>
-							{ 'attribute' === ( attributeTagSource || 'attribute' ) && (
+							{ 'attribute' ===
+								( attributeTagSource || 'attribute' ) && (
 								<TextControl
 									label={ __(
 										'Attribute taxonomy slug',
@@ -2286,7 +2748,8 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 							) }
 							<TextControl
 								label={
-									'tag' === ( attributeTagSource || 'attribute' )
+									'tag' ===
+									( attributeTagSource || 'attribute' )
 										? __( 'Product tag slug', 'sgs-blocks' )
 										: __( 'Term slug', 'sgs-blocks' )
 								}
@@ -2301,10 +2764,12 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 								__next40pxDefaultSize
 								__nextHasNoMarginBottom
 							/>
-							<SgsFreeTextField type="rich" noLink
+							<SgsFreeTextField
+								type="rich"
+								noLink
 								label={ __( 'Tag text', 'sgs-blocks' ) }
 								help={ __(
-									'Empty (default) uses the matched term\'s own name.',
+									"Empty (default) uses the matched term's own name.",
 									'sgs-blocks'
 								) }
 								value={ attributes.attributeTagText || '' }
@@ -2313,12 +2778,20 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 								}
 							/>
 							<SgsBoxControl
-								label={ __( 'Attribute tag padding', 'sgs-blocks' ) }
+								label={ __(
+									'Attribute tag padding',
+									'sgs-blocks'
+								) }
 								values={ attributeTagPadding ?? {} }
 								presets
-								defaults={ spacingDefaultsFor( name, 'attributeTagPadding' ) }
+								defaults={ spacingDefaultsFor(
+									name,
+									'attributeTagPadding'
+								) }
 								onChange={ ( next ) =>
-									setAttributes( { attributeTagPadding: next } )
+									setAttributes( {
+										attributeTagPadding: next,
+									} )
 								}
 							/>
 							{ /* Border width + colour as ONE composite row (Spec 35 C1 —
@@ -2330,10 +2803,15 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 							     scalar keep (Spec 32 §6.1), so onRadiusChange is not
 							     wired here. */ }
 							<SgsBorderControl
-								label={ __( 'Attribute tag border width', 'sgs-blocks' ) }
+								label={ __(
+									'Attribute tag border width',
+									'sgs-blocks'
+								) }
 								widthValues={ attributeTagBorderWidth ?? {} }
 								onWidthChange={ ( next ) =>
-									setAttributes( { attributeTagBorderWidth: next } )
+									setAttributes( {
+										attributeTagBorderWidth: next,
+									} )
 								}
 								colourLabel={ __(
 									'Attribute tag border colour',
@@ -2346,7 +2824,9 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 									} )
 								}
 								colourLinked
-								contrastAgainst={ attributeTagBackgroundColour || '' }
+								contrastAgainst={
+									attributeTagBackgroundColour || ''
+								}
 							/>
 							<SgsLengthControl
 								label={ __(
@@ -2375,7 +2855,7 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 					</p>
 					<p style={ { fontSize: '12px', color: '#757575' } }>
 						{ __(
-							'Decorative colour options shown on the price row. Each swatch\'s colour is data, not a styling choice.',
+							"Decorative colour options shown on the price row. Each swatch's colour is data, not a styling choice.",
 							'sgs-blocks'
 						) }
 					</p>
@@ -2406,7 +2886,11 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 										label: __( 'Normal', 'sgs-blocks' ),
 										value: item.colour || '#000000',
 										onChange: ( v ) =>
-											onSwatchChange( index, 'colour', v ),
+											onSwatchChange(
+												index,
+												'colour',
+												v
+											),
 									},
 								] }
 							/>
@@ -2433,8 +2917,7 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 							min={ 1 }
 							onChange={ ( v ) =>
 								setAttributes( {
-									swatchMaxVisible:
-										parseInt( v, 10 ) || 4,
+									swatchMaxVisible: parseInt( v, 10 ) || 4,
 								} )
 							}
 							__next40pxDefaultSize
@@ -2456,8 +2939,11 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 				     typed/bound split, so this one switcher serves both. Typed
 				     mode leaves out 'priceFromLabel', because only a bound card
 				     renders the "From" label. */ }
-				{ (
-					<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
+				{
+					<PanelBody
+						title={ __( 'Typography', 'sgs-blocks' ) }
+						initialOpen={ false }
+					>
 						<TypographyControls
 							attributes={ attributes }
 							setAttributes={ setAttributes }
@@ -2598,7 +3084,10 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 								},
 								isBound && {
 									key: 'valueLadderSaving',
-									label: __( 'Value ladder saving', 'sgs-blocks' ),
+									label: __(
+										'Value ladder saving',
+										'sgs-blocks'
+									),
 									prefix: 'valueLadderSaving',
 									fontSizePresets: true,
 									showFontFamily: true,
@@ -2628,7 +3117,10 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 								},
 								attributes.showRating && {
 									key: 'rating',
-									label: __( 'Rating and reviews', 'sgs-blocks' ),
+									label: __(
+										'Rating and reviews',
+										'sgs-blocks'
+									),
 									prefix: 'rating',
 									fontSizePresets: true,
 									showFontFamily: true,
@@ -2685,9 +3177,14 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 									showTextColumns: true,
 									showWritingMode: true,
 								},
-								( isBound || ( attributes.colourSwatches || [] ).length > 0 ) && {
+								( isBound ||
+									( attributes.colourSwatches || [] ).length >
+										0 ) && {
 									key: 'swatchMore',
-									label: __( 'Swatch count (+N)', 'sgs-blocks' ),
+									label: __(
+										'Swatch count (+N)',
+										'sgs-blocks'
+									),
 									prefix: 'swatchMore',
 									fontSizePresets: true,
 									showFontFamily: true,
@@ -2699,12 +3196,20 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 									showTextColumns: true,
 									showWritingMode: true,
 								},
-							].filter( ( target ) => target && ( isBound || 'priceFromLabel' !== target.key ) ) }
+							].filter(
+								( target ) =>
+									target &&
+									( isBound ||
+										'priceFromLabel' !== target.key )
+							) }
 						/>
 						{ isTrial && (
 							<>
 								<ToggleControl
-									label={ __( 'Tag full width', 'sgs-blocks' ) }
+									label={ __(
+										'Tag full width',
+										'sgs-blocks'
+									) }
 									help={ __(
 										'Stretch the trial tag to the full width of the card body (matches the draft) instead of hugging its text.',
 										'sgs-blocks'
@@ -2721,21 +3226,38 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 								     Mirrors sgs/label — both feed the SAME shared
 								     sgs_label_box_css_rule() emitter. */ }
 								<SgsBorderControl
-									label={ __( 'Tag border width', 'sgs-blocks' ) }
-									widthValues={ attributes.tagBorderWidth ?? {} }
-									onWidthChange={ ( next ) =>
-										setAttributes( { tagBorderWidth: next } )
+									label={ __(
+										'Tag border width',
+										'sgs-blocks'
+									) }
+									widthValues={
+										attributes.tagBorderWidth ?? {}
 									}
-									colourLabel={ __( 'Tag border colour', 'sgs-blocks' ) }
+									onWidthChange={ ( next ) =>
+										setAttributes( {
+											tagBorderWidth: next,
+										} )
+									}
+									colourLabel={ __(
+										'Tag border colour',
+										'sgs-blocks'
+									) }
 									colourValue={ attributes.tagBorderColour }
 									onColourChange={ ( val ) =>
-										setAttributes( { tagBorderColour: val ?? '' } )
+										setAttributes( {
+											tagBorderColour: val ?? '',
+										} )
 									}
 									colourLinked
-									contrastAgainst={ attributes.tagBackgroundColour || '' }
+									contrastAgainst={
+										attributes.tagBackgroundColour || ''
+									}
 								/>
 								<SgsLengthControl
-									label={ __( 'Tag border radius', 'sgs-blocks' ) }
+									label={ __(
+										'Tag border radius',
+										'sgs-blocks'
+									) }
 									value={ attributes.tagBorderRadius ?? '' }
 									units={ SGS_LENGTH_UNITS }
 									presets={ false }
@@ -2757,7 +3279,7 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 							</>
 						) }
 					</PanelBody>
-				) }
+				}
 
 				{ /* ── Button panel (rule 41 merge, 2026-09-08) — was two panels,
 				     "Buttons" (content: text/URL/behaviour, Settings tab) + "Call
@@ -2789,15 +3311,32 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 					     here is redundant. Behaviour stays below (both modes). */ }
 					{ ! isBound && (
 						<>
-							<SgsFreeTextField type="rich" noLink
-								label={ __( 'Primary button text', 'sgs-blocks' ) }
+							<SgsFreeTextField
+								type="rich"
+								noLink
+								label={ __(
+									'Primary button text',
+									'sgs-blocks'
+								) }
 								value={ ctaText || '' }
-								onChange={ ( v ) => setAttributes( { ctaText: v } ) }
+								onChange={ ( v ) =>
+									setAttributes( { ctaText: v } )
+								}
 							/>
 							<LinkPopoverField
-								label={ __( 'Primary button URL', 'sgs-blocks' ) }
+								label={ __(
+									'Primary button URL',
+									'sgs-blocks'
+								) }
 								value={ ctaUrl || '' }
-								onChange={ ( url, extra ) => setAttributes( { ctaUrl: url, ...( extra ? { ctaUrlSource: extra.linkSource } : {} ) } ) }
+								onChange={ ( url, extra ) =>
+									setAttributes( {
+										ctaUrl: url,
+										...( extra
+											? { ctaUrlSource: extra.linkSource }
+											: {} ),
+									} )
+								}
 								linkSource={ attributes.ctaUrlSource || '' }
 								linkSources={ LINK_SOURCES_NO_TOP }
 								searchOnly
@@ -2806,12 +3345,15 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 					) }
 					{ isBound ? (
 						<SelectControl
-							label={ __( 'Primary button behaviour', 'sgs-blocks' ) }
+							label={ __(
+								'Primary button behaviour',
+								'sgs-blocks'
+							) }
 							help={ __(
 								'What happens when the button is clicked in the live product card.',
 								'sgs-blocks'
 							) }
-							value={ ctaBehaviour || "learn-more" }
+							value={ ctaBehaviour || 'learn-more' }
 							options={ CTA_BEHAVIOUR_OPTIONS }
 							onChange={ ( v ) =>
 								setAttributes( { ctaBehaviour: v } )
@@ -2850,7 +3392,11 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 					 */ }
 					<Button
 						variant="secondary"
-						onClick={ () => setAttributes( ctaPresetSeed( ctaStyle || 'primary' ) ) }
+						onClick={ () =>
+							setAttributes(
+								ctaPresetSeed( ctaStyle || 'primary' )
+							)
+						}
 						style={ { marginBottom: 16 } }
 					>
 						{ __( 'Reset colours to preset', 'sgs-blocks' ) }
@@ -2859,23 +3405,25 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 						label={ __( 'Text alignment', 'sgs-blocks' ) }
 						value={ ctaTextAlign || '' }
 						options={ CTA_TEXT_ALIGN_OPTIONS }
-						onChange={ ( v ) => setAttributes( { ctaTextAlign: v } ) }
+						onChange={ ( v ) =>
+							setAttributes( { ctaTextAlign: v } )
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
 
 					{ /* Secondary button */ }
 					<hr style={ { margin: '12px 0' } } />
-					<SgsFreeTextField type="rich" noLink
+					<SgsFreeTextField
+						type="rich"
+						noLink
 						label={ __( 'Secondary button text', 'sgs-blocks' ) }
 						help={ __(
 							'Leave empty to hide the secondary button.',
 							'sgs-blocks'
 						) }
 						value={ cta2Text || '' }
-						onChange={ ( v ) =>
-							setAttributes( { cta2Text: v } )
-						}
+						onChange={ ( v ) => setAttributes( { cta2Text: v } ) }
 					/>
 					{ ( cta2Text || '' ) !== '' && (
 						<>
@@ -2886,7 +3434,15 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 								) }
 								value={ cta2Url || '' }
 								onChange={ ( url, extra ) =>
-									setAttributes( { cta2Url: url, ...( extra ? { cta2UrlSource: extra.linkSource } : {} ) } )
+									setAttributes( {
+										cta2Url: url,
+										...( extra
+											? {
+													cta2UrlSource:
+														extra.linkSource,
+											  }
+											: {} ),
+									} )
 								}
 								linkSource={ attributes.cta2UrlSource || '' }
 								linkSources={ LINK_SOURCES_NO_TOP }
@@ -2967,7 +3523,10 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 					     inside the isBuiltIn gate. */ }
 					{ isBuiltIn && (
 						<ToggleControl
-							label={ __( 'Product image is decorative', 'sgs-blocks' ) }
+							label={ __(
+								'Product image is decorative',
+								'sgs-blocks'
+							) }
 							checked={ !! imageDecorative }
 							onChange={ ( val ) =>
 								setAttributes( { imageDecorative: val } )
@@ -2985,137 +3544,194 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 				   in-card sgs/option-picker: typed pack-size pills AND
 				   bound/connected axis pickers, all 3 render_block call
 				   sites in render.php/product-card-builtin-render.php). ── */ }
-					<PanelBody
-						title={ __( 'Picker style', 'sgs-blocks' ) }
-						initialOpen={ false }
+				<PanelBody
+					title={ __( 'Picker style', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<p style={ { marginTop: 0 } }>
+						{ __(
+							'Style the in-card option pickers (pack size / flavour / etc). Forwarded to every sgs/option-picker the card renders.',
+							'sgs-blocks'
+						) }
+					</p>
+					<ToolsPanel
+						className="sgs-nested-tools-panel"
+						label={ __( 'Picker style', 'sgs-blocks' ) }
+						resetAll={ () =>
+							setAttributes( {
+								pickerLabelFontSize: '',
+								pickerLabelColour: '',
+								pickerColourPreset: 'solid',
+								pickerShowSelectedTick: false,
+								pickerPillBgColour: '',
+								pickerPillBgColourGradient: '',
+								pickerPillTextColour: '',
+								pickerPillBorderColour: '',
+								pickerPillBorderRadius: '',
+								pickerPillSelectedBgColour: '',
+								pickerPillSelectedTextColour: '',
+								pickerPillSelectedBorderColour: '',
+								pickerPillSelectedBorderRadius: '',
+							} )
+						}
 					>
-						<p style={ { marginTop: 0 } }>
-							{ __(
-								'Style the in-card option pickers (pack size / flavour / etc). Forwarded to every sgs/option-picker the card renders.',
+						<ToolsPanelItem
+							label={ __(
+								'Picker label font size',
 								'sgs-blocks'
 							) }
-						</p>
-						<ToolsPanel
-							className="sgs-nested-tools-panel"
-							label={ __( 'Picker style', 'sgs-blocks' ) }
-							resetAll={ () =>
+							hasValue={ () => !! pickerLabelFontSize }
+							onDeselect={ () =>
+								setAttributes( { pickerLabelFontSize: '' } )
+							}
+							isShownByDefault
+						>
+							<TextControl
+								label={ __(
+									'Picker label font size',
+									'sgs-blocks'
+								) }
+								help={ __(
+									'Any CSS size, e.g. 18px or 1.2rem. Leave empty for the default.',
+									'sgs-blocks'
+								) }
+								value={ pickerLabelFontSize || '' }
+								onChange={ ( v ) =>
+									setAttributes( {
+										pickerLabelFontSize: v,
+									} )
+								}
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Picker colour preset', 'sgs-blocks' ) }
+							hasValue={ () => pickerColourPreset !== 'solid' }
+							onDeselect={ () =>
+								setAttributes( { pickerColourPreset: 'solid' } )
+							}
+							isShownByDefault
+						>
+							<SelectControl
+								label={ __(
+									'Picker colour preset',
+									'sgs-blocks'
+								) }
+								help={ __(
+									'Solid (default) matches the previous look. Soft = pale-tint fill, outline, no tick.',
+									'sgs-blocks'
+								) }
+								value={ pickerColourPreset }
+								options={ [
+									{
+										label: __(
+											'Solid (default)',
+											'sgs-blocks'
+										),
+										value: 'solid',
+									},
+									{
+										label: __( 'Soft', 'sgs-blocks' ),
+										value: 'soft',
+									},
+									{
+										label: __(
+											'— Framework default —',
+											'sgs-blocks'
+										),
+										value: '',
+									},
+								] }
+								onChange={ ( v ) =>
+									setAttributes( { pickerColourPreset: v } )
+								}
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Show selection tick', 'sgs-blocks' ) }
+							hasValue={ () => pickerShowSelectedTick !== false }
+							onDeselect={ () =>
 								setAttributes( {
-									pickerLabelFontSize: '',
-									pickerLabelColour: '',
-									pickerColourPreset: 'solid',
 									pickerShowSelectedTick: false,
-									pickerPillBgColour: '',
-									pickerPillBgColourGradient: '',
-									pickerPillTextColour: '',
-									pickerPillBorderColour: '',
-									pickerPillBorderRadius: '',
-									pickerPillSelectedBgColour: '',
-									pickerPillSelectedTextColour: '',
-									pickerPillSelectedBorderColour: '',
+								} )
+							}
+						>
+							<ToggleControl
+								label={ __(
+									'Show selection tick',
+									'sgs-blocks'
+								) }
+								checked={ true === pickerShowSelectedTick }
+								onChange={ ( v ) =>
+									setAttributes( {
+										pickerShowSelectedTick: v,
+									} )
+								}
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Pill border radius', 'sgs-blocks' ) }
+							hasValue={ () => !! pickerPillBorderRadius }
+							onDeselect={ () =>
+								setAttributes( { pickerPillBorderRadius: '' } )
+							}
+						>
+							<SgsLengthControl
+								presets={ false }
+								label={ __(
+									'Pill border radius',
+									'sgs-blocks'
+								) }
+								value={ pickerPillBorderRadius || '' }
+								units={ PICKER_RADIUS_UNITS }
+								onChange={ ( v ) =>
+									setAttributes( {
+										pickerPillBorderRadius: v ?? '',
+									} )
+								}
+								help={ __(
+									'CSS length, e.g. 6px. Blank = default; 0 = square.',
+									'sgs-blocks'
+								) }
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __(
+								'Selected pill border radius',
+								'sgs-blocks'
+							) }
+							hasValue={ () => !! pickerPillSelectedBorderRadius }
+							onDeselect={ () =>
+								setAttributes( {
 									pickerPillSelectedBorderRadius: '',
 								} )
 							}
 						>
-							<ToolsPanelItem
-								label={ __( 'Picker label font size', 'sgs-blocks' ) }
-								hasValue={ () => !! pickerLabelFontSize }
-								onDeselect={ () =>
-									setAttributes( { pickerLabelFontSize: '' } )
+							<SgsLengthControl
+								presets={ false }
+								label={ __(
+									'Selected pill border radius',
+									'sgs-blocks'
+								) }
+								value={ pickerPillSelectedBorderRadius || '' }
+								units={ PICKER_RADIUS_UNITS }
+								onChange={ ( v ) =>
+									setAttributes( {
+										pickerPillSelectedBorderRadius: v ?? '',
+									} )
 								}
-								isShownByDefault
-							>
-								<TextControl
-									label={ __(
-										'Picker label font size',
-										'sgs-blocks'
-									) }
-									help={ __(
-										'Any CSS size, e.g. 18px or 1.2rem. Leave empty for the default.',
-										'sgs-blocks'
-									) }
-									value={ pickerLabelFontSize || '' }
-									onChange={ ( v ) =>
-										setAttributes( {
-											pickerLabelFontSize: v,
-										} )
-									}
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
-							</ToolsPanelItem>
-							<ToolsPanelItem
-								label={ __( 'Picker colour preset', 'sgs-blocks' ) }
-								hasValue={ () => pickerColourPreset !== 'solid' }
-								onDeselect={ () =>
-									setAttributes( { pickerColourPreset: 'solid' } )
-								}
-								isShownByDefault
-							>
-								<SelectControl
-									label={ __( 'Picker colour preset', 'sgs-blocks' ) }
-									help={ __(
-										'Solid (default) matches the previous look. Soft = pale-tint fill, outline, no tick.',
-										'sgs-blocks'
-									) }
-									value={ pickerColourPreset }
-									options={ [
-										{ label: __( 'Solid (default)', 'sgs-blocks' ), value: 'solid' },
-										{ label: __( 'Soft', 'sgs-blocks' ), value: 'soft' },
-										{ label: __( '— Framework default —', 'sgs-blocks' ), value: '' },
-									] }
-									onChange={ ( v ) => setAttributes( { pickerColourPreset: v } ) }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
-							</ToolsPanelItem>
-							<ToolsPanelItem
-								label={ __( 'Show selection tick', 'sgs-blocks' ) }
-								hasValue={ () => pickerShowSelectedTick !== false }
-								onDeselect={ () =>
-									setAttributes( { pickerShowSelectedTick: false } )
-								}
-							>
-								<ToggleControl
-									label={ __( 'Show selection tick', 'sgs-blocks' ) }
-									checked={ true === pickerShowSelectedTick }
-									onChange={ ( v ) => setAttributes( { pickerShowSelectedTick: v } ) }
-									__nextHasNoMarginBottom
-								/>
-							</ToolsPanelItem>
-							<ToolsPanelItem
-								label={ __( 'Pill border radius', 'sgs-blocks' ) }
-								hasValue={ () => !! pickerPillBorderRadius }
-								onDeselect={ () =>
-									setAttributes( { pickerPillBorderRadius: '' } )
-								}
-							>
-								<SgsLengthControl
-									presets={ false }
-									label={ __( 'Pill border radius', 'sgs-blocks' ) }
-									value={ pickerPillBorderRadius || '' }
-									units={ PICKER_RADIUS_UNITS }
-									onChange={ ( v ) => setAttributes( { pickerPillBorderRadius: v ?? '' } ) }
-									help={ __( 'CSS length, e.g. 6px. Blank = default; 0 = square.', 'sgs-blocks' ) }
-								/>
-							</ToolsPanelItem>
-							<ToolsPanelItem
-								label={ __( 'Selected pill border radius', 'sgs-blocks' ) }
-								hasValue={ () => !! pickerPillSelectedBorderRadius }
-								onDeselect={ () =>
-									setAttributes( { pickerPillSelectedBorderRadius: '' } )
-								}
-							>
-								<SgsLengthControl
-									presets={ false }
-									label={ __( 'Selected pill border radius', 'sgs-blocks' ) }
-									value={ pickerPillSelectedBorderRadius || '' }
-									units={ PICKER_RADIUS_UNITS }
-									onChange={ ( v ) => setAttributes( { pickerPillSelectedBorderRadius: v ?? '' } ) }
-									help={ __( 'Blank = match resting radius; 0 = square.', 'sgs-blocks' ) }
-								/>
-							</ToolsPanelItem>
-						</ToolsPanel>
-					</PanelBody>
+								help={ __(
+									'Blank = match resting radius; 0 = square.',
+									'sgs-blocks'
+								) }
+							/>
+						</ToolsPanelItem>
+					</ToolsPanel>
+				</PanelBody>
 			</InspectorControls>
 
 			{ /* The two built-in buttons' look (the built-in button kit: preset, colours, border, radius, padding, width, minimum height,
@@ -3142,7 +3758,10 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 						<p className="sgs-product-card__linked-note">
 							{ sprintf(
 								/* translators: 1: upsells, cross-sells or related; 2: position number */
-								__( 'Sample shown. On a product page this card shows linked product %2$d (%1$s) of the product being viewed.', 'sgs-blocks' ),
+								__(
+									'Sample shown. On a product page this card shows linked product %2$d (%1$s) of the product being viewed.',
+									'sgs-blocks'
+								),
 								attributes.linkedProductKind,
 								attributes.linkedProductPosition || 1
 							) }
@@ -3185,19 +3804,35 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 					     instance's ctaPreviewUid class so it never leaks to a
 					     sibling product-card in the same editor canvas. */ }
 					{ ctaHoverCss && <style>{ ctaHoverCss }</style> }
-					{ descLinkPreviewCss && <style>{ descLinkPreviewCss }</style> }
+					{ descLinkPreviewCss && (
+						<style>{ descLinkPreviewCss }</style>
+					) }
 					{ /* Image */ }
 					{ firstUrl( imageSource ) ? (
-						<div className="sgs-product-card__media-wrap" style={ { position: 'relative', ...typedParts.media } }>
+						<div
+							className="sgs-product-card__media-wrap"
+							style={ {
+								position: 'relative',
+								...typedParts.media,
+							} }
+						>
 							<SlotPicture
 								attributes={ attributes }
 								setAttributes={ setAttributes }
 								prefix="image"
-								uid={ `sgs-pc-${ clientId.slice( 0, 8 ) }-image` }
+								uid={ `sgs-pc-${ clientId.slice(
+									0,
+									8
+								) }-image` }
 								className="sgs-product-card__image"
 								placeholder={ false }
 							/>
-							<TypedMediaOverlays attributes={ attributes } setAttributes={ setAttributes } styles={ typedParts } uid={ `sgs-pc-${ clientId.slice( 0, 8 ) }` } />
+							<TypedMediaOverlays
+								attributes={ attributes }
+								setAttributes={ setAttributes }
+								styles={ typedParts }
+								uid={ `sgs-pc-${ clientId.slice( 0, 8 ) }` }
+							/>
 							{ /* D787 — a broken/mismatched image (exactly how a freshly
 							     cloned card lands) previously left only a destructive
 							     "Remove image" button here; a client had to DELETE the
@@ -3216,10 +3851,14 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 							>
 								<LibraryButton
 									types={ [ 'image' ] }
-									label={ __( 'Replace image', 'sgs-blocks' ) }
+									label={ __(
+										'Replace image',
+										'sgs-blocks'
+									) }
 									onSelect={ ( media ) =>
 										setAttributes( {
-											imageSource: sourceFromMedia( media ),
+											imageSource:
+												sourceFromMedia( media ),
 											imageAlt: media.alt || '',
 										} )
 									}
@@ -3261,7 +3900,10 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 						</MediaUploadCheck>
 					) }
 
-					<div className="sgs-product-card__body" style={ typedParts.body }>
+					<div
+						className="sgs-product-card__body"
+						style={ typedParts.body }
+					>
 						{ /* Tag badge preview — tagTextColour/tagBackgroundColour only
 						     style the TRIAL tag in render.php (the scoped rule targets
 						     .sgs-product-card__tag--trial specifically); the featured
@@ -3288,7 +3930,10 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 						{ tagText ? (
 							<div className="sgs-product-card__title-row">
 								{ titleField }
-								<span className="sgs-product-card__attribute-tag" style={ typedParts.attributeTag }>
+								<span
+									className="sgs-product-card__attribute-tag"
+									style={ typedParts.attributeTag }
+								>
 									{ tagText }
 								</span>
 							</div>
@@ -3312,7 +3957,10 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 							allowedFormats={ RICH_TEXT_BODY }
 						/>
 
-						<TypedRating attributes={ attributes } styles={ typedParts } />
+						<TypedRating
+							attributes={ attributes }
+							styles={ typedParts }
+						/>
 
 						{ /*
 						 * Pack pills preview — uses the REAL sgs/option-picker markup +
@@ -3328,7 +3976,12 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 						 */ }
 						{ ( packSizes || [] ).length > 0 && (
 							<div
-								className={ [ 'sgs-option-picker', 'sgs-option-picker--outlined', 'sgs-option-picker--medium', ...typedParts.pickerClasses ].join( ' ' ) }
+								className={ [
+									'sgs-option-picker',
+									'sgs-option-picker--outlined',
+									'sgs-option-picker--medium',
+									...typedParts.pickerClasses,
+								].join( ' ' ) }
 								style={ typedParts.picker }
 								role="radiogroup"
 								aria-label={ __( 'Pack size', 'sgs-blocks' ) }
@@ -3345,7 +3998,13 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 												checked={ !! pill.selected }
 												readOnly
 											/>
-											<span className="sgs-option-picker__pill" style={ { ...typedParts.pill, ...typedParts.pillText } }>
+											<span
+												className="sgs-option-picker__pill"
+												style={ {
+													...typedParts.pill,
+													...typedParts.pillText,
+												} }
+											>
 												{ pill.label }
 											</span>
 										</label>
@@ -3357,8 +4016,22 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 						{ /* Price row */ }
 						{ ( ( priceLarge || '' ) !== '' ||
 							( priceNote || '' ) !== '' ) && (
-							<div className="sgs-product-card__price-row" style={ attributes.priceRowFlexWrap ? { ...typedParts.priceRow, flexWrap: attributes.priceRowFlexWrap } : typedParts.priceRow }>
-								<div className="sgs-product-card__price-group" style={ typedParts.priceGroup }>
+							<div
+								className="sgs-product-card__price-row"
+								style={
+									attributes.priceRowFlexWrap
+										? {
+												...typedParts.priceRow,
+												flexWrap:
+													attributes.priceRowFlexWrap,
+										  }
+										: typedParts.priceRow
+								}
+							>
+								<div
+									className="sgs-product-card__price-group"
+									style={ typedParts.priceGroup }
+								>
 									{ ( priceLarge || '' ) !== '' && (
 										<span
 											className="sgs-product-card__price"
@@ -3376,7 +4049,10 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 										</span>
 									) }
 								</div>
-								<TypedSwatches attributes={ attributes } styles={ typedParts } />
+								<TypedSwatches
+									attributes={ attributes }
+									styles={ typedParts }
+								/>
 							</div>
 						) }
 
@@ -3393,7 +4069,14 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 						     equivalent box attrs (block.json declares only
 						     cta2Text/cta2Url/cta2Style/cta2TextAlign), so its
 						     only inline style is the text alignment. */ }
-						<div className="sgs-product-card__cta-row" style={ attributes.ctaRowFlexWrap ? { flexWrap: attributes.ctaRowFlexWrap } : undefined }>
+						<div
+							className="sgs-product-card__cta-row"
+							style={
+								attributes.ctaRowFlexWrap
+									? { flexWrap: attributes.ctaRowFlexWrap }
+									: undefined
+							}
+						>
 							{ ( ctaText || '' ) !== '' && (
 								<span
 									className={ `sgs-button sgs-button--${ safeCtaStyle } sgs-product-card__cta--primary` }

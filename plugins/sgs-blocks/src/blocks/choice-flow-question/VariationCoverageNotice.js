@@ -54,7 +54,11 @@ function collectBlocksByName( blocks, name ) {
  * @param {string} props.clientId   This question's clientId.
  * @param {Object} [props.context]  Block context (`sgs/choice-flow/productId`).
  */
-export default function VariationCoverageNotice( { attributes, clientId, context } ) {
+export default function VariationCoverageNotice( {
+	attributes,
+	clientId,
+	context,
+} ) {
 	const { productAttribute } = attributes;
 	const contextProductId = context?.[ 'sgs/choice-flow/productId' ] || 0;
 
@@ -66,14 +70,20 @@ export default function VariationCoverageNotice( { attributes, clientId, context
 			let ancestorId = getBlockRootClientId( clientId );
 			while ( ancestorId ) {
 				const ancestorBlock = getBlock( ancestorId );
-				if ( ancestorBlock && ancestorBlock.name === 'sgs/choice-flow' ) {
+				if (
+					ancestorBlock &&
+					ancestorBlock.name === 'sgs/choice-flow'
+				) {
 					const siblingAttributes = collectBlocksByName(
 						getBlocks( ancestorId ),
 						'sgs/choice-flow-question'
-					).map( ( block ) => block.attributes.productAttribute || '' );
+					).map(
+						( block ) => block.attributes.productAttribute || ''
+					);
 
 					return {
-						flowProductId: ancestorBlock.attributes.flowProductId || 0,
+						flowProductId:
+							ancestorBlock.attributes.flowProductId || 0,
 						siblingAttributes,
 					};
 				}
@@ -106,10 +116,17 @@ export default function VariationCoverageNotice( { attributes, clientId, context
 				if ( cancelled ) {
 					return;
 				}
-				const slugById = new Map( ( globalAttributes || [] ).map( ( a ) => [ a.id, a.slug ] ) );
+				const slugById = new Map(
+					( globalAttributes || [] ).map( ( a ) => [ a.id, a.slug ] )
+				);
 				const resolved = ( product.attributes || [] )
-					.filter( ( a ) => a.id > 0 && a.variation && slugById.has( a.id ) )
-					.map( ( a ) => ( { name: a.name, taxonomy: `pa_${ slugById.get( a.id ) }` } ) );
+					.filter(
+						( a ) => a.id > 0 && a.variation && slugById.has( a.id )
+					)
+					.map( ( a ) => ( {
+						name: a.name,
+						taxonomy: `pa_${ slugById.get( a.id ) }`,
+					} ) );
 				setVariationAttributes( resolved );
 			} )
 			.catch( () => {
@@ -132,9 +149,15 @@ export default function VariationCoverageNotice( { attributes, clientId, context
 		return null;
 	}
 
-	const askedTaxonomies = new Set( flowInfo.siblingAttributes.filter( Boolean ) );
-	const covered = variationAttributes.filter( ( attribute ) => askedTaxonomies.has( attribute.taxonomy ) );
-	const missing = variationAttributes.filter( ( attribute ) => ! askedTaxonomies.has( attribute.taxonomy ) );
+	const askedTaxonomies = new Set(
+		flowInfo.siblingAttributes.filter( Boolean )
+	);
+	const covered = variationAttributes.filter( ( attribute ) =>
+		askedTaxonomies.has( attribute.taxonomy )
+	);
+	const missing = variationAttributes.filter(
+		( attribute ) => ! askedTaxonomies.has( attribute.taxonomy )
+	);
 
 	// D9 only warns on a PARTIAL set — full coverage and (the unreachable-
 	// in-practice) zero coverage both render nothing.

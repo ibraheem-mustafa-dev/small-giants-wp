@@ -29,7 +29,10 @@ const DEFAULT_DOT_LABEL = 'Go to position %d';
  * @return {boolean} True when `prefers-reduced-motion: reduce` matches.
  */
 function reducedMotion() {
-	return !! ( window.matchMedia && window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches );
+	return !! (
+		window.matchMedia &&
+		window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches
+	);
 }
 
 /**
@@ -41,7 +44,10 @@ function reducedMotion() {
  */
 function rowScrolls( row ) {
 	const overflowX = window.getComputedStyle( row ).overflowX;
-	return ( 'auto' === overflowX || 'scroll' === overflowX ) && row.scrollWidth > row.clientWidth + 1;
+	return (
+		( 'auto' === overflowX || 'scroll' === overflowX ) &&
+		row.scrollWidth > row.clientWidth + 1
+	);
 }
 
 /**
@@ -52,14 +58,19 @@ function rowScrolls( row ) {
  */
 export function scrollStops( row ) {
 	const max = Math.max( 0, row.scrollWidth - row.clientWidth );
-	const pad = Number.parseFloat( window.getComputedStyle( row ).scrollPaddingInlineStart ) || 0;
+	const pad =
+		Number.parseFloat(
+			window.getComputedStyle( row ).scrollPaddingInlineStart
+		) || 0;
 	const rowLeft = row.getBoundingClientRect().left;
 	const stops = [];
 	Array.from( row.children ).forEach( ( item ) => {
 		if ( item.hidden ) {
 			return;
 		}
-		const at = Math.round( item.getBoundingClientRect().left - rowLeft + row.scrollLeft - pad );
+		const at = Math.round(
+			item.getBoundingClientRect().left - rowLeft + row.scrollLeft - pad
+		);
 		const stop = Math.min( max, Math.max( 0, at ) );
 		if ( 0 === stops.length || stop - stops[ stops.length - 1 ] > 1 ) {
 			stops.push( stop );
@@ -91,13 +102,24 @@ function nearestStop( stops, left ) {
  * @param {HTMLElement} row An element carrying `data-sgs-scroll-controls`.
  */
 export function initScrollRowControl( row ) {
-	const wanted = ( row.getAttribute( 'data-sgs-scroll-controls' ) || '' ).split( /\s+/ );
-	const nav = row.nextElementSibling?.matches( '.sgs-container__scroll-nav' ) ? row.nextElementSibling : null;
-	const prev = wanted.includes( 'arrows' ) ? nav?.querySelector( '.sgs-container__arrow--prev' ) : null;
-	const next = wanted.includes( 'arrows' ) ? nav?.querySelector( '.sgs-container__arrow--next' ) : null;
-	const dotsEl = wanted.includes( 'dots' ) ? nav?.querySelector( '.sgs-container__dots' ) : null;
+	const wanted = (
+		row.getAttribute( 'data-sgs-scroll-controls' ) || ''
+	).split( /\s+/ );
+	const nav = row.nextElementSibling?.matches( '.sgs-container__scroll-nav' )
+		? row.nextElementSibling
+		: null;
+	const prev = wanted.includes( 'arrows' )
+		? nav?.querySelector( '.sgs-container__arrow--prev' )
+		: null;
+	const next = wanted.includes( 'arrows' )
+		? nav?.querySelector( '.sgs-container__arrow--next' )
+		: null;
+	const dotsEl = wanted.includes( 'dots' )
+		? nav?.querySelector( '.sgs-container__dots' )
+		: null;
 	const drag = wanted.includes( 'drag' );
-	const dotLabel = dotsEl?.getAttribute( 'data-sgs-dot-label' ) || DEFAULT_DOT_LABEL;
+	const dotLabel =
+		dotsEl?.getAttribute( 'data-sgs-dot-label' ) || DEFAULT_DOT_LABEL;
 
 	let stops = [];
 	let frame = 0;
@@ -112,14 +134,22 @@ export function initScrollRowControl( row ) {
 			const dot = document.createElement( 'button' );
 			dot.type = 'button';
 			dot.className = 'sgs-container__dot sgs-slider-nav__dot';
-			dot.setAttribute( 'aria-label', dotLabel.replace( '%d', String( i + 1 ) ) );
+			dot.setAttribute(
+				'aria-label',
+				dotLabel.replace( '%d', String( i + 1 ) )
+			);
 			dot.addEventListener( 'click', () => goTo( stops[ i ] ) );
 			dotsEl.appendChild( dot );
 		} );
 	};
 
 	const setDisabled = ( button, other, disabled ) => {
-		if ( disabled && document.activeElement === button && other && ! other.disabled ) {
+		if (
+			disabled &&
+			document.activeElement === button &&
+			other &&
+			! other.disabled
+		) {
 			other.focus();
 		}
 		button.disabled = disabled;
@@ -130,7 +160,10 @@ export function initScrollRowControl( row ) {
 		if ( dotsEl ) {
 			const active = nearestStop( stops, left );
 			Array.from( dotsEl.children ).forEach( ( dot, i ) => {
-				dot.classList.toggle( 'sgs-container__dot--active', i === active );
+				dot.classList.toggle(
+					'sgs-container__dot--active',
+					i === active
+				);
 				dot.classList.toggle( 'is-active', i === active );
 				if ( i === active ) {
 					dot.setAttribute( 'aria-current', 'true' );
@@ -151,7 +184,10 @@ export function initScrollRowControl( row ) {
 	const sync = () => {
 		const scrolls = rowScrolls( row );
 		nav?.classList.toggle( 'is-ready', scrolls );
-		row.classList.toggle( 'sgs-container__inner--draggable', drag && scrolls );
+		row.classList.toggle(
+			'sgs-container__inner--draggable',
+			drag && scrolls
+		);
 		if ( ! scrolls ) {
 			stops = [];
 			if ( dotsEl ) {
@@ -160,7 +196,10 @@ export function initScrollRowControl( row ) {
 			return;
 		}
 		const fresh = scrollStops( row );
-		if ( dotsEl && ( fresh.length !== stops.length || 0 === dotsEl.children.length ) ) {
+		if (
+			dotsEl &&
+			( fresh.length !== stops.length || 0 === dotsEl.children.length )
+		) {
 			stops = fresh;
 			buildDots();
 		}
@@ -220,10 +259,18 @@ export function initScrollRowControl( row ) {
 		};
 
 		row.addEventListener( 'pointerdown', ( event ) => {
-			if ( 'mouse' !== event.pointerType || 0 !== event.button || ! rowScrolls( row ) ) {
+			if (
+				'mouse' !== event.pointerType ||
+				0 !== event.button ||
+				! rowScrolls( row )
+			) {
 				return;
 			}
-			start = { x: event.clientX, left: row.scrollLeft, id: event.pointerId };
+			start = {
+				x: event.clientX,
+				left: row.scrollLeft,
+				id: event.pointerId,
+			};
 		} );
 		row.addEventListener( 'pointermove', ( event ) => {
 			if ( ! start || 'mouse' !== event.pointerType ) {
@@ -242,7 +289,9 @@ export function initScrollRowControl( row ) {
 		} );
 		row.addEventListener( 'pointerup', end );
 		row.addEventListener( 'pointercancel', end );
-		row.addEventListener( 'dragstart', ( event ) => event.preventDefault() );
+		row.addEventListener( 'dragstart', ( event ) =>
+			event.preventDefault()
+		);
 		row.addEventListener(
 			'click',
 			( event ) => {

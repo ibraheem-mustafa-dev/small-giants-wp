@@ -7,7 +7,11 @@
  *
  * @package SGS\Blocks
  */
-import { isCssGradient, borderRadiusLonghands, sgsBorderPreview } from '../../utils';
+import {
+	isCssGradient,
+	borderRadiusLonghands,
+	sgsBorderPreview,
+} from '../../utils';
 import { brandBySlug } from '../../utils/brand-registry';
 import { mediaWidth } from '../../utils/breakpoints';
 import { resolveShadowPreviewComposed } from '../../utils/tokens';
@@ -26,12 +30,16 @@ import { resolveShadowPreviewComposed } from '../../utils/tokens';
  * (.claude/rules/block-editor-controls.md "Editor-canvas mirrors" trap 1:
  * "enumerate attributes explicitly at the call site").
  *
- * @param {Object}   previewAttrs         Explicit subset of block attributes this preview reads.
- * @param {Function} colourVar            Design-token → CSS var resolver.
+ * @param {Object}   previewAttrs                  Explicit subset of block attributes this preview reads.
+ * @param {Function} colourVar                     Design-token → CSS var resolver.
  * @param {Function} resolveTextColourPreviewStyle Text-colour/gradient preview resolver.
  * @return {Object} Inline style object for the canvas preview.
  */
-export function buildRootStyle( previewAttrs, colourVar, resolveTextColourPreviewStyle ) {
+export function buildRootStyle(
+	previewAttrs,
+	colourVar,
+	resolveTextColourPreviewStyle
+) {
 	const {
 		borderRadius,
 		labelColour,
@@ -55,9 +63,16 @@ export function buildRootStyle( previewAttrs, colourVar, resolveTextColourPrevie
 	// server-rendered scoped CSS (sgs_hover_state_rules()), not a custom
 	// property the canvas inline style could replicate.
 	const rootStyle = {
-		...resolveTextColourPreviewStyle( labelColour, labelColourGradient, colourVar ),
+		...resolveTextColourPreviewStyle(
+			labelColour,
+			labelColourGradient,
+			colourVar
+		),
 		// A colour set on the block wins; otherwise the ground is WhatsApp's brand colour from the registry.
-		backgroundColor: colourVar( backgroundColour ) || brandBySlug( 'whatsapp' )?.colour || undefined,
+		backgroundColor:
+			colourVar( backgroundColour ) ||
+			brandBySlug( 'whatsapp' )?.colour ||
+			undefined,
 		gap: iconGap || undefined,
 		minHeight: minHeight || undefined,
 		'--sgs-wa-min-height': minHeight || undefined,
@@ -74,7 +89,19 @@ export function buildRootStyle( previewAttrs, colourVar, resolveTextColourPrevie
 	// cardBorderWidth is BASE ONLY (no desktop tier — Spec 35 §14, no
 	// per-device border width), unlike borderRadius above.
 	if ( 'card' === variant ) {
-		Object.assign( rootStyle, sgsBorderPreview( { widthValues: cardBorderWidth, styleValue: cardBorderStyle, colourValue: cardBorderColour }, 'desktop', undefined, { defaultBorder: true } ) );
+		Object.assign(
+			rootStyle,
+			sgsBorderPreview(
+				{
+					widthValues: cardBorderWidth,
+					styleValue: cardBorderStyle,
+					colourValue: cardBorderColour,
+				},
+				'desktop',
+				undefined,
+				{ defaultBorder: true }
+			)
+		);
 	}
 
 	return rootStyle;
@@ -93,7 +120,9 @@ export function buildRootClassName( { variant, showOnMobile, showOnDesktop } ) {
 		'sgs-whatsapp-cta__btn',
 		! showOnMobile ? 'sgs-whatsapp-cta--hide-mobile' : '',
 		! showOnDesktop ? 'sgs-whatsapp-cta--hide-desktop' : '',
-	].filter( Boolean ).join( ' ' );
+	]
+		.filter( Boolean )
+		.join( ' ' );
 }
 
 /**
@@ -102,19 +131,25 @@ export function buildRootClassName( { variant, showOnMobile, showOnDesktop } ) {
  * pill (same padding, radius and minimum height). The canvas is an iframe whose width follows the device preview, so the
  * same media query applies there.
  *
- * @param {string}  rootSelector      Selector of the preview root (uid class).
- * @param {number}  hideBelow         floatingHideLabelBelow, 0 = never.
- * @param {boolean} hasVisibleLabel   True when the floating variant has a typed label.
+ * @param {string}  rootSelector    Selector of the preview root (uid class).
+ * @param {number}  hideBelow       floatingHideLabelBelow, 0 = never.
+ * @param {boolean} hasVisibleLabel True when the floating variant has a typed label.
  * @return {string} CSS text, or '' when nothing collapses.
  */
-export function floatingHideLabelPreviewCss( rootSelector, hideBelow, hasVisibleLabel ) {
+export function floatingHideLabelPreviewCss(
+	rootSelector,
+	hideBelow,
+	hasVisibleLabel
+) {
 	const below = Math.max( 0, parseInt( hideBelow, 10 ) || 0 );
 	if ( below <= 0 || ! hasVisibleLabel ) {
 		return '';
 	}
 	// "Below N" stops just under N, like every other below-N setting.
-	return `${ mediaWidth( 'max', below - 1 ) }{`
-		+ `${ rootSelector } .sgs-whatsapp-cta__label--floating{display:none}`
-		+ `${ rootSelector }{--sgs-wa-pill-pad-left:16px;--sgs-wa-pill-pad-right:16px}`
-		+ '}';
+	return (
+		`${ mediaWidth( 'max', below - 1 ) }{` +
+		`${ rootSelector } .sgs-whatsapp-cta__label--floating{display:none}` +
+		`${ rootSelector }{--sgs-wa-pill-pad-left:16px;--sgs-wa-pill-pad-right:16px}` +
+		'}'
+	);
 }

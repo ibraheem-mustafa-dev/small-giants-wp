@@ -75,15 +75,15 @@ function formatTriggerLabel( value, mode ) {
 }
 
 /**
- * @param {Object}   props
- * @param {string}   props.label            BaseControl label.
- * @param {string}   [props.help]           Help text.
- * @param {string}   props.value             ISO date/datetime string, or ''.
- * @param {Function} props.onChange          Receives the next ISO string (or null when cleared).
- * @param {'date'|'datetime'} [props.mode='date']  'date' hides the time/timezone row
- *                                            (matches HTML5 type="date" consumers).
- *                                            'datetime' shows it (matches type="datetime-local").
- * @param {boolean}  [props.is12Hour=false]  Passed straight through to DateTimePicker.
+ * @param {Object}            props
+ * @param {string}            props.label            BaseControl label.
+ * @param {string}            [props.help]           Help text.
+ * @param {string}            props.value            ISO date/datetime string, or ''.
+ * @param {Function}          props.onChange         Receives the next ISO string (or null when cleared).
+ * @param {'date'|'datetime'} [props.mode='date']    'date' hides the time/timezone row
+ *                                                   (matches HTML5 type="date" consumers).
+ *                                                   'datetime' shows it (matches type="datetime-local").
+ * @param {boolean}           [props.is12Hour=false] Passed straight through to DateTimePicker.
  */
 export default function DateTimePickerField( {
 	label,
@@ -102,12 +102,20 @@ export default function DateTimePickerField( {
 	// (`${id}__help`, the same convention every native self-wiring control
 	// gets from useBaseControlProps()) — without it the paragraph renders
 	// with no id at all and nothing can point aria-describedby at it.
-	const instanceId = useInstanceId( DateTimePickerField, 'sgs-date-picker-field' );
+	const instanceId = useInstanceId(
+		DateTimePickerField,
+		'sgs-date-picker-field'
+	);
 	const id = `sgs-date-picker-field-${ instanceId }`;
 	const helpId = help ? `${ id }__help` : undefined;
 
 	return (
-		<BaseControl id={ id } label={ label } help={ help } __nextHasNoMarginBottom>
+		<BaseControl
+			id={ id }
+			label={ label }
+			help={ help }
+			__nextHasNoMarginBottom
+		>
 			<Button
 				ref={ triggerRef }
 				variant="tertiary"

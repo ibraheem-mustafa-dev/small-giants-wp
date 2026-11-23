@@ -8,7 +8,11 @@
  */
 import { __ } from '@wordpress/i18n';
 import { PanelBody, RangeControl } from '@wordpress/components';
-import { IconPicker, ResponsiveOverride, SgsLengthControl } from '../../components';
+import {
+	IconPicker,
+	ResponsiveOverride,
+	SgsLengthControl,
+} from '../../components';
 import { Choice } from './extraControls';
 
 const POSITIONS = [
@@ -36,21 +40,41 @@ function ButtonIconPanel( { prefix, title, gap, attributes, setAttributes } ) {
 				label={ __( 'Icon', 'sgs-blocks' ) }
 				sources={ [ 'lucide' ] }
 				value={ icon ? { source: 'lucide', name: icon } : null }
-				onChange={ ( val ) => setAttributes( { [ prefix + 'Icon' ]: val ? val.name : '' } ) }
+				onChange={ ( val ) =>
+					setAttributes( {
+						[ prefix + 'Icon' ]: val ? val.name : '',
+					} )
+				}
 			/>
 			{ icon && (
 				<>
-					<Choice { ...p } name={ prefix + 'IconPosition' } label={ __( 'Icon position', 'sgs-blocks' ) } options={ POSITIONS } />
+					<Choice
+						{ ...p }
+						name={ prefix + 'IconPosition' }
+						label={ __( 'Icon position', 'sgs-blocks' ) }
+						options={ POSITIONS }
+					/>
 					<ResponsiveOverride
 						label={ __( 'Icon size (px)', 'sgs-blocks' ) }
 						value={ attributes[ sizeName ] }
-						onChange={ ( obj ) => setAttributes( { [ sizeName ]: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { [ sizeName ]: obj } )
+						}
 					>
-						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+						{ ( {
+							ownValue,
+							effectiveValue,
+							inherited,
+							setOwnValue,
+						} ) => (
 							<RangeControl
 								label={ __( 'Icon size (px)', 'sgs-blocks' ) }
 								hideLabelFromVision
-								value={ ownValue || ( inherited ? effectiveValue : 16 ) || 16 }
+								value={
+									ownValue ||
+									( inherited ? effectiveValue : 16 ) ||
+									16
+								}
 								onChange={ ( val ) => setOwnValue( val ) }
 								min={ 8 }
 								max={ 100 }
@@ -64,14 +88,31 @@ function ButtonIconPanel( { prefix, title, gap, attributes, setAttributes } ) {
 					<ResponsiveOverride
 						label={ __( 'Icon circle size (px)', 'sgs-blocks' ) }
 						value={ attributes[ shapeName ] }
-						onChange={ ( obj ) => setAttributes( { [ shapeName ]: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { [ shapeName ]: obj } )
+						}
 					>
-						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+						{ ( {
+							ownValue,
+							effectiveValue,
+							inherited,
+							setOwnValue,
+						} ) => (
 							<RangeControl
-								label={ __( 'Icon circle size (px)', 'sgs-blocks' ) }
+								label={ __(
+									'Icon circle size (px)',
+									'sgs-blocks'
+								) }
 								hideLabelFromVision
-								help={ __( 'Shows once an icon circle colour is set (Colours panel). Empty = 1.8 times the icon size.', 'sgs-blocks' ) }
-								value={ ownValue || ( inherited ? effectiveValue : 0 ) || 0 }
+								help={ __(
+									'Shows once an icon circle colour is set (Colours panel). Empty = 1.8 times the icon size.',
+									'sgs-blocks'
+								) }
+								value={
+									ownValue ||
+									( inherited ? effectiveValue : 0 ) ||
+									0
+								}
 								onChange={ ( val ) => setOwnValue( val || '' ) }
 								min={ 0 }
 								max={ 200 }
@@ -103,7 +144,13 @@ export default function ButtonIconPanels( { attributes, setAttributes } ) {
 			onChange={ ( obj ) => setAttributes( { loginButtonIconGap: obj } ) }
 		>
 			{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-				<SgsLengthControl label={ __( 'Icon gap', 'sgs-blocks' ) } hideLabelFromVision value={ ownValue } placeholder={ inherited ? effectiveValue : '' } onChange={ setOwnValue } />
+				<SgsLengthControl
+					label={ __( 'Icon gap', 'sgs-blocks' ) }
+					hideLabelFromVision
+					value={ ownValue }
+					placeholder={ inherited ? effectiveValue : '' }
+					onChange={ setOwnValue }
+				/>
 			) }
 		</ResponsiveOverride>
 	);
@@ -111,17 +158,37 @@ export default function ButtonIconPanels( { attributes, setAttributes } ) {
 		<ResponsiveOverride
 			label={ __( 'Icon gap', 'sgs-blocks' ) }
 			value={ attributes.registerButtonIconGap }
-			onChange={ ( obj ) => setAttributes( { registerButtonIconGap: obj } ) }
+			onChange={ ( obj ) =>
+				setAttributes( { registerButtonIconGap: obj } )
+			}
 		>
 			{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-				<SgsLengthControl label={ __( 'Icon gap', 'sgs-blocks' ) } hideLabelFromVision value={ ownValue } placeholder={ inherited ? effectiveValue : '' } onChange={ setOwnValue } />
+				<SgsLengthControl
+					label={ __( 'Icon gap', 'sgs-blocks' ) }
+					hideLabelFromVision
+					value={ ownValue }
+					placeholder={ inherited ? effectiveValue : '' }
+					onChange={ setOwnValue }
+				/>
 			) }
 		</ResponsiveOverride>
 	);
 	return (
 		<>
-			<ButtonIconPanel prefix="loginButton" title={ __( 'Sign in button icon', 'sgs-blocks' ) } gap={ loginGap } attributes={ attributes } setAttributes={ setAttributes } />
-			<ButtonIconPanel prefix="registerButton" title={ __( 'Create account button icon', 'sgs-blocks' ) } gap={ registerGap } attributes={ attributes } setAttributes={ setAttributes } />
+			<ButtonIconPanel
+				prefix="loginButton"
+				title={ __( 'Sign in button icon', 'sgs-blocks' ) }
+				gap={ loginGap }
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+			/>
+			<ButtonIconPanel
+				prefix="registerButton"
+				title={ __( 'Create account button icon', 'sgs-blocks' ) }
+				gap={ registerGap }
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+			/>
 		</>
 	);
 }

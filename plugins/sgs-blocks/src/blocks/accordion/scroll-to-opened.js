@@ -45,13 +45,21 @@ export function scrollOpenedIntoView( details, accordion ) {
 	if ( ! header || ! details.open ) {
 		return false;
 	}
-	const offset = resolveOffset( accordion, accordion.dataset.scrollGap || '' );
+	const offset = resolveOffset(
+		accordion,
+		accordion.dataset.scrollGap || ''
+	);
 	const rect = header.getBoundingClientRect();
 	if ( rect.top >= offset && rect.bottom <= window.innerHeight ) {
 		return false;
 	}
-	const reduced = window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
-	window.scrollBy( { top: rect.top - offset, behavior: reduced ? 'auto' : 'smooth' } );
+	const reduced = window.matchMedia(
+		'(prefers-reduced-motion: reduce)'
+	).matches;
+	window.scrollBy( {
+		top: rect.top - offset,
+		behavior: reduced ? 'auto' : 'smooth',
+	} );
 	return true;
 }
 
@@ -65,6 +73,11 @@ export function scheduleScrollToOpened( details, accordion ) {
 	if ( accordion.dataset.scrollToOpened !== 'true' ) {
 		return;
 	}
-	const reduced = window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
-	window.setTimeout( () => scrollOpenedIntoView( details, accordion ), reduced ? 0 : SETTLE_MS );
+	const reduced = window.matchMedia(
+		'(prefers-reduced-motion: reduce)'
+	).matches;
+	window.setTimeout(
+		() => scrollOpenedIntoView( details, accordion ),
+		reduced ? 0 : SETTLE_MS
+	);
 }

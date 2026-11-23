@@ -39,9 +39,24 @@
  */
 import { mediaStoredAttrName } from '../../MediaElementControls.js';
 import { MEDIA_ATOMS } from './registry.js';
-import { isLegacyCall, rulesFor, kindIn, omitted, disabled, REASONS } from '../panels/disclosure-context.js';
+import {
+	isLegacyCall,
+	rulesFor,
+	kindIn,
+	omitted,
+	disabled,
+	REASONS,
+} from '../panels/disclosure-context.js';
 
-import { DEVICES, add, nodes, own, resolved, rulesCss, scalar } from '../emit/core.js';
+import {
+	DEVICES,
+	add,
+	nodes,
+	own,
+	resolved,
+	rulesCss,
+	scalar,
+} from '../emit/core.js';
 import { mediaLength } from '../emit/values.js';
 const ATOM_ID = 'object-fit';
 
@@ -56,7 +71,9 @@ const ATOM_ID = 'object-fit';
  */
 export function validate( value, scope = 'element' ) {
 	const vocabulary = MEDIA_ATOMS[ ATOM_ID ].vocabulary[ scope ] || [];
-	return 'string' === typeof value && vocabulary.includes( value ) ? value : '';
+	return 'string' === typeof value && vocabulary.includes( value )
+		? value
+		: '';
 }
 
 /**
@@ -119,9 +136,24 @@ export function emit( slot, attrs, uid, helper ) {
 			add( rules, media, device, 'object-fit', fit );
 		} else if ( 'tile' === fit ) {
 			const repeat = resolved( attrs, slot, 'Repeat', device );
-			const size = mediaLength( resolved( attrs, slot, 'TileSize', device ), [ 'auto' ] );
-			add( rules, media, device, 'background-repeat', EMIT_REPEATS.includes( repeat ) ? repeat : 'repeat' );
-			add( rules, media, device, 'background-size', '' !== size ? size : 'auto' );
+			const size = mediaLength(
+				resolved( attrs, slot, 'TileSize', device ),
+				[ 'auto' ]
+			);
+			add(
+				rules,
+				media,
+				device,
+				'background-repeat',
+				EMIT_REPEATS.includes( repeat ) ? repeat : 'repeat'
+			);
+			add(
+				rules,
+				media,
+				device,
+				'background-size',
+				'' !== size ? size : 'auto'
+			);
 		}
 	}
 	if ( true === scalar( attrs, slot, 'Pinned' ) ) {

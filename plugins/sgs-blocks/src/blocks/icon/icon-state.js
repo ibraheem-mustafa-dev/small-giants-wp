@@ -18,7 +18,11 @@ import { borderBoxPreview, resolveBorderStyle } from '../../utils/border-style';
 import { SHAPE_SLUGS, isOutlineShape } from '../../utils/icon-shapes';
 import { colourVar } from '../../utils/tokens';
 import { resolvedCssValue } from '../../utils/resolved-css-value';
-import { cssLengthValue, cssSingleLengthValue, cssValueTokens } from '../../utils/css-length';
+import {
+	cssLengthValue,
+	cssSingleLengthValue,
+	cssValueTokens,
+} from '../../utils/css-length';
 import { isCssGradient } from '../../utils/background-preview';
 
 /** The Site Info admin page, relative to wp-admin (both editors run there). */
@@ -33,7 +37,11 @@ export const SITE_INFO_ADMIN_URL = 'admin.php?page=sgs-site-info';
 export function boundLinkKey( attributes ) {
 	const binding = attributes?.metadata?.bindings?.linkUrl;
 	const key = binding?.args?.key;
-	return binding && 'sgs/site-info' === binding.source && 'string' === typeof key ? key : '';
+	return binding &&
+		'sgs/site-info' === binding.source &&
+		'string' === typeof key
+		? key
+		: '';
 }
 
 /**
@@ -66,7 +74,8 @@ export function siteInfoLinkState( key, siteInfo ) {
 	if ( ! key ) {
 		return { bound: false, hidden: false, label: '', link: '' };
 	}
-	const entry = siteInfo && 'object' === typeof siteInfo ? siteInfo[ key ] : undefined;
+	const entry =
+		siteInfo && 'object' === typeof siteInfo ? siteInfo[ key ] : undefined;
 	const brand = brandBySiteInfoKey( key );
 	return {
 		bound: true,
@@ -90,7 +99,10 @@ export function siteInfoLinkState( key, siteInfo ) {
  */
 export function linkFallbackState( link, attributes ) {
 	const source = 'custom' === attributes?.linkSource ? 'custom' : 'site-info';
-	const raw = 'string' === typeof attributes?.linkUrl ? attributes.linkUrl.trim() : '';
+	const raw =
+		'string' === typeof attributes?.linkUrl
+			? attributes.linkUrl.trim()
+			: '';
 	const url = /^(javascript|data|vbscript):/i.test( raw ) ? '' : raw;
 	if ( ! link?.bound ) {
 		return { source, url, fromSite: false, hidden: false };
@@ -121,19 +133,45 @@ export function resolveBrand( attributes, key ) {
 	} else if ( glyphBrand?.colour ) {
 		colourBrand = glyphBrand;
 	}
-	const mode = [ 'inherit', 'theme', 'brand', 'brand-glyph' ].includes( attributes?.colourMode ) ? attributes.colourMode : 'inherit';
+	const mode = [ 'inherit', 'theme', 'brand', 'brand-glyph' ].includes(
+		attributes?.colourMode
+	)
+		? attributes.colourMode
+		: 'inherit';
 	const brandOn = 'theme' !== mode && null !== colourBrand;
 	const glyphOnly = brandOn && 'brand-glyph' === mode;
 	const drawFixed =
-		brandOn && 'brand' === source && !! glyphBrand && glyphBrand.slug === colourBrand.slug && !! glyphBrand.glyphBrand;
+		brandOn &&
+		'brand' === source &&
+		!! glyphBrand &&
+		glyphBrand.slug === colourBrand.slug &&
+		!! glyphBrand.glyphBrand;
 	// Brand colours on hover: hold keeps the ground and glyph; a gradient ground (Instagram) paints over the flat brand colour.
 	const hold = 'hold' === attributes?.brandHover;
-	let paint = brandOn ? brandPaint( colourBrand, drawFixed, glyphOnly ? 'brand-glyph' : 'brand' ) : null;
+	let paint = brandOn
+		? brandPaint(
+				colourBrand,
+				drawFixed,
+				glyphOnly ? 'brand-glyph' : 'brand'
+		  )
+		: null;
 	if ( paint && hold && ! glyphOnly ) {
 		paint = brandPaintHold( paint );
 	}
-	const groundGradient = brandOn && ! glyphOnly && ! drawFixed ? colourBrand.groundGradient || '' : '';
-	return { glyphBrand, colourBrand, brandOn, glyphOnly, drawFixed, paint, hold, groundGradient };
+	const groundGradient =
+		brandOn && ! glyphOnly && ! drawFixed
+			? colourBrand.groundGradient || ''
+			: '';
+	return {
+		glyphBrand,
+		colourBrand,
+		brandOn,
+		glyphOnly,
+		drawFixed,
+		paint,
+		hold,
+		groundGradient,
+	};
 }
 
 /**
@@ -176,7 +214,10 @@ export function accessibleName( { ariaLabel, boundKey, glyphBrand, url } ) {
 	}
 	if ( 'http' === scheme || 'https' === scheme ) {
 		try {
-			return { name: new URL( url ).hostname.replace( /^www\./i, '' ), from: 'host' };
+			return {
+				name: new URL( url ).hostname.replace( /^www\./i, '' ),
+				from: 'host',
+			};
 		} catch ( e ) {
 			return { name: '', from: '' };
 		}
@@ -238,7 +279,11 @@ export function iconLengthValue( raw, maxPx = 512, presetSlugs = [] ) {
 	if ( resolved ) {
 		return resolved;
 	}
-	if ( ! isNumber && /^\d+$/.test( value ) && presetSlugs.includes( value ) ) {
+	if (
+		! isNumber &&
+		/^\d+$/.test( value ) &&
+		presetSlugs.includes( value )
+	) {
 		return `var(--wp--preset--spacing--${ value })`;
 	}
 	const m = /^(\d+(?:\.\d+)?)(px|rem|em|%|vw|vh)?$/.exec( value );
@@ -246,7 +291,14 @@ export function iconLengthValue( raw, maxPx = 512, presetSlugs = [] ) {
 		return '';
 	}
 	const unit = m[ 2 ] || 'px';
-	const max = { px: maxPx, rem: maxPx / 16, em: maxPx / 16, '%': 100, vw: 100, vh: 100 }[ unit ];
+	const max = {
+		px: maxPx,
+		rem: maxPx / 16,
+		em: maxPx / 16,
+		'%': 100,
+		vw: 100,
+		vh: 100,
+	}[ unit ];
 	const num = Math.min( parseFloat( m[ 1 ] ), max );
 	return `${ parseFloat( num.toFixed( 3 ) ) }${ unit }`;
 }
@@ -266,16 +318,38 @@ export function iconGroupContext( context ) {
 	const borderWidth = context[ 'sgs/socialIconsBorderWidth' ];
 	return {
 		inGroup: undefined !== mode && null !== mode,
-		colourMode: [ 'inherit', 'theme', 'brand', 'brand-glyph' ].includes( mode ) ? mode : 'inherit',
-		hidden: Array.isArray( hidden ) ? hidden.filter( ( k ) => 'string' === typeof k ) : [],
+		colourMode: [ 'inherit', 'theme', 'brand', 'brand-glyph' ].includes(
+			mode
+		)
+			? mode
+			: 'inherit',
+		hidden: Array.isArray( hidden )
+			? hidden.filter( ( k ) => 'string' === typeof k )
+			: [],
 		shape: SHAPE_SLUGS.includes( shape ) ? shape : '',
 		showBg: !! context[ 'sgs/socialIconsShowBackground' ],
-		border: !! borderBoxPreview( context[ 'sgs/socialIconsBorderWidth' ], context[ 'sgs/socialIconsBorderStyle' ] ).borderWidth,
-		borderWidth: borderWidth && 'object' === typeof borderWidth && ! Array.isArray( borderWidth ) ? borderWidth : {},
-		borderStyle: 'string' === typeof context[ 'sgs/socialIconsBorderStyle' ] ? context[ 'sgs/socialIconsBorderStyle' ] : '',
+		border: !! borderBoxPreview(
+			context[ 'sgs/socialIconsBorderWidth' ],
+			context[ 'sgs/socialIconsBorderStyle' ]
+		).borderWidth,
+		borderWidth:
+			borderWidth &&
+			'object' === typeof borderWidth &&
+			! Array.isArray( borderWidth )
+				? borderWidth
+				: {},
+		borderStyle:
+			'string' === typeof context[ 'sgs/socialIconsBorderStyle' ]
+				? context[ 'sgs/socialIconsBorderStyle' ]
+				: '',
 		showLabel: !! context[ 'sgs/socialIconsShowLabel' ],
-		labelPosition: LABEL_POSITIONS.includes( context[ 'sgs/socialIconsLabelPosition' ] ) ? context[ 'sgs/socialIconsLabelPosition' ] : '',
-		brandHover: 'hold' === context[ 'sgs/socialIconsBrandHover' ] ? 'hold' : 'swap',
+		labelPosition: LABEL_POSITIONS.includes(
+			context[ 'sgs/socialIconsLabelPosition' ]
+		)
+			? context[ 'sgs/socialIconsLabelPosition' ]
+			: '',
+		brandHover:
+			'hold' === context[ 'sgs/socialIconsBrandHover' ] ? 'hold' : 'swap',
 	};
 }
 
@@ -301,8 +375,13 @@ export function attributesInGroup( attributes, group ) {
 	}
 	next.showBackground = !! attributes.showBackground || group.showBg;
 	next.showLabel = !! attributes.showLabel || group.showLabel;
-	next.labelPosition = labelPositionFor( attributes.labelPosition, group.labelPosition );
-	next.brandHover = [ 'swap', 'hold' ].includes( attributes.brandHover ) ? attributes.brandHover : group.brandHover;
+	next.labelPosition = labelPositionFor(
+		attributes.labelPosition,
+		group.labelPosition
+	);
+	next.brandHover = [ 'swap', 'hold' ].includes( attributes.brandHover )
+		? attributes.brandHover
+		: group.brandHover;
 	return next;
 }
 
@@ -320,18 +399,33 @@ export function attributesInGroup( attributes, group ) {
 export function outlineStroke( widthBox, style, presetSlugs = [] ) {
 	const none = { width: '', dash: 'solid' };
 	const kind = resolveBorderStyle( style );
-	const box = widthBox && 'object' === typeof widthBox && ! Array.isArray( widthBox ) ? widthBox : {};
+	const box =
+		widthBox && 'object' === typeof widthBox && ! Array.isArray( widthBox )
+			? widthBox
+			: {};
 	const sides = [ 'top', 'right', 'bottom', 'left' ].map( ( side ) => {
 		const raw = box[ side ];
-		return ( 'string' === typeof raw || 'number' === typeof raw || 'boolean' === typeof raw ? cssLengthValue( phpScalarString( raw ), presetSlugs ) : '' ) || '';
+		return (
+			( 'string' === typeof raw ||
+			'number' === typeof raw ||
+			'boolean' === typeof raw
+				? cssLengthValue( phpScalarString( raw ), presetSlugs )
+				: '' ) || ''
+		);
 	} );
 	if ( 'none' === kind || ! sides.some( Boolean ) ) {
 		return none;
 	}
-	for ( const token of cssValueTokens( sides.map( ( v ) => v || '0' ).join( ' ' ) ) ) {
-		const width = '0' === token ? '' : cssSingleLengthValue( token, presetSlugs );
+	for ( const token of cssValueTokens(
+		sides.map( ( v ) => v || '0' ).join( ' ' )
+	) ) {
+		const width =
+			'0' === token ? '' : cssSingleLengthValue( token, presetSlugs );
 		if ( width ) {
-			return { width, dash: [ 'dashed', 'dotted' ].includes( kind ) ? kind : 'solid' };
+			return {
+				width,
+				dash: [ 'dashed', 'dotted' ].includes( kind ) ? kind : 'solid',
+			};
 		}
 	}
 	return none;
@@ -362,13 +456,22 @@ function phpScalarString( value ) {
  * @return {{outline:boolean, stroke:boolean, own:boolean, dash:string, style:Object}} `style` is a React style fragment.
  */
 export function outlineCanvas( attributes, group, tier, presetSlugs = [] ) {
-	const result = { outline: false, stroke: false, own: false, dash: 'solid', style: {} };
+	const result = {
+		outline: false,
+		stroke: false,
+		own: false,
+		dash: 'solid',
+		style: {},
+	};
 	if ( ! isOutlineShape( attributes?.shape ) ) {
 		return result;
 	}
 	result.outline = true;
 	const raw = attributes.borderWidth;
-	const tiered = !! raw && 'object' === typeof raw && ( !! raw.desktop || !! raw.tablet || !! raw.mobile );
+	const tiered =
+		!! raw &&
+		'object' === typeof raw &&
+		( !! raw.desktop || !! raw.tablet || !! raw.mobile );
 	const widths = {};
 	[ 'desktop', 'tablet', 'mobile' ].forEach( ( t ) => {
 		let box = null;
@@ -377,15 +480,27 @@ export function outlineCanvas( attributes, group, tier, presetSlugs = [] ) {
 		} else if ( 'desktop' === t ) {
 			box = raw;
 		}
-		const stroke = outlineStroke( box, attributes.borderStyle, presetSlugs );
+		const stroke = outlineStroke(
+			box,
+			attributes.borderStyle,
+			presetSlugs
+		);
 		if ( stroke.width ) {
 			widths[ t ] = stroke.width;
 			result.dash = stroke.dash;
 		}
 	} );
 	result.own = Object.keys( widths ).length > 0;
-	if ( ! result.own && 'none' !== resolveBorderStyle( attributes.borderStyle ) && group?.border ) {
-		const stroke = outlineStroke( group.borderWidth, group.borderStyle, presetSlugs );
+	if (
+		! result.own &&
+		'none' !== resolveBorderStyle( attributes.borderStyle ) &&
+		group?.border
+	) {
+		const stroke = outlineStroke(
+			group.borderWidth,
+			group.borderStyle,
+			presetSlugs
+		);
 		if ( stroke.width ) {
 			widths.desktop = stroke.width;
 			result.dash = stroke.dash;
@@ -406,10 +521,18 @@ export function outlineCanvas( attributes, group, tier, presetSlugs = [] ) {
 	if ( result.own ) {
 		// sgs_border_element_decls() paints a stored gradient as a ring instead of a border colour (a resting gradient
 		// takes the hover paint with it), so the stroke then shows the default colours, as on the page.
-		const restingGradient = isCssGradient( attributes.borderColourGradient );
-		const hoverGradient = restingGradient || isCssGradient( attributes.borderColourHoverGradient );
-		const colour = restingGradient ? undefined : colourVar( attributes.borderColour );
-		const hover = hoverGradient ? undefined : colourVar( attributes.borderColourHover );
+		const restingGradient = isCssGradient(
+			attributes.borderColourGradient
+		);
+		const hoverGradient =
+			restingGradient ||
+			isCssGradient( attributes.borderColourHoverGradient );
+		const colour = restingGradient
+			? undefined
+			: colourVar( attributes.borderColour );
+		const hover = hoverGradient
+			? undefined
+			: colourVar( attributes.borderColourHover );
 		if ( colour ) {
 			result.style[ '--sgs-icon-border-colour' ] = colour;
 		}

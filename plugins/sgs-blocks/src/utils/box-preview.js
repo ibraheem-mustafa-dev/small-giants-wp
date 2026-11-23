@@ -16,7 +16,10 @@ import { wrapperBorderPreview } from './wrapper-border-preview';
  * @return {Object} React style fragment for the block's root element.
  */
 export function boxPreview( attributes, tier, palette ) {
-	const style = spacingPreview( { padding: attributes.padding, margin: attributes.margin }, tier );
+	const style = spacingPreview(
+		{ padding: attributes.padding, margin: attributes.margin },
+		tier
+	);
 
 	Object.assign( style, wrapperBorderPreview( attributes, tier, palette ) );
 

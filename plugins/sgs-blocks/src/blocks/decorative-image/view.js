@@ -26,7 +26,11 @@ function initDecorativeImageEffects() {
 	// Find images with fade-on-scroll enabled.
 	const activeImages = prefersReducedMotion
 		? []
-		: Array.from( document.querySelectorAll( '.sgs-decorative-image[data-fade-on-scroll]' ) );
+		: Array.from(
+				document.querySelectorAll(
+					'.sgs-decorative-image[data-fade-on-scroll]'
+				)
+		  );
 
 	if ( activeImages.length === 0 ) {
 		return;
@@ -71,7 +75,10 @@ function initDecorativeImageEffects() {
 			// past the top of the viewport). Progress > 1 means element is above vp.
 			if ( img.hasAttribute( 'data-fade-on-scroll' ) ) {
 				// clamp: 1 when progress ≤ 0.7, fading out as it approaches 1.
-				const fadeOpacity = Math.max( 0, Math.min( 1, ( 1 - scrollProgress ) / 0.3 ) );
+				const fadeOpacity = Math.max(
+					0,
+					Math.min( 1, ( 1 - scrollProgress ) / 0.3 )
+				);
 				// Custom-property VALUE only — the scoped <style> rule reads
 				// var(--sgs-di-op, <base opacity>).
 				img.style.setProperty( '--sgs-di-op', String( fadeOpacity ) );

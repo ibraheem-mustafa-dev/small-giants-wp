@@ -21,9 +21,19 @@ import { DesignTokenPicker, TierBorderControl } from '../../components';
  * @param {Function} props.setAttributes Setter.
  * @return {Element} The panel.
  */
-export default function BadgePanel( { resolvedItems, attributes, setAttributes } ) {
-	const topLevelItems = resolvedItems.filter( ( item ) => 0 === ( item.depth || 0 ) );
-	const tones = attributes.itemBadgeTones && 'object' === typeof attributes.itemBadgeTones ? attributes.itemBadgeTones : {};
+export default function BadgePanel( {
+	resolvedItems,
+	attributes,
+	setAttributes,
+} ) {
+	const topLevelItems = resolvedItems.filter(
+		( item ) => 0 === ( item.depth || 0 )
+	);
+	const tones =
+		attributes.itemBadgeTones &&
+		'object' === typeof attributes.itemBadgeTones
+			? attributes.itemBadgeTones
+			: {};
 
 	const setTone = ( identifier, tone ) => {
 		const next = { ...tones };
@@ -43,17 +53,28 @@ export default function BadgePanel( { resolvedItems, attributes, setAttributes }
 					key: 'normal',
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: attributes[ attr ] || '',
-					onChange: ( value ) => setAttributes( { [ attr ]: value || '' } ),
+					onChange: ( value ) =>
+						setAttributes( { [ attr ]: value || '' } ),
 				},
 			] }
 		/>
 	);
 
-	const opacity = '' === ( attributes.itemBadgeOpacity ?? '' ) ? undefined : Number( attributes.itemBadgeOpacity );
+	const opacity =
+		'' === ( attributes.itemBadgeOpacity ?? '' )
+			? undefined
+			: Number( attributes.itemBadgeOpacity );
 
 	return (
 		<PanelBody title={ __( 'Badge', 'sgs-blocks' ) } initialOpen={ false }>
-			{ 0 === topLevelItems.length && <p>{ __( 'Choose a menu above to set a badge tone per item.', 'sgs-blocks' ) }</p> }
+			{ 0 === topLevelItems.length && (
+				<p>
+					{ __(
+						'Choose a menu above to set a badge tone per item.',
+						'sgs-blocks'
+					) }
+				</p>
+			) }
 			{ topLevelItems.map( ( item ) => (
 				<SelectControl
 					key={ item.identifier }
@@ -61,7 +82,10 @@ export default function BadgePanel( { resolvedItems, attributes, setAttributes }
 					help={ __( 'Badge tone', 'sgs-blocks' ) }
 					value={ tones[ item.identifier ] || '' }
 					options={ [
-						{ label: __( 'Default badge colours', 'sgs-blocks' ), value: '' },
+						{
+							label: __( 'Default badge colours', 'sgs-blocks' ),
+							value: '',
+						},
 						{ label: __( 'Tone A', 'sgs-blocks' ), value: 'a' },
 						{ label: __( 'Tone B', 'sgs-blocks' ), value: 'b' },
 					] }
@@ -70,10 +94,22 @@ export default function BadgePanel( { resolvedItems, attributes, setAttributes }
 					__next40pxDefaultSize
 				/>
 			) ) }
-			{ colourPicker( __( 'Tone A background', 'sgs-blocks' ), 'badgeColourA' ) }
-			{ colourPicker( __( 'Tone A text', 'sgs-blocks' ), 'badgeTextColourA' ) }
-			{ colourPicker( __( 'Tone B background', 'sgs-blocks' ), 'badgeColourB' ) }
-			{ colourPicker( __( 'Tone B text', 'sgs-blocks' ), 'badgeTextColourB' ) }
+			{ colourPicker(
+				__( 'Tone A background', 'sgs-blocks' ),
+				'badgeColourA'
+			) }
+			{ colourPicker(
+				__( 'Tone A text', 'sgs-blocks' ),
+				'badgeTextColourA'
+			) }
+			{ colourPicker(
+				__( 'Tone B background', 'sgs-blocks' ),
+				'badgeColourB'
+			) }
+			{ colourPicker(
+				__( 'Tone B text', 'sgs-blocks' ),
+				'badgeTextColourB'
+			) }
 			<TierBorderControl
 				label={ __( 'Badge border', 'sgs-blocks' ) }
 				value={ attributes.badgeBorder }
@@ -88,7 +124,12 @@ export default function BadgePanel( { resolvedItems, attributes, setAttributes }
 				step={ 0.05 }
 				allowReset
 				resetFallbackValue={ undefined }
-				onChange={ ( value ) => setAttributes( { itemBadgeOpacity: undefined === value ? '' : String( value ) } ) }
+				onChange={ ( value ) =>
+					setAttributes( {
+						itemBadgeOpacity:
+							undefined === value ? '' : String( value ),
+					} )
+				}
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>

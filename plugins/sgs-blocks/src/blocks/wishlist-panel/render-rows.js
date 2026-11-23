@@ -36,7 +36,9 @@ export function escapeHtml( str ) {
  * @return {string} Text content only.
  */
 function plainText( html ) {
-	return new DOMParser().parseFromString( String( html ?? '' ), 'text/html' ).body.textContent.trim();
+	return new DOMParser()
+		.parseFromString( String( html ?? '' ), 'text/html' )
+		.body.textContent.trim();
 }
 
 /**
@@ -61,15 +63,17 @@ function actionHtml( product, labels, shared ) {
 	const id = Number( product.id ) || 0;
 	const permalink = escapeHtml( product.permalink || '#' );
 	const hasOptions = !! product.has_options;
-	const chooseOptionsUrl = escapeHtml( product.add_to_cart?.url || permalink );
-	const chooseOptionsText = escapeHtml( product.add_to_cart?.text || 'Choose options' );
+	const chooseOptionsUrl = escapeHtml(
+		product.add_to_cart?.url || permalink
+	);
+	const chooseOptionsText = escapeHtml(
+		product.add_to_cart?.text || 'Choose options'
+	);
 
 	if ( ! isInStock( product ) && ! shared ) {
-		return (
-			`<button type="button" class="sgs-wishlist-panel__notify-toggle" data-product-id="${ id }" aria-expanded="false">${ escapeHtml(
-				labels.notifyLabel
-			) }</button><div class="sgs-wishlist-panel__notify-form" data-product-id="${ id }" hidden></div>`
-		);
+		return `<button type="button" class="sgs-wishlist-panel__notify-toggle" data-product-id="${ id }" aria-expanded="false">${ escapeHtml(
+			labels.notifyLabel
+		) }</button><div class="sgs-wishlist-panel__notify-form" data-product-id="${ id }" hidden></div>`;
 	}
 
 	// Variable products refuse a Store API add-to-cart call with no
@@ -95,7 +99,8 @@ function actionHtml( product, labels, shared ) {
 	);
 }
 
-const HEART_PATH = 'M12 21s-7-4.6-9.3-9A5.4 5.4 0 0 1 12 6.6 5.4 5.4 0 0 1 21.3 12C19 16.4 12 21 12 21z';
+const HEART_PATH =
+	'M12 21s-7-4.6-9.3-9A5.4 5.4 0 0 1 12 6.6 5.4 5.4 0 0 1 21.3 12C19 16.4 12 21 12 21z';
 
 /**
  * One frame card of the cards layout: a large photo, the brand, a filled heart that removes the item, the name, the
@@ -110,30 +115,44 @@ function wishlistCardHtml( product, options ) {
 	const id = Number( product.id ) || 0;
 	const name = escapeHtml( plainText( product.name ) );
 	const permalink = escapeHtml( product.permalink || '#' );
-	const photo = product.images?.[ 0 ]?.src || product.images?.[ 0 ]?.thumbnail || '';
+	const photo =
+		product.images?.[ 0 ]?.src || product.images?.[ 0 ]?.thumbnail || '';
 	const brand = product.brands?.[ 0 ]?.name || '';
 	const prices = product.prices;
-	const showRrp = prices && prices.regular_price && prices.regular_price !== prices.price;
+	const showRrp =
+		prices && prices.regular_price && prices.regular_price !== prices.price;
 	const photoHtml = photo
-		? `<img class="sgs-wishlist-panel__card-img sgs-media-el" src="${ escapeHtml( photo ) }" alt="" loading="lazy" decoding="async" />`
+		? `<img class="sgs-wishlist-panel__card-img sgs-media-el" src="${ escapeHtml(
+				photo
+		  ) }" alt="" loading="lazy" decoding="async" />`
 		: '';
 	const priceHtml =
 		showPrice && prices
-			? `<span class="sgs-wishlist-panel__row-price">${ escapeHtml( formatMoney( prices.price, prices ) ) }</span>` +
+			? `<span class="sgs-wishlist-panel__row-price">${ escapeHtml(
+					formatMoney( prices.price, prices )
+			  ) }</span>` +
 			  ( showRrp
-					? `<span class="sgs-wishlist-panel__card-rrp">${ escapeHtml( formatMoney( prices.regular_price, prices ) ) }</span>`
+					? `<span class="sgs-wishlist-panel__card-rrp">${ escapeHtml(
+							formatMoney( prices.regular_price, prices )
+					  ) }</span>`
 					: '' )
 			: '';
 	return (
 		`<div class="sgs-wishlist-panel__row sgs-wishlist-panel__card" data-product-id="${ id }">` +
 		`<a class="sgs-wishlist-panel__card-media" href="${ permalink }" tabindex="-1" aria-hidden="true">${ photoHtml }</a>` +
-		( brand ? `<span class="sgs-wishlist-panel__card-brand">${ escapeHtml( brand ) }</span>` : '' ) +
+		( brand
+			? `<span class="sgs-wishlist-panel__card-brand">${ escapeHtml(
+					brand
+			  ) }</span>`
+			: '' ) +
 		`<button type="button" class="sgs-wishlist-panel__remove sgs-wishlist-panel__card-heart" data-product-id="${ id }" aria-label="${ escapeHtml(
 			labels.removeLabel + ' ' + plainText( product.name )
 		) }"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="currentColor"><path d="${ HEART_PATH }"/></svg></button>` +
 		'<div class="sgs-wishlist-panel__card-body">' +
 		`<a class="sgs-wishlist-panel__row-name" href="${ permalink }">${ name }</a>` +
-		( priceHtml ? `<div class="sgs-wishlist-panel__card-prices">${ priceHtml }</div>` : '' ) +
+		( priceHtml
+			? `<div class="sgs-wishlist-panel__card-prices">${ priceHtml }</div>`
+			: '' ) +
 		'</div>' +
 		'</div>'
 	);
@@ -142,7 +161,7 @@ function wishlistCardHtml( product, options ) {
 /**
  * Build one saved-item row's markup.
  *
- * @param {Object}  product       A Store API product.
+ * @param {Object}  product               A Store API product.
  * @param {Object}  options
  * @param {boolean} options.showPrice     Whether to render the price.
  * @param {boolean} options.showStock     Whether to render the stock line.
@@ -160,11 +179,21 @@ export function wishlistRowHtml( product, options ) {
 	if ( 'cards' === options.layout && ! options.shared ) {
 		return wishlistCardHtml( product, options );
 	}
-	const { showPrice, showStock, showDateSaved, showPriceDrop, shared, labels, savedPrice, cardHtml } = options;
+	const {
+		showPrice,
+		showStock,
+		showDateSaved,
+		showPriceDrop,
+		shared,
+		labels,
+		savedPrice,
+		cardHtml,
+	} = options;
 	const id = Number( product.id ) || 0;
 	const name = escapeHtml( plainText( product.name ) );
 	const permalink = escapeHtml( product.permalink || '#' );
-	const thumb = product.images?.[ 0 ]?.thumbnail || product.images?.[ 0 ]?.src || '';
+	const thumb =
+		product.images?.[ 0 ]?.thumbnail || product.images?.[ 0 ]?.src || '';
 
 	const priceHtml =
 		showPrice && product.prices
@@ -175,10 +204,17 @@ export function wishlistRowHtml( product, options ) {
 
 	const dropText =
 		! shared && showPriceDrop && savedPrice
-			? priceDropLine( labels.priceDropText, savedPrice, product.prices, formatMoney )
+			? priceDropLine(
+					labels.priceDropText,
+					savedPrice,
+					product.prices,
+					formatMoney
+			  )
 			: '';
 	const priceDropHtml = dropText
-		? `<span class="sgs-wishlist-panel__row-price-drop">${ escapeHtml( dropText ) }</span>`
+		? `<span class="sgs-wishlist-panel__row-price-drop">${ escapeHtml(
+				dropText
+		  ) }</span>`
 		: '';
 
 	const dateText =
@@ -189,7 +225,9 @@ export function wishlistRowHtml( product, options ) {
 			  )
 			: '';
 	const dateHtml = dateText
-		? `<span class="sgs-wishlist-panel__row-date">${ escapeHtml( dateText ) }</span>`
+		? `<span class="sgs-wishlist-panel__row-date">${ escapeHtml(
+				dateText
+		  ) }</span>`
 		: '';
 
 	const thumbHtml = thumb
@@ -200,7 +238,9 @@ export function wishlistRowHtml( product, options ) {
 
 	const stockHtml =
 		showStock && ! isInStock( product )
-			? `<span class="sgs-wishlist-panel__row-stock">${ escapeHtml( labels.outOfStockLabel ) }</span>`
+			? `<span class="sgs-wishlist-panel__row-stock">${ escapeHtml(
+					labels.outOfStockLabel
+			  ) }</span>`
 			: '';
 
 	const removeHtml = shared
@@ -213,7 +253,10 @@ export function wishlistRowHtml( product, options ) {
 		// The card is the site's own product card (markup from `sgs/product-card`'s render, escaped there); the panel adds
 		// only what a card does not carry: the saved-list parts and the remove button.
 		const metaHtml = priceDropHtml + stockHtml + dateHtml;
-		const cardRemoveHtml = removeHtml.replace( '<button type="button"', `<button type="button" data-product-name="${ name }"` );
+		const cardRemoveHtml = removeHtml.replace(
+			'<button type="button"',
+			`<button type="button" data-product-name="${ name }"`
+		);
 		const notifyHtml = isInStock( product )
 			? ''
 			: `<button type="button" class="sgs-wishlist-panel__notify-toggle" data-product-id="${ id }" aria-expanded="false">${ escapeHtml(
@@ -222,7 +265,9 @@ export function wishlistRowHtml( product, options ) {
 		return (
 			`<div class="sgs-wishlist-panel__row sgs-wishlist-panel__item" data-product-id="${ id }">` +
 			`<div class="sgs-wishlist-panel__item-card">${ cardHtml }</div>` +
-			( metaHtml ? `<div class="sgs-wishlist-panel__item-meta">${ metaHtml }</div>` : '' ) +
+			( metaHtml
+				? `<div class="sgs-wishlist-panel__item-meta">${ metaHtml }</div>`
+				: '' ) +
 			`<div class="sgs-wishlist-panel__item-actions sgs-wishlist-panel__row-actions">${ notifyHtml }${ cardRemoveHtml }</div>` +
 			'</div>'
 		);

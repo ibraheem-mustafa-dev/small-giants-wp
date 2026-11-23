@@ -42,14 +42,29 @@ import { __ } from '@wordpress/i18n';
 
 import { mediaStoredAttrName } from '../../MediaElementControls.js';
 import { MEDIA_ATOMS } from './registry.js';
-import { isLegacyCall, rulesFor, kindIn, omitted, disabled, shown, REASONS } from '../panels/disclosure-context.js';
+import {
+	isLegacyCall,
+	rulesFor,
+	kindIn,
+	omitted,
+	disabled,
+	shown,
+	REASONS,
+} from '../panels/disclosure-context.js';
 
 import { emitPlain, nodes, num, rulesCss } from '../emit/core.js';
 import { isNumeric } from '../emit/values.js';
 const ATOM_ID = 'focal-point';
 
 /** Repeat/attachment are small closed enums, unlike free-form position. */
-const REPEAT_VALUES = [ 'repeat', 'no-repeat', 'repeat-x', 'repeat-y', 'space', 'round' ];
+const REPEAT_VALUES = [
+	'repeat',
+	'no-repeat',
+	'repeat-x',
+	'repeat-y',
+	'space',
+	'round',
+];
 const ATTACHMENT_VALUES = [ 'scroll', 'fixed', 'local' ];
 
 /** Same charset `sgs_css_object_position` (hero/render.php) already sanitises with. */
@@ -92,7 +107,9 @@ export function resolvePosition( raw ) {
 		if ( 0.5 === x && 0.5 === y ) {
 			return '';
 		}
-		return `${ Math.round( x * 100 * 100 ) / 100 }% ${ Math.round( y * 100 * 100 ) / 100 }%`;
+		return `${ Math.round( x * 100 * 100 ) / 100 }% ${
+			Math.round( y * 100 * 100 ) / 100
+		}%`;
 	}
 	return sanitisePositionString( raw );
 }
@@ -106,10 +123,14 @@ export function resolvePosition( raw ) {
  */
 export function validate( value, base = 'ObjectPosition' ) {
 	if ( 'Repeat' === base ) {
-		return 'string' === typeof value && REPEAT_VALUES.includes( value ) ? value : '';
+		return 'string' === typeof value && REPEAT_VALUES.includes( value )
+			? value
+			: '';
 	}
 	if ( 'Attachment' === base ) {
-		return 'string' === typeof value && ATTACHMENT_VALUES.includes( value ) ? value : '';
+		return 'string' === typeof value && ATTACHMENT_VALUES.includes( value )
+			? value
+			: '';
 	}
 	// ObjectPosition + Position share the same free-form position grammar.
 	return resolvePosition( value );
@@ -128,7 +149,12 @@ export function validate( value, base = 'ObjectPosition' ) {
  *                                   gated — see the module docblock.
  * @return {{state: string, hiddenReason: (string|null)}}
  */
-function legacyDisclosure( { attributes = {}, prefix = '', blockSlug = '', scope = 'element' } = {} ) {
+function legacyDisclosure( {
+	attributes = {},
+	prefix = '',
+	blockSlug = '',
+	scope = 'element',
+} = {} ) {
 	if ( 'element' !== scope ) {
 		return { state: 'shown', hiddenReason: null };
 	}
@@ -178,13 +204,19 @@ export function disclosure( attrs, device, prefix = '', opts = {} ) {
 			if ( ! c.boxCrops ) {
 				return disabled( REASONS.noCrop );
 			}
-			return 'fill' === c.get( 'ObjectFit' ) ? disabled( REASONS.focalFill ) : undefined;
+			return 'fill' === c.get( 'ObjectFit' )
+				? disabled( REASONS.focalFill )
+				: undefined;
 		}
 		if ( 'Position' === base ) {
 			return c.background && media ? undefined : omitted();
 		}
 		if ( 'Repeat' === base ) {
-			return c.background && kindIn( c, 'image' ) && 'tile' === c.get( 'Size' ) ? shown() : omitted();
+			return c.background &&
+				kindIn( c, 'image' ) &&
+				'tile' === c.get( 'Size' )
+				? shown()
+				: omitted();
 		}
 		if ( ! ( c.background && kindIn( c, 'image' ) ) ) {
 			return omitted();
@@ -233,13 +265,26 @@ function normaliseTierValue( raw ) {
 export function emit( slot, attrs, uid, helper ) {
 	const { media } = nodes( slot, uid, helper );
 	const rules = {};
-	emitPlain( rules, attrs, slot, 'Focal', media, 'object-position', ( point ) => {
-		if ( ! point || 'object' !== typeof point || ! isNumeric( point.x ) || ! isNumeric( point.y ) ) {
-			return '';
+	emitPlain(
+		rules,
+		attrs,
+		slot,
+		'Focal',
+		media,
+		'object-position',
+		( point ) => {
+			if (
+				! point ||
+				'object' !== typeof point ||
+				! isNumeric( point.x ) ||
+				! isNumeric( point.y )
+			) {
+				return '';
+			}
+			const x = Math.max( 0, Math.min( 1, Number( point.x ) ) ) * 100;
+			const y = Math.max( 0, Math.min( 1, Number( point.y ) ) ) * 100;
+			return `${ num( x ) }% ${ num( y ) }%`;
 		}
-		const x = Math.max( 0, Math.min( 1, Number( point.x ) ) ) * 100;
-		const y = Math.max( 0, Math.min( 1, Number( point.y ) ) ) * 100;
-		return `${ num( x ) }% ${ num( y ) }%`;
-	} );
+	);
 	return rulesCss( rules );
 }

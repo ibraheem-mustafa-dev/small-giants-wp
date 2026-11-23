@@ -82,7 +82,9 @@ function successLifetime() {
 	if ( ! toast || state.reduceMotion ) {
 		return AUTO_CLOSE_MS;
 	}
-	const raw = String( window.getComputedStyle( toast ).animationDuration || '' );
+	const raw = String(
+		window.getComputedStyle( toast ).animationDuration || ''
+	);
 	const first = raw.split( ',' )[ 0 ].trim();
 	const seconds = first.endsWith( 'ms' )
 		? parseFloat( first ) / 1000
@@ -140,16 +142,18 @@ function hostToast() {
 		return;
 	}
 
-	const open = [ ...document.querySelectorAll( 'dialog[open]' ) ].filter( ( d ) => {
-		// `:modal` is what distinguishes showModal() from show(); only the
-		// former takes the top layer. Older engines that do not know the
-		// selector throw, and there the open dialog is the best guess.
-		try {
-			return d.matches( ':modal' );
-		} catch {
-			return true;
+	const open = [ ...document.querySelectorAll( 'dialog[open]' ) ].filter(
+		( d ) => {
+			// `:modal` is what distinguishes showModal() from show(); only the
+			// former takes the top layer. Older engines that do not know the
+			// selector throw, and there the open dialog is the best guess.
+			try {
+				return d.matches( ':modal' );
+			} catch {
+				return true;
+			}
 		}
-	} );
+	);
 	const dialog = open[ open.length - 1 ] || null;
 
 	if ( dialog ) {

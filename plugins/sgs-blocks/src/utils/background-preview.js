@@ -2,7 +2,6 @@ import { resolveColourToken } from '../components/DesignTokenPicker';
 import { sanitiseSvg } from './sanitise-svg';
 import { surfaceBackdropPreview, wrapperToneClass } from './surface-preview';
 
-
 /**
  * Shared editor-canvas mirror of the container/composite background stack —
  * background image / video, overlay (colour or gradient, opacity, blend
@@ -34,24 +33,37 @@ import { surfaceBackdropPreview, wrapperToneClass } from './surface-preview';
 /** A CSS gradient function (what `sgs_css_gradient_value()` accepts). */
 const CSS_GRADIENT = /^(repeating-)?(linear|radial|conic)-gradient\(/i;
 /** The same, as the whole value with no `; { } < >`, for CSS text written into a stylesheet. */
-const CSS_GRADIENT_WHOLE = /^(repeating-)?(linear|radial|conic)-gradient\([^;{}<>]*\)$/i;
+const CSS_GRADIENT_WHOLE =
+	/^(repeating-)?(linear|radial|conic)-gradient\([^;{}<>]*\)$/i;
 
 /**
  * Is this value a CSS gradient function?
  *
- * @param {*}       value               Stored attribute value.
+ * @param {*}       value                 Stored attribute value.
  * @param {Object}  [options]
  * @param {boolean} [options.whole=false] Require the whole value to be one gradient that is
  *                                        safe to write into a stylesheet.
  * @return {boolean} True for a linear/radial/conic (or repeating) gradient.
  */
 export function isCssGradient( value, { whole = false } = {} ) {
-	return 'string' === typeof value && ( whole ? CSS_GRADIENT_WHOLE : CSS_GRADIENT ).test( value.trim() );
+	return (
+		'string' === typeof value &&
+		( whole ? CSS_GRADIENT_WHOLE : CSS_GRADIENT ).test( value.trim() )
+	);
 }
 
 export const OVERLAY_BLEND_MODES = [
-	'multiply', 'screen', 'overlay', 'darken', 'lighten', 'color-dodge',
-	'color-burn', 'soft-light', 'hard-light', 'difference', 'exclusion',
+	'multiply',
+	'screen',
+	'overlay',
+	'darken',
+	'lighten',
+	'color-dodge',
+	'color-burn',
+	'soft-light',
+	'hard-light',
+	'difference',
+	'exclusion',
 ];
 
 /**
@@ -128,7 +140,9 @@ export function borderPaintPreview( colour, gradient, palette ) {
 	const style = {};
 	if ( colour ) {
 		const resolved = resolveColourToken( colour, palette );
-		if ( resolved ) style.borderColor = resolved;
+		if ( resolved ) {
+			style.borderColor = resolved;
+		}
 	}
 	if ( isCssGradient( gradient ) ) {
 		style.borderImage = `${ gradient } 1`;
@@ -148,7 +162,7 @@ export function borderPaintPreview( colour, gradient, palette ) {
  * @param {string}        colour    `backgroundOverlayColour` attribute value.
  * @param {string}        gradient  `overlayGradient` attribute value.
  * @param {number|string} opacity   `backgroundOverlayOpacity`, 0-100. 100/empty/
- *                                   null emits no opacity override (CSS default).
+ *                                  null emits no opacity override (CSS default).
  * @param {string}        blendMode `backgroundOverlayBlendMode` attribute value.
  * @param {Array}         palette   Active theme colour palette.
  * @return {{hasOverlay: boolean, vars: Object}} CSS custom properties for the
@@ -156,7 +170,13 @@ export function borderPaintPreview( colour, gradient, palette ) {
  *                   `hasOverlay` flag — `{}` / `false` when there is nothing
  *                   to paint, mirroring the PHP helper's `''`.
  */
-export function overlayPaintPreview( colour, gradient, opacity, blendMode, palette ) {
+export function overlayPaintPreview(
+	colour,
+	gradient,
+	opacity,
+	blendMode,
+	palette
+) {
 	const paint = backgroundPaintPreview( colour, gradient, palette );
 	if ( ! paint.backgroundImage && ! paint.backgroundColor ) {
 		return { hasOverlay: false, vars: {} };
@@ -166,13 +186,21 @@ export function overlayPaintPreview( colour, gradient, opacity, blendMode, palet
 		'--sgs-ed-overlay-colour': paint.backgroundColor || 'transparent',
 	};
 	const numericOpacity = parseFloat( opacity );
-	if ( '' !== opacity && null != opacity && ! Number.isNaN( numericOpacity ) ) {
+	if (
+		'' !== opacity &&
+		null != opacity &&
+		! Number.isNaN( numericOpacity )
+	) {
 		const pct = Math.max( 0, Math.min( 100, numericOpacity ) );
 		if ( 100 !== pct ) {
 			vars[ '--sgs-ed-overlay-opacity' ] = pct / 100;
 		}
 	}
-	if ( blendMode && 'normal' !== blendMode && OVERLAY_BLEND_MODES.includes( blendMode ) ) {
+	if (
+		blendMode &&
+		'normal' !== blendMode &&
+		OVERLAY_BLEND_MODES.includes( blendMode )
+	) {
 		vars[ '--sgs-ed-overlay-blend' ] = blendMode;
 	}
 	return { hasOverlay: true, vars };
@@ -213,25 +241,30 @@ export function tierBackgroundImageUrl( desktop, tablet, mobile, tier ) {
  * a themed placeholder colour stands in for it instead, matching
  * `sgs/container`'s original behaviour exactly.
  *
- * @param {Object} attributes    Full block attributes object — pass the
- *                                 block's own `attributes` verbatim.
- * @param {Array}  colourPalette Active theme colour palette
- *                                 (`useSettings('color.palette')`).
+ * @param {Object} attributes        Full block attributes object — pass the
+ *                                   block's own `attributes` verbatim.
+ * @param {Array}  colourPalette     Active theme colour palette
+ *                                   (`useSettings('color.palette')`).
  * @param {Array}  [gradientPresets] Active theme gradient presets
- *                                 (`useSettings('color.gradients')`). Optional,
- *                                 defaults to `[]` — with no list given, a
- *                                 PRESET gradient (`var(--wp--preset--gradient--slug)`
- *                                 or a bare slug) cannot be resolved to its
- *                                 stops, so `surfaceToneClass()` yields unknown
- *                                 (no class) for that case; a LITERAL gradient
- *                                 function string still resolves regardless.
- * @param {string} [tier]      Previewed device tier (`usePreviewTier()`). The
- *                                 tablet/mobile image replaces the desktop one on
- *                                 the same media layer, as the wrapper's
- *                                 `@media` overrides do. Defaults to desktop.
+ *                                   (`useSettings('color.gradients')`). Optional,
+ *                                   defaults to `[]` — with no list given, a
+ *                                   PRESET gradient (`var(--wp--preset--gradient--slug)`
+ *                                   or a bare slug) cannot be resolved to its
+ *                                   stops, so `surfaceToneClass()` yields unknown
+ *                                   (no class) for that case; a LITERAL gradient
+ *                                   function string still resolves regardless.
+ * @param {string} [tier]            Previewed device tier (`usePreviewTier()`). The
+ *                                   tablet/mobile image replaces the desktop one on
+ *                                   the same media layer, as the wrapper's
+ *                                   `@media` overrides do. Defaults to desktop.
  * @return {{style: Object, hasBgMedia: boolean, hasOverlay: boolean, className: string}}
  */
-export function backgroundPreview( attributes, colourPalette, gradientPresets = [], tier = 'desktop' ) {
+export function backgroundPreview(
+	attributes,
+	colourPalette,
+	gradientPresets = [],
+	tier = 'desktop'
+) {
 	const {
 		backgroundImage,
 		backgroundImageTablet,
@@ -266,11 +299,17 @@ export function backgroundPreview( attributes, colourPalette, gradientPresets = 
 		// painted on the element, MIRRORING the frontend (Phase 1, 2026-08-08).
 		// The editor is the surface clients actually work in, so it has to agree.
 		...( hasBgMedia && {
-			'--sgs-ed-bg-image': `url(${ tierBackgroundImageUrl( backgroundImage, backgroundImageTablet, backgroundImageMobile, tier ) })`,
+			'--sgs-ed-bg-image': `url(${ tierBackgroundImageUrl(
+				backgroundImage,
+				backgroundImageTablet,
+				backgroundImageMobile,
+				tier
+			) })`,
 			'--sgs-ed-bg-size': backgroundSize || 'cover',
 			'--sgs-ed-bg-position': backgroundPosition || 'center center',
 			'--sgs-ed-bg-repeat': backgroundRepeat || 'no-repeat',
-			'--sgs-ed-bg-attachment': backgroundAttachment === 'fixed' ? 'fixed' : 'scroll',
+			'--sgs-ed-bg-attachment':
+				backgroundAttachment === 'fixed' ? 'fixed' : 'scroll',
 		} ),
 		...( hasBgVideo && {
 			// Show a teal placeholder in editor when video is set
@@ -289,7 +328,11 @@ export function backgroundPreview( attributes, colourPalette, gradientPresets = 
 	};
 
 	// The same surface-tone class the wrapper adds on the page.
-	const toneClass = wrapperToneClass( attributes, colourPalette, gradientPresets );
+	const toneClass = wrapperToneClass(
+		attributes,
+		colourPalette,
+		gradientPresets
+	);
 
 	// Gate the ::before media layer / ::after overlay layer on marker classes
 	// so the pseudo-elements exist ONLY on instances that actually have
@@ -365,10 +408,18 @@ export function svgBackgroundPreview( attributes ) {
 	// server-side block sits behind (class-sgs-container-wrapper.php:975).
 	const hasSvg = !! ( bgSvgContent && String( bgSvgContent ).trim() );
 	if ( ! hasSvg ) {
-		return { hasSvg: false, className: [], style: {}, markup: '', position: 'background' };
+		return {
+			hasSvg: false,
+			className: [],
+			style: {},
+			markup: '',
+			position: 'background',
+		};
 	}
 
-	const position = SVG_POSITIONS.includes( bgSvgPosition ) ? bgSvgPosition : 'background';
+	const position = SVG_POSITIONS.includes( bgSvgPosition )
+		? bgSvgPosition
+		: 'background';
 
 	// `absint()` server-side: negatives become their absolute value, non-numeric
 	// becomes 0. Mirrored rather than clamped so an out-of-range value shows the

@@ -78,7 +78,15 @@ import { useContext, useState } from '@wordpress/element';
 import { useInstanceId } from '@wordpress/compose';
 import { __, sprintf } from '@wordpress/i18n';
 import { useSettings } from '@wordpress/block-editor';
-import { BaseControl, Button, Flex, FlexBlock, FlexItem, RangeControl, SelectControl } from '@wordpress/components';
+import {
+	BaseControl,
+	Button,
+	Flex,
+	FlexBlock,
+	FlexItem,
+	RangeControl,
+	SelectControl,
+} from '@wordpress/components';
 import {
 	Icon,
 	link as linkIcon,
@@ -140,7 +148,9 @@ const KEY_ICONS = {
  * @return {Object} The all-corners icon for a radius, the all-sides icon otherwise.
  */
 function allIconFor( keys ) {
-	return keys.some( ( k ) => k.startsWith( 'top' ) && k !== 'top' ) ? cornerAll : sidesAll;
+	return keys.some( ( k ) => k.startsWith( 'top' ) && k !== 'top' )
+		? cornerAll
+		: sidesAll;
 }
 
 /**
@@ -218,51 +228,51 @@ export function parseLength( raw ) {
 }
 
 /**
- * @param {Object}   props
- * @param {string}   props.label     Field label (BaseControl heading).
- * @param {Object}   [props.values]  { top, right, bottom, left } — each a
- *                                   CSS length string or absent.
- * @param {Function} props.onChange  Receives the next full box object.
- * @param {ReadonlyArray<string>} [props.sides=ALL_SIDES] Restrict to a
- *                                   subset of sides (e.g. block-start/end
- *                                   in future — currently always all 4).
- * @param {Array}    [props.units]   UnitControl unit list.
- * @param {Object}   [props.inherited] { side: value } — what each unset side
- *                                   takes from a wider tier. An unset side shows
- *                                   it as placeholder text and the slider rests
- *                                   at it; nothing is written until the client
- *                                   types (`utils/inherited-box.js`).
- * @param {Object}   [props.defaults] { side: value } — the default the block
- *                                   declares for each untouched side, a spacing
- *                                   preset var() or a literal length
- *                                   (`utils/spacing-defaults.js`). An unset side
- *                                   that inherits nothing from a wider tier
- *                                   shows it exactly as an inherited value
- *                                   ("Default (M)" / "Default (20px)", and the
- *                                   size as placeholder); nothing is written.
- * @param {boolean}  [props.splitOnAxis=false] Offer the paired Vertical / Horizontal
- *                                   state between linked and each side. OPT-IN;
- *                                   ignored unless all four sides are requested.
- * @param {Object}   [props.labels]  { side: label } — names for non-side keys
- *                                   (the four corners of a radius).
- * @param {number}   [props.min]     RangeControl minimum override. Omit to
- *                                   use the per-unit range in UNIT_RANGES.
- * @param {number}   [props.max]     RangeControl maximum override. Omit to
- *                                   use the per-unit range in UNIT_RANGES.
- * @param {boolean|ReadonlyArray<string>} [props.presets=false] Offer the
- *                                   theme.json spacing-scale dropdown per
- *                                   side. OPT-IN, default OFF — see file
- *                                   header. `true` offers the FULL scale;
- *                                   an array of spacing slugs (e.g.
- *                                   `[ 'XXS', 'XS', 'S' ]`, D-2026-08-27
- *                                   box-control-presets-rollout) restricts
- *                                   the dropdown to that subset — for a
- *                                   property like border-width where the
- *                                   full XXS-XXXL ladder is nonsensical.
- *                                   Falls back to the plain control when the
- *                                   active theme declares no spacing scale
- *                                   (or the array resolves to zero matching
- *                                   sizes), same as SgsLengthControl.
+ * @param {Object}                        props
+ * @param {string}                        props.label               Field label (BaseControl heading).
+ * @param {Object}                        [props.values]            { top, right, bottom, left } — each a
+ *                                                                  CSS length string or absent.
+ * @param {Function}                      props.onChange            Receives the next full box object.
+ * @param {ReadonlyArray<string>}         [props.sides=ALL_SIDES]   Restrict to a
+ *                                                                  subset of sides (e.g. block-start/end
+ *                                                                  in future — currently always all 4).
+ * @param {Array}                         [props.units]             UnitControl unit list.
+ * @param {Object}                        [props.inherited]         { side: value } — what each unset side
+ *                                                                  takes from a wider tier. An unset side shows
+ *                                                                  it as placeholder text and the slider rests
+ *                                                                  at it; nothing is written until the client
+ *                                                                  types (`utils/inherited-box.js`).
+ * @param {Object}                        [props.defaults]          { side: value } — the default the block
+ *                                                                  declares for each untouched side, a spacing
+ *                                                                  preset var() or a literal length
+ *                                                                  (`utils/spacing-defaults.js`). An unset side
+ *                                                                  that inherits nothing from a wider tier
+ *                                                                  shows it exactly as an inherited value
+ *                                                                  ("Default (M)" / "Default (20px)", and the
+ *                                                                  size as placeholder); nothing is written.
+ * @param {boolean}                       [props.splitOnAxis=false] Offer the paired Vertical / Horizontal
+ *                                                                  state between linked and each side. OPT-IN;
+ *                                                                  ignored unless all four sides are requested.
+ * @param {Object}                        [props.labels]            { side: label } — names for non-side keys
+ *                                                                  (the four corners of a radius).
+ * @param {number}                        [props.min]               RangeControl minimum override. Omit to
+ *                                                                  use the per-unit range in UNIT_RANGES.
+ * @param {number}                        [props.max]               RangeControl maximum override. Omit to
+ *                                                                  use the per-unit range in UNIT_RANGES.
+ * @param {boolean|ReadonlyArray<string>} [props.presets=false]     Offer the
+ *                                                                  theme.json spacing-scale dropdown per
+ *                                                                  side. OPT-IN, default OFF — see file
+ *                                                                  header. `true` offers the FULL scale;
+ *                                                                  an array of spacing slugs (e.g.
+ *                                                                  `[ 'XXS', 'XS', 'S' ]`, D-2026-08-27
+ *                                                                  box-control-presets-rollout) restricts
+ *                                                                  the dropdown to that subset — for a
+ *                                                                  property like border-width where the
+ *                                                                  full XXS-XXXL ladder is nonsensical.
+ *                                                                  Falls back to the plain control when the
+ *                                                                  active theme declares no spacing scale
+ *                                                                  (or the array resolves to zero matching
+ *                                                                  sizes), same as SgsLengthControl.
  * @return {JSX.Element} Controls fragment.
  */
 export default function SgsBoxControl( {
@@ -295,13 +305,16 @@ export default function SgsBoxControl( {
 	const filteredSizes = allowedSlugs
 		? spacingSizes.filter( ( s ) => allowedSlugs.includes( s.slug ) )
 		: spacingSizes;
-	const hasPresets = ( presets === true || Array.isArray( presets ) ) && filteredSizes.length > 0;
+	const hasPresets =
+		( presets === true || Array.isArray( presets ) ) &&
+		filteredSizes.length > 0;
 
 	// What an unset side paints: a wider tier's value first, else the block's declared default.
 	const unsetValue = ( key ) => inherited[ key ] || defaults?.[ key ] || '';
 
 	// The paired mode needs the four sides of a box; a radius's corners never pair.
-	const canSplit = splitOnAxis && ALL_SIDES.every( ( s ) => sides.includes( s ) );
+	const canSplit =
+		splitOnAxis && ALL_SIDES.every( ( s ) => sides.includes( s ) );
 
 	// 'linked' (one row) | 'axial' (Vertical and Horizontal; the linked state when `splitOnAxis` is on) | 'sides'.
 	// Starts linked only when every side reads the same, counting what an unset side inherits; with the paired mode
@@ -309,7 +322,10 @@ export default function SgsBoxControl( {
 	const [ mode, setMode ] = useState( () => {
 		const shown = ( s ) => values[ s ] || unsetValue( s );
 		if ( canSplit ) {
-			return shown( 'top' ) === shown( 'bottom' ) && shown( 'left' ) === shown( 'right' ) ? 'axial' : 'sides';
+			return shown( 'top' ) === shown( 'bottom' ) &&
+				shown( 'left' ) === shown( 'right' )
+				? 'axial'
+				: 'sides';
 		}
 		const raw = sides.map( shown );
 		return raw.every( ( v ) => v === raw[ 0 ] ) ? 'linked' : 'sides';
@@ -321,11 +337,14 @@ export default function SgsBoxControl( {
 	// Rows whose select the client set to Custom… before typing a value (keyed by side, 'linked' for the linked row).
 	const [ customRows, setCustomRows ] = useState( {} );
 	const setRowCustom = ( rowKey, on ) =>
-		setCustomRows( ( prev ) => ( !! prev[ rowKey ] === on ? prev : { ...prev, [ rowKey ]: on } ) );
+		setCustomRows( ( prev ) =>
+			!! prev[ rowKey ] === on ? prev : { ...prev, [ rowKey ]: on }
+		);
 
 	// What an unset row takes from a wider tier or, failing that, the block's declared default: the side's own,
 	// the axis's first side's, or the first side's on the linked row. '' when the row has its own value.
-	const inheritedFor = ( sideKey, value ) => ( value ? '' : unsetValue( sideKey || firstSide ) );
+	const inheritedFor = ( sideKey, value ) =>
+		value ? '' : unsetValue( sideKey || firstSide );
 
 	const setSide = ( side, raw ) => {
 		onChange( { ...values, [ side ]: raw } );
@@ -354,7 +373,10 @@ export default function SgsBoxControl( {
 			return [ { key: 'linked', covers: sides } ];
 		}
 		if ( 'axial' === forMode ) {
-			return Object.entries( AXES ).map( ( [ key, covers ] ) => ( { key, covers } ) );
+			return Object.entries( AXES ).map( ( [ key, covers ] ) => ( {
+				key,
+				covers,
+			} ) );
 		}
 		return sides.map( ( s ) => ( { key: s, covers: [ s ] } ) );
 	};
@@ -368,7 +390,13 @@ export default function SgsBoxControl( {
 			const fromRows = rowsOf( from );
 			fromRows.forEach( ( r ) => delete next[ r.key ] );
 			rowsOf( to ).forEach( ( r ) => {
-				if ( fromRows.some( ( f ) => prev[ f.key ] && f.covers.some( ( s ) => r.covers.includes( s ) ) ) ) {
+				if (
+					fromRows.some(
+						( f ) =>
+							prev[ f.key ] &&
+							f.covers.some( ( s ) => r.covers.includes( s ) )
+					)
+				) {
 					next[ r.key ] = true;
 				}
 			} );
@@ -387,7 +415,10 @@ export default function SgsBoxControl( {
 				// the axes already agree.
 				const top = values.top ?? '';
 				const left = values.left ?? '';
-				if ( ( values.bottom ?? '' ) !== top || ( values.right ?? '' ) !== left ) {
+				if (
+					( values.bottom ?? '' ) !== top ||
+					( values.right ?? '' ) !== left
+				) {
 					onChange( { ...values, bottom: top, right: left } );
 				}
 			} else {
@@ -402,7 +433,9 @@ export default function SgsBoxControl( {
 		setMode( nextMode );
 	};
 
-	const linkLabel = isLinked ? __( 'Unlink sides', 'sgs-blocks' ) : __( 'Link sides', 'sgs-blocks' );
+	const linkLabel = isLinked
+		? __( 'Unlink sides', 'sgs-blocks' )
+		: __( 'Link sides', 'sgs-blocks' );
 	const linkButtonIcon = isLinked ? linkIcon : linkOffIcon;
 
 	const explicitRange = min !== undefined || max !== undefined;
@@ -419,7 +452,11 @@ export default function SgsBoxControl( {
 	);
 
 	const rowIcon = ( sideKey, axis ) => {
-		const icon = axis ? AXIS_ICONS[ axis ] : sideKey ? KEY_ICONS[ sideKey ] : allIconFor( sides );
+		const icon = axis
+			? AXIS_ICONS[ axis ]
+			: sideKey
+			? KEY_ICONS[ sideKey ]
+			: allIconFor( sides );
 		return icon ? (
 			<FlexItem className="sgs-box-control__side-icon">
 				<Icon icon={ icon } size={ 24 } />
@@ -430,7 +467,9 @@ export default function SgsBoxControl( {
 	/** What the value box shows for a stored or inherited value: a preset's size, anything else as stored. */
 	const presetSize = ( raw ) => {
 		const slug = presetSlugFromValue( raw );
-		const preset = slug ? filteredSizes.find( ( s ) => s.slug === slug ) : undefined;
+		const preset = slug
+			? filteredSizes.find( ( s ) => s.slug === slug )
+			: undefined;
 		return preset ? preset.size : raw;
 	};
 
@@ -442,7 +481,9 @@ export default function SgsBoxControl( {
 	const presetRow = ( sideKey, value, onSideChange, rowLabel, axis ) => {
 		const rowKey = axis || sideKey || 'linked';
 		const slug = presetSlugFromValue( value );
-		const knownPreset = slug ? filteredSizes.find( ( s ) => s.slug === slug ) : undefined;
+		const knownPreset = slug
+			? filteredSizes.find( ( s ) => s.slug === slug )
+			: undefined;
 		const isUnknownPreset = !! slug && ! knownPreset; // design doc row H
 
 		let selectValue = '';
@@ -456,7 +497,10 @@ export default function SgsBoxControl( {
 
 		// "Default" (value '') is unset: the side paints what the block's stylesheet or a wider tier gives it,
 		// and an inherited value is named in the label. Nothing is written for it.
-		const inheritedRaw = inheritedFor( axis ? AXES[ axis ][ 0 ] : sideKey, value );
+		const inheritedRaw = inheritedFor(
+			axis ? AXES[ axis ][ 0 ] : sideKey,
+			value
+		);
 		const inheritedText = inheritedDefault( inheritedRaw, filteredSizes );
 		const options = [
 			{
@@ -469,7 +513,10 @@ export default function SgsBoxControl( {
 					: __( 'Default', 'sgs-blocks' ),
 				value: '',
 			},
-			...filteredSizes.map( ( s ) => ( { label: s.name || s.slug, value: s.slug } ) ),
+			...filteredSizes.map( ( s ) => ( {
+				label: s.name || s.slug,
+				value: s.slug,
+			} ) ),
 			{ label: __( 'Custom…', 'sgs-blocks' ), value: CUSTOM_VALUE },
 		];
 		if ( isUnknownPreset ) {
@@ -486,7 +533,12 @@ export default function SgsBoxControl( {
 		const { num, unit } = parseLength( presetSize( value ) );
 
 		return (
-			<Flex align="center" gap={ 2 } key={ rowKey } className="sgs-box-control__row">
+			<Flex
+				align="center"
+				gap={ 2 }
+				key={ rowKey }
+				className="sgs-box-control__row"
+			>
 				{ rowIcon( sideKey, axis ) }
 				<FlexBlock>
 					<SelectControl
@@ -513,13 +565,18 @@ export default function SgsBoxControl( {
 								return;
 							}
 							// Row A/B/C/D: literal var() form — see file header.
-							onSideChange( `var(--wp--preset--spacing--${ next })` );
+							onSideChange(
+								`var(--wp--preset--spacing--${ next })`
+							);
 						} }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
 				</FlexBlock>
-				<FlexItem className="sgs-box-control__value" style={ VALUE_BOX_STYLE }>
+				<FlexItem
+					className="sgs-box-control__value"
+					style={ VALUE_BOX_STYLE }
+				>
 					<UnitControl
 						label={ rowLabel }
 						hideLabelFromVision
@@ -549,19 +606,32 @@ export default function SgsBoxControl( {
 			filteredSizes
 		).size;
 		const rest = parseLength( inheritedRaw );
-		const unit = own.num === undefined && rest.num !== undefined ? rest.unit : own.unit;
+		const unit =
+			own.num === undefined && rest.num !== undefined
+				? rest.unit
+				: own.unit;
 		const unitRange = rangeForUnit( unit );
 		const rowMin = explicitRange ? min ?? 0 : unitRange.min;
 		const rowMax = explicitRange ? max ?? 300 : unitRange.max;
 		const rowStep = explicitRange ? 1 : unitRange.step;
 		return (
-			<Flex align="center" gap={ 2 } key={ axis || sideKey || 'linked' } className="sgs-box-control__row">
+			<Flex
+				align="center"
+				gap={ 2 }
+				key={ axis || sideKey || 'linked' }
+				className="sgs-box-control__row"
+			>
 				{ rowIcon( sideKey, axis ) }
-				<FlexItem className="sgs-box-control__value" style={ VALUE_BOX_STYLE }>
+				<FlexItem
+					className="sgs-box-control__value"
+					style={ VALUE_BOX_STYLE }
+				>
 					<UnitControl
 						label={ rowLabel }
 						hideLabelFromVision
-						value={ own.num === undefined ? '' : `${ own.num }${ unit }` }
+						value={
+							own.num === undefined ? '' : `${ own.num }${ unit }`
+						}
 						placeholder={ inheritedRaw }
 						onChange={ ( raw ) => onSideChange( raw ?? '' ) }
 						units={ units }
@@ -590,13 +660,24 @@ export default function SgsBoxControl( {
 	const row = hasPresets ? presetRow : plainRow;
 
 	return (
-		<div className="sgs-box-control" role="group" aria-labelledby={ labelId }>
-			<Flex align="center" justify="space-between" className="sgs-box-control__header">
-				<BaseControl.VisualLabel id={ labelId }>{ label }</BaseControl.VisualLabel>
+		<div
+			className="sgs-box-control"
+			role="group"
+			aria-labelledby={ labelId }
+		>
+			<Flex
+				align="center"
+				justify="space-between"
+				className="sgs-box-control__header"
+			>
+				<BaseControl.VisualLabel id={ labelId }>
+					{ label }
+				</BaseControl.VisualLabel>
 				{ sides.length > 1 && linkButton }
 			</Flex>
 			<VStack spacing={ 2 }>
-				{ 'linked' === mode && row( null, values[ firstSide ] ?? '', setAllSides, label ) }
+				{ 'linked' === mode &&
+					row( null, values[ firstSide ] ?? '', setAllSides, label ) }
 				{ 'axial' === mode &&
 					Object.keys( AXES ).map( ( axis ) =>
 						row(
@@ -609,7 +690,12 @@ export default function SgsBoxControl( {
 					) }
 				{ 'sides' === mode &&
 					sides.map( ( side ) =>
-						row( side, values[ side ] ?? '', ( raw ) => setSide( side, raw ), labels[ side ] ?? side )
+						row(
+							side,
+							values[ side ] ?? '',
+							( raw ) => setSide( side, raw ),
+							labels[ side ] ?? side
+						)
 					) }
 			</VStack>
 		</div>

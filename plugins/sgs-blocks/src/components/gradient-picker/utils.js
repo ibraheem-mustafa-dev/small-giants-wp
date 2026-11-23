@@ -54,13 +54,16 @@ function parseGradientOrNull( candidate ) {
 /**
  * @param {string|undefined} value           The stored gradient string.
  * @param {string|undefined} defaultGradient Gradient to start from when
- *                                            nothing is stored. SGS passes a
- *                                            brand-palette seed here (see
- *                                            `palette-default.js`); core's
- *                                            `DEFAULT_GRADIENT` is the final
- *                                            fallback.
+ *                                           nothing is stored. SGS passes a
+ *                                           brand-palette seed here (see
+ *                                           `palette-default.js`); core's
+ *                                           `DEFAULT_GRADIENT` is the final
+ *                                           fallback.
  */
-export function getGradientAstWithDefault( value, defaultGradient = DEFAULT_GRADIENT ) {
+export function getGradientAstWithDefault(
+	value,
+	defaultGradient = DEFAULT_GRADIENT
+) {
 	// gradientAST will contain the gradient AST as parsed by gradient-parser
 	// npm module. Structure: https://www.npmjs.com/package/gradient-parser#ast.
 	let gradientAST;
@@ -132,7 +135,10 @@ export function getGradientAstWithDefault( value, defaultGradient = DEFAULT_GRAD
 	return { gradientAST, hasGradient };
 }
 
-export function getGradientAstWithControlPoints( gradientAST, newControlPoints ) {
+export function getGradientAstWithControlPoints(
+	gradientAST,
+	newControlPoints
+) {
 	return {
 		...gradientAST,
 		colorStops: newControlPoints.map( ( { position, color, token } ) => {
@@ -201,9 +207,9 @@ export function getStopCssColor( colorStop ) {
  * the picker rather than as a bare custom colour.
  *
  * @param {string} cssColor The stop's resolved CSS colour (from
- *                           getStopCssColor).
+ *                          getStopCssColor).
  * @param {Array}  palette  `color.palette` from `useSettings()` — the same
- *                           shape DesignTokenPicker already reads.
+ *                          shape DesignTokenPicker already reads.
  * @return {{token: string, slug: string}|null} The matched palette token +
  *         slug, or null if this stop is a custom (unlinked) colour.
  */
@@ -220,7 +226,10 @@ export function resolveStopToken( cssColor, palette ) {
 	}
 	const match = palette.find( ( c ) => c.color === cssColor );
 	if ( match ) {
-		return { token: `--wp--preset--color--${ match.slug }`, slug: match.slug };
+		return {
+			token: `--wp--preset--color--${ match.slug }`,
+			slug: match.slug,
+		};
 	}
 	return null;
 }

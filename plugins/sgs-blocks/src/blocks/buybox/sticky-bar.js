@@ -42,16 +42,24 @@ function parseObject( text ) {
 
 /** @param {Element} root The `.sgs-buybox` wrapper. @return {string} The chosen option labels joined with " / ". */
 function chosenOptionsText( root ) {
-	const values = Array.from( root.querySelectorAll( '.sgs-buybox__picker-selected-value' ) )
+	const values = Array.from(
+		root.querySelectorAll( '.sgs-buybox__picker-selected-value' )
+	)
 		.map( ( el ) => el.textContent.trim() )
 		.filter( Boolean );
 	if ( values.length ) {
 		return values.join( ' / ' );
 	}
-	return Array.from( root.querySelectorAll( '.sgs-option-picker input[type="radio"]:checked' ) )
+	return Array.from(
+		root.querySelectorAll(
+			'.sgs-option-picker input[type="radio"]:checked'
+		)
+	)
 		.map( ( input ) => {
 			const label = input.closest( 'label' );
-			const text = label && label.querySelector( '.sgs-option-picker__pill-label' );
+			const text =
+				label &&
+				label.querySelector( '.sgs-option-picker__pill-label' );
 			return text ? text.textContent.trim() : '';
 		} )
 		.filter( Boolean )
@@ -64,8 +72,14 @@ function initStickyBar( root ) {
 		return;
 	}
 	const bar = root.querySelector( '.sgs-buybox__bar' );
-	const control = root.querySelector( '.buybox__cart-form' ) || root.querySelector( '[data-sgs-modal-open]' );
-	if ( ! bar || ! control || 'function' !== typeof window.IntersectionObserver ) {
+	const control =
+		root.querySelector( '.buybox__cart-form' ) ||
+		root.querySelector( '[data-sgs-modal-open]' );
+	if (
+		! bar ||
+		! control ||
+		'function' !== typeof window.IntersectionObserver
+	) {
 		return;
 	}
 	root.dataset.sgsBarInit = '1';
@@ -93,7 +107,10 @@ function initStickyBar( root ) {
 	function apply() {
 		const on = controlAbove && tierIsOn();
 		bar.classList.toggle( 'is-on', on );
-		setStickyBarHeight( bar, on ? Math.ceil( bar.getBoundingClientRect().height ) : 0 );
+		setStickyBarHeight(
+			bar,
+			on ? Math.ceil( bar.getBoundingClientRect().height ) : 0
+		);
 	}
 
 	function refreshVariantLine() {
@@ -108,12 +125,21 @@ function initStickyBar( root ) {
 	}
 
 	function choiceIsIncomplete() {
-		return Array.isArray( seed.axes ) && seed.axes.length > 0 && 0 === variationId;
+		return (
+			Array.isArray( seed.axes ) &&
+			seed.axes.length > 0 &&
+			0 === variationId
+		);
 	}
 
 	function goToPicker() {
-		const pickers = Array.from( root.querySelectorAll( '.sgs-option-picker' ) );
-		const picker = pickers.find( ( el ) => ! el.querySelector( 'input[type="radio"]:checked' ) ) || pickers[ 0 ];
+		const pickers = Array.from(
+			root.querySelectorAll( '.sgs-option-picker' )
+		);
+		const picker =
+			pickers.find(
+				( el ) => ! el.querySelector( 'input[type="radio"]:checked' )
+			) || pickers[ 0 ];
 		if ( ! picker ) {
 			return;
 		}
@@ -126,7 +152,8 @@ function initStickyBar( root ) {
 
 	new window.IntersectionObserver( ( entries ) => {
 		const entry = entries[ entries.length - 1 ];
-		controlAbove = ! entry.isIntersecting && entry.boundingClientRect.top < 0;
+		controlAbove =
+			! entry.isIntersecting && entry.boundingClientRect.top < 0;
 		apply();
 	} ).observe( control );
 
@@ -136,7 +163,12 @@ function initStickyBar( root ) {
 	root.addEventListener( 'sgs:option-selected', ( event ) => {
 		const typeKey = event.detail && event.detail.typeKey;
 		const key = event.detail && event.detail.selectedKey;
-		if ( 'string' === typeof typeKey && typeKey && 'string' === typeof key && key ) {
+		if (
+			'string' === typeof typeKey &&
+			typeKey &&
+			'string' === typeof key &&
+			key
+		) {
 			selections = { ...selections, [ typeKey ]: key };
 			const comboKey = Object.keys( selections )
 				.sort()
@@ -154,15 +186,23 @@ function initStickyBar( root ) {
 	// moment after the event, so follow their text as well.
 	if ( 'function' === typeof window.MutationObserver ) {
 		const watcher = new window.MutationObserver( refreshVariantLine );
-		root.querySelectorAll( '.sgs-buybox__picker-selected-value' ).forEach( ( el ) => {
-			watcher.observe( el, { childList: true, characterData: true, subtree: true } );
-		} );
+		root.querySelectorAll( '.sgs-buybox__picker-selected-value' ).forEach(
+			( el ) => {
+				watcher.observe( el, {
+					childList: true,
+					characterData: true,
+					subtree: true,
+				} );
+			}
+		);
 	}
 
 	const button = bar.querySelector( 'button' );
 	if ( button ) {
 		button.addEventListener( 'click', () => {
-			const opener = root.querySelector( '.buybox__cart-form [data-sgs-modal-open]' );
+			const opener = root.querySelector(
+				'.buybox__cart-form [data-sgs-modal-open]'
+			);
 			if ( opener ) {
 				opener.click();
 				return;

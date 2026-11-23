@@ -154,7 +154,11 @@ function MoveRows( { layer, tier, editor } ) {
 				/>
 			) ) }
 			{ used.includes( 'clip' ) && (
-				<ClipRoundFields layer={ layer } tier={ tier } editor={ editor } />
+				<ClipRoundFields
+					layer={ layer }
+					tier={ tier }
+					editor={ editor }
+				/>
 			) }
 			{ tier === 'desktop' && unused.length > 0 && (
 				<ChoiceAtom

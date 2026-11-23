@@ -29,14 +29,16 @@ import { createContext, kindIn, omitted, shown } from './disclosure-context.js';
 const NOT_ON_BACKGROUNDS = 'Not available on a background.';
 
 /** First answer that is not omitted, else the last one. */
-const firstShown = ( ...states ) => states.find( ( s ) => s && 'omitted' !== s.state ) || states[ states.length - 1 ];
+const firstShown = ( ...states ) =>
+	states.find( ( s ) => s && 'omitted' !== s.state ) ||
+	states[ states.length - 1 ];
 
 /**
- * @param {string} id    Adopted atom id.
- * @param {Object} attrs Block attributes.
+ * @param {string} id     Adopted atom id.
+ * @param {Object} attrs  Block attributes.
  * @param {string} device Device.
  * @param {string} prefix Slot prefix.
- * @param {Object} opts  `{ blockSlug, kinds, context, parallax }`.
+ * @param {Object} opts   `{ blockSlug, kinds, context, parallax }`.
  * @return {Object<string,{state:string,hiddenReason:(string|null)}>} §8 base to state.
  */
 export function adoptedDisclosure( id, attrs, device, prefix = '', opts = {} ) {
@@ -52,16 +54,26 @@ export function adoptedDisclosure( id, attrs, device, prefix = '', opts = {} ) {
 			};
 		case 'meaning': {
 			const m = run( meaningDisclosure );
-			return { Alt: firstShown( m.ImageAlt, m.VideoAlt ), Decorative: m.ImageDecorative };
+			return {
+				Alt: firstShown( m.ImageAlt, m.VideoAlt ),
+				Decorative: m.ImageDecorative,
+			};
 		}
 		case 'object-fit': {
 			const m = run( objectFitDisclosure );
 			const f = run( focalDisclosure );
-			return { Fit: c.background ? m.Size : m.ObjectFit, Repeat: f.Repeat, TileSize: f.Repeat };
+			return {
+				Fit: c.background ? m.Size : m.ObjectFit,
+				Repeat: f.Repeat,
+				TileSize: f.Repeat,
+			};
 		}
 		case 'focal-point': {
 			const f = run( focalDisclosure );
-			return { Focal: c.background ? f.Position : f.ObjectPosition, Pinned: f.Attachment };
+			return {
+				Focal: c.background ? f.Position : f.ObjectPosition,
+				Pinned: f.Attachment,
+			};
 		}
 		case 'media-padding': {
 			const m = run( paddingDisclosure );
@@ -73,17 +85,32 @@ export function adoptedDisclosure( id, attrs, device, prefix = '', opts = {} ) {
 		}
 		case 'opacity': {
 			const m = run( opacityDisclosure );
-			return { Opacity: m.Opacity, Blend: ! c.background && kindIn( c, 'image', 'video' ) ? shown() : omitted() };
+			return {
+				Opacity: m.Opacity,
+				Blend:
+					! c.background && kindIn( c, 'image', 'video' )
+						? shown()
+						: omitted(),
+			};
 		}
 		case 'shadow':
 			return run( shadowDisclosure );
 		case 'svg-presentation': {
 			const m = run( svgDisclosure );
-			const parts = c.background && kindIn( c, 'svg' ) ? shown() : omitted();
-			return { SvgLayer: m.SvgPosition, SvgTextShadow: m.SvgTextShadow, SvgParts: parts, SvgPartsTrigger: parts };
+			const parts =
+				c.background && kindIn( c, 'svg' ) ? shown() : omitted();
+			return {
+				SvgLayer: m.SvgPosition,
+				SvgTextShadow: m.SvgTextShadow,
+				SvgParts: parts,
+				SvgPartsTrigger: parts,
+			};
 		}
 		case 'video-behaviour':
-			return { Playback: kindIn( c, 'video', 'embed' ) ? shown() : omitted(), Captions: kindIn( c, 'video' ) ? shown() : omitted() };
+			return {
+				Playback: kindIn( c, 'video', 'embed' ) ? shown() : omitted(),
+				Captions: kindIn( c, 'video' ) ? shown() : omitted(),
+			};
 		case 'caption':
 			return run( captionDisclosure );
 		case 'link':
@@ -92,15 +119,27 @@ export function adoptedDisclosure( id, attrs, device, prefix = '', opts = {} ) {
 		case 'shape':
 		case 'layout':
 		case 'filter': {
-			const fn = { sizing: sizingDisclosure, shape: shapeDisclosure, layout: layoutDisclosure, filter: filterDisclosure }[ id ];
+			const fn = {
+				sizing: sizingDisclosure,
+				shape: shapeDisclosure,
+				layout: layoutDisclosure,
+				filter: filterDisclosure,
+			}[ id ];
 			const map = fn( attrs, device, prefix );
 			// A base with no rule of its own (the hover and gradient border colours) follows its resting form.
 			map.BorderColourHover = map.BorderColourHover || map.BorderColour;
-			map.BorderColourGradient = map.BorderColourGradient || map.BorderColour;
-			map.BorderColourHoverGradient = map.BorderColourHoverGradient || map.BorderColour;
+			map.BorderColourGradient =
+				map.BorderColourGradient || map.BorderColour;
+			map.BorderColourHoverGradient =
+				map.BorderColourHoverGradient || map.BorderColour;
 			const out = {};
 			Object.keys( map ).forEach( ( base ) => {
-				out[ base ] = c.background || ( 'filter' === id && ! kindIn( c, 'image', 'video', 'svg' ) ) ? omitted( NOT_ON_BACKGROUNDS ) : map[ base ];
+				out[ base ] =
+					c.background ||
+					( 'filter' === id &&
+						! kindIn( c, 'image', 'video', 'svg' ) )
+						? omitted( NOT_ON_BACKGROUNDS )
+						: map[ base ];
 			} );
 			return out;
 		}

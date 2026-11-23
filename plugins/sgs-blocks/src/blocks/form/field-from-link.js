@@ -14,7 +14,9 @@
  * @return {boolean} True when equal ignoring case and surrounding space.
  */
 function same( a, b ) {
-	return String( a ).trim().toLowerCase() === String( b ).trim().toLowerCase();
+	return (
+		String( a ).trim().toLowerCase() === String( b ).trim().toLowerCase()
+	);
 }
 
 /**
@@ -33,7 +35,11 @@ function controlsOf( el ) {
  * @return {string} Its label text.
  */
 function radioLabel( radio ) {
-	const own = radio.id ? document.querySelector( `label[for="${ radio.id.replace( /"/g, '\\"' ) }"]` ) : null;
+	const own = radio.id
+		? document.querySelector(
+				`label[for="${ radio.id.replace( /"/g, '\\"' ) }"]`
+		  )
+		: null;
 	const label = own || radio.closest( 'label' );
 	return label ? label.textContent : '';
 }
@@ -45,7 +51,9 @@ function radioLabel( radio ) {
  */
 function applyTo( control, value ) {
 	if ( control.tagName === 'SELECT' ) {
-		const options = Array.from( control.options ).filter( ( o ) => o.value !== '' );
+		const options = Array.from( control.options ).filter(
+			( o ) => o.value !== ''
+		);
 		const hit =
 			options.find( ( o ) => o.value === value ) ||
 			options.find( ( o ) => same( o.value, value ) ) ||
@@ -58,9 +66,9 @@ function applyTo( control, value ) {
 	}
 	if ( control.type === 'radio' ) {
 		const scope = control.form || document;
-		const group = Array.from( scope.querySelectorAll( 'input[type="radio"]' ) ).filter(
-			( r ) => r.name === control.name
-		);
+		const group = Array.from(
+			scope.querySelectorAll( 'input[type="radio"]' )
+		).filter( ( r ) => r.name === control.name );
 		const hit =
 			group.find( ( r ) => r.value === value ) ||
 			group.find( ( r ) => same( r.value, value ) ) ||
@@ -71,11 +79,16 @@ function applyTo( control, value ) {
 		hit.checked = true;
 		return true;
 	}
-	if ( [ 'checkbox', 'file', 'hidden', 'submit', 'button' ].includes( control.type ) ) {
+	if (
+		[ 'checkbox', 'file', 'hidden', 'submit', 'button' ].includes(
+			control.type
+		)
+	) {
 		return false;
 	}
 	// A value set from script never trips the field's own maxlength, so the link value is held to it here.
-	const capped = control.maxLength > 0 ? value.slice( 0, control.maxLength ) : value;
+	const capped =
+		control.maxLength > 0 ? value.slice( 0, control.maxLength ) : value;
 	if ( control.value === capped ) {
 		return false;
 	}
@@ -104,8 +117,12 @@ export function applyLinkValues( formRoot, search ) {
 		const value = params.get( name );
 		controlsOf( el ).forEach( ( control ) => {
 			if ( applyTo( control, value ) ) {
-				control.dispatchEvent( new Event( 'input', { bubbles: true } ) );
-				control.dispatchEvent( new Event( 'change', { bubbles: true } ) );
+				control.dispatchEvent(
+					new Event( 'input', { bubbles: true } )
+				);
+				control.dispatchEvent(
+					new Event( 'change', { bubbles: true } )
+				);
 			}
 		} );
 	} );

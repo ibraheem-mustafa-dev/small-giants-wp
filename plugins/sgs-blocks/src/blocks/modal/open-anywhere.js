@@ -28,7 +28,9 @@ import { openModal, resolveModalDialog } from './modal-core';
  */
 export function initGenericOpeners() {
 	document.addEventListener( 'click', ( event ) => {
-		const opener = event.target.closest( '[data-sgs-modal-open], a[href^="#"]' );
+		const opener = event.target.closest(
+			'[data-sgs-modal-open], a[href^="#"]'
+		);
 		if ( ! opener ) {
 			return;
 		}
@@ -40,9 +42,10 @@ export function initGenericOpeners() {
 		}
 
 		const explicitId = opener.dataset.sgsModalOpen;
-		const hashId = opener.tagName === 'A' && opener.getAttribute( 'href' )
-			? opener.getAttribute( 'href' ).slice( 1 )
-			: '';
+		const hashId =
+			opener.tagName === 'A' && opener.getAttribute( 'href' )
+				? opener.getAttribute( 'href' ).slice( 1 )
+				: '';
 		const id = explicitId || hashId;
 		if ( ! id ) {
 			return;

@@ -13,10 +13,39 @@ import {
 	Notice,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
-import { IconPicker, IconPreview, ResponsiveBoxControl, SgsColourPanel, SgsLengthControl, fillRow, textRow, SgsBorderControl, resolveColourToken, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, ShadowControl } from '../../components';
-import { colourVar, resolveShadowPreviewComposed, usePreviewTier, typographyPreviewStyle, textPaintPreview, textIndentPreviewCss, sgsBorderPreview } from '../../utils';
+import {
+	IconPicker,
+	IconPreview,
+	ResponsiveBoxControl,
+	SgsColourPanel,
+	SgsLengthControl,
+	fillRow,
+	textRow,
+	SgsBorderControl,
+	resolveColourToken,
+	TypographyControls,
+	ResponsiveOverride,
+	BOX_UNITS,
+	normaliseResponsiveBox,
+	SgsBoxControl,
+	ShadowControl,
+} from '../../components';
+import {
+	colourVar,
+	resolveShadowPreviewComposed,
+	usePreviewTier,
+	typographyPreviewStyle,
+	textPaintPreview,
+	textIndentPreviewCss,
+	sgsBorderPreview,
+} from '../../utils';
 import { buildWrapperStyle } from './preview-style';
-import { ToolsPanel, ToolsPanelItem, ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+import {
+	ToolsPanel,
+	ToolsPanelItem,
+	ToggleGroupControl,
+	ToggleGroupControlOption,
+} from '../../components/primitives';
 import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 import MotionPausePreview from '../../components/MotionPausePreview';
 
@@ -112,7 +141,10 @@ function resolveIcon( attrs ) {
 const NOTICE_BANNER_TEMPLATE = [
 	[
 		'sgs/text',
-		{ text: __( 'Write your notice message here.', 'sgs-blocks' ), tag: 'p' },
+		{
+			text: __( 'Write your notice message here.', 'sgs-blocks' ),
+			tag: 'p',
+		},
 	],
 ];
 
@@ -160,7 +192,8 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		( select ) =>
 			select( 'core/block-editor' )
 				.getBlocks( clientId )
-				.filter( ( block ) => 'sgs/notice-message' === block.name ).length,
+				.filter( ( block ) => 'sgs/notice-message' === block.name )
+				.length,
 		[ clientId ]
 	);
 	const canRotate = messageChildCount >= 2;
@@ -183,25 +216,44 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	// against the notice-banner's own background. When the background is a gradient,
 	// the flat backgroundColour is not rendered, so skip the check in that case.
 	const noticeBannerContrastAgainst =
-		backgroundColour && ! backgroundColourGradient
-			? backgroundColour
-			: '';
+		backgroundColour && ! backgroundColourGradient ? backgroundColour : '';
 
 	const previewTier = usePreviewTier();
-	const indentPreviewCss = textIndentPreviewCss( attributes, '', `#block-${ clientId }`, previewTier );
+	const indentPreviewCss = textIndentPreviewCss(
+		attributes,
+		'',
+		`#block-${ clientId }`,
+		previewTier
+	);
 	const [ colourPalette ] = useSettings( 'color.palette' );
 	// render.php paints the rotation arrows with arrowColour (base state).
-	const arrowStyle = textPaintPreview( attributes.arrowColour, '', colourPalette );
+	const arrowStyle = textPaintPreview(
+		attributes.arrowColour,
+		'',
+		colourPalette
+	);
 	const blockProps = useBlockProps( {
 		className,
 		style: {
-			...buildWrapperStyle( attributes, previewTier, colourPalette, isAnnouncement ),
-			...typographyPreviewStyle( { textAlign: attributes.textAlign }, '', previewTier ),
+			...buildWrapperStyle(
+				attributes,
+				previewTier,
+				colourPalette,
+				isAnnouncement
+			),
+			...typographyPreviewStyle(
+				{ textAlign: attributes.textAlign },
+				'',
+				previewTier
+			),
 		},
 	} );
-	const innerBlocksProps = useInnerBlocksProps( {}, {
-		template: NOTICE_BANNER_TEMPLATE,
-	} );
+	const innerBlocksProps = useInnerBlocksProps(
+		{},
+		{
+			template: NOTICE_BANNER_TEMPLATE,
+		}
+	);
 	const resolved = resolveIcon( attributes );
 	const usingDefault = ! ( iconSource && attributes.iconName );
 
@@ -220,11 +272,24 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 				width: `${ iconCircleSize }px`,
 				height: `${ iconCircleSize }px`,
 				borderRadius: iconCircleBorderRadius || '50%',
-				backgroundColor: colourVar( iconCircleBackground ) || 'var(--wp--preset--color--surface, #FAF9F6)',
+				backgroundColor:
+					colourVar( iconCircleBackground ) ||
+					'var(--wp--preset--color--surface, #FAF9F6)',
 				backgroundImage: iconCircleBackgroundGradient || 'none',
 				// The circle's stylesheet gives no width, so the border paints only beside a chosen width.
-				...sgsBorderPreview( { widthValues: iconCircleBorderWidth, styleValue: iconCircleBorderStyle, colourValue: iconCircleBorderColour }, 'desktop' ),
-				boxShadow: resolveShadowPreviewComposed( iconCircleShadow, iconCircleShadowColour ) || 'none',
+				...sgsBorderPreview(
+					{
+						widthValues: iconCircleBorderWidth,
+						styleValue: iconCircleBorderStyle,
+						colourValue: iconCircleBorderColour,
+					},
+					'desktop'
+				),
+				boxShadow:
+					resolveShadowPreviewComposed(
+						iconCircleShadow,
+						iconCircleShadowColour
+					) || 'none',
 		  }
 		: undefined;
 
@@ -278,21 +343,29 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: iconColour,
-								onChange: ( val ) => setAttributes( { iconColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( { iconColour: val ?? '' } ),
 								linked: true,
 								gradientValue: iconColourGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { iconColourGradient: val ?? '' } ),
+									setAttributes( {
+										iconColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: iconColourHover,
-								onChange: ( val ) => setAttributes( { iconColourHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										iconColourHover: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: iconColourHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { iconColourHoverGradient: val ?? '' } ),
+									setAttributes( {
+										iconColourHoverGradient: val ?? '',
+									} ),
 							},
 						],
 					},
@@ -308,21 +381,33 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: iconCircleBackground,
-								onChange: ( val ) => setAttributes( { iconCircleBackground: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										iconCircleBackground: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: iconCircleBackgroundGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { iconCircleBackgroundGradient: val ?? '' } ),
+									setAttributes( {
+										iconCircleBackgroundGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: attributes.iconCircleBackgroundHover,
-								onChange: ( val ) => setAttributes( { iconCircleBackgroundHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										iconCircleBackgroundHover: val ?? '',
+									} ),
 								linked: true,
-								gradientValue: attributes.iconCircleBackgroundHoverGradient,
+								gradientValue:
+									attributes.iconCircleBackgroundHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { iconCircleBackgroundHoverGradient: val ?? '' } ),
+									setAttributes( {
+										iconCircleBackgroundHoverGradient:
+											val ?? '',
+									} ),
 							},
 						],
 					},
@@ -331,7 +416,10 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					canRotate && 'rotate' === messageMode && showMessageArrows
 						? fillRow( {
 								key: 'arrowColour',
-								label: __( 'Rotation arrow colour', 'sgs-blocks' ),
+								label: __(
+									'Rotation arrow colour',
+									'sgs-blocks'
+								),
 								attrs: {
 									base: 'arrowColour',
 									hover: 'arrowColourHover',
@@ -347,352 +435,509 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 				   ToolsPanel's own "Banner settings" title with no
 				   initialOpen, so the client saw the same words twice for
 				   no collapse benefit (Spec 35 A5 note). */ }
-					<ToolsPanel
-						label={ __( 'Banner settings', 'sgs-blocks' ) }
-						resetAll={ () =>
-							setAttributes( {
-								displayMode: 'inline',
-								stickyPosition: 'top',
-								dismissible: false,
-								dismissBehaviour: 'session',
-								variant: 'info',
-								showIcon: true,
-								iconSource: '',
-								iconName: '',
-								iconColour: '',
-								iconSize: 20,
-								iconStyle: 'bare',
-								iconCircleSize: 44,
-								iconCircleBackground: 'surface',
-								iconCircleBorderRadius: '',
-								iconCircleShadow: 'none',
-							} )
+				<ToolsPanel
+					label={ __( 'Banner settings', 'sgs-blocks' ) }
+					resetAll={ () =>
+						setAttributes( {
+							displayMode: 'inline',
+							stickyPosition: 'top',
+							dismissible: false,
+							dismissBehaviour: 'session',
+							variant: 'info',
+							showIcon: true,
+							iconSource: '',
+							iconName: '',
+							iconColour: '',
+							iconSize: 20,
+							iconStyle: 'bare',
+							iconCircleSize: 44,
+							iconCircleBackground: 'surface',
+							iconCircleBorderRadius: '',
+							iconCircleShadow: 'none',
+						} )
+					}
+				>
+					<ToolsPanelItem
+						label={ __( 'Display mode', 'sgs-blocks' ) }
+						hasValue={ () => displayMode !== 'inline' }
+						onDeselect={ () =>
+							setAttributes( { displayMode: 'inline' } )
 						}
+						isShownByDefault
 					>
-						<ToolsPanelItem
+						<SelectControl
 							label={ __( 'Display mode', 'sgs-blocks' ) }
-							hasValue={ () => displayMode !== 'inline' }
-							onDeselect={ () => setAttributes( { displayMode: 'inline' } ) }
-							isShownByDefault
-						>
-							<SelectControl
-								label={ __( 'Display mode', 'sgs-blocks' ) }
-								help={ __(
-									'Inline is a rounded card within the page flow. Full-width strip runs edge to edge with square corners (a header top bar). Announcement bar is fixed to the top or bottom of the viewport.',
-									'sgs-blocks'
-								) }
-								value={ displayMode }
-								options={ DISPLAY_MODE_OPTIONS }
-								onChange={ ( val ) =>
-									setAttributes(
-										'bar' === val && ! attributes.align
-											? { displayMode: val, align: 'full' }
-											: { displayMode: val }
-									)
+							help={ __(
+								'Inline is a rounded card within the page flow. Full-width strip runs edge to edge with square corners (a header top bar). Announcement bar is fixed to the top or bottom of the viewport.',
+								'sgs-blocks'
+							) }
+							value={ displayMode }
+							options={ DISPLAY_MODE_OPTIONS }
+							onChange={ ( val ) =>
+								setAttributes(
+									'bar' === val && ! attributes.align
+										? { displayMode: val, align: 'full' }
+										: { displayMode: val }
+								)
+							}
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
+					{ isAnnouncement && (
+						<>
+							<ToolsPanelItem
+								label={ __( 'Position', 'sgs-blocks' ) }
+								hasValue={ () => stickyPosition !== 'top' }
+								onDeselect={ () =>
+									setAttributes( { stickyPosition: 'top' } )
 								}
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						</ToolsPanelItem>
-						{ isAnnouncement && (
-							<>
-								<ToolsPanelItem
+							>
+								<SelectControl
 									label={ __( 'Position', 'sgs-blocks' ) }
-									hasValue={ () => stickyPosition !== 'top' }
-									onDeselect={ () => setAttributes( { stickyPosition: 'top' } ) }
+									value={ stickyPosition }
+									options={ STICKY_POSITION_OPTIONS }
+									onChange={ ( val ) =>
+										setAttributes( { stickyPosition: val } )
+									}
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+							</ToolsPanelItem>
+							<ToolsPanelItem
+								label={ __( 'Dismissible', 'sgs-blocks' ) }
+								hasValue={ () => dismissible !== false }
+								onDeselect={ () =>
+									setAttributes( { dismissible: false } )
+								}
+							>
+								<ToggleControl
+									label={ __( 'Dismissible', 'sgs-blocks' ) }
+									help={ __(
+										'Shows a close button so visitors can hide the bar.',
+										'sgs-blocks'
+									) }
+									checked={ !! dismissible }
+									onChange={ ( val ) =>
+										setAttributes( { dismissible: val } )
+									}
+									__nextHasNoMarginBottom
+								/>
+							</ToolsPanelItem>
+							{ dismissible && (
+								<ToolsPanelItem
+									label={ __(
+										'Dismiss behaviour',
+										'sgs-blocks'
+									) }
+									hasValue={ () =>
+										dismissBehaviour !== 'session'
+									}
+									onDeselect={ () =>
+										setAttributes( {
+											dismissBehaviour: 'session',
+										} )
+									}
 								>
 									<SelectControl
-										label={ __( 'Position', 'sgs-blocks' ) }
-										value={ stickyPosition }
-										options={ STICKY_POSITION_OPTIONS }
-										onChange={ ( val ) => setAttributes( { stickyPosition: val } ) }
+										label={ __(
+											'Dismiss behaviour',
+											'sgs-blocks'
+										) }
+										help={ __(
+											'How long the bar stays hidden after the visitor closes it.',
+											'sgs-blocks'
+										) }
+										value={ dismissBehaviour }
+										options={ DISMISS_BEHAVIOUR_OPTIONS }
+										onChange={ ( val ) =>
+											setAttributes( {
+												dismissBehaviour: val,
+											} )
+										}
 										__nextHasNoMarginBottom
 										__next40pxDefaultSize
 									/>
 								</ToolsPanelItem>
-								<ToolsPanelItem
-									label={ __( 'Dismissible', 'sgs-blocks' ) }
-									hasValue={ () => dismissible !== false }
-									onDeselect={ () => setAttributes( { dismissible: false } ) }
-								>
-									<ToggleControl
-										label={ __( 'Dismissible', 'sgs-blocks' ) }
-										help={ __(
-											'Shows a close button so visitors can hide the bar.',
-											'sgs-blocks'
-										) }
-										checked={ !! dismissible }
-										onChange={ ( val ) => setAttributes( { dismissible: val } ) }
-										__nextHasNoMarginBottom
-									/>
-								</ToolsPanelItem>
-								{ dismissible && (
-									<ToolsPanelItem
-										label={ __( 'Dismiss behaviour', 'sgs-blocks' ) }
-										hasValue={ () => dismissBehaviour !== 'session' }
-										onDeselect={ () => setAttributes( { dismissBehaviour: 'session' } ) }
-									>
-										<SelectControl
-											label={ __( 'Dismiss behaviour', 'sgs-blocks' ) }
-											help={ __(
-												'How long the bar stays hidden after the visitor closes it.',
-												'sgs-blocks'
-											) }
-											value={ dismissBehaviour }
-											options={ DISMISS_BEHAVIOUR_OPTIONS }
-											onChange={ ( val ) =>
-												setAttributes( { dismissBehaviour: val } )
-											}
-											__nextHasNoMarginBottom
-											__next40pxDefaultSize
-										/>
-									</ToolsPanelItem>
-								) }
-								<Notice status="info" isDismissible={ false }>
-									{ __(
-										'Announcement bar is fixed-position on the live site. In the editor it renders inline so you can still edit the content.',
-										'sgs-blocks'
-									) }
-								</Notice>
-							</>
-						) }
-						<ToolsPanelItem
-							label={ __( 'Variant', 'sgs-blocks' ) }
-							hasValue={ () => variant !== 'info' }
-							onDeselect={ () => setAttributes( { variant: 'info' } ) }
-							isShownByDefault
-						>
-							<SelectControl
-								label={ __( 'Variant', 'sgs-blocks' ) }
-								help={ __(
-									'Sets the colour and a fitting default icon.',
+							) }
+							<Notice status="info" isDismissible={ false }>
+								{ __(
+									'Announcement bar is fixed-position on the live site. In the editor it renders inline so you can still edit the content.',
 									'sgs-blocks'
 								) }
-								value={ variant }
-								options={ VARIANT_OPTIONS }
-								onChange={ ( val ) => setAttributes( { variant: val } ) }
+							</Notice>
+						</>
+					) }
+					<ToolsPanelItem
+						label={ __( 'Variant', 'sgs-blocks' ) }
+						hasValue={ () => variant !== 'info' }
+						onDeselect={ () =>
+							setAttributes( { variant: 'info' } )
+						}
+						isShownByDefault
+					>
+						<SelectControl
+							label={ __( 'Variant', 'sgs-blocks' ) }
+							help={ __(
+								'Sets the colour and a fitting default icon.',
+								'sgs-blocks'
+							) }
+							value={ variant }
+							options={ VARIANT_OPTIONS }
+							onChange={ ( val ) =>
+								setAttributes( { variant: val } )
+							}
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Show icon', 'sgs-blocks' ) }
+						hasValue={ () => showIcon !== true }
+						onDeselect={ () => setAttributes( { showIcon: true } ) }
+						isShownByDefault
+					>
+						<ToggleControl
+							label={ __( 'Show icon', 'sgs-blocks' ) }
+							checked={ !! showIcon }
+							onChange={ ( val ) =>
+								setAttributes( { showIcon: val } )
+							}
+							__nextHasNoMarginBottom
+						/>
+					</ToolsPanelItem>
+					{ showIcon && (
+						<ToolsPanelItem
+							label={ __( 'Icon', 'sgs-blocks' ) }
+							hasValue={ () =>
+								!! iconSource ||
+								!! attributes.iconName ||
+								!! iconColour
+							}
+							onDeselect={ () =>
+								setAttributes( {
+									iconSource: '',
+									iconName: '',
+									iconColour: '',
+								} )
+							}
+						>
+							<IconPicker
+								label={ __(
+									'Icon (overrides the variant default)',
+									'sgs-blocks'
+								) }
+								value={ resolved }
+								onChange={ ( { source, name } ) =>
+									setAttributes( {
+										iconSource: source,
+										iconName: name,
+									} )
+								}
+							/>
+							{ ! usingDefault && (
+								<ToggleControl
+									label={ __(
+										"Use the variant's default icon",
+										'sgs-blocks'
+									) }
+									checked={ false }
+									onChange={ () =>
+										setAttributes( {
+											iconSource: '',
+											iconName: '',
+										} )
+									}
+									help={ __(
+										'Reset to the icon that matches the chosen variant.',
+										'sgs-blocks'
+									) }
+									__nextHasNoMarginBottom
+								/>
+							) }
+							{ /* Icon colour moved to the top-level SgsColourPanel (D618/D621). */ }
+							<RangeControl
+								label={ __( 'Icon size (px)', 'sgs-blocks' ) }
+								value={ iconSize }
+								onChange={ ( val ) =>
+									setAttributes( { iconSize: val ?? 20 } )
+								}
+								min={ 8 }
+								max={ 96 }
+								step={ 2 }
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Show icon', 'sgs-blocks' ) }
-							hasValue={ () => showIcon !== true }
-							onDeselect={ () => setAttributes( { showIcon: true } ) }
-							isShownByDefault
-						>
-							<ToggleControl
-								label={ __( 'Show icon', 'sgs-blocks' ) }
-								checked={ !! showIcon }
-								onChange={ ( val ) => setAttributes( { showIcon: val } ) }
+							<ToggleGroupControl
+								label={ __( 'Icon style', 'sgs-blocks' ) }
+								value={ iconStyle }
+								onChange={ ( val ) =>
+									setAttributes( { iconStyle: val } )
+								}
+								isBlock
 								__nextHasNoMarginBottom
-							/>
-						</ToolsPanelItem>
-						{ showIcon && (
-							<ToolsPanelItem
-								label={ __( 'Icon', 'sgs-blocks' ) }
-								hasValue={ () =>
-									!! iconSource || !! attributes.iconName || !! iconColour
-								}
-								onDeselect={ () =>
-									setAttributes( { iconSource: '', iconName: '', iconColour: '' } )
-								}
+								__next40pxDefaultSize
 							>
-								<IconPicker
-									label={ __( 'Icon (overrides the variant default)', 'sgs-blocks' ) }
-									value={ resolved }
-									onChange={ ( { source, name } ) =>
-										setAttributes( { iconSource: source, iconName: name } )
-									}
+								<ToggleGroupControlOption
+									value="bare"
+									label={ __( 'Bare', 'sgs-blocks' ) }
 								/>
-								{ ! usingDefault && (
-									<ToggleControl
-										label={ __( "Use the variant's default icon", 'sgs-blocks' ) }
-										checked={ false }
-										onChange={ () =>
-											setAttributes( { iconSource: '', iconName: '' } )
-										}
-										help={ __(
-											'Reset to the icon that matches the chosen variant.',
-											'sgs-blocks'
-										) }
-										__nextHasNoMarginBottom
-									/>
-								) }
-								{ /* Icon colour moved to the top-level SgsColourPanel (D618/D621). */ }
-								<RangeControl
-									label={ __( 'Icon size (px)', 'sgs-blocks' ) }
-									value={ iconSize }
-									onChange={ ( val ) => setAttributes( { iconSize: val ?? 20 } ) }
-									min={ 8 }
-									max={ 96 }
-									step={ 2 }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
+								<ToggleGroupControlOption
+									value="circle"
+									label={ __( 'Circle', 'sgs-blocks' ) }
 								/>
-								<ToggleGroupControl
-									label={ __( 'Icon style', 'sgs-blocks' ) }
-									value={ iconStyle }
-									onChange={ ( val ) => setAttributes( { iconStyle: val } ) }
-									isBlock
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								>
-									<ToggleGroupControlOption value="bare" label={ __( 'Bare', 'sgs-blocks' ) } />
-									<ToggleGroupControlOption value="circle" label={ __( 'Circle', 'sgs-blocks' ) } />
-								</ToggleGroupControl>
-								{ /* Badge controls (iconStyle:'circle' only) — replicate
+							</ToggleGroupControl>
+							{ /* Badge controls (iconStyle:'circle' only) — replicate
 								     sgs/trust-bar's own icon-circle Appearance panel
 								     (trust-bar/edit.js:1130-1201) exactly: size,
 								     border-radius, border, shadow. Background +
 								     hover live in the top-level SgsColourPanel above,
 								     matching trust-bar's 2026-08-30 consolidation. */ }
-								{ isIconCircle && (
-									<>
-										<RangeControl
-											label={ __( 'Icon badge size (px)', 'sgs-blocks' ) }
-											value={ iconCircleSize }
-											onChange={ ( val ) => setAttributes( { iconCircleSize: val ?? 44 } ) }
-											min={ 24 }
-											max={ 96 }
-											step={ 2 }
-											__nextHasNoMarginBottom
-											__next40pxDefaultSize
-										/>
-										<SgsLengthControl
-											presets={ false }
-											label={ __( 'Icon badge border radius', 'sgs-blocks' ) }
-											value={ iconCircleBorderRadius }
-											onChange={ ( val ) => setAttributes( { iconCircleBorderRadius: val || '' } ) }
-											units={ [
-												{ value: '%', label: '%', default: 50 },
-												{ value: 'px', label: 'px', default: 8 },
-												{ value: 'rem', label: 'rem', default: 0.5 },
-												{ value: 'em', label: 'em', default: 0.5 },
-											] }
-											help={ __( '50% makes a circle; a px value makes a rounded square.', 'sgs-blocks' ) }
-										/>
-										<SgsBorderControl
-											label={ __( 'Icon badge border width', 'sgs-blocks' ) }
-											widthValues={ iconCircleBorderWidth ?? {} }
-											onWidthChange={ ( next ) => setAttributes( { iconCircleBorderWidth: next } ) }
-											styleValue={ iconCircleBorderStyle }
-											onStyleChange={ ( val ) => setAttributes( { iconCircleBorderStyle: val ?? '' } ) }
-											colourLabel={ __( 'Icon badge border colour', 'sgs-blocks' ) }
-											colourValue={ iconCircleBorderColour }
-											onColourChange={ ( val ) => setAttributes( { iconCircleBorderColour: val ?? '' } ) }
-											colourLinked={ true }
-											contrastAgainst={ colourVar( iconCircleBackground ) }
-										/>
-										<ShadowControl
-											label={ __( 'Icon badge shadow', 'sgs-blocks' ) }
-											attributes={ attributes }
-											setAttributes={ setAttributes }
-											attrNames={ {
-												base: 'iconCircleShadow',
-												colour: 'iconCircleShadowColour',
-												hoverColour: 'iconCircleShadowColourHover',
-											} }
-										/>
-									</>
-								) }
-							</ToolsPanelItem>
-						) }
-					</ToolsPanel>
-					{ /* U-15 §3.2: two or more sgs/notice-message children switch
+							{ isIconCircle && (
+								<>
+									<RangeControl
+										label={ __(
+											'Icon badge size (px)',
+											'sgs-blocks'
+										) }
+										value={ iconCircleSize }
+										onChange={ ( val ) =>
+											setAttributes( {
+												iconCircleSize: val ?? 44,
+											} )
+										}
+										min={ 24 }
+										max={ 96 }
+										step={ 2 }
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+									<SgsLengthControl
+										presets={ false }
+										label={ __(
+											'Icon badge border radius',
+											'sgs-blocks'
+										) }
+										value={ iconCircleBorderRadius }
+										onChange={ ( val ) =>
+											setAttributes( {
+												iconCircleBorderRadius:
+													val || '',
+											} )
+										}
+										units={ [
+											{
+												value: '%',
+												label: '%',
+												default: 50,
+											},
+											{
+												value: 'px',
+												label: 'px',
+												default: 8,
+											},
+											{
+												value: 'rem',
+												label: 'rem',
+												default: 0.5,
+											},
+											{
+												value: 'em',
+												label: 'em',
+												default: 0.5,
+											},
+										] }
+										help={ __(
+											'50% makes a circle; a px value makes a rounded square.',
+											'sgs-blocks'
+										) }
+									/>
+									<SgsBorderControl
+										label={ __(
+											'Icon badge border width',
+											'sgs-blocks'
+										) }
+										widthValues={
+											iconCircleBorderWidth ?? {}
+										}
+										onWidthChange={ ( next ) =>
+											setAttributes( {
+												iconCircleBorderWidth: next,
+											} )
+										}
+										styleValue={ iconCircleBorderStyle }
+										onStyleChange={ ( val ) =>
+											setAttributes( {
+												iconCircleBorderStyle:
+													val ?? '',
+											} )
+										}
+										colourLabel={ __(
+											'Icon badge border colour',
+											'sgs-blocks'
+										) }
+										colourValue={ iconCircleBorderColour }
+										onColourChange={ ( val ) =>
+											setAttributes( {
+												iconCircleBorderColour:
+													val ?? '',
+											} )
+										}
+										colourLinked={ true }
+										contrastAgainst={ colourVar(
+											iconCircleBackground
+										) }
+									/>
+									<ShadowControl
+										label={ __(
+											'Icon badge shadow',
+											'sgs-blocks'
+										) }
+										attributes={ attributes }
+										setAttributes={ setAttributes }
+										attrNames={ {
+											base: 'iconCircleShadow',
+											colour: 'iconCircleShadowColour',
+											hoverColour:
+												'iconCircleShadowColourHover',
+										} }
+									/>
+								</>
+							) }
+						</ToolsPanelItem>
+					) }
+				</ToolsPanel>
+				{ /* U-15 §3.2: two or more sgs/notice-message children switch
 					   the banner into rotate/random mode. Fewer than two, the
 					   controls stay hidden and the banner renders static — a
 					   Notice explains the missing precondition instead of a
 					   dead control. */ }
-					<PanelBody title={ __( 'Messages', 'sgs-blocks' ) } initialOpen={ false }>
-						{ ! canRotate && (
-							<Notice status="info" isDismissible={ false }>
-								{ __(
-									'Add two or more Message blocks to rotate.',
+				<PanelBody
+					title={ __( 'Messages', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					{ ! canRotate && (
+						<Notice status="info" isDismissible={ false }>
+							{ __(
+								'Add two or more Message blocks to rotate.',
+								'sgs-blocks'
+							) }
+						</Notice>
+					) }
+					{ canRotate && (
+						<>
+							<ToggleGroupControl
+								label={ __( 'Message mode', 'sgs-blocks' ) }
+								value={ messageMode }
+								onChange={ ( val ) =>
+									setAttributes( { messageMode: val } )
+								}
+								isBlock
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							>
+								{ MESSAGE_MODE_OPTIONS.map( ( option ) => (
+									<ToggleGroupControlOption
+										key={ option.value }
+										value={ option.value }
+										label={ option.label }
+									/>
+								) ) }
+							</ToggleGroupControl>
+							{ 'rotate' === messageMode && (
+								<>
+									<RangeControl
+										label={ __(
+											'Rotate every (seconds)',
+											'sgs-blocks'
+										) }
+										value={ rotateInterval }
+										onChange={ ( val ) =>
+											setAttributes( {
+												rotateInterval: val ?? 5,
+											} )
+										}
+										min={ 2 }
+										max={ 30 }
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+									<ToggleControl
+										label={ __(
+											'Show previous/next arrows',
+											'sgs-blocks'
+										) }
+										checked={ !! showMessageArrows }
+										onChange={ ( val ) =>
+											setAttributes( {
+												showMessageArrows: val,
+											} )
+										}
+										__nextHasNoMarginBottom
+									/>
+									<ToggleControl
+										label={ __(
+											'Pause on hover',
+											'sgs-blocks'
+										) }
+										help={ __(
+											'Keyboard focus inside the banner always pauses it.',
+											'sgs-blocks'
+										) }
+										checked={ pauseOnHover !== false }
+										onChange={ ( val ) =>
+											setAttributes( {
+												pauseOnHover: val,
+											} )
+										}
+										__nextHasNoMarginBottom
+									/>
+									<ToggleControl
+										label={ __(
+											'Show pause button',
+											'sgs-blocks'
+										) }
+										help={ __(
+											'Adds a pause/play button. Needed for WCAG 2.2.2 on sites that must meet it, such as public-sector clients.',
+											'sgs-blocks'
+										) }
+										checked={ !! pauseButton }
+										onChange={ ( val ) =>
+											setAttributes( {
+												pauseButton: val,
+											} )
+										}
+										__nextHasNoMarginBottom
+									/>
+								</>
+							) }
+							<ToggleGroupControl
+								label={ __( 'Transition', 'sgs-blocks' ) }
+								value={ messageTransition }
+								onChange={ ( val ) =>
+									setAttributes( { messageTransition: val } )
+								}
+								help={ __(
+									'A message change is instant for visitors who prefer reduced motion.',
 									'sgs-blocks'
 								) }
-							</Notice>
-						) }
-						{ canRotate && (
-							<>
-								<ToggleGroupControl
-									label={ __( 'Message mode', 'sgs-blocks' ) }
-									value={ messageMode }
-									onChange={ ( val ) => setAttributes( { messageMode: val } ) }
-									isBlock
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								>
-									{ MESSAGE_MODE_OPTIONS.map( ( option ) => (
+								isBlock
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							>
+								{ MESSAGE_TRANSITION_OPTIONS.map(
+									( option ) => (
 										<ToggleGroupControlOption
 											key={ option.value }
 											value={ option.value }
 											label={ option.label }
 										/>
-									) ) }
-								</ToggleGroupControl>
-								{ 'rotate' === messageMode && (
-									<>
-										<RangeControl
-											label={ __( 'Rotate every (seconds)', 'sgs-blocks' ) }
-											value={ rotateInterval }
-											onChange={ ( val ) =>
-												setAttributes( { rotateInterval: val ?? 5 } )
-											}
-											min={ 2 }
-											max={ 30 }
-											__nextHasNoMarginBottom
-											__next40pxDefaultSize
-										/>
-										<ToggleControl
-											label={ __( 'Show previous/next arrows', 'sgs-blocks' ) }
-											checked={ !! showMessageArrows }
-											onChange={ ( val ) =>
-												setAttributes( { showMessageArrows: val } )
-											}
-											__nextHasNoMarginBottom
-										/>
-										<ToggleControl
-											label={ __( 'Pause on hover', 'sgs-blocks' ) }
-											help={ __( 'Keyboard focus inside the banner always pauses it.', 'sgs-blocks' ) }
-											checked={ pauseOnHover !== false }
-											onChange={ ( val ) =>
-												setAttributes( { pauseOnHover: val } )
-											}
-											__nextHasNoMarginBottom
-										/>
-										<ToggleControl
-											label={ __( 'Show pause button', 'sgs-blocks' ) }
-											help={ __( 'Adds a pause/play button. Needed for WCAG 2.2.2 on sites that must meet it, such as public-sector clients.', 'sgs-blocks' ) }
-											checked={ !! pauseButton }
-											onChange={ ( val ) =>
-												setAttributes( { pauseButton: val } )
-											}
-											__nextHasNoMarginBottom
-										/>
-									</>
+									)
 								) }
-								<ToggleGroupControl
-									label={ __( 'Transition', 'sgs-blocks' ) }
-									value={ messageTransition }
-									onChange={ ( val ) =>
-										setAttributes( { messageTransition: val } )
-									}
-									help={ __(
-										'A message change is instant for visitors who prefer reduced motion.',
-										'sgs-blocks'
-									) }
-									isBlock
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								>
-									{ MESSAGE_TRANSITION_OPTIONS.map( ( option ) => (
-										<ToggleGroupControlOption key={ option.value } value={ option.value } label={ option.label } />
-									) ) }
-								</ToggleGroupControl>
-							</>
-						) }
-					</PanelBody>
+							</ToggleGroupControl>
+						</>
+					) }
+				</PanelBody>
 			</InspectorControls>
 
 			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
@@ -713,8 +958,22 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 				   D812 (2026-08-26): a 5-option enum with longest rendered
 				   label <=12 chars ("— inherit —", 11 chars) renders as
 				   ToggleGroupControl, not SelectControl. */ }
-				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
-					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextStroke showTextColumns showTextIndent showWritingMode
+				<PanelBody
+					title={ __( 'Typography', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<TypographyControls
+						fontSizePresets
+						showFontFamily
+						showDecoration
+						showTransform
+						showLetterSpacing
+						showTextAlign
+						showTextWrap
+						showTextStroke
+						showTextColumns
+						showTextIndent
+						showWritingMode
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						prefix=""
@@ -727,68 +986,115 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 				     read directly by this block's render.php; only shown in inline
 				     mode — announcement mode is always full-width + fixed. */ }
 				{ ! isAnnouncement && (
-					<PanelBody title={ __( 'Wrapper', 'sgs-blocks' ) } initialOpen={ false }>
+					<PanelBody
+						title={ __( 'Wrapper', 'sgs-blocks' ) }
+						initialOpen={ false }
+					>
 						<SgsLengthControl
 							presets={ false }
 							label={ __( 'Outer max-width', 'sgs-blocks' ) }
 							value={ maxWidth || '' }
 							units={ LENGTH_UNITS }
-							onChange={ ( val ) => setAttributes( { maxWidth: val ?? '' } ) }
-							help={ __( 'Exact CSS length, e.g. 800px. Leave blank for no cap.', 'sgs-blocks' ) }
+							onChange={ ( val ) =>
+								setAttributes( { maxWidth: val ?? '' } )
+							}
+							help={ __(
+								'Exact CSS length, e.g. 800px. Leave blank for no cap.',
+								'sgs-blocks'
+							) }
 						/>
 						<ResponsiveOverride
 							value={ attributes.padding }
-							onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+							onChange={ ( obj ) =>
+								setAttributes( { padding: obj } )
+							}
 						>
 							{ ( { ownValue, setOwnValue } ) => (
 								<SgsBoxControl
 									label={ __( 'Padding', 'sgs-blocks' ) }
-									values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+									values={
+										ownValue && typeof ownValue === 'object'
+											? ownValue
+											: {}
+									}
 									units={ BOX_UNITS }
 									presets
-									defaults={ spacingDefaultsFor( name, 'padding' ) }
-									onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+									defaults={ spacingDefaultsFor(
+										name,
+										'padding'
+									) }
+									onChange={ ( next ) =>
+										setOwnValue(
+											normaliseResponsiveBox( next )
+										)
+									}
 								/>
 							) }
 						</ResponsiveOverride>
 						<ResponsiveOverride
 							value={ attributes.margin }
-							onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+							onChange={ ( obj ) =>
+								setAttributes( { margin: obj } )
+							}
 						>
 							{ ( { ownValue, setOwnValue } ) => (
 								<SgsBoxControl
 									label={ __( 'Margin', 'sgs-blocks' ) }
-									values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+									values={
+										ownValue && typeof ownValue === 'object'
+											? ownValue
+											: {}
+									}
 									units={ BOX_UNITS }
 									presets
-									onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+									onChange={ ( next ) =>
+										setOwnValue(
+											normaliseResponsiveBox( next )
+										)
+									}
 								/>
 							) }
 						</ResponsiveOverride>
 					</PanelBody>
 				) }
-				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Border', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SgsBorderControl
 						widthValues={ attributes.borderWidth ?? {} }
-						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						onWidthChange={ ( next ) =>
+							setAttributes( { borderWidth: next } )
+						}
 						widthPresets={ [ '10', '20', '30' ] }
 						styleValue={ attributes.borderStyle }
-						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						onStyleChange={ ( val ) =>
+							setAttributes( { borderStyle: val } )
+						}
 						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
 						colourValue={ attributes.borderColour }
-						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						onColourChange={ ( val ) =>
+							setAttributes( { borderColour: val ?? '' } )
+						}
 						colourGradientValue={ attributes.borderColourGradient }
-						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+						onColourGradientChange={ ( val ) =>
+							setAttributes( { borderColourGradient: val ?? '' } )
+						}
 						colourLinked={ true }
 						contrastAgainst={ noticeBannerContrastAgainst }
 						radiusValues={ {
-								base: attributes.borderRadius?.desktop ?? {},
-								tablet: attributes.borderRadius?.tablet ?? {},
-								mobile: attributes.borderRadius?.mobile ?? {},
-							} }
+							base: attributes.borderRadius?.desktop ?? {},
+							tablet: attributes.borderRadius?.tablet ?? {},
+							mobile: attributes.borderRadius?.mobile ?? {},
+						} }
 						onRadiusChange={ ( tier, next ) => {
 							const key = tier === 'base' ? 'desktop' : tier;
-							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+							setAttributes( {
+								borderRadius: {
+									...attributes.borderRadius,
+									[ key ]: next,
+								},
+							} );
 						} }
 					/>
 				</PanelBody>
@@ -802,44 +1108,66 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 				{ indentPreviewCss && <style>{ indentPreviewCss }</style> }
 				{ showIcon && (
 					<span
-						className={ isIconCircle ? 'sgs-notice-banner__icon sgs-notice-banner__icon--circle' : 'sgs-notice-banner__icon' }
+						className={
+							isIconCircle
+								? 'sgs-notice-banner__icon sgs-notice-banner__icon--circle'
+								: 'sgs-notice-banner__icon'
+						}
 						aria-hidden="true"
 						style={ {
-							...( iconColour ? { color: colourVar( iconColour ) } : undefined ),
+							...( iconColour
+								? { color: colourVar( iconColour ) }
+								: undefined ),
 							...iconBadgeStyle,
 						} }
 					>
-						<IconPreview source={ resolved.source } name={ resolved.name } size={ iconSize } gradient={ iconColourGradient } />
+						<IconPreview
+							source={ resolved.source }
+							name={ resolved.name }
+							size={ iconSize }
+							gradient={ iconColourGradient }
+						/>
 					</span>
 				) }
 				<div { ...innerBlocksProps } />
 				{ canRotate && 'rotate' === messageMode && pauseButton && (
 					<MotionPausePreview block="sgs-notice-banner" />
 				) }
-				{ canRotate && 'rotate' === messageMode && showMessageArrows && (
-					<>
-						<button
-							className="sgs-notice-banner__arrows sgs-notice-banner__prev"
-							type="button"
-							aria-label={ __( 'Previous announcement', 'sgs-blocks' ) }
-							style={ arrowStyle }
-						>
-							<span aria-hidden="true">&lsaquo;</span>
-						</button>
-						<button
-							className="sgs-notice-banner__arrows sgs-notice-banner__next"
-							type="button"
-							aria-label={ __( 'Next announcement', 'sgs-blocks' ) }
-							style={ arrowStyle }
-						>
-							<span aria-hidden="true">&rsaquo;</span>
-						</button>
-					</>
-				) }
+				{ canRotate &&
+					'rotate' === messageMode &&
+					showMessageArrows && (
+						<>
+							<button
+								className="sgs-notice-banner__arrows sgs-notice-banner__prev"
+								type="button"
+								aria-label={ __(
+									'Previous announcement',
+									'sgs-blocks'
+								) }
+								style={ arrowStyle }
+							>
+								<span aria-hidden="true">&lsaquo;</span>
+							</button>
+							<button
+								className="sgs-notice-banner__arrows sgs-notice-banner__next"
+								type="button"
+								aria-label={ __(
+									'Next announcement',
+									'sgs-blocks'
+								) }
+								style={ arrowStyle }
+							>
+								<span aria-hidden="true">&rsaquo;</span>
+							</button>
+						</>
+					) }
 				{ isAnnouncement && dismissible && (
 					<button
 						className="sgs-notice-banner__close"
-						aria-label={ __( 'Dismiss announcement', 'sgs-blocks' ) }
+						aria-label={ __(
+							'Dismiss announcement',
+							'sgs-blocks'
+						) }
 						type="button"
 					>
 						{ /* × character — decorative; the aria-label carries the accessible name. */ }

@@ -73,7 +73,12 @@ import { mediaStoredAttrName } from '../../MediaElementControls.js';
 import { colourVar } from '../../../utils/tokens.js';
 import { cssLengthValue } from '../../../utils/css-length.js';
 import { MEDIA_ATOMS } from './registry.js';
-import { isLegacyCall, rulesFor, omitted, REASONS } from '../panels/disclosure-context.js';
+import {
+	isLegacyCall,
+	rulesFor,
+	omitted,
+	REASONS,
+} from '../panels/disclosure-context.js';
 
 const ATOM_ID = 'box-shape';
 
@@ -81,7 +86,16 @@ const ATOM_ID = 'box-shape';
  * Border styles this atom accepts — the same allowlist `sgs/before-after`'s
  * render.php enforces for its own block-private border (Shape B).
  */
-const BORDER_STYLES = [ 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' ];
+const BORDER_STYLES = [
+	'solid',
+	'dashed',
+	'dotted',
+	'double',
+	'groove',
+	'ridge',
+	'inset',
+	'outset',
+];
 
 /**
  * Gradient charset/breakout rules, mirrored from `overlay.js`'s
@@ -90,7 +104,8 @@ const BORDER_STYLES = [ 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge'
  * from `sgs_css_gradient_value()` (helpers-tokens.php), which has no JS
  * twin of its own.
  */
-const GRADIENT_PATTERN = /^(repeating-)?(linear|radial|conic)-gradient\([A-Za-z0-9\s.,%()#/_-]+\)$/i;
+const GRADIENT_PATTERN =
+	/^(repeating-)?(linear|radial|conic)-gradient\([A-Za-z0-9\s.,%()#/_-]+\)$/i;
 const GRADIENT_BREAKOUT = /[;{}]|url\s*\(|<|>|@|expression/i;
 
 /**
@@ -145,10 +160,19 @@ export function resolveSizingMode(
 		const heightKey = mediaStoredAttrName( blockSlug, prefix, 'Height' );
 		const resolved = resolveHeight( attributes[ heightKey ] );
 		const tiers = [ 'desktop', 'tablet', 'mobile' ];
-		if ( tiers.some( ( tier ) => '' !== String( ( resolved && resolved[ tier ] ) ?? '' ) ) ) {
+		if (
+			tiers.some(
+				( tier ) =>
+					'' !== String( ( resolved && resolved[ tier ] ) ?? '' )
+			)
+		) {
 			return 'height';
 		}
-		const ratioKey = mediaStoredAttrName( blockSlug, prefix, 'AspectRatio' );
+		const ratioKey = mediaStoredAttrName(
+			blockSlug,
+			prefix,
+			'AspectRatio'
+		);
 		if ( '' !== normaliseRatio( attributes[ ratioKey ] ) ) {
 			return 'ratio';
 		}
@@ -160,7 +184,9 @@ export function resolveSizingMode(
 /** Reject an out-of-vocabulary `Shape` value to `'none'`. */
 export function validateShape( value ) {
 	const vocabulary = MEDIA_ATOMS[ ATOM_ID ].vocabulary.shape;
-	return 'string' === typeof value && vocabulary.includes( value ) ? value : 'none';
+	return 'string' === typeof value && vocabulary.includes( value )
+		? value
+		: 'none';
 }
 
 /**
@@ -297,7 +323,10 @@ function sanitiseLengthString( value ) {
 	const consumed = consumeAllowlistedLengthCalls( value );
 	// Anything left that can break out of a declaration, open a comment, or
 	// is an unconsumed/unbalanced parenthesis → reject.
-	if ( /[\\&=}{;<>()]/.test( consumed ) || consumed.includes( COMMENT_OPEN ) ) {
+	if (
+		/[\\&=}{;<>()]/.test( consumed ) ||
+		consumed.includes( COMMENT_OPEN )
+	) {
 		return '';
 	}
 	return value.trim().replace( /\s+/g, ' ' );
@@ -378,7 +407,9 @@ export function cornerRadiusDecls( corners, suffix ) {
 		)
 		.map(
 			( pair ) =>
-				`--sgs-media-border-${ pair[ 1 ] }-radius${ suffix }:${ toLengthValue( corners[ pair[ 0 ] ] ) }`
+				`--sgs-media-border-${
+					pair[ 1 ]
+				}-radius${ suffix }:${ toLengthValue( corners[ pair[ 0 ] ] ) }`
 		);
 }
 
@@ -399,7 +430,8 @@ export function sidesToWidthShorthand( sides ) {
 	}
 	const order = [ 'top', 'right', 'bottom', 'left' ];
 	const hasAny = order.some(
-		( k ) => undefined !== sides[ k ] && null !== sides[ k ] && '' !== sides[ k ]
+		( k ) =>
+			undefined !== sides[ k ] && null !== sides[ k ] && '' !== sides[ k ]
 	);
 	if ( ! hasAny ) {
 		return '';
@@ -415,7 +447,9 @@ export function sidesToWidthShorthand( sides ) {
 
 /** Reject an out-of-vocabulary `BorderStyle` value to ''. */
 export function validateBorderStyle( value ) {
-	return 'string' === typeof value && BORDER_STYLES.includes( value ) ? value : '';
+	return 'string' === typeof value && BORDER_STYLES.includes( value )
+		? value
+		: '';
 }
 
 /**
@@ -453,15 +487,25 @@ export function resolveBorderColour( value ) {
  * other rows (Shape, min/max/width) are independent of sizing mode.
  *
  * @param {Object} props
- * @param {Object} props.attributes Block attributes.
+ * @param {Object} props.attributes  Block attributes.
  * @param {string} [props.prefix]
  * @param {string} [props.blockSlug]
  * @return {{state: string, hiddenReason: (string|null), mode: string, heightState: string, ratioState: string}}
  */
-function legacyDisclosure( { attributes = {}, prefix = '', blockSlug = '' } = {} ) {
+function legacyDisclosure( {
+	attributes = {},
+	prefix = '',
+	blockSlug = '',
+} = {} ) {
 	const sizingKey = mediaStoredAttrName( blockSlug, prefix, 'MediaSizing' );
 	const fitKey = mediaStoredAttrName( blockSlug, prefix, 'ObjectFit' );
-	const mode = resolveSizingMode( attributes[ sizingKey ], attributes[ fitKey ], attributes, prefix, blockSlug );
+	const mode = resolveSizingMode(
+		attributes[ sizingKey ],
+		attributes[ fitKey ],
+		attributes,
+		prefix,
+		blockSlug
+	);
 	return {
 		state: 'shown',
 		hiddenReason: null,
@@ -516,7 +560,7 @@ export function disclosure( attrs, device, prefix = '', opts = {} ) {
  * point — required by the atom contract
  * (`scripts/check-media-atom-purity.js`).
  *
- * @param {*}      value Raw candidate.
+ * @param {*}      value  Raw candidate.
  * @param {string} [kind] 'shape' (default) | 'sizing' | 'ratio'.
  * @return {string} A vocabulary member / canonical string, never the raw
  *                  out-of-vocabulary input.
@@ -541,7 +585,11 @@ export function validate( value, kind = 'shape' ) {
  * @param {Object}   tiers `{desktop,tablet,mobile}` length strings.
  */
 function pushTierLengths( decls, name, tiers ) {
-	[ [ 'desktop', '' ], [ 'tablet', '-tablet' ], [ 'mobile', '-mobile' ] ].forEach( ( pair ) => {
+	[
+		[ 'desktop', '' ],
+		[ 'tablet', '-tablet' ],
+		[ 'mobile', '-mobile' ],
+	].forEach( ( pair ) => {
 		const val = cssLengthValue( tiers[ pair[ 0 ] ] );
 		if ( val ) {
 			decls.push( `${ name }${ pair[ 1 ] }:${ val }` );

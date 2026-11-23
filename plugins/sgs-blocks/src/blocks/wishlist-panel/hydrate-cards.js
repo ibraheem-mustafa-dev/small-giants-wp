@@ -11,7 +11,8 @@
  */
 import { privateApis } from '@wordpress/interactivity';
 
-const CONSENT = 'I acknowledge that using private APIs means my theme or plugin will inevitably break in the next version of WordPress.';
+const CONSENT =
+	'I acknowledge that using private APIs means my theme or plugin will inevitably break in the next version of WordPress.';
 
 /**
  * The outermost interactive regions inside a container.
@@ -20,7 +21,9 @@ const CONSENT = 'I acknowledge that using private APIs means my theme or plugin 
  * @return {HTMLElement[]} The regions to start.
  */
 export function outerRegions( container ) {
-	return Array.from( container.querySelectorAll( '[data-wp-interactive]' ) ).filter( ( node ) => {
+	return Array.from(
+		container.querySelectorAll( '[data-wp-interactive]' )
+	).filter( ( node ) => {
 		const outer = node.parentElement?.closest( '[data-wp-interactive]' );
 		return ! outer || ! container.contains( outer );
 	} );
@@ -38,7 +41,8 @@ export async function hydrateCards( container ) {
 		return;
 	}
 	try {
-		const { getRegionRootFragment, toVdom, render } = privateApis( CONSENT );
+		const { getRegionRootFragment, toVdom, render } =
+			privateApis( CONSENT );
 		for ( const node of regions ) {
 			if ( ! node.isConnected ) {
 				continue;

@@ -23,9 +23,14 @@ const wired = new WeakSet();
 function labelOf( field, input, wrap = true ) {
 	let label = null;
 	if ( input.id ) {
-		label = 'function' === typeof CSS && CSS.escape
-			? field.querySelector( `label[for="${ CSS.escape( input.id ) }"]` )
-			: Array.from( field.querySelectorAll( 'label' ) ).find( ( candidate ) => candidate.htmlFor === input.id ) || null;
+		label =
+			'function' === typeof CSS && CSS.escape
+				? field.querySelector(
+						`label[for="${ CSS.escape( input.id ) }"]`
+				  )
+				: Array.from( field.querySelectorAll( 'label' ) ).find(
+						( candidate ) => candidate.htmlFor === input.id
+				  ) || null;
 	}
 	return label || ( wrap ? input.closest( 'label' ) : null );
 }
@@ -38,7 +43,9 @@ function labelOf( field, input, wrap = true ) {
  * @return {boolean} True when the field asks its own question.
  */
 function printsOwnQuestion( field ) {
-	return !! field.querySelector( 'legend, .sgs-form-field__label, .sgs-form-field__consent-text, [aria-labelledby]' );
+	return !! field.querySelector(
+		'legend, .sgs-form-field__label, .sgs-form-field__consent-text, [aria-labelledby]'
+	);
 }
 
 /**
@@ -60,7 +67,9 @@ export function fieldValueText( field ) {
 	const selectEl = field.querySelector( 'select' );
 	if ( selectEl && selectEl.value ) {
 		const selectedOption = selectEl.querySelector( 'option:checked' );
-		valueText = selectedOption ? selectedOption.textContent : selectEl.value;
+		valueText = selectedOption
+			? selectedOption.textContent
+			: selectEl.value;
 	}
 
 	const labelFor = ( input ) => {
@@ -73,12 +82,16 @@ export function fieldValueText( field ) {
 		valueText = labelFor( checkedRadio );
 	}
 
-	const checkedBoxes = field.querySelectorAll( 'input[type="checkbox"]:checked' );
+	const checkedBoxes = field.querySelectorAll(
+		'input[type="checkbox"]:checked'
+	);
 	if ( checkedBoxes.length > 0 ) {
 		valueText = Array.from( checkedBoxes ).map( labelFor ).join( ', ' );
 	}
 
-	const checkedTiles = field.querySelectorAll( '.sgs-form-tile input:checked' );
+	const checkedTiles = field.querySelectorAll(
+		'.sgs-form-tile input:checked'
+	);
 	if ( checkedTiles.length > 0 ) {
 		const values = [];
 		checkedTiles.forEach( ( tileInput ) => {
@@ -97,7 +110,10 @@ export function fieldValueText( field ) {
 	}
 
 	const consentCheckbox = field.querySelector( 'input[type="checkbox"]' );
-	if ( field.classList.contains( 'sgs-form-field--consent' ) && consentCheckbox ) {
+	if (
+		field.classList.contains( 'sgs-form-field--consent' ) &&
+		consentCheckbox
+	) {
 		valueText = consentCheckbox.checked ? 'Yes' : 'No';
 	}
 
@@ -132,12 +148,16 @@ function loneCheckbox( field ) {
  * @return {string} Label text, or '' when the field carries none of the three.
  */
 function fallbackLabelText( field ) {
-	const labelled = field.matches( '[aria-label]' ) ? field : field.querySelector( '[aria-label]' );
+	const labelled = field.matches( '[aria-label]' )
+		? field
+		: field.querySelector( '[aria-label]' );
 	const aria = labelled ? labelled.getAttribute( 'aria-label' ).trim() : '';
 	if ( aria ) {
 		return aria;
 	}
-	const dataEl = field.matches( '[data-label]' ) ? field : field.querySelector( '[data-label]' );
+	const dataEl = field.matches( '[data-label]' )
+		? field
+		: field.querySelector( '[data-label]' );
 	const data = dataEl ? dataEl.getAttribute( 'data-label' ).trim() : '';
 	if ( data ) {
 		return data;
@@ -149,8 +169,17 @@ function fallbackLabelText( field ) {
 	if ( words ) {
 		return words.length > 40 ? `${ words.slice( 0, 40 ) }…` : words;
 	}
-	const named = field.querySelector( 'input[name], select[name], textarea[name]' );
-	const name = named ? named.getAttribute( 'name' ).replace( /\[\d*\]$/, '' ).replace( /[-_]+/g, ' ' ).replace( /\s+/g, ' ' ).trim() : '';
+	const named = field.querySelector(
+		'input[name], select[name], textarea[name]'
+	);
+	const name = named
+		? named
+				.getAttribute( 'name' )
+				.replace( /\[\d*\]$/, '' )
+				.replace( /[-_]+/g, ' ' )
+				.replace( /\s+/g, ' ' )
+				.trim()
+		: '';
 	return name ? name.charAt( 0 ).toUpperCase() + name.slice( 1 ) : '';
 }
 
@@ -163,21 +192,37 @@ function fallbackLabelText( field ) {
  */
 export function fieldLabelText( field ) {
 	const consentText = field.querySelector( '.sgs-form-field__consent-text' );
-	let source = consentText || field.querySelector( 'legend.sgs-form-field__label, .sgs-form-field__label' );
+	let source =
+		consentText ||
+		field.querySelector(
+			'legend.sgs-form-field__label, .sgs-form-field__label'
+		);
 	if ( ! source ) {
 		const group = field.querySelector( '[aria-labelledby]' );
-		const ids = group ? group.getAttribute( 'aria-labelledby' ).split( /\s+/ ) : [];
-		source = ids.map( ( id ) => document.getElementById( id ) ).find( Boolean ) || null;
+		const ids = group
+			? group.getAttribute( 'aria-labelledby' ).split( /\s+/ )
+			: [];
+		source =
+			ids
+				.map( ( id ) => document.getElementById( id ) )
+				.find( Boolean ) || null;
 	}
 	if ( ! source ) {
-		source = field.querySelector( 'legend' ) ||
-			field.querySelector( 'label:not(.sgs-form-field__option):not(.sgs-form-tile):not(.screen-reader-text)' );
+		source =
+			field.querySelector( 'legend' ) ||
+			field.querySelector(
+				'label:not(.sgs-form-field__option):not(.sgs-form-tile):not(.screen-reader-text)'
+			);
 	}
 	if ( ! source ) {
 		return fallbackLabelText( field );
 	}
 	const clone = source.cloneNode( true );
-	clone.querySelectorAll( '.sgs-form-field__required, .sgs-form-field__optional, .sgs-sr-only, .screen-reader-text' ).forEach( ( node ) => node.remove() );
+	clone
+		.querySelectorAll(
+			'.sgs-form-field__required, .sgs-form-field__optional, .sgs-sr-only, .screen-reader-text'
+		)
+		.forEach( ( node ) => node.remove() );
 	return clone.textContent.replace( /\s+/g, ' ' ).trim();
 }
 
@@ -193,7 +238,10 @@ function isFieldHidden( field ) {
 		return true;
 	}
 	const inputs = field.querySelectorAll( 'input, select, textarea' );
-	return inputs.length > 0 && Array.from( inputs ).every( ( input ) => input.disabled );
+	return (
+		inputs.length > 0 &&
+		Array.from( inputs ).every( ( input ) => input.disabled )
+	);
 }
 
 /**
@@ -209,7 +257,10 @@ function isStepSkipped( step ) {
 		return true;
 	}
 	const inputs = step.querySelectorAll( 'input, select, textarea' );
-	return inputs.length > 0 && Array.from( inputs ).every( ( input ) => input.disabled );
+	return (
+		inputs.length > 0 &&
+		Array.from( inputs ).every( ( input ) => input.disabled )
+	);
 }
 
 /**
@@ -241,7 +292,9 @@ function answeredRows( scope ) {
  * @param {number}      index    Zero-based step to show.
  */
 export function jumpToStep( formRoot, index ) {
-	const button = formRoot.querySelectorAll( '.sgs-form__progress-step' )[ index ];
+	const button = formRoot.querySelectorAll( '.sgs-form__progress-step' )[
+		index
+	];
 	if ( button ) {
 		button.click();
 	}
@@ -287,7 +340,10 @@ export function populateReview( formRoot, review ) {
 		mount.addEventListener( 'click', ( event ) => {
 			const button = event.target.closest( '.sgs-form-review__edit' );
 			if ( button ) {
-				jumpToStep( formRoot, parseInt( button.getAttribute( 'data-step' ), 10 ) );
+				jumpToStep(
+					formRoot,
+					parseInt( button.getAttribute( 'data-step' ), 10 )
+				);
 			}
 		} );
 	}
@@ -302,10 +358,10 @@ export function populateReview( formRoot, review ) {
 	const ownIndex = ownStep ? steps.indexOf( ownStep ) : steps.length;
 	const sections = steps.length
 		? steps.slice( 0, ownIndex ).map( ( step, index ) => ( {
-			step,
-			index,
-			title: step.getAttribute( 'data-step-label' ) || '',
-		} ) )
+				step,
+				index,
+				title: step.getAttribute( 'data-step-label' ) || '',
+		  } ) )
 		: [ { step: formRoot, index: -1, title: '' } ];
 
 	sections.forEach( ( section ) => {
@@ -332,7 +388,13 @@ export function populateReview( formRoot, review ) {
 			button.type = 'button';
 			button.setAttribute( 'data-step', String( section.index ) );
 			if ( section.title ) {
-				button.appendChild( el( 'span', 'sgs-form-review__edit-context', ' ' + section.title ) );
+				button.appendChild(
+					el(
+						'span',
+						'sgs-form-review__edit-context',
+						' ' + section.title
+					)
+				);
 			}
 			head.appendChild( button );
 		}
@@ -344,7 +406,9 @@ export function populateReview( formRoot, review ) {
 		rows.forEach( ( row ) => {
 			const item = el( 'div', 'sgs-form-review__row' );
 			item.appendChild( el( 'dt', 'sgs-form-review__term', row.label ) );
-			item.appendChild( el( 'dd', 'sgs-form-review__detail', row.value ) );
+			item.appendChild(
+				el( 'dd', 'sgs-form-review__detail', row.value )
+			);
 			list.appendChild( item );
 		} );
 		card.appendChild( list );

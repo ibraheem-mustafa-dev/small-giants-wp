@@ -48,7 +48,11 @@ export default function SlotPicture( {
 } ) {
 	const device = useActiveDevice();
 	const access = slotAccess( attributes, setAttributes, prefix );
-	const shown = resolveTierSource( attributes[ `${ prefix }Source` ], device, hasFile ).value;
+	const shown = resolveTierSource(
+		attributes[ `${ prefix }Source` ],
+		device,
+		hasFile
+	).value;
 	const hasMedia = !! ( shown && ( shown.url || shown.markup ) );
 
 	if ( ! hasMedia ) {
@@ -56,7 +60,15 @@ export default function SlotPicture( {
 			return null;
 		}
 		const pick = ( attachment ) => {
-			access.write( pickPatch( { read: access.read, device, media: attachment, kind: 'image', keepFocal: false } ).patch );
+			access.write(
+				pickPatch( {
+					read: access.read,
+					device,
+					media: attachment,
+					kind: 'image',
+					keepFocal: false,
+				} ).patch
+			);
 		};
 		return (
 			<MediaUploadCheck>
@@ -69,13 +81,26 @@ export default function SlotPicture( {
 		);
 	}
 
-	const { css, needsHelper } = mediaPreview( { prefix, kinds, context }, attributes, uid );
+	const { css, needsHelper } = mediaPreview(
+		{ prefix, kinds, context },
+		attributes,
+		uid
+	);
 	const decorative = !! attributes[ `${ prefix }Decorative` ];
-	const alt = decorative ? '' : shown.alt || attributes[ `${ prefix }Alt` ] || fallbackAlt;
-	const src = shown.url || 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent( shown.markup );
+	const alt = decorative
+		? ''
+		: shown.alt || attributes[ `${ prefix }Alt` ] || fallbackAlt;
+	const src =
+		shown.url ||
+		'data:image/svg+xml;charset=utf-8,' +
+			encodeURIComponent( shown.markup );
 	const image = (
 		<img
-			className={ `sgs-media-el sgs-media sgs-media--renderer ${ needsHelper ? '' : uid } ${ className }`.replace( /\s+/g, ' ' ).trim() }
+			className={ `sgs-media-el sgs-media sgs-media--renderer ${
+				needsHelper ? '' : uid
+			} ${ className }`
+				.replace( /\s+/g, ' ' )
+				.trim() }
 			src={ src }
 			width={ shown.width || undefined }
 			height={ shown.height || undefined }

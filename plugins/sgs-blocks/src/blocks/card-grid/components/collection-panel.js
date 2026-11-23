@@ -28,9 +28,15 @@ const MAX_COUNT = 24;
 const SELECTION_RULE_OPTIONS = [
 	{ value: 'newest', label: __( 'Newest', 'sgs-blocks' ) },
 	{ value: 'featured', label: __( 'Featured / Starred', 'sgs-blocks' ) },
-	{ value: 'most-expensive', label: __( 'Most expensive (price ↓)', 'sgs-blocks' ) },
+	{
+		value: 'most-expensive',
+		label: __( 'Most expensive (price ↓)', 'sgs-blocks' ),
+	},
 	{ value: 'cheapest', label: __( 'Cheapest (price ↑)', 'sgs-blocks' ) },
-	{ value: 'most-popular', label: __( 'Most popular (views ↓)', 'sgs-blocks' ) },
+	{
+		value: 'most-popular',
+		label: __( 'Most popular (views ↓)', 'sgs-blocks' ),
+	},
 	{ value: 'handpicked', label: __( 'Hand-picked', 'sgs-blocks' ) },
 	{ value: 'category', label: __( 'By category', 'sgs-blocks' ) },
 ];
@@ -59,7 +65,10 @@ export default function CollectionPanel( { attributes, setAttributes } ) {
 
 	return (
 		<>
-			<PanelBody title={ __( 'Collection', 'sgs-blocks' ) } initialOpen={ true }>
+			<PanelBody
+				title={ __( 'Collection', 'sgs-blocks' ) }
+				initialOpen={ true }
+			>
 				<SelectControl
 					label={ __( 'Content type', 'sgs-blocks' ) }
 					help={ __(
@@ -68,7 +77,10 @@ export default function CollectionPanel( { attributes, setAttributes } ) {
 					) }
 					value={ contentType || 'sgs_product' }
 					options={ [
-						{ value: 'sgs_product', label: __( 'Products (sgs_product)', 'sgs-blocks' ) },
+						{
+							value: 'sgs_product',
+							label: __( 'Products (sgs_product)', 'sgs-blocks' ),
+						},
 					] }
 					onChange={ ( v ) => setAttributes( { contentType: v } ) }
 					__nextHasNoMarginBottom
@@ -76,7 +88,10 @@ export default function CollectionPanel( { attributes, setAttributes } ) {
 				/>
 				<SelectControl
 					label={ __( 'Selection rule', 'sgs-blocks' ) }
-					help={ __( 'How items are chosen and ordered.', 'sgs-blocks' ) }
+					help={ __(
+						'How items are chosen and ordered.',
+						'sgs-blocks'
+					) }
 					value={ selectionRule || 'newest' }
 					options={ SELECTION_RULE_OPTIONS }
 					onChange={ ( v ) => setAttributes( { selectionRule: v } ) }
@@ -85,7 +100,10 @@ export default function CollectionPanel( { attributes, setAttributes } ) {
 				/>
 				<RangeControl
 					label={ __( 'Number of items', 'sgs-blocks' ) }
-					help={ __( 'Maximum 24 items per page (server-side cap).', 'sgs-blocks' ) }
+					help={ __(
+						'Maximum 24 items per page (server-side cap).',
+						'sgs-blocks'
+					) }
 					value={ count || 12 }
 					min={ 1 }
 					max={ MAX_COUNT }
@@ -125,7 +143,8 @@ export default function CollectionPanel( { attributes, setAttributes } ) {
 					/>
 				) }
 
-				<SgsFreeTextField type="rich"
+				<SgsFreeTextField
+					type="rich"
 					label={ __( 'Empty state message', 'sgs-blocks' ) }
 					help={ __(
 						'Shown on the live site when nothing matches. Leave empty to show nothing; the editor shows a notice instead.',

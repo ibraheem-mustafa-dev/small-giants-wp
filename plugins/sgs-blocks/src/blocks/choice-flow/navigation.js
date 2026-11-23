@@ -49,10 +49,24 @@ import { initPricePanel } from './pricing.js';
 import { initVariation } from './variation.js';
 import { applyDefaultSelections } from './defaults.js';
 import { applyDefaultAnswers } from './flow-routing.js';
-import { ensureNavigationState, restoreFlowState, flowState, getFlowTags } from './flow-persistence.js';
-import { getSteps, advanceModeOf, getActiveResultEl, showStepByIndex } from './flow-steps.js';
+import {
+	ensureNavigationState,
+	restoreFlowState,
+	flowState,
+	getFlowTags,
+} from './flow-persistence.js';
+import {
+	getSteps,
+	advanceModeOf,
+	getActiveResultEl,
+	showStepByIndex,
+} from './flow-steps.js';
 import { showStep } from './flow-inline.js';
-import { handleOptionClick, handleContinueClick, handleBackClick } from './flow-options.js';
+import {
+	handleOptionClick,
+	handleContinueClick,
+	handleBackClick,
+} from './flow-options.js';
 
 export {
 	FLOW_SELECTOR,
@@ -90,9 +104,17 @@ export function initFlow( flowRoot ) {
 	// A flow ending in add to bag or email sends answers that are not
 	// persisted, so it always starts from step 1 rather than resuming
 	// without them.
-	const restored = flowRoot.querySelector( '[data-action="add-to-bag"], [data-action="email"]' ) ? null : restoreFlowState( flowRoot );
+	const restored = flowRoot.querySelector(
+		'[data-action="add-to-bag"], [data-action="email"]'
+	)
+		? null
+		: restoreFlowState( flowRoot );
 
-	if ( restored && restored.stepIndex >= 0 && restored.stepIndex < steps.length ) {
+	if (
+		restored &&
+		restored.stepIndex >= 0 &&
+		restored.stepIndex < steps.length
+	) {
 		flowState.set( flowRoot, {
 			tags: new Set( restored.tags ),
 			history: restored.history,

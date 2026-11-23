@@ -26,14 +26,25 @@ store( 'sgs/product-filter-chips', {
 				return;
 			}
 			const wc = store( WC_FILTERS );
-			const chosen = wc.state.activeFilters.some( ( f ) => f.type === item.type && f.value === item.value );
+			const chosen = wc.state.activeFilters.some(
+				( f ) => f.type === item.type && f.value === item.value
+			);
 			if ( ! chosen ) {
-				wc.actions.removeActiveFiltersBy( ( f ) => f.type === item.type );
+				wc.actions.removeActiveFiltersBy(
+					( f ) => f.type === item.type
+				);
 			}
 			wc.actions.toggle( item );
 		},
 		clearAll( event ) {
-			if ( event.defaultPrevented || event.button || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey ) {
+			if (
+				event.defaultPrevented ||
+				event.button ||
+				event.metaKey ||
+				event.ctrlKey ||
+				event.shiftKey ||
+				event.altKey
+			) {
 				return;
 			}
 			const type = getElement().ref?.dataset?.sgsAllType;

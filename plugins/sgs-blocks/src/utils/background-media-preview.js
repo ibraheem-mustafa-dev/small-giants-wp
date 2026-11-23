@@ -11,15 +11,23 @@
  * @package SGS\Blocks
  */
 import { sanitiseSvg } from './sanitise-svg';
-import { backgroundPaintPreview, overlayPaintPreview } from './background-preview';
+import {
+	backgroundPaintPreview,
+	overlayPaintPreview,
+} from './background-preview';
 import { surfaceBackdropPreview, wrapperToneClass } from './surface-preview';
 
 const DEVICES = [ 'desktop', 'tablet', 'mobile' ];
-const CASCADE = { desktop: [ 'desktop' ], tablet: [ 'tablet', 'desktop' ], mobile: [ 'mobile', 'tablet', 'desktop' ] };
+const CASCADE = {
+	desktop: [ 'desktop' ],
+	tablet: [ 'tablet', 'desktop' ],
+	mobile: [ 'mobile', 'tablet', 'desktop' ],
+};
 const FITS = [ 'cover', 'contain', 'fill', 'none', 'scale-down' ];
 const REPEATS = [ 'repeat', 'repeat-x', 'repeat-y', 'no-repeat' ];
 
-const isEmpty = ( v ) => undefined === v || null === v || '' === v || 'inherit' === v;
+const isEmpty = ( v ) =>
+	undefined === v || null === v || '' === v || 'inherit' === v;
 
 /**
  * A per-device value at a device: its own, else the nearest wider device's. A plain value is the desktop value.
@@ -29,11 +37,17 @@ const isEmpty = ( v ) => undefined === v || null === v || '' === v || 'inherit' 
  * @return {*} The value, or undefined.
  */
 export function valueAt( raw, device = 'desktop' ) {
-	const tiered = raw && 'object' === typeof raw && ! Array.isArray( raw ) && DEVICES.some( ( d ) => d in raw );
+	const tiered =
+		raw &&
+		'object' === typeof raw &&
+		! Array.isArray( raw ) &&
+		DEVICES.some( ( d ) => d in raw );
 	if ( ! tiered ) {
 		return isEmpty( raw ) ? undefined : raw;
 	}
-	const hit = ( CASCADE[ device ] || CASCADE.desktop ).find( ( d ) => ! isEmpty( raw[ d ] ) );
+	const hit = ( CASCADE[ device ] || CASCADE.desktop ).find(
+		( d ) => ! isEmpty( raw[ d ] )
+	);
 	return undefined === hit ? undefined : raw[ hit ];
 }
 
@@ -44,10 +58,18 @@ export function valueAt( raw, device = 'desktop' ) {
  * @return {string} The text, or '' when unset.
  */
 function focalText( focal ) {
-	if ( ! focal || ! Number.isFinite( Number( focal.x ) ) || ! Number.isFinite( Number( focal.y ) ) ) {
+	if (
+		! focal ||
+		! Number.isFinite( Number( focal.x ) ) ||
+		! Number.isFinite( Number( focal.y ) )
+	) {
 		return '';
 	}
-	const pct = ( n ) => `${ Math.round( Math.max( 0, Math.min( 1, Number( n ) ) ) * 10000 ) / 100 }%`;
+	const pct = ( n ) =>
+		`${
+			Math.round( Math.max( 0, Math.min( 1, Number( n ) ) ) * 10000 ) /
+			100
+		}%`;
 	return `${ pct( focal.x ) } ${ pct( focal.y ) }`;
 }
 
@@ -68,20 +90,43 @@ export function backgroundMediaAt( attrs, device = 'desktop' ) {
 	const focal = focalText( valueAt( attrs.backgroundFocal, device ) );
 	const pinned = true === attrs.backgroundPinned;
 	if ( 'svg' === kind ) {
-		const markup = source.markup ? sanitiseSvg( String( source.markup ) ) : '';
-		return markup ? { type: 'svg', markup, fit: 'contain' === fit ? 'contain' : 'cover' } : null;
+		const markup = source.markup
+			? sanitiseSvg( String( source.markup ) )
+			: '';
+		return markup
+			? {
+					type: 'svg',
+					markup,
+					fit: 'contain' === fit ? 'contain' : 'cover',
+			  }
+			: null;
 	}
 	if ( ! source.url ) {
 		return source.id ? { type: 'missing', kind } : null;
 	}
 	if ( 'video' === kind ) {
-		return { type: 'video', url: source.url, poster: source.poster?.url || '', fit: FITS.includes( fit ) ? fit : 'cover', focal };
+		return {
+			type: 'video',
+			url: source.url,
+			poster: source.poster?.url || '',
+			fit: FITS.includes( fit ) ? fit : 'cover',
+			focal,
+		};
 	}
 	if ( 'tile' === fit || pinned ) {
 		const repeat = valueAt( attrs.backgroundRepeat, device );
-		const size = 'tile' === fit ? valueAt( attrs.backgroundTileSize, device ) : undefined;
+		const size =
+			'tile' === fit
+				? valueAt( attrs.backgroundTileSize, device )
+				: undefined;
 		// The same map as includes/media/background-css.php::sgs_bg_media_painted_decls.
-		const PAINTED_SIZE = { cover: 'cover', contain: 'contain', 'scale-down': 'contain', none: 'auto', fill: '100% 100%' };
+		const PAINTED_SIZE = {
+			cover: 'cover',
+			contain: 'contain',
+			'scale-down': 'contain',
+			none: 'auto',
+			fill: '100% 100%',
+		};
 		let bgSize = PAINTED_SIZE[ fit ] || 'cover';
 		if ( 'tile' === fit ) {
 			bgSize = isEmpty( size ) ? 'auto' : String( size );
@@ -90,12 +135,22 @@ export function backgroundMediaAt( attrs, device = 'desktop' ) {
 			type: 'tile',
 			url: source.url,
 			pinned,
-			repeat: 'tile' === fit ? ( REPEATS.includes( repeat ) ? repeat : 'repeat' ) : 'no-repeat',
+			repeat:
+				'tile' === fit
+					? REPEATS.includes( repeat )
+						? repeat
+						: 'repeat'
+					: 'no-repeat',
 			size: bgSize,
 			position: focal,
 		};
 	}
-	return { type: 'image', url: source.url, fit: FITS.includes( fit ) ? fit : 'cover', focal };
+	return {
+		type: 'image',
+		url: source.url,
+		fit: FITS.includes( fit ) ? fit : 'cover',
+		focal,
+	};
 }
 
 /**
@@ -118,11 +173,19 @@ export function backgroundOverlayAt( attrs, device, palette ) {
 	if ( ! hasOverlay ) {
 		return null;
 	}
-	const paint = backgroundPaintPreview( attrs.backgroundOverlayColour, attrs.backgroundOverlayGradient, palette );
+	const paint = backgroundPaintPreview(
+		attrs.backgroundOverlayColour,
+		attrs.backgroundOverlayGradient,
+		palette
+	);
 	return {
 		...paint,
-		...( undefined !== vars[ '--sgs-ed-overlay-opacity' ] && { opacity: vars[ '--sgs-ed-overlay-opacity' ] } ),
-		...( vars[ '--sgs-ed-overlay-blend' ] && { mixBlendMode: vars[ '--sgs-ed-overlay-blend' ] } ),
+		...( undefined !== vars[ '--sgs-ed-overlay-opacity' ] && {
+			opacity: vars[ '--sgs-ed-overlay-opacity' ],
+		} ),
+		...( vars[ '--sgs-ed-overlay-blend' ] && {
+			mixBlendMode: vars[ '--sgs-ed-overlay-blend' ],
+		} ),
 	};
 }
 
@@ -138,21 +201,40 @@ export function backgroundOverlayAt( attrs, device, palette ) {
  * @param {string} tier            Previewed device.
  * @return {{style:Object,className:string,media:(Object|null),overlay:(Object|null),hasBgMedia:boolean,hasOverlay:boolean}} The preview.
  */
-export function backgroundMediaPreview( attrs, colourPalette, gradientPresets = [], tier = 'desktop' ) {
+export function backgroundMediaPreview(
+	attrs,
+	colourPalette,
+	gradientPresets = [],
+	tier = 'desktop'
+) {
 	const media = backgroundMediaAt( attrs, tier );
 	const overlay = backgroundOverlayAt( attrs, tier, colourPalette );
 	const opacity = valueAt( attrs?.backgroundOpacity, tier );
 	let rootClass = '';
 	if ( media ) {
-		rootClass = 'video' === media.type ? 'sgs-container--has-bg-video' : 'svg' === media.type ? 'sgs-container--has-bg-svg' : 'sgs-container--has-bg-image';
+		rootClass =
+			'video' === media.type
+				? 'sgs-container--has-bg-video'
+				: 'svg' === media.type
+				? 'sgs-container--has-bg-svg'
+				: 'sgs-container--has-bg-image';
 	}
 	const classes = [
 		rootClass,
-		media && 'svg' === media.type && 'front' === attrs?.backgroundSvgLayer && 'sgs-container--bg-front',
-		media && 'svg' === media.type && attrs?.backgroundSvgTextShadow && 'sgs-container--svg-text-shadow',
+		media &&
+			'svg' === media.type &&
+			'front' === attrs?.backgroundSvgLayer &&
+			'sgs-container--bg-front',
+		media &&
+			'svg' === media.type &&
+			attrs?.backgroundSvgTextShadow &&
+			'sgs-container--svg-text-shadow',
 		wrapperToneClass( attrs, colourPalette, gradientPresets ),
 	];
-	const strength = Number.isFinite( Number( opacity ) ) && ! isEmpty( opacity ) ? Math.max( 0, Math.min( 100, Number( opacity ) ) ) / 100 : undefined;
+	const strength =
+		Number.isFinite( Number( opacity ) ) && ! isEmpty( opacity )
+			? Math.max( 0, Math.min( 100, Number( opacity ) ) ) / 100
+			: undefined;
 	return {
 		style: { ...surfaceBackdropPreview( attrs ) },
 		className: classes.filter( Boolean ).join( ' ' ),

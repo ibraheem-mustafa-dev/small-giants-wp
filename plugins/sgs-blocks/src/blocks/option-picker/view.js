@@ -25,7 +25,7 @@ document.querySelectorAll( '.sgs-option-picker' ).forEach( ( fieldset ) => {
 	}
 
 	/** Read static data attributes baked in by render.php */
-	const typeKey       = optionsDiv.dataset.typeKey       || '';
+	const typeKey = optionsDiv.dataset.typeKey || '';
 	const contentImpact = optionsDiv.dataset.contentImpact
 		? optionsDiv.dataset.contentImpact
 				.split( ',' )
@@ -69,7 +69,9 @@ document.querySelectorAll( '.sgs-option-picker' ).forEach( ( fieldset ) => {
 	 * Uses requestAnimationFrame to ensure sibling blocks are mounted first.
 	 */
 	requestAnimationFrame( () => {
-		const checked = optionsDiv.querySelector( 'input[type="radio"]:checked' );
+		const checked = optionsDiv.querySelector(
+			'input[type="radio"]:checked'
+		);
 		if ( checked ) {
 			dispatchSelectionEvent( checked.value );
 		}

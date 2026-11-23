@@ -9,7 +9,11 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { SgsBoxControl, SgsLengthControl, ShadowControl } from '../../components';
+import {
+	SgsBoxControl,
+	SgsLengthControl,
+	ShadowControl,
+} from '../../components';
 
 /**
  * @param {Object}   props               Props.
@@ -24,21 +28,31 @@ export default function ChromeLogoBoxControls( { attributes, setAttributes } ) {
 		<>
 			<SgsLengthControl
 				label={ __( 'Logo box corner radius', 'sgs-blocks' ) }
-				help={ __( 'Rounds the box around the logo. Empty: square corners.', 'sgs-blocks' ) }
+				help={ __(
+					'Rounds the box around the logo. Empty: square corners.',
+					'sgs-blocks'
+				) }
 				value={ chromeLogoBoxRadius || '' }
-				onChange={ ( value ) => setAttributes( { chromeLogoBoxRadius: value || '' } ) }
+				onChange={ ( value ) =>
+					setAttributes( { chromeLogoBoxRadius: value || '' } )
+				}
 			/>
 			<SgsBoxControl
 				label={ __( 'Logo box padding', 'sgs-blocks' ) }
 				values={ chromeLogoBoxPadding ?? {} }
 				presets
-				onChange={ ( next ) => setAttributes( { chromeLogoBoxPadding: next } ) }
+				onChange={ ( next ) =>
+					setAttributes( { chromeLogoBoxPadding: next } )
+				}
 			/>
 			<ShadowControl
 				label={ __( 'Logo box shadow', 'sgs-blocks' ) }
 				attributes={ attributes }
 				setAttributes={ setAttributes }
-				attrNames={ { base: 'chromeLogoBoxShadow', colour: 'chromeLogoBoxShadowColour' } }
+				attrNames={ {
+					base: 'chromeLogoBoxShadow',
+					colour: 'chromeLogoBoxShadowColour',
+				} }
 			/>
 		</>
 	);

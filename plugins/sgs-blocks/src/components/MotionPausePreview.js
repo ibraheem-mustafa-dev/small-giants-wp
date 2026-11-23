@@ -18,10 +18,25 @@ export default function MotionPausePreview( { block, placement = 'inline' } ) {
 			className={ `sgs-motion-pause sgs-motion-pause--${ placement } ${ block }__pause` }
 			aria-hidden="true"
 		>
-			<svg className="sgs-motion-pause__icon sgs-motion-pause__icon--pause" viewBox="0 0 24 24" width="20" height="20" focusable="false">
-				<path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" fill="currentColor" />
+			<svg
+				className="sgs-motion-pause__icon sgs-motion-pause__icon--pause"
+				viewBox="0 0 24 24"
+				width="20"
+				height="20"
+				focusable="false"
+			>
+				<path
+					d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"
+					fill="currentColor"
+				/>
 			</svg>
-			<svg className="sgs-motion-pause__icon sgs-motion-pause__icon--play" viewBox="0 0 24 24" width="20" height="20" focusable="false">
+			<svg
+				className="sgs-motion-pause__icon sgs-motion-pause__icon--play"
+				viewBox="0 0 24 24"
+				width="20"
+				height="20"
+				focusable="false"
+			>
 				<path d="M8 5v14l11-7z" fill="currentColor" />
 			</svg>
 		</span>

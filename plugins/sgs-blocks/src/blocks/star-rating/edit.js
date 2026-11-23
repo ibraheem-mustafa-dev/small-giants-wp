@@ -1,5 +1,9 @@
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-editor';
+import {
+	useBlockProps,
+	InspectorControls,
+	useSettings,
+} from '@wordpress/block-editor';
 import {
 	PanelBody,
 	RangeControl,
@@ -7,7 +11,16 @@ import {
 	ToggleControl,
 	SelectControl,
 } from '@wordpress/components';
-import { ResponsiveBoxControl, SgsColourPanel, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl, textRow } from '../../components';
+import {
+	ResponsiveBoxControl,
+	SgsColourPanel,
+	ResponsiveOverride,
+	BOX_UNITS,
+	normaliseResponsiveBox,
+	SgsBoxControl,
+	SgsBorderControl,
+	textRow,
+} from '../../components';
 import {
 	parseSvgGradient,
 	SvgGradientDefs,
@@ -21,18 +34,36 @@ import AuthoredText from '../../components/AuthoredText';
 import SgsFreeTextField from '../../components/SgsFreeTextField';
 /** Build the wrapper's editor-preview style (mirrors render.php's scoped base declarations) at the previewed device tier. */
 function buildWrapperStyle( attributes, colourPalette, tier ) {
-	const { textColour, textColourGradient, backgroundColour, backgroundColourGradient } = attributes;
+	const {
+		textColour,
+		textColourGradient,
+		backgroundColour,
+		backgroundColourGradient,
+	} = attributes;
 	return {
 		...boxPreview( attributes, tier, colourPalette ),
 		...textPaintPreview( textColour, textColourGradient, colourPalette ),
-		...backgroundPaintPreview( backgroundColour, backgroundColourGradient, colourPalette ),
+		...backgroundPaintPreview(
+			backgroundColour,
+			backgroundColourGradient,
+			colourPalette
+		),
 	};
 }
 
 const DISPLAY_MODE_OPTIONS = [
 	{ label: __( 'Stars only', 'sgs-blocks' ), value: 'stars-only' },
-	{ label: __( 'Stars + value (e.g. 4.8)', 'sgs-blocks' ), value: 'stars-with-value' },
-	{ label: __( 'Stars + value + count (e.g. 4.8 (127 reviews))', 'sgs-blocks' ), value: 'stars-with-value-and-count' },
+	{
+		label: __( 'Stars + value (e.g. 4.8)', 'sgs-blocks' ),
+		value: 'stars-with-value',
+	},
+	{
+		label: __(
+			'Stars + value + count (e.g. 4.8 (127 reviews))',
+			'sgs-blocks'
+		),
+		value: 'stars-with-value-and-count',
+	},
 ];
 
 // starColourGradient/emptyColourGradient (D636/D644, mirrored from
@@ -62,10 +93,23 @@ function StarSVG( {
 	injectEmptyDefs,
 } ) {
 	const fill = filled
-		? ( starGradient ? `url(#${ starGradId })` : colour )
-		: ( half ? `url(#sgs-star-half)` : ( emptyGradient ? `url(#${ emptyGradId })` : emptyColour ) );
+		? starGradient
+			? `url(#${ starGradId })`
+			: colour
+		: half
+		? `url(#sgs-star-half)`
+		: emptyGradient
+		? `url(#${ emptyGradId })`
+		: emptyColour;
 	return (
-		<svg className="sgs-star-rating__star" width={ size } height={ size } viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+		<svg
+			className="sgs-star-rating__star"
+			width={ size }
+			height={ size }
+			viewBox="0 0 24 24"
+			xmlns="http://www.w3.org/2000/svg"
+			aria-hidden="true"
+		>
 			{ half && (
 				<defs>
 					<linearGradient id="sgs-star-half">
@@ -75,13 +119,29 @@ function StarSVG( {
 				</defs>
 			) }
 			{ ! half && filled && injectStarDefs && starGradient && (
-				<defs><SvgGradientDefs id={ starGradId } gradient={ starGradient } /></defs>
+				<defs>
+					<SvgGradientDefs
+						id={ starGradId }
+						gradient={ starGradient }
+					/>
+				</defs>
 			) }
 			{ ! half && ! filled && injectEmptyDefs && emptyGradient && (
-				<defs><SvgGradientDefs id={ emptyGradId } gradient={ emptyGradient } /></defs>
+				<defs>
+					<SvgGradientDefs
+						id={ emptyGradId }
+						gradient={ emptyGradient }
+					/>
+				</defs>
 			) }
 			<path
-				className={ half ? undefined : `sgs-star-rating__star--${ filled ? 'full' : 'empty' }` }
+				className={
+					half
+						? undefined
+						: `sgs-star-rating__star--${
+								filled ? 'full' : 'empty'
+						  }`
+				}
 				d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
 				fill={ fill }
 			/>
@@ -136,7 +196,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const sgsStyleClasses = String( attributes.className || '' )
 		.split( /\s+/ )
 		.filter( Boolean );
-	const isTpOfficial = sgsStyleClasses.includes( 'is-style-trustpilot-official' );
+	const isTpOfficial = sgsStyleClasses.includes(
+		'is-style-trustpilot-official'
+	);
 
 	// Parsed once per render — mirrors render.php computing $star_fill_grad/
 	// $empty_fill_grad once, before the loop, rather than re-parsing per star.
@@ -150,7 +212,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	let emptyDefsInjected = false;
 	for ( let i = 1; i <= maxRating; i++ ) {
 		const filled = i <= Math.floor( rating );
-		const half = ! filled && i === Math.ceil( rating ) && rating % 1 >= 0.25;
+		const half =
+			! filled && i === Math.ceil( rating ) && rating % 1 >= 0.25;
 		// Mirrors render.php's $star_fill_defs_injected/$empty_fill_defs_injected
 		// flags — the gradient def only needs to exist ONCE in the document.
 		const injectStarDefs = filled && ! half && ! starDefsInjected;
@@ -179,7 +242,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		);
 	}
 
-	const showValue = displayMode === 'stars-with-value' || displayMode === 'stars-with-value-and-count';
+	const showValue =
+		displayMode === 'stars-with-value' ||
+		displayMode === 'stars-with-value-and-count';
 	const showCount = displayMode === 'stars-with-value-and-count';
 
 	// Contrast check for border colour — warn if border fails WCAG 3:1 contrast
@@ -199,70 +264,86 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			   values resolved via sgs_colour_value(), so they belong here
 			   like any other single colour. */ }
 			{ ! isTpOfficial && (
-			<SgsColourPanel
-				rows={ [
-					textRow( {
-						key: 'wrapperText',
-						label: __( 'Text colour', 'sgs-blocks' ),
-						attrs: {
-							base: 'textColour',
-							hover: 'textColourHover',
-							gradient: 'textColourGradient',
-							hoverGradient: 'textColourHoverGradient',
+				<SgsColourPanel
+					rows={ [
+						textRow( {
+							key: 'wrapperText',
+							label: __( 'Text colour', 'sgs-blocks' ),
+							attrs: {
+								base: 'textColour',
+								hover: 'textColourHover',
+								gradient: 'textColourGradient',
+								hoverGradient: 'textColourHoverGradient',
+							},
+							attributes,
+							setAttributes,
+						} ),
+						{
+							key: 'wrapperBackground',
+							label: __( 'Background colour', 'sgs-blocks' ),
+							gradientCapable: true,
+							states: [
+								{
+									key: 'normal',
+									label: __( 'Normal', 'sgs-blocks' ),
+									value: backgroundColour,
+									onChange: ( val ) =>
+										setAttributes( {
+											backgroundColour: val ?? '',
+										} ),
+									gradientValue: backgroundColourGradient,
+									onGradientChange: ( val ) =>
+										setAttributes( {
+											backgroundColourGradient: val ?? '',
+										} ),
+									linked: true,
+								},
+							],
 						},
-						attributes,
-						setAttributes,
-					} ),
-					{
-						key: 'wrapperBackground',
-						label: __( 'Background colour', 'sgs-blocks' ),
-						gradientCapable: true,
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: backgroundColour,
-								onChange: ( val ) => setAttributes( { backgroundColour: val ?? '' } ),
-								gradientValue: backgroundColourGradient,
-								onGradientChange: ( val ) => setAttributes( { backgroundColourGradient: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
-					{
-						key: 'emptyColour',
-						label: __( 'Empty colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: emptyColour,
-								onChange: ( val ) => setAttributes( { emptyColour: val ?? '' } ),
-								gradientValue: emptyColourGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { emptyColourGradient: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
-					{
-						key: 'starColour',
-						label: __( 'Star colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: starColour,
-								onChange: ( val ) => setAttributes( { starColour: val ?? '' } ),
-								gradientValue: starColourGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { starColourGradient: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
-				] }
-			/>
+						{
+							key: 'emptyColour',
+							label: __( 'Empty colour', 'sgs-blocks' ),
+							states: [
+								{
+									key: 'normal',
+									label: __( 'Normal', 'sgs-blocks' ),
+									value: emptyColour,
+									onChange: ( val ) =>
+										setAttributes( {
+											emptyColour: val ?? '',
+										} ),
+									gradientValue: emptyColourGradient,
+									onGradientChange: ( val ) =>
+										setAttributes( {
+											emptyColourGradient: val ?? '',
+										} ),
+									linked: true,
+								},
+							],
+						},
+						{
+							key: 'starColour',
+							label: __( 'Star colour', 'sgs-blocks' ),
+							states: [
+								{
+									key: 'normal',
+									label: __( 'Normal', 'sgs-blocks' ),
+									value: starColour,
+									onChange: ( val ) =>
+										setAttributes( {
+											starColour: val ?? '',
+										} ),
+									gradientValue: starColourGradient,
+									onGradientChange: ( val ) =>
+										setAttributes( {
+											starColourGradient: val ?? '',
+										} ),
+									linked: true,
+								},
+							],
+						},
+					] }
+				/>
 			) }
 			<InspectorControls>
 				<PanelBody title={ __( 'Rating', 'sgs-blocks' ) }>
@@ -279,7 +360,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					<RangeControl
 						label={ __( 'Max stars', 'sgs-blocks' ) }
 						value={ maxRating }
-						onChange={ ( val ) => setAttributes( { maxRating: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { maxRating: val } )
+						}
 						min={ 1 }
 						max={ 10 }
 						__nextHasNoMarginBottom
@@ -288,7 +371,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					<RangeControl
 						label={ __( 'Star size (px)', 'sgs-blocks' ) }
 						value={ starSize }
-						onChange={ ( val ) => setAttributes( { starSize: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { starSize: val } )
+						}
 						min={ 12 }
 						max={ 64 }
 						__nextHasNoMarginBottom
@@ -299,18 +384,31 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				{ /* padding/margin are each a single block-owned tier-object attr
 				   { desktop, tablet, mobile }, written via ResponsiveOverride +
 				   SgsBoxControl; read directly by this block's render.php. */ }
-				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Spacing', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<ResponsiveOverride
 						value={ attributes.padding }
-						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { padding: obj } )
+						}
 					>
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
@@ -321,32 +419,67 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
 				</PanelBody>
 
-				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Border', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SgsBorderControl
 						widthValues={ borderWidth ?? {} }
-						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						onWidthChange={ ( next ) =>
+							setAttributes( { borderWidth: next } )
+						}
 						widthPresets={ [ '10', '20', '30' ] }
 						styleValue={ borderStyle }
-						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						onStyleChange={ ( val ) =>
+							setAttributes( { borderStyle: val } )
+						}
 						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
 						colourStates={ [
-							{ key: 'normal', label: __( 'Normal', 'sgs-blocks' ), value: borderColour,
-							  onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
-							  gradientValue: borderColourGradient,
-							  onGradientChange: ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) },
-							{ key: 'hover', label: __( 'Hover', 'sgs-blocks' ), value: borderColourHover,
-							  onChange: ( val ) => setAttributes( { borderColourHover: val ?? '' } ),
-							  gradientValue: borderColourHoverGradient,
-							  onGradientChange: ( val ) => setAttributes( { borderColourHoverGradient: val ?? '' } ) },
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: borderColour,
+								onChange: ( val ) =>
+									setAttributes( {
+										borderColour: val ?? '',
+									} ),
+								gradientValue: borderColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										borderColourGradient: val ?? '',
+									} ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: borderColourHover,
+								onChange: ( val ) =>
+									setAttributes( {
+										borderColourHover: val ?? '',
+									} ),
+								gradientValue: borderColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										borderColourHoverGradient: val ?? '',
+									} ),
+							},
 						] }
 						contrastAgainst={ starRatingContrastAgainst }
 						radiusValues={ {
@@ -356,39 +489,63 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						} }
 						onRadiusChange={ ( tier, next ) => {
 							const key = tier === 'base' ? 'desktop' : tier;
-							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+							setAttributes( {
+								borderRadius: {
+									...attributes.borderRadius,
+									[ key ]: next,
+								},
+							} );
 						} }
 					/>
 				</PanelBody>
 
-				<PanelBody title={ __( 'Display', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Display', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SelectControl
 						label={ __( 'Display mode', 'sgs-blocks' ) }
 						value={ displayMode }
 						options={ DISPLAY_MODE_OPTIONS }
-						onChange={ ( val ) => setAttributes( { displayMode: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { displayMode: val } )
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					<SgsFreeTextField type="rich"
+					<SgsFreeTextField
+						type="rich"
 						label={ __( 'Label', 'sgs-blocks' ) }
 						value={ label }
 						onChange={ ( val ) => setAttributes( { label: val } ) }
 					/>
 					<ToggleControl
-						label={ __( 'Show numeric value (legacy)', 'sgs-blocks' ) }
-						help={ __( 'Use Display mode above instead.', 'sgs-blocks' ) }
+						label={ __(
+							'Show numeric value (legacy)',
+							'sgs-blocks'
+						) }
+						help={ __(
+							'Use Display mode above instead.',
+							'sgs-blocks'
+						) }
 						checked={ showNumeric }
-						onChange={ ( val ) => setAttributes( { showNumeric: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { showNumeric: val } )
+						}
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
 
-				<PanelBody title={ __( 'Schema Markup', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Schema Markup', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<ToggleControl
 						label={ __( 'Enable schema.org markup', 'sgs-blocks' ) }
 						checked={ schemaEnabled }
-						onChange={ ( val ) => setAttributes( { schemaEnabled: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { schemaEnabled: val } )
+						}
 						__nextHasNoMarginBottom
 					/>
 					{ schemaEnabled && (
@@ -396,14 +553,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							<TextControl
 								label={ __( 'Item name', 'sgs-blocks' ) }
 								value={ schemaItemName }
-								onChange={ ( val ) => setAttributes( { schemaItemName: val } ) }
+								onChange={ ( val ) =>
+									setAttributes( { schemaItemName: val } )
+								}
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							/>
 							<RangeControl
 								label={ __( 'Review count', 'sgs-blocks' ) }
 								value={ schemaReviewCount }
-								onChange={ ( val ) => setAttributes( { schemaReviewCount: val } ) }
+								onChange={ ( val ) =>
+									setAttributes( { schemaReviewCount: val } )
+								}
 								min={ 1 }
 								max={ 10000 }
 								__nextHasNoMarginBottom
@@ -415,7 +576,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
-				<div className="sgs-star-rating__stars" role="img" aria-label={ `${ rating } out of ${ maxRating } stars` }>
+				<div
+					className="sgs-star-rating__stars"
+					role="img"
+					aria-label={ `${ rating } out of ${ maxRating } stars` }
+				>
 					{ stars }
 				</div>
 				{ showValue && (
@@ -425,14 +590,23 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				) }
 				{ showCount && schemaReviewCount > 0 && (
 					<span className="sgs-star-rating__count" aria-hidden="true">
-						{ `(${ schemaReviewCount.toLocaleString( 'en-GB' ) } ${ schemaReviewCount === 1 ? __( 'review', 'sgs-blocks' ) : __( 'reviews', 'sgs-blocks' ) })` }
+						{ `(${ schemaReviewCount.toLocaleString( 'en-GB' ) } ${
+							schemaReviewCount === 1
+								? __( 'review', 'sgs-blocks' )
+								: __( 'reviews', 'sgs-blocks' )
+						})` }
 					</span>
 				) }
 				{ showNumeric && (
-					<span className="sgs-star-rating__numeric">{ rating }/{ maxRating }</span>
+					<span className="sgs-star-rating__numeric">
+						{ rating }/{ maxRating }
+					</span>
 				) }
 				{ label && (
-					<AuthoredText className="sgs-star-rating__label" value={ label } />
+					<AuthoredText
+						className="sgs-star-rating__label"
+						value={ label }
+					/>
 				) }
 			</div>
 		</>

@@ -24,7 +24,13 @@ const noop = () => {};
  * @return {boolean} True when blank.
  */
 function blank( value ) {
-	return undefined === value || null === value || '' === value || 'inherit' === value || ( Array.isArray( value ) && ! value.length );
+	return (
+		undefined === value ||
+		null === value ||
+		'' === value ||
+		'inherit' === value ||
+		( Array.isArray( value ) && ! value.length )
+	);
 }
 
 /**
@@ -34,7 +40,11 @@ function blank( value ) {
  * @return {Object} Device to value (undefined where nothing is set at or above the device).
  */
 function deviceValues( raw ) {
-	const isTier = raw && 'object' === typeof raw && ! Array.isArray( raw ) && DEVICES.some( ( d ) => d in raw );
+	const isTier =
+		raw &&
+		'object' === typeof raw &&
+		! Array.isArray( raw ) &&
+		DEVICES.some( ( d ) => d in raw );
 	const own = isTier ? raw : { desktop: raw };
 	const out = {};
 	let last;
@@ -91,7 +101,13 @@ export function itemSlotAttrs( prefix, item, attributes ) {
 	if ( Object.keys( fit ).length ) {
 		attrs[ name( 'Fit' ) ] = fit;
 	}
-	[ 'Caption', 'LinkUrl', 'LinkUrlSource', 'LinkOpensNewTab', 'LinkRel' ].forEach( ( own ) => {
+	[
+		'Caption',
+		'LinkUrl',
+		'LinkUrlSource',
+		'LinkOpensNewTab',
+		'LinkRel',
+	].forEach( ( own ) => {
 		delete attrs[ name( own ) ];
 	} );
 	return attrs;
@@ -109,7 +125,16 @@ export function itemSlotAttrs( prefix, item, attributes ) {
  * @param {string}   [props.className] Extra class for the picture.
  * @return {JSX.Element|null} The picture, or null when the item has no file.
  */
-export default function ItemSlotPicture( { attributes, item, index, prefix, uid, kinds = [ 'image' ], context = 'item', className = '' } ) {
+export default function ItemSlotPicture( {
+	attributes,
+	item,
+	index,
+	prefix,
+	uid,
+	kinds = [ 'image' ],
+	context = 'item',
+	className = '',
+} ) {
 	return (
 		<SlotPicture
 			attributes={ itemSlotAttrs( prefix, item, attributes ) }

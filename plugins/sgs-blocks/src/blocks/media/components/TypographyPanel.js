@@ -6,7 +6,12 @@
 import { __ } from '@wordpress/i18n';
 import { TypographyControls } from '../../../components';
 
-export default function TypographyPanel( { attributes, setAttributes, showCaption = true, showVideoTime = true } ) {
+export default function TypographyPanel( {
+	attributes,
+	setAttributes,
+	showCaption = true,
+	showVideoTime = true,
+} ) {
 	if ( ! showCaption && ! showVideoTime ) {
 		return null;
 	}
@@ -57,7 +62,9 @@ export default function TypographyPanel( { attributes, setAttributes, showCaptio
 						showTextColumns: true,
 						showWritingMode: true,
 					},
-				].filter( ( target ) => ( 'caption' === target.key ? showCaption : showVideoTime ) ) }
+				].filter( ( target ) =>
+					'caption' === target.key ? showCaption : showVideoTime
+				) }
 			/>
 		</>
 	);

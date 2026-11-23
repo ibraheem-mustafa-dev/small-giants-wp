@@ -13,7 +13,11 @@ import { Section, Row, typographyAttrs } from './panel-kit';
 import { TypographyRow, typoTarget } from './panel-fields';
 
 import SgsFreeTextField from '../../../components/SgsFreeTextField';
-export const REVIEW_TEXT_TYPOGRAPHY_PREFIXES = [ 'text', 'reviewLink', 'footnote' ];
+export const REVIEW_TEXT_TYPOGRAPHY_PREFIXES = [
+	'text',
+	'reviewLink',
+	'footnote',
+];
 
 /** Every attribute this section owns (drives "Reset all"). */
 export const REVIEW_TEXT_ATTRS = [
@@ -29,22 +33,33 @@ export default function ReviewTextPanel( { attributes, setAttributes } ) {
 	const shared = { attributes, setAttributes };
 
 	return (
-		<Section title={ __( 'Review text', 'sgs-blocks' ) } attrs={ REVIEW_TEXT_ATTRS } setAttributes={ setAttributes }>
+		<Section
+			title={ __( 'Review text', 'sgs-blocks' ) }
+			attrs={ REVIEW_TEXT_ATTRS }
+			setAttributes={ setAttributes }
+		>
 			<Row
 				label={ __( 'Shorten long reviews', 'sgs-blocks' ) }
 				attrs={ [ 'textClamp', 'textClampLines' ] }
 				{ ...shared }
 			>
 				<ToggleControl
-					label={ __( 'Cut long reviews to a set number of lines', 'sgs-blocks' ) }
+					label={ __(
+						'Cut long reviews to a set number of lines',
+						'sgs-blocks'
+					) }
 					checked={ !! attributes.textClamp }
-					onChange={ ( value ) => setAttributes( { textClamp: value } ) }
+					onChange={ ( value ) =>
+						setAttributes( { textClamp: value } )
+					}
 				/>
 				{ attributes.textClamp && (
 					<RangeControl
 						label={ __( 'Lines shown', 'sgs-blocks' ) }
 						value={ attributes.textClampLines }
-						onChange={ ( value ) => setAttributes( { textClampLines: value } ) }
+						onChange={ ( value ) =>
+							setAttributes( { textClampLines: value } )
+						}
 						min={ 1 }
 						max={ 20 }
 						__next40pxDefaultSize
@@ -57,47 +72,93 @@ export default function ReviewTextPanel( { attributes, setAttributes } ) {
 				{ ...shared }
 			>
 				<ToggleControl
-					label={ __( 'Show a link to the full review', 'sgs-blocks' ) }
-					help={ __( 'Only appears on a review that has its own link.', 'sgs-blocks' ) }
+					label={ __(
+						'Show a link to the full review',
+						'sgs-blocks'
+					) }
+					help={ __(
+						'Only appears on a review that has its own link.',
+						'sgs-blocks'
+					) }
 					checked={ !! attributes.showReviewLink }
-					onChange={ ( value ) => setAttributes( { showReviewLink: value } ) }
+					onChange={ ( value ) =>
+						setAttributes( { showReviewLink: value } )
+					}
 				/>
 				{ attributes.showReviewLink && (
-					<SgsFreeTextField type="rich" noLink
+					<SgsFreeTextField
+						type="rich"
+						noLink
 						label={ __( 'Link wording', 'sgs-blocks' ) }
 						value={ attributes.reviewLinkLabel }
-						onChange={ ( value ) => setAttributes( { reviewLinkLabel: value } ) }
-						help={ __( 'Leave empty to use the standard wording.', 'sgs-blocks' ) }
+						onChange={ ( value ) =>
+							setAttributes( { reviewLinkLabel: value } )
+						}
+						help={ __(
+							'Leave empty to use the standard wording.',
+							'sgs-blocks'
+						) }
 					/>
 				) }
 			</Row>
-			<Row label={ __( 'Call-to-action wording', 'sgs-blocks' ) } attrs={ [ 'seeAllLabel', 'writeReviewLabel' ] } { ...shared }>
-				<SgsFreeTextField type="rich" noLink
+			<Row
+				label={ __( 'Call-to-action wording', 'sgs-blocks' ) }
+				attrs={ [ 'seeAllLabel', 'writeReviewLabel' ] }
+				{ ...shared }
+			>
+				<SgsFreeTextField
+					type="rich"
+					noLink
 					label={ __( 'See all reviews link', 'sgs-blocks' ) }
 					value={ attributes.seeAllLabel }
-					onChange={ ( value ) => setAttributes( { seeAllLabel: value } ) }
-					help={ __( 'Leave empty to use the standard wording.', 'sgs-blocks' ) }
+					onChange={ ( value ) =>
+						setAttributes( { seeAllLabel: value } )
+					}
+					help={ __(
+						'Leave empty to use the standard wording.',
+						'sgs-blocks'
+					) }
 				/>
-				<SgsFreeTextField type="rich" noLink
+				<SgsFreeTextField
+					type="rich"
+					noLink
 					label={ __( 'Write a review link', 'sgs-blocks' ) }
 					value={ attributes.writeReviewLabel }
-					onChange={ ( value ) => setAttributes( { writeReviewLabel: value } ) }
-					help={ __( 'Leave empty to use the standard wording.', 'sgs-blocks' ) }
+					onChange={ ( value ) =>
+						setAttributes( { writeReviewLabel: value } )
+					}
+					help={ __(
+						'Leave empty to use the standard wording.',
+						'sgs-blocks'
+					) }
 				/>
 			</Row>
-			<Row label={ __( 'Footnote', 'sgs-blocks' ) } attrs={ [ 'footnote' ] } { ...shared }>
-				<SgsFreeTextField type="rich"
+			<Row
+				label={ __( 'Footnote', 'sgs-blocks' ) }
+				attrs={ [ 'footnote' ] }
+				{ ...shared }
+			>
+				<SgsFreeTextField
+					type="rich"
 					label={ __( 'Footnote', 'sgs-blocks' ) }
 					value={ attributes.footnote }
-					onChange={ ( value ) => setAttributes( { footnote: value } ) }
-					help={ __( 'A short line under the reviews, for example "Scroll for more". Leave empty for none.', 'sgs-blocks' ) }
+					onChange={ ( value ) =>
+						setAttributes( { footnote: value } )
+					}
+					help={ __(
+						'A short line under the reviews, for example "Scroll for more". Leave empty for none.',
+						'sgs-blocks'
+					) }
 				/>
 			</Row>
 			<TypographyRow
 				label={ __( 'Review text typography', 'sgs-blocks' ) }
 				targets={ [
 					typoTarget( 'text', __( 'Review text', 'sgs-blocks' ) ),
-					typoTarget( 'reviewLink', __( 'Full review link', 'sgs-blocks' ) ),
+					typoTarget(
+						'reviewLink',
+						__( 'Full review link', 'sgs-blocks' )
+					),
 					typoTarget( 'footnote', __( 'Footnote', 'sgs-blocks' ) ),
 				] }
 				{ ...shared }

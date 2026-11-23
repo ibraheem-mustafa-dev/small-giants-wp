@@ -44,7 +44,8 @@ import {
 } from './constants';
 
 const GradientAnglePicker = ( { gradientAST, hasGradient, onChange } ) => {
-	const angle = gradientAST?.orientation?.value ?? DEFAULT_LINEAR_GRADIENT_ANGLE;
+	const angle =
+		gradientAST?.orientation?.value ?? DEFAULT_LINEAR_GRADIENT_ANGLE;
 	const onAngleChange = ( newAngle ) => {
 		onChange(
 			serializeGradient( {
@@ -153,7 +154,9 @@ export default function SgsGradientPicker( {
 	return (
 		<VStack spacing={ 4 } className="sgs-gradient-picker">
 			<CustomGradientBar
-				__experimentalIsRenderedInSidebar={ __experimentalIsRenderedInSidebar }
+				__experimentalIsRenderedInSidebar={
+					__experimentalIsRenderedInSidebar
+				}
 				disableAlpha={ ! enableAlpha }
 				background={ background }
 				hasGradient={ hasGradient }

@@ -39,7 +39,9 @@
  * @return {string} The attribute name.
  */
 export function mediaAttrName( prefix, base ) {
-	return prefix ? prefix + base : base.charAt( 0 ).toLowerCase() + base.slice( 1 );
+	return prefix
+		? prefix + base
+		: base.charAt( 0 ).toLowerCase() + base.slice( 1 );
 }
 
 /**
@@ -201,11 +203,27 @@ export const MEDIA_BASES = {
  * the tiered set from group membership.
  */
 export const MEDIA_TIERED_BASES = [
-	...[ 'ImageId', 'ImageUrl', 'VideoId', 'VideoUrl',
-		'SvgContent', 'Thumbnail', 'ThumbnailId' ],
-	...[ 'VideoAutoplay', 'VideoLoop', 'VideoMuted', 'VideoControls',
-		'VideoPlaysInline', 'VideoLazyLoad', 'VideoCaptionsId', 'VideoCaptionsUrl',
-		'VideoCaptionsLabel', 'VideoCaptionsSrcLang' ],
+	...[
+		'ImageId',
+		'ImageUrl',
+		'VideoId',
+		'VideoUrl',
+		'SvgContent',
+		'Thumbnail',
+		'ThumbnailId',
+	],
+	...[
+		'VideoAutoplay',
+		'VideoLoop',
+		'VideoMuted',
+		'VideoControls',
+		'VideoPlaysInline',
+		'VideoLazyLoad',
+		'VideoCaptionsId',
+		'VideoCaptionsUrl',
+		'VideoCaptionsLabel',
+		'VideoCaptionsSrcLang',
+	],
 	'ObjectFit',
 	'ObjectPosition',
 	'Height',

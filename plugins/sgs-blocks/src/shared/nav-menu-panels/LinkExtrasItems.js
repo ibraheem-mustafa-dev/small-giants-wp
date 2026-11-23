@@ -42,13 +42,23 @@ export default function LinkExtrasItems( {
 			>
 				<ResponsiveOverride
 					value={ itemMinHeight }
-					onChange={ ( obj ) => setAttributes( { itemMinHeight: obj } ) }
+					onChange={ ( obj ) =>
+						setAttributes( { itemMinHeight: obj } )
+					}
 				>
-					{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+					{ ( {
+						ownValue,
+						effectiveValue,
+						inherited,
+						setOwnValue,
+					} ) => (
 						<SgsLengthControl
 							presets={ false }
 							label={ __( 'Link minimum height', 'sgs-blocks' ) }
-							help={ __( 'Empty keeps the 44px touch-target height.', 'sgs-blocks' ) }
+							help={ __(
+								'Empty keeps the 44px touch-target height.',
+								'sgs-blocks'
+							) }
 							value={ ownValue || '' }
 							placeholder={ inherited ? effectiveValue : '44px' }
 							onChange={ ( val ) => setOwnValue( val || '' ) }
@@ -58,21 +68,31 @@ export default function LinkExtrasItems( {
 			</ToolsPanelItem>
 
 			<ToolsPanelItem
-				hasValue={ () => Object.keys( itemBadgePadding ?? {} ).length > 0 }
+				hasValue={ () =>
+					Object.keys( itemBadgePadding ?? {} ).length > 0
+				}
 				label={ __( 'Badge padding', 'sgs-blocks' ) }
 				onDeselect={ () => setAttributes( { itemBadgePadding: {} } ) }
 			>
 				<ResponsiveOverride
 					value={ itemBadgePadding }
-					onChange={ ( obj ) => setAttributes( { itemBadgePadding: obj } ) }
+					onChange={ ( obj ) =>
+						setAttributes( { itemBadgePadding: obj } )
+					}
 				>
 					{ ( { ownValue, setOwnValue } ) => (
 						<SgsBoxControl
 							label={ __( 'Badge padding', 'sgs-blocks' ) }
-							values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+							values={
+								ownValue && typeof ownValue === 'object'
+									? ownValue
+									: {}
+							}
 							units={ BOX_UNITS }
 							presets
-							onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							onChange={ ( next ) =>
+								setOwnValue( normaliseResponsiveBox( next ) )
+							}
 						/>
 					) }
 				</ResponsiveOverride>
@@ -81,13 +101,17 @@ export default function LinkExtrasItems( {
 			<ToolsPanelItem
 				hasValue={ () => !! itemBadgeBorderRadius }
 				label={ __( 'Badge corner radius', 'sgs-blocks' ) }
-				onDeselect={ () => setAttributes( { itemBadgeBorderRadius: '' } ) }
+				onDeselect={ () =>
+					setAttributes( { itemBadgeBorderRadius: '' } )
+				}
 			>
 				<SgsLengthControl
 					presets={ false }
 					label={ __( 'Badge corner radius', 'sgs-blocks' ) }
 					value={ itemBadgeBorderRadius || '' }
-					onChange={ ( val ) => setAttributes( { itemBadgeBorderRadius: val || '' } ) }
+					onChange={ ( val ) =>
+						setAttributes( { itemBadgeBorderRadius: val || '' } )
+					}
 				/>
 			</ToolsPanelItem>
 
@@ -99,9 +123,14 @@ export default function LinkExtrasItems( {
 				<SgsLengthControl
 					presets={ false }
 					label={ __( 'Space before badge', 'sgs-blocks' ) }
-					help={ __( 'The gap between a menu word and its badge (e.g. SOON).', 'sgs-blocks' ) }
+					help={ __(
+						'The gap between a menu word and its badge (e.g. SOON).',
+						'sgs-blocks'
+					) }
 					value={ itemBadgeGap || '' }
-					onChange={ ( val ) => setAttributes( { itemBadgeGap: val || '' } ) }
+					onChange={ ( val ) =>
+						setAttributes( { itemBadgeGap: val || '' } )
+					}
 				/>
 			</ToolsPanelItem>
 
@@ -113,12 +142,22 @@ export default function LinkExtrasItems( {
 				>
 					<ResponsiveOverride
 						value={ itemGap }
-						onChange={ ( obj ) => setAttributes( { itemGap: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { itemGap: obj } )
+						}
 					>
-						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+						{ ( {
+							ownValue,
+							effectiveValue,
+							inherited,
+							setOwnValue,
+						} ) => (
 							<SgsGapControl
 								label={ __( 'Row gap', 'sgs-blocks' ) }
-								help={ __( 'The space between a row’s parts: its label and a trailing icon or arrow, an ornament, a badge. Empty keeps the row as it is.', 'sgs-blocks' ) }
+								help={ __(
+									'The space between a row’s parts: its label and a trailing icon or arrow, an ornament, a badge. Empty keeps the row as it is.',
+									'sgs-blocks'
+								) }
 								value={ ownValue || '' }
 								placeholder={ inherited ? effectiveValue : '' }
 								onChange={ ( val ) => setOwnValue( val || '' ) }

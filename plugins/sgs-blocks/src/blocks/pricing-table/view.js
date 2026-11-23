@@ -22,7 +22,9 @@
 	 * @param {HTMLElement} wrapper The .sgs-pricing-table--has-toggle element.
 	 */
 	function initToggle( wrapper ) {
-		const inputs = wrapper.querySelectorAll( '.sgs-pricing-table__toggle-input' );
+		const inputs = wrapper.querySelectorAll(
+			'.sgs-pricing-table__toggle-input'
+		);
 		if ( ! inputs.length ) {
 			return;
 		}
@@ -32,23 +34,31 @@
 		 * billing period.
 		 */
 		function applyPeriod() {
-			const checked = wrapper.querySelector( '.sgs-pricing-table__toggle-input:checked' );
+			const checked = wrapper.querySelector(
+				'.sgs-pricing-table__toggle-input:checked'
+			);
 			if ( ! checked ) {
 				return;
 			}
 			const period = checked.value; // 'monthly' | 'yearly'
 
-			wrapper.querySelectorAll( '.sgs-pricing-table__price--monthly' ).forEach( ( el ) => {
-				el.hidden = ( period !== 'monthly' );
-			} );
-			wrapper.querySelectorAll( '.sgs-pricing-table__price--yearly' ).forEach( ( el ) => {
-				el.hidden = ( period !== 'yearly' );
-			} );
+			wrapper
+				.querySelectorAll( '.sgs-pricing-table__price--monthly' )
+				.forEach( ( el ) => {
+					el.hidden = period !== 'monthly';
+				} );
+			wrapper
+				.querySelectorAll( '.sgs-pricing-table__price--yearly' )
+				.forEach( ( el ) => {
+					el.hidden = period !== 'yearly';
+				} );
 
 			// Savings badge: show only when yearly is active.
-			wrapper.querySelectorAll( '.sgs-pricing-table__savings-badge' ).forEach( ( el ) => {
-				el.hidden = ( period !== 'yearly' );
-			} );
+			wrapper
+				.querySelectorAll( '.sgs-pricing-table__savings-badge' )
+				.forEach( ( el ) => {
+					el.hidden = period !== 'yearly';
+				} );
 
 			// Reflect current state as a data attribute for CSS theming.
 			wrapper.dataset.billingPeriod = period;
@@ -63,5 +73,7 @@
 	}
 
 	// Boot on DOMContentLoaded (scripts are deferred via viewScriptModule).
-	document.querySelectorAll( '.sgs-pricing-table--has-toggle' ).forEach( initToggle );
+	document
+		.querySelectorAll( '.sgs-pricing-table--has-toggle' )
+		.forEach( initToggle );
 } )();

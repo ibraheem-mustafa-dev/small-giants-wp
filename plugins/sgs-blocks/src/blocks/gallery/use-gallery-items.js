@@ -17,7 +17,13 @@ export default function useGalleryItems( { items, setAttributes } ) {
 	 * @param {number} to   Target index.
 	 */
 	const moveItem = ( from, to ) => {
-		if ( from === to || from < 0 || to < 0 || from >= items.length || to >= items.length ) {
+		if (
+			from === to ||
+			from < 0 ||
+			to < 0 ||
+			from >= items.length ||
+			to >= items.length
+		) {
 			return;
 		}
 		const next = [ ...items ];
@@ -38,7 +44,8 @@ export default function useGalleryItems( { items, setAttributes } ) {
 		}
 	};
 
-	const removeImage = ( index ) => write( items.filter( ( _, i ) => i !== index ) );
+	const removeImage = ( index ) =>
+		write( items.filter( ( _, i ) => i !== index ) );
 
 	/**
 	 * Patch one item's own fields (caption, link and the like).
@@ -69,7 +76,11 @@ export default function useGalleryItems( { items, setAttributes } ) {
 	 * @param {Object} patch `{ itemSource: ..., itemFocal: ... }`.
 	 */
 	const updateItemSlot = ( index, patch ) =>
-		write( items.map( ( item, i ) => ( i === index ? applySlotPatch( item, patch ) : item ) ) );
+		write(
+			items.map( ( item, i ) =>
+				i === index ? applySlotPatch( item, patch ) : item
+			)
+		);
 
 	/**
 	 * Add the media picked in the library after the items already in the gallery.

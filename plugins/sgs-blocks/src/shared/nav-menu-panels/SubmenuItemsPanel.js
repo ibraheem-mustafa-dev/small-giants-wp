@@ -16,13 +16,26 @@ import { IconPicker } from '../../components';
  * @param {Object}   root0.sublinkMarkerIcon `sublinkMarkerIcon` — `{ source, name }`.
  * @param {Function} root0.setAttributes     The block's attribute setter.
  */
-export default function SubmenuItemsPanel( { sublinkMarkerIcon, setAttributes } ) {
+export default function SubmenuItemsPanel( {
+	sublinkMarkerIcon,
+	setAttributes,
+} ) {
 	return (
-		<PanelBody title={ __( 'Submenu — Items', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Submenu — Items', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			<IconPicker
 				label={ __( 'Marker icon', 'sgs-blocks' ) }
-				value={ sublinkMarkerIcon || { source: 'lucide', name: 'chevron-right' } }
-				onChange={ ( next ) => setAttributes( { sublinkMarkerIcon: next } ) }
+				value={
+					sublinkMarkerIcon || {
+						source: 'lucide',
+						name: 'chevron-right',
+					}
+				}
+				onChange={ ( next ) =>
+					setAttributes( { sublinkMarkerIcon: next } )
+				}
 			/>
 			<p className="components-base-control__help">
 				{ __(

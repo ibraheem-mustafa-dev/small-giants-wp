@@ -72,16 +72,14 @@ function markCurrentPage( root ) {
 	// sitting on a dropdown child's URL still gets it highlighted.
 	root.querySelectorAll(
 		'.sgs-nav-bar-menu__link[data-sgs-nav-path], .sgs-nav-bar-menu__sublink[data-sgs-nav-path]'
-	).forEach(
-		( link ) => {
-			const path = normalisePath( link.dataset.sgsNavPath || '' );
-			if ( path !== '' && path === current ) {
-				link.setAttribute( 'aria-current', 'page' );
-			} else {
-				link.removeAttribute( 'aria-current' );
-			}
+	).forEach( ( link ) => {
+		const path = normalisePath( link.dataset.sgsNavPath || '' );
+		if ( path !== '' && path === current ) {
+			link.setAttribute( 'aria-current', 'page' );
+		} else {
+			link.removeAttribute( 'aria-current' );
 		}
-	);
+	} );
 
 	// A mega item is an ancestor of the current page when one of its panel
 	// links points at it: the panel links are container-block links that carry
@@ -136,14 +134,16 @@ function initBarEffects( root ) {
 		// `engage: 'over'`, and moves only the label inside it: only the hovered
 		// item's label moves, only while the pointer is over that item.
 		const strengthAttr = bar.getAttribute( 'data-magnet-strength' );
-		const strength = null !== strengthAttr ? parseFloat( strengthAttr ) : NaN;
+		const strength =
+			null !== strengthAttr ? parseFloat( strengthAttr ) : NaN;
 		const magnetOpts = Number.isFinite( strength )
 			? { factor: strength, maxPull: Infinity }
 			: {};
 
 		bar.querySelectorAll( '.sgs-nav-bar-menu__magnet-target' ).forEach(
 			( label ) => {
-				const link = label.closest( '.sgs-nav-bar-menu__link' ) || label;
+				const link =
+					label.closest( '.sgs-nav-bar-menu__link' ) || label;
 				activeCleanups.push(
 					initLabelMagnet( link, {
 						...magnetOpts,
@@ -160,10 +160,12 @@ function initBarEffects( root ) {
  * Initialise every sgs/nav-bar-menu instance on the page.
  */
 function init() {
-	document.querySelectorAll( '.wp-block-sgs-nav-bar-menu' ).forEach( ( root ) => {
-		markCurrentPage( root );
-		initBarEffects( root );
-	} );
+	document
+		.querySelectorAll( '.wp-block-sgs-nav-bar-menu' )
+		.forEach( ( root ) => {
+			markCurrentPage( root );
+			initBarEffects( root );
+		} );
 	// A bar on the Entrance model: each dropdown and mega panel publishes its
 	// trigger's state as the `open` motion state (Spec 38A FR-38A-51). See
 	// panel-motion-state.js.

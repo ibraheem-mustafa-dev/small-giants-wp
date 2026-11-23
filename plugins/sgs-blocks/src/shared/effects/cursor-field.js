@@ -129,7 +129,11 @@ const REST_Y_ATTR = 'data-sgs-fx-cursor-field-rest-y';
  */
 export function readRest( el, name ) {
 	const raw = el.getAttribute( name );
-	if ( null === raw || '' === raw.trim() || ! Number.isFinite( Number( raw ) ) ) {
+	if (
+		null === raw ||
+		'' === raw.trim() ||
+		! Number.isFinite( Number( raw ) )
+	) {
 		return null;
 	}
 	return Math.max( 0, Math.min( 100, Number( raw ) ) );
@@ -353,20 +357,38 @@ export function initCursorField( el, opts = {} ) {
 		const restX = readRest( el, REST_X_ATTR );
 		const restY = readRest( el, REST_Y_ATTR );
 		if ( elementSpace ) {
-			el.style.setProperty( varX, null === restX ? STATIC_ELEMENT_X : `${ restX }%` );
-			el.style.setProperty( varY, null === restY ? STATIC_ELEMENT_Y : `${ restY }%` );
+			el.style.setProperty(
+				varX,
+				null === restX ? STATIC_ELEMENT_X : `${ restX }%`
+			);
+			el.style.setProperty(
+				varY,
+				null === restY ? STATIC_ELEMENT_Y : `${ restY }%`
+			);
 			return;
 		}
 		const rect = el.getBoundingClientRect();
 		// A stored rest point is in vw / vh; absent, the field rests at the emitter's centre.
-		const x = null === restX ? rect.left + rect.width / 2 : ( window.innerWidth * restX ) / 100;
-		const y = null === restY ? rect.top + rect.height / 2 : ( window.innerHeight * restY ) / 100;
+		const x =
+			null === restX
+				? rect.left + rect.width / 2
+				: ( window.innerWidth * restX ) / 100;
+		const y =
+			null === restY
+				? rect.top + rect.height / 2
+				: ( window.innerHeight * restY ) / 100;
 		el.style.setProperty( varX, `${ Math.round( x ) }px` );
 		el.style.setProperty( varY, `${ Math.round( y ) }px` );
 		// The same resting point expressed in the element's own box, for
 		// masked types. Same rect, no extra measurement.
-		el.style.setProperty( VAR_LOCAL_X, `${ Math.round( x - rect.left ) }px` );
-		el.style.setProperty( VAR_LOCAL_Y, `${ Math.round( y - rect.top ) }px` );
+		el.style.setProperty(
+			VAR_LOCAL_X,
+			`${ Math.round( x - rect.left ) }px`
+		);
+		el.style.setProperty(
+			VAR_LOCAL_Y,
+			`${ Math.round( y - rect.top ) }px`
+		);
 	};
 
 	/**
@@ -408,12 +430,15 @@ export function initCursorField( el, opts = {} ) {
 		setVisible( false );
 	}
 
-	const participants = elementSpace || revealMode ? [] : markParticipants( el );
+	const participants =
+		elementSpace || revealMode ? [] : markParticipants( el );
 
 	// Element-space mode is the single-element `spotlight.js` contract — it
 	// has no participants and therefore nothing for the observer to watch.
 	const participantObserver =
-		! elementSpace && ! revealMode && 'undefined' !== typeof window.MutationObserver
+		! elementSpace &&
+		! revealMode &&
+		'undefined' !== typeof window.MutationObserver
 			? observeParticipants( el, participants )
 			: null;
 
@@ -496,7 +521,8 @@ export function initCursorField( el, opts = {} ) {
 	 */
 	const trailAttr = el.getAttribute( 'data-sgs-cursor-field-trail' );
 	const trailAmount = clamp( parseInt( trailAttr, 10 ) || 0, 0, 100 );
-	const trailFactor = 0 === trailAmount ? 1 : 1 - ( trailAmount / 100 ) * 0.94;
+	const trailFactor =
+		0 === trailAmount ? 1 : 1 - ( trailAmount / 100 ) * 0.94;
 
 	let targetX = null;
 	let targetY = null;

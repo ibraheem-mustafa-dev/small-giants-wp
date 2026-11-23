@@ -15,7 +15,13 @@ import Chips from './Chips.js';
 import { MEDIA_SHAPES } from '../../utils/icon-shapes.js';
 import { RADIUS_OF } from './emit/mask.js';
 import { slotAccess, slotKind } from './fieldBase.js';
-import { deviceName, isUnset, resolveTierSource, useActiveDevice, writeDevice } from './deviceValues.js';
+import {
+	deviceName,
+	isUnset,
+	resolveTierSource,
+	useActiveDevice,
+	writeDevice,
+} from './deviceValues.js';
 import { FILL, NATURAL } from './sizing-model.js';
 import './ShapeField.css';
 
@@ -26,8 +32,12 @@ import './ShapeField.css';
  * @return {Array} Entries with `mask` (the path, for masks) or `radius` (the corner radius, for radius shapes).
  */
 export function shapeEntries( kind = '' ) {
-	return MEDIA_SHAPES.filter( ( entry ) => 'radius' === entry.paint ? !! RADIUS_OF[ entry.slug ] : 'embed' !== kind ).map( ( entry ) =>
-		'radius' === entry.paint ? { ...entry, radius: RADIUS_OF[ entry.slug ] } : { ...entry, mask: entry.d }
+	return MEDIA_SHAPES.filter( ( entry ) =>
+		'radius' === entry.paint ? !! RADIUS_OF[ entry.slug ] : 'embed' !== kind
+	).map( ( entry ) =>
+		'radius' === entry.paint
+			? { ...entry, radius: RADIUS_OF[ entry.slug ] }
+			: { ...entry, mask: entry.d }
 	);
 }
 
@@ -39,7 +49,8 @@ function maskUrl( d ) {
 
 /** Whether the box resolves to something other than a square at a device, by ratio or two same-unit lengths. */
 function resolvesNonSquare( read, device ) {
-	const pick = ( base ) => resolveTierSource( read( base ), device ).value || '';
+	const pick = ( base ) =>
+		resolveTierSource( read( base ), device ).value || '';
 	const ratio = pick( 'Ratio' );
 	if ( ratio && NATURAL !== ratio && FILL !== pick( 'Height' ) ) {
 		const [ w, h ] = ratio.split( '/' ).map( ( n ) => parseFloat( n ) );
@@ -48,27 +59,58 @@ function resolvesNonSquare( read, device ) {
 	const width = String( pick( 'Width' ) );
 	const height = String( pick( 'Height' ) );
 	const unit = ( v ) => v.replace( /^[\d.]+/, '' );
-	return /^[\d.]+[a-z%]+$/.test( width ) && /^[\d.]+[a-z%]+$/.test( height ) && unit( width ) === unit( height ) && parseFloat( width ) !== parseFloat( height );
+	return (
+		/^[\d.]+[a-z%]+$/.test( width ) &&
+		/^[\d.]+[a-z%]+$/.test( height ) &&
+		unit( width ) === unit( height ) &&
+		parseFloat( width ) !== parseFloat( height )
+	);
 }
 
-export default function ShapeField( { attributes, setAttributes, prefix, slot } ) {
+export default function ShapeField( {
+	attributes,
+	setAttributes,
+	prefix,
+	slot,
+} ) {
 	const access = slotAccess( attributes, setAttributes, prefix );
 	const device = useActiveDevice();
 	const kind = slotKind( slot, access );
-	const photo = resolveTierSource( access.read( 'Source' ), device, ( s ) => !! s?.url ).value?.url || '';
+	const photo =
+		resolveTierSource( access.read( 'Source' ), device, ( s ) => !! s?.url )
+			.value?.url || '';
 	const entries = shapeEntries( kind );
 
 	const options = [
-		{ value: 'none', label: __( 'None', 'sgs-blocks' ), icon: <span className="sgs-shape-tile" style={ photo ? { '--sgs-shape-photo': `url("${ photo }")` } : undefined } /> },
+		{
+			value: 'none',
+			label: __( 'None', 'sgs-blocks' ),
+			icon: (
+				<span
+					className="sgs-shape-tile"
+					style={
+						photo
+							? { '--sgs-shape-photo': `url("${ photo }")` }
+							: undefined
+					}
+				/>
+			),
+		},
 		...entries.map( ( entry ) => ( {
 			value: entry.slug,
 			label: entry.label,
 			icon: (
 				<span
-					className={ `sgs-shape-tile${ entry.mask ? ' is-mask' : '' }` }
+					className={ `sgs-shape-tile${
+						entry.mask ? ' is-mask' : ''
+					}` }
 					style={ {
-						...( photo ? { '--sgs-shape-photo': `url("${ photo }")` } : {} ),
-						...( entry.mask ? { '--sgs-shape-mask': maskUrl( entry.d ) } : { '--sgs-shape-radius': entry.radius } ),
+						...( photo
+							? { '--sgs-shape-photo': `url("${ photo }")` }
+							: {} ),
+						...( entry.mask
+							? { '--sgs-shape-mask': maskUrl( entry.d ) }
+							: { '--sgs-shape-radius': entry.radius } ),
 					} }
 				/>
 			),
@@ -79,7 +121,11 @@ export default function ShapeField( { attributes, setAttributes, prefix, slot } 
 		const stored = access.read( 'Shape' );
 		const parent = { tablet: 'desktop', mobile: 'tablet' }[ device ];
 		const wider = parent
-			? resolveTierSource( stored, parent, ( v ) => ! isUnset( v ) && 'none' !== v?.shape )
+			? resolveTierSource(
+					stored,
+					parent,
+					( v ) => ! isUnset( v ) && 'none' !== v?.shape
+			  )
 			: { from: null };
 		let next;
 		if ( 'none' === slug ) {
@@ -88,19 +134,30 @@ export default function ShapeField( { attributes, setAttributes, prefix, slot } 
 			const entry = entries.find( ( e ) => e.slug === slug );
 			next = { shape: slug };
 			if ( entry?.mask ) {
-				next.proportions = current?.shape === slug && current.proportions ? current.proportions : entry.proportions || 'stretch';
+				next.proportions =
+					current?.shape === slug && current.proportions
+						? current.proportions
+						: entry.proportions || 'stretch';
 			}
 		}
 		const patch = { Shape: writeDevice( stored, device, next ) };
 		const entry = entries.find( ( e ) => e.slug === slug );
-		const ratioNow = resolveTierSource( access.read( 'Ratio' ), device ).value;
+		const ratioNow = resolveTierSource(
+			access.read( 'Ratio' ),
+			device
+		).value;
 		if ( entry?.ratio && ! ratioNow ) {
-			patch.Ratio = writeDevice( access.read( 'Ratio' ), device, entry.ratio );
+			patch.Ratio = writeDevice(
+				access.read( 'Ratio' ),
+				device,
+				entry.ratio
+			);
 		}
 		access.write( patch );
 	};
 
-	const showSquareNote = ( shape ) => 'circle' === shape && resolvesNonSquare( access.read, device );
+	const showSquareNote = ( shape ) =>
+		'circle' === shape && resolvesNonSquare( access.read, device );
 
 	return (
 		<ResponsiveOverride
@@ -115,7 +172,13 @@ export default function ShapeField( { attributes, setAttributes, prefix, slot } 
 				return (
 					<>
 						<Chips
-							label={ sprintf( /* translators: %s: device name. */ __( 'Shape on %s', 'sgs-blocks' ), deviceName( tier ) ) }
+							label={ sprintf(
+								/* translators: %s: device name. */ __(
+									'Shape on %s',
+									'sgs-blocks'
+								),
+								deviceName( tier )
+							) }
 							options={ options }
 							value={ slug }
 							onChange={ ( value ) => choose( value, current ) }
@@ -127,7 +190,17 @@ export default function ShapeField( { attributes, setAttributes, prefix, slot } 
 									checked={ 'keep' === current.proportions }
 									onChange={ ( e ) =>
 										access.write( {
-											Shape: writeDevice( access.read( 'Shape' ), device, { ...current, proportions: e.target.checked ? 'keep' : 'stretch' } ),
+											Shape: writeDevice(
+												access.read( 'Shape' ),
+												device,
+												{
+													...current,
+													proportions: e.target
+														.checked
+														? 'keep'
+														: 'stretch',
+												}
+											),
 										} )
 									}
 								/>
@@ -136,13 +209,29 @@ export default function ShapeField( { attributes, setAttributes, prefix, slot } 
 						) }
 						{ showSquareNote( slug ) && (
 							<div className="sgs-shape-note" role="status">
-								<p>{ __( 'This is an oval because the photo area is not square.', 'sgs-blocks' ) }</p>
+								<p>
+									{ __(
+										'This is an oval because the photo area is not square.',
+										'sgs-blocks'
+									) }
+								</p>
 								<button
 									type="button"
 									className="sgs-media-length__keyword"
-									onClick={ () => access.write( { Ratio: writeDevice( access.read( 'Ratio' ), device, '1 / 1' ) } ) }
+									onClick={ () =>
+										access.write( {
+											Ratio: writeDevice(
+												access.read( 'Ratio' ),
+												device,
+												'1 / 1'
+											),
+										} )
+									}
 								>
-									{ __( 'Make it square (1:1)', 'sgs-blocks' ) }
+									{ __(
+										'Make it square (1:1)',
+										'sgs-blocks'
+									) }
 								</button>
 							</div>
 						) }

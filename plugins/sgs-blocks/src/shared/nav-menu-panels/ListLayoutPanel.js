@@ -20,32 +20,32 @@ import LinkExtrasItems from './LinkExtrasItems';
  * drawer-only, because a horizontal bar always stays one row. The bar's
  * link extras come from LinkExtrasItems.js.
  *
- * @param {Object}   root0                     Props.
- * @param {Object}   root0.gap                 The block's `gap` attribute, a tier object
- *                                             ({ desktop, tablet, mobile }; unset tiers inherit upward).
- * @param {boolean}  root0.showColumnsControl  True on `sgs/nav-drawer-menu`, false on
- *                                             `sgs/nav-bar-menu`.
- * @param {Object}   [root0.listColumns]       The block's `listColumns` attribute — drawer only.
- * @param {Object}   root0.padding             The block's `padding` attribute.
- * @param {boolean}  [root0.showMargin]        Shows the "Margin" control (`margin`, a tier-of-boxes object).
- * @param {Object}   [root0.margin]            The block's `margin` attribute.
- * @param {boolean}  [root0.showItemPadding]   True on `sgs/nav-bar-menu` only: shows
- *                                             "Link padding" (`itemPadding`) and the
- *                                             LinkExtrasItems rows.
- * @param {Object}   [root0.itemPadding]       The bar's `itemPadding` attribute, a tier
- *                                             object of {top,right,bottom,left} boxes.
- * @param {boolean}  [root0.showItemGap]       True on `sgs/nav-drawer-menu` only: shows "Row gap" (`itemGap`).
- * @param {Object}   [root0.itemGap]           The block's `itemGap` attribute, a tier object of gap values.
+ * @param {Object}   root0                          Props.
+ * @param {Object}   root0.gap                      The block's `gap` attribute, a tier object
+ *                                                  ({ desktop, tablet, mobile }; unset tiers inherit upward).
+ * @param {boolean}  root0.showColumnsControl       True on `sgs/nav-drawer-menu`, false on
+ *                                                  `sgs/nav-bar-menu`.
+ * @param {Object}   [root0.listColumns]            The block's `listColumns` attribute — drawer only.
+ * @param {Object}   root0.padding                  The block's `padding` attribute.
+ * @param {boolean}  [root0.showMargin]             Shows the "Margin" control (`margin`, a tier-of-boxes object).
+ * @param {Object}   [root0.margin]                 The block's `margin` attribute.
+ * @param {boolean}  [root0.showItemPadding]        True on `sgs/nav-bar-menu` only: shows
+ *                                                  "Link padding" (`itemPadding`) and the
+ *                                                  LinkExtrasItems rows.
+ * @param {Object}   [root0.itemPadding]            The bar's `itemPadding` attribute, a tier
+ *                                                  object of {top,right,bottom,left} boxes.
+ * @param {boolean}  [root0.showItemGap]            True on `sgs/nav-drawer-menu` only: shows "Row gap" (`itemGap`).
+ * @param {Object}   [root0.itemGap]                The block's `itemGap` attribute, a tier object of gap values.
  * @param {boolean}  [root0.showSubmenuLinkPadding] Shows "Dropdown link padding"
- *                                             (`submenuLinkPadding`) — Spec 36 "Item hover
- *                                             paint": the same per-device box control as
- *                                             `itemPadding`, for the submenu/dropdown/mega/
- *                                             accordion link instead of the top-level one.
- * @param {Object}   [root0.submenuLinkPadding] The block's `submenuLinkPadding` attribute, a
- *                                             tier object of {top,right,bottom,left} boxes.
- * @param {boolean}  [root0.showFlexWrap]      True on `sgs/nav-bar-menu` only: shows "Wrap items" (`flexWrap`).
- * @param {string}   [root0.flexWrap]          The bar's `flexWrap` attribute ('' | 'nowrap' | 'wrap').
- * @param {Function} root0.setAttributes       The block's attribute setter.
+ *                                                  (`submenuLinkPadding`) — Spec 36 "Item hover
+ *                                                  paint": the same per-device box control as
+ *                                                  `itemPadding`, for the submenu/dropdown/mega/
+ *                                                  accordion link instead of the top-level one.
+ * @param {Object}   [root0.submenuLinkPadding]     The block's `submenuLinkPadding` attribute, a
+ *                                                  tier object of {top,right,bottom,left} boxes.
+ * @param {boolean}  [root0.showFlexWrap]           True on `sgs/nav-bar-menu` only: shows "Wrap items" (`flexWrap`).
+ * @param {string}   [root0.flexWrap]               The bar's `flexWrap` attribute ('' | 'nowrap' | 'wrap').
+ * @param {Function} root0.setAttributes            The block's attribute setter.
  */
 export default function ListLayoutPanel( {
 	gap,
@@ -76,9 +76,19 @@ export default function ListLayoutPanel( {
 					gap: { desktop: '8px' },
 					padding: {},
 					...( showMargin ? { margin: {} } : {} ),
-					...( showItemPadding ? { itemPadding: {}, itemMinHeight: {}, itemBadgePadding: {}, itemBadgeBorderRadius: '', itemBadgeGap: '' } : {} ),
+					...( showItemPadding
+						? {
+								itemPadding: {},
+								itemMinHeight: {},
+								itemBadgePadding: {},
+								itemBadgeBorderRadius: '',
+								itemBadgeGap: '',
+						  }
+						: {} ),
 					...( showItemGap ? { itemGap: undefined } : {} ),
-					...( showSubmenuLinkPadding ? { submenuLinkPadding: {} } : {} ),
+					...( showSubmenuLinkPadding
+						? { submenuLinkPadding: {} }
+						: {} ),
 					...( showFlexWrap ? { flexWrap: '' } : {} ),
 				} )
 			}
@@ -88,11 +98,15 @@ export default function ListLayoutPanel( {
 					!! gap &&
 					typeof gap === 'object' &&
 					Object.entries( gap ).some(
-						( [ tier, value ] ) => !! value && ! ( tier === 'desktop' && value === '8px' )
+						( [ tier, value ] ) =>
+							!! value &&
+							! ( tier === 'desktop' && value === '8px' )
 					)
 				}
 				label={ __( 'Item gap', 'sgs-blocks' ) }
-				onDeselect={ () => setAttributes( { gap: { desktop: '8px' } } ) }
+				onDeselect={ () =>
+					setAttributes( { gap: { desktop: '8px' } } )
+				}
 				isShownByDefault
 			>
 				<ResponsiveLengthControl
@@ -120,11 +134,25 @@ export default function ListLayoutPanel( {
 						) }
 						value={ flexWrap || '' }
 						options={ [
-							{ value: '', label: __( 'One row (default)', 'sgs-blocks' ) },
-							{ value: 'nowrap', label: __( 'One row', 'sgs-blocks' ) },
-							{ value: 'wrap', label: __( 'Wrap onto more rows', 'sgs-blocks' ) },
+							{
+								value: '',
+								label: __( 'One row (default)', 'sgs-blocks' ),
+							},
+							{
+								value: 'nowrap',
+								label: __( 'One row', 'sgs-blocks' ),
+							},
+							{
+								value: 'wrap',
+								label: __(
+									'Wrap onto more rows',
+									'sgs-blocks'
+								),
+							},
 						] }
-						onChange={ ( value ) => setAttributes( { flexWrap: value } ) }
+						onChange={ ( value ) =>
+							setAttributes( { flexWrap: value } )
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
@@ -146,7 +174,10 @@ export default function ListLayoutPanel( {
 							value={ listColumns?.[ breakpoint ] || 1 }
 							onChange={ ( value ) =>
 								setAttributes( {
-									listColumns: { ...listColumns, [ breakpoint ]: value || undefined },
+									listColumns: {
+										...listColumns,
+										[ breakpoint ]: value || undefined,
+									},
 								} )
 							}
 							__nextHasNoMarginBottom
@@ -167,13 +198,9 @@ export default function ListLayoutPanel( {
 			 * pattern set it and the live canary computed `max-width: none`.
 			 */ }
 			<ToolsPanelItem
-				hasValue={ () =>
-					Object.keys( padding ?? {} ).length > 0
-				}
+				hasValue={ () => Object.keys( padding ?? {} ).length > 0 }
 				label={ __( 'Padding', 'sgs-blocks' ) }
-				onDeselect={ () =>
-					setAttributes( { padding: {} } )
-				}
+				onDeselect={ () => setAttributes( { padding: {} } ) }
 				isShownByDefault
 			>
 				<ResponsiveOverride
@@ -183,10 +210,16 @@ export default function ListLayoutPanel( {
 					{ ( { ownValue, setOwnValue } ) => (
 						<SgsBoxControl
 							label={ __( 'Padding', 'sgs-blocks' ) }
-							values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+							values={
+								ownValue && typeof ownValue === 'object'
+									? ownValue
+									: {}
+							}
 							units={ BOX_UNITS }
 							presets
-							onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							onChange={ ( next ) =>
+								setOwnValue( normaliseResponsiveBox( next ) )
+							}
 						/>
 					) }
 				</ResponsiveOverride>
@@ -206,10 +239,18 @@ export default function ListLayoutPanel( {
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
@@ -218,22 +259,34 @@ export default function ListLayoutPanel( {
 
 			{ showItemPadding && (
 				<ToolsPanelItem
-					hasValue={ () => Object.keys( itemPadding ?? {} ).length > 0 }
+					hasValue={ () =>
+						Object.keys( itemPadding ?? {} ).length > 0
+					}
 					label={ __( 'Link padding', 'sgs-blocks' ) }
 					onDeselect={ () => setAttributes( { itemPadding: {} } ) }
 					isShownByDefault
 				>
 					<ResponsiveOverride
 						value={ itemPadding }
-						onChange={ ( obj ) => setAttributes( { itemPadding: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { itemPadding: obj } )
+						}
 					>
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Link padding', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
@@ -254,22 +307,39 @@ export default function ListLayoutPanel( {
 
 			{ showSubmenuLinkPadding && (
 				<ToolsPanelItem
-					hasValue={ () => Object.keys( submenuLinkPadding ?? {} ).length > 0 }
+					hasValue={ () =>
+						Object.keys( submenuLinkPadding ?? {} ).length > 0
+					}
 					label={ __( 'Dropdown link padding', 'sgs-blocks' ) }
-					onDeselect={ () => setAttributes( { submenuLinkPadding: {} } ) }
+					onDeselect={ () =>
+						setAttributes( { submenuLinkPadding: {} } )
+					}
 					isShownByDefault
 				>
 					<ResponsiveOverride
 						value={ submenuLinkPadding }
-						onChange={ ( obj ) => setAttributes( { submenuLinkPadding: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { submenuLinkPadding: obj } )
+						}
 					>
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
-								label={ __( 'Dropdown link padding', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								label={ __(
+									'Dropdown link padding',
+									'sgs-blocks'
+								) }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>

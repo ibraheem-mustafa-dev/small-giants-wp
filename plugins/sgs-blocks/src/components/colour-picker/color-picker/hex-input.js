@@ -20,7 +20,11 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { InputControl, InputControlPrefixWrapper, Text } from '../../primitives';
+import {
+	InputControl,
+	InputControlPrefixWrapper,
+	Text,
+} from '../../primitives';
 
 const ACCENT_COLOR =
 	'var(--wp-components-color-accent, var(--wp-admin-theme-color, #3858e9))';

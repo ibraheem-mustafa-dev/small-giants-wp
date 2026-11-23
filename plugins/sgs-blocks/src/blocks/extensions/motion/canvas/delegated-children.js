@@ -72,10 +72,17 @@ export function delegatedCardTarget( delegation, root ) {
  */
 export function shownCards( found, rootEl, rootClass ) {
 	return found.filter( ( el ) => {
-		if ( el.closest( NOT_SHOWN ) && rootEl.contains( el.closest( NOT_SHOWN ) ) ) {
+		if (
+			el.closest( NOT_SHOWN ) &&
+			rootEl.contains( el.closest( NOT_SHOWN ) )
+		) {
 			return false;
 		}
-		for ( let up = el.parentElement; up && up !== rootEl; up = up.parentElement ) {
+		for (
+			let up = el.parentElement;
+			up && up !== rootEl;
+			up = up.parentElement
+		) {
 			if ( up.classList.contains( rootClass ) ) {
 				return false;
 			}
@@ -86,7 +93,10 @@ export function shownCards( found, rootEl, rootClass ) {
 
 // An entrance on a named state the child block does not declare plays on scroll (`Sgs_Motion_Delegate::playable`).
 function playable( base, states ) {
-	if ( base.trigger === 'state' && ! states.includes( String( base.state ?? '' ) ) ) {
+	if (
+		base.trigger === 'state' &&
+		! states.includes( String( base.state ?? '' ) )
+	) {
 		const { state, ...rest } = base;
 		return { ...rest, trigger: 'scroll' };
 	}
@@ -106,21 +116,47 @@ function playable( base, states ) {
 export function delegatedCardPlan( motion, options ) {
 	const target = delegatedCardTarget( options.delegation, options.root );
 	const targets = sanitiseDocument( motion ).elements;
-	if ( ! target || ! ( options.cards > 0 ) || ! targets || typeof targets !== 'object' || Array.isArray( targets ) ) {
+	if (
+		! target ||
+		! ( options.cards > 0 ) ||
+		! targets ||
+		typeof targets !== 'object' ||
+		Array.isArray( targets )
+	) {
 		return null;
 	}
-	const from = delegatedMove( motion, targets, options.elements, options.delegation );
+	const from = delegatedMove(
+		motion,
+		targets,
+		options.elements,
+		options.delegation
+	);
 	if ( from === null ) {
 		return null;
 	}
-	const states = Array.isArray( options.delegation.childStates ) ? options.delegation.childStates : [];
-	const base = playable( withoutDelays( targets[ from ].entrance.base ), states );
-	const emitted = emitTarget( { entrance: { base } }, target.selector, { ...( options.context || {} ), suppressEntrance: false, states } );
+	const states = Array.isArray( options.delegation.childStates )
+		? options.delegation.childStates
+		: [];
+	const base = playable(
+		withoutDelays( targets[ from ].entrance.base ),
+		states
+	);
+	const emitted = emitTarget( { entrance: { base } }, target.selector, {
+		...( options.context || {} ),
+		suppressEntrance: false,
+		states,
+	} );
 	if ( ! emitted.entrance ) {
 		return null;
 	}
 	return {
-		plan: { ...target, target: from, attrs: emitted.attrs, entrance: true, inheritedFrom: from },
+		plan: {
+			...target,
+			target: from,
+			attrs: emitted.attrs,
+			entrance: true,
+			inheritedFrom: from,
+		},
 		css: emitted.css,
 	};
 }

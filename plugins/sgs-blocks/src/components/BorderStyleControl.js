@@ -31,12 +31,16 @@ const BORDER_STYLES = [
 
 /**
  * @param {Object}   props
- * @param {string}   [props.label]    Field label.
- * @param {string}   [props.value]    'solid' | 'dashed' | 'dotted' | '' (none).
- * @param {Function} props.onChange   Receives the next style value ('' on deselect).
+ * @param {string}   [props.label]  Field label.
+ * @param {string}   [props.value]  'solid' | 'dashed' | 'dotted' | '' (none).
+ * @param {Function} props.onChange Receives the next style value ('' on deselect).
  * @return {JSX.Element} Controls fragment.
  */
-export default function BorderStyleControl( { label = __( 'Style', 'sgs-blocks' ), value, onChange } ) {
+export default function BorderStyleControl( {
+	label = __( 'Style', 'sgs-blocks' ),
+	value,
+	onChange,
+} ) {
 	return (
 		<ToggleGroupControl
 			label={ label }

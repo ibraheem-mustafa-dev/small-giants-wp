@@ -93,7 +93,9 @@ export function dimensionPaths( dim, width, height ) {
 	const overshoot = clamp( dim.extOvershoot, 0, 50, 0 ) * scale;
 	const reachStart = clamp( dim.extReach, -100, 100, 0 ) * scale;
 	const reachEnd =
-		dim.extReachEnd === null || dim.extReachEnd === undefined || dim.extReachEnd === ''
+		dim.extReachEnd === null ||
+		dim.extReachEnd === undefined ||
+		dim.extReachEnd === ''
 			? reachStart
 			: clamp( dim.extReachEnd, -100, 100, 0 ) * scale;
 
@@ -113,7 +115,9 @@ export function dimensionPaths( dim, width, height ) {
 			const ay = py - ny * reach;
 			const bx = px + nx * sign * overshoot;
 			const by = py + ny * sign * overshoot;
-			guides += `M${ fmt( ax ) } ${ fmt( ay ) }L${ fmt( bx ) } ${ fmt( by ) }`;
+			guides += `M${ fmt( ax ) } ${ fmt( ay ) }L${ fmt( bx ) } ${ fmt(
+				by
+			) }`;
 		} );
 	}
 
@@ -137,9 +141,9 @@ export function dimensionPaths( dim, width, height ) {
 		}
 		if ( endStyle === 'tick' ) {
 			const half = tick / 2;
-			ends += `M${ fmt( px - nx * half ) } ${ fmt( py - ny * half ) }L${ fmt(
-				px + nx * half
-			) } ${ fmt( py + ny * half ) }`;
+			ends += `M${ fmt( px - nx * half ) } ${ fmt(
+				py - ny * half
+			) }L${ fmt( px + nx * half ) } ${ fmt( py + ny * half ) }`;
 			return;
 		}
 		// Arrow: two strokes pointing at the end, 30 degrees either side of the line.
@@ -149,7 +153,9 @@ export function dimensionPaths( dim, width, height ) {
 		const by = py + uy * inward * back;
 		ends += `M${ fmt( bx + nx * side ) } ${ fmt( by + ny * side ) }L${ fmt(
 			px
-		) } ${ fmt( py ) }L${ fmt( bx - nx * side ) } ${ fmt( by - ny * side ) }`;
+		) } ${ fmt( py ) }L${ fmt( bx - nx * side ) } ${ fmt(
+			by - ny * side
+		) }`;
 	} );
 
 	return { line, guides, ends, dots };

@@ -12,7 +12,10 @@
 
 import { __ } from '@wordpress/i18n';
 import { PanelBody, RangeControl } from '@wordpress/components';
-import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+import {
+	ToggleGroupControl,
+	ToggleGroupControlOption,
+} from '../../components/primitives';
 
 /**
  * @param {Object}   props
@@ -24,7 +27,10 @@ export default function ScrollChangePanel( { attributes, setAttributes } ) {
 	const { scrolledTrigger, scrolledOffset } = attributes;
 
 	return (
-		<PanelBody title={ __( 'Scroll change', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Scroll change', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			<ToggleGroupControl
 				label={ __( 'Change based on', 'sgs-blocks' ) }
 				help={ __(
@@ -32,19 +38,29 @@ export default function ScrollChangePanel( { attributes, setAttributes } ) {
 					'sgs-blocks'
 				) }
 				value={ scrolledTrigger || 'position' }
-				onChange={ ( value ) => setAttributes( { scrolledTrigger: value || 'position' } ) }
+				onChange={ ( value ) =>
+					setAttributes( { scrolledTrigger: value || 'position' } )
+				}
 				isBlock
 				__next40pxDefaultSize
 				__nextHasNoMarginBottom
 			>
-				<ToggleGroupControlOption value="position" label={ __( 'Position', 'sgs-blocks' ) } />
-				<ToggleGroupControlOption value="direction" label={ __( 'Direction', 'sgs-blocks' ) } />
+				<ToggleGroupControlOption
+					value="position"
+					label={ __( 'Position', 'sgs-blocks' ) }
+				/>
+				<ToggleGroupControlOption
+					value="direction"
+					label={ __( 'Direction', 'sgs-blocks' ) }
+				/>
 			</ToggleGroupControl>
 
 			<RangeControl
 				label={ __( 'Change after scrolling (px)', 'sgs-blocks' ) }
 				value={ scrolledOffset ?? 50 }
-				onChange={ ( value ) => setAttributes( { scrolledOffset: value ?? 50 } ) }
+				onChange={ ( value ) =>
+					setAttributes( { scrolledOffset: value ?? 50 } )
+				}
 				min={ 0 }
 				max={ 2000 }
 				step={ 10 }

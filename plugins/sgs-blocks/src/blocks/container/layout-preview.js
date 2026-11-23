@@ -14,7 +14,8 @@
 import { tierValueOf } from '../../utils';
 import { cssSingleLengthValue } from '../../utils/css-length';
 
-const isBlank = ( v ) => undefined === v || null === v || '' === String( v ).trim();
+const isBlank = ( v ) =>
+	undefined === v || null === v || '' === String( v ).trim();
 
 /**
  * Twin of sgs_intrinsic_columns_track().
@@ -53,7 +54,13 @@ export function containerColumnsPreview( attributes, tier, gap ) {
 	}
 	const width = tierValueOf( attributes.minColumnWidth, tier );
 	const basis = cssSingleLengthValue( width );
-	return intrinsicColumnsTrack( tierValueOf( attributes.columns, tier ), gap, basis ) || undefined;
+	return (
+		intrinsicColumnsTrack(
+			tierValueOf( attributes.columns, tier ),
+			gap,
+			basis
+		) || undefined
+	);
 }
 
 /**

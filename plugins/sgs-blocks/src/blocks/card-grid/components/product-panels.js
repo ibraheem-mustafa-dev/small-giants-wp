@@ -11,11 +11,7 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import {
-	TextControl,
-	Spinner,
-	CheckboxControl,
-} from '@wordpress/components';
+import { TextControl, Spinner, CheckboxControl } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { store as coreStore } from '@wordpress/core-data';
 import { useState } from '@wordpress/element';
@@ -78,12 +74,24 @@ export function ProductTaxonomyChecklist( {
 
 	return (
 		<div style={ { marginBottom: 12 } }>
-			<p style={ { margin: '12px 0 4px', fontWeight: 600, fontSize: 12 } }>
+			<p
+				style={ {
+					margin: '12px 0 4px',
+					fontWeight: 600,
+					fontSize: 12,
+				} }
+			>
 				{ label }
 			</p>
 			{ isResolving && <Spinner /> }
 			{ ! isResolving && ( ! terms || terms.length === 0 ) && (
-				<p style={ { fontSize: 12, color: '#6b7280', margin: '4px 0' } }>
+				<p
+					style={ {
+						fontSize: 12,
+						color: '#6b7280',
+						margin: '4px 0',
+					} }
+				>
 					{ __(
 						'No terms found. This list fills in once WooCommerce is active and terms exist.',
 						'sgs-blocks'
@@ -243,7 +251,13 @@ export function ProductHandpickPanel( { productIds, setAttributes } ) {
 				</select>
 			) }
 			{ productIds.length > 0 && (
-				<ul style={ { margin: '4px 0 0', padding: 0, listStyle: 'none' } }>
+				<ul
+					style={ {
+						margin: '4px 0 0',
+						padding: 0,
+						listStyle: 'none',
+					} }
+				>
 					{ productIds.map( ( id ) => {
 						// Title lookup: the dedicated selected-products query
 						// first (always covers every selected ID), then the
@@ -281,7 +295,10 @@ export function ProductHandpickPanel( { productIds, setAttributes } ) {
 										alignItems: 'center',
 										justifyContent: 'center',
 									} }
-									aria-label={ __( 'Remove product', 'sgs-blocks' ) }
+									aria-label={ __(
+										'Remove product',
+										'sgs-blocks'
+									) }
 								>
 									✕
 								</button>

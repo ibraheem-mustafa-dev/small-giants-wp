@@ -31,7 +31,12 @@ export function resolveEase( value ) {
 		candidate = root
 			? window
 					.getComputedStyle( root )
-					.getPropertyValue( `--wp--custom--easing--${ token[ 1 ].replace( /(?<=[0-9])(?=[a-z])/g, '-' ) }` )
+					.getPropertyValue(
+						`--wp--custom--easing--${ token[ 1 ].replace(
+							/(?<=[0-9])(?=[a-z])/g,
+							'-'
+						) }`
+					)
 					.trim()
 			: '';
 	}

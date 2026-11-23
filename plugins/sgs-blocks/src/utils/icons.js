@@ -73,11 +73,32 @@ export const trustBarIcon = icon(
 /** Icon List — stacked check items */
 export const iconListIcon = icon(
 	<SVG viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-		<Path d="M4.5 5.5L6 7l2.5-2.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+		<Path
+			d="M4.5 5.5L6 7l2.5-2.5"
+			fill="none"
+			stroke="currentColor"
+			strokeWidth="1.5"
+			strokeLinecap="round"
+			strokeLinejoin="round"
+		/>
 		<Rect x="11" y="4" width="9" height="2" rx="1" />
-		<Path d="M4.5 11.5L6 13l2.5-2.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+		<Path
+			d="M4.5 11.5L6 13l2.5-2.5"
+			fill="none"
+			stroke="currentColor"
+			strokeWidth="1.5"
+			strokeLinecap="round"
+			strokeLinejoin="round"
+		/>
 		<Rect x="11" y="11" width="9" height="2" rx="1" />
-		<Path d="M4.5 17.5L6 19l2.5-2.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+		<Path
+			d="M4.5 17.5L6 19l2.5-2.5"
+			fill="none"
+			stroke="currentColor"
+			strokeWidth="1.5"
+			strokeLinecap="round"
+			strokeLinejoin="round"
+		/>
 		<Rect x="11" y="17" width="9" height="2" rx="1" />
 	</SVG>
 );
@@ -124,7 +145,10 @@ export const testimonialSliderIcon = icon(
 export const heritageStripIcon = icon(
 	<SVG viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 		<Path d="M12 4C10.08 2.8 7.64 2 5 2 3.9 2 2.84 2.12 1.84 2.35A.5.5 0 001.5 2.84V18.5a.5.5 0 00.62.48C3.06 18.68 4.02 18.5 5 18.5c2.4 0 4.64.88 6.36 2.33a.5.5 0 00.64.04V4.55a.5.5 0 00-.01-.08A.47.47 0 0012 4z" />
-		<Path d="M12 4c1.92-1.2 4.36-2 7-2 1.1 0 2.16.12 3.16.35a.5.5 0 01.34.49V18.5a.5.5 0 01-.62.48c-.94-.3-1.9-.48-2.88-.48-2.4 0-4.64.88-6.36 2.33a.5.5 0 01-.64.04V4.55a.5.5 0 01.01-.08.47.47 0 00-.01-.47z" fillOpacity="0.65" />
+		<Path
+			d="M12 4c1.92-1.2 4.36-2 7-2 1.1 0 2.16.12 3.16.35a.5.5 0 01.34.49V18.5a.5.5 0 01-.62.48c-.94-.3-1.9-.48-2.88-.48-2.4 0-4.64.88-6.36 2.33a.5.5 0 01-.64.04V4.55a.5.5 0 01.01-.08.47.47 0 00-.01-.47z"
+			fillOpacity="0.65"
+		/>
 	</SVG>
 );
 
@@ -141,7 +165,10 @@ export const brandStripIcon = icon(
 export const certificationBarIcon = icon(
 	<SVG viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 		<Circle cx="12" cy="9" r="7" />
-		<Path d="M12 9l1.12 2.27 2.5.37-1.81 1.76.43 2.5L12 14.78l-2.24 1.12.43-2.5-1.81-1.76 2.5-.37L12 9z" fill="white" />
+		<Path
+			d="M12 9l1.12 2.27 2.5.37-1.81 1.76.43 2.5L12 14.78l-2.24 1.12.43-2.5-1.81-1.76 2.5-.37L12 9z"
+			fill="white"
+		/>
 		<Path d="M8.5 15.5L7 22l5-2.5L17 22l-1.5-6.5" fillOpacity="0.65" />
 	</SVG>
 );
@@ -186,7 +213,16 @@ export const formStepIcon = icon(
 export const formFieldTextIcon = icon(
 	<SVG viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 		<Rect x="2" y="7" width="20" height="10" rx="2" fillOpacity="0.15" />
-		<Rect x="2" y="7" width="20" height="10" rx="2" fill="none" stroke="currentColor" strokeWidth="1.5" />
+		<Rect
+			x="2"
+			y="7"
+			width="20"
+			height="10"
+			rx="2"
+			fill="none"
+			stroke="currentColor"
+			strokeWidth="1.5"
+		/>
 		<Rect x="5" y="10.5" width="1.5" height="3" rx="0.5" />
 		<Rect x="8" y="11" width="6" height="2" rx="0.75" fillOpacity="0.4" />
 	</SVG>
@@ -195,8 +231,23 @@ export const formFieldTextIcon = icon(
 /** Form Field Email — envelope */
 export const formFieldEmailIcon = icon(
 	<SVG viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-		<Path d="M2 6a2 2 0 012-2h16a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V6zm2-.5L12 11l8-5.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-		<Rect x="2" y="4" width="20" height="16" rx="2" fill="none" stroke="currentColor" strokeWidth="1.5" />
+		<Path
+			d="M2 6a2 2 0 012-2h16a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V6zm2-.5L12 11l8-5.5"
+			fill="none"
+			stroke="currentColor"
+			strokeWidth="1.5"
+			strokeLinejoin="round"
+		/>
+		<Rect
+			x="2"
+			y="4"
+			width="20"
+			height="16"
+			rx="2"
+			fill="none"
+			stroke="currentColor"
+			strokeWidth="1.5"
+		/>
 	</SVG>
 );
 
@@ -211,9 +262,25 @@ export const formFieldPhoneIcon = icon(
 export const formFieldTextareaIcon = icon(
 	<SVG viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 		<Rect x="2" y="3" width="20" height="18" rx="2" fillOpacity="0.15" />
-		<Rect x="2" y="3" width="20" height="18" rx="2" fill="none" stroke="currentColor" strokeWidth="1.5" />
+		<Rect
+			x="2"
+			y="3"
+			width="20"
+			height="18"
+			rx="2"
+			fill="none"
+			stroke="currentColor"
+			strokeWidth="1.5"
+		/>
 		<Rect x="5" y="7" width="10" height="1.5" rx="0.75" />
-		<Rect x="5" y="10.5" width="14" height="1.5" rx="0.75" fillOpacity="0.5" />
+		<Rect
+			x="5"
+			y="10.5"
+			width="14"
+			height="1.5"
+			rx="0.75"
+			fillOpacity="0.5"
+		/>
 		<Rect x="5" y="14" width="8" height="1.5" rx="0.75" fillOpacity="0.5" />
 	</SVG>
 );
@@ -222,16 +289,40 @@ export const formFieldTextareaIcon = icon(
 export const formFieldSelectIcon = icon(
 	<SVG viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 		<Rect x="2" y="7" width="20" height="10" rx="2" fillOpacity="0.15" />
-		<Rect x="2" y="7" width="20" height="10" rx="2" fill="none" stroke="currentColor" strokeWidth="1.5" />
+		<Rect
+			x="2"
+			y="7"
+			width="20"
+			height="10"
+			rx="2"
+			fill="none"
+			stroke="currentColor"
+			strokeWidth="1.5"
+		/>
 		<Rect x="5" y="11" width="8" height="2" rx="0.75" fillOpacity="0.5" />
-		<Path d="M17 10.5l2 2.5-2 2.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" transform="rotate(90 18 12.75)" />
+		<Path
+			d="M17 10.5l2 2.5-2 2.5"
+			fill="none"
+			stroke="currentColor"
+			strokeWidth="1.5"
+			strokeLinecap="round"
+			strokeLinejoin="round"
+			transform="rotate(90 18 12.75)"
+		/>
 	</SVG>
 );
 
 /** Form Field Radio — circle with inner dot */
 export const formFieldRadioIcon = icon(
 	<SVG viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-		<Circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth="1.5" />
+		<Circle
+			cx="12"
+			cy="12"
+			r="9"
+			fill="none"
+			stroke="currentColor"
+			strokeWidth="1.5"
+		/>
 		<Circle cx="12" cy="12" r="4.5" />
 	</SVG>
 );
@@ -240,7 +331,14 @@ export const formFieldRadioIcon = icon(
 export const formFieldCheckboxIcon = icon(
 	<SVG viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 		<Rect x="3" y="3" width="18" height="18" rx="3" />
-		<Path d="M7.5 12l3 3 6-6" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+		<Path
+			d="M7.5 12l3 3 6-6"
+			fill="none"
+			stroke="white"
+			strokeWidth="2"
+			strokeLinecap="round"
+			strokeLinejoin="round"
+		/>
 	</SVG>
 );
 
@@ -251,7 +349,14 @@ export const formFieldTilesIcon = icon(
 		<Rect x="13" y="3" width="8" height="8" rx="1.5" fillOpacity="0.35" />
 		<Rect x="3" y="13" width="8" height="8" rx="1.5" fillOpacity="0.35" />
 		<Rect x="13" y="13" width="8" height="8" rx="1.5" fillOpacity="0.35" />
-		<Path d="M5 7l1.5 1.5L9 5.5" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+		<Path
+			d="M5 7l1.5 1.5L9 5.5"
+			fill="none"
+			stroke="white"
+			strokeWidth="1.5"
+			strokeLinecap="round"
+			strokeLinejoin="round"
+		/>
 	</SVG>
 );
 
@@ -259,7 +364,14 @@ export const formFieldTilesIcon = icon(
 export const formFieldFileIcon = icon(
 	<SVG viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 		<Path d="M6.34 8.16A5.5 5.5 0 0112 4a5.5 5.5 0 015.28 3.95A4.002 4.002 0 0118 16H6a4 4 0 01-.66-7.94L6.34 8.16z" />
-		<Path d="M12 12v5m0-5l-2 2m2-2l2 2" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+		<Path
+			d="M12 12v5m0-5l-2 2m2-2l2 2"
+			fill="none"
+			stroke="white"
+			strokeWidth="1.5"
+			strokeLinecap="round"
+			strokeLinejoin="round"
+		/>
 	</SVG>
 );
 
@@ -268,14 +380,28 @@ export const formFieldConsentIcon = icon(
 	<SVG viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 		<Path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z" />
 		<Rect x="10" y="10" width="4" height="5" rx="1" fill="white" />
-		<Path d="M10.5 10V8.5a1.5 1.5 0 013 0V10" fill="none" stroke="white" strokeWidth="1.5" />
+		<Path
+			d="M10.5 10V8.5a1.5 1.5 0 013 0V10"
+			fill="none"
+			stroke="white"
+			strokeWidth="1.5"
+		/>
 	</SVG>
 );
 
 /** Form Field Date — calendar */
 export const formFieldDateIcon = icon(
 	<SVG viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-		<Rect x="3" y="4" width="18" height="17" rx="2" fill="none" stroke="currentColor" strokeWidth="1.5" />
+		<Rect
+			x="3"
+			y="4"
+			width="18"
+			height="17"
+			rx="2"
+			fill="none"
+			stroke="currentColor"
+			strokeWidth="1.5"
+		/>
 		<Path d="M3 9h18" stroke="currentColor" strokeWidth="1.5" />
 		<Circle cx="8" cy="14" r="1.5" />
 		<Circle cx="12" cy="14" r="1.5" />
@@ -289,8 +415,22 @@ export const formFieldDateIcon = icon(
 export const formFieldNumberIcon = icon(
 	<SVG viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 		<Rect x="2" y="7" width="20" height="10" rx="2" fillOpacity="0.15" />
-		<Rect x="2" y="7" width="20" height="10" rx="2" fill="none" stroke="currentColor" strokeWidth="1.5" />
-		<Path d="M8 9.5v5M11 9.5v5M6 11.5h5M6 13.5h5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+		<Rect
+			x="2"
+			y="7"
+			width="20"
+			height="10"
+			rx="2"
+			fill="none"
+			stroke="currentColor"
+			strokeWidth="1.5"
+		/>
+		<Path
+			d="M8 9.5v5M11 9.5v5M6 11.5h5M6 13.5h5"
+			stroke="currentColor"
+			strokeWidth="1.5"
+			strokeLinecap="round"
+		/>
 		<Rect x="14" y="11" width="5" height="2" rx="0.75" fillOpacity="0.5" />
 	</SVG>
 );
@@ -299,10 +439,27 @@ export const formFieldNumberIcon = icon(
 export const formFieldHiddenIcon = icon(
 	<SVG viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 		<Rect x="2" y="7" width="20" height="10" rx="2" fillOpacity="0.15" />
-		<Rect x="2" y="7" width="20" height="10" rx="2" fill="none" stroke="currentColor" strokeWidth="1.5" />
-		<Path d="M4 12c1.5-3 4.5-5 8-5s6.5 2 8 5c-1.5 3-4.5 5-8 5s-6.5-2-8-5z" fillOpacity="0.3" />
+		<Rect
+			x="2"
+			y="7"
+			width="20"
+			height="10"
+			rx="2"
+			fill="none"
+			stroke="currentColor"
+			strokeWidth="1.5"
+		/>
+		<Path
+			d="M4 12c1.5-3 4.5-5 8-5s6.5 2 8 5c-1.5 3-4.5 5-8 5s-6.5-2-8-5z"
+			fillOpacity="0.3"
+		/>
 		<Circle cx="12" cy="12" r="2" />
-		<Path d="M4 4l16 16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+		<Path
+			d="M4 4l16 16"
+			stroke="currentColor"
+			strokeWidth="1.5"
+			strokeLinecap="round"
+		/>
 	</SVG>
 );
 
@@ -323,7 +480,14 @@ export const formReviewIcon = icon(
 			fillRule="evenodd"
 			d="M10 2a2 2 0 00-2 2H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2a2 2 0 00-2-2h-4zm0 1.5h4a.5.5 0 01.5.5v1a.5.5 0 01-.5.5h-4a.5.5 0 01-.5-.5V4a.5.5 0 01.5-.5z"
 		/>
-		<Path d="M8.5 13l2.5 2.5L16 10" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+		<Path
+			d="M8.5 13l2.5 2.5L16 10"
+			fill="none"
+			stroke="white"
+			strokeWidth="2"
+			strokeLinecap="round"
+			strokeLinejoin="round"
+		/>
 	</SVG>
 );
 
@@ -331,10 +495,31 @@ export const formReviewIcon = icon(
 export const tableOfContentsIcon = icon(
 	<SVG viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 		<Rect x="3" y="3" width="12" height="2" rx="1" />
-		<Rect x="6" y="7.5" width="10" height="1.5" rx="0.75" fillOpacity="0.6" />
+		<Rect
+			x="6"
+			y="7.5"
+			width="10"
+			height="1.5"
+			rx="0.75"
+			fillOpacity="0.6"
+		/>
 		<Rect x="6" y="11" width="9" height="1.5" rx="0.75" fillOpacity="0.6" />
-		<Rect x="9" y="14.5" width="8" height="1.5" rx="0.75" fillOpacity="0.4" />
-		<Rect x="6" y="18" width="11" height="1.5" rx="0.75" fillOpacity="0.6" />
+		<Rect
+			x="9"
+			y="14.5"
+			width="8"
+			height="1.5"
+			rx="0.75"
+			fillOpacity="0.4"
+		/>
+		<Rect
+			x="6"
+			y="18"
+			width="11"
+			height="1.5"
+			rx="0.75"
+			fillOpacity="0.6"
+		/>
 		<Rect x="3" y="7" width="1.5" height="14" rx="0.5" fillOpacity="0.3" />
 	</SVG>
 );
@@ -347,7 +532,14 @@ export const tableOfContentsIcon = icon(
 export const accordionIcon = icon(
 	<SVG viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 		<Rect x="3" y="2" width="18" height="5" rx="1.5" />
-		<Path d="M16.5 4.5l-1 1-1-1" fill="none" stroke="white" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" />
+		<Path
+			d="M16.5 4.5l-1 1-1-1"
+			fill="none"
+			stroke="white"
+			strokeWidth="1"
+			strokeLinecap="round"
+			strokeLinejoin="round"
+		/>
 		<Rect x="3" y="9" width="18" height="5" rx="1.5" fillOpacity="0.5" />
 		<Rect x="3" y="16" width="18" height="5" rx="1.5" fillOpacity="0.35" />
 	</SVG>
@@ -357,11 +549,41 @@ export const accordionIcon = icon(
 export const accordionItemIcon = icon(
 	<SVG viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 		<Rect x="3" y="3" width="18" height="18" rx="2" fillOpacity="0.15" />
-		<Rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="currentColor" strokeWidth="1.5" />
+		<Rect
+			x="3"
+			y="3"
+			width="18"
+			height="18"
+			rx="2"
+			fill="none"
+			stroke="currentColor"
+			strokeWidth="1.5"
+		/>
 		<Rect x="6" y="7" width="8" height="2" rx="0.75" />
-		<Path d="M16 7l1.5 1.5L19 7" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-		<Rect x="6" y="12" width="12" height="1.5" rx="0.75" fillOpacity="0.4" />
-		<Rect x="6" y="15.5" width="9" height="1.5" rx="0.75" fillOpacity="0.4" />
+		<Path
+			d="M16 7l1.5 1.5L19 7"
+			fill="none"
+			stroke="currentColor"
+			strokeWidth="1.5"
+			strokeLinecap="round"
+			strokeLinejoin="round"
+		/>
+		<Rect
+			x="6"
+			y="12"
+			width="12"
+			height="1.5"
+			rx="0.75"
+			fillOpacity="0.4"
+		/>
+		<Rect
+			x="6"
+			y="15.5"
+			width="9"
+			height="1.5"
+			rx="0.75"
+			fillOpacity="0.4"
+		/>
 	</SVG>
 );
 
@@ -372,9 +594,32 @@ export const tabsIcon = icon(
 		<Rect x="9.5" y="3" width="5" height="4" rx="1" fillOpacity="0.4" />
 		<Rect x="16" y="3" width="5" height="4" rx="1" fillOpacity="0.4" />
 		<Rect x="3" y="7" width="18" height="14" rx="1.5" fillOpacity="0.15" />
-		<Rect x="3" y="7" width="18" height="14" rx="1.5" fill="none" stroke="currentColor" strokeWidth="1.5" />
-		<Rect x="6" y="11" width="10" height="1.5" rx="0.75" fillOpacity="0.5" />
-		<Rect x="6" y="14.5" width="7" height="1.5" rx="0.75" fillOpacity="0.35" />
+		<Rect
+			x="3"
+			y="7"
+			width="18"
+			height="14"
+			rx="1.5"
+			fill="none"
+			stroke="currentColor"
+			strokeWidth="1.5"
+		/>
+		<Rect
+			x="6"
+			y="11"
+			width="10"
+			height="1.5"
+			rx="0.75"
+			fillOpacity="0.5"
+		/>
+		<Rect
+			x="6"
+			y="14.5"
+			width="7"
+			height="1.5"
+			rx="0.75"
+			fillOpacity="0.35"
+		/>
 	</SVG>
 );
 
@@ -382,10 +627,33 @@ export const tabsIcon = icon(
 export const tabIcon = icon(
 	<SVG viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 		<Rect x="3" y="3" width="18" height="18" rx="2" fillOpacity="0.15" />
-		<Rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="currentColor" strokeWidth="1.5" />
+		<Rect
+			x="3"
+			y="3"
+			width="18"
+			height="18"
+			rx="2"
+			fill="none"
+			stroke="currentColor"
+			strokeWidth="1.5"
+		/>
 		<Rect x="3" y="3" width="6" height="4" rx="1" />
-		<Rect x="6" y="10" width="12" height="1.5" rx="0.75" fillOpacity="0.5" />
-		<Rect x="6" y="13.5" width="9" height="1.5" rx="0.75" fillOpacity="0.35" />
+		<Rect
+			x="6"
+			y="10"
+			width="12"
+			height="1.5"
+			rx="0.75"
+			fillOpacity="0.5"
+		/>
+		<Rect
+			x="6"
+			y="13.5"
+			width="9"
+			height="1.5"
+			rx="0.75"
+			fillOpacity="0.35"
+		/>
 	</SVG>
 );
 

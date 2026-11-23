@@ -13,13 +13,19 @@ import { parseColourToken } from '../../utils/shadow-model';
 
 /**
  * @param {Object}   props
- * @param {string}   props.label        Field label.
- * @param {string}   props.colour       Colour token.
- * @param {number}   props.alpha        Opacity 0 to 100.
- * @param {Function} props.onChange     Receives `{ colour, alpha }` (only the changed part).
- * @param {boolean}  [props.noOpacity]  Hide the opacity slider (the builder has its own intensity).
+ * @param {string}   props.label       Field label.
+ * @param {string}   props.colour      Colour token.
+ * @param {number}   props.alpha       Opacity 0 to 100.
+ * @param {Function} props.onChange    Receives `{ colour, alpha }` (only the changed part).
+ * @param {boolean}  [props.noOpacity] Hide the opacity slider (the builder has its own intensity).
  */
-export default function ColourOpacity( { label, colour, alpha, onChange, noOpacity = false } ) {
+export default function ColourOpacity( {
+	label,
+	colour,
+	alpha,
+	onChange,
+	noOpacity = false,
+} ) {
 	const isSite = 'site' === colour;
 	return (
 		<div className="sgs-shadow-control__colour">

@@ -24,7 +24,8 @@ const PRODUCT_SELECTOR = '.sgs-choice-flow__summary-product';
 const META_SELECTOR = '.sgs-choice-flow__summary-meta';
 const LINES_SELECTOR = '.sgs-choice-flow__summary-lines';
 const MEDIA_SELECTOR = '.sgs-choice-flow__summary-media';
-const TOTAL_VALUE_SELECTOR = '.sgs-choice-flow__summary-total-value, .sgs-choice-flow__summary-summary-total-value';
+const TOTAL_VALUE_SELECTOR =
+	'.sgs-choice-flow__summary-total-value, .sgs-choice-flow__summary-summary-total-value';
 const EFFECTS = [ 'dim', 'deepen', 'soften', 'brighten' ];
 
 /** `style.css`'s own two-column breakpoint for `.sgs-choice-flow__body--with-panel`. */
@@ -52,7 +53,9 @@ function resolveComboImage( flowRoot, variationId ) {
 	}
 	try {
 		const combos = JSON.parse( raw );
-		const match = Object.values( combos ).find( ( combo ) => parseInt( combo?.v, 10 ) === variationId );
+		const match = Object.values( combos ).find(
+			( combo ) => parseInt( combo?.v, 10 ) === variationId
+		);
 		return match && typeof match.i === 'string' ? match.i : '';
 	} catch {
 		return '';
@@ -74,9 +77,14 @@ function updateImage( panelEl, variationId ) {
 	if ( ! imageEls.length ) {
 		return;
 	}
-	const flowRoot = panelEl.closest( '[data-wp-interactive="sgs/choice-flow"]' );
-	const comboImage = flowRoot ? resolveComboImage( flowRoot, variationId ) : '';
-	const src = comboImage || panelEl.getAttribute( 'data-fallback-image' ) || '';
+	const flowRoot = panelEl.closest(
+		'[data-wp-interactive="sgs/choice-flow"]'
+	);
+	const comboImage = flowRoot
+		? resolveComboImage( flowRoot, variationId )
+		: '';
+	const src =
+		comboImage || panelEl.getAttribute( 'data-fallback-image' ) || '';
 	imageEls.forEach( ( imageEl ) => {
 		if ( src ) {
 			imageEl.src = src;
@@ -100,26 +108,36 @@ function updateImage( panelEl, variationId ) {
  * @param {string}      src      The stage photo's URL, '' for none.
  */
 function updateOptionPhotos( flowRoot, src ) {
-	flowRoot.querySelectorAll( '.sgs-choice-flow-question__option-button[data-stage-effect]' ).forEach( ( buttonEl ) => {
-		const mediaEl = buttonEl.querySelector( '.sgs-choice-flow-question__option-media' );
-		if ( ! mediaEl ) {
-			return;
-		}
-		let photoEl = mediaEl.querySelector( '.sgs-choice-flow-question__option-photo' );
-		if ( ! photoEl && src ) {
-			photoEl = document.createElement( 'img' );
-			photoEl.className = `sgs-choice-flow-question__option-photo is-effect-${ buttonEl.getAttribute( 'data-stage-effect' ) }`;
-			photoEl.alt = '';
-			photoEl.loading = 'lazy';
-			mediaEl.appendChild( photoEl );
-		}
-		if ( photoEl ) {
-			photoEl.hidden = ! src;
-			if ( src ) {
-				photoEl.src = src;
+	flowRoot
+		.querySelectorAll(
+			'.sgs-choice-flow-question__option-button[data-stage-effect]'
+		)
+		.forEach( ( buttonEl ) => {
+			const mediaEl = buttonEl.querySelector(
+				'.sgs-choice-flow-question__option-media'
+			);
+			if ( ! mediaEl ) {
+				return;
 			}
-		}
-	} );
+			let photoEl = mediaEl.querySelector(
+				'.sgs-choice-flow-question__option-photo'
+			);
+			if ( ! photoEl && src ) {
+				photoEl = document.createElement( 'img' );
+				photoEl.className = `sgs-choice-flow-question__option-photo is-effect-${ buttonEl.getAttribute(
+					'data-stage-effect'
+				) }`;
+				photoEl.alt = '';
+				photoEl.loading = 'lazy';
+				mediaEl.appendChild( photoEl );
+			}
+			if ( photoEl ) {
+				photoEl.hidden = ! src;
+				if ( src ) {
+					photoEl.src = src;
+				}
+			}
+		} );
 }
 
 /**
@@ -158,7 +176,9 @@ function buildLine( label, value, muted, rich = false ) {
  */
 function updateEffect( panelEl, effect, effectLabel ) {
 	panelEl.querySelectorAll( MEDIA_SELECTOR ).forEach( ( mediaEl ) => {
-		EFFECTS.forEach( ( name ) => mediaEl.classList.toggle( `is-effect-${ name }`, name === effect ) );
+		EFFECTS.forEach( ( name ) =>
+			mediaEl.classList.toggle( `is-effect-${ name }`, name === effect )
+		);
 		let tagEl = mediaEl.querySelector( '.sgs-choice-flow__summary-effect' );
 		if ( effect && ! tagEl ) {
 			tagEl = document.createElement( 'span' );
@@ -205,24 +225,37 @@ export function renderSummaryPanel( flowRoot, pricing ) {
 	const linesEl = panelEl.querySelector( LINES_SELECTOR );
 	if ( linesEl ) {
 		linesEl.innerHTML = '';
-		summary.lines.forEach( ( line ) => linesEl.appendChild( buildLine( line.label, line.value, line.muted, line.rich ) ) );
+		summary.lines.forEach( ( line ) =>
+			linesEl.appendChild(
+				buildLine( line.label, line.value, line.muted, line.rich )
+			)
+		);
 	}
 
-	const total = summary.totalMinor !== null ? formatTotal( summary.totalMinor, base.decimals, trimZeros ) : '—';
-	flowRoot.querySelectorAll( '.sgs-choice-flow__action-total' ).forEach( ( actionTotalEl ) => {
-		actionTotalEl.textContent = total;
-	} );
-	panelEl.querySelectorAll( TOTAL_VALUE_SELECTOR ).forEach( ( totalValueEl ) => {
-		// FR-43-24: the total pops when it changes (style.css's `.is-updated`
-		// keyframes, off under reduced motion); an unchanged repaint stays still.
-		const changed = totalValueEl.textContent !== '' && totalValueEl.textContent !== total;
-		totalValueEl.textContent = total;
-		if ( changed ) {
-			totalValueEl.classList.remove( 'is-updated' );
-			void totalValueEl.offsetWidth; // Restart the animation.
-			totalValueEl.classList.add( 'is-updated' );
-		}
-	} );
+	const total =
+		summary.totalMinor !== null
+			? formatTotal( summary.totalMinor, base.decimals, trimZeros )
+			: '—';
+	flowRoot
+		.querySelectorAll( '.sgs-choice-flow__action-total' )
+		.forEach( ( actionTotalEl ) => {
+			actionTotalEl.textContent = total;
+		} );
+	panelEl
+		.querySelectorAll( TOTAL_VALUE_SELECTOR )
+		.forEach( ( totalValueEl ) => {
+			// FR-43-24: the total pops when it changes (style.css's `.is-updated`
+			// keyframes, off under reduced motion); an unchanged repaint stays still.
+			const changed =
+				totalValueEl.textContent !== '' &&
+				totalValueEl.textContent !== total;
+			totalValueEl.textContent = total;
+			if ( changed ) {
+				totalValueEl.classList.remove( 'is-updated' );
+				void totalValueEl.offsetWidth; // Restart the animation.
+				totalValueEl.classList.add( 'is-updated' );
+			}
+		} );
 }
 
 /**
@@ -239,7 +272,9 @@ export function bindSummaryToggle( flowRoot ) {
 	if ( toggleLockBound.has( flowRoot ) ) {
 		return;
 	}
-	const detailsEl = flowRoot.querySelector( '.sgs-choice-flow__summary-toggle' );
+	const detailsEl = flowRoot.querySelector(
+		'.sgs-choice-flow__summary-toggle'
+	);
 	if ( ! detailsEl ) {
 		return;
 	}

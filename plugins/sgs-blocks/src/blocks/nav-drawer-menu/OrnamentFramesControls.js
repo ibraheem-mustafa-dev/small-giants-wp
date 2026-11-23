@@ -12,19 +12,28 @@
 import { __ } from '@wordpress/i18n';
 import { Button, RangeControl } from '@wordpress/components';
 import { IconPicker, ResponsiveOverride } from '../../components';
-import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+import {
+	ToggleGroupControl,
+	ToggleGroupControlOption,
+} from '../../components/primitives';
 
 const MAX_FRAMES = 8;
 const DEFAULT_MS = 60;
-const tierObject = ( value ) => ( value && typeof value === 'object' ? value : {} );
+const tierObject = ( value ) =>
+	value && typeof value === 'object' ? value : {};
 
 /**
  * @param {Object}   root0               Props.
  * @param {Object}   root0.attributes    Block attributes.
  * @param {Function} root0.setAttributes The block's attribute setter.
  */
-export default function OrnamentFramesControls( { attributes, setAttributes } ) {
-	const frames = Array.isArray( attributes.itemOrnamentFrames ) ? attributes.itemOrnamentFrames : [];
+export default function OrnamentFramesControls( {
+	attributes,
+	setAttributes,
+} ) {
+	const frames = Array.isArray( attributes.itemOrnamentFrames )
+		? attributes.itemOrnamentFrames
+		: [];
 	const setFrames = ( next ) => setAttributes( { itemOrnamentFrames: next } );
 
 	const move = ( index, by ) => {
@@ -48,12 +57,17 @@ export default function OrnamentFramesControls( { attributes, setAttributes } ) 
 			{ frames.map( ( frame, index ) => (
 				<div key={ index } className="sgs-nav-ornament-frame-row">
 					<IconPicker
-						label={ `${ __( 'Frame', 'sgs-blocks' ) } ${ index + 1 }` }
+						label={ `${ __( 'Frame', 'sgs-blocks' ) } ${
+							index + 1
+						}` }
 						sources={ [ 'custom' ] }
 						value={ frame || {} }
 						onChange={ ( next ) => {
 							const list = [ ...frames ];
-							list[ index ] = next && next.svg ? next : { source: 'custom', svg: '' };
+							list[ index ] =
+								next && next.svg
+									? next
+									: { source: 'custom', svg: '' };
 							setFrames( list );
 						} }
 					/>
@@ -76,7 +90,11 @@ export default function OrnamentFramesControls( { attributes, setAttributes } ) 
 					<Button
 						variant="link"
 						isDestructive
-						onClick={ () => setFrames( frames.filter( ( _, i ) => i !== index ) ) }
+						onClick={ () =>
+							setFrames(
+								frames.filter( ( _, i ) => i !== index )
+							)
+						}
 					>
 						{ __( 'Remove frame', 'sgs-blocks' ) }
 					</Button>
@@ -85,7 +103,9 @@ export default function OrnamentFramesControls( { attributes, setAttributes } ) 
 			<Button
 				variant="secondary"
 				disabled={ frames.length >= MAX_FRAMES }
-				onClick={ () => setFrames( [ ...frames, { source: 'custom', svg: '' } ] ) }
+				onClick={ () =>
+					setFrames( [ ...frames, { source: 'custom', svg: '' } ] )
+				}
 			>
 				{ __( 'Add ornament frame', 'sgs-blocks' ) }
 			</Button>
@@ -94,37 +114,75 @@ export default function OrnamentFramesControls( { attributes, setAttributes } ) 
 					<ResponsiveOverride
 						label={ __( 'Play frame sequence', 'sgs-blocks' ) }
 						value={ tierObject( attributes.itemOrnamentFramePlay ) }
-						onChange={ ( obj ) => setAttributes( { itemOrnamentFramePlay: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { itemOrnamentFramePlay: obj } )
+						}
 					>
 						{ ( { ownValue, effectiveValue, setOwnValue } ) => (
 							<ToggleGroupControl
-								label={ __( 'Play frame sequence', 'sgs-blocks' ) }
+								label={ __(
+									'Play frame sequence',
+									'sgs-blocks'
+								) }
 								hideLabelFromVision
 								value={ ownValue || effectiveValue || 'on' }
-								onChange={ ( val ) => setOwnValue( val || undefined ) }
+								onChange={ ( val ) =>
+									setOwnValue( val || undefined )
+								}
 								isBlock
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							>
-								<ToggleGroupControlOption value="on" label={ __( 'On', 'sgs-blocks' ) } />
-								<ToggleGroupControlOption value="off" label={ __( 'Off', 'sgs-blocks' ) } />
+								<ToggleGroupControlOption
+									value="on"
+									label={ __( 'On', 'sgs-blocks' ) }
+								/>
+								<ToggleGroupControlOption
+									value="off"
+									label={ __( 'Off', 'sgs-blocks' ) }
+								/>
 							</ToggleGroupControl>
 						) }
 					</ResponsiveOverride>
 					<ResponsiveOverride
 						label={ __( 'Time per frame (ms)', 'sgs-blocks' ) }
-						value={ tierObject( attributes.itemOrnamentFrameDuration ) }
-						onChange={ ( obj ) => setAttributes( { itemOrnamentFrameDuration: obj } ) }
+						value={ tierObject(
+							attributes.itemOrnamentFrameDuration
+						) }
+						onChange={ ( obj ) =>
+							setAttributes( { itemOrnamentFrameDuration: obj } )
+						}
 					>
-						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+						{ ( {
+							ownValue,
+							effectiveValue,
+							inherited,
+							setOwnValue,
+						} ) => (
 							<RangeControl
-								label={ __( 'Time per frame (ms)', 'sgs-blocks' ) }
+								label={ __(
+									'Time per frame (ms)',
+									'sgs-blocks'
+								) }
 								hideLabelFromVision
-								value={ typeof ownValue === 'number' ? ownValue : ( inherited && typeof effectiveValue === 'number' ? effectiveValue : DEFAULT_MS ) }
+								value={
+									typeof ownValue === 'number'
+										? ownValue
+										: inherited &&
+										  typeof effectiveValue === 'number'
+										? effectiveValue
+										: DEFAULT_MS
+								}
 								min={ 10 }
 								max={ 500 }
 								step={ 10 }
-								onChange={ ( val ) => setOwnValue( typeof val === 'number' ? val : undefined ) }
+								onChange={ ( val ) =>
+									setOwnValue(
+										typeof val === 'number'
+											? val
+											: undefined
+									)
+								}
 								allowReset
 								resetFallbackValue={ undefined }
 								__nextHasNoMarginBottom

@@ -30,7 +30,8 @@
 
 const PROP = '--sgs-header-height';
 const USES_PROP = /var\(\s*--sgs-header-height\s*[,)]/;
-const PSEUDO_ELEMENT = /::[a-z-]+(\([^)]*\))?|:(?:before|after|first-line|first-letter)\b/gi;
+const PSEUDO_ELEMENT =
+	/::[a-z-]+(\([^)]*\))?|:(?:before|after|first-line|first-letter)\b/gi;
 
 /**
  * Split a selector list on its top-level commas.
@@ -85,8 +86,8 @@ export function hostSelector( selector ) {
  * change (an announcement bar dismissed) is followed, a shrink (page scrolled,
  * value moving) is not.
  *
- * @param {{ live: function( string ): void, resting: function( string ): void }} sinks Receivers of each write, as px strings.
- * @param {{ delay?: number, win?: Window, scrolled?: function(): boolean }} [options] Quiet delay in ms, window for timers, and whether the page is scrolled.
+ * @param {{ live: function( string ): void, resting: function( string ): void }} sinks     Receivers of each write, as px strings.
+ * @param {{ delay?: number, win?: Window, scrolled?: function(): boolean }}      [options] Quiet delay in ms, window for timers, and whether the page is scrolled.
  * @return {function( number, boolean ): void} publish( edge, exact )
  */
 export function createHeightPublisher( sinks, options = {} ) {
@@ -118,7 +119,12 @@ export function createHeightPublisher( sinks, options = {} ) {
 		// The inherited resting value restyles the whole page. Without an exact
 		// publish (a resize) it is written at once only when it first appears,
 		// rises or drops to 0.
-		if ( true === exact || null === resting || edge > resting || 0 === edge ) {
+		if (
+			true === exact ||
+			null === resting ||
+			edge > resting ||
+			0 === edge
+		) {
 			win.clearTimeout( timer );
 			timer = 0;
 			writeResting( edge );
@@ -171,7 +177,11 @@ export function createLiveHeight( options = {} ) {
 
 	function collect( rules, found ) {
 		for ( const rule of Array.prototype.slice.call( rules ) ) {
-			if ( rule.selectorText && rule.style && USES_PROP.test( rule.style.cssText ) ) {
+			if (
+				rule.selectorText &&
+				rule.style &&
+				USES_PROP.test( rule.style.cssText )
+			) {
 				splitSelectorList( rule.selectorText ).forEach( ( member ) => {
 					const host = hostSelector( member );
 					if ( host && isValid( host ) ) {
@@ -270,7 +280,9 @@ export function createLiveHeight( options = {} ) {
 			for ( const record of records ) {
 				const nodes = Array.prototype.slice
 					.call( record.addedNodes )
-					.concat( Array.prototype.slice.call( record.removedNodes ) );
+					.concat(
+						Array.prototype.slice.call( record.removedNodes )
+					);
 				if ( nodes.some( ( n ) => 1 === n.nodeType ) ) {
 					schedule();
 					return;
@@ -309,14 +321,20 @@ export function createLiveHeight( options = {} ) {
 /**
  * The receivers of every header-height write.
  *
- * @param {Document} [doc]        Document whose root carries the properties.
+ * @param {Document}                          [doc]        Document whose root carries the properties.
  * @param {{ set: function( string ): void }} [liveHeight] Consumer writer.
  * @return {{ live: function( string ): void, resting: function( string ): void }} Sinks for createHeightPublisher().
  */
-export function createHeaderHeightWriter( doc = document, liveHeight = createLiveHeight( { doc } ) ) {
+export function createHeaderHeightWriter(
+	doc = document,
+	liveHeight = createLiveHeight( { doc } )
+) {
 	return {
 		live( px ) {
-			doc.documentElement.style.setProperty( '--sgs-header-height-live', px );
+			doc.documentElement.style.setProperty(
+				'--sgs-header-height-live',
+				px
+			);
 			liveHeight.set( px );
 		},
 		resting( px ) {

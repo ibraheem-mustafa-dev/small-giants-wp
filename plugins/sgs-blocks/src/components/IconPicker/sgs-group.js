@@ -66,7 +66,11 @@ export function withSgsCategory( categories, sgsNames ) {
 	const [ all, ...others ] = rest;
 	return [
 		all,
-		{ key: SGS_CATEGORY_KEY, label: __( 'SGS', 'sgs-blocks' ), names: sgsNames },
+		{
+			key: SGS_CATEGORY_KEY,
+			label: __( 'SGS', 'sgs-blocks' ),
+			names: sgsNames,
+		},
 		...others,
 	];
 }

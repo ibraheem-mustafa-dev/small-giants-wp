@@ -1,6 +1,10 @@
 import { __, sprintf } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
-import QuestionPreview, { OptionBadgePreview, OptionDescriptionPreview, OptionDescriptionStyle } from './QuestionPreview';
+import QuestionPreview, {
+	OptionBadgePreview,
+	OptionDescriptionPreview,
+	OptionDescriptionStyle,
+} from './QuestionPreview';
 import { useSelect } from '@wordpress/data';
 import {
 	PanelBody,
@@ -23,9 +27,19 @@ import { usePreviewTier } from '../../utils';
 import ProductAttributePanel from './ProductAttributePanel';
 import TitlePanel from './TitlePanel';
 import VariationCoverageNotice from './VariationCoverageNotice';
-import OptionPolishFields, { OptionDescriptionPanel, optionDescriptionColourRows, optionBadgeColourRows } from './OptionPolishFields';
+import OptionPolishFields, {
+	OptionDescriptionPanel,
+	optionDescriptionColourRows,
+	optionBadgeColourRows,
+} from './OptionPolishFields';
 import { SgsColourPanel } from '../../components';
-import { OptionCardPanel, OptionBadgeBoxPanel, OptionCheckPanel, OptionCardStyle, optionCardColourRows } from './OptionCardPanels';
+import {
+	OptionCardPanel,
+	OptionBadgeBoxPanel,
+	OptionCheckPanel,
+	OptionCardStyle,
+	optionCardColourRows,
+} from './OptionCardPanels';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
 // Reserved sentinel (FR-43-2 / spec brief) — "jump straight to whichever
@@ -53,7 +67,12 @@ function slugifyLabel( label ) {
 		.replace( /^-+|-+$/g, '' );
 }
 
-export default function Edit( { attributes, setAttributes, clientId, context } ) {
+export default function Edit( {
+	attributes,
+	setAttributes,
+	clientId,
+	context,
+} ) {
 	const { question, options, layout, priceGroup } = attributes;
 
 	const previewTier = usePreviewTier();
@@ -76,7 +95,10 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 			let flowId = '';
 			while ( ancestorId ) {
 				const ancestorBlock = getBlock( ancestorId );
-				if ( ancestorBlock && ancestorBlock.name === 'sgs/choice-flow' ) {
+				if (
+					ancestorBlock &&
+					ancestorBlock.name === 'sgs/choice-flow'
+				) {
 					flowId = ancestorId;
 					break;
 				}
@@ -163,19 +185,34 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 		<>
 			<SgsColourPanel
 				rows={ [
-					...optionDescriptionColourRows( { attributes, setAttributes } ),
+					...optionDescriptionColourRows( {
+						attributes,
+						setAttributes,
+					} ),
 					...optionBadgeColourRows( { attributes, setAttributes } ),
 					...optionCardColourRows( { attributes, setAttributes } ),
 				] }
 			/>
 			<InspectorControls group="settings">
-				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ true }>
+				<PanelBody
+					title={ __( 'Layout', 'sgs-blocks' ) }
+					initialOpen={ true }
+				>
 					<SelectControl
 						label={ __( 'Options layout', 'sgs-blocks' ) }
 						value={ layout || 'grid' }
 						options={ [
-							{ label: __( 'Grid (cards)', 'sgs-blocks' ), value: 'grid' },
-							{ label: __( 'List (stacked rows)', 'sgs-blocks' ), value: 'list' },
+							{
+								label: __( 'Grid (cards)', 'sgs-blocks' ),
+								value: 'grid',
+							},
+							{
+								label: __(
+									'List (stacked rows)',
+									'sgs-blocks'
+								),
+								value: 'list',
+							},
 						] }
 						onChange={ ( val ) => setAttributes( { layout: val } ) }
 						help={ __(
@@ -186,21 +223,40 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 						__next40pxDefaultSize
 					/>
 					<ToggleControl
-						label={ __( "Open the chosen option's next step underneath", 'sgs-blocks' ) }
-						help={ __( 'The step an option leads to shows under the question on the same screen, with its own buttons in the footer, instead of after Continue.', 'sgs-blocks' ) }
+						label={ __(
+							"Open the chosen option's next step underneath",
+							'sgs-blocks'
+						) }
+						help={ __(
+							'The step an option leads to shows under the question on the same screen, with its own buttons in the footer, instead of after Continue.',
+							'sgs-blocks'
+						) }
 						checked={ !! attributes.showNextStepInline }
-						onChange={ ( v ) => setAttributes( { showNextStepInline: v } ) }
+						onChange={ ( v ) =>
+							setAttributes( { showNextStepInline: v } )
+						}
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
-				<ProductAttributePanel attributes={ attributes } setAttributes={ setAttributes } clientId={ clientId } context={ context } />
+				<ProductAttributePanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					clientId={ clientId }
+					context={ context }
+				/>
 				<AddonPricingPanel
 					priceGroup={ priceGroup }
 					options={ options }
 					setAttributes={ setAttributes }
 				/>
-				<AnswersPanel attributes={ attributes } setAttributes={ setAttributes } />
-				<PanelBody title={ __( 'Options', 'sgs-blocks' ) } initialOpen={ true }>
+				<AnswersPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+				<PanelBody
+					title={ __( 'Options', 'sgs-blocks' ) }
+					initialOpen={ true }
+				>
 					<VStack spacing={ 4 }>
 						{ options.map( ( option, index ) => (
 							<VStack
@@ -213,18 +269,25 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 									value={ option.label || '' }
 									onChange={ ( val ) => {
 										const newOptions = [ ...options ];
-										const nextOption = { ...newOptions[ index ], label: val };
+										const nextOption = {
+											...newOptions[ index ],
+											label: val,
+										};
 										// Only auto-derive the value while it still matches the
 										// slug of the PREVIOUS label — once the operator edits
 										// the value directly it stops tracking the label.
 										if (
 											! option.value ||
-											option.value === slugifyLabel( option.label )
+											option.value ===
+												slugifyLabel( option.label )
 										) {
-											nextOption.value = slugifyLabel( val );
+											nextOption.value =
+												slugifyLabel( val );
 										}
 										newOptions[ index ] = nextOption;
-										setAttributes( { options: newOptions } );
+										setAttributes( {
+											options: newOptions,
+										} );
 									} }
 									__nextHasNoMarginBottom
 									__next40pxDefaultSize
@@ -232,8 +295,13 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 								<TextControl
 									label={ __( 'Value', 'sgs-blocks' ) }
 									value={ option.value || '' }
-									onChange={ ( val ) => updateOption( index, 'value', val ) }
-									help={ __( 'Machine value used in submission data', 'sgs-blocks' ) }
+									onChange={ ( val ) =>
+										updateOption( index, 'value', val )
+									}
+									help={ __(
+										'Machine value used in submission data',
+										'sgs-blocks'
+									) }
 									__nextHasNoMarginBottom
 									__next40pxDefaultSize
 								/>
@@ -241,7 +309,9 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 									label={ __( 'Goes to', 'sgs-blocks' ) }
 									value={ option.nextStepId || '' }
 									options={ nextStepOptions }
-									onChange={ ( val ) => updateOption( index, 'nextStepId', val ) }
+									onChange={ ( val ) =>
+										updateOption( index, 'nextStepId', val )
+									}
 									__nextHasNoMarginBottom
 									__next40pxDefaultSize
 								/>
@@ -277,7 +347,9 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 									onChange={ ( next ) => {
 										const newOptions = [ ...options ];
 										newOptions[ index ] = next;
-										setAttributes( { options: newOptions } );
+										setAttributes( {
+											options: newOptions,
+										} );
 									} }
 								/>
 								{ /* FR-43-16 (v1.3.0): optional per-option help text, revealed
@@ -285,7 +357,9 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 								<TextareaControl
 									label={ __( 'Help text', 'sgs-blocks' ) }
 									value={ option.helpText || '' }
-									onChange={ ( val ) => updateOption( index, 'helpText', val ) }
+									onChange={ ( val ) =>
+										updateOption( index, 'helpText', val )
+									}
 									help={ __(
 										'Optional. Shown when a visitor taps the ‘?’ on this option — leave blank for no toggle at all.',
 										'sgs-blocks'
@@ -294,29 +368,49 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 									__nextHasNoMarginBottom
 								/>
 								<ToggleControl
-									label={ __( 'Add to bag now (no add-ons)', 'sgs-blocks' ) }
+									label={ __(
+										'Add to bag now (no add-ons)',
+										'sgs-blocks'
+									) }
 									checked={ !! option.addToBagNow }
-									onChange={ ( val ) => updateOption( index, 'addToBagNow', val ) }
+									onChange={ ( val ) =>
+										updateOption(
+											index,
+											'addToBagNow',
+											val
+										)
+									}
 									help={ __(
 										'Ends the flow adding the product with no add-ons — e.g. “No prescription, keep the lenses they come with”. Still route this option to a result step below.',
 										'sgs-blocks'
 									) }
 									__nextHasNoMarginBottom
 								/>
-								<OptionPolishFields option={ option } index={ index } onChange={ updateOption } />
-								<VStack spacing={ 1 } className="sgs-choice-flow-question__option-row-actions">
+								<OptionPolishFields
+									option={ option }
+									index={ index }
+									onChange={ updateOption }
+								/>
+								<VStack
+									spacing={ 1 }
+									className="sgs-choice-flow-question__option-row-actions"
+								>
 									<Button
 										isSmall
 										variant="secondary"
 										disabled={ index === 0 }
-										onClick={ () => moveOption( index, -1 ) }
+										onClick={ () =>
+											moveOption( index, -1 )
+										}
 									>
 										{ __( 'Move up', 'sgs-blocks' ) }
 									</Button>
 									<Button
 										isSmall
 										variant="secondary"
-										disabled={ index === options.length - 1 }
+										disabled={
+											index === options.length - 1
+										}
 										onClick={ () => moveOption( index, 1 ) }
 									>
 										{ __( 'Move down', 'sgs-blocks' ) }
@@ -348,34 +442,85 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 				context="item"
 			/>
 			<InspectorControls group="styles">
-				<TitlePanel attributes={ attributes } setAttributes={ setAttributes } />
-				<OptionCardsPanel attributes={ attributes } setAttributes={ setAttributes } title={ __( 'Option pictures', 'sgs-blocks' ) } />
-				<OptionDescriptionPanel attributes={ attributes } setAttributes={ setAttributes } />
-				<OptionCardPanel attributes={ attributes } setAttributes={ setAttributes } />
-				<OptionBadgeBoxPanel attributes={ attributes } setAttributes={ setAttributes } />
-				<OptionCheckPanel attributes={ attributes } setAttributes={ setAttributes } />
+				<TitlePanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+				<OptionCardsPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					title={ __( 'Option pictures', 'sgs-blocks' ) }
+				/>
+				<OptionDescriptionPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+				<OptionCardPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+				<OptionBadgeBoxPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+				<OptionCheckPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 			</InspectorControls>
 
 			<div { ...blockProps }>
-				<VariationCoverageNotice attributes={ attributes } clientId={ clientId } context={ context } />
+				<VariationCoverageNotice
+					attributes={ attributes }
+					clientId={ clientId }
+					context={ context }
+				/>
 				<QuestionPreview attributes={ attributes } />
-				<OptionDescriptionStyle attributes={ attributes } clientId={ clientId } />
-				<OptionCardStyle attributes={ attributes } clientId={ clientId } />
-				<SgsFreeTextField type="rich" noLink
+				<OptionDescriptionStyle
+					attributes={ attributes }
+					clientId={ clientId }
+				/>
+				<OptionCardStyle
+					attributes={ attributes }
+					clientId={ clientId }
+				/>
+				<SgsFreeTextField
+					type="rich"
+					noLink
 					label={ __( 'Question', 'sgs-blocks' ) }
 					value={ question }
 					onChange={ ( val ) => setAttributes( { question: val } ) }
-					placeholder={ __( 'Which service suits you?', 'sgs-blocks' ) }
+					placeholder={ __(
+						'Which service suits you?',
+						'sgs-blocks'
+					) }
 					className="sgs-choice-flow-question__title-input"
 				/>
 				<ul
-					className={ `sgs-choice-flow-question__options-preview sgs-choice-flow-question__options-preview--${ layout || 'grid' }` }
+					className={ `sgs-choice-flow-question__options-preview sgs-choice-flow-question__options-preview--${
+						layout || 'grid'
+					}` }
 				>
 					{ options.map( ( option, index ) => (
-						<li key={ index } className={ `sgs-choice-flow-question__option-preview${ option.isDefault ? ' sgs-choice-flow-question__option-preview--selected' : '' }` }>
-							{ attributes.optionCheckShow && <span className="sgs-choice-flow-question__option-check" aria-hidden="true" /> }
+						<li
+							key={ index }
+							className={ `sgs-choice-flow-question__option-preview${
+								option.isDefault
+									? ' sgs-choice-flow-question__option-preview--selected'
+									: ''
+							}` }
+						>
+							{ attributes.optionCheckShow && (
+								<span
+									className="sgs-choice-flow-question__option-check"
+									aria-hidden="true"
+								/>
+							) }
 							{ /* The option's own picture, ahead of the label as render.php prints it. */ }
-							{ [ 'desktop', 'tablet', 'mobile' ].some( ( device ) => hasFile( option.source?.[ device ] ) ) && (
+							{ [ 'desktop', 'tablet', 'mobile' ].some(
+								( device ) =>
+									hasFile( option.source?.[ device ] )
+							) && (
 								<span className="sgs-choice-flow-question__option-media">
 									<ItemSlotPicture
 										attributes={ attributes }
@@ -384,11 +529,15 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 										prefix={ OPTION_SLOT.prefix }
 										kinds={ OPTION_SLOT.kinds }
 										context={ OPTION_SLOT.context }
-										uid={ `sgs-cfq-${ clientId.slice( 0, 8 ) }` }
+										uid={ `sgs-cfq-${ clientId.slice(
+											0,
+											8
+										) }` }
 									/>
 								</span>
 							) }
-							{ option.label || __( '(empty option)', 'sgs-blocks' ) }
+							{ option.label ||
+								__( '(empty option)', 'sgs-blocks' ) }
 							<OptionDescriptionPreview
 								description={ option.description }
 								colour={ attributes.optionDescriptionColour }

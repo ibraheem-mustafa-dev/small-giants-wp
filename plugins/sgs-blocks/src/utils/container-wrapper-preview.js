@@ -16,7 +16,10 @@
  */
 
 import { applyGridLayoutPreview } from './grid-layout-preview';
-import { contentBandPreview, resolveContentWidthPreview } from './content-band-preview';
+import {
+	contentBandPreview,
+	resolveContentWidthPreview,
+} from './content-band-preview';
 import { tierLengthPreview } from './cssLength';
 import { tierValueOf } from './responsive';
 import { separatorsFlowPreview } from './separators';
@@ -26,18 +29,23 @@ import { wrapperBorderPreview } from './wrapper-border-preview';
 const LAYOUTS = [ 'grid', 'flex', 'stack' ];
 
 /**
- * @param {Object} attributes Block attributes (the wrapper family: layout, columns,
- *                            gap, grid*, justify*, align*, flex*, maxWidth, contentWidth,
- *                            padding, border*).
- * @param {string} [tier]     Previewed device tier from `usePreviewTier()`.
- * @param {Array}  [palette]  Theme colour palette, to resolve a border colour slug.
+ * @param {Object} attributes   Block attributes (the wrapper family: layout, columns,
+ *                              gap, grid*, justify*, align*, flex*, maxWidth, contentWidth,
+ *                              padding, border*).
+ * @param {string} [tier]       Previewed device tier from `usePreviewTier()`.
+ * @param {Array}  [palette]    Theme colour palette, to resolve a border colour slug.
  * @param {Object} [extraStyle] Block-own outer declarations (a bespoke grid, say) that
- *                            win over the generic layout and move onto the band with it.
+ *                              win over the generic layout and move onto the band with it.
  * @return {{ style: Object, className: string, bandStyle: Object, hasBandProps: boolean }}
  *   `style` for the outer element, `className` the layout class the wrapper adds,
  *   `bandStyle` for the `.sgs-container__inner` band, rendered only when `hasBandProps`.
  */
-export function containerWrapperPreview( attributes, tier = 'desktop', palette = [], extraStyle = {} ) {
+export function containerWrapperPreview(
+	attributes,
+	tier = 'desktop',
+	palette = [],
+	extraStyle = {}
+) {
 	const attrs = attributes || {};
 	const layout = LAYOUTS.includes( attrs.layout ) ? attrs.layout : '';
 	const style = {};
@@ -61,7 +69,9 @@ export function containerWrapperPreview( attributes, tier = 'desktop', palette =
 		justifyItems: attrs.justifyItems,
 		alignContent: attrs.alignContent,
 		gridAutoRows: attrs.gridAutoRows,
-		gridTemplateColumns: { desktop: tierValueOf( attrs.gridTemplateColumns, tier ) },
+		gridTemplateColumns: {
+			desktop: tierValueOf( attrs.gridTemplateColumns, tier ),
+		},
 		columns: { desktop: tierValueOf( attrs.columns, tier ) },
 		flexDirection: attrs.flexDirection,
 		flexWrap: attrs.flexWrap,
@@ -76,13 +86,36 @@ export function containerWrapperPreview( attributes, tier = 'desktop', palette =
 	// `padding` paints the band, as the wrapper's `$padding_on_band` does: the block's tier-of-boxes
 	// `padding`, or the flat native `style.spacing.padding` box of a block without that attribute.
 	const nativePadding = attrs.style?.spacing?.padding;
-	const band = attrs.padding && 'object' === typeof attrs.padding && ! Array.isArray( attrs.padding ) ? attrs.padding : {};
-	const hasTiers = [ 'desktop', 'tablet', 'mobile' ].some( ( key ) => band[ key ] && 'object' === typeof band[ key ] && Object.keys( band[ key ] ).length );
+	const band =
+		attrs.padding &&
+		'object' === typeof attrs.padding &&
+		! Array.isArray( attrs.padding )
+			? attrs.padding
+			: {};
+	const hasTiers = [ 'desktop', 'tablet', 'mobile' ].some(
+		( key ) =>
+			band[ key ] &&
+			'object' === typeof band[ key ] &&
+			Object.keys( band[ key ] ).length
+	);
 	const { hasBandProps, bandStyle } = contentBandPreview( {
-		contentWidth: resolveContentWidthPreview( tierValueOf( attrs.contentWidth, tier ) || '' ),
-		bandPadding: hasTiers || ! nativePadding || 'object' !== typeof nativePadding
-			? resolveBoxTierPreview( band.desktop, band.tablet, band.mobile, tier )
-			: resolveBoxTierPreview( nativePadding, undefined, undefined, tier ),
+		contentWidth: resolveContentWidthPreview(
+			tierValueOf( attrs.contentWidth, tier ) || ''
+		),
+		bandPadding:
+			hasTiers || ! nativePadding || 'object' !== typeof nativePadding
+				? resolveBoxTierPreview(
+						band.desktop,
+						band.tablet,
+						band.mobile,
+						tier
+				  )
+				: resolveBoxTierPreview(
+						nativePadding,
+						undefined,
+						undefined,
+						tier
+				  ),
 		style,
 		layout,
 	} );
@@ -90,7 +123,8 @@ export function containerWrapperPreview( attributes, tier = 'desktop', palette =
 	// Grid rows sit with the rest of the grid: on the band when the layout moved there.
 	const gridTemplateRows = tierValueOf( attrs.gridTemplateRows, tier );
 	if ( 'grid' === layout && gridTemplateRows ) {
-		( hasBandProps ? bandStyle : style ).gridTemplateRows = gridTemplateRows;
+		( hasBandProps ? bandStyle : style ).gridTemplateRows =
+			gridTemplateRows;
 	}
 
 	return {
@@ -118,7 +152,11 @@ export const wrapperPreview = containerWrapperPreview;
  */
 export function BandWrap( { hasBandProps, bandStyle, bandRef, children } ) {
 	return hasBandProps ? (
-		<div className="sgs-container__inner" ref={ bandRef } style={ bandStyle }>
+		<div
+			className="sgs-container__inner"
+			ref={ bandRef }
+			style={ bandStyle }
+		>
 			{ children }
 		</div>
 	) : (

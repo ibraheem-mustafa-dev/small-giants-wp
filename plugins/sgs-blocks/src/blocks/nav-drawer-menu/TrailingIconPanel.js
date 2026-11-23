@@ -113,14 +113,19 @@ export default function TrailingIconPanel( {
 						'Row end lines the icon up with the accordion expander at the right edge of the row.',
 						'sgs-blocks'
 					) }
-					value={ attributes.itemTrailingIconPosition || 'after-label' }
+					value={
+						attributes.itemTrailingIconPosition || 'after-label'
+					}
 					options={ [
 						{
 							label: __( 'After the label', 'sgs-blocks' ),
 							value: 'after-label',
 						},
 						{
-							label: __( 'Row end, level with the expander', 'sgs-blocks' ),
+							label: __(
+								'Row end, level with the expander',
+								'sgs-blocks'
+							),
 							value: 'row-end',
 						},
 					] }

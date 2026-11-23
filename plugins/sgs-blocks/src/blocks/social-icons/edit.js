@@ -8,12 +8,24 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, useInnerBlocksProps, InspectorControls, useSettings, store as blockEditorStore } from '@wordpress/block-editor';
+import {
+	useBlockProps,
+	useInnerBlocksProps,
+	InspectorControls,
+	useSettings,
+	store as blockEditorStore,
+} from '@wordpress/block-editor';
 import { createBlock } from '@wordpress/blocks';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { useMemo } from '@wordpress/element';
 import { useInstanceId } from '@wordpress/compose';
-import { CheckboxControl, PanelBody, SelectControl, TextControl, ToggleControl } from '@wordpress/components';
+import {
+	CheckboxControl,
+	PanelBody,
+	SelectControl,
+	TextControl,
+	ToggleControl,
+} from '@wordpress/components';
 import {
 	SgsColourPanel,
 	fillRow,
@@ -38,7 +50,11 @@ import {
 	isCssGradient,
 } from '../../utils';
 import FlexWrapControl from '../../components/FlexWrapControl';
-import { svgStrokeGradientPreview, parseSvgGradient, SvgGradientDefs } from '../../utils/svg-gradient-preview';
+import {
+	svgStrokeGradientPreview,
+	parseSvgGradient,
+	SvgGradientDefs,
+} from '../../utils/svg-gradient-preview';
 import { iconLengthValue } from '../icon/icon-state';
 import IconSizeControl, { ICON_SIZE_HELP } from '../icon/icon-size-control';
 import { ShapeToggle } from '../icon/shape-options';
@@ -54,9 +70,15 @@ const LENGTH_UNITS = [
 ];
 
 const COLOUR_MODES = [
-	{ label: __( 'Automatic (brand colours for a brand)', 'sgs-blocks' ), value: 'inherit' },
+	{
+		label: __( 'Automatic (brand colours for a brand)', 'sgs-blocks' ),
+		value: 'inherit',
+	},
 	{ label: __( 'Brand colours', 'sgs-blocks' ), value: 'brand' },
-	{ label: __( 'Brand colour: logo only', 'sgs-blocks' ), value: 'brand-glyph' },
+	{
+		label: __( 'Brand colour: logo only', 'sgs-blocks' ),
+		value: 'brand-glyph',
+	},
 	{ label: __( 'Theme colours', 'sgs-blocks' ), value: 'theme' },
 ];
 
@@ -92,13 +114,20 @@ export function rowCanvasStyle( attributes, tier, palette, presetSlugs ) {
 		flexWrap,
 	} = attributes;
 	const style = {};
-	const size = iconLengthValue( resolveTier( childIconSize, tier ).value, 512, presetSlugs );
+	const size = iconLengthValue(
+		resolveTier( childIconSize, tier ).value,
+		512,
+		presetSlugs
+	);
 	if ( size ) {
 		style[ '--sgs-si-size' ] = size;
 	}
 	const box = resolveTier( childIconShapeSize, tier ).value;
 	const width = iconLengthValue( box?.width, 640, presetSlugs );
-	const height = shapeUsesWidthOnly( childIconShape ) || childIconShapeSizeLinked ? '' : iconLengthValue( box?.height, 640, presetSlugs );
+	const height =
+		shapeUsesWidthOnly( childIconShape ) || childIconShapeSizeLinked
+			? ''
+			: iconLengthValue( box?.height, 640, presetSlugs );
 	if ( width ) {
 		style[ '--sgs-si-shape-w' ] = width;
 	}
@@ -109,7 +138,11 @@ export function rowCanvasStyle( attributes, tier, palette, presetSlugs ) {
 	if ( size || width || height ) {
 		style[ '--sgs-si-tap-min' ] = '0px';
 	}
-	const gapValue = iconLengthValue( resolveTier( gap, tier ).value, 640, presetSlugs );
+	const gapValue = iconLengthValue(
+		resolveTier( gap, tier ).value,
+		640,
+		presetSlugs
+	);
 	if ( gapValue ) {
 		style.gap = gapValue;
 	}
@@ -133,11 +166,19 @@ export function rowCanvasStyle( attributes, tier, palette, presetSlugs ) {
 		style[ '--sgs-si-bg-gradient' ] = childIconBackgroundGradient;
 	}
 	if ( isCssGradient( childIconBackgroundHoverGradient ) ) {
-		style[ '--sgs-si-bg-hover-gradient' ] = childIconBackgroundHoverGradient;
-	} else if ( isCssGradient( childIconBackgroundGradient ) && childIconBackgroundHover ) {
+		style[ '--sgs-si-bg-hover-gradient' ] =
+			childIconBackgroundHoverGradient;
+	} else if (
+		isCssGradient( childIconBackgroundGradient ) &&
+		childIconBackgroundHover
+	) {
 		style[ '--sgs-si-bg-hover-gradient' ] = 'none';
 	}
-	const border = sgsBorderPreview( { widthValues: childIconBorderWidth, styleValue: childIconBorderStyle }, tier, palette );
+	const border = sgsBorderPreview(
+		{ widthValues: childIconBorderWidth, styleValue: childIconBorderStyle },
+		tier,
+		palette
+	);
 	if ( border.borderWidth ) {
 		style[ '--sgs-si-border-width' ] = border.borderWidth;
 		style[ '--sgs-si-border-style' ] = border.borderStyle;
@@ -150,17 +191,23 @@ export function rowCanvasStyle( attributes, tier, palette, presetSlugs ) {
 	} else if ( 'end' === rowAlign ) {
 		style.justifyContent = 'flex-end';
 	}
-	Object.assign( style, tierBoxLonghands( attributes.padding, tier, 'padding' ) );
-	Object.assign( style, tierBoxLonghands( attributes.margin, tier, 'margin' ) );
+	Object.assign(
+		style,
+		tierBoxLonghands( attributes.padding, tier, 'padding' )
+	);
+	Object.assign(
+		style,
+		tierBoxLonghands( attributes.margin, tier, 'margin' )
+	);
 	return style;
 }
 
 /**
  * The group glyph gradient on the canvas: render.php's defs block and stroke rules, scoped to this row.
  *
- * @param {string} scope          The row's canvas class.
- * @param {string} gradient       childIconColourGradient.
- * @param {string} hoverGradient  childIconColourHoverGradient.
+ * @param {string} scope         The row's canvas class.
+ * @param {string} gradient      childIconColourGradient.
+ * @param {string} hoverGradient childIconColourHoverGradient.
  * @return {{gradients:Array<{id:string, gradient:Object}>, css:string}} The gradient definitions and the rules.
  */
 export function rowGlyphGradientPreview( scope, gradient, hoverGradient ) {
@@ -171,11 +218,17 @@ export function rowGlyphGradientPreview( scope, gradient, hoverGradient ) {
 	const gradients = [];
 	if ( rest.css ) {
 		css += `${ glyph } .sgs-icon__svg svg{${ rest.css }}`;
-		gradients.push( { id: `${ scope }-g`, gradient: parseSvgGradient( gradient ) } );
+		gradients.push( {
+			id: `${ scope }-g`,
+			gradient: parseSvgGradient( gradient ),
+		} );
 	}
 	if ( hover.css ) {
 		css += `${ glyph } .sgs-icon__link:hover .sgs-icon__svg svg{${ hover.css }}`;
-		gradients.push( { id: `${ scope }-gh`, gradient: parseSvgGradient( hoverGradient ) } );
+		gradients.push( {
+			id: `${ scope }-gh`,
+			gradient: parseSvgGradient( hoverGradient ),
+		} );
 	}
 	return { gradients, css };
 }
@@ -184,7 +237,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const tier = usePreviewTier();
 	const [ palette ] = useSettings( 'color.palette' );
 	const [ spacingSizes ] = useSettings( 'spacing.spacingSizes' );
-	const presetSlugs = flattenPresetSetting( spacingSizes ).map( ( s ) => s.slug );
+	const presetSlugs = flattenPresetSetting( spacingSizes ).map(
+		( s ) => s.slug
+	);
 	const siteInfo = window.sgsBlocksData?.siteInfo;
 	const [ shadowHoverMap ] = useSettings( 'custom.shadowHover' );
 
@@ -207,17 +262,30 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		flexWrap,
 	} = attributes;
 
-	const children = useSelect( ( select ) => select( blockEditorStore ).getBlocks( clientId ), [ clientId ] );
+	const children = useSelect(
+		( select ) => select( blockEditorStore ).getBlocks( clientId ),
+		[ clientId ]
+	);
 	const { insertBlock } = useDispatch( blockEditorStore );
 	// The template applies only to an empty row, so it never rewrites existing children.
-	const template = useMemo( () => templateFromSiteInfo( siteInfo ), [ siteInfo ] );
+	const template = useMemo(
+		() => templateFromSiteInfo( siteInfo ),
+		[ siteInfo ]
+	);
 
 	const scope = `sgs-si-canvas-${ useInstanceId( Edit ) }`;
-	const glyphGradient = rowGlyphGradientPreview( scope, attributes.childIconColourGradient, attributes.childIconColourHoverGradient );
+	const glyphGradient = rowGlyphGradientPreview(
+		scope,
+		attributes.childIconColourGradient,
+		attributes.childIconColourHoverGradient
+	);
 	const labelCss = rowLabelPreviewCss( scope, attributes, tier );
 	const blockProps = useBlockProps( {
 		className: `sgs-social-icons ${ scope }`,
-		style: { ...rowCanvasStyle( attributes, tier, palette, presetSlugs ), ...rowShadowCanvasStyle( attributes, shadowHoverMap || {} ) },
+		style: {
+			...rowCanvasStyle( attributes, tier, palette, presetSlugs ),
+			...rowShadowCanvasStyle( attributes, shadowHoverMap || {} ),
+		},
 	} );
 	const innerBlocksProps = useInnerBlocksProps( blockProps, {
 		allowedBlocks: [ 'sgs/icon' ],
@@ -231,14 +299,29 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		const next = toggleLink( key, checked, children, hiddenLinks );
 		setAttributes( { hiddenLinks: next.hiddenLinks } );
 		if ( next.append ) {
-			insertBlock( createBlock( 'sgs/icon', next.append ), children.length, clientId, false );
+			insertBlock(
+				createBlock( 'sgs/icon', next.append ),
+				children.length,
+				clientId,
+				false
+			);
 		}
 	};
 
 	const writeShapeSize = ( t, side, value ) => {
-		const current = childIconShapeSize?.[ t ] && 'object' === typeof childIconShapeSize[ t ] ? childIconShapeSize[ t ] : {};
+		const current =
+			childIconShapeSize?.[ t ] &&
+			'object' === typeof childIconShapeSize[ t ]
+				? childIconShapeSize[ t ]
+				: {};
 		const next = { ...current, [ side ]: value || undefined };
-		patchTier( attributes, setAttributes, 'childIconShapeSize', t, next.width || next.height ? next : undefined );
+		patchTier(
+			attributes,
+			setAttributes,
+			'childIconShapeSize',
+			t,
+			next.width || next.height ? next : undefined
+		);
 	};
 
 	return (
@@ -248,7 +331,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					textRow( {
 						key: 'icon',
 						label: __( 'Icon colour', 'sgs-blocks' ),
-						attrs: { base: 'childIconColour', hover: 'childIconColourHover', gradient: 'childIconColourGradient', hoverGradient: 'childIconColourHoverGradient' },
+						attrs: {
+							base: 'childIconColour',
+							hover: 'childIconColourHover',
+							gradient: 'childIconColourGradient',
+							hoverGradient: 'childIconColourHoverGradient',
+						},
 						attributes,
 						setAttributes,
 					} ),
@@ -260,7 +348,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								base: 'childIconBackground',
 								hover: 'childIconBackgroundHover',
 								gradient: 'childIconBackgroundGradient',
-								hoverGradient: 'childIconBackgroundHoverGradient',
+								hoverGradient:
+									'childIconBackgroundHoverGradient',
 							},
 							attributes,
 							setAttributes,
@@ -273,7 +362,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								base: 'childIconLabelColour',
 								hover: 'childIconLabelColourHover',
 								gradient: 'childIconLabelColourGradient',
-								hoverGradient: 'childIconLabelColourHoverGradient',
+								hoverGradient:
+									'childIconLabelColourHoverGradient',
 							},
 							attributes,
 							setAttributes,
@@ -283,19 +373,30 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			<InspectorControls>
 				<PanelBody title={ __( 'Links', 'sgs-blocks' ) }>
 					<p className="components-base-control__help">
-						{ __( 'Each icon links to its Site Info field and hides while that field is empty. Untick to hide an icon; drag icons in List View to reorder them.', 'sgs-blocks' ) }
+						{ __(
+							'Each icon links to its Site Info field and hides while that field is empty. Untick to hide an icon; drag icons in List View to reorder them.',
+							'sgs-blocks'
+						) }
 					</p>
 					{ rows.map( ( row ) => (
-						<div key={ row.key } className="sgs-social-icons-links__row">
+						<div
+							key={ row.key }
+							className="sgs-social-icons-links__row"
+						>
 							<CheckboxControl
 								label={ row.label }
 								checked={ row.checked }
-								onChange={ ( value ) => onToggle( row.key, value ) }
+								onChange={ ( value ) =>
+									onToggle( row.key, value )
+								}
 								__nextHasNoMarginBottom
 							/>
 							{ row.missing && (
 								<p className="sgs-social-icons-links__flag">
-									{ __( 'Filled in Site Info but not in this row: tick it to add it.', 'sgs-blocks' ) }
+									{ __(
+										'Filled in Site Info but not in this row: tick it to add it.',
+										'sgs-blocks'
+									) }
 								</p>
 							) }
 						</div>
@@ -306,12 +407,20 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						label={ __( 'Colours', 'sgs-blocks' ) }
 						help={
 							'brand-glyph' === colourMode
-								? __( 'Each logo takes its brand colour on the row own background and border (Google keeps its four colours, Instagram its gradient). On hover the border turns the brand colour with a thin ring. A colour set here or on an icon always wins.', 'sgs-blocks' )
-								: __( 'For icons left on Automatic. A colour set here or on an icon always wins.', 'sgs-blocks' )
+								? __(
+										'Each logo takes its brand colour on the row own background and border (Google keeps its four colours, Instagram its gradient). On hover the border turns the brand colour with a thin ring. A colour set here or on an icon always wins.',
+										'sgs-blocks'
+								  )
+								: __(
+										'For icons left on Automatic. A colour set here or on an icon always wins.',
+										'sgs-blocks'
+								  )
 						}
 						value={ colourMode || 'inherit' }
 						options={ COLOUR_MODES }
-						onChange={ ( value ) => setAttributes( { colourMode: value } ) }
+						onChange={ ( value ) =>
+							setAttributes( { colourMode: value } )
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
@@ -321,67 +430,134 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							<IconSizeControl
 								value={ childIconSize?.[ t ] }
 								help={ ICON_SIZE_HELP.group }
-								onChange={ ( value ) => patchTier( attributes, setAttributes, 'childIconSize', t, value ) }
+								onChange={ ( value ) =>
+									patchTier(
+										attributes,
+										setAttributes,
+										'childIconSize',
+										t,
+										value
+									)
+								}
 							/>
 						) }
 					</ResponsiveControl>
 				</PanelBody>
-				<PanelBody title={ __( 'Icon shape', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Icon shape', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<ShapeToggle
 						label={ __( 'Shape', 'sgs-blocks' ) }
-						help={ __( 'For icons left on the square. With no shape picked (click the picked one again), each icon keeps its own.', 'sgs-blocks' ) }
+						help={ __(
+							'For icons left on the square. With no shape picked (click the picked one again), each icon keeps its own.',
+							'sgs-blocks'
+						) }
 						value={ childIconShape }
-						onChange={ ( value ) => setAttributes( { childIconShape: value ?? '' } ) }
+						onChange={ ( value ) =>
+							setAttributes( { childIconShape: value ?? '' } )
+						}
 						isDeselectable
 					/>
 					<ToggleControl
 						label={ __( 'Background', 'sgs-blocks' ) }
-						help={ __( 'Paints a shape behind every icon.', 'sgs-blocks' ) }
+						help={ __(
+							'Paints a shape behind every icon.',
+							'sgs-blocks'
+						) }
 						checked={ !! childIconShowBackground }
-						onChange={ ( value ) => setAttributes( { childIconShowBackground: value } ) }
+						onChange={ ( value ) =>
+							setAttributes( { childIconShowBackground: value } )
+						}
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
-				<PanelBody title={ __( 'Shape size', 'sgs-blocks' ) } initialOpen={ false }>
-					<ResponsiveControl label={ __( 'Shape size', 'sgs-blocks' ) }>
+				<PanelBody
+					title={ __( 'Shape size', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<ResponsiveControl
+						label={ __( 'Shape size', 'sgs-blocks' ) }
+					>
 						{ ( t ) => (
 							<>
 								<SgsLengthControl
-									label={ shapeUsesWidthOnly( childIconShape ) || childIconShapeSizeLinked ? __( 'Size', 'sgs-blocks' ) : __( 'Width', 'sgs-blocks' ) }
-									value={ childIconShapeSize?.[ t ]?.width ?? '' }
+									label={
+										shapeUsesWidthOnly( childIconShape ) ||
+										childIconShapeSizeLinked
+											? __( 'Size', 'sgs-blocks' )
+											: __( 'Width', 'sgs-blocks' )
+									}
+									value={
+										childIconShapeSize?.[ t ]?.width ?? ''
+									}
 									units={ LENGTH_UNITS }
 									presets
-									help={ __( 'Blank: the icon size plus a little room each side.', 'sgs-blocks' ) }
-									onChange={ ( value ) => writeShapeSize( t, 'width', value ) }
+									help={ __(
+										'Blank: the icon size plus a little room each side.',
+										'sgs-blocks'
+									) }
+									onChange={ ( value ) =>
+										writeShapeSize( t, 'width', value )
+									}
 								/>
-								{ ! shapeUsesWidthOnly( childIconShape ) && ! childIconShapeSizeLinked && (
-									<SgsLengthControl
-										label={ __( 'Height', 'sgs-blocks' ) }
-										value={ childIconShapeSize?.[ t ]?.height ?? '' }
-										units={ LENGTH_UNITS }
-										presets
-										onChange={ ( value ) => writeShapeSize( t, 'height', value ) }
-									/>
-								) }
+								{ ! shapeUsesWidthOnly( childIconShape ) &&
+									! childIconShapeSizeLinked && (
+										<SgsLengthControl
+											label={ __(
+												'Height',
+												'sgs-blocks'
+											) }
+											value={
+												childIconShapeSize?.[ t ]
+													?.height ?? ''
+											}
+											units={ LENGTH_UNITS }
+											presets
+											onChange={ ( value ) =>
+												writeShapeSize(
+													t,
+													'height',
+													value
+												)
+											}
+										/>
+									) }
 							</>
 						) }
 					</ResponsiveControl>
 					{ ! shapeUsesWidthOnly( childIconShape ) && (
 						<ToggleControl
-							label={ __( 'Same width and height', 'sgs-blocks' ) }
+							label={ __(
+								'Same width and height',
+								'sgs-blocks'
+							) }
 							checked={ childIconShapeSizeLinked }
-							onChange={ ( value ) => setAttributes( { childIconShapeSizeLinked: value } ) }
+							onChange={ ( value ) =>
+								setAttributes( {
+									childIconShapeSizeLinked: value,
+								} )
+							}
 							__nextHasNoMarginBottom
 						/>
 					) }
 				</PanelBody>
-				<PanelBody title={ __( 'Icon border', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Icon border', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SgsBorderControl
 						widthValues={ childIconBorderWidth ?? {} }
-						onWidthChange={ ( next ) => setAttributes( { childIconBorderWidth: next } ) }
+						onWidthChange={ ( next ) =>
+							setAttributes( { childIconBorderWidth: next } )
+						}
 						widthPresets={ [ '10', '20', '30' ] }
 						styleValue={ childIconBorderStyle }
-						onStyleChange={ ( value ) => setAttributes( { childIconBorderStyle: value ?? '' } ) }
+						onStyleChange={ ( value ) =>
+							setAttributes( {
+								childIconBorderStyle: value ?? '',
+							} )
+						}
 						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
 						colourStates={ [
 							{
@@ -389,73 +565,147 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: childIconBorderColour,
 								linked: true,
-								onChange: ( value ) => setAttributes( { childIconBorderColour: value ?? '' } ),
+								onChange: ( value ) =>
+									setAttributes( {
+										childIconBorderColour: value ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: childIconBorderColourHover,
 								linked: true,
-								onChange: ( value ) => setAttributes( { childIconBorderColourHover: value ?? '' } ),
+								onChange: ( value ) =>
+									setAttributes( {
+										childIconBorderColourHover: value ?? '',
+									} ),
 							},
 						] }
 					/>
 				</PanelBody>
-				<RowShadowPanels attributes={ attributes } setAttributes={ setAttributes } />
-				<SocialIconLabelsPanel attributes={ attributes } setAttributes={ setAttributes } />
-				<PanelBody title={ __( 'Row', 'sgs-blocks' ) } initialOpen={ false }>
-					<ResponsiveControl label={ __( 'Gap between icons', 'sgs-blocks' ) }>
+				<RowShadowPanels
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+				<SocialIconLabelsPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+				<PanelBody
+					title={ __( 'Row', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<ResponsiveControl
+						label={ __( 'Gap between icons', 'sgs-blocks' ) }
+					>
 						{ ( t ) => (
 							<SgsLengthControl
-								label={ __( 'Gap between icons', 'sgs-blocks' ) }
+								label={ __(
+									'Gap between icons',
+									'sgs-blocks'
+								) }
 								hideLabelFromVision
 								value={ gap?.[ t ] ?? '' }
 								units={ LENGTH_UNITS }
 								presets
-								onChange={ ( value ) => patchTier( attributes, setAttributes, 'gap', t, value || undefined ) }
+								onChange={ ( value ) =>
+									patchTier(
+										attributes,
+										setAttributes,
+										'gap',
+										t,
+										value || undefined
+									)
+								}
 							/>
 						) }
 					</ResponsiveControl>
 					<LogicalAlignControl
 						label={ __( 'Alignment', 'sgs-blocks' ) }
 						value={ rowAlign }
-						onChange={ ( value ) => setAttributes( { rowAlign: value || 'start' } ) }
+						onChange={ ( value ) =>
+							setAttributes( { rowAlign: value || 'start' } )
+						}
 					/>
-					<FlexWrapControl label={ __( 'Wrap icons', 'sgs-blocks' ) } value={ flexWrap } onChange={ ( value ) => setAttributes( { flexWrap: value } ) } />
+					<FlexWrapControl
+						label={ __( 'Wrap icons', 'sgs-blocks' ) }
+						value={ flexWrap }
+						onChange={ ( value ) =>
+							setAttributes( { flexWrap: value } )
+						}
+					/>
 				</PanelBody>
-				<PanelBody title={ __( 'Accessibility', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Accessibility', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<TextControl
 						label={ __( 'List name', 'sgs-blocks' ) }
-						help={ __( 'What screen readers call this row of links.', 'sgs-blocks' ) }
-						placeholder={ __( 'Social media and contact', 'sgs-blocks' ) }
+						help={ __(
+							'What screen readers call this row of links.',
+							'sgs-blocks'
+						) }
+						placeholder={ __(
+							'Social media and contact',
+							'sgs-blocks'
+						) }
 						value={ ariaLabel }
-						onChange={ ( value ) => setAttributes( { ariaLabel: value } ) }
+						onChange={ ( value ) =>
+							setAttributes( { ariaLabel: value } )
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
 				</PanelBody>
 			</InspectorControls>
 			<InspectorControls group="styles">
-				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
-					<ResponsiveOverride value={ attributes.padding } onChange={ ( obj ) => setAttributes( { padding: obj } ) }>
+				<PanelBody
+					title={ __( 'Spacing', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<ResponsiveOverride
+						value={ attributes.padding }
+						onChange={ ( obj ) =>
+							setAttributes( { padding: obj } )
+						}
+					>
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={ ownValue && 'object' === typeof ownValue ? ownValue : {} }
+								values={
+									ownValue && 'object' === typeof ownValue
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
-					<ResponsiveOverride value={ attributes.margin } onChange={ ( obj ) => setAttributes( { margin: obj } ) }>
+					<ResponsiveOverride
+						value={ attributes.margin }
+						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+					>
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={ ownValue && 'object' === typeof ownValue ? ownValue : {} }
+								values={
+									ownValue && 'object' === typeof ownValue
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
@@ -463,10 +713,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			</InspectorControls>
 			<div { ...innerBlocksProps }>
 				{ glyphGradient.gradients.length > 0 && (
-					<svg className="sgs-social-icons__defs" aria-hidden="true" focusable="false">
+					<svg
+						className="sgs-social-icons__defs"
+						aria-hidden="true"
+						focusable="false"
+					>
 						<defs>
 							{ glyphGradient.gradients.map( ( g ) => (
-								<SvgGradientDefs key={ g.id } id={ g.id } gradient={ g.gradient } />
+								<SvgGradientDefs
+									key={ g.id }
+									id={ g.id }
+									gradient={ g.gradient }
+								/>
 							) ) }
 						</defs>
 					</svg>

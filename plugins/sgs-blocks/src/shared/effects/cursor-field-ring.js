@@ -72,8 +72,14 @@ function bindElement( el ) {
 			const rect = el.getBoundingClientRect();
 			const width = el.offsetWidth || rect.width;
 			const height = el.offsetHeight || rect.height;
-			layer.style.setProperty( PROP_X, ( nx * width ).toFixed( 1 ) + 'px' );
-			layer.style.setProperty( PROP_Y, ( ny * height ).toFixed( 1 ) + 'px' );
+			layer.style.setProperty(
+				PROP_X,
+				( nx * width ).toFixed( 1 ) + 'px'
+			);
+			layer.style.setProperty(
+				PROP_Y,
+				( ny * height ).toFixed( 1 ) + 'px'
+			);
 			if ( ! layer.hasAttribute( LIVE ) && null === liveFrame ) {
 				liveFrame = window.requestAnimationFrame( () => {
 					liveFrame = null;
@@ -88,10 +94,14 @@ function bindElement( el ) {
 			// The revealed circle keeps gliding to the exit point while its radius shrinks; the flag drops once that has
 			// finished, so the next entry seeds the position at once (the circle is invisible by then).
 			cancelSettle();
-			settleTimer = window.setTimeout( () => {
-				settleTimer = null;
-				el.removeAttribute( LIVE );
-			}, readMs( el, RADIUS_DURATION_ATTR, DEFAULT_RADIUS_MS ) + readMs( el, LAG_ATTR, DEFAULT_LAG_MS ) );
+			settleTimer = window.setTimeout(
+				() => {
+					settleTimer = null;
+					el.removeAttribute( LIVE );
+				},
+				readMs( el, RADIUS_DURATION_ATTR, DEFAULT_RADIUS_MS ) +
+					readMs( el, LAG_ATTR, DEFAULT_LAG_MS )
+			);
 		},
 	} );
 }

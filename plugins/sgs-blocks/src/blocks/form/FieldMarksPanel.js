@@ -19,10 +19,15 @@ import { ResponsiveLengthControl } from '../../components';
  */
 export default function FieldMarksPanel( { attributes, setAttributes } ) {
 	return (
-		<PanelBody title={ __( 'Required and optional marks', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Required and optional marks', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			<ToolsPanel
 				label={ __( 'Label marks', 'sgs-blocks' ) }
-				resetAll={ () => setAttributes( { optionalText: '', requiredMarkGap: {} } ) }
+				resetAll={ () =>
+					setAttributes( { optionalText: '', requiredMarkGap: {} } )
+				}
 			>
 				<ToolsPanelItem
 					label={ __( 'Optional tag text', 'sgs-blocks' ) }
@@ -33,8 +38,13 @@ export default function FieldMarksPanel( { attributes, setAttributes } ) {
 					<TextControl
 						label={ __( 'Optional tag text', 'sgs-blocks' ) }
 						value={ attributes.optionalText ?? '' }
-						help={ __( 'The words of the Optional tag, shown on each field that switches the tag on (Show the Optional tag in the field settings). Empty uses "Optional".', 'sgs-blocks' ) }
-						onChange={ ( optionalText ) => setAttributes( { optionalText } ) }
+						help={ __(
+							'The words of the Optional tag, shown on each field that switches the tag on (Show the Optional tag in the field settings). Empty uses "Optional".',
+							'sgs-blocks'
+						) }
+						onChange={ ( optionalText ) =>
+							setAttributes( { optionalText } )
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
@@ -42,13 +52,20 @@ export default function FieldMarksPanel( { attributes, setAttributes } ) {
 				<ToolsPanelItem
 					label={ __( 'Space before the mark', 'sgs-blocks' ) }
 					isShownByDefault
-					hasValue={ () => Object.keys( attributes.requiredMarkGap ?? {} ).length > 0 }
-					onDeselect={ () => setAttributes( { requiredMarkGap: {} } ) }
+					hasValue={ () =>
+						Object.keys( attributes.requiredMarkGap ?? {} ).length >
+						0
+					}
+					onDeselect={ () =>
+						setAttributes( { requiredMarkGap: {} } )
+					}
 				>
 					<ResponsiveLengthControl
 						label={ __( 'Space before the mark', 'sgs-blocks' ) }
 						value={ attributes.requiredMarkGap }
-						onChange={ ( next ) => setAttributes( { requiredMarkGap: next } ) }
+						onChange={ ( next ) =>
+							setAttributes( { requiredMarkGap: next } )
+						}
 					/>
 				</ToolsPanelItem>
 			</ToolsPanel>

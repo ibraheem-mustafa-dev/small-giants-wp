@@ -124,7 +124,13 @@ export default function IntensityPicker( {
 				const layer = next
 					? restampLayer( family, next, values, customised )
 					: null;
-				if ( layer && ! ( layer.intensity === value && sameValue( layer.values, values ) ) ) {
+				if (
+					layer &&
+					! (
+						layer.intensity === value &&
+						sameValue( layer.values, values )
+					)
+				) {
 					onChange( layer );
 				}
 			} }

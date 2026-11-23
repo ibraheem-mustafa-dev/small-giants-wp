@@ -58,20 +58,27 @@ export function effectTriggers( effect, layerDef = EFFECT_LAYER_DEF ) {
 /**
  * The effect slugs the Effects panel offers for a block and target, in schema order.
  *
- * @param {string}      blockName  The block's name.
- * @param {string}      target     `root`, a part key or a `custom:<n>` target.
- * @param {Object|null} [elements] The block's `supports.sgs.elements` (a part marked `"surface": true` takes
- *                                 surface-level effects; one marked `"text": true` or `"svg": true` takes that kind's effects).
+ * @param {string}      blockName       The block's name.
+ * @param {string}      target          `root`, a part key or a `custom:<n>` target.
+ * @param {Object|null} [elements]      The block's `supports.sgs.elements` (a part marked `"surface": true` takes
+ *                                      surface-level effects; one marked `"text": true` or `"svg": true` takes that kind's effects).
  * @param {Object|null} [kindsByDevice] For a part that declares `availableWhen`: the media kind shown on each device
- *                                 (`{ desktop, tablet, mobile }`, or the devices to judge by). The effects then filter by
- *                                 the kind on each device (`kind-fit.js`, Spec 49 §10.1) in place of the part's static
- *                                 `svg` and `text` flags.
+ *                                      (`{ desktop, tablet, mobile }`, or the devices to judge by). The effects then filter by
+ *                                      the kind on each device (`kind-fit.js`, Spec 49 §10.1) in place of the part's static
+ *                                      `svg` and `text` flags.
  * @return {string[]} The slugs.
  */
-export function effectOptions( blockName, target, elements = null, kindsByDevice = null ) {
+export function effectOptions(
+	blockName,
+	target,
+	elements = null,
+	kindsByDevice = null
+) {
 	const qualifying = qualifyingBlocks[ blockName ] || [];
 	const levels = levelsForTarget( target, elements );
-	const byKind = Boolean( kindsByDevice && elements?.[ target ]?.availableWhen );
+	const byKind = Boolean(
+		kindsByDevice && elements?.[ target ]?.availableWhen
+	);
 	const offered = effectsForList( EFFECTS_LIST ).filter( ( effect ) => {
 		const row = effectMetaOf( effect );
 		return (

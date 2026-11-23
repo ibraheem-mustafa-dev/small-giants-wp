@@ -11,8 +11,17 @@
 
 import { __ } from '@wordpress/i18n';
 import { SelectControl, TextControl } from '@wordpress/components';
-import { ResponsiveControl, SgsBoxControl, SgsLengthControl, ShadowControl, DesignTokenPicker } from '../../components';
-import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+import {
+	ResponsiveControl,
+	SgsBoxControl,
+	SgsLengthControl,
+	ShadowControl,
+	DesignTokenPicker,
+} from '../../components';
+import {
+	ToggleGroupControl,
+	ToggleGroupControlOption,
+} from '../../components/primitives';
 
 const LAYOUT_OPTIONS = [
 	{ label: __( 'Compact', 'sgs-blocks' ), value: '' },
@@ -26,56 +35,98 @@ const LAYOUT_OPTIONS = [
  * @return {Element} The controls.
  */
 export default function DrawerShellControls( { attributes, setAttributes } ) {
-	const { drawerShellRadius, drawerShellPadding, drawerLinkRadius, drawerCardLayout, drawerCardMediaRatio, drawerCardMediaHeight, drawerCardTagRadius, drawerLinkTrailingIcon, drawerLinkTrailingColour } = attributes;
+	const {
+		drawerShellRadius,
+		drawerShellPadding,
+		drawerLinkRadius,
+		drawerCardLayout,
+		drawerCardMediaRatio,
+		drawerCardMediaHeight,
+		drawerCardTagRadius,
+		drawerLinkTrailingIcon,
+		drawerLinkTrailingColour,
+	} = attributes;
 
 	return (
 		<>
 			<SgsLengthControl
-				label={ __( 'Panel corner radius in the drawer', 'sgs-blocks' ) }
+				label={ __(
+					'Panel corner radius in the drawer',
+					'sgs-blocks'
+				) }
 				value={ drawerShellRadius || '' }
-				onChange={ ( value ) => setAttributes( { drawerShellRadius: value || '' } ) }
+				onChange={ ( value ) =>
+					setAttributes( { drawerShellRadius: value || '' } )
+				}
 				presets={ false }
 			/>
 			<SgsBoxControl
 				label={ __( 'Panel padding in the drawer', 'sgs-blocks' ) }
-				values={ drawerShellPadding && 'object' === typeof drawerShellPadding ? drawerShellPadding : {} }
+				values={
+					drawerShellPadding && 'object' === typeof drawerShellPadding
+						? drawerShellPadding
+						: {}
+				}
 				presets
-				onChange={ ( next ) => setAttributes( { drawerShellPadding: next || {} } ) }
+				onChange={ ( next ) =>
+					setAttributes( { drawerShellPadding: next || {} } )
+				}
 			/>
 			<ShadowControl
 				label={ __( 'Panel shadow in the drawer', 'sgs-blocks' ) }
 				attributes={ attributes }
 				setAttributes={ setAttributes }
-				attrNames={ { base: 'drawerShellShadow', colour: 'drawerShellShadowColour' } }
+				attrNames={ {
+					base: 'drawerShellShadow',
+					colour: 'drawerShellShadowColour',
+				} }
 			/>
 			<SgsLengthControl
 				label={ __( 'Link row corner radius', 'sgs-blocks' ) }
 				value={ drawerLinkRadius || '' }
-				onChange={ ( value ) => setAttributes( { drawerLinkRadius: value || '' } ) }
+				onChange={ ( value ) =>
+					setAttributes( { drawerLinkRadius: value || '' } )
+				}
 				presets={ false }
 			/>
 			<ToggleGroupControl
 				label={ __( 'Side card layout', 'sgs-blocks' ) }
-				help={ __( 'Stacked: the card spans the panel, its tag sits over the photo and its link is an arrow in a circle.', 'sgs-blocks' ) }
+				help={ __(
+					'Stacked: the card spans the panel, its tag sits over the photo and its link is an arrow in a circle.',
+					'sgs-blocks'
+				) }
 				value={ drawerCardLayout || '' }
-				onChange={ ( value ) => setAttributes( { drawerCardLayout: value } ) }
+				onChange={ ( value ) =>
+					setAttributes( { drawerCardLayout: value } )
+				}
 				isBlock
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			>
 				{ LAYOUT_OPTIONS.map( ( option ) => (
-					<ToggleGroupControlOption key={ option.value } value={ option.value } label={ option.label } />
+					<ToggleGroupControlOption
+						key={ option.value }
+						value={ option.value }
+						label={ option.label }
+					/>
 				) ) }
 			</ToggleGroupControl>
 			<TextControl
 				label={ __( 'Side card photo ratio', 'sgs-blocks' ) }
-				help={ __( 'Width / height, for example 2 / 1. Blank uses 2 / 1.', 'sgs-blocks' ) }
+				help={ __(
+					'Width / height, for example 2 / 1. Blank uses 2 / 1.',
+					'sgs-blocks'
+				) }
 				value={ drawerCardMediaRatio || '' }
-				onChange={ ( value ) => setAttributes( { drawerCardMediaRatio: value } ) }
+				onChange={ ( value ) =>
+					setAttributes( { drawerCardMediaRatio: value } )
+				}
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>
-			<ResponsiveControl label={ __( 'Side card photo height', 'sgs-blocks' ) }>
+			<ResponsiveControl
+				label={ __( 'Side card photo height', 'sgs-blocks' ) }
+			>
 				{ ( breakpoint ) => (
 					<SgsLengthControl
 						label={ __( 'Photo height', 'sgs-blocks' ) }
@@ -83,7 +134,10 @@ export default function DrawerShellControls( { attributes, setAttributes } ) {
 						value={ drawerCardMediaHeight?.[ breakpoint ] || '' }
 						onChange={ ( value ) =>
 							setAttributes( {
-								drawerCardMediaHeight: { ...drawerCardMediaHeight, [ breakpoint ]: value || undefined },
+								drawerCardMediaHeight: {
+									...drawerCardMediaHeight,
+									[ breakpoint ]: value || undefined,
+								},
 							} )
 						}
 						presets={ false }
@@ -91,9 +145,14 @@ export default function DrawerShellControls( { attributes, setAttributes } ) {
 				) }
 			</ResponsiveControl>
 			<SgsLengthControl
-				label={ __( 'Side card tag corner radius (stacked)', 'sgs-blocks' ) }
+				label={ __(
+					'Side card tag corner radius (stacked)',
+					'sgs-blocks'
+				) }
 				value={ drawerCardTagRadius || '' }
-				onChange={ ( value ) => setAttributes( { drawerCardTagRadius: value || '' } ) }
+				onChange={ ( value ) =>
+					setAttributes( { drawerCardTagRadius: value || '' } )
+				}
 				presets={ false }
 			/>
 			<SelectControl
@@ -103,14 +162,18 @@ export default function DrawerShellControls( { attributes, setAttributes } ) {
 					{ label: __( 'None', 'sgs-blocks' ), value: '' },
 					{ label: __( 'Arrow', 'sgs-blocks' ), value: 'arrow' },
 				] }
-				onChange={ ( value ) => setAttributes( { drawerLinkTrailingIcon: value } ) }
+				onChange={ ( value ) =>
+					setAttributes( { drawerLinkTrailingIcon: value } )
+				}
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>
 			<DesignTokenPicker
 				label={ __( 'Link row trailing icon colour', 'sgs-blocks' ) }
 				value={ drawerLinkTrailingColour }
-				onChange={ ( value ) => setAttributes( { drawerLinkTrailingColour: value ?? '' } ) }
+				onChange={ ( value ) =>
+					setAttributes( { drawerLinkTrailingColour: value ?? '' } )
+				}
 				linked
 			/>
 		</>

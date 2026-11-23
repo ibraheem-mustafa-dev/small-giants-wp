@@ -20,7 +20,13 @@
  */
 
 import { __, sprintf } from '@wordpress/i18n';
-import { useState, useEffect, useRef, useMemo, useCallback } from '@wordpress/element';
+import {
+	useState,
+	useEffect,
+	useRef,
+	useMemo,
+	useCallback,
+} from '@wordpress/element';
 import {
 	BaseControl,
 	Button,
@@ -32,7 +38,13 @@ import {
 import IconGrid from './IconGrid';
 import IconPreview, { withInlineFillStroke } from './IconPreview';
 import { withSgsCategory } from './sgs-group';
-import { loadLucide, loadEmoji, loadWpIcons, enabledIconSources, DASHICONS } from './icon-data';
+import {
+	loadLucide,
+	loadEmoji,
+	loadWpIcons,
+	enabledIconSources,
+	DASHICONS,
+} from './icon-data';
 import './editor.css';
 import { sanitiseSvg } from '../../utils';
 
@@ -66,7 +78,10 @@ function buildLucideCategories( names, tags ) {
 	const cats = Object.keys( buckets )
 		.sort()
 		.map( ( k ) => ( { key: k, label: k, names: buckets[ k ] } ) );
-	return [ { key: '__all__', label: __( 'All', 'sgs-blocks' ), names }, ...cats ];
+	return [
+		{ key: '__all__', label: __( 'All', 'sgs-blocks' ), names },
+		...cats,
+	];
 }
 
 /**
@@ -87,7 +102,10 @@ function buildEmojiCategories( emoji ) {
 	const cats = Object.keys( buckets )
 		.sort()
 		.map( ( k ) => ( { key: k, label: k, items: buckets[ k ] } ) );
-	return [ { key: '__all__', label: __( 'All', 'sgs-blocks' ), items: emoji }, ...cats ];
+	return [
+		{ key: '__all__', label: __( 'All', 'sgs-blocks' ), items: emoji },
+		...cats,
+	];
 }
 
 /**
@@ -157,7 +175,10 @@ export default function IconPicker( {
 	// Coerce null → empty object so destructuring value.source/value.name below
 	// never throws when a block passes value={ icon ? { source, name } : null }.
 	value = value || {};
-	const enabledSources = useMemo( () => enabledIconSources( sources ), [ sources ] );
+	const enabledSources = useMemo(
+		() => enabledIconSources( sources ),
+		[ sources ]
+	);
 
 	const [ isOpen, setIsOpen ] = useState( false );
 	const [ activeSource, setActiveSource ] = useState(
@@ -252,13 +273,16 @@ export default function IconPicker( {
 		if ( 'lucide' === activeSource && lucide ) {
 			const { map, tags } = lucide;
 			// Start from the category's name subset (or all names if no category match).
-			const cat = lucideCategories.find( ( c ) => c.key === activeCategory );
+			const cat = lucideCategories.find(
+				( c ) => c.key === activeCategory
+			);
 			const pool = cat ? cat.names : lucide.names;
 			const filtered = q
 				? pool.filter(
 						( n ) =>
 							n.includes( q ) ||
-							( tags[ n ] && tags[ n ].some( ( t ) => t.includes( q ) ) )
+							( tags[ n ] &&
+								tags[ n ].some( ( t ) => t.includes( q ) ) )
 				  )
 				: pool;
 			return filtered.map( ( n ) => ( {
@@ -268,20 +292,30 @@ export default function IconPicker( {
 					<span
 						className="sgs-icon-grid__svg"
 						// eslint-disable-next-line react/no-danger
-						dangerouslySetInnerHTML={ { __html: sanitiseSvg( withInlineFillStroke( map[ n ] ) ) } }
+						dangerouslySetInnerHTML={ {
+							__html: sanitiseSvg(
+								withInlineFillStroke( map[ n ] )
+							),
+						} }
 					/>
 				),
 			} ) );
 		}
 
 		if ( 'emoji' === activeSource && emoji ) {
-			const cat = emojiCategories.find( ( c ) => c.key === activeCategory );
+			const cat = emojiCategories.find(
+				( c ) => c.key === activeCategory
+			);
 			const pool = cat ? cat.items : emoji;
-			const filtered = q ? pool.filter( ( e ) => e.k.includes( q ) ) : pool;
+			const filtered = q
+				? pool.filter( ( e ) => e.k.includes( q ) )
+				: pool;
 			return filtered.map( ( e ) => ( {
 				key: e.c,
 				label: e.n,
-				render: () => <span className="sgs-icon-grid__emoji">{ e.c }</span>,
+				render: () => (
+					<span className="sgs-icon-grid__emoji">{ e.c }</span>
+				),
 			} ) );
 		}
 
@@ -295,7 +329,11 @@ export default function IconPicker( {
 						<span
 							className="sgs-icon-grid__svg"
 							// eslint-disable-next-line react/no-danger
-							dangerouslySetInnerHTML={ { __html: sanitiseSvg( withInlineFillStroke( wpIcons[ s ] ) ) } }
+							dangerouslySetInnerHTML={ {
+								__html: sanitiseSvg(
+									withInlineFillStroke( wpIcons[ s ] )
+								),
+							} }
 						/>
 					),
 				} )
@@ -303,28 +341,51 @@ export default function IconPicker( {
 		}
 
 		if ( 'brand' === activeSource ) {
-			return brands.filter(
-				( b ) => ! q || b.slug.includes( q ) || b.label.toLowerCase().includes( q )
-			).map( ( b ) => ( {
-				key: b.slug,
-				label: b.label,
-				render: () => <IconPreview source="brand" name={ b.slug } size={ 24 } brands={ brands } />,
-			} ) );
+			return brands
+				.filter(
+					( b ) =>
+						! q ||
+						b.slug.includes( q ) ||
+						b.label.toLowerCase().includes( q )
+				)
+				.map( ( b ) => ( {
+					key: b.slug,
+					label: b.label,
+					render: () => (
+						<IconPreview
+							source="brand"
+							name={ b.slug }
+							size={ 24 }
+							brands={ brands }
+						/>
+					),
+				} ) );
 		}
 
 		if ( 'dashicon' === activeSource ) {
-			return ( q
-				? DASHICONS.filter( ( s ) => s.includes( q ) )
-				: DASHICONS
+			return (
+				q ? DASHICONS.filter( ( s ) => s.includes( q ) ) : DASHICONS
 			).map( ( s ) => ( {
 				key: s,
 				label: s,
-				render: () => <span className={ `dashicons dashicons-${ s }` } />,
+				render: () => (
+					<span className={ `dashicons dashicons-${ s }` } />
+				),
 			} ) );
 		}
 
 		return [];
-	}, [ activeSource, activeCategory, query, lucide, emoji, wpIcons, lucideCategories, emojiCategories, brands ] );
+	}, [
+		activeSource,
+		activeCategory,
+		query,
+		lucide,
+		emoji,
+		wpIcons,
+		lucideCategories,
+		emojiCategories,
+		brands,
+	] );
 
 	const { visible, sentinelRef, hasMore } = useWindowed( allItems );
 
@@ -375,18 +436,30 @@ export default function IconPicker( {
 				{ 'custom' === value.source && value.svg ? (
 					<span
 						className="sgs-icon-preview__svg"
-						style={ { width: 24, height: 24, display: 'inline-flex' } }
+						style={ {
+							width: 24,
+							height: 24,
+							display: 'inline-flex',
+						} }
 						aria-hidden="true"
 						// eslint-disable-next-line react/no-danger
-						dangerouslySetInnerHTML={ { __html: sanitiseSvg( value.svg ) } }
+						dangerouslySetInnerHTML={ {
+							__html: sanitiseSvg( value.svg ),
+						} }
 					/>
 				) : (
-					<IconPreview source={ value.source } name={ value.name } size={ 24 } brands={ brands } />
+					<IconPreview
+						source={ value.source }
+						name={ value.name }
+						size={ 24 }
+						brands={ brands }
+					/>
 				) }
 				<span className="sgs-icon-picker__trigger-label">
 					{ ( 'custom' === value.source && value.svg
 						? __( 'Custom SVG', 'sgs-blocks' )
-						: value.name ) || __( 'Choose an icon…', 'sgs-blocks' ) }
+						: value.name ) ||
+						__( 'Choose an icon…', 'sgs-blocks' ) }
 				</span>
 			</Button>
 
@@ -406,7 +479,11 @@ export default function IconPicker( {
 						{ enabledSources.map( ( s ) => (
 							<Button
 								key={ s.key }
-								variant={ activeSource === s.key ? 'primary' : 'tertiary' }
+								variant={
+									activeSource === s.key
+										? 'primary'
+										: 'tertiary'
+								}
 								aria-pressed={ activeSource === s.key }
 								onClick={ () => {
 									setActiveSource( s.key );
@@ -442,11 +519,18 @@ export default function IconPicker( {
 											className="sgs-icon-grid__svg"
 											aria-hidden="true"
 											// eslint-disable-next-line react/no-danger
-											dangerouslySetInnerHTML={ { __html: sanitiseSvg( customSvgDraft ) } }
+											dangerouslySetInnerHTML={ {
+												__html: sanitiseSvg(
+													customSvgDraft
+												),
+											} }
 										/>
 									) : (
 										<p className="sgs-icon-picker__note">
-											{ __( 'Nothing survived sanitising — check the markup is a valid SVG.', 'sgs-blocks' ) }
+											{ __(
+												'Nothing survived sanitising — check the markup is a valid SVG.',
+												'sgs-blocks'
+											) }
 										</p>
 									) }
 								</div>
@@ -454,7 +538,9 @@ export default function IconPicker( {
 							<Button
 								variant="primary"
 								onClick={ useCustomSvg }
-								disabled={ '' === sanitiseSvg( customSvgDraft ) }
+								disabled={
+									'' === sanitiseSvg( customSvgDraft )
+								}
 							>
 								{ __( 'Use this icon', 'sgs-blocks' ) }
 							</Button>
@@ -484,27 +570,43 @@ export default function IconPicker( {
 
 					{ 'custom' !== activeSource && ! isLoading && error && (
 						<div className="sgs-icon-picker__status">
-							{ __( 'Could not load icons. Try again.', 'sgs-blocks' ) }
+							{ __(
+								'Could not load icons. Try again.',
+								'sgs-blocks'
+							) }
 						</div>
 					) }
 
 					{ 'custom' !== activeSource && ! isLoading && ! error && (
-						<div className={ `sgs-icon-picker__body${ showCategoryPanel ? ' has-categories' : '' }` }>
+						<div
+							className={ `sgs-icon-picker__body${
+								showCategoryPanel ? ' has-categories' : ''
+							}` }
+						>
 							{ /* ── Category sidebar ──────────────────────────────── */ }
 							{ showCategoryPanel && (
 								<nav
 									className="sgs-icon-picker__cats"
-									aria-label={ __( 'Icon categories', 'sgs-blocks' ) }
+									aria-label={ __(
+										'Icon categories',
+										'sgs-blocks'
+									) }
 								>
 									{ categories.map( ( cat ) => (
 										<button
 											key={ cat.key }
 											type="button"
 											className={ `sgs-icon-picker__cat-btn${
-												activeCategory === cat.key ? ' is-active' : ''
+												activeCategory === cat.key
+													? ' is-active'
+													: ''
 											}` }
-											aria-pressed={ activeCategory === cat.key }
-											onClick={ () => setActiveCategory( cat.key ) }
+											aria-pressed={
+												activeCategory === cat.key
+											}
+											onClick={ () =>
+												setActiveCategory( cat.key )
+											}
 										>
 											{ cat.label }
 											<span className="sgs-icon-picker__cat-count">
@@ -521,7 +623,10 @@ export default function IconPicker( {
 							<div className="sgs-icon-picker__grid-wrap">
 								{ 0 === allItems.length && (
 									<p className="sgs-icon-picker__note">
-										{ __( 'No icons match your search.', 'sgs-blocks' ) }
+										{ __(
+											'No icons match your search.',
+											'sgs-blocks'
+										) }
 									</p>
 								) }
 
@@ -546,15 +651,19 @@ export default function IconPicker( {
 											</div>
 										) }
 
-										{ ! hasMore && allItems.length > PAGE_SIZE && (
-											<p className="sgs-icon-picker__note">
-												{ sprintf(
-													/* translators: %d: total icon count */
-													__( 'All %d icons shown.', 'sgs-blocks' ),
-													allItems.length
-												) }
-											</p>
-										) }
+										{ ! hasMore &&
+											allItems.length > PAGE_SIZE && (
+												<p className="sgs-icon-picker__note">
+													{ sprintf(
+														/* translators: %d: total icon count */
+														__(
+															'All %d icons shown.',
+															'sgs-blocks'
+														),
+														allItems.length
+													) }
+												</p>
+											) }
 									</>
 								) }
 							</div>

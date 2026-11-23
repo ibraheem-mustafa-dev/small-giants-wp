@@ -1,5 +1,9 @@
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-editor';
+import {
+	useBlockProps,
+	InspectorControls,
+	useSettings,
+} from '@wordpress/block-editor';
 import {
 	PanelBody,
 	TextControl,
@@ -13,7 +17,12 @@ import ContainerWrapperControls from '../container/components/ContainerWrapperCo
 import MediaElementPanel from '../../components/MediaElementPanel';
 import ItemSlotFields from '../../components/media/ItemSlotFields.js';
 import ItemSlotPicture from '../../components/media/ItemSlotPicture.js';
-import { IconPicker, IconPreview, SgsColourPanel, fillRow, textRow,
+import {
+	IconPicker,
+	IconPreview,
+	SgsColourPanel,
+	fillRow,
+	textRow,
 	SgsBorderControl,
 	ShadowControl,
 	TypographyControls,
@@ -50,7 +59,13 @@ import AuthoredText from '../../components/AuthoredText';
 /** The block's one media slot: each tile's picture (Spec 49 §10.4: Source, Fit, Width, Shape). */
 const TILE_SLOT = { prefix: 'tile', kinds: [ 'image' ], context: 'item' };
 
-const ROOT_BORDER_KEYS = [ 'borderWidth', 'borderStyle', 'borderColor', 'borderImage', ...RADIUS_STYLE_KEYS ];
+const ROOT_BORDER_KEYS = [
+	'borderWidth',
+	'borderStyle',
+	'borderColor',
+	'borderImage',
+	...RADIUS_STYLE_KEYS,
+];
 
 // A tile's description is one line of copy; the render cuts it at the same length.
 const DESCRIPTION_MAX_LENGTH = 140;
@@ -63,7 +78,13 @@ const WIDTH_OPTIONS = [
 ];
 
 const CHECK_POSITION_OPTIONS = [
-	{ label: __( 'Default (corner badge with the checkmark style)', 'sgs-blocks' ), value: '' },
+	{
+		label: __(
+			'Default (corner badge with the checkmark style)',
+			'sgs-blocks'
+		),
+		value: '',
+	},
 	{ label: __( 'Before the text', 'sgs-blocks' ), value: 'inline-start' },
 	{ label: __( 'Top-end corner badge', 'sgs-blocks' ), value: 'corner' },
 ];
@@ -109,8 +130,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			: '';
 
 	// A tile's border is judged against the tile's own fill, falling back to the field's fill behind it.
-	const formFieldTilesTileContrastAgainst = attributes.tileBackgroundColour || formFieldTilesContrastAgainst;
-
+	const formFieldTilesTileContrastAgainst =
+		attributes.tileBackgroundColour || formFieldTilesContrastAgainst;
 
 	// columns is a TIER OBJECT (Spec 35 pass 4) — this control only ever edits
 	// the desktop tier (there is no per-tier UI here); resolve it for both the
@@ -118,18 +139,29 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// raw setAttributes({ columns: val }) would coerce the whole object-typed
 	// attr to its block.json default (D563 bug class).
 	const previewTier = usePreviewTier();
-	const columnsDesktop = resolveResponsiveTier( columns, 'desktop' )?.value || 3;
-	const columnsAtTier = resolveResponsiveTier( columns, previewTier )?.value || 3;
+	const columnsDesktop =
+		resolveResponsiveTier( columns, 'desktop' )?.value || 3;
+	const columnsAtTier =
+		resolveResponsiveTier( columns, previewTier )?.value || 3;
 	const setColumnsDesktop = ( val ) =>
-		setAttributes( { columns: { ...( columns && typeof columns === 'object' ? columns : {} ), desktop: val } } );
+		setAttributes( {
+			columns: {
+				...( columns && typeof columns === 'object' ? columns : {} ),
+				desktop: val,
+			},
+		} );
 
 	const className = [
 		'sgs-form-field',
 		'sgs-form-field--tiles',
 		`sgs-form-field--${ width }`,
 		`sgs-form-field--tiles-style-${ selectedStyle || 'checkmark' }`,
-		attributes.selectedCheckPosition ? `sgs-form-field--tiles-check-${ attributes.selectedCheckPosition }` : '',
-	].filter( Boolean ).join( ' ' );
+		attributes.selectedCheckPosition
+			? `sgs-form-field--tiles-check-${ attributes.selectedCheckPosition }`
+			: '',
+	]
+		.filter( Boolean )
+		.join( ' ' );
 
 	// CHECK A finding: textColour/textColourGradient are written by the
 	// "Text colour" row above and consumed by render.php on `$sgs_ft_sel`
@@ -141,13 +173,31 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const wrapper = wrapperPreview( attributes, previewTier, colourPalette );
 	const tilesStyle = { ...wrapper.style };
 	ROOT_BORDER_KEYS.forEach( ( key ) => delete tilesStyle[ key ] );
-	if ( ! tilesStyle.gridTemplateColumns && 'flex' !== attributes.layout && 'stack' !== attributes.layout ) {
+	if (
+		! tilesStyle.gridTemplateColumns &&
+		'flex' !== attributes.layout &&
+		'stack' !== attributes.layout
+	) {
 		tilesStyle.gridTemplateColumns = `repeat(${ columnsAtTier }, 1fr)`;
 	}
 	const rootStyle = {
-		...backgroundPaintPreview( backgroundColour, backgroundColourGradient, colourPalette ),
+		...backgroundPaintPreview(
+			backgroundColour,
+			backgroundColourGradient,
+			colourPalette
+		),
 		...textPaintPreview( textColour, textColourGradient, colourPalette ),
-		...sgsBorderPreview( { widthValues: attributes.borderWidth, styleValue: attributes.borderStyle, colourValue: attributes.borderColour, colourGradientValue: attributes.borderColourGradient, radiusValues: attributes.borderRadius }, previewTier, colourPalette ),
+		...sgsBorderPreview(
+			{
+				widthValues: attributes.borderWidth,
+				styleValue: attributes.borderStyle,
+				colourValue: attributes.borderColour,
+				colourGradientValue: attributes.borderColourGradient,
+				radiusValues: attributes.borderRadius,
+			},
+			previewTier,
+			colourPalette
+		),
 	};
 
 	const blockProps = useBlockProps( { className, style: rootStyle } );
@@ -155,14 +205,30 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// The tile label and description typography reach the canvas as one scoped rule each (the tiles are
 	// array data, painted by this block's own preview below); the colours ride on the spans.
 	const tileTextPreviewCss = [
-		typographyPreviewCss( attributes, 'tileLabel', `#block-${ clientId } .sgs-form-tile__label`, previewTier ),
-		typographyPreviewCss( attributes, 'tileDescription', `#block-${ clientId } .sgs-form-tile__description`, previewTier ),
-	].filter( Boolean ).join( '' );
+		typographyPreviewCss(
+			attributes,
+			'tileLabel',
+			`#block-${ clientId } .sgs-form-tile__label`,
+			previewTier
+		),
+		typographyPreviewCss(
+			attributes,
+			'tileDescription',
+			`#block-${ clientId } .sgs-form-tile__description`,
+			previewTier
+		),
+	]
+		.filter( Boolean )
+		.join( '' );
 	// Each tile's own surface (background, border, radius, padding, inner gap, alignment) on the canvas. The first
 	// tile previews the selected state, so it keeps the stylesheet's selected border.
 	const tileSurface = ( selected ) => {
 		const style = {
-			...backgroundPaintPreview( attributes.tileBackgroundColour, '', colourPalette ),
+			...backgroundPaintPreview(
+				attributes.tileBackgroundColour,
+				'',
+				colourPalette
+			),
 			...sgsBorderPreview(
 				{
 					widthValues: attributes.tileBorderWidth,
@@ -179,11 +245,17 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			delete style.borderStyle;
 			delete style.borderWidth;
 			delete style.borderColor;
-			const selectedFill = resolveColourToken( attributes.tileSelectedBackgroundColour, colourPalette );
+			const selectedFill = resolveColourToken(
+				attributes.tileSelectedBackgroundColour,
+				colourPalette
+			);
 			if ( selectedFill ) {
 				style.backgroundColor = selectedFill;
 			}
-			const selectedBorder = resolveColourToken( attributes.tileSelectedBorderColour, colourPalette );
+			const selectedBorder = resolveColourToken(
+				attributes.tileSelectedBorderColour,
+				colourPalette
+			);
 			if ( selectedBorder ) {
 				style.borderColor = selectedBorder;
 			}
@@ -194,13 +266,21 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			const offsetX = attributes.tileSelectedOffset?.x;
 			const offsetY = attributes.tileSelectedOffset?.y;
 			if ( offsetX || offsetY ) {
-				style.transform = `translate(${ offsetX || '0' }, ${ offsetY || '0' })`;
+				style.transform = `translate(${ offsetX || '0' }, ${
+					offsetY || '0'
+				})`;
 			}
-			const selectedText = resolveColourToken( attributes.tileSelectedLabelColour, colourPalette );
+			const selectedText = resolveColourToken(
+				attributes.tileSelectedLabelColour,
+				colourPalette
+			);
 			if ( selectedText ) {
 				style.color = selectedText;
 			}
-			const selectedShadow = resolveShadowPreviewComposed( attributes.tileSelectedShadow, attributes.tileSelectedShadowColour );
+			const selectedShadow = resolveShadowPreviewComposed(
+				attributes.tileSelectedShadow,
+				attributes.tileSelectedShadowColour
+			);
 			if ( selectedShadow ) {
 				style.boxShadow = selectedShadow;
 			}
@@ -221,18 +301,29 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	};
 	// The tile(s) named by defaultValue (one value, or a comma list on a multi-select field) show chosen; with no
 	// default, or one that matches no tile, the first tile previews the chosen state so its settings stay visible.
-	const defaultValues = String( attributes.defaultValue || '' ).split( ',' ).map( ( v ) => v.trim() ).filter( Boolean );
+	const defaultValues = String( attributes.defaultValue || '' )
+		.split( ',' )
+		.map( ( v ) => v.trim() )
+		.filter( Boolean );
 	const defaultedIndexes = tiles
-		.map( ( tile, index ) => ( defaultValues.includes( String( tile.value || '' ) ) ? index : -1 ) )
+		.map( ( tile, index ) =>
+			defaultValues.includes( String( tile.value || '' ) ) ? index : -1
+		)
 		.filter( ( index ) => index >= 0 )
 		.slice( 0, multiSelect ? undefined : 1 );
 	const chosenIndexes = defaultedIndexes.length ? defaultedIndexes : [ 0 ];
 	const tileCheckPreview = {};
-	const checkColour = resolveColourToken( attributes.tileCheckColour, colourPalette );
+	const checkColour = resolveColourToken(
+		attributes.tileCheckColour,
+		colourPalette
+	);
 	if ( checkColour ) {
 		tileCheckPreview.color = checkColour;
 	}
-	const checkFill = resolveColourToken( attributes.tileCheckBackgroundColour, colourPalette );
+	const checkFill = resolveColourToken(
+		attributes.tileCheckBackgroundColour,
+		colourPalette
+	);
 	if ( checkFill ) {
 		tileCheckPreview.backgroundColor = checkFill;
 	}
@@ -241,12 +332,23 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		tileCheckPreview.width = attributes.tileCheckSize;
 		tileCheckPreview.height = attributes.tileCheckSize;
 	}
-	if ( attributes.tileCheckInset && 'inline-start' !== attributes.selectedCheckPosition ) {
+	if (
+		attributes.tileCheckInset &&
+		'inline-start' !== attributes.selectedCheckPosition
+	) {
 		tileCheckPreview.top = attributes.tileCheckInset;
 		tileCheckPreview.insetInlineEnd = attributes.tileCheckInset;
 	}
-	const tileLabelPaint = textPaintPreview( tileLabelColour, '', colourPalette );
-	const tileDescriptionPaint = textPaintPreview( tileDescriptionColour, '', colourPalette );
+	const tileLabelPaint = textPaintPreview(
+		tileLabelColour,
+		'',
+		colourPalette
+	);
+	const tileDescriptionPaint = textPaintPreview(
+		tileDescriptionColour,
+		'',
+		colourPalette
+	);
 
 	const updateTile = ( index, key, value ) => {
 		const newTiles = [ ...tiles ];
@@ -362,271 +464,377 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				   ToolsPanel's own "Field settings" title with no
 				   initialOpen, so the client saw the same words twice for
 				   no collapse benefit (Spec 35 A5 note). */ }
-					<ToolsPanel
-						label={ __( 'Field settings', 'sgs-blocks' ) }
-						resetAll={ () =>
+				<ToolsPanel
+					label={ __( 'Field settings', 'sgs-blocks' ) }
+					resetAll={ () =>
+						setAttributes( {
+							fieldName: '',
+							label: '',
+							helpText: '',
+							required: false,
+							multiSelect: false,
+							columns: { desktop: 3, tablet: 2, mobile: 1 },
+							width: 'full',
+							selectedStyle: 'checkmark',
+							defaultValue: '',
+							tileSelectedShadow: '',
+							tileSelectedShadowColour: '',
+							tileHoverShadow: '',
+							tileHoverShadowColour: '',
+							tileSelectedBorderWidth: '',
+							tileSelectedOffset: {},
+							selectedCheckPosition: '',
+							tileCheckSize: '',
+							tileCheckInset: '',
+						} )
+					}
+				>
+					<ToolsPanelItem
+						label={ __( 'Field name', 'sgs-blocks' ) }
+						hasValue={ () => !! fieldName }
+						onDeselect={ () => setAttributes( { fieldName: '' } ) }
+					>
+						<TextControl
+							label={ __( 'Field name', 'sgs-blocks' ) }
+							value={ fieldName }
+							onChange={ ( val ) =>
+								setAttributes( { fieldName: val } )
+							}
+							help={ __(
+								'Machine name used in submission data',
+								'sgs-blocks'
+							) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Label', 'sgs-blocks' ) }
+						hasValue={ () => !! label }
+						onDeselect={ () => setAttributes( { label: '' } ) }
+						isShownByDefault
+					>
+						<SgsFreeTextField
+							type="rich"
+							noLink
+							label={ __( 'Label', 'sgs-blocks' ) }
+							value={ label }
+							onChange={ ( val ) =>
+								setAttributes( { label: val } )
+							}
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Help text', 'sgs-blocks' ) }
+						hasValue={ () => !! helpText }
+						onDeselect={ () => setAttributes( { helpText: '' } ) }
+					>
+						<TextControl
+							label={ __( 'Help text', 'sgs-blocks' ) }
+							value={ helpText }
+							onChange={ ( val ) =>
+								setAttributes( { helpText: val } )
+							}
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Required', 'sgs-blocks' ) }
+						hasValue={ () => required !== false }
+						onDeselect={ () =>
+							setAttributes( { required: false } )
+						}
+						isShownByDefault
+					>
+						<ToggleControl
+							label={ __( 'Required', 'sgs-blocks' ) }
+							checked={ required }
+							onChange={ ( val ) =>
+								setAttributes( { required: val } )
+							}
+							__nextHasNoMarginBottom
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Allow multiple selection', 'sgs-blocks' ) }
+						hasValue={ () => multiSelect !== false }
+						onDeselect={ () =>
+							setAttributes( { multiSelect: false } )
+						}
+						isShownByDefault
+					>
+						<ToggleControl
+							label={ __(
+								'Allow multiple selection',
+								'sgs-blocks'
+							) }
+							checked={ multiSelect }
+							onChange={ ( val ) =>
+								setAttributes( { multiSelect: val } )
+							}
+							__nextHasNoMarginBottom
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Columns', 'sgs-blocks' ) }
+						hasValue={ () => columnsDesktop !== 3 }
+						onDeselect={ () => setColumnsDesktop( 3 ) }
+					>
+						<RangeControl
+							label={ __( 'Columns', 'sgs-blocks' ) }
+							value={ columnsDesktop }
+							onChange={ ( val ) => setColumnsDesktop( val ) }
+							min={ 2 }
+							max={ 4 }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Width', 'sgs-blocks' ) }
+						hasValue={ () => width !== 'full' }
+						onDeselect={ () => setAttributes( { width: 'full' } ) }
+					>
+						<SelectControl
+							label={ __( 'Width', 'sgs-blocks' ) }
+							value={ width }
+							options={ WIDTH_OPTIONS }
+							onChange={ ( val ) =>
+								setAttributes( { width: val } )
+							}
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Selected tile style', 'sgs-blocks' ) }
+						hasValue={ () => selectedStyle !== 'checkmark' }
+						onDeselect={ () =>
+							setAttributes( { selectedStyle: 'checkmark' } )
+						}
+					>
+						<SelectControl
+							label={ __( 'Selected tile style', 'sgs-blocks' ) }
+							value={ selectedStyle }
+							options={ SELECTED_STYLE_OPTIONS }
+							onChange={ ( val ) =>
+								setAttributes( { selectedStyle: val } )
+							}
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Tick position', 'sgs-blocks' ) }
+						hasValue={ () => !! attributes.selectedCheckPosition }
+						onDeselect={ () =>
+							setAttributes( { selectedCheckPosition: '' } )
+						}
+					>
+						<SelectControl
+							label={ __( 'Tick position', 'sgs-blocks' ) }
+							value={ attributes.selectedCheckPosition || '' }
+							options={ CHECK_POSITION_OPTIONS }
+							onChange={ ( val ) =>
+								setAttributes( { selectedCheckPosition: val } )
+							}
+							help={ __(
+								'Shows a tick on the chosen tile whatever the Selected tile style is. Before the text lays the tile out in a row.',
+								'sgs-blocks'
+							) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Tick size', 'sgs-blocks' ) }
+						hasValue={ () => !! attributes.tileCheckSize }
+						onDeselect={ () =>
+							setAttributes( { tileCheckSize: '' } )
+						}
+					>
+						<SgsLengthControl
+							label={ __( 'Tick size', 'sgs-blocks' ) }
+							value={ attributes.tileCheckSize || '' }
+							max={ 64 }
+							onChange={ ( val ) =>
+								setAttributes( { tileCheckSize: val || '' } )
+							}
+							help={ __(
+								'Empty is 20px on the corner badge and 14px before the text.',
+								'sgs-blocks'
+							) }
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __(
+							'Corner tick distance from the edge',
+							'sgs-blocks'
+						) }
+						hasValue={ () => !! attributes.tileCheckInset }
+						onDeselect={ () =>
+							setAttributes( { tileCheckInset: '' } )
+						}
+					>
+						<SgsLengthControl
+							label={ __(
+								'Corner tick distance from the edge',
+								'sgs-blocks'
+							) }
+							value={ attributes.tileCheckInset || '' }
+							max={ 64 }
+							onChange={ ( val ) =>
+								setAttributes( { tileCheckInset: val || '' } )
+							}
+							help={ __(
+								'How far the corner badge sits from the top and end edges. Empty is 0.5rem.',
+								'sgs-blocks'
+							) }
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Starts chosen', 'sgs-blocks' ) }
+						hasValue={ () => !! attributes.defaultValue }
+						onDeselect={ () =>
+							setAttributes( { defaultValue: '' } )
+						}
+					>
+						<TextControl
+							label={ __( 'Starts chosen', 'sgs-blocks' ) }
+							value={ attributes.defaultValue || '' }
+							onChange={ ( val ) =>
+								setAttributes( { defaultValue: val } )
+							}
+							help={ __(
+								'The value of the tile to start chosen. Separate several values with commas on a multi-select field.',
+								'sgs-blocks'
+							) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Chosen tile border width', 'sgs-blocks' ) }
+						hasValue={ () => !! attributes.tileSelectedBorderWidth }
+						onDeselect={ () =>
+							setAttributes( { tileSelectedBorderWidth: '' } )
+						}
+					>
+						<SgsLengthControl
+							label={ __(
+								'Chosen tile border width',
+								'sgs-blocks'
+							) }
+							value={ attributes.tileSelectedBorderWidth || '' }
+							max={ 12 }
+							onChange={ ( val ) =>
+								setAttributes( {
+									tileSelectedBorderWidth: val || '',
+								} )
+							}
+							help={ __(
+								'Empty keeps 3px for the checkmark and border styles.',
+								'sgs-blocks'
+							) }
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Chosen tile offset', 'sgs-blocks' ) }
+						hasValue={ () =>
+							!! (
+								attributes.tileSelectedOffset?.x ||
+								attributes.tileSelectedOffset?.y
+							)
+						}
+						onDeselect={ () =>
+							setAttributes( { tileSelectedOffset: {} } )
+						}
+					>
+						<SgsLengthControl
+							label={ __(
+								'Chosen tile moves right by',
+								'sgs-blocks'
+							) }
+							value={ attributes.tileSelectedOffset?.x || '' }
+							negative
+							max={ 40 }
+							onChange={ ( val ) =>
+								setAttributes( {
+									tileSelectedOffset: {
+										...attributes.tileSelectedOffset,
+										x: val || '',
+									},
+								} )
+							}
+							help={ __(
+								'A negative length moves it left.',
+								'sgs-blocks'
+							) }
+						/>
+						<SgsLengthControl
+							label={ __(
+								'Chosen tile moves down by',
+								'sgs-blocks'
+							) }
+							value={ attributes.tileSelectedOffset?.y || '' }
+							negative
+							max={ 40 }
+							onChange={ ( val ) =>
+								setAttributes( {
+									tileSelectedOffset: {
+										...attributes.tileSelectedOffset,
+										y: val || '',
+									},
+								} )
+							}
+							help={ __(
+								'A negative length moves it up.',
+								'sgs-blocks'
+							) }
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Chosen tile shadow', 'sgs-blocks' ) }
+						hasValue={ () => !! attributes.tileSelectedShadow }
+						onDeselect={ () =>
 							setAttributes( {
-								fieldName: '',
-								label: '',
-								helpText: '',
-								required: false,
-								multiSelect: false,
-								columns: { desktop: 3, tablet: 2, mobile: 1 },
-								width: 'full',
-								selectedStyle: 'checkmark',
-								defaultValue: '',
 								tileSelectedShadow: '',
 								tileSelectedShadowColour: '',
-								tileHoverShadow: '',
-								tileHoverShadowColour: '',
-								tileSelectedBorderWidth: '',
-								tileSelectedOffset: {},
-								selectedCheckPosition: '',
-								tileCheckSize: '',
-								tileCheckInset: '',
 							} )
 						}
 					>
-						<ToolsPanelItem
-							label={ __( 'Field name', 'sgs-blocks' ) }
-							hasValue={ () => !! fieldName }
-							onDeselect={ () => setAttributes( { fieldName: '' } ) }
-						>
-							<TextControl
-								label={ __( 'Field name', 'sgs-blocks' ) }
-								value={ fieldName }
-								onChange={ ( val ) =>
-									setAttributes( { fieldName: val } )
-								}
-								help={ __(
-									'Machine name used in submission data',
-									'sgs-blocks'
-								) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Label', 'sgs-blocks' ) }
-							hasValue={ () => !! label }
-							onDeselect={ () => setAttributes( { label: '' } ) }
-							isShownByDefault
-						>
-							<SgsFreeTextField type="rich" noLink
-								label={ __( 'Label', 'sgs-blocks' ) }
-								value={ label }
-								onChange={ ( val ) => setAttributes( { label: val } ) }
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Help text', 'sgs-blocks' ) }
-							hasValue={ () => !! helpText }
-							onDeselect={ () => setAttributes( { helpText: '' } ) }
-						>
-							<TextControl
-								label={ __( 'Help text', 'sgs-blocks' ) }
-								value={ helpText }
-								onChange={ ( val ) =>
-									setAttributes( { helpText: val } )
-								}
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Required', 'sgs-blocks' ) }
-							hasValue={ () => required !== false }
-							onDeselect={ () => setAttributes( { required: false } ) }
-							isShownByDefault
-						>
-							<ToggleControl
-								label={ __( 'Required', 'sgs-blocks' ) }
-								checked={ required }
-								onChange={ ( val ) =>
-									setAttributes( { required: val } )
-								}
-								__nextHasNoMarginBottom
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Allow multiple selection', 'sgs-blocks' ) }
-							hasValue={ () => multiSelect !== false }
-							onDeselect={ () => setAttributes( { multiSelect: false } ) }
-							isShownByDefault
-						>
-							<ToggleControl
-								label={ __( 'Allow multiple selection', 'sgs-blocks' ) }
-								checked={ multiSelect }
-								onChange={ ( val ) =>
-									setAttributes( { multiSelect: val } )
-								}
-								__nextHasNoMarginBottom
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Columns', 'sgs-blocks' ) }
-							hasValue={ () => columnsDesktop !== 3 }
-							onDeselect={ () => setColumnsDesktop( 3 ) }
-						>
-							<RangeControl
-								label={ __( 'Columns', 'sgs-blocks' ) }
-								value={ columnsDesktop }
-								onChange={ ( val ) =>
-									setColumnsDesktop( val )
-								}
-								min={ 2 }
-								max={ 4 }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Width', 'sgs-blocks' ) }
-							hasValue={ () => width !== 'full' }
-							onDeselect={ () => setAttributes( { width: 'full' } ) }
-						>
-							<SelectControl
-								label={ __( 'Width', 'sgs-blocks' ) }
-								value={ width }
-								options={ WIDTH_OPTIONS }
-								onChange={ ( val ) => setAttributes( { width: val } ) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Selected tile style', 'sgs-blocks' ) }
-							hasValue={ () => selectedStyle !== 'checkmark' }
-							onDeselect={ () =>
-								setAttributes( { selectedStyle: 'checkmark' } )
-							}
-						>
-							<SelectControl
-								label={ __( 'Selected tile style', 'sgs-blocks' ) }
-								value={ selectedStyle }
-								options={ SELECTED_STYLE_OPTIONS }
-								onChange={ ( val ) =>
-									setAttributes( { selectedStyle: val } )
-								}
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Tick position', 'sgs-blocks' ) }
-							hasValue={ () => !! attributes.selectedCheckPosition }
-							onDeselect={ () => setAttributes( { selectedCheckPosition: '' } ) }
-						>
-							<SelectControl
-								label={ __( 'Tick position', 'sgs-blocks' ) }
-								value={ attributes.selectedCheckPosition || '' }
-								options={ CHECK_POSITION_OPTIONS }
-								onChange={ ( val ) => setAttributes( { selectedCheckPosition: val } ) }
-								help={ __( 'Shows a tick on the chosen tile whatever the Selected tile style is. Before the text lays the tile out in a row.', 'sgs-blocks' ) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Tick size', 'sgs-blocks' ) }
-							hasValue={ () => !! attributes.tileCheckSize }
-							onDeselect={ () => setAttributes( { tileCheckSize: '' } ) }
-						>
-							<SgsLengthControl
-								label={ __( 'Tick size', 'sgs-blocks' ) }
-								value={ attributes.tileCheckSize || '' }
-								max={ 64 }
-								onChange={ ( val ) => setAttributes( { tileCheckSize: val || '' } ) }
-								help={ __( 'Empty is 20px on the corner badge and 14px before the text.', 'sgs-blocks' ) }
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Corner tick distance from the edge', 'sgs-blocks' ) }
-							hasValue={ () => !! attributes.tileCheckInset }
-							onDeselect={ () => setAttributes( { tileCheckInset: '' } ) }
-						>
-							<SgsLengthControl
-								label={ __( 'Corner tick distance from the edge', 'sgs-blocks' ) }
-								value={ attributes.tileCheckInset || '' }
-								max={ 64 }
-								onChange={ ( val ) => setAttributes( { tileCheckInset: val || '' } ) }
-								help={ __( 'How far the corner badge sits from the top and end edges. Empty is 0.5rem.', 'sgs-blocks' ) }
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Starts chosen', 'sgs-blocks' ) }
-							hasValue={ () => !! attributes.defaultValue }
-							onDeselect={ () => setAttributes( { defaultValue: '' } ) }
-						>
-							<TextControl
-								label={ __( 'Starts chosen', 'sgs-blocks' ) }
-								value={ attributes.defaultValue || '' }
-								onChange={ ( val ) => setAttributes( { defaultValue: val } ) }
-								help={ __( 'The value of the tile to start chosen. Separate several values with commas on a multi-select field.', 'sgs-blocks' ) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Chosen tile border width', 'sgs-blocks' ) }
-							hasValue={ () => !! attributes.tileSelectedBorderWidth }
-							onDeselect={ () => setAttributes( { tileSelectedBorderWidth: '' } ) }
-						>
-							<SgsLengthControl
-								label={ __( 'Chosen tile border width', 'sgs-blocks' ) }
-								value={ attributes.tileSelectedBorderWidth || '' }
-								max={ 12 }
-								onChange={ ( val ) => setAttributes( { tileSelectedBorderWidth: val || '' } ) }
-								help={ __( 'Empty keeps 3px for the checkmark and border styles.', 'sgs-blocks' ) }
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Chosen tile offset', 'sgs-blocks' ) }
-							hasValue={ () => !! ( attributes.tileSelectedOffset?.x || attributes.tileSelectedOffset?.y ) }
-							onDeselect={ () => setAttributes( { tileSelectedOffset: {} } ) }
-						>
-							<SgsLengthControl
-								label={ __( 'Chosen tile moves right by', 'sgs-blocks' ) }
-								value={ attributes.tileSelectedOffset?.x || '' }
-								negative
-								max={ 40 }
-								onChange={ ( val ) => setAttributes( { tileSelectedOffset: { ...attributes.tileSelectedOffset, x: val || '' } } ) }
-								help={ __( 'A negative length moves it left.', 'sgs-blocks' ) }
-							/>
-							<SgsLengthControl
-								label={ __( 'Chosen tile moves down by', 'sgs-blocks' ) }
-								value={ attributes.tileSelectedOffset?.y || '' }
-								negative
-								max={ 40 }
-								onChange={ ( val ) => setAttributes( { tileSelectedOffset: { ...attributes.tileSelectedOffset, y: val || '' } } ) }
-								help={ __( 'A negative length moves it up.', 'sgs-blocks' ) }
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
+						<ShadowControl
 							label={ __( 'Chosen tile shadow', 'sgs-blocks' ) }
-							hasValue={ () => !! attributes.tileSelectedShadow }
-							onDeselect={ () => setAttributes( { tileSelectedShadow: '', tileSelectedShadowColour: '' } ) }
-						>
-							<ShadowControl
-								label={ __( 'Chosen tile shadow', 'sgs-blocks' ) }
-								attributes={ attributes }
-								setAttributes={ setAttributes }
-								attrNames={ { base: 'tileSelectedShadow', colour: 'tileSelectedShadowColour' } }
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							attrNames={ {
+								base: 'tileSelectedShadow',
+								colour: 'tileSelectedShadowColour',
+							} }
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Tile hover shadow', 'sgs-blocks' ) }
+						hasValue={ () => !! attributes.tileHoverShadow }
+						onDeselect={ () =>
+							setAttributes( {
+								tileHoverShadow: '',
+								tileHoverShadowColour: '',
+							} )
+						}
+					>
+						<ShadowControl
 							label={ __( 'Tile hover shadow', 'sgs-blocks' ) }
-							hasValue={ () => !! attributes.tileHoverShadow }
-							onDeselect={ () => setAttributes( { tileHoverShadow: '', tileHoverShadowColour: '' } ) }
-						>
-							<ShadowControl
-								label={ __( 'Tile hover shadow', 'sgs-blocks' ) }
-								attributes={ attributes }
-								setAttributes={ setAttributes }
-								attrNames={ { base: 'tileHoverShadow', colour: 'tileHoverShadowColour' } }
-							/>
-						</ToolsPanelItem>
-					</ToolsPanel>
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							attrNames={ {
+								base: 'tileHoverShadow',
+								colour: 'tileHoverShadowColour',
+							} }
+						/>
+					</ToolsPanelItem>
+				</ToolsPanel>
 
 				{ /* Container wrapper (WS-4 mirror) */ }
 				<ContainerWrapperControls
@@ -671,7 +879,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								label={ __( 'Description', 'sgs-blocks' ) }
 								value={ tile.description || '' }
 								onChange={ ( val ) =>
-									updateTile( index, 'description', Array.from( val ).slice( 0, DESCRIPTION_MAX_LENGTH ).join( '' ) )
+									updateTile(
+										index,
+										'description',
+										Array.from( val )
+											.slice( 0, DESCRIPTION_MAX_LENGTH )
+											.join( '' )
+									)
 								}
 								maxLength={ DESCRIPTION_MAX_LENGTH }
 								help={ __(
@@ -725,28 +939,44 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						{ __( 'Add Tile', 'sgs-blocks' ) }
 					</Button>
 				</PanelBody>
-				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Border', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SgsBorderControl
 						widthValues={ attributes.borderWidth ?? {} }
-						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						onWidthChange={ ( next ) =>
+							setAttributes( { borderWidth: next } )
+						}
 						widthPresets={ [ '10', '20', '30' ] }
 						styleValue={ attributes.borderStyle }
-						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						onStyleChange={ ( val ) =>
+							setAttributes( { borderStyle: val } )
+						}
 						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
 						colourValue={ attributes.borderColour }
-						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						onColourChange={ ( val ) =>
+							setAttributes( { borderColour: val ?? '' } )
+						}
 						colourGradientValue={ attributes.borderColourGradient }
-						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+						onColourGradientChange={ ( val ) =>
+							setAttributes( { borderColourGradient: val ?? '' } )
+						}
 						colourLinked={ true }
 						contrastAgainst={ formFieldTilesContrastAgainst }
 						radiusValues={ {
-								base: attributes.borderRadius?.desktop ?? {},
-								tablet: attributes.borderRadius?.tablet ?? {},
-								mobile: attributes.borderRadius?.mobile ?? {},
-							} }
+							base: attributes.borderRadius?.desktop ?? {},
+							tablet: attributes.borderRadius?.tablet ?? {},
+							mobile: attributes.borderRadius?.mobile ?? {},
+						} }
 						onRadiusChange={ ( tier, next ) => {
 							const key = tier === 'base' ? 'desktop' : tier;
-							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+							setAttributes( {
+								borderRadius: {
+									...attributes.borderRadius,
+									[ key ]: next,
+								},
+							} );
 						} }
 					/>
 				</PanelBody>
@@ -762,16 +992,25 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				context="item"
 			/>
 			<InspectorControls>
-				<PanelBody title={ __( 'Tile surface', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Tile surface', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SgsBorderControl
 						widthValues={ attributes.tileBorderWidth ?? {} }
-						onWidthChange={ ( next ) => setAttributes( { tileBorderWidth: next } ) }
+						onWidthChange={ ( next ) =>
+							setAttributes( { tileBorderWidth: next } )
+						}
 						widthPresets={ [ '10', '20', '30' ] }
 						styleValue={ attributes.tileBorderStyle }
-						onStyleChange={ ( val ) => setAttributes( { tileBorderStyle: val } ) }
+						onStyleChange={ ( val ) =>
+							setAttributes( { tileBorderStyle: val } )
+						}
 						colourLabel={ __( 'Tile border colour', 'sgs-blocks' ) }
 						colourValue={ attributes.tileBorderColour }
-						onColourChange={ ( val ) => setAttributes( { tileBorderColour: val ?? '' } ) }
+						onColourChange={ ( val ) =>
+							setAttributes( { tileBorderColour: val ?? '' } )
+						}
 						colourLinked={ true }
 						contrastAgainst={ formFieldTilesTileContrastAgainst }
 						radiusValues={ {
@@ -781,29 +1020,54 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						} }
 						onRadiusChange={ ( tier, next ) => {
 							const key = tier === 'base' ? 'desktop' : tier;
-							setAttributes( { tileRadius: { ...attributes.tileRadius, [ key ]: next } } );
+							setAttributes( {
+								tileRadius: {
+									...attributes.tileRadius,
+									[ key ]: next,
+								},
+							} );
 						} }
 					/>
 					<ResponsiveOverride
 						value={ attributes.tilePadding }
-						onChange={ ( obj ) => setAttributes( { tilePadding: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { tilePadding: obj } )
+						}
 					>
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Tile padding', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
 					<ResponsiveOverride
-						label={ __( 'Gap between label and description', 'sgs-blocks' ) }
+						label={ __(
+							'Gap between label and description',
+							'sgs-blocks'
+						) }
 						value={ attributes.tileInnerGap }
-						onChange={ ( obj ) => setAttributes( { tileInnerGap: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { tileInnerGap: obj } )
+						}
 					>
-						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+						{ ( {
+							ownValue,
+							effectiveValue,
+							inherited,
+							setOwnValue,
+						} ) => (
 							<SgsGapControl
 								value={ ownValue }
 								placeholder={ inherited ? effectiveValue : '' }
@@ -815,12 +1079,17 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						label={ __( 'Tile content alignment', 'sgs-blocks' ) }
 						value={ attributes.tileAlign }
 						options={ TILE_ALIGN_OPTIONS }
-						onChange={ ( obj ) => setAttributes( { tileAlign: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { tileAlign: obj } )
+						}
 					/>
 				</PanelBody>
 			</InspectorControls>
 			<InspectorControls group="styles">
-				<PanelBody title={ __( 'Tile text', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Tile text', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<TypographyControls
 						attributes={ attributes }
 						setAttributes={ setAttributes }
@@ -862,22 +1131,29 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					<label className="sgs-form-field__label">
 						<AuthoredText value={ label } />
 						{ required && (
-							<span className="sgs-form-field__required">
-								*
-							</span>
+							<span className="sgs-form-field__required">*</span>
 						) }
 					</label>
 				) }
 				<div className="sgs-form-tiles" style={ tilesStyle }>
-					<BandWrap hasBandProps={ wrapper.hasBandProps } bandStyle={ wrapper.bandStyle }>
+					<BandWrap
+						hasBandProps={ wrapper.hasBandProps }
+						bandStyle={ wrapper.bandStyle }
+					>
 						{ tiles.map( ( tile, index ) => (
 							<label
 								key={ index }
 								className={ [
 									'sgs-form-tile',
-									chosenIndexes.includes( index ) ? 'sgs-form-tile--selected' : '',
-								].filter( Boolean ).join( ' ' ) }
-								style={ tileSurface( chosenIndexes.includes( index ) ) }
+									chosenIndexes.includes( index )
+										? 'sgs-form-tile--selected'
+										: '',
+								]
+									.filter( Boolean )
+									.join( ' ' ) }
+								style={ tileSurface(
+									chosenIndexes.includes( index )
+								) }
 							>
 								<input
 									className="sgs-form-tile__input"
@@ -889,9 +1165,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									disabled
 								/>
 								{ tile.icon && (
-									<span className="sgs-form-tile__icon" aria-hidden="true">
+									<span
+										className="sgs-form-tile__icon"
+										aria-hidden="true"
+									>
 										<IconPreview
-											source={ tile.iconSource || 'emoji' }
+											source={
+												tile.iconSource || 'emoji'
+											}
 											name={ tile.icon }
 											size={ 32 }
 										/>
@@ -907,13 +1188,27 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									context={ TILE_SLOT.context }
 									uid={ `sgs-ft-${ clientId.slice( 0, 8 ) }` }
 								/>
-								<span className="sgs-form-tile__label" style={ tileLabelPaint }>{ tile.label || '' }</span>
+								<span
+									className="sgs-form-tile__label"
+									style={ tileLabelPaint }
+								>
+									{ tile.label || '' }
+								</span>
 								{ tile.description && (
-									<span className="sgs-form-tile__description" style={ tileDescriptionPaint }>
-										{ Array.from( tile.description ).slice( 0, DESCRIPTION_MAX_LENGTH ).join( '' ) }
+									<span
+										className="sgs-form-tile__description"
+										style={ tileDescriptionPaint }
+									>
+										{ Array.from( tile.description )
+											.slice( 0, DESCRIPTION_MAX_LENGTH )
+											.join( '' ) }
 									</span>
 								) }
-								<span className="sgs-form-tile__check" style={ tileCheckPreview } aria-hidden="true"></span>
+								<span
+									className="sgs-form-tile__check"
+									style={ tileCheckPreview }
+									aria-hidden="true"
+								></span>
 							</label>
 						) ) }
 					</BandWrap>

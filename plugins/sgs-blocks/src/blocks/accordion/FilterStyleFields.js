@@ -26,7 +26,11 @@ import {
 } from '../../components';
 import { FontFamilyControl, ToolsPanelItem } from '../../components/primitives';
 import { ToggleControl } from '@wordpress/components';
-import { fontFamilyPickerValue, fontFamilyStoredValue, flattenPresetSetting } from '../../utils';
+import {
+	fontFamilyPickerValue,
+	fontFamilyStoredValue,
+	flattenPresetSetting,
+} from '../../utils';
 
 const OFFSET_UNITS = [
 	{ value: 'px', label: 'px', default: 0 },
@@ -35,19 +39,44 @@ const OFFSET_UNITS = [
 ];
 
 const JUSTIFY_OPTIONS = [
-	{ label: __( 'Chips at the start', 'sgs-blocks' ), value: 'left', icon: alignLeft },
-	{ label: __( 'Chips centred', 'sgs-blocks' ), value: 'center', icon: alignCenter },
-	{ label: __( 'Chips at the end', 'sgs-blocks' ), value: 'right', icon: alignRight },
+	{
+		label: __( 'Chips at the start', 'sgs-blocks' ),
+		value: 'left',
+		icon: alignLeft,
+	},
+	{
+		label: __( 'Chips centred', 'sgs-blocks' ),
+		value: 'center',
+		icon: alignCenter,
+	},
+	{
+		label: __( 'Chips at the end', 'sgs-blocks' ),
+		value: 'right',
+		icon: alignRight,
+	},
 ];
 
 const SEARCH_ALIGN_OPTIONS = [
-	{ label: __( 'Search box at the start', 'sgs-blocks' ), value: 'left', icon: alignLeft },
-	{ label: __( 'Search box centred', 'sgs-blocks' ), value: 'center', icon: alignCenter },
-	{ label: __( 'Search box at the end', 'sgs-blocks' ), value: 'right', icon: alignRight },
+	{
+		label: __( 'Search box at the start', 'sgs-blocks' ),
+		value: 'left',
+		icon: alignLeft,
+	},
+	{
+		label: __( 'Search box centred', 'sgs-blocks' ),
+		value: 'center',
+		icon: alignCenter,
+	},
+	{
+		label: __( 'Search box at the end', 'sgs-blocks' ),
+		value: 'right',
+		icon: alignRight,
+	},
 ];
 
 /** True when a tier object carries any value. */
-const hasTier = ( value ) => !! value && 'object' === typeof value && Object.keys( value ).length > 0;
+const hasTier = ( value ) =>
+	!! value && 'object' === typeof value && Object.keys( value ).length > 0;
 
 function TierItem( { label, attribute, attributes, setAttributes, children } ) {
 	return (
@@ -67,7 +96,9 @@ function ShadowItem( { label, base, colour, attributes, setAttributes } ) {
 		<ToolsPanelItem
 			label={ label }
 			hasValue={ () => !! attributes[ base ] || !! attributes[ colour ] }
-			onDeselect={ () => setAttributes( { [ base ]: '', [ colour ]: '' } ) }
+			onDeselect={ () =>
+				setAttributes( { [ base ]: '', [ colour ]: '' } )
+			}
 			isShownByDefault
 		>
 			<ShadowControl
@@ -82,15 +113,29 @@ function ShadowItem( { label, base, colour, attributes, setAttributes } ) {
 
 function BoxItem( { label, attribute, attributes, setAttributes } ) {
 	return (
-		<TierItem label={ label } attribute={ attribute } attributes={ attributes } setAttributes={ setAttributes }>
-			<ResponsiveOverride value={ attributes[ attribute ] } onChange={ ( obj ) => setAttributes( { [ attribute ]: obj } ) }>
+		<TierItem
+			label={ label }
+			attribute={ attribute }
+			attributes={ attributes }
+			setAttributes={ setAttributes }
+		>
+			<ResponsiveOverride
+				value={ attributes[ attribute ] }
+				onChange={ ( obj ) => setAttributes( { [ attribute ]: obj } ) }
+			>
 				{ ( { ownValue, setOwnValue } ) => (
 					<SgsBoxControl
 						label={ label }
-						values={ ownValue && 'object' === typeof ownValue ? ownValue : {} }
+						values={
+							ownValue && 'object' === typeof ownValue
+								? ownValue
+								: {}
+						}
 						units={ BOX_UNITS }
 						presets
-						onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+						onChange={ ( next ) =>
+							setOwnValue( normaliseResponsiveBox( next ) )
+						}
 					/>
 				) }
 			</ResponsiveOverride>
@@ -111,8 +156,20 @@ function FontFamilyItem( { label, attribute, attributes, setAttributes } ) {
 		>
 			<FontFamilyControl
 				fontFamilies={ families }
-				value={ fontFamilyPickerValue( attributes[ attribute ], families ) }
-				onChange={ ( val ) => setAttributes( { [ attribute ]: fontFamilyStoredValue( val, families, attributes[ attribute ] ) || '' } ) }
+				value={ fontFamilyPickerValue(
+					attributes[ attribute ],
+					families
+				) }
+				onChange={ ( val ) =>
+					setAttributes( {
+						[ attribute ]:
+							fontFamilyStoredValue(
+								val,
+								families,
+								attributes[ attribute ]
+							) || '',
+					} )
+				}
 			/>
 		</ToolsPanelItem>
 	);
@@ -123,41 +180,70 @@ export function ChipLookFields( { attributes, setAttributes } ) {
 	const shared = { attributes, setAttributes };
 	return (
 		<>
-			<TierItem label={ __( 'Chip row wrapping', 'sgs-blocks' ) } attribute="filterChipsWrap" { ...shared }>
+			<TierItem
+				label={ __( 'Chip row wrapping', 'sgs-blocks' ) }
+				attribute="filterChipsWrap"
+				{ ...shared }
+			>
 				<ResponsiveOverride
 					label={ __( 'Chip row wrapping', 'sgs-blocks' ) }
 					value={ attributes.filterChipsWrap }
-					onChange={ ( obj ) => setAttributes( { filterChipsWrap: obj } ) }
+					onChange={ ( obj ) =>
+						setAttributes( { filterChipsWrap: obj } )
+					}
 				>
 					{ ( { ownValue, setOwnValue } ) => (
 						<FlexWrapControl
 							label={ __( 'Chip row wrapping', 'sgs-blocks' ) }
 							hideLabelFromVision
-							help={ __( 'One row keeps every chip on a single line and scrolls the row sideways. Wrap lets chips drop onto further rows.', 'sgs-blocks' ) }
+							help={ __(
+								'One row keeps every chip on a single line and scrolls the row sideways. Wrap lets chips drop onto further rows.',
+								'sgs-blocks'
+							) }
 							value={ ownValue }
 							onChange={ setOwnValue }
 						/>
 					) }
 				</ResponsiveOverride>
 			</TierItem>
-			<TierItem label={ __( 'Chip row alignment', 'sgs-blocks' ) } attribute="filterChipsJustify" { ...shared }>
+			<TierItem
+				label={ __( 'Chip row alignment', 'sgs-blocks' ) }
+				attribute="filterChipsJustify"
+				{ ...shared }
+			>
 				<TextAlignTierControl
 					label={ __( 'Chip row alignment', 'sgs-blocks' ) }
 					value={ attributes.filterChipsJustify }
-					onChange={ ( obj ) => setAttributes( { filterChipsJustify: obj } ) }
+					onChange={ ( obj ) =>
+						setAttributes( { filterChipsJustify: obj } )
+					}
 					options={ JUSTIFY_OPTIONS }
 				/>
 			</TierItem>
-			<BoxItem label={ __( 'Chip row padding', 'sgs-blocks' ) } attribute="filterChipsPadding" { ...shared } />
-			<TierItem label={ __( 'Chip text size', 'sgs-blocks' ) } attribute="filterChipFontSize" { ...shared }>
+			<BoxItem
+				label={ __( 'Chip row padding', 'sgs-blocks' ) }
+				attribute="filterChipsPadding"
+				{ ...shared }
+			/>
+			<TierItem
+				label={ __( 'Chip text size', 'sgs-blocks' ) }
+				attribute="filterChipFontSize"
+				{ ...shared }
+			>
 				<ResponsiveLengthControl
 					scale="font-size"
 					label={ __( 'Chip text size', 'sgs-blocks' ) }
 					value={ attributes.filterChipFontSize }
-					onChange={ ( obj ) => setAttributes( { filterChipFontSize: obj } ) }
+					onChange={ ( obj ) =>
+						setAttributes( { filterChipFontSize: obj } )
+					}
 				/>
 			</TierItem>
-			<FontFamilyItem label={ __( 'Chip font', 'sgs-blocks' ) } attribute="filterChipFontFamily" { ...shared } />
+			<FontFamilyItem
+				label={ __( 'Chip font', 'sgs-blocks' ) }
+				attribute="filterChipFontFamily"
+				{ ...shared }
+			/>
 			<ShadowItem
 				label={ __( 'Chip shadow', 'sgs-blocks' ) }
 				base="filterChipShadow"
@@ -173,33 +259,51 @@ export function ChipLookFields( { attributes, setAttributes } ) {
 			<ToolsPanelItem
 				label={ __( 'Selected chip shift (across)', 'sgs-blocks' ) }
 				hasValue={ () => !! attributes.filterChipSelectedOffsetX }
-				onDeselect={ () => setAttributes( { filterChipSelectedOffsetX: '' } ) }
+				onDeselect={ () =>
+					setAttributes( { filterChipSelectedOffsetX: '' } )
+				}
 				isShownByDefault
 			>
 				<SgsLengthControl
 					scale="spacing"
 					label={ __( 'Selected chip shift (across)', 'sgs-blocks' ) }
-					help={ __( 'Moves the selected chip sideways. Negative moves it left.', 'sgs-blocks' ) }
+					help={ __(
+						'Moves the selected chip sideways. Negative moves it left.',
+						'sgs-blocks'
+					) }
 					value={ attributes.filterChipSelectedOffsetX || '' }
 					units={ OFFSET_UNITS }
 					presets={ false }
-					onChange={ ( val ) => setAttributes( { filterChipSelectedOffsetX: val ?? '' } ) }
+					onChange={ ( val ) =>
+						setAttributes( {
+							filterChipSelectedOffsetX: val ?? '',
+						} )
+					}
 				/>
 			</ToolsPanelItem>
 			<ToolsPanelItem
 				label={ __( 'Selected chip shift (down)', 'sgs-blocks' ) }
 				hasValue={ () => !! attributes.filterChipSelectedOffsetY }
-				onDeselect={ () => setAttributes( { filterChipSelectedOffsetY: '' } ) }
+				onDeselect={ () =>
+					setAttributes( { filterChipSelectedOffsetY: '' } )
+				}
 				isShownByDefault
 			>
 				<SgsLengthControl
 					scale="spacing"
 					label={ __( 'Selected chip shift (down)', 'sgs-blocks' ) }
-					help={ __( 'Moves the selected chip up or down. Negative moves it up.', 'sgs-blocks' ) }
+					help={ __(
+						'Moves the selected chip up or down. Negative moves it up.',
+						'sgs-blocks'
+					) }
 					value={ attributes.filterChipSelectedOffsetY || '' }
 					units={ OFFSET_UNITS }
 					presets={ false }
-					onChange={ ( val ) => setAttributes( { filterChipSelectedOffsetY: val ?? '' } ) }
+					onChange={ ( val ) =>
+						setAttributes( {
+							filterChipSelectedOffsetY: val ?? '',
+						} )
+					}
 				/>
 			</ToolsPanelItem>
 		</>
@@ -211,40 +315,72 @@ export function SearchLookFields( { attributes, setAttributes } ) {
 	const shared = { attributes, setAttributes };
 	return (
 		<>
-			<TierItem label={ __( 'Search box maximum width', 'sgs-blocks' ) } attribute="filterSearchMaxWidth" { ...shared }>
+			<TierItem
+				label={ __( 'Search box maximum width', 'sgs-blocks' ) }
+				attribute="filterSearchMaxWidth"
+				{ ...shared }
+			>
 				<ResponsiveLengthControl
 					scale="spacing"
 					label={ __( 'Search box maximum width', 'sgs-blocks' ) }
 					value={ attributes.filterSearchMaxWidth }
-					onChange={ ( obj ) => setAttributes( { filterSearchMaxWidth: obj } ) }
+					onChange={ ( obj ) =>
+						setAttributes( { filterSearchMaxWidth: obj } )
+					}
 				/>
 			</TierItem>
-			<TierItem label={ __( 'Search box alignment', 'sgs-blocks' ) } attribute="filterSearchAlign" { ...shared }>
+			<TierItem
+				label={ __( 'Search box alignment', 'sgs-blocks' ) }
+				attribute="filterSearchAlign"
+				{ ...shared }
+			>
 				<TextAlignTierControl
 					label={ __( 'Search box alignment', 'sgs-blocks' ) }
 					value={ attributes.filterSearchAlign }
-					onChange={ ( obj ) => setAttributes( { filterSearchAlign: obj } ) }
+					onChange={ ( obj ) =>
+						setAttributes( { filterSearchAlign: obj } )
+					}
 					options={ SEARCH_ALIGN_OPTIONS }
 				/>
 			</TierItem>
-			<TierItem label={ __( 'Search box height', 'sgs-blocks' ) } attribute="filterSearchHeight" { ...shared }>
+			<TierItem
+				label={ __( 'Search box height', 'sgs-blocks' ) }
+				attribute="filterSearchHeight"
+				{ ...shared }
+			>
 				<ResponsiveLengthControl
 					scale="spacing"
 					label={ __( 'Search box height', 'sgs-blocks' ) }
 					value={ attributes.filterSearchHeight }
-					onChange={ ( obj ) => setAttributes( { filterSearchHeight: obj } ) }
+					onChange={ ( obj ) =>
+						setAttributes( { filterSearchHeight: obj } )
+					}
 				/>
 			</TierItem>
-			<BoxItem label={ __( 'Search box padding', 'sgs-blocks' ) } attribute="filterSearchPadding" { ...shared } />
-			<TierItem label={ __( 'Search text size', 'sgs-blocks' ) } attribute="filterSearchFontSize" { ...shared }>
+			<BoxItem
+				label={ __( 'Search box padding', 'sgs-blocks' ) }
+				attribute="filterSearchPadding"
+				{ ...shared }
+			/>
+			<TierItem
+				label={ __( 'Search text size', 'sgs-blocks' ) }
+				attribute="filterSearchFontSize"
+				{ ...shared }
+			>
 				<ResponsiveLengthControl
 					scale="font-size"
 					label={ __( 'Search text size', 'sgs-blocks' ) }
 					value={ attributes.filterSearchFontSize }
-					onChange={ ( obj ) => setAttributes( { filterSearchFontSize: obj } ) }
+					onChange={ ( obj ) =>
+						setAttributes( { filterSearchFontSize: obj } )
+					}
 				/>
 			</TierItem>
-			<FontFamilyItem label={ __( 'Search text font', 'sgs-blocks' ) } attribute="filterSearchFontFamily" { ...shared } />
+			<FontFamilyItem
+				label={ __( 'Search text font', 'sgs-blocks' ) }
+				attribute="filterSearchFontFamily"
+				{ ...shared }
+			/>
 			<ShadowItem
 				label={ __( 'Search box shadow', 'sgs-blocks' ) }
 				base="filterSearchShadow"
@@ -260,15 +396,22 @@ export function SearchLookFields( { attributes, setAttributes } ) {
 				<IconPicker
 					label={ __( 'Search icon', 'sgs-blocks' ) }
 					sources={ [ 'lucide' ] }
-					value={ { source: 'lucide', name: attributes.filterSearchIcon || '' } }
-					onChange={ ( { name } ) => setAttributes( { filterSearchIcon: name || '' } ) }
+					value={ {
+						source: 'lucide',
+						name: attributes.filterSearchIcon || '',
+					} }
+					onChange={ ( { name } ) =>
+						setAttributes( { filterSearchIcon: name || '' } )
+					}
 				/>
 			</ToolsPanelItem>
 			{ !! attributes.filterSearchIcon && (
 				<ToolsPanelItem
 					label={ __( 'Search icon size', 'sgs-blocks' ) }
 					hasValue={ () => !! attributes.filterSearchIconSize }
-					onDeselect={ () => setAttributes( { filterSearchIconSize: '' } ) }
+					onDeselect={ () =>
+						setAttributes( { filterSearchIconSize: '' } )
+					}
 					isShownByDefault
 				>
 					<SgsLengthControl
@@ -276,7 +419,9 @@ export function SearchLookFields( { attributes, setAttributes } ) {
 						presets={ false }
 						label={ __( 'Search icon size', 'sgs-blocks' ) }
 						value={ attributes.filterSearchIconSize ?? '' }
-						onChange={ ( val ) => setAttributes( { filterSearchIconSize: val || '' } ) }
+						onChange={ ( val ) =>
+							setAttributes( { filterSearchIconSize: val || '' } )
+						}
 					/>
 				</ToolsPanelItem>
 			) }
@@ -284,16 +429,25 @@ export function SearchLookFields( { attributes, setAttributes } ) {
 				<ToolsPanelItem
 					label={ __( 'Search icon offset', 'sgs-blocks' ) }
 					hasValue={ () => !! attributes.filterSearchIconOffset }
-					onDeselect={ () => setAttributes( { filterSearchIconOffset: '' } ) }
+					onDeselect={ () =>
+						setAttributes( { filterSearchIconOffset: '' } )
+					}
 					isShownByDefault
 				>
 					<SgsLengthControl
 						scale="spacing"
 						presets={ false }
 						label={ __( 'Search icon offset', 'sgs-blocks' ) }
-						help={ __( 'Distance from the start edge of the search box to the icon. The text clears the icon by the same distance. Empty = 1rem.', 'sgs-blocks' ) }
+						help={ __(
+							'Distance from the start edge of the search box to the icon. The text clears the icon by the same distance. Empty = 1rem.',
+							'sgs-blocks'
+						) }
 						value={ attributes.filterSearchIconOffset ?? '' }
-						onChange={ ( val ) => setAttributes( { filterSearchIconOffset: val || '' } ) }
+						onChange={ ( val ) =>
+							setAttributes( {
+								filterSearchIconOffset: val || '',
+							} )
+						}
 					/>
 				</ToolsPanelItem>
 			) }
@@ -304,39 +458,70 @@ export function SearchLookFields( { attributes, setAttributes } ) {
 /** The band: the bar drawn as a strip with its own padding, bottom line and an optional full-screen-width spread (its fill is a ColourField in FilterPanel). */
 export function BandFields( { attributes, setAttributes } ) {
 	const shared = { attributes, setAttributes };
-	const width = attributes.filterBandBorderWidth && 'object' === typeof attributes.filterBandBorderWidth ? attributes.filterBandBorderWidth : {};
+	const width =
+		attributes.filterBandBorderWidth &&
+		'object' === typeof attributes.filterBandBorderWidth
+			? attributes.filterBandBorderWidth
+			: {};
 	return (
 		<>
-			<BoxItem label={ __( 'Band padding', 'sgs-blocks' ) } attribute="filterBandPadding" { ...shared } />
+			<BoxItem
+				label={ __( 'Band padding', 'sgs-blocks' ) }
+				attribute="filterBandPadding"
+				{ ...shared }
+			/>
 			<ToolsPanelItem
 				label={ __( 'Band bottom line', 'sgs-blocks' ) }
-				hasValue={ () => Object.keys( width ).length > 0 || !! attributes.filterBandBorderColour || 'solid' !== ( attributes.filterBandBorderStyle || 'solid' ) }
-				onDeselect={ () => setAttributes( { filterBandBorderWidth: {}, filterBandBorderStyle: 'solid', filterBandBorderColour: '' } ) }
+				hasValue={ () =>
+					Object.keys( width ).length > 0 ||
+					!! attributes.filterBandBorderColour ||
+					'solid' !== ( attributes.filterBandBorderStyle || 'solid' )
+				}
+				onDeselect={ () =>
+					setAttributes( {
+						filterBandBorderWidth: {},
+						filterBandBorderStyle: 'solid',
+						filterBandBorderColour: '',
+					} )
+				}
 				isShownByDefault
 			>
 				<SgsBorderControl
 					label={ __( 'Band bottom line', 'sgs-blocks' ) }
 					widthValues={ width }
-					onWidthChange={ ( next ) => setAttributes( { filterBandBorderWidth: next } ) }
+					onWidthChange={ ( next ) =>
+						setAttributes( { filterBandBorderWidth: next } )
+					}
 					styleValue={ attributes.filterBandBorderStyle || 'solid' }
-					onStyleChange={ ( val ) => setAttributes( { filterBandBorderStyle: val } ) }
+					onStyleChange={ ( val ) =>
+						setAttributes( { filterBandBorderStyle: val } )
+					}
 					colourLabel={ __( 'Band line colour', 'sgs-blocks' ) }
 					colourValue={ attributes.filterBandBorderColour }
-					onColourChange={ ( val ) => setAttributes( { filterBandBorderColour: val ?? '' } ) }
+					onColourChange={ ( val ) =>
+						setAttributes( { filterBandBorderColour: val ?? '' } )
+					}
 					colourLinked
 				/>
 			</ToolsPanelItem>
 			<ToolsPanelItem
 				label={ __( 'Band full width', 'sgs-blocks' ) }
 				hasValue={ () => !! attributes.filterBandFullWidth }
-				onDeselect={ () => setAttributes( { filterBandFullWidth: false } ) }
+				onDeselect={ () =>
+					setAttributes( { filterBandFullWidth: false } )
+				}
 				isShownByDefault
 			>
 				<ToggleControl
 					label={ __( 'Band full width', 'sgs-blocks' ) }
-					help={ __( 'Spreads the band fill and line to both edges of the screen. The search box and chips stay in the accordion width. The line is solid in this mode.', 'sgs-blocks' ) }
+					help={ __(
+						'Spreads the band fill and line to both edges of the screen. The search box and chips stay in the accordion width. The line is solid in this mode.',
+						'sgs-blocks'
+					) }
 					checked={ !! attributes.filterBandFullWidth }
-					onChange={ ( val ) => setAttributes( { filterBandFullWidth: val } ) }
+					onChange={ ( val ) =>
+						setAttributes( { filterBandFullWidth: val } )
+					}
 					__nextHasNoMarginBottom
 				/>
 			</ToolsPanelItem>

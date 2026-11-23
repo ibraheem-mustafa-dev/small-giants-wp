@@ -12,7 +12,12 @@ import clsx from 'clsx';
  */
 import { Button, Dropdown } from '@wordpress/components';
 
-export function DropdownLinkAction( { buttonProps, className, dropdownProps, linkText } ) {
+export function DropdownLinkAction( {
+	buttonProps,
+	className,
+	dropdownProps,
+	linkText,
+} ) {
 	return (
 		<Dropdown
 			className={ clsx(

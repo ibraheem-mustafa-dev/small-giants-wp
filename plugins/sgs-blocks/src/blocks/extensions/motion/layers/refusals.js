@@ -199,8 +199,8 @@ function limitRefusals( limit, layers, focus, context = {} ) {
 /**
  * Every refusal on one element: pairs first in table order, then limits.
  *
- * @param {Object} element One element of the motion value.
- * @param {string} [focus] The path of the layer being added or edited; a paint-slot refusal names it as the extra.
+ * @param {Object} element   One element of the motion value.
+ * @param {string} [focus]   The path of the layer being added or edited; a paint-slot refusal names it as the extra.
  * @param {Object} [context] Facts about where the element sits; `parent-owned` lifts a limit marked `unless: "parent-owned"`.
  * @return {{id: string, text: string, layers: string[]}[]} The refusals, each naming the layer paths it involves.
  */

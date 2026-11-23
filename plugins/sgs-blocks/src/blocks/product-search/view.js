@@ -435,7 +435,10 @@ function initInstance( root ) {
 				// already sanitised server-side via wp_kses_post, see
 				// class-product-search-rest.php step 8) plus `on_sale` and
 				// `in_stock` booleans.
-				if ( typeof result.price_html === 'string' && result.price_html ) {
+				if (
+					typeof result.price_html === 'string' &&
+					result.price_html
+				) {
 					const priceEl = document.createElement( 'span' );
 					priceEl.className = 'sgs-product-search__result-price';
 					if ( result.on_sale ) {

@@ -13,7 +13,13 @@ function VideoPreview( { source } ) {
 	const video = useRef( null );
 	const [ paused, setPaused ] = useState( false );
 	if ( ! source.url ) {
-		return source.poster?.url ? <img className="sgs-media-slot__preview" src={ source.poster.url } alt="" /> : null;
+		return source.poster?.url ? (
+			<img
+				className="sgs-media-slot__preview"
+				src={ source.poster.url }
+				alt=""
+			/>
+		) : null;
 	}
 	return (
 		<div className="sgs-media-slot__video">
@@ -40,7 +46,9 @@ function VideoPreview( { source } ) {
 					setPaused( ! paused );
 				} }
 			>
-				{ paused ? __( 'Play preview', 'sgs-blocks' ) : __( 'Pause preview', 'sgs-blocks' ) }
+				{ paused
+					? __( 'Play preview', 'sgs-blocks' )
+					: __( 'Pause preview', 'sgs-blocks' ) }
 			</button>
 		</div>
 	);
@@ -53,11 +61,27 @@ export default function MediaSlotPreview( { source } ) {
 	if ( 'embed' === source.kind ) {
 		const src = embedSrc( source.url );
 		return src ? (
-			<iframe className="sgs-media-slot__preview sgs-media-slot__preview--embed" src={ src } title={ __( 'Video preview', 'sgs-blocks' ) } loading="lazy" tabIndex={ -1 } />
+			<iframe
+				className="sgs-media-slot__preview sgs-media-slot__preview--embed"
+				src={ src }
+				title={ __( 'Video preview', 'sgs-blocks' ) }
+				loading="lazy"
+				tabIndex={ -1 }
+			/>
 		) : null;
 	}
 	if ( 'svg' === source.kind && source.markup && ! source.url ) {
-		return <img className="sgs-media-slot__preview" src={ `data:image/svg+xml;charset=utf-8,${ encodeURIComponent( source.markup ) }` } alt="" />;
+		return (
+			<img
+				className="sgs-media-slot__preview"
+				src={ `data:image/svg+xml;charset=utf-8,${ encodeURIComponent(
+					source.markup
+				) }` }
+				alt=""
+			/>
+		);
 	}
-	return source.url ? <img className="sgs-media-slot__preview" src={ source.url } alt="" /> : null;
+	return source.url ? (
+		<img className="sgs-media-slot__preview" src={ source.url } alt="" />
+	) : null;
 }

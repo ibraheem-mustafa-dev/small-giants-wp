@@ -13,7 +13,11 @@ import { SsrPreviewGuard } from '../../components';
 import { resolveTier, tierLengthPreview } from '../../utils';
 import { resolveLinkSource } from '../../utils/link-source';
 import { logoUrlFor } from '../../utils/logo-source';
-import { chromeRowStyle, chromeSlotStyle, chromeLogoBoxStyle } from './chrome-preview-style';
+import {
+	chromeRowStyle,
+	chromeSlotStyle,
+	chromeLogoBoxStyle,
+} from './chrome-preview-style';
 
 /**
  * The `sgs/google-rating-badge` attributes for the top-row rating; the same
@@ -48,31 +52,57 @@ function ratingBadgeAttributes( attributes ) {
  * @param {Element} props.children   The × preview.
  * @return {Element} The preview row.
  */
-export default function ChromePreview( { attributes, deviceTier, palette, children } ) {
+export default function ChromePreview( {
+	attributes,
+	deviceTier,
+	palette,
+	children,
+} ) {
 	const tier = deviceTier || 'desktop';
 	const logoUrl = logoUrlFor( attributes.chromeLogoSource, tier );
-	const showLogo = !! logoUrl && false !== resolveTier( attributes.chromeLogoShow, tier, true ).value;
+	const showLogo =
+		!! logoUrl &&
+		false !== resolveTier( attributes.chromeLogoShow, tier, true ).value;
 	const type = attributes.chromeSlotType || '';
 	const text = ( attributes.chromeSlotText || '' ).trim();
 	const showSlot =
 		'' !== type &&
 		'' !== text &&
-		( 'button' !== type || !! resolveLinkSource( attributes.chromeSlotUrlSource, attributes.chromeSlotUrl ).url ) &&
+		( 'button' !== type ||
+			!! resolveLinkSource(
+				attributes.chromeSlotUrlSource,
+				attributes.chromeSlotUrl
+			).url ) &&
 		false !== resolveTier( attributes.chromeSlotShow, tier, true ).value;
 	const placement = attributes.chromeSlotPlacement || 'after-logo';
-	const showRating = !! attributes.chromeRating && false !== resolveTier( attributes.chromeRatingShow, tier, true ).value;
-	const ratingPlacement = 'center' === attributes.chromeRatingPlacement ? 'center' : 'end';
+	const showRating =
+		!! attributes.chromeRating &&
+		false !== resolveTier( attributes.chromeRatingShow, tier, true ).value;
+	const ratingPlacement =
+		'center' === attributes.chromeRatingPlacement ? 'center' : 'end';
 	const logoWidth = tierLengthPreview( attributes.chromeLogoWidth, tier );
-	const linkedLogo = ! Object.prototype.hasOwnProperty.call( attributes, 'chromeLogoLink' ) || !! attributes.chromeLogoLink;
+	const linkedLogo =
+		! Object.prototype.hasOwnProperty.call(
+			attributes,
+			'chromeLogoLink'
+		) || !! attributes.chromeLogoLink;
 	const LogoTag = linkedLogo ? 'a' : 'span';
 	// The slot's tag, as nav-drawer-chrome.php picks it: a heading takes its level, a label is a span, text a paragraph, a button a link.
-	const SlotTag = {
-		heading: [ 'h2', 'h3', 'h4', 'p' ].includes( attributes.chromeSlotHeadingLevel ) ? attributes.chromeSlotHeadingLevel : 'h2',
-		label: 'span',
-		text: 'p',
-		button: 'a',
-	}[ type ] || 'span';
-	const slotLinkProps = 'button' === type && attributes.chromeSlotNewTab ? { target: '_blank', rel: 'noopener' } : {};
+	const SlotTag =
+		{
+			heading: [ 'h2', 'h3', 'h4', 'p' ].includes(
+				attributes.chromeSlotHeadingLevel
+			)
+				? attributes.chromeSlotHeadingLevel
+				: 'h2',
+			label: 'span',
+			text: 'p',
+			button: 'a',
+		}[ type ] || 'span';
+	const slotLinkProps =
+		'button' === type && attributes.chromeSlotNewTab
+			? { target: '_blank', rel: 'noopener' }
+			: {};
 
 	return (
 		<div
@@ -84,13 +114,22 @@ export default function ChromePreview( { attributes, deviceTier, palette, childr
 				<LogoTag
 					className="sgs-nav-drawer__chrome-logo"
 					style={ chromeLogoBoxStyle( attributes, palette ) }
-					{ ...( linkedLogo ? { href: '#', onClick: ( event ) => event.preventDefault() } : {} ) }
+					{ ...( linkedLogo
+						? {
+								href: '#',
+								onClick: ( event ) => event.preventDefault(),
+						  }
+						: {} ) }
 				>
 					<img
 						className="sgs-nav-drawer__chrome-logo-image"
 						src={ logoUrl }
 						alt=""
-						style={ logoWidth ? { width: logoWidth, height: 'auto' } : undefined }
+						style={
+							logoWidth
+								? { width: logoWidth, height: 'auto' }
+								: undefined
+						}
 					/>
 				</LogoTag>
 			) }
@@ -98,15 +137,26 @@ export default function ChromePreview( { attributes, deviceTier, palette, childr
 				<SlotTag
 					className={ `sgs-nav-drawer__chrome-slot sgs-nav-drawer__chrome-slot--${ type } sgs-nav-drawer__chrome-slot--at-${ placement }` }
 					style={ chromeSlotStyle( attributes, tier, palette ) }
-					{ ...( 'button' === type ? { href: '#', onClick: ( event ) => event.preventDefault(), ...slotLinkProps } : {} ) }
+					{ ...( 'button' === type
+						? {
+								href: '#',
+								onClick: ( event ) => event.preventDefault(),
+								...slotLinkProps,
+						  }
+						: {} ) }
 				>
 					{ text }
 				</SlotTag>
 			) }
 			{ showRating && (
-				<div className={ `sgs-nav-drawer__chrome-rating sgs-nav-drawer__chrome-rating--at-${ ratingPlacement }` }>
+				<div
+					className={ `sgs-nav-drawer__chrome-rating sgs-nav-drawer__chrome-rating--at-${ ratingPlacement }` }
+				>
 					<SsrPreviewGuard>
-						<ServerSideRender block="sgs/google-rating-badge" attributes={ ratingBadgeAttributes( attributes ) } />
+						<ServerSideRender
+							block="sgs/google-rating-badge"
+							attributes={ ratingBadgeAttributes( attributes ) }
+						/>
 					</SsrPreviewGuard>
 				</div>
 			) }

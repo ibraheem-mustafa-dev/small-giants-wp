@@ -14,7 +14,11 @@ import { getBlockType } from '@wordpress/blocks';
  */
 export function spacingAxesFor( blockName, attr ) {
 	const declared = getBlockType( blockName )?.supports?.sgs?.spacingAxes;
-	if ( ! declared || 'object' !== typeof declared || Array.isArray( declared ) ) {
+	if (
+		! declared ||
+		'object' !== typeof declared ||
+		Array.isArray( declared )
+	) {
 		return false;
 	}
 	return true === declared[ attr ];

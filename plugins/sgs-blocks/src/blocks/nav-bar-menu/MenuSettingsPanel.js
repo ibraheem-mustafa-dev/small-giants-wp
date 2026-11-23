@@ -2,8 +2,14 @@ import { __ } from '@wordpress/i18n';
 import { useState } from '@wordpress/element';
 import { PanelBody, SelectControl } from '@wordpress/components';
 import { SgsLengthControl } from '../../components';
-import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
-import { BURGER_SCOPE_PX, burgerScopeOf } from '../../shared/nav-menu-panels/utils';
+import {
+	ToggleGroupControl,
+	ToggleGroupControlOption,
+} from '../../components/primitives';
+import {
+	BURGER_SCOPE_PX,
+	burgerScopeOf,
+} from '../../shared/nav-menu-panels/utils';
 
 /**
  * SGS Nav Bar Menu (sgs/nav-bar-menu) — Settings tab panels: Menu, Burger Menu.
@@ -67,7 +73,9 @@ export default function MenuSettingsPanel( {
 					__nextHasNoMarginBottom
 					onChange={ ( value ) => {
 						if ( value === 'custom' ) {
-							setAttributes( { collapsePoint: collapsePoint || 768 } );
+							setAttributes( {
+								collapsePoint: collapsePoint || 768,
+							} );
 							setShowCustomCollapse( true );
 							return;
 						}
@@ -115,7 +123,6 @@ export default function MenuSettingsPanel( {
 						presets={ false }
 					/>
 				) }
-
 			</PanelBody>
 		</>
 	);

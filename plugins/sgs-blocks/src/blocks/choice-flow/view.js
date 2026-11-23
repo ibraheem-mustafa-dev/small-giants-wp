@@ -38,7 +38,10 @@
  */
 
 import { store } from '@wordpress/interactivity';
-import { INFO_TOGGLE_SELECTOR, handleInfoToggleClick } from '../../shared/info-toggle.js';
+import {
+	INFO_TOGGLE_SELECTOR,
+	handleInfoToggleClick,
+} from '../../shared/info-toggle.js';
 import { handleAddToBasketClick, handleBuyNowClick } from './add-to-bag.js';
 import { uploadFlowFile } from './flow-fields.js';
 import { initChrome } from './chrome.js';
@@ -117,7 +120,9 @@ document.addEventListener( 'click', ( event ) => {
 
 	// D3 — the footer's terminal actions on an 'add-to-bag' result step.
 	// Both live in add-to-bag.js (it alone knows the path's add-ons/variation).
-	const addToBasketButtonEl = event.target.closest( ADD_TO_BASKET_BUTTON_SELECTOR );
+	const addToBasketButtonEl = event.target.closest(
+		ADD_TO_BASKET_BUTTON_SELECTOR
+	);
 	if ( addToBasketButtonEl ) {
 		handleAddToBasketClick( addToBasketButtonEl );
 		return;

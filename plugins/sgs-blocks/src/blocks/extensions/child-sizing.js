@@ -33,7 +33,11 @@ import { resolveResponsiveTier } from '../../utils/responsive';
 
 const SLUG = 'childSizing';
 const MODES = [ 'fit', 'fill', 'fixed', 'span' ];
-const DEVICE_TO_TIER = { Desktop: 'desktop', Tablet: 'tablet', Mobile: 'mobile' };
+const DEVICE_TO_TIER = {
+	Desktop: 'desktop',
+	Tablet: 'tablet',
+	Mobile: 'mobile',
+};
 const WIDTH_UNITS = [
 	{ value: 'px', label: 'px' },
 	{ value: '%', label: '%' },
@@ -54,19 +58,23 @@ const MODE_OPTIONS_TIER = [
 	...MODE_OPTIONS.slice( 1 ),
 ];
 
-addFilter( 'blocks.registerBlockType', 'sgs/child-sizing/attributes', ( settings ) => {
-	if ( ! isExtensionEnabled( settings, SLUG ) ) {
-		return settings;
+addFilter(
+	'blocks.registerBlockType',
+	'sgs/child-sizing/attributes',
+	( settings ) => {
+		if ( ! isExtensionEnabled( settings, SLUG ) ) {
+			return settings;
+		}
+		return {
+			...settings,
+			attributes: {
+				...settings.attributes,
+				sgsChildSizing: { type: 'object', default: {} },
+				sgsChildWidth: { type: 'object', default: {} },
+			},
+		};
 	}
-	return {
-		...settings,
-		attributes: {
-			...settings.attributes,
-			sgsChildSizing: { type: 'object', default: {} },
-			sgsChildWidth: { type: 'object', default: {} },
-		},
-	};
-} );
+);
 
 /**
  * The active editor device as a tier key.
@@ -76,7 +84,10 @@ addFilter( 'blocks.registerBlockType', 'sgs/child-sizing/attributes', ( settings
 function useActiveTier() {
 	return useSelect( ( select ) => {
 		const ed = select( 'core/editor' );
-		const device = ed && 'function' === typeof ed.getDeviceType ? ed.getDeviceType() : null;
+		const device =
+			ed && 'function' === typeof ed.getDeviceType
+				? ed.getDeviceType()
+				: null;
 		return DEVICE_TO_TIER[ device ] || 'desktop';
 	}, [] );
 }
@@ -86,7 +97,10 @@ function ChildSizingPanel( { attributes, setAttributes } ) {
 	const widths = attributes.sgsChildWidth || {};
 
 	return (
-		<PanelBody title={ __( 'Size in row', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Size in row', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			<ResponsiveOverride
 				label={ __( 'Sizing', 'sgs-blocks' ) }
 				value={ sizing }
@@ -94,23 +108,37 @@ function ChildSizingPanel( { attributes, setAttributes } ) {
 			>
 				{ ( { tier, ownValue, effectiveValue, setOwnValue } ) => {
 					const ownWidth = widths[ tier ] || '';
-					const inheritedWidth = resolveResponsiveTier( widths, tier ).value || '';
+					const inheritedWidth =
+						resolveResponsiveTier( widths, tier ).value || '';
 					return (
 						<>
 							<SelectControl
 								label={ __( 'Sizing', 'sgs-blocks' ) }
 								hideLabelFromVision
 								value={ ownValue }
-								options={ 'desktop' === tier ? MODE_OPTIONS : MODE_OPTIONS_TIER }
+								options={
+									'desktop' === tier
+										? MODE_OPTIONS
+										: MODE_OPTIONS_TIER
+								}
 								onChange={ setOwnValue }
-								help={ __( 'Applies when this block sits in a row: a header or footer row, or a container set to Flex. Fill takes the space the other blocks leave.', 'sgs-blocks' ) }
+								help={ __(
+									'Applies when this block sits in a row: a header or footer row, or a container set to Flex. Fill takes the space the other blocks leave.',
+									'sgs-blocks'
+								) }
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							/>
 							{ 'fixed' === effectiveValue && (
 								<ToggleControl
-									label={ __( 'Natural size, never shrinks', 'sgs-blocks' ) }
-									help={ __( 'Keeps the block at its own size (for example a logo with a fluid height) and stops the row from squeezing it.', 'sgs-blocks' ) }
+									label={ __(
+										'Natural size, never shrinks',
+										'sgs-blocks'
+									) }
+									help={ __(
+										'Keeps the block at its own size (for example a logo with a fluid height) and stops the row from squeezing it.',
+										'sgs-blocks'
+									) }
 									checked={ 'auto' === ownWidth }
 									onChange={ ( on ) => {
 										const next = { ...widths };
@@ -119,28 +147,37 @@ function ChildSizingPanel( { attributes, setAttributes } ) {
 										} else {
 											delete next[ tier ];
 										}
-										setAttributes( { sgsChildWidth: next } );
+										setAttributes( {
+											sgsChildWidth: next,
+										} );
 									} }
 									__nextHasNoMarginBottom
 								/>
 							) }
-							{ 'fixed' === effectiveValue && 'auto' !== ownWidth && (
-								<SgsLengthControl
-									label={ __( 'Width', 'sgs-blocks' ) }
-									value={ ownWidth }
-									placeholder={ ownWidth ? undefined : inheritedWidth }
-									units={ WIDTH_UNITS }
-									onChange={ ( raw ) => {
-										const next = { ...widths };
-										if ( raw ) {
-											next[ tier ] = raw;
-										} else {
-											delete next[ tier ];
+							{ 'fixed' === effectiveValue &&
+								'auto' !== ownWidth && (
+									<SgsLengthControl
+										label={ __( 'Width', 'sgs-blocks' ) }
+										value={ ownWidth }
+										placeholder={
+											ownWidth
+												? undefined
+												: inheritedWidth
 										}
-										setAttributes( { sgsChildWidth: next } );
-									} }
-								/>
-							) }
+										units={ WIDTH_UNITS }
+										onChange={ ( raw ) => {
+											const next = { ...widths };
+											if ( raw ) {
+												next[ tier ] = raw;
+											} else {
+												delete next[ tier ];
+											}
+											setAttributes( {
+												sgsChildWidth: next,
+											} );
+										} }
+									/>
+								) }
 						</>
 					);
 				} }
@@ -149,21 +186,31 @@ function ChildSizingPanel( { attributes, setAttributes } ) {
 	);
 }
 
-const withChildSizingControls = createHigherOrderComponent( ( BlockEdit ) => ( props ) => {
-	if ( ! isExtensionEnabled( props.name, SLUG ) ) {
-		return <BlockEdit { ...props } />;
-	}
-	return (
-		<>
-			<BlockEdit { ...props } />
-			<InspectorControls group="styles">
-				<ChildSizingPanel attributes={ props.attributes } setAttributes={ props.setAttributes } />
-			</InspectorControls>
-		</>
-	);
-}, 'withChildSizingControls' );
+const withChildSizingControls = createHigherOrderComponent(
+	( BlockEdit ) => ( props ) => {
+		if ( ! isExtensionEnabled( props.name, SLUG ) ) {
+			return <BlockEdit { ...props } />;
+		}
+		return (
+			<>
+				<BlockEdit { ...props } />
+				<InspectorControls group="styles">
+					<ChildSizingPanel
+						attributes={ props.attributes }
+						setAttributes={ props.setAttributes }
+					/>
+				</InspectorControls>
+			</>
+		);
+	},
+	'withChildSizingControls'
+);
 
-addFilter( 'editor.BlockEdit', 'sgs/child-sizing/controls', withChildSizingControls );
+addFilter(
+	'editor.BlockEdit',
+	'sgs/child-sizing/controls',
+	withChildSizingControls
+);
 
 /**
  * Editor preview on the block wrapper (the flex item in the canvas): a
@@ -171,26 +218,48 @@ addFilter( 'editor.BlockEdit', 'sgs/child-sizing/controls', withChildSizingContr
  * property. Custom properties only, as the grid-dots canvas preview: Spec 32
  * forbids inline property declarations; the rules are in child-sizing.scss.
  */
-const withChildSizingPreview = createHigherOrderComponent( ( BlockListBlock ) => ( props ) => {
-	const tier = useActiveTier();
-	const { attributes, name } = props;
-	if ( ! attributes?.sgsChildSizing || ! isExtensionEnabled( name, SLUG ) ) {
-		return <BlockListBlock { ...props } />;
-	}
-	const mode = resolveResponsiveTier( attributes.sgsChildSizing, tier ).value;
-	if ( ! MODES.includes( mode ) ) {
-		return <BlockListBlock { ...props } />;
-	}
-	const width = 'fixed' === mode ? resolveResponsiveTier( attributes.sgsChildWidth || {}, tier ).value : '';
-	const wrapperProps = {
-		...( props.wrapperProps || {} ),
-		className: [ props.wrapperProps?.className, `sgs-child-sizing--${ mode }` ].filter( Boolean ).join( ' ' ),
-		style: {
-			...( props.wrapperProps?.style || {} ),
-			...( width ? { '--sgs-child-width': width } : {} ),
-		},
-	};
-	return <BlockListBlock { ...props } wrapperProps={ wrapperProps } />;
-}, 'withChildSizingPreview' );
+const withChildSizingPreview = createHigherOrderComponent(
+	( BlockListBlock ) => ( props ) => {
+		const tier = useActiveTier();
+		const { attributes, name } = props;
+		if (
+			! attributes?.sgsChildSizing ||
+			! isExtensionEnabled( name, SLUG )
+		) {
+			return <BlockListBlock { ...props } />;
+		}
+		const mode = resolveResponsiveTier(
+			attributes.sgsChildSizing,
+			tier
+		).value;
+		if ( ! MODES.includes( mode ) ) {
+			return <BlockListBlock { ...props } />;
+		}
+		const width =
+			'fixed' === mode
+				? resolveResponsiveTier( attributes.sgsChildWidth || {}, tier )
+						.value
+				: '';
+		const wrapperProps = {
+			...( props.wrapperProps || {} ),
+			className: [
+				props.wrapperProps?.className,
+				`sgs-child-sizing--${ mode }`,
+			]
+				.filter( Boolean )
+				.join( ' ' ),
+			style: {
+				...( props.wrapperProps?.style || {} ),
+				...( width ? { '--sgs-child-width': width } : {} ),
+			},
+		};
+		return <BlockListBlock { ...props } wrapperProps={ wrapperProps } />;
+	},
+	'withChildSizingPreview'
+);
 
-addFilter( 'editor.BlockListBlock', 'sgs/child-sizing/preview', withChildSizingPreview );
+addFilter(
+	'editor.BlockListBlock',
+	'sgs/child-sizing/preview',
+	withChildSizingPreview
+);

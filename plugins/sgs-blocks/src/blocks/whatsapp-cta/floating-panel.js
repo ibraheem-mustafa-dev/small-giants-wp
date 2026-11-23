@@ -27,12 +27,18 @@ export function FloatingPanel( { attributes, setAttributes } ) {
 		floatingHideNearInline,
 		floatingOffset,
 	} = attributes;
-	const offset = floatingOffset && 'object' === typeof floatingOffset ? floatingOffset : {};
+	const offset =
+		floatingOffset && 'object' === typeof floatingOffset
+			? floatingOffset
+			: {};
 	const setOffset = ( side, val ) =>
 		setAttributes( { floatingOffset: { ...offset, [ side ]: val || '' } } );
 
 	return (
-		<PanelBody title={ __( 'Floating button', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Floating button', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			<TextControl
 				label={ __( 'Show after scrolling (px)', 'sgs-blocks' ) }
 				help={ __( '0 = always visible.', 'sgs-blocks' ) }
@@ -40,7 +46,9 @@ export function FloatingPanel( { attributes, setAttributes } ) {
 				min={ 0 }
 				value={ floatingScrollThreshold ?? 0 }
 				onChange={ ( val ) =>
-					setAttributes( { floatingScrollThreshold: toNonNegativeInt( val ) } )
+					setAttributes( {
+						floatingScrollThreshold: toNonNegativeInt( val ),
+					} )
 				}
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
@@ -55,7 +63,9 @@ export function FloatingPanel( { attributes, setAttributes } ) {
 				min={ 0 }
 				value={ floatingHideLabelBelow ?? 0 }
 				onChange={ ( val ) =>
-					setAttributes( { floatingHideLabelBelow: toNonNegativeInt( val ) } )
+					setAttributes( {
+						floatingHideLabelBelow: toNonNegativeInt( val ),
+					} )
 				}
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
@@ -75,7 +85,10 @@ export function FloatingPanel( { attributes, setAttributes } ) {
 				presets={ false }
 			/>
 			<ToggleControl
-				label={ __( 'Step aside when a WhatsApp button is on screen', 'sgs-blocks' ) }
+				label={ __(
+					'Step aside when a WhatsApp button is on screen',
+					'sgs-blocks'
+				) }
 				help={ __(
 					'Hides the floating button while any other WhatsApp button on the page is visible, so the same CTA never shows twice at once.',
 					'sgs-blocks'

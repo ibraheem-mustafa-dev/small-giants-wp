@@ -52,7 +52,14 @@ import {
 } from '@wordpress/components';
 import { useSettings } from '@wordpress/block-editor';
 import { useInstanceId } from '@wordpress/compose';
-import { HStack, Item, ItemGroup, ZStack, ToggleGroupControl, ToggleGroupControlOption } from './primitives';
+import {
+	HStack,
+	Item,
+	ItemGroup,
+	ZStack,
+	ToggleGroupControl,
+	ToggleGroupControlOption,
+} from './primitives';
 import { ColorPalette } from './colour-picker';
 import SgsGradientPicker from './gradient-picker';
 import { resolveColourToken } from './DesignTokenPicker';
@@ -112,7 +119,8 @@ function StateContent( {
 	// nav-menu.
 	const stateIsGradientCapable = typeof state.onGradientChange === 'function';
 	const gradientEnabled =
-		stateIsGradientCapable && ( localMode !== null ? localMode : !! state.gradientValue );
+		stateIsGradientCapable &&
+		( localMode !== null ? localMode : !! state.gradientValue );
 
 	const displayValue = state.linked
 		? resolveColourToken( state.value, colours )
@@ -131,7 +139,9 @@ function StateContent( {
 		if ( ! contrastAgainst ) {
 			return '';
 		}
-		return resolveColourToken( contrastAgainst, colours ) || contrastAgainst;
+		return (
+			resolveColourToken( contrastAgainst, colours ) || contrastAgainst
+		);
 	}, [ contrastAgainst, colours ] );
 
 	// WARN ONLY — never blocks saving, never throws on an unparseable colour
@@ -199,7 +209,10 @@ function StateContent( {
 				resolvedColour,
 				contrastRefEl.current
 			);
-			const ratio = calculateContrastRatio( backgroundLuminance, colourLuminance );
+			const ratio = calculateContrastRatio(
+				backgroundLuminance,
+				colourLuminance
+			);
 			if ( ! meetsWCAG_AA( ratio, contrastLargeText ) ) {
 				const minRatio = contrastLargeText ? '3.0' : '4.5';
 				setContrastNotice(
@@ -255,8 +268,14 @@ function StateContent( {
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 				>
-					<ToggleGroupControlOption value="solid" label={ __( 'Solid', 'sgs-blocks' ) } />
-					<ToggleGroupControlOption value="gradient" label={ __( 'Gradient', 'sgs-blocks' ) } />
+					<ToggleGroupControlOption
+						value="solid"
+						label={ __( 'Solid', 'sgs-blocks' ) }
+					/>
+					<ToggleGroupControlOption
+						value="gradient"
+						label={ __( 'Gradient', 'sgs-blocks' ) }
+					/>
 				</ToggleGroupControl>
 			) }
 
@@ -308,34 +327,34 @@ function StateContent( {
 
 /**
  * @param {Object}   props
- * @param {string}   props.label              Row label (e.g. "Heading colour").
- * @param {Array}    [props.states]           `[{ key, label, value, onChange, gradientValue, onGradientChange, linked? }]`.
- *                                             `value`/`onChange`/`linked` are the SAME shape `DesignTokenPicker` uses
- *                                             for the flat colour — unchanged. `gradientValue`/`onGradientChange`
- *                                             are the sibling `{attr}Gradient` attribute's pair — CANONICAL name per
- *                                             D5 (2026-08-22); every call site has been migrated to it.
- * @param {string}   [props.value]            Single-state convenience form (no tabs) — flat colour, paired with `onChange`.
- * @param {Function} [props.onChange]         Paired with `value` for the single-state form.
- * @param {string}   [props.gradientValue]    Single-state convenience form — the sibling gradient value.
- * @param {Function} [props.onGradientChange] Paired with `gradientValue` for the single-state form (canonical name).
+ * @param {string}   props.label                     Row label (e.g. "Heading colour").
+ * @param {Array}    [props.states]                  `[{ key, label, value, onChange, gradientValue, onGradientChange, linked? }]`.
+ *                                                   `value`/`onChange`/`linked` are the SAME shape `DesignTokenPicker` uses
+ *                                                   for the flat colour — unchanged. `gradientValue`/`onGradientChange`
+ *                                                   are the sibling `{attr}Gradient` attribute's pair — CANONICAL name per
+ *                                                   D5 (2026-08-22); every call site has been migrated to it.
+ * @param {string}   [props.value]                   Single-state convenience form (no tabs) — flat colour, paired with `onChange`.
+ * @param {Function} [props.onChange]                Paired with `value` for the single-state form.
+ * @param {string}   [props.gradientValue]           Single-state convenience form — the sibling gradient value.
+ * @param {Function} [props.onGradientChange]        Paired with `gradientValue` for the single-state form (canonical name).
  * @param {boolean}  [props.clearable=true]
  * @param {boolean}  [props.enableAlpha=true]
- * @param {string}   [props.contrastAgainst]  Opt-in WCAG contrast check — a hex colour OR a
- *                                             theme palette token slug to contrast the CURRENTLY
- *                                             OPEN state's colour/gradient against. Resolved the
- *                                             same way every other colour in this component is
- *                                             (raw value or palette slug). Omit to skip the check
- *                                             entirely (the default — no behaviour change for
- *                                             existing callers).
- * @param {string}   [props.contrastLabel]    Overrides the default "Contrast ratio X:1 is below…"
- *                                             warning text when the check fails.
+ * @param {string}   [props.contrastAgainst]         Opt-in WCAG contrast check — a hex colour OR a
+ *                                                   theme palette token slug to contrast the CURRENTLY
+ *                                                   OPEN state's colour/gradient against. Resolved the
+ *                                                   same way every other colour in this component is
+ *                                                   (raw value or palette slug). Omit to skip the check
+ *                                                   entirely (the default — no behaviour change for
+ *                                                   existing callers).
+ * @param {string}   [props.contrastLabel]           Overrides the default "Contrast ratio X:1 is below…"
+ *                                                   warning text when the check fails.
  * @param {boolean}  [props.contrastLargeText=false] Selects the WCAG AA threshold `contrastAgainst`
- *                                             checks against: `false` (default) is the 4.5:1 TEXT
- *                                             threshold; `true` is the lower 3.0:1 threshold shared by
- *                                             large text (18px+/14px+bold) AND UI-component / non-text
- *                                             contrast (WCAG 1.4.11 — borders, icons, focus rings).
- *                                             Pass `true` when `contrastAgainst` is checking a BORDER
- *                                             or other non-text colour, not body text.
+ *                                                   checks against: `false` (default) is the 4.5:1 TEXT
+ *                                                   threshold; `true` is the lower 3.0:1 threshold shared by
+ *                                                   large text (18px+/14px+bold) AND UI-component / non-text
+ *                                                   contrast (WCAG 1.4.11 — borders, icons, focus rings).
+ *                                                   Pass `true` when `contrastAgainst` is checking a BORDER
+ *                                                   or other non-text colour, not body text.
  */
 export default function GradientCapableColourControl( {
 	label,
@@ -451,62 +470,71 @@ export default function GradientCapableColourControl( {
 					) }
 					renderContent={ () => (
 						<>
-						{ hasStates ? (
-							<TabPanel
-								className="sgs-colour-control__tabs"
-								tabs={ resolvedStates.map( ( s ) => ( {
-									name: s.key,
-									title: s.label,
-								} ) ) }
-							>
-								{ ( tab ) => {
-									const s =
-										resolvedStates.find(
-											( st ) => st.key === tab.name
-										) ?? resolvedStates[ 0 ];
-									return (
-										<div className="sgs-colour-control__content">
-											<StateContent
-												state={ s }
-												colours={ colours }
-												enableAlpha={ enableAlpha }
-												clearable={ clearable }
-												ariaLabel={ sprintf(
-													/* translators: 1: control label, 2: state label */
-													__( '%1$s — %2$s', 'sgs-blocks' ),
-													label,
-													s.label
-												) }
-												contrastAgainst={ contrastAgainst }
-												contrastLabel={ contrastLabel }
-												contrastLargeText={ contrastLargeText }
-											/>
-										</div>
-									);
-								} }
-							</TabPanel>
-						) : (
-							<div className="sgs-colour-control__content">
-								<StateContent
-									state={ resolvedStates[ 0 ] }
-									colours={ colours }
-									enableAlpha={ enableAlpha }
-									clearable={ clearable }
-									ariaLabel={ label }
-									contrastAgainst={ contrastAgainst }
-									contrastLabel={ contrastLabel }
-									contrastLargeText={ contrastLargeText }
-								/>
-							</div>
-						) }
-						{ typeof onBorderStyleChange === 'function' && (
-							<div className="sgs-colour-control__border-style">
-								<BorderStyleControl
-									value={ borderStyle }
-									onChange={ onBorderStyleChange }
-								/>
-							</div>
-						) }
+							{ hasStates ? (
+								<TabPanel
+									className="sgs-colour-control__tabs"
+									tabs={ resolvedStates.map( ( s ) => ( {
+										name: s.key,
+										title: s.label,
+									} ) ) }
+								>
+									{ ( tab ) => {
+										const s =
+											resolvedStates.find(
+												( st ) => st.key === tab.name
+											) ?? resolvedStates[ 0 ];
+										return (
+											<div className="sgs-colour-control__content">
+												<StateContent
+													state={ s }
+													colours={ colours }
+													enableAlpha={ enableAlpha }
+													clearable={ clearable }
+													ariaLabel={ sprintf(
+														/* translators: 1: control label, 2: state label */
+														__(
+															'%1$s — %2$s',
+															'sgs-blocks'
+														),
+														label,
+														s.label
+													) }
+													contrastAgainst={
+														contrastAgainst
+													}
+													contrastLabel={
+														contrastLabel
+													}
+													contrastLargeText={
+														contrastLargeText
+													}
+												/>
+											</div>
+										);
+									} }
+								</TabPanel>
+							) : (
+								<div className="sgs-colour-control__content">
+									<StateContent
+										state={ resolvedStates[ 0 ] }
+										colours={ colours }
+										enableAlpha={ enableAlpha }
+										clearable={ clearable }
+										ariaLabel={ label }
+										contrastAgainst={ contrastAgainst }
+										contrastLabel={ contrastLabel }
+										contrastLargeText={ contrastLargeText }
+									/>
+								</div>
+							) }
+							{ typeof onBorderStyleChange === 'function' && (
+								<div className="sgs-colour-control__border-style">
+									<BorderStyleControl
+										value={ borderStyle }
+										onChange={ onBorderStyleChange }
+									/>
+								</div>
+							) }
 						</>
 					) }
 				/>

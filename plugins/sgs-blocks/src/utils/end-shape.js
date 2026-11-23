@@ -30,7 +30,9 @@ const SIDES = Object.freeze( [ 'left', 'right' ] );
  * @return {string} Library key or ''.
  */
 export function endShapeNormalise( shape ) {
-	return 'string' === typeof shape && END_SHAPE_ALLOWED.includes( shape ) ? shape : '';
+	return 'string' === typeof shape && END_SHAPE_ALLOWED.includes( shape )
+		? shape
+		: '';
 }
 
 /**
@@ -41,7 +43,12 @@ export function endShapeNormalise( shape ) {
  */
 export function endShapeDepth( depth ) {
 	const n = Number( depth );
-	if ( '' === depth || null === depth || undefined === depth || Number.isNaN( n ) ) {
+	if (
+		'' === depth ||
+		null === depth ||
+		undefined === depth ||
+		Number.isNaN( n )
+	) {
 		return 45;
 	}
 	return Math.max( 10, Math.min( 150, n ) );
@@ -105,7 +112,10 @@ export function endShapeCutSvg( shape, side, depth ) {
 		return '';
 	}
 	const d = endShapeDepth( depth );
-	return `${ svgOpen( d ) }<path fill-rule='evenodd' transform='${ matrix( side, d ) }' d='M0,0H1200V120H0Z ${ path }'/></svg>`;
+	return `${ svgOpen( d ) }<path fill-rule='evenodd' transform='${ matrix(
+		side,
+		d
+	) }' d='M0,0H1200V120H0Z ${ path }'/></svg>`;
 }
 
 /**
@@ -194,20 +204,30 @@ export function endShapeBorderBoxDecls( ends, borderDecls = [], paint = '' ) {
 	let sides = [];
 	borderDecls.forEach( ( decl ) => {
 		if ( decl.startsWith( 'border-width:' ) ) {
-			sides = decl.slice( 'border-width:'.length ).trim().split( /\s+/ ).filter( Boolean );
+			sides = decl
+				.slice( 'border-width:'.length )
+				.trim()
+				.split( /\s+/ )
+				.filter( Boolean );
 		}
 	} );
 	let css = 'inset:0;';
 	if ( sides.length ) {
-		const inset = sides.map( ( side ) => ( ZERO_LENGTH.test( side ) ? '0' : `calc(-1 * ${ side })` ) );
+		const inset = sides.map( ( side ) =>
+			ZERO_LENGTH.test( side ) ? '0' : `calc(-1 * ${ side })`
+		);
 		css = `inset:${ inset.join( ' ' ) };${ borderDecls.join( ';' ) };`;
 		if ( paint.startsWith( 'background-color:' ) ) {
-			css += `border-color:${ paint.slice( 'background-color:'.length ) };`;
+			css += `border-color:${ paint.slice(
+				'background-color:'.length
+			) };`;
 		} else if ( paint.startsWith( 'background-image:' ) ) {
-			const imageWidths = [ 'top', 'right', 'bottom', 'left' ].map( ( side ) =>
-				shaped.includes( side ) ? '0' : '1'
+			const imageWidths = [ 'top', 'right', 'bottom', 'left' ].map(
+				( side ) => ( shaped.includes( side ) ? '0' : '1' )
 			);
-			css += `border-image:${ paint.slice( 'background-image:'.length ) } 1;border-image-width:${ imageWidths.join( ' ' ) };`;
+			css += `border-image:${ paint.slice(
+				'background-image:'.length
+			) } 1;border-image-width:${ imageWidths.join( ' ' ) };`;
 		}
 	}
 	if ( shaped.length ) {

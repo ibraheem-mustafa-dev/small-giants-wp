@@ -43,10 +43,10 @@ const TRIGGER_LABELS = Object.freeze( {
  * The triggers a panel may offer.
  *
  * @param {Object}   args
- * @param {string}   args.panel                  `hover`, `entrance`, `entrance-text` or `effects`.
- * @param {string[]} [args.effectTriggers]       The effect's `fx_effects.triggers`; omitted for a panel without an effect.
- * @param {string[]} [args.states]               The states the block declares; `state` is dropped when there are none.
- * @param {string[]} [args.exclude]             Triggers to drop (for example `open` on a part no disclosure opens).
+ * @param {string}   args.panel            `hover`, `entrance`, `entrance-text` or `effects`.
+ * @param {string[]} [args.effectTriggers] The effect's `fx_effects.triggers`; omitted for a panel without an effect.
+ * @param {string[]} [args.states]         The states the block declares; `state` is dropped when there are none.
+ * @param {string[]} [args.exclude]        Triggers to drop (for example `open` on a part no disclosure opens).
  * @return {string[]} The trigger names, in schema order.
  */
 export function triggersFor( {
@@ -56,9 +56,7 @@ export function triggersFor( {
 	exclude = [],
 } ) {
 	const entry = PANEL_ENTRIES[ panel ];
-	const allowed = entry
-		? DEFS[ entry ]?.properties?.trigger?.enum || []
-		: [];
+	const allowed = entry ? DEFS[ entry ]?.properties?.trigger?.enum || [] : [];
 	return allowed.filter(
 		( trigger ) =>
 			( ! effectTriggers || effectTriggers.includes( trigger ) ) &&
@@ -106,7 +104,10 @@ export default function TriggerPicker( {
 	}
 	const options = triggers.map( ( trigger ) => ( {
 		value: trigger,
-		label: labels[ trigger ] || TRIGGER_LABELS[ trigger ] || humanise( trigger ),
+		label:
+			labels[ trigger ] ||
+			TRIGGER_LABELS[ trigger ] ||
+			humanise( trigger ),
 	} ) );
 	return (
 		<>

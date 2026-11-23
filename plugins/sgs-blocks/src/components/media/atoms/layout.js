@@ -27,13 +27,39 @@ export function emit( slot, attrs, uid, helper ) {
 	const rules = {};
 	for ( const device of DEVICES ) {
 		const align = own( attrs, slot, 'Alignment', device );
-		if ( 'string' === typeof align && Object.prototype.hasOwnProperty.call( SIDES, align ) ) {
-			add( rules, layout, device, 'margin-inline-start', SIDES[ align ][ 0 ] );
-			add( rules, layout, device, 'margin-inline-end', SIDES[ align ][ 1 ] );
+		if (
+			'string' === typeof align &&
+			Object.prototype.hasOwnProperty.call( SIDES, align )
+		) {
+			add(
+				rules,
+				layout,
+				device,
+				'margin-inline-start',
+				SIDES[ align ][ 0 ]
+			);
+			add(
+				rules,
+				layout,
+				device,
+				'margin-inline-end',
+				SIDES[ align ][ 1 ]
+			);
 		}
 		const order = own( attrs, slot, 'Order', device );
 		if ( isNumeric( order ) ) {
-			add( rules, layout, device, 'order', String( Math.max( -20, Math.min( 20, Math.trunc( Number( order ) ) ) ) ) );
+			add(
+				rules,
+				layout,
+				device,
+				'order',
+				String(
+					Math.max(
+						-20,
+						Math.min( 20, Math.trunc( Number( order ) ) )
+					)
+				)
+			);
 		}
 	}
 	return rulesCss( rules );
@@ -44,7 +70,9 @@ export function emit( slot, attrs, uid, helper ) {
  * @return {number} An integer from -20 to 20; 0 for anything else.
  */
 export function validate( value ) {
-	return isNumeric( value ) ? Math.max( -20, Math.min( 20, Math.trunc( Number( value ) ) ) ) : 0;
+	return isNumeric( value )
+		? Math.max( -20, Math.min( 20, Math.trunc( Number( value ) ) ) )
+		: 0;
 }
 
 /**

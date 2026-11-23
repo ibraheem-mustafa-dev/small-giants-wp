@@ -12,7 +12,11 @@
 
 import { __ } from '@wordpress/i18n';
 import { RangeControl } from '@wordpress/components';
-import { SgsBorderControl, ResponsiveBoxControl, ResponsiveLengthControl } from '../../components';
+import {
+	SgsBorderControl,
+	ResponsiveBoxControl,
+	ResponsiveLengthControl,
+} from '../../components';
 
 /**
  * @param {Object}   props               Props.
@@ -21,19 +25,32 @@ import { SgsBorderControl, ResponsiveBoxControl, ResponsiveLengthControl } from 
  * @return {Element} The controls.
  */
 export default function CloseBoxControls( { attributes, setAttributes } ) {
-	const { closeBorderWidth, closeBorderStyle, closeBorderColour, closeIconSize, closePadding, closeHoverOpacity } = attributes;
+	const {
+		closeBorderWidth,
+		closeBorderStyle,
+		closeBorderColour,
+		closeIconSize,
+		closePadding,
+		closeHoverOpacity,
+	} = attributes;
 
 	return (
 		<>
 			<SgsBorderControl
 				label={ __( 'Close button border', 'sgs-blocks' ) }
 				widthValues={ closeBorderWidth ?? {} }
-				onWidthChange={ ( next ) => setAttributes( { closeBorderWidth: next } ) }
+				onWidthChange={ ( next ) =>
+					setAttributes( { closeBorderWidth: next } )
+				}
 				styleValue={ closeBorderStyle }
-				onStyleChange={ ( value ) => setAttributes( { closeBorderStyle: value } ) }
+				onStyleChange={ ( value ) =>
+					setAttributes( { closeBorderStyle: value } )
+				}
 				colourLabel={ __( 'Close button border colour', 'sgs-blocks' ) }
 				colourValue={ closeBorderColour }
-				onColourChange={ ( value ) => setAttributes( { closeBorderColour: value ?? '' } ) }
+				onColourChange={ ( value ) =>
+					setAttributes( { closeBorderColour: value ?? '' } )
+				}
 				colourLinked
 			/>
 			<ResponsiveLengthControl
@@ -51,14 +68,21 @@ export default function CloseBoxControls( { attributes, setAttributes } ) {
 				} }
 				onChange={ ( tier, next ) => {
 					const key = 'base' === tier ? 'desktop' : tier;
-					setAttributes( { closePadding: { ...( closePadding || {} ), [ key ]: next } } );
+					setAttributes( {
+						closePadding: {
+							...( closePadding || {} ),
+							[ key ]: next,
+						},
+					} );
 				} }
 			/>
 			<RangeControl
 				label={ __( 'Close button hover opacity', 'sgs-blocks' ) }
 				help={ __( '1 switches the hover fade off.', 'sgs-blocks' ) }
 				value={ closeHoverOpacity ?? 0.75 }
-				onChange={ ( value ) => setAttributes( { closeHoverOpacity: value ?? 0.75 } ) }
+				onChange={ ( value ) =>
+					setAttributes( { closeHoverOpacity: value ?? 0.75 } )
+				}
 				min={ 0 }
 				max={ 1 }
 				step={ 0.05 }

@@ -101,13 +101,17 @@ export function swapMessage( layer, effect, count ) {
 /**
  * The panel's state and actions for one target: the re-stamp flow, the pending effect swap and the last problem text.
  *
- * @param {Object} layers The `useMotionLayers` result.
- * @param {string} target The chosen target.
+ * @param {Object}   layers   The `useMotionLayers` result.
+ * @param {string}   target   The chosen target.
  * @param {Function} [offFor] `( effect ) => string[]|undefined`: the device tiers a new layer is switched off on
  *                            (an adopted media part whose kind differs per device, `kind-fit.js::offTiersFor`).
  * @return {Object} `{ flow, first, rest, problem, setProblem, swap, chooseEffect, confirmSwap, cancelSwap, addEffect, reset }`.
  */
-export function useEffectsPanelState( layers, target, offFor = () => undefined ) {
+export function useEffectsPanelState(
+	layers,
+	target,
+	offFor = () => undefined
+) {
 	const flow = useRestamp( layers );
 	const [ problem, setProblem ] = useState( null );
 	const [ swap, setSwap ] = useState( null );

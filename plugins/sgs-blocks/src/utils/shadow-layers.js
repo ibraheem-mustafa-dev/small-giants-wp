@@ -20,10 +20,12 @@
 
 export const MAX_BYTES = 2000;
 export const MAX_LAYERS = 8;
-export const DEFAULT_COLOUR = 'color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)';
+export const DEFAULT_COLOUR =
+	'color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)';
 export const SITE_COLOUR = 'var(--wp--custom--shadow-colour, #000000)';
 
-const NAMED_FALLBACK = /^(red|green|blue|black|white|transparent|currentcolor|gray|grey)$/i;
+const NAMED_FALLBACK =
+	/^(red|green|blue|black|white|transparent|currentcolor|gray|grey)$/i;
 
 /**
  * Split on top-level separators only, counting parentheses. Comma splits keep empty entries
@@ -59,7 +61,9 @@ export function splitTop( value, sep ) {
  * @return {number|null} The number, or null when it is not a legal length.
  */
 export function parseLength( token ) {
-	return /^-?(?:\d{1,4}(?:\.\d{1,3})?|\.\d{1,3})(?:px)?$/.test( token ) ? parseFloat( token ) : null;
+	return /^-?(?:\d{1,4}(?:\.\d{1,3})?|\.\d{1,3})(?:px)?$/.test( token )
+		? parseFloat( token )
+		: null;
 }
 
 /**
@@ -75,7 +79,13 @@ export function formatLength( value ) {
 }
 
 function colourIsSafe( css ) {
-	if ( ! css || css.length > 200 || /[;{}<>"'`\\@!]|\/\*|\*\/|url\s*\(|expression\s*\(|[\x00-\x1F]/i.test( css ) ) {
+	if (
+		! css ||
+		css.length > 200 ||
+		/[;{}<>"'`\\@!]|\/\*|\*\/|url\s*\(|expression\s*\(|[\x00-\x1F]/i.test(
+			css
+		)
+	) {
 		return false;
 	}
 	let depth = 0;
@@ -92,7 +102,8 @@ function colourIsSafe( css ) {
 
 // The one `color-mix()` a theme preset may carry: the site colour, a palette variable or a hex,
 // mixed with transparent. Anything else that starts `color-mix(` is not a colour.
-const PRESET_MIX = /^color-mix\(in srgb, (?:var\(--wp--custom--shadow-colour\)|var\(--wp--preset--color--[a-z0-9-]+\)|#[0-9a-f]{6}(?:[0-9a-f]{2})?) \d{1,3}(?:\.\d)?%, transparent\)$/i;
+const PRESET_MIX =
+	/^color-mix\(in srgb, (?:var\(--wp--custom--shadow-colour\)|var\(--wp--preset--color--[a-z0-9-]+\)|#[0-9a-f]{6}(?:[0-9a-f]{2})?) \d{1,3}(?:\.\d)?%, transparent\)$/i;
 
 function colourToCss( token ) {
 	if ( 'site' === token ) {
@@ -110,7 +121,10 @@ function colourToCss( token ) {
 	) {
 		return token;
 	}
-	const named = typeof CSS !== 'undefined' && 'function' === typeof CSS.supports ? CSS.supports( 'color', token ) : NAMED_FALLBACK.test( token );
+	const named =
+		typeof CSS !== 'undefined' && 'function' === typeof CSS.supports
+			? CSS.supports( 'color', token )
+			: NAMED_FALLBACK.test( token );
 	if ( named ) {
 		return token;
 	}
@@ -127,7 +141,10 @@ function colourToCss( token ) {
 export function resolveColour( entry ) {
 	const tokens = splitTop( entry.trim(), ' ' );
 	let alpha = 100;
-	const match = tokens.length > 1 ? /^(\d{1,3}(?:\.\d)?)%$/.exec( tokens[ tokens.length - 1 ] ) : null;
+	const match =
+		tokens.length > 1
+			? /^(\d{1,3}(?:\.\d)?)%$/.exec( tokens[ tokens.length - 1 ] )
+			: null;
 	if ( match ) {
 		alpha = Math.min( 100, parseFloat( match[ 1 ] ) );
 		tokens.pop();
@@ -212,7 +229,10 @@ export function composeShadow( shape, colour ) {
 	if ( layers.length > MAX_LAYERS ) {
 		return '';
 	}
-	const list = 'string' === typeof colour && '' !== colour.trim() ? splitTop( colour, ',' ).slice( 0, 64 ) : [];
+	const list =
+		'string' === typeof colour && '' !== colour.trim()
+			? splitTop( colour, ',' ).slice( 0, 64 )
+			: [];
 	const out = [];
 	let last = '';
 	layers.forEach( ( layerText, index ) => {
@@ -234,7 +254,11 @@ export function composeShadow( shape, colour ) {
 			return;
 		}
 		out.push(
-			`${ fields.inset ? 'inset ' : '' }${ formatLength( fields.x ) } ${ formatLength( fields.y ) } ${ formatLength( fields.blur ) } ${ formatLength( fields.spread ) } ${ css }`
+			`${ fields.inset ? 'inset ' : '' }${ formatLength(
+				fields.x
+			) } ${ formatLength( fields.y ) } ${ formatLength(
+				fields.blur
+			) } ${ formatLength( fields.spread ) } ${ css }`
 		);
 	} );
 	return out.join( ', ' );

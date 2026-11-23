@@ -22,7 +22,10 @@
  * @package SGS\Blocks
  */
 import { __ } from '@wordpress/i18n';
-import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+import {
+	ToggleGroupControl,
+	ToggleGroupControlOption,
+} from '../../components/primitives';
 import { resolveTier } from '../../utils/responsive';
 
 /**
@@ -76,7 +79,9 @@ export function sweepEligible( eligibility, treatment, attributes ) {
 		const raw = attributes[ guard.attr ];
 		const values =
 			raw && typeof raw === 'object'
-				? [ 'desktop', 'tablet', 'mobile' ].map( ( tier ) => resolveTier( raw, tier, 'icon' ).value )
+				? [ 'desktop', 'tablet', 'mobile' ].map(
+						( tier ) => resolveTier( raw, tier, 'icon' ).value
+				  )
 				: [ raw ];
 		if ( values.every( ( value ) => disallowed.includes( value ) ) ) {
 			return false;
@@ -130,7 +135,9 @@ export function TreatmentSelect( { label, value, onChange, options, help } ) {
 					/>
 				) ) }
 			</ToggleGroupControl>
-			{ help && <p className="components-base-control__help">{ help }</p> }
+			{ help && (
+				<p className="components-base-control__help">{ help }</p>
+			) }
 		</>
 	);
 }

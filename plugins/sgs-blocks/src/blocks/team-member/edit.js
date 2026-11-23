@@ -39,7 +39,24 @@ import {
 	RangeControl,
 	Button,
 } from '@wordpress/components';
-import { FlexWrapControl, ResponsiveBoxControl, ShadowControl, shadowAttrKeys, LinkPopoverField, SgsColourPanel, SgsLengthControl, fillRow, textRow, SgsBorderControl, resolveColourToken, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
+import {
+	FlexWrapControl,
+	ResponsiveBoxControl,
+	ShadowControl,
+	shadowAttrKeys,
+	LinkPopoverField,
+	SgsColourPanel,
+	SgsLengthControl,
+	fillRow,
+	textRow,
+	SgsBorderControl,
+	resolveColourToken,
+	TypographyControls,
+	ResponsiveOverride,
+	BOX_UNITS,
+	normaliseResponsiveBox,
+	SgsBoxControl,
+} from '../../components';
 import MediaElementPanel from '../../components/MediaElementPanel';
 import SlotPicture from '../../components/media/SlotPicture';
 import metadata from './block.json';
@@ -47,9 +64,16 @@ import metadata from './block.json';
 /** A photo with no Shape of its own is a circle (the block's default outline); render.php applies the same default. */
 const DEFAULT_PHOTO_SHAPE = { desktop: { shape: 'circle' } };
 
-const PHOTO_ENTRY = metadata.supports.sgs.mediaElements.find( ( e ) => 'photo' === e.prefix );
+const PHOTO_ENTRY = metadata.supports.sgs.mediaElements.find(
+	( e ) => 'photo' === e.prefix
+);
 import { LINK_SOURCES_PAGES } from '../../shared/link-source-options';
-import { ToolsPanel, ToolsPanelItem, ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+import {
+	ToolsPanel,
+	ToolsPanelItem,
+	ToggleGroupControl,
+	ToggleGroupControlOption,
+} from '../../components/primitives';
 import { usePreviewTier, typographyPreviewStyle } from '../../utils';
 import { buildWrapperStyle, textSurfaceStyle } from './preview-style';
 import { spacingDefaultsFor } from '../../utils/spacing-defaults';
@@ -75,25 +99,31 @@ const HEADING_LEVEL_OPTIONS = [
 ];
 
 const DISPLAY_MODES = [
-	{ label: __( 'Full (photo, name, role, bio, socials)', 'sgs-blocks' ), value: 'full' },
-	{ label: __( 'Compact (photo, name, role)', 'sgs-blocks' ), value: 'compact' },
+	{
+		label: __( 'Full (photo, name, role, bio, socials)', 'sgs-blocks' ),
+		value: 'full',
+	},
+	{
+		label: __( 'Compact (photo, name, role)', 'sgs-blocks' ),
+		value: 'compact',
+	},
 ];
 
 const PLATFORM_OPTIONS = [
-	{ label: __( 'Facebook', 'sgs-blocks' ),     value: 'facebook' },
-	{ label: __( 'Instagram', 'sgs-blocks' ),    value: 'instagram' },
-	{ label: __( 'LinkedIn', 'sgs-blocks' ),     value: 'linkedin' },
-	{ label: __( 'X / Twitter', 'sgs-blocks' ),  value: 'twitter' },
-	{ label: __( 'YouTube', 'sgs-blocks' ),      value: 'youtube' },
-	{ label: __( 'TikTok', 'sgs-blocks' ),       value: 'tiktok' },
-	{ label: __( 'GitHub', 'sgs-blocks' ),       value: 'github' },
-	{ label: __( 'WhatsApp', 'sgs-blocks' ),     value: 'whatsapp' },
-	{ label: __( 'Email', 'sgs-blocks' ),        value: 'email' },
-	{ label: __( 'Website', 'sgs-blocks' ),      value: 'website' },
-	{ label: __( 'Pinterest', 'sgs-blocks' ),    value: 'pinterest' },
-	{ label: __( 'Snapchat', 'sgs-blocks' ),     value: 'snapchat' },
-	{ label: __( 'Telegram', 'sgs-blocks' ),     value: 'telegram' },
-	{ label: __( 'Discord', 'sgs-blocks' ),      value: 'discord' },
+	{ label: __( 'Facebook', 'sgs-blocks' ), value: 'facebook' },
+	{ label: __( 'Instagram', 'sgs-blocks' ), value: 'instagram' },
+	{ label: __( 'LinkedIn', 'sgs-blocks' ), value: 'linkedin' },
+	{ label: __( 'X / Twitter', 'sgs-blocks' ), value: 'twitter' },
+	{ label: __( 'YouTube', 'sgs-blocks' ), value: 'youtube' },
+	{ label: __( 'TikTok', 'sgs-blocks' ), value: 'tiktok' },
+	{ label: __( 'GitHub', 'sgs-blocks' ), value: 'github' },
+	{ label: __( 'WhatsApp', 'sgs-blocks' ), value: 'whatsapp' },
+	{ label: __( 'Email', 'sgs-blocks' ), value: 'email' },
+	{ label: __( 'Website', 'sgs-blocks' ), value: 'website' },
+	{ label: __( 'Pinterest', 'sgs-blocks' ), value: 'pinterest' },
+	{ label: __( 'Snapchat', 'sgs-blocks' ), value: 'snapchat' },
+	{ label: __( 'Telegram', 'sgs-blocks' ), value: 'telegram' },
+	{ label: __( 'Discord', 'sgs-blocks' ), value: 'discord' },
 ];
 
 const LENGTH_UNITS = [
@@ -110,9 +140,16 @@ const LENGTH_UNITS = [
 function SocialLinkItemEditor( { item, index, onChange, onRemove } ) {
 	const update = ( key, value ) => onChange( { ...item, [ key ]: value } );
 	return (
-		<div style={ { borderBottom: '1px solid #ddd', paddingBottom: '12px', marginBottom: '12px' } }>
+		<div
+			style={ {
+				borderBottom: '1px solid #ddd',
+				paddingBottom: '12px',
+				marginBottom: '12px',
+			} }
+		>
 			<p style={ { fontWeight: 600, margin: '0 0 8px' } }>
-				{ `#${ index + 1 }` }{ item.platform ? ` — ${ item.platform }` : '' }
+				{ `#${ index + 1 }` }
+				{ item.platform ? ` — ${ item.platform }` : '' }
 			</p>
 			<SelectControl
 				label={ __( 'Platform', 'sgs-blocks' ) }
@@ -132,25 +169,39 @@ function SocialLinkItemEditor( { item, index, onChange, onRemove } ) {
 				label={ __( 'Link', 'sgs-blocks' ) }
 				help={
 					item.platform === 'email'
-						? __( 'Enter an email address, e.g. hello@example.com.', 'sgs-blocks' )
+						? __(
+								'Enter an email address, e.g. hello@example.com.',
+								'sgs-blocks'
+						  )
 						: __( 'Search your site or paste a URL.', 'sgs-blocks' )
 				}
 				value={ {
 					url: item.url || '',
-					linkTarget: item.opensInNewTab !== false ? '_blank' : '_self',
+					linkTarget:
+						item.opensInNewTab !== false ? '_blank' : '_self',
 					rel: item.rel || '',
 					linkSource: item.linkSource || '',
 				} }
 				// A person's own profile links: only a page on this site (a bio page) is
 				// offered, never the business's Site Info links; an email takes no source.
-				linkSources={ 'email' === item.platform ? undefined : LINK_SOURCES_PAGES }
+				linkSources={
+					'email' === item.platform ? undefined : LINK_SOURCES_PAGES
+				}
 				targetMode="boolean"
 				onChange={ ( next ) => {
 					const patch = { ...item };
-					if ( undefined !== next.url ) patch.url = next.url;
-					if ( undefined !== next.linkSource ) patch.linkSource = next.linkSource;
-					if ( undefined !== next.linkTarget ) patch.opensInNewTab = '_blank' === next.linkTarget;
-					if ( undefined !== next.rel ) patch.rel = next.rel;
+					if ( undefined !== next.url ) {
+						patch.url = next.url;
+					}
+					if ( undefined !== next.linkSource ) {
+						patch.linkSource = next.linkSource;
+					}
+					if ( undefined !== next.linkTarget ) {
+						patch.opensInNewTab = '_blank' === next.linkTarget;
+					}
+					if ( undefined !== next.rel ) {
+						patch.rel = next.rel;
+					}
 					onChange( patch );
 				} }
 			/>
@@ -167,7 +218,12 @@ function SocialLinkItemEditor( { item, index, onChange, onRemove } ) {
 	);
 }
 
-export default function Edit( { attributes, setAttributes, name: blockName, clientId } ) {
+export default function Edit( {
+	attributes,
+	setAttributes,
+	name: blockName,
+	clientId,
+} ) {
 	const previewTier = usePreviewTier();
 	const [ colourPalette ] = useSettings( 'color.palette' );
 	const {
@@ -208,9 +264,7 @@ export default function Edit( { attributes, setAttributes, name: blockName, clie
 	// the flat colour would compare against a surface that isn't rendered — skip
 	// the check entirely in that case rather than feed the raw gradient string in.
 	const teamMemberContrastAgainst =
-		backgroundColour && ! backgroundColourGradient
-			? backgroundColour
-			: '';
+		backgroundColour && ! backgroundColourGradient ? backgroundColour : '';
 
 	const isCompact = 'compact' === displayMode;
 
@@ -220,8 +274,13 @@ export default function Edit( { attributes, setAttributes, name: blockName, clie
 
 	const photoUid = 'sgs-team-member-photo-' + clientId.slice( 0, 8 );
 	// The wrapper clips the bio overlay to the photo's outline: a circle is the one shape it follows.
-	const photoAttributes = attributes.photoShape ? attributes : { ...attributes, photoShape: DEFAULT_PHOTO_SHAPE };
-	const photoOutline = 'circle' === ( photoAttributes.photoShape.desktop?.shape ?? '' ) ? 'circle' : 'none';
+	const photoAttributes = attributes.photoShape
+		? attributes
+		: { ...attributes, photoShape: DEFAULT_PHOTO_SHAPE };
+	const photoOutline =
+		'circle' === ( photoAttributes.photoShape.desktop?.shape ?? '' )
+			? 'circle'
+			: 'none';
 
 	// Social links repeater helpers — mirror trust-bar pattern.
 	const updateSocialLink = ( index, updated ) => {
@@ -231,11 +290,18 @@ export default function Edit( { attributes, setAttributes, name: blockName, clie
 	};
 
 	const removeSocialLink = ( index ) => {
-		setAttributes( { socialLinks: socialLinks.filter( ( _, i ) => i !== index ) } );
+		setAttributes( {
+			socialLinks: socialLinks.filter( ( _, i ) => i !== index ),
+		} );
 	};
 
 	const addSocialLink = () => {
-		setAttributes( { socialLinks: [ ...socialLinks, { platform: 'website', url: '', opensInNewTab: true, rel: '' } ] } );
+		setAttributes( {
+			socialLinks: [
+				...socialLinks,
+				{ platform: 'website', url: '', opensInNewTab: true, rel: '' },
+			],
+		} );
 	};
 
 	const className = [
@@ -254,7 +320,11 @@ export default function Edit( { attributes, setAttributes, name: blockName, clie
 		className,
 		style: {
 			...buildWrapperStyle( attributes, previewTier, colourPalette ),
-			...typographyPreviewStyle( { textAlign: attributes.textAlign }, '', previewTier ),
+			...typographyPreviewStyle(
+				{ textAlign: attributes.textAlign },
+				'',
+				previewTier
+			),
 		},
 	} );
 
@@ -302,16 +372,23 @@ export default function Edit( { attributes, setAttributes, name: blockName, clie
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: nameColour,
-								onChange: ( val ) => setAttributes( { nameColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( { nameColour: val ?? '' } ),
 								linked: true,
 								gradientValue: nameColourGradient,
-								onGradientChange: ( val ) => setAttributes( { nameColourGradient: val ?? '' } ),
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										nameColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: nameColourHover,
-								onChange: ( val ) => setAttributes( { nameColourHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										nameColourHover: val ?? '',
+									} ),
 								linked: true,
 							},
 						],
@@ -325,18 +402,25 @@ export default function Edit( { attributes, setAttributes, name: blockName, clie
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: roleColour,
-								onChange: ( val ) => setAttributes( { roleColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( { roleColour: val ?? '' } ),
 								linked: true,
 								gradientValue: roleColourGradient,
-								onGradientChange: ( val ) => setAttributes( { roleColourGradient: val ?? '' } ),
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										roleColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: roleColourHover,
-								onChange: ( val ) => setAttributes( { roleColourHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										roleColourHover: val ?? '',
+									} ),
 								linked: true,
-								},
+							},
 						],
 					},
 				] }
@@ -381,14 +465,18 @@ export default function Edit( { attributes, setAttributes, name: blockName, clie
 					<ToolsPanelItem
 						label={ __( 'Heading level', 'sgs-blocks' ) }
 						hasValue={ () => ( headingLevel || 'h3' ) !== 'h3' }
-						onDeselect={ () => setAttributes( { headingLevel: 'h3' } ) }
+						onDeselect={ () =>
+							setAttributes( { headingLevel: 'h3' } )
+						}
 						isShownByDefault
 					>
 						<SelectControl
 							label={ __( 'Heading level', 'sgs-blocks' ) }
 							value={ headingLevel || 'h3' }
 							options={ HEADING_LEVEL_OPTIONS }
-							onChange={ ( val ) => setAttributes( { headingLevel: val } ) }
+							onChange={ ( val ) =>
+								setAttributes( { headingLevel: val } )
+							}
 							help={ __(
 								'Pick the level that fits your page outline — usually H3 under a page-level H2.',
 								'sgs-blocks'
@@ -400,7 +488,9 @@ export default function Edit( { attributes, setAttributes, name: blockName, clie
 					<ToolsPanelItem
 						label={ __( 'Display mode', 'sgs-blocks' ) }
 						hasValue={ () => displayMode !== 'full' }
-						onDeselect={ () => setAttributes( { displayMode: 'full' } ) }
+						onDeselect={ () =>
+							setAttributes( { displayMode: 'full' } )
+						}
 						isShownByDefault
 					>
 						<SelectControl
@@ -411,7 +501,9 @@ export default function Edit( { attributes, setAttributes, name: blockName, clie
 							) }
 							value={ displayMode }
 							options={ DISPLAY_MODES }
-							onChange={ ( val ) => setAttributes( { displayMode: val } ) }
+							onChange={ ( val ) =>
+								setAttributes( { displayMode: val } )
+							}
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
@@ -419,14 +511,18 @@ export default function Edit( { attributes, setAttributes, name: blockName, clie
 					<ToolsPanelItem
 						label={ __( 'Card style', 'sgs-blocks' ) }
 						hasValue={ () => cardStyle !== 'elevated' }
-						onDeselect={ () => setAttributes( { cardStyle: 'elevated' } ) }
+						onDeselect={ () =>
+							setAttributes( { cardStyle: 'elevated' } )
+						}
 						isShownByDefault
 					>
 						<SelectControl
 							label={ __( 'Card style', 'sgs-blocks' ) }
 							value={ cardStyle }
 							options={ CARD_STYLES }
-							onChange={ ( val ) => setAttributes( { cardStyle: val } ) }
+							onChange={ ( val ) =>
+								setAttributes( { cardStyle: val } )
+							}
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
@@ -435,13 +531,23 @@ export default function Edit( { attributes, setAttributes, name: blockName, clie
 						<ToolsPanelItem
 							label={ __( 'Hover overlay (bio)', 'sgs-blocks' ) }
 							hasValue={ () => overlayHover !== false }
-							onDeselect={ () => setAttributes( { overlayHover: false } ) }
+							onDeselect={ () =>
+								setAttributes( { overlayHover: false } )
+							}
 						>
 							<ToggleControl
-								label={ __( 'Hover overlay (bio)', 'sgs-blocks' ) }
-								help={ __( 'Reveals the bio as a slide-up overlay on the photo when hovered or focused. On touch devices, tap the photo to toggle.', 'sgs-blocks' ) }
+								label={ __(
+									'Hover overlay (bio)',
+									'sgs-blocks'
+								) }
+								help={ __(
+									'Reveals the bio as a slide-up overlay on the photo when hovered or focused. On touch devices, tap the photo to toggle.',
+									'sgs-blocks'
+								) }
 								checked={ overlayHover }
-								onChange={ ( val ) => setAttributes( { overlayHover: val } ) }
+								onChange={ ( val ) =>
+									setAttributes( { overlayHover: val } )
+								}
 								__nextHasNoMarginBottom
 							/>
 						</ToolsPanelItem>
@@ -452,7 +558,10 @@ export default function Edit( { attributes, setAttributes, name: blockName, clie
 					<ToolsPanelItem
 						label={ __( 'Shadow', 'sgs-blocks' ) }
 						hasValue={ () =>
-							!! cardShadow || !! cardShadowColour || !! cardShadowHover || !! cardShadowColourHover
+							!! cardShadow ||
+							!! cardShadowColour ||
+							!! cardShadowHover ||
+							!! cardShadowColourHover
 						}
 						onDeselect={ () =>
 							setAttributes( {
@@ -467,7 +576,10 @@ export default function Edit( { attributes, setAttributes, name: blockName, clie
 							label={ __( 'Shadow', 'sgs-blocks' ) }
 							attributes={ attributes }
 							setAttributes={ setAttributes }
-							attrNames={ shadowAttrKeys( 'cardShadow', { hover: true, hoverColour: true } ) }
+							attrNames={ shadowAttrKeys( 'cardShadow', {
+								hover: true,
+								hoverColour: true,
+							} ) }
 						/>
 					</ToolsPanelItem>
 					<ToolsPanelItem
@@ -478,7 +590,9 @@ export default function Edit( { attributes, setAttributes, name: blockName, clie
 						<RangeControl
 							label={ __( 'Hover scale', 'sgs-blocks' ) }
 							value={ parseFloat( scaleHover ) || 1 }
-							onChange={ ( val ) => setAttributes( { scaleHover: String( val ) } ) }
+							onChange={ ( val ) =>
+								setAttributes( { scaleHover: String( val ) } )
+							}
 							min={ 1 }
 							max={ 1.1 }
 							step={ 0.01 }
@@ -489,12 +603,21 @@ export default function Edit( { attributes, setAttributes, name: blockName, clie
 					<ToolsPanelItem
 						label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
 						hasValue={ () => transitionDuration !== '300' }
-						onDeselect={ () => setAttributes( { transitionDuration: '300' } ) }
+						onDeselect={ () =>
+							setAttributes( { transitionDuration: '300' } )
+						}
 					>
 						<RangeControl
-							label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
+							label={ __(
+								'Transition duration (ms)',
+								'sgs-blocks'
+							) }
 							value={ parseInt( transitionDuration, 10 ) || 300 }
-							onChange={ ( val ) => setAttributes( { transitionDuration: String( val ) } ) }
+							onChange={ ( val ) =>
+								setAttributes( {
+									transitionDuration: String( val ),
+								} )
+							}
 							min={ 0 }
 							max={ 1000 }
 							step={ 50 }
@@ -505,13 +628,17 @@ export default function Edit( { attributes, setAttributes, name: blockName, clie
 					<ToolsPanelItem
 						label={ __( 'Transition easing', 'sgs-blocks' ) }
 						hasValue={ () => transitionEasing !== 'ease-in-out' }
-						onDeselect={ () => setAttributes( { transitionEasing: 'ease-in-out' } ) }
+						onDeselect={ () =>
+							setAttributes( { transitionEasing: 'ease-in-out' } )
+						}
 					>
 						<SelectControl
 							label={ __( 'Transition easing', 'sgs-blocks' ) }
 							value={ transitionEasing }
 							options={ EASING_OPTIONS }
-							onChange={ ( val ) => setAttributes( { transitionEasing: val } ) }
+							onChange={ ( val ) =>
+								setAttributes( { transitionEasing: val } )
+							}
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
@@ -519,24 +646,47 @@ export default function Edit( { attributes, setAttributes, name: blockName, clie
 				</ToolsPanel>
 
 				{ ! isCompact && (
-					<PanelBody title={ __( 'Social Links', 'sgs-blocks' ) } initialOpen={ false }>
-						<p style={ { fontSize: '12px', color: '#757575', marginTop: 0 } }>
-							{ __( 'Social profile links displayed below the bio. Hidden in Compact mode.', 'sgs-blocks' ) }
+					<PanelBody
+						title={ __( 'Social Links', 'sgs-blocks' ) }
+						initialOpen={ false }
+					>
+						<p
+							style={ {
+								fontSize: '12px',
+								color: '#757575',
+								marginTop: 0,
+							} }
+						>
+							{ __(
+								'Social profile links displayed below the bio. Hidden in Compact mode.',
+								'sgs-blocks'
+							) }
 						</p>
-						<FlexWrapControl label={ __( 'Wrap social links', 'sgs-blocks' ) } value={ attributes.flexWrap } onChange={ ( val ) => setAttributes( { flexWrap: val } ) } />
+						<FlexWrapControl
+							label={ __( 'Wrap social links', 'sgs-blocks' ) }
+							value={ attributes.flexWrap }
+							onChange={ ( val ) =>
+								setAttributes( { flexWrap: val } )
+							}
+						/>
 						{ socialLinks.map( ( link, index ) => (
 							<SocialLinkItemEditor
 								key={ index }
 								item={ link }
 								index={ index }
-								onChange={ ( updated ) => updateSocialLink( index, updated ) }
+								onChange={ ( updated ) =>
+									updateSocialLink( index, updated )
+								}
 								onRemove={ () => removeSocialLink( index ) }
 							/>
 						) ) }
 						<Button
 							variant="secondary"
 							onClick={ addSocialLink }
-							style={ { width: '100%', justifyContent: 'center' } }
+							style={ {
+								width: '100%',
+								justifyContent: 'center',
+							} }
 						>
 							{ __( 'Add social link', 'sgs-blocks' ) }
 						</Button>
@@ -546,7 +696,6 @@ export default function Edit( { attributes, setAttributes, name: blockName, clie
 
 			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
 			<InspectorControls group="styles">
-
 				{ /* Typography — FULLY replaces the old WP-native supports.typography
 				   (fontSize + textAlign) with the shared TypographyControls
 				   component + sgs_typography_css_rule() render.php helper
@@ -560,7 +709,10 @@ export default function Edit( { attributes, setAttributes, name: blockName, clie
 				   D812 (2026-08-26): a 5-option enum with longest rendered
 				   label <=12 chars ("Justify", 7 chars) renders as
 				   ToggleGroupControl, not SelectControl. */ }
-				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Typography', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<TypographyControls
 						attributes={ attributes }
 						setAttributes={ setAttributes }
@@ -641,19 +793,35 @@ export default function Edit( { attributes, setAttributes, name: blockName, clie
 				   emission path. Border width/colour/style/radius are
 				   block-private (borderWidth/borderStyle/borderColour/
 				   borderRadius via the SgsBorderControl panel below). */ }
-				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Spacing', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<ResponsiveOverride
 						value={ attributes.padding }
-						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { padding: obj } )
+						}
 					>
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								defaults={ spacingDefaultsFor( blockName, 'padding' ) }
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								defaults={ spacingDefaultsFor(
+									blockName,
+									'padding'
+								) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
@@ -664,10 +832,18 @@ export default function Edit( { attributes, setAttributes, name: blockName, clie
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
@@ -675,46 +851,69 @@ export default function Edit( { attributes, setAttributes, name: blockName, clie
 
 				{ /* Width — outer maxWidth (kept-scalar, base only — matches the
 				   pre-existing contract for this block). */ }
-				<PanelBody title={ __( 'Width', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Width', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SgsLengthControl
 						presets={ false }
 						label={ __( 'Max-width', 'sgs-blocks' ) }
 						value={ maxWidth || '' }
 						units={ LENGTH_UNITS }
-						onChange={ ( val ) => setAttributes( { maxWidth: val ?? '' } ) }
+						onChange={ ( val ) =>
+							setAttributes( { maxWidth: val ?? '' } )
+						}
 						help={ __( 'Leave blank for no cap.', 'sgs-blocks' ) }
 					/>
 				</PanelBody>
 
-				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Border', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SgsBorderControl
 						widthValues={ attributes.borderWidth ?? {} }
-						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						onWidthChange={ ( next ) =>
+							setAttributes( { borderWidth: next } )
+						}
 						widthPresets={ [ '10', '20', '30' ] }
 						styleValue={ attributes.borderStyle }
-						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						onStyleChange={ ( val ) =>
+							setAttributes( { borderStyle: val } )
+						}
 						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
 						colourValue={ attributes.borderColour }
-						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						onColourChange={ ( val ) =>
+							setAttributes( { borderColour: val ?? '' } )
+						}
 						colourGradientValue={ attributes.borderColourGradient }
-						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+						onColourGradientChange={ ( val ) =>
+							setAttributes( { borderColourGradient: val ?? '' } )
+						}
 						colourLinked={ true }
 						contrastAgainst={ teamMemberContrastAgainst }
 						radiusValues={ {
-								base: attributes.borderRadius?.desktop ?? {},
-								tablet: attributes.borderRadius?.tablet ?? {},
-								mobile: attributes.borderRadius?.mobile ?? {},
-							} }
+							base: attributes.borderRadius?.desktop ?? {},
+							tablet: attributes.borderRadius?.tablet ?? {},
+							mobile: attributes.borderRadius?.mobile ?? {},
+						} }
 						onRadiusChange={ ( tier, next ) => {
 							const key = tier === 'base' ? 'desktop' : tier;
-							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+							setAttributes( {
+								borderRadius: {
+									...attributes.borderRadius,
+									[ key ]: next,
+								},
+							} );
 						} }
 					/>
 				</PanelBody>
 			</InspectorControls>
 
 			<div { ...blockProps }>
-				<div className={ `sgs-team-member__photo sgs-team-member__photo--${ photoOutline }` }>
+				<div
+					className={ `sgs-team-member__photo sgs-team-member__photo--${ photoOutline }` }
+				>
 					<SlotPicture
 						attributes={ photoAttributes }
 						setAttributes={ setAttributes }
@@ -724,7 +923,10 @@ export default function Edit( { attributes, setAttributes, name: blockName, clie
 						uid={ photoUid }
 						fallbackAlt={ name }
 						title={ __( 'Photo', 'sgs-blocks' ) }
-						instructions={ __( 'Choose a headshot photo for this team member', 'sgs-blocks' ) }
+						instructions={ __(
+							'Choose a headshot photo for this team member',
+							'sgs-blocks'
+						) }
 					/>
 				</div>
 				<RichText
@@ -733,7 +935,11 @@ export default function Edit( { attributes, setAttributes, name: blockName, clie
 					value={ name }
 					onChange={ ( val ) => setAttributes( { name: val } ) }
 					placeholder={ __( 'Name', 'sgs-blocks' ) }
-					style={ textSurfaceStyle( attributes, 'name', previewTier ) }
+					style={ textSurfaceStyle(
+						attributes,
+						'name',
+						previewTier
+					) }
 					allowedFormats={ RICH_TEXT_BODY }
 				/>
 				<RichText
@@ -742,7 +948,11 @@ export default function Edit( { attributes, setAttributes, name: blockName, clie
 					value={ role }
 					onChange={ ( val ) => setAttributes( { role: val } ) }
 					placeholder={ __( 'Role / Title', 'sgs-blocks' ) }
-					style={ textSurfaceStyle( attributes, 'role', previewTier ) }
+					style={ textSurfaceStyle(
+						attributes,
+						'role',
+						previewTier
+					) }
 					allowedFormats={ RICH_TEXT_BODY }
 				/>
 				{ ! isCompact && (
@@ -752,31 +962,56 @@ export default function Edit( { attributes, setAttributes, name: blockName, clie
 						value={ bio }
 						onChange={ ( val ) => setAttributes( { bio: val } ) }
 						placeholder={ __( 'Short bio…', 'sgs-blocks' ) }
-						style={ textSurfaceStyle( attributes, 'bio', previewTier ) }
+						style={ textSurfaceStyle(
+							attributes,
+							'bio',
+							previewTier
+						) }
 						allowedFormats={ RICH_TEXT_BODY }
 					/>
 				) }
 				{ /* Social links preview in editor — shown only in full mode. */ }
 				{ ! isCompact && socialLinks.length > 0 && (
-					<div className="sgs-team-member__social" style={ attributes.flexWrap ? { flexWrap: attributes.flexWrap } : undefined }>
-						{ socialLinks.map( ( link, i ) => (
-							link.url && (
-								<span
-									key={ i }
-									className="sgs-team-member__social-preview"
-									title={ link.url }
-									aria-hidden="true"
-									style={ typographyPreviewStyle( attributes, 'socialLink', previewTier ) }
-								>
-									{ link.platform || 'website' }
-								</span>
-							)
-						) ) }
+					<div
+						className="sgs-team-member__social"
+						style={
+							attributes.flexWrap
+								? { flexWrap: attributes.flexWrap }
+								: undefined
+						}
+					>
+						{ socialLinks.map(
+							( link, i ) =>
+								link.url && (
+									<span
+										key={ i }
+										className="sgs-team-member__social-preview"
+										title={ link.url }
+										aria-hidden="true"
+										style={ typographyPreviewStyle(
+											attributes,
+											'socialLink',
+											previewTier
+										) }
+									>
+										{ link.platform || 'website' }
+									</span>
+								)
+						) }
 					</div>
 				) }
 				{ ! isCompact && socialLinks.length === 0 && (
-					<p style={ { color: '#757575', fontStyle: 'italic', fontSize: '12px' } }>
-						{ __( 'Add social links in the sidebar panel.', 'sgs-blocks' ) }
+					<p
+						style={ {
+							color: '#757575',
+							fontStyle: 'italic',
+							fontSize: '12px',
+						} }
+					>
+						{ __(
+							'Add social links in the sidebar panel.',
+							'sgs-blocks'
+						) }
 					</p>
 				) }
 			</div>

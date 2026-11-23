@@ -20,18 +20,34 @@ import { PanelBody, SelectControl, TextControl } from '@wordpress/components';
  * @param {boolean}  props.showHeadings  Offer the column and row headings.
  * @return {JSX.Element} The panel.
  */
-export default function FieldLabelLayoutPanel( { attributes, setAttributes, showHeadings = false } ) {
+export default function FieldLabelLayoutPanel( {
+	attributes,
+	setAttributes,
+	showHeadings = false,
+} ) {
 	return (
-		<PanelBody title={ __( 'Label and headings', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Label and headings', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			<SelectControl
 				label={ __( 'Label', 'sgs-blocks' ) }
 				value={ attributes.labelStyle || 'visible' }
 				options={ [
-					{ label: __( 'Shown above the field', 'sgs-blocks' ), value: 'visible' },
-					{ label: __( 'Screen readers only', 'sgs-blocks' ), value: 'hidden' },
+					{
+						label: __( 'Shown above the field', 'sgs-blocks' ),
+						value: 'visible',
+					},
+					{
+						label: __( 'Screen readers only', 'sgs-blocks' ),
+						value: 'hidden',
+					},
 				] }
 				onChange={ ( labelStyle ) => setAttributes( { labelStyle } ) }
-				help={ __( 'Hide the label when a heading, the placeholder or the panel\'s own text already says what the field is for.', 'sgs-blocks' ) }
+				help={ __(
+					"Hide the label when a heading, the placeholder or the panel's own text already says what the field is for.",
+					'sgs-blocks'
+				) }
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>
@@ -40,16 +56,26 @@ export default function FieldLabelLayoutPanel( { attributes, setAttributes, show
 					<TextControl
 						label={ __( 'Column heading', 'sgs-blocks' ) }
 						value={ attributes.columnHeading || '' }
-						onChange={ ( columnHeading ) => setAttributes( { columnHeading } ) }
-						help={ __( 'A short heading above the box, e.g. "SPH". Set it on the first row only.', 'sgs-blocks' ) }
+						onChange={ ( columnHeading ) =>
+							setAttributes( { columnHeading } )
+						}
+						help={ __(
+							'A short heading above the box, e.g. "SPH". Set it on the first row only.',
+							'sgs-blocks'
+						) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
 					<TextControl
 						label={ __( 'Row heading', 'sgs-blocks' ) }
 						value={ attributes.rowHeading || '' }
-						onChange={ ( rowHeading ) => setAttributes( { rowHeading } ) }
-						help={ __( 'A short heading to the left of the row, e.g. "R". Set it on the first box of each row.', 'sgs-blocks' ) }
+						onChange={ ( rowHeading ) =>
+							setAttributes( { rowHeading } )
+						}
+						help={ __(
+							'A short heading to the left of the row, e.g. "R". Set it on the first box of each row.',
+							'sgs-blocks'
+						) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>

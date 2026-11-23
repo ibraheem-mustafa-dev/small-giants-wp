@@ -12,7 +12,11 @@ import { DEVICES, resolved } from './core.js';
 /** The shapes drawn as `border-radius`, with the radius each prints. */
 export const RADIUS_OF = { circle: '50%', ellipse: '50%', pill: '9999px' };
 
-const NO_SHAPE = Object.freeze( { kind: 'none', slug: '', proportions: 'stretch' } );
+const NO_SHAPE = Object.freeze( {
+	kind: 'none',
+	slug: '',
+	proportions: 'stretch',
+} );
 
 let masks = {};
 
@@ -22,7 +26,15 @@ let masks = {};
  * @param {Array<{slug:string,d:string,proportions?:string}>} list Mask entries.
  */
 export function registerMaskShapes( list ) {
-	masks = Object.fromEntries( list.map( ( s ) => [ s.slug, { d: s.d, proportions: 'keep' === s.proportions ? 'keep' : 'stretch' } ] ) );
+	masks = Object.fromEntries(
+		list.map( ( s ) => [
+			s.slug,
+			{
+				d: s.d,
+				proportions: 'keep' === s.proportions ? 'keep' : 'stretch',
+			},
+		] )
+	);
 }
 
 /**
@@ -55,7 +67,14 @@ export function shapeAt( attrs, slot, device ) {
 	}
 	const entry = masks[ slug ];
 	if ( entry ) {
-		return { kind: 'mask', slug, proportions: 'keep' === props || 'stretch' === props ? props : entry.proportions };
+		return {
+			kind: 'mask',
+			slug,
+			proportions:
+				'keep' === props || 'stretch' === props
+					? props
+					: entry.proportions,
+		};
 	}
 	return NO_SHAPE;
 }
@@ -66,5 +85,7 @@ export function shapeAt( attrs, slot, device ) {
  * @return {boolean} Whether any device has a mask shape (so the mask layer is printed).
  */
 export function shapeHasMask( attrs, slot ) {
-	return DEVICES.some( ( device ) => 'mask' === shapeAt( attrs, slot, device ).kind );
+	return DEVICES.some(
+		( device ) => 'mask' === shapeAt( attrs, slot, device ).kind
+	);
 }

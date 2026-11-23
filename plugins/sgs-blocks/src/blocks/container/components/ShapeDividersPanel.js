@@ -23,9 +23,15 @@ const SHAPE_OPTIONS = [
 	{ label: __( 'Wave', 'sgs-blocks' ), value: 'wave' },
 	{ label: __( 'Wave (Smooth)', 'sgs-blocks' ), value: 'wave-smooth' },
 	{ label: __( 'Triangle', 'sgs-blocks' ), value: 'triangle' },
-	{ label: __( 'Triangle (Asymmetric)', 'sgs-blocks' ), value: 'triangle-asymmetric' },
+	{
+		label: __( 'Triangle (Asymmetric)', 'sgs-blocks' ),
+		value: 'triangle-asymmetric',
+	},
 	{ label: __( 'Curve', 'sgs-blocks' ), value: 'curve' },
-	{ label: __( 'Curve (Asymmetric)', 'sgs-blocks' ), value: 'curve-asymmetric' },
+	{
+		label: __( 'Curve (Asymmetric)', 'sgs-blocks' ),
+		value: 'curve-asymmetric',
+	},
 	{ label: __( 'Zigzag', 'sgs-blocks' ), value: 'zigzag' },
 	{ label: __( 'Cloud', 'sgs-blocks' ), value: 'cloud' },
 	{ label: __( 'Slant', 'sgs-blocks' ), value: 'slant' },
@@ -39,15 +45,23 @@ const SHAPE_OPTIONS = [
 
 export function ShapeDividersPanel( { attributes, setAttributes } ) {
 	return (
-		<PanelBody title={ __( 'Shape Dividers', 'sgs-blocks' ) } initialOpen={ false }>
-			<p className="components-base-control__label" style={ { fontWeight: 600, marginBottom: '8px' } }>
+		<PanelBody
+			title={ __( 'Shape Dividers', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
+			<p
+				className="components-base-control__label"
+				style={ { fontWeight: 600, marginBottom: '8px' } }
+			>
 				{ __( 'Top Divider', 'sgs-blocks' ) }
 			</p>
 			<SelectControl
 				label={ __( 'Shape', 'sgs-blocks' ) }
 				value={ attributes.shapeDividerTop || '' }
 				options={ SHAPE_OPTIONS }
-				onChange={ ( val ) => setAttributes( { shapeDividerTop: val } ) }
+				onChange={ ( val ) =>
+					setAttributes( { shapeDividerTop: val } )
+				}
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>
@@ -65,7 +79,9 @@ export function ShapeDividersPanel( { attributes, setAttributes } ) {
 					<ScaleAxisControl
 						label={ __( 'Size', 'sgs-blocks' ) }
 						value={ attributes.shapeDividerTopScale }
-						onChange={ ( val ) => setAttributes( { shapeDividerTopScale: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { shapeDividerTopScale: val } )
+						}
 						min={ SHAPE_DIVIDER_SCALE_MIN }
 						max={ SHAPE_DIVIDER_SCALE_MAX }
 						step={ 1 }
@@ -75,13 +91,17 @@ export function ShapeDividersPanel( { attributes, setAttributes } ) {
 					<ToggleControl
 						label={ __( 'Flip horizontally', 'sgs-blocks' ) }
 						checked={ attributes.shapeDividerTopFlip }
-						onChange={ ( val ) => setAttributes( { shapeDividerTopFlip: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { shapeDividerTopFlip: val } )
+						}
 						__nextHasNoMarginBottom
 					/>
 					<ToggleControl
 						label={ __( 'Invert vertically', 'sgs-blocks' ) }
 						checked={ attributes.shapeDividerTopInvert }
-						onChange={ ( val ) => setAttributes( { shapeDividerTopInvert: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { shapeDividerTopInvert: val } )
+						}
 						__nextHasNoMarginBottom
 					/>
 				</>
@@ -89,14 +109,19 @@ export function ShapeDividersPanel( { attributes, setAttributes } ) {
 
 			<hr style={ { margin: '16px 0' } } />
 
-			<p className="components-base-control__label" style={ { fontWeight: 600, marginBottom: '8px' } }>
+			<p
+				className="components-base-control__label"
+				style={ { fontWeight: 600, marginBottom: '8px' } }
+			>
 				{ __( 'Bottom Divider', 'sgs-blocks' ) }
 			</p>
 			<SelectControl
 				label={ __( 'Shape', 'sgs-blocks' ) }
 				value={ attributes.shapeDividerBottom || '' }
 				options={ SHAPE_OPTIONS }
-				onChange={ ( val ) => setAttributes( { shapeDividerBottom: val } ) }
+				onChange={ ( val ) =>
+					setAttributes( { shapeDividerBottom: val } )
+				}
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>
@@ -114,7 +139,9 @@ export function ShapeDividersPanel( { attributes, setAttributes } ) {
 					<ScaleAxisControl
 						label={ __( 'Size', 'sgs-blocks' ) }
 						value={ attributes.shapeDividerBottomScale }
-						onChange={ ( val ) => setAttributes( { shapeDividerBottomScale: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { shapeDividerBottomScale: val } )
+						}
 						min={ SHAPE_DIVIDER_SCALE_MIN }
 						max={ SHAPE_DIVIDER_SCALE_MAX }
 						step={ 1 }
@@ -124,13 +151,17 @@ export function ShapeDividersPanel( { attributes, setAttributes } ) {
 					<ToggleControl
 						label={ __( 'Flip horizontally', 'sgs-blocks' ) }
 						checked={ attributes.shapeDividerBottomFlip }
-						onChange={ ( val ) => setAttributes( { shapeDividerBottomFlip: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { shapeDividerBottomFlip: val } )
+						}
 						__nextHasNoMarginBottom
 					/>
 					<ToggleControl
 						label={ __( 'Invert vertically', 'sgs-blocks' ) }
 						checked={ attributes.shapeDividerBottomInvert }
-						onChange={ ( val ) => setAttributes( { shapeDividerBottomInvert: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { shapeDividerBottomInvert: val } )
+						}
 						__nextHasNoMarginBottom
 					/>
 				</>

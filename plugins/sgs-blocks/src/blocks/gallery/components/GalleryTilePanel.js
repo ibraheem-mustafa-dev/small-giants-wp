@@ -4,7 +4,10 @@
  */
 import { __ } from '@wordpress/i18n';
 import { PanelBody } from '@wordpress/components';
-import { ResponsiveBoxControl, ResponsiveLengthControl } from '../../../components';
+import {
+	ResponsiveBoxControl,
+	ResponsiveLengthControl,
+} from '../../../components';
 import { patchTier } from '../../../utils';
 import GalleryBorderControl from './GalleryBorderControl';
 
@@ -12,7 +15,10 @@ export default function GalleryTilePanel( { attributes, setAttributes } ) {
 	const { tileMinHeight, tilePadding } = attributes;
 
 	return (
-		<PanelBody title={ __( 'Item tile', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Item tile', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			<ResponsiveLengthControl
 				label={ __( 'Tile height', 'sgs-blocks' ) }
 				help={ __(
@@ -20,7 +26,9 @@ export default function GalleryTilePanel( { attributes, setAttributes } ) {
 					'sgs-blocks'
 				) }
 				value={ tileMinHeight }
-				onChange={ ( next ) => setAttributes( { tileMinHeight: next } ) }
+				onChange={ ( next ) =>
+					setAttributes( { tileMinHeight: next } )
+				}
 			/>
 			<ResponsiveBoxControl
 				label={ __( 'Tile padding', 'sgs-blocks' ) }
@@ -31,11 +39,25 @@ export default function GalleryTilePanel( { attributes, setAttributes } ) {
 					mobile: tilePadding?.mobile ?? {},
 				} }
 				onChange={ ( tier, next ) => {
-					const tierMap = { base: 'desktop', tablet: 'tablet', mobile: 'mobile' };
-					patchTier( attributes, setAttributes, 'tilePadding', tierMap[ tier ], next );
+					const tierMap = {
+						base: 'desktop',
+						tablet: 'tablet',
+						mobile: 'mobile',
+					};
+					patchTier(
+						attributes,
+						setAttributes,
+						'tilePadding',
+						tierMap[ tier ],
+						next
+					);
 				} }
 			/>
-			<GalleryBorderControl attributes={ attributes } setAttributes={ setAttributes } prefix="tile" />
+			<GalleryBorderControl
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				prefix="tile"
+			/>
 		</PanelBody>
 	);
 }

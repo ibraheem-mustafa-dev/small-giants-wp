@@ -61,7 +61,8 @@ function widthValue( type, val ) {
 function tierWidth( attributes, tier ) {
 	const { widthType = {}, customWidth = {} } = attributes;
 	for ( const t of TIER_CHAIN[ tier ] || TIER_CHAIN.desktop ) {
-		const type = 'desktop' === t ? widthType?.[ t ] || 'fit' : widthType?.[ t ];
+		const type =
+			'desktop' === t ? widthType?.[ t ] || 'fit' : widthType?.[ t ];
 		const value = widthValue( type, customWidth?.[ t ] );
 		if ( null !== value ) {
 			return value;
@@ -118,11 +119,24 @@ export function buttonPreviewStyle( attributes, palette, tier = 'desktop' ) {
 
 	// Content alignment + label-to-icon gap at the tier (render.php's sgs_emit_responsive_css).
 	const align = tierValueOf( contentAlign, tier );
-	if ( [ 'flex-start', 'center', 'flex-end', 'space-between' ].includes( align ) ) {
+	if (
+		[ 'flex-start', 'center', 'flex-end', 'space-between' ].includes(
+			align
+		)
+	) {
 		style.justifyContent = align;
 	}
 	const selfAlign = tierValueOf( alignSelf, tier );
-	if ( [ 'auto', 'flex-start', 'center', 'flex-end', 'stretch', 'baseline' ].includes( selfAlign ) ) {
+	if (
+		[
+			'auto',
+			'flex-start',
+			'center',
+			'flex-end',
+			'stretch',
+			'baseline',
+		].includes( selfAlign )
+	) {
 		style.alignSelf = selfAlign;
 	}
 	const gap = tierLengthPreview( iconGap, tier );
@@ -132,21 +146,30 @@ export function buttonPreviewStyle( attributes, palette, tier = 'desktop' ) {
 	// Icon size: the custom property the icon's svg rule reads.
 	const size = tierValueOf( iconSize, tier );
 	if ( ! isUnset( size ) ) {
-		style[ '--sgs-btn-icon-size' ] = `${ Math.abs( parseInt( size, 10 ) ) || 0 }px`;
+		style[ '--sgs-btn-icon-size' ] = `${
+			Math.abs( parseInt( size, 10 ) ) || 0
+		}px`;
 	}
 
 	// A gradient TEXT colour needs background-clip:text on the root, which would
 	// erase the root's own fill, so the front end moves the fill onto a ::after
 	// layer; the canvas uses a real sibling layer for the same job.
-	const hasValidTextGradient = !! ( isCssGradient( colourTextGradient ) );
-	const bgPaintPreview = backgroundPaintPreview( colourBackground, colourBackgroundGradient, palette );
+	const hasValidTextGradient = !! isCssGradient( colourTextGradient );
+	const bgPaintPreview = backgroundPaintPreview(
+		colourBackground,
+		colourBackgroundGradient,
+		palette
+	);
 	let backgroundLayerStyle = null;
 	if ( hasValidTextGradient ) {
 		style.position = 'relative';
 		style.isolation = 'isolate';
 		style.backgroundColor = 'transparent';
 		style.backgroundImage = 'none';
-		if ( bgPaintPreview.backgroundColor || bgPaintPreview.backgroundImage ) {
+		if (
+			bgPaintPreview.backgroundColor ||
+			bgPaintPreview.backgroundImage
+		) {
 			backgroundLayerStyle = {
 				position: 'absolute',
 				inset: 0,
@@ -156,7 +179,10 @@ export function buttonPreviewStyle( attributes, palette, tier = 'desktop' ) {
 				...bgPaintPreview,
 			};
 		}
-		Object.assign( style, textPaintPreview( colourText, colourTextGradient, palette ) );
+		Object.assign(
+			style,
+			textPaintPreview( colourText, colourTextGradient, palette )
+		);
 	} else {
 		Object.assign( style, bgPaintPreview );
 		if ( colourText ) {
@@ -166,14 +192,33 @@ export function buttonPreviewStyle( attributes, palette, tier = 'desktop' ) {
 
 	// A preset class (render.php's $border_style_is_preset) already paints a border, so a chosen
 	// style or colour overrides it without a width; any other button paints a border only beside one.
-	const presetBorder = presetNames().includes( attributes.inheritStyle ?? 'primary' );
-	Object.assign( style, sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient, radiusValues: attributes.borderRadius }, tier, palette, { defaultBorder: presetBorder } ) );
+	const presetBorder = presetNames().includes(
+		attributes.inheritStyle ?? 'primary'
+	);
+	Object.assign(
+		style,
+		sgsBorderPreview(
+			{
+				widthValues: borderWidth,
+				styleValue: borderStyle,
+				colourValue: borderColour,
+				colourGradientValue: borderColourGradient,
+				radiusValues: attributes.borderRadius,
+			},
+			tier,
+			palette,
+			{ defaultBorder: presetBorder }
+		)
+	);
 
 	// Typography: the twin of render.php's sgs_typography_css_rule( $attributes, '' ).
 	Object.assign( style, typographyPreviewStyle( attributes, '', tier ) );
 
 	// Base-state shadow (hover cannot show on a static canvas element).
-	const boxShadowPreview = resolveShadowPreviewComposed( boxShadow, resolveColourToken( boxShadowColour, palette ) );
+	const boxShadowPreview = resolveShadowPreviewComposed(
+		boxShadow,
+		resolveColourToken( boxShadowColour, palette )
+	);
 	if ( boxShadowPreview ) {
 		style.boxShadow = boxShadowPreview;
 	}
@@ -209,9 +254,12 @@ export function labelCollapsedAt( labelCollapse, hasIcon, tier ) {
 	if ( ! hasIcon ) {
 		return false;
 	}
-	return 'all' === labelCollapse ||
-		( 'tablet' === labelCollapse && ( 'tablet' === tier || 'mobile' === tier ) ) ||
-		( 'mobile' === labelCollapse && 'mobile' === tier );
+	return (
+		'all' === labelCollapse ||
+		( 'tablet' === labelCollapse &&
+			( 'tablet' === tier || 'mobile' === tier ) ) ||
+		( 'mobile' === labelCollapse && 'mobile' === tier )
+	);
 }
 
 /** render.php's visually-hidden clip for a collapsed label, kept in the accessibility tree. */

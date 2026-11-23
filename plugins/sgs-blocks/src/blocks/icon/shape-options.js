@@ -10,8 +10,15 @@
 
 import { __ } from '@wordpress/i18n';
 import { useInstanceId } from '@wordpress/compose';
-import { ToggleGroupControl, ToggleGroupControlOptionIcon } from '../../components/primitives';
-import { BOX_SHAPES, OUTLINE_SHAPES, outlineShape } from '../../utils/icon-shapes';
+import {
+	ToggleGroupControl,
+	ToggleGroupControlOptionIcon,
+} from '../../components/primitives';
+import {
+	BOX_SHAPES,
+	OUTLINE_SHAPES,
+	outlineShape,
+} from '../../utils/icon-shapes';
 
 const BOX_LABELS = {
 	square: __( 'Square', 'sgs-blocks' ),
@@ -26,8 +33,14 @@ const BOX_LABELS = {
  */
 export function shapeOptions() {
 	return [
-		...BOX_SHAPES.map( ( value ) => ( { value, label: BOX_LABELS[ value ] } ) ),
-		...OUTLINE_SHAPES.map( ( shape ) => ( { value: shape.slug, label: shape.label } ) ),
+		...BOX_SHAPES.map( ( value ) => ( {
+			value,
+			label: BOX_LABELS[ value ],
+		} ) ),
+		...OUTLINE_SHAPES.map( ( shape ) => ( {
+			value: shape.slug,
+			label: shape.label,
+		} ) ),
 	];
 }
 
@@ -71,14 +84,20 @@ export function ShapeOptionIcon( { shape } ) {
  * The shape picker: one icon option per shape, named by its tooltip.
  *
  * @param {Object}   props
- * @param {string}   props.label          Control label.
- * @param {string}   [props.help]         Help text.
- * @param {string}   props.value          Current shape ('' for none picked).
- * @param {Function} props.onChange       Receives the picked shape (undefined when deselected).
+ * @param {string}   props.label            Control label.
+ * @param {string}   [props.help]           Help text.
+ * @param {string}   props.value            Current shape ('' for none picked).
+ * @param {Function} props.onChange         Receives the picked shape (undefined when deselected).
  * @param {boolean}  [props.isDeselectable] Clicking the picked shape clears it (a group default).
  * @return {JSX.Element} The control.
  */
-export function ShapeToggle( { label, help, value, onChange, isDeselectable = false } ) {
+export function ShapeToggle( {
+	label,
+	help,
+	value,
+	onChange,
+	isDeselectable = false,
+} ) {
 	return (
 		<ToggleGroupControl
 			label={ label }
@@ -116,13 +135,23 @@ export function CanvasOutline( { shape } ) {
 		return null;
 	}
 	return (
-		<svg className="sgs-icon__outline" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+		<svg
+			className="sgs-icon__outline"
+			viewBox="0 0 100 100"
+			preserveAspectRatio="none"
+			aria-hidden="true"
+			focusable="false"
+		>
 			<defs>
 				<clipPath id={ clipId }>
 					<path d={ outline.d } />
 				</clipPath>
 			</defs>
-			<path className="sgs-icon__outline-path" d={ outline.d } clipPath={ `url(#${ clipId })` } />
+			<path
+				className="sgs-icon__outline-path"
+				d={ outline.d }
+				clipPath={ `url(#${ clipId })` }
+			/>
 		</svg>
 	);
 }

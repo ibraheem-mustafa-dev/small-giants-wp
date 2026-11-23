@@ -19,16 +19,24 @@ import { matches, squash } from '../../utils/filter-text';
 const SETTLE_MS = 300;
 
 function countText( countRoot, count ) {
-	const countEl = countRoot.querySelector( '.sgs-accordion__count' ) || countRoot;
+	const countEl =
+		countRoot.querySelector( '.sgs-accordion__count' ) || countRoot;
 	const plural = countEl?.dataset.template || '{count}';
 	const singular = countEl?.dataset.singular || plural;
-	return ( 1 === count ? singular : plural ).replace( '{count}', String( count ) );
+	return ( 1 === count ? singular : plural ).replace(
+		'{count}',
+		String( count )
+	);
 }
 
 function itemText( item ) {
 	const title = item.querySelector( '.sgs-accordion-item__title' );
 	const body = item.querySelector( '.sgs-accordion-item__content' );
-	return squash( ( title ? title.textContent : '' ) + ' ' + ( body ? body.textContent : '' ) );
+	return squash(
+		( title ? title.textContent : '' ) +
+			' ' +
+			( body ? body.textContent : '' )
+	);
 }
 
 function initAccordion( accordion ) {
@@ -38,21 +46,23 @@ function initAccordion( accordion ) {
 	}
 	accordion.dataset.filterReady = 'true';
 
-	const items = Array.from( accordion.querySelectorAll( '.sgs-accordion-item' ) ).filter(
-		( item ) => item.closest( '.sgs-accordion' ) === accordion
-	);
+	const items = Array.from(
+		accordion.querySelectorAll( '.sgs-accordion-item' )
+	).filter( ( item ) => item.closest( '.sgs-accordion' ) === accordion );
 	const input = bar.querySelector( '.sgs-accordion__search-input' );
 	const chips = Array.from( bar.querySelectorAll( '.sgs-accordion__chip' ) );
 	const empty = accordion.querySelector( '[data-sgs-accordion-empty]' );
 	// With a band the count is its own element after the bar; otherwise it sits inside the bar.
-	const countBelow = Array.from( accordion.querySelectorAll( '[data-sgs-accordion-count]' ) ).find(
-		( el ) => el.closest( '.sgs-accordion' ) === accordion
-	);
+	const countBelow = Array.from(
+		accordion.querySelectorAll( '[data-sgs-accordion-count]' )
+	).find( ( el ) => el.closest( '.sgs-accordion' ) === accordion );
 	const countRoot = countBelow || bar;
 	const live = countRoot.querySelector( '[data-sgs-accordion-live]' );
 	const painted = countRoot.querySelector( '.sgs-accordion__count-text' );
 	const allowMultiple = 'true' === accordion.dataset.allowMultiple;
-	const texts = new Map( items.map( ( item ) => [ item, itemText( item ) ] ) );
+	const texts = new Map(
+		items.map( ( item ) => [ item, itemText( item ) ] )
+	);
 
 	let category = '';
 	let openBefore = null;
@@ -80,7 +90,9 @@ function initAccordion( accordion ) {
 	function apply() {
 		const query = input ? input.value : '';
 		const active = '' !== query.trim() || '' !== category;
-		const focusInside = items.find( ( item ) => item.contains( document.activeElement ) );
+		const focusInside = items.find( ( item ) =>
+			item.contains( document.activeElement )
+		);
 
 		if ( active && null === openBefore ) {
 			openBefore = items.filter( ( item ) => item.open );
@@ -120,13 +132,18 @@ function initAccordion( accordion ) {
 		const next = chip.dataset.category || '';
 		category = category === next ? '' : next;
 		chips.forEach( ( other ) => {
-			const on = '' === category ? '' === ( other.dataset.category || '' ) : other.dataset.category === category;
+			const on =
+				'' === category
+					? '' === ( other.dataset.category || '' )
+					: other.dataset.category === category;
 			other.setAttribute( 'aria-pressed', on ? 'true' : 'false' );
 		} );
 		apply();
 	}
 
-	chips.forEach( ( chip ) => chip.addEventListener( 'click', () => selectChip( chip ) ) );
+	chips.forEach( ( chip ) =>
+		chip.addEventListener( 'click', () => selectChip( chip ) )
+	);
 	if ( input ) {
 		input.addEventListener( 'input', apply );
 		input.addEventListener( 'keydown', ( event ) => {
@@ -144,7 +161,9 @@ function initAccordion( accordion ) {
 }
 
 function init() {
-	document.querySelectorAll( '.sgs-accordion[data-filter]' ).forEach( initAccordion );
+	document
+		.querySelectorAll( '.sgs-accordion[data-filter]' )
+		.forEach( initAccordion );
 }
 
 if ( 'loading' === document.readyState ) {

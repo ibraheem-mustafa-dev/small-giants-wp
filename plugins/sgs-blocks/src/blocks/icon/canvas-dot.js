@@ -17,16 +17,28 @@ export function canvasDotStyle( attributes, tier, presetSlugs ) {
 		return null;
 	}
 	const style = {};
-	const size = iconLengthValue( resolveTier( attributes.signedInDotSize, tier ).value, 64, presetSlugs );
+	const size = iconLengthValue(
+		resolveTier( attributes.signedInDotSize, tier ).value,
+		64,
+		presetSlugs
+	);
 	if ( size ) {
 		style.inlineSize = size;
 		style.blockSize = size;
 	}
-	const top = iconLengthValue( resolveTier( attributes.signedInDotTop, tier ).value, 128, presetSlugs );
+	const top = iconLengthValue(
+		resolveTier( attributes.signedInDotTop, tier ).value,
+		128,
+		presetSlugs
+	);
 	if ( top ) {
 		style.insetBlockStart = top;
 	}
-	const end = iconLengthValue( resolveTier( attributes.signedInDotRight, tier ).value, 128, presetSlugs );
+	const end = iconLengthValue(
+		resolveTier( attributes.signedInDotRight, tier ).value,
+		128,
+		presetSlugs
+	);
 	if ( end ) {
 		style.marginInlineEnd = end;
 	}
@@ -37,7 +49,13 @@ export function canvasDotStyle( attributes, tier, presetSlugs ) {
 	const ring = colourVar( attributes.signedInDotRingColour );
 	if ( ring ) {
 		style.boxSizing = 'content-box';
-		style.border = `${ iconLengthValue( attributes.signedInDotRingWidth, 16, presetSlugs ) || '2px' } solid ${ ring }`;
+		style.border = `${
+			iconLengthValue(
+				attributes.signedInDotRingWidth,
+				16,
+				presetSlugs
+			) || '2px'
+		} solid ${ ring }`;
 	}
 	return style;
 }

@@ -59,7 +59,9 @@ const messageState = new WeakMap();
  * @return {Element|null} The `[data-wp-interactive]` root, or null.
  */
 function findRoot( el ) {
-	return el ? el.closest( '[data-wp-interactive="sgs/notice-banner"]' ) : null;
+	return el
+		? el.closest( '[data-wp-interactive="sgs/notice-banner"]' )
+		: null;
 }
 
 /**
@@ -138,7 +140,10 @@ store( 'sgs/notice-banner', {
 				try {
 					localStorage.setItem(
 						storageKey,
-						JSON.stringify( { dismissed: true, expiry: Date.now() + PERMANENT_EXPIRY_MS } )
+						JSON.stringify( {
+							dismissed: true,
+							expiry: Date.now() + PERMANENT_EXPIRY_MS,
+						} )
 					);
 				} catch ( e ) {
 					// Storage unavailable — fail silently.
@@ -218,11 +223,14 @@ store( 'sgs/notice-banner', {
 			}
 
 			const root = getElement()?.ref;
-			const messagesEl = root && root.querySelector( '.sgs-notice-banner__messages' );
+			const messagesEl =
+				root && root.querySelector( '.sgs-notice-banner__messages' );
 			if ( ! root || ! messagesEl ) {
 				return;
 			}
-			const messageEls = Array.from( messagesEl.querySelectorAll( ':scope > .sgs-notice-message' ) );
+			const messageEls = Array.from(
+				messagesEl.querySelectorAll( ':scope > .sgs-notice-message' )
+			);
 			if ( messageEls.length < 2 ) {
 				return;
 			}
@@ -238,7 +246,10 @@ store( 'sgs/notice-banner', {
 			if ( 'random' === ctx.messageMode ) {
 				// Client-side (never server-side), so the page cache cannot
 				// freeze one message for every visitor.
-				setActiveMessage( state, Math.floor( Math.random() * messageEls.length ) );
+				setActiveMessage(
+					state,
+					Math.floor( Math.random() * messageEls.length )
+				);
 				return;
 			}
 
@@ -253,7 +264,8 @@ store( 'sgs/notice-banner', {
 			// instant; style.css handles that via the same media query.
 			void prefersReducedMotion;
 
-			const intervalMs = Math.max( 2, Number( ctx.rotateInterval ) || 5 ) * 1000;
+			const intervalMs =
+				Math.max( 2, Number( ctx.rotateInterval ) || 5 ) * 1000;
 			const tick = () => {
 				if ( ctx.isPaused || document.hidden ) {
 					return;

@@ -43,7 +43,11 @@ export function kindNoun( kind ) {
  * @return {boolean} True when it holds something to show.
  */
 export function hasFile( source ) {
-	return !! source && 'object' === typeof source && !! ( source.url || source.markup || source.id );
+	return (
+		!! source &&
+		'object' === typeof source &&
+		!! ( source.url || source.markup || source.id )
+	);
 }
 
 /**
@@ -53,12 +57,18 @@ export function hasFile( source ) {
  * @return {number} Seconds; 0 when blank or not a time.
  */
 function startSeconds( raw ) {
-	const text = String( raw ?? '' ).trim().toLowerCase();
+	const text = String( raw ?? '' )
+		.trim()
+		.toLowerCase();
 	if ( /^\d+$/.test( text ) ) {
 		return Number( text );
 	}
 	const m = text.match( /^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?$/ );
-	return m && text ? Number( m[ 1 ] || 0 ) * 3600 + Number( m[ 2 ] || 0 ) * 60 + Number( m[ 3 ] || 0 ) : 0;
+	return m && text
+		? Number( m[ 1 ] || 0 ) * 3600 +
+				Number( m[ 2 ] || 0 ) * 60 +
+				Number( m[ 3 ] || 0 )
+		: 0;
 }
 
 /**
@@ -80,18 +90,31 @@ export function embedSrc( url ) {
 	const host = parsed.hostname.toLowerCase();
 	const query = parsed.searchParams;
 	const hashQuery = new URLSearchParams( parsed.hash.replace( /^#/, '' ) );
-	const start = startSeconds( query.get( 'start' ) ?? query.get( 't' ) ?? hashQuery.get( 't' ) );
+	const start = startSeconds(
+		query.get( 'start' ) ?? query.get( 't' ) ?? hashQuery.get( 't' )
+	);
 	let youtube = null;
-	if ( [ 'youtube.com', 'www.youtube.com', 'm.youtube.com' ].includes( host ) ) {
-		const candidate = query.get( 'v' ) || ( parsed.pathname.match( /^\/(?:embed|shorts|live)\/([\w-]+)/ ) || [] )[ 1 ];
+	if (
+		[ 'youtube.com', 'www.youtube.com', 'm.youtube.com' ].includes( host )
+	) {
+		const candidate =
+			query.get( 'v' ) ||
+			( parsed.pathname.match( /^\/(?:embed|shorts|live)\/([\w-]+)/ ) ||
+				[] )[ 1 ];
 		youtube = candidate && /^[\w-]+$/.test( candidate ) ? candidate : null;
-	} else if ( [ 'youtube-nocookie.com', 'www.youtube-nocookie.com' ].includes( host ) ) {
-		youtube = ( parsed.pathname.match( /^\/embed\/([\w-]+)/ ) || [] )[ 1 ] || null;
+	} else if (
+		[ 'youtube-nocookie.com', 'www.youtube-nocookie.com' ].includes( host )
+	) {
+		youtube =
+			( parsed.pathname.match( /^\/embed\/([\w-]+)/ ) || [] )[ 1 ] ||
+			null;
 	} else if ( 'youtu.be' === host ) {
 		youtube = ( parsed.pathname.match( /^\/([\w-]+)/ ) || [] )[ 1 ] || null;
 	}
 	if ( youtube ) {
-		return `https://www.youtube-nocookie.com/embed/${ youtube }${ start > 0 ? `?start=${ start }` : '' }`;
+		return `https://www.youtube-nocookie.com/embed/${ youtube }${
+			start > 0 ? `?start=${ start }` : ''
+		}`;
 	}
 	let vimeo = null;
 	let hash = '';
@@ -107,7 +130,9 @@ export function embedSrc( url ) {
 		return '';
 	}
 	const safeHash = /^[A-Za-z0-9]+$/.test( hash ) ? hash : '';
-	return `https://player.vimeo.com/video/${ vimeo }${ safeHash ? `?h=${ safeHash }` : '' }${ start > 0 ? `#t=${ start }s` : '' }`;
+	return `https://player.vimeo.com/video/${ vimeo }${
+		safeHash ? `?h=${ safeHash }` : ''
+	}${ start > 0 ? `#t=${ start }s` : '' }`;
 }
 
 /** A device's source built from a library attachment. */
@@ -147,7 +172,11 @@ export function pickPatch( { read, device, media, kind, keepFocal } ) {
 	const replacing = own.own;
 	const source = sourceFromAttachment( media, kind );
 	const libraryAlt = String( media?.alt || '' );
-	const currentAlt = String( ( 'desktop' === device ? read( 'Alt' ) : replacing && own.value?.alt ) || '' );
+	const currentAlt = String(
+		( 'desktop' === device
+			? read( 'Alt' )
+			: replacing && own.value?.alt ) || ''
+	);
 	const patch = {};
 	let staleAlt = false;
 

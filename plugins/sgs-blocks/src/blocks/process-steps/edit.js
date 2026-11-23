@@ -25,8 +25,30 @@ const HEADING_LEVEL_OPTIONS = [
 	{ label: __( 'Paragraph (not a heading)', 'sgs-blocks' ), value: 'p' },
 ];
 
-import { ResponsiveControl, FlexWrapControl, IconPicker, IconPreview, ResponsiveBoxControl, fillRow, SgsBorderControl, DesignTokenPicker, TypographyControls, SgsLengthControl, ResponsiveOverride, BorderStyleControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, ShadowLiftControls } from '../../components';
-import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import {
+	ResponsiveControl,
+	FlexWrapControl,
+	IconPicker,
+	IconPreview,
+	ResponsiveBoxControl,
+	fillRow,
+	SgsBorderControl,
+	DesignTokenPicker,
+	TypographyControls,
+	SgsLengthControl,
+	ResponsiveOverride,
+	BorderStyleControl,
+	BOX_UNITS,
+	normaliseResponsiveBox,
+	SgsBoxControl,
+	ShadowLiftControls,
+} from '../../components';
+import {
+	ToggleGroupControl,
+	ToggleGroupControlOption,
+	ToolsPanel,
+	ToolsPanelItem,
+} from '../../components/primitives';
 import {
 	backgroundPaintPreview,
 	colourVar,
@@ -39,7 +61,10 @@ import {
 	tierBoxLonghands,
 } from '../../utils';
 import { cssLengthValue } from '../../utils/css-length';
-import { connectorLineStyleOf, connectorLineStyleProps } from '../../utils/connector-line';
+import {
+	connectorLineStyleOf,
+	connectorLineStyleProps,
+} from '../../utils/connector-line';
 import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 
 // Spec 35 Part B: 2 options, short labels → ToggleGroupControl (mirrors
@@ -51,7 +76,13 @@ const LAYOUT_OPTIONS = [
 
 // A step part's own margin: one per-device four-side box, shown in that part's panel. An unset side keeps the stylesheet's
 // margin (block.json's numberMargin, titleMargin and descriptionMargin, printed by render.php).
-function PartMarginBox( { blockName, attrName, label, attributes, setAttributes } ) {
+function PartMarginBox( {
+	blockName,
+	attrName,
+	label,
+	attributes,
+	setAttributes,
+} ) {
 	return (
 		<ResponsiveOverride
 			value={ attributes[ attrName ] }
@@ -60,11 +91,18 @@ function PartMarginBox( { blockName, attrName, label, attributes, setAttributes 
 			{ ( { tier, ownValue, setOwnValue } ) => (
 				<SgsBoxControl
 					label={ label }
-					values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+					values={
+						ownValue && typeof ownValue === 'object' ? ownValue : {}
+					}
 					units={ BOX_UNITS }
 					presets
-					defaults={ spacingDefaultsFor( blockName, attrName, { attributes, tier } ) }
-					onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+					defaults={ spacingDefaultsFor( blockName, attrName, {
+						attributes,
+						tier,
+					} ) }
+					onChange={ ( next ) =>
+						setOwnValue( normaliseResponsiveBox( next ) )
+					}
 				/>
 			) }
 		</ResponsiveOverride>
@@ -136,13 +174,17 @@ function StepEditor( { step, index, showBackground, onChange, onRemove } ) {
 			{ /* A step's own number colours. `linked` stores the palette slug, as every other colour row does, so the colour follows the brand token (render.php resolves it through sgs_colour_value()). */ }
 			{ showBackground && (
 				<DesignTokenPicker
-					label={ __( 'Number background (this step)', 'sgs-blocks' ) }
+					label={ __(
+						'Number background (this step)',
+						'sgs-blocks'
+					) }
 					states={ [
 						{
 							key: 'normal',
 							label: __( 'Normal', 'sgs-blocks' ),
 							value: step.numberBackground || '',
-							onChange: ( val ) => update( 'numberBackground', val || '' ),
+							onChange: ( val ) =>
+								update( 'numberBackground', val || '' ),
 							linked: true,
 						},
 					] }
@@ -155,7 +197,8 @@ function StepEditor( { step, index, showBackground, onChange, onRemove } ) {
 						key: 'normal',
 						label: __( 'Normal', 'sgs-blocks' ),
 						value: step.numberColour || '',
-						onChange: ( val ) => update( 'numberColour', val || '' ),
+						onChange: ( val ) =>
+							update( 'numberColour', val || '' ),
 						linked: true,
 					},
 				] }
@@ -190,7 +233,9 @@ function tierValue( obj, tier ) {
 	for ( const t of order ) {
 		const v = obj[ t ];
 		if ( v !== undefined && v !== null && v !== '' ) {
-			return /^-?\d+(\.\d+)?$/.test( String( v ) ) ? `${ v }px` : String( v );
+			return /^-?\d+(\.\d+)?$/.test( String( v ) )
+				? `${ v }px`
+				: String( v );
 		}
 	}
 	return undefined;
@@ -360,26 +405,35 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	const className = [
 		'sgs-process-steps',
 		`sgs-process-steps--connector-${ connectorStyle }`,
-		`sgs-process-steps--line-${ connectorLineStyleOf( connectorLineStyle ) }`,
+		`sgs-process-steps--line-${ connectorLineStyleOf(
+			connectorLineStyle
+		) }`,
 		`sgs-process-steps--number-${ numberStyle }`,
 		'list' === layout ? 'sgs-process-steps--layout-list' : '',
-		connectorLine && 'list' !== layout ? 'sgs-process-steps--connector-rail' : '',
-	].filter( Boolean ).join( ' ' );
+		connectorLine && 'list' !== layout
+			? 'sgs-process-steps--connector-rail'
+			: '',
+	]
+		.filter( Boolean )
+		.join( ' ' );
 
 	// Contrast check for border colour — warn if border fails WCAG 3:1 contrast
 	// against the process-steps wrapper's own background. When the background is a gradient,
 	// the flat backgroundColour is not rendered, so skip the check in that case.
 	const processStepsContrastAgainst =
-		backgroundColour && ! backgroundColourGradient
-			? backgroundColour
-			: '';
+		backgroundColour && ! backgroundColourGradient ? backgroundColour : '';
 
 	// Box-object interface contract §5: editor-canvas preview of the box families
 	// and the wrapper fill at the previewed device tier, mirroring render.php's
 	// scoped output so the canvas matches the frontend.
 	const previewTier = usePreviewTier();
-	const [ palette, spacingSizes ] = useSettings( 'color.palette', 'spacing.spacingSizes' );
-	const spacingSlugs = flattenPresetSetting( spacingSizes ).map( ( size ) => size.slug );
+	const [ palette, spacingSizes ] = useSettings(
+		'color.palette',
+		'spacing.spacingSizes'
+	);
+	const spacingSlugs = flattenPresetSetting( spacingSizes ).map(
+		( size ) => size.slug
+	);
 
 	// The continuous connector line, mirroring render.php: colour, thickness (height), offset from the top
 	// (margin-top) and width. An empty value keeps the stylesheet default.
@@ -395,7 +449,11 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	};
 	const wrapperPreviewStyle = {
 		...boxPreview( attributes, previewTier, palette ),
-		...backgroundPaintPreview( backgroundColour, backgroundColourGradient, palette ),
+		...backgroundPaintPreview(
+			backgroundColour,
+			backgroundColourGradient,
+			palette
+		),
 	};
 
 	// Wrapper text colour/gradient — CHECK A finding: textColour/textColourGradient
@@ -407,14 +465,20 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	// established in this file, rather than introducing the palette-based
 	// `textPaintPreview()` sibling used elsewhere — one resolver convention
 	// per file.
-	const wrapperTextStyle = resolveTextColourPreviewStyle( textColour, textColourGradient, colourVar );
+	const wrapperTextStyle = resolveTextColourPreviewStyle(
+		textColour,
+		textColourGradient,
+		colourVar
+	);
 
 	const blockProps = useBlockProps( {
 		className,
 		style: {
 			...wrapperPreviewStyle,
 			...wrapperTextStyle,
-			'--sgs-transition-duration': transitionDuration ? `${ transitionDuration }ms` : undefined,
+			'--sgs-transition-duration': transitionDuration
+				? `${ transitionDuration }ms`
+				: undefined,
 			'--sgs-transition-easing': transitionEasing || undefined,
 			gap: tierValue( stepGap, previewTier ) || undefined,
 			'--sgs-step-gap': tierValue( stepGap, previewTier ) || undefined,
@@ -428,7 +492,13 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	const numStyle = {
 		color: colourVar( numberColour ) || undefined,
 		// The list layout draws no badge, so render.php drops the badge fill there.
-		...( 'list' === layout ? {} : backgroundPaintPreview( numberBackground, attributes.numberBackgroundGradient, palette ) ),
+		...( 'list' === layout
+			? {}
+			: backgroundPaintPreview(
+					numberBackground,
+					attributes.numberBackgroundGradient,
+					palette
+			  ) ),
 		...typographyPreviewStyle( numberTypography, 'number', previewTier ),
 		...tierBoxLonghands( attributes.numberMargin, previewTier, 'margin' ),
 	};
@@ -436,26 +506,55 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	// A step's own number colours beat the block-wide pair for that step (the list layout draws no badge fill).
 	const stepNumStyle = ( step ) => ( {
 		...numStyle,
-		...( step.numberColour ? { color: colourVar( step.numberColour ) } : {} ),
+		...( step.numberColour
+			? { color: colourVar( step.numberColour ) }
+			: {} ),
 		...( step.numberBackground && 'list' !== layout
-			? { ...backgroundPaintPreview( step.numberBackground, '', palette ), backgroundImage: 'none' }
+			? {
+					...backgroundPaintPreview(
+						step.numberBackground,
+						'',
+						palette
+					),
+					backgroundImage: 'none',
+			  }
 			: {} ),
 	} );
 
 	const titleStyle = {
 		...typographyPreviewStyle( attributes, 'title', previewTier ),
 		...tierBoxLonghands( attributes.titleMargin, previewTier, 'margin' ),
-		...resolveTextColourPreviewStyle( titleColour, titleColourGradient, colourVar ),
+		...resolveTextColourPreviewStyle(
+			titleColour,
+			titleColourGradient,
+			colourVar
+		),
 	};
 
 	const descStyle = {
-		...typographyPreviewStyle( descriptionTypography, 'description', previewTier ),
-		...tierBoxLonghands( attributes.descriptionMargin, previewTier, 'margin' ),
+		...typographyPreviewStyle(
+			descriptionTypography,
+			'description',
+			previewTier
+		),
+		...tierBoxLonghands(
+			attributes.descriptionMargin,
+			previewTier,
+			'margin'
+		),
 		maxWidth: tierValue( descriptionMaxWidth, previewTier ) || undefined,
-		...resolveTextColourPreviewStyle( descriptionColour, descriptionColourGradient, colourVar ),
+		...resolveTextColourPreviewStyle(
+			descriptionColour,
+			descriptionColourGradient,
+			colourVar
+		),
 	};
 
-	const iconStyle = typographyPreviewStyle( iconTypography, 'icon', previewTier );
+	const iconStyle = typographyPreviewStyle(
+		iconTypography,
+		'icon',
+		previewTier
+	);
 
 	// D649 — heading level is an identity control (document-outline
 	// placement), not a style control; mirrors render.php's own fallback.
@@ -527,13 +626,22 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			   does internally) since SgsColourPanel has no per-caller title
 			   override and these four panels each need a different title. */ }
 			<InspectorControls group="styles">
-				<PanelBody title={ __( 'Shadow on hover', 'sgs-blocks' ) } initialOpen={ false }>
-					<ShadowLiftControls attributes={ attributes } setAttributes={ setAttributes } />
+				<PanelBody
+					title={ __( 'Shadow on hover', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<ShadowLiftControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
 				</PanelBody>
 			</InspectorControls>
 
 			<InspectorControls group="styles">
-				<PanelBody title={ __( 'Step number badge', 'sgs-blocks' ) } className="sgs-colour-panel">
+				<PanelBody
+					title={ __( 'Step number badge', 'sgs-blocks' ) }
+					className="sgs-colour-panel"
+				>
 					{ /* Moved in from the Settings-tab "Appearance" panel
 					     (D622 — an element-scoped control belongs in its own
 					     element's TIER 1 panel; "step number badge" is a
@@ -548,13 +656,23 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					<ResponsiveControl label={ __( 'Number size', 'sgs-blocks' ) }>
+					<ResponsiveControl
+						label={ __( 'Number size', 'sgs-blocks' ) }
+					>
 						{ ( breakpoint ) => (
 							<SgsLengthControl
 								label={ __( 'Number size', 'sgs-blocks' ) }
 								hideLabelFromVision
 								value={ numberSize?.[ breakpoint ] ?? '' }
-								onChange={ ( val ) => patchTier( attributes, setAttributes, 'numberSize', breakpoint, val || '' ) }
+								onChange={ ( val ) =>
+									patchTier(
+										attributes,
+										setAttributes,
+										'numberSize',
+										breakpoint,
+										val || ''
+									)
+								}
 								presets={ false }
 							/>
 						) }
@@ -566,37 +684,59 @@ export default function Edit( { attributes, setAttributes, name } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: numberColour,
-								onChange: ( val ) => setAttributes( { numberColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										numberColour: val ?? '',
+									} ),
 								linked: true,
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: numberColourHover,
-								onChange: ( val ) => setAttributes( { numberColourHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										numberColourHover: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: numberColourHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { numberColourHoverGradient: val ?? '' } ),
+									setAttributes( {
+										numberColourHoverGradient: val ?? '',
+									} ),
 							},
 						] }
 					/>
 					<ToggleGroupControl
 						label={ __( 'Number hover trigger', 'sgs-blocks' ) }
 						value={ numberHoverTrigger || 'step' }
-						onChange={ ( val ) => setAttributes( { numberHoverTrigger: val } ) }
-						help={ __( 'What the pointer must be over to repaint the number’s hover colours.', 'sgs-blocks' ) }
+						onChange={ ( val ) =>
+							setAttributes( { numberHoverTrigger: val } )
+						}
+						help={ __(
+							'What the pointer must be over to repaint the number’s hover colours.',
+							'sgs-blocks'
+						) }
 						isBlock
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					>
-						<ToggleGroupControlOption value="step" label={ __( 'Whole step', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="number" label={ __( 'Number only', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption
+							value="step"
+							label={ __( 'Whole step', 'sgs-blocks' ) }
+						/>
+						<ToggleGroupControlOption
+							value="number"
+							label={ __( 'Number only', 'sgs-blocks' ) }
+						/>
 					</ToggleGroupControl>
 					{ ( () => {
 						const numberBackgroundRow = fillRow( {
 							key: 'numberBackground',
-							label: __( 'Number background colour', 'sgs-blocks' ),
+							label: __(
+								'Number background colour',
+								'sgs-blocks'
+							),
 							attrs: {
 								base: 'numberBackground',
 								hover: 'numberBackgroundHover',
@@ -612,12 +752,21 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							/>
 						);
 					} )() }
-					<PartMarginBox blockName={ name } attrName="numberMargin" label={ __( 'Number margin', 'sgs-blocks' ) } attributes={ attributes } setAttributes={ setAttributes } />
+					<PartMarginBox
+						blockName={ name }
+						attrName="numberMargin"
+						label={ __( 'Number margin', 'sgs-blocks' ) }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
 				</PanelBody>
 			</InspectorControls>
 
 			<InspectorControls group="styles">
-				<PanelBody title={ __( 'Step title', 'sgs-blocks' ) } className="sgs-colour-panel">
+				<PanelBody
+					title={ __( 'Step title', 'sgs-blocks' ) }
+					className="sgs-colour-panel"
+				>
 					{ /* Moved in from the Settings-tab "Step title" panel
 					     (D622 — an element-scoped control belongs in its own
 					     element's TIER 1 panel). */ }
@@ -642,26 +791,42 @@ export default function Edit( { attributes, setAttributes, name } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: titleColour,
-								onChange: ( val ) => setAttributes( { titleColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( { titleColour: val ?? '' } ),
 								linked: true,
 								gradientValue: titleColourGradient,
-								onGradientChange: ( val ) => setAttributes( { titleColourGradient: val ?? '' } ),
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										titleColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: titleColourHover,
-								onChange: ( val ) => setAttributes( { titleColourHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										titleColourHover: val ?? '',
+									} ),
 								linked: true,
 							},
 						] }
 					/>
-					<PartMarginBox blockName={ name } attrName="titleMargin" label={ __( 'Title margin', 'sgs-blocks' ) } attributes={ attributes } setAttributes={ setAttributes } />
+					<PartMarginBox
+						blockName={ name }
+						attrName="titleMargin"
+						label={ __( 'Title margin', 'sgs-blocks' ) }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
 				</PanelBody>
 			</InspectorControls>
 
 			<InspectorControls group="styles">
-				<PanelBody title={ __( 'Step description', 'sgs-blocks' ) } className="sgs-colour-panel">
+				<PanelBody
+					title={ __( 'Step description', 'sgs-blocks' ) }
+					className="sgs-colour-panel"
+				>
 					<DesignTokenPicker
 						label={ __( 'Description colour', 'sgs-blocks' ) }
 						states={ [
@@ -669,30 +834,66 @@ export default function Edit( { attributes, setAttributes, name } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: descriptionColour,
-								onChange: ( val ) => setAttributes( { descriptionColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										descriptionColour: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: descriptionColourGradient,
-								onGradientChange: ( val ) => setAttributes( { descriptionColourGradient: val ?? '' } ),
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										descriptionColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: descriptionColourHover,
-								onChange: ( val ) => setAttributes( { descriptionColourHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										descriptionColourHover: val ?? '',
+									} ),
 								linked: true,
 							},
 						] }
 					/>
-					<PartMarginBox blockName={ name } attrName="descriptionMargin" label={ __( 'Description margin', 'sgs-blocks' ) } attributes={ attributes } setAttributes={ setAttributes } />
-					<ResponsiveControl label={ __( 'Description maximum width', 'sgs-blocks' ) }>
+					<PartMarginBox
+						blockName={ name }
+						attrName="descriptionMargin"
+						label={ __( 'Description margin', 'sgs-blocks' ) }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
+					<ResponsiveControl
+						label={ __(
+							'Description maximum width',
+							'sgs-blocks'
+						) }
+					>
 						{ ( breakpoint ) => (
 							<SgsLengthControl
 								scale="spacing"
-								label={ __( 'Description maximum width', 'sgs-blocks' ) }
+								label={ __(
+									'Description maximum width',
+									'sgs-blocks'
+								) }
 								hideLabelFromVision
-								help={ __( 'Empty lets the description fill its step.', 'sgs-blocks' ) }
-								value={ descriptionMaxWidth?.[ breakpoint ] ?? '' }
-								onChange={ ( val ) => patchTier( attributes, setAttributes, 'descriptionMaxWidth', breakpoint, val || '' ) }
+								help={ __(
+									'Empty lets the description fill its step.',
+									'sgs-blocks'
+								) }
+								value={
+									descriptionMaxWidth?.[ breakpoint ] ?? ''
+								}
+								onChange={ ( val ) =>
+									patchTier(
+										attributes,
+										setAttributes,
+										'descriptionMaxWidth',
+										breakpoint,
+										val || ''
+									)
+								}
 								presets={ false }
 							/>
 						) }
@@ -705,7 +906,10 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			   attrMap prefix; render.php emits each family through
 			   sgs_typography_css_rule(). */ }
 			<InspectorControls group="styles">
-				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Typography', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<TypographyControls
 						attributes={ attributes }
 						setAttributes={ setAttributes }
@@ -780,7 +984,10 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			   wrapper, Layout family) stay in the default Settings group
 			   below, merged into ONE "Layout" panel per THE PLACEMENT RULE. */ }
 			<InspectorControls group="styles">
-				<PanelBody title={ __( 'Text & fill', 'sgs-blocks' ) } className="sgs-colour-panel">
+				<PanelBody
+					title={ __( 'Text & fill', 'sgs-blocks' ) }
+					className="sgs-colour-panel"
+				>
 					<DesignTokenPicker
 						label={ __( 'Wrapper text colour', 'sgs-blocks' ) }
 						states={ [
@@ -788,42 +995,68 @@ export default function Edit( { attributes, setAttributes, name } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: textColour,
-								onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( { textColour: val ?? '' } ),
 								linked: true,
 								gradientValue: textColourGradient,
-								onGradientChange: ( val ) => setAttributes( { textColourGradient: val ?? '' } ),
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										textColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: textColourHover,
-								onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										textColourHover: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: textColourHoverGradient,
-								onGradientChange: ( val ) => setAttributes( { textColourHoverGradient: val ?? '' } ),
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										textColourHoverGradient: val ?? '',
+									} ),
 							},
 						] }
 					/>
 					<DesignTokenPicker
-						label={ __( 'Wrapper background colour', 'sgs-blocks' ) }
+						label={ __(
+							'Wrapper background colour',
+							'sgs-blocks'
+						) }
 						states={ [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: backgroundColour,
-								onChange: ( val ) => setAttributes( { backgroundColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										backgroundColour: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: backgroundColourGradient,
-								onGradientChange: ( val ) => setAttributes( { backgroundColourGradient: val ?? '' } ),
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										backgroundColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: backgroundColourHover,
-								onChange: ( val ) => setAttributes( { backgroundColourHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										backgroundColourHover: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: backgroundColourHoverGradient,
-								onGradientChange: ( val ) => setAttributes( { backgroundColourHoverGradient: val ?? '' } ),
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										backgroundColourHoverGradient:
+											val ?? '',
+									} ),
 							},
 						] }
 					/>
@@ -879,7 +1112,9 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							label={ __( 'Layout', 'sgs-blocks' ) }
 							isShownByDefault
 							hasValue={ () => 'row' !== ( layout || 'row' ) }
-							onDeselect={ () => setAttributes( { layout: 'row' } ) }
+							onDeselect={ () =>
+								setAttributes( { layout: 'row' } )
+							}
 						>
 							<ToggleGroupControl
 								label={ __( 'Layout', 'sgs-blocks' ) }
@@ -894,7 +1129,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 								) }
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
-						>
+							>
 								{ LAYOUT_OPTIONS.map( ( opt ) => (
 									<ToggleGroupControlOption
 										key={ opt.value }
@@ -947,17 +1182,43 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							</ResponsiveControl>
 						</ToolsPanelItem>
 						<ToolsPanelItem
-							label={ __( 'Row gap between steps', 'sgs-blocks' ) }
-							hasValue={ () => !! stepRowGap && Object.keys( stepRowGap ).length > 0 }
-							onDeselect={ () => setAttributes( { stepRowGap: {} } ) }
+							label={ __(
+								'Row gap between steps',
+								'sgs-blocks'
+							) }
+							hasValue={ () =>
+								!! stepRowGap &&
+								Object.keys( stepRowGap ).length > 0
+							}
+							onDeselect={ () =>
+								setAttributes( { stepRowGap: {} } )
+							}
 						>
-							<ResponsiveControl label={ __( 'Row gap between steps', 'sgs-blocks' ) }>
+							<ResponsiveControl
+								label={ __(
+									'Row gap between steps',
+									'sgs-blocks'
+								) }
+							>
 								{ ( breakpoint ) => (
 									<SgsLengthControl
-										label={ __( 'Row gap between steps', 'sgs-blocks' ) }
+										label={ __(
+											'Row gap between steps',
+											'sgs-blocks'
+										) }
 										hideLabelFromVision
-										value={ stepRowGap?.[ breakpoint ] ?? '' }
-										onChange={ ( val ) => patchTier( attributes, setAttributes, 'stepRowGap', breakpoint, val || '' ) }
+										value={
+											stepRowGap?.[ breakpoint ] ?? ''
+										}
+										onChange={ ( val ) =>
+											patchTier(
+												attributes,
+												setAttributes,
+												'stepRowGap',
+												breakpoint,
+												val || ''
+											)
+										}
 										presets={ false }
 									/>
 								) }
@@ -966,34 +1227,66 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						<ToolsPanelItem
 							label={ __( 'Wrap steps', 'sgs-blocks' ) }
 							hasValue={ () => !! attributes.flexWrap }
-							onDeselect={ () => setAttributes( { flexWrap: '' } ) }
+							onDeselect={ () =>
+								setAttributes( { flexWrap: '' } )
+							}
 						>
-							<FlexWrapControl label={ __( 'Wrap steps', 'sgs-blocks' ) } value={ attributes.flexWrap } onChange={ ( val ) => setAttributes( { flexWrap: val } ) } />
+							<FlexWrapControl
+								label={ __( 'Wrap steps', 'sgs-blocks' ) }
+								value={ attributes.flexWrap }
+								onChange={ ( val ) =>
+									setAttributes( { flexWrap: val } )
+								}
+							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
-							label={ __( 'Align parts within a step', 'sgs-blocks' ) }
-							hasValue={ () => !! stepAlignItems && Object.keys( stepAlignItems ).length > 0 }
-							onDeselect={ () => setAttributes( { stepAlignItems: undefined } ) }
+							label={ __(
+								'Align parts within a step',
+								'sgs-blocks'
+							) }
+							hasValue={ () =>
+								!! stepAlignItems &&
+								Object.keys( stepAlignItems ).length > 0
+							}
+							onDeselect={ () =>
+								setAttributes( { stepAlignItems: undefined } )
+							}
 						>
 							<ResponsiveOverride
-								label={ __( 'Align parts within a step', 'sgs-blocks' ) }
+								label={ __(
+									'Align parts within a step',
+									'sgs-blocks'
+								) }
 								value={ stepAlignItems }
-								onChange={ ( obj ) => setAttributes( { stepAlignItems: obj } ) }
+								onChange={ ( obj ) =>
+									setAttributes( { stepAlignItems: obj } )
+								}
 							>
 								{ ( { ownValue, setOwnValue } ) => (
 									<ToggleGroupControl
-										label={ __( 'Align parts within a step', 'sgs-blocks' ) }
+										label={ __(
+											'Align parts within a step',
+											'sgs-blocks'
+										) }
 										hideLabelFromVision
 										value={ ownValue || '' }
-										onChange={ ( raw ) => setOwnValue( raw || undefined ) }
+										onChange={ ( raw ) =>
+											setOwnValue( raw || undefined )
+										}
 										isBlock
 										isDeselectable
 										__nextHasNoMarginBottom
 										__next40pxDefaultSize
 									>
-										{ STEP_ALIGN_OPTIONS.map( ( option ) => (
-											<ToggleGroupControlOption key={ option.value } value={ option.value } label={ option.label } />
-										) ) }
+										{ STEP_ALIGN_OPTIONS.map(
+											( option ) => (
+												<ToggleGroupControlOption
+													key={ option.value }
+													value={ option.value }
+													label={ option.label }
+												/>
+											)
+										) }
 									</ToggleGroupControl>
 								) }
 							</ResponsiveOverride>
@@ -1051,10 +1344,15 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							<ToolsPanelItem
 								label={ __( 'Connector style', 'sgs-blocks' ) }
 								hasValue={ () => 'line' !== connectorStyle }
-								onDeselect={ () => setAttributes( { connectorStyle: 'line' } ) }
+								onDeselect={ () =>
+									setAttributes( { connectorStyle: 'line' } )
+								}
 							>
 								<SelectControl
-									label={ __( 'Connector type', 'sgs-blocks' ) }
+									label={ __(
+										'Connector type',
+										'sgs-blocks'
+									) }
 									value={ connectorStyle }
 									options={ CONNECTOR_OPTIONS }
 									onChange={ ( val ) =>
@@ -1067,31 +1365,66 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						) }
 						{ 'list' !== layout && (
 							<ToolsPanelItem
-								label={ __( 'Connector line style', 'sgs-blocks' ) }
-								hasValue={ () => 'solid' !== connectorLineStyleOf( connectorLineStyle ) }
-								onDeselect={ () => setAttributes( { connectorLineStyle: 'solid' } ) }
+								label={ __(
+									'Connector line style',
+									'sgs-blocks'
+								) }
+								hasValue={ () =>
+									'solid' !==
+									connectorLineStyleOf( connectorLineStyle )
+								}
+								onDeselect={ () =>
+									setAttributes( {
+										connectorLineStyle: 'solid',
+									} )
+								}
 							>
 								<BorderStyleControl
-									label={ __( 'Connector line style', 'sgs-blocks' ) }
+									label={ __(
+										'Connector line style',
+										'sgs-blocks'
+									) }
 									value={ connectorLineStyle }
-									onChange={ ( val ) => setAttributes( { connectorLineStyle: val || 'solid' } ) }
+									onChange={ ( val ) =>
+										setAttributes( {
+											connectorLineStyle: val || 'solid',
+										} )
+									}
 								/>
 								<p className="components-base-control__help">
-									{ __( 'Dashed and dotted draw a border in the connector colour and thickness, so a connector gradient is ignored (the style wins).', 'sgs-blocks' ) }
+									{ __(
+										'Dashed and dotted draw a border in the connector colour and thickness, so a connector gradient is ignored (the style wins).',
+										'sgs-blocks'
+									) }
 								</p>
 							</ToolsPanelItem>
 						) }
 						{ 'list' !== layout && (
 							<ToolsPanelItem
-								label={ __( 'Continuous connector line', 'sgs-blocks' ) }
+								label={ __(
+									'Continuous connector line',
+									'sgs-blocks'
+								) }
 								hasValue={ () => !! connectorLine }
-								onDeselect={ () => setAttributes( { connectorLine: false } ) }
+								onDeselect={ () =>
+									setAttributes( { connectorLine: false } )
+								}
 							>
 								<ToggleControl
-									label={ __( 'Continuous connector line', 'sgs-blocks' ) }
-									help={ __( 'One line behind the badges as its own element, so an entrance can draw it in on scroll. Replaces the per-step line segments.', 'sgs-blocks' ) }
+									label={ __(
+										'Continuous connector line',
+										'sgs-blocks'
+									) }
+									help={ __(
+										'One line behind the badges as its own element, so an entrance can draw it in on scroll. Replaces the per-step line segments.',
+										'sgs-blocks'
+									) }
 									checked={ !! connectorLine }
-									onChange={ ( val ) => setAttributes( { connectorLine: !! val } ) }
+									onChange={ ( val ) =>
+										setAttributes( {
+											connectorLine: !! val,
+										} )
+									}
 									__nextHasNoMarginBottom
 								/>
 							</ToolsPanelItem>
@@ -1099,19 +1432,52 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						{ 'list' !== layout && (
 							<ToolsPanelItem
 								label={ __( 'Hide connector', 'sgs-blocks' ) }
-								hasValue={ () => !! connectorHidden && Object.keys( connectorHidden ).length > 0 }
-								onDeselect={ () => setAttributes( { connectorHidden: {} } ) }
+								hasValue={ () =>
+									!! connectorHidden &&
+									Object.keys( connectorHidden ).length > 0
+								}
+								onDeselect={ () =>
+									setAttributes( { connectorHidden: {} } )
+								}
 							>
 								<ResponsiveOverride
-									label={ __( 'Hide connector', 'sgs-blocks' ) }
+									label={ __(
+										'Hide connector',
+										'sgs-blocks'
+									) }
 									value={ connectorHidden }
-									onChange={ ( obj ) => setAttributes( { connectorHidden: obj } ) }
+									onChange={ ( obj ) =>
+										setAttributes( {
+											connectorHidden: obj,
+										} )
+									}
 								>
-									{ ( { tier, ownValue, effectiveValue, setOwnValue } ) => (
+									{ ( {
+										tier,
+										ownValue,
+										effectiveValue,
+										setOwnValue,
+									} ) => (
 										<ToggleControl
-											label={ __( 'Hide the connector on this device', 'sgs-blocks' ) }
-											checked={ true === ( '' === ownValue ? effectiveValue : ownValue ) }
-											onChange={ ( value ) => setOwnValue( value ? true : ( 'desktop' === tier ? undefined : false ) ) }
+											label={ __(
+												'Hide the connector on this device',
+												'sgs-blocks'
+											) }
+											checked={
+												true ===
+												( '' === ownValue
+													? effectiveValue
+													: ownValue )
+											}
+											onChange={ ( value ) =>
+												setOwnValue(
+													value
+														? true
+														: 'desktop' === tier
+														? undefined
+														: false
+												)
+											}
 											__nextHasNoMarginBottom
 										/>
 									) }
@@ -1137,13 +1503,23 @@ export default function Edit( { attributes, setAttributes, name } ) {
 									}
 								>
 									<DesignTokenPicker
-										label={ __( 'Connector colour', 'sgs-blocks' ) }
+										label={ __(
+											'Connector colour',
+											'sgs-blocks'
+										) }
 										states={ [
 											{
 												key: 'normal',
-												label: __( 'Normal', 'sgs-blocks' ),
+												label: __(
+													'Normal',
+													'sgs-blocks'
+												),
 												value: connectorColour,
-												onChange: ( val ) => setAttributes( { connectorColour: val ?? '' } ),
+												onChange: ( val ) =>
+													setAttributes( {
+														connectorColour:
+															val ?? '',
+													} ),
 												linked: true,
 												gradientValue:
 													connectorColourGradient,
@@ -1157,41 +1533,88 @@ export default function Edit( { attributes, setAttributes, name } ) {
 									/>
 								</ToolsPanelItem>
 								<ToolsPanelItem
-									label={ __( 'Connector thickness', 'sgs-blocks' ) }
+									label={ __(
+										'Connector thickness',
+										'sgs-blocks'
+									) }
 									hasValue={ () => !! connectorThickness }
-									onDeselect={ () => setAttributes( { connectorThickness: '' } ) }
+									onDeselect={ () =>
+										setAttributes( {
+											connectorThickness: '',
+										} )
+									}
 								>
 									<SgsLengthControl
-										label={ __( 'Connector thickness', 'sgs-blocks' ) }
-										help={ __( 'Empty keeps 2px.', 'sgs-blocks' ) }
+										label={ __(
+											'Connector thickness',
+											'sgs-blocks'
+										) }
+										help={ __(
+											'Empty keeps 2px.',
+											'sgs-blocks'
+										) }
 										value={ connectorThickness || '' }
-										onChange={ ( val ) => setAttributes( { connectorThickness: val || '' } ) }
+										onChange={ ( val ) =>
+											setAttributes( {
+												connectorThickness: val || '',
+											} )
+										}
 										presets={ false }
 									/>
 								</ToolsPanelItem>
 								<ToolsPanelItem
-									label={ __( 'Connector offset from top', 'sgs-blocks' ) }
+									label={ __(
+										'Connector offset from top',
+										'sgs-blocks'
+									) }
 									hasValue={ () => !! connectorOffset }
-									onDeselect={ () => setAttributes( { connectorOffset: '' } ) }
+									onDeselect={ () =>
+										setAttributes( { connectorOffset: '' } )
+									}
 								>
 									<SgsLengthControl
-										label={ __( 'Connector offset from top', 'sgs-blocks' ) }
-										help={ __( 'Distance from the top of the steps to the line. Empty centres it on the badges.', 'sgs-blocks' ) }
+										label={ __(
+											'Connector offset from top',
+											'sgs-blocks'
+										) }
+										help={ __(
+											'Distance from the top of the steps to the line. Empty centres it on the badges.',
+											'sgs-blocks'
+										) }
 										value={ connectorOffset || '' }
-										onChange={ ( val ) => setAttributes( { connectorOffset: val || '' } ) }
+										onChange={ ( val ) =>
+											setAttributes( {
+												connectorOffset: val || '',
+											} )
+										}
 										presets={ false }
 									/>
 								</ToolsPanelItem>
 								<ToolsPanelItem
-									label={ __( 'Connector width', 'sgs-blocks' ) }
+									label={ __(
+										'Connector width',
+										'sgs-blocks'
+									) }
 									hasValue={ () => !! connectorWidth }
-									onDeselect={ () => setAttributes( { connectorWidth: '' } ) }
+									onDeselect={ () =>
+										setAttributes( { connectorWidth: '' } )
+									}
 								>
 									<SgsLengthControl
-										label={ __( 'Connector width', 'sgs-blocks' ) }
-										help={ __( 'Empty runs the line edge to edge.', 'sgs-blocks' ) }
+										label={ __(
+											'Connector width',
+											'sgs-blocks'
+										) }
+										help={ __(
+											'Empty runs the line edge to edge.',
+											'sgs-blocks'
+										) }
 										value={ connectorWidth || '' }
-										onChange={ ( val ) => setAttributes( { connectorWidth: val || '' } ) }
+										onChange={ ( val ) =>
+											setAttributes( {
+												connectorWidth: val || '',
+											} )
+										}
 										presets={ false }
 									/>
 								</ToolsPanelItem>
@@ -1221,11 +1644,26 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						label={ __( 'Transition easing', 'sgs-blocks' ) }
 						value={ transitionEasing }
 						options={ [
-							{ label: __( 'Ease', 'sgs-blocks' ), value: 'ease' },
-							{ label: __( 'Ease in', 'sgs-blocks' ), value: 'ease-in' },
-							{ label: __( 'Ease out', 'sgs-blocks' ), value: 'ease-out' },
-							{ label: __( 'Ease in\u2013out', 'sgs-blocks' ), value: 'ease-in-out' },
-							{ label: __( 'Linear', 'sgs-blocks' ), value: 'linear' },
+							{
+								label: __( 'Ease', 'sgs-blocks' ),
+								value: 'ease',
+							},
+							{
+								label: __( 'Ease in', 'sgs-blocks' ),
+								value: 'ease-in',
+							},
+							{
+								label: __( 'Ease out', 'sgs-blocks' ),
+								value: 'ease-out',
+							},
+							{
+								label: __( 'Ease in\u2013out', 'sgs-blocks' ),
+								value: 'ease-in-out',
+							},
+							{
+								label: __( 'Linear', 'sgs-blocks' ),
+								value: 'linear',
+							},
 						] }
 						onChange={ ( val ) =>
 							setAttributes( { transitionEasing: val } )
@@ -1243,69 +1681,104 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				   is an SGS custom object attr (base only, no tiers); border-radius
 				   routes to WP-native style.border.radius (skip-serialised → scoped,
 				   matches sgs/heading + sgs/quote). */ }
-				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ false }>
-										{ /* Task 0 codemod (migrate-border-control.js) -- one composite row
+				<PanelBody
+					title={ __( 'Layout', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					{ /* Task 0 codemod (migrate-border-control.js) -- one composite row
 					   (width/style/colour) mirroring native's BorderBoxControl layout,
 					   matching sgs/product-card + sgs/quote. Border-radius is unchanged
 					   (stays WP-native). */ }
 					<SgsBorderControl
 						widthValues={ borderWidth ?? {} }
-						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						onWidthChange={ ( next ) =>
+							setAttributes( { borderWidth: next } )
+						}
 						widthPresets={ [ '10', '20', '30' ] }
 						styleValue={ borderStyle }
-						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						onStyleChange={ ( val ) =>
+							setAttributes( { borderStyle: val } )
+						}
 						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
 						colourStates={ [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: borderColour,
-								onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										borderColour: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: borderColourGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { borderColourGradient: val ?? '' } ),
+									setAttributes( {
+										borderColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: borderColourHover,
-								onChange: ( val ) => setAttributes( { borderColourHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										borderColourHover: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: borderColourHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { borderColourHoverGradient: val ?? '' } ),
+									setAttributes( {
+										borderColourHoverGradient: val ?? '',
+									} ),
 							},
 						] }
 						contrastAgainst={ processStepsContrastAgainst }
 						radiusValues={ {
-								base: attributes.borderRadius?.desktop ?? {},
-								tablet: attributes.borderRadius?.tablet ?? {},
-								mobile: attributes.borderRadius?.mobile ?? {},
-							} }
+							base: attributes.borderRadius?.desktop ?? {},
+							tablet: attributes.borderRadius?.tablet ?? {},
+							mobile: attributes.borderRadius?.mobile ?? {},
+						} }
 						onRadiusChange={ ( tier, next ) => {
 							const key = tier === 'base' ? 'desktop' : tier;
-							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+							setAttributes( {
+								borderRadius: {
+									...attributes.borderRadius,
+									[ key ]: next,
+								},
+							} );
 						} }
 					/>
 
-				{ /* Padding/margin — same `layout` cluster on the wrapper element,
+					{ /* Padding/margin — same `layout` cluster on the wrapper element,
 				   merged into this panel (was a separate "Spacing" panel). Each is a
 				   single block-owned tier-object attr { desktop, tablet, mobile },
 				   written via ResponsiveOverride + SgsBoxControl; read directly by
 				   this block's render.php. */ }
 					<ResponsiveOverride
 						value={ attributes.padding }
-						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { padding: obj } )
+						}
 					>
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								defaults={ spacingDefaultsFor( name, 'padding' ) }
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								defaults={ spacingDefaultsFor(
+									name,
+									'padding'
+								) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
@@ -1316,10 +1789,18 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
@@ -1327,9 +1808,17 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
-				{ connectorLine && 'list' !== layout && true !== resolveTier( connectorHidden, previewTier, false ).value && (
-					<span className="sgs-process-steps__connector" style={ connectorPreviewStyle } aria-hidden="true" />
-				) }
+				{ connectorLine &&
+					'list' !== layout &&
+					true !==
+						resolveTier( connectorHidden, previewTier, false )
+							.value && (
+						<span
+							className="sgs-process-steps__connector"
+							style={ connectorPreviewStyle }
+							aria-hidden="true"
+						/>
+					) }
 				{ steps.map( ( step, index ) => (
 					<div
 						key={ index }
@@ -1355,7 +1844,11 @@ export default function Edit( { attributes, setAttributes, name } ) {
 								data-icon={ step.icon }
 								style={ iconStyle }
 							>
-								<IconPreview source="lucide" name={ step.icon } size={ 24 } />
+								<IconPreview
+									source="lucide"
+									name={ step.icon }
+									size={ 24 }
+								/>
 							</span>
 						) }
 						{ numberStyle !== 'none' && (
@@ -1370,10 +1863,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							className="sgs-process-steps__title"
 							style={ titleStyle }
 						>
-							{ step.title || __(
-								'Step title',
-								'sgs-blocks'
-							) }
+							{ step.title || __( 'Step title', 'sgs-blocks' ) }
 						</HeadingTag>
 						{ step.description && (
 							<p

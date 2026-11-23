@@ -27,13 +27,7 @@ const ADDRESS_FIELDS = [
 ];
 
 export default function Edit( { attributes, setAttributes } ) {
-	const {
-		fieldName,
-		label,
-		required,
-		fields,
-		width,
-	} = attributes;
+	const { fieldName, label, required, fields, width } = attributes;
 
 	const className = [
 		'sgs-form-field',
@@ -67,7 +61,9 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					<SgsFreeTextField type="rich" noLink
+					<SgsFreeTextField
+						type="rich"
+						noLink
 						label={ __( 'Label', 'sgs-blocks' ) }
 						value={ label }
 						onChange={ ( val ) => setAttributes( { label: val } ) }
@@ -111,9 +107,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					<label className="sgs-form-field__label">
 						<AuthoredText value={ label } />
 						{ required && (
-							<span className="sgs-form-field__required">
-								*
-							</span>
+							<span className="sgs-form-field__required">*</span>
 						) }
 					</label>
 				) }
@@ -122,10 +116,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						<input
 							type="text"
 							className="sgs-form-field__input"
-							placeholder={ __(
-								'Address line 1',
-								'sgs-blocks'
-							) }
+							placeholder={ __( 'Address line 1', 'sgs-blocks' ) }
 							disabled
 						/>
 					) }
@@ -133,10 +124,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						<input
 							type="text"
 							className="sgs-form-field__input"
-							placeholder={ __(
-								'Address line 2',
-								'sgs-blocks'
-							) }
+							placeholder={ __( 'Address line 2', 'sgs-blocks' ) }
 							disabled
 						/>
 					) }

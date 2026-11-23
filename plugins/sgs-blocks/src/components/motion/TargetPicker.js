@@ -26,7 +26,7 @@ export const humanise = ( key ) => {
 /**
  * The target options for a block's declared parts.
  *
- * @param {Object|null} elements `supports.sgs.elements`: `{ <partKey>: { label, order } }`.
+ * @param {Object|null} elements  `supports.sgs.elements`: `{ <partKey>: { label, order } }`.
  * @param {string[]}    [held]    Targets that already hold a stored layer; a wrapper part among them stays listed.
  * @param {Function}    [kindsOf] `( part ) => { desktop, tablet, mobile }|null`: a part that declares `availableWhen`
  *                                is listed only while the kind shown on some device is one it is for (`kind-fit.js`),
@@ -55,7 +55,10 @@ export function targetOptions( elements, held = [], kindsOf = null ) {
 				( held.includes( part.value ) ||
 					! kindsOf ||
 					! kindsOf( elements[ part.value ] ) ||
-					partAvailable( elements[ part.value ], kindsOf( elements[ part.value ] ) ) )
+					partAvailable(
+						elements[ part.value ],
+						kindsOf( elements[ part.value ] )
+					) )
 		)
 		.sort( ( a, b ) => a.order - b.order );
 	return [

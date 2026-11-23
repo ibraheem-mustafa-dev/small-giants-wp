@@ -30,7 +30,10 @@ export default function PanelTitle( { title, devices } ) {
 						className={ `sgs-responsive-override__dot sgs-responsive-override__dot--${ device }` }
 						aria-label={ sprintf(
 							/* translators: 1: device name, 2: the panel title. */
-							__( '%1$s has its own value in %2$s', 'sgs-blocks' ),
+							__(
+								'%1$s has its own value in %2$s',
+								'sgs-blocks'
+							),
 							deviceName( device ),
 							title
 						) }

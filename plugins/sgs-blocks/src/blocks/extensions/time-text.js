@@ -35,32 +35,46 @@ import {
 } from '@wordpress/components';
 import { getSettings as getDateSettings } from '@wordpress/date';
 import { isExtensionEnabled } from './hide-extensions';
-import { hourIn, normaliseRanges, rangeFor } from '../../shared/time-text-range';
+import {
+	hourIn,
+	normaliseRanges,
+	rangeFor,
+} from '../../shared/time-text-range';
 import './time-text.scss';
 
 const SLUG = 'timeText';
 const pad = ( h ) => `${ String( h ).padStart( 2, '0' ) }:00`;
-const START_OPTIONS = Array.from( { length: 24 }, ( _, h ) => ( { value: String( h ), label: pad( h ) } ) );
-const END_OPTIONS = Array.from( { length: 24 }, ( _, i ) => ( { value: String( i + 1 ), label: pad( i + 1 ) } ) );
+const START_OPTIONS = Array.from( { length: 24 }, ( _, h ) => ( {
+	value: String( h ),
+	label: pad( h ),
+} ) );
+const END_OPTIONS = Array.from( { length: 24 }, ( _, i ) => ( {
+	value: String( i + 1 ),
+	label: pad( i + 1 ),
+} ) );
 const ZONE_MODES = [
 	{ value: '', label: __( "Visitor's local time", 'sgs-blocks' ) },
 	{ value: 'site', label: __( 'Site time zone', 'sgs-blocks' ) },
 	{ value: 'named', label: __( 'A named time zone', 'sgs-blocks' ) },
 ];
 
-addFilter( 'blocks.registerBlockType', 'sgs/time-text/attributes', ( settings ) => {
-	if ( ! isExtensionEnabled( settings, SLUG ) ) {
-		return settings;
+addFilter(
+	'blocks.registerBlockType',
+	'sgs/time-text/attributes',
+	( settings ) => {
+		if ( ! isExtensionEnabled( settings, SLUG ) ) {
+			return settings;
+		}
+		return {
+			...settings,
+			attributes: {
+				...settings.attributes,
+				sgsTimeText: { type: 'array', default: [] },
+				sgsTimeTextZone: { type: 'string', default: '' },
+			},
+		};
 	}
-	return {
-		...settings,
-		attributes: {
-			...settings.attributes,
-			sgsTimeText: { type: 'array', default: [] },
-			sgsTimeTextZone: { type: 'string', default: '' },
-		},
-	};
-} );
+);
 
 /**
  * Every time zone name the browser knows, for the named-zone picker.
@@ -68,8 +82,14 @@ addFilter( 'blocks.registerBlockType', 'sgs/time-text/attributes', ( settings ) 
  * @return {Array<{value: string, label: string}>} Picker options.
  */
 function zoneOptions() {
-	const names = 'function' === typeof Intl.supportedValuesOf ? Intl.supportedValuesOf( 'timeZone' ) : [];
-	return names.map( ( z ) => ( { value: z, label: z.replace( /_/g, ' ' ) } ) );
+	const names =
+		'function' === typeof Intl.supportedValuesOf
+			? Intl.supportedValuesOf( 'timeZone' )
+			: [];
+	return names.map( ( z ) => ( {
+		value: z,
+		label: z.replace( /_/g, ' ' ),
+	} ) );
 }
 
 /**
@@ -92,46 +112,72 @@ function previewZone( zone ) {
 		return '';
 	}
 	const minutes = Math.round( Math.abs( offset ) * 60 );
-	return `${ offset < 0 ? '-' : '+' }${ String( Math.floor( minutes / 60 ) ).padStart( 2, '0' ) }:${ String( minutes % 60 ).padStart( 2, '0' ) }`;
+	return `${ offset < 0 ? '-' : '+' }${ String(
+		Math.floor( minutes / 60 )
+	).padStart( 2, '0' ) }:${ String( minutes % 60 ).padStart( 2, '0' ) }`;
 }
 
 function TimeTextPanel( { attributes, setAttributes } ) {
-	const ranges = Array.isArray( attributes.sgsTimeText ) ? attributes.sgsTimeText : [];
-	const zone = 'string' === typeof attributes.sgsTimeTextZone ? attributes.sgsTimeTextZone : '';
+	const ranges = Array.isArray( attributes.sgsTimeText )
+		? attributes.sgsTimeText
+		: [];
+	const zone =
+		'string' === typeof attributes.sgsTimeTextZone
+			? attributes.sgsTimeTextZone
+			: '';
 	const zoneMode = '' === zone || 'site' === zone ? zone : 'named';
 	const write = ( next ) => setAttributes( { sgsTimeText: next } );
-	const update = ( i, patch ) => write( ranges.map( ( r, j ) => ( j === i ? { ...r, ...patch } : r ) ) );
+	const update = ( i, patch ) =>
+		write( ranges.map( ( r, j ) => ( j === i ? { ...r, ...patch } : r ) ) );
 	const last = ranges[ ranges.length - 1 ];
 	const addRange = () => {
 		const start = last ? Number( last.end ) % 24 : 0;
-		write( [ ...ranges, { start, end: Math.min( start + 6, 24 ), text: '' } ] );
+		write( [
+			...ranges,
+			{ start, end: Math.min( start + 6, 24 ), text: '' },
+		] );
 	};
 
 	const hour = hourIn( new Date(), previewZone( zone ) );
 	const showing = rangeFor( ranges, hour );
 	const usable = normaliseRanges( ranges ).length;
-	let preview = __( 'Add a range to change the words by the hour.', 'sgs-blocks' );
+	let preview = __(
+		'Add a range to change the words by the hour.',
+		'sgs-blocks'
+	);
 	if ( usable ) {
 		preview = showing
 			? sprintf(
-				/* translators: 1: the hour now, 2: range start, 3: range end, 4: the words shown. */
-				__( 'Showing now (%1$s): %2$s to %3$s, "%4$s".', 'sgs-blocks' ),
-				pad( hour ),
-				pad( showing.start ),
-				pad( showing.end ),
-				showing.text
-			)
+					/* translators: 1: the hour now, 2: range start, 3: range end, 4: the words shown. */
+					__(
+						'Showing now (%1$s): %2$s to %3$s, "%4$s".',
+						'sgs-blocks'
+					),
+					pad( hour ),
+					pad( showing.start ),
+					pad( showing.end ),
+					showing.text
+			  )
 			: sprintf(
-				/* translators: %s: the hour now. */
-				__( "Showing now (%s): the block's own words, as no range covers this hour.", 'sgs-blocks' ),
-				pad( hour )
-			);
+					/* translators: %s: the hour now. */
+					__(
+						"Showing now (%s): the block's own words, as no range covers this hour.",
+						'sgs-blocks'
+					),
+					pad( hour )
+			  );
 	}
 
 	return (
-		<PanelBody title={ __( 'Text by time of day', 'sgs-blocks' ) } initialOpen={ ranges.length > 0 }>
+		<PanelBody
+			title={ __( 'Text by time of day', 'sgs-blocks' ) }
+			initialOpen={ ranges.length > 0 }
+		>
 			<p className="components-base-control__help">
-				{ __( 'Each range shows its own words from its start hour until its end hour. A range can run past midnight (21:00 to 05:00). Hours no range covers show the block\'s own words, which visitors without JavaScript and search engines always see.', 'sgs-blocks' ) }
+				{ __(
+					"Each range shows its own words from its start hour until its end hour. A range can run past midnight (21:00 to 05:00). Hours no range covers show the block's own words, which visitors without JavaScript and search engines always see.",
+					'sgs-blocks'
+				) }
 			</p>
 			{ ranges.map( ( range, i ) => (
 				<fieldset key={ i } className="sgs-time-text-range">
@@ -146,7 +192,9 @@ function TimeTextPanel( { attributes, setAttributes } ) {
 						label={ __( 'From', 'sgs-blocks' ) }
 						value={ String( range.start ?? 0 ) }
 						options={ START_OPTIONS }
-						onChange={ ( v ) => update( i, { start: Number( v ) } ) }
+						onChange={ ( v ) =>
+							update( i, { start: Number( v ) } )
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
@@ -168,7 +216,9 @@ function TimeTextPanel( { attributes, setAttributes } ) {
 					<Button
 						variant="link"
 						isDestructive
-						onClick={ () => write( ranges.filter( ( _, j ) => j !== i ) ) }
+						onClick={ () =>
+							write( ranges.filter( ( _, j ) => j !== i ) )
+						}
 					>
 						{ sprintf(
 							/* translators: %d: the range's number. */
@@ -178,7 +228,11 @@ function TimeTextPanel( { attributes, setAttributes } ) {
 					</Button>
 				</fieldset>
 			) ) }
-			<Button variant="secondary" onClick={ addRange } __next40pxDefaultSize>
+			<Button
+				variant="secondary"
+				onClick={ addRange }
+				__next40pxDefaultSize
+			>
 				{ __( 'Add range', 'sgs-blocks' ) }
 			</Button>
 			<SelectControl
@@ -187,12 +241,19 @@ function TimeTextPanel( { attributes, setAttributes } ) {
 				options={ ZONE_MODES }
 				onChange={ ( v ) => {
 					if ( 'named' === v ) {
-						setAttributes( { sgsTimeTextZone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC' } );
+						setAttributes( {
+							sgsTimeTextZone:
+								Intl.DateTimeFormat().resolvedOptions()
+									.timeZone || 'UTC',
+						} );
 					} else {
 						setAttributes( { sgsTimeTextZone: v } );
 					}
 				} }
-				help={ __( "The visitor's local time suits a greeting; a set time zone suits words tied to a place.", 'sgs-blocks' ) }
+				help={ __(
+					"The visitor's local time suits a greeting; a set time zone suits words tied to a place.",
+					'sgs-blocks'
+				) }
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>
@@ -201,7 +262,9 @@ function TimeTextPanel( { attributes, setAttributes } ) {
 					label={ __( 'Time zone', 'sgs-blocks' ) }
 					value={ zone }
 					options={ zoneOptions() }
-					onChange={ ( v ) => setAttributes( { sgsTimeTextZone: v || '' } ) }
+					onChange={ ( v ) =>
+						setAttributes( { sgsTimeTextZone: v || '' } )
+					}
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 				/>
@@ -211,18 +274,24 @@ function TimeTextPanel( { attributes, setAttributes } ) {
 	);
 }
 
-const withTimeTextControls = createHigherOrderComponent( ( BlockEdit ) => ( props ) => {
-	if ( ! isExtensionEnabled( props.name, SLUG ) ) {
-		return <BlockEdit { ...props } />;
-	}
-	return (
-		<>
-			<BlockEdit { ...props } />
-			<InspectorControls>
-				<TimeTextPanel attributes={ props.attributes } setAttributes={ props.setAttributes } />
-			</InspectorControls>
-		</>
-	);
-}, 'withTimeTextControls' );
+const withTimeTextControls = createHigherOrderComponent(
+	( BlockEdit ) => ( props ) => {
+		if ( ! isExtensionEnabled( props.name, SLUG ) ) {
+			return <BlockEdit { ...props } />;
+		}
+		return (
+			<>
+				<BlockEdit { ...props } />
+				<InspectorControls>
+					<TimeTextPanel
+						attributes={ props.attributes }
+						setAttributes={ props.setAttributes }
+					/>
+				</InspectorControls>
+			</>
+		);
+	},
+	'withTimeTextControls'
+);
 
 addFilter( 'editor.BlockEdit', 'sgs/time-text/controls', withTimeTextControls );

@@ -30,7 +30,9 @@ import { store, getContext, getElement } from '@wordpress/interactivity';
 import { initMotionPause } from '../../shared/motion-pause/index.js';
 import { initScrollRegions } from '../../shared/scroll-region/index.js';
 
-const REDUCED_MOTION = window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
+const REDUCED_MOTION = window.matchMedia(
+	'(prefers-reduced-motion: reduce)'
+).matches;
 
 // ==========================================================================
 /**
@@ -102,7 +104,7 @@ store( 'sgs/gallery', {
 		 */
 		get counterText() {
 			const ctx = getContext();
-			return ( ctx.currentIndex + 1 ) + ' / ' + ctx.images.length;
+			return ctx.currentIndex + 1 + ' / ' + ctx.images.length;
 		},
 	},
 
@@ -116,7 +118,7 @@ store( 'sgs/gallery', {
 		 */
 		openLightbox() {
 			const ctx = getContext();
-			ctx.lightboxOpen   = true;
+			ctx.lightboxOpen = true;
 			// No-inline contract: toggle a class instead of an inline style
 			// property — style.css defines body.sgs-gallery-lightbox-open.
 			document.body.classList.add( 'sgs-gallery-lightbox-open' );
@@ -130,7 +132,11 @@ store( 'sgs/gallery', {
 			// child (the close button) by itself, and the old call queried for
 			// a class that had not been applied yet at this tick.
 			const dialogEl = lightboxFor( getElement()?.ref );
-			if ( dialogEl && ! dialogEl.open && 'function' === typeof dialogEl.showModal ) {
+			if (
+				dialogEl &&
+				! dialogEl.open &&
+				'function' === typeof dialogEl.showModal
+			) {
 				dialogEl.showModal();
 			}
 		},
@@ -145,11 +151,15 @@ store( 'sgs/gallery', {
 		 */
 		closeLightbox() {
 			const ctx = getContext();
-			ctx.lightboxOpen          = false;
+			ctx.lightboxOpen = false;
 			document.body.classList.remove( 'sgs-gallery-lightbox-open' );
 
 			const dialogEl = lightboxFor( getElement()?.ref );
-			if ( dialogEl && dialogEl.open && 'function' === typeof dialogEl.close ) {
+			if (
+				dialogEl &&
+				dialogEl.open &&
+				'function' === typeof dialogEl.close
+			) {
 				dialogEl.close();
 			}
 		},
@@ -166,11 +176,19 @@ store( 'sgs/gallery', {
 		 */
 		closeOnBackdrop( event ) {
 			const dialogEl = event.currentTarget;
-			const target   = event.target;
-			if ( ! dialogEl || ! dialogEl.open || ! ( target instanceof Element ) ) {
+			const target = event.target;
+			if (
+				! dialogEl ||
+				! dialogEl.open ||
+				! ( target instanceof Element )
+			) {
 				return;
 			}
-			if ( target.closest( '.sgs-gallery__lightbox-img, .sgs-gallery__lightbox-caption, .sgs-gallery__lightbox-counter, button' ) ) {
+			if (
+				target.closest(
+					'.sgs-gallery__lightbox-img, .sgs-gallery__lightbox-caption, .sgs-gallery__lightbox-counter, button'
+				)
+			) {
 				return;
 			}
 			dialogEl.close();
@@ -189,7 +207,9 @@ store( 'sgs/gallery', {
 		 */
 		prevImage() {
 			const ctx = getContext();
-			ctx.currentIndex = ( ctx.currentIndex - 1 + ctx.images.length ) % ctx.images.length;
+			ctx.currentIndex =
+				( ctx.currentIndex - 1 + ctx.images.length ) %
+				ctx.images.length;
 		},
 	},
 
@@ -234,10 +254,10 @@ store( 'sgs/gallery', {
  * @param {Element} galleryEl The .sgs-gallery--carousel root element.
  */
 function initCarousel( galleryEl ) {
-	const grid    = galleryEl.querySelector( '.sgs-gallery__grid' );
+	const grid = galleryEl.querySelector( '.sgs-gallery__grid' );
 	const prevBtn = galleryEl.querySelector( '.sgs-gallery__carousel-prev' );
 	const nextBtn = galleryEl.querySelector( '.sgs-gallery__carousel-next' );
-	const dotsEl  = galleryEl.querySelector( '.sgs-gallery__carousel-dots' );
+	const dotsEl = galleryEl.querySelector( '.sgs-gallery__carousel-dots' );
 
 	if ( ! grid ) {
 		return;
@@ -261,18 +281,18 @@ function initCarousel( galleryEl ) {
 	}
 
 	const shouldAutoplay = galleryEl.dataset.autoplay === 'true';
-	const speed          = parseInt( galleryEl.dataset.speed || '5000', 10 );
-	const totalItems     = items.length;
+	const speed = parseInt( galleryEl.dataset.speed || '5000', 10 );
+	const totalItems = items.length;
 	// Whether `fx-carousel-loop.js` is attached to THIS track — read off the
 	// same marker the render layer emits (`data-sgs-loop="1"` on the grid),
 	// so arrows/keyboard wrap instead of clamping at the ends. Independent of
 	// drag (Bean's ruling): this reads true whether or not drag is also on.
 	const loopEnabled = grid.dataset.sgsLoop === '1';
 
-	let currentIndex  = 0;
+	let currentIndex = 0;
 	let autoplayTimer = null;
-	const autoplayOn  = shouldAutoplay && ! REDUCED_MOTION && totalItems > 1;
-	const pauser      = initMotionPause( galleryEl, {
+	const autoplayOn = shouldAutoplay && ! REDUCED_MOTION && totalItems > 1;
+	const pauser = initMotionPause( galleryEl, {
 		onChange: ( paused ) => ( paused ? stopAutoplay() : startAutoplay() ),
 	} );
 
@@ -289,14 +309,14 @@ function initCarousel( galleryEl ) {
 		const resolved = loopEnabled
 			? ( ( index % totalItems ) + totalItems ) % totalItems
 			: Math.max( 0, Math.min( index, totalItems - 1 ) );
-		currentIndex  = resolved;
+		currentIndex = resolved;
 
 		const target = items[ resolved ];
 		if ( target ) {
 			target.scrollIntoView( {
 				behavior: REDUCED_MOTION ? 'auto' : 'smooth',
-				block:    'nearest',
-				inline:   'start',
+				block: 'nearest',
+				inline: 'start',
 			} );
 		}
 
@@ -338,8 +358,10 @@ function initCarousel( galleryEl ) {
 	if ( dotsEl ) {
 		items.forEach( ( _item, i ) => {
 			const dot = document.createElement( 'button' );
-			dot.type      = 'button';
-			dot.className = 'sgs-gallery__dot' + ( 0 === i ? ' sgs-gallery__dot--active' : '' );
+			dot.type = 'button';
+			dot.className =
+				'sgs-gallery__dot' +
+				( 0 === i ? ' sgs-gallery__dot--active' : '' );
 			dot.setAttribute( 'role', 'tab' );
 			dot.setAttribute( 'aria-selected', 0 === i ? 'true' : 'false' );
 			dot.setAttribute( 'aria-label', 'Go to image ' + ( i + 1 ) );
@@ -388,14 +410,14 @@ function initCarousel( galleryEl ) {
 			clearTimeout( scrollTimeout );
 			scrollTimeout = setTimeout( () => {
 				const gridRect = grid.getBoundingClientRect();
-				let closestIndex    = 0;
+				let closestIndex = 0;
 				let closestDistance = Infinity;
 				items.forEach( ( item, i ) => {
 					const itemRect = item.getBoundingClientRect();
 					const distance = Math.abs( itemRect.left - gridRect.left );
 					if ( distance < closestDistance ) {
 						closestDistance = distance;
-						closestIndex    = i;
+						closestIndex = i;
 					}
 				} );
 				if ( closestIndex !== currentIndex ) {

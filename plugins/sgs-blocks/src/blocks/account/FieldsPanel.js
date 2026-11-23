@@ -83,16 +83,25 @@ export default function FieldsPanel( { attributes, setAttributes } ) {
 
 	return (
 		<>
-			<PanelBody title={ __( 'Fields', 'sgs-blocks' ) } initialOpen={ false }>
+			<PanelBody
+				title={ __( 'Fields', 'sgs-blocks' ) }
+				initialOpen={ false }
+			>
 				<SgsBorderControl
 					widthValues={ attributes.fieldBorderWidth ?? {} }
-					onWidthChange={ ( next ) => setAttributes( { fieldBorderWidth: next } ) }
+					onWidthChange={ ( next ) =>
+						setAttributes( { fieldBorderWidth: next } )
+					}
 					widthPresets={ [ '10', '20', '30' ] }
 					styleValue={ attributes.fieldBorderStyle }
-					onStyleChange={ ( val ) => setAttributes( { fieldBorderStyle: val || undefined } ) }
+					onStyleChange={ ( val ) =>
+						setAttributes( { fieldBorderStyle: val || undefined } )
+					}
 					colourLabel={ __( 'Field border colour', 'sgs-blocks' ) }
 					colourValue={ attributes.fieldBorderColour }
-					onColourChange={ ( val ) => setAttributes( { fieldBorderColour: val || undefined } ) }
+					onColourChange={ ( val ) =>
+						setAttributes( { fieldBorderColour: val || undefined } )
+					}
 					colourLinked
 					radiusValues={ {
 						base: fieldBorderRadius?.desktop ?? {},
@@ -101,84 +110,150 @@ export default function FieldsPanel( { attributes, setAttributes } ) {
 					} }
 					onRadiusChange={ ( tier, next ) => {
 						const key = 'base' === tier ? 'desktop' : tier;
-						setAttributes( { fieldBorderRadius: { ...fieldBorderRadius, [ key ]: next } } );
+						setAttributes( {
+							fieldBorderRadius: {
+								...fieldBorderRadius,
+								[ key ]: next,
+							},
+						} );
 					} }
 				/>
 				<ShadowControl
 					label={ __( 'Field shadow', 'sgs-blocks' ) }
 					attributes={ attributes }
 					setAttributes={ setAttributes }
-					attrNames={ { base: 'fieldShadow', colour: 'fieldShadowColour' } }
+					attrNames={ {
+						base: 'fieldShadow',
+						colour: 'fieldShadowColour',
+					} }
 				/>
 				<ResponsiveOverride
 					value={ attributes.fieldPadding }
-					onChange={ ( obj ) => setAttributes( { fieldPadding: obj } ) }
+					onChange={ ( obj ) =>
+						setAttributes( { fieldPadding: obj } )
+					}
 				>
 					{ ( { ownValue, setOwnValue } ) => (
 						<SgsBoxControl
 							label={ __( 'Field padding', 'sgs-blocks' ) }
-							values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+							values={
+								ownValue && typeof ownValue === 'object'
+									? ownValue
+									: {}
+							}
 							units={ BOX_UNITS }
 							presets
-							onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							onChange={ ( next ) =>
+								setOwnValue( normaliseResponsiveBox( next ) )
+							}
 						/>
 					) }
 				</ResponsiveOverride>
 				<ResponsiveOverride
 					label={ __( 'Field minimum height', 'sgs-blocks' ) }
 					value={ attributes.fieldMinHeight }
-					onChange={ ( obj ) => setAttributes( { fieldMinHeight: obj } ) }
+					onChange={ ( obj ) =>
+						setAttributes( { fieldMinHeight: obj } )
+					}
 				>
-					{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+					{ ( {
+						ownValue,
+						effectiveValue,
+						inherited,
+						setOwnValue,
+					} ) => (
 						<SgsLengthControl
 							presets={ false }
 							label={ __( 'Field minimum height', 'sgs-blocks' ) }
 							hideLabelFromVision
-							help={ __( 'Inputs and selects. The height you set, even below 44px; empty keeps 44px.', 'sgs-blocks' ) }
+							help={ __(
+								'Inputs and selects. The height you set, even below 44px; empty keeps 44px.',
+								'sgs-blocks'
+							) }
 							value={ ownValue ?? '' }
 							placeholder={ inherited ? effectiveValue : '44px' }
-							onChange={ ( val ) => setOwnValue( val || undefined ) }
+							onChange={ ( val ) =>
+								setOwnValue( val || undefined )
+							}
 						/>
 					) }
 				</ResponsiveOverride>
 			</PanelBody>
-			<PanelBody title={ __( 'Field labels', 'sgs-blocks' ) } initialOpen={ false }>
+			<PanelBody
+				title={ __( 'Field labels', 'sgs-blocks' ) }
+				initialOpen={ false }
+			>
 				<SelectControl
 					__next40pxDefaultSize
 					__nextHasNoMarginBottom
 					label={ __( 'Label position', 'sgs-blocks' ) }
-					value={ 'above' === attributes.labelPosition ? 'above' : '' }
+					value={
+						'above' === attributes.labelPosition ? 'above' : ''
+					}
 					options={ [
-						{ label: __( 'WooCommerce default', 'sgs-blocks' ), value: '' },
-						{ label: __( 'Above the field', 'sgs-blocks' ), value: 'above' },
+						{
+							label: __( 'WooCommerce default', 'sgs-blocks' ),
+							value: '',
+						},
+						{
+							label: __( 'Above the field', 'sgs-blocks' ),
+							value: 'above',
+						},
 					] }
 					onChange={ ( value ) =>
-						setAttributes( { labelPosition: 'above' === value ? 'above' : undefined } )
+						setAttributes( {
+							labelPosition:
+								'above' === value ? 'above' : undefined,
+						} )
 					}
 				/>
 				{ 'above' === attributes.labelPosition && (
-					<ResponsiveControl label={ __( 'Space under the label', 'sgs-blocks' ) }>
+					<ResponsiveControl
+						label={ __( 'Space under the label', 'sgs-blocks' ) }
+					>
 						{ ( breakpoint ) => (
 							<SgsLengthControl
 								presets
 								hideLabelFromVision
-								label={ __( 'Space under the label', 'sgs-blocks' ) }
+								label={ __(
+									'Space under the label',
+									'sgs-blocks'
+								) }
 								value={ labelGap?.[ breakpoint ] ?? '' }
 								onChange={ ( value ) =>
-									patchTier( attributes, setAttributes, 'labelGap', breakpoint, value )
+									patchTier(
+										attributes,
+										setAttributes,
+										'labelGap',
+										breakpoint,
+										value
+									)
 								}
 							/>
 						) }
 					</ResponsiveControl>
 				) }
 			</PanelBody>
-			<PanelBody title={ __( 'Field and label type', 'sgs-blocks' ) } initialOpen={ false }>
+			<PanelBody
+				title={ __( 'Field and label type', 'sgs-blocks' ) }
+				initialOpen={ false }
+			>
 				<TypographyControls
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 					targets={ [
-						{ key: 'field', label: __( 'Field text', 'sgs-blocks' ), prefix: 'field', ...TYPE_TARGET },
-						{ key: 'label', label: __( 'Label', 'sgs-blocks' ), prefix: 'label', ...TYPE_TARGET },
+						{
+							key: 'field',
+							label: __( 'Field text', 'sgs-blocks' ),
+							prefix: 'field',
+							...TYPE_TARGET,
+						},
+						{
+							key: 'label',
+							label: __( 'Label', 'sgs-blocks' ),
+							prefix: 'label',
+							...TYPE_TARGET,
+						},
 					] }
 				/>
 			</PanelBody>

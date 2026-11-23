@@ -25,10 +25,19 @@ const DEFAULT_LABEL = __( 'Default', 'sgs-blocks' );
 export const NUMBER_STYLE_OPTIONS = [
 	{ label: DEFAULT_LABEL, value: '' },
 	{ label: __( 'Normal', 'sgs-blocks' ), value: 'normal' },
-	{ label: __( 'Tabular (equal-width digits)', 'sgs-blocks' ), value: 'tabular-nums' },
+	{
+		label: __( 'Tabular (equal-width digits)', 'sgs-blocks' ),
+		value: 'tabular-nums',
+	},
 	{ label: __( 'Proportional', 'sgs-blocks' ), value: 'proportional-nums' },
-	{ label: __( 'Lining (capital-height digits)', 'sgs-blocks' ), value: 'lining-nums' },
-	{ label: __( 'Old-style (varying-height digits)', 'sgs-blocks' ), value: 'oldstyle-nums' },
+	{
+		label: __( 'Lining (capital-height digits)', 'sgs-blocks' ),
+		value: 'lining-nums',
+	},
+	{
+		label: __( 'Old-style (varying-height digits)', 'sgs-blocks' ),
+		value: 'oldstyle-nums',
+	},
 ];
 
 const LENGTH = /^(-?\d*\.?\d+)(?:px)?$/i;
@@ -69,7 +78,10 @@ function splitOutsideBrackets( text, separator ) {
  * @return {boolean} False when a length carries em, rem, %, or another unit.
  */
 export function textShadowIsEditable( shape ) {
-	const first = 'string' === typeof shape ? splitOutsideBrackets( shape, /,/ )[ 0 ] || '' : '';
+	const first =
+		'string' === typeof shape
+			? splitOutsideBrackets( shape, /,/ )[ 0 ] || ''
+			: '';
 	return splitOutsideBrackets( first, /\s/ )
 		.filter( ( token ) => ANY_LENGTH.test( token ) )
 		.every( ( token ) => LENGTH.test( token ) );
@@ -82,8 +94,13 @@ export function textShadowIsEditable( shape ) {
  * @return {{x:number,y:number,blur:number}} Lengths in px; all zero when unset or unparseable.
  */
 export function parseTextShadowShape( shape ) {
-	const first = 'string' === typeof shape ? shape.split( ',' )[ 0 ].trim().split( /\s+/ ) : [];
-	const nums = first.filter( ( t ) => LENGTH.test( t ) ).map( ( t ) => parseFloat( t ) );
+	const first =
+		'string' === typeof shape
+			? shape.split( ',' )[ 0 ].trim().split( /\s+/ )
+			: [];
+	const nums = first
+		.filter( ( t ) => LENGTH.test( t ) )
+		.map( ( t ) => parseFloat( t ) );
 	if ( nums.length < 2 ) {
 		return { x: 0, y: 0, blur: 0 };
 	}
@@ -114,9 +131,14 @@ export function composeTextShadowShape( { x, y, blur } ) {
  * @return {string} The new stored shape.
  */
 export function editTextShadowShape( shape, lengths ) {
-	const text = 'string' === typeof shape && 'none' !== shape.trim().toLowerCase() ? shape : '';
+	const text =
+		'string' === typeof shape && 'none' !== shape.trim().toLowerCase()
+			? shape
+			: '';
 	const [ first = '', ...rest ] = splitOutsideBrackets( text, /,/ );
-	const extras = splitOutsideBrackets( first, /\s/ ).filter( ( token ) => ! ANY_LENGTH.test( token ) );
+	const extras = splitOutsideBrackets( first, /\s/ ).filter(
+		( token ) => ! ANY_LENGTH.test( token )
+	);
 	const lead = composeTextShadowShape( lengths );
 	if ( '' === lead && 0 === rest.length && 0 === extras.length ) {
 		return '';
@@ -138,10 +160,15 @@ export function NumberStyleRow( { attributes, setAttributes, keys } ) {
 	return (
 		<SelectControl
 			label={ __( 'Number style', 'sgs-blocks' ) }
-			help={ __( 'Tabular digits keep a changing or numbered label the same width.', 'sgs-blocks' ) }
+			help={ __(
+				'Tabular digits keep a changing or numbered label the same width.',
+				'sgs-blocks'
+			) }
 			value={ attributes[ keys.fontVariantNumeric ] || '' }
 			options={ NUMBER_STYLE_OPTIONS }
-			onChange={ ( val ) => setAttributes( { [ keys.fontVariantNumeric ]: val } ) }
+			onChange={ ( val ) =>
+				setAttributes( { [ keys.fontVariantNumeric ]: val } )
+			}
 			__nextHasNoMarginBottom
 			__next40pxDefaultSize
 		/>
@@ -161,7 +188,10 @@ export function TextShadowRow( { attributes, setAttributes, keys } ) {
 	if ( ! textShadowIsEditable( attributes[ keys.textShadow ] ) ) {
 		return (
 			<Notice status="info" isDismissible={ false }>
-				{ __( 'This text shadow uses em, rem or percentage lengths, which this row cannot show. It is left as written.', 'sgs-blocks' ) }
+				{ __(
+					'This text shadow uses em, rem or percentage lengths, which this row cannot show. It is left as written.',
+					'sgs-blocks'
+				) }
 			</Notice>
 		);
 	}
@@ -172,7 +202,12 @@ export function TextShadowRow( { attributes, setAttributes, keys } ) {
 		if ( 'blur' === part ) {
 			next.blur = Math.max( 0, next.blur );
 		}
-		setAttributes( { [ keys.textShadow ]: editTextShadowShape( attributes[ keys.textShadow ], next ) } );
+		setAttributes( {
+			[ keys.textShadow ]: editTextShadowShape(
+				attributes[ keys.textShadow ],
+				next
+			),
+		} );
 	};
 	const field = ( part, label, min ) => (
 		<FlexItem isBlock>

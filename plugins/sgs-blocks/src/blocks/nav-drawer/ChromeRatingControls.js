@@ -9,7 +9,10 @@
 
 import { __ } from '@wordpress/i18n';
 import { ToggleControl } from '@wordpress/components';
-import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+import {
+	ToggleGroupControl,
+	ToggleGroupControlOption,
+} from '../../components/primitives';
 import { TierShow } from './chrome-tier-controls';
 
 /**
@@ -19,40 +22,75 @@ import { TierShow } from './chrome-tier-controls';
  * @return {Element} The controls.
  */
 export default function ChromeRatingControls( { attributes, setAttributes } ) {
-	const { chromeRating, chromeRatingPlacement, chromeRatingShow, chromeRatingShowCount } = attributes;
+	const {
+		chromeRating,
+		chromeRatingPlacement,
+		chromeRatingShow,
+		chromeRatingShowCount,
+	} = attributes;
 
 	return (
 		<>
 			<ToggleControl
 				label={ __( 'Show the Google rating', 'sgs-blocks' ) }
-				help={ __( 'The rating, review count and link come from Site Info (Settings > Site Info), or live Google data when connected.', 'sgs-blocks' ) }
+				help={ __(
+					'The rating, review count and link come from Site Info (Settings > Site Info), or live Google data when connected.',
+					'sgs-blocks'
+				) }
 				checked={ !! chromeRating }
-				onChange={ ( value ) => setAttributes( { chromeRating: value } ) }
+				onChange={ ( value ) =>
+					setAttributes( { chromeRating: value } )
+				}
 				__nextHasNoMarginBottom
 			/>
 			{ !! chromeRating && (
 				<>
 					<ToggleGroupControl
-						label={ __( 'Rating position in the row', 'sgs-blocks' ) }
-						help={ __( 'End sits beside the close button.', 'sgs-blocks' ) }
-						value={ 'center' === chromeRatingPlacement ? 'center' : 'end' }
-						onChange={ ( value ) => setAttributes( { chromeRatingPlacement: value } ) }
+						label={ __(
+							'Rating position in the row',
+							'sgs-blocks'
+						) }
+						help={ __(
+							'End sits beside the close button.',
+							'sgs-blocks'
+						) }
+						value={
+							'center' === chromeRatingPlacement
+								? 'center'
+								: 'end'
+						}
+						onChange={ ( value ) =>
+							setAttributes( { chromeRatingPlacement: value } )
+						}
 						isBlock
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					>
-						<ToggleGroupControlOption value="center" label={ __( 'Centre', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="end" label={ __( 'End', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption
+							value="center"
+							label={ __( 'Centre', 'sgs-blocks' ) }
+						/>
+						<ToggleGroupControlOption
+							value="end"
+							label={ __( 'End', 'sgs-blocks' ) }
+						/>
 					</ToggleGroupControl>
 					<TierShow
 						label={ __( 'Show the Google rating', 'sgs-blocks' ) }
 						value={ chromeRatingShow }
-						onChange={ ( obj ) => setAttributes( { chromeRatingShow: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { chromeRatingShow: obj } )
+						}
 					/>
 					<ToggleControl
-						label={ __( 'Show the number of reviews', 'sgs-blocks' ) }
+						label={ __(
+							'Show the number of reviews',
+							'sgs-blocks'
+						) }
 						checked={ !! chromeRatingShowCount }
-						onChange={ ( value ) => setAttributes( { chromeRatingShowCount: value } ) }
+						onChange={ ( value ) =>
+							setAttributes( { chromeRatingShowCount: value } )
+						}
 						__nextHasNoMarginBottom
 					/>
 				</>

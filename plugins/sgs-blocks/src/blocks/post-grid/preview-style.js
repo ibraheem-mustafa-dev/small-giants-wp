@@ -33,7 +33,9 @@ export function postGridWrapperPreview( attributes, tier, palette ) {
 		rootStyle.maxWidth = maxWidth;
 	}
 	const { hasBandProps, bandStyle } = contentBandPreview( {
-		contentWidth: resolveContentWidthPreview( resolveResponsiveTier( attributes.contentWidth, tier )?.value ),
+		contentWidth: resolveContentWidthPreview(
+			resolveResponsiveTier( attributes.contentWidth, tier )?.value
+		),
 		bandPadding: {},
 		style: rootStyle,
 		layout: 'stack',
@@ -77,7 +79,10 @@ export function filterChipVarsPreview( attributes, palette ) {
 	colour( '--sgs-pg-filter-text', attributes.filterTextColour );
 	colour( '--sgs-pg-filter-active-bg', attributes.filterActiveBackground );
 	colour( '--sgs-pg-filter-active-text', attributes.filterActiveTextColour );
-	colour( '--sgs-pg-filter-active-border', attributes.filterActiveBorderColour );
+	colour(
+		'--sgs-pg-filter-active-border',
+		attributes.filterActiveBorderColour
+	);
 	length( '--sgs-pg-filter-bw', attributes.filterBorderWidth );
 	length( '--sgs-pg-filter-active-bw', attributes.filterActiveBorderWidth );
 	length( '--sgs-pg-filter-min-h', attributes.filterMinHeight );
@@ -100,11 +105,17 @@ export function orderFilterTerms( terms, order, termOrder ) {
 	const list = [ ...( terms || [] ) ];
 	const byName = ( a, b ) => a.name.localeCompare( b.name );
 	if ( 'count' === order ) {
-		return list.sort( ( a, b ) => ( b.count - a.count ) || byName( a, b ) );
+		return list.sort( ( a, b ) => b.count - a.count || byName( a, b ) );
 	}
 	if ( 'term_order' === order ) {
-		const rank = new Map( ( termOrder || [] ).map( ( id, i ) => [ id, i ] ) );
-		return list.sort( ( a, b ) => ( ( rank.get( a.id ) ?? 1e9 ) - ( rank.get( b.id ) ?? 1e9 ) ) || byName( a, b ) );
+		const rank = new Map(
+			( termOrder || [] ).map( ( id, i ) => [ id, i ] )
+		);
+		return list.sort(
+			( a, b ) =>
+				( rank.get( a.id ) ?? 1e9 ) - ( rank.get( b.id ) ?? 1e9 ) ||
+				byName( a, b )
+		);
 	}
 	return list.sort( byName );
 }

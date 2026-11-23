@@ -20,8 +20,8 @@ import { ToggleControl, Notice } from '@wordpress/components';
  * (supports.anchor:true, set under the Advanced panel) rather than a new
  * attribute, since this block already declares that support.
  *
- * @param {Object}      props        Component props.
- * @param {string}      props.anchor The block's current HTML anchor value.
+ * @param {Object} props        Component props.
+ * @param {string} props.anchor The block's current HTML anchor value.
  * @return {JSX.Element} The notice.
  */
 export function ModalAnchorNotice( { anchor } ) {
@@ -56,10 +56,10 @@ export function ModalAnchorNotice( { anchor } ) {
  * its normal jump-to-position behaviour unless the operator opts in; disabled
  * (not hidden) until an anchor is set, since it does nothing without one.
  *
- * @param {Object}   props                  Component props.
- * @param {string}   props.anchor           The block's current HTML anchor value.
- * @param {boolean}  props.openOnHashLoad   Current attribute value.
- * @param {Function} props.setAttributes    Block editor setAttributes.
+ * @param {Object}   props                Component props.
+ * @param {string}   props.anchor         The block's current HTML anchor value.
+ * @param {boolean}  props.openOnHashLoad Current attribute value.
+ * @param {Function} props.setAttributes  Block editor setAttributes.
  * @return {JSX.Element} The control.
  */
 /**
@@ -85,10 +85,17 @@ export function ModalNoOpenerWarning( { anchor } ) {
 	);
 }
 
-export function ModalHashLoadToggle( { anchor, openOnHashLoad, setAttributes } ) {
+export function ModalHashLoadToggle( {
+	anchor,
+	openOnHashLoad,
+	setAttributes,
+} ) {
 	return (
 		<ToggleControl
-			label={ __( 'Open automatically when linked to directly', 'sgs-blocks' ) }
+			label={ __(
+				'Open automatically when linked to directly',
+				'sgs-blocks'
+			) }
 			help={
 				anchor
 					? sprintf(

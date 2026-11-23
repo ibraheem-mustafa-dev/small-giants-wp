@@ -14,13 +14,15 @@ export const TERMINAL_SENTINEL = '__terminal__';
 
 export const FLOW_SELECTOR = '[data-wp-interactive="sgs/choice-flow"]';
 export const STEP_SELECTOR = '.sgs-form-step';
-export const OPTION_BUTTON_SELECTOR = '.sgs-choice-flow-question__option-button';
+export const OPTION_BUTTON_SELECTOR =
+	'.sgs-choice-flow-question__option-button';
 export const RESULT_SELECTOR = '.sgs-choice-flow-result';
 export const BACK_BUTTON_SELECTOR = '.sgs-choice-flow__nav-back';
 export const CONTINUE_BUTTON_SELECTOR = '.sgs-choice-flow__continue';
 export const ADD_TO_BASKET_BUTTON_SELECTOR = '.sgs-choice-flow__add-to-basket';
 export const BUY_NOW_BUTTON_SELECTOR = '.sgs-choice-flow__buy-now';
-export const SELECTED_CLASS = 'sgs-choice-flow-question__option-button--selected';
+export const SELECTED_CLASS =
+	'sgs-choice-flow-question__option-button--selected';
 
 export const STEP_COUNT_SELECTOR = '.sgs-choice-flow__step-count';
 export const STEP_LABEL_SELECTOR = '.sgs-choice-flow__step-label';

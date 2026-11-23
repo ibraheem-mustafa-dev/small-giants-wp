@@ -38,8 +38,24 @@ export function lengthUnits( values ) {
 }
 
 /** Units per §9.4's catalogue of ranges. */
-export const WIDTH_UNITS = lengthUnits( [ 'px', '%', 'rem', 'em', 'vw', 'ch' ] );
-export const HEIGHT_UNITS = lengthUnits( [ 'px', '%', 'rem', 'em', 'vh', 'svh', 'dvh', 'vw' ] );
+export const WIDTH_UNITS = lengthUnits( [
+	'px',
+	'%',
+	'rem',
+	'em',
+	'vw',
+	'ch',
+] );
+export const HEIGHT_UNITS = lengthUnits( [
+	'px',
+	'%',
+	'rem',
+	'em',
+	'vh',
+	'svh',
+	'dvh',
+	'vw',
+] );
 
 /**
  * The kind a slot currently holds: the first device that carries a file with a kind, else the slot's first allowed
@@ -51,6 +67,8 @@ export const HEIGHT_UNITS = lengthUnits( [ 'px', '%', 'rem', 'em', 'vh', 'svh', 
  */
 export function slotKind( slot, access ) {
 	const source = access.read( 'Source' );
-	const own = Object.values( source && 'object' === typeof source ? source : {} ).find( ( s ) => s?.kind );
+	const own = Object.values(
+		source && 'object' === typeof source ? source : {}
+	).find( ( s ) => s?.kind );
 	return own?.kind || slot?.kinds?.[ 0 ] || 'image';
 }

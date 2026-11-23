@@ -31,8 +31,16 @@ import {
  */
 export function buildTabPreview( attributes, tier, palette ) {
 	const style = {
-		...backgroundPaintPreview( attributes.backgroundColour, attributes.backgroundColourGradient, palette ),
-		...textPaintPreview( attributes.textColour, attributes.textColourGradient, palette ),
+		...backgroundPaintPreview(
+			attributes.backgroundColour,
+			attributes.backgroundColourGradient,
+			palette
+		),
+		...textPaintPreview(
+			attributes.textColour,
+			attributes.textColourGradient,
+			palette
+		),
 		...wrapperBorderPreview( attributes, tier, palette ),
 	};
 	const maxWidth = tierValueOf( attributes.maxWidth, tier );
@@ -40,7 +48,9 @@ export function buildTabPreview( attributes, tier, palette ) {
 		style.maxWidth = maxWidth;
 	}
 	const { hasBandProps, bandStyle } = contentBandPreview( {
-		contentWidth: resolveContentWidthPreview( tierValueOf( attributes.contentWidth, tier ) ),
+		contentWidth: resolveContentWidthPreview(
+			tierValueOf( attributes.contentWidth, tier )
+		),
 		bandPadding: {},
 		style,
 		layout: 'stack',

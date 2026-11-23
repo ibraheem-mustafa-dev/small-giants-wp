@@ -26,7 +26,10 @@ import { TypographyControls, SgsLengthControl } from '../../components';
 
 const SOURCE_OPTIONS = [
 	{ label: __( 'Manual (add logos below)', 'sgs-blocks' ), value: 'manual' },
-	{ label: __( 'Product brands (WooCommerce)', 'sgs-blocks' ), value: 'product-brands' },
+	{
+		label: __( 'Product brands (WooCommerce)', 'sgs-blocks' ),
+		value: 'product-brands',
+	},
 ];
 
 const ORDER_OPTIONS = [
@@ -66,10 +69,13 @@ export function SourcePanel( { attributes, setAttributes } ) {
 		const { getTaxonomy, hasFinishedResolution } = select( coreDataStore );
 		return {
 			taxonomy: getTaxonomy( 'product_brand' ),
-			hasResolved: hasFinishedResolution( 'getTaxonomy', [ 'product_brand' ] ),
+			hasResolved: hasFinishedResolution( 'getTaxonomy', [
+				'product_brand',
+			] ),
 		};
 	}, [] );
-	const brandsUnavailable = 'product-brands' === source && hasResolved && ! taxonomy;
+	const brandsUnavailable =
+		'product-brands' === source && hasResolved && ! taxonomy;
 
 	return (
 		<PanelBody title={ __( 'Source', 'sgs-blocks' ) } initialOpen={ true }>
@@ -97,20 +103,29 @@ export function SourcePanel( { attributes, setAttributes } ) {
 						label={ __( 'Order by', 'sgs-blocks' ) }
 						value={ brandOrder || 'name' }
 						options={ ORDER_OPTIONS }
-						onChange={ ( val ) => setAttributes( { brandOrder: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { brandOrder: val } )
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
 					<ToggleControl
-						label={ __( 'Hide brands with no products', 'sgs-blocks' ) }
+						label={ __(
+							'Hide brands with no products',
+							'sgs-blocks'
+						) }
 						checked={ brandHideEmpty ?? true }
-						onChange={ ( val ) => setAttributes( { brandHideEmpty: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { brandHideEmpty: val } )
+						}
 						__nextHasNoMarginBottom
 					/>
 					<RangeControl
 						label={ __( 'Maximum brands', 'sgs-blocks' ) }
 						value={ brandMaxItems ?? 20 }
-						onChange={ ( val ) => setAttributes( { brandMaxItems: val ?? 20 } ) }
+						onChange={ ( val ) =>
+							setAttributes( { brandMaxItems: val ?? 20 } )
+						}
 						min={ 1 }
 						max={ 100 }
 						step={ 1 }
@@ -121,9 +136,14 @@ export function SourcePanel( { attributes, setAttributes } ) {
 						__next40pxDefaultSize
 					/>
 					<ToggleControl
-						label={ __( 'Link each brand to its shop page', 'sgs-blocks' ) }
+						label={ __(
+							'Link each brand to its shop page',
+							'sgs-blocks'
+						) }
 						checked={ brandLinkToShop ?? true }
-						onChange={ ( val ) => setAttributes( { brandLinkToShop: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { brandLinkToShop: val } )
+						}
 						__nextHasNoMarginBottom
 					/>
 				</>
@@ -157,7 +177,10 @@ export function BrandTextStylePanel( { attributes, setAttributes } ) {
 	}
 
 	return (
-		<PanelBody title={ __( 'Brand text style', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Brand text style', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			{ 'row' !== attributes.logoLayout && (
 				<ToggleControl
 					label={ __( 'Draw each name as a tile', 'sgs-blocks' ) }
@@ -166,7 +189,9 @@ export function BrandTextStylePanel( { attributes, setAttributes } ) {
 						'sgs-blocks'
 					) }
 					checked={ !! attributes.brandTextTile }
-					onChange={ ( val ) => setAttributes( { brandTextTile: val } ) }
+					onChange={ ( val ) =>
+						setAttributes( { brandTextTile: val } )
+					}
 					__nextHasNoMarginBottom
 				/>
 			) }
@@ -186,7 +211,9 @@ export function BrandTextStylePanel( { attributes, setAttributes } ) {
 					<SgsLengthControl
 						label={ __( 'Minimum width per brand', 'sgs-blocks' ) }
 						value={ attributes.brandTextMinWidth || '' }
-						onChange={ ( val ) => setAttributes( { brandTextMinWidth: val ?? '' } ) }
+						onChange={ ( val ) =>
+							setAttributes( { brandTextMinWidth: val ?? '' } )
+						}
 						presets={ false }
 					/>
 				</>

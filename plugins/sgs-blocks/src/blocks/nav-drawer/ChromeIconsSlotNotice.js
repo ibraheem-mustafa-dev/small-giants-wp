@@ -22,8 +22,11 @@ import { childAttributesForKey } from '../social-icons/links';
 export default function ChromeIconsSlotNotice( { clientId } ) {
 	const firstName = useSelect(
 		( select ) => {
-			const order = select( 'core/block-editor' ).getBlockOrder( clientId );
-			return order.length ? select( 'core/block-editor' ).getBlockName( order[ 0 ] ) : '';
+			const order =
+				select( 'core/block-editor' ).getBlockOrder( clientId );
+			return order.length
+				? select( 'core/block-editor' ).getBlockName( order[ 0 ] )
+				: '';
 		},
 		[ clientId ]
 	);
@@ -59,7 +62,11 @@ export default function ChromeIconsSlotNotice( { clientId } ) {
 					'sgs-blocks'
 				) }
 			</p>
-			<Button variant="secondary" onClick={ addGroup } __next40pxDefaultSize>
+			<Button
+				variant="secondary"
+				onClick={ addGroup }
+				__next40pxDefaultSize
+			>
 				{ __( 'Add a phone and email icon group', 'sgs-blocks' ) }
 			</Button>
 		</Notice>

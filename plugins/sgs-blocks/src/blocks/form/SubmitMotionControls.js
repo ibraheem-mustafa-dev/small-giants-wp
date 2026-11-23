@@ -11,7 +11,6 @@ import { RangeControl } from '@wordpress/components';
 import { ShadowControl, shadowAttrKeys } from '../../components';
 import { HOVER_LIFT_MAX_PX } from '../../utils/hover-lift';
 
-
 /**
  * @param {Object}   props               Props.
  * @param {Object}   props.attributes    Block attributes.
@@ -19,22 +18,41 @@ import { HOVER_LIFT_MAX_PX } from '../../utils/hover-lift';
  * @param {string}   [props.prefix]      Button attribute prefix: 'submit', 'next' or 'prev'.
  * @return {JSX.Element} The controls.
  */
-export default function SubmitMotionControls( { attributes, setAttributes, prefix = 'submit' } ) {
+export default function SubmitMotionControls( {
+	attributes,
+	setAttributes,
+	prefix = 'submit',
+} ) {
 	const liftKey = `${ prefix }LiftHover`;
 	// One literal call per button so the wiring scan sees every shadow attribute name.
 	const shadowKeysByPrefix = {
-		submit: shadowAttrKeys( 'submitShadow', { hover: true, hoverColour: true } ),
-		next: shadowAttrKeys( 'nextShadow', { hover: true, hoverColour: true } ),
-		prev: shadowAttrKeys( 'prevShadow', { hover: true, hoverColour: true } ),
+		submit: shadowAttrKeys( 'submitShadow', {
+			hover: true,
+			hoverColour: true,
+		} ),
+		next: shadowAttrKeys( 'nextShadow', {
+			hover: true,
+			hoverColour: true,
+		} ),
+		prev: shadowAttrKeys( 'prevShadow', {
+			hover: true,
+			hoverColour: true,
+		} ),
 	};
-	const shadowKeys = shadowKeysByPrefix[ prefix ] ?? shadowKeysByPrefix.submit;
+	const shadowKeys =
+		shadowKeysByPrefix[ prefix ] ?? shadowKeysByPrefix.submit;
 	return (
 		<>
 			<RangeControl
 				label={ __( 'Button hover lift (px)', 'sgs-blocks' ) }
-				help={ __( 'Raises the button on hover and keyboard focus. 0 = no lift.', 'sgs-blocks' ) }
+				help={ __(
+					'Raises the button on hover and keyboard focus. 0 = no lift.',
+					'sgs-blocks'
+				) }
 				value={ attributes[ liftKey ] ?? 0 }
-				onChange={ ( value ) => setAttributes( { [ liftKey ]: value ?? 0 } ) }
+				onChange={ ( value ) =>
+					setAttributes( { [ liftKey ]: value ?? 0 } )
+				}
 				min={ 0 }
 				max={ HOVER_LIFT_MAX_PX }
 				step={ 1 }

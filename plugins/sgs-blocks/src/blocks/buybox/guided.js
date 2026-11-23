@@ -44,8 +44,12 @@ function initGuidedBuybox( root ) {
 		return;
 	}
 
-	const groups = Array.from( shell.querySelectorAll( '[data-guided-group]' ) );
-	const meterBtns = Array.from( shell.querySelectorAll( '[data-guided-goto]' ) );
+	const groups = Array.from(
+		shell.querySelectorAll( '[data-guided-group]' )
+	);
+	const meterBtns = Array.from(
+		shell.querySelectorAll( '[data-guided-goto]' )
+	);
 	const compact = shell.querySelector( '[data-guided-meter-compact]' );
 	const status = shell.querySelector( '[data-guided-status]' );
 	const backBtn = shell.querySelector( '[data-guided-back]' );
@@ -60,8 +64,14 @@ function initGuidedBuybox( root ) {
 	// manifest's defaultAxes — FR-43-23 "a default choice counts as made").
 	const state = groups.map( ( group, i ) => {
 		const done = group.dataset.guidedHasDefault === '1';
-		const valueEl = meterBtns[ i ] && meterBtns[ i ].querySelector( '[data-guided-meter-value]' );
-		return { done, label: group.dataset.guidedLabel || '', value: done && valueEl ? valueEl.textContent.trim() : '' };
+		const valueEl =
+			meterBtns[ i ] &&
+			meterBtns[ i ].querySelector( '[data-guided-meter-value]' );
+		return {
+			done,
+			label: group.dataset.guidedLabel || '',
+			value: done && valueEl ? valueEl.textContent.trim() : '',
+		};
 	} );
 
 	let active = groups.findIndex( ( g ) => ! g.hasAttribute( 'hidden' ) );
@@ -77,11 +87,18 @@ function initGuidedBuybox( root ) {
 			groups[ active ].setAttribute( 'hidden', '' );
 			active = idx;
 			groups[ active ].removeAttribute( 'hidden' );
-			meterBtns.forEach( ( btn, i ) => btn.setAttribute( 'aria-current', i === active ? 'true' : 'false' ) );
+			meterBtns.forEach( ( btn, i ) =>
+				btn.setAttribute(
+					'aria-current',
+					i === active ? 'true' : 'false'
+				)
+			);
 			updateCompact();
 			updateNav();
 		}
-		const title = focusTitle && groups[ active ].querySelector( '.sgs-buybox-guided__group-title' );
+		const title =
+			focusTitle &&
+			groups[ active ].querySelector( '.sgs-buybox-guided__group-title' );
 		if ( title ) {
 			title.focus();
 		}
@@ -102,15 +119,25 @@ function initGuidedBuybox( root ) {
 		}
 		const valueEl = btn.querySelector( '[data-guided-meter-value]' );
 		if ( valueEl ) {
-			valueEl.textContent = state[ idx ].value || groups[ idx ].dataset.guidedLabel || '';
+			valueEl.textContent =
+				state[ idx ].value || groups[ idx ].dataset.guidedLabel || '';
 		}
-		btn.classList.toggle( 'sgs-buybox-guided__meter-btn--done', state[ idx ].done );
+		btn.classList.toggle(
+			'sgs-buybox-guided__meter-btn--done',
+			state[ idx ].done
+		);
 		setAriaDisabled( btn, ! state[ idx ].done );
 	}
 
 	function updateCompact() {
 		if ( compact ) {
-			compact.textContent = ( active + 1 ) + ' of ' + total + ' \u00B7 ' + ( groups[ active ].dataset.guidedLabel || '' );
+			compact.textContent =
+				active +
+				1 +
+				' of ' +
+				total +
+				' \u00B7 ' +
+				( groups[ active ].dataset.guidedLabel || '' );
 		}
 	}
 
@@ -127,8 +154,15 @@ function initGuidedBuybox( root ) {
 	function updateExtraFields() {
 		const fields = [];
 		groups.forEach( ( group, i ) => {
-			if ( group.dataset.guidedAnswer === '1' && state[ i ].done && state[ i ].value ) {
-				fields.push( { label: state[ i ].label, value: state[ i ].value } );
+			if (
+				group.dataset.guidedAnswer === '1' &&
+				state[ i ].done &&
+				state[ i ].value
+			) {
+				fields.push( {
+					label: state[ i ].label,
+					value: state[ i ].value,
+				} );
 			}
 		} );
 		if ( fields.length ) {
@@ -139,7 +173,11 @@ function initGuidedBuybox( root ) {
 	}
 
 	function runGuard( event ) {
-		const unfinished = state.map( ( s, i ) => ( s.done ? null : groups[ i ].dataset.guidedLabel || '' ) ).filter( Boolean );
+		const unfinished = state
+			.map( ( s, i ) =>
+				s.done ? null : groups[ i ].dataset.guidedLabel || ''
+			)
+			.filter( Boolean );
 		if ( ! unfinished.length ) {
 			return; // Everything chosen — let the add-to-cart / modal-open proceed.
 		}
@@ -160,34 +198,50 @@ function initGuidedBuybox( root ) {
 
 	// Capture phase — must run before product-card's bubble listener on this
 	// same root (see file docblock for the proof this is genuinely necessary).
-	shell.addEventListener( 'sgs:option-selected', ( event ) => {
-		const groupEl = event.target.closest && event.target.closest( '[data-guided-group]' );
-		if ( ! groupEl || ! shell.contains( groupEl ) ) {
-			return;
-		}
-		const idx = parseInt( groupEl.dataset.guidedGroup, 10 );
-		if ( Number.isNaN( idx ) ) {
-			return;
-		}
-		const detail = event.detail || {};
-		const isAnswer = groupEl.dataset.guidedAnswer === '1';
-		const chosenLabel = resolveChosenLabel( groupEl, detail.selectedKey ) || detail.selectedKey || '';
+	shell.addEventListener(
+		'sgs:option-selected',
+		( event ) => {
+			const groupEl =
+				event.target.closest &&
+				event.target.closest( '[data-guided-group]' );
+			if ( ! groupEl || ! shell.contains( groupEl ) ) {
+				return;
+			}
+			const idx = parseInt( groupEl.dataset.guidedGroup, 10 );
+			if ( Number.isNaN( idx ) ) {
+				return;
+			}
+			const detail = event.detail || {};
+			const isAnswer = groupEl.dataset.guidedAnswer === '1';
+			const chosenLabel =
+				resolveChosenLabel( groupEl, detail.selectedKey ) ||
+				detail.selectedKey ||
+				'';
 
-		state[ idx ] = { done: true, label: groupEl.dataset.guidedLabel || '', value: chosenLabel };
-		updateMeterItem( idx );
-		updateExtraFields();
-		if ( status ) {
-			status.textContent = '';
-		}
-		if ( isAnswer ) {
-			event.stopPropagation();
-		}
-		if ( autoAdvance && idx === active && idx < total - 1 ) {
-			window.setTimeout( () => goTo( idx + 1, false ), reducedMotion() ? 0 : 250 );
-		} else {
-			updateNav();
-		}
-	}, true );
+			state[ idx ] = {
+				done: true,
+				label: groupEl.dataset.guidedLabel || '',
+				value: chosenLabel,
+			};
+			updateMeterItem( idx );
+			updateExtraFields();
+			if ( status ) {
+				status.textContent = '';
+			}
+			if ( isAnswer ) {
+				event.stopPropagation();
+			}
+			if ( autoAdvance && idx === active && idx < total - 1 ) {
+				window.setTimeout(
+					() => goTo( idx + 1, false ),
+					reducedMotion() ? 0 : 250
+				);
+			} else {
+				updateNav();
+			}
+		},
+		true
+	);
 
 	meterBtns.forEach( ( btn, i ) => {
 		btn.addEventListener( 'click', () => {
@@ -197,7 +251,9 @@ function initGuidedBuybox( root ) {
 		} );
 	} );
 	if ( backBtn ) {
-		backBtn.addEventListener( 'click', () => goTo( Math.max( 0, active - 1 ), true ) );
+		backBtn.addEventListener( 'click', () =>
+			goTo( Math.max( 0, active - 1 ), true )
+		);
 	}
 	if ( nextBtn ) {
 		nextBtn.addEventListener( 'click', () => {
@@ -210,16 +266,30 @@ function initGuidedBuybox( root ) {
 	// Finish-choosing guard (FR-43-23) — ROOT is an ancestor of both the
 	// cart-mode form and the modal-mode open button, so capture here runs
 	// before actions.addToCart or the modal's open-anywhere listener.
-	root.addEventListener( 'submit', ( event ) => {
-		if ( event.target.matches && event.target.matches( '.buybox__cart-form' ) ) {
-			runGuard( event );
-		}
-	}, true );
-	root.addEventListener( 'click', ( event ) => {
-		if ( event.target.closest && event.target.closest( '[data-sgs-modal-open]' ) ) {
-			runGuard( event );
-		}
-	}, true );
+	root.addEventListener(
+		'submit',
+		( event ) => {
+			if (
+				event.target.matches &&
+				event.target.matches( '.buybox__cart-form' )
+			) {
+				runGuard( event );
+			}
+		},
+		true
+	);
+	root.addEventListener(
+		'click',
+		( event ) => {
+			if (
+				event.target.closest &&
+				event.target.closest( '[data-sgs-modal-open]' )
+			) {
+				runGuard( event );
+			}
+		},
+		true
+	);
 }
 
 /**
@@ -240,7 +310,8 @@ function resolveChosenLabel( groupEl, selectedKey ) {
 			: selectedKey.replace( /["\\]/g, '\\$&' );
 	const input = groupEl.querySelector( 'input[value="' + escaped + '"]' );
 	const label = input && input.closest( 'label' );
-	const textEl = label && label.querySelector( '.sgs-option-picker__pill-label' );
+	const textEl =
+		label && label.querySelector( '.sgs-option-picker__pill-label' );
 	return textEl ? textEl.textContent.trim() : '';
 }
 

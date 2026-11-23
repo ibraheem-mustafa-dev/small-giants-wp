@@ -235,7 +235,12 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		bgSvgTextShadow: attributes.bgSvgTextShadow,
 	} );
 
-	const bgPreview = backgroundMediaPreview( attributes, colourPalette, gradientPresets, previewTier );
+	const bgPreview = backgroundMediaPreview(
+		attributes,
+		colourPalette,
+		gradientPresets,
+		previewTier
+	);
 
 	const style = {
 		gap: gapCssValue( gap, previewTier ),
@@ -245,8 +250,15 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 			resolveResponsiveTier( attributes.minHeight, previewTier )?.value ||
 			undefined,
 		order: ( () => {
-			const tierOrder = resolveResponsiveTier( attributes.order, previewTier )?.value;
-			return null === tierOrder || undefined === tierOrder || '' === tierOrder ? undefined : tierOrder;
+			const tierOrder = resolveResponsiveTier(
+				attributes.order,
+				previewTier
+			)?.value;
+			return null === tierOrder ||
+				undefined === tierOrder ||
+				'' === tierOrder
+				? undefined
+				: tierOrder;
 		} )(),
 		aspectRatio: /^\s*\d+(\.\d+)?\s*(\/\s*\d+(\.\d+)?\s*)?$/.test(
 			attributes.boxAspectRatio || ''
@@ -579,7 +591,8 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 					'data-sgs-scroll-region': scrollRowPreview
 						? attributes.scrollRegionLabel || ''
 						: undefined,
-					'data-sgs-scroll-controls': scrollControlTokens || undefined,
+					'data-sgs-scroll-controls':
+						scrollControlTokens || undefined,
 					ref: gridRef,
 			  }
 			: { ...blockProps, ref: rootRef },
@@ -1222,7 +1235,10 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 
 			{ hasBandProps ? (
 				<div { ...blockProps }>
-					<BackgroundLayers media={ bgPreview.media } overlay={ bgPreview.overlay } />
+					<BackgroundLayers
+						media={ bgPreview.media }
+						overlay={ bgPreview.overlay }
+					/>
 					{ svgLayer }
 					<ShapeDividerPreview
 						attributes={ attributes }
@@ -1245,7 +1261,10 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 				// it rather than added alongside the spread (which React would
 				// silently discard).
 				<div { ...innerBlocksProps }>
-					<BackgroundLayers media={ bgPreview.media } overlay={ bgPreview.overlay } />
+					<BackgroundLayers
+						media={ bgPreview.media }
+						overlay={ bgPreview.overlay }
+					/>
 					{ svgLayer }
 					<ShapeDividerPreview
 						attributes={ attributes }

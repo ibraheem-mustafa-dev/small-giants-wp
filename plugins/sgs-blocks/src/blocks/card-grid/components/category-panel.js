@@ -19,7 +19,11 @@ import apiFetch from '@wordpress/api-fetch';
  * @param {number}   props.categoryTerm  Currently selected term ID.
  * @param {Function} props.setAttributes Block attribute setter.
  */
-export default function CategoryPanel( { contentType, categoryTerm, setAttributes } ) {
+export default function CategoryPanel( {
+	contentType,
+	categoryTerm,
+	setAttributes,
+} ) {
 	const [ terms, setTerms ] = useState( [] );
 	const [ loading, setLoading ] = useState( false );
 

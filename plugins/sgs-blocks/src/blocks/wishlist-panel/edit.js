@@ -9,7 +9,11 @@
  * every saved product's card is drawn from, edited in place like any card on the Shop.
  */
 import { __ } from '@wordpress/i18n';
-import { InspectorControls, useBlockProps, useInnerBlocksProps } from '@wordpress/block-editor';
+import {
+	InspectorControls,
+	useBlockProps,
+	useInnerBlocksProps,
+} from '@wordpress/block-editor';
 import { SgsColourPanel, fillRow, textRow } from '../../components';
 import { usePreviewTier } from '../../utils';
 import { wishlistColourStyles, wishlistGridStyle } from './colour-preview';
@@ -26,19 +30,45 @@ import AuthoredText from '../../components/AuthoredText';
  * @return {JSX.Element} Editor markup.
  */
 export default function Edit( { attributes, setAttributes } ) {
-	const { heading, layout, maxItems, viewAllLabel, viewAllUrl, showCount, moveLabel, removeLabel, rowActionsFlexWrap } =
-		attributes;
-	const previewLayout = [ 'grid', 'list', 'strip', 'cards', 'product-cards' ].includes( layout ) ? layout : 'grid';
+	const {
+		heading,
+		layout,
+		maxItems,
+		viewAllLabel,
+		viewAllUrl,
+		showCount,
+		moveLabel,
+		removeLabel,
+		rowActionsFlexWrap,
+	} = attributes;
+	const previewLayout = [
+		'grid',
+		'list',
+		'strip',
+		'cards',
+		'product-cards',
+	].includes( layout )
+		? layout
+		: 'grid';
 	const sampleCount = 6;
-	const cap = Number( maxItems ) > 0 ? Math.min( Number( maxItems ), sampleCount ) : sampleCount;
-	const showViewAll = Number( maxItems ) > 0 && Number( maxItems ) < sampleCount;
+	const cap =
+		Number( maxItems ) > 0
+			? Math.min( Number( maxItems ), sampleCount )
+			: sampleCount;
+	const showViewAll =
+		Number( maxItems ) > 0 && Number( maxItems ) < sampleCount;
 
 	// Mirrors render.php: a one-column phone grid shows compact rows.
 	const columns = attributes.columns || {};
 	const phoneTier = [ 'mobile', 'tablet', 'desktop' ].find(
-		( tier ) => columns[ tier ] !== undefined && columns[ tier ] !== null && columns[ tier ] !== ''
+		( tier ) =>
+			columns[ tier ] !== undefined &&
+			columns[ tier ] !== null &&
+			columns[ tier ] !== ''
 	);
-	const mobileRows = 'grid' === previewLayout && 1 === Number( phoneTier ? columns[ phoneTier ] : 1 );
+	const mobileRows =
+		'grid' === previewLayout &&
+		1 === Number( phoneTier ? columns[ phoneTier ] : 1 );
 
 	const previewTier = usePreviewTier();
 	const colourStyles = wishlistColourStyles( attributes );
@@ -57,7 +87,12 @@ export default function Edit( { attributes, setAttributes } ) {
 		{ className: 'sgs-wishlist-panel__items' },
 		{
 			allowedBlocks: [ 'sgs/product-card' ],
-			template: [ [ 'sgs/product-card', { sourceMode: 'wc-product', showLadder: false } ] ],
+			template: [
+				[
+					'sgs/product-card',
+					{ sourceMode: 'wc-product', showLadder: false },
+				],
+			],
 			templateLock: 'insert',
 		}
 	);
@@ -73,7 +108,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		textRow( {
 			key: 'itemName',
 			label: __( 'Product name', 'sgs-blocks' ),
-			attrs: { base: 'itemNameColour', gradient: 'itemNameColourGradient' },
+			attrs: {
+				base: 'itemNameColour',
+				gradient: 'itemNameColourGradient',
+			},
 			attributes,
 			setAttributes,
 		} ),
@@ -108,7 +146,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		fillRow( {
 			key: 'buttonBackground',
 			label: __( 'Move to basket background', 'sgs-blocks' ),
-			attrs: { base: 'buttonBackgroundColour', gradient: 'buttonBackgroundColourGradient' },
+			attrs: {
+				base: 'buttonBackgroundColour',
+				gradient: 'buttonBackgroundColourGradient',
+			},
 			attributes,
 			setAttributes,
 		} ),
@@ -129,7 +170,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		fillRow( {
 			key: 'barBackground',
 			label: __( 'Guest prompt / alerts bar background', 'sgs-blocks' ),
-			attrs: { base: 'barBackgroundColour', gradient: 'barBackgroundColourGradient' },
+			attrs: {
+				base: 'barBackgroundColour',
+				gradient: 'barBackgroundColourGradient',
+			},
 			attributes,
 			setAttributes,
 		} ),
@@ -155,25 +199,48 @@ export default function Edit( { attributes, setAttributes } ) {
 				<SgsColourPanel rows={ colourRows } />
 			</InspectorControls>
 			<InspectorControls>
-				<WishlistLayoutPanel attributes={ attributes } setAttributes={ setAttributes } />
-				<LabelsPanel attributes={ attributes } setAttributes={ setAttributes } />
-				<AlertsSharingPanel attributes={ attributes } setAttributes={ setAttributes } />
+				<WishlistLayoutPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+				<LabelsPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+				<AlertsSharingPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 				<SiteFeaturesPanel />
 			</InspectorControls>
 			<div { ...blockProps }>
 				<div className="sgs-wishlist-panel__bar-top">
-					<h2 className="sgs-wishlist-panel__heading" style={ colourStyles.heading }>
+					<h2
+						className="sgs-wishlist-panel__heading"
+						style={ colourStyles.heading }
+					>
 						<AuthoredText value={ heading } />
-						{ showCount && <span className="sgs-wishlist-panel__count">{ ` (${ sampleCount })` }</span> }
+						{ showCount && (
+							<span className="sgs-wishlist-panel__count">{ ` (${ sampleCount })` }</span>
+						) }
 					</h2>
 					{ showViewAll && (
-						<a className="sgs-wishlist-panel__view-all" href={ viewAllUrl || '#' } onClick={ ( e ) => e.preventDefault() }>
+						<a
+							className="sgs-wishlist-panel__view-all"
+							href={ viewAllUrl || '#' }
+							onClick={ ( e ) => e.preventDefault() }
+						>
 							{ viewAllLabel }
 						</a>
 					) }
 				</div>
-				<div className="sgs-wishlist-panel__bar" style={ colourStyles.bar }>
-					<span className="sgs-wishlist-panel__bar-note">{ __( 'Alerts and sharing', 'sgs-blocks' ) }</span>
+				<div
+					className="sgs-wishlist-panel__bar"
+					style={ colourStyles.bar }
+				>
+					<span className="sgs-wishlist-panel__bar-note">
+						{ __( 'Alerts and sharing', 'sgs-blocks' ) }
+					</span>
 					<input
 						type="text"
 						className="sgs-wishlist-panel__share-field"
@@ -186,46 +253,87 @@ export default function Edit( { attributes, setAttributes } ) {
 				{ isCards ? (
 					<div { ...innerBlocksProps } />
 				) : (
-				<div className="sgs-wishlist-panel__items">
-					{ Array.from( { length: cap }, ( _, i ) => (
-						<div className="sgs-wishlist-panel__row" key={ i }>
-							<span className="sgs-wishlist-panel__row-thumb sgs-wishlist-panel__row-thumb--placeholder" aria-hidden="true" />
-							<div className="sgs-wishlist-panel__row-info">
-								<span className="sgs-wishlist-panel__row-name" style={ colourStyles.itemName }>
-									{ __( 'Saved product', 'sgs-blocks' ) } { i + 1 }
-								</span>
-								<span className="sgs-wishlist-panel__row-price" style={ colourStyles.price }>
-									£0.00
-								</span>
-								{ 0 === i && (
-									<>
-										<span className="sgs-wishlist-panel__row-price-drop" style={ colourStyles.priceDrop }>
-											{ __( 'Price dropped', 'sgs-blocks' ) }
-										</span>
-										<span className="sgs-wishlist-panel__row-stock" style={ colourStyles.stockChip }>
-											{ __( 'In stock', 'sgs-blocks' ) }
-										</span>
-									</>
-								) }
-							</div>
-							<div className="sgs-wishlist-panel__row-actions" style={ rowActionsFlexWrap ? { flexWrap: rowActionsFlexWrap } : undefined }>
-								<span className="sgs-wishlist-panel__move-to-basket wp-element-button" style={ colourStyles.button }>
-									{ moveLabel }
-								</span>
-								{ 'strip' !== previewLayout && (
-									<span className="sgs-wishlist-panel__remove" style={ colourStyles.link }>
-										{ removeLabel }
+					<div className="sgs-wishlist-panel__items">
+						{ Array.from( { length: cap }, ( _, i ) => (
+							<div className="sgs-wishlist-panel__row" key={ i }>
+								<span
+									className="sgs-wishlist-panel__row-thumb sgs-wishlist-panel__row-thumb--placeholder"
+									aria-hidden="true"
+								/>
+								<div className="sgs-wishlist-panel__row-info">
+									<span
+										className="sgs-wishlist-panel__row-name"
+										style={ colourStyles.itemName }
+									>
+										{ __( 'Saved product', 'sgs-blocks' ) }{ ' ' }
+										{ i + 1 }
 									</span>
-								) }
+									<span
+										className="sgs-wishlist-panel__row-price"
+										style={ colourStyles.price }
+									>
+										£0.00
+									</span>
+									{ 0 === i && (
+										<>
+											<span
+												className="sgs-wishlist-panel__row-price-drop"
+												style={ colourStyles.priceDrop }
+											>
+												{ __(
+													'Price dropped',
+													'sgs-blocks'
+												) }
+											</span>
+											<span
+												className="sgs-wishlist-panel__row-stock"
+												style={ colourStyles.stockChip }
+											>
+												{ __(
+													'In stock',
+													'sgs-blocks'
+												) }
+											</span>
+										</>
+									) }
+								</div>
+								<div
+									className="sgs-wishlist-panel__row-actions"
+									style={
+										rowActionsFlexWrap
+											? { flexWrap: rowActionsFlexWrap }
+											: undefined
+									}
+								>
+									<span
+										className="sgs-wishlist-panel__move-to-basket wp-element-button"
+										style={ colourStyles.button }
+									>
+										{ moveLabel }
+									</span>
+									{ 'strip' !== previewLayout && (
+										<span
+											className="sgs-wishlist-panel__remove"
+											style={ colourStyles.link }
+										>
+											{ removeLabel }
+										</span>
+									) }
+								</div>
 							</div>
-						</div>
-					) ) }
-				</div>
+						) ) }
+					</div>
 				) }
 				<p className="sgs-wishlist-panel__editor-note">
 					{ isCards
-						? __( 'This card is the template: every saved product is drawn with it, as on the Shop. Pick any product in the card to preview it.', 'sgs-blocks' )
-						: __( 'Sample rows. Each visitor sees their own saved items on the live page.', 'sgs-blocks' ) }
+						? __(
+								'This card is the template: every saved product is drawn with it, as on the Shop. Pick any product in the card to preview it.',
+								'sgs-blocks'
+						  )
+						: __(
+								'Sample rows. Each visitor sees their own saved items on the live page.',
+								'sgs-blocks'
+						  ) }
 				</p>
 			</div>
 		</>

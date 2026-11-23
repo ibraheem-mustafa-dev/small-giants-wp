@@ -42,13 +42,13 @@ function Fields( { fields, layer, onLayer, repeated } ) {
 
 /**
  * @param {Object}   props
- * @param {Object}   props.layer   The state layer.
- * @param {string}   props.defName The values `$def` the layer holds (`HoverStateValues`).
- * @param {Object[]} props.groups  `HOVER_GROUPS` or `FOCUS_GROUPS`.
- * @param {number}   props.level   The heading level of a group (3 under the panel, 4 under the Focus heading).
- * @param {string[]} props.omitKeys Keys not offered on this element; the ring group says why when its keys are left out.
+ * @param {Object}   props.layer      The state layer.
+ * @param {string}   props.defName    The values `$def` the layer holds (`HoverStateValues`).
+ * @param {Object[]} props.groups     `HOVER_GROUPS` or `FOCUS_GROUPS`.
+ * @param {number}   props.level      The heading level of a group (3 under the panel, 4 under the Focus heading).
+ * @param {string[]} props.omitKeys   Keys not offered on this element; the ring group says why when its keys are left out.
  * @param {boolean}  [props.repeated] Whether the target is a repeated item.
- * @param {Function} props.onLayer Receives the edited layer.
+ * @param {Function} props.onLayer    Receives the edited layer.
  * @return {Element} The fields.
  */
 export default function HoverFineTune( {
@@ -63,63 +63,69 @@ export default function HoverFineTune( {
 	const Heading = `h${ level }`;
 	return (
 		<>
-			{ fieldGroups( defName, groups, undefined, omitKeys ).map( ( group ) => {
-				const { driver } = group;
-				const mode = driver ? driverOf( layer, driver ) : null;
-				return (
-					<section
-						key={ group.id }
-						className={ `sgs-motion-hover__group sgs-motion-hover__group--${ group.id }` }
-					>
-						<Heading className="sgs-motion-hover__heading">
-							{ group.label }
-						</Heading>
-						{ group.refused && (
-							<p
-								className="sgs-motion-atom__help sgs-motion-hover__refusal"
-								role="note"
-							>
-								{ RING_REFUSAL_MESSAGE }
-							</p>
-						) }
-						<Fields
-							fields={ group.fields }
-							layer={ layer }
-							onLayer={ onLayer }
-							repeated={ repeated }
-						/>
-						{ driver && (
-							<>
-								<ChoiceAtom
-									label={ __(
-										'Rotate driven by',
-										'sgs-blocks'
-									) }
-									options={ DRIVER_OPTIONS }
-									emptyLabel={ null }
-									value={ mode }
-									onChange={ ( next ) =>
-										next &&
-										next !== mode &&
-										onLayer(
-											withDriver( layer, next, driver )
-										)
-									}
-								/>
-								<Fields
-									fields={
-										mode === 'pointer'
-											? driver.pointerFields
-											: driver.angleFields
-									}
-									layer={ layer }
-									onLayer={ onLayer }
-								/>
-							</>
-						) }
-					</section>
-				);
-			} ) }
+			{ fieldGroups( defName, groups, undefined, omitKeys ).map(
+				( group ) => {
+					const { driver } = group;
+					const mode = driver ? driverOf( layer, driver ) : null;
+					return (
+						<section
+							key={ group.id }
+							className={ `sgs-motion-hover__group sgs-motion-hover__group--${ group.id }` }
+						>
+							<Heading className="sgs-motion-hover__heading">
+								{ group.label }
+							</Heading>
+							{ group.refused && (
+								<p
+									className="sgs-motion-atom__help sgs-motion-hover__refusal"
+									role="note"
+								>
+									{ RING_REFUSAL_MESSAGE }
+								</p>
+							) }
+							<Fields
+								fields={ group.fields }
+								layer={ layer }
+								onLayer={ onLayer }
+								repeated={ repeated }
+							/>
+							{ driver && (
+								<>
+									<ChoiceAtom
+										label={ __(
+											'Rotate driven by',
+											'sgs-blocks'
+										) }
+										options={ DRIVER_OPTIONS }
+										emptyLabel={ null }
+										value={ mode }
+										onChange={ ( next ) =>
+											next &&
+											next !== mode &&
+											onLayer(
+												withDriver(
+													layer,
+													next,
+													driver
+												)
+											)
+										}
+									/>
+									<Fields
+										fields={
+											mode === 'pointer'
+												? driver.pointerFields
+												: driver.angleFields
+										}
+										layer={ layer }
+										onLayer={ onLayer }
+									/>
+								</>
+							) }
+						</section>
+					);
+				}
+			) }
 		</>
 	);
 }

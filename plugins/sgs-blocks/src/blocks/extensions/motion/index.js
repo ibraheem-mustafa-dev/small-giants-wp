@@ -37,7 +37,8 @@ function delegateValueOf( name, attributes ) {
 	if ( ! delegateAttributeByName.has( name ) ) {
 		delegateAttributeByName.set(
 			name,
-			delegateConfig( getBlockType( name )?.supports?.sgs )?.attribute ?? null
+			delegateConfig( getBlockType( name )?.supports?.sgs )?.attribute ??
+				null
 		);
 	}
 	const attribute = delegateAttributeByName.get( name );
@@ -60,7 +61,10 @@ const withMotionPanels = createHigherOrderComponent(
 						clientId={ props.clientId }
 						motion={ props.attributes[ MOTION_ATTRIBUTE_NAME ] }
 						setAttributes={ props.setAttributes }
-						delegateValue={ delegateValueOf( props.name, props.attributes ) }
+						delegateValue={ delegateValueOf(
+							props.name,
+							props.attributes
+						) }
 					/>
 				</>
 			);

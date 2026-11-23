@@ -12,15 +12,30 @@
 import { __ } from '@wordpress/i18n';
 import { SelectControl } from '@wordpress/components';
 import { Section, Row, typographyAttrs } from './panel-kit';
-import { TierBox, TierLength, BorderField, TypographyRow, typoTarget } from './panel-fields';
+import {
+	TierBox,
+	TierLength,
+	BorderField,
+	TypographyRow,
+	typoTarget,
+} from './panel-fields';
 
 /** Human labels for the `cardStyle` enum. The slugs come from block.json; a slug added there needs a label here. */
 export const CARD_LOOK_OPTIONS = [
 	{ label: __( 'Flat', 'sgs-blocks' ), value: 'flat' },
 	{ label: __( 'Bordered', 'sgs-blocks' ), value: 'bordered' },
 	{ label: __( 'Elevated', 'sgs-blocks' ), value: 'elevated' },
-	{ label: __( 'Google card (matches the Google Reviews panel)', 'sgs-blocks' ), value: 'google-card' },
-	{ label: __( 'Minimal quote (no boxes)', 'sgs-blocks' ), value: 'quote-minimal' },
+	{
+		label: __(
+			'Google card (matches the Google Reviews panel)',
+			'sgs-blocks'
+		),
+		value: 'google-card',
+	},
+	{
+		label: __( 'Minimal quote (no boxes)', 'sgs-blocks' ),
+		value: 'quote-minimal',
+	},
 	{ label: __( 'Boxed tile', 'sgs-blocks' ), value: 'boxed' },
 	{ label: __( 'Speech bubble', 'sgs-blocks' ), value: 'bubble' },
 	{ label: __( 'Wall tile (dense wall)', 'sgs-blocks' ), value: 'wall-tile' },
@@ -49,22 +64,46 @@ export default function CardPanel( { name, attributes, setAttributes } ) {
 	const shared = { attributes, setAttributes };
 	// The card border sits on the card background, or on the panel behind it when the card has none.
 	const cardBackdrop =
-		attributes.cardBackground || ( ! attributes.backgroundColourGradient && attributes.backgroundColour ) || '';
+		attributes.cardBackground ||
+		( ! attributes.backgroundColourGradient &&
+			attributes.backgroundColour ) ||
+		'';
 
 	return (
-		<Section title={ __( 'Card', 'sgs-blocks' ) } attrs={ CARD_ATTRS } setAttributes={ setAttributes }>
-			<Row label={ __( 'Card look', 'sgs-blocks' ) } attrs={ [ 'cardStyle' ] } { ...shared }>
+		<Section
+			title={ __( 'Card', 'sgs-blocks' ) }
+			attrs={ CARD_ATTRS }
+			setAttributes={ setAttributes }
+		>
+			<Row
+				label={ __( 'Card look', 'sgs-blocks' ) }
+				attrs={ [ 'cardStyle' ] }
+				{ ...shared }
+			>
 				<SelectControl
 					label={ __( 'Card look', 'sgs-blocks' ) }
 					value={ attributes.cardStyle }
 					options={ CARD_LOOK_OPTIONS }
-					onChange={ ( value ) => setAttributes( { cardStyle: value } ) }
-					help={ __( 'A ready-made starting style. Anything you set in the controls below paints over it.', 'sgs-blocks' ) }
+					onChange={ ( value ) =>
+						setAttributes( { cardStyle: value } )
+					}
+					help={ __(
+						'A ready-made starting style. Anything you set in the controls below paints over it.',
+						'sgs-blocks'
+					) }
 					__next40pxDefaultSize
 				/>
 			</Row>
-			<Row label={ __( 'Panel padding', 'sgs-blocks' ) } attrs={ [ 'padding' ] } { ...shared }>
-				<TierBox label={ __( 'Panel padding', 'sgs-blocks' ) } attr="padding" { ...shared } />
+			<Row
+				label={ __( 'Panel padding', 'sgs-blocks' ) }
+				attrs={ [ 'padding' ] }
+				{ ...shared }
+			>
+				<TierBox
+					label={ __( 'Panel padding', 'sgs-blocks' ) }
+					attr="padding"
+					{ ...shared }
+				/>
 			</Row>
 			<TypographyRow
 				label={ __( 'Panel font', 'sgs-blocks' ) }
@@ -80,10 +119,23 @@ export default function CardPanel( { name, attributes, setAttributes } ) {
 				] }
 				{ ...shared }
 			/>
-			<Row label={ __( 'Review card padding', 'sgs-blocks' ) } attrs={ [ 'cardPadding' ] } { ...shared }>
-				<TierBox label={ __( 'Review card padding', 'sgs-blocks' ) } attr="cardPadding" blockName={ name } { ...shared } />
+			<Row
+				label={ __( 'Review card padding', 'sgs-blocks' ) }
+				attrs={ [ 'cardPadding' ] }
+				{ ...shared }
+			>
+				<TierBox
+					label={ __( 'Review card padding', 'sgs-blocks' ) }
+					attr="cardPadding"
+					blockName={ name }
+					{ ...shared }
+				/>
 			</Row>
-			<Row label={ __( 'Review card border', 'sgs-blocks' ) } attrs={ BORDER_ATTRS } { ...shared }>
+			<Row
+				label={ __( 'Review card border', 'sgs-blocks' ) }
+				attrs={ BORDER_ATTRS }
+				{ ...shared }
+			>
 				<BorderField
 					label={ __( 'Review card border width', 'sgs-blocks' ) }
 					widthAttr="cardBorderWidth"
@@ -95,11 +147,30 @@ export default function CardPanel( { name, attributes, setAttributes } ) {
 					{ ...shared }
 				/>
 			</Row>
-			<Row label={ __( 'Review card gap', 'sgs-blocks' ) } attrs={ [ 'cardGap' ] } { ...shared }>
-				<TierLength label={ __( 'Space between the parts of a card', 'sgs-blocks' ) } attr="cardGap" { ...shared } />
+			<Row
+				label={ __( 'Review card gap', 'sgs-blocks' ) }
+				attrs={ [ 'cardGap' ] }
+				{ ...shared }
+			>
+				<TierLength
+					label={ __(
+						'Space between the parts of a card',
+						'sgs-blocks'
+					) }
+					attr="cardGap"
+					{ ...shared }
+				/>
 			</Row>
-			<Row label={ __( 'Review card width', 'sgs-blocks' ) } attrs={ [ 'cardWidth' ] } { ...shared }>
-				<TierLength label={ __( 'Card width (slider and wall)', 'sgs-blocks' ) } attr="cardWidth" { ...shared } />
+			<Row
+				label={ __( 'Review card width', 'sgs-blocks' ) }
+				attrs={ [ 'cardWidth' ] }
+				{ ...shared }
+			>
+				<TierLength
+					label={ __( 'Card width (slider and wall)', 'sgs-blocks' ) }
+					attr="cardWidth"
+					{ ...shared }
+				/>
 			</Row>
 		</Section>
 	);

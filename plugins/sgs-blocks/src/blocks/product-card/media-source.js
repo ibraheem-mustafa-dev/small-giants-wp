@@ -48,7 +48,11 @@ export function firstUrl( source ) {
  * @return {*} The desktop value, or the value itself when it is not a responsive object.
  */
 export function desktopOf( value ) {
-	if ( value && typeof value === 'object' && ( 'desktop' in value || 'tablet' in value || 'mobile' in value ) ) {
+	if (
+		value &&
+		typeof value === 'object' &&
+		( 'desktop' in value || 'tablet' in value || 'mobile' in value )
+	) {
 		return value.desktop;
 	}
 	return value;

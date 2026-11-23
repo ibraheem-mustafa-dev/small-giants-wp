@@ -24,21 +24,21 @@ const FLOW_PRODUCT_ID_ATTR = 'data-flow-product-id';
 
 /**
  * @typedef {Object} ComboEntry One entry in a parsed `data-flow-combos` map.
- * @property {number} v Variation ID.
- * @property {number} p Price, minor currency units.
- * @property {0|1}    s In-stock flag.
+ * @property {number}                                                                                                v         Variation ID.
+ * @property {number}                                                                                                p         Price, minor currency units.
+ * @property {0|1}                                                                                                   s         In-stock flag.
  *
  * @typedef {Object} VariationChoice
- * @property {string} slug      Chosen term slug.
- * @property {number} stepIndex Step the choice was made on (-1 if unknown).
+ * @property {string}                                                                                                slug      Chosen term slug.
+ * @property {number}                                                                                                stepIndex Step the choice was made on (-1 if unknown).
  *
  * @typedef {Object} FlowVariationState
- * @property {number}                       productId The flow's resolved product.
- * @property {Object<string, ComboEntry>}   combos    Parsed `data-flow-combos`.
- * @property {Set<string>}                  required  Taxonomies the combo map covers.
- * @property {Map<string, VariationChoice>} choices   This path's picks, keyed by taxonomy.
+ * @property {number}                                                                                                productId The flow's resolved product.
+ * @property {Object<string, ComboEntry>}                                                                            combos    Parsed `data-flow-combos`.
+ * @property {Set<string>}                                                                                           required  Taxonomies the combo map covers.
+ * @property {Map<string, VariationChoice>}                                                                          choices   This path's picks, keyed by taxonomy.
  * @property {{productId: number, variationId: number, attributes: Object<string, string>, priceMinor: number}|null} resolved
- *           Fully-resolved variation, or null until every required taxonomy has a choice.
+ *                                                                                                                             Fully-resolved variation, or null until every required taxonomy has a choice.
  */
 
 /** @type {WeakMap<HTMLElement, FlowVariationState>} Per-flow-instance variation state. */
@@ -93,7 +93,9 @@ function deriveRequiredTaxonomies( combos ) {
 function buildComboKey( choices ) {
 	return Array.from( choices.keys() )
 		.sort()
-		.map( ( taxonomy ) => `${ taxonomy }:${ choices.get( taxonomy ).slug }` )
+		.map(
+			( taxonomy ) => `${ taxonomy }:${ choices.get( taxonomy ).slug }`
+		)
 		.join( '|' );
 }
 
@@ -106,7 +108,9 @@ function ensureState( flowEl ) {
 	if ( ! variationState.has( flowEl ) ) {
 		const combos = parseCombos( flowEl );
 		variationState.set( flowEl, {
-			productId: parseInt( flowEl.getAttribute( FLOW_PRODUCT_ID_ATTR ), 10 ) || 0,
+			productId:
+				parseInt( flowEl.getAttribute( FLOW_PRODUCT_ID_ATTR ), 10 ) ||
+				0,
 			combos,
 			required: deriveRequiredTaxonomies( combos ),
 			choices: new Map(),
@@ -137,7 +141,10 @@ export function initVariation( flowEl ) {
 function tryResolve( flowEl ) {
 	const state = ensureState( flowEl );
 
-	if ( state.required.size === 0 || state.choices.size < state.required.size ) {
+	if (
+		state.required.size === 0 ||
+		state.choices.size < state.required.size
+	) {
 		state.resolved = null;
 		return;
 	}
@@ -160,7 +167,12 @@ function tryResolve( flowEl ) {
 		attributes[ taxonomy ] = choice.slug;
 	} );
 
-	state.resolved = { productId: state.productId, variationId: combo.v, attributes, priceMinor: combo.p };
+	state.resolved = {
+		productId: state.productId,
+		variationId: combo.v,
+		attributes,
+		priceMinor: combo.p,
+	};
 
 	flowEl.dispatchEvent(
 		new CustomEvent( 'sgs-flow-variation-change', {
@@ -182,7 +194,12 @@ function tryResolve( flowEl ) {
  * @param {number}      [stepIndex] Step the choice was made on; -1 (never
  *                                  cleared by Back) when unknown.
  */
-export function recordVariationChoice( flowEl, taxonomy, slug, stepIndex = -1 ) {
+export function recordVariationChoice(
+	flowEl,
+	taxonomy,
+	slug,
+	stepIndex = -1
+) {
 	if ( ! taxonomy || ! slug ) {
 		return;
 	}
@@ -239,7 +256,9 @@ export function getResolvedVariation( flowEl ) {
  * @param {number}      stepIndex The current step's index.
  */
 export function handleProductOptionClick( flowEl, button, stepIndex ) {
-	if ( 'variation' !== ( button.getAttribute( 'data-attribute-mode' ) || '' ) ) {
+	if (
+		'variation' !== ( button.getAttribute( 'data-attribute-mode' ) || '' )
+	) {
 		return;
 	}
 	const taxonomy = button.getAttribute( 'data-product-attribute' ) || '';

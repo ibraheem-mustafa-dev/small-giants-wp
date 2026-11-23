@@ -272,7 +272,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			return undefined;
 		}
 		loadLucide()
-			.then( ( data ) => live && setMarkerIconSvg( data?.map?.[ markerIcon ] || '' ) )
+			.then(
+				( data ) =>
+					live && setMarkerIconSvg( data?.map?.[ markerIcon ] || '' )
+			)
 			.catch( () => live && setMarkerIconSvg( '' ) );
 		return () => {
 			live = false;
@@ -574,23 +577,45 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								<>
 									{ 'icon' === markerShape && (
 										<IconPicker
-											label={ __( 'Marker icon', 'sgs-blocks' ) }
+											label={ __(
+												'Marker icon',
+												'sgs-blocks'
+											) }
 											/* render.php cuts a Lucide icon out of the dot paint with a mask. */
 											sources={ [ 'lucide' ] }
-											value={ markerIcon ? { source: 'lucide', name: markerIcon } : null }
+											value={
+												markerIcon
+													? {
+															source: 'lucide',
+															name: markerIcon,
+													  }
+													: null
+											}
 											onChange={ ( val ) =>
-												setAttributes( { markerIcon: val ? val.name : '' } )
+												setAttributes( {
+													markerIcon: val
+														? val.name
+														: '',
+												} )
 											}
 										/>
 									) }
 									<SgsLengthControl
 										scale="font-size"
-										label={ 'icon' === markerShape ? __( 'Icon size', 'sgs-blocks' ) : __( 'Dot size', 'sgs-blocks' ) }
+										label={
+											'icon' === markerShape
+												? __(
+														'Icon size',
+														'sgs-blocks'
+												  )
+												: __( 'Dot size', 'sgs-blocks' )
+										}
 										value={ dotSize ?? '' }
 										units={ SGS_LENGTH_UNITS }
 										onChange={ ( val ) =>
 											setAttributes( {
-												dotSize: sgsNormaliseLength( val ),
+												dotSize:
+													sgsNormaliseLength( val ),
 											} )
 										}
 										presets={ false }

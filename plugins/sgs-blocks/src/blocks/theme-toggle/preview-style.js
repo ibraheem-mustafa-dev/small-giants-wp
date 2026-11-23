@@ -7,7 +7,12 @@
  */
 
 import { resolveColourToken } from '../../components';
-import { backgroundPaintPreview, typographyPreviewStyle, boxPreview, tierLengthPreview } from '../../utils';
+import {
+	backgroundPaintPreview,
+	typographyPreviewStyle,
+	boxPreview,
+	tierLengthPreview,
+} from '../../utils';
 
 /**
  * Effective icon-only value for each tier: a tablet or mobile value left unset
@@ -17,10 +22,15 @@ import { backgroundPaintPreview, typographyPreviewStyle, boxPreview, tierLengthP
  * @return {{ base: boolean, tablet: boolean, mobile: boolean }} Effective value per tier.
  */
 function iconOnlyByTier( attributes ) {
-	const unset = ( value ) => null === value || undefined === value || '' === value;
+	const unset = ( value ) =>
+		null === value || undefined === value || '' === value;
 	const base = !! attributes.iconOnly;
-	const tablet = unset( attributes.iconOnlyTablet ) ? base : !! attributes.iconOnlyTablet;
-	const mobile = unset( attributes.iconOnlyMobile ) ? tablet : !! attributes.iconOnlyMobile;
+	const tablet = unset( attributes.iconOnlyTablet )
+		? base
+		: !! attributes.iconOnlyTablet;
+	const mobile = unset( attributes.iconOnlyMobile )
+		? tablet
+		: !! attributes.iconOnlyMobile;
 	return { base, tablet, mobile };
 }
 
@@ -41,7 +51,11 @@ export function themeTogglePreview( attributes, tier, palette ) {
 		buttonStyle: {
 			...boxPreview( attributes, tier, palette ),
 			...( iconSize ? { '--sgs-tt-tap-min': '0px' } : {} ),
-			...backgroundPaintPreview( attributes.backgroundColour, attributes.backgroundColourGradient, palette ),
+			...backgroundPaintPreview(
+				attributes.backgroundColour,
+				attributes.backgroundColourGradient,
+				palette
+			),
 		},
 		labelStyle: {
 			...typographyPreviewStyle( attributes, 'label', tier ),

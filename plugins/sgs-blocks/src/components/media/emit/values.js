@@ -61,7 +61,9 @@ export function mediaColour( raw ) {
 	if ( NAMED_COLOURS.includes( value.toLowerCase() ) ) {
 		return value;
 	}
-	return `var(--wp--preset--color--${ value.toLowerCase().replace( /[^a-z0-9-]/g, '' ) }, currentColor)`;
+	return `var(--wp--preset--color--${ value
+		.toLowerCase()
+		.replace( /[^a-z0-9-]/g, '' ) }, currentColor)`;
 }
 
 /**
@@ -73,7 +75,11 @@ export function mediaGradient( raw ) {
 	if ( '' === value ) {
 		return '';
 	}
-	if ( ! /^(repeating-)?(linear|radial|conic)-gradient\([A-Za-z0-9\s.,%()#/_-]+\)$/i.test( value ) ) {
+	if (
+		! /^(repeating-)?(linear|radial|conic)-gradient\([A-Za-z0-9\s.,%()#/_-]+\)$/i.test(
+			value
+		)
+	) {
 		return '';
 	}
 	if ( /[;{}]|url\s*\(|<|>|@|expression/i.test( value ) ) {
@@ -125,7 +131,11 @@ function hslToRgb( hue, sat, light ) {
 		}
 		return p;
 	};
-	return [ phpRound( toRgb( h + 1 / 3 ) * 255 ), phpRound( toRgb( h ) * 255 ), phpRound( toRgb( h - 1 / 3 ) * 255 ) ];
+	return [
+		phpRound( toRgb( h + 1 / 3 ) * 255 ),
+		phpRound( toRgb( h ) * 255 ),
+		phpRound( toRgb( h - 1 / 3 ) * 255 ),
+	];
 }
 
 /**
@@ -137,14 +147,24 @@ function hslToRgb( hue, sat, light ) {
  */
 export function functionalColourToHex( value ) {
 	const v = value.trim();
-	let m = /^rgba?\(\s*([\d.]+%?)[\s,]+([\d.]+%?)[\s,]+([\d.]+%?)\s*(?:[,/]\s*([\d.]+%?)\s*)?\)$/i.exec( v );
+	let m =
+		/^rgba?\(\s*([\d.]+%?)[\s,]+([\d.]+%?)[\s,]+([\d.]+%?)\s*(?:[,/]\s*([\d.]+%?)\s*)?\)$/i.exec(
+			v
+		);
 	let rgb = null;
 	if ( m ) {
 		rgb = [ channel( m[ 1 ] ), channel( m[ 2 ] ), channel( m[ 3 ] ) ];
 	} else {
-		m = /^hsla?\(\s*([\d.]+)(?:deg)?[\s,]+([\d.]+)%[\s,]+([\d.]+)%\s*(?:[,/]\s*([\d.]+%?)\s*)?\)$/i.exec( v );
+		m =
+			/^hsla?\(\s*([\d.]+)(?:deg)?[\s,]+([\d.]+)%[\s,]+([\d.]+)%\s*(?:[,/]\s*([\d.]+%?)\s*)?\)$/i.exec(
+				v
+			);
 		if ( m ) {
-			rgb = hslToRgb( parseFloat( m[ 1 ] ), parseFloat( m[ 2 ] ), parseFloat( m[ 3 ] ) );
+			rgb = hslToRgb(
+				parseFloat( m[ 1 ] ),
+				parseFloat( m[ 2 ] ),
+				parseFloat( m[ 3 ] )
+			);
 		}
 	}
 	if ( ! rgb ) {
@@ -166,11 +186,34 @@ export function functionalColourToHex( value ) {
  * @return {string} A box-shadow value, or ''. Functional colours are hex, as `sgs_colour_value()` prints them.
  */
 export function mediaShadow( shape, colour ) {
-	const value = composeShadow( 'string' === typeof shape ? shape : '', 'string' === typeof colour ? colour : '' );
-	return value.replace( /(?:rgba?|hsla?)\([^()]*\)/gi, ( token ) => functionalColourToHex( token ) );
+	const value = composeShadow(
+		'string' === typeof shape ? shape : '',
+		'string' === typeof colour ? colour : ''
+	);
+	return value.replace( /(?:rgba?|hsla?)\([^()]*\)/gi, ( token ) =>
+		functionalColourToHex( token )
+	);
 }
 
-const BLENDS = [ 'normal', 'multiply', 'screen', 'overlay', 'darken', 'lighten', 'color-dodge', 'color-burn', 'hard-light', 'soft-light', 'difference', 'exclusion', 'hue', 'saturation', 'color', 'luminosity', 'plus-lighter' ];
+const BLENDS = [
+	'normal',
+	'multiply',
+	'screen',
+	'overlay',
+	'darken',
+	'lighten',
+	'color-dodge',
+	'color-burn',
+	'hard-light',
+	'soft-light',
+	'difference',
+	'exclusion',
+	'hue',
+	'saturation',
+	'color',
+	'luminosity',
+	'plus-lighter',
+];
 
 /**
  * @param {*} raw Stored value.
@@ -199,13 +242,18 @@ export function mediaFilter( colour, strength ) {
 	if ( 'white' === colour ) {
 		return 'brightness(0) invert(1)';
 	}
-	if ( 'string' === typeof colour && Object.prototype.hasOwnProperty.call( TONE_FILTERS, colour ) ) {
+	if (
+		'string' === typeof colour &&
+		Object.prototype.hasOwnProperty.call( TONE_FILTERS, colour )
+	) {
 		return TONE_FILTERS[ colour ];
 	}
 	if ( 'greyscale' !== colour ) {
 		return '';
 	}
-	const n = isNumeric( strength ) ? Math.max( 0, Math.min( 100, Number( strength ) ) ) : 100;
+	const n = isNumeric( strength )
+		? Math.max( 0, Math.min( 100, Number( strength ) ) )
+		: 100;
 	return `grayscale(${ num( n ) }%)`;
 }
 
@@ -232,7 +280,10 @@ export function isNumeric( value ) {
 	if ( 'number' === typeof value ) {
 		return Number.isFinite( value );
 	}
-	return 'string' === typeof value && /^\s*[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?\s*$/.test( value );
+	return (
+		'string' === typeof value &&
+		/^\s*[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?\s*$/.test( value )
+	);
 }
 
 /**
@@ -241,7 +292,10 @@ export function isNumeric( value ) {
  * @return {string} A length that may be a bare number of pixels (clamped 0 to max), or ''.
  */
 export function mediaPx( raw, max = 500 ) {
-	if ( 'number' === typeof raw || ( 'string' === typeof raw && /^\s*\d+(\.\d+)?\s*$/.test( raw ) ) ) {
+	if (
+		'number' === typeof raw ||
+		( 'string' === typeof raw && /^\s*\d+(\.\d+)?\s*$/.test( raw ) )
+	) {
 		return `${ num( Math.max( 0, Math.min( max, Number( raw ) ) ) ) }px`;
 	}
 	return mediaLength( raw );

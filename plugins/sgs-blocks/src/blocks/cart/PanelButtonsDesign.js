@@ -23,13 +23,24 @@ const VIEW_TARGETS = [
  * @param {Function} root0.setAttributes The block's attribute setter.
  * @param {boolean}  root0.hasPanel      Whether displayMode is flyout|drawer.
  */
-export default function PanelButtonsDesign( { attributes, setAttributes, hasPanel } ) {
+export default function PanelButtonsDesign( {
+	attributes,
+	setAttributes,
+	hasPanel,
+} ) {
 	if ( ! hasPanel || false === attributes.panelShowViewCart ) {
 		return null;
 	}
 	return (
-		<PanelBody title={ __( 'Mini-cart "View cart" text', 'sgs-blocks' ) } initialOpen={ false }>
-			<TypographyControls attributes={ attributes } setAttributes={ setAttributes } targets={ VIEW_TARGETS } />
+		<PanelBody
+			title={ __( 'Mini-cart "View cart" text', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
+			<TypographyControls
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				targets={ VIEW_TARGETS }
+			/>
 		</PanelBody>
 	);
 }

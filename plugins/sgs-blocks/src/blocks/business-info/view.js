@@ -8,7 +8,13 @@
  * live region, so assistive technology reads it once as part of the page and is not interrupted.
  */
 import { initialiseHoursToday } from './hours-today';
-import { parseSchedule, hasAnySession, zonedNow, computeStatus, buildLine } from './open-status-logic';
+import {
+	parseSchedule,
+	hasAnySession,
+	zonedNow,
+	computeStatus,
+	buildLine,
+} from './open-status-logic';
 
 const RECHECK_MS = 15 * 60 * 1000;
 
@@ -33,13 +39,18 @@ function update( root, config, schedule ) {
 	const line = root.querySelector( '.sgs-open-status__line' );
 	root.setAttribute( 'data-state', status.open ? 'open' : 'closed' );
 	if ( label ) {
-		label.textContent = status.open ? config.labels.open : config.labels.closed;
+		label.textContent = status.open
+			? config.labels.open
+			: config.labels.closed;
 	}
 	if ( pill ) {
 		pill.hidden = false;
 	}
 	if ( line ) {
-		const text = config.showLine && status.change ? buildLine( status.change, config.labels ) : '';
+		const text =
+			config.showLine && status.change
+				? buildLine( status.change, config.labels )
+				: '';
 		line.textContent = text;
 		line.hidden = '' === text;
 	}

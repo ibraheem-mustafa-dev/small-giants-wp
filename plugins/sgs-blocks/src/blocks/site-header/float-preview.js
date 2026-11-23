@@ -160,7 +160,11 @@ export function resolveFloatInset( inset, tier ) {
 	if ( tier === 'mobile' ) {
 		order.push( 'mobile' );
 	}
-	const out = { top: DEFAULT_INSET, right: DEFAULT_INSET, left: DEFAULT_INSET };
+	const out = {
+		top: DEFAULT_INSET,
+		right: DEFAULT_INSET,
+		left: DEFAULT_INSET,
+	};
 	order.forEach( ( key ) => {
 		const box = inset?.[ key ];
 		if ( ! box || typeof box !== 'object' ) {
@@ -192,11 +196,8 @@ export function resolveFloatInset( inset, tier ) {
  * @return {Object} Style object for `useBlockProps`; empty when nothing applies.
  */
 export function floatPreview( attributes, previewTier ) {
-	const {
-		headerFloat,
-		headerFloatInset,
-		headerFloatCollapse,
-	} = attributes || {};
+	const { headerFloat, headerFloatInset, headerFloatCollapse } =
+		attributes || {};
 	// Shared with every other `<BackgroundPanel>` block via
 	// `src/utils/surface-preview.js` (U-1 commit 4e) — this was the ONLY
 	// block with this mirror before the fan-out; the helper now carries it.

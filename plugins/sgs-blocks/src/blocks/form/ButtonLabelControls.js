@@ -1,7 +1,11 @@
 import { __ } from '@wordpress/i18n';
 import { SelectControl, ToggleControl } from '@wordpress/components';
 import SgsFreeTextField from '../../components/SgsFreeTextField';
-import { IconPicker, ResponsiveOverride, SgsLengthControl } from '../../components';
+import {
+	IconPicker,
+	ResponsiveOverride,
+	SgsLengthControl,
+} from '../../components';
 import { NumberControl } from '../../components/primitives';
 
 /**
@@ -21,7 +25,9 @@ export default function ButtonLabelControls( { attributes, setAttributes } ) {
 				noLink
 				label={ __( 'Button Label', 'sgs-blocks' ) }
 				value={ attributes.submitLabel ?? '' }
-				onChange={ ( value ) => setAttributes( { submitLabel: value } ) }
+				onChange={ ( value ) =>
+					setAttributes( { submitLabel: value } )
+				}
 			/>
 			<SgsFreeTextField
 				type="rich"
@@ -33,7 +39,10 @@ export default function ButtonLabelControls( { attributes, setAttributes } ) {
 			<SgsFreeTextField
 				type="rich"
 				noLink
-				label={ __( 'Previous button label (multi-step)', 'sgs-blocks' ) }
+				label={ __(
+					'Previous button label (multi-step)',
+					'sgs-blocks'
+				) }
 				value={ attributes.prevLabel ?? '' }
 				onChange={ ( value ) => setAttributes( { prevLabel: value } ) }
 			/>
@@ -41,8 +50,14 @@ export default function ButtonLabelControls( { attributes, setAttributes } ) {
 				label={ __( 'Button icon', 'sgs-blocks' ) }
 				/* render.php draws a Lucide icon after the Next and Submit labels and a mirrored copy before Previous's label. */
 				sources={ [ 'lucide' ] }
-				value={ attributes.navIcon ? { source: 'lucide', name: attributes.navIcon } : null }
-				onChange={ ( val ) => setAttributes( { navIcon: val ? val.name : '' } ) }
+				value={
+					attributes.navIcon
+						? { source: 'lucide', name: attributes.navIcon }
+						: null
+				}
+				onChange={ ( val ) =>
+					setAttributes( { navIcon: val ? val.name : '' } )
+				}
 			/>
 			{ attributes.navIcon && (
 				<>
@@ -50,22 +65,40 @@ export default function ButtonLabelControls( { attributes, setAttributes } ) {
 						label={ __( 'Button icon size (px)', 'sgs-blocks' ) }
 						value={ attributes.navIconSize ?? 18 }
 						min={ 1 }
-						onChange={ ( value ) => setAttributes( { navIconSize: value ? parseFloat( value ) : 18 } ) }
+						onChange={ ( value ) =>
+							setAttributes( {
+								navIconSize: value ? parseFloat( value ) : 18,
+							} )
+						}
 						__next40pxDefaultSize
 					/>
 					<SgsLengthControl
 						presets
-						label={ __( 'Gap between icon and label', 'sgs-blocks' ) }
+						label={ __(
+							'Gap between icon and label',
+							'sgs-blocks'
+						) }
 						value={ attributes.navIconGap ?? '10px' }
-						onChange={ ( value ) => setAttributes( { navIconGap: value || '10px' } ) }
+						onChange={ ( value ) =>
+							setAttributes( { navIconGap: value || '10px' } )
+						}
 					/>
 					<NumberControl
 						label={ __( 'Button icon stroke width', 'sgs-blocks' ) }
 						value={ attributes.navIconStrokeWidth ?? '' }
 						min={ 0.5 }
 						step={ 0.1 }
-						help={ __( 'Line thickness of the icon. Empty keeps 2.', 'sgs-blocks' ) }
-						onChange={ ( value ) => setAttributes( { navIconStrokeWidth: value ? parseFloat( value ) : '' } ) }
+						help={ __(
+							'Line thickness of the icon. Empty keeps 2.',
+							'sgs-blocks'
+						) }
+						onChange={ ( value ) =>
+							setAttributes( {
+								navIconStrokeWidth: value
+									? parseFloat( value )
+									: '',
+							} )
+						}
 						__next40pxDefaultSize
 					/>
 				</>
@@ -77,9 +110,23 @@ export default function ButtonLabelControls( { attributes, setAttributes } ) {
 			>
 				{ ( { tier, ownValue, effectiveValue, setOwnValue } ) => (
 					<ToggleControl
-						label={ __( 'Next and Submit fill the row on this device', 'sgs-blocks' ) }
-						checked={ true === ( '' === ownValue ? effectiveValue : ownValue ) }
-						onChange={ ( value ) => setOwnValue( value ? true : ( 'desktop' === tier ? undefined : false ) ) }
+						label={ __(
+							'Next and Submit fill the row on this device',
+							'sgs-blocks'
+						) }
+						checked={
+							true ===
+							( '' === ownValue ? effectiveValue : ownValue )
+						}
+						onChange={ ( value ) =>
+							setOwnValue(
+								value
+									? true
+									: 'desktop' === tier
+									? undefined
+									: false
+							)
+						}
 						__nextHasNoMarginBottom
 					/>
 				) }
@@ -103,22 +150,53 @@ export default function ButtonLabelControls( { attributes, setAttributes } ) {
 			<ResponsiveOverride
 				label={ __( 'Align the buttons vertically', 'sgs-blocks' ) }
 				value={ attributes.actionsAlignItems }
-				onChange={ ( obj ) => setAttributes( { actionsAlignItems: obj } ) }
+				onChange={ ( obj ) =>
+					setAttributes( { actionsAlignItems: obj } )
+				}
 			>
 				{ ( { ownValue, effectiveValue, setOwnValue } ) => (
 					<SelectControl
 						__next40pxDefaultSize
 						__nextHasNoMarginBottom
-						label={ __( 'Align the buttons vertically', 'sgs-blocks' ) }
+						label={ __(
+							'Align the buttons vertically',
+							'sgs-blocks'
+						) }
 						hideLabelFromVision
 						value={ ownValue ?? '' }
 						options={ [
-							{ label: effectiveValue ? __( 'Same as the larger device', 'sgs-blocks' ) : __( 'Stretch to the tallest button', 'sgs-blocks' ), value: '' },
-							{ label: __( 'Top', 'sgs-blocks' ), value: 'flex-start' },
-							{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
-							{ label: __( 'Bottom', 'sgs-blocks' ), value: 'flex-end' },
-							{ label: __( 'Stretch', 'sgs-blocks' ), value: 'stretch' },
-							{ label: __( 'Text baseline', 'sgs-blocks' ), value: 'baseline' },
+							{
+								label: effectiveValue
+									? __(
+											'Same as the larger device',
+											'sgs-blocks'
+									  )
+									: __(
+											'Stretch to the tallest button',
+											'sgs-blocks'
+									  ),
+								value: '',
+							},
+							{
+								label: __( 'Top', 'sgs-blocks' ),
+								value: 'flex-start',
+							},
+							{
+								label: __( 'Centre', 'sgs-blocks' ),
+								value: 'center',
+							},
+							{
+								label: __( 'Bottom', 'sgs-blocks' ),
+								value: 'flex-end',
+							},
+							{
+								label: __( 'Stretch', 'sgs-blocks' ),
+								value: 'stretch',
+							},
+							{
+								label: __( 'Text baseline', 'sgs-blocks' ),
+								value: 'baseline',
+							},
 						] }
 						onChange={ ( val ) => setOwnValue( val || undefined ) }
 					/>
@@ -129,14 +207,24 @@ export default function ButtonLabelControls( { attributes, setAttributes } ) {
 				noLink
 				label={ __( 'Note beside the buttons', 'sgs-blocks' ) }
 				value={ attributes.actionsNote ?? '' }
-				onChange={ ( value ) => setAttributes( { actionsNote: value } ) }
-				help={ __( 'Short text at the left of the buttons row. Pair it with Space between in Button alignment.', 'sgs-blocks' ) }
+				onChange={ ( value ) =>
+					setAttributes( { actionsNote: value } )
+				}
+				help={ __(
+					'Short text at the left of the buttons row. Pair it with Space between in Button alignment.',
+					'sgs-blocks'
+				) }
 			/>
 			{ !! attributes.actionsNote && (
 				<ToggleControl
-					label={ __( 'Show the note on the first step only', 'sgs-blocks' ) }
+					label={ __(
+						'Show the note on the first step only',
+						'sgs-blocks'
+					) }
 					checked={ false !== attributes.actionsNoteFirstStepOnly }
-					onChange={ ( value ) => setAttributes( { actionsNoteFirstStepOnly: value } ) }
+					onChange={ ( value ) =>
+						setAttributes( { actionsNoteFirstStepOnly: value } )
+					}
 					__nextHasNoMarginBottom
 				/>
 			) }
@@ -144,13 +232,29 @@ export default function ButtonLabelControls( { attributes, setAttributes } ) {
 				<ResponsiveOverride
 					label={ __( 'Hide the note', 'sgs-blocks' ) }
 					value={ attributes.actionsNoteHidden }
-					onChange={ ( obj ) => setAttributes( { actionsNoteHidden: obj } ) }
+					onChange={ ( obj ) =>
+						setAttributes( { actionsNoteHidden: obj } )
+					}
 				>
 					{ ( { tier, ownValue, effectiveValue, setOwnValue } ) => (
 						<ToggleControl
-							label={ __( 'Hide the note on this device', 'sgs-blocks' ) }
-							checked={ true === ( '' === ownValue ? effectiveValue : ownValue ) }
-							onChange={ ( value ) => setOwnValue( value ? true : ( 'desktop' === tier ? undefined : false ) ) }
+							label={ __(
+								'Hide the note on this device',
+								'sgs-blocks'
+							) }
+							checked={
+								true ===
+								( '' === ownValue ? effectiveValue : ownValue )
+							}
+							onChange={ ( value ) =>
+								setOwnValue(
+									value
+										? true
+										: 'desktop' === tier
+										? undefined
+										: false
+								)
+							}
 							__nextHasNoMarginBottom
 						/>
 					) }

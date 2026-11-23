@@ -6,7 +6,8 @@
 import { __ } from '@wordpress/i18n';
 
 /** @param {Array<[string,string]>} pairs `[ value, label ]` pairs. @return {Array} Options. */
-const options = ( pairs ) => pairs.map( ( [ value, label ] ) => ( { value, label } ) );
+const options = ( pairs ) =>
+	pairs.map( ( [ value, label ] ) => ( { value, label } ) );
 
 export const SELECT_OPTIONS = {
 	SvgAnimation: options( [

@@ -155,7 +155,10 @@ export function normaliseAngleList( list ) {
 	for ( const item of list ) {
 		if ( isJsonNumber( item ) ) {
 			kept.push( Math.max( range.min, Math.min( range.max, item ) ) );
-		} else if ( typeof item === 'string' && validateField( 'angle', item ).ok ) {
+		} else if (
+			typeof item === 'string' &&
+			validateField( 'angle', item ).ok
+		) {
 			kept.push( item );
 		}
 		if ( kept.length === 12 ) {
@@ -256,7 +259,11 @@ function valueCss( type, value ) {
 export function fieldCss( type, value, fieldNode = null ) {
 	const verdict = validateField( type, value, fieldNode );
 	return verdict.ok
-		? { ok: true, value: verdict.value, css: valueCss( type, verdict.value ) }
+		? {
+				ok: true,
+				value: verdict.value,
+				css: valueCss( type, verdict.value ),
+		  }
 		: verdict;
 }
 

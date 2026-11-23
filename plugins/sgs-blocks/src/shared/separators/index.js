@@ -22,7 +22,10 @@ export function initSeparators( scope = document ) {
 	}
 	scope.querySelectorAll( '.sgs-has-separators' ).forEach( ( root ) => {
 		const selector = root.getAttribute( 'data-sgs-sep-list' ) || 'self';
-		const lists = 'self' === selector ? [ root ] : root.querySelectorAll( `:scope ${ selector }` );
+		const lists =
+			'self' === selector
+				? [ root ]
+				: root.querySelectorAll( `:scope ${ selector }` );
 		lists.forEach( ( list ) => {
 			initSeparatorList( list );
 		} );

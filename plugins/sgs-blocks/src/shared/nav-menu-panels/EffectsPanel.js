@@ -24,15 +24,15 @@ import { PanelBody, RangeControl, ToggleControl } from '@wordpress/components';
  * what it always has — the control below mounts ONLY when a caller supplies
  * `onMagnetStrengthChange`.
  *
- * @param {Object}   root0                    Props.
- * @param {boolean}  root0.itemMagnetEnabled  `itemMagnetEnabled`.
- * @param {Function} root0.setAttributes      The block's attribute setter.
- * @param {number}   [root0.magnetStrength]   Optional — `itemMagnetStrength`. `undefined`
- *                                             means "unset" (the caller's own shipped
- *                                             default applies, e.g. `magnet.js`'s 8px cap).
+ * @param {Object}   root0                          Props.
+ * @param {boolean}  root0.itemMagnetEnabled        `itemMagnetEnabled`.
+ * @param {Function} root0.setAttributes            The block's attribute setter.
+ * @param {number}   [root0.magnetStrength]         Optional — `itemMagnetStrength`. `undefined`
+ *                                                  means "unset" (the caller's own shipped
+ *                                                  default applies, e.g. `magnet.js`'s 8px cap).
  * @param {Function} [root0.onMagnetStrengthChange] Optional — when supplied, renders the
- *                                             "Pull strength" control, gated on
- *                                             `itemMagnetEnabled` like the toggle above.
+ *                                                  "Pull strength" control, gated on
+ *                                                  `itemMagnetEnabled` like the toggle above.
  */
 export default function EffectsPanel( {
 	itemMagnetEnabled,
@@ -42,11 +42,16 @@ export default function EffectsPanel( {
 } ) {
 	const hasStrengthControl = typeof onMagnetStrengthChange === 'function';
 	return (
-		<PanelBody title={ __( 'Effects', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Effects', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			<ToggleControl
 				label={ __( 'Magnetic hover pull', 'sgs-blocks' ) }
 				checked={ !! itemMagnetEnabled }
-				onChange={ ( val ) => setAttributes( { itemMagnetEnabled: val } ) }
+				onChange={ ( val ) =>
+					setAttributes( { itemMagnetEnabled: val } )
+				}
 				help={ __(
 					'Nudges each item label a few pixels toward the cursor on hover. Off automatically when the visitor is using touch, and when reduced motion is requested.',
 					'sgs-blocks'
@@ -72,7 +77,9 @@ export default function EffectsPanel( {
 					max={ 0.5 }
 					step={ 0.01 }
 					onChange={ ( val ) =>
-						onMagnetStrengthChange( typeof val === 'number' ? val : undefined )
+						onMagnetStrengthChange(
+							typeof val === 'number' ? val : undefined
+						)
 					}
 					allowReset
 					resetFallbackValue={ undefined }

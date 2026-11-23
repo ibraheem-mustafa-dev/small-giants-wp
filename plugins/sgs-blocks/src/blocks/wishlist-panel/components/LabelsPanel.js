@@ -33,11 +33,26 @@ export default function LabelsPanel( { attributes, setAttributes } ) {
 			{ field( 'moveLabel', __( 'Move to basket label', 'sgs-blocks' ) ) }
 			{ field( 'removeLabel', __( 'Remove label', 'sgs-blocks' ) ) }
 			{ field( 'notifyLabel', __( 'Notify me label', 'sgs-blocks' ) ) }
-			{ field( 'outOfStockLabel', __( 'Out of stock label', 'sgs-blocks' ) ) }
-			{ field( 'notifyEmailLabel', __( 'Notify-me email field label', 'sgs-blocks' ) ) }
-			{ field( 'notifyConsentText', __( 'Notify-me consent text', 'sgs-blocks' ) ) }
-			{ field( 'notifySuccessText', __( 'Notify-me success message', 'sgs-blocks' ) ) }
-			{ field( 'errorText', __( 'Generic error message', 'sgs-blocks' ) ) }
+			{ field(
+				'outOfStockLabel',
+				__( 'Out of stock label', 'sgs-blocks' )
+			) }
+			{ field(
+				'notifyEmailLabel',
+				__( 'Notify-me email field label', 'sgs-blocks' )
+			) }
+			{ field(
+				'notifyConsentText',
+				__( 'Notify-me consent text', 'sgs-blocks' )
+			) }
+			{ field(
+				'notifySuccessText',
+				__( 'Notify-me success message', 'sgs-blocks' )
+			) }
+			{ field(
+				'errorText',
+				__( 'Generic error message', 'sgs-blocks' )
+			) }
 			{ 'strip' !== layout && (
 				<>
 					<ToggleControl
@@ -48,11 +63,26 @@ export default function LabelsPanel( { attributes, setAttributes } ) {
 					/>
 					{ showSort && (
 						<>
-							{ field( 'sortLabel', __( 'Sort control label', 'sgs-blocks' ) ) }
-							{ field( 'sortRecentLabel', __( '"Recently saved" option', 'sgs-blocks' ) ) }
-							{ field( 'sortPriceAscLabel', __( '"Price low to high" option', 'sgs-blocks' ) ) }
-							{ field( 'sortPriceDescLabel', __( '"Price high to low" option', 'sgs-blocks' ) ) }
-							{ field( 'sortStockLabel', __( '"In stock first" option', 'sgs-blocks' ) ) }
+							{ field(
+								'sortLabel',
+								__( 'Sort control label', 'sgs-blocks' )
+							) }
+							{ field(
+								'sortRecentLabel',
+								__( '"Recently saved" option', 'sgs-blocks' )
+							) }
+							{ field(
+								'sortPriceAscLabel',
+								__( '"Price low to high" option', 'sgs-blocks' )
+							) }
+							{ field(
+								'sortPriceDescLabel',
+								__( '"Price high to low" option', 'sgs-blocks' )
+							) }
+							{ field(
+								'sortStockLabel',
+								__( '"In stock first" option', 'sgs-blocks' )
+							) }
 						</>
 					) }
 					<ToggleControl
@@ -77,7 +107,10 @@ export default function LabelsPanel( { attributes, setAttributes } ) {
 						field(
 							'priceDropText',
 							__( 'Price-drop text', 'sgs-blocks' ),
-							__( 'Use {now} and {saved} for the two prices.', 'sgs-blocks' )
+							__(
+								'Use {now} and {saved} for the two prices.',
+								'sgs-blocks'
+							)
 						) }
 				</>
 			) }

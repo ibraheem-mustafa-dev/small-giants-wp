@@ -22,7 +22,10 @@ export default function useParentOwned( clientId, target ) {
 			}
 			const store = select( 'core/block-editor' );
 			const parentId = store?.getBlockRootClientId?.( clientId );
-			return Boolean( parentId ) && String( store.getBlockName( parentId ) ).startsWith( 'sgs/' );
+			return (
+				Boolean( parentId ) &&
+				String( store.getBlockName( parentId ) ).startsWith( 'sgs/' )
+			);
 		},
 		[ clientId, target ]
 	);

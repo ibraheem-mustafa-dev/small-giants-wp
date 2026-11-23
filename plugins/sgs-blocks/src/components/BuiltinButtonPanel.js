@@ -36,14 +36,19 @@ export function builtinButtonAttrName( prefix, base ) {
 /**
  * Every attribute name the kit generates for a button's groups.
  *
- * @param {string}   prefix Button prefix.
+ * @param {string}   prefix   Button prefix.
  * @param {string[]} [groups] Declared groups; omitted means the registry's default groups.
  * @return {string[]} The attribute names.
  */
 export function builtinButtonAttrKeys( prefix, groups ) {
-	const shown = Array.isArray( groups ) && groups.length ? groups : registry.defaultGroups;
+	const shown =
+		Array.isArray( groups ) && groups.length
+			? groups
+			: registry.defaultGroups;
 	return shown.flatMap( ( group ) =>
-		( registry.groups[ group ] || [] ).map( ( row ) => builtinButtonAttrName( prefix, row.base ) )
+		( registry.groups[ group ] || [] ).map( ( row ) =>
+			builtinButtonAttrName( prefix, row.base )
+		)
 	);
 }
 
@@ -65,10 +70,10 @@ export function declaredButton( blockName, prefix ) {
  * Mount one built-in button's panels.
  *
  * @param {Object}   props
- * @param {Object}   props.attributes    Block attributes.
- * @param {Function} props.setAttributes Block `setAttributes`.
- * @param {string}   props.blockName     Block name, to read the button's `supports.sgs.builtinButtons` entry.
- * @param {string}   props.prefix        The button's attribute prefix.
+ * @param {Object}   props.attributes      Block attributes.
+ * @param {Function} props.setAttributes   Block `setAttributes`.
+ * @param {string}   props.blockName       Block name, to read the button's `supports.sgs.builtinButtons` entry.
+ * @param {string}   props.prefix          The button's attribute prefix.
  * @param {Function} [props.seedForPreset] Optional: given the preset slug just picked, returns further attributes to write with it
  *                                         (the product card seeds its colours and border from the preset).
  * @return {Object|null} The mounted panels, or null.

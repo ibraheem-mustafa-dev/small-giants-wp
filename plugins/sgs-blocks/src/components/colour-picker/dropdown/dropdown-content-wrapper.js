@@ -40,6 +40,8 @@ function UnconnectedDropdownContentWrapper( props, forwardedRef ) {
  * A convenience wrapper for the `renderContent` when you want to apply
  * different padding. (Default is `paddingSize="small"`).
  */
-export const DropdownContentWrapper = forwardRef( UnconnectedDropdownContentWrapper );
+export const DropdownContentWrapper = forwardRef(
+	UnconnectedDropdownContentWrapper
+);
 
 export default DropdownContentWrapper;

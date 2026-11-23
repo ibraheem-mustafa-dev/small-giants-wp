@@ -151,10 +151,14 @@ export default function CustomGradientBar( {
 							value={ controlPoints }
 							onChange={ onChange }
 							onOpenInserter={ () => {
-								gradientBarStateDispatch( { type: 'OPEN_INSERTER' } );
+								gradientBarStateDispatch( {
+									type: 'OPEN_INSERTER',
+								} );
 							} }
 							onCloseInserter={ () => {
-								gradientBarStateDispatch( { type: 'CLOSE_INSERTER' } );
+								gradientBarStateDispatch( {
+									type: 'CLOSE_INSERTER',
+								} );
 							} }
 						/>
 					) }
@@ -173,10 +177,14 @@ export default function CustomGradientBar( {
 					value={ controlPoints }
 					onChange={ onChange }
 					onStartControlPointChange={ () => {
-						gradientBarStateDispatch( { type: 'START_CONTROL_CHANGE' } );
+						gradientBarStateDispatch( {
+							type: 'START_CONTROL_CHANGE',
+						} );
 					} }
 					onStopControlPointChange={ () => {
-						gradientBarStateDispatch( { type: 'STOP_CONTROL_CHANGE' } );
+						gradientBarStateDispatch( {
+							type: 'STOP_CONTROL_CHANGE',
+						} );
 					} }
 				/>
 			</div>

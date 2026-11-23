@@ -1,6 +1,16 @@
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-editor';
-import { sgsBorderPreview, backgroundPaintPreview, tierBoxLonghands, sgsLengthPreview, usePreviewTier } from '../../utils';
+import {
+	useBlockProps,
+	InspectorControls,
+	useSettings,
+} from '@wordpress/block-editor';
+import {
+	sgsBorderPreview,
+	backgroundPaintPreview,
+	tierBoxLonghands,
+	sgsLengthPreview,
+	usePreviewTier,
+} from '../../utils';
 import {
 	PanelBody,
 	TextControl,
@@ -8,7 +18,15 @@ import {
 	SelectControl,
 	Button,
 } from '@wordpress/components';
-import { DesignTokenPicker, SgsBorderControl, SgsBoxControl, SgsLengthControl, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox } from '../../components';
+import {
+	DesignTokenPicker,
+	SgsBorderControl,
+	SgsBoxControl,
+	SgsLengthControl,
+	ResponsiveOverride,
+	BOX_UNITS,
+	normaliseResponsiveBox,
+} from '../../components';
 import FormFieldAdvancedPanel from '../../components/FormFieldAdvancedPanel';
 import { fieldLabelClasses } from '../../components/form-field-preview';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
@@ -23,22 +41,19 @@ const WIDTH_OPTIONS = [
 ];
 
 export default function Edit( { attributes, setAttributes } ) {
-	const {
-		fieldName,
-		label,
-		helpText,
-		required,
-		width,
-		options,
-	} = attributes;
+	const { fieldName, label, helpText, required, width, options } = attributes;
 
 	const className = [
 		'sgs-form-field',
 		'sgs-form-field--checkbox',
 		`sgs-form-field--${ width }`,
 		...fieldLabelClasses( attributes ),
-		'card' === attributes.optionPresentation ? 'sgs-form-field--option-card' : '',
-	].filter( Boolean ).join( ' ' );
+		'card' === attributes.optionPresentation
+			? 'sgs-form-field--option-card'
+			: '',
+	]
+		.filter( Boolean )
+		.join( ' ' );
 
 	// Card rows on the canvas, as render.php paints them: row box (background, border, radius, padding, gap) on each
 	// option, tick-box size and radius on the field, ticked fill on a ticked box.
@@ -47,34 +62,54 @@ export default function Edit( { attributes, setAttributes } ) {
 	const isCard = 'card' === attributes.optionPresentation;
 	const cardRowStyle = isCard
 		? {
-			...backgroundPaintPreview( attributes.rowBackground, '', colourPalette ),
-			...sgsBorderPreview(
-				{
-					widthValues: attributes.rowBorderWidth,
-					styleValue: attributes.rowBorderStyle,
-					colourValue: attributes.rowBorderColour,
-					radiusValues: attributes.rowBorderRadius,
-				},
-				previewTier,
-				colourPalette,
-				{ fallbackColour: 'currentColor' }
-			),
-			...tierBoxLonghands( attributes.rowPadding, previewTier, 'padding' ),
-			gap: sgsLengthPreview( attributes.rowGap ),
-		}
+				...backgroundPaintPreview(
+					attributes.rowBackground,
+					'',
+					colourPalette
+				),
+				...sgsBorderPreview(
+					{
+						widthValues: attributes.rowBorderWidth,
+						styleValue: attributes.rowBorderStyle,
+						colourValue: attributes.rowBorderColour,
+						radiusValues: attributes.rowBorderRadius,
+					},
+					previewTier,
+					colourPalette,
+					{ fallbackColour: 'currentColor' }
+				),
+				...tierBoxLonghands(
+					attributes.rowPadding,
+					previewTier,
+					'padding'
+				),
+				gap: sgsLengthPreview( attributes.rowGap ),
+		  }
 		: undefined;
 	// optionRowMinHeight: the tap-area height of each option row, plain or card.
 	const rowMinHeight = sgsLengthPreview( attributes.optionRowMinHeight );
-	const rowStyle = cardRowStyle || rowMinHeight
-		? { ...cardRowStyle, ...( rowMinHeight ? { minHeight: rowMinHeight } : {} ) }
-		: undefined;
+	const rowStyle =
+		cardRowStyle || rowMinHeight
+			? {
+					...cardRowStyle,
+					...( rowMinHeight ? { minHeight: rowMinHeight } : {} ),
+			  }
+			: undefined;
 	const boxVars = isCard
 		? {
-			'--sgs-option-box-size': sgsLengthPreview( attributes.boxSize ),
-			'--sgs-option-box-radius': sgsLengthPreview( attributes.boxRadius ),
-		}
+				'--sgs-option-box-size': sgsLengthPreview( attributes.boxSize ),
+				'--sgs-option-box-radius': sgsLengthPreview(
+					attributes.boxRadius
+				),
+		  }
 		: undefined;
-	const tickedPaint = isCard ? backgroundPaintPreview( attributes.boxColourChecked, '', colourPalette ) : {};
+	const tickedPaint = isCard
+		? backgroundPaintPreview(
+				attributes.boxColourChecked,
+				'',
+				colourPalette
+		  )
+		: {};
 	const blockProps = useBlockProps( { className, style: boxVars } );
 
 	const updateOption = ( index, key, value ) => {
@@ -140,16 +175,22 @@ export default function Edit( { attributes, setAttributes } ) {
 						onDeselect={ () => setAttributes( { label: '' } ) }
 						isShownByDefault
 					>
-						<SgsFreeTextField type="rich" noLink
+						<SgsFreeTextField
+							type="rich"
+							noLink
 							label={ __( 'Label', 'sgs-blocks' ) }
 							value={ label }
-							onChange={ ( val ) => setAttributes( { label: val } ) }
+							onChange={ ( val ) =>
+								setAttributes( { label: val } )
+							}
 						/>
 					</ToolsPanelItem>
 					<ToolsPanelItem
 						label={ __( 'Required', 'sgs-blocks' ) }
 						hasValue={ () => required !== false }
-						onDeselect={ () => setAttributes( { required: false } ) }
+						onDeselect={ () =>
+							setAttributes( { required: false } )
+						}
 						isShownByDefault
 					>
 						<ToggleControl
@@ -185,7 +226,9 @@ export default function Edit( { attributes, setAttributes } ) {
 							label={ __( 'Width', 'sgs-blocks' ) }
 							value={ width }
 							options={ WIDTH_OPTIONS }
-							onChange={ ( val ) => setAttributes( { width: val } ) }
+							onChange={ ( val ) =>
+								setAttributes( { width: val } )
+							}
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
@@ -222,7 +265,10 @@ export default function Edit( { attributes, setAttributes } ) {
 								__next40pxDefaultSize
 							/>
 							<ToggleControl
-								label={ __( 'Ticked by default', 'sgs-blocks' ) }
+								label={ __(
+									'Ticked by default',
+									'sgs-blocks'
+								) }
 								checked={ !! option.checked }
 								onChange={ ( val ) =>
 									updateOption( index, 'checked', val )
@@ -265,30 +311,54 @@ export default function Edit( { attributes, setAttributes } ) {
 					<ToolsPanelItem
 						label={ __( 'Row minimum height', 'sgs-blocks' ) }
 						hasValue={ () => !! attributes.optionRowMinHeight }
-						onDeselect={ () => setAttributes( { optionRowMinHeight: '' } ) }
+						onDeselect={ () =>
+							setAttributes( { optionRowMinHeight: '' } )
+						}
 					>
 						<SgsLengthControl
 							presets={ false }
 							label={ __( 'Row minimum height', 'sgs-blocks' ) }
-							help={ __( 'Empty keeps 44px, the touch-target minimum. Smaller only to match a supplied design.', 'sgs-blocks' ) }
+							help={ __(
+								'Empty keeps 44px, the touch-target minimum. Smaller only to match a supplied design.',
+								'sgs-blocks'
+							) }
 							value={ attributes.optionRowMinHeight ?? '' }
-							onChange={ ( val ) => setAttributes( { optionRowMinHeight: val || undefined } ) }
+							onChange={ ( val ) =>
+								setAttributes( {
+									optionRowMinHeight: val || undefined,
+								} )
+							}
 						/>
 					</ToolsPanelItem>
 					<ToolsPanelItem
 						label={ __( 'Option presentation', 'sgs-blocks' ) }
-						hasValue={ () => 'card' === attributes.optionPresentation }
-						onDeselect={ () => setAttributes( { optionPresentation: 'plain' } ) }
+						hasValue={ () =>
+							'card' === attributes.optionPresentation
+						}
+						onDeselect={ () =>
+							setAttributes( { optionPresentation: 'plain' } )
+						}
 						isShownByDefault
 					>
 						<SelectControl
 							label={ __( 'Option presentation', 'sgs-blocks' ) }
 							value={ attributes.optionPresentation || 'plain' }
 							options={ [
-								{ label: __( 'Plain row', 'sgs-blocks' ), value: 'plain' },
-								{ label: __( 'Card (boxed row, custom tick box)', 'sgs-blocks' ), value: 'card' },
+								{
+									label: __( 'Plain row', 'sgs-blocks' ),
+									value: 'plain',
+								},
+								{
+									label: __(
+										'Card (boxed row, custom tick box)',
+										'sgs-blocks'
+									),
+									value: 'card',
+								},
 							] }
-							onChange={ ( val ) => setAttributes( { optionPresentation: val } ) }
+							onChange={ ( val ) =>
+								setAttributes( { optionPresentation: val } )
+							}
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
@@ -298,106 +368,228 @@ export default function Edit( { attributes, setAttributes } ) {
 							<ToolsPanelItem
 								label={ __( 'Row background', 'sgs-blocks' ) }
 								hasValue={ () => !! attributes.rowBackground }
-								onDeselect={ () => setAttributes( { rowBackground: '' } ) }
+								onDeselect={ () =>
+									setAttributes( { rowBackground: '' } )
+								}
 							>
 								<DesignTokenPicker
-									label={ __( 'Row background', 'sgs-blocks' ) }
+									label={ __(
+										'Row background',
+										'sgs-blocks'
+									) }
 									value={ attributes.rowBackground }
-									onChange={ ( val ) => setAttributes( { rowBackground: val ?? '' } ) }
+									onChange={ ( val ) =>
+										setAttributes( {
+											rowBackground: val ?? '',
+										} )
+									}
 									linked
 								/>
 							</ToolsPanelItem>
 							<ToolsPanelItem
 								label={ __( 'Row border', 'sgs-blocks' ) }
-								hasValue={ () => !! ( attributes.rowBorderStyle || attributes.rowBorderColour || Object.keys( attributes.rowBorderWidth ?? {} ).length || Object.keys( attributes.rowBorderRadius ?? {} ).length ) }
-								onDeselect={ () => setAttributes( { rowBorderWidth: {}, rowBorderStyle: '', rowBorderColour: '', rowBorderRadius: {} } ) }
+								hasValue={ () =>
+									!! (
+										attributes.rowBorderStyle ||
+										attributes.rowBorderColour ||
+										Object.keys(
+											attributes.rowBorderWidth ?? {}
+										).length ||
+										Object.keys(
+											attributes.rowBorderRadius ?? {}
+										).length
+									)
+								}
+								onDeselect={ () =>
+									setAttributes( {
+										rowBorderWidth: {},
+										rowBorderStyle: '',
+										rowBorderColour: '',
+										rowBorderRadius: {},
+									} )
+								}
 							>
 								<SgsBorderControl
-									widthValues={ attributes.rowBorderWidth ?? {} }
-									onWidthChange={ ( next ) => setAttributes( { rowBorderWidth: next } ) }
+									widthValues={
+										attributes.rowBorderWidth ?? {}
+									}
+									onWidthChange={ ( next ) =>
+										setAttributes( {
+											rowBorderWidth: next,
+										} )
+									}
 									widthPresets={ [ '10', '20', '30' ] }
 									styleValue={ attributes.rowBorderStyle }
-									onStyleChange={ ( val ) => setAttributes( { rowBorderStyle: val } ) }
-									colourLabel={ __( 'Row border colour', 'sgs-blocks' ) }
+									onStyleChange={ ( val ) =>
+										setAttributes( { rowBorderStyle: val } )
+									}
+									colourLabel={ __(
+										'Row border colour',
+										'sgs-blocks'
+									) }
 									colourValue={ attributes.rowBorderColour }
-									onColourChange={ ( val ) => setAttributes( { rowBorderColour: val ?? '' } ) }
+									onColourChange={ ( val ) =>
+										setAttributes( {
+											rowBorderColour: val ?? '',
+										} )
+									}
 									colourLinked={ true }
 									radiusValues={ {
-										base: attributes.rowBorderRadius?.desktop ?? {},
-										tablet: attributes.rowBorderRadius?.tablet ?? {},
-										mobile: attributes.rowBorderRadius?.mobile ?? {},
+										base:
+											attributes.rowBorderRadius
+												?.desktop ?? {},
+										tablet:
+											attributes.rowBorderRadius
+												?.tablet ?? {},
+										mobile:
+											attributes.rowBorderRadius
+												?.mobile ?? {},
 									} }
 									onRadiusChange={ ( tier, next ) => {
-										const key = tier === 'base' ? 'desktop' : tier;
-										setAttributes( { rowBorderRadius: { ...attributes.rowBorderRadius, [ key ]: next } } );
+										const key =
+											tier === 'base' ? 'desktop' : tier;
+										setAttributes( {
+											rowBorderRadius: {
+												...attributes.rowBorderRadius,
+												[ key ]: next,
+											},
+										} );
 									} }
 								/>
 							</ToolsPanelItem>
 							<ToolsPanelItem
 								label={ __( 'Row padding', 'sgs-blocks' ) }
-								hasValue={ () => Object.keys( attributes.rowPadding ?? {} ).length > 0 }
-								onDeselect={ () => setAttributes( { rowPadding: {} } ) }
+								hasValue={ () =>
+									Object.keys( attributes.rowPadding ?? {} )
+										.length > 0
+								}
+								onDeselect={ () =>
+									setAttributes( { rowPadding: {} } )
+								}
 							>
 								<ResponsiveOverride
 									value={ attributes.rowPadding }
-									onChange={ ( obj ) => setAttributes( { rowPadding: obj } ) }
+									onChange={ ( obj ) =>
+										setAttributes( { rowPadding: obj } )
+									}
 								>
 									{ ( { ownValue, setOwnValue } ) => (
 										<SgsBoxControl
-											label={ __( 'Row padding', 'sgs-blocks' ) }
-											values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+											label={ __(
+												'Row padding',
+												'sgs-blocks'
+											) }
+											values={
+												ownValue &&
+												typeof ownValue === 'object'
+													? ownValue
+													: {}
+											}
 											units={ BOX_UNITS }
 											presets
-											onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+											onChange={ ( next ) =>
+												setOwnValue(
+													normaliseResponsiveBox(
+														next
+													)
+												)
+											}
 										/>
 									) }
 								</ResponsiveOverride>
 							</ToolsPanelItem>
 							<ToolsPanelItem
-								label={ __( 'Gap between box and label', 'sgs-blocks' ) }
+								label={ __(
+									'Gap between box and label',
+									'sgs-blocks'
+								) }
 								hasValue={ () => !! attributes.rowGap }
-								onDeselect={ () => setAttributes( { rowGap: '' } ) }
+								onDeselect={ () =>
+									setAttributes( { rowGap: '' } )
+								}
 							>
 								<SgsLengthControl
 									presets={ false }
-									label={ __( 'Gap between box and label', 'sgs-blocks' ) }
+									label={ __(
+										'Gap between box and label',
+										'sgs-blocks'
+									) }
 									value={ attributes.rowGap ?? '' }
-									onChange={ ( val ) => setAttributes( { rowGap: val || undefined } ) }
+									onChange={ ( val ) =>
+										setAttributes( {
+											rowGap: val || undefined,
+										} )
+									}
 								/>
 							</ToolsPanelItem>
 							<ToolsPanelItem
 								label={ __( 'Tick box size', 'sgs-blocks' ) }
 								hasValue={ () => !! attributes.boxSize }
-								onDeselect={ () => setAttributes( { boxSize: '' } ) }
+								onDeselect={ () =>
+									setAttributes( { boxSize: '' } )
+								}
 							>
 								<SgsLengthControl
 									presets={ false }
-									label={ __( 'Tick box size', 'sgs-blocks' ) }
+									label={ __(
+										'Tick box size',
+										'sgs-blocks'
+									) }
 									value={ attributes.boxSize ?? '' }
-									onChange={ ( val ) => setAttributes( { boxSize: val || undefined } ) }
+									onChange={ ( val ) =>
+										setAttributes( {
+											boxSize: val || undefined,
+										} )
+									}
 								/>
 							</ToolsPanelItem>
 							<ToolsPanelItem
-								label={ __( 'Tick box corner radius', 'sgs-blocks' ) }
+								label={ __(
+									'Tick box corner radius',
+									'sgs-blocks'
+								) }
 								hasValue={ () => !! attributes.boxRadius }
-								onDeselect={ () => setAttributes( { boxRadius: '' } ) }
+								onDeselect={ () =>
+									setAttributes( { boxRadius: '' } )
+								}
 							>
 								<SgsLengthControl
 									presets={ false }
-									label={ __( 'Tick box corner radius', 'sgs-blocks' ) }
+									label={ __(
+										'Tick box corner radius',
+										'sgs-blocks'
+									) }
 									value={ attributes.boxRadius ?? '' }
-									onChange={ ( val ) => setAttributes( { boxRadius: val || undefined } ) }
+									onChange={ ( val ) =>
+										setAttributes( {
+											boxRadius: val || undefined,
+										} )
+									}
 								/>
 							</ToolsPanelItem>
 							<ToolsPanelItem
-								label={ __( 'Ticked box colour', 'sgs-blocks' ) }
-								hasValue={ () => !! attributes.boxColourChecked }
-								onDeselect={ () => setAttributes( { boxColourChecked: '' } ) }
+								label={ __(
+									'Ticked box colour',
+									'sgs-blocks'
+								) }
+								hasValue={ () =>
+									!! attributes.boxColourChecked
+								}
+								onDeselect={ () =>
+									setAttributes( { boxColourChecked: '' } )
+								}
 							>
 								<DesignTokenPicker
-									label={ __( 'Ticked box colour', 'sgs-blocks' ) }
+									label={ __(
+										'Ticked box colour',
+										'sgs-blocks'
+									) }
 									value={ attributes.boxColourChecked }
-									onChange={ ( val ) => setAttributes( { boxColourChecked: val ?? '' } ) }
+									onChange={ ( val ) =>
+										setAttributes( {
+											boxColourChecked: val ?? '',
+										} )
+									}
 									linked
 								/>
 							</ToolsPanelItem>
@@ -416,9 +608,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					<label className="sgs-form-field__label">
 						<AuthoredText value={ label } />
 						{ required && (
-							<span className="sgs-form-field__required">
-								*
-							</span>
+							<span className="sgs-form-field__required">*</span>
 						) }
 					</label>
 				) }
@@ -436,7 +626,16 @@ export default function Edit( { attributes, setAttributes } ) {
 								checked={ !! option.checked }
 								readOnly
 								disabled
-								style={ option.checked && tickedPaint.backgroundColor ? { ...tickedPaint, borderColor: tickedPaint.backgroundColor } : undefined }
+								style={
+									option.checked &&
+									tickedPaint.backgroundColor
+										? {
+												...tickedPaint,
+												borderColor:
+													tickedPaint.backgroundColor,
+										  }
+										: undefined
+								}
 							/>
 							<span>{ option.label || '' }</span>
 						</label>

@@ -10,10 +10,7 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import {
-	PanelBody,
-	ToggleControl,
-} from '@wordpress/components';
+import { PanelBody, ToggleControl } from '@wordpress/components';
 import {
 	ShadowControl,
 	SgsBorderControl,
@@ -26,7 +23,13 @@ import {
 	fillRow,
 	textRow,
 } from '../../components';
-import { colourVar, resolveShadowPreviewComposed, sgsBorderPreview, tierBoxLonghands, usePreviewTier } from '../../utils';
+import {
+	colourVar,
+	resolveShadowPreviewComposed,
+	sgsBorderPreview,
+	tierBoxLonghands,
+	usePreviewTier,
+} from '../../utils';
 
 /**
  * One responsive padding box, as sgs/nav-bar-menu's badge padding.
@@ -43,10 +46,14 @@ export function TierPadding( { label, value, onChange } ) {
 			{ ( { ownValue, setOwnValue } ) => (
 				<SgsBoxControl
 					label={ label }
-					values={ ownValue && 'object' === typeof ownValue ? ownValue : {} }
+					values={
+						ownValue && 'object' === typeof ownValue ? ownValue : {}
+					}
 					units={ BOX_UNITS }
 					presets
-					onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+					onChange={ ( next ) =>
+						setOwnValue( normaliseResponsiveBox( next ) )
+					}
 				/>
 			) }
 		</ResponsiveOverride>
@@ -64,44 +71,66 @@ export function TierPadding( { label, value, onChange } ) {
  */
 export function OptionCardPanel( { attributes, setAttributes } ) {
 	return (
-		<PanelBody title={ __( 'Option card', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Option card', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			<SgsBorderControl
 				widthValues={ attributes.optionCardBorderWidth ?? {} }
-				onWidthChange={ ( next ) => setAttributes( { optionCardBorderWidth: next } ) }
+				onWidthChange={ ( next ) =>
+					setAttributes( { optionCardBorderWidth: next } )
+				}
 				styleValue={ attributes.optionCardBorderStyle }
-				onStyleChange={ ( val ) => setAttributes( { optionCardBorderStyle: val } ) }
+				onStyleChange={ ( val ) =>
+					setAttributes( { optionCardBorderStyle: val } )
+				}
 				colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
 				colourStates={ [
 					{
 						key: 'normal',
 						label: __( 'Normal', 'sgs-blocks' ),
 						value: attributes.optionCardColourBorder,
-						onChange: ( val ) => setAttributes( { optionCardColourBorder: val ?? '' } ),
+						onChange: ( val ) =>
+							setAttributes( {
+								optionCardColourBorder: val ?? '',
+							} ),
 						linked: true,
 					},
 					{
 						key: 'hover',
 						label: __( 'Hover', 'sgs-blocks' ),
 						value: attributes.optionCardColourBorderHover,
-						onChange: ( val ) => setAttributes( { optionCardColourBorderHover: val ?? '' } ),
+						onChange: ( val ) =>
+							setAttributes( {
+								optionCardColourBorderHover: val ?? '',
+							} ),
 						linked: true,
 					},
 					{
 						key: 'current',
 						label: __( 'Current', 'sgs-blocks' ),
 						value: attributes.optionCardSelectedBorderColour,
-						onChange: ( val ) => setAttributes( { optionCardSelectedBorderColour: val ?? '' } ),
+						onChange: ( val ) =>
+							setAttributes( {
+								optionCardSelectedBorderColour: val ?? '',
+							} ),
 						linked: true,
 					},
 				] }
-				radiusValues={ { base: attributes.optionCardBorderRadius ?? {} } }
+				radiusValues={ {
+					base: attributes.optionCardBorderRadius ?? {},
+				} }
 				showRadiusResponsive={ false }
-				onRadiusChange={ ( _tier, next ) => setAttributes( { optionCardBorderRadius: next } ) }
+				onRadiusChange={ ( _tier, next ) =>
+					setAttributes( { optionCardBorderRadius: next } )
+				}
 			/>
 			<TierPadding
 				label={ __( 'Card padding', 'sgs-blocks' ) }
 				value={ attributes.optionCardPadding }
-				onChange={ ( obj ) => setAttributes( { optionCardPadding: obj } ) }
+				onChange={ ( obj ) =>
+					setAttributes( { optionCardPadding: obj } )
+				}
 			/>
 			<ShadowControl
 				label={ __( 'Card shadow', 'sgs-blocks' ) }
@@ -119,7 +148,10 @@ export function OptionCardPanel( { attributes, setAttributes } ) {
 				label={ __( 'Chosen card shadow', 'sgs-blocks' ) }
 				attributes={ attributes }
 				setAttributes={ setAttributes }
-				attrNames={ { base: 'optionCardSelectedShadow', colour: 'optionCardSelectedShadowColour' } }
+				attrNames={ {
+					base: 'optionCardSelectedShadow',
+					colour: 'optionCardSelectedShadowColour',
+				} }
 			/>
 		</PanelBody>
 	);
@@ -135,22 +167,31 @@ export function OptionCardPanel( { attributes, setAttributes } ) {
  */
 export function OptionBadgeBoxPanel( { attributes, setAttributes } ) {
 	return (
-		<PanelBody title={ __( 'Option badge', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Option badge', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			<TierBorderControl
 				label={ __( 'Badge border', 'sgs-blocks' ) }
 				value={ attributes.optionBadgeBorder }
-				onChange={ ( next ) => setAttributes( { optionBadgeBorder: next } ) }
+				onChange={ ( next ) =>
+					setAttributes( { optionBadgeBorder: next } )
+				}
 			/>
 			<SgsLengthControl
 				presets={ false }
 				label={ __( 'Badge corner radius', 'sgs-blocks' ) }
 				value={ attributes.optionBadgeRadius || '' }
-				onChange={ ( val ) => setAttributes( { optionBadgeRadius: val || '' } ) }
+				onChange={ ( val ) =>
+					setAttributes( { optionBadgeRadius: val || '' } )
+				}
 			/>
 			<TierPadding
 				label={ __( 'Badge padding', 'sgs-blocks' ) }
 				value={ attributes.optionBadgePadding }
-				onChange={ ( obj ) => setAttributes( { optionBadgePadding: obj } ) }
+				onChange={ ( obj ) =>
+					setAttributes( { optionBadgePadding: obj } )
+				}
 			/>
 		</PanelBody>
 	);
@@ -166,12 +207,20 @@ export function OptionBadgeBoxPanel( { attributes, setAttributes } ) {
  */
 export function OptionCheckPanel( { attributes, setAttributes } ) {
 	return (
-		<PanelBody title={ __( 'Chosen option tick', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Chosen option tick', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			<ToggleControl
 				label={ __( 'Show a tick on the chosen option', 'sgs-blocks' ) }
-				help={ __( 'A tick disc in the top corner of the card a shopper picks. Its colours are in the Colour panel.', 'sgs-blocks' ) }
+				help={ __(
+					'A tick disc in the top corner of the card a shopper picks. Its colours are in the Colour panel.',
+					'sgs-blocks'
+				) }
 				checked={ !! attributes.optionCheckShow }
-				onChange={ ( val ) => setAttributes( { optionCheckShow: val } ) }
+				onChange={ ( val ) =>
+					setAttributes( { optionCheckShow: val } )
+				}
 				__nextHasNoMarginBottom
 			/>
 			{ !! attributes.optionCheckShow && (
@@ -181,14 +230,21 @@ export function OptionCheckPanel( { attributes, setAttributes } ) {
 						label={ __( 'Tick size', 'sgs-blocks' ) }
 						help={ __( 'Empty keeps 20px.', 'sgs-blocks' ) }
 						value={ attributes.optionCheckSize || '' }
-						onChange={ ( val ) => setAttributes( { optionCheckSize: val || '' } ) }
+						onChange={ ( val ) =>
+							setAttributes( { optionCheckSize: val || '' } )
+						}
 					/>
 					<SgsLengthControl
 						presets={ false }
-						label={ __( 'Tick distance from the corner', 'sgs-blocks' ) }
+						label={ __(
+							'Tick distance from the corner',
+							'sgs-blocks'
+						) }
 						help={ __( 'Empty keeps 0.5rem.', 'sgs-blocks' ) }
 						value={ attributes.optionCheckInset || '' }
-						onChange={ ( val ) => setAttributes( { optionCheckInset: val || '' } ) }
+						onChange={ ( val ) =>
+							setAttributes( { optionCheckInset: val || '' } )
+						}
 					/>
 				</>
 			) }
@@ -255,8 +311,21 @@ export function optionCardColourRows( { attributes, setAttributes } ) {
  */
 export function cssText( style ) {
 	return Object.entries( style )
-		.filter( ( [ , value ] ) => undefined !== value && null !== value && '' !== value )
-		.map( ( [ key, value ] ) => `${ key.startsWith( '--' ) ? key : key.replace( /[A-Z]/g, ( c ) => `-${ c.toLowerCase() }` ) }:${ value }` )
+		.filter(
+			( [ , value ] ) =>
+				undefined !== value && null !== value && '' !== value
+		)
+		.map(
+			( [ key, value ] ) =>
+				`${
+					key.startsWith( '--' )
+						? key
+						: key.replace(
+								/[A-Z]/g,
+								( c ) => `-${ c.toLowerCase() }`
+						  )
+				}:${ value }`
+		)
 		.join( ';' );
 }
 
@@ -270,18 +339,27 @@ export function cssText( style ) {
  */
 export function tierBorderPreview( border, tier ) {
 	const source = border && 'object' === typeof border ? border : {};
-	const order = [ 'desktop', 'tablet', 'mobile' ].slice( 0, [ 'desktop', 'tablet', 'mobile' ].indexOf( tier ) + 1 );
+	const order = [ 'desktop', 'tablet', 'mobile' ].slice(
+		0,
+		[ 'desktop', 'tablet', 'mobile' ].indexOf( tier ) + 1
+	);
 	const merged = {};
 	order.forEach( ( device ) => {
-		Object.entries( source[ device ] || {} ).forEach( ( [ member, value ] ) => {
-			if ( value ) {
-				merged[ member ] = value;
+		Object.entries( source[ device ] || {} ).forEach(
+			( [ member, value ] ) => {
+				if ( value ) {
+					merged[ member ] = value;
+				}
 			}
-		} );
+		);
 	} );
 	return {
 		borderWidth: merged.width,
-		borderStyle: [ 'none', 'solid', 'dashed', 'dotted' ].includes( merged.style ) ? merged.style : undefined,
+		borderStyle: [ 'none', 'solid', 'dashed', 'dotted' ].includes(
+			merged.style
+		)
+			? merged.style
+			: undefined,
 		borderColor: colourVar( merged.colour ),
 	};
 }
@@ -303,32 +381,70 @@ export function OptionCardStyle( { attributes, clientId } ) {
 		[
 			card,
 			{
-				...sgsBorderPreview( { widthValues: attributes.optionCardBorderWidth ?? {}, styleValue: attributes.optionCardBorderStyle, radiusValues: { base: attributes.optionCardBorderRadius ?? {} } }, 'desktop' ),
-				...tierBoxLonghands( attributes.optionCardPadding, tier, 'padding' ),
+				...sgsBorderPreview(
+					{
+						widthValues: attributes.optionCardBorderWidth ?? {},
+						styleValue: attributes.optionCardBorderStyle,
+						radiusValues: {
+							base: attributes.optionCardBorderRadius ?? {},
+						},
+					},
+					'desktop'
+				),
+				...tierBoxLonghands(
+					attributes.optionCardPadding,
+					tier,
+					'padding'
+				),
 			},
 		],
 		[
 			rest,
 			{
-				backgroundColor: colourVar( attributes.optionCardColourBackground ),
+				backgroundColor: colourVar(
+					attributes.optionCardColourBackground
+				),
 				borderColor: colourVar( attributes.optionCardColourBorder ),
-				boxShadow: resolveShadowPreviewComposed( attributes.optionCardShadow, attributes.optionCardShadowColour ),
+				boxShadow: resolveShadowPreviewComposed(
+					attributes.optionCardShadow,
+					attributes.optionCardShadowColour
+				),
 			},
 		],
 		[
 			`${ rest }:hover`,
 			{
-				backgroundColor: colourVar( attributes.optionCardColourBackgroundHover ),
-				borderColor: colourVar( attributes.optionCardColourBorderHover ),
-				boxShadow: attributes.optionCardHoverShadow || attributes.optionCardHoverShadowColour ? resolveShadowPreviewComposed( attributes.optionCardHoverShadow || attributes.optionCardShadow, attributes.optionCardHoverShadowColour || attributes.optionCardShadowColour ) : undefined,
+				backgroundColor: colourVar(
+					attributes.optionCardColourBackgroundHover
+				),
+				borderColor: colourVar(
+					attributes.optionCardColourBorderHover
+				),
+				boxShadow:
+					attributes.optionCardHoverShadow ||
+					attributes.optionCardHoverShadowColour
+						? resolveShadowPreviewComposed(
+								attributes.optionCardHoverShadow ||
+									attributes.optionCardShadow,
+								attributes.optionCardHoverShadowColour ||
+									attributes.optionCardShadowColour
+						  )
+						: undefined,
 			},
 		],
 		[
 			`${ card }.sgs-choice-flow-question__option-preview--selected`,
 			{
-				backgroundColor: colourVar( attributes.optionCardSelectedBackgroundColour ),
-				borderColor: colourVar( attributes.optionCardSelectedBorderColour ),
-				boxShadow: resolveShadowPreviewComposed( attributes.optionCardSelectedShadow, attributes.optionCardSelectedShadowColour ),
+				backgroundColor: colourVar(
+					attributes.optionCardSelectedBackgroundColour
+				),
+				borderColor: colourVar(
+					attributes.optionCardSelectedBorderColour
+				),
+				boxShadow: resolveShadowPreviewComposed(
+					attributes.optionCardSelectedShadow,
+					attributes.optionCardSelectedShadowColour
+				),
 			},
 		],
 		[
@@ -336,21 +452,34 @@ export function OptionCardStyle( { attributes, clientId } ) {
 			{
 				...tierBorderPreview( attributes.optionBadgeBorder, tier ),
 				borderRadius: attributes.optionBadgeRadius || undefined,
-				...tierBoxLonghands( attributes.optionBadgePadding, tier, 'padding' ),
+				...tierBoxLonghands(
+					attributes.optionBadgePadding,
+					tier,
+					'padding'
+				),
 			},
 		],
-		[ `${ scope } .sgs-choice-flow-question__option-media`, { backgroundColor: colourVar( attributes.optionMediaBackground ) } ],
+		[
+			`${ scope } .sgs-choice-flow-question__option-media`,
+			{ backgroundColor: colourVar( attributes.optionMediaBackground ) },
+		],
 	];
 	if ( attributes.optionCheckShow ) {
 		rules.push(
 			[ card, { position: 'relative' } ],
-			[ `${ card }--selected > .sgs-choice-flow-question__option-check`, { display: 'block' } ],
+			[
+				`${ card }--selected > .sgs-choice-flow-question__option-check`,
+				{ display: 'block' },
+			],
 			[
 				`${ scope } .sgs-choice-flow-question__option-check`,
 				{
 					color: colourVar( attributes.optionCheckColour ),
-					backgroundColor: colourVar( attributes.optionCheckBackgroundColour ),
-					'--sgs-cfq-check-size': attributes.optionCheckSize || undefined,
+					backgroundColor: colourVar(
+						attributes.optionCheckBackgroundColour
+					),
+					'--sgs-cfq-check-size':
+						attributes.optionCheckSize || undefined,
 					top: attributes.optionCheckInset || undefined,
 					insetInlineEnd: attributes.optionCheckInset || undefined,
 				},

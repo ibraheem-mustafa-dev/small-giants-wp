@@ -26,14 +26,22 @@ import SgsBoxControl from '../../SgsBoxControl.js';
 import SgsLengthControl from '../../SgsLengthControl.js';
 import ShadowControl from '../../ShadowControl.js';
 import { LINK_SOURCES_ALL } from '../../../shared/link-source-options.js';
-import { mediaAttrName, mediaStoredAttrName } from '../../MediaElementControls.js';
+import {
+	mediaAttrName,
+	mediaStoredAttrName,
+} from '../../MediaElementControls.js';
 import FitField from '../FitField.js';
 import FocalField from '../FocalField.js';
 import MediaSlotCaptions from '../MediaSlotCaptions.js';
 import MediaSlotCaptionText from '../MediaSlotCaptionText.js';
 import MediaSlotField from '../MediaSlotField.js';
 import ShapeField from '../ShapeField.js';
-import { AspectRatioField, HeightField, LimitsGroup, WidthField } from '../SizingFields.js';
+import {
+	AspectRatioField,
+	HeightField,
+	LimitsGroup,
+	WidthField,
+} from '../SizingFields.js';
 import {
 	AlignmentField,
 	ColourTreatmentField,
@@ -49,10 +57,15 @@ import { translateReason } from './reasons.js';
 import { SELECT_OPTIONS } from './select-options.js';
 
 const labelOf = ( row ) => row.setting.control.label;
-const reasonOf = ( row ) => ( 'disabled' === row.state.state ? translateReason( row.state.hiddenReason ) || undefined : undefined );
+const reasonOf = ( row ) =>
+	'disabled' === row.state.state
+		? translateReason( row.state.hiddenReason ) || undefined
+		: undefined;
 /** A row's stored attribute name: an adopted row keeps its §8 name, an older one what its block stores. */
 const attrKey = ( row, prefix, blockSlug, base ) =>
-	row.setting.adopted ? mediaAttrName( prefix, base ) : mediaStoredAttrName( blockSlug, prefix, base );
+	row.setting.adopted
+		? mediaAttrName( prefix, base )
+		: mediaStoredAttrName( blockSlug, prefix, base );
 const isOff = ( row ) => 'disabled' === row.state.state;
 
 const CORNER_SIDES = [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ];
@@ -132,7 +145,10 @@ function Select( { row, io } ) {
 			__next40pxDefaultSize
 			label={ labelOf( row ) }
 			value={ isSet( io.own ) ? String( io.own ) : '' }
-			options={ [ { value: '', label: __( 'Default', 'sgs-blocks' ) }, ...list ] }
+			options={ [
+				{ value: '', label: __( 'Default', 'sgs-blocks' ) },
+				...list,
+			] }
 			disabled={ isOff( row ) }
 			help={ reasonOf( row ) }
 			onChange={ ( v ) => io.write( v ) }
@@ -158,7 +174,10 @@ function Alt( { row, io, kind } ) {
 			help={
 				isTitle
 					? undefined
-					: __( 'Describe the photo for someone who cannot see it.', 'sgs-blocks' )
+					: __(
+							'Describe the photo for someone who cannot see it.',
+							'sgs-blocks'
+					  )
 			}
 			onChange={ ( v ) => io.write( v ) }
 		/>
@@ -170,7 +189,11 @@ function Length( { row, io } ) {
 		<SgsLengthControl
 			label={ labelOf( row ) }
 			value={ isSet( io.own ) ? String( io.own ) : '' }
-			placeholder={ ! isSet( io.own ) && isSet( io.resolved ) ? String( io.resolved ) : undefined }
+			placeholder={
+				! isSet( io.own ) && isSet( io.resolved )
+					? String( io.resolved )
+					: undefined
+			}
 			presets={ false }
 			onChange={ ( v ) => io.write( v ) }
 		/>
@@ -207,25 +230,61 @@ function Colour( { row, attributes, setAttributes, prefix, blockSlug } ) {
 	const isOverlay = 'OverlayColour' === row.setting.base;
 	const forms = isOverlay
 		? [
-				[ 'rest', __( 'Normal', 'sgs-blocks' ), 'OverlayColour', 'OverlayGradient' ],
-				[ 'hover', __( 'Hover', 'sgs-blocks' ), 'OverlayColourHover', 'OverlayGradientHover' ],
+				[
+					'rest',
+					__( 'Normal', 'sgs-blocks' ),
+					'OverlayColour',
+					'OverlayGradient',
+				],
+				[
+					'hover',
+					__( 'Hover', 'sgs-blocks' ),
+					'OverlayColourHover',
+					'OverlayGradientHover',
+				],
 		  ]
 		: row.setting.adopted
 		? [
-				[ 'rest', __( 'Normal', 'sgs-blocks' ), 'BorderColour', 'BorderColourGradient' ],
-				[ 'hover', __( 'Hover', 'sgs-blocks' ), 'BorderColourHover', 'BorderColourHoverGradient' ],
+				[
+					'rest',
+					__( 'Normal', 'sgs-blocks' ),
+					'BorderColour',
+					'BorderColourGradient',
+				],
+				[
+					'hover',
+					__( 'Hover', 'sgs-blocks' ),
+					'BorderColourHover',
+					'BorderColourHoverGradient',
+				],
 		  ]
-		: [ [ 'rest', __( 'Normal', 'sgs-blocks' ), 'BorderColour', 'BorderColourGradient' ] ];
+		: [
+				[
+					'rest',
+					__( 'Normal', 'sgs-blocks' ),
+					'BorderColour',
+					'BorderColourGradient',
+				],
+		  ];
 
 	const write = ( patch ) => {
 		const colourKey = key( 'OverlayColour' );
-		const noPaint = ! attributes[ colourKey ] && ! attributes[ key( 'OverlayGradient' ) ];
-		if ( isOverlay && noPaint && ! isSet( attributes[ key( 'OverlayOpacity' ) ] ) ) {
+		const noPaint =
+			! attributes[ colourKey ] &&
+			! attributes[ key( 'OverlayGradient' ) ];
+		if (
+			isOverlay &&
+			noPaint &&
+			! isSet( attributes[ key( 'OverlayOpacity' ) ] )
+		) {
 			const first = Object.entries( patch ).find(
-				( [ k, v ] ) => ( k === colourKey || k === key( 'OverlayGradient' ) ) && v
+				( [ k, v ] ) =>
+					( k === colourKey || k === key( 'OverlayGradient' ) ) && v
 			);
 			if ( first ) {
-				patch[ key( 'OverlayOpacity' ) ] = row.setting.adopted ? { desktop: 40 } : 40;
+				patch[ key( 'OverlayOpacity' ) ] = row.setting.adopted
+					? { desktop: 40 }
+					: 40;
 			}
 		}
 		setAttributes( patch );
@@ -242,7 +301,8 @@ function Colour( { row, attributes, setAttributes, prefix, blockSlug } ) {
 				...( gradient
 					? {
 							gradientValue: attributes[ key( gradient ) ],
-							onGradientChange: ( v ) => write( { [ key( gradient ) ]: v ?? '' } ),
+							onGradientChange: ( v ) =>
+								write( { [ key( gradient ) ]: v ?? '' } ),
 					  }
 					: {} ),
 				linked: true,
@@ -315,7 +375,9 @@ function Link( { row, attributes, setAttributes, prefix, blockSlug } ) {
 /** Fit, or the one hint line in its place while the box does not crop. */
 function Fit( props ) {
 	if ( isOff( props.row ) ) {
-		return <p className="sgs-media-panel__hint">{ reasonOf( props.row ) }</p>;
+		return (
+			<p className="sgs-media-panel__hint">{ reasonOf( props.row ) }</p>
+		);
 	}
 	return <FitField { ...props } />;
 }
@@ -323,13 +385,20 @@ function Fit( props ) {
 /** Focal; Fit prints the shared "give it a shape" hint, so Focal prints only its own reason. */
 function Focal( props ) {
 	if ( isOff( props.row ) ) {
-		return props.row.state.hiddenReason === REASONS.noCrop ? null : <p className="sgs-media-panel__hint">{ reasonOf( props.row ) }</p>;
+		return props.row.state.hiddenReason === REASONS.noCrop ? null : (
+			<p className="sgs-media-panel__hint">{ reasonOf( props.row ) }</p>
+		);
 	}
 	return <FocalField { ...props } />;
 }
 
 /** The older four-corner box, or the adopted slider with a link and a Round preset. */
-const CornersOrRadius = ( props ) => ( props.row.setting.adopted ? <RadiusField { ...props } /> : <Corners { ...props } /> );
+const CornersOrRadius = ( props ) =>
+	props.row.setting.adopted ? (
+		<RadiusField { ...props } />
+	) : (
+		<Corners { ...props } />
+	);
 
 /** Components that print their own device note: `PanelRow` adds none under them. */
 export const OWN_NOTE = [

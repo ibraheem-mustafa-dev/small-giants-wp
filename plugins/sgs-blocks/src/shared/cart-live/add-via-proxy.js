@@ -34,7 +34,10 @@ export async function addViaProxy( url, nonce, body ) {
 		// A non-JSON reply: the generic message below.
 	}
 	if ( ! response.ok ) {
-		throw new Error( json?.message || 'Could not add that to your basket. Please try again.' );
+		throw new Error(
+			json?.message ||
+				'Could not add that to your basket. Please try again.'
+		);
 	}
 	return json;
 }

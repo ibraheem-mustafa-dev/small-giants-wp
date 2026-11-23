@@ -37,32 +37,32 @@ import { __ } from '@wordpress/i18n';
  * gradient-capable control is a value nothing can author.
  *
  * @param {Object}   o
- * @param {string}   o.key            Row key, stable.
- * @param {string}   o.label          Already translated by the caller.
- * @param {Object}   [o.attrs]        The BLOCK'S OWN top-level attribute names:
- *                                    { base, hover?, current?, gradient?,
- *                                    hoverGradient?, currentGradient? }.
- *                                    Mutually exclusive with o.get/o.set.
- * @param {Object}   [o.attributes]   The block's attributes object. Required with
- *                                    o.attrs; ignored on the o.get/o.set path.
- * @param {Function} [o.setAttributes] The block's setAttributes. Required with
- *                                    o.attrs; ignored on the o.get/o.set path.
+ * @param {string}   o.key               Row key, stable.
+ * @param {string}   o.label             Already translated by the caller.
+ * @param {Object}   [o.attrs]           The BLOCK'S OWN top-level attribute names:
+ *                                       { base, hover?, current?, gradient?,
+ *                                       hoverGradient?, currentGradient? }.
+ *                                       Mutually exclusive with o.get/o.set.
+ * @param {Object}   [o.attributes]      The block's attributes object. Required with
+ *                                       o.attrs; ignored on the o.get/o.set path.
+ * @param {Function} [o.setAttributes]   The block's setAttributes. Required with
+ *                                       o.attrs; ignored on the o.get/o.set path.
  * @param {Function} [o.get]             Non-top-level reader — see fillRow's header.
  * @param {Function} [o.set]             Non-top-level writer — companion to o.get.
  * @param {string}   [o.contrastAgainst] Opt-in WCAG contrast check (see
- *                                    `GradientCapableColourControl`'s own prop of the
- *                                    same name) — a hex colour or theme palette token
- *                                    naming the background ACTUALLY rendered behind
- *                                    this row's text. The caller is responsible for
- *                                    working that out (it depends on the block's own
- *                                    background attributes/context — there is no
- *                                    general answer this row builder can derive).
- *                                    Passed straight through onto the descriptor;
- *                                    ignored entirely when the row isn't
- *                                    `gradientCapable` (DesignTokenPicker has no
- *                                    contrast check). Omit for no behaviour change.
+ *                                       `GradientCapableColourControl`'s own prop of the
+ *                                       same name) — a hex colour or theme palette token
+ *                                       naming the background ACTUALLY rendered behind
+ *                                       this row's text. The caller is responsible for
+ *                                       working that out (it depends on the block's own
+ *                                       background attributes/context — there is no
+ *                                       general answer this row builder can derive).
+ *                                       Passed straight through onto the descriptor;
+ *                                       ignored entirely when the row isn't
+ *                                       `gradientCapable` (DesignTokenPicker has no
+ *                                       contrast check). Omit for no behaviour change.
  * @param {string}   [o.contrastLabel]   Paired override text — see the same prop on
- *                                    `GradientCapableColourControl`.
+ *                                       `GradientCapableColourControl`.
  * @return {Object} A row descriptor: { key, label, states, gradientCapable?, contrastAgainst?, contrastLabel? }.
  */
 export default function textRow( {
@@ -113,7 +113,8 @@ export default function textRow( {
 		};
 	}
 
-	const { base, hover, current, gradient, hoverGradient, currentGradient } = attrs || {};
+	const { base, hover, current, gradient, hoverGradient, currentGradient } =
+		attrs || {};
 
 	if ( ! base ) {
 		throw new Error(
@@ -143,7 +144,8 @@ export default function textRow( {
 		...( gradient
 			? {
 					gradientValue: attributes[ gradient ],
-					onGradientChange: ( val ) => setAttributes( { [ gradient ]: val ?? '' } ),
+					onGradientChange: ( val ) =>
+						setAttributes( { [ gradient ]: val ?? '' } ),
 			  }
 			: {} ),
 	};
@@ -157,7 +159,8 @@ export default function textRow( {
 		...( hoverGradient
 			? {
 					gradientValue: attributes[ hoverGradient ],
-					onGradientChange: ( val ) => setAttributes( { [ hoverGradient ]: val ?? '' } ),
+					onGradientChange: ( val ) =>
+						setAttributes( { [ hoverGradient ]: val ?? '' } ),
 			  }
 			: {} ),
 	};
@@ -187,7 +190,9 @@ export default function textRow( {
 				? [ normal, hoverState, currentState ]
 				: [ normal, hoverState ]
 			: [ normal ],
-		...( gradient || hoverGradient || currentGradient ? { gradientCapable: true } : {} ),
+		...( gradient || hoverGradient || currentGradient
+			? { gradientCapable: true }
+			: {} ),
 		...( contrastAgainst ? { contrastAgainst } : {} ),
 		...( contrastLabel ? { contrastLabel } : {} ),
 		...( contrastLargeText ? { contrastLargeText } : {} ),

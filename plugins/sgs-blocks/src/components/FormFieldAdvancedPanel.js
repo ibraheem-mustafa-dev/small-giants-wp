@@ -11,7 +11,12 @@
 
 import { __ } from '@wordpress/i18n';
 import { useState } from '@wordpress/element';
-import { PanelBody, SelectControl, TextControl, ToggleControl } from '@wordpress/components';
+import {
+	PanelBody,
+	SelectControl,
+	TextControl,
+	ToggleControl,
+} from '@wordpress/components';
 import { NumberControl } from './primitives';
 
 /** HTML autofill tokens people actually use on a site form, with a plain label each. */
@@ -59,7 +64,9 @@ export const INPUTMODE_OPTIONS = [
  * @return {JSX.Element} The control.
  */
 function AutocompleteControl( { value, onChange } ) {
-	const known = AUTOCOMPLETE_TOKENS.some( ( token ) => token.value === value );
+	const known = AUTOCOMPLETE_TOKENS.some(
+		( token ) => token.value === value
+	);
 	const [ custom, setCustom ] = useState( '' !== value && ! known );
 	const selected = custom ? CUSTOM : value;
 
@@ -70,7 +77,10 @@ function AutocompleteControl( { value, onChange } ) {
 				value={ selected }
 				options={ [
 					...AUTOCOMPLETE_TOKENS,
-					{ label: __( 'Custom value…', 'sgs-blocks' ), value: CUSTOM },
+					{
+						label: __( 'Custom value…', 'sgs-blocks' ),
+						value: CUSTOM,
+					},
 				] }
 				onChange={ ( next ) => {
 					if ( CUSTOM === next ) {
@@ -80,7 +90,10 @@ function AutocompleteControl( { value, onChange } ) {
 					setCustom( false );
 					onChange( next );
 				} }
-				help={ __( 'Tells the browser what to offer to fill in (the HTML autocomplete attribute).', 'sgs-blocks' ) }
+				help={ __(
+					'Tells the browser what to offer to fill in (the HTML autocomplete attribute).',
+					'sgs-blocks'
+				) }
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>
@@ -88,8 +101,15 @@ function AutocompleteControl( { value, onChange } ) {
 				<TextControl
 					label={ __( 'Custom autofill value', 'sgs-blocks' ) }
 					value={ known ? '' : value }
-					onChange={ ( next ) => onChange( next.toLowerCase().replace( /[^a-z0-9 -]/g, '' ) ) }
-					help={ __( 'Lower-case letters, digits and hyphens, e.g. "section-billing postal-code".', 'sgs-blocks' ) }
+					onChange={ ( next ) =>
+						onChange(
+							next.toLowerCase().replace( /[^a-z0-9 -]/g, '' )
+						)
+					}
+					help={ __(
+						'Lower-case letters, digits and hyphens, e.g. "section-billing postal-code".',
+						'sgs-blocks'
+					) }
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 				/>
@@ -100,36 +120,60 @@ function AutocompleteControl( { value, onChange } ) {
 
 /**
  * @param {Object}   props
- * @param {Object}   props.attributes     Block attributes.
- * @param {Function} props.setAttributes  Block attribute setter.
- * @param {string[]} props.features       Settings to offer: floatingLabel, autocomplete, inputmode, defaultValue,
- *                                        defaultSelect, defaultChecked, valueFromParam, maxLength, counter,
- *                                        msgRequired, msgInvalid, msgTooLong.
- * @param {string[]} props.optionValues   A select's option values (for defaultSelect).
+ * @param {Object}   props.attributes    Block attributes.
+ * @param {Function} props.setAttributes Block attribute setter.
+ * @param {string[]} props.features      Settings to offer: floatingLabel, autocomplete, inputmode, defaultValue,
+ *                                       defaultSelect, defaultChecked, valueFromParam, maxLength, counter,
+ *                                       msgRequired, msgInvalid, msgTooLong.
+ * @param {string[]} props.optionValues  A select's option values (for defaultSelect).
  * @return {JSX.Element} The panel.
  */
-export default function FormFieldAdvancedPanel( { attributes, setAttributes, features, optionValues = [] } ) {
+export default function FormFieldAdvancedPanel( {
+	attributes,
+	setAttributes,
+	features,
+	optionValues = [],
+} ) {
 	const has = ( name ) => features.includes( name );
 	const set = ( key ) => ( value ) => setAttributes( { [ key ]: value } );
 
 	return (
-		<PanelBody title={ __( 'Advanced field settings', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Advanced field settings', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			{ has( 'floatingLabel' ) && (
 				<ToggleControl
 					label={ __( 'Floating label', 'sgs-blocks' ) }
 					checked={ false !== attributes.floatingLabel }
 					onChange={ set( 'floatingLabel' ) }
-					help={ __( 'On: the label sits inside the box and lifts above it on focus or once filled. Off: the label stays above the box.', 'sgs-blocks' ) }
+					help={ __(
+						'On: the label sits inside the box and lifts above it on focus or once filled. Off: the label stays above the box.',
+						'sgs-blocks'
+					) }
 					__nextHasNoMarginBottom
 				/>
 			) }
 			{ has( 'floatingLabel' ) && false !== attributes.floatingLabel && (
 				<SelectControl
 					label={ __( 'Floating label position', 'sgs-blocks' ) }
-					value={ 'inside' === attributes.floatingLabelPosition ? 'inside' : 'above' }
+					value={
+						'inside' === attributes.floatingLabelPosition
+							? 'inside'
+							: 'above'
+					}
 					options={ [
-						{ label: __( 'Lifts above the box', 'sgs-blocks' ), value: 'above' },
-						{ label: __( 'Stays inside the box, shrinks on focus', 'sgs-blocks' ), value: 'inside' },
+						{
+							label: __( 'Lifts above the box', 'sgs-blocks' ),
+							value: 'above',
+						},
+						{
+							label: __(
+								'Stays inside the box, shrinks on focus',
+								'sgs-blocks'
+							),
+							value: 'inside',
+						},
 					] }
 					onChange={ set( 'floatingLabelPosition' ) }
 					__nextHasNoMarginBottom
@@ -137,7 +181,10 @@ export default function FormFieldAdvancedPanel( { attributes, setAttributes, fea
 				/>
 			) }
 			{ has( 'autocomplete' ) && (
-				<AutocompleteControl value={ attributes.autocomplete || '' } onChange={ set( 'autocomplete' ) } />
+				<AutocompleteControl
+					value={ attributes.autocomplete || '' }
+					onChange={ set( 'autocomplete' ) }
+				/>
 			) }
 			{ has( 'inputmode' ) && (
 				<SelectControl
@@ -145,7 +192,10 @@ export default function FormFieldAdvancedPanel( { attributes, setAttributes, fea
 					value={ attributes.inputmode || '' }
 					options={ INPUTMODE_OPTIONS }
 					onChange={ set( 'inputmode' ) }
-					help={ __( 'Which on-screen keyboard phones open (the HTML inputmode attribute).', 'sgs-blocks' ) }
+					help={ __(
+						'Which on-screen keyboard phones open (the HTML inputmode attribute).',
+						'sgs-blocks'
+					) }
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 				/>
@@ -162,9 +212,19 @@ export default function FormFieldAdvancedPanel( { attributes, setAttributes, fea
 			{ has( 'defaultSelect' ) && (
 				<SelectControl
 					label={ __( 'Default option', 'sgs-blocks' ) }
-					value={ optionValues.includes( attributes.defaultValue ) ? attributes.defaultValue : '' }
+					value={
+						optionValues.includes( attributes.defaultValue )
+							? attributes.defaultValue
+							: ''
+					}
 					options={ [
-						{ label: __( 'None (show the placeholder)', 'sgs-blocks' ), value: '' },
+						{
+							label: __(
+								'None (show the placeholder)',
+								'sgs-blocks'
+							),
+							value: '',
+						},
 						...optionValues
 							.filter( ( value ) => '' !== value )
 							.map( ( value ) => ( { label: value, value } ) ),
@@ -186,19 +246,39 @@ export default function FormFieldAdvancedPanel( { attributes, setAttributes, fea
 				<TextControl
 					label={ __( 'Fill from link parameter', 'sgs-blocks' ) }
 					value={ attributes.valueFromParam || '' }
-					onChange={ ( value ) => setAttributes( { valueFromParam: value.replace( /[^A-Za-z0-9_-]/g, '' ) } ) }
-					help={ __( 'A link such as /apply/?role=Driver fills this field with "Driver" when the parameter name is "role". A select or radio group takes it only if it matches one of its own options.', 'sgs-blocks' ) }
+					onChange={ ( value ) =>
+						setAttributes( {
+							valueFromParam: value.replace(
+								/[^A-Za-z0-9_-]/g,
+								''
+							),
+						} )
+					}
+					help={ __(
+						'A link such as /apply/?role=Driver fills this field with "Driver" when the parameter name is "role". A select or radio group takes it only if it matches one of its own options.',
+						'sgs-blocks'
+					) }
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 				/>
 			) }
 			{ has( 'maxLength' ) && (
 				<NumberControl
-					label={ __( 'Maximum characters (0 = no limit)', 'sgs-blocks' ) }
+					label={ __(
+						'Maximum characters (0 = no limit)',
+						'sgs-blocks'
+					) }
 					value={ attributes.maxLength || 0 }
 					min={ 0 }
 					max={ 100000 }
-					onChange={ ( value ) => setAttributes( { maxLength: Math.max( 0, parseInt( value, 10 ) || 0 ) } ) }
+					onChange={ ( value ) =>
+						setAttributes( {
+							maxLength: Math.max(
+								0,
+								parseInt( value, 10 ) || 0
+							),
+						} )
+					}
 					__next40pxDefaultSize
 				/>
 			) }
@@ -207,7 +287,10 @@ export default function FormFieldAdvancedPanel( { attributes, setAttributes, fea
 					label={ __( 'Show character counter', 'sgs-blocks' ) }
 					checked={ false !== attributes.showCounter }
 					onChange={ set( 'showCounter' ) }
-					help={ __( 'Shows "0 / 800" under the box when a maximum is set.', 'sgs-blocks' ) }
+					help={ __(
+						'Shows "0 / 800" under the box when a maximum is set.',
+						'sgs-blocks'
+					) }
 					__nextHasNoMarginBottom
 				/>
 			) }
@@ -222,7 +305,10 @@ export default function FormFieldAdvancedPanel( { attributes, setAttributes, fea
 			) }
 			{ has( 'msgInvalid' ) && (
 				<TextControl
-					label={ __( 'Message when the format is wrong', 'sgs-blocks' ) }
+					label={ __(
+						'Message when the format is wrong',
+						'sgs-blocks'
+					) }
 					value={ attributes.msgInvalid || '' }
 					onChange={ set( 'msgInvalid' ) }
 					__nextHasNoMarginBottom

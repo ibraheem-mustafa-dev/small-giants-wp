@@ -24,20 +24,27 @@ const OPERATORS = [
 if ( ! window.__sgsFormAnswerConditionRegistered ) {
 	window.__sgsFormAnswerConditionRegistered = true;
 
-	addFilter( 'blocks.registerBlockType', 'sgs/form-answer-condition/attributes', ( settings ) => {
-		if ( settings?.supports?.className === false ) {
-			return settings;
+	addFilter(
+		'blocks.registerBlockType',
+		'sgs/form-answer-condition/attributes',
+		( settings ) => {
+			if ( settings?.supports?.className === false ) {
+				return settings;
+			}
+			return {
+				...settings,
+				attributes: {
+					...settings.attributes,
+					sgsConditionFormField: { type: 'string', default: '' },
+					sgsConditionFormOperator: {
+						type: 'string',
+						default: 'equals',
+					},
+					sgsConditionFormValue: { type: 'string', default: '' },
+				},
+			};
 		}
-		return {
-			...settings,
-			attributes: {
-				...settings.attributes,
-				sgsConditionFormField: { type: 'string', default: '' },
-				sgsConditionFormOperator: { type: 'string', default: 'equals' },
-				sgsConditionFormValue: { type: 'string', default: '' },
-			},
-		};
-	} );
+	);
 }
 
 /**
@@ -75,18 +82,35 @@ export function isFormAnswerConditionActive( attributes ) {
  * @return {string} Summary text.
  */
 export function formAnswerConditionSummary( attributes ) {
-	return `${ __( 'form answer', 'sgs-blocks' ) } ${ attributes.sgsConditionFormField } ${ attributes.sgsConditionFormOperator || 'equals' } ${ attributes.sgsConditionFormValue || '' }`.trim();
+	return `${ __( 'form answer', 'sgs-blocks' ) } ${
+		attributes.sgsConditionFormField
+	} ${ attributes.sgsConditionFormOperator || 'equals' } ${
+		attributes.sgsConditionFormValue || ''
+	}`.trim();
 }
 
-export default function FormAnswerConditionControl( { clientId, attributes, setAttributes } ) {
+export default function FormAnswerConditionControl( {
+	clientId,
+	attributes,
+	setAttributes,
+} ) {
 	const fieldNames = useSelect(
 		( select ) => {
 			const store = select( 'core/block-editor' );
-			const forms = store.getBlockParentsByBlockName( clientId, 'sgs/form' );
+			const forms = store.getBlockParentsByBlockName(
+				clientId,
+				'sgs/form'
+			);
 			if ( ! forms.length ) {
 				return null;
 			}
-			return [ ...new Set( collectFieldNames( store.getBlocks( forms[ forms.length - 1 ] ) ) ) ];
+			return [
+				...new Set(
+					collectFieldNames(
+						store.getBlocks( forms[ forms.length - 1 ] )
+					)
+				),
+			];
 		},
 		[ clientId ]
 	);
@@ -109,8 +133,13 @@ export default function FormAnswerConditionControl( { clientId, attributes, setA
 				label={ __( 'Show when form field', 'sgs-blocks' ) }
 				value={ watched }
 				options={ options }
-				onChange={ ( v ) => setAttributes( { sgsConditionFormField: v } ) }
-				help={ __( 'Shows this block only while the chosen field of this form matches. Fields are listed by their field name.', 'sgs-blocks' ) }
+				onChange={ ( v ) =>
+					setAttributes( { sgsConditionFormField: v } )
+				}
+				help={ __(
+					'Shows this block only while the chosen field of this form matches. Fields are listed by their field name.',
+					'sgs-blocks'
+				) }
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>
@@ -120,7 +149,9 @@ export default function FormAnswerConditionControl( { clientId, attributes, setA
 						label={ __( 'Condition', 'sgs-blocks' ) }
 						value={ operator }
 						options={ OPERATORS }
-						onChange={ ( v ) => setAttributes( { sgsConditionFormOperator: v } ) }
+						onChange={ ( v ) =>
+							setAttributes( { sgsConditionFormOperator: v } )
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
@@ -128,7 +159,9 @@ export default function FormAnswerConditionControl( { clientId, attributes, setA
 						<TextControl
 							label={ __( 'Value', 'sgs-blocks' ) }
 							value={ attributes.sgsConditionFormValue || '' }
-							onChange={ ( v ) => setAttributes( { sgsConditionFormValue: v } ) }
+							onChange={ ( v ) =>
+								setAttributes( { sgsConditionFormValue: v } )
+							}
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>

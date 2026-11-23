@@ -53,7 +53,9 @@ const withBlockLinkControls = createHigherOrderComponent( ( BlockEdit ) => {
 		// (supports.sgs.blockLinkAlways): the panel renders the help line
 		// only, and render.php applies the link with no attribute to read.
 		const hasAlwaysLink = isExtensionFlagged( name, 'blockLinkAlways' );
-		const autoUrlHelp = String( type?.supports?.sgs?.blockLinkAutoHelp || '' );
+		const autoUrlHelp = String(
+			type?.supports?.sgs?.blockLinkAutoHelp || ''
+		);
 
 		const {
 			sgsBlockLink,

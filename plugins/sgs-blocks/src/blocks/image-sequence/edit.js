@@ -30,7 +30,9 @@ import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
  */
 const MAX_FRAME_COUNT = 200;
 
-const THUMBNAIL_ENTRY = metadata.supports.sgs.mediaElements.find( ( e ) => 'thumbnail' === e.prefix );
+const THUMBNAIL_ENTRY = metadata.supports.sgs.mediaElements.find(
+	( e ) => 'thumbnail' === e.prefix
+);
 
 // Must stay in sync with `$allowed_ext` in render.php AND the `enum` on the three
 // *FrameExt attrs in block.json — all three now list the same five values. They did
@@ -260,7 +262,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							attributes={ attributes }
 							setAttributes={ setAttributes }
 							prefix="thumbnail"
-							slot={ { prefix: 'thumbnail', kinds: THUMBNAIL_ENTRY.kinds, context: THUMBNAIL_ENTRY.context } }
+							slot={ {
+								prefix: 'thumbnail',
+								kinds: THUMBNAIL_ENTRY.kinds,
+								context: THUMBNAIL_ENTRY.context,
+							} }
 						/>
 					),
 				} }
@@ -441,9 +447,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						context={ THUMBNAIL_ENTRY.context }
 						uid={ uid }
 						className="sgs-image-sequence-editor__preview"
-						fallbackAlt={ __( 'Image sequence thumbnail preview', 'sgs-blocks' ) }
+						fallbackAlt={ __(
+							'Image sequence thumbnail preview',
+							'sgs-blocks'
+						) }
 						title={ __( 'Thumbnail image', 'sgs-blocks' ) }
-						instructions={ __( 'An image sequence needs a thumbnail frame. Add one to get started, then configure the frame source in the sidebar.', 'sgs-blocks' ) }
+						instructions={ __(
+							'An image sequence needs a thumbnail frame. Add one to get started, then configure the frame source in the sidebar.',
+							'sgs-blocks'
+						) }
 					/>
 				</div>
 

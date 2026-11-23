@@ -27,7 +27,11 @@ const SCOPE_CLASS = /^(?:sgs-c-[a-z0-9-]+|sgs-m-[0-9a-f]+)$/;
  */
 export function carryCustomCssScope( el ) {
 	const added = [];
-	for ( let node = el.parentElement; node && node !== document.body; node = node.parentElement ) {
+	for (
+		let node = el.parentElement;
+		node && node !== document.body;
+		node = node.parentElement
+	) {
 		for ( const cls of node.classList ) {
 			if ( SCOPE_CLASS.test( cls ) && ! el.classList.contains( cls ) ) {
 				el.classList.add( cls );

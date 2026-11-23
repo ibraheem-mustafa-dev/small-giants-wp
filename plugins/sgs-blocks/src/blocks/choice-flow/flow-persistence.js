@@ -88,7 +88,7 @@ export function ensureNavigationState( flowRoot ) {
 /**
  * Persist current navigation state for this flow instance.
  *
- * @param {HTMLElement} flowRoot Flow wrapper element.
+ * @param {HTMLElement} flowRoot  Flow wrapper element.
  * @param {number}      stepIndex Current step index.
  * @param {Set<string>} tags      Accumulated tags.
  * @param {number[]}    history   Visited step-index history.

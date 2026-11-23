@@ -263,24 +263,29 @@ function makeValueNoise( width, height, cell, rng ) {
  * overlaps), never a 1D gradient — from our own maths, with no dependency
  * on any third-party asset (D941/D942).
  *
- * @param {number[][]} stops  sRGB 0-1 colours, exactly 4.
- * @param {number}     width  Image width, px.
- * @param {number}     height Image height, px.
- * @param {Object}     [blobShape] Blob-count/radius override — EXPORTED
- *   and parameterised (rather than left as inline literals) solely so
- *   `scripts/generative-background/verify-field-texture.mjs`'s negative
- *   control can re-run this SAME real generator against the exact
- *   overcorrected D946 config it was reverted from (`N_BLOBS = 26`,
- *   `radius = (0.1 + rng()*0.12) * width`), rather than hand-rolling a
- *   second copy of the compositing maths. Every real caller (this file's
- *   own `attachStaticCanvas()` included) omits it and gets the shipped
- *   defaults below unchanged.
+ * @param {number[][]} stops                   sRGB 0-1 colours, exactly 4.
+ * @param {number}     width                   Image width, px.
+ * @param {number}     height                  Image height, px.
+ * @param {Object}     [blobShape]             Blob-count/radius override — EXPORTED
+ *                                             and parameterised (rather than left as inline literals) solely so
+ *                                             `scripts/generative-background/verify-field-texture.mjs`'s negative
+ *                                             control can re-run this SAME real generator against the exact
+ *                                             overcorrected D946 config it was reverted from (`N_BLOBS = 26`,
+ *                                             `radius = (0.1 + rng()*0.12) * width`), rather than hand-rolling a
+ *                                             second copy of the compositing maths. Every real caller (this file's
+ *                                             own `attachStaticCanvas()` included) omits it and gets the shipped
+ *                                             defaults below unchanged.
  * @param {number}     [blobShape.nBlobs]      Blob count. Default 36 (shipped).
  * @param {number}     [blobShape.radiusMin]   Radius formula's base fraction of width. Default 0.18 (shipped).
  * @param {number}     [blobShape.radiusRange] Radius formula's random range fraction of width. Default 0.14 (shipped).
  * @return {ImageData} The built image.
  */
-export function buildFieldImageData( stops, width, height, { nBlobs = 36, radiusMin = 0.18, radiusRange = 0.14 } = {} ) {
+export function buildFieldImageData(
+	stops,
+	width,
+	height,
+	{ nBlobs = 36, radiusMin = 0.18, radiusRange = 0.14 } = {}
+) {
 	const rng = mulberry32( seedFromColours( stops ) );
 	// ⚠ Blob scale is calibrated against TWO measurements, not guessed — read
 	// both before changing these numbers. (1) A UV-visualisation debug render
@@ -298,8 +303,18 @@ export function buildFieldImageData( stops, width, height, { nBlobs = 36, radius
 	// against a real white-percentage measurement across 6 seeds before
 	// shipping (avg 3.3%, range 1.5-6.7%) — close to the reference's 0.8%
 	// without erasing genuine gaps entirely.
-	const noiseX = makeValueNoise( width, height, width * 0.12, mulberry32( rng() * 4294967296 ) );
-	const noiseY = makeValueNoise( width, height, width * 0.12, mulberry32( rng() * 4294967296 ) );
+	const noiseX = makeValueNoise(
+		width,
+		height,
+		width * 0.12,
+		mulberry32( rng() * 4294967296 )
+	);
+	const noiseY = makeValueNoise(
+		width,
+		height,
+		width * 0.12,
+		mulberry32( rng() * 4294967296 )
+	);
 
 	const stopsLinear = stops.map( ( [ r, g, b ] ) => [
 		srgbToLinear( r ),
@@ -352,7 +367,10 @@ export function buildFieldImageData( stops, width, height, { nBlobs = 36, radius
 				// NOT a power falloff starting at the centre, which never lets
 				// a blob reach true near-full coverage anywhere.
 				const edge0 = blob.radius * blob.coreFrac;
-				const t = Math.min( 1, Math.max( 0, ( d - edge0 ) / ( blob.radius - edge0 ) ) );
+				const t = Math.min(
+					1,
+					Math.max( 0, ( d - edge0 ) / ( blob.radius - edge0 ) )
+				);
 				const fall = t * t * ( 3 - 2 * t );
 				const a = blob.coreAlpha * ( 1 - fall );
 				r = blob.colour[ 0 ] * a + r * ( 1 - a );
@@ -410,8 +428,8 @@ function readColours( el ) {
  * Attach the layer-2 OKLCH 2D-canvas image — always attempted first,
  * unconditionally, and used as the WebGL layer's own colour texture.
  *
- * @param {HTMLElement}  el      The marked element.
- * @param {number[][]}   colours Four sRGB 0-1 colours.
+ * @param {HTMLElement} el      The marked element.
+ * @param {number[][]}  colours Four sRGB 0-1 colours.
  * @return {HTMLCanvasElement|null} The painted canvas, or null on failure.
  */
 function attachStaticCanvas( el, colours ) {
@@ -455,7 +473,9 @@ function attachWebglLayer( el, staticCanvas ) {
 	canvas.setAttribute( 'aria-hidden', 'true' );
 
 	const speedRaw = parseFloat( el.getAttribute( 'data-sgs-fx-gen-speed' ) );
-	const speed = isNaN( speedRaw ) ? 1 : Math.max( 0.1, Math.min( 3, speedRaw / 50 ) );
+	const speed = isNaN( speedRaw )
+		? 1
+		: Math.max( 0.1, Math.min( 3, speedRaw / 50 ) );
 
 	/*
 	 * The eight geometry-mechanism attributes (v1.2 rewrite) — read as plain
@@ -483,9 +503,13 @@ function attachWebglLayer( el, staticCanvas ) {
 	const glowAmount = readNumberAttr( 'data-sgs-fx-gen-glow-amount' );
 	const glowPower = readNumberAttr( 'data-sgs-fx-gen-glow-power' );
 	const glowRamp = readNumberAttr( 'data-sgs-fx-gen-glow-ramp' );
-	const striationStrength = readNumberAttr( 'data-sgs-fx-gen-striation-strength' );
+	const striationStrength = readNumberAttr(
+		'data-sgs-fx-gen-striation-strength'
+	);
 	const striationFreq = readNumberAttr( 'data-sgs-fx-gen-striation-freq' );
-	const colourAttenuation = readNumberAttr( 'data-sgs-fx-gen-colour-attenuation' );
+	const colourAttenuation = readNumberAttr(
+		'data-sgs-fx-gen-colour-attenuation'
+	);
 	const parabolaPower = readNumberAttr( 'data-sgs-fx-gen-parabola-power' );
 
 	/*
@@ -549,7 +573,13 @@ function attachWebglLayer( el, staticCanvas ) {
 	};
 
 	function start() {
-		if ( ! handle || frame !== null || paused || ! visible || document.hidden ) {
+		if (
+			! handle ||
+			frame !== null ||
+			paused ||
+			! visible ||
+			document.hidden
+		) {
 			return;
 		}
 		if ( prefersReducedMotion() ) {
@@ -586,7 +616,10 @@ function attachWebglLayer( el, staticCanvas ) {
 				observer.disconnect();
 			}
 			if ( onVisibility ) {
-				document.removeEventListener( 'visibilitychange', onVisibility );
+				document.removeEventListener(
+					'visibilitychange',
+					onVisibility
+				);
 			}
 			if ( resizeObserver ) {
 				resizeObserver.disconnect();

@@ -8,15 +8,34 @@
  *
  * @package SGS\Blocks
  */
-import { MEDIA_ATTR_TYPES, MEDIA_TIERED_BASES, mediaAttrName, mediaStoredAttrName } from '../../MediaElementControls.js';
+import {
+	MEDIA_ATTR_TYPES,
+	MEDIA_TIERED_BASES,
+	mediaAttrName,
+	mediaStoredAttrName,
+} from '../../MediaElementControls.js';
 import { ADOPTED_SETTINGS } from '../emit/adopted-settings.js';
 import { ADOPTED_COMPOSITES, COMPOSITES } from './panel-model.js';
-import { DEVICES, clearPatch, isSet, ownAt, readAt, tierPatch } from './disclosure-context.js';
+import {
+	DEVICES,
+	clearPatch,
+	isSet,
+	ownAt,
+	readAt,
+	tierPatch,
+} from './disclosure-context.js';
 
 const DEVICE_NAMES = { desktop: 'Desktop', tablet: 'Tablet', mobile: 'Mobile' };
 
 /** The slot's content (the file, its description and its captions): Reset clears a panel's settings and leaves these, Remove clears the file. */
-const CONTENT_BASES = new Set( [ 'Source', 'Alt', 'VideoAlt', 'Decorative', 'Captions', 'Caption' ] );
+const CONTENT_BASES = new Set( [
+	'Source',
+	'Alt',
+	'VideoAlt',
+	'Decorative',
+	'Captions',
+	'Caption',
+] );
 
 const ADOPTED_RESPONSIVE = new Set(
 	Object.values( ADOPTED_SETTINGS )
@@ -36,11 +55,16 @@ const ADOPTED_RESPONSIVE = new Set(
 const storage = ( base, adopted ) =>
 	adopted
 		? { responsive: ADOPTED_RESPONSIVE.has( base ), mode: 'object' }
-		: { responsive: MEDIA_TIERED_BASES.includes( base ), mode: modeFor( base ) };
+		: {
+				responsive: MEDIA_TIERED_BASES.includes( base ),
+				mode: modeFor( base ),
+		  };
 
 /** @param {string} base Base name. @return {string} 'object' or 'flat'. */
 const modeFor = ( base ) =>
-	'object' === MEDIA_ATTR_TYPES[ base ] && 'BorderRadius' !== base ? 'object' : 'flat';
+	'object' === MEDIA_ATTR_TYPES[ base ] && 'BorderRadius' !== base
+		? 'object'
+		: 'flat';
 
 /**
  * @param {Object}   row           A model row.
@@ -54,13 +78,20 @@ const modeFor = ( base ) =>
 export function rowIO( row, attrs, setAttributes, device, prefix, blockSlug ) {
 	const base = row.setting.base;
 	const adopted = !! row.setting.adopted;
-	const key = adopted ? mediaAttrName( prefix, base ) : mediaStoredAttrName( blockSlug, prefix, base );
+	const key = adopted
+		? mediaAttrName( prefix, base )
+		: mediaStoredAttrName( blockSlug, prefix, base );
 	const { responsive, mode } = storage( base, adopted );
 
 	let inheritedFrom = '';
-	if ( responsive && 'desktop' !== device && ! isSet( ownAt( attrs, key, device ) ) ) {
+	if (
+		responsive &&
+		'desktop' !== device &&
+		! isSet( ownAt( attrs, key, device ) )
+	) {
 		const wider = DEVICES.slice( 0, DEVICES.indexOf( device ) ).reverse();
-		inheritedFrom = wider.find( ( d ) => isSet( ownAt( attrs, key, d ) ) ) || '';
+		inheritedFrom =
+			wider.find( ( d ) => isSet( ownAt( attrs, key, d ) ) ) || '';
 	}
 
 	return {
@@ -96,7 +127,11 @@ export function deviceNote( io, device ) {
 	if ( isSet( io.own ) ) {
 		return null;
 	}
-	return { kind: 'inherited', device: DEVICE_NAMES[ device ], from: io.inheritedFrom ? DEVICE_NAMES[ io.inheritedFrom ] : '' };
+	return {
+		kind: 'inherited',
+		device: DEVICE_NAMES[ device ],
+		from: io.inheritedFrom ? DEVICE_NAMES[ io.inheritedFrom ] : '',
+	};
 }
 
 /**
@@ -119,9 +154,13 @@ export function resetPatch( rows, attrs, device, prefix, blockSlug ) {
 		if ( CONTENT_BASES.has( row.setting.base ) ) {
 			return;
 		}
-		const members = ( adopted ? ADOPTED_COMPOSITES : COMPOSITES )[ row.setting.base ] || [];
+		const members =
+			( adopted ? ADOPTED_COMPOSITES : COMPOSITES )[ row.setting.base ] ||
+			[];
 		[ row.setting.base, ...members ].forEach( ( base ) => {
-			const key = adopted ? mediaAttrName( prefix, base ) : mediaStoredAttrName( blockSlug, prefix, base );
+			const key = adopted
+				? mediaAttrName( prefix, base )
+				: mediaStoredAttrName( blockSlug, prefix, base );
 			const { responsive, mode } = storage( base, adopted );
 			if ( responsive ) {
 				Object.assign( patch, clearPatch( attrs, key, devices, mode ) );

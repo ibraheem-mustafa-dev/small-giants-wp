@@ -16,7 +16,9 @@ import { boundLinkKey } from '../icon/icon-state';
  *
  * @type {Array<{key:string, brand:Object}>}
  */
-export const LINK_KEYS = BRANDS.filter( ( b ) => b.siteInfoKey ).map( ( b ) => ( { key: b.siteInfoKey, brand: b } ) );
+export const LINK_KEYS = BRANDS.filter( ( b ) => b.siteInfoKey ).map(
+	( b ) => ( { key: b.siteInfoKey, brand: b } )
+);
 
 /**
  * The attributes of an `sgs/icon` child bound to a Site Info key, drawing that key's registry glyph.
@@ -32,7 +34,9 @@ export function childAttributesForKey( key ) {
 	return {
 		iconSource: 'brand',
 		brandName: entry.brand.slug,
-		metadata: { bindings: { linkUrl: { source: 'sgs/site-info', args: { key } } } },
+		metadata: {
+			bindings: { linkUrl: { source: 'sgs/site-info', args: { key } } },
+		},
 	};
 }
 
@@ -47,7 +51,10 @@ export function childAttributesForKey( key ) {
 export function templateFromSiteInfo( siteInfo ) {
 	const info = siteInfo && 'object' === typeof siteInfo ? siteInfo : {};
 	const filled = LINK_KEYS.filter( ( k ) => info[ k.key ]?.filled );
-	return ( filled.length ? filled : LINK_KEYS ).map( ( k ) => [ 'sgs/icon', childAttributesForKey( k.key ) ] );
+	return ( filled.length ? filled : LINK_KEYS ).map( ( k ) => [
+		'sgs/icon',
+		childAttributesForKey( k.key ),
+	] );
 }
 
 /**
@@ -62,7 +69,11 @@ export function templateFromSiteInfo( siteInfo ) {
 export function checklistRows( children, hiddenLinks, siteInfo ) {
 	const info = siteInfo && 'object' === typeof siteInfo ? siteInfo : {};
 	const hidden = Array.isArray( hiddenLinks ) ? hiddenLinks : [];
-	const bound = new Set( ( children || [] ).map( ( c ) => boundLinkKey( c?.attributes ) ).filter( Boolean ) );
+	const bound = new Set(
+		( children || [] )
+			.map( ( c ) => boundLinkKey( c?.attributes ) )
+			.filter( Boolean )
+	);
 	return LINK_KEYS.map( ( { key, brand } ) => {
 		const filled = !! info[ key ]?.filled;
 		const hasChild = bound.has( key );
@@ -73,7 +84,14 @@ export function checklistRows( children, hiddenLinks, siteInfo ) {
 					__( '%s (empty — hidden on your site)', 'sgs-blocks' ),
 					brand.label
 			  );
-		return { key, label, filled, hasChild, checked: hasChild && ! hidden.includes( key ), missing: filled && ! hasChild };
+		return {
+			key,
+			label,
+			filled,
+			hasChild,
+			checked: hasChild && ! hidden.includes( key ),
+			missing: filled && ! hasChild,
+		};
 	} );
 }
 
@@ -89,10 +107,17 @@ export function checklistRows( children, hiddenLinks, siteInfo ) {
  *         append (null when none is needed).
  */
 export function toggleLink( key, checked, children, hiddenLinks ) {
-	const hidden = ( Array.isArray( hiddenLinks ) ? hiddenLinks : [] ).filter( ( k ) => k !== key );
+	const hidden = ( Array.isArray( hiddenLinks ) ? hiddenLinks : [] ).filter(
+		( k ) => k !== key
+	);
 	if ( ! checked ) {
 		return { hiddenLinks: [ ...hidden, key ], append: null };
 	}
-	const hasChild = ( children || [] ).some( ( c ) => boundLinkKey( c?.attributes ) === key );
-	return { hiddenLinks: hidden, append: hasChild ? null : childAttributesForKey( key ) };
+	const hasChild = ( children || [] ).some(
+		( c ) => boundLinkKey( c?.attributes ) === key
+	);
+	return {
+		hiddenLinks: hidden,
+		append: hasChild ? null : childAttributesForKey( key ),
+	};
 }

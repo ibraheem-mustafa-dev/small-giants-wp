@@ -31,7 +31,9 @@ export function fieldLabelClasses( attributes ) {
  * @return {string} The value, or '' when none is set.
  */
 export function fieldDefaultValue( attributes ) {
-	return 'string' === typeof attributes.defaultValue ? attributes.defaultValue : '';
+	return 'string' === typeof attributes.defaultValue
+		? attributes.defaultValue
+		: '';
 }
 
 /**
@@ -43,10 +45,15 @@ export function fieldDefaultValue( attributes ) {
  * @return {JSX.Element|null} The counter span, or null.
  */
 export function FieldCounterPreview( { attributes } ) {
-	const max = Math.max( 0, Math.min( parseInt( attributes.maxLength, 10 ) || 0, 100000 ) );
+	const max = Math.max(
+		0,
+		Math.min( parseInt( attributes.maxLength, 10 ) || 0, 100000 )
+	);
 	if ( max < 1 || false === attributes.showCounter ) {
 		return null;
 	}
 	const start = Math.min( fieldDefaultValue( attributes ).length, max );
-	return <span className="sgs-form-field__counter">{ `${ start } / ${ max }` }</span>;
+	return (
+		<span className="sgs-form-field__counter">{ `${ start } / ${ max }` }</span>
+	);
 }

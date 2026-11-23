@@ -23,15 +23,17 @@ export function sortSelectHtml( labels ) {
 	]
 		.map(
 			( [ value, text ] ) =>
-				`<option value="${ value }" ${ value === current ? 'selected' : '' }>${ escapeHtml(
-					text
-				) }</option>`
+				`<option value="${ value }" ${
+					value === current ? 'selected' : ''
+				}>${ escapeHtml( text ) }</option>`
 		)
 		.join( '' );
 
 	return (
 		'<div class="sgs-wishlist-panel__sort">' +
-		`<label for="sgs-wishlist-sort">${ escapeHtml( labels.sortLabel ) }</label>` +
+		`<label for="sgs-wishlist-sort">${ escapeHtml(
+			labels.sortLabel
+		) }</label>` +
 		`<select id="sgs-wishlist-sort" data-sgs-wishlist-sort>${ options }</select>` +
 		'</div>'
 	);
@@ -40,12 +42,17 @@ export function sortSelectHtml( labels ) {
 /**
  * Wire the sort control's change event.
  *
- * @param {HTMLElement} container `[data-sgs-wishlist-bars]` (the sort control's parent).
- * @param {Function}    onChange  `(mode:string) => void`, called with the new mode.
- * @param {Function}    announce  `(message:string) => void` — the panel's status region.
+ * @param {HTMLElement} container      `[data-sgs-wishlist-bars]` (the sort control's parent).
+ * @param {Function}    onChange       `(mode:string) => void`, called with the new mode.
+ * @param {Function}    announce       `(message:string) => void` — the panel's status region.
  * @param {string}      sortedByPrefix Announcement prefix (e.g. "Sorted by").
  */
-export function wireSortSelect( container, onChange, announce, sortedByPrefix ) {
+export function wireSortSelect(
+	container,
+	onChange,
+	announce,
+	sortedByPrefix
+) {
 	const select = container.querySelector( '[data-sgs-wishlist-sort]' );
 	if ( ! select ) {
 		return;
@@ -54,7 +61,8 @@ export function wireSortSelect( container, onChange, announce, sortedByPrefix ) 
 		const mode = select.value;
 		writeStoredSort( mode );
 		onChange( mode );
-		const label = select.options[ select.selectedIndex ]?.textContent || mode;
+		const label =
+			select.options[ select.selectedIndex ]?.textContent || mode;
 		announce( `${ sortedByPrefix } ${ label }` );
 	} );
 }

@@ -17,10 +17,12 @@ const PATH = /^[MLHVCSQTAZmlhvcsqtaz0-9.,\s-]+$/;
 const SLUG = /^[a-z][a-z0-9-]*$/;
 
 /** @return {Array<Object>} The registry entries, or none when the file is malformed. */
-const entries = () => ( Array.isArray( registry?.shapes ) ? registry.shapes : [] );
+const entries = () =>
+	Array.isArray( registry?.shapes ) ? registry.shapes : [];
 
 /** Whether an entry lists a surface. */
-const onSurface = ( entry, surface ) => Array.isArray( entry?.surfaces ) && entry.surfaces.includes( surface );
+const onSurface = ( entry, surface ) =>
+	Array.isArray( entry?.surfaces ) && entry.surfaces.includes( surface );
 
 /**
  * The custom outlines in registry order, with the same validation as `sgs_icon_outline_shapes()`.
@@ -32,10 +34,18 @@ export const OUTLINE_SHAPES = Object.freeze(
 		.filter( ( entry ) => onSurface( entry, 'icons' ) )
 		.map( ( entry ) => ( {
 			slug: 'string' === typeof entry?.slug ? entry.slug : '',
-			label: 'string' === typeof entry?.label ? entry.label : String( entry?.slug ?? '' ),
+			label:
+				'string' === typeof entry?.label
+					? entry.label
+					: String( entry?.slug ?? '' ),
 			d: 'string' === typeof entry?.d ? entry.d.trim() : '',
 		} ) )
-		.filter( ( entry ) => SLUG.test( entry.slug ) && ! BOX_SHAPES.includes( entry.slug ) && PATH.test( entry.d ) )
+		.filter(
+			( entry ) =>
+				SLUG.test( entry.slug ) &&
+				! BOX_SHAPES.includes( entry.slug ) &&
+				PATH.test( entry.d )
+		)
 );
 
 /**
@@ -46,7 +56,9 @@ export const OUTLINE_SHAPES = Object.freeze(
  */
 export const MEDIA_SHAPES = Object.freeze(
 	entries()
-		.filter( ( entry ) => onSurface( entry, 'media' ) && SLUG.test( entry?.slug ) )
+		.filter(
+			( entry ) => onSurface( entry, 'media' ) && SLUG.test( entry?.slug )
+		)
 		.map( ( entry ) => ( {
 			slug: entry.slug,
 			label: 'string' === typeof entry.label ? entry.label : entry.slug,
@@ -59,7 +71,10 @@ export const MEDIA_SHAPES = Object.freeze(
 );
 
 /** Every `shape` value an icon accepts, box shapes first. Twin: sgs_icon_shape_slugs(). */
-export const SHAPE_SLUGS = Object.freeze( [ ...BOX_SHAPES, ...OUTLINE_SHAPES.map( ( s ) => s.slug ) ] );
+export const SHAPE_SLUGS = Object.freeze( [
+	...BOX_SHAPES,
+	...OUTLINE_SHAPES.map( ( s ) => s.slug ),
+] );
 
 /**
  * @param {string} shape A `shape` value.

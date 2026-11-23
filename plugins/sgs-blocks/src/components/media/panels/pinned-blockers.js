@@ -11,7 +11,8 @@
  */
 import { backgroundTarget, effectLayers } from './motion-line.js';
 
-const TRANSFORM_KEY = /^(translate[XYZ]?|scale[XY]?|rotate[XYZ]?|skew[XY]?|followPointer)$/;
+const TRANSFORM_KEY =
+	/^(translate[XYZ]?|scale[XY]?|rotate[XYZ]?|skew[XY]?|followPointer)$/;
 
 /**
  * Whether a stored motion value, at any depth, sets a transform property.
@@ -26,7 +27,9 @@ export function movesElement( node ) {
 	if ( ! node || 'object' !== typeof node ) {
 		return false;
 	}
-	return Object.keys( node ).some( ( key ) => TRANSFORM_KEY.test( key ) || movesElement( node[ key ] ) );
+	return Object.keys( node ).some(
+		( key ) => TRANSFORM_KEY.test( key ) || movesElement( node[ key ] )
+	);
 }
 
 /**
@@ -36,7 +39,9 @@ export function movesElement( node ) {
  * @return {string[]} Part keys flagged `isWrapper`, else `wrapper`.
  */
 export function rootParts( elements ) {
-	const keys = Object.keys( elements || {} ).filter( ( key ) => elements[ key ]?.isWrapper );
+	const keys = Object.keys( elements || {} ).filter(
+		( key ) => elements[ key ]?.isWrapper
+	);
 	return keys.length ? keys : [ 'wrapper' ];
 }
 
@@ -47,11 +52,18 @@ export function rootParts( elements ) {
  */
 export function pinnedBlockers( motion, elements ) {
 	const parallax = [ 'image', 'video', 'svg' ].some( ( kind ) =>
-		effectLayers( motion, backgroundTarget( kind ) ).some( ( layer ) => 'parallax' === String( layer.effect ).replace( /^fx-/, '' ) )
+		effectLayers( motion, backgroundTarget( kind ) ).some(
+			( layer ) =>
+				'parallax' === String( layer.effect ).replace( /^fx-/, '' )
+		)
 	);
 	const transformMotion = rootParts( elements ).some( ( key ) => {
 		const part = motion?.elements?.[ key ];
-		return movesElement( part?.entrance?.base?.values ) || movesElement( part?.hover?.state?.values ) || movesElement( part?.hover?.effects );
+		return (
+			movesElement( part?.entrance?.base?.values ) ||
+			movesElement( part?.hover?.state?.values ) ||
+			movesElement( part?.hover?.effects )
+		);
 	} );
 	return { parallax, transformMotion };
 }

@@ -14,7 +14,11 @@ import { ADOPTED_ATOM_IDS } from './media/emit/adopted-settings.js';
 
 // The adopted panels load on first use as one shared chunk, so the 30-odd block bundles that import this
 // component do not each carry a copy (about 80 KB apiece).
-const MediaPanels = lazy( () => import( /* webpackChunkName: "media-panels" */ './media/panels/MediaPanels.js' ) );
+const MediaPanels = lazy( () =>
+	import(
+		/* webpackChunkName: "media-panels" */ './media/panels/MediaPanels.js'
+	)
+);
 
 /**
  * The `kinds` a block declares for one media slot, or an empty list.
@@ -36,25 +40,29 @@ export function declaredKinds( blockName, prefix ) {
  * @return {Object|null} The entry.
  */
 function declaredEntry( blockName, prefix ) {
-	const entries = blockName ? getBlockType( blockName )?.supports?.sgs?.mediaElements : null;
-	return Array.isArray( entries ) ? entries.find( ( e ) => ( e.prefix || '' ) === prefix ) || null : null;
+	const entries = blockName
+		? getBlockType( blockName )?.supports?.sgs?.mediaElements
+		: null;
+	return Array.isArray( entries )
+		? entries.find( ( e ) => ( e.prefix || '' ) === prefix ) || null
+		: null;
 }
 
 /**
  * Mount one media slot's panels.
  *
  * @param {Object}   props
- * @param {Object}   props.attributes    Block attributes.
- * @param {Function} props.setAttributes Block `setAttributes`.
- * @param {string}   [props.prefix]      Surface prefix ('' when unprefixed).
- * @param {string}   [props.blockSlug]   Block slug, for stored-name resolution.
- * @param {string[]} [props.atoms]       Atom ids; omitted means every adopted atom.
- * @param {string[]} [props.kinds]       The slot's allowed kinds; a non-empty list selects the panel path.
- * @param {string}   [props.blockName]   Block name, to read `kinds` and `blockOwns` from its slot entry.
- * @param {string}   [props.context]     'element' | 'background' (panel path).
- * @param {boolean}  [props.parallax]    Parallax is on for this background (panel path).
+ * @param {Object}   props.attributes     Block attributes.
+ * @param {Function} props.setAttributes  Block `setAttributes`.
+ * @param {string}   [props.prefix]       Surface prefix ('' when unprefixed).
+ * @param {string}   [props.blockSlug]    Block slug, for stored-name resolution.
+ * @param {string[]} [props.atoms]        Atom ids; omitted means every adopted atom.
+ * @param {string[]} [props.kinds]        The slot's allowed kinds; a non-empty list selects the panel path.
+ * @param {string}   [props.blockName]    Block name, to read `kinds` and `blockOwns` from its slot entry.
+ * @param {string}   [props.context]      'element' | 'background' (panel path).
+ * @param {boolean}  [props.parallax]     Parallax is on for this background (panel path).
  * @param {Object}   [props.panelContent] Panel id to caller content (panel path).
- * @param {string}   [props.label]       Names the slot in each panel title when a block mounts more than one (panel path).
+ * @param {string}   [props.label]        Names the slot in each panel title when a block mounts more than one (panel path).
  * @return {Object|null} The mounted panels, or null.
  */
 export default function MediaElementPanel( {
@@ -70,7 +78,10 @@ export default function MediaElementPanel( {
 	panelContent,
 	label = '',
 } ) {
-	const slotKinds = Array.isArray( kinds ) && kinds.length ? kinds : declaredKinds( blockName, prefix );
+	const slotKinds =
+		Array.isArray( kinds ) && kinds.length
+			? kinds
+			: declaredKinds( blockName, prefix );
 	// A setting the block edits with its own control (the slot entry's `blockOwns` bases) is not shown twice.
 	const owns = declaredEntry( blockName, prefix )?.blockOwns;
 	if ( slotKinds.length ) {
@@ -81,7 +92,11 @@ export default function MediaElementPanel( {
 					setAttributes={ setAttributes }
 					prefix={ prefix }
 					blockSlug={ blockSlug }
-					atomIds={ Array.isArray( atoms ) && atoms.length ? atoms : ADOPTED_ATOM_IDS }
+					atomIds={
+						Array.isArray( atoms ) && atoms.length
+							? atoms
+							: ADOPTED_ATOM_IDS
+					}
 					kinds={ slotKinds }
 					context={ context }
 					parallax={ parallax }

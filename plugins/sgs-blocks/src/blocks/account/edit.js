@@ -28,12 +28,26 @@ import MenuPanel from './MenuPanel';
 import DashboardPanel from './DashboardPanel';
 import FieldsPanel, { fieldColourRows } from './FieldsPanel';
 import LoggedOutPanel from './LoggedOutPanel';
-import OrdersPanel, { extraColourRows, EXTRA_TYPE_TARGETS } from './OrdersPanel';
+import OrdersPanel, {
+	extraColourRows,
+	EXTRA_TYPE_TARGETS,
+} from './OrdersPanel';
 import CellPanels from './CellPanels';
 import ButtonIconPanels from './ButtonIconPanels';
 import OrderPagePanels from './OrderPagePanels';
-import { WordingPanel, HeaderPanel, AddressesPanel, AccountDetailsPanel, SignInButtonPanel, RegisterFormPanel } from './ExtraPanels';
-import { AuthTabsPanel, SignedOutContentPanel, SignedOutCardPanel } from './SignedOutPanel';
+import {
+	WordingPanel,
+	HeaderPanel,
+	AddressesPanel,
+	AccountDetailsPanel,
+	SignInButtonPanel,
+	RegisterFormPanel,
+} from './ExtraPanels';
+import {
+	AuthTabsPanel,
+	SignedOutContentPanel,
+	SignedOutCardPanel,
+} from './SignedOutPanel';
 
 /**
  * @param {Object}   props               Block props.
@@ -193,16 +207,46 @@ export default function Edit( { attributes, setAttributes } ) {
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 				/>
-				<WordingPanel attributes={ attributes } setAttributes={ setAttributes } />
-				<HeaderPanel attributes={ attributes } setAttributes={ setAttributes } />
-				<SignInButtonPanel attributes={ attributes } setAttributes={ setAttributes } />
-				<ButtonIconPanels attributes={ attributes } setAttributes={ setAttributes } />
-				<RegisterFormPanel attributes={ attributes } setAttributes={ setAttributes } />
-				<OrdersPanel attributes={ attributes } setAttributes={ setAttributes } />
-				<OrderPagePanels attributes={ attributes } setAttributes={ setAttributes } />
-				<AddressesPanel attributes={ attributes } setAttributes={ setAttributes } />
-				<AccountDetailsPanel attributes={ attributes } setAttributes={ setAttributes } />
-				<CellPanels attributes={ attributes } setAttributes={ setAttributes } />
+				<WordingPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+				<HeaderPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+				<SignInButtonPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+				<ButtonIconPanels
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+				<RegisterFormPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+				<OrdersPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+				<OrderPagePanels
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+				<AddressesPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+				<AccountDetailsPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+				<CellPanels
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 				<PanelBody
 					title={ __( 'Card border', 'sgs-blocks' ) }
 					initialOpen={ false }
@@ -286,7 +330,10 @@ export default function Edit( { attributes, setAttributes } ) {
 							},
 							{
 								key: 'signedOutHeading',
-								label: __( 'Signed-out card heading', 'sgs-blocks' ),
+								label: __(
+									'Signed-out card heading',
+									'sgs-blocks'
+								),
 								prefix: 'signedOutHeading',
 								showFontFamily: true,
 								showDecoration: true,
@@ -295,7 +342,10 @@ export default function Edit( { attributes, setAttributes } ) {
 							},
 							{
 								key: 'signedOutCopy',
-								label: __( 'Signed-out card text', 'sgs-blocks' ),
+								label: __(
+									'Signed-out card text',
+									'sgs-blocks'
+								),
 								prefix: 'signedOutCopy',
 								showFontFamily: true,
 								showDecoration: true,
@@ -388,11 +438,36 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 			{ /* The block's built-in buttons (the built-in button kit's one panel, which mounts its own Styles group): the signed-out
 			     card's two buttons and the button in the empty-state card. The canvas is the server render, so no twin is needed. */ }
-			<BuiltinButtonPanel attributes={ attributes } setAttributes={ setAttributes } blockName="sgs/account" prefix="signedOutSignIn" />
-			<BuiltinButtonPanel attributes={ attributes } setAttributes={ setAttributes } blockName="sgs/account" prefix="signedOutRegister" />
-			<BuiltinButtonPanel attributes={ attributes } setAttributes={ setAttributes } blockName="sgs/account" prefix="emptyState" />
-			<BuiltinButtonPanel attributes={ attributes } setAttributes={ setAttributes } blockName="sgs/account" prefix="loginButton" />
-			<BuiltinButtonPanel attributes={ attributes } setAttributes={ setAttributes } blockName="sgs/account" prefix="registerButton" />
+			<BuiltinButtonPanel
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				blockName="sgs/account"
+				prefix="signedOutSignIn"
+			/>
+			<BuiltinButtonPanel
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				blockName="sgs/account"
+				prefix="signedOutRegister"
+			/>
+			<BuiltinButtonPanel
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				blockName="sgs/account"
+				prefix="emptyState"
+			/>
+			<BuiltinButtonPanel
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				blockName="sgs/account"
+				prefix="loginButton"
+			/>
+			<BuiltinButtonPanel
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				blockName="sgs/account"
+				prefix="registerButton"
+			/>
 			<div { ...blockProps }>
 				<SsrPreviewGuard>
 					<ServerSideRender

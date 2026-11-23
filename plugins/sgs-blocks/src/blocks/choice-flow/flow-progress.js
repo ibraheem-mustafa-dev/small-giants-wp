@@ -73,7 +73,9 @@ export function updateStepperState( flowRoot, targetIndex ) {
 	if ( ! stepperEl ) {
 		return;
 	}
-	const items = stepperEl.querySelectorAll( '.sgs-choice-flow__stepper-item' );
+	const items = stepperEl.querySelectorAll(
+		'.sgs-choice-flow__stepper-item'
+	);
 	items.forEach( ( itemEl, index ) => {
 		itemEl.classList.toggle( 'is-current', index === targetIndex );
 		itemEl.classList.toggle( 'is-complete', index < targetIndex );
@@ -114,8 +116,12 @@ export function updateProgressBadge( flowRoot, current, total, progress ) {
  * @return {string} The eyebrow text.
  */
 function stepEyebrow( stepEl ) {
-	const questionEl = stepEl ? stepEl.querySelector( QUESTION_SELECTOR ) : null;
-	return questionEl ? ( questionEl.getAttribute( 'data-eyebrow' ) || '' ).trim() : '';
+	const questionEl = stepEl
+		? stepEl.querySelector( QUESTION_SELECTOR )
+		: null;
+	return questionEl
+		? ( questionEl.getAttribute( 'data-eyebrow' ) || '' ).trim()
+		: '';
 }
 
 /**
@@ -137,35 +143,59 @@ function stepEyebrow( stepEl ) {
  */
 export function updateStepPosition( flowRoot, steps, targetIndex ) {
 	const targetStepEl = steps[ targetIndex ];
-	const questionSteps = steps.filter( ( stepEl ) => ! stepEl.querySelector( RESULT_SELECTOR ) );
+	const questionSteps = steps.filter(
+		( stepEl ) => ! stepEl.querySelector( RESULT_SELECTOR )
+	);
 	const total = questionSteps.length || steps.length;
 	const questionIndex = questionSteps.indexOf( targetStepEl );
 	const isResultStep = questionIndex === -1;
-	const counted = isResultStep ? total : questionIndex + ( 'current' === flowRoot.dataset.progressCounts ? 1 : 0 );
+	const counted = isResultStep
+		? total
+		: questionIndex +
+		  ( 'current' === flowRoot.dataset.progressCounts ? 1 : 0 );
 	const progress = total > 0 ? counted / total : 0;
-	flowRoot.style.setProperty( '--sgs-choice-flow-progress', String( progress ) );
+	flowRoot.style.setProperty(
+		'--sgs-choice-flow-progress',
+		String( progress )
+	);
 	flowRoot.dataset.questionIndex = String( questionIndex );
 
-	const numbered = questionSteps.filter( ( stepEl ) => ! stepEyebrow( stepEl ) );
+	const numbered = questionSteps.filter(
+		( stepEl ) => ! stepEyebrow( stepEl )
+	);
 	const numberedIndex = numbered.indexOf( targetStepEl );
 	const position = numberedIndex === -1 ? numbered.length : numberedIndex + 1;
 	const stepCountEl = flowRoot.querySelector( STEP_COUNT_SELECTOR );
 	if ( stepCountEl ) {
 		const label = flowRoot.dataset.stepCountLabel || 'Step';
 		// A result step is not a question: no position line.
-		stepCountEl.textContent = isResultStep ? '' : stepEyebrow( targetStepEl ) || `${ label } ${ position } of ${ numbered.length || total }`;
+		stepCountEl.textContent = isResultStep
+			? ''
+			: stepEyebrow( targetStepEl ) ||
+			  `${ label } ${ position } of ${ numbered.length || total }`;
 	}
 
 	const stepLabelEl = flowRoot.querySelector( STEP_LABEL_SELECTOR );
 	if ( stepLabelEl && targetStepEl ) {
 		// Falls back to the question's own title when the step has no label, so
 		// chrome.js's showcase eyebrow always has a step name to show.
-		const questionTitleEl = targetStepEl.querySelector( '.sgs-choice-flow-question__title' );
+		const questionTitleEl = targetStepEl.querySelector(
+			'.sgs-choice-flow-question__title'
+		);
 		stepLabelEl.textContent =
-			targetStepEl.getAttribute( 'data-step-label' ) || ( questionTitleEl ? questionTitleEl.textContent : '' );
+			targetStepEl.getAttribute( 'data-step-label' ) ||
+			( questionTitleEl ? questionTitleEl.textContent : '' );
 	}
 
-	buildStepperMarkup( flowRoot, questionSteps.length ? questionSteps : steps );
+	buildStepperMarkup(
+		flowRoot,
+		questionSteps.length ? questionSteps : steps
+	);
 	updateStepperState( flowRoot, isResultStep ? total : questionIndex );
-	updateProgressBadge( flowRoot, isResultStep ? total : questionIndex + 1, total, progress );
+	updateProgressBadge(
+		flowRoot,
+		isResultStep ? total : questionIndex + 1,
+		total,
+		progress
+	);
 }

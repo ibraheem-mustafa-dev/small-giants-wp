@@ -24,7 +24,12 @@ import { translateReason } from './reasons.js';
 const labelOf = ( row ) => row.setting.control.label;
 
 /** The surface Background: one flat colour. */
-export function SurfaceColourField( { row, attributes, setAttributes, prefix } ) {
+export function SurfaceColourField( {
+	row,
+	attributes,
+	setAttributes,
+	prefix,
+} ) {
 	const key = mediaAttrName( prefix, row.setting.base );
 	return (
 		<GradientCapableColourControl
@@ -48,7 +53,8 @@ export function ShadowField( { row, attributes, setAttributes, prefix } ) {
 	const stored = String( attributes[ name( 'BoxShadow' ) ] || '' );
 	const isPreset = presets.some( ( p ) => p.slug === stored );
 	const [ custom, setCustom ] = useState( false );
-	const customOpen = custom || ( '' !== stored && 'none' !== stored && ! isPreset );
+	const customOpen =
+		custom || ( '' !== stored && 'none' !== stored && ! isPreset );
 	let current = '';
 	if ( customOpen ) {
 		current = 'custom';
@@ -63,7 +69,10 @@ export function ShadowField( { row, attributes, setAttributes, prefix } ) {
 			return;
 		}
 		setCustom( false );
-		setAttributes( { [ name( 'BoxShadow' ) ]: value, [ name( 'BoxShadowColour' ) ]: '' } );
+		setAttributes( {
+			[ name( 'BoxShadow' ) ]: value,
+			[ name( 'BoxShadowColour' ) ]: '',
+		} );
 	};
 	const options = [
 		{ value: 'none', label: __( 'None', 'sgs-blocks' ) },
@@ -72,8 +81,17 @@ export function ShadowField( { row, attributes, setAttributes, prefix } ) {
 	];
 	return (
 		<div className="sgs-media-shadow">
-			<Chips label={ labelOf( row ) } options={ options } value={ current } onChange={ choose } />
-			{ row.state.note && <p className="sgs-media-panel__hint">{ translateReason( row.state.note ) }</p> }
+			<Chips
+				label={ labelOf( row ) }
+				options={ options }
+				value={ current }
+				onChange={ choose }
+			/>
+			{ row.state.note && (
+				<p className="sgs-media-panel__hint">
+					{ translateReason( row.state.note ) }
+				</p>
+			) }
 			{ customOpen && (
 				<ShadowControl
 					label={ __( 'Custom shadow', 'sgs-blocks' ) }
@@ -108,7 +126,8 @@ export function RadiusField( { row, io } ) {
 	const same = values.every( ( v ) => v === values[ 0 ] );
 	const [ separate, setSeparate ] = useState( ! same );
 	const px = parseFloat( values[ 0 ] );
-	const all = ( value ) => Object.fromEntries( CORNER_SIDES.map( ( side ) => [ side, value ] ) );
+	const all = ( value ) =>
+		Object.fromEntries( CORNER_SIDES.map( ( side ) => [ side, value ] ) );
 	return (
 		<div className="sgs-media-corners">
 			<span className="sgs-media-corners__label">{ labelOf( row ) }</span>
@@ -126,18 +145,33 @@ export function RadiusField( { row, io } ) {
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 					label={ __( 'All corners', 'sgs-blocks' ) }
-					value={ Number.isFinite( px ) && px < 9999 ? px : undefined }
+					value={
+						Number.isFinite( px ) && px < 9999 ? px : undefined
+					}
 					min={ 0 }
 					max={ 200 }
 					step={ 1 }
-					onChange={ ( v ) => io.write( undefined === v ? '' : all( `${ v }px` ) ) }
+					onChange={ ( v ) =>
+						io.write( undefined === v ? '' : all( `${ v }px` ) )
+					}
 				/>
 			) }
 			<div className="sgs-media-corners__actions">
-				<Button variant="secondary" __next40pxDefaultSize aria-pressed={ separate } onClick={ () => setSeparate( ! separate ) }>
-					{ separate ? __( 'Link the four corners', 'sgs-blocks' ) : __( 'Set each corner', 'sgs-blocks' ) }
+				<Button
+					variant="secondary"
+					__next40pxDefaultSize
+					aria-pressed={ separate }
+					onClick={ () => setSeparate( ! separate ) }
+				>
+					{ separate
+						? __( 'Link the four corners', 'sgs-blocks' )
+						: __( 'Set each corner', 'sgs-blocks' ) }
 				</Button>
-				<Button variant="secondary" __next40pxDefaultSize onClick={ () => io.write( all( ROUND ) ) }>
+				<Button
+					variant="secondary"
+					__next40pxDefaultSize
+					onClick={ () => io.write( all( ROUND ) ) }
+				>
 					{ __( 'Round', 'sgs-blocks' ) }
 				</Button>
 			</div>
@@ -152,7 +186,10 @@ export function ColourTreatmentField( { row, io } ) {
 			label={ labelOf( row ) }
 			options={ [
 				{ value: 'natural', label: __( 'Natural', 'sgs-blocks' ) },
-				{ value: 'greyscale', label: __( 'Black and white', 'sgs-blocks' ) },
+				{
+					value: 'greyscale',
+					label: __( 'Black and white', 'sgs-blocks' ),
+				},
 				{ value: 'white', label: __( 'White', 'sgs-blocks' ) },
 				{ value: 'dim', label: __( 'Dim', 'sgs-blocks' ) },
 				{ value: 'deepen', label: __( 'Deepen', 'sgs-blocks' ) },
@@ -218,7 +255,9 @@ export function PlaybackField( { row, io, kind, slot } ) {
 	const lock = autoplay ? { locked: true, reason: REASONS.autoplayLock } : {};
 	let toggles;
 	if ( background ) {
-		toggles = [ toggle( 'pause', __( 'Show a pause button', 'sgs-blocks' ) ) ];
+		toggles = [
+			toggle( 'pause', __( 'Show a pause button', 'sgs-blocks' ) ),
+		];
 	} else if ( 'embed' === kind ) {
 		toggles = [
 			toggle( 'autoplay', __( 'Autoplay', 'sgs-blocks' ) ),
@@ -238,18 +277,26 @@ export function PlaybackField( { row, io, kind, slot } ) {
 		];
 	}
 	return (
-		<div className="sgs-media-playback" role="group" aria-label={ labelOf( row ) }>
+		<div
+			className="sgs-media-playback"
+			role="group"
+			aria-label={ labelOf( row ) }
+		>
 			{ toggles }
 			{ 'embed' === kind && ! background && (
 				<RangeControl
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 					label={ __( 'Start at (seconds)', 'sgs-blocks' ) }
-					value={ isSet( value.start ) ? Number( value.start ) : undefined }
+					value={
+						isSet( value.start ) ? Number( value.start ) : undefined
+					}
 					min={ 0 }
 					max={ 3600 }
 					allowReset
-					onChange={ ( v ) => set( { start: undefined === v ? '' : v } ) }
+					onChange={ ( v ) =>
+						set( { start: undefined === v ? '' : v } )
+					}
 				/>
 			) }
 		</div>

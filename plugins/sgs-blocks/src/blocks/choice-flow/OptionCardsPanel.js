@@ -26,8 +26,16 @@ const TIER_LABEL = {
  * @param {string}   [o.title]       Panel title; sgs/choice-flow-question passes its own.
  * @return {JSX.Element} The panel.
  */
-export default function OptionCardsPanel( { attributes, setAttributes, title } ) {
-	const sizes = attributes.optionMediaSize && ! Array.isArray( attributes.optionMediaSize ) ? attributes.optionMediaSize : {};
+export default function OptionCardsPanel( {
+	attributes,
+	setAttributes,
+	title,
+} ) {
+	const sizes =
+		attributes.optionMediaSize &&
+		! Array.isArray( attributes.optionMediaSize )
+			? attributes.optionMediaSize
+			: {};
 	const setSize = ( tier, val ) => {
 		const next = { ...sizes };
 		if ( val === undefined || val === null || val === '' ) {
@@ -48,11 +56,16 @@ export default function OptionCardsPanel( { attributes, setAttributes, title } )
 	};
 
 	return (
-		<PanelBody title={ title || __( 'Option cards', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ title || __( 'Option cards', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			<ResponsiveControl
 				label={ __( 'Picture size', 'sgs-blocks' ) }
 				value={ sizes }
-				isInherited={ ( tier ) => 'desktop' !== tier && ! sizes[ tier ] }
+				isInherited={ ( tier ) =>
+					'desktop' !== tier && ! sizes[ tier ]
+				}
 				resolvedValue={ ( tier ) => `${ inherited( tier ) }%` }
 				onReset={ ( tier ) => setSize( tier, null ) }
 			>
@@ -60,7 +73,10 @@ export default function OptionCardsPanel( { attributes, setAttributes, title } )
 					<RangeControl
 						label={ sprintf(
 							/* translators: %s: device name */
-							__( 'Picture size on %s (%% of the picture band)', 'sgs-blocks' ),
+							__(
+								'Picture size on %s (%% of the picture band)',
+								'sgs-blocks'
+							),
 							TIER_LABEL[ tier ]
 						) }
 						value={ sizes[ tier ] ?? inherited( tier ) }

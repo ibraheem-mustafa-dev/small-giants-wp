@@ -26,8 +26,15 @@ import { Notice, Spinner } from '@wordpress/components';
 /** One short line for the invented sample set. */
 export function SampleNotice() {
 	return (
-		<Notice status="warning" isDismissible={ false } className="sgs-google-reviews__editor-notice">
-			{ __( 'Sample reviews: these are invented examples. Replace them with real reviews before the page goes live.', 'sgs-blocks' ) }
+		<Notice
+			status="warning"
+			isDismissible={ false }
+			className="sgs-google-reviews__editor-notice"
+		>
+			{ __(
+				'Sample reviews: these are invented examples. Replace them with real reviews before the page goes live.',
+				'sgs-blocks'
+			) }
 		</Notice>
 	);
 }
@@ -35,14 +42,36 @@ export function SampleNotice() {
 /** Shown when the server renders nothing: says why, and the three ways to fix it. */
 export function EmptyState() {
 	return (
-		<Notice status="info" isDismissible={ false } className="sgs-google-reviews__editor-notice">
+		<Notice
+			status="info"
+			isDismissible={ false }
+			className="sgs-google-reviews__editor-notice"
+		>
 			<p>
-				{ __( 'This block shows nothing on the live site yet, because it has no real reviews to show. To fix that, do one of these:', 'sgs-blocks' ) }
+				{ __(
+					'This block shows nothing on the live site yet, because it has no real reviews to show. To fix that, do one of these:',
+					'sgs-blocks'
+				) }
 			</p>
 			<ul>
-				<li>{ __( 'Add your own reviews in the "Written reviews" panel.', 'sgs-blocks' ) }</li>
-				<li>{ __( 'Or set the Google Place ID and API key (Settings → SGS Google Reviews) so live reviews can load.', 'sgs-blocks' ) }</li>
-				<li>{ __( 'Or choose "Sample reviews" in "Reviews source" to build the layout with example reviews.', 'sgs-blocks' ) }</li>
+				<li>
+					{ __(
+						'Add your own reviews in the "Written reviews" panel.',
+						'sgs-blocks'
+					) }
+				</li>
+				<li>
+					{ __(
+						'Or set the Google Place ID and API key (Settings → SGS Google Reviews) so live reviews can load.',
+						'sgs-blocks'
+					) }
+				</li>
+				<li>
+					{ __(
+						'Or choose "Sample reviews" in "Reviews source" to build the layout with example reviews.',
+						'sgs-blocks'
+					) }
+				</li>
 			</ul>
 		</Notice>
 	);
@@ -65,8 +94,13 @@ export function LoadingState() {
  */
 export function ErrorState( { response } ) {
 	return (
-		<Notice status="error" isDismissible={ false } className="sgs-google-reviews__editor-notice">
-			{ response?.errorMsg || __( 'The reviews preview could not load.', 'sgs-blocks' ) }
+		<Notice
+			status="error"
+			isDismissible={ false }
+			className="sgs-google-reviews__editor-notice"
+		>
+			{ response?.errorMsg ||
+				__( 'The reviews preview could not load.', 'sgs-blocks' ) }
 		</Notice>
 	);
 }

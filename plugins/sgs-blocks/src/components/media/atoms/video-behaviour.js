@@ -49,7 +49,14 @@
  */
 import { __ } from '@wordpress/i18n';
 import { mediaAttrName } from '../../MediaElementControls.js';
-import { isLegacyCall, rulesFor, kindIn, omitted, disabled, REASONS } from '../panels/disclosure-context.js';
+import {
+	isLegacyCall,
+	rulesFor,
+	kindIn,
+	omitted,
+	disabled,
+	REASONS,
+} from '../panels/disclosure-context.js';
 
 /** Boolean bases this atom owns. */
 const BOOLEAN_BASES = [
@@ -72,7 +79,7 @@ const LOCKED_ON_AUTOPLAY = [ 'VideoMuted', 'VideoPlaysInline' ];
  * `'VideoAutoplay'` keeps the single-arg call `validate( value )` the brief
  * describes working for the common case.
  *
- * @param {*}      value Candidate value.
+ * @param {*}      value  Candidate value.
  * @param {string} [base] Which base is being validated.
  * @return {boolean|number|string} The validated value, or that base's default.
  */
@@ -164,11 +171,19 @@ export function disclosure( attrs, device, prefix = '', opts = {} ) {
 		if ( c.background || ! kindIn( c, 'video', 'embed' ) ) {
 			return omitted();
 		}
-		const embedOnly = [ 'VideoAutoplay', 'VideoMuted', 'VideoLoop', 'VideoControls' ];
+		const embedOnly = [
+			'VideoAutoplay',
+			'VideoMuted',
+			'VideoLoop',
+			'VideoControls',
+		];
 		if ( 'embed' === c.kind && ! embedOnly.includes( base ) ) {
 			return omitted();
 		}
-		if ( [ 'VideoMuted', 'VideoPlaysInline' ].includes( base ) && c.get( 'VideoAutoplay' ) ) {
+		if (
+			[ 'VideoMuted', 'VideoPlaysInline' ].includes( base ) &&
+			c.get( 'VideoAutoplay' )
+		) {
 			return disabled( REASONS.autoplayLock );
 		}
 		return undefined;

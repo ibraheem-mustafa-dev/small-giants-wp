@@ -42,12 +42,18 @@ export default function FluidScaleControls( { attributes, setAttributes } ) {
 			hasValue={ () => enabled }
 			onDeselect={ () =>
 				setAttributes( {
-					fluidScale: { enabled: false, breakpoint: DEFAULT_FLUID_BREAKPOINT },
+					fluidScale: {
+						enabled: false,
+						breakpoint: DEFAULT_FLUID_BREAKPOINT,
+					},
 				} )
 			}
 		>
 			<ToggleControl
-				label={ __( 'Scale with the viewport above a width', 'sgs-blocks' ) }
+				label={ __(
+					'Scale with the viewport above a width',
+					'sgs-blocks'
+				) }
 				help={ __(
 					'Off by default. Once on, everything inside the header — and the gap around it when it floats as a pill — grows smoothly past the width you set below, instead of staying a fixed size on very large screens.',
 					'sgs-blocks'
@@ -57,7 +63,9 @@ export default function FluidScaleControls( { attributes, setAttributes } ) {
 					setAttributes( {
 						fluidScale: {
 							enabled: value,
-							breakpoint: fluidScale.breakpoint || DEFAULT_FLUID_BREAKPOINT,
+							breakpoint:
+								fluidScale.breakpoint ||
+								DEFAULT_FLUID_BREAKPOINT,
 						},
 					} )
 				}
@@ -66,8 +74,13 @@ export default function FluidScaleControls( { attributes, setAttributes } ) {
 			{ enabled && (
 				<>
 					<NumberControl
-						label={ __( 'Scale above this viewport width (px)', 'sgs-blocks' ) }
-						value={ fluidScale.breakpoint || DEFAULT_FLUID_BREAKPOINT }
+						label={ __(
+							'Scale above this viewport width (px)',
+							'sgs-blocks'
+						) }
+						value={
+							fluidScale.breakpoint || DEFAULT_FLUID_BREAKPOINT
+						}
 						min={ 768 }
 						max={ 2560 }
 						onChange={ ( value ) =>
@@ -77,7 +90,14 @@ export default function FluidScaleControls( { attributes, setAttributes } ) {
 									breakpoint:
 										value === '' || value === undefined
 											? DEFAULT_FLUID_BREAKPOINT
-											: Math.max( 768, Math.min( 2560, parseInt( value, 10 ) || DEFAULT_FLUID_BREAKPOINT ) ),
+											: Math.max(
+													768,
+													Math.min(
+														2560,
+														parseInt( value, 10 ) ||
+															DEFAULT_FLUID_BREAKPOINT
+													)
+											  ),
 								},
 							} )
 						}

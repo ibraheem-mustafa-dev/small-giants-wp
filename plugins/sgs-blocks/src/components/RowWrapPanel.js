@@ -15,9 +15,17 @@ export default function RowWrapPanel( { rows } ) {
 		return null;
 	}
 	return (
-		<PanelBody title={ __( 'Row wrapping', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Row wrapping', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			{ shown.map( ( row ) => (
-				<FlexWrapControl key={ row.label } label={ row.label } value={ row.value } onChange={ row.onChange } />
+				<FlexWrapControl
+					key={ row.label }
+					label={ row.label }
+					value={ row.value }
+					onChange={ row.onChange }
+				/>
 			) ) }
 		</PanelBody>
 	);

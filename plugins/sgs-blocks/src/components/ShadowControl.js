@@ -48,7 +48,9 @@ function describeLift( liftValue ) {
 	if ( ! liftValue ) {
 		return '';
 	}
-	const presetMatch = /^var\(--wp--preset--shadow--([a-z0-9-]+)\)$/i.exec( liftValue );
+	const presetMatch = /^var\(--wp--preset--shadow--([a-z0-9-]+)\)$/i.exec(
+		liftValue
+	);
 	if ( presetMatch ) {
 		const slug = presetMatch[ 1 ];
 		return slug.charAt( 0 ).toUpperCase() + slug.slice( 1 );
@@ -100,7 +102,10 @@ export function shadowAttrName( base, part = 'base' ) {
  * @param {boolean} [options.hoverColour] Include the hover colour.
  * @return {{base: string, colour: string, hover?: string, hoverColour?: string}} The keys.
  */
-export function shadowAttrKeys( base, { hover = false, hoverColour = false } = {} ) {
+export function shadowAttrKeys(
+	base,
+	{ hover = false, hoverColour = false } = {}
+) {
 	const keys = {
 		base: shadowAttrName( base, 'base' ),
 		colour: shadowAttrName( base, 'colour' ),
@@ -116,26 +121,28 @@ export function shadowAttrKeys( base, { hover = false, hoverColour = false } = {
 
 const warnMissing = ( what ) => () => {
 	// eslint-disable-next-line no-console
-	console.warn( `ShadowControl: ${ what } is missing, so this field will not update the block. Pass it from the caller.` );
+	console.warn(
+		`ShadowControl: ${ what } is missing, so this field will not update the block. Pass it from the caller.`
+	);
 };
 
 /**
  * @param {Object}   props
- * @param {string}   props.label                  Field label.
- * @param {string}   [props.value]                Stored SHAPE text (or a theme shadow name).
- * @param {Function} [props.onChange]             Receives the next SHAPE text.
- * @param {string}   [props.colour]               Stored COLOUR text, owned by the caller.
- * @param {Function} [props.onColourChange]       Setter for the colour attribute.
- * @param {string}   [props.colourHover]          Hover COLOUR text. Omit when the block has no hover state.
- * @param {Function} [props.onColourHoverChange]  Setter for the hover colour.
- * @param {string}   [props.valueHover]           Hover SHAPE text.
- * @param {Function} [props.onValueHoverChange]   Setter for the hover shape.
- * @param {Object}   [props.attributes]           Block attributes (install-in-one-call form).
- * @param {Function} [props.setAttributes]        Block setAttributes.
- * @param {Object}   [props.attrNames]            Map from `shadowAttrKeys()`.
- * @param {string}   [props.liftPrefix]           Attribute prefix for the lift switch ('' = the block root; see ShadowLiftControls).
- * @param {boolean}  [props.hoverOnly]            Show only the hover shadow builder, for a block with no resting shadow attributes.
- * @param {string[]} [props.hide]                 Inputs to remove: `spread`, `inset`, `raw` (the Raw CSS tab). Empty by default.
+ * @param {string}   props.label                 Field label.
+ * @param {string}   [props.value]               Stored SHAPE text (or a theme shadow name).
+ * @param {Function} [props.onChange]            Receives the next SHAPE text.
+ * @param {string}   [props.colour]              Stored COLOUR text, owned by the caller.
+ * @param {Function} [props.onColourChange]      Setter for the colour attribute.
+ * @param {string}   [props.colourHover]         Hover COLOUR text. Omit when the block has no hover state.
+ * @param {Function} [props.onColourHoverChange] Setter for the hover colour.
+ * @param {string}   [props.valueHover]          Hover SHAPE text.
+ * @param {Function} [props.onValueHoverChange]  Setter for the hover shape.
+ * @param {Object}   [props.attributes]          Block attributes (install-in-one-call form).
+ * @param {Function} [props.setAttributes]       Block setAttributes.
+ * @param {Object}   [props.attrNames]           Map from `shadowAttrKeys()`.
+ * @param {string}   [props.liftPrefix]          Attribute prefix for the lift switch ('' = the block root; see ShadowLiftControls).
+ * @param {boolean}  [props.hoverOnly]           Show only the hover shadow builder, for a block with no resting shadow attributes.
+ * @param {string[]} [props.hide]                Inputs to remove: `spread`, `inset`, `raw` (the Raw CSS tab). Empty by default.
  */
 export default function ShadowControl( {
 	label,
@@ -156,37 +163,71 @@ export default function ShadowControl( {
 } ) {
 	// Explicit props win over the map, and a pair is written in ONE call only when the map
 	// (not the caller) supplies both halves.
-	const explicitBase = typeof onChange === 'function' || typeof onColourChange === 'function';
-	const explicitHover = typeof onValueHoverChange === 'function' || typeof onColourHoverChange === 'function';
+	const explicitBase =
+		typeof onChange === 'function' || typeof onColourChange === 'function';
+	const explicitHover =
+		typeof onValueHoverChange === 'function' ||
+		typeof onColourHoverChange === 'function';
 	if ( attrNames && attributes && setAttributes ) {
 		const bind = ( key, current, currentSetter ) => {
 			const attr = attrNames[ key ];
-			if ( ! attr || current !== undefined || typeof currentSetter === 'function' ) {
+			if (
+				! attr ||
+				current !== undefined ||
+				typeof currentSetter === 'function'
+			) {
 				return [ current, currentSetter ];
 			}
-			return [ attributes[ attr ], ( next ) => setAttributes( { [ attr ]: next ?? '' } ) ];
+			return [
+				attributes[ attr ],
+				( next ) => setAttributes( { [ attr ]: next ?? '' } ),
+			];
 		};
 		[ value, onChange ] = bind( 'base', value, onChange );
 		[ colour, onColourChange ] = bind( 'colour', colour, onColourChange );
-		[ valueHover, onValueHoverChange ] = bind( 'hover', valueHover, onValueHoverChange );
-		[ colourHover, onColourHoverChange ] = bind( 'hoverColour', colourHover, onColourHoverChange );
+		[ valueHover, onValueHoverChange ] = bind(
+			'hover',
+			valueHover,
+			onValueHoverChange
+		);
+		[ colourHover, onColourHoverChange ] = bind(
+			'hoverColour',
+			colourHover,
+			onColourHoverChange
+		);
 	}
 	const setShape = onChange || warnMissing( 'onChange' );
 	const setColour = onColourChange || warnMissing( 'onColourChange' );
-	const setHoverShape = onValueHoverChange || warnMissing( 'onValueHoverChange' );
-	const setHoverColour = onColourHoverChange || warnMissing( 'onColourHoverChange' );
+	const setHoverShape =
+		onValueHoverChange || warnMissing( 'onValueHoverChange' );
+	const setHoverColour =
+		onColourHoverChange || warnMissing( 'onColourHoverChange' );
 	const canEditHoverShape = typeof onValueHoverChange === 'function';
-	const hasHoverState = canEditHoverShape || typeof onColourHoverChange === 'function';
+	const hasHoverState =
+		canEditHoverShape || typeof onColourHoverChange === 'function';
 
 	// The "Lift on hover" switch (design H5) — shown only when the block DECLARES the
 	// attribute (fanned out by scripts/fanout-shadow-lift-attr.py). `attributes` always
 	// carries a declared attribute's default, so an undeclared attribute reads as
 	// `undefined` here, not `true` — that's the presence check, not the value.
-	const declaresLift = Boolean( attributes ) && Object.prototype.hasOwnProperty.call( attributes, shadowLiftAttrKeys( liftPrefix ).lift );
+	const declaresLift =
+		Boolean( attributes ) &&
+		Object.prototype.hasOwnProperty.call(
+			attributes,
+			shadowLiftAttrKeys( liftPrefix ).lift
+		);
 
 	const applyNormal = ( shape, colourText ) => {
-		if ( ! explicitBase && attrNames?.base && attrNames?.colour && setAttributes ) {
-			setAttributes( { [ attrNames.base ]: shape, [ attrNames.colour ]: colourText } );
+		if (
+			! explicitBase &&
+			attrNames?.base &&
+			attrNames?.colour &&
+			setAttributes
+		) {
+			setAttributes( {
+				[ attrNames.base ]: shape,
+				[ attrNames.colour ]: colourText,
+			} );
 			return;
 		}
 		setShape( shape );
@@ -195,19 +236,35 @@ export default function ShadowControl( {
 	const applyHover = ( shape, colourText ) => {
 		if ( ! canEditHoverShape ) {
 			setHoverColour( colourText );
-		} else if ( ! explicitHover && attrNames?.hover && attrNames?.hoverColour && setAttributes ) {
-			setAttributes( { [ attrNames.hover ]: shape, [ attrNames.hoverColour ]: colourText } );
+		} else if (
+			! explicitHover &&
+			attrNames?.hover &&
+			attrNames?.hoverColour &&
+			setAttributes
+		) {
+			setAttributes( {
+				[ attrNames.hover ]: shape,
+				[ attrNames.hoverColour ]: colourText,
+			} );
 		} else {
 			setHoverShape( shape );
 			setHoverColour( colourText );
 		}
 	};
 
-	const [ presetSetting, custom, paletteSetting ] = useSettings( 'shadow.presets', 'custom', 'color.palette' );
+	const [ presetSetting, custom, paletteSetting ] = useSettings(
+		'shadow.presets',
+		'custom',
+		'color.palette'
+	);
 	const palette = flattenSettingList( paletteSetting );
 	const siteToken = String( custom?.shadowColour || '' );
-	const slugMatch = /^var\(--wp--preset--color--([a-z0-9-]+)\)$/.exec( siteToken );
-	const siteColor = slugMatch ? palette.find( ( p ) => p.slug === slugMatch[ 1 ] )?.color || '' : siteToken;
+	const slugMatch = /^var\(--wp--preset--color--([a-z0-9-]+)\)$/.exec(
+		siteToken
+	);
+	const siteColor = slugMatch
+		? palette.find( ( p ) => p.slug === slugMatch[ 1 ] )?.color || ''
+		: siteToken;
 	const resolveHex = makeResolveHex( palette, siteColor );
 	const presets = flattenSettingList( presetSetting ).map( ( preset ) => ( {
 		slug: preset.slug,
@@ -215,19 +272,31 @@ export default function ShadowControl( {
 		literal: preset.shadow,
 		preview: presetPreviewCss( preset.shadow, resolveHex( 'site' ) ),
 	} ) );
-	const shared = { presets, resolveHex, siteColor: resolveHex( 'site' ), hide };
+	const shared = {
+		presets,
+		resolveHex,
+		siteColor: resolveHex( 'site' ),
+		hide,
+	};
 
 	// The lift-on-hover value for THIS instance's resting shape (design H5's "the Hover tab
 	// says what it lifts to"), computed only once the theme's hover map (`custom.shadowHover`)
 	// is in scope — read via the SAME `useSettings()` call the presets/palette already use,
 	// never a second call (a component only calls a WordPress data hook once per render path).
-	const liftValue = declaresLift ? shadowHoverValue( value, colour, custom?.shadowHover ) : '';
+	const liftValue = declaresLift
+		? shadowHoverValue( value, colour, custom?.shadowHover )
+		: '';
 	const liftLabel = describeLift( liftValue );
 
 	// The lift switch lives in the shared ShadowLiftControls, also mounted by blocks that use
 	// WordPress's own shadow panel.
 	const liftToggle = declaresLift ? (
-		<ShadowLiftControls attributes={ attributes } setAttributes={ setAttributes } liftLabel={ liftLabel } attrPrefix={ liftPrefix } />
+		<ShadowLiftControls
+			attributes={ attributes }
+			setAttributes={ setAttributes }
+			liftLabel={ liftLabel }
+			attrPrefix={ liftPrefix }
+		/>
 	) : null;
 
 	// Show the Hover tab when the block has an EXPLICIT hover pair to edit, OR declares the
@@ -282,12 +351,22 @@ export default function ShadowControl( {
 								) }
 							</>
 						) : (
-							<ShadowStateBuilder { ...shared } value={ value } colour={ colour } onApply={ applyNormal } />
+							<ShadowStateBuilder
+								{ ...shared }
+								value={ value }
+								colour={ colour }
+								onApply={ applyNormal }
+							/>
 						)
 					}
 				</TabPanel>
 			) : (
-				<ShadowStateBuilder { ...shared } value={ value } colour={ colour } onApply={ applyNormal } />
+				<ShadowStateBuilder
+					{ ...shared }
+					value={ value }
+					colour={ colour }
+					onApply={ applyNormal }
+				/>
 			) }
 		</BaseControl>
 	);

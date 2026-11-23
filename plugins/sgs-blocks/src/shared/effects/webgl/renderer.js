@@ -84,8 +84,10 @@ const CANVAS_CLASS = 'sgs-webgl-surface';
  */
 const CONTEXT_RESTORE_GRACE_MS = 3000;
 
-/** Cap device-pixel-ratio scaling — beyond 2x the extra fill rate buys
- * nothing visible and costs real frame time on the redraw path. */
+/**
+ * Cap device-pixel-ratio scaling — beyond 2x the extra fill rate buys
+ * nothing visible and costs real frame time on the redraw path.
+ */
 const MAX_DPR = 2;
 
 const FULLSCREEN_TRIANGLE_VERTEX_SHADER = `#version 300 es
@@ -107,11 +109,7 @@ void main() {
  *
  * @type {Float32Array}
  */
-const TRIANGLE_VERTICES = new Float32Array( [
-	-1, -1,
-	3, -1,
-	-1, 3,
-] );
+const TRIANGLE_VERTICES = new Float32Array( [ -1, -1, 3, -1, -1, 3 ] );
 
 /**
  * Compile a shader and check `COMPILE_STATUS`. On failure, returns the shader
@@ -188,7 +186,7 @@ function setNonPowerOfTwoTextureParams( gl ) {
  *
  * @param {WebGL2RenderingContext} gl       The context.
  * @param {WebGLUniformLocation}   location The cached uniform location.
- * @param {number|number[]}       value    The value to upload.
+ * @param {number|number[]}        value    The value to upload.
  * @return {boolean} True when the value shape was recognised and uploaded.
  */
 function uploadUniform( gl, location, value ) {
@@ -221,11 +219,11 @@ function uploadUniform( gl, location, value ) {
  * Never throws. Returns `null` on any failure — see README "initSurface
  * returns null, never throws" for why that is the whole fallback mechanism.
  *
- * @param {HTMLElement}      el                 Element the canvas is appended to (or, for an <img>, placed after).
- * @param {Object}            opts               Options.
- * @param {HTMLImageElement} opts.image         Already-decoded source image.
- * @param {string}            opts.fragment      GLSL ES 3.00 fragment shader source.
- * @param {Object}            [opts.uniforms]    Initial `{ name: value }` uniforms.
+ * @param {HTMLElement}      el              Element the canvas is appended to (or, for an <img>, placed after).
+ * @param {Object}           opts            Options.
+ * @param {HTMLImageElement} opts.image      Already-decoded source image.
+ * @param {string}           opts.fragment   GLSL ES 3.00 fragment shader source.
+ * @param {Object}           [opts.uniforms] Initial `{ name: value }` uniforms.
  * @return {{setUniform: Function, redraw: Function, destroy: Function}|null}
  *         The render handle, or `null` on failure.
  */
@@ -583,11 +581,7 @@ export function createRenderer( el, opts ) {
 	paint();
 
 	canvas.addEventListener( 'webglcontextlost', onContextLost, false );
-	canvas.addEventListener(
-		'webglcontextrestored',
-		onContextRestored,
-		false
-	);
+	canvas.addEventListener( 'webglcontextrestored', onContextRestored, false );
 
 	if ( typeof window.ResizeObserver === 'function' ) {
 		resizeObserver = new window.ResizeObserver( () => {

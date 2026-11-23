@@ -28,7 +28,9 @@ const DEVICE_MEDIA = {
  */
 export function mediaKey( slot, base ) {
 	const prefix = slot?.prefix ?? '';
-	return '' === prefix ? base.charAt( 0 ).toLowerCase() + base.slice( 1 ) : prefix + base;
+	return '' === prefix
+		? base.charAt( 0 ).toLowerCase() + base.slice( 1 )
+		: prefix + base;
 }
 
 /**
@@ -36,11 +38,19 @@ export function mediaKey( slot, base ) {
  * @return {boolean} Whether it is a responsive object.
  */
 export function isTiered( value ) {
-	return null !== value && 'object' === typeof value && ! Array.isArray( value ) && DEVICES.some( ( d ) => d in value );
+	return (
+		null !== value &&
+		'object' === typeof value &&
+		! Array.isArray( value ) &&
+		DEVICES.some( ( d ) => d in value )
+	);
 }
 
 const isEmpty = ( v ) =>
-	null === v || undefined === v || '' === v || ( 'object' === typeof v && 0 === Object.keys( v ).length );
+	null === v ||
+	undefined === v ||
+	'' === v ||
+	( 'object' === typeof v && 0 === Object.keys( v ).length );
 
 /**
  * A base's stored value as a responsive object; a plain value is the desktop value.
@@ -67,7 +77,12 @@ export function tiers( attrs, slot, base ) {
  */
 export function own( attrs, slot, base, device ) {
 	const value = tiers( attrs, slot, base )[ device ];
-	return null === value || undefined === value || '' === value || 'inherit' === value ? null : value;
+	return null === value ||
+		undefined === value ||
+		'' === value ||
+		'inherit' === value
+		? null
+		: value;
 }
 
 /**
@@ -151,7 +166,9 @@ export function add( rules, selector, device, prop, value ) {
 const body = ( decls ) =>
 	Object.keys( decls )
 		.sort()
-		.map( ( p ) => ( '@' === p[ 0 ] ? decls[ p ] : `${ p }:${ decls[ p ] };` ) )
+		.map( ( p ) =>
+			'@' === p[ 0 ] ? decls[ p ] : `${ p }:${ decls[ p ] };`
+		)
 		.join( '' );
 
 /**
@@ -171,7 +188,10 @@ export function rulesCss( rules, hover = [] ) {
 				continue;
 			}
 			const rule = `${ selector }{${ body( decls ) }}`;
-			css += 'desktop' === device ? rule : `${ DEVICE_MEDIA[ device ] }{${ rule }}`;
+			css +=
+				'desktop' === device
+					? rule
+					: `${ DEVICE_MEDIA[ device ] }{${ rule }}`;
 		}
 	}
 	for ( const [ hoverSel, baseSel, decls ] of hover ) {
@@ -179,7 +199,11 @@ export function rulesCss( rules, hover = [] ) {
 			continue;
 		}
 		css += `@media(hover:hover){${ hoverSel }{${ body( decls ) }}}`;
-		css += `@media(hover:hover) and (prefers-reduced-motion:no-preference){${ baseSel }{transition:${ Object.keys( decls ).sort().join( ' 200ms,' ) } 200ms;}}`;
+		css += `@media(hover:hover) and (prefers-reduced-motion:no-preference){${ baseSel }{transition:${ Object.keys(
+			decls
+		)
+			.sort()
+			.join( ' 200ms,' ) } 200ms;}}`;
 	}
 	return css;
 }
@@ -196,14 +220,28 @@ export function rulesCss( rules, hover = [] ) {
  * @param {Function} format             Maps the raw value to the printed value, '' to print nothing.
  * @param {string}   skipDefaultDesktop A desktop value equal to this printed value is not printed.
  */
-export function emitPlain( rules, attrs, slot, base, selector, prop, format, skipDefaultDesktop = '' ) {
+export function emitPlain(
+	rules,
+	attrs,
+	slot,
+	base,
+	selector,
+	prop,
+	format,
+	skipDefaultDesktop = ''
+) {
 	for ( const device of DEVICES ) {
 		const value = own( attrs, slot, base, device );
 		if ( null === value ) {
 			continue;
 		}
 		const printed = format( value );
-		if ( '' === printed || ( 'desktop' === device && '' !== skipDefaultDesktop && printed === skipDefaultDesktop ) ) {
+		if (
+			'' === printed ||
+			( 'desktop' === device &&
+				'' !== skipDefaultDesktop &&
+				printed === skipDefaultDesktop )
+		) {
 			continue;
 		}
 		add( rules, selector, device, prop, printed );

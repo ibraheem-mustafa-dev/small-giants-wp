@@ -21,7 +21,12 @@ export function galleryLayoutTiers( layout ) {
 	// (`sgs_resolve_tier` plus the allow-list in `sgs_gallery_layout_tiers`).
 	const own = ( tier ) => {
 		const value = stored[ tier ];
-		if ( value === undefined || value === null || value === '' || value === 'inherit' ) {
+		if (
+			value === undefined ||
+			value === null ||
+			value === '' ||
+			value === 'inherit'
+		) {
 			return null;
 		}
 		return LAYOUTS.includes( value ) ? value : 'grid';
@@ -30,7 +35,9 @@ export function galleryLayoutTiers( layout ) {
 	const tablet = own( 'tablet' ) ?? desktop;
 	const mobile = own( 'mobile' ) ?? tablet;
 	const tiers = { desktop, tablet, mobile };
-	const count = Object.values( tiers ).filter( ( v ) => v === 'carousel' ).length;
+	const count = Object.values( tiers ).filter(
+		( v ) => v === 'carousel'
+	).length;
 	const carousel = count === 3;
 	const rewritten = count > 0 && ! carousel;
 	if ( rewritten ) {

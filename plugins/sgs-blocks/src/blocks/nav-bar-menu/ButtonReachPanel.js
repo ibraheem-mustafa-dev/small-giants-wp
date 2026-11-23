@@ -35,8 +35,8 @@ function onAnywhere( raw ) {
 }
 
 /**
- * @param {Object}   props            Props.
- * @param {Object}   props.attributes Block attributes.
+ * @param {Object}   props               Props.
+ * @param {Object}   props.attributes    Block attributes.
  * @param {Function} props.setAttributes Block attribute setter.
  * @return {Element} The panel.
  */
@@ -71,13 +71,18 @@ export default function ButtonReachPanel( { attributes, setAttributes } ) {
 			/>
 
 			<ResponsiveTriStateControl
-				label={ __( 'Detach when the header scrolls away', 'sgs-blocks' ) }
+				label={ __(
+					'Detach when the header scrolls away',
+					'sgs-blocks'
+				) }
 				help={ __(
 					'Once the menu button scrolls off screen it comes back as a round button pinned to the top corner. A header that stays pinned never needs it.',
 					'sgs-blocks'
 				) }
 				value={ triggerDetach }
-				onChange={ ( value ) => setAttributes( { triggerDetach: value } ) }
+				onChange={ ( value ) =>
+					setAttributes( { triggerDetach: value } )
+				}
 				defaultValue="off"
 			/>
 
@@ -92,7 +97,10 @@ export default function ButtonReachPanel( { attributes, setAttributes } ) {
 					>
 						{ ( { ownValue, effectiveValue, setOwnValue } ) => (
 							<RangeControl
-								label={ __( 'Wait until scrolled (px)', 'sgs-blocks' ) }
+								label={ __(
+									'Wait until scrolled (px)',
+									'sgs-blocks'
+								) }
 								help={ __(
 									'0 shows it as soon as the header button leaves the screen.',
 									'sgs-blocks'
@@ -101,7 +109,9 @@ export default function ButtonReachPanel( { attributes, setAttributes } ) {
 								max={ 2000 }
 								step={ 10 }
 								value={ ownValue ?? effectiveValue ?? 0 }
-								onChange={ ( value ) => setOwnValue( value ?? undefined ) }
+								onChange={ ( value ) =>
+									setOwnValue( value ?? undefined )
+								}
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							/>
@@ -121,7 +131,9 @@ export default function ButtonReachPanel( { attributes, setAttributes } ) {
 								min={ 16 }
 								max={ 120 }
 								value={ ownValue ?? effectiveValue ?? 56 }
-								onChange={ ( value ) => setOwnValue( value ?? undefined ) }
+								onChange={ ( value ) =>
+									setOwnValue( value ?? undefined )
+								}
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							/>
@@ -138,23 +150,39 @@ export default function ButtonReachPanel( { attributes, setAttributes } ) {
 						{ ( { ownValue, effectiveValue, setOwnValue } ) => (
 							<>
 								<RangeControl
-									label={ __( 'From the side (px)', 'sgs-blocks' ) }
+									label={ __(
+										'From the side (px)',
+										'sgs-blocks'
+									) }
 									min={ 0 }
 									max={ 120 }
-									value={ ownValue?.x ?? effectiveValue?.x ?? 20 }
+									value={
+										ownValue?.x ?? effectiveValue?.x ?? 20
+									}
 									onChange={ ( value ) =>
-										setOwnValue( { ...( ownValue || {} ), x: value ?? 20 } )
+										setOwnValue( {
+											...( ownValue || {} ),
+											x: value ?? 20,
+										} )
 									}
 									__nextHasNoMarginBottom
 									__next40pxDefaultSize
 								/>
 								<RangeControl
-									label={ __( 'From the top (px)', 'sgs-blocks' ) }
+									label={ __(
+										'From the top (px)',
+										'sgs-blocks'
+									) }
 									min={ 0 }
 									max={ 120 }
-									value={ ownValue?.y ?? effectiveValue?.y ?? 20 }
+									value={
+										ownValue?.y ?? effectiveValue?.y ?? 20
+									}
 									onChange={ ( value ) =>
-										setOwnValue( { ...( ownValue || {} ), y: value ?? 20 } )
+										setOwnValue( {
+											...( ownValue || {} ),
+											y: value ?? 20,
+										} )
 									}
 									__nextHasNoMarginBottom
 									__next40pxDefaultSize
@@ -167,7 +195,9 @@ export default function ButtonReachPanel( { attributes, setAttributes } ) {
 						label={ __( 'Corner radius', 'sgs-blocks' ) }
 						value={ triggerDetachRadius }
 						onChange={ ( value ) =>
-							setAttributes( { triggerDetachRadius: value || '9999px' } )
+							setAttributes( {
+								triggerDetachRadius: value || '9999px',
+							} )
 						}
 					/>
 
@@ -181,7 +211,9 @@ export default function ButtonReachPanel( { attributes, setAttributes } ) {
 						max={ 10000 }
 						value={ triggerDetachZIndex ?? 110 }
 						onChange={ ( value ) =>
-							setAttributes( { triggerDetachZIndex: value ?? 110 } )
+							setAttributes( {
+								triggerDetachZIndex: value ?? 110,
+							} )
 						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize

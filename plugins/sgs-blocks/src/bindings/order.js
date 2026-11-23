@@ -19,7 +19,10 @@ const FIELDS = {
 		sample: __( 'Tracked delivery', 'sgs-blocks' ),
 	},
 	total: { label: __( 'Order total', 'sgs-blocks' ), sample: '£31.50' },
-	date: { label: __( 'Order date', 'sgs-blocks' ), sample: '17 November 2026' },
+	date: {
+		label: __( 'Order date', 'sgs-blocks' ),
+		sample: '17 November 2026',
+	},
 	view_url: {
 		label: __( 'View order link (signed-in owner only)', 'sgs-blocks' ),
 		sample: '/my-account/view-order/1234/',
@@ -49,7 +52,10 @@ const FIELDS = {
 		label: __( 'Billing address (one line)', 'sgs-blocks' ),
 		sample: __( '12 High Street, Birmingham, B8 1AA', 'sgs-blocks' ),
 	},
-	phone: { label: __( 'Phone number', 'sgs-blocks' ), sample: '07700 900123' },
+	phone: {
+		label: __( 'Phone number', 'sgs-blocks' ),
+		sample: '07700 900123',
+	},
 	payment_method: {
 		label: __( 'Payment method', 'sgs-blocks' ),
 		sample: __( 'Card', 'sgs-blocks' ),

@@ -38,7 +38,10 @@ export default function DisabledItemsPanel( {
 	disabledItemIds,
 } ) {
 	return (
-		<PanelBody title={ __( 'Disabled items', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Disabled items', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			{ 0 === menuRef && (
 				<p>
 					{ __(

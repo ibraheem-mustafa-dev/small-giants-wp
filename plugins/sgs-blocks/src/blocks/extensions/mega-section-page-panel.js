@@ -68,8 +68,14 @@ if ( ! window.__sgsMegaSectionPagePanelRegistered ) {
 			value: String( page.id ),
 			label: pageLabel( page ),
 		} ) );
-		if ( current && ! options.some( ( o ) => o.value === String( current.id ) ) ) {
-			options.unshift( { value: String( current.id ), label: pageLabel( current ) } );
+		if (
+			current &&
+			! options.some( ( o ) => o.value === String( current.id ) )
+		) {
+			options.unshift( {
+				value: String( current.id ),
+				label: pageLabel( current ),
+			} );
 		}
 
 		return (
@@ -89,12 +95,17 @@ if ( ! window.__sgsMegaSectionPagePanelRegistered ) {
 					options={ options }
 					onFilterValueChange={ setSearch }
 					onChange={ ( value ) =>
-						setMeta( { ...meta, [ META_KEY ]: value ? parseInt( value, 10 ) : 0 } )
+						setMeta( {
+							...meta,
+							[ META_KEY ]: value ? parseInt( value, 10 ) : 0,
+						} )
 					}
 				/>
 			</PluginDocumentSettingPanel>
 		);
 	};
 
-	registerPlugin( 'sgs-mega-section-page-panel', { render: SgsMegaSectionPagePanel } );
+	registerPlugin( 'sgs-mega-section-page-panel', {
+		render: SgsMegaSectionPagePanel,
+	} );
 }

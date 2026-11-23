@@ -45,28 +45,36 @@ export function readPanelData( panel ) {
 		sortPriceDescLabel: d.sortPriceDescLabel || 'Price, high to low',
 		sortStockLabel: d.sortStockLabel || 'In stock first',
 		dateSavedText: d.dateSavedText || 'Saved {date}',
-		priceDropText: d.priceDropText || 'Price drop: now {now} ({saved} when you saved it)',
+		priceDropText:
+			d.priceDropText ||
+			'Price drop: now {now} ({saved} when you saved it)',
 		moveLabel: d.moveLabel || 'Move to basket',
 		removeLabel: d.removeLabel || 'Remove',
 		notifyLabel: d.notifyLabel || 'Notify me',
 		outOfStockLabel: d.outOfStockLabel || 'Out of stock',
 		notifyEmailLabel: d.notifyEmailLabel || 'Your email',
-		notifyConsentText: d.notifyConsentText || 'Email me when this item is back in stock.',
-		notifySuccessText: d.notifySuccessText || "We'll email you when this is back in stock.",
+		notifyConsentText:
+			d.notifyConsentText || 'Email me when this item is back in stock.',
+		notifySuccessText:
+			d.notifySuccessText ||
+			"We'll email you when this is back in stock.",
 		errorText: d.errorText || 'Something went wrong. Please try again.',
 		guestPromptText:
 			d.guestPromptText ||
 			'Sign in to keep your saved items on every device and get price alerts.',
 		signInLabel: d.signInLabel || 'Sign in',
-		alertsPriceLabel: d.alertsPriceLabel || 'Email me when a saved item drops in price',
-		alertsStockLabel: d.alertsStockLabel || 'Email me when a saved item is back in stock',
+		alertsPriceLabel:
+			d.alertsPriceLabel || 'Email me when a saved item drops in price',
+		alertsStockLabel:
+			d.alertsStockLabel || 'Email me when a saved item is back in stock',
 		shareLabel: d.shareLabel || 'Share my list',
 		shareCopyLabel: d.shareCopyLabel || 'Copy link',
 		shareCopiedText: d.shareCopiedText || 'Link copied',
 		shareNewLinkLabel: d.shareNewLinkLabel || 'Make a new link',
 		sharedHeading: d.sharedHeading || 'A saved list',
 		addToMineLabel: d.addToMineLabel || 'Save to my list',
-		sharedGoneText: d.sharedGoneText || 'This saved list is no longer shared.',
+		sharedGoneText:
+			d.sharedGoneText || 'This saved list is no longer shared.',
 		privacyLinkLabel: d.privacyLinkLabel || 'Privacy policy',
 	};
 }
@@ -83,9 +91,10 @@ export function formatSavedDate( addedTs ) {
 		return '';
 	}
 	try {
-		return new Intl.DateTimeFormat( undefined, { day: 'numeric', month: 'short' } ).format(
-			new Date( Number( addedTs ) * 1000 )
-		);
+		return new Intl.DateTimeFormat( undefined, {
+			day: 'numeric',
+			month: 'short',
+		} ).format( new Date( Number( addedTs ) * 1000 ) );
 	} catch ( e ) {
 		return '';
 	}
@@ -100,5 +109,7 @@ export function formatSavedDate( addedTs ) {
  * @return {string} The announcement.
  */
 export function removedAnnouncement( labels, name ) {
-	return name ? String( labels.removedText ).replace( '{name}', name ) : labels.removeLabel;
+	return name
+		? String( labels.removedText ).replace( '{name}', name )
+		: labels.removeLabel;
 }

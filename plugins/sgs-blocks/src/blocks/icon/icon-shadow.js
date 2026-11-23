@@ -13,14 +13,18 @@ import { shadowHoverValue } from '../../utils/shadow-hover';
  *
  * The caller reads each shadow attribute by its own name (so the canvas read is visible to the wiring gate) and passes the values.
  *
- * @param {Object}  values      { shadow, colour, hover, hoverColour, lift }: the stored shadow, its colour, the hover shadow and colour, the lift switch.
- * @param {string}  prefix      '--sgs-icon' or '--sgs-si'.
+ * @param {Object}  values             { shadow, colour, hover, hoverColour, lift }: the stored shadow, its colour, the hover shadow and colour, the lift switch.
+ * @param {string}  prefix             '--sgs-icon' or '--sgs-si'.
  * @param {Object}  [options]
  * @param {boolean} [options.pinHover] Pin an unset hover to the resting shadow (an icon with a shadow of its own).
  * @param {Object}  [options.hoverMap] `settings.custom.shadowHover`, for a preset's automatic lift.
  * @return {Object} React style fragment.
  */
-export function iconShadowStyle( values, prefix, { pinHover = false, hoverMap = {} } = {} ) {
+export function iconShadowStyle(
+	values,
+	prefix,
+	{ pinHover = false, hoverMap = {} } = {}
+) {
 	const base = values.shadow || '';
 	const colour = values.colour || '';
 	const hoverShape = values.hover || '';

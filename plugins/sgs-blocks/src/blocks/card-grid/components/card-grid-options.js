@@ -77,7 +77,12 @@ export const CARD_STYLE_PRESETS = {
 	boxed: {
 		cardBackground: 'surface',
 		cardBorderColour: 'border',
-		cardBorderWidth: { top: '1px', right: '1px', bottom: '1px', left: '1px' },
+		cardBorderWidth: {
+			top: '1px',
+			right: '1px',
+			bottom: '1px',
+			left: '1px',
+		},
 		cardRadius: '8px',
 		// Zero-size shape (D621/D622 colour split) — explicitly resets any
 		// inherited shadow to none; colour is moot at zero offset/blur/spread.
@@ -87,7 +92,12 @@ export const CARD_STYLE_PRESETS = {
 	borderless: {
 		cardBackground: 'transparent',
 		cardBorderColour: '',
-		cardBorderWidth: { top: '0px', right: '0px', bottom: '0px', left: '0px' },
+		cardBorderWidth: {
+			top: '0px',
+			right: '0px',
+			bottom: '0px',
+			left: '0px',
+		},
 		cardRadius: '0px',
 		cardShadow: '0px 0px 0px 0px',
 		cardShadowColour: '',

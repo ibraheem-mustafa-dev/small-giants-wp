@@ -184,7 +184,8 @@ export function setMotionState( el, name, on = true ) {
 		return;
 	}
 	const rest = list.filter(
-		( t ) => name !== t && name + OUT_SUFFIX !== t && name + REST_SUFFIX !== t
+		( t ) =>
+			name !== t && name + OUT_SUFFIX !== t && name + REST_SUFFIX !== t
 	);
 	write( el, on ? rest.concat( name ) : rest );
 }
@@ -215,7 +216,8 @@ export function leaveMotionState( el, name ) {
 	const list = tokens( el );
 	const wasOn = list.includes( name );
 	const rest = list.filter(
-		( t ) => name !== t && name + OUT_SUFFIX !== t && name + REST_SUFFIX !== t
+		( t ) =>
+			name !== t && name + OUT_SUFFIX !== t && name + REST_SUFFIX !== t
 	);
 	write( el, wasOn ? rest.concat( name + OUT_SUFFIX ) : list );
 }
@@ -233,7 +235,8 @@ export function restMotionState( el, name ) {
 	}
 	watchReducedMotion();
 	const rest = tokens( el ).filter(
-		( t ) => name !== t && name + OUT_SUFFIX !== t && name + REST_SUFFIX !== t
+		( t ) =>
+			name !== t && name + OUT_SUFFIX !== t && name + REST_SUFFIX !== t
 	);
 	write( el, rest.concat( name, name + REST_SUFFIX ) );
 }

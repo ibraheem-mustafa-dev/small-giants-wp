@@ -35,7 +35,14 @@ export function initGift( panelRoot ) {
 	const to = root?.querySelector( '.sgs-cart__panel-gift-to' );
 	const note = root?.querySelector( '.sgs-cart__panel-gift-message' );
 	const alert = root?.querySelector( '.sgs-cart__panel-gift-error' );
-	if ( ! root || ! box || ! fields || ! to || ! note || ! root.dataset.restUrl ) {
+	if (
+		! root ||
+		! box ||
+		! fields ||
+		! to ||
+		! note ||
+		! root.dataset.restUrl
+	) {
 		return { headers: null, sync: () => {} };
 	}
 
@@ -72,7 +79,11 @@ export function initGift( panelRoot ) {
 		}
 		again = false;
 		inFlight += 1;
-		const sent = { on: box.checked, to: box.checked ? to.value : '', message: box.checked ? note.value : '' };
+		const sent = {
+			on: box.checked,
+			to: box.checked ? to.value : '',
+			message: box.checked ? note.value : '',
+		};
 		fetchWithNonce(
 			root.dataset.restUrl,
 			{
@@ -84,11 +95,17 @@ export function initGift( panelRoot ) {
 			},
 			root.dataset.nonce
 		)
-			.then( ( response ) => response.json().then( ( body ) => ( { response, body } ) ) )
+			.then( ( response ) =>
+				response.json().then( ( body ) => ( { response, body } ) )
+			)
 			.then( ( { response, body } ) => {
 				fail( response.ok ? '' : body?.message || SAVE_ERROR );
 				if ( response.ok ) {
-					document.dispatchEvent( new CustomEvent( GIFT_EVENT, { detail: { ...sent, source: root } } ) );
+					document.dispatchEvent(
+						new CustomEvent( GIFT_EVENT, {
+							detail: { ...sent, source: root },
+						} )
+					);
 				}
 			} )
 			.catch( () => fail( SAVE_ERROR ) )
@@ -141,7 +158,8 @@ export function initGift( panelRoot ) {
 	return {
 		headers: GIFT_HEADERS,
 		sync( cart ) {
-			const hasItems = Array.isArray( cart?.items ) && cart.items.length > 0;
+			const hasItems =
+				Array.isArray( cart?.items ) && cart.items.length > 0;
 			root.hidden = ! hasItems;
 			const stored = cart?.extensions?.sgs_gift;
 			if ( ! hasItems || ! stored || busy() ) {

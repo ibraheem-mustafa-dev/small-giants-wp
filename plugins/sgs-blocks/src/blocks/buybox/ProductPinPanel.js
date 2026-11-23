@@ -20,24 +20,54 @@ export default function ProductPinPanel( { attributes, setAttributes } ) {
 				return { loading: false, title: '' };
 			}
 			const core = select( 'core' );
-			const found = core.getEntityRecord( 'postType', 'product', pinnedId );
-			const finished = core.hasFinishedResolution( 'getEntityRecord', [ 'postType', 'product', pinnedId ] );
-			return { loading: ! finished, title: found && found.title ? found.title.raw || found.title.rendered || '' : '' };
+			const found = core.getEntityRecord(
+				'postType',
+				'product',
+				pinnedId
+			);
+			const finished = core.hasFinishedResolution( 'getEntityRecord', [
+				'postType',
+				'product',
+				pinnedId,
+			] );
+			return {
+				loading: ! finished,
+				title:
+					found && found.title
+						? found.title.raw || found.title.rendered || ''
+						: '',
+			};
 		},
 		[ pinnedId ]
 	);
 
 	return (
 		<InspectorControls>
-			<PanelBody title={ __( 'Product', 'sgs-blocks' ) } initialOpen={ false }>
+			<PanelBody
+				title={ __( 'Product', 'sgs-blocks' ) }
+				initialOpen={ false }
+			>
 				<TextControl
-					label={ __( 'Show a different product (product ID)', 'sgs-blocks' ) }
+					label={ __(
+						'Show a different product (product ID)',
+						'sgs-blocks'
+					) }
 					__next40pxDefaultSize
 					type="number"
 					min={ 0 }
 					value={ pinnedId > 0 ? String( pinnedId ) : '' }
-					onChange={ ( val ) => setAttributes( { buyboxProductId: Math.max( 0, parseInt( val, 10 ) || 0 ) } ) }
-					help={ __( 'Leave empty to show the product of the page this sits on. Set it to put this buy box on any other page, such as the home page.', 'sgs-blocks' ) }
+					onChange={ ( val ) =>
+						setAttributes( {
+							buyboxProductId: Math.max(
+								0,
+								parseInt( val, 10 ) || 0
+							),
+						} )
+					}
+					help={ __(
+						'Leave empty to show the product of the page this sits on. Set it to put this buy box on any other page, such as the home page.',
+						'sgs-blocks'
+					) }
 				/>
 				{ pinnedId > 0 && ! record.loading && '' !== record.title && (
 					<Notice status="info" isDismissible={ false }>
@@ -46,7 +76,10 @@ export default function ProductPinPanel( { attributes, setAttributes } ) {
 				) }
 				{ pinnedId > 0 && ! record.loading && '' === record.title && (
 					<Notice status="warning" isDismissible={ false }>
-						{ __( 'No product with that ID was found, or you cannot read it. Visitors will see nothing.', 'sgs-blocks' ) }
+						{ __(
+							'No product with that ID was found, or you cannot read it. Visitors will see nothing.',
+							'sgs-blocks'
+						) }
 					</Notice>
 				) }
 			</PanelBody>

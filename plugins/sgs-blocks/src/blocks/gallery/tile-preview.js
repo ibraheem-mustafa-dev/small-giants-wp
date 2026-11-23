@@ -29,7 +29,9 @@ export function isTileMode( attributes ) {
 	if ( ! tiers || 'object' !== typeof tiers ) {
 		return false;
 	}
-	return TIERS.some( ( tier ) => '' !== String( tiers[ tier ] ?? '' ).trim() );
+	return TIERS.some(
+		( tier ) => '' !== String( tiers[ tier ] ?? '' ).trim()
+	);
 }
 
 /**
@@ -44,7 +46,10 @@ export function isTileMode( attributes ) {
  */
 export function tilePreviewStyle( attributes, tier, palette ) {
 	const style = {};
-	const gradient = resolveTextColourPreviewStyle( '', attributes.tileColourGradient ).backgroundImage;
+	const gradient = resolveTextColourPreviewStyle(
+		'',
+		attributes.tileColourGradient
+	).backgroundImage;
 	if ( gradient ) {
 		style.backgroundImage = gradient;
 	} else if ( attributes.tileColour ) {
@@ -64,10 +69,19 @@ export function tilePreviewStyle( attributes, tier, palette ) {
 			palette
 		)
 	);
-	const minHeight = resolveResponsiveTier( attributes.tileMinHeight, tier )?.value;
-	const padding = tierBoxLonghands( attributes.tilePadding || {}, tier, 'padding' );
+	const minHeight = resolveResponsiveTier(
+		attributes.tileMinHeight,
+		tier
+	)?.value;
+	const padding = tierBoxLonghands(
+		attributes.tilePadding || {},
+		tier,
+		'padding'
+	);
 	if ( minHeight ) {
-		style.minHeight = /^\d+(\.\d+)?$/.test( String( minHeight ) ) ? minHeight + 'px' : minHeight;
+		style.minHeight = /^\d+(\.\d+)?$/.test( String( minHeight ) )
+			? minHeight + 'px'
+			: minHeight;
 	}
 	Object.assign( style, padding );
 	if ( minHeight || Object.keys( padding ).length ) {
@@ -95,15 +109,18 @@ export function tileColourRow( { attributes, setAttributes } ) {
 				value: attributes.tileColour,
 				onChange: ( val ) => setAttributes( { tileColour: val ?? '' } ),
 				gradientValue: attributes.tileColourGradient,
-				onGradientChange: ( val ) => setAttributes( { tileColourGradient: val ?? '' } ),
+				onGradientChange: ( val ) =>
+					setAttributes( { tileColourGradient: val ?? '' } ),
 			},
 			{
 				key: 'hover',
 				label: __( 'Hover', 'sgs-blocks' ),
 				value: attributes.tileColourHover,
-				onChange: ( val ) => setAttributes( { tileColourHover: val ?? '' } ),
+				onChange: ( val ) =>
+					setAttributes( { tileColourHover: val ?? '' } ),
 				gradientValue: attributes.tileColourHoverGradient,
-				onGradientChange: ( val ) => setAttributes( { tileColourHoverGradient: val ?? '' } ),
+				onGradientChange: ( val ) =>
+					setAttributes( { tileColourHoverGradient: val ?? '' } ),
 			},
 		],
 	};

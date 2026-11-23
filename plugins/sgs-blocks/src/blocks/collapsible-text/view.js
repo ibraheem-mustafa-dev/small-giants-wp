@@ -65,7 +65,9 @@ function initInstance( root ) {
  * Initialise all instances on the page.
  */
 function init() {
-	const roots = document.querySelectorAll( '.sgs-collapsible-text--collapsible' );
+	const roots = document.querySelectorAll(
+		'.sgs-collapsible-text--collapsible'
+	);
 	roots.forEach( initInstance );
 }
 

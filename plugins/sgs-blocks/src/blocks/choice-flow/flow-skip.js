@@ -14,7 +14,12 @@
  * @package SGS\Blocks
  */
 
-import { FLOW_SELECTOR, NO_ADDONS_OPTION_SELECTOR, SKIP_SELECTOR, STEP_SELECTOR } from './flow-constants.js';
+import {
+	FLOW_SELECTOR,
+	NO_ADDONS_OPTION_SELECTOR,
+	SKIP_SELECTOR,
+	STEP_SELECTOR,
+} from './flow-constants.js';
 import { getSteps } from './flow-steps.js';
 import { recordOptionAnswer, commitStepRouting } from './flow-routing.js';
 import { addFrameToBag } from './add-to-bag.js';
@@ -29,7 +34,9 @@ import { closeEnclosingModal } from './flow-modal.js';
 export function updateSkipVisibility( flowRoot, targetIndex ) {
 	const skipEl = flowRoot.querySelector( SKIP_SELECTOR );
 	if ( skipEl ) {
-		skipEl.hidden = targetIndex !== 0 || ! flowRoot.querySelector( NO_ADDONS_OPTION_SELECTOR );
+		skipEl.hidden =
+			targetIndex !== 0 ||
+			! flowRoot.querySelector( NO_ADDONS_OPTION_SELECTOR );
 	}
 }
 
@@ -38,13 +45,18 @@ export function updateSkipVisibility( flowRoot, targetIndex ) {
  */
 export async function handleSkipClick( buttonEl ) {
 	const flowRoot = buttonEl.closest( FLOW_SELECTOR );
-	if ( flowRoot && '1' === flowRoot.getAttribute( 'data-skip-adds-to-bag' ) ) {
+	if (
+		flowRoot &&
+		'1' === flowRoot.getAttribute( 'data-skip-adds-to-bag' )
+	) {
 		if ( await addFrameToBag( buttonEl ) ) {
 			closeEnclosingModal( flowRoot );
 		}
 		return;
 	}
-	const optionEl = flowRoot ? flowRoot.querySelector( NO_ADDONS_OPTION_SELECTOR ) : null;
+	const optionEl = flowRoot
+		? flowRoot.querySelector( NO_ADDONS_OPTION_SELECTOR )
+		: null;
 	const stepEl = optionEl ? optionEl.closest( STEP_SELECTOR ) : null;
 	if ( ! stepEl ) {
 		return;

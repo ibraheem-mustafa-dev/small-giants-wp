@@ -41,7 +41,13 @@ import { makeResponsive, resolveResponsiveTier } from '../utils/responsive';
 import { inheritedBox } from '../utils/inherited-box';
 import { InheritedBoxContext } from './InheritedBoxContext';
 import { ControlLabelContext } from './ControlLabelContext';
-import { deviceName, describeInheritance, resetLabel, resolveTierSource, useActiveDevice } from './media/deviceValues.js';
+import {
+	deviceName,
+	describeInheritance,
+	resetLabel,
+	resolveTierSource,
+	useActiveDevice,
+} from './media/deviceValues.js';
 import './ResponsiveOverride.css';
 
 // Every side and corner key a box control can show; the box inside this override reads the ones it has.
@@ -58,7 +64,8 @@ const BOX_KEYS = [
 
 const OWN_TIERS = [ 'tablet', 'mobile' ];
 
-const isOwn = ( value ) => value !== undefined && value !== null && value !== '';
+const isOwn = ( value ) =>
+	value !== undefined && value !== null && value !== '';
 
 export default function ResponsiveOverride( {
 	label,
@@ -75,7 +82,11 @@ export default function ResponsiveOverride( {
 		return (
 			<div className="sgs-responsive-override sgs-responsive-override--global">
 				<div className="sgs-responsive-override__header">
-					{ label && <span className="sgs-responsive-override__label">{ label }</span> }
+					{ label && (
+						<span className="sgs-responsive-override__label">
+							{ label }
+						</span>
+					) }
 				</div>
 				<div className="sgs-responsive-override__field">
 					<ControlLabelContext.Provider value={ label || '' }>
@@ -110,7 +121,8 @@ export default function ResponsiveOverride( {
 	const source = resolveTierSource( obj, active ).from;
 	const without = { ...obj };
 	delete without[ active ];
-	const fallbackTier = 'desktop' === active ? null : resolveTierSource( without, active ).from;
+	const fallbackTier =
+		'desktop' === active ? null : resolveTierSource( without, active ).from;
 
 	const writeTier = ( tierKey, tierValue ) => {
 		const next = { ...obj };
@@ -130,9 +142,15 @@ export default function ResponsiveOverride( {
 	return (
 		<div className="sgs-responsive-override">
 			<div className="sgs-responsive-override__header">
-				{ label && <span className="sgs-responsive-override__label">{ label }</span> }
+				{ label && (
+					<span className="sgs-responsive-override__label">
+						{ label }
+					</span>
+				) }
 				<span className="sgs-responsive-override__dots">
-					{ OWN_TIERS.filter( ( tier ) => isOwn( obj?.[ tier ] ) ).map( ( tier ) => (
+					{ OWN_TIERS.filter( ( tier ) =>
+						isOwn( obj?.[ tier ] )
+					).map( ( tier ) => (
 						<span
 							key={ tier }
 							role="img"
@@ -141,13 +159,19 @@ export default function ResponsiveOverride( {
 								label
 									? sprintf(
 											/* translators: 1: device name, 2: the setting's label. */
-											__( '%1$s has its own value for %2$s', 'sgs-blocks' ),
+											__(
+												'%1$s has its own value for %2$s',
+												'sgs-blocks'
+											),
 											deviceName( tier ),
 											label
 									  )
 									: sprintf(
 											/* translators: %s: device name. */
-											__( '%s has its own value', 'sgs-blocks' ),
+											__(
+												'%s has its own value',
+												'sgs-blocks'
+											),
 											deviceName( tier )
 									  )
 							}
@@ -156,7 +180,11 @@ export default function ResponsiveOverride( {
 				</span>
 			</div>
 
-			<div className={ `sgs-responsive-override__field${ inherited ? ' is-inherited' : '' }` }>
+			<div
+				className={ `sgs-responsive-override__field${
+					inherited ? ' is-inherited' : ''
+				}` }
+			>
 				<ControlLabelContext.Provider value={ label || '' }>
 					<InheritedBoxContext.Provider
 						value={ inheritedBox( obj, active, BOX_KEYS ) }
@@ -178,7 +206,10 @@ export default function ResponsiveOverride( {
 			{ inherited && (
 				<div className="sgs-responsive-override__inherited">
 					{ /* Non-colour cue: an explicit icon + text, never colour alone (WCAG 1.4.1). */ }
-					<span aria-hidden="true" className="sgs-responsive-override__inherited-icon">
+					<span
+						aria-hidden="true"
+						className="sgs-responsive-override__inherited-icon"
+					>
 						{ linkIcon }
 					</span>
 					<span className="sgs-responsive-override__inherited-text">
@@ -195,7 +226,9 @@ export default function ResponsiveOverride( {
 					onClick={ resetTier }
 					aria-label={
 						label
-							? `${ visibleReset } (${ deviceName( active ) } ${ label })`
+							? `${ visibleReset } (${ deviceName(
+									active
+							  ) } ${ label })`
 							: `${ visibleReset } (${ deviceName( active ) })`
 					}
 				>

@@ -8,7 +8,10 @@
  * @package SGS\Blocks
  */
 import { __ } from '@wordpress/i18n';
-import { ToggleGroupControl, ToggleGroupControlOption } from '../../../components/primitives';
+import {
+	ToggleGroupControl,
+	ToggleGroupControlOption,
+} from '../../../components/primitives';
 
 export const OVERFLOW_OPTIONS = [
 	{ label: __( 'Visible', 'sgs-blocks' ), value: 'visible' },
@@ -37,7 +40,11 @@ export default function OverflowControl( { attributes, setAttributes } ) {
 			__next40pxDefaultSize
 		>
 			{ OVERFLOW_OPTIONS.map( ( opt ) => (
-				<ToggleGroupControlOption key={ opt.value } value={ opt.value } label={ opt.label } />
+				<ToggleGroupControlOption
+					key={ opt.value }
+					value={ opt.value }
+					label={ opt.label }
+				/>
 			) ) }
 		</ToggleGroupControl>
 	);

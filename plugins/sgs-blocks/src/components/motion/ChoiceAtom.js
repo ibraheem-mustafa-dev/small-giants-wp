@@ -51,7 +51,8 @@ export default function ChoiceAtom( {
 		( boundsOf( 'choice', fieldNode ).options || [] ).map( ( option ) => ( {
 			value: option,
 			label:
-				( fieldNode && fieldNode[ 'x-sgs-option-labels' ]?.[ option ] ) ||
+				( fieldNode &&
+					fieldNode[ 'x-sgs-option-labels' ]?.[ option ] ) ||
 				humanise( option ),
 		} ) );
 	const field = useAtomField( {
@@ -79,7 +80,10 @@ export default function ChoiceAtom( {
 	const segmented =
 		listed.length > 0 &&
 		listed.length <= MAX_SEGMENTED &&
-		listed.reduce( ( sum, option ) => sum + String( option.label ).length, 0 ) <= SEGMENTED_CHAR_BUDGET;
+		listed.reduce(
+			( sum, option ) => sum + String( option.label ).length,
+			0
+		) <= SEGMENTED_CHAR_BUDGET;
 	const current = typeof value === 'string' ? value : '';
 	const listedValue = listed.some( ( option ) => option.value === current );
 	// The select form never shows a real option the value is not: a stored value outside the list shows as itself,
@@ -89,11 +93,18 @@ export default function ChoiceAtom( {
 		unlisted = {
 			value: current,
 			/* translators: %s: the stored option, which this list does not offer. */
-			label: sprintf( __( '%s (not available here)', 'sgs-blocks' ), humanise( current ) ),
+			label: sprintf(
+				__( '%s (not available here)', 'sgs-blocks' ),
+				humanise( current )
+			),
 			disabled: true,
 		};
 	} else if ( current === '' && emptyLabel === null ) {
-		unlisted = { value: '', label: __( 'Choose…', 'sgs-blocks' ), disabled: true };
+		unlisted = {
+			value: '',
+			label: __( 'Choose…', 'sgs-blocks' ),
+			disabled: true,
+		};
 	}
 	const selectOptions = [
 		...( unlisted ? [ unlisted ] : [] ),

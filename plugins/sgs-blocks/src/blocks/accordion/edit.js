@@ -605,7 +605,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					initialOpen={ false }
 				>
 					<ToggleControl
-						label={ __( 'Show category lines with the filter off', 'sgs-blocks' ) }
+						label={ __(
+							'Show category lines with the filter off',
+							'sgs-blocks'
+						) }
 						help={ __(
 							'Each item whose "Show the category above the heading" is on prints its category over its heading, whether or not the filter is on.',
 							'sgs-blocks'
@@ -620,7 +623,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						label={ __( 'Category line colour', 'sgs-blocks' ) }
 						value={ attributes.categoryEyebrowColour }
 						onChange={ ( val ) =>
-							setAttributes( { categoryEyebrowColour: val ?? '' } )
+							setAttributes( {
+								categoryEyebrowColour: val ?? '',
+							} )
 						}
 					/>
 					<TypographyControls

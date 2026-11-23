@@ -11,13 +11,21 @@ import { FORM_CPT } from './form-cpt';
 
 export { FORM_CPT };
 
-export default function SavedFormPicker( { formId, formIsLinked, onLink, onUnlink } ) {
+export default function SavedFormPicker( {
+	formId,
+	formIsLinked,
+	onLink,
+	onUnlink,
+} ) {
 	return (
 		<SavedPostPicker
 			postType={ FORM_CPT }
 			label={ __( 'Saved form', 'sgs-blocks' ) }
 			emptyLabel={ __( 'Choose a saved form', 'sgs-blocks' ) }
-			help={ __( 'Search the Forms list. Edit the form there, and every page using it updates.', 'sgs-blocks' ) }
+			help={ __(
+				'Search the Forms list. Edit the form there, and every page using it updates.',
+				'sgs-blocks'
+			) }
 			value={ formIsLinked ? formId : '' }
 			onSelect={ onLink }
 			onClear={ onUnlink }

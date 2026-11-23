@@ -38,7 +38,13 @@ export function normaliseImage( media ) {
  * @param {string}   props.label        The pick button's label.
  * @param {string}   props.instructions Help shown above the pick button when empty.
  */
-export default function ItemImageField( { value, onChange, onRemove, label, instructions } ) {
+export default function ItemImageField( {
+	value,
+	onChange,
+	onRemove,
+	label,
+	instructions,
+} ) {
 	const hasImage = !! ( value && value.url );
 	const choose = ( media ) => {
 		const next = normaliseImage( media );
@@ -54,17 +60,34 @@ export default function ItemImageField( { value, onChange, onRemove, label, inst
 					<img
 						className="sgs-item-image-field__preview"
 						src={ value.url }
-						alt={ value.alt || __( 'Selected image preview', 'sgs-blocks' ) }
+						alt={
+							value.alt ||
+							__( 'Selected image preview', 'sgs-blocks' )
+						}
 					/>
-					<LibraryButton types={ [ 'image' ] } value={ value.id } label={ __( 'Replace image', 'sgs-blocks' ) } onSelect={ choose } />
+					<LibraryButton
+						types={ [ 'image' ] }
+						value={ value.id }
+						label={ __( 'Replace image', 'sgs-blocks' ) }
+						onSelect={ choose }
+					/>
 					<Button variant="link" isDestructive onClick={ onRemove }>
 						{ __( 'Remove', 'sgs-blocks' ) }
 					</Button>
 				</>
 			) : (
 				<>
-					{ instructions && <p className="sgs-item-image-field__help">{ instructions }</p> }
-					<LibraryButton types={ [ 'image' ] } value={ 0 } label={ label } onSelect={ choose } />
+					{ instructions && (
+						<p className="sgs-item-image-field__help">
+							{ instructions }
+						</p>
+					) }
+					<LibraryButton
+						types={ [ 'image' ] }
+						value={ 0 }
+						label={ label }
+						onSelect={ choose }
+					/>
 				</>
 			) }
 		</div>

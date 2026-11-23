@@ -43,10 +43,12 @@ export const COLOUR_ATTRS = [
 /** The row descriptors SgsColourPanel renders. */
 export function colourRows( attributes, setAttributes ) {
 	const own = { attributes, setAttributes };
-	const text = ( key, label, base ) => textRow( { key, label, attrs: { base }, ...own } );
+	const text = ( key, label, base ) =>
+		textRow( { key, label, attrs: { base }, ...own } );
 	// A gradient behind the See-all button hides which colour the text sits on, so only a flat fill is compared.
 	const seeAllBackdrop =
-		! attributes.seeAllColourBackgroundGradient && attributes.seeAllColourBackground
+		! attributes.seeAllColourBackgroundGradient &&
+		attributes.seeAllColourBackground
 			? attributes.seeAllColourBackground
 			: '';
 
@@ -54,7 +56,10 @@ export function colourRows( attributes, setAttributes ) {
 		fillRow( {
 			key: 'panel-background',
 			label: __( 'Panel background', 'sgs-blocks' ),
-			attrs: { base: 'backgroundColour', gradient: 'backgroundColourGradient' },
+			attrs: {
+				base: 'backgroundColour',
+				gradient: 'backgroundColourGradient',
+			},
 			...own,
 		} ),
 		fillRow( {
@@ -69,19 +74,39 @@ export function colourRows( attributes, setAttributes ) {
 			attrs: { base: 'starEmptyColour' },
 			...own,
 		} ),
-		text( 'source-label', __( 'Source caption', 'sgs-blocks' ), 'sourceLabelColour' ),
+		text(
+			'source-label',
+			__( 'Source caption', 'sgs-blocks' ),
+			'sourceLabelColour'
+		),
 		text( 'score', __( 'Rating figure', 'sgs-blocks' ), 'scoreColour' ),
 		text( 'count', __( 'Review count', 'sgs-blocks' ), 'countColour' ),
 		text( 'author', __( 'Reviewer name', 'sgs-blocks' ), 'authorColour' ),
 		text( 'meta', __( 'Reviewer details', 'sgs-blocks' ), 'metaColour' ),
 		text( 'date', __( 'Review date', 'sgs-blocks' ), 'dateColour' ),
-		text( 'avatar-text', __( 'Avatar initials', 'sgs-blocks' ), 'avatarTextColour' ),
+		text(
+			'avatar-text',
+			__( 'Avatar initials', 'sgs-blocks' ),
+			'avatarTextColour'
+		),
 		text( 'review-text', __( 'Review text', 'sgs-blocks' ), 'textColour' ),
-		text( 'review-link', __( 'Full review link', 'sgs-blocks' ), 'reviewLinkColour' ),
+		text(
+			'review-link',
+			__( 'Full review link', 'sgs-blocks' ),
+			'reviewLinkColour'
+		),
 		text( 'footnote', __( 'Footnote', 'sgs-blocks' ), 'footnoteColour' ),
 		// Block-wide: each sets one custom property that every line or link in its family reads.
-		text( 'muted-text', __( 'Muted text (all secondary lines)', 'sgs-blocks' ), 'mutedTextColour' ),
-		text( 'accent', __( 'Accent (links, focus ring, blue fills)', 'sgs-blocks' ), 'accentColour' ),
+		text(
+			'muted-text',
+			__( 'Muted text (all secondary lines)', 'sgs-blocks' ),
+			'mutedTextColour'
+		),
+		text(
+			'accent',
+			__( 'Accent (links, focus ring, blue fills)', 'sgs-blocks' ),
+			'accentColour'
+		),
 		fillRow( {
 			key: 'see-all-background',
 			label: __( 'See all reviews button background', 'sgs-blocks' ),

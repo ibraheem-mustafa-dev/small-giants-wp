@@ -24,8 +24,10 @@
  * @package SGS\Blocks
  */
 
-/** The window (ms) within which a wheel/touchmove/pointer-drag event counts as
- * "this scroll was pointer-driven", per §4.6. */
+/**
+ * The window (ms) within which a wheel/touchmove/pointer-drag event counts as
+ * "this scroll was pointer-driven", per §4.6.
+ */
 export const SCROLL_INTENT_WINDOW_MS = 150;
 
 /**
@@ -93,7 +95,7 @@ export function isOpenerLive( trigger, deps = {} ) {
  *
  * @param {number}      now          Current timestamp (ms, e.g. `Date.now()`).
  * @param {number|null} lastIntentAt Timestamp of the last pointer-scroll
- *                                    signal, or null/undefined if none yet.
+ *                                   signal, or null/undefined if none yet.
  * @return {boolean}
  */
 export function isIntentionalScroll( now, lastIntentAt ) {

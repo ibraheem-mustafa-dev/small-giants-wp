@@ -70,16 +70,36 @@ import { __ } from '@wordpress/i18n';
 
 import { mediaStoredAttrName } from '../../MediaElementControls.js';
 import { colourVar } from '../../../utils/tokens.js';
-import { isLegacyCall, rulesFor, disabled, REASONS } from '../panels/disclosure-context.js';
+import {
+	isLegacyCall,
+	rulesFor,
+	disabled,
+	REASONS,
+} from '../panels/disclosure-context.js';
 
 import { add, emitPlain, nodes, num, rulesCss, scalar } from '../emit/core.js';
-import { isNumeric, mediaBlend, mediaColour, mediaGradient } from '../emit/values.js';
+import {
+	isNumeric,
+	mediaBlend,
+	mediaColour,
+	mediaGradient,
+} from '../emit/values.js';
 import { shapeHasMask } from '../emit/mask.js';
-const GRADIENT_PATTERN = /^(repeating-)?(linear|radial|conic)-gradient\([A-Za-z0-9\s.,%()#/_-]+\)$/i;
+const GRADIENT_PATTERN =
+	/^(repeating-)?(linear|radial|conic)-gradient\([A-Za-z0-9\s.,%()#/_-]+\)$/i;
 const GRADIENT_BREAKOUT = /[;{}]|url\s*\(|<|>|@|expression/i;
 const BLEND_MODES = [
-	'multiply', 'screen', 'overlay', 'darken', 'lighten', 'color-dodge',
-	'color-burn', 'soft-light', 'hard-light', 'difference', 'exclusion',
+	'multiply',
+	'screen',
+	'overlay',
+	'darken',
+	'lighten',
+	'color-dodge',
+	'color-burn',
+	'soft-light',
+	'hard-light',
+	'difference',
+	'exclusion',
 ];
 
 /**
@@ -140,12 +160,28 @@ export function resolvePaint( colour, gradient ) {
 export function attrKeys( prefix, blockSlug ) {
 	return {
 		colour: mediaStoredAttrName( blockSlug, prefix, 'OverlayColour' ),
-		colourHover: mediaStoredAttrName( blockSlug, prefix, 'OverlayColourHover' ),
+		colourHover: mediaStoredAttrName(
+			blockSlug,
+			prefix,
+			'OverlayColourHover'
+		),
 		gradient: mediaStoredAttrName( blockSlug, prefix, 'OverlayGradient' ),
-		gradientHover: mediaStoredAttrName( blockSlug, prefix, 'OverlayGradientHover' ),
+		gradientHover: mediaStoredAttrName(
+			blockSlug,
+			prefix,
+			'OverlayGradientHover'
+		),
 		opacity: mediaStoredAttrName( blockSlug, prefix, 'OverlayOpacity' ),
-		opacityTablet: mediaStoredAttrName( blockSlug, prefix, 'OverlayOpacityTablet' ),
-		opacityMobile: mediaStoredAttrName( blockSlug, prefix, 'OverlayOpacityMobile' ),
+		opacityTablet: mediaStoredAttrName(
+			blockSlug,
+			prefix,
+			'OverlayOpacityTablet'
+		),
+		opacityMobile: mediaStoredAttrName(
+			blockSlug,
+			prefix,
+			'OverlayOpacityMobile'
+		),
 		blendMode: mediaStoredAttrName( blockSlug, prefix, 'OverlayBlendMode' ),
 	};
 }
@@ -170,7 +206,10 @@ function formatOpacityDecl( raw ) {
 	if ( 100 === pct ) {
 		return null;
 	}
-	return { pct, fraction: String( Math.round( ( pct / 100 ) * 10000 ) / 10000 ) };
+	return {
+		pct,
+		fraction: String( Math.round( ( pct / 100 ) * 10000 ) / 10000 ),
+	};
 }
 
 /**
@@ -183,9 +222,16 @@ function formatOpacityDecl( raw ) {
  * @param {string} [props.blockSlug]
  * @return {{state: string, hiddenReason: (string|null)}}
  */
-function legacyDisclosure( { attributes = {}, prefix = '', blockSlug = '' } = {} ) {
+function legacyDisclosure( {
+	attributes = {},
+	prefix = '',
+	blockSlug = '',
+} = {} ) {
 	const keys = attrKeys( prefix, blockSlug );
-	const paint = resolvePaint( attributes[ keys.colour ], attributes[ keys.gradient ] );
+	const paint = resolvePaint(
+		attributes[ keys.colour ],
+		attributes[ keys.gradient ]
+	);
 	if ( '' === paint.property ) {
 		return {
 			state: 'disabled',
@@ -215,8 +261,14 @@ export function disclosure( attrs, device, prefix = '', opts = {} ) {
 		return legacyDisclosure( attrs );
 	}
 	return rulesFor( 'overlay', attrs, device, prefix, opts, ( base, c ) => {
-		const needsPaint = [ 'OverlayOpacity', 'OverlayBlendMode' ].includes( base );
-		if ( needsPaint && ! c.has( 'OverlayColour' ) && ! c.has( 'OverlayGradient' ) ) {
+		const needsPaint = [ 'OverlayOpacity', 'OverlayBlendMode' ].includes(
+			base
+		);
+		if (
+			needsPaint &&
+			! c.has( 'OverlayColour' ) &&
+			! c.has( 'OverlayGradient' )
+		) {
 			return disabled( REASONS.overlayPaint );
 		}
 		return undefined;
@@ -228,7 +280,7 @@ export function disclosure( attrs, device, prefix = '', opts = {} ) {
  * (`scripts/check-media-atom-purity.js`), mirroring `object-fit`'s
  * `validate(value, scope)` shape.
  *
- * @param {*}      value Raw candidate.
+ * @param {*}      value  Raw candidate.
  * @param {string} [kind] 'blendMode' (default) | 'gradient' | 'colour'.
  * @return {string} A vocabulary member / paintable value, never the raw
  *                  out-of-vocabulary input.
@@ -240,7 +292,9 @@ export function validate( value, kind = 'blendMode' ) {
 	if ( 'colour' === kind ) {
 		return resolveColour( value );
 	}
-	return value && 'normal' !== value && BLEND_MODES.includes( value ) ? value : 'normal';
+	return value && 'normal' !== value && BLEND_MODES.includes( value )
+		? value
+		: 'normal';
 }
 
 /**
@@ -269,7 +323,9 @@ export function emit( slot, attrs, uid, helper ) {
 		return '' !== colour ? { 'background-color': colour } : {};
 	};
 	const rules = {};
-	for ( const [ prop, value ] of Object.entries( paint( 'OverlayColour', 'OverlayGradient' ) ) ) {
+	for ( const [ prop, value ] of Object.entries(
+		paint( 'OverlayColour', 'OverlayGradient' )
+	) ) {
 		add( rules, overlay, 'desktop', prop, value );
 	}
 	emitPlain(
@@ -279,11 +335,33 @@ export function emit( slot, attrs, uid, helper ) {
 		'OverlayOpacity',
 		overlay,
 		'opacity',
-		( raw ) => ( isNumeric( raw ) ? num( Math.max( 0, Math.min( 100, Number( raw ) ) ) / 100 ) : '' ),
+		( raw ) =>
+			isNumeric( raw )
+				? num( Math.max( 0, Math.min( 100, Number( raw ) ) ) / 100 )
+				: '',
 		'1'
 	);
-	emitPlain( rules, attrs, slot, 'OverlayBlend', overlay, 'mix-blend-mode', mediaBlend );
+	emitPlain(
+		rules,
+		attrs,
+		slot,
+		'OverlayBlend',
+		overlay,
+		'mix-blend-mode',
+		mediaBlend
+	);
 	const hover = paint( 'OverlayColourHover', 'OverlayGradientHover' );
-	const hoverList = 0 === Object.keys( hover ).length ? [] : [ [ `${ surface }:hover${ mask ? ' .sgs-media-box__mask' : '' }::after`, overlay, hover ] ];
+	const hoverList =
+		0 === Object.keys( hover ).length
+			? []
+			: [
+					[
+						`${ surface }:hover${
+							mask ? ' .sgs-media-box__mask' : ''
+						}::after`,
+						overlay,
+						hover,
+					],
+			  ];
 	return rulesCss( rules, hoverList );
 }

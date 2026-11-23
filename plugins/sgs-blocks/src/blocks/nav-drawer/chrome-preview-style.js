@@ -37,7 +37,12 @@ export function chromeRowBorderPreview( border, tier, palette ) {
 	if ( ! border || 'object' !== typeof border ) {
 		return {};
 	}
-	const order = 'mobile' === tier ? [ 'mobile', 'tablet', 'desktop' ] : 'tablet' === tier ? [ 'tablet', 'desktop' ] : [ 'desktop' ];
+	const order =
+		'mobile' === tier
+			? [ 'mobile', 'tablet', 'desktop' ]
+			: 'tablet' === tier
+			? [ 'tablet', 'desktop' ]
+			: [ 'desktop' ];
 	const pick = ( member ) => {
 		for ( const key of order ) {
 			const value = border[ key ]?.[ member ];
@@ -72,10 +77,18 @@ export function chromeRowBorderPreview( border, tier, palette ) {
  * @return {Object} React style fragment.
  */
 export function chromeRowStyle( attributes, tier, palette ) {
-	const style = backgroundPaintPreview( attributes.chromeRowBg, attributes.chromeRowBgGradient, palette );
+	const style = backgroundPaintPreview(
+		attributes.chromeRowBg,
+		attributes.chromeRowBgGradient,
+		palette
+	);
 	const minHeight = tierLengthPreview( attributes.chromeRowHeight, tier );
 	const gap = tierLengthPreview( attributes.chromeRowGap, tier );
-	const padding = tierBoxLonghands( attributes.chromeRowPadding, tier, 'padding' );
+	const padding = tierBoxLonghands(
+		attributes.chromeRowPadding,
+		tier,
+		'padding'
+	);
 	if ( minHeight ) {
 		style.minHeight = minHeight;
 	}
@@ -83,7 +96,10 @@ export function chromeRowStyle( attributes, tier, palette ) {
 		style.gap = gap;
 	}
 	Object.assign( style, padding );
-	Object.assign( style, chromeRowBorderPreview( attributes.chromeRowBorder, tier, palette ) );
+	Object.assign(
+		style,
+		chromeRowBorderPreview( attributes.chromeRowBorder, tier, palette )
+	);
 	return style;
 }
 
@@ -96,18 +112,38 @@ export function chromeRowStyle( attributes, tier, palette ) {
  * @return {Object} React style fragment.
  */
 function chromeButtonStyle( attributes, palette ) {
-	const style = backgroundPaintPreview( attributes.chromeButtonColourBackground, attributes.chromeButtonColourBackgroundGradient, palette );
-	Object.assign( style, textPaintPreview( attributes.chromeButtonColourText, attributes.chromeButtonColourTextGradient, palette ) );
-	const border = resolveColourToken( attributes.chromeButtonColourBorder, palette );
+	const style = backgroundPaintPreview(
+		attributes.chromeButtonColourBackground,
+		attributes.chromeButtonColourBackgroundGradient,
+		palette
+	);
+	Object.assign(
+		style,
+		textPaintPreview(
+			attributes.chromeButtonColourText,
+			attributes.chromeButtonColourTextGradient,
+			palette
+		)
+	);
+	const border = resolveColourToken(
+		attributes.chromeButtonColourBorder,
+		palette
+	);
 	if ( border ) {
 		style.borderColor = border;
 	}
 	Object.assign(
 		style,
-		borderBoxPreview( attributes.chromeButtonBorderWidth, attributes.chromeButtonBorderStyle ),
+		borderBoxPreview(
+			attributes.chromeButtonBorderWidth,
+			attributes.chromeButtonBorderStyle
+		),
 		borderRadiusLonghands( attributes.chromeButtonBorderRadius )
 	);
-	Object.assign( style, boxLonghands( attributes.chromeButtonPadding, 'padding' ) );
+	Object.assign(
+		style,
+		boxLonghands( attributes.chromeButtonPadding, 'padding' )
+	);
 	return style;
 }
 
@@ -125,7 +161,14 @@ export function chromeSlotStyle( attributes, tier, palette ) {
 	if ( 'button' === attributes.chromeSlotType ) {
 		return { ...style, ...chromeButtonStyle( attributes, palette ) };
 	}
-	return { ...style, ...textPaintPreview( attributes.chromeSlotColour, attributes.chromeSlotColourGradient, palette ) };
+	return {
+		...style,
+		...textPaintPreview(
+			attributes.chromeSlotColour,
+			attributes.chromeSlotColourGradient,
+			palette
+		),
+	};
 }
 
 /**
@@ -137,12 +180,22 @@ export function chromeSlotStyle( attributes, tier, palette ) {
  * @return {Object} React style fragment.
  */
 export function chromeLogoBoxStyle( attributes, palette ) {
-	const style = backgroundPaintPreview( attributes.chromeLogoBoxBg, attributes.chromeLogoBoxBgGradient, palette );
+	const style = backgroundPaintPreview(
+		attributes.chromeLogoBoxBg,
+		attributes.chromeLogoBoxBgGradient,
+		palette
+	);
 	if ( attributes.chromeLogoBoxRadius ) {
 		style.borderRadius = attributes.chromeLogoBoxRadius;
 	}
-	Object.assign( style, boxLonghands( attributes.chromeLogoBoxPadding, 'padding' ) );
-	const shadow = resolveShadowPreviewComposed( attributes.chromeLogoBoxShadow, attributes.chromeLogoBoxShadowColour );
+	Object.assign(
+		style,
+		boxLonghands( attributes.chromeLogoBoxPadding, 'padding' )
+	);
+	const shadow = resolveShadowPreviewComposed(
+		attributes.chromeLogoBoxShadow,
+		attributes.chromeLogoBoxShadowColour
+	);
 	if ( shadow ) {
 		style.boxShadow = shadow;
 	}
@@ -157,7 +210,11 @@ export function chromeLogoBoxStyle( attributes, palette ) {
  * @return {Object} React style fragment.
  */
 export function closeFillStyle( attributes, palette ) {
-	return backgroundPaintPreview( attributes.closeBg, attributes.closeBgGradient, palette );
+	return backgroundPaintPreview(
+		attributes.closeBg,
+		attributes.closeBgGradient,
+		palette
+	);
 }
 
 /**
@@ -181,9 +238,15 @@ export function shellBorderStyle( attributes, tier, palette ) {
  * @return {Object} React style fragment.
  */
 export function closeBorderStyle( attributes, palette ) {
-	const style = borderBoxPreview( attributes.closeBorderWidth, attributes.closeBorderStyle );
+	const style = borderBoxPreview(
+		attributes.closeBorderWidth,
+		attributes.closeBorderStyle
+	);
 	if ( style.borderStyle ) {
-		Object.assign( style, borderPaintPreview( attributes.closeBorderColour, '', palette ) );
+		Object.assign(
+			style,
+			borderPaintPreview( attributes.closeBorderColour, '', palette )
+		);
 	}
 	return style;
 }

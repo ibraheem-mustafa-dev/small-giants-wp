@@ -210,7 +210,10 @@ export function readParams( el ) {
 		hold: readHold( el ),
 		pinQuery: PIN_QUERIES[ breakpoint ] || PIN_QUERIES.tablet,
 		belowMode: 'static' === belowMode ? 'static' : 'snap',
-		travelEnd: 'track-end' === text( el, ATTRS.travelEnd ) ? 'track-end' : 'first-start',
+		travelEnd:
+			'track-end' === text( el, ATTRS.travelEnd )
+				? 'track-end'
+				: 'first-start',
 		pinLength: parseScrollLength( responsive( el, 'pinLength' ) ),
 		pinTail: parseScrollLength( responsive( el, 'pinTail' ) ),
 		progress: flag( el, ATTRS.progressOutput, true ),

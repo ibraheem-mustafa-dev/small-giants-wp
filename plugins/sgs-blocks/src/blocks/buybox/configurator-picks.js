@@ -7,7 +7,11 @@
  * @package SGS\Blocks
  */
 
-import { parseLimits, canAddAnswer, meetsLeast } from '../choice-flow/flow-multi.js';
+import {
+	parseLimits,
+	canAddAnswer,
+	meetsLeast,
+} from '../choice-flow/flow-multi.js';
 
 export { parseLimits, canAddAnswer, meetsLeast };
 
@@ -28,7 +32,11 @@ export function applyPick( order, slug, most, overflow ) {
 		return { order: [ ...order, slug ], removed: null, refused: false };
 	}
 	if ( 'replace' === overflow && order.length > 0 ) {
-		return { order: [ ...order.slice( 1 ), slug ], removed: order[ 0 ], refused: false };
+		return {
+			order: [ ...order.slice( 1 ), slug ],
+			removed: order[ 0 ],
+			refused: false,
+		};
 	}
 	return { order: order.slice(), removed: null, refused: true };
 }
@@ -60,7 +68,10 @@ export function removePick( order, slug, least ) {
  * @return {string[]} The order before the swap.
  */
 export function undoSwap( order, added, removed ) {
-	return [ removed, ...order.filter( ( s ) => s !== added && s !== removed ) ];
+	return [
+		removed,
+		...order.filter( ( s ) => s !== added && s !== removed ),
+	];
 }
 
 /**
@@ -96,7 +107,9 @@ export function addCounted( counts, slug, pack ) {
 	if ( total < pack ) {
 		return { ...counts, [ slug ]: 1 };
 	}
-	const donor = Object.keys( counts ).sort( ( a, b ) => counts[ b ] - counts[ a ] )[ 0 ];
+	const donor = Object.keys( counts ).sort(
+		( a, b ) => counts[ b ] - counts[ a ]
+	)[ 0 ];
 	if ( ! donor || counts[ donor ] < 2 ) {
 		return null;
 	}

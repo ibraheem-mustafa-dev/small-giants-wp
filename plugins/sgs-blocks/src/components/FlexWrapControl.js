@@ -10,21 +10,42 @@
 import { __ } from '@wordpress/i18n';
 import { ToggleGroupControl, ToggleGroupControlOption } from './primitives';
 
-export default function FlexWrapControl( { label, value, onChange, help, hideLabelFromVision = false } ) {
+export default function FlexWrapControl( {
+	label,
+	value,
+	onChange,
+	help,
+	hideLabelFromVision = false,
+} ) {
 	return (
 		<ToggleGroupControl
 			label={ label || __( 'Wrap items', 'sgs-blocks' ) }
 			hideLabelFromVision={ hideLabelFromVision }
-			help={ help || __( 'Default keeps the layout\'s own behaviour. One row keeps every item on a single line; Wrap lets items that overrun drop onto a further row.', 'sgs-blocks' ) }
+			help={
+				help ||
+				__(
+					"Default keeps the layout's own behaviour. One row keeps every item on a single line; Wrap lets items that overrun drop onto a further row.",
+					'sgs-blocks'
+				)
+			}
 			value={ value || '' }
 			onChange={ ( next ) => onChange( next || '' ) }
 			isBlock
 			__nextHasNoMarginBottom
 			__next40pxDefaultSize
 		>
-			<ToggleGroupControlOption value="" label={ __( 'Default', 'sgs-blocks' ) } />
-			<ToggleGroupControlOption value="nowrap" label={ __( 'One row', 'sgs-blocks' ) } />
-			<ToggleGroupControlOption value="wrap" label={ __( 'Wrap', 'sgs-blocks' ) } />
+			<ToggleGroupControlOption
+				value=""
+				label={ __( 'Default', 'sgs-blocks' ) }
+			/>
+			<ToggleGroupControlOption
+				value="nowrap"
+				label={ __( 'One row', 'sgs-blocks' ) }
+			/>
+			<ToggleGroupControlOption
+				value="wrap"
+				label={ __( 'Wrap', 'sgs-blocks' ) }
+			/>
 		</ToggleGroupControl>
 	);
 }

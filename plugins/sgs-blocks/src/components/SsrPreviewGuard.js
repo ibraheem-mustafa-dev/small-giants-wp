@@ -275,7 +275,9 @@ function cardModePrice( combo, meta ) {
 		return out;
 	}
 	if ( mode === 'inc-suffix' && meta.priceSuffix ) {
-		return formatCardPrice( combo.priceMinor, meta ) + ' ' + meta.priceSuffix;
+		return (
+			formatCardPrice( combo.priceMinor, meta ) + ' ' + meta.priceSuffix
+		);
 	}
 	return formatCardPrice( combo.priceMinor, meta );
 }
@@ -338,10 +340,10 @@ function cardPerUnitDisplay( combo, meta ) {
  * change, since it targets the documented data contract, not incidental
  * markup.
  *
- * @param {Element} root      The card's live root element.
- * @param {string}  attrName  e.g. 'data-wp-text' or 'data-wp-bind--hidden'.
- * @param {string}  attrValue e.g. 'context.priceDisplay'.
- * @param {(el: Element) => void} apply Called once per matching element.
+ * @param {Element}               root      The card's live root element.
+ * @param {string}                attrName  e.g. 'data-wp-text' or 'data-wp-bind--hidden'.
+ * @param {string}                attrValue e.g. 'context.priceDisplay'.
+ * @param {(el: Element) => void} apply     Called once per matching element.
  */
 function applyToDirective( root, attrName, attrValue, apply ) {
 	const selector = '[' + attrName + '="' + attrValue + '"]';
@@ -465,9 +467,14 @@ function applyProductCardVariantSelection( input ) {
 	} );
 
 	const inStock = !! combo.inStock;
-	applyToDirective( root, 'data-wp-bind--hidden', 'context.inStock', ( el ) => {
-		el.hidden = inStock;
-	} );
+	applyToDirective(
+		root,
+		'data-wp-bind--hidden',
+		'context.inStock',
+		( el ) => {
+			el.hidden = inStock;
+		}
+	);
 	applyToDirective( root, 'data-wp-text', 'context.stockText', ( el ) => {
 		el.textContent = inStock ? '' : 'Out of stock';
 	} );
@@ -483,14 +490,9 @@ function applyProductCardVariantSelection( input ) {
 			el.hidden = ! badgeLabel;
 		}
 	);
-	applyToDirective(
-		root,
-		'data-wp-text',
-		'context.discountLabel',
-		( el ) => {
-			el.textContent = badgeLabel;
-		}
-	);
+	applyToDirective( root, 'data-wp-text', 'context.discountLabel', ( el ) => {
+		el.textContent = badgeLabel;
+	} );
 
 	const puDisplay = cardPerUnitDisplay( combo, state );
 	applyToDirective(
@@ -521,9 +523,14 @@ function applyProductCardVariantSelection( input ) {
 			? gallery[ 0 ].url
 			: combo.imageUrl || '';
 	if ( newSrc ) {
-		applyToDirective( root, 'data-wp-bind--src', 'context.imageSrc', ( el ) => {
-			el.src = newSrc;
-		} );
+		applyToDirective(
+			root,
+			'data-wp-bind--src',
+			'context.imageSrc',
+			( el ) => {
+				el.src = newSrc;
+			}
+		);
 		const newAlt = gallery.length > 0 ? gallery[ 0 ].alt || '' : '';
 		if ( newAlt ) {
 			applyToDirective(
@@ -570,7 +577,10 @@ export default function SsrPreviewGuard( { children, className } ) {
 						}
 					} );
 			}
-			trigger.setAttribute( 'aria-expanded', willOpen ? 'true' : 'false' );
+			trigger.setAttribute(
+				'aria-expanded',
+				willOpen ? 'true' : 'false'
+			);
 		}
 
 		// `sgs/trustpilot-reviews` carousel arrows — scroll the track by one
@@ -580,7 +590,10 @@ export default function SsrPreviewGuard( { children, className } ) {
 			typeof event.target.closest === 'function'
 				? event.target.closest( TRUSTPILOT_ARROW_SELECTOR )
 				: null;
-		if ( arrowBtn && typeof event.currentTarget.querySelector === 'function' ) {
+		if (
+			arrowBtn &&
+			typeof event.currentTarget.querySelector === 'function'
+		) {
 			const track = event.currentTarget.querySelector(
 				TRUSTPILOT_TRACK_SELECTOR
 			);
@@ -611,7 +624,10 @@ export default function SsrPreviewGuard( { children, className } ) {
 			typeof event.target.closest === 'function'
 				? event.target.closest( TRUSTPILOT_DOT_SELECTOR )
 				: null;
-		if ( dotBtn && typeof event.currentTarget.querySelector === 'function' ) {
+		if (
+			dotBtn &&
+			typeof event.currentTarget.querySelector === 'function'
+		) {
 			const track = event.currentTarget.querySelector(
 				TRUSTPILOT_TRACK_SELECTOR
 			);
@@ -716,7 +732,10 @@ export default function SsrPreviewGuard( { children, className } ) {
 			typeof event.target.closest === 'function'
 				? event.target.closest( BRAND_STRIP_SCROLLING_SELECTOR )
 				: null;
-		if ( ! strip || strip.classList.contains( 'sgs-brand-strip--no-pause' ) ) {
+		if (
+			! strip ||
+			strip.classList.contains( 'sgs-brand-strip--no-pause' )
+		) {
 			return;
 		}
 		const related = event.relatedTarget;

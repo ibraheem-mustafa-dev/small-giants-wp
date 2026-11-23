@@ -14,10 +14,19 @@
 import { __ } from '@wordpress/i18n';
 import { InspectorControls } from '@wordpress/block-editor';
 import { PanelBody } from '@wordpress/components';
-import { ResponsiveOverride, SgsLengthControl, TierBorderControl, fillRow } from '../../components';
+import {
+	ResponsiveOverride,
+	SgsLengthControl,
+	TierBorderControl,
+	fillRow,
+} from '../../components';
 import { colourVar, tierBoxLonghands, usePreviewTier } from '../../utils';
 import { tierLengthPreview } from '../../utils/cssLength';
-import { TierPadding, cssText, tierBorderPreview } from '../choice-flow-question/OptionCardPanels';
+import {
+	TierPadding,
+	cssText,
+	tierBorderPreview,
+} from '../choice-flow-question/OptionCardPanels';
 
 /**
  * @param {Object}   o
@@ -28,39 +37,91 @@ import { TierPadding, cssText, tierBorderPreview } from '../choice-flow-question
 export default function BandsPanel( { attributes, setAttributes } ) {
 	// Each element: its panel title (the element's label), its border attribute, its padding attribute and their labels.
 	const parts = [
-		[ __( 'Header band', 'sgs-blocks' ), 'headerBandBorder', 'headerBandPadding', __( 'Rule (bottom edge)', 'sgs-blocks' ), __( 'Padding', 'sgs-blocks' ) ],
-		[ __( 'Footer band', 'sgs-blocks' ), 'footerBandBorder', 'footerBandPadding', __( 'Rule (top edge)', 'sgs-blocks' ), __( 'Padding', 'sgs-blocks' ) ],
-		[ __( 'Summary box', 'sgs-blocks' ), 'summaryBorder', 'summaryPadding', __( 'Border', 'sgs-blocks' ), __( 'Padding', 'sgs-blocks' ) ],
+		[
+			__( 'Header band', 'sgs-blocks' ),
+			'headerBandBorder',
+			'headerBandPadding',
+			__( 'Rule (bottom edge)', 'sgs-blocks' ),
+			__( 'Padding', 'sgs-blocks' ),
+		],
+		[
+			__( 'Footer band', 'sgs-blocks' ),
+			'footerBandBorder',
+			'footerBandPadding',
+			__( 'Rule (top edge)', 'sgs-blocks' ),
+			__( 'Padding', 'sgs-blocks' ),
+		],
+		[
+			__( 'Summary box', 'sgs-blocks' ),
+			'summaryBorder',
+			'summaryPadding',
+			__( 'Border', 'sgs-blocks' ),
+			__( 'Padding', 'sgs-blocks' ),
+		],
 	];
 	return (
 		<InspectorControls>
-			{ parts.map( ( [ title, borderAttr, paddingAttr, borderLabel, paddingLabel ] ) => (
-				<PanelBody key={ borderAttr } title={ title } initialOpen={ false }>
-					<TierBorderControl
-						label={ borderLabel }
-						value={ attributes[ borderAttr ] }
-						onChange={ ( next ) => setAttributes( { [ borderAttr ]: next } ) }
-					/>
-					<TierPadding
-						label={ paddingLabel }
-						value={ attributes[ paddingAttr ] }
-						onChange={ ( obj ) => setAttributes( { [ paddingAttr ]: obj } ) }
-					/>
-				</PanelBody>
-			) ) }
-			<PanelBody title={ __( 'Help note icon disc', 'sgs-blocks' ) } initialOpen={ false }>
+			{ parts.map(
+				( [
+					title,
+					borderAttr,
+					paddingAttr,
+					borderLabel,
+					paddingLabel,
+				] ) => (
+					<PanelBody
+						key={ borderAttr }
+						title={ title }
+						initialOpen={ false }
+					>
+						<TierBorderControl
+							label={ borderLabel }
+							value={ attributes[ borderAttr ] }
+							onChange={ ( next ) =>
+								setAttributes( { [ borderAttr ]: next } )
+							}
+						/>
+						<TierPadding
+							label={ paddingLabel }
+							value={ attributes[ paddingAttr ] }
+							onChange={ ( obj ) =>
+								setAttributes( { [ paddingAttr ]: obj } )
+							}
+						/>
+					</PanelBody>
+				)
+			) }
+			<PanelBody
+				title={ __( 'Help note icon disc', 'sgs-blocks' ) }
+				initialOpen={ false }
+			>
 				<ResponsiveOverride
 					value={ attributes.stageNoteIconCircleSize }
-					onChange={ ( obj ) => setAttributes( { stageNoteIconCircleSize: obj } ) }
+					onChange={ ( obj ) =>
+						setAttributes( { stageNoteIconCircleSize: obj } )
+					}
 				>
-					{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+					{ ( {
+						ownValue,
+						effectiveValue,
+						inherited,
+						setOwnValue,
+					} ) => (
 						<SgsLengthControl
-							label={ __( 'Help note icon disc size', 'sgs-blocks' ) }
-							help={ __( 'The disc behind the help note’s icon in the showcase layout. Empty keeps 34px; the icon keeps its own size.', 'sgs-blocks' ) }
+							label={ __(
+								'Help note icon disc size',
+								'sgs-blocks'
+							) }
+							help={ __(
+								'The disc behind the help note’s icon in the showcase layout. Empty keeps 34px; the icon keeps its own size.',
+								'sgs-blocks'
+							) }
 							presets={ false }
 							value={ ownValue ?? '' }
 							placeholder={ inherited ? effectiveValue : '' }
-							onChange={ ( val ) => setOwnValue( val || undefined ) }
+							onChange={ ( val ) =>
+								setOwnValue( val || undefined )
+							}
 						/>
 					) }
 				</ResponsiveOverride>
@@ -79,13 +140,42 @@ export default function BandsPanel( { attributes, setAttributes } ) {
  * @return {Array} Colour rows.
  */
 export function bandsColourRows( { attributes, setAttributes } ) {
-	const row = ( key, label, base, heading ) => fillRow( { key, heading, label, attrs: { base }, attributes, setAttributes } );
+	const row = ( key, label, base, heading ) =>
+		fillRow( {
+			key,
+			heading,
+			label,
+			attrs: { base },
+			attributes,
+			setAttributes,
+		} );
 	return [
-		row( 'progress-track', __( 'Progress bar track', 'sgs-blocks' ), 'progressTrackColour', __( 'Bands and summary box', 'sgs-blocks' ) ),
-		row( 'header-band', __( 'Header band fill', 'sgs-blocks' ), 'headerBandBackground' ),
-		row( 'footer-band', __( 'Footer band fill', 'sgs-blocks' ), 'footerBandBackground' ),
-		row( 'summary-box', __( 'Summary box fill', 'sgs-blocks' ), 'summaryBackground' ),
-		row( 'summary-dividers', __( 'Summary dividers', 'sgs-blocks' ), 'summaryDividerColour' ),
+		row(
+			'progress-track',
+			__( 'Progress bar track', 'sgs-blocks' ),
+			'progressTrackColour',
+			__( 'Bands and summary box', 'sgs-blocks' )
+		),
+		row(
+			'header-band',
+			__( 'Header band fill', 'sgs-blocks' ),
+			'headerBandBackground'
+		),
+		row(
+			'footer-band',
+			__( 'Footer band fill', 'sgs-blocks' ),
+			'footerBandBackground'
+		),
+		row(
+			'summary-box',
+			__( 'Summary box fill', 'sgs-blocks' ),
+			'summaryBackground'
+		),
+		row(
+			'summary-dividers',
+			__( 'Summary dividers', 'sgs-blocks' ),
+			'summaryDividerColour'
+		),
 	];
 }
 
@@ -142,21 +232,38 @@ export function BandsStyle( { attributes, clientId } ) {
 	const divider = colourVar( attributes.summaryDividerColour );
 	const iconSize = noteIconSize( attributes.stageNoteIconCircleSize, tier );
 	const rules = [
-		[ `${ scope } .sgs-choice-flow__progress`, { backgroundColor: colourVar( attributes.progressTrackColour ) } ],
+		[
+			`${ scope } .sgs-choice-flow__progress`,
+			{ backgroundColor: colourVar( attributes.progressTrackColour ) },
+		],
 		[
 			`${ scope } .sgs-choice-flow__chrome-header`,
 			{
 				...bandFill( attributes.headerBandBackground ),
-				...sideBorder( tierBorderPreview( attributes.headerBandBorder, tier ), 'Bottom' ),
-				...tierBoxLonghands( attributes.headerBandPadding, tier, 'padding' ),
+				...sideBorder(
+					tierBorderPreview( attributes.headerBandBorder, tier ),
+					'Bottom'
+				),
+				...tierBoxLonghands(
+					attributes.headerBandPadding,
+					tier,
+					'padding'
+				),
 			},
 		],
 		[
 			`${ scope } .sgs-choice-flow__footer-preview`,
 			{
 				...bandFill( attributes.footerBandBackground ),
-				...sideBorder( tierBorderPreview( attributes.footerBandBorder, tier ), 'Top' ),
-				...tierBoxLonghands( attributes.footerBandPadding, tier, 'padding' ),
+				...sideBorder(
+					tierBorderPreview( attributes.footerBandBorder, tier ),
+					'Top'
+				),
+				...tierBoxLonghands(
+					attributes.footerBandPadding,
+					tier,
+					'padding'
+				),
 			},
 		],
 		[
@@ -164,11 +271,21 @@ export function BandsStyle( { attributes, clientId } ) {
 			{
 				...bandFill( attributes.summaryBackground ),
 				...tierBorderPreview( attributes.summaryBorder, tier ),
-				...tierBoxLonghands( attributes.summaryPadding, tier, 'padding' ),
+				...tierBoxLonghands(
+					attributes.summaryPadding,
+					tier,
+					'padding'
+				),
 			},
 		],
-		[ `${ scope } .sgs-choice-flow__summary-lines,${ scope } .sgs-choice-flow__summary-total`, { borderColor: divider } ],
-		[ `${ scope } .sgs-choice-flow__summary-note-icon`, { width: iconSize, height: iconSize } ],
+		[
+			`${ scope } .sgs-choice-flow__summary-lines,${ scope } .sgs-choice-flow__summary-total`,
+			{ borderColor: divider },
+		],
+		[
+			`${ scope } .sgs-choice-flow__summary-note-icon`,
+			{ width: iconSize, height: iconSize },
+		],
 	];
 	const css = rules
 		.map( ( [ selector, style ] ) => [ selector, cssText( style ) ] )

@@ -199,7 +199,9 @@ void main() {
 function toLinear( rgb ) {
 	return rgb.map( ( channel ) => {
 		const c = channel / 255;
-		return c <= 0.04045 ? c / 12.92 : Math.pow( ( c + 0.055 ) / 1.055, 2.4 );
+		return c <= 0.04045
+			? c / 12.92
+			: Math.pow( ( c + 0.055 ) / 1.055, 2.4 );
 	} );
 }
 
@@ -231,11 +233,11 @@ function compile( gl, type, source ) {
  * Mirrors createWaveGradient's handle exactly, so the boot module can drive
  * either renderer through the same three calls.
  *
- * @param {HTMLCanvasElement} canvas         Target canvas.
- * @param {Object}            [opts]         Options.
- * @param {number[][]}        [opts.colours] [ base, low, mid, high ] as 0-255 triples.
+ * @param {HTMLCanvasElement} canvas           Target canvas.
+ * @param {Object}            [opts]           Options.
+ * @param {number[][]}        [opts.colours]   [ base, low, mid, high ] as 0-255 triples.
  * @param {number}            [opts.amplitude] 0-1; scales how strongly curtains assert.
- * @param {Function}          [opts.onLost]  Called when the GL context is lost.
+ * @param {Function}          [opts.onLost]    Called when the GL context is lost.
  * @return {{draw: Function, resize: Function, destroy: Function}|null} Handle, or null.
  */
 export function createAurora( canvas, opts = {} ) {
@@ -272,9 +274,15 @@ export function createAurora( canvas, opts = {} ) {
 		return null;
 	}
 
-	const colours = opts.colours && opts.colours.length >= 4
-		? opts.colours
-		: [ [ 8, 12, 26 ], [ 61, 224, 160 ], [ 79, 210, 232 ], [ 180, 107, 220 ] ];
+	const colours =
+		opts.colours && opts.colours.length >= 4
+			? opts.colours
+			: [
+					[ 8, 12, 26 ],
+					[ 61, 224, 160 ],
+					[ 79, 210, 232 ],
+					[ 180, 107, 220 ],
+			  ];
 
 	gl.useProgram( program );
 	const u = ( name ) => gl.getUniformLocation( program, name );
@@ -284,7 +292,10 @@ export function createAurora( canvas, opts = {} ) {
 	gl.uniform3fv( u( 'u_high' ), toLinear( colours[ 3 ] ) );
 
 	const amplitude = opts.amplitude === undefined ? 0.45 : opts.amplitude;
-	gl.uniform1f( u( 'u_intensity' ), 0.6 + Math.max( 0, Math.min( 1, amplitude ) ) * 1.3 );
+	gl.uniform1f(
+		u( 'u_intensity' ),
+		0.6 + Math.max( 0, Math.min( 1, amplitude ) ) * 1.3
+	);
 
 	const timeLoc = u( 'u_time' );
 	const resolutionLoc = u( 'u_resolution' );

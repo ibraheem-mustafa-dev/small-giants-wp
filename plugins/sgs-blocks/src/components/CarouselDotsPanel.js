@@ -40,7 +40,9 @@ export function carouselDotsAttrName( prefix, base ) {
  * @return {string[]} The attribute names.
  */
 export function carouselDotsAttrKeys( prefix ) {
-	return registry.rows.map( ( row ) => carouselDotsAttrName( prefix, row.base ) );
+	return registry.rows.map( ( row ) =>
+		carouselDotsAttrName( prefix, row.base )
+	);
 }
 
 /**

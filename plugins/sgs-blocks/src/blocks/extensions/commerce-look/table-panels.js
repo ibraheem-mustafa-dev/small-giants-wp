@@ -32,7 +32,13 @@ const LENGTH_UNITS = [
  * @param {Object} row The row.
  * @return {string} The prefix.
  */
-export const rowPrefix = ( id, row ) => row.prefix || 'sgs' + id.split( '_' ).map( ( p ) => p.charAt( 0 ).toUpperCase() + p.slice( 1 ) ).join( '' );
+export const rowPrefix = ( id, row ) =>
+	row.prefix ||
+	'sgs' +
+		id
+			.split( '_' )
+			.map( ( p ) => p.charAt( 0 ).toUpperCase() + p.slice( 1 ) )
+			.join( '' );
 
 /**
  * The rows that carry settings for a block, each with the columns that draw their own control.
@@ -42,7 +48,11 @@ export const rowPrefix = ( id, row ) => row.prefix || 'sgs' + id.split( '_' ).ma
  */
 export const tableRowsFor = ( isCart ) =>
 	Object.entries( TABLE.rows )
-		.filter( ( [ , row ] ) => ( row.columns || [] ).some( ( c ) => 'decoration' !== c ) && row[ isCart ? 'cart' : 'checkout' ] )
+		.filter(
+			( [ , row ] ) =>
+				( row.columns || [] ).some( ( c ) => 'decoration' !== c ) &&
+				row[ isCart ? 'cart' : 'checkout' ]
+		)
 		.map( ( [ id, row ] ) => ( {
 			id,
 			label: row.label || id,
@@ -71,7 +81,15 @@ function ColumnControl( { column, prefix, attributes, setAttributes } ) {
 					presets
 					label={ label }
 					values={ boxTiers( attributes[ name ] ) }
-					onChange={ ( tier, next ) => setAttributes( { [ name ]: writeTier( attributes[ name ], tier, next ) } ) }
+					onChange={ ( tier, next ) =>
+						setAttributes( {
+							[ name ]: writeTier(
+								attributes[ name ],
+								tier,
+								next
+							),
+						} )
+					}
 				/>
 			);
 		case 'length':
@@ -85,22 +103,53 @@ function ColumnControl( { column, prefix, attributes, setAttributes } ) {
 				/>
 			);
 		case 'border':
-			return <TierBorderControl label={ label } value={ attributes[ name ] } onChange={ ( next ) => setAttributes( { [ name ]: next } ) } />;
+			return (
+				<TierBorderControl
+					label={ label }
+					value={ attributes[ name ] }
+					onChange={ ( next ) => setAttributes( { [ name ]: next } ) }
+				/>
+			);
 		case 'shadow':
-			return <ShadowControl label={ label } attributes={ attributes } setAttributes={ setAttributes } attrNames={ { base: name, colour: name + 'Colour' } } />;
+			return (
+				<ShadowControl
+					label={ label }
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					attrNames={ { base: name, colour: name + 'Colour' } }
+				/>
+			);
 		case 'keyword':
 			return (
 				<TierSelectControl
 					label={ label }
 					value={ attributes[ name ] }
-					options={ def.options.map( ( [ value, text ] ) => ( { value, label: __( text, 'sgs-blocks' ) } ) ) }
+					options={ def.options.map( ( [ value, text ] ) => ( {
+						value,
+						label: __( text, 'sgs-blocks' ),
+					} ) ) }
 					onChange={ ( next ) => setAttributes( { [ name ]: next } ) }
 				/>
 			);
 		case 'text':
-			return <TextControls attributes={ attributes } setAttributes={ setAttributes } prefix={ name.slice( 0, -'FontSize'.length ) } noColour showTextAlign />;
+			return (
+				<TextControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					prefix={ name.slice( 0, -'FontSize'.length ) }
+					noColour
+					showTextAlign
+				/>
+			);
 		case 'colour':
-			return <ColourRow label={ label } attributes={ attributes } setAttributes={ setAttributes } name={ name } />;
+			return (
+				<ColourRow
+					label={ label }
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					name={ name }
+				/>
+			);
 		default:
 			return null;
 	}
@@ -117,11 +166,24 @@ function ColumnControl( { column, prefix, attributes, setAttributes } ) {
  */
 export function TablePanel( { attributes, setAttributes, isCart } ) {
 	return (
-		<PanelBody title={ __( 'Spacing, size and text of each part', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Spacing, size and text of each part', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			{ tableRowsFor( isCart ).map( ( row ) => (
-				<PanelBody key={ row.id } title={ row.label } initialOpen={ false }>
+				<PanelBody
+					key={ row.id }
+					title={ row.label }
+					initialOpen={ false }
+				>
 					{ row.columns.map( ( column ) => (
-						<ColumnControl key={ column } column={ column } prefix={ row.prefix } attributes={ attributes } setAttributes={ setAttributes } />
+						<ColumnControl
+							key={ column }
+							column={ column }
+							prefix={ row.prefix }
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+						/>
 					) ) }
 				</PanelBody>
 			) ) }

@@ -6,7 +6,10 @@
  * fills in the real count from the shared wishlist store and keeps it in
  * sync across every wishlist-link on the page, and across tabs.
  */
-import { ensureWishlistReady, onWishlistChange } from '../../shared/wishlist-store';
+import {
+	ensureWishlistReady,
+	onWishlistChange,
+} from '../../shared/wishlist-store';
 
 /**
  * Paint one badge's visible state.
@@ -18,7 +21,10 @@ function paint( link, count ) {
 	const badge = link.querySelector( '[data-sgs-wishlist-count]' );
 	if ( badge ) {
 		badge.textContent = String( count );
-		badge.classList.toggle( 'sgs-wishlist-link__badge--visible', count > 0 );
+		badge.classList.toggle(
+			'sgs-wishlist-link__badge--visible',
+			count > 0
+		);
 	}
 	link.setAttribute(
 		'aria-label',

@@ -28,14 +28,17 @@ export function apiBase() {
 /**
  * Issue a Store API request, tracking the rotating nonce.
  *
- * @param {string} path             Path under the Store API base, e.g. "/cart".
- * @param {Object} [options]        Fetch options.
- * @param {string} [options.method] HTTP method (default GET).
- * @param {Object} [options.body]   JSON-serialisable request body.
+ * @param {string} path              Path under the Store API base, e.g. "/cart".
+ * @param {Object} [options]         Fetch options.
+ * @param {string} [options.method]  HTTP method (default GET).
+ * @param {Object} [options.body]    JSON-serialisable request body.
  * @param {Object} [options.headers] Extra request headers (the gift value is added to the response by `X-SGS-Gift: 1`).
  * @return {Promise<Object>} The parsed JSON response.
  */
-export async function storeRequest( path, { method = 'GET', body, headers: extra } = {} ) {
+export async function storeRequest(
+	path,
+	{ method = 'GET', body, headers: extra } = {}
+) {
 	const headers = { 'Content-Type': 'application/json', ...extra };
 	if ( 'GET' !== method && window[ NONCE_KEY ] ) {
 		headers.Nonce = window[ NONCE_KEY ];

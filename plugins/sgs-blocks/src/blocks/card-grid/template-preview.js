@@ -98,7 +98,11 @@ export function templateBlocksFor( source, innerBlocks, create ) {
  * @return {Object} The context value.
  */
 export function itemContext( item ) {
-	return { postId: item.id, postType: item.postType, [ SOURCE_MODE_CONTEXT ]: item.sourceMode };
+	return {
+		postId: item.id,
+		postType: item.postType,
+		[ SOURCE_MODE_CONTEXT ]: item.sourceMode,
+	};
 }
 
 /**

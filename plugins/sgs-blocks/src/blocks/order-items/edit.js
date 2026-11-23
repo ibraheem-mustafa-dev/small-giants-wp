@@ -7,7 +7,12 @@
  */
 import { __ } from '@wordpress/i18n';
 import { InspectorControls, useBlockProps } from '@wordpress/block-editor';
-import { PanelBody, SelectControl, TextControl, ToggleControl } from '@wordpress/components';
+import {
+	PanelBody,
+	SelectControl,
+	TextControl,
+	ToggleControl,
+} from '@wordpress/components';
 import ServerSideRender from '../../components/ServerSideRender';
 import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 import {
@@ -151,9 +156,14 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 					/>
 					<ToggleControl
-						label={ __( 'Chosen options under each name', 'sgs-blocks' ) }
+						label={ __(
+							'Chosen options under each name',
+							'sgs-blocks'
+						) }
 						checked={ false !== attributes.showMeta }
-						onChange={ ( val ) => setAttributes( { showMeta: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { showMeta: val } )
+						}
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
@@ -205,7 +215,9 @@ export default function Edit( { attributes, setAttributes } ) {
 					<ToggleControl
 						label={ __( 'Total row', 'sgs-blocks' ) }
 						checked={ false !== attributes.showTotal }
-						onChange={ ( val ) => setAttributes( { showTotal: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { showTotal: val } )
+						}
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
@@ -313,10 +325,15 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 					<SelectControl
 						label={ __( 'Row alignment', 'sgs-blocks' ) }
-						help={ __( 'Lines up each row’s picture, words and price.', 'sgs-blocks' ) }
+						help={ __(
+							'Lines up each row’s picture, words and price.',
+							'sgs-blocks'
+						) }
 						value={ attributes.rowAlign ?? '' }
 						options={ ROW_ALIGN }
-						onChange={ ( val ) => setAttributes( { rowAlign: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { rowAlign: val } )
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
@@ -335,7 +352,10 @@ export default function Edit( { attributes, setAttributes } ) {
 						onStyleChange={ ( val ) =>
 							setAttributes( { totalsBorderStyle: val ?? '' } )
 						}
-						colourLabel={ __( 'Totals border colour', 'sgs-blocks' ) }
+						colourLabel={ __(
+							'Totals border colour',
+							'sgs-blocks'
+						) }
 						colourLinked={ true }
 						colourValue={ attributes.totalsBorderColour }
 						onColourChange={ ( val ) =>
@@ -361,7 +381,10 @@ export default function Edit( { attributes, setAttributes } ) {
 						} ) => (
 							<SgsLengthControl
 								presets={ false }
-								label={ __( 'Space between items', 'sgs-blocks' ) }
+								label={ __(
+									'Space between items',
+									'sgs-blocks'
+								) }
 								hideLabelFromVision
 								value={ ownValue || '' }
 								placeholder={
@@ -385,7 +408,10 @@ export default function Edit( { attributes, setAttributes } ) {
 								<SgsBoxControl
 									label={ label }
 									hideLabelFromVision
-									defaults={ spacingDefaultsFor( 'sgs/order-items', attr ) }
+									defaults={ spacingDefaultsFor(
+										'sgs/order-items',
+										attr
+									) }
 									values={
 										ownValue && 'object' === typeof ownValue
 											? ownValue

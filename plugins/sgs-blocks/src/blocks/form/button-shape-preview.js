@@ -14,15 +14,21 @@ import { resolveShadowPreviewComposed } from '../../utils/tokens';
 /**
  * The inline style a button's shape settings add to its canvas preview button.
  *
- * @param {Object}  attributes             Block attributes.
- * @param {string}  prefix                 Button attribute prefix: 'submit', 'next' or 'prev'.
- * @param {Array}   palette                The live colour palette.
- * @param {string}  tier                   Previewed device tier.
+ * @param {Object}  attributes          Block attributes.
+ * @param {string}  prefix              Button attribute prefix: 'submit', 'next' or 'prev'.
+ * @param {Array}   palette             The live colour palette.
+ * @param {string}  tier                Previewed device tier.
  * @param {Object}  [options]
- * @param {boolean} [options.full=true]    Also read the text colour, padding and shadow (Submit has its own previews of those).
+ * @param {boolean} [options.full=true] Also read the text colour, padding and shadow (Submit has its own previews of those).
  * @return {Object} React style fragment; {} when nothing is set.
  */
-export function formButtonShapePreviewStyle( attributes, prefix, palette, tier, { full = true } = {} ) {
+export function formButtonShapePreviewStyle(
+	attributes,
+	prefix,
+	palette,
+	tier,
+	{ full = true } = {}
+) {
 	const style = sgsBorderPreview(
 		{
 			widthValues: attributes[ `${ prefix }BorderWidth` ],
@@ -36,13 +42,22 @@ export function formButtonShapePreviewStyle( attributes, prefix, palette, tier, 
 	if ( ! full ) {
 		return style;
 	}
-	const colour = resolveColourToken( attributes[ `${ prefix }ColourText` ], palette );
+	const colour = resolveColourToken(
+		attributes[ `${ prefix }ColourText` ],
+		palette
+	);
 	if ( colour ) {
 		style.color = colour;
 	}
 	const padding = attributes[ `${ prefix }Padding` ];
-	if ( padding && 'object' === typeof padding && Object.values( padding ).some( Boolean ) ) {
-		style.padding = [ 'top', 'right', 'bottom', 'left' ].map( ( side ) => padding[ side ] || '0' ).join( ' ' );
+	if (
+		padding &&
+		'object' === typeof padding &&
+		Object.values( padding ).some( Boolean )
+	) {
+		style.padding = [ 'top', 'right', 'bottom', 'left' ]
+			.map( ( side ) => padding[ side ] || '0' )
+			.join( ' ' );
 	}
 	const boxShadow = resolveShadowPreviewComposed(
 		attributes[ `${ prefix }Shadow` ],

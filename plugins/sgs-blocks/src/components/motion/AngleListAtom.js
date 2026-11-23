@@ -26,7 +26,9 @@ const MAX_ITEMS = 12;
 
 /** A starting list for a scalar: its angle and the opposite, or a small tilt either way. */
 const starterList = ( scalar ) =>
-	typeof scalar === 'number' && scalar !== 0 ? [ scalar, -scalar ] : [ -2, 2 ];
+	typeof scalar === 'number' && scalar !== 0
+		? [ scalar, -scalar ]
+		: [ -2, 2 ];
 
 /**
  * @param {Object}      props
@@ -75,7 +77,10 @@ export default function AngleListAtom( {
 						onChange={ () => {
 							onChange( starterList( value ) );
 							speak(
-								__( 'A different angle for each item', 'sgs-blocks' )
+								__(
+									'A different angle for each item',
+									'sgs-blocks'
+								)
 							);
 						} }
 					/>
@@ -112,7 +117,9 @@ export default function AngleListAtom( {
 						clamped
 				  )
 		);
-		commit( value.map( ( angle, i ) => ( i === index ? clamped : angle ) ) );
+		commit(
+			value.map( ( angle, i ) => ( i === index ? clamped : angle ) )
+		);
 	};
 	const move = ( event, index ) => {
 		const input = event.target;
@@ -160,7 +167,9 @@ export default function AngleListAtom( {
 				className="sgs-motion-atom__chips"
 				style={ { border: 0, margin: 0, padding: 0 } }
 			>
-				<legend>{ __( 'Tilt at rest, per item (Z)', 'sgs-blocks' ) }</legend>
+				<legend>
+					{ __( 'Tilt at rest, per item (Z)', 'sgs-blocks' ) }
+				</legend>
 				<ol
 					style={ {
 						listStyle: 'none',
@@ -208,7 +217,10 @@ export default function AngleListAtom( {
 								size="small"
 								label={ sprintf(
 									/* translators: %d: the item's position. */
-									__( 'Remove angle for item %d', 'sgs-blocks' ),
+									__(
+										'Remove angle for item %d',
+										'sgs-blocks'
+									),
 									index + 1
 								) }
 								disabled={ value.length <= MIN_ITEMS }

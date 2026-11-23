@@ -21,7 +21,10 @@ import { Composite } from '@wordpress/components';
 import { CircularOptionPickerContext } from './circular-option-picker-context';
 import { Option } from './circular-option-picker-option';
 import { OptionGroup } from './circular-option-picker-option-group';
-import { ButtonAction, DropdownLinkAction } from './circular-option-picker-actions';
+import {
+	ButtonAction,
+	DropdownLinkAction,
+} from './circular-option-picker-actions';
 
 // No stylesheet import — this fork keeps core's own `.components-circular-
 // option-picker*` class names, already styled by the globally-loaded

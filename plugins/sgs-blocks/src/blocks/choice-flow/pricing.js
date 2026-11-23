@@ -19,7 +19,11 @@
  * @package SGS\Blocks
  */
 
-import { renderSummaryPanel, formatMinor, bindSummaryToggle } from './summary.js';
+import {
+	renderSummaryPanel,
+	formatMinor,
+	bindSummaryToggle,
+} from './summary.js';
 
 /**
  * Per-flow state: priced answers keyed by group, and the seeded base.
@@ -67,14 +71,17 @@ let variationListenerBound = false;
  * @return {{productId: number, variationId: number, attributes: Object, priceMinor: number|null, decimals: number}}
  */
 function readSeededBase( flowRoot ) {
-	const productId = parseInt( flowRoot.getAttribute( 'data-flow-product-id' ), 10 ) || 0;
+	const productId =
+		parseInt( flowRoot.getAttribute( 'data-flow-product-id' ), 10 ) || 0;
 	const minorRaw = flowRoot.getAttribute( 'data-flow-price-minor' );
-	const decimals = parseInt( flowRoot.getAttribute( 'data-flow-decimals' ), 10 ) || 2;
+	const decimals =
+		parseInt( flowRoot.getAttribute( 'data-flow-decimals' ), 10 ) || 2;
 	return {
 		productId,
 		variationId: 0,
 		attributes: {},
-		priceMinor: minorRaw && minorRaw !== '' ? parseInt( minorRaw, 10 ) : null,
+		priceMinor:
+			minorRaw && minorRaw !== '' ? parseInt( minorRaw, 10 ) : null,
 		decimals,
 	};
 }
@@ -138,8 +145,12 @@ function handleVariationChange( event ) {
 	const live = {
 		productId: parseInt( detail.productId, 10 ) || 0,
 		variationId: parseInt( detail.variationId, 10 ) || 0,
-		attributes: detail.attributes && 'object' === typeof detail.attributes ? detail.attributes : {},
-		priceMinor: typeof detail.priceMinor === 'number' ? detail.priceMinor : null,
+		attributes:
+			detail.attributes && 'object' === typeof detail.attributes
+				? detail.attributes
+				: {},
+		priceMinor:
+			typeof detail.priceMinor === 'number' ? detail.priceMinor : null,
 		decimals: typeof detail.decimals === 'number' ? detail.decimals : 2,
 	};
 	storeLiveBase( live );
@@ -152,28 +163,38 @@ function handleVariationChange( event ) {
  * @param {Object} live Live base (productId, variationId, attributes, priceMinor, decimals, fromFlow?).
  */
 function storeLiveBase( live ) {
-	if ( ! live.productId || ( liveBases.get( live.productId )?.fromFlow && ! live.fromFlow ) ) {
+	if (
+		! live.productId ||
+		( liveBases.get( live.productId )?.fromFlow && ! live.fromFlow )
+	) {
 		return;
 	}
 	liveBases.set( live.productId, live );
 	lastLiveBase = live;
-	document.querySelectorAll( '[data-wp-interactive="sgs/choice-flow"]' ).forEach( refreshSummary );
+	document
+		.querySelectorAll( '[data-wp-interactive="sgs/choice-flow"]' )
+		.forEach( refreshSummary );
 }
 
 /**
  * Apply the variation a flow's own product-option steps resolved
  * (`variation.js`), taking precedence over the page buybox's event.
  *
- * @param {HTMLElement} flowRoot Flow wrapper element.
- * @param {{productId: number, variationId: number, attributes: Object, priceMinor: number|null}} overlay Resolved variation.
+ * @param {HTMLElement}                                                                           flowRoot Flow wrapper element.
+ * @param {{productId: number, variationId: number, attributes: Object, priceMinor: number|null}} overlay  Resolved variation.
  */
 export function setFlowVariationBase( flowRoot, overlay ) {
 	storeLiveBase( {
 		productId: parseInt( overlay.productId, 10 ) || 0,
 		variationId: parseInt( overlay.variationId, 10 ) || 0,
-		attributes: overlay.attributes && 'object' === typeof overlay.attributes ? overlay.attributes : {},
-		priceMinor: typeof overlay.priceMinor === 'number' ? overlay.priceMinor : null,
-		decimals: parseInt( flowRoot.getAttribute( 'data-flow-decimals' ), 10 ) || 2,
+		attributes:
+			overlay.attributes && 'object' === typeof overlay.attributes
+				? overlay.attributes
+				: {},
+		priceMinor:
+			typeof overlay.priceMinor === 'number' ? overlay.priceMinor : null,
+		decimals:
+			parseInt( flowRoot.getAttribute( 'data-flow-decimals' ), 10 ) || 2,
 		fromFlow: true,
 	} );
 }
@@ -191,7 +212,10 @@ export function initPricePanel( flowRoot ) {
 
 	if ( ! variationListenerBound ) {
 		variationListenerBound = true;
-		window.addEventListener( 'sgs-variation-change', handleVariationChange );
+		window.addEventListener(
+			'sgs-variation-change',
+			handleVariationChange
+		);
 	}
 
 	refreshSummary( flowRoot );
@@ -202,21 +226,29 @@ export function initPricePanel( flowRoot ) {
  * `handleOptionClick()` when the clicked option carries `data-price-group`.
  * A no-op when `group` is empty (the option isn't part of a priced step).
  *
- * @param {HTMLElement} flowRoot   Flow wrapper element.
- * @param {string}      group      The add-on group key.
- * @param {string}      groupLabel The group's own label (for the panel row).
- * @param {string}      key        The chosen option's key (matches a price-
- *                                  list option key — this IS the value the
- *                                  server resolves, per FR-43-18).
- * @param {string}      label      The chosen option's label.
- * @param {string}      price      The chosen option's decimal price string.
- * @param {Object}      [where]           Where the answer came from.
- * @param {number}      [where.stepIndex] Its step (the stage lists it once reached).
- * @param {string}      [where.effect]    Its stage photo effect, '' for none.
+ * @param {HTMLElement} flowRoot              Flow wrapper element.
+ * @param {string}      group                 The add-on group key.
+ * @param {string}      groupLabel            The group's own label (for the panel row).
+ * @param {string}      key                   The chosen option's key (matches a price-
+ *                                            list option key — this IS the value the
+ *                                            server resolves, per FR-43-18).
+ * @param {string}      label                 The chosen option's label.
+ * @param {string}      price                 The chosen option's decimal price string.
+ * @param {Object}      [where]               Where the answer came from.
+ * @param {number}      [where.stepIndex]     Its step (the stage lists it once reached).
+ * @param {string}      [where.effect]        Its stage photo effect, '' for none.
  * @param {boolean}     [where.startingPrice] A 'from' price: the stage shows it without a '+'.
  * @param {string}      [where.summaryText]   The stage's wording for this answer, '' for the label.
  */
-export function recordAddonAnswer( flowRoot, group, groupLabel, key, label, price, where = {} ) {
+export function recordAddonAnswer(
+	flowRoot,
+	group,
+	groupLabel,
+	key,
+	label,
+	price,
+	where = {}
+) {
 	if ( ! group ) {
 		return;
 	}
@@ -263,15 +295,23 @@ export function getAddonSummary( flowRoot ) {
 	const rows = [];
 	// Question order, as the stage lists them: a pre-selected default is
 	// recorded on load, before any click, so insertion order would put it first.
-	const ordered = [ ...state.answers ].sort( ( a, b ) => a[ 1 ].stepIndex - b[ 1 ].stepIndex );
+	const ordered = [ ...state.answers ].sort(
+		( a, b ) => a[ 1 ].stepIndex - b[ 1 ].stepIndex
+	);
 	ordered.forEach( ( [ group, answer ] ) => {
 		addons.push( { group, key: answer.key } );
 		const priceValue = parseFloat( answer.price );
 		rows.push( {
-			label: answer.groupLabel ? `${ answer.groupLabel } — ${ answer.label }` : answer.label,
+			label: answer.groupLabel
+				? `${ answer.groupLabel } — ${ answer.label }`
+				: answer.label,
 			priceLabel:
 				Number.isFinite( priceValue ) && priceValue > 0
-					? formatMinor( Math.round( priceValue * 10 ** base.decimals ), base.decimals, state.trimZeros )
+					? formatMinor(
+							Math.round( priceValue * 10 ** base.decimals ),
+							base.decimals,
+							state.trimZeros
+					  )
 					: 'included',
 		} );
 	} );

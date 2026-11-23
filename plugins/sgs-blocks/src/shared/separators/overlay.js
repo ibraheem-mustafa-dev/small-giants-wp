@@ -25,7 +25,9 @@ const LINE_CLASS = 'sgs-sep-line';
  * @return {boolean} True when native decorations are available.
  */
 export function supportsGapDecorations() {
-	return typeof CSS !== 'undefined' && CSS.supports( 'row-rule-style', 'solid' );
+	return (
+		typeof CSS !== 'undefined' && CSS.supports( 'row-rule-style', 'solid' )
+	);
 }
 
 /**
@@ -41,7 +43,9 @@ function axisDraws( overlay, axis ) {
 	probe.className = `${ LINE_CLASS } ${ LINE_CLASS }--${ axis }`;
 	overlay.appendChild( probe );
 	const cs = getComputedStyle( probe );
-	const width = parseFloat( 'column' === axis ? cs.borderLeftWidth : cs.borderTopWidth );
+	const width = parseFloat(
+		'column' === axis ? cs.borderLeftWidth : cs.borderTopWidth
+	);
 	probe.remove();
 	return width > 0;
 }
@@ -65,12 +69,21 @@ function itemBoxes( list, overlay, isItem ) {
 			continue;
 		}
 		const cs = getComputedStyle( el );
-		if ( 'none' === cs.display || 'absolute' === cs.position || 'fixed' === cs.position ) {
+		if (
+			'none' === cs.display ||
+			'absolute' === cs.position ||
+			'fixed' === cs.position
+		) {
 			continue;
 		}
 		const r = el.getBoundingClientRect();
 		if ( r.width > 0 && r.height > 0 ) {
-			boxes.push( { left: r.left - x0, top: r.top - y0, right: r.right - x0, bottom: r.bottom - y0 } );
+			boxes.push( {
+				left: r.left - x0,
+				top: r.top - y0,
+				right: r.right - x0,
+				bottom: r.bottom - y0,
+			} );
 		}
 	}
 	return boxes;
@@ -87,9 +100,13 @@ function buildLine( axis, seg ) {
 	const line = document.createElement( 'div' );
 	line.className = `${ LINE_CLASS } ${ LINE_CLASS }--${ axis }`;
 	if ( 'column' === axis ) {
-		line.style.cssText = `left:${ seg.at }px;top:${ seg.from }px;height:${ seg.to - seg.from }px;width:0;transform:translateX(-50%);`;
+		line.style.cssText = `left:${ seg.at }px;top:${ seg.from }px;height:${
+			seg.to - seg.from
+		}px;width:0;transform:translateX(-50%);`;
 	} else {
-		line.style.cssText = `top:${ seg.at }px;left:${ seg.from }px;width:${ seg.to - seg.from }px;height:0;transform:translateY(-50%);`;
+		line.style.cssText = `top:${ seg.at }px;left:${ seg.from }px;width:${
+			seg.to - seg.from
+		}px;height:0;transform:translateY(-50%);`;
 	}
 	return line;
 }
@@ -102,11 +119,19 @@ function buildLine( axis, seg ) {
  * @param {Function}    isItem  Whether a child counts as an item.
  */
 function paint( list, overlay, isItem ) {
-	const axes = { column: axisDraws( overlay, 'column' ), row: axisDraws( overlay, 'row' ) };
-	const segments = separatorSegments( axes.column || axes.row ? itemBoxes( list, overlay, isItem ) : [], axes );
+	const axes = {
+		column: axisDraws( overlay, 'column' ),
+		row: axisDraws( overlay, 'row' ),
+	};
+	const segments = separatorSegments(
+		axes.column || axes.row ? itemBoxes( list, overlay, isItem ) : [],
+		axes
+	);
 	const lines = [];
 	for ( const axis of [ 'column', 'row' ] ) {
-		segments[ axis ].forEach( ( seg ) => lines.push( buildLine( axis, seg ) ) );
+		segments[ axis ].forEach( ( seg ) =>
+			lines.push( buildLine( axis, seg ) )
+		);
 	}
 	overlay.replaceChildren( ...lines );
 }
@@ -114,7 +139,7 @@ function paint( list, overlay, isItem ) {
 /**
  * Start drawing a list's lines, where the browser does not do it natively.
  *
- * @param {HTMLElement} list    The list element (the grid / flex element).
+ * @param {HTMLElement} list             The list element (the grid / flex element).
  * @param {Object}      [options]
  * @param {Function}    [options.isItem] Whether a child counts as an item (the editor
  *                                       excludes its inserter and drop markers).
@@ -125,7 +150,10 @@ export function initSeparatorList( list, options = {} ) {
 	// Each adopting block bundles its own copy of this module, so "already started"
 	// lives on the element, not in module memory: a list is painted once however
 	// many bundles ask.
-	if ( supportsGapDecorations() || list.hasAttribute( 'data-sgs-sep-active' ) ) {
+	if (
+		supportsGapDecorations() ||
+		list.hasAttribute( 'data-sgs-sep-active' )
+	) {
 		return () => {};
 	}
 	list.setAttribute( 'data-sgs-sep-active', '' );
@@ -158,7 +186,13 @@ export function initSeparatorList( list, options = {} ) {
 		}
 	};
 	const mutations = new MutationObserver( ( records ) => {
-		if ( records.some( ( r ) => [ ...r.addedNodes, ...r.removedNodes ].some( ( n ) => n !== overlay ) ) ) {
+		if (
+			records.some( ( r ) =>
+				[ ...r.addedNodes, ...r.removedNodes ].some(
+					( n ) => n !== overlay
+				)
+			)
+		) {
 			watchItems();
 			schedule();
 		}

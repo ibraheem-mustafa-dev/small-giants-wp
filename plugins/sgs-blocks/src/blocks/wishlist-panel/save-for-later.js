@@ -33,7 +33,9 @@ function invalidateCartStore() {
 	const dataStore = window?.wp?.data;
 	if ( dataStore && 'function' === typeof dataStore.dispatch ) {
 		try {
-			dataStore.dispatch( 'wc/store/cart' )?.invalidateResolutionForStore?.();
+			dataStore
+				.dispatch( 'wc/store/cart' )
+				?.invalidateResolutionForStore?.();
 			return;
 		} catch {
 			// Fall through to the reload below.
@@ -95,7 +97,10 @@ async function enhanceRows() {
 		if ( ! nameLink || ! removeEl ) {
 			return;
 		}
-		const item = findCartItemForRow( nameLink.getAttribute( 'href' ), items );
+		const item = findCartItemForRow(
+			nameLink.getAttribute( 'href' ),
+			items
+		);
 		if ( ! item ) {
 			return; // No exact permalink match — no button (never a best guess).
 		}

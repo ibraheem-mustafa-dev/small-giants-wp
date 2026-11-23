@@ -13,13 +13,13 @@
 
 /**
  * @typedef {Object} SgsLottieInstance
- * @property {Function} play    Resume playback.
- * @property {Function} pause   Pause playback.
- * @property {Function} seek    (progress:number) => void — 0..1 of total frames.
- * @property {Function} destroy Tear down the player and detach it from the DOM.
+ * @property {Function} play        Resume playback.
+ * @property {Function} pause       Pause playback.
+ * @property {Function} seek        (progress:number) => void — 0..1 of total frames.
+ * @property {Function} destroy     Tear down the player and detach it from the DOM.
  * @property {Function} getDuration (inFrames?:boolean) => number.
- * @property {Function} setSpeed (speed:number) => void.
- * @property {Function} setLoop  (loop:boolean) => void.
+ * @property {Function} setSpeed    (speed:number) => void.
+ * @property {Function} setLoop     (loop:boolean) => void.
  */
 
 /**
@@ -32,13 +32,18 @@
  * load for a reduced-motion visitor.
  *
  * @param {Object}  options
- * @param {Element} options.container    Element the SVG is rendered into.
+ * @param {Element} options.container     Element the SVG is rendered into.
  * @param {Object}  options.animationData Parsed Lottie JSON.
- * @param {boolean} [options.loop]       Whether playback loops. Default false.
- * @param {number}  [options.speed]      Playback speed, 0.1–5 (the layer's range). Default 1.
+ * @param {boolean} [options.loop]        Whether playback loops. Default false.
+ * @param {number}  [options.speed]       Playback speed, 0.1–5 (the layer's range). Default 1.
  * @return {Promise<SgsLottieInstance>} The player instance.
  */
-export async function init( { container, animationData, loop = false, speed = 1 } ) {
+export async function init( {
+	container,
+	animationData,
+	loop = false,
+	speed = 1,
+} ) {
 	const { default: lottie } = await import(
 		/* webpackChunkName: "lottie-web" */ '@sgs/lottie-web'
 	);

@@ -25,20 +25,20 @@ export function addBlockLinkAttributes( settings ) {
 
 	const linkAttributes = isExtensionEnabled( settings, 'blockLink' )
 		? {
-			// Block link: injects an empty stretched-link overlay <a> as
-			// the block root's last child (server-side, includes/hover-
-			// effects/hover-effects.php). Never wraps the block, which would
-			// produce invalid nested <a> whenever the block has its own links.
-			sgsBlockLink:         { type: 'string',  default: '' },
-			sgsBlockLinkTarget:   { type: 'boolean', default: false },
-			// Accessible name for the overlay anchor: an empty anchor has no
-			// text content for screen readers.
-			sgsBlockLinkLabel:    { type: 'string',  default: '' },
-			// Where the link goes ('' = the typed sgsBlockLink): a page by ID,
-			// a Site Info link or back to top, resolved server-side by
-			// includes/helpers-link-source.php (shared link popover's source).
-			sgsBlockLinkSource:   { type: 'string',  default: '' },
-		}
+				// Block link: injects an empty stretched-link overlay <a> as
+				// the block root's last child (server-side, includes/hover-
+				// effects/hover-effects.php). Never wraps the block, which would
+				// produce invalid nested <a> whenever the block has its own links.
+				sgsBlockLink: { type: 'string', default: '' },
+				sgsBlockLinkTarget: { type: 'boolean', default: false },
+				// Accessible name for the overlay anchor: an empty anchor has no
+				// text content for screen readers.
+				sgsBlockLinkLabel: { type: 'string', default: '' },
+				// Where the link goes ('' = the typed sgsBlockLink): a page by ID,
+				// a Site Info link or back to top, resolved server-side by
+				// includes/helpers-link-source.php (shared link popover's source).
+				sgsBlockLinkSource: { type: 'string', default: '' },
+		  }
 		: {};
 
 	// Whole-block link for a block that resolves its OWN destination at
@@ -46,10 +46,13 @@ export function addBlockLinkAttributes( settings ) {
 	// the same overlay mechanism from its render.php via
 	// includes/helpers-stretched-link.php::sgs_stretched_link_handover, so the
 	// operator gets a toggle instead of a URL field (see BlockLinkPanel).
-	const linkAutoAttributes = isExtensionFlagged( settings, 'blockLinkAutoUrl' )
+	const linkAutoAttributes = isExtensionFlagged(
+		settings,
+		'blockLinkAutoUrl'
+	)
 		? {
-			sgsBlockLinkAuto:     { type: 'boolean', default: false },
-		}
+				sgsBlockLinkAuto: { type: 'boolean', default: false },
+		  }
 		: {};
 
 	return {

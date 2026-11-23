@@ -25,12 +25,43 @@ import {
 	BackgroundPanel,
 	MIN_HEIGHT_OPTIONS,
 } from '../container/components/ContainerWrapperControls';
-import { ResponsiveTriStateControl, ResponsiveBoxControl, ResponsiveOverride, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBorderControl, ShadowControl, resolveColourToken, SgsBoxControl, StarterLookPresetControl } from '../../components';
-import { NumberControl, ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import {
+	ResponsiveTriStateControl,
+	ResponsiveBoxControl,
+	ResponsiveOverride,
+	SgsColourPanel,
+	BOX_UNITS,
+	normaliseResponsiveBox,
+	SgsBorderControl,
+	ShadowControl,
+	resolveColourToken,
+	SgsBoxControl,
+	StarterLookPresetControl,
+} from '../../components';
+import {
+	NumberControl,
+	ToggleGroupControl,
+	ToggleGroupControlOption,
+	ToolsPanel,
+	ToolsPanelItem,
+} from '../../components/primitives';
 import { resolveTier } from '../../utils/responsive';
-import { backgroundPaintPreview, backgroundMediaPreview, spacingPreview, isTierBoxEmpty, svgBackgroundPreview, textPaintPreview, flattenPresetSetting, usePreviewTier } from '../../utils';
+import {
+	backgroundPaintPreview,
+	backgroundMediaPreview,
+	spacingPreview,
+	isTierBoxEmpty,
+	svgBackgroundPreview,
+	textPaintPreview,
+	flattenPresetSetting,
+	usePreviewTier,
+} from '../../utils';
 import { siteHeaderWrapperPreview, siteHeaderRowsCss } from './preview-style';
-import { calculateRelativeLuminance, calculateContrastRatio, meetsWCAG_AA } from '../../utils/wcag-contrast';
+import {
+	calculateRelativeLuminance,
+	calculateContrastRatio,
+	meetsWCAG_AA,
+} from '../../utils/wcag-contrast';
 // Floating ("pill") mode — controls, canvas preview and reset live in their own
 // file; this module only mounts them. See FloatControls.js.
 import FloatControls from './components/FloatControls';
@@ -39,7 +70,9 @@ import { floatPreview, floatResetAttributes } from './float-preview';
 // own file for the same reason FloatControls.js is (edit.js is already well
 // past the project's 250-line ceiling).
 import RowsAlignControl from './components/RowsAlignControl';
-import FluidScaleControls, { DEFAULT_FLUID_BREAKPOINT } from './components/FluidScaleControls';
+import FluidScaleControls, {
+	DEFAULT_FLUID_BREAKPOINT,
+} from './components/FluidScaleControls';
 // Section-adaptive ink (Wave 3C U-13) — its own panel, independent of the
 // "Header behaviour" ToolsPanel below (sectionInk is its own feature).
 import SectionInkPanel, { sectionInkColourRows } from './section-ink-panel';
@@ -90,7 +123,12 @@ function isOnAtAnyTier( raw ) {
 //   nav/icons right. This is the fresh-insert default.
 // Minimal — content band capped to 'normal', padding reduced to a slimmer
 //   bar height, middle row still edge-to-edge — a stripped-back header.
-const MINIMAL_PADDING = { top: '8px', right: '16px', bottom: '8px', left: '16px' };
+const MINIMAL_PADDING = {
+	top: '8px',
+	right: '16px',
+	bottom: '8px',
+	left: '16px',
+};
 
 // Middle-row justifyContent each preset writes (the alignment half of the
 // preset). '' would render flex-start; these are the three deliberate looks.
@@ -140,7 +178,11 @@ function getActiveLayoutPreset( attributes, rowJustify = '' ) {
 	// selected — a silent break with no error and a green build.
 	const noPadding = isTierBoxEmpty( padding );
 
-	if ( contentWidth === 'full' && noPadding && rowJustify === 'space-between' ) {
+	if (
+		contentWidth === 'full' &&
+		noPadding &&
+		rowJustify === 'space-between'
+	) {
 		return 'split';
 	}
 	if ( contentWidth === 'normal' ) {
@@ -163,10 +205,10 @@ function getActiveLayoutPreset( attributes, rowJustify = '' ) {
  * justifyContent (the alignment half — see PRESET_JUSTIFY). Never a new
  * stored shape.
  *
- * @param {string}   value                 'centred' | 'split' | 'minimal'
- * @param {Object}   attributes            Current block attributes.
- * @param {Function} setAttributes         Block editor setAttributes.
- * @param {string}   [middleRowClientId]   clientId of the rowSlot:'middle' row, if any.
+ * @param {string}   value                   'centred' | 'split' | 'minimal'
+ * @param {Object}   attributes              Current block attributes.
+ * @param {Function} setAttributes           Block editor setAttributes.
+ * @param {string}   [middleRowClientId]     clientId of the rowSlot:'middle' row, if any.
  * @param {Function} [updateBlockAttributes] core/block-editor updateBlockAttributes dispatch.
  */
 function applyLayoutPreset(
@@ -181,11 +223,20 @@ function applyLayoutPreset(
 	if ( value === 'split' ) {
 		// Split has no padding override — clear one if present so the
 		// preset detector reads back 'split' cleanly.
-		setAttributes( { contentWidth: { ...attributes.contentWidth, desktop: 'full' }, padding: {} } );
+		setAttributes( {
+			contentWidth: { ...attributes.contentWidth, desktop: 'full' },
+			padding: {},
+		} );
 	} else if ( value === 'centred' ) {
-		setAttributes( { contentWidth: { ...attributes.contentWidth, desktop: 'normal' }, padding: {} } );
+		setAttributes( {
+			contentWidth: { ...attributes.contentWidth, desktop: 'normal' },
+			padding: {},
+		} );
 	} else if ( value === 'minimal' ) {
-		setAttributes( { contentWidth: { ...attributes.contentWidth, desktop: 'normal' }, padding: { desktop: MINIMAL_PADDING } } );
+		setAttributes( {
+			contentWidth: { ...attributes.contentWidth, desktop: 'normal' },
+			padding: { desktop: MINIMAL_PADDING },
+		} );
 	} else {
 		return;
 	}
@@ -283,9 +334,7 @@ const TEMPLATE = [
 					layout: 'flex',
 					flexWrap: 'nowrap',
 				},
-				[
-					[ 'sgs/cart', {} ],
-				],
+				[ [ 'sgs/cart', {} ] ],
 			],
 		],
 	],
@@ -327,14 +376,27 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		attributes.surfaceOpacity < 1 &&
 		typeof backgroundPaint.backgroundColor === 'string'
 			? {
-					backgroundColor: `color-mix(in srgb, ${ backgroundPaint.backgroundColor } ${ Math.round( Math.max( 0, attributes.surfaceOpacity ) * 100 ) }%, transparent)`,
+					backgroundColor: `color-mix(in srgb, ${
+						backgroundPaint.backgroundColor
+					} ${ Math.round(
+						Math.max( 0, attributes.surfaceOpacity ) * 100
+					) }%, transparent)`,
 			  }
 			: {};
-	const textPreview = textPaintPreview( attributes.textColour, attributes.textColourGradient, colourPalette );
+	const textPreview = textPaintPreview(
+		attributes.textColour,
+		attributes.textColourGradient,
+		colourPalette
+	);
 
 	// The device tier the canvas previews (core/editor's device type).
 	const previewTier = usePreviewTier();
-	const bgPreview = backgroundMediaPreview( attributes, colourPalette, gradientPresets, previewTier );
+	const bgPreview = backgroundMediaPreview(
+		attributes,
+		colourPalette,
+		gradientPresets,
+		previewTier
+	);
 
 	// Decorative SVG background layer — editor mirror. Deliberately
 	// NOT folded into backgroundPreview()'s return: that helper paints via
@@ -354,13 +416,15 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		bgSvgTextShadow: attributes.bgSvgTextShadow,
 	} );
 
-
 	// Padding/margin canvas preview. `padding`/`margin` are each ONE
 	// tier-of-boxes object attr { desktop, tablet, mobile }, read directly.
-	const spacePreview = spacingPreview( {
-		padding: attributes.padding,
-		margin: attributes.margin,
-	}, previewTier );
+	const spacePreview = spacingPreview(
+		{
+			padding: attributes.padding,
+			margin: attributes.margin,
+		},
+		previewTier
+	);
 
 	// `alignfull` is canvas-only (the block saves nothing and render.php prints its own
 	// classes): without it the editor's root layout caps the header at the content width
@@ -368,13 +432,41 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	// pads it by the root padding, so the rows lay out narrower than the front end's
 	// full-width `.sgs-site-header` (style.css, max-width 100%).
 	const blockProps = useBlockProps( {
-		className: [ 'sgs-site-header', 'alignfull', `sgs-site-header-ed-${ clientId }`, bgPreview.className, ...svgPreview.className ]
+		className: [
+			'sgs-site-header',
+			'alignfull',
+			`sgs-site-header-ed-${ clientId }`,
+			bgPreview.className,
+			...svgPreview.className,
+		]
 			.filter( Boolean )
 			.join( ' ' ),
 		// The pill preview is spread LAST so its width/margin-inline win over the
 		// spacing preview's margin for a floating header — which is what the
 		// frontend does too (the float rules are emitted after the wrapper's).
-		style: { ...siteHeaderWrapperPreview( attributes, previewTier, colourPalette ), ...backgroundPaint, ...surfaceOpacityPreview, ...bgPreview.style, ...svgPreview.style, ...spacePreview, ...textPreview, ...floatPreview( { headerFloat: attributes.headerFloat, headerFloatInset: attributes.headerFloatInset, headerFloatCollapse: attributes.headerFloatCollapse, surfaceBlur: attributes.surfaceBlur, surfaceSaturate: attributes.surfaceSaturate }, previewTier ) },
+		style: {
+			...siteHeaderWrapperPreview(
+				attributes,
+				previewTier,
+				colourPalette
+			),
+			...backgroundPaint,
+			...surfaceOpacityPreview,
+			...bgPreview.style,
+			...svgPreview.style,
+			...spacePreview,
+			...textPreview,
+			...floatPreview(
+				{
+					headerFloat: attributes.headerFloat,
+					headerFloatInset: attributes.headerFloatInset,
+					headerFloatCollapse: attributes.headerFloatCollapse,
+					surfaceBlur: attributes.surfaceBlur,
+					surfaceSaturate: attributes.surfaceSaturate,
+				},
+				previewTier
+			),
+		},
 	} );
 	const refEl = useRef( null );
 
@@ -543,7 +635,8 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		}
 
 		const bgLuminance = calculateRelativeLuminance(
-			resolveColourToken( backgroundColour, colourPalette ) || backgroundColour,
+			resolveColourToken( backgroundColour, colourPalette ) ||
+				backgroundColour,
 			refEl.current
 		);
 		const textLuminance = calculateRelativeLuminance(
@@ -556,7 +649,10 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		// Check both normal text (4.5:1) and large text (3:1) — use the stricter threshold
 		if ( ! meetsWCAG_AA( ratio, false ) ) {
 			setContrastNotice(
-				__( 'This text colour may be hard to read on this background. Consider adjusting the colour for better readability.', 'sgs-blocks' )
+				__(
+					'This text colour may be hard to read on this background. Consider adjusting the colour for better readability.',
+					'sgs-blocks'
+				)
 			);
 		} else {
 			setContrastNotice( null );
@@ -590,7 +686,9 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 								label: __( 'At rest', 'sgs-blocks' ),
 								value: backgroundColour,
 								onChange: ( val ) =>
-									setAttributes( { backgroundColour: val ?? '' } ),
+									setAttributes( {
+										backgroundColour: val ?? '',
+									} ),
 								gradientValue: backgroundColourGradient,
 								onGradientChange: ( val ) =>
 									setAttributes( {
@@ -615,7 +713,8 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 								gradientValue: backgroundColourScrolledGradient,
 								onGradientChange: ( val ) =>
 									setAttributes( {
-										backgroundColourScrolledGradient: val ?? '',
+										backgroundColourScrolledGradient:
+											val ?? '',
 									} ),
 							},
 						],
@@ -637,7 +736,9 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 								label: __( 'Once scrolled', 'sgs-blocks' ),
 								value: textColourScrolled,
 								onChange: ( val ) =>
-									setAttributes( { textColourScrolled: val ?? '' } ),
+									setAttributes( {
+										textColourScrolled: val ?? '',
+									} ),
 							},
 						],
 					},
@@ -650,7 +751,11 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 			     in the same place whichever block is selected. Appearance sits
 			     with colour, in Styles. */ }
 			<InspectorControls group="styles">
-				<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } name={ name } />
+				<BackgroundPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					name={ name }
+				/>
 
 				{ /* SHADOW — the shared ShadowControl (X/Y/blur/spread/
 				     colour+alpha/inset) every other SGS_Container_Wrapper block
@@ -660,7 +765,10 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 				     sgs_shadow_value_composed(); a bare preset slug (from an
 				     existing stored value) still resolves correctly through the
 				     same helper. */ }
-				<PanelBody title={ __( 'Shadow', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Shadow', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<ShadowControl
 						label={ __( 'Shadow', 'sgs-blocks' ) }
 						attributes={ attributes }
@@ -689,7 +797,10 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						} }
 					/>
 					<p className="components-base-control__help">
-						{ __( 'Applied once the visitor has scrolled down the page, and eased in. Leave on None for no change. Most useful with a sticky header.', 'sgs-blocks' ) }
+						{ __(
+							'Applied once the visitor has scrolled down the page, and eased in. Leave on None for no change. Most useful with a sticky header.',
+							'sgs-blocks'
+						) }
 					</p>
 					{ /* The scrolled rule is a more specific selector than both the
 					     resting rule and its hover, so while the page is scrolled it
@@ -697,31 +808,50 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					     around in CSS — the precedence is the intended behaviour, it
 					     just is not guessable from the control. */ }
 					<p className="components-base-control__help">
-						{ __( 'While the page is scrolled, this shadow replaces the resting shadow and its hover shadow.', 'sgs-blocks' ) }
+						{ __(
+							'While the page is scrolled, this shadow replaces the resting shadow and its hover shadow.',
+							'sgs-blocks'
+						) }
 					</p>
 				</PanelBody>
-				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Border', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SgsBorderControl
 						widthValues={ attributes.borderWidth ?? {} }
-						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						onWidthChange={ ( next ) =>
+							setAttributes( { borderWidth: next } )
+						}
 						widthPresets={ [ '10', '20', '30' ] }
 						styleValue={ attributes.borderStyle }
-						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						onStyleChange={ ( val ) =>
+							setAttributes( { borderStyle: val } )
+						}
 						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
 						colourValue={ attributes.borderColour }
-						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						onColourChange={ ( val ) =>
+							setAttributes( { borderColour: val ?? '' } )
+						}
 						colourGradientValue={ attributes.borderColourGradient }
-						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+						onColourGradientChange={ ( val ) =>
+							setAttributes( { borderColourGradient: val ?? '' } )
+						}
 						colourLinked={ true }
 						contrastAgainst={ headerContrastAgainst }
 						radiusValues={ {
-								base: attributes.borderRadius?.desktop ?? {},
-								tablet: attributes.borderRadius?.tablet ?? {},
-								mobile: attributes.borderRadius?.mobile ?? {},
-							} }
+							base: attributes.borderRadius?.desktop ?? {},
+							tablet: attributes.borderRadius?.tablet ?? {},
+							mobile: attributes.borderRadius?.mobile ?? {},
+						} }
 						onRadiusChange={ ( tier, next ) => {
 							const key = tier === 'base' ? 'desktop' : tier;
-							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+							setAttributes( {
+								borderRadius: {
+									...attributes.borderRadius,
+									[ key ]: next,
+								},
+							} );
 						} }
 					/>
 				</PanelBody>
@@ -751,17 +881,26 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					<hr style={ { margin: '16px 0' } } />
 					<ResponsiveOverride
 						value={ attributes.minHeight }
-						onChange={ ( obj ) => setAttributes( { minHeight: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { minHeight: obj } )
+						}
 					>
 						{ ( { tier, ownValue, setOwnValue } ) => (
 							<SelectControl
 								label={ __( 'Min height', 'sgs-blocks' ) }
 								value={ ownValue || '' }
 								options={ MIN_HEIGHT_OPTIONS }
-								onChange={ ( val ) => setOwnValue( val || undefined ) }
-								help={ tier === 'desktop'
-									? __( 'Desktop / base. Tablet and mobile override it at narrower widths.', 'sgs-blocks' )
-									: undefined }
+								onChange={ ( val ) =>
+									setOwnValue( val || undefined )
+								}
+								help={
+									tier === 'desktop'
+										? __(
+												'Desktop / base. Tablet and mobile override it at narrower widths.',
+												'sgs-blocks'
+										  )
+										: undefined
+								}
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							/>
@@ -811,35 +950,54 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					>
 						<ResponsiveOverride
 							value={ attributes.padding }
-							onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+							onChange={ ( obj ) =>
+								setAttributes( { padding: obj } )
+							}
 						>
 							{ ( { ownValue, setOwnValue } ) => (
 								<SgsBoxControl
 									label={ __( 'Padding', 'sgs-blocks' ) }
-									values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+									values={
+										ownValue && typeof ownValue === 'object'
+											? ownValue
+											: {}
+									}
 									units={ BOX_UNITS }
-								presets
-									onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+									presets
+									onChange={ ( next ) =>
+										setOwnValue(
+											normaliseResponsiveBox( next )
+										)
+									}
 								/>
 							) }
 						</ResponsiveOverride>
 						<hr style={ { margin: '16px 0' } } />
 						<ResponsiveOverride
 							value={ attributes.margin }
-							onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+							onChange={ ( obj ) =>
+								setAttributes( { margin: obj } )
+							}
 						>
 							{ ( { ownValue, setOwnValue } ) => (
 								<SgsBoxControl
 									label={ __( 'Margin', 'sgs-blocks' ) }
-									values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+									values={
+										ownValue && typeof ownValue === 'object'
+											? ownValue
+											: {}
+									}
 									units={ BOX_UNITS }
 									presets
-									onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+									onChange={ ( next ) =>
+										setOwnValue(
+											normaliseResponsiveBox( next )
+										)
+									}
 								/>
 							) }
 						</ResponsiveOverride>
 					</ToolsPanelItem>
-
 
 					{ /* zIndex is a TIER OBJECT written by includes/sgs-header-z-index.php
 					     (the header's single z-index writer). Empty = inherit the wider
@@ -853,25 +1011,44 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					>
 						<ResponsiveOverride
 							value={ attributes.zIndex }
-							onChange={ ( obj ) => setAttributes( { zIndex: obj } ) }
+							onChange={ ( obj ) =>
+								setAttributes( { zIndex: obj } )
+							}
 						>
 							{ ( { tier, ownValue, setOwnValue } ) => (
 								<NumberControl
-									label={ __( 'Stacking order (z-index)', 'sgs-blocks' ) }
+									label={ __(
+										'Stacking order (z-index)',
+										'sgs-blocks'
+									) }
 									value={ ownValue ?? '' }
 									min={ 0 }
 									max={ 99998 }
 									placeholder="100"
 									onChange={ ( val ) =>
 										setOwnValue(
-											val === '' || val === undefined || val === null
+											val === '' ||
+												val === undefined ||
+												val === null
 												? undefined
-												: Math.max( 0, Math.min( 99998, parseInt( val, 10 ) || 0 ) )
+												: Math.max(
+														0,
+														Math.min(
+															99998,
+															parseInt(
+																val,
+																10
+															) || 0
+														)
+												  )
 										)
 									}
 									help={
 										tier === 'desktop'
-											? __( 'Where the header sits above page content. Leave empty for the default (100). Use 4 or more so the menu panel stays below the header. Tablet and mobile inherit desktop until set.', 'sgs-blocks' )
+											? __(
+													'Where the header sits above page content. Leave empty for the default (100). Use 4 or more so the menu panel stays below the header. Tablet and mobile inherit desktop until set.',
+													'sgs-blocks'
+											  )
 											: undefined
 									}
 									__next40pxDefaultSize
@@ -888,7 +1065,6 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 					/>
-
 				</ToolsPanel>
 			</InspectorControls>
 
@@ -903,7 +1079,10 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							headerHideOnScroll: {},
 							headerPassThrough: {},
 							contrastSafe: {},
-							fluidScale: { enabled: false, breakpoint: DEFAULT_FLUID_BREAKPOINT },
+							fluidScale: {
+								enabled: false,
+								breakpoint: DEFAULT_FLUID_BREAKPOINT,
+							},
 							...floatResetAttributes(),
 						} )
 					}
@@ -1023,14 +1202,19 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 									variant="secondary"
 									size="small"
 									onClick={ () => {
-										const next = { ...( contrastSafe || {} ) };
+										const next = {
+											...( contrastSafe || {} ),
+										};
 										unprotectedTiers.forEach( ( t ) => {
 											next[ t ] = 'scrim';
 										} );
 										setAttributes( { contrastSafe: next } );
 									} }
 								>
-									{ __( 'Apply contrast scrim', 'sgs-blocks' ) }
+									{ __(
+										'Apply contrast scrim',
+										'sgs-blocks'
+									) }
 								</Button>
 							</Notice>
 						) }
@@ -1049,7 +1233,8 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							label={ __( 'Which way round', 'sgs-blocks' ) }
 							hasValue={ () =>
 								!! headerTransparentDirection &&
-								'transparent-first' !== headerTransparentDirection
+								'transparent-first' !==
+									headerTransparentDirection
 							}
 							onDeselect={ () =>
 								setAttributes( {
@@ -1220,7 +1405,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 															value: '',
 														},
 														...CONTRAST_SAFE_OPTIONS,
-													]
+												  ]
 										}
 										onChange={ ( value ) =>
 											setOwnValue( value || undefined )
@@ -1284,8 +1469,10 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					<ToolsPanelItem
 						label={ __( 'Layout preset', 'sgs-blocks' ) }
 						hasValue={ () =>
-							getActiveLayoutPreset( attributes, middleRowJustify ) !==
-							'split'
+							getActiveLayoutPreset(
+								attributes,
+								middleRowJustify
+							) !== 'split'
 						}
 						onDeselect={ () =>
 							applyLayoutPreset(
@@ -1340,9 +1527,18 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 
 			{ /* Editor canvas renders as <header> to match the frontend banner
 			     landmark (FR-37-13). */ }
-			<style>{ siteHeaderRowsCss( attributes, previewTier, `sgs-site-header-ed-${ clientId }` ) }</style>
+			<style>
+				{ siteHeaderRowsCss(
+					attributes,
+					previewTier,
+					`sgs-site-header-ed-${ clientId }`
+				) }
+			</style>
 			<header ref={ refEl } { ...innerBlocksProps }>
-				<BackgroundLayers media={ bgPreview.media } overlay={ bgPreview.overlay } />
+				<BackgroundLayers
+					media={ bgPreview.media }
+					overlay={ bgPreview.overlay }
+				/>
 				{ svgLayer }
 				{ innerBlocksProps.children }
 			</header>

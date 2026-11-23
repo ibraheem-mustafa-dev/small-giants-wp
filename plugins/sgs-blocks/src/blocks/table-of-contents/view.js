@@ -34,7 +34,7 @@ function ensureHeadingIds( toc ) {
 		}
 
 		// Check if heading already exists with this ID
-		let heading = document.getElementById( targetId );
+		const heading = document.getElementById( targetId );
 		if ( heading ) {
 			return; // Already has correct ID
 		}
@@ -73,10 +73,7 @@ function initTableOfContents() {
 		// Ensure headings have IDs before initializing interactions
 		ensureHeadingIds( toc );
 		const smoothScroll = toc.dataset.smoothScroll === 'true';
-		const scrollOffset = parseInt(
-			toc.dataset.scrollOffset || '0',
-			10
-		);
+		const scrollOffset = parseInt( toc.dataset.scrollOffset || '0', 10 );
 		const enableScrollSpy = toc.dataset.scrollSpy === 'true';
 
 		const links = toc.querySelectorAll( '.sgs-toc__link' );
@@ -85,14 +82,11 @@ function initTableOfContents() {
 		if ( smoothScroll && ! prefersReduced ) {
 			links.forEach( ( link ) => {
 				link.addEventListener( 'click', ( e ) => {
-					const targetId = link
-						.getAttribute( 'href' )
-						?.slice( 1 );
+					const targetId = link.getAttribute( 'href' )?.slice( 1 );
 					if ( ! targetId ) {
 						return;
 					}
-					const target =
-						document.getElementById( targetId );
+					const target = document.getElementById( targetId );
 					if ( ! target ) {
 						return;
 					}
@@ -111,11 +105,7 @@ function initTableOfContents() {
 
 					// Update hash after scroll completes.
 					setTimeout( () => {
-						history.replaceState(
-							null,
-							'',
-							'#' + targetId
-						);
+						history.replaceState( null, '', '#' + targetId );
 					}, 500 );
 				} );
 			} );
@@ -124,9 +114,7 @@ function initTableOfContents() {
 		// ─── Scroll spy ───
 		if ( enableScrollSpy && links.length > 0 ) {
 			const headingIds = Array.from( links )
-				.map( ( link ) =>
-					link.getAttribute( 'href' )?.slice( 1 )
-				)
+				.map( ( link ) => link.getAttribute( 'href' )?.slice( 1 ) )
 				.filter( Boolean );
 
 			const headingElements = headingIds
@@ -139,18 +127,13 @@ function initTableOfContents() {
 
 			const setActive = ( activeId ) => {
 				links.forEach( ( link ) => {
-					const linkId = link
-						.getAttribute( 'href' )
-						?.slice( 1 );
+					const linkId = link.getAttribute( 'href' )?.slice( 1 );
 					const isActive = linkId === activeId;
 
 					// Active colour is CSS-driven (scoped `.sgs-toc__link--active`
 					// rule emitted in render.php) — no runtime inline style
 					// (no-inline contract §A). Toggling the class is enough.
-					link.classList.toggle(
-						'sgs-toc__link--active',
-						isActive
-					);
+					link.classList.toggle( 'sgs-toc__link--active', isActive );
 				} );
 			};
 

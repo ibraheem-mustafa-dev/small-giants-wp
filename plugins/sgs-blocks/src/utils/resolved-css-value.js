@@ -29,7 +29,11 @@ export function resolvedCssValue( value ) {
 	if ( ! CSS_FUNCTION_START.test( text ) ) {
 		return '';
 	}
-	if ( /[\\{}<>;=]/.test( text ) || text.includes( '/*' ) || /url\s*\(|expression\s*\(|@import/i.test( text ) ) {
+	if (
+		/[\\{}<>;=]/.test( text ) ||
+		text.includes( '/*' ) ||
+		/url\s*\(|expression\s*\(|@import/i.test( text )
+	) {
 		return '';
 	}
 	// An open quote would swallow the rest of the declaration, so single and double quotes must pair up.

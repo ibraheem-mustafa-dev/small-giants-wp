@@ -25,9 +25,7 @@
  * Loaded as a viewScriptModule (ES module, frontend only).
  */
 
-const floatingBtns = document.querySelectorAll(
-	'.sgs-whatsapp-cta--floating'
-);
+const floatingBtns = document.querySelectorAll( '.sgs-whatsapp-cta--floating' );
 
 if ( floatingBtns.length ) {
 	floatingBtns.forEach( ( btn ) => {

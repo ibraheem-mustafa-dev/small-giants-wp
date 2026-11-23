@@ -16,7 +16,10 @@ import {
 	ShadowControl,
 	shadowAttrKeys,
 } from '../../components';
-import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+import {
+	ToggleGroupControl,
+	ToggleGroupControlOption,
+} from '../../components/primitives';
 
 const DIALOG_WIDTH_UNITS = [
 	{ value: 'px', label: 'px' },
@@ -39,7 +42,13 @@ const DIALOG_WIDTH_UNITS = [
  * @return {JSX.Element} The panel body.
  */
 export function DialogSizeBorderControls( { attributes, setAttributes } ) {
-	const { dialogWidth, borderWidth, borderStyle, borderColour, borderColourGradient } = attributes;
+	const {
+		dialogWidth,
+		borderWidth,
+		borderStyle,
+		borderColour,
+		borderColourGradient,
+	} = attributes;
 
 	return (
 		<>
@@ -66,14 +75,22 @@ export function DialogSizeBorderControls( { attributes, setAttributes } ) {
 			</ResponsiveOverride>
 			<SgsBorderControl
 				widthValues={ borderWidth ?? {} }
-				onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+				onWidthChange={ ( next ) =>
+					setAttributes( { borderWidth: next } )
+				}
 				styleValue={ borderStyle }
-				onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+				onStyleChange={ ( val ) =>
+					setAttributes( { borderStyle: val } )
+				}
 				colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
 				colourValue={ borderColour }
-				onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+				onColourChange={ ( val ) =>
+					setAttributes( { borderColour: val ?? '' } )
+				}
 				colourGradientValue={ borderColourGradient }
-				onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+				onColourGradientChange={ ( val ) =>
+					setAttributes( { borderColourGradient: val ?? '' } )
+				}
 				colourLinked
 			/>
 		</>
@@ -117,13 +134,21 @@ export function CloseStyleControl( { attributes, setAttributes } ) {
 		<ToggleGroupControl
 			label={ __( 'Close button style', 'sgs-blocks' ) }
 			value={ attributes.closeStyle }
-			onChange={ ( val ) => setAttributes( { closeStyle: val || 'icon' } ) }
+			onChange={ ( val ) =>
+				setAttributes( { closeStyle: val || 'icon' } )
+			}
 			isBlock
 			__nextHasNoMarginBottom
 			__next40pxDefaultSize
 		>
-			<ToggleGroupControlOption value="icon" label={ __( 'Icon', 'sgs-blocks' ) } />
-			<ToggleGroupControlOption value="glyph" label={ __( 'Glyph (×)', 'sgs-blocks' ) } />
+			<ToggleGroupControlOption
+				value="icon"
+				label={ __( 'Icon', 'sgs-blocks' ) }
+			/>
+			<ToggleGroupControlOption
+				value="glyph"
+				label={ __( 'Glyph (×)', 'sgs-blocks' ) }
+			/>
 		</ToggleGroupControl>
 	);
 }

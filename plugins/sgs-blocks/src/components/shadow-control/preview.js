@@ -18,9 +18,13 @@ import { formatLength } from '../../utils/shadow-layers';
 export function makeResolveHex( palette, siteColor ) {
 	return ( token ) => {
 		if ( 'site' === token ) {
-			return /^#[0-9a-f]{6}$/i.test( siteColor || '' ) ? siteColor : '#000000';
+			return /^#[0-9a-f]{6}$/i.test( siteColor || '' )
+				? siteColor
+				: '#000000';
 		}
-		const found = ( palette || [] ).find( ( entry ) => entry.slug === token );
+		const found = ( palette || [] ).find(
+			( entry ) => entry.slug === token
+		);
 		return found ? found.color : token;
 	};
 }
@@ -40,9 +44,15 @@ export function previewCss( layers, resolveHex ) {
 	return drawn
 		.map( ( l ) => {
 			const hex = resolveHex( l.colour );
-			const alpha = Math.round( ( Math.min( 100, l.alpha ) / 100 ) * 255 ).toString( 16 ).padStart( 2, '0' );
+			const alpha = Math.round( ( Math.min( 100, l.alpha ) / 100 ) * 255 )
+				.toString( 16 )
+				.padStart( 2, '0' );
 			const colour = /^#[0-9a-f]{6}$/i.test( hex ) ? hex + alpha : hex;
-			return `${ l.inset ? 'inset ' : '' }${ formatLength( l.x ) } ${ formatLength( l.y ) } ${ formatLength( l.blur ) } ${ formatLength( l.spread ) } ${ colour }`;
+			return `${ l.inset ? 'inset ' : '' }${ formatLength(
+				l.x
+			) } ${ formatLength( l.y ) } ${ formatLength(
+				l.blur
+			) } ${ formatLength( l.spread ) } ${ colour }`;
 		} )
 		.join( ', ' );
 }
@@ -55,5 +65,8 @@ export function previewCss( layers, resolveHex ) {
  * @return {string} CSS value.
  */
 export function presetPreviewCss( literal, siteColor ) {
-	return String( literal || 'none' ).replace( /var\(--wp--custom--shadow-colour(?:\s*,[^)]*)?\)/g, siteColor || '#000000' );
+	return String( literal || 'none' ).replace(
+		/var\(--wp--custom--shadow-colour(?:\s*,[^)]*)?\)/g,
+		siteColor || '#000000'
+	);
 }

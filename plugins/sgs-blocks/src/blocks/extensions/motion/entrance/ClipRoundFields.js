@@ -40,7 +40,9 @@ export default function ClipRoundFields( { layer, tier, editor } ) {
 						label={ labels[ end ] }
 						value={ valueAtPath( layer, path ) }
 						fieldNode={ NODES[ end ] }
-						onChange={ ( next ) => editor.editMany( [ [ path, next ] ] ) }
+						onChange={ ( next ) =>
+							editor.editMany( [ [ path, next ] ] )
+						}
 					/>
 				);
 			} ) }

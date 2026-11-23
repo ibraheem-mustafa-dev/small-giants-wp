@@ -755,11 +755,23 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 								options={ [
 									{
 										value: '',
-										label: __( 'Default (full width)', 'sgs-blocks' ),
+										label: __(
+											'Default (full width)',
+											'sgs-blocks'
+										),
 									},
-									{ value: 'left', label: __( 'Left', 'sgs-blocks' ) },
-									{ value: 'centre', label: __( 'Centre', 'sgs-blocks' ) },
-									{ value: 'right', label: __( 'Right', 'sgs-blocks' ) },
+									{
+										value: 'left',
+										label: __( 'Left', 'sgs-blocks' ),
+									},
+									{
+										value: 'centre',
+										label: __( 'Centre', 'sgs-blocks' ),
+									},
+									{
+										value: 'right',
+										label: __( 'Right', 'sgs-blocks' ),
+									},
 								] }
 								onChange={ ( v ) => setOwnValue( v || '' ) }
 								help={ __(

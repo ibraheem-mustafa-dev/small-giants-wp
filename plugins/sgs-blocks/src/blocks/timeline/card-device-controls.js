@@ -1,7 +1,11 @@
 import { __ } from '@wordpress/i18n';
 import { SelectControl, ToggleControl } from '@wordpress/components';
 import { ToolsPanelItem } from '../../components/primitives';
-import { ResponsiveOverride, SgsLengthControl, ShadowControl } from '../../components';
+import {
+	ResponsiveOverride,
+	SgsLengthControl,
+	ShadowControl,
+} from '../../components';
 
 /** The card layouts offered per device. */
 const CARD_LAYOUT_OPTIONS = [
@@ -30,7 +34,8 @@ export const CARD_DEVICE_ATTRS = {
 	cardShadowMobileColour: '',
 };
 
-const hasKeys = ( value ) => !! value && 'object' === typeof value && Object.keys( value ).length > 0;
+const hasKeys = ( value ) =>
+	!! value && 'object' === typeof value && Object.keys( value ).length > 0;
 
 /**
  * A per-device length setting stored as a tier object of CSS lengths.
@@ -43,7 +48,13 @@ const hasKeys = ( value ) => !! value && 'object' === typeof value && Object.key
  * @param {Function} props.setAttributes Attribute writer.
  * @return {JSX.Element} The panel item.
  */
-export function TierLengthItem( { label, help, name, attributes, setAttributes } ) {
+export function TierLengthItem( {
+	label,
+	help,
+	name,
+	attributes,
+	setAttributes,
+} ) {
 	return (
 		<ToolsPanelItem
 			label={ label }
@@ -59,7 +70,12 @@ export function TierLengthItem( { label, help, name, attributes, setAttributes }
 					<SgsLengthControl
 						label={ label }
 						hideLabelFromVision
-						value={ 'string' === typeof ownValue || 'number' === typeof ownValue ? String( ownValue ) : '' }
+						value={
+							'string' === typeof ownValue ||
+							'number' === typeof ownValue
+								? String( ownValue )
+								: ''
+						}
 						onChange={ ( val ) => setOwnValue( val ) }
 						help={ help }
 					/>
@@ -95,10 +111,15 @@ export function CardLayoutItems( { attributes, setAttributes } ) {
 						<SelectControl
 							label={ __( 'Card layout', 'sgs-blocks' ) }
 							hideLabelFromVision
-							value={ 'string' === typeof ownValue ? ownValue : '' }
+							value={
+								'string' === typeof ownValue ? ownValue : ''
+							}
 							options={ CARD_LAYOUT_OPTIONS }
 							onChange={ ( val ) => setOwnValue( val ) }
-							help={ __( 'Used with the Text beside image content layout. Image on top puts the picture first, then the date and the text.', 'sgs-blocks' ) }
+							help={ __(
+								'Used with the Text beside image content layout. Image on top puts the picture first, then the date and the text.',
+								'sgs-blocks'
+							) }
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
@@ -107,15 +128,25 @@ export function CardLayoutItems( { attributes, setAttributes } ) {
 			</ToolsPanelItem>
 			{ 'horizontal' === attributes.orientation && (
 				<ToolsPanelItem
-					label={ __( 'Entries share the row equally', 'sgs-blocks' ) }
+					label={ __(
+						'Entries share the row equally',
+						'sgs-blocks'
+					) }
 					hasValue={ () => !! attributes.cardsShareRow }
-					onDeselect={ () => setAttributes( { cardsShareRow: false } ) }
+					onDeselect={ () =>
+						setAttributes( { cardsShareRow: false } )
+					}
 					isShownByDefault
 				>
 					<ToggleControl
-						label={ __( 'Entries share the row equally', 'sgs-blocks' ) }
+						label={ __(
+							'Entries share the row equally',
+							'sgs-blocks'
+						) }
 						checked={ !! attributes.cardsShareRow }
-						onChange={ ( val ) => setAttributes( { cardsShareRow: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { cardsShareRow: val } )
+						}
 						help={ __(
 							'768px and up: every entry takes an equal column of the row, so any number of entries fits without scrolling sideways. Off keeps the card width set under Layout. Not used while the scroll effect is pinned horizontal.',
 							'sgs-blocks'
@@ -138,10 +169,15 @@ export function CardLayoutItems( { attributes, setAttributes } ) {
 						<SelectControl
 							label={ __( 'Entry alignment', 'sgs-blocks' ) }
 							hideLabelFromVision
-							value={ 'string' === typeof ownValue ? ownValue : '' }
+							value={
+								'string' === typeof ownValue ? ownValue : ''
+							}
 							options={ CARD_ALIGN_OPTIONS }
 							onChange={ ( val ) => setOwnValue( val ) }
-							help={ __( 'Start left-aligns the date, title and description and puts the date at the start of the entry. Not used by the Text beside image layout.', 'sgs-blocks' ) }
+							help={ __(
+								'Start left-aligns the date, title and description and puts the date at the start of the entry. Not used by the Text beside image layout.',
+								'sgs-blocks'
+							) }
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
@@ -151,14 +187,20 @@ export function CardLayoutItems( { attributes, setAttributes } ) {
 			<TierLengthItem
 				name="cardGap"
 				label={ __( 'Space between cards', 'sgs-blocks' ) }
-				help={ __( 'The gap between neighbouring cards for each device. Empty keeps no gap on the pinned row and the theme spacing on swipeable cards.', 'sgs-blocks' ) }
+				help={ __(
+					'The gap between neighbouring cards for each device. Empty keeps no gap on the pinned row and the theme spacing on swipeable cards.',
+					'sgs-blocks'
+				) }
 				attributes={ attributes }
 				setAttributes={ setAttributes }
 			/>
 			<TierLengthItem
 				name="cardRowGap"
 				label={ __( 'Space between card rows', 'sgs-blocks' ) }
-				help={ __( 'The gap between rows of cards for each device. It shows where the cards stack, at 767px and below. Empty keeps no row gap.', 'sgs-blocks' ) }
+				help={ __(
+					'The gap between rows of cards for each device. It shows where the cards stack, at 767px and below. Empty keeps no row gap.',
+					'sgs-blocks'
+				) }
 				attributes={ attributes }
 				setAttributes={ setAttributes }
 			/>
@@ -180,25 +222,41 @@ export function CardDeviceShadowItems( { attributes, setAttributes } ) {
 			<ToolsPanelItem
 				label={ __( 'Card shadow on tablet', 'sgs-blocks' ) }
 				hasValue={ () => !! attributes.cardShadowTablet }
-				onDeselect={ () => setAttributes( { cardShadowTablet: '', cardShadowTabletColour: '' } ) }
+				onDeselect={ () =>
+					setAttributes( {
+						cardShadowTablet: '',
+						cardShadowTabletColour: '',
+					} )
+				}
 			>
 				<ShadowControl
 					label={ __( 'Card shadow on tablet', 'sgs-blocks' ) }
 					attributes={ attributes }
 					setAttributes={ setAttributes }
-					attrNames={ { base: 'cardShadowTablet', colour: 'cardShadowTabletColour' } }
+					attrNames={ {
+						base: 'cardShadowTablet',
+						colour: 'cardShadowTabletColour',
+					} }
 				/>
 			</ToolsPanelItem>
 			<ToolsPanelItem
 				label={ __( 'Card shadow on mobile', 'sgs-blocks' ) }
 				hasValue={ () => !! attributes.cardShadowMobile }
-				onDeselect={ () => setAttributes( { cardShadowMobile: '', cardShadowMobileColour: '' } ) }
+				onDeselect={ () =>
+					setAttributes( {
+						cardShadowMobile: '',
+						cardShadowMobileColour: '',
+					} )
+				}
 			>
 				<ShadowControl
 					label={ __( 'Card shadow on mobile', 'sgs-blocks' ) }
 					attributes={ attributes }
 					setAttributes={ setAttributes }
-					attrNames={ { base: 'cardShadowMobile', colour: 'cardShadowMobileColour' } }
+					attrNames={ {
+						base: 'cardShadowMobile',
+						colour: 'cardShadowMobileColour',
+					} }
 				/>
 			</ToolsPanelItem>
 		</>

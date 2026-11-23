@@ -63,14 +63,39 @@ export function applySlotPatch( prefix, item, patch ) {
  * @param {boolean}  props.focal    Whether to offer the focal point.
  * @param {string}   props.label    Label of the media field.
  */
-export default function ItemSlotFields( { item, prefix, slot, onChange, focal = false, label } ) {
+export default function ItemSlotFields( {
+	item,
+	prefix,
+	slot,
+	onChange,
+	focal = false,
+	label,
+} ) {
 	const slotAttrs = itemToSlotAttrs( prefix, item );
-	const setSlot = ( patch ) => onChange( applySlotPatch( prefix, item, patch ) );
+	const setSlot = ( patch ) =>
+		onChange( applySlotPatch( prefix, item, patch ) );
 	return (
 		<>
-			<MediaSlotField attributes={ slotAttrs } setAttributes={ setSlot } prefix={ prefix } slot={ slot } label={ label } />
-			<FitField attributes={ slotAttrs } setAttributes={ setSlot } prefix={ prefix } slot={ slot } />
-			{ focal && <FocalField attributes={ slotAttrs } setAttributes={ setSlot } prefix={ prefix } /> }
+			<MediaSlotField
+				attributes={ slotAttrs }
+				setAttributes={ setSlot }
+				prefix={ prefix }
+				slot={ slot }
+				label={ label }
+			/>
+			<FitField
+				attributes={ slotAttrs }
+				setAttributes={ setSlot }
+				prefix={ prefix }
+				slot={ slot }
+			/>
+			{ focal && (
+				<FocalField
+					attributes={ slotAttrs }
+					setAttributes={ setSlot }
+					prefix={ prefix }
+				/>
+			) }
 		</>
 	);
 }

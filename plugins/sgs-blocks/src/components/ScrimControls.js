@@ -28,7 +28,10 @@ import { ToolsPanelItem } from './primitives';
 const hasTierValue = ( obj ) =>
 	!! obj &&
 	[ 'desktop', 'tablet', 'mobile' ].some(
-		( tier ) => obj[ tier ] !== undefined && obj[ tier ] !== null && obj[ tier ] !== ''
+		( tier ) =>
+			obj[ tier ] !== undefined &&
+			obj[ tier ] !== null &&
+			obj[ tier ] !== ''
 	);
 
 /**
@@ -85,7 +88,9 @@ export default function ScrimControls( { attributes, setAttributes } ) {
 				hasValue={ () => hasTierValue( scrimOpacity ) }
 				onDeselect={ () => setAttributes( { scrimOpacity: {} } ) }
 			>
-				<ResponsiveControl label={ __( 'Backdrop strength', 'sgs-blocks' ) }>
+				<ResponsiveControl
+					label={ __( 'Backdrop strength', 'sgs-blocks' ) }
+				>
 					{ ( breakpoint ) => (
 						<RangeControl
 							label={ __( 'Backdrop strength', 'sgs-blocks' ) }
@@ -108,7 +113,9 @@ export default function ScrimControls( { attributes, setAttributes } ) {
 									scrimOpacity: withTier(
 										scrimOpacity,
 										breakpoint,
-										typeof value === 'number' ? value : undefined
+										typeof value === 'number'
+											? value
+											: undefined
 									),
 								} )
 							}
@@ -124,7 +131,9 @@ export default function ScrimControls( { attributes, setAttributes } ) {
 				hasValue={ () => hasTierValue( scrimBlur ) }
 				onDeselect={ () => setAttributes( { scrimBlur: {} } ) }
 			>
-				<ResponsiveControl label={ __( 'Backdrop blur', 'sgs-blocks' ) }>
+				<ResponsiveControl
+					label={ __( 'Backdrop blur', 'sgs-blocks' ) }
+				>
 					{ ( breakpoint ) => (
 						<SgsLengthControl
 							label={ __( 'Backdrop blur', 'sgs-blocks' ) }
@@ -136,7 +145,11 @@ export default function ScrimControls( { attributes, setAttributes } ) {
 							value={ scrimBlur?.[ breakpoint ] || '' }
 							onChange={ ( value ) =>
 								setAttributes( {
-									scrimBlur: withTier( scrimBlur, breakpoint, value || '' ),
+									scrimBlur: withTier(
+										scrimBlur,
+										breakpoint,
+										value || ''
+									),
 								} )
 							}
 							units={ [ { value: 'px', label: 'px' } ] }

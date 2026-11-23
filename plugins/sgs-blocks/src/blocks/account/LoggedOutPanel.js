@@ -6,7 +6,10 @@
  */
 import { __ } from '@wordpress/i18n';
 import { PanelBody, ToggleControl } from '@wordpress/components';
-import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+import {
+	ToggleGroupControl,
+	ToggleGroupControlOption,
+} from '../../components/primitives';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
 import { LinkPopoverField } from '../../components';
@@ -27,7 +30,10 @@ export default function LoggedOutPanel( { attributes, setAttributes } ) {
 	} = attributes;
 
 	return (
-		<PanelBody title={ __( 'Logged out', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Logged out', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			<ToggleGroupControl
 				__next40pxDefaultSize
 				__nextHasNoMarginBottom
@@ -36,33 +42,55 @@ export default function LoggedOutPanel( { attributes, setAttributes } ) {
 				value={ authLayout || 'side-by-side' }
 				onChange={ ( value ) => setAttributes( { authLayout: value } ) }
 			>
-				<ToggleGroupControlOption value="side-by-side" label={ __( 'Side by side', 'sgs-blocks' ) } />
-				<ToggleGroupControlOption value="stacked" label={ __( 'Stacked', 'sgs-blocks' ) } />
-				<ToggleGroupControlOption value="tabs" label={ __( 'Tabs', 'sgs-blocks' ) } />
+				<ToggleGroupControlOption
+					value="side-by-side"
+					label={ __( 'Side by side', 'sgs-blocks' ) }
+				/>
+				<ToggleGroupControlOption
+					value="stacked"
+					label={ __( 'Stacked', 'sgs-blocks' ) }
+				/>
+				<ToggleGroupControlOption
+					value="tabs"
+					label={ __( 'Tabs', 'sgs-blocks' ) }
+				/>
 			</ToggleGroupControl>
 			{ 'tabs' === authLayout && (
 				<>
 					<SgsFreeTextField
 						label={ __( 'Sign in tab label', 'sgs-blocks' ) }
 						value={ attributes.authTabSignInLabel }
-						onChange={ ( value ) => setAttributes( { authTabSignInLabel: value } ) }
+						onChange={ ( value ) =>
+							setAttributes( { authTabSignInLabel: value } )
+						}
 					/>
 					<SgsFreeTextField
 						label={ __( 'Create account tab label', 'sgs-blocks' ) }
-						help={ __( 'The tabs show only while WooCommerce registration is on.', 'sgs-blocks' ) }
+						help={ __(
+							'The tabs show only while WooCommerce registration is on.',
+							'sgs-blocks'
+						) }
 						value={ attributes.authTabRegisterLabel }
-						onChange={ ( value ) => setAttributes( { authTabRegisterLabel: value } ) }
+						onChange={ ( value ) =>
+							setAttributes( { authTabRegisterLabel: value } )
+						}
 					/>
 				</>
 			) }
 
 			<LinkPopoverField
-				label={ __( 'When the visitor is signed in, send them to', 'sgs-blocks' ) }
+				label={ __(
+					'When the visitor is signed in, send them to',
+					'sgs-blocks'
+				) }
 				help={ __(
 					'Leave empty to show the account view on this page. Set it on a sign-in page so a signed-in visitor lands on the account page, including straight after signing in or registering. Password-reset links and account pages are never redirected.',
 					'sgs-blocks'
 				) }
-				value={ { url: attributes.signedInRedirectUrl, linkSource: attributes.signedInRedirectUrlSource || '' } }
+				value={ {
+					url: attributes.signedInRedirectUrl,
+					linkSource: attributes.signedInRedirectUrlSource || '',
+				} }
 				linkSources={ LINK_SOURCES_PAGES }
 				onChange={ ( next ) => {
 					const patch = {};
@@ -70,7 +98,8 @@ export default function LoggedOutPanel( { attributes, setAttributes } ) {
 						patch.signedInRedirectUrl = next.url || undefined;
 					}
 					if ( undefined !== next.linkSource ) {
-						patch.signedInRedirectUrlSource = next.linkSource || undefined;
+						patch.signedInRedirectUrlSource =
+							next.linkSource || undefined;
 					}
 					setAttributes( patch );
 				} }
@@ -80,13 +109,18 @@ export default function LoggedOutPanel( { attributes, setAttributes } ) {
 				__nextHasNoMarginBottom
 				label={ __( 'Show "Track an order" card', 'sgs-blocks' ) }
 				checked={ !! showOrderTracking }
-				onChange={ ( value ) => setAttributes( { showOrderTracking: value } ) }
+				onChange={ ( value ) =>
+					setAttributes( { showOrderTracking: value } )
+				}
 			/>
 			{ !! showOrderTracking && (
-				<SgsFreeTextField type="rich"
+				<SgsFreeTextField
+					type="rich"
 					label={ __( 'Track an order heading', 'sgs-blocks' ) }
 					value={ orderTrackingHeading }
-					onChange={ ( value ) => setAttributes( { orderTrackingHeading: value } ) }
+					onChange={ ( value ) =>
+						setAttributes( { orderTrackingHeading: value } )
+					}
 				/>
 			) }
 
@@ -94,13 +128,18 @@ export default function LoggedOutPanel( { attributes, setAttributes } ) {
 				__nextHasNoMarginBottom
 				label={ __( 'Show the guest-checkout line', 'sgs-blocks' ) }
 				checked={ false !== showGuestLine }
-				onChange={ ( value ) => setAttributes( { showGuestLine: value } ) }
+				onChange={ ( value ) =>
+					setAttributes( { showGuestLine: value } )
+				}
 			/>
 			{ false !== showGuestLine && (
-				<SgsFreeTextField type="rich"
+				<SgsFreeTextField
+					type="rich"
 					label={ __( 'Guest-checkout line text', 'sgs-blocks' ) }
 					value={ guestLineText }
-					onChange={ ( value ) => setAttributes( { guestLineText: value } ) }
+					onChange={ ( value ) =>
+						setAttributes( { guestLineText: value } )
+					}
 				/>
 			) }
 		</PanelBody>

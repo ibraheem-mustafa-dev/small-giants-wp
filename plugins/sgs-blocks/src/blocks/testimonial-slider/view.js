@@ -81,7 +81,10 @@ function waapiEasing( value, el ) {
 	if ( ! token ) {
 		return value;
 	}
-	return getComputedStyle( el ).getPropertyValue( token[ 1 ] ).trim() || token[ 2 ];
+	return (
+		getComputedStyle( el ).getPropertyValue( token[ 1 ] ).trim() ||
+		token[ 2 ]
+	);
 }
 
 /**
@@ -108,7 +111,9 @@ function isEditorSurface() {
 		// `wp-admin` nor `#wpwrap`, so those two checks alone miss it. These are
 		// the canvas's own markers: the editor loads block view modules INTO
 		// that iframe, which is exactly where an unguarded motion boot would run.
-		!! document.querySelector( '.block-editor-iframe__body, .editor-styles-wrapper' ) ||
+		!! document.querySelector(
+			'.block-editor-iframe__body, .editor-styles-wrapper'
+		) ||
 		document.body?.classList.contains( 'block-editor-iframe__body' )
 	);
 }
@@ -143,9 +148,14 @@ sliders.forEach( ( slider ) => {
 	).matches;
 	// The fade-up change animation: the track jumps and the new cards fade in while moving in from the side.
 	const fadeUp = slider.dataset.change === 'fade-up';
-	const changeDistance = Number.parseFloat( slider.dataset.changeDistance || '26' ) || 0;
-	const changeDuration = Number.parseInt( slider.dataset.changeDuration || '520', 10 ) || 0;
-	const changeEasing = waapiEasing( slider.dataset.changeEasing || 'ease', slider );
+	const changeDistance =
+		Number.parseFloat( slider.dataset.changeDistance || '26' ) || 0;
+	const changeDuration =
+		Number.parseInt( slider.dataset.changeDuration || '520', 10 ) || 0;
+	const changeEasing = waapiEasing(
+		slider.dataset.changeEasing || 'ease',
+		slider
+	);
 
 	const total = originalSlides.length;
 	// Loop padding covers the largest visible count of any device, so it holds at every width.
@@ -197,7 +207,9 @@ sliders.forEach( ( slider ) => {
 		if ( clone.hasAttribute( 'tabindex' ) ) {
 			clone.setAttribute( 'tabindex', '-1' );
 		}
-		clone.querySelectorAll( '[id]' ).forEach( ( el ) => el.removeAttribute( 'id' ) );
+		clone
+			.querySelectorAll( '[id]' )
+			.forEach( ( el ) => el.removeAttribute( 'id' ) );
 		clone
 			.querySelectorAll( CLONE_FOCUSABLE )
 			.forEach( ( el ) => el.setAttribute( 'tabindex', '-1' ) );
@@ -333,18 +345,26 @@ sliders.forEach( ( slider ) => {
 			return;
 		}
 		const trackBox = track.getBoundingClientRect();
-		list.querySelectorAll( '.sgs-testimonial-slider__slide' ).forEach( ( card ) => {
-			const box = card.getBoundingClientRect();
-			if ( box.right - trackBox.left > 1 && trackBox.right - box.left > 1 ) {
-				card.animate(
-					[
-						{ opacity: 0, translate: `${ changeDistance }px 0` },
-						{ opacity: 1, translate: '0 0' },
-					],
-					{ duration: changeDuration, easing: changeEasing }
-				);
+		list.querySelectorAll( '.sgs-testimonial-slider__slide' ).forEach(
+			( card ) => {
+				const box = card.getBoundingClientRect();
+				if (
+					box.right - trackBox.left > 1 &&
+					trackBox.right - box.left > 1
+				) {
+					card.animate(
+						[
+							{
+								opacity: 0,
+								translate: `${ changeDistance }px 0`,
+							},
+							{ opacity: 1, translate: '0 0' },
+						],
+						{ duration: changeDuration, easing: changeEasing }
+					);
+				}
 			}
-		} );
+		);
 	}
 
 	/**

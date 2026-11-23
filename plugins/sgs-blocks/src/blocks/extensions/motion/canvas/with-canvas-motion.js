@@ -37,7 +37,11 @@ export const withCanvasMotion = createHigherOrderComponent(
 			return (
 				<>
 					<BlockListBlock { ...props } />
-					<CanvasMotion clientId={ props.clientId } name={ props.name } attributes={ props.attributes } />
+					<CanvasMotion
+						clientId={ props.clientId }
+						name={ props.name }
+						attributes={ props.attributes }
+					/>
 				</>
 			);
 		},

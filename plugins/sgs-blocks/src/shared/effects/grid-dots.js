@@ -111,7 +111,10 @@ function parseColour( value ) {
 	}
 	// One split handles both separator styles, which keeps this readable and
 	// avoids a regex complex enough to trip the lint ceiling.
-	const parts = inner[ 1 ].trim().split( /[\s,/]+/ ).filter( Boolean );
+	const parts = inner[ 1 ]
+		.trim()
+		.split( /[\s,/]+/ )
+		.filter( Boolean );
 	if ( parts.length < 3 ) {
 		return [ 255, 255, 255, 1 ];
 	}
@@ -280,7 +283,9 @@ export function createGridDots( el, opts = {} ) {
 		if ( 'production' !== process.env.NODE_ENV && ! dots.length ) {
 			// eslint-disable-next-line no-console
 			console.warn(
-				`sgs grid-dots: built 0 dots for a ${ Math.round( width ) }x${ Math.round(
+				`sgs grid-dots: built 0 dots for a ${ Math.round(
+					width
+				) }x${ Math.round(
 					height
 				) } box (cell=${ cellPx }). The field will paint nothing. Check that ` +
 					'every option resolved to a number — an undefined cell size ' +
@@ -440,9 +445,15 @@ export function createGridDots( el, opts = {} ) {
 			 * the resting colour" rather than "swap one constant for another".
 			 */
 			const t = cfg.fade ? prox : 0;
-			const r = Math.round( restRgba[ 0 ] + ( hotRgba[ 0 ] - restRgba[ 0 ] ) * t );
-			const g = Math.round( restRgba[ 1 ] + ( hotRgba[ 1 ] - restRgba[ 1 ] ) * t );
-			const b = Math.round( restRgba[ 2 ] + ( hotRgba[ 2 ] - restRgba[ 2 ] ) * t );
+			const r = Math.round(
+				restRgba[ 0 ] + ( hotRgba[ 0 ] - restRgba[ 0 ] ) * t
+			);
+			const g = Math.round(
+				restRgba[ 1 ] + ( hotRgba[ 1 ] - restRgba[ 1 ] ) * t
+			);
+			const b = Math.round(
+				restRgba[ 2 ] + ( hotRgba[ 2 ] - restRgba[ 2 ] ) * t
+			);
 			const a = restRgba[ 3 ] + ( hotRgba[ 3 ] - restRgba[ 3 ] ) * t;
 			ctx.fillStyle = `rgba(${ r },${ g },${ b },${ a })`;
 			paintMarker( shape, d, directional );

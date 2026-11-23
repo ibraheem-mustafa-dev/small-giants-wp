@@ -142,7 +142,9 @@ export function resolveColourHexAlpha( value, palette ) {
 	if ( hex8 ) {
 		return {
 			hex: '#' + hex8[ 1 ],
-			alpha: Math.round( ( parseInt( hex8[ 2 ], 16 ) / 255 ) * 10000 ) / 10000,
+			alpha:
+				Math.round( ( parseInt( hex8[ 2 ], 16 ) / 255 ) * 10000 ) /
+				10000,
 		};
 	}
 
@@ -157,7 +159,8 @@ export function resolveColourHexAlpha( value, palette ) {
 		let alpha = 1.0;
 		if ( rgbMatch[ 4 ] ) {
 			alpha = rgbMatch[ 4 ].endsWith( '%' )
-				? Math.max( 0, Math.min( 100, parseFloat( rgbMatch[ 4 ] ) ) ) / 100
+				? Math.max( 0, Math.min( 100, parseFloat( rgbMatch[ 4 ] ) ) ) /
+				  100
 				: Math.max( 0, Math.min( 1, parseFloat( rgbMatch[ 4 ] ) ) );
 		}
 		const toHex = ( n ) => n.toString( 16 ).padStart( 2, '0' );
@@ -167,7 +170,9 @@ export function resolveColourHexAlpha( value, palette ) {
 	// Palette var / bare slug — resolve then re-parse once (guarded against a
 	// slug resolving to itself, which would recurse forever).
 	let slug = '';
-	const varMatch = trimmed.match( /^var\(\s*--wp--preset--color--([a-z0-9-]+)\s*\)$/ );
+	const varMatch = trimmed.match(
+		/^var\(\s*--wp--preset--color--([a-z0-9-]+)\s*\)$/
+	);
 	if ( varMatch ) {
 		slug = varMatch[ 1 ];
 	} else if ( /^[a-z0-9-]+$/.test( trimmed ) ) {
@@ -198,12 +203,16 @@ export function resolveGradientValue( value, gradients ) {
 		return '';
 	}
 
-	if ( /^(?:repeating-)?(?:linear|radial|conic)-gradient\(/i.test( trimmed ) ) {
+	if (
+		/^(?:repeating-)?(?:linear|radial|conic)-gradient\(/i.test( trimmed )
+	) {
 		return trimmed;
 	}
 
 	let slug = '';
-	const varMatch = trimmed.match( /^var\(\s*--wp--preset--gradient--([a-z0-9-]+)\s*\)$/ );
+	const varMatch = trimmed.match(
+		/^var\(\s*--wp--preset--gradient--([a-z0-9-]+)\s*\)$/
+	);
 	if ( varMatch ) {
 		slug = varMatch[ 1 ];
 	} else if ( /^[a-z0-9-]+$/.test( trimmed ) ) {
@@ -228,9 +237,17 @@ export function resolveGradientValue( value, gradients ) {
  * @return {number} Relative luminance in [0.0, 1.0], or -1.0 on failure.
  */
 export function relativeLuminance( hex ) {
-	let value = String( hex ?? '' ).trim().replace( /^#/, '' );
+	let value = String( hex ?? '' )
+		.trim()
+		.replace( /^#/, '' );
 	if ( 3 === value.length ) {
-		value = value[ 0 ] + value[ 0 ] + value[ 1 ] + value[ 1 ] + value[ 2 ] + value[ 2 ];
+		value =
+			value[ 0 ] +
+			value[ 0 ] +
+			value[ 1 ] +
+			value[ 1 ] +
+			value[ 2 ] +
+			value[ 2 ];
 	}
 	if ( 6 !== value.length || ! /^[0-9a-fA-F]+$/.test( value ) ) {
 		return -1.0;
@@ -240,9 +257,14 @@ export function relativeLuminance( hex ) {
 	const g = parseInt( value.substr( 2, 2 ), 16 ) / 255.0;
 	const b = parseInt( value.substr( 4, 2 ), 16 ) / 255.0;
 
-	const linearise = ( c ) => ( c <= 0.03928 ? c / 12.92 : Math.pow( ( c + 0.055 ) / 1.055, 2.4 ) );
+	const linearise = ( c ) =>
+		c <= 0.03928 ? c / 12.92 : Math.pow( ( c + 0.055 ) / 1.055, 2.4 );
 
-	return 0.2126 * linearise( r ) + 0.7152 * linearise( g ) + 0.0722 * linearise( b );
+	return (
+		0.2126 * linearise( r ) +
+		0.7152 * linearise( g ) +
+		0.0722 * linearise( b )
+	);
 }
 
 /**
@@ -257,8 +279,10 @@ export function whiteWinsForLuminance( lBg ) {
 	const lBlack = 0.0;
 	const lWhite = 1.0;
 
-	const ratioWithBlack = ( Math.max( lBg, lBlack ) + 0.05 ) / ( Math.min( lBg, lBlack ) + 0.05 );
-	const ratioWithWhite = ( Math.max( lBg, lWhite ) + 0.05 ) / ( Math.min( lBg, lWhite ) + 0.05 );
+	const ratioWithBlack =
+		( Math.max( lBg, lBlack ) + 0.05 ) / ( Math.min( lBg, lBlack ) + 0.05 );
+	const ratioWithWhite =
+		( Math.max( lBg, lWhite ) + 0.05 ) / ( Math.min( lBg, lWhite ) + 0.05 );
 
 	const blackPasses = ratioWithBlack >= 4.5;
 	const whitePasses = ratioWithWhite >= 4.5;
@@ -289,7 +313,9 @@ export function gradientTone( value, palette, gradients ) {
 		return '';
 	}
 
-	const outer = gradient.match( /^(?:repeating-)?(?:linear|radial|conic)-gradient\(\s*([\s\S]*)\s*\)$/i );
+	const outer = gradient.match(
+		/^(?:repeating-)?(?:linear|radial|conic)-gradient\(\s*([\s\S]*)\s*\)$/i
+	);
 	if ( ! outer ) {
 		return '';
 	}
@@ -310,7 +336,10 @@ export function gradientTone( value, palette, gradients ) {
 		const stopMatch = segment.match( /^(.*)\s+(-?[0-9]*\.?[0-9]+)%$/ );
 		if ( stopMatch ) {
 			colourPart = stopMatch[ 1 ].trim();
-			pos = Math.max( 0.0, Math.min( 100.0, parseFloat( stopMatch[ 2 ] ) ) );
+			pos = Math.max(
+				0.0,
+				Math.min( 100.0, parseFloat( stopMatch[ 2 ] ) )
+			);
 		}
 
 		const parsed = resolveColourHexAlpha( colourPart, palette );
@@ -359,7 +388,8 @@ export function gradientTone( value, palette, gradients ) {
 		const end = stops[ j ].pos;
 		const span = j - ( i - 1 );
 		for ( let k = i; k < j; k++ ) {
-			stops[ k ].pos = start + ( ( end - start ) * ( k - ( i - 1 ) ) ) / span;
+			stops[ k ].pos =
+				start + ( ( end - start ) * ( k - ( i - 1 ) ) ) / span;
 		}
 		i = j;
 	}
@@ -368,9 +398,14 @@ export function gradientTone( value, palette, gradients ) {
 	const weights = [];
 	let totalW = 0.0;
 	for ( let idx = 0; idx < count; idx++ ) {
-		const left = 0 === idx ? Math.min( 0.0, stops[ 0 ].pos ) : ( stops[ idx - 1 ].pos + stops[ idx ].pos ) / 2;
+		const left =
+			0 === idx
+				? Math.min( 0.0, stops[ 0 ].pos )
+				: ( stops[ idx - 1 ].pos + stops[ idx ].pos ) / 2;
 		const right =
-			count - 1 === idx ? Math.max( 100.0, stops[ count - 1 ].pos ) : ( stops[ idx ].pos + stops[ idx + 1 ].pos ) / 2;
+			count - 1 === idx
+				? Math.max( 100.0, stops[ count - 1 ].pos )
+				: ( stops[ idx ].pos + stops[ idx + 1 ].pos ) / 2;
 		const w = Math.max( 0.0, right - left );
 		weights.push( w );
 		totalW += w;
@@ -398,13 +433,13 @@ export function gradientTone( value, palette, gradients ) {
  * full per-layer-shape rules (colour / gradient / image / accumulated-opacity
  * walk to 0.5).
  *
- * @param {Array} layers    Top-down painted layers: `{ colour, opacity }` /
- *                          `{ gradient, opacity }` / `{ image: true }`.
- * @param {Array} [palette] Active theme colour palette.
+ * @param {Array} layers      Top-down painted layers: `{ colour, opacity }` /
+ *                            `{ gradient, opacity }` / `{ image: true }`.
+ * @param {Array} [palette]   Active theme colour palette.
  * @param {Array} [gradients] Active theme gradient presets — a preset
- *                          gradient resolves against this list; default `[]`
- *                          means a preset-slug/`var()` gradient yields unknown
- *                          (a literal gradient function string still resolves).
+ *                            gradient resolves against this list; default `[]`
+ *                            means a preset-slug/`var()` gradient yields unknown
+ *                            (a literal gradient function string still resolves).
  * @return {string} 'dark', 'light', or ''.
  */
 export function surfaceTone( layers, palette = [], gradients = [] ) {
@@ -432,7 +467,10 @@ export function surfaceTone( layers, palette = [], gradients = [] ) {
 				return ''; // Unresolvable colour is the deciding factor.
 			}
 
-			accumulated += Math.max( 0.0, Math.min( 1.0, layerOpacity * parsed.alpha ) );
+			accumulated += Math.max(
+				0.0,
+				Math.min( 1.0, layerOpacity * parsed.alpha )
+			);
 			if ( accumulated >= 0.5 ) {
 				const luminance = relativeLuminance( parsed.hex );
 				if ( luminance < 0 ) {

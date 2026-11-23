@@ -59,9 +59,9 @@ function FieldAtom( {
 
 /**
  * @param {Object}   props
- * @param {Object}   props.field   A field from `hover-fields.js::fieldGroups`.
- * @param {Object}   props.layer   The state layer.
- * @param {Function} props.onLayer Receives the edited layer.
+ * @param {Object}   props.field      A field from `hover-fields.js::fieldGroups`.
+ * @param {Object}   props.layer      The state layer.
+ * @param {Function} props.onLayer    Receives the edited layer.
  * @param {boolean}  [props.repeated] Whether the target is a repeated item (a rest rotate list is offered only then).
  * @return {Element} The field.
  */

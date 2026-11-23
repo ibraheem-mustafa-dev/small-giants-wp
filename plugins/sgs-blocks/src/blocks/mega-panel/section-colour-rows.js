@@ -19,7 +19,11 @@ import { fillRow, textRow } from '../../components';
  * @param {string}   props.resolvedVariant The panel variant ('general' when unset).
  * @return {Array} Colour rows for SgsColourPanel.
  */
-export default function sectionColourRows( { attributes, setAttributes, resolvedVariant } ) {
+export default function sectionColourRows( {
+	attributes,
+	setAttributes,
+	resolvedVariant,
+} ) {
 	const { asideSeparator, brandsEyebrow } = attributes;
 	const sepStyle = asideSeparator?.style || 'line';
 
@@ -41,7 +45,10 @@ export default function sectionColourRows( { attributes, setAttributes, resolved
 				get: () => asideSeparator?.colour,
 				set: ( value ) =>
 					setAttributes( {
-						asideSeparator: { ...asideSeparator, colour: value || '' },
+						asideSeparator: {
+							...asideSeparator,
+							colour: value || '',
+						},
 					} ),
 			} ),
 		fillRow( {
@@ -55,28 +62,40 @@ export default function sectionColourRows( { attributes, setAttributes, resolved
 		textRow( {
 			key: 'drawerLinkNumColour',
 			label: __( 'Link number colour', 'sgs-blocks' ),
-			attrs: { base: 'drawerLinkNumColour', gradient: 'drawerLinkNumColourGradient' },
+			attrs: {
+				base: 'drawerLinkNumColour',
+				gradient: 'drawerLinkNumColourGradient',
+			},
 			attributes,
 			setAttributes,
 		} ),
 		textRow( {
 			key: 'drawerLinkLabelColour',
 			label: __( 'Link label colour', 'sgs-blocks' ),
-			attrs: { base: 'drawerLinkLabelColour', gradient: 'drawerLinkLabelColourGradient' },
+			attrs: {
+				base: 'drawerLinkLabelColour',
+				gradient: 'drawerLinkLabelColourGradient',
+			},
 			attributes,
 			setAttributes,
 		} ),
 		textRow( {
 			key: 'drawerLinkDescColour',
 			label: __( 'Link description colour', 'sgs-blocks' ),
-			attrs: { base: 'drawerLinkDescColour', gradient: 'drawerLinkDescColourGradient' },
+			attrs: {
+				base: 'drawerLinkDescColour',
+				gradient: 'drawerLinkDescColourGradient',
+			},
 			attributes,
 			setAttributes,
 		} ),
 		fillRow( {
 			key: 'drawerLinkDivider',
 			label: __( 'Link divider colour', 'sgs-blocks' ),
-			attrs: { base: 'drawerLinkDivider', gradient: 'drawerLinkDividerGradient' },
+			attrs: {
+				base: 'drawerLinkDivider',
+				gradient: 'drawerLinkDividerGradient',
+			},
 			attributes,
 			setAttributes,
 		} ),
@@ -123,14 +142,20 @@ export default function sectionColourRows( { attributes, setAttributes, resolved
 		fillRow( {
 			key: 'drawerCardBorderColour',
 			label: __( 'Card border colour', 'sgs-blocks' ),
-			attrs: { base: 'drawerCardBorderColour', gradient: 'drawerCardBorderColourGradient' },
+			attrs: {
+				base: 'drawerCardBorderColour',
+				gradient: 'drawerCardBorderColourGradient',
+			},
 			attributes,
 			setAttributes,
 		} ),
 		fillRow( {
 			key: 'drawerTileBorderColour',
 			label: __( 'Gallery tile border colour', 'sgs-blocks' ),
-			attrs: { base: 'drawerTileBorderColour', hover: 'drawerTileBorderColourHover' },
+			attrs: {
+				base: 'drawerTileBorderColour',
+				hover: 'drawerTileBorderColourHover',
+			},
 			attributes,
 			setAttributes,
 		} ),

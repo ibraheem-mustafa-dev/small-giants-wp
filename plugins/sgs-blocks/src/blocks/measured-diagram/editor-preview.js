@@ -8,7 +8,12 @@
  *
  * @package SGS\Blocks
  */
-import { colourVar, parseSvgGradient, resolveTier, typographyPreviewCss } from '../../utils';
+import {
+	colourVar,
+	parseSvgGradient,
+	resolveTier,
+	typographyPreviewCss,
+} from '../../utils';
 import { fmt } from '../../utils/diagram-geometry';
 
 /** A value that could break out of a declaration never reaches the canvas CSS. */
@@ -21,7 +26,12 @@ const BREAKOUT = /[{};<>]|\/\*/;
  * @return {string} CSS length or ''.
  */
 function length( raw ) {
-	if ( raw === null || raw === undefined || raw === '' || 'object' === typeof raw ) {
+	if (
+		raw === null ||
+		raw === undefined ||
+		raw === '' ||
+		'object' === typeof raw
+	) {
 		return '';
 	}
 	if ( Number.isFinite( Number( raw ) ) ) {
@@ -50,7 +60,11 @@ function colour( raw ) {
  * @return {string} Declarations without braces.
  */
 function textPaint( flat, gradient ) {
-	if ( gradient && /^(linear|radial)-gradient\(/i.test( gradient ) && ! BREAKOUT.test( gradient ) ) {
+	if (
+		gradient &&
+		/^(linear|radial)-gradient\(/i.test( gradient ) &&
+		! BREAKOUT.test( gradient )
+	) {
 		return `background-image:${ gradient };-webkit-background-clip:text;background-clip:text;color:transparent;`;
 	}
 	const value = colour( flat );
@@ -89,7 +103,10 @@ const MODE_VARS = {
  * @return {string} DOM id.
  */
 export function gradientId( clientId, role ) {
-	return `sgs-md-${ String( clientId ).replace( /[^a-zA-Z0-9-]/g, '' ) }-${ role }`;
+	return `sgs-md-${ String( clientId ).replace(
+		/[^a-zA-Z0-9-]/g,
+		''
+	) }-${ role }`;
 }
 
 /**
@@ -133,17 +150,34 @@ export function UserSpaceGradientDef( { id, gradient } ) {
 		return null;
 	}
 	const stops = gradient.stops.map( ( stop, i ) => (
-		<stop key={ i } offset={ `${ stop.offset }%` } stopColor={ stop.colour } />
+		<stop
+			key={ i }
+			offset={ `${ stop.offset }%` }
+			stopColor={ stop.colour }
+		/>
 	) );
 	if ( 'radial' === gradient.type ) {
 		return (
-			<radialGradient id={ id } gradientUnits="userSpaceOnUse" cx={ `${ gradient.cx }%` } cy={ `${ gradient.cy }%` } r={ `${ gradient.r }%` }>
+			<radialGradient
+				id={ id }
+				gradientUnits="userSpaceOnUse"
+				cx={ `${ gradient.cx }%` }
+				cy={ `${ gradient.cy }%` }
+				r={ `${ gradient.r }%` }
+			>
 				{ stops }
 			</radialGradient>
 		);
 	}
 	return (
-		<linearGradient id={ id } gradientUnits="userSpaceOnUse" x1={ gradient.x1 } y1={ gradient.y1 } x2={ gradient.x2 } y2={ gradient.y2 }>
+		<linearGradient
+			id={ id }
+			gradientUnits="userSpaceOnUse"
+			x1={ gradient.x1 }
+			y1={ gradient.y1 }
+			x2={ gradient.x2 }
+			y2={ gradient.y2 }
+		>
 			{ stops }
 		</linearGradient>
 	);
@@ -160,11 +194,23 @@ export function UserSpaceGradientDef( { id, gradient } ) {
  * @param {number} args.height     Drawing height.
  * @return {string} CSS text.
  */
-export function diagramPreviewCss( { attributes, clientId, tier, width, height } ) {
+export function diagramPreviewCss( {
+	attributes,
+	clientId,
+	tier,
+	width,
+	height,
+} ) {
 	const scope = `#block-${ clientId }`;
-	const rules = [ `${ scope }{--sgs-measured-diagram-ratio:${ fmt( width ) } / ${ fmt( height ) };}` ];
+	const rules = [
+		`${ scope }{--sgs-measured-diagram-ratio:${ fmt( width ) } / ${ fmt(
+			height
+		) };}`,
+	];
 
-	const maxWidth = length( resolveTier( attributes.maxWidth, tier, '' ).value );
+	const maxWidth = length(
+		resolveTier( attributes.maxWidth, tier, '' ).value
+	);
 	if ( maxWidth ) {
 		rules.push( `${ scope }{max-width:${ maxWidth };}` );
 	}
@@ -177,10 +223,14 @@ export function diagramPreviewCss( { attributes, clientId, tier, width, height }
 	const lineSel = `${ scope } .sgs-diagram-dimension__line,${ scope } .sgs-diagram-dimension__ends`;
 	if ( parseSvgGradient( attributes.lineColourGradient ) ) {
 		const id = gradientId( clientId, 'line' );
-		rules.push( `${ lineSel }{stroke:url(#${ id });}${ scope } .sgs-diagram-dimension__dot{fill:url(#${ id });}` );
+		rules.push(
+			`${ lineSel }{stroke:url(#${ id });}${ scope } .sgs-diagram-dimension__dot{fill:url(#${ id });}`
+		);
 	} else if ( colour( attributes.lineColour ) ) {
 		const value = colour( attributes.lineColour );
-		rules.push( `${ lineSel }{stroke:${ value };}${ scope } .sgs-diagram-dimension__dot{fill:${ value };}` );
+		rules.push(
+			`${ lineSel }{stroke:${ value };}${ scope } .sgs-diagram-dimension__dot{fill:${ value };}`
+		);
 	}
 	const lineWidth = length( attributes.lineWidth );
 	if ( lineWidth ) {
@@ -189,29 +239,67 @@ export function diagramPreviewCss( { attributes, clientId, tier, width, height }
 
 	const guideSel = `${ scope } .sgs-diagram-dimension__guides`;
 	if ( parseSvgGradient( attributes.extensionColourGradient ) ) {
-		rules.push( `${ guideSel }{stroke:url(#${ gradientId( clientId, 'extension' ) });}` );
+		rules.push(
+			`${ guideSel }{stroke:url(#${ gradientId(
+				clientId,
+				'extension'
+			) });}`
+		);
 	} else if ( colour( attributes.extensionColour ) ) {
-		rules.push( `${ guideSel }{stroke:${ colour( attributes.extensionColour ) };}` );
+		rules.push(
+			`${ guideSel }{stroke:${ colour( attributes.extensionColour ) };}`
+		);
 	}
 	const extensionWidth = length( attributes.extensionWidth );
 	if ( extensionWidth ) {
-		rules.push( `${ guideSel }{stroke-width:${ extensionWidth };${ dash( attributes.extensionStyle, extensionWidth ) }}` );
+		rules.push(
+			`${ guideSel }{stroke-width:${ extensionWidth };${ dash(
+				attributes.extensionStyle,
+				extensionWidth
+			) }}`
+		);
 	}
 
-	const valuePaint = textPaint( attributes.valueColour, attributes.valueColourGradient );
+	const valuePaint = textPaint(
+		attributes.valueColour,
+		attributes.valueColourGradient
+	);
 	if ( valuePaint ) {
-		rules.push( `${ scope } .sgs-diagram-dimension__value{${ valuePaint }}` );
+		rules.push(
+			`${ scope } .sgs-diagram-dimension__value{${ valuePaint }}`
+		);
 		if ( 0 === valuePaint.indexOf( 'color:' ) ) {
-			rules.push( `${ scope } .sgs-diagram-dimension__marker,${ scope } .sgs-diagram-dimension__number{${ valuePaint }}` );
+			rules.push(
+				`${ scope } .sgs-diagram-dimension__marker,${ scope } .sgs-diagram-dimension__number{${ valuePaint }}`
+			);
 		}
 	}
-	const captionPaint = textPaint( attributes.captionColour, attributes.captionColourGradient );
+	const captionPaint = textPaint(
+		attributes.captionColour,
+		attributes.captionColourGradient
+	);
 	if ( captionPaint ) {
-		rules.push( `${ scope } .sgs-diagram-dimension__caption{${ captionPaint }}` );
+		rules.push(
+			`${ scope } .sgs-diagram-dimension__caption{${ captionPaint }}`
+		);
 	}
 
-	rules.push( typographyPreviewCss( attributes, 'value', `${ scope } .sgs-diagram-dimension__value`, tier ) );
-	rules.push( typographyPreviewCss( attributes, 'caption', `${ scope } .sgs-diagram-dimension__caption`, tier ) );
+	rules.push(
+		typographyPreviewCss(
+			attributes,
+			'value',
+			`${ scope } .sgs-diagram-dimension__value`,
+			tier
+		)
+	);
+	rules.push(
+		typographyPreviewCss(
+			attributes,
+			'caption',
+			`${ scope } .sgs-diagram-dimension__caption`,
+			tier
+		)
+	);
 
 	const gap = length( resolveTier( attributes.labelGap, tier, '' ).value );
 	if ( gap ) {

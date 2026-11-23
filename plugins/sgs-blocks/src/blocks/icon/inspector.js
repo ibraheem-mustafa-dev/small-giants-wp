@@ -42,7 +42,12 @@ import { metadataWithoutLinkBinding } from './icon-state';
 import { LINK_SOURCES_PAGES } from '../../shared/link-source-options';
 
 const ICON_LINK_SOURCES = [ ...LINK_SOURCES_PAGES, 'top' ];
-import { BrandHoverControl, IconShadowPanel, ICON_SHADOW_NAMES, ICON_SHADOW_KEYS } from './shadow-panels';
+import {
+	BrandHoverControl,
+	IconShadowPanel,
+	ICON_SHADOW_NAMES,
+	ICON_SHADOW_KEYS,
+} from './shadow-panels';
 
 /**
  * An outline shape fills with a flat colour only (render.php prints no background gradient for it), so its background
@@ -58,21 +63,39 @@ function solidForOutline( row, outline ) {
 	}
 	return {
 		...row,
-		states: row.states.map( ( { gradientValue, onGradientChange, ...state } ) => state ), // eslint-disable-line no-unused-vars
+		states: row.states.map(
+			( { gradientValue, onGradientChange, ...state } ) => state
+		), // eslint-disable-line no-unused-vars
 		after: (
 			<p className="components-base-control__help">
-				{ __( 'Gradients paint the square, circle and pill only; this shape fills with a flat colour.', 'sgs-blocks' ) }
+				{ __(
+					'Gradients paint the square, circle and pill only; this shape fills with a flat colour.',
+					'sgs-blocks'
+				) }
 			</p>
 		),
 	};
 }
 
-const ICON_SOURCES = [ 'lucide', 'brand', 'emoji', 'wp-icon', 'dashicon', 'custom' ];
+const ICON_SOURCES = [
+	'lucide',
+	'brand',
+	'emoji',
+	'wp-icon',
+	'dashicon',
+	'custom',
+];
 
 const COLOUR_MODES = [
-	{ label: __( 'Automatic (brand colours for a brand)', 'sgs-blocks' ), value: 'inherit' },
+	{
+		label: __( 'Automatic (brand colours for a brand)', 'sgs-blocks' ),
+		value: 'inherit',
+	},
 	{ label: __( 'Brand colours', 'sgs-blocks' ), value: 'brand' },
-	{ label: __( 'Brand colour: logo only', 'sgs-blocks' ), value: 'brand-glyph' },
+	{
+		label: __( 'Brand colour: logo only', 'sgs-blocks' ),
+		value: 'brand-glyph',
+	},
 	{ label: __( 'Theme colours', 'sgs-blocks' ), value: 'theme' },
 ];
 
@@ -109,25 +132,67 @@ export function currentIconName( attrs ) {
  * @return {JSX.Element} Inspector panels.
  */
 export default function IconInspector( { attributes, setAttributes, state } ) {
-	const { iconSource, iconSvg, iconSize, iconFill, iconRotate, colourMode, showBackground, linkUrl, linkTarget, linkRel, ariaLabel, textAlign } = attributes;
-	const { boundKey, link, fallback, storedLinkUrl, brand, name, paintedShape, labelOn, labelFromRow, defaultLabel } = state;
+	const {
+		iconSource,
+		iconSvg,
+		iconSize,
+		iconFill,
+		iconRotate,
+		colourMode,
+		showBackground,
+		linkUrl,
+		linkTarget,
+		linkRel,
+		ariaLabel,
+		textAlign,
+	} = attributes;
+	const {
+		boundKey,
+		link,
+		fallback,
+		storedLinkUrl,
+		brand,
+		name,
+		paintedShape,
+		labelOn,
+		labelFromRow,
+		defaultLabel,
+	} = state;
 	// The shape the canvas paints (a row's group shape replaces the square), which decides what the colours can do.
 	const outlineShown = isOutlineShape( paintedShape || attributes.shape );
-	let accessibleHelp = __( 'Describes the icon for screen readers. Leave blank for a decorative icon.', 'sgs-blocks' );
+	let accessibleHelp = __(
+		'Describes the icon for screen readers. Leave blank for a decorative icon.',
+		'sgs-blocks'
+	);
 	if ( labelOn && ( linkUrl || boundKey ) ) {
-		accessibleHelp = __( 'Screen readers read the visible label as the link name. This only fills a blank label.', 'sgs-blocks' );
+		accessibleHelp = __(
+			'Screen readers read the visible label as the link name. This only fills a blank label.',
+			'sgs-blocks'
+		);
 	} else if ( linkUrl || boundKey ) {
 		accessibleHelp = sprintf(
 			/* translators: %s: the name screen readers announce. */
-			__( 'What screen readers say for this link. Blank: "%s".', 'sgs-blocks' ),
+			__(
+				'What screen readers say for this link. Blank: "%s".',
+				'sgs-blocks'
+			),
 			name.name
 		);
 	}
-	const strokeGlyph = ! [ 'emoji', 'dashicon' ].includes( iconSource ) && ! ( 'brand' === iconSource && brand.glyphBrand?.glyph?.svg );
+	const strokeGlyph =
+		! [ 'emoji', 'dashicon' ].includes( iconSource ) &&
+		! ( 'brand' === iconSource && brand.glyphBrand?.glyph?.svg );
 
 	const handleIconChange = ( { source, name: picked, svg } ) => {
 		const next = { iconSource: source };
-		const field = { emoji: 'emojiChar', dashicon: 'dashiconName', 'wp-icon': 'wpIconName', custom: 'iconSvg', brand: 'brandName' }[ source ] || 'iconName';
+		const field =
+			{
+				emoji: 'emojiChar',
+				dashicon: 'dashiconName',
+				'wp-icon': 'wpIconName',
+				custom: 'iconSvg',
+				brand: 'brandName',
+			}[ source ] || 'iconName';
 		next[ field ] = 'custom' === source ? svg : picked;
 		setAttributes( next );
 	};
@@ -139,7 +204,12 @@ export default function IconInspector( { attributes, setAttributes, state } ) {
 					textRow( {
 						key: 'icon',
 						label: __( 'Icon colour', 'sgs-blocks' ),
-						attrs: { base: 'iconColour', hover: 'iconColourHover', gradient: 'iconColourGradient', hoverGradient: 'iconColourHoverGradient' },
+						attrs: {
+							base: 'iconColour',
+							hover: 'iconColourHover',
+							gradient: 'iconColourGradient',
+							hoverGradient: 'iconColourHoverGradient',
+						},
 						attributes,
 						setAttributes,
 					} ),
@@ -148,7 +218,13 @@ export default function IconInspector( { attributes, setAttributes, state } ) {
 							fillRow( {
 								key: 'background',
 								label: __( 'Background colour', 'sgs-blocks' ),
-								attrs: { base: 'backgroundColour', hover: 'backgroundColourHover', gradient: 'backgroundColourGradient', hoverGradient: 'backgroundColourHoverGradient' },
+								attrs: {
+									base: 'backgroundColour',
+									hover: 'backgroundColourHover',
+									gradient: 'backgroundColourGradient',
+									hoverGradient:
+										'backgroundColourHoverGradient',
+								},
 								attributes,
 								setAttributes,
 							} ),
@@ -165,7 +241,10 @@ export default function IconInspector( { attributes, setAttributes, state } ) {
 					attributes.showSignedInDot &&
 						fillRow( {
 							key: 'signedInDotRing',
-							label: __( 'Signed-in dot ring colour', 'sgs-blocks' ),
+							label: __(
+								'Signed-in dot ring colour',
+								'sgs-blocks'
+							),
 							attrs: { base: 'signedInDotRingColour' },
 							attributes,
 							setAttributes,
@@ -174,7 +253,12 @@ export default function IconInspector( { attributes, setAttributes, state } ) {
 						textRow( {
 							key: 'label',
 							label: __( 'Label colour', 'sgs-blocks' ),
-							attrs: { base: 'labelColour', hover: 'labelColourHover', gradient: 'labelColourGradient', hoverGradient: 'labelColourHoverGradient' },
+							attrs: {
+								base: 'labelColour',
+								hover: 'labelColourHover',
+								gradient: 'labelColourGradient',
+								hoverGradient: 'labelColourHoverGradient',
+							},
 							attributes,
 							setAttributes,
 						} ),
@@ -184,7 +268,11 @@ export default function IconInspector( { attributes, setAttributes, state } ) {
 				<PanelBody title={ __( 'Icon', 'sgs-blocks' ) }>
 					<IconPicker
 						label={ __( 'Icon', 'sgs-blocks' ) }
-						value={ { source: iconSource, name: currentIconName( attributes ), svg: 'custom' === iconSource ? iconSvg : undefined } }
+						value={ {
+							source: iconSource,
+							name: currentIconName( attributes ),
+							svg: 'custom' === iconSource ? iconSvg : undefined,
+						} }
 						sources={ ICON_SOURCES }
 						brands={ BRANDS }
 						onChange={ handleIconChange }
@@ -195,16 +283,29 @@ export default function IconInspector( { attributes, setAttributes, state } ) {
 							<IconSizeControl
 								value={ iconSize?.[ tier ] }
 								help={ ICON_SIZE_HELP.icon }
-								onChange={ ( value ) => patchTier( attributes, setAttributes, 'iconSize', tier, value ) }
+								onChange={ ( value ) =>
+									patchTier(
+										attributes,
+										setAttributes,
+										'iconSize',
+										tier,
+										value
+									)
+								}
 							/>
 						) }
 					</ResponsiveControl>
 					{ strokeGlyph && (
 						<ToggleControl
 							label={ __( 'Fill the icon', 'sgs-blocks' ) }
-							help={ __( 'Fills an outline icon with its colour.', 'sgs-blocks' ) }
+							help={ __(
+								'Fills an outline icon with its colour.',
+								'sgs-blocks'
+							) }
 							checked={ !! iconFill }
-							onChange={ ( value ) => setAttributes( { iconFill: value } ) }
+							onChange={ ( value ) =>
+								setAttributes( { iconFill: value } )
+							}
 							__nextHasNoMarginBottom
 						/>
 					) }
@@ -212,26 +313,47 @@ export default function IconInspector( { attributes, setAttributes, state } ) {
 						label={ __( 'Colours', 'sgs-blocks' ) }
 						help={
 							'brand-glyph' === colourMode
-								? __( 'Only the logo takes the brand colour (Google keeps its four colours, Instagram its gradient). The shape keeps its own background and border; on hover the border turns the brand colour with a thin ring. A colour you set above always wins.', 'sgs-blocks' )
+								? __(
+										'Only the logo takes the brand colour (Google keeps its four colours, Instagram its gradient). The shape keeps its own background and border; on hover the border turns the brand colour with a thin ring. A colour you set above always wins.',
+										'sgs-blocks'
+								  )
 								: brand.colourBrand
 								? sprintf(
 										/* translators: %s: brand name, e.g. WhatsApp. */
-										__( 'This icon is %s. A colour you set above always wins.', 'sgs-blocks' ),
+										__(
+											'This icon is %s. A colour you set above always wins.',
+											'sgs-blocks'
+										),
 										brand.colourBrand.label
 								  )
-								: __( 'Brand colours apply to an icon linked to a social network or showing its logo.', 'sgs-blocks' )
+								: __(
+										'Brand colours apply to an icon linked to a social network or showing its logo.',
+										'sgs-blocks'
+								  )
 						}
 						value={ colourMode || 'inherit' }
 						options={ COLOUR_MODES }
-						onChange={ ( value ) => setAttributes( { colourMode: value } ) }
+						onChange={ ( value ) =>
+							setAttributes( { colourMode: value } )
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					{ ( brand.brandOn || 'brand' === colourMode ) && ! brand.glyphOnly && (
-						<BrandHoverControl inherit value={ attributes.brandHover } onChange={ ( value ) => setAttributes( { brandHover: value } ) } />
-					) }
+					{ ( brand.brandOn || 'brand' === colourMode ) &&
+						! brand.glyphOnly && (
+							<BrandHoverControl
+								inherit
+								value={ attributes.brandHover }
+								onChange={ ( value ) =>
+									setAttributes( { brandHover: value } )
+								}
+							/>
+						) }
 				</PanelBody>
-				<PanelBody title={ __( 'Link', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Link', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					{ link.bound ? (
 						<>
 							<BaseControl
@@ -239,42 +361,83 @@ export default function IconInspector( { attributes, setAttributes, state } ) {
 								label={ __( 'Link', 'sgs-blocks' ) }
 								help={
 									'custom' === fallback.source
-										? __( 'This icon uses the link below. Switch it off to follow Site Info again.', 'sgs-blocks' )
-										: __( 'The link follows Site Info; change it there. The fallback link below is used only when Site Info is empty. Unlink to drop Site Info altogether.', 'sgs-blocks' )
+										? __(
+												'This icon uses the link below. Switch it off to follow Site Info again.',
+												'sgs-blocks'
+										  )
+										: __(
+												'The link follows Site Info; change it there. The fallback link below is used only when Site Info is empty. Unlink to drop Site Info altogether.',
+												'sgs-blocks'
+										  )
 								}
 								__nextHasNoMarginBottom
 							>
 								<p className="sgs-icon-bound-link">
 									{ sprintf(
 										/* translators: %s: Site Info field, e.g. Phone. */
-										__( 'Linked to Site Info: %s', 'sgs-blocks' ),
+										__(
+											'Linked to Site Info: %s',
+											'sgs-blocks'
+										),
 										link.label
 									) }
 								</p>
 								<Button
 									variant="secondary"
 									size="compact"
-									onClick={ () => setAttributes( { metadata: metadataWithoutLinkBinding( attributes.metadata ) } ) }
+									onClick={ () =>
+										setAttributes( {
+											metadata:
+												metadataWithoutLinkBinding(
+													attributes.metadata
+												),
+										} )
+									}
 								>
 									{ __( 'Unlink', 'sgs-blocks' ) }
 								</Button>
 							</BaseControl>
 							<ToggleControl
-								label={ __( 'Use my own link instead of Site Info', 'sgs-blocks' ) }
+								label={ __(
+									'Use my own link instead of Site Info',
+									'sgs-blocks'
+								) }
 								checked={ 'custom' === fallback.source }
-								onChange={ ( value ) => setAttributes( { linkSource: value ? 'custom' : 'site-info' } ) }
+								onChange={ ( value ) =>
+									setAttributes( {
+										linkSource: value
+											? 'custom'
+											: 'site-info',
+									} )
+								}
 								__nextHasNoMarginBottom
 							/>
 							<LinkPopoverField
-								label={ __( 'Fallback link (used when Site Info is empty)', 'sgs-blocks' ) }
-								help={ __( 'Search your site or paste a URL. Leave blank to hide the icon when Site Info is empty.', 'sgs-blocks' ) }
-								value={ { url: storedLinkUrl, linkTarget, rel: linkRel } }
+								label={ __(
+									'Fallback link (used when Site Info is empty)',
+									'sgs-blocks'
+								) }
+								help={ __(
+									'Search your site or paste a URL. Leave blank to hide the icon when Site Info is empty.',
+									'sgs-blocks'
+								) }
+								value={ {
+									url: storedLinkUrl,
+									linkTarget,
+									rel: linkRel,
+								} }
 								targetMode="boolean"
 								onChange={ ( next ) => {
 									const patch = {};
-									if ( undefined !== next.url ) patch.linkUrl = next.url;
-									if ( undefined !== next.linkTarget ) patch.linkTarget = next.linkTarget;
-									if ( undefined !== next.rel ) patch.linkRel = next.rel;
+									if ( undefined !== next.url ) {
+										patch.linkUrl = next.url;
+									}
+									if ( undefined !== next.linkTarget ) {
+										patch.linkTarget = next.linkTarget;
+									}
+									if ( undefined !== next.rel ) {
+										patch.linkRel = next.rel;
+									}
 									setAttributes( patch );
 								} }
 							/>
@@ -282,59 +445,109 @@ export default function IconInspector( { attributes, setAttributes, state } ) {
 					) : (
 						<LinkPopoverField
 							label={ __( 'Link', 'sgs-blocks' ) }
-							help={ __( 'Search your site or paste a URL to make this icon clickable.', 'sgs-blocks' ) }
-							value={ { url: linkUrl, linkTarget, rel: linkRel, linkSource: attributes.linkUrlSource || '' } }
+							help={ __(
+								'Search your site or paste a URL to make this icon clickable.',
+								'sgs-blocks'
+							) }
+							value={ {
+								url: linkUrl,
+								linkTarget,
+								rel: linkRel,
+								linkSource: attributes.linkUrlSource || '',
+							} }
 							// Site Info links come through the Site Info binding above, so only a page or back to top.
 							linkSources={ ICON_LINK_SOURCES }
 							targetMode="boolean"
 							onChange={ ( next ) => {
 								const patch = {};
-								if ( undefined !== next.url ) patch.linkUrl = next.url;
-								if ( undefined !== next.linkSource ) patch.linkUrlSource = next.linkSource;
-								if ( undefined !== next.linkTarget ) patch.linkTarget = next.linkTarget;
-								if ( undefined !== next.rel ) patch.linkRel = next.rel;
+								if ( undefined !== next.url ) {
+									patch.linkUrl = next.url;
+								}
+								if ( undefined !== next.linkSource ) {
+									patch.linkUrlSource = next.linkSource;
+								}
+								if ( undefined !== next.linkTarget ) {
+									patch.linkTarget = next.linkTarget;
+								}
+								if ( undefined !== next.rel ) {
+									patch.linkRel = next.rel;
+								}
 								setAttributes( patch );
 							} }
 						/>
 					) }
 				</PanelBody>
-				<ShapePanels attributes={ attributes } setAttributes={ setAttributes } brandOn={ brand.brandOn } outlineShown={ outlineShown } />
-				<IconLabelPanel attributes={ attributes } setAttributes={ setAttributes } state={ { labelOn, labelFromRow, defaultLabel } } />
-				<IconDotPanel attributes={ attributes } setAttributes={ setAttributes } />
-				<PanelBody title={ __( 'Accessibility', 'sgs-blocks' ) } initialOpen={ false }>
+				<ShapePanels
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					brandOn={ brand.brandOn }
+					outlineShown={ outlineShown }
+				/>
+				<IconLabelPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					state={ { labelOn, labelFromRow, defaultLabel } }
+				/>
+				<IconDotPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+				<PanelBody
+					title={ __( 'Accessibility', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<TextControl
 						label={ __( 'Accessible label', 'sgs-blocks' ) }
 						help={ accessibleHelp }
 						value={ ariaLabel }
-						onChange={ ( value ) => setAttributes( { ariaLabel: value } ) }
+						onChange={ ( value ) =>
+							setAttributes( { ariaLabel: value } )
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					{ ( linkUrl || boundKey ) && [ '', 'host' ].includes( name.from ) && (
-						<Notice status="warning" isDismissible={ false }>
-							{ '' === name.from
-								? __( 'This link has no name for screen readers. Add an accessible label.', 'sgs-blocks' )
-								: sprintf(
-										/* translators: %s: site name taken from the link. */
-										__( 'Screen readers will only hear "%s". Add an accessible label that says where the link goes.', 'sgs-blocks' ),
-										name.name
-								  ) }
-						</Notice>
-					) }
+					{ ( linkUrl || boundKey ) &&
+						[ '', 'host' ].includes( name.from ) && (
+							<Notice status="warning" isDismissible={ false }>
+								{ '' === name.from
+									? __(
+											'This link has no name for screen readers. Add an accessible label.',
+											'sgs-blocks'
+									  )
+									: sprintf(
+											/* translators: %s: site name taken from the link. */
+											__(
+												'Screen readers will only hear "%s". Add an accessible label that says where the link goes.',
+												'sgs-blocks'
+											),
+											name.name
+									  ) }
+							</Notice>
+						) }
 				</PanelBody>
 			</InspectorControls>
 			<InspectorControls group="styles">
-				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Layout', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<TextAlignTierControl
 						label={ __( 'Text align', 'sgs-blocks' ) }
 						value={ textAlign }
-						onChange={ ( value ) => setAttributes( { textAlign: value } ) }
+						onChange={ ( value ) =>
+							setAttributes( { textAlign: value } )
+						}
 					/>
 					<RangeControl
 						label={ __( 'Rotation (degrees)', 'sgs-blocks' ) }
-						help={ __( 'Turns the icon and its shape without changing the space it takes up.', 'sgs-blocks' ) }
+						help={ __(
+							'Turns the icon and its shape without changing the space it takes up.',
+							'sgs-blocks'
+						) }
 						value={ iconRotate ?? 0 }
-						onChange={ ( value ) => setAttributes( { iconRotate: value ?? 0 } ) }
+						onChange={ ( value ) =>
+							setAttributes( { iconRotate: value ?? 0 } )
+						}
 						min={ -180 }
 						max={ 180 }
 						step={ 5 }
@@ -349,28 +562,62 @@ export default function IconInspector( { attributes, setAttributes, state } ) {
 					setAttributes={ setAttributes }
 					names={ ICON_SHADOW_NAMES }
 					shadowKeys={ ICON_SHADOW_KEYS }
-					help={ outlineShown ? __( 'The outline shapes draw no box, so they take no shadow. Use the square, circle or pill.', 'sgs-blocks' ) : undefined }
+					help={
+						outlineShown
+							? __(
+									'The outline shapes draw no box, so they take no shadow. Use the square, circle or pill.',
+									'sgs-blocks'
+							  )
+							: undefined
+					}
 				/>
-				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
-					<ResponsiveOverride value={ attributes.padding } onChange={ ( obj ) => setAttributes( { padding: obj } ) }>
+				<PanelBody
+					title={ __( 'Spacing', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<ResponsiveOverride
+						value={ attributes.padding }
+						onChange={ ( obj ) =>
+							setAttributes( { padding: obj } )
+						}
+					>
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={ ownValue && 'object' === typeof ownValue ? ownValue : {} }
+								values={
+									ownValue && 'object' === typeof ownValue
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
-					<ResponsiveOverride value={ attributes.margin } onChange={ ( obj ) => setAttributes( { margin: obj } ) }>
+					<ResponsiveOverride
+						value={ attributes.margin }
+						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+					>
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={ ownValue && 'object' === typeof ownValue ? ownValue : {} }
+								values={
+									ownValue && 'object' === typeof ownValue
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>

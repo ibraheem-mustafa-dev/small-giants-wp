@@ -9,7 +9,11 @@
 import { __ } from '@wordpress/i18n';
 import { PanelBody } from '@wordpress/components';
 import { iconShadowStyle } from '../icon/icon-shadow';
-import { BrandHoverControl, IconShadowPanel, ROW_SHADOW_KEYS } from '../icon/shadow-panels';
+import {
+	BrandHoverControl,
+	IconShadowPanel,
+	ROW_SHADOW_KEYS,
+} from '../icon/shadow-panels';
 import { isCssGradient } from '../../utils/background-preview';
 
 // The row's shadow-lift attribute name, written out here so the inspector scan sees this block's controls (it does not
@@ -26,7 +30,10 @@ export const ROW_SHADOW_NAMES = { lift: 'childIconShadowLiftOnHover' };
 export function rowShadowCanvasStyle( attributes, hoverMap = {} ) {
 	const style = {};
 	// A flat group background with no gradient of its own replaces a brand's gradient ground on every icon.
-	if ( attributes.childIconBackground && ! isCssGradient( attributes.childIconBackgroundGradient ) ) {
+	if (
+		attributes.childIconBackground &&
+		! isCssGradient( attributes.childIconBackgroundGradient )
+	) {
 		style[ '--sgs-si-bg-gradient' ] = 'none';
 	}
 	return {
@@ -56,15 +63,26 @@ export function rowShadowCanvasStyle( attributes, hoverMap = {} ) {
 export default function RowShadowPanels( { attributes, setAttributes } ) {
 	return (
 		<>
-			<PanelBody title={ __( 'Icon hover', 'sgs-blocks' ) } initialOpen={ false }>
-				<BrandHoverControl value={ attributes.childIconBrandHover } onChange={ ( value ) => setAttributes( { childIconBrandHover: value } ) } />
+			<PanelBody
+				title={ __( 'Icon hover', 'sgs-blocks' ) }
+				initialOpen={ false }
+			>
+				<BrandHoverControl
+					value={ attributes.childIconBrandHover }
+					onChange={ ( value ) =>
+						setAttributes( { childIconBrandHover: value } )
+					}
+				/>
 			</PanelBody>
 			<IconShadowPanel
 				attributes={ attributes }
 				setAttributes={ setAttributes }
 				names={ ROW_SHADOW_NAMES }
 				shadowKeys={ ROW_SHADOW_KEYS }
-				help={ __( 'For every icon without a shadow of its own. The outline shapes draw no box, so they take none.', 'sgs-blocks' ) }
+				help={ __(
+					'For every icon without a shadow of its own. The outline shapes draw no box, so they take none.',
+					'sgs-blocks'
+				) }
 			/>
 		</>
 	);

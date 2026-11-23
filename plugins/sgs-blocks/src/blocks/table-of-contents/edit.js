@@ -1,9 +1,37 @@
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-editor';
-import { PanelBody, SelectControl, ToggleControl, RangeControl, CheckboxControl } from '@wordpress/components';
+import {
+	useBlockProps,
+	InspectorControls,
+	useSettings,
+} from '@wordpress/block-editor';
+import {
+	PanelBody,
+	SelectControl,
+	ToggleControl,
+	RangeControl,
+	CheckboxControl,
+} from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
-import { ResponsiveBoxControl, SgsColourPanel, SgsBorderControl, TypographyControls, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, textRow } from '../../components';
-import { colourVar, resolveTextColourPreviewStyle, typographyPreviewStyle, usePreviewTier,  tierBoxLonghands, sgsBorderPreview } from '../../utils';
+import {
+	ResponsiveBoxControl,
+	SgsColourPanel,
+	SgsBorderControl,
+	TypographyControls,
+	resolveColourToken,
+	ResponsiveOverride,
+	BOX_UNITS,
+	normaliseResponsiveBox,
+	SgsBoxControl,
+	textRow,
+} from '../../components';
+import {
+	colourVar,
+	resolveTextColourPreviewStyle,
+	typographyPreviewStyle,
+	usePreviewTier,
+	tierBoxLonghands,
+	sgsBorderPreview,
+} from '../../utils';
 
 import AuthoredText from '../../components/AuthoredText';
 import SgsFreeTextField from '../../components/SgsFreeTextField';
@@ -45,7 +73,14 @@ function slugify( text ) {
  * only ever applied to the React editor canvas (mirrors sgs/label + sgs/media).
  */
 function buildRootPreviewStyle( attributes, padding, margin, tier, palette ) {
-	const { borderWidth, borderStyle, borderRadius, borderColour, borderColourGradient, tocStyle } = attributes;
+	const {
+		borderWidth,
+		borderStyle,
+		borderRadius,
+		borderColour,
+		borderColourGradient,
+		tocStyle,
+	} = attributes;
 	// The card and minimal variants' stylesheet already paints a border, which a
 	// chosen colour, style or width overrides part by part (render.php emits each alone).
 	const defaultBorder = 'card' === tocStyle || 'minimal' === tocStyle;
@@ -53,7 +88,18 @@ function buildRootPreviewStyle( attributes, padding, margin, tier, palette ) {
 	const previewStyle = {
 		...tierBoxLonghands( padding, tier, 'padding' ),
 		...tierBoxLonghands( margin, tier, 'margin' ),
-		...sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient, radiusValues: borderRadius }, tier, palette, { defaultBorder } ),
+		...sgsBorderPreview(
+			{
+				widthValues: borderWidth,
+				styleValue: borderStyle,
+				colourValue: borderColour,
+				colourGradientValue: borderColourGradient,
+				radiusValues: borderRadius,
+			},
+			tier,
+			palette,
+			{ defaultBorder }
+		),
 		...typographyPreviewStyle( attributes, '', tier ),
 	};
 
@@ -89,12 +135,8 @@ export default function Edit( { attributes, setAttributes } ) {
 
 			function findHeadings( blockList ) {
 				for ( const block of blockList ) {
-					const isSgsHeading =
-						block.name === 'sgs/heading';
-					if (
-						block.name === 'core/heading' ||
-						isSgsHeading
-					) {
+					const isSgsHeading = block.name === 'sgs/heading';
+					if ( block.name === 'core/heading' || isSgsHeading ) {
 						// sgs/heading stores level as 'h2'–'h6'; core/heading stores a number.
 						const level = isSgsHeading
 							? parseInt(
@@ -144,12 +186,22 @@ export default function Edit( { attributes, setAttributes } ) {
 	// Twin of render.php's sgs_typography_css_rule( $attributes, 'title', … ) plus the title colour.
 	const titlePreviewStyle = {
 		...typographyPreviewStyle( attributes, 'title', previewTier ),
-		...resolveTextColourPreviewStyle( titleColour, titleColourGradient, colourVar ),
+		...resolveTextColourPreviewStyle(
+			titleColour,
+			titleColourGradient,
+			colourVar
+		),
 	};
 	const [ colourPalette ] = useSettings( 'color.palette' );
 	const blockProps = useBlockProps( {
 		className,
-		style: buildRootPreviewStyle( attributes, attributes.padding, attributes.margin, previewTier, colourPalette ),
+		style: buildRootPreviewStyle(
+			attributes,
+			attributes.padding,
+			attributes.margin,
+			previewTier,
+			colourPalette
+		),
 	} );
 
 	const ListTag = listStyle === 'numbered' ? 'ol' : 'ul';
@@ -181,19 +233,29 @@ export default function Edit( { attributes, setAttributes } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: linkColour,
-								onChange: ( val ) => setAttributes( { linkColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( { linkColour: val ?? '' } ),
 								linked: true,
 								gradientValue: linkColourGradient,
-								onGradientChange: ( val ) => setAttributes( { linkColourGradient: val ?? '' } ),
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										linkColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'current',
 								label: __( 'Active', 'sgs-blocks' ),
 								value: activeLinkColour,
-								onChange: ( val ) => setAttributes( { activeLinkColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										activeLinkColour: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: activeLinkColourGradient,
-								onGradientChange: ( val ) => setAttributes( { activeLinkColourGradient: val ?? '' } ),
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										activeLinkColourGradient: val ?? '',
+									} ),
 							},
 						],
 					},
@@ -212,9 +274,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				] }
 			/>
 			<InspectorControls>
-				<PanelBody
-					title={ __( 'Table of Contents', 'sgs-blocks' ) }
-				>
+				<PanelBody title={ __( 'Table of Contents', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'Visual style', 'sgs-blocks' ) }
 						value={ tocStyle }
@@ -235,12 +295,12 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					<SgsFreeTextField type="rich" noLink
+					<SgsFreeTextField
+						type="rich"
+						noLink
 						label={ __( 'Title', 'sgs-blocks' ) }
 						value={ title }
-						onChange={ ( val ) =>
-							setAttributes( { title: val } )
-						}
+						onChange={ ( val ) => setAttributes( { title: val } ) }
 					/>
 					<p className="components-base-control__label">
 						{ __( 'Heading levels', 'sgs-blocks' ) }
@@ -279,10 +339,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 					{ collapsible && (
 						<ToggleControl
-							label={ __(
-								'Collapsed by default',
-								'sgs-blocks'
-							) }
+							label={ __( 'Collapsed by default', 'sgs-blocks' ) }
 							checked={ defaultCollapsed }
 							onChange={ ( val ) =>
 								setAttributes( {
@@ -302,10 +359,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 					{ smoothScroll && (
 						<RangeControl
-							label={ __(
-								'Scroll offset (px)',
-								'sgs-blocks'
-							) }
+							label={ __( 'Scroll offset (px)', 'sgs-blocks' ) }
 							help={ __(
 								'Offset for sticky headers. 0 = no offset.',
 								'sgs-blocks'
@@ -349,15 +403,25 @@ export default function Edit( { attributes, setAttributes } ) {
 				>
 					<ResponsiveOverride
 						value={ attributes.padding }
-						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { padding: obj } )
+						}
 					>
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
@@ -368,36 +432,60 @@ export default function Edit( { attributes, setAttributes } ) {
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
 				</PanelBody>
 
-				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Border', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SgsBorderControl
 						widthValues={ attributes.borderWidth ?? {} }
-						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						onWidthChange={ ( next ) =>
+							setAttributes( { borderWidth: next } )
+						}
 						widthPresets={ [ '10', '20', '30' ] }
 						styleValue={ attributes.borderStyle }
-						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						onStyleChange={ ( val ) =>
+							setAttributes( { borderStyle: val } )
+						}
 						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
 						colourValue={ attributes.borderColour }
-						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						onColourChange={ ( val ) =>
+							setAttributes( { borderColour: val ?? '' } )
+						}
 						colourGradientValue={ attributes.borderColourGradient }
-						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+						onColourGradientChange={ ( val ) =>
+							setAttributes( { borderColourGradient: val ?? '' } )
+						}
 						colourLinked={ true }
 						radiusValues={ {
-								base: attributes.borderRadius?.desktop ?? {},
-								tablet: attributes.borderRadius?.tablet ?? {},
-								mobile: attributes.borderRadius?.mobile ?? {},
-							} }
+							base: attributes.borderRadius?.desktop ?? {},
+							tablet: attributes.borderRadius?.tablet ?? {},
+							mobile: attributes.borderRadius?.mobile ?? {},
+						} }
 						onRadiusChange={ ( tier, next ) => {
 							const key = tier === 'base' ? 'desktop' : tier;
-							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+							setAttributes( {
+								borderRadius: {
+									...attributes.borderRadius,
+									[ key ]: next,
+								},
+							} );
 						} }
 					/>
 				</PanelBody>
@@ -410,7 +498,10 @@ export default function Edit( { attributes, setAttributes } ) {
 			 * the <nav> wrapper (root prefix "") and "Title" is the
 			 * <summary>/<p> title element (prefix "title"). */ }
 			<InspectorControls group="styles">
-				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Typography', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<TypographyControls
 						attributes={ attributes }
 						setAttributes={ setAttributes }
@@ -474,7 +565,11 @@ export default function Edit( { attributes, setAttributes } ) {
 									<li
 										key={ i }
 										className={ `sgs-toc__item sgs-toc__item--h${ heading.level }` }
-										style={ resolveTextColourPreviewStyle( linkColour, linkColourGradient, colourVar ) }
+										style={ resolveTextColourPreviewStyle(
+											linkColour,
+											linkColourGradient,
+											colourVar
+										) }
 									>
 										{ /* First item previews the scroll-spy "active" state as a
 										   representative sample — the real active link is determined
@@ -482,12 +577,18 @@ export default function Edit( { attributes, setAttributes } ) {
 										   .sgs-toc__link--active, render.php:195), which the static
 										   editor canvas cannot replay. */ }
 										<span
-											className={ `sgs-toc__link${ 0 === i ? ' sgs-toc__link--active' : '' }` }
+											className={ `sgs-toc__link${
+												0 === i
+													? ' sgs-toc__link--active'
+													: ''
+											}` }
 											style={
 												0 === i
 													? resolveTextColourPreviewStyle(
-															activeLinkColour || linkColour,
-															activeLinkColourGradient || linkColourGradient,
+															activeLinkColour ||
+																linkColour,
+															activeLinkColourGradient ||
+																linkColourGradient,
 															colourVar
 													  )
 													: undefined
@@ -523,7 +624,11 @@ export default function Edit( { attributes, setAttributes } ) {
 									<li
 										key={ i }
 										className={ `sgs-toc__item sgs-toc__item--h${ heading.level }` }
-										style={ resolveTextColourPreviewStyle( linkColour, linkColourGradient, colourVar ) }
+										style={ resolveTextColourPreviewStyle(
+											linkColour,
+											linkColourGradient,
+											colourVar
+										) }
 									>
 										{ /* First item previews the scroll-spy "active" state as a
 										   representative sample — the real active link is determined
@@ -531,12 +636,18 @@ export default function Edit( { attributes, setAttributes } ) {
 										   .sgs-toc__link--active, render.php:195), which the static
 										   editor canvas cannot replay. */ }
 										<span
-											className={ `sgs-toc__link${ 0 === i ? ' sgs-toc__link--active' : '' }` }
+											className={ `sgs-toc__link${
+												0 === i
+													? ' sgs-toc__link--active'
+													: ''
+											}` }
 											style={
 												0 === i
 													? resolveTextColourPreviewStyle(
-															activeLinkColour || linkColour,
-															activeLinkColourGradient || linkColourGradient,
+															activeLinkColour ||
+																linkColour,
+															activeLinkColourGradient ||
+																linkColourGradient,
 															colourVar
 													  )
 													: undefined

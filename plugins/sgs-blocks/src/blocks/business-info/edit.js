@@ -260,7 +260,13 @@ export default function Edit( { attributes, setAttributes } ) {
 						__next40pxDefaultSize
 					/>
 					{ 'socials' === displayType && (
-						<FlexWrapControl label={ __( 'Wrap social links', 'sgs-blocks' ) } value={ attributes.flexWrap } onChange={ ( val ) => setAttributes( { flexWrap: val } ) } />
+						<FlexWrapControl
+							label={ __( 'Wrap social links', 'sgs-blocks' ) }
+							value={ attributes.flexWrap }
+							onChange={ ( val ) =>
+								setAttributes( { flexWrap: val } )
+							}
+						/>
 					) }
 					<Notice
 						isDismissible={ false }
@@ -605,7 +611,8 @@ export default function Edit( { attributes, setAttributes } ) {
 					title={ __( 'Surrounding Text', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<SgsFreeTextField type="rich"
+					<SgsFreeTextField
+						type="rich"
 						label={ __( 'Text before', 'sgs-blocks' ) }
 						help={ __(
 							'Shown before the value in the same line, e.g. "Call the clinic on ". Include the trailing space. Single-line values only.',
@@ -616,7 +623,8 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { textBefore: val } )
 						}
 					/>
-					<SgsFreeTextField type="rich"
+					<SgsFreeTextField
+						type="rich"
 						label={ __( 'Text after', 'sgs-blocks' ) }
 						help={ __(
 							'Shown straight after the value, e.g. ", or send us a message."',

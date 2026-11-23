@@ -28,7 +28,11 @@
  */
 import { __ } from '@wordpress/i18n';
 import { useRef } from 'react';
-import { useBlockProps, useSettings, InspectorControls } from '@wordpress/block-editor';
+import {
+	useBlockProps,
+	useSettings,
+	InspectorControls,
+} from '@wordpress/block-editor';
 import { Notice } from '@wordpress/components';
 import ServerSideRender from '../../components/ServerSideRender';
 import {
@@ -163,7 +167,9 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	const toggleOrnamentHidden = ( identifier, checked ) => {
 		const next = checked
 			? [ ...( ornamentHiddenItemIds || [] ), identifier ]
-			: ( ornamentHiddenItemIds || [] ).filter( ( id ) => id !== identifier );
+			: ( ornamentHiddenItemIds || [] ).filter(
+					( id ) => id !== identifier
+			  );
 		setAttributes( { ornamentHiddenItemIds: next } );
 	};
 
@@ -188,15 +194,20 @@ export default function Edit( { attributes, setAttributes, name } ) {
 
 	// FR-41-30(b) — the sublink-marker colour row is revealed only once the
 	// operator picks a DIFFERENT icon than the declared default (chevron-right).
-	const SGS_NM_SUBLINK_MARKER_ICON_DEFAULT = { source: 'lucide', name: 'chevron-right' };
+	const SGS_NM_SUBLINK_MARKER_ICON_DEFAULT = {
+		source: 'lucide',
+		name: 'chevron-right',
+	};
 	const ornamentInUse = Object.values(
 		itemOrnament && typeof itemOrnament === 'object' ? itemOrnament : {}
 	).some( ( v ) => 'index' === v || 'icon' === v );
 
 	const sublinkMarkerIconIsCustom =
-		( sublinkMarkerIcon?.source ?? SGS_NM_SUBLINK_MARKER_ICON_DEFAULT.source ) !==
+		( sublinkMarkerIcon?.source ??
+			SGS_NM_SUBLINK_MARKER_ICON_DEFAULT.source ) !==
 			SGS_NM_SUBLINK_MARKER_ICON_DEFAULT.source ||
-		( sublinkMarkerIcon?.name ?? SGS_NM_SUBLINK_MARKER_ICON_DEFAULT.name ) !==
+		( sublinkMarkerIcon?.name ??
+			SGS_NM_SUBLINK_MARKER_ICON_DEFAULT.name ) !==
 			SGS_NM_SUBLINK_MARKER_ICON_DEFAULT.name;
 
 	// ── The Colour panel (Spec 36 §14.9.6) ──────────────────────────────────────
@@ -213,7 +224,11 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			key: 'nav-bg',
 			heading: __( 'Menu', 'sgs-blocks' ),
 			label: __( 'Nav background', 'sgs-blocks' ),
-			attrs: { base: 'navBg', hover: 'navBgHover', gradient: 'navBgGradient' },
+			attrs: {
+				base: 'navBg',
+				hover: 'navBgHover',
+				gradient: 'navBgGradient',
+			},
 			attributes,
 			setAttributes,
 		} ),
@@ -236,7 +251,9 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				hover: 'itemColourHover',
 				current: 'itemColourCurrent',
 				gradient: 'itemColourGradient',
-				hoverGradient: itemSmartContrast ? undefined : 'itemColourHoverGradient',
+				hoverGradient: itemSmartContrast
+					? undefined
+					: 'itemColourHoverGradient',
 			},
 			attributes,
 			setAttributes,
@@ -253,7 +270,9 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					) }
 					<ItemTextTreatment
 						value={ itemColourHoverTreatment }
-						onChange={ ( val ) => setAttributes( { itemColourHoverTreatment: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { itemColourHoverTreatment: val } )
+						}
 						attributes={ attributes }
 						sweepEligibility={ SWEEP_ELIGIBILITY }
 					/>
@@ -282,7 +301,8 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					key: 'hover',
 					label: __( 'Hover', 'sgs-blocks' ),
 					value: itemBgHover,
-					onChange: ( val ) => setAttributes( { itemBgHover: val ?? '' } ),
+					onChange: ( val ) =>
+						setAttributes( { itemBgHover: val ?? '' } ),
 					gradientValue: itemBgHoverGradient,
 					onGradientChange: ( val ) =>
 						setAttributes( { itemBgHoverGradient: val ?? '' } ),
@@ -295,7 +315,9 @@ export default function Edit( { attributes, setAttributes, name } ) {
 								label: __( 'Current', 'sgs-blocks' ),
 								value: itemBgCurrent,
 								onChange: ( val ) =>
-									setAttributes( { itemBgCurrent: val ?? '' } ),
+									setAttributes( {
+										itemBgCurrent: val ?? '',
+									} ),
 								gradientValue: itemBgCurrentGradient,
 								onGradientChange: ( val ) =>
 									setAttributes( {
@@ -309,7 +331,9 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			after: (
 				<ItemBgTreatment
 					value={ itemBgHoverTreatment }
-					onChange={ ( val ) => setAttributes( { itemBgHoverTreatment: val } ) }
+					onChange={ ( val ) =>
+						setAttributes( { itemBgHoverTreatment: val } )
+					}
 				/>
 			),
 		},
@@ -328,7 +352,8 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					key: 'normal',
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: itemBorderColour,
-					onChange: ( val ) => setAttributes( { itemBorderColour: val ?? '' } ),
+					onChange: ( val ) =>
+						setAttributes( { itemBorderColour: val ?? '' } ),
 					linked: true,
 				},
 				{
@@ -351,9 +376,13 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			after: (
 				<ItemBorderTreatment
 					value={ itemBorderHoverTreatment }
-					onChange={ ( val ) => setAttributes( { itemBorderHoverTreatment: val } ) }
+					onChange={ ( val ) =>
+						setAttributes( { itemBorderHoverTreatment: val } )
+					}
 					angle={ sweepAngle }
-					onAngleChange={ ( val ) => setAttributes( { sweepAngle: val } ) }
+					onAngleChange={ ( val ) =>
+						setAttributes( { sweepAngle: val } )
+					}
 				/>
 			),
 		},
@@ -382,7 +411,9 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						setAttributes( { submenuBorderColour: val ?? '' } ),
 					gradientValue: submenuBorderColourGradient,
 					onGradientChange: ( val ) =>
-						setAttributes( { submenuBorderColourGradient: val ?? '' } ),
+						setAttributes( {
+							submenuBorderColourGradient: val ?? '',
+						} ),
 					linked: true,
 				},
 			],
@@ -401,7 +432,9 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			after: (
 				<SubmenuTextTreatment
 					value={ submenuColourHoverTreatment }
-					onChange={ ( val ) => setAttributes( { submenuColourHoverTreatment: val } ) }
+					onChange={ ( val ) =>
+						setAttributes( { submenuColourHoverTreatment: val } )
+					}
 					attributes={ attributes }
 					sweepEligibility={ SWEEP_ELIGIBILITY }
 				/>
@@ -421,7 +454,9 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			after: (
 				<SubmenuLinkBgTreatment
 					value={ submenuLinkBgHoverTreatment }
-					onChange={ ( val ) => setAttributes( { submenuLinkBgHoverTreatment: val } ) }
+					onChange={ ( val ) =>
+						setAttributes( { submenuLinkBgHoverTreatment: val } )
+					}
 				/>
 			),
 		} ),
@@ -448,7 +483,10 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			textRow( {
 				key: 'ornament',
 				label: __( 'Row ornament colour', 'sgs-blocks' ),
-				attrs: { base: 'itemOrnamentColour', hover: 'itemOrnamentColourHover' },
+				attrs: {
+					base: 'itemOrnamentColour',
+					hover: 'itemOrnamentColourHover',
+				},
 				attributes,
 				setAttributes,
 			} ),
@@ -456,7 +494,10 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		textRow( {
 			key: 'sibling-dim',
 			label: __( 'Dimmed rows (while another is hovered)', 'sgs-blocks' ),
-			attrs: { base: 'siblingDimColour', gradient: 'siblingDimColourGradient' },
+			attrs: {
+				base: 'siblingDimColour',
+				gradient: 'siblingDimColourGradient',
+			},
 			attributes,
 			setAttributes,
 		} ),
@@ -550,7 +591,9 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					menuRef={ ref }
 					menuOptions={ menuOptions }
 					isResolving={ isResolving }
-					accordionScrollIntoView={ attributes.accordionScrollIntoView }
+					accordionScrollIntoView={
+						attributes.accordionScrollIntoView
+					}
 					parentRowAction={ attributes.parentRowAction }
 					setAttributes={ setAttributes }
 				/>
@@ -675,7 +718,10 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							},
 							{
 								key: 'ornamentText',
-								label: __( 'Row number or glyph', 'sgs-blocks' ),
+								label: __(
+									'Row number or glyph',
+									'sgs-blocks'
+								),
 								prefix: 'ornamentText',
 								showSize: false,
 								showStyle: false,
@@ -685,7 +731,10 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							},
 							{
 								key: 'drillBack',
-								label: __( 'Back button (drill-down)', 'sgs-blocks' ),
+								label: __(
+									'Back button (drill-down)',
+									'sgs-blocks'
+								),
 								prefix: 'drillBack',
 								fontSizePresets: true,
 								showFontFamily: true,
@@ -721,7 +770,9 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				<SeparatorsPanel
 					title={ __( 'Row separators', 'sgs-blocks' ) }
 					value={ attributes.separators }
-					onChange={ ( next ) => setAttributes( { separators: next } ) }
+					onChange={ ( next ) =>
+						setAttributes( { separators: next } )
+					}
 					axes={ [ 'row' ] }
 					edges
 					sweep
@@ -748,11 +799,16 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				<SeparatorsPanel
 					title={ __( 'Submenu row separators', 'sgs-blocks' ) }
 					value={ attributes.submenuSeparators }
-					onChange={ ( next ) => setAttributes( { submenuSeparators: next } ) }
+					onChange={ ( next ) =>
+						setAttributes( { submenuSeparators: next } )
+					}
 					axes={ [ 'row' ] }
 				/>
 
-				<SectionMotionPanel attributes={ attributes } setAttributes={ setAttributes } />
+				<SectionMotionPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 
 				<EffectsPanel
 					itemMagnetEnabled={ itemMagnetEnabled }
@@ -804,12 +860,18 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					setAttributes={ setAttributes }
 				/>
 
-				<RowExtrasPanel attributes={ attributes } setAttributes={ setAttributes } />
+				<RowExtrasPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 			</InspectorControls>
 
 			<div { ...blockProps }>
 				<SsrPreviewGuard>
-					<ServerSideRender block="sgs/nav-drawer-menu" attributes={ attributes } />
+					<ServerSideRender
+						block="sgs/nav-drawer-menu"
+						attributes={ attributes }
+					/>
 				</SsrPreviewGuard>
 			</div>
 		</>

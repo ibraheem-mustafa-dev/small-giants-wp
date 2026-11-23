@@ -28,7 +28,12 @@
  * @package SGS\Blocks
  */
 import { mediaStoredAttrName } from '../../MediaElementControls.js';
-import { isLegacyCall, rulesFor, kindIn, omitted } from '../panels/disclosure-context.js';
+import {
+	isLegacyCall,
+	rulesFor,
+	kindIn,
+	omitted,
+} from '../panels/disclosure-context.js';
 
 /** The vocabulary this atom's `types` field declares (registry.js: source.types). */
 export const TYPE_VOCABULARY = [ 'image', 'video', 'svg' ];

@@ -385,7 +385,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				// Blank alignItems falls to the CSS-initial `stretch` — mirrors
 				// SGS_Container_Wrapper::render()'s own default, not a
 				// hardcoded editor-only fallback.
-				alignItems: resolveResponsiveTier( alignItems, 'desktop' )?.value || 'stretch',
+				alignItems:
+					resolveResponsiveTier( alignItems, 'desktop' )?.value ||
+					'stretch',
 				...( flexDirection ? { flexDirection } : {} ),
 				// Matches block.json's gap default.
 				gap: gapPreview,
@@ -650,17 +652,22 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						<ToolsPanelItem
 							label={ __( 'Align items', 'sgs-blocks' ) }
 							hasValue={ () =>
-								JSON.stringify( alignItems ?? {} ) !== JSON.stringify( { desktop: 'center' } )
+								JSON.stringify( alignItems ?? {} ) !==
+								JSON.stringify( { desktop: 'center' } )
 							}
 							onDeselect={ () =>
-								setAttributes( { alignItems: { desktop: 'center' } } )
+								setAttributes( {
+									alignItems: { desktop: 'center' },
+								} )
 							}
 							isShownByDefault
 						>
 							<TierSelectControl
 								value={ alignItems }
 								options={ VERTICAL_ALIGN_OPTIONS }
-								onChange={ ( obj ) => setAttributes( { alignItems: obj } ) }
+								onChange={ ( obj ) =>
+									setAttributes( { alignItems: obj } )
+								}
 								help={ __(
 									'How elements of different heights line up across the row.',
 									'sgs-blocks'

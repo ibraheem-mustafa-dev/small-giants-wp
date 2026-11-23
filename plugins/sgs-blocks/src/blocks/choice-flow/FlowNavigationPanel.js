@@ -24,20 +24,38 @@ import SgsFreeTextField from '../../components/SgsFreeTextField';
  * @return {JSX.Element} The panel, mounted inside its own InspectorControls.
  */
 export default function FlowNavigationPanel( { attributes, setAttributes } ) {
-	const { advanceMode, continueLabel, openerLabel, openerNote, flexWrap } = attributes;
+	const { advanceMode, continueLabel, openerLabel, openerNote, flexWrap } =
+		attributes;
 
 	return (
 		<InspectorControls>
-			<PanelBody title={ __( 'Navigation', 'sgs-blocks' ) } initialOpen={ false }>
+			<PanelBody
+				title={ __( 'Navigation', 'sgs-blocks' ) }
+				initialOpen={ false }
+			>
 				<SelectControl
 					label={ __( 'On answering a question', 'sgs-blocks' ) }
 					value={ advanceMode || 'continue' }
 					options={ [
-						{ label: __( 'Select, then Continue', 'sgs-blocks' ), value: 'continue' },
-						{ label: __( 'Advance straight away', 'sgs-blocks' ), value: 'tap' },
-						{ label: __( 'Advance when an option is picked (Continue only after Back)', 'sgs-blocks' ), value: 'pick' },
+						{
+							label: __( 'Select, then Continue', 'sgs-blocks' ),
+							value: 'continue',
+						},
+						{
+							label: __( 'Advance straight away', 'sgs-blocks' ),
+							value: 'tap',
+						},
+						{
+							label: __(
+								'Advance when an option is picked (Continue only after Back)',
+								'sgs-blocks'
+							),
+							value: 'pick',
+						},
 					] }
-					onChange={ ( val ) => setAttributes( { advanceMode: val } ) }
+					onChange={ ( val ) =>
+						setAttributes( { advanceMode: val } )
+					}
 					help={ __(
 						'"Select, then Continue" shows the choice as picked and waits for the footer’s Continue button — the shopper can change their mind first. "Advance straight away" keeps the original quick-quiz behaviour. "Advance when an option is picked" moves on at once from a single-choice question and shows Continue only on a question that already holds an answer, so Back can return and move on again without re-picking.',
 						'sgs-blocks'
@@ -46,17 +64,26 @@ export default function FlowNavigationPanel( { attributes, setAttributes } ) {
 					__next40pxDefaultSize
 				/>
 				{ 'tap' !== ( advanceMode || 'continue' ) && (
-					<SgsFreeTextField type="rich" noLink
+					<SgsFreeTextField
+						type="rich"
+						noLink
 						label={ __( 'Continue button label', 'sgs-blocks' ) }
 						value={ continueLabel }
-						onChange={ ( val ) => setAttributes( { continueLabel: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { continueLabel: val } )
+						}
 					/>
 				) }
 				<TextControl
 					label={ __( 'Product page button label', 'sgs-blocks' ) }
 					value={ openerLabel }
-					onChange={ ( val ) => setAttributes( { openerLabel: val } ) }
-					help={ __( 'Shown on the product page button when a product links this flow, e.g. "Choose your flavours". Empty uses the buybox label.', 'sgs-blocks' ) }
+					onChange={ ( val ) =>
+						setAttributes( { openerLabel: val } )
+					}
+					help={ __(
+						'Shown on the product page button when a product links this flow, e.g. "Choose your flavours". Empty uses the buybox label.',
+						'sgs-blocks'
+					) }
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 				/>
@@ -64,7 +91,10 @@ export default function FlowNavigationPanel( { attributes, setAttributes } ) {
 					label={ __( 'Product page button note', 'sgs-blocks' ) }
 					value={ openerNote }
 					onChange={ ( val ) => setAttributes( { openerNote: val } ) }
-					help={ __( 'A second line on the product page button, after its label, e.g. "from +£59". Empty shows none. Its colour is set on the buy box.', 'sgs-blocks' ) }
+					help={ __(
+						'A second line on the product page button, after its label, e.g. "from +£59". Empty shows none. Its colour is set on the buy box.',
+						'sgs-blocks'
+					) }
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 				/>

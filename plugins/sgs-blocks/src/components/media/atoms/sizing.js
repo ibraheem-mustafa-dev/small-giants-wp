@@ -25,7 +25,8 @@ const CANCEL = {
 const LAYOUT_PROPS = [ 'width', 'min-width', 'max-width' ];
 
 const text = ( v ) => ( 'string' === typeof v ? v.trim() : '' );
-const limit = ( raw ) => ( 'none' === raw || '' === mediaLength( raw ) ? null : mediaLength( raw ) );
+const limit = ( raw ) =>
+	'none' === raw || '' === mediaLength( raw ) ? null : mediaLength( raw );
 
 /**
  * The checked sizing values in force at a device; null for a base that is unset, `auto` or `natural`.
@@ -47,7 +48,10 @@ function resolveSizing( attrs, slot, device ) {
 		heightValue = null;
 	}
 	return {
-		Ratio: 'natural' === ratio || '' === mediaRatio( ratio ) ? null : mediaRatio( ratio ),
+		Ratio:
+			'natural' === ratio || '' === mediaRatio( ratio )
+				? null
+				: mediaRatio( ratio ),
 		Height: heightValue,
 		Width: '' !== width ? width : null,
 		MinWidth: limit( get( 'MinWidth' ) ),
@@ -59,8 +63,14 @@ function resolveSizing( attrs, slot, device ) {
 
 function fileRatio( attrs, slot, device ) {
 	const source = resolved( attrs, slot, 'Source', device );
-	const w = source && 'object' === typeof source ? parseInt( source.width, 10 ) || 0 : 0;
-	const h = source && 'object' === typeof source ? parseInt( source.height, 10 ) || 0 : 0;
+	const w =
+		source && 'object' === typeof source
+			? parseInt( source.width, 10 ) || 0
+			: 0;
+	const h =
+		source && 'object' === typeof source
+			? parseInt( source.height, 10 ) || 0
+			: 0;
 	return w > 0 && h > 0 ? `${ w } / ${ h }` : '';
 }
 
@@ -121,7 +131,11 @@ export function emit( slot, attrs, uid, helper ) {
 			}
 			const node = LAYOUT_PROPS.includes( prop ) ? n.layout : n.surface;
 			if ( null === now ) {
-				if ( null === was || ( 'width' === prop && 'auto' === was ) || '__fill' === was ) {
+				if (
+					null === was ||
+					( 'width' === prop && 'auto' === was ) ||
+					'__fill' === was
+				) {
 					continue;
 				}
 				add( rules, node, device, prop, cancel );
@@ -130,7 +144,8 @@ export function emit( slot, attrs, uid, helper ) {
 			}
 		}
 		if ( inner ) {
-			const fills = null !== width && ! [ 'auto', 'fit-content' ].includes( width );
+			const fills =
+				null !== width && ! [ 'auto', 'fit-content' ].includes( width );
 			if ( fills !== innerWas ) {
 				add( rules, n.media, device, 'width', fills ? '100%' : 'auto' );
 				innerWas = fills;
@@ -162,11 +177,22 @@ export function disclosure( attrs = {}, device = 'desktop', prefix = '' ) {
 	const fill = 'fill' === resolved( attrs, slot, 'Height', device );
 	const shown = { state: 'shown', hiddenReason: null };
 	const out = {};
-	[ 'Width', 'Height', 'MinWidth', 'MaxWidth', 'MinHeight', 'MaxHeight' ].forEach( ( base ) => {
+	[
+		'Width',
+		'Height',
+		'MinWidth',
+		'MaxWidth',
+		'MinHeight',
+		'MaxHeight',
+	].forEach( ( base ) => {
 		out[ base ] = shown;
 	} );
 	out.Ratio = fill
-		? { state: 'omitted', hiddenReason: 'A ratio does not apply while the height matches its space.' }
+		? {
+				state: 'omitted',
+				hiddenReason:
+					'A ratio does not apply while the height matches its space.',
+		  }
 		: shown;
 	return out;
 }

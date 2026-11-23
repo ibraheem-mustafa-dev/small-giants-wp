@@ -19,19 +19,34 @@ const MOVES = {
 	ArrowUp: -1,
 };
 
-export default function Chips( { label, options, value, onChange, className = '', columns } ) {
+export default function Chips( {
+	label,
+	options,
+	value,
+	onChange,
+	className = '',
+	columns,
+} ) {
 	const refs = useRef( [] );
 	const enabled = options
 		.map( ( option, index ) => ( option.disabled ? -1 : index ) )
 		.filter( ( index ) => index >= 0 );
-	const selectedIndex = options.findIndex( ( option ) => option.value === value );
-	const tabStop = enabled.includes( selectedIndex ) ? selectedIndex : enabled[ 0 ];
+	const selectedIndex = options.findIndex(
+		( option ) => option.value === value
+	);
+	const tabStop = enabled.includes( selectedIndex )
+		? selectedIndex
+		: enabled[ 0 ];
 
 	const onKeyDown = ( event, index ) => {
 		let target = null;
 		if ( event.key in MOVES ) {
 			const at = enabled.indexOf( index );
-			target = enabled[ ( at + MOVES[ event.key ] + enabled.length ) % enabled.length ];
+			target =
+				enabled[
+					( at + MOVES[ event.key ] + enabled.length ) %
+						enabled.length
+				];
 		} else if ( 'Home' === event.key ) {
 			target = enabled[ 0 ];
 		} else if ( 'End' === event.key ) {
@@ -63,21 +78,33 @@ export default function Chips( { label, options, value, onChange, className = ''
 						ref={ ( node ) => {
 							refs.current[ index ] = node;
 						} }
-						className={ `sgs-chips__chip${ checked ? ' is-selected' : '' }` }
+						className={ `sgs-chips__chip${
+							checked ? ' is-selected' : ''
+						}` }
 						onClick={ () => onChange( option.value ) }
 						onKeyDown={ ( event ) => onKeyDown( event, index ) }
 					>
 						{ option.icon && (
-							<span className="sgs-chips__icon" aria-hidden="true">
+							<span
+								className="sgs-chips__icon"
+								aria-hidden="true"
+							>
 								{ option.icon }
 							</span>
 						) }
-						<span className="sgs-chips__label">{ option.label }</span>
+						<span className="sgs-chips__label">
+							{ option.label }
+						</span>
 						{ option.caption && (
-							<span className="sgs-chips__caption">{ option.caption }</span>
+							<span className="sgs-chips__caption">
+								{ option.caption }
+							</span>
 						) }
 						{ checked && (
-							<span className="sgs-chips__tick" aria-hidden="true">
+							<span
+								className="sgs-chips__tick"
+								aria-hidden="true"
+							>
 								&#10003;
 							</span>
 						) }

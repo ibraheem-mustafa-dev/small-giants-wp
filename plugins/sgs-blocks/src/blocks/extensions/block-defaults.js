@@ -19,11 +19,22 @@ import { addFilter } from '@wordpress/hooks';
 export const SITE_DEFAULT_VARIATION = 'sgs-site-default';
 
 /** Attributes never seeded: WP internals and per-instance identity (PHP twin: Block_Defaults::NOT_DEFAULTS). */
-export const NOT_DEFAULTS = [ 'lock', 'className', 'style', 'metadata', 'anchor', 'formId' ];
+export const NOT_DEFAULTS = [
+	'lock',
+	'className',
+	'style',
+	'metadata',
+	'anchor',
+	'formId',
+];
 
 // A variation's scopes; WordPress treats an undeclared scope as [ 'block', 'inserter' ].
-const scopesOf = ( variation ) => ( Array.isArray( variation.scope ) ? variation.scope : [ 'block', 'inserter' ] );
-const insertable = ( variation ) => scopesOf( variation ).includes( 'inserter' );
+const scopesOf = ( variation ) =>
+	Array.isArray( variation.scope )
+		? variation.scope
+		: [ 'block', 'inserter' ];
+const insertable = ( variation ) =>
+	scopesOf( variation ).includes( 'inserter' );
 
 /**
  * Seed a block's inserter entries with its saved site defaults.
@@ -43,7 +54,11 @@ export function applyBlockDefaults( settings, name ) {
 		return settings;
 	}
 	// Keys the block does not declare when it is inserted are dropped by createBlock.
-	const initial = Object.fromEntries( Object.entries( saved ).filter( ( [ key ] ) => ! NOT_DEFAULTS.includes( key ) ) );
+	const initial = Object.fromEntries(
+		Object.entries( saved ).filter(
+			( [ key ] ) => ! NOT_DEFAULTS.includes( key )
+		)
+	);
 	if ( ! Object.keys( initial ).length ) {
 		return settings;
 	}
@@ -54,11 +69,23 @@ export function applyBlockDefaults( settings, name ) {
 		if ( ! insertable( variation ) ) {
 			return [ variation ];
 		}
-		const seeded = { ...variation, scope: [ 'inserter' ], attributes: { ...initial, ...( variation.attributes || {} ) } };
-		const others = scopesOf( variation ).filter( ( s ) => 'inserter' !== s );
-		return others.length ? [ { ...variation, scope: others }, seeded ] : [ seeded ];
+		const seeded = {
+			...variation,
+			scope: [ 'inserter' ],
+			attributes: { ...initial, ...( variation.attributes || {} ) },
+		};
+		const others = scopesOf( variation ).filter(
+			( s ) => 'inserter' !== s
+		);
+		return others.length
+			? [ { ...variation, scope: others }, seeded ]
+			: [ seeded ];
 	} );
-	if ( ! variations.some( ( variation ) => variation.isDefault && insertable( variation ) ) ) {
+	if (
+		! variations.some(
+			( variation ) => variation.isDefault && insertable( variation )
+		)
+	) {
 		variations.unshift( {
 			name: SITE_DEFAULT_VARIATION,
 			isDefault: true,
@@ -112,8 +139,8 @@ const withSaveAsDefault = createHigherOrderComponent( ( BlockEdit ) => {
 			status === 'saved'
 				? __( 'Saved as default', 'sgs-blocks' )
 				: status === 'error'
-					? __( 'Failed to save', 'sgs-blocks' )
-					: __( 'Save as Default', 'sgs-blocks' );
+				? __( 'Failed to save', 'sgs-blocks' )
+				: __( 'Save as Default', 'sgs-blocks' );
 
 		return (
 			<>
@@ -139,8 +166,4 @@ const withSaveAsDefault = createHigherOrderComponent( ( BlockEdit ) => {
 	};
 }, 'withSaveAsDefault' );
 
-addFilter(
-	'editor.BlockEdit',
-	'sgs/block-defaults',
-	withSaveAsDefault
-);
+addFilter( 'editor.BlockEdit', 'sgs/block-defaults', withSaveAsDefault );

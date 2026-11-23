@@ -57,14 +57,23 @@ export default function DashboardPanel( { attributes, setAttributes } ) {
 	} = attributes;
 
 	const steps = { ...DEFAULT_STEP_LABELS, ...( statusStepLabels || {} ) };
-	const cards = { ...DEFAULT_CARD_DESCRIPTIONS, ...( cardDescriptions || {} ) };
+	const cards = {
+		...DEFAULT_CARD_DESCRIPTIONS,
+		...( cardDescriptions || {} ),
+	};
 
 	return (
-		<PanelBody title={ __( 'Dashboard', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Dashboard', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			<TextControl
 				__next40pxDefaultSize
 				__nextHasNoMarginBottom
-				label={ __( 'Greeting ({name} = the shopper\'s name)', 'sgs-blocks' ) }
+				label={ __(
+					"Greeting ({name} = the shopper's name)",
+					'sgs-blocks'
+				) }
 				value={ greeting }
 				onChange={ ( value ) => setAttributes( { greeting: value } ) }
 			/>
@@ -73,7 +82,9 @@ export default function DashboardPanel( { attributes, setAttributes } ) {
 				__nextHasNoMarginBottom
 				label={ __( 'Show latest order card', 'sgs-blocks' ) }
 				checked={ false !== showLatestOrder }
-				onChange={ ( value ) => setAttributes( { showLatestOrder: value } ) }
+				onChange={ ( value ) =>
+					setAttributes( { showLatestOrder: value } )
+				}
 			/>
 
 			{ false !== showLatestOrder && (
@@ -83,45 +94,65 @@ export default function DashboardPanel( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						label={ __( 'Latest order heading', 'sgs-blocks' ) }
 						value={ latestOrderHeading }
-						onChange={ ( value ) => setAttributes( { latestOrderHeading: value } ) }
+						onChange={ ( value ) =>
+							setAttributes( { latestOrderHeading: value } )
+						}
 					/>
 					<TextControl
 						__next40pxDefaultSize
 						__nextHasNoMarginBottom
 						label={ __( 'View order label', 'sgs-blocks' ) }
 						value={ viewOrderLabel }
-						onChange={ ( value ) => setAttributes( { viewOrderLabel: value } ) }
+						onChange={ ( value ) =>
+							setAttributes( { viewOrderLabel: value } )
+						}
 					/>
 					<TextControl
 						__next40pxDefaultSize
 						__nextHasNoMarginBottom
 						label={ __( 'Track parcel label', 'sgs-blocks' ) }
 						value={ parcelTrackingLabel }
-						onChange={ ( value ) => setAttributes( { parcelTrackingLabel: value } ) }
+						onChange={ ( value ) =>
+							setAttributes( { parcelTrackingLabel: value } )
+						}
 					/>
 					{ Object.keys( DEFAULT_STEP_LABELS ).map( ( key ) => (
 						<TextControl
 							key={ key }
 							__next40pxDefaultSize
 							__nextHasNoMarginBottom
-							label={ DEFAULT_STEP_LABELS[ key ] + ' ' + __( 'step label', 'sgs-blocks' ) }
+							label={
+								DEFAULT_STEP_LABELS[ key ] +
+								' ' +
+								__( 'step label', 'sgs-blocks' )
+							}
 							value={ steps[ key ] }
 							onChange={ ( value ) =>
-								setAttributes( { statusStepLabels: { ...steps, [ key ]: value } } )
+								setAttributes( {
+									statusStepLabels: {
+										...steps,
+										[ key ]: value,
+									},
+								} )
 							}
 						/>
 					) ) }
-					<SgsFreeTextField type="rich"
+					<SgsFreeTextField
+						type="rich"
 						label={ __( 'No-orders text', 'sgs-blocks' ) }
 						value={ noOrdersText }
-						onChange={ ( value ) => setAttributes( { noOrdersText: value } ) }
+						onChange={ ( value ) =>
+							setAttributes( { noOrdersText: value } )
+						}
 					/>
 					<TextControl
 						__next40pxDefaultSize
 						__nextHasNoMarginBottom
 						label={ __( 'Shop link label', 'sgs-blocks' ) }
 						value={ shopLinkLabel }
-						onChange={ ( value ) => setAttributes( { shopLinkLabel: value } ) }
+						onChange={ ( value ) =>
+							setAttributes( { shopLinkLabel: value } )
+						}
 					/>
 				</>
 			) }
@@ -129,19 +160,25 @@ export default function DashboardPanel( { attributes, setAttributes } ) {
 			<FlexWrapControl
 				label={ __( 'Wrap order thumbnails', 'sgs-blocks' ) }
 				value={ orderThumbsFlexWrap }
-				onChange={ ( value ) => setAttributes( { orderThumbsFlexWrap: value } ) }
+				onChange={ ( value ) =>
+					setAttributes( { orderThumbsFlexWrap: value } )
+				}
 			/>
 			<FlexWrapControl
 				label={ __( 'Wrap order links', 'sgs-blocks' ) }
 				value={ orderActionsFlexWrap }
-				onChange={ ( value ) => setAttributes( { orderActionsFlexWrap: value } ) }
+				onChange={ ( value ) =>
+					setAttributes( { orderActionsFlexWrap: value } )
+				}
 			/>
 
 			<ToggleControl
 				__nextHasNoMarginBottom
 				label={ __( 'Show quick-link cards', 'sgs-blocks' ) }
 				checked={ false !== showQuickCards }
-				onChange={ ( value ) => setAttributes( { showQuickCards: value } ) }
+				onChange={ ( value ) =>
+					setAttributes( { showQuickCards: value } )
+				}
 			/>
 
 			{ false !== showQuickCards &&
@@ -153,7 +190,9 @@ export default function DashboardPanel( { attributes, setAttributes } ) {
 						label={ CARD_LABELS[ key ] }
 						value={ cards[ key ] }
 						onChange={ ( value ) =>
-							setAttributes( { cardDescriptions: { ...cards, [ key ]: value } } )
+							setAttributes( {
+								cardDescriptions: { ...cards, [ key ]: value },
+							} )
 						}
 					/>
 				) ) }

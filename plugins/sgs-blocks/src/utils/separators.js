@@ -44,7 +44,10 @@ export function separatorAxis( value, axis ) {
  * @return {boolean} True when style, widths and colours all match.
  */
 export function axesMatch( a, b ) {
-	const tiers = ( axis ) => [ 'desktop', 'tablet', 'mobile' ].map( ( t ) => ( axis.width && axis.width[ t ] ) || '' );
+	const tiers = ( axis ) =>
+		[ 'desktop', 'tablet', 'mobile' ].map(
+			( t ) => ( axis.width && axis.width[ t ] ) || ''
+		);
 	return (
 		( a.style || '' ) === ( b.style || '' ) &&
 		( a.colour || '' ) === ( b.colour || '' ) &&
@@ -67,7 +70,10 @@ export function patchSeparatorAxis( value, axes, axis, patch, linked ) {
 	const next = { ...( value || {} ) };
 	const targets = linked ? axes : [ axis ];
 	targets.forEach( ( target ) => {
-		next[ target ] = { ...separatorAxis( value, linked ? axis : target ), ...patch };
+		next[ target ] = {
+			...separatorAxis( value, linked ? axis : target ),
+			...patch,
+		};
 	} );
 	return next;
 }
@@ -100,7 +106,8 @@ export function separatorsFlowPreview( value, device = 'desktop' ) {
 		const data = separatorAxis( value, axis );
 		const width = separatorWidthAt( data, device );
 		if ( width ) {
-			const line = data.style && 'none' !== data.style ? data.style : 'solid';
+			const line =
+				data.style && 'none' !== data.style ? data.style : 'solid';
 			const colour = colourVar( data.colour ) || 'currentColor';
 			style[ `${ axis }Rule` ] = `${ width } ${ line } ${ colour }`;
 			// The same values as custom properties: the editor's overlay (for browsers

@@ -23,7 +23,10 @@
  * @package
  */
 
-import { QUERY_MOBILE_FRACTIONAL, QUERY_TABLET_ONLY_FRACTIONAL } from '../../utils/breakpoints';
+import {
+	QUERY_MOBILE_FRACTIONAL,
+	QUERY_TABLET_ONLY_FRACTIONAL,
+} from '../../utils/breakpoints';
 
 /**
  * The device-tier queries: mobile <=767, tablet 768-1023, desktop >=1024. Never design breakpoints. The fractional edges
@@ -68,7 +71,10 @@ export function isEffectOffAtThisTier( el, effect ) {
 	if ( ! tier ) {
 		return false;
 	}
-	if ( tier !== 'desktop' && el.hasAttribute( `data-sgs-fx-disable-${ tier }` ) ) {
+	if (
+		tier !== 'desktop' &&
+		el.hasAttribute( `data-sgs-fx-disable-${ tier }` )
+	) {
 		return true;
 	}
 	const off = el.getAttribute( `data-sgs-fx-off-${ tier }` ) || '';

@@ -132,7 +132,9 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					<SgsFreeTextField type="rich" noLink
+					<SgsFreeTextField
+						type="rich"
+						noLink
 						label={ __( 'Label', 'sgs-blocks' ) }
 						value={ label }
 						onChange={ ( val ) => setAttributes( { label: val } ) }

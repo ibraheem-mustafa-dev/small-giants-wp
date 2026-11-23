@@ -33,7 +33,7 @@ import { sanitiseSvg, withSvgStrokeGradient } from '../../utils';
  * does not cover on its own.
  *
  * @param {string} svgString Raw SVG markup with `fill="..."`/`stroke="..."`
- *   attributes on its root element.
+ *                           attributes on its root element.
  * @return {string} The same markup with those two values also present as an
  *   inline `style`, so they survive being mounted inside a Button.
  */
@@ -46,30 +46,32 @@ export function withInlineFillStroke( svgString ) {
 	const declarations = [
 		fillMatch ? `fill:${ fillMatch[ 1 ] }` : null,
 		strokeMatch ? `stroke:${ strokeMatch[ 1 ] }` : null,
-	].filter( Boolean ).join( ';' );
+	]
+		.filter( Boolean )
+		.join( ';' );
 	return svgString.replace( /<svg/, `<svg style="${ declarations }"` );
 }
 
 /**
- * @param {Object} props
- * @param {string} props.source   One of lucide | brand | emoji | wp-icon | dashicon | custom.
- * @param {string} props.name     Icon identifier (lucide/wp slug, brand registry slug, dashicon slug, or emoji char).
- * @param {boolean} [props.branded] Brand source only: draw the brand's fixed-colour mark when it has one.
- * @param {Array}   [props.brands]  Brand registry entries (src/utils/brand-registry.js BRANDS), from the caller.
- * @param {string} [props.svg]    Raw SVG markup — only read when source is 'custom'.
- * @param {number} [props.size]   Pixel size of the preview box. Default 24.
- * @param {string} [props.glyphClassName] A class for the glyph's own element (the `<svg>`, or the dashicon span),
- *   the element a server render resolver puts a part class on (`nav-drawer` `closeIcon`); an emoji has none.
- * @param {string} [props.gradient] Optional `iconColourGradient`-style CSS
- *   gradient function (`linear-gradient(...)`/`radial-gradient(...)`). SVG
- *   icons are STROKE-based, so a gradient can't ride `color`/`currentColor`
- *   the way a flat colour does (D636/D644) — when set, this mirrors the
- *   frontend's `sgs_svg_stroke_gradient()` (`helpers-svg-gradient.php`) by
- *   injecting a real SVG `<linearGradient>`/`<radialGradient>` def and
- *   painting the icon's `stroke` with it, via `withSvgStrokeGradient()`
- *   (`utils/svg-gradient-preview.js`). Only applies to lucide/wp-icon (the
- *   only stroke-based sources); emoji/dashicon ignore it, matching the
- *   frontend's `$icon_svg` scoping.
+ * @param {Object}  props
+ * @param {string}  props.source           One of lucide | brand | emoji | wp-icon | dashicon | custom.
+ * @param {string}  props.name             Icon identifier (lucide/wp slug, brand registry slug, dashicon slug, or emoji char).
+ * @param {boolean} [props.branded]        Brand source only: draw the brand's fixed-colour mark when it has one.
+ * @param {Array}   [props.brands]         Brand registry entries (src/utils/brand-registry.js BRANDS), from the caller.
+ * @param {string}  [props.svg]            Raw SVG markup — only read when source is 'custom'.
+ * @param {number}  [props.size]           Pixel size of the preview box. Default 24.
+ * @param {string}  [props.glyphClassName] A class for the glyph's own element (the `<svg>`, or the dashicon span),
+ *                                         the element a server render resolver puts a part class on (`nav-drawer` `closeIcon`); an emoji has none.
+ * @param {string}  [props.gradient]       Optional `iconColourGradient`-style CSS
+ *                                         gradient function (`linear-gradient(...)`/`radial-gradient(...)`). SVG
+ *                                         icons are STROKE-based, so a gradient can't ride `color`/`currentColor`
+ *                                         the way a flat colour does (D636/D644) — when set, this mirrors the
+ *                                         frontend's `sgs_svg_stroke_gradient()` (`helpers-svg-gradient.php`) by
+ *                                         injecting a real SVG `<linearGradient>`/`<radialGradient>` def and
+ *                                         painting the icon's `stroke` with it, via `withSvgStrokeGradient()`
+ *                                         (`utils/svg-gradient-preview.js`). Only applies to lucide/wp-icon (the
+ *                                         only stroke-based sources); emoji/dashicon ignore it, matching the
+ *                                         frontend's `$icon_svg` scoping.
  */
 /**
  * An SVG string with one class added to its root `<svg>` tag.
@@ -82,21 +84,37 @@ export function withSvgClass( markup, className ) {
 	return String( markup ).replace( /<svg\b([^>]*)>/i, ( tag, attrs ) => {
 		const current = /\sclass\s*=\s*"([^"]*)"/i.exec( attrs );
 		if ( current ) {
-			return tag.replace( current[ 0 ], ` class="${ current[ 1 ] } ${ className }"` );
+			return tag.replace(
+				current[ 0 ],
+				` class="${ current[ 1 ] } ${ className }"`
+			);
 		}
 		return `<svg${ attrs } class="${ className }">`;
 	} );
 }
 
-export default function IconPreview( { source, name, size = 24, gradient = '', svg: customSvg = '', branded = false, brands = [], glyphClassName = '' } ) {
+export default function IconPreview( {
+	source,
+	name,
+	size = 24,
+	gradient = '',
+	svg: customSvg = '',
+	branded = false,
+	brands = [],
+	glyphClassName = '',
+} ) {
 	// The glyph class goes on the sanitised markup's own `<svg>` tag.
-	const glyph = ( markup ) => ( glyphClassName ? withSvgClass( markup, glyphClassName ) : markup );
+	const glyph = ( markup ) =>
+		glyphClassName ? withSvgClass( markup, glyphClassName ) : markup;
 	const [ svg, setSvg ] = useState( '' );
 	const gradientId = useInstanceId( IconPreview, 'sgs-icon-preview-grad' );
 
 	// A brand drawn from a Lucide icon previews as that icon; a registry SVG mark needs no load.
-	const brandEntry = 'brand' === source ? brands.find( ( b ) => b.slug === name ) : null;
-	const brandMark = brandEntry ? ( branded && brandEntry.glyphBrand ) || brandEntry.glyph || {} : null;
+	const brandEntry =
+		'brand' === source ? brands.find( ( b ) => b.slug === name ) : null;
+	const brandMark = brandEntry
+		? ( branded && brandEntry.glyphBrand ) || brandEntry.glyph || {}
+		: null;
 	const lucideName = brandMark ? brandMark.lucide : name;
 
 	useEffect( () => {
@@ -104,11 +122,21 @@ export default function IconPreview( { source, name, size = 24, gradient = '', s
 		setSvg( '' );
 		if ( ( 'lucide' === source || 'brand' === source ) && lucideName ) {
 			loadLucide()
-				.then( ( { map } ) => active && setSvg( withInlineFillStroke( map[ lucideName ] || '' ) ) )
+				.then(
+					( { map } ) =>
+						active &&
+						setSvg(
+							withInlineFillStroke( map[ lucideName ] || '' )
+						)
+				)
 				.catch( () => {} );
 		} else if ( 'wp-icon' === source && name ) {
 			loadWpIcons()
-				.then( ( map ) => active && setSvg( withInlineFillStroke( map[ name ] || '' ) ) )
+				.then(
+					( map ) =>
+						active &&
+						setSvg( withInlineFillStroke( map[ name ] || '' ) )
+				)
 				.catch( () => {} );
 		}
 		return () => {
@@ -128,7 +156,11 @@ export default function IconPreview( { source, name, size = 24, gradient = '', s
 	if ( 'emoji' === source ) {
 		return (
 			<span
-				style={ { ...box, fontSize: Math.round( size * 0.9 ), lineHeight: 1 } }
+				style={ {
+					...box,
+					fontSize: Math.round( size * 0.9 ),
+					lineHeight: 1,
+				} }
 				aria-hidden="true"
 			>
 				{ name || '⭐' }
@@ -143,7 +175,9 @@ export default function IconPreview( { source, name, size = 24, gradient = '', s
 				style={ box }
 				aria-hidden="true"
 				// eslint-disable-next-line react/no-danger
-				dangerouslySetInnerHTML={ { __html: glyph( sanitiseSvg( brandMark.svg ) ) } }
+				dangerouslySetInnerHTML={ {
+					__html: glyph( sanitiseSvg( brandMark.svg ) ),
+				} }
 			/>
 		);
 	}
@@ -159,14 +193,21 @@ export default function IconPreview( { source, name, size = 24, gradient = '', s
 				dangerouslySetInnerHTML={ { __html: safe } }
 			/>
 		) : (
-			<span style={ box } aria-hidden="true">▢</span>
+			<span style={ box } aria-hidden="true">
+				▢
+			</span>
 		);
 	}
 
 	if ( 'dashicon' === source ) {
 		return (
 			<span
-				className={ [ `dashicons dashicons-${ name || 'star-filled' }`, glyphClassName ].filter( Boolean ).join( ' ' ) }
+				className={ [
+					`dashicons dashicons-${ name || 'star-filled' }`,
+					glyphClassName,
+				]
+					.filter( Boolean )
+					.join( ' ' ) }
 				style={ { ...box, fontSize: size, width: size, height: size } }
 				aria-hidden="true"
 			/>
@@ -184,7 +225,9 @@ export default function IconPreview( { source, name, size = 24, gradient = '', s
 				style={ box }
 				aria-hidden="true"
 				// eslint-disable-next-line react/no-danger
-				dangerouslySetInnerHTML={ { __html: glyph( sanitiseSvg( gradedSvg ) ) } }
+				dangerouslySetInnerHTML={ {
+					__html: glyph( sanitiseSvg( gradedSvg ) ),
+				} }
 			/>
 		);
 	}

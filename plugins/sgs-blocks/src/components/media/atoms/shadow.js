@@ -20,7 +20,12 @@ import { __ } from '@wordpress/i18n';
 import { mediaStoredAttrName } from '../../MediaElementControls.js';
 import { composeShadow } from '../../../utils/shadow-layers.js';
 import { shadowHoverValue } from '../../../utils/shadow-hover.js';
-import { isLegacyCall, rulesFor, omitted, REASONS } from '../panels/disclosure-context.js';
+import {
+	isLegacyCall,
+	rulesFor,
+	omitted,
+	REASONS,
+} from '../panels/disclosure-context.js';
 
 import { add, nodes, rulesCss, scalar } from '../emit/core.js';
 import { mediaShadow } from '../emit/values.js';
@@ -35,7 +40,11 @@ export function attrKeys( prefix, blockSlug ) {
 	return {
 		base: mediaStoredAttrName( blockSlug, prefix, 'BoxShadow' ),
 		colour: mediaStoredAttrName( blockSlug, prefix, 'BoxShadowColour' ),
-		hoverColour: mediaStoredAttrName( blockSlug, prefix, 'BoxShadowColourHover' ),
+		hoverColour: mediaStoredAttrName(
+			blockSlug,
+			prefix,
+			'BoxShadowColourHover'
+		),
 	};
 }
 
@@ -47,7 +56,10 @@ export function attrKeys( prefix, blockSlug ) {
  * @return {string} CSS `box-shadow` value, or '' when there is nothing to draw.
  */
 export function resolveShadow( shape, colour ) {
-	return composeShadow( 'string' === typeof shape ? shape : '', 'string' === typeof colour ? colour : '' );
+	return composeShadow(
+		'string' === typeof shape ? shape : '',
+		'string' === typeof colour ? colour : ''
+	);
 }
 
 /**
@@ -59,12 +71,19 @@ export function resolveShadow( shape, colour ) {
  * @param {string} [props.blockSlug]
  * @return {{state: string, hiddenReason: (string|null)}}
  */
-function legacyDisclosure( { attributes = {}, prefix = '', blockSlug = '' } = {} ) {
+function legacyDisclosure( {
+	attributes = {},
+	prefix = '',
+	blockSlug = '',
+} = {} ) {
 	const keys = attrKeys( prefix, blockSlug );
 	if ( ! attributes[ keys.base ] ) {
 		return {
 			state: 'disabled',
-			hiddenReason: __( 'The hover colour only applies once a shadow is set.', 'sgs-blocks' ),
+			hiddenReason: __(
+				'The hover colour only applies once a shadow is set.',
+				'sgs-blocks'
+			),
 		};
 	}
 	return { state: 'shown', hiddenReason: null };
@@ -172,7 +191,9 @@ export function emit( slot, attrs, uid, helper ) {
 		return out;
 	};
 	const rules = {};
-	for ( const [ prop, value ] of Object.entries( decls( scalar( attrs, slot, 'BoxShadowColour' ) ) ) ) {
+	for ( const [ prop, value ] of Object.entries(
+		decls( scalar( attrs, slot, 'BoxShadowColour' ) )
+	) ) {
 		add( rules, surface, 'desktop', prop, value );
 	}
 	const hoverColour = scalar( attrs, slot, 'BoxShadowColourHover' );

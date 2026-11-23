@@ -19,7 +19,8 @@ import {
 import { parseSvgGradient } from '../../utils/svg-gradient-preview';
 
 // render.php accepts only the digit weights 100-900.
-const fontWeightOf = ( value ) => ( /^[1-9]00$/.test( String( value ?? '' ) ) ? String( value ) : undefined );
+const fontWeightOf = ( value ) =>
+	/^[1-9]00$/.test( String( value ?? '' ) ) ? String( value ) : undefined;
 
 /**
  * The item's own wrapper.
@@ -35,8 +36,16 @@ export function itemWrapperPreview( attributes, tier, palette ) {
 	// background-image key, the same last-wins order render.php emits.
 	Object.assign(
 		wrapper.style,
-		backgroundPaintPreview( attributes.backgroundColour, attributes.backgroundColourGradient, palette ),
-		textPaintPreview( attributes.textColour, attributes.textColourGradient, palette )
+		backgroundPaintPreview(
+			attributes.backgroundColour,
+			attributes.backgroundColourGradient,
+			palette
+		),
+		textPaintPreview(
+			attributes.textColour,
+			attributes.textColourGradient,
+			palette
+		)
 	);
 	return wrapper;
 }
@@ -50,7 +59,10 @@ export function itemWrapperPreview( attributes, tier, palette ) {
  */
 export function itemShadowPreview( context, open ) {
 	const colour = context[ 'sgs/accordionItemShadowColour' ];
-	const resting = resolveShadowPreviewComposed( context[ 'sgs/accordionItemShadow' ], colour );
+	const resting = resolveShadowPreviewComposed(
+		context[ 'sgs/accordionItemShadow' ],
+		colour
+	);
 	const openShadow = open
 		? resolveShadowPreviewComposed(
 				context[ 'sgs/accordionItemShadowOpen' ],
@@ -76,10 +88,21 @@ export function iconRingPreview( context, tier, open ) {
 		.map( ( t ) => sizes[ t ] )
 		.find( ( v ) => 'number' === typeof v && v > 0 );
 	const widths = context[ 'sgs/accordionIconCircleBorderWidth' ] || {};
-	const side = ( key ) => ( /^\d+(\.\d+)?(px|em|rem)?$/.test( String( widths[ key ] ?? '' ) ) ? String( widths[ key ] ) : '' );
-	const hasWidth = [ 'top', 'right', 'bottom', 'left' ].some( ( key ) => '' !== side( key ) );
-	const borderColour = colourVar( ( open && context[ 'sgs/accordionIconCircleBorderColourOpen' ] ) || context[ 'sgs/accordionIconCircleBorderColour' ] );
-	const background = colourVar( ( open && context[ 'sgs/accordionIconCircleBackgroundOpen' ] ) || context[ 'sgs/accordionIconCircleBackground' ] );
+	const side = ( key ) =>
+		/^\d+(\.\d+)?(px|em|rem)?$/.test( String( widths[ key ] ?? '' ) )
+			? String( widths[ key ] )
+			: '';
+	const hasWidth = [ 'top', 'right', 'bottom', 'left' ].some(
+		( key ) => '' !== side( key )
+	);
+	const borderColour = colourVar(
+		( open && context[ 'sgs/accordionIconCircleBorderColourOpen' ] ) ||
+			context[ 'sgs/accordionIconCircleBorderColour' ]
+	);
+	const background = colourVar(
+		( open && context[ 'sgs/accordionIconCircleBackgroundOpen' ] ) ||
+			context[ 'sgs/accordionIconCircleBackground' ]
+	);
 	if ( ! size && ! hasWidth && ! borderColour && ! background ) {
 		return {};
 	}
@@ -93,7 +116,15 @@ export function iconRingPreview( context, tier, open ) {
 		...( hasWidth
 			? {
 					borderStyle: 'solid',
-					borderWidth: [ 'top', 'right', 'bottom', 'left' ].map( ( key ) => ( side( key ) ? ( /[a-z]$/.test( side( key ) ) ? side( key ) : `${ side( key ) }px` ) : '0' ) ).join( ' ' ),
+					borderWidth: [ 'top', 'right', 'bottom', 'left' ]
+						.map( ( key ) =>
+							side( key )
+								? /[a-z]$/.test( side( key ) )
+									? side( key )
+									: `${ side( key ) }px`
+								: '0'
+						)
+						.join( ' ' ),
 			  }
 			: {} ),
 		...( borderColour ? { borderColor: borderColour } : {} ),
@@ -118,7 +149,8 @@ export function headerPreview( context, palette, open ) {
 	};
 	const weight = fontWeightOf(
 		open
-			? context[ 'sgs/accordionHeaderFontWeightOpen' ] || context[ 'sgs/accordionHeaderFontWeight' ]
+			? context[ 'sgs/accordionHeaderFontWeightOpen' ] ||
+					context[ 'sgs/accordionHeaderFontWeight' ]
 			: context[ 'sgs/accordionHeaderFontWeight' ]
 	);
 	if ( weight ) {
@@ -144,6 +176,8 @@ export function headerPreview( context, palette, open ) {
 		header,
 		title,
 		icon: iconColour ? { color: iconColour } : {},
-		iconGradient: iconGradientValue ? parseSvgGradient( iconGradientValue ) : null,
+		iconGradient: iconGradientValue
+			? parseSvgGradient( iconGradientValue )
+			: null,
 	};
 }

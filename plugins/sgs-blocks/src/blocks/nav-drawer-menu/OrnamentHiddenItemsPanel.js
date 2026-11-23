@@ -24,12 +24,12 @@ import { __ } from '@wordpress/i18n';
 import { PanelBody, CheckboxControl } from '@wordpress/components';
 
 /**
- * @param {Object}   root0                      Props.
- * @param {number}   root0.menuRef              The block's `ref` attribute (menu id).
- * @param {Array}    root0.resolvedItems        From `useNavMenuSource()`.
- * @param {Function} root0.toggleOrnamentHidden Local add/remove-from-array toggler
- *                                              (edit.js), same shape as
- *                                              useNavMenuSource's own toggleFeatured.
+ * @param {Object}   root0                       Props.
+ * @param {number}   root0.menuRef               The block's `ref` attribute (menu id).
+ * @param {Array}    root0.resolvedItems         From `useNavMenuSource()`.
+ * @param {Function} root0.toggleOrnamentHidden  Local add/remove-from-array toggler
+ *                                               (edit.js), same shape as
+ *                                               useNavMenuSource's own toggleFeatured.
  * @param {string[]} root0.ornamentHiddenItemIds The block's `ornamentHiddenItemIds` attribute.
  */
 export default function OrnamentHiddenItemsPanel( {
@@ -39,7 +39,10 @@ export default function OrnamentHiddenItemsPanel( {
 	ornamentHiddenItemIds,
 } ) {
 	return (
-		<PanelBody title={ __( 'Ornament', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Ornament', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			{ 0 === menuRef && (
 				<p>
 					{ __(

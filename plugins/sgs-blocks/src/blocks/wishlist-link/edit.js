@@ -55,7 +55,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const previewTier = usePreviewTier();
 	const previewUid = `sgs-wishlist-link-preview-${ clientId }`;
 	// A glyph size set for the preview tier overrules the 44px tap floor, as render.php does.
-	const hasGlyphSize = '' !== ( resolveTier( iconSize, previewTier ).value ?? '' );
+	const hasGlyphSize =
+		'' !== ( resolveTier( iconSize, previewTier ).value ?? '' );
 	const blockProps = useBlockProps( {
 		className: `sgs-wishlist-link ${ previewUid }`,
 		style: hasGlyphSize ? { '--sgs-wishlist-tap-min': '0px' } : undefined,
@@ -138,7 +139,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							setAttributes( { wishlistUrl: value } )
 						}
 					/>
-					<SgsFreeTextField type="rich" noLink
+					<SgsFreeTextField
+						type="rich"
+						noLink
 						label={ __( 'Label', 'sgs-blocks' ) }
 						value={ label }
 						onChange={ ( value ) =>

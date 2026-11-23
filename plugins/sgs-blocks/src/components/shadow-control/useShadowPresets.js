@@ -17,8 +17,17 @@ import { useSettings } from '@wordpress/block-editor';
  * @return {Array} Flat list of `{ slug, name, ... }`.
  */
 export function flattenSettingList( setting ) {
-	const list = Array.isArray( setting ) ? setting : [ ...( setting?.custom || [] ), ...( setting?.theme || [] ), ...( setting?.default || [] ) ];
-	return list.filter( ( item, i ) => list.findIndex( ( other ) => other.slug === item.slug ) === i );
+	const list = Array.isArray( setting )
+		? setting
+		: [
+				...( setting?.custom || [] ),
+				...( setting?.theme || [] ),
+				...( setting?.default || [] ),
+		  ];
+	return list.filter(
+		( item, i ) =>
+			list.findIndex( ( other ) => other.slug === item.slug ) === i
+	);
 }
 
 /**
@@ -35,5 +44,11 @@ export function useShadowPresets() {
  * @return {Array} `[ { label, value } ]`.
  */
 export function useShadowPresetOptions() {
-	return [ { label: __( 'None', 'sgs-blocks' ), value: '' }, ...useShadowPresets().map( ( p ) => ( { label: p.name, value: p.slug } ) ) ];
+	return [
+		{ label: __( 'None', 'sgs-blocks' ), value: '' },
+		...useShadowPresets().map( ( p ) => ( {
+			label: p.name,
+			value: p.slug,
+		} ) ),
+	];
 }

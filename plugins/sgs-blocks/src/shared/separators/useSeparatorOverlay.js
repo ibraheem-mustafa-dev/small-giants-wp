@@ -15,8 +15,8 @@ import { initSeparatorList } from './overlay';
 import './editor.css';
 
 /**
- * @param {{current: HTMLElement|null}} ref    The list element's ref.
- * @param {string}                      key    '' for no lines, else a string that changes with the settings.
+ * @param {{current: HTMLElement|null}} ref The list element's ref.
+ * @param {string}                      key '' for no lines, else a string that changes with the settings.
  */
 export function useSeparatorOverlay( ref, key ) {
 	useEffect( () => {
@@ -25,6 +25,8 @@ export function useSeparatorOverlay( ref, key ) {
 		}
 		// Canvas children are block wrappers (`data-block`); the inserter and drop
 		// markers are not items.
-		return initSeparatorList( ref.current, { isItem: ( el ) => el.hasAttribute( 'data-block' ) } );
+		return initSeparatorList( ref.current, {
+			isItem: ( el ) => el.hasAttribute( 'data-block' ),
+		} );
 	}, [ ref, key ] );
 }

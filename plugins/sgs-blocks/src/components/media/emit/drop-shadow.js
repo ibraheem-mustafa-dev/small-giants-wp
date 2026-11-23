@@ -6,7 +6,11 @@
  * @package SGS\Blocks
  */
 
-import { formatLength, parseLayer, splitTop } from '../../../utils/shadow-layers.js';
+import {
+	formatLength,
+	parseLayer,
+	splitTop,
+} from '../../../utils/shadow-layers.js';
 
 /**
  * @param {string} composed Value from `composeShadow()`.
@@ -14,7 +18,11 @@ import { formatLength, parseLayer, splitTop } from '../../../utils/shadow-layers
  */
 export function dropShadow( composed ) {
 	const text = composed.trim();
-	if ( '' === text || 'none' === text || /^var\(--wp--preset--shadow--[a-z0-9-]+\)$/.test( text ) ) {
+	if (
+		'' === text ||
+		'none' === text ||
+		/^var\(--wp--preset--shadow--[a-z0-9-]+\)$/.test( text )
+	) {
 		return '';
 	}
 	const filters = [];
@@ -23,7 +31,11 @@ export function dropShadow( composed ) {
 		if ( ! fields || fields.inset || null === fields.colour ) {
 			continue;
 		}
-		filters.push( `drop-shadow(${ formatLength( fields.x ) } ${ formatLength( fields.y ) } ${ formatLength( fields.blur ) } ${ fields.colour })` );
+		filters.push(
+			`drop-shadow(${ formatLength( fields.x ) } ${ formatLength(
+				fields.y
+			) } ${ formatLength( fields.blur ) } ${ fields.colour })`
+		);
 	}
 	return filters.join( ' ' );
 }

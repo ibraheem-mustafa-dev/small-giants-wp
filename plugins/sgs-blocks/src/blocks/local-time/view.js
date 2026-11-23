@@ -21,10 +21,10 @@
  * hiding it means walking formatToParts() and dropping that one part
  * (there is no formatting option that omits it directly).
  *
- * @param {string}  zone         IANA time-zone identifier.
- * @param {string}  cycle        "h12" or "h23".
- * @param {boolean} showSeconds  Whether to include seconds.
- * @param {boolean} showPeriod   Whether to keep the AM/PM part (h12 only).
+ * @param {string}  zone        IANA time-zone identifier.
+ * @param {string}  cycle       "h12" or "h23".
+ * @param {boolean} showSeconds Whether to include seconds.
+ * @param {boolean} showPeriod  Whether to keep the AM/PM part (h12 only).
  * @return {string|null} Formatted time, or null if the zone/options are unusable.
  */
 function formatLocalTime( zone, cycle, showSeconds, showPeriod ) {
@@ -94,7 +94,12 @@ function initInstance( root ) {
 			return;
 		}
 
-		const formatted = formatLocalTime( zone, cycle, showSeconds, showPeriod );
+		const formatted = formatLocalTime(
+			zone,
+			cycle,
+			showSeconds,
+			showPeriod
+		);
 		if ( null !== formatted ) {
 			timeEl.textContent = formatted;
 		}

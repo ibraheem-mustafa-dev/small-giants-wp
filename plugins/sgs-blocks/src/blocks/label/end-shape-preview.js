@@ -17,7 +17,11 @@
  */
 import { colourVar, gapVar, isCssGradient } from '../../utils';
 import { resolveBorderStyle } from '../../utils/border-style';
-import { endShapeDepth, endShapeLayerDecls, endShapeNormalise } from '../../utils/end-shape';
+import {
+	endShapeDepth,
+	endShapeLayerDecls,
+	endShapeNormalise,
+} from '../../utils/end-shape';
 
 const SAFE_LENGTH = /^-?(?:\d+|\d*\.\d+)(?:[a-z]+|%)?$/i;
 const SAFE_PRESET = /^var\(--wp--preset--spacing--[a-z0-9-]+\)$/i;
@@ -33,14 +37,15 @@ const SIDE_KEYS = [ 'top', 'right', 'bottom', 'left' ];
 export function labelEndShapeEnds( attributes = {} ) {
 	const depth = endShapeDepth( attributes.endDepth );
 	const ends = {};
-	[ [ 'left', attributes.endShapeLeft ], [ 'right', attributes.endShapeRight ] ].forEach(
-		( [ side, value ] ) => {
-			const shape = endShapeNormalise( value );
-			if ( shape ) {
-				ends[ side ] = [ shape, depth ];
-			}
+	[
+		[ 'left', attributes.endShapeLeft ],
+		[ 'right', attributes.endShapeRight ],
+	].forEach( ( [ side, value ] ) => {
+		const shape = endShapeNormalise( value );
+		if ( shape ) {
+			ends[ side ] = [ shape, depth ];
 		}
-	);
+	} );
 	return ends;
 }
 
@@ -51,9 +56,14 @@ export function labelEndShapeEnds( attributes = {} ) {
  * @return {string} Length, or '' when unset or unsafe.
  */
 function sideWidth( value ) {
-	const raw = 'string' === typeof value || 'number' === typeof value ? String( value ).trim() : '';
+	const raw =
+		'string' === typeof value || 'number' === typeof value
+			? String( value ).trim()
+			: '';
 	const length = raw ? gapVar( raw ) : '';
-	return SAFE_LENGTH.test( length ) || SAFE_PRESET.test( length ) ? length : '';
+	return SAFE_LENGTH.test( length ) || SAFE_PRESET.test( length )
+		? length
+		: '';
 }
 
 /**
@@ -64,13 +74,19 @@ function sideWidth( value ) {
  * @return {string[]} `border-style:…` and `border-width:t r b l`, or none.
  */
 function borderDecls( attributes ) {
-	const box = attributes.borderWidth && 'object' === typeof attributes.borderWidth ? attributes.borderWidth : {};
+	const box =
+		attributes.borderWidth && 'object' === typeof attributes.borderWidth
+			? attributes.borderWidth
+			: {};
 	const sides = SIDE_KEYS.map( ( key ) => sideWidth( box[ key ] ) );
 	const style = resolveBorderStyle( attributes.borderStyle );
 	if ( ! sides.some( Boolean ) || 'none' === style ) {
 		return [];
 	}
-	return [ `border-style:${ style }`, `border-width:${ sides.map( ( side ) => side || '0' ).join( ' ' ) }` ];
+	return [
+		`border-style:${ style }`,
+		`border-width:${ sides.map( ( side ) => side || '0' ).join( ' ' ) }`,
+	];
 }
 
 /**
@@ -86,7 +102,9 @@ function paintDecl( colour, gradient ) {
 		return `background-image:${ gradient.trim() }`;
 	}
 	const flat = colourVar( colour );
-	return flat && ! UNSAFE_CHARS.test( flat ) ? `background-color:${ flat }` : '';
+	return flat && ! UNSAFE_CHARS.test( flat )
+		? `background-color:${ flat }`
+		: '';
 }
 
 /**
@@ -103,7 +121,10 @@ export function labelEndShapePreviewCss( selector, attributes = {} ) {
 	}
 	// The canvas element carries the block class too, so these rules outrank the stylesheet's variant fill.
 	const sel = `${ selector }.wp-block-sgs-label`;
-	const fill = paintDecl( attributes.backgroundColour, attributes.backgroundColourGradient );
+	const fill = paintDecl(
+		attributes.backgroundColour,
+		attributes.backgroundColourGradient
+	);
 	const layer = endShapeLayerDecls(
 		ends,
 		borderDecls( attributes ),

@@ -26,7 +26,8 @@ const evaluate = createEvaluator( DEFS );
 const DROP = Symbol( 'drop' );
 
 const isEmptyList = ( v ) => Array.isArray( v ) && v.length === 0;
-const isEmptyObject = ( v ) => isJsonObject( v ) && Object.keys( v ).length === 0;
+const isEmptyObject = ( v ) =>
+	isJsonObject( v ) && Object.keys( v ).length === 0;
 // PHP's `Sgs_Motion_Schema_Eval::is_object`: an associative array or the empty array.
 const isObjectLike = ( v ) => isJsonObject( v ) || isEmptyList( v );
 const isListLike = ( v ) => Array.isArray( v ) || isEmptyObject( v );
@@ -79,45 +80,62 @@ function walkObject( node, value ) {
 			required = [ ...required, ...branch.required ];
 		}
 	} );
-	const patterns = isJsonObject( node.patternProperties ) ? node.patternProperties : {};
+	const patterns = isJsonObject( node.patternProperties )
+		? node.patternProperties
+		: {};
 	const additional = node.additionalProperties ?? true;
 	const closed = additional === false || node.unevaluatedProperties === false;
 	const out = {};
-	Object.entries( isJsonObject( value ) ? value : {} ).forEach( ( [ name, raw ] ) => {
-		const nodes = [ ...( props[ name ] || [] ) ];
-		Object.entries( patterns ).forEach( ( [ pattern, sub ] ) => {
-			if ( evaluate( { type: 'string', pattern }, name ) === null ) {
-				nodes.push( sub );
+	Object.entries( isJsonObject( value ) ? value : {} ).forEach(
+		( [ name, raw ] ) => {
+			const nodes = [ ...( props[ name ] || [] ) ];
+			Object.entries( patterns ).forEach( ( [ pattern, sub ] ) => {
+				if ( evaluate( { type: 'string', pattern }, name ) === null ) {
+					nodes.push( sub );
+				}
+			} );
+			if ( nodes.length === 0 ) {
+				if ( closed ) {
+					return;
+				}
+				if ( isJsonObject( additional ) ) {
+					nodes.push( additional );
+				}
 			}
-		} );
-		if ( nodes.length === 0 ) {
-			if ( closed ) {
-				return;
+			let item = raw;
+			for ( const sub of nodes ) {
+				item = walk( sub, item );
+				if ( item === DROP ) {
+					break;
+				}
 			}
-			if ( isJsonObject( additional ) ) {
-				nodes.push( additional );
+			if ( item !== DROP ) {
+				out[ name ] = item;
 			}
 		}
-		let item = raw;
-		for ( const sub of nodes ) {
-			item = walk( sub, item );
-			if ( item === DROP ) {
-				break;
-			}
-		}
-		if ( item !== DROP ) {
-			out[ name ] = item;
-		}
-	} );
-	if ( required.some( ( name ) => ! Object.prototype.hasOwnProperty.call( out, String( name ) ) ) ) {
+	);
+	if (
+		required.some(
+			( name ) =>
+				! Object.prototype.hasOwnProperty.call( out, String( name ) )
+		)
+	) {
 		return DROP;
 	}
 	let keys = Object.keys( out );
-	if ( Number.isInteger( node.maxProperties ) && keys.length > node.maxProperties ) {
-		keys.slice( node.maxProperties ).forEach( ( key ) => delete out[ key ] );
+	if (
+		Number.isInteger( node.maxProperties ) &&
+		keys.length > node.maxProperties
+	) {
+		keys.slice( node.maxProperties ).forEach(
+			( key ) => delete out[ key ]
+		);
 		keys = Object.keys( out );
 	}
-	if ( Number.isInteger( node.minProperties ) && keys.length < node.minProperties ) {
+	if (
+		Number.isInteger( node.minProperties ) &&
+		keys.length < node.minProperties
+	) {
 		return DROP;
 	}
 	return out;
@@ -130,7 +148,9 @@ function walkList( node, value ) {
 	let out = [];
 	const seen = new Set();
 	( Array.isArray( value ) ? value : [] ).forEach( ( raw ) => {
-		const item = Object.prototype.hasOwnProperty.call( node, 'items' ) ? walk( node.items, raw ) : raw;
+		const item = Object.prototype.hasOwnProperty.call( node, 'items' )
+			? walk( node.items, raw )
+			: raw;
 		if ( item === DROP ) {
 			return;
 		}
@@ -175,9 +195,13 @@ function walk( node, value ) {
 				rest[ key ] = arg;
 			}
 		} );
-		return kept === DROP || Object.keys( rest ).length === 0 ? kept : walk( { ...rest, type: rest.type ?? type }, kept );
+		return kept === DROP || Object.keys( rest ).length === 0
+			? kept
+			: walk( { ...rest, type: rest.type ?? type }, kept );
 	}
-	return type === 'object' ? walkObject( node, value ) : walkList( node, value );
+	return type === 'object'
+		? walkObject( node, value )
+		: walkList( node, value );
 }
 
 /**
@@ -188,11 +212,13 @@ function walk( node, value ) {
  */
 export function sanitiseDocument( doc ) {
 	const root = {};
-	[ 'type', 'properties', 'required', 'additionalProperties' ].forEach( ( key ) => {
-		if ( Object.prototype.hasOwnProperty.call( defs, key ) ) {
-			root[ key ] = defs[ key ];
+	[ 'type', 'properties', 'required', 'additionalProperties' ].forEach(
+		( key ) => {
+			if ( Object.prototype.hasOwnProperty.call( defs, key ) ) {
+				root[ key ] = defs[ key ];
+			}
 		}
-	} );
+	);
 	if ( Object.keys( root ).length === 0 ) {
 		return {};
 	}

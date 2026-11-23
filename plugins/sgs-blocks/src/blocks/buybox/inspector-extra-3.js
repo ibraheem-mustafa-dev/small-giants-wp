@@ -155,7 +155,10 @@ export function BuyboxExtraStylesPanels( { attributes, setAttributes } ) {
 						},
 						{
 							key: 'pickerPill',
-							label: __( 'Size and pill option text', 'sgs-blocks' ),
+							label: __(
+								'Size and pill option text',
+								'sgs-blocks'
+							),
 							prefix: 'pickerPill',
 							showFontFamily: false,
 							showWeight: false,
@@ -439,10 +442,18 @@ export function BuyboxExtraStylesPanels( { attributes, setAttributes } ) {
 				/>
 				{ !! addToCartShowPrice && (
 					<SgsFreeTextField
-						label={ __( 'Between the label and the price', 'sgs-blocks' ) }
-						help={ __( 'A joiner such as "·" printed between the label and the price. Empty prints none.', 'sgs-blocks' ) }
+						label={ __(
+							'Between the label and the price',
+							'sgs-blocks'
+						) }
+						help={ __(
+							'A joiner such as "·" printed between the label and the price. Empty prints none.',
+							'sgs-blocks'
+						) }
 						value={ addToCartPriceSeparator || '' }
-						onChange={ ( val ) => setAttributes( { addToCartPriceSeparator: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { addToCartPriceSeparator: val } )
+						}
 					/>
 				) }
 				<ToggleControl

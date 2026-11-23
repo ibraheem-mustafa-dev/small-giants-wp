@@ -7,7 +7,12 @@
  * @package SGS\Blocks
  */
 
-import { store, getContext, getElement, withSyncEvent } from '@wordpress/interactivity';
+import {
+	store,
+	getContext,
+	getElement,
+	withSyncEvent,
+} from '@wordpress/interactivity';
 import {
 	pulseState,
 	setState,
@@ -18,7 +23,11 @@ import {
 import { validateField } from './custom-messages.js';
 import { applyLinkValues } from './field-from-link.js';
 import { populateReview } from './review-cards.js';
-import { initSavedProgress, saveStep, clearProgress } from './saved-progress.js';
+import {
+	initSavedProgress,
+	saveStep,
+	clearProgress,
+} from './saved-progress.js';
 import { initStickyActions } from './sticky-actions.js';
 import { fetchWithNonce } from '../../shared/rest-nonce';
 
@@ -31,7 +40,9 @@ import { fetchWithNonce } from '../../shared/rest-nonce';
  */
 function progressFraction( ctx ) {
 	if ( 'completed' === ctx.progressFill ) {
-		return ctx.totalSteps > 1 ? ctx.currentStep / ( ctx.totalSteps - 1 ) : 0;
+		return ctx.totalSteps > 1
+			? ctx.currentStep / ( ctx.totalSteps - 1 )
+			: 0;
 	}
 	return ( ctx.currentStep + 1 ) / ctx.totalSteps;
 }
@@ -84,8 +95,13 @@ const { state } = store( 'sgs/form', {
 		 */
 		get stepCounterNameText() {
 			const ctx = getContext();
-			const name = Array.isArray( ctx.stepNames ) ? ctx.stepNames[ ctx.currentStep ] : '';
-			return String( ctx.stepCounterNameLabel || '' ).replace( '%3$s', String( name || '' ) );
+			const name = Array.isArray( ctx.stepNames )
+				? ctx.stepNames[ ctx.currentStep ]
+				: '';
+			return String( ctx.stepCounterNameLabel || '' ).replace(
+				'%3$s',
+				String( name || '' )
+			);
 		},
 
 		/**
@@ -144,9 +160,10 @@ const { state } = store( 'sgs/form', {
 			}
 
 			// Get current step element.
-			const currentStepEl = formRoot.querySelectorAll(
-				'.sgs-form-step'
-			)[ ctx.currentStep ];
+			const currentStepEl =
+				formRoot.querySelectorAll( '.sgs-form-step' )[
+					ctx.currentStep
+				];
 
 			if ( ! currentStepEl ) {
 				return;
@@ -155,12 +172,14 @@ const { state } = store( 'sgs/form', {
 			// Validate all fields in current step (WCAG 3.3.1: aria-invalid + error line; a field's own
 			// data-sgs-msg-* copy replaces the browser text).
 			let isValid = true;
-			currentStepEl.querySelectorAll( 'input, select, textarea' ).forEach( ( field ) => {
-				if ( ! validateField( field ) ) {
-					field.reportValidity();
-					isValid = false;
-				}
-			} );
+			currentStepEl
+				.querySelectorAll( 'input, select, textarea' )
+				.forEach( ( field ) => {
+					if ( ! validateField( field ) ) {
+						field.reportValidity();
+						isValid = false;
+					}
+				} );
 
 			if ( ! isValid ) {
 				// Every rejected attempt replays the block's `invalid` motion (Spec 38A FR-38A-53).
@@ -259,11 +278,13 @@ const { state } = store( 'sgs/form', {
 
 			// Validate entire form: aria-invalid + error line per field.
 			let formValid = true;
-			formEl.querySelectorAll( 'input, select, textarea' ).forEach( ( field ) => {
-				if ( ! validateField( field ) ) {
-					formValid = false;
-				}
-			} );
+			formEl
+				.querySelectorAll( 'input, select, textarea' )
+				.forEach( ( field ) => {
+					if ( ! validateField( field ) ) {
+						formValid = false;
+					}
+				} );
 
 			if ( ! formValid ) {
 				formEl.reportValidity();
@@ -295,7 +316,10 @@ const { state } = store( 'sgs/form', {
 					}
 
 					// A file travels through the upload endpoint and fileIds; JSON cannot carry it.
-					if ( 'undefined' !== typeof File && value instanceof File ) {
+					if (
+						'undefined' !== typeof File &&
+						value instanceof File
+					) {
 						continue;
 					}
 
@@ -304,7 +328,9 @@ const { state } = store( 'sgs/form', {
 					const isList = key.endsWith( '[]' );
 					const name = isList ? key.slice( 0, -2 ) : key;
 
-					if ( Object.prototype.hasOwnProperty.call( fields, name ) ) {
+					if (
+						Object.prototype.hasOwnProperty.call( fields, name )
+					) {
 						if ( ! Array.isArray( fields[ name ] ) ) {
 							fields[ name ] = [ fields[ name ] ];
 						}
@@ -342,7 +368,10 @@ const { state } = store( 'sgs/form', {
 							fields,
 							fileIds,
 							honeypot: honeypotValue,
-							storeSubmissions: formRoot.getAttribute( 'data-store-submissions' ) !== 'false',
+							storeSubmissions:
+								formRoot.getAttribute(
+									'data-store-submissions'
+								) !== 'false',
 						} ),
 					},
 					state.nonce
@@ -357,12 +386,16 @@ const { state } = store( 'sgs/form', {
 				}
 
 				// Success — clear all aria-invalid + error messages.
-				formEl.querySelectorAll( '[aria-invalid]' ).forEach( ( field ) => {
-					field.removeAttribute( 'aria-invalid' );
-				} );
-				formEl.querySelectorAll( '.sgs-form-field__error' ).forEach( ( el ) => {
-					el.textContent = '';
-				} );
+				formEl
+					.querySelectorAll( '[aria-invalid]' )
+					.forEach( ( field ) => {
+						field.removeAttribute( 'aria-invalid' );
+					} );
+				formEl
+					.querySelectorAll( '.sgs-form-field__error' )
+					.forEach( ( el ) => {
+						el.textContent = '';
+					} );
 
 				ctx.submitted = true;
 				ctx.submitting = false;
@@ -392,13 +425,17 @@ const { state } = store( 'sgs/form', {
 			// click of the input or Space on the focused input, and fires `change` (which this handler runs on). The
 			// tile only mirrors the result: every tile of the group, because choosing a radio tile unchecks the others.
 			const { ref } = getElement();
-			const group = ref.closest( '.sgs-form-field__group' ) || ref.parentElement;
+			const group =
+				ref.closest( '.sgs-form-field__group' ) || ref.parentElement;
 			if ( ! group ) {
 				return;
 			}
 			group.querySelectorAll( '.sgs-form-tile' ).forEach( ( tile ) => {
 				const input = tile.querySelector( 'input' );
-				tile.classList.toggle( 'sgs-form-tile--selected', !! input?.checked );
+				tile.classList.toggle(
+					'sgs-form-tile--selected',
+					!! input?.checked
+				);
 			} );
 		},
 
@@ -489,8 +526,7 @@ const { state } = store( 'sgs/form', {
 
 					const errorEl = document.createElement( 'span' );
 					errorEl.className = 'sgs-form-file__error';
-					errorEl.textContent =
-						'Upload failed. Please try again.';
+					errorEl.textContent = 'Upload failed. Please try again.';
 
 					previewEl.appendChild( errorEl );
 					previewEl.hidden = false;
@@ -508,7 +544,7 @@ const { state } = store( 'sgs/form', {
 /**
  * Update step visibility based on current step index.
  *
- * @param {HTMLElement} formRoot Form wrapper element.
+ * @param {HTMLElement} formRoot    Form wrapper element.
  * @param {number}      currentStep Current step index.
  */
 /**
@@ -571,7 +607,6 @@ function initForms() {
 		applyLinkValues( formRoot, window.location.search );
 
 		if ( steps.length > 1 ) {
-
 			// Multi-step form: hide all steps except the restored one.
 			steps.forEach( ( step, index ) => {
 				if ( index !== startStep ) {
@@ -586,13 +621,17 @@ function initForms() {
 					if ( ctxAttr ) {
 						const ctx = JSON.parse( ctxAttr );
 						ctx.currentStep = startStep;
-						formRoot.setAttribute( 'data-wp-context', JSON.stringify( ctx ) );
+						formRoot.setAttribute(
+							'data-wp-context',
+							JSON.stringify( ctx )
+						);
 					}
 				} catch ( _e ) {
 					// Context parse failure — leave at step 0.
 				}
 			}
-			const startReview = steps[ startStep ].querySelector( '.sgs-form-review' );
+			const startReview =
+				steps[ startStep ].querySelector( '.sgs-form-review' );
 			if ( startReview ) {
 				populateReview( formRoot, startReview );
 			}
@@ -612,7 +651,11 @@ function initForms() {
 function evaluateCondition( formRoot, watchName, operator, expected ) {
 	// Collect the current value(s) of the watched field.
 	const watchedInputs = Array.from(
-		formRoot.querySelectorAll( `[name="${ CSS.escape( watchName ) }"], [name="${ CSS.escape( watchName ) }[]"]` )
+		formRoot.querySelectorAll(
+			`[name="${ CSS.escape( watchName ) }"], [name="${ CSS.escape(
+				watchName
+			) }[]"]`
+		)
 	);
 
 	let current = '';
@@ -660,27 +703,37 @@ function applyConditionalLogic( formRoot ) {
 
 	conditionalFields.forEach( ( fieldEl ) => {
 		const watchName = fieldEl.getAttribute( 'data-conditional-field' );
-		const operator  = fieldEl.getAttribute( 'data-conditional-operator' ) || 'equals';
-		const expected  = fieldEl.getAttribute( 'data-conditional-value' ) || '';
+		const operator =
+			fieldEl.getAttribute( 'data-conditional-operator' ) || 'equals';
+		const expected = fieldEl.getAttribute( 'data-conditional-value' ) || '';
 
 		if ( ! watchName ) {
 			return;
 		}
 
-		const shouldShow = evaluateCondition( formRoot, watchName, operator, expected );
+		const shouldShow = evaluateCondition(
+			formRoot,
+			watchName,
+			operator,
+			expected
+		);
 
 		if ( shouldShow ) {
 			fieldEl.classList.remove( 'sgs-form-field--hidden' );
 			// Re-enable inputs so they are submitted and validated.
-			fieldEl.querySelectorAll( 'input, select, textarea' ).forEach( ( i ) => {
-				i.removeAttribute( 'disabled' );
-			} );
+			fieldEl
+				.querySelectorAll( 'input, select, textarea' )
+				.forEach( ( i ) => {
+					i.removeAttribute( 'disabled' );
+				} );
 		} else {
 			fieldEl.classList.add( 'sgs-form-field--hidden' );
 			// Disable inputs so they don't participate in validation or submission.
-			fieldEl.querySelectorAll( 'input, select, textarea' ).forEach( ( i ) => {
-				i.setAttribute( 'disabled', 'disabled' );
-			} );
+			fieldEl
+				.querySelectorAll( 'input, select, textarea' )
+				.forEach( ( i ) => {
+					i.setAttribute( 'disabled', 'disabled' );
+				} );
 		}
 	} );
 }
@@ -702,7 +755,9 @@ if ( document.readyState === 'loading' ) {
  * Let each form's sticky buttons row publish its height for floating widgets.
  */
 function initStickyActionsAll() {
-	document.querySelectorAll( '[data-wp-interactive="sgs/form"]' ).forEach( initStickyActions );
+	document
+		.querySelectorAll( '[data-wp-interactive="sgs/form"]' )
+		.forEach( initStickyActions );
 }
 
 /**

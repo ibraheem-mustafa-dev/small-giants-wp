@@ -40,90 +40,92 @@
  */
 import { __ } from '@wordpress/i18n';
 import { Flex, FlexItem } from '@wordpress/components';
-import ResponsiveBoxControl, { ResponsiveBorderRadiusControl } from './ResponsiveBoxControl';
+import ResponsiveBoxControl, {
+	ResponsiveBorderRadiusControl,
+} from './ResponsiveBoxControl';
 import GradientCapableColourControl from './GradientCapableColourControl';
 import BorderStyleControl from './BorderStyleControl';
 
 /**
- * @param {Object}   props
- * @param {string}   [props.label]              Row heading (rendered above the three
- *                                               controls) — omit for a bare row.
- * @param {Object}   [props.widthValues={}]      The block's own border-width attr: a flat
- *                                               `{ top, right, bottom, left }` box (desktop) or
- *                                               a `{ desktop, tablet, mobile }` tier object.
- * @param {Function} props.onWidthChange         Receives the next full width attr value (flat box or tier object).
- * @param {boolean|ReadonlyArray<string>} [props.widthPresets=false] Forwarded verbatim
- *                                               to `SgsBoxControl`'s own `presets` prop
- *                                               (opt-in theme spacing-scale dropdown).
- * @param {string}   [props.styleValue]          'solid' | 'dashed' | 'dotted' | '' (none).
- * @param {Function} props.onStyleChange         Receives the next style value.
- * @param {Array}    [props.colourStates]        Multi-state form — passed straight
- *                                               through to `GradientCapableColourControl`'s
- *                                               own `states` prop (Normal/Hover tabs).
- *                                               Omit and use the four props below for the
- *                                               single-state (no hover) form instead.
- * @param {string}   [props.colourValue]         Single-state form — the flat colour.
- * @param {Function} [props.onColourChange]      Paired with `colourValue`.
- * @param {string}   [props.colourGradientValue] Single-state form — the sibling gradient.
- * @param {Function} [props.onColourGradientChange] Paired with `colourGradientValue`.
- * @param {string}   [props.colourLabel]         Swatch button label (default "Colour").
- * @param {boolean}  [props.colourLinked]        Single-state form — when true the picker
- *                                               stores the palette token SLUG rather than a
- *                                               baked hex, so a later re-skin still moves the
- *                                               colour. Ignored when `colourStates` is used
- *                                               (carry `linked` on each state object there).
- * @param {boolean}  [props.clearable=true]      Forwarded to `GradientCapableColourControl`.
- * @param {boolean}  [props.enableAlpha=true]    Forwarded to `GradientCapableColourControl`.
- * @param {string}   [props.contrastAgainst]     Opt-in WCAG contrast check, forwarded to
- *                                               `GradientCapableColourControl` — a hex colour
- *                                               or theme palette token naming the background
- *                                               ACTUALLY rendered behind this border (the
- *                                               caller works that out, same as any other
- *                                               `contrastAgainst` use). Omit for no behaviour
- *                                               change (the default).
- * @param {string}   [props.contrastLabel]       Forwarded to `GradientCapableColourControl`.
- * @param {boolean}  [props.contrastLargeText=true] Forwarded to `GradientCapableColourControl`.
- *                                               Defaults to `true` HERE (unlike that
- *                                               component's own default of `false`) because a
- *                                               border is a UI-component / non-text contrast
- *                                               case (WCAG 1.4.11, 3:1), never body text —
- *                                               callers should not need to remember to flip
- *                                               this for the one shape this control ever draws.
- * @param {boolean}  [props.showColour=true]     Additive (Spec 36 §14 FR-41-33/FR-41-2b). `true`
- *                                               (the default) is byte-identical to this
- *                                               control's pre-existing behaviour. `false`
- *                                               suppresses the `.sgs-border-control__colour`
- *                                               `FlexItem` and its `GradientCapableColourControl`
- *                                               entirely — NOT merely omitting the colour props,
- *                                               which would render an empty picker. Because the
- *                                               colour popover is where `styleValue`/
- *                                               `onStyleChange` normally travel (nested inside
- *                                               `GradientCapableColourControl` as `borderStyle`/
- *                                               `onBorderStyleChange`), suppressing it re-parents
- *                                               `BorderStyleControl` as this component's OWN
- *                                               sibling in the same row instead, so border style
- *                                               stays reachable when colour is hidden. Gated on
- *                                               `typeof onStyleChange === 'function'`, mirroring
- *                                               `GradientCapableColourControl`'s own gate — a
- *                                               caller that never wired border style gets no
- *                                               orphan control.
+ * @param {Object}                        props
+ * @param {string}                        [props.label]                  Row heading (rendered above the three
+ *                                                                       controls) — omit for a bare row.
+ * @param {Object}                        [props.widthValues={}]         The block's own border-width attr: a flat
+ *                                                                       `{ top, right, bottom, left }` box (desktop) or
+ *                                                                       a `{ desktop, tablet, mobile }` tier object.
+ * @param {Function}                      props.onWidthChange            Receives the next full width attr value (flat box or tier object).
+ * @param {boolean|ReadonlyArray<string>} [props.widthPresets=false]     Forwarded verbatim
+ *                                                                       to `SgsBoxControl`'s own `presets` prop
+ *                                                                       (opt-in theme spacing-scale dropdown).
+ * @param {string}                        [props.styleValue]             'solid' | 'dashed' | 'dotted' | '' (none).
+ * @param {Function}                      props.onStyleChange            Receives the next style value.
+ * @param {Array}                         [props.colourStates]           Multi-state form — passed straight
+ *                                                                       through to `GradientCapableColourControl`'s
+ *                                                                       own `states` prop (Normal/Hover tabs).
+ *                                                                       Omit and use the four props below for the
+ *                                                                       single-state (no hover) form instead.
+ * @param {string}                        [props.colourValue]            Single-state form — the flat colour.
+ * @param {Function}                      [props.onColourChange]         Paired with `colourValue`.
+ * @param {string}                        [props.colourGradientValue]    Single-state form — the sibling gradient.
+ * @param {Function}                      [props.onColourGradientChange] Paired with `colourGradientValue`.
+ * @param {string}                        [props.colourLabel]            Swatch button label (default "Colour").
+ * @param {boolean}                       [props.colourLinked]           Single-state form — when true the picker
+ *                                                                       stores the palette token SLUG rather than a
+ *                                                                       baked hex, so a later re-skin still moves the
+ *                                                                       colour. Ignored when `colourStates` is used
+ *                                                                       (carry `linked` on each state object there).
+ * @param {boolean}                       [props.clearable=true]         Forwarded to `GradientCapableColourControl`.
+ * @param {boolean}                       [props.enableAlpha=true]       Forwarded to `GradientCapableColourControl`.
+ * @param {string}                        [props.contrastAgainst]        Opt-in WCAG contrast check, forwarded to
+ *                                                                       `GradientCapableColourControl` — a hex colour
+ *                                                                       or theme palette token naming the background
+ *                                                                       ACTUALLY rendered behind this border (the
+ *                                                                       caller works that out, same as any other
+ *                                                                       `contrastAgainst` use). Omit for no behaviour
+ *                                                                       change (the default).
+ * @param {string}                        [props.contrastLabel]          Forwarded to `GradientCapableColourControl`.
+ * @param {boolean}                       [props.contrastLargeText=true] Forwarded to `GradientCapableColourControl`.
+ *                                                                       Defaults to `true` HERE (unlike that
+ *                                                                       component's own default of `false`) because a
+ *                                                                       border is a UI-component / non-text contrast
+ *                                                                       case (WCAG 1.4.11, 3:1), never body text —
+ *                                                                       callers should not need to remember to flip
+ *                                                                       this for the one shape this control ever draws.
+ * @param {boolean}                       [props.showColour=true]        Additive (Spec 36 §14 FR-41-33/FR-41-2b). `true`
+ *                                                                       (the default) is byte-identical to this
+ *                                                                       control's pre-existing behaviour. `false`
+ *                                                                       suppresses the `.sgs-border-control__colour`
+ *                                                                       `FlexItem` and its `GradientCapableColourControl`
+ *                                                                       entirely — NOT merely omitting the colour props,
+ *                                                                       which would render an empty picker. Because the
+ *                                                                       colour popover is where `styleValue`/
+ *                                                                       `onStyleChange` normally travel (nested inside
+ *                                                                       `GradientCapableColourControl` as `borderStyle`/
+ *                                                                       `onBorderStyleChange`), suppressing it re-parents
+ *                                                                       `BorderStyleControl` as this component's OWN
+ *                                                                       sibling in the same row instead, so border style
+ *                                                                       stays reachable when colour is hidden. Gated on
+ *                                                                       `typeof onStyleChange === 'function'`, mirroring
+ *                                                                       `GradientCapableColourControl`'s own gate — a
+ *                                                                       caller that never wired border style gets no
+ *                                                                       orphan control.
  *
- *                                               When `showColour={false}`, the following props
- *                                               become INERT — still accepted, but never reach
- *                                               any rendered control, because the only component
- *                                               that reads them (`GradientCapableColourControl`)
- *                                               is not mounted: `colourStates`, `colourValue`,
- *                                               `onColourChange`, `colourGradientValue`,
- *                                               `onColourGradientChange`, `colourLinked`,
- *                                               `colourLabel`, `clearable`, `enableAlpha`, and the
- *                                               contrast trio `contrastAgainst`/`contrastLabel`/
- *                                               `contrastLargeText`. ⚠ The contrast trio is the
- *                                               DANGEROUS one of the twelve: a caller can wire a
- *                                               full WCAG contrast check that then silently never
- *                                               runs, because the control performing it is not
- *                                               rendered. `borderStyle` is NOT on this list — it
- *                                               is re-parented to the sibling `BorderStyleControl`
- *                                               above, not dropped.
+ *                                                                       When `showColour={false}`, the following props
+ *                                                                       become INERT — still accepted, but never reach
+ *                                                                       any rendered control, because the only component
+ *                                                                       that reads them (`GradientCapableColourControl`)
+ *                                                                       is not mounted: `colourStates`, `colourValue`,
+ *                                                                       `onColourChange`, `colourGradientValue`,
+ *                                                                       `onColourGradientChange`, `colourLinked`,
+ *                                                                       `colourLabel`, `clearable`, `enableAlpha`, and the
+ *                                                                       contrast trio `contrastAgainst`/`contrastLabel`/
+ *                                                                       `contrastLargeText`. ⚠ The contrast trio is the
+ *                                                                       DANGEROUS one of the twelve: a caller can wire a
+ *                                                                       full WCAG contrast check that then silently never
+ *                                                                       runs, because the control performing it is not
+ *                                                                       rendered. `borderStyle` is NOT on this list — it
+ *                                                                       is re-parented to the sibling `BorderStyleControl`
+ *                                                                       above, not dropped.
  * @return {JSX.Element} The composed one-row control.
  */
 export default function SgsBorderControl( {
@@ -152,8 +154,11 @@ export default function SgsBorderControl( {
 	contrastLargeText = true,
 } ) {
 	// A flat box is the desktop width; a tier object carries one box per device.
-	const widthAttr = widthValues && 'object' === typeof widthValues ? widthValues : {};
-	const isTiered = [ 'desktop', 'tablet', 'mobile' ].some( ( key ) => key in widthAttr );
+	const widthAttr =
+		widthValues && 'object' === typeof widthValues ? widthValues : {};
+	const isTiered = [ 'desktop', 'tablet', 'mobile' ].some(
+		( key ) => key in widthAttr
+	);
 	const widthTiers = {
 		base: ( isTiered ? widthAttr.desktop : widthAttr ) || {},
 		tablet: ( isTiered ? widthAttr.tablet : undefined ) || {},
@@ -161,7 +166,10 @@ export default function SgsBorderControl( {
 	};
 	const writeWidth = ( tier, next ) => {
 		const merged = { ...widthTiers, [ tier ]: next || {} };
-		const filled = ( box ) => Object.values( box ).some( ( v ) => v !== undefined && v !== null && v !== '' );
+		const filled = ( box ) =>
+			Object.values( box ).some(
+				( v ) => v !== undefined && v !== null && v !== ''
+			);
 		if ( ! filled( merged.tablet ) && ! filled( merged.mobile ) ) {
 			onWidthChange( merged.base );
 			return;
@@ -179,7 +187,10 @@ export default function SgsBorderControl( {
 	return (
 		<div className="sgs-border-control">
 			<Flex align="flex-start" gap={ 3 } wrap>
-				<FlexItem className="sgs-border-control__width" style={ { flexGrow: 1, minWidth: 220 } }>
+				<FlexItem
+					className="sgs-border-control__width"
+					style={ { flexGrow: 1, minWidth: 220 } }
+				>
 					<ResponsiveBoxControl
 						label={ label || __( 'Width', 'sgs-blocks' ) }
 						values={ widthTiers }
@@ -188,7 +199,10 @@ export default function SgsBorderControl( {
 					/>
 				</FlexItem>
 				{ showColour && (
-					<FlexItem className="sgs-border-control__colour" style={ { minWidth: 180 } }>
+					<FlexItem
+						className="sgs-border-control__colour"
+						style={ { minWidth: 180 } }
+					>
 						<GradientCapableColourControl
 							label={ colourLabel }
 							states={ colourStates }
@@ -211,7 +225,10 @@ export default function SgsBorderControl( {
 				     as SgsBorderControl's own sibling, matching GradientCapableColourControl's
 				     own gate so a caller that never wired border style gets no orphan control. */ }
 				{ ! showColour && typeof onStyleChange === 'function' && (
-					<FlexItem className="sgs-border-control__style" style={ { minWidth: 180 } }>
+					<FlexItem
+						className="sgs-border-control__style"
+						style={ { minWidth: 180 } }
+					>
 						<BorderStyleControl
 							value={ styleValue }
 							onChange={ onStyleChange }

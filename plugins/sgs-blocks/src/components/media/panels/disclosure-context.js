@@ -15,7 +15,11 @@
  *
  * @package SGS\Blocks
  */
-import { MEDIA_BASES, mediaAttrName, mediaStoredAttrName } from '../../MediaElementControls.js';
+import {
+	MEDIA_BASES,
+	mediaAttrName,
+	mediaStoredAttrName,
+} from '../../MediaElementControls.js';
 
 export const DEVICES = [ 'desktop', 'tablet', 'mobile' ];
 
@@ -51,8 +55,14 @@ const NOT_A_BOX = [ '', 'natural', 'auto', 'original' ];
 
 /** Closed-vocabulary state builders. */
 export const shown = () => ( { state: 'shown', hiddenReason: null } );
-export const disabled = ( hiddenReason ) => ( { state: 'disabled', hiddenReason } );
-export const omitted = ( hiddenReason = null ) => ( { state: 'omitted', hiddenReason } );
+export const disabled = ( hiddenReason ) => ( {
+	state: 'disabled',
+	hiddenReason,
+} );
+export const omitted = ( hiddenReason = null ) => ( {
+	state: 'omitted',
+	hiddenReason,
+} );
 
 /**
  * What a disabled control tells the person, shared by the atoms' rules. Plain English here so the atoms load in plain
@@ -63,13 +73,16 @@ export const REASONS = {
 	focalFill: 'A stretched photo has no part to choose.',
 	autoplayLock:
 		'Locked on while Autoplay is on: a browser refuses to autoplay an unmuted video, and iOS needs "plays inline" or the video takes over the screen.',
-	overlayPaint: 'Overlay strength and blend only apply once an overlay colour or gradient is set.',
+	overlayPaint:
+		'Overlay strength and blend only apply once an overlay colour or gradient is set.',
 	svgSpeed: 'Animation speed only applies once an animation is chosen.',
 	corners: 'Corners are not used while a shape is chosen.',
-	borders: 'Borders are not available on this shape. Choose Circle, Ellipse or Pill to keep a border.',
+	borders:
+		'Borders are not available on this shape. Choose Circle, Ellipse or Pill to keep a border.',
 	shadowFollowsShape: 'Shadows follow the shape',
 	pinnedParallax: 'Pinned cannot hold while the background has parallax.',
-	pinnedTransform: 'Pinned cannot hold with a moving entrance or hover on this block.',
+	pinnedTransform:
+		'Pinned cannot hold with a moving entrance or hover on this block.',
 };
 
 /**
@@ -175,7 +188,11 @@ export function readAt( attrs, key, device ) {
 export function tierPatch( attrs, key, device, value, mode = 'flat' ) {
 	const raw = attrs ? attrs[ key ] : undefined;
 	if ( isTierObject( raw ) || 'object' === mode ) {
-		const next = isTierObject( raw ) ? { ...raw } : isSet( raw ) ? { desktop: raw } : {};
+		const next = isTierObject( raw )
+			? { ...raw }
+			: isSet( raw )
+			? { desktop: raw }
+			: {};
 		if ( isSet( value ) ) {
 			next[ device ] = value;
 		} else {
@@ -198,7 +215,11 @@ export function tierPatch( attrs, key, device, value, mode = 'flat' ) {
 export function clearPatch( attrs, key, devices, mode = 'flat' ) {
 	const raw = attrs ? attrs[ key ] : undefined;
 	if ( isTierObject( raw ) || 'object' === mode ) {
-		const next = isTierObject( raw ) ? { ...raw } : isSet( raw ) ? { desktop: raw } : {};
+		const next = isTierObject( raw )
+			? { ...raw }
+			: isSet( raw )
+			? { desktop: raw }
+			: {};
 		devices.forEach( ( d ) => delete next[ d ] );
 		return { [ key ]: Object.keys( next ).length ? next : undefined };
 	}
@@ -234,11 +255,18 @@ function resolveKind( get, kinds, adopted = false ) {
 	}
 	if ( adopted ) {
 		const source = get( 'Source' );
-		return source && 'object' === typeof source && source.kind ? source.kind : kinds[ 0 ] || 'image';
+		return source && 'object' === typeof source && source.kind
+			? source.kind
+			: kinds[ 0 ] || 'image';
 	}
 	const type = get( 'MediaType' );
-	const base = [ 'image', 'video', 'svg', 'embed' ].includes( type ) ? type : 'image';
-	if ( 'video' === base && EMBED_SOURCES.test( String( get( 'VideoSource' ) || '' ) ) ) {
+	const base = [ 'image', 'video', 'svg', 'embed' ].includes( type )
+		? type
+		: 'image';
+	if (
+		'video' === base &&
+		EMBED_SOURCES.test( String( get( 'VideoSource' ) || '' ) )
+	) {
 		return 'embed';
 	}
 	return base;
@@ -255,18 +283,38 @@ function resolveKind( get, kinds, adopted = false ) {
  * @return {Object} Context.
  */
 export function createContext( attrs, device, prefix = '', opts = {} ) {
-	const { blockSlug = '', kinds = [], context = 'element', parallax = false, transformMotion = false, adopted = false } = opts || {};
+	const {
+		blockSlug = '',
+		kinds = [],
+		context = 'element',
+		parallax = false,
+		transformMotion = false,
+		adopted = false,
+	} = opts || {};
 	const a = attrs || {};
 	const dev = DEVICES.includes( device ) ? device : 'desktop';
-	const keyOf = ( base ) => ( adopted ? mediaAttrName( prefix, base ) : mediaStoredAttrName( blockSlug, prefix, base ) );
-	const get = ( base ) => readAt( a, keyOf( adopted ? ADOPTED_ALIAS[ base ] || base : base ), dev );
+	const keyOf = ( base ) =>
+		adopted
+			? mediaAttrName( prefix, base )
+			: mediaStoredAttrName( blockSlug, prefix, base );
+	const get = ( base ) =>
+		readAt(
+			a,
+			keyOf( adopted ? ADOPTED_ALIAS[ base ] || base : base ),
+			dev
+		);
 
 	const shapeRaw = get( 'Shape' );
 	const shapeSlug = String(
-		( shapeRaw && 'object' === typeof shapeRaw ? shapeRaw.shape : shapeRaw ) || 'none'
+		( shapeRaw && 'object' === typeof shapeRaw
+			? shapeRaw.shape
+			: shapeRaw ) || 'none'
 	).toLowerCase();
 	const isRadius = RADIUS_SHAPES.includes( shapeSlug );
-	const isMask = ! NO_SHAPE.includes( shapeSlug ) && ! isRadius && ! [ 'rounded', 'square' ].includes( shapeSlug );
+	const isMask =
+		! NO_SHAPE.includes( shapeSlug ) &&
+		! isRadius &&
+		! [ 'rounded', 'square' ].includes( shapeSlug );
 
 	const background = 'background' === context;
 	const ratio = String( get( 'AspectRatio' ) || '' ).toLowerCase();
@@ -289,11 +337,16 @@ export function createContext( attrs, device, prefix = '', opts = {} ) {
 		isMask,
 		shapeHidesCorners: isMask || isRadius,
 		heightMatchesSpace: 'fill' === height,
-		boxCrops: background || ! NOT_A_BOX.includes( ratio ) || ! NOT_A_BOX.includes( height ),
+		boxCrops:
+			background ||
+			! NOT_A_BOX.includes( ratio ) ||
+			! NOT_A_BOX.includes( height ),
 		hasBorderWidth: ( () => {
 			const raw = readAt( a, keyOf( 'BorderWidth' ), dev );
 			if ( raw && 'object' === typeof raw ) {
-				return Object.values( raw ).some( ( v ) => parseFloat( v ) > 0 );
+				return Object.values( raw ).some(
+					( v ) => parseFloat( v ) > 0
+				);
 			}
 			return parseFloat( raw ) > 0;
 		} )(),

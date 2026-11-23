@@ -30,16 +30,25 @@
 import { getBlockType } from '@wordpress/blocks';
 
 const SIDES = [ 'top', 'right', 'bottom', 'left' ];
-const TIER_CASCADE = { desktop: [], base: [], tablet: [ 'tablet' ], mobile: [ 'tablet', 'mobile' ] };
+const TIER_CASCADE = {
+	desktop: [],
+	base: [],
+	tablet: [ 'tablet' ],
+	mobile: [ 'tablet', 'mobile' ],
+};
 
-const isObject = ( value ) => !! value && 'object' === typeof value && ! Array.isArray( value );
+const isObject = ( value ) =>
+	!! value && 'object' === typeof value && ! Array.isArray( value );
 
 /** The `{ side: value }` entries of an object whose value is a non-empty string; tier and when keys never qualify. */
 const sideValues = ( source ) =>
 	isObject( source )
 		? Object.fromEntries(
 				Object.entries( source ).filter(
-					( [ key, value ] ) => SIDES.includes( key ) && 'string' === typeof value && '' !== value
+					( [ key, value ] ) =>
+						SIDES.includes( key ) &&
+						'string' === typeof value &&
+						'' !== value
 				)
 		  )
 		: {};
@@ -52,28 +61,33 @@ const matchingWhen = ( when, attributes ) =>
 					isObject( entry ) &&
 					isObject( entry.attrs ) &&
 					Object.keys( entry.attrs ).length > 0 &&
-					Object.entries( entry.attrs ).every( ( [ attr, value ] ) => attributes[ attr ] === value )
+					Object.entries( entry.attrs ).every(
+						( [ attr, value ] ) => attributes[ attr ] === value
+					)
 		  )
 		: undefined;
 
 /**
- * @param {string} blockName         The registered block name (`sgs/cart`).
- * @param {string} attr              The box attribute (`panelFooterPadding`).
- * @param {Object} [context]         What the control is showing.
+ * @param {string} blockName            The registered block name (`sgs/cart`).
+ * @param {string} attr                 The box attribute (`panelFooterPadding`).
+ * @param {Object} [context]            What the control is showing.
  * @param {Object} [context.attributes] The block's attributes, matched against the declaration's `when` entries.
- * @param {string} [context.tier]    'desktop' (or 'base'), 'tablet' or 'mobile'; anything else reads as desktop.
+ * @param {string} [context.tier]       'desktop' (or 'base'), 'tablet' or 'mobile'; anything else reads as desktop.
  * @return {Object} `{ side: value }` (a preset var() or a length) the sides paint at that tier and setting; `{}` when
  *                  none. Without a context it is the base.
  */
 export function spacingDefaultsFor( blockName, attr, context = {} ) {
-	const declared = getBlockType( blockName )?.supports?.sgs?.spacingDefaults?.[ attr ];
+	const declared =
+		getBlockType( blockName )?.supports?.sgs?.spacingDefaults?.[ attr ];
 	if ( ! isObject( declared ) ) {
 		return {};
 	}
 	const matched = matchingWhen( declared.when, context?.attributes );
 	const cascade = TIER_CASCADE[ context?.tier ] ?? [];
 	const layers = [ declared, matched ];
-	cascade.forEach( ( tier ) => layers.push( declared[ tier ], matched?.[ tier ] ) );
+	cascade.forEach( ( tier ) =>
+		layers.push( declared[ tier ], matched?.[ tier ] )
+	);
 	// The layers interleave plain and `when` entries, so the order above is base, when sides, tablet, when tablet, …
 	return Object.assign( {}, ...layers.map( sideValues ) );
 }

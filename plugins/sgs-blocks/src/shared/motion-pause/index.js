@@ -31,21 +31,25 @@
 /**
  * Wire the pause mechanism to one moving region.
  *
- * @param {HTMLElement} root                  The moving region; hover, touch and focus are read on it.
+ * @param {HTMLElement} root                 The moving region; hover, touch and focus are read on it.
  * @param {Object}      options
- * @param {Function}    options.onChange      Called with `true` (paused) or `false` (playing) on every change.
- * @param {HTMLElement} [options.button]      The pause button. Default: the region's own `[data-sgs-motion-pause]`.
- * @param {boolean}     [options.hover=true]  Pause while a mouse or pen pointer is over the region.
- * @param {string}      [options.touch]       'press' (default): pause while a finger is down on the region.
- *                                            'toggle': a tap on the region pauses, the next tap resumes.
- *                                            'none': touch alone does not pause.
+ * @param {Function}    options.onChange     Called with `true` (paused) or `false` (playing) on every change.
+ * @param {HTMLElement} [options.button]     The pause button. Default: the region's own `[data-sgs-motion-pause]`.
+ * @param {boolean}     [options.hover=true] Pause while a mouse or pen pointer is over the region.
+ * @param {string}      [options.touch]      'press' (default): pause while a finger is down on the region.
+ *                                           'toggle': a tap on the region pauses, the next tap resumes.
+ *                                           'none': touch alone does not pause.
  * @return {{isPaused: Function, setRunning: Function, pause: Function, play: Function, addFocusRegion: Function, removeFocusRegion: Function, reset: Function}} Controller.
  */
 export function initMotionPause( root, options = {} ) {
-	const onChange = typeof options.onChange === 'function' ? options.onChange : () => {};
-	const button = options.button || root.querySelector( '[data-sgs-motion-pause]' );
+	const onChange =
+		typeof options.onChange === 'function' ? options.onChange : () => {};
+	const button =
+		options.button || root.querySelector( '[data-sgs-motion-pause]' );
 	const hoverPauses = options.hover !== false;
-	const touchMode = [ 'press', 'toggle', 'none' ].includes( options.touch ) ? options.touch : 'press';
+	const touchMode = [ 'press', 'toggle', 'none' ].includes( options.touch )
+		? options.touch
+		: 'press';
 
 	let hovered = false;
 	let pressed = false;
@@ -85,7 +89,12 @@ export function initMotionPause( root, options = {} ) {
 		button.addEventListener( 'click', () => setUserPaused( ! userPaused ) );
 	}
 
-	const fromButton = ( event ) => !! ( button && event.target instanceof Node && button.contains( event.target ) );
+	const fromButton = ( event ) =>
+		!! (
+			button &&
+			event.target instanceof Node &&
+			button.contains( event.target )
+		);
 
 	root.addEventListener( 'pointerenter', ( event ) => {
 		if ( event.pointerType === 'touch' ) {
@@ -128,7 +137,9 @@ export function initMotionPause( root, options = {} ) {
 	const regions = [ root ];
 	// Region -> its [ focusin, focusout ] handlers, so a region can be removed with its listeners.
 	const handlers = new Map();
-	const inRegion = ( node ) => node instanceof Node && regions.some( ( region ) => region.contains( node ) );
+	const inRegion = ( node ) =>
+		node instanceof Node &&
+		regions.some( ( region ) => region.contains( node ) );
 	const listenForFocus = ( region ) => {
 		const onIn = () => {
 			focused = true;

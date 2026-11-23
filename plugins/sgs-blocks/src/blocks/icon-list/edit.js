@@ -564,7 +564,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		// render.php's scoped rule.
 		...( iconBackgroundColour || attributes.iconBoxBorderWidth
 			? {
-					backgroundColor: colourVar( iconBackgroundColour ) || undefined,
+					backgroundColor:
+						colourVar( iconBackgroundColour ) || undefined,
 					borderRadius: '50%',
 					width: iconBoxSize || '26px',
 					height: iconBoxSize || '26px',
@@ -574,7 +575,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			? {
 					boxSizing: 'border-box',
 					border: `${ attributes.iconBoxBorderWidth } solid ${
-						colourVar( attributes.iconBoxBorderColour ) || 'currentColor'
+						colourVar( attributes.iconBoxBorderColour ) ||
+						'currentColor'
 					}`,
 			  }
 			: {} ),
@@ -1309,14 +1311,19 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					{ showIconColourRow && (
 						<SgsLengthControl
 							scale="spacing"
-							label={ __( 'Icon circle ring width', 'sgs-blocks' ) }
+							label={ __(
+								'Icon circle ring width',
+								'sgs-blocks'
+							) }
 							help={ __(
 								'A solid ring round each icon. Empty draws none.',
 								'sgs-blocks'
 							) }
 							value={ attributes.iconBoxBorderWidth || '' }
 							onChange={ ( val ) =>
-								setAttributes( { iconBoxBorderWidth: val || '' } )
+								setAttributes( {
+									iconBoxBorderWidth: val || '',
+								} )
 							}
 							presets={ false }
 						/>
@@ -1324,19 +1331,19 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					{ showIconColourRow &&
 						( !! iconBackgroundColour ||
 							!! attributes.iconBoxBorderWidth ) && (
-						<SgsLengthControl
-							label={ __( 'Icon circle size', 'sgs-blocks' ) }
-							help={ __(
-								'Diameter of the icon background circle. Empty uses 26px.',
-								'sgs-blocks'
-							) }
-							value={ iconBoxSize || '' }
-							onChange={ ( val ) =>
-								setAttributes( { iconBoxSize: val || '' } )
-							}
-							presets={ false }
-						/>
-					) }
+							<SgsLengthControl
+								label={ __( 'Icon circle size', 'sgs-blocks' ) }
+								help={ __(
+									'Diameter of the icon background circle. Empty uses 26px.',
+									'sgs-blocks'
+								) }
+								value={ iconBoxSize || '' }
+								onChange={ ( val ) =>
+									setAttributes( { iconBoxSize: val || '' } )
+								}
+								presets={ false }
+							/>
+						) }
 					<SgsLengthControl
 						presets
 						label={ __( 'Spacing', 'sgs-blocks' ) }

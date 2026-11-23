@@ -38,7 +38,9 @@ async function handleSubmit( event ) {
 	// -- Read field values ---------------------------------------------------
 	const emailInput = form.querySelector( 'input[type="email"]' );
 	const consentInput = form.querySelector( 'input[type="checkbox"]' );
-	const tokenInput = form.querySelector( 'input[name="cf-turnstile-response"]' );
+	const tokenInput = form.querySelector(
+		'input[name="cf-turnstile-response"]'
+	);
 	const productId = parseInt( form.dataset.productId, 10 );
 	const nonce = form.dataset.nonce || '';
 
@@ -105,12 +107,13 @@ async function handleSubmit( event ) {
 			}
 			if ( statusEl ) {
 				statusEl.setAttribute( 'data-status', 'success' );
-				statusEl.textContent = "✓ You’ll be notified when this is back in stock.";
+				statusEl.textContent =
+					'✓ You’ll be notified when this is back in stock.';
 			}
 			resetTurnstile( form );
 		} else {
 			// Server error — surface the message.
-			let message = "Something went wrong. Please try again.";
+			let message = 'Something went wrong. Please try again.';
 			try {
 				const body = await response.json();
 				if ( body && body.message ) {
@@ -121,14 +124,15 @@ async function handleSubmit( event ) {
 			}
 			if ( statusEl ) {
 				statusEl.setAttribute( 'data-status', 'error' );
-				statusEl.textContent = "! " + message;
+				statusEl.textContent = '! ' + message;
 			}
 			resetTurnstile( form );
 		}
 	} catch ( networkError ) {
 		if ( statusEl ) {
 			statusEl.setAttribute( 'data-status', 'error' );
-			statusEl.textContent = "! Network error. Please check your connection and try again.";
+			statusEl.textContent =
+				'! Network error. Please check your connection and try again.';
 		}
 		resetTurnstile( form );
 	} finally {
@@ -145,7 +149,11 @@ async function handleSubmit( event ) {
  */
 function resetTurnstile( form ) {
 	const widget = form.querySelector( '.cf-turnstile' );
-	if ( widget && window.turnstile && typeof window.turnstile.reset === 'function' ) {
+	if (
+		widget &&
+		window.turnstile &&
+		typeof window.turnstile.reset === 'function'
+	) {
 		window.turnstile.reset( widget );
 	}
 }

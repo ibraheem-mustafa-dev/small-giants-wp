@@ -9,7 +9,10 @@ import { maskShapes } from './mask.js';
 
 // PHP rawurlencode() leaves only A-Z a-z 0-9 - _ . ~ ; encodeURIComponent also leaves ! ' ( ) *.
 const encode = ( text ) =>
-	encodeURIComponent( text ).replace( /[!'()*]/g, ( c ) => `%${ c.charCodeAt( 0 ).toString( 16 ).toUpperCase() }` );
+	encodeURIComponent( text ).replace(
+		/[!'()*]/g,
+		( c ) => `%${ c.charCodeAt( 0 ).toString( 16 ).toUpperCase() }`
+	);
 
 /**
  * @param {string}  path SVG path data of a registry shape.
@@ -30,7 +33,9 @@ export function maskCss( shape ) {
 		return { 'mask-image': 'none', '-webkit-mask-image': 'none' };
 	}
 	const keep = 'keep' === shape.proportions;
-	const url = `url("data:image/svg+xml,${ encode( svgDocument( maskShapes()[ shape.slug ].d, keep ) ) }")`;
+	const url = `url("data:image/svg+xml,${ encode(
+		svgDocument( maskShapes()[ shape.slug ].d, keep )
+	) }")`;
 	const size = keep ? 'contain' : '100% 100%';
 	return {
 		'mask-image': url,

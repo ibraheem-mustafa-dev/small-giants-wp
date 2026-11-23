@@ -5,7 +5,11 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { RangeControl, ToggleControl, SelectControl } from '@wordpress/components';
+import {
+	RangeControl,
+	ToggleControl,
+	SelectControl,
+} from '@wordpress/components';
 import ProductPickerControl from '../../components/ProductPickerControl';
 import { ResponsiveOverride } from '../../components';
 import { ToolsPanelItem } from '../../components/primitives';
@@ -25,10 +29,18 @@ export function SiteInfoLabelToggle( { attributes, setAttributes } ) {
 	}
 	return (
 		<ToggleControl
-			label={ __( 'Show the Site Info value as the label', 'sgs-blocks' ) }
-			help={ __( 'Prints the live phone number, email address or WhatsApp number from Appearance > SGS Site Info. The label below shows while that field is empty.', 'sgs-blocks' ) }
+			label={ __(
+				'Show the Site Info value as the label',
+				'sgs-blocks'
+			) }
+			help={ __(
+				'Prints the live phone number, email address or WhatsApp number from Appearance > SGS Site Info. The label below shows while that field is empty.',
+				'sgs-blocks'
+			) }
 			checked={ !! attributes.labelFromSiteInfo }
-			onChange={ ( next ) => setAttributes( { labelFromSiteInfo: next } ) }
+			onChange={ ( next ) =>
+				setAttributes( { labelFromSiteInfo: next } )
+			}
 			__nextHasNoMarginBottom
 		/>
 	);
@@ -59,8 +71,13 @@ export function IconShapeSizeItem( { attributes, setAttributes } ) {
 					<RangeControl
 						label={ __( 'Icon circle size (px)', 'sgs-blocks' ) }
 						hideLabelFromVision
-						help={ __( 'The diameter of the filled circle behind the icon. Shows once an icon circle colour is set; empty = 1.8 times the icon size.', 'sgs-blocks' ) }
-						value={ ownValue || ( inherited ? effectiveValue : 0 ) || 0 }
+						help={ __(
+							'The diameter of the filled circle behind the icon. Shows once an icon circle colour is set; empty = 1.8 times the icon size.',
+							'sgs-blocks'
+						) }
+						value={
+							ownValue || ( inherited ? effectiveValue : 0 ) || 0
+						}
 						onChange={ ( val ) => setOwnValue( val || '' ) }
 						min={ 0 }
 						max={ 200 }
@@ -92,7 +109,10 @@ export function AddToBasketControls( { attributes, setAttributes } ) {
 		<>
 			<ProductPickerControl
 				label={ __( 'Product to add', 'sgs-blocks' ) }
-				help={ __( 'A simple product, or a variable product whose default options are all set, is added in one tap. Type {price} in the label to print its current price.', 'sgs-blocks' ) }
+				help={ __(
+					'A simple product, or a variable product whose default options are all set, is added in one tap. Type {price} in the label to print its current price.',
+					'sgs-blocks'
+				) }
 				value={ Number( attributes.addProductId ) || 0 }
 				onChange={ ( id ) => setAttributes( { addProductId: id } ) }
 			/>
@@ -100,8 +120,14 @@ export function AddToBasketControls( { attributes, setAttributes } ) {
 				label={ __( 'After adding', 'sgs-blocks' ) }
 				value={ attributes.addAfter || 'stay' }
 				options={ [
-					{ label: __( 'Stay on this page', 'sgs-blocks' ), value: 'stay' },
-					{ label: __( 'Go to the basket page', 'sgs-blocks' ), value: 'basket' },
+					{
+						label: __( 'Stay on this page', 'sgs-blocks' ),
+						value: 'stay',
+					},
+					{
+						label: __( 'Go to the basket page', 'sgs-blocks' ),
+						value: 'basket',
+					},
 				] }
 				onChange={ ( val ) => setAttributes( { addAfter: val } ) }
 				__nextHasNoMarginBottom

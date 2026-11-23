@@ -48,7 +48,8 @@ export default function PayLaterMessage( { config } ) {
 			country:
 				settings.country ||
 				address.country ||
-				window.wc?.wcSettings?.getSetting?.( 'baseLocation' )?.country ||
+				window.wc?.wcSettings?.getSetting?.( 'baseLocation' )
+					?.country ||
 				'GB',
 		};
 	}, [] );

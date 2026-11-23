@@ -46,7 +46,14 @@ import {
 
 extend( [ namesPlugin, a11yPlugin ] );
 
-function SinglePalette( { className, clearColor, colors, onChange, value, ...additionalProps } ) {
+function SinglePalette( {
+	className,
+	clearColor,
+	colors,
+	onChange,
+	value,
+	...additionalProps
+} ) {
 	const colorOptions = useMemo( () => {
 		return colors.map( ( { color, name }, index ) => {
 			const colordColor = colord( color );
@@ -90,7 +97,14 @@ function SinglePalette( { className, clearColor, colors, onChange, value, ...add
 	);
 }
 
-function MultiplePalettes( { className, clearColor, colors, onChange, value, headingLevel } ) {
+function MultiplePalettes( {
+	className,
+	clearColor,
+	colors,
+	onChange,
+	value,
+	headingLevel,
+} ) {
 	const instanceId = useInstanceId( MultiplePalettes, 'color-palette' );
 
 	if ( colors.length === 0 ) {
@@ -122,7 +136,11 @@ function MultiplePalettes( { className, clearColor, colors, onChange, value, hea
 	);
 }
 
-export function CustomColorPickerDropdown( { isRenderedInSidebar, popoverProps: receivedPopoverProps, ...props } ) {
+export function CustomColorPickerDropdown( {
+	isRenderedInSidebar,
+	popoverProps: receivedPopoverProps,
+	...props
+} ) {
 	const popoverProps = useMemo(
 		() => ( {
 			shift: true,

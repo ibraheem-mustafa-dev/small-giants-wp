@@ -9,7 +9,12 @@
  *
  * @package SGS\Blocks
  */
-import { colourVar, gapVar, isCssGradient, sgsLengthPreview } from '../../utils';
+import {
+	colourVar,
+	gapVar,
+	isCssGradient,
+	sgsLengthPreview,
+} from '../../utils';
 
 const SAFE_LENGTH = /^-?(?:\d+|\d*\.\d+)(?:[a-z]+|%)?$/i;
 const SAFE_PRESET = /^var\(--wp--preset--spacing--[a-z0-9-]+\)$/i;
@@ -58,24 +63,32 @@ export function labelDotPreviewCss( selector, attributes = {}, iconSvg = '' ) {
 		return '';
 	}
 	const gap = safeLength( gapVar( attributes.dotGap ) ) || '8px';
-	const paint = dotPaint( attributes.dotColour, attributes.dotColourGradient );
+	const paint = dotPaint(
+		attributes.dotColour,
+		attributes.dotColourGradient
+	);
 	if ( 'line' === attributes.markerShape ) {
-		const length =
-			safeLength( gapVar( attributes.lineLength ) ) || '28px';
+		const length = safeLength( gapVar( attributes.lineLength ) ) || '28px';
 		const thickness =
 			safeLength( gapVar( attributes.lineThickness ) ) || '2px';
-		const radius =
-			safeLength( gapVar( attributes.lineRadius ) ) || '0';
+		const radius = safeLength( gapVar( attributes.lineRadius ) ) || '0';
 		return `${ selector }::before{content:"";display:inline-block;flex-shrink:0;width:${ length };height:${ thickness };border-radius:${ radius };vertical-align:middle;margin-inline-end:${ gap };${ paint };}`;
 	}
-	if ( 'icon' === attributes.markerShape && 'string' === typeof iconSvg && iconSvg ) {
-		const size = safeLength( sgsLengthPreview( attributes.dotSize ) ) || '16px';
+	if (
+		'icon' === attributes.markerShape &&
+		'string' === typeof iconSvg &&
+		iconSvg
+	) {
+		const size =
+			safeLength( sgsLengthPreview( attributes.dotSize ) ) || '16px';
 		const svg = iconSvg
 			.replace( /<!--[\s\S]*?-->/g, '' )
 			.replace( /stroke="currentColor"/g, 'stroke="black"' )
 			.replace( />\s+</g, '><' )
 			.trim();
-		const mask = `url("data:image/svg+xml,${ encodeURIComponent( svg ) }") center/contain no-repeat`;
+		const mask = `url("data:image/svg+xml,${ encodeURIComponent(
+			svg
+		) }") center/contain no-repeat`;
 		return `${ selector }::before{content:"";display:inline-block;flex-shrink:0;width:${ size };height:${ size };vertical-align:middle;margin-inline-end:${ gap };${ paint };-webkit-mask:${ mask };mask:${ mask };}`;
 	}
 	const size = safeLength( sgsLengthPreview( attributes.dotSize ) ) || '7px';

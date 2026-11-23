@@ -5,7 +5,14 @@
 import { __ } from '@wordpress/i18n';
 import { InspectorControls } from '@wordpress/block-editor';
 import { PanelBody } from '@wordpress/components';
-import { ShadowControl, shadowAttrKeys, ResponsiveBoxControl, SgsLengthControl, DesignTokenPicker, GradientCapableColourControl } from '../../../components';
+import {
+	ShadowControl,
+	shadowAttrKeys,
+	ResponsiveBoxControl,
+	SgsLengthControl,
+	DesignTokenPicker,
+	GradientCapableColourControl,
+} from '../../../components';
 import { patchTier } from '../../../utils';
 import { spacingDefaultsFor } from '../../../utils/spacing-defaults';
 
@@ -43,7 +50,10 @@ export default function CardStylesPanel( { name, attributes, setAttributes } ) {
 			   the "Card Styling (resting state)" panel below for the rest of
 			   the item's non-colour box styling (border width, radius). */ }
 			<InspectorControls group="styles">
-				<PanelBody title={ __( 'Card', 'sgs-blocks' ) } className="sgs-colour-panel">
+				<PanelBody
+					title={ __( 'Card', 'sgs-blocks' ) }
+					className="sgs-colour-panel"
+				>
 					<DesignTokenPicker
 						label={ __( 'Card background colour', 'sgs-blocks' ) }
 						states={ [
@@ -51,21 +61,32 @@ export default function CardStylesPanel( { name, attributes, setAttributes } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: cardBackground,
-								onChange: ( val ) => setAttributes( { cardBackground: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										cardBackground: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: cardBackgroundGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { cardBackgroundGradient: val ?? '' } ),
+									setAttributes( {
+										cardBackgroundGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: backgroundColourHover,
-								onChange: ( val ) => setAttributes( { backgroundColourHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										backgroundColourHover: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: backgroundColourHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { backgroundColourHoverGradient: val ?? '' } ),
+									setAttributes( {
+										backgroundColourHoverGradient:
+											val ?? '',
+									} ),
 							},
 						] }
 					/>
@@ -76,21 +97,31 @@ export default function CardStylesPanel( { name, attributes, setAttributes } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: cardBorderColour,
-								onChange: ( val ) => setAttributes( { cardBorderColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										cardBorderColour: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: cardBorderColourGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { cardBorderColourGradient: val ?? '' } ),
+									setAttributes( {
+										cardBorderColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: borderColourHover,
-								onChange: ( val ) => setAttributes( { borderColourHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										borderColourHover: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: borderColourHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { borderColourHoverGradient: val ?? '' } ),
+									setAttributes( {
+										borderColourHoverGradient: val ?? '',
+									} ),
 							},
 						] }
 					/>
@@ -106,11 +137,16 @@ export default function CardStylesPanel( { name, attributes, setAttributes } ) {
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: textColourHover,
-								onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										textColourHover: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: textColourHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { textColourHoverGradient: val ?? '' } ),
+									setAttributes( {
+										textColourHoverGradient: val ?? '',
+									} ),
 							},
 						] }
 					/>
@@ -125,7 +161,10 @@ export default function CardStylesPanel( { name, attributes, setAttributes } ) {
 						label={ __( 'Shadow', 'sgs-blocks' ) }
 						attributes={ attributes }
 						setAttributes={ setAttributes }
-						attrNames={ shadowAttrKeys( 'cardShadow', { hover: true, hoverColour: true } ) }
+						attrNames={ shadowAttrKeys( 'cardShadow', {
+							hover: true,
+							hoverColour: true,
+						} ) }
 					/>
 					{ /* Moved in from the Settings-tab "Card Styling (resting
 					     state)" panel (D622 — an element-scoped control
@@ -156,8 +195,18 @@ export default function CardStylesPanel( { name, attributes, setAttributes } ) {
 							mobile: cardPadding?.mobile ?? {},
 						} }
 						onChange={ ( tier, next ) => {
-							const tierMap = { base: 'desktop', tablet: 'tablet', mobile: 'mobile' };
-							patchTier( attributes, setAttributes, 'cardPadding', tierMap[ tier ], next );
+							const tierMap = {
+								base: 'desktop',
+								tablet: 'tablet',
+								mobile: 'mobile',
+							};
+							patchTier(
+								attributes,
+								setAttributes,
+								'cardPadding',
+								tierMap[ tier ],
+								next
+							);
 						} }
 					/>
 					<SgsLengthControl

@@ -13,7 +13,13 @@
 import { __, sprintf } from '@wordpress/i18n';
 import { TextControl, RangeControl } from '@wordpress/components';
 import { Section, Row, typographyAttrs, isDeclared } from './panel-kit';
-import { TierBox, TierLength, BorderField, TypographyRow, typoTarget } from './panel-fields';
+import {
+	TierBox,
+	TierLength,
+	BorderField,
+	TypographyRow,
+	typoTarget,
+} from './panel-fields';
 
 /** The attributes one button prefix owns that block.json declares (the gradient pair exists on some only). */
 export function buttonAttrs( prefix ) {
@@ -36,7 +42,10 @@ export function buttonAttrs( prefix ) {
 const PREFIXES = [ 'seeAll', 'writeReview' ];
 
 /** Every attribute this section owns (drives "Reset all"). */
-export const BUTTONS_ATTRS = [ ...PREFIXES.flatMap( buttonAttrs ), 'buttonHoverLift' ].filter( isDeclared );
+export const BUTTONS_ATTRS = [
+	...PREFIXES.flatMap( buttonAttrs ),
+	'buttonHoverLift',
+].filter( isDeclared );
 
 /**
  * One button's fields.
@@ -52,18 +61,37 @@ function ButtonFields( { prefix, name, attributes, setAttributes } ) {
 	const t = ( pattern ) => sprintf( pattern, name );
 	const has = ( suffix ) => isDeclared( attr( suffix ) );
 	const backdrop = attributes[ attr( 'ColourBackground' ) ] || '';
-	const borderAttrs = [ 'BorderWidth', 'BorderStyle', 'ColourBorder', 'ColourBorderGradient', 'ColourBorderHover', 'ColourBorderHoverGradient', 'BorderRadius' ]
+	const borderAttrs = [
+		'BorderWidth',
+		'BorderStyle',
+		'ColourBorder',
+		'ColourBorderGradient',
+		'ColourBorderHover',
+		'ColourBorderHoverGradient',
+		'BorderRadius',
+	]
 		.filter( has )
 		.map( attr );
 
 	return (
 		<>
-			<Row label={ t( __( '%s: wording', 'sgs-blocks' ) ) } attrs={ [ attr( 'Label' ), ...( has( 'Url' ) ? [ attr( 'Url' ) ] : [] ) ].filter( isDeclared ) } { ...shared }>
+			<Row
+				label={ t( __( '%s: wording', 'sgs-blocks' ) ) }
+				attrs={ [
+					attr( 'Label' ),
+					...( has( 'Url' ) ? [ attr( 'Url' ) ] : [] ),
+				].filter( isDeclared ) }
+				{ ...shared }
+			>
 				{ has( 'Url' ) && (
 					<TextControl
-						label={ t( __( '%s link (web address)', 'sgs-blocks' ) ) }
+						label={ t(
+							__( '%s link (web address)', 'sgs-blocks' )
+						) }
 						value={ attributes[ attr( 'Url' ) ] }
-						onChange={ ( value ) => setAttributes( { [ attr( 'Url' ) ]: value } ) }
+						onChange={ ( value ) =>
+							setAttributes( { [ attr( 'Url' ) ]: value } )
+						}
 						type="url"
 						__next40pxDefaultSize
 					/>
@@ -71,34 +99,69 @@ function ButtonFields( { prefix, name, attributes, setAttributes } ) {
 				<TextControl
 					label={ t( __( '%s wording', 'sgs-blocks' ) ) }
 					value={ attributes[ attr( 'Label' ) ] }
-					onChange={ ( value ) => setAttributes( { [ attr( 'Label' ) ]: value } ) }
-					help={ __( 'Leave empty to use the standard wording.', 'sgs-blocks' ) }
+					onChange={ ( value ) =>
+						setAttributes( { [ attr( 'Label' ) ]: value } )
+					}
+					help={ __(
+						'Leave empty to use the standard wording.',
+						'sgs-blocks'
+					) }
 					__next40pxDefaultSize
 				/>
 			</Row>
-			<Row label={ t( __( '%s: border', 'sgs-blocks' ) ) } attrs={ borderAttrs } { ...shared }>
+			<Row
+				label={ t( __( '%s: border', 'sgs-blocks' ) ) }
+				attrs={ borderAttrs }
+				{ ...shared }
+			>
 				<BorderField
 					label={ t( __( '%s border width', 'sgs-blocks' ) ) }
 					widthAttr={ attr( 'BorderWidth' ) }
 					styleAttr={ attr( 'BorderStyle' ) }
 					colourAttr={ attr( 'ColourBorder' ) }
-					gradientAttr={ has( 'ColourBorderGradient' ) ? attr( 'ColourBorderGradient' ) : undefined }
+					gradientAttr={
+						has( 'ColourBorderGradient' )
+							? attr( 'ColourBorderGradient' )
+							: undefined
+					}
 					hoverAttr={ attr( 'ColourBorderHover' ) }
-					hoverGradientAttr={ has( 'ColourBorderHoverGradient' ) ? attr( 'ColourBorderHoverGradient' ) : undefined }
+					hoverGradientAttr={
+						has( 'ColourBorderHoverGradient' )
+							? attr( 'ColourBorderHoverGradient' )
+							: undefined
+					}
 					radiusAttr={ attr( 'BorderRadius' ) }
 					contrastAgainst={ backdrop }
 					{ ...shared }
 				/>
 			</Row>
-			<Row label={ t( __( '%s: padding', 'sgs-blocks' ) ) } attrs={ [ attr( 'Padding' ) ] } { ...shared }>
-				<TierBox label={ t( __( '%s padding', 'sgs-blocks' ) ) } attr={ attr( 'Padding' ) } { ...shared } />
+			<Row
+				label={ t( __( '%s: padding', 'sgs-blocks' ) ) }
+				attrs={ [ attr( 'Padding' ) ] }
+				{ ...shared }
+			>
+				<TierBox
+					label={ t( __( '%s padding', 'sgs-blocks' ) ) }
+					attr={ attr( 'Padding' ) }
+					{ ...shared }
+				/>
 			</Row>
-			<Row label={ t( __( '%s: minimum height', 'sgs-blocks' ) ) } attrs={ [ attr( 'MinHeight' ) ] } { ...shared }>
-				<TierLength label={ t( __( '%s minimum height', 'sgs-blocks' ) ) } attr={ attr( 'MinHeight' ) } { ...shared } />
+			<Row
+				label={ t( __( '%s: minimum height', 'sgs-blocks' ) ) }
+				attrs={ [ attr( 'MinHeight' ) ] }
+				{ ...shared }
+			>
+				<TierLength
+					label={ t( __( '%s minimum height', 'sgs-blocks' ) ) }
+					attr={ attr( 'MinHeight' ) }
+					{ ...shared }
+				/>
 			</Row>
 			<TypographyRow
 				label={ t( __( '%s: typography', 'sgs-blocks' ) ) }
-				targets={ [ typoTarget( prefix, t( __( '%s text', 'sgs-blocks' ) ) ) ] }
+				targets={ [
+					typoTarget( prefix, t( __( '%s text', 'sgs-blocks' ) ) ),
+				] }
 				{ ...shared }
 			/>
 		</>
@@ -109,18 +172,39 @@ export default function ButtonsPanel( { attributes, setAttributes } ) {
 	const shared = { attributes, setAttributes };
 
 	return (
-		<Section title={ __( 'Buttons', 'sgs-blocks' ) } attrs={ BUTTONS_ATTRS } setAttributes={ setAttributes }>
-			<ButtonFields prefix="seeAll" name={ __( 'See all reviews button', 'sgs-blocks' ) } { ...shared } />
-			<ButtonFields prefix="writeReview" name={ __( 'Write a review button', 'sgs-blocks' ) } { ...shared } />
-			<Row label={ __( 'Both buttons: lift on hover', 'sgs-blocks' ) } attrs={ [ 'buttonHoverLift' ] } { ...shared }>
+		<Section
+			title={ __( 'Buttons', 'sgs-blocks' ) }
+			attrs={ BUTTONS_ATTRS }
+			setAttributes={ setAttributes }
+		>
+			<ButtonFields
+				prefix="seeAll"
+				name={ __( 'See all reviews button', 'sgs-blocks' ) }
+				{ ...shared }
+			/>
+			<ButtonFields
+				prefix="writeReview"
+				name={ __( 'Write a review button', 'sgs-blocks' ) }
+				{ ...shared }
+			/>
+			<Row
+				label={ __( 'Both buttons: lift on hover', 'sgs-blocks' ) }
+				attrs={ [ 'buttonHoverLift' ] }
+				{ ...shared }
+			>
 				<RangeControl
 					label={ __( 'Lift on hover (px)', 'sgs-blocks' ) }
 					value={ attributes.buttonHoverLift ?? 0 }
-					onChange={ ( value ) => setAttributes( { buttonHoverLift: value ?? 0 } ) }
+					onChange={ ( value ) =>
+						setAttributes( { buttonHoverLift: value ?? 0 } )
+					}
 					min={ 0 }
 					max={ 8 }
 					step={ 1 }
-					help={ __( 'How far both buttons rise when hovered. 0 keeps them still, as Google does.', 'sgs-blocks' ) }
+					help={ __(
+						'How far both buttons rise when hovered. 0 keeps them still, as Google does.',
+						'sgs-blocks'
+					) }
 					__next40pxDefaultSize
 				/>
 			</Row>

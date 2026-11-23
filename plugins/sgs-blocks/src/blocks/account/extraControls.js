@@ -4,7 +4,11 @@
  * WooCommerce's look.
  */
 import { __ } from '@wordpress/i18n';
-import { SelectControl, TextControl, ToggleControl } from '@wordpress/components';
+import {
+	SelectControl,
+	TextControl,
+	ToggleControl,
+} from '@wordpress/components';
 import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 import {
 	BOX_UNITS,
@@ -30,7 +34,9 @@ export function TextField( { name, label, help, attributes, setAttributes } ) {
 			label={ label }
 			help={ help }
 			value={ attributes[ name ] ?? '' }
-			onChange={ ( value ) => setAttributes( { [ name ]: value || undefined } ) }
+			onChange={ ( value ) =>
+				setAttributes( { [ name ]: value || undefined } )
+			}
 		/>
 	);
 }
@@ -51,7 +57,9 @@ export function Toggle( { name, label, help, attributes, setAttributes } ) {
 			label={ label }
 			help={ help }
 			checked={ !! attributes[ name ] }
-			onChange={ ( value ) => setAttributes( { [ name ]: value || undefined } ) }
+			onChange={ ( value ) =>
+				setAttributes( { [ name ]: value || undefined } )
+			}
 		/>
 	);
 }
@@ -66,7 +74,14 @@ export function Toggle( { name, label, help, attributes, setAttributes } ) {
  * @param {Function} p.setAttributes Attribute setter.
  * @return {JSX.Element} A select.
  */
-export function Choice( { name, label, options, help, attributes, setAttributes } ) {
+export function Choice( {
+	name,
+	label,
+	options,
+	help,
+	attributes,
+	setAttributes,
+} ) {
 	return (
 		<SelectControl
 			__next40pxDefaultSize
@@ -75,7 +90,9 @@ export function Choice( { name, label, options, help, attributes, setAttributes 
 			help={ help }
 			value={ attributes[ name ] ?? '' }
 			options={ options }
-			onChange={ ( value ) => setAttributes( { [ name ]: value || undefined } ) }
+			onChange={ ( value ) =>
+				setAttributes( { [ name ]: value || undefined } )
+			}
 		/>
 	);
 }
@@ -99,11 +116,15 @@ export function TierBox( { name, label, attributes, setAttributes } ) {
 			{ ( { ownValue, setOwnValue } ) => (
 				<SgsBoxControl
 					label={ label }
-					values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+					values={
+						ownValue && typeof ownValue === 'object' ? ownValue : {}
+					}
 					units={ BOX_UNITS }
 					presets
 					defaults={ spacingDefaultsFor( 'sgs/account', name ) }
-					onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+					onChange={ ( next ) =>
+						setOwnValue( normaliseResponsiveBox( next ) )
+					}
 				/>
 			) }
 		</ResponsiveOverride>

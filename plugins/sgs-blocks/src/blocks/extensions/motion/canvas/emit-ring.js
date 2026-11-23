@@ -29,7 +29,12 @@ export const RING_PAIRS = Object.freeze( {
 } );
 
 /** The hover state values the guard removes. */
-export const RING_KEYS = Object.freeze( [ 'ringSpread', 'ringColour', 'accentWidth', 'accentColour' ] );
+export const RING_KEYS = Object.freeze( [
+	'ringSpread',
+	'ringColour',
+	'accentWidth',
+	'accentColour',
+] );
 
 const SHADOW_KEY = 'css:box-shadow';
 const STYLE_KEY = 'restingShadow';
@@ -44,7 +49,9 @@ const plain = ( v ) =>
 function elementsFor( elements, target ) {
 	return Object.entries( plain( elements ) )
 		.filter( ( [ key, element ] ) =>
-			target === ROOT ? plain( element ).isWrapper === true : key === target
+			target === ROOT
+				? plain( element ).isWrapper === true
+				: key === target
 		)
 		.map( ( [ , element ] ) => plain( element ) );
 }
@@ -86,13 +93,15 @@ export function shadowValues( elements, attributes ) {
 	const attrs = plain( attributes );
 	const out = {};
 	Object.keys( plain( elements ) ).forEach( ( key ) =>
-		shadowAttributes( { [ key ]: elements[ key ] }, key ).forEach( ( name ) => {
-			if ( name === NATIVE ) {
-				out.style = { shadow: plain( attrs.style ).shadow };
-			} else {
-				out[ name ] = attrs[ name ];
+		shadowAttributes( { [ key ]: elements[ key ] }, key ).forEach(
+			( name ) => {
+				if ( name === NATIVE ) {
+					out.style = { shadow: plain( attrs.style ).shadow };
+				} else {
+					out[ name ] = attrs[ name ];
+				}
 			}
-		} )
+		)
 	);
 	return out;
 }
@@ -125,15 +134,17 @@ function isSet( value ) {
  * @return {boolean} True when the element is marked.
  */
 export function stylesheetShadow( elements, target ) {
-	return elementsFor( elements, target ).some( ( el ) => el[ STYLE_KEY ] === true );
+	return elementsFor( elements, target ).some(
+		( el ) => el[ STYLE_KEY ] === true
+	);
 }
 
 /**
  * Whether a target's element has a shadow set, so the hover ring is refused there.
  *
- * @param {Object}  elements   The block's `supports.sgs.elements`.
- * @param {string}  target     Target.
- * @param {Object}  attributes The block's attributes (defaults included).
+ * @param {Object} elements   The block's `supports.sgs.elements`.
+ * @param {string} target     Target.
+ * @param {Object} attributes The block's attributes (defaults included).
  * @return {boolean} True when the ring is refused.
  */
 export function ringRefused( elements, target, attributes ) {
@@ -141,7 +152,9 @@ export function ringRefused( elements, target, attributes ) {
 	return (
 		stylesheetShadow( elements, target ) ||
 		shadowAttributes( elements, target ).some( ( name ) =>
-			isSet( name === NATIVE ? plain( attrs.style ).shadow : attrs[ name ] )
+			isSet(
+				name === NATIVE ? plain( attrs.style ).shadow : attrs[ name ]
+			)
 		)
 	);
 }
@@ -185,7 +198,9 @@ export function ringUnpainted( state ) {
 			const css = valueCss( HOVER, size, values[ size ] );
 			return css !== null && ! /^0(?:\.0+)?[a-z%]*$/.test( css );
 		} );
-		const coloured = valueCss( HOVER, colour, plain( state?.values )[ colour ] ) !== null;
+		const coloured =
+			valueCss( HOVER, colour, plain( state?.values )[ colour ] ) !==
+			null;
 		if ( stored && ! ( sized && coloured ) ) {
 			out.push( size, colour );
 		}

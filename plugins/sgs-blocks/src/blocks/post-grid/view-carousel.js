@@ -25,7 +25,7 @@ export function initCarousel( gridEl, queryData ) {
 	const innerEl = gridEl.querySelector( '.sgs-post-grid__inner' );
 	const prevBtn = gridEl.querySelector( '.sgs-post-grid__carousel-prev' );
 	const nextBtn = gridEl.querySelector( '.sgs-post-grid__carousel-next' );
-	const dotsEl  = gridEl.querySelector( '.sgs-post-grid__carousel-dots' );
+	const dotsEl = gridEl.querySelector( '.sgs-post-grid__carousel-dots' );
 
 	if ( ! innerEl ) {
 		return;
@@ -42,7 +42,9 @@ export function initCarousel( gridEl, queryData ) {
 	 * off — there are no clones to exclude. Mirrors sgs/gallery's view.js.
 	 */
 	const cards = Array.from(
-		innerEl.querySelectorAll( '.sgs-post-grid__card:not([data-sgs-loop-clone])' )
+		innerEl.querySelectorAll(
+			'.sgs-post-grid__card:not([data-sgs-loop-clone])'
+		)
 	);
 	if ( ! cards.length ) {
 		return;
@@ -55,12 +57,13 @@ export function initCarousel( gridEl, queryData ) {
 	// drag is also on.
 	const loopEnabled = innerEl.dataset.sgsLoop === '1';
 
-	let currentIndex  = 0;
+	let currentIndex = 0;
 	let autoplayTimer = null;
-	const totalCards  = cards.length;
-	const autoplayOn  = !! queryData.carouselAutoplay && ! REDUCED_MOTION && totalCards > 1;
+	const totalCards = cards.length;
+	const autoplayOn =
+		!! queryData.carouselAutoplay && ! REDUCED_MOTION && totalCards > 1;
 	// The callback runs on a visitor's input, after the timer functions below exist.
-	const pauser      = initMotionPause( gridEl, {
+	const pauser = initMotionPause( gridEl, {
 		onChange: ( paused ) => ( paused ? stopAutoplay() : startAutoplay() ),
 	} );
 
@@ -82,11 +85,19 @@ export function initCarousel( gridEl, queryData ) {
 			: Math.max( 0, Math.min( index, totalCards - 1 ) );
 
 		if ( dotsEl ) {
-			dotsEl.querySelectorAll( '.sgs-post-grid__dot' ).forEach( ( dot, i ) => {
-				const isActive = i === currentIndex;
-				dot.classList.toggle( 'sgs-post-grid__dot--active', isActive );
-				dot.setAttribute( 'aria-selected', isActive ? 'true' : 'false' );
-			} );
+			dotsEl
+				.querySelectorAll( '.sgs-post-grid__dot' )
+				.forEach( ( dot, i ) => {
+					const isActive = i === currentIndex;
+					dot.classList.toggle(
+						'sgs-post-grid__dot--active',
+						isActive
+					);
+					dot.setAttribute(
+						'aria-selected',
+						isActive ? 'true' : 'false'
+					);
+				} );
 		}
 
 		// A loop has no last item (WCAG 2.5.7 concern the loop module's own
@@ -113,8 +124,8 @@ export function initCarousel( gridEl, queryData ) {
 		if ( target ) {
 			target.scrollIntoView( {
 				behavior: REDUCED_MOTION ? 'auto' : 'smooth',
-				block:    'nearest',
-				inline:   'start',
+				block: 'nearest',
+				inline: 'start',
 			} );
 		}
 	};
@@ -132,8 +143,8 @@ export function initCarousel( gridEl, queryData ) {
 	 * @return {number} Nearest card index.
 	 */
 	const nearestCardIndex = () => {
-		let nearest  = 0;
-		let minDist  = Infinity;
+		let nearest = 0;
+		let minDist = Infinity;
 		cards.forEach( ( card, i ) => {
 			const dist = Math.abs( card.offsetLeft - innerEl.scrollLeft );
 			if ( dist < minDist ) {
@@ -148,8 +159,10 @@ export function initCarousel( gridEl, queryData ) {
 	if ( dotsEl ) {
 		cards.forEach( ( _card, i ) => {
 			const dot = document.createElement( 'button' );
-			dot.type      = 'button';
-			dot.className = 'sgs-post-grid__dot' + ( i === 0 ? ' sgs-post-grid__dot--active' : '' );
+			dot.type = 'button';
+			dot.className =
+				'sgs-post-grid__dot' +
+				( i === 0 ? ' sgs-post-grid__dot--active' : '' );
 			dot.setAttribute( 'role', 'tab' );
 			dot.setAttribute( 'aria-selected', i === 0 ? 'true' : 'false' );
 			dot.setAttribute( 'aria-label', 'Go to slide ' + ( i + 1 ) );
@@ -232,15 +245,19 @@ export function initCarousel( gridEl, queryData ) {
 	 * `{ passive: true }` because this listener never calls `preventDefault`.
 	 */
 	let scrollSyncFrame = null;
-	innerEl.addEventListener( 'scroll', () => {
-		if ( null !== scrollSyncFrame ) {
-			return;
-		}
-		scrollSyncFrame = requestAnimationFrame( () => {
-			scrollSyncFrame = null;
-			updateCarouselUI( nearestCardIndex() );
-		} );
-	}, { passive: true } );
+	innerEl.addEventListener(
+		'scroll',
+		() => {
+			if ( null !== scrollSyncFrame ) {
+				return;
+			}
+			scrollSyncFrame = requestAnimationFrame( () => {
+				scrollSyncFrame = null;
+				updateCarouselUI( nearestCardIndex() );
+			} );
+		},
+		{ passive: true }
+	);
 
 	pauser.setRunning( autoplayOn );
 	startAutoplay();

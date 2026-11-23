@@ -7,11 +7,18 @@ import {
 } from '@wordpress/block-editor';
 import { PanelBody, ToggleControl } from '@wordpress/components';
 import { useState } from '@wordpress/element';
-import { SgsColourPanel, fillRow, textRow,
+import {
+	SgsColourPanel,
+	fillRow,
+	textRow,
 	SgsBorderControl,
 	resolveColourToken,
 } from '../../components';
-import { colourVar, resolveTextColourPreviewStyle, sgsBorderPreview } from '../../utils';
+import {
+	colourVar,
+	resolveTextColourPreviewStyle,
+	sgsBorderPreview,
+} from '../../utils';
 import { RICH_TEXT_FREE_TEXT_NO_LINK } from '../../utils/rich-text-formats';
 
 const CHEVRON_SVG = (
@@ -60,8 +67,10 @@ function buildWrapperStyle( attributes ) {
 	// render.php's sgs_resolve_text_colour_or_gradient()/sgs_text_colour_decl()).
 	Object.assign(
 		wrapperStyle,
-		resolveTextColourPreviewStyle( textColour, textColourGradient, ( val ) =>
-			/^#|^rgb|^hsl/.test( val ) ? val : colourVar( val )
+		resolveTextColourPreviewStyle(
+			textColour,
+			textColourGradient,
+			( val ) => ( /^#|^rgb|^hsl/.test( val ) ? val : colourVar( val ) )
 		)
 	);
 	if ( backgroundColour ) {
@@ -76,13 +85,23 @@ function buildWrapperStyle( attributes ) {
 	// border* are block-private attrs (SgsBorderControl, D876/D881 standard) —
 	// not WP-native style.border.* (undeclared in block.json, silently
 	// discarded by WordPress — check-undeclared-attrs finding).
-	Object.assign( wrapperStyle, sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient, radiusValues: borderRadius } ) );
+	Object.assign(
+		wrapperStyle,
+		sgsBorderPreview( {
+			widthValues: borderWidth,
+			styleValue: borderStyle,
+			colourValue: borderColour,
+			colourGradientValue: borderColourGradient,
+			radiusValues: borderRadius,
+		} )
+	);
 
 	return wrapperStyle;
 }
 
 export default function Edit( { attributes, setAttributes, context } ) {
-	const { question, isOpen, backgroundColour, backgroundColourGradient } = attributes;
+	const { question, isOpen, backgroundColour, backgroundColourGradient } =
+		attributes;
 	// Editor-canvas desync fix (CHECK A, 2026-08-13): this used to hardcode
 	// useState( true ) with a comment justifying it as "always editable" —
 	// which meant the `isOpen` ("Open by default") toggle had ZERO visible
@@ -134,9 +153,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 	// comparing against the flat colour would compare against a surface that
 	// isn't rendered — skip the check entirely in that case.
 	const faqItemContrastAgainst =
-		backgroundColour && ! backgroundColourGradient
-			? backgroundColour
-			: '';
+		backgroundColour && ! backgroundColourGradient ? backgroundColour : '';
 
 	return (
 		<>
@@ -189,28 +206,44 @@ export default function Edit( { attributes, setAttributes, context } ) {
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
-				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Border', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SgsBorderControl
 						widthValues={ attributes.borderWidth ?? {} }
-						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						onWidthChange={ ( next ) =>
+							setAttributes( { borderWidth: next } )
+						}
 						widthPresets={ [ '10', '20', '30' ] }
 						styleValue={ attributes.borderStyle }
-						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						onStyleChange={ ( val ) =>
+							setAttributes( { borderStyle: val } )
+						}
 						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
 						colourValue={ attributes.borderColour }
-						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						onColourChange={ ( val ) =>
+							setAttributes( { borderColour: val ?? '' } )
+						}
 						colourGradientValue={ attributes.borderColourGradient }
-						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+						onColourGradientChange={ ( val ) =>
+							setAttributes( { borderColourGradient: val ?? '' } )
+						}
 						colourLinked={ true }
 						contrastAgainst={ faqItemContrastAgainst }
 						radiusValues={ {
-								base: attributes.borderRadius?.desktop ?? {},
-								tablet: attributes.borderRadius?.tablet ?? {},
-								mobile: attributes.borderRadius?.mobile ?? {},
-							} }
+							base: attributes.borderRadius?.desktop ?? {},
+							tablet: attributes.borderRadius?.tablet ?? {},
+							mobile: attributes.borderRadius?.mobile ?? {},
+						} }
 						onRadiusChange={ ( tier, next ) => {
 							const key = tier === 'base' ? 'desktop' : tier;
-							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+							setAttributes( {
+								borderRadius: {
+									...attributes.borderRadius,
+									[ key ]: next,
+								},
+							} );
 						} }
 					/>
 				</PanelBody>

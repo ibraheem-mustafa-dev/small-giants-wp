@@ -9,19 +9,36 @@
 import { __ } from '@wordpress/i18n';
 import { useSelect } from '@wordpress/data';
 import { IconPreview, resolveColourToken } from '../../components';
-import { fontFamilyCssValue, resolveShadowPreviewComposed, sgsLengthPreview, spacingPreview, tierValueOf } from '../../utils';
+import {
+	fontFamilyCssValue,
+	resolveShadowPreviewComposed,
+	sgsLengthPreview,
+	spacingPreview,
+	tierValueOf,
+} from '../../utils';
 
-const WRAP_CSS = { wrap: { flexWrap: 'wrap', overflowX: 'visible' }, nowrap: { flexWrap: 'nowrap', overflowX: 'auto' } };
+const WRAP_CSS = {
+	wrap: { flexWrap: 'wrap', overflowX: 'visible' },
+	nowrap: { flexWrap: 'nowrap', overflowX: 'auto' },
+};
 const MARGIN_CSS = { left: '0 auto', center: 'auto', right: 'auto 0' };
 const JUSTIFY_CSS = { left: 'flex-start', center: 'center', right: 'flex-end' };
 
 function countLine( attributes, count ) {
 	const plural = attributes.filterCountTemplate || '{count}';
 	const singular = attributes.filterCountSingular || plural;
-	return ( 1 === count ? singular : plural ).replace( '{count}', String( count ) );
+	return ( 1 === count ? singular : plural ).replace(
+		'{count}',
+		String( count )
+	);
 }
 
-export default function FilterCanvasBar( { attributes, clientId, palette, tier = 'desktop' } ) {
+export default function FilterCanvasBar( {
+	attributes,
+	clientId,
+	palette,
+	tier = 'desktop',
+} ) {
 	const items = useSelect(
 		( select ) =>
 			select( 'core/block-editor' )
@@ -36,30 +53,59 @@ export default function FilterCanvasBar( { attributes, clientId, palette, tier =
 			categories.push( category );
 		}
 	} );
-	const colour = ( value ) => ( value ? resolveColourToken( value, palette ) : undefined );
+	const colour = ( value ) =>
+		value ? resolveColourToken( value, palette ) : undefined;
 	const length = ( value ) => sgsLengthPreview( tierValueOf( value, tier ) );
-	const wrap = tierValueOf( attributes.filterChipsWrap, tier, ( v ) => ( WRAP_CSS[ v ] ? v : undefined ) );
+	const wrap = tierValueOf( attributes.filterChipsWrap, tier, ( v ) =>
+		WRAP_CSS[ v ] ? v : undefined
+	);
 	const offsetX = sgsLengthPreview( attributes.filterChipSelectedOffsetX );
 	const offsetY = sgsLengthPreview( attributes.filterChipSelectedOffsetY );
 	const chipStyle = ( pressed ) => ( {
-		color: colour( pressed ? attributes.filterChipColourPressed : attributes.filterChipColour ),
-		backgroundColor: colour( pressed ? attributes.filterChipBackgroundPressed : attributes.filterChipBackground ),
+		color: colour(
+			pressed
+				? attributes.filterChipColourPressed
+				: attributes.filterChipColour
+		),
+		backgroundColor: colour(
+			pressed
+				? attributes.filterChipBackgroundPressed
+				: attributes.filterChipBackground
+		),
 		borderColor: colour( attributes.filterChipBorderColour ),
 		borderRadius: attributes.filterChipRadius || undefined,
 		fontSize: length( attributes.filterChipFontSize ),
 		fontFamily: fontFamilyCssValue( attributes.filterChipFontFamily ),
-		...( wrap ? { flex: 'wrap' === wrap ? '0 1 auto' : 'none', whiteSpace: 'wrap' === wrap ? 'normal' : 'nowrap' } : {} ),
-		boxShadow: resolveShadowPreviewComposed( attributes.filterChipShadow, attributes.filterChipShadowColour ),
+		...( wrap
+			? {
+					flex: 'wrap' === wrap ? '0 1 auto' : 'none',
+					whiteSpace: 'wrap' === wrap ? 'normal' : 'nowrap',
+			  }
+			: {} ),
+		boxShadow: resolveShadowPreviewComposed(
+			attributes.filterChipShadow,
+			attributes.filterChipShadowColour
+		),
 		...( pressed
 			? {
-					boxShadow: resolveShadowPreviewComposed( attributes.filterChipSelectedShadow, attributes.filterChipSelectedShadowColour ),
-					translate: offsetX || offsetY ? `${ offsetX || '0' } ${ offsetY || '0' }` : undefined,
+					boxShadow: resolveShadowPreviewComposed(
+						attributes.filterChipSelectedShadow,
+						attributes.filterChipSelectedShadowColour
+					),
+					translate:
+						offsetX || offsetY
+							? `${ offsetX || '0' } ${ offsetY || '0' }`
+							: undefined,
 			  }
 			: {} ),
 	} );
 	const chipsStyle = {
 		...( wrap ? WRAP_CSS[ wrap ] : {} ),
-		justifyContent: tierValueOf( attributes.filterChipsJustify, tier, ( v ) => JUSTIFY_CSS[ v ] ),
+		justifyContent: tierValueOf(
+			attributes.filterChipsJustify,
+			tier,
+			( v ) => JUSTIFY_CSS[ v ]
+		),
 		...spacingPreview( { padding: attributes.filterChipsPadding }, tier ),
 	};
 	const searchIcon = ( attributes.filterSearchIcon || '' ).trim();
@@ -69,28 +115,60 @@ export default function FilterCanvasBar( { attributes, clientId, palette, tier =
 		minHeight: length( attributes.filterSearchHeight ),
 		fontSize: length( attributes.filterSearchFontSize ),
 		fontFamily: fontFamilyCssValue( attributes.filterSearchFontFamily ),
-		...( iconOffset && searchIcon ? { paddingInlineStart: `calc(${ iconOffset } + var(--sgs-accordion-search-icon-size, 1.25rem) + 0.75rem)` } : {} ),
-		boxShadow: resolveShadowPreviewComposed( attributes.filterSearchShadow, attributes.filterSearchShadowColour ),
+		...( iconOffset && searchIcon
+			? {
+					paddingInlineStart: `calc(${ iconOffset } + var(--sgs-accordion-search-icon-size, 1.25rem) + 0.75rem)`,
+			  }
+			: {} ),
+		boxShadow: resolveShadowPreviewComposed(
+			attributes.filterSearchShadow,
+			attributes.filterSearchShadowColour
+		),
 		...spacingPreview( { padding: attributes.filterSearchPadding }, tier ),
 	};
 	const searchWrapStyle = {
 		maxWidth: length( attributes.filterSearchMaxWidth ),
-		width: length( attributes.filterSearchMaxWidth ) || tierValueOf( attributes.filterSearchAlign, tier ) ? '100%' : undefined,
-		marginInline: tierValueOf( attributes.filterSearchAlign, tier, ( v ) => MARGIN_CSS[ v ] ),
+		width:
+			length( attributes.filterSearchMaxWidth ) ||
+			tierValueOf( attributes.filterSearchAlign, tier )
+				? '100%'
+				: undefined,
+		marginInline: tierValueOf(
+			attributes.filterSearchAlign,
+			tier,
+			( v ) => MARGIN_CSS[ v ]
+		),
 	};
 	const iconSize = sgsLengthPreview( attributes.filterSearchIconSize );
 	const showSearch = false !== attributes.filterSearch;
 	const showChips = false !== attributes.filterChips && categories.length > 0;
 
 	const bandFill = colour( attributes.filterBandBackground );
-	const bandLine = colour( attributes.filterBandBorderColour ) || 'currentColor';
-	const bandBottom = sgsLengthPreview( attributes.filterBandBorderWidth?.bottom );
-	const bandHasLine = !! bandBottom && 'none' !== attributes.filterBandBorderStyle && '0' !== bandBottom && '0px' !== bandBottom;
+	const bandLine =
+		colour( attributes.filterBandBorderColour ) || 'currentColor';
+	const bandBottom = sgsLengthPreview(
+		attributes.filterBandBorderWidth?.bottom
+	);
+	const bandHasLine =
+		!! bandBottom &&
+		'none' !== attributes.filterBandBorderStyle &&
+		'0' !== bandBottom &&
+		'0px' !== bandBottom;
 	const bandFull = !! attributes.filterBandFullWidth;
 	// With a band in use the count is its own row after the band (includes/accordion-filter.php::sgs_accordion_filter_band_in_use).
-	const countBelow = !! ( attributes.filterBandBackground || Object.keys( attributes.filterBandBorderWidth || {} ).length || Object.keys( attributes.filterBandPadding || {} ).length );
+	const countBelow = !! (
+		attributes.filterBandBackground ||
+		Object.keys( attributes.filterBandBorderWidth || {} ).length ||
+		Object.keys( attributes.filterBandPadding || {} ).length
+	);
 	const countParagraph = (
-		<p className={ 'sgs-accordion__count' + ( countBelow ? ' sgs-accordion__count--below' : '' ) } style={ { color: colour( attributes.filterCountColour ) } }>
+		<p
+			className={
+				'sgs-accordion__count' +
+				( countBelow ? ' sgs-accordion__count--below' : '' )
+			}
+			style={ { color: colour( attributes.filterCountColour ) } }
+		>
 			{ countLine( attributes, items.length ) }
 		</p>
 	);
@@ -106,56 +184,104 @@ export default function FilterCanvasBar( { attributes, clientId, palette, tier =
 						borderImage: `linear-gradient(${ bandLine },${ bandLine }) 0 0 1 0/0 0 ${ bandBottom } 0/0 100vmax`,
 				  }
 				: {
-						borderStyle: attributes.filterBandBorderStyle || 'solid',
+						borderStyle:
+							attributes.filterBandBorderStyle || 'solid',
 						borderWidth: `0 0 ${ bandBottom } 0`,
 						borderColor: bandLine,
 				  }
 			: {} ),
-		...( bandFull && bandFill ? { '--sgs-accordion-band-fill': bandFill } : {} ),
+		...( bandFull && bandFill
+			? { '--sgs-accordion-band-fill': bandFill }
+			: {} ),
 	};
 
 	return (
 		<>
-		<div
-			className={ 'sgs-accordion__filter sgs-accordion__filter--canvas' + ( bandFull && bandFill ? ' sgs-accordion__filter--band-full' : '' ) }
-			style={ bandStyle }
-			contentEditable={ false }
-		>
-			{ showSearch && (
-				<div
-					className={ 'sgs-accordion__search' + ( searchIcon ? ' sgs-accordion__search--has-icon' : '' ) }
-					style={ { ...searchWrapStyle, ...( iconSize ? { '--sgs-accordion-search-icon-size': iconSize } : {} ) } }
-				>
-					{ searchIcon && (
-						<span className="sgs-accordion__search-icon" style={ { color: colour( attributes.filterSearchIconColour ), insetInlineStart: iconOffset } } aria-hidden="true">
-							<IconPreview source="lucide" name={ searchIcon } />
+			<div
+				className={
+					'sgs-accordion__filter sgs-accordion__filter--canvas' +
+					( bandFull && bandFill
+						? ' sgs-accordion__filter--band-full'
+						: '' )
+				}
+				style={ bandStyle }
+				contentEditable={ false }
+			>
+				{ showSearch && (
+					<div
+						className={
+							'sgs-accordion__search' +
+							( searchIcon
+								? ' sgs-accordion__search--has-icon'
+								: '' )
+						}
+						style={ {
+							...searchWrapStyle,
+							...( iconSize
+								? {
+										'--sgs-accordion-search-icon-size':
+											iconSize,
+								  }
+								: {} ),
+						} }
+					>
+						{ searchIcon && (
+							<span
+								className="sgs-accordion__search-icon"
+								style={ {
+									color: colour(
+										attributes.filterSearchIconColour
+									),
+									insetInlineStart: iconOffset,
+								} }
+								aria-hidden="true"
+							>
+								<IconPreview
+									source="lucide"
+									name={ searchIcon }
+								/>
+							</span>
+						) }
+						<input
+							className="sgs-accordion__search-input"
+							type="search"
+							disabled
+							style={ searchStyle }
+							aria-label={
+								attributes.filterSearchLabel ||
+								__( 'Search', 'sgs-blocks' )
+							}
+							placeholder={
+								attributes.filterSearchPlaceholder || ''
+							}
+						/>
+					</div>
+				) }
+				{ showChips && (
+					<div className="sgs-accordion__chips" style={ chipsStyle }>
+						<span
+							className="sgs-accordion__chip"
+							aria-pressed="true"
+							style={ chipStyle( true ) }
+						>
+							{ attributes.filterAllLabel ||
+								__( 'All', 'sgs-blocks' ) }
 						</span>
-					) }
-					<input
-						className="sgs-accordion__search-input"
-						type="search"
-						disabled
-						style={ searchStyle }
-						aria-label={ attributes.filterSearchLabel || __( 'Search', 'sgs-blocks' ) }
-						placeholder={ attributes.filterSearchPlaceholder || '' }
-					/>
-				</div>
-			) }
-			{ showChips && (
-				<div className="sgs-accordion__chips" style={ chipsStyle }>
-					<span className="sgs-accordion__chip" aria-pressed="true" style={ chipStyle( true ) }>
-						{ attributes.filterAllLabel || __( 'All', 'sgs-blocks' ) }
-					</span>
-					{ categories.map( ( category ) => (
-						<span key={ category } className="sgs-accordion__chip" aria-pressed="false" style={ chipStyle( false ) }>
-							{ category }
-						</span>
-					) ) }
-				</div>
-			) }
-			{ ! countBelow && countParagraph }
-		</div>
-		{ countBelow && countParagraph }
+						{ categories.map( ( category ) => (
+							<span
+								key={ category }
+								className="sgs-accordion__chip"
+								aria-pressed="false"
+								style={ chipStyle( false ) }
+							>
+								{ category }
+							</span>
+						) ) }
+					</div>
+				) }
+				{ ! countBelow && countParagraph }
+			</div>
+			{ countBelow && countParagraph }
 		</>
 	);
 }

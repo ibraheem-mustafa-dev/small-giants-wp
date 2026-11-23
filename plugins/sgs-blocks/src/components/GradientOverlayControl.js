@@ -74,7 +74,6 @@ const DEFAULT_ATTR_NAMES = {
 	gradientHover: 'overlayGradientHover',
 };
 
-
 /**
  * Derive ONE of a gradient-overlay family's attribute names from its base.
  *
@@ -129,9 +128,9 @@ export function gradientOverlayAttrName( base, part = 'gradient' ) {
  * The PHP twin is `sgs_gradient_overlay_attr_map()` (`includes/helpers-tokens.php`),
  * which carries the same default and the same override.
  *
- * @param {string} base              Base attribute name, e.g. 'contentBackground'.
- * @param {Object} [options]         Options.
- * @param {string} [options.solid]   Override the solid-colour attribute name.
+ * @param {string} base            Base attribute name, e.g. 'contentBackground'.
+ * @param {Object} [options]       Options.
+ * @param {string} [options.solid] Override the solid-colour attribute name.
  * @return {{gradient: string, solid: string}} The keys.
  */
 export function gradientOverlayAttrKeys( base, { solid } = {} ) {

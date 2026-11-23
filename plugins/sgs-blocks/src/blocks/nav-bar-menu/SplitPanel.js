@@ -26,7 +26,10 @@ import {
 	ToggleControl,
 	Notice,
 } from '@wordpress/components';
-import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+import {
+	ToggleGroupControl,
+	ToggleGroupControlOption,
+} from '../../components/primitives';
 import { ResponsiveControl } from '../../components';
 import { resolveTier } from '../../utils';
 import { patchTier } from '../../utils/patch-tier';
@@ -77,24 +80,47 @@ export default function SplitPanel( {
 	const splitIdUnresolved =
 		isSplitting &&
 		!! splitAfterItemId &&
-		! topLevelItems.some( ( item ) => item.identifier === splitAfterItemId );
+		! topLevelItems.some(
+			( item ) => item.identifier === splitAfterItemId
+		);
 
 	return (
 		<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ false }>
 			<ResponsiveControl
 				label={ __( 'Align items (per device)', 'sgs-blocks' ) }
 				value={ justifyContent }
-				isInherited={ ( tier ) => resolveTier( justifyContent, tier, '' ).inherited }
-				resolvedValue={ ( tier ) => resolveTier( justifyContent, tier, '' ).value || __( 'default (space between)', 'sgs-blocks' ) }
-				onReset={ ( tier ) => patchTier( { justifyContent }, setAttributes, 'justifyContent', tier, null ) }
+				isInherited={ ( tier ) =>
+					resolveTier( justifyContent, tier, '' ).inherited
+				}
+				resolvedValue={ ( tier ) =>
+					resolveTier( justifyContent, tier, '' ).value ||
+					__( 'default (space between)', 'sgs-blocks' )
+				}
+				onReset={ ( tier ) =>
+					patchTier(
+						{ justifyContent },
+						setAttributes,
+						'justifyContent',
+						tier,
+						null
+					)
+				}
 			>
 				{ ( tier ) => (
 					<SelectControl
 						label={ __( 'Align items', 'sgs-blocks' ) }
-						value={ ( justifyContent && justifyContent[ tier ] ) || '' }
+						value={
+							( justifyContent && justifyContent[ tier ] ) || ''
+						}
 						options={ JUSTIFY_CONTENT_OPTIONS }
 						onChange={ ( val ) =>
-							patchTier( { justifyContent }, setAttributes, 'justifyContent', tier, val || null )
+							patchTier(
+								{ justifyContent },
+								setAttributes,
+								'justifyContent',
+								tier,
+								val || null
+							)
 						}
 						help={ __(
 							'The menu button sits in this row below the collapse point. How the items are spaced along the bar when they do not fill it.',

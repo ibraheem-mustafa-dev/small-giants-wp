@@ -24,9 +24,9 @@ export const DIRECTION_UP_DEADZONE_PX = 8;
 
 /**
  * @typedef {Object} DirectionScrollState
- * @property {number}  prevScrollY   The previous tick's scrollY.
- * @property {boolean} scrolled      Whether `is-header-scrolled` is currently on.
- * @property {number}  upAccumPx     Upward pixels accumulated since the last downward movement.
+ * @property {number}  prevScrollY The previous tick's scrollY.
+ * @property {boolean} scrolled    Whether `is-header-scrolled` is currently on.
+ * @property {number}  upAccumPx   Upward pixels accumulated since the last downward movement.
  */
 
 /**
@@ -44,9 +44,9 @@ export function initDirectionScrollState( scrollY ) {
  * previous state and the new scrollY, returns the next state. Never mutates
  * its input.
  *
- * @param {DirectionScrollState} state    The previous tick's state.
- * @param {number}               scrollY  The new `window.scrollY`.
- * @param {number}               offset   `scrolledOffset` — the px threshold.
+ * @param {DirectionScrollState} state   The previous tick's state.
+ * @param {number}               scrollY The new `window.scrollY`.
+ * @param {number}               offset  `scrolledOffset` — the px threshold.
  * @return {DirectionScrollState} The next state.
  */
 export function nextDirectionScrollState( state, scrollY, offset ) {

@@ -13,7 +13,11 @@ import { __, sprintf } from '@wordpress/i18n';
 import { Fragment } from '@wordpress/element';
 import { colourVar } from '../../utils';
 import { logoUrlFor } from '../../utils/logo-source';
-import { buttonKitPreview, buttonPresetClass, firstQuestionProgress } from './preview-style';
+import {
+	buttonKitPreview,
+	buttonPresetClass,
+	firstQuestionProgress,
+} from './preview-style';
 
 import AuthoredText from '../../components/AuthoredText';
 /**
@@ -24,12 +28,35 @@ import AuthoredText from '../../components/AuthoredText';
  * @param {Array}  [props.palette]     Theme colour palette.
  * @return {JSX.Element} The preview rows.
  */
-export default function ChromePreview( { attributes, questionTotal, tier = 'desktop', palette } ) {
-	const { showHeader, flowLayout, headerLogoSource, headerLogoAlt, headerLogoDecorative, closeStyle, closeLabel, stepCountLabel, progressColour, progressColourGradient, progressStyle: progressVariant, showPricePanel, stageNote } = attributes;
+export default function ChromePreview( {
+	attributes,
+	questionTotal,
+	tier = 'desktop',
+	palette,
+} ) {
+	const {
+		showHeader,
+		flowLayout,
+		headerLogoSource,
+		headerLogoAlt,
+		headerLogoDecorative,
+		closeStyle,
+		closeLabel,
+		stepCountLabel,
+		progressColour,
+		progressColourGradient,
+		progressStyle: progressVariant,
+		showPricePanel,
+		stageNote,
+	} = attributes;
 	const showcase = 'showcase' === flowLayout;
 	const hasHeader = !! showHeader || showcase;
-	const label = stepCountLabel && stepCountLabel.trim() ? stepCountLabel.trim() : __( 'Step', 'sgs-blocks' );
-	const stepCountText = questionTotal > 0 ? `${ label } 1 of ${ questionTotal }` : '';
+	const label =
+		stepCountLabel && stepCountLabel.trim()
+			? stepCountLabel.trim()
+			: __( 'Step', 'sgs-blocks' );
+	const stepCountText =
+		questionTotal > 0 ? `${ label } 1 of ${ questionTotal }` : '';
 	// Showcase's header eyebrow starts as the server's "Step N of M" until the
 	// runtime recomposes it; compact mirrors the step-count line.
 	const eyebrowText =
@@ -44,21 +71,42 @@ export default function ChromePreview( { attributes, questionTotal, tier = 'desk
 	const logoUrl = logoUrlFor( headerLogoSource, 'desktop' );
 	// The Close button's own kit look (`closeButton*`): the preset's class and the look settings, as the page prints them.
 	const closeClass = buttonPresetClass( attributes, 'closeButton' );
-	const closeLook = buttonKitPreview( attributes, 'closeButton', { tier, palette } );
-	const closeText = closeLabel && closeLabel.trim() ? closeLabel.trim() : __( 'Close', 'sgs-blocks' );
+	const closeLook = buttonKitPreview( attributes, 'closeButton', {
+		tier,
+		palette,
+	} );
+	const closeText =
+		closeLabel && closeLabel.trim()
+			? closeLabel.trim()
+			: __( 'Close', 'sgs-blocks' );
 	const fillColour = colourVar( progressColour );
-	const progressStyle = { '--sgs-choice-flow-progress': firstQuestionProgress( attributes, questionTotal ) };
+	const progressStyle = {
+		'--sgs-choice-flow-progress': firstQuestionProgress(
+			attributes,
+			questionTotal
+		),
+	};
 	const fillStyle =
 		fillColour || progressColourGradient
 			? {
-					...( fillColour ? { '--sgs-choice-flow-progress-colour': fillColour } : {} ),
-					...( progressColourGradient ? { '--sgs-choice-flow-progress-colour-gradient': progressColourGradient } : {} ),
+					...( fillColour
+						? { '--sgs-choice-flow-progress-colour': fillColour }
+						: {} ),
+					...( progressColourGradient
+						? {
+								'--sgs-choice-flow-progress-colour-gradient':
+									progressColourGradient,
+						  }
+						: {} ),
 			  }
 			: undefined;
 
 	// view.js builds one circle per question (flow-progress.js::buildStepperMarkup); an empty flow shows three.
 	const stepperTotal = questionTotal > 0 ? questionTotal : 3;
-	const stepperItems = Array.from( { length: stepperTotal }, ( _, index ) => index + 1 );
+	const stepperItems = Array.from(
+		{ length: stepperTotal },
+		( _, index ) => index + 1
+	);
 	const noteText = stageNote && stageNote.trim() ? stageNote.trim() : '';
 
 	return (
@@ -67,11 +115,19 @@ export default function ChromePreview( { attributes, questionTotal, tier = 'desk
 				<div className="sgs-choice-flow__stepper" aria-hidden="true">
 					{ stepperItems.map( ( number ) => (
 						<Fragment key={ number }>
-							<div className={ `sgs-choice-flow__stepper-item${ 1 === number ? ' is-current' : '' }` }>
-								<span className="sgs-choice-flow__stepper-circle">{ number }</span>
+							<div
+								className={ `sgs-choice-flow__stepper-item${
+									1 === number ? ' is-current' : ''
+								}` }
+							>
+								<span className="sgs-choice-flow__stepper-circle">
+									{ number }
+								</span>
 								<span className="sgs-choice-flow__stepper-label">{ `${ label } ${ number }` }</span>
 							</div>
-							{ number < stepperTotal && <span className="sgs-choice-flow__stepper-connector" /> }
+							{ number < stepperTotal && (
+								<span className="sgs-choice-flow__stepper-connector" />
+							) }
 						</Fragment>
 					) ) }
 				</div>
@@ -79,25 +135,50 @@ export default function ChromePreview( { attributes, questionTotal, tier = 'desk
 			{ hasHeader && (
 				<div className="sgs-choice-flow__chrome-header">
 					{ logoUrl && (
-						<img className="sgs-choice-flow__chrome-logo" src={ logoUrl } alt={ headerLogoDecorative ? '' : headerLogoAlt || '' } />
+						<img
+							className="sgs-choice-flow__chrome-logo"
+							src={ logoUrl }
+							alt={
+								headerLogoDecorative ? '' : headerLogoAlt || ''
+							}
+						/>
 					) }
-					<span className="sgs-choice-flow__chrome-eyebrow">{ eyebrowText }</span>
+					<span className="sgs-choice-flow__chrome-eyebrow">
+						{ eyebrowText }
+					</span>
 					{ 'text' === closeStyle ? (
-						<span className={ `sgs-choice-flow__chrome-close sgs-choice-flow__chrome-close--text ${ closeClass }`.trim() } style={ closeLook }>
-							<AuthoredText className="sgs-choice-flow__chrome-close-text" value={ closeText } />
-							<span className="sgs-choice-flow__chrome-close-glyph" aria-hidden="true">
+						<span
+							className={ `sgs-choice-flow__chrome-close sgs-choice-flow__chrome-close--text ${ closeClass }`.trim() }
+							style={ closeLook }
+						>
+							<AuthoredText
+								className="sgs-choice-flow__chrome-close-text"
+								value={ closeText }
+							/>
+							<span
+								className="sgs-choice-flow__chrome-close-glyph"
+								aria-hidden="true"
+							>
 								&times;
 							</span>
 						</span>
 					) : (
-						<span className={ `sgs-choice-flow__chrome-close sgs-choice-flow__chrome-close--icon ${ closeClass }`.trim() } style={ closeLook }>
+						<span
+							className={ `sgs-choice-flow__chrome-close sgs-choice-flow__chrome-close--icon ${ closeClass }`.trim() }
+							style={ closeLook }
+						>
 							<svg
 								className="sgs-choice-flow__chrome-close-icon"
 								viewBox="0 0 24 24"
 								aria-hidden="true"
 								focusable="false"
 							>
-								<path d="M6 6L18 18M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+								<path
+									d="M6 6L18 18M18 6L6 18"
+									stroke="currentColor"
+									strokeWidth="2"
+									strokeLinecap="round"
+								/>
 							</svg>
 						</span>
 					) }
@@ -106,19 +187,39 @@ export default function ChromePreview( { attributes, questionTotal, tier = 'desk
 			{ ! showcase && (
 				<div className="sgs-choice-flow__header">
 					<div className="sgs-choice-flow__step-indicator">
-						<span className="sgs-choice-flow__step-count">{ stepCountText }</span>
+						<span className="sgs-choice-flow__step-count">
+							{ stepCountText }
+						</span>
 					</div>
 				</div>
 			) }
-			<div className="sgs-choice-flow__progress" aria-hidden="true" style={ progressStyle }>
-				<div className="sgs-choice-flow__progress-fill" style={ fillStyle } />
+			<div
+				className="sgs-choice-flow__progress"
+				aria-hidden="true"
+				style={ progressStyle }
+			>
+				<div
+					className="sgs-choice-flow__progress-fill"
+					style={ fillStyle }
+				/>
 				{ 'badge' === progressVariant && (
-					<span className="sgs-choice-flow__progress-badge" style={ { left: 'calc(var(--sgs-choice-flow-progress) * 100%)' } }>
+					<span
+						className="sgs-choice-flow__progress-badge"
+						style={ {
+							left: 'calc(var(--sgs-choice-flow-progress) * 100%)',
+						} }
+					>
 						{ `1/${ stepperTotal }` }
 					</span>
 				) }
 			</div>
-			{ ( showPricePanel || showcase ) && <SummaryPreview attributes={ attributes } showcase={ showcase } noteText={ noteText } /> }
+			{ ( showPricePanel || showcase ) && (
+				<SummaryPreview
+					attributes={ attributes }
+					showcase={ showcase }
+					noteText={ noteText }
+				/>
+			) }
 		</>
 	);
 }
@@ -128,8 +229,13 @@ export default function ChromePreview( { attributes, questionTotal, tier = 'desk
  * message-circle); the WhatsApp choice shows the message-circle outline on the canvas.
  */
 const NOTE_ICON_PATHS = {
-	phone: [ 'M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z' ],
-	email: [ 'M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z', 'm22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7' ],
+	phone: [
+		'M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z',
+	],
+	email: [
+		'M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z',
+		'm22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7',
+	],
 	chat: [ 'M7.9 20A9 9 0 1 0 4 16.1L2 22Z' ],
 	whatsapp: [ 'M7.9 20A9 9 0 1 0 4 16.1L2 22Z' ],
 };
@@ -147,10 +253,16 @@ const NOTE_ICON_PATHS = {
  * @return {JSX.Element} The summary box.
  */
 function SummaryPreview( { attributes, showcase, noteText } ) {
-	const baseLabel = attributes.summaryBaseLabel && attributes.summaryBaseLabel.trim() ? attributes.summaryBaseLabel.trim() : __( 'Base price', 'sgs-blocks' );
+	const baseLabel =
+		attributes.summaryBaseLabel && attributes.summaryBaseLabel.trim()
+			? attributes.summaryBaseLabel.trim()
+			: __( 'Base price', 'sgs-blocks' );
 	const iconPaths = NOTE_ICON_PATHS[ attributes.stageNoteIcon ];
 	return (
-		<div className="sgs-choice-flow__summary-body" style={ showcase ? { display: 'flex' } : undefined }>
+		<div
+			className="sgs-choice-flow__summary-body"
+			style={ showcase ? { display: 'flex' } : undefined }
+		>
 			<ul className="sgs-choice-flow__summary-lines">
 				<li>
 					<span>{ baseLabel }</span>
@@ -158,21 +270,47 @@ function SummaryPreview( { attributes, showcase, noteText } ) {
 				</li>
 			</ul>
 			<div className="sgs-choice-flow__summary-total">
-				<span className="sgs-choice-flow__summary-total-label">{ __( 'Total', 'sgs-blocks' ) }</span>
-				<span className="sgs-choice-flow__summary-total-value">&mdash;</span>
+				<span className="sgs-choice-flow__summary-total-label">
+					{ __( 'Total', 'sgs-blocks' ) }
+				</span>
+				<span className="sgs-choice-flow__summary-total-value">
+					&mdash;
+				</span>
 			</div>
 			{ noteText && (
-				<p className={ `sgs-choice-flow__summary-note sgs-choice-flow__summary-note--stage${ iconPaths ? ' sgs-choice-flow__summary-note--has-icon' : '' }` }>
+				<p
+					className={ `sgs-choice-flow__summary-note sgs-choice-flow__summary-note--stage${
+						iconPaths
+							? ' sgs-choice-flow__summary-note--has-icon'
+							: ''
+					}` }
+				>
 					{ iconPaths && (
-						<span className="sgs-choice-flow__summary-note-icon" aria-hidden="true">
-							<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" focusable="false">
+						<span
+							className="sgs-choice-flow__summary-note-icon"
+							aria-hidden="true"
+						>
+							<svg
+								width="24"
+								height="24"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								strokeWidth="2"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								focusable="false"
+							>
 								{ iconPaths.map( ( d ) => (
 									<path key={ d } d={ d } />
 								) ) }
 							</svg>
 						</span>
 					) }
-					<AuthoredText className="sgs-choice-flow__summary-note-text" value={ noteText } />
+					<AuthoredText
+						className="sgs-choice-flow__summary-note-text"
+						value={ noteText }
+					/>
 				</p>
 			) }
 		</div>

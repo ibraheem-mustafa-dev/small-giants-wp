@@ -1,5 +1,9 @@
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls, RichText } from '@wordpress/block-editor';
+import {
+	useBlockProps,
+	InspectorControls,
+	RichText,
+} from '@wordpress/block-editor';
 import {
 	PanelBody,
 	TextControl,
@@ -27,8 +31,7 @@ const CONSENT_TYPE_OPTIONS = [
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
 	const consentScope = `sgs-cn-preview-${ clientId }`;
-	const { fieldName, helpText, width, consentType, consentText } =
-		attributes;
+	const { fieldName, helpText, width, consentType, consentText } = attributes;
 
 	const className = [
 		'sgs-form-field',
@@ -37,15 +40,30 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		...fieldLabelClasses( attributes ),
 	].join( ' ' );
 
-	const blockProps = useBlockProps( { className: `${ className } ${ consentScope }` } );
-	const boxSize = attributes.boxSize ? ( /^[\d.]+$/.test( attributes.boxSize ) ? `${ attributes.boxSize }px` : attributes.boxSize ) : '';
-	const boxMargin = attributes.boxMargin && 'object' === typeof attributes.boxMargin && Object.keys( attributes.boxMargin ).length
-		? [ 'top', 'right', 'bottom', 'left' ].map( ( side ) => attributes.boxMargin[ side ] || '0' ).join( ' ' )
+	const blockProps = useBlockProps( {
+		className: `${ className } ${ consentScope }`,
+	} );
+	const boxSize = attributes.boxSize
+		? /^[\d.]+$/.test( attributes.boxSize )
+			? `${ attributes.boxSize }px`
+			: attributes.boxSize
 		: '';
+	const boxMargin =
+		attributes.boxMargin &&
+		'object' === typeof attributes.boxMargin &&
+		Object.keys( attributes.boxMargin ).length
+			? [ 'top', 'right', 'bottom', 'left' ]
+					.map( ( side ) => attributes.boxMargin[ side ] || '0' )
+					.join( ' ' )
+			: '';
 	const consentPreviewCss = [
-		boxSize && `.${ consentScope } .sgs-form-field__consent input[type="checkbox"]{width:${ boxSize };height:${ boxSize };min-width:${ boxSize };}`,
-		boxMargin && `.${ consentScope } .sgs-form-field__consent input[type="checkbox"]{margin:${ boxMargin };}`,
-	].filter( Boolean ).join( '' );
+		boxSize &&
+			`.${ consentScope } .sgs-form-field__consent input[type="checkbox"]{width:${ boxSize };height:${ boxSize };min-width:${ boxSize };}`,
+		boxMargin &&
+			`.${ consentScope } .sgs-form-field__consent input[type="checkbox"]{margin:${ boxMargin };}`,
+	]
+		.filter( Boolean )
+		.join( '' );
 
 	const isRequired = [ 'terms', 'gdpr' ].includes( consentType );
 
@@ -91,21 +109,28 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							setAttributes( { consentText: val } )
 						}
 						rows={ 3 }
-						help={ __(
-							'Supports HTML for links',
-							'sgs-blocks'
-						) }
+						help={ __( 'Supports HTML for links', 'sgs-blocks' ) }
 						__nextHasNoMarginBottom
 					/>
 					<ToolsPanel
 						label={ __( 'More field settings', 'sgs-blocks' ) }
-						resetAll={ () => setAttributes( { helpText: '', width: 'full', optionRowMinHeight: undefined, boxSize: undefined, boxMargin: {} } ) }
+						resetAll={ () =>
+							setAttributes( {
+								helpText: '',
+								width: 'full',
+								optionRowMinHeight: undefined,
+								boxSize: undefined,
+								boxMargin: {},
+							} )
+						}
 					>
 						<ToolsPanelItem
 							label={ __( 'Help text', 'sgs-blocks' ) }
 							isShownByDefault
 							hasValue={ () => !! helpText }
-							onDeselect={ () => setAttributes( { helpText: '' } ) }
+							onDeselect={ () =>
+								setAttributes( { helpText: '' } )
+							}
 						>
 							<TextControl
 								label={ __( 'Help text', 'sgs-blocks' ) }
@@ -121,13 +146,17 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							label={ __( 'Width', 'sgs-blocks' ) }
 							isShownByDefault
 							hasValue={ () => 'full' !== width }
-							onDeselect={ () => setAttributes( { width: 'full' } ) }
+							onDeselect={ () =>
+								setAttributes( { width: 'full' } )
+							}
 						>
 							<SelectControl
 								label={ __( 'Width', 'sgs-blocks' ) }
 								value={ width }
 								options={ WIDTH_OPTIONS }
-								onChange={ ( val ) => setAttributes( { width: val } ) }
+								onChange={ ( val ) =>
+									setAttributes( { width: val } )
+								}
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							/>
@@ -135,40 +164,75 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						<ToolsPanelItem
 							label={ __( 'Row minimum height', 'sgs-blocks' ) }
 							hasValue={ () => !! attributes.optionRowMinHeight }
-							onDeselect={ () => setAttributes( { optionRowMinHeight: undefined } ) }
+							onDeselect={ () =>
+								setAttributes( {
+									optionRowMinHeight: undefined,
+								} )
+							}
 						>
 							<SgsLengthControl
 								presets={ false }
-								label={ __( 'Row minimum height', 'sgs-blocks' ) }
-								help={ __( 'Empty keeps 44px, the touch-target minimum. Smaller only to match a supplied design.', 'sgs-blocks' ) }
+								label={ __(
+									'Row minimum height',
+									'sgs-blocks'
+								) }
+								help={ __(
+									'Empty keeps 44px, the touch-target minimum. Smaller only to match a supplied design.',
+									'sgs-blocks'
+								) }
 								value={ attributes.optionRowMinHeight ?? '' }
-								onChange={ ( val ) => setAttributes( { optionRowMinHeight: val || undefined } ) }
+								onChange={ ( val ) =>
+									setAttributes( {
+										optionRowMinHeight: val || undefined,
+									} )
+								}
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
 							label={ __( 'Tick box size', 'sgs-blocks' ) }
 							hasValue={ () => !! attributes.boxSize }
-							onDeselect={ () => setAttributes( { boxSize: undefined } ) }
+							onDeselect={ () =>
+								setAttributes( { boxSize: undefined } )
+							}
 						>
 							<SgsLengthControl
 								presets={ false }
 								label={ __( 'Tick box size', 'sgs-blocks' ) }
-								help={ __( 'Width and height of the box. Empty = 20px.', 'sgs-blocks' ) }
+								help={ __(
+									'Width and height of the box. Empty = 20px.',
+									'sgs-blocks'
+								) }
 								value={ attributes.boxSize ?? '' }
-								onChange={ ( val ) => setAttributes( { boxSize: val || undefined } ) }
+								onChange={ ( val ) =>
+									setAttributes( {
+										boxSize: val || undefined,
+									} )
+								}
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
 							label={ __( 'Tick box margin', 'sgs-blocks' ) }
-							hasValue={ () => !! attributes.boxMargin && Object.keys( attributes.boxMargin ).length > 0 }
-							onDeselect={ () => setAttributes( { boxMargin: {} } ) }
+							hasValue={ () =>
+								!! attributes.boxMargin &&
+								Object.keys( attributes.boxMargin ).length > 0
+							}
+							onDeselect={ () =>
+								setAttributes( { boxMargin: {} } )
+							}
 						>
 							<SgsBoxControl
 								presets
 								label={ __( 'Tick box margin', 'sgs-blocks' ) }
-								values={ attributes.boxMargin && 'object' === typeof attributes.boxMargin ? attributes.boxMargin : {} }
+								values={
+									attributes.boxMargin &&
+									'object' === typeof attributes.boxMargin
+										? attributes.boxMargin
+										: {}
+								}
 								units={ BOX_UNITS }
-								onChange={ ( next ) => setAttributes( { boxMargin: next } ) }
+								onChange={ ( next ) =>
+									setAttributes( { boxMargin: next } )
+								}
 							/>
 						</ToolsPanelItem>
 					</ToolsPanel>
@@ -182,7 +246,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 			<div { ...blockProps }>
 				{ consentPreviewCss && <style>{ consentPreviewCss }</style> }
-				<label className="sgs-form-field__consent" style={ attributes.optionRowMinHeight ? { minHeight: attributes.optionRowMinHeight } : undefined }>
+				<label
+					className="sgs-form-field__consent"
+					style={
+						attributes.optionRowMinHeight
+							? { minHeight: attributes.optionRowMinHeight }
+							: undefined
+					}
+				>
 					<input
 						type="checkbox"
 						checked={ !! attributes.defaultChecked }

@@ -9,12 +9,12 @@ import { LINK_COUNT_THRESHOLD } from '../../shared/nav-menu-panels/utils';
  * Kept separate from edit.js to stay under the project's 250-line JS budget;
  * mounted at the top of edit.js's `<InspectorControls>` block.
  *
- * @param {Object}   root0                     Props.
- * @param {boolean}  root0.showDrawerNotice     From useDrawerNotice().
- * @param {Object}   root0.drawerState          From useDrawerNotice().
- * @param {boolean}  root0.showActiveDrawerNotice From useDrawerNotice().
- * @param {Object}   root0.activeDrawer         From useDrawerNotice().
- * @param {number}   root0.resolvedItemsLength  `resolvedItems.length` from useNavMenuSource().
+ * @param {Object}  root0                        Props.
+ * @param {boolean} root0.showDrawerNotice       From useDrawerNotice().
+ * @param {Object}  root0.drawerState            From useDrawerNotice().
+ * @param {boolean} root0.showActiveDrawerNotice From useDrawerNotice().
+ * @param {Object}  root0.activeDrawer           From useDrawerNotice().
+ * @param {number}  root0.resolvedItemsLength    `resolvedItems.length` from useNavMenuSource().
  */
 export default function NavMenuNotices( {
 	showDrawerNotice,
@@ -82,10 +82,17 @@ export default function NavMenuNotices( {
 			) }
 
 			{ resolvedItemsLength > LINK_COUNT_THRESHOLD && (
-				<Notice status="info" isDismissible={ true } style={ { marginBottom: '16px' } }>
+				<Notice
+					status="info"
+					isDismissible={ true }
+					style={ { marginBottom: '16px' } }
+				>
 					{ sprintf(
 						/* translators: %d is the number of links. */
-						__( 'This menu has %d links. Consider simplifying to reduce cognitive load and improve usability.', 'sgs-blocks' ),
+						__(
+							'This menu has %d links. Consider simplifying to reduce cognitive load and improve usability.',
+							'sgs-blocks'
+						),
 						resolvedItemsLength
 					) }
 				</Notice>

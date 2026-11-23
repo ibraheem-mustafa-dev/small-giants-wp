@@ -302,13 +302,21 @@ export default function RowScrollBehaviourControls( {
 
 				{ undefined !== scrollAway && (
 					<ToolsPanelItem
-						label={ __( 'Scroll this row away with the page', 'sgs-blocks' ) }
+						label={ __(
+							'Scroll this row away with the page',
+							'sgs-blocks'
+						) }
 						hasValue={ () => Object.keys( scrollAway ).length > 0 }
-						onDeselect={ () => setAttributes( { rowScrollAway: {} } ) }
+						onDeselect={ () =>
+							setAttributes( { rowScrollAway: {} } )
+						}
 						isShownByDefault
 					>
 						<ResponsiveTriStateControl
-							label={ __( 'Scroll this row away with the page', 'sgs-blocks' ) }
+							label={ __(
+								'Scroll this row away with the page',
+								'sgs-blocks'
+							) }
 							help={ __(
 								'This row scrolls out of view with the page, as ordinary content does, and the rows after it pin at the top of the screen. Put it first in the header; it needs a sticky header.',
 								'sgs-blocks'

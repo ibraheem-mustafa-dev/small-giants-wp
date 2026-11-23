@@ -8,7 +8,11 @@
  */
 
 import { boxShorthand } from './spacing-preview';
-import { borderBoxPreview, borderWidthBoxForTier, resolveBorderStyle } from './border-style';
+import {
+	borderBoxPreview,
+	borderWidthBoxForTier,
+	resolveBorderStyle,
+} from './border-style';
 import { borderPaintPreview } from './background-preview';
 import { borderRadiusLonghands } from './radius-preview';
 
@@ -21,8 +25,16 @@ import { borderRadiusLonghands } from './radius-preview';
  * @return {*} A value `borderRadiusLonghands()` reads.
  */
 function radiusSource( radiusValues ) {
-	if ( radiusValues && 'object' === typeof radiusValues && 'base' in radiusValues ) {
-		return { desktop: radiusValues.base, tablet: radiusValues.tablet, mobile: radiusValues.mobile };
+	if (
+		radiusValues &&
+		'object' === typeof radiusValues &&
+		'base' in radiusValues
+	) {
+		return {
+			desktop: radiusValues.base,
+			tablet: radiusValues.tablet,
+			mobile: radiusValues.mobile,
+		};
 	}
 	return radiusValues;
 }
@@ -40,20 +52,26 @@ function radiusSource( radiusValues ) {
  * (sgs_corner_object_longhands()): an unset corner keeps the stylesheet's radius.
  *
  * @param {Object}  values
- * @param {Object}  [values.widthValues]         `{ top, right, bottom, left }` width box, or a `{ desktop, tablet, mobile }` tier object of boxes.
- * @param {string}  [values.styleValue]          Stored border-style.
- * @param {string}  [values.colourValue]         Flat colour (slug or CSS colour).
- * @param {string}  [values.colourGradientValue] Gradient border colour.
- * @param {*}       [values.radiusValues]        Panel radius envelope or the radius attribute.
- * @param {string}  [tier='desktop']             Previewed device tier.
- * @param {Array}   [palette]                    Theme colour palette.
+ * @param {Object}  [values.widthValues]          `{ top, right, bottom, left }` width box, or a `{ desktop, tablet, mobile }` tier object of boxes.
+ * @param {string}  [values.styleValue]           Stored border-style.
+ * @param {string}  [values.colourValue]          Flat colour (slug or CSS colour).
+ * @param {string}  [values.colourGradientValue]  Gradient border colour.
+ * @param {*}       [values.radiusValues]         Panel radius envelope or the radius attribute.
+ * @param {string}  [tier='desktop']              Previewed device tier.
+ * @param {Array}   [palette]                     Theme colour palette.
  * @param {Object}  [options]
  * @param {boolean} [options.defaultBorder=false] The element's stylesheet already paints a border.
  * @param {string}  [options.fallbackColour]      Colour painted when no flat colour is set.
  * @return {Object} React style fragment; {} when nothing paints.
  */
 export function sgsBorderPreview(
-	{ widthValues, styleValue, colourValue, colourGradientValue, radiusValues } = {},
+	{
+		widthValues,
+		styleValue,
+		colourValue,
+		colourGradientValue,
+		radiusValues,
+	} = {},
 	tier = 'desktop',
 	palette,
 	{ defaultBorder = false, fallbackColour } = {}
@@ -61,15 +79,29 @@ export function sgsBorderPreview(
 	let style;
 	if ( defaultBorder ) {
 		style = {};
-		const width = boxShorthand( borderWidthBoxForTier( widthValues, tier ) );
-		if ( styleValue || width ) style.borderStyle = resolveBorderStyle( styleValue );
-		if ( width ) style.borderWidth = width;
+		const width = boxShorthand(
+			borderWidthBoxForTier( widthValues, tier )
+		);
+		if ( styleValue || width ) {
+			style.borderStyle = resolveBorderStyle( styleValue );
+		}
+		if ( width ) {
+			style.borderWidth = width;
+		}
 	} else {
 		style = borderBoxPreview( widthValues, styleValue, tier );
 	}
 	if ( style.borderStyle || defaultBorder ) {
-		Object.assign( style, borderPaintPreview( colourValue, colourGradientValue, palette ) );
-		if ( ! style.borderColor && fallbackColour ) style.borderColor = fallbackColour;
+		Object.assign(
+			style,
+			borderPaintPreview( colourValue, colourGradientValue, palette )
+		);
+		if ( ! style.borderColor && fallbackColour ) {
+			style.borderColor = fallbackColour;
+		}
 	}
-	return Object.assign( style, borderRadiusLonghands( radiusSource( radiusValues ), tier ) );
+	return Object.assign(
+		style,
+		borderRadiusLonghands( radiusSource( radiusValues ), tier )
+	);
 }

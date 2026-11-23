@@ -5,10 +5,17 @@
 import { __ } from '@wordpress/i18n';
 import { InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, SelectControl } from '@wordpress/components';
-import { GradientCapableColourControl, SgsColourPanel } from '../../../components';
+import {
+	GradientCapableColourControl,
+	SgsColourPanel,
+} from '../../../components';
 import { HEADING_LEVEL_OPTIONS } from './card-grid-options';
 
-export default function ElementColourPanels( { attributes, setAttributes, cardBackgroundForContrast } ) {
+export default function ElementColourPanels( {
+	attributes,
+	setAttributes,
+	cardBackgroundForContrast,
+} ) {
 	const {
 		headingLevel,
 		titleColour,
@@ -60,20 +67,29 @@ export default function ElementColourPanels( { attributes, setAttributes, cardBa
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: titleColour,
-								onChange: ( val ) => setAttributes( { titleColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( { titleColour: val ?? '' } ),
 								linked: true,
 								gradientValue: titleColourGradient,
-								onGradientChange: ( val ) => setAttributes( { titleColourGradient: val ?? '' } ),
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										titleColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: titleColourHover,
-								onChange: ( val ) => setAttributes( { titleColourHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										titleColourHover: val ?? '',
+									} ),
 								linked: true,
 							},
 						],
-						...( cardBackgroundForContrast ? { contrastAgainst: cardBackgroundForContrast } : {} ),
+						...( cardBackgroundForContrast
+							? { contrastAgainst: cardBackgroundForContrast }
+							: {} ),
 					},
 					{
 						key: 'glyph',
@@ -83,7 +99,8 @@ export default function ElementColourPanels( { attributes, setAttributes, cardBa
 								key: 'normal',
 								label: __( 'Colour', 'sgs-blocks' ),
 								value: glyphColour,
-								onChange: ( val ) => setAttributes( { glyphColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( { glyphColour: val ?? '' } ),
 								linked: true,
 							},
 						],
@@ -91,19 +108,23 @@ export default function ElementColourPanels( { attributes, setAttributes, cardBa
 					// Image-fallback background — omitted entirely (not disabled)
 					// when the feature is off, per SgsColourPanel's own
 					// rows.filter(Boolean) contract.
-					imageFallback && noImageLabel && {
-						key: 'no-image-label',
-						label: __( 'No-photo label', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Colour', 'sgs-blocks' ),
-								value: noImageLabelColour,
-								onChange: ( val ) => setAttributes( { noImageLabelColour: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
+					imageFallback &&
+						noImageLabel && {
+							key: 'no-image-label',
+							label: __( 'No-photo label', 'sgs-blocks' ),
+							states: [
+								{
+									key: 'normal',
+									label: __( 'Colour', 'sgs-blocks' ),
+									value: noImageLabelColour,
+									onChange: ( val ) =>
+										setAttributes( {
+											noImageLabelColour: val ?? '',
+										} ),
+									linked: true,
+								},
+							],
+						},
 					imageFallback && {
 						key: 'image-fallback',
 						label: __( 'Image fallback background', 'sgs-blocks' ),
@@ -112,7 +133,10 @@ export default function ElementColourPanels( { attributes, setAttributes, cardBa
 								key: 'normal',
 								label: __( 'Colour', 'sgs-blocks' ),
 								value: imageFallbackColour,
-								onChange: ( val ) => setAttributes( { imageFallbackColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										imageFallbackColour: val ?? '',
+									} ),
 								linked: true,
 							},
 						],
@@ -126,10 +150,16 @@ export default function ElementColourPanels( { attributes, setAttributes, cardBa
 								key: 'normal',
 								label: __( 'Colour or gradient', 'sgs-blocks' ),
 								value: overlayColour,
-								onChange: ( val ) => setAttributes( { overlayColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										overlayColour: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: overlayGradient,
-								onGradientChange: ( val ) => setAttributes( { overlayGradient: val ?? '' } ),
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										overlayGradient: val ?? '',
+									} ),
 							},
 						],
 					},
@@ -144,7 +174,9 @@ export default function ElementColourPanels( { attributes, setAttributes, cardBa
 						label={ __( 'Heading level', 'sgs-blocks' ) }
 						value={ headingLevel || 'h3' }
 						options={ HEADING_LEVEL_OPTIONS }
-						onChange={ ( val ) => setAttributes( { headingLevel: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { headingLevel: val } )
+						}
 						help={ __(
 							'Pick the level that fits your page outline — usually H2 or H3 depending on what comes before this grid.',
 							'sgs-blocks'
@@ -159,7 +191,10 @@ export default function ElementColourPanels( { attributes, setAttributes, cardBa
 			   own (the subtitle text itself is authored per-item, not a
 			   block-level setting). */ }
 			<InspectorControls group="styles">
-				<PanelBody title={ __( 'Subtitle', 'sgs-blocks' ) } className="sgs-colour-panel">
+				<PanelBody
+					title={ __( 'Subtitle', 'sgs-blocks' ) }
+					className="sgs-colour-panel"
+				>
 					<GradientCapableColourControl
 						label={ __( 'Subtitle colour', 'sgs-blocks' ) }
 						states={ [
@@ -167,20 +202,31 @@ export default function ElementColourPanels( { attributes, setAttributes, cardBa
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: subtitleColour,
-								onChange: ( val ) => setAttributes( { subtitleColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										subtitleColour: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: subtitleColourGradient,
-								onGradientChange: ( val ) => setAttributes( { subtitleColourGradient: val ?? '' } ),
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										subtitleColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: subtitleColourHover,
-								onChange: ( val ) => setAttributes( { subtitleColourHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										subtitleColourHover: val ?? '',
+									} ),
 								linked: true,
 							},
 						] }
-						{ ...( cardBackgroundForContrast ? { contrastAgainst: cardBackgroundForContrast } : {} ) }
+						{ ...( cardBackgroundForContrast
+							? { contrastAgainst: cardBackgroundForContrast }
+							: {} ) }
 					/>
 				</PanelBody>
 			</InspectorControls>

@@ -6,9 +6,25 @@ import {
 	InspectorControls,
 	useSettings,
 } from '@wordpress/block-editor';
-import { PanelBody, RangeControl, SelectControl, Notice } from '@wordpress/components';
+import {
+	PanelBody,
+	RangeControl,
+	SelectControl,
+	Notice,
+} from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
-import { ResponsiveBoxControl, ResponsiveOverride, ShadowControl, SgsColourPanel, fillRow, BOX_UNITS, normaliseResponsiveBox, SgsBorderControl, resolveColourToken, SgsBoxControl } from '../../components';
+import {
+	ResponsiveBoxControl,
+	ResponsiveOverride,
+	ShadowControl,
+	SgsColourPanel,
+	fillRow,
+	BOX_UNITS,
+	normaliseResponsiveBox,
+	SgsBorderControl,
+	resolveColourToken,
+	SgsBoxControl,
+} from '../../components';
 import {
 	backgroundMediaPreview,
 	spacingPreview,
@@ -23,7 +39,11 @@ import {
 // WidthPanel already handles maxWidth/contentWidth + their Tablet/Mobile tiers,
 // MIN_HEIGHT_OPTIONS is the shared preset list for the min-height SelectControl
 // (mirrors trust-bar's "Section (outer)" panel exactly).
-import { WidthPanel, MIN_HEIGHT_OPTIONS, BackgroundPanel } from '../container/components/ContainerWrapperControls';
+import {
+	WidthPanel,
+	MIN_HEIGHT_OPTIONS,
+	BackgroundPanel,
+} from '../container/components/ContainerWrapperControls';
 
 // Semantic HTML tag (mirrors sgs/container's edit.js exactly — must match the
 // block.json `tagName` enum here and render.php's sanitize_key() default).
@@ -67,7 +87,13 @@ const ALLOWED_BLOCKS = [
  */
 
 export default function Edit( { attributes, setAttributes, name } ) {
-	const { physicsGravity, physicsBounce, physicsEdgeResistance, backgroundColour, backgroundColourGradient } = attributes;
+	const {
+		physicsGravity,
+		physicsBounce,
+		physicsEdgeResistance,
+		backgroundColour,
+		backgroundColourGradient,
+	} = attributes;
 
 	// D717/background-preview: BackgroundPanel (mounted below) writes image/
 	// video/overlay/ken-burns/parallax attrs this block never previewed on
@@ -97,47 +123,72 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		bgSvgTextShadow: attributes.bgSvgTextShadow,
 	} );
 
-
-
 	// Active device tier for the padding/margin preview below — this block had
 	// no previewTier mechanism of its own, so this follows sgs/container's
 	// getDeviceType read exactly (same source its own Layout panel writes).
 	const previewTier = useSelect( ( select ) => {
 		const ed = select( 'core/editor' );
 		const device =
-			ed && typeof ed.getDeviceType === 'function' ? ed.getDeviceType() : null;
+			ed && typeof ed.getDeviceType === 'function'
+				? ed.getDeviceType()
+				: null;
 		return { Tablet: 'tablet', Mobile: 'mobile' }[ device ] || 'desktop';
 	}, [] );
 
-	const bgPreview = backgroundMediaPreview( attributes, colourPalette, gradientPresets, previewTier );
+	const bgPreview = backgroundMediaPreview(
+		attributes,
+		colourPalette,
+		gradientPresets,
+		previewTier
+	);
 
 	// Padding/margin canvas preview. `padding`/`margin` are each ONE
 	// tier-of-boxes object attr { desktop, tablet, mobile }, read directly.
-	const spacePreview = spacingPreview( {
-		margin: attributes.margin,
-	}, previewTier );
+	const spacePreview = spacingPreview(
+		{
+			margin: attributes.margin,
+		},
+		previewTier
+	);
 
 	// Contrast check for border colour — warn if border fails WCAG 3:1 contrast
 	// against the physics-canvas's own background. When the background is a gradient,
 	// the flat backgroundColour is not rendered, so skip the check in that case.
 	const physicsCanvasContrastAgainst =
-		backgroundColour && ! backgroundColourGradient
-			? backgroundColour
-			: '';
+		backgroundColour && ! backgroundColourGradient ? backgroundColour : '';
 
 	// Border, radius, max-width and the content band, then the section's own min-height,
 	// shadow, tablet/mobile images and surface tone, as the wrapper paints them.
 	const wrapper = wrapperPreview( attributes, previewTier, colourPalette );
-	const section = sectionPreview( attributes, previewTier, colourPalette, gradientPresets );
+	const section = sectionPreview(
+		attributes,
+		previewTier,
+		colourPalette,
+		gradientPresets
+	);
 
 	const blockProps = useBlockProps( {
-		className: [ bgPreview.className, ...svgPreview.className, section.className ].filter( Boolean ).join( ' ' ),
-		style: { ...wrapper.style, ...bgPreview.style, ...section.style, ...svgPreview.style, ...spacePreview },
+		className: [
+			bgPreview.className,
+			...svgPreview.className,
+			section.className,
+		]
+			.filter( Boolean )
+			.join( ' ' ),
+		style: {
+			...wrapper.style,
+			...bgPreview.style,
+			...section.style,
+			...svgPreview.style,
+			...spacePreview,
+		},
 	} );
 	// With a band the front end nests the content in `.sgs-container__inner`; the band element
 	// then hosts the InnerBlocks and the block's own element stays the full-bleed outer.
 	const innerBlocksProps = useInnerBlocksProps(
-		wrapper.hasBandProps ? { className: 'sgs-container__inner', style: wrapper.bandStyle } : blockProps,
+		wrapper.hasBandProps
+			? { className: 'sgs-container__inner', style: wrapper.bandStyle }
+			: blockProps,
 		{
 			allowedBlocks: ALLOWED_BLOCKS,
 			templateLock: false,
@@ -204,29 +255,49 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			     depending on which block they had selected. Appearance sits with
 			     colour, which D621/D622 already placed in Styles. */ }
 			<InspectorControls group="styles">
-				<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } name={ name } />
-				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+				<BackgroundPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					name={ name }
+				/>
+				<PanelBody
+					title={ __( 'Border', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SgsBorderControl
 						widthValues={ attributes.borderWidth ?? {} }
-						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						onWidthChange={ ( next ) =>
+							setAttributes( { borderWidth: next } )
+						}
 						widthPresets={ [ '10', '20', '30' ] }
 						styleValue={ attributes.borderStyle }
-						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						onStyleChange={ ( val ) =>
+							setAttributes( { borderStyle: val } )
+						}
 						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
 						colourValue={ attributes.borderColour }
-						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						onColourChange={ ( val ) =>
+							setAttributes( { borderColour: val ?? '' } )
+						}
 						colourGradientValue={ attributes.borderColourGradient }
-						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+						onColourGradientChange={ ( val ) =>
+							setAttributes( { borderColourGradient: val ?? '' } )
+						}
 						colourLinked={ true }
 						contrastAgainst={ physicsCanvasContrastAgainst }
 						radiusValues={ {
-								base: attributes.borderRadius?.desktop ?? {},
-								tablet: attributes.borderRadius?.tablet ?? {},
-								mobile: attributes.borderRadius?.mobile ?? {},
-							} }
+							base: attributes.borderRadius?.desktop ?? {},
+							tablet: attributes.borderRadius?.tablet ?? {},
+							mobile: attributes.borderRadius?.mobile ?? {},
+						} }
 						onRadiusChange={ ( tier, next ) => {
 							const key = tier === 'base' ? 'desktop' : tier;
-							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+							setAttributes( {
+								borderRadius: {
+									...attributes.borderRadius,
+									[ key ]: next,
+								},
+							} );
 						} }
 					/>
 				</PanelBody>
@@ -296,18 +367,29 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				     resizable arena box: minHeight ships defaults (480px desktop /
 				     320px mobile) with no control until now, so a client could
 				     never resize the throw arena at all. */ }
-				<PanelBody title={ __( 'Section (outer)', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Section (outer)', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SelectControl
 						label={ __( 'HTML tag', 'sgs-blocks' ) }
 						value={ attributes.tagName || 'section' }
 						options={ TAG_NAME_OPTIONS }
-						onChange={ ( val ) => setAttributes( { tagName: val } ) }
-						help={ __( 'Semantic tag for accessibility landmarks and SEO. Use Nav / Aside / Article for their meaning; Div for a plain wrapper.', 'sgs-blocks' ) }
+						onChange={ ( val ) =>
+							setAttributes( { tagName: val } )
+						}
+						help={ __(
+							'Semantic tag for accessibility landmarks and SEO. Use Nav / Aside / Article for their meaning; Div for a plain wrapper.',
+							'sgs-blocks'
+						) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
 					<hr style={ { margin: '16px 0' } } />
-					<WidthPanel attributes={ attributes } setAttributes={ setAttributes } />
+					<WidthPanel
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
 					{ /*
 						  `minHeight` is a TIER OBJECT — ONE attr holding
 						  {desktop,tablet,mobile} (Spec 35 pass), same shape as
@@ -318,16 +400,23 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					<ResponsiveOverride
 						label={ __( 'Min height', 'sgs-blocks' ) }
 						value={ attributes.minHeight }
-						onChange={ ( obj ) => setAttributes( { minHeight: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { minHeight: obj } )
+						}
 					>
 						{ ( { tier, ownValue, setOwnValue } ) => (
 							<SelectControl
 								value={ ownValue || '' }
 								options={ MIN_HEIGHT_OPTIONS }
 								onChange={ ( val ) => setOwnValue( val ) }
-								help={ tier === 'desktop'
-									? __( 'Desktop / base. Tablet and mobile override it at narrower widths.', 'sgs-blocks' )
-									: undefined }
+								help={
+									tier === 'desktop'
+										? __(
+												'Desktop / base. Tablet and mobile override it at narrower widths.',
+												'sgs-blocks'
+										  )
+										: undefined
+								}
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							/>
@@ -339,18 +428,31 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				     block-OWNED `padding`/`margin` tier-of-boxes attrs (desktop, tablet and
 				     mobile in one object, read by the wrapper's @media tiers). Mirrors sgs/container's
 				     and sgs/trust-bar's own edit.js exactly. ────────────────── */ }
-				<PanelBody title={ __( 'Padding & margin', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Padding & margin', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<ResponsiveOverride
 						value={ attributes.padding }
-						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { padding: obj } )
+						}
 					>
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
-							presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								presets
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
@@ -362,15 +464,22 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
 				</PanelBody>
-
 
 				{ /* Background (image/video/overlay/SVG/animation) — same shared
 				     component + attrs as sgs/container, sgs/hero, sgs/site-footer
@@ -389,7 +498,10 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				     box-shadow CSS string built by ShadowControl), resolved by
 				     sgs_shadow_value(). ──────────────────────────────────────── */ }
 
-				<PanelBody title={ __( 'Shadow', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Shadow', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<ShadowControl
 						label={ __( 'Shadow', 'sgs-blocks' ) }
 						attributes={ attributes }
@@ -404,7 +516,10 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			</InspectorControls>
 			{ wrapper.hasBandProps ? (
 				<div { ...blockProps }>
-					<BackgroundLayers media={ bgPreview.media } overlay={ bgPreview.overlay } />
+					<BackgroundLayers
+						media={ bgPreview.media }
+						overlay={ bgPreview.overlay }
+					/>
 					{ svgLayer }
 					<div { ...innerBlocksProps }>
 						{ editorNotice }
@@ -413,7 +528,10 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				</div>
 			) : (
 				<div { ...innerBlocksProps }>
-					<BackgroundLayers media={ bgPreview.media } overlay={ bgPreview.overlay } />
+					<BackgroundLayers
+						media={ bgPreview.media }
+						overlay={ bgPreview.overlay }
+					/>
 					{ svgLayer }
 					{ editorNotice }
 					{ innerBlocksProps.children }

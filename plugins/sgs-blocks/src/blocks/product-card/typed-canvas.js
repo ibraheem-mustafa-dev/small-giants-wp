@@ -27,12 +27,15 @@ import {
 } from '../../utils';
 import { resolveColourToken } from '../../components';
 
-const CSS_LENGTH = /^(?:[\d.]+(?:%|px|em|rem|vw|vh|ch|ex|fr|cm|mm|in|pt|pc)|calc\([\d.\s+\-*/%a-z()]+\))$/i;
+const CSS_LENGTH =
+	/^(?:[\d.]+(?:%|px|em|rem|vw|vh|ch|ex|fr|cm|mm|in|pt|pc)|calc\([\d.\s+\-*/%a-z()]+\))$/i;
 /** A Ratio value the photo slot stores: `width / height`, as the Ratio chips and a custom ratio write it. */
 const RATIO = /^\d+(\.\d+)? \/ \d+(\.\d+)?$/;
 
 // Stacked price group (render.php): the RRP under the price.
-const PRICE_GROUP_PREVIEW = { stacked: { flexDirection: 'column', alignItems: 'flex-start', gap: 0 } };
+const PRICE_GROUP_PREVIEW = {
+	stacked: { flexDirection: 'column', alignItems: 'flex-start', gap: 0 },
+};
 
 const colour = ( value ) => resolveColourToken( value ) || undefined;
 const paddingOf = ( box ) => boxLonghands( box, 'padding' );
@@ -53,20 +56,29 @@ function textColour( flat, gradient ) {
 
 /**
  * @param {Object} attrs Block attributes.
- * @param {string} tier 'desktop' | 'tablet' | 'mobile'.
+ * @param {string} tier  'desktop' | 'tablet' | 'mobile'.
  * @return {Object} Style objects and class names per canvas element.
  */
 export function typedCardPreview( attrs, tier ) {
 	// The photo slot's Ratio at this device, e.g. '1 / 1'; empty or 'natural' means the card's fixed-height box.
-	const imageRatio = String( resolveTier( attrs.imageRatio, tier ).value || '' );
+	const imageRatio = String(
+		resolveTier( attrs.imageRatio, tier ).value || ''
+	);
 	const aspectOk = RATIO.test( imageRatio );
-	const imageHeight = String( resolveTier( attrs.imageHeight, tier ).value || '' );
+	const imageHeight = String(
+		resolveTier( attrs.imageHeight, tier ).value || ''
+	);
 	const maxWidth = resolveTier( attrs.maxWidth, tier ).value;
 	const rowSpace = String( attrs.priceRowSpaceAbove || '' ).trim();
-	const swatchSize = Math.min( 40, Math.abs( parseInt( attrs.swatchSize, 10 ) || 0 ) );
-	const swatchGrow = Math.min( 200, Math.abs( parseInt( attrs.swatchHoverGrow, 10 ) || 0 ) );
+	const swatchSize = Math.min(
+		40,
+		Math.abs( parseInt( attrs.swatchSize, 10 ) || 0 )
+	);
+	const swatchGrow = Math.min(
+		200,
+		Math.abs( parseInt( attrs.swatchHoverGrow, 10 ) || 0 )
+	);
 	const cardMaxWidth = String( attrs.cardMaxWidth || '' );
-
 
 	return {
 		rootClasses: [
@@ -78,24 +90,72 @@ export function typedCardPreview( attrs, tier ) {
 		root: {
 			...borderRadiusLonghands( attrs.borderRadius, tier ),
 			...( maxWidth ? { maxWidth } : {} ),
-			'--sgs-product-card-max-width': CSS_LENGTH.test( cardMaxWidth ) ? cardMaxWidth : undefined,
-			'--sgs-product-card-image-aspect': aspectOk ? imageRatio : undefined,
-			'--sgs-pc-swatch-size': swatchSize > 0 ? `${ swatchSize }px` : undefined,
-			'--sgs-pc-swatch-hover-scale': swatchGrow > 100 ? ( swatchGrow / 100 ).toFixed( 2 ) : undefined,
+			'--sgs-product-card-max-width': CSS_LENGTH.test( cardMaxWidth )
+				? cardMaxWidth
+				: undefined,
+			'--sgs-product-card-image-aspect': aspectOk
+				? imageRatio
+				: undefined,
+			'--sgs-pc-swatch-size':
+				swatchSize > 0 ? `${ swatchSize }px` : undefined,
+			'--sgs-pc-swatch-hover-scale':
+				swatchGrow > 100
+					? ( swatchGrow / 100 ).toFixed( 2 )
+					: undefined,
 		},
-		body: paddingOf( resolveTier( { ...( attrs.cardPaddingTier || {} ), desktop: attrs.cardPadding }, tier ).value ),
-		media: attrs.imageBackground ? { background: colour( attrs.imageBackground ) } : {},
-		title: { ...typographyPreviewStyle( attrs, 'title', tier ), ...textColour( attrs.titleColour, attrs.titleColourGradient ) },
-		desc: { ...typographyPreviewStyle( attrs, 'desc', tier ), ...textColour( attrs.descColour, attrs.descColourGradient ) },
-		price: { ...typographyPreviewStyle( attrs, 'price', tier ), ...textColour( attrs.priceColour, attrs.priceColourGradient ) },
-		priceNote: { ...typographyPreviewStyle( attrs, 'priceNote', tier ), ...textColour( attrs.priceNoteColour, attrs.priceNoteColourGradient ) },
-		priceGroup: PRICE_GROUP_PREVIEW[ resolveTier( attrs.priceGroupLayout, tier, '' ).value ] || {},
-		priceRow: /^\d+(\.\d+)?(px|em|rem)$/.test( rowSpace ) ? { paddingTop: rowSpace } : {},
+		body: paddingOf(
+			resolveTier(
+				{
+					...( attrs.cardPaddingTier || {} ),
+					desktop: attrs.cardPadding,
+				},
+				tier
+			).value
+		),
+		media: attrs.imageBackground
+			? { background: colour( attrs.imageBackground ) }
+			: {},
+		title: {
+			...typographyPreviewStyle( attrs, 'title', tier ),
+			...textColour( attrs.titleColour, attrs.titleColourGradient ),
+		},
+		desc: {
+			...typographyPreviewStyle( attrs, 'desc', tier ),
+			...textColour( attrs.descColour, attrs.descColourGradient ),
+		},
+		price: {
+			...typographyPreviewStyle( attrs, 'price', tier ),
+			...textColour( attrs.priceColour, attrs.priceColourGradient ),
+		},
+		priceNote: {
+			...typographyPreviewStyle( attrs, 'priceNote', tier ),
+			...textColour(
+				attrs.priceNoteColour,
+				attrs.priceNoteColourGradient
+			),
+		},
+		priceGroup:
+			PRICE_GROUP_PREVIEW[
+				resolveTier( attrs.priceGroupLayout, tier, '' ).value
+			] || {},
+		priceRow: /^\d+(\.\d+)?(px|em|rem)$/.test( rowSpace )
+			? { paddingTop: rowSpace }
+			: {},
 		pill: typographyPreviewStyle( attrs, 'pill', tier ),
 		tag: {
 			...typographyPreviewStyle( attrs, 'tag', tier ),
-			...labelBox( attrs.tagPadding, attrs.tagBorderRadius, attrs.tagBackgroundColour, attrs.tagFullWidth ),
-			...( isCssGradient( attrs.tagBackgroundColourGradient ) ? backgroundPaintPreview( '', attrs.tagBackgroundColourGradient ) : {} ),
+			...labelBox(
+				attrs.tagPadding,
+				attrs.tagBorderRadius,
+				attrs.tagBackgroundColour,
+				attrs.tagFullWidth
+			),
+			...( isCssGradient( attrs.tagBackgroundColourGradient )
+				? backgroundPaintPreview(
+						'',
+						attrs.tagBackgroundColourGradient
+				  )
+				: {} ),
 			...textColour( attrs.tagTextColour, attrs.tagTextColourGradient ),
 			// tagBorderWidth and tagBorderColour, as render.php's sgs_border_element_decls() rule paints them.
 			...sgsBorderPreview(
@@ -113,49 +173,96 @@ export function typedCardPreview( attrs, tier ) {
 		},
 		savingBadge: {
 			...typographyPreviewStyle( attrs, 'savingBadge', tier ),
-			...labelBox( attrs.savingBadgePadding, attrs.savingBadgeBorderRadius, attrs.savingBadgeBackgroundColour, false ),
+			...labelBox(
+				attrs.savingBadgePadding,
+				attrs.savingBadgeBorderRadius,
+				attrs.savingBadgeBackgroundColour,
+				false
+			),
 			color: colour( attrs.savingBadgeTextColour ),
 		},
 		attributeTag: {
 			...typographyPreviewStyle( attrs, 'attributeTag', tier ),
-			...labelBox( attrs.attributeTagPadding, attrs.attributeTagBorderRadius, attrs.attributeTagBackgroundColour, false ),
+			...labelBox(
+				attrs.attributeTagPadding,
+				attrs.attributeTagBorderRadius,
+				attrs.attributeTagBackgroundColour,
+				false
+			),
 			color: colour( attrs.attributeTagTextColour ),
 			// The chip's stylesheet gives no width, so the border paints only beside a chosen width.
-			...sgsBorderPreview( { widthValues: attrs.attributeTagBorderWidth, colourValue: attrs.attributeTagBorderColour }, tier ),
+			...sgsBorderPreview(
+				{
+					widthValues: attrs.attributeTagBorderWidth,
+					colourValue: attrs.attributeTagBorderColour,
+				},
+				tier
+			),
 		},
 		rating: { color: colour( attrs.ratingColour ) },
 		ratingRow: {
 			...typographyPreviewStyle( attrs, 'rating', tier ),
 			// render.php maps the row's alignment to justify-content: the row is a
 			// flex box as wide as the card body, so text-align alone moves nothing.
-			justifyContent: { left: 'flex-start', start: 'flex-start', justify: 'flex-start', center: 'center', right: 'flex-end', end: 'flex-end' }[ attrs.ratingTextAlign ],
+			justifyContent: {
+				left: 'flex-start',
+				start: 'flex-start',
+				justify: 'flex-start',
+				center: 'center',
+				right: 'flex-end',
+				end: 'flex-end',
+			}[ attrs.ratingTextAlign ],
 		},
-		ratingStars: { ...typographyPreviewStyle( attrs, 'ratingStars', tier ), color: colour( attrs.ratingColour ) },
+		ratingStars: {
+			...typographyPreviewStyle( attrs, 'ratingStars', tier ),
+			color: colour( attrs.ratingColour ),
+		},
 		swatch: { borderColor: colour( attrs.swatchBorderColour ) },
-		swatchMore: { ...typographyPreviewStyle( attrs, 'swatchMore', tier ), borderColor: colour( attrs.swatchMoreBorderColour ) },
+		swatchMore: {
+			...typographyPreviewStyle( attrs, 'swatchMore', tier ),
+			borderColor: colour( attrs.swatchMoreBorderColour ),
+		},
 		// The picker forwards its settings to sgs/option-picker as the same custom properties.
 		picker: {
 			'--sgs-op-bg': colour( attrs.pickerPillBgColour ),
-			'--sgs-op-bg-gradient': isCssGradient( attrs.pickerPillBgColourGradient ) ? attrs.pickerPillBgColourGradient : undefined,
+			'--sgs-op-bg-gradient': isCssGradient(
+				attrs.pickerPillBgColourGradient
+			)
+				? attrs.pickerPillBgColourGradient
+				: undefined,
 			'--sgs-op-text': colour( attrs.pickerPillTextColour ),
 			'--sgs-op-border': colour( attrs.pickerPillBorderColour ),
 			'--sgs-op-sel-bg': colour( attrs.pickerPillSelectedBgColour ),
 			'--sgs-op-sel-text': colour( attrs.pickerPillSelectedTextColour ),
-			'--sgs-op-sel-border': colour( attrs.pickerPillSelectedBorderColour ),
+			'--sgs-op-sel-border': colour(
+				attrs.pickerPillSelectedBorderColour
+			),
 			'--sgs-op-pill-radius': attrs.pickerPillBorderRadius || undefined,
-			'--sgs-op-sel-pill-radius': attrs.pickerPillSelectedBorderRadius || undefined,
+			'--sgs-op-sel-pill-radius':
+				attrs.pickerPillSelectedBorderRadius || undefined,
 		},
 		pickerClasses: [
-			[ 'soft', 'solid' ].includes( attrs.pickerColourPreset ) ? `sgs-option-picker--${ attrs.pickerColourPreset }` : '',
-			true === attrs.pickerShowSelectedTick ? '' : 'sgs-option-picker--no-tick',
+			[ 'soft', 'solid' ].includes( attrs.pickerColourPreset )
+				? `sgs-option-picker--${ attrs.pickerColourPreset }`
+				: '',
+			true === attrs.pickerShowSelectedTick
+				? ''
+				: 'sgs-option-picker--no-tick',
 		].filter( Boolean ),
 		pillText: isCssGradient( attrs.pickerPillTextColourGradient )
 			? textPaintPreview( '', attrs.pickerPillTextColourGradient )
 			: {},
 		// The CTA's three gradient siblings (sgs_button_element_style_css()).
 		ctaGradients: {
-			...( isCssGradient( attrs.ctaColourBackgroundGradient ) ? backgroundPaintPreview( '', attrs.ctaColourBackgroundGradient ) : {} ),
-			...( isCssGradient( attrs.ctaColourTextGradient ) ? textPaintPreview( '', attrs.ctaColourTextGradient ) : {} ),
+			...( isCssGradient( attrs.ctaColourBackgroundGradient )
+				? backgroundPaintPreview(
+						'',
+						attrs.ctaColourBackgroundGradient
+				  )
+				: {} ),
+			...( isCssGradient( attrs.ctaColourTextGradient )
+				? textPaintPreview( '', attrs.ctaColourTextGradient )
+				: {} ),
 			...borderPaintPreview( '', attrs.ctaColourBorderGradient ),
 		},
 	};
@@ -168,18 +275,42 @@ export function typedCardPreview( attrs, tier ) {
  * show as on the page; a logo that comes from the product's brand term is live data a typed card does not have, so
  * without a `logoSource` the typed brand name shows. `brandUseLogo` off always shows the name.
  */
-export function TypedMediaOverlays( { attributes: attrs, setAttributes, styles, uid = '' } ) {
-	const brand = attrs.showBrandOverlay ? String( attrs.brandName || '' ).trim() : '';
-	const logo = attrs.showBrandOverlay && false !== attrs.brandUseLogo && [ 'desktop', 'tablet', 'mobile' ].some( ( device ) => hasFile( attrs.logoSource?.[ device ] ) );
-	const saving = attrs.showSavingBadge ? String( attrs.savingLabel || '' ).trim() : '';
-	const positions = [ 'top-left', 'top-right', 'bottom-left', 'bottom-right' ];
-	const position = positions.includes( attrs.savingBadgePosition ) ? attrs.savingBadgePosition : 'bottom-left';
+export function TypedMediaOverlays( {
+	attributes: attrs,
+	setAttributes,
+	styles,
+	uid = '',
+} ) {
+	const brand = attrs.showBrandOverlay
+		? String( attrs.brandName || '' ).trim()
+		: '';
+	const logo =
+		attrs.showBrandOverlay &&
+		false !== attrs.brandUseLogo &&
+		[ 'desktop', 'tablet', 'mobile' ].some( ( device ) =>
+			hasFile( attrs.logoSource?.[ device ] )
+		);
+	const saving = attrs.showSavingBadge
+		? String( attrs.savingLabel || '' ).trim()
+		: '';
+	const positions = [
+		'top-left',
+		'top-right',
+		'bottom-left',
+		'bottom-right',
+	];
+	const position = positions.includes( attrs.savingBadgePosition )
+		? attrs.savingBadgePosition
+		: 'bottom-left';
 	return (
 		<>
 			{ logo ? (
 				<span className="sgs-product-card__brand sgs-product-card__brand--logo">
 					<SlotPicture
-						attributes={ { ...attrs, logoAlt: brand || attrs.logoAlt || '' } }
+						attributes={ {
+							...attrs,
+							logoAlt: brand || attrs.logoAlt || '',
+						} }
 						setAttributes={ setAttributes }
 						prefix="logo"
 						uid={ `${ uid }-logo` }
@@ -188,7 +319,14 @@ export function TypedMediaOverlays( { attributes: attrs, setAttributes, styles, 
 					/>
 				</span>
 			) : (
-				brand && <span className="sgs-product-card__brand" style={ styles.brand }>{ brand }</span>
+				brand && (
+					<span
+						className="sgs-product-card__brand"
+						style={ styles.brand }
+					>
+						{ brand }
+					</span>
+				)
 			) }
 			{ saving && (
 				<span
@@ -211,20 +349,38 @@ export function TypedRating( { attributes: attrs, styles } ) {
 	if ( 0 === count ) {
 		const none = String( attrs.noReviewsText || '' ).trim();
 		return none ? (
-			<div className="sgs-product-card__rating sgs-product-card__rating--empty" style={ styles.ratingRow }>
-				<span className="sgs-product-card__rating-empty-text">{ none }</span>
+			<div
+				className="sgs-product-card__rating sgs-product-card__rating--empty"
+				style={ styles.ratingRow }
+			>
+				<span className="sgs-product-card__rating-empty-text">
+					{ none }
+				</span>
 			</div>
 		) : null;
 	}
-	const value = Math.max( 0, Math.min( 5, Number( attrs.ratingValue ) || 0 ) );
+	const value = Math.max(
+		0,
+		Math.min( 5, Number( attrs.ratingValue ) || 0 )
+	);
 	return (
 		<div className="sgs-product-card__rating" style={ styles.ratingRow }>
-			<span className="sgs-product-card__rating-stars" aria-hidden="true" style={ styles.ratingStars }>
+			<span
+				className="sgs-product-card__rating-stars"
+				aria-hidden="true"
+				style={ styles.ratingStars }
+			>
 				{ '★'.repeat( 5 ) }
 			</span>
-			<span className="sgs-product-card__rating-text" style={ styles.rating }>
+			<span
+				className="sgs-product-card__rating-text"
+				style={ styles.rating }
+			>
 				{ `${ value.toFixed( 1 ) } ` }
-				{ sprintf( _n( '(%d review)', '(%d reviews)', count, 'sgs-blocks' ), count ) }
+				{ sprintf(
+					_n( '(%d review)', '(%d reviews)', count, 'sgs-blocks' ),
+					count
+				) }
 			</span>
 		</div>
 	);
@@ -244,28 +400,47 @@ export function TypedRating( { attributes: attrs, styles } ) {
  * ServerSideRender and shows the real buttons.
  */
 export function TypedSwatches( { attributes: attrs, styles } ) {
-	const items = Array.isArray( attrs.colourSwatches ) ? attrs.colourSwatches : [];
+	const items = Array.isArray( attrs.colourSwatches )
+		? attrs.colourSwatches
+		: [];
 	const max = Math.max( 1, parseInt( attrs.swatchMaxVisible, 10 ) || 4 );
-	const visible = items.slice( 0, max ).filter( ( item ) => /^#[0-9a-f]{3,6}$/i.test( String( item?.colour || '' ) ) );
+	const visible = items
+		.slice( 0, max )
+		.filter( ( item ) =>
+			/^#[0-9a-f]{3,6}$/i.test( String( item?.colour || '' ) )
+		);
 	if ( ! visible.length ) {
 		return null;
 	}
 	const hidden = Math.max( 0, items.length - Math.min( items.length, max ) );
 	return (
-		<div className="sgs-product-card__swatches" style={ attrs.swatchesFlexWrap ? { flexWrap: attrs.swatchesFlexWrap } : undefined }>
+		<div
+			className="sgs-product-card__swatches"
+			style={
+				attrs.swatchesFlexWrap
+					? { flexWrap: attrs.swatchesFlexWrap }
+					: undefined
+			}
+		>
 			{ visible.map( ( item, index ) => (
 				<span
 					key={ index }
 					className="sgs-product-card__swatch"
 					title={ item.label || undefined }
-					style={ { '--sgs-pc-swatch-bg': item.colour, ...styles.swatch } }
+					style={ {
+						'--sgs-pc-swatch-bg': item.colour,
+						...styles.swatch,
+					} }
 				/>
 			) ) }
 			{ hidden > 0 && (
 				<span
 					className="sgs-product-card__swatch-more"
 					style={ styles.swatchMore }
-					aria-label={ sprintf( __( '+%d more colours', 'sgs-blocks' ), hidden ) }
+					aria-label={ sprintf(
+						__( '+%d more colours', 'sgs-blocks' ),
+						hidden
+					) }
 				>
 					{ `+${ hidden }` }
 				</span>
@@ -280,10 +455,18 @@ export function attributeTagText( attrs ) {
 		return '';
 	}
 	const term = String( attrs.attributeTagTerm || '' ).trim();
-	const bySource = 'tag' === attrs.attributeTagSource ? true : '' !== String( attrs.attributeTagTaxonomy || '' ).trim();
+	const bySource =
+		'tag' === attrs.attributeTagSource
+			? true
+			: '' !== String( attrs.attributeTagTaxonomy || '' ).trim();
 	if ( ! term || ! bySource ) {
 		return '';
 	}
 	const custom = String( attrs.attributeTagText || '' ).trim();
-	return custom || term.replace( /[-_]/g, ' ' ).replace( /\b\w/g, ( c ) => c.toUpperCase() );
+	return (
+		custom ||
+		term
+			.replace( /[-_]/g, ' ' )
+			.replace( /\b\w/g, ( c ) => c.toUpperCase() )
+	);
 }

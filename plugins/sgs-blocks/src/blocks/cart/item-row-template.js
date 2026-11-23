@@ -49,7 +49,9 @@ export function escapeHtml( str ) {
  * @return {string} Its text content.
  */
 function plainText( str ) {
-	return new DOMParser().parseFromString( String( str ?? '' ), 'text/html' ).body.textContent.trim();
+	return new DOMParser()
+		.parseFromString( String( str ?? '' ), 'text/html' )
+		.body.textContent.trim();
 }
 
 /**
@@ -98,16 +100,18 @@ function detailsHtml( item ) {
  * A line the Store API marks not editable disables all three. The stepper's disabled buttons carry `data-at-limit` so
  * the panel's busy toggle never re-enables them.
  *
- * @param {Object} args          The line and its already-escaped ids.
- * @param {Object} args.item     The Store API cart item.
- * @param {string} args.key      The escaped cart item key.
- * @param {number} args.qty      The line's quantity.
+ * @param {Object} args            The line and its already-escaped ids.
+ * @param {Object} args.item       The Store API cart item.
+ * @param {string} args.key        The escaped cart item key.
+ * @param {number} args.qty        The line's quantity.
  * @param {string} args.qtyInputId The number input's id.
- * @param {string} args.qtyStyle 'input' or 'stepper'.
+ * @param {string} args.qtyStyle   'input' or 'stepper'.
  * @return {string} The control's HTML.
  */
 function qtyControlHtml( { item, key, qty, qtyInputId, qtyStyle } ) {
-	const label = `<label class="sgs-cart__item-qty-label${ 'stepper' === qtyStyle ? ' sgs-cart__item-qty-label--hidden' : '' }" for="${ qtyInputId }">${ escapeHtml( 'Qty' ) }</label>`;
+	const label = `<label class="sgs-cart__item-qty-label${
+		'stepper' === qtyStyle ? ' sgs-cart__item-qty-label--hidden' : ''
+	}" for="${ qtyInputId }">${ escapeHtml( 'Qty' ) }</label>`;
 	const ariaLabel = escapeHtml( 'Quantity for ' + item.name );
 	if ( 'stepper' !== qtyStyle ) {
 		return (
@@ -125,14 +129,20 @@ function qtyControlHtml( { item, key, qty, qtyInputId, qtyStyle } ) {
 	const atMin = ! editable || qty - step < min;
 	const atMax = ! editable || ( max > 0 && qty + step > max );
 	const button = ( dir, glyph, name, off ) =>
-		`<button type="button" class="sgs-cart__item-qty-step sgs-cart__item-qty-step--${ dir }" data-key="${ key }" data-step="${ 'minus' === dir ? -step : step }" ` +
-		`aria-label="${ escapeHtml( name + ' ' + item.name ) }"${ off ? ' disabled data-at-limit' : '' }>` +
+		`<button type="button" class="sgs-cart__item-qty-step sgs-cart__item-qty-step--${ dir }" data-key="${ key }" data-step="${
+			'minus' === dir ? -step : step
+		}" ` +
+		`aria-label="${ escapeHtml( name + ' ' + item.name ) }"${
+			off ? ' disabled data-at-limit' : ''
+		}>` +
 		`<span aria-hidden="true">${ glyph }</span></button>`;
 	return (
 		label +
 		'<div class="sgs-cart__item-stepper">' +
 		button( 'minus', '&minus;', 'Decrease quantity of', atMin ) +
-		`<input type="number" min="${ min }" ${ max ? `max="${ max }" ` : '' }step="${ step }" id="${ qtyInputId }" ` +
+		`<input type="number" min="${ min }" ${
+			max ? `max="${ max }" ` : ''
+		}step="${ step }" id="${ qtyInputId }" ` +
 		`class="sgs-cart__item-qty-input" value="${ qty }" data-key="${ key }" ` +
 		`aria-label="${ ariaLabel }"${ editable ? '' : ' readonly' } />` +
 		button( 'plus', '+', 'Increase quantity of', atMax ) +
@@ -146,16 +156,16 @@ function qtyControlHtml( { item, key, qty, qtyInputId, qtyStyle } ) {
  * (variation and item data), the optional quantity input, and the actions
  * (Save for later, and Remove when it is set to show as a text link).
  *
- * @param {Object}  item                The Store API cart item.
- * @param {Object}  totals              The cart's `totals` object (currency metadata).
- * @param {Object}  [opts]              The panel's item settings (render.php data-* attributes).
- * @param {string}  [opts.removeStyle]  'icon' (an × in its own column) or 'text' (a link under the details).
- * @param {string}  [opts.removeLabel]  The text link's label.
- * @param {boolean} [opts.showQty]      Show the quantity input.
- * @param {string}  [opts.qtyStyle]     'input' (a number box) or 'stepper' (minus, number, plus in one pill).
- * @param {string}  [opts.removePlace]  'under' (the text Remove link in the actions row) or 'end' (at the right of the quantity's own line).
- * @param {boolean} [opts.showSave]     Show Save for later.
- * @param {boolean} [opts.showAddOptions] Show the per-line "add options" link.
+ * @param {Object}  item                   The Store API cart item.
+ * @param {Object}  totals                 The cart's `totals` object (currency metadata).
+ * @param {Object}  [opts]                 The panel's item settings (render.php data-* attributes).
+ * @param {string}  [opts.removeStyle]     'icon' (an × in its own column) or 'text' (a link under the details).
+ * @param {string}  [opts.removeLabel]     The text link's label.
+ * @param {boolean} [opts.showQty]         Show the quantity input.
+ * @param {string}  [opts.qtyStyle]        'input' (a number box) or 'stepper' (minus, number, plus in one pill).
+ * @param {string}  [opts.removePlace]     'under' (the text Remove link in the actions row) or 'end' (at the right of the quantity's own line).
+ * @param {boolean} [opts.showSave]        Show Save for later.
+ * @param {boolean} [opts.showAddOptions]  Show the per-line "add options" link.
  * @param {string}  [opts.addOptionsLabel] That link's label; '' hides it.
  * @return {string} The row's HTML.
  */
@@ -181,7 +191,9 @@ export function itemRowHtml( item, totals, opts = {} ) {
 	// to label it, no logo is drawn at all, so the accessible name can never
 	// come out empty.
 	const brandLogo = item.extensions?.sgs?.brandLogo ?? {};
-	const brandLogoUrl = brand ? escapeHtml( String( brandLogo.url ?? '' ) ) : '';
+	const brandLogoUrl = brand
+		? escapeHtml( String( brandLogo.url ?? '' ) )
+		: '';
 	const brandLogoSize =
 		Number( brandLogo.width ) > 0 && Number( brandLogo.height ) > 0
 			? ` width="${ Number( brandLogo.width ) }" height="${ Number(
@@ -200,9 +212,10 @@ export function itemRowHtml( item, totals, opts = {} ) {
 	// PRODUCT id (a variation's own id is post type product_variation, which
 	// includes/wishlist/class-wishlist-store.php::Wishlist_Store::product_is_valid() rejects) — mirrors
 	// src/blocks/wishlist-panel/match-row.js::wishlistProductIdForCartItem().
-	const wishlistProductId = Number( item.parent_id ) > 0
-		? Number( item.parent_id )
-		: Number( item.id ) || 0;
+	const wishlistProductId =
+		Number( item.parent_id ) > 0
+			? Number( item.parent_id )
+			: Number( item.id ) || 0;
 
 	// `sgs-media-el` is the shared media-element
 	// atom marker (includes/class-sgs-media-element.php /
@@ -247,7 +260,8 @@ export function itemRowHtml( item, totals, opts = {} ) {
 			: '';
 
 	// A text Remove link can sit at the right of the quantity's line instead of under it; with no quantity line it stays under.
-	const removeAtEnd = 'end' === removePlace && 'text' === removeStyle && showQty;
+	const removeAtEnd =
+		'end' === removePlace && 'text' === removeStyle && showQty;
 	const qtyHtml = showQty
 		? '<div class="sgs-cart__item-row">' +
 		  qtyControlHtml( { item, key, qty, qtyInputId, qtyStyle } ) +
@@ -278,15 +292,23 @@ export function itemRowHtml( item, totals, opts = {} ) {
 	const alreadyConfigured = true === item.extensions?.sgs?.hasLenses;
 	const addOptionsHref = String( item.permalink ?? '' );
 	const addOptionsHtml =
-		showAddOptions && addOptionsLabel && hasChoiceFlow && ! alreadyConfigured && addOptionsHref
+		showAddOptions &&
+		addOptionsLabel &&
+		hasChoiceFlow &&
+		! alreadyConfigured &&
+		addOptionsHref
 			? `<a class="sgs-cart__item-add-options sgs-cart__item-action" href="${ escapeHtml(
 					addOptionsHref
 			  ) }">${ escapeHtml( addOptionsLabel ) }</a>`
 			: '';
 
 	const actionsHtml =
-		addOptionsHtml || saveForLaterHtml || ( removeTextHtml && ! removeAtEnd )
-			? `<div class="sgs-cart__item-actions">${ addOptionsHtml }${ saveForLaterHtml }${ removeAtEnd ? '' : removeTextHtml }</div>`
+		addOptionsHtml ||
+		saveForLaterHtml ||
+		( removeTextHtml && ! removeAtEnd )
+			? `<div class="sgs-cart__item-actions">${ addOptionsHtml }${ saveForLaterHtml }${
+					removeAtEnd ? '' : removeTextHtml
+			  }</div>`
 			: '';
 
 	return (

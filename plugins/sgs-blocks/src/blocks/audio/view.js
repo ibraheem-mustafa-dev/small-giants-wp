@@ -24,8 +24,15 @@
  * No jQuery. No dependencies.
  */
 
-const REACTIVE = new Set( [ 'spectrum', 'oscilloscope', 'gradient-pulse', 'radial' ] );
-const reduceMotion = window.matchMedia && window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
+const REACTIVE = new Set( [
+	'spectrum',
+	'oscilloscope',
+	'gradient-pulse',
+	'radial',
+] );
+const reduceMotion =
+	window.matchMedia &&
+	window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
 
 /**
  * A 0-100 "Reactivity" slider value → AnalyserNode params. 50 reproduces the
@@ -85,11 +92,16 @@ function resolveColour( root, name, fallback ) {
 	return c;
 }
 
-const ICON_PLAY = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>';
-const ICON_PAUSE = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d="M7 5h4v14H7zM13 5h4v14h-4z" fill="currentColor"/></svg>';
-const ICON_TOGGLE_BARS = '<span class="sgs-audio__toggle-bar"></span><span class="sgs-audio__toggle-bar"></span><span class="sgs-audio__toggle-bar"></span>';
-const ICON_SPEAKER_ON = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M4 9v6h4l5 5V4L8 9H4z" fill="currentColor"/><path d="M16.5 12c0-1.77-.77-3.29-2-4.24v8.48c1.23-.95 2-2.47 2-4.24z" fill="currentColor"/><path d="M14.5 4.6v2.09c2.89 1.02 5 3.77 5 7.31s-2.11 6.29-5 7.31v2.09c4.01-1.06 7-4.7 7-9.4s-2.99-8.34-7-9.4z" fill="currentColor"/></svg>';
-const ICON_SPEAKER_OFF = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M4 9v6h4l5 5V4L8 9H4z" fill="currentColor"/><path d="M19.5 5.5 18.44 4.44 4.44 18.44 5.5 19.5l3.2-3.2L14 21V13.7l3.83 3.83c-.44.37-.94.68-1.5.92v2.1c1.03-.32 1.96-.86 2.75-1.56L21.5 21.5l1.06-1.06L19.5 17.4V5.5Zm-1.83 1.83L15.83 9.17c.42.7.67 1.5.67 2.33 0 .34-.05.67-.13.98l1.5 1.5c.29-.75.46-1.6.46-2.48 0-2.07-.94-3.93-2.66-5.17Z" fill="currentColor"/></svg>';
+const ICON_PLAY =
+	'<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>';
+const ICON_PAUSE =
+	'<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d="M7 5h4v14H7zM13 5h4v14h-4z" fill="currentColor"/></svg>';
+const ICON_TOGGLE_BARS =
+	'<span class="sgs-audio__toggle-bar"></span><span class="sgs-audio__toggle-bar"></span><span class="sgs-audio__toggle-bar"></span>';
+const ICON_SPEAKER_ON =
+	'<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M4 9v6h4l5 5V4L8 9H4z" fill="currentColor"/><path d="M16.5 12c0-1.77-.77-3.29-2-4.24v8.48c1.23-.95 2-2.47 2-4.24z" fill="currentColor"/><path d="M14.5 4.6v2.09c2.89 1.02 5 3.77 5 7.31s-2.11 6.29-5 7.31v2.09c4.01-1.06 7-4.7 7-9.4s-2.99-8.34-7-9.4z" fill="currentColor"/></svg>';
+const ICON_SPEAKER_OFF =
+	'<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M4 9v6h4l5 5V4L8 9H4z" fill="currentColor"/><path d="M19.5 5.5 18.44 4.44 4.44 18.44 5.5 19.5l3.2-3.2L14 21V13.7l3.83 3.83c-.44.37-.94.68-1.5.92v2.1c1.03-.32 1.96-.86 2.75-1.56L21.5 21.5l1.06-1.06L19.5 17.4V5.5Zm-1.83 1.83L15.83 9.17c.42.7.67 1.5.67 2.33 0 .34-.05.67-.13.98l1.5 1.5c.29-.75.46-1.6.46-2.48 0-2.07-.94-3.93-2.66-5.17Z" fill="currentColor"/></svg>';
 
 /** Build the shared analyser graph for one audio element (once). */
 function buildGraph( audio, sensitivity ) {
@@ -157,7 +169,8 @@ function makeTime( audio ) {
 	const t = document.createElement( 'span' );
 	t.className = 'sgs-audio__time';
 	const paint = () => {
-		t.textContent = fmt( audio.currentTime ) + ' / ' + fmt( audio.duration );
+		t.textContent =
+			fmt( audio.currentTime ) + ' / ' + fmt( audio.duration );
 	};
 	audio.addEventListener( 'timeupdate', paint );
 	audio.addEventListener( 'loadedmetadata', paint );
@@ -178,7 +191,7 @@ function makeSeek( audio, cls ) {
 	r.addEventListener( 'input', () => {
 		seeking = true;
 		if ( audio.duration ) {
-			r.style.setProperty( '--sgs-progress', ( r.value / 10 ) + '%' );
+			r.style.setProperty( '--sgs-progress', r.value / 10 + '%' );
 		}
 	} );
 	r.addEventListener( 'change', () => {
@@ -193,7 +206,7 @@ function makeSeek( audio, cls ) {
 		}
 		const p = audio.currentTime / audio.duration;
 		r.value = String( Math.round( p * 1000 ) );
-		r.style.setProperty( '--sgs-progress', ( p * 100 ) + '%' );
+		r.style.setProperty( '--sgs-progress', p * 100 + '%' );
 	} );
 	return r;
 }
@@ -227,20 +240,27 @@ function runReactive( root, audio, drawFn, sensitivity ) {
 		}
 	};
 	audio.addEventListener( 'play', start, { passive: true } );
-	audio.addEventListener( 'pause', () => {
-		cancelAnimationFrame( raf );
-		raf = 0;
-	}, { passive: true } );
+	audio.addEventListener(
+		'pause',
+		() => {
+			cancelAnimationFrame( raf );
+			raf = 0;
+		},
+		{ passive: true }
+	);
 	if ( 'IntersectionObserver' in window ) {
-		new IntersectionObserver( ( entries ) => {
-			onScreen = entries[ 0 ].isIntersecting;
-			if ( onScreen ) {
-				start();
-			} else {
-				cancelAnimationFrame( raf );
-				raf = 0;
-			}
-		}, { threshold: 0 } ).observe( root );
+		new IntersectionObserver(
+			( entries ) => {
+				onScreen = entries[ 0 ].isIntersecting;
+				if ( onScreen ) {
+					start();
+				} else {
+					cancelAnimationFrame( raf );
+					raf = 0;
+				}
+			},
+			{ threshold: 0 }
+		).observe( root );
 	}
 	// one static frame at rest (also the reduced-motion representation)
 	drawFn( null, null, 0 );
@@ -255,7 +275,8 @@ function fitCanvas( cv ) {
 
 function enhance( root ) {
 	const style = root.getAttribute( 'data-player-style' ) || 'minimal';
-	const sensitivity = root.getAttribute( 'data-reactive-sensitivity' ) || '50';
+	const sensitivity =
+		root.getAttribute( 'data-reactive-sensitivity' ) || '50';
 	const audio = root.querySelector( '.sgs-audio__native' );
 	const viz = root.querySelector( '.sgs-audio__viz' );
 	if ( ! audio || style === 'hidden' ) {
@@ -288,7 +309,10 @@ function enhance( root ) {
 
 	if ( style === 'toggle' ) {
 		const toggleLabel = root.getAttribute( 'data-toggle-label' ) || 'Sound';
-		const toggleIcon = root.getAttribute( 'data-toggle-icon' ) === 'speaker' ? 'speaker' : 'bars';
+		const toggleIcon =
+			root.getAttribute( 'data-toggle-icon' ) === 'speaker'
+				? 'speaker'
+				: 'bars';
 
 		const btn = document.createElement( 'button' );
 		btn.type = 'button';
@@ -299,7 +323,8 @@ function enhance( root ) {
 		const iconWrap = document.createElement( 'span' );
 		iconWrap.className = 'sgs-audio__toggle-icon';
 		iconWrap.setAttribute( 'aria-hidden', 'true' );
-		iconWrap.innerHTML = toggleIcon === 'speaker' ? ICON_SPEAKER_OFF : ICON_TOGGLE_BARS;
+		iconWrap.innerHTML =
+			toggleIcon === 'speaker' ? ICON_SPEAKER_OFF : ICON_TOGGLE_BARS;
 
 		const labelSpan = document.createElement( 'span' );
 		labelSpan.className = 'sgs-audio__toggle-label';
@@ -322,7 +347,9 @@ function enhance( root ) {
 		const syncPressed = ( playing ) => {
 			btn.setAttribute( 'aria-pressed', playing ? 'true' : 'false' );
 			if ( toggleIcon === 'speaker' ) {
-				iconWrap.innerHTML = playing ? ICON_SPEAKER_ON : ICON_SPEAKER_OFF;
+				iconWrap.innerHTML = playing
+					? ICON_SPEAKER_ON
+					: ICON_SPEAKER_OFF;
 			}
 		};
 
@@ -346,7 +373,9 @@ function enhance( root ) {
 				// Storage blocked (private mode / disabled) — state just won't persist.
 			}
 			setOthersMuted( false );
-			window.dispatchEvent( new CustomEvent( 'sgs-sound-change', { detail: { on: true } } ) );
+			window.dispatchEvent(
+				new CustomEvent( 'sgs-sound-change', { detail: { on: true } } )
+			);
 		} );
 		audio.addEventListener( 'pause', () => {
 			syncPressed( false );
@@ -356,7 +385,9 @@ function enhance( root ) {
 				// Storage blocked (private mode / disabled) — state just won't persist.
 			}
 			setOthersMuted( true );
-			window.dispatchEvent( new CustomEvent( 'sgs-sound-change', { detail: { on: false } } ) );
+			window.dispatchEvent(
+				new CustomEvent( 'sgs-sound-change', { detail: { on: false } } )
+			);
 		} );
 
 		// Init: NEVER autoplay (render.php also forces audioAutoplay off for
@@ -376,13 +407,23 @@ function enhance( root ) {
 			// Bars animate only while playing — runReactive() itself gates on
 			// playing / reduced-motion / on-screen, and paints one static
 			// frame at rest (also the reduced-motion representation).
-			const bars = Array.from( iconWrap.querySelectorAll( '.sgs-audio__toggle-bar' ) );
-			runReactive( root, audio, ( freq ) => {
-				bars.forEach( ( bar, i ) => {
-					const v = freq ? freq[ i * 4 ] / 255 : 0.15;
-					bar.style.setProperty( '--sgs-bar-scale', String( Math.max( 0.15, v ) ) );
-				} );
-			}, sensitivity );
+			const bars = Array.from(
+				iconWrap.querySelectorAll( '.sgs-audio__toggle-bar' )
+			);
+			runReactive(
+				root,
+				audio,
+				( freq ) => {
+					bars.forEach( ( bar, i ) => {
+						const v = freq ? freq[ i * 4 ] / 255 : 0.15;
+						bar.style.setProperty(
+							'--sgs-bar-scale',
+							String( Math.max( 0.15, v ) )
+						);
+					} );
+				},
+				sensitivity
+			);
 		}
 		return;
 	}
@@ -392,19 +433,33 @@ function enhance( root ) {
 		cv.setAttribute( 'aria-hidden', 'true' );
 		cv.className = 'sgs-audio__wave-canvas';
 		viz.append( play, cv, time );
-		const peaks = Array.from( { length: 72 }, ( _, i ) => 0.22 + 0.78 * Math.abs( Math.sin( i * 0.5 ) * Math.cos( i * 0.17 ) + 0.3 * Math.sin( i * 1.3 ) ) );
+		const peaks = Array.from(
+			{ length: 72 },
+			( _, i ) =>
+				0.22 +
+				0.78 *
+					Math.abs(
+						Math.sin( i * 0.5 ) * Math.cos( i * 0.17 ) +
+							0.3 * Math.sin( i * 1.3 )
+					)
+		);
 		const track = resolveColour( root, '--sgs-audio-track', '#e2dcd2' );
 		let dpr = fitCanvas( cv ); // fit only on resize — NOT every frame (canvas resize clears + reallocates).
 		const paint = () => {
 			const c = cv.getContext( '2d' );
-			const W = cv.clientWidth, H = cv.clientHeight;
+			const W = cv.clientWidth,
+				H = cv.clientHeight;
 			c.setTransform( dpr, 0, 0, dpr, 0, 0 );
 			c.clearRect( 0, 0, W, H );
-			const prog = audio.duration ? audio.currentTime / audio.duration : 0;
+			const prog = audio.duration
+				? audio.currentTime / audio.duration
+				: 0;
 			const bw = W / peaks.length;
 			peaks.forEach( ( pk, i ) => {
-				const h = pk * H * 0.9, x = i * bw, y = ( H - h ) / 2;
-				c.fillStyle = ( i / peaks.length <= prog ) ? accent : track;
+				const h = pk * H * 0.9,
+					x = i * bw,
+					y = ( H - h ) / 2;
+				c.fillStyle = i / peaks.length <= prog ? accent : track;
 				c.beginPath();
 				c.roundRect( x + bw * 0.15, y, bw * 0.7, h, 1.5 );
 				c.fill();
@@ -412,10 +467,14 @@ function enhance( root ) {
 		};
 		cv.addEventListener( 'click', ( e ) => {
 			if ( audio.duration ) {
-				audio.currentTime = ( e.offsetX / cv.clientWidth ) * audio.duration;
+				audio.currentTime =
+					( e.offsetX / cv.clientWidth ) * audio.duration;
 			}
 		} );
-		new ResizeObserver( () => { dpr = fitCanvas( cv ); paint(); } ).observe( cv );
+		new ResizeObserver( () => {
+			dpr = fitCanvas( cv );
+			paint();
+		} ).observe( cv );
 		audio.addEventListener( 'timeupdate', paint, { passive: true } );
 		requestAnimationFrame( paint );
 		return;
@@ -446,12 +505,26 @@ function enhance( root ) {
 		arc.style.setProperty( '--sgs-arc-offset', String( C ) );
 		audio.addEventListener( 'timeupdate', () => {
 			const p = audio.duration ? audio.currentTime / audio.duration : 0;
-			arc.style.setProperty( '--sgs-arc-offset', String( C * ( 1 - p ) ) );
+			arc.style.setProperty(
+				'--sgs-arc-offset',
+				String( C * ( 1 - p ) )
+			);
 		} );
-		runReactive( root, audio, ( f, t, level ) => {
-			glow.style.setProperty( '--sgs-glow-opacity', String( Math.min( 1, level * 2.2 ) ) );
-			glow.style.setProperty( '--sgs-glow-scale', String( 1 + level * 0.5 ) );
-		}, sensitivity );
+		runReactive(
+			root,
+			audio,
+			( f, t, level ) => {
+				glow.style.setProperty(
+					'--sgs-glow-opacity',
+					String( Math.min( 1, level * 2.2 ) )
+				);
+				glow.style.setProperty(
+					'--sgs-glow-scale',
+					String( 1 + level * 0.5 )
+				);
+			},
+			sensitivity
+		);
 		return;
 	}
 
@@ -463,82 +536,122 @@ function enhance( root ) {
 	if ( style === 'gradient-pulse' ) {
 		viz.classList.add( 'sgs-audio__viz--pulse' );
 		viz.append( transport );
-		runReactive( root, audio, ( freq, t, level ) => {
-			if ( ! freq ) {
-				// Quiet: remove the override so the CSS default (color-mix background,
-				// style.css `.sgs-audio__viz--pulse`) shows through — never a raw
-				// `.style.background` write (no-inline contract).
-				viz.style.removeProperty( '--sgs-viz-bg' );
-				return;
-			}
-			let lo = 0, hi = 0;
-			for ( let i = 0; i < freq.length; i++ ) {
-				( i < freq.length / 3 ? ( lo += freq[ i ] ) : ( hi += freq[ i ] ) );
-			}
-			const bias = hi / ( lo + hi + 1 );
-			const hue = 190 - bias * 150;
-			const light = 24 + level * 44;
-			const sat = 55 + level * 20;
-			viz.style.setProperty(
-				'--sgs-viz-bg',
-				'linear-gradient(135deg, hsl(' + hue + ' ' + sat + '% ' + light + '%), hsl(' + ( hue + 24 ) + ' ' + sat + '% ' + Math.max( 14, light - 14 ) + '%))'
-			);
-		}, sensitivity );
+		runReactive(
+			root,
+			audio,
+			( freq, t, level ) => {
+				if ( ! freq ) {
+					// Quiet: remove the override so the CSS default (color-mix background,
+					// style.css `.sgs-audio__viz--pulse`) shows through — never a raw
+					// `.style.background` write (no-inline contract).
+					viz.style.removeProperty( '--sgs-viz-bg' );
+					return;
+				}
+				let lo = 0,
+					hi = 0;
+				for ( let i = 0; i < freq.length; i++ ) {
+					i < freq.length / 3
+						? ( lo += freq[ i ] )
+						: ( hi += freq[ i ] );
+				}
+				const bias = hi / ( lo + hi + 1 );
+				const hue = 190 - bias * 150;
+				const light = 24 + level * 44;
+				const sat = 55 + level * 20;
+				viz.style.setProperty(
+					'--sgs-viz-bg',
+					'linear-gradient(135deg, hsl(' +
+						hue +
+						' ' +
+						sat +
+						'% ' +
+						light +
+						'%), hsl(' +
+						( hue + 24 ) +
+						' ' +
+						sat +
+						'% ' +
+						Math.max( 14, light - 14 ) +
+						'%))'
+				);
+			},
+			sensitivity
+		);
 		return;
 	}
 
 	const cv = document.createElement( 'canvas' );
 	cv.setAttribute( 'aria-hidden', 'true' );
-	cv.className = style === 'spectrum' ? 'sgs-audio__spectrum-canvas' : 'sgs-audio__scope-canvas';
+	cv.className =
+		style === 'spectrum'
+			? 'sgs-audio__spectrum-canvas'
+			: 'sgs-audio__scope-canvas';
 	viz.append( transport, cv );
 
 	if ( style === 'spectrum' ) {
 		let dpr = fitCanvas( cv );
 		new ResizeObserver( () => ( dpr = fitCanvas( cv ) ) ).observe( cv );
-		runReactive( root, audio, ( freq ) => {
-			const c = cv.getContext( '2d' );
-			const W = cv.clientWidth, H = cv.clientHeight;
-			c.setTransform( dpr, 0, 0, dpr, 0, 0 );
-			c.clearRect( 0, 0, W, H );
-			const N = 32, bw = W / N;
-			for ( let i = 0; i < N; i++ ) {
-				const v = freq ? freq[ i * 2 ] / 255 : 0.02;
-				const h = Math.max( 2, v * H * 0.94 ), x = i * bw, y = H - h;
-				const grad = c.createLinearGradient( 0, H, 0, y );
-				grad.addColorStop( 0, spectrum );
-				grad.addColorStop( 1, accent );
-				c.fillStyle = grad;
-				c.beginPath();
-				c.roundRect( x + bw * 0.18, y, bw * 0.64, h, 3 );
-				c.fill();
-			}
-		}, sensitivity );
+		runReactive(
+			root,
+			audio,
+			( freq ) => {
+				const c = cv.getContext( '2d' );
+				const W = cv.clientWidth,
+					H = cv.clientHeight;
+				c.setTransform( dpr, 0, 0, dpr, 0, 0 );
+				c.clearRect( 0, 0, W, H );
+				const N = 32,
+					bw = W / N;
+				for ( let i = 0; i < N; i++ ) {
+					const v = freq ? freq[ i * 2 ] / 255 : 0.02;
+					const h = Math.max( 2, v * H * 0.94 ),
+						x = i * bw,
+						y = H - h;
+					const grad = c.createLinearGradient( 0, H, 0, y );
+					grad.addColorStop( 0, spectrum );
+					grad.addColorStop( 1, accent );
+					c.fillStyle = grad;
+					c.beginPath();
+					c.roundRect( x + bw * 0.18, y, bw * 0.64, h, 3 );
+					c.fill();
+				}
+			},
+			sensitivity
+		);
 	} else {
 		let dpr = fitCanvas( cv );
 		new ResizeObserver( () => ( dpr = fitCanvas( cv ) ) ).observe( cv );
-		runReactive( root, audio, ( f, time2 ) => {
-			const c = cv.getContext( '2d' );
-			const W = cv.clientWidth, H = cv.clientHeight;
-			c.setTransform( dpr, 0, 0, dpr, 0, 0 );
-			c.clearRect( 0, 0, W, H );
-			c.lineWidth = 2.2;
-			c.strokeStyle = spectrum;
-			c.shadowBlur = 8;
-			c.shadowColor = spectrum;
-			c.beginPath();
-			if ( time2 ) {
-				const step = W / time2.length;
-				for ( let i = 0; i < time2.length; i++ ) {
-					const v = time2[ i ] / 128 - 1, x = i * step, y = H / 2 + v * H * 0.42;
-					i === 0 ? c.moveTo( x, y ) : c.lineTo( x, y );
+		runReactive(
+			root,
+			audio,
+			( f, time2 ) => {
+				const c = cv.getContext( '2d' );
+				const W = cv.clientWidth,
+					H = cv.clientHeight;
+				c.setTransform( dpr, 0, 0, dpr, 0, 0 );
+				c.clearRect( 0, 0, W, H );
+				c.lineWidth = 2.2;
+				c.strokeStyle = spectrum;
+				c.shadowBlur = 8;
+				c.shadowColor = spectrum;
+				c.beginPath();
+				if ( time2 ) {
+					const step = W / time2.length;
+					for ( let i = 0; i < time2.length; i++ ) {
+						const v = time2[ i ] / 128 - 1,
+							x = i * step,
+							y = H / 2 + v * H * 0.42;
+						i === 0 ? c.moveTo( x, y ) : c.lineTo( x, y );
+					}
+				} else {
+					c.moveTo( 0, H / 2 );
+					c.lineTo( W, H / 2 );
 				}
-			} else {
-				c.moveTo( 0, H / 2 );
-				c.lineTo( W, H / 2 );
-			}
-			c.stroke();
-			c.shadowBlur = 0;
-		}, sensitivity );
+				c.stroke();
+				c.shadowBlur = 0;
+			},
+			sensitivity
+		);
 	}
 }
 

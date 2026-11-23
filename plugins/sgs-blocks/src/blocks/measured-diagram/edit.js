@@ -30,12 +30,22 @@ import {
 } from '../../components';
 import SlotPicture from '../../components/media/SlotPicture';
 import metadata from './block.json';
-import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+import {
+	ToggleGroupControl,
+	ToggleGroupControlOption,
+} from '../../components/primitives';
 import { usePreviewTier } from '../../utils';
 import { drawingBox, sourceSize } from './drawing-box';
-import { diagramPreviewCss, gradientId, userSpaceGradient, UserSpaceGradientDef } from './editor-preview';
+import {
+	diagramPreviewCss,
+	gradientId,
+	userSpaceGradient,
+	UserSpaceGradientDef,
+} from './editor-preview';
 
-const DRAWING_ENTRY = metadata.supports.sgs.mediaElements.find( ( e ) => 'drawing' === e.prefix );
+const DRAWING_ENTRY = metadata.supports.sgs.mediaElements.find(
+	( e ) => 'drawing' === e.prefix
+);
 
 const ALLOWED_BLOCKS = [ 'sgs/diagram-dimension' ];
 const TEMPLATE = [ [ 'sgs/diagram-dimension', {} ] ];
@@ -54,7 +64,10 @@ function measureImage( url, onResult ) {
 	const probe = new window.Image();
 	probe.onload = () => {
 		if ( probe.naturalWidth > 0 && probe.naturalHeight > 0 ) {
-			onResult( { width: probe.naturalWidth, height: probe.naturalHeight } );
+			onResult( {
+				width: probe.naturalWidth,
+				height: probe.naturalHeight,
+			} );
 		}
 	};
 	probe.src = url;
@@ -78,17 +91,31 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const [ boxW, boxH ] = drawingBox( ...sourceSize( drawingSource ) );
 	// Every attribute the canvas mirror paints is named here, at the call site.
 	const previewCss = diagramPreviewCss( {
-		attributes: { ...attributes, maxWidth, labelMode, lineWidth, extensionWidth, extensionStyle, labelGap },
+		attributes: {
+			...attributes,
+			maxWidth,
+			labelMode,
+			lineWidth,
+			extensionWidth,
+			extensionStyle,
+			labelGap,
+		},
 		clientId,
 		tier: previewTier,
 		width: boxW,
 		height: boxH,
 	} );
 	const lineGradient = userSpaceGradient( lineColourGradient, boxW, boxH );
-	const extensionGradient = userSpaceGradient( extensionColourGradient, boxW, boxH );
+	const extensionGradient = userSpaceGradient(
+		extensionColourGradient,
+		boxW,
+		boxH
+	);
 
 	const blockProps = useBlockProps( {
-		className: `sgs-measured-diagram sgs-measured-diagram--extension-${ extensionStyle || 'solid' }`,
+		className: `sgs-measured-diagram sgs-measured-diagram--extension-${
+			extensionStyle || 'solid'
+		}`,
 	} );
 	const innerBlocksProps = useInnerBlocksProps(
 		{ className: 'sgs-measured-diagram__labels', role: 'list' },
@@ -105,8 +132,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	latestSource.current = drawingSource;
 	const pendingFile = [ 'desktop', 'tablet', 'mobile' ]
 		.map( ( key ) => [ key, drawingSource?.[ key ] ] )
-		.find( ( [ , entry ] ) => entry?.url && ! ( Number( entry.width ) > 0 && Number( entry.height ) > 0 ) );
-	const pendingKey = pendingFile ? `${ pendingFile[ 0 ] }:${ pendingFile[ 1 ].url }` : '';
+		.find(
+			( [ , entry ] ) =>
+				entry?.url &&
+				! ( Number( entry.width ) > 0 && Number( entry.height ) > 0 )
+		);
+	const pendingKey = pendingFile
+		? `${ pendingFile[ 0 ] }:${ pendingFile[ 1 ].url }`
+		: '';
 	useEffect( () => {
 		if ( ! pendingFile ) {
 			return;
@@ -115,7 +148,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		measureImage( entry.url, ( size ) => {
 			const current = latestSource.current?.[ key ];
 			if ( current?.url === entry.url ) {
-				setAttributes( { drawingSource: { ...latestSource.current, [ key ]: { ...current, ...size } } } );
+				setAttributes( {
+					drawingSource: {
+						...latestSource.current,
+						[ key ]: { ...current, ...size },
+					},
+				} );
 			}
 		} );
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -139,13 +177,17 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					<ResponsiveOverride
 						label={ __( 'Label layout', 'sgs-blocks' ) }
 						value={ labelMode }
-						onChange={ ( obj ) => setAttributes( { labelMode: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { labelMode: obj } )
+						}
 					>
 						{ ( { ownValue, effectiveValue, setOwnValue } ) => (
 							<ToggleGroupControl
 								label={ __( 'Label layout', 'sgs-blocks' ) }
 								hideLabelFromVision
-								value={ ownValue || effectiveValue || 'onDrawing' }
+								value={
+									ownValue || effectiveValue || 'onDrawing'
+								}
 								onChange={ ( val ) => setOwnValue( val ) }
 								help={ __(
 									'Numbered puts a small number on each line and lists the labels under the drawing — useful on narrow screens where labels would overlap.',
@@ -155,8 +197,17 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							>
-								<ToggleGroupControlOption value="onDrawing" label={ __( 'On the drawing', 'sgs-blocks' ) } />
-								<ToggleGroupControlOption value="numbered" label={ __( 'Numbered', 'sgs-blocks' ) } />
+								<ToggleGroupControlOption
+									value="onDrawing"
+									label={ __(
+										'On the drawing',
+										'sgs-blocks'
+									) }
+								/>
+								<ToggleGroupControlOption
+									value="numbered"
+									label={ __( 'Numbered', 'sgs-blocks' ) }
+								/>
 							</ToggleGroupControl>
 						) }
 					</ResponsiveOverride>
@@ -165,7 +216,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					<ResponsiveLengthControl
 						label={ __( 'Maximum width', 'sgs-blocks' ) }
 						value={ maxWidth }
-						onChange={ ( obj ) => setAttributes( { maxWidth: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { maxWidth: obj } )
+						}
 						placeholder="100%"
 					/>
 				</PanelBody>
@@ -176,28 +229,40 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					fillRow( {
 						key: 'line',
 						label: __( 'Measurement lines', 'sgs-blocks' ),
-						attrs: { base: 'lineColour', gradient: 'lineColourGradient' },
+						attrs: {
+							base: 'lineColour',
+							gradient: 'lineColourGradient',
+						},
 						attributes,
 						setAttributes,
 					} ),
 					fillRow( {
 						key: 'extension',
 						label: __( 'Extension lines', 'sgs-blocks' ),
-						attrs: { base: 'extensionColour', gradient: 'extensionColourGradient' },
+						attrs: {
+							base: 'extensionColour',
+							gradient: 'extensionColourGradient',
+						},
 						attributes,
 						setAttributes,
 					} ),
 					textRow( {
 						key: 'value',
 						label: __( 'Value', 'sgs-blocks' ),
-						attrs: { base: 'valueColour', gradient: 'valueColourGradient' },
+						attrs: {
+							base: 'valueColour',
+							gradient: 'valueColourGradient',
+						},
 						attributes,
 						setAttributes,
 					} ),
 					textRow( {
 						key: 'caption',
 						label: __( 'Caption', 'sgs-blocks' ),
-						attrs: { base: 'captionColour', gradient: 'captionColourGradient' },
+						attrs: {
+							base: 'captionColour',
+							gradient: 'captionColourGradient',
+						},
 						attributes,
 						setAttributes,
 					} ),
@@ -205,18 +270,28 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			/>
 
 			<InspectorControls group="styles">
-				<PanelBody title={ __( 'Line', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Line', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SgsLengthControl
 						label={ __( 'Line thickness', 'sgs-blocks' ) }
 						value={ lineWidth }
-						onChange={ ( val ) => setAttributes( { lineWidth: val || '' } ) }
+						onChange={ ( val ) =>
+							setAttributes( { lineWidth: val || '' } )
+						}
 						placeholder="1.5px"
 						units={ [ { value: 'px', label: 'px' } ] }
 					/>
 					<RangeControl
-						label={ __( 'Tick and arrow size (% of drawing width)', 'sgs-blocks' ) }
+						label={ __(
+							'Tick and arrow size (% of drawing width)',
+							'sgs-blocks'
+						) }
 						value={ tickLength }
-						onChange={ ( val ) => setAttributes( { tickLength: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { tickLength: val } )
+						}
 						min={ 0 }
 						max={ 10 }
 						step={ 0.1 }
@@ -226,32 +301,56 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__next40pxDefaultSize
 					/>
 				</PanelBody>
-				<PanelBody title={ __( 'Extension lines', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Extension lines', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SgsLengthControl
 						label={ __( 'Extension line thickness', 'sgs-blocks' ) }
 						value={ extensionWidth }
-						onChange={ ( val ) => setAttributes( { extensionWidth: val || '' } ) }
+						onChange={ ( val ) =>
+							setAttributes( { extensionWidth: val || '' } )
+						}
 						placeholder="1px"
 						units={ [ { value: 'px', label: 'px' } ] }
 					/>
 					<ToggleGroupControl
 						label={ __( 'Extension line style', 'sgs-blocks' ) }
 						value={ extensionStyle || 'solid' }
-						onChange={ ( val ) => setAttributes( { extensionStyle: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { extensionStyle: val } )
+						}
 						isBlock
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					>
-						<ToggleGroupControlOption value="solid" label={ __( 'Solid', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="dashed" label={ __( 'Dashed', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="dotted" label={ __( 'Dotted', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption
+							value="solid"
+							label={ __( 'Solid', 'sgs-blocks' ) }
+						/>
+						<ToggleGroupControlOption
+							value="dashed"
+							label={ __( 'Dashed', 'sgs-blocks' ) }
+						/>
+						<ToggleGroupControlOption
+							value="dotted"
+							label={ __( 'Dotted', 'sgs-blocks' ) }
+						/>
 					</ToggleGroupControl>
 				</PanelBody>
-				<PanelBody title={ __( 'Labels', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Labels', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<ResponsiveLengthControl
-						label={ __( 'Gap between caption and value', 'sgs-blocks' ) }
+						label={ __(
+							'Gap between caption and value',
+							'sgs-blocks'
+						) }
 						value={ labelGap }
-						onChange={ ( obj ) => setAttributes( { labelGap: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { labelGap: obj } )
+						}
 						placeholder="0px"
 					/>
 					<TypographyControls
@@ -304,17 +403,33 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							context={ DRAWING_ENTRY.context }
 							uid={ uid }
 							title={ __( 'Drawing', 'sgs-blocks' ) }
-							instructions={ __( 'An SVG or image of the item, with no labels of its own.', 'sgs-blocks' ) }
+							instructions={ __(
+								'An SVG or image of the item, with no labels of its own.',
+								'sgs-blocks'
+							) }
 						/>
 					</div>
 					{ ( lineGradient || extensionGradient ) && (
-						<svg className="sgs-measured-diagram__defs" aria-hidden="true" focusable="false">
+						<svg
+							className="sgs-measured-diagram__defs"
+							aria-hidden="true"
+							focusable="false"
+						>
 							<defs>
 								{ lineGradient && (
-									<UserSpaceGradientDef id={ gradientId( clientId, 'line' ) } gradient={ lineGradient } />
+									<UserSpaceGradientDef
+										id={ gradientId( clientId, 'line' ) }
+										gradient={ lineGradient }
+									/>
 								) }
 								{ extensionGradient && (
-									<UserSpaceGradientDef id={ gradientId( clientId, 'extension' ) } gradient={ extensionGradient } />
+									<UserSpaceGradientDef
+										id={ gradientId(
+											clientId,
+											'extension'
+										) }
+										gradient={ extensionGradient }
+									/>
 								) }
 							</defs>
 						</svg>

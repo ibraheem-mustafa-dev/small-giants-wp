@@ -6,13 +6,43 @@ import {
 	useSettings,
 } from '@wordpress/block-editor';
 import { useEntityRecords } from '@wordpress/core-data';
-import { PanelBody, SelectControl, ToggleControl, Notice } from '@wordpress/components';
+import {
+	PanelBody,
+	SelectControl,
+	ToggleControl,
+	Notice,
+} from '@wordpress/components';
 import { dialogPreviewStyle } from './preview-style';
-import { resolveColourToken, DesignTokenPicker, GradientCapableColourControl, SgsColourPanel, ScrimControls, scrimColourRow } from '../../components';
-import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel } from '../../components/primitives';
-import { resolveTextColourPreviewStyle, resolveBackgroundPaintPreviewStyle, backgroundPaintPreview, isCssGradient, usePreviewTier } from '../../utils';
-import { ModalAnchorNotice, ModalHashLoadToggle, ModalNoOpenerWarning } from './anchor-open-controls';
-import { DialogSizeBorderControls, DialogShadowControl, CloseStyleControl } from './dialog-style-controls';
+import {
+	resolveColourToken,
+	DesignTokenPicker,
+	GradientCapableColourControl,
+	SgsColourPanel,
+	ScrimControls,
+	scrimColourRow,
+} from '../../components';
+import {
+	ToggleGroupControl,
+	ToggleGroupControlOption,
+	ToolsPanel,
+} from '../../components/primitives';
+import {
+	resolveTextColourPreviewStyle,
+	resolveBackgroundPaintPreviewStyle,
+	backgroundPaintPreview,
+	isCssGradient,
+	usePreviewTier,
+} from '../../utils';
+import {
+	ModalAnchorNotice,
+	ModalHashLoadToggle,
+	ModalNoOpenerWarning,
+} from './anchor-open-controls';
+import {
+	DialogSizeBorderControls,
+	DialogShadowControl,
+	CloseStyleControl,
+} from './dialog-style-controls';
 import { DialogOpenMotionControls } from './open-motion-controls';
 
 import AuthoredText from '../../components/AuthoredText';
@@ -101,28 +131,33 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// applies the same status check), so offering it here would be a picker
 	// option that silently renders nothing. Mirrors useNavMenuSource.js's
 	// useEntityRecords( 'postType', … ) + manual-options-array shape.
-	const { records: modalPosts, isResolving: isResolvingModals } = useEntityRecords(
-		'postType',
-		'sgs_modal',
-		{ per_page: -1, status: [ 'publish' ], context: 'edit' }
-	);
+	const { records: modalPosts, isResolving: isResolvingModals } =
+		useEntityRecords( 'postType', 'sgs_modal', {
+			per_page: -1,
+			status: [ 'publish' ],
+			context: 'edit',
+		} );
 	const modalRefOptions = [
 		{
 			label: __( "This block's own content (below)", 'sgs-blocks' ),
 			value: 0,
 		},
 		...( modalPosts || [] ).map( ( post ) => ( {
-			label: post.title?.rendered || __( '(untitled modal)', 'sgs-blocks' ),
+			label:
+				post.title?.rendered || __( '(untitled modal)', 'sgs-blocks' ),
 			value: post.id,
 		} ) ),
 	];
-	const referencedModalPost = ( modalPosts || [] ).find( ( post ) => post.id === modalRef );
+	const referencedModalPost = ( modalPosts || [] ).find(
+		( post ) => post.id === modalRef
+	);
 	// A non-zero modalRef whose post is missing from the published list above
 	// — trashed, unpublished, or deleted since this block last saved — degrades
 	// the same way render.php does: nothing is rendered from the reference, and
 	// this notice tells the operator why rather than showing a silently-empty
 	// dialog.
-	const modalRefIsDangling = 0 !== modalRef && ! isResolvingModals && ! referencedModalPost;
+	const modalRefIsDangling =
+		0 !== modalRef && ! isResolvingModals && ! referencedModalPost;
 
 	// Mirrors render.php's dialog rules: max-width variant class + the
 	// modalBackground colour rule on `.sgs-modal__dialog`. modalBackground's
@@ -134,9 +169,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		// Fullscreen ignores maxWidth entirely (render.php swaps the modifier
 		// class rather than emitting both) — the canvas preview mirrors that
 		// by filling the available width instead of clamping to a variant.
-		maxWidth: isFullscreenSize ? '100%' : MAX_WIDTH_VALUES[ maxWidth ] || undefined,
+		maxWidth: isFullscreenSize
+			? '100%'
+			: MAX_WIDTH_VALUES[ maxWidth ] || undefined,
 		borderRadius: isFullscreenSize ? 0 : undefined,
-		backgroundColor: resolveColourToken( modalBackground, palette ) || undefined,
+		backgroundColor:
+			resolveColourToken( modalBackground, palette ) || undefined,
 		...dialogPreviewStyle( attributes, palette, previewTier ),
 	};
 
@@ -156,8 +194,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// resolveColourToken() (not colourVar(), which is slug-only) is the
 	// correct resolver.
 	const triggerButtonStyle = {
-		...resolveTextColourPreviewStyle( triggerColour, triggerColourGradient, ( v ) => resolveColourToken( v, palette ) ),
-		...backgroundPaintPreview( triggerBackground, attributes.triggerBackgroundGradient, palette ),
+		...resolveTextColourPreviewStyle(
+			triggerColour,
+			triggerColourGradient,
+			( v ) => resolveColourToken( v, palette )
+		),
+		...backgroundPaintPreview(
+			triggerBackground,
+			attributes.triggerBackgroundGradient,
+			palette
+		),
 	};
 
 	/*
@@ -181,12 +227,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	 * so without it this rule would parse correctly and still never paint
 	 * whenever a resting colour is also set (the common case).
 	 */
-	const triggerBgHoverDecl =
-		isCssGradient( triggerBackgroundHoverGradient )
-			? `background-image:${ triggerBackgroundHoverGradient } !important;background-color:transparent !important;`
-			: triggerBackgroundHover
-				? `background-color:${ resolveColourToken( triggerBackgroundHover, palette ) } !important;`
-				: '';
+	const triggerBgHoverDecl = isCssGradient( triggerBackgroundHoverGradient )
+		? `background-image:${ triggerBackgroundHoverGradient } !important;background-color:transparent !important;`
+		: triggerBackgroundHover
+		? `background-color:${ resolveColourToken(
+				triggerBackgroundHover,
+				palette
+		  ) } !important;`
+		: '';
 	const modalHoverPreviewCss = [
 		triggerBgHoverDecl &&
 			`.${ modalPreviewScope } .sgs-modal__trigger:hover,.${ modalPreviewScope } .sgs-modal__trigger:focus-visible{${ triggerBgHoverDecl }}`,
@@ -218,43 +266,73 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: closeColourText,
-								onChange: ( val ) => setAttributes( { closeColourText: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										closeColourText: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: closeColourTextGradient,
-								onGradientChange: ( val ) => setAttributes( { closeColourTextGradient: val ?? '' } ),
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										closeColourTextGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: closeColourTextHover,
-								onChange: ( val ) => setAttributes( { closeColourTextHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										closeColourTextHover: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: closeColourTextHoverGradient,
-								onGradientChange: ( val ) => setAttributes( { closeColourTextHoverGradient: val ?? '' } ),
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										closeColourTextHoverGradient: val ?? '',
+									} ),
 							},
 						],
 					},
 					{
 						key: 'closeBackground',
-						label: __( 'Close button background colour', 'sgs-blocks' ),
+						label: __(
+							'Close button background colour',
+							'sgs-blocks'
+						),
 						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: closeColourBackground,
-								onChange: ( val ) => setAttributes( { closeColourBackground: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										closeColourBackground: val ?? '',
+									} ),
 								gradientValue: closeColourBackgroundGradient,
-								onGradientChange: ( val ) => setAttributes( { closeColourBackgroundGradient: val ?? '' } ),
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										closeColourBackgroundGradient:
+											val ?? '',
+									} ),
 								linked: true,
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: closeColourBackgroundHover,
-								onChange: ( val ) => setAttributes( { closeColourBackgroundHover: val ?? '' } ),
-								gradientValue: closeColourBackgroundHoverGradient,
-								onGradientChange: ( val ) => setAttributes( { closeColourBackgroundHoverGradient: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										closeColourBackgroundHover: val ?? '',
+									} ),
+								gradientValue:
+									closeColourBackgroundHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										closeColourBackgroundHoverGradient:
+											val ?? '',
+									} ),
 								linked: true,
 							},
 						],
@@ -318,7 +396,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					   Extracted to its own file since this file already
 					   exceeds the 250-line JS limit. */ }
 					<ModalAnchorNotice anchor={ anchor } />
-					<SgsFreeTextField type="rich" noLink
+					<SgsFreeTextField
+						type="rich"
+						noLink
 						label={ __( 'Button text', 'sgs-blocks' ) }
 						value={ triggerText }
 						onChange={ ( val ) =>
@@ -335,10 +415,22 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					>
-						<ToggleGroupControlOption value="primary" label={ __( 'Primary', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="secondary" label={ __( 'Secondary', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="text-link" label={ __( 'Text Link', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="none" label={ __( 'None', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption
+							value="primary"
+							label={ __( 'Primary', 'sgs-blocks' ) }
+						/>
+						<ToggleGroupControlOption
+							value="secondary"
+							label={ __( 'Secondary', 'sgs-blocks' ) }
+						/>
+						<ToggleGroupControlOption
+							value="text-link"
+							label={ __( 'Text Link', 'sgs-blocks' ) }
+						/>
+						<ToggleGroupControlOption
+							value="none"
+							label={ __( 'None', 'sgs-blocks' ) }
+						/>
 					</ToggleGroupControl>
 					{ /* 'none' — no trigger button on the page at all; the modal
 					   opens only via a link/data-sgs-modal-open element elsewhere
@@ -358,18 +450,30 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: triggerColour,
-								onChange: ( val ) => setAttributes( { triggerColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										triggerColour: val ?? '',
+									} ),
 								gradientValue: triggerColourGradient,
-								onGradientChange: ( val ) => setAttributes( { triggerColourGradient: val ?? '' } ),
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										triggerColourGradient: val ?? '',
+									} ),
 								linked: true,
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: triggerColourHover,
-								onChange: ( val ) => setAttributes( { triggerColourHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										triggerColourHover: val ?? '',
+									} ),
 								gradientValue: triggerColourHoverGradient,
-								onGradientChange: ( val ) => setAttributes( { triggerColourHoverGradient: val ?? '' } ),
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										triggerColourHoverGradient: val ?? '',
+									} ),
 								linked: true,
 							},
 						] }
@@ -381,18 +485,33 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: triggerBackground,
-								onChange: ( val ) => setAttributes( { triggerBackground: val ?? '' } ),
-								gradientValue: attributes.triggerBackgroundGradient,
-								onGradientChange: ( val ) => setAttributes( { triggerBackgroundGradient: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										triggerBackground: val ?? '',
+									} ),
+								gradientValue:
+									attributes.triggerBackgroundGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										triggerBackgroundGradient: val ?? '',
+									} ),
 								linked: true,
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: triggerBackgroundHover,
-								onChange: ( val ) => setAttributes( { triggerBackgroundHover: val ?? '' } ),
-								gradientValue: attributes.triggerBackgroundHoverGradient,
-								onGradientChange: ( val ) => setAttributes( { triggerBackgroundHoverGradient: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										triggerBackgroundHover: val ?? '',
+									} ),
+								gradientValue:
+									attributes.triggerBackgroundHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										triggerBackgroundHoverGradient:
+											val ?? '',
+									} ),
 								linked: true,
 							},
 						] }
@@ -436,18 +555,22 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: modalBackground,
-								onChange: ( val ) => setAttributes( { modalBackground: val ?? '' } ),
-								gradientValue: attributes.modalBackgroundGradient,
-								onGradientChange: ( val ) => setAttributes( { modalBackgroundGradient: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										modalBackground: val ?? '',
+									} ),
+								gradientValue:
+									attributes.modalBackgroundGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										modalBackgroundGradient: val ?? '',
+									} ),
 								linked: true,
 							},
 						] }
 					/>
 					<ToggleControl
-						label={ __(
-							'Close on overlay click',
-							'sgs-blocks'
-						) }
+						label={ __( 'Close on overlay click', 'sgs-blocks' ) }
 						help={ __(
 							'Allow users to close the modal by clicking outside it.',
 							'sgs-blocks'
@@ -461,7 +584,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					{ /* CloseStyleControl (dialog-style-controls.js) — 'icon' (default, the
 					   existing round SVG button) or 'glyph' (a plain "×" text
 					   character, no background disc). */ }
-					<CloseStyleControl attributes={ attributes } setAttributes={ setAttributes } />
+					<CloseStyleControl
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
 					{ /* ModalHashLoadToggle (anchor-open-controls.js) —
 					   openOnHashLoad, off by default (block.json) so an
 					   existing anchor link to this block keeps its normal
@@ -490,32 +616,58 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						// empty object — scrimOpacity's default is desktop 0.5 (the
 						// old opacity attribute's 50/100 default), so a blank reset would
 						// silently change the default look.
-						setAttributes( { scrimOpacity: { desktop: 0.5 }, scrimBlur: {} } )
+						setAttributes( {
+							scrimOpacity: { desktop: 0.5 },
+							scrimBlur: {},
+						} )
 					}
 				>
-					<ScrimControls attributes={ attributes } setAttributes={ setAttributes } />
+					<ScrimControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
 				</ToolsPanel>
 				{ /* Dialog size + border
 				   — block-private Shape B border, same shape as sgs/accordion's
 				   SgsBorderControl mount. 'none' border style (block.json
 				   default) keeps every existing modal's borderless look. */ }
-				<PanelBody title={ __( 'Dialog size & border', 'sgs-blocks' ) } initialOpen={ false }>
-					<DialogSizeBorderControls attributes={ attributes } setAttributes={ setAttributes } />
+				<PanelBody
+					title={ __( 'Dialog size & border', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<DialogSizeBorderControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
 				</PanelBody>
 				{ /* Dialog shadow — the shared layered ShadowControl. Empty shape
 				   (block.json default) keeps the dialog's existing hardcoded
 				   box-shadow (style.css) unchanged. */ }
-				<PanelBody title={ __( 'Dialog shadow', 'sgs-blocks' ) } initialOpen={ false }>
-					<DialogShadowControl attributes={ attributes } setAttributes={ setAttributes } />
+				<PanelBody
+					title={ __( 'Dialog shadow', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<DialogShadowControl
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
 				</PanelBody>
 				{ /* Open animation: duration, easing and start scale of the panel, and the backdrop's fade time. Unset keeps the stylesheet's own values. */ }
-				<PanelBody title={ __( 'Open animation', 'sgs-blocks' ) } initialOpen={ false }>
-					<DialogOpenMotionControls attributes={ attributes } setAttributes={ setAttributes } />
+				<PanelBody
+					title={ __( 'Open animation', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<DialogOpenMotionControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
 				</PanelBody>
 			</InspectorControls>
 
 			<div { ...blockProps }>
-				{ modalHoverPreviewCss && <style>{ modalHoverPreviewCss }</style> }
+				{ modalHoverPreviewCss && (
+					<style>{ modalHoverPreviewCss }</style>
+				) }
 				{ 'none' === triggerStyle ? (
 					// No trigger button is rendered on the frontend at all —
 					// this placeholder tells the operator how the modal opens
@@ -561,7 +713,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				   paint (a gradient text colour makes the icon transparent, as on the page). */ }
 				<div
 					className="sgs-modal__close-preview-row"
-					style={ { display: 'flex', alignItems: 'center', gap: '8px' } }
+					style={ {
+						display: 'flex',
+						alignItems: 'center',
+						gap: '8px',
+					} }
 				>
 					<span
 						className="sgs-modal__close-preview-swatch"
@@ -574,7 +730,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							flexShrink: 0,
 							borderRadius: '50%',
 							border: '1px solid #e5e5e5',
-							...resolveBackgroundPaintPreviewStyle( closeColourBackground, closeColourBackgroundGradient ),
+							...resolveBackgroundPaintPreviewStyle(
+								closeColourBackground,
+								closeColourBackgroundGradient
+							),
 						} }
 						aria-hidden="true"
 					>
@@ -586,9 +745,20 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							) }
 						>
 							{ 'glyph' === attributes.closeStyle ? (
-								<span className="sgs-modal__close-glyph">&times;</span>
+								<span className="sgs-modal__close-glyph">
+									&times;
+								</span>
 							) : (
-								<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+								<svg
+									width="14"
+									height="14"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									strokeWidth="2"
+									strokeLinecap="round"
+									strokeLinejoin="round"
+								>
 									<line x1="18" y1="6" x2="6" y2="18"></line>
 									<line x1="6" y1="6" x2="18" y2="18"></line>
 								</svg>
@@ -631,7 +801,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 											'sgs-blocks'
 										),
 										referencedModalPost.title?.rendered ||
-											__( '(untitled modal)', 'sgs-blocks' )
+											__(
+												'(untitled modal)',
+												'sgs-blocks'
+											)
 								  )
 								: __(
 										'⬇ This trigger points at a modal that no longer resolves — pick another above.',

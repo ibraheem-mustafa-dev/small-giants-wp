@@ -35,12 +35,22 @@
  * @package SGS\Blocks
  */
 import { __ } from '@wordpress/i18n';
-import { sweepEligible, TreatmentSelect, CrossRefNote } from './ColourTreatment';
+import {
+	sweepEligible,
+	TreatmentSelect,
+	CrossRefNote,
+} from './ColourTreatment';
 import SweepAngleControl from '../../components/SweepAngleControl';
 
 /** Shared option fragments — translated once, reused by every selector below. */
-export const TREATMENT_NONE = { value: 'none', label: __( 'None', 'sgs-blocks' ) };
-export const TREATMENT_SWAP = { value: 'swap', label: __( 'Swap', 'sgs-blocks' ) };
+export const TREATMENT_NONE = {
+	value: 'none',
+	label: __( 'None', 'sgs-blocks' ),
+};
+export const TREATMENT_SWAP = {
+	value: 'swap',
+	label: __( 'Swap', 'sgs-blocks' ),
+};
 const TREATMENT_SWEEP = { value: 'sweep', label: __( 'Sweep', 'sgs-blocks' ) };
 const TREATMENT_HIGHLIGHT = {
 	value: 'highlight',
@@ -51,8 +61,8 @@ const TREATMENT_HIGHLIGHT = {
  * The two/three options a Sweep-eligible row offers, with `Sweep` OMITTED
  * (never disabled) when the declared predicate says the element cannot carry it.
  *
- * @param {Object} attributes      Block attributes.
- * @param {string} treatment       The treatment attribute keying this row's entry.
+ * @param {Object} attributes       Block attributes.
+ * @param {string} treatment        The treatment attribute keying this row's entry.
  * @param {Object} sweepEligibility The CALLER's OWN `supports.sgs.sweepEligibility`
  *                                  map (each block declares its own — see file docblock).
  * @return {Array} Option objects for `TreatmentSelect`.
@@ -61,7 +71,9 @@ export function sweepableOptions( attributes, treatment, sweepEligibility ) {
 	return [
 		TREATMENT_NONE,
 		TREATMENT_SWAP,
-		...( sweepEligible( sweepEligibility, treatment, attributes ) ? [ TREATMENT_SWEEP ] : [] ),
+		...( sweepEligible( sweepEligibility, treatment, attributes )
+			? [ TREATMENT_SWEEP ]
+			: [] ),
 	];
 }
 
@@ -79,14 +91,23 @@ const SMART_CONTRAST_NOTE = __(
  * @param {Object}   [root0.sweepEligibility] The caller's own declared eligibility map.
  * @return {Object} The node.
  */
-export function ItemTextTreatment( { value, onChange, attributes, sweepEligibility } ) {
+export function ItemTextTreatment( {
+	value,
+	onChange,
+	attributes,
+	sweepEligibility,
+} ) {
 	return (
 		<>
 			<TreatmentSelect
 				label={ __( 'Text on hover', 'sgs-blocks' ) }
 				value={ value }
 				onChange={ onChange }
-				options={ sweepableOptions( attributes, 'itemColourHoverTreatment', sweepEligibility ) }
+				options={ sweepableOptions(
+					attributes,
+					'itemColourHoverTreatment',
+					sweepEligibility
+				) }
 				help={ __(
 					'Sweep travels the Hover colour across the word instead of switching to it instantly.',
 					'sgs-blocks'
@@ -110,7 +131,11 @@ export function ItemBgTreatment( { value, onChange } ) {
 				label={ __( 'Background on hover', 'sgs-blocks' ) }
 				value={ value }
 				onChange={ onChange }
-				options={ [ TREATMENT_NONE, TREATMENT_SWAP, TREATMENT_HIGHLIGHT ] }
+				options={ [
+					TREATMENT_NONE,
+					TREATMENT_SWAP,
+					TREATMENT_HIGHLIGHT,
+				] }
 				help={ __(
 					'Highlight paints one shape that slides between items, using the Hover colour you picked above. It replaces each item’s own current-page background, so that swatch is hidden while it’s selected.',
 					'sgs-blocks'
@@ -125,14 +150,19 @@ export function ItemBgTreatment( { value, onChange } ) {
  * ⛔ The ⓘ note here is the TWIN of the one in the Typography panel (§9.10),
  * and neither ships without the other.
  *
- * @param {Object}   root0                Props.
+ * @param {Object}   root0               Props.
  * @param {string}   root0.value         The stored treatment value.
  * @param {Function} root0.onChange      Receives the next treatment value.
  * @param {number}   root0.angle         The stored sweep angle, degrees.
  * @param {Function} root0.onAngleChange Receives the next angle, degrees.
  * @return {Object} The node.
  */
-export function ItemBorderTreatment( { value, onChange, angle, onAngleChange } ) {
+export function ItemBorderTreatment( {
+	value,
+	onChange,
+	angle,
+	onAngleChange,
+} ) {
 	return (
 		<>
 			<TreatmentSelect
@@ -142,7 +172,10 @@ export function ItemBorderTreatment( { value, onChange, angle, onAngleChange } )
 				options={ [ TREATMENT_NONE, TREATMENT_SWAP, TREATMENT_SWEEP ] }
 			/>
 			{ 'sweep' === value && (
-				<SweepAngleControl angle={ angle } onAngleChange={ onAngleChange } />
+				<SweepAngleControl
+					angle={ angle }
+					onAngleChange={ onAngleChange }
+				/>
 			) }
 			<CrossRefNote>
 				{ __(
@@ -163,13 +196,22 @@ export function ItemBorderTreatment( { value, onChange, angle, onAngleChange } )
  * @param {Object}   [root0.sweepEligibility] The caller's own declared eligibility map.
  * @return {Object} The node.
  */
-export function SubmenuTextTreatment( { value, onChange, attributes, sweepEligibility } ) {
+export function SubmenuTextTreatment( {
+	value,
+	onChange,
+	attributes,
+	sweepEligibility,
+} ) {
 	return (
 		<TreatmentSelect
 			label={ __( 'Link text on hover', 'sgs-blocks' ) }
 			value={ value }
 			onChange={ onChange }
-			options={ sweepableOptions( attributes, 'submenuColourHoverTreatment', sweepEligibility ) }
+			options={ sweepableOptions(
+				attributes,
+				'submenuColourHoverTreatment',
+				sweepEligibility
+			) }
 		/>
 	);
 }

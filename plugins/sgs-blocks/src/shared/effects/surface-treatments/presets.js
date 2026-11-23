@@ -41,22 +41,22 @@ import { DUOTONE_FRAGMENT } from './duotone.frag';
 
 /**
  * @typedef {Object} SurfaceTreatmentUniformSpec
- * @property {'float'|'vec3'} type    The WebGL upload shape (see
+ * @property {'float'|'vec3'}  type    The WebGL upload shape (see
  *                                     `../webgl/renderer.js` `uploadUniform`
  *                                     — only bare numbers and 2/3/4-length
  *                                     arrays are supported; no int/bool/mat).
  * @property {number|number[]} default The real numeric default value.
  * @property {number|number[]} min     The real numeric lower bound (per
- *                                      component, for vec3).
+ *                                     component, for vec3).
  * @property {number|number[]} max     The real numeric upper bound (per
- *                                      component, for vec3).
+ *                                     component, for vec3).
  */
 
 /**
  * @typedef {Object} SurfaceTreatmentPreset
- * @property {string} id       The preset id (matches `data-sgs-fx-treatment`).
- * @property {string} label    Human-readable label for editor UI.
- * @property {string} fragment The GLSL ES 3.00 fragment shader source.
+ * @property {string}                                      id       The preset id (matches `data-sgs-fx-treatment`).
+ * @property {string}                                      label    Human-readable label for editor UI.
+ * @property {string}                                      fragment The GLSL ES 3.00 fragment shader source.
  * @property {Object<string, SurfaceTreatmentUniformSpec>} uniforms
  */
 

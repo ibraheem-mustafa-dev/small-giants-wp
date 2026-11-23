@@ -1,9 +1,27 @@
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, useInnerBlocksProps, InspectorControls, useSettings } from '@wordpress/block-editor';
-import { PanelBody, TextControl, ToggleControl, SelectControl } from '@wordpress/components';
+import {
+	useBlockProps,
+	useInnerBlocksProps,
+	InspectorControls,
+	useSettings,
+} from '@wordpress/block-editor';
+import {
+	PanelBody,
+	TextControl,
+	ToggleControl,
+	SelectControl,
+} from '@wordpress/components';
 import { usePreviewTier } from '../../utils';
-import { BuyboxCanvasMock, buyboxRootStyle, buyboxMockCss } from './canvas-mock';
-import { ResponsiveBoxControl, SgsColourPanel, fillRow, textRow,
+import {
+	BuyboxCanvasMock,
+	buyboxRootStyle,
+	buyboxMockCss,
+} from './canvas-mock';
+import {
+	ResponsiveBoxControl,
+	SgsColourPanel,
+	fillRow,
+	textRow,
 	SgsBorderControl,
 	resolveColourToken,
 	MediaElementPanel,
@@ -15,7 +33,10 @@ import { BuyboxExtraStylesPanels } from './inspector-extra-3';
 import { BuyboxExtraSettingsPanels3 } from './inspector-extra-4';
 import { BuyboxExpressLoadPanel } from './inspector-express';
 import { BuyboxStickerPanels } from './inspector-sticker';
-import { BuyboxInstalmentsPanel, instalmentsColourRows } from './inspector-instalments';
+import {
+	BuyboxInstalmentsPanel,
+	instalmentsColourRows,
+} from './inspector-instalments';
 import ButtonActionPanel from './ButtonActionPanel';
 import GuidedPanel, { guidedColourRows } from './GuidedPanel';
 import ProductPinPanel from './ProductPinPanel';
@@ -25,10 +46,24 @@ import ConfiguratorPanel, { configuratorColourRows } from './ConfiguratorPanel';
 import SgsFreeTextField from '../../components/SgsFreeTextField';
 import BuiltinButtonPanel from '../../components/BuiltinButtonPanel';
 // Curated extras for below the add-to-cart form (any block can still be inserted from the list view).
-const BUYBOX_EXTRAS_ALLOWED_BLOCKS = [ 'sgs/button', 'sgs/whatsapp-cta', 'sgs/icon-list', 'sgs/gift-order' ];
+const BUYBOX_EXTRAS_ALLOWED_BLOCKS = [
+	'sgs/button',
+	'sgs/whatsapp-cta',
+	'sgs/icon-list',
+	'sgs/gift-order',
+];
 
 /** The atoms each slot's panels carry (block.json supports.sgs.mediaElements). */
-const MAIN_ATOMS = [ 'source', 'meaning', 'object-fit', 'focal-point', 'sizing', 'shape', 'shadow', 'media-padding' ];
+const MAIN_ATOMS = [
+	'source',
+	'meaning',
+	'object-fit',
+	'focal-point',
+	'sizing',
+	'shape',
+	'shadow',
+	'media-padding',
+];
 const THUMB_ATOMS = [ 'object-fit', 'shape' ];
 
 /**
@@ -88,9 +123,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// Contrast check for border colour against the buybox's own background.
 	// When the background has a gradient sibling, skip the check (flat colour would be inaccurate).
 	const buyboxContrastAgainst =
-		backgroundColour && ! backgroundColourGradient
-			? backgroundColour
-			: '';
+		backgroundColour && ! backgroundColourGradient ? backgroundColour : '';
 
 	const [ palette ] = useSettings( 'color.palette' );
 	const previewTier = usePreviewTier();
@@ -99,10 +132,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		className: [
 			'sgs-buybox',
 			mockScope,
-			'tablet' === attributes.stackBelow ? 'sgs-buybox--stack-tablet' : '',
+			'tablet' === attributes.stackBelow
+				? 'sgs-buybox--stack-tablet'
+				: '',
 			'guided' === attributes.buyboxLayout ? 'sgs-buybox--guided' : '',
-			'configurator' === attributes.buyboxLayout ? 'sgs-buybox--configurator' : '',
-		].filter( Boolean ).join( ' ' ),
+			'configurator' === attributes.buyboxLayout
+				? 'sgs-buybox--configurator'
+				: '',
+		]
+			.filter( Boolean )
+			.join( ' ' ),
 		style: buyboxRootStyle( attributes, previewTier, palette ),
 	} );
 
@@ -120,21 +159,69 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	return (
 		<>
 			<SgsColourPanel rows={ colourRows } />
-			<ButtonActionPanel attributes={ attributes } setAttributes={ setAttributes } />
-			<GuidedPanel attributes={ attributes } setAttributes={ setAttributes } />
-			<ConfiguratorPanel attributes={ attributes } setAttributes={ setAttributes } />
-			<ProductPinPanel attributes={ attributes } setAttributes={ setAttributes } />
-			<NotePanel attributes={ attributes } setAttributes={ setAttributes } />
+			<ButtonActionPanel
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+			/>
+			<GuidedPanel
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+			/>
+			<ConfiguratorPanel
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+			/>
+			<ProductPinPanel
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+			/>
+			<NotePanel
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+			/>
 			<InspectorControls>
 				<RowWrapPanel
 					rows={ [
-						{ label: __( 'Wrap thumbnails (default: one scrolling row)', 'sgs-blocks' ), value: attributes.thumbsFlexWrap, onChange: ( val ) => setAttributes( { thumbsFlexWrap: val } ) },
-						{ label: __( 'Wrap price row', 'sgs-blocks' ), value: attributes.priceRowFlexWrap, onChange: ( val ) => setAttributes( { priceRowFlexWrap: val } ) },
+						{
+							label: __(
+								'Wrap thumbnails (default: one scrolling row)',
+								'sgs-blocks'
+							),
+							value: attributes.thumbsFlexWrap,
+							onChange: ( val ) =>
+								setAttributes( { thumbsFlexWrap: val } ),
+						},
+						{
+							label: __( 'Wrap price row', 'sgs-blocks' ),
+							value: attributes.priceRowFlexWrap,
+							onChange: ( val ) =>
+								setAttributes( { priceRowFlexWrap: val } ),
+						},
 						...( 'guided' === attributes.buyboxLayout
 							? [
-								{ label: __( 'Wrap guided step meter', 'sgs-blocks' ), value: attributes.meterFlexWrap, onChange: ( val ) => setAttributes( { meterFlexWrap: val } ) },
-								{ label: __( 'Wrap guided Back and Next', 'sgs-blocks' ), value: attributes.navFlexWrap, onChange: ( val ) => setAttributes( { navFlexWrap: val } ) },
-							]
+									{
+										label: __(
+											'Wrap guided step meter',
+											'sgs-blocks'
+										),
+										value: attributes.meterFlexWrap,
+										onChange: ( val ) =>
+											setAttributes( {
+												meterFlexWrap: val,
+											} ),
+									},
+									{
+										label: __(
+											'Wrap guided Back and Next',
+											'sgs-blocks'
+										),
+										value: attributes.navFlexWrap,
+										onChange: ( val ) =>
+											setAttributes( {
+												navFlexWrap: val,
+											} ),
+									},
+							  ]
 							: [] ),
 					] }
 				/>
@@ -142,7 +229,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 			<InspectorControls>
 				<PanelBody title={ __( 'Buybox labels', 'sgs-blocks' ) }>
-					<SgsFreeTextField type="rich" noLink
+					<SgsFreeTextField
+						type="rich"
+						noLink
 						label={ __( 'Add to Cart label', 'sgs-blocks' ) }
 						value={ addToCartLabel }
 						onChange={ ( val ) =>
@@ -195,7 +284,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__next40pxDefaultSize
 					/>
 					<ToggleControl
-						label={ __( 'Show back-in-stock notify form', 'sgs-blocks' ) }
+						label={ __(
+							'Show back-in-stock notify form',
+							'sgs-blocks'
+						) }
 						checked={ notifyEnabled }
 						onChange={ ( val ) =>
 							setAttributes( { notifyEnabled: val } )
@@ -206,7 +298,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						) }
 						__nextHasNoMarginBottom
 					/>
-					<SgsFreeTextField type="rich" noLink
+					<SgsFreeTextField
+						type="rich"
+						noLink
 						label={ __( 'Notify-me label', 'sgs-blocks' ) }
 						value={ notifyMeLabel }
 						onChange={ ( val ) =>
@@ -290,9 +384,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							'sgs-blocks'
 						) }
 						checked={ false !== showLadder }
-						onChange={ ( v ) =>
-							setAttributes( { showLadder: v } )
-						}
+						onChange={ ( v ) => setAttributes( { showLadder: v } ) }
 						__nextHasNoMarginBottom
 					/>
 					<SelectControl
@@ -352,7 +444,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 				/>
-				<BuyboxInstalmentsPanel attributes={ attributes } setAttributes={ setAttributes } />
+				<BuyboxInstalmentsPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 				<BuyboxExtraSettingsPanels2
 					attributes={ attributes }
 					setAttributes={ setAttributes }
@@ -418,7 +513,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						} }
 						onChange={ ( tier, next ) => {
 							const key = 'base' === tier ? 'desktop' : tier;
-							setAttributes( { margin: { ...margin, [ key ]: next } } );
+							setAttributes( {
+								margin: { ...margin, [ key ]: next },
+							} );
 						} }
 					/>
 				</PanelBody>
@@ -432,28 +529,44 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				   style/colour/radius are all real CSS), so it is routed to Styles
 				   here to match sgs/accordion's Border panel — do not revert this
 				   once the DB row is corrected and the exemption naturally clears. */ }
-				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Border', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SgsBorderControl
 						widthValues={ attributes.borderWidth ?? {} }
-						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						onWidthChange={ ( next ) =>
+							setAttributes( { borderWidth: next } )
+						}
 						widthPresets={ [ '10', '20', '30' ] }
 						styleValue={ attributes.borderStyle }
-						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						onStyleChange={ ( val ) =>
+							setAttributes( { borderStyle: val } )
+						}
 						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
 						colourValue={ attributes.borderColour }
-						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						onColourChange={ ( val ) =>
+							setAttributes( { borderColour: val ?? '' } )
+						}
 						colourGradientValue={ attributes.borderColourGradient }
-						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+						onColourGradientChange={ ( val ) =>
+							setAttributes( { borderColourGradient: val ?? '' } )
+						}
 						colourLinked={ true }
 						contrastAgainst={ buyboxContrastAgainst }
 						radiusValues={ {
-								base: attributes.borderRadius?.desktop ?? {},
-								tablet: attributes.borderRadius?.tablet ?? {},
-								mobile: attributes.borderRadius?.mobile ?? {},
-							} }
+							base: attributes.borderRadius?.desktop ?? {},
+							tablet: attributes.borderRadius?.tablet ?? {},
+							mobile: attributes.borderRadius?.mobile ?? {},
+						} }
 						onRadiusChange={ ( tier, next ) => {
 							const key = tier === 'base' ? 'desktop' : tier;
-							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+							setAttributes( {
+								borderRadius: {
+									...attributes.borderRadius,
+									[ key ]: next,
+								},
+							} );
 						} }
 					/>
 				</PanelBody>
@@ -481,7 +594,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				prefix="flowOpener"
 			/>
 
-			<style>{ buyboxMockCss( attributes, mockScope, palette, previewTier ) }</style>
+			<style>
+				{ buyboxMockCss( attributes, mockScope, palette, previewTier ) }
+			</style>
 			<div { ...blockProps }>
 				<BuyboxCanvasMock
 					attributes={ attributes }

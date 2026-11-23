@@ -63,7 +63,14 @@
 import { __ } from '@wordpress/i18n';
 
 import { mediaStoredAttrName } from '../../MediaElementControls.js';
-import { isLegacyCall, rulesFor, kindIn, omitted, disabled, REASONS } from '../panels/disclosure-context.js';
+import {
+	isLegacyCall,
+	rulesFor,
+	kindIn,
+	omitted,
+	disabled,
+	REASONS,
+} from '../panels/disclosure-context.js';
 
 import { add, nodes, rulesCss, scalar } from '../emit/core.js';
 const POSITION_VALUES = [ 'background', 'foreground' ];
@@ -78,17 +85,23 @@ const ANIMATION_NAMES = {
 
 /** Reject an out-of-vocabulary `SvgPosition` value to 'background'. */
 export function validatePosition( value ) {
-	return 'string' === typeof value && POSITION_VALUES.includes( value ) ? value : 'background';
+	return 'string' === typeof value && POSITION_VALUES.includes( value )
+		? value
+		: 'background';
 }
 
 /** Reject an out-of-vocabulary `SvgAnimation` value to 'none'. */
 export function validateAnimation( value ) {
-	return 'string' === typeof value && ANIMATION_VALUES.includes( value ) ? value : 'none';
+	return 'string' === typeof value && ANIMATION_VALUES.includes( value )
+		? value
+		: 'none';
 }
 
 /** Reject an out-of-vocabulary `SvgAnimationSpeed` value to 'medium'. */
 export function validateSpeed( value ) {
-	return 'string' === typeof value && SPEED_VALUES.includes( value ) ? value : 'medium';
+	return 'string' === typeof value && SPEED_VALUES.includes( value )
+		? value
+		: 'medium';
 }
 
 export function attrKeys( prefix, blockSlug ) {
@@ -113,13 +126,20 @@ export function attrKeys( prefix, blockSlug ) {
  * @param {string} [props.blockSlug]
  * @return {{state: string, hiddenReason: (string|null)}}
  */
-function legacyDisclosure( { attributes = {}, prefix = '', blockSlug = '' } = {} ) {
+function legacyDisclosure( {
+	attributes = {},
+	prefix = '',
+	blockSlug = '',
+} = {} ) {
 	const keys = attrKeys( prefix, blockSlug );
 	const animation = validateAnimation( attributes[ keys.animation ] );
 	if ( 'none' === animation ) {
 		return {
 			state: 'disabled',
-			hiddenReason: __( 'Animation speed only applies once an animation is chosen.', 'sgs-blocks' ),
+			hiddenReason: __(
+				'Animation speed only applies once an animation is chosen.',
+				'sgs-blocks'
+			),
 		};
 	}
 	return { state: 'shown', hiddenReason: null };
@@ -142,11 +162,17 @@ export function disclosure( attrs, device, prefix = '', opts = {} ) {
 		return legacyDisclosure( attrs );
 	}
 	return rulesFor( 'svg', attrs, device, prefix, opts, ( base, c ) => {
-		if ( ! kindIn( c, 'svg' ) || [ 'SvgOpacity', 'SvgMinHeight' ].includes( base ) ) {
+		if (
+			! kindIn( c, 'svg' ) ||
+			[ 'SvgOpacity', 'SvgMinHeight' ].includes( base )
+		) {
 			return omitted();
 		}
 		const animation = c.get( 'SvgAnimation' );
-		if ( 'SvgAnimationSpeed' === base && ( ! animation || 'none' === animation ) ) {
+		if (
+			'SvgAnimationSpeed' === base &&
+			( ! animation || 'none' === animation )
+		) {
 			return disabled( REASONS.svgSpeed );
 		}
 		return undefined;
@@ -158,7 +184,7 @@ export function disclosure( attrs, device, prefix = '', opts = {} ) {
  * (`scripts/check-media-atom-purity.js`), mirroring `object-fit`'s
  * `validate(value, scope)` shape.
  *
- * @param {*}      value Raw candidate.
+ * @param {*}      value  Raw candidate.
  * @param {string} [kind] 'animation' (default) | 'position' | 'speed'.
  * @return {string} A vocabulary member, never the raw out-of-vocabulary input.
  */
@@ -188,10 +214,22 @@ export function emit( slot, attrs, uid, helper ) {
 	const rules = {};
 	const layer = scalar( attrs, slot, 'SvgLayer' );
 	if ( 'behind' === layer || 'front' === layer ) {
-		add( rules, media, 'desktop', 'z-index', 'front' === layer ? '1' : '-1' );
+		add(
+			rules,
+			media,
+			'desktop',
+			'z-index',
+			'front' === layer ? '1' : '-1'
+		);
 	}
 	if ( true === scalar( attrs, slot, 'SvgTextShadow' ) ) {
-		add( rules, media, 'desktop', 'text-shadow', '0 1px 3px rgba(0,0,0,.6)' );
+		add(
+			rules,
+			media,
+			'desktop',
+			'text-shadow',
+			'0 1px 3px rgba(0,0,0,.6)'
+		);
 	}
 	return rulesCss( rules );
 }

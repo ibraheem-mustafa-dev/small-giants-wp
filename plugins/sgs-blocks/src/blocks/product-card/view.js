@@ -72,7 +72,9 @@ import { instalmentMinor } from '../../shared/cart-live/instalments';
  * @param {Element|undefined} card The card or buybox root.
  */
 function replayPhoto( card ) {
-	if ( card?.querySelector( '.sgs-buybox__main-photo[data-sgs-me~="state"]' ) ) {
+	if (
+		card?.querySelector( '.sgs-buybox__main-photo[data-sgs-me~="state"]' )
+	) {
 		pulseState( card, 'image-changed' );
 	}
 }
@@ -274,12 +276,17 @@ function applyAvailability( ref, ctx, isInit ) {
 			}
 
 			if ( 'available' === state ) {
-				label.classList.remove( 'sgs-option-picker__option--unavailable' );
+				label.classList.remove(
+					'sgs-option-picker__option--unavailable'
+				);
 				label.classList.remove( 'sgs-option-picker__option--sold-out' );
 				label.removeAttribute( 'aria-disabled' );
 				// Remove the aria-label override if it was previously set.
 				if ( input.dataset.sgsOriginalLabel !== undefined ) {
-					input.setAttribute( 'aria-label', input.dataset.sgsOriginalLabel );
+					input.setAttribute(
+						'aria-label',
+						input.dataset.sgsOriginalLabel
+					);
 					delete input.dataset.sgsOriginalLabel;
 				} else {
 					input.removeAttribute( 'aria-label' );
@@ -418,13 +425,20 @@ function modePrice( combo, ctx ) {
 	// Defensive: a pre-v2 cached manifest (e.g. full-page-cached HTML seeded
 	// before the deploy) lacks the ex/tax fields — degrade to the display price
 	// rather than render "£NaN".
-	if ( mode === 'ex-plus-vat' && ( combo.exMinor == null || combo.taxMinor == null ) ) {
+	if (
+		mode === 'ex-plus-vat' &&
+		( combo.exMinor == null || combo.taxMinor == null )
+	) {
 		mode = 'auto';
 	}
 	if ( mode === 'ex-plus-vat' ) {
 		let out = formatPrice( combo.exMinor, ctx );
 		if ( combo.taxMinor && combo.taxMinor > 0 ) {
-			out += ' + ' + formatPrice( combo.taxMinor, ctx ) + ' ' + ( ctx.vatLabel || 'VAT' );
+			out +=
+				' + ' +
+				formatPrice( combo.taxMinor, ctx ) +
+				' ' +
+				( ctx.vatLabel || 'VAT' );
 		}
 		return out;
 	}
@@ -447,7 +461,10 @@ function modeRegular( combo, ctx ) {
 	const exMode =
 		( ctx.taxDisplayMode || 'auto' ) === 'ex-plus-vat' &&
 		combo.regularExMinor != null;
-	return formatPrice( exMode ? combo.regularExMinor : combo.regularMinor, ctx );
+	return formatPrice(
+		exMode ? combo.regularExMinor : combo.regularMinor,
+		ctx
+	);
 }
 
 /**
@@ -460,7 +477,10 @@ function modeRegular( combo, ctx ) {
  * @return {string} The formatted amount.
  */
 function instalmentsDisplay( combo, ctx ) {
-	return formatPrice( instalmentMinor( combo.priceMinor, ctx.instalmentsCount ), ctx );
+	return formatPrice(
+		instalmentMinor( combo.priceMinor, ctx.instalmentsCount ),
+		ctx
+	);
 }
 
 /**
@@ -480,16 +500,26 @@ function instalmentsDisplay( combo, ctx ) {
  * @return {string}
  */
 function perUnitDisplay( combo, ctx ) {
-	const divisor = typeof combo.unitDivisor === 'number' ? combo.unitDivisor : parseFloat( combo.unitDivisor ) || 0;
+	const divisor =
+		typeof combo.unitDivisor === 'number'
+			? combo.unitDivisor
+			: parseFloat( combo.unitDivisor ) || 0;
 	const label = combo.unitLabel || '';
 	if ( divisor <= 0 || label === '' ) {
 		return '';
 	}
 	const mode = ctx.taxDisplayMode || 'auto';
-	const base = ( mode === 'ex-plus-vat' && combo.exMinor != null ) ? combo.exMinor : combo.priceMinor;
+	const base =
+		mode === 'ex-plus-vat' && combo.exMinor != null
+			? combo.exMinor
+			: combo.priceMinor;
 	const perUnitMinor = Math.round( base / divisor );
 	const template = ctx.perUnitTemplate || 'per %s';
-	return formatPrice( perUnitMinor, ctx ) + ' ' + template.split( '%s' ).join( label );
+	return (
+		formatPrice( perUnitMinor, ctx ) +
+		' ' +
+		template.split( '%s' ).join( label )
+	);
 }
 
 /**
@@ -503,7 +533,8 @@ function perUnitDisplay( combo, ctx ) {
  * @param {Object} ctx The card's live Interactivity context proxy.
  */
 function dispatchVariationChange( ctx ) {
-	const combo = ctx.combos && ctx.selectedKey ? ctx.combos[ ctx.selectedKey ] : null;
+	const combo =
+		ctx.combos && ctx.selectedKey ? ctx.combos[ ctx.selectedKey ] : null;
 	window.dispatchEvent(
 		new CustomEvent( 'sgs-variation-change', {
 			detail: {
@@ -534,8 +565,10 @@ function applyPillSelection( ctx, detail ) {
 	const key = detail?.selectedKey;
 
 	if (
-		typeof typeKey !== 'string' || typeKey === '' ||
-		typeof key !== 'string' || key === ''
+		typeof typeKey !== 'string' ||
+		typeKey === '' ||
+		typeof key !== 'string' ||
+		key === ''
 	) {
 		return;
 	}
@@ -673,8 +706,12 @@ function applyPillSelection( ctx, detail ) {
 		// Its context keys exist only while the note is set, so a card or a buy box without one skips this.
 		// It hides at an amount of 0 (a free variation) and when the variation is out of stock, as render.php seeds it.
 		if ( ctx.instalmentsCount ) {
-			const minor = instalmentMinor( combo.priceMinor, ctx.instalmentsCount );
-			ctx.instalmentsDisplay = minor > 0 ? instalmentsDisplay( combo, ctx ) : '';
+			const minor = instalmentMinor(
+				combo.priceMinor,
+				ctx.instalmentsCount
+			);
+			ctx.instalmentsDisplay =
+				minor > 0 ? instalmentsDisplay( combo, ctx ) : '';
 			ctx.instalmentsHidden = minor <= 0 || ! combo.inStock;
 		}
 		// FP-13: an on-sale combo shows the "Sale" badge (limited-time urgency);
@@ -741,7 +778,11 @@ function applyPillSelection( ctx, detail ) {
  * @param {number}  idx  Selected thumbnail index.
  */
 function selectThumbByIndex( ctx, card, idx ) {
-	if ( ! Array.isArray( ctx.gallery ) || ! ctx.gallery[ idx ] || ! ctx.gallery[ idx ].url ) {
+	if (
+		! Array.isArray( ctx.gallery ) ||
+		! ctx.gallery[ idx ] ||
+		! ctx.gallery[ idx ].url
+	) {
 		return;
 	}
 	const imageChanged = applyPhoto(
@@ -810,7 +851,10 @@ function updateSwatchLinks( card, param, slug ) {
 		} catch ( e ) {
 			return;
 		}
-		if ( url.origin !== baseUrl.origin || url.pathname !== baseUrl.pathname ) {
+		if (
+			url.origin !== baseUrl.origin ||
+			url.pathname !== baseUrl.pathname
+		) {
 			return;
 		}
 		url.searchParams.set( param, slug );
@@ -835,9 +879,11 @@ function selectSwatch( card, btn ) {
 		return;
 	}
 
-	card.querySelectorAll( '.sgs-product-card__swatch--button' ).forEach( ( el ) => {
-		el.setAttribute( 'aria-pressed', el === btn ? 'true' : 'false' );
-	} );
+	card.querySelectorAll( '.sgs-product-card__swatch--button' ).forEach(
+		( el ) => {
+			el.setAttribute( 'aria-pressed', el === btn ? 'true' : 'false' );
+		}
+	);
 
 	// The link rewrite runs first: it needs no manifest, so it still happens on
 	// a card whose branch seeds no Interactivity context.
@@ -879,7 +925,8 @@ document.addEventListener( 'click', ( event ) => {
 		return;
 	}
 	const card =
-		btn.closest( '.wp-block-sgs-product-card' ) || btn.closest( '.product-card' );
+		btn.closest( '.wp-block-sgs-product-card' ) ||
+		btn.closest( '.product-card' );
 	if ( ! card ) {
 		return;
 	}
@@ -900,8 +947,8 @@ function buildAddBody( ctx ) {
 	//   variable product → selected variation ID
 	//   simple / CPT    → parent product ID (addToCartId)
 	const variationId = parseInt( ctx.selectedVariationId, 10 ) || 0;
-	const parentId    = parseInt( ctx.addToCartId, 10 ) || 0;
-	const id          = variationId > 0 ? variationId : parentId;
+	const parentId = parseInt( ctx.addToCartId, 10 ) || 0;
+	const id = variationId > 0 ? variationId : parentId;
 
 	if ( ! id ) {
 		return null;
@@ -947,11 +994,17 @@ function buildAddBody( ctx ) {
 
 	// Buy box note (Spec 27 FR-27-PS8): note-view.js keeps the text as one {label, value, note} row, which rides in `fields`
 	// beside the guided answers; the server cleans and caps it (sgs_flow_fields_sanitise).
-	const extraNoteRaw = cardRefForFields ? cardRefForFields.dataset.extraNote : '';
+	const extraNoteRaw = cardRefForFields
+		? cardRefForFields.dataset.extraNote
+		: '';
 	if ( extraNoteRaw ) {
 		try {
 			const noteRow = JSON.parse( extraNoteRaw );
-			if ( noteRow && 'string' === typeof noteRow.value && '' !== noteRow.value ) {
+			if (
+				noteRow &&
+				'string' === typeof noteRow.value &&
+				'' !== noteRow.value
+			) {
 				body.fields = [ ...( body.fields || [] ), noteRow ];
 			}
 		} catch {
@@ -961,7 +1014,9 @@ function buildAddBody( ctx ) {
 
 	// Buy box "Pick a set": configurator-view.js keeps the picks as JSON on the card root; the server checks
 	// every slug and builds the cart row (Configurator_Picks), so only slugs and counts travel.
-	const extraPicksRaw = cardRefForFields ? cardRefForFields.dataset.extraPicks : '';
+	const extraPicksRaw = cardRefForFields
+		? cardRefForFields.dataset.extraPicks
+		: '';
 	if ( extraPicksRaw ) {
 		try {
 			const extraPicks = JSON.parse( extraPicksRaw );
@@ -1004,7 +1059,13 @@ let expressCalculationSignature = '';
 /** The payment plugin's globals, or null while it is absent or not yet loaded. */
 function expressPlugin() {
 	const wc = window.wcStripe;
-	return wc && wc.actions && wc.product && wc.cart && 'function' === typeof wc.actions.addFilter ? wc : null;
+	return wc &&
+		wc.actions &&
+		wc.product &&
+		wc.cart &&
+		'function' === typeof wc.actions.addFilter
+		? wc
+		: null;
 }
 
 /**
@@ -1018,8 +1079,13 @@ function expressPlugin() {
 function expressFields( ctx ) {
 	const built = buildAddBody( ctx );
 	// The buy box note travels as plain request fields; the server reads them like the no-JS form (sgs_buybox_note_row_from_post).
-	const noteRow = built && Array.isArray( built.body.fields ) ? built.body.fields.find( ( row ) => row && row.note ) : null;
-	const noteFields = noteRow ? { sgs_note: noteRow.value, sgs_note_label: noteRow.label } : {};
+	const noteRow =
+		built && Array.isArray( built.body.fields )
+			? built.body.fields.find( ( row ) => row && row.note )
+			: null;
+	const noteFields = noteRow
+		? { sgs_note: noteRow.value, sgs_note_label: noteRow.label }
+		: {};
 	const picks = built && built.body.picks;
 	if ( ! picks ) {
 		return noteFields;
@@ -1029,7 +1095,9 @@ function expressFields( ctx ) {
 	for ( const [ group, rows ] of Object.entries( picks ) ) {
 		if ( Array.isArray( rows ) ) {
 			slugs[ group ] = rows.map( ( row ) => row.slug );
-			counts[ group ] = Object.fromEntries( rows.map( ( row ) => [ row.slug, row.count ] ) );
+			counts[ group ] = Object.fromEntries(
+				rows.map( ( row ) => [ row.slug, row.count ] )
+			);
 		}
 	}
 	return { sgs_picks: slugs, sgs_pick_counts: counts, ...noteFields };
@@ -1040,10 +1108,16 @@ function expressUsable( ctx, ref ) {
 	if ( ctx.pending || ! ctx.inStock || ! buildAddBody( ctx ) ) {
 		return false;
 	}
-	if ( Array.isArray( ctx.axes ) && ctx.axes.length && ! ( parseInt( ctx.selectedVariationId, 10 ) > 0 ) ) {
+	if (
+		Array.isArray( ctx.axes ) &&
+		ctx.axes.length &&
+		! ( parseInt( ctx.selectedVariationId, 10 ) > 0 )
+	) {
 		return false;
 	}
-	return '0' !== ref.dataset.sgsPicksReady && '0' !== ref.dataset.sgsNoteReady;
+	return (
+		'0' !== ref.dataset.sgsPicksReady && '0' !== ref.dataset.sgsNoteReady
+	);
 }
 
 function expressAddFilters( wc ) {
@@ -1051,10 +1125,20 @@ function expressAddFilters( wc ) {
 		return;
 	}
 	expressFiltersAdded = true;
-	const withPicks = ( data ) => ( expressActive ? { ...data, ...expressFields( expressActive.ctx ) } : data );
+	const withPicks = ( data ) =>
+		expressActive
+			? { ...data, ...expressFields( expressActive.ctx ) }
+			: data;
 	wc.actions.addFilter( 'add_to_cart_data', withPicks );
 	wc.actions.addFilter( 'cart_calculation_data', withPicks );
-	wc.actions.addFilter( 'cart_calculation_enabled', ( enabled ) => !! enabled && !! expressActive && expressUsable( expressActive.ctx, expressActive.ref ), 20 );
+	wc.actions.addFilter(
+		'cart_calculation_enabled',
+		( enabled ) =>
+			!! enabled &&
+			!! expressActive &&
+			expressUsable( expressActive.ctx, expressActive.ref ),
+		20
+	);
 }
 
 /** Tell the payment plugin which variation, attributes and price the buy box shows (once per change). */
@@ -1067,17 +1151,26 @@ function expressSyncProduct( wc, ctx ) {
 	const attributes = {};
 	for ( const axis of ctx.axes || [] ) {
 		if ( ctx.selectedAxes && ctx.selectedAxes[ axis.taxonomy ] ) {
-			attributes[ 'attribute_' + axis.taxonomy ] = ctx.selectedAxes[ axis.taxonomy ];
+			attributes[ 'attribute_' + axis.taxonomy ] =
+				ctx.selectedAxes[ axis.taxonomy ];
 		}
 	}
-	const signature = [ variationId, combo.priceMinor, !! combo.inStock, JSON.stringify( attributes ) ].join( '|' );
+	const signature = [
+		variationId,
+		combo.priceMinor,
+		!! combo.inStock,
+		JSON.stringify( attributes ),
+	].join( '|' );
 	if ( signature === expressProductSignature ) {
 		return;
 	}
 	expressProductSignature = signature;
 	wc.actions.doAction( 'single_product_variation_changed', variationId, {
 		attributes,
-		prices: { price: String( combo.priceMinor ), currency_minor_unit: ctx.decimals ?? 2 },
+		prices: {
+			price: String( combo.priceMinor ),
+			currency_minor_unit: ctx.decimals ?? 2,
+		},
 		is_in_stock: !! combo.inStock,
 	} );
 }
@@ -1124,10 +1217,20 @@ function applyExpress( ctx, ref ) {
 	}
 	// The amount comes from the server's calculation of this exact line. The plugin runs it on a variation change, which
 	// can land while the picks are still incomplete (held back); run it again once they are complete and whenever they change.
-	const signature = [ ctx.selectedVariationId, JSON.stringify( expressFields( ctx ) ) ].join( '|' );
+	const signature = [
+		ctx.selectedVariationId,
+		JSON.stringify( expressFields( ctx ) ),
+	].join( '|' );
 	if ( signature !== expressCalculationSignature ) {
 		expressCalculationSignature = signature;
-		if ( wc.actions.applyFilters( 'cart_calculation_enabled', false, wc.product, wc.cart ) ) {
+		if (
+			wc.actions.applyFilters(
+				'cart_calculation_enabled',
+				false,
+				wc.product,
+				wc.cart
+			)
+		) {
 			wc.cart.cartCalculation();
 		}
 	}
@@ -1209,13 +1312,17 @@ store( 'sgs/product-card', {
 		initExpress() {
 			const ctx = getContext();
 			const { ref: marker } = getElement();
-			const ref = marker && marker.closest( '[data-wp-interactive="sgs/product-card"]' );
+			const ref =
+				marker &&
+				marker.closest( '[data-wp-interactive="sgs/product-card"]' );
 			if ( ! ref || '1' === ref.dataset.sgsExpress ) {
 				return;
 			}
 			ref.dataset.sgsExpress = '1';
 			cardRefByCtx.set( ctx, ref );
-			ref.addEventListener( 'sgs:picks-changed', () => applyExpress( ctx, ref ) );
+			ref.addEventListener( 'sgs:picks-changed', () =>
+				applyExpress( ctx, ref )
+			);
 			let tries = 0;
 			const wait = () => {
 				if ( expressPlugin() ) {
@@ -1227,7 +1334,11 @@ store( 'sgs/product-card', {
 			wait();
 			// With the buy box's `expressLoad` set to `interaction` the payment plugin's scripts arrive after the first
 			// scroll, press, key or touch, usually after the ten seconds above: the loader announces when it is done.
-			window.addEventListener( 'sgs:express-loaded', () => applyExpress( ctx, ref ), { once: true } );
+			window.addEventListener(
+				'sgs:express-loaded',
+				() => applyExpress( ctx, ref ),
+				{ once: true }
+			);
 		},
 	},
 	actions: {
@@ -1297,7 +1408,8 @@ store( 'sgs/product-card', {
 				);
 
 				if ( ! response.ok ) {
-					let msg = 'Sorry, this item could not be added to your basket.';
+					let msg =
+						'Sorry, this item could not be added to your basket.';
 					try {
 						const j = yield response.json();
 						if ( j && j.message ) {
@@ -1341,19 +1453,27 @@ store( 'sgs/product-card', {
 									for ( const key in ctx.combos ) {
 										ctx.combos[ key ].inStock =
 											key in avData.combos
-												? !! avData.combos[ key ].inStock
+												? !! avData.combos[ key ]
+														.inStock
 												: false;
 									}
 									const cardRef = cardRefByCtx.get( ctx );
 									if ( cardRef ) {
-										applyAvailability( cardRef, ctx, false );
+										applyAvailability(
+											cardRef,
+											ctx,
+											false
+										);
 									}
 									// Refresh the SELECTED combo's stock slot (top-level
 									// writes the proxy observes) so it stays consistent
 									// with the freshly-greyed pills.
 									const currentCombo =
 										ctx.combos[ ctx.selectedKey ];
-									if ( currentCombo && ! currentCombo.inStock ) {
+									if (
+										currentCombo &&
+										! currentCombo.inStock
+									) {
 										ctx.inStock = false;
 										ctx.stockText = 'Out of stock';
 										if ( ctx.instalmentsCount ) {

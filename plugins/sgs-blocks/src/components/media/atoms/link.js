@@ -24,7 +24,12 @@
  * @package SGS\Blocks
  */
 import { mediaStoredAttrName } from '../../MediaElementControls.js';
-import { isLegacyCall, rulesFor, kindIn, omitted } from '../panels/disclosure-context.js';
+import {
+	isLegacyCall,
+	rulesFor,
+	kindIn,
+	omitted,
+} from '../panels/disclosure-context.js';
 
 /**
  * @param {string} prefix    Surface prefix.

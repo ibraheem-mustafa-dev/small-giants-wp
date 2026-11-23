@@ -16,8 +16,8 @@
  * No denylist slug is currently recognised.
  *
  * @param {string|Object} nameOrSettings Block name (from an editor HOC) OR the
- *                                        settings object (from a
- *                                        blocks.registerBlockType filter).
+ *                                       settings object (from a
+ *                                       blocks.registerBlockType filter).
  * @param {string}        slug           Extension slug to test.
  * @return {boolean} True when the block has opted this extension out.
  *

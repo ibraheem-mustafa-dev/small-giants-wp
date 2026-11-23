@@ -22,7 +22,9 @@ const EPS = 1;
  * @return {Array<{items:Array,top:number,bottom:number}>} Rows, top to bottom.
  */
 export function groupRows( boxes ) {
-	const sorted = [ ...boxes ].sort( ( a, b ) => a.top - b.top || a.left - b.left );
+	const sorted = [ ...boxes ].sort(
+		( a, b ) => a.top - b.top || a.left - b.left
+	);
 	const rows = [];
 	for ( const box of sorted ) {
 		const row = rows[ rows.length - 1 ];
@@ -45,7 +47,11 @@ export function groupRows( boxes ) {
  * @return {boolean} True when flanked on both sides.
  */
 function flankedAt( row, x ) {
-	return !! row && row.items.some( ( b ) => b.right <= x + EPS ) && row.items.some( ( b ) => b.left >= x - EPS );
+	return (
+		!! row &&
+		row.items.some( ( b ) => b.right <= x + EPS ) &&
+		row.items.some( ( b ) => b.left >= x - EPS )
+	);
 }
 
 /**
@@ -55,11 +61,17 @@ function flankedAt( row, x ) {
  * @return {Array<{at:number,from:number,to:number}>} Merged segments.
  */
 function mergeSegments( segments ) {
-	const sorted = [ ...segments ].sort( ( a, b ) => a.at - b.at || a.from - b.from );
+	const sorted = [ ...segments ].sort(
+		( a, b ) => a.at - b.at || a.from - b.from
+	);
 	const merged = [];
 	for ( const seg of sorted ) {
 		const last = merged[ merged.length - 1 ];
-		if ( last && Math.abs( last.at - seg.at ) <= EPS && seg.from <= last.to + EPS ) {
+		if (
+			last &&
+			Math.abs( last.at - seg.at ) <= EPS &&
+			seg.from <= last.to + EPS
+		) {
 			last.to = Math.max( last.to, seg.to );
 		} else {
 			merged.push( { ...seg } );
@@ -91,8 +103,12 @@ function columnSegments( rows ) {
 			const below = rows[ i + 1 ];
 			out.push( {
 				at: x,
-				from: flankedAt( above, x ) ? row.top - ( row.top - above.bottom ) / 2 : row.top,
-				to: flankedAt( below, x ) ? row.bottom + ( below.top - row.bottom ) / 2 : row.bottom,
+				from: flankedAt( above, x )
+					? row.top - ( row.top - above.bottom ) / 2
+					: row.top,
+				to: flankedAt( below, x )
+					? row.bottom + ( below.top - row.bottom ) / 2
+					: row.bottom,
 			} );
 		}
 	} );
@@ -112,16 +128,28 @@ function rowSegments( rows ) {
 		const row = rows[ i ];
 		const prev = rows[ i - 1 ];
 		row.items.forEach( ( b, k ) => {
-			const over = prev.items.filter( ( a ) => Math.min( a.right, b.right ) - Math.max( a.left, b.left ) > EPS );
+			const over = prev.items.filter(
+				( a ) =>
+					Math.min( a.right, b.right ) - Math.max( a.left, b.left ) >
+					EPS
+			);
 			if ( ! over.length ) {
 				return;
 			}
 			const left = row.items[ k - 1 ];
 			const right = row.items[ k + 1 ];
 			out.push( {
-				at: ( Math.max( ...over.map( ( a ) => a.bottom ) ) + b.top ) / 2,
-				from: left && b.left - left.right > EPS ? b.left - ( b.left - left.right ) / 2 : b.left,
-				to: right && right.left - b.right > EPS ? b.right + ( right.left - b.right ) / 2 : b.right,
+				at:
+					( Math.max( ...over.map( ( a ) => a.bottom ) ) + b.top ) /
+					2,
+				from:
+					left && b.left - left.right > EPS
+						? b.left - ( b.left - left.right ) / 2
+						: b.left,
+				to:
+					right && right.left - b.right > EPS
+						? b.right + ( right.left - b.right ) / 2
+						: b.right,
 			} );
 		} );
 	}
@@ -132,7 +160,7 @@ function rowSegments( rows ) {
  * The line segments for a list.
  *
  * @param {Array<{left:number,top:number,right:number,bottom:number}>} boxes Item boxes, relative to the list.
- * @param {{column:boolean,row:boolean}}                                axes  Which axes draw.
+ * @param {{column:boolean,row:boolean}}                               axes  Which axes draw.
  * @return {{column:Array,row:Array}} Segments per axis: `column` lines are vertical
  *                                    ({at:x, from:y1, to:y2}), `row` lines horizontal ({at:y, from:x1, to:x2}).
  */

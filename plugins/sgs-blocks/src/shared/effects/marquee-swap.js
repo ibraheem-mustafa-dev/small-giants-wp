@@ -31,7 +31,9 @@ const MAX_SECONDS = 60;
  */
 export function swapSeconds( value ) {
 	const seconds = parseFloat( value );
-	return Number.isFinite( seconds ) && seconds >= MIN_SECONDS && seconds <= MAX_SECONDS
+	return Number.isFinite( seconds ) &&
+		seconds >= MIN_SECONDS &&
+		seconds <= MAX_SECONDS
 		? seconds
 		: DEFAULT_SWAP_SECONDS;
 }
@@ -90,16 +92,25 @@ export function createSwap( { root, set, seconds, touchPause, pauseControl } ) {
 		label: 'Pause swapping',
 		observe: root,
 	} );
-	const items = () => Array.from( set.children ).filter( ( el ) => ! el.hidden );
+	const items = () =>
+		Array.from( set.children ).filter( ( el ) => ! el.hidden );
 
 	function show( group ) {
 		items().forEach( ( el, position ) => {
-			el.toggleAttribute( OFF_ATTR, ! groups[ group ]?.includes( position ) );
+			el.toggleAttribute(
+				OFF_ATTR,
+				! groups[ group ]?.includes( position )
+			);
 		} );
 	}
 
 	function tick() {
-		if ( destroyed || groups.length < 2 || loop.isPaused() || document.visibilityState === 'hidden' ) {
+		if (
+			destroyed ||
+			groups.length < 2 ||
+			loop.isPaused() ||
+			document.visibilityState === 'hidden'
+		) {
 			return;
 		}
 		index = ( index + 1 ) % groups.length;
@@ -119,9 +130,16 @@ export function createSwap( { root, set, seconds, touchPause, pauseControl } ) {
 			root.clientWidth -
 			( parseFloat( rootStyle.paddingLeft ) || 0 ) -
 			( parseFloat( rootStyle.paddingRight ) || 0 );
-		groups = groupItems( list.map( ( el ) => el.offsetWidth ), gap, view );
+		groups = groupItems(
+			list.map( ( el ) => el.offsetWidth ),
+			gap,
+			view
+		);
 		// The strip keeps the height of its tallest item, so a group of shorter items never moves what is below.
-		root.style.setProperty( '--sgs-marquee-swap-height', `${ Math.max( 0, ...list.map( ( el ) => el.offsetHeight ) ) }px` );
+		root.style.setProperty(
+			'--sgs-marquee-swap-height',
+			`${ Math.max( 0, ...list.map( ( el ) => el.offsetHeight ) ) }px`
+		);
 		index = Math.min( index, Math.max( 0, groups.length - 1 ) );
 		if ( groups.length < 2 ) {
 			index = 0;
@@ -136,8 +154,12 @@ export function createSwap( { root, set, seconds, touchPause, pauseControl } ) {
 	// A group is never swapped away from the control a visitor has just tabbed to.
 	function onFocusIn( event ) {
 		const list = items();
-		const position = list.findIndex( ( el ) => el.contains( event.target ) );
-		const group = groups.findIndex( ( members ) => members.includes( position ) );
+		const position = list.findIndex( ( el ) =>
+			el.contains( event.target )
+		);
+		const group = groups.findIndex( ( members ) =>
+			members.includes( position )
+		);
 		if ( group >= 0 && group !== index ) {
 			index = group;
 			show( index );

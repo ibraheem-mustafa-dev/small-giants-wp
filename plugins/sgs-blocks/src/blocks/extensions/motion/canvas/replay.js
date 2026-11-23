@@ -33,7 +33,10 @@ export const registry = new Map();
 
 function prefersReduced( el ) {
 	const win = el.ownerDocument.defaultView || window;
-	return Boolean( win.matchMedia && win.matchMedia( '(prefers-reduced-motion: reduce)' ).matches );
+	return Boolean(
+		win.matchMedia &&
+			win.matchMedia( '(prefers-reduced-motion: reduce)' ).matches
+	);
 }
 
 // Element => the run that plays on it now, and clientId => { run, indexed } for the Replay that owns a block's loop-item
@@ -54,7 +57,9 @@ function playOn( el, attrs ) {
 	// The element's resting entrance markers, read before the first of any overlapping runs touched them.
 	const resting =
 		currentRun.get( el )?.resting ||
-		Object.fromEntries( ENTRANCE_ATTRS.map( ( name ) => [ name, el.getAttribute( name ) ] ) );
+		Object.fromEntries(
+			ENTRANCE_ATTRS.map( ( name ) => [ name, el.getAttribute( name ) ] )
+		);
 	const run = { resting };
 	currentRun.set( el, run );
 	const win = el.ownerDocument.defaultView || window;
@@ -65,7 +70,10 @@ function playOn( el, attrs ) {
 	// an attribute to the value it already holds restarts no animation.
 	const markers = ENTRANCE_ATTRS.filter(
 		( name ) => written.includes( name ) || el.hasAttribute( name )
-	).map( ( name ) => [ name, written.includes( name ) ? attrs[ name ] : el.getAttribute( name ) ] );
+	).map( ( name ) => [
+		name,
+		written.includes( name ) ? attrs[ name ] : el.getAttribute( name ),
+	] );
 	markers.forEach( ( [ name ] ) => el.removeAttribute( name ) );
 	el.removeAttribute( 'data-sgs-me-kf' );
 	el.removeAttribute( 'data-sgs-in' );
@@ -76,8 +84,11 @@ function playOn( el, attrs ) {
 	if ( el.hasAttribute( 'data-sgs-me-keyframes' ) && keyframes?.replay ) {
 		keyframes.replay( el );
 	}
-	const running = typeof el.getAnimations === 'function' ? el.getAnimations() : [];
-	const done = Promise.all( running.map( ( animation ) => animation.finished.catch( () => null ) ) );
+	const running =
+		typeof el.getAnimations === 'function' ? el.getAnimations() : [];
+	const done = Promise.all(
+		running.map( ( animation ) => animation.finished.catch( () => null ) )
+	);
 	let timer = 0;
 	const cap = new Promise( ( resolve ) => {
 		timer = win.setTimeout( resolve, REPLAY_CAP_MS );
@@ -93,7 +104,9 @@ function playOn( el, attrs ) {
 		// A planned marker returns to its resting value: off when the element had none, back on when the server
 		// printed it (a block preview's own marker).
 		written.forEach( ( name ) =>
-			null === resting[ name ] ? el.removeAttribute( name ) : el.setAttribute( name, resting[ name ] )
+			null === resting[ name ]
+				? el.removeAttribute( name )
+				: el.setAttribute( name, resting[ name ] )
 		);
 	} );
 }
@@ -118,7 +131,10 @@ function indexLoopItems( rootEl, loopItems ) {
 // stagger's "Apply entrance to children", `stagger-apply.js`), which plays on the items, or a delegating block's
 // shown cards (`delegated-children.js`).
 function playsFrom( plan, target ) {
-	return Boolean( plan.entrance ) && ( plan.target === target || plan.inheritedFrom === target );
+	return (
+		Boolean( plan.entrance ) &&
+		( plan.target === target || plan.inheritedFrom === target )
+	);
 }
 
 /**
@@ -131,31 +147,48 @@ function playsFrom( plan, target ) {
 export function replay( clientId, target = 'root' ) {
 	const entry = registry.get( clientId );
 	const rootEl = entry ? entry.element() : null;
-	const plans = entry ? entry.emitted.plans.filter( ( candidate ) => playsFrom( candidate, target ) ) : [];
+	const plans = entry
+		? entry.emitted.plans.filter( ( candidate ) =>
+				playsFrom( candidate, target )
+		  )
+		: [];
 	if ( ! rootEl || plans.length === 0 ) {
 		return Promise.resolve( { played: false, reduced: false } );
 	}
 	if ( prefersReduced( rootEl ) ) {
-		dispatch( 'core/notices' ).createNotice( 'info', REPLAY_REDUCED_NOTICE, {
-			id: 'sgs-motion-replay-reduced',
-			type: 'snackbar',
-			isDismissible: true,
-		} );
+		dispatch( 'core/notices' ).createNotice(
+			'info',
+			REPLAY_REDUCED_NOTICE,
+			{
+				id: 'sgs-motion-replay-reduced',
+				type: 'snackbar',
+				isDismissible: true,
+			}
+		);
 		return Promise.resolve( { played: false, reduced: true } );
 	}
 	// A mirrored block (the grid's template card) plays on each of its mirrors too (`mirrors.js`).
-	const roots = [ rootEl, ...( typeof entry.mirrors === 'function' ? entry.mirrors() : [] ) ];
+	const roots = [
+		rootEl,
+		...( typeof entry.mirrors === 'function' ? entry.mirrors() : [] ),
+	];
 	const pairs = roots.flatMap( ( root ) =>
-		plans.flatMap( ( plan ) => planElements( root, plan ).map( ( el ) => [ el, plan.attrs ] ) )
+		plans.flatMap( ( plan ) =>
+			planElements( root, plan ).map( ( el ) => [ el, plan.attrs ] )
+		)
 	);
 	// Items an earlier, still-playing Replay indexed carry their index already; this Replay takes them over.
 	const indexed = [
 		...( currentReplay.get( clientId )?.indexed || [] ),
-		...roots.flatMap( ( root ) => indexLoopItems( root, entry.emitted.loopItems ) ),
+		...roots.flatMap( ( root ) =>
+			indexLoopItems( root, entry.emitted.loopItems )
+		),
 	];
 	const run = { indexed };
 	currentReplay.set( clientId, run );
-	return Promise.all( pairs.map( ( [ el, attrs ] ) => playOn( el, attrs ) ) ).then( () => {
+	return Promise.all(
+		pairs.map( ( [ el, attrs ] ) => playOn( el, attrs ) )
+	).then( () => {
 		if ( currentReplay.get( clientId ) === run ) {
 			currentReplay.delete( clientId );
 			indexed.forEach( ( el ) => el.removeAttribute( ITEM_ATTR ) );
@@ -172,5 +205,9 @@ export function replay( clientId, target = 'root' ) {
  * @return {boolean} True when Replay has something to play.
  */
 export function canReplay( clientId, target = 'root' ) {
-	return Boolean( registry.get( clientId )?.emitted.plans.some( ( p ) => playsFrom( p, target ) ) );
+	return Boolean(
+		registry
+			.get( clientId )
+			?.emitted.plans.some( ( p ) => playsFrom( p, target ) )
+	);
 }

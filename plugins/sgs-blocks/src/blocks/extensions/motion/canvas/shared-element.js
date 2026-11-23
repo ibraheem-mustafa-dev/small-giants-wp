@@ -30,8 +30,8 @@ export function targetRank( target, elements ) {
 /**
  * The targets that share an element with an earlier-declared target: target => the earlier target it yields to.
  *
- * @param {Array<{target:string}>}    plans    Plans in stored order.
- * @param {Object}                    elements `supports.sgs.elements`.
+ * @param {Array<{target:string}>}   plans      Plans in stored order.
+ * @param {Object}                   elements   `supports.sgs.elements`.
  * @param {(plan:Object)=>Element[]} elementsOf Each plan's elements.
  * @return {Object<string,string>} Losers.
  */
@@ -53,7 +53,10 @@ export function sharedLosers( plans, elements, elementsOf ) {
 		elementsOf( plan ).forEach( ( el ) => {
 			if ( ! keeper.has( el ) ) {
 				keeper.set( el, plan.target );
-			} else if ( keeper.get( el ) !== plan.target && ! out[ plan.target ] ) {
+			} else if (
+				keeper.get( el ) !== plan.target &&
+				! out[ plan.target ]
+			) {
 				out[ plan.target ] = keeper.get( el );
 			}
 		} );
@@ -71,7 +74,11 @@ export function stripShared( element ) {
 	const out = { ...element };
 	LAYERS.forEach( ( path ) => {
 		const [ panel, key ] = path.split( '.' );
-		if ( out[ panel ] && typeof out[ panel ] === 'object' && key in out[ panel ] ) {
+		if (
+			out[ panel ] &&
+			typeof out[ panel ] === 'object' &&
+			key in out[ panel ]
+		) {
 			const rest = { ...out[ panel ] };
 			delete rest[ key ];
 			if ( Object.keys( rest ).length === 0 ) {

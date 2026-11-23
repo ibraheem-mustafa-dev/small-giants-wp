@@ -240,7 +240,6 @@ export function easingEntry( vocabulary, value ) {
 	);
 }
 
-
 // The default views, one per vocabulary.
 export const NAV_EASING_OPTIONS = easingView( 'nav' );
 export const THEME_EASING_OPTIONS = easingView( 'theme' );
@@ -256,7 +255,14 @@ export const CSS_EASING_OPTIONS_IN_OUT_FIRST = easingView( 'css', {
 // The animation control: the theme curves with plain-English hints, then the CSS default curve.
 export const ANIMATION_EASING_OPTIONS = [
 	...easingView( 'theme', {
-		order: [ 'default', 'emphasised', 'ease-out', 'ease-in', 'spring', 'linear' ],
+		order: [
+			'default',
+			'emphasised',
+			'ease-out',
+			'ease-in',
+			'spring',
+			'linear',
+		],
 		labels: {
 			emphasised: __( 'Emphasised (snappy)', 'sgs-blocks' ),
 			'ease-out': __( 'Ease out', 'sgs-blocks' ),

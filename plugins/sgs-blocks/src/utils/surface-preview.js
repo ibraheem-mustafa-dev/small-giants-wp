@@ -30,9 +30,9 @@ import { surfaceToneClass } from './surface-tone';
  * own opacity, the background image, which is never sampled, then the background gradient, then
  * the flat colour), through the same rule (`surfaceToneClass`).
  *
- * @param {Object} attributes      Block attributes (only the background ones are read).
- * @param {Array}  palette         Theme colour palette.
- * @param {Array}  [gradients=[]]  Theme gradient presets; without them a preset gradient is unknown.
+ * @param {Object} attributes     Block attributes (only the background ones are read).
+ * @param {Array}  palette        Theme colour palette.
+ * @param {Array}  [gradients=[]] Theme gradient presets; without them a preset gradient is unknown.
  * @return {string} 'sgs-on-dark', 'sgs-on-light' or ''.
  */
 export function wrapperToneClass( attributes, palette, gradients = [] ) {
@@ -58,12 +58,17 @@ export function wrapperToneClass( attributes, palette, gradients = [] ) {
 			? backgroundOverlayOpacity.desktop
 			: backgroundOverlayOpacity;
 	const parsed = parseFloat( opacityDesktop );
-	const overlayOpacity = Number.isNaN( parsed ) ? 1 : Math.max( 0, Math.min( 1, parsed / 100 ) );
+	const overlayOpacity = Number.isNaN( parsed )
+		? 1
+		: Math.max( 0, Math.min( 1, parsed / 100 ) );
 	const layers = [];
 	if ( overlayGradient ) {
 		layers.push( { gradient: overlayGradient, opacity: overlayOpacity } );
 	} else if ( backgroundOverlayColour ) {
-		layers.push( { colour: backgroundOverlayColour, opacity: overlayOpacity } );
+		layers.push( {
+			colour: backgroundOverlayColour,
+			opacity: overlayOpacity,
+		} );
 	}
 	if ( backgroundImage?.url ) {
 		layers.push( { image: true } );

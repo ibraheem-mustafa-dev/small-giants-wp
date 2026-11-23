@@ -7,8 +7,19 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { PanelBody, SelectControl, ToggleControl, TextControl, RangeControl } from '@wordpress/components';
-import { ResponsiveLengthControl, BOX_UNITS, textRow, fillRow } from '../../components';
+import {
+	PanelBody,
+	SelectControl,
+	ToggleControl,
+	TextControl,
+	RangeControl,
+} from '@wordpress/components';
+import {
+	ResponsiveLengthControl,
+	BOX_UNITS,
+	textRow,
+	fillRow,
+} from '../../components';
 
 /**
  * Colour rows for today's row of the opening hours: text and background.
@@ -53,20 +64,37 @@ export function openStatusColourRows( attributes, setAttributes ) {
 				key: 'open',
 				label: __( 'Open', 'sgs-blocks' ),
 				value: attributes[ openAttr ],
-				onChange: ( val ) => setAttributes( { [ openAttr ]: val ?? '' } ),
+				onChange: ( val ) =>
+					setAttributes( { [ openAttr ]: val ?? '' } ),
 			},
 			{
 				key: 'closed',
 				label: __( 'Closed', 'sgs-blocks' ),
 				value: attributes[ closedAttr ],
-				onChange: ( val ) => setAttributes( { [ closedAttr ]: val ?? '' } ),
+				onChange: ( val ) =>
+					setAttributes( { [ closedAttr ]: val ?? '' } ),
 			},
 		],
 	} );
 	return [
-		row( 'statusDot', __( 'Status dot', 'sgs-blocks' ), 'openStatusOpenDot', 'openStatusClosedDot' ),
-		row( 'statusText', __( 'Status pill text', 'sgs-blocks' ), 'openStatusOpenText', 'openStatusClosedText' ),
-		row( 'statusBackground', __( 'Status pill background', 'sgs-blocks' ), 'openStatusOpenBackground', 'openStatusClosedBackground' ),
+		row(
+			'statusDot',
+			__( 'Status dot', 'sgs-blocks' ),
+			'openStatusOpenDot',
+			'openStatusClosedDot'
+		),
+		row(
+			'statusText',
+			__( 'Status pill text', 'sgs-blocks' ),
+			'openStatusOpenText',
+			'openStatusClosedText'
+		),
+		row(
+			'statusBackground',
+			__( 'Status pill background', 'sgs-blocks' ),
+			'openStatusOpenBackground',
+			'openStatusClosedBackground'
+		),
 	];
 }
 
@@ -92,21 +120,33 @@ export function OpenStatusPanel( { attributes, setAttributes } ) {
 					'sgs-blocks'
 				) }
 				checked={ false !== attributes.openStatusShowLine }
-				onChange={ ( val ) => setAttributes( { openStatusShowLine: val } ) }
+				onChange={ ( val ) =>
+					setAttributes( { openStatusShowLine: val } )
+				}
 				__nextHasNoMarginBottom
 			/>
 			<ToggleControl
 				label={ __( 'Show the Open now / Closed pill', 'sgs-blocks' ) }
-				help={ __( 'Off prints the closing or opening line on its own, for a card that already shows the status elsewhere.', 'sgs-blocks' ) }
+				help={ __(
+					'Off prints the closing or opening line on its own, for a card that already shows the status elsewhere.',
+					'sgs-blocks'
+				) }
 				checked={ false !== attributes.openStatusShowPill }
-				onChange={ ( val ) => setAttributes( { openStatusShowPill: val } ) }
+				onChange={ ( val ) =>
+					setAttributes( { openStatusShowPill: val } )
+				}
 				__nextHasNoMarginBottom
 			/>
 			<ToggleControl
 				label={ __( 'Pulse the dot while open', 'sgs-blocks' ) }
-				help={ __( 'An endless expanding ring around the dot while the business is open. It does not play for visitors who ask their device for reduced motion.', 'sgs-blocks' ) }
+				help={ __(
+					'An endless expanding ring around the dot while the business is open. It does not play for visitors who ask their device for reduced motion.',
+					'sgs-blocks'
+				) }
 				checked={ !! attributes.openStatusDotPulse }
-				onChange={ ( val ) => setAttributes( { openStatusDotPulse: val } ) }
+				onChange={ ( val ) =>
+					setAttributes( { openStatusDotPulse: val } )
+				}
 				__nextHasNoMarginBottom
 			/>
 			{ attributes.openStatusDotPulse && (
@@ -116,7 +156,11 @@ export function OpenStatusPanel( { attributes, setAttributes } ) {
 					min={ 200 }
 					max={ 10000 }
 					step={ 100 }
-					onChange={ ( val ) => setAttributes( { openStatusDotPulseDuration: val ?? 1600 } ) }
+					onChange={ ( val ) =>
+						setAttributes( {
+							openStatusDotPulseDuration: val ?? 1600,
+						} )
+					}
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 				/>
@@ -124,13 +168,27 @@ export function OpenStatusPanel( { attributes, setAttributes } ) {
 			{ attributes.openStatusDotPulse && (
 				<SelectControl
 					label={ __( 'Pulse runs', 'sgs-blocks' ) }
-					help={ __( 'The ring takes the colour of the dot in the current state.', 'sgs-blocks' ) }
+					help={ __(
+						'The ring takes the colour of the dot in the current state.',
+						'sgs-blocks'
+					) }
 					value={ attributes.openStatusDotPulseWhen || 'open' }
 					options={ [
-						{ label: __( 'While open only', 'sgs-blocks' ), value: 'open' },
-						{ label: __( 'While open and while closed', 'sgs-blocks' ), value: 'always' },
+						{
+							label: __( 'While open only', 'sgs-blocks' ),
+							value: 'open',
+						},
+						{
+							label: __(
+								'While open and while closed',
+								'sgs-blocks'
+							),
+							value: 'always',
+						},
 					] }
-					onChange={ ( val ) => setAttributes( { openStatusDotPulseWhen: val } ) }
+					onChange={ ( val ) =>
+						setAttributes( { openStatusDotPulseWhen: val } )
+					}
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 				/>
@@ -139,23 +197,48 @@ export function OpenStatusPanel( { attributes, setAttributes } ) {
 				__( 'Line word order', 'sgs-blocks' ),
 				'openStatusLinePattern',
 				'{lead} {time} {when}',
-				__( 'Placeholders: {lead} (the Closes or Opens wording), {time} and {when} (today, tomorrow or the weekday). "{lead} {when} at {time}" reads "Opens tomorrow at 9:30am".', 'sgs-blocks' )
+				__(
+					'Placeholders: {lead} (the Closes or Opens wording), {time} and {when} (today, tomorrow or the weekday). "{lead} {when} at {time}" reads "Opens tomorrow at 9:30am".',
+					'sgs-blocks'
+				)
 			) }
 			{ text(
 				__( 'Opening line word order', 'sgs-blocks' ),
 				'openStatusOpensPattern',
 				'',
-				__( 'Leave empty to use the line word order. Set it when the opening line reads differently from the closing line.', 'sgs-blocks' )
+				__(
+					'Leave empty to use the line word order. Set it when the opening line reads differently from the closing line.',
+					'sgs-blocks'
+				)
 			) }
-			{ text( __( 'Open label', 'sgs-blocks' ), 'openStatusOpenLabel', __( 'Open now', 'sgs-blocks' ) ) }
-			{ text( __( 'Closed label', 'sgs-blocks' ), 'openStatusClosedLabel', __( 'Closed', 'sgs-blocks' ) ) }
-			{ text( __( 'Closes wording', 'sgs-blocks' ), 'openStatusClosesLabel', __( 'Closes at', 'sgs-blocks' ) ) }
-			{ text( __( 'Opens wording', 'sgs-blocks' ), 'openStatusOpensLabel', __( 'Opens at', 'sgs-blocks' ) ) }
+			{ text(
+				__( 'Open label', 'sgs-blocks' ),
+				'openStatusOpenLabel',
+				__( 'Open now', 'sgs-blocks' )
+			) }
+			{ text(
+				__( 'Closed label', 'sgs-blocks' ),
+				'openStatusClosedLabel',
+				__( 'Closed', 'sgs-blocks' )
+			) }
+			{ text(
+				__( 'Closes wording', 'sgs-blocks' ),
+				'openStatusClosesLabel',
+				__( 'Closes at', 'sgs-blocks' )
+			) }
+			{ text(
+				__( 'Opens wording', 'sgs-blocks' ),
+				'openStatusOpensLabel',
+				__( 'Opens at', 'sgs-blocks' )
+			) }
 			{ text(
 				__( 'Reopens wording', 'sgs-blocks' ),
 				'openStatusReopensLabel',
 				__( 'Closed until', 'sgs-blocks' ),
-				__( 'Used between two sessions of the same day, e.g. "Closed until 2:30pm".', 'sgs-blocks' )
+				__(
+					'Used between two sessions of the same day, e.g. "Closed until 2:30pm".',
+					'sgs-blocks'
+				)
 			) }
 		</PanelBody>
 	);
@@ -184,13 +267,21 @@ const TODAY_WEIGHT_OPTIONS = [
 /** Font weight of today's row in the opening hours (its colours sit in the colour panel). */
 export function TodayRowPanel( { attributes, setAttributes } ) {
 	return (
-		<PanelBody title={ __( 'Today’s row', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Today’s row', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			<SelectControl
 				label={ __( 'Today’s row weight', 'sgs-blocks' ) }
-				help={ __( 'The row for the visitor’s current day (in the business’s time zone) is marked in their browser.', 'sgs-blocks' ) }
+				help={ __(
+					'The row for the visitor’s current day (in the business’s time zone) is marked in their browser.',
+					'sgs-blocks'
+				) }
 				value={ attributes.hoursTodayWeight || '' }
 				options={ TODAY_WEIGHT_OPTIONS }
-				onChange={ ( val ) => setAttributes( { hoursTodayWeight: val } ) }
+				onChange={ ( val ) =>
+					setAttributes( { hoursTodayWeight: val } )
+				}
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>
@@ -211,7 +302,10 @@ export function MapSourcePanel( { attributes, setAttributes } ) {
 				value={ attributes.mapSource || 'address' }
 				options={ [
 					{ label: __( 'Address', 'sgs-blocks' ), value: 'address' },
-					{ label: __( 'Google business listing', 'sgs-blocks' ), value: 'business' },
+					{
+						label: __( 'Google business listing', 'sgs-blocks' ),
+						value: 'business',
+					},
 				] }
 				onChange={ ( val ) => setAttributes( { mapSource: val } ) }
 				__nextHasNoMarginBottom
@@ -226,7 +320,10 @@ export function MapSourcePanel( { attributes, setAttributes } ) {
 			/>
 			<RangeControl
 				label={ __( 'Zoom', 'sgs-blocks' ) }
-				help={ __( '1 shows the world, 20 a single building.', 'sgs-blocks' ) }
+				help={ __(
+					'1 shows the world, 20 a single building.',
+					'sgs-blocks'
+				) }
 				value={ attributes.mapZoom ?? 15 }
 				min={ 1 }
 				max={ 20 }
@@ -239,13 +336,18 @@ export function MapSourcePanel( { attributes, setAttributes } ) {
 				label={ __( 'Map filter', 'sgs-blocks' ) }
 				value={ attributes.mapFilterPreset || 'none' }
 				options={ MAP_FILTER_OPTIONS }
-				onChange={ ( val ) => setAttributes( { mapFilterPreset: val } ) }
+				onChange={ ( val ) =>
+					setAttributes( { mapFilterPreset: val } )
+				}
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>
 			<TextControl
 				label={ __( 'Custom map filter', 'sgs-blocks' ) }
-				help={ __( 'Overrides the preset. CSS filter functions with numbers only, e.g. grayscale(.35) contrast(1.05). Anything else is ignored.', 'sgs-blocks' ) }
+				help={ __(
+					'Overrides the preset. CSS filter functions with numbers only, e.g. grayscale(.35) contrast(1.05). Anything else is ignored.',
+					'sgs-blocks'
+				) }
 				value={ attributes.mapFilter ?? '' }
 				onChange={ ( val ) => setAttributes( { mapFilter: val } ) }
 				__nextHasNoMarginBottom

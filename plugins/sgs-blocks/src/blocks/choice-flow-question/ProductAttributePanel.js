@@ -62,7 +62,12 @@ function slugifyTermName( name ) {
  *                                       declares a matching `providesContext`
  *                                       — see this feature's build report).
  */
-export default function ProductAttributePanel( { attributes, setAttributes, clientId, context } ) {
+export default function ProductAttributePanel( {
+	attributes,
+	setAttributes,
+	clientId,
+	context,
+} ) {
 	const { productAttribute, options } = attributes;
 
 	const contextProductId = context?.[ 'sgs/choice-flow/productId' ] || 0;
@@ -76,11 +81,15 @@ export default function ProductAttributePanel( { attributes, setAttributes, clie
 			if ( contextProductId ) {
 				return 0;
 			}
-			const { getBlockRootClientId, getBlock } = select( 'core/block-editor' );
+			const { getBlockRootClientId, getBlock } =
+				select( 'core/block-editor' );
 			let ancestorId = getBlockRootClientId( clientId );
 			while ( ancestorId ) {
 				const ancestorBlock = getBlock( ancestorId );
-				if ( ancestorBlock && ancestorBlock.name === 'sgs/choice-flow' ) {
+				if (
+					ancestorBlock &&
+					ancestorBlock.name === 'sgs/choice-flow'
+				) {
 					return ancestorBlock.attributes.flowProductId || 0;
 				}
 				ancestorId = getBlockRootClientId( ancestorId );
@@ -117,10 +126,15 @@ export default function ProductAttributePanel( { attributes, setAttributes, clie
 				if ( cancelled ) {
 					return;
 				}
-				const slugById = new Map( ( globalAttributes || [] ).map( ( a ) => [ a.id, a.slug ] ) );
+				const slugById = new Map(
+					( globalAttributes || [] ).map( ( a ) => [ a.id, a.slug ] )
+				);
 				const resolved = ( product.attributes || [] )
 					.filter( ( a ) => a.id > 0 && slugById.has( a.id ) )
-					.map( ( a ) => ( { ...a, taxonomy: `pa_${ slugById.get( a.id ) }` } ) );
+					.map( ( a ) => ( {
+						...a,
+						taxonomy: `pa_${ slugById.get( a.id ) }`,
+					} ) );
 				setWcAttributes( resolved );
 			} )
 			.catch( () => {
@@ -159,33 +173,44 @@ export default function ProductAttributePanel( { attributes, setAttributes, clie
 		if ( ! attribute ) {
 			return;
 		}
-		apiFetch( { path: `/wc/v3/products/attributes/${ attribute.id }/terms?per_page=100` } )
-			.then( ( terms ) => {
-				const nameToSlug = new Map( ( terms || [] ).map( ( t ) => [ t.name, t.slug ] ) );
-				const newOptions = ( attribute.options || [] ).map( ( name ) => {
-					const slug = nameToSlug.get( name ) || slugifyTermName( name );
-					const existing = ( options || [] ).find( ( o ) => o.value === slug ) || {};
-					return {
-						label: name,
-						value: slug,
-						nextStepId: existing.nextStepId || '',
-						tags: existing.tags || [],
-						...pickMedia( existing ),
-						helpText: existing.helpText || '',
-						addToBagNow: existing.addToBagNow || false,
-						isDefault: existing.isDefault || false,
-						badge: existing.badge || '',
-						description: existing.description || '',
-					};
-				} );
-				// productAttribute wins over priceGroup (Spec 43 Phase 3/4 §1) —
-				// clear it here so the two never both carry a value.
-				setAttributes( { productAttribute: taxonomy, priceGroup: '', options: newOptions } );
+		apiFetch( {
+			path: `/wc/v3/products/attributes/${ attribute.id }/terms?per_page=100`,
+		} ).then( ( terms ) => {
+			const nameToSlug = new Map(
+				( terms || [] ).map( ( t ) => [ t.name, t.slug ] )
+			);
+			const newOptions = ( attribute.options || [] ).map( ( name ) => {
+				const slug = nameToSlug.get( name ) || slugifyTermName( name );
+				const existing =
+					( options || [] ).find( ( o ) => o.value === slug ) || {};
+				return {
+					label: name,
+					value: slug,
+					nextStepId: existing.nextStepId || '',
+					tags: existing.tags || [],
+					...pickMedia( existing ),
+					helpText: existing.helpText || '',
+					addToBagNow: existing.addToBagNow || false,
+					isDefault: existing.isDefault || false,
+					badge: existing.badge || '',
+					description: existing.description || '',
+				};
 			} );
+			// productAttribute wins over priceGroup (Spec 43 Phase 3/4 §1) —
+			// clear it here so the two never both carry a value.
+			setAttributes( {
+				productAttribute: taxonomy,
+				priceGroup: '',
+				options: newOptions,
+			} );
+		} );
 	};
 
 	return (
-		<PanelBody title={ __( 'Product attribute', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Product attribute', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			{ ! productId && (
 				<p>
 					{ __(

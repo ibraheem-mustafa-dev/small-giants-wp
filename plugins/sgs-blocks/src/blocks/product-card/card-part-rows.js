@@ -14,7 +14,14 @@ import { __ } from '@wordpress/i18n';
  * @return {Object[]} SgsColourPanel rows.
  */
 export function cardPartColourRows( attributes, setAttributes ) {
-	const { borderColourHover, rrpColour, noImageLabelColour, swatchBorderColour, swatchMoreBorderColour, wishlistBorderColour } = attributes;
+	const {
+		borderColourHover,
+		rrpColour,
+		noImageLabelColour,
+		swatchBorderColour,
+		swatchMoreBorderColour,
+		wishlistBorderColour,
+	} = attributes;
 
 	return [
 		{
@@ -25,7 +32,8 @@ export function cardPartColourRows( attributes, setAttributes ) {
 					key: 'hover',
 					label: __( 'Hover', 'sgs-blocks' ),
 					value: borderColourHover,
-					onChange: ( val ) => setAttributes( { borderColourHover: val ?? '' } ),
+					onChange: ( val ) =>
+						setAttributes( { borderColourHover: val ?? '' } ),
 					linked: true,
 				},
 			],
@@ -38,7 +46,8 @@ export function cardPartColourRows( attributes, setAttributes ) {
 					key: 'normal',
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: rrpColour,
-					onChange: ( val ) => setAttributes( { rrpColour: val ?? '' } ),
+					onChange: ( val ) =>
+						setAttributes( { rrpColour: val ?? '' } ),
 					linked: true,
 				},
 			],
@@ -51,7 +60,8 @@ export function cardPartColourRows( attributes, setAttributes ) {
 					key: 'normal',
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: noImageLabelColour,
-					onChange: ( val ) => setAttributes( { noImageLabelColour: val ?? '' } ),
+					onChange: ( val ) =>
+						setAttributes( { noImageLabelColour: val ?? '' } ),
 					linked: true,
 				},
 			],
@@ -64,7 +74,8 @@ export function cardPartColourRows( attributes, setAttributes ) {
 					key: 'normal',
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: swatchBorderColour,
-					onChange: ( val ) => setAttributes( { swatchBorderColour: val ?? '' } ),
+					onChange: ( val ) =>
+						setAttributes( { swatchBorderColour: val ?? '' } ),
 					linked: true,
 				},
 			],
@@ -77,7 +88,8 @@ export function cardPartColourRows( attributes, setAttributes ) {
 					key: 'normal',
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: swatchMoreBorderColour,
-					onChange: ( val ) => setAttributes( { swatchMoreBorderColour: val ?? '' } ),
+					onChange: ( val ) =>
+						setAttributes( { swatchMoreBorderColour: val ?? '' } ),
 					linked: true,
 				},
 			],
@@ -90,7 +102,8 @@ export function cardPartColourRows( attributes, setAttributes ) {
 					key: 'normal',
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: wishlistBorderColour,
-					onChange: ( val ) => setAttributes( { wishlistBorderColour: val ?? '' } ),
+					onChange: ( val ) =>
+						setAttributes( { wishlistBorderColour: val ?? '' } ),
 					linked: true,
 				},
 			],

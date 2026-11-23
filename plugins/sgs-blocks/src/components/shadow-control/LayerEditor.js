@@ -25,8 +25,14 @@ export default function LayerEditor( { layer, onChange, hide = [] } ) {
 				<code>{ layer.raw }</code>
 				<p className="sgs-shadow-control__note">
 					{ layer.valid
-						? __( 'This layer uses a colour the fields cannot show. It is kept exactly as written. Edit it in the Raw CSS tab.', 'sgs-blocks' )
-						: __( 'This layer will not display because it is not a valid shadow. Fix it in the Raw CSS tab, or delete it.', 'sgs-blocks' ) }
+						? __(
+								'This layer uses a colour the fields cannot show. It is kept exactly as written. Edit it in the Raw CSS tab.',
+								'sgs-blocks'
+						  )
+						: __(
+								'This layer will not display because it is not a valid shadow. Fix it in the Raw CSS tab, or delete it.',
+								'sgs-blocks'
+						  ) }
 				</p>
 			</div>
 		);
@@ -37,7 +43,14 @@ export default function LayerEditor( { layer, onChange, hide = [] } ) {
 			value={ `${ layer[ key ] }px` }
 			onChange={ ( v ) => {
 				const n = parseFloat( v );
-				onChange( { [ key ]: Number.isFinite( n ) ? Math.max( min, Math.min( key === 'blur' ? 100 : 200, n ) ) : 0 } );
+				onChange( {
+					[ key ]: Number.isFinite( n )
+						? Math.max(
+								min,
+								Math.min( key === 'blur' ? 100 : 200, n )
+						  )
+						: 0,
+				} );
 			} }
 			units={ PX }
 			__nextHasNoMarginBottom
@@ -52,9 +65,14 @@ export default function LayerEditor( { layer, onChange, hide = [] } ) {
 			</div>
 			<div className="sgs-shadow-control__pair">
 				{ length( 'blur', __( 'Blur', 'sgs-blocks' ), 0 ) }
-				{ ! hide.includes( 'spread' ) && length( 'spread', __( 'Spread', 'sgs-blocks' ), -200 ) }
+				{ ! hide.includes( 'spread' ) &&
+					length( 'spread', __( 'Spread', 'sgs-blocks' ), -200 ) }
 			</div>
-			<ColourOpacity colour={ layer.colour } alpha={ layer.alpha } onChange={ onChange } />
+			<ColourOpacity
+				colour={ layer.colour }
+				alpha={ layer.alpha }
+				onChange={ onChange }
+			/>
 			{ ! hide.includes( 'inset' ) && (
 				<ToggleControl
 					label={ __( 'Inner shadow', 'sgs-blocks' ) }

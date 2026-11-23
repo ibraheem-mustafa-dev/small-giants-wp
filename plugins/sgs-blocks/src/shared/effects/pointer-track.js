@@ -52,8 +52,16 @@ export function trackPointer( el, handlers ) {
 			return;
 		}
 		handlers.move(
-			clamp( 0.5 + ( last.x - ( rect.left + rect.width / 2 ) ) / width, 0, 1 ),
-			clamp( 0.5 + ( last.y - ( rect.top + rect.height / 2 ) ) / height, 0, 1 )
+			clamp(
+				0.5 + ( last.x - ( rect.left + rect.width / 2 ) ) / width,
+				0,
+				1
+			),
+			clamp(
+				0.5 + ( last.y - ( rect.top + rect.height / 2 ) ) / height,
+				0,
+				1
+			)
 		);
 	};
 

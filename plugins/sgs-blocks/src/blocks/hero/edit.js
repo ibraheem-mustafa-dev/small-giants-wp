@@ -39,7 +39,10 @@ const CONTENT_GAP_UNITS = [
 import MediaElementPanel from '../../components/MediaElementPanel.js';
 import BackgroundLayers from '../../components/media/BackgroundLayers';
 import mediaPreview from '../../components/media/mediaPreview.js';
-import { resolveTierSource, useActiveDevice } from '../../components/media/deviceValues.js';
+import {
+	resolveTierSource,
+	useActiveDevice,
+} from '../../components/media/deviceValues.js';
 import { hasFile } from '../../components/media/mediaSlotWrites.js';
 import {
 	resolveShadowPreviewComposed,
@@ -65,8 +68,19 @@ import {
 	ShapeDividersPanel,
 } from '../container/components/ContainerWrapperControls';
 import { BackgroundPanel } from '../container/components/BackgroundPanel';
-import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
-import { sanitiseSvg, svgBackgroundPreview, backgroundMediaPreview, wrapperToneClass, surfaceBackdropPreview } from '../../utils';
+import {
+	ToggleGroupControl,
+	ToggleGroupControlOption,
+	ToolsPanel,
+	ToolsPanelItem,
+} from '../../components/primitives';
+import {
+	sanitiseSvg,
+	svgBackgroundPreview,
+	backgroundMediaPreview,
+	wrapperToneClass,
+	surfaceBackdropPreview,
+} from '../../utils';
 import { heroCanvasPreview } from './canvas-preview';
 import metadata from './block.json';
 import { motionNamesBand } from '../extensions/motion/canvas/resolve-target';
@@ -103,8 +117,14 @@ const COLUMN_RATIO_PRESETS = [
 ];
 
 const MOBILE_ORDER_OPTIONS = [
-	{ label: __( 'Media first (image on top)', 'sgs-blocks' ), value: 'media-first' },
-	{ label: __( 'Content first (text on top)', 'sgs-blocks' ), value: 'content-first' },
+	{
+		label: __( 'Media first (image on top)', 'sgs-blocks' ),
+		value: 'media-first',
+	},
+	{
+		label: __( 'Content first (text on top)', 'sgs-blocks' ),
+		value: 'content-first',
+	},
 ];
 
 // Desktop/tablet column order (Spec 35 Track 1b Phase 1.4c — promoted from the
@@ -115,14 +135,32 @@ const MOBILE_ORDER_OPTIONS = [
 // MOBILE_ORDER_OPTIONS — only the labels change per tier so a non-technical
 // client understands which axis they're setting.
 const DESKTOP_ORDER_OPTIONS = [
-	{ label: __( 'Content left, image right (default)', 'sgs-blocks' ), value: '' },
-	{ label: __( 'Image left, content right', 'sgs-blocks' ), value: 'media-first' },
+	{
+		label: __( 'Content left, image right (default)', 'sgs-blocks' ),
+		value: '',
+	},
+	{
+		label: __( 'Image left, content right', 'sgs-blocks' ),
+		value: 'media-first',
+	},
 ];
 
 const TABLET_ORDER_OPTIONS = [
 	{ label: __( 'Same as desktop', 'sgs-blocks' ), value: '' },
-	{ label: __( 'Content first (left if side-by-side, top if stacked)', 'sgs-blocks' ), value: 'content-first' },
-	{ label: __( 'Image first (left if side-by-side, top if stacked)', 'sgs-blocks' ), value: 'media-first' },
+	{
+		label: __(
+			'Content first (left if side-by-side, top if stacked)',
+			'sgs-blocks'
+		),
+		value: 'content-first',
+	},
+	{
+		label: __(
+			'Image first (left if side-by-side, top if stacked)',
+			'sgs-blocks'
+		),
+		value: 'media-first',
+	},
 ];
 
 // Alignment & grid panel (gap 1, 2026-09-02) — option lists match hero's own
@@ -173,17 +211,58 @@ const ALIGN_CONTENT_OPTIONS = [
  * Produces: eyebrow label → headline (h1) → sub-headline paragraph → CTA buttons.
  * Converter supplies sgs/label + sgs/heading + sgs/text + sgs/multi-button.
  */
-const SPLIT_ENTRY = metadata.supports.sgs.mediaElements.find( ( e ) => 'split' === e.prefix );
-const SPLIT_SLOT = { prefix: 'split', kinds: SPLIT_ENTRY.kinds, context: SPLIT_ENTRY.context };
+const SPLIT_ENTRY = metadata.supports.sgs.mediaElements.find(
+	( e ) => 'split' === e.prefix
+);
+const SPLIT_SLOT = {
+	prefix: 'split',
+	kinds: SPLIT_ENTRY.kinds,
+	context: SPLIT_ENTRY.context,
+};
 
 const HERO_CONTENT_TEMPLATE = [
-	[ 'sgs/label', { className: 'sgs-hero__label', text: __( 'Eyebrow label', 'sgs-blocks' ) } ],
-	[ 'sgs/heading', { level: 'h1', className: 'sgs-hero__headline', content: __( 'Your hero headline', 'sgs-blocks' ) } ],
-	[ 'sgs/text', { className: 'sgs-hero__subheadline', text: __( 'Supporting sub-headline text goes here.', 'sgs-blocks' ) } ],
-	[ 'sgs/multi-button', {}, [
-		[ 'sgs/button', { inheritStyle: 'primary', label: __( 'Primary Action', 'sgs-blocks' ) } ],
-		[ 'sgs/button', { inheritStyle: 'secondary', label: __( 'Secondary Action', 'sgs-blocks' ) } ],
-	] ],
+	[
+		'sgs/label',
+		{
+			className: 'sgs-hero__label',
+			text: __( 'Eyebrow label', 'sgs-blocks' ),
+		},
+	],
+	[
+		'sgs/heading',
+		{
+			level: 'h1',
+			className: 'sgs-hero__headline',
+			content: __( 'Your hero headline', 'sgs-blocks' ),
+		},
+	],
+	[
+		'sgs/text',
+		{
+			className: 'sgs-hero__subheadline',
+			text: __( 'Supporting sub-headline text goes here.', 'sgs-blocks' ),
+		},
+	],
+	[
+		'sgs/multi-button',
+		{},
+		[
+			[
+				'sgs/button',
+				{
+					inheritStyle: 'primary',
+					label: __( 'Primary Action', 'sgs-blocks' ),
+				},
+			],
+			[
+				'sgs/button',
+				{
+					inheritStyle: 'secondary',
+					label: __( 'Secondary Action', 'sgs-blocks' ),
+				},
+			],
+		],
+	],
 ];
 
 const VARIANT_OPTIONS = [
@@ -223,24 +302,61 @@ function SplitMediaElement( { shown, alt } ) {
 	if ( 'video' === shown.kind ) {
 		return (
 			<span className="sgs-media-stack">
-				{ shown.poster?.url && <img className="sgs-media-el sgs-media-cover" src={ shown.poster.url } alt="" /> }
-				{ shown.url && <video className="sgs-media-el sgs-media-video" src={ shown.url } poster={ shown.poster?.url || undefined } muted loop autoPlay playsInline /> }
+				{ shown.poster?.url && (
+					<img
+						className="sgs-media-el sgs-media-cover"
+						src={ shown.poster.url }
+						alt=""
+					/>
+				) }
+				{ shown.url && (
+					<video
+						className="sgs-media-el sgs-media-video"
+						src={ shown.url }
+						poster={ shown.poster?.url || undefined }
+						muted
+						loop
+						autoPlay
+						playsInline
+					/>
+				) }
 			</span>
 		);
 	}
 	if ( 'svg' === shown.kind && shown.markup ) {
 		// Editor preview of the operator's own markup, through the same allowlist the server uses.
-		return <span className="sgs-media-el sgs-media-svg" aria-hidden="true" dangerouslySetInnerHTML={ { __html: sanitiseSvg( shown.markup ) } } />; // eslint-disable-line react/no-danger
+		return (
+			<span
+				className="sgs-media-el sgs-media-svg"
+				aria-hidden="true"
+				dangerouslySetInnerHTML={ {
+					__html: sanitiseSvg( shown.markup ),
+				} }
+			/>
+		); // eslint-disable-line react/no-danger
 	}
 	if ( shown.url ) {
-		return <img className="sgs-media-el" src={ shown.url } width={ shown.width || undefined } height={ shown.height || undefined } alt={ alt } />;
+		return (
+			<img
+				className="sgs-media-el"
+				src={ shown.url }
+				width={ shown.width || undefined }
+				height={ shown.height || undefined }
+				alt={ alt }
+			/>
+		);
 	}
 	return null;
 }
 
 export default function Edit( { attributes, setAttributes, name, clientId } ) {
 	const previewTier = usePreviewTier();
-	const indentPreviewCss = textIndentPreviewCss( attributes, '', `#block-${ clientId }`, previewTier );
+	const indentPreviewCss = textIndentPreviewCss(
+		attributes,
+		'',
+		`#block-${ clientId }`,
+		previewTier
+	);
 	const {
 		variant,
 		alignment,
@@ -322,7 +438,11 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 	const gradientPresets = flattenPresetSetting( rawGradientPresets );
 
 	// The canvas styles and the split column's media at the previewed device tier.
-	const heroPreview = heroCanvasPreview( attributes, { tier: previewTier, palette: colourPalette, isSplit } );
+	const heroPreview = heroCanvasPreview( attributes, {
+		tier: previewTier,
+		palette: colourPalette,
+		isSplit,
+	} );
 
 	// Root background paint (backgroundColour / backgroundColourGradient).
 	// Spread FIRST so the background-image branch below still wins when a media
@@ -357,12 +477,20 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 
 	// The background's canvas layers and the tier-aware paint around them, as the shared Background panel and the
 	// container preview them (`backgroundMediaPreview`, `BackgroundLayers`: the same two nodes the page prints).
-	const bgPreview = backgroundMediaPreview( attributes, colourPalette, gradientPresets, previewTier );
+	const bgPreview = backgroundMediaPreview(
+		attributes,
+		colourPalette,
+		gradientPresets,
+		previewTier
+	);
 
 	const wrapperStyle = {
 		...heroPreview.root,
 		...svgPreview.style,
-		...surfaceBackdropPreview( { surfaceBlur: attributes.surfaceBlur, surfaceSaturate: attributes.surfaceSaturate } ),
+		...surfaceBackdropPreview( {
+			surfaceBlur: attributes.surfaceBlur,
+			surfaceSaturate: attributes.surfaceSaturate,
+		} ),
 		...bgPreview.style,
 		...resolveBackgroundPaintPreviewStyle(
 			backgroundColour,
@@ -399,7 +527,10 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		if ( gridAutoRows ) {
 			wrapperStyle.gridAutoRows = gridAutoRows;
 		}
-		const gridRowsDesktop = resolveResponsiveTier( gridTemplateRows, 'desktop' )?.value;
+		const gridRowsDesktop = resolveResponsiveTier(
+			gridTemplateRows,
+			'desktop'
+		)?.value;
 		if ( gridRowsDesktop ) {
 			wrapperStyle.gridTemplateRows = gridRowsDesktop;
 		}
@@ -419,7 +550,10 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		}
 	}
 	if ( shadow ) {
-		wrapperStyle.boxShadow = resolveShadowPreviewComposed( shadow, attributes.shadowColour );
+		wrapperStyle.boxShadow = resolveShadowPreviewComposed(
+			shadow,
+			attributes.shadowColour
+		);
 	}
 	const contentPreviewStyle = heroPreview.content;
 
@@ -429,21 +563,47 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 	// DOES preview). Same box-object family, base only, no tiers. Mirrors
 	// splitMedia's raw colour pass-through (no token resolution) rather than
 	// introducing a different mechanism into this file.
-	Object.assign( wrapperStyle, sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient }, previewTier, colourPalette ) );
+	Object.assign(
+		wrapperStyle,
+		sgsBorderPreview(
+			{
+				widthValues: borderWidth,
+				styleValue: borderStyle,
+				colourValue: borderColour,
+				colourGradientValue: borderColourGradient,
+			},
+			previewTier,
+			colourPalette
+		)
+	);
 
 	// Content band (`.sgs-container__inner`): standard variant only; split passes wrap_inner=false.
-	const { hasBandProps: bandFromProps, bandStyle: contentBandStyle } = heroPreview.band;
+	const { hasBandProps: bandFromProps, bandStyle: contentBandStyle } =
+		heroPreview.band;
 	// A motion layer on the band part (`content-band`, `inner`; Spec 38A §6.2) forces the band, as
 	// `Sgs_Motion_Targets::names_band()` does on the page; split passes wrap_inner=false there too.
-	const showContentBand = bandFromProps || ( ! isSplit && motionNamesBand( attributes, 'sgs/hero', getBlockType( 'sgs/hero' )?.supports?.sgs?.elements || {} ) );
+	const showContentBand =
+		bandFromProps ||
+		( ! isSplit &&
+			motionNamesBand(
+				attributes,
+				'sgs/hero',
+				getBlockType( 'sgs/hero' )?.supports?.sgs?.elements || {}
+			) );
 
 	// The split media: the shared slot preview (the editor's twin of `SGS_Media_Element::render()`), the media element of
 	// the device being edited, inside the hero's own grid cell (`.sgs-hero__media`, where column order applies).
 	const activeDevice = useActiveDevice();
 	const splitUid = 'sgs-hero-' + clientId.slice( 0, 8 );
 	const splitPreview = mediaPreview( SPLIT_SLOT, attributes, splitUid );
-	const splitShown = resolveTierSource( attributes.splitSource, activeDevice, hasFile ).value;
-	const splitAlt = attributes.splitDecorative ? '' : splitShown?.alt || attributes.splitAlt || '';
+	const splitShown = resolveTierSource(
+		attributes.splitSource,
+		activeDevice,
+		hasFile
+	).value;
+	const splitAlt = attributes.splitDecorative
+		? ''
+		: splitShown?.alt || attributes.splitAlt || '';
 	const mediaWrapperStyle = heroPreview.media;
 
 	// `has-background` suppression flag — mirrors render.php:934-938.
@@ -473,9 +633,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 	// against the hero's own background. When the background is a gradient,
 	// the flat backgroundColour is not rendered, so skip the check in that case.
 	const heroBorderContrastAgainst =
-		backgroundColour && ! backgroundColourGradient
-			? backgroundColour
-			: '';
+		backgroundColour && ! backgroundColourGradient ? backgroundColour : '';
 
 	// NOTE the SPREAD on svgPreview.className — it returns a string ARRAY, and
 	// passing it unspread to .join(' ') stringifies it with COMMAS, silently
@@ -488,16 +646,22 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		hasBackgroundPaint ? 'has-background' : null,
 		...svgPreview.className,
 		bgPreview.className,
-		wrapperToneClass( {
-			backgroundOverlayColour: attributes.backgroundOverlayColour,
-			overlayGradient: attributes.backgroundOverlayGradient,
-			backgroundOverlayOpacity: attributes.backgroundOverlayOpacity,
-			// The tone judge only asks whether a photo is there (it never samples one).
-			backgroundImage: bgPreview.media ? { url: bgPreview.media.url || 'photo' } : null,
-			backgroundColourGradient,
-			backgroundColour,
-			surfaceTone: attributes.surfaceTone,
-		}, colourPalette, gradientPresets ),
+		wrapperToneClass(
+			{
+				backgroundOverlayColour: attributes.backgroundOverlayColour,
+				overlayGradient: attributes.backgroundOverlayGradient,
+				backgroundOverlayOpacity: attributes.backgroundOverlayOpacity,
+				// The tone judge only asks whether a photo is there (it never samples one).
+				backgroundImage: bgPreview.media
+					? { url: bgPreview.media.url || 'photo' }
+					: null,
+				backgroundColourGradient,
+				backgroundColour,
+				surfaceTone: attributes.surfaceTone,
+			},
+			colourPalette,
+			gradientPresets
+		),
 		heroPreview.layoutClass,
 	]
 		.filter( Boolean )
@@ -550,21 +714,32 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: backgroundColour,
-								onChange: ( val ) => setAttributes( { backgroundColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										backgroundColour: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: backgroundColourGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { backgroundColourGradient: val ?? '' } ),
+									setAttributes( {
+										backgroundColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: backgroundColourHover,
-								onChange: ( val ) => setAttributes( { backgroundColourHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										backgroundColourHover: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: backgroundColourHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { backgroundColourHoverGradient: val ?? '' } ),
+									setAttributes( {
+										backgroundColourHoverGradient:
+											val ?? '',
+									} ),
 							},
 						],
 					},
@@ -587,28 +762,38 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: textColour,
-								onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( { textColour: val ?? '' } ),
 								linked: true,
 								gradientValue: textColourGradient,
-								onGradientChange: ( val ) => setAttributes( { textColourGradient: val ?? '' } ),
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										textColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: textColourHover,
-								onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										textColourHover: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: textColourHoverGradient,
-								onGradientChange: ( val ) => setAttributes( { textColourHoverGradient: val ?? '' } ),
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										textColourHoverGradient: val ?? '',
+									} ),
 							},
 						],
 					},
 				] }
 			/>
-			{/* ── Settings tab (default InspectorControls group) — behaviour: variant,
-			   media selection/data-source, content. ── */}
+			{ /* ── Settings tab (default InspectorControls group) — behaviour: variant,
+			   media selection/data-source, content. ── */ }
 			<InspectorControls>
-				{/* ── 1. Hero Settings (variant only) ── */}
+				{ /* ── 1. Hero Settings (variant only) ── */ }
 				<PanelBody title={ __( 'Hero Settings', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'Variant', 'sgs-blocks' ) }
@@ -638,10 +823,10 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 				) }
 			</InspectorControls>
 
-			{/* ── Styles tab — appearance: colour, spacing, borders, shadows,
-			   layout/grid geometry, hover/effects. ── */}
+			{ /* ── Styles tab — appearance: colour, spacing, borders, shadows,
+			   layout/grid geometry, hover/effects. ── */ }
 			<InspectorControls group="styles">
-				{/* Typography — replaces the old WP-native supports.typography
+				{ /* Typography — replaces the old WP-native supports.typography
 				    (fontSize/lineHeight/letterSpacing/textTransform/fontWeight/
 				    fontStyle) with the shared TypographyControls component +
 				    sgs_typography_css_rule() render.php helper (D971/D972
@@ -650,9 +835,21 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 				    root `.wp-block-sgs-hero`, not the never-emitted
 				    `.sgs-hero__headline`). showLetterSpacing/showTransform are
 				    enabled because the native support being replaced actually
-				    declared and rendered both. */}
-				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
-					<TypographyControls fontSizePresets showFontFamily showDecoration showTextAlign showTextWrap showTextStroke showTextColumns showTextIndent showWritingMode
+				    declared and rendered both. */ }
+				<PanelBody
+					title={ __( 'Typography', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<TypographyControls
+						fontSizePresets
+						showFontFamily
+						showDecoration
+						showTextAlign
+						showTextWrap
+						showTextStroke
+						showTextColumns
+						showTextIndent
+						showWritingMode
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						prefix=""
@@ -666,45 +863,67 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 				   duration/easing are pure styling, not settings. Gap 2's own
 				   colourStates rationale (Normal/Hover tabs for
 				   borderColourHover/borderColourHoverGradient) is unchanged. */ }
-				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Border', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SgsBorderControl
 						widthValues={ attributes.borderWidth ?? {} }
-						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						onWidthChange={ ( next ) =>
+							setAttributes( { borderWidth: next } )
+						}
 						widthPresets={ [ '10', '20', '30' ] }
 						styleValue={ attributes.borderStyle }
-						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						onStyleChange={ ( val ) =>
+							setAttributes( { borderStyle: val } )
+						}
 						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
 						colourStates={ [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: borderColour,
-								onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										borderColour: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: borderColourGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { borderColourGradient: val ?? '' } ),
+									setAttributes( {
+										borderColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: borderColourHover,
-								onChange: ( val ) => setAttributes( { borderColourHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										borderColourHover: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: borderColourHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { borderColourHoverGradient: val ?? '' } ),
+									setAttributes( {
+										borderColourHoverGradient: val ?? '',
+									} ),
 							},
 						] }
 						contrastAgainst={ heroBorderContrastAgainst }
 						radiusValues={ {
-								base: attributes.borderRadius?.desktop ?? {},
-								tablet: attributes.borderRadius?.tablet ?? {},
-								mobile: attributes.borderRadius?.mobile ?? {},
-							} }
+							base: attributes.borderRadius?.desktop ?? {},
+							tablet: attributes.borderRadius?.tablet ?? {},
+							mobile: attributes.borderRadius?.mobile ?? {},
+						} }
 						onRadiusChange={ ( tier, next ) => {
 							const key = tier === 'base' ? 'desktop' : tier;
-							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+							setAttributes( {
+								borderRadius: {
+									...attributes.borderRadius,
+									[ key ]: next,
+								},
+							} );
 						} }
 					/>
 				</PanelBody>
@@ -717,11 +936,18 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 				   scale/shadow-on-hover controls are NOT added here, hero declares
 				   no scaleHover/boxShadowHover attrs, only the transition pair is
 				   in scope for this fix. */ }
-				<PanelBody title={ __( 'Hover', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Hover', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<RangeControl
 						label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
 						value={ parseInt( transitionDuration, 10 ) || 300 }
-						onChange={ ( val ) => setAttributes( { transitionDuration: String( val ) } ) }
+						onChange={ ( val ) =>
+							setAttributes( {
+								transitionDuration: String( val ),
+							} )
+						}
 						min={ 0 }
 						max={ 1000 }
 						step={ 50 }
@@ -738,13 +964,15 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 							{ label: 'ease-out', value: 'ease-out' },
 							{ label: 'linear', value: 'linear' },
 						] }
-						onChange={ ( val ) => setAttributes( { transitionEasing: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { transitionEasing: val } )
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
-				{/* ── 2. Container / Entire Block ── */}
+				{ /* ── 2. Container / Entire Block ── */ }
 				{ /* Converted to ToolsPanel/ToolsPanelItem (Spec 35 T4.1 tail, audit-inspector-conformance
 				     dense-panel-candidate — 14 control-like elements). hasValue/onDeselect check against
 				     the DECLARED block.json defaults (D328): alignment='left', verticalAlignment='center',
@@ -752,7 +980,9 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 				     contentBackground='', contentPadding{,Tablet,Mobile}={}, gridTemplateColumns{,Tablet,Mobile}='',
 				     splitContentOrderMobile='media-first'. Text/vertical alignment are
 				     isShownByDefault (touched on nearly every hero instance); the rest are opt-in via the "+" menu. */ }
-				<PanelBody title={ __( 'Container / Entire Block', 'sgs-blocks' ) }>
+				<PanelBody
+					title={ __( 'Container / Entire Block', 'sgs-blocks' ) }
+				>
 					{ /* The ToolsPanel label deliberately does NOT repeat the
 					     PanelBody title above it. It did until 2026-08-08, which
 					     rendered the same words twice in a row in the sidebar and
@@ -770,7 +1000,9 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 								contentPadding: { desktop: {} },
 								...( isSplit && {
 									gridTemplateColumns: '',
-									splitContentOrder: { mobile: 'media-first' },
+									splitContentOrder: {
+										mobile: 'media-first',
+									},
 								} ),
 							} );
 						} }
@@ -778,7 +1010,9 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 						<ToolsPanelItem
 							label={ __( 'Content fill', 'sgs-blocks' ) }
 							hasValue={ () => alignment !== 'left' }
-							onDeselect={ () => setAttributes( { alignment: 'left' } ) }
+							onDeselect={ () =>
+								setAttributes( { alignment: 'left' } )
+							}
 							isShownByDefault
 						>
 							<ToggleGroupControl
@@ -804,36 +1038,52 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 						<ToolsPanelItem
 							label={ __( 'Vertical alignment', 'sgs-blocks' ) }
 							hasValue={ () => verticalAlignment !== 'center' }
-							onDeselect={ () => setAttributes( { verticalAlignment: 'center' } ) }
+							onDeselect={ () =>
+								setAttributes( { verticalAlignment: 'center' } )
+							}
 							isShownByDefault
 						>
 							<SelectControl
-								label={ __( 'Vertical alignment', 'sgs-blocks' ) }
+								label={ __(
+									'Vertical alignment',
+									'sgs-blocks'
+								) }
 								value={ verticalAlignment }
 								options={ VERTICAL_ALIGN_OPTIONS }
-								onChange={ ( val ) => setAttributes( { verticalAlignment: val } ) }
+								onChange={ ( val ) =>
+									setAttributes( { verticalAlignment: val } )
+								}
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 
-						{/* HC2: per-breakpoint text-align on the content column.
+						{ /* HC2: per-breakpoint text-align on the content column.
 						    Empty = inherit the variant's own alignment. textAlign is a
 						    TIER OBJECT {desktop,tablet,mobile} (D777/S2 fix,
 						    2026-09-04) — ONE attr, bound directly via
 						    <ResponsiveOverride> (mirrors minHeight/gridTemplateColumns
-						    above), replacing the old three-flat-attr attrMap. */}
+						    above), replacing the old three-flat-attr attrMap. */ }
 						<ToolsPanelItem
 							label={ __( 'Content text align', 'sgs-blocks' ) }
 							hasValue={ () =>
-								!! textAlign?.desktop || !! textAlign?.tablet || !! textAlign?.mobile
+								!! textAlign?.desktop ||
+								!! textAlign?.tablet ||
+								!! textAlign?.mobile
 							}
-							onDeselect={ () => setAttributes( { textAlign: {} } ) }
+							onDeselect={ () =>
+								setAttributes( { textAlign: {} } )
+							}
 						>
 							<ResponsiveOverride
-								label={ __( 'Content text align', 'sgs-blocks' ) }
+								label={ __(
+									'Content text align',
+									'sgs-blocks'
+								) }
 								value={ textAlign }
-								onChange={ ( obj ) => setAttributes( { textAlign: obj } ) }
+								onChange={ ( obj ) =>
+									setAttributes( { textAlign: obj } )
+								}
 							>
 								{ ( { ownValue, setOwnValue } ) => (
 									<SelectControl
@@ -855,7 +1105,9 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 								( minHeight?.mobile ?? '360px' ) !== '360px'
 							}
 							onDeselect={ () =>
-								setAttributes( { minHeight: { mobile: '360px' } } )
+								setAttributes( {
+									minHeight: { mobile: '360px' },
+								} )
 							}
 						>
 							{ /* minHeight is a TIER OBJECT {desktop,tablet,mobile}
@@ -868,7 +1120,9 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 							<ResponsiveOverride
 								label={ __( 'Min height', 'sgs-blocks' ) }
 								value={ minHeight }
-								onChange={ ( obj ) => setAttributes( { minHeight: obj } ) }
+								onChange={ ( obj ) =>
+									setAttributes( { minHeight: obj } )
+								}
 							>
 								{ ( { ownValue, setOwnValue } ) => (
 									<SelectControl
@@ -887,17 +1141,25 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 										// NEITHER list, so a hero-specific list matching a hero-specific
 										// default is the more honest approach, not the odd one out.
 										options={ [
-											{ label: __( 'Auto (fit content)', 'sgs-blocks' ), value: '' },
-											{ label: '50vh',  value: '50vh'  },
-											{ label: '75vh',  value: '75vh'  },
-											{ label: '80vh',  value: '80vh'  },
+											{
+												label: __(
+													'Auto (fit content)',
+													'sgs-blocks'
+												),
+												value: '',
+											},
+											{ label: '50vh', value: '50vh' },
+											{ label: '75vh', value: '75vh' },
+											{ label: '80vh', value: '80vh' },
 											{ label: '100vh', value: '100vh' },
 											{ label: '360px', value: '360px' },
 											{ label: '400px', value: '400px' },
 											{ label: '520px', value: '520px' },
 											{ label: '600px', value: '600px' },
 										] }
-										onChange={ ( val ) => setOwnValue( val ) }
+										onChange={ ( val ) =>
+											setOwnValue( val )
+										}
 										__nextHasNoMarginBottom
 										__next40pxDefaultSize
 									/>
@@ -912,22 +1174,34 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 								!! attributes.contentGap?.tablet ||
 								!! attributes.contentGap?.mobile
 							}
-							onDeselect={ () => setAttributes( { contentGap: {} } ) }
+							onDeselect={ () =>
+								setAttributes( { contentGap: {} } )
+							}
 						>
 							<ResponsiveOverride
-								label={ __( 'Space between content items', 'sgs-blocks' ) }
+								label={ __(
+									'Space between content items',
+									'sgs-blocks'
+								) }
 								value={ attributes.contentGap }
-								onChange={ ( obj ) => setAttributes( { contentGap: obj } ) }
+								onChange={ ( obj ) =>
+									setAttributes( { contentGap: obj } )
+								}
 							>
 								{ ( { ownValue, setOwnValue } ) => (
 									<SgsLengthControl
 										presets={ false }
 										scale="spacing"
-										label={ __( 'Space between content items', 'sgs-blocks' ) }
+										label={ __(
+											'Space between content items',
+											'sgs-blocks'
+										) }
 										hideLabelFromVision
 										value={ ownValue || '' }
 										units={ CONTENT_GAP_UNITS }
-										onChange={ ( val ) => setOwnValue( val || '' ) }
+										onChange={ ( val ) =>
+											setOwnValue( val || '' )
+										}
 									/>
 								) }
 							</ResponsiveOverride>
@@ -938,9 +1212,12 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 							hasValue={ () =>
 								!! contentBackground ||
 								!! contentBackgroundGradient ||
-								Object.keys( contentPadding?.desktop ?? {} ).length > 0 ||
-								Object.keys( contentPadding?.tablet ?? {} ).length > 0 ||
-								Object.keys( contentPadding?.mobile ?? {} ).length > 0
+								Object.keys( contentPadding?.desktop ?? {} )
+									.length > 0 ||
+								Object.keys( contentPadding?.tablet ?? {} )
+									.length > 0 ||
+								Object.keys( contentPadding?.mobile ?? {} )
+									.length > 0
 							}
 							onDeselect={ () =>
 								setAttributes( {
@@ -953,13 +1230,28 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 								} )
 							}
 						>
-							<p style={ { fontWeight: 600, margin: '0 0 4px' } }>{ __( 'Content area', 'sgs-blocks' ) }</p>
-							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Background', 'sgs-blocks' ) }</p>
+							<p style={ { fontWeight: 600, margin: '0 0 4px' } }>
+								{ __( 'Content area', 'sgs-blocks' ) }
+							</p>
+							<p
+								style={ {
+									fontWeight: 600,
+									margin: '16px 0 4px',
+								} }
+							>
+								{ __( 'Background', 'sgs-blocks' ) }
+							</p>
 							<GradientOverlayControl
 								attributes={ attributes }
 								setAttributes={ setAttributes }
-								attrNames={ gradientOverlayAttrKeys( 'contentBackground', { solid: 'contentBackground' } ) }
-								solidLabel={ __( 'Content background colour', 'sgs-blocks' ) }
+								attrNames={ gradientOverlayAttrKeys(
+									'contentBackground',
+									{ solid: 'contentBackground' }
+								) }
+								solidLabel={ __(
+									'Content background colour',
+									'sgs-blocks'
+								) }
 							/>
 							{ /* contentPadding is a TIER-OF-BOXES OBJECT {desktop,tablet,mobile}
 							     ONE attr; each tier holds the 4-side box. */ }
@@ -978,19 +1270,26 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 										mobile: 'mobile',
 									}[ tier ];
 									setAttributes( {
-										contentPadding: { ...contentPadding, [ tierKey ]: next },
+										contentPadding: {
+											...contentPadding,
+											[ tierKey ]: next,
+										},
 									} );
 								} }
 							/>
 						</ToolsPanelItem>
-
 					</ToolsPanel>
 					{ [ 'nav', 'aside' ].includes( attributes.tagName ) && (
 						<TextControl
 							label={ __( 'Landmark label', 'sgs-blocks' ) }
 							value={ attributes.ariaLabel || '' }
-							onChange={ ( val ) => setAttributes( { ariaLabel: val } ) }
-							help={ __( 'Required when a page has more than one Nav or Aside — lets screen readers tell them apart (e.g. "Primary", "Footer links", "Related articles").', 'sgs-blocks' ) }
+							onChange={ ( val ) =>
+								setAttributes( { ariaLabel: val } )
+							}
+							help={ __(
+								'Required when a page has more than one Nav or Aside — lets screen readers tell them apart (e.g. "Primary", "Footer links", "Related articles").',
+								'sgs-blocks'
+							) }
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
@@ -1009,7 +1308,10 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 				   (class-sgs-container-wrapper.php:3057-3068), a separate
 				   element from the "Container / Entire Block" panel above
 				   (which governs the OUTER wrapper). */ }
-				<PanelBody title={ __( 'Alignment & grid', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Alignment & grid', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					{ /* The ToolsPanel label deliberately does NOT repeat the PanelBody
 					   title above it (rule 29 / Spec 35 Part A5 — mirrors the
 					   "Container / Entire Block" panel's own comment a few hundred
@@ -1033,11 +1335,16 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 							<ToolsPanelItem
 								label={ __( 'Flex direction', 'sgs-blocks' ) }
 								hasValue={ () => flexDirection !== '' }
-								onDeselect={ () => setAttributes( { flexDirection: '' } ) }
+								onDeselect={ () =>
+									setAttributes( { flexDirection: '' } )
+								}
 								isShownByDefault
 							>
 								<ToggleGroupControl
-									label={ __( 'Flex direction', 'sgs-blocks' ) }
+									label={ __(
+										'Flex direction',
+										'sgs-blocks'
+									) }
 									value={ flexDirection || '' }
 									onChange={ ( val ) =>
 										setAttributes( { flexDirection: val } )
@@ -1063,8 +1370,12 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 						{ ! isGrid && (
 							<ToolsPanelItem
 								label={ __( 'Flex wrap', 'sgs-blocks' ) }
-								hasValue={ () => ( flexWrap || 'wrap' ) !== 'wrap' }
-								onDeselect={ () => setAttributes( { flexWrap: 'wrap' } ) }
+								hasValue={ () =>
+									( flexWrap || 'wrap' ) !== 'wrap'
+								}
+								onDeselect={ () =>
+									setAttributes( { flexWrap: 'wrap' } )
+								}
 							>
 								<SelectControl
 									label={ __( 'Flex wrap', 'sgs-blocks' ) }
@@ -1180,22 +1491,42 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 								</ToolsPanelItem>
 								<ToolsPanelItem
 									label={ __( 'Row template', 'sgs-blocks' ) }
-									hasValue={ () => !! gridTemplateRows?.desktop || !! gridTemplateRows?.tablet || !! gridTemplateRows?.mobile }
-									onDeselect={ () => setAttributes( { gridTemplateRows: {} } ) }
+									hasValue={ () =>
+										!! gridTemplateRows?.desktop ||
+										!! gridTemplateRows?.tablet ||
+										!! gridTemplateRows?.mobile
+									}
+									onDeselect={ () =>
+										setAttributes( {
+											gridTemplateRows: {},
+										} )
+									}
 								>
 									<ResponsiveOverride
-										label={ __( 'Row template', 'sgs-blocks' ) }
+										label={ __(
+											'Row template',
+											'sgs-blocks'
+										) }
 										value={ gridTemplateRows }
 										onChange={ ( obj ) =>
-											setAttributes( { gridTemplateRows: obj } )
+											setAttributes( {
+												gridTemplateRows: obj,
+											} )
 										}
 									>
-										{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+										{ ( {
+											ownValue,
+											effectiveValue,
+											inherited,
+											setOwnValue,
+										} ) => (
 											<TextControl
 												value={ ownValue }
 												onChange={ setOwnValue }
 												placeholder={
-													inherited ? effectiveValue : ''
+													inherited
+														? effectiveValue
+														: ''
 												}
 												help={ __(
 													"CSS grid-template-rows, e.g. 'auto 1fr'. Leave blank for the browser default.",
@@ -1210,13 +1541,20 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 								<ToolsPanelItem
 									label={ __( 'Auto rows', 'sgs-blocks' ) }
 									hasValue={ () => gridAutoRows !== '' }
-									onDeselect={ () => setAttributes( { gridAutoRows: '' } ) }
+									onDeselect={ () =>
+										setAttributes( { gridAutoRows: '' } )
+									}
 								>
 									<TextControl
-										label={ __( 'Auto rows', 'sgs-blocks' ) }
+										label={ __(
+											'Auto rows',
+											'sgs-blocks'
+										) }
 										value={ gridAutoRows || '' }
 										onChange={ ( val ) =>
-											setAttributes( { gridAutoRows: val } )
+											setAttributes( {
+												gridAutoRows: val,
+											} )
 										}
 										help={ __(
 											"Sets grid-auto-rows, e.g. '1fr' for equal-height rows or 'minmax(100px,auto)'.",
@@ -1230,21 +1568,34 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 						) }
 						{ isSplit && (
 							<ToolsPanelItem
-								label={ __( 'Split layout grid', 'sgs-blocks' ) }
+								label={ __(
+									'Split layout grid',
+									'sgs-blocks'
+								) }
 								hasValue={ () =>
 									!! gridTemplateColumns ||
-										!! splitContentOrder?.desktop ||
+									!! splitContentOrder?.desktop ||
 									!! splitContentOrder?.tablet ||
-									( splitContentOrder?.mobile ?? 'media-first' ) !== 'media-first'
+									( splitContentOrder?.mobile ??
+										'media-first' ) !== 'media-first'
 								}
 								onDeselect={ () =>
 									setAttributes( {
 										gridTemplateColumns: '',
-										splitContentOrder: { mobile: 'media-first' },
+										splitContentOrder: {
+											mobile: 'media-first',
+										},
 									} )
 								}
 							>
-								<p style={ { fontWeight: 600, margin: '0 0 4px' } }>{ __( 'Split layout grid', 'sgs-blocks' ) }</p>
+								<p
+									style={ {
+										fontWeight: 600,
+										margin: '0 0 4px',
+									} }
+								>
+									{ __( 'Split layout grid', 'sgs-blocks' ) }
+								</p>
 								{ /*
 								     `gridTemplateColumns` is a TIER OBJECT (Spec 35 pass 3a) —
 								     ONE attr holding {desktop,tablet,mobile}. ResponsiveOverride
@@ -1255,9 +1606,19 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 								<ResponsiveOverride
 									label={ __( 'Column ratio', 'sgs-blocks' ) }
 									value={ gridTemplateColumns }
-									onChange={ ( obj ) => setAttributes( { gridTemplateColumns: obj } ) }
+									onChange={ ( obj ) =>
+										setAttributes( {
+											gridTemplateColumns: obj,
+										} )
+									}
 								>
-									{ ( { ownValue, effectiveValue, inherited, setOwnValue, tier } ) => {
+									{ ( {
+										ownValue,
+										effectiveValue,
+										inherited,
+										setOwnValue,
+										tier,
+									} ) => {
 										// The preset picker is a DESKTOP affordance: the presets are
 										// whole-layout ratios, while a tablet/mobile override is a
 										// free-text refinement of the inherited desktop choice.
@@ -1265,25 +1626,59 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 										// payload (ResponsiveOverride.js:116) — the active tier from
 										// the ONE global device toggle.
 										if ( 'desktop' === tier ) {
-											const isCustom = ! COLUMN_RATIO_PRESETS.some(
-												( p ) => p.value !== 'custom' && p.value === ownValue
-											);
+											const isCustom =
+												! COLUMN_RATIO_PRESETS.some(
+													( p ) =>
+														p.value !== 'custom' &&
+														p.value === ownValue
+												);
 											return (
 												<>
 													<SelectControl
-														label={ __( 'Preset', 'sgs-blocks' ) }
-														value={ isCustom ? 'custom' : ownValue }
-														options={ COLUMN_RATIO_PRESETS }
-														onChange={ ( val ) => { if ( val !== 'custom' ) { setOwnValue( val ); } } }
+														label={ __(
+															'Preset',
+															'sgs-blocks'
+														) }
+														value={
+															isCustom
+																? 'custom'
+																: ownValue
+														}
+														options={
+															COLUMN_RATIO_PRESETS
+														}
+														onChange={ ( val ) => {
+															if (
+																val !== 'custom'
+															) {
+																setOwnValue(
+																	val
+																);
+															}
+														} }
 														__nextHasNoMarginBottom
 														__next40pxDefaultSize
 													/>
 													{ isCustom && (
 														<TextControl
-															label={ __( 'Custom ratio', 'sgs-blocks' ) }
-															help={ __( 'CSS grid-template-columns (e.g. "3fr 2fr").', 'sgs-blocks' ) }
-															value={ ownValue || '' }
-															onChange={ ( val ) => setOwnValue( val ) }
+															label={ __(
+																'Custom ratio',
+																'sgs-blocks'
+															) }
+															help={ __(
+																'CSS grid-template-columns (e.g. "3fr 2fr").',
+																'sgs-blocks'
+															) }
+															value={
+																ownValue || ''
+															}
+															onChange={ (
+																val
+															) =>
+																setOwnValue(
+																	val
+																)
+															}
 															__nextHasNoMarginBottom
 															__next40pxDefaultSize
 														/>
@@ -1293,10 +1688,19 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 										}
 										return (
 											<TextControl
-												help={ __( 'Blank = inherit the tier above.', 'sgs-blocks' ) }
+												help={ __(
+													'Blank = inherit the tier above.',
+													'sgs-blocks'
+												) }
 												value={ ownValue || '' }
-												placeholder={ inherited ? effectiveValue || '' : '' }
-												onChange={ ( val ) => setOwnValue( val ) }
+												placeholder={
+													inherited
+														? effectiveValue || ''
+														: ''
+												}
+												onChange={ ( val ) =>
+													setOwnValue( val )
+												}
 												__nextHasNoMarginBottom
 												__next40pxDefaultSize
 											/>
@@ -1314,20 +1718,45 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 								     render-prop's `tier` selects them exactly as the old
 								     breakpoint-keyed maps did. */ }
 								<ResponsiveOverride
-									label={ __( 'Column / stacking order', 'sgs-blocks' ) }
+									label={ __(
+										'Column / stacking order',
+										'sgs-blocks'
+									) }
 									value={ splitContentOrder }
-									onChange={ ( obj ) => setAttributes( { splitContentOrder: obj } ) }
+									onChange={ ( obj ) =>
+										setAttributes( {
+											splitContentOrder: obj,
+										} )
+									}
 								>
 									{ ( { ownValue, setOwnValue, tier } ) => {
 										const orderLabelMap = {
-											desktop: __( 'Desktop order', 'sgs-blocks' ),
-											tablet: __( 'Tablet order', 'sgs-blocks' ),
-											mobile: __( 'Mobile stacking order', 'sgs-blocks' ),
+											desktop: __(
+												'Desktop order',
+												'sgs-blocks'
+											),
+											tablet: __(
+												'Tablet order',
+												'sgs-blocks'
+											),
+											mobile: __(
+												'Mobile stacking order',
+												'sgs-blocks'
+											),
 										};
 										const orderHelpMap = {
-											desktop: __( 'Which column sits on the left when content and image are side by side.', 'sgs-blocks' ),
-											tablet: __( 'Overrides desktop for tablet screens only. If your tablet grid is side by side this sets left/right; if it stacks (single column) this sets top/bottom.', 'sgs-blocks' ),
-											mobile: __( 'Mobile always stacks into a single column — this sets which section shows on top.', 'sgs-blocks' ),
+											desktop: __(
+												'Which column sits on the left when content and image are side by side.',
+												'sgs-blocks'
+											),
+											tablet: __(
+												'Overrides desktop for tablet screens only. If your tablet grid is side by side this sets left/right; if it stacks (single column) this sets top/bottom.',
+												'sgs-blocks'
+											),
+											mobile: __(
+												'Mobile always stacks into a single column — this sets which section shows on top.',
+												'sgs-blocks'
+											),
 										};
 										// Mobile has no blank/inherit option (MOBILE_ORDER_OPTIONS
 										// mirrors render.php's own 'media-first' fallback default);
@@ -1338,10 +1767,23 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 										return (
 											<SelectControl
 												label={ orderLabelMap[ tier ] }
-												value={ 'mobile' === tier ? ( ownValue || 'media-first' ) : ( ownValue || '' ) }
-												options={ ( 'mobile' === tier && MOBILE_ORDER_OPTIONS ) || ( 'tablet' === tier && TABLET_ORDER_OPTIONS ) || DESKTOP_ORDER_OPTIONS }
+												value={
+													'mobile' === tier
+														? ownValue ||
+														  'media-first'
+														: ownValue || ''
+												}
+												options={
+													( 'mobile' === tier &&
+														MOBILE_ORDER_OPTIONS ) ||
+													( 'tablet' === tier &&
+														TABLET_ORDER_OPTIONS ) ||
+													DESKTOP_ORDER_OPTIONS
+												}
 												help={ orderHelpMap[ tier ] }
-												onChange={ ( val ) => setOwnValue( val ) }
+												onChange={ ( val ) =>
+													setOwnValue( val )
+												}
 												__nextHasNoMarginBottom
 												__next40pxDefaultSize
 											/>
@@ -1364,29 +1806,46 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 				   that no longer exist. Individual panels still needed are composed
 				   directly; the min-height duplicate ("Section (outer)") is dropped
 				   since hero already has its own min-height ResponsiveControl above. */ }
-				<PanelBody title={ __( 'Section (outer)', 'sgs-blocks' ) } initialOpen={ false }>
-					<WidthPanel attributes={ attributes } setAttributes={ setAttributes } />
-
+				<PanelBody
+					title={ __( 'Section (outer)', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<WidthPanel
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
 				</PanelBody>
-
 
 				{ /* Root padding & margin — box-object interface contract (mirrors
 					sgs/container). `padding` and `margin` are each
 					ONE tier-of-boxes object attr {desktop,tablet,mobile}, each tier a
 					{top,right,bottom,left} box; the shared wrapper reads the tiers at
 					@media breakpoints. */ }
-				<PanelBody title={ __( 'Padding & margin', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Padding & margin', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<ResponsiveOverride
 						value={ attributes.padding }
-						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { padding: obj } )
+						}
 					>
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
@@ -1397,21 +1856,36 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
 				</PanelBody>
 
-				<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } name={ name } />
+				<BackgroundPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					name={ name }
+				/>
 
 				{ /* Shadow — legacy string token attr (sm/md/lg/glow OR a raw box-shadow
 					CSS string built by ShadowControl), resolved by sgs_shadow_value()
 					(Spec 35 T2.2b). */ }
-				<PanelBody title={ __( 'Shadow', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Shadow', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<ShadowControl
 						label={ __( 'Shadow', 'sgs-blocks' ) }
 						attributes={ attributes }
@@ -1424,12 +1898,18 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 					/>
 				</PanelBody>
 
-				<ShapeDividersPanel attributes={ attributes } setAttributes={ setAttributes } />
+				<ShapeDividersPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 			</InspectorControls>
 
 			<div { ...blockProps }>
 				{ indentPreviewCss && <style>{ indentPreviewCss }</style> }
-				<BackgroundLayers media={ bgPreview.media } overlay={ bgPreview.overlay } />
+				<BackgroundLayers
+					media={ bgPreview.media }
+					overlay={ bgPreview.overlay }
+				/>
 				{ svgLayer }
 
 				{ /* FR-22-6: content column is the InnerBlocks slot (label + heading + text + buttons).
@@ -1437,7 +1917,10 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 				   frontend's `.sgs-container__inner`) whenever Content band padding is set —
 				   see the `showContentBand` derivation above for why split never wraps. */ }
 				{ showContentBand ? (
-					<div className="sgs-container__inner sgs-hero__content-band" style={ contentBandStyle }>
+					<div
+						className="sgs-container__inner sgs-hero__content-band"
+						style={ contentBandStyle }
+					>
 						<div { ...innerBlocksProps } />
 					</div>
 				) : (
@@ -1445,14 +1928,35 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 				) }
 
 				{ /* The split media: the shared slot preview inside the hero's grid cell, as render.php prints it. */ }
-				{ isSplit && splitShown && ( hasFile( splitShown ) || splitShown.markup ) && (
-					<div className="sgs-hero__media" style={ Object.keys( mediaWrapperStyle ).length ? mediaWrapperStyle : undefined }>
-						{ splitPreview.css && <style>{ splitPreview.css }</style> }
-						<span className={ [ 'sgs-media', 'sgs-media--renderer', 'sgs-hero__split-media', splitPreview.className ].join( ' ' ) }>
-							<SplitMediaElement shown={ splitShown } alt={ splitAlt } />
-						</span>
-					</div>
-				) }
+				{ isSplit &&
+					splitShown &&
+					( hasFile( splitShown ) || splitShown.markup ) && (
+						<div
+							className="sgs-hero__media"
+							style={
+								Object.keys( mediaWrapperStyle ).length
+									? mediaWrapperStyle
+									: undefined
+							}
+						>
+							{ splitPreview.css && (
+								<style>{ splitPreview.css }</style>
+							) }
+							<span
+								className={ [
+									'sgs-media',
+									'sgs-media--renderer',
+									'sgs-hero__split-media',
+									splitPreview.className,
+								].join( ' ' ) }
+							>
+								<SplitMediaElement
+									shown={ splitShown }
+									alt={ splitAlt }
+								/>
+							</span>
+						</div>
+					) }
 			</div>
 		</>
 	);

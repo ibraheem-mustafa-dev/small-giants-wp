@@ -12,7 +12,11 @@ import { __, sprintf } from '@wordpress/i18n';
 import { useRef, useState } from '@wordpress/element';
 import ResponsiveOverride from '../ResponsiveOverride.js';
 import { slotAccess } from './fieldBase.js';
-import { deviceName, resolveTierSource, useActiveDevice } from './deviceValues.js';
+import {
+	deviceName,
+	resolveTierSource,
+	useActiveDevice,
+} from './deviceValues.js';
 import './FocalField.css';
 
 const CENTRE = { x: 0.5, y: 0.5 };
@@ -25,7 +29,8 @@ const QUICK_PICKS = [
 	[ __( 'Right', 'sgs-blocks' ), { x: 1, y: 0.5 } ],
 ];
 
-const clamp = ( n ) => Math.min( 1, Math.max( 0, Number.isFinite( n ) ? n : 0.5 ) );
+const clamp = ( n ) =>
+	Math.min( 1, Math.max( 0, Number.isFinite( n ) ? n : 0.5 ) );
 const percent = ( n ) => Math.round( clamp( n ) * 100 );
 
 /**
@@ -33,12 +38,21 @@ const percent = ( n ) => Math.round( clamp( n ) * 100 );
  * @return {boolean} True for a usable `{x,y}`.
  */
 export function isPoint( value ) {
-	return !! value && 'object' === typeof value && Number.isFinite( value.x ) && Number.isFinite( value.y );
+	return (
+		!! value &&
+		'object' === typeof value &&
+		Number.isFinite( value.x ) &&
+		Number.isFinite( value.y )
+	);
 }
 
 /** The picture the picker draws: the device's file, or a video's cover image. */
 function pictureFor( source ) {
-	return source?.poster?.url || ( 'video' === source?.kind ? '' : source?.url ) || '';
+	return (
+		source?.poster?.url ||
+		( 'video' === source?.kind ? '' : source?.url ) ||
+		''
+	);
 }
 
 export default function FocalField( { attributes, setAttributes, prefix } ) {
@@ -49,7 +63,11 @@ export default function FocalField( { attributes, setAttributes, prefix } ) {
 	const [ announcement, setAnnouncement ] = useState( '' );
 	const [ draft, setDraft ] = useState( {} );
 
-	const media = resolveTierSource( access.read( 'Source' ), device, ( s ) => !! ( s?.url || s?.poster?.url ) );
+	const media = resolveTierSource(
+		access.read( 'Source' ),
+		device,
+		( s ) => !! ( s?.url || s?.poster?.url )
+	);
 	const picture = pictureFor( media.value );
 	const ownFile = media.own && 'desktop' !== device;
 
@@ -60,36 +78,68 @@ export default function FocalField( { attributes, setAttributes, prefix } ) {
 			onChange={ ( next ) => access.write( { Focal: next } ) }
 			desktopReset
 		>
-			{ ( { tier, effectiveValue, inherited, sourceTier, setOwnValue } ) => {
-				const point = isPoint( effectiveValue ) ? effectiveValue : CENTRE;
+			{ ( {
+				tier,
+				effectiveValue,
+				inherited,
+				sourceTier,
+				setOwnValue,
+			} ) => {
+				const point = isPoint( effectiveValue )
+					? effectiveValue
+					: CENTRE;
 				const isDefault = ! isPoint( effectiveValue );
 				const set = ( next ) => {
 					const x = clamp( next.x );
 					const y = clamp( next.y );
-					setOwnValue( { x: Math.round( x * 100 ) / 100, y: Math.round( y * 100 ) / 100 } );
+					setOwnValue( {
+						x: Math.round( x * 100 ) / 100,
+						y: Math.round( y * 100 ) / 100,
+					} );
 					setAnnouncement(
-						sprintf( /* translators: 1: percent across, 2: percent down. */ __( 'Focal point %1$d%% across, %2$d%% down', 'sgs-blocks' ), percent( x ), percent( y ) )
+						sprintf(
+							/* translators: 1: percent across, 2: percent down. */ __(
+								'Focal point %1$d%% across, %2$d%% down',
+								'sgs-blocks'
+							),
+							percent( x ),
+							percent( y )
+						)
 					);
 				};
 				const fromPointer = ( event ) => {
 					// The drawn picture, not the letterboxed area around it: the stored point is the photo's own fraction.
 					const box = frame.current?.getBoundingClientRect();
 					if ( box && box.width && box.height ) {
-						set( { x: ( event.clientX - box.left ) / box.width, y: ( event.clientY - box.top ) / box.height } );
+						set( {
+							x: ( event.clientX - box.left ) / box.width,
+							y: ( event.clientY - box.top ) / box.height,
+						} );
 					}
 				};
 				const onKeyDown = ( event ) => {
 					const step = event.shiftKey ? 0.1 : 0.01;
-					const moves = { ArrowLeft: [ -step, 0 ], ArrowRight: [ step, 0 ], ArrowUp: [ 0, -step ], ArrowDown: [ 0, step ] };
+					const moves = {
+						ArrowLeft: [ -step, 0 ],
+						ArrowRight: [ step, 0 ],
+						ArrowUp: [ 0, -step ],
+						ArrowDown: [ 0, step ],
+					};
 					if ( moves[ event.key ] ) {
 						event.preventDefault();
-						set( { x: point.x + moves[ event.key ][ 0 ], y: point.y + moves[ event.key ][ 1 ] } );
+						set( {
+							x: point.x + moves[ event.key ][ 0 ],
+							y: point.y + moves[ event.key ][ 1 ],
+						} );
 					}
 				};
 				return (
 					<div className="sgs-focal-field">
 						<p className="sgs-focal-field__help">
-							{ __( 'Choose the part of the photo that must stay in view when it is cropped.', 'sgs-blocks' ) }
+							{ __(
+								'Choose the part of the photo that must stay in view when it is cropped.',
+								'sgs-blocks'
+							) }
 						</p>
 						<div
 							className="sgs-focal-field__area"
@@ -97,7 +147,10 @@ export default function FocalField( { attributes, setAttributes, prefix } ) {
 							tabIndex={ 0 }
 							aria-label={ sprintf(
 								/* translators: 1: device name, 2: percent across, 3: percent down. */
-								__( 'Focal point picker on %1$s, at %2$d%% across and %3$d%% down. Use the arrow keys to move the point.', 'sgs-blocks' ),
+								__(
+									'Focal point picker on %1$s, at %2$d%% across and %3$d%% down. Use the arrow keys to move the point.',
+									'sgs-blocks'
+								),
 								deviceName( tier ),
 								percent( point.x ),
 								percent( point.y )
@@ -105,29 +158,52 @@ export default function FocalField( { attributes, setAttributes, prefix } ) {
 							onKeyDown={ onKeyDown }
 							onPointerDown={ ( event ) => {
 								dragging.current = true;
-								event.currentTarget.setPointerCapture?.( event.pointerId );
+								event.currentTarget.setPointerCapture?.(
+									event.pointerId
+								);
 								fromPointer( event );
 							} }
-							onPointerMove={ ( event ) => dragging.current && fromPointer( event ) }
+							onPointerMove={ ( event ) =>
+								dragging.current && fromPointer( event )
+							}
 							onPointerUp={ () => {
 								dragging.current = false;
 							} }
 						>
 							{ picture ? (
-								<span ref={ frame } className="sgs-focal-field__frame">
-									<img className="sgs-focal-field__picture" src={ picture } alt="" draggable="false" />
+								<span
+									ref={ frame }
+									className="sgs-focal-field__frame"
+								>
+									<img
+										className="sgs-focal-field__picture"
+										src={ picture }
+										alt=""
+										draggable="false"
+									/>
 									<span
 										className="sgs-focal-field__point"
 										aria-hidden="true"
-										style={ { left: `${ percent( point.x ) }%`, top: `${ percent( point.y ) }%` } }
+										style={ {
+											left: `${ percent( point.x ) }%`,
+											top: `${ percent( point.y ) }%`,
+										} }
 									/>
 								</span>
 							) : (
-								<span className="sgs-focal-field__empty">{ __( 'Choose a photo to set its focal point.', 'sgs-blocks' ) }</span>
+								<span className="sgs-focal-field__empty">
+									{ __(
+										'Choose a photo to set its focal point.',
+										'sgs-blocks'
+									) }
+								</span>
 							) }
 						</div>
 						<div className="sgs-focal-field__inputs">
-							{ [ [ 'x', __( 'X', 'sgs-blocks' ) ], [ 'y', __( 'Y', 'sgs-blocks' ) ] ].map( ( [ axis, name ] ) => (
+							{ [
+								[ 'x', __( 'X', 'sgs-blocks' ) ],
+								[ 'y', __( 'Y', 'sgs-blocks' ) ],
+							].map( ( [ axis, name ] ) => (
 								<label key={ axis }>
 									{ name }
 									<input
@@ -135,37 +211,87 @@ export default function FocalField( { attributes, setAttributes, prefix } ) {
 										min="0"
 										max="100"
 										step="1"
-										aria-label={ sprintf( /* translators: 1: axis, 2: device name. */ __( 'Focal point %1$s percent on %2$s', 'sgs-blocks' ), name, deviceName( tier ) ) }
-										value={ undefined === draft[ axis ] ? percent( point[ axis ] ) : draft[ axis ] }
+										aria-label={ sprintf(
+											/* translators: 1: axis, 2: device name. */ __(
+												'Focal point %1$s percent on %2$s',
+												'sgs-blocks'
+											),
+											name,
+											deviceName( tier )
+										) }
+										value={
+											undefined === draft[ axis ]
+												? percent( point[ axis ] )
+												: draft[ axis ]
+										}
 										onChange={ ( e ) => {
 											// A cleared box stays empty until a number is typed; nothing is written for it.
 											if ( '' === e.target.value ) {
-												setDraft( { ...draft, [ axis ]: '' } );
+												setDraft( {
+													...draft,
+													[ axis ]: '',
+												} );
 												return;
 											}
-											setDraft( { ...draft, [ axis ]: undefined } );
-											set( { ...point, [ axis ]: Number( e.target.value ) / 100 } );
+											setDraft( {
+												...draft,
+												[ axis ]: undefined,
+											} );
+											set( {
+												...point,
+												[ axis ]:
+													Number( e.target.value ) /
+													100,
+											} );
 										} }
-										onBlur={ () => setDraft( { ...draft, [ axis ]: undefined } ) }
+										onBlur={ () =>
+											setDraft( {
+												...draft,
+												[ axis ]: undefined,
+											} )
+										}
 									/>
 									%
 								</label>
 							) ) }
 						</div>
-						{ isDefault && <p className="sgs-focal-field__state">{ __( 'Centre (default)', 'sgs-blocks' ) }</p> }
-						<div className="sgs-focal-field__picks" role="group" aria-label={ __( 'Quick picks', 'sgs-blocks' ) }>
+						{ isDefault && (
+							<p className="sgs-focal-field__state">
+								{ __( 'Centre (default)', 'sgs-blocks' ) }
+							</p>
+						) }
+						<div
+							className="sgs-focal-field__picks"
+							role="group"
+							aria-label={ __( 'Quick picks', 'sgs-blocks' ) }
+						>
 							{ QUICK_PICKS.map( ( [ label, pick ] ) => (
-								<button key={ label } type="button" className="sgs-focal-field__pick" onClick={ () => set( pick ) }>
+								<button
+									key={ label }
+									type="button"
+									className="sgs-focal-field__pick"
+									onClick={ () => set( pick ) }
+								>
 									{ label }
 								</button>
 							) ) }
 						</div>
 						{ ownFile && inherited && sourceTier && (
 							<p className="sgs-focal-field__note">
-								{ sprintf( /* translators: %s: the wider device. */ __( "Using %s's focal point on this image.", 'sgs-blocks' ), deviceName( sourceTier ) ) }
+								{ sprintf(
+									/* translators: %s: the wider device. */ __(
+										"Using %s's focal point on this image.",
+										'sgs-blocks'
+									),
+									deviceName( sourceTier )
+								) }
 							</p>
 						) }
-						<p className="sgs-focal-field__live" role="status" aria-live="polite">
+						<p
+							className="sgs-focal-field__live"
+							role="status"
+							aria-live="polite"
+						>
 							{ announcement }
 						</p>
 					</div>

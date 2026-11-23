@@ -66,8 +66,8 @@ export function initDetachChips( doc = document, win = window ) {
 		);
 		const burger = uid
 			? doc.querySelector(
-				`.${ uid }:not(.sgs-nav-bar-menu__detach) .sgs-nav-bar-menu__toggle-wrap .sgs-nav-bar-menu__burger`
-			)
+					`.${ uid }:not(.sgs-nav-bar-menu__detach) .sgs-nav-bar-menu__toggle-wrap .sgs-nav-bar-menu__burger`
+			  )
 			: null;
 		if ( ! burger ) {
 			return;
@@ -87,7 +87,12 @@ export function initDetachChips( doc = document, win = window ) {
 			frame = 0;
 			chip.classList.toggle(
 				'is-detached',
-				shouldDetach( offScreen, win.scrollY, after, tierForWidth( win.innerWidth ) )
+				shouldDetach(
+					offScreen,
+					win.scrollY,
+					after,
+					tierForWidth( win.innerWidth )
+				)
 			);
 		};
 		const schedule = () => {

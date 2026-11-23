@@ -115,10 +115,16 @@ export default function useDrawerNotice( { clientId, drawerRef } ) {
 	// cannot be previewed here) rather than leaving a non-coder to read its absence
 	// as a fault.
 	const showActiveDrawerNotice =
-		! hasPickedDrawer && ! drawerState.suppress && ! drawerState.matches && activeDrawerMatches;
+		! hasPickedDrawer &&
+		! drawerState.suppress &&
+		! drawerState.matches &&
+		activeDrawerMatches;
 
 	const showDrawerNotice =
-		! hasPickedDrawer && ! drawerState.suppress && ! drawerState.matches && ! activeDrawerMatches;
+		! hasPickedDrawer &&
+		! drawerState.suppress &&
+		! drawerState.matches &&
+		! activeDrawerMatches;
 
 	return {
 		effectiveDrawerRef,

@@ -31,13 +31,22 @@ export default function FlowLayoutPanel( { attributes, setAttributes } ) {
 
 	return (
 		<InspectorControls>
-			<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ false }>
+			<PanelBody
+				title={ __( 'Layout', 'sgs-blocks' ) }
+				initialOpen={ false }
+			>
 				<SelectControl
 					label={ __( 'Layout', 'sgs-blocks' ) }
 					value={ flowLayout || 'compact' }
 					options={ [
-						{ label: __( 'Compact', 'sgs-blocks' ), value: 'compact' },
-						{ label: __( 'Showcase (full screen)', 'sgs-blocks' ), value: 'showcase' },
+						{
+							label: __( 'Compact', 'sgs-blocks' ),
+							value: 'compact',
+						},
+						{
+							label: __( 'Showcase (full screen)', 'sgs-blocks' ),
+							value: 'showcase',
+						},
 					] }
 					onChange={ ( val ) => setAttributes( { flowLayout: val } ) }
 					help={ __(

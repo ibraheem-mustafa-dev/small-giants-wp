@@ -16,8 +16,14 @@ export function useFocusPreview() {
 		className: showFocus ? FOCUS_PREVIEW_CLASS : '',
 		control: (
 			<CheckboxControl
-				label={ __( 'Show the focus look in the editor', 'sgs-blocks' ) }
-				help={ __( 'Previews the keyboard focus ring on this button. It is only shown here and is never saved.', 'sgs-blocks' ) }
+				label={ __(
+					'Show the focus look in the editor',
+					'sgs-blocks'
+				) }
+				help={ __(
+					'Previews the keyboard focus ring on this button. It is only shown here and is never saved.',
+					'sgs-blocks'
+				) }
 				checked={ showFocus }
 				onChange={ setShowFocus }
 				__nextHasNoMarginBottom

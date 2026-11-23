@@ -93,11 +93,15 @@ export function findExplicitRoot( blocks, rootBlockName ) {
 	if ( ! Array.isArray( blocks ) || blocks.length === 0 ) {
 		return null;
 	}
-	return blocks.find( ( block ) => block.name === rootBlockName ) || blocks[ 0 ];
+	return (
+		blocks.find( ( block ) => block.name === rootBlockName ) || blocks[ 0 ]
+	);
 }
 
 function ownableKeys( attrs ) {
-	return Object.keys( attrs || {} ).filter( ( key ) => ! NEVER_OWNED.includes( key ) );
+	return Object.keys( attrs || {} ).filter(
+		( key ) => ! NEVER_OWNED.includes( key )
+	);
 }
 
 /**
@@ -112,7 +116,10 @@ function ownableKeys( attrs ) {
 export function collectOwnedKeys( patterns, rootBlockName ) {
 	const keys = new Set();
 	( patterns || [] ).forEach( ( pattern ) => {
-		const root = findExplicitRoot( parseExplicitBlocks( pattern?.content ), rootBlockName );
+		const root = findExplicitRoot(
+			parseExplicitBlocks( pattern?.content ),
+			rootBlockName
+		);
 		if ( root ) {
 			ownableKeys( root.attrs ).forEach( ( key ) => keys.add( key ) );
 		}
@@ -132,10 +139,15 @@ export function collectOwnedKeys( patterns, rootBlockName ) {
 export function collectChildOwnedKeys( patterns, rootBlockName ) {
 	const byName = {};
 	( patterns || [] ).forEach( ( pattern ) => {
-		const root = findExplicitRoot( parseExplicitBlocks( pattern?.content ), rootBlockName );
+		const root = findExplicitRoot(
+			parseExplicitBlocks( pattern?.content ),
+			rootBlockName
+		);
 		( root?.innerBlocks || [] ).forEach( ( child ) => {
 			byName[ child.name ] = byName[ child.name ] || new Set();
-			ownableKeys( child.attrs ).forEach( ( key ) => byName[ child.name ].add( key ) );
+			ownableKeys( child.attrs ).forEach( ( key ) =>
+				byName[ child.name ].add( key )
+			);
 		} );
 	} );
 	return Object.keys( byName ).reduce( ( out, name ) => {
@@ -150,12 +162,16 @@ export function collectChildOwnedKeys( patterns, rootBlockName ) {
  * owns — back to the block type's declared default. Keys no look owns are
  * absent from the result and therefore never written.
  *
- * @param {Array<string>} ownedKeys          Owned attribute names for this block.
- * @param {Object}        lookExplicitAttrs  This look's explicitly-written attributes.
+ * @param {Array<string>} ownedKeys           Owned attribute names for this block.
+ * @param {Object}        lookExplicitAttrs   This look's explicitly-written attributes.
  * @param {Object}        blockTypeAttributes The block type's `attributes` schema.
  * @return {Object} The attribute patch to dispatch.
  */
-export function buildOwnedAttributes( ownedKeys, lookExplicitAttrs, blockTypeAttributes ) {
+export function buildOwnedAttributes(
+	ownedKeys,
+	lookExplicitAttrs,
+	blockTypeAttributes
+) {
 	const explicit = lookExplicitAttrs || {};
 	const schema = blockTypeAttributes || {};
 	return ( ownedKeys || [] ).reduce( ( patch, key ) => {
@@ -174,7 +190,10 @@ export function buildOwnedAttributes( ownedKeys, lookExplicitAttrs, blockTypeAtt
  * @return {Object} A copy minus `metadata`. Never mutates the input.
  */
 export function stripMetadata( attributes ) {
-	if ( ! attributes || ! Object.prototype.hasOwnProperty.call( attributes, 'metadata' ) ) {
+	if (
+		! attributes ||
+		! Object.prototype.hasOwnProperty.call( attributes, 'metadata' )
+	) {
 		return attributes || {};
 	}
 	const { metadata, ...rest } = attributes;

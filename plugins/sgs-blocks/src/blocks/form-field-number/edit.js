@@ -6,7 +6,10 @@ import {
 	SelectControl,
 } from '@wordpress/components';
 import FormFieldAdvancedPanel from '../../components/FormFieldAdvancedPanel';
-import { fieldLabelClasses, fieldDefaultValue } from '../../components/form-field-preview';
+import {
+	fieldLabelClasses,
+	fieldDefaultValue,
+} from '../../components/form-field-preview';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import FieldLabelLayoutPanel from '../../components/FieldLabelLayoutPanel';
 
@@ -96,24 +99,35 @@ export default function Edit( { attributes, setAttributes } ) {
 						onDeselect={ () => setAttributes( { label: '' } ) }
 						isShownByDefault
 					>
-						<SgsFreeTextField type="rich" noLink
+						<SgsFreeTextField
+							type="rich"
+							noLink
 							label={ __( 'Label', 'sgs-blocks' ) }
 							value={ label }
-							onChange={ ( val ) => setAttributes( { label: val } ) }
+							onChange={ ( val ) =>
+								setAttributes( { label: val } )
+							}
 						/>
 					</ToolsPanelItem>
 					<ToolsPanelItem
 						label={ __( 'Column heading', 'sgs-blocks' ) }
 						hasValue={ () => !! attributes.columnHeading }
-						onDeselect={ () => setAttributes( { columnHeading: '' } ) }
+						onDeselect={ () =>
+							setAttributes( { columnHeading: '' } )
+						}
 					>
 						<SgsFreeTextField
 							type="rich"
 							noLink
 							label={ __( 'Column heading', 'sgs-blocks' ) }
 							value={ attributes.columnHeading ?? '' }
-							onChange={ ( val ) => setAttributes( { columnHeading: val } ) }
-							help={ __( 'A short heading drawn beside the box (visual only; the label stays the accessible name).', 'sgs-blocks' ) }
+							onChange={ ( val ) =>
+								setAttributes( { columnHeading: val } )
+							}
+							help={ __(
+								'A short heading drawn beside the box (visual only; the label stays the accessible name).',
+								'sgs-blocks'
+							) }
 						/>
 					</ToolsPanelItem>
 					<ToolsPanelItem
@@ -126,14 +140,21 @@ export default function Edit( { attributes, setAttributes } ) {
 							noLink
 							label={ __( 'Row heading', 'sgs-blocks' ) }
 							value={ attributes.rowHeading ?? '' }
-							onChange={ ( val ) => setAttributes( { rowHeading: val } ) }
-							help={ __( 'A short heading drawn beside the box (visual only; the label stays the accessible name).', 'sgs-blocks' ) }
+							onChange={ ( val ) =>
+								setAttributes( { rowHeading: val } )
+							}
+							help={ __(
+								'A short heading drawn beside the box (visual only; the label stays the accessible name).',
+								'sgs-blocks'
+							) }
 						/>
 					</ToolsPanelItem>
 					<ToolsPanelItem
 						label={ __( 'Required', 'sgs-blocks' ) }
 						hasValue={ () => required !== false }
-						onDeselect={ () => setAttributes( { required: false } ) }
+						onDeselect={ () =>
+							setAttributes( { required: false } )
+						}
 						isShownByDefault
 					>
 						<ToggleControl
@@ -148,7 +169,9 @@ export default function Edit( { attributes, setAttributes } ) {
 					<ToolsPanelItem
 						label={ __( 'Placeholder', 'sgs-blocks' ) }
 						hasValue={ () => placeholder !== '' }
-						onDeselect={ () => setAttributes( { placeholder: '' } ) }
+						onDeselect={ () =>
+							setAttributes( { placeholder: '' } )
+						}
 					>
 						<TextControl
 							label={ __( 'Placeholder', 'sgs-blocks' ) }
@@ -184,7 +207,9 @@ export default function Edit( { attributes, setAttributes } ) {
 							label={ __( 'Width', 'sgs-blocks' ) }
 							value={ width }
 							options={ WIDTH_OPTIONS }
-							onChange={ ( val ) => setAttributes( { width: val } ) }
+							onChange={ ( val ) =>
+								setAttributes( { width: val } )
+							}
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
@@ -197,7 +222,9 @@ export default function Edit( { attributes, setAttributes } ) {
 						<TextControl
 							label={ __( 'Minimum value', 'sgs-blocks' ) }
 							value={ min }
-							onChange={ ( val ) => setAttributes( { min: val } ) }
+							onChange={ ( val ) =>
+								setAttributes( { min: val } )
+							}
 							type="number"
 							help={ __(
 								'Leave blank for no minimum',
@@ -215,7 +242,9 @@ export default function Edit( { attributes, setAttributes } ) {
 						<TextControl
 							label={ __( 'Maximum value', 'sgs-blocks' ) }
 							value={ max }
-							onChange={ ( val ) => setAttributes( { max: val } ) }
+							onChange={ ( val ) =>
+								setAttributes( { max: val } )
+							}
 							type="number"
 							help={ __(
 								'Leave blank for no maximum',
@@ -233,7 +262,9 @@ export default function Edit( { attributes, setAttributes } ) {
 						<TextControl
 							label={ __( 'Step', 'sgs-blocks' ) }
 							value={ step }
-							onChange={ ( val ) => setAttributes( { step: val } ) }
+							onChange={ ( val ) =>
+								setAttributes( { step: val } )
+							}
 							type="number"
 							help={ __(
 								'Increment/decrement amount (default: 1)',
@@ -244,25 +275,43 @@ export default function Edit( { attributes, setAttributes } ) {
 						/>
 					</ToolsPanelItem>
 				</ToolsPanel>
-				<FieldLabelLayoutPanel attributes={ attributes } setAttributes={ setAttributes } showHeadings />
+				<FieldLabelLayoutPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					showHeadings
+				/>
 				<FormFieldAdvancedPanel
 					attributes={ attributes }
 					setAttributes={ setAttributes }
-					features={ [ 'floatingLabel', 'autocomplete', 'inputmode', 'defaultValue', 'valueFromParam', 'msgRequired', 'msgInvalid' ] }
+					features={ [
+						'floatingLabel',
+						'autocomplete',
+						'inputmode',
+						'defaultValue',
+						'valueFromParam',
+						'msgRequired',
+						'msgInvalid',
+					] }
 				/>
 			</InspectorControls>
 
 			<div { ...blockProps }>
 				{ label && (
 					<label
-						className={ 'hidden' === attributes.labelStyle ? 'sgs-form-field__label sgs-sr-only' : 'sgs-form-field__label' }
-						style={ 'hidden' === attributes.labelStyle ? SR_ONLY : undefined }
+						className={
+							'hidden' === attributes.labelStyle
+								? 'sgs-form-field__label sgs-sr-only'
+								: 'sgs-form-field__label'
+						}
+						style={
+							'hidden' === attributes.labelStyle
+								? SR_ONLY
+								: undefined
+						}
 					>
 						<AuthoredText value={ label } />
 						{ required && (
-							<span className="sgs-form-field__required">
-								*
-							</span>
+							<span className="sgs-form-field__required">*</span>
 						) }
 					</label>
 				) }

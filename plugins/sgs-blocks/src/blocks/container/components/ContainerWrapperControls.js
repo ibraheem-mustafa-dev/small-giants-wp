@@ -160,7 +160,10 @@ const KIND_PANELS = {
 		//    chain were all green with this in place.
 		// 4. Layout.
 		( props ) => (
-			<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ false }>
+			<PanelBody
+				title={ __( 'Layout', 'sgs-blocks' ) }
+				initialOpen={ false }
+			>
 				<LayoutPanel { ...props } />
 			</PanelBody>
 		),
@@ -173,7 +176,10 @@ const KIND_PANELS = {
 		( props ) => <BackgroundPanel { ...props } />,
 		// 7. Shadow.
 		( props ) => (
-			<PanelBody title={ __( 'Shadow', 'sgs-blocks' ) } initialOpen={ false }>
+			<PanelBody
+				title={ __( 'Shadow', 'sgs-blocks' ) }
+				initialOpen={ false }
+			>
 				<ContainerShadowControl { ...props } />
 			</PanelBody>
 		),
@@ -224,24 +230,24 @@ const KIND_PANELS = {
  * ContainerWrapperControls
  *
  * @param {Object}   props
- * @param {Object}   props.attributes    Block attributes object.
- * @param {Function} props.setAttributes Block setAttributes function.
- * @param {string}   [props.kind]        'section' | 'layout' | 'content'. Default 'section'.
- * ⛔ `props.gridAreas` was REMOVED 2026-08-16 (D639) along with GridAreaPanel — see that
- * tombstone above. No consumer ever passed it, and the capability it gated is delivered by
- * the block's own per-area controls.
- * @param {boolean}  [props.showLayout]  Forwarded to LayoutPanel. Pass false when the block owns its OWN
- *                                       layout control — rendering both is silent DATA LOSS, because this
- *                                       panel writes stack/flex/grid into a `layout` attr whose block.json
- *                                       enum may not contain them and WordPress coerces the write back to
- *                                       the default. Previously only reachable via a DIRECT <LayoutPanel>
- *                                       mount (sgs/gallery's fix), so aggregator consumers had no way to
- *                                       opt out; threaded here 2026-08-12 for sgs/post-grid
- *                                       (enum grid|list|masonry|carousel) and sgs/testimonial-slider
- *                                       (enum full|split), both of which own their control and were
- *                                       silently losing writes.
+ * @param {Object}   props.attributes        Block attributes object.
+ * @param {Function} props.setAttributes     Block setAttributes function.
+ * @param {string}   [props.kind]            'section' | 'layout' | 'content'. Default 'section'.
+ *                                           ⛔ `props.gridAreas` was REMOVED 2026-08-16 (D639) along with GridAreaPanel — see that
+ *                                           tombstone above. No consumer ever passed it, and the capability it gated is delivered by
+ *                                           the block's own per-area controls.
+ * @param {boolean}  [props.showLayout]      Forwarded to LayoutPanel. Pass false when the block owns its OWN
+ *                                           layout control — rendering both is silent DATA LOSS, because this
+ *                                           panel writes stack/flex/grid into a `layout` attr whose block.json
+ *                                           enum may not contain them and WordPress coerces the write back to
+ *                                           the default. Previously only reachable via a DIRECT <LayoutPanel>
+ *                                           mount (sgs/gallery's fix), so aggregator consumers had no way to
+ *                                           opt out; threaded here 2026-08-12 for sgs/post-grid
+ *                                           (enum grid|list|masonry|carousel) and sgs/testimonial-slider
+ *                                           (enum full|split), both of which own their control and were
+ *                                           silently losing writes.
  * @param {boolean}  [props.showContentBand] Forwarded to WidthPanel. Pass false for a block that cannot
- *                                       render a content band (see WidthPanel's docblock).
+ *                                           render a content band (see WidthPanel's docblock).
  */
 export default function ContainerWrapperControls( {
 	attributes,

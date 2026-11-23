@@ -144,7 +144,9 @@ export async function toggleWishlistId( id ) {
 		return { ok: true, saved: !! res.json?.saved, status: res.status };
 	}
 
-	const next = has ? shared.ids.filter( ( x ) => x !== id ) : [ ...shared.ids, id ];
+	const next = has
+		? shared.ids.filter( ( x ) => x !== id )
+		: [ ...shared.ids, id ];
 	shared.ids = next;
 	writeGuestIds( next );
 	if ( has ) {

@@ -20,14 +20,7 @@ const WIDTH_OPTIONS = [
 ];
 
 export default function Edit( { attributes, setAttributes } ) {
-	const {
-		fieldName,
-		label,
-		helpText,
-		required,
-		width,
-		options,
-	} = attributes;
+	const { fieldName, label, helpText, required, width, options } = attributes;
 
 	const className = [
 		'sgs-form-field',
@@ -100,16 +93,22 @@ export default function Edit( { attributes, setAttributes } ) {
 						onDeselect={ () => setAttributes( { label: '' } ) }
 						isShownByDefault
 					>
-						<SgsFreeTextField type="rich" noLink
+						<SgsFreeTextField
+							type="rich"
+							noLink
 							label={ __( 'Label', 'sgs-blocks' ) }
 							value={ label }
-							onChange={ ( val ) => setAttributes( { label: val } ) }
+							onChange={ ( val ) =>
+								setAttributes( { label: val } )
+							}
 						/>
 					</ToolsPanelItem>
 					<ToolsPanelItem
 						label={ __( 'Required', 'sgs-blocks' ) }
 						hasValue={ () => required !== false }
-						onDeselect={ () => setAttributes( { required: false } ) }
+						onDeselect={ () =>
+							setAttributes( { required: false } )
+						}
 						isShownByDefault
 					>
 						<ToggleControl
@@ -145,7 +144,9 @@ export default function Edit( { attributes, setAttributes } ) {
 							label={ __( 'Width', 'sgs-blocks' ) }
 							value={ width }
 							options={ WIDTH_OPTIONS }
-							onChange={ ( val ) => setAttributes( { width: val } ) }
+							onChange={ ( val ) =>
+								setAttributes( { width: val } )
+							}
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
@@ -207,18 +208,13 @@ export default function Edit( { attributes, setAttributes } ) {
 					<label className="sgs-form-field__label">
 						<AuthoredText value={ label } />
 						{ required && (
-							<span className="sgs-form-field__required">
-								*
-							</span>
+							<span className="sgs-form-field__required">*</span>
 						) }
 					</label>
 				) }
 				<fieldset className="sgs-form-field__options">
 					{ options.map( ( option, index ) => (
-						<label
-							key={ index }
-							className="sgs-form-field__option"
-						>
+						<label key={ index } className="sgs-form-field__option">
 							<input
 								type="radio"
 								name={ `preview-${ fieldName }` }

@@ -13,15 +13,20 @@
  * @package SGS\Blocks\Forms
  */
 import { __ } from '@wordpress/i18n';
-import { PanelBody, TextControl, TextareaControl, ToggleControl } from '@wordpress/components';
+import {
+	PanelBody,
+	TextControl,
+	TextareaControl,
+	ToggleControl,
+} from '@wordpress/components';
 
 /**
- * @param {Object}   props                        Component props.
- * @param {string}   props.notifyEmail             Owner notification recipient.
- * @param {boolean}  props.confirmationEmail       Whether the submitter also gets a confirmation email.
- * @param {string}   props.confirmationSubject     Confirmation email subject.
- * @param {string}   props.confirmationMessage     Confirmation email body.
- * @param {Function} props.setAttributes           Block attribute setter.
+ * @param {Object}   props                     Component props.
+ * @param {string}   props.notifyEmail         Owner notification recipient.
+ * @param {boolean}  props.confirmationEmail   Whether the submitter also gets a confirmation email.
+ * @param {string}   props.confirmationSubject Confirmation email subject.
+ * @param {string}   props.confirmationMessage Confirmation email body.
+ * @param {Function} props.setAttributes       Block attribute setter.
  * @return {JSX.Element} The Email settings panel.
  */
 export default function EmailSettingsPanel( {
@@ -37,18 +42,19 @@ export default function EmailSettingsPanel( {
 				type="email"
 				label={ __( 'Send submissions to', 'sgs-blocks' ) }
 				value={ notifyEmail || '' }
-				onChange={ ( value ) => setAttributes( { notifyEmail: value } ) }
-				help={ __(
-					'Blank uses the Site Info email.',
-					'sgs-blocks'
-				) }
+				onChange={ ( value ) =>
+					setAttributes( { notifyEmail: value } )
+				}
+				help={ __( 'Blank uses the Site Info email.', 'sgs-blocks' ) }
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>
 			<ToggleControl
 				label={ __( 'Email the person a confirmation', 'sgs-blocks' ) }
 				checked={ !! confirmationEmail }
-				onChange={ ( value ) => setAttributes( { confirmationEmail: value } ) }
+				onChange={ ( value ) =>
+					setAttributes( { confirmationEmail: value } )
+				}
 				help={ __(
 					'Sends only when the form has a valid email field.',
 					'sgs-blocks'

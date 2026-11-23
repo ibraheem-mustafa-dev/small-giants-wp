@@ -102,16 +102,22 @@ export default function Edit( { attributes, setAttributes } ) {
 						onDeselect={ () => setAttributes( { label: '' } ) }
 						isShownByDefault
 					>
-						<SgsFreeTextField type="rich" noLink
+						<SgsFreeTextField
+							type="rich"
+							noLink
 							label={ __( 'Label', 'sgs-blocks' ) }
 							value={ label }
-							onChange={ ( val ) => setAttributes( { label: val } ) }
+							onChange={ ( val ) =>
+								setAttributes( { label: val } )
+							}
 						/>
 					</ToolsPanelItem>
 					<ToolsPanelItem
 						label={ __( 'Required', 'sgs-blocks' ) }
 						hasValue={ () => required !== false }
-						onDeselect={ () => setAttributes( { required: false } ) }
+						onDeselect={ () =>
+							setAttributes( { required: false } )
+						}
 						isShownByDefault
 					>
 						<ToggleControl
@@ -126,7 +132,9 @@ export default function Edit( { attributes, setAttributes } ) {
 					<ToolsPanelItem
 						label={ __( 'Placeholder', 'sgs-blocks' ) }
 						hasValue={ () => placeholder !== '' }
-						onDeselect={ () => setAttributes( { placeholder: '' } ) }
+						onDeselect={ () =>
+							setAttributes( { placeholder: '' } )
+						}
 					>
 						<TextControl
 							label={ __( 'Placeholder', 'sgs-blocks' ) }
@@ -162,7 +170,9 @@ export default function Edit( { attributes, setAttributes } ) {
 							label={ __( 'Width', 'sgs-blocks' ) }
 							value={ width }
 							options={ WIDTH_OPTIONS }
-							onChange={ ( val ) => setAttributes( { width: val } ) }
+							onChange={ ( val ) =>
+								setAttributes( { width: val } )
+							}
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
@@ -215,9 +225,16 @@ export default function Edit( { attributes, setAttributes } ) {
 				<FormFieldAdvancedPanel
 					attributes={ attributes }
 					setAttributes={ setAttributes }
-					features={ [ 'defaultSelect', 'valueFromParam', 'msgRequired' ] }
-					optionValues={ ( attributes.options || [] ).map( ( option ) =>
-						'string' === typeof option ? option : option.value || ''
+					features={ [
+						'defaultSelect',
+						'valueFromParam',
+						'msgRequired',
+					] }
+					optionValues={ ( attributes.options || [] ).map(
+						( option ) =>
+							'string' === typeof option
+								? option
+								: option.value || ''
 					) }
 				/>
 			</InspectorControls>
@@ -227,9 +244,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					<label className="sgs-form-field__label">
 						<AuthoredText value={ label } />
 						{ required && (
-							<span className="sgs-form-field__required">
-								*
-							</span>
+							<span className="sgs-form-field__required">*</span>
 						) }
 					</label>
 				) }

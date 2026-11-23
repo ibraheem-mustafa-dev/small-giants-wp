@@ -9,20 +9,41 @@
  * @package SGS\Blocks
  */
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, MediaPlaceholder, MediaUploadCheck } from '@wordpress/block-editor';
+import {
+	useBlockProps,
+	MediaPlaceholder,
+	MediaUploadCheck,
+} from '@wordpress/block-editor';
 import { SgsColourPanel, textRow } from '../../components';
 import MediaElementPanel from '../../components/MediaElementPanel.js';
 import mediaPreview from '../../components/media/mediaPreview.js';
 import { slotAccess } from '../../components/media/fieldBase.js';
-import { resolveTierSource, useActiveDevice } from '../../components/media/deviceValues.js';
-import { embedSrc, hasFile, pickPatch } from '../../components/media/mediaSlotWrites.js';
+import {
+	resolveTierSource,
+	useActiveDevice,
+} from '../../components/media/deviceValues.js';
+import {
+	embedSrc,
+	hasFile,
+	pickPatch,
+} from '../../components/media/mediaSlotWrites.js';
 import AuthoredText from '../../components/AuthoredText';
-import { sanitiseSvg, typographyPreviewStyle, textPaintPreview, usePreviewTier } from '../../utils';
+import {
+	sanitiseSvg,
+	typographyPreviewStyle,
+	textPaintPreview,
+	usePreviewTier,
+} from '../../utils';
 import TypographyPanel from './components/TypographyPanel';
 import metadata from './block.json';
 
 const ENTRY = metadata.supports.sgs.mediaElements.find( ( e ) => ! e.prefix );
-const SLOT = { prefix: '', kinds: ENTRY.kinds, context: ENTRY.context, wrapper: true };
+const SLOT = {
+	prefix: '',
+	kinds: ENTRY.kinds,
+	context: ENTRY.context,
+	wrapper: true,
+};
 
 /** The media element one device shows. */
 function Canvas( { shown, alt, attributes, previewTier } ) {
@@ -30,12 +51,37 @@ function Canvas( { shown, alt, attributes, previewTier } ) {
 		const controls = false !== attributes.playback?.controls;
 		return (
 			<span className="sgs-media-stack">
-				{ shown.poster?.url && <img className="sgs-media-el sgs-media-cover" src={ shown.poster.url } alt="" /> }
-				{ shown.url && <video className="sgs-media-el sgs-media-video" src={ shown.url } poster={ shown.poster?.url || undefined } muted playsInline preload="metadata" /> }
+				{ shown.poster?.url && (
+					<img
+						className="sgs-media-el sgs-media-cover"
+						src={ shown.poster.url }
+						alt=""
+					/>
+				) }
+				{ shown.url && (
+					<video
+						className="sgs-media-el sgs-media-video"
+						src={ shown.url }
+						poster={ shown.poster?.url || undefined }
+						muted
+						playsInline
+						preload="metadata"
+					/>
+				) }
 				{ controls && (
-					<span className="sgs-video sgs-video--editor-sample" aria-hidden="true">
+					<span
+						className="sgs-video sgs-video--editor-sample"
+						aria-hidden="true"
+					>
 						<span className="sgs-video__bar">
-							<span className="sgs-video__time" style={ typographyPreviewStyle( attributes, 'videoTime', previewTier ) }>
+							<span
+								className="sgs-video__time"
+								style={ typographyPreviewStyle(
+									attributes,
+									'videoTime',
+									previewTier
+								) }
+							>
 								0:00 / 1:24
 							</span>
 						</span>
@@ -47,7 +93,13 @@ function Canvas( { shown, alt, attributes, previewTier } ) {
 	if ( 'embed' === shown.kind ) {
 		const src = embedSrc( shown.url );
 		return src ? (
-			<iframe className="sgs-media-el sgs-media-embed" src={ src } title={ alt || __( 'Video preview', 'sgs-blocks' ) } loading="lazy" tabIndex={ -1 } />
+			<iframe
+				className="sgs-media-el sgs-media-embed"
+				src={ src }
+				title={ alt || __( 'Video preview', 'sgs-blocks' ) }
+				loading="lazy"
+				tabIndex={ -1 }
+			/>
 		) : null;
 	}
 	if ( 'svg' === shown.kind && shown.markup ) {
@@ -57,7 +109,9 @@ function Canvas( { shown, alt, attributes, previewTier } ) {
 				className="sgs-media-el sgs-media-svg"
 				aria-hidden="true"
 				// eslint-disable-next-line react/no-danger
-				dangerouslySetInnerHTML={ { __html: sanitiseSvg( shown.markup ) } }
+				dangerouslySetInnerHTML={ {
+					__html: sanitiseSvg( shown.markup ),
+				} }
 			/>
 		);
 	}
@@ -88,7 +142,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const alt = attributes.decorative ? '' : shown?.alt || attributes.alt || '';
 	const caption = String( attributes.caption || '' );
 	const CaptionTag = 'div' === attributes.captionTag ? 'div' : 'figcaption';
-	const showsVideoTime = !! shown && 'video' === shown.kind && false !== attributes.playback?.controls;
+	const showsVideoTime =
+		!! shown &&
+		'video' === shown.kind &&
+		false !== attributes.playback?.controls;
 
 	const typography = ( caption || showsVideoTime ) && (
 		<TypographyPanel
@@ -100,8 +157,20 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	);
 
 	const pick = ( attachment ) => {
-		const kind = ( attachment?.mime || attachment?.type || '' ).startsWith( 'video' ) ? 'video' : 'image';
-		access.write( pickPatch( { read: access.read, device, media: attachment, kind, keepFocal: false } ).patch );
+		const kind = ( attachment?.mime || attachment?.type || '' ).startsWith(
+			'video'
+		)
+			? 'video'
+			: 'image';
+		access.write(
+			pickPatch( {
+				read: access.read,
+				device,
+				media: attachment,
+				kind,
+				keepFocal: false,
+			} ).patch
+		);
 	};
 
 	return (
@@ -134,13 +203,25 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				{ css && <style>{ css }</style> }
 				{ shown && ( hasFile( shown ) || shown.markup ) ? (
 					<>
-						<Canvas shown={ shown } alt={ alt } attributes={ attributes } previewTier={ previewTier } />
+						<Canvas
+							shown={ shown }
+							alt={ alt }
+							attributes={ attributes }
+							previewTier={ previewTier }
+						/>
 						{ caption && (
 							<CaptionTag
 								className="sgs-media-caption"
 								style={ {
-									...typographyPreviewStyle( attributes, 'caption', previewTier ),
-									...textPaintPreview( attributes.captionColour, attributes.captionColourGradient ),
+									...typographyPreviewStyle(
+										attributes,
+										'caption',
+										previewTier
+									),
+									...textPaintPreview(
+										attributes.captionColour,
+										attributes.captionColourGradient
+									),
 								} }
 							>
 								<AuthoredText value={ caption } />
@@ -154,7 +235,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							onSelect={ pick }
 							labels={ {
 								title: __( 'SGS Media', 'sgs-blocks' ),
-								instructions: __( 'Upload or choose a photo or video. Embeds and SVG are in the Media panel.', 'sgs-blocks' ),
+								instructions: __(
+									'Upload or choose a photo or video. Embeds and SVG are in the Media panel.',
+									'sgs-blocks'
+								),
 							} }
 						/>
 					</MediaUploadCheck>

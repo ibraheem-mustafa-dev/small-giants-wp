@@ -73,7 +73,10 @@ export function scrollbarCss( selector, choice, media = '' ) {
 		css =
 			`${ sel }{scrollbar-width:none;}` +
 			`${ parts }{display:none;}` +
-			`${ selectorWith( sel, '>.sgs-overlay-scroll__thumb' ) }{display:none;}`;
+			`${ selectorWith(
+				sel,
+				'>.sgs-overlay-scroll__thumb'
+			) }{display:none;}`;
 	} else if ( choice === 'thin' ) {
 		const width = 'var(--wp--custom--scrollbar--thin-width,10px)';
 		css =

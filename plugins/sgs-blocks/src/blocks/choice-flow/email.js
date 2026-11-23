@@ -19,15 +19,17 @@ import { fetchWithNonce } from '../../shared/rest-nonce';
  * instance. Safe to call more than once per flow root (each form is bound
  * only the first time it is seen).
  *
- * @param {HTMLElement}           flowEl  The flow's root element
- *                                          (`[data-wp-interactive="sgs/choice-flow"]`).
+ * @param {HTMLElement}         flowEl  The flow's root element
+ *                                      (`[data-wp-interactive="sgs/choice-flow"]`).
  * @param {() => Array<string>} getTags Returns the tags gathered along the path taken.
  */
 export function initEmailResults( flowEl, getTags ) {
 	if ( ! flowEl ) {
 		return;
 	}
-	const forms = flowEl.querySelectorAll( '.sgs-choice-flow-result__email-form' );
+	const forms = flowEl.querySelectorAll(
+		'.sgs-choice-flow-result__email-form'
+	);
 	forms.forEach( ( formEl ) => {
 		if ( formEl.dataset.sgsEmailBound ) {
 			return;
@@ -42,20 +44,30 @@ export function initEmailResults( flowEl, getTags ) {
 /**
  * Handle a submit on one email-capture form.
  *
- * @param {SubmitEvent}  event  The form's submit event.
- * @param {HTMLElement}  flowEl  The flow's root element.
- * @param {Function}     getTags Returns the tags gathered along the path taken.
+ * @param {SubmitEvent} event   The form's submit event.
+ * @param {HTMLElement} flowEl  The flow's root element.
+ * @param {Function}    getTags Returns the tags gathered along the path taken.
  */
 async function handleEmailSubmit( event, flowEl, getTags ) {
 	event.preventDefault();
 
 	const formEl = event.currentTarget;
 	const resultEl = formEl.closest( '.sgs-choice-flow-result' );
-	const buttonEl = formEl.querySelector( '.sgs-choice-flow-result__email-submit' );
-	const statusEl = formEl.querySelector( '.sgs-choice-flow-result__email-status' );
-	const successEl = resultEl ? resultEl.querySelector( '.sgs-choice-flow-result__email-success' ) : null;
-	const emailInput = formEl.querySelector( '.sgs-choice-flow-result__email-input' );
-	const honeypotInput = formEl.querySelector( '.sgs-choice-flow-result__honeypot input' );
+	const buttonEl = formEl.querySelector(
+		'.sgs-choice-flow-result__email-submit'
+	);
+	const statusEl = formEl.querySelector(
+		'.sgs-choice-flow-result__email-status'
+	);
+	const successEl = resultEl
+		? resultEl.querySelector( '.sgs-choice-flow-result__email-success' )
+		: null;
+	const emailInput = formEl.querySelector(
+		'.sgs-choice-flow-result__email-input'
+	);
+	const honeypotInput = formEl.querySelector(
+		'.sgs-choice-flow-result__honeypot input'
+	);
 
 	if ( ! buttonEl || ! resultEl || ! emailInput ) {
 		return;
@@ -72,10 +84,12 @@ async function handleEmailSubmit( event, flowEl, getTags ) {
 	// The path's unpriced answers (plainAnswers only — an email terminal has
 	// no purchase-step file/text fields of its own, but collectFlowFields()
 	// degrades safely to just the answers when resultEl carries none).
-	const answers = collectFlowFields( flowEl, resultEl ).map( ( { label, value } ) => ( {
-		label,
-		value: value || '',
-	} ) );
+	const answers = collectFlowFields( flowEl, resultEl ).map(
+		( { label, value } ) => ( {
+			label,
+			value: value || '',
+		} )
+	);
 
 	const body = {
 		flowRef,
@@ -112,7 +126,9 @@ async function handleEmailSubmit( event, flowEl, getTags ) {
 		}
 
 		if ( ! response.ok || ! result.success ) {
-			const message = ( result && result.message ) || 'Sorry, something went wrong. Please try again.';
+			const message =
+				( result && result.message ) ||
+				'Sorry, something went wrong. Please try again.';
 			if ( statusEl ) {
 				statusEl.dataset.state = 'error';
 				statusEl.textContent = message;
@@ -130,7 +146,8 @@ async function handleEmailSubmit( event, flowEl, getTags ) {
 	} catch ( _e ) {
 		if ( statusEl ) {
 			statusEl.dataset.state = 'error';
-			statusEl.textContent = 'Sorry, something went wrong. Please try again.';
+			statusEl.textContent =
+				'Sorry, something went wrong. Please try again.';
 		}
 	} finally {
 		buttonEl.disabled = false;

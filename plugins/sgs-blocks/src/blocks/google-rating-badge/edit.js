@@ -367,7 +367,9 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( patch );
 						} }
 					/>
-					<SgsFreeTextField type="rich" noLink
+					<SgsFreeTextField
+						type="rich"
+						noLink
 						label={ __(
 							'Link label for screen readers',
 							'sgs-blocks'

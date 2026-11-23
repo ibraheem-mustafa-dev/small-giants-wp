@@ -51,7 +51,9 @@ function initNote( box ) {
 			count.textContent = `${ max - left } / ${ max }`;
 		}
 		// The count is spoken only near the limit, and only when it changes, so typing is not narrated.
-		const spoken = isNearLimit( left, max ) ? leftMessage.replace( '%d', String( left ) ) : '';
+		const spoken = isNearLimit( left, max )
+			? leftMessage.replace( '%d', String( left ) )
+			: '';
 		if ( status && spoken !== lastSpoken ) {
 			status.textContent = spoken;
 			lastSpoken = spoken;
@@ -82,7 +84,10 @@ function initNote( box ) {
 	root.addEventListener(
 		'submit',
 		( event ) => {
-			if ( ! event.target.matches || ! event.target.matches( '.buybox__cart-form' ) ) {
+			if (
+				! event.target.matches ||
+				! event.target.matches( '.buybox__cart-form' )
+			) {
 				return;
 			}
 			publish();

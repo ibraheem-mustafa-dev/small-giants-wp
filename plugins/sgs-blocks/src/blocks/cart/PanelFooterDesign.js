@@ -1,6 +1,10 @@
 import { __ } from '@wordpress/i18n';
 import { PanelBody } from '@wordpress/components';
-import { ResponsiveBoxControl, SgsBorderControl, TypographyControls } from '../../components';
+import {
+	ResponsiveBoxControl,
+	SgsBorderControl,
+	TypographyControls,
+} from '../../components';
 import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 
 // The delivery note under the subtotal: its own text style, apart from the instalments note under Checkout.
@@ -27,38 +31,74 @@ const TAX_NOTE_TARGETS = [
  * @param {Function} root0.setAttributes The block's attribute setter.
  * @param {boolean}  root0.hasPanel      Whether displayMode is flyout|drawer.
  */
-export default function PanelFooterDesign( { name, attributes, setAttributes, hasPanel } ) {
+export default function PanelFooterDesign( {
+	name,
+	attributes,
+	setAttributes,
+	hasPanel,
+} ) {
 	if ( ! hasPanel ) {
 		return null;
 	}
 	return (
 		<>
-			<PanelBody title={ __( 'Mini-cart note under the subtotal', 'sgs-blocks' ) } initialOpen={ false }>
-				<TypographyControls attributes={ attributes } setAttributes={ setAttributes } targets={ TAX_NOTE_TARGETS } />
+			<PanelBody
+				title={ __(
+					'Mini-cart note under the subtotal',
+					'sgs-blocks'
+				) }
+				initialOpen={ false }
+			>
+				<TypographyControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					targets={ TAX_NOTE_TARGETS }
+				/>
 			</PanelBody>
-			<PanelBody title={ __( 'Mini-cart free-delivery band', 'sgs-blocks' ) } initialOpen={ false }>
+			<PanelBody
+				title={ __( 'Mini-cart free-delivery band', 'sgs-blocks' ) }
+				initialOpen={ false }
+			>
 				<SgsBorderControl
 					widthValues={ attributes.freeDeliveryBandBorderWidth ?? {} }
-					onWidthChange={ ( next ) => setAttributes( { freeDeliveryBandBorderWidth: next } ) }
+					onWidthChange={ ( next ) =>
+						setAttributes( { freeDeliveryBandBorderWidth: next } )
+					}
 					styleValue={ attributes.freeDeliveryBandBorderStyle }
-					onStyleChange={ ( val ) => setAttributes( { freeDeliveryBandBorderStyle: val } ) }
+					onStyleChange={ ( val ) =>
+						setAttributes( { freeDeliveryBandBorderStyle: val } )
+					}
 					colourValue={ attributes.freeDeliveryBandBorderColour }
-					onColourChange={ ( val ) => setAttributes( { freeDeliveryBandBorderColour: val ?? '' } ) }
+					onColourChange={ ( val ) =>
+						setAttributes( {
+							freeDeliveryBandBorderColour: val ?? '',
+						} )
+					}
 					colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
 					colourLinked
 				/>
 				<ResponsiveBoxControl
 					label={ __( 'Band padding', 'sgs-blocks' ) }
 					presets
-					defaults={ spacingDefaultsFor( name, 'freeDeliveryBandPadding' ) }
+					defaults={ spacingDefaultsFor(
+						name,
+						'freeDeliveryBandPadding'
+					) }
 					values={ {
 						base: attributes.freeDeliveryBandPadding?.desktop ?? {},
-						tablet: attributes.freeDeliveryBandPadding?.tablet ?? {},
-						mobile: attributes.freeDeliveryBandPadding?.mobile ?? {},
+						tablet:
+							attributes.freeDeliveryBandPadding?.tablet ?? {},
+						mobile:
+							attributes.freeDeliveryBandPadding?.mobile ?? {},
 					} }
 					onChange={ ( tier, next ) => {
 						const key = 'base' === tier ? 'desktop' : tier;
-						setAttributes( { freeDeliveryBandPadding: { ...( attributes.freeDeliveryBandPadding || {} ), [ key ]: next } } );
+						setAttributes( {
+							freeDeliveryBandPadding: {
+								...( attributes.freeDeliveryBandPadding || {} ),
+								[ key ]: next,
+							},
+						} );
 					} }
 				/>
 			</PanelBody>

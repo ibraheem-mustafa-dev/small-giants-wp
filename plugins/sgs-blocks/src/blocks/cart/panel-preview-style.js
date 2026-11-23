@@ -45,10 +45,20 @@ export function panelElementStyles( attributes, tier, palette ) {
 		empty: {
 			...typographyPreviewStyle( attributes, 'panelEmpty', tier ),
 			color: colour( attributes.panelEmptyColour ),
-			...tierBoxLonghands( attributes.panelEmptyPadding, tier, 'padding' ),
+			...tierBoxLonghands(
+				attributes.panelEmptyPadding,
+				tier,
+				'padding'
+			),
 			// Centred: the empty block takes the free height of the item list above and below it.
-			marginTop: 'center' === attributes.panelEmptyPlacement ? 'auto' : undefined,
-			marginBottom: 'center' === attributes.panelEmptyPlacement ? 'auto' : undefined,
+			marginTop:
+				'center' === attributes.panelEmptyPlacement
+					? 'auto'
+					: undefined,
+			marginBottom:
+				'center' === attributes.panelEmptyPlacement
+					? 'auto'
+					: undefined,
 		},
 		emptyMessage: {
 			...typographyPreviewStyle( attributes, 'emptyMessage', tier ),
@@ -85,9 +95,16 @@ export function panelElementStyles( attributes, tier, palette ) {
 			color: colour( attributes.itemQtyColour ),
 			backgroundColor: colour( attributes.itemQtyBg ),
 			borderRadius: radius( attributes.itemQtyRadius ),
-			'--sgs-cart-qty-height': tierLengthPreview( attributes.itemQtyHeight, tier ),
+			'--sgs-cart-qty-height': tierLengthPreview(
+				attributes.itemQtyHeight,
+				tier
+			),
 			...sgsBorderPreview(
-				{ widthValues: attributes.itemQtyBorderWidth, styleValue: attributes.itemQtyBorderStyle, colourValue: attributes.itemQtyBorderColour },
+				{
+					widthValues: attributes.itemQtyBorderWidth,
+					styleValue: attributes.itemQtyBorderStyle,
+					colourValue: attributes.itemQtyBorderColour,
+				},
 				tier,
 				palette
 			),
@@ -104,11 +121,19 @@ export function panelElementStyles( attributes, tier, palette ) {
 		freeBand: {
 			backgroundColor: colour( attributes.freeDeliveryBandBg ),
 			...sgsBorderPreview(
-				{ widthValues: attributes.freeDeliveryBandBorderWidth, styleValue: attributes.freeDeliveryBandBorderStyle, colourValue: attributes.freeDeliveryBandBorderColour },
+				{
+					widthValues: attributes.freeDeliveryBandBorderWidth,
+					styleValue: attributes.freeDeliveryBandBorderStyle,
+					colourValue: attributes.freeDeliveryBandBorderColour,
+				},
 				tier,
 				palette
 			),
-			...tierBoxLonghands( attributes.freeDeliveryBandPadding, tier, 'padding' ),
+			...tierBoxLonghands(
+				attributes.freeDeliveryBandPadding,
+				tier,
+				'padding'
+			),
 		},
 		freeText: {
 			...typographyPreviewStyle( attributes, 'freeDeliveryText', tier ),
@@ -127,9 +152,17 @@ export function panelElementStyles( attributes, tier, palette ) {
 		},
 		close: {
 			color: colour( attributes.panelCloseColour ),
-			'--sgs-cart-editor-close-size': tierLengthPreview( attributes.panelCloseSize, tier ),
+			'--sgs-cart-editor-close-size': tierLengthPreview(
+				attributes.panelCloseSize,
+				tier
+			),
 			// A close size set for the tier overrules the button's 44px tap floor, as render.php does.
-			'--sgs-cart-close-tap-min': tierLengthPreview( attributes.panelCloseSize, tier ) ? '0px' : undefined,
+			'--sgs-cart-close-tap-min': tierLengthPreview(
+				attributes.panelCloseSize,
+				tier
+			)
+				? '0px'
+				: undefined,
 			// The close button's own tap area, when set, wins over both.
 			minWidth: tierLengthPreview( attributes.panelCloseTapSize, tier ),
 			minHeight: tierLengthPreview( attributes.panelCloseTapSize, tier ),
@@ -137,7 +170,11 @@ export function panelElementStyles( attributes, tier, palette ) {
 		footer: {
 			backgroundColor: colour( attributes.panelFooterBg ),
 			borderTopColor: colour( attributes.panelFooterBorderColour ),
-			...tierBoxLonghands( attributes.panelFooterPadding, tier, 'padding' ),
+			...tierBoxLonghands(
+				attributes.panelFooterPadding,
+				tier,
+				'padding'
+			),
 		},
 		header: {
 			borderBottomColor: colour( attributes.panelHeadBorderColour ),
@@ -152,8 +189,14 @@ export function panelElementStyles( attributes, tier, palette ) {
 			color: colour( attributes.itemRemoveColour ),
 			borderBottomColor: colour( attributes.itemRemoveBorderColour ),
 			// A text decoration replaces the drawn line under the link, as includes/helpers-cart-panel-items-css.php does.
-			borderBottomWidth: attributes.itemRemoveTextDecoration ? 0 : undefined,
-			...tierBoxLonghands( attributes.itemRemovePadding, tier, 'padding' ),
+			borderBottomWidth: attributes.itemRemoveTextDecoration
+				? 0
+				: undefined,
+			...tierBoxLonghands(
+				attributes.itemRemovePadding,
+				tier,
+				'padding'
+			),
 		},
 		// The number between the stepper buttons. It is bold by default, so the stepper's weight is set on it too, as
 		// includes/helpers-cart-panel-css.php does.
@@ -176,7 +219,11 @@ export function panelElementStyles( attributes, tier, palette ) {
 		giftBox: {
 			backgroundColor: colour( attributes.giftBoxBg ),
 			...sgsBorderPreview(
-				{ widthValues: attributes.giftBoxBorderWidth, styleValue: attributes.giftBoxBorderStyle, colourValue: attributes.giftBoxBorderColour },
+				{
+					widthValues: attributes.giftBoxBorderWidth,
+					styleValue: attributes.giftBoxBorderStyle,
+					colourValue: attributes.giftBoxBorderColour,
+				},
 				tier,
 				palette
 			),
@@ -195,7 +242,11 @@ export function panelElementStyles( attributes, tier, palette ) {
 		giftField: {
 			backgroundColor: colour( attributes.giftFieldBg ),
 			...sgsBorderPreview(
-				{ widthValues: attributes.giftFieldBorderWidth, styleValue: attributes.giftFieldBorderStyle, colourValue: attributes.giftFieldBorderColour },
+				{
+					widthValues: attributes.giftFieldBorderWidth,
+					styleValue: attributes.giftFieldBorderStyle,
+					colourValue: attributes.giftFieldBorderColour,
+				},
 				tier,
 				palette
 			),
@@ -228,12 +279,20 @@ export function panelElementStyles( attributes, tier, palette ) {
 			backgroundColor: colour( attributes.upsellButtonBg ),
 			color: colour( attributes.upsellButtonColour ),
 			...sgsBorderPreview(
-				{ widthValues: attributes.upsellButtonBorderWidth, styleValue: attributes.upsellButtonBorderStyle, colourValue: attributes.upsellButtonBorderColour },
+				{
+					widthValues: attributes.upsellButtonBorderWidth,
+					styleValue: attributes.upsellButtonBorderStyle,
+					colourValue: attributes.upsellButtonBorderColour,
+				},
 				tier,
 				palette
 			),
 			borderRadius: radius( attributes.upsellButtonRadius ),
-			...tierBoxLonghands( attributes.upsellButtonPadding, tier, 'padding' ),
+			...tierBoxLonghands(
+				attributes.upsellButtonPadding,
+				tier,
+				'padding'
+			),
 		},
 		save: {
 			color: colour( attributes.itemActionColour ),
@@ -247,14 +306,24 @@ export function panelElementStyles( attributes, tier, palette ) {
 		},
 		freeTrack: {
 			backgroundColor: colour( attributes.freeDeliveryTrackColour ),
-			height: tierLengthPreview( attributes.freeDeliveryTrackHeight, tier ),
-			...tierBoxLonghands( attributes.freeDeliveryBarMargin, tier, 'margin' ),
+			height: tierLengthPreview(
+				attributes.freeDeliveryTrackHeight,
+				tier
+			),
+			...tierBoxLonghands(
+				attributes.freeDeliveryBarMargin,
+				tier,
+				'margin'
+			),
 			borderRadius: radius( attributes.freeDeliveryTrackRadius ),
 		},
 		items: {
 			gap: tierLengthPreview( attributes.panelBodyGap, tier ),
 			...tierBoxLonghands( attributes.panelBodyPadding, tier, 'padding' ),
-			'--sgs-cart-item-thumb': tierLengthPreview( attributes.itemThumbSize, tier ),
+			'--sgs-cart-item-thumb': tierLengthPreview(
+				attributes.itemThumbSize,
+				tier
+			),
 		},
 		item: {
 			gap: tierLengthPreview( attributes.itemGap, tier ),
@@ -267,7 +336,11 @@ export function panelElementStyles( attributes, tier, palette ) {
 	};
 	// An unset setting is left off so the element keeps the stylesheet's own value.
 	Object.keys( styles ).forEach( ( key ) => {
-		styles[ key ] = Object.fromEntries( Object.entries( styles[ key ] ).filter( ( [ , value ] ) => undefined !== value && '' !== value ) );
+		styles[ key ] = Object.fromEntries(
+			Object.entries( styles[ key ] ).filter(
+				( [ , value ] ) => undefined !== value && '' !== value
+			)
+		);
 	} );
 	return styles;
 }
@@ -285,20 +358,37 @@ export function panelElementStyles( attributes, tier, palette ) {
  * @return {Object} React style object.
  */
 export function panelRootStyle( attributes, tier, palette ) {
-	const style = { ...textPaintPreview( attributes.panelTextColour, attributes.panelTextColourGradient, palette ) };
-	const fill = backgroundPaintPreview( attributes.panelBg, attributes.panelBgGradient, palette );
+	const style = {
+		...textPaintPreview(
+			attributes.panelTextColour,
+			attributes.panelTextColourGradient,
+			palette
+		),
+	};
+	const fill = backgroundPaintPreview(
+		attributes.panelBg,
+		attributes.panelBgGradient,
+		palette
+	);
 	if ( fill.backgroundImage || fill.backgroundColor ) {
-		style[ '--sgs-cart-editor-panel-fill' ] = fill.backgroundImage || fill.backgroundColor;
+		style[ '--sgs-cart-editor-panel-fill' ] =
+			fill.backgroundImage || fill.backgroundColor;
 	}
 	const maxWidth = tierLengthPreview( attributes.panelMaxWidth, tier );
 	if ( maxWidth ) {
 		style.maxWidth = maxWidth;
 	}
-	const shadow = resolveShadowPreviewComposed( attributes.panelShadow, attributes.panelShadowColour );
+	const shadow = resolveShadowPreviewComposed(
+		attributes.panelShadow,
+		attributes.panelShadowColour
+	);
 	if ( shadow ) {
 		style.boxShadow = shadow;
 	}
-	const track = resolveColourToken( attributes.freeDeliveryTrackColour, palette );
+	const track = resolveColourToken(
+		attributes.freeDeliveryTrackColour,
+		palette
+	);
 	if ( track ) {
 		style[ '--sgs-cart-free-delivery-track' ] = track;
 	}
@@ -318,29 +408,52 @@ export function panelRootStyle( attributes, tier, palette ) {
  * @return {{trigger: Object, pillLabel: Object, badge: Object}} Styles.
  */
 export function triggerStyles( attributes, tier, palette, hasPill ) {
-	const badge = { ...textPaintPreview( attributes.badgeTextColour, attributes.badgeTextColourGradient, palette ) };
+	const badge = {
+		...textPaintPreview(
+			attributes.badgeTextColour,
+			attributes.badgeTextColourGradient,
+			palette
+		),
+	};
 	// A plain pill count inherits the pill label's typography; the icon badge and the bubble use their own.
 	if ( ! hasPill || 'bubble' === attributes.pillCountStyle ) {
-		Object.assign( badge, typographyPreviewStyle( attributes, 'badge', tier ) );
+		Object.assign(
+			badge,
+			typographyPreviewStyle( attributes, 'badge', tier )
+		);
 	}
 	// render-scoped-css.php paints badgeColour (solid) or badgeColourGradient on the badge's ::after.
-	const badgeFill = backgroundPaintPreview( attributes.badgeColour, attributes.badgeColourGradient, palette );
+	const badgeFill = backgroundPaintPreview(
+		attributes.badgeColour,
+		attributes.badgeColourGradient,
+		palette
+	);
 	if ( badgeFill.backgroundImage || badgeFill.backgroundColor ) {
-		badge[ '--sgs-cart-editor-badge-fill' ] = badgeFill.backgroundImage || badgeFill.backgroundColor;
+		badge[ '--sgs-cart-editor-badge-fill' ] =
+			badgeFill.backgroundImage || badgeFill.backgroundColor;
 	}
 	if ( ! hasPill ) {
 		// The icon button's own background paints on the trigger's ::after layer (render-scoped-css.php), as the pill's does.
-		const iconFill = backgroundPaintPreview( attributes.iconBg, attributes.iconBgGradient, palette );
+		const iconFill = backgroundPaintPreview(
+			attributes.iconBg,
+			attributes.iconBgGradient,
+			palette
+		);
 		const iconTrigger = {};
 		if ( iconFill.backgroundImage || iconFill.backgroundColor ) {
-			iconTrigger[ '--sgs-cart-editor-icon-fill' ] = iconFill.backgroundImage || iconFill.backgroundColor;
+			iconTrigger[ '--sgs-cart-editor-icon-fill' ] =
+				iconFill.backgroundImage || iconFill.backgroundColor;
 		}
 		const iconRadius = sgsLengthPreview( attributes.iconTriggerRadius );
 		if ( iconRadius ) {
 			iconTrigger.borderRadius = iconRadius;
 		}
 		// A set size replaces the 44px tap floor at this device and never goes below 24px (render-scoped-css.php).
-		const iconSize = resolveTier( attributes.iconTriggerSize, tier, null ).value;
+		const iconSize = resolveTier(
+			attributes.iconTriggerSize,
+			tier,
+			null
+		).value;
 		if ( null !== iconSize && Number( iconSize ) > 0 ) {
 			const px = `${ Math.max( 24, Number( iconSize ) ) }px`;
 			iconTrigger.minWidth = px;
@@ -349,12 +462,28 @@ export function triggerStyles( attributes, tier, palette, hasPill ) {
 		return { trigger: iconTrigger, pillLabel: {}, badge };
 	}
 	const trigger = typographyPreviewStyle( attributes, 'pill', tier );
-	const fill = backgroundPaintPreview( attributes.pillBgColour, attributes.pillBgColourGradient, palette );
+	const fill = backgroundPaintPreview(
+		attributes.pillBgColour,
+		attributes.pillBgColourGradient,
+		palette
+	);
 	if ( fill.backgroundImage || fill.backgroundColor ) {
-		trigger[ '--sgs-cart-editor-pill-fill' ] = fill.backgroundImage || fill.backgroundColor;
+		trigger[ '--sgs-cart-editor-pill-fill' ] =
+			fill.backgroundImage || fill.backgroundColor;
 	}
 	// The pill's stylesheet gives no width, so the border paints only beside a chosen width.
-	Object.assign( trigger, sgsBorderPreview( { widthValues: attributes.pillBorderWidth, styleValue: attributes.pillBorderStyle, colourValue: attributes.pillBorderColour }, tier, palette ) );
+	Object.assign(
+		trigger,
+		sgsBorderPreview(
+			{
+				widthValues: attributes.pillBorderWidth,
+				styleValue: attributes.pillBorderStyle,
+				colourValue: attributes.pillBorderColour,
+			},
+			tier,
+			palette
+		)
+	);
 	const radius = sgsLengthPreview( attributes.pillBorderRadius );
 	if ( radius ) {
 		trigger.borderRadius = radius;
@@ -363,16 +492,26 @@ export function triggerStyles( attributes, tier, palette, hasPill ) {
 	if ( minHeight ) {
 		trigger.minHeight = minHeight;
 	}
-	Object.assign( trigger, tierBoxLonghands( attributes.pillPadding, tier, 'padding' ) );
+	Object.assign(
+		trigger,
+		tierBoxLonghands( attributes.pillPadding, tier, 'padding' )
+	);
 	// The pill's shadow, and the same value as --sgs-focus-under so the focus ring composes over it (render-scoped-css.php).
-	const pillShadow = resolveShadowPreviewComposed( attributes.pillShadow, attributes.pillShadowColour );
+	const pillShadow = resolveShadowPreviewComposed(
+		attributes.pillShadow,
+		attributes.pillShadowColour
+	);
 	if ( pillShadow ) {
 		trigger.boxShadow = pillShadow;
 		trigger[ '--sgs-focus-under' ] = pillShadow;
 	}
 	return {
 		trigger,
-		pillLabel: textPaintPreview( attributes.pillTextColour, attributes.pillTextColourGradient, palette ),
+		pillLabel: textPaintPreview(
+			attributes.pillTextColour,
+			attributes.pillTextColourGradient,
+			palette
+		),
 		badge,
 	};
 }
@@ -388,10 +527,20 @@ export function triggerStyles( attributes, tier, palette, hasPill ) {
  * @return {Object} React style object (custom properties editor.css reads).
  */
 export function scrimPreviewStyle( attributes, tier, palette ) {
-	const gradient = backgroundPaintPreview( '', attributes.scrimColourGradient, palette ).backgroundImage;
-	const fill = gradient || resolveColourToken( attributes.scrimColour, palette ) || '#000';
+	const gradient = backgroundPaintPreview(
+		'',
+		attributes.scrimColourGradient,
+		palette
+	).backgroundImage;
+	const fill =
+		gradient ||
+		resolveColourToken( attributes.scrimColour, palette ) ||
+		'#000';
 	const rawOpacity = resolveTier( attributes.scrimOpacity, tier, '' ).value;
-	const opacity = '' !== rawOpacity && ! isNaN( Number( rawOpacity ) ) ? Math.max( 0, Math.min( 1, Number( rawOpacity ) ) ) : 0;
+	const opacity =
+		'' !== rawOpacity && ! isNaN( Number( rawOpacity ) )
+			? Math.max( 0, Math.min( 1, Number( rawOpacity ) ) )
+			: 0;
 	const style = { '--sgs-scrim-fill': fill, '--sgs-scrim-opacity': opacity };
 	const blur = tierLengthPreview( attributes.scrimBlur, tier );
 	if ( blur ) {

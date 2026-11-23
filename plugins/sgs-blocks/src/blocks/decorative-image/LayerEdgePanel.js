@@ -45,11 +45,25 @@ export default function LayerEdgePanel( { attributes, setAttributes } ) {
 						key={ attr }
 						label={ label }
 						value={ attributes[ attr ] }
-						onChange={ ( obj ) => setAttributes( { [ attr ]: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { [ attr ]: obj } )
+						}
 					>
-						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+						{ ( {
+							ownValue,
+							effectiveValue,
+							inherited,
+							setOwnValue,
+						} ) => (
 							<RangeControl
-								help={ inherited ? __( 'Leave empty to use the desktop value', 'sgs-blocks' ) : undefined }
+								help={
+									inherited
+										? __(
+												'Leave empty to use the desktop value',
+												'sgs-blocks'
+										  )
+										: undefined
+								}
 								value={ ownValue || effectiveValue || 50 }
 								onChange={ ( v ) => setOwnValue( v ) }
 								min={ 0 }

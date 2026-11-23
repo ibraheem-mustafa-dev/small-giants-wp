@@ -26,15 +26,27 @@ import {
 	InspectorAdvancedControls,
 	RichText,
 } from '@wordpress/block-editor';
-import {
-	PanelBody,
-	SelectControl,
-	ToggleControl,
-} from '@wordpress/components';
+import { PanelBody, SelectControl, ToggleControl } from '@wordpress/components';
 // ⛔ ResponsiveControl is deliberately NOT imported any more: the only mount was
 // the bolted-on "Line height (tablet / mobile)" pair, now replaced by the shared
 // TypographyControls' own tier-aware line-height field.
-import { TypographyControls, ResponsiveBoxControl, SgsColourPanel, SgsLengthControl, SgsBorderControl, DesignTokenPicker, GradientCapableColourControl, ShadowControl, shadowAttrKeys, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, LinkUnderlineControl, SGS_FONT_WEIGHT_OPTIONS } from '../../components';
+import {
+	TypographyControls,
+	ResponsiveBoxControl,
+	SgsColourPanel,
+	SgsLengthControl,
+	SgsBorderControl,
+	DesignTokenPicker,
+	GradientCapableColourControl,
+	ShadowControl,
+	shadowAttrKeys,
+	ResponsiveOverride,
+	BOX_UNITS,
+	normaliseResponsiveBox,
+	SgsBoxControl,
+	LinkUnderlineControl,
+	SGS_FONT_WEIGHT_OPTIONS,
+} from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import {
 	colourVar,
@@ -118,10 +130,16 @@ const FIRST_LETTER_SIZE_UNITS = [
 // Style builder — editor preview only (desktop styles; responsive handled PHP)
 // ---------------------------------------------------------------------------
 
-const MAX_WIDTH_ALIGN_MARGIN = { left: '0 auto', centre: 'auto', right: 'auto 0' };
+const MAX_WIDTH_ALIGN_MARGIN = {
+	left: '0 auto',
+	centre: 'auto',
+	right: 'auto 0',
+};
 
 function buildEditorStyle( attributes, tier ) {
-	const { padding, margin,
+	const {
+		padding,
+		margin,
 		textColour,
 		textColourGradient,
 		maxWidth,
@@ -146,21 +164,31 @@ function buildEditorStyle( attributes, tier ) {
 	);
 	// Typography (size, line-height, letter-spacing per tier, family, weight,
 	// style, transform, decoration, align, wrap, writing mode, columns).
-	Object.assign( previewStyle, typographyPreviewStyle( attributes, '', tier ) );
+	Object.assign(
+		previewStyle,
+		typographyPreviewStyle( attributes, '', tier )
+	);
 	// text-indent paints only on a block that directly follows another sgs/text
 	// (render.php's adjacent-sibling selector); editor.css reads this property.
 	if ( attributes.textIndent ) {
 		previewStyle[ '--sgs-ed-text-indent' ] = attributes.textIndent;
 	}
-	const maxWidthPreview = cssLengthValue( resolveTier( maxWidth, tier, '' ).value ?? '' );
+	const maxWidthPreview = cssLengthValue(
+		resolveTier( maxWidth, tier, '' ).value ?? ''
+	);
 	if ( maxWidthPreview ) {
 		previewStyle.maxWidth = maxWidthPreview;
-		const maxWidthAlignPreview = MAX_WIDTH_ALIGN_MARGIN[ resolveTier( maxWidthAlign, tier, '' ).value ];
+		const maxWidthAlignPreview =
+			MAX_WIDTH_ALIGN_MARGIN[
+				resolveTier( maxWidthAlign, tier, '' ).value
+			];
 		if ( maxWidthAlignPreview ) {
 			previewStyle.marginInline = maxWidthAlignPreview;
 		}
 	}
-	const customWidthPreview = cssLengthValue( resolveTier( customWidth, tier, '' ).value ?? '' );
+	const customWidthPreview = cssLengthValue(
+		resolveTier( customWidth, tier, '' ).value ?? ''
+	);
 	if ( customWidthPreview ) {
 		previewStyle.width = customWidthPreview;
 	}
@@ -169,12 +197,40 @@ function buildEditorStyle( attributes, tier ) {
 	// tier-object attrs { desktop, tablet, mobile } (desktop tier previewed
 	// here only); border-radius stays WP-native style.border.radius; border
 	// width comes from the SGS custom borderWidth object attr.
-	Object.assign( previewStyle, tierBoxLonghands( padding, tier, 'padding' ), tierBoxLonghands( margin, tier, 'margin' ) );
-	Object.assign( previewStyle, backgroundPaintPreview( attributes.backgroundColour, attributes.backgroundColourGradient ) );
-	const shadowPreview = composeShadow( attributes.boxShadow, attributes.boxShadowColour );
-	if ( shadowPreview ) previewStyle.boxShadow = shadowPreview;
+	Object.assign(
+		previewStyle,
+		tierBoxLonghands( padding, tier, 'padding' ),
+		tierBoxLonghands( margin, tier, 'margin' )
+	);
+	Object.assign(
+		previewStyle,
+		backgroundPaintPreview(
+			attributes.backgroundColour,
+			attributes.backgroundColourGradient
+		)
+	);
+	const shadowPreview = composeShadow(
+		attributes.boxShadow,
+		attributes.boxShadowColour
+	);
+	if ( shadowPreview ) {
+		previewStyle.boxShadow = shadowPreview;
+	}
 
-	Object.assign( previewStyle, sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient, radiusValues: attributes.borderRadius }, tier, undefined ) );
+	Object.assign(
+		previewStyle,
+		sgsBorderPreview(
+			{
+				widthValues: borderWidth,
+				styleValue: borderStyle,
+				colourValue: borderColour,
+				colourGradientValue: borderColourGradient,
+				radiusValues: attributes.borderRadius,
+			},
+			tier,
+			undefined
+		)
+	);
 
 	return previewStyle;
 }
@@ -206,12 +262,15 @@ function buildDropCapStyle( attributes ) {
 	const dropCapStyle = {};
 
 	dropCapStyle[ '--sgs-ed-first-letter-font-size' ] =
-		firstLetterFontSize !== undefined && firstLetterFontSize !== null && '' !== firstLetterFontSize
+		firstLetterFontSize !== undefined &&
+		firstLetterFontSize !== null &&
+		'' !== firstLetterFontSize
 			? `${ firstLetterFontSize }${ firstLetterFontSizeUnit || 'em' }`
 			: '3em';
 
 	if ( firstLetterFontWeight ) {
-		dropCapStyle[ '--sgs-ed-first-letter-font-weight' ] = firstLetterFontWeight;
+		dropCapStyle[ '--sgs-ed-first-letter-font-weight' ] =
+			firstLetterFontWeight;
 	}
 
 	// The drop-cap ::first-letter pseudo-element cannot receive an inline React
@@ -225,7 +284,9 @@ function buildDropCapStyle( attributes ) {
 	// invalid CSS custom-property consumer — a solid colour still previews
 	// exactly as before.
 	if ( firstLetterColour && ! firstLetterColourGradient ) {
-		dropCapStyle[ '--sgs-ed-first-letter-colour' ] = /^#|^rgb|^hsl/.test( firstLetterColour )
+		dropCapStyle[ '--sgs-ed-first-letter-colour' ] = /^#|^rgb|^hsl/.test(
+			firstLetterColour
+		)
 			? firstLetterColour
 			: colourVar( firstLetterColour );
 	}
@@ -373,7 +434,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const previewTier = usePreviewTier();
 	const blockProps = useBlockProps( {
 		className: editorClassName,
-		style: { ...buildEditorStyle( attributes, previewTier ), ...dropCapStyle },
+		style: {
+			...buildEditorStyle( attributes, previewTier ),
+			...dropCapStyle,
+		},
 	} );
 
 	return (
@@ -400,19 +464,29 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: textColour,
-								onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( { textColour: val ?? '' } ),
 								linked: true,
 								gradientValue: textColourGradient,
-								onGradientChange: ( val ) => setAttributes( { textColourGradient: val ?? '' } ),
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										textColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: textColourHover,
-								onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										textColourHover: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: textColourHoverGradient,
-								onGradientChange: ( val ) => setAttributes( { textColourHoverGradient: val ?? '' } ),
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										textColourHoverGradient: val ?? '',
+									} ),
 							},
 						],
 					},
@@ -425,43 +499,76 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: linkColour,
-								onChange: ( val ) => setAttributes( { linkColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( { linkColour: val ?? '' } ),
 								linked: true,
 								gradientValue: linkColourGradient,
-								onGradientChange: ( val ) => setAttributes( { linkColourGradient: val ?? '' } ),
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										linkColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: linkColourHover,
-								onChange: ( val ) => setAttributes( { linkColourHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										linkColourHover: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: linkColourHoverGradient,
-								onGradientChange: ( val ) => setAttributes( { linkColourHoverGradient: val ?? '' } ),
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										linkColourHoverGradient: val ?? '',
+									} ),
 							},
 						],
 						after: (
 							<>
-							<SelectControl
-								label={ __( 'Link font weight', 'sgs-blocks' ) }
-								value={ linkFontWeight || '' }
-								options={ SGS_FONT_WEIGHT_OPTIONS }
-								onChange={ ( val ) => setAttributes( { linkFontWeight: val } ) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-							<LinkUnderlineControl
-								mode={ linkUnderline }
-								thickness={ linkUnderlineThickness }
-								colour={ linkUnderlineColour }
-								colourHover={ linkUnderlineColourHover }
-								offset={ linkUnderlineOffset }
-								onModeChange={ ( val ) => setAttributes( { linkUnderline: val } ) }
-								onThicknessChange={ ( val ) => setAttributes( { linkUnderlineThickness: val } ) }
-								onColourChange={ ( val ) => setAttributes( { linkUnderlineColour: val } ) }
-								onColourHoverChange={ ( val ) => setAttributes( { linkUnderlineColourHover: val } ) }
-								onOffsetChange={ ( val ) => setAttributes( { linkUnderlineOffset: val } ) }
-							/>
+								<SelectControl
+									label={ __(
+										'Link font weight',
+										'sgs-blocks'
+									) }
+									value={ linkFontWeight || '' }
+									options={ SGS_FONT_WEIGHT_OPTIONS }
+									onChange={ ( val ) =>
+										setAttributes( { linkFontWeight: val } )
+									}
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+								<LinkUnderlineControl
+									mode={ linkUnderline }
+									thickness={ linkUnderlineThickness }
+									colour={ linkUnderlineColour }
+									colourHover={ linkUnderlineColourHover }
+									offset={ linkUnderlineOffset }
+									onModeChange={ ( val ) =>
+										setAttributes( { linkUnderline: val } )
+									}
+									onThicknessChange={ ( val ) =>
+										setAttributes( {
+											linkUnderlineThickness: val,
+										} )
+									}
+									onColourChange={ ( val ) =>
+										setAttributes( {
+											linkUnderlineColour: val,
+										} )
+									}
+									onColourHoverChange={ ( val ) =>
+										setAttributes( {
+											linkUnderlineColourHover: val,
+										} )
+									}
+									onOffsetChange={ ( val ) =>
+										setAttributes( {
+											linkUnderlineOffset: val,
+										} )
+									}
+								/>
 							</>
 						),
 					},
@@ -496,17 +603,25 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					<ToolsPanelItem
 						label={ __( 'Font', 'sgs-blocks' ) }
 						hasValue={ () =>
-							( fontSize && 'object' === typeof fontSize && Object.keys( fontSize ).length > 0 ) ||
+							( fontSize &&
+								'object' === typeof fontSize &&
+								Object.keys( fontSize ).length > 0 ) ||
 							'px' !== ( fontSizeUnit || 'px' ) ||
 							!! fontWeight ||
 							!! fontStyle ||
-							( lineHeight && 'object' === typeof lineHeight && Object.keys( lineHeight ).length > 0 ) ||
+							( lineHeight &&
+								'object' === typeof lineHeight &&
+								Object.keys( lineHeight ).length > 0 ) ||
 							'em' !== ( lineHeightUnit || 'em' ) ||
-							( letterSpacing && 'object' === typeof letterSpacing && Object.keys( letterSpacing ).length > 0 ) ||
+							( letterSpacing &&
+								'object' === typeof letterSpacing &&
+								Object.keys( letterSpacing ).length > 0 ) ||
 							!! fontFamily ||
 							!! textDecoration ||
 							!! textTransform ||
-							( textAlign && 'object' === typeof textAlign && Object.keys( textAlign ).length > 0 ) ||
+							( textAlign &&
+								'object' === typeof textAlign &&
+								Object.keys( textAlign ).length > 0 ) ||
 							!! textWrap
 						}
 						onDeselect={ () =>
@@ -527,53 +642,53 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						}
 						isShownByDefault
 					>
-					{ /*
-					 * THE WHOLE typography field set is the shared
-					 * TypographyControls component, which since the 2026-09-06
-					 * rebuild renders WordPress's OWN native controls
-					 * (FontSizePicker / FontFamilyControl / FontAppearanceControl /
-					 * LineHeightControl / LetterSpacingControl /
-					 * TextDecorationControl / TextTransformControl, plus a faithful
-					 * reimplementation of core's private TextAlignmentControl).
-					 *
-					 * Four ToolsPanelItems that used to sit below this one —
-					 * "Text decoration & transform", "Font family" and "Text align" —
-					 * are GONE, not moved alongside. Each hand-rolled a control the
-					 * shared component already renders; "Text decoration & transform"
-					 * in particular was a genuine DUPLICATE WRITER, since this block
-					 * already passed showDecoration/showTransform.
-					 *
-					 * fontSize / lineHeight / letterSpacing are TIER OBJECTS here
-					 * ({desktop,tablet,mobile}), so the responsive values live inside
-					 * them. The legacy flat fontSizeTablet/fontSizeMobile pair does
-					 * NOT apply to this block and must not be re-added;
-					 * TypographyControls' tiered branch never writes them.
-					 */ }
-					<TypographyControls
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						prefix=""
-						showSize={ true }
-						fontSizePresets={ true }
-						showWeight={ true }
-						showStyle={ true }
-						showLineHeight={ true }
-						showResponsive={ true }
-						showLetterSpacing={ true }
-						showDecoration={ true }
-						showTransform={ true }
-						showFontFamily={ true }
-						showTextAlign={ true }
-						showTextWrap={ true }
-						showTextStroke
-						showNumberStyle
-						showTextShadow
-						showTextColumns={ true }
-						showTextIndent={ true }
-						showWritingMode={ true }
-					/>
+						{ /*
+						 * THE WHOLE typography field set is the shared
+						 * TypographyControls component, which since the 2026-09-06
+						 * rebuild renders WordPress's OWN native controls
+						 * (FontSizePicker / FontFamilyControl / FontAppearanceControl /
+						 * LineHeightControl / LetterSpacingControl /
+						 * TextDecorationControl / TextTransformControl, plus a faithful
+						 * reimplementation of core's private TextAlignmentControl).
+						 *
+						 * Four ToolsPanelItems that used to sit below this one —
+						 * "Text decoration & transform", "Font family" and "Text align" —
+						 * are GONE, not moved alongside. Each hand-rolled a control the
+						 * shared component already renders; "Text decoration & transform"
+						 * in particular was a genuine DUPLICATE WRITER, since this block
+						 * already passed showDecoration/showTransform.
+						 *
+						 * fontSize / lineHeight / letterSpacing are TIER OBJECTS here
+						 * ({desktop,tablet,mobile}), so the responsive values live inside
+						 * them. The legacy flat fontSizeTablet/fontSizeMobile pair does
+						 * NOT apply to this block and must not be re-added;
+						 * TypographyControls' tiered branch never writes them.
+						 */ }
+						<TypographyControls
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							prefix=""
+							showSize={ true }
+							fontSizePresets={ true }
+							showWeight={ true }
+							showStyle={ true }
+							showLineHeight={ true }
+							showResponsive={ true }
+							showLetterSpacing={ true }
+							showDecoration={ true }
+							showTransform={ true }
+							showFontFamily={ true }
+							showTextAlign={ true }
+							showTextWrap={ true }
+							showTextStroke
+							showNumberStyle
+							showTextShadow
+							showTextColumns={ true }
+							showTextIndent={ true }
+							showWritingMode={ true }
+						/>
 
-					{ /* ⛔ The separate "Line height (tablet / mobile)" ResponsiveControl
+						{ /* ⛔ The separate "Line height (tablet / mobile)" ResponsiveControl
 					   that used to sit here is DELETED (2026-09-06).
 
 					   It existed because the shared TypographyControls' line-height
@@ -651,11 +766,20 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						<>
 							{ /* First-letter size — SgsLengthControl (number + unit in one input) */ }
 							<SgsLengthControl
-								label={ __( 'First-letter size', 'sgs-blocks' ) }
-								value={ composeUnit( firstLetterFontSize, firstLetterFontSizeUnit ) }
+								label={ __(
+									'First-letter size',
+									'sgs-blocks'
+								) }
+								value={ composeUnit(
+									firstLetterFontSize,
+									firstLetterFontSizeUnit
+								) }
 								units={ FIRST_LETTER_SIZE_UNITS }
 								onChange={ ( raw ) => {
-									const { num, unit } = parseUnit( raw, firstLetterFontSizeUnit || 'em' );
+									const { num, unit } = parseUnit(
+										raw,
+										firstLetterFontSizeUnit || 'em'
+									);
 									setAttributes( {
 										firstLetterFontSize: num,
 										firstLetterFontSizeUnit: unit,
@@ -664,7 +788,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								presets={ false }
 							/>
 							<SelectControl
-								label={ __( 'First-letter weight', 'sgs-blocks' ) }
+								label={ __(
+									'First-letter weight',
+									'sgs-blocks'
+								) }
 								value={ firstLetterFontWeight }
 								options={ FONT_WEIGHT_OPTIONS }
 								onChange={ ( val ) =>
@@ -676,22 +803,37 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								__next40pxDefaultSize
 							/>
 							<GradientCapableColourControl
-								label={ __( 'First-letter colour', 'sgs-blocks' ) }
+								label={ __(
+									'First-letter colour',
+									'sgs-blocks'
+								) }
 								states={ [
 									{
 										key: 'normal',
 										label: __( 'Normal', 'sgs-blocks' ),
 										value: firstLetterColour,
-										onChange: ( val ) => setAttributes( { firstLetterColour: val ?? '' } ),
+										onChange: ( val ) =>
+											setAttributes( {
+												firstLetterColour: val ?? '',
+											} ),
 										linked: true,
-										gradientValue: firstLetterColourGradient,
-										onGradientChange: ( val ) => setAttributes( { firstLetterColourGradient: val ?? '' } ),
+										gradientValue:
+											firstLetterColourGradient,
+										onGradientChange: ( val ) =>
+											setAttributes( {
+												firstLetterColourGradient:
+													val ?? '',
+											} ),
 									},
 									{
 										key: 'hover',
 										label: __( 'Hover', 'sgs-blocks' ),
 										value: firstLetterColourHover,
-										onChange: ( val ) => setAttributes( { firstLetterColourHover: val ?? '' } ),
+										onChange: ( val ) =>
+											setAttributes( {
+												firstLetterColourHover:
+													val ?? '',
+											} ),
 										linked: true,
 									},
 								] }
@@ -718,21 +860,32 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: backgroundColour,
-								onChange: ( val ) => setAttributes( { backgroundColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										backgroundColour: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: backgroundColourGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { backgroundColourGradient: val ?? '' } ),
+									setAttributes( {
+										backgroundColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: backgroundColourHover,
-								onChange: ( val ) => setAttributes( { backgroundColourHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										backgroundColourHover: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: backgroundColourHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { backgroundColourHoverGradient: val ?? '' } ),
+									setAttributes( {
+										backgroundColourHoverGradient:
+											val ?? '',
+									} ),
 							},
 						] }
 					/>
@@ -753,14 +906,23 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					<ResponsiveOverride
 						label={ __( 'Max width', 'sgs-blocks' ) }
 						value={ maxWidth }
-						onChange={ ( obj ) => setAttributes( { maxWidth: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { maxWidth: obj } )
+						}
 					>
-						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+						{ ( {
+							ownValue,
+							effectiveValue,
+							inherited,
+							setOwnValue,
+						} ) => (
 							<SgsLengthControl
 								label={ __( 'Max width', 'sgs-blocks' ) }
 								hideLabelFromVision
 								value={ ownValue || '' }
-								placeholder={ inherited ? effectiveValue || '' : '' }
+								placeholder={
+									inherited ? effectiveValue || '' : ''
+								}
 								units={ MAX_WIDTH_UNITS }
 								onChange={ ( v ) => setOwnValue( v || '' ) }
 								presets={ false }
@@ -772,23 +934,46 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					<ResponsiveOverride
 						label={ __( 'Max width position', 'sgs-blocks' ) }
 						value={ maxWidthAlign }
-						onChange={ ( obj ) => setAttributes( { maxWidthAlign: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { maxWidthAlign: obj } )
+						}
 					>
 						{ ( { ownValue, setOwnValue } ) => (
 							<SelectControl
 								__next40pxDefaultSize
 								__nextHasNoMarginBottom
-								label={ __( 'Max width position', 'sgs-blocks' ) }
+								label={ __(
+									'Max width position',
+									'sgs-blocks'
+								) }
 								hideLabelFromVision
 								value={ ownValue || '' }
 								options={ [
-									{ value: '', label: __( 'Default (centre)', 'sgs-blocks' ) },
-									{ value: 'left', label: __( 'Left', 'sgs-blocks' ) },
-									{ value: 'centre', label: __( 'Centre', 'sgs-blocks' ) },
-									{ value: 'right', label: __( 'Right', 'sgs-blocks' ) },
+									{
+										value: '',
+										label: __(
+											'Default (centre)',
+											'sgs-blocks'
+										),
+									},
+									{
+										value: 'left',
+										label: __( 'Left', 'sgs-blocks' ),
+									},
+									{
+										value: 'centre',
+										label: __( 'Centre', 'sgs-blocks' ),
+									},
+									{
+										value: 'right',
+										label: __( 'Right', 'sgs-blocks' ),
+									},
 								] }
 								onChange={ ( v ) => setOwnValue( v || '' ) }
-								help={ __( 'Where the box sits when a max width is set.', 'sgs-blocks' ) }
+								help={ __(
+									'Where the box sits when a max width is set.',
+									'sgs-blocks'
+								) }
 							/>
 						) }
 					</ResponsiveOverride>
@@ -797,14 +982,23 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					<ResponsiveOverride
 						label={ __( 'Custom width', 'sgs-blocks' ) }
 						value={ customWidth }
-						onChange={ ( obj ) => setAttributes( { customWidth: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { customWidth: obj } )
+						}
 					>
-						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+						{ ( {
+							ownValue,
+							effectiveValue,
+							inherited,
+							setOwnValue,
+						} ) => (
 							<SgsLengthControl
 								label={ __( 'Custom width', 'sgs-blocks' ) }
 								hideLabelFromVision
 								value={ ownValue || '' }
-								placeholder={ inherited ? effectiveValue || '' : '' }
+								placeholder={
+									inherited ? effectiveValue || '' : ''
+								}
 								units={ CUSTOM_WIDTH_UNITS }
 								onChange={ ( v ) => setOwnValue( v || '' ) }
 								presets={ false }
@@ -823,25 +1017,43 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
 
 					<ResponsiveOverride
 						value={ attributes.padding }
-						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { padding: obj } )
+						}
 					>
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
@@ -854,39 +1066,56 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					   BorderBoxControl layout, matching sgs/product-card + sgs/quote. */ }
 					<SgsBorderControl
 						widthValues={ borderWidth ?? {} }
-						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						onWidthChange={ ( next ) =>
+							setAttributes( { borderWidth: next } )
+						}
 						widthPresets={ [ '10', '20', '30' ] }
 						styleValue={ borderStyle }
-						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						onStyleChange={ ( val ) =>
+							setAttributes( { borderStyle: val } )
+						}
 						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
 						colourStates={ [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: borderColour,
-								onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										borderColour: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: borderColourGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { borderColourGradient: val ?? '' } ),
+									setAttributes( {
+										borderColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: borderColourHover,
-								onChange: ( val ) => setAttributes( { borderColourHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										borderColourHover: val ?? '',
+									} ),
 								linked: true,
 							},
 						] }
 						contrastAgainst={ textContrastAgainst }
 						radiusValues={ {
-								base: attributes.borderRadius?.desktop ?? {},
-								tablet: attributes.borderRadius?.tablet ?? {},
-								mobile: attributes.borderRadius?.mobile ?? {},
-							} }
+							base: attributes.borderRadius?.desktop ?? {},
+							tablet: attributes.borderRadius?.tablet ?? {},
+							mobile: attributes.borderRadius?.mobile ?? {},
+						} }
 						onRadiusChange={ ( tier, next ) => {
 							const key = tier === 'base' ? 'desktop' : tier;
-							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+							setAttributes( {
+								borderRadius: {
+									...attributes.borderRadius,
+									[ key ]: next,
+								},
+							} );
 						} }
 					/>
 				</PanelBody>
@@ -909,7 +1138,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						label={ __( 'Box shadow', 'sgs-blocks' ) }
 						attributes={ attributes }
 						setAttributes={ setAttributes }
-						attrNames={ shadowAttrKeys( 'boxShadow', { hover: true, hoverColour: true } ) }
+						attrNames={ shadowAttrKeys( 'boxShadow', {
+							hover: true,
+							hoverColour: true,
+						} ) }
 					/>
 				</PanelBody>
 			</InspectorControls>
@@ -922,9 +1154,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			<InspectorAdvancedControls>
 				<ToggleControl
 					label={ __( 'Inherit style from parent', 'sgs-blocks' ) }
-					help={ __( 'When enabled, all block-level typography styles are suppressed and the element inherits from its parent container.', 'sgs-blocks' ) }
+					help={ __(
+						'When enabled, all block-level typography styles are suppressed and the element inherits from its parent container.',
+						'sgs-blocks'
+					) }
 					checked={ !! inheritStyle }
-					onChange={ ( val ) => setAttributes( { inheritStyle: val } ) }
+					onChange={ ( val ) =>
+						setAttributes( { inheritStyle: val } )
+					}
 				/>
 			</InspectorAdvancedControls>
 

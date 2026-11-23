@@ -13,14 +13,22 @@ import { PanelBody, Button } from '@wordpress/components';
  */
 export default function CardDesignPanel( { onEdit } ) {
 	return (
-		<PanelBody title={ __( 'Card design', 'sgs-blocks' ) } initialOpen={ true }>
+		<PanelBody
+			title={ __( 'Card design', 'sgs-blocks' ) }
+			initialOpen={ true }
+		>
 			<p>
 				{ __(
 					'Every product shows as the same card. Edit that card to change its text, colours, buttons and effects for all products.',
 					'sgs-blocks'
 				) }
 			</p>
-			<Button variant="secondary" onClick={ onEdit || undefined } disabled={ ! onEdit } __next40pxDefaultSize>
+			<Button
+				variant="secondary"
+				onClick={ onEdit || undefined }
+				disabled={ ! onEdit }
+				__next40pxDefaultSize
+			>
 				{ __( 'Edit card design', 'sgs-blocks' ) }
 			</Button>
 		</PanelBody>

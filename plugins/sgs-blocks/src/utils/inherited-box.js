@@ -14,12 +14,13 @@ const WIDER_TIERS = {
 	mobile: [ 'tablet', 'base', 'desktop' ],
 };
 
-const isSet = ( value ) => value !== undefined && value !== null && value !== '';
+const isSet = ( value ) =>
+	value !== undefined && value !== null && value !== '';
 
 /**
  * @param {{base?: Object, tablet?: Object, mobile?: Object}} tierValues Box object per tier.
- * @param {string}                                            tier        'base' | 'tablet' | 'mobile'.
- * @param {string}                                            key         A side ('top') or corner ('topLeft').
+ * @param {string}                                            tier       'base' | 'tablet' | 'mobile'.
+ * @param {string}                                            key        A side ('top') or corner ('topLeft').
  * @return {string} The nearest wider tier's value for `key`, or '' when the tier itself sets it or none does.
  */
 export function inheritedBoxValue( tierValues, tier, key ) {
@@ -72,12 +73,18 @@ export function inheritedDefault( value, sizes ) {
 	if ( ! call ) {
 		return { label: value.trim(), size: value.trim() };
 	}
-	const slug = call[ 1 ].startsWith( '--wp--preset--spacing--' ) ? call[ 1 ].slice( '--wp--preset--spacing--'.length ) : null;
-	const preset = slug ? ( sizes ?? [] ).find( ( s ) => s.slug === slug ) : undefined;
+	const slug = call[ 1 ].startsWith( '--wp--preset--spacing--' )
+		? call[ 1 ].slice( '--wp--preset--spacing--'.length )
+		: null;
+	const preset = slug
+		? ( sizes ?? [] ).find( ( s ) => s.slug === slug )
+		: undefined;
 	if ( preset ) {
 		return { label: preset.name || preset.slug, size: preset.size ?? '' };
 	}
-	return call[ 2 ] ? inheritedDefault( call[ 2 ], sizes ) : { label: '', size: '' };
+	return call[ 2 ]
+		? inheritedDefault( call[ 2 ], sizes )
+		: { label: '', size: '' };
 }
 
 const CORNER_KEYS = [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ];
@@ -91,7 +98,9 @@ const CORNER_KEYS = [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ];
  */
 export function radiusAsCorners( value ) {
 	if ( 'string' === typeof value && '' !== value ) {
-		return Object.fromEntries( CORNER_KEYS.map( ( corner ) => [ corner, value ] ) );
+		return Object.fromEntries(
+			CORNER_KEYS.map( ( corner ) => [ corner, value ] )
+		);
 	}
 	return value && 'object' === typeof value ? value : {};
 }

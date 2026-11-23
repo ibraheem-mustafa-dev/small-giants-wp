@@ -47,8 +47,18 @@ export function accordionWrapperPreview( attributes, tier, palette, scope ) {
 		...wrapper,
 		css: [
 			textIndentPreviewCss( attributes, '', scope, tier ),
-			typographyPreviewCss( attributes, 'categoryEyebrow', scope ? `${ scope } .sgs-accordion-item__eyebrow` : '', tier ),
-			typographyPreviewCss( attributes, 'itemTitle', scope ? `${ scope } .sgs-accordion-item__title` : '', tier ),
+			typographyPreviewCss(
+				attributes,
+				'categoryEyebrow',
+				scope ? `${ scope } .sgs-accordion-item__eyebrow` : '',
+				tier
+			),
+			typographyPreviewCss(
+				attributes,
+				'itemTitle',
+				scope ? `${ scope } .sgs-accordion-item__title` : '',
+				tier
+			),
 			eyebrowColourCss,
 		]
 			.filter( Boolean )

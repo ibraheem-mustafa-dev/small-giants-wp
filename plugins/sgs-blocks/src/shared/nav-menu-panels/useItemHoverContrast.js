@@ -43,7 +43,8 @@ export default function useItemHoverContrast( {
 	colourPalette,
 	contrastRefEl,
 } ) {
-	const [ itemHoverContrastNotice, setItemHoverContrastNotice ] = useState( null );
+	const [ itemHoverContrastNotice, setItemHoverContrastNotice ] =
+		useState( null );
 
 	useEffect( () => {
 		if ( ! itemColourHover || ! itemHoverSurface ) {
@@ -53,11 +54,13 @@ export default function useItemHoverContrast( {
 
 		try {
 			const bgLuminance = calculateRelativeLuminance(
-				resolveColourToken( itemHoverSurface, colourPalette ) || itemHoverSurface,
+				resolveColourToken( itemHoverSurface, colourPalette ) ||
+					itemHoverSurface,
 				contrastRefEl.current
 			);
 			const fgLuminance = calculateRelativeLuminance(
-				resolveColourToken( itemColourHover, colourPalette ) || itemColourHover,
+				resolveColourToken( itemColourHover, colourPalette ) ||
+					itemColourHover,
 				contrastRefEl.current
 			);
 			const ratio = calculateContrastRatio( bgLuminance, fgLuminance );

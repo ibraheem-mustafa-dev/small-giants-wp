@@ -44,9 +44,7 @@ export const extractColorNameFromCurrentValue = (
 		: currentValue;
 
 	// Normalize format of `colors` to simplify the following loop
-	const colorPalettes = showMultiplePalettes
-		? colors
-		: [ { colors } ];
+	const colorPalettes = showMultiplePalettes ? colors : [ { colors } ];
 	for ( const { colors: paletteColors } of colorPalettes ) {
 		for ( const { name: colorName, color: colorValue } of paletteColors ) {
 			const normalizedColorValue = currentValueIsSimpleColor
@@ -78,8 +76,8 @@ export const isMultiplePaletteArray = ( arr ) => {
 /**
  * Transform a CSS variable used as background color into the color value itself.
  *
- * @param {string|undefined}    value   The color value that may be a CSS variable.
- * @param {HTMLElement|null}    element The element for which to get the computed style.
+ * @param {string|undefined} value   The color value that may be a CSS variable.
+ * @param {HTMLElement|null} element The element for which to get the computed style.
  * @return {string|undefined} The background color value computed from a element.
  */
 export const normalizeColorValue = ( value, element ) => {

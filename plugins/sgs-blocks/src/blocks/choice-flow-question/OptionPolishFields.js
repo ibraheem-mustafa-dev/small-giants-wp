@@ -17,7 +17,13 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { PanelBody, SelectControl, ToggleControl, TextControl, TextareaControl } from '@wordpress/components';
+import {
+	PanelBody,
+	SelectControl,
+	ToggleControl,
+	TextControl,
+	TextareaControl,
+} from '@wordpress/components';
 import { TypographyControls, textRow } from '../../components';
 
 const BADGE_MAX_LENGTH = 20;
@@ -25,13 +31,13 @@ const DESCRIPTION_MAX_LENGTH = 140;
 
 /**
  * @param {Object}   props
- * @param {Object}   props.option  The option row being edited (reads
- *                                 `isDefault`/`badge`/`description`).
- * @param {number}   props.index   This option's index in `options[]` —
- *                                 forwarded to `onChange` unchanged so the
- *                                 caller's own `updateOption` can locate it.
+ * @param {Object}   props.option   The option row being edited (reads
+ *                                  `isDefault`/`badge`/`description`).
+ * @param {number}   props.index    This option's index in `options[]` —
+ *                                  forwarded to `onChange` unchanged so the
+ *                                  caller's own `updateOption` can locate it.
  * @param {Function} props.onChange `( index, key, value ) => void` — the
- *                                 same signature as edit.js's `updateOption`.
+ *                                  same signature as edit.js's `updateOption`.
  * @return {JSX.Element} The three polish controls for one option.
  */
 export default function OptionPolishFields( { option, index, onChange } ) {
@@ -50,7 +56,9 @@ export default function OptionPolishFields( { option, index, onChange } ) {
 			<TextControl
 				label={ __( 'Badge', 'sgs-blocks' ) }
 				value={ option.badge || '' }
-				onChange={ ( val ) => onChange( index, 'badge', val.slice( 0, BADGE_MAX_LENGTH ) ) }
+				onChange={ ( val ) =>
+					onChange( index, 'badge', val.slice( 0, BADGE_MAX_LENGTH ) )
+				}
 				maxLength={ BADGE_MAX_LENGTH }
 				help={ __(
 					'Optional. A short pill shown on the card, e.g. "EASIEST". Leave blank for no badge.',
@@ -62,7 +70,13 @@ export default function OptionPolishFields( { option, index, onChange } ) {
 			<TextareaControl
 				label={ __( 'Description', 'sgs-blocks' ) }
 				value={ option.description || '' }
-				onChange={ ( val ) => onChange( index, 'description', val.slice( 0, DESCRIPTION_MAX_LENGTH ) ) }
+				onChange={ ( val ) =>
+					onChange(
+						index,
+						'description',
+						val.slice( 0, DESCRIPTION_MAX_LENGTH )
+					)
+				}
 				maxLength={ DESCRIPTION_MAX_LENGTH }
 				help={ __(
 					'Optional. One line shown under the option label. Leave blank for none.',
@@ -75,7 +89,10 @@ export default function OptionPolishFields( { option, index, onChange } ) {
 				label={ __( 'Summary wording', 'sgs-blocks' ) }
 				value={ option.summaryText || '' }
 				onChange={ ( val ) => onChange( index, 'summaryText', val ) }
-				help={ __( 'Optional. How the summary shows this answer, e.g. "Sending it later". Leave blank for the label.', 'sgs-blocks' ) }
+				help={ __(
+					'Optional. How the summary shows this answer, e.g. "Sending it later". Leave blank for the label.',
+					'sgs-blocks'
+				) }
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>
@@ -84,13 +101,28 @@ export default function OptionPolishFields( { option, index, onChange } ) {
 				value={ option.stageEffect || '' }
 				options={ [
 					{ label: __( 'None', 'sgs-blocks' ), value: '' },
-					{ label: __( 'Dim (a matched tint)', 'sgs-blocks' ), value: 'dim' },
-					{ label: __( 'Deepen (richer, darker)', 'sgs-blocks' ), value: 'deepen' },
-					{ label: __( 'Soften (a touch lighter)', 'sgs-blocks' ), value: 'soften' },
-					{ label: __( 'Brighten (clear)', 'sgs-blocks' ), value: 'brighten' },
+					{
+						label: __( 'Dim (a matched tint)', 'sgs-blocks' ),
+						value: 'dim',
+					},
+					{
+						label: __( 'Deepen (richer, darker)', 'sgs-blocks' ),
+						value: 'deepen',
+					},
+					{
+						label: __( 'Soften (a touch lighter)', 'sgs-blocks' ),
+						value: 'soften',
+					},
+					{
+						label: __( 'Brighten (clear)', 'sgs-blocks' ),
+						value: 'brighten',
+					},
 				] }
 				onChange={ ( val ) => onChange( index, 'stageEffect', val ) }
-				help={ __( 'The full-screen stage shows the product photo this way while this option is chosen, e.g. a lens finish.', 'sgs-blocks' ) }
+				help={ __(
+					'The full-screen stage shows the product photo this way while this option is chosen, e.g. a lens finish.',
+					'sgs-blocks'
+				) }
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>
@@ -155,7 +187,10 @@ export function optionBadgeColourRows( { attributes, setAttributes } ) {
  */
 export function OptionDescriptionPanel( { attributes, setAttributes } ) {
 	return (
-		<PanelBody title={ __( 'Option description', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Option description', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			<TypographyControls
 				attributes={ attributes }
 				setAttributes={ setAttributes }

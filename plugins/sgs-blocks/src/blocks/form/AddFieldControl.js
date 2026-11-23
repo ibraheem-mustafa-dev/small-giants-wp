@@ -15,7 +15,9 @@ import { plus } from '@wordpress/icons';
 import metadata from './block.json';
 
 /** The field blocks a form takes, from the form's own allowed list: listed first wherever a form's inserter opens. */
-export const FORM_FIELDS = metadata.allowedBlocks.filter( ( name ) => name.startsWith( 'sgs/form-field-' ) );
+export const FORM_FIELDS = metadata.allowedBlocks.filter( ( name ) =>
+	name.startsWith( 'sgs/form-field-' )
+);
 
 /**
  * @param {Object} props

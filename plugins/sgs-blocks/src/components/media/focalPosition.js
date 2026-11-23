@@ -8,5 +8,7 @@
 export function focalToObjectPosition( point ) {
 	const x = Math.max( 0, Math.min( 1, point?.x ?? 0.5 ) );
 	const y = Math.max( 0, Math.min( 1, point?.y ?? 0.5 ) );
-	return `${ Math.round( x * 100 * 100 ) / 100 }% ${ Math.round( y * 100 * 100 ) / 100 }%`;
+	return `${ Math.round( x * 100 * 100 ) / 100 }% ${
+		Math.round( y * 100 * 100 ) / 100
+	}%`;
 }

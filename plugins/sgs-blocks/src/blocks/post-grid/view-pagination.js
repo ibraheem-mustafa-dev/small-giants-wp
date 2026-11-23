@@ -1,6 +1,14 @@
 /* Post grid: standard, load-more and infinite-scroll pagination. */
 
-import { REDUCED_MOTION, showSkeletons, announce, setTrustedServerHtml, showLoadFailure, fetchPosts, scanMotion } from './view-fetch.js';
+import {
+	REDUCED_MOTION,
+	showSkeletons,
+	announce,
+	setTrustedServerHtml,
+	showLoadFailure,
+	fetchPosts,
+	scanMotion,
+} from './view-fetch.js';
 
 // ==========================================================================
 // Standard (numbered) pagination
@@ -24,7 +32,7 @@ export function initStandardPagination( gridEl, queryData ) {
 			return;
 		}
 
-		const page    = parseInt( btn.dataset.page, 10 );
+		const page = parseInt( btn.dataset.page, 10 );
 		const innerEl = gridEl.querySelector( '.sgs-post-grid__inner' );
 		const allBtns = nav.querySelectorAll( '.sgs-post-grid__page-btn' );
 
@@ -41,8 +49,12 @@ export function initStandardPagination( gridEl, queryData ) {
 			scanMotion( innerEl );
 
 			allBtns.forEach( ( b ) => {
-				const isActive = parseInt( b.dataset.page, 10 ) === data.currentPage;
-				b.classList.toggle( 'sgs-post-grid__page-btn--current', isActive );
+				const isActive =
+					parseInt( b.dataset.page, 10 ) === data.currentPage;
+				b.classList.toggle(
+					'sgs-post-grid__page-btn--current',
+					isActive
+				);
 				if ( isActive ) {
 					b.setAttribute( 'aria-current', 'page' );
 				} else {
@@ -58,7 +70,14 @@ export function initStandardPagination( gridEl, queryData ) {
 				history.replaceState( null, '', window.location.pathname );
 			}
 
-			announce( gridEl, 'Page ' + data.currentPage + ' of ' + data.totalPages + ' loaded.' );
+			announce(
+				gridEl,
+				'Page ' +
+					data.currentPage +
+					' of ' +
+					data.totalPages +
+					' loaded.'
+			);
 
 			gridEl.scrollIntoView( {
 				// `behavior` — the DOM API's own spelling. UK English is the
@@ -66,13 +85,15 @@ export function initStandardPagination( gridEl, queryData ) {
 				// an unrecognised key is silently discarded, so `behaviour`
 				// meant this scroll ignored reduced motion in BOTH directions.
 				behavior: REDUCED_MOTION ? 'auto' : 'smooth',
-				block:    'start',
+				block: 'start',
 			} );
 		} catch ( err ) {
 			showLoadFailure( gridEl, innerEl, previousPosts );
-			nav.querySelectorAll( '.sgs-post-grid__page-btn' ).forEach( ( b ) => {
-				b.disabled = false;
-			} );
+			nav.querySelectorAll( '.sgs-post-grid__page-btn' ).forEach(
+				( b ) => {
+					b.disabled = false;
+				}
+			);
 		}
 	} );
 }
@@ -96,12 +117,12 @@ export function initLoadMore( gridEl, queryData ) {
 	let currentPage = 1;
 
 	btn.addEventListener( 'click', async () => {
-		const nextPage    = currentPage + 1;
-		const totalPages  = parseInt( btn.dataset.totalPages, 10 );
-		const innerEl     = gridEl.querySelector( '.sgs-post-grid__inner' );
+		const nextPage = currentPage + 1;
+		const totalPages = parseInt( btn.dataset.totalPages, 10 );
+		const innerEl = gridEl.querySelector( '.sgs-post-grid__inner' );
 		const originalText = btn.textContent;
 
-		btn.disabled    = true;
+		btn.disabled = true;
 		btn.textContent = 'Loading\u2026';
 
 		try {
@@ -115,19 +136,22 @@ export function initLoadMore( gridEl, queryData ) {
 			}
 			scanMotion( innerEl );
 
-			currentPage             = nextPage;
+			currentPage = nextPage;
 			btn.dataset.currentPage = currentPage;
 
 			if ( currentPage >= data.totalPages ) {
 				btn.closest( '.sgs-post-grid__load-more-wrap' )?.remove();
 			} else {
-				btn.disabled    = false;
+				btn.disabled = false;
 				btn.textContent = originalText;
 			}
 
-			announce( gridEl, 'Loaded page ' + nextPage + ' of ' + totalPages + '.' );
+			announce(
+				gridEl,
+				'Loaded page ' + nextPage + ' of ' + totalPages + '.'
+			);
 		} catch ( err ) {
-			btn.disabled    = false;
+			btn.disabled = false;
 			btn.textContent = originalText;
 		}
 	} );
@@ -150,7 +174,7 @@ export function initInfiniteScroll( gridEl, queryData ) {
 	}
 
 	let currentPage = 1;
-	let isLoading   = false;
+	let isLoading = false;
 
 	const observer = new IntersectionObserver(
 		async ( entries ) => {
@@ -165,9 +189,9 @@ export function initInfiniteScroll( gridEl, queryData ) {
 				return;
 			}
 
-			isLoading      = true;
+			isLoading = true;
 			const nextPage = currentPage + 1;
-			const innerEl  = gridEl.querySelector( '.sgs-post-grid__inner' );
+			const innerEl = gridEl.querySelector( '.sgs-post-grid__inner' );
 
 			try {
 				const data = await fetchPosts( queryData, nextPage );
@@ -180,7 +204,7 @@ export function initInfiniteScroll( gridEl, queryData ) {
 				}
 				scanMotion( innerEl );
 
-				currentPage                  = nextPage;
+				currentPage = nextPage;
 				sentinel.dataset.currentPage = currentPage;
 
 				announce( gridEl, 'More posts loaded.' );

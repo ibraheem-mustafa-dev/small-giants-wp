@@ -90,7 +90,11 @@ export function hoverAngles( angles, raw, changed, tier, decls, owners ) {
 		if ( angles[ restKey ] !== null ) {
 			let diff = null;
 			if ( isNumber( raw[ hoverKey ] ) && isNumber( raw[ restKey ] ) ) {
-				diff = valueCss( DEF, hoverKey, raw[ hoverKey ] - raw[ restKey ] );
+				diff = valueCss(
+					DEF,
+					hoverKey,
+					raw[ hoverKey ] - raw[ restKey ]
+				);
 			}
 			// A rest angle list gives every item its own rest angle, so the hover difference is read from the item's own
 			// `--sgs-rot-rest` and the engaged hover lands on the hover angle for each of them.
@@ -125,14 +129,21 @@ export function isOriginKey( key ) {
  * @return {string|null} The value, or null when none is set.
  */
 export function originCss( origin ) {
-	const choice = typeof origin.restOrigin === 'string' ? origin.restOrigin : '';
+	const choice =
+		typeof origin.restOrigin === 'string' ? origin.restOrigin : '';
 	if ( choice === 'custom' ) {
-		return valueCss( DEF, 'restOriginCustom', origin.restOriginCustom ?? null );
+		return valueCss(
+			DEF,
+			'restOriginCustom',
+			origin.restOriginCustom ?? null
+		);
 	}
 	if ( choice === 'centre' ) {
 		return 'center';
 	}
-	return [ 'left', 'right', 'top', 'bottom' ].includes( choice ) ? choice : null;
+	return [ 'left', 'right', 'top', 'bottom' ].includes( choice )
+		? choice
+		: null;
 }
 
 /**
@@ -164,9 +175,14 @@ export function nthRules( value, classes ) {
 	const list = listCss( value );
 	if ( list === null ) {
 		const css = valueCss( DEF, 'restRotate', value );
-		return css === null ? [] : [ [ `:nth-child(n${ of }`, { [ prop ]: css } ] ];
+		return css === null
+			? []
+			: [ [ `:nth-child(n${ of }`, { [ prop ]: css } ] ];
 	}
-	return list.map( ( css, i ) => [ `:nth-child(${ list.length }n+${ i + 1 }${ of }`, { [ prop ]: css } ] );
+	return list.map( ( css, i ) => [
+		`:nth-child(${ list.length }n+${ i + 1 }${ of }`,
+		{ [ prop ]: css },
+	] );
 }
 
 /**
@@ -383,7 +399,8 @@ export function keyframesJson( list, used, desktop ) {
 			if ( prop !== null && css !== null ) {
 				row[ prop ] = css;
 				used[ prop ] = true;
-				const from = ME_PREFIX + 'from-' + prop.slice( ME_PREFIX.length );
+				const from =
+					ME_PREFIX + 'from-' + prop.slice( ME_PREFIX.length );
 				if (
 					index === 0 &&
 					! Object.prototype.hasOwnProperty.call( desktop, from )

@@ -27,17 +27,27 @@ import {
 export function cardGridPreview( attributes, tier, palette ) {
 	const itemStyle = {};
 	if ( attributes.cardBackground || attributes.cardBackgroundGradient ) {
-		const paint = resolveBackgroundPaintPreviewStyle( attributes.cardBackground, attributes.cardBackgroundGradient );
+		const paint = resolveBackgroundPaintPreviewStyle(
+			attributes.cardBackground,
+			attributes.cardBackgroundGradient
+		);
 		if ( paint.backgroundImage ) {
 			itemStyle.backgroundImage = paint.backgroundImage;
 		} else if ( attributes.cardBackground ) {
-			itemStyle[ '--sgs-card-background' ] = colourVar( attributes.cardBackground );
+			itemStyle[ '--sgs-card-background' ] = colourVar(
+				attributes.cardBackground
+			);
 		}
 	}
 	if ( attributes.cardBorderColour ) {
-		itemStyle[ '--sgs-card-border-color' ] = colourVar( attributes.cardBorderColour );
+		itemStyle[ '--sgs-card-border-color' ] = colourVar(
+			attributes.cardBorderColour
+		);
 	}
-	Object.assign( itemStyle, borderPaintPreview( '', attributes.cardBorderColourGradient, palette ) );
+	Object.assign(
+		itemStyle,
+		borderPaintPreview( '', attributes.cardBorderColourGradient, palette )
+	);
 	const borderWidth = boxShorthand( attributes.cardBorderWidth );
 	if ( borderWidth ) {
 		itemStyle[ '--sgs-card-border-width' ] = borderWidth;
@@ -46,13 +56,19 @@ export function cardGridPreview( attributes, tier, palette ) {
 	if ( radius ) {
 		itemStyle[ '--sgs-card-radius' ] = radius;
 	}
-	const shadow = resolveShadowPreviewComposed( attributes.cardShadow, attributes.cardShadowColour );
+	const shadow = resolveShadowPreviewComposed(
+		attributes.cardShadow,
+		attributes.cardShadowColour
+	);
 	if ( shadow ) {
 		itemStyle[ '--sgs-card-shadow' ] = shadow;
 	}
 
 	const imageWrapStyle = {};
-	Object.assign( imageWrapStyle, tierBoxLonghands( attributes.imagePadding, tier, 'padding' ) );
+	Object.assign(
+		imageWrapStyle,
+		tierBoxLonghands( attributes.imagePadding, tier, 'padding' )
+	);
 	const imageHeight = tierLengthPreview( attributes.imageHeight, tier );
 	if ( imageHeight ) {
 		imageWrapStyle.height = imageHeight;
@@ -65,9 +81,21 @@ export function cardGridPreview( attributes, tier, palette ) {
 		imageWrapStyle,
 		titleMarginBottom: tierLengthPreview( attributes.titleMarginBottom ),
 		titleTypography: typographyPreviewStyle( attributes, 'title', tier ),
-		subtitleTypography: typographyPreviewStyle( attributes, 'subtitle', tier ),
-		noImageLabelTypography: typographyPreviewStyle( attributes, 'noImageLabel', tier ),
-		glyphInitialTypography: typographyPreviewStyle( attributes, 'glyphInitial', tier ),
+		subtitleTypography: typographyPreviewStyle(
+			attributes,
+			'subtitle',
+			tier
+		),
+		noImageLabelTypography: typographyPreviewStyle(
+			attributes,
+			'noImageLabel',
+			tier
+		),
+		glyphInitialTypography: typographyPreviewStyle(
+			attributes,
+			'glyphInitial',
+			tier
+		),
 		badgeTypography: typographyPreviewStyle( attributes, 'badge', tier ),
 	};
 }

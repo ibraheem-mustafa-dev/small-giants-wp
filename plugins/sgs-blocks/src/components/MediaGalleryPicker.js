@@ -29,11 +29,11 @@ import { __ } from '@wordpress/i18n';
 
 /**
  * @typedef {Object} SGSGalleryMedia
- * @property {number} id
- * @property {string} url
+ * @property {number}          id
+ * @property {string}          url
  * @property {'image'|'video'} type
- * @property {string} [alt]
- * @property {string} [mime]
+ * @property {string}          [alt]
+ * @property {string}          [mime]
  */
 
 /**
@@ -43,7 +43,7 @@ import { __ } from '@wordpress/i18n';
  * pass their own resolver instead of relying on this default.
  *
  * @param {Object} media WordPress media-library item (from MediaUpload onSelect).
- * @returns {SGSGalleryMedia|null}
+ * @return {SGSGalleryMedia|null}
  */
 function defaultResolveItem( media ) {
 	if ( ! media || ! media.url ) {
@@ -63,23 +63,23 @@ function defaultResolveItem( media ) {
 /**
  * MediaGalleryPicker component.
  *
- * @param {Object}     props
- * @param {Object[]}   props.value                  Current array of mapped media items (must each carry `id`).
- * @param {(items: Object[]) => void} props.onChange Called with the full replacement array after a library selection.
- * @param {(media: Object) => Object|null} [props.resolveItem] Maps a raw WP media object to the block's item shape.
- *                                                    Defaults to `defaultResolveItem` (id/url/type/alt/mime only).
- * @param {string[]}   [props.allowedTypes]          Defaults to ['image', 'video'].
- * @param {boolean|string} [props.multiple]          WordPress MediaUpload `multiple` prop. `true` (default) opens
- *                                                    a multi-select modal pre-populated from `value` and REPLACES
- *                                                    the selection on confirm (matches sgs/gallery's existing
- *                                                    "Edit gallery" behaviour). `"add"` opens without
- *                                                    pre-selection and grows the existing array instead.
- * @param {boolean}    [props.gallery]               WordPress MediaUpload `gallery` prop (gallery-mode UI chrome). Defaults to true.
- * @param {string}     [props.addLabel]              Button label when `value` is empty.
- * @param {string}     [props.editLabel]              Button label when `value` already has items. Defaults to `addLabel` when omitted.
- * @param {string}     [props.buttonVariant]          `Button` `variant` prop. Defaults to 'secondary'.
- * @param {string}     [props.className]              Extra class name(s) applied to the trigger `Button`.
- * @returns {JSX.Element}
+ * @param {Object}                         props
+ * @param {Object[]}                       props.value           Current array of mapped media items (must each carry `id`).
+ * @param {(items: Object[]) => void}      props.onChange        Called with the full replacement array after a library selection.
+ * @param {(media: Object) => Object|null} [props.resolveItem]   Maps a raw WP media object to the block's item shape.
+ *                                                               Defaults to `defaultResolveItem` (id/url/type/alt/mime only).
+ * @param {string[]}                       [props.allowedTypes]  Defaults to ['image', 'video'].
+ * @param {boolean|string}                 [props.multiple]      WordPress MediaUpload `multiple` prop. `true` (default) opens
+ *                                                               a multi-select modal pre-populated from `value` and REPLACES
+ *                                                               the selection on confirm (matches sgs/gallery's existing
+ *                                                               "Edit gallery" behaviour). `"add"` opens without
+ *                                                               pre-selection and grows the existing array instead.
+ * @param {boolean}                        [props.gallery]       WordPress MediaUpload `gallery` prop (gallery-mode UI chrome). Defaults to true.
+ * @param {string}                         [props.addLabel]      Button label when `value` is empty.
+ * @param {string}                         [props.editLabel]     Button label when `value` already has items. Defaults to `addLabel` when omitted.
+ * @param {string}                         [props.buttonVariant] `Button` `variant` prop. Defaults to 'secondary'.
+ * @param {string}                         [props.className]     Extra class name(s) applied to the trigger `Button`.
+ * @return {JSX.Element}
  */
 export default function MediaGalleryPicker( {
 	value = [],
@@ -101,7 +101,7 @@ export default function MediaGalleryPicker( {
 	};
 
 	const hasItems = Array.isArray( value ) && value.length > 0;
-	const label = hasItems ? ( editLabel || addLabel ) : addLabel;
+	const label = hasItems ? editLabel || addLabel : addLabel;
 
 	return (
 		<MediaUploadCheck>
@@ -110,7 +110,9 @@ export default function MediaGalleryPicker( {
 				allowedTypes={ allowedTypes }
 				multiple={ multiple }
 				gallery={ gallery }
-				value={ ( value || [] ).map( ( item ) => item.id ).filter( Boolean ) }
+				value={ ( value || [] )
+					.map( ( item ) => item.id )
+					.filter( Boolean ) }
 				render={ ( { open } ) => (
 					<Button
 						onClick={ open }

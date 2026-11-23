@@ -23,11 +23,21 @@ import {
 	RichText,
 	useSettings,
 } from '@wordpress/block-editor';
+import { PanelBody, SelectControl } from '@wordpress/components';
 import {
-	PanelBody,
-	SelectControl,
-} from '@wordpress/components';
-import { ResponsiveBoxControl, SgsColourPanel, SgsLengthControl, fillRow, textRow, SgsBorderControl, resolveColourToken, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
+	ResponsiveBoxControl,
+	SgsColourPanel,
+	SgsLengthControl,
+	fillRow,
+	textRow,
+	SgsBorderControl,
+	resolveColourToken,
+	TypographyControls,
+	ResponsiveOverride,
+	BOX_UNITS,
+	normaliseResponsiveBox,
+	SgsBoxControl,
+} from '../../components';
 import {
 	backgroundPaintPreview,
 	colourVar,
@@ -68,11 +78,21 @@ const LENGTH_UNITS = [
 // (padding, margin, border, radius), the fill, the text colour and typography,
 // plus the SGS kept-scalar width family. Mirrors render.php's scoped output.
 function buildWrapperStyle( attributes, tier, palette ) {
-	const { maxWidth, backgroundColour, backgroundColourGradient, textColour, textColourGradient } = attributes;
+	const {
+		maxWidth,
+		backgroundColour,
+		backgroundColourGradient,
+		textColour,
+		textColourGradient,
+	} = attributes;
 	const wrapperStyle = {
 		...boxPreview( attributes, tier, palette ),
 		...typographyPreviewStyle( attributes, '', tier ),
-		...backgroundPaintPreview( backgroundColour, backgroundColourGradient, palette ),
+		...backgroundPaintPreview(
+			backgroundColour,
+			backgroundColourGradient,
+			palette
+		),
 	};
 
 	// D636 gap-closure — textColourGradient sibling wins when set+valid,
@@ -80,8 +100,10 @@ function buildWrapperStyle( attributes, tier, palette ) {
 	// render.php's sgs_resolve_text_colour_or_gradient()/sgs_text_colour_decl()).
 	Object.assign(
 		wrapperStyle,
-		resolveTextColourPreviewStyle( textColour, textColourGradient, ( val ) =>
-			/^#|^rgb|^hsl/.test( val ) ? val : colourVar( val )
+		resolveTextColourPreviewStyle(
+			textColour,
+			textColourGradient,
+			( val ) => ( /^#|^rgb|^hsl/.test( val ) ? val : colourVar( val ) )
 		)
 	);
 
@@ -115,18 +137,26 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// comparing against the flat colour would compare against a surface that
 	// isn't rendered — skip the check entirely in that case.
 	const faqContrastAgainst =
-		backgroundColour && ! backgroundColourGradient
-			? backgroundColour
-			: '';
+		backgroundColour && ! backgroundColourGradient ? backgroundColour : '';
 
 	const previewTier = usePreviewTier();
-	const indentPreviewCss = textIndentPreviewCss( attributes, '', `#block-${ clientId }`, previewTier );
+	const indentPreviewCss = textIndentPreviewCss(
+		attributes,
+		'',
+		`#block-${ clientId }`,
+		previewTier
+	);
 	// The `question` family paints every sgs/product-faq-item <summary>, which the
 	// CHILD block's canvas renders, not this one. An inline style cannot reach
 	// another block's element, so the canvas gets a scoped rule instead - the same
 	// reason the text-indent preview above is a rule. Mirrors render.php's own
 	// `question` descendant selector.
-	const questionPreviewCss = typographyPreviewCss( attributes, 'question', `#block-${ clientId } .sgs-product-faq-item__question`, previewTier );
+	const questionPreviewCss = typographyPreviewCss(
+		attributes,
+		'question',
+		`#block-${ clientId } .sgs-product-faq-item__question`,
+		previewTier
+	);
 	const [ palette ] = useSettings( 'color.palette' );
 	const blockProps = useBlockProps( {
 		className: 'sgs-product-faq',
@@ -228,7 +258,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				    prefix "", the section) and Question (prefix "question", every
 				    question summary in this FAQ, painted by render.php through a
 				    descendant selector). */ }
-				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Typography', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<TypographyControls
 						attributes={ attributes }
 						setAttributes={ setAttributes }
@@ -274,18 +307,31 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				   ResponsiveOverride + SgsBoxControl; read directly by this
 				   block's render.php. Border/colour stay on the native WP
 				   panels. */ }
-				<PanelBody title={ __( 'Wrapper', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Wrapper', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<ResponsiveOverride
 						value={ attributes.padding }
-						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { padding: obj } )
+						}
 					>
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
@@ -296,10 +342,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
@@ -308,32 +362,53 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						label={ __( 'Outer max-width', 'sgs-blocks' ) }
 						value={ maxWidth || '' }
 						units={ LENGTH_UNITS }
-						onChange={ ( val ) => setAttributes( { maxWidth: val ?? '' } ) }
-						help={ __( 'Exact CSS length, e.g. 1200px. Leave blank for no cap.', 'sgs-blocks' ) }
+						onChange={ ( val ) =>
+							setAttributes( { maxWidth: val ?? '' } )
+						}
+						help={ __(
+							'Exact CSS length, e.g. 1200px. Leave blank for no cap.',
+							'sgs-blocks'
+						) }
 					/>
 				</PanelBody>
-				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Border', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SgsBorderControl
 						widthValues={ attributes.borderWidth ?? {} }
-						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						onWidthChange={ ( next ) =>
+							setAttributes( { borderWidth: next } )
+						}
 						widthPresets={ [ '10', '20', '30' ] }
 						styleValue={ attributes.borderStyle }
-						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						onStyleChange={ ( val ) =>
+							setAttributes( { borderStyle: val } )
+						}
 						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
 						colourValue={ attributes.borderColour }
-						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						onColourChange={ ( val ) =>
+							setAttributes( { borderColour: val ?? '' } )
+						}
 						colourGradientValue={ attributes.borderColourGradient }
-						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+						onColourGradientChange={ ( val ) =>
+							setAttributes( { borderColourGradient: val ?? '' } )
+						}
 						colourLinked={ true }
 						contrastAgainst={ faqContrastAgainst }
 						radiusValues={ {
-								base: attributes.borderRadius?.desktop ?? {},
-								tablet: attributes.borderRadius?.tablet ?? {},
-								mobile: attributes.borderRadius?.mobile ?? {},
-							} }
+							base: attributes.borderRadius?.desktop ?? {},
+							tablet: attributes.borderRadius?.tablet ?? {},
+							mobile: attributes.borderRadius?.mobile ?? {},
+						} }
 						onRadiusChange={ ( tier, next ) => {
 							const key = tier === 'base' ? 'desktop' : tier;
-							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+							setAttributes( {
+								borderRadius: {
+									...attributes.borderRadius,
+									[ key ]: next,
+								},
+							} );
 						} }
 					/>
 				</PanelBody>

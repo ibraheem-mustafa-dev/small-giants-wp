@@ -7,7 +7,16 @@ import { __, sprintf } from '@wordpress/i18n';
 import { deviceName, resolveTierSource } from './deviceValues.js';
 
 /** The ratio a slot offers by default, `w / h`, spaced as the stored value is. */
-export const BASE_RATIOS = [ '1 / 1', '4 / 3', '3 / 2', '16 / 9', '4 / 5', '3 / 4', '9 / 16', '21 / 9' ];
+export const BASE_RATIOS = [
+	'1 / 1',
+	'4 / 3',
+	'3 / 2',
+	'16 / 9',
+	'4 / 5',
+	'3 / 4',
+	'9 / 16',
+	'21 / 9',
+];
 
 /** The only ratios an embed offers. */
 export const EMBED_RATIOS = [ '16 / 9', '4 / 3', '21 / 9', '9 / 16' ];
@@ -29,7 +38,9 @@ export function normaliseRatio( ratio ) {
 		return `${ match[ 1 ] } / ${ match[ 2 ] }`;
 	}
 	// Core writes a square as the bare number "1": the same ratio as "1 / 1".
-	return /^\d+(?:\.\d+)?$/.test( text ) && Number( text ) > 0 ? `${ text } / 1` : text;
+	return /^\d+(?:\.\d+)?$/.test( text ) && Number( text ) > 0
+		? `${ text } / 1`
+		: text;
 }
 
 /**
@@ -47,16 +58,25 @@ export function ratioOptions( themeRatios, kind = 'image' ) {
 		}
 	};
 	if ( 'embed' !== kind ) {
-		add( NATURAL, 'video' === kind ? __( "Video's own", 'sgs-blocks' ) : __( "Photo's own", 'sgs-blocks' ) );
+		add(
+			NATURAL,
+			'video' === kind
+				? __( "Video's own", 'sgs-blocks' )
+				: __( "Photo's own", 'sgs-blocks' )
+		);
 	}
-	( 'embed' === kind ? EMBED_RATIOS : BASE_RATIOS ).forEach( ( ratio ) => add( ratio, ratio.replace( / /g, '' ).replace( '/', ':' ) ) );
+	( 'embed' === kind ? EMBED_RATIOS : BASE_RATIOS ).forEach( ( ratio ) =>
+		add( ratio, ratio.replace( / /g, '' ).replace( '/', ':' ) )
+	);
 	if ( 'embed' !== kind ) {
-		( Array.isArray( themeRatios ) ? themeRatios : [] ).forEach( ( entry ) => {
-			const value = normaliseRatio( entry?.ratio );
-			if ( value && 'string' === typeof entry?.name ) {
-				add( value, entry.name );
+		( Array.isArray( themeRatios ) ? themeRatios : [] ).forEach(
+			( entry ) => {
+				const value = normaliseRatio( entry?.ratio );
+				if ( value && 'string' === typeof entry?.name ) {
+					add( value, entry.name );
+				}
 			}
-		} );
+		);
 	}
 	return out;
 }
@@ -66,7 +86,10 @@ export function ratioOptions( themeRatios, kind = 'image' ) {
  * @return {boolean} True for a real length (not blank, auto, none, fill, natural).
  */
 export function isLength( value ) {
-	return !! value && ! [ 'auto', 'none', FILL, NATURAL, 'inherit' ].includes( value );
+	return (
+		!! value &&
+		! [ 'auto', 'none', FILL, NATURAL, 'inherit' ].includes( value )
+	);
 }
 
 /**
@@ -106,12 +129,24 @@ export function describeSizing( device, sized ) {
 	const widthSet = isLength( width );
 	const heightSet = isLength( height );
 	// Ratio is not used while Width and Height are both set, nor while Height is Fill (§7.2).
-	const hasRatio = !! ratio && NATURAL !== ratio && FILL !== height && ! ( widthSet && heightSet );
+	const hasRatio =
+		!! ratio &&
+		NATURAL !== ratio &&
+		FILL !== height &&
+		! ( widthSet && heightSet );
 	const hasHeight = !! height && 'auto' !== height;
 	const parts = [];
 
 	if ( widthSet ) {
-		parts.push( sprintf( /* translators: %s: a CSS length. */ __( '%s wide', 'sgs-blocks' ), width ) );
+		parts.push(
+			sprintf(
+				/* translators: %s: a CSS length. */ __(
+					'%s wide',
+					'sgs-blocks'
+				),
+				width
+			)
+		);
 	} else if ( 'auto' === width || ( hasRatio && hasHeight ) ) {
 		parts.push( __( 'width follows the height', 'sgs-blocks' ) );
 	} else if ( hasRatio || hasHeight ) {
@@ -123,13 +158,27 @@ export function describeSizing( device, sized ) {
 	if ( FILL === height ) {
 		parts.push( __( 'as tall as its space', 'sgs-blocks' ) );
 	} else if ( heightSet ) {
-		parts.push( sprintf( /* translators: %s: a CSS length. */ __( '%s tall', 'sgs-blocks' ), height ) );
+		parts.push(
+			sprintf(
+				/* translators: %s: a CSS length. */ __(
+					'%s tall',
+					'sgs-blocks'
+				),
+				height
+			)
+		);
 	}
 	if ( hasRatio ) {
 		parts.push(
 			'1 / 1' === ratio
 				? __( 'square (1:1)', 'sgs-blocks' )
-				: sprintf( /* translators: %s: a ratio such as 16:9. */ __( 'ratio %s', 'sgs-blocks' ), ratio.replace( / /g, '' ).replace( '/', ':' ) )
+				: sprintf(
+						/* translators: %s: a ratio such as 16:9. */ __(
+							'ratio %s',
+							'sgs-blocks'
+						),
+						ratio.replace( / /g, '' ).replace( '/', ':' )
+				  )
 		);
 	}
 	// Width auto with a Height and no Ratio keeps the file's proportions, so nothing is cropped (§7.2).
@@ -154,9 +203,24 @@ export function describeSizing( device, sized ) {
 		.filter( ( [ value ] ) => isLength( value ) )
 		.map( ( [ value, template ] ) => sprintf( template, value ) );
 	if ( limits.length ) {
-		parts.push( sprintf( /* translators: %s: a list such as "max height 300px". */ __( 'limited to %s', 'sgs-blocks' ), limits.join( ', ' ) ) );
+		parts.push(
+			sprintf(
+				/* translators: %s: a list such as "max height 300px". */ __(
+					'limited to %s',
+					'sgs-blocks'
+				),
+				limits.join( ', ' )
+			)
+		);
 	}
-	return sprintf( /* translators: 1: device name, 2: the result. */ __( '%1$s: %2$s', 'sgs-blocks' ), deviceName( device ), parts.join( ', ' ) );
+	return sprintf(
+		/* translators: 1: device name, 2: the result. */ __(
+			'%1$s: %2$s',
+			'sgs-blocks'
+		),
+		deviceName( device ),
+		parts.join( ', ' )
+	);
 }
 
 /**
@@ -164,5 +228,9 @@ export function describeSizing( device, sized ) {
  * @return {boolean} True when the box crops, so Fit and Focal have something to act on (§9.2 hint).
  */
 export function boxCrops( sized ) {
-	return ( !! sized.ratio && NATURAL !== sized.ratio ) || isLength( sized.height ) || FILL === sized.height;
+	return (
+		( !! sized.ratio && NATURAL !== sized.ratio ) ||
+		isLength( sized.height ) ||
+		FILL === sized.height
+	);
 }

@@ -27,7 +27,9 @@ function setOpen( card, open ) {
 	edit.hidden = open;
 	edit.setAttribute( 'aria-expanded', open ? 'true' : 'false' );
 	if ( open ) {
-		const first = form.querySelector( 'input:not([type="hidden"]), select, textarea' );
+		const first = form.querySelector(
+			'input:not([type="hidden"]), select, textarea'
+		);
 		if ( first ) {
 			first.focus();
 		}
@@ -66,7 +68,10 @@ function onClick( event ) {
 
 /** Bind the editor once for the page. */
 export function initAddressEditors() {
-	if ( document.body.dataset.sgsAddrBound === '1' || ! document.querySelector( CARD ) ) {
+	if (
+		document.body.dataset.sgsAddrBound === '1' ||
+		! document.querySelector( CARD )
+	) {
 		return;
 	}
 	document.body.dataset.sgsAddrBound = '1';

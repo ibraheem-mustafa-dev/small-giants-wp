@@ -19,22 +19,34 @@ import {
 /**
  * Wrapper style for the banner canvas.
  *
- * @param {Object} attributes Block attributes.
- * @param {string} tier       Previewed device tier.
- * @param {Array}  palette    Theme colour palette.
- * @param {boolean} bareBox   True in announcement mode, which keeps its spacing and width off the canvas wrapper.
+ * @param {Object}  attributes Block attributes.
+ * @param {string}  tier       Previewed device tier.
+ * @param {Array}   palette    Theme colour palette.
+ * @param {boolean} bareBox    True in announcement mode, which keeps its spacing and width off the canvas wrapper.
  * @return {Object} React style object.
  */
 export function buildWrapperStyle( attributes, tier, palette, bareBox ) {
 	const { padding, margin, maxWidth } = attributes;
 	const style = {
-		...backgroundPaintPreview( attributes.backgroundColour, attributes.backgroundColourGradient, palette ),
-		...textPaintPreview( attributes.textColour, attributes.textColourGradient, palette ),
+		...backgroundPaintPreview(
+			attributes.backgroundColour,
+			attributes.backgroundColourGradient,
+			palette
+		),
+		...textPaintPreview(
+			attributes.textColour,
+			attributes.textColourGradient,
+			palette
+		),
 		...wrapperBorderPreview( attributes, tier, palette ),
 		...typographyPreviewStyle( attributes, '', tier ),
 	};
 	if ( ! bareBox ) {
-		Object.assign( style, tierBoxLonghands( padding, tier, 'padding' ), tierBoxLonghands( margin, tier, 'margin' ) );
+		Object.assign(
+			style,
+			tierBoxLonghands( padding, tier, 'padding' ),
+			tierBoxLonghands( margin, tier, 'margin' )
+		);
 		if ( maxWidth ) {
 			style.maxWidth = maxWidth;
 		}

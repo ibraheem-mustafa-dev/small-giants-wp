@@ -13,7 +13,9 @@
  * No jQuery. No dependencies.
  */
 
-const reduceMotion = window.matchMedia && window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
+const reduceMotion =
+	window.matchMedia &&
+	window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
 
 const ICON = {
 	play: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>',
@@ -43,7 +45,11 @@ function el( tag, cls, html ) {
 }
 
 function enhance( video ) {
-	if ( video._sgsVideo || video.tagName !== 'VIDEO' || ! video.hasAttribute( 'controls' ) ) {
+	if (
+		video._sgsVideo ||
+		video.tagName !== 'VIDEO' ||
+		! video.hasAttribute( 'controls' )
+	) {
 		return;
 	}
 	video._sgsVideo = true;
@@ -76,7 +82,11 @@ function enhance( video ) {
 
 	const time = el( 'span', 'sgs-video__time', '0:00 / 0:00' );
 
-	const muteBtn = el( 'button', 'sgs-video__btn sgs-video__mute', ICON.volume );
+	const muteBtn = el(
+		'button',
+		'sgs-video__btn sgs-video__mute',
+		ICON.volume
+	);
 	muteBtn.type = 'button';
 	muteBtn.setAttribute( 'aria-label', 'Mute' );
 	muteBtn.setAttribute( 'aria-pressed', 'false' );
@@ -96,7 +106,8 @@ function enhance( video ) {
 	wrap.appendChild( bar );
 
 	// ---- wiring ----
-	const setProgress = ( p ) => scrub.style.setProperty( '--sgs-progress', ( p * 100 ) + '%' );
+	const setProgress = ( p ) =>
+		scrub.style.setProperty( '--sgs-progress', p * 100 + '%' );
 	const togglePlay = () => ( video.paused ? video.play() : video.pause() );
 
 	centre.addEventListener( 'click', togglePlay );
@@ -125,10 +136,12 @@ function enhance( video ) {
 		const p = video.currentTime / video.duration;
 		scrub.value = String( Math.round( p * 1000 ) );
 		setProgress( p );
-		time.textContent = fmt( video.currentTime ) + ' / ' + fmt( video.duration );
+		time.textContent =
+			fmt( video.currentTime ) + ' / ' + fmt( video.duration );
 	} );
 	video.addEventListener( 'loadedmetadata', () => {
-		time.textContent = fmt( video.currentTime ) + ' / ' + fmt( video.duration );
+		time.textContent =
+			fmt( video.currentTime ) + ' / ' + fmt( video.duration );
 	} );
 	scrub.addEventListener( 'input', () => {
 		scrubbing = true;
@@ -159,7 +172,9 @@ function enhance( video ) {
 		video.muted = video.volume === 0;
 	} );
 	video.addEventListener( 'volumechange', () => {
-		vol.value = String( Math.round( ( video.muted ? 0 : video.volume ) * 100 ) );
+		vol.value = String(
+			Math.round( ( video.muted ? 0 : video.volume ) * 100 )
+		);
 		applyMuteIcon();
 	} );
 
@@ -174,14 +189,20 @@ function enhance( video ) {
 	document.addEventListener( 'fullscreenchange', () => {
 		const on = inFs();
 		fsBtn.innerHTML = on ? ICON.fsOut : ICON.fsIn;
-		fsBtn.setAttribute( 'aria-label', on ? 'Exit full screen' : 'Full screen' );
+		fsBtn.setAttribute(
+			'aria-label',
+			on ? 'Exit full screen' : 'Full screen'
+		);
 		wrap.classList.toggle( 'is-fullscreen', on );
 	} );
 
 	// Keyboard (when the player has focus): space/k play, arrows seek/volume, m, f.
 	wrap.tabIndex = 0;
 	wrap.setAttribute( 'role', 'group' );
-	wrap.setAttribute( 'aria-label', video.getAttribute( 'aria-label' ) || 'Video player' );
+	wrap.setAttribute(
+		'aria-label',
+		video.getAttribute( 'aria-label' ) || 'Video player'
+	);
 	wrap.addEventListener( 'keydown', ( e ) => {
 		// Only handle shortcuts when the WRAPPER itself has focus. When a child
 		// control (range slider / button) has focus, let it handle its own keys —
@@ -202,7 +223,10 @@ function enhance( video ) {
 				break;
 			case 'ArrowRight':
 				e.preventDefault();
-				video.currentTime = Math.min( video.duration || 0, video.currentTime + 5 );
+				video.currentTime = Math.min(
+					video.duration || 0,
+					video.currentTime + 5
+				);
 				break;
 			case 'ArrowUp':
 				e.preventDefault();
@@ -219,7 +243,6 @@ function enhance( video ) {
 				fsBtn.click();
 				break;
 			default:
-				return;
 		}
 	} );
 
@@ -231,7 +254,11 @@ function enhance( video ) {
 }
 
 function init() {
-	document.querySelectorAll( '.wp-block-sgs-media video.sgs-media-video[controls]' ).forEach( enhance );
+	document
+		.querySelectorAll(
+			'.wp-block-sgs-media video.sgs-media-video[controls]'
+		)
+		.forEach( enhance );
 }
 
 if ( document.readyState === 'loading' ) {

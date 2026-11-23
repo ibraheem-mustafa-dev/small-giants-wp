@@ -26,7 +26,9 @@ export const WISHLIST_CHANGE_EVENT = 'sgs-wishlist-change';
  */
 export function readGuestIds() {
 	try {
-		const parsed = JSON.parse( window.localStorage.getItem( STORAGE_KEY ) || '[]' );
+		const parsed = JSON.parse(
+			window.localStorage.getItem( STORAGE_KEY ) || '[]'
+		);
 		return Array.isArray( parsed )
 			? parsed.map( Number ).filter( ( id ) => id > 0 )
 			: [];

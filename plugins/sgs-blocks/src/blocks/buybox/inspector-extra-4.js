@@ -5,7 +5,14 @@ import {
 	ToggleGroupControl,
 	ToggleGroupControlOption,
 } from '../../components/primitives';
-import { SgsLengthControl, ResponsiveLengthControl, SgsBoxControl, SgsBorderControl, ShadowControl, shadowAttrKeys } from '../../components';
+import {
+	SgsLengthControl,
+	ResponsiveLengthControl,
+	SgsBoxControl,
+	SgsBorderControl,
+	ShadowControl,
+	shadowAttrKeys,
+} from '../../components';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
 import { spacingDefaultsFor } from '../../utils/spacing-defaults';
@@ -116,7 +123,9 @@ export function BuyboxExtraSettingsPanels3( { attributes, setAttributes } ) {
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 				/>
-				<SgsFreeTextField type="rich" noLink
+				<SgsFreeTextField
+					type="rich"
+					noLink
 					label={ __( 'Link text', 'sgs-blocks' ) }
 					value={ pickerLabelLinkText || '' }
 					onChange={ ( val ) =>
@@ -137,7 +146,10 @@ export function BuyboxExtraSettingsPanels3( { attributes, setAttributes } ) {
 				<SgsBoxControl
 					label={ __( 'Link padding', 'sgs-blocks' ) }
 					values={ pickerLabelLinkPadding ?? {} }
-					defaults={ spacingDefaultsFor( 'sgs/buybox', 'pickerLabelLinkPadding' ) }
+					defaults={ spacingDefaultsFor(
+						'sgs/buybox',
+						'pickerLabelLinkPadding'
+					) }
 					presets
 					onChange={ ( next ) =>
 						setAttributes( { pickerLabelLinkPadding: next } )
@@ -150,12 +162,18 @@ export function BuyboxExtraSettingsPanels3( { attributes, setAttributes } ) {
 				initialOpen={ false }
 			>
 				<SgsLengthControl
-					label={ __( 'Option pill and tile border width', 'sgs-blocks' ) }
+					label={ __(
+						'Option pill and tile border width',
+						'sgs-blocks'
+					) }
 					value={ pickerPillBorderWidth || '' }
 					onChange={ ( val ) =>
 						setAttributes( { pickerPillBorderWidth: val ?? '' } )
 					}
-					help={ __( 'Empty = the option picker default of 2px.', 'sgs-blocks' ) }
+					help={ __(
+						'Empty = the option picker default of 2px.',
+						'sgs-blocks'
+					) }
 					presets={ false }
 				/>
 				<SgsBoxControl
@@ -167,17 +185,27 @@ export function BuyboxExtraSettingsPanels3( { attributes, setAttributes } ) {
 					}
 				/>
 				<SgsLengthControl
-					label={ __( 'RRP saving pill corner radius', 'sgs-blocks' ) }
+					label={ __(
+						'RRP saving pill corner radius',
+						'sgs-blocks'
+					) }
 					value={ rrpPillRadius || '' }
-					onChange={ ( val ) => setAttributes( { rrpPillRadius: val ?? '' } ) }
+					onChange={ ( val ) =>
+						setAttributes( { rrpPillRadius: val ?? '' } )
+					}
 					help={ __( 'Empty = the default 4px.', 'sgs-blocks' ) }
 					presets={ false }
 				/>
 				<SgsLengthControl
 					label={ __( 'Price row gap', 'sgs-blocks' ) }
 					value={ priceRowGap || '' }
-					onChange={ ( val ) => setAttributes( { priceRowGap: val ?? '' } ) }
-					help={ __( 'Space between the price, the RRP and the saving pill. Empty = the default 8px.', 'sgs-blocks' ) }
+					onChange={ ( val ) =>
+						setAttributes( { priceRowGap: val ?? '' } )
+					}
+					help={ __(
+						'Space between the price, the RRP and the saving pill. Empty = the default 8px.',
+						'sgs-blocks'
+					) }
 					presets={ false }
 				/>
 			</PanelBody>

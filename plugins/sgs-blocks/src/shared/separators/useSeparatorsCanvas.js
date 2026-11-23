@@ -27,10 +27,18 @@ import { useSeparatorOverlay } from './useSeparatorOverlay';
  * @param {Array}   [args.deps]     Other values that move the items (columns, gap): they re-run the overlay.
  * @return {{ref: {current: HTMLElement|null}, style: Object}} Attach `ref` to the list element and spread `style` into its style.
  */
-export function useSeparatorsCanvas( { separators, device = 'desktop', active = true, deps = [] } ) {
+export function useSeparatorsCanvas( {
+	separators,
+	device = 'desktop',
+	active = true,
+	deps = [],
+} ) {
 	const ref = useRef( null );
 	const style = active ? separatorsFlowPreview( separators, device ) : {};
 	const drawing = Object.keys( style ).length > 0;
-	useSeparatorOverlay( ref, drawing ? JSON.stringify( [ separators, device, ...deps ] ) : '' );
+	useSeparatorOverlay(
+		ref,
+		drawing ? JSON.stringify( [ separators, device, ...deps ] ) : ''
+	);
 	return { ref, style };
 }

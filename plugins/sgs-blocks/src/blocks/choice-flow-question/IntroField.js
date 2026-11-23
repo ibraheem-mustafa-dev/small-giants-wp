@@ -16,7 +16,12 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { SelectControl, TextControl, TextareaControl, ToggleControl } from '@wordpress/components';
+import {
+	SelectControl,
+	TextControl,
+	TextareaControl,
+	ToggleControl,
+} from '@wordpress/components';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
 /**
@@ -25,11 +30,21 @@ import SgsFreeTextField from '../../components/SgsFreeTextField';
  * @param {Function} props.setAttributes Block attribute setter.
  */
 export default function IntroField( { attributes, setAttributes } ) {
-	const { intro, introWidth, eyebrow, pricePrefix, priceGroup, summaryLabel, showInBagLine } = attributes;
+	const {
+		intro,
+		introWidth,
+		eyebrow,
+		pricePrefix,
+		priceGroup,
+		summaryLabel,
+		showInBagLine,
+	} = attributes;
 
 	return (
 		<>
-			<SgsFreeTextField type="rich" multiline
+			<SgsFreeTextField
+				type="rich"
+				multiline
 				label={ __( 'Intro text', 'sgs-blocks' ) }
 				value={ intro || '' }
 				onChange={ ( val ) => setAttributes( { intro: val } ) }
@@ -43,16 +58,43 @@ export default function IntroField( { attributes, setAttributes } ) {
 					label={ __( 'Intro width', 'sgs-blocks' ) }
 					value={ introWidth || '' }
 					options={ [
-						{ label: __( 'Layout default (56 characters)', 'sgs-blocks' ), value: '' },
-						{ label: __( '52 characters', 'sgs-blocks' ), value: '52' },
-						{ label: __( '56 characters', 'sgs-blocks' ), value: '56' },
-						{ label: __( '58 characters', 'sgs-blocks' ), value: '58' },
-						{ label: __( '60 characters', 'sgs-blocks' ), value: '60' },
-						{ label: __( '64 characters', 'sgs-blocks' ), value: '64' },
-						{ label: __( 'Full column', 'sgs-blocks' ), value: 'none' },
+						{
+							label: __(
+								'Layout default (56 characters)',
+								'sgs-blocks'
+							),
+							value: '',
+						},
+						{
+							label: __( '52 characters', 'sgs-blocks' ),
+							value: '52',
+						},
+						{
+							label: __( '56 characters', 'sgs-blocks' ),
+							value: '56',
+						},
+						{
+							label: __( '58 characters', 'sgs-blocks' ),
+							value: '58',
+						},
+						{
+							label: __( '60 characters', 'sgs-blocks' ),
+							value: '60',
+						},
+						{
+							label: __( '64 characters', 'sgs-blocks' ),
+							value: '64',
+						},
+						{
+							label: __( 'Full column', 'sgs-blocks' ),
+							value: 'none',
+						},
 					] }
 					onChange={ ( val ) => setAttributes( { introWidth: val } ) }
-					help={ __( 'How wide the intro runs in the showcase layout; where its lines break follows.', 'sgs-blocks' ) }
+					help={ __(
+						'How wide the intro runs in the showcase layout; where its lines break follows.',
+						'sgs-blocks'
+					) }
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 				/>
@@ -73,10 +115,21 @@ export default function IntroField( { attributes, setAttributes } ) {
 					label={ __( 'Option prices read as', 'sgs-blocks' ) }
 					value={ pricePrefix || 'plus' }
 					options={ [
-						{ label: __( 'An extra, e.g. +£30.00', 'sgs-blocks' ), value: 'plus' },
-						{ label: __( 'A starting price, e.g. from £59.00', 'sgs-blocks' ), value: 'from' },
+						{
+							label: __( 'An extra, e.g. +£30.00', 'sgs-blocks' ),
+							value: 'plus',
+						},
+						{
+							label: __(
+								'A starting price, e.g. from £59.00',
+								'sgs-blocks'
+							),
+							value: 'from',
+						},
 					] }
-					onChange={ ( val ) => setAttributes( { pricePrefix: val } ) }
+					onChange={ ( val ) =>
+						setAttributes( { pricePrefix: val } )
+					}
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 				/>
@@ -85,8 +138,13 @@ export default function IntroField( { attributes, setAttributes } ) {
 				<TextControl
 					label={ __( 'Summary line label', 'sgs-blocks' ) }
 					value={ summaryLabel || '' }
-					onChange={ ( val ) => setAttributes( { summaryLabel: val } ) }
-					help={ __( 'How the summary names this answer, e.g. "Prescription". Leave blank for the step’s label.', 'sgs-blocks' ) }
+					onChange={ ( val ) =>
+						setAttributes( { summaryLabel: val } )
+					}
+					help={ __(
+						'How the summary names this answer, e.g. "Prescription". Leave blank for the step’s label.',
+						'sgs-blocks'
+					) }
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 				/>
@@ -95,8 +153,13 @@ export default function IntroField( { attributes, setAttributes } ) {
 				<ToggleControl
 					label={ __( 'Show in the bag line', 'sgs-blocks' ) }
 					checked={ false !== showInBagLine }
-					onChange={ ( val ) => setAttributes( { showInBagLine: val } ) }
-					help={ __( 'On: the bag, cart, checkout and emails name this answer. Off: the answer still goes on the order for you, but the shopper’s line leaves it out.', 'sgs-blocks' ) }
+					onChange={ ( val ) =>
+						setAttributes( { showInBagLine: val } )
+					}
+					help={ __(
+						'On: the bag, cart, checkout and emails name this answer. Off: the answer still goes on the order for you, but the shopper’s line leaves it out.',
+						'sgs-blocks'
+					) }
 					__nextHasNoMarginBottom
 				/>
 			) }

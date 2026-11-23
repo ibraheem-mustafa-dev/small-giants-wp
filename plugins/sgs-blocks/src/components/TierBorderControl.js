@@ -29,10 +29,18 @@ import DesignTokenPicker from './DesignTokenPicker';
  */
 export default function TierBorderControl( { label, value, onChange } ) {
 	return (
-		<ResponsiveOverride label={ label } value={ value } onChange={ onChange }>
+		<ResponsiveOverride
+			label={ label }
+			value={ value }
+			onChange={ onChange }
+		>
 			{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => {
-				const own = ownValue && 'object' === typeof ownValue ? ownValue : {};
-				const effective = effectiveValue && 'object' === typeof effectiveValue ? effectiveValue : {};
+				const own =
+					ownValue && 'object' === typeof ownValue ? ownValue : {};
+				const effective =
+					effectiveValue && 'object' === typeof effectiveValue
+						? effectiveValue
+						: {};
 				const write = ( member, next ) => {
 					const merged = { ...own };
 					if ( next ) {
@@ -40,7 +48,9 @@ export default function TierBorderControl( { label, value, onChange } ) {
 					} else {
 						delete merged[ member ];
 					}
-					setOwnValue( Object.keys( merged ).length ? merged : undefined );
+					setOwnValue(
+						Object.keys( merged ).length ? merged : undefined
+					);
 				};
 				return (
 					<>
@@ -53,7 +63,9 @@ export default function TierBorderControl( { label, value, onChange } ) {
 						<BorderStyleControl
 							label={ __( 'Style', 'sgs-blocks' ) }
 							value={ own.style ?? effective.style ?? '' }
-							onChange={ ( next ) => write( 'style', next || 'none' ) }
+							onChange={ ( next ) =>
+								write( 'style', next || 'none' )
+							}
 						/>
 						<DesignTokenPicker
 							label={ __( 'Colour', 'sgs-blocks' ) }
@@ -62,7 +74,8 @@ export default function TierBorderControl( { label, value, onChange } ) {
 									key: 'normal',
 									label: __( 'Normal', 'sgs-blocks' ),
 									value: own.colour ?? effective.colour ?? '',
-									onChange: ( next ) => write( 'colour', next ),
+									onChange: ( next ) =>
+										write( 'colour', next ),
 								},
 							] }
 						/>

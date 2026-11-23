@@ -56,7 +56,13 @@ const choicesFor = ( ringRefused ) =>
  * @param {Object}           props.layers    The `useMotionLayers` result.
  * @return {Element} The panel.
  */
-export default function HoverPanel( { blockName, clientId, elements, motion, layers } ) {
+export default function HoverPanel( {
+	blockName,
+	clientId,
+	elements,
+	motion,
+	layers,
+} ) {
 	const [ target, setTarget ] = useState( ROOT_TARGET );
 	const ringRefused = useRingRefused( clientId, blockName, elements, target );
 	const parentOwned = useParentOwned( clientId, target );
@@ -76,7 +82,9 @@ export default function HoverPanel( { blockName, clientId, elements, motion, lay
 			blockName,
 			elements,
 			getBlockType( blockName )?.supports?.sgs?.animationItems
-		).some( ( item ) => ! item.root && item.classes.join( '.' ) === wanted );
+		).some(
+			( item ) => ! item.root && item.classes.join( '.' ) === wanted
+		);
 	} )();
 	const [ notice, setNotice ] = useState( null );
 	const flow = useRestamp( layers );

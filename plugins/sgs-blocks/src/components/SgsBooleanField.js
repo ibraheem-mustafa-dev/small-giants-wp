@@ -37,21 +37,27 @@ import { ToggleControl } from '@wordpress/components';
 import './SgsBooleanField.css';
 
 /**
- * @param {Object}    props
- * @param {string}    props.label     Toggle label.
- * @param {boolean}   props.checked   Current value.
- * @param {Function}  props.onChange  Receives the next boolean.
- * @param {string}    [props.help]    Help text.
+ * @param {Object}                    props
+ * @param {string}                    props.label      Toggle label.
+ * @param {boolean}                   props.checked    Current value.
+ * @param {Function}                  props.onChange   Receives the next boolean.
+ * @param {string}                    [props.help]     Help text.
  * @param {import('react').ReactNode} [props.children] A conditionally-revealed
- *   control (or controls) shown below the toggle — pass them already gated on
- *   the checked state by the caller (see post-grid/edit.js's Show
- *   image/Show excerpt/Show read more rows for real examples).
- *   (JSX-shaped example text deliberately avoided here — check-control-
- *   parity-live.js's scanner does not exclude JSDoc content from its tag
- *   search, so a literal `<Component .../>` in a comment reads as a real
- *   mount and false-flags this file.)
+ *                                                     control (or controls) shown below the toggle — pass them already gated on
+ *                                                     the checked state by the caller (see post-grid/edit.js's Show
+ *                                                     image/Show excerpt/Show read more rows for real examples).
+ *                                                     (JSX-shaped example text deliberately avoided here — check-control-
+ *                                                     parity-live.js's scanner does not exclude JSDoc content from its tag
+ *                                                     search, so a literal `<Component .../>` in a comment reads as a real
+ *                                                     mount and false-flags this file.)
  */
-export default function SgsBooleanField( { label, checked, onChange, help, children } ) {
+export default function SgsBooleanField( {
+	label,
+	checked,
+	onChange,
+	help,
+	children,
+} ) {
 	const hasReveal = !! children;
 	return (
 		<>
@@ -62,7 +68,9 @@ export default function SgsBooleanField( { label, checked, onChange, help, child
 				help={ help }
 				__nextHasNoMarginBottom={ ! hasReveal }
 			/>
-			{ hasReveal && <div className="sgs-boolean-field__reveal">{ children }</div> }
+			{ hasReveal && (
+				<div className="sgs-boolean-field__reveal">{ children }</div>
+			) }
 		</>
 	);
 }

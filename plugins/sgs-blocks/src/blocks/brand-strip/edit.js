@@ -30,7 +30,14 @@ import {
 import MediaSlotField from '../../components/media/MediaSlotField.js';
 import FitField from '../../components/media/FitField.js';
 import MediaElementPanel from '../../components/MediaElementPanel';
-import { LOGO_SLOT, applySlotPatch, emptyLogoItem, itemToSlotAttrs, itemUrl, resolveLogoItem } from './item-model';
+import {
+	LOGO_SLOT,
+	applySlotPatch,
+	emptyLogoItem,
+	itemToSlotAttrs,
+	itemUrl,
+	resolveLogoItem,
+} from './item-model';
 import metadata from './block.json';
 import { LINK_SOURCES_ALL } from '../../shared/link-source-options';
 import { withStableItemKeys } from '../../utils';
@@ -43,9 +50,13 @@ import {
 import { SourcePanel, BrandTextStylePanel } from './source-controls';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
-const LOGO_ENTRY = metadata.supports.sgs.mediaElements.find( ( e ) => 'logo' === e.prefix );
+const LOGO_ENTRY = metadata.supports.sgs.mediaElements.find(
+	( e ) => 'logo' === e.prefix
+);
 // Source, Alt and Decorative are each logo's own; the rest are the strip's.
-const BLOCK_ATOMS = LOGO_ENTRY.atoms.filter( ( id ) => ! [ 'source', 'meaning' ].includes( id ) );
+const BLOCK_ATOMS = LOGO_ENTRY.atoms.filter(
+	( id ) => ! [ 'source', 'meaning' ].includes( id )
+);
 
 const IMAGE_EFFECT_OPTIONS = [
 	{ label: __( 'None (full colour)', 'sgs-blocks' ), value: 'none' },
@@ -654,16 +665,30 @@ export default function Edit( { attributes, setAttributes } ) {
 					title={ __( 'Logo size', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<ResponsiveControl label={ __( 'Logo max height cap (px)', 'sgs-blocks' ) }>
+					<ResponsiveControl
+						label={ __( 'Logo max height cap (px)', 'sgs-blocks' ) }
+					>
 						{ ( bp ) => {
 							const cap = {
 								desktop: { key: 'maxHeight', value: maxHeight },
-								tablet: { key: 'maxHeightTablet', value: maxHeightTablet ?? maxHeight },
-								mobile: { key: 'maxHeightMobile', value: maxHeightMobile ?? maxHeightTablet ?? maxHeight },
+								tablet: {
+									key: 'maxHeightTablet',
+									value: maxHeightTablet ?? maxHeight,
+								},
+								mobile: {
+									key: 'maxHeightMobile',
+									value:
+										maxHeightMobile ??
+										maxHeightTablet ??
+										maxHeight,
+								},
 							}[ bp ];
 							return (
 								<RangeControl
-									label={ __( 'Logo max height cap (px)', 'sgs-blocks' ) }
+									label={ __(
+										'Logo max height cap (px)',
+										'sgs-blocks'
+									) }
 									hideLabelFromVision
 									help={ __(
 										'Tiles size to fit the columns above and grow with the screen; this caps how big a tile and its logo get on this device so they never pixelate on wide screens. An unset device keeps the one above it.',
@@ -684,7 +709,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						} }
 					</ResponsiveControl>
 				</PanelBody>
-
 
 				<PanelBody
 					title={ __( 'Border', 'sgs-blocks' ) }
@@ -899,7 +923,8 @@ export default function Edit( { attributes, setAttributes } ) {
 					title={ __( 'Title', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<SgsFreeTextField type="rich"
+					<SgsFreeTextField
+						type="rich"
 						label={ __( 'Title text', 'sgs-blocks' ) }
 						help={ __(
 							'Printed above the strip. Leave empty to show no title.',

@@ -103,8 +103,7 @@ export const STAGGER_ORDERS = Object.freeze( {
 		grid.indexInLine.map( ( j ) =>
 			Math.floor( Math.abs( j - ( grid.lineSize - 1 ) / 2 ) )
 		),
-	reverse: ( grid ) =>
-		grid.indexInLine.map( ( j ) => grid.lineSize - 1 - j ),
+	reverse: ( grid ) => grid.indexInLine.map( ( j ) => grid.lineSize - 1 - j ),
 	flatten: ( grid ) => grid.indices.slice(),
 } );
 

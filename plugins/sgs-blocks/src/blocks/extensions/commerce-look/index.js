@@ -12,11 +12,24 @@ import { addFilter } from '@wordpress/hooks';
 import { createHigherOrderComponent } from '@wordpress/compose';
 import { InspectorControls } from '@wordpress/block-editor';
 import { COMMERCE_LOOK_ATTRIBUTES } from './attributes';
-import { CANVAS_SCOPE, setLookAttributes, useCommerceLookCss } from './canvas-css';
+import {
+	CANVAS_SCOPE,
+	setLookAttributes,
+	useCommerceLookCss,
+} from './canvas-css';
 import { CheckoutWordingPanel } from './panels-checkout-wording';
 import { BasketSpeedPanel } from './panels-basket-speed';
 import { TablePanel } from './table-panels';
-import { ButtonPanel, CheckoutPanels, ColumnsPanel, CouponPanel, FieldsPanel, LineItemsPanel, NoticePanel, SummaryPanel } from './panels';
+import {
+	ButtonPanel,
+	CheckoutPanels,
+	ColumnsPanel,
+	CouponPanel,
+	FieldsPanel,
+	LineItemsPanel,
+	NoticePanel,
+	SummaryPanel,
+} from './panels';
 
 const CART_BLOCK = 'woocommerce/cart';
 const CHECKOUT_BLOCK = 'woocommerce/checkout';
@@ -26,12 +39,22 @@ const isTarget = ( name ) => CART_BLOCK === name || CHECKOUT_BLOCK === name;
 if ( ! window.__sgsCommerceLookRegistered ) {
 	window.__sgsCommerceLookRegistered = true;
 
-	addFilter( 'blocks.registerBlockType', 'sgs/commerce-look/attributes', ( settings, name ) => {
-		if ( ! isTarget( name ) ) {
-			return settings;
+	addFilter(
+		'blocks.registerBlockType',
+		'sgs/commerce-look/attributes',
+		( settings, name ) => {
+			if ( ! isTarget( name ) ) {
+				return settings;
+			}
+			return {
+				...settings,
+				attributes: {
+					...settings.attributes,
+					...COMMERCE_LOOK_ATTRIBUTES,
+				},
+			};
 		}
-		return { ...settings, attributes: { ...settings.attributes, ...COMMERCE_LOOK_ATTRIBUTES } };
-	} );
+	);
 
 	/** The block's own edit plus its panels and the canvas CSS; mounted for the two target blocks only. */
 	const CommerceLookEdit = ( { BlockEdit, ...props } ) => {
@@ -61,24 +84,51 @@ if ( ! window.__sgsCommerceLookRegistered ) {
 	};
 
 	const withCommerceLookControls = createHigherOrderComponent(
-		( BlockEdit ) => ( props ) => ( isTarget( props.name ) ? <CommerceLookEdit BlockEdit={ BlockEdit } { ...props } /> : <BlockEdit { ...props } /> ),
+		( BlockEdit ) => ( props ) =>
+			isTarget( props.name ) ? (
+				<CommerceLookEdit BlockEdit={ BlockEdit } { ...props } />
+			) : (
+				<BlockEdit { ...props } />
+			),
 		'withCommerceLookControls'
 	);
 
-	addFilter( 'editor.BlockEdit', 'sgs/commerce-look/controls', withCommerceLookControls );
+	addFilter(
+		'editor.BlockEdit',
+		'sgs/commerce-look/controls',
+		withCommerceLookControls
+	);
 
 	/** The canvas wrapper carries the scope the server CSS is written against, only while a setting is set. */
-	const withCommerceLookScope = createHigherOrderComponent( ( BlockListBlock ) => ( props ) => {
-		const { name, attributes } = props;
-		if ( ! isTarget( name ) || 0 === Object.keys( setLookAttributes( attributes ) ).length ) {
-			return <BlockListBlock { ...props } />;
-		}
-		const wrapperProps = {
-			...( props.wrapperProps || {} ),
-			className: [ props.wrapperProps?.className, 'sgs-commerce-look', CANVAS_SCOPE ].filter( Boolean ).join( ' ' ),
-		};
-		return <BlockListBlock { ...props } wrapperProps={ wrapperProps } />;
-	}, 'withCommerceLookScope' );
+	const withCommerceLookScope = createHigherOrderComponent(
+		( BlockListBlock ) => ( props ) => {
+			const { name, attributes } = props;
+			if (
+				! isTarget( name ) ||
+				0 === Object.keys( setLookAttributes( attributes ) ).length
+			) {
+				return <BlockListBlock { ...props } />;
+			}
+			const wrapperProps = {
+				...( props.wrapperProps || {} ),
+				className: [
+					props.wrapperProps?.className,
+					'sgs-commerce-look',
+					CANVAS_SCOPE,
+				]
+					.filter( Boolean )
+					.join( ' ' ),
+			};
+			return (
+				<BlockListBlock { ...props } wrapperProps={ wrapperProps } />
+			);
+		},
+		'withCommerceLookScope'
+	);
 
-	addFilter( 'editor.BlockListBlock', 'sgs/commerce-look/scope', withCommerceLookScope );
+	addFilter(
+		'editor.BlockListBlock',
+		'sgs/commerce-look/scope',
+		withCommerceLookScope
+	);
 } // end guard: window.__sgsCommerceLookRegistered

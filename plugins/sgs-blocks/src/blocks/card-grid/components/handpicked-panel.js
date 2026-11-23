@@ -17,11 +17,15 @@ import { useState } from '@wordpress/element';
 
 /**
  * @param {Object}   props
- * @param {string}   props.contentType    Post type slug to search.
- * @param {number[]} props.handpickedIds  Currently selected post IDs.
- * @param {Function} props.setAttributes  Block attribute setter.
+ * @param {string}   props.contentType   Post type slug to search.
+ * @param {number[]} props.handpickedIds Currently selected post IDs.
+ * @param {Function} props.setAttributes Block attribute setter.
  */
-export default function HandpickedPanel( { contentType, handpickedIds, setAttributes } ) {
+export default function HandpickedPanel( {
+	contentType,
+	handpickedIds,
+	setAttributes,
+} ) {
 	const [ search, setSearch ] = useState( '' );
 
 	const { records, isResolving } = useSelect(
@@ -84,7 +88,13 @@ export default function HandpickedPanel( { contentType, handpickedIds, setAttrib
 			/>
 			{ isResolving && <Spinner /> }
 			{ handpickedIds.length > 0 && (
-				<ul style={ { margin: '8px 0 0', padding: 0, listStyle: 'none' } }>
+				<ul
+					style={ {
+						margin: '8px 0 0',
+						padding: 0,
+						listStyle: 'none',
+					} }
+				>
 					{ handpickedIds.map( ( id ) => {
 						const found = ( records || [] ).find(
 							( p ) => p.id === id
@@ -119,7 +129,10 @@ export default function HandpickedPanel( { contentType, handpickedIds, setAttrib
 										alignItems: 'center',
 										justifyContent: 'center',
 									} }
-									aria-label={ __( 'Remove item', 'sgs-blocks' ) }
+									aria-label={ __(
+										'Remove item',
+										'sgs-blocks'
+									) }
 								>
 									✕
 								</button>

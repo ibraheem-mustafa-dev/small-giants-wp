@@ -27,7 +27,12 @@ const DEBOUNCE_MS = 300;
 export function setLookAttributes( attributes ) {
 	const set = {};
 	Object.entries( attributes || {} ).forEach( ( [ name, value ] ) => {
-		const empty = '' === value || null === value || undefined === value || false === value || ( Array.isArray( value ) && 0 === value.length );
+		const empty =
+			'' === value ||
+			null === value ||
+			undefined === value ||
+			false === value ||
+			( Array.isArray( value ) && 0 === value.length );
 		if ( name.startsWith( 'sgs' ) && ! empty ) {
 			set[ name ] = value;
 		}
@@ -55,15 +60,26 @@ export function useCommerceLookCss( blockName, attributes ) {
 			return undefined;
 		}
 		const timer = setTimeout( () => {
-			apiFetch( { path: '/sgs/v1/commerce-look/css', method: 'POST', data: { block: blockName, attributes: key } } )
+			apiFetch( {
+				path: '/sgs/v1/commerce-look/css',
+				method: 'POST',
+				data: { block: blockName, attributes: key },
+			} )
 				.then( ( res ) => {
-					if ( ticket === latest.current && res && 'string' === typeof res.css ) {
+					if (
+						ticket === latest.current &&
+						res &&
+						'string' === typeof res.css
+					) {
 						setCss( res.css );
 					}
 				} )
 				.catch( ( error ) => {
 					// eslint-disable-next-line no-console
-					console.warn( 'SGS commerce-look: the editor canvas CSS request failed; the last good CSS stays.', error && ( error.code || error.message ) );
+					console.warn(
+						'SGS commerce-look: the editor canvas CSS request failed; the last good CSS stays.',
+						error && ( error.code || error.message )
+					);
 				} );
 		}, DEBOUNCE_MS );
 		return () => clearTimeout( timer );

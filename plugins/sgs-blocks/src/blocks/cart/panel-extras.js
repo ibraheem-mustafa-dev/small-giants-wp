@@ -10,7 +10,10 @@
  */
 
 import { formatMoney } from './store-api';
-import { instalmentMinor, noteWithAmount } from '../../shared/cart-live/instalments';
+import {
+	instalmentMinor,
+	noteWithAmount,
+} from '../../shared/cart-live/instalments';
 
 import { appendAuthoredText } from '../../utils/authored-text-dom';
 /**
@@ -36,9 +39,14 @@ export function updatePanelExtras( panelRoot, cart ) {
 		noteEl.hidden = true;
 		return;
 	}
-	const amount = formatMoney( instalmentMinor( total, noteEl.dataset.noteCount ), cart.totals );
+	const amount = formatMoney(
+		instalmentMinor( total, noteEl.dataset.noteCount ),
+		cart.totals
+	);
 	// The note is typed rich text with a %s for the amount: the amount goes in as text, the note as DOM nodes.
-	const safeAmount = String( amount ).replace( /&/g, '&amp;' ).replace( /</g, '&lt;' );
+	const safeAmount = String( amount )
+		.replace( /&/g, '&amp;' )
+		.replace( /</g, '&lt;' );
 	appendAuthoredText( noteEl, noteWithAmount( template, safeAmount ) );
 	noteEl.hidden = false;
 }

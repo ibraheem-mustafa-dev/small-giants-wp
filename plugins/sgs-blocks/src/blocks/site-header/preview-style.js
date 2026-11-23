@@ -7,7 +7,12 @@
  * @package SGS\Blocks
  */
 
-import { containerWrapperPreview, resolveResponsiveTier, resolveTier, RADIUS_STYLE_KEYS } from '../../utils';
+import {
+	containerWrapperPreview,
+	resolveResponsiveTier,
+	resolveTier,
+	RADIUS_STYLE_KEYS,
+} from '../../utils';
 import { resolveShadowPreviewComposed } from '../../utils/tokens';
 
 const ROWS_ALIGN = {
@@ -26,17 +31,30 @@ const ROWS_ALIGN = {
 export function siteHeaderWrapperPreview( attributes, tier, palette ) {
 	const wrapper = containerWrapperPreview( attributes, tier, palette ).style;
 	const style = {};
-	[ 'borderWidth', 'borderStyle', 'borderColor', 'borderImage', ...RADIUS_STYLE_KEYS, 'maxWidth' ].forEach( ( key ) => {
+	[
+		'borderWidth',
+		'borderStyle',
+		'borderColor',
+		'borderImage',
+		...RADIUS_STYLE_KEYS,
+		'maxWidth',
+	].forEach( ( key ) => {
 		if ( undefined !== wrapper[ key ] ) {
 			style[ key ] = wrapper[ key ];
 		}
 	} );
-	const minHeight = resolveResponsiveTier( attributes.minHeight || {}, tier )?.value;
+	const minHeight = resolveResponsiveTier(
+		attributes.minHeight || {},
+		tier
+	)?.value;
 	if ( minHeight ) {
 		style.minHeight = minHeight;
 	}
 	if ( attributes.shadow ) {
-		style.boxShadow = resolveShadowPreviewComposed( attributes.shadow, attributes.shadowColour );
+		style.boxShadow = resolveShadowPreviewComposed(
+			attributes.shadow,
+			attributes.shadowColour
+		);
 	}
 	// Rows alignment: the header is a column flex box at every tier (default centre).
 	const align = resolveTier( attributes.rowsAlign, tier, 'center' ).value;
@@ -61,6 +79,9 @@ export function siteHeaderWrapperPreview( attributes, tier, palette ) {
  */
 export function siteHeaderRowsCss( attributes, tier, scope ) {
 	const align = resolveTier( attributes.rowsAlign, tier, 'center' ).value;
-	const rows = 'stretch' === align ? 'flex:1 1 auto;min-height:0;' : 'flex:0 1 auto;min-height:auto;';
+	const rows =
+		'stretch' === align
+			? 'flex:1 1 auto;min-height:0;'
+			: 'flex:0 1 auto;min-height:auto;';
 	return `.${ scope } > *{${ rows }}:where(.${ scope } > *){width:100%;}`;
 }

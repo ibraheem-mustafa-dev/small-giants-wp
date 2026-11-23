@@ -18,7 +18,11 @@ import { PanelBody } from '@wordpress/components';
 import TypographyControls from '../../components/TypographyControls';
 import { SgsBorderControl } from '../../components';
 import textRow from '../../components/colour-variants/textRow';
-import { typographyPreviewStyle, usePreviewTier, textPaintPreview } from '../../utils';
+import {
+	typographyPreviewStyle,
+	usePreviewTier,
+	textPaintPreview,
+} from '../../utils';
 import WhatsappIcon from './icon';
 import { RICH_TEXT_BODY_NO_LINK } from '../../utils/rich-text-formats';
 
@@ -34,10 +38,19 @@ const cardTextWrapAllowed = [ 'wrap', 'nowrap', 'balance', 'pretty', 'stable' ];
 export function VariantContent( { attributes, setAttributes } ) {
 	const { variant, label } = attributes;
 	const previewTier = usePreviewTier();
-	const labelStyle = typographyPreviewStyle( attributes, 'label', previewTier );
+	const labelStyle = typographyPreviewStyle(
+		attributes,
+		'label',
+		previewTier
+	);
 
 	if ( 'card' === variant ) {
-		return <CardFields attributes={ attributes } setAttributes={ setAttributes } />;
+		return (
+			<CardFields
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+			/>
+		);
 	}
 
 	if ( 'floating' === variant ) {
@@ -45,11 +58,17 @@ export function VariantContent( { attributes, setAttributes } ) {
 			<>
 				<WhatsappIcon size={ attributes.iconSize } />
 				{ label ? (
-					<span className="sgs-whatsapp-cta__label sgs-whatsapp-cta__label--floating" style={ labelStyle }>
+					<span
+						className="sgs-whatsapp-cta__label sgs-whatsapp-cta__label--floating"
+						style={ labelStyle }
+					>
 						{ label }
 					</span>
 				) : (
-					<span className="sgs-whatsapp-cta__label sgs-sr-only" style={ labelStyle }>
+					<span
+						className="sgs-whatsapp-cta__label sgs-sr-only"
+						style={ labelStyle }
+					>
 						{ __( 'Chat on WhatsApp', 'sgs-blocks' ) }
 					</span>
 				) }
@@ -97,9 +116,14 @@ export function CardFields( { attributes, setAttributes } ) {
 			</span>
 			<span
 				className="sgs-whatsapp-cta__card-text"
-				style={ cardTextWrapAllowed.includes( attributes.labelTextWrap )
-					? { '--sgs-whatsapp-cta-card-text-wrap': attributes.labelTextWrap }
-					: undefined }
+				style={
+					cardTextWrapAllowed.includes( attributes.labelTextWrap )
+						? {
+								'--sgs-whatsapp-cta-card-text-wrap':
+									attributes.labelTextWrap,
+						  }
+						: undefined
+				}
 			>
 				<RichText
 					tagName="span"
@@ -107,7 +131,10 @@ export function CardFields( { attributes, setAttributes } ) {
 					style={ titleStyle }
 					value={ cardTitle }
 					onChange={ ( val ) => setAttributes( { cardTitle: val } ) }
-					placeholder={ __( 'Questions? Chat to an optician', 'sgs-blocks' ) }
+					placeholder={ __(
+						'Questions? Chat to an optician',
+						'sgs-blocks'
+					) }
 					allowedFormats={ RICH_TEXT_BODY_NO_LINK }
 				/>
 				<RichText
@@ -115,8 +142,13 @@ export function CardFields( { attributes, setAttributes } ) {
 					className="sgs-whatsapp-cta__card-subline"
 					style={ sublineStyle }
 					value={ cardSubline }
-					onChange={ ( val ) => setAttributes( { cardSubline: val } ) }
-					placeholder={ __( 'We reply within the hour', 'sgs-blocks' ) }
+					onChange={ ( val ) =>
+						setAttributes( { cardSubline: val } )
+					}
+					placeholder={ __(
+						'We reply within the hour',
+						'sgs-blocks'
+					) }
 					allowedFormats={ RICH_TEXT_BODY_NO_LINK }
 				/>
 			</span>
@@ -161,7 +193,10 @@ export function CardTypographyPanel( { attributes, setAttributes } ) {
 	const { cardBorderWidth, cardBorderColour, cardBorderStyle } = attributes;
 
 	return (
-		<PanelBody title={ __( 'Card typography', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Card typography', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			<TypographyControls
 				attributes={ attributes }
 				setAttributes={ setAttributes }
@@ -177,15 +212,22 @@ export function CardTypographyPanel( { attributes, setAttributes } ) {
 			<SgsBorderControl
 				label={ __( 'Card border', 'sgs-blocks' ) }
 				widthValues={ cardBorderWidth }
-				onWidthChange={ ( next ) => setAttributes( { cardBorderWidth: next } ) }
+				onWidthChange={ ( next ) =>
+					setAttributes( { cardBorderWidth: next } )
+				}
 				styleValue={ cardBorderStyle }
-				onStyleChange={ ( next ) => setAttributes( { cardBorderStyle: next } ) }
+				onStyleChange={ ( next ) =>
+					setAttributes( { cardBorderStyle: next } )
+				}
 				colourValue={ cardBorderColour }
-				onColourChange={ ( next ) => setAttributes( { cardBorderColour: next } ) }
+				onColourChange={ ( next ) =>
+					setAttributes( { cardBorderColour: next } )
+				}
 				colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
 				colourLinked
 				contrastAgainst={
-					attributes.backgroundColour && ! attributes.backgroundColourGradient
+					attributes.backgroundColour &&
+					! attributes.backgroundColourGradient
 						? attributes.backgroundColour
 						: ''
 				}

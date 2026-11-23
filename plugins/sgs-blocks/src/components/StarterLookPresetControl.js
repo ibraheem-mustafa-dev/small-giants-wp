@@ -71,7 +71,10 @@ function schemaOf( blockName ) {
  * @param {string} props.rootBlockName The root block's registered name.
  * @return {JSX.Element|null} The panel, or null when this CPT has no looks.
  */
-export default function StarterLookPresetControl( { clientId, rootBlockName } ) {
+export default function StarterLookPresetControl( {
+	clientId,
+	rootBlockName,
+} ) {
 	const { postType, patterns: allPatterns } = useSelect( ( select ) => {
 		const editor = select( editorStore );
 		return {
@@ -105,17 +108,28 @@ export default function StarterLookPresetControl( { clientId, rootBlockName } ) 
 		}
 		const matches = allPatterns.filter( ( pattern ) => {
 			const scopedToPostType =
-				Array.isArray( pattern.postTypes ) && pattern.postTypes.includes( postType );
+				Array.isArray( pattern.postTypes ) &&
+				pattern.postTypes.includes( postType );
 			const scopedToPostContent =
-				! pattern.blockTypes || pattern.blockTypes.includes( 'core/post-content' );
-			return scopedToPostType && scopedToPostContent && pattern.inserter !== false;
+				! pattern.blockTypes ||
+				pattern.blockTypes.includes( 'core/post-content' );
+			return (
+				scopedToPostType &&
+				scopedToPostContent &&
+				pattern.inserter !== false
+			);
 		} );
 		// With any look marked `featured` the picker shows only those, so a big
 		// library stays a short list; with none marked, every look is shown.
 		const featured = matches.filter(
-			( pattern ) => Array.isArray( pattern.keywords ) && pattern.keywords.includes( 'featured' )
+			( pattern ) =>
+				Array.isArray( pattern.keywords ) &&
+				pattern.keywords.includes( 'featured' )
 		);
-		return { qualifying: matches, visible: featured.length > 0 ? featured : matches };
+		return {
+			qualifying: matches,
+			visible: featured.length > 0 ? featured : matches,
+		};
 	}, [ allPatterns, postType ] );
 
 	// Owned keys come from the QUALIFYING set, not the visible one: a look the
@@ -142,9 +156,16 @@ export default function StarterLookPresetControl( { clientId, rootBlockName } ) 
 	 * @param {Object} pattern The registered pattern object (`{name, content, …}`).
 	 */
 	function applyLook( pattern ) {
-		const parsed = stripMetadataDeep( parse( pattern.content ).filter( ( block ) => block.name ) );
-		const rootBlock = parsed.find( ( block ) => block.name === rootBlockName ) || parsed[ 0 ];
-		const explicitRoot = findExplicitRoot( parseExplicitBlocks( pattern.content ), rootBlockName );
+		const parsed = stripMetadataDeep(
+			parse( pattern.content ).filter( ( block ) => block.name )
+		);
+		const rootBlock =
+			parsed.find( ( block ) => block.name === rootBlockName ) ||
+			parsed[ 0 ];
+		const explicitRoot = findExplicitRoot(
+			parseExplicitBlocks( pattern.content ),
+			rootBlockName
+		);
 		if ( ! rootBlock ) {
 			return;
 		}
@@ -155,22 +176,49 @@ export default function StarterLookPresetControl( { clientId, rootBlockName } ) 
 		const writes = [];
 		const pushAttrs = ( target, name, explicitAttrs, keys ) =>
 			writes.push( () =>
-				updateBlockAttributes( target, buildOwnedAttributes( keys, explicitAttrs, schemaOf( name ) ) )
+				updateBlockAttributes(
+					target,
+					buildOwnedAttributes(
+						keys,
+						explicitAttrs,
+						schemaOf( name )
+					)
+				)
 			);
 
-		pushAttrs( clientId, rootBlockName, explicitRoot?.attrs, ownedRootKeys );
+		pushAttrs(
+			clientId,
+			rootBlockName,
+			explicitRoot?.attrs,
+			ownedRootKeys
+		);
 
 		if ( hasRowSlots ) {
 			rows.forEach( ( row ) => {
 				const slot = row.attributes?.rowSlot;
-				const matched = patternRows.find( ( r ) => r.attributes?.rowSlot === slot );
+				const matched = patternRows.find(
+					( r ) => r.attributes?.rowSlot === slot
+				);
 				if ( ! matched ) {
 					return;
 				}
-				const explicitRow = explicitRows.find( ( r ) => r.attrs?.rowSlot === slot );
-				pushAttrs( row.clientId, row.name, explicitRow?.attrs, ownedChildKeys[ row.name ] || [] );
+				const explicitRow = explicitRows.find(
+					( r ) => r.attrs?.rowSlot === slot
+				);
+				pushAttrs(
+					row.clientId,
+					row.name,
+					explicitRow?.attrs,
+					ownedChildKeys[ row.name ] || []
+				);
 				if ( ! keepContent ) {
-					writes.push( () => replaceInnerBlocks( row.clientId, matched.innerBlocks || [], false ) );
+					writes.push( () =>
+						replaceInnerBlocks(
+							row.clientId,
+							matched.innerBlocks || [],
+							false
+						)
+					);
 				}
 			} );
 		} else if ( keepContent ) {
@@ -190,7 +238,9 @@ export default function StarterLookPresetControl( { clientId, rootBlockName } ) 
 				);
 			} );
 		} else {
-			writes.push( () => replaceInnerBlocks( clientId, patternRows, false ) );
+			writes.push( () =>
+				replaceInnerBlocks( clientId, patternRows, false )
+			);
 		}
 
 		writes.forEach( ( write ) => {
@@ -201,7 +251,10 @@ export default function StarterLookPresetControl( { clientId, rootBlockName } ) 
 	}
 
 	return (
-		<PanelBody title={ __( 'Starter look', 'sgs-blocks' ) } initialOpen={ true }>
+		<PanelBody
+			title={ __( 'Starter look', 'sgs-blocks' ) }
+			initialOpen={ true }
+		>
 			<p className="sgs-starter-look__help">
 				{ __(
 					'Applies a starter look’s settings and content to this locked block. Undo reverts it in one step.',
@@ -210,7 +263,10 @@ export default function StarterLookPresetControl( { clientId, rootBlockName } ) 
 			</p>
 			<ToggleControl
 				__nextHasNoMarginBottom
-				label={ __( 'Keep my blocks – change the look only', 'sgs-blocks' ) }
+				label={ __(
+					'Keep my blocks – change the look only',
+					'sgs-blocks'
+				) }
 				help={ __(
 					'Your menu, buttons and text stay as they are. Only the settings this look controls (such as layout, size and background) are replaced.',
 					'sgs-blocks'

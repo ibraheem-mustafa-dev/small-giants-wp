@@ -168,7 +168,9 @@ function inertiaResistance( el ) {
  * @return {boolean} False only when the operator explicitly disabled it.
  */
 function momentumRequested( el ) {
-	return 'false' !== el.getAttribute( PARAMETER_ATTRS[ 'draggable-momentum' ] );
+	return (
+		'false' !== el.getAttribute( PARAMETER_ATTRS[ 'draggable-momentum' ] )
+	);
 }
 
 /**
@@ -292,9 +294,9 @@ function selectionControl( el ) {
  * Bind pointer drag-to-scroll. Writes ONLY `scrollLeft`, `cursor` and the
  * transient snap suspension above.
  *
- * @param {HTMLElement} el       The native-scroll element.
- * @param {Object}      hooks    `{ onStart, onMove, onRelease }` — the momentum
- *                               layer's hooks, or no-ops when it is inactive.
+ * @param {HTMLElement} el    The native-scroll element.
+ * @param {Object}      hooks `{ onStart, onMove, onRelease }` — the momentum
+ *                            layer's hooks, or no-ops when it is inactive.
  * @return {Function} Unbind.
  */
 function bindDrag( el, hooks ) {
@@ -358,7 +360,10 @@ function bindDrag( el, hooks ) {
 		}
 		dragging = false;
 		el.style.cursor = 'grab';
-		if ( null !== activePointer && el.hasPointerCapture?.( activePointer ) ) {
+		if (
+			null !== activePointer &&
+			el.hasPointerCapture?.( activePointer )
+		) {
 			el.releasePointerCapture( activePointer );
 		}
 		activePointer = null;
@@ -502,8 +507,10 @@ export function initDraggable( el ) {
 									? {}
 									: { resistance } ),
 								x: {
-									velocity:
-										InertiaPlugin.getVelocity( tracker, 'x' ),
+									velocity: InertiaPlugin.getVelocity(
+										tracker,
+										'x'
+									),
 									min: 0,
 									max,
 								},

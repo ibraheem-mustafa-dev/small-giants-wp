@@ -71,8 +71,16 @@ export function resolveColourToken( value, palette ) {
 		return undefined;
 	}
 	const match = ( palette || [] ).find( ( c ) => c.slug === value );
-	const isCssColour = /^(#|(rgba?|hsla?|hwb|lab|lch|oklab|oklch|color|color-mix)\(|var\()/i.test( value ) || ( 'undefined' !== typeof CSS && !! CSS.supports?.( 'color', value ) );
-	return match ? match.color : ( isCssColour ? value : `var(--wp--preset--color--${ value })` );
+	const isCssColour =
+		/^(#|(rgba?|hsla?|hwb|lab|lch|oklab|oklch|color|color-mix)\(|var\()/i.test(
+			value
+		) ||
+		( 'undefined' !== typeof CSS && !! CSS.supports?.( 'color', value ) );
+	return match
+		? match.color
+		: isCssColour
+		? value
+		: `var(--wp--preset--color--${ value })`;
 }
 
 /**
@@ -154,28 +162,28 @@ function makeChangeHandler( { linked, colours, onChange } ) {
  *    inside an `ItemGroup`, so there is no disclosure to fall behind.
  *
  * @param {Object}  props
- * @param {string}  props.id          Stable id for this control instance (label/description association).
- * @param {string}  props.label       The control's own label (e.g. "Icon colour").
- * @param {Array}   props.states      `[{ key, label, value, onChange, linked?, gradientValue?, onGradientChange? }]`
- *                                    — one entry per pickable state. A state carrying
- *                                    `onGradientChange` (a function, even if `gradientValue`
- *                                    is currently empty) is GRADIENT-CAPABLE: it gets a
- *                                    Solid/Gradient toggle and `gradientValue`'s sibling
- *                                    attribute is written via `onGradientChange` instead of
- *                                    `onChange`. Storage mirrors `GradientOverlayControl`
- *                                    (D636): a non-empty gradient string on the sibling attr
- *                                    wins over the flat `value` at render time — see
- *                                    `sgs_background_paint_value()` in `helpers-tokens.php`.
- * @param {boolean} props.clearable          Forwarded to `ColorPalette`.
+ * @param {string}  props.id                    Stable id for this control instance (label/description association).
+ * @param {string}  props.label                 The control's own label (e.g. "Icon colour").
+ * @param {Array}   props.states                `[{ key, label, value, onChange, linked?, gradientValue?, onGradientChange? }]`
+ *                                              — one entry per pickable state. A state carrying
+ *                                              `onGradientChange` (a function, even if `gradientValue`
+ *                                              is currently empty) is GRADIENT-CAPABLE: it gets a
+ *                                              Solid/Gradient toggle and `gradientValue`'s sibling
+ *                                              attribute is written via `onGradientChange` instead of
+ *                                              `onChange`. Storage mirrors `GradientOverlayControl`
+ *                                              (D636): a non-empty gradient string on the sibling attr
+ *                                              wins over the flat `value` at render time — see
+ *                                              `sgs_background_paint_value()` in `helpers-tokens.php`.
+ * @param {boolean} props.clearable             Forwarded to `ColorPalette`.
  * @param {boolean} [props.disableCustomColors] Forwarded to `ColorPalette`: hides its custom-colour picker so only
- *                                            palette swatches can be picked (a value that must stay a palette slug).
- * @param {boolean} props.enableAlpha        Forwarded to the solid `ColorPalette`.
+ *                                              palette swatches can be picked (a value that must stay a palette slug).
+ * @param {boolean} props.enableAlpha           Forwarded to the solid `ColorPalette`.
  * @param {boolean} [props.gradientEnableAlpha] Forwarded to the gradient bar's stop editor
- *                                            instead of `enableAlpha` when a caller needs the
- *                                            two paths to differ (D4 adapter rollout — see the
- *                                            comment on this prop below). Falls back to
- *                                            `enableAlpha` when omitted.
- * @param {Array}   props.colours     Active theme colour palette (from `useSettings( 'color.palette' )`).
+ *                                              instead of `enableAlpha` when a caller needs the
+ *                                              two paths to differ (D4 adapter rollout — see the
+ *                                              comment on this prop below). Falls back to
+ *                                              `enableAlpha` when omitted.
+ * @param {Array}   props.colours               Active theme colour palette (from `useSettings( 'color.palette' )`).
  */
 function SgsColourStateControl( {
 	id,
@@ -359,11 +367,7 @@ function SgsColourStateControl( {
 	);
 
 	return (
-		<ItemGroup
-			isBordered
-			isSeparated
-			className="sgs-colour-control-group"
-		>
+		<ItemGroup isBordered isSeparated className="sgs-colour-control-group">
 			<Item as="div" className="sgs-colour-control-group__item">
 				<Dropdown
 					className="sgs-colour-control__dropdown"
@@ -510,7 +514,9 @@ export default function DesignTokenPicker( {
 			console.warn(
 				`DesignTokenPicker: ignoring unrecognised prop(s) [${ strayProps.join(
 					', '
-				) }]${ label ? ` on "${ label }"` : '' }. This component forwards an ` +
+				) }]${
+					label ? ` on "${ label }"` : ''
+				}. This component forwards an ` +
 					'explicit prop list, so anything not in its signature is dropped. ' +
 					'Add the prop to the signature AND forward it to the shape that ' +
 					'renders it — passing it here alone does nothing.'

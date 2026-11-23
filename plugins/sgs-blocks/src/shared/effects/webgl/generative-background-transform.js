@@ -151,9 +151,9 @@ function mapLinear( value, min1, max1, min2, max2 ) {
  * That identity is asserted directly by the verifier's `permutation` case, so
  * the shortcut is checked rather than merely claimed.
  *
- * @param {number} x  Rest-pose local X.
- * @param {number} y  Rest-pose local Y.
- * @param {number} v  The vertex's UV V coordinate, 0..1.
+ * @param {number} x          Rest-pose local X.
+ * @param {number} y          Rest-pose local Y.
+ * @param {number} v          The vertex's UV V coordinate, 0..1.
  * @param {number} planeWidth Plane width in local units.
  * @return {number[]} Folded [x, y, z].
  */
@@ -163,7 +163,7 @@ export function foldVertex( x, y, v, planeWidth = PLANE_WIDTH ) {
 		FOLD_BASE - FOLD_DEPTH * Math.pow( 4 * v * ( 1 - v ), FOLD_EXPONENT );
 
 	let fx = x;
-	let fy = y;
+	const fy = y;
 	let fz = 0;
 
 	if ( x < -BAND_EDGE ) {
@@ -173,7 +173,9 @@ export function foldVertex( x, y, v, planeWidth = PLANE_WIDTH ) {
 		// Narrow central band: a cosine profile in BOTH X and Z, which is what
 		// produces the curl rather than a simple bend. The two cosines run
 		// over different ranges (0..PI for Z, -PI/2..PI/2 for X) on purpose.
-		fz = Math.cos( mapLinear( x, -BAND_EDGE, BAND_EDGE, 0, Math.PI ) ) * foldPower;
+		fz =
+			Math.cos( mapLinear( x, -BAND_EDGE, BAND_EDGE, 0, Math.PI ) ) *
+			foldPower;
 		fx =
 			Math.cos(
 				mapLinear( x, -BAND_EDGE, BAND_EDGE, -Math.PI / 2, Math.PI / 2 )
@@ -198,10 +200,10 @@ export function foldVertex( x, y, v, planeWidth = PLANE_WIDTH ) {
 /**
  * LAYER 1 — build the folded plane's buffers.
  *
- * @param {number} width      Plane width, local units.
- * @param {number} height     Plane height, local units.
- * @param {number} segmentsX  Subdivisions across X.
- * @param {number} segmentsY  Subdivisions across Y.
+ * @param {number} width     Plane width, local units.
+ * @param {number} height    Plane height, local units.
+ * @param {number} segmentsX Subdivisions across X.
+ * @param {number} segmentsY Subdivisions across Y.
  * @return {Object} { positions, uvs, indices, vertexCount }.
  */
 export function buildFoldedGeometry(
@@ -363,7 +365,11 @@ export function composeModelMatrix( position, rotation, scale ) {
  * @return {Float32Array} Column-major mat4.
  */
 export function composeViewMatrix( eye, target, up = [ 0, 1, 0 ] ) {
-	const sub = ( p, q ) => [ p[ 0 ] - q[ 0 ], p[ 1 ] - q[ 1 ], p[ 2 ] - q[ 2 ] ];
+	const sub = ( p, q ) => [
+		p[ 0 ] - q[ 0 ],
+		p[ 1 ] - q[ 1 ],
+		p[ 2 ] - q[ 2 ],
+	];
 	const cross = ( p, q ) => [
 		p[ 1 ] * q[ 2 ] - p[ 2 ] * q[ 1 ],
 		p[ 2 ] * q[ 0 ] - p[ 0 ] * q[ 2 ],
@@ -371,7 +377,9 @@ export function composeViewMatrix( eye, target, up = [ 0, 1, 0 ] ) {
 	];
 	const norm = ( p ) => {
 		const len = Math.hypot( p[ 0 ], p[ 1 ], p[ 2 ] );
-		return len === 0 ? [ 0, 0, 0 ] : [ p[ 0 ] / len, p[ 1 ] / len, p[ 2 ] / len ];
+		return len === 0
+			? [ 0, 0, 0 ]
+			: [ p[ 0 ] / len, p[ 1 ] / len, p[ 2 ] / len ];
 	};
 	const dot = ( p, q ) => p[ 0 ] * q[ 0 ] + p[ 1 ] * q[ 1 ] + p[ 2 ] * q[ 2 ];
 

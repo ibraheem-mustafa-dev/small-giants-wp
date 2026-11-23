@@ -31,13 +31,13 @@
  * descendant removes it from the accessibility tree and would cost the button
  * its accessible name.
  *
- * @param {Object}        root              Subtree root (the document body).
- * @param {Object|null}   toggle            The nav toggle; its chain stays live.
- * @param {Object}        [options]         Predicates.
- * @param {Function}      [options.isSkipped] True for a node to leave untouched
- *                                            and undescended.
- * @param {Function}      [options.isLive]    True for a node whose whole subtree
- *                                            stays live.
+ * @param {Object}      root                Subtree root (the document body).
+ * @param {Object|null} toggle              The nav toggle; its chain stays live.
+ * @param {Object}      [options]           Predicates.
+ * @param {Function}    [options.isSkipped] True for a node to leave untouched
+ *                                          and undescended.
+ * @param {Function}    [options.isLive]    True for a node whose whole subtree
+ *                                          stays live.
  * @return {Array<Object>} Elements to freeze, in document order.
  */
 export function collectFreezeTargets( root, toggle, options = {} ) {

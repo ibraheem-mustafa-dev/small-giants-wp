@@ -1,5 +1,9 @@
 import { __ } from '@wordpress/i18n';
-import { PanelBody, CheckboxControl, SelectControl } from '@wordpress/components';
+import {
+	PanelBody,
+	CheckboxControl,
+	SelectControl,
+} from '@wordpress/components';
 import { SgsLengthControl } from '../../components';
 
 /**
@@ -20,8 +24,8 @@ import { SgsLengthControl } from '../../components';
  * widen the SelectControl's available choices — a real behaviour change,
  * not a refactor. Left as a named, deferred fix rather than risked here.
  *
- * @param {Object}   root0                        Props.
- * @param {number}   root0.menuRef                The block's `ref` attribute (menu id).
+ * @param {Object}   root0                         Props.
+ * @param {number}   root0.menuRef                 The block's `ref` attribute (menu id).
  *                                                 Named `menuRef`, NOT `ref` — see
  *                                                 SettingsPanels.js's docblock for why.
  * @param {Array}    root0.resolvedItems           From useNavMenuSource().
@@ -45,7 +49,10 @@ export default function FeaturedPanel( {
 	featuredFontWeightHover,
 } ) {
 	return (
-		<PanelBody title={ __( 'Featured', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Featured', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			{ 0 === menuRef && (
 				<p>
 					{ __(
@@ -106,7 +113,9 @@ export default function FeaturedPanel( {
 				value={ `${ featuredRadiusHover ?? featuredRadius }px` }
 				units={ [ { value: 'px', label: 'px', default: 8 } ] }
 				onChange={ ( val ) =>
-					setAttributes( { featuredRadiusHover: parseFloat( val ) || 0 } )
+					setAttributes( {
+						featuredRadiusHover: parseFloat( val ) || 0,
+					} )
 				}
 				presets={ false }
 			/>
@@ -126,7 +135,9 @@ export default function FeaturedPanel( {
 			/>
 			<SelectControl
 				label={ __( 'Font weight on hover', 'sgs-blocks' ) }
-				value={ String( featuredFontWeightHover ?? featuredFontWeight ) }
+				value={ String(
+					featuredFontWeightHover ?? featuredFontWeight
+				) }
 				options={ [
 					{ label: 'Regular', value: '400' },
 					{ label: 'Medium', value: '500' },
@@ -134,7 +145,9 @@ export default function FeaturedPanel( {
 					{ label: 'Bold', value: '700' },
 				] }
 				onChange={ ( val ) =>
-					setAttributes( { featuredFontWeightHover: parseInt( val, 10 ) } )
+					setAttributes( {
+						featuredFontWeightHover: parseInt( val, 10 ),
+					} )
 				}
 				__next40pxDefaultSize
 			/>

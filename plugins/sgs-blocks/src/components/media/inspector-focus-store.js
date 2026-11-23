@@ -8,7 +8,11 @@
  *
  * @package SGS\Blocks
  */
-import { createReduxStore, register, select as dataSelect } from '@wordpress/data';
+import {
+	createReduxStore,
+	register,
+	select as dataSelect,
+} from '@wordpress/data';
 
 export const INSPECTOR_FOCUS_STORE = 'sgs/inspector-focus';
 
@@ -34,7 +38,11 @@ export const actions = {
 	 * @return {Object} The action.
 	 */
 	open( { clientId, panel, target, requestId } ) {
-		return { type: 'OPEN', clientId, request: { panel, target, requestId } };
+		return {
+			type: 'OPEN',
+			clientId,
+			request: { panel, target, requestId },
+		};
 	},
 	/**
 	 * @param {string} clientId The block's client id.
@@ -58,7 +66,12 @@ export const selectors = {
 
 export function reducer( state = { requests: {} }, action ) {
 	if ( 'OPEN' === action.type ) {
-		return { requests: { ...state.requests, [ action.clientId ]: action.request } };
+		return {
+			requests: {
+				...state.requests,
+				[ action.clientId ]: action.request,
+			},
+		};
 	}
 	if ( 'CLEAR' === action.type ) {
 		if ( ! state.requests[ action.clientId ] ) {
@@ -71,7 +84,11 @@ export function reducer( state = { requests: {} }, action ) {
 	return state;
 }
 
-export const inspectorFocusStore = createReduxStore( INSPECTOR_FOCUS_STORE, { reducer, actions, selectors } );
+export const inspectorFocusStore = createReduxStore( INSPECTOR_FOCUS_STORE, {
+	reducer,
+	actions,
+	selectors,
+} );
 
 // Registered once per page, however many bundles import this module.
 if ( ! dataSelect( INSPECTOR_FOCUS_STORE ) ) {

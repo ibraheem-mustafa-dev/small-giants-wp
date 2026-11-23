@@ -24,8 +24,15 @@ import LayerEdgePanel from './LayerEdgePanel';
 import { layerPreviewStyle, layerBoxPreview } from './layer-preview';
 import metadata from './block.json';
 
-const ENTRY = metadata.supports.sgs.mediaElements.find( ( e ) => 'layer' === e.prefix );
-const SLOT = { prefix: 'layer', kinds: ENTRY.kinds, context: ENTRY.context, wrapper: true };
+const ENTRY = metadata.supports.sgs.mediaElements.find(
+	( e ) => 'layer' === e.prefix
+);
+const SLOT = {
+	prefix: 'layer',
+	kinds: ENTRY.kinds,
+	context: ENTRY.context,
+	wrapper: true,
+};
 
 /**
  * The settings the canvas layer paints on itself, as render.php does for a box layer. The picture inside fills it, so the
@@ -80,7 +87,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const previewTier = usePreviewTier();
 	const [ colourPalette ] = useSettings( 'color.palette' );
 
-	const shown = resolveTierSource( attributes.layerSource, previewTier, hasFile ).value;
+	const shown = resolveTierSource(
+		attributes.layerSource,
+		previewTier,
+		hasFile
+	).value;
 	const hasMedia = !! ( shown && ( shown.url || shown.markup ) );
 	const decorative = attributes.layerDecorative ?? true;
 	const alt = decorative ? '' : shown?.alt || attributes.layerAlt || '';
@@ -88,24 +99,44 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	// The media part's CSS is the emitters' own, for the settings the layer root does not paint itself.
 	// The layer paints its own fill (render.php's $sgs_di_unrendered), so the media-padding atom's Background never reaches the picture.
-	const mediaAttrs = Object.fromEntries( Object.entries( attributes ).filter( ( [ key ] ) => ! BOX_KEYS.includes( key ) && 'layerBackground' !== key ) );
+	const mediaAttrs = Object.fromEntries(
+		Object.entries( attributes ).filter(
+			( [ key ] ) =>
+				! BOX_KEYS.includes( key ) && 'layerBackground' !== key
+		)
+	);
 	// A radius-drawn shape is the box's corners (layer-preview.js); only a mask shape reaches the picture.
-	const hasMask = Object.values( attributes.layerShape || {} ).some( ( value ) => ! RADIUS_SHAPES.includes( String( value?.shape ?? value ?? '' ) ) );
+	const hasMask = Object.values( attributes.layerShape || {} ).some(
+		( value ) =>
+			! RADIUS_SHAPES.includes( String( value?.shape ?? value ?? '' ) )
+	);
 	if ( ! hasMask ) {
 		delete mediaAttrs.layerShape;
 	}
-	const { css: mediaCss, needsHelper } = mediaPreview( SLOT, mediaAttrs, uid );
+	const { css: mediaCss, needsHelper } = mediaPreview(
+		SLOT,
+		mediaAttrs,
+		uid
+	);
 	// The picture fills the layer, as render.php's scoped rule does.
 	const css = `${ mediaCss }
 .${ uid } .sgs-media-el{display:block;width:100%;height:auto}`;
 
 	const layerStyle = layerPreviewStyle( attributes, previewTier );
 	// The layer's own box (border, fill, shadow, height), painted on the same element as the position.
-	const boxStyle = layerBoxPreview( attributes, previewTier, colourPalette, ! hasMedia && 0 === blockCount );
+	const boxStyle = layerBoxPreview(
+		attributes,
+		previewTier,
+		colourPalette,
+		! hasMedia && 0 === blockCount
+	);
 
 	let picture = null;
 	if ( hasMedia ) {
-		const src = shown.url || 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent( shown.markup );
+		const src =
+			shown.url ||
+			'data:image/svg+xml;charset=utf-8,' +
+				encodeURIComponent( shown.markup );
 		picture = (
 			<img
 				src={ src }
@@ -150,13 +181,23 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					<ResponsiveOverride
 						label={ __( 'Rotation (degrees)', 'sgs-blocks' ) }
 						value={ rotation }
-						onChange={ ( obj ) => setAttributes( { rotation: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { rotation: obj } )
+						}
 					>
-						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+						{ ( {
+							ownValue,
+							effectiveValue,
+							inherited,
+							setOwnValue,
+						} ) => (
 							<RangeControl
 								help={
 									inherited
-										? __( 'Leave empty to use the desktop value', 'sgs-blocks' )
+										? __(
+												'Leave empty to use the desktop value',
+												'sgs-blocks'
+										  )
 										: undefined
 								}
 								value={ ownValue || effectiveValue || 0 }
@@ -203,7 +244,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							'sgs-blocks'
 						) }
 						checked={ fadeOnScroll }
-						onChange={ ( val ) => setAttributes( { fadeOnScroll: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { fadeOnScroll: val } )
+						}
 						__nextHasNoMarginBottom
 					/>
 					<SelectControl
@@ -214,7 +257,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						) }
 						value={ overflow }
 						options={ OVERFLOW_OPTIONS }
-						onChange={ ( val ) => setAttributes( { overflow: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { overflow: val } )
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
@@ -224,7 +269,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			<div { ...blockProps }>
 				{ ! hasMedia && 0 === blockCount && (
 					<p className="sgs-decorative-image-editor__placeholder">
-						{ __( 'Choose an image in the Media panel, or add blocks to float text, a label or a badge.', 'sgs-blocks' ) }
+						{ __(
+							'Choose an image in the Media panel, or add blocks to float text, a label or a badge.',
+							'sgs-blocks'
+						) }
 					</p>
 				) }
 				<div className="sgs-decorative-image-editor__preview-wrapper">
@@ -236,7 +284,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							className={ [
 								'sgs-decorative-image-editor__layer',
 								'sgs-decorative-image--layer',
-								hasMedia ? 'sgs-decorative-image--over-image' : '',
+								hasMedia
+									? 'sgs-decorative-image--over-image'
+									: '',
 								uid,
 							]
 								.filter( Boolean )

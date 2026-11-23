@@ -24,7 +24,6 @@ export const FOCUS_STYLE_CLASSES = Object.freeze( {
 	signature: 'sgs-focus--signature',
 } );
 
-
 // Set on the sgs/multi-button canvas wrapper (multi-button/edit.js) from the group's default border.
 export const GROUP_HOST_BORDER_PROPERTY =
 	'--sgs-mb-btn-focus-host-border-default';
@@ -145,7 +144,10 @@ export function buttonFocusState( attributes ) {
 		sgsMotion: attributes.sgsMotion,
 	};
 	return {
-		focusClass: focusStyleClass( { focusStyle: attributes.focusStyle, ...motion } ),
+		focusClass: focusStyleClass( {
+			focusStyle: attributes.focusStyle,
+			...motion,
+		} ),
 		signatureRefused: signatureRefusal( motion ),
 	};
 }
@@ -192,7 +194,9 @@ export function focusHostBorder( { borderWidth, borderStyle, inheritStyle } ) {
 	// A preset-less button with no border of its own paints its sgs/multi-button group's default border, which the
 	// group publishes as a single length in this property (outside a group the property is unset and focus.css
 	// falls back to 0px). The canvas cannot read the group's block context from edit.js, so it reads the property.
-	return 'custom' === inheritStyle ? `var(${ GROUP_HOST_BORDER_PROPERTY })` : '';
+	return 'custom' === inheritStyle
+		? `var(${ GROUP_HOST_BORDER_PROPERTY })`
+		: '';
 }
 
 /**

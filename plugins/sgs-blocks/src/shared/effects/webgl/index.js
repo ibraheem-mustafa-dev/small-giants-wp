@@ -36,11 +36,11 @@ import { createRenderer } from './renderer';
  * A `null` return IS the fallback signal — the caller does nothing further,
  * and the untouched source element is already the finished state.
  *
- * @param {HTMLElement}      el                 Element the canvas is appended to.
- * @param {Object}            opts               Options.
- * @param {HTMLImageElement} opts.image         Already-decoded source image.
- * @param {string}            opts.fragment      GLSL ES 3.00 fragment shader source.
- * @param {Object}            [opts.uniforms]    Initial `{ name: value }` uniforms.
+ * @param {HTMLElement}      el              Element the canvas is appended to.
+ * @param {Object}           opts            Options.
+ * @param {HTMLImageElement} opts.image      Already-decoded source image.
+ * @param {string}           opts.fragment   GLSL ES 3.00 fragment shader source.
+ * @param {Object}           [opts.uniforms] Initial `{ name: value }` uniforms.
  * @return {{setUniform: Function, redraw: Function, destroy: Function}|null}
  *         The render handle, or `null` when unsupported or on any failure.
  */

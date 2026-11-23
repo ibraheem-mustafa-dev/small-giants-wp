@@ -16,7 +16,10 @@ import { PanelBody, TextControl } from '@wordpress/components';
 
 export default function SubLabelPanel( { attributes, setAttributes } ) {
 	return (
-		<PanelBody title={ __( 'Sub-label', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Sub-label', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			<TextControl
 				label={ __( 'Sub-label term-meta key', 'sgs-blocks' ) }
 				help={ __(
@@ -24,7 +27,9 @@ export default function SubLabelPanel( { attributes, setAttributes } ) {
 					'sgs-blocks'
 				) }
 				value={ attributes.subLabelMetaKey || '' }
-				onChange={ ( val ) => setAttributes( { subLabelMetaKey: val } ) }
+				onChange={ ( val ) =>
+					setAttributes( { subLabelMetaKey: val } )
+				}
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>

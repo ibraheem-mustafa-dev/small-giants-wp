@@ -37,14 +37,18 @@ export function sortProducts( products, mode, savedPrices ) {
 	if ( 'price-asc' === mode || 'price-desc' === mode ) {
 		const direction = 'price-asc' === mode ? 1 : -1;
 		return list.sort(
-			( a, b ) => direction * ( Number( a?.prices?.price ) - Number( b?.prices?.price ) )
+			( a, b ) =>
+				direction *
+				( Number( a?.prices?.price ) - Number( b?.prices?.price ) )
 		);
 	}
 
 	if ( 'stock' === mode ) {
 		const inStock = ( product ) =>
 			'instock' === product?.is_in_stock || true === product?.is_in_stock;
-		return list.sort( ( a, b ) => ( inStock( b ) ? 1 : 0 ) - ( inStock( a ) ? 1 : 0 ) );
+		return list.sort(
+			( a, b ) => ( inStock( b ) ? 1 : 0 ) - ( inStock( a ) ? 1 : 0 )
+		);
 	}
 
 	// 'recent' (default). Prefer a real addedTs when every item carries one

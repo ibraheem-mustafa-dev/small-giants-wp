@@ -378,7 +378,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				display: 'flex',
 				flexWrap: 'wrap',
 				// Blank alignItems falls to the wrapper's own `stretch` default.
-				alignItems: resolveResponsiveTier( alignItems, 'desktop' )?.value || 'stretch',
+				alignItems:
+					resolveResponsiveTier( alignItems, 'desktop' )?.value ||
+					'stretch',
 				...( flexDirection ? { flexDirection } : {} ),
 				gap: ( gap && gap.desktop ) || 'clamp(0.5rem, 2vw, 1.5rem)',
 				justifyContent:
@@ -625,17 +627,22 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						<ToolsPanelItem
 							label={ __( 'Align items', 'sgs-blocks' ) }
 							hasValue={ () =>
-								JSON.stringify( alignItems ?? {} ) !== JSON.stringify( { desktop: 'start' } )
+								JSON.stringify( alignItems ?? {} ) !==
+								JSON.stringify( { desktop: 'start' } )
 							}
 							onDeselect={ () =>
-								setAttributes( { alignItems: { desktop: 'start' } } )
+								setAttributes( {
+									alignItems: { desktop: 'start' },
+								} )
 							}
 							isShownByDefault
 						>
 							<TierSelectControl
 								value={ alignItems }
 								options={ VERTICAL_ALIGN_OPTIONS }
-								onChange={ ( obj ) => setAttributes( { alignItems: obj } ) }
+								onChange={ ( obj ) =>
+									setAttributes( { alignItems: obj } )
+								}
 								help={ __(
 									'How elements of different heights line up across the row.',
 									'sgs-blocks'

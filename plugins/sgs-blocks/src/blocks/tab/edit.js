@@ -1,10 +1,18 @@
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, useInnerBlocksProps, InspectorControls, useSettings } from '@wordpress/block-editor';
+import {
+	useBlockProps,
+	useInnerBlocksProps,
+	InspectorControls,
+	useSettings,
+} from '@wordpress/block-editor';
 import { PanelBody } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 // WS-4: shared sgs/container wrapper editor controls (content kind = width/spacing).
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
-import { SgsColourPanel, fillRow, textRow,
+import {
+	SgsColourPanel,
+	fillRow,
+	textRow,
 	SgsBorderControl,
 	resolveColourToken,
 } from '../../components';
@@ -26,9 +34,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// the flat colour would compare against a surface that isn't rendered — skip
 	// the check entirely in that case rather than feed the raw gradient string in.
 	const tabContrastAgainst =
-		backgroundColour && ! backgroundColourGradient
-			? backgroundColour
-			: '';
+		backgroundColour && ! backgroundColourGradient ? backgroundColour : '';
 
 	// Determine which tab index this block occupies in the parent.
 	const tabIndex = useSelect(
@@ -45,8 +51,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// so we can show/hide this panel in the editor canvas.
 	const isActive = useSelect(
 		( select ) => {
-			const { getBlockRootClientId, getSelectedBlockClientId, getBlocks } =
-				select( 'core/block-editor' );
+			const {
+				getBlockRootClientId,
+				getSelectedBlockClientId,
+				getBlocks,
+			} = select( 'core/block-editor' );
 			const parentId = getBlockRootClientId( clientId );
 			if ( ! parentId ) {
 				return true;
@@ -58,11 +67,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			if ( ! selectedId ) {
 				return tabIndex === 0;
 			}
-			const selectedAncestors =
-				select( 'core/block-editor' ).getBlockParents(
-					selectedId,
-					true
-				);
+			const selectedAncestors = select(
+				'core/block-editor'
+			).getBlockParents( selectedId, true );
 			if (
 				selectedAncestors.includes( clientId ) ||
 				selectedId === clientId
@@ -71,11 +78,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			}
 			// No tab in this group is selected — show first tab.
 			const anyTabSelected = siblings.some( ( sib ) => {
-				const sibAncestors =
-					select( 'core/block-editor' ).getBlockParents(
-						selectedId,
-						true
-					);
+				const sibAncestors = select(
+					'core/block-editor'
+				).getBlockParents( selectedId, true );
 				return (
 					sibAncestors.includes( sib.clientId ) ||
 					selectedId === sib.clientId
@@ -96,7 +101,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const [ colourPalette ] = useSettings( 'color.palette' );
 
 	const previewTier = usePreviewTier();
-	const { wrapperStyle, bandStyle } = buildTabPreview( attributes, previewTier, colourPalette );
+	const { wrapperStyle, bandStyle } = buildTabPreview(
+		attributes,
+		previewTier,
+		colourPalette
+	);
 	const blockProps = useBlockProps( {
 		className: [
 			'sgs-tab',
@@ -158,12 +167,20 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			/>
 			{ /* Width / spacing (WS-4 container wrapper) */ }
 			<InspectorControls>
-				<PanelBody title={ __( 'Tab Settings', 'sgs-blocks' ) } initialOpen={ true }>
-					<SgsFreeTextField type="rich" noLink
+				<PanelBody
+					title={ __( 'Tab Settings', 'sgs-blocks' ) }
+					initialOpen={ true }
+				>
+					<SgsFreeTextField
+						type="rich"
+						noLink
 						label={ __( 'Tab label', 'sgs-blocks' ) }
 						value={ label }
 						onChange={ ( val ) => setAttributes( { label: val } ) }
-						help={ __( 'Label shown on the tab button.', 'sgs-blocks' ) }
+						help={ __(
+							'Label shown on the tab button.',
+							'sgs-blocks'
+						) }
 					/>
 				</PanelBody>
 				<ContainerWrapperControls
@@ -171,28 +188,44 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					setAttributes={ setAttributes }
 					kind="content"
 				/>
-				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Border', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SgsBorderControl
 						widthValues={ attributes.borderWidth ?? {} }
-						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						onWidthChange={ ( next ) =>
+							setAttributes( { borderWidth: next } )
+						}
 						widthPresets={ [ '10', '20', '30' ] }
 						styleValue={ attributes.borderStyle }
-						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						onStyleChange={ ( val ) =>
+							setAttributes( { borderStyle: val } )
+						}
 						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
 						colourValue={ attributes.borderColour }
-						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						onColourChange={ ( val ) =>
+							setAttributes( { borderColour: val ?? '' } )
+						}
 						colourGradientValue={ attributes.borderColourGradient }
-						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+						onColourGradientChange={ ( val ) =>
+							setAttributes( { borderColourGradient: val ?? '' } )
+						}
 						colourLinked={ true }
 						contrastAgainst={ tabContrastAgainst }
 						radiusValues={ {
-								base: attributes.borderRadius?.desktop ?? {},
-								tablet: attributes.borderRadius?.tablet ?? {},
-								mobile: attributes.borderRadius?.mobile ?? {},
-							} }
+							base: attributes.borderRadius?.desktop ?? {},
+							tablet: attributes.borderRadius?.tablet ?? {},
+							mobile: attributes.borderRadius?.mobile ?? {},
+						} }
 						onRadiusChange={ ( tier, next ) => {
 							const key = tier === 'base' ? 'desktop' : tier;
-							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+							setAttributes( {
+								borderRadius: {
+									...attributes.borderRadius,
+									[ key ]: next,
+								},
+							} );
 						} }
 					/>
 				</PanelBody>
@@ -200,7 +233,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 			<div { ...blockProps }>
 				<div className="sgs-tab__label-control">
-					<SgsFreeTextField type="rich" noLink
+					<SgsFreeTextField
+						type="rich"
+						noLink
 						label={ __( 'Tab label', 'sgs-blocks' ) }
 						value={ label }
 						onChange={ ( val ) => setAttributes( { label: val } ) }

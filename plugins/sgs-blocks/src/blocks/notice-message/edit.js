@@ -19,12 +19,21 @@ import { backgroundPaintPreview, textPaintPreview } from '../../utils';
 const NOTICE_MESSAGE_TEMPLATE = [
 	[
 		'sgs/text',
-		{ text: __( 'Write your rotating message here.', 'sgs-blocks' ), tag: 'p' },
+		{
+			text: __( 'Write your rotating message here.', 'sgs-blocks' ),
+			tag: 'p',
+		},
 	],
 ];
 
 export default function Edit( { attributes, setAttributes } ) {
-	const { backgroundColour, backgroundColourGradient, textColour, textColourGradient, label } = attributes;
+	const {
+		backgroundColour,
+		backgroundColourGradient,
+		textColour,
+		textColourGradient,
+		label,
+	} = attributes;
 
 	// The front end paints this message's colours on the whole banner while it is
 	// the active slide; the canvas shows the message being edited, so it carries them.
@@ -32,8 +41,16 @@ export default function Edit( { attributes, setAttributes } ) {
 	const blockProps = useBlockProps( {
 		className: 'sgs-notice-message',
 		style: {
-			...backgroundPaintPreview( backgroundColour, backgroundColourGradient, colourPalette ),
-			...textPaintPreview( textColour, textColourGradient, colourPalette ),
+			...backgroundPaintPreview(
+				backgroundColour,
+				backgroundColourGradient,
+				colourPalette
+			),
+			...textPaintPreview(
+				textColour,
+				textColourGradient,
+				colourPalette
+			),
 		},
 	} );
 	const innerBlocksProps = useInnerBlocksProps( blockProps, {
@@ -48,9 +65,14 @@ export default function Edit( { attributes, setAttributes } ) {
 						<TextControl
 							label={ __( 'List view label', 'sgs-blocks' ) }
 							value={ label }
-							onChange={ ( val ) => setAttributes( { label: val ?? '' } ) }
+							onChange={ ( val ) =>
+								setAttributes( { label: val ?? '' } )
+							}
 							placeholder={ __( 'e.g. Slide 1', 'sgs-blocks' ) }
-							help={ __( 'Editor only — never rendered on the frontend.', 'sgs-blocks' ) }
+							help={ __(
+								'Editor only — never rendered on the frontend.',
+								'sgs-blocks'
+							) }
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
@@ -82,7 +104,10 @@ export default function Edit( { attributes, setAttributes } ) {
 				] }
 			/>
 			<InspectorControls>
-				<PanelBody title={ __( 'Message', 'sgs-blocks' ) } initialOpen={ true }>
+				<PanelBody
+					title={ __( 'Message', 'sgs-blocks' ) }
+					initialOpen={ true }
+				>
 					{ ! backgroundColour && ! textColour && (
 						<p>
 							{ __(

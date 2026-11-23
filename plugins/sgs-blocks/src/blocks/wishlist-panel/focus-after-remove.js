@@ -30,7 +30,9 @@ export function nextItemId( orderedIds, removedId ) {
  * @return {number[]} The IDs.
  */
 export function visibleIds( itemsEl ) {
-	return Array.from( itemsEl.querySelectorAll( '.sgs-wishlist-panel__row[data-product-id]' ) )
+	return Array.from(
+		itemsEl.querySelectorAll( '.sgs-wishlist-panel__row[data-product-id]' )
+	)
 		.map( ( row ) => Number( row.dataset.productId ) )
 		.filter( ( id ) => id > 0 );
 }
@@ -46,9 +48,13 @@ export function applyFocus( itemsEl, nextId ) {
 	const target =
 		null === nextId
 			? itemsEl.querySelector( '.sgs-wishlist-panel__empty-cta' )
-			: itemsEl.querySelector( `.sgs-wishlist-panel__row[data-product-id="${ nextId }"]` )?.querySelector(
-					'a[href]:not([tabindex="-1"]), button:not(:disabled)'
-			  );
+			: itemsEl
+					.querySelector(
+						`.sgs-wishlist-panel__row[data-product-id="${ nextId }"]`
+					)
+					?.querySelector(
+						'a[href]:not([tabindex="-1"]), button:not(:disabled)'
+					);
 	if ( ! target ) {
 		return false;
 	}

@@ -17,7 +17,13 @@
  * @package SGS\Blocks
  */
 
-import { MAX_LAYERS, splitTop, parseLayer, formatLength, composeShadow } from './shadow-layers.js';
+import {
+	MAX_LAYERS,
+	splitTop,
+	parseLayer,
+	formatLength,
+	composeShadow,
+} from './shadow-layers.js';
 
 export const LIFT_FACTOR = 1.25;
 
@@ -29,7 +35,11 @@ export const LIFT_FACTOR = 1.25;
  * @return {boolean} True when it reads as a slug, not a layered shape.
  */
 export function isSlug( text ) {
-	return /^[a-z][a-z0-9-]*$/i.test( text ) && 'inset' !== text.toLowerCase() && 'none' !== text.toLowerCase();
+	return (
+		/^[a-z][a-z0-9-]*$/i.test( text ) &&
+		'inset' !== text.toLowerCase() &&
+		'none' !== text.toLowerCase()
+	);
 }
 
 /**
@@ -55,7 +65,11 @@ export function liftShape( shape ) {
 			out.push( layerText.trim() );
 			continue;
 		}
-		let text = `${ formatLength( fields.x ) } ${ formatLength( Math.round( fields.y * LIFT_FACTOR ) ) } ${ formatLength( Math.round( fields.blur * LIFT_FACTOR ) ) } ${ formatLength( fields.spread ) }`;
+		let text = `${ formatLength( fields.x ) } ${ formatLength(
+			Math.round( fields.y * LIFT_FACTOR )
+		) } ${ formatLength(
+			Math.round( fields.blur * LIFT_FACTOR )
+		) } ${ formatLength( fields.spread ) }`;
 		if ( null !== fields.colour ) {
 			text += ` ${ fields.colour }`;
 		}

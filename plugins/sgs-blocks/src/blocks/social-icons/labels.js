@@ -29,8 +29,14 @@ const LABEL_POSITIONS = [
  */
 export function rowLabelPreviewCss( scope, attributes, tier ) {
 	const label = `.${ scope } .sgs-icon:not(.sgs-icon--own-label-colour)`;
-	const safe = ( value ) => isCssGradient( value ) && ! /[{}<>;]/.test( value );
-	let css = typographyPreviewCss( attributes, 'childIconLabel', `.${ scope } .sgs-icon__label-text`, tier );
+	const safe = ( value ) =>
+		isCssGradient( value ) && ! /[{}<>;]/.test( value );
+	let css = typographyPreviewCss(
+		attributes,
+		'childIconLabel',
+		`.${ scope } .sgs-icon__label-text`,
+		tier
+	);
 	if ( safe( attributes.childIconLabelColourGradient ) ) {
 		css += `${ label } .sgs-icon__label-text{background-image:${ attributes.childIconLabelColourGradient };-webkit-background-clip:text;background-clip:text;color:transparent;}`;
 	}
@@ -49,12 +55,20 @@ export function rowLabelPreviewCss( scope, attributes, tier ) {
 export function SocialIconLabelsPanel( { attributes, setAttributes } ) {
 	const { childIconShowLabel, childIconLabelPosition = '' } = attributes;
 	return (
-		<PanelBody title={ __( 'Icon labels', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Icon labels', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			<ToggleControl
 				label={ __( 'Show labels', 'sgs-blocks' ) }
-				help={ __( 'Shows each icon\'s name beside it. An icon can also switch on its own label.', 'sgs-blocks' ) }
+				help={ __(
+					"Shows each icon's name beside it. An icon can also switch on its own label.",
+					'sgs-blocks'
+				) }
 				checked={ !! childIconShowLabel }
-				onChange={ ( value ) => setAttributes( { childIconShowLabel: value } ) }
+				onChange={ ( value ) =>
+					setAttributes( { childIconShowLabel: value } )
+				}
 				__nextHasNoMarginBottom
 			/>
 			<SelectControl
@@ -62,7 +76,9 @@ export function SocialIconLabelsPanel( { attributes, setAttributes } ) {
 				help={ __( 'For icons left on After the icon.', 'sgs-blocks' ) }
 				value={ childIconLabelPosition }
 				options={ LABEL_POSITIONS }
-				onChange={ ( value ) => setAttributes( { childIconLabelPosition: value } ) }
+				onChange={ ( value ) =>
+					setAttributes( { childIconLabelPosition: value } )
+				}
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>

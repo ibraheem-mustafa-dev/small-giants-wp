@@ -115,7 +115,9 @@ export function gapVar( value ) {
 	if ( ! value ) {
 		return undefined;
 	}
-	return /^\d+$/.test( String( value ) ) ? spacingVar( value ) : String( value );
+	return /^\d+$/.test( String( value ) )
+		? spacingVar( value )
+		: String( value );
 }
 
 export function shadowVar( slug ) {
@@ -172,7 +174,11 @@ export function textGradientBoxStyle( align = '' ) {
 		case 'end':
 			return { ...box, marginInlineStart: 'auto', marginInlineEnd: 0 };
 		default:
-			return { ...box, marginInlineStart: 'var(--sgs-text-ms, 0)', marginInlineEnd: 'var(--sgs-text-me, 0)' };
+			return {
+				...box,
+				marginInlineStart: 'var(--sgs-text-ms, 0)',
+				marginInlineEnd: 'var(--sgs-text-me, 0)',
+			};
 	}
 }
 
@@ -201,15 +207,26 @@ export function textGradientBoxStyle( align = '' ) {
  * @param {string}   [align]        The element's text-align for textGradientBoxStyle().
  * @return {Object} A style fragment to spread into the element's inline style object.
  */
-export function resolveTextColourPreviewStyle( flatValue, gradientValue, resolveSolid, localise = false, align = '' ) {
-	if ( gradientValue && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( gradientValue ) ) {
+export function resolveTextColourPreviewStyle(
+	flatValue,
+	gradientValue,
+	resolveSolid,
+	localise = false,
+	align = ''
+) {
+	if (
+		gradientValue &&
+		/^(repeating-)?(linear|radial|conic)-gradient\(/i.test( gradientValue )
+	) {
 		const style = {
 			backgroundImage: gradientValue,
 			WebkitBackgroundClip: 'text',
 			backgroundClip: 'text',
 			color: 'transparent',
 		};
-		return localise ? { ...style, ...textGradientBoxStyle( align ) } : style;
+		return localise
+			? { ...style, ...textGradientBoxStyle( align ) }
+			: style;
 	}
 	if ( ! flatValue ) {
 		return {};
@@ -242,7 +259,9 @@ export function resolveTextColourPreviewStyle( flatValue, gradientValue, resolve
 export function resolveBackgroundPaintPreviewStyle( flatValue, gradientValue ) {
 	if (
 		gradientValue &&
-		/^(repeating-)?(linear|radial|conic)-gradient\(/i.test( gradientValue.trim() )
+		/^(repeating-)?(linear|radial|conic)-gradient\(/i.test(
+			gradientValue.trim()
+		)
 	) {
 		return { backgroundImage: gradientValue.trim() };
 	}
@@ -273,18 +292,26 @@ export function resolveBackgroundPaintPreviewStyle( flatValue, gradientValue ) {
  * `sgs_resolve_text_colour_or_gradient()` + `sgs_text_colour_decl()`'s
  * PHP-side precedence — the canvas cannot disagree with the render.
  *
- * @param {string} selector          Fully-formed CSS selector for the field's own
- *                                    element (NOT the `a` itself), scoped to this
- *                                    block instance (e.g. via a clientId-derived class).
- * @param {string} colour            The link's normal-state colour attribute value.
- * @param {string} colourHover       The link's hover-state colour attribute value.
+ * @param {string} selector              Fully-formed CSS selector for the field's own
+ *                                       element (NOT the `a` itself), scoped to this
+ *                                       block instance (e.g. via a clientId-derived class).
+ * @param {string} colour                The link's normal-state colour attribute value.
+ * @param {string} colourHover           The link's hover-state colour attribute value.
  * @param {string} [colourGradient]      The normal state's `{attr}Gradient` sibling value.
  * @param {string} [colourHoverGradient] The hover state's `{attr}HoverGradient` sibling value.
  * @return {string} CSS text; '' when nothing is set.
  */
-export function linkColourPreviewCss( selector, colour, colourHover, colourGradient, colourHoverGradient ) {
+export function linkColourPreviewCss(
+	selector,
+	colour,
+	colourHover,
+	colourGradient,
+	colourHoverGradient
+) {
 	const linkSelector = `${ selector } a`;
-	const isGradient = ( value ) => !! value && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( value.trim() );
+	const isGradient = ( value ) =>
+		!! value &&
+		/^(repeating-)?(linear|radial|conic)-gradient\(/i.test( value.trim() );
 
 	const declFor = ( flat, gradient ) => {
 		if ( isGradient( gradient ) ) {

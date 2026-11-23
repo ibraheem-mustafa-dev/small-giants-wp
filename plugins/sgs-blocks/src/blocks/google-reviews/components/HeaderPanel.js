@@ -84,7 +84,8 @@ export default function HeaderPanel( { attributes, setAttributes } ) {
 				attrs={ [ 'sourceLabel' ] }
 				{ ...shared }
 			>
-				<SgsFreeTextField type="rich"
+				<SgsFreeTextField
+					type="rich"
 					label={ __( 'Source caption', 'sgs-blocks' ) }
 					value={ attributes.sourceLabel }
 					onChange={ ( value ) =>

@@ -94,7 +94,10 @@ if ( ! window.__sgsSameTermRegistered ) {
 					<BlockEdit { ...props } />
 					<InspectorControls>
 						<PanelBody
-							title={ __( 'Same as the current product', 'sgs-blocks' ) }
+							title={ __(
+								'Same as the current product',
+								'sgs-blocks'
+							) }
 							initialOpen={ false }
 						>
 							<SelectControl

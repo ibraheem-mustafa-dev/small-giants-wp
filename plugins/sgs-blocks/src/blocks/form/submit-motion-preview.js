@@ -31,7 +31,7 @@ export function submitShadowPreviewStyle( attributes, palette ) {
 /**
  * The scoped hover rule for the submit button's lift.
  *
- * @param {string} selector Selector for the canvas preview button (no `:hover` suffix).
+ * @param {string} selector   Selector for the canvas preview button (no `:hover` suffix).
  * @param {Object} attributes Block attributes.
  * @return {string} The rule, or '' when there is no lift.
  */

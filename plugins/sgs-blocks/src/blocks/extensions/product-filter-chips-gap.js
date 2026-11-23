@@ -66,7 +66,10 @@ if ( ! window.__sgsChipGapRegistered ) {
 							initialOpen={ false }
 						>
 							<ResponsiveOverride
-								label={ __( 'Gap between chips', 'sgs-blocks' ) }
+								label={ __(
+									'Gap between chips',
+									'sgs-blocks'
+								) }
 								value={ attributes.sgsChipGap }
 								onChange={ ( obj ) =>
 									setAttributes( { sgsChipGap: obj } )
@@ -74,14 +77,18 @@ if ( ! window.__sgsChipGapRegistered ) {
 							>
 								{ ( { tier, ownValue, setOwnValue } ) => (
 									<SgsLengthControl
-										label={ __( 'Gap between chips', 'sgs-blocks' ) }
+										label={ __(
+											'Gap between chips',
+											'sgs-blocks'
+										) }
 										hideLabelFromVision
 										value={ ownValue }
 										placeholder={
 											ownValue
 												? undefined
 												: resolveResponsiveTier(
-														attributes.sgsChipGap || {},
+														attributes.sgsChipGap ||
+															{},
 														tier
 												  ).value || ''
 										}
@@ -112,20 +119,41 @@ if ( ! window.__sgsChipGapRegistered ) {
 	 * product-filter-chips-gap.scss reads (custom properties only: Spec 32 forbids inline declarations; the
 	 * front end gets its scoped rule from includes/product-filter-chips-gap.php).
 	 */
-	const withChipGapPreview = createHigherOrderComponent( ( BlockListBlock ) => ( props ) => {
-		const tier = usePreviewTier();
-		const { attributes, name } = props;
-		const gap = TARGET_BLOCK_NAME === name && attributes ? resolveResponsiveTier( attributes.sgsChipGap || {}, tier ).value : '';
-		if ( ! gap ) {
-			return <BlockListBlock { ...props } />;
-		}
-		const wrapperProps = {
-			...( props.wrapperProps || {} ),
-			className: [ props.wrapperProps?.className, 'sgs-chip-gap-preview' ].filter( Boolean ).join( ' ' ),
-			style: { ...( props.wrapperProps?.style || {} ), '--sgs-chip-gap': gap },
-		};
-		return <BlockListBlock { ...props } wrapperProps={ wrapperProps } />;
-	}, 'withChipGapPreview' );
+	const withChipGapPreview = createHigherOrderComponent(
+		( BlockListBlock ) => ( props ) => {
+			const tier = usePreviewTier();
+			const { attributes, name } = props;
+			const gap =
+				TARGET_BLOCK_NAME === name && attributes
+					? resolveResponsiveTier( attributes.sgsChipGap || {}, tier )
+							.value
+					: '';
+			if ( ! gap ) {
+				return <BlockListBlock { ...props } />;
+			}
+			const wrapperProps = {
+				...( props.wrapperProps || {} ),
+				className: [
+					props.wrapperProps?.className,
+					'sgs-chip-gap-preview',
+				]
+					.filter( Boolean )
+					.join( ' ' ),
+				style: {
+					...( props.wrapperProps?.style || {} ),
+					'--sgs-chip-gap': gap,
+				},
+			};
+			return (
+				<BlockListBlock { ...props } wrapperProps={ wrapperProps } />
+			);
+		},
+		'withChipGapPreview'
+	);
 
-	addFilter( 'editor.BlockListBlock', 'sgs/product-filter-chips-gap/preview', withChipGapPreview );
+	addFilter(
+		'editor.BlockListBlock',
+		'sgs/product-filter-chips-gap/preview',
+		withChipGapPreview
+	);
 } // end guard: window.__sgsChipGapRegistered

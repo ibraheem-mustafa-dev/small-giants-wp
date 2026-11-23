@@ -21,10 +21,17 @@ export default function NavMenuNotices( { resolvedItemsLength } ) {
 	return (
 		<>
 			{ resolvedItemsLength > LINK_COUNT_THRESHOLD && (
-				<Notice status="info" isDismissible={ true } style={ { marginBottom: '16px' } }>
+				<Notice
+					status="info"
+					isDismissible={ true }
+					style={ { marginBottom: '16px' } }
+				>
 					{ sprintf(
 						/* translators: %d is the number of links. */
-						__( 'This menu has %d links. Consider simplifying to reduce cognitive load and improve usability.', 'sgs-blocks' ),
+						__(
+							'This menu has %d links. Consider simplifying to reduce cognitive load and improve usability.',
+							'sgs-blocks'
+						),
 						resolvedItemsLength
 					) }
 				</Notice>

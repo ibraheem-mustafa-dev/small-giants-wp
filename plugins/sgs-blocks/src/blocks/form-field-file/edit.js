@@ -39,7 +39,11 @@ const SR_ONLY = {
  * @return {*} The wrapped or bare children.
  */
 function ZoneText( { isRow, children } ) {
-	return isRow ? <span className="sgs-form-field__file-text">{ children }</span> : children;
+	return isRow ? (
+		<span className="sgs-form-field__file-text">{ children }</span>
+	) : (
+		children
+	);
 }
 
 export default function Edit( { attributes, setAttributes } ) {
@@ -111,16 +115,22 @@ export default function Edit( { attributes, setAttributes } ) {
 						onDeselect={ () => setAttributes( { label: '' } ) }
 						isShownByDefault
 					>
-						<SgsFreeTextField type="rich" noLink
+						<SgsFreeTextField
+							type="rich"
+							noLink
 							label={ __( 'Label', 'sgs-blocks' ) }
 							value={ label }
-							onChange={ ( val ) => setAttributes( { label: val } ) }
+							onChange={ ( val ) =>
+								setAttributes( { label: val } )
+							}
 						/>
 					</ToolsPanelItem>
 					<ToolsPanelItem
 						label={ __( 'Required', 'sgs-blocks' ) }
 						hasValue={ () => required !== false }
-						onDeselect={ () => setAttributes( { required: false } ) }
+						onDeselect={ () =>
+							setAttributes( { required: false } )
+						}
 						isShownByDefault
 					>
 						<ToggleControl
@@ -152,7 +162,9 @@ export default function Edit( { attributes, setAttributes } ) {
 						hasValue={ () => uploadText !== '' }
 						onDeselect={ () => setAttributes( { uploadText: '' } ) }
 					>
-						<SgsFreeTextField type="rich" noLink
+						<SgsFreeTextField
+							type="rich"
+							noLink
 							label={ __( 'Drop-zone text', 'sgs-blocks' ) }
 							value={ uploadText }
 							onChange={ ( val ) =>
@@ -177,7 +189,9 @@ export default function Edit( { attributes, setAttributes } ) {
 							label={ __( 'Width', 'sgs-blocks' ) }
 							value={ width }
 							options={ WIDTH_OPTIONS }
-							onChange={ ( val ) => setAttributes( { width: val } ) }
+							onChange={ ( val ) =>
+								setAttributes( { width: val } )
+							}
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
@@ -214,7 +228,10 @@ export default function Edit( { attributes, setAttributes } ) {
 						onDeselect={ () => setAttributes( { maxSize: 10 } ) }
 					>
 						<RangeControl
-							label={ __( 'Maximum file size (MB)', 'sgs-blocks' ) }
+							label={ __(
+								'Maximum file size (MB)',
+								'sgs-blocks'
+							) }
 							value={ maxSize }
 							onChange={ ( val ) =>
 								setAttributes( { maxSize: val } )
@@ -226,60 +243,105 @@ export default function Edit( { attributes, setAttributes } ) {
 						/>
 					</ToolsPanelItem>
 				</ToolsPanel>
-				<FieldLabelLayoutPanel attributes={ attributes } setAttributes={ setAttributes } />
-				<ZonePanel attributes={ attributes } setAttributes={ setAttributes } />
+				<FieldLabelLayoutPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+				<ZonePanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 			</InspectorControls>
 
 			<div { ...blockProps }>
 				{ label && (
 					<label
-						className={ 'hidden' === attributes.labelStyle ? 'sgs-form-field__label sgs-sr-only' : 'sgs-form-field__label' }
-						style={ 'hidden' === attributes.labelStyle ? SR_ONLY : undefined }
+						className={
+							'hidden' === attributes.labelStyle
+								? 'sgs-form-field__label sgs-sr-only'
+								: 'sgs-form-field__label'
+						}
+						style={
+							'hidden' === attributes.labelStyle
+								? SR_ONLY
+								: undefined
+						}
 					>
 						<AuthoredText value={ label } />
 						{ required && (
-							<span className="sgs-form-field__required">
-								*
-							</span>
+							<span className="sgs-form-field__required">*</span>
 						) }
 					</label>
 				) }
 				{ /* The same markup render.php prints, so the form's stylesheet and its upload-zone settings paint the canvas. */ }
-				<div className={ `sgs-form-field__file-zone${ isPanel ? ' sgs-form-field__file-zone--panel' : '' }${ isNative ? ' sgs-form-field__file-zone--native' : '' }` }>
+				<div
+					className={ `sgs-form-field__file-zone${
+						isPanel ? ' sgs-form-field__file-zone--panel' : ''
+					}${
+						isNative ? ' sgs-form-field__file-zone--native' : ''
+					}` }
+				>
 					{ isNative && (
-						<input type="file" className="sgs-form-field__file-input sgs-form-field__input" disabled />
+						<input
+							type="file"
+							className="sgs-form-field__file-input sgs-form-field__input"
+							disabled
+						/>
 					) }
 					{ ! isNative && (
-					<div className={ `sgs-form-field__file-label${ isRow ? ' sgs-form-field__file-label--row' : '' }` }>
-						{ attributes.zoneIcon && (
-							<span className="sgs-form-field__file-icon" aria-hidden="true">
-								<IconPreview source="lucide" name={ attributes.zoneIcon } />
-							</span>
-						) }
-						<ZoneText isRow={ isRow }>
-							<span>
-								<AuthoredText
-									value={ uploadText || __( 'Drag a file here or click to browse', 'sgs-blocks' ) }
-								/>
-							</span>
-							<span className="sgs-form-field__file-hint">
-								{ attributes.hintText || (
-									<>
-										{ __( 'Max', 'sgs-blocks' ) } { maxSize }{ ' ' }
-										{ __( 'MB', 'sgs-blocks' ) }
-									</>
-								) }
-							</span>
-						</ZoneText>
-						{ isPanel && helpText && (
-							<p className="sgs-form-field__help">{ helpText }</p>
-						) }
-						{ isPanel && (
-							<span className="sgs-form-field__file-button" aria-hidden="true">
-								{ attributes.buttonLabel || __( 'Choose file', 'sgs-blocks' ) }
-							</span>
-						) }
-					</div>
+						<div
+							className={ `sgs-form-field__file-label${
+								isRow ? ' sgs-form-field__file-label--row' : ''
+							}` }
+						>
+							{ attributes.zoneIcon && (
+								<span
+									className="sgs-form-field__file-icon"
+									aria-hidden="true"
+								>
+									<IconPreview
+										source="lucide"
+										name={ attributes.zoneIcon }
+									/>
+								</span>
+							) }
+							<ZoneText isRow={ isRow }>
+								<span>
+									<AuthoredText
+										value={
+											uploadText ||
+											__(
+												'Drag a file here or click to browse',
+												'sgs-blocks'
+											)
+										}
+									/>
+								</span>
+								<span className="sgs-form-field__file-hint">
+									{ attributes.hintText || (
+										<>
+											{ __( 'Max', 'sgs-blocks' ) }{ ' ' }
+											{ maxSize }{ ' ' }
+											{ __( 'MB', 'sgs-blocks' ) }
+										</>
+									) }
+								</span>
+							</ZoneText>
+							{ isPanel && helpText && (
+								<p className="sgs-form-field__help">
+									{ helpText }
+								</p>
+							) }
+							{ isPanel && (
+								<span
+									className="sgs-form-field__file-button"
+									aria-hidden="true"
+								>
+									{ attributes.buttonLabel ||
+										__( 'Choose file', 'sgs-blocks' ) }
+								</span>
+							) }
+						</div>
 					) }
 				</div>
 				{ ! isPanel && helpText && (

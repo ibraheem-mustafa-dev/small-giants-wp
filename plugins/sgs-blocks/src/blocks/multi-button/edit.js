@@ -188,7 +188,12 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 
 	// The device tier the canvas previews (core/editor's device type).
 	const previewTier = usePreviewTier();
-	const bgPreview = backgroundMediaPreview( attributes, colourPalette, gradientPresets, previewTier );
+	const bgPreview = backgroundMediaPreview(
+		attributes,
+		colourPalette,
+		gradientPresets,
+		previewTier
+	);
 
 	// Lines between the buttons: the block root is the flex list, so the hook's
 	// ref and style land on blockProps.
@@ -993,7 +998,10 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 			    with it rather than added alongside the spread (which React
 			    would silently discard). */ }
 			<div { ...innerBlocksProps }>
-				<BackgroundLayers media={ bgPreview.media } overlay={ bgPreview.overlay } />
+				<BackgroundLayers
+					media={ bgPreview.media }
+					overlay={ bgPreview.overlay }
+				/>
 				{ svgLayer }
 				{ innerBlocksProps.children }
 			</div>

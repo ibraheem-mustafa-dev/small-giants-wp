@@ -53,7 +53,11 @@ import {
 	parseSvgGradient,
 	SvgGradientDefs,
 } from '../../utils/svg-gradient-preview';
-import { SiteInfoLabelToggle, IconShapeSizeItem, AddToBasketControls } from './ButtonExtraControls';
+import {
+	SiteInfoLabelToggle,
+	IconShapeSizeItem,
+	AddToBasketControls,
+} from './ButtonExtraControls';
 import { iconCirclePreviewStyle } from './icon-circle-preview';
 import { siteInfoLabelText } from './site-info-label';
 import {
@@ -298,8 +302,14 @@ export default function Edit( {
 			: previewStyle,
 		role: 'presentation',
 		// The canvas names the one-tap add it will make, so the choice is readable on the canvas as well as in the inspector.
-		'data-sgs-add-product': 'add-to-basket' === linkSource && addProductId > 0 ? addProductId : undefined,
-		'data-sgs-add-after': 'add-to-basket' === linkSource && addProductId > 0 ? addAfter || 'stay' : undefined,
+		'data-sgs-add-product':
+			'add-to-basket' === linkSource && addProductId > 0
+				? addProductId
+				: undefined,
+		'data-sgs-add-after':
+			'add-to-basket' === linkSource && addProductId > 0
+				? addAfter || 'stay'
+				: undefined,
 	} );
 
 	// Icon placeholder SVG for editor preview. When a gradient is set on
@@ -606,7 +616,10 @@ export default function Edit( {
 						/>
 					) }
 					<ToggleControl
-						label={ __( 'Visual cue only (card is the link)', 'sgs-blocks' ) }
+						label={ __(
+							'Visual cue only (card is the link)',
+							'sgs-blocks'
+						) }
 						checked={ !! visualOnly }
 						onChange={ ( val ) =>
 							setAttributes( { visualOnly: val } )
@@ -617,7 +630,9 @@ export default function Edit( {
 							'sgs-blocks'
 						) }
 					/>
-					<SgsFreeTextField type="rich" noLink
+					<SgsFreeTextField
+						type="rich"
+						noLink
 						label={ __( 'Note', 'sgs-blocks' ) }
 						value={ attributes.note || '' }
 						onChange={ ( val ) => setAttributes( { note: val } ) }
@@ -627,7 +642,8 @@ export default function Edit( {
 						) }
 					/>
 					{ ( !! url || usesSiteInfoLink ) &&
-						'' === ( label || '' ).replace( /<[^>]*>/g, '' ).trim() &&
+						'' ===
+							( label || '' ).replace( /<[^>]*>/g, '' ).trim() &&
 						'' === ( ariaLabel || '' ).trim() && (
 							<Notice status="warning" isDismissible={ false }>
 								{ __(
@@ -922,17 +938,25 @@ export default function Edit( {
 								{ /* iconGapHover is a TIER OBJECT — block.json attributes.iconGapHover +
 								   helpers-button-icon-gap-hover.php (gap on hover). */ }
 								<ToolsPanelItem
-									label={ __( 'Icon gap on hover', 'sgs-blocks' ) }
+									label={ __(
+										'Icon gap on hover',
+										'sgs-blocks'
+									) }
 									hasValue={ () => !! iconGapHover?.desktop }
 									onDeselect={ () =>
 										setAttributes( { iconGapHover: {} } )
 									}
 								>
 									<ResponsiveOverride
-										label={ __( 'Icon gap on hover', 'sgs-blocks' ) }
+										label={ __(
+											'Icon gap on hover',
+											'sgs-blocks'
+										) }
 										value={ iconGapHover }
 										onChange={ ( obj ) =>
-											setAttributes( { iconGapHover: obj } )
+											setAttributes( {
+												iconGapHover: obj,
+											} )
 										}
 									>
 										{ ( {
@@ -1154,15 +1178,36 @@ export default function Edit( {
 										label:
 											'desktop' === tier
 												? __( 'Default', 'sgs-blocks' )
-												: __( '— inherit —', 'sgs-blocks' ),
+												: __(
+														'— inherit —',
+														'sgs-blocks'
+												  ),
 										value: '',
 									},
-									{ label: __( 'Auto', 'sgs-blocks' ), value: 'auto' },
-									{ label: __( 'Start', 'sgs-blocks' ), value: 'flex-start' },
-									{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
-									{ label: __( 'End', 'sgs-blocks' ), value: 'flex-end' },
-									{ label: __( 'Stretch', 'sgs-blocks' ), value: 'stretch' },
-									{ label: __( 'Baseline', 'sgs-blocks' ), value: 'baseline' },
+									{
+										label: __( 'Auto', 'sgs-blocks' ),
+										value: 'auto',
+									},
+									{
+										label: __( 'Start', 'sgs-blocks' ),
+										value: 'flex-start',
+									},
+									{
+										label: __( 'Centre', 'sgs-blocks' ),
+										value: 'center',
+									},
+									{
+										label: __( 'End', 'sgs-blocks' ),
+										value: 'flex-end',
+									},
+									{
+										label: __( 'Stretch', 'sgs-blocks' ),
+										value: 'stretch',
+									},
+									{
+										label: __( 'Baseline', 'sgs-blocks' ),
+										value: 'baseline',
+									},
 								] }
 								onChange={ ( val ) => setOwnValue( val ) }
 								__nextHasNoMarginBottom
@@ -1286,7 +1331,10 @@ export default function Edit( {
 						}
 					/>
 					<SelectControl
-						label={ __( 'Overline / strike-through', 'sgs-blocks' ) }
+						label={ __(
+							'Overline / strike-through',
+							'sgs-blocks'
+						) }
 						value={
 							'underline' === textDecoration ? '' : textDecoration
 						}
@@ -1326,10 +1374,15 @@ export default function Edit( {
 								variant="secondary"
 								size="compact"
 								onClick={ () =>
-									setAttributes( { textDecorationHover: 'none' } )
+									setAttributes( {
+										textDecorationHover: 'none',
+									} )
 								}
 							>
-								{ __( 'Clear the old hover underline', 'sgs-blocks' ) }
+								{ __(
+									'Clear the old hover underline',
+									'sgs-blocks'
+								) }
 							</Button>
 						</div>
 					) }
@@ -1656,7 +1709,10 @@ export default function Edit( {
 					/>
 				) }
 				{ attributes.note && (
-					<AuthoredText className="sgs-button__note" value={ attributes.note } />
+					<AuthoredText
+						className="sgs-button__note"
+						value={ attributes.note }
+					/>
 				) }
 				{ hasIcon &&
 					( iconPosition === 'after' || iconPosition === 'only' ) &&

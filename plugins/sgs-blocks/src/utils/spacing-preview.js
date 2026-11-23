@@ -18,10 +18,20 @@
 import { bareLength } from './bare-length';
 
 /** The four sides of a padding/margin/border-width box, in CSS shorthand order. */
-export const BOX_SIDE_KEYS = Object.freeze( [ 'top', 'right', 'bottom', 'left' ] );
+export const BOX_SIDE_KEYS = Object.freeze( [
+	'top',
+	'right',
+	'bottom',
+	'left',
+] );
 
 /** The four corners of a border-radius box, in CSS shorthand order. */
-export const BOX_CORNER_KEYS = Object.freeze( [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
+export const BOX_CORNER_KEYS = Object.freeze( [
+	'topLeft',
+	'topRight',
+	'bottomRight',
+	'bottomLeft',
+] );
 
 /**
  * Box-object interface contract §1: build an editor-preview shorthand from a
@@ -29,15 +39,19 @@ export const BOX_CORNER_KEYS = Object.freeze( [ 'topLeft', 'topRight', 'bottomRi
  * block's edit.js (e.g. icon-list/edit.js) and render.php's own hand-built
  * shorthand, so the canvas preview matches the frontend.
  *
- * @param {Object|undefined} box  {top,right,bottom,left} (or the corner keys),
- *                                 each an already unit-bearing CSS length string or absent.
+ * @param {Object|undefined} box    {top,right,bottom,left} (or the corner keys),
+ *                                  each an already unit-bearing CSS length string or absent.
  * @param {string[]}         [keys] Box keys in shorthand order; BOX_CORNER_KEYS for a radius.
  * @return {string|undefined} A 4-value CSS shorthand, or undefined when no
  *                             side is set.
  */
 export function boxShorthand( box, keys = BOX_SIDE_KEYS ) {
-	if ( ! box || 'object' !== typeof box ) return undefined;
-	if ( ! keys.some( ( key ) => box[ key ] ) ) return undefined;
+	if ( ! box || 'object' !== typeof box ) {
+		return undefined;
+	}
+	if ( ! keys.some( ( key ) => box[ key ] ) ) {
+		return undefined;
+	}
 	return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
 }
 
@@ -56,18 +70,28 @@ export function boxShorthand( box, keys = BOX_SIDE_KEYS ) {
  * @param {string[]}         [keys] The box keys to merge (BOX_CORNER_KEYS for a radius).
  * @return {Object} Merged box for the active tier.
  */
-export function resolveBoxTierPreview( base, tablet, mobile, tier, keys = BOX_SIDE_KEYS ) {
+export function resolveBoxTierPreview(
+	base,
+	tablet,
+	mobile,
+	tier,
+	keys = BOX_SIDE_KEYS
+) {
 	const merged = { ...( base && typeof base === 'object' ? base : {} ) };
 	if ( tier === 'tablet' || tier === 'mobile' ) {
 		const t = tablet && typeof tablet === 'object' ? tablet : {};
 		keys.forEach( ( key ) => {
-			if ( t[ key ] ) merged[ key ] = t[ key ];
+			if ( t[ key ] ) {
+				merged[ key ] = t[ key ];
+			}
 		} );
 	}
 	if ( tier === 'mobile' ) {
 		const m = mobile && typeof mobile === 'object' ? mobile : {};
 		keys.forEach( ( key ) => {
-			if ( m[ key ] ) merged[ key ] = m[ key ];
+			if ( m[ key ] ) {
+				merged[ key ] = m[ key ];
+			}
 		} );
 	}
 	return merged;
@@ -82,9 +106,14 @@ export function resolveBoxTierPreview( base, tablet, mobile, tier, keys = BOX_SI
  * @return {boolean} True when no tier declares any side.
  */
 export function isTierBoxEmpty( tiers ) {
-	if ( ! tiers || typeof tiers !== 'object' ) return true;
+	if ( ! tiers || typeof tiers !== 'object' ) {
+		return true;
+	}
 	return Object.values( tiers ).every(
-		( box ) => ! box || typeof box !== 'object' || Object.values( box ).every( ( side ) => ! side )
+		( box ) =>
+			! box ||
+			typeof box !== 'object' ||
+			Object.values( box ).every( ( side ) => ! side )
 	);
 }
 
@@ -107,10 +136,18 @@ export function isTierBoxEmpty( tiers ) {
  * @param {boolean}          [wholeBox] True for a whole-shorthand-per-tier emitter.
  * @return {string|undefined} A 4-value shorthand, or undefined when nothing is set.
  */
-export function tierBoxShorthand( tiers, tier, keys = BOX_SIDE_KEYS, wholeBox = false ) {
+export function tierBoxShorthand(
+	tiers,
+	tier,
+	keys = BOX_SIDE_KEYS,
+	wholeBox = false
+) {
 	const source = tiers && typeof tiers === 'object' ? tiers : {};
 	if ( wholeBox ) {
-		const chain = { tablet: [ 'tablet', 'desktop' ], mobile: [ 'mobile', 'tablet', 'desktop' ] }[ tier ] || [ 'desktop' ];
+		const chain = {
+			tablet: [ 'tablet', 'desktop' ],
+			mobile: [ 'mobile', 'tablet', 'desktop' ],
+		}[ tier ] || [ 'desktop' ];
 		for ( const t of chain ) {
 			const value = boxShorthand( source[ t ], keys );
 			if ( value ) {
@@ -119,7 +156,16 @@ export function tierBoxShorthand( tiers, tier, keys = BOX_SIDE_KEYS, wholeBox = 
 		}
 		return undefined;
 	}
-	return boxShorthand( resolveBoxTierPreview( source.desktop, source.tablet, source.mobile, tier, keys ), keys );
+	return boxShorthand(
+		resolveBoxTierPreview(
+			source.desktop,
+			source.tablet,
+			source.mobile,
+			tier,
+			keys
+		),
+		keys
+	);
 }
 
 /**
@@ -143,11 +189,17 @@ export function tierBoxLonghands( tiers, tier, family ) {
 		return {};
 	}
 	const source = tiers && 'object' === typeof tiers ? tiers : {};
-	const merged = resolveBoxTierPreview( source.desktop, source.tablet, source.mobile, tier );
+	const merged = resolveBoxTierPreview(
+		source.desktop,
+		source.tablet,
+		source.mobile,
+		tier
+	);
 	const style = {};
 	BOX_SIDE_KEYS.forEach( ( side ) => {
 		if ( merged[ side ] ) {
-			style[ family + side.charAt( 0 ).toUpperCase() + side.slice( 1 ) ] = merged[ side ];
+			style[ family + side.charAt( 0 ).toUpperCase() + side.slice( 1 ) ] =
+				merged[ side ];
 		}
 	} );
 	return style;
@@ -172,7 +224,8 @@ export function boxLonghands( box, family ) {
 	const style = {};
 	BOX_SIDE_KEYS.forEach( ( side ) => {
 		if ( source[ side ] ) {
-			style[ family + side.charAt( 0 ).toUpperCase() + side.slice( 1 ) ] = source[ side ];
+			style[ family + side.charAt( 0 ).toUpperCase() + side.slice( 1 ) ] =
+				source[ side ];
 		}
 	} );
 	return style;
@@ -184,10 +237,10 @@ export function boxLonghands( box, family ) {
  * can spread the result straight into its style object and an unset side keeps
  * the stylesheet's value, as on the page.
  *
- * @param {Object} attrs         The block's spacing attributes.
+ * @param {Object} attrs           The block's spacing attributes.
  * @param {Object} [attrs.padding] Tier-of-boxes padding attribute.
  * @param {Object} [attrs.margin]  Tier-of-boxes margin attribute.
- * @param {string} tier          Active preview tier ('desktop'|'tablet'|'mobile').
+ * @param {string} tier            Active preview tier ('desktop'|'tablet'|'mobile').
  * @return {Object} `paddingTop`, `marginLeft` and the other set-side keys; `{}` when nothing is set.
  */
 export function spacingPreview( { padding, margin }, tier ) {
@@ -210,7 +263,12 @@ export function spacingPreview( { padding, margin }, tier ) {
  */
 export function tierBoxProperties( tiers, tier, prefix ) {
 	const source = tiers && 'object' === typeof tiers ? tiers : {};
-	const merged = resolveBoxTierPreview( source.desktop, source.tablet, source.mobile, tier );
+	const merged = resolveBoxTierPreview(
+		source.desktop,
+		source.tablet,
+		source.mobile,
+		tier
+	);
 	const out = {};
 	BOX_SIDE_KEYS.forEach( ( side ) => {
 		if ( merged[ side ] ) {

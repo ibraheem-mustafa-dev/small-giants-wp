@@ -268,9 +268,12 @@ const OFFSET_REFERENCE_HEIGHT = 900;
  *                   is copied through from `basePreset` unchanged.
  */
 function applyRotationScaleOverrides( basePreset, opts ) {
-	const rotationXDeg = typeof opts.rotationX === 'number' ? opts.rotationX : 0;
-	const rotationYDeg = typeof opts.rotationY === 'number' ? opts.rotationY : 0;
-	const rotationZDeg = typeof opts.rotationZ === 'number' ? opts.rotationZ : 0;
+	const rotationXDeg =
+		typeof opts.rotationX === 'number' ? opts.rotationX : 0;
+	const rotationYDeg =
+		typeof opts.rotationY === 'number' ? opts.rotationY : 0;
+	const rotationZDeg =
+		typeof opts.rotationZ === 'number' ? opts.rotationZ : 0;
 	const scaleXMult = typeof opts.scaleX === 'number' ? opts.scaleX : 1;
 	const scaleYMult = typeof opts.scaleY === 'number' ? opts.scaleY : 1;
 	const scaleZMult = typeof opts.scaleZ === 'number' ? opts.scaleZ : 1;
@@ -298,9 +301,9 @@ function applyRotationScaleOverrides( basePreset, opts ) {
  * on-screen position at every width — see the module doc above.
  *
  * @param {Object} preset       A preset already passed through
- *                               `applyRotationScaleOverrides()`.
+ *                              `applyRotationScaleOverrides()`.
  * @param {Object} opts         The engine's own `opts` — only `offsetX`/`offsetY`
- *                               are read.
+ *                              are read.
  * @param {number} canvasWidth  Current CSS canvas width, px (world units).
  * @param {number} canvasHeight Current CSS canvas height, px (world units).
  * @return {Object} A new preset object with `position` adjusted; every other
@@ -467,7 +470,6 @@ float snoise(vec3 v){
 	m=m*m;
 	return 42.0*dot(m*m,vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3)));
 }`;
-
 
 const VERTEX_SHADER = `#version 300 es
 in vec3 a_position;
@@ -805,42 +807,42 @@ function compile( gl, type, source ) {
  * function stays `async` and Promise-returning purely to keep the caller's
  * existing `await createGenerativeBackground(...)` contract unchanged.
  *
- * @param {HTMLCanvasElement}    canvas          Target canvas.
- * @param {Object}               opts            Options.
- * @param {HTMLCanvasElement|HTMLImageElement} opts.textureSource Already-painted
- *   OKLCH gradient (the Step-1 2D canvas), used as the colour texture (§2).
- * @param {number}               [opts.speed]        Time-scale multiplier, default 1.
- * @param {number}               [opts.dispAmount]    Displacement magnitude, world units.
- * @param {number}               [opts.dispFreqX]     Displacement noise frequency, X.
- * @param {number}               [opts.dispFreqZ]     Displacement noise frequency, Z.
- * @param {number}               [opts.foldFreq1]     Rotation 1 (axis A) angle scale, radians.
- * @param {number}               [opts.foldFreq2]     Rotation 2 (axis B) angle scale, radians.
- * @param {number}               [opts.foldFreq3]     Rotation 3 (axis A) angle scale, radians.
- * @param {number}               [opts.foldPower1]    Rotation 1 shaping-curve power.
- * @param {number}               [opts.foldPower2]    Rotation 2 shaping-curve power.
- * @param {number}               [opts.foldPower3]    Rotation 3 shaping-curve power.
- * @param {number[]}             [opts.groundColour]  Ground colour, sRGB 0-1 [r,g,b], read
- *   from the element's own `--sgs-genbg-ground` custom property — the depth-fade target (§2).
- * @param {number}               [opts.glowAmount]        Glow-gate derivative scale.
- * @param {number}               [opts.glowPower]         Glow-gate exponent.
- * @param {number}               [opts.glowRamp]          Glow-gate smoothstep ramp.
- * @param {number}               [opts.striationStrength] Fine-texture contribution strength.
- * @param {number}               [opts.striationFreq]     Fine-texture high-frequency base.
- * @param {number}               [opts.colourAttenuation] Blue-channel attenuation of the fine texture.
- * @param {number}               [opts.parabolaPower]     Fine-texture UV-axis falloff shape power.
- * @param {number}               [opts.rotationX]     Layer-2 static orientation override, DEGREES,
- *   added to the preset's own X rotation (radians, converted internally). Default 0.
- * @param {number}               [opts.rotationY]     As `rotationX`, Y axis. Default 0.
- * @param {number}               [opts.rotationZ]     As `rotationX`, Z axis. Default 0.
- * @param {number}               [opts.scaleX]        Layer-2 static scale override, a MULTIPLIER
- *   applied to the preset's own non-uniform X scale. Default 1 (no change).
- * @param {number}               [opts.scaleY]        As `scaleX`, Y axis. Default 1.
- * @param {number}               [opts.scaleZ]        As `scaleX`, Z axis. Default 1.
- * @param {number}               [opts.offsetX]       Layer-2 framing pan, world units, added to the
- *   preset's own position X (a 2D pan of the object, not the camera — see the
- *   "Static orientation/scale/framing overrides" comment above for why). Default 0.
- * @param {number}               [opts.offsetY]       As `offsetX`, Y axis. Default 0.
- * @param {Function}             [opts.onLost]        Called when the GPU context is lost.
+ * @param {HTMLCanvasElement}                  canvas                   Target canvas.
+ * @param {Object}                             opts                     Options.
+ * @param {HTMLCanvasElement|HTMLImageElement} opts.textureSource       Already-painted
+ *                                                                      OKLCH gradient (the Step-1 2D canvas), used as the colour texture (§2).
+ * @param {number}                             [opts.speed]             Time-scale multiplier, default 1.
+ * @param {number}                             [opts.dispAmount]        Displacement magnitude, world units.
+ * @param {number}                             [opts.dispFreqX]         Displacement noise frequency, X.
+ * @param {number}                             [opts.dispFreqZ]         Displacement noise frequency, Z.
+ * @param {number}                             [opts.foldFreq1]         Rotation 1 (axis A) angle scale, radians.
+ * @param {number}                             [opts.foldFreq2]         Rotation 2 (axis B) angle scale, radians.
+ * @param {number}                             [opts.foldFreq3]         Rotation 3 (axis A) angle scale, radians.
+ * @param {number}                             [opts.foldPower1]        Rotation 1 shaping-curve power.
+ * @param {number}                             [opts.foldPower2]        Rotation 2 shaping-curve power.
+ * @param {number}                             [opts.foldPower3]        Rotation 3 shaping-curve power.
+ * @param {number[]}                           [opts.groundColour]      Ground colour, sRGB 0-1 [r,g,b], read
+ *                                                                      from the element's own `--sgs-genbg-ground` custom property — the depth-fade target (§2).
+ * @param {number}                             [opts.glowAmount]        Glow-gate derivative scale.
+ * @param {number}                             [opts.glowPower]         Glow-gate exponent.
+ * @param {number}                             [opts.glowRamp]          Glow-gate smoothstep ramp.
+ * @param {number}                             [opts.striationStrength] Fine-texture contribution strength.
+ * @param {number}                             [opts.striationFreq]     Fine-texture high-frequency base.
+ * @param {number}                             [opts.colourAttenuation] Blue-channel attenuation of the fine texture.
+ * @param {number}                             [opts.parabolaPower]     Fine-texture UV-axis falloff shape power.
+ * @param {number}                             [opts.rotationX]         Layer-2 static orientation override, DEGREES,
+ *                                                                      added to the preset's own X rotation (radians, converted internally). Default 0.
+ * @param {number}                             [opts.rotationY]         As `rotationX`, Y axis. Default 0.
+ * @param {number}                             [opts.rotationZ]         As `rotationX`, Z axis. Default 0.
+ * @param {number}                             [opts.scaleX]            Layer-2 static scale override, a MULTIPLIER
+ *                                                                      applied to the preset's own non-uniform X scale. Default 1 (no change).
+ * @param {number}                             [opts.scaleY]            As `scaleX`, Y axis. Default 1.
+ * @param {number}                             [opts.scaleZ]            As `scaleX`, Z axis. Default 1.
+ * @param {number}                             [opts.offsetX]           Layer-2 framing pan, world units, added to the
+ *                                                                      preset's own position X (a 2D pan of the object, not the camera — see the
+ *                                                                      "Static orientation/scale/framing overrides" comment above for why). Default 0.
+ * @param {number}                             [opts.offsetY]           As `offsetX`, Y axis. Default 0.
+ * @param {Function}                           [opts.onLost]            Called when the GPU context is lost.
  * @return {Promise<{draw: Function, resize: Function, destroy: Function}|null>}
  */
 export async function createGenerativeBackground( canvas, opts = {} ) {
@@ -964,7 +966,9 @@ export async function createGenerativeBackground( canvas, opts = {} ) {
 	gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, indexBuf );
 	gl.bufferData( gl.ELEMENT_ARRAY_BUFFER, geometry.indices, gl.STATIC_DRAW );
 	const indexType =
-		geometry.indices instanceof Uint32Array ? gl.UNSIGNED_INT : gl.UNSIGNED_SHORT;
+		geometry.indices instanceof Uint32Array
+			? gl.UNSIGNED_INT
+			: gl.UNSIGNED_SHORT;
 	const indexCount = geometry.indices.length;
 
 	gl.bindVertexArray( null );
@@ -975,7 +979,14 @@ export async function createGenerativeBackground( canvas, opts = {} ) {
 	// the client changes any of the four colour tokens" (§2).
 	const texture = gl.createTexture();
 	gl.bindTexture( gl.TEXTURE_2D, texture );
-	gl.texImage2D( gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, opts.textureSource );
+	gl.texImage2D(
+		gl.TEXTURE_2D,
+		0,
+		gl.RGBA,
+		gl.RGBA,
+		gl.UNSIGNED_BYTE,
+		opts.textureSource
+	);
 	gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE );
 	gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE );
 	gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR );
@@ -987,20 +998,38 @@ export async function createGenerativeBackground( canvas, opts = {} ) {
 	const textureLoc = u( 'u_texture' );
 
 	const dispAmount =
-		typeof opts.dispAmount === 'number' ? opts.dispAmount : DEFAULT_DISPLACEMENT_AMOUNT;
+		typeof opts.dispAmount === 'number'
+			? opts.dispAmount
+			: DEFAULT_DISPLACEMENT_AMOUNT;
 	const dispFreqX =
-		typeof opts.dispFreqX === 'number' ? opts.dispFreqX : DEFAULT_DISPLACEMENT_FREQ_X;
+		typeof opts.dispFreqX === 'number'
+			? opts.dispFreqX
+			: DEFAULT_DISPLACEMENT_FREQ_X;
 	const dispFreqZ =
-		typeof opts.dispFreqZ === 'number' ? opts.dispFreqZ : DEFAULT_DISPLACEMENT_FREQ_Z;
+		typeof opts.dispFreqZ === 'number'
+			? opts.dispFreqZ
+			: DEFAULT_DISPLACEMENT_FREQ_Z;
 	const foldFreq = [
-		typeof opts.foldFreq1 === 'number' ? opts.foldFreq1 : DEFAULT_FOLD_FREQ[ 0 ],
-		typeof opts.foldFreq2 === 'number' ? opts.foldFreq2 : DEFAULT_FOLD_FREQ[ 1 ],
-		typeof opts.foldFreq3 === 'number' ? opts.foldFreq3 : DEFAULT_FOLD_FREQ[ 2 ],
+		typeof opts.foldFreq1 === 'number'
+			? opts.foldFreq1
+			: DEFAULT_FOLD_FREQ[ 0 ],
+		typeof opts.foldFreq2 === 'number'
+			? opts.foldFreq2
+			: DEFAULT_FOLD_FREQ[ 1 ],
+		typeof opts.foldFreq3 === 'number'
+			? opts.foldFreq3
+			: DEFAULT_FOLD_FREQ[ 2 ],
 	];
 	const foldPower = [
-		typeof opts.foldPower1 === 'number' ? opts.foldPower1 : DEFAULT_FOLD_POWER[ 0 ],
-		typeof opts.foldPower2 === 'number' ? opts.foldPower2 : DEFAULT_FOLD_POWER[ 1 ],
-		typeof opts.foldPower3 === 'number' ? opts.foldPower3 : DEFAULT_FOLD_POWER[ 2 ],
+		typeof opts.foldPower1 === 'number'
+			? opts.foldPower1
+			: DEFAULT_FOLD_POWER[ 0 ],
+		typeof opts.foldPower2 === 'number'
+			? opts.foldPower2
+			: DEFAULT_FOLD_POWER[ 1 ],
+		typeof opts.foldPower3 === 'number'
+			? opts.foldPower3
+			: DEFAULT_FOLD_POWER[ 2 ],
 	];
 
 	gl.uniform1f( u( 'u_dispAmount' ), dispAmount );
@@ -1014,33 +1043,55 @@ export async function createGenerativeBackground( canvas, opts = {} ) {
 	// `opts.groundColour`/`DEFAULT_GROUND` fallback + luminance formula the
 	// fragment shader's own `groundLuma` gate uses, so JS and GLSL never
 	// disagree on which side of the light/dark line a preset falls).
-	const groundForGrading = Array.isArray( opts.groundColour ) ? opts.groundColour : DEFAULT_GROUND;
+	const groundForGrading = Array.isArray( opts.groundColour )
+		? opts.groundColour
+		: DEFAULT_GROUND;
 	const groundLumaForGrading =
-		0.299 * groundForGrading[ 0 ] + 0.587 * groundForGrading[ 1 ] + 0.114 * groundForGrading[ 2 ];
+		0.299 * groundForGrading[ 0 ] +
+		0.587 * groundForGrading[ 1 ] +
+		0.114 * groundForGrading[ 2 ];
 	const isDarkGround = groundLumaForGrading < 0.5;
 
 	gl.uniform1f( u( 'u_contrast' ), GRADE_CONTRAST );
-	gl.uniform1f( u( 'u_saturation' ), isDarkGround ? DEFAULT_GRADE_SATURATION_DARK : GRADE_SATURATION );
-	gl.uniform1f( u( 'u_hueShift' ), isDarkGround ? DEFAULT_GRADE_HUE_SHIFT_DARK : GRADE_HUE_SHIFT );
+	gl.uniform1f(
+		u( 'u_saturation' ),
+		isDarkGround ? DEFAULT_GRADE_SATURATION_DARK : GRADE_SATURATION
+	);
+	gl.uniform1f(
+		u( 'u_hueShift' ),
+		isDarkGround ? DEFAULT_GRADE_HUE_SHIFT_DARK : GRADE_HUE_SHIFT
+	);
 
 	// Striation / glow-gate + depth-fade uniforms (§3, 2026-08-28 build).
 	const glowAmount =
-		typeof opts.glowAmount === 'number' ? opts.glowAmount : DEFAULT_GLOW_AMOUNT;
-	const glowPower = typeof opts.glowPower === 'number' ? opts.glowPower : DEFAULT_GLOW_POWER;
-	const glowRamp = typeof opts.glowRamp === 'number' ? opts.glowRamp : DEFAULT_GLOW_RAMP;
+		typeof opts.glowAmount === 'number'
+			? opts.glowAmount
+			: DEFAULT_GLOW_AMOUNT;
+	const glowPower =
+		typeof opts.glowPower === 'number'
+			? opts.glowPower
+			: DEFAULT_GLOW_POWER;
+	const glowRamp =
+		typeof opts.glowRamp === 'number' ? opts.glowRamp : DEFAULT_GLOW_RAMP;
 	const striationStrength =
 		typeof opts.striationStrength === 'number'
 			? opts.striationStrength
 			: DEFAULT_STRIATION_STRENGTH;
 	const striationFreq =
-		typeof opts.striationFreq === 'number' ? opts.striationFreq : DEFAULT_STRIATION_FREQ;
+		typeof opts.striationFreq === 'number'
+			? opts.striationFreq
+			: DEFAULT_STRIATION_FREQ;
 	const colourAttenuation =
 		typeof opts.colourAttenuation === 'number'
 			? opts.colourAttenuation
 			: DEFAULT_COLOUR_ATTENUATION;
 	const parabolaPower =
-		typeof opts.parabolaPower === 'number' ? opts.parabolaPower : DEFAULT_PARABOLA_POWER;
-	const ground = Array.isArray( opts.groundColour ) ? opts.groundColour : DEFAULT_GROUND;
+		typeof opts.parabolaPower === 'number'
+			? opts.parabolaPower
+			: DEFAULT_PARABOLA_POWER;
+	const ground = Array.isArray( opts.groundColour )
+		? opts.groundColour
+		: DEFAULT_GROUND;
 
 	gl.uniform1f( u( 'u_glowAmount' ), glowAmount );
 	gl.uniform1f( u( 'u_glowPower' ), glowPower );
@@ -1100,10 +1151,18 @@ export async function createGenerativeBackground( canvas, opts = {} ) {
 	// (see the module doc above `applyOffsetOverride()`) — recomputed inside
 	// `resize()` below, the one place the frustum is already rebuilt per
 	// width/height, rather than baked in here as a fixed world-unit pan.
-	const presetWithRotationScale = applyRotationScaleOverrides( REFERENCE_PRESET, opts );
+	const presetWithRotationScale = applyRotationScaleOverrides(
+		REFERENCE_PRESET,
+		opts
+	);
 
 	let projection = buildTransform(
-		applyOffsetOverride( presetWithRotationScale, opts, OFFSET_REFERENCE_WIDTH, OFFSET_REFERENCE_HEIGHT ),
+		applyOffsetOverride(
+			presetWithRotationScale,
+			opts,
+			OFFSET_REFERENCE_WIDTH,
+			OFFSET_REFERENCE_HEIGHT
+		),
 		1,
 		1
 	).mvp;
@@ -1186,7 +1245,14 @@ export async function createGenerativeBackground( canvas, opts = {} ) {
 				return;
 			}
 			gl.bindTexture( gl.TEXTURE_2D, texture );
-			gl.texImage2D( gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source );
+			gl.texImage2D(
+				gl.TEXTURE_2D,
+				0,
+				gl.RGBA,
+				gl.RGBA,
+				gl.UNSIGNED_BYTE,
+				source
+			);
 		},
 		destroy: () => {
 			canvas.removeEventListener( 'webglcontextlost', onContextLost );

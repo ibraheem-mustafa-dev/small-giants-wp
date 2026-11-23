@@ -1,7 +1,10 @@
 import { __ } from '@wordpress/i18n';
 import { PanelBody, RangeControl } from '@wordpress/components';
 import EasingAtom from '../../components/motion/EasingAtom';
-import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+import {
+	ToggleGroupControl,
+	ToggleGroupControlOption,
+} from '../../components/primitives';
 
 const LABEL_ROLL_OPTIONS = [
 	{ value: 'off', label: __( 'Off', 'sgs-blocks' ) },
@@ -43,7 +46,10 @@ export default function ItemEffectsPanel( {
 	setAttributes,
 } ) {
 	return (
-		<PanelBody title={ __( 'Item effects', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Item effects', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			{ showDim && (
 				<RangeControl
 					label={ __( 'Dim other items (opacity)', 'sgs-blocks' ) }
@@ -51,12 +57,19 @@ export default function ItemEffectsPanel( {
 						'While one item is hovered or focused, the others in the same list fade to this opacity. Set a dim colour in the Colour panel for a colour change instead.',
 						'sgs-blocks'
 					) }
-					value={ typeof siblingDimOpacity === 'number' ? siblingDimOpacity : undefined }
+					value={
+						typeof siblingDimOpacity === 'number'
+							? siblingDimOpacity
+							: undefined
+					}
 					min={ 0 }
 					max={ 1 }
 					step={ 0.05 }
 					onChange={ ( val ) =>
-						setAttributes( { siblingDimOpacity: typeof val === 'number' ? val : undefined } )
+						setAttributes( {
+							siblingDimOpacity:
+								typeof val === 'number' ? val : undefined,
+						} )
 					}
 					allowReset
 					__nextHasNoMarginBottom
@@ -71,11 +84,20 @@ export default function ItemEffectsPanel( {
 						'On hover or focus the item text slides this far toward the end of the line, away from its bullet or icon, which stays put. 0 is off.',
 						'sgs-blocks'
 					) }
-					value={ typeof itemTextShiftHover === 'number' ? itemTextShiftHover : 0 }
+					value={
+						typeof itemTextShiftHover === 'number'
+							? itemTextShiftHover
+							: 0
+					}
 					min={ 0 }
 					max={ 60 }
 					step={ 1 }
-					onChange={ ( val ) => setAttributes( { itemTextShiftHover: typeof val === 'number' ? val : 0 } ) }
+					onChange={ ( val ) =>
+						setAttributes( {
+							itemTextShiftHover:
+								typeof val === 'number' ? val : 0,
+						} )
+					}
 					allowReset
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
@@ -89,7 +111,11 @@ export default function ItemEffectsPanel( {
 					'sgs-blocks'
 				) }
 				value={ labelRoll || 'off' }
-				onChange={ ( val ) => setAttributes( { labelRoll: val && 'off' !== val ? val : '' } ) }
+				onChange={ ( val ) =>
+					setAttributes( {
+						labelRoll: val && 'off' !== val ? val : '',
+					} )
+				}
 				isBlock
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
@@ -105,13 +131,23 @@ export default function ItemEffectsPanel( {
 
 			<RangeControl
 				label={ __( 'Effect speed', 'sgs-blocks' ) }
-				help={ __( 'Milliseconds, for every item effect on this block.', 'sgs-blocks' ) }
-				value={ typeof itemMotionDuration === 'number' ? itemMotionDuration : 300 }
+				help={ __(
+					'Milliseconds, for every item effect on this block.',
+					'sgs-blocks'
+				) }
+				value={
+					typeof itemMotionDuration === 'number'
+						? itemMotionDuration
+						: 300
+				}
 				min={ 0 }
 				max={ 3000 }
 				step={ 10 }
 				onChange={ ( val ) =>
-					setAttributes( { itemMotionDuration: typeof val === 'number' ? val : undefined } )
+					setAttributes( {
+						itemMotionDuration:
+							typeof val === 'number' ? val : undefined,
+					} )
 				}
 				allowReset
 				resetFallbackValue={ 300 }
@@ -124,8 +160,12 @@ export default function ItemEffectsPanel( {
 				label={ __( 'Effect easing', 'sgs-blocks' ) }
 				value={ itemMotionEasing }
 				custom={ itemMotionEasingCustom }
-				onChange={ ( val ) => setAttributes( { itemMotionEasing: val } ) }
-				onCustomChange={ ( val ) => setAttributes( { itemMotionEasingCustom: val } ) }
+				onChange={ ( val ) =>
+					setAttributes( { itemMotionEasing: val } )
+				}
+				onCustomChange={ ( val ) =>
+					setAttributes( { itemMotionEasingCustom: val } )
+				}
 			/>
 		</PanelBody>
 	);

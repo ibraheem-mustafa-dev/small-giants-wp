@@ -23,7 +23,10 @@ export default function choiceFlowColourRows( { attributes, setAttributes } ) {
 			key: 'progress-fill',
 			heading: __( 'Progress', 'sgs-blocks' ),
 			label: __( 'Progress bar fill', 'sgs-blocks' ),
-			attrs: { base: 'progressColour', gradient: 'progressColourGradient' },
+			attrs: {
+				base: 'progressColour',
+				gradient: 'progressColourGradient',
+			},
 			attributes,
 			setAttributes,
 		} ),
@@ -66,7 +69,10 @@ export default function choiceFlowColourRows( { attributes, setAttributes } ) {
 		fillRow( {
 			key: 'note-icon',
 			label: __( 'Help note icon', 'sgs-blocks' ),
-			attrs: { base: 'stageNoteIconColour', gradient: 'stageNoteIconColourGradient' },
+			attrs: {
+				base: 'stageNoteIconColour',
+				gradient: 'stageNoteIconColourGradient',
+			},
 			attributes,
 			setAttributes,
 		} ),
@@ -80,7 +86,10 @@ export default function choiceFlowColourRows( { attributes, setAttributes } ) {
 		fillRow( {
 			key: 'note-hover',
 			label: __( 'Help note on hover', 'sgs-blocks' ),
-			attrs: { base: 'stageNoteHoverColour', gradient: 'stageNoteHoverColourGradient' },
+			attrs: {
+				base: 'stageNoteHoverColour',
+				gradient: 'stageNoteHoverColourGradient',
+			},
 			attributes,
 			setAttributes,
 		} ),

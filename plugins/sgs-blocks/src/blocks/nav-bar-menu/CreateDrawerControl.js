@@ -14,7 +14,13 @@
  */
 import { __, sprintf } from '@wordpress/i18n';
 import { useState } from '@wordpress/element';
-import { Button, Notice, TextControl, Flex, FlexItem } from '@wordpress/components';
+import {
+	Button,
+	Notice,
+	TextControl,
+	Flex,
+	FlexItem,
+} from '@wordpress/components';
 import { drawerEditUrl } from './create-drawer-seed';
 import useCreateDrawer from './useCreateDrawer';
 
@@ -66,7 +72,10 @@ export default function CreateDrawerControl( { setAttributes } ) {
 						target="_blank"
 						rel="noopener noreferrer"
 					>
-						{ __( 'Edit this menu panel (opens a new tab)', 'sgs-blocks' ) }
+						{ __(
+							'Edit this menu panel (opens a new tab)',
+							'sgs-blocks'
+						) }
 					</Button>
 				</Notice>
 			) }

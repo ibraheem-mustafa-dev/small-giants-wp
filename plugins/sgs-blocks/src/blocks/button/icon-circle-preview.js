@@ -9,7 +9,8 @@
 import { resolveColourToken } from '../../components';
 import { tierValueOf } from '../../utils';
 
-export const ICON_CIRCLE_DEFAULT_DIAMETER = 'calc(var(--sgs-btn-icon-size, 1em) * 1.8)';
+export const ICON_CIRCLE_DEFAULT_DIAMETER =
+	'calc(var(--sgs-btn-icon-size, 1em) * 1.8)';
 
 /**
  * The circle diameter at a device tier.
@@ -45,7 +46,9 @@ export function iconCirclePreviewStyle( attributes, palette, tier ) {
 		width: diameter,
 		height: diameter,
 	};
-	const fill = iconBackground ? resolveColourToken( iconBackground, palette ) : '';
+	const fill = iconBackground
+		? resolveColourToken( iconBackground, palette )
+		: '';
 	if ( fill ) {
 		style.backgroundColor = fill;
 	}

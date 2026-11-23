@@ -7,13 +7,38 @@
 
 import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 import { __ } from '@wordpress/i18n';
-import { SelectControl, TextControl, ToggleControl } from '@wordpress/components';
-import { FlexWrapControl, ResponsiveOverride, SgsLengthControl, SgsBoxControl, BOX_UNITS, normaliseResponsiveBox, ShadowControl, shadowAttrKeys } from '../../components';
+import {
+	SelectControl,
+	TextControl,
+	ToggleControl,
+} from '@wordpress/components';
+import {
+	FlexWrapControl,
+	ResponsiveOverride,
+	SgsLengthControl,
+	SgsBoxControl,
+	BOX_UNITS,
+	normaliseResponsiveBox,
+	ShadowControl,
+	shadowAttrKeys,
+} from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 const PROGRESS_FILL_OPTIONS = [
-	{ label: __( 'Counts the step being shown (step 1 of 5 = 20%)', 'sgs-blocks' ), value: 'current' },
-	{ label: __( 'Counts finished steps only (0% on step 1, 100% on the last)', 'sgs-blocks' ), value: 'completed' },
+	{
+		label: __(
+			'Counts the step being shown (step 1 of 5 = 20%)',
+			'sgs-blocks'
+		),
+		value: 'current',
+	},
+	{
+		label: __(
+			'Counts finished steps only (0% on step 1, 100% on the last)',
+			'sgs-blocks'
+		),
+		value: 'completed',
+	},
 ];
 
 const COMPLETED_ICON_OPTIONS = [
@@ -24,8 +49,14 @@ const COMPLETED_ICON_OPTIONS = [
 const STICKY_SHADOW_KEYS = shadowAttrKeys( 'actionsStickyShadow' );
 
 const STEP_LAYOUT_OPTIONS = [
-	{ label: __( 'Stacked (number above label)', 'sgs-blocks' ), value: 'stacked' },
-	{ label: __( 'Inline (number beside label)', 'sgs-blocks' ), value: 'inline' },
+	{
+		label: __( 'Stacked (number above label)', 'sgs-blocks' ),
+		value: 'stacked',
+	},
+	{
+		label: __( 'Inline (number beside label)', 'sgs-blocks' ),
+		value: 'inline',
+	},
 ];
 
 /**
@@ -35,15 +66,47 @@ const STEP_LAYOUT_OPTIONS = [
  * @return {JSX.Element} The panel.
  */
 export default function StepSettingsPanel( { attributes, setAttributes } ) {
-	const { stepLayout, stepCounter, stepCounterLabel, stepCounterNameSuffix, stepCounterNameHidden, stepNamesHidden, progressTrackHeight, statusRowWrap, statusRowGap, actionsTopPadding, actionsTopMargin, actionsBorderTopWidth, actionsBorderTopStyle, statusRowMarginBottom, progressFill, stepCompletedIcon, actionsSticky, actionsStickyPadding, actionsStickyBleed } = attributes;
+	const {
+		stepLayout,
+		stepCounter,
+		stepCounterLabel,
+		stepCounterNameSuffix,
+		stepCounterNameHidden,
+		stepNamesHidden,
+		progressTrackHeight,
+		statusRowWrap,
+		statusRowGap,
+		actionsTopPadding,
+		actionsTopMargin,
+		actionsBorderTopWidth,
+		actionsBorderTopStyle,
+		statusRowMarginBottom,
+		progressFill,
+		stepCompletedIcon,
+		actionsSticky,
+		actionsStickyPadding,
+		actionsStickyBleed,
+	} = attributes;
 	const item = ( label, keys, children, isShownByDefault = false ) => (
 		<ToolsPanelItem
 			label={ label }
-			hasValue={ () => keys.some( ( key ) => {
-				const value = attributes[ key ];
-				return value && 'object' === typeof value ? Object.keys( value ).length > 0 : ( undefined !== value && '' !== value && false !== value );
-			} ) }
-			onDeselect={ () => setAttributes( Object.fromEntries( keys.map( ( key ) => [ key, undefined ] ) ) ) }
+			hasValue={ () =>
+				keys.some( ( key ) => {
+					const value = attributes[ key ];
+					return value && 'object' === typeof value
+						? Object.keys( value ).length > 0
+						: undefined !== value &&
+								'' !== value &&
+								false !== value;
+				} )
+			}
+			onDeselect={ () =>
+				setAttributes(
+					Object.fromEntries(
+						keys.map( ( key ) => [ key, undefined ] )
+					)
+				)
+			}
 			isShownByDefault={ isShownByDefault }
 		>
 			{ children }
@@ -53,265 +116,535 @@ export default function StepSettingsPanel( { attributes, setAttributes } ) {
 	return (
 		<ToolsPanel
 			label={ __( 'Progress steps', 'sgs-blocks' ) }
-			resetAll={ () => setAttributes( {
-				stepLayout: undefined,
-				stepCounter: undefined,
-				stepCounterLabel: undefined,
-				stepCounterNameSuffix: undefined,
-				stepCounterNameHidden: undefined,
-				stepNamesHidden: undefined,
-				statusRowWrap: undefined,
-				statusRowGap: undefined,
-				actionsTopPadding: undefined,
-				actionsTopMargin: undefined,
-				actionsBorderTopWidth: undefined,
-				actionsBorderTopStyle: undefined,
-				actionsBorderTopColour: undefined,
-				stepLabelFontWeightCompleted: undefined,
-				statusRowMarginBottom: undefined,
-				progressTrackHeight: undefined,
-				progressFill: undefined,
-				stepCompletedIcon: undefined,
-				actionsSticky: undefined,
-				actionsStickyPadding: undefined,
-				actionsStickyBleed: undefined,
-				actionsStickyShadow: undefined,
-				actionsStickyShadowColour: undefined,
-			} ) }
+			resetAll={ () =>
+				setAttributes( {
+					stepLayout: undefined,
+					stepCounter: undefined,
+					stepCounterLabel: undefined,
+					stepCounterNameSuffix: undefined,
+					stepCounterNameHidden: undefined,
+					stepNamesHidden: undefined,
+					statusRowWrap: undefined,
+					statusRowGap: undefined,
+					actionsTopPadding: undefined,
+					actionsTopMargin: undefined,
+					actionsBorderTopWidth: undefined,
+					actionsBorderTopStyle: undefined,
+					actionsBorderTopColour: undefined,
+					stepLabelFontWeightCompleted: undefined,
+					statusRowMarginBottom: undefined,
+					progressTrackHeight: undefined,
+					progressFill: undefined,
+					stepCompletedIcon: undefined,
+					actionsSticky: undefined,
+					actionsStickyPadding: undefined,
+					actionsStickyBleed: undefined,
+					actionsStickyShadow: undefined,
+					actionsStickyShadowColour: undefined,
+				} )
+			}
 		>
-			{ item( __( 'Step layout', 'sgs-blocks' ), [ 'stepLayout' ], (
+			{ item(
+				__( 'Step layout', 'sgs-blocks' ),
+				[ 'stepLayout' ],
 				<SelectControl
 					label={ __( 'Step layout', 'sgs-blocks' ) }
 					value={ stepLayout || 'stacked' }
 					options={ STEP_LAYOUT_OPTIONS }
-					onChange={ ( value ) => setAttributes( { stepLayout: value } ) }
-					help={ __( 'Inline puts each step’s number beside its label and shares the width equally. Labels still hide in a narrow form.', 'sgs-blocks' ) }
+					onChange={ ( value ) =>
+						setAttributes( { stepLayout: value } )
+					}
+					help={ __(
+						'Inline puts each step’s number beside its label and shares the width equally. Labels still hide in a narrow form.',
+						'sgs-blocks'
+					) }
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
-				/>
-			), true ) }
-			{ item( __( 'Hide the step names', 'sgs-blocks' ), [ 'stepNamesHidden' ], (
+				/>,
+				true
+			) }
+			{ item(
+				__( 'Hide the step names', 'sgs-blocks' ),
+				[ 'stepNamesHidden' ],
 				<ResponsiveOverride
 					label={ __( 'Hide the step names', 'sgs-blocks' ) }
 					value={ stepNamesHidden }
-					onChange={ ( obj ) => setAttributes( { stepNamesHidden: obj } ) }
+					onChange={ ( obj ) =>
+						setAttributes( { stepNamesHidden: obj } )
+					}
 				>
 					{ ( { tier, ownValue, effectiveValue, setOwnValue } ) => (
 						<ToggleControl
-							label={ __( 'Show only the step numbers on this device', 'sgs-blocks' ) }
-							checked={ true === ( '' === ownValue ? effectiveValue : ownValue ) }
-							onChange={ ( value ) => setOwnValue( value ? true : ( 'desktop' === tier ? undefined : false ) ) }
+							label={ __(
+								'Show only the step numbers on this device',
+								'sgs-blocks'
+							) }
+							checked={
+								true ===
+								( '' === ownValue ? effectiveValue : ownValue )
+							}
+							onChange={ ( value ) =>
+								setOwnValue(
+									value
+										? true
+										: 'desktop' === tier
+										? undefined
+										: false
+								)
+							}
 							__nextHasNoMarginBottom
 						/>
 					) }
 				</ResponsiveOverride>
-			) ) }
-			{ item( __( 'Step counter', 'sgs-blocks' ), [ 'stepCounter' ], (
+			) }
+			{ item(
+				__( 'Step counter', 'sgs-blocks' ),
+				[ 'stepCounter' ],
 				<ToggleControl
 					label={ __( 'Show a step counter', 'sgs-blocks' ) }
 					checked={ !! stepCounter }
-					onChange={ ( value ) => setAttributes( { stepCounter: value } ) }
-					help={ __( 'A line such as “Step 2 of 4” above the fields of a multi-step form.', 'sgs-blocks' ) }
+					onChange={ ( value ) =>
+						setAttributes( { stepCounter: value } )
+					}
+					help={ __(
+						'A line such as “Step 2 of 4” above the fields of a multi-step form.',
+						'sgs-blocks'
+					) }
 					__nextHasNoMarginBottom
-				/>
-			), true ) }
-			{ stepCounter && item( __( 'Counter wording', 'sgs-blocks' ), [ 'stepCounterLabel' ], (
-				<TextControl
-					label={ __( 'Counter wording', 'sgs-blocks' ) }
-					value={ stepCounterLabel ?? '' }
-					onChange={ ( value ) => setAttributes( { stepCounterLabel: value } ) }
-					help={ __( '%1$d is the current step and %2$d the number of steps.', 'sgs-blocks' ) }
-					__nextHasNoMarginBottom
-					__next40pxDefaultSize
-				/>
-			), true ) }
-			{ stepCounter && item( __( 'Step name wording', 'sgs-blocks' ), [ 'stepCounterNameSuffix', 'stepCounterNameHidden' ], (
-				<>
+				/>,
+				true
+			) }
+			{ stepCounter &&
+				item(
+					__( 'Counter wording', 'sgs-blocks' ),
+					[ 'stepCounterLabel' ],
 					<TextControl
-						label={ __( 'Step name wording', 'sgs-blocks' ) }
-						value={ stepCounterNameSuffix ?? '' }
-						onChange={ ( value ) => setAttributes( { stepCounterNameSuffix: value } ) }
-						help={ __( 'Printed after the counter; %3$s is the current step’s name, for example “ · %3$s”. Empty shows no name.', 'sgs-blocks' ) }
+						label={ __( 'Counter wording', 'sgs-blocks' ) }
+						value={ stepCounterLabel ?? '' }
+						onChange={ ( value ) =>
+							setAttributes( { stepCounterLabel: value } )
+						}
+						help={ __(
+							'%1$d is the current step and %2$d the number of steps.',
+							'sgs-blocks'
+						) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
-					/>
-					{ !! stepCounterNameSuffix && (
+					/>,
+					true
+				) }
+			{ stepCounter &&
+				item(
+					__( 'Step name wording', 'sgs-blocks' ),
+					[ 'stepCounterNameSuffix', 'stepCounterNameHidden' ],
+					<>
+						<TextControl
+							label={ __( 'Step name wording', 'sgs-blocks' ) }
+							value={ stepCounterNameSuffix ?? '' }
+							onChange={ ( value ) =>
+								setAttributes( {
+									stepCounterNameSuffix: value,
+								} )
+							}
+							help={ __(
+								'Printed after the counter; %3$s is the current step’s name, for example “ · %3$s”. Empty shows no name.',
+								'sgs-blocks'
+							) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+						{ !! stepCounterNameSuffix && (
+							<ResponsiveOverride
+								label={ __(
+									'Hide the step name',
+									'sgs-blocks'
+								) }
+								value={ stepCounterNameHidden }
+								onChange={ ( obj ) =>
+									setAttributes( {
+										stepCounterNameHidden: obj,
+									} )
+								}
+							>
+								{ ( {
+									tier,
+									ownValue,
+									effectiveValue,
+									setOwnValue,
+								} ) => (
+									<ToggleControl
+										label={ __(
+											'Hide the step name on this device',
+											'sgs-blocks'
+										) }
+										checked={
+											true ===
+											( '' === ownValue
+												? effectiveValue
+												: ownValue )
+										}
+										onChange={ ( value ) =>
+											setOwnValue(
+												value
+													? true
+													: 'desktop' === tier
+													? undefined
+													: false
+											)
+										}
+										__nextHasNoMarginBottom
+									/>
+								) }
+							</ResponsiveOverride>
+						) }
+					</>,
+					true
+				) }
+			{ stepCounter &&
+				item(
+					__( 'Counter row wrap and gap', 'sgs-blocks' ),
+					[
+						'statusRowWrap',
+						'statusRowGap',
+						'statusRowMarginBottom',
+					],
+					<>
+						<FlexWrapControl
+							label={ __( 'Wrap the counter row', 'sgs-blocks' ) }
+							value={ statusRowWrap }
+							onChange={ ( value ) =>
+								setAttributes( { statusRowWrap: value } )
+							}
+						/>
 						<ResponsiveOverride
-							label={ __( 'Hide the step name', 'sgs-blocks' ) }
-							value={ stepCounterNameHidden }
-							onChange={ ( obj ) => setAttributes( { stepCounterNameHidden: obj } ) }
+							label={ __( 'Counter row gap', 'sgs-blocks' ) }
+							value={ statusRowGap }
+							onChange={ ( obj ) =>
+								setAttributes( { statusRowGap: obj } )
+							}
 						>
-							{ ( { tier, ownValue, effectiveValue, setOwnValue } ) => (
-								<ToggleControl
-									label={ __( 'Hide the step name on this device', 'sgs-blocks' ) }
-									checked={ true === ( '' === ownValue ? effectiveValue : ownValue ) }
-									onChange={ ( value ) => setOwnValue( value ? true : ( 'desktop' === tier ? undefined : false ) ) }
-									__nextHasNoMarginBottom
+							{ ( {
+								ownValue,
+								effectiveValue,
+								inherited,
+								setOwnValue,
+							} ) => (
+								<SgsLengthControl
+									presets={ false }
+									label={ __(
+										'Counter row gap',
+										'sgs-blocks'
+									) }
+									hideLabelFromVision
+									help={ __(
+										'Space between the counter and the saved-progress notice, and between their lines when they wrap.',
+										'sgs-blocks'
+									) }
+									value={ ownValue ?? '' }
+									placeholder={
+										inherited ? effectiveValue : '0.5rem'
+									}
+									onChange={ ( val ) =>
+										setOwnValue( val || undefined )
+									}
 								/>
 							) }
 						</ResponsiveOverride>
-					) }
-				</>
-			), true ) }
-			{ stepCounter && item( __( 'Counter row wrap and gap', 'sgs-blocks' ), [ 'statusRowWrap', 'statusRowGap', 'statusRowMarginBottom' ], (
-				<>
-					<FlexWrapControl
-						label={ __( 'Wrap the counter row', 'sgs-blocks' ) }
-						value={ statusRowWrap }
-						onChange={ ( value ) => setAttributes( { statusRowWrap: value } ) }
-					/>
-					<ResponsiveOverride
-						label={ __( 'Counter row gap', 'sgs-blocks' ) }
-						value={ statusRowGap }
-						onChange={ ( obj ) => setAttributes( { statusRowGap: obj } ) }
-					>
-						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-							<SgsLengthControl
-								presets={ false }
-								label={ __( 'Counter row gap', 'sgs-blocks' ) }
-								hideLabelFromVision
-								help={ __( 'Space between the counter and the saved-progress notice, and between their lines when they wrap.', 'sgs-blocks' ) }
-								value={ ownValue ?? '' }
-								placeholder={ inherited ? effectiveValue : '0.5rem' }
-								onChange={ ( val ) => setOwnValue( val || undefined ) }
-							/>
-						) }
-					</ResponsiveOverride>
-					<SgsLengthControl
-						presets={ false }
-						label={ __( 'Counter row space below', 'sgs-blocks' ) }
-						help={ __( 'Space under the counter row. Empty keeps 1rem.', 'sgs-blocks' ) }
-						value={ statusRowMarginBottom ?? '' }
-						placeholder="1rem"
-						onChange={ ( val ) => setAttributes( { statusRowMarginBottom: val || undefined } ) }
-					/>
-				</>
-			), true ) }
-			{ item( __( 'Completed step label weight', 'sgs-blocks' ), [ 'stepLabelFontWeightCompleted' ], (
-				<SelectControl __next40pxDefaultSize __nextHasNoMarginBottom
+						<SgsLengthControl
+							presets={ false }
+							label={ __(
+								'Counter row space below',
+								'sgs-blocks'
+							) }
+							help={ __(
+								'Space under the counter row. Empty keeps 1rem.',
+								'sgs-blocks'
+							) }
+							value={ statusRowMarginBottom ?? '' }
+							placeholder="1rem"
+							onChange={ ( val ) =>
+								setAttributes( {
+									statusRowMarginBottom: val || undefined,
+								} )
+							}
+						/>
+					</>,
+					true
+				) }
+			{ item(
+				__( 'Completed step label weight', 'sgs-blocks' ),
+				[ 'stepLabelFontWeightCompleted' ],
+				<SelectControl
+					__next40pxDefaultSize
+					__nextHasNoMarginBottom
 					label={ __( 'Completed step label weight', 'sgs-blocks' ) }
-					help={ __( 'Font weight of the label of a step the visitor has passed. Its colour sits in the Colours panel.', 'sgs-blocks' ) }
+					help={ __(
+						'Font weight of the label of a step the visitor has passed. Its colour sits in the Colours panel.',
+						'sgs-blocks'
+					) }
 					value={ attributes.stepLabelFontWeightCompleted ?? '' }
-					options={ [ { label: __( 'Same as the other labels', 'sgs-blocks' ), value: '' }, ...[ '400', '500', '600', '700', '800' ].map( ( w ) => ( { label: w, value: w } ) ) ] }
-					onChange={ ( val ) => setAttributes( { stepLabelFontWeightCompleted: val || undefined } ) }
+					options={ [
+						{
+							label: __(
+								'Same as the other labels',
+								'sgs-blocks'
+							),
+							value: '',
+						},
+						...[ '400', '500', '600', '700', '800' ].map(
+							( w ) => ( { label: w, value: w } )
+						),
+					] }
+					onChange={ ( val ) =>
+						setAttributes( {
+							stepLabelFontWeightCompleted: val || undefined,
+						} )
+					}
 					__nextHasNoMarginBottom
 				/>
-			) ) }
-			{ item( __( 'Space above buttons', 'sgs-blocks' ), [ 'actionsTopPadding' ], (
+			) }
+			{ item(
+				__( 'Space above buttons', 'sgs-blocks' ),
+				[ 'actionsTopPadding' ],
 				<ResponsiveOverride
 					label={ __( 'Space above buttons', 'sgs-blocks' ) }
 					value={ actionsTopPadding }
-					onChange={ ( obj ) => setAttributes( { actionsTopPadding: obj } ) }
+					onChange={ ( obj ) =>
+						setAttributes( { actionsTopPadding: obj } )
+					}
 				>
-					{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+					{ ( {
+						ownValue,
+						effectiveValue,
+						inherited,
+						setOwnValue,
+					} ) => (
 						<SgsLengthControl
 							presets={ false }
 							label={ __( 'Space above buttons', 'sgs-blocks' ) }
 							hideLabelFromVision
-							help={ __( 'Gap between the last field and the buttons row. A sticky row uses its own padding setting.', 'sgs-blocks' ) }
+							help={ __(
+								'Gap between the last field and the buttons row. A sticky row uses its own padding setting.',
+								'sgs-blocks'
+							) }
 							value={ ownValue ?? '' }
 							placeholder={ inherited ? effectiveValue : '1rem' }
-							onChange={ ( val ) => setOwnValue( val || undefined ) }
+							onChange={ ( val ) =>
+								setOwnValue( val || undefined )
+							}
 						/>
 					) }
-				</ResponsiveOverride>
-			), true ) }
-			{ item( __( 'Margin above buttons', 'sgs-blocks' ), [ 'actionsTopMargin' ], (
+				</ResponsiveOverride>,
+				true
+			) }
+			{ item(
+				__( 'Margin above buttons', 'sgs-blocks' ),
+				[ 'actionsTopMargin' ],
 				<ResponsiveOverride
 					label={ __( 'Margin above buttons', 'sgs-blocks' ) }
 					value={ actionsTopMargin }
-					onChange={ ( obj ) => setAttributes( { actionsTopMargin: obj } ) }
+					onChange={ ( obj ) =>
+						setAttributes( { actionsTopMargin: obj } )
+					}
 				>
-					{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+					{ ( {
+						ownValue,
+						effectiveValue,
+						inherited,
+						setOwnValue,
+					} ) => (
 						<SgsLengthControl
 							presets={ false }
 							label={ __( 'Margin above buttons', 'sgs-blocks' ) }
 							hideLabelFromVision
-							help={ __( 'Extra space outside the buttons row, above its divider. It adds to the gap between the fields.', 'sgs-blocks' ) }
+							help={ __(
+								'Extra space outside the buttons row, above its divider. It adds to the gap between the fields.',
+								'sgs-blocks'
+							) }
 							value={ ownValue ?? '' }
 							placeholder={ inherited ? effectiveValue : '0' }
-							onChange={ ( val ) => setOwnValue( val || undefined ) }
+							onChange={ ( val ) =>
+								setOwnValue( val || undefined )
+							}
 						/>
 					) }
 				</ResponsiveOverride>
-			) ) }
-			{ item( __( 'Buttons row divider', 'sgs-blocks' ), [ 'actionsBorderTopWidth', 'actionsBorderTopStyle', 'actionsBorderTopColour' ], (
+			) }
+			{ item(
+				__( 'Buttons row divider', 'sgs-blocks' ),
+				[
+					'actionsBorderTopWidth',
+					'actionsBorderTopStyle',
+					'actionsBorderTopColour',
+				],
 				<>
 					<SgsLengthControl
 						presets={ false }
 						label={ __( 'Divider thickness', 'sgs-blocks' ) }
-						help={ __( 'A line along the top of the buttons row. Empty = no line. Its colour sits in the Colours panel. A sticky row’s own line colour wins when set.', 'sgs-blocks' ) }
+						help={ __(
+							'A line along the top of the buttons row. Empty = no line. Its colour sits in the Colours panel. A sticky row’s own line colour wins when set.',
+							'sgs-blocks'
+						) }
 						value={ actionsBorderTopWidth ?? '' }
 						placeholder="0"
-						onChange={ ( val ) => setAttributes( { actionsBorderTopWidth: val || undefined } ) }
+						onChange={ ( val ) =>
+							setAttributes( {
+								actionsBorderTopWidth: val || undefined,
+							} )
+						}
 					/>
-					<SelectControl __next40pxDefaultSize __nextHasNoMarginBottom
+					<SelectControl
+						__next40pxDefaultSize
+						__nextHasNoMarginBottom
 						label={ __( 'Divider style', 'sgs-blocks' ) }
 						value={ actionsBorderTopStyle || 'solid' }
-						options={ [ 'solid', 'dashed', 'dotted' ].map( ( v ) => ( { label: v.charAt( 0 ).toUpperCase() + v.slice( 1 ), value: v } ) ) }
-						onChange={ ( val ) => setAttributes( { actionsBorderTopStyle: val || undefined } ) }
+						options={ [ 'solid', 'dashed', 'dotted' ].map(
+							( v ) => ( {
+								label:
+									v.charAt( 0 ).toUpperCase() + v.slice( 1 ),
+								value: v,
+							} )
+						) }
+						onChange={ ( val ) =>
+							setAttributes( {
+								actionsBorderTopStyle: val || undefined,
+							} )
+						}
 					/>
 				</>
-			) ) }
-			{ item( __( 'Progress fill', 'sgs-blocks' ), [ 'progressFill' ], (
+			) }
+			{ item(
+				__( 'Progress fill', 'sgs-blocks' ),
+				[ 'progressFill' ],
 				<SelectControl
 					label={ __( 'Progress fill counts', 'sgs-blocks' ) }
 					value={ progressFill || 'current' }
 					options={ PROGRESS_FILL_OPTIONS }
-					onChange={ ( value ) => setAttributes( { progressFill: value } ) }
+					onChange={ ( value ) =>
+						setAttributes( { progressFill: value } )
+					}
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
-				/>
-			), true ) }
-			{ item( __( 'Completed step marker', 'sgs-blocks' ), [ 'stepCompletedIcon' ], (
+				/>,
+				true
+			) }
+			{ item(
+				__( 'Completed step marker', 'sgs-blocks' ),
+				[ 'stepCompletedIcon' ],
 				<SelectControl
 					label={ __( 'A completed step shows', 'sgs-blocks' ) }
 					value={ stepCompletedIcon || 'number' }
 					options={ COMPLETED_ICON_OPTIONS }
-					onChange={ ( value ) => setAttributes( { stepCompletedIcon: value } ) }
-					help={ __( 'The step name stays in the button’s accessible name either way. Bubble colours are in the colour panel.', 'sgs-blocks' ) }
+					onChange={ ( value ) =>
+						setAttributes( { stepCompletedIcon: value } )
+					}
+					help={ __(
+						'The step name stays in the button’s accessible name either way. Bubble colours are in the colour panel.',
+						'sgs-blocks'
+					) }
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
-				/>
-			), true ) }
-			{ item( __( 'Sticky buttons row', 'sgs-blocks' ), [ 'actionsSticky', 'actionsStickyPadding', 'actionsStickyBleed', 'actionsStickyShadow', 'actionsStickyShadowColour' ], (
+				/>,
+				true
+			) }
+			{ item(
+				__( 'Sticky buttons row', 'sgs-blocks' ),
+				[
+					'actionsSticky',
+					'actionsStickyPadding',
+					'actionsStickyBleed',
+					'actionsStickyShadow',
+					'actionsStickyShadowColour',
+				],
 				<>
 					<ResponsiveOverride
-						label={ __( 'Stick the buttons row to the bottom', 'sgs-blocks' ) }
+						label={ __(
+							'Stick the buttons row to the bottom',
+							'sgs-blocks'
+						) }
 						value={ actionsSticky }
-						onChange={ ( obj ) => setAttributes( { actionsSticky: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { actionsSticky: obj } )
+						}
 					>
-						{ ( { tier, ownValue, effectiveValue, setOwnValue } ) => (
+						{ ( {
+							tier,
+							ownValue,
+							effectiveValue,
+							setOwnValue,
+						} ) => (
 							<ToggleControl
-								label={ __( 'Sticky on this device', 'sgs-blocks' ) }
-								checked={ true === ( '' === ownValue ? effectiveValue : ownValue ) }
-								onChange={ ( value ) => setOwnValue( value ? true : ( 'desktop' === tier ? undefined : false ) ) }
-								help={ __( 'Pins Back / Next / Submit to the bottom of the screen while the form is in view. Colours are in the colour panel.', 'sgs-blocks' ) }
+								label={ __(
+									'Sticky on this device',
+									'sgs-blocks'
+								) }
+								checked={
+									true ===
+									( '' === ownValue
+										? effectiveValue
+										: ownValue )
+								}
+								onChange={ ( value ) =>
+									setOwnValue(
+										value
+											? true
+											: 'desktop' === tier
+											? undefined
+											: false
+									)
+								}
+								help={ __(
+									'Pins Back / Next / Submit to the bottom of the screen while the form is in view. Colours are in the colour panel.',
+									'sgs-blocks'
+								) }
 								__nextHasNoMarginBottom
 							/>
 						) }
 					</ResponsiveOverride>
 					<ResponsiveOverride
 						value={ actionsStickyPadding }
-						onChange={ ( obj ) => setAttributes( { actionsStickyPadding: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { actionsStickyPadding: obj } )
+						}
 					>
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
-								label={ __( 'Sticky row padding', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								label={ __(
+									'Sticky row padding',
+									'sgs-blocks'
+								) }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								defaults={ spacingDefaultsFor( 'sgs/form', 'actionsStickyPadding' ) }
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								defaults={ spacingDefaultsFor(
+									'sgs/form',
+									'actionsStickyPadding'
+								) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
 					<SgsLengthControl
 						presets={ false }
 						label={ __( 'Sticky row side bleed', 'sgs-blocks' ) }
-						help={ __( 'Set to the form card’s side padding so the row spans the card edge to edge. Empty = none.', 'sgs-blocks' ) }
+						help={ __(
+							'Set to the form card’s side padding so the row spans the card edge to edge. Empty = none.',
+							'sgs-blocks'
+						) }
 						value={ actionsStickyBleed ?? '' }
-						onChange={ ( val ) => setAttributes( { actionsStickyBleed: val || undefined } ) }
+						onChange={ ( val ) =>
+							setAttributes( {
+								actionsStickyBleed: val || undefined,
+							} )
+						}
 					/>
 					<ShadowControl
 						label={ __( 'Sticky row shadow', 'sgs-blocks' ) }
@@ -319,27 +652,46 @@ export default function StepSettingsPanel( { attributes, setAttributes } ) {
 						setAttributes={ setAttributes }
 						attrNames={ STICKY_SHADOW_KEYS }
 					/>
-				</>
-			), false ) }
-			{ item( __( 'Progress track height', 'sgs-blocks' ), [ 'progressTrackHeight' ], (
+				</>,
+				false
+			) }
+			{ item(
+				__( 'Progress track height', 'sgs-blocks' ),
+				[ 'progressTrackHeight' ],
 				<ResponsiveOverride
 					label={ __( 'Progress track height', 'sgs-blocks' ) }
 					value={ progressTrackHeight }
-					onChange={ ( obj ) => setAttributes( { progressTrackHeight: obj } ) }
+					onChange={ ( obj ) =>
+						setAttributes( { progressTrackHeight: obj } )
+					}
 				>
-					{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+					{ ( {
+						ownValue,
+						effectiveValue,
+						inherited,
+						setOwnValue,
+					} ) => (
 						<SgsLengthControl
 							presets={ false }
-							label={ __( 'Progress track height', 'sgs-blocks' ) }
+							label={ __(
+								'Progress track height',
+								'sgs-blocks'
+							) }
 							hideLabelFromVision
-							help={ __( 'Height of the bar the progress fill runs along; empty keeps the 4px fill. The track colour is in the colour panel.', 'sgs-blocks' ) }
+							help={ __(
+								'Height of the bar the progress fill runs along; empty keeps the 4px fill. The track colour is in the colour panel.',
+								'sgs-blocks'
+							) }
 							value={ ownValue ?? '' }
 							placeholder={ inherited ? effectiveValue : '4px' }
-							onChange={ ( val ) => setOwnValue( val || undefined ) }
+							onChange={ ( val ) =>
+								setOwnValue( val || undefined )
+							}
 						/>
 					) }
-				</ResponsiveOverride>
-			), true ) }
+				</ResponsiveOverride>,
+				true
+			) }
 		</ToolsPanel>
 	);
 }

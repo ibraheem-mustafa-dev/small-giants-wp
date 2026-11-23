@@ -86,21 +86,40 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	// The products modes hold one template card, the design every product renders with; the other modes hold none.
 	// The grid gains its template when it enters a products mode (or, already in one, on its next editor load, so it is
 	// saved with the next save) and loses it when it leaves (removed, not hidden).
-	const innerBlocks = useSelect( ( select ) => select( 'core/block-editor' ).getBlocks( clientId ), [ clientId ] ) ?? NO_BLOCKS;
-	const { replaceInnerBlocks, selectBlock, __unstableMarkNextChangeAsNotPersistent: markNotPersistent } =
-		useDispatch( 'core/block-editor' );
+	const innerBlocks =
+		useSelect(
+			( select ) => select( 'core/block-editor' ).getBlocks( clientId ),
+			[ clientId ]
+		) ?? NO_BLOCKS;
+	const {
+		replaceInnerBlocks,
+		selectBlock,
+		__unstableMarkNextChangeAsNotPersistent: markNotPersistent,
+	} = useDispatch( 'core/block-editor' );
 	useEffect( () => {
 		const next = templateBlocksFor( source, innerBlocks, createBlock );
 		if ( null === next ) {
 			return;
 		}
-		if ( next.length > 0 && innerBlocks.length === 0 && typeof markNotPersistent === 'function' ) {
+		if (
+			next.length > 0 &&
+			innerBlocks.length === 0 &&
+			typeof markNotPersistent === 'function'
+		) {
 			// A seeded template is the grid's starting state, not a client edit (core's template sync does the same).
 			markNotPersistent();
 		}
 		replaceInnerBlocks( clientId, next, false );
-	}, [ source, innerBlocks, clientId, replaceInnerBlocks, markNotPersistent ] );
-	const templateId = innerBlocks.find( ( block ) => block.name === 'sgs/product-card' )?.clientId;
+	}, [
+		source,
+		innerBlocks,
+		clientId,
+		replaceInnerBlocks,
+		markNotPersistent,
+	] );
+	const templateId = innerBlocks.find(
+		( block ) => block.name === 'sgs/product-card'
+	)?.clientId;
 
 	// Contrast check for card text (title/subtitle) against the card's
 	// background. `contrastAgainst` only accepts a FLAT colour/token, so this
@@ -114,23 +133,36 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		cardBackground && ! cardBackgroundGradient ? cardBackground : '';
 
 	// Flat help-text resolution (no nested ternary — S3358).
-	let sourceHelp = __( 'Add and arrange cards manually below.', 'sgs-blocks' );
+	let sourceHelp = __(
+		'Add and arrange cards manually below.',
+		'sgs-blocks'
+	);
 	if ( isWcProductMode ) {
-		sourceHelp = __( 'Products are pulled from your WooCommerce catalogue.', 'sgs-blocks' );
+		sourceHelp = __(
+			'Products are pulled from your WooCommerce catalogue.',
+			'sgs-blocks'
+		);
 	} else if ( isCptCollectionMode ) {
 		sourceHelp = __(
 			'Products are pulled from your SGS product library. This works whether or not WooCommerce is installed.',
 			'sgs-blocks'
 		);
 	} else if ( isQueryMode ) {
-		sourceHelp = __( 'Cards are pulled automatically from your posts.', 'sgs-blocks' );
+		sourceHelp = __(
+			'Cards are pulled automatically from your posts.',
+			'sgs-blocks'
+		);
 	}
 
 	const className = [
 		'sgs-card-grid',
 		`sgs-card-grid--${ variant }`,
-		overlayColour || overlayGradient ? 'sgs-card-grid--has-image-overlay' : '',
-	].filter( Boolean ).join( ' ' );
+		overlayColour || overlayGradient
+			? 'sgs-card-grid--has-image-overlay'
+			: '',
+	]
+		.filter( Boolean )
+		.join( ' ' );
 
 	const previewTier = usePreviewTier();
 	// Collection mode shows render.php's own output, whose page-button rule
@@ -138,7 +170,12 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	// page buttons from the current attributes at once; #block-{clientId} keeps it
 	// to this instance and outranks the server render's .{uid} rule while editing.
 	const pageButtonPreviewCss = isCptCollectionMode
-		? typographyPreviewCss( attributes, 'pageButton', `#block-${ clientId } .sgs-card-grid__page-btn`, previewTier )
+		? typographyPreviewCss(
+				attributes,
+				'pageButton',
+				`#block-${ clientId } .sgs-card-grid__page-btn`,
+				previewTier
+		  )
 		: '';
 	const [ palette ] = useSettings( 'color.palette' );
 	const wrapper = wrapperPreview( attributes, previewTier, palette );
@@ -157,19 +194,32 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	// or the editor preview would emit "--sgs-card-grid-columns: [object
 	// Object]" and CSS custom properties silently fail to apply (same D567
 	// class as the container/gridTemplateColumns fix).
-	const columnsDesktop = resolveResponsiveTier( columns, 'desktop' )?.value || 3;
-	const columnsTabletTier = resolveResponsiveTier( columns, 'tablet' )?.value || 2;
-	const columnsMobileTier = resolveResponsiveTier( columns, 'mobile' )?.value || 1;
+	const columnsDesktop =
+		resolveResponsiveTier( columns, 'desktop' )?.value || 3;
+	const columnsTabletTier =
+		resolveResponsiveTier( columns, 'tablet' )?.value || 2;
+	const columnsMobileTier =
+		resolveResponsiveTier( columns, 'mobile' )?.value || 1;
 
 	// Lines between the cards (supports.sgs.separators), drawn on the list element the wrapper puts them on.
 	const sep = useSeparatorsCanvas( {
 		separators: attributes.separators,
 		device: previewTier,
-		deps: [ source, columnsDesktop, columnsTabletTier, columnsMobileTier, gap, items.length ],
+		deps: [
+			source,
+			columnsDesktop,
+			columnsTabletTier,
+			columnsMobileTier,
+			gap,
+			items.length,
+		],
 	} );
 
 	// The image frame's ratio at the previewed device (16 / 9 when the grid sets none), as render.php's stylesheet prints it.
-	const ratioTier = String( resolveResponsiveTier( attributes.imageRatio || {}, previewTier )?.value || '' );
+	const ratioTier = String(
+		resolveResponsiveTier( attributes.imageRatio || {}, previewTier )
+			?.value || ''
+	);
 	let previewRatio = '16 / 9';
 	if ( 'natural' === ratioTier ) {
 		previewRatio = 'auto';
@@ -185,9 +235,17 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		'--sgs-card-grid-aspect': previewRatio,
 	};
 
-	const titleStyle = resolveTextColourPreviewStyle( titleColour, titleColourGradient, colourVar );
+	const titleStyle = resolveTextColourPreviewStyle(
+		titleColour,
+		titleColourGradient,
+		colourVar
+	);
 
-	const subtitleStyle = resolveTextColourPreviewStyle( subtitleColour, subtitleColourGradient, colourVar );
+	const subtitleStyle = resolveTextColourPreviewStyle(
+		subtitleColour,
+		subtitleColourGradient,
+		colourVar
+	);
 
 	const updateItem = ( index, updatedItem ) => {
 		const updated = [ ...items ];
@@ -221,15 +279,40 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	return (
 		<>
 			{ manualCards && (
-				<ElementColourPanels attributes={ attributes } setAttributes={ setAttributes } cardBackgroundForContrast={ cardBackgroundForContrast } />
+				<ElementColourPanels
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					cardBackgroundForContrast={ cardBackgroundForContrast }
+				/>
 			) }
 
-			{ manualCards && <CardStylesPanel name={ name } attributes={ attributes } setAttributes={ setAttributes } /> }
+			{ manualCards && (
+				<CardStylesPanel
+					name={ name }
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+			) }
 
 			<InspectorControls>
-				{ ! manualCards && <CardDesignPanel onEdit={ templateId ? () => selectBlock( templateId ) : null } /> }
-				<ContainerWrapperControls attributes={ attributes } setAttributes={ setAttributes } kind="layout" />
-				<ContentSourcePanel attributes={ attributes } setAttributes={ setAttributes } isQueryMode={ isQueryMode } sourceHelp={ sourceHelp } />
+				{ ! manualCards && (
+					<CardDesignPanel
+						onEdit={
+							templateId ? () => selectBlock( templateId ) : null
+						}
+					/>
+				) }
+				<ContainerWrapperControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					kind="layout"
+				/>
+				<ContentSourcePanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					isQueryMode={ isQueryMode }
+					sourceHelp={ sourceHelp }
+				/>
 
 				{ /* ── Collection panel: visible only in cpt-collection mode ── */ }
 				{ isCptCollectionMode && (
@@ -239,57 +322,93 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					/>
 				) }
 
-				<ProductsToolsPanel attributes={ attributes } setAttributes={ setAttributes } isWcProductMode={ isWcProductMode } />
+				<ProductsToolsPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					isWcProductMode={ isWcProductMode }
+				/>
 
-				{ ! isQueryMode && ! isWcProductMode && ! isCptCollectionMode && (
-				<PanelBody title={ __( 'Items', 'sgs-blocks' ) }>
-					{ items.map( ( item, index ) => (
-						<ItemEditor
-							key={ index }
-							item={ item }
-							index={ index }
-							onChange={ ( updated ) =>
-								updateItem( index, updated )
-							}
-							onRemove={ () => removeItem( index ) }
-						/>
-					) ) }
-					<Button variant="secondary" onClick={ addItem }>
-						{ __( 'Add item', 'sgs-blocks' ) }
-					</Button>
-					<SelectControl
-						label={ __( 'Load priority', 'sgs-blocks' ) }
-						help={ __( 'Automatic loads the pictures above the fold first and the rest as they scroll into view.', 'sgs-blocks' ) }
-						value={ attributes.imageLoading || '' }
-						options={ LOADING_OPTIONS }
-						onChange={ ( val ) => setAttributes( { imageLoading: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-				</PanelBody>
-				) }
+				{ ! isQueryMode &&
+					! isWcProductMode &&
+					! isCptCollectionMode && (
+						<PanelBody title={ __( 'Items', 'sgs-blocks' ) }>
+							{ items.map( ( item, index ) => (
+								<ItemEditor
+									key={ index }
+									item={ item }
+									index={ index }
+									onChange={ ( updated ) =>
+										updateItem( index, updated )
+									}
+									onRemove={ () => removeItem( index ) }
+								/>
+							) ) }
+							<Button variant="secondary" onClick={ addItem }>
+								{ __( 'Add item', 'sgs-blocks' ) }
+							</Button>
+							<SelectControl
+								label={ __( 'Load priority', 'sgs-blocks' ) }
+								help={ __(
+									'Automatic loads the pictures above the fold first and the rest as they scroll into view.',
+									'sgs-blocks'
+								) }
+								value={ attributes.imageLoading || '' }
+								options={ LOADING_OPTIONS }
+								onChange={ ( val ) =>
+									setAttributes( { imageLoading: val } )
+								}
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						</PanelBody>
+					) }
 
 				{ manualCards && (
 					<>
-						<GlyphOverlayPanels attributes={ attributes } setAttributes={ setAttributes } />
-						<GridSettingsPanel attributes={ attributes } setAttributes={ setAttributes } />
-						<CardGridHoverEffectsPanel attributes={ attributes } setAttributes={ setAttributes } />
+						<GlyphOverlayPanels
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+						/>
+						<GridSettingsPanel
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+						/>
+						<CardGridHoverEffectsPanel
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+						/>
 					</>
 				) }
 
 				{ ( manualCards || isCptCollectionMode ) && (
-					<TextStylingPanel attributes={ attributes } setAttributes={ setAttributes } isCptCollectionMode={ isCptCollectionMode } pageButtonsOnly={ ! manualCards } />
+					<TextStylingPanel
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						isCptCollectionMode={ isCptCollectionMode }
+						pageButtonsOnly={ ! manualCards }
+					/>
 				) }
 
-				{ manualCards && <CardSpacingStylingPanel attributes={ attributes } setAttributes={ setAttributes } /> }
-				<LayoutBorderPanel attributes={ attributes } setAttributes={ setAttributes } />
+				{ manualCards && (
+					<CardSpacingStylingPanel
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
+				) }
+				<LayoutBorderPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 			</InspectorControls>
 
 			{ /* The settings every card shares (Spec 49 §10.4: Fit, Ratio, Height, Radius, Shape): the adopted panels on the
 			   image slot, without the Source rows, which each card's own item holds. */ }
 			{ manualCards && (
 				<MediaElementPanel
-					attributes={ { ...attributes, imageSource: { desktop: { kind: 'image' } } } }
+					attributes={ {
+						...attributes,
+						imageSource: { desktop: { kind: 'image' } },
+					} }
 					setAttributes={ setAttributes }
 					prefix="image"
 					blockSlug="sgs/card-grid"
@@ -299,7 +418,22 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 				/>
 			) }
 
-			<CardGridCanvas attributes={ attributes } clientId={ clientId } sep={ sep } isWcProductMode={ isWcProductMode } isCptCollectionMode={ isCptCollectionMode } blockProps={ blockProps } pageButtonPreviewCss={ pageButtonPreviewCss } wrapper={ wrapper } gridStyle={ gridStyle } items={ items } cardPreview={ cardPreview } titleStyle={ titleStyle } subtitleStyle={ subtitleStyle } HeadingTag={ HeadingTag } />
+			<CardGridCanvas
+				attributes={ attributes }
+				clientId={ clientId }
+				sep={ sep }
+				isWcProductMode={ isWcProductMode }
+				isCptCollectionMode={ isCptCollectionMode }
+				blockProps={ blockProps }
+				pageButtonPreviewCss={ pageButtonPreviewCss }
+				wrapper={ wrapper }
+				gridStyle={ gridStyle }
+				items={ items }
+				cardPreview={ cardPreview }
+				titleStyle={ titleStyle }
+				subtitleStyle={ subtitleStyle }
+				HeadingTag={ HeadingTag }
+			/>
 		</>
 	);
 }

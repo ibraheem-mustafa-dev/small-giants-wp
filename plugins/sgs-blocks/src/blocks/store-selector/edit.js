@@ -136,7 +136,9 @@ export default function Edit( { attributes, setAttributes } ) {
 				<PanelBody
 					title={ __( 'Store Selector Settings', 'sgs-blocks' ) }
 				>
-					<SgsFreeTextField type="rich" noLink
+					<SgsFreeTextField
+						type="rich"
+						noLink
 						label={ __( 'Trigger prefix', 'sgs-blocks' ) }
 						help={ __(
 							'Text shown before the flag and current store, e.g. "Select store".',

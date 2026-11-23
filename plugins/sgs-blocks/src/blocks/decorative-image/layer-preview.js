@@ -41,7 +41,9 @@ const SHAPE_RADIUS = { circle: '50%', ellipse: '50%', pill: '9999px' };
  */
 export function layerEdges( attributes, tier ) {
 	const out = { x: false, y: false, offsets: {} };
-	for ( const [ property, stored ] of Object.entries( edgeValues( attributes ) ) ) {
+	for ( const [ property, stored ] of Object.entries(
+		edgeValues( attributes )
+	) ) {
 		const tiers = stored || {};
 		if (
 			TIERS.some( ( t ) => '' !== cssLengthValue( tiers[ t ] ?? '' ) )
@@ -254,7 +256,8 @@ export function layerBoxPreview(
 
 	// A radius-drawn shape (circle, ellipse, pill) is the box's corners, as render.php prints it.
 	const shape = resolveTier( attributes.layerShape, tier, '' ).value;
-	const radius = SHAPE_RADIUS[ 'object' === typeof shape ? shape?.shape : shape ];
+	const radius =
+		SHAPE_RADIUS[ 'object' === typeof shape ? shape?.shape : shape ];
 	if ( radius ) {
 		Object.keys( style )
 			.filter( ( key ) => /^border.+Radius$/.test( key ) )

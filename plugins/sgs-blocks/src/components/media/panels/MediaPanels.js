@@ -10,8 +10,16 @@
  *
  * @package SGS\Blocks
  */
-import { InspectorControls, useBlockEditContext } from '@wordpress/block-editor';
-import { DropdownMenu, MenuGroup, MenuItem, PanelBody } from '@wordpress/components';
+import {
+	InspectorControls,
+	useBlockEditContext,
+} from '@wordpress/block-editor';
+import {
+	DropdownMenu,
+	MenuGroup,
+	MenuItem,
+	PanelBody,
+} from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { __, sprintf } from '@wordpress/i18n';
 import { moreVertical } from '@wordpress/icons';
@@ -28,14 +36,21 @@ import { translateReason } from './reasons.js';
 import { pinnedBlockers } from './pinned-blockers.js';
 import { panelOwnDevices, resetPatch } from './row-io.js';
 
-const DEVICE_TO_KEY = { Desktop: 'desktop', Tablet: 'tablet', Mobile: 'mobile' };
+const DEVICE_TO_KEY = {
+	Desktop: 'desktop',
+	Tablet: 'tablet',
+	Mobile: 'mobile',
+};
 const DEVICE_NAMES = { desktop: 'Desktop', tablet: 'Tablet', mobile: 'Mobile' };
 
 /** The editor's active device, from the one global toggle. */
 function useActiveDevice() {
 	return useSelect( ( select ) => {
 		const ed = select( 'core/editor' );
-		const device = ed && 'function' === typeof ed.getDeviceType ? ed.getDeviceType() : null;
+		const device =
+			ed && 'function' === typeof ed.getDeviceType
+				? ed.getDeviceType()
+				: null;
 		return DEVICE_TO_KEY[ device ] || 'desktop';
 	}, [] );
 }
@@ -75,13 +90,35 @@ export default function MediaPanels( {
 	const { clientId, name } = useBlockEditContext();
 	// A background's Pinned setting is refused beside Parallax on the background or a transform entrance or hover on the
 	// block (§10.3). A caller that already knows passes `parallax`; otherwise the block's stored motion says.
-	const blockers = 'background' === context ? pinnedBlockers( attributes?.sgsMotion, getBlockType( name )?.supports?.sgs?.elements ) : {};
-	const parallax = undefined === parallaxProp ? !! blockers.parallax : parallaxProp;
-	const opts = { blockSlug, kinds, context, parallax, transformMotion: !! blockers.transformMotion, adopted: true, blockOwns };
+	const blockers =
+		'background' === context
+			? pinnedBlockers(
+					attributes?.sgsMotion,
+					getBlockType( name )?.supports?.sgs?.elements
+			  )
+			: {};
+	const parallax =
+		undefined === parallaxProp ? !! blockers.parallax : parallaxProp;
+	const opts = {
+		blockSlug,
+		kinds,
+		context,
+		parallax,
+		transformMotion: !! blockers.transformMotion,
+		adopted: true,
+		blockOwns,
+	};
 	const kind = createContext( attributes, device, prefix, opts ).kind;
 	// A background's notes and motion line (§9.6): why Pinned is not offered, then what moves the background. The motion
 	// line shows only on a block that has the Effects panel; a caller's own `panelContent.background` comes first.
-	const pinnedWhy = 'background' === context && 'image' === kind ? ( parallax ? REASONS.pinnedParallax : blockers.transformMotion ? REASONS.pinnedTransform : '' ) : '';
+	const pinnedWhy =
+		'background' === context && 'image' === kind
+			? parallax
+				? REASONS.pinnedParallax
+				: blockers.transformMotion
+				? REASONS.pinnedTransform
+				: ''
+			: '';
 	const content =
 		'background' === context
 			? {
@@ -89,8 +126,18 @@ export default function MediaPanels( {
 					background: (
 						<>
 							{ panelContent.background || null }
-							{ pinnedWhy && <p className="components-base-control__help sgs-media-panel__note">{ translateReason( pinnedWhy ) }</p> }
-							{ blockHasMotion( name ) && <MotionLine clientId={ clientId } attributes={ attributes } kind={ kind } /> }
+							{ pinnedWhy && (
+								<p className="components-base-control__help sgs-media-panel__note">
+									{ translateReason( pinnedWhy ) }
+								</p>
+							) }
+							{ blockHasMotion( name ) && (
+								<MotionLine
+									clientId={ clientId }
+									attributes={ attributes }
+									kind={ kind }
+								/>
+							) }
 						</>
 					),
 			  }
@@ -110,7 +157,10 @@ export default function MediaPanels( {
 		'desktop' === device
 			? __( 'Reset this panel', 'sgs-blocks' )
 			: /* translators: %s: Tablet or Mobile. */
-			  sprintf( __( 'Reset %s in this panel', 'sgs-blocks' ), DEVICE_NAMES[ device ] );
+			  sprintf(
+					__( 'Reset %s in this panel', 'sgs-blocks' ),
+					DEVICE_NAMES[ device ]
+			  );
 
 	const mount = ( group ) =>
 		model
@@ -118,13 +168,36 @@ export default function MediaPanels( {
 			.map( ( { panel, rows } ) => (
 				<PanelBody
 					key={ panel.id }
-					title={ <PanelTitle title={ label ? /* translators: 1: the slot's name, 2: the panel title. */ sprintf( __( '%1$s: %2$s', 'sgs-blocks' ), label, panel.title() ) : panel.title() } devices={ panelOwnDevices( rows, attributes, prefix, blockSlug ) } /> }
+					title={
+						<PanelTitle
+							title={
+								label
+									? /* translators: 1: the slot's name, 2: the panel title. */ sprintf(
+											__( '%1$s: %2$s', 'sgs-blocks' ),
+											label,
+											panel.title()
+									  )
+									: panel.title()
+							}
+							devices={ panelOwnDevices(
+								rows,
+								attributes,
+								prefix,
+								blockSlug
+							) }
+						/>
+					}
 					initialOpen={ panel.open }
 					className={ `sgs-media-panel sgs-media-panel--${ panel.id }` }
 				>
-					{ 'size-and-crop' === panel.id && 'background' !== context && (
-						<SizingSummary attributes={ attributes } setAttributes={ setAttributes } prefix={ prefix } />
-					) }
+					{ 'size-and-crop' === panel.id &&
+						'background' !== context && (
+							<SizingSummary
+								attributes={ attributes }
+								setAttributes={ setAttributes }
+								prefix={ prefix }
+							/>
+						) }
 					{ rows.length > 0 && (
 						<div className="sgs-media-panel__menu">
 							<DropdownMenu
@@ -136,7 +209,15 @@ export default function MediaPanels( {
 									<MenuGroup>
 										<MenuItem
 											onClick={ () => {
-												setAttributes( resetPatch( rows, attributes, device, prefix, blockSlug ) );
+												setAttributes(
+													resetPatch(
+														rows,
+														attributes,
+														device,
+														prefix,
+														blockSlug
+													)
+												);
 												onClose();
 											} }
 										>
@@ -166,8 +247,12 @@ export default function MediaPanels( {
 
 	return (
 		<>
-			<InspectorControls group="settings">{ mount( 'settings' ) }</InspectorControls>
-			<InspectorControls group="styles">{ mount( 'styles' ) }</InspectorControls>
+			<InspectorControls group="settings">
+				{ mount( 'settings' ) }
+			</InspectorControls>
+			<InspectorControls group="styles">
+				{ mount( 'styles' ) }
+			</InspectorControls>
 		</>
 	);
 }

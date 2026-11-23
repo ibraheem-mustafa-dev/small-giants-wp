@@ -16,6 +16,8 @@ export function authoredTextPlain( value ) {
 		return html.replace( /\s+/g, ' ' ).trim();
 	}
 	const doc = new window.DOMParser().parseFromString( html, 'text/html' );
-	doc.querySelectorAll( 'script, style, template' ).forEach( ( node ) => node.remove() );
+	doc.querySelectorAll( 'script, style, template' ).forEach( ( node ) =>
+		node.remove()
+	);
 	return ( doc.body.textContent || '' ).replace( /\s+/g, ' ' ).trim();
 }

@@ -46,21 +46,30 @@ export const RADIUS_STYLE_KEYS = Object.values( LONGHAND_KEYS );
  * only the corners it declares. An explicit `0` counts as set; only undefined,
  * null and the empty string are unset.
  *
- * @param {Object|string|undefined} borderRadius The block's borderRadius attribute.
+ * @param {Object|string|undefined} borderRadius     The block's borderRadius attribute.
  * @param {string}                  [tier='desktop'] 'desktop' | 'tablet' | 'mobile'.
  * @return {Object} React style fragment of border*Radius longhands; {} when nothing is set.
  */
 export function borderRadiusLonghands( borderRadius, tier = 'desktop' ) {
-	const isObject = borderRadius && 'object' === typeof borderRadius && ! Array.isArray( borderRadius );
-	const hasTierKey = isObject && TIER_KEYS.some( ( key ) => key in borderRadius );
+	const isObject =
+		borderRadius &&
+		'object' === typeof borderRadius &&
+		! Array.isArray( borderRadius );
+	const hasTierKey =
+		isObject && TIER_KEYS.some( ( key ) => key in borderRadius );
 	const desktop = hasTierKey ? borderRadius.desktop : borderRadius;
-	const isSet = ( value ) => undefined !== value && null !== value && '' !== value;
+	const isSet = ( value ) =>
+		undefined !== value && null !== value && '' !== value;
 
 	const merged = {};
 	const apply = ( box ) => {
-		if ( ! box || 'object' !== typeof box ) return;
+		if ( ! box || 'object' !== typeof box ) {
+			return;
+		}
 		CORNERS.forEach( ( corner ) => {
-			if ( isSet( box[ corner ] ) ) merged[ corner ] = box[ corner ];
+			if ( isSet( box[ corner ] ) ) {
+				merged[ corner ] = box[ corner ];
+			}
 		} );
 	};
 	if ( 'string' === typeof desktop && '' !== desktop ) {
@@ -70,12 +79,18 @@ export function borderRadiusLonghands( borderRadius, tier = 'desktop' ) {
 	} else {
 		apply( desktop );
 	}
-	if ( hasTierKey && ( 'tablet' === tier || 'mobile' === tier ) ) apply( borderRadius.tablet );
-	if ( hasTierKey && 'mobile' === tier ) apply( borderRadius.mobile );
+	if ( hasTierKey && ( 'tablet' === tier || 'mobile' === tier ) ) {
+		apply( borderRadius.tablet );
+	}
+	if ( hasTierKey && 'mobile' === tier ) {
+		apply( borderRadius.mobile );
+	}
 
 	const style = {};
 	CORNERS.forEach( ( corner ) => {
-		if ( corner in merged ) style[ LONGHAND_KEYS[ corner ] ] = merged[ corner ];
+		if ( corner in merged ) {
+			style[ LONGHAND_KEYS[ corner ] ] = merged[ corner ];
+		}
 	} );
 	return style;
 }
@@ -103,7 +118,10 @@ export function borderRadiusProperties( borderRadius, tier, prefix ) {
 	const out = {};
 	CORNERS.forEach( ( corner ) => {
 		const value = longhands[ LONGHAND_KEYS[ corner ] ];
-		if ( undefined !== value ) out[ `${ prefix }${ CORNER_SUFFIX[ corner ] }` ] = bareLength( value );
+		if ( undefined !== value ) {
+			out[ `${ prefix }${ CORNER_SUFFIX[ corner ] }` ] =
+				bareLength( value );
+		}
 	} );
 	return out;
 }

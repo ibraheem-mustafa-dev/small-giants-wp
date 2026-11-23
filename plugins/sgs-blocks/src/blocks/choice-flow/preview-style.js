@@ -8,7 +8,12 @@
  * @package SGS\Blocks
  */
 import { getBlockType } from '@wordpress/blocks';
-import { colourVar, sgsBorderPreview, tierBoxLonghands, tierValueOf } from '../../utils';
+import {
+	colourVar,
+	sgsBorderPreview,
+	tierBoxLonghands,
+	tierValueOf,
+} from '../../utils';
 import buttonKitStyle from '../../components/button-kit/button-kit-style';
 import { presetNames } from '../button/preset-names';
 
@@ -18,7 +23,8 @@ import { presetNames } from '../button/preset-names';
  * @return {Object} Style object for the flow's wrapper element.
  */
 export function buildWrapperStyle( attributes, tier = 'desktop' ) {
-	const { padding, maxWidth, flowLayout, optionMediaSize, headerLogoHeight } = attributes;
+	const { padding, maxWidth, flowLayout, optionMediaSize, headerLogoHeight } =
+		attributes;
 	const style = {};
 
 	// Showcase fills its full-screen frame, so render.php skips the compact box.
@@ -44,23 +50,52 @@ export function buildWrapperStyle( attributes, tier = 'desktop' ) {
 		}
 	};
 	setColour( '--sgs-choice-flow-stage', attributes.stageColour );
-	setGradient( '--sgs-choice-flow-stage-gradient', attributes.stageColourGradient );
+	setGradient(
+		'--sgs-choice-flow-stage-gradient',
+		attributes.stageColourGradient
+	);
 	setColour( '--sgs-choice-flow-note-icon', attributes.stageNoteIconColour );
-	setGradient( '--sgs-choice-flow-note-icon-gradient', attributes.stageNoteIconColourGradient );
-	setColour( '--sgs-choice-flow-note-border', attributes.stageNoteBorderColour );
-	setColour( '--sgs-choice-flow-note-hover', attributes.stageNoteHoverColour );
-	setGradient( '--sgs-choice-flow-note-hover-gradient', attributes.stageNoteHoverColourGradient );
+	setGradient(
+		'--sgs-choice-flow-note-icon-gradient',
+		attributes.stageNoteIconColourGradient
+	);
+	setColour(
+		'--sgs-choice-flow-note-border',
+		attributes.stageNoteBorderColour
+	);
+	setColour(
+		'--sgs-choice-flow-note-hover',
+		attributes.stageNoteHoverColour
+	);
+	setGradient(
+		'--sgs-choice-flow-note-hover-gradient',
+		attributes.stageNoteHoverColourGradient
+	);
 	setColour( '--sgs-choice-flow-eyebrow', attributes.headerEyebrowColour );
 	setColour( '--sgs-choice-flow-toggle', attributes.infoToggleColour );
-	setColour( '--sgs-choice-flow-toggle-border', attributes.infoToggleBorderColour );
+	setColour(
+		'--sgs-choice-flow-toggle-border',
+		attributes.infoToggleBorderColour
+	);
 	setColour( '--sgs-choice-flow-stepper', attributes.stepperColour );
-	setColour( '--sgs-choice-flow-stepper-active', attributes.stepperActiveColour );
-	setColour( '--sgs-choice-flow-badge-colour', attributes.progressBadgeColour );
+	setColour(
+		'--sgs-choice-flow-stepper-active',
+		attributes.stepperActiveColour
+	);
+	setColour(
+		'--sgs-choice-flow-badge-colour',
+		attributes.progressBadgeColour
+	);
 	setColour( '--sgs-choice-flow-note-colour', attributes.summaryNoteColour );
 
 	// choice-flow-showcase.php: 12 to 80 px, 32 is the stylesheet's own default.
 	const logoHeight = Number( headerLogoHeight );
-	if ( Number.isInteger( logoHeight ) && 32 !== logoHeight && logoHeight >= 12 && logoHeight <= 80 ) {
+	if (
+		Number.isInteger( logoHeight ) &&
+		32 !== logoHeight &&
+		logoHeight >= 12 &&
+		logoHeight <= 80
+	) {
 		style[ '--sgs-choice-flow-logo-height' ] = `${ logoHeight }px`;
 	}
 
@@ -79,13 +114,17 @@ export function buildWrapperStyle( attributes, tier = 'desktop' ) {
 export function mediaSizePreviewStyle( optionMediaSize, tier = 'desktop' ) {
 	const mediaSize = tierValueOf( optionMediaSize, tier, ( raw ) => {
 		const value = Number( raw );
-		return Number.isFinite( value ) && value >= 10 && value <= 300 ? value : undefined;
+		return Number.isFinite( value ) && value >= 10 && value <= 300
+			? value
+			: undefined;
 	} );
 	if ( undefined === mediaSize ) {
 		return {};
 	}
 	return {
-		'--sgs-choice-flow-media-size': `${ Math.round( mediaSize * 100 ) / 100 }%`,
+		'--sgs-choice-flow-media-size': `${
+			Math.round( mediaSize * 100 ) / 100
+		}%`,
 		'--sgs-choice-flow-media-height': 'auto',
 	};
 }
@@ -100,7 +139,9 @@ export function mediaSizePreviewStyle( optionMediaSize, tier = 'desktop' ) {
  */
 export function buttonPresetClass( attributes, prefix ) {
 	const slug = attributes?.[ `${ prefix }Style` ];
-	return presetNames().includes( slug ) ? `sgs-button sgs-button--${ slug }` : '';
+	return presetNames().includes( slug )
+		? `sgs-button sgs-button--${ slug }`
+		: '';
 }
 
 /**
@@ -115,13 +156,22 @@ export function buttonPresetClass( attributes, prefix ) {
  * @param {Array}  [options.palette] Theme colour palette.
  * @return {Object} React style fragment.
  */
-export function buttonKitPreview( attributes, prefix, { tier = 'desktop', palette } = {} ) {
+export function buttonKitPreview(
+	attributes,
+	prefix,
+	{ tier = 'desktop', palette } = {}
+) {
 	let own = attributes;
 	if ( buttonPresetClass( attributes, prefix ) ) {
 		const declared = getBlockType( 'sgs/choice-flow' )?.attributes || {};
 		own = { ...attributes };
 		for ( const name of Object.keys( own ) ) {
-			if ( name.startsWith( prefix ) && 'default' in ( declared[ name ] || {} ) && JSON.stringify( own[ name ] ) === JSON.stringify( declared[ name ].default ) ) {
+			if (
+				name.startsWith( prefix ) &&
+				'default' in ( declared[ name ] || {} ) &&
+				JSON.stringify( own[ name ] ) ===
+					JSON.stringify( declared[ name ].default )
+			) {
 				delete own[ name ];
 			}
 		}
@@ -139,17 +189,40 @@ export function buttonKitPreview( attributes, prefix, { tier = 'desktop', palett
  * @param {Array}  [palette]  Theme colour palette.
  * @return {Object} Inline style object for the preview `<span>`.
  */
-export function buildBackButtonPreviewStyle( attributes, tier = 'desktop', palette ) {
+export function buildBackButtonPreviewStyle(
+	attributes,
+	tier = 'desktop',
+	palette
+) {
 	const kit = buttonKitPreview( attributes, 'back', { tier, palette } );
 	if ( buttonPresetClass( attributes, 'back' ) ) {
 		return kit;
 	}
-	const { backColourBackground, backColourText, backColourBorder, backBorderStyle, backBorderWidth, backBorderRadius } = attributes;
+	const {
+		backColourBackground,
+		backColourText,
+		backColourBorder,
+		backBorderStyle,
+		backBorderWidth,
+		backBorderRadius,
+	} = attributes;
 	return {
 		...kit,
-		backgroundColor: backColourBackground ? colourVar( backColourBackground ) : 'transparent',
+		backgroundColor: backColourBackground
+			? colourVar( backColourBackground )
+			: 'transparent',
 		color: backColourText ? colourVar( backColourText ) : undefined,
-		...sgsBorderPreview( { widthValues: backBorderWidth ?? {}, styleValue: backBorderStyle, colourValue: backColourBorder, radiusValues: backBorderRadius }, tier, palette, { defaultBorder: true } ),
+		...sgsBorderPreview(
+			{
+				widthValues: backBorderWidth ?? {},
+				styleValue: backBorderStyle,
+				colourValue: backColourBorder,
+				radiusValues: backBorderRadius,
+			},
+			tier,
+			palette,
+			{ defaultBorder: true }
+		),
 	};
 }
 

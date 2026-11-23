@@ -14,6 +14,21 @@ import SgsFreeTextField from '../SgsFreeTextField.js';
  * @param {string}   props.help     Why it is off, when it is.
  * @param {Function} props.onChange Receives the new HTML string.
  */
-export default function MediaSlotCaptionText( { label, value, disabled, help, onChange } ) {
-	return <SgsFreeTextField type="rich" label={ label } value={ value } disabled={ disabled } help={ help } onChange={ onChange } />;
+export default function MediaSlotCaptionText( {
+	label,
+	value,
+	disabled,
+	help,
+	onChange,
+} ) {
+	return (
+		<SgsFreeTextField
+			type="rich"
+			label={ label }
+			value={ value }
+			disabled={ disabled }
+			help={ help }
+			onChange={ onChange }
+		/>
+	);
 }

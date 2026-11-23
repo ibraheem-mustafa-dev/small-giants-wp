@@ -35,7 +35,10 @@ import { hasFile } from '../../components/media/mediaSlotWrites.js';
 import { QUERY_DESKTOP, QUERY_TABLET_UP } from '../../utils/breakpoints';
 import { composeShadow } from '../../utils/shadow-layers';
 import { presetNames } from '../button/preset-names';
-import { galleryStickerPreviewCss, stickerCorner } from './gallery-sticker-preview';
+import {
+	galleryStickerPreviewCss,
+	stickerCorner,
+} from './gallery-sticker-preview';
 import { cartFormMock, instalmentsNoteMock } from './canvas-cart-form';
 import buttonKitStyle from '../../components/button-kit/button-kit-style';
 const PICKER_STYLES = [ 'outlined', 'filled', 'ghost', 'tile' ];
@@ -71,7 +74,17 @@ const SAMPLE_PICTURE = {
  * the picture: the twin of `includes/product-card-media.php::sgs_pcm_chrome_bases`. The mock draws them on the box
  * (`buyboxMockCss`), so the picture is given the slot without them, as render.php does.
  */
-const CHROME_BASES = [ 'BorderWidth', 'BorderStyle', 'BorderColour', 'BorderColourHover', 'Radius', 'BoxShadow', 'BoxShadowColour', 'BoxShadowColourHover', 'Background' ];
+const CHROME_BASES = [
+	'BorderWidth',
+	'BorderStyle',
+	'BorderColour',
+	'BorderColourHover',
+	'Radius',
+	'BoxShadow',
+	'BoxShadowColour',
+	'BoxShadowColourHover',
+	'Background',
+];
 
 /**
  * A slot's attributes without its box settings (`sgs_pcm_picture_attrs`).
@@ -87,7 +100,10 @@ function pictureAttrs( attributes, prefix ) {
 }
 
 /** Whether a Source (per device) names a file on any device. */
-const sourceHasFile = ( source ) => [ 'desktop', 'tablet', 'mobile' ].some( ( device ) => hasFile( source?.[ device ] ) );
+const sourceHasFile = ( source ) =>
+	[ 'desktop', 'tablet', 'mobile' ].some( ( device ) =>
+		hasFile( source?.[ device ] )
+	);
 
 const SAMPLE = {
 	price: '£30.00',
@@ -116,7 +132,8 @@ const SAMPLE = {
  * @param {*} value Stored length.
  * @return {string} The length, or '' when it is not safe to print.
  */
-const safeLength = ( value ) => ( /^[\w.%() ,-]+$/.test( String( value || '' ) ) ? String( value ) : '' );
+const safeLength = ( value ) =>
+	/^[\w.%() ,-]+$/.test( String( value || '' ) ) ? String( value ) : '';
 
 /**
  * Whether the add-to-basket bar is on at a tier (render.php's sgs_buybox_sticky_bar_data).
@@ -291,11 +308,17 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 		right: 'flex-end',
 		end: 'flex-end',
 	};
-	const stockAlign = resolveResponsiveTier( attributes.stockTextAlign, tier ).value;
+	const stockAlign = resolveResponsiveTier(
+		attributes.stockTextAlign,
+		tier
+	).value;
 	if ( justify[ stockAlign ] ) {
 		css += `${ root } .buybox__stock--status{justify-content:${ justify[ stockAlign ] };}`;
 	}
-	const meterAlign = resolveResponsiveTier( attributes.guidedMeterTextAlign, tier ).value;
+	const meterAlign = resolveResponsiveTier(
+		attributes.guidedMeterTextAlign,
+		tier
+	).value;
 	if ( justify[ meterAlign ] ) {
 		css += `${ root } .sgs-buybox-guided__meter-btn{justify-content:${ justify[ meterAlign ] };}`;
 	}
@@ -314,7 +337,9 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 	}
 	if ( decls.length ) {
 		const query =
-			'tablet' === attributes.stackBelow ? QUERY_DESKTOP : QUERY_TABLET_UP;
+			'tablet' === attributes.stackBelow
+				? QUERY_DESKTOP
+				: QUERY_TABLET_UP;
 		css += `@media ${ query }{${ root }{${ decls.join( ';' ) };}}`;
 	}
 	[
@@ -353,20 +378,34 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 	}
 	const photoWidth = attributes.mainBorderWidth || {};
 	const photoBox = photoWidth.desktop || photoWidth;
-	const photoSides = [ 'top', 'right', 'bottom', 'left' ].map( ( side ) => safeLength( photoBox[ side ] ) );
+	const photoSides = [ 'top', 'right', 'bottom', 'left' ].map( ( side ) =>
+		safeLength( photoBox[ side ] )
+	);
 	if ( photoSides.some( Boolean ) ) {
 		photoDecls.push(
 			`border-style:${ attributes.mainBorderStyle || 'solid' }`,
-			`border-width:${ photoSides.map( ( side ) => side || '0' ).join( ' ' ) }`
+			`border-width:${ photoSides
+				.map( ( side ) => side || '0' )
+				.join( ' ' ) }`
 		);
 	}
 	const photoCorners = cornersAt( attributes.mainRadius );
-	const photoRadii = [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ].map( ( corner ) => safeLength( photoCorners[ corner ] ) );
+	const photoRadii = [
+		'topLeft',
+		'topRight',
+		'bottomRight',
+		'bottomLeft',
+	].map( ( corner ) => safeLength( photoCorners[ corner ] ) );
 	if ( photoRadii.some( Boolean ) ) {
-		photoDecls.push( `border-radius:${ photoRadii.map( ( r ) => r || '0' ).join( ' ' ) }` );
+		photoDecls.push(
+			`border-radius:${ photoRadii.map( ( r ) => r || '0' ).join( ' ' ) }`
+		);
 	}
 	const photoShadow = attributes.mainBoxShadow
-		? composeShadow( attributes.mainBoxShadow, attributes.mainBoxShadowColour )
+		? composeShadow(
+				attributes.mainBoxShadow,
+				attributes.mainBoxShadowColour
+		  )
 		: '';
 	if ( photoShadow && ! /[;{}<>]/.test( photoShadow ) ) {
 		photoDecls.push( `box-shadow:${ photoShadow }` );
@@ -375,19 +414,30 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 		css += `${ root } .product-card__media{${ photoDecls.join( ';' ) };}`;
 	}
 	if ( safeLength( attributes.priceRowGap ) ) {
-		css += `${ root } .buybox__price-row{gap:${ safeLength( attributes.priceRowGap ) };}`;
+		css += `${ root } .buybox__price-row{gap:${ safeLength(
+			attributes.priceRowGap
+		) };}`;
 	}
 	if ( safeLength( attributes.rrpPillRadius ) ) {
-		css += `${ root } .buybox__rrp-pill{border-radius:${ safeLength( attributes.rrpPillRadius ) };}`;
+		css += `${ root } .buybox__rrp-pill{border-radius:${ safeLength(
+			attributes.rrpPillRadius
+		) };}`;
 	}
 	const hairlineMargin = attributes.stockLineHairlineMargin || {};
 	const hairlineMarginDecls = [ 'top', 'bottom' ]
 		.filter( ( side ) => safeLength( hairlineMargin[ side ] ) )
-		.map( ( side ) => `margin-${ side }:${ safeLength( hairlineMargin[ side ] ) }` );
+		.map(
+			( side ) =>
+				`margin-${ side }:${ safeLength( hairlineMargin[ side ] ) }`
+		);
 	if ( hairlineMarginDecls.length ) {
-		css += `${ root } .sgs-buybox__stock-hairline{${ hairlineMarginDecls.join( ';' ) };}`;
+		css += `${ root } .sgs-buybox__stock-hairline{${ hairlineMarginDecls.join(
+			';'
+		) };}`;
 	}
-	const galleryThumbSizeValue = safeLength( tierValueOf( attributes.galleryThumbSize, tier ) || '' );
+	const galleryThumbSizeValue = safeLength(
+		tierValueOf( attributes.galleryThumbSize, tier ) || ''
+	);
 	if ( galleryThumbSizeValue ) {
 		css += `${ root }{--sgs-buybox-thumb-size:${ galleryThumbSizeValue };}`;
 	}
@@ -506,46 +556,93 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 	}
 	// Pick a set: the preview box, the summary and the option pills (render.php prints the same settings scoped).
 	if ( 'configurator' === attributes.buyboxLayout ) {
-		const resolve = ( value ) => ( value ? resolveColourToken( value, palette ) || value : '' );
+		const resolve = ( value ) =>
+			value ? resolveColourToken( value, palette ) || value : '';
 		const previewDecls = [];
 		if ( attributes.previewBackgroundColour ) {
-			previewDecls.push( `background:${ resolve( attributes.previewBackgroundColour ) }` );
+			previewDecls.push(
+				`background:${ resolve( attributes.previewBackgroundColour ) }`
+			);
 		}
 		if ( attributes.previewBorderColour ) {
-			previewDecls.push( `border-color:${ resolve( attributes.previewBorderColour ) }` );
+			previewDecls.push(
+				`border-color:${ resolve( attributes.previewBorderColour ) }`
+			);
 		}
 		const previewWidth = attributes.previewBorderWidth || {};
-		const previewSides = [ 'top', 'right', 'bottom', 'left' ].map( ( side ) => safeLength( previewWidth[ side ] ) );
+		const previewSides = [ 'top', 'right', 'bottom', 'left' ].map(
+			( side ) => safeLength( previewWidth[ side ] )
+		);
 		if ( previewSides.some( Boolean ) ) {
-			previewDecls.push( `border-width:${ previewSides.map( ( side ) => side || '0' ).join( ' ' ) }` );
+			previewDecls.push(
+				`border-width:${ previewSides
+					.map( ( side ) => side || '0' )
+					.join( ' ' ) }`
+			);
 		}
 		const previewCorners = cornersAt( attributes.previewRadius );
-		const previewRadii = [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ].map( ( corner ) => safeLength( previewCorners[ corner ] ) );
+		const previewRadii = [
+			'topLeft',
+			'topRight',
+			'bottomRight',
+			'bottomLeft',
+		].map( ( corner ) => safeLength( previewCorners[ corner ] ) );
 		if ( previewRadii.some( Boolean ) ) {
-			previewDecls.push( `border-radius:${ previewRadii.map( ( r ) => r || '0' ).join( ' ' ) }` );
+			previewDecls.push(
+				`border-radius:${ previewRadii
+					.map( ( r ) => r || '0' )
+					.join( ' ' ) }`
+			);
 		}
-		const previewPad = tierBoxLonghands( attributes.previewPadding, tier, 'padding' );
+		const previewPad = tierBoxLonghands(
+			attributes.previewPadding,
+			tier,
+			'padding'
+		);
 		Object.entries( previewPad ).forEach( ( [ prop, val ] ) => {
-			previewDecls.push( `${ prop.replace( /[A-Z]/g, ( c ) => `-${ c.toLowerCase() }` ) }:${ val }` );
+			previewDecls.push(
+				`${ prop.replace(
+					/[A-Z]/g,
+					( c ) => `-${ c.toLowerCase() }`
+				) }:${ val }`
+			);
 		} );
 		if ( previewDecls.length ) {
-			css += `${ root } .sgs-buybox__pick-preview{${ previewDecls.join( ';' ) };}`;
+			css += `${ root } .sgs-buybox__pick-preview{${ previewDecls.join(
+				';'
+			) };}`;
 		}
 		if ( attributes.pickSummaryColour ) {
-			css += `${ root } .sgs-buybox__pick-summary{color:${ resolve( attributes.pickSummaryColour ) };}`;
+			css += `${ root } .sgs-buybox__pick-summary{color:${ resolve(
+				attributes.pickSummaryColour
+			) };}`;
 		}
-		css += typographyPreviewCss( attributes, 'pickSummary', `${ root } .sgs-buybox__pick-summary`, tier );
+		css += typographyPreviewCss(
+			attributes,
+			'pickSummary',
+			`${ root } .sgs-buybox__pick-summary`,
+			tier
+		);
 		if ( attributes.pickOptionRadius ) {
 			css += `${ root } .sgs-buybox__pick-option{border-radius:${ attributes.pickOptionRadius };}`;
 		}
-		const kebab = ( prop ) => prop.replace( /[A-Z]/g, ( c ) => `-${ c.toLowerCase() }` );
-		const optionPad = Object.entries( tierBoxLonghands( attributes.pickOptionPadding, tier, 'padding' ) ).map( ( [ prop, val ] ) => `${ kebab( prop ) }:${ val }` );
+		const kebab = ( prop ) =>
+			prop.replace( /[A-Z]/g, ( c ) => `-${ c.toLowerCase() }` );
+		const optionPad = Object.entries(
+			tierBoxLonghands( attributes.pickOptionPadding, tier, 'padding' )
+		).map( ( [ prop, val ] ) => `${ kebab( prop ) }:${ val }` );
 		if ( optionPad.length ) {
-			css += `${ root } .sgs-buybox__pick-option{${ optionPad.join( ';' ) };}`;
+			css += `${ root } .sgs-buybox__pick-option{${ optionPad.join(
+				';'
+			) };}`;
 		}
-		const tilePad = Object.entries( tierBoxLonghands( attributes.pickTilePadding, tier, 'padding' ) ).map( ( [ prop, val ] ) => `${ kebab( prop ) }:${ val }` );
+		const tilePad = Object.entries(
+			tierBoxLonghands( attributes.pickTilePadding, tier, 'padding' )
+		).map( ( [ prop, val ] ) => `${ kebab( prop ) }:${ val }` );
 		if ( tilePad.length ) {
-			css += `${ root } .sgs-buybox__pick-box .sgs-option-picker__pill{${ tilePad.join( ';' ) };}`;
+			css += `${ root } .sgs-buybox__pick-box .sgs-option-picker__pill{${ tilePad.join(
+				';'
+			) };}`;
 		}
 		if ( attributes.pickTileGap ) {
 			css += `${ root } .sgs-buybox__pick-box .sgs-option-picker__options{gap:${ attributes.pickTileGap };}`;
@@ -553,36 +650,62 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 		const tile = `${ root } .sgs-buybox__pick-box .sgs-option-picker--tile`;
 		const pill = `${ root } .sgs-buybox__pick-box .sgs-option-picker:not(.sgs-option-picker--tile)`;
 		[
-			[ attributes.pickTileNumberSize, `${ tile } .sgs-option-picker__pill-label` ],
-			[ attributes.pickTilePriceSize, `${ tile } .sgs-option-picker__sub-label` ],
-			[ attributes.pickTileEachSize, `${ tile } .sgs-option-picker__term-description` ],
-			[ attributes.pickPricedFontSize, `${ pill } .sgs-option-picker__pill` ],
+			[
+				attributes.pickTileNumberSize,
+				`${ tile } .sgs-option-picker__pill-label`,
+			],
+			[
+				attributes.pickTilePriceSize,
+				`${ tile } .sgs-option-picker__sub-label`,
+			],
+			[
+				attributes.pickTileEachSize,
+				`${ tile } .sgs-option-picker__term-description`,
+			],
+			[
+				attributes.pickPricedFontSize,
+				`${ pill } .sgs-option-picker__pill`,
+			],
 		].forEach( ( [ sizes, sel ] ) => {
 			const size = tierValueOf( sizes, tier );
 			if ( size ) {
 				css += `${ sel }{font-size:${ safeLength( size ) };}`;
 			}
 		} );
-		const pricedPad = Object.entries( tierBoxLonghands( attributes.pickPricedPadding, tier, 'padding' ) ).map( ( [ prop, val ] ) => `${ kebab( prop ) }:${ val }` );
+		const pricedPad = Object.entries(
+			tierBoxLonghands( attributes.pickPricedPadding, tier, 'padding' )
+		).map( ( [ prop, val ] ) => `${ kebab( prop ) }:${ val }` );
 		if ( pricedPad.length ) {
-			css += `${ pill } .sgs-option-picker__pill{${ pricedPad.join( ';' ) };}`;
+			css += `${ pill } .sgs-option-picker__pill{${ pricedPad.join(
+				';'
+			) };}`;
 		}
 		const pricedMin = tierValueOf( attributes.pickPricedMinHeight, tier );
 		if ( pricedMin ) {
-			css += `${ pill } .sgs-option-picker__pill{min-height:${ safeLength( pricedMin ) };}`;
+			css += `${ pill } .sgs-option-picker__pill{min-height:${ safeLength(
+				pricedMin
+			) };}`;
 		}
 		if ( 'auto' === attributes.pickPricedLayout ) {
 			css += `${ pill } .sgs-option-picker__options{display:flex;flex-wrap:wrap;align-items:center;}${ pill } .sgs-option-picker__option{width:auto;}${ pill } .sgs-option-picker__pill{width:auto;}`;
 		}
 		const badgeDecls = [];
 		if ( attributes.pickBadgeBackgroundColour ) {
-			badgeDecls.push( `background-color:${ resolve( attributes.pickBadgeBackgroundColour ) }` );
+			badgeDecls.push(
+				`background-color:${ resolve(
+					attributes.pickBadgeBackgroundColour
+				) }`
+			);
 		}
 		if ( attributes.pickBadgeTextColour ) {
-			badgeDecls.push( `color:${ resolve( attributes.pickBadgeTextColour ) }` );
+			badgeDecls.push(
+				`color:${ resolve( attributes.pickBadgeTextColour ) }`
+			);
 		}
 		if ( badgeDecls.length ) {
-			css += `${ root } .sgs-buybox__pick-box .sgs-option-picker__term-badge,${ root } .sgs-buybox__pick-box .sgs-buybox-pick__option-badge{${ badgeDecls.join( ';' ) };}`;
+			css += `${ root } .sgs-buybox__pick-box .sgs-option-picker__term-badge,${ root } .sgs-buybox__pick-box .sgs-buybox-pick__option-badge{${ badgeDecls.join(
+				';'
+			) };}`;
 		}
 		// The badge's size (pickBadgeFontSize), as render.php's pickBadge typography rule prints it.
 		css += typographyPreviewCss(
@@ -592,23 +715,41 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 			tier
 		);
 		if ( attributes.pickPricedGap ) {
-			css += `${ pill } .sgs-option-picker__options{gap:${ safeLength( attributes.pickPricedGap ) };}`;
+			css += `${ pill } .sgs-option-picker__options{gap:${ safeLength(
+				attributes.pickPricedGap
+			) };}`;
 		}
 		if ( attributes.pickPricedRadius ) {
-			css += `${ pill }{--sgs-op-pill-radius:${ safeLength( attributes.pickPricedRadius ) };}${ pill } .sgs-option-picker__pill{border-radius:${ safeLength( attributes.pickPricedRadius ) };}`;
+			css += `${ pill }{--sgs-op-pill-radius:${ safeLength(
+				attributes.pickPricedRadius
+			) };}${ pill } .sgs-option-picker__pill{border-radius:${ safeLength(
+				attributes.pickPricedRadius
+			) };}`;
 		}
 		if ( attributes.pickOptionGap ) {
 			css += `${ root } .sgs-buybox-pick__options{gap:${ attributes.pickOptionGap };}`;
 		}
 		const selVars = [];
 		if ( attributes.pickSelectedBackgroundColour ) {
-			selVars.push( `--sgs-pick-sel-bg:${ resolve( attributes.pickSelectedBackgroundColour ) }` );
+			selVars.push(
+				`--sgs-pick-sel-bg:${ resolve(
+					attributes.pickSelectedBackgroundColour
+				) }`
+			);
 		}
 		if ( attributes.pickSelectedBorderColour ) {
-			selVars.push( `--sgs-pick-sel-border:${ resolve( attributes.pickSelectedBorderColour ) }` );
+			selVars.push(
+				`--sgs-pick-sel-border:${ resolve(
+					attributes.pickSelectedBorderColour
+				) }`
+			);
 		}
 		if ( attributes.pickSelectedTextColour ) {
-			selVars.push( `--sgs-pick-sel-text:${ resolve( attributes.pickSelectedTextColour ) }` );
+			selVars.push(
+				`--sgs-pick-sel-text:${ resolve(
+					attributes.pickSelectedTextColour
+				) }`
+			);
 		}
 		if ( selVars.length ) {
 			css += `${ root }{${ selVars.join( ';' ) };}`;
@@ -618,8 +759,16 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 		const pickerVars = [];
 		const pickVars = [];
 		[
-			[ attributes.pickerPillBackgroundColour, '--sgs-op-bg', '--sgs-pick-bg' ],
-			[ attributes.pickerPillBorderColour, '--sgs-op-border', '--sgs-pick-border' ],
+			[
+				attributes.pickerPillBackgroundColour,
+				'--sgs-op-bg',
+				'--sgs-pick-bg',
+			],
+			[
+				attributes.pickerPillBorderColour,
+				'--sgs-op-border',
+				'--sgs-pick-border',
+			],
 		].forEach( ( [ value, opVar, pickVar ] ) => {
 			if ( value ) {
 				pickerVars.push( `${ opVar }:${ resolve( value ) }` );
@@ -627,31 +776,54 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 			}
 		} );
 		if ( /^[1-9]00$/.test( attributes.pickerPillFontWeight || '' ) ) {
-			pickVars.push( `--sgs-pick-weight:${ attributes.pickerPillFontWeight }` );
+			pickVars.push(
+				`--sgs-pick-weight:${ attributes.pickerPillFontWeight }`
+			);
 			css += `${ box } .sgs-option-picker:not(.sgs-option-picker--tile) .sgs-option-picker__pill{font-weight:${ attributes.pickerPillFontWeight };}`;
 		}
 		if ( pickerVars.length ) {
 			css += `${ box } .sgs-option-picker{${ pickerVars.join( ';' ) };}`;
 		}
-		if ( attributes.pickerDotTickInside && attributes.pickerDotTickColour ) {
-			pickVars.push( `--sgs-pick-dot-tick:${ resolve( attributes.pickerDotTickColour ) }` );
+		if (
+			attributes.pickerDotTickInside &&
+			attributes.pickerDotTickColour
+		) {
+			pickVars.push(
+				`--sgs-pick-dot-tick:${ resolve(
+					attributes.pickerDotTickColour
+				) }`
+			);
 		}
 		if ( pickVars.length ) {
 			css += `${ root }{${ pickVars.join( ';' ) };}`;
 		}
-		const selShadow = composeShadow( attributes.pickerPillSelectedShadow, attributes.pickerPillSelectedShadowColour );
+		const selShadow = composeShadow(
+			attributes.pickerPillSelectedShadow,
+			attributes.pickerPillSelectedShadowColour
+		);
 		const selDecls = [];
 		if ( selShadow ) {
 			selDecls.push( `box-shadow:${ selShadow }` );
 		}
-		if ( attributes.pickerPillSelectedOffsetX || attributes.pickerPillSelectedOffsetY ) {
-			selDecls.push( `translate:${ attributes.pickerPillSelectedOffsetX || '0' } ${ attributes.pickerPillSelectedOffsetY || '0' }` );
+		if (
+			attributes.pickerPillSelectedOffsetX ||
+			attributes.pickerPillSelectedOffsetY
+		) {
+			selDecls.push(
+				`translate:${ attributes.pickerPillSelectedOffsetX || '0' } ${
+					attributes.pickerPillSelectedOffsetY || '0'
+				}`
+			);
 		}
 		if ( selDecls.length ) {
-			css += `${ box } .sgs-option-picker__option--selected .sgs-option-picker__pill,${ box } .sgs-option-picker__option input:checked ~ .sgs-option-picker__pill{${ selDecls.join( ';' ) };}`;
+			css += `${ box } .sgs-option-picker__option--selected .sgs-option-picker__pill,${ box } .sgs-option-picker__option input:checked ~ .sgs-option-picker__pill{${ selDecls.join(
+				';'
+			) };}`;
 		}
 		if ( attributes.pickerDotSize ) {
-			css += `${ root } .sgs-option-picker:not(.sgs-option-picker--tile) .sgs-option-picker__swatch--colour{width:${ safeLength( attributes.pickerDotSize ) };height:${ safeLength( attributes.pickerDotSize ) };}`;
+			css += `${ root } .sgs-option-picker:not(.sgs-option-picker--tile) .sgs-option-picker__swatch--colour{width:${ safeLength(
+				attributes.pickerDotSize
+			) };height:${ safeLength( attributes.pickerDotSize ) };}`;
 		}
 		const dotDecls = [];
 		if ( 'round' === attributes.pickerDotShape ) {
@@ -660,25 +832,47 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 			dotDecls.push( 'border-radius:0' );
 		}
 		if ( attributes.pickerGroupDotSize ) {
-			dotDecls.push( `width:${ safeLength( attributes.pickerGroupDotSize ) }`, `height:${ safeLength( attributes.pickerGroupDotSize ) }` );
+			dotDecls.push(
+				`width:${ safeLength( attributes.pickerGroupDotSize ) }`,
+				`height:${ safeLength( attributes.pickerGroupDotSize ) }`
+			);
 		}
 		if ( attributes.pickerDotRingThickness ) {
-			dotDecls.push( `border-width:${ safeLength( attributes.pickerDotRingThickness ) }` );
+			dotDecls.push(
+				`border-width:${ safeLength(
+					attributes.pickerDotRingThickness
+				) }`
+			);
 		}
 		if ( attributes.pickerDotRingColour ) {
-			dotDecls.push( `border-color:${ resolve( attributes.pickerDotRingColour ) }` );
+			dotDecls.push(
+				`border-color:${ resolve( attributes.pickerDotRingColour ) }`
+			);
 		}
 		if ( dotDecls.length ) {
-			css += `${ root } .sgs-buybox-pick__swatch{${ dotDecls.join( ';' ) };}`;
+			css += `${ root } .sgs-buybox-pick__swatch{${ dotDecls.join(
+				';'
+			) };}`;
 		}
-		css += typographyPreviewCss( attributes, 'pickerLabel', `${ root } .sgs-buybox-pick__group-title`, tier );
+		css += typographyPreviewCss(
+			attributes,
+			'pickerLabel',
+			`${ root } .sgs-buybox-pick__group-title`,
+			tier
+		);
 		if ( attributes.pickerLabelColour ) {
-			css += `${ root } .sgs-buybox-pick__group-title{color:${ resolve( attributes.pickerLabelColour ) };}`;
+			css += `${ root } .sgs-buybox-pick__group-title{color:${ resolve(
+				attributes.pickerLabelColour
+			) };}`;
 		}
 		if ( attributes.pickerHintColour ) {
-			css += `${ root } .sgs-buybox-pick__hint{color:${ resolve( attributes.pickerHintColour ) };}`;
+			css += `${ root } .sgs-buybox-pick__hint{color:${ resolve(
+				attributes.pickerHintColour
+			) };}`;
 		}
-		const boxPad = Object.entries( tierBoxLonghands( attributes.pickerBoxPadding, tier, 'padding' ) ).map( ( [ prop, val ] ) => `${ kebab( prop ) }:${ val }` );
+		const boxPad = Object.entries(
+			tierBoxLonghands( attributes.pickerBoxPadding, tier, 'padding' )
+		).map( ( [ prop, val ] ) => `${ kebab( prop ) }:${ val }` );
 		if ( boxPad.length ) {
 			css += `${ box }{${ boxPad.join( ';' ) };}`;
 		}
@@ -686,9 +880,17 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 		if ( boxGap ) {
 			css += `${ box }{gap:${ safeLength( boxGap ) };}`;
 		}
-		const cols = attributes.pickTileColumns && 'object' === typeof attributes.pickTileColumns ? attributes.pickTileColumns[ tier ] || attributes.pickTileColumns.desktop : 0;
+		const cols =
+			attributes.pickTileColumns &&
+			'object' === typeof attributes.pickTileColumns
+				? attributes.pickTileColumns[ tier ] ||
+				  attributes.pickTileColumns.desktop
+				: 0;
 		if ( cols >= 1 && cols <= 12 ) {
-			css += `${ box } .sgs-option-picker--tile .sgs-option-picker__options{grid-template-columns:repeat(${ parseInt( cols, 10 ) },minmax(0,1fr));}`;
+			css += `${ box } .sgs-option-picker--tile .sgs-option-picker__options{grid-template-columns:repeat(${ parseInt(
+				cols,
+				10
+			) },minmax(0,1fr));}`;
 		}
 		if ( /^[1-9]00$/.test( attributes.pickTileNumberWeight || '' ) ) {
 			css += `${ box } .sgs-option-picker--tile .sgs-option-picker__pill-label{font-weight:${ attributes.pickTileNumberWeight };}`;
@@ -704,12 +906,16 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 		const boxBorder = attributes.pickerBoxBorderColour;
 		if ( boxFill ) {
 			boxDecls.push(
-				`background-color:${ resolveColourToken( boxFill, palette ) || boxFill }`
+				`background-color:${
+					resolveColourToken( boxFill, palette ) || boxFill
+				}`
 			);
 		}
 		if ( boxBorder ) {
 			boxDecls.push(
-				`border-color:${ resolveColourToken( boxBorder, palette ) || boxBorder }`
+				`border-color:${
+					resolveColourToken( boxBorder, palette ) || boxBorder
+				}`
 			);
 		}
 		if ( attributes.pickerBoxBorderWidth ) {
@@ -722,7 +928,9 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 			boxDecls.push( `border-radius:${ attributes.pickerBoxRadius }` );
 		}
 		if ( boxDecls.length ) {
-			css += `${ root } .sgs-buybox__pick-box{${ boxDecls.join( ';' ) };padding:var(--wp--preset--spacing--30,1rem);}`;
+			css += `${ root } .sgs-buybox__pick-box{${ boxDecls.join(
+				';'
+			) };padding:var(--wp--preset--spacing--30,1rem);}`;
 		}
 	}
 	return css;
@@ -852,32 +1060,90 @@ function SampleOptionGroup( {
  * @return {Element} Sample markup.
  */
 function SamplePickSet( { attributes, uid, cart = null } ) {
-	const looks = attributes.groupStyles && 'object' === typeof attributes.groupStyles ? Object.values( attributes.groupStyles ) : [];
-	const style = [ 'filled', 'outlined', 'ghost', 'tile' ].includes( looks[ 0 ] ) ? looks[ 0 ] : 'outlined';
+	const looks =
+		attributes.groupStyles && 'object' === typeof attributes.groupStyles
+			? Object.values( attributes.groupStyles )
+			: [];
+	const style = [ 'filled', 'outlined', 'ghost', 'tile' ].includes(
+		looks[ 0 ]
+	)
+		? looks[ 0 ]
+		: 'outlined';
 	// The sample group is the last one, after three variation pickers, so an auto number reads 4.
-	const row = attributes.pickGroupHeadings && 'object' === typeof attributes.pickGroupHeadings ? Object.values( attributes.pickGroupHeadings )[ 0 ] || {} : {};
+	const row =
+		attributes.pickGroupHeadings &&
+		'object' === typeof attributes.pickGroupHeadings
+			? Object.values( attributes.pickGroupHeadings )[ 0 ] || {}
+			: {};
 	// The sample shows one of three picked, so a count placeholder in the hint reads as a real count.
-	const heading = row.text || row.hint || attributes.pickGroupNumbers
-		? { text: `${ attributes.pickGroupNumbers ? '4 · ' : '' }${ row.text || __( 'Flavour', 'sgs-blocks' ) }`, hint: ( row.hint || '' ).replace( /\{picked\}/g, '1' ).replace( /\{max\}/g, '3' ).replace( /\{left\}/g, '2' ) }
-		: null;
+	const heading =
+		row.text || row.hint || attributes.pickGroupNumbers
+			? {
+					text: `${ attributes.pickGroupNumbers ? '4 · ' : '' }${
+						row.text || __( 'Flavour', 'sgs-blocks' )
+					}`,
+					hint: ( row.hint || '' )
+						.replace( /\{picked\}/g, '1' )
+						.replace( /\{max\}/g, '3' )
+						.replace( /\{left\}/g, '2' ),
+			  }
+			: null;
 	return (
-		<div className={ `sgs-buybox-pick${ true === attributes.pickHidePreview ? ' sgs-buybox-pick--no-preview' : '' }${ attributes.pickerDotTickInside ? ' sgs-buybox-pick--dot-tick' : '' }${ true === attributes.pickSideButton ? ' sgs-buybox-pick--side-cart' : '' }` }>
+		<div
+			className={ `sgs-buybox-pick${
+				true === attributes.pickHidePreview
+					? ' sgs-buybox-pick--no-preview'
+					: ''
+			}${
+				attributes.pickerDotTickInside
+					? ' sgs-buybox-pick--dot-tick'
+					: ''
+			}${
+				true === attributes.pickSideButton
+					? ' sgs-buybox-pick--side-cart'
+					: ''
+			}` }
+		>
 			<div className="sgs-buybox-pick__groups sgs-buybox__pick-box">
-				<div className="sgs-buybox-pick__group" role="group" aria-label={ __( 'Flavour', 'sgs-blocks' ) }>
+				<div
+					className="sgs-buybox-pick__group"
+					role="group"
+					aria-label={ __( 'Flavour', 'sgs-blocks' ) }
+				>
 					{ heading ? (
 						<p className="sgs-buybox-pick__group-title">
 							{ heading.text }
-							{ heading.hint && <span className="sgs-buybox-pick__hint">{ heading.hint }</span> }
+							{ heading.hint && (
+								<span className="sgs-buybox-pick__hint">
+									{ heading.hint }
+								</span>
+							) }
 						</p>
 					) : (
-						<p className="sgs-buybox-pick__group-title">{ __( 'Flavour, choose up to 3', 'sgs-blocks' ) }</p>
+						<p className="sgs-buybox-pick__group-title">
+							{ __( 'Flavour, choose up to 3', 'sgs-blocks' ) }
+						</p>
 					) }
-					<div className={ `sgs-buybox-pick__options sgs-buybox-pick__options--${ style }` }>
-						{ [ __( 'Vanilla', 'sgs-blocks' ), __( 'Mango', 'sgs-blocks' ), __( 'Mint', 'sgs-blocks' ) ].map( ( name ) => (
-							<span key={ name } className="sgs-buybox-pick__option">
+					<div
+						className={ `sgs-buybox-pick__options sgs-buybox-pick__options--${ style }` }
+					>
+						{ [
+							__( 'Vanilla', 'sgs-blocks' ),
+							__( 'Mango', 'sgs-blocks' ),
+							__( 'Mint', 'sgs-blocks' ),
+						].map( ( name ) => (
+							<span
+								key={ name }
+								className="sgs-buybox-pick__option"
+							>
 								<span className="sgs-buybox-pick__option-body">
-									<span className="sgs-buybox-pick__swatch" aria-hidden="true" />
-									<span className="sgs-buybox-pick__option-name">{ name }</span>
+									<span
+										className="sgs-buybox-pick__swatch"
+										aria-hidden="true"
+									/>
+									<span className="sgs-buybox-pick__option-name">
+										{ name }
+									</span>
 								</span>
 							</span>
 						) ) }
@@ -887,12 +1153,20 @@ function SamplePickSet( { attributes, uid, cart = null } ) {
 			<div className="sgs-buybox-pick__side">
 				{ true !== attributes.pickHidePreview && (
 					<div
-						className={ `sgs-buybox-pick__preview-box sgs-buybox__pick-preview${ sourceHasFile( attributes.previewSource ) ? '' : ' sgs-buybox-pick__preview-box--plain' }` }
+						className={ `sgs-buybox-pick__preview-box sgs-buybox__pick-preview${
+							sourceHasFile( attributes.previewSource )
+								? ''
+								: ' sgs-buybox-pick__preview-box--plain'
+						}` }
 						aria-hidden="true"
 					>
 						{ /* The box's own picture, when the author set one: decorative, as render.php prints it. */ }
 						<SlotPicture
-							attributes={ { ...pictureAttrs( attributes, 'preview' ), previewAlt: '', previewDecorative: true } }
+							attributes={ {
+								...pictureAttrs( attributes, 'preview' ),
+								previewAlt: '',
+								previewDecorative: true,
+							} }
 							setAttributes={ () => {} }
 							prefix="preview"
 							kinds={ [ 'image' ] }
@@ -903,22 +1177,36 @@ function SamplePickSet( { attributes, uid, cart = null } ) {
 						/>
 					</div>
 				) }
-				<p className="sgs-buybox-pick__caption sgs-buybox__pick-summary">{ ( attributes.summaryText || 'Your {pack}: {split}' ).replace( '{pack}', '20' ).replace( '{split}', '7 Vanilla · 7 Mango · 6 Mint' ).replace( /\{[a-z_]+\}/g, '' ) }</p>
+				<p className="sgs-buybox-pick__caption sgs-buybox__pick-summary">
+					{ ( attributes.summaryText || 'Your {pack}: {split}' )
+						.replace( '{pack}', '20' )
+						.replace( '{split}', '7 Vanilla · 7 Mango · 6 Mint' )
+						.replace( /\{[a-z_]+\}/g, '' ) }
+				</p>
 				{ attributes.pickSideAxis && (
 					<div className="sgs-buybox-pick__side-picker sgs-buybox__pick-box">
-						<p className="sgs-buybox-pick__group-title">{ attributes.pickSideAxis }</p>
+						<p className="sgs-buybox-pick__group-title">
+							{ attributes.pickSideAxis }
+						</p>
 						<div className="sgs-buybox-pick__options sgs-buybox-pick__options--tile">
 							{ [ '8', '20' ].map( ( n ) => (
-								<span key={ n } className="sgs-buybox-pick__option">
+								<span
+									key={ n }
+									className="sgs-buybox-pick__option"
+								>
 									<span className="sgs-buybox-pick__option-body">
-										<span className="sgs-buybox-pick__option-name">{ n }</span>
+										<span className="sgs-buybox-pick__option-name">
+											{ n }
+										</span>
 									</span>
 								</span>
 							) ) }
 						</div>
 					</div>
 				) }
-				{ cart && <div className="sgs-buybox-pick__side-cart">{ cart }</div> }
+				{ cart && (
+					<div className="sgs-buybox-pick__side-cart">{ cart }</div>
+				) }
 			</div>
 		</div>
 	);
@@ -984,11 +1272,21 @@ function SampleNote( { attributes } ) {
 	return (
 		<div className="sgs-buybox__note" aria-hidden="true">
 			<span className="sgs-buybox__note-label">
-				{ attributes.noteLabel || __( 'Allergies or dietary needs?', 'sgs-blocks' ) }
-				{ true === attributes.noteRequired && <span className="sgs-buybox__note-required"> *</span> }
+				{ attributes.noteLabel ||
+					__( 'Allergies or dietary needs?', 'sgs-blocks' ) }
+				{ true === attributes.noteRequired && (
+					<span className="sgs-buybox__note-required"> *</span>
+				) }
 			</span>
-			{ attributes.noteHint && <p className="sgs-buybox__note-hint">{ attributes.noteHint }</p> }
-			<textarea className="sgs-buybox__note-input" rows={ 3 } readOnly tabIndex={ -1 } />
+			{ attributes.noteHint && (
+				<p className="sgs-buybox__note-hint">{ attributes.noteHint }</p>
+			) }
+			<textarea
+				className="sgs-buybox__note-input"
+				rows={ 3 }
+				readOnly
+				tabIndex={ -1 }
+			/>
 			<span className="sgs-buybox__note-count">{ `0 / ${ max }` }</span>
 		</div>
 	);
@@ -1107,7 +1405,13 @@ function SampleStickyBar( { attributes, palette, cartVariant } ) {
  * @param {*}      props.extras     The extras slot (InnerBlocks).
  * @return {JSX.Element} Gallery and configurator columns.
  */
-export function BuyboxCanvasMock( { attributes, tier, palette, extras, uid = 'sgs-bb' } ) {
+export function BuyboxCanvasMock( {
+	attributes,
+	tier,
+	palette,
+	extras,
+	uid = 'sgs-bb',
+} ) {
 	const isGuided = 'guided' === attributes.buyboxLayout;
 	const format =
 		'percentage' === attributes.rrpSavingFormat ? 'percentage' : 'amount';
@@ -1167,16 +1471,23 @@ export function BuyboxCanvasMock( { attributes, tier, palette, extras, uid = 'sg
 		tier
 	);
 	const pillSelTextColour = attributes.pickerPillSelectedTextColour
-		? resolveColourToken( attributes.pickerPillSelectedTextColour, palette ) ||
-		  attributes.pickerPillSelectedTextColour
+		? resolveColourToken(
+				attributes.pickerPillSelectedTextColour,
+				palette
+		  ) || attributes.pickerPillSelectedTextColour
 		: '';
 	const pillStyleVars =
 		attributes.pickerPillBorderWidth || pillSelTextColour
 			? {
 					...( attributes.pickerPillBorderWidth
-						? { '--sgs-op-border-width': attributes.pickerPillBorderWidth }
+						? {
+								'--sgs-op-border-width':
+									attributes.pickerPillBorderWidth,
+						  }
 						: {} ),
-					...( pillSelTextColour ? { '--sgs-op-sel-text': pillSelTextColour } : {} ),
+					...( pillSelTextColour
+						? { '--sgs-op-sel-text': pillSelTextColour }
+						: {} ),
 			  }
 			: undefined;
 	// The label-row link, shown on the Size sample group.
@@ -1184,10 +1495,8 @@ export function BuyboxCanvasMock( { attributes, tier, palette, extras, uid = 'sg
 		? attributes.pickerLabelLinkText || ''
 		: '';
 	const linkColour = attributes.pickerLabelLinkColour
-		? resolveColourToken(
-				attributes.pickerLabelLinkColour,
-				palette
-		  ) || attributes.pickerLabelLinkColour
+		? resolveColourToken( attributes.pickerLabelLinkColour, palette ) ||
+		  attributes.pickerLabelLinkColour
 		: '';
 	const linkUnderline = attributes.pickerLabelLinkUnderlineColour
 		? resolveColourToken(
@@ -1230,14 +1539,22 @@ export function BuyboxCanvasMock( { attributes, tier, palette, extras, uid = 'sg
 			: {} ),
 	};
 	// Add to Cart's own look (the built-in button kit), previewed at the device being edited.
-	const cartStyle = buttonKitStyle( attributes, 'addToCart', { tier, palette } );
+	const cartStyle = buttonKitStyle( attributes, 'addToCart', {
+		tier,
+		palette,
+	} );
 	const cartVariant = presetNames().includes( attributes.addToCartStyle )
 		? ` buybox__add-to-cart--${ attributes.addToCartStyle }`
 		: '';
 	// Pick a set can move the add-to-basket button into the side column (pickSideButton), as render.php does.
-	const sideCart = 'configurator' === attributes.buyboxLayout && true === attributes.pickSideButton;
+	const sideCart =
+		'configurator' === attributes.buyboxLayout &&
+		true === attributes.pickSideButton;
 	// The flow opener's own look (the built-in button kit), previewed at the device being edited.
-	const openerStyle = buttonKitStyle( attributes, 'flowOpener', { tier, palette } );
+	const openerStyle = buttonKitStyle( attributes, 'flowOpener', {
+		tier,
+		palette,
+	} );
 	// The opener note's colour (openerNoteColour), resolved as render.php's sgs_colour_value() does.
 	const noteColour = attributes.openerNoteColour
 		? resolveColourToken( attributes.openerNoteColour, palette ) ||
@@ -1271,80 +1588,98 @@ export function BuyboxCanvasMock( { attributes, tier, palette, extras, uid = 'sg
 		: '';
 
 	// Pick a set can drop the photo column (pickHideGallery), as render.php does.
-	const hideGallery = 'configurator' === attributes.buyboxLayout && true === attributes.pickHideGallery;
+	const hideGallery =
+		'configurator' === attributes.buyboxLayout &&
+		true === attributes.pickHideGallery;
 
 	return (
 		<>
 			{ ! hideGallery && (
-			<div className="sgs-buybox__gallery-col">
-				<div
-					className="product-card__media sgs-buybox__mock-image"
-					aria-hidden="true"
-					style={ {
-						aspectRatio: '1 / 1',
-						display: 'grid',
-						placeItems: 'center',
-						background:
-							'var(--wp--preset--color--surface-alt, #f0f0f0)',
-					} }
-				>
-					<SlotPicture
-						attributes={ { ...pictureAttrs( attributes, 'main' ), mainSource: sourceHasFile( attributes.mainSource ) ? attributes.mainSource : SAMPLE_PICTURE, mainAlt: '' } }
-						setAttributes={ () => {} }
-						prefix="main"
-						kinds={ [ 'image' ] }
-						context="item"
-						uid={ `${ uid }-main` }
-						className="sgs-buybox__main-image"
-						placeholder={ false }
-					/>
-					{ attributes.galleryStickerText && (
+				<div className="sgs-buybox__gallery-col">
+					<div
+						className="product-card__media sgs-buybox__mock-image"
+						aria-hidden="true"
+						style={ {
+							aspectRatio: '1 / 1',
+							display: 'grid',
+							placeItems: 'center',
+							background:
+								'var(--wp--preset--color--surface-alt, #f0f0f0)',
+						} }
+					>
+						<SlotPicture
+							attributes={ {
+								...pictureAttrs( attributes, 'main' ),
+								mainSource: sourceHasFile(
+									attributes.mainSource
+								)
+									? attributes.mainSource
+									: SAMPLE_PICTURE,
+								mainAlt: '',
+							} }
+							setAttributes={ () => {} }
+							prefix="main"
+							kinds={ [ 'image' ] }
+							context="item"
+							uid={ `${ uid }-main` }
+							className="sgs-buybox__main-image"
+							placeholder={ false }
+						/>
+						{ attributes.galleryStickerText && (
+							<span
+								className={ `sgs-buybox__gallery-sticker sgs-buybox__gallery-sticker--${ stickerCorner(
+									attributes
+								) }` }
+							>
+								{ attributes.galleryStickerText }
+							</span>
+						) }
+					</div>
+					<div
+						className="product-card__thumbs"
+						aria-hidden="true"
+						style={
+							attributes.thumbsFlexWrap
+								? { flexWrap: attributes.thumbsFlexWrap }
+								: undefined
+						}
+					>
+						{ [ 1, 2, 3, 4 ].map( ( n ) => (
+							<span
+								key={ n }
+								className="product-card__thumb sgs-buybox__gallery-thumb"
+								aria-current={ 1 === n ? 'true' : undefined }
+								style={ {
+									display: 'block',
+									background:
+										'var(--wp--preset--color--surface-alt, #f0f0f0)',
+								} }
+							>
+								<ItemSlotPicture
+									attributes={ pictureAttrs(
+										attributes,
+										'thumb'
+									) }
+									item={ {
+										source: SAMPLE_PICTURE,
+										decorative: true,
+									} }
+									index={ n }
+									prefix="thumb"
+									context="item"
+									uid={ `${ uid }-thumb` }
+								/>
+							</span>
+						) ) }
+					</div>
+					{ attributes.gallerySavingBadge && (
 						<span
-							className={ `sgs-buybox__gallery-sticker sgs-buybox__gallery-sticker--${ stickerCorner( attributes ) }` }
+							className={ `sgs-buybox__saving-badge sgs-buybox__saving-badge--${ badgePosition }` }
 						>
-							{ attributes.galleryStickerText }
+							{ savingText }
 						</span>
 					) }
 				</div>
-				<div
-					className="product-card__thumbs"
-					aria-hidden="true"
-					style={
-						attributes.thumbsFlexWrap
-							? { flexWrap: attributes.thumbsFlexWrap }
-							: undefined
-					}
-				>
-					{ [ 1, 2, 3, 4 ].map( ( n ) => (
-						<span
-							key={ n }
-							className="product-card__thumb sgs-buybox__gallery-thumb"
-							aria-current={ 1 === n ? 'true' : undefined }
-							style={ {
-								display: 'block',
-								background:
-									'var(--wp--preset--color--surface-alt, #f0f0f0)',
-							} }
-						>
-							<ItemSlotPicture
-								attributes={ pictureAttrs( attributes, 'thumb' ) }
-								item={ { source: SAMPLE_PICTURE, decorative: true } }
-								index={ n }
-								prefix="thumb"
-								context="item"
-								uid={ `${ uid }-thumb` }
-							/>
-						</span>
-					) ) }
-				</div>
-				{ attributes.gallerySavingBadge && (
-					<span
-						className={ `sgs-buybox__saving-badge sgs-buybox__saving-badge--${ badgePosition }` }
-					>
-						{ savingText }
-					</span>
-				) }
-			</div>
 			) }
 			<div className="sgs-buybox__config-col">
 				{ stockAbove && stockLine }
@@ -1508,11 +1843,17 @@ export function BuyboxCanvasMock( { attributes, tier, palette, extras, uid = 'sg
 							linkStyle={ linkStyle }
 						/>
 						{ 'configurator' === attributes.buyboxLayout && (
-							<SamplePickSet attributes={ attributes } uid={ uid } cart={ sideCart ? cartForm : null } />
+							<SamplePickSet
+								attributes={ attributes }
+								uid={ uid }
+								cart={ sideCart ? cartForm : null }
+							/>
 						) }
 					</>
 				) }
-				{ true === attributes.noteField && <SampleNote attributes={ attributes } /> }
+				{ true === attributes.noteField && (
+					<SampleNote attributes={ attributes } />
+				) }
 				{ ! sideCart && cartForm }
 				{ instalmentsNoteMock( attributes ) }
 				{ false !== attributes.notifyEnabled && (

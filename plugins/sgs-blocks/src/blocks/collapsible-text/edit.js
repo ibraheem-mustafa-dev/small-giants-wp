@@ -13,17 +13,49 @@ import {
 	RichText,
 	useSettings,
 } from '@wordpress/block-editor';
+import { PanelBody, ToggleControl, RangeControl } from '@wordpress/components';
 import {
-	PanelBody,
-	ToggleControl,
-	RangeControl,
-} from '@wordpress/components';
-import { TypographyControls, ResponsiveBoxControl, SgsColourPanel, fillRow, textRow, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, LinkUnderlineControl } from '../../components';
-import { textPaintPreview, linkColourPreviewCss, linkUnderlinePreviewCss, backgroundPaintPreview, typographyPreviewStyle, textIndentPreviewCss, usePreviewTier, tierBoxLonghands } from '../../utils';
+	TypographyControls,
+	ResponsiveBoxControl,
+	SgsColourPanel,
+	fillRow,
+	textRow,
+	ResponsiveOverride,
+	BOX_UNITS,
+	normaliseResponsiveBox,
+	SgsBoxControl,
+	LinkUnderlineControl,
+} from '../../components';
+import {
+	textPaintPreview,
+	linkColourPreviewCss,
+	linkUnderlinePreviewCss,
+	backgroundPaintPreview,
+	typographyPreviewStyle,
+	textIndentPreviewCss,
+	usePreviewTier,
+	tierBoxLonghands,
+} from '../../utils';
 import { RICH_TEXT_BODY } from '../../utils/rich-text-formats';
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
-	const { text, collapsible, collapsedLines, backgroundColour, textColour, textColourGradient, linkColour, linkColourHover, linkColourGradient, linkColourHoverGradient, linkUnderline, linkUnderlineThickness, linkUnderlineColour, linkUnderlineColourHover, linkUnderlineOffset } = attributes;
+	const {
+		text,
+		collapsible,
+		collapsedLines,
+		backgroundColour,
+		textColour,
+		textColourGradient,
+		linkColour,
+		linkColourHover,
+		linkColourGradient,
+		linkColourHoverGradient,
+		linkUnderline,
+		linkUnderlineThickness,
+		linkUnderlineColour,
+		linkUnderlineColourHover,
+		linkUnderlineOffset,
+	} = attributes;
 
 	// Editor-canvas preview scope for the link-colour CSS below (Task 3,
 	// 2026-09-07) — mirrors render.php's uid scope, matching product-card's
@@ -40,12 +72,34 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// The block's own fill and spacing sit on the root, at the previewed tier;
 	// its typography sits on the body (render.php's `.sgs-collapsible-text__body`).
 	const previewTier = usePreviewTier();
-	const scopedPreviewCss = linkPreviewCss + linkUnderlinePreviewCss( `.${ linkPreviewUid } .sgs-collapsible-text__body`, { mode: linkUnderline, thickness: linkUnderlineThickness, colour: linkUnderlineColour, colourHover: linkUnderlineColourHover, offset: linkUnderlineOffset, linkGradient: linkColourGradient } ) + textIndentPreviewCss( attributes, '', `.${ linkPreviewUid } .sgs-collapsible-text__body`, previewTier );
+	const scopedPreviewCss =
+		linkPreviewCss +
+		linkUnderlinePreviewCss(
+			`.${ linkPreviewUid } .sgs-collapsible-text__body`,
+			{
+				mode: linkUnderline,
+				thickness: linkUnderlineThickness,
+				colour: linkUnderlineColour,
+				colourHover: linkUnderlineColourHover,
+				offset: linkUnderlineOffset,
+				linkGradient: linkColourGradient,
+			}
+		) +
+		textIndentPreviewCss(
+			attributes,
+			'',
+			`.${ linkPreviewUid } .sgs-collapsible-text__body`,
+			previewTier
+		);
 	const [ colourPalette ] = useSettings( 'color.palette' );
 	const blockProps = useBlockProps( {
 		className: [ 'sgs-collapsible-text', linkPreviewUid ].join( ' ' ),
 		style: {
-			...backgroundPaintPreview( backgroundColour, attributes.backgroundColourGradient, colourPalette ),
+			...backgroundPaintPreview(
+				backgroundColour,
+				attributes.backgroundColourGradient,
+				colourPalette
+			),
 			...tierBoxLonghands( attributes.padding, previewTier, 'padding' ),
 			...tierBoxLonghands( attributes.margin, previewTier, 'margin' ),
 		},
@@ -99,18 +153,24 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								linked: true,
 								gradientValue: linkColourGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { linkColourGradient: val ?? '' } ),
+									setAttributes( {
+										linkColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: linkColourHover,
 								onChange: ( val ) =>
-									setAttributes( { linkColourHover: val ?? '' } ),
+									setAttributes( {
+										linkColourHover: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: linkColourHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { linkColourHoverGradient: val ?? '' } ),
+									setAttributes( {
+										linkColourHoverGradient: val ?? '',
+									} ),
 							},
 						],
 						after: (
@@ -120,18 +180,38 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								colour={ linkUnderlineColour }
 								colourHover={ linkUnderlineColourHover }
 								offset={ linkUnderlineOffset }
-								onModeChange={ ( val ) => setAttributes( { linkUnderline: val } ) }
-								onThicknessChange={ ( val ) => setAttributes( { linkUnderlineThickness: val } ) }
-								onColourChange={ ( val ) => setAttributes( { linkUnderlineColour: val } ) }
-								onColourHoverChange={ ( val ) => setAttributes( { linkUnderlineColourHover: val } ) }
-								onOffsetChange={ ( val ) => setAttributes( { linkUnderlineOffset: val } ) }
+								onModeChange={ ( val ) =>
+									setAttributes( { linkUnderline: val } )
+								}
+								onThicknessChange={ ( val ) =>
+									setAttributes( {
+										linkUnderlineThickness: val,
+									} )
+								}
+								onColourChange={ ( val ) =>
+									setAttributes( {
+										linkUnderlineColour: val,
+									} )
+								}
+								onColourHoverChange={ ( val ) =>
+									setAttributes( {
+										linkUnderlineColourHover: val,
+									} )
+								}
+								onOffsetChange={ ( val ) =>
+									setAttributes( {
+										linkUnderlineOffset: val,
+									} )
+								}
 							/>
 						),
 					},
 				] }
 			/>
 			<InspectorControls>
-				<PanelBody title={ __( 'Collapsible Text Settings', 'sgs-blocks' ) }>
+				<PanelBody
+					title={ __( 'Collapsible Text Settings', 'sgs-blocks' ) }
+				>
 					<ToggleControl
 						label={ __( 'Collapsible', 'sgs-blocks' ) }
 						help={ __(
@@ -139,7 +219,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							'sgs-blocks'
 						) }
 						checked={ !! collapsible }
-						onChange={ ( val ) => setAttributes( { collapsible: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { collapsible: val } )
+						}
 						__nextHasNoMarginBottom
 					/>
 					{ collapsible && (
@@ -150,7 +232,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								'sgs-blocks'
 							) }
 							value={ collapsedLines }
-							onChange={ ( val ) => setAttributes( { collapsedLines: val } ) }
+							onChange={ ( val ) =>
+								setAttributes( { collapsedLines: val } )
+							}
 							min={ 1 }
 							max={ 20 }
 							__nextHasNoMarginBottom
@@ -162,25 +246,52 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
 			<InspectorControls group="styles">
-				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
-					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextStroke showTextColumns showTextIndent showWritingMode
+				<PanelBody
+					title={ __( 'Typography', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<TypographyControls
+						fontSizePresets
+						showFontFamily
+						showDecoration
+						showTransform
+						showLetterSpacing
+						showTextAlign
+						showTextWrap
+						showTextStroke
+						showTextColumns
+						showTextIndent
+						showWritingMode
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						prefix=""
 					/>
 				</PanelBody>
-				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Spacing', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<ResponsiveOverride
 						value={ attributes.padding }
-						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { padding: obj } )
+						}
 					>
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
@@ -191,10 +302,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
@@ -223,8 +342,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							'--sgs-collapsible-text-collapsed-lines':
 								collapsedLines,
 						} ),
-						...typographyPreviewStyle( attributes, '', previewTier ),
-						...textPaintPreview( textColour, textColourGradient, colourPalette ),
+						...typographyPreviewStyle(
+							attributes,
+							'',
+							previewTier
+						),
+						...textPaintPreview(
+							textColour,
+							textColourGradient,
+							colourPalette
+						),
 					} }
 					multiline="p"
 					value={ text }

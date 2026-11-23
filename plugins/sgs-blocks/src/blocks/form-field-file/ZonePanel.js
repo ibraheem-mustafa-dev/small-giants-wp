@@ -22,14 +22,32 @@ export default function ZonePanel( { attributes, setAttributes } ) {
 	const isPanel = 'panel' === attributes.zoneStyle;
 	const isNative = 'native' === attributes.zoneStyle;
 	return (
-		<PanelBody title={ __( 'Drop zone', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Drop zone', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			<SelectControl
 				label={ __( 'Look', 'sgs-blocks' ) }
 				value={ attributes.zoneStyle || 'dashed' }
 				options={ [
-					{ label: __( 'Dashed drop zone', 'sgs-blocks' ), value: 'dashed' },
-					{ label: __( 'Panel with a Choose file button', 'sgs-blocks' ), value: 'panel' },
-					{ label: __( 'Native file control (styled like the other fields)', 'sgs-blocks' ), value: 'native' },
+					{
+						label: __( 'Dashed drop zone', 'sgs-blocks' ),
+						value: 'dashed',
+					},
+					{
+						label: __(
+							'Panel with a Choose file button',
+							'sgs-blocks'
+						),
+						value: 'panel',
+					},
+					{
+						label: __(
+							'Native file control (styled like the other fields)',
+							'sgs-blocks'
+						),
+						value: 'native',
+					},
 				] }
 				onChange={ ( zoneStyle ) => setAttributes( { zoneStyle } ) }
 				__nextHasNoMarginBottom
@@ -38,7 +56,10 @@ export default function ZonePanel( { attributes, setAttributes } ) {
 			<TextControl
 				label={ __( 'Hint line', 'sgs-blocks' ) }
 				value={ attributes.hintText || '' }
-				help={ __( 'The small line under the prompt, for example the accepted file types. Empty shows the maximum file size.', 'sgs-blocks' ) }
+				help={ __(
+					'The small line under the prompt, for example the accepted file types. Empty shows the maximum file size.',
+					'sgs-blocks'
+				) }
 				onChange={ ( hintText ) => setAttributes( { hintText } ) }
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
@@ -48,8 +69,14 @@ export default function ZonePanel( { attributes, setAttributes } ) {
 					label={ __( 'Zone icon', 'sgs-blocks' ) }
 					/* render.php draws a Lucide icon in the zone; its holder, size and colours are the form's Upload zone settings. */
 					sources={ [ 'lucide' ] }
-					value={ attributes.zoneIcon ? { source: 'lucide', name: attributes.zoneIcon } : null }
-					onChange={ ( val ) => setAttributes( { zoneIcon: val ? val.name : '' } ) }
+					value={
+						attributes.zoneIcon
+							? { source: 'lucide', name: attributes.zoneIcon }
+							: null
+					}
+					onChange={ ( val ) =>
+						setAttributes( { zoneIcon: val ? val.name : '' } )
+					}
 				/>
 			) }
 			{ ! isPanel && ! isNative && (
@@ -57,20 +84,32 @@ export default function ZonePanel( { attributes, setAttributes } ) {
 					label={ __( 'Layout', 'sgs-blocks' ) }
 					value={ attributes.zoneLayout || 'column' }
 					options={ [
-						{ label: __( 'Stacked and centred', 'sgs-blocks' ), value: 'column' },
-						{ label: __( 'Icon beside the text', 'sgs-blocks' ), value: 'row' },
+						{
+							label: __( 'Stacked and centred', 'sgs-blocks' ),
+							value: 'column',
+						},
+						{
+							label: __( 'Icon beside the text', 'sgs-blocks' ),
+							value: 'row',
+						},
 					] }
-					onChange={ ( zoneLayout ) => setAttributes( { zoneLayout } ) }
+					onChange={ ( zoneLayout ) =>
+						setAttributes( { zoneLayout } )
+					}
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 				/>
 			) }
 			{ isPanel && (
-				<SgsFreeTextField type="rich" noLink
+				<SgsFreeTextField
+					type="rich"
+					noLink
 					label={ __( 'Button text', 'sgs-blocks' ) }
 					value={ attributes.buttonLabel || '' }
 					placeholder={ __( 'Choose file', 'sgs-blocks' ) }
-					onChange={ ( buttonLabel ) => setAttributes( { buttonLabel } ) }
+					onChange={ ( buttonLabel ) =>
+						setAttributes( { buttonLabel } )
+					}
 				/>
 			) }
 		</PanelBody>

@@ -13,7 +13,7 @@ import './address-editor';
 const TAB_SELECTOR = '[role="tab"][data-sgs-auth-tab]';
 
 /**
- * @param {HTMLElement} tab The tab to open.
+ * @param {HTMLElement} tab   The tab to open.
  * @param {boolean}     focus Whether to move focus to it.
  */
 function select( tab, focus ) {
@@ -25,7 +25,9 @@ function select( tab, focus ) {
 		const on = other === tab;
 		other.setAttribute( 'aria-selected', on ? 'true' : 'false' );
 		other.tabIndex = on ? 0 : -1;
-		const panel = document.getElementById( other.getAttribute( 'aria-controls' ) );
+		const panel = document.getElementById(
+			other.getAttribute( 'aria-controls' )
+		);
 		if ( panel ) {
 			panel.hidden = ! on;
 		}
@@ -34,7 +36,10 @@ function select( tab, focus ) {
 		tab.focus();
 	}
 	const url = new URL( window.location.href );
-	url.searchParams.set( 'mode', tab.dataset.sgsAuthTab === 'register' ? 'register' : 'signin' );
+	url.searchParams.set(
+		'mode',
+		tab.dataset.sgsAuthTab === 'register' ? 'register' : 'signin'
+	);
 	window.history.replaceState( null, '', url );
 }
 
@@ -42,7 +47,10 @@ function select( tab, focus ) {
  * @param {Event} event Click or keydown inside a tab list.
  */
 function onEvent( event ) {
-	const tab = event.target instanceof Element ? event.target.closest( TAB_SELECTOR ) : null;
+	const tab =
+		event.target instanceof Element
+			? event.target.closest( TAB_SELECTOR )
+			: null;
 	if ( ! tab ) {
 		return;
 	}
@@ -51,7 +59,9 @@ function onEvent( event ) {
 		select( tab, false );
 		return;
 	}
-	const tabs = Array.from( tab.closest( '[role="tablist"]' ).querySelectorAll( TAB_SELECTOR ) );
+	const tabs = Array.from(
+		tab.closest( '[role="tablist"]' ).querySelectorAll( TAB_SELECTOR )
+	);
 	const at = tabs.indexOf( tab );
 	let next = null;
 	switch ( event.key ) {

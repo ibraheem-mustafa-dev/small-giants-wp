@@ -47,7 +47,11 @@ export default function DrawerHoverControls( { attributes, setAttributes } ) {
 				min={ min }
 				max={ max }
 				step={ step }
-				onChange={ ( value ) => setAttributes( { [ key ]: typeof value === 'number' ? value : 0 } ) }
+				onChange={ ( value ) =>
+					setAttributes( {
+						[ key ]: typeof value === 'number' ? value : 0,
+					} )
+				}
 				allowReset
 				resetFallbackValue={ 0 }
 				__nextHasNoMarginBottom
@@ -64,7 +68,10 @@ export default function DrawerHoverControls( { attributes, setAttributes } ) {
 			{ range(
 				'drawerLinkTextShiftHover',
 				__( 'Link row text slide (px)', 'sgs-blocks' ),
-				__( 'On hover the label and description slide this far toward the end of the row. The number stays where it is. 0 is off.', 'sgs-blocks' ),
+				__(
+					'On hover the label and description slide this far toward the end of the row. The number stays where it is. 0 is off.',
+					'sgs-blocks'
+				),
 				0,
 				60
 			) }
@@ -72,26 +79,41 @@ export default function DrawerHoverControls( { attributes, setAttributes } ) {
 				label={ __( 'Link row arrow colour on hover', 'sgs-blocks' ) }
 				isShownByDefault
 				hasValue={ () => !! attributes.drawerLinkTrailingColourHover }
-				onDeselect={ () => setAttributes( { drawerLinkTrailingColourHover: '' } ) }
+				onDeselect={ () =>
+					setAttributes( { drawerLinkTrailingColourHover: '' } )
+				}
 			>
 				<DesignTokenPicker
-					label={ __( 'Link row arrow colour on hover', 'sgs-blocks' ) }
+					label={ __(
+						'Link row arrow colour on hover',
+						'sgs-blocks'
+					) }
 					value={ attributes.drawerLinkTrailingColourHover }
-					onChange={ ( value ) => setAttributes( { drawerLinkTrailingColourHover: value ?? '' } ) }
+					onChange={ ( value ) =>
+						setAttributes( {
+							drawerLinkTrailingColourHover: value ?? '',
+						} )
+					}
 					linked
 				/>
 			</ToolsPanelItem>
 			{ range(
 				'drawerCardHoverLift',
 				__( 'Side card lift (px)', 'sgs-blocks' ),
-				__( 'On hover the side card rises by this much. 0 is off.', 'sgs-blocks' ),
+				__(
+					'On hover the side card rises by this much. 0 is off.',
+					'sgs-blocks'
+				),
 				0,
 				40
 			) }
 			{ range(
 				'drawerCardHoverRotate',
 				__( 'Side card tilt (degrees)', 'sgs-blocks' ),
-				__( 'On hover the side card turns by this much. Negative turns anticlockwise. 0 is off.', 'sgs-blocks' ),
+				__(
+					'On hover the side card turns by this much. Negative turns anticlockwise. 0 is off.',
+					'sgs-blocks'
+				),
 				-15,
 				15,
 				0.5
@@ -99,16 +121,26 @@ export default function DrawerHoverControls( { attributes, setAttributes } ) {
 			{ range(
 				'drawerCardLinkShiftHover',
 				__( 'Side card arrow nudge (px)', 'sgs-blocks' ),
-				__( 'On hover the arrow in the side card link moves this far toward the end. 0 is off.', 'sgs-blocks' ),
+				__(
+					'On hover the arrow in the side card link moves this far toward the end. 0 is off.',
+					'sgs-blocks'
+				),
 				0,
 				40
 			) }
 			<ToolsPanelItem
 				label={ __( 'Hover speed and curve', 'sgs-blocks' ) }
 				isShownByDefault
-				hasValue={ () => 300 !== ( attributes.drawerHoverDuration ?? 300 ) || 'ease' !== ( attributes.drawerHoverEasing || 'ease' ) }
+				hasValue={ () =>
+					300 !== ( attributes.drawerHoverDuration ?? 300 ) ||
+					'ease' !== ( attributes.drawerHoverEasing || 'ease' )
+				}
 				onDeselect={ () =>
-					setAttributes( { drawerHoverDuration: 300, drawerHoverEasing: 'ease', drawerHoverEasingCustom: '' } )
+					setAttributes( {
+						drawerHoverDuration: 300,
+						drawerHoverEasing: 'ease',
+						drawerHoverEasingCustom: '',
+					} )
 				}
 			>
 				<RangeControl
@@ -117,7 +149,12 @@ export default function DrawerHoverControls( { attributes, setAttributes } ) {
 					min={ 0 }
 					max={ 3000 }
 					step={ 10 }
-					onChange={ ( value ) => setAttributes( { drawerHoverDuration: typeof value === 'number' ? value : 300 } ) }
+					onChange={ ( value ) =>
+						setAttributes( {
+							drawerHoverDuration:
+								typeof value === 'number' ? value : 300,
+						} )
+					}
 					allowReset
 					resetFallbackValue={ 300 }
 					__nextHasNoMarginBottom
@@ -128,8 +165,12 @@ export default function DrawerHoverControls( { attributes, setAttributes } ) {
 					label={ __( 'Hover curve', 'sgs-blocks' ) }
 					value={ attributes.drawerHoverEasing }
 					custom={ attributes.drawerHoverEasingCustom }
-					onChange={ ( value ) => setAttributes( { drawerHoverEasing: value } ) }
-					onCustomChange={ ( value ) => setAttributes( { drawerHoverEasingCustom: value } ) }
+					onChange={ ( value ) =>
+						setAttributes( { drawerHoverEasing: value } )
+					}
+					onCustomChange={ ( value ) =>
+						setAttributes( { drawerHoverEasingCustom: value } )
+					}
 				/>
 			</ToolsPanelItem>
 		</ToolsPanel>

@@ -16,14 +16,20 @@ import SgsFreeTextField from '../../components/SgsFreeTextField';
  * @return {JSX.Element} The panel.
  */
 export default function SavedProgressPanel( { attributes, setAttributes } ) {
-	const { savedProgress, savedProgressLabel, savedProgressSavedLabel } = attributes;
+	const { savedProgress, savedProgressLabel, savedProgressSavedLabel } =
+		attributes;
 
 	return (
-		<PanelBody title={ __( 'Saved progress', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Saved progress', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			<ToggleControl
 				label={ __( 'Remember answers in the browser', 'sgs-blocks' ) }
 				checked={ !! savedProgress }
-				onChange={ ( value ) => setAttributes( { savedProgress: value } ) }
+				onChange={ ( value ) =>
+					setAttributes( { savedProgress: value } )
+				}
 				help={ __(
 					'Keeps every answer and the current step on the visitor’s device, restores them on their next visit and clears them once the form is sent. File uploads are not kept.',
 					'sgs-blocks'
@@ -33,16 +39,28 @@ export default function SavedProgressPanel( { attributes, setAttributes } ) {
 			{ savedProgress && (
 				<>
 					<TextControl
-						label={ __( 'Notice before anything is saved', 'sgs-blocks' ) }
+						label={ __(
+							'Notice before anything is saved',
+							'sgs-blocks'
+						) }
 						value={ savedProgressLabel }
-						onChange={ ( value ) => setAttributes( { savedProgressLabel: value } ) }
+						onChange={ ( value ) =>
+							setAttributes( { savedProgressLabel: value } )
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					<SgsFreeTextField type="rich" noLink
-						label={ __( 'Notice once progress is saved', 'sgs-blocks' ) }
+					<SgsFreeTextField
+						type="rich"
+						noLink
+						label={ __(
+							'Notice once progress is saved',
+							'sgs-blocks'
+						) }
 						value={ savedProgressSavedLabel }
-						onChange={ ( value ) => setAttributes( { savedProgressSavedLabel: value } ) }
+						onChange={ ( value ) =>
+							setAttributes( { savedProgressSavedLabel: value } )
+						}
 					/>
 				</>
 			) }

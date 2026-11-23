@@ -32,7 +32,10 @@ export const DRAWER_QUERY = Object.freeze( {
  * default. A new drawer never arrives wearing a look the operator did not
  * choose, so no other pattern is ever picked.
  */
-const PREFERRED_SEED_SLUGS = [ 'sgs/drawer-scratch', 'sgs/framework-drawer-default' ];
+const PREFERRED_SEED_SLUGS = [
+	'sgs/drawer-scratch',
+	'sgs/framework-drawer-default',
+];
 
 /**
  * Patterns registered for the drawer CPT, using the same qualification rule as
@@ -55,7 +58,8 @@ export function qualifyingDrawerPatterns( patterns ) {
 			Array.isArray( pattern.postTypes ) &&
 			pattern.postTypes.includes( DRAWER_POST_TYPE );
 		const scopedToPostContent =
-			! pattern.blockTypes || pattern.blockTypes.includes( 'core/post-content' );
+			! pattern.blockTypes ||
+			pattern.blockTypes.includes( 'core/post-content' );
 		return scopedToPostType && scopedToPostContent;
 	} );
 }
@@ -70,7 +74,9 @@ export function qualifyingDrawerPatterns( patterns ) {
 export function pickDrawerSeedPattern( patterns ) {
 	const qualifying = qualifyingDrawerPatterns( patterns );
 	for ( const slug of PREFERRED_SEED_SLUGS ) {
-		const preferred = qualifying.find( ( pattern ) => pattern.name === slug );
+		const preferred = qualifying.find(
+			( pattern ) => pattern.name === slug
+		);
 		if ( preferred ) {
 			return preferred;
 		}
@@ -93,7 +99,10 @@ export function pickDrawerSeedPattern( patterns ) {
  * @return {string} Block markup, or '' when there is none.
  */
 export function drawerSeedContent( pattern ) {
-	const content = pattern && typeof pattern.content === 'string' ? pattern.content.trim() : '';
+	const content =
+		pattern && typeof pattern.content === 'string'
+			? pattern.content.trim()
+			: '';
 	return content;
 }
 
@@ -142,7 +151,11 @@ export function drawerEditUrl( postId ) {
  * @return {string} A human-readable message; never empty.
  */
 export function createDrawerErrorMessage( error, fallback ) {
-	if ( error && typeof error.message === 'string' && '' !== error.message.trim() ) {
+	if (
+		error &&
+		typeof error.message === 'string' &&
+		'' !== error.message.trim()
+	) {
 		return error.message.trim();
 	}
 	if ( typeof error === 'string' && '' !== error.trim() ) {

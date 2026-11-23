@@ -44,7 +44,9 @@ export function shouldStartForm( blocks, isNew, patterns ) {
 		return false;
 	}
 	return ! ( patterns || [] ).some(
-		( p ) => ( p.postTypes || [] ).includes( FORM_CPT ) && ( p.blockTypes || [] ).includes( 'core/post-content' )
+		( p ) =>
+			( p.postTypes || [] ).includes( FORM_CPT ) &&
+			( p.blockTypes || [] ).includes( 'core/post-content' )
 	);
 }
 
@@ -55,7 +57,10 @@ const unsubscribe = subscribe( () => {
 		return;
 	}
 	const editor = select( 'core/editor' );
-	const type = editor && 'function' === typeof editor.getCurrentPostType ? editor.getCurrentPostType() : null;
+	const type =
+		editor && 'function' === typeof editor.getCurrentPostType
+			? editor.getCurrentPostType()
+			: null;
 	if ( ! type ) {
 		return;
 	}
@@ -64,19 +69,27 @@ const unsubscribe = subscribe( () => {
 		unsubscribe();
 		return;
 	}
-	if ( 'function' === typeof editor.__unstableIsEditorReady && ! editor.__unstableIsEditorReady() ) {
+	if (
+		'function' === typeof editor.__unstableIsEditorReady &&
+		! editor.__unstableIsEditorReady()
+	) {
 		return; // the editor sets its initial content first; a block added before that is replaced
 	}
 	const blocks = select( 'core/block-editor' ).getBlocks();
 	if ( starts < 3 && editor.isEditedPostNew() ) {
 		const core = select( 'core' );
-		const patterns = core && 'function' === typeof core.getBlockPatterns ? core.getBlockPatterns() : [];
+		const patterns =
+			core && 'function' === typeof core.getBlockPatterns
+				? core.getBlockPatterns()
+				: [];
 		if ( undefined === patterns ) {
 			return; // the patterns are still loading
 		}
 		if ( shouldStartForm( blocks, true, patterns ) ) {
 			starts += 1;
-			dispatch( 'core/block-editor' ).insertBlocks( createBlock( 'sgs/form' ) );
+			dispatch( 'core/block-editor' ).insertBlocks(
+				createBlock( 'sgs/form' )
+			);
 			return;
 		}
 	}
@@ -89,6 +102,9 @@ const unsubscribe = subscribe( () => {
 	// after the editor's own first selection, so the step stays selected
 	setTimeout( () => {
 		dispatch( 'core/block-editor' ).selectBlock( target.clientId );
-		dispatch( 'core/editor' ).setIsInserterOpened( { rootClientId: target.clientId, insertionIndex: target.innerBlocks.length } );
+		dispatch( 'core/editor' ).setIsInserterOpened( {
+			rootClientId: target.clientId,
+			insertionIndex: target.innerBlocks.length,
+		} );
 	}, 0 );
 } );

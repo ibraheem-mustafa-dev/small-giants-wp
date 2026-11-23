@@ -3,7 +3,13 @@
  */
 import { __ } from '@wordpress/i18n';
 import { resolveColourToken } from '../../../components';
-import { colourVar, resolveTextColourPreviewStyle, typographyPreviewStyle, isCssGradient, tierBoxLonghands } from '../../../utils';
+import {
+	colourVar,
+	resolveTextColourPreviewStyle,
+	typographyPreviewStyle,
+	isCssGradient,
+	tierBoxLonghands,
+} from '../../../utils';
 import { tierValueOf } from '../../../utils/responsive';
 import { IconPreview } from '../../../components/IconPicker';
 import { cardGradientPreview } from '../preview-style';
@@ -29,10 +35,25 @@ function formatDate( dateString, phpFormat = '' ) {
 		const mon = d.toLocaleDateString( 'en-GB', { month: 'short' } );
 		const full = d.toLocaleDateString( 'en-GB', { month: 'long' } );
 		const pad = ( n ) => String( n ).padStart( 2, '0' );
-		const map = { j: d.getDate(), d: pad( d.getDate() ), n: d.getMonth() + 1, m: pad( d.getMonth() + 1 ), M: mon, F: full, Y: d.getFullYear(), y: pad( d.getFullYear() % 100 ) };
-		return phpFormat.replace( /\\?(.)/g, ( all, ch ) => ( all.length > 1 ? ch : ( ch in map ? map[ ch ] : ch ) ) );
+		const map = {
+			j: d.getDate(),
+			d: pad( d.getDate() ),
+			n: d.getMonth() + 1,
+			m: pad( d.getMonth() + 1 ),
+			M: mon,
+			F: full,
+			Y: d.getFullYear(),
+			y: pad( d.getFullYear() % 100 ),
+		};
+		return phpFormat.replace( /\\?(.)/g, ( all, ch ) =>
+			all.length > 1 ? ch : ch in map ? map[ ch ] : ch
+		);
 	}
-	return d.toLocaleDateString( 'en-GB', { day: 'numeric', month: 'short', year: 'numeric' } );
+	return d.toLocaleDateString( 'en-GB', {
+		day: 'numeric',
+		month: 'short',
+		year: 'numeric',
+	} );
 }
 
 // -------------------------------------------------------------------------
@@ -49,7 +70,13 @@ function formatDate( dateString, phpFormat = '' ) {
  * @param {Object} props.post       WP post record from useEntityRecords.
  * @param {Object} props.attributes Block attributes.
  */
-export default function PreviewCard( { post, attributes, palette, tier, clientId = '' } ) {
+export default function PreviewCard( {
+	post,
+	attributes,
+	palette,
+	tier,
+	clientId = '',
+} ) {
 	const {
 		cardStyle,
 		showImage,
@@ -95,21 +122,49 @@ export default function PreviewCard( { post, attributes, palette, tier, clientId
 
 	const featuredImage = post?._embedded?.[ 'wp:featuredmedia' ]?.[ 0 ];
 	// The preview shows a medium-large file; the page prints the renderer's own srcset.
-	const imageUrl      = featuredImage?.media_details?.sizes?.medium_large?.source_url || featuredImage?.source_url;
+	const imageUrl =
+		featuredImage?.media_details?.sizes?.medium_large?.source_url ||
+		featuredImage?.source_url;
 	// wp_trim_words(): the first N words, with an ellipsis only when words were cut.
-	const excerptWords  = ( post?.excerpt?.rendered || '' ).replace( /(<([^>]+)>)/gi, '' ).trim().split( /\s+/ ).filter( Boolean );
-	const excerptMax    = excerptLength || 20;
-	const excerptText   = excerptWords.slice( 0, excerptMax ).join( ' ' ) + ( excerptWords.length > excerptMax ? '…' : '' );
-	const authorName    = post?._embedded?.author?.[ 0 ]?.name || '';
-	const categories    = post?._embedded?.[ 'wp:term' ]?.[ 0 ] || [];
-	const firstCat      = categories[ 0 ];
+	const excerptWords = ( post?.excerpt?.rendered || '' )
+		.replace( /(<([^>]+)>)/gi, '' )
+		.trim()
+		.split( /\s+/ )
+		.filter( Boolean );
+	const excerptMax = excerptLength || 20;
+	const excerptText =
+		excerptWords.slice( 0, excerptMax ).join( ' ' ) +
+		( excerptWords.length > excerptMax ? '…' : '' );
+	const authorName = post?._embedded?.author?.[ 0 ]?.name || '';
+	const categories = post?._embedded?.[ 'wp:term' ]?.[ 0 ] || [];
+	const firstCat = categories[ 0 ];
 
-	const cardBg     = cardBgColour ? colourVar( cardBgColour ) : undefined;
-	const titleStyle = resolveTextColourPreviewStyle( titleColour, titleColourGradient, colourVar );
-	const excStyle   = resolveTextColourPreviewStyle( excerptColour, excerptColourGradient, colourVar );
-	const metaStyle  = resolveTextColourPreviewStyle( metaColour, metaColourGradient, colourVar );
-	const badgeStyle = resolveTextColourPreviewStyle( categoryBadgeColour, categoryBadgeColourGradient, colourVar );
-	const rmStyle    = resolveTextColourPreviewStyle( readMoreColour, readMoreColourGradient, colourVar );
+	const cardBg = cardBgColour ? colourVar( cardBgColour ) : undefined;
+	const titleStyle = resolveTextColourPreviewStyle(
+		titleColour,
+		titleColourGradient,
+		colourVar
+	);
+	const excStyle = resolveTextColourPreviewStyle(
+		excerptColour,
+		excerptColourGradient,
+		colourVar
+	);
+	const metaStyle = resolveTextColourPreviewStyle(
+		metaColour,
+		metaColourGradient,
+		colourVar
+	);
+	const badgeStyle = resolveTextColourPreviewStyle(
+		categoryBadgeColour,
+		categoryBadgeColourGradient,
+		colourVar
+	);
+	const rmStyle = resolveTextColourPreviewStyle(
+		readMoreColour,
+		readMoreColourGradient,
+		colourVar
+	);
 
 	// categoryBadgeBgColour + categoryBadgeBgColourGradient form a 2-state
 	// (resting + hover) x 2-form (flat + gradient) system. The resting state
@@ -119,40 +174,71 @@ export default function PreviewCard( { post, attributes, palette, tier, clientId
 	// Editor preview mirrors the render.php logic: emits the gradient if
 	// present (as background-image), otherwise falls back to the flat colour.
 	const badgeBg = isCssGradient( categoryBadgeBgColourGradient )
-		? { backgroundImage: categoryBadgeBgColourGradient, backgroundColor: 'transparent' }
-		: categoryBadgeBgColour ? { backgroundColor: resolveColourToken( categoryBadgeBgColour, palette ) } : {};
+		? {
+				backgroundImage: categoryBadgeBgColourGradient,
+				backgroundColor: 'transparent',
+		  }
+		: categoryBadgeBgColour
+		? {
+				backgroundColor: resolveColourToken(
+					categoryBadgeBgColour,
+					palette
+				),
+		  }
+		: {};
 	const badgeFillStyle = { ...badgeStyle, ...badgeBg };
 
 	const isOverlay = cardStyle === 'overlay';
 
 	// readMorePin: the card is a column and the excerpt takes the spare height, as the front end's scoped rule does (not the list layout).
-	const pinned     = 'pinned' === tierValueOf( readMorePin, tier ) && 'list' !== attributes.layout;
-	const pinCard    = pinned ? { display: 'flex', flexDirection: 'column' } : {};
-	const pinContent = pinned ? { display: 'flex', flexDirection: 'column', flex: '1 1 auto' } : {};
+	const pinned =
+		'pinned' === tierValueOf( readMorePin, tier ) &&
+		'list' !== attributes.layout;
+	const pinCard = pinned ? { display: 'flex', flexDirection: 'column' } : {};
+	const pinContent = pinned
+		? { display: 'flex', flexDirection: 'column', flex: '1 1 auto' }
+		: {};
 	const pinExcerpt = pinned ? { flex: '1 1 auto' } : {};
-	const pinLink    = pinned ? { alignSelf: 'stretch', marginTop: 'auto' } : {};
+	const pinLink = pinned ? { alignSelf: 'stretch', marginTop: 'auto' } : {};
 
 	// metaLayout 'inline' wraps the flat/minimal category label and the meta line in one flex row, as render_card() does.
-	const isInlineLabel = showCategory && firstCat && ( cardStyle === 'flat' || cardStyle === 'minimal' );
-	const metaInline    = 'inline' === metaLayout && isInlineLabel;
+	const isInlineLabel =
+		showCategory &&
+		firstCat &&
+		( cardStyle === 'flat' || cardStyle === 'minimal' );
+	const metaInline = 'inline' === metaLayout && isInlineLabel;
 	const categoryShape = {
 		...tierBoxLonghands( categoryPadding, tier, 'padding' ),
 		...( categoryRadius ? { borderRadius: categoryRadius } : {} ),
 	};
-	const metaNode      = ( showDate || showAuthor ) && (
-		<div className="sgs-post-grid__meta" style={ { ...metaStyle, ...( metaInline ? {} : tierBoxLonghands( metaMargin, tier, 'margin' ) ), ...typographyPreviewStyle( attributes, 'meta', tier ) } }>
+	const metaNode = ( showDate || showAuthor ) && (
+		<div
+			className="sgs-post-grid__meta"
+			style={ {
+				...metaStyle,
+				...( metaInline
+					? {}
+					: tierBoxLonghands( metaMargin, tier, 'margin' ) ),
+				...typographyPreviewStyle( attributes, 'meta', tier ),
+			} }
+		>
 			{ showDate && (
 				<time>{ formatDate( post?.date, dateFormat ) }</time>
 			) }
 			{ showAuthor && authorName && (
-				<span className="sgs-post-grid__author">
-					{ authorName }
-				</span>
+				<span className="sgs-post-grid__author">{ authorName }</span>
 			) }
 		</div>
 	);
-	const categoryNode  = isInlineLabel && (
-		<span className="sgs-post-grid__category sgs-post-grid__category-badge" style={ { ...badgeStyle, ...categoryShape, ...typographyPreviewStyle( attributes, 'category', tier ) } }>
+	const categoryNode = isInlineLabel && (
+		<span
+			className="sgs-post-grid__category sgs-post-grid__category-badge"
+			style={ {
+				...badgeStyle,
+				...categoryShape,
+				...typographyPreviewStyle( attributes, 'category', tier ),
+			} }
+		>
 			{ firstCat.name }
 		</span>
 	);
@@ -160,23 +246,38 @@ export default function PreviewCard( { post, attributes, palette, tier, clientId
 	// The frame's ratio at the previewed device (16 / 9 when the grid sets none), and the picture's fit.
 	const ratioValue = String( tierValueOf( imageRatio, tier ) || '16 / 9' );
 	const frameRatio = 'natural' === ratioValue ? 'auto' : ratioValue;
-	const imageHeightPx = ( 'mobile' === tier ? imageHeight?.mobile || imageHeight?.tablet || imageHeight?.desktop : 'tablet' === tier ? imageHeight?.tablet || imageHeight?.desktop : imageHeight?.desktop ) || '';
+	const imageHeightPx =
+		( 'mobile' === tier
+			? imageHeight?.mobile || imageHeight?.tablet || imageHeight?.desktop
+			: 'tablet' === tier
+			? imageHeight?.tablet || imageHeight?.desktop
+			: imageHeight?.desktop ) || '';
 
 	return (
 		<article
 			className={ `sgs-post-grid__card sgs-post-grid__card--${ cardStyle }` }
-			style={ { ...( cardBg ? { '--sgs-card-bg': cardBg } : {} ), ...cardGradientPreview( attributes.cardBgColourGradient ), ...pinCard } }
+			style={ {
+				...( cardBg ? { '--sgs-card-bg': cardBg } : {} ),
+				...cardGradientPreview( attributes.cardBgColourGradient ),
+				...pinCard,
+			} }
 		>
 			{ showImage && featuredImage && (
 				<div className="sgs-post-grid__image-link">
 					<div
 						className="sgs-post-grid__image"
-						style={ imageHeightPx ? { height: imageHeightPx, aspectRatio: 'auto' } : { aspectRatio: frameRatio } }
+						style={
+							imageHeightPx
+								? { height: imageHeightPx, aspectRatio: 'auto' }
+								: { aspectRatio: frameRatio }
+						}
 					>
 						<ItemSlotPicture
 							attributes={ attributes }
 							item={ {
-								source: { desktop: { kind: 'image', url: imageUrl } },
+								source: {
+									desktop: { kind: 'image', url: imageUrl },
+								},
 								alt: featuredImage.alt_text || '',
 								decorative: !! imageDecorative,
 							} }
@@ -187,17 +288,38 @@ export default function PreviewCard( { post, attributes, palette, tier, clientId
 						/>
 					</div>
 
-					{ showCategory && firstCat && ( cardStyle === 'card' || isOverlay ) && (
-						<span className="sgs-post-grid__badge sgs-post-grid__category-badge" style={ { ...badgeFillStyle, ...typographyPreviewStyle( attributes, 'badge', tier ) } }>
-							{ firstCat.name }
-						</span>
-					) }
+					{ showCategory &&
+						firstCat &&
+						( cardStyle === 'card' || isOverlay ) && (
+							<span
+								className="sgs-post-grid__badge sgs-post-grid__category-badge"
+								style={ {
+									...badgeFillStyle,
+									...typographyPreviewStyle(
+										attributes,
+										'badge',
+										tier
+									),
+								} }
+							>
+								{ firstCat.name }
+							</span>
+						) }
 				</div>
 			) }
 
-			<div className="sgs-post-grid__content" style={ { ...tierBoxLonghands( contentPadding, tier, 'padding' ), ...pinContent } }>
+			<div
+				className="sgs-post-grid__content"
+				style={ {
+					...tierBoxLonghands( contentPadding, tier, 'padding' ),
+					...pinContent,
+				} }
+			>
 				{ metaInline ? (
-					<div className="sgs-post-grid__meta-row" style={ tierBoxLonghands( metaMargin, tier, 'margin' ) }>
+					<div
+						className="sgs-post-grid__meta-row"
+						style={ tierBoxLonghands( metaMargin, tier, 'margin' ) }
+					>
 						{ categoryNode }
 						{ metaNode }
 					</div>
@@ -209,27 +331,86 @@ export default function PreviewCard( { post, attributes, palette, tier, clientId
 				) }
 
 				{ showTitle && (
-					<h3 className="sgs-post-grid__title" style={ { ...tierBoxLonghands( titleMargin, tier, 'margin' ), ...typographyPreviewStyle( attributes, 'title', tier ) } }>
+					<h3
+						className="sgs-post-grid__title"
+						style={ {
+							...tierBoxLonghands( titleMargin, tier, 'margin' ),
+							...typographyPreviewStyle(
+								attributes,
+								'title',
+								tier
+							),
+						} }
+					>
 						<a href={ post?.link || '#' } style={ titleStyle }>
-							{ post?.title?.rendered || __( 'Post title', 'sgs-blocks' ) }
+							{ post?.title?.rendered ||
+								__( 'Post title', 'sgs-blocks' ) }
 						</a>
 					</h3>
 				) }
 
 				{ showExcerpt && (
-					<p className="sgs-post-grid__excerpt" style={ { ...excStyle, ...pinExcerpt, ...tierBoxLonghands( excerptMargin, tier, 'margin' ), ...typographyPreviewStyle( attributes, 'excerpt', tier ) } }>
-						{ excerptText || __( 'Post excerpt\u2026', 'sgs-blocks' ) }
+					<p
+						className="sgs-post-grid__excerpt"
+						style={ {
+							...excStyle,
+							...pinExcerpt,
+							...tierBoxLonghands(
+								excerptMargin,
+								tier,
+								'margin'
+							),
+							...typographyPreviewStyle(
+								attributes,
+								'excerpt',
+								tier
+							),
+						} }
+					>
+						{ excerptText ||
+							__( 'Post excerpt\u2026', 'sgs-blocks' ) }
 					</p>
 				) }
 
 				{ showReadMore && (
-					<span className="sgs-post-grid__readmore" style={ { ...rmStyle, ...pinLink, ...tierBoxLonghands( readMoreMargin, tier, 'margin' ), ...typographyPreviewStyle( attributes, 'readMore', tier ) } }>
-						<AuthoredText value={ readMoreText || __( 'Read more', 'sgs-blocks' ) } />
+					<span
+						className="sgs-post-grid__readmore"
+						style={ {
+							...rmStyle,
+							...pinLink,
+							...tierBoxLonghands(
+								readMoreMargin,
+								tier,
+								'margin'
+							),
+							...typographyPreviewStyle(
+								attributes,
+								'readMore',
+								tier
+							),
+						} }
+					>
+						<AuthoredText
+							value={
+								readMoreText || __( 'Read more', 'sgs-blocks' )
+							}
+						/>
 						{ 'none' !== readMoreIcon && (
 							<>
 								{ ' ' }
-								<span className="sgs-post-grid__readmore-icon" aria-hidden="true">
-									{ readMoreIcon ? <IconPreview source="lucide" name={ readMoreIcon } size={ 16 } /> : <>&rarr;</> }
+								<span
+									className="sgs-post-grid__readmore-icon"
+									aria-hidden="true"
+								>
+									{ readMoreIcon ? (
+										<IconPreview
+											source="lucide"
+											name={ readMoreIcon }
+											size={ 16 }
+										/>
+									) : (
+										<>&rarr;</>
+									) }
 								</span>
 							</>
 						) }

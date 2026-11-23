@@ -47,7 +47,7 @@ const DRAGGING_CLASS = 'sgs-physics-canvas__dragging';
 /**
  * Read a numeric config value off the canvas root, falling back safely.
  *
- * @param {HTMLElement} canvas  The canvas root element.
+ * @param {HTMLElement} canvas   The canvas root element.
  * @param {string}      attr     Attribute name.
  * @param {number}      fallback Value to use when absent or not a number.
  * @return {number} The parsed value, or `fallback`.
@@ -109,8 +109,7 @@ function bootCanvases( gsapInstance ) {
 	const teardowns = Array.from(
 		document.querySelectorAll( CANVAS_SELECTOR )
 	).map( ( canvas ) => {
-		const arena =
-			canvas.querySelector( '.sgs-container__inner' ) || canvas;
+		const arena = canvas.querySelector( '.sgs-container__inner' ) || canvas;
 
 		const children = Array.from( arena.children );
 		if ( 0 === children.length ) {

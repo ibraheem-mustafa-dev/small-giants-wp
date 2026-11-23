@@ -27,18 +27,18 @@ import { SgsBorderControl, SgsLengthControl } from '../../components';
  *
  * ⚠ `showRadiusResponsive={ false }` — the item radius is base-only on this block.
  *
- * @param {Object}   root0                     Props.
- * @param {Object}   root0.itemBorderWidth     `itemBorderWidth`  — box object, base only.
- * @param {string}   root0.itemBorderStyle     `itemBorderStyle`  — solid | dashed | dotted | ''.
- * @param {Object}   root0.itemBorderRadius    `itemBorderRadius`.
- * @param {string}   [root0.itemBorderScope]   `itemBorderScope` — item | label. The control renders only when `showBorderScope` is true (the bar menu; the drawer menu has no such attribute).
- * @param {boolean}  [root0.showBorderScope]   Whether to offer the underline-width control.
- * @param {number}   [root0.itemOpacity]       `itemOpacity` — resting opacity, 0 to 1, no default.
- * @param {number}   [root0.itemOpacityHover]  `itemOpacityHover` — hover/focus-visible opacity, 0 to 1, no default.
+ * @param {Object}   root0                         Props.
+ * @param {Object}   root0.itemBorderWidth         `itemBorderWidth`  — box object, base only.
+ * @param {string}   root0.itemBorderStyle         `itemBorderStyle`  — solid | dashed | dotted | ''.
+ * @param {Object}   root0.itemBorderRadius        `itemBorderRadius`.
+ * @param {string}   [root0.itemBorderScope]       `itemBorderScope` — item | label. The control renders only when `showBorderScope` is true (the bar menu; the drawer menu has no such attribute).
+ * @param {boolean}  [root0.showBorderScope]       Whether to offer the underline-width control.
+ * @param {number}   [root0.itemOpacity]           `itemOpacity` — resting opacity, 0 to 1, no default.
+ * @param {number}   [root0.itemOpacityHover]      `itemOpacityHover` — hover/focus-visible opacity, 0 to 1, no default.
  * @param {string}   [root0.itemPaddingShiftHover] `itemPaddingShiftHover` — hover-only inline-start padding growth, no default.
- * @param {number}   [root0.submenuOpacity]       `submenuOpacity` — the SUBLINK's own resting opacity, 0 to 1, no default. Genuinely separate from itemOpacity (fantasy needs opposite directions on the two elements).
- * @param {number}   [root0.submenuOpacityHover]  `submenuOpacityHover` — the sublink's own hover/focus-visible opacity, 0 to 1, no default.
- * @param {Function} root0.setAttributes       The block's attribute setter.
+ * @param {number}   [root0.submenuOpacity]        `submenuOpacity` — the SUBLINK's own resting opacity, 0 to 1, no default. Genuinely separate from itemOpacity (fantasy needs opposite directions on the two elements).
+ * @param {number}   [root0.submenuOpacityHover]   `submenuOpacityHover` — the sublink's own hover/focus-visible opacity, 0 to 1, no default.
+ * @param {Function} root0.setAttributes           The block's attribute setter.
  */
 export default function ItemsPanel( {
 	itemBorderWidth,
@@ -54,27 +54,47 @@ export default function ItemsPanel( {
 	setAttributes,
 } ) {
 	return (
-		<PanelBody title={ __( 'Menu item', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Menu item', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			<SgsBorderControl
 				label={ __( 'Border', 'sgs-blocks' ) }
 				showColour={ false }
 				showRadiusResponsive={ false }
 				widthValues={ itemBorderWidth || {} }
-				onWidthChange={ ( next ) => setAttributes( { itemBorderWidth: next || {} } ) }
+				onWidthChange={ ( next ) =>
+					setAttributes( { itemBorderWidth: next || {} } )
+				}
 				styleValue={ itemBorderStyle }
-				onStyleChange={ ( next ) => setAttributes( { itemBorderStyle: next || '' } ) }
+				onStyleChange={ ( next ) =>
+					setAttributes( { itemBorderStyle: next || '' } )
+				}
 				radiusValues={ itemBorderRadius || {} }
-				onRadiusChange={ ( next ) => setAttributes( { itemBorderRadius: next || {} } ) }
+				onRadiusChange={ ( next ) =>
+					setAttributes( { itemBorderRadius: next || {} } )
+				}
 			/>
 			{ showBorderScope && (
 				<SelectControl
 					label={ __( 'Underline spans', 'sgs-blocks' ) }
 					value={ itemBorderScope || 'item' }
 					options={ [
-						{ label: __( 'The whole item', 'sgs-blocks' ), value: 'item' },
-						{ label: __( 'The label only (flat, square ends)', 'sgs-blocks' ), value: 'label' },
+						{
+							label: __( 'The whole item', 'sgs-blocks' ),
+							value: 'item',
+						},
+						{
+							label: __(
+								'The label only (flat, square ends)',
+								'sgs-blocks'
+							),
+							value: 'label',
+						},
 					] }
-					onChange={ ( value ) => setAttributes( { itemBorderScope: value || 'item' } ) }
+					onChange={ ( value ) =>
+						setAttributes( { itemBorderScope: value || 'item' } )
+					}
 					help={ __(
 						'The label-only underline is as wide as the text, sits on the item’s bottom edge and ignores the corner radius.',
 						'sgs-blocks'
@@ -108,7 +128,9 @@ export default function ItemsPanel( {
 			<RangeControl
 				label={ __( 'Opacity on hover', 'sgs-blocks' ) }
 				value={ itemOpacityHover }
-				onChange={ ( val ) => setAttributes( { itemOpacityHover: val } ) }
+				onChange={ ( val ) =>
+					setAttributes( { itemOpacityHover: val } )
+				}
 				min={ 0 }
 				max={ 1 }
 				step={ 0.05 }
@@ -123,7 +145,9 @@ export default function ItemsPanel( {
 					'sgs-blocks'
 				) }
 				value={ itemPaddingShiftHover || '' }
-				onChange={ ( val ) => setAttributes( { itemPaddingShiftHover: val || '' } ) }
+				onChange={ ( val ) =>
+					setAttributes( { itemPaddingShiftHover: val || '' } )
+				}
 				presets={ false }
 			/>
 			{ /* M-21 — the SUBMENU link's own opacity pair, genuinely separate
@@ -144,7 +168,9 @@ export default function ItemsPanel( {
 			<RangeControl
 				label={ __( 'Submenu opacity on hover', 'sgs-blocks' ) }
 				value={ submenuOpacityHover }
-				onChange={ ( val ) => setAttributes( { submenuOpacityHover: val } ) }
+				onChange={ ( val ) =>
+					setAttributes( { submenuOpacityHover: val } )
+				}
 				min={ 0 }
 				max={ 1 }
 				step={ 0.05 }

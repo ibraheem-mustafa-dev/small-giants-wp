@@ -6,7 +6,13 @@
  *
  * @package SGS\Blocks
  */
-import { backgroundPaintPreview, colourVar, gapVar, textPaintPreview, tierValueOf } from '../../utils';
+import {
+	backgroundPaintPreview,
+	colourVar,
+	gapVar,
+	textPaintPreview,
+	tierValueOf,
+} from '../../utils';
 
 /**
  * @param {string} slugOrColour Stored colour (palette slug or CSS colour).
@@ -27,7 +33,9 @@ function paint( slugOrColour, property ) {
  * @return {Object} Style object, {} when both are unset.
  */
 function paintText( slugOrColour, gradient ) {
-	return gradient ? textPaintPreview( '', gradient ) : paint( slugOrColour, 'color' );
+	return gradient
+		? textPaintPreview( '', gradient )
+		: paint( slugOrColour, 'color' );
 }
 
 /**
@@ -39,7 +47,9 @@ function paintText( slugOrColour, gradient ) {
  * @return {Object} Style object, {} when both are unset.
  */
 function paintFill( slugOrColour, gradient ) {
-	return gradient ? backgroundPaintPreview( '', gradient ) : paint( slugOrColour, 'backgroundColor' );
+	return gradient
+		? backgroundPaintPreview( '', gradient )
+		: paint( slugOrColour, 'backgroundColor' );
 }
 
 /**
@@ -48,26 +58,44 @@ function paintFill( slugOrColour, gradient ) {
  */
 export function wishlistColourStyles( attributes ) {
 	return {
-		heading: paintText( attributes.headingColour, attributes.headingColourGradient ),
+		heading: paintText(
+			attributes.headingColour,
+			attributes.headingColourGradient
+		),
 		// Mirrors render.php: no itemNameColour means the palette's text token.
 		itemName:
 			attributes.itemNameColour || attributes.itemNameColourGradient
-				? paintText( attributes.itemNameColour, attributes.itemNameColourGradient )
+				? paintText(
+						attributes.itemNameColour,
+						attributes.itemNameColourGradient
+				  )
 				: { color: 'var(--wp--preset--color--text)' },
-		price: paintText( attributes.priceColour, attributes.priceColourGradient ),
+		price: paintText(
+			attributes.priceColour,
+			attributes.priceColourGradient
+		),
 		priceDrop: paint( attributes.priceDropColour, 'color' ),
 		stockChip: {
 			...paint( attributes.stockChipBackgroundColour, 'backgroundColor' ),
 			...paint( attributes.stockChipTextColour, 'color' ),
 		},
 		button: {
-			...paintFill( attributes.buttonBackgroundColour, attributes.buttonBackgroundColourGradient ),
+			...paintFill(
+				attributes.buttonBackgroundColour,
+				attributes.buttonBackgroundColourGradient
+			),
 			...paint( attributes.buttonTextColour, 'color' ),
 		},
 		link: paint( attributes.linkColour, 'color' ),
-		bar: paintFill( attributes.barBackgroundColour, attributes.barBackgroundColourGradient ),
+		bar: paintFill(
+			attributes.barBackgroundColour,
+			attributes.barBackgroundColourGradient
+		),
 		shareField: {
-			...paint( attributes.shareFieldBackgroundColour, 'backgroundColor' ),
+			...paint(
+				attributes.shareFieldBackgroundColour,
+				'backgroundColor'
+			),
 			...paint( attributes.shareFieldTextColour, 'color' ),
 		},
 	};

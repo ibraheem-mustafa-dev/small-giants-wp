@@ -7,7 +7,11 @@
 import { __ } from '@wordpress/i18n';
 import { InspectorControls } from '@wordpress/block-editor';
 import { PanelBody } from '@wordpress/components';
-import { SgsColourPanel, fillRow, GradientCapableColourControl } from '../../components';
+import {
+	SgsColourPanel,
+	fillRow,
+	GradientCapableColourControl,
+} from '../../components';
 
 /**
  * @param {Object}   props
@@ -35,16 +39,31 @@ export default function LayerBoxPanels( { attributes, setAttributes } ) {
 				] }
 			/>
 			<InspectorControls group="styles">
-				<PanelBody title={ __( 'Border gradient', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Border gradient', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<p className="components-base-control__help">
-						{ __( 'Draws the border as a gradient ring. Set a border width first. It paints on a layer that holds blocks or has no picture; on a picture alone, the Border colour applies.', 'sgs-blocks' ) }
+						{ __(
+							'Draws the border as a gradient ring. Set a border width first. It paints on a layer that holds blocks or has no picture; on a picture alone, the Border colour applies.',
+							'sgs-blocks'
+						) }
 					</p>
 					<GradientCapableColourControl
-						label={ __( 'Border colour or gradient', 'sgs-blocks' ) }
+						label={ __(
+							'Border colour or gradient',
+							'sgs-blocks'
+						) }
 						value={ attributes.layerBorderColour || '' }
-						onChange={ ( value ) => setAttributes( { layerBorderColour: value ?? '' } ) }
+						onChange={ ( value ) =>
+							setAttributes( { layerBorderColour: value ?? '' } )
+						}
 						gradientValue={ ring }
-						onGradientChange={ ( value ) => setAttributes( { layerBorderColourGradient: value ?? '' } ) }
+						onGradientChange={ ( value ) =>
+							setAttributes( {
+								layerBorderColourGradient: value ?? '',
+							} )
+						}
 					/>
 				</PanelBody>
 			</InspectorControls>

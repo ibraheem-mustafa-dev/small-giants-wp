@@ -13,7 +13,10 @@ import { useSelect } from '@wordpress/data';
 export function usePreviewTier() {
 	return useSelect( ( select ) => {
 		const ed = select( 'core/editor' );
-		const device = ed && typeof ed.getDeviceType === 'function' ? ed.getDeviceType() : null;
+		const device =
+			ed && typeof ed.getDeviceType === 'function'
+				? ed.getDeviceType()
+				: null;
 		return { Tablet: 'tablet', Mobile: 'mobile' }[ device ] || 'desktop';
 	}, [] );
 }

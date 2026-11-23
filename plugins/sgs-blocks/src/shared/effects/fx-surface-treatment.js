@@ -60,8 +60,11 @@ let stopGated = () => {};
  * @return {string} The matching `dataset` property name.
  */
 function datasetKeyForUniform( uniformName ) {
-	const suffix = uniformName.charAt( 1 ).toLowerCase() + uniformName.slice( 2 );
-	return 'sgsFxTreatment' + suffix.charAt( 0 ).toUpperCase() + suffix.slice( 1 );
+	const suffix =
+		uniformName.charAt( 1 ).toLowerCase() + uniformName.slice( 2 );
+	return (
+		'sgsFxTreatment' + suffix.charAt( 0 ).toUpperCase() + suffix.slice( 1 )
+	);
 }
 
 /**
@@ -78,10 +81,10 @@ function datasetKeyForUniform( uniformName ) {
  * dependency on the audio block.
  *
  * @param {HTMLElement} root     Element to resolve the property against
- *                                (custom properties inherit down the tree).
+ *                               (custom properties inherit down the tree).
  * @param {string}      name     Custom property name, e.g. `--sgs-fx-shadow`.
  * @param {number[]}    fallback `[r, g, b]` in 0-1 float space, used when
- *                                the property is unset or unparsable.
+ *                               the property is unset or unparsable.
  * @return {number[]} `[r, g, b]` in 0-1 float space.
  */
 function resolveColourVec3( root, name, fallback ) {
@@ -115,9 +118,8 @@ function resolveColourVec3( root, name, fallback ) {
 	const resolved = getComputedStyle( probe ).color;
 	probe.remove();
 
-	const match = resolved && resolved.match(
-		/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/
-	);
+	const match =
+		resolved && resolved.match( /rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/ );
 	if ( ! match ) {
 		return fallback;
 	}
@@ -156,7 +158,7 @@ function transformBrandColour( rgb, transform ) {
 		// Printer's ink: dark enough to read as ink, saturated enough to read
 		// as a COLOUR. A full 'deepen' lands near-black and defeats the point
 		// of offering an ink colour at all.
-		return [ rgb[ 0 ] * 0.55, rgb[ 1 ] * 0.42, rgb[ 2 ] * 0.50 ];
+		return [ rgb[ 0 ] * 0.55, rgb[ 1 ] * 0.42, rgb[ 2 ] * 0.5 ];
 	}
 	if ( 'lighten' === transform ) {
 		// Toward white, retaining a clear tint so highlights still read as
@@ -177,7 +179,7 @@ function transformBrandColour( rgb, transform ) {
  * by CSS custom properties for `vec3` colour uniforms (the render layer
  * publishes those — see this function's colour-resolution branch).
  *
- * @param {HTMLElement}                        el     The treatment host.
+ * @param {HTMLElement}                                                   el     The treatment host.
  * @param {import('./surface-treatments/presets').SurfaceTreatmentPreset} preset
  * @return {Object<string, number|number[]>} The resolved uniform values.
  */
@@ -217,7 +219,10 @@ function resolveUniforms( el, preset ) {
 					null
 				);
 				if ( brand ) {
-					fallback = transformBrandColour( brand, spec.paletteTransform );
+					fallback = transformBrandColour(
+						brand,
+						spec.paletteTransform
+					);
 				}
 			}
 
@@ -266,7 +271,7 @@ function resolveUniforms( el, preset ) {
  * scroll events costs one redraw per frame at most; and progress is clamped so
  * a fully-entered element stops redrawing entirely.
  *
- * @param {HTMLElement} el     The treatment host.
+ * @param {HTMLElement}                              el     The treatment host.
  * @param {{setUniform: Function, redraw: Function}} handle The render handle.
  * @return {Function} Teardown for this driver.
  */

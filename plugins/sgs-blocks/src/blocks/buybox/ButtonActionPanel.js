@@ -1,7 +1,10 @@
 import { __ } from '@wordpress/i18n';
 import { InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
-import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+import {
+	ToggleGroupControl,
+	ToggleGroupControlOption,
+} from '../../components/primitives';
 
 /**
  * "Button action" panel for sgs/buybox (Spec 43 FR-43-22).
@@ -22,11 +25,16 @@ export default function ButtonActionPanel( { attributes, setAttributes } ) {
 
 	return (
 		<InspectorControls>
-			<PanelBody title={ __( 'Button action', 'sgs-blocks' ) } initialOpen={ false }>
+			<PanelBody
+				title={ __( 'Button action', 'sgs-blocks' ) }
+				initialOpen={ false }
+			>
 				<ToggleGroupControl
 					label={ __( 'Button action', 'sgs-blocks' ) }
 					value={ addToCartAction || 'cart' }
-					onChange={ ( val ) => setAttributes( { addToCartAction: val } ) }
+					onChange={ ( val ) =>
+						setAttributes( { addToCartAction: val } )
+					}
 					isBlock
 					help={ __(
 						'Open a popup keeps the label above but opens a modal instead of adding to the cart directly — use this when the modal holds a choice-flow that finishes the purchase.',
@@ -35,14 +43,22 @@ export default function ButtonActionPanel( { attributes, setAttributes } ) {
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 				>
-					<ToggleGroupControlOption value="cart" label={ __( 'Add to cart', 'sgs-blocks' ) } />
-					<ToggleGroupControlOption value="modal" label={ __( 'Open a popup', 'sgs-blocks' ) } />
+					<ToggleGroupControlOption
+						value="cart"
+						label={ __( 'Add to cart', 'sgs-blocks' ) }
+					/>
+					<ToggleGroupControlOption
+						value="modal"
+						label={ __( 'Open a popup', 'sgs-blocks' ) }
+					/>
 				</ToggleGroupControl>
 				{ 'modal' === addToCartAction && (
 					<TextControl
 						label={ __( 'Popup to open', 'sgs-blocks' ) }
 						value={ addToCartModalId || '' }
-						onChange={ ( val ) => setAttributes( { addToCartModalId: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { addToCartModalId: val } )
+						}
 						help={ __(
 							'The HTML anchor set on the sgs/modal block to open — set it on that block\'s Advanced panel, "HTML anchor" field.',
 							'sgs-blocks'
@@ -52,9 +68,14 @@ export default function ButtonActionPanel( { attributes, setAttributes } ) {
 					/>
 				) }
 				<ToggleControl
-					label={ __( 'Keep Add to Cart beside the flow button', 'sgs-blocks' ) }
+					label={ __(
+						'Keep Add to Cart beside the flow button',
+						'sgs-blocks'
+					) }
 					checked={ !! keepAddToCartWithFlow }
-					onChange={ ( val ) => setAttributes( { keepAddToCartWithFlow: val } ) }
+					onChange={ ( val ) =>
+						setAttributes( { keepAddToCartWithFlow: val } )
+					}
 					help={ __(
 						'For a product linked to a choice flow that some buyers skip. Off: the flow button replaces Add to Cart. On: Add to Cart (and the express Buy now buttons) stay, and the flow button shows beside them. Does nothing on a product with no flow, in the guided layout, or when the button above opens a popup. A product that cannot be bought shows no flow button. The look of the flow button is set in Styles, Flow opener button; a setting left empty follows Add to Cart.',
 						'sgs-blocks'

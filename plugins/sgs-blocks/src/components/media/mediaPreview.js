@@ -66,10 +66,20 @@ function isFilled( value ) {
  */
 function everyDevice( stored ) {
 	const list =
-		stored && 'object' === typeof stored && ! Array.isArray( stored ) && ( 'desktop' in stored || 'tablet' in stored || 'mobile' in stored )
+		stored &&
+		'object' === typeof stored &&
+		! Array.isArray( stored ) &&
+		( 'desktop' in stored || 'tablet' in stored || 'mobile' in stored )
 			? [ stored.desktop, stored.tablet, stored.mobile ]
 			: [ stored ];
-	return list.filter( ( v ) => undefined !== v && null !== v && '' !== v && 'inherit' !== v && ! ( Array.isArray( v ) && ! v.length ) );
+	return list.filter(
+		( v ) =>
+			undefined !== v &&
+			null !== v &&
+			'' !== v &&
+			'inherit' !== v &&
+			! ( Array.isArray( v ) && ! v.length )
+	);
 }
 
 /**
@@ -79,24 +89,50 @@ function everyDevice( stored ) {
  * @return {boolean} Whether the helper element is printed (§7.3).
  */
 export function needsHelper( slot, attrs, motion = {} ) {
-	const read = ( base ) => everyDevice( attrs?.[ mediaAttrName( slot?.prefix || '', base ) ] );
+	const read = ( base ) =>
+		everyDevice( attrs?.[ mediaAttrName( slot?.prefix || '', base ) ] );
 	if ( read( 'Height' ).includes( 'fill' ) ) {
 		return true;
 	}
-	if ( [ 'OverlayColour', 'OverlayGradient' ].some( ( base ) => read( base ).some( isFilled ) ) ) {
+	if (
+		[ 'OverlayColour', 'OverlayGradient' ].some( ( base ) =>
+			read( base ).some( isFilled )
+		)
+	) {
 		return true;
 	}
 	// Any stored `{prefix}Overlay…Hover…` setting is an overlay hover form.
 	const overlayKey = mediaAttrName( slot?.prefix || '', 'Overlay' );
-	if ( Object.entries( attrs || {} ).some( ( [ key, value ] ) => key.startsWith( overlayKey ) && key.includes( 'Hover' ) && isFilled( value ) ) ) {
+	if (
+		Object.entries( attrs || {} ).some(
+			( [ key, value ] ) =>
+				key.startsWith( overlayKey ) &&
+				key.includes( 'Hover' ) &&
+				isFilled( value )
+		)
+	) {
 		return true;
 	}
-	if ( read( 'Shape' ).some( ( shape ) => ! MASK_FREE_SHAPES.includes( String( ( 'object' === typeof shape ? shape?.shape : shape ) ?? '' ) ) ) ) {
+	if (
+		read( 'Shape' ).some(
+			( shape ) =>
+				! MASK_FREE_SHAPES.includes(
+					String(
+						( 'object' === typeof shape ? shape?.shape : shape ) ??
+							''
+					)
+				)
+		)
+	) {
 		return true;
 	}
 	const effects = Array.isArray( motion?.effects ) ? motion.effects : [];
 	const entrance = String( motion?.entrance || '' );
-	return Number( motion?.hoverScale ) > 1 || effects.some( effectPaintsLayer ) || entrance.includes( 'clip' );
+	return (
+		Number( motion?.hoverScale ) > 1 ||
+		effects.some( effectPaintsLayer ) ||
+		entrance.includes( 'clip' )
+	);
 }
 
 /** The rule text one atom contributes. */
@@ -107,7 +143,9 @@ function atomRules( atom, args ) {
 	const out = atom.css( args );
 	return ( Array.isArray( out ) ? out : [ out ] )
 		.filter( ( rule ) => 'string' === typeof rule && rule.trim() )
-		.map( ( rule ) => ( rule.includes( '{' ) ? rule : `.${ args.uid }{${ rule }}` ) );
+		.map( ( rule ) =>
+			rule.includes( '{' ) ? rule : `.${ args.uid }{${ rule }}`
+		);
 }
 
 /**
@@ -119,11 +157,28 @@ function atomRules( atom, args ) {
  */
 export default function mediaPreview( slot, attrs, uid, options = {} ) {
 	const helper = needsHelper( slot, attrs, options.motion );
-	const args = { slot, attrs, attributes: attrs, prefix: slot?.prefix || '', uid, helper };
+	const args = {
+		slot,
+		attrs,
+		attributes: attrs,
+		prefix: slot?.prefix || '',
+		uid,
+		helper,
+	};
 	const css = options.atoms
-		? Object.values( options.atoms ).flatMap( ( atom ) => atomRules( atom, args ) ).join( '\n' )
+		? Object.values( options.atoms )
+				.flatMap( ( atom ) => atomRules( atom, args ) )
+				.join( '\n' )
 		: emitSlot( slot, attrs, uid, helper );
-	const fill = everyDevice( attrs?.[ mediaAttrName( slot?.prefix || '', 'Height' ) ] ).includes( 'fill' );
-	const className = [ uid, helper ? 'sgs-media-box' : '', fill ? 'sgs-media-box--fill' : '' ].filter( Boolean ).join( ' ' );
+	const fill = everyDevice(
+		attrs?.[ mediaAttrName( slot?.prefix || '', 'Height' ) ]
+	).includes( 'fill' );
+	const className = [
+		uid,
+		helper ? 'sgs-media-box' : '',
+		fill ? 'sgs-media-box--fill' : '',
+	]
+		.filter( Boolean )
+		.join( ' ' );
 	return { css, className, needsHelper: helper };
 }

@@ -11,7 +11,15 @@
 
 import { __ } from '@wordpress/i18n';
 import { ToggleControl } from '@wordpress/components';
-import { ResponsiveLengthControl, SgsBorderControl, SgsColourPanel, ShadowControl, shadowAttrKeys, fillRow, textRow } from '../../components';
+import {
+	ResponsiveLengthControl,
+	SgsBorderControl,
+	SgsColourPanel,
+	ShadowControl,
+	shadowAttrKeys,
+	fillRow,
+	textRow,
+} from '../../components';
 
 /**
  * @param {Object}   root0               Props.
@@ -20,7 +28,12 @@ import { ResponsiveLengthControl, SgsBorderControl, SgsColourPanel, ShadowContro
  * @return {Element} The controls.
  */
 export default function CaretBoxControls( { attributes, setAttributes } ) {
-	const { caretBoxSize, caretBoxBorderWidth, caretBoxBorderStyle, caretBoxOnTrailingIcon } = attributes;
+	const {
+		caretBoxSize,
+		caretBoxBorderWidth,
+		caretBoxBorderStyle,
+		caretBoxOnTrailingIcon,
+	} = attributes;
 
 	return (
 		<>
@@ -34,20 +47,32 @@ export default function CaretBoxControls( { attributes, setAttributes } ) {
 					fillRow( {
 						key: 'caretBoxBg',
 						label: __( 'Expander circle fill', 'sgs-blocks' ),
-						attrs: { base: 'caretBoxBg', gradient: 'caretBoxBgGradient' },
+						attrs: {
+							base: 'caretBoxBg',
+							gradient: 'caretBoxBgGradient',
+						},
 						attributes,
 						setAttributes,
 					} ),
 					fillRow( {
 						key: 'caretBoxBgOpen',
-						label: __( 'Expander circle fill (open)', 'sgs-blocks' ),
-						attrs: { base: 'caretBoxBgOpen', gradient: 'caretBoxBgOpenGradient' },
+						label: __(
+							'Expander circle fill (open)',
+							'sgs-blocks'
+						),
+						attrs: {
+							base: 'caretBoxBgOpen',
+							gradient: 'caretBoxBgOpenGradient',
+						},
 						attributes,
 						setAttributes,
 					} ),
 					textRow( {
 						key: 'caretColourOpen',
-						label: __( 'Expander glyph colour (open)', 'sgs-blocks' ),
+						label: __(
+							'Expander glyph colour (open)',
+							'sgs-blocks'
+						),
 						attrs: { base: 'caretColourOpen' },
 						attributes,
 						setAttributes,
@@ -57,36 +82,60 @@ export default function CaretBoxControls( { attributes, setAttributes } ) {
 			<SgsBorderControl
 				label={ __( 'Expander circle border', 'sgs-blocks' ) }
 				widthValues={ caretBoxBorderWidth ?? {} }
-				onWidthChange={ ( next ) => setAttributes( { caretBoxBorderWidth: next } ) }
+				onWidthChange={ ( next ) =>
+					setAttributes( { caretBoxBorderWidth: next } )
+				}
 				styleValue={ caretBoxBorderStyle }
-				onStyleChange={ ( value ) => setAttributes( { caretBoxBorderStyle: value } ) }
-				colourLabel={ __( 'Expander circle border colour', 'sgs-blocks' ) }
+				onStyleChange={ ( value ) =>
+					setAttributes( { caretBoxBorderStyle: value } )
+				}
+				colourLabel={ __(
+					'Expander circle border colour',
+					'sgs-blocks'
+				) }
 				colourStates={ [
 					{
 						key: 'normal',
 						label: __( 'Closed', 'sgs-blocks' ),
 						value: attributes.caretBoxBorderColour,
-						onChange: ( value ) => setAttributes( { caretBoxBorderColour: value ?? '' } ),
+						onChange: ( value ) =>
+							setAttributes( {
+								caretBoxBorderColour: value ?? '',
+							} ),
 					},
 					{
 						key: 'open',
 						label: __( 'Open', 'sgs-blocks' ),
 						value: attributes.caretBoxBorderColourOpen,
-						onChange: ( value ) => setAttributes( { caretBoxBorderColourOpen: value ?? '' } ),
+						onChange: ( value ) =>
+							setAttributes( {
+								caretBoxBorderColourOpen: value ?? '',
+							} ),
 					},
 				] }
 			/>
 			<ShadowControl
-				label={ __( 'Expander circle shadow and hover glow', 'sgs-blocks' ) }
+				label={ __(
+					'Expander circle shadow and hover glow',
+					'sgs-blocks'
+				) }
 				attributes={ attributes }
 				setAttributes={ setAttributes }
-				attrNames={ shadowAttrKeys( 'caretBoxShadow', { hover: true, hoverColour: true } ) }
+				attrNames={ shadowAttrKeys( 'caretBoxShadow', {
+					hover: true,
+					hoverColour: true,
+				} ) }
 			/>
 			<ToggleControl
 				label={ __( 'Same circle round trailing icons', 'sgs-blocks' ) }
-				help={ __( 'Rows with no submenu (for example Home or Contact) show their trailing arrow in a matching circle.', 'sgs-blocks' ) }
+				help={ __(
+					'Rows with no submenu (for example Home or Contact) show their trailing arrow in a matching circle.',
+					'sgs-blocks'
+				) }
 				checked={ !! caretBoxOnTrailingIcon }
-				onChange={ ( value ) => setAttributes( { caretBoxOnTrailingIcon: value } ) }
+				onChange={ ( value ) =>
+					setAttributes( { caretBoxOnTrailingIcon: value } )
+				}
 				__nextHasNoMarginBottom
 			/>
 		</>

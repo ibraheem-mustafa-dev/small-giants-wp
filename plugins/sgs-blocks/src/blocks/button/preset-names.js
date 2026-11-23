@@ -8,7 +8,11 @@
  */
 
 /** The framework's starter preset names (the one list of them in the editor's JavaScript). */
-export const STARTER_PRESETS = Object.freeze( [ 'primary', 'secondary', 'outline' ] );
+export const STARTER_PRESETS = Object.freeze( [
+	'primary',
+	'secondary',
+	'outline',
+] );
 
 /**
  * A preset name as a readable label: `gold-large` becomes `Gold large`.
@@ -28,10 +32,16 @@ export function presetLabel( name ) {
  */
 export function presetNames() {
 	const extra =
-		'undefined' !== typeof window && Array.isArray( window.sgsButtonPresetNames )
+		'undefined' !== typeof window &&
+		Array.isArray( window.sgsButtonPresetNames )
 			? window.sgsButtonPresetNames
 			: [];
-	return [ ...STARTER_PRESETS, ...extra.filter( ( n ) => 'string' === typeof n && ! STARTER_PRESETS.includes( n ) ) ];
+	return [
+		...STARTER_PRESETS,
+		...extra.filter(
+			( n ) => 'string' === typeof n && ! STARTER_PRESETS.includes( n )
+		),
+	];
 }
 
 /**
@@ -41,5 +51,8 @@ export function presetNames() {
  * @return {{label: string, value: string}[]} Options.
  */
 export function presetOptions( labels = {} ) {
-	return presetNames().map( ( name ) => ( { value: name, label: labels[ name ] || presetLabel( name ) } ) );
+	return presetNames().map( ( name ) => ( {
+		value: name,
+		label: labels[ name ] || presetLabel( name ),
+	} ) );
 }

@@ -13,21 +13,40 @@
  */
 import { __ } from '@wordpress/i18n';
 import { InspectorControls, useBlockProps } from '@wordpress/block-editor';
-import { PanelBody, RangeControl, SelectControl, TextControl, ToggleControl } from '@wordpress/components';
+import {
+	PanelBody,
+	RangeControl,
+	SelectControl,
+	TextControl,
+	ToggleControl,
+} from '@wordpress/components';
 import { useRef } from '@wordpress/element';
 import { ResponsiveOverride } from '../../components';
-import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+import {
+	ToggleGroupControl,
+	ToggleGroupControlOption,
+} from '../../components/primitives';
 import { patchTier, resolveTier, usePreviewTier } from '../../utils';
 import { dimensionPaths } from '../../utils/diagram-geometry';
-import { clampPct, dotRadius, drawingBox, lockedEndpoints, sourceSize } from '../measured-diagram/drawing-box';
+import {
+	clampPct,
+	dotRadius,
+	drawingBox,
+	lockedEndpoints,
+	sourceSize,
+} from '../measured-diagram/drawing-box';
 import LinePanel from './line-panel';
 
 import AuthoredText from '../../components/AuthoredText';
 import SgsFreeTextField from '../../components/SgsFreeTextField';
 const round1 = ( n ) => Math.round( n * 10 ) / 10;
 
-
-export default function Edit( { attributes, setAttributes, context, isSelected } ) {
+export default function Edit( {
+	attributes,
+	setAttributes,
+	context,
+	isSelected,
+} ) {
 	const {
 		caption,
 		value,
@@ -50,11 +69,30 @@ export default function Edit( { attributes, setAttributes, context, isSelected }
 
 	const overlayRef = useRef( null );
 	const previewTier = usePreviewTier();
-	const [ boxW, boxH ] = drawingBox( ...sourceSize( context[ 'sgs/measuredDiagramSource' ] ) );
+	const [ boxW, boxH ] = drawingBox(
+		...sourceSize( context[ 'sgs/measuredDiagramSource' ] )
+	);
 	const tickLength = context[ 'sgs/measuredDiagramTickLength' ];
-	const { sx, sy, ex, ey } = lockedEndpoints( { startX, startY, endX, endY, orientation } );
+	const { sx, sy, ex, ey } = lockedEndpoints( {
+		startX,
+		startY,
+		endX,
+		endY,
+		orientation,
+	} );
 	const paths = dimensionPaths(
-		{ startX: sx, startY: sy, endX: ex, endY: ey, kind, endStyle, extReach, extReachEnd, extOvershoot, tickLength },
+		{
+			startX: sx,
+			startY: sy,
+			endX: ex,
+			endY: ey,
+			kind,
+			endStyle,
+			extReach,
+			extReachEnd,
+			extOvershoot,
+			tickLength,
+		},
 		boxW,
 		boxH
 	);
@@ -67,7 +105,11 @@ export default function Edit( { attributes, setAttributes, context, isSelected }
 	// binding's own before/after text (e.g. "00 mm").
 	const binding = attributes.metadata?.bindings?.value;
 	const bindingArgs = binding?.args || {};
-	const shownValue = value || ( binding ? `${ bindingArgs.before || '' }00${ bindingArgs.after || '' }` : '' );
+	const shownValue =
+		value ||
+		( binding
+			? `${ bindingArgs.before || '' }00${ bindingArgs.after || '' }`
+			: '' );
 
 	/**
 	 * Move one handle to (x, y), % of the frame.
@@ -116,7 +158,11 @@ export default function Edit( { attributes, setAttributes, context, isSelected }
 		}
 		const view = frame.ownerDocument.defaultView;
 		const onMove = ( e ) =>
-			moveHandle( which, ( ( e.clientX - rect.left ) / rect.width ) * 100, ( ( e.clientY - rect.top ) / rect.height ) * 100 );
+			moveHandle(
+				which,
+				( ( e.clientX - rect.left ) / rect.width ) * 100,
+				( ( e.clientY - rect.top ) / rect.height ) * 100
+			);
 		const onUp = () => {
 			view.removeEventListener( 'pointermove', onMove );
 			view.removeEventListener( 'pointerup', onUp );
@@ -126,7 +172,12 @@ export default function Edit( { attributes, setAttributes, context, isSelected }
 	};
 
 	const nudge = ( which, x, y ) => ( event ) => {
-		const steps = { ArrowLeft: [ -1, 0 ], ArrowRight: [ 1, 0 ], ArrowUp: [ 0, -1 ], ArrowDown: [ 0, 1 ] };
+		const steps = {
+			ArrowLeft: [ -1, 0 ],
+			ArrowRight: [ 1, 0 ],
+			ArrowUp: [ 0, -1 ],
+			ArrowDown: [ 0, 1 ],
+		};
 		const dir = steps[ event.key ];
 		if ( ! dir ) {
 			return;
@@ -168,7 +219,9 @@ export default function Edit( { attributes, setAttributes, context, isSelected }
 			'sgs-diagram-dimension',
 			`sgs-diagram-dimension--${ kind || 'dimension' }`,
 			`sgs-diagram-dimension--align-${ labelAlign || 'center' }`,
-			'valueFirst' === labelOrder ? 'sgs-diagram-dimension--value-first' : 'sgs-diagram-dimension--caption-first',
+			'valueFirst' === labelOrder
+				? 'sgs-diagram-dimension--value-first'
+				: 'sgs-diagram-dimension--caption-first',
 			false !== hideWhenEmpty ? 'sgs-diagram-dimension--hide-empty' : '',
 		]
 			.filter( Boolean )
@@ -179,9 +232,14 @@ export default function Edit( { attributes, setAttributes, context, isSelected }
 		<>
 			<InspectorControls>
 				<PanelBody title={ __( 'Measurement', 'sgs-blocks' ) }>
-					<SgsFreeTextField type="rich" noLink
+					<SgsFreeTextField
+						type="rich"
+						noLink
 						label={ __( 'Caption', 'sgs-blocks' ) }
-						help={ __( 'What is measured, e.g. "Lens width".', 'sgs-blocks' ) }
+						help={ __(
+							'What is measured, e.g. "Lens width".',
+							'sgs-blocks'
+						) }
 						value={ caption || '' }
 						onChange={ ( v ) => setAttributes( { caption: v } ) }
 					/>
@@ -189,8 +247,14 @@ export default function Edit( { attributes, setAttributes, context, isSelected }
 						label={ __( 'Value', 'sgs-blocks' ) }
 						help={
 							binding
-								? __( 'This value is connected to data and fills in on the page. Units come from the connection’s before/after text.', 'sgs-blocks' )
-								: __( 'Type the value with its unit, e.g. "52 mm", or connect it to product data.', 'sgs-blocks' )
+								? __(
+										'This value is connected to data and fills in on the page. Units come from the connection’s before/after text.',
+										'sgs-blocks'
+								  )
+								: __(
+										'Type the value with its unit, e.g. "52 mm", or connect it to product data.',
+										'sgs-blocks'
+								  )
 						}
 						value={ value || '' }
 						disabled={ !! binding }
@@ -199,10 +263,18 @@ export default function Edit( { attributes, setAttributes, context, isSelected }
 						__next40pxDefaultSize
 					/>
 					<ToggleControl
-						label={ __( 'Hide when there is no value', 'sgs-blocks' ) }
-						help={ __( 'Hides this line and label when a connected value is empty, e.g. a size without that measurement.', 'sgs-blocks' ) }
+						label={ __(
+							'Hide when there is no value',
+							'sgs-blocks'
+						) }
+						help={ __(
+							'Hides this line and label when a connected value is empty, e.g. a size without that measurement.',
+							'sgs-blocks'
+						) }
 						checked={ false !== hideWhenEmpty }
-						onChange={ ( v ) => setAttributes( { hideWhenEmpty: v } ) }
+						onChange={ ( v ) =>
+							setAttributes( { hideWhenEmpty: v } )
+						}
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
@@ -212,7 +284,10 @@ export default function Edit( { attributes, setAttributes, context, isSelected }
 					endpoints={ { sx, sy, ex, ey } }
 					onOrientation={ setOrientation }
 				/>
-				<PanelBody title={ __( 'Label position', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Label position', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<ResponsiveOverride
 						label={ __( 'Label across (%)', 'sgs-blocks' ) }
 						value={ labelX }
@@ -220,7 +295,10 @@ export default function Edit( { attributes, setAttributes, context, isSelected }
 					>
 						{ ( { setOwnValue } ) => (
 							<RangeControl
-								help={ __( 'Unset places the label on the line’s middle.', 'sgs-blocks' ) }
+								help={ __(
+									'Unset places the label on the line’s middle.',
+									'sgs-blocks'
+								) }
 								value={ lx }
 								onChange={ ( v ) => setOwnValue( v ) }
 								min={ 0 }
@@ -256,17 +334,35 @@ export default function Edit( { attributes, setAttributes, context, isSelected }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					>
-						<ToggleGroupControlOption value="start" label={ __( 'Start', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="center" label={ __( 'Centre', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="end" label={ __( 'End', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption
+							value="start"
+							label={ __( 'Start', 'sgs-blocks' ) }
+						/>
+						<ToggleGroupControlOption
+							value="center"
+							label={ __( 'Centre', 'sgs-blocks' ) }
+						/>
+						<ToggleGroupControlOption
+							value="end"
+							label={ __( 'End', 'sgs-blocks' ) }
+						/>
 					</ToggleGroupControl>
 					<SelectControl
 						label={ __( 'Stacking', 'sgs-blocks' ) }
-						help={ __( 'Visual only: screen readers always hear the caption first.', 'sgs-blocks' ) }
+						help={ __(
+							'Visual only: screen readers always hear the caption first.',
+							'sgs-blocks'
+						) }
 						value={ labelOrder || 'captionFirst' }
 						options={ [
-							{ value: 'captionFirst', label: __( 'Caption on top', 'sgs-blocks' ) },
-							{ value: 'valueFirst', label: __( 'Value on top', 'sgs-blocks' ) },
+							{
+								value: 'captionFirst',
+								label: __( 'Caption on top', 'sgs-blocks' ),
+							},
+							{
+								value: 'valueFirst',
+								label: __( 'Value on top', 'sgs-blocks' ),
+							},
 						] }
 						onChange={ ( v ) => setAttributes( { labelOrder: v } ) }
 						__nextHasNoMarginBottom
@@ -276,7 +372,10 @@ export default function Edit( { attributes, setAttributes, context, isSelected }
 			</InspectorControls>
 
 			<li { ...blockProps }>
-				<span className="sgs-diagram-dimension__overlay" ref={ overlayRef }>
+				<span
+					className="sgs-diagram-dimension__overlay"
+					ref={ overlayRef }
+				>
 					<svg
 						className="sgs-diagram-dimension__lines"
 						viewBox={ `0 0 ${ boxW } ${ boxH }` }
@@ -284,24 +383,93 @@ export default function Edit( { attributes, setAttributes, context, isSelected }
 						aria-hidden="true"
 						focusable="false"
 					>
-						{ paths.guides && <path className="sgs-diagram-dimension__guides" d={ paths.guides } /> }
-						{ paths.line && <path className="sgs-diagram-dimension__line" d={ paths.line } /> }
-						{ paths.ends && <path className="sgs-diagram-dimension__ends" d={ paths.ends } /> }
+						{ paths.guides && (
+							<path
+								className="sgs-diagram-dimension__guides"
+								d={ paths.guides }
+							/>
+						) }
+						{ paths.line && (
+							<path
+								className="sgs-diagram-dimension__line"
+								d={ paths.line }
+							/>
+						) }
+						{ paths.ends && (
+							<path
+								className="sgs-diagram-dimension__ends"
+								d={ paths.ends }
+							/>
+						) }
 						{ paths.dots.map( ( dot, i ) => (
-							<circle key={ i } className="sgs-diagram-dimension__dot" cx={ dot.cx } cy={ dot.cy } r={ dotRadius( tickLength, boxW ) } />
+							<circle
+								key={ i }
+								className="sgs-diagram-dimension__dot"
+								cx={ dot.cx }
+								cy={ dot.cy }
+								r={ dotRadius( tickLength, boxW ) }
+							/>
 						) ) }
 					</svg>
-					<span className="sgs-diagram-dimension__marker" aria-hidden="true" style={ { left: `${ midX }%`, top: `${ midY }%` } } />
-					{ isSelected && handle( 'start', sx, sy, __( 'Move line start (arrow keys nudge)', 'sgs-blocks' ) ) }
-					{ isSelected && handle( 'end', ex, ey, __( 'Move line end (arrow keys nudge)', 'sgs-blocks' ) ) }
-					{ isSelected && handle( 'label', lx, ly, __( 'Move label (arrow keys nudge)', 'sgs-blocks' ) ) }
+					<span
+						className="sgs-diagram-dimension__marker"
+						aria-hidden="true"
+						style={ { left: `${ midX }%`, top: `${ midY }%` } }
+					/>
+					{ isSelected &&
+						handle(
+							'start',
+							sx,
+							sy,
+							__(
+								'Move line start (arrow keys nudge)',
+								'sgs-blocks'
+							)
+						) }
+					{ isSelected &&
+						handle(
+							'end',
+							ex,
+							ey,
+							__(
+								'Move line end (arrow keys nudge)',
+								'sgs-blocks'
+							)
+						) }
+					{ isSelected &&
+						handle(
+							'label',
+							lx,
+							ly,
+							__( 'Move label (arrow keys nudge)', 'sgs-blocks' )
+						) }
 				</span>
-				<span className="sgs-diagram-dimension__number" aria-hidden="true" />
-				<span className="sgs-diagram-dimension__label" style={ { left: `${ lx }%`, top: `${ ly }%` } }>
-					<span className={ caption ? 'sgs-diagram-dimension__caption' : 'sgs-diagram-dimension__caption is-placeholder' }>
-						<AuthoredText value={ caption || __( 'Caption', 'sgs-blocks' ) } />
+				<span
+					className="sgs-diagram-dimension__number"
+					aria-hidden="true"
+				/>
+				<span
+					className="sgs-diagram-dimension__label"
+					style={ { left: `${ lx }%`, top: `${ ly }%` } }
+				>
+					<span
+						className={
+							caption
+								? 'sgs-diagram-dimension__caption'
+								: 'sgs-diagram-dimension__caption is-placeholder'
+						}
+					>
+						<AuthoredText
+							value={ caption || __( 'Caption', 'sgs-blocks' ) }
+						/>
 					</span>{ ' ' }
-					<span className={ shownValue ? 'sgs-diagram-dimension__value' : 'sgs-diagram-dimension__value is-placeholder' }>
+					<span
+						className={
+							shownValue
+								? 'sgs-diagram-dimension__value'
+								: 'sgs-diagram-dimension__value is-placeholder'
+						}
+					>
 						{ shownValue || __( 'Value', 'sgs-blocks' ) }
 					</span>
 				</span>

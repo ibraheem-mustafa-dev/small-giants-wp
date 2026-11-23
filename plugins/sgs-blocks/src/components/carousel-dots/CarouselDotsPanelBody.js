@@ -126,12 +126,18 @@ export default function CarouselDotsPanelBody( {
 						'ActiveWidth',
 						__( 'Current dot width', 'sgs-blocks' )
 					) }
-					{ tierLength( 'Gap', __( 'Space between dots', 'sgs-blocks' ) ) }
+					{ tierLength(
+						'Gap',
+						__( 'Space between dots', 'sgs-blocks' )
+					) }
 					{ singleLength(
 						'BorderWidth',
 						__( 'Dot border width', 'sgs-blocks' )
 					) }
-					{ singleLength( 'Radius', __( 'Dot corner radius', 'sgs-blocks' ) ) }
+					{ singleLength(
+						'Radius',
+						__( 'Dot corner radius', 'sgs-blocks' )
+					) }
 				</PanelBody>
 			</InspectorControls>
 		</>

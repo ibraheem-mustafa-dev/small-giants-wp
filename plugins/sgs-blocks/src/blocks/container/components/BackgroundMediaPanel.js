@@ -12,9 +12,24 @@
 import { __ } from '@wordpress/i18n';
 import { InspectorControls } from '@wordpress/block-editor';
 import { getBlockType } from '@wordpress/blocks';
-import { PanelBody, RangeControl, SelectControl, TextareaControl, ToggleControl, Notice } from '@wordpress/components';
-import { ToolsPanel, ToggleGroupControl, ToggleGroupControlOption } from '../../../components/primitives';
-import { MediaElementPanel, SgsLengthControl, SurfaceGroundControls } from '../../../components';
+import {
+	PanelBody,
+	RangeControl,
+	SelectControl,
+	TextareaControl,
+	ToggleControl,
+	Notice,
+} from '@wordpress/components';
+import {
+	ToolsPanel,
+	ToggleGroupControl,
+	ToggleGroupControlOption,
+} from '../../../components/primitives';
+import {
+	MediaElementPanel,
+	SgsLengthControl,
+	SurfaceGroundControls,
+} from '../../../components';
 import { LENGTH_UNITS } from './_shared';
 
 export const BACKGROUND_KINDS = [ 'image', 'video', 'svg' ];
@@ -40,31 +55,61 @@ function SurfaceSection( { attributes, setAttributes, name } ) {
 		return null;
 	}
 	const showSurfaceOpacity = !! type?.attributes?.surfaceOpacity;
-	const { surfaceTone = 'auto', backgroundOverlayColour = '', backgroundOverlayGradient = '', backgroundSource } = attributes;
-	const hasPhoto = !! ( backgroundSource?.desktop?.url || backgroundSource?.url );
-	const hasOverlayPaint = !! backgroundOverlayColour || !! backgroundOverlayGradient;
+	const {
+		surfaceTone = 'auto',
+		backgroundOverlayColour = '',
+		backgroundOverlayGradient = '',
+		backgroundSource,
+	} = attributes;
+	const hasPhoto = !! (
+		backgroundSource?.desktop?.url || backgroundSource?.url
+	);
+	const hasOverlayPaint =
+		!! backgroundOverlayColour || !! backgroundOverlayGradient;
 	return (
-		<PanelBody title={ __( 'Background surface', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Background surface', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			{ showTone && (
 				<>
 					<ToggleGroupControl
 						label={ __( 'Surface tone', 'sgs-blocks' ) }
-						help={ __( 'Tells a see-through header and shadows whether this section reads as light or dark.', 'sgs-blocks' ) }
+						help={ __(
+							'Tells a see-through header and shadows whether this section reads as light or dark.',
+							'sgs-blocks'
+						) }
 						value={ surfaceTone }
-						onChange={ ( val ) => setAttributes( { surfaceTone: val || 'auto' } ) }
+						onChange={ ( val ) =>
+							setAttributes( { surfaceTone: val || 'auto' } )
+						}
 						isBlock
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					>
-						<ToggleGroupControlOption value="auto" label={ __( 'Automatic', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="light" label={ __( 'Light', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="dark" label={ __( 'Dark', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption
+							value="auto"
+							label={ __( 'Automatic', 'sgs-blocks' ) }
+						/>
+						<ToggleGroupControlOption
+							value="light"
+							label={ __( 'Light', 'sgs-blocks' ) }
+						/>
+						<ToggleGroupControlOption
+							value="dark"
+							label={ __( 'Dark', 'sgs-blocks' ) }
+						/>
 					</ToggleGroupControl>
-					{ hasPhoto && ! hasOverlayPaint && 'auto' === surfaceTone && (
-						<Notice isDismissible={ false } status="warning">
-							{ __( 'A header over this picture cannot tell whether it is light or dark.', 'sgs-blocks' ) }
-						</Notice>
-					) }
+					{ hasPhoto &&
+						! hasOverlayPaint &&
+						'auto' === surfaceTone && (
+							<Notice isDismissible={ false } status="warning">
+								{ __(
+									'A header over this picture cannot tell whether it is light or dark.',
+									'sgs-blocks'
+								) }
+							</Notice>
+						) }
 				</>
 			) }
 			{ showSurface && (
@@ -74,11 +119,17 @@ function SurfaceSection( { attributes, setAttributes, name } ) {
 						setAttributes( {
 							surfaceBlur: '',
 							surfaceSaturate: undefined,
-							...( showSurfaceOpacity ? { surfaceOpacity: undefined } : {} ),
+							...( showSurfaceOpacity
+								? { surfaceOpacity: undefined }
+								: {} ),
 						} )
 					}
 				>
-					<SurfaceGroundControls attributes={ attributes } setAttributes={ setAttributes } showOpacity={ showSurfaceOpacity } />
+					<SurfaceGroundControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						showOpacity={ showSurfaceOpacity }
+					/>
 				</ToolsPanel>
 			) }
 		</PanelBody>
@@ -93,17 +144,32 @@ function SvgLayerSection( { attributes, setAttributes, name } ) {
 	if ( ! getBlockType( name )?.attributes?.bgSvgContent ) {
 		return null;
 	}
-	const { bgSvgContent = '', bgSvgPosition = 'background', bgSvgOpacity = 100, bgSvgTextShadow = false, bgSvgMinHeight = '' } = attributes;
+	const {
+		bgSvgContent = '',
+		bgSvgPosition = 'background',
+		bgSvgOpacity = 100,
+		bgSvgTextShadow = false,
+		bgSvgMinHeight = '',
+	} = attributes;
 	return (
-		<PanelBody title={ __( 'Extra SVG layer', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Extra SVG layer', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			<p className="components-base-control__help">
-				{ __( 'An SVG drawn over a photo or video. To use an SVG as the whole background, choose SVG in the Background panel instead.', 'sgs-blocks' ) }
+				{ __(
+					'An SVG drawn over a photo or video. To use an SVG as the whole background, choose SVG in the Background panel instead.',
+					'sgs-blocks'
+				) }
 			</p>
 			<TextareaControl
 				label={ __( 'SVG code', 'sgs-blocks' ) }
 				value={ bgSvgContent }
 				onChange={ ( val ) => setAttributes( { bgSvgContent: val } ) }
-				help={ __( 'Paste your <svg>…</svg> markup here.', 'sgs-blocks' ) }
+				help={ __(
+					'Paste your <svg>…</svg> markup here.',
+					'sgs-blocks'
+				) }
 				rows={ 8 }
 			/>
 			{ bgSvgContent && (
@@ -112,17 +178,33 @@ function SvgLayerSection( { attributes, setAttributes, name } ) {
 						label={ __( 'Position', 'sgs-blocks' ) }
 						value={ bgSvgPosition }
 						options={ [
-							{ label: __( 'Background (behind content)', 'sgs-blocks' ), value: 'background' },
-							{ label: __( 'Foreground (above content)', 'sgs-blocks' ), value: 'foreground' },
+							{
+								label: __(
+									'Background (behind content)',
+									'sgs-blocks'
+								),
+								value: 'background',
+							},
+							{
+								label: __(
+									'Foreground (above content)',
+									'sgs-blocks'
+								),
+								value: 'foreground',
+							},
 						] }
-						onChange={ ( val ) => setAttributes( { bgSvgPosition: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { bgSvgPosition: val } )
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
 					<RangeControl
 						label={ __( 'Opacity (%)', 'sgs-blocks' ) }
 						value={ bgSvgOpacity }
-						onChange={ ( val ) => setAttributes( { bgSvgOpacity: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { bgSvgOpacity: val } )
+						}
 						min={ 0 }
 						max={ 100 }
 						step={ 5 }
@@ -131,9 +213,14 @@ function SvgLayerSection( { attributes, setAttributes, name } ) {
 					/>
 					<ToggleControl
 						label={ __( 'Text shadow', 'sgs-blocks' ) }
-						help={ __( 'Adds a subtle shadow to inner text for readability over busy SVG layers.', 'sgs-blocks' ) }
+						help={ __(
+							'Adds a subtle shadow to inner text for readability over busy SVG layers.',
+							'sgs-blocks'
+						) }
 						checked={ bgSvgTextShadow }
-						onChange={ ( val ) => setAttributes( { bgSvgTextShadow: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { bgSvgTextShadow: val } )
+						}
 						__nextHasNoMarginBottom
 					/>
 					<SgsLengthControl
@@ -141,8 +228,13 @@ function SvgLayerSection( { attributes, setAttributes, name } ) {
 						label={ __( 'Minimum height', 'sgs-blocks' ) }
 						value={ bgSvgMinHeight }
 						units={ LENGTH_UNITS }
-						onChange={ ( val ) => setAttributes( { bgSvgMinHeight: val ?? '' } ) }
-						help={ __( 'Minimum height applied to the SVG layer, e.g. 400px or 50vh. Leave blank for no minimum.', 'sgs-blocks' ) }
+						onChange={ ( val ) =>
+							setAttributes( { bgSvgMinHeight: val ?? '' } )
+						}
+						help={ __(
+							'Minimum height applied to the SVG layer, e.g. 400px or 50vh. Leave blank for no minimum.',
+							'sgs-blocks'
+						) }
 					/>
 				</>
 			) }
@@ -170,8 +262,16 @@ export function BackgroundMediaPanel( { attributes, setAttributes, name } ) {
 				kinds={ BACKGROUND_KINDS }
 			/>
 			<InspectorControls group="styles">
-				<SurfaceSection attributes={ attributes } setAttributes={ setAttributes } name={ name } />
-				<SvgLayerSection attributes={ attributes } setAttributes={ setAttributes } name={ name } />
+				<SurfaceSection
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					name={ name }
+				/>
+				<SvgLayerSection
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					name={ name }
+				/>
 			</InspectorControls>
 		</>
 	);

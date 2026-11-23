@@ -17,12 +17,30 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 export default function FrameSummary( { attributes } ) {
 	const tiers = [
-		{ label: __( 'Desktop', 'sgs-blocks' ), url: attributes.desktopFramesUrl, count: attributes.desktopFrameCount, ext: attributes.desktopFrameExt },
-		{ label: __( 'Tablet', 'sgs-blocks' ), url: attributes.tabletFramesUrl, count: attributes.tabletFrameCount, ext: attributes.tabletFrameExt },
-		{ label: __( 'Mobile', 'sgs-blocks' ), url: attributes.mobileFramesUrl, count: attributes.mobileFrameCount, ext: attributes.mobileFrameExt },
+		{
+			label: __( 'Desktop', 'sgs-blocks' ),
+			url: attributes.desktopFramesUrl,
+			count: attributes.desktopFrameCount,
+			ext: attributes.desktopFrameExt,
+		},
+		{
+			label: __( 'Tablet', 'sgs-blocks' ),
+			url: attributes.tabletFramesUrl,
+			count: attributes.tabletFrameCount,
+			ext: attributes.tabletFrameExt,
+		},
+		{
+			label: __( 'Mobile', 'sgs-blocks' ),
+			url: attributes.mobileFramesUrl,
+			count: attributes.mobileFrameCount,
+			ext: attributes.mobileFrameExt,
+		},
 	].filter( ( tier ) => tier.url && tier.count > 0 );
 
-	if ( ! attributes.desktopFramesUrl || ! ( attributes.desktopFrameCount > 0 ) ) {
+	if (
+		! attributes.desktopFramesUrl ||
+		! ( attributes.desktopFrameCount > 0 )
+	) {
 		return (
 			<p className="sgs-image-sequence-editor__frame-count">
 				{ __(
@@ -38,7 +56,12 @@ export default function FrameSummary( { attributes } ) {
 			{ tiers
 				.map( ( tier ) =>
 					/* translators: 1: device name, 2: frame count, 3: file extension. */
-					sprintf( __( '%1$s: %2$d frames (.%3$s)', 'sgs-blocks' ), tier.label, tier.count, tier.ext || 'webp' )
+					sprintf(
+						__( '%1$s: %2$d frames (.%3$s)', 'sgs-blocks' ),
+						tier.label,
+						tier.count,
+						tier.ext || 'webp'
+					)
 				)
 				.join( ' · ' ) }
 		</p>

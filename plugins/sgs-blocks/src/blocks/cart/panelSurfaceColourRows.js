@@ -48,10 +48,12 @@ export default function buildCartPanelSurfaceColourRows( {
 					key: 'normal',
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: panelBg,
-					onChange: ( val ) => setAttributes( { panelBg: val ?? '' } ),
+					onChange: ( val ) =>
+						setAttributes( { panelBg: val ?? '' } ),
 					linked: true,
 					gradientValue: panelBgGradient,
-					onGradientChange: ( val ) => setAttributes( { panelBgGradient: val ?? '' } ),
+					onGradientChange: ( val ) =>
+						setAttributes( { panelBgGradient: val ?? '' } ),
 				},
 			],
 		},
@@ -64,19 +66,25 @@ export default function buildCartPanelSurfaceColourRows( {
 					key: 'normal',
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: panelTextColour,
-					onChange: ( val ) => setAttributes( { panelTextColour: val ?? '' } ),
+					onChange: ( val ) =>
+						setAttributes( { panelTextColour: val ?? '' } ),
 					linked: true,
 					gradientValue: panelTextColourGradient,
-					onGradientChange: ( val ) => setAttributes( { panelTextColourGradient: val ?? '' } ),
+					onGradientChange: ( val ) =>
+						setAttributes( { panelTextColourGradient: val ?? '' } ),
 				},
 				{
 					key: 'hover',
 					label: __( 'Hover', 'sgs-blocks' ),
 					value: panelTextColourHover,
-					onChange: ( val ) => setAttributes( { panelTextColourHover: val ?? '' } ),
+					onChange: ( val ) =>
+						setAttributes( { panelTextColourHover: val ?? '' } ),
 					linked: true,
 					gradientValue: panelTextColourHoverGradient,
-					onGradientChange: ( val ) => setAttributes( { panelTextColourHoverGradient: val ?? '' } ),
+					onGradientChange: ( val ) =>
+						setAttributes( {
+							panelTextColourHoverGradient: val ?? '',
+						} ),
 				},
 			],
 		},

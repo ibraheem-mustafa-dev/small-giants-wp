@@ -42,17 +42,53 @@ import chromeColourRows from './chrome-colour-rows';
 import ChromePreview from './ChromePreview';
 import { scrollbarCss, scrollbarStyle } from '../../utils/scrollbar-style';
 import ScrollbarStyleControl from '../../components/ScrollbarStyleControl';
-import { shellBorderStyle, closeBorderStyle, closeFillStyle } from './chrome-preview-style';
+import {
+	shellBorderStyle,
+	closeBorderStyle,
+	closeFillStyle,
+} from './chrome-preview-style';
 import { useSelect } from '@wordpress/data';
 import BackgroundLayers from '../../components/media/BackgroundLayers';
 import { BackgroundPanel } from '../container/components/BackgroundPanel';
 
-import { useDrawerPreviewToggle, LogicalAlignControl, ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, resolveColourToken, SgsColourPanel, fillRow, textRow, SgsLengthControl,
-	SgsBorderControl, IconPicker, IconPreview, TypographyControls, StarterLookPresetControl,
-	ShadowControl, SurfaceGroundControls, ScrimControls, scrimColourRow,
+import {
+	useDrawerPreviewToggle,
+	LogicalAlignControl,
+	ResponsiveControl,
+	ResponsiveOverride,
+	ResponsiveBoxControl,
+	resolveColourToken,
+	SgsColourPanel,
+	fillRow,
+	textRow,
+	SgsLengthControl,
+	SgsBorderControl,
+	IconPicker,
+	IconPreview,
+	TypographyControls,
+	StarterLookPresetControl,
+	ShadowControl,
+	SurfaceGroundControls,
+	ScrimControls,
+	scrimColourRow,
 } from '../../components';
-import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
-import { backgroundMediaPreview, resolveTextColourPreviewStyle, typographyPreviewStyle, resolveShadowPreviewComposed, surfaceToneClass, resolveTier, flattenPresetSetting, tierBoxLonghands, tierLengthPreview } from '../../utils';
+import {
+	ToggleGroupControl,
+	ToggleGroupControlOption,
+	ToolsPanel,
+	ToolsPanelItem,
+} from '../../components/primitives';
+import {
+	backgroundMediaPreview,
+	resolveTextColourPreviewStyle,
+	typographyPreviewStyle,
+	resolveShadowPreviewComposed,
+	surfaceToneClass,
+	resolveTier,
+	flattenPresetSetting,
+	tierBoxLonghands,
+	tierLengthPreview,
+} from '../../utils';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
 /**
@@ -70,9 +106,7 @@ import SgsFreeTextField from '../../components/SgsFreeTextField';
  * UNSET so the drawer's own background shows through until a client picks
  * one.
  */
-const TEMPLATE = [
-	[ 'sgs/nav-drawer-menu', { gap: { desktop: '4px' } } ],
-];
+const TEMPLATE = [ [ 'sgs/nav-drawer-menu', { gap: { desktop: '4px' } } ] ];
 
 /** drawerAlign → align-items (mirrors render.php). */
 const ALIGN_ITEMS = {
@@ -90,7 +124,9 @@ const ALIGN_ITEMS = {
  * @return {boolean} True when some tier is set to one of them.
  */
 function anchorUses( anchor, values ) {
-	return [ 'desktop', 'tablet', 'mobile' ].some( ( tier ) => values.includes( anchor?.[ tier ] ) );
+	return [ 'desktop', 'tablet', 'mobile' ].some( ( tier ) =>
+		values.includes( anchor?.[ tier ] )
+	);
 }
 
 export default function Edit( { attributes, setAttributes, clientId, name } ) {
@@ -152,8 +188,16 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 			nativeDeviceType
 		] || 'desktop';
 	// The anchor at the previewed tier decides the shell shape and its fallback width.
-	const anchorActive = resolveTier( anchor, activeDeviceTier, 'full-screen' ).value || 'full-screen';
-	const isCompact = [ 'trigger', 'centred', 'container', 'side-start', 'side-end' ].includes( anchorActive );
+	const anchorActive =
+		resolveTier( anchor, activeDeviceTier, 'full-screen' ).value ||
+		'full-screen';
+	const isCompact = [
+		'trigger',
+		'centred',
+		'container',
+		'side-start',
+		'side-end',
+	].includes( anchorActive );
 
 	/**
 	 * The tier cascade for a `{desktop,tablet,mobile}` object: desktop is
@@ -176,24 +220,39 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	const resolveCloseTier = ( tierObj, tier, fallback ) =>
 		resolveTier( tierObj, tier, fallback ).value;
 
-	const closeStyleActive = resolveCloseTier( closeStyle, activeDeviceTier, 'separate-x' );
+	const closeStyleActive = resolveCloseTier(
+		closeStyle,
+		activeDeviceTier,
+		'separate-x'
+	);
 	const closeStyleAnyTierIs = ( values ) =>
 		[ 'desktop', 'tablet', 'mobile' ].some( ( tier ) =>
-			values.includes( resolveCloseTier( closeStyle, tier, 'separate-x' ) )
+			values.includes(
+				resolveCloseTier( closeStyle, tier, 'separate-x' )
+			)
 		);
 	// §4.10 — closeRadius editor-canvas mirror, keyed to the ACTIVE EDITOR
 	// DEVICE like every other closeStyle-family preview above. Default '4px'
 	// matches style.css::.sgs-nav-drawer__close's un-migrated value (today's
 	// behaviour when the tier object is empty).
-	const closeRadiusActive = resolveCloseTier( closeRadius, activeDeviceTier, '4px' );
+	const closeRadiusActive = resolveCloseTier(
+		closeRadius,
+		activeDeviceTier,
+		'4px'
+	);
 	// §4.9/§4.10 canvas-mirror additions (Spec 35 audit SHOULD 10) —
 	// closePlacement and closeOffset, keyed the same way as
 	// closeStyle/closeRadius above. `resolveCloseTier`'s cascade also applies
 	// to the {x,y} offset object itself (a tier with no own offset inherits
 	// the tier above's), mirroring render.php's sgs_resolve_tier() call for
 	// closeOffset (not just closePlacement).
-	const closePlacementActive = resolveCloseTier( closePlacement, activeDeviceTier, 'top-row-end' );
-	const closeOffsetActive = resolveCloseTier( closeOffset, activeDeviceTier, {} ) || {};
+	const closePlacementActive = resolveCloseTier(
+		closePlacement,
+		activeDeviceTier,
+		'top-row-end'
+	);
+	const closeOffsetActive =
+		resolveCloseTier( closeOffset, activeDeviceTier, {} ) || {};
 
 	// ── Auto-rename on detected collision. ──
 	//
@@ -237,7 +296,10 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 			const editor = select( 'core/editor' );
 			return {
 				withinPostCollision,
-				postId: editor && editor.getCurrentPostId ? editor.getCurrentPostId() : null,
+				postId:
+					editor && editor.getCurrentPostId
+						? editor.getCurrentPostId()
+						: null,
 			};
 		},
 		[ clientId, effectiveDrawerRef ]
@@ -286,12 +348,13 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	// hex for a custom colour pick (only a palette-swatch pick stores the
 	// slug) -- colourVar() (slug-only) cannot handle that half;
 	// resolveColourToken() handles both.
-	const compactWidthFallback = {
-		centred: '480px',
-		'side-start': '400px',
-		'side-end': '400px',
-		container: '100%',
-	}[ anchorActive ] || '360px';
+	const compactWidthFallback =
+		{
+			centred: '480px',
+			'side-start': '400px',
+			'side-end': '400px',
+			container: '100%',
+		}[ anchorActive ] || '360px';
 
 	// Editor-only preview state. Deliberately component state and NOT a block
 	// attribute: it must never serialise into saved content. Deliberately NOT
@@ -301,7 +364,12 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	const shellStyle = {
 		backgroundColor:
 			typeof surfaceOpacity === 'number' && surfaceOpacity < 1 && drawerBg
-				? `color-mix(in srgb, ${ resolveColourToken( drawerBg, palette ) } ${ Math.round( Math.max( 0, surfaceOpacity ) * 100 ) }%, transparent)`
+				? `color-mix(in srgb, ${ resolveColourToken(
+						drawerBg,
+						palette
+				  ) } ${ Math.round(
+						Math.max( 0, surfaceOpacity ) * 100
+				  ) }%, transparent)`
 				: resolveColourToken( drawerBg, palette ),
 		// Same order as render.php's sgs_surface_backdrop_decls(): saturate, then blur.
 		backdropFilter: ( () => {
@@ -317,7 +385,10 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		boxShadow: shadow
 			? resolveShadowPreviewComposed( shadow, shadowColour )
 			: undefined,
-		maxWidth: isCompact ? tierLengthPreview( panelSize, activeDeviceTier ) || compactWidthFallback : undefined,
+		maxWidth: isCompact
+			? tierLengthPreview( panelSize, activeDeviceTier ) ||
+			  compactWidthFallback
+			: undefined,
 		...shellBorderStyle( attributes, activeDeviceTier, palette ),
 		marginInline: isCompact ? 'auto' : undefined,
 	};
@@ -332,11 +403,20 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		// `$body_sel`/`sgs_text_colour_decl( $drawer_text_effective )`), but
 		// nothing applied them to the canvas. Same resolver already used for
 		// the close-icon preview two lines below.
-		...resolveTextColourPreviewStyle( drawerTextColour, drawerTextColourGradient, ( v ) => resolveColourToken( v, palette ) ),
+		...resolveTextColourPreviewStyle(
+			drawerTextColour,
+			drawerTextColourGradient,
+			( v ) => resolveColourToken( v, palette )
+		),
 	};
 
 	// The drawer's background (Spec 49 §7.8): the media layer and overlay the shared wrapper prints, at the previewed device.
-	const bgPreview = backgroundMediaPreview( attributes, palette, gradientPresets, activeDeviceTier );
+	const bgPreview = backgroundMediaPreview(
+		attributes,
+		palette,
+		gradientPresets,
+		activeDeviceTier
+	);
 
 	// Close-LABEL typography canvas mirror. The close-text span
 	// below is hand-authored JSX, not a render.php-rendered node (this block
@@ -355,14 +435,22 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	// too (a documented, deliberate simplification — §4.1 is explicit about
 	// per-tier WIDTH/PADDING/TEXT-TRANSFORM sizing, not the full typography
 	// set), so matching render.php exactly here is the honest canvas mirror.
-	const closeStyleDesktop = resolveCloseTier( closeStyle, 'desktop', 'separate-x' );
+	const closeStyleDesktop = resolveCloseTier(
+		closeStyle,
+		'desktop',
+		'separate-x'
+	);
 	const closeTypographyAttrs = attributes.closeTextTransform
 		? attributes
 		: {
 				...attributes,
-				closeTextTransform: 'text-swap' === closeStyleDesktop ? 'uppercase' : '',
+				closeTextTransform:
+					'text-swap' === closeStyleDesktop ? 'uppercase' : '',
 		  };
-	const closeLabelStyle = typographyPreviewStyle( closeTypographyAttrs, 'close' );
+	const closeLabelStyle = typographyPreviewStyle(
+		closeTypographyAttrs,
+		'close'
+	);
 
 	// D3/D6 (`.claude/reports/2026-09-23-shadow-tone-design.md`) — the SAME
 	// one-fill-layer tone the real render.php marks itself with
@@ -433,7 +521,10 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	// The drawer's scrollbar choice on the editor shell, which is what scrolls in the canvas (render.php prints the same
 	// rules on the dialog through includes/helpers-scrollbar.php).
 	const scrollbarScope = 'sgs-nav-drawer-ed-' + clientId.slice( 0, 8 );
-	const scrollbarPreviewCss = scrollbarCss( `.${ scrollbarScope }`, scrollbarStyle( attributes.scrollbarStyle, 'thin' ) );
+	const scrollbarPreviewCss = scrollbarCss(
+		`.${ scrollbarScope }`,
+		scrollbarStyle( attributes.scrollbarStyle, 'thin' )
+	);
 
 	const blockProps = useBlockProps( {
 		// sgs-nav-drawer--close-{style} mirrors render.php's own modifier class --
@@ -441,7 +532,11 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		// modifier class) never applies. Keyed to the ACTIVE EDITOR DEVICE's
 		// resolved style (§4.9) so switching the device toggle shows what that
 		// tier actually ships, not just the desktop value.
-		className: `sgs-nav-drawer sgs-nav-drawer__editor ${ scrollbarScope } sgs-nav-drawer--close-${ closeStyleRenderActive }${ previewOpen ? '' : ' sgs-nav-drawer__editor--collapsed' }${ toneClass ? ` ${ toneClass }` : '' }${ bgPreview.className ? ` ${ bgPreview.className }` : '' }`,
+		className: `sgs-nav-drawer sgs-nav-drawer__editor ${ scrollbarScope } sgs-nav-drawer--close-${ closeStyleRenderActive }${
+			previewOpen ? '' : ' sgs-nav-drawer__editor--collapsed'
+		}${ toneClass ? ` ${ toneClass }` : '' }${
+			bgPreview.className ? ` ${ bgPreview.className }` : ''
+		}`,
 		style: { ...shellStyle, ...bgPreview.style },
 	} );
 
@@ -547,9 +642,14 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					>
 						<TextControl
 							label={ __( 'Accessible name', 'sgs-blocks' ) }
-							help={ __( 'How screen readers announce this drawer. Leave blank for “Navigation menu”; give each drawer its own name when a site has more than one.', 'sgs-blocks' ) }
+							help={ __(
+								'How screen readers announce this drawer. Leave blank for “Navigation menu”; give each drawer its own name when a site has more than one.',
+								'sgs-blocks'
+							) }
 							value={ ariaLabel }
-							onChange={ ( value ) => setAttributes( { ariaLabel: value } ) }
+							onChange={ ( value ) =>
+								setAttributes( { ariaLabel: value } )
+							}
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
@@ -557,8 +657,13 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 
 					<ToolsPanelItem
 						label={ __( 'Drawer ID', 'sgs-blocks' ) }
-						hasValue={ () => ( drawerRef || 'sgs-nav-drawer' ) !== 'sgs-nav-drawer' }
-						onDeselect={ () => setAttributes( { drawerRef: 'sgs-nav-drawer' } ) }
+						hasValue={ () =>
+							( drawerRef || 'sgs-nav-drawer' ) !==
+							'sgs-nav-drawer'
+						}
+						onDeselect={ () =>
+							setAttributes( { drawerRef: 'sgs-nav-drawer' } )
+						}
 						isShownByDefault
 					>
 						<TextControl
@@ -568,7 +673,9 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 								'sgs-blocks'
 							) }
 							value={ drawerRef || '' }
-							onChange={ ( value ) => setAttributes( { drawerRef: value } ) }
+							onChange={ ( value ) =>
+								setAttributes( { drawerRef: value } )
+							}
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
@@ -582,35 +689,96 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					   pairing carried no inherit indicator and no per-tier reset. */ }
 					<ToolsPanelItem
 						label={ __( 'Panel position', 'sgs-blocks' ) }
-						hasValue={ () => !! anchor && Object.keys( anchor ).length > 0 }
+						hasValue={ () =>
+							!! anchor && Object.keys( anchor ).length > 0
+						}
 						onDeselect={ () => setAttributes( { anchor: {} } ) }
 						isShownByDefault
 					>
 						<ResponsiveOverride
 							label={ __( 'Panel position', 'sgs-blocks' ) }
 							value={ anchor }
-							onChange={ ( obj ) => setAttributes( { anchor: obj } ) }
+							onChange={ ( obj ) =>
+								setAttributes( { anchor: obj } )
+							}
 						>
 							{ ( { ownValue, effectiveValue, setOwnValue } ) => (
 								<SelectControl
 									hideLabelFromVision
-									label={ __( 'Panel position', 'sgs-blocks' ) }
+									label={ __(
+										'Panel position',
+										'sgs-blocks'
+									) }
 									help={ __(
 										'Full screen is the default everywhere. Set a different position per device, e.g. a side panel on tablet and full screen on mobile.',
 										'sgs-blocks'
 									) }
-									value={ ownValue || effectiveValue || 'full-screen' }
+									value={
+										ownValue ||
+										effectiveValue ||
+										'full-screen'
+									}
 									options={ [
-										{ value: 'full-screen', label: __( 'Full screen', 'sgs-blocks' ) },
-										{ value: 'header', label: __( 'Below the header', 'sgs-blocks' ) },
-										{ value: 'side-start', label: __( 'Side panel from the start edge', 'sgs-blocks' ) },
-										{ value: 'side-end', label: __( 'Side panel from the end edge', 'sgs-blocks' ) },
-										{ value: 'container', label: __( "Lined up with the header's content", 'sgs-blocks' ) },
-										{ value: 'trigger', label: __( 'Corner panel under the menu button', 'sgs-blocks' ) },
-										{ value: 'centred', label: __( 'Centred card', 'sgs-blocks' ) },
-										{ value: 'header-box', label: __( 'Grows out of the header', 'sgs-blocks' ) },
+										{
+											value: 'full-screen',
+											label: __(
+												'Full screen',
+												'sgs-blocks'
+											),
+										},
+										{
+											value: 'header',
+											label: __(
+												'Below the header',
+												'sgs-blocks'
+											),
+										},
+										{
+											value: 'side-start',
+											label: __(
+												'Side panel from the start edge',
+												'sgs-blocks'
+											),
+										},
+										{
+											value: 'side-end',
+											label: __(
+												'Side panel from the end edge',
+												'sgs-blocks'
+											),
+										},
+										{
+											value: 'container',
+											label: __(
+												"Lined up with the header's content",
+												'sgs-blocks'
+											),
+										},
+										{
+											value: 'trigger',
+											label: __(
+												'Corner panel under the menu button',
+												'sgs-blocks'
+											),
+										},
+										{
+											value: 'centred',
+											label: __(
+												'Centred card',
+												'sgs-blocks'
+											),
+										},
+										{
+											value: 'header-box',
+											label: __(
+												'Grows out of the header',
+												'sgs-blocks'
+											),
+										},
 									] }
-									onChange={ ( value ) => setOwnValue( value || undefined ) }
+									onChange={ ( value ) =>
+										setOwnValue( value || undefined )
+									}
 									__nextHasNoMarginBottom
 									__next40pxDefaultSize
 								/>
@@ -618,25 +786,52 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						</ResponsiveOverride>
 					</ToolsPanelItem>
 
-					{ anchorUses( anchor, [ 'trigger', 'centred', 'side-start', 'side-end' ] ) && (
+					{ anchorUses( anchor, [
+						'trigger',
+						'centred',
+						'side-start',
+						'side-end',
+					] ) && (
 						<ToolsPanelItem
 							label={ __( 'Panel size', 'sgs-blocks' ) }
-							hasValue={ () => !! panelSize && Object.keys( panelSize ).length > 0 }
-							onDeselect={ () => setAttributes( { panelSize: {} } ) }
+							hasValue={ () =>
+								!! panelSize &&
+								Object.keys( panelSize ).length > 0
+							}
+							onDeselect={ () =>
+								setAttributes( { panelSize: {} } )
+							}
 						>
 							<ResponsiveOverride
 								label={ __( 'Panel size', 'sgs-blocks' ) }
 								value={ panelSize }
-								onChange={ ( obj ) => setAttributes( { panelSize: obj } ) }
+								onChange={ ( obj ) =>
+									setAttributes( { panelSize: obj } )
+								}
 							>
-								{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+								{ ( {
+									ownValue,
+									effectiveValue,
+									inherited,
+									setOwnValue,
+								} ) => (
 									<SgsLengthControl
-										label={ __( 'Panel size', 'sgs-blocks' ) }
+										label={ __(
+											'Panel size',
+											'sgs-blocks'
+										) }
 										hideLabelFromVision
-										help={ __( 'Maximum width of a side, corner or centred panel at this device.', 'sgs-blocks' ) }
+										help={ __(
+											'Maximum width of a side, corner or centred panel at this device.',
+											'sgs-blocks'
+										) }
 										value={ ownValue || '' }
-										placeholder={ inherited ? effectiveValue : '' }
-										onChange={ ( value ) => setOwnValue( value || undefined ) }
+										placeholder={
+											inherited ? effectiveValue : ''
+										}
+										onChange={ ( value ) =>
+											setOwnValue( value || undefined )
+										}
 										presets={ false }
 									/>
 								) }
@@ -647,22 +842,47 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					{ anchorUses( anchor, [ 'trigger', 'container' ] ) && (
 						<ToolsPanelItem
 							label={ __( 'Gap above the panel', 'sgs-blocks' ) }
-							hasValue={ () => !! anchorOffset && Object.keys( anchorOffset ).length > 0 }
-							onDeselect={ () => setAttributes( { anchorOffset: {} } ) }
+							hasValue={ () =>
+								!! anchorOffset &&
+								Object.keys( anchorOffset ).length > 0
+							}
+							onDeselect={ () =>
+								setAttributes( { anchorOffset: {} } )
+							}
 						>
 							<ResponsiveOverride
-								label={ __( 'Gap above the panel', 'sgs-blocks' ) }
+								label={ __(
+									'Gap above the panel',
+									'sgs-blocks'
+								) }
 								value={ anchorOffset }
-								onChange={ ( obj ) => setAttributes( { anchorOffset: obj } ) }
+								onChange={ ( obj ) =>
+									setAttributes( { anchorOffset: obj } )
+								}
 							>
-								{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+								{ ( {
+									ownValue,
+									effectiveValue,
+									inherited,
+									setOwnValue,
+								} ) => (
 									<SgsLengthControl
-										label={ __( 'Gap above the panel', 'sgs-blocks' ) }
+										label={ __(
+											'Gap above the panel',
+											'sgs-blocks'
+										) }
 										hideLabelFromVision
-										help={ __( 'Space between the panel and what it hangs from: the menu button for a corner panel (default 8px), the header for a panel lined up with its content (default 0).', 'sgs-blocks' ) }
+										help={ __(
+											'Space between the panel and what it hangs from: the menu button for a corner panel (default 8px), the header for a panel lined up with its content (default 0).',
+											'sgs-blocks'
+										) }
 										value={ ownValue || '' }
-										placeholder={ inherited ? effectiveValue : '' }
-										onChange={ ( value ) => setOwnValue( value || undefined ) }
+										placeholder={
+											inherited ? effectiveValue : ''
+										}
+										onChange={ ( value ) =>
+											setOwnValue( value || undefined )
+										}
 										presets={ false }
 									/>
 								) }
@@ -673,40 +893,58 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					<ToolsPanelItem
 						label={ __( 'Header stays live', 'sgs-blocks' ) }
 						hasValue={ () => modality === 'non-modal' }
-						onDeselect={ () => setAttributes( { modality: 'modal' } ) }
+						onDeselect={ () =>
+							setAttributes( { modality: 'modal' } )
+						}
 					>
 						<ToggleGroupControl
 							label={ __( 'Header stays live', 'sgs-blocks' ) }
 							help={
 								anchorUses( anchor, [ 'header-box' ] )
 									? __(
-										'A panel that grows out of the header is always non-modal, so the header and its menu button stay usable.',
-										'sgs-blocks'
-									)
+											'A panel that grows out of the header is always non-modal, so the header and its menu button stay usable.',
+											'sgs-blocks'
+									  )
 									: __(
-										'Modal (default) dims and disables the rest of the page while the drawer is open. Non-modal keeps the header row — including the burger button — visible and usable, matching the pattern most reference sites use.',
-										'sgs-blocks'
-									)
+											'Modal (default) dims and disables the rest of the page while the drawer is open. Non-modal keeps the header row — including the burger button — visible and usable, matching the pattern most reference sites use.',
+											'sgs-blocks'
+									  )
 							}
-							value={ anchorUses( anchor, [ 'header-box' ] ) ? 'non-modal' : modality || 'modal' }
+							value={
+								anchorUses( anchor, [ 'header-box' ] )
+									? 'non-modal'
+									: modality || 'modal'
+							}
 							onChange={ ( value ) => {
-								if ( ! anchorUses( anchor, [ 'header-box' ] ) ) {
-									setAttributes( { modality: value || 'modal' } );
+								if (
+									! anchorUses( anchor, [ 'header-box' ] )
+								) {
+									setAttributes( {
+										modality: value || 'modal',
+									} );
 								}
 							} }
 							isBlock
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						>
-							<ToggleGroupControlOption value="modal" label={ __( 'Modal', 'sgs-blocks' ) } />
-							<ToggleGroupControlOption value="non-modal" label={ __( 'Non-modal', 'sgs-blocks' ) } />
+							<ToggleGroupControlOption
+								value="modal"
+								label={ __( 'Modal', 'sgs-blocks' ) }
+							/>
+							<ToggleGroupControlOption
+								value="non-modal"
+								label={ __( 'Non-modal', 'sgs-blocks' ) }
+							/>
 						</ToggleGroupControl>
 					</ToolsPanelItem>
 
 					<ToolsPanelItem
 						label={ __( 'Submenu behaviour', 'sgs-blocks' ) }
 						hasValue={ () => submenuModel !== 'accordion' }
-						onDeselect={ () => setAttributes( { submenuModel: 'accordion' } ) }
+						onDeselect={ () =>
+							setAttributes( { submenuModel: 'accordion' } )
+						}
 					>
 						<ToggleGroupControl
 							label={ __( 'Submenu behaviour', 'sgs-blocks' ) }
@@ -715,13 +953,23 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 								'sgs-blocks'
 							) }
 							value={ submenuModel }
-							onChange={ ( value ) => setAttributes( { submenuModel: value || 'accordion' } ) }
+							onChange={ ( value ) =>
+								setAttributes( {
+									submenuModel: value || 'accordion',
+								} )
+							}
 							isBlock
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						>
-							<ToggleGroupControlOption value="accordion" label={ __( 'Accordion', 'sgs-blocks' ) } />
-							<ToggleGroupControlOption value="drill-down" label={ __( 'Drill-down', 'sgs-blocks' ) } />
+							<ToggleGroupControlOption
+								value="accordion"
+								label={ __( 'Accordion', 'sgs-blocks' ) }
+							/>
+							<ToggleGroupControlOption
+								value="drill-down"
+								label={ __( 'Drill-down', 'sgs-blocks' ) }
+							/>
 						</ToggleGroupControl>
 					</ToolsPanelItem>
 
@@ -732,18 +980,30 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					   condition), since it only means anything under the accordion model. */ }
 					{ 'accordion' === submenuModel && (
 						<ToolsPanelItem
-							label={ __( 'Multiple sections open', 'sgs-blocks' ) }
+							label={ __(
+								'Multiple sections open',
+								'sgs-blocks'
+							) }
 							hasValue={ () => accordionExclusive === false }
-							onDeselect={ () => setAttributes( { accordionExclusive: true } ) }
+							onDeselect={ () =>
+								setAttributes( { accordionExclusive: true } )
+							}
 						>
 							<ToggleControl
-								label={ __( 'Allow multiple sections open at once', 'sgs-blocks' ) }
+								label={ __(
+									'Allow multiple sections open at once',
+									'sgs-blocks'
+								) }
 								help={ __(
 									'Off (default): opening one submenu closes any other that was open. On: submenus open independently, so more than one can stay open together.',
 									'sgs-blocks'
 								) }
 								checked={ accordionExclusive === false }
-								onChange={ ( value ) => setAttributes( { accordionExclusive: ! value } ) }
+								onChange={ ( value ) =>
+									setAttributes( {
+										accordionExclusive: ! value,
+									} )
+								}
 								__nextHasNoMarginBottom
 							/>
 						</ToolsPanelItem>
@@ -752,7 +1012,9 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					<ToolsPanelItem
 						label={ __( 'Close on scroll', 'sgs-blocks' ) }
 						hasValue={ () => ( closeOnScrollDistance || 0 ) > 0 }
-						onDeselect={ () => setAttributes( { closeOnScrollDistance: 0 } ) }
+						onDeselect={ () =>
+							setAttributes( { closeOnScrollDistance: 0 } )
+						}
 					>
 						<RangeControl
 							label={ __( 'Close on scroll', 'sgs-blocks' ) }
@@ -763,35 +1025,60 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							min={ 0 }
 							max={ 200 }
 							value={ closeOnScrollDistance || 0 }
-							onChange={ ( value ) => setAttributes( { closeOnScrollDistance: value ?? 0 } ) }
+							onChange={ ( value ) =>
+								setAttributes( {
+									closeOnScrollDistance: value ?? 0,
+								} )
+							}
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
 					</ToolsPanelItem>
 				</ToolsPanel>
 
-				<ChromePanel name={ name } attributes={ attributes } setAttributes={ setAttributes } clientId={ clientId } />
-				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+				<ChromePanel
+					name={ name }
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					clientId={ clientId }
+				/>
+				<PanelBody
+					title={ __( 'Border', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SgsBorderControl
 						widthValues={ attributes.borderWidth ?? {} }
-						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						onWidthChange={ ( next ) =>
+							setAttributes( { borderWidth: next } )
+						}
 						widthPresets={ [ '10', '20', '30' ] }
 						styleValue={ attributes.borderStyle }
-						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						onStyleChange={ ( val ) =>
+							setAttributes( { borderStyle: val } )
+						}
 						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
 						colourValue={ attributes.borderColour }
-						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						onColourChange={ ( val ) =>
+							setAttributes( { borderColour: val ?? '' } )
+						}
 						colourGradientValue={ attributes.borderColourGradient }
-						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+						onColourGradientChange={ ( val ) =>
+							setAttributes( { borderColourGradient: val ?? '' } )
+						}
 						colourLinked={ true }
 						radiusValues={ {
-								base: attributes.borderRadius?.desktop ?? {},
-								tablet: attributes.borderRadius?.tablet ?? {},
-								mobile: attributes.borderRadius?.mobile ?? {},
-							} }
+							base: attributes.borderRadius?.desktop ?? {},
+							tablet: attributes.borderRadius?.tablet ?? {},
+							mobile: attributes.borderRadius?.mobile ?? {},
+						} }
 						onRadiusChange={ ( tier, next ) => {
 							const key = tier === 'base' ? 'desktop' : tier;
-							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+							setAttributes( {
+								borderRadius: {
+									...attributes.borderRadius,
+									[ key ]: next,
+								},
+							} );
 						} }
 					/>
 				</PanelBody>
@@ -852,13 +1139,21 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						<ToolsPanelItem
 							label={ __( 'Shadow', 'sgs-blocks' ) }
 							hasValue={ () => !! shadow || !! shadowColour }
-							onDeselect={ () => setAttributes( { shadow: '', shadowColour: '' } ) }
+							onDeselect={ () =>
+								setAttributes( {
+									shadow: '',
+									shadowColour: '',
+								} )
+							}
 						>
 							<ShadowControl
 								label={ __( 'Shadow', 'sgs-blocks' ) }
 								attributes={ attributes }
 								setAttributes={ setAttributes }
-								attrNames={ { base: 'shadow', colour: 'shadowColour' } }
+								attrNames={ {
+									base: 'shadow',
+									colour: 'shadowColour',
+								} }
 							/>
 						</ToolsPanelItem>
 						<ScrimControls
@@ -909,10 +1204,14 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						label={ __( 'Content alignment', 'sgs-blocks' ) }
 						value={ drawerAlign }
 						withStretch
-						onChange={ ( value ) => setAttributes( { drawerAlign: value } ) }
+						onChange={ ( value ) =>
+							setAttributes( { drawerAlign: value } )
+						}
 					/>
 
-					<ResponsiveControl label={ __( 'Inner element spacing', 'sgs-blocks' ) }>
+					<ResponsiveControl
+						label={ __( 'Inner element spacing', 'sgs-blocks' ) }
+					>
 						{ ( breakpoint ) => (
 							<SgsLengthControl
 								label={ __( 'Gap', 'sgs-blocks' ) }
@@ -920,7 +1219,10 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 								value={ drawerGap?.[ breakpoint ] || '' }
 								onChange={ ( value ) =>
 									setAttributes( {
-										drawerGap: { ...drawerGap, [ breakpoint ]: value || undefined },
+										drawerGap: {
+											...drawerGap,
+											[ breakpoint ]: value || undefined,
+										},
 									} )
 								}
 								presets={ false }
@@ -939,7 +1241,10 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						onChange={ ( tier, next ) => {
 							const key = tier === 'base' ? 'desktop' : tier;
 							setAttributes( {
-								drawerPadding: { ...drawerPadding, [ key ]: next },
+								drawerPadding: {
+									...drawerPadding,
+									[ key ]: next,
+								},
 							} );
 						} }
 					/>
@@ -947,22 +1252,36 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					{ /* The drawer's scrollbar: both settings paint the dialog (supports.sgs.elements
 					   dialog), or its body under a sticky top row, so they sit in its panel. */ }
 					<ToggleControl
-						label={ __( 'Reserve space for the scrollbar', 'sgs-blocks' ) }
-						help={ __( 'On: the menu keeps its width when a section opens and the drawer first scrolls. Off: the scrollbar takes width only while it shows. Has no effect where scrollbars overlay the content.', 'sgs-blocks' ) }
+						label={ __(
+							'Reserve space for the scrollbar',
+							'sgs-blocks'
+						) }
+						help={ __(
+							'On: the menu keeps its width when a section opens and the drawer first scrolls. Off: the scrollbar takes width only while it shows. Has no effect where scrollbars overlay the content.',
+							'sgs-blocks'
+						) }
 						checked={ false !== attributes.drawerScrollbarGutter }
-						onChange={ ( value ) => setAttributes( { drawerScrollbarGutter: value } ) }
+						onChange={ ( value ) =>
+							setAttributes( { drawerScrollbarGutter: value } )
+						}
 						__nextHasNoMarginBottom
 					/>
 					<ScrollbarStyleControl
 						label={ __( 'Drawer scrollbar', 'sgs-blocks' ) }
 						value={ attributes.scrollbarStyle }
 						start="thin"
-						onChange={ ( value ) => setAttributes( { scrollbarStyle: value } ) }
+						onChange={ ( value ) =>
+							setAttributes( { scrollbarStyle: value } )
+						}
 					/>
 				</PanelBody>
 
 				{ /* The drawer's background is the shared Background panel for the `background` slot. */ }
-				<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } name={ name } />
+				<BackgroundPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					name={ name }
+				/>
 
 				{ /* Spec 36 §14 FR-41-12 — the close button offers the same three things
 				   the OPEN side does: a chosen icon, a chosen word, and both
@@ -990,21 +1309,32 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					   greyed out. Shown if ANY tier resolves to an icon-bearing style
 					   (§4.9) — over-inclusive on purpose so a tablet/mobile-only icon
 					   pick is never hidden just because desktop happens to be text-only. */ }
-					{ closeStyleAnyTierIs( [ 'separate-x', 'icon-and-text', 'trigger' ] ) && (
+					{ closeStyleAnyTierIs( [
+						'separate-x',
+						'icon-and-text',
+						'trigger',
+					] ) && (
 						<ToolsPanelItem
 							label={ __( 'Icon', 'sgs-blocks' ) }
 							hasValue={ () =>
 								!! closeIcon &&
-								( closeIcon.source !== 'lucide' || closeIcon.name !== 'x' )
+								( closeIcon.source !== 'lucide' ||
+									closeIcon.name !== 'x' )
 							}
 							onDeselect={ () =>
-								setAttributes( { closeIcon: { source: 'lucide', name: 'x' } } )
+								setAttributes( {
+									closeIcon: { source: 'lucide', name: 'x' },
+								} )
 							}
 						>
 							<IconPicker
 								label={ __( 'Icon', 'sgs-blocks' ) }
-								value={ closeIcon || { source: 'lucide', name: 'x' } }
-								onChange={ ( next ) => setAttributes( { closeIcon: next } ) }
+								value={
+									closeIcon || { source: 'lucide', name: 'x' }
+								}
+								onChange={ ( next ) =>
+									setAttributes( { closeIcon: next } )
+								}
 							/>
 						</ToolsPanelItem>
 					) }
@@ -1016,7 +1346,10 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					   `ResponsiveControl` it used to mount. */ }
 					<ToolsPanelItem
 						label={ __( 'Show as', 'sgs-blocks' ) }
-						hasValue={ () => !! closeStyle && Object.keys( closeStyle ).length > 0 }
+						hasValue={ () =>
+							!! closeStyle &&
+							Object.keys( closeStyle ).length > 0
+						}
 						onDeselect={ () => setAttributes( { closeStyle: {} } ) }
 					>
 						{ /* ⚠ FIVE values now (Spec 36 §14 FR-41-12's four plus NEW `trigger`,
@@ -1034,7 +1367,9 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						<ResponsiveOverride
 							label={ __( 'Show as', 'sgs-blocks' ) }
 							value={ closeStyle }
-							onChange={ ( obj ) => setAttributes( { closeStyle: obj } ) }
+							onChange={ ( obj ) =>
+								setAttributes( { closeStyle: obj } )
+							}
 						>
 							{ ( { ownValue, effectiveValue, setOwnValue } ) => (
 								<ToggleGroupControl
@@ -1044,17 +1379,47 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 										'How the always-present close control is drawn. The close button itself can never be deleted. “Menu button closes it” hides the × entirely while the menu button stays visible and live — it reappears the moment that stops being true.',
 										'sgs-blocks'
 									) }
-									value={ ownValue || effectiveValue || 'separate-x' }
-									onChange={ ( value ) => setOwnValue( value || undefined ) }
+									value={
+										ownValue ||
+										effectiveValue ||
+										'separate-x'
+									}
+									onChange={ ( value ) =>
+										setOwnValue( value || undefined )
+									}
 									isBlock
 									__nextHasNoMarginBottom
 									__next40pxDefaultSize
 								>
-									<ToggleGroupControlOption value="separate-x" label={ __( '× icon', 'sgs-blocks' ) } />
-									<ToggleGroupControlOption value="text-swap" label={ __( '“Close” text', 'sgs-blocks' ) } />
-									<ToggleGroupControlOption value="burger-morph" label={ __( 'Morphed icon', 'sgs-blocks' ) } />
-									<ToggleGroupControlOption value="icon-and-text" label={ __( 'Both', 'sgs-blocks' ) } />
-									<ToggleGroupControlOption value="trigger" label={ __( 'Menu button', 'sgs-blocks' ) } />
+									<ToggleGroupControlOption
+										value="separate-x"
+										label={ __( '× icon', 'sgs-blocks' ) }
+									/>
+									<ToggleGroupControlOption
+										value="text-swap"
+										label={ __(
+											'“Close” text',
+											'sgs-blocks'
+										) }
+									/>
+									<ToggleGroupControlOption
+										value="burger-morph"
+										label={ __(
+											'Morphed icon',
+											'sgs-blocks'
+										) }
+									/>
+									<ToggleGroupControlOption
+										value="icon-and-text"
+										label={ __( 'Both', 'sgs-blocks' ) }
+									/>
+									<ToggleGroupControlOption
+										value="trigger"
+										label={ __(
+											'Menu button',
+											'sgs-blocks'
+										) }
+									/>
 								</ToggleGroupControl>
 							) }
 						</ResponsiveOverride>
@@ -1069,34 +1434,66 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					   silently fall back. */ }
 					<ToolsPanelItem
 						label={ __( 'Position', 'sgs-blocks' ) }
-						hasValue={ () => !! closePlacement && Object.keys( closePlacement ).length > 0 }
-						onDeselect={ () => setAttributes( { closePlacement: {} } ) }
+						hasValue={ () =>
+							!! closePlacement &&
+							Object.keys( closePlacement ).length > 0
+						}
+						onDeselect={ () =>
+							setAttributes( { closePlacement: {} } )
+						}
 					>
 						<ResponsiveOverride
 							label={ __( 'Position', 'sgs-blocks' ) }
 							value={ closePlacement }
-							onChange={ ( obj ) => setAttributes( { closePlacement: obj } ) }
+							onChange={ ( obj ) =>
+								setAttributes( { closePlacement: obj } )
+							}
 						>
 							{ ( { ownValue, effectiveValue, setOwnValue } ) => {
-								const resolvedPlacement = ownValue || effectiveValue || 'top-row-end';
+								const resolvedPlacement =
+									ownValue || effectiveValue || 'top-row-end';
 								return (
 									<ToggleGroupControl
 										hideLabelFromVision
 										label={ __( 'Position', 'sgs-blocks' ) }
 										help={
-											'same-slot' === resolvedPlacement && 'non-modal' === modality
-												? __( '“On button” needs a modal drawer — this falls back to the top row while “Header stays live” is on.', 'sgs-blocks' )
-												: __( 'Where the close control sits in the drawer. “On button” overlays the close control on the menu button and needs a modal drawer (“Header stays live” off).', 'sgs-blocks' )
+											'same-slot' === resolvedPlacement &&
+											'non-modal' === modality
+												? __(
+														'“On button” needs a modal drawer — this falls back to the top row while “Header stays live” is on.',
+														'sgs-blocks'
+												  )
+												: __(
+														'Where the close control sits in the drawer. “On button” overlays the close control on the menu button and needs a modal drawer (“Header stays live” off).',
+														'sgs-blocks'
+												  )
 										}
 										value={ resolvedPlacement }
-										onChange={ ( value ) => setOwnValue( value || undefined ) }
+										onChange={ ( value ) =>
+											setOwnValue( value || undefined )
+										}
 										isBlock
 										__nextHasNoMarginBottom
 										__next40pxDefaultSize
 									>
-										<ToggleGroupControlOption value="top-row-end" label={ __( 'End', 'sgs-blocks' ) } />
-										<ToggleGroupControlOption value="top-row-start" label={ __( 'Start', 'sgs-blocks' ) } />
-										<ToggleGroupControlOption value="same-slot" label={ __( 'On button', 'sgs-blocks' ) } />
+										<ToggleGroupControlOption
+											value="top-row-end"
+											label={ __( 'End', 'sgs-blocks' ) }
+										/>
+										<ToggleGroupControlOption
+											value="top-row-start"
+											label={ __(
+												'Start',
+												'sgs-blocks'
+											) }
+										/>
+										<ToggleGroupControlOption
+											value="same-slot"
+											label={ __(
+												'On button',
+												'sgs-blocks'
+											) }
+										/>
 									</ToggleGroupControl>
 								);
 							} }
@@ -1105,36 +1502,61 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 
 					<ToolsPanelItem
 						label={ __( 'Position offset', 'sgs-blocks' ) }
-						hasValue={ () => !! closeOffset && Object.keys( closeOffset ).length > 0 }
-						onDeselect={ () => setAttributes( { closeOffset: {} } ) }
+						hasValue={ () =>
+							!! closeOffset &&
+							Object.keys( closeOffset ).length > 0
+						}
+						onDeselect={ () =>
+							setAttributes( { closeOffset: {} } )
+						}
 					>
 						<ResponsiveOverride
 							label={ __( 'Position offset', 'sgs-blocks' ) }
 							value={ closeOffset }
-							onChange={ ( obj ) => setAttributes( { closeOffset: obj } ) }
+							onChange={ ( obj ) =>
+								setAttributes( { closeOffset: obj } )
+							}
 						>
 							{ ( { ownValue, setOwnValue } ) => (
 								<>
 									<RangeControl
-										label={ __( 'Nudge sideways', 'sgs-blocks' ) }
-										help={ __( 'Pixels — positive moves right, negative moves left.', 'sgs-blocks' ) }
+										label={ __(
+											'Nudge sideways',
+											'sgs-blocks'
+										) }
+										help={ __(
+											'Pixels — positive moves right, negative moves left.',
+											'sgs-blocks'
+										) }
 										min={ -40 }
 										max={ 40 }
 										value={ ownValue?.x ?? 0 }
 										onChange={ ( value ) =>
-											setOwnValue( { ...( ownValue || {} ), x: value ?? 0 } )
+											setOwnValue( {
+												...( ownValue || {} ),
+												x: value ?? 0,
+											} )
 										}
 										__nextHasNoMarginBottom
 										__next40pxDefaultSize
 									/>
 									<RangeControl
-										label={ __( 'Nudge up/down', 'sgs-blocks' ) }
-										help={ __( 'Pixels — positive moves down, negative moves up.', 'sgs-blocks' ) }
+										label={ __(
+											'Nudge up/down',
+											'sgs-blocks'
+										) }
+										help={ __(
+											'Pixels — positive moves down, negative moves up.',
+											'sgs-blocks'
+										) }
 										min={ -40 }
 										max={ 40 }
 										value={ ownValue?.y ?? 0 }
 										onChange={ ( value ) =>
-											setOwnValue( { ...( ownValue || {} ), y: value ?? 0 } )
+											setOwnValue( {
+												...( ownValue || {} ),
+												y: value ?? 0,
+											} )
 										}
 										__nextHasNoMarginBottom
 										__next40pxDefaultSize
@@ -1146,32 +1568,58 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 
 					<ToolsPanelItem
 						label={ __( 'Corner radius', 'sgs-blocks' ) }
-						hasValue={ () => !! closeRadius && Object.keys( closeRadius ).length > 0 }
-						onDeselect={ () => setAttributes( { closeRadius: {} } ) }
+						hasValue={ () =>
+							!! closeRadius &&
+							Object.keys( closeRadius ).length > 0
+						}
+						onDeselect={ () =>
+							setAttributes( { closeRadius: {} } )
+						}
 					>
 						<ResponsiveOverride
 							label={ __( 'Corner radius', 'sgs-blocks' ) }
 							value={ closeRadius }
-							onChange={ ( obj ) => setAttributes( { closeRadius: obj } ) }
+							onChange={ ( obj ) =>
+								setAttributes( { closeRadius: obj } )
+							}
 						>
-							{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+							{ ( {
+								ownValue,
+								effectiveValue,
+								inherited,
+								setOwnValue,
+							} ) => (
 								<SgsLengthControl
-									label={ __( 'Corner radius', 'sgs-blocks' ) }
+									label={ __(
+										'Corner radius',
+										'sgs-blocks'
+									) }
 									hideLabelFromVision
 									value={ ownValue || '' }
-									placeholder={ inherited ? effectiveValue : '' }
-									onChange={ ( value ) => setOwnValue( value || undefined ) }
+									placeholder={
+										inherited ? effectiveValue : ''
+									}
+									onChange={ ( value ) =>
+										setOwnValue( value || undefined )
+									}
 									presets={ false }
 								/>
 							) }
 						</ResponsiveOverride>
 					</ToolsPanelItem>
 
-					{ closeStyleAnyTierIs( [ 'text-swap', 'icon-and-text' ] ) && (
+					{ closeStyleAnyTierIs( [
+						'text-swap',
+						'icon-and-text',
+					] ) && (
 						<ToolsPanelItem
 							label={ __( 'Label', 'sgs-blocks' ) }
-							hasValue={ () => 'Close' !== ( closeLabel ?? 'Close' ) }
-							onDeselect={ () => setAttributes( { closeLabel: 'Close' } ) }
+							hasValue={ () =>
+								'Close' !== ( closeLabel ?? 'Close' )
+							}
+							onDeselect={ () =>
+								setAttributes( { closeLabel: 'Close' } )
+							}
 						>
 							{ /* ⛔ A native TextControl, not SgsFreeTextField — matching the
 							   open side's Label field. ⚠ Clearing this does NOT leave the
@@ -1179,10 +1627,14 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							   accessible name when the word is empty, because an
 							   aria-label="" is an EMPTY accessible name, which is strictly
 							   worse than a mismatched one. */ }
-							<SgsFreeTextField type="rich" noLink
+							<SgsFreeTextField
+								type="rich"
+								noLink
 								label={ __( 'Label', 'sgs-blocks' ) }
 								value={ closeLabel ?? 'Close' }
-								onChange={ ( value ) => setAttributes( { closeLabel: value } ) }
+								onChange={ ( value ) =>
+									setAttributes( { closeLabel: value } )
+								}
 								help={ __(
 									'The word shown on the button. It is also what a screen reader announces — leave it empty and the button falls back to “Close menu”.',
 									'sgs-blocks'
@@ -1198,13 +1650,19 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					<ToolsPanelItem
 						label={ __( 'Size', 'sgs-blocks' ) }
 						hasValue={ () => '44px' !== ( closeSize || '44px' ) }
-						onDeselect={ () => setAttributes( { closeSize: '44px' } ) }
+						onDeselect={ () =>
+							setAttributes( { closeSize: '44px' } )
+						}
 					>
 						<SgsLengthControl
 							label={ __( 'Size', 'sgs-blocks' ) }
 							value={ closeSize }
-							units={ [ { value: 'px', label: 'px', default: 44 } ] }
-							onChange={ ( val ) => setAttributes( { closeSize: val || '44px' } ) }
+							units={ [
+								{ value: 'px', label: 'px', default: 44 },
+							] }
+							onChange={ ( val ) =>
+								setAttributes( { closeSize: val || '44px' } )
+							}
 							help={ __(
 								'44px minimum for a comfortable touch target (WCAG 2.2 AA).',
 								'sgs-blocks'
@@ -1221,7 +1679,10 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					   under separate-x / burger-morph. The uppercase(text-swap)/none
 					   (icon-and-text) text-transform defaults still apply while hidden
 					   (render.php resolves the per-style default). */ }
-					{ closeStyleAnyTierIs( [ 'text-swap', 'icon-and-text' ] ) && (
+					{ closeStyleAnyTierIs( [
+						'text-swap',
+						'icon-and-text',
+					] ) && (
 						<TypographyControls
 							attributes={ attributes }
 							setAttributes={ setAttributes }
@@ -1238,7 +1699,13 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						/>
 					) }
 
-					<p style={ { fontSize: '12px', color: '#757575', margin: '4px 0 0' } }>
+					<p
+						style={ {
+							fontSize: '12px',
+							color: '#757575',
+							margin: '4px 0 0',
+						} }
+					>
 						{ __(
 							'Its colour is in the Colour panel above — leave that empty to match the drawer’s text colour automatically. The close button is always present; it cannot be deleted.',
 							'sgs-blocks'
@@ -1246,8 +1713,17 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					</p>
 				</ToolsPanel>
 
-				<PanelBody title={ __( 'Content', 'sgs-blocks' ) } initialOpen={ false }>
-					<p style={ { fontSize: '12px', color: '#757575', margin: 0 } }>
+				<PanelBody
+					title={ __( 'Content', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<p
+						style={ {
+							fontSize: '12px',
+							color: '#757575',
+							margin: 0,
+						} }
+					>
 						{ __(
 							'Edit the drawer’s menu and anything below it directly on the canvas. The logo and the top row’s extra item are set in the Top row panel.',
 							'sgs-blocks'
@@ -1257,8 +1733,15 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
-				<BackgroundLayers media={ bgPreview.media } overlay={ bgPreview.overlay } />
-				<ChromePreview attributes={ attributes } deviceTier={ activeDeviceTier } palette={ palette }>
+				<BackgroundLayers
+					media={ bgPreview.media }
+					overlay={ bgPreview.overlay }
+				/>
+				<ChromePreview
+					attributes={ attributes }
+					deviceTier={ activeDeviceTier }
+					palette={ palette }
+				>
 					{ /* closeStyle preview -- mirrors render.php's three real, visually
 						distinct close-button markups, so the "Close button style"
 						control has a visible editor-canvas effect. */ }
@@ -1266,7 +1749,11 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						className="sgs-nav-drawer__close-preview sgs-nav-drawer__close"
 						aria-hidden="true"
 						style={ {
-							...resolveTextColourPreviewStyle( toggleCloseColour, toggleCloseColourGradient, ( v ) => resolveColourToken( v, palette ) ),
+							...resolveTextColourPreviewStyle(
+								toggleCloseColour,
+								toggleCloseColourGradient,
+								( v ) => resolveColourToken( v, palette )
+							),
 							/* closeSize editor-canvas mirror — this preview span
 							   is hand-authored JSX, not a render.php-rendered node (the drawer
 							   cannot use ServerSideRender while it hosts editable InnerBlocks —
@@ -1274,7 +1761,11 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							   never reaches it. Width is only forced when the style shows text
 							   (matches render.php's own text-bearing width:auto branch). Keyed
 							   to the ACTIVE EDITOR DEVICE's resolved style (§4.9). */
-							width: ( 'text-swap' === closeStyleRenderActive || 'icon-and-text' === closeStyleRenderActive ) ? 'auto' : ( closeSize || '44px' ),
+							width:
+								'text-swap' === closeStyleRenderActive ||
+								'icon-and-text' === closeStyleRenderActive
+									? 'auto'
+									: closeSize || '44px',
 							height: closeSize || '44px',
 							minWidth: closeSize || '44px',
 							minHeight: closeSize || '44px',
@@ -1288,17 +1779,35 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							   4px default (style.css::.sgs-nav-drawer__close). */
 							borderRadius: closeRadiusActive,
 							// closePadding editor-canvas mirror (active device tier).
-							...tierBoxLonghands( closePadding, activeDeviceTier, 'padding' ),
+							...tierBoxLonghands(
+								closePadding,
+								activeDeviceTier,
+								'padding'
+							),
 							// closePlacement/closeOffset editor-canvas mirror (SHOULD 10).
 							...closePlacementPreviewStyle,
 							// closeBorder* and closeIconSize editor-canvas mirrors: the box border and the glyph size.
 							...closeBorderStyle( attributes, palette ),
 							...closeFillStyle( attributes, palette ),
-							...( tierLengthPreview( attributes.closeIconSize, activeDeviceTier ) ? { '--sgs-nd-editor-close-icon': tierLengthPreview( attributes.closeIconSize, activeDeviceTier ) } : {} ),
+							...( tierLengthPreview(
+								attributes.closeIconSize,
+								activeDeviceTier
+							)
+								? {
+										'--sgs-nd-editor-close-icon':
+											tierLengthPreview(
+												attributes.closeIconSize,
+												activeDeviceTier
+											),
+								  }
+								: {} ),
 						} }
 					>
 						{ closeStyleRenderActive === 'text-swap' && (
-							<span className="sgs-nav-drawer__close-text" style={ closeLabelStyle }>
+							<span
+								className="sgs-nav-drawer__close-text"
+								style={ closeLabelStyle }
+							>
 								{ closeLabel ?? __( 'Close', 'sgs-blocks' ) }
 							</span>
 						) }
@@ -1323,12 +1832,17 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 										glyphClassName="sgs-nav-drawer__close-icon"
 									/>
 								</span>
-								<span className="sgs-nav-drawer__close-text" style={ closeLabelStyle }>
-									{ closeLabel ?? __( 'Close', 'sgs-blocks' ) }
+								<span
+									className="sgs-nav-drawer__close-text"
+									style={ closeLabelStyle }
+								>
+									{ closeLabel ??
+										__( 'Close', 'sgs-blocks' ) }
 								</span>
 							</>
 						) }
-						{ ( ! closeStyleRenderActive || closeStyleRenderActive === 'separate-x' ) && (
+						{ ( ! closeStyleRenderActive ||
+							closeStyleRenderActive === 'separate-x' ) && (
 							<IconPreview
 								source={ closeIcon?.source || 'lucide' }
 								name={ closeIcon?.name || 'x' }

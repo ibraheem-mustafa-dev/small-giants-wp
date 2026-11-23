@@ -23,12 +23,12 @@ import { store as blockEditorStore } from '@wordpress/block-editor';
  * for its optional empty InnerBlocks slot.
  *
  * @param {Object}   props
- * @param {string}   props.clientId    Row block's clientId — insertion target.
- * @param {Array}    props.promoted    [{ slug, label, variant, attributes }].
- * @param {string}   props.label       Placeholder heading.
+ * @param {string}   props.clientId     Row block's clientId — insertion target.
+ * @param {Array}    props.promoted     [{ slug, label, variant, attributes }].
+ * @param {string}   props.label        Placeholder heading.
  * @param {string}   props.instructions Placeholder helper text.
- * @param {Function} props.onDismiss   Called with no args when the client
- *                                     dismisses this placeholder.
+ * @param {Function} props.onDismiss    Called with no args when the client
+ *                                      dismisses this placeholder.
  */
 export default function RowQuickInsertAppender( {
 	clientId,
@@ -61,10 +61,7 @@ export default function RowQuickInsertAppender( {
 						variant="secondary"
 						onClick={ () =>
 							insertBlock(
-								createBlock(
-									item.slug,
-									item.attributes || {}
-								),
+								createBlock( item.slug, item.attributes || {} ),
 								undefined,
 								clientId
 							)

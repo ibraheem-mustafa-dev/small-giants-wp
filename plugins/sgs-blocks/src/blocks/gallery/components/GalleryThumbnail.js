@@ -23,7 +23,17 @@ import { ITEM_SLOT, itemFile, itemToSlotAttrs } from '../item-model';
  * @param {Function} props.onUpdateSlot Called with (index, patch) for a media field's `item*` patch.
  * @param {Function} props.onUpdate     Called with (index, patch) for the item's own caption and link fields.
  */
-export default function GalleryThumbnail( { item, index, count, onRemove, onMove, onDragStart, onDrop, onUpdateSlot, onUpdate } ) {
+export default function GalleryThumbnail( {
+	item,
+	index,
+	count,
+	onRemove,
+	onMove,
+	onDragStart,
+	onDrop,
+	onUpdateSlot,
+	onUpdate,
+} ) {
 	const file = itemFile( item );
 	const preview = file.poster || ( 'video' === file.kind ? '' : file.url );
 	const slotAttrs = itemToSlotAttrs( item );
@@ -46,12 +56,18 @@ export default function GalleryThumbnail( { item, index, count, onRemove, onMove
 					title={ __( 'Drag to reorder', 'sgs-blocks' ) }
 				>
 					{ preview ? (
-						<img src={ preview } alt="" className="sgs-gallery-editor__thumb-img" />
+						<img
+							src={ preview }
+							alt=""
+							className="sgs-gallery-editor__thumb-img"
+						/>
 					) : (
 						<span className="sgs-gallery-editor__thumb-img sgs-gallery-editor__thumb-img--empty" />
 					) }
 				</span>
-				<strong className="sgs-gallery-editor__thumb-title">{ title }</strong>
+				<strong className="sgs-gallery-editor__thumb-title">
+					{ title }
+				</strong>
 				<button
 					type="button"
 					className="sgs-gallery-editor__thumb-move"
@@ -79,12 +95,30 @@ export default function GalleryThumbnail( { item, index, count, onRemove, onMove
 					&times;
 				</button>
 			</div>
-			<MediaSlotField attributes={ slotAttrs } setAttributes={ setSlot } prefix={ ITEM_SLOT.prefix } slot={ ITEM_SLOT } label={ __( 'Media', 'sgs-blocks' ) } />
-			<FitField attributes={ slotAttrs } setAttributes={ setSlot } prefix={ ITEM_SLOT.prefix } slot={ ITEM_SLOT } />
-			<FocalField attributes={ slotAttrs } setAttributes={ setSlot } prefix={ ITEM_SLOT.prefix } />
+			<MediaSlotField
+				attributes={ slotAttrs }
+				setAttributes={ setSlot }
+				prefix={ ITEM_SLOT.prefix }
+				slot={ ITEM_SLOT }
+				label={ __( 'Media', 'sgs-blocks' ) }
+			/>
+			<FitField
+				attributes={ slotAttrs }
+				setAttributes={ setSlot }
+				prefix={ ITEM_SLOT.prefix }
+				slot={ ITEM_SLOT }
+			/>
+			<FocalField
+				attributes={ slotAttrs }
+				setAttributes={ setSlot }
+				prefix={ ITEM_SLOT.prefix }
+			/>
 			<TextControl
 				label={ __( 'Caption', 'sgs-blocks' ) }
-				help={ __( 'Shown with the picture when the gallery shows captions.', 'sgs-blocks' ) }
+				help={ __(
+					'Shown with the picture when the gallery shows captions.',
+					'sgs-blocks'
+				) }
 				value={ item.caption || '' }
 				onChange={ ( val ) => onUpdate( index, { caption: val } ) }
 				__nextHasNoMarginBottom
@@ -95,13 +129,20 @@ export default function GalleryThumbnail( { item, index, count, onRemove, onMove
 			<LinkPopoverField
 				label={ __( 'Link', 'sgs-blocks' ) }
 				emptyLabel={ __( 'Link this item', 'sgs-blocks' ) }
-				value={ { url: item.linkUrl || '', linkTarget: item.linkTarget || '', linkSource: item.linkUrlSource || '' } }
+				value={ {
+					url: item.linkUrl || '',
+					linkTarget: item.linkTarget || '',
+					linkSource: item.linkUrlSource || '',
+				} }
 				linkSources={ LINK_SOURCES_ALL }
 				targetMode="boolean"
 				showRel={ false }
 				onChange={ ( next ) => {
 					const patch = {};
-					const nextSource = 'linkSource' in next ? next.linkSource : item.linkUrlSource || '';
+					const nextSource =
+						'linkSource' in next
+							? next.linkSource
+							: item.linkUrlSource || '';
 					if ( 'linkSource' in next ) {
 						patch.linkUrlSource = next.linkSource;
 					}
@@ -113,7 +154,8 @@ export default function GalleryThumbnail( { item, index, count, onRemove, onMove
 						}
 					}
 					if ( 'linkTarget' in next ) {
-						patch.linkTarget = '_blank' === next.linkTarget ? '_blank' : '';
+						patch.linkTarget =
+							'_blank' === next.linkTarget ? '_blank' : '';
 					}
 					onUpdate( index, patch );
 				} }
@@ -121,9 +163,14 @@ export default function GalleryThumbnail( { item, index, count, onRemove, onMove
 			{ !! ( item.linkUrl || item.linkUrlSource ) && (
 				<TextControl
 					label={ __( 'Link label', 'sgs-blocks' ) }
-					help={ __( 'Read out by screen readers. Empty uses the image description.', 'sgs-blocks' ) }
+					help={ __(
+						'Read out by screen readers. Empty uses the image description.',
+						'sgs-blocks'
+					) }
 					value={ item.linkLabel || '' }
-					onChange={ ( val ) => onUpdate( index, { linkLabel: val } ) }
+					onChange={ ( val ) =>
+						onUpdate( index, { linkLabel: val } )
+					}
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 				/>

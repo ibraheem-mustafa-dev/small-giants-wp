@@ -172,7 +172,12 @@ function togglePause( video ) {
  */
 function settleEmbed( frame ) {
 	const target = frame.getAttribute( 'data-sgs-autoplay-src' );
-	if ( target && ! reducedMotion() && frame.getClientRects().length > 0 && frame.getAttribute( 'src' ) !== target ) {
+	if (
+		target &&
+		! reducedMotion() &&
+		frame.getClientRects().length > 0 &&
+		frame.getAttribute( 'src' ) !== target
+	) {
 		frame.setAttribute( 'src', target );
 	}
 }

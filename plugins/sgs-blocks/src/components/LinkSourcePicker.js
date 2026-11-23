@@ -59,7 +59,10 @@ export function linkSourceMode( source, pendingPost = false ) {
  * @return {boolean} Whether the source reads Site Info.
  */
 export function isSiteInfoMode( mode ) {
-	return Object.prototype.hasOwnProperty.call( LINK_SOURCE_SITE_INFO_KEYS, mode );
+	return Object.prototype.hasOwnProperty.call(
+		LINK_SOURCE_SITE_INFO_KEYS,
+		mode
+	);
 }
 
 /**
@@ -97,37 +100,66 @@ export function linkSourceRowText( source, typedUrl ) {
 		return href;
 	}
 	const label = linkSourceLabel( mode );
-	return href ? `${ label }: ${ href }` : sprintf(
-		/* translators: %s: link source, e.g. "Phone (Site Info)". */
-		__( '%s: not set', 'sgs-blocks' ),
-		label
-	);
+	return href
+		? `${ label }: ${ href }`
+		: sprintf(
+				/* translators: %s: link source, e.g. "Phone (Site Info)". */
+				__( '%s: not set', 'sgs-blocks' ),
+				label
+		  );
 }
 
 /**
  * The "Link to" select plus a status line saying what the chosen Site Info field holds.
  *
  * @param {Object}   props
- * @param {string}   props.value        Stored source value.
- * @param {string[]} props.sources      Offered sources ('post', Site Info names, 'top'); the
- *                                      typed URL is always offered.
- * @param {boolean}  props.pendingPost  "Page or post" chosen, no page picked yet.
+ * @param {string}   props.value         Stored source value.
+ * @param {string[]} props.sources       Offered sources ('post', Site Info names, 'top'); the
+ *                                       typed URL is always offered.
+ * @param {boolean}  props.pendingPost   "Page or post" chosen, no page picked yet.
  * @param {Function} props.onPendingPost Receives the next pendingPost boolean.
- * @param {Function} props.onChange     Receives the next stored source value.
+ * @param {Function} props.onChange      Receives the next stored source value.
  */
-export default function LinkSourcePicker( { value, sources, pendingPost, onPendingPost, onChange } ) {
+export default function LinkSourcePicker( {
+	value,
+	sources,
+	pendingPost,
+	onPendingPost,
+	onChange,
+} ) {
 	const mode = linkSourceMode( value, pendingPost );
 	const offered = Array.isArray( sources ) ? sources : [];
-	const siteInfoOptions = SITE_INFO_SOURCE_OPTIONS.filter( ( o ) => offered.includes( o.value ) );
+	const siteInfoOptions = SITE_INFO_SOURCE_OPTIONS.filter( ( o ) =>
+		offered.includes( o.value )
+	);
 
 	// Up to 14 choices, so a searchable combobox (D812: more than 10 options). The typed URL is
 	// listed as 'url' because the combobox treats an empty value as "nothing chosen".
 	const options = [
 		{ value: 'url', label: __( 'Typed URL', 'sgs-blocks' ) },
-		...( offered.includes( 'post' ) ? [ { value: 'post', label: __( 'Page or post on this site', 'sgs-blocks' ) } ] : [] ),
+		...( offered.includes( 'post' )
+			? [
+					{
+						value: 'post',
+						label: __( 'Page or post on this site', 'sgs-blocks' ),
+					},
+			  ]
+			: [] ),
 		...siteInfoOptions,
-		...( offered.includes( 'top' ) ? [ { value: 'top', label: __( 'Back to top', 'sgs-blocks' ) } ] : [] ),
-		...( offered.includes( 'order-view' ) ? [ { value: 'order-view', label: __( 'This order’s page (order confirmation)', 'sgs-blocks' ) } ] : [] ),
+		...( offered.includes( 'top' )
+			? [ { value: 'top', label: __( 'Back to top', 'sgs-blocks' ) } ]
+			: [] ),
+		...( offered.includes( 'order-view' )
+			? [
+					{
+						value: 'order-view',
+						label: __(
+							'This order’s page (order confirmation)',
+							'sgs-blocks'
+						),
+					},
+			  ]
+			: [] ),
 	];
 
 	const handleChange = ( picked ) => {
@@ -146,11 +178,14 @@ export default function LinkSourcePicker( { value, sources, pendingPost, onPendi
 		const entry = editorSiteInfo()[ LINK_SOURCE_SITE_INFO_KEYS[ mode ] ];
 		status = entry?.filled
 			? sprintf(
-				/* translators: %s: the Site Info value, e.g. a phone number. */
-				__( 'Site Info holds: %s', 'sgs-blocks' ),
-				entry.value || entry.link
-			)
-			: __( 'This Site Info field is empty, so the typed link below is used until it is filled in.', 'sgs-blocks' );
+					/* translators: %s: the Site Info value, e.g. a phone number. */
+					__( 'Site Info holds: %s', 'sgs-blocks' ),
+					entry.value || entry.link
+			  )
+			: __(
+					'This Site Info field is empty, so the typed link below is used until it is filled in.',
+					'sgs-blocks'
+			  );
 	}
 
 	return (

@@ -10,16 +10,50 @@
  */
 import { createElement, Fragment } from '@wordpress/element';
 
-const FORMAT_TAGS = { strong: 'strong', b: 'strong', em: 'em', i: 'em', s: 's', del: 's', strike: 's' };
-const DROP_WITH_CONTENT = new Set( [ 'script', 'style', 'iframe', 'object', 'embed', 'form', 'svg', 'math', 'template', 'noscript', 'textarea', 'select', 'title', 'head', 'frame', 'frameset', 'applet', 'link', 'meta', 'base' ] );
+const FORMAT_TAGS = {
+	strong: 'strong',
+	b: 'strong',
+	em: 'em',
+	i: 'em',
+	s: 's',
+	del: 's',
+	strike: 's',
+};
+const DROP_WITH_CONTENT = new Set( [
+	'script',
+	'style',
+	'iframe',
+	'object',
+	'embed',
+	'form',
+	'svg',
+	'math',
+	'template',
+	'noscript',
+	'textarea',
+	'select',
+	'title',
+	'head',
+	'frame',
+	'frameset',
+	'applet',
+	'link',
+	'meta',
+	'base',
+] );
 
 /**
  * @param {string} href A link address.
  * @return {boolean} Whether it is http, https, mailto, tel or a site-relative path.
  */
 export function isSafeHref( href ) {
-	const value = String( href ?? '' ).replace( /[\u0000-\u0020\u007f-\u009f]/g, '' );
-	return /^(https?:|mailto:|tel:)/i.test( value ) || ( /^\/(?!\/)/.test( value ) );
+	const value = String( href ?? '' ).replace(
+		/[\u0000-\u0020\u007f-\u009f]/g,
+		''
+	);
+	return (
+		/^(https?:|mailto:|tel:)/i.test( value ) || /^\/(?!\/)/.test( value )
+	);
 }
 
 const PHOTO = 'sgs/inline-photo';
@@ -27,8 +61,15 @@ const HIGHLIGHT = 'sgs/highlight';
 const BASKET_COUNT = 'sgs/basket-count';
 const BASKET_COUNT_CLASS = 'sgs-basket-count';
 // The basket count keeps exactly its one class: no other token of the span survives.
-const isBasketCount = ( node ) => String( node.getAttribute( 'class' ) || '' ).split( /\s+/ ).includes( BASKET_COUNT_CLASS );
-const highlightClass = ( node ) => String( node.getAttribute( 'class' ) || '' ).split( /\s+/ ).filter( ( t ) => /^sgs-highlight/.test( t ) ).join( ' ' );
+const isBasketCount = ( node ) =>
+	String( node.getAttribute( 'class' ) || '' )
+		.split( /\s+/ )
+		.includes( BASKET_COUNT_CLASS );
+const highlightClass = ( node ) =>
+	String( node.getAttribute( 'class' ) || '' )
+		.split( /\s+/ )
+		.filter( ( t ) => /^sgs-highlight/.test( t ) )
+		.join( ' ' );
 
 function build( node, links, key, formats ) {
 	if ( 3 === node.nodeType ) {
@@ -47,37 +88,73 @@ function build( node, links, key, formats ) {
 	if ( 'img' === tag ) {
 		const src = String( node.getAttribute( 'src' ) || '' ).trim();
 		return formats.includes( PHOTO ) && /^(https?:|\/(?!\/))/i.test( src )
-			? createElement( 'img', { key, src, alt: node.getAttribute( 'alt' ) || '', width: node.getAttribute( 'width' ) || undefined, height: node.getAttribute( 'height' ) || undefined } )
+			? createElement( 'img', {
+					key,
+					src,
+					alt: node.getAttribute( 'alt' ) || '',
+					width: node.getAttribute( 'width' ) || undefined,
+					height: node.getAttribute( 'height' ) || undefined,
+			  } )
 			: null;
 	}
-	const children = Array.from( node.childNodes ).map( ( child, i ) => build( child, links, i, formats ) );
-	if ( 'span' === tag && formats.includes( BASKET_COUNT ) && isBasketCount( node ) ) {
-		return createElement( 'span', { key, className: BASKET_COUNT_CLASS }, ...children );
+	const children = Array.from( node.childNodes ).map( ( child, i ) =>
+		build( child, links, i, formats )
+	);
+	if (
+		'span' === tag &&
+		formats.includes( BASKET_COUNT ) &&
+		isBasketCount( node )
+	) {
+		return createElement(
+			'span',
+			{ key, className: BASKET_COUNT_CLASS },
+			...children
+		);
 	}
-	if ( 'span' === tag && formats.includes( HIGHLIGHT ) && highlightClass( node ) ) {
-		return createElement( 'span', { key, className: highlightClass( node ) }, ...children );
+	if (
+		'span' === tag &&
+		formats.includes( HIGHLIGHT ) &&
+		highlightClass( node )
+	) {
+		return createElement(
+			'span',
+			{ key, className: highlightClass( node ) },
+			...children
+		);
 	}
 	if ( FORMAT_TAGS[ tag ] ) {
 		return createElement( FORMAT_TAGS[ tag ], { key }, ...children );
 	}
 	if ( 'a' === tag && links && isSafeHref( node.getAttribute( 'href' ) ) ) {
-		return createElement( 'a', { key, href: node.getAttribute( 'href' ).trim() }, ...children );
+		return createElement(
+			'a',
+			{ key, href: node.getAttribute( 'href' ).trim() },
+			...children
+		);
 	}
 	return createElement( Fragment, { key }, ...children );
 }
 
 /**
- * @param {*}       value   The typed value (HTML string or plain text).
- * @param {Object}  [opts]
- * @param {boolean} [opts.links=true] Whether a link may stay (false inside a link, button or summary).
- * @param {string[]} [opts.formats] The setting's extra formats (`sgs/inline-photo`, `sgs/highlight`): kept only where its editor holds them.
+ * @param {*}        value             The typed value (HTML string or plain text).
+ * @param {Object}   [opts]
+ * @param {boolean}  [opts.links=true] Whether a link may stay (false inside a link, button or summary).
+ * @param {string[]} [opts.formats]    The setting's extra formats (`sgs/inline-photo`, `sgs/highlight`): kept only where its editor holds them.
  * @return {Array} React nodes.
  */
-export function authoredTextNodes( value, { links = true, formats = [] } = {} ) {
+export function authoredTextNodes(
+	value,
+	{ links = true, formats = [] } = {}
+) {
 	const html = String( value ?? '' );
 	if ( ! html.includes( '<' ) && ! html.includes( '&' ) ) {
 		return [ html ];
 	}
-	const doc = new window.DOMParser().parseFromString( '<!doctype html><body>' + html, 'text/html' );
-	return Array.from( doc.body.childNodes ).map( ( child, i ) => build( child, links, i, formats ) );
+	const doc = new window.DOMParser().parseFromString(
+		'<!doctype html><body>' + html,
+		'text/html'
+	);
+	return Array.from( doc.body.childNodes ).map( ( child, i ) =>
+		build( child, links, i, formats )
+	);
 }

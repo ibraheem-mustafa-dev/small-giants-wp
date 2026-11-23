@@ -1,5 +1,11 @@
 import { __ } from '@wordpress/i18n';
-import { PanelBody, ToggleControl, TextControl, RangeControl, SelectControl } from '@wordpress/components';
+import {
+	PanelBody,
+	ToggleControl,
+	TextControl,
+	RangeControl,
+	SelectControl,
+} from '@wordpress/components';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
 import { SgsBoxControl } from '../../components';
@@ -95,11 +101,17 @@ export function BuyboxExtraSettingsPanels2( { attributes, setAttributes } ) {
 			) }
 
 			<PanelBody
-				title={ __( 'Extras above the add-to-cart button', 'sgs-blocks' ) }
+				title={ __(
+					'Extras above the add-to-cart button',
+					'sgs-blocks'
+				) }
 				initialOpen={ false }
 			>
 				<RangeControl
-					label={ __( 'Blocks above the add-to-cart button', 'sgs-blocks' ) }
+					label={ __(
+						'Blocks above the add-to-cart button',
+						'sgs-blocks'
+					) }
 					help={ __(
 						'After the blocks shown above the price, the next N extra-area blocks show between the pickers and the add-to-cart button; the rest stay below it.',
 						'sgs-blocks'
@@ -119,7 +131,8 @@ export function BuyboxExtraSettingsPanels2( { attributes, setAttributes } ) {
 				title={ __( 'Stock wording', 'sgs-blocks' ) }
 				initialOpen={ false }
 			>
-				<SgsFreeTextField type="rich"
+				<SgsFreeTextField
+					type="rich"
 					label={ __( 'In-stock label', 'sgs-blocks' ) }
 					value={ stockInStockLabel || '' }
 					onChange={ ( val ) =>
@@ -161,17 +174,20 @@ export function BuyboxExtraSettingsPanels2( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 					/>
 				) }
-				{ 'above' === ( stockLinePosition || 'below' ) && !! stockLineHairline && (
-					<SgsBoxControl
-						label={ __( 'Hairline spacing', 'sgs-blocks' ) }
-						values={ stockLineHairlineMargin ?? {} }
-						sides={ HAIRLINE_SIDES }
-						presets
-						onChange={ ( next ) =>
-							setAttributes( { stockLineHairlineMargin: next } )
-						}
-					/>
-				) }
+				{ 'above' === ( stockLinePosition || 'below' ) &&
+					!! stockLineHairline && (
+						<SgsBoxControl
+							label={ __( 'Hairline spacing', 'sgs-blocks' ) }
+							values={ stockLineHairlineMargin ?? {} }
+							sides={ HAIRLINE_SIDES }
+							presets
+							onChange={ ( next ) =>
+								setAttributes( {
+									stockLineHairlineMargin: next,
+								} )
+							}
+						/>
+					) }
 			</PanelBody>
 		</>
 	);

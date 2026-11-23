@@ -14,7 +14,14 @@
 import { recordAddonAnswer, resetAddonAnswers } from './pricing.js';
 import { recordPlainAnswer } from './flow-fields.js';
 import { handleProductOptionClick } from './variation.js';
-import { STEP_SELECTOR, RESULT_SELECTOR, OPTIONS_GROUP_SELECTOR, DEFAULT_OPTION_SELECTOR, TERMINAL_SENTINEL, QUESTION_SELECTOR } from './flow-constants.js';
+import {
+	STEP_SELECTOR,
+	RESULT_SELECTOR,
+	OPTIONS_GROUP_SELECTOR,
+	DEFAULT_OPTION_SELECTOR,
+	TERMINAL_SENTINEL,
+	QUESTION_SELECTOR,
+} from './flow-constants.js';
 import { getSteps, advanceModeOf } from './flow-steps.js';
 import { chosenButtons } from './flow-multi.js';
 import { showStep } from './flow-inline.js';
@@ -59,7 +66,9 @@ function resolveTerminalStepIndex( flowRoot, accumulatedTags ) {
 		if ( ! info ) {
 			return;
 		}
-		const score = info.tags.filter( ( tag ) => accumulatedTags.has( tag ) ).length;
+		const score = info.tags.filter( ( tag ) =>
+			accumulatedTags.has( tag )
+		).length;
 		if ( score > bestScore ) {
 			bestScore = score;
 			bestIndex = index;
@@ -84,7 +93,9 @@ function stepIndexAfter( steps, nextStepId, currentIndex ) {
 		return currentIndex + 1;
 	}
 	const parsedIndex = parseInt( nextStepId, 10 );
-	return Number.isInteger( parsedIndex ) && parsedIndex >= 0 && parsedIndex < steps.length
+	return Number.isInteger( parsedIndex ) &&
+		parsedIndex >= 0 &&
+		parsedIndex < steps.length
 		? parsedIndex
 		: currentIndex + 1; // Defensive fallback — malformed/legacy data, never fatal.
 }
@@ -103,7 +114,10 @@ function stepIndexAfter( steps, nextStepId, currentIndex ) {
  */
 export function routesToQuestionStep( flowRoot, buttonEl, currentIndex ) {
 	const nextStepId = buttonEl.getAttribute( 'data-next-step-id' ) || '';
-	if ( TERMINAL_SENTINEL === nextStepId || buttonEl.hasAttribute( 'data-add-to-bag-now' ) ) {
+	if (
+		TERMINAL_SENTINEL === nextStepId ||
+		buttonEl.hasAttribute( 'data-add-to-bag-now' )
+	) {
 		return false;
 	}
 	const questionEl = buttonEl.closest( QUESTION_SELECTOR );
@@ -111,8 +125,13 @@ export function routesToQuestionStep( flowRoot, buttonEl, currentIndex ) {
 		return false;
 	}
 	const steps = getSteps( flowRoot );
-	const targetStepEl = steps[ stepIndexAfter( steps, nextStepId, currentIndex ) ];
-	return !! targetStepEl && targetStepEl !== steps[ currentIndex ] && ! targetStepEl.querySelector( RESULT_SELECTOR );
+	const targetStepEl =
+		steps[ stepIndexAfter( steps, nextStepId, currentIndex ) ];
+	return (
+		!! targetStepEl &&
+		targetStepEl !== steps[ currentIndex ] &&
+		! targetStepEl.querySelector( RESULT_SELECTOR )
+	);
 }
 
 /**
@@ -130,7 +149,9 @@ export function recordOptionAnswer( flowRoot, buttonEl, stepIndex ) {
 	const priceGroup = buttonEl.getAttribute( 'data-price-group' ) || '';
 	if ( priceGroup ) {
 		const optionsEl = buttonEl.closest( OPTIONS_GROUP_SELECTOR );
-		const groupLabel = optionsEl ? optionsEl.getAttribute( 'data-price-group-label' ) || '' : '';
+		const groupLabel = optionsEl
+			? optionsEl.getAttribute( 'data-price-group-label' ) || ''
+			: '';
 		recordAddonAnswer(
 			flowRoot,
 			priceGroup,
@@ -142,10 +163,16 @@ export function recordOptionAnswer( flowRoot, buttonEl, stepIndex ) {
 				stepIndex,
 				effect: buttonEl.getAttribute( 'data-stage-effect' ) || '',
 				summaryText: buttonEl.getAttribute( 'data-summary-text' ) || '',
-				startingPrice: 'from' === buttonEl.closest( '.sgs-choice-flow-question' )?.getAttribute( 'data-price-prefix' ),
+				startingPrice:
+					'from' ===
+					buttonEl
+						.closest( '.sgs-choice-flow-question' )
+						?.getAttribute( 'data-price-prefix' ),
 			}
 		);
-	} else if ( 'variation' !== buttonEl.getAttribute( 'data-attribute-mode' ) ) {
+	} else if (
+		'variation' !== buttonEl.getAttribute( 'data-attribute-mode' )
+	) {
 		const stepEl = buttonEl.closest( STEP_SELECTOR );
 		if ( stepEl ) {
 			recordPlainAnswer( flowRoot, stepIndex, stepEl, buttonEl );
@@ -160,8 +187,8 @@ export function recordOptionAnswer( flowRoot, buttonEl, stepIndex ) {
  * answer in 'tap' advanceMode, or from `handleContinueClick()` in 'continue'
  * advanceMode (reading whichever option the step's Continue button commits).
  *
- * @param {HTMLElement} flowRoot    Flow wrapper element.
- * @param {HTMLElement} buttonEl    The option whose routing applies.
+ * @param {HTMLElement} flowRoot     Flow wrapper element.
+ * @param {HTMLElement} buttonEl     The option whose routing applies.
  * @param {number}      currentIndex The step's index.
  */
 export function commitStepRouting( flowRoot, buttonEl, currentIndex ) {
@@ -183,9 +210,10 @@ export function commitStepRouting( flowRoot, buttonEl, currentIndex ) {
 
 	const nextStepId = buttonEl.getAttribute( 'data-next-step-id' ) || '';
 
-	const targetIndex = TERMINAL_SENTINEL === nextStepId
-		? resolveTerminalStepIndex( flowRoot, instanceState.tags )
-		: stepIndexAfter( steps, nextStepId, currentIndex );
+	const targetIndex =
+		TERMINAL_SENTINEL === nextStepId
+			? resolveTerminalStepIndex( flowRoot, instanceState.tags )
+			: stepIndexAfter( steps, nextStepId, currentIndex );
 
 	if ( targetIndex < 0 || targetIndex >= steps.length ) {
 		return;
@@ -193,7 +221,12 @@ export function commitStepRouting( flowRoot, buttonEl, currentIndex ) {
 
 	instanceState.history.push( currentIndex );
 	showStep( flowRoot, targetIndex );
-	persistFlowState( flowRoot, targetIndex, instanceState.tags, instanceState.history );
+	persistFlowState(
+		flowRoot,
+		targetIndex,
+		instanceState.tags,
+		instanceState.history
+	);
 
 	flowRoot.scrollIntoView( { behavior: 'smooth', block: 'start' } );
 }
@@ -213,12 +246,19 @@ export function applyDefaultAnswers( flowRoot ) {
 		return;
 	}
 	const steps = getSteps( flowRoot );
-	flowRoot.querySelectorAll( DEFAULT_OPTION_SELECTOR ).forEach( ( buttonEl ) => {
-		buttonEl.setAttribute( buttonEl.hasAttribute( 'aria-checked' ) ? 'aria-checked' : 'aria-pressed', 'true' );
-		const stepEl = buttonEl.closest( STEP_SELECTOR );
-		const stepIndex = stepEl ? steps.indexOf( stepEl ) : -1;
-		if ( stepIndex !== -1 ) {
-			recordOptionAnswer( flowRoot, buttonEl, stepIndex );
-		}
-	} );
+	flowRoot
+		.querySelectorAll( DEFAULT_OPTION_SELECTOR )
+		.forEach( ( buttonEl ) => {
+			buttonEl.setAttribute(
+				buttonEl.hasAttribute( 'aria-checked' )
+					? 'aria-checked'
+					: 'aria-pressed',
+				'true'
+			);
+			const stepEl = buttonEl.closest( STEP_SELECTOR );
+			const stepIndex = stepEl ? steps.indexOf( stepEl ) : -1;
+			if ( stepIndex !== -1 ) {
+				recordOptionAnswer( flowRoot, buttonEl, stepIndex );
+			}
+		} );
 }

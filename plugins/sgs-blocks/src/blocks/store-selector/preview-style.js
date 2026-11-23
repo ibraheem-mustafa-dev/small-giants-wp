@@ -33,7 +33,11 @@ export function flagSizeAtTier( flagSize, tier ) {
 	const start = Math.max( 0, TIER_ORDER.indexOf( tier ) );
 	for ( let i = start; i >= 0; i-- ) {
 		const candidate = flagSize?.[ TIER_ORDER[ i ] ];
-		if ( candidate && 'object' === typeof candidate && ( candidate.w || candidate.h ) ) {
+		if (
+			candidate &&
+			'object' === typeof candidate &&
+			( candidate.w || candidate.h )
+		) {
 			const w = parseInt( candidate.w, 10 );
 			const h = parseInt( candidate.h, 10 );
 			return {
@@ -56,7 +60,11 @@ function flagSizeSetAtTier( flagSize, tier ) {
 	const start = Math.max( 0, TIER_ORDER.indexOf( tier ) );
 	for ( let i = start; i >= 0; i-- ) {
 		const candidate = flagSize?.[ TIER_ORDER[ i ] ];
-		if ( candidate && 'object' === typeof candidate && ( candidate.w || candidate.h ) ) {
+		if (
+			candidate &&
+			'object' === typeof candidate &&
+			( candidate.w || candidate.h )
+		) {
 			return true;
 		}
 	}
@@ -75,15 +83,30 @@ export function storeSelectorPreviewStyles( attributes, tier ) {
 	return {
 		root: {
 			...typographyPreviewStyle( attributes, '', tier ),
-			...( flagSizeSetAtTier( attributes.flagSize, tier ) ? { '--sgs-ss-tap-min': '0px' } : {} ),
+			...( flagSizeSetAtTier( attributes.flagSize, tier )
+				? { '--sgs-ss-tap-min': '0px' }
+				: {} ),
 		},
-		trigger: { ...gapStyle, ...textPaintPreview( attributes.triggerColour, '' ) },
+		trigger: {
+			...gapStyle,
+			...textPaintPreview( attributes.triggerColour, '' ),
+		},
 		item: textPaintPreview( attributes.itemColour, '' ),
 		list: {
 			...gapStyle,
 			...backgroundPaintPreview( attributes.panelBackground, '' ),
 			...tierBoxLonghands( attributes.panelPadding, tier, 'padding' ),
-			...sgsBorderPreview( { widthValues: attributes.borderWidth, styleValue: attributes.borderStyle, colourValue: attributes.borderColour, colourGradientValue: attributes.borderColourGradient, radiusValues: attributes.borderRadius }, tier, undefined ),
+			...sgsBorderPreview(
+				{
+					widthValues: attributes.borderWidth,
+					styleValue: attributes.borderStyle,
+					colourValue: attributes.borderColour,
+					colourGradientValue: attributes.borderColourGradient,
+					radiusValues: attributes.borderRadius,
+				},
+				tier,
+				undefined
+			),
 		},
 	};
 }

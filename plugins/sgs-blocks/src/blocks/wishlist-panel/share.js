@@ -45,15 +45,28 @@ async function copyField( field ) {
  */
 export function wireShare( container, labels, announce ) {
 	container.addEventListener( 'click', async ( event ) => {
-		const toggle = event.target.closest( '[data-sgs-wishlist-share-toggle]' );
-		const copyButton = event.target.closest( '[data-sgs-wishlist-share-copy]' );
-		const regenerateButton = event.target.closest( '[data-sgs-wishlist-share-regenerate]' );
-		const shareBlock = container.querySelector( '.sgs-wishlist-panel__share' );
-		const controls = shareBlock?.querySelector( '.sgs-wishlist-panel__share-controls' );
-		const field = shareBlock?.querySelector( '[data-sgs-wishlist-share-field]' );
+		const toggle = event.target.closest(
+			'[data-sgs-wishlist-share-toggle]'
+		);
+		const copyButton = event.target.closest(
+			'[data-sgs-wishlist-share-copy]'
+		);
+		const regenerateButton = event.target.closest(
+			'[data-sgs-wishlist-share-regenerate]'
+		);
+		const shareBlock = container.querySelector(
+			'.sgs-wishlist-panel__share'
+		);
+		const controls = shareBlock?.querySelector(
+			'.sgs-wishlist-panel__share-controls'
+		);
+		const field = shareBlock?.querySelector(
+			'[data-sgs-wishlist-share-field]'
+		);
 
 		if ( toggle ) {
-			const nextEnabled = 'true' !== toggle.getAttribute( 'aria-pressed' );
+			const nextEnabled =
+				'true' !== toggle.getAttribute( 'aria-pressed' );
 			toggle.disabled = true;
 			const result = await setWishlistShare( { enabled: nextEnabled } );
 			toggle.disabled = false;
@@ -61,7 +74,10 @@ export function wireShare( container, labels, announce ) {
 				announce( labels.errorText );
 				return;
 			}
-			toggle.setAttribute( 'aria-pressed', result.share.enabled ? 'true' : 'false' );
+			toggle.setAttribute(
+				'aria-pressed',
+				result.share.enabled ? 'true' : 'false'
+			);
 			if ( controls ) {
 				controls.hidden = ! result.share.enabled;
 			}
@@ -79,7 +95,10 @@ export function wireShare( container, labels, announce ) {
 
 		if ( regenerateButton ) {
 			regenerateButton.disabled = true;
-			const result = await setWishlistShare( { enabled: true, regenerate: true } );
+			const result = await setWishlistShare( {
+				enabled: true,
+				regenerate: true,
+			} );
 			regenerateButton.disabled = false;
 			if ( ! result.ok ) {
 				announce( labels.errorText );

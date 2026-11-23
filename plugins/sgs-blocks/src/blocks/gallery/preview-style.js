@@ -26,8 +26,17 @@ import {
  * @return {Object} React style fragment for the figcaption.
  */
 export function captionPreviewStyle( attributes, palette ) {
-	const style = { ...textPaintPreview( attributes.captionColour, attributes.captionColourGradient, palette ) };
-	const gradient = resolveTextColourPreviewStyle( '', attributes.captionBgColourGradient ).backgroundImage;
+	const style = {
+		...textPaintPreview(
+			attributes.captionColour,
+			attributes.captionColourGradient,
+			palette
+		),
+	};
+	const gradient = resolveTextColourPreviewStyle(
+		'',
+		attributes.captionBgColourGradient
+	).backgroundImage;
 	const fill = gradient || colourVar( attributes.captionBgColour );
 	if ( fill ) {
 		style[ '--sgs-gallery-caption-fill' ] = fill;

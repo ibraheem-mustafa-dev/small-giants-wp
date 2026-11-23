@@ -37,12 +37,23 @@ import {
 	InspectorControls,
 	RichText,
 } from '@wordpress/block-editor';
+import { PanelBody, SelectControl, ToggleControl } from '@wordpress/components';
 import {
-	PanelBody,
-	SelectControl,
-	ToggleControl,
-} from '@wordpress/components';
-import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, SgsColourPanel, textRow, ShadowControl, shadowAttrKeys, SgsLengthControl, TypographyControls, SgsBorderControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, LinkUnderlineControl } from '../../components';
+	ResponsiveControl,
+	ResponsiveOverride,
+	ResponsiveBoxControl,
+	SgsColourPanel,
+	textRow,
+	ShadowControl,
+	shadowAttrKeys,
+	SgsLengthControl,
+	TypographyControls,
+	SgsBorderControl,
+	BOX_UNITS,
+	normaliseResponsiveBox,
+	SgsBoxControl,
+	LinkUnderlineControl,
+} from '../../components';
 import {
 	colourVar,
 	resolveTextColourPreviewStyle,
@@ -97,7 +108,9 @@ const LENGTH_UNITS = [
 // ---------------------------------------------------------------------------
 
 function buildWrapperStyle( attributes, tier ) {
-	const { padding, margin,
+	const {
+		padding,
+		margin,
 		inheritStyle,
 		borderWidth,
 		borderStyle,
@@ -112,15 +125,41 @@ function buildWrapperStyle( attributes, tier ) {
 
 	const wrapperStyle = {};
 
-	Object.assign( wrapperStyle, backgroundPaintPreview( attributes.backgroundColour, attributes.backgroundColourGradient ) );
-	const shadowPreview = composeShadow( attributes.boxShadow, attributes.boxShadowColour );
+	Object.assign(
+		wrapperStyle,
+		backgroundPaintPreview(
+			attributes.backgroundColour,
+			attributes.backgroundColourGradient
+		)
+	);
+	const shadowPreview = composeShadow(
+		attributes.boxShadow,
+		attributes.boxShadowColour
+	);
 	if ( shadowPreview ) {
 		wrapperStyle.boxShadow = shadowPreview;
 	}
 
-	Object.assign( wrapperStyle, sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient, radiusValues: attributes.borderRadius }, tier, undefined ) );
+	Object.assign(
+		wrapperStyle,
+		sgsBorderPreview(
+			{
+				widthValues: borderWidth,
+				styleValue: borderStyle,
+				colourValue: borderColour,
+				colourGradientValue: borderColourGradient,
+				radiusValues: attributes.borderRadius,
+			},
+			tier,
+			undefined
+		)
+	);
 
-	Object.assign( wrapperStyle, tierBoxLonghands( padding, tier, 'padding' ), tierBoxLonghands( margin, tier, 'margin' ) );
+	Object.assign(
+		wrapperStyle,
+		tierBoxLonghands( padding, tier, 'padding' ),
+		tierBoxLonghands( margin, tier, 'margin' )
+	);
 
 	if ( maxWidth ) {
 		wrapperStyle.maxWidth = maxWidth;
@@ -142,10 +181,15 @@ function buildAttribStyle( attributes, tier ) {
 			( val ) => ( /^#|^rgb|^hsl/.test( val ) ? val : colourVar( val ) )
 		),
 	};
-	Object.assign( style, typographyPreviewStyle( attributes, 'attribution', tier ) );
+	Object.assign(
+		style,
+		typographyPreviewStyle( attributes, 'attribution', tier )
+	);
 	// attributionMarginTop holds a length per device; a narrower device
 	// inherits the wider one, as the front-end media rules do.
-	const marginTop = cssLengthValue( resolveTier( attributionMarginTop, tier ).value );
+	const marginTop = cssLengthValue(
+		resolveTier( attributionMarginTop, tier ).value
+	);
 	if ( '' !== marginTop ) {
 		style.marginTop = marginTop;
 	}
@@ -208,9 +252,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// comparing against the flat colour would compare against a surface that
 	// isn't rendered — skip the check entirely in that case.
 	const quoteContrastAgainst =
-		backgroundColour && ! backgroundColourGradient
-			? backgroundColour
-			: '';
+		backgroundColour && ! backgroundColourGradient ? backgroundColour : '';
 
 	// Contract §B3: NO wrapper <div> — the <blockquote> IS the block root
 	// (matches render.php). It carries the block class + the wrapper preview
@@ -218,13 +260,25 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// Editor-canvas preview scope for the attribution link-colour CSS below
 	// (Task 3, 2026-09-07). Extended to include gradient params (2026-09-07).
 	const linkPreviewUid = `sgs-quote-link-preview-${ clientId }`;
-	const linkPreviewCss = linkUnderlinePreviewCss( `.${ linkPreviewUid } .wp-block-sgs-quote__attribution`, { mode: attributionLinkUnderline, thickness: attributionLinkUnderlineThickness, colour: attributionLinkUnderlineColour, colourHover: attributionLinkUnderlineColourHover, offset: attributionLinkUnderlineOffset, linkGradient: attributionLinkColourGradient } ) + linkColourPreviewCss(
-		`.${ linkPreviewUid } .wp-block-sgs-quote__attribution`,
-		attributionLinkColour,
-		attributionLinkColourHover,
-		attributionLinkColourGradient,
-		attributionLinkColourHoverGradient
-	);
+	const linkPreviewCss =
+		linkUnderlinePreviewCss(
+			`.${ linkPreviewUid } .wp-block-sgs-quote__attribution`,
+			{
+				mode: attributionLinkUnderline,
+				thickness: attributionLinkUnderlineThickness,
+				colour: attributionLinkUnderlineColour,
+				colourHover: attributionLinkUnderlineColourHover,
+				offset: attributionLinkUnderlineOffset,
+				linkGradient: attributionLinkColourGradient,
+			}
+		) +
+		linkColourPreviewCss(
+			`.${ linkPreviewUid } .wp-block-sgs-quote__attribution`,
+			attributionLinkColour,
+			attributionLinkColourHover,
+			attributionLinkColourGradient,
+			attributionLinkColourHoverGradient
+		);
 
 	const previewTier = usePreviewTier();
 	const blockProps = useBlockProps( {
@@ -241,9 +295,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// the RichText. blockProps goes in, so its class list, style and ref merge
 	// with the inner-blocks props (a second spread would replace the root's
 	// classes with the layout class alone).
-	const { children: innerBlocksChildren, ...innerBlocksRest } = useInnerBlocksProps( blockProps, {
-		template: QUOTE_BODY_TEMPLATE,
-	} );
+	const { children: innerBlocksChildren, ...innerBlocksRest } =
+		useInnerBlocksProps( blockProps, {
+			template: QUOTE_BODY_TEMPLATE,
+		} );
 
 	const attribStyle = buildAttribStyle( attributes, previewTier );
 
@@ -304,7 +359,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									setAttributes( {
 										style: {
 											...style,
-											color: { ...style?.color, text: val || undefined },
+											color: {
+												...style?.color,
+												text: val || undefined,
+											},
 										},
 									} ),
 								linked: true,
@@ -319,21 +377,32 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: backgroundColour,
-								onChange: ( val ) => setAttributes( { backgroundColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										backgroundColour: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: backgroundColourGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { backgroundColourGradient: val ?? '' } ),
+									setAttributes( {
+										backgroundColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: backgroundColourHover,
-								onChange: ( val ) => setAttributes( { backgroundColourHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										backgroundColourHover: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: backgroundColourHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { backgroundColourHoverGradient: val ?? '' } ),
+									setAttributes( {
+										backgroundColourHoverGradient:
+											val ?? '',
+									} ),
 							},
 						],
 					},
@@ -346,11 +415,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: textColourHover,
-								onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										textColourHover: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: textColourHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { textColourHoverGradient: val ?? '' } ),
+									setAttributes( {
+										textColourHoverGradient: val ?? '',
+									} ),
 							},
 						],
 					},
@@ -376,22 +450,33 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: attributionLinkColour,
 								onChange: ( val ) =>
-									setAttributes( { attributionLinkColour: val ?? '' } ),
+									setAttributes( {
+										attributionLinkColour: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: attributionLinkColourGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { attributionLinkColourGradient: val ?? '' } ),
+									setAttributes( {
+										attributionLinkColourGradient:
+											val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: attributionLinkColourHover,
 								onChange: ( val ) =>
-									setAttributes( { attributionLinkColourHover: val ?? '' } ),
+									setAttributes( {
+										attributionLinkColourHover: val ?? '',
+									} ),
 								linked: true,
-								gradientValue: attributionLinkColourHoverGradient,
+								gradientValue:
+									attributionLinkColourHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { attributionLinkColourHoverGradient: val ?? '' } ),
+									setAttributes( {
+										attributionLinkColourHoverGradient:
+											val ?? '',
+									} ),
 							},
 						],
 						after: (
@@ -399,13 +484,36 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								mode={ attributionLinkUnderline }
 								thickness={ attributionLinkUnderlineThickness }
 								colour={ attributionLinkUnderlineColour }
-								colourHover={ attributionLinkUnderlineColourHover }
+								colourHover={
+									attributionLinkUnderlineColourHover
+								}
 								offset={ attributionLinkUnderlineOffset }
-								onModeChange={ ( val ) => setAttributes( { attributionLinkUnderline: val } ) }
-								onThicknessChange={ ( val ) => setAttributes( { attributionLinkUnderlineThickness: val } ) }
-								onColourChange={ ( val ) => setAttributes( { attributionLinkUnderlineColour: val } ) }
-								onColourHoverChange={ ( val ) => setAttributes( { attributionLinkUnderlineColourHover: val } ) }
-								onOffsetChange={ ( val ) => setAttributes( { attributionLinkUnderlineOffset: val } ) }
+								onModeChange={ ( val ) =>
+									setAttributes( {
+										attributionLinkUnderline: val,
+									} )
+								}
+								onThicknessChange={ ( val ) =>
+									setAttributes( {
+										attributionLinkUnderlineThickness: val,
+									} )
+								}
+								onColourChange={ ( val ) =>
+									setAttributes( {
+										attributionLinkUnderlineColour: val,
+									} )
+								}
+								onColourHoverChange={ ( val ) =>
+									setAttributes( {
+										attributionLinkUnderlineColourHover:
+											val,
+									} )
+								}
+								onOffsetChange={ ( val ) =>
+									setAttributes( {
+										attributionLinkUnderlineOffset: val,
+									} )
+								}
 							/>
 						),
 					},
@@ -415,9 +523,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				{ /* ---- Style ---- */ }
 				<PanelBody title={ __( 'Style', 'sgs-blocks' ) }>
 					<ToggleControl
-						label={ __( 'Inherit parent styles (suppress wrapper styles)', 'sgs-blocks' ) }
+						label={ __(
+							'Inherit parent styles (suppress wrapper styles)',
+							'sgs-blocks'
+						) }
 						checked={ inheritStyle }
-						onChange={ ( val ) => setAttributes( { inheritStyle: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { inheritStyle: val } )
+						}
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
@@ -465,7 +578,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						<ToggleControl
 							label={ __( 'Show attribution', 'sgs-blocks' ) }
 							checked={ attributionEnabled }
-							onChange={ ( val ) => setAttributes( { attributionEnabled: val } ) }
+							onChange={ ( val ) =>
+								setAttributes( { attributionEnabled: val } )
+							}
 							__nextHasNoMarginBottom
 						/>
 					</ToolsPanelItem>
@@ -475,14 +590,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								label={ __( 'HTML tag', 'sgs-blocks' ) }
 								hasValue={ () => attributionTag !== 'footer' }
 								onDeselect={ () =>
-									setAttributes( { attributionTag: 'footer' } )
+									setAttributes( {
+										attributionTag: 'footer',
+									} )
 								}
 							>
 								<SelectControl
 									label={ __( 'HTML tag', 'sgs-blocks' ) }
 									value={ attributionTag }
 									options={ ATTRIB_TAG_OPTIONS }
-									onChange={ ( val ) => setAttributes( { attributionTag: val } ) }
+									onChange={ ( val ) =>
+										setAttributes( { attributionTag: val } )
+									}
 									__nextHasNoMarginBottom
 									__next40pxDefaultSize
 								/>
@@ -524,7 +643,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								}
 								isShownByDefault
 							>
-								<TypographyControls fontSizePresets showLetterSpacing showTextAlign showTextWrap showTextStroke showTextColumns showWritingMode
+								<TypographyControls
+									fontSizePresets
+									showLetterSpacing
+									showTextAlign
+									showTextWrap
+									showTextStroke
+									showTextColumns
+									showWritingMode
 									attributes={ attributes }
 									setAttributes={ setAttributes }
 									prefix="attribution"
@@ -542,29 +668,55 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							{ /* Attribution margin-top: one length per device (attributionMarginTop),
 							   the same length box on every device. */ }
 							<ToolsPanelItem
-								label={ __( 'Margin-top (gap above attribution)', 'sgs-blocks' ) }
+								label={ __(
+									'Margin-top (gap above attribution)',
+									'sgs-blocks'
+								) }
 								hasValue={ () =>
 									attributionMarginTop?.desktop != null ||
 									attributionMarginTop?.tablet != null ||
 									attributionMarginTop?.mobile != null
 								}
 								onDeselect={ () =>
-									setAttributes( { attributionMarginTop: {} } )
+									setAttributes( {
+										attributionMarginTop: {},
+									} )
 								}
 							>
 								<ResponsiveOverride
-									label={ __( 'Margin-top (gap above attribution)', 'sgs-blocks' ) }
+									label={ __(
+										'Margin-top (gap above attribution)',
+										'sgs-blocks'
+									) }
 									value={ attributionMarginTop }
-									onChange={ ( obj ) => setAttributes( { attributionMarginTop: obj } ) }
+									onChange={ ( obj ) =>
+										setAttributes( {
+											attributionMarginTop: obj,
+										} )
+									}
 								>
-									{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+									{ ( {
+										ownValue,
+										effectiveValue,
+										inherited,
+										setOwnValue,
+									} ) => (
 										<SgsLengthControl
-											label={ __( 'Margin-top', 'sgs-blocks' ) }
+											label={ __(
+												'Margin-top',
+												'sgs-blocks'
+											) }
 											hideLabelFromVision
 											value={ ownValue || '' }
-											placeholder={ inherited ? effectiveValue || '' : '' }
+											placeholder={
+												inherited
+													? effectiveValue || ''
+													: ''
+											}
 											units={ MARGIN_UNITS }
-											onChange={ ( v ) => setOwnValue( v || '' ) }
+											onChange={ ( v ) =>
+												setOwnValue( v || '' )
+											}
 											presets={ false }
 										/>
 									) }
@@ -605,7 +757,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 							<ToolsPanelItem
 								label={ __( 'Box shadow', 'sgs-blocks' ) }
-								hasValue={ () => !! boxShadow || !! attributes.boxShadowHover }
+								hasValue={ () =>
+									!! boxShadow || !! attributes.boxShadowHover
+								}
 								onDeselect={ () =>
 									setAttributes( {
 										boxShadow: '',
@@ -624,7 +778,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									label={ __( 'Box shadow', 'sgs-blocks' ) }
 									attributes={ attributes }
 									setAttributes={ setAttributes }
-									attrNames={ shadowAttrKeys( 'boxShadow', { hover: true, hoverColour: true } ) }
+									attrNames={ shadowAttrKeys( 'boxShadow', {
+										hover: true,
+										hoverColour: true,
+									} ) }
 								/>
 							</ToolsPanelItem>
 
@@ -643,15 +800,31 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							>
 								<ResponsiveOverride
 									value={ attributes.padding }
-									onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+									onChange={ ( obj ) =>
+										setAttributes( { padding: obj } )
+									}
 								>
 									{ ( { ownValue, setOwnValue } ) => (
 										<SgsBoxControl
-											label={ __( 'Padding', 'sgs-blocks' ) }
-											values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+											label={ __(
+												'Padding',
+												'sgs-blocks'
+											) }
+											values={
+												ownValue &&
+												typeof ownValue === 'object'
+													? ownValue
+													: {}
+											}
 											units={ BOX_UNITS }
 											presets
-											onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+											onChange={ ( next ) =>
+												setOwnValue(
+													normaliseResponsiveBox(
+														next
+													)
+												)
+											}
 										/>
 									) }
 								</ResponsiveOverride>
@@ -667,15 +840,31 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							>
 								<ResponsiveOverride
 									value={ attributes.margin }
-									onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+									onChange={ ( obj ) =>
+										setAttributes( { margin: obj } )
+									}
 								>
 									{ ( { ownValue, setOwnValue } ) => (
 										<SgsBoxControl
-											label={ __( 'Margin', 'sgs-blocks' ) }
-											values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+											label={ __(
+												'Margin',
+												'sgs-blocks'
+											) }
+											values={
+												ownValue &&
+												typeof ownValue === 'object'
+													? ownValue
+													: {}
+											}
 											units={ BOX_UNITS }
 											presets
-											onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+											onChange={ ( next ) =>
+												setOwnValue(
+													normaliseResponsiveBox(
+														next
+													)
+												)
+											}
 										/>
 									) }
 								</ResponsiveOverride>
@@ -689,26 +878,53 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									!! (
 										maxWidth &&
 										Object.values( maxWidth ).some(
-											( v ) => v !== undefined && v !== null && v !== ''
+											( v ) =>
+												v !== undefined &&
+												v !== null &&
+												v !== ''
 										)
 									)
 								}
-								onDeselect={ () => setAttributes( { maxWidth: {} } ) }
+								onDeselect={ () =>
+									setAttributes( { maxWidth: {} } )
+								}
 							>
 								<ResponsiveOverride
-									label={ __( 'Outer max-width', 'sgs-blocks' ) }
+									label={ __(
+										'Outer max-width',
+										'sgs-blocks'
+									) }
 									value={ maxWidth }
-									onChange={ ( obj ) => setAttributes( { maxWidth: obj } ) }
+									onChange={ ( obj ) =>
+										setAttributes( { maxWidth: obj } )
+									}
 								>
-									{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+									{ ( {
+										ownValue,
+										effectiveValue,
+										inherited,
+										setOwnValue,
+									} ) => (
 										<SgsLengthControl
-											label={ __( 'Max-width', 'sgs-blocks' ) }
+											label={ __(
+												'Max-width',
+												'sgs-blocks'
+											) }
 											hideLabelFromVision
 											value={ ownValue || '' }
-											placeholder={ inherited ? effectiveValue || '' : '' }
+											placeholder={
+												inherited
+													? effectiveValue || ''
+													: ''
+											}
 											units={ LENGTH_UNITS }
-											onChange={ ( val ) => setOwnValue( val ?? '' ) }
-											help={ __( 'Leave blank for no cap — on tablet or mobile, blank inherits the tier above.', 'sgs-blocks' ) }
+											onChange={ ( val ) =>
+												setOwnValue( val ?? '' )
+											}
+											help={ __(
+												'Leave blank for no cap — on tablet or mobile, blank inherits the tier above.',
+												'sgs-blocks'
+											) }
 											presets={ false }
 										/>
 									) }
@@ -724,7 +940,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				   declares __experimentalBorder.__experimentalSkipSerialization so it
 				   serialises scoped, not inline). */ }
 				{ ! inheritStyle && (
-					<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+					<PanelBody
+						title={ __( 'Border', 'sgs-blocks' ) }
+						initialOpen={ false }
+					>
 						{ /* Task 0 (2026-08-27) — one composite row (width/style/colour)
 						   mirroring native's BorderBoxControl layout, matching
 						   sgs/product-card. borderColour has a Hover pair on this
@@ -735,27 +954,39 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						   serialises scoped, not inline. */ }
 						<SgsBorderControl
 							widthValues={ borderWidth ?? {} }
-							onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+							onWidthChange={ ( next ) =>
+								setAttributes( { borderWidth: next } )
+							}
 							widthPresets={ [ '10', '20', '30' ] }
 							styleValue={ borderStyle }
-							onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+							onStyleChange={ ( val ) =>
+								setAttributes( { borderStyle: val } )
+							}
 							colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
 							colourStates={ [
 								{
 									key: 'normal',
 									label: __( 'Normal', 'sgs-blocks' ),
 									value: borderColour,
-									onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
+									onChange: ( val ) =>
+										setAttributes( {
+											borderColour: val ?? '',
+										} ),
 									linked: true,
 									gradientValue: borderColourGradient,
 									onGradientChange: ( val ) =>
-										setAttributes( { borderColourGradient: val ?? '' } ),
+										setAttributes( {
+											borderColourGradient: val ?? '',
+										} ),
 								},
 								{
 									key: 'hover',
 									label: __( 'Hover', 'sgs-blocks' ),
 									value: borderColourHover,
-									onChange: ( val ) => setAttributes( { borderColourHover: val ?? '' } ),
+									onChange: ( val ) =>
+										setAttributes( {
+											borderColourHover: val ?? '',
+										} ),
 									linked: true,
 								},
 							] }
@@ -767,12 +998,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							} }
 							onRadiusChange={ ( tier, next ) => {
 								const key = tier === 'base' ? 'desktop' : tier;
-								setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+								setAttributes( {
+									borderRadius: {
+										...attributes.borderRadius,
+										[ key ]: next,
+									},
+								} );
 							} }
 						/>
 					</PanelBody>
 				) }
-
 			</InspectorControls>
 
 			{ /* Canvas — body children (InnerBlocks) + attribution (RichText) sit as
@@ -791,7 +1026,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						className="wp-block-sgs-quote__attribution"
 						style={ attribStyle }
 						value={ attribution }
-						onChange={ ( val ) => setAttributes( { attribution: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { attribution: val } )
+						}
 						placeholder={ __( '— Attribution…', 'sgs-blocks' ) }
 						allowedFormats={ RICH_TEXT_BODY }
 					/>

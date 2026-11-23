@@ -71,8 +71,14 @@ import mediaPreview from '../../components/media/mediaPreview';
 import metadata from './block.json';
 import { scrollbarCss, scrollbarStyle } from '../../utils/scrollbar-style';
 
-const ITEM_ENTRY = metadata.supports.sgs.mediaElements.find( ( entry ) => 'item' === entry.prefix );
-const ITEM_SLOT = { prefix: 'item', kinds: ITEM_ENTRY.kinds, context: ITEM_ENTRY.context };
+const ITEM_ENTRY = metadata.supports.sgs.mediaElements.find(
+	( entry ) => 'item' === entry.prefix
+);
+const ITEM_SLOT = {
+	prefix: 'item',
+	kinds: ITEM_ENTRY.kinds,
+	context: ITEM_ENTRY.context,
+};
 
 // -------------------------------------------------------------------------
 // Main edit component
@@ -256,7 +262,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	);
 	const { hasBandProps, bandStyle } = contentBandPreview( {
 		contentWidth: galleryBandMaxWidth,
-		bandPadding: resolveBoxTierPreview( galleryPaddingObj.desktop, galleryPaddingObj.tablet, galleryPaddingObj.mobile, previewTier ),
+		bandPadding: resolveBoxTierPreview(
+			galleryPaddingObj.desktop,
+			galleryPaddingObj.tablet,
+			galleryPaddingObj.mobile,
+			previewTier
+		),
 		style: inlineStyles,
 		// render.php hands the wrapper no `layout`: the outer element is never a grid.
 		layout: '',
@@ -266,20 +277,35 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// panels are told the kind (a gallery with a video item as well as photos offers both kinds' settings).
 	const blockLevelAttributes = {
 		...attributes,
-		itemSource: { desktop: { kind: items.some( ( item ) => 'video' === itemFile( item ).kind ) ? 'video' : 'image' } },
+		itemSource: {
+			desktop: {
+				kind: items.some(
+					( item ) => 'video' === itemFile( item ).kind
+				)
+					? 'video'
+					: 'image',
+			},
+		},
 	};
 
 	// The items' shared size, shape and border as the page prints them: the emitters' own CSS, scoped to a class every
 	// canvas item carries (`sgs_media_render_slot` prints the same rules under the block's scope class).
 	const itemMediaUid = 'sgs-gallery-media-' + clientId.slice( 0, 8 );
-	const itemMedia = mediaPreview( ITEM_SLOT, blockLevelAttributes, itemMediaUid );
+	const itemMedia = mediaPreview(
+		ITEM_SLOT,
+		blockLevelAttributes,
+		itemMediaUid
+	);
 
 	// The image grid's scrollbar choice wherever the previewed layout scrolls (the live page prints the same rules
 	// through includes/helpers-scrollbar.php).
 	const scrollbarScope = 'sgs-gallery-ed-' + clientId.slice( 0, 8 );
 	const scrollbarPreviewCss =
 		'scroll' === canvasLayout || 'carousel' === canvasLayout
-			? scrollbarCss( `.${ scrollbarScope } .sgs-gallery__grid`, scrollbarStyle( attributes.scrollbarStyle, 'hidden' ) )
+			? scrollbarCss(
+					`.${ scrollbarScope } .sgs-gallery__grid`,
+					scrollbarStyle( attributes.scrollbarStyle, 'hidden' )
+			  )
 			: '';
 
 	const blockProps = useBlockProps( {
@@ -315,14 +341,21 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		// The swipe row (style.css `.sgs-gallery--scroll`, resolved for the previewed device): one card per column
 		// width unless a card width is set, and the edge padding that lets cards run to the screen edge.
 		// The same length check the page applies (`sgs_css_length_value`), so the canvas accepts and rejects what it prints.
-		const cardWidth = cssLengthValue( resolveResponsiveTier( attributes.scrollItemWidth, previewTier )?.value );
-		const inset = cssLengthValue( resolveResponsiveTier( attributes.scrollInset, previewTier )?.value );
+		const cardWidth = cssLengthValue(
+			resolveResponsiveTier( attributes.scrollItemWidth, previewTier )
+				?.value
+		);
+		const inset = cssLengthValue(
+			resolveResponsiveTier( attributes.scrollInset, previewTier )?.value
+		);
 		previewGridStyle.gridAutoFlow = 'column';
 		previewGridStyle.gridTemplateColumns = 'none';
 		previewGridStyle.gridAutoColumns =
 			typeof cardWidth === 'string' && cardWidth
 				? cardWidth
-				: `calc( ( 100% - ${ tierColumns - 1 } * var( --sgs-gap, 16px ) ) / ${ tierColumns } )`;
+				: `calc( ( 100% - ${
+						tierColumns - 1
+				  } * var( --sgs-gap, 16px ) ) / ${ tierColumns } )`;
 		previewGridStyle.overflowX = 'auto';
 		previewGridStyle.scrollSnapType = 'x mandatory';
 		if ( typeof inset === 'string' && inset ) {
@@ -496,7 +529,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				/>
 
 				<GalleryCarouselPanel
-					attributes={ { ...attributes, layout: layoutTiers.carousel ? 'carousel' : layoutTiers.desktop } }
+					attributes={ {
+						...attributes,
+						layout: layoutTiers.carousel
+							? 'carousel'
+							: layoutTiers.desktop,
+					} }
 					setAttributes={ setAttributes }
 					set={ set }
 				/>

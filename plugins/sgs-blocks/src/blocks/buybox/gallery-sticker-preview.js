@@ -82,7 +82,10 @@ export function galleryStickerPreviewCss( attributes, root, palette, tier ) {
 	const rotation = Number( attributes.galleryStickerRotation ) || 0;
 	if ( 0 !== rotation ) {
 		decls.push(
-			`transform:rotate(${ Math.max( -180, Math.min( 180, rotation ) ) }deg)`
+			`transform:rotate(${ Math.max(
+				-180,
+				Math.min( 180, rotation )
+			) }deg)`
 		);
 	}
 	const corner = stickerCorner( attributes );
@@ -108,9 +111,7 @@ export function galleryStickerPreviewCss( attributes, root, palette, tier ) {
 	if ( sides.some( Boolean ) ) {
 		decls.push(
 			`border-style:${ attributes.galleryStickerBorderStyle || 'solid' }`,
-			`border-width:${ sides
-				.map( ( side ) => side || '0' )
-				.join( ' ' ) }`
+			`border-width:${ sides.map( ( side ) => side || '0' ).join( ' ' ) }`
 		);
 		const borderColour = colourOf( attributes.galleryStickerBorderColour );
 		if ( borderColour ) {

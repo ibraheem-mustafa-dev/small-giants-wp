@@ -89,7 +89,11 @@ export function initRevealOpen( el ) {
 		sync();
 	};
 	const onOutside = ( event ) => {
-		if ( ! tapped || ! isTapPointer( event ) || el.contains( event.target ) ) {
+		if (
+			! tapped ||
+			! isTapPointer( event ) ||
+			el.contains( event.target )
+		) {
 			return;
 		}
 		tapped = false;

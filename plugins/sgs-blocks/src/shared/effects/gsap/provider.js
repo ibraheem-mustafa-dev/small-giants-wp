@@ -48,7 +48,10 @@ export {
 	resolveStart,
 	resolveTrigger,
 } from './provider-resolvers.js';
-import { QUERY_MOBILE_FRACTIONAL, QUERY_TABLET_ONLY_FRACTIONAL } from '../../../utils/breakpoints';
+import {
+	QUERY_MOBILE_FRACTIONAL,
+	QUERY_TABLET_ONLY_FRACTIONAL,
+} from '../../../utils/breakpoints';
 
 /**
  * Register Tier G plugins and return the shared GSAP instance.
@@ -63,7 +66,7 @@ import { QUERY_MOBILE_FRACTIONAL, QUERY_TABLET_ONLY_FRACTIONAL } from '../../../
  * merely that their module was fetched.
  *
  * @param {...object} plugins Plugin objects to register (e.g. ScrollTrigger).
- * @return {object} The shared `gsap` instance.
+ * @return {Object} The shared `gsap` instance.
  */
 export function tierG( ...plugins ) {
 	const unregistered = plugins.filter(
@@ -206,10 +209,7 @@ function currentTier() {
 	if ( window.matchMedia( QUERY_MOBILE_FRACTIONAL ).matches ) {
 		return 'mobile';
 	}
-	if (
-		window.matchMedia( QUERY_TABLET_ONLY_FRACTIONAL )
-			.matches
-	) {
+	if ( window.matchMedia( QUERY_TABLET_ONLY_FRACTIONAL ).matches ) {
 		return 'tablet';
 	}
 	return 'desktop';
@@ -247,7 +247,10 @@ export function isDisabledAtThisTier( el, effect ) {
 	if ( ! tier ) {
 		return false;
 	}
-	if ( tier !== 'desktop' && el.hasAttribute( `data-sgs-fx-disable-${ tier }` ) ) {
+	if (
+		tier !== 'desktop' &&
+		el.hasAttribute( `data-sgs-fx-disable-${ tier }` )
+	) {
 		return true;
 	}
 	const off = el.getAttribute( `data-sgs-fx-off-${ tier }` ) || '';

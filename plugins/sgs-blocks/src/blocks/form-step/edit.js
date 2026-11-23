@@ -9,7 +9,10 @@ import { PanelBody } from '@wordpress/components';
 import AddFieldControl, { FORM_FIELDS } from '../form/AddFieldControl';
 // WS-4: shared sgs/container wrapper editor controls (content kind = width/spacing).
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
-import { SgsColourPanel, fillRow, textRow,
+import {
+	SgsColourPanel,
+	fillRow,
+	textRow,
 	SgsBorderControl,
 	resolveColourToken,
 } from '../../components';
@@ -24,7 +27,13 @@ import {
 import AuthoredText from '../../components/AuthoredText';
 import SgsFreeTextField from '../../components/SgsFreeTextField';
 export default function Edit( { attributes, setAttributes, clientId } ) {
-	const { label, backgroundColour, backgroundColourGradient, textColour, textColourGradient } = attributes;
+	const {
+		label,
+		backgroundColour,
+		backgroundColourGradient,
+		textColour,
+		textColourGradient,
+	} = attributes;
 
 	// Contrast check for border — warn if border fails WCAG contrast against
 	// the block's own background. When there's no background set or a gradient
@@ -47,8 +56,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		className: 'sgs-form-step',
 		style: {
 			...wrapper.style,
-			...backgroundPaintPreview( backgroundColour, backgroundColourGradient, colourPalette ),
-			...textPaintPreview( textColour, textColourGradient, colourPalette ),
+			...backgroundPaintPreview(
+				backgroundColour,
+				backgroundColourGradient,
+				colourPalette
+			),
+			...textPaintPreview(
+				textColour,
+				textColourGradient,
+				colourPalette
+			),
 		},
 	} );
 
@@ -93,7 +110,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			/>
 			<InspectorControls>
 				<PanelBody title={ __( 'Step Settings', 'sgs-blocks' ) }>
-					<SgsFreeTextField type="rich" noLink
+					<SgsFreeTextField
+						type="rich"
+						noLink
 						label={ __( 'Step Label', 'sgs-blocks' ) }
 						value={ label }
 						onChange={ ( value ) =>
@@ -111,37 +130,58 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					setAttributes={ setAttributes }
 					kind="content"
 				/>
-				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Border', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SgsBorderControl
 						widthValues={ attributes.borderWidth ?? {} }
-						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						onWidthChange={ ( next ) =>
+							setAttributes( { borderWidth: next } )
+						}
 						widthPresets={ [ '10', '20', '30' ] }
 						styleValue={ attributes.borderStyle }
-						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						onStyleChange={ ( val ) =>
+							setAttributes( { borderStyle: val } )
+						}
 						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
 						colourValue={ attributes.borderColour }
-						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						onColourChange={ ( val ) =>
+							setAttributes( { borderColour: val ?? '' } )
+						}
 						colourGradientValue={ attributes.borderColourGradient }
-						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+						onColourGradientChange={ ( val ) =>
+							setAttributes( { borderColourGradient: val ?? '' } )
+						}
 						colourLinked={ true }
 						contrastAgainst={ formStepContrastAgainst }
 						radiusValues={ {
-								base: attributes.borderRadius?.desktop ?? {},
-								tablet: attributes.borderRadius?.tablet ?? {},
-								mobile: attributes.borderRadius?.mobile ?? {},
-							} }
+							base: attributes.borderRadius?.desktop ?? {},
+							tablet: attributes.borderRadius?.tablet ?? {},
+							mobile: attributes.borderRadius?.mobile ?? {},
+						} }
 						onRadiusChange={ ( tier, next ) => {
 							const key = tier === 'base' ? 'desktop' : tier;
-							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+							setAttributes( {
+								borderRadius: {
+									...attributes.borderRadius,
+									[ key ]: next,
+								},
+							} );
 						} }
 					/>
 				</PanelBody>
 			</InspectorControls>
 
 			<div { ...blockProps }>
-				<BandWrap hasBandProps={ wrapper.hasBandProps } bandStyle={ wrapper.bandStyle }>
+				<BandWrap
+					hasBandProps={ wrapper.hasBandProps }
+					bandStyle={ wrapper.bandStyle }
+				>
 					<div className="sgs-form-step__header">
-						<strong><AuthoredText value={ label } /></strong>
+						<strong>
+							<AuthoredText value={ label } />
+						</strong>
 					</div>
 					<div { ...innerBlocksProps } />
 				</BandWrap>

@@ -16,19 +16,59 @@ import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 // the attributes block.json declares for that prefix.
 const TEXT_TARGETS = [
 	[ 'panelTitle', __( 'Heading', 'sgs-blocks' ), { showFontFamily: true } ],
-	[ 'panelCount', __( 'Heading count', 'sgs-blocks' ), { showFontFamily: true, showWeight: false } ],
-	[ 'emptyMessage', __( 'Empty message', 'sgs-blocks' ), { showFontFamily: true } ],
-	[ 'panelEmpty', __( 'Empty block', 'sgs-blocks' ), { showSize: false, showWeight: false, showTextAlign: true } ],
-	[ 'emptyCta', __( 'Empty button', 'sgs-blocks' ), { showLetterSpacing: true, showTransform: true } ],
-	[ 'itemBrand', __( 'Item brand', 'sgs-blocks' ), { showWeight: false, showLetterSpacing: true, showTransform: true } ],
-	[ 'itemName', __( 'Item name', 'sgs-blocks' ), { showLineHeight: true, showFontFamily: true } ],
-	[ 'itemDetail', __( 'Item details', 'sgs-blocks' ), { showWeight: false, showLineHeight: true } ],
+	[
+		'panelCount',
+		__( 'Heading count', 'sgs-blocks' ),
+		{ showFontFamily: true, showWeight: false },
+	],
+	[
+		'emptyMessage',
+		__( 'Empty message', 'sgs-blocks' ),
+		{ showFontFamily: true },
+	],
+	[
+		'panelEmpty',
+		__( 'Empty block', 'sgs-blocks' ),
+		{ showSize: false, showWeight: false, showTextAlign: true },
+	],
+	[
+		'emptyCta',
+		__( 'Empty button', 'sgs-blocks' ),
+		{ showLetterSpacing: true, showTransform: true },
+	],
+	[
+		'itemBrand',
+		__( 'Item brand', 'sgs-blocks' ),
+		{ showWeight: false, showLetterSpacing: true, showTransform: true },
+	],
+	[
+		'itemName',
+		__( 'Item name', 'sgs-blocks' ),
+		{ showLineHeight: true, showFontFamily: true },
+	],
+	[
+		'itemDetail',
+		__( 'Item details', 'sgs-blocks' ),
+		{ showWeight: false, showLineHeight: true },
+	],
 	[ 'itemPrice', __( 'Item price', 'sgs-blocks' ), {} ],
 	[ 'itemAction', __( 'Item links', 'sgs-blocks' ), { showWeight: false } ],
 	[ 'subtotal', __( 'Subtotal', 'sgs-blocks' ), {} ],
-	[ 'freeDeliveryText', __( 'Free-delivery message', 'sgs-blocks' ), { showLineHeight: true } ],
-	[ 'checkout', __( 'Checkout button', 'sgs-blocks' ), { showLetterSpacing: true, showTransform: true } ],
-	[ 'panelNote', __( 'Note under Checkout', 'sgs-blocks' ), { showWeight: false, showTextAlign: true } ],
+	[
+		'freeDeliveryText',
+		__( 'Free-delivery message', 'sgs-blocks' ),
+		{ showLineHeight: true },
+	],
+	[
+		'checkout',
+		__( 'Checkout button', 'sgs-blocks' ),
+		{ showLetterSpacing: true, showTransform: true },
+	],
+	[
+		'panelNote',
+		__( 'Note under Checkout', 'sgs-blocks' ),
+		{ showWeight: false, showTextAlign: true },
+	],
 ].map( ( [ prefix, label, fields ] ) => ( {
 	key: prefix,
 	prefix,
@@ -42,13 +82,29 @@ const TEXT_TARGETS = [
 const LENGTHS = [
 	[ 'panelMaxWidth', __( 'Panel width (maximum)', 'sgs-blocks' ), '400px' ],
 	[ 'panelCloseSize', __( 'Close icon size', 'sgs-blocks' ), '24px' ],
-	[ 'panelCloseTapSize', __( 'Close button tap area', 'sgs-blocks' ), '44px' ],
+	[
+		'panelCloseTapSize',
+		__( 'Close button tap area', 'sgs-blocks' ),
+		'44px',
+	],
 	[ 'panelBodyGap', __( 'Space between items', 'sgs-blocks' ), '16px' ],
 	[ 'itemThumbSize', __( 'Item image size', 'sgs-blocks' ), '64px' ],
 	[ 'itemGap', __( 'Space beside the item image', 'sgs-blocks' ), '12px' ],
-	[ 'emptyMessageGap', __( 'Space under the empty message', 'sgs-blocks' ), '12px' ],
-	[ 'freeDeliveryTrackHeight', __( 'Free-delivery bar height', 'sgs-blocks' ), '6px' ],
-	[ 'checkoutMinHeight', __( 'Checkout button height', 'sgs-blocks' ), '44px' ],
+	[
+		'emptyMessageGap',
+		__( 'Space under the empty message', 'sgs-blocks' ),
+		'12px',
+	],
+	[
+		'freeDeliveryTrackHeight',
+		__( 'Free-delivery bar height', 'sgs-blocks' ),
+		'6px',
+	],
+	[
+		'checkoutMinHeight',
+		__( 'Checkout button height', 'sgs-blocks' ),
+		'44px',
+	],
 ];
 
 // Padding and margin boxes, per device: [attribute, label].
@@ -66,7 +122,10 @@ const RADII = [
 	[ 'itemThumbRadius', __( 'Item image corners', 'sgs-blocks' ) ],
 	[ 'emptyCtaRadius', __( 'Empty button corners', 'sgs-blocks' ) ],
 	[ 'checkoutRadius', __( 'Checkout and View cart corners', 'sgs-blocks' ) ],
-	[ 'freeDeliveryTrackRadius', __( 'Free-delivery bar corners', 'sgs-blocks' ) ],
+	[
+		'freeDeliveryTrackRadius',
+		__( 'Free-delivery bar corners', 'sgs-blocks' ),
+	],
 ];
 
 /**
@@ -81,13 +140,22 @@ const RADII = [
  * @param {boolean}  root0.hasPanel      Whether displayMode is flyout|drawer.
  * @param {boolean}  root0.hasDrawer     Whether displayMode is drawer.
  */
-export default function PanelDesignControls( { name, attributes, setAttributes, hasPanel, hasDrawer } ) {
+export default function PanelDesignControls( {
+	name,
+	attributes,
+	setAttributes,
+	hasPanel,
+	hasDrawer,
+} ) {
 	if ( ! hasPanel ) {
 		return null;
 	}
 	return (
 		<>
-			<PanelBody title={ __( 'Mini-cart text', 'sgs-blocks' ) } initialOpen={ false }>
+			<PanelBody
+				title={ __( 'Mini-cart text', 'sgs-blocks' ) }
+				initialOpen={ false }
+			>
 				<TypographyControls
 					attributes={ attributes }
 					setAttributes={ setAttributes }
@@ -95,21 +163,33 @@ export default function PanelDesignControls( { name, attributes, setAttributes, 
 				/>
 			</PanelBody>
 
-			<PanelBody title={ __( 'Mini-cart sizes and spacing', 'sgs-blocks' ) } initialOpen={ false }>
+			<PanelBody
+				title={ __( 'Mini-cart sizes and spacing', 'sgs-blocks' ) }
+				initialOpen={ false }
+			>
 				{ LENGTHS.map( ( [ attr, label, fallback ] ) => (
 					<ResponsiveOverride
 						key={ attr }
 						label={ label }
 						value={ attributes[ attr ] }
-						onChange={ ( obj ) => setAttributes( { [ attr ]: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { [ attr ]: obj } )
+						}
 					>
-						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+						{ ( {
+							ownValue,
+							effectiveValue,
+							inherited,
+							setOwnValue,
+						} ) => (
 							<SgsLengthControl
 								presets={ false }
 								label={ label }
 								hideLabelFromVision
 								value={ ownValue || '' }
-								placeholder={ inherited ? effectiveValue : fallback }
+								placeholder={
+									inherited ? effectiveValue : fallback
+								}
 								onChange={ ( val ) => setOwnValue( val || '' ) }
 							/>
 						) }
@@ -118,7 +198,9 @@ export default function PanelDesignControls( { name, attributes, setAttributes, 
 				<SgsSeparatorControl
 					label={ __( 'Lines between items', 'sgs-blocks' ) }
 					value={ attributes.separators }
-					onChange={ ( next ) => setAttributes( { separators: next } ) }
+					onChange={ ( next ) =>
+						setAttributes( { separators: next } )
+					}
 					axes={ [ 'row' ] }
 				/>
 				{ BOXES.map( ( [ attr, label ] ) => (
@@ -134,7 +216,12 @@ export default function PanelDesignControls( { name, attributes, setAttributes, 
 						} }
 						onChange={ ( tier, next ) => {
 							const key = 'base' === tier ? 'desktop' : tier;
-							setAttributes( { [ attr ]: { ...( attributes[ attr ] || {} ), [ key ]: next } } );
+							setAttributes( {
+								[ attr ]: {
+									...( attributes[ attr ] || {} ),
+									[ key ]: next,
+								},
+							} );
 						} }
 					/>
 				) ) }
@@ -144,12 +231,17 @@ export default function PanelDesignControls( { name, attributes, setAttributes, 
 						presets={ false }
 						label={ label }
 						value={ attributes[ attr ] || '' }
-						onChange={ ( val ) => setAttributes( { [ attr ]: val || '' } ) }
+						onChange={ ( val ) =>
+							setAttributes( { [ attr ]: val || '' } )
+						}
 					/>
 				) ) }
 			</PanelBody>
 
-			<PanelBody title={ __( 'Mini-cart shadow and motion', 'sgs-blocks' ) } initialOpen={ false }>
+			<PanelBody
+				title={ __( 'Mini-cart shadow and motion', 'sgs-blocks' ) }
+				initialOpen={ false }
+			>
 				<ShadowControl
 					label={ __( 'Panel shadow', 'sgs-blocks' ) }
 					attributes={ attributes }
@@ -160,12 +252,19 @@ export default function PanelDesignControls( { name, attributes, setAttributes, 
 					<>
 						<RangeControl
 							label={ __( 'Slide time (ms)', 'sgs-blocks' ) }
-							help={ __( 'Times the slide in and, reversed, the slide out. 0 keeps the 250ms default.', 'sgs-blocks' ) }
+							help={ __(
+								'Times the slide in and, reversed, the slide out. 0 keeps the 250ms default.',
+								'sgs-blocks'
+							) }
 							value={ attributes.panelSlideDuration ?? 0 }
 							min={ 0 }
 							max={ 3000 }
 							step={ 10 }
-							onChange={ ( val ) => setAttributes( { panelSlideDuration: val ?? 0 } ) }
+							onChange={ ( val ) =>
+								setAttributes( {
+									panelSlideDuration: val ?? 0,
+								} )
+							}
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
@@ -175,8 +274,14 @@ export default function PanelDesignControls( { name, attributes, setAttributes, 
 							value={ attributes.panelSlideEasing }
 							custom={ attributes.panelSlideEasingCustom }
 							fallback="ease-out"
-							onChange={ ( value ) => setAttributes( { panelSlideEasing: value } ) }
-							onCustomChange={ ( value ) => setAttributes( { panelSlideEasingCustom: value } ) }
+							onChange={ ( value ) =>
+								setAttributes( { panelSlideEasing: value } )
+							}
+							onCustomChange={ ( value ) =>
+								setAttributes( {
+									panelSlideEasingCustom: value,
+								} )
+							}
 						/>
 					</>
 				) }

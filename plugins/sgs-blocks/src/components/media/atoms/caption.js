@@ -32,7 +32,12 @@
  * @package SGS\Blocks
  */
 import { mediaStoredAttrName } from '../../MediaElementControls.js';
-import { isLegacyCall, rulesFor, kindIn, omitted } from '../panels/disclosure-context.js';
+import {
+	isLegacyCall,
+	rulesFor,
+	kindIn,
+	omitted,
+} from '../panels/disclosure-context.js';
 
 const ALLOWED_TAGS = [ 'figcaption', 'div' ];
 
@@ -56,7 +61,9 @@ export function attrKeys( prefix, blockSlug ) {
  * @return {string} A vocabulary member.
  */
 export function validateTag( value ) {
-	return 'string' === typeof value && ALLOWED_TAGS.includes( value ) ? value : 'figcaption';
+	return 'string' === typeof value && ALLOWED_TAGS.includes( value )
+		? value
+		: 'figcaption';
 }
 
 /** Unconditional — nothing gates the caption fields off. */
@@ -84,7 +91,9 @@ export function disclosure( attrs, device, prefix = '', opts = {} ) {
 		if ( c.background || ! kindIn( c, 'image', 'video' ) ) {
 			return omitted();
 		}
-		return 'CaptionTag' === base && ! c.has( 'Caption' ) ? omitted() : undefined;
+		return 'CaptionTag' === base && ! c.has( 'Caption' )
+			? omitted()
+			: undefined;
 	} );
 }
 

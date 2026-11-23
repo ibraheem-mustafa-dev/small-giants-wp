@@ -27,9 +27,15 @@
 export function relativeLuminance( r, g, b ) {
 	const linearise = ( c ) => {
 		const n = c / 255;
-		return n <= 0.03928 ? n / 12.92 : Math.pow( ( n + 0.055 ) / 1.055, 2.4 );
+		return n <= 0.03928
+			? n / 12.92
+			: Math.pow( ( n + 0.055 ) / 1.055, 2.4 );
 	};
-	return 0.2126 * linearise( r ) + 0.7152 * linearise( g ) + 0.0722 * linearise( b );
+	return (
+		0.2126 * linearise( r ) +
+		0.7152 * linearise( g ) +
+		0.0722 * linearise( b )
+	);
 }
 
 /**
@@ -70,9 +76,10 @@ export function whiteWinsForLuminance( lBg ) {
  * @return {{r:number,g:number,b:number,a:number}|null}
  */
 export function parseComputedColour( value ) {
-	const match = /^rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*(?:,\s*([\d.]+)\s*)?\)$/.exec(
-		( value || '' ).trim()
-	);
+	const match =
+		/^rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*(?:,\s*([\d.]+)\s*)?\)$/.exec(
+			( value || '' ).trim()
+		);
 	if ( ! match ) {
 		return null;
 	}
@@ -106,12 +113,12 @@ export function classifyComputedColour( value, minAlpha = 0.5 ) {
  * per §4.2's three-step rule. Pure — takes a plain descriptor, never a real
  * DOM node, so it is directly unit-testable.
  *
- * @param {Object}  el                  Element descriptor.
- * @param {string}  el.tagName          Upper-case tag name (e.g. 'IMG').
- * @param {boolean} el.hasToneClassDark  Carries `sgs-on-dark`.
- * @param {boolean} el.hasToneClassLight Carries `sgs-on-light`.
+ * @param {Object}  el                    Element descriptor.
+ * @param {string}  el.tagName            Upper-case tag name (e.g. 'IMG').
+ * @param {boolean} el.hasToneClassDark   Carries `sgs-on-dark`.
+ * @param {boolean} el.hasToneClassLight  Carries `sgs-on-light`.
  * @param {boolean} el.hasBackgroundImage Computed `background-image` is not 'none'.
- * @param {string}  el.backgroundColor  Computed `background-color`.
+ * @param {string}  el.backgroundColor    Computed `background-color`.
  * @return {'dark'|'light'|'unknown'|null} null = inconclusive, keep looking
  *     further down the stack; 'unknown' = STOP, never look through a picture.
  */
@@ -124,7 +131,10 @@ export function classifyStackElement( el ) {
 	}
 
 	const opaqueMediaTags = [ 'IMG', 'VIDEO', 'CANVAS', 'IFRAME' ];
-	if ( opaqueMediaTags.indexOf( el.tagName ) !== -1 || el.hasBackgroundImage ) {
+	if (
+		opaqueMediaTags.indexOf( el.tagName ) !== -1 ||
+		el.hasBackgroundImage
+	) {
 		return 'unknown';
 	}
 
@@ -138,10 +148,10 @@ export function classifyStackElement( el ) {
  * behaves exactly as today).
  *
  * @param {Array<Object>} stack Element descriptors, frontmost first (the
- *                               same order `document.elementsFromPoint()`
- *                               returns), already filtered of excluded
- *                               elements (the header itself, dialogs, the
- *                               mega panel, the detached burger chip).
+ *                              same order `document.elementsFromPoint()`
+ *                              returns), already filtered of excluded
+ *                              elements (the header itself, dialogs, the
+ *                              mega panel, the detached burger chip).
  * @return {'dark'|'light'|'unknown'|null}
  */
 export function decideSectionTone( stack ) {

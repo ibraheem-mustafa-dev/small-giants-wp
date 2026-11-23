@@ -7,7 +7,12 @@ import {
 } from '@wordpress/block-editor';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { useEffect, useMemo, useRef } from '@wordpress/element';
-import { PanelBody, TextControl, SelectControl, Notice } from '@wordpress/components';
+import {
+	PanelBody,
+	TextControl,
+	SelectControl,
+	Notice,
+} from '@wordpress/components';
 import {
 	SgsLengthControl,
 	SgsBoxControl,
@@ -17,7 +22,11 @@ import {
 	normaliseResponsiveBox,
 } from '../../components';
 import { usePreviewTier } from '../../utils';
-import { buildWrapperStyle, buildBackButtonPreviewStyle, buttonPresetClass } from './preview-style';
+import {
+	buildWrapperStyle,
+	buildBackButtonPreviewStyle,
+	buttonPresetClass,
+} from './preview-style';
 import ChromePreview from './ChromePreview';
 import PricingSettingsPanel from './PricingSettingsPanel';
 import SummaryPanel from './SummaryPanel';
@@ -117,16 +126,20 @@ function findDescendantsByName( block, blockName ) {
  * OLD position to the SAME STEP's NEW position, keyed by clientId identity,
  * so a client's authored routing intent survives a reorder unchanged.
  *
- * @param {Object[]} steps        Current top-level `sgs/form-step` children,
- *                                 in DOM order, each with clientId + full
- *                                 nested innerBlocks tree.
- * @param {string[]} previousOrder The same steps' clientIds, in the order
- *                                 recorded before this render's change.
+ * @param {Object[]} steps                 Current top-level `sgs/form-step` children,
+ *                                         in DOM order, each with clientId + full
+ *                                         nested innerBlocks tree.
+ * @param {string[]} previousOrder         The same steps' clientIds, in the order
+ *                                         recorded before this render's change.
  * @param {Function} updateBlockAttributes `core/block-editor`'s dispatch
- *                                 action, used to rewrite each affected
- *                                 question block's `options` attribute.
+ *                                         action, used to rewrite each affected
+ *                                         question block's `options` attribute.
  */
-function remapStepReferencesOnReorder( steps, previousOrder, updateBlockAttributes ) {
+function remapStepReferencesOnReorder(
+	steps,
+	previousOrder,
+	updateBlockAttributes
+) {
 	const currentOrder = steps.map( ( step ) => step.clientId );
 
 	// Only remap when it's a genuine REORDER of the same step set — a
@@ -158,28 +171,30 @@ function remapStepReferencesOnReorder( steps, previousOrder, updateBlockAttribut
 		findDescendantsByName( step, 'sgs/choice-flow-question' ).forEach(
 			( questionBlock ) => {
 				let changed = false;
-				const newOptions = ( questionBlock.attributes.options || [] ).map(
-					( option ) => {
-						const raw = option.nextStepId || '';
-						if ( '' === raw || TERMINAL_SENTINEL === raw ) {
-							return option;
-						}
-						const oldIndex = /^\d+$/.test( raw ) ? parseInt( raw, 10 ) : -1;
-						if ( ! indexMap.has( oldIndex ) ) {
-							// Not a value this remap recognises (already
-							// dangling, or somehow out of range) — leave it
-							// for validateFlow()'s dangling-reference check
-							// to report as-is, don't guess a translation.
-							return option;
-						}
-						const newIndex = indexMap.get( oldIndex );
-						if ( newIndex === oldIndex ) {
-							return option;
-						}
-						changed = true;
-						return { ...option, nextStepId: String( newIndex ) };
+				const newOptions = (
+					questionBlock.attributes.options || []
+				).map( ( option ) => {
+					const raw = option.nextStepId || '';
+					if ( '' === raw || TERMINAL_SENTINEL === raw ) {
+						return option;
 					}
-				);
+					const oldIndex = /^\d+$/.test( raw )
+						? parseInt( raw, 10 )
+						: -1;
+					if ( ! indexMap.has( oldIndex ) ) {
+						// Not a value this remap recognises (already
+						// dangling, or somehow out of range) — leave it
+						// for validateFlow()'s dangling-reference check
+						// to report as-is, don't guess a translation.
+						return option;
+					}
+					const newIndex = indexMap.get( oldIndex );
+					if ( newIndex === oldIndex ) {
+						return option;
+					}
+					changed = true;
+					return { ...option, nextStepId: String( newIndex ) };
+				} );
 				if ( changed ) {
 					updateBlockAttributes( questionBlock.clientId, {
 						options: newOptions,
@@ -206,8 +221,8 @@ function remapStepReferencesOnReorder( steps, previousOrder, updateBlockAttribut
  *      that case).
  *
  * @param {Object[]} steps Top-level `sgs/form-step` children of this flow,
- *                          in DOM order, each with its full nested
- *                          `innerBlocks` tree already populated.
+ *                         in DOM order, each with its full nested
+ *                         `innerBlocks` tree already populated.
  * @return {{message: string}[]} Named, human-readable validation errors.
  *                                Empty array = flow is valid, publish is
  *                                unlocked.
@@ -216,7 +231,8 @@ function validateFlow( steps ) {
 	const errors = [];
 	const stepCount = steps.length;
 	const hasAnyResultStep = steps.some(
-		( step ) => findDescendantsByName( step, 'sgs/choice-flow-result' ).length > 0
+		( step ) =>
+			findDescendantsByName( step, 'sgs/choice-flow-result' ).length > 0
 	);
 
 	// Build the routing graph while checking for dangling references.
@@ -230,7 +246,10 @@ function validateFlow( steps ) {
 			edges[ stepIndex ].add( stepIndex + 1 );
 		}
 
-		const questions = findDescendantsByName( step, 'sgs/choice-flow-question' );
+		const questions = findDescendantsByName(
+			step,
+			'sgs/choice-flow-question'
+		);
 
 		questions.forEach( ( questionBlock ) => {
 			const questionText =
@@ -240,7 +259,8 @@ function validateFlow( steps ) {
 
 			options.forEach( ( option ) => {
 				const nextStepId = option.nextStepId || '';
-				const optionLabel = option.label || __( '(untitled option)', 'sgs-blocks' );
+				const optionLabel =
+					option.label || __( '(untitled option)', 'sgs-blocks' );
 
 				if ( '' === nextStepId ) {
 					// Advance-to-next-step — already covered by the default
@@ -258,9 +278,13 @@ function validateFlow( steps ) {
 				// including non-numeric strings, negative numbers, and
 				// floats — as a dangling reference.
 				const isValidIndexString = /^\d+$/.test( nextStepId );
-				const parsedIndex = isValidIndexString ? parseInt( nextStepId, 10 ) : -1;
+				const parsedIndex = isValidIndexString
+					? parseInt( nextStepId, 10 )
+					: -1;
 				const isValidTarget =
-					isValidIndexString && parsedIndex >= 0 && parsedIndex < stepCount;
+					isValidIndexString &&
+					parsedIndex >= 0 &&
+					parsedIndex < stepCount;
 
 				if ( ! isValidTarget ) {
 					errors.push( {
@@ -310,7 +334,12 @@ function validateFlow( steps ) {
 			}
 			visited.add( current );
 
-			if ( findDescendantsByName( steps[ current ], 'sgs/choice-flow-result' ).length > 0 ) {
+			if (
+				findDescendantsByName(
+					steps[ current ],
+					'sgs/choice-flow-result'
+				).length > 0
+			) {
 				reachedResult = true;
 				break;
 			}
@@ -354,9 +383,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	const previewTier = usePreviewTier();
 	const [ palette ] = useSettings( 'color.palette' );
-	const hasHeader = !! attributes.showHeader || 'showcase' === attributes.flowLayout;
+	const hasHeader =
+		!! attributes.showHeader || 'showcase' === attributes.flowLayout;
 	const blockProps = useBlockProps( {
-		className: `sgs-choice-flow sgs-choice-flow--layout-${ attributes.flowLayout || 'compact' } sgs-choice-flow--close-${ closeStyle || 'icon' }${ hasHeader ? ' sgs-choice-flow--has-header' : '' }`,
+		className: `sgs-choice-flow sgs-choice-flow--layout-${
+			attributes.flowLayout || 'compact'
+		} sgs-choice-flow--close-${ closeStyle || 'icon' }${
+			hasHeader ? ' sgs-choice-flow--has-header' : ''
+		}`,
 		style: buildWrapperStyle( attributes, previewTier ),
 		'data-summary-base-label': summaryBaseLabel || '',
 		'data-opener-label': attributes.openerLabel || '',
@@ -388,7 +422,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	// Questions only, as render.php and flow-progress.js count them.
 	const questionTotal = steps.filter(
-		( step ) => 0 === findDescendantsByName( step, 'sgs/choice-flow-result' ).length
+		( step ) =>
+			0 === findDescendantsByName( step, 'sgs/choice-flow-result' ).length
 	).length;
 
 	const errors = useMemo(
@@ -450,7 +485,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	return (
 		<>
 			{ /* Every colour row of the block, first so it heads the Styles tab. */ }
-			<SgsColourPanel rows={ [ ...choiceFlowColourRows( { attributes, setAttributes } ), ...bandsColourRows( { attributes, setAttributes } ) ] } />
+			<SgsColourPanel
+				rows={ [
+					...choiceFlowColourRows( { attributes, setAttributes } ),
+					...bandsColourRows( { attributes, setAttributes } ),
+				] }
+			/>
 			<InspectorControls>
 				<LinkedFlowPanel
 					flowId={ flowId }
@@ -461,7 +501,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					<TextControl
 						label={ __( 'Flow title', 'sgs-blocks' ) }
 						value={ title }
-						onChange={ ( value ) => setAttributes( { title: value } ) }
+						onChange={ ( value ) =>
+							setAttributes( { title: value } )
+						}
 						help={ __(
 							'Internal label for this flow, shown in the editor and admin lists — not necessarily displayed to visitors.',
 							'sgs-blocks'
@@ -477,26 +519,44 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				   SGS_Container_Wrapper capability set here (CLAUDE.md
 				   rule 7 — this block is content-block, not
 				   wrapper-shell-kind). */ }
-				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Layout', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SgsLengthControl
 						presets={ false }
 						label={ __( 'Outer max-width', 'sgs-blocks' ) }
 						value={ maxWidth || '' }
 						units={ LENGTH_UNITS }
-						onChange={ ( val ) => setAttributes( { maxWidth: val ?? '' } ) }
-						help={ __( 'Exact CSS length, e.g. 800px. Leave blank for no cap.', 'sgs-blocks' ) }
+						onChange={ ( val ) =>
+							setAttributes( { maxWidth: val ?? '' } )
+						}
+						help={ __(
+							'Exact CSS length, e.g. 800px. Leave blank for no cap.',
+							'sgs-blocks'
+						) }
 					/>
 					<ResponsiveOverride
 						value={ padding }
-						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { padding: obj } )
+						}
 					>
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
@@ -504,16 +564,30 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				{ /* User-directed (2026-09-15) — operator choice across the 3 real
 				   reference patterns found live: see progressStyle's own
 				   block.json description for the evidence. */ }
-				<PanelBody title={ __( 'Progress indicator', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Progress indicator', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SelectControl
 						label={ __( 'Style', 'sgs-blocks' ) }
 						value={ progressStyle || 'bar' }
 						options={ [
-							{ label: __( 'Plain bar', 'sgs-blocks' ), value: 'bar' },
-							{ label: __( 'Numbered circles', 'sgs-blocks' ), value: 'circles' },
-							{ label: __( 'Badge on bar', 'sgs-blocks' ), value: 'badge' },
+							{
+								label: __( 'Plain bar', 'sgs-blocks' ),
+								value: 'bar',
+							},
+							{
+								label: __( 'Numbered circles', 'sgs-blocks' ),
+								value: 'circles',
+							},
+							{
+								label: __( 'Badge on bar', 'sgs-blocks' ),
+								value: 'badge',
+							},
 						] }
-						onChange={ ( val ) => setAttributes( { progressStyle: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { progressStyle: val } )
+						}
 						help={ __(
 							'Plain bar matches the real lens-configurator reference; Numbered circles matches a reference quiz; Badge on bar matches another reference quiz.',
 							'sgs-blocks'
@@ -567,11 +641,26 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				blockName="sgs/choice-flow"
 				prefix="closeButton"
 			/>
-			<ChromePanel attributes={ attributes } setAttributes={ setAttributes } />
-			<BandsPanel attributes={ attributes } setAttributes={ setAttributes } />
-			<FlowLayoutPanel attributes={ attributes } setAttributes={ setAttributes } />
-			<ShowcasePanel attributes={ attributes } setAttributes={ setAttributes } />
-			<FlowNavigationPanel attributes={ attributes } setAttributes={ setAttributes } />
+			<ChromePanel
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+			/>
+			<BandsPanel
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+			/>
+			<FlowLayoutPanel
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+			/>
+			<ShowcasePanel
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+			/>
+			<FlowNavigationPanel
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+			/>
 			<InspectorControls>
 				<SummaryPanel
 					showPricePanel={ showPricePanel }
@@ -587,7 +676,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 			<div { ...blockProps }>
 				<BandsStyle attributes={ attributes } clientId={ clientId } />
-				<ChromePreview attributes={ attributes } questionTotal={ questionTotal } tier={ previewTier } palette={ palette } />
+				<ChromePreview
+					attributes={ attributes }
+					questionTotal={ questionTotal }
+					tier={ previewTier }
+					palette={ palette }
+				/>
 				{ title && (
 					<p className="sgs-choice-flow__title-preview">
 						{ __( 'Flow:', 'sgs-blocks' ) } { title }
@@ -620,7 +714,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					>
 						{ sprintf(
 							/* translators: %s: the linked flow's slug. */
-							__( 'Showing the saved flow “%s”. Edit its steps under Choice Flows.', 'sgs-blocks' ),
+							__(
+								'Showing the saved flow “%s”. Edit its steps under Choice Flows.',
+								'sgs-blocks'
+							),
 							flowId
 						) }
 					</Notice>
@@ -634,8 +731,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				   at runtime, shown/hidden by view.js. */ }
 				<div className="sgs-choice-flow__footer-preview">
 					<span
-						className={ `sgs-choice-flow__nav-back-preview ${ buttonPresetClass( attributes, 'back' ) }`.trim() }
-						style={ buildBackButtonPreviewStyle( attributes, previewTier, palette ) }
+						className={ `sgs-choice-flow__nav-back-preview ${ buttonPresetClass(
+							attributes,
+							'back'
+						) }`.trim() }
+						style={ buildBackButtonPreviewStyle(
+							attributes,
+							previewTier,
+							palette
+						) }
 					>
 						{ __( '← Back', 'sgs-blocks' ) }
 					</span>

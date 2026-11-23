@@ -36,7 +36,8 @@ function bootMegaPanel( panelEl ) {
 		teardownFns.push( spotlightCleanup );
 	}
 
-	return () => teardownFns.forEach( ( fn ) => 'function' === typeof fn && fn() );
+	return () =>
+		teardownFns.forEach( ( fn ) => 'function' === typeof fn && fn() );
 }
 
 document

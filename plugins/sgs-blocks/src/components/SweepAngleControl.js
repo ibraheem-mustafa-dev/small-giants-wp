@@ -18,7 +18,11 @@ import { SelectControl, AnglePickerControl } from '@wordpress/components';
  * @param {number}   [root0.fallback]    The angle shown when none is stored. Default 90.
  * @return {Object} The node.
  */
-export default function SweepAngleControl( { angle, onAngleChange, fallback = 90 } ) {
+export default function SweepAngleControl( {
+	angle,
+	onAngleChange,
+	fallback = 90,
+} ) {
 	const current = Number.isFinite( angle ) ? angle : fallback;
 	const presets = [
 		{ label: __( 'Horizontal (left to right)', 'sgs-blocks' ), value: 90 },
@@ -37,7 +41,10 @@ export default function SweepAngleControl( { angle, onAngleChange, fallback = 90
 						label: p.label,
 						value: String( p.value ),
 					} ) ),
-					{ label: __( 'Custom angle…', 'sgs-blocks' ), value: 'custom' },
+					{
+						label: __( 'Custom angle…', 'sgs-blocks' ),
+						value: 'custom',
+					},
 				] }
 				onChange={ ( val ) => {
 					if ( 'custom' !== val ) {

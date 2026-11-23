@@ -15,10 +15,10 @@ import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
  *     no caret-disclosure-arrow choice (the `<details>` marker is the
  *     disclosure), and no close-on-pointer-leave grace period.
  *
- * @param {Object}   root0                Props.
- * @param {string}   root0.navLabel       The block's `navLabel` attribute.
+ * @param {Object}   root0                   Props.
+ * @param {string}   root0.navLabel          The block's `navLabel` attribute.
  * @param {boolean}  root0.itemSmartContrast The block's `itemSmartContrast` attribute.
- * @param {Function} root0.setAttributes  The block's attribute setter.
+ * @param {Function} root0.setAttributes     The block's attribute setter.
  */
 export default function DropdownSettingsPanel( {
 	navLabel,
@@ -26,17 +26,15 @@ export default function DropdownSettingsPanel( {
 	setAttributes,
 } ) {
 	return (
-		<PanelBody title={ __( 'Accessibility', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Accessibility', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			<TextControl
 				label={ __( 'Navigation label', 'sgs-blocks' ) }
 				value={ navLabel }
-				placeholder={ __(
-					'Auto — from the menu name',
-					'sgs-blocks'
-				) }
-				onChange={ ( val ) =>
-					setAttributes( { navLabel: val } )
-				}
+				placeholder={ __( 'Auto — from the menu name', 'sgs-blocks' ) }
+				onChange={ ( val ) => setAttributes( { navLabel: val } ) }
 				help={ __(
 					'Accessible name for this menu landmark. Leave blank to use the chosen menu’s own name, so this drawer’s menu and the header bar are named apart automatically. Set it only to override that (e.g. Primary, Footer).',
 					'sgs-blocks'
@@ -48,7 +46,9 @@ export default function DropdownSettingsPanel( {
 			<ToggleControl
 				label={ __( 'Keep text readable automatically', 'sgs-blocks' ) }
 				checked={ itemSmartContrast === true }
-				onChange={ ( val ) => setAttributes( { itemSmartContrast: val } ) }
+				onChange={ ( val ) =>
+					setAttributes( { itemSmartContrast: val } )
+				}
 				help={ __(
 					'When you set a background, we can check your text colour stays readable against it and swap in a readable one if it doesn’t. Off by default, so your chosen colour always renders exactly as picked — switch this on to have it corrected automatically instead.',
 					'sgs-blocks'

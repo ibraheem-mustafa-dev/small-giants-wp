@@ -8,7 +8,10 @@
 
 import { __ } from '@wordpress/i18n';
 import { ResponsiveOverride } from '../../components';
-import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+import {
+	ToggleGroupControl,
+	ToggleGroupControlOption,
+} from '../../components/primitives';
 
 export const ORNAMENT_OPTIONS = [
 	{ value: 'none', label: __( 'None', 'sgs-blocks' ) },
@@ -27,7 +30,8 @@ export const ORNAMENT_REVEAL_MODE_OPTIONS = [
 	{ value: 'hover-draw', label: __( 'Draw in on hover', 'sgs-blocks' ) },
 ];
 
-export const tierObject = ( value ) => ( value && typeof value === 'object' ? value : {} );
+export const tierObject = ( value ) =>
+	value && typeof value === 'object' ? value : {};
 
 /**
  * A per-device enum as a toggle group under the global device toggle.
@@ -41,7 +45,11 @@ export const tierObject = ( value ) => ( value && typeof value === 'object' ? va
  */
 export function TierToggle( { label, help, value, options, onChange } ) {
 	return (
-		<ResponsiveOverride label={ label } value={ tierObject( value ) } onChange={ onChange }>
+		<ResponsiveOverride
+			label={ label }
+			value={ tierObject( value ) }
+			onChange={ onChange }
+		>
 			{ ( { ownValue, effectiveValue, setOwnValue } ) => (
 				<ToggleGroupControl
 					label={ label }
@@ -54,7 +62,11 @@ export function TierToggle( { label, help, value, options, onChange } ) {
 					__next40pxDefaultSize
 				>
 					{ options.map( ( option ) => (
-						<ToggleGroupControlOption key={ option.value } value={ option.value } label={ option.label } />
+						<ToggleGroupControlOption
+							key={ option.value }
+							value={ option.value }
+							label={ option.label }
+						/>
 					) ) }
 				</ToggleGroupControl>
 			) }

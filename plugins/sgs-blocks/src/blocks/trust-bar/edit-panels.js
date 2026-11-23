@@ -47,15 +47,32 @@ export const TRUST_BAR_LIMITS = {
  * @param {string}  props.fillColour Custom fill colour (CSS value).
  * @return {JSX.Element} The icon.
  */
-export function EditorIconBare( { size, iconSlug, gradient, filled, fillColour } ) {
-	const style = filled && fillColour ? { '--sgs-trust-badge-icon-fill': fillColour } : undefined;
+export function EditorIconBare( {
+	size,
+	iconSlug,
+	gradient,
+	filled,
+	fillColour,
+} ) {
+	const style =
+		filled && fillColour
+			? { '--sgs-trust-badge-icon-fill': fillColour }
+			: undefined;
 	return (
 		<span
-			className={ 'sgs-trust-bar__icon' + ( filled ? ' sgs-trust-bar__icon--filled' : '' ) }
+			className={
+				'sgs-trust-bar__icon' +
+				( filled ? ' sgs-trust-bar__icon--filled' : '' )
+			}
 			aria-hidden="true"
 			style={ style }
 		>
-			<IconPreview source="lucide" name={ iconSlug || 'check' } size={ size } gradient={ gradient } />
+			<IconPreview
+				source="lucide"
+				name={ iconSlug || 'check' }
+				size={ size }
+				gradient={ gradient }
+			/>
 		</span>
 	);
 }
@@ -75,9 +92,20 @@ export function TrustBarIconPanel( { attributes, setAttributes, badgeStyle } ) {
 			{ 'icon-bare' === badgeStyle && (
 				<RangeControl
 					label={ __( 'Icon size (px)', 'sgs-blocks' ) }
-					help={ __( 'The icon on its own, with no circle behind it.', 'sgs-blocks' ) }
-					value={ attributes.iconBareSize ?? TRUST_BAR_LIMITS.bareSize.fallback }
-					onChange={ ( val ) => setAttributes( { iconBareSize: val ?? TRUST_BAR_LIMITS.bareSize.fallback } ) }
+					help={ __(
+						'The icon on its own, with no circle behind it.',
+						'sgs-blocks'
+					) }
+					value={
+						attributes.iconBareSize ??
+						TRUST_BAR_LIMITS.bareSize.fallback
+					}
+					onChange={ ( val ) =>
+						setAttributes( {
+							iconBareSize:
+								val ?? TRUST_BAR_LIMITS.bareSize.fallback,
+						} )
+					}
 					min={ TRUST_BAR_LIMITS.bareSize.min }
 					max={ TRUST_BAR_LIMITS.bareSize.max }
 					step={ 1 }
@@ -87,9 +115,20 @@ export function TrustBarIconPanel( { attributes, setAttributes, badgeStyle } ) {
 			) }
 			<RangeControl
 				label={ __( 'Line thickness', 'sgs-blocks' ) }
-				help={ __( 'How thick the icon lines are. 1.8 is the standard; lower is finer, higher is bolder.', 'sgs-blocks' ) }
-				value={ attributes.iconStrokeWidth ?? TRUST_BAR_LIMITS.strokeWidth.fallback }
-				onChange={ ( val ) => setAttributes( { iconStrokeWidth: val ?? TRUST_BAR_LIMITS.strokeWidth.fallback } ) }
+				help={ __(
+					'How thick the icon lines are. 1.8 is the standard; lower is finer, higher is bolder.',
+					'sgs-blocks'
+				) }
+				value={
+					attributes.iconStrokeWidth ??
+					TRUST_BAR_LIMITS.strokeWidth.fallback
+				}
+				onChange={ ( val ) =>
+					setAttributes( {
+						iconStrokeWidth:
+							val ?? TRUST_BAR_LIMITS.strokeWidth.fallback,
+					} )
+				}
 				min={ TRUST_BAR_LIMITS.strokeWidth.min }
 				max={ TRUST_BAR_LIMITS.strokeWidth.max }
 				step={ 0.05 }
@@ -110,7 +149,10 @@ export function TrustBarIconPanel( { attributes, setAttributes, badgeStyle } ) {
  */
 export function TrustBarItemSpacingPanel( { attributes, setAttributes } ) {
 	return (
-		<PanelBody title={ __( 'Badge spacing', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Badge spacing', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			<ResponsiveOverride
 				label={ __( 'Gap between icon and label', 'sgs-blocks' ) }
 				value={ attributes.itemGap }
@@ -118,10 +160,17 @@ export function TrustBarItemSpacingPanel( { attributes, setAttributes } ) {
 			>
 				{ ( { ownValue, effectiveValue, setOwnValue } ) => (
 					<SgsLengthControl
-						label={ __( 'Gap between icon and label', 'sgs-blocks' ) }
+						label={ __(
+							'Gap between icon and label',
+							'sgs-blocks'
+						) }
 						hideLabelFromVision
 						value={ ownValue || '' }
-						placeholder={ effectiveValue ? String( effectiveValue ) : undefined }
+						placeholder={
+							effectiveValue
+								? String( effectiveValue )
+								: undefined
+						}
 						onChange={ ( val ) => setOwnValue( val || '' ) }
 						presets={ false }
 					/>
@@ -135,10 +184,16 @@ export function TrustBarItemSpacingPanel( { attributes, setAttributes } ) {
 				{ ( { ownValue, setOwnValue } ) => (
 					<SgsBoxControl
 						label={ __( 'Badge padding', 'sgs-blocks' ) }
-						values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+						values={
+							ownValue && typeof ownValue === 'object'
+								? ownValue
+								: {}
+						}
 						units={ BOX_UNITS }
 						presets
-						onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+						onChange={ ( next ) =>
+							setOwnValue( normaliseResponsiveBox( next ) )
+						}
 					/>
 				) }
 			</ResponsiveOverride>

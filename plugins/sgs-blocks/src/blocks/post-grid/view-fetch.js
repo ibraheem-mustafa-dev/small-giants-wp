@@ -4,11 +4,14 @@
 
 import { fetchWithNonce } from '../../shared/rest-nonce';
 
-const REST_BASE = ( typeof wpApiSettings !== 'undefined' && wpApiSettings.root )
-	? wpApiSettings.root.replace( /\/$/, '' ) + '/sgs-blocks/v1/posts'
-	: '/wp-json/sgs-blocks/v1/posts';
+const REST_BASE =
+	typeof wpApiSettings !== 'undefined' && wpApiSettings.root
+		? wpApiSettings.root.replace( /\/$/, '' ) + '/sgs-blocks/v1/posts'
+		: '/wp-json/sgs-blocks/v1/posts';
 
-export const REDUCED_MOTION = window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
+export const REDUCED_MOTION = window.matchMedia(
+	'(prefers-reduced-motion: reduce)'
+).matches;
 
 /**
  * Build a URL query string from a plain object.
@@ -19,7 +22,10 @@ export const REDUCED_MOTION = window.matchMedia( '(prefers-reduced-motion: reduc
 function buildQuery( params ) {
 	return Object.entries( params )
 		.filter( ( [ , v ] ) => v !== undefined && v !== null && v !== '' )
-		.map( ( [ k, v ] ) => encodeURIComponent( k ) + '=' + encodeURIComponent( v ) )
+		.map(
+			( [ k, v ] ) =>
+				encodeURIComponent( k ) + '=' + encodeURIComponent( v )
+		)
 		.join( '&' );
 }
 
@@ -33,13 +39,12 @@ function buildQuery( params ) {
  * @param {number}  count   Number of skeleton cards to render.
  */
 export function showSkeletons( innerEl, count ) {
-	const skeletons = Array.from( { length: count } )
-		.map( () => {
-			const el = document.createElement( 'div' );
-			el.className   = 'sgs-post-grid__card sgs-post-grid__card--skeleton';
-			el.setAttribute( 'aria-hidden', 'true' );
-			return el;
-		} );
+	const skeletons = Array.from( { length: count } ).map( () => {
+		const el = document.createElement( 'div' );
+		el.className = 'sgs-post-grid__card sgs-post-grid__card--skeleton';
+		el.setAttribute( 'aria-hidden', 'true' );
+		return el;
+	} );
 
 	// Clear current cards and append skeletons using safe DOM methods.
 	innerEl.replaceChildren( ...skeletons );
@@ -85,16 +90,18 @@ export function setTrustedServerHtml( container, html ) {
  * @param {Element} container The element now holding the fetched cards.
  */
 export function scanMotion( container ) {
-	container.dispatchEvent( new CustomEvent( 'sgs-motion:scan', { bubbles: true } ) );
+	container.dispatchEvent(
+		new CustomEvent( 'sgs-motion:scan', { bubbles: true } )
+	);
 }
 
 /**
  * After a failed load: the client's own error message (errorMessage) when set,
  * otherwise the posts that were showing before the load, put back unchanged.
  *
- * @param {Element}   gridEl    The block root carrying data-error-message.
- * @param {Element}   container The posts container.
- * @param {Node[]}    previous  The container's children before the load.
+ * @param {Element} gridEl    The block root carrying data-error-message.
+ * @param {Element} container The posts container.
+ * @param {Node[]}  previous  The container's children before the load.
  */
 export function showLoadFailure( gridEl, container, previous ) {
 	const message = gridEl.dataset.errorMessage || '';
@@ -103,7 +110,7 @@ export function showLoadFailure( gridEl, container, previous ) {
 		return;
 	}
 	const p = document.createElement( 'p' );
-	p.className   = 'sgs-post-grid__error';
+	p.className = 'sgs-post-grid__error';
 	p.textContent = message;
 	container.replaceChildren( p );
 }
@@ -117,48 +124,54 @@ export function showLoadFailure( gridEl, container, previous ) {
  * @return {Promise<{html: string, totalPages: number, currentPage: number, totalPosts: number}>}
  */
 export async function fetchPosts( queryData, page, filterCategory ) {
-	const nonce = ( typeof wpApiSettings !== 'undefined' ) ? ( wpApiSettings.nonce || '' ) : '';
+	const nonce =
+		typeof wpApiSettings !== 'undefined' ? wpApiSettings.nonce || '' : '';
 
 	const params = {
-		postType:              queryData.postType,
+		postType: queryData.postType,
 		page,
-		postsPerPage:          queryData.postsPerPage,
-		orderBy:               queryData.orderBy,
-		order:                 queryData.order,
-		offset:                queryData.offset || 0,
-		excludeCurrent:        queryData.excludeCurrent || false,
-		excludePost:           queryData.excludePost || 0,
-		layout:                queryData.layout,
-		cardStyle:             queryData.cardStyle,
+		postsPerPage: queryData.postsPerPage,
+		orderBy: queryData.orderBy,
+		order: queryData.order,
+		offset: queryData.offset || 0,
+		excludeCurrent: queryData.excludeCurrent || false,
+		excludePost: queryData.excludePost || 0,
+		layout: queryData.layout,
+		cardStyle: queryData.cardStyle,
 		// Spec 49: the image slot's settings, so a card paged in prints the same picture markup as the first page.
-		imageMedia:            queryData.imageMedia ? JSON.stringify( queryData.imageMedia ) : undefined,
-		showImage:             queryData.showImage,
-		showTitle:             queryData.showTitle,
-		showExcerpt:           queryData.showExcerpt,
-		excerptLength:         queryData.excerptLength,
-		showDate:              queryData.showDate,
-		dateFormat:            queryData.dateFormat,
-		showAuthor:            queryData.showAuthor,
-		showCategory:          queryData.showCategory,
-		metaLayout:            queryData.metaLayout,
-		showReadMore:          queryData.showReadMore,
-		readMoreText:          queryData.readMoreText,
-		readMoreIcon:          queryData.readMoreIcon,
-		cardLink:              queryData.cardLink,
-		titleColour:           queryData.titleColour,
-		excerptColour:         queryData.excerptColour,
-		metaColour:            queryData.metaColour,
-		categoryBadgeColour:   queryData.categoryBadgeColour,
+		imageMedia: queryData.imageMedia
+			? JSON.stringify( queryData.imageMedia )
+			: undefined,
+		showImage: queryData.showImage,
+		showTitle: queryData.showTitle,
+		showExcerpt: queryData.showExcerpt,
+		excerptLength: queryData.excerptLength,
+		showDate: queryData.showDate,
+		dateFormat: queryData.dateFormat,
+		showAuthor: queryData.showAuthor,
+		showCategory: queryData.showCategory,
+		metaLayout: queryData.metaLayout,
+		showReadMore: queryData.showReadMore,
+		readMoreText: queryData.readMoreText,
+		readMoreIcon: queryData.readMoreIcon,
+		cardLink: queryData.cardLink,
+		titleColour: queryData.titleColour,
+		excerptColour: queryData.excerptColour,
+		metaColour: queryData.metaColour,
+		categoryBadgeColour: queryData.categoryBadgeColour,
 		categoryBadgeBgColour: queryData.categoryBadgeBgColour,
-		categoryBadgeBgColourGradient:      queryData.categoryBadgeBgColourGradient,
-		categoryBadgeBgColourHover:         queryData.categoryBadgeBgColourHover,
-		categoryBadgeBgColourHoverGradient: queryData.categoryBadgeBgColourHoverGradient,
-		readMoreColour:        queryData.readMoreColour,
+		categoryBadgeBgColourGradient: queryData.categoryBadgeBgColourGradient,
+		categoryBadgeBgColourHover: queryData.categoryBadgeBgColourHover,
+		categoryBadgeBgColourHoverGradient:
+			queryData.categoryBadgeBgColourHoverGradient,
+		readMoreColour: queryData.readMoreColour,
 		// Round-tripped so AJAX-paginated cards' featured images carry the grid's media scope class — see the
 		// $sgs_pg_uid comment in class-post-grid-rest.php.
-		uid:                   queryData.uid,
+		uid: queryData.uid,
 		// Spec 38A §8: the entrance the first page's cards inherit, stamped by the route on the fetched cards.
-		itemMotion:            queryData.itemMotion ? JSON.stringify( queryData.itemMotion ) : undefined,
+		itemMotion: queryData.itemMotion
+			? JSON.stringify( queryData.itemMotion )
+			: undefined,
 	};
 
 	// Filter button overrides the block's base category setting.

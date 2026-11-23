@@ -13,16 +13,50 @@
  * @package SGS\Blocks
  */
 
-const FORMAT_TAGS = { strong: 'strong', b: 'strong', em: 'em', i: 'em', s: 's', del: 's', strike: 's' };
-const DROP_WITH_CONTENT = new Set( [ 'script', 'style', 'iframe', 'object', 'embed', 'form', 'svg', 'math', 'template', 'noscript', 'textarea', 'select', 'title', 'head', 'frame', 'frameset', 'applet', 'link', 'meta', 'base' ] );
+const FORMAT_TAGS = {
+	strong: 'strong',
+	b: 'strong',
+	em: 'em',
+	i: 'em',
+	s: 's',
+	del: 's',
+	strike: 's',
+};
+const DROP_WITH_CONTENT = new Set( [
+	'script',
+	'style',
+	'iframe',
+	'object',
+	'embed',
+	'form',
+	'svg',
+	'math',
+	'template',
+	'noscript',
+	'textarea',
+	'select',
+	'title',
+	'head',
+	'frame',
+	'frameset',
+	'applet',
+	'link',
+	'meta',
+	'base',
+] );
 
 /**
  * @param {string} href A link address.
  * @return {boolean} Whether it is http, https, mailto, tel or a site-relative path.
  */
 export function isSafeHref( href ) {
-	const value = String( href ?? '' ).replace( /[\u0000-\u0020\u007f-\u009f]/g, '' );
-	return /^(https?:|mailto:|tel:)/i.test( value ) || /^\/(?!\/)/.test( value );
+	const value = String( href ?? '' ).replace(
+		/[\u0000-\u0020\u007f-\u009f]/g,
+		''
+	);
+	return (
+		/^(https?:|mailto:|tel:)/i.test( value ) || /^\/(?!\/)/.test( value )
+	);
 }
 
 const PHOTO = 'sgs/inline-photo';
@@ -30,10 +64,17 @@ const HIGHLIGHT = 'sgs/highlight';
 const BASKET_COUNT = 'sgs/basket-count';
 const BASKET_COUNT_CLASS = 'sgs-basket-count';
 // The basket count keeps exactly its one class: no other token of the span survives.
-const isBasketCount = ( node ) => String( node.getAttribute( 'class' ) || '' ).split( /\s+/ ).includes( BASKET_COUNT_CLASS );
+const isBasketCount = ( node ) =>
+	String( node.getAttribute( 'class' ) || '' )
+		.split( /\s+/ )
+		.includes( BASKET_COUNT_CLASS );
 
 // A highlight's class tokens: only `sgs-highlight` ones survive.
-const highlightClass = ( node ) => String( node.getAttribute( 'class' ) || '' ).split( /\s+/ ).filter( ( t ) => /^sgs-highlight/.test( t ) ).join( ' ' );
+const highlightClass = ( node ) =>
+	String( node.getAttribute( 'class' ) || '' )
+		.split( /\s+/ )
+		.filter( ( t ) => /^sgs-highlight/.test( t ) )
+		.join( ' ' );
 
 function copyInto( target, source, links, formats ) {
 	const doc = target.ownerDocument;
@@ -53,21 +94,45 @@ function copyInto( target, source, links, formats ) {
 			target.appendChild( doc.createElement( 'br' ) );
 			return;
 		}
-		if ( 'img' === tag && formats.includes( PHOTO ) && /^(https?:|\/(?!\/))/i.test( String( node.getAttribute( 'src' ) || '' ).trim() ) ) {
+		if (
+			'img' === tag &&
+			formats.includes( PHOTO ) &&
+			/^(https?:|\/(?!\/))/i.test(
+				String( node.getAttribute( 'src' ) || '' ).trim()
+			)
+		) {
 			const img = target.appendChild( doc.createElement( 'img' ) );
-			[ 'src', 'alt', 'width', 'height' ].forEach( ( a ) => node.hasAttribute( a ) && img.setAttribute( a, node.getAttribute( a ) ) );
+			[ 'src', 'alt', 'width', 'height' ].forEach(
+				( a ) =>
+					node.hasAttribute( a ) &&
+					img.setAttribute( a, node.getAttribute( a ) )
+			);
 			return;
 		}
 		let host = target;
-		if ( 'span' === tag && formats.includes( BASKET_COUNT ) && isBasketCount( node ) ) {
+		if (
+			'span' === tag &&
+			formats.includes( BASKET_COUNT ) &&
+			isBasketCount( node )
+		) {
 			host = target.appendChild( doc.createElement( 'span' ) );
 			host.setAttribute( 'class', BASKET_COUNT_CLASS );
-		} else if ( 'span' === tag && formats.includes( HIGHLIGHT ) && highlightClass( node ) ) {
+		} else if (
+			'span' === tag &&
+			formats.includes( HIGHLIGHT ) &&
+			highlightClass( node )
+		) {
 			host = target.appendChild( doc.createElement( 'span' ) );
 			host.setAttribute( 'class', highlightClass( node ) );
 		} else if ( FORMAT_TAGS[ tag ] ) {
-			host = target.appendChild( doc.createElement( FORMAT_TAGS[ tag ] ) );
-		} else if ( 'a' === tag && links && isSafeHref( node.getAttribute( 'href' ) ) ) {
+			host = target.appendChild(
+				doc.createElement( FORMAT_TAGS[ tag ] )
+			);
+		} else if (
+			'a' === tag &&
+			links &&
+			isSafeHref( node.getAttribute( 'href' ) )
+		) {
 			host = target.appendChild( doc.createElement( 'a' ) );
 			host.setAttribute( 'href', node.getAttribute( 'href' ).trim() );
 		}
@@ -78,15 +143,22 @@ function copyInto( target, source, links, formats ) {
 /**
  * Replace an element's content with a typed value, as DOM nodes.
  *
- * @param {Element} element The element to fill.
- * @param {*}       value   The typed value (HTML string or plain text).
- * @param {Object}  [opts]
- * @param {boolean} [opts.links=true] Whether a link may stay (false inside a link, button or summary).
- * @param {string[]} [opts.formats] The setting's extra formats (`sgs/inline-photo`, `sgs/highlight`): kept only where the setting's editor holds them.
+ * @param {Element}  element           The element to fill.
+ * @param {*}        value             The typed value (HTML string or plain text).
+ * @param {Object}   [opts]
+ * @param {boolean}  [opts.links=true] Whether a link may stay (false inside a link, button or summary).
+ * @param {string[]} [opts.formats]    The setting's extra formats (`sgs/inline-photo`, `sgs/highlight`): kept only where the setting's editor holds them.
  * @return {Element} The element.
  */
-export function appendAuthoredText( element, value, { links = true, formats = [] } = {} ) {
-	const parsed = new window.DOMParser().parseFromString( '<!doctype html><body>' + String( value ?? '' ), 'text/html' );
+export function appendAuthoredText(
+	element,
+	value,
+	{ links = true, formats = [] } = {}
+) {
+	const parsed = new window.DOMParser().parseFromString(
+		'<!doctype html><body>' + String( value ?? '' ),
+		'text/html'
+	);
 	element.textContent = '';
 	copyInto( element, parsed.body, links, formats );
 	return element;
@@ -97,7 +169,13 @@ export function appendAuthoredText( element, value, { links = true, formats = []
  * @return {string} The words only (tags removed, a line break a space, white space collapsed).
  */
 export function authoredPlain( value ) {
-	const parsed = new window.DOMParser().parseFromString( '<!doctype html><body>' + String( value ?? '' ).replace( /<br\s*\/?>/gi, ' ' ), 'text/html' );
-	parsed.querySelectorAll( [ ...DROP_WITH_CONTENT ].join( ',' ) ).forEach( ( n ) => n.remove() );
+	const parsed = new window.DOMParser().parseFromString(
+		'<!doctype html><body>' +
+			String( value ?? '' ).replace( /<br\s*\/?>/gi, ' ' ),
+		'text/html'
+	);
+	parsed
+		.querySelectorAll( [ ...DROP_WITH_CONTENT ].join( ',' ) )
+		.forEach( ( n ) => n.remove() );
 	return parsed.body.textContent.replace( /\s+/g, ' ' ).trim();
 }

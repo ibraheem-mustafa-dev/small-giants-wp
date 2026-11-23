@@ -16,12 +16,24 @@ import { RangeControl } from '@wordpress/components';
 /**
  * Internal dependencies
  */
-import { HStack, NumberControl, InputControlPrefixWrapper, Text } from '../../primitives';
+import {
+	HStack,
+	NumberControl,
+	InputControlPrefixWrapper,
+	Text,
+} from '../../primitives';
 
 const ACCENT_COLOR =
 	'var(--wp-components-color-accent, var(--wp-admin-theme-color, #3858e9))';
 
-export const InputWithSlider = ( { min, max, label, abbreviation, onChange, value } ) => {
+export const InputWithSlider = ( {
+	min,
+	max,
+	label,
+	abbreviation,
+	onChange,
+	value,
+} ) => {
 	const onNumberControlChange = ( newValue ) => {
 		if ( ! newValue ) {
 			onChange( 0 );

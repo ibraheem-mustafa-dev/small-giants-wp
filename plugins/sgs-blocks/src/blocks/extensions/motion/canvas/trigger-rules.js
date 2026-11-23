@@ -30,7 +30,8 @@ const PAINT = {
 	borderColour: [ 'border-color', '--sgs-me-to-bd' ],
 };
 
-const plain = ( v ) => ( v && typeof v === 'object' && ! Array.isArray( v ) ? v : {} );
+const plain = ( v ) =>
+	v && typeof v === 'object' && ! Array.isArray( v ) ? v : {};
 
 /**
  * The states a block declares (`supports.sgs.motion.states`), valid names only, each once.
@@ -39,8 +40,16 @@ const plain = ( v ) => ( v && typeof v === 'object' && ! Array.isArray( v ) ? v 
  * @return {string[]} State names.
  */
 export function declaredStates( motionSupport ) {
-	const states = Array.isArray( motionSupport?.states ) ? motionSupport.states : [];
-	return [ ...new Set( states.filter( ( s ) => typeof s === 'string' && STATE_PATTERN.test( s ) ) ) ];
+	const states = Array.isArray( motionSupport?.states )
+		? motionSupport.states
+		: [];
+	return [
+		...new Set(
+			states.filter(
+				( s ) => typeof s === 'string' && STATE_PATTERN.test( s )
+			)
+		),
+	];
 }
 
 /**
@@ -65,7 +74,11 @@ function closeRules( base, selector ) {
 		tablet: plain( base.devices?.tablet?.close ),
 		mobile: plain( base.devices?.mobile?.close ),
 	};
-	const timing = { closeDuration: 'dur', closeDelay: 'delay', closeEasing: 'ease' };
+	const timing = {
+		closeDuration: 'dur',
+		closeDelay: 'delay',
+		closeEasing: 'ease',
+	};
 	const toFields = fields( 'EntranceCloseTo' );
 	const decls = { desktop: {}, tablet: {}, mobile: {} };
 	TIERS.forEach( ( tier ) => {
@@ -73,10 +86,16 @@ function closeRules( base, selector ) {
 		Object.entries( plain( close.to ) ).forEach( ( [ key, value ] ) => {
 			const prop = toFields[ key ]?.css ?? null;
 			const out = valueCss( 'EntranceCloseTo', key, value );
-			if ( prop === null || out === null || ! prop.startsWith( ME_PREFIX ) ) {
+			if (
+				prop === null ||
+				out === null ||
+				! prop.startsWith( ME_PREFIX )
+			) {
 				return;
 			}
-			decls[ tier ][ CLOSE_PREFIX + 'to-' + prop.slice( ME_PREFIX.length ) ] = out;
+			decls[ tier ][
+				CLOSE_PREFIX + 'to-' + prop.slice( ME_PREFIX.length )
+			] = out;
 		} );
 		Object.entries( timing ).forEach( ( [ key, suffix ] ) => {
 			if ( key === 'closeEasing' && tier !== 'desktop' ) {
@@ -99,8 +118,13 @@ function paint( base ) {
 	const to = plain( plain( base.values ).to );
 	return Object.fromEntries(
 		Object.entries( PAINT )
-			.filter( ( [ key ] ) => typeof to[ key ] === 'string' && to[ key ] !== '' )
-			.map( ( [ , [ property, holder ] ] ) => [ property, `var(${ holder })` ] )
+			.filter(
+				( [ key ] ) => typeof to[ key ] === 'string' && to[ key ] !== ''
+			)
+			.map( ( [ , [ property, holder ] ] ) => [
+				property,
+				`var(${ holder })`,
+			] )
 	);
 }
 
@@ -120,8 +144,10 @@ function paintTransition( base, selector, leave ) {
 	const host = `[${ STATE_ATTR }~="${ leave }"]`;
 	return rules( `${ selector }:is(${ host },${ host } *)`, {
 		desktop: {
-			'--sgs-mt-paint-dur': 'var(--sgs-me-close-dur,var(--sgs-me-dur,var(--wp--custom--duration--medium,300ms)))',
-			'--sgs-mt-paint-ease': 'var(--sgs-me-close-ease,var(--sgs-me-ease,var(--wp--custom--easing--default,ease)))',
+			'--sgs-mt-paint-dur':
+				'var(--sgs-me-close-dur,var(--sgs-me-dur,var(--wp--custom--duration--medium,300ms)))',
+			'--sgs-mt-paint-ease':
+				'var(--sgs-me-close-ease,var(--sgs-me-ease,var(--wp--custom--easing--default,ease)))',
 		},
 		tablet: {},
 		mobile: {},
@@ -135,17 +161,22 @@ function openPaintRule( base, selector ) {
 	}
 	const open = `[${ STATE_ATTR }~="open"]`;
 	const closed = `[${ STATE_ATTR }]:not(${ open })`;
-	return rules( `${ selector }:is(${ open },${ open } *):not(${ closed },${ closed } *)`, {
-		desktop: declarations,
-		tablet: {},
-		mobile: {},
-	} );
+	return rules(
+		`${ selector }:is(${ open },${ open } *):not(${ closed },${ closed } *)`,
+		{
+			desktop: declarations,
+			tablet: {},
+			mobile: {},
+		}
+	);
 }
 
 function hasClose( base ) {
-	return [ base.close, base.devices?.tablet?.close, base.devices?.mobile?.close ].some(
-		( close ) => Object.keys( plain( close ) ).length > 0
-	);
+	return [
+		base.close,
+		base.devices?.tablet?.close,
+		base.devices?.mobile?.close,
+	].some( ( close ) => Object.keys( plain( close ) ).length > 0 );
 }
 
 function stateRule( base, selector, keyframes ) {
@@ -159,7 +190,11 @@ function stateRule( base, selector, keyframes ) {
 		decls[ 'animation-name' ] = 'var(--sgs-mt-in,none)';
 	}
 	Object.assign( decls, paint( base ) );
-	let css = rules( `${ selector }:is(${ host },${ host } *)`, { desktop: decls, tablet: {}, mobile: {} } );
+	let css = rules( `${ selector }:is(${ host },${ host } *)`, {
+		desktop: decls,
+		tablet: {},
+		mobile: {},
+	} );
 	if ( keyframes || state.length > STATE_SUFFIX_MAX ) {
 		return css;
 	}
@@ -167,8 +202,10 @@ function stateRule( base, selector, keyframes ) {
 		const out = `[${ STATE_ATTR }~="${ state }${ OUT_SUFFIX }"]`;
 		css += rules( `${ selector }:is(${ out },${ out } *)`, {
 			desktop: {
-				'--sgs-me-a-dur': 'var(--sgs-me-close-dur,var(--sgs-me-dur,var(--wp--custom--duration--slow,450ms)))',
-				'--sgs-me-a-ease': 'var(--sgs-me-close-ease,var(--sgs-me-ease,var(--wp--custom--entrance--easing,ease-out)))',
+				'--sgs-me-a-dur':
+					'var(--sgs-me-close-dur,var(--sgs-me-dur,var(--wp--custom--duration--slow,450ms)))',
+				'--sgs-me-a-ease':
+					'var(--sgs-me-close-ease,var(--sgs-me-ease,var(--wp--custom--entrance--easing,ease-out)))',
 				'--sgs-me-a-delay': 'var(--sgs-me-close-delay,0ms)',
 				'animation-name': 'var(--sgs-mt-out,none)',
 			},
@@ -183,7 +220,9 @@ function stateRule( base, selector, keyframes ) {
 			desktop: {
 				'--sgs-me-a-dur': 'var(--sgs-mt-rest,0ms)',
 				'--sgs-me-a-delay': 'var(--sgs-mt-rest,0ms)',
-				...( Object.keys( paint( base ) ).length > 0 ? { '--sgs-mt-paint-dur': 'var(--sgs-mt-rest,0ms)' } : {} ),
+				...( Object.keys( paint( base ) ).length > 0
+					? { '--sgs-mt-paint-dur': 'var(--sgs-mt-rest,0ms)' }
+					: {} ),
 			},
 			tablet: {},
 			mobile: {},
@@ -200,7 +239,10 @@ function stateRule( base, selector, keyframes ) {
  * @return {string} CSS.
  */
 export function triggerCss( base, selector, attrs ) {
-	const trigger = String( attrs[ 'data-sgs-me' ] ?? '' ).trim().split( /\s+/ )[ 0 ] ?? '';
+	const trigger =
+		String( attrs[ 'data-sgs-me' ] ?? '' )
+			.trim()
+			.split( /\s+/ )[ 0 ] ?? '';
 	if ( trigger === 'open' ) {
 		return (
 			closeRules( base, selector ) +
@@ -210,13 +252,21 @@ export function triggerCss( base, selector, attrs ) {
 	}
 	if ( trigger === 'state' ) {
 		const keyframes = attrs[ 'data-sgs-me-keyframes' ] !== undefined;
-		const close = ! keyframes && hasClose( base ) ? closeRules( base, selector ) : '';
+		const close =
+			! keyframes && hasClose( base ) ? closeRules( base, selector ) : '';
 		const state = typeof base.state === 'string' ? base.state : '';
 		const leave =
-			! keyframes && state !== '' && state.length <= STATE_SUFFIX_MAX && hasClose( base )
+			! keyframes &&
+			state !== '' &&
+			state.length <= STATE_SUFFIX_MAX &&
+			hasClose( base )
 				? state + OUT_SUFFIX
 				: '';
-		return close + stateRule( base, selector, keyframes ) + paintTransition( base, selector, leave );
+		return (
+			close +
+			stateRule( base, selector, keyframes ) +
+			paintTransition( base, selector, leave )
+		);
 	}
 	return '';
 }

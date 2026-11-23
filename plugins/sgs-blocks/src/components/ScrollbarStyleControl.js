@@ -44,9 +44,18 @@ export default function ScrollbarStyleControl( {
 				__next40pxDefaultSize
 				__nextHasNoMarginBottom
 			>
-				<ToggleGroupControlOption value="default" label={ __( 'Default', 'sgs-blocks' ) } />
-				<ToggleGroupControlOption value="thin" label={ __( 'Thin', 'sgs-blocks' ) } />
-				<ToggleGroupControlOption value="hidden" label={ __( 'Hidden', 'sgs-blocks' ) } />
+				<ToggleGroupControlOption
+					value="default"
+					label={ __( 'Default', 'sgs-blocks' ) }
+				/>
+				<ToggleGroupControlOption
+					value="thin"
+					label={ __( 'Thin', 'sgs-blocks' ) }
+				/>
+				<ToggleGroupControlOption
+					value="hidden"
+					label={ __( 'Hidden', 'sgs-blocks' ) }
+				/>
 			</ToggleGroupControl>
 			{ 'hidden' === choice && ! hasOtherWay && (
 				<Notice status="warning" isDismissible={ false }>

@@ -30,12 +30,12 @@
 
 import { init as playerInit } from './lottie-adapter.js';
 import { bootGated } from './off-switch.js';
-import { prefersReducedMotion, rafThrottle, focusRests } from '../effects/motion-utils.js';
 import {
-	readConfig,
-	readSpeed,
-	scrollProgress,
-} from './lottie-config.js';
+	prefersReducedMotion,
+	rafThrottle,
+	focusRests,
+} from '../effects/motion-utils.js';
+import { readConfig, readSpeed, scrollProgress } from './lottie-config.js';
 import { registerWithLoopControl, playIfAllowed } from './lottie-loop.js';
 import { BREAKPOINTS } from '@sgs/loop-control'; // eslint-disable-line import/no-unresolved -- a webpack external (script module `@sgs/loop-control`).
 
@@ -63,16 +63,16 @@ let permanentBound = false;
 
 /**
  * @typedef {Object} LottieBinding
- * @property {Element}                   el         The Lottie element.
- * @property {Object}                    config     The result of `readConfig`.
- * @property {Object|null}               player     The adapter instance once mounted.
- * @property {Object|null}               loopCtl    The loop control handle once registered.
- * @property {boolean}                   active     Whether the trigger currently asks for playback.
- * @property {boolean}                   inView     Whether the element is in view.
- * @property {boolean}                   mounted    Whether the player is mounted or mounting.
- * @property {IntersectionObserver|null} observer   The trigger's observer.
- * @property {AbortController}           controller Cancels listeners and fetches on cleanup.
- * @property {number}                    epoch      Bumped by every teardown, so a mount that started earlier can tell.
+ * @property {Element}                   el          The Lottie element.
+ * @property {Object}                    config      The result of `readConfig`.
+ * @property {Object|null}               player      The adapter instance once mounted.
+ * @property {Object|null}               loopCtl     The loop control handle once registered.
+ * @property {boolean}                   active      Whether the trigger currently asks for playback.
+ * @property {boolean}                   inView      Whether the element is in view.
+ * @property {boolean}                   mounted     Whether the player is mounted or mounting.
+ * @property {IntersectionObserver|null} observer    The trigger's observer.
+ * @property {AbortController}           controller  Cancels listeners and fetches on cleanup.
+ * @property {number}                    epoch       Bumped by every teardown, so a mount that started earlier can tell.
  * @property {boolean}                   scrollWired Whether the shared scroll driver serves this binding.
  */
 
@@ -100,7 +100,10 @@ export function init() {
 			reducedQuery = window.matchMedia(
 				'(prefers-reduced-motion: reduce)'
 			);
-			reducedQuery.addEventListener( 'change', handleReducedMotionChange );
+			reducedQuery.addEventListener(
+				'change',
+				handleReducedMotionChange
+			);
 		}
 	}
 	syncSharedListeners();
@@ -256,7 +259,11 @@ export function wireTrigger( binding ) {
 		const leave = () => activate( binding, false );
 		el.addEventListener( 'pointerenter', enter, signal );
 		// A block with `sgsFocusRests` on keeps its resting look on keyboard focus: focus never starts the animation.
-		el.addEventListener( 'focusin', () => ! focusRests( el ) && enter(), signal );
+		el.addEventListener(
+			'focusin',
+			() => ! focusRests( el ) && enter(),
+			signal
+		);
 		el.addEventListener( 'pointerleave', leave, signal );
 		el.addEventListener( 'focusout', leave, signal );
 		return;

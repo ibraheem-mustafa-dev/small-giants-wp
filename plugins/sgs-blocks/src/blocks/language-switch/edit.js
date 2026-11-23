@@ -10,7 +10,11 @@
  * @package SGS\Blocks
  */
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-editor';
+import {
+	useBlockProps,
+	InspectorControls,
+	useSettings,
+} from '@wordpress/block-editor';
 import {
 	PanelBody,
 	TextControl,
@@ -30,7 +34,10 @@ import {
 	LinkPopoverField,
 	FlexWrapControl,
 } from '../../components';
-import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+import {
+	ToggleGroupControl,
+	ToggleGroupControlOption,
+} from '../../components/primitives';
 import { usePreviewTier } from '../../utils';
 import { LINK_SOURCES_PAGES } from '../../shared/link-source-options';
 import { languageSwitchPreview } from './preview-style';
@@ -60,7 +67,9 @@ function previewLabel( code, labelStyle, customLabel ) {
 	// autonym.
 	if ( primarySubtag && 'undefined' !== typeof Intl && Intl.DisplayNames ) {
 		try {
-			const dn = new Intl.DisplayNames( [ primarySubtag ], { type: 'language' } );
+			const dn = new Intl.DisplayNames( [ primarySubtag ], {
+				type: 'language',
+			} );
 			const name = dn.of( primarySubtag );
 			if ( name ) {
 				return name.charAt( 0 ).toUpperCase() + name.slice( 1 );
@@ -99,17 +108,17 @@ export default function Edit( { attributes, setAttributes } ) {
 	const preview = languageSwitchPreview( attributes, previewTier, palette );
 
 	const blockProps = useBlockProps( {
-		className: [ 'sgs-language-switch', `sgs-language-switch--${ display }` ].join( ' ' ),
+		className: [
+			'sgs-language-switch',
+			`sgs-language-switch--${ display }`,
+		].join( ' ' ),
 	} );
 
 	/* ── languages repeater handlers ─────────────────────────────────── */
 
 	function addLanguage() {
 		setAttributes( {
-			languages: [
-				...languages,
-				{ code: '', url: '', customLabel: '' },
-			],
+			languages: [ ...languages, { code: '', url: '', customLabel: '' } ],
 		} );
 	}
 
@@ -133,12 +142,17 @@ export default function Edit( { attributes, setAttributes } ) {
 			return;
 		}
 		const updated = [ ...languages ];
-		[ updated[ fromIndex ], updated[ toIndex ] ] = [ updated[ toIndex ], updated[ fromIndex ] ];
+		[ updated[ fromIndex ], updated[ toIndex ] ] = [
+			updated[ toIndex ],
+			updated[ fromIndex ],
+		];
 		setAttributes( { languages: updated } );
 	}
 
 	const duplicateCodesExist = ( () => {
-		const codes = languages.map( ( it ) => ( it.code || '' ).trim().toLowerCase() ).filter( Boolean );
+		const codes = languages
+			.map( ( it ) => ( it.code || '' ).trim().toLowerCase() )
+			.filter( Boolean );
 		return new Set( codes ).size !== codes.length;
 	} )();
 
@@ -148,7 +162,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		if ( languages.length === 0 ) {
 			return (
 				<p className="sgs-language-switch-editor__empty">
-					{ __( 'Add languages in the sidebar to preview links.', 'sgs-blocks' ) }
+					{ __(
+						'Add languages in the sidebar to preview links.',
+						'sgs-blocks'
+					) }
 				</p>
 			);
 		}
@@ -162,15 +179,29 @@ export default function Edit( { attributes, setAttributes } ) {
 						// The first language stands in for the visitor's current one, so the
 						// current-language colour shows on the canvas.
 						aria-current={ 0 === index ? 'true' : undefined }
-						style={ 0 === index ? preview.currentLinkStyle : preview.linkStyle }
+						style={
+							0 === index
+								? preview.currentLinkStyle
+								: preview.linkStyle
+						}
 					>
-						{ previewLabel( item.code, labelStyle, item.customLabel ) }
+						{ previewLabel(
+							item.code,
+							labelStyle,
+							item.customLabel
+						) }
 					</span>
-					{ 'inline' === display && index < arr.length - 1 && !! separator && (
-						<span className="sgs-language-switch__separator" aria-hidden="true" style={ preview.separatorStyle }>
-							{ separator }
-						</span>
-					) }
+					{ 'inline' === display &&
+						index < arr.length - 1 &&
+						!! separator && (
+							<span
+								className="sgs-language-switch__separator"
+								aria-hidden="true"
+								style={ preview.separatorStyle }
+							>
+								{ separator }
+							</span>
+						) }
 				</span>
 			) );
 	}
@@ -218,68 +249,122 @@ export default function Edit( { attributes, setAttributes } ) {
 			<SgsColourPanel rows={ colourRows } />
 
 			<InspectorControls>
-				<PanelBody title={ __( 'Language Switch Settings', 'sgs-blocks' ) } initialOpen={ true }>
+				<PanelBody
+					title={ __( 'Language Switch Settings', 'sgs-blocks' ) }
+					initialOpen={ true }
+				>
 					<ToggleGroupControl
 						label={ __( 'Display', 'sgs-blocks' ) }
 						value={ display }
-						onChange={ ( val ) => setAttributes( { display: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { display: val } )
+						}
 						isBlock
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					>
-						<ToggleGroupControlOption value="inline" label={ __( 'Inline', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="single-link" label={ __( 'Single link', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="disclosure" label={ __( 'Disclosure', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption
+							value="inline"
+							label={ __( 'Inline', 'sgs-blocks' ) }
+						/>
+						<ToggleGroupControlOption
+							value="single-link"
+							label={ __( 'Single link', 'sgs-blocks' ) }
+						/>
+						<ToggleGroupControlOption
+							value="disclosure"
+							label={ __( 'Disclosure', 'sgs-blocks' ) }
+						/>
 					</ToggleGroupControl>
 
 					<ToggleGroupControl
 						label={ __( 'Label style', 'sgs-blocks' ) }
 						value={ labelStyle }
-						onChange={ ( val ) => setAttributes( { labelStyle: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { labelStyle: val } )
+						}
 						isBlock
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					>
-						<ToggleGroupControlOption value="autonym" label={ __( 'Autonym', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="code" label={ __( 'Code', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="custom" label={ __( 'Custom', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption
+							value="autonym"
+							label={ __( 'Autonym', 'sgs-blocks' ) }
+						/>
+						<ToggleGroupControlOption
+							value="code"
+							label={ __( 'Code', 'sgs-blocks' ) }
+						/>
+						<ToggleGroupControlOption
+							value="custom"
+							label={ __( 'Custom', 'sgs-blocks' ) }
+						/>
 					</ToggleGroupControl>
 
-					<SgsFreeTextField type="rich" noLink
+					<SgsFreeTextField
+						type="rich"
+						noLink
 						label={ __( 'Prefix label', 'sgs-blocks' ) }
-						help={ __( 'e.g. "Language:" — shown before the list/trigger. Leave blank for none.', 'sgs-blocks' ) }
+						help={ __(
+							'e.g. "Language:" — shown before the list/trigger. Leave blank for none.',
+							'sgs-blocks'
+						) }
 						value={ prefixLabel }
-						onChange={ ( val ) => setAttributes( { prefixLabel: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { prefixLabel: val } )
+						}
 					/>
 
 					{ 'inline' === display && (
 						<TextControl
 							label={ __( 'Separator', 'sgs-blocks' ) }
-							help={ __( 'Printed between languages, e.g. "/" or ",".', 'sgs-blocks' ) }
+							help={ __(
+								'Printed between languages, e.g. "/" or ",".',
+								'sgs-blocks'
+							) }
 							value={ separator }
-							onChange={ ( val ) => setAttributes( { separator: val } ) }
+							onChange={ ( val ) =>
+								setAttributes( { separator: val } )
+							}
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
 					) }
 				</PanelBody>
 
-				<PanelBody title={ __( 'Languages', 'sgs-blocks' ) } initialOpen={ true }>
+				<PanelBody
+					title={ __( 'Languages', 'sgs-blocks' ) }
+					initialOpen={ true }
+				>
 					{ duplicateCodesExist && (
 						<Notice status="warning" isDismissible={ false }>
-							{ __( 'Duplicate language codes detected — the current-language match uses the first one found.', 'sgs-blocks' ) }
+							{ __(
+								'Duplicate language codes detected — the current-language match uses the first one found.',
+								'sgs-blocks'
+							) }
 						</Notice>
 					) }
 
 					{ languages.map( ( item, index ) => (
-						<div key={ index } className="sgs-language-switch-editor__row">
+						<div
+							key={ index }
+							className="sgs-language-switch-editor__row"
+						>
 							<Flex align="flex-start" gap={ 1 }>
 								<FlexBlock>
 									<TextControl
-										label={ __( 'Language code', 'sgs-blocks' ) }
-										help={ __( 'e.g. "es", "en_GB", "nl".', 'sgs-blocks' ) }
+										label={ __(
+											'Language code',
+											'sgs-blocks'
+										) }
+										help={ __(
+											'e.g. "es", "en_GB", "nl".',
+											'sgs-blocks'
+										) }
 										value={ item.code }
-										onChange={ ( val ) => updateLanguage( index, 'code', val ) }
+										onChange={ ( val ) =>
+											updateLanguage( index, 'code', val )
+										}
 										__nextHasNoMarginBottom
 										__next40pxDefaultSize
 									/>
@@ -289,25 +374,63 @@ export default function Edit( { attributes, setAttributes } ) {
 									<LinkPopoverField
 										label={ __( 'URL', 'sgs-blocks' ) }
 										value={ item.url }
-										onChange={ ( val, extra ) => setAttributes( { languages: languages.map( ( it, i ) => ( i === index ? { ...it, url: val || '', ...( extra || {} ) } : it ) ) } ) }
+										onChange={ ( val, extra ) =>
+											setAttributes( {
+												languages: languages.map(
+													( it, i ) =>
+														i === index
+															? {
+																	...it,
+																	url:
+																		val ||
+																		'',
+																	...( extra ||
+																		{} ),
+															  }
+															: it
+												),
+											} )
+										}
 										linkSource={ item.linkSource || '' }
 										linkSources={ LINK_SOURCES_PAGES }
 										searchOnly
 									/>
 									<TextControl
-										label={ __( 'Custom label', 'sgs-blocks' ) }
-										help={ __( 'Used when label style is "Custom", and as the fallback if intl cannot resolve a name.', 'sgs-blocks' ) }
+										label={ __(
+											'Custom label',
+											'sgs-blocks'
+										) }
+										help={ __(
+											'Used when label style is "Custom", and as the fallback if intl cannot resolve a name.',
+											'sgs-blocks'
+										) }
 										value={ item.customLabel }
-										onChange={ ( val ) => updateLanguage( index, 'customLabel', val ) }
+										onChange={ ( val ) =>
+											updateLanguage(
+												index,
+												'customLabel',
+												val
+											)
+										}
 										__nextHasNoMarginBottom
 										__next40pxDefaultSize
 									/>
 									{ item.code && (
 										<p className="sgs-language-switch-editor__preview">
 											{ __( 'Preview:', 'sgs-blocks' ) }{ ' ' }
-											{ previewLabel( item.code, labelStyle, item.customLabel ) }
+											{ previewLabel(
+												item.code,
+												labelStyle,
+												item.customLabel
+											) }
 											{ 'code' === labelStyle &&
-												` (${ __( 'accessible name', 'sgs-blocks' ) }: ${ previewAutonym( item.code, item.customLabel ) })` }
+												` (${ __(
+													'accessible name',
+													'sgs-blocks'
+												) }: ${ previewAutonym(
+													item.code,
+													item.customLabel
+												) })` }
 										</p>
 									) }
 								</FlexBlock>
@@ -317,21 +440,35 @@ export default function Edit( { attributes, setAttributes } ) {
 										label={ __( 'Move up', 'sgs-blocks' ) }
 										size="small"
 										disabled={ index === 0 }
-										onClick={ () => moveLanguage( index, -1 ) }
+										onClick={ () =>
+											moveLanguage( index, -1 )
+										}
 									/>
 									<Button
 										icon="arrow-down"
-										label={ __( 'Move down', 'sgs-blocks' ) }
+										label={ __(
+											'Move down',
+											'sgs-blocks'
+										) }
 										size="small"
-										disabled={ index === languages.length - 1 }
-										onClick={ () => moveLanguage( index, 1 ) }
+										disabled={
+											index === languages.length - 1
+										}
+										onClick={ () =>
+											moveLanguage( index, 1 )
+										}
 									/>
 									<Button
 										icon="trash"
-										label={ __( 'Remove language', 'sgs-blocks' ) }
+										label={ __(
+											'Remove language',
+											'sgs-blocks'
+										) }
 										size="small"
 										isDestructive
-										onClick={ () => removeLanguage( index ) }
+										onClick={ () =>
+											removeLanguage( index )
+										}
 									/>
 								</FlexItem>
 							</Flex>
@@ -345,7 +482,10 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 
 			<InspectorControls group="styles">
-				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Typography', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<TypographyControls
 						fontSizePresets
 						showFontFamily
@@ -354,7 +494,10 @@ export default function Edit( { attributes, setAttributes } ) {
 						prefix=""
 					/>
 				</PanelBody>
-				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Layout', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<ResponsiveControl label={ __( 'Gap', 'sgs-blocks' ) }>
 						{ ( bp ) => (
 							<SgsLengthControl
@@ -363,14 +506,25 @@ export default function Edit( { attributes, setAttributes } ) {
 								value={ gap?.[ bp ] ?? '' }
 								units={ LENGTH_UNITS }
 								onChange={ ( val ) =>
-									setAttributes( { gap: { ...gap, [ bp ]: val ?? '' } } )
+									setAttributes( {
+										gap: { ...gap, [ bp ]: val ?? '' },
+									} )
 								}
-								help={ __( 'Space between languages. Leave blank for the framework default.', 'sgs-blocks' ) }
+								help={ __(
+									'Space between languages. Leave blank for the framework default.',
+									'sgs-blocks'
+								) }
 								presets={ false }
 							/>
 						) }
 					</ResponsiveControl>
-					<FlexWrapControl label={ __( 'Wrap languages', 'sgs-blocks' ) } value={ attributes.flexWrap } onChange={ ( val ) => setAttributes( { flexWrap: val } ) } />
+					<FlexWrapControl
+						label={ __( 'Wrap languages', 'sgs-blocks' ) }
+						value={ attributes.flexWrap }
+						onChange={ ( val ) =>
+							setAttributes( { flexWrap: val } )
+						}
+					/>
 					{ 'disclosure' === display && (
 						<ResponsiveBoxControl
 							label={ __( 'Panel padding', 'sgs-blocks' ) }
@@ -381,8 +535,17 @@ export default function Edit( { attributes, setAttributes } ) {
 								mobile: panelPadding?.mobile ?? {},
 							} }
 							onChange={ ( tier, next ) => {
-								const tierKey = { base: 'desktop', tablet: 'tablet', mobile: 'mobile' }[ tier ];
-								setAttributes( { panelPadding: { ...panelPadding, [ tierKey ]: next } } );
+								const tierKey = {
+									base: 'desktop',
+									tablet: 'tablet',
+									mobile: 'mobile',
+								}[ tier ];
+								setAttributes( {
+									panelPadding: {
+										...panelPadding,
+										[ tierKey ]: next,
+									},
+								} );
 							} }
 						/>
 					) }
@@ -391,21 +554,44 @@ export default function Edit( { attributes, setAttributes } ) {
 
 			<div { ...blockProps }>
 				{ !! prefixLabel && (
-					<span className="sgs-language-switch__prefix">{ prefixLabel }</span>
+					<span className="sgs-language-switch__prefix">
+						{ prefixLabel }
+					</span>
 				) }
 				{ 'disclosure' === display ? (
 					<>
-						<button type="button" className="sgs-language-switch__trigger" disabled>
+						<button
+							type="button"
+							className="sgs-language-switch__trigger"
+							disabled
+						>
 							{ languages[ 0 ]
-								? previewLabel( languages[ 0 ].code, labelStyle, languages[ 0 ].customLabel )
+								? previewLabel(
+										languages[ 0 ].code,
+										labelStyle,
+										languages[ 0 ].customLabel
+								  )
 								: __( 'Language', 'sgs-blocks' ) }
 						</button>
-						<div className="sgs-language-switch__panel" style={ preview.panelStyle }>
-							<span className="sgs-language-switch__list" style={ preview.listStyle }>{ renderPreviewItems() }</span>
+						<div
+							className="sgs-language-switch__panel"
+							style={ preview.panelStyle }
+						>
+							<span
+								className="sgs-language-switch__list"
+								style={ preview.listStyle }
+							>
+								{ renderPreviewItems() }
+							</span>
 						</div>
 					</>
 				) : (
-					<span className="sgs-language-switch__list" style={ preview.listStyle }>{ renderPreviewItems() }</span>
+					<span
+						className="sgs-language-switch__list"
+						style={ preview.listStyle }
+					>
+						{ renderPreviewItems() }
+					</span>
 				) }
 			</div>
 		</>

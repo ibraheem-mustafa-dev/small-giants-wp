@@ -18,7 +18,10 @@ function matrixScale( transform ) {
 	}
 	try {
 		const m = new window.DOMMatrixReadOnly( transform );
-		return { x: Math.hypot( m.a, m.b ) || 1, y: Math.hypot( m.c, m.d ) || 1 };
+		return {
+			x: Math.hypot( m.a, m.b ) || 1,
+			y: Math.hypot( m.c, m.d ) || 1,
+		};
 	} catch ( error ) {
 		return { x: 1, y: 1 };
 	}
@@ -59,7 +62,11 @@ export function ownScale( el ) {
 export function layoutScale( el ) {
 	let x = 1;
 	let y = 1;
-	for ( let node = el; node && 1 === node.nodeType; node = node.parentElement ) {
+	for (
+		let node = el;
+		node && 1 === node.nodeType;
+		node = node.parentElement
+	) {
 		const s = ownScaleOf( node );
 		x *= s.x;
 		y *= s.y;

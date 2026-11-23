@@ -17,12 +17,30 @@ export const ICON_SHADOW_NAMES = { lift: 'shadowLiftOnHover' };
 export const ROW_SHADOW_NAMES = { lift: 'childIconShadowLiftOnHover' };
 
 /** The shadow attribute families, by literal base name. */
-export const ICON_SHADOW_KEYS = shadowAttrKeys( 'boxShadow', { hover: true, hoverColour: true } );
-export const ROW_SHADOW_KEYS = shadowAttrKeys( 'childIconBoxShadow', { hover: true, hoverColour: true } );
+export const ICON_SHADOW_KEYS = shadowAttrKeys( 'boxShadow', {
+	hover: true,
+	hoverColour: true,
+} );
+export const ROW_SHADOW_KEYS = shadowAttrKeys( 'childIconBoxShadow', {
+	hover: true,
+	hoverColour: true,
+} );
 
 const BRAND_HOVER_OPTIONS = [
-	{ label: __( 'Swap: the ground and the logo trade colours', 'sgs-blocks' ), value: 'swap' },
-	{ label: __( 'Hold: keep the brand ground and logo colour', 'sgs-blocks' ), value: 'hold' },
+	{
+		label: __(
+			'Swap: the ground and the logo trade colours',
+			'sgs-blocks'
+		),
+		value: 'swap',
+	},
+	{
+		label: __(
+			'Hold: keep the brand ground and logo colour',
+			'sgs-blocks'
+		),
+		value: 'hold',
+	},
 ];
 
 /**
@@ -36,12 +54,24 @@ const BRAND_HOVER_OPTIONS = [
  */
 export function BrandHoverControl( { value, onChange, inherit = false } ) {
 	const options = inherit
-		? [ { label: __( 'Same as the row (swap outside a row)', 'sgs-blocks' ), value: 'inherit' }, ...BRAND_HOVER_OPTIONS ]
+		? [
+				{
+					label: __(
+						'Same as the row (swap outside a row)',
+						'sgs-blocks'
+					),
+					value: 'inherit',
+				},
+				...BRAND_HOVER_OPTIONS,
+		  ]
 		: BRAND_HOVER_OPTIONS;
 	return (
 		<SelectControl
 			label={ __( 'Brand colours on hover', 'sgs-blocks' ) }
-			help={ __( 'Only for Brand colours. Hold keeps the brand ground and the logo colour as they are when the pointer arrives.', 'sgs-blocks' ) }
+			help={ __(
+				'Only for Brand colours. Hold keeps the brand ground and the logo colour as they are when the pointer arrives.',
+				'sgs-blocks'
+			) }
 			value={ value || ( inherit ? 'inherit' : 'swap' ) }
 			options={ options }
 			onChange={ onChange }
@@ -62,16 +92,28 @@ export function BrandHoverControl( { value, onChange, inherit = false } ) {
  * @param {string}   props.help          Optional line under the panel title.
  * @return {JSX.Element} The panel.
  */
-export function IconShadowPanel( { attributes, setAttributes, names, shadowKeys, help } ) {
+export function IconShadowPanel( {
+	attributes,
+	setAttributes,
+	names,
+	shadowKeys,
+	help,
+} ) {
 	// The shared control reads and writes the lift switch as `shadowLiftOnHover`; a row stores it under its own name.
 	const view = { ...attributes, shadowLiftOnHover: attributes[ names.lift ] };
 	const write = ( next ) => {
 		const { shadowLiftOnHover, ...rest } = next;
-		setAttributes( 'shadowLiftOnHover' in next ? { ...rest, [ names.lift ]: shadowLiftOnHover } : rest );
+		setAttributes(
+			'shadowLiftOnHover' in next
+				? { ...rest, [ names.lift ]: shadowLiftOnHover }
+				: rest
+		);
 	};
 	return (
 		<PanelBody title={ __( 'Shadow', 'sgs-blocks' ) } initialOpen={ false }>
-			{ help && <p className="components-base-control__help">{ help }</p> }
+			{ help && (
+				<p className="components-base-control__help">{ help }</p>
+			) }
 			<ShadowControl
 				label={ __( 'Shadow', 'sgs-blocks' ) }
 				attributes={ view }

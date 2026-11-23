@@ -8,7 +8,12 @@
  *
  * @package
  */
-import { ensureWishlistReady, onWishlistChange, toggleWishlistId, addWishlistId } from '../../shared/wishlist-store';
+import {
+	ensureWishlistReady,
+	onWishlistChange,
+	toggleWishlistId,
+	addWishlistId,
+} from '../../shared/wishlist-store';
 import { addCartItem } from './api';
 import { appendAuthoredText } from '../../utils/authored-text-dom';
 import { applyFocus, nextItemId, visibleIds } from './focus-after-remove';
@@ -63,7 +68,9 @@ export function initPanel( panel ) {
 		 * @param {number[]} [freshIds] The current id list, when already known.
 		 */
 		async function render( freshIds ) {
-			const ids = Array.isArray( freshIds ) ? freshIds : await ensureWishlistReady();
+			const ids = Array.isArray( freshIds )
+				? freshIds
+				: await ensureWishlistReady();
 
 			if ( 0 === ids.length ) {
 				panel.hidden = ! labels.showWhenEmpty;
@@ -75,9 +82,12 @@ export function initPanel( panel ) {
 				message.className = 'sgs-wishlist-panel__empty-message';
 				appendAuthoredText( message, labels.emptyText );
 				const cta = document.createElement( 'a' );
-				cta.className = 'sgs-wishlist-panel__empty-cta wp-element-button';
+				cta.className =
+					'sgs-wishlist-panel__empty-cta wp-element-button';
 				cta.setAttribute( 'href', labels.shopUrl );
-				appendAuthoredText( cta, labels.emptyLinkLabel, { links: false } );
+				appendAuthoredText( cta, labels.emptyLinkLabel, {
+					links: false,
+				} );
 				itemsEl.replaceChildren( message, cta );
 				takePendingFocus( null );
 				return;
@@ -109,10 +119,18 @@ export function initPanel( panel ) {
 	// Move to basket / Remove / Notify me / Add to my list — one delegated
 	// listener, shared by both the own-list and the shared-list rows.
 	itemsEl.addEventListener( 'click', async ( event ) => {
-		const moveButton = event.target.closest( '.sgs-wishlist-panel__move-to-basket' );
-		const removeButton = event.target.closest( '.sgs-wishlist-panel__remove' );
-		const notifyToggle = event.target.closest( '.sgs-wishlist-panel__notify-toggle' );
-		const addToMineButton = event.target.closest( '.sgs-wishlist-panel__add-to-mine' );
+		const moveButton = event.target.closest(
+			'.sgs-wishlist-panel__move-to-basket'
+		);
+		const removeButton = event.target.closest(
+			'.sgs-wishlist-panel__remove'
+		);
+		const notifyToggle = event.target.closest(
+			'.sgs-wishlist-panel__notify-toggle'
+		);
+		const addToMineButton = event.target.closest(
+			'.sgs-wishlist-panel__add-to-mine'
+		);
 
 		if ( moveButton ) {
 			const productId = Number( moveButton.dataset.productId );
@@ -132,7 +150,10 @@ export function initPanel( panel ) {
 
 		if ( removeButton ) {
 			const productId = Number( removeButton.dataset.productId );
-			const removedMessage = removedAnnouncement( labels, removeButton.dataset.productName || '' );
+			const removedMessage = removedAnnouncement(
+				labels,
+				removeButton.dataset.productName || ''
+			);
 			removeButton.disabled = true;
 			focusAfterRender = nextItemId( visibleIds( itemsEl ), productId );
 			try {

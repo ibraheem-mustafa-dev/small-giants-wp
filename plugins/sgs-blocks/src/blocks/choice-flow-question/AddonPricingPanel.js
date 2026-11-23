@@ -14,7 +14,12 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { PanelBody, SelectControl, Button, Notice } from '@wordpress/components';
+import {
+	PanelBody,
+	SelectControl,
+	Button,
+	Notice,
+} from '@wordpress/components';
 
 /**
  * @return {Array<{key: string, label: string, options: Array}>} The site-wide
@@ -28,13 +33,18 @@ function getAddonGroups() {
 
 /**
  * @param {Object}   props
- * @param {string}   props.priceGroup   Current `priceGroup` attribute value.
- * @param {Array}    props.options      Current `options` attribute value.
+ * @param {string}   props.priceGroup    Current `priceGroup` attribute value.
+ * @param {Array}    props.options       Current `options` attribute value.
  * @param {Function} props.setAttributes Block attribute setter.
  */
-export default function AddonPricingPanel( { priceGroup, options, setAttributes } ) {
+export default function AddonPricingPanel( {
+	priceGroup,
+	options,
+	setAttributes,
+} ) {
 	const groups = getAddonGroups();
-	const activeGroup = groups.find( ( group ) => group.key === priceGroup ) || null;
+	const activeGroup =
+		groups.find( ( group ) => group.key === priceGroup ) || null;
 
 	const groupChoices = [
 		{ label: __( 'None (plain question)', 'sgs-blocks' ), value: '' },
@@ -53,7 +63,9 @@ export default function AddonPricingPanel( { priceGroup, options, setAttributes 
 					.filter(
 						( option ) =>
 							option.value &&
-							! activeGroup.options.some( ( row ) => row.key === option.value )
+							! activeGroup.options.some(
+								( row ) => row.key === option.value
+							)
 					)
 					.map( ( option ) => option.label || option.value )
 			: [];
@@ -91,7 +103,10 @@ export default function AddonPricingPanel( { priceGroup, options, setAttributes 
 	};
 
 	return (
-		<PanelBody title={ __( 'Pricing', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Pricing', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			<SelectControl
 				label={ __( 'Price from list', 'sgs-blocks' ) }
 				value={ priceGroup || '' }
@@ -121,7 +136,11 @@ export default function AddonPricingPanel( { priceGroup, options, setAttributes 
 				</Button>
 			) }
 			{ unmatchedLabels.length > 0 && (
-				<Notice status="warning" isDismissible={ false } style={ { marginTop: '8px' } }>
+				<Notice
+					status="warning"
+					isDismissible={ false }
+					style={ { marginTop: '8px' } }
+				>
 					{ __(
 						'These options don’t match a key in the chosen price group, so they’ll show with no price: ',
 						'sgs-blocks'

@@ -16,18 +16,23 @@ import { separatorAxis, separatorWidthAt } from './separators';
 /**
  * The CSS for one list's item-drawn separators in the canvas.
  *
- * @param {Object} value      The stored separators object.
- * @param {Object} list       The list descriptor.
- * @param {string} list.item      Selector of the items.
- * @param {string} list.direction 'row' (side by side) or 'column' (stacked).
- * @param {string} list.gap       The gap as a CSS length or expression.
- * @param {string} [list.pseudo]  The pseudo-element the line is drawn on. Default '::before'.
+ * @param {Object} value            The stored separators object.
+ * @param {Object} list             The list descriptor.
+ * @param {string} list.item        Selector of the items.
+ * @param {string} list.direction   'row' (side by side) or 'column' (stacked).
+ * @param {string} list.gap         The gap as a CSS length or expression.
+ * @param {string} [list.pseudo]    The pseudo-element the line is drawn on. Default '::before'.
  * @param {string} [list.pseudoEnd] The pseudo-element for the trailing edge. Default '::after'.
- * @param {string} [device]   'desktop' | 'tablet' | 'mobile'. Default 'desktop'.
- * @param {string} [edges]    'between' | 'all' | 'end' (only when the block offers edges). Default 'between'.
+ * @param {string} [device]         'desktop' | 'tablet' | 'mobile'. Default 'desktop'.
+ * @param {string} [edges]          'between' | 'all' | 'end' (only when the block offers edges). Default 'between'.
  * @return {string} CSS, or '' when the setting draws nothing.
  */
-export function separatorsLineCss( value, list, device = 'desktop', edges = 'between' ) {
+export function separatorsLineCss(
+	value,
+	list,
+	device = 'desktop',
+	edges = 'between'
+) {
 	const axis = 'column' === list.direction ? 'row' : 'column';
 	const data = separatorAxis( value, axis );
 	const width = separatorWidthAt( data, device );
@@ -47,7 +52,11 @@ export function separatorsLineCss( value, list, device = 'desktop', edges = 'bet
 	const border = `border-${ side }-start:${ width } ${ style } ${ colour };`;
 
 	let css = `${ list.item }{position:relative;}`;
-	css += `${ list.item }:not(:first-child)${ before }{${ base }${ start }:calc((${ list.gap || '0px' } + ${ width }) / -2);${ border }}`;
+	css += `${
+		list.item
+	}:not(:first-child)${ before }{${ base }${ start }:calc((${
+		list.gap || '0px'
+	} + ${ width }) / -2);${ border }}`;
 	if ( 'all' === edges ) {
 		css += `${ list.item }:first-child${ before }{${ base }${ start }:0;${ border }}`;
 	}

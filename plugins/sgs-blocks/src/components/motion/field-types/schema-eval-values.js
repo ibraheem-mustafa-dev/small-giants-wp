@@ -168,4 +168,3 @@ export function patternMatches( pattern, value ) {
 export function codePointLength( value ) {
 	return [ ...value ].length;
 }
-

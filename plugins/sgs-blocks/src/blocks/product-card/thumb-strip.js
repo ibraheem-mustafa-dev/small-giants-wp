@@ -19,9 +19,19 @@
  */
 
 /** Entrance attributes a rebuilt thumbnail never carries. */
-const ENTRANCE = [ 'data-sgs-me', 'data-sgs-me-keyframes', 'data-sgs-me-kf', 'data-sgs-in' ];
+const ENTRANCE = [
+	'data-sgs-me',
+	'data-sgs-me-keyframes',
+	'data-sgs-me-kf',
+	'data-sgs-in',
+];
 
-const BARE = { className: 'product-card__thumb', imgClass: '', attrs: [], layers: [] };
+const BARE = {
+	className: 'product-card__thumb',
+	imgClass: '',
+	attrs: [],
+	layers: [],
+};
 
 /** Strip => the stamp last read from it. */
 const stamps = new WeakMap();
@@ -43,7 +53,11 @@ export function readThumbStamp( strip ) {
 		// The media renderer's classes on the picture (its scope class carries the thumb slot's Fit and Radius).
 		imgClass: first.querySelector( 'img' )?.className || '',
 		attrs: [ ...first.attributes ]
-			.filter( ( attr ) => attr.name.startsWith( 'data-sgs-' ) && ! ENTRANCE.includes( attr.name ) )
+			.filter(
+				( attr ) =>
+					attr.name.startsWith( 'data-sgs-' ) &&
+					! ENTRANCE.includes( attr.name )
+			)
 			.map( ( attr ) => [ attr.name, attr.value ] ),
 		layers: [ ...first.children ]
 			.filter( ( child ) => child.matches( 'span.sgs-motion-layer' ) )
@@ -61,8 +75,12 @@ export function readThumbStamp( strip ) {
  */
 export function applyThumbStamp( btn, stamp ) {
 	btn.className = stamp.className;
-	stamp.attrs.forEach( ( [ name, value ] ) => btn.setAttribute( name, value ) );
-	stamp.layers.forEach( ( span ) => btn.appendChild( span.cloneNode( false ) ) );
+	stamp.attrs.forEach( ( [ name, value ] ) =>
+		btn.setAttribute( name, value )
+	);
+	stamp.layers.forEach( ( span ) =>
+		btn.appendChild( span.cloneNode( false ) )
+	);
 }
 
 /**
@@ -90,7 +108,10 @@ export function renderThumbStrip( card, gallery, selectedIdx ) {
 		btn.type = 'button';
 		btn.setAttribute( 'role', 'listitem' );
 		btn.dataset.index = String( i );
-		btn.setAttribute( 'aria-current', i === selectedIdx ? 'true' : 'false' );
+		btn.setAttribute(
+			'aria-current',
+			i === selectedIdx ? 'true' : 'false'
+		);
 		btn.setAttribute( 'aria-label', 'Image ' + ( i + 1 ) );
 		const img = card.ownerDocument.createElement( 'img' );
 		img.src = item.url;

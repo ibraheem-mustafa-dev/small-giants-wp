@@ -69,7 +69,11 @@ if (
 	window.addEventListener(
 		'pointermove',
 		( event ) => {
-			if ( 'touch' === lastPointerType && event.pointerType && 'touch' !== event.pointerType ) {
+			if (
+				'touch' === lastPointerType &&
+				event.pointerType &&
+				'touch' !== event.pointerType
+			) {
 				lastPointerType = event.pointerType;
 			}
 		},

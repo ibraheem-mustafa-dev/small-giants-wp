@@ -319,7 +319,9 @@ function toSeconds( raw ) {
 	if ( ! match ) {
 		return NaN;
 	}
-	return 'ms' === match[ 2 ] ? Number( match[ 1 ] ) / 1000 : Number( match[ 1 ] );
+	return 'ms' === match[ 2 ]
+		? Number( match[ 1 ] ) / 1000
+		: Number( match[ 1 ] );
 }
 
 /**

@@ -39,12 +39,17 @@ export default function TitlePanel( { attributes, setAttributes } ) {
 				label={ __( 'Question weight', 'sgs-blocks' ) }
 				value={ questionFontWeight || '700' }
 				options={ WEIGHT_CHOICES }
-				onChange={ ( val ) => setAttributes( { questionFontWeight: val } ) }
+				onChange={ ( val ) =>
+					setAttributes( { questionFontWeight: val } )
+				}
 				help={ __( 'How bold the step heading reads.', 'sgs-blocks' ) }
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>
-			<IntroField attributes={ attributes } setAttributes={ setAttributes } />
+			<IntroField
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+			/>
 		</PanelBody>
 	);
 }

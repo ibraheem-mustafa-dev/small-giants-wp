@@ -14,7 +14,10 @@ export default function SvgPartsField( { attributes, setAttributes, prefix } ) {
 		<SvgPartsControls
 			attributes={ attributes }
 			setAttributes={ setAttributes }
-			names={ { parts: mediaAttrName( prefix, 'SvgParts' ), trigger: mediaAttrName( prefix, 'SvgPartsTrigger' ) } }
+			names={ {
+				parts: mediaAttrName( prefix, 'SvgParts' ),
+				trigger: mediaAttrName( prefix, 'SvgPartsTrigger' ),
+			} }
 			label={ __( 'Background SVG parts', 'sgs-blocks' ) }
 			defaultTrigger="load"
 			hover={ false }

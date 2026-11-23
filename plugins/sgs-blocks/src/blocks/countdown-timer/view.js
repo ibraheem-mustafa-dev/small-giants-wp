@@ -39,9 +39,9 @@ function flipDigit( el, newValue ) {
 /**
  * Update a digit element — flip style or plain text swap.
  *
- * @param {Element|null} el        Target span, or null to skip.
- * @param {string}       newValue  Padded string (e.g. "07").
- * @param {boolean}      useFlip   Whether to use the flip animation.
+ * @param {Element|null} el       Target span, or null to skip.
+ * @param {string}       newValue Padded string (e.g. "07").
+ * @param {boolean}      useFlip  Whether to use the flip animation.
  */
 function updateDigit( el, newValue, useFlip ) {
 	if ( ! el ) {
@@ -58,7 +58,8 @@ function initCountdown( el ) {
 	const targetAttr = el.dataset.target;
 	const evergreenSeconds = parseInt( el.dataset.evergreen, 10 );
 	const serverTs = parseInt( el.dataset.serverTs, 10 );
-	const expiredMessage = el.dataset.expiredMessage || 'This offer has expired.';
+	const expiredMessage =
+		el.dataset.expiredMessage || 'This offer has expired.';
 	const digitStyle = el.dataset.digitStyle || 'simple';
 	const useFlip = digitStyle === 'flip';
 
@@ -71,13 +72,14 @@ function initCountdown( el ) {
 	let targetTime;
 
 	if ( evergreenSeconds ) {
-		const storageKey = 'sgs-countdown-' + ( el.id || btoa( el.dataset.evergreen ) );
+		const storageKey =
+			'sgs-countdown-' + ( el.id || btoa( el.dataset.evergreen ) );
 		const stored = localStorage.getItem( storageKey );
 
 		if ( stored && parseInt( stored, 10 ) > Date.now() ) {
 			targetTime = parseInt( stored, 10 );
 		} else {
-			targetTime = Date.now() + ( evergreenSeconds * 1000 );
+			targetTime = Date.now() + evergreenSeconds * 1000;
 			localStorage.setItem( storageKey, targetTime.toString() );
 		}
 	} else if ( serverTs ) {

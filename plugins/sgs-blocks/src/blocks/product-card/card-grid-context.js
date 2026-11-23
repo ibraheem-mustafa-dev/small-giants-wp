@@ -22,7 +22,9 @@ const ITEM_SOURCE_MODES = [ 'wc-product', 'sgs-cpt' ];
  */
 export function effectiveSourceMode( attributes, context ) {
 	const fromGrid = context?.[ SOURCE_MODE_CONTEXT ];
-	return ITEM_SOURCE_MODES.includes( fromGrid ) ? fromGrid : attributes?.sourceMode;
+	return ITEM_SOURCE_MODES.includes( fromGrid )
+		? fromGrid
+		: attributes?.sourceMode;
 }
 
 /**

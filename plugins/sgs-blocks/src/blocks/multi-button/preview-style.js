@@ -5,7 +5,12 @@
  * @package SGS\Blocks
  */
 
-import { containerWrapperPreview, isCssGradient, tierLengthPreview, RADIUS_STYLE_KEYS } from '../../utils';
+import {
+	containerWrapperPreview,
+	isCssGradient,
+	tierLengthPreview,
+	RADIUS_STYLE_KEYS,
+} from '../../utils';
 import { resolveColourToken } from '../../components';
 
 /**
@@ -19,7 +24,13 @@ import { resolveColourToken } from '../../components';
  * @return {Object} Flex declarations for the block root.
  */
 export function multiButtonFlexPreview( attributes, tier = 'desktop' ) {
-	const { flexDirection = {}, flexWrap = {}, gap = {}, justifyContent = {}, alignItems = {} } = attributes;
+	const {
+		flexDirection = {},
+		flexWrap = {},
+		gap = {},
+		justifyContent = {},
+		alignItems = {},
+	} = attributes;
 	const has = ( v ) => undefined !== v && null !== v && '' !== v;
 	const pick = ( obj, desktopDefault, mobileDefault ) => {
 		const desktop = has( obj?.desktop ) ? obj.desktop : desktopDefault;
@@ -41,11 +52,12 @@ export function multiButtonFlexPreview( attributes, tier = 'desktop' ) {
 		display: 'flex',
 		flexDirection: pick( flexDirection, 'row', 'column' ),
 		flexWrap: pick( flexWrap, 'nowrap', 'nowrap' ),
-		gap: {
-			desktop: desktopGap,
-			tablet: gapAt( gap?.tablet, desktopGap ),
-			mobile: mobileGap,
-		}[ tier ] || desktopGap,
+		gap:
+			{
+				desktop: desktopGap,
+				tablet: gapAt( gap?.tablet, desktopGap ),
+				mobile: mobileGap,
+			}[ tier ] || desktopGap,
 		justifyContent: pick( justifyContent, 'flex-start' ),
 		alignItems: pick( alignItems, 'center', 'stretch' ),
 	};
@@ -64,19 +76,31 @@ export function multiButtonFlexPreview( attributes, tier = 'desktop' ) {
 export function multiButtonWrapperPreview( attributes, tier, palette ) {
 	const wrapper = containerWrapperPreview( attributes, tier, palette ).style;
 	const style = {};
-	[ 'borderWidth', 'borderStyle', 'borderColor', 'borderImage', ...RADIUS_STYLE_KEYS, 'maxWidth' ].forEach( ( key ) => {
+	[
+		'borderWidth',
+		'borderStyle',
+		'borderColor',
+		'borderImage',
+		...RADIUS_STYLE_KEYS,
+		'maxWidth',
+	].forEach( ( key ) => {
 		if ( undefined !== wrapper[ key ] ) {
 			style[ key ] = wrapper[ key ];
 		}
 	} );
 	if ( attributes.childBtnBackground ) {
-		style[ '--sgs-mb-btn-bg-default' ] = resolveColourToken( attributes.childBtnBackground, palette ) || attributes.childBtnBackground;
+		style[ '--sgs-mb-btn-bg-default' ] =
+			resolveColourToken( attributes.childBtnBackground, palette ) ||
+			attributes.childBtnBackground;
 	}
 	if ( isCssGradient( attributes.childBtnBackgroundGradient ) ) {
-		style[ '--sgs-mb-btn-bg-image-default' ] = attributes.childBtnBackgroundGradient;
+		style[ '--sgs-mb-btn-bg-image-default' ] =
+			attributes.childBtnBackgroundGradient;
 	}
 	if ( attributes.childBtnTextColour ) {
-		style[ '--sgs-mb-btn-color-default' ] = resolveColourToken( attributes.childBtnTextColour, palette ) || attributes.childBtnTextColour;
+		style[ '--sgs-mb-btn-color-default' ] =
+			resolveColourToken( attributes.childBtnTextColour, palette ) ||
+			attributes.childBtnTextColour;
 	}
 	return style;
 }

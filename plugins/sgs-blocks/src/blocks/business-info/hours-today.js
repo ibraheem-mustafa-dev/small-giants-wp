@@ -31,7 +31,10 @@ export function markToday( list, dayKey ) {
 export function initialiseHoursToday( doc = document, now = new Date() ) {
 	doc.querySelectorAll( '[data-sgs-hours-today]' ).forEach( ( list ) => {
 		try {
-			const { day } = zonedNow( now, list.getAttribute( 'data-timezone' ) || 'UTC' );
+			const { day } = zonedNow(
+				now,
+				list.getAttribute( 'data-timezone' ) || 'UTC'
+			);
 			markToday( list, DAY_KEYS[ day ] );
 		} catch ( error ) {
 			// An unreadable time zone leaves the rows unmarked.

@@ -84,11 +84,11 @@ export function boundsFromHeaderRect( headerRect, viewportWidth, epsilon = 1 ) {
  * dropdown 28px in from a card edge the visitor can see, which no reference
  * does.
  *
- * @param {Object} args                Arguments.
- * @param {number} args.desiredLeft    Where the alignment wants the panel.
- * @param {number} args.width          The panel's own width.
- * @param {Object} args.bounds         Bounding box from the helpers above.
- * @param {number} args.gutter         Viewport-edge gutter in px.
+ * @param {Object} args             Arguments.
+ * @param {number} args.desiredLeft Where the alignment wants the panel.
+ * @param {number} args.width       The panel's own width.
+ * @param {Object} args.bounds      Bounding box from the helpers above.
+ * @param {number} args.gutter      Viewport-edge gutter in px.
  * @return {number} Clamped left edge, in the same coordinate space as the input.
  */
 export function clampDropdownLeft( { desiredLeft, width, bounds, gutter } ) {
@@ -139,7 +139,13 @@ export function megaPanelWidth( bounds ) {
  * `start`, `center` and `end` line up with the menu item; `page-centred` centres
  * in the box; `full-width` takes the box's whole width.
  */
-export const PANEL_ALIGNS = [ 'start', 'center', 'end', 'page-centred', 'full-width' ];
+export const PANEL_ALIGNS = [
+	'start',
+	'center',
+	'end',
+	'page-centred',
+	'full-width',
+];
 
 /**
  * Left edge for a panel lined up with its menu item, before clamping.
@@ -174,14 +180,14 @@ export function itemAlignedLeft( { align, anchorLeft, anchorWidth, width } ) {
  * its own content via `width`. When `contentWidth` is not narrower than the
  * width the panel would otherwise get, the result is identical to omitting it.
  *
- * @param {Object}      args              Arguments.
- * @param {string}      args.align        One of PANEL_ALIGNS.
- * @param {boolean}     args.isDropdown   True for the dropdown kind.
- * @param {number}      args.anchorLeft   The menu item's left edge.
- * @param {number}      args.anchorWidth  The menu item's width.
- * @param {number}      args.width        The panel's own measured width.
- * @param {Object}      args.bounds       Bounding box.
- * @param {number}      args.gutter       Viewport-edge gutter in px.
+ * @param {Object}      args                Arguments.
+ * @param {string}      args.align          One of PANEL_ALIGNS.
+ * @param {boolean}     args.isDropdown     True for the dropdown kind.
+ * @param {number}      args.anchorLeft     The menu item's left edge.
+ * @param {number}      args.anchorWidth    The menu item's width.
+ * @param {number}      args.width          The panel's own measured width.
+ * @param {Object}      args.bounds         Bounding box.
+ * @param {number}      args.gutter         Viewport-edge gutter in px.
  * @param {number|null} [args.contentWidth] A mega panel's own content width, or null.
  * @return {{left: number, width: number|null}} Placement.
  */
@@ -200,15 +206,29 @@ export function placePanel( {
 	}
 	const boxWidth = isDropdown ? null : megaPanelWidth( bounds );
 	const eff = null !== boxWidth ? boxWidth : width;
-	const useContent = ! isDropdown && null !== contentWidth && contentWidth < eff;
+	const useContent =
+		! isDropdown && null !== contentWidth && contentWidth < eff;
 	const placedWidth = useContent ? contentWidth : eff;
 	const returnedWidth = useContent ? contentWidth : boxWidth;
 	if ( 'page-centred' === align ) {
-		return { left: centreMegaLeft( { width: placedWidth, bounds, gutter } ), width: returnedWidth };
+		return {
+			left: centreMegaLeft( { width: placedWidth, bounds, gutter } ),
+			width: returnedWidth,
+		};
 	}
-	const desired = itemAlignedLeft( { align, anchorLeft, anchorWidth, width: placedWidth } );
+	const desired = itemAlignedLeft( {
+		align,
+		anchorLeft,
+		anchorWidth,
+		width: placedWidth,
+	} );
 	return {
-		left: clampDropdownLeft( { desiredLeft: desired, width: placedWidth, bounds, gutter } ),
+		left: clampDropdownLeft( {
+			desiredLeft: desired,
+			width: placedWidth,
+			bounds,
+			gutter,
+		} ),
 		width: returnedWidth,
 	};
 }

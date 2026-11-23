@@ -54,8 +54,8 @@ export function removeCartItem( key ) {
 /**
  * Add a product (or variation) to the cart.
  *
- * @param {number} id       Product or variation id.
- * @param {number} quantity Quantity (default 1).
+ * @param {number} id        Product or variation id.
+ * @param {number} quantity  Quantity (default 1).
  * @param {Object} [headers] Extra request headers (the gift box's `X-SGS-Gift: 1`, so the new cart carries the gift value).
  * @return {Promise<Object>} The updated cart.
  */
@@ -79,7 +79,9 @@ export function fetchProducts( ids ) {
 	if ( ! Array.isArray( ids ) || 0 === ids.length ) {
 		return Promise.resolve( [] );
 	}
-	return storeRequest( '/products?include=' + ids.join( ',' ) + '&per_page=100' );
+	return storeRequest(
+		'/products?include=' + ids.join( ',' ) + '&per_page=100'
+	);
 }
 
 export { formatMoney } from '../../shared/cart-live/money';

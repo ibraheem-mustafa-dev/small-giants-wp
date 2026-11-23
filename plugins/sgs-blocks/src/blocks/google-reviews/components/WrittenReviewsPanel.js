@@ -41,11 +41,18 @@ const RATING_OPTIONS = [
  * @param {Function} props.setAttributes Block attribute setter.
  */
 export default function WrittenReviewsPanel( { attributes, setAttributes } ) {
-	const { reviews = [], averageRating, reviewCount, businessName } = attributes;
+	const {
+		reviews = [],
+		averageRating,
+		reviewCount,
+		businessName,
+	} = attributes;
 
 	const update = ( index, patch ) =>
 		setAttributes( {
-			reviews: reviews.map( ( review, i ) => ( i === index ? { ...review, ...patch } : review ) ),
+			reviews: reviews.map( ( review, i ) =>
+				i === index ? { ...review, ...patch } : review
+			),
 		} );
 
 	const remove = ( index ) =>
@@ -62,7 +69,12 @@ export default function WrittenReviewsPanel( { attributes, setAttributes } ) {
 	};
 
 	const add = () =>
-		setAttributes( { reviews: [ ...reviews, { author: '', text: '', rating: 5, _key: generateItemKey() } ] } );
+		setAttributes( {
+			reviews: [
+				...reviews,
+				{ author: '', text: '', rating: 5, _key: generateItemKey() },
+			],
+		} );
 
 	return (
 		<>
@@ -70,7 +82,9 @@ export default function WrittenReviewsPanel( { attributes, setAttributes } ) {
 				<TextControl
 					label={ __( 'Business name', 'sgs-blocks' ) }
 					value={ businessName || '' }
-					onChange={ ( value ) => setAttributes( { businessName: value } ) }
+					onChange={ ( value ) =>
+						setAttributes( { businessName: value } )
+					}
 					__next40pxDefaultSize
 				/>
 				<NumberControl
@@ -79,8 +93,15 @@ export default function WrittenReviewsPanel( { attributes, setAttributes } ) {
 					min={ 0 }
 					max={ 5 }
 					step={ 0.1 }
-					onChange={ ( value ) => setAttributes( { averageRating: parseFloat( value ) || 0 } ) }
-					help={ __( 'Leave empty to work it out from the reviews below.', 'sgs-blocks' ) }
+					onChange={ ( value ) =>
+						setAttributes( {
+							averageRating: parseFloat( value ) || 0,
+						} )
+					}
+					help={ __(
+						'Leave empty to work it out from the reviews below.',
+						'sgs-blocks'
+					) }
 					__next40pxDefaultSize
 				/>
 				<NumberControl
@@ -88,93 +109,184 @@ export default function WrittenReviewsPanel( { attributes, setAttributes } ) {
 					value={ reviewCount || '' }
 					min={ 0 }
 					step={ 1 }
-					onChange={ ( value ) => setAttributes( { reviewCount: parseInt( value, 10 ) || 0 } ) }
-					help={ __( 'Your full count on Google. Leave empty to use the number of reviews below.', 'sgs-blocks' ) }
+					onChange={ ( value ) =>
+						setAttributes( {
+							reviewCount: parseInt( value, 10 ) || 0,
+						} )
+					}
+					help={ __(
+						'Your full count on Google. Leave empty to use the number of reviews below.',
+						'sgs-blocks'
+					) }
 					__next40pxDefaultSize
 				/>
 			</PanelBody>
 
-			<PanelBody title={ sprintf( /* translators: %d: number of reviews. */ __( 'Written reviews (%d)', 'sgs-blocks' ), reviews.length ) }>
+			<PanelBody
+				title={ sprintf(
+					/* translators: %d: number of reviews. */ __(
+						'Written reviews (%d)',
+						'sgs-blocks'
+					),
+					reviews.length
+				) }
+			>
 				{ reviews.map( ( review, index ) => (
 					<PanelBody
 						key={ review._key || index }
-						title={ review.author || sprintf( /* translators: %d: review number. */ __( 'Review %d', 'sgs-blocks' ), index + 1 ) }
+						title={
+							review.author ||
+							sprintf(
+								/* translators: %d: review number. */ __(
+									'Review %d',
+									'sgs-blocks'
+								),
+								index + 1
+							)
+						}
 						initialOpen={ false }
 					>
 						<TextControl
 							label={ __( 'Reviewer name', 'sgs-blocks' ) }
 							value={ review.author || '' }
-							onChange={ ( value ) => update( index, { author: value } ) }
+							onChange={ ( value ) =>
+								update( index, { author: value } )
+							}
 							__next40pxDefaultSize
 						/>
 						<TextareaControl
 							label={ __( 'Review text', 'sgs-blocks' ) }
 							value={ review.text || '' }
-							onChange={ ( value ) => update( index, { text: value } ) }
+							onChange={ ( value ) =>
+								update( index, { text: value } )
+							}
 							rows={ 5 }
 						/>
 						<SelectControl
 							label={ __( 'Rating', 'sgs-blocks' ) }
-							value={ review.rating === undefined || review.rating === null ? '' : String( review.rating ) }
+							value={
+								review.rating === undefined ||
+								review.rating === null
+									? ''
+									: String( review.rating )
+							}
 							options={ RATING_OPTIONS }
-							onChange={ ( value ) => update( index, { rating: value === '' ? undefined : parseFloat( value ) } ) }
+							onChange={ ( value ) =>
+								update( index, {
+									rating:
+										value === ''
+											? undefined
+											: parseFloat( value ),
+								} )
+							}
 							__next40pxDefaultSize
 						/>
 						<TextControl
 							label={ __( 'Date, as shown', 'sgs-blocks' ) }
 							value={ review.date || '' }
-							onChange={ ( value ) => update( index, { date: value } ) }
-							help={ __( 'For example "2 years ago" or "March 2026". Shown exactly as typed.', 'sgs-blocks' ) }
+							onChange={ ( value ) =>
+								update( index, { date: value } )
+							}
+							help={ __(
+								'For example "2 years ago" or "March 2026". Shown exactly as typed.',
+								'sgs-blocks'
+							) }
 							__next40pxDefaultSize
 						/>
 						<TextControl
-							label={ __( 'Date published (optional)', 'sgs-blocks' ) }
+							label={ __(
+								'Date published (optional)',
+								'sgs-blocks'
+							) }
 							type="date"
 							value={ review.datePublished || '' }
-							onChange={ ( value ) => update( index, { datePublished: value } ) }
+							onChange={ ( value ) =>
+								update( index, { datePublished: value } )
+							}
 							__next40pxDefaultSize
 						/>
 						<TextControl
-							label={ __( 'Reviewer detail (optional)', 'sgs-blocks' ) }
+							label={ __(
+								'Reviewer detail (optional)',
+								'sgs-blocks'
+							) }
 							value={ review.meta || '' }
-							onChange={ ( value ) => update( index, { meta: value } ) }
-							help={ __( 'For example "Local Guide · 11 reviews".', 'sgs-blocks' ) }
+							onChange={ ( value ) =>
+								update( index, { meta: value } )
+							}
+							help={ __(
+								'For example "Local Guide · 11 reviews".',
+								'sgs-blocks'
+							) }
 							__next40pxDefaultSize
 						/>
 						<TextControl
-							label={ __( 'Link to the original review (optional)', 'sgs-blocks' ) }
+							label={ __(
+								'Link to the original review (optional)',
+								'sgs-blocks'
+							) }
 							type="url"
 							value={ review.url || '' }
-							onChange={ ( value ) => update( index, { url: value } ) }
+							onChange={ ( value ) =>
+								update( index, { url: value } )
+							}
 							__next40pxDefaultSize
 						/>
 						<ItemImageField
 							value={ review.photo || null }
-							onChange={ ( media ) => update( index, { photo: media } ) }
-							onRemove={ () => update( index, { photo: undefined } ) }
-							label={ __( 'Reviewer photo (optional)', 'sgs-blocks' ) }
-							instructions={ __( 'Shown instead of the initial.', 'sgs-blocks' ) }
+							onChange={ ( media ) =>
+								update( index, { photo: media } )
+							}
+							onRemove={ () =>
+								update( index, { photo: undefined } )
+							}
+							label={ __(
+								'Reviewer photo (optional)',
+								'sgs-blocks'
+							) }
+							instructions={ __(
+								'Shown instead of the initial.',
+								'sgs-blocks'
+							) }
 						/>
 						<DesignTokenPicker
-							label={ __( 'Initial background colour', 'sgs-blocks' ) }
+							label={ __(
+								'Initial background colour',
+								'sgs-blocks'
+							) }
 							states={ [
 								{
 									key: 'normal',
 									label: __( 'Normal', 'sgs-blocks' ),
 									value: review.avatarColour,
-									onChange: ( value ) => update( index, { avatarColour: value ?? '' } ),
+									onChange: ( value ) =>
+										update( index, {
+											avatarColour: value ?? '',
+										} ),
 									linked: true,
 								},
 							] }
 						/>
 						<div className="sgs-google-reviews-editor__row-actions">
-							<Button variant="link" onClick={ () => move( index, -1 ) } disabled={ index === 0 }>
+							<Button
+								variant="link"
+								onClick={ () => move( index, -1 ) }
+								disabled={ index === 0 }
+							>
 								{ __( 'Move up', 'sgs-blocks' ) }
 							</Button>
-							<Button variant="link" onClick={ () => move( index, 1 ) } disabled={ index === reviews.length - 1 }>
+							<Button
+								variant="link"
+								onClick={ () => move( index, 1 ) }
+								disabled={ index === reviews.length - 1 }
+							>
 								{ __( 'Move down', 'sgs-blocks' ) }
 							</Button>
-							<Button isDestructive variant="link" onClick={ () => remove( index ) }>
+							<Button
+								isDestructive
+								variant="link"
+								onClick={ () => remove( index ) }
+							>
 								{ __( 'Remove', 'sgs-blocks' ) }
 							</Button>
 						</div>

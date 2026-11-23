@@ -5,7 +5,11 @@
  * @package
  */
 
-const WIDER = { desktop: [ 'desktop' ], tablet: [ 'tablet', 'desktop' ], mobile: [ 'mobile', 'tablet', 'desktop' ] };
+const WIDER = {
+	desktop: [ 'desktop' ],
+	tablet: [ 'tablet', 'desktop' ],
+	mobile: [ 'mobile', 'tablet', 'desktop' ],
+};
 
 /**
  * @param {Object} source Stored Source object.
@@ -14,7 +18,8 @@ const WIDER = { desktop: [ 'desktop' ], tablet: [ 'tablet', 'desktop' ], mobile:
  */
 export function logoEntryFor( source, tier ) {
 	for ( const device of WIDER[ tier ] || WIDER.desktop ) {
-		const entry = source && 'object' === typeof source ? source[ device ] : null;
+		const entry =
+			source && 'object' === typeof source ? source[ device ] : null;
 		if ( entry && ( entry.url || entry.id ) ) {
 			return entry;
 		}
@@ -36,5 +41,7 @@ export function logoUrlFor( source, tier ) {
  * @return {boolean} Whether any device has a file.
  */
 export function hasLogoFile( source ) {
-	return [ 'desktop', 'tablet', 'mobile' ].some( ( tier ) => !! logoEntryFor( source, tier ) );
+	return [ 'desktop', 'tablet', 'mobile' ].some(
+		( tier ) => !! logoEntryFor( source, tier )
+	);
 }

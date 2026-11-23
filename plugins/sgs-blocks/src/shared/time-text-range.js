@@ -85,8 +85,7 @@ export function hourIn( date, zone = '' ) {
 	if ( offset ) {
 		const sign = '-' === offset[ 1 ] ? -1 : 1;
 		const minutes =
-			sign *
-			( Number( offset[ 2 ] ) * 60 + Number( offset[ 3 ] || 0 ) );
+			sign * ( Number( offset[ 2 ] ) * 60 + Number( offset[ 3 ] || 0 ) );
 		const utc = date.getUTCHours() * 60 + date.getUTCMinutes();
 		return Math.floor( ( ( ( utc + minutes ) % 1440 ) + 1440 ) / 60 ) % 24;
 	}

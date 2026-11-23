@@ -44,10 +44,7 @@
  */
 import { useRef } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
-import {
-	ToggleControl,
-	Button,
-} from '@wordpress/components';
+import { ToggleControl, Button } from '@wordpress/components';
 import { desktop, tablet, mobile } from '@wordpress/icons';
 import { __, sprintf } from '@wordpress/i18n';
 import { resolveTier } from '../utils/responsive';
@@ -56,7 +53,11 @@ import { ToggleGroupControl, ToggleGroupControlOption } from './primitives';
 // TIER_META supplies the tier names shown in labels and hints.
 
 // WP's native device-type names → this component's tier keys.
-const DEVICE_TO_KEY = { Desktop: 'desktop', Tablet: 'tablet', Mobile: 'mobile' };
+const DEVICE_TO_KEY = {
+	Desktop: 'desktop',
+	Tablet: 'tablet',
+	Mobile: 'mobile',
+};
 
 const TIER_META = [
 	{ key: 'desktop', icon: desktop, label: __( 'All devices', 'sgs-blocks' ) },

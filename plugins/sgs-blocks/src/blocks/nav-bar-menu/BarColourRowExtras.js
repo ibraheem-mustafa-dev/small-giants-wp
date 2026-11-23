@@ -37,13 +37,22 @@ import {
  * @param {Object}   [root0.sweepEligibility] This block's own declared eligibility map.
  * @return {Object} The node.
  */
-export function BurgerIconTreatment( { value, onChange, attributes, sweepEligibility } ) {
+export function BurgerIconTreatment( {
+	value,
+	onChange,
+	attributes,
+	sweepEligibility,
+} ) {
 	return (
 		<TreatmentSelect
 			label={ __( 'Icon on hover', 'sgs-blocks' ) }
 			value={ value }
 			onChange={ onChange }
-			options={ sweepableOptions( attributes, 'burgerColourHoverTreatment', sweepEligibility ) }
+			options={ sweepableOptions(
+				attributes,
+				'burgerColourHoverTreatment',
+				sweepEligibility
+			) }
 		/>
 	);
 }

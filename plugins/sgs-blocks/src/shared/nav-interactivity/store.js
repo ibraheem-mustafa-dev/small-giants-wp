@@ -165,7 +165,10 @@ function publishContainerInsets( drawer, trigger ) {
 function publishHeaderBox( drawer, trigger ) {
 	const grows =
 		'1' ===
-		window.getComputedStyle( drawer ).getPropertyValue( '--sgs-nd-grows' ).trim();
+		window
+			.getComputedStyle( drawer )
+			.getPropertyValue( '--sgs-nd-grows' )
+			.trim();
 	const header =
 		grows && trigger
 			? trigger.closest( 'header.sgs-site-header' ) ||
@@ -183,10 +186,22 @@ function publishHeaderBox( drawer, trigger ) {
 		);
 		return;
 	}
-	drawer.style.setProperty( '--sgs-drawer-hb-top', `${ Math.round( rect.top ) }px` );
-	drawer.style.setProperty( '--sgs-drawer-hb-left', `${ Math.round( rect.left ) }px` );
-	drawer.style.setProperty( '--sgs-drawer-hb-width', `${ Math.round( rect.width ) }px` );
-	drawer.style.setProperty( '--sgs-drawer-hb-row-h', `${ Math.round( rect.height ) }px` );
+	drawer.style.setProperty(
+		'--sgs-drawer-hb-top',
+		`${ Math.round( rect.top ) }px`
+	);
+	drawer.style.setProperty(
+		'--sgs-drawer-hb-left',
+		`${ Math.round( rect.left ) }px`
+	);
+	drawer.style.setProperty(
+		'--sgs-drawer-hb-width',
+		`${ Math.round( rect.width ) }px`
+	);
+	drawer.style.setProperty(
+		'--sgs-drawer-hb-row-h',
+		`${ Math.round( rect.height ) }px`
+	);
 	drawer.style.setProperty(
 		'--sgs-drawer-hb-radius',
 		window.getComputedStyle( header ).borderTopLeftRadius || '0px'
@@ -464,9 +479,7 @@ function focusFirstIn( container ) {
  * @return {boolean} Whether a nested dialog is currently containing focus.
  */
 function hasContainingNestedDialog( container ) {
-	const nested = Array.from(
-		container.querySelectorAll( 'dialog[open]' )
-	);
+	const nested = Array.from( container.querySelectorAll( 'dialog[open]' ) );
 	if ( 0 === nested.length ) {
 		return false;
 	}
@@ -559,9 +572,7 @@ function resolveScrim( drawerRef ) {
 	if ( ! drawerRef ) {
 		return null;
 	}
-	return document.querySelector(
-		`[data-sgs-nav-scrim="${ drawerRef }"]`
-	);
+	return document.querySelector( `[data-sgs-nav-scrim="${ drawerRef }"]` );
 }
 
 /**
@@ -670,8 +681,7 @@ function openDrawerFor( ctx, trigger ) {
 	const sgsNdScrollDistance = Number.isFinite( sgsNdScrollDistanceRaw )
 		? sgsNdScrollDistanceRaw
 		: 0;
-	const sgsNdSkipScrollLock =
-		sgsNdScrollDistance > 0 && ! isTouchInput();
+	const sgsNdSkipScrollLock = sgsNdScrollDistance > 0 && ! isTouchInput();
 
 	reparentToBody( drawer, scrim );
 	// The drawer is open, so its sections' images are about to be seen: a lazy image inside a closed section would only
@@ -757,9 +767,7 @@ function openDrawerFor( ctx, trigger ) {
 			'--sgs-drawer-trigger-right',
 			`${ Math.max(
 				0,
-				Math.round(
-					document.documentElement.clientWidth - tRect.right
-				)
+				Math.round( document.documentElement.clientWidth - tRect.right )
 			) }px`
 		);
 	} else {
@@ -926,11 +934,23 @@ function openDrawerFor( ctx, trigger ) {
 	 * download, and non-web links (tel:, mailto:) are left to the browser.
 	 */
 	const onLinkClick = ( e ) => {
-		if ( e.defaultPrevented || 0 !== e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey ) {
+		if (
+			e.defaultPrevented ||
+			0 !== e.button ||
+			e.metaKey ||
+			e.ctrlKey ||
+			e.shiftKey ||
+			e.altKey
+		) {
 			return;
 		}
-		const link = e.target && e.target.closest ? e.target.closest( 'a[href]' ) : null;
-		if ( ! link || ! drawer.contains( link ) || link.hasAttribute( 'download' ) ) {
+		const link =
+			e.target && e.target.closest ? e.target.closest( 'a[href]' ) : null;
+		if (
+			! link ||
+			! drawer.contains( link ) ||
+			link.hasAttribute( 'download' )
+		) {
 			return;
 		}
 		if ( link.target && '_self' !== link.target ) {
@@ -1041,8 +1061,14 @@ function openDrawerFor( ctx, trigger ) {
 		const dialogTop = drawer.offsetTop;
 		const cx = openerRect.left + openerRect.width / 2 - dialogLeft;
 		const cy = openerRect.top + openerRect.height / 2 - dialogTop;
-		drawer.style.setProperty( '--sgs-nav-close-x', `${ Math.round( cx ) }px` );
-		drawer.style.setProperty( '--sgs-nav-close-y', `${ Math.round( cy ) }px` );
+		drawer.style.setProperty(
+			'--sgs-nav-close-x',
+			`${ Math.round( cx ) }px`
+		);
+		drawer.style.setProperty(
+			'--sgs-nav-close-y',
+			`${ Math.round( cy ) }px`
+		);
 	};
 
 	updateOpenerLiveness();
@@ -1236,7 +1262,10 @@ function openDrawerFor( ctx, trigger ) {
 	ctx.isOpen = true;
 	setOpenByRef( ctx.drawerRef, true );
 	announceDrawer( drawer, 'open' );
-	if ( drawer.hasAttribute( 'data-sgs-nd-focus-after-entry' ) && ! prefersReducedMotion() ) {
+	if (
+		drawer.hasAttribute( 'data-sgs-nd-focus-after-entry' ) &&
+		! prefersReducedMotion()
+	) {
 		// A slow entry (over 500ms) still clips its first link, so its focus
 		// ring would be invisible: hold focus on the dialog itself, then move it
 		// in once the entry has finished. Escape still closes mid-entry.

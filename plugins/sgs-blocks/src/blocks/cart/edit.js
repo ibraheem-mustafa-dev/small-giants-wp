@@ -1,9 +1,35 @@
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-editor';
-import { PanelBody, TextControl, Notice, RangeControl } from '@wordpress/components';
-import { useDrawerPreviewToggle, IconPreview, ResponsiveBoxControl, ShadowControl, shadowAttrKeys, SgsColourPanel, ScrimControls, TypographyControls, ResponsiveOverride, SgsLengthControl, RowWrapPanel } from '../../components';
+import {
+	useBlockProps,
+	InspectorControls,
+	useSettings,
+} from '@wordpress/block-editor';
+import {
+	PanelBody,
+	TextControl,
+	Notice,
+	RangeControl,
+} from '@wordpress/components';
+import {
+	useDrawerPreviewToggle,
+	IconPreview,
+	ResponsiveBoxControl,
+	ShadowControl,
+	shadowAttrKeys,
+	SgsColourPanel,
+	ScrimControls,
+	TypographyControls,
+	ResponsiveOverride,
+	SgsLengthControl,
+	RowWrapPanel,
+} from '../../components';
 import { ToolsPanel } from '../../components/primitives';
-import { colourVar, usePreviewTier, tierBoxLonghands, resolveTier } from '../../utils';
+import {
+	colourVar,
+	usePreviewTier,
+	tierBoxLonghands,
+	resolveTier,
+} from '../../utils';
 import PanelSettingsControls from './PanelSettingsControls';
 import TriggerSettingsControls from './TriggerSettingsControls';
 import PillBorderControl from './PillBorderControl';
@@ -96,11 +122,19 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 	// Wave B, U-1 — 'pill' swaps the icon+badge trigger for a word beside the
 	// live count, in a pill.
 	const desktopStyle = 'pill' === triggerStyle ? 'pill' : 'icon';
-	const tabletStyle = [ 'icon', 'pill' ].includes( triggerStyleTablet ) ? triggerStyleTablet : desktopStyle;
-	const mobileStyle = [ 'icon', 'pill' ].includes( triggerStyleMobile ) ? triggerStyleMobile : tabletStyle;
+	const tabletStyle = [ 'icon', 'pill' ].includes( triggerStyleTablet )
+		? triggerStyleTablet
+		: desktopStyle;
+	const mobileStyle = [ 'icon', 'pill' ].includes( triggerStyleMobile )
+		? triggerStyleMobile
+		: tabletStyle;
 	// anyPill: some device shows the pill (its settings appear); allPill: every device does.
-	const anyPill = [ desktopStyle, tabletStyle, mobileStyle ].includes( 'pill' );
-	const allPill = [ desktopStyle, tabletStyle, mobileStyle ].every( ( v ) => 'pill' === v );
+	const anyPill = [ desktopStyle, tabletStyle, mobileStyle ].includes(
+		'pill'
+	);
+	const allPill = [ desktopStyle, tabletStyle, mobileStyle ].every(
+		( v ) => 'pill' === v
+	);
 
 	// WooCommerce availability flag — injected by render.php via wp_localize_script
 	// equivalent in the editor. Falls back to true when the data object is absent
@@ -109,26 +143,47 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 
 	const [ previewOpen, drawerPreviewControl ] = useDrawerPreviewToggle( {
 		title: __( 'Bag drawer', 'sgs-blocks' ),
-		help: __( 'Shows the open panel over the canvas so you can style it. Affects this editing session only — it is not saved and does not change the site.', 'sgs-blocks' ),
+		help: __(
+			'Shows the open panel over the canvas so you can style it. Affects this editing session only — it is not saved and does not change the site.',
+			'sgs-blocks'
+		),
 	} );
 	const previewTier = usePreviewTier();
 	// Every per-breakpoint value resolves for the previewed device, as render.php's tier rules do on the front end.
 	const iconSizeOwn = resolveTier( iconSizeSet, previewTier, null ).value;
 	const iconSize = iconSizeOwn ?? 24;
-	const showZeroPreview = true === resolveTier( showZero, previewTier, false ).value;
-	const badgeSizePreview = resolveTier( attributes.badgeSize, previewTier, null ).value;
-	const pillBadgeSizePreview = resolveTier( attributes.pillBadgeSize, previewTier, null ).value;
+	const showZeroPreview =
+		true === resolveTier( showZero, previewTier, false ).value;
+	const badgeSizePreview = resolveTier(
+		attributes.badgeSize,
+		previewTier,
+		null
+	).value;
+	const pillBadgeSizePreview = resolveTier(
+		attributes.pillBadgeSize,
+		previewTier,
+		null
+	).value;
 	// The canvas shows the style of the device being previewed.
-	const hasPill = 'pill' === { desktop: desktopStyle, tablet: tabletStyle, mobile: mobileStyle }[ previewTier ];
+	const hasPill =
+		'pill' ===
+		{ desktop: desktopStyle, tablet: tabletStyle, mobile: mobileStyle }[
+			previewTier
+		];
 	const [ palette ] = useSettings( 'color.palette' );
 	const parts = triggerStyles( attributes, previewTier, palette, hasPill );
 	const marginLonghands = tierBoxLonghands( margin, previewTier, 'margin' );
 	const style = {
 		'--sgs-cart-icon-size': `${ iconSize }px`,
 		// An icon size set at this breakpoint or above overrules the trigger's 44px tap floor, as render.php does.
-		'--sgs-cart-tap-min': null !== iconSizeOwn && ! hasPill ? '0px' : undefined,
-		'--sgs-cart-badge-size': null !== badgeSizePreview ? `${ badgeSizePreview }px` : undefined,
-		'--sgs-cart-pill-badge-size': null !== pillBadgeSizePreview ? `${ pillBadgeSizePreview }px` : undefined,
+		'--sgs-cart-tap-min':
+			null !== iconSizeOwn && ! hasPill ? '0px' : undefined,
+		'--sgs-cart-badge-size':
+			null !== badgeSizePreview ? `${ badgeSizePreview }px` : undefined,
+		'--sgs-cart-pill-badge-size':
+			null !== pillBadgeSizePreview
+				? `${ pillBadgeSizePreview }px`
+				: undefined,
 		'--sgs-cart-icon-colour': colourVar( iconColour ) || undefined,
 		'--sgs-cart-badge-colour': colourVar( badgeColour ) || undefined,
 		'--sgs-cart-badge-text-colour':
@@ -139,13 +194,19 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 	const blockProps = useBlockProps( {
 		className: `sgs-cart sgs-cart--editor-preview sgs-cart--trigger-${
 			hasPill ? 'pill' : 'icon'
-		}${ hasPill && 'bubble' === attributes.pillCountStyle ? ' sgs-cart--pill-count-bubble' : '' }`,
+		}${
+			hasPill && 'bubble' === attributes.pillCountStyle
+				? ' sgs-cart--pill-count-bubble'
+				: ''
+		}`,
 		style,
 	} );
 
 	return (
 		<>
-			{ hasPanel && <InspectorControls>{ drawerPreviewControl }</InspectorControls> }
+			{ hasPanel && (
+				<InspectorControls>{ drawerPreviewControl }</InspectorControls>
+			) }
 			<SgsColourPanel
 				rows={ [
 					...buildCartColourRows( {
@@ -154,7 +215,11 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 						hasPanel,
 						hasDrawer,
 					} ),
-					...buildPanelColourRows( { attributes, setAttributes, hasPanel } ),
+					...buildPanelColourRows( {
+						attributes,
+						setAttributes,
+						hasPanel,
+					} ),
 				] }
 			/>
 			<InspectorControls>
@@ -169,7 +234,9 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 					autoOpenOnAdd={ autoOpenOnAdd }
 					autoOpenDrawerOnAdd={ attributes.autoOpenDrawerOnAdd }
 					hideOnCartCheckoutPages={ hideOnCartCheckoutPages }
-					freeDeliveryThresholdOverride={ freeDeliveryThresholdOverride }
+					freeDeliveryThresholdOverride={
+						freeDeliveryThresholdOverride
+					}
 					freeDeliveryMessage={ freeDeliveryMessage }
 					freeDeliverySuccessMessage={ freeDeliverySuccessMessage }
 					setAttributes={ setAttributes }
@@ -208,8 +275,22 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 				{ hasPanel && (
 					<RowWrapPanel
 						rows={ [
-							{ label: __( 'Wrap item actions', 'sgs-blocks' ), value: attributes.itemActionsFlexWrap, onChange: ( val ) => setAttributes( { itemActionsFlexWrap: val } ) },
-							{ label: __( 'Wrap panel buttons', 'sgs-blocks' ), value: attributes.panelActionsFlexWrap, onChange: ( val ) => setAttributes( { panelActionsFlexWrap: val } ) },
+							{
+								label: __( 'Wrap item actions', 'sgs-blocks' ),
+								value: attributes.itemActionsFlexWrap,
+								onChange: ( val ) =>
+									setAttributes( {
+										itemActionsFlexWrap: val,
+									} ),
+							},
+							{
+								label: __( 'Wrap panel buttons', 'sgs-blocks' ),
+								value: attributes.panelActionsFlexWrap,
+								onChange: ( val ) =>
+									setAttributes( {
+										panelActionsFlexWrap: val,
+									} ),
+							},
 						] }
 					/>
 				) }
@@ -291,7 +372,8 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 					pillBorderStyle={ pillBorderStyle }
 					pillBorderRadius={ pillBorderRadius }
 					contrastAgainst={
-						attributes.pillBgColour && ! attributes.pillBgColourGradient
+						attributes.pillBgColour &&
+						! attributes.pillBgColourGradient
 							? attributes.pillBgColour
 							: ''
 					}
@@ -323,17 +405,34 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 						<ResponsiveOverride
 							label={ __( 'Minimum height', 'sgs-blocks' ) }
 							value={ attributes.pillMinHeight }
-							onChange={ ( obj ) => setAttributes( { pillMinHeight: obj } ) }
+							onChange={ ( obj ) =>
+								setAttributes( { pillMinHeight: obj } )
+							}
 						>
-							{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+							{ ( {
+								ownValue,
+								effectiveValue,
+								inherited,
+								setOwnValue,
+							} ) => (
 								<SgsLengthControl
 									presets={ false }
-									label={ __( 'Minimum height', 'sgs-blocks' ) }
+									label={ __(
+										'Minimum height',
+										'sgs-blocks'
+									) }
 									hideLabelFromVision
-									help={ __( 'Empty keeps the 44px touch-target height.', 'sgs-blocks' ) }
+									help={ __(
+										'Empty keeps the 44px touch-target height.',
+										'sgs-blocks'
+									) }
 									value={ ownValue || '' }
-									placeholder={ inherited ? effectiveValue : '44px' }
-									onChange={ ( val ) => setOwnValue( val || '' ) }
+									placeholder={
+										inherited ? effectiveValue : '44px'
+									}
+									onChange={ ( val ) =>
+										setOwnValue( val || '' )
+									}
 								/>
 							) }
 						</ResponsiveOverride>
@@ -345,12 +444,20 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 						title={ __( 'Pill shadow', 'sgs-blocks' ) }
 						initialOpen={ false }
 					>
-						<p>{ __( 'Text pill only: an icon button never takes this shadow.', 'sgs-blocks' ) }</p>
+						<p>
+							{ __(
+								'Text pill only: an icon button never takes this shadow.',
+								'sgs-blocks'
+							) }
+						</p>
 						<ShadowControl
 							label={ __( 'Pill shadow', 'sgs-blocks' ) }
 							attributes={ attributes }
 							setAttributes={ setAttributes }
-							attrNames={ shadowAttrKeys( 'pillShadow', { hover: true, hoverColour: true } ) }
+							attrNames={ shadowAttrKeys( 'pillShadow', {
+								hover: true,
+								hoverColour: true,
+							} ) }
 						/>
 					</PanelBody>
 				) }
@@ -385,7 +492,9 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 						} }
 						onChange={ ( tier, next ) => {
 							const key = 'base' === tier ? 'desktop' : tier;
-							setAttributes( { margin: { ...margin, [ key ]: next } } );
+							setAttributes( {
+								margin: { ...margin, [ key ]: next },
+							} );
 						} }
 					/>
 				</PanelBody>
@@ -406,12 +515,25 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 							} )
 						}
 					>
-						<ScrimControls attributes={ attributes } setAttributes={ setAttributes } />
+						<ScrimControls
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+						/>
 						<RangeControl
-							label={ __( 'Backdrop fade time (ms)', 'sgs-blocks' ) }
-							help={ __( '0 fades the dimmed page behind in step with the drawer slide.', 'sgs-blocks' ) }
+							label={ __(
+								'Backdrop fade time (ms)',
+								'sgs-blocks'
+							) }
+							help={ __(
+								'0 fades the dimmed page behind in step with the drawer slide.',
+								'sgs-blocks'
+							) }
 							value={ attributes.scrimFadeDuration ?? 0 }
-							onChange={ ( value ) => setAttributes( { scrimFadeDuration: value ?? 0 } ) }
+							onChange={ ( value ) =>
+								setAttributes( {
+									scrimFadeDuration: value ?? 0,
+								} )
+							}
 							min={ 0 }
 							max={ 3000 }
 							step={ 10 }
@@ -446,7 +568,11 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 					{ ( ! hasPill || pillShowIcon ) && (
 						<span className="sgs-cart__icon" aria-hidden="true">
 							<IconPreview
-								source={ 'custom' === iconSource && iconSvg ? 'custom' : 'lucide' }
+								source={
+									'custom' === iconSource && iconSvg
+										? 'custom'
+										: 'lucide'
+								}
 								svg={ 'custom' === iconSource ? iconSvg : '' }
 								name={ iconName }
 								size={ iconSize }
@@ -455,21 +581,36 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 						</span>
 					) }
 					{ hasPill && (
-						<span className="sgs-cart__pill-label" style={ parts.pillLabel }>
-							<AuthoredText value={ pillLabel || __( 'Cart', 'sgs-blocks' ) } />
+						<span
+							className="sgs-cart__pill-label"
+							style={ parts.pillLabel }
+						>
+							<AuthoredText
+								value={
+									pillLabel || __( 'Cart', 'sgs-blocks' )
+								}
+							/>
 						</span>
 					) }
 					<span
 						className={ `sgs-cart__badge${
 							hasPill ? ' sgs-cart__badge--pill' : ''
-						}${ showZeroPreview ? ' sgs-cart__badge--visible' : '' }` }
+						}${
+							showZeroPreview ? ' sgs-cart__badge--visible' : ''
+						}` }
 						style={ parts.badge }
 					>
 						0
 					</span>
 				</span>
 				{ hasPanel && previewOpen && (
-					<PanelPreview attributes={ attributes } displayMode={ displayMode } tier={ previewTier } palette={ palette } clientId={ clientId } />
+					<PanelPreview
+						attributes={ attributes }
+						displayMode={ displayMode }
+						tier={ previewTier }
+						palette={ palette }
+						clientId={ clientId }
+					/>
 				) }
 			</div>
 		</>

@@ -213,7 +213,12 @@ store( 'sgs/google-reviews', {
 				}
 			} );
 			// Further back by the cards-per-click setting, never past the first card.
-			scrollToItem( root, target === -1 ? items.length - 1 : Math.max( 0, target - ( arrowStep( getContext() ) - 1 ) ) );
+			scrollToItem(
+				root,
+				target === -1
+					? items.length - 1
+					: Math.max( 0, target - ( arrowStep( getContext() ) - 1 ) )
+			);
 		},
 
 		/**
@@ -250,7 +255,10 @@ store( 'sgs/google-reviews', {
 				}
 			} );
 			// On by the cards-per-click setting; scrollToItem clamps at the last card.
-			scrollToItem( root, target === -1 ? 0 : target + ( arrowStep( getContext() ) - 1 ) );
+			scrollToItem(
+				root,
+				target === -1 ? 0 : target + ( arrowStep( getContext() ) - 1 )
+			);
 		},
 
 		/**

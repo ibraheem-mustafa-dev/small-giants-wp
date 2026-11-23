@@ -10,23 +10,46 @@ import { PanelBody, SelectControl } from '@wordpress/components';
  * @param {Function} root0.setAttributes The block's attribute setter.
  * @param {boolean}  root0.hasPanel      Whether displayMode is flyout|drawer.
  */
-export default function PanelItemRowControls( { attributes, setAttributes, hasPanel } ) {
+export default function PanelItemRowControls( {
+	attributes,
+	setAttributes,
+	hasPanel,
+} ) {
 	if ( ! hasPanel ) {
 		return null;
 	}
-	const textRemove = 'text' === attributes.itemRemoveStyle && false !== attributes.itemShowQty;
+	const textRemove =
+		'text' === attributes.itemRemoveStyle &&
+		false !== attributes.itemShowQty;
 	return (
-		<PanelBody title={ __( 'Mini-cart item rows', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Mini-cart item rows', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			{ false !== attributes.itemShowQty && (
 				<SelectControl
 					label={ __( 'Quantity control', 'sgs-blocks' ) }
-					help={ __( 'The stepper is a minus button, the number and a plus button in one pill. Its buttons stop at the limits the shop sets for that item.', 'sgs-blocks' ) }
+					help={ __(
+						'The stepper is a minus button, the number and a plus button in one pill. Its buttons stop at the limits the shop sets for that item.',
+						'sgs-blocks'
+					) }
 					value={ attributes.itemQtyStyle || 'input' }
 					options={ [
-						{ label: __( 'A number box', 'sgs-blocks' ), value: 'input' },
-						{ label: __( 'A stepper (minus, number, plus)', 'sgs-blocks' ), value: 'stepper' },
+						{
+							label: __( 'A number box', 'sgs-blocks' ),
+							value: 'input',
+						},
+						{
+							label: __(
+								'A stepper (minus, number, plus)',
+								'sgs-blocks'
+							),
+							value: 'stepper',
+						},
 					] }
-					onChange={ ( val ) => setAttributes( { itemQtyStyle: val } ) }
+					onChange={ ( val ) =>
+						setAttributes( { itemQtyStyle: val } )
+					}
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 				/>
@@ -36,10 +59,21 @@ export default function PanelItemRowControls( { attributes, setAttributes, hasPa
 					label={ __( 'Remove link position', 'sgs-blocks' ) }
 					value={ attributes.itemRemovePlacement || 'under' }
 					options={ [
-						{ label: __( 'Under the quantity', 'sgs-blocks' ), value: 'under' },
-						{ label: __( 'At the right of the quantity line', 'sgs-blocks' ), value: 'inline-end' },
+						{
+							label: __( 'Under the quantity', 'sgs-blocks' ),
+							value: 'under',
+						},
+						{
+							label: __(
+								'At the right of the quantity line',
+								'sgs-blocks'
+							),
+							value: 'inline-end',
+						},
 					] }
-					onChange={ ( val ) => setAttributes( { itemRemovePlacement: val } ) }
+					onChange={ ( val ) =>
+						setAttributes( { itemRemovePlacement: val } )
+					}
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 				/>

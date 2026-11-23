@@ -1,6 +1,9 @@
 import { __ } from '@wordpress/i18n';
 import { PanelBody, CheckboxControl } from '@wordpress/components';
-import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+import {
+	ToggleGroupControl,
+	ToggleGroupControlOption,
+} from '../../components/primitives';
 
 /**
  * SGS Nav Drawer Menu — Settings tab: "Mega menu (drawer)" PanelBody.
@@ -16,13 +19,13 @@ import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/p
  * A mega item with no nested children is shown with a disabled row. Mirrors
  * FeaturedPanel.js's checklist shape (same identifier scheme and toggle).
  *
- * @param {Object}   root0                        Props.
- * @param {number}   root0.menuRef                The block's `ref` attribute (menu id).
- * @param {Array}    root0.resolvedItems          From useNavMenuSource() — each item
- *                                                 also carries `isMega`/`hasChildren`.
- * @param {string}   root0.megaDrawerMode         The block's `megaDrawerMode` attribute.
- * @param {string[]} root0.megaDrawerFallbackIds  The block's `megaDrawerFallbackIds` attribute.
- * @param {Function} root0.setAttributes          The block's attribute setter.
+ * @param {Object}   root0                       Props.
+ * @param {number}   root0.menuRef               The block's `ref` attribute (menu id).
+ * @param {Array}    root0.resolvedItems         From useNavMenuSource() — each item
+ *                                               also carries `isMega`/`hasChildren`.
+ * @param {string}   root0.megaDrawerMode        The block's `megaDrawerMode` attribute.
+ * @param {string[]} root0.megaDrawerFallbackIds The block's `megaDrawerFallbackIds` attribute.
+ * @param {Function} root0.setAttributes         The block's attribute setter.
  */
 export default function MegaDrawerPanel( {
 	menuRef,
@@ -54,13 +57,23 @@ export default function MegaDrawerPanel( {
 					'sgs-blocks'
 				) }
 				value={ 'link' === megaDrawerMode ? 'link' : 'panel' }
-				onChange={ ( val ) => setAttributes( { megaDrawerMode: 'link' === val ? 'link' : 'panel' } ) }
+				onChange={ ( val ) =>
+					setAttributes( {
+						megaDrawerMode: 'link' === val ? 'link' : 'panel',
+					} )
+				}
 				isBlock
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			>
-				<ToggleGroupControlOption value="panel" label={ __( 'Panel', 'sgs-blocks' ) } />
-				<ToggleGroupControlOption value="link" label={ __( 'Link', 'sgs-blocks' ) } />
+				<ToggleGroupControlOption
+					value="panel"
+					label={ __( 'Panel', 'sgs-blocks' ) }
+				/>
+				<ToggleGroupControlOption
+					value="link"
+					label={ __( 'Link', 'sgs-blocks' ) }
+				/>
 			</ToggleGroupControl>
 			{ 0 === menuRef && (
 				<p>
@@ -72,10 +85,7 @@ export default function MegaDrawerPanel( {
 			) }
 			{ 0 !== menuRef && 0 === megaItems.length && (
 				<p>
-					{ __(
-						'This menu has no mega-menu items.',
-						'sgs-blocks'
-					) }
+					{ __( 'This menu has no mega-menu items.', 'sgs-blocks' ) }
 				</p>
 			) }
 			{ megaItems.map( ( item ) => (

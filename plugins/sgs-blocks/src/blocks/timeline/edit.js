@@ -45,11 +45,29 @@ import {
 	sgsBorderPreview,
 	gapVar,
 } from '../../utils';
-import { connectorLineCss, connectorLineStyleOf } from '../../utils/connector-line';
-import { timelineCardPreviewStyle, timelineDateRingPreviewStyle, timelineEntryAlignPreviewStyle, timelineMediaPreviewStyle, timelineMediaWidth, timelineStripPreviewStyle } from './card-preview';
+import {
+	connectorLineCss,
+	connectorLineStyleOf,
+} from '../../utils/connector-line';
+import {
+	timelineCardPreviewStyle,
+	timelineDateRingPreviewStyle,
+	timelineEntryAlignPreviewStyle,
+	timelineMediaPreviewStyle,
+	timelineMediaWidth,
+	timelineStripPreviewStyle,
+} from './card-preview';
 import { RICH_TEXT_BODY } from '../../utils/rich-text-formats';
-import HorizontalPanelControls, { CardWidthControl, pinnedColourRows } from './horizontal-panel-controls';
-import { cardColourRows, EntryCardControls, EntryDateTypography, EntryDescriptionTypography } from './card-panel-controls';
+import HorizontalPanelControls, {
+	CardWidthControl,
+	pinnedColourRows,
+} from './horizontal-panel-controls';
+import {
+	cardColourRows,
+	EntryCardControls,
+	EntryDateTypography,
+	EntryDescriptionTypography,
+} from './card-panel-controls';
 import DateRingControls, { dateRingColourRows } from './date-ring-controls';
 
 // Per-device spacing boxes of the entry parts: [ attribute, label ].
@@ -73,7 +91,10 @@ const DATE_TEXT_TRANSFORM_OPTIONS = [
 ];
 
 const HORIZONTAL_CARD_LAYOUT_OPTIONS = [
-	{ label: __( 'Stacked (date, then text)', 'sgs-blocks' ), value: 'alternating' },
+	{
+		label: __( 'Stacked (date, then text)', 'sgs-blocks' ),
+		value: 'alternating',
+	},
 	{ label: __( 'Text beside image', 'sgs-blocks' ), value: 'same-side' },
 ];
 
@@ -104,7 +125,11 @@ function entryFile( entry, device = 'desktop' ) {
 		return { kind: 'image', url: '', poster: '' };
 	}
 	return {
-		kind: found.kind || ( /\.(mp4|webm|mov|ogv|m4v)(\?|#|$)/i.test( found.url || '' ) ? 'video' : 'image' ),
+		kind:
+			found.kind ||
+			( /\.(mp4|webm|mov|ogv|m4v)(\?|#|$)/i.test( found.url || '' )
+				? 'video'
+				: 'image' ),
 		url: found.url || '',
 		poster: found.poster?.url || '',
 	};
@@ -126,12 +151,12 @@ function entryHasMedia( entry, device = 'desktop' ) {
  * Canvas preview for an image or video milestone, from the entry's stored Source (its url is stored beside the
  * attachment id, so the editor paints without a REST round-trip).
  *
- * @param {Object} props        Component props.
- * @param {Object} props.entry  The entry to preview.
- * @param {string} props.device The previewed device.
+ * @param {Object} props            Component props.
+ * @param {Object} props.entry      The entry to preview.
+ * @param {string} props.device     The previewed device.
  * @param {Object} props.attributes Block attributes (the entry slot's shared settings).
- * @param {number} props.index  The entry's position.
- * @param {string} props.uid    Scope class base for this block instance.
+ * @param {number} props.index      The entry's position.
+ * @param {string} props.uid        Scope class base for this block instance.
  * @return {JSX.Element|null} The preview element.
  */
 function MediaPreview( { entry, device, attributes, index, uid } ) {
@@ -315,7 +340,10 @@ function buildRootPreviewStyle( attributes, previewTier = 'desktop' ) {
 
 	// The horizontal card strip's gap between cards (the editor's list is the block root).
 	if ( 'horizontal' === attributes.orientation ) {
-		Object.assign( previewStyle, timelineStripPreviewStyle( attributes, previewTier ) );
+		Object.assign(
+			previewStyle,
+			timelineStripPreviewStyle( attributes, previewTier )
+		);
 	}
 	return previewStyle;
 }
@@ -398,9 +426,24 @@ function EntryEditor( { entry, onChange, onRemove } ) {
 			/>
 			{ /* The entry's picture or video: the shared media field with its Alt text and Decorative switch, then this
 			     entry's own Fit and Focal point (an empty Fit takes the timeline's). */ }
-			<MediaSlotField attributes={ slotAttrs } setAttributes={ setSlot } prefix={ ENTRY_SLOT.prefix } slot={ ENTRY_SLOT } label={ __( 'Media', 'sgs-blocks' ) } />
-			<FitField attributes={ slotAttrs } setAttributes={ setSlot } prefix={ ENTRY_SLOT.prefix } slot={ ENTRY_SLOT } />
-			<FocalField attributes={ slotAttrs } setAttributes={ setSlot } prefix={ ENTRY_SLOT.prefix } />
+			<MediaSlotField
+				attributes={ slotAttrs }
+				setAttributes={ setSlot }
+				prefix={ ENTRY_SLOT.prefix }
+				slot={ ENTRY_SLOT }
+				label={ __( 'Media', 'sgs-blocks' ) }
+			/>
+			<FitField
+				attributes={ slotAttrs }
+				setAttributes={ setSlot }
+				prefix={ ENTRY_SLOT.prefix }
+				slot={ ENTRY_SLOT }
+			/>
+			<FocalField
+				attributes={ slotAttrs }
+				setAttributes={ setSlot }
+				prefix={ ENTRY_SLOT.prefix }
+			/>
 			<Button
 				variant="secondary"
 				isDestructive
@@ -425,8 +468,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		previewTier
 	);
 	// Date and description typography: render.php's sgs_typography_css_rule( $attributes, 'date' | 'descriptionText' ).
-	const datePreviewStyle = typographyPreviewStyle( attributes, 'date', previewTier );
-	const descriptionPreviewStyle = typographyPreviewStyle( attributes, 'descriptionText', previewTier );
+	const datePreviewStyle = typographyPreviewStyle(
+		attributes,
+		'date',
+		previewTier
+	);
+	const descriptionPreviewStyle = typographyPreviewStyle(
+		attributes,
+		'descriptionText',
+		previewTier
+	);
 	const {
 		orientation,
 		contentLayout,
@@ -515,10 +566,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		'sgs-timeline--media-under',
 		rowStripes ? 'sgs-timeline--row-stripes' : '',
 		'carousel' === mobileLayout ? 'sgs-timeline--mobile-carousel' : '',
-		'horizontal' === orientation && attributes.cardsShareRow && 'pinned-horizontal' !== scrollEffect
+		'horizontal' === orientation &&
+		attributes.cardsShareRow &&
+		'pinned-horizontal' !== scrollEffect
 			? 'sgs-timeline--cards-share'
 			: '',
-		'horizontal' === orientation && Object.keys( attributes.dateRingSize || {} ).length
+		'horizontal' === orientation &&
+		Object.keys( attributes.dateRingSize || {} ).length
 			? 'sgs-timeline--date-ring'
 			: '',
 		orientation === 'vertical' &&
@@ -550,7 +604,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			: `#block-${ clientId }.sgs-timeline::before{${ connectorLineCss(
 					connectorLineStyle,
 					'vertical' === orientation ? 'vertical' : 'horizontal',
-					{ colour: 'var(--sgs-connector-colour)', thickness: 'var(--sgs-connector-width)' }
+					{
+						colour: 'var(--sgs-connector-colour)',
+						thickness: 'var(--sgs-connector-width)',
+					}
 			  ) }}#block-${ clientId }.sgs-timeline:hover::before{border-color:var(--sgs-connector-colour-hover,var(--sgs-connector-colour))}`;
 
 	const linkPreviewCss =
@@ -587,11 +644,30 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// to the element so each paints its own (textGradientBoxStyle()).
 	const elementTextStyle = ( ownFlat, ownGradient, align = '' ) =>
 		ownFlat || ownGradient
-			? resolveTextColourPreviewStyle( ownFlat, ownGradient, colourVar, true, align )
-			: resolveTextColourPreviewStyle( textColour, textColourGradient, colourVar, true, align );
+			? resolveTextColourPreviewStyle(
+					ownFlat,
+					ownGradient,
+					colourVar,
+					true,
+					align
+			  )
+			: resolveTextColourPreviewStyle(
+					textColour,
+					textColourGradient,
+					colourVar,
+					true,
+					align
+			  );
 	const dateColourStyle = elementTextStyle( dateColour, dateColourGradient );
-	const titleColourStyle = elementTextStyle( titleColour, titleColourGradient, titleTextAlign );
-	const descriptionColourStyle = elementTextStyle( descriptionTextColour, descriptionTextColourGradient );
+	const titleColourStyle = elementTextStyle(
+		titleColour,
+		titleColourGradient,
+		titleTextAlign
+	);
+	const descriptionColourStyle = elementTextStyle(
+		descriptionTextColour,
+		descriptionTextColourGradient
+	);
 
 	// Hover look for the same three elements, previewed in the canvas with a
 	// scoped rule (an inline style would pin the resting colour). Own hover
@@ -600,17 +676,48 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const hoverTextRule = ( suffix, ownFlat, ownGradient, align = '' ) => {
 		const style =
 			ownFlat || ownGradient
-				? resolveTextColourPreviewStyle( ownFlat, ownGradient, colourVar, true, align )
-				: resolveTextColourPreviewStyle( textColourHover, textColourHoverGradient, colourVar, true, align );
+				? resolveTextColourPreviewStyle(
+						ownFlat,
+						ownGradient,
+						colourVar,
+						true,
+						align
+				  )
+				: resolveTextColourPreviewStyle(
+						textColourHover,
+						textColourHoverGradient,
+						colourVar,
+						true,
+						align
+				  );
 		const decls = Object.entries( style )
-			.map( ( [ prop, value ] ) => `${ prop.replace( /[A-Z]/g, ( c ) => `-${ c.toLowerCase() }` ).replace( /^webkit-/, '-webkit-' ) }:${ value } !important` )
+			.map(
+				( [ prop, value ] ) =>
+					`${ prop
+						.replace( /[A-Z]/g, ( c ) => `-${ c.toLowerCase() }` )
+						.replace(
+							/^webkit-/,
+							'-webkit-'
+						) }:${ value } !important`
+			)
 			.join( ';' );
-		return decls ? `#block-${ clientId }:hover .sgs-timeline__${ suffix }{${ decls }}` : '';
+		return decls
+			? `#block-${ clientId }:hover .sgs-timeline__${ suffix }{${ decls }}`
+			: '';
 	};
 	const hoverPreviewCss = [
-		hoverTextRule( 'title', titleColourHover, titleColourHoverGradient, titleTextAlign ),
+		hoverTextRule(
+			'title',
+			titleColourHover,
+			titleColourHoverGradient,
+			titleTextAlign
+		),
 		hoverTextRule( 'date', dateColourHover, dateColourHoverGradient ),
-		hoverTextRule( 'description', descriptionTextColourHover, descriptionTextColourHoverGradient ),
+		hoverTextRule(
+			'description',
+			descriptionTextColourHover,
+			descriptionTextColourHoverGradient
+		),
 	].join( '' );
 
 	// Contract §A: the pre-existing --sgs-connector-colour / --sgs-date-colour
@@ -643,7 +750,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				: undefined,
 			'--sgs-connector-colour-hover-gradient':
 				connectorColourHoverGradient || undefined,
-			'--sgs-timeline-media-width': timelineMediaWidth( attributes.entryWidth, previewTier ) || undefined,
+			'--sgs-timeline-media-width':
+				timelineMediaWidth( attributes.entryWidth, previewTier ) ||
+				undefined,
 			// Mirrors render.php: an EMPTY stripe A resolves to `transparent`,
 			// so odd rows keep the page/section background and only even rows
 			// band. Emitted only when the feature is on, so a timeline without
@@ -690,7 +799,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			'--sgs-timeline-milestone-min-height':
 				milestoneMinHeight || undefined,
 			'--sgs-timeline-entry-gap': gapVar( entryGap ),
-			'--sgs-date-ring-size': 'horizontal' === orientation ? timelineMediaWidth( attributes.dateRingSize, previewTier ) || undefined : undefined,
+			'--sgs-date-ring-size':
+				'horizontal' === orientation
+					? timelineMediaWidth(
+							attributes.dateRingSize,
+							previewTier
+					  ) || undefined
+					: undefined,
 			...buildRootPreviewStyle( attributes, previewTier ),
 		},
 	} );
@@ -1075,12 +1190,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: descriptionTextColour,
 								onChange: ( val ) =>
-									setAttributes( { descriptionTextColour: val ?? '' } ),
+									setAttributes( {
+										descriptionTextColour: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: descriptionTextColourGradient,
 								onGradientChange: ( val ) =>
 									setAttributes( {
-										descriptionTextColourGradient: val ?? '',
+										descriptionTextColourGradient:
+											val ?? '',
 									} ),
 							},
 							{
@@ -1091,20 +1209,19 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									setAttributes( {
 										descriptionTextColourHover: val ?? '',
 									} ),
-								gradientValue: descriptionTextColourHoverGradient,
+								gradientValue:
+									descriptionTextColourHoverGradient,
 								onGradientChange: ( val ) =>
 									setAttributes( {
-										descriptionTextColourHoverGradient: val ?? '',
+										descriptionTextColourHoverGradient:
+											val ?? '',
 									} ),
 							},
 						],
 					},
 					{
 						key: 'descriptionLink',
-						label: __(
-							'Description link colour',
-							'sgs-blocks'
-						),
+						label: __( 'Description link colour', 'sgs-blocks' ),
 						gradientCapable: true,
 						states: [
 							{
@@ -1252,7 +1369,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					{ ( 'horizontal' === orientation || 'vertical' === orientation ) && (
+					{ ( 'horizontal' === orientation ||
+						'vertical' === orientation ) && (
 						<SelectControl
 							label={
 								'horizontal' === orientation
@@ -1260,7 +1378,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									: __( 'How entries line up', 'sgs-blocks' )
 							}
 							value={
-								'horizontal' === orientation && 'same-side' !== contentLayout
+								'horizontal' === orientation &&
+								'same-side' !== contentLayout
 									? 'alternating'
 									: contentLayout
 							}
@@ -1296,8 +1415,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						<SelectControl
 							label={
 								'horizontal' === orientation
-									? __( 'Which side the text sits', 'sgs-blocks' )
-									: __( 'Which side of the line', 'sgs-blocks' )
+									? __(
+											'Which side the text sits',
+											'sgs-blocks'
+									  )
+									: __(
+											'Which side of the line',
+											'sgs-blocks'
+									  )
 							}
 							value={ contentSide }
 							options={ CONTENT_SIDE_OPTIONS }
@@ -1336,7 +1461,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							'sgs-blocks'
 						) }
 					/>
-					{ ( 'carousel' === mobileLayout || 'horizontal' === orientation ) && (
+					{ ( 'carousel' === mobileLayout ||
+						'horizontal' === orientation ) && (
 						<CardWidthControl
 							attributes={ attributes }
 							setAttributes={ setAttributes }
@@ -1353,11 +1479,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						label={ __( 'Line style', 'sgs-blocks' ) }
 						value={ connectorLineStyle }
 						onChange={ ( val ) =>
-							setAttributes( { connectorLineStyle: val || 'solid' } )
+							setAttributes( {
+								connectorLineStyle: val || 'solid',
+							} )
 						}
 					/>
 					<p className="components-base-control__help">
-						{ __( 'Dashed and dotted draw a border in the connector colour, so a connector gradient is ignored.', 'sgs-blocks' ) }
+						{ __(
+							'Dashed and dotted draw a border in the connector colour, so a connector gradient is ignored.',
+							'sgs-blocks'
+						) }
 					</p>
 					<ToggleControl
 						label={ __( 'Fill connector on scroll', 'sgs-blocks' ) }
@@ -1552,16 +1683,28 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					title={ __( 'Entry date typography', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<EntryDateTypography attributes={ attributes } setAttributes={ setAttributes } />
+					<EntryDateTypography
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
 				</PanelBody>
 				<PanelBody
 					title={ __( 'Entry description typography', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<EntryDescriptionTypography attributes={ attributes } setAttributes={ setAttributes } />
+					<EntryDescriptionTypography
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
 				</PanelBody>
-				<EntryCardControls attributes={ attributes } setAttributes={ setAttributes } />
-				<DateRingControls attributes={ attributes } setAttributes={ setAttributes } />
+				<EntryCardControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+				<DateRingControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 				<PanelBody
 					title={ __( 'Padding, margin & border', 'sgs-blocks' ) }
 					initialOpen={ false }
@@ -1616,7 +1759,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						<ResponsiveOverride
 							key={ attrName }
 							value={ attributes[ attrName ] }
-							onChange={ ( obj ) => setAttributes( { [ attrName ]: obj } ) }
+							onChange={ ( obj ) =>
+								setAttributes( { [ attrName ]: obj } )
+							}
 						>
 							{ ( { ownValue, setOwnValue } ) => (
 								<SgsBoxControl
@@ -1629,7 +1774,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									units={ BOX_UNITS }
 									presets
 									onChange={ ( next ) =>
-										setOwnValue( normaliseResponsiveBox( next ) )
+										setOwnValue(
+											normaliseResponsiveBox( next )
+										)
 									}
 								/>
 							) }
@@ -1735,10 +1882,21 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							'horizontal' === orientation
 								? {
 										...( attributes.cardBackgroundColour
-											? { backgroundColor: colourVar( attributes.cardBackgroundColour ) }
+											? {
+													backgroundColor: colourVar(
+														attributes.cardBackgroundColour
+													),
+											  }
 											: {} ),
-										...tierBoxLonghands( attributes.cardPadding, previewTier, 'padding' ),
-										...timelineCardPreviewStyle( attributes, previewTier ),
+										...tierBoxLonghands(
+											attributes.cardPadding,
+											previewTier,
+											'padding'
+										),
+										...timelineCardPreviewStyle(
+											attributes,
+											previewTier
+										),
 								  }
 								: undefined
 						}
@@ -1748,10 +1906,25 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							style={ {
 								...datePreviewStyle,
 								...dateColourStyle,
-								...timelineDateRingPreviewStyle( attributes, previewTier ),
-								...tierBoxLonghands( attributes.dateMargin, previewTier, 'margin' ),
-								...( [ 'none', 'uppercase', 'lowercase', 'capitalize' ].includes( attributes.dateTextTransform )
-									? { textTransform: attributes.dateTextTransform }
+								...timelineDateRingPreviewStyle(
+									attributes,
+									previewTier
+								),
+								...tierBoxLonghands(
+									attributes.dateMargin,
+									previewTier,
+									'margin'
+								),
+								...( [
+									'none',
+									'uppercase',
+									'lowercase',
+									'capitalize',
+								].includes( attributes.dateTextTransform )
+									? {
+											textTransform:
+												attributes.dateTextTransform,
+									  }
 									: {} ),
 							} }
 						>
@@ -1766,7 +1939,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						{ entryHasMedia( entry, previewTier ) && (
 							<div
 								className="sgs-timeline__media-slot"
-								style={ timelineMediaPreviewStyle( attributes, previewTier ) }
+								style={ timelineMediaPreviewStyle(
+									attributes,
+									previewTier
+								) }
 								/* Mirrors render.php: a decorative milestone
 								   picture is hidden from assistive tech rather
 								   than announced. Reflected on the canvas too so
@@ -1776,7 +1952,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								   to catch, and it caught this one. */
 								aria-hidden={ entry.decorative || undefined }
 							>
-								<MediaPreview entry={ entry } device={ previewTier } attributes={ attributes } index={ index } uid={ `sgs-tl-${ clientId.slice( 0, 8 ) }` } />
+								<MediaPreview
+									entry={ entry }
+									device={ previewTier }
+									attributes={ attributes }
+									index={ index }
+									uid={ `sgs-tl-${ clientId.slice( 0, 8 ) }` }
+								/>
 							</div>
 						) }
 						<div
@@ -1786,15 +1968,29 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						<div
 							className="sgs-timeline__content"
 							style={ {
-								...tierBoxLonghands( attributes.contentMargin, previewTier, 'margin' ),
-								...tierBoxLonghands( attributes.contentPadding, previewTier, 'padding' ),
-								...timelineEntryAlignPreviewStyle( attributes, previewTier ),
+								...tierBoxLonghands(
+									attributes.contentMargin,
+									previewTier,
+									'margin'
+								),
+								...tierBoxLonghands(
+									attributes.contentPadding,
+									previewTier,
+									'padding'
+								),
+								...timelineEntryAlignPreviewStyle(
+									attributes,
+									previewTier
+								),
 							} }
 						>
 							<RichText.Content
 								tagName={ HeadingTag }
 								className="sgs-timeline__title"
-								style={ { ...titlePreviewStyle, ...titleColourStyle } }
+								style={ {
+									...titlePreviewStyle,
+									...titleColourStyle,
+								} }
 								value={
 									entry.title ||
 									__( 'Entry title', 'sgs-blocks' )
@@ -1807,8 +2003,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									style={ {
 										...descriptionPreviewStyle,
 										...descriptionColourStyle,
-										...tierBoxLonghands( attributes.descriptionMargin, previewTier, 'margin' ),
-										...timelineEntryAlignPreviewStyle( attributes, previewTier ),
+										...tierBoxLonghands(
+											attributes.descriptionMargin,
+											previewTier,
+											'margin'
+										),
+										...timelineEntryAlignPreviewStyle(
+											attributes,
+											previewTier
+										),
 									} }
 									value={ entry.description }
 								/>

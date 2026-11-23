@@ -50,7 +50,11 @@
 import { __ } from '@wordpress/i18n';
 import EasingAtom from '../../components/motion/EasingAtom';
 import { useRef } from 'react';
-import { useBlockProps, useSettings, InspectorControls } from '@wordpress/block-editor';
+import {
+	useBlockProps,
+	useSettings,
+	InspectorControls,
+} from '@wordpress/block-editor';
 import { Notice, RangeControl } from '@wordpress/components';
 import ServerSideRender from '../../components/ServerSideRender';
 import {
@@ -61,7 +65,7 @@ import {
 	textRow,
 	ScrimControls,
 	scrimColourRow,
-	} from '../../components';
+} from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { resolveTier } from '../../utils';
 import {
@@ -71,10 +75,7 @@ import {
 	SubmenuTextTreatment,
 	SubmenuLinkBgTreatment,
 } from '../../shared/nav-menu-panels/ColourRowExtras';
-import {
-	BurgerIconTreatment,
-	BurgerBgTreatment,
-} from './BarColourRowExtras';
+import { BurgerIconTreatment, BurgerBgTreatment } from './BarColourRowExtras';
 import useNavMenuSource from '../../shared/nav-menu-panels/useNavMenuSource';
 import useDrawerNotice from './useDrawerNotice';
 import useItemHoverContrast from '../../shared/nav-menu-panels/useItemHoverContrast';
@@ -234,8 +235,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// uniformly across every tier's markup (the burger LABEL typography below
 	// — the text span exists in the DOM the moment ANY tier is text-bearing,
 	// mirrors render.php's own $sgs_nm_trigger_any_text).
-	const triggerAnyTextBearing = [ 'desktop', 'tablet', 'mobile' ].some( ( tier ) =>
-		[ 'text', 'icon-and-text' ].includes( resolveTier( triggerMode, tier, 'icon' ).value )
+	const triggerAnyTextBearing = [ 'desktop', 'tablet', 'mobile' ].some(
+		( tier ) =>
+			[ 'text', 'icon-and-text' ].includes(
+				resolveTier( triggerMode, tier, 'icon' ).value
+			)
 	);
 
 	// Reference element for resolving `var(--wp--preset--color--x)` stops via
@@ -272,14 +276,21 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	// The Open state (a top-level item whose dropdown or mega panel is open) is appended at array level to the
 	// helper's Normal/Hover/Current states: the helpers model pointer and page states only.
-	const withOpenState = ( row, openState ) => ( { ...row, states: [ ...row.states, openState ] } );
+	const withOpenState = ( row, openState ) => ( {
+		...row,
+		states: [ ...row.states, openState ],
+	} );
 
 	const colourRows = [
 		fillRow( {
 			key: 'nav-bg',
 			heading: __( 'Menu', 'sgs-blocks' ),
 			label: __( 'Nav background', 'sgs-blocks' ),
-			attrs: { base: 'navBg', hover: 'navBgHover', gradient: 'navBgGradient' },
+			attrs: {
+				base: 'navBg',
+				hover: 'navBgHover',
+				gradient: 'navBgGradient',
+			},
 			attributes,
 			setAttributes,
 		} ),
@@ -296,42 +307,49 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		} ),
 		withOpenState(
 			textRow( {
-			key: 'item-text',
-			label: __( 'Item text', 'sgs-blocks' ),
-			attrs: {
-				base: 'itemColour',
-				hover: 'itemColourHover',
-				current: 'itemColourCurrent',
-				gradient: 'itemColourGradient',
-				hoverGradient: itemSmartContrast ? undefined : 'itemColourHoverGradient',
-			},
-			attributes,
-			setAttributes,
-			after: (
-				<>
-					{ itemHoverContrastNotice && (
-						<Notice
-							status="warning"
-							isDismissible={ false }
-							className="sgs-contrast-notice"
-						>
-							{ itemHoverContrastNotice }
-						</Notice>
-					) }
-					<ItemTextTreatment
-						value={ itemColourHoverTreatment }
-						onChange={ ( val ) => setAttributes( { itemColourHoverTreatment: val } ) }
-						attributes={ attributes }
-						sweepEligibility={ SWEEP_ELIGIBILITY }
-					/>
-				</>
-			),
+				key: 'item-text',
+				label: __( 'Item text', 'sgs-blocks' ),
+				attrs: {
+					base: 'itemColour',
+					hover: 'itemColourHover',
+					current: 'itemColourCurrent',
+					gradient: 'itemColourGradient',
+					hoverGradient: itemSmartContrast
+						? undefined
+						: 'itemColourHoverGradient',
+				},
+				attributes,
+				setAttributes,
+				after: (
+					<>
+						{ itemHoverContrastNotice && (
+							<Notice
+								status="warning"
+								isDismissible={ false }
+								className="sgs-contrast-notice"
+							>
+								{ itemHoverContrastNotice }
+							</Notice>
+						) }
+						<ItemTextTreatment
+							value={ itemColourHoverTreatment }
+							onChange={ ( val ) =>
+								setAttributes( {
+									itemColourHoverTreatment: val,
+								} )
+							}
+							attributes={ attributes }
+							sweepEligibility={ SWEEP_ELIGIBILITY }
+						/>
+					</>
+				),
 			} ),
 			{
 				key: 'open',
 				label: __( 'Open', 'sgs-blocks' ),
 				value: itemColourOpen,
-				onChange: ( val ) => setAttributes( { itemColourOpen: val ?? '' } ),
+				onChange: ( val ) =>
+					setAttributes( { itemColourOpen: val ?? '' } ),
 				linked: true,
 			}
 		),
@@ -358,7 +376,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					key: 'hover',
 					label: __( 'Hover', 'sgs-blocks' ),
 					value: itemBgHover,
-					onChange: ( val ) => setAttributes( { itemBgHover: val ?? '' } ),
+					onChange: ( val ) =>
+						setAttributes( { itemBgHover: val ?? '' } ),
 					gradientValue: itemBgHoverGradient,
 					onGradientChange: ( val ) =>
 						setAttributes( { itemBgHoverGradient: val ?? '' } ),
@@ -371,7 +390,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								label: __( 'Current', 'sgs-blocks' ),
 								value: itemBgCurrent,
 								onChange: ( val ) =>
-									setAttributes( { itemBgCurrent: val ?? '' } ),
+									setAttributes( {
+										itemBgCurrent: val ?? '',
+									} ),
 								gradientValue: itemBgCurrentGradient,
 								onGradientChange: ( val ) =>
 									setAttributes( {
@@ -385,14 +406,17 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					key: 'open',
 					label: __( 'Open', 'sgs-blocks' ),
 					value: itemBgOpen,
-					onChange: ( val ) => setAttributes( { itemBgOpen: val ?? '' } ),
+					onChange: ( val ) =>
+						setAttributes( { itemBgOpen: val ?? '' } ),
 					linked: true,
 				},
 			],
 			after: (
 				<ItemBgTreatment
 					value={ itemBgHoverTreatment }
-					onChange={ ( val ) => setAttributes( { itemBgHoverTreatment: val } ) }
+					onChange={ ( val ) =>
+						setAttributes( { itemBgHoverTreatment: val } )
+					}
 				/>
 			),
 		},
@@ -413,7 +437,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					key: 'normal',
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: itemBorderColour,
-					onChange: ( val ) => setAttributes( { itemBorderColour: val ?? '' } ),
+					onChange: ( val ) =>
+						setAttributes( { itemBorderColour: val ?? '' } ),
 					linked: true,
 				},
 				{
@@ -436,9 +461,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			after: (
 				<ItemBorderTreatment
 					value={ itemBorderHoverTreatment }
-					onChange={ ( val ) => setAttributes( { itemBorderHoverTreatment: val } ) }
+					onChange={ ( val ) =>
+						setAttributes( { itemBorderHoverTreatment: val } )
+					}
 					angle={ sweepAngle }
-					onAngleChange={ ( val ) => setAttributes( { sweepAngle: val } ) }
+					onAngleChange={ ( val ) =>
+						setAttributes( { sweepAngle: val } )
+					}
 				/>
 			),
 		},
@@ -466,7 +495,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						setAttributes( { submenuBorderColour: val ?? '' } ),
 					gradientValue: submenuBorderColourGradient,
 					onGradientChange: ( val ) =>
-						setAttributes( { submenuBorderColourGradient: val ?? '' } ),
+						setAttributes( {
+							submenuBorderColourGradient: val ?? '',
+						} ),
 					linked: true,
 				},
 			],
@@ -485,7 +516,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			after: (
 				<SubmenuTextTreatment
 					value={ submenuColourHoverTreatment }
-					onChange={ ( val ) => setAttributes( { submenuColourHoverTreatment: val } ) }
+					onChange={ ( val ) =>
+						setAttributes( { submenuColourHoverTreatment: val } )
+					}
 					attributes={ attributes }
 					sweepEligibility={ SWEEP_ELIGIBILITY }
 				/>
@@ -505,7 +538,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			after: (
 				<SubmenuLinkBgTreatment
 					value={ submenuLinkBgHoverTreatment }
-					onChange={ ( val ) => setAttributes( { submenuLinkBgHoverTreatment: val } ) }
+					onChange={ ( val ) =>
+						setAttributes( { submenuLinkBgHoverTreatment: val } )
+					}
 				/>
 			),
 		} ),
@@ -527,7 +562,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			after: (
 				<BurgerIconTreatment
 					value={ burgerColourHoverTreatment }
-					onChange={ ( val ) => setAttributes( { burgerColourHoverTreatment: val } ) }
+					onChange={ ( val ) =>
+						setAttributes( { burgerColourHoverTreatment: val } )
+					}
 					attributes={ attributes }
 					sweepEligibility={ SWEEP_ELIGIBILITY }
 				/>
@@ -546,7 +583,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			after: (
 				<BurgerBgTreatment
 					value={ burgerBgHoverTreatment }
-					onChange={ ( val ) => setAttributes( { burgerBgHoverTreatment: val } ) }
+					onChange={ ( val ) =>
+						setAttributes( { burgerBgHoverTreatment: val } )
+					}
 				/>
 			),
 		} ),
@@ -695,7 +734,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					submenuCaretGap={ submenuCaretGap }
 					submenuCaretTurnDuration={ submenuCaretTurnDuration }
 					submenuCaretTurnEasing={ submenuCaretTurnEasing }
-					submenuCaretTurnEasingCustom={ submenuCaretTurnEasingCustom }
+					submenuCaretTurnEasingCustom={
+						submenuCaretTurnEasingCustom
+					}
 					submenuCloseGrace={ submenuCloseGrace }
 					submenuIntentDelay={ submenuIntentDelay }
 					submenuOpenOn={ submenuOpenOn }
@@ -785,14 +826,21 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								showLetterSpacing: true,
 								showTransform: true,
 							},
-							...( triggerAnyTextBearing ? [ {
-								key: 'burger',
-								label: __( 'Menu button', 'sgs-blocks' ),
-								prefix: 'burger',
-								showFontFamily: true,
-								showTransform: true,
-								showLetterSpacing: true,
-							} ] : [] ),
+							...( triggerAnyTextBearing
+								? [
+										{
+											key: 'burger',
+											label: __(
+												'Menu button',
+												'sgs-blocks'
+											),
+											prefix: 'burger',
+											showFontFamily: true,
+											showTransform: true,
+											showLetterSpacing: true,
+										},
+								  ]
+								: [] ),
 						] }
 					/>
 				</TypographyPanel>
@@ -816,7 +864,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				<SeparatorsPanel
 					title={ __( 'Item separators', 'sgs-blocks' ) }
 					value={ attributes.separators }
-					onChange={ ( next ) => setAttributes( { separators: next } ) }
+					onChange={ ( next ) =>
+						setAttributes( { separators: next } )
+					}
 					axes={ [ 'column' ] }
 					sweep
 				/>
@@ -841,7 +891,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				<SeparatorsPanel
 					title={ __( 'Submenu row separators', 'sgs-blocks' ) }
 					value={ attributes.submenuSeparators }
-					onChange={ ( next ) => setAttributes( { submenuSeparators: next } ) }
+					onChange={ ( next ) =>
+						setAttributes( { submenuSeparators: next } )
+					}
 					axes={ [ 'row' ] }
 				/>
 
@@ -882,7 +934,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						}
 					>
 						<RangeControl
-							label={ __( 'Backdrop fade time (ms)', 'sgs-blocks' ) }
+							label={ __(
+								'Backdrop fade time (ms)',
+								'sgs-blocks'
+							) }
 							help={ __(
 								'0 fades the backdrop WITH the dropdown/mega panel.',
 								'sgs-blocks'
@@ -906,16 +961,24 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						label={ __( 'Backdrop fade easing', 'sgs-blocks' ) }
 						hasValue={ () => !! scrimFadeEasing }
 						onDeselect={ () =>
-							setAttributes( { scrimFadeEasing: '', scrimFadeEasingCustom: '' } )
+							setAttributes( {
+								scrimFadeEasing: '',
+								scrimFadeEasingCustom: '',
+							} )
 						}
 					>
-						<EasingAtom vocab="nav"
+						<EasingAtom
+							vocab="nav"
 							label={ __( 'Backdrop fade easing', 'sgs-blocks' ) }
 							value={ scrimFadeEasing }
 							custom={ scrimFadeEasingCustom }
 							fallback="ease"
-							onChange={ ( val ) => setAttributes( { scrimFadeEasing: val } ) }
-							onCustomChange={ ( val ) => setAttributes( { scrimFadeEasingCustom: val } ) }
+							onChange={ ( val ) =>
+								setAttributes( { scrimFadeEasing: val } )
+							}
+							onCustomChange={ ( val ) =>
+								setAttributes( { scrimFadeEasingCustom: val } )
+							}
 						/>
 					</ToolsPanelItem>
 				</ToolsPanel>
@@ -966,7 +1029,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 			<div { ...blockProps }>
 				<SsrPreviewGuard>
-					<ServerSideRender block="sgs/nav-bar-menu" attributes={ attributes } />
+					<ServerSideRender
+						block="sgs/nav-bar-menu"
+						attributes={ attributes }
+					/>
 				</SsrPreviewGuard>
 			</div>
 		</>

@@ -3,7 +3,11 @@
  *
  * @package
  */
-import { config, getSavedPrices, getAccountState } from '../../shared/wishlist-store';
+import {
+	config,
+	getSavedPrices,
+	getAccountState,
+} from '../../shared/wishlist-store';
 import { fetchWishlistProducts } from './api';
 import { cardProducts, fetchProductCards } from './cards-api';
 import { hydrateCards } from './hydrate-cards';
@@ -16,8 +20,8 @@ import { limitForStrip } from './layout';
 /**
  * Render the bars (guest prompt / alerts+share) — grid/list layouts only.
  *
- * @param {HTMLElement} barsEl  `[data-sgs-wishlist-bars]`.
- * @param {Object}      labels  `labels.js::readPanelData()` output.
+ * @param {HTMLElement} barsEl `[data-sgs-wishlist-bars]`.
+ * @param {Object}      labels `labels.js::readPanelData()` output.
  * @return {void}
  */
 function renderBars( barsEl, labels ) {
@@ -27,7 +31,9 @@ function renderBars( barsEl, labels ) {
 	}
 	const cfg = config();
 	if ( ! cfg.isLoggedIn ) {
-		barsEl.innerHTML = labels.showGuestPrompt ? guestPromptHtml( labels ) : '';
+		barsEl.innerHTML = labels.showGuestPrompt
+			? guestPromptHtml( labels )
+			: '';
 		return;
 	}
 	barsEl.innerHTML = alertsBarHtml(
@@ -40,11 +46,11 @@ function renderBars( barsEl, labels ) {
  * Render the sort control — grid/list layouts only, and only once there is
  * something to sort.
  *
- * @param {HTMLElement} barsEl     `[data-sgs-wishlist-bars]`.
- * @param {Object}      labels     `labels.js::readPanelData()` output.
- * @param {boolean}     hasProducts Whether the panel has any rows to sort.
+ * @param {HTMLElement} barsEl       `[data-sgs-wishlist-bars]`.
+ * @param {Object}      labels       `labels.js::readPanelData()` output.
+ * @param {boolean}     hasProducts  Whether the panel has any rows to sort.
  * @param {Function}    onSortChange `(mode:string) => void`.
- * @param {Function}    announce   `(message:string) => void`.
+ * @param {Function}    announce     `(message:string) => void`.
  */
 function renderSort( barsEl, labels, hasProducts, onSortChange, announce ) {
 	if ( 'strip' === labels.layout || ! labels.showSort || ! hasProducts ) {
@@ -57,12 +63,17 @@ function renderSort( barsEl, labels, hasProducts, onSortChange, announce ) {
 /**
  * Update the heading's count span and the strip "View all" link.
  *
- * @param {Object}      elements `{headingCountEl, viewAllEl}`.
- * @param {Object}      labels   `labels.js::readPanelData()` output.
- * @param {number}      count    Total saved-item count.
- * @param {boolean}     hasMore  Whether more items exist than are shown (strip only).
+ * @param {Object}  elements `{headingCountEl, viewAllEl}`.
+ * @param {Object}  labels   `labels.js::readPanelData()` output.
+ * @param {number}  count    Total saved-item count.
+ * @param {boolean} hasMore  Whether more items exist than are shown (strip only).
  */
-function updateHeadingAndViewAll( { headingCountEl, viewAllEl }, labels, count, hasMore ) {
+function updateHeadingAndViewAll(
+	{ headingCountEl, viewAllEl },
+	labels,
+	count,
+	hasMore
+) {
 	if ( headingCountEl ) {
 		headingCountEl.hidden = ! labels.showCount;
 		headingCountEl.textContent = labels.showCount ? `(${ count })` : '';
@@ -98,11 +109,15 @@ export async function renderNormalView( elements, labels, ids, announce ) {
 		// read the data; the markup is the site's own card).
 		[ products, cards ] = await Promise.all( [
 			fetchWishlistProducts( ids ),
-			isCards ? fetchProductCards( labels, ids ) : Promise.resolve( cards ),
+			isCards
+				? fetchProductCards( labels, ids )
+				: Promise.resolve( cards ),
 		] );
 	} catch {
 		itemsEl.removeAttribute( 'aria-busy' );
-		itemsEl.innerHTML = `<p class="sgs-wishlist-panel__error">${ escapeHtml( labels.errorText ) }</p>`;
+		itemsEl.innerHTML = `<p class="sgs-wishlist-panel__error">${ escapeHtml(
+			labels.errorText
+		) }</p>`;
 		return;
 	}
 	itemsEl.removeAttribute( 'aria-busy' );
@@ -112,7 +127,9 @@ export async function renderNormalView( elements, labels, ids, announce ) {
 	}
 
 	if ( 0 === products.length ) {
-		itemsEl.innerHTML = `<p class="sgs-wishlist-panel__error">${ escapeHtml( labels.errorText ) }</p>`;
+		itemsEl.innerHTML = `<p class="sgs-wishlist-panel__error">${ escapeHtml(
+			labels.errorText
+		) }</p>`;
 		updateHeadingAndViewAll( elements, labels, 0, false );
 		return;
 	}
@@ -121,7 +138,9 @@ export async function renderNormalView( elements, labels, ids, announce ) {
 	const isStrip = 'strip' === labels.layout;
 
 	const paint = ( sortedProducts ) => {
-		const view = isStrip ? limitForStrip( sortedProducts, labels.maxItems ) : { rows: sortedProducts, hasMore: false };
+		const view = isStrip
+			? limitForStrip( sortedProducts, labels.maxItems )
+			: { rows: sortedProducts, hasMore: false };
 		itemsEl.innerHTML = view.rows
 			.map( ( product ) =>
 				wishlistRowHtml( product, {
@@ -137,7 +156,12 @@ export async function renderNormalView( elements, labels, ids, announce ) {
 				} )
 			)
 			.join( '' );
-		updateHeadingAndViewAll( elements, labels, sortedProducts.length, view.hasMore );
+		updateHeadingAndViewAll(
+			elements,
+			labels,
+			sortedProducts.length,
+			view.hasMore
+		);
 		if ( isCards ) {
 			hydrateCards( itemsEl );
 		}

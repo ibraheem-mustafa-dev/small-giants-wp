@@ -58,28 +58,40 @@ function alertRowHtml( { name, label, checked }, labels ) {
  * The logged-in alerts + share bar. Only the site-enabled features get a
  * row/control at all (the caller filters `features` before calling this).
  *
- * @param {Object}  params
- * @param {Object}  params.features {priceAlerts, stockAlerts, sharing} — site switches.
- * @param {Object}  params.alerts   {price, stock} — this shopper's opt-ins.
- * @param {Object}  params.share    {enabled, url} — this shopper's share state.
- * @param {Object}  labels          `labels.js::readPanelData()` output.
+ * @param {Object} params
+ * @param {Object} params.features {priceAlerts, stockAlerts, sharing} — site switches.
+ * @param {Object} params.alerts   {price, stock} — this shopper's opt-ins.
+ * @param {Object} params.share    {enabled, url} — this shopper's share state.
+ * @param {Object} labels          `labels.js::readPanelData()` output.
  * @return {string} Bar markup, or '' when no feature is enabled.
  */
 export function alertsBarHtml( { features, alerts, share }, labels ) {
-	if ( ! features?.priceAlerts && ! features?.stockAlerts && ! features?.sharing ) {
+	if (
+		! features?.priceAlerts &&
+		! features?.stockAlerts &&
+		! features?.sharing
+	) {
 		return '';
 	}
 
 	let alertRows = '';
 	if ( features.priceAlerts ) {
 		alertRows += alertRowHtml(
-			{ name: 'price', label: labels.alertsPriceLabel, checked: !! alerts?.price },
+			{
+				name: 'price',
+				label: labels.alertsPriceLabel,
+				checked: !! alerts?.price,
+			},
 			labels
 		);
 	}
 	if ( features.stockAlerts ) {
 		alertRows += alertRowHtml(
-			{ name: 'stock', label: labels.alertsStockLabel, checked: !! alerts?.stock },
+			{
+				name: 'stock',
+				label: labels.alertsStockLabel,
+				checked: !! alerts?.stock,
+			},
 			labels
 		);
 	}
@@ -89,8 +101,12 @@ export function alertsBarHtml( { features, alerts, share }, labels ) {
 		  `<button type="button" class="sgs-wishlist-panel__share-toggle" data-sgs-wishlist-share-toggle aria-pressed="${
 				share?.enabled ? 'true' : 'false'
 		  }">${ escapeHtml( labels.shareLabel ) }</button>` +
-		  `<div class="sgs-wishlist-panel__share-controls" ${ share?.enabled ? '' : 'hidden' }>` +
-		  `<input type="text" class="sgs-wishlist-panel__share-field" readonly aria-label="${ escapeHtml( labels.shareLabel ) }" value="${ escapeHtml(
+		  `<div class="sgs-wishlist-panel__share-controls" ${
+				share?.enabled ? '' : 'hidden'
+		  }>` +
+		  `<input type="text" class="sgs-wishlist-panel__share-field" readonly aria-label="${ escapeHtml(
+				labels.shareLabel
+		  ) }" value="${ escapeHtml(
 				share?.url || ''
 		  ) }" data-sgs-wishlist-share-field />` +
 		  `<button type="button" data-sgs-wishlist-share-copy>${ escapeHtml(

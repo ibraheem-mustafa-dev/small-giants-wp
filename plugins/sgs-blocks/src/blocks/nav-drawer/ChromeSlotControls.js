@@ -33,14 +33,18 @@ const TYPE_OPTIONS = [
 ];
 
 const LEVEL_OPTIONS = [ 'h2', 'h3', 'h4', 'p' ].map( ( level ) => ( {
-	label: 'p' === level ? __( 'Paragraph', 'sgs-blocks' ) : level.toUpperCase(),
+	label:
+		'p' === level ? __( 'Paragraph', 'sgs-blocks' ) : level.toUpperCase(),
 	value: level,
 } ) );
 
 const PLACEMENT_OPTIONS = [
 	{ label: __( 'After the logo', 'sgs-blocks' ), value: 'after-logo' },
 	{ label: __( 'Centre of the row', 'sgs-blocks' ), value: 'center' },
-	{ label: __( 'At the end, beside the close button', 'sgs-blocks' ), value: 'end' },
+	{
+		label: __( 'At the end, beside the close button', 'sgs-blocks' ),
+		value: 'end',
+	},
 ];
 
 /**
@@ -50,7 +54,11 @@ const PLACEMENT_OPTIONS = [
  * @param {string}   props.clientId      The drawer block's client id.
  * @return {Element} The controls.
  */
-export default function ChromeSlotControls( { attributes, setAttributes, clientId } ) {
+export default function ChromeSlotControls( {
+	attributes,
+	setAttributes,
+	clientId,
+} ) {
 	const {
 		chromeSlotType,
 		chromeSlotText,
@@ -75,24 +83,39 @@ export default function ChromeSlotControls( { attributes, setAttributes, clientI
 				label={ __( 'Extra item in the top row', 'sgs-blocks' ) }
 				value={ type }
 				options={ TYPE_OPTIONS }
-				onChange={ ( value ) => setAttributes( { chromeSlotType: value } ) }
+				onChange={ ( value ) =>
+					setAttributes( { chromeSlotType: value } )
+				}
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>
 			{ isIcons && <ChromeIconsSlotNotice clientId={ clientId } /> }
 			{ '' !== type && (
 				<>
-					{ ! isIcons && <SgsFreeTextField type="rich"
-						label={ isButton ? __( 'Button label', 'sgs-blocks' ) : __( 'Words', 'sgs-blocks' ) }
-						value={ chromeSlotText || '' }
-						onChange={ ( value ) => setAttributes( { chromeSlotText: value } ) }
-					/> }
+					{ ! isIcons && (
+						<SgsFreeTextField
+							type="rich"
+							label={
+								isButton
+									? __( 'Button label', 'sgs-blocks' )
+									: __( 'Words', 'sgs-blocks' )
+							}
+							value={ chromeSlotText || '' }
+							onChange={ ( value ) =>
+								setAttributes( { chromeSlotText: value } )
+							}
+						/>
+					) }
 					{ 'heading' === type && (
 						<SelectControl
 							label={ __( 'Heading level', 'sgs-blocks' ) }
 							value={ chromeSlotHeadingLevel || 'h2' }
 							options={ LEVEL_OPTIONS }
-							onChange={ ( value ) => setAttributes( { chromeSlotHeadingLevel: value } ) }
+							onChange={ ( value ) =>
+								setAttributes( {
+									chromeSlotHeadingLevel: value,
+								} )
+							}
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
@@ -101,10 +124,15 @@ export default function ChromeSlotControls( { attributes, setAttributes, clientI
 						<>
 							<LinkPopoverField
 								label={ __( 'Button link', 'sgs-blocks' ) }
-								help={ __( 'A button with no link is not shown.', 'sgs-blocks' ) }
+								help={ __(
+									'A button with no link is not shown.',
+									'sgs-blocks'
+								) }
 								value={ {
 									url: chromeSlotUrl || '',
-									linkTarget: chromeSlotNewTab ? '_blank' : '_self',
+									linkTarget: chromeSlotNewTab
+										? '_blank'
+										: '_self',
 									linkSource: chromeSlotUrlSource || '',
 								} }
 								linkSources={ LINK_SOURCES_ALL }
@@ -115,10 +143,12 @@ export default function ChromeSlotControls( { attributes, setAttributes, clientI
 										patch.chromeSlotUrl = next.url;
 									}
 									if ( undefined !== next.linkSource ) {
-										patch.chromeSlotUrlSource = next.linkSource;
+										patch.chromeSlotUrlSource =
+											next.linkSource;
 									}
 									if ( undefined !== next.linkTarget ) {
-										patch.chromeSlotNewTab = '_blank' === next.linkTarget;
+										patch.chromeSlotNewTab =
+											'_blank' === next.linkTarget;
 									}
 									setAttributes( patch );
 								} }
@@ -129,67 +159,108 @@ export default function ChromeSlotControls( { attributes, setAttributes, clientI
 						label={ __( 'Position in the row', 'sgs-blocks' ) }
 						value={ chromeSlotPlacement || 'after-logo' }
 						options={ PLACEMENT_OPTIONS }
-						onChange={ ( value ) => setAttributes( { chromeSlotPlacement: value } ) }
+						onChange={ ( value ) =>
+							setAttributes( { chromeSlotPlacement: value } )
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
 					<TierShow
 						label={ __( 'Show the extra item', 'sgs-blocks' ) }
 						value={ chromeSlotShow }
-						onChange={ ( obj ) => setAttributes( { chromeSlotShow: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { chromeSlotShow: obj } )
+						}
 					/>
-					{ ! isIcons && <TypographyControls
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						targets={ [
-							{
-								key: 'chromeSlot',
-								label: __( 'Extra item text', 'sgs-blocks' ),
-								prefix: 'chromeSlot',
-								showFontFamily: true,
-								showTransform: true,
-								showLetterSpacing: true,
-							},
-						] }
-					/> }
+					{ ! isIcons && (
+						<TypographyControls
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							targets={ [
+								{
+									key: 'chromeSlot',
+									label: __(
+										'Extra item text',
+										'sgs-blocks'
+									),
+									prefix: 'chromeSlot',
+									showFontFamily: true,
+									showTransform: true,
+									showLetterSpacing: true,
+								},
+							] }
+						/>
+					) }
 					{ isButton && (
 						<>
 							<SgsBorderControl
 								label={ __( 'Button border', 'sgs-blocks' ) }
 								widthValues={ chromeButtonBorderWidth ?? {} }
-								onWidthChange={ ( next ) => setAttributes( { chromeButtonBorderWidth: next } ) }
+								onWidthChange={ ( next ) =>
+									setAttributes( {
+										chromeButtonBorderWidth: next,
+									} )
+								}
 								styleValue={ chromeButtonBorderStyle }
-								onStyleChange={ ( value ) => setAttributes( { chromeButtonBorderStyle: value } ) }
-								colourLabel={ __( 'Button border colour', 'sgs-blocks' ) }
+								onStyleChange={ ( value ) =>
+									setAttributes( {
+										chromeButtonBorderStyle: value,
+									} )
+								}
+								colourLabel={ __(
+									'Button border colour',
+									'sgs-blocks'
+								) }
 								colourStates={ [
 									{
 										key: 'normal',
 										label: __( 'Normal', 'sgs-blocks' ),
 										value: attributes.chromeButtonColourBorder,
-										onChange: ( value ) => setAttributes( { chromeButtonColourBorder: value ?? '' } ),
+										onChange: ( value ) =>
+											setAttributes( {
+												chromeButtonColourBorder:
+													value ?? '',
+											} ),
 									},
 									{
 										key: 'hover',
 										label: __( 'Hover', 'sgs-blocks' ),
 										value: attributes.chromeButtonColourBorderHover,
-										onChange: ( value ) => setAttributes( { chromeButtonColourBorderHover: value ?? '' } ),
+										onChange: ( value ) =>
+											setAttributes( {
+												chromeButtonColourBorderHover:
+													value ?? '',
+											} ),
 									},
 								] }
-								radiusValues={ { base: chromeButtonBorderRadius ?? {} } }
+								radiusValues={ {
+									base: chromeButtonBorderRadius ?? {},
+								} }
 								showRadiusResponsive={ false }
-								onRadiusChange={ ( _tier, next ) => setAttributes( { chromeButtonBorderRadius: next } ) }
+								onRadiusChange={ ( _tier, next ) =>
+									setAttributes( {
+										chromeButtonBorderRadius: next,
+									} )
+								}
 							/>
 							<SgsBoxControl
 								label={ __( 'Button padding', 'sgs-blocks' ) }
 								values={ chromeButtonPadding ?? {} }
 								presets
-								onChange={ ( next ) => setAttributes( { chromeButtonPadding: next } ) }
+								onChange={ ( next ) =>
+									setAttributes( {
+										chromeButtonPadding: next,
+									} )
+								}
 							/>
 						</>
 					) }
 				</>
 			) }
-			<ChromeRatingControls attributes={ attributes } setAttributes={ setAttributes } />
+			<ChromeRatingControls
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+			/>
 		</>
 	);
 }

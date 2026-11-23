@@ -12,7 +12,11 @@ import { __ } from '@wordpress/i18n';
  * @param {boolean}  root0.hasPanel      Whether displayMode is flyout|drawer.
  * @return {Array} Rows for `SgsColourPanel`.
  */
-export default function buildPanelColourRows( { attributes, setAttributes, hasPanel } ) {
+export default function buildPanelColourRows( {
+	attributes,
+	setAttributes,
+	hasPanel,
+} ) {
 	if ( ! hasPanel ) {
 		return [];
 	}
@@ -28,41 +32,96 @@ export default function buildPanelColourRows( { attributes, setAttributes, hasPa
 		[ 'itemBrandColour', __( 'Item brand', 'sgs-blocks' ) ],
 		[ 'itemDetailColour', __( 'Item details', 'sgs-blocks' ) ],
 		[ 'itemActionColour', __( 'Save for later link', 'sgs-blocks' ) ],
-		[ 'itemActionBorderColour', __( 'Save for later underline', 'sgs-blocks' ) ],
-		...( 'stepper' === attributes.itemQtyStyle && false !== attributes.itemShowQty
+		[
+			'itemActionBorderColour',
+			__( 'Save for later underline', 'sgs-blocks' ),
+		],
+		...( 'stepper' === attributes.itemQtyStyle &&
+		false !== attributes.itemShowQty
 			? [
-					[ 'itemQtyBg', __( 'Quantity stepper background', 'sgs-blocks' ) ],
-					[ 'itemQtyColour', __( 'Quantity stepper text', 'sgs-blocks' ) ],
+					[
+						'itemQtyBg',
+						__( 'Quantity stepper background', 'sgs-blocks' ),
+					],
+					[
+						'itemQtyColour',
+						__( 'Quantity stepper text', 'sgs-blocks' ),
+					],
 			  ]
 			: [] ),
 		[ 'itemRemoveColour', __( 'Remove link', 'sgs-blocks' ) ],
-		[ 'itemRemoveBorderColour', __( 'Remove link underline', 'sgs-blocks' ) ],
+		[
+			'itemRemoveBorderColour',
+			__( 'Remove link underline', 'sgs-blocks' ),
+		],
 		[ 'panelFooterBg', __( 'Panel footer background', 'sgs-blocks' ) ],
-		[ 'panelFooterBorderColour', __( 'Panel footer divider', 'sgs-blocks' ) ],
+		[
+			'panelFooterBorderColour',
+			__( 'Panel footer divider', 'sgs-blocks' ),
+		],
 		[ 'subtotalLabelColour', __( 'Subtotal label', 'sgs-blocks' ) ],
 		[ 'subtotalValueColour', __( 'Subtotal amount', 'sgs-blocks' ) ],
-		[ 'freeDeliveryTextColour', __( 'Free-delivery message', 'sgs-blocks' ) ],
-		[ 'checkoutBg', __( 'Checkout button background', 'sgs-blocks' ), 'checkoutBgHover' ],
-		[ 'checkoutColour', __( 'Checkout button text', 'sgs-blocks' ), 'checkoutColourHover' ],
-		...( false !== attributes.panelShowViewCart ? [ [ 'panelViewColour', __( 'View cart text', 'sgs-blocks' ), 'panelViewColourHover' ] ] : [] ),
+		[
+			'freeDeliveryTextColour',
+			__( 'Free-delivery message', 'sgs-blocks' ),
+		],
+		[
+			'checkoutBg',
+			__( 'Checkout button background', 'sgs-blocks' ),
+			'checkoutBgHover',
+		],
+		[
+			'checkoutColour',
+			__( 'Checkout button text', 'sgs-blocks' ),
+			'checkoutColourHover',
+		],
+		...( false !== attributes.panelShowViewCart
+			? [
+					[
+						'panelViewColour',
+						__( 'View cart text', 'sgs-blocks' ),
+						'panelViewColourHover',
+					],
+			  ]
+			: [] ),
 		[ 'panelTaxNoteColour', __( 'Note under the subtotal', 'sgs-blocks' ) ],
-		[ 'freeDeliveryBandBg', __( 'Free-delivery band background', 'sgs-blocks' ) ],
+		[
+			'freeDeliveryBandBg',
+			__( 'Free-delivery band background', 'sgs-blocks' ),
+		],
 		[ 'panelNoteColour', __( 'Note under Checkout', 'sgs-blocks' ) ],
 		[ 'emptyBodyColour', __( 'Empty-cart line of text', 'sgs-blocks' ) ],
 		[ 'emptyLinkColour', __( 'Empty-cart text link', 'sgs-blocks' ) ],
 		...( attributes.panelGiftShow
 			? [
 					[ 'giftBoxBg', __( 'Gift box background', 'sgs-blocks' ) ],
-					[ 'giftHelpColour', __( 'Gift box helper line', 'sgs-blocks' ) ],
-					[ 'giftFieldBg', __( 'Gift box fields background', 'sgs-blocks' ) ],
+					[
+						'giftHelpColour',
+						__( 'Gift box helper line', 'sgs-blocks' ),
+					],
+					[
+						'giftFieldBg',
+						__( 'Gift box fields background', 'sgs-blocks' ),
+					],
 			  ]
 			: [] ),
 		...( Number( attributes.upsellProductId ) > 0
 			? [
 					[ 'upsellBg', __( 'Upsell row background', 'sgs-blocks' ) ],
-					[ 'upsellTextColour', __( 'Upsell line under the heading', 'sgs-blocks' ) ],
-					[ 'upsellButtonBg', __( 'Upsell button background', 'sgs-blocks' ), 'upsellButtonBgHover' ],
-					[ 'upsellButtonColour', __( 'Upsell button text', 'sgs-blocks' ), 'upsellButtonColourHover' ],
+					[
+						'upsellTextColour',
+						__( 'Upsell line under the heading', 'sgs-blocks' ),
+					],
+					[
+						'upsellButtonBg',
+						__( 'Upsell button background', 'sgs-blocks' ),
+						'upsellButtonBgHover',
+					],
+					[
+						'upsellButtonColour',
+						__( 'Upsell button text', 'sgs-blocks' ),
+						'upsellButtonColourHover',
+					],
 			  ]
 			: [] ),
 	];
@@ -78,7 +137,9 @@ export default function buildPanelColourRows( { attributes, setAttributes, hasPa
 		label,
 		states: [
 			state( 'normal', __( 'Normal', 'sgs-blocks' ), attr ),
-			...( hoverAttr ? [ state( 'hover', __( 'Hover', 'sgs-blocks' ), hoverAttr ) ] : [] ),
+			...( hoverAttr
+				? [ state( 'hover', __( 'Hover', 'sgs-blocks' ), hoverAttr ) ]
+				: [] ),
 		],
 	} ) );
 }

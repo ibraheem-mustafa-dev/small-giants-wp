@@ -3,19 +3,59 @@
  */
 import { __ } from '@wordpress/i18n';
 import { PanelBody } from '@wordpress/components';
-import { fillRow, textRow, SgsBorderControl, ShadowControl } from '../../components';
+import {
+	fillRow,
+	textRow,
+	SgsBorderControl,
+	ShadowControl,
+} from '../../components';
 import { TextField, TierBox, Toggle, TYPE_TARGET } from './extraControls';
 import { TierLength } from './CellPanels';
 
 // [ row key, label, background attribute, text attribute ]
 const STATUSES = [
-	[ 'Pending', __( 'Pending', 'sgs-blocks' ), 'ordersPillPendingBackground', 'ordersPillPendingText' ],
-	[ 'Processing', __( 'Processing', 'sgs-blocks' ), 'ordersPillProcessingBackground', 'ordersPillProcessingText' ],
-	[ 'OnHold', __( 'On hold', 'sgs-blocks' ), 'ordersPillOnHoldBackground', 'ordersPillOnHoldText' ],
-	[ 'Completed', __( 'Completed', 'sgs-blocks' ), 'ordersPillCompletedBackground', 'ordersPillCompletedText' ],
-	[ 'Cancelled', __( 'Cancelled', 'sgs-blocks' ), 'ordersPillCancelledBackground', 'ordersPillCancelledText' ],
-	[ 'Refunded', __( 'Refunded', 'sgs-blocks' ), 'ordersPillRefundedBackground', 'ordersPillRefundedText' ],
-	[ 'Failed', __( 'Failed', 'sgs-blocks' ), 'ordersPillFailedBackground', 'ordersPillFailedText' ],
+	[
+		'Pending',
+		__( 'Pending', 'sgs-blocks' ),
+		'ordersPillPendingBackground',
+		'ordersPillPendingText',
+	],
+	[
+		'Processing',
+		__( 'Processing', 'sgs-blocks' ),
+		'ordersPillProcessingBackground',
+		'ordersPillProcessingText',
+	],
+	[
+		'OnHold',
+		__( 'On hold', 'sgs-blocks' ),
+		'ordersPillOnHoldBackground',
+		'ordersPillOnHoldText',
+	],
+	[
+		'Completed',
+		__( 'Completed', 'sgs-blocks' ),
+		'ordersPillCompletedBackground',
+		'ordersPillCompletedText',
+	],
+	[
+		'Cancelled',
+		__( 'Cancelled', 'sgs-blocks' ),
+		'ordersPillCancelledBackground',
+		'ordersPillCancelledText',
+	],
+	[
+		'Refunded',
+		__( 'Refunded', 'sgs-blocks' ),
+		'ordersPillRefundedBackground',
+		'ordersPillRefundedText',
+	],
+	[
+		'Failed',
+		__( 'Failed', 'sgs-blocks' ),
+		'ordersPillFailedBackground',
+		'ordersPillFailedText',
+	],
 ];
 
 /**
@@ -27,31 +67,65 @@ const STATUSES = [
 export default function OrdersPanel( { attributes, setAttributes } ) {
 	const p = { attributes, setAttributes };
 	return (
-		<PanelBody title={ __( 'Orders list', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Orders list', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			<Toggle
 				{ ...p }
 				name="ordersLook"
 				label={ __( 'Draw orders as bordered rows', 'sgs-blocks' ) }
-				help={ __( 'Order, date, status pill, total and a chevron on each row. Colours and type are under Colour and Typography.', 'sgs-blocks' ) }
+				help={ __(
+					'Order, date, status pill, total and a chevron on each row. Colours and type are under Colour and Typography.',
+					'sgs-blocks'
+				) }
 			/>
-			{ attributes.ordersLook && <TierBox { ...p } name="ordersRowPadding" label={ __( 'Row padding', 'sgs-blocks' ) } /> }
-			{ attributes.ordersLook && <TierBox { ...p } name="ordersPillPadding" label={ __( 'Status pill padding', 'sgs-blocks' ) } /> }
+			{ attributes.ordersLook && (
+				<TierBox
+					{ ...p }
+					name="ordersRowPadding"
+					label={ __( 'Row padding', 'sgs-blocks' ) }
+				/>
+			) }
+			{ attributes.ordersLook && (
+				<TierBox
+					{ ...p }
+					name="ordersPillPadding"
+					label={ __( 'Status pill padding', 'sgs-blocks' ) }
+				/>
+			) }
 			{ ( attributes.ordersLook || attributes.ordersRowList ) && (
 				<>
-					<TierLength { ...p } name="ordersRowGap" label={ __( 'Space between rows (set: separate cards)', 'sgs-blocks' ) } />
+					<TierLength
+						{ ...p }
+						name="ordersRowGap"
+						label={ __(
+							'Space between rows (set: separate cards)',
+							'sgs-blocks'
+						) }
+					/>
 					<SgsBorderControl
 						label={ __( 'Row frame', 'sgs-blocks' ) }
 						widthValues={ attributes.ordersRowBorderWidth ?? {} }
-						onWidthChange={ ( next ) => setAttributes( { ordersRowBorderWidth: next } ) }
+						onWidthChange={ ( next ) =>
+							setAttributes( { ordersRowBorderWidth: next } )
+						}
 						styleValue={ attributes.ordersRowBorderStyle }
-						onStyleChange={ ( val ) => setAttributes( { ordersRowBorderStyle: val || undefined } ) }
+						onStyleChange={ ( val ) =>
+							setAttributes( {
+								ordersRowBorderStyle: val || undefined,
+							} )
+						}
 						showColour={ false }
 					/>
 					<ShadowControl
 						label={ __( 'Row shadow', 'sgs-blocks' ) }
 						attributes={ attributes }
 						setAttributes={ setAttributes }
-						attrNames={ { base: 'ordersRowShadow', colour: 'ordersRowShadowColour' } }
+						attrNames={ {
+							base: 'ordersRowShadow',
+							colour: 'ordersRowShadowColour',
+						} }
 					/>
 				</>
 			) }
@@ -59,20 +133,39 @@ export default function OrdersPanel( { attributes, setAttributes } ) {
 				{ ...p }
 				name="ordersEmptyState"
 				label={ __( 'Empty state card', 'sgs-blocks' ) }
-				help={ __( 'Replaces WooCommerce’s “no order has been made” notice.', 'sgs-blocks' ) }
+				help={ __(
+					'Replaces WooCommerce’s “no order has been made” notice.',
+					'sgs-blocks'
+				) }
 			/>
 			{ attributes.ordersEmptyState && (
 				<>
-					<TextField { ...p } name="ordersEmptyHeading" label={ __( 'Heading', 'sgs-blocks' ) } />
-					<TextField { ...p } name="ordersEmptyText" label={ __( 'Text', 'sgs-blocks' ) } />
-					<TextField { ...p } name="ordersEmptyButtonLabel" label={ __( 'Button label', 'sgs-blocks' ) } />
+					<TextField
+						{ ...p }
+						name="ordersEmptyHeading"
+						label={ __( 'Heading', 'sgs-blocks' ) }
+					/>
+					<TextField
+						{ ...p }
+						name="ordersEmptyText"
+						label={ __( 'Text', 'sgs-blocks' ) }
+					/>
+					<TextField
+						{ ...p }
+						name="ordersEmptyButtonLabel"
+						label={ __( 'Button label', 'sgs-blocks' ) }
+					/>
 					<TextField
 						{ ...p }
 						name="ordersEmptyButtonUrl"
 						label={ __( 'Button link', 'sgs-blocks' ) }
 						help={ __( 'Empty = the shop page.', 'sgs-blocks' ) }
 					/>
-					<TierBox { ...p } name="ordersEmptyPadding" label={ __( 'Card padding', 'sgs-blocks' ) } />
+					<TierBox
+						{ ...p }
+						name="ordersEmptyPadding"
+						label={ __( 'Card padding', 'sgs-blocks' ) }
+					/>
 				</>
 			) }
 		</PanelBody>
@@ -87,51 +180,147 @@ export default function OrdersPanel( { attributes, setAttributes } ) {
  * @return {Array} Rows for SgsColourPanel.
  */
 export function extraColourRows( attributes, setAttributes ) {
-	const t = ( key, label, attrs ) => textRow( { key, label, attrs, attributes, setAttributes } );
-	const f = ( key, label, attrs ) => fillRow( { key, label, attrs, attributes, setAttributes } );
+	const t = ( key, label, attrs ) =>
+		textRow( { key, label, attrs, attributes, setAttributes } );
+	const f = ( key, label, attrs ) =>
+		fillRow( { key, label, attrs, attributes, setAttributes } );
 	const rows = [
-		t( 'headerEyebrow', __( 'Page header eyebrow', 'sgs-blocks' ), { base: 'headerEyebrowColour' } ),
-		t( 'headerTitle', __( 'Page header title', 'sgs-blocks' ), { base: 'headerTitleColour' } ),
-		t( 'headerIntro', __( 'Page header intro', 'sgs-blocks' ), { base: 'headerIntroColour' } ),
-		t( 'headerMeta', __( 'Page header signed-in line', 'sgs-blocks' ), { base: 'headerMetaColour' } ),
-		t( 'headerBack', __( 'Back to sign in link', 'sgs-blocks' ), { base: 'headerBackColour' } ),
-		f( 'headerRule', __( 'Page header rule', 'sgs-blocks' ), { base: 'headerRuleColour' } ),
-		t( 'menuCount', __( 'Menu Orders count', 'sgs-blocks' ), { base: 'menuCountColour' } ),
-		f( 'ordersRowBackground', __( 'Order row background', 'sgs-blocks' ), { base: 'ordersRowBackground', hover: 'ordersRowBackgroundHover' } ),
-		f( 'ordersRowBorder', __( 'Order rows frame and lines', 'sgs-blocks' ), { base: 'ordersRowBorderColour' } ),
-		t( 'ordersNumber', __( 'Order number', 'sgs-blocks' ), { base: 'ordersNumberColour' } ),
-		t( 'ordersDate', __( 'Order date', 'sgs-blocks' ), { base: 'ordersDateColour' } ),
-		t( 'ordersTotal', __( 'Order total', 'sgs-blocks' ), { base: 'ordersTotalColour' } ),
-		f( 'ordersPillBackground', __( 'Status pill background', 'sgs-blocks' ), { base: 'ordersPillBackground' } ),
-		t( 'ordersPillText', __( 'Status pill text', 'sgs-blocks' ), { base: 'ordersPillText' } ),
+		t( 'headerEyebrow', __( 'Page header eyebrow', 'sgs-blocks' ), {
+			base: 'headerEyebrowColour',
+		} ),
+		t( 'headerTitle', __( 'Page header title', 'sgs-blocks' ), {
+			base: 'headerTitleColour',
+		} ),
+		t( 'headerIntro', __( 'Page header intro', 'sgs-blocks' ), {
+			base: 'headerIntroColour',
+		} ),
+		t( 'headerMeta', __( 'Page header signed-in line', 'sgs-blocks' ), {
+			base: 'headerMetaColour',
+		} ),
+		t( 'headerBack', __( 'Back to sign in link', 'sgs-blocks' ), {
+			base: 'headerBackColour',
+		} ),
+		f( 'headerRule', __( 'Page header rule', 'sgs-blocks' ), {
+			base: 'headerRuleColour',
+		} ),
+		t( 'menuCount', __( 'Menu Orders count', 'sgs-blocks' ), {
+			base: 'menuCountColour',
+		} ),
+		f( 'ordersRowBackground', __( 'Order row background', 'sgs-blocks' ), {
+			base: 'ordersRowBackground',
+			hover: 'ordersRowBackgroundHover',
+		} ),
+		f(
+			'ordersRowBorder',
+			__( 'Order rows frame and lines', 'sgs-blocks' ),
+			{ base: 'ordersRowBorderColour' }
+		),
+		t( 'ordersNumber', __( 'Order number', 'sgs-blocks' ), {
+			base: 'ordersNumberColour',
+		} ),
+		t( 'ordersDate', __( 'Order date', 'sgs-blocks' ), {
+			base: 'ordersDateColour',
+		} ),
+		t( 'ordersTotal', __( 'Order total', 'sgs-blocks' ), {
+			base: 'ordersTotalColour',
+		} ),
+		f(
+			'ordersPillBackground',
+			__( 'Status pill background', 'sgs-blocks' ),
+			{ base: 'ordersPillBackground' }
+		),
+		t( 'ordersPillText', __( 'Status pill text', 'sgs-blocks' ), {
+			base: 'ordersPillText',
+		} ),
 	];
 	STATUSES.forEach( ( [ key, label, background, text ] ) => {
 		rows.push(
-			f( 'ordersPill' + key + 'Bg', label + ': ' + __( 'pill background', 'sgs-blocks' ), { base: background } ),
-			t( 'ordersPill' + key + 'Tx', label + ': ' + __( 'pill text', 'sgs-blocks' ), { base: text } )
+			f(
+				'ordersPill' + key + 'Bg',
+				label + ': ' + __( 'pill background', 'sgs-blocks' ),
+				{ base: background }
+			),
+			t(
+				'ordersPill' + key + 'Tx',
+				label + ': ' + __( 'pill text', 'sgs-blocks' ),
+				{ base: text }
+			)
 		);
 	} );
 	rows.push(
-		f( 'ordersEmptyBackground', __( 'Orders empty card background', 'sgs-blocks' ), { base: 'ordersEmptyBackground' } ),
-		f( 'ordersEmptyBorder', __( 'Orders empty card border', 'sgs-blocks' ), { base: 'ordersEmptyBorderColour' } ),
-		t( 'ordersEmptyTitle', __( 'Orders empty card heading', 'sgs-blocks' ), { base: 'ordersEmptyTitleColour' } ),
-		t( 'ordersEmptyText', __( 'Orders empty card text', 'sgs-blocks' ), { base: 'ordersEmptyTextColour' } ),
-		f( 'addressCardBackground', __( 'Address card background', 'sgs-blocks' ), { base: 'addressCardBackgroundColour' } ),
-		t( 'addressTitle', __( 'Address card title', 'sgs-blocks' ), { base: 'addressTitleColour' } ),
-		t( 'addressHelper', __( 'Addresses helper line', 'sgs-blocks' ), { base: 'addressHelperColour' } ),
-		t( 'accountSection', __( 'Change password heading', 'sgs-blocks' ), { base: 'accountSectionColour' } ),
-		f( 'accountSectionRule', __( 'Change password rule', 'sgs-blocks' ), { base: 'accountSectionRuleColour' } ),
-		t( 'accountPasswordHelper', __( 'Change password helper text', 'sgs-blocks' ), { base: 'accountPasswordHelperColour' } ),
-		t( 'loginButtonIcon', __( 'Sign in button icon', 'sgs-blocks' ), { base: 'loginButtonIconColour' } ),
-		f( 'loginButtonIconBackground', __( 'Sign in button icon circle', 'sgs-blocks' ), { base: 'loginButtonIconBackground' } ),
-		t( 'registerButtonIcon', __( 'Create account button icon', 'sgs-blocks' ), { base: 'registerButtonIconColour' } ),
-		f( 'registerButtonIconBackground', __( 'Create account button icon circle', 'sgs-blocks' ), { base: 'registerButtonIconBackground' } ),
-		t( 'loginLink', __( 'Lost password link', 'sgs-blocks' ), { base: 'loginLinkColour', hover: 'loginLinkColourHover' } )
+		f(
+			'ordersEmptyBackground',
+			__( 'Orders empty card background', 'sgs-blocks' ),
+			{ base: 'ordersEmptyBackground' }
+		),
+		f(
+			'ordersEmptyBorder',
+			__( 'Orders empty card border', 'sgs-blocks' ),
+			{ base: 'ordersEmptyBorderColour' }
+		),
+		t(
+			'ordersEmptyTitle',
+			__( 'Orders empty card heading', 'sgs-blocks' ),
+			{ base: 'ordersEmptyTitleColour' }
+		),
+		t( 'ordersEmptyText', __( 'Orders empty card text', 'sgs-blocks' ), {
+			base: 'ordersEmptyTextColour',
+		} ),
+		f(
+			'addressCardBackground',
+			__( 'Address card background', 'sgs-blocks' ),
+			{ base: 'addressCardBackgroundColour' }
+		),
+		t( 'addressTitle', __( 'Address card title', 'sgs-blocks' ), {
+			base: 'addressTitleColour',
+		} ),
+		t( 'addressHelper', __( 'Addresses helper line', 'sgs-blocks' ), {
+			base: 'addressHelperColour',
+		} ),
+		t( 'accountSection', __( 'Change password heading', 'sgs-blocks' ), {
+			base: 'accountSectionColour',
+		} ),
+		f( 'accountSectionRule', __( 'Change password rule', 'sgs-blocks' ), {
+			base: 'accountSectionRuleColour',
+		} ),
+		t(
+			'accountPasswordHelper',
+			__( 'Change password helper text', 'sgs-blocks' ),
+			{ base: 'accountPasswordHelperColour' }
+		),
+		t( 'loginButtonIcon', __( 'Sign in button icon', 'sgs-blocks' ), {
+			base: 'loginButtonIconColour',
+		} ),
+		f(
+			'loginButtonIconBackground',
+			__( 'Sign in button icon circle', 'sgs-blocks' ),
+			{ base: 'loginButtonIconBackground' }
+		),
+		t(
+			'registerButtonIcon',
+			__( 'Create account button icon', 'sgs-blocks' ),
+			{ base: 'registerButtonIconColour' }
+		),
+		f(
+			'registerButtonIconBackground',
+			__( 'Create account button icon circle', 'sgs-blocks' ),
+			{ base: 'registerButtonIconBackground' }
+		),
+		t( 'loginLink', __( 'Lost password link', 'sgs-blocks' ), {
+			base: 'loginLinkColour',
+			hover: 'loginLinkColourHover',
+		} )
 	);
 	return rows;
 }
 
-const target = ( prefix, label, extra = {} ) => ( { key: prefix, label, prefix, ...TYPE_TARGET, ...extra } );
+const target = ( prefix, label, extra = {} ) => ( {
+	key: prefix,
+	label,
+	prefix,
+	...TYPE_TARGET,
+	...extra,
+} );
 
 export const EXTRA_TYPE_TARGETS = [
 	target( 'headerEyebrow', __( 'Page header eyebrow', 'sgs-blocks' ) ),
@@ -144,16 +333,31 @@ export const EXTRA_TYPE_TARGETS = [
 	target( 'ordersDate', __( 'Order date', 'sgs-blocks' ) ),
 	target( 'ordersSummary', __( 'Order items summary', 'sgs-blocks' ) ),
 	target( 'ordersTotal', __( 'Order total', 'sgs-blocks' ) ),
-	target( 'orderDetailText', __( 'Order page address and payment text', 'sgs-blocks' ) ),
+	target(
+		'orderDetailText',
+		__( 'Order page address and payment text', 'sgs-blocks' )
+	),
 	target( 'ordersPill', __( 'Order status pill', 'sgs-blocks' ) ),
-	target( 'ordersEmptyTitle', __( 'Orders empty card heading', 'sgs-blocks' ) ),
-	target( 'ordersEmptyTextType', __( 'Orders empty card text', 'sgs-blocks' ) ),
+	target(
+		'ordersEmptyTitle',
+		__( 'Orders empty card heading', 'sgs-blocks' )
+	),
+	target(
+		'ordersEmptyTextType',
+		__( 'Orders empty card text', 'sgs-blocks' )
+	),
 	target( 'addressTitle', __( 'Address card title', 'sgs-blocks' ) ),
 	target( 'addressHelper', __( 'Addresses helper line', 'sgs-blocks' ) ),
 	target( 'accountSection', __( 'Change password heading', 'sgs-blocks' ) ),
-	target( 'accountPasswordHelperType', __( 'Change password helper text', 'sgs-blocks' ) ),
+	target(
+		'accountPasswordHelperType',
+		__( 'Change password helper text', 'sgs-blocks' )
+	),
 	target( 'loginLink', __( 'Lost password link', 'sgs-blocks' ) ),
-	target( 'authHeading', __( 'Sign-in and register panel heading', 'sgs-blocks' ) ),
+	target(
+		'authHeading',
+		__( 'Sign-in and register panel heading', 'sgs-blocks' )
+	),
 	target( 'loginRememberText', __( 'Remember me row', 'sgs-blocks' ) ),
 	target( 'lostPasswordRow', __( 'Lost password line', 'sgs-blocks' ) ),
 	target( 'privacyText', __( 'Privacy policy text', 'sgs-blocks' ) ),
@@ -163,8 +367,20 @@ export const EXTRA_TYPE_TARGETS = [
 	target( 'addressEditLink', __( 'Address Edit link', 'sgs-blocks' ) ),
 	target( 'addressText', __( 'Address card text', 'sgs-blocks' ) ),
 	target( 'orderDetailBackLink', __( 'Order page back link', 'sgs-blocks' ) ),
-	target( 'orderDetailPlacedLine', __( 'Order page placed line', 'sgs-blocks' ) ),
-	target( 'orderDetailChatText', __( 'Order page WhatsApp card text', 'sgs-blocks' ) ),
-	target( 'orderDetailTotalValue', __( 'Order page total value', 'sgs-blocks' ) ),
-	target( 'orderDetailItemBrand', __( 'Order page item brand', 'sgs-blocks' ) ),
+	target(
+		'orderDetailPlacedLine',
+		__( 'Order page placed line', 'sgs-blocks' )
+	),
+	target(
+		'orderDetailChatText',
+		__( 'Order page WhatsApp card text', 'sgs-blocks' )
+	),
+	target(
+		'orderDetailTotalValue',
+		__( 'Order page total value', 'sgs-blocks' )
+	),
+	target(
+		'orderDetailItemBrand',
+		__( 'Order page item brand', 'sgs-blocks' )
+	),
 ];

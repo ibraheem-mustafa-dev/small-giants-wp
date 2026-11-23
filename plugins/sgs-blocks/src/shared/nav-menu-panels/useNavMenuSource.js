@@ -24,7 +24,11 @@ import { flattenMenuItems } from './utils';
  * @param {Function} root0.setAttributes   The block's attribute setter.
  * @return {Object} { menuOptions, isResolving, resolvedItems, toggleFeatured }.
  */
-export default function useNavMenuSource( { ref, featuredItemIds, setAttributes } ) {
+export default function useNavMenuSource( {
+	ref,
+	featuredItemIds,
+	setAttributes,
+} ) {
 	// Classic menus (Appearance → Menus, `nav_menu` terms) are the PRIMARY source
 	// (Spec 36 FR-36-1); block-based wp_navigation menus are the Phase-3 extra.
 	const { records: classicMenus, isResolving: isResolvingClassic } =
@@ -127,32 +131,35 @@ export default function useNavMenuSource( { ref, featuredItemIds, setAttributes 
 			} );
 			const out = [];
 			const walk = ( parentId, parentPath, depth ) => {
-				( byParent.get( String( parentId ) ) || [] ).forEach( ( item ) => {
-					const identifier = parentPath
-						? `${ parentPath }>${ keyOf( item ) }`
-						: keyOf( item );
-					// isMega mirrors render.php's from_link() 'type' check — a
-					// classic nav_menu_item's REST `object` field carries the
-					// linked post type slug for a link to an sgs_mega_menu CPT
-					// post. Feeds the megaDrawerFallbackIds checklist
-					// (MegaDrawerPanel.js).
-					out.push( {
-						identifier,
-						label:
-							item.title?.rendered ||
-							__( '(untitled item)', 'sgs-blocks' ),
-						depth,
-						isMega: 'sgs_mega_menu' === item.object,
-						hasChildren:
-							( byParent.get( String( item.id ) ) || [] ).length > 0,
-					} );
-					// Depth 1 matches render.php's MAX_SUBMENU_DEPTH: anything
-					// deeper is flattened INTO level 1 there, so offering it as a
-					// separate tick here would not match what the server renders.
-					if ( depth < 1 ) {
-						walk( item.id, identifier, depth + 1 );
+				( byParent.get( String( parentId ) ) || [] ).forEach(
+					( item ) => {
+						const identifier = parentPath
+							? `${ parentPath }>${ keyOf( item ) }`
+							: keyOf( item );
+						// isMega mirrors render.php's from_link() 'type' check — a
+						// classic nav_menu_item's REST `object` field carries the
+						// linked post type slug for a link to an sgs_mega_menu CPT
+						// post. Feeds the megaDrawerFallbackIds checklist
+						// (MegaDrawerPanel.js).
+						out.push( {
+							identifier,
+							label:
+								item.title?.rendered ||
+								__( '(untitled item)', 'sgs-blocks' ),
+							depth,
+							isMega: 'sgs_mega_menu' === item.object,
+							hasChildren:
+								( byParent.get( String( item.id ) ) || [] )
+									.length > 0,
+						} );
+						// Depth 1 matches render.php's MAX_SUBMENU_DEPTH: anything
+						// deeper is flattened INTO level 1 there, so offering it as a
+						// separate tick here would not match what the server renders.
+						if ( depth < 1 ) {
+							walk( item.id, identifier, depth + 1 );
+						}
 					}
-				} );
+				);
 			};
 			walk( 0, '', 0 );
 			return out;

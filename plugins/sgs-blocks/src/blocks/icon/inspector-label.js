@@ -7,7 +7,11 @@
 
 import { __, sprintf } from '@wordpress/i18n';
 import { PanelBody, SelectControl, ToggleControl } from '@wordpress/components';
-import { ResponsiveControl, SgsLengthControl, TypographyControls } from '../../components';
+import {
+	ResponsiveControl,
+	SgsLengthControl,
+	TypographyControls,
+} from '../../components';
 import { patchTier } from '../../utils';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
@@ -37,13 +41,22 @@ export default function IconLabelPanel( { attributes, setAttributes, state } ) {
 	const { labelOn, labelFromRow, defaultLabel } = state;
 
 	return (
-		<PanelBody title={ __( 'Label', 'sgs-blocks' ) } initialOpen={ !! labelOn }>
+		<PanelBody
+			title={ __( 'Label', 'sgs-blocks' ) }
+			initialOpen={ !! labelOn }
+		>
 			<ToggleControl
 				label={ __( 'Show a label', 'sgs-blocks' ) }
 				help={
 					labelFromRow
-						? __( 'The Social Icons row shows a label on every icon.', 'sgs-blocks' )
-						: __( 'Shows text beside the icon. Screen readers then read the label as the link name.', 'sgs-blocks' )
+						? __(
+								'The Social Icons row shows a label on every icon.',
+								'sgs-blocks'
+						  )
+						: __(
+								'Shows text beside the icon. Screen readers then read the label as the link name.',
+								'sgs-blocks'
+						  )
 				}
 				checked={ !! showLabel }
 				onChange={ ( value ) => setAttributes( { showLabel: value } ) }
@@ -51,7 +64,9 @@ export default function IconLabelPanel( { attributes, setAttributes, state } ) {
 			/>
 			{ labelOn && (
 				<>
-					<SgsFreeTextField type="rich" noLink
+					<SgsFreeTextField
+						type="rich"
+						noLink
 						label={ __( 'Label text', 'sgs-blocks' ) }
 						help={
 							defaultLabel
@@ -63,25 +78,45 @@ export default function IconLabelPanel( { attributes, setAttributes, state } ) {
 								: __( 'Type the text to show.', 'sgs-blocks' )
 						}
 						value={ labelText }
-						onChange={ ( value ) => setAttributes( { labelText: value } ) }
+						onChange={ ( value ) =>
+							setAttributes( { labelText: value } )
+						}
 					/>
 					<SelectControl
 						label={ __( 'Position', 'sgs-blocks' ) }
 						value={ labelPosition || 'end' }
 						options={ POSITION_OPTIONS }
-						onChange={ ( value ) => setAttributes( { labelPosition: value } ) }
+						onChange={ ( value ) =>
+							setAttributes( { labelPosition: value } )
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					<ResponsiveControl label={ __( 'Space between icon and label', 'sgs-blocks' ) }>
+					<ResponsiveControl
+						label={ __(
+							'Space between icon and label',
+							'sgs-blocks'
+						) }
+					>
 						{ ( tier ) => (
 							<SgsLengthControl
-								label={ __( 'Space between icon and label', 'sgs-blocks' ) }
+								label={ __(
+									'Space between icon and label',
+									'sgs-blocks'
+								) }
 								hideLabelFromVision
 								value={ labelGap?.[ tier ] ?? '' }
 								units={ GAP_UNITS }
 								presets
-								onChange={ ( value ) => patchTier( attributes, setAttributes, 'labelGap', tier, value || undefined ) }
+								onChange={ ( value ) =>
+									patchTier(
+										attributes,
+										setAttributes,
+										'labelGap',
+										tier,
+										value || undefined
+									)
+								}
 							/>
 						) }
 					</ResponsiveControl>

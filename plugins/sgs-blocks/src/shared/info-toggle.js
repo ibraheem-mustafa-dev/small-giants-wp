@@ -31,5 +31,8 @@ export function handleInfoToggleClick( toggleEl ) {
 
 	const isCurrentlyHidden = panelEl.hidden;
 	panelEl.hidden = ! isCurrentlyHidden;
-	toggleEl.setAttribute( 'aria-expanded', isCurrentlyHidden ? 'true' : 'false' );
+	toggleEl.setAttribute(
+		'aria-expanded',
+		isCurrentlyHidden ? 'true' : 'false'
+	);
 }

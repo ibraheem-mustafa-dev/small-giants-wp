@@ -28,7 +28,11 @@ export function generateItemKey() {
 	// crypto.randomUUID() is unavailable (Editor.js Playground, some
 	// third-party iframe embeds). Collision risk is negligible for a
 	// per-instance repeater key.
-	return 'key-' + Math.random().toString( 36 ).slice( 2 ) + Date.now().toString( 36 );
+	return (
+		'key-' +
+		Math.random().toString( 36 ).slice( 2 ) +
+		Date.now().toString( 36 )
+	);
 }
 
 /**

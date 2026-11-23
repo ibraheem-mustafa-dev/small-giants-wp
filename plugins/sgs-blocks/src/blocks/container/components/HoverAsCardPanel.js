@@ -31,7 +31,9 @@ export default function HoverAsCardPanel( { attributes, setAttributes } ) {
 					'sgs-blocks'
 				) }
 				checked={ !! attributes.hoverAsCard }
-				onChange={ ( value ) => setAttributes( { hoverAsCard: !! value } ) }
+				onChange={ ( value ) =>
+					setAttributes( { hoverAsCard: !! value } )
+				}
 				__nextHasNoMarginBottom
 			/>
 		</PanelBody>

@@ -13,7 +13,10 @@ import { addFilter } from '@wordpress/hooks';
 import { createHigherOrderComponent } from '@wordpress/compose';
 import { useSelect } from '@wordpress/data';
 import { getBlockType } from '@wordpress/blocks';
-import { InspectorControls, store as blockEditorStore } from '@wordpress/block-editor';
+import {
+	InspectorControls,
+	store as blockEditorStore,
+} from '@wordpress/block-editor';
 import { PanelBody, ToggleControl } from '@wordpress/components';
 
 const FORM_BLOCK = 'sgs/form';
@@ -26,7 +29,8 @@ const cssString = ( text ) =>
 		.replace( /"/g, '\\22 ' )
 		.replace( /\r\n|\r|\n/g, '\\a ' ) +
 	'"';
-const hasOptionalTag = ( name ) => !! getBlockType( name )?.attributes?.optionalTag;
+const hasOptionalTag = ( name ) =>
+	!! getBlockType( name )?.attributes?.optionalTag;
 
 /** Guard against double registration (a CJS + ESM double-load would register every filter twice). */
 if ( ! window.__sgsFormOptionalTagRegistered ) {
@@ -43,13 +47,26 @@ if ( ! window.__sgsFormOptionalTagRegistered ) {
 				<>
 					<BlockEdit { ...props } />
 					<InspectorControls>
-						<PanelBody title={ __( 'Optional tag', 'sgs-blocks' ) } initialOpen={ false }>
+						<PanelBody
+							title={ __( 'Optional tag', 'sgs-blocks' ) }
+							initialOpen={ false }
+						>
 							<ToggleControl
-								label={ __( 'Show the Optional tag', 'sgs-blocks' ) }
-								checked={ !! attributes.optionalTag && ! required }
+								label={ __(
+									'Show the Optional tag',
+									'sgs-blocks'
+								) }
+								checked={
+									!! attributes.optionalTag && ! required
+								}
 								disabled={ required }
-								help={ __( 'Shown only when the field is not required. The form sets the tag\'s text and look.', 'sgs-blocks' ) }
-								onChange={ ( optionalTag ) => setAttributes( { optionalTag } ) }
+								help={ __(
+									"Shown only when the field is not required. The form sets the tag's text and look.",
+									'sgs-blocks'
+								) }
+								onChange={ ( optionalTag ) =>
+									setAttributes( { optionalTag } )
+								}
 								__nextHasNoMarginBottom
 							/>
 						</PanelBody>
@@ -59,33 +76,61 @@ if ( ! window.__sgsFormOptionalTagRegistered ) {
 		},
 		'withOptionalTagControl'
 	);
-	addFilter( 'editor.BlockEdit', 'sgs/form-optional-tag/controls', withOptionalTagControl );
+	addFilter(
+		'editor.BlockEdit',
+		'sgs/form-optional-tag/controls',
+		withOptionalTagControl
+	);
 
 	/** The canvas wrapper carries the tag text as a custom property that editor.scss prints after the label. */
-	const withOptionalTagPreview = createHigherOrderComponent( ( BlockListBlock ) => ( props ) => {
-		const { name, attributes, clientId } = props;
-		const target = hasOptionalTag( name );
-		const formText = useSelect(
-			( select ) => {
-				if ( ! target ) {
-					return '';
-				}
-				const store = select( blockEditorStore );
-				const formId = store.getBlockParentsByBlockName( clientId, FORM_BLOCK )?.slice( -1 )[ 0 ];
-				return formId ? String( store.getBlockAttributes( formId )?.optionalText ?? '' ).trim() : '';
-			},
-			[ target, clientId ]
-		);
-		if ( ! target || ! attributes.optionalTag || attributes.required ) {
-			return <BlockListBlock { ...props } />;
-		}
-		const text = formText || __( 'Optional', 'sgs-blocks' );
-		const wrapperProps = {
-			...( props.wrapperProps || {} ),
-			className: [ props.wrapperProps?.className, 'sgs-form-field--optional-tag' ].filter( Boolean ).join( ' ' ),
-			style: { ...( props.wrapperProps?.style || {} ), '--sgs-optional-tag': cssString( text ) },
-		};
-		return <BlockListBlock { ...props } wrapperProps={ wrapperProps } />;
-	}, 'withOptionalTagPreview' );
-	addFilter( 'editor.BlockListBlock', 'sgs/form-optional-tag/preview', withOptionalTagPreview );
+	const withOptionalTagPreview = createHigherOrderComponent(
+		( BlockListBlock ) => ( props ) => {
+			const { name, attributes, clientId } = props;
+			const target = hasOptionalTag( name );
+			const formText = useSelect(
+				( select ) => {
+					if ( ! target ) {
+						return '';
+					}
+					const store = select( blockEditorStore );
+					const formId = store
+						.getBlockParentsByBlockName( clientId, FORM_BLOCK )
+						?.slice( -1 )[ 0 ];
+					return formId
+						? String(
+								store.getBlockAttributes( formId )
+									?.optionalText ?? ''
+						  ).trim()
+						: '';
+				},
+				[ target, clientId ]
+			);
+			if ( ! target || ! attributes.optionalTag || attributes.required ) {
+				return <BlockListBlock { ...props } />;
+			}
+			const text = formText || __( 'Optional', 'sgs-blocks' );
+			const wrapperProps = {
+				...( props.wrapperProps || {} ),
+				className: [
+					props.wrapperProps?.className,
+					'sgs-form-field--optional-tag',
+				]
+					.filter( Boolean )
+					.join( ' ' ),
+				style: {
+					...( props.wrapperProps?.style || {} ),
+					'--sgs-optional-tag': cssString( text ),
+				},
+			};
+			return (
+				<BlockListBlock { ...props } wrapperProps={ wrapperProps } />
+			);
+		},
+		'withOptionalTagPreview'
+	);
+	addFilter(
+		'editor.BlockListBlock',
+		'sgs/form-optional-tag/preview',
+		withOptionalTagPreview
+	);
 }

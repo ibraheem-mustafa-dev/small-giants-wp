@@ -10,7 +10,10 @@ import { brandBySlug, brandSvgPaths } from '../../utils/brand-registry';
 
 const MARK = brandSvgPaths( brandBySlug( 'whatsapp' ) );
 
-export default function WhatsappIcon( { className = 'sgs-whatsapp-cta__icon', size = '' } ) {
+export default function WhatsappIcon( {
+	className = 'sgs-whatsapp-cta__icon',
+	size = '',
+} ) {
 	return (
 		<svg
 			className={ className }

@@ -11,7 +11,11 @@ import { InspectorControls } from '@wordpress/block-editor';
 import { getBlockType } from '@wordpress/blocks';
 import { getMotionPanels } from './panel-slots';
 import { useMotionLayers } from './layers/use-motion-layers';
-import { delegateConfig, elementsForSourceMode, heldTargets } from './source-mode';
+import {
+	delegateConfig,
+	elementsForSourceMode,
+	heldTargets,
+} from './source-mode';
 
 /**
  * @param {Object}           props
@@ -25,7 +29,13 @@ import { delegateConfig, elementsForSourceMode, heldTargets } from './source-mod
  *                                               that still holds a layer, marked as not shown in that mode.
  * @return {Element|null} The panels, or null when none is registered.
  */
-function MotionPanels( { blockName, clientId, motion, setAttributes, delegateValue } ) {
+function MotionPanels( {
+	blockName,
+	clientId,
+	motion,
+	setAttributes,
+	delegateValue,
+} ) {
 	// Only which targets hold a layer reaches the memo, so editing a layer's values re-renders no panel.
 	const held = heldTargets( motion ).sort().join( ' ' );
 	const elements = useMemo( () => {

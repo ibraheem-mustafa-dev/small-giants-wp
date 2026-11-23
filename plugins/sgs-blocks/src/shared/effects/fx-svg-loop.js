@@ -124,7 +124,8 @@ function boot() {
 		const loop = animateLoop( el, {
 			read: () => readSvgLoop( el ),
 			keyframes: svgLoopKeyframes,
-			pauseControl: el.getAttribute( PREFIX + 'pause-control' ) === 'true',
+			pauseControl:
+				el.getAttribute( PREFIX + 'pause-control' ) === 'true',
 			label: LABEL,
 		} );
 		return () => loop.destroy();

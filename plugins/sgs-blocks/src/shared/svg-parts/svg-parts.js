@@ -261,7 +261,9 @@ function boot( root ) {
 		prefersReducedMotion() ||
 		( touch &&
 			'desktop' ===
-				document.documentElement.getAttribute( 'data-sgs-touch-hover' ) );
+				document.documentElement.getAttribute(
+					'data-sgs-touch-hover'
+				) );
 	root.addEventListener( 'mouseenter', () => {
 		if ( hoverOff( isTouchInput() ) ) {
 			return;

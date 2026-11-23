@@ -13,7 +13,11 @@
  * InnerBlocks slot.
  */
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-editor';
+import {
+	useBlockProps,
+	InspectorControls,
+	useSettings,
+} from '@wordpress/block-editor';
 import { useEntityRecords } from '@wordpress/core-data';
 import { Spinner } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
@@ -23,12 +27,21 @@ import {
 	resolveResponsiveTier,
 	resolveShadowPreviewComposed,
 	typographyPreviewStyle,
-	usePreviewTier, isCssGradient, tierBoxLonghands,
+	usePreviewTier,
+	isCssGradient,
+	tierBoxLonghands,
 } from '../../utils';
-import { scrollbarCss, scrollbarStyle as scrollbarChoice } from '../../utils/scrollbar-style';
+import {
+	scrollbarCss,
+	scrollbarStyle as scrollbarChoice,
+} from '../../utils/scrollbar-style';
 import { cssLengthValue } from '../../utils/css-length';
 import { useSeparatorsCanvas } from '../../shared/separators/useSeparatorsCanvas';
-import { postGridWrapperPreview, filterChipVarsPreview, orderFilterTerms } from './preview-style';
+import {
+	postGridWrapperPreview,
+	filterChipVarsPreview,
+	orderFilterTerms,
+} from './preview-style';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { resolveColourToken } from '../../components';
 import PreviewCard from './components/PreviewCard';
@@ -97,10 +110,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	// Live post preview via Entity Records — no server round-trip needed.
 	const queryArgs = {
-		per_page:   postsPerPage,
-		orderby:    orderBy,
+		per_page: postsPerPage,
+		orderby: orderBy,
 		order,
-		_embed:     true,
+		_embed: true,
 	};
 	if ( categories?.length ) {
 		queryArgs.categories = categories;
@@ -131,16 +144,27 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	}, [] );
 
 	// Filter chip row: the same terms, order and chip look the front end prints.
-	const filterTerms = useSelect( ( select ) => {
-		if ( ! showFilters ) {
-			return null;
-		}
-		return select( 'core' ).getEntityRecords( 'taxonomy', filterTaxonomy || 'category', {
-			per_page: 100,
-			hide_empty: true,
-		} );
-	}, [ showFilters, filterTaxonomy ] );
-	const orderedFilterTerms = orderFilterTerms( filterTerms, filterOrder, filterTermIds );
+	const filterTerms = useSelect(
+		( select ) => {
+			if ( ! showFilters ) {
+				return null;
+			}
+			return select( 'core' ).getEntityRecords(
+				'taxonomy',
+				filterTaxonomy || 'category',
+				{
+					per_page: 100,
+					hide_empty: true,
+				}
+			);
+		},
+		[ showFilters, filterTaxonomy ]
+	);
+	const orderedFilterTerms = orderFilterTerms(
+		filterTerms,
+		filterOrder,
+		filterTermIds
+	);
 
 	const catSuggestions = ( allCategories || [] ).map( ( c ) => c.name );
 	const tagSuggestions = ( allTags || [] ).map( ( t ) => t.name );
@@ -151,10 +175,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	 * @param {string[]} names Array of category name strings.
 	 */
 	const onCategoriesChange = ( names ) => {
-		const ids = names.map( ( name ) => {
-			const found = ( allCategories || [] ).find( ( c ) => c.name === name );
-			return found ? found.id : null;
-		} ).filter( Boolean );
+		const ids = names
+			.map( ( name ) => {
+				const found = ( allCategories || [] ).find(
+					( c ) => c.name === name
+				);
+				return found ? found.id : null;
+			} )
+			.filter( Boolean );
 		setAttributes( { categories: ids } );
 	};
 
@@ -164,10 +192,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	 * @param {string[]} names Array of tag name strings.
 	 */
 	const onTagsChange = ( names ) => {
-		const ids = names.map( ( name ) => {
-			const found = ( allTags || [] ).find( ( t ) => t.name === name );
-			return found ? found.id : null;
-		} ).filter( Boolean );
+		const ids = names
+			.map( ( name ) => {
+				const found = ( allTags || [] ).find(
+					( t ) => t.name === name
+				);
+				return found ? found.id : null;
+			} )
+			.filter( Boolean );
 		setAttributes( { tags: ids } );
 	};
 
@@ -185,9 +217,24 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// columns is a TIER OBJECT (Spec 35 pass 4) — resolve each tier explicitly,
 	// or the preview would emit "--sgs-columns-desktop: [object Object]" and
 	// the CSS custom properties would silently fail (D567 class).
-	const columnsDesktop = Math.max( 1, Math.floor( Number( resolveResponsiveTier( columns, 'desktop' )?.value ) ) || 3 );
-	const columnsTabletTier = Math.max( 1, Math.floor( Number( resolveResponsiveTier( columns, 'tablet' )?.value ) ) || 2 );
-	const columnsMobileTier = Math.max( 1, Math.floor( Number( resolveResponsiveTier( columns, 'mobile' )?.value ) ) || 1 );
+	const columnsDesktop = Math.max(
+		1,
+		Math.floor(
+			Number( resolveResponsiveTier( columns, 'desktop' )?.value )
+		) || 3
+	);
+	const columnsTabletTier = Math.max(
+		1,
+		Math.floor(
+			Number( resolveResponsiveTier( columns, 'tablet' )?.value )
+		) || 2
+	);
+	const columnsMobileTier = Math.max(
+		1,
+		Math.floor(
+			Number( resolveResponsiveTier( columns, 'mobile' )?.value )
+		) || 1
+	);
 
 	// Editor-canvas parity for post-grid's resting card shadow. render.php
 	// composes shape (`shadow`) + colour (`shadowColour`) via
@@ -200,12 +247,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	// Wrapper inline styles.
 	// gap is a tier object ({ desktop: '30px' }); render.php prints its desktop length as --sgs-gap (30px when empty).
-	const gapCss = cssLengthValue( gap && 'object' === typeof gap ? gap.desktop : gap ) || '30px';
+	const gapCss =
+		cssLengthValue( gap && 'object' === typeof gap ? gap.desktop : gap ) ||
+		'30px';
 	const inlineStyles = {
 		'--sgs-columns-desktop': columnsDesktop,
-		'--sgs-columns-tablet':  columnsTabletTier,
-		'--sgs-columns-mobile':  columnsMobileTier,
-		'--sgs-gap':             gapCss,
+		'--sgs-columns-tablet': columnsTabletTier,
+		'--sgs-columns-mobile': columnsMobileTier,
+		'--sgs-gap': gapCss,
 		...( shadowPreview ? { '--sgs-card-shadow': shadowPreview } : {} ),
 	};
 
@@ -233,14 +282,21 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	 * text colour would shadow the hover rule.
 	 */
 	const postGridPreviewScope = `sgs-post-grid-preview-${ clientId }`;
-	const categoryBadgeBgHoverDecl =
-		isCssGradient( categoryBadgeBgColourHoverGradient )
-			? `background-image:${ categoryBadgeBgColourHoverGradient } !important;background-color:transparent !important;`
-			: categoryBadgeBgColourHover
-				? `background-color:${ resolveColourToken( categoryBadgeBgColourHover, colourPalette ) } !important;`
-				: '';
+	const categoryBadgeBgHoverDecl = isCssGradient(
+		categoryBadgeBgColourHoverGradient
+	)
+		? `background-image:${ categoryBadgeBgColourHoverGradient } !important;background-color:transparent !important;`
+		: categoryBadgeBgColourHover
+		? `background-color:${ resolveColourToken(
+				categoryBadgeBgColourHover,
+				colourPalette
+		  ) } !important;`
+		: '';
 	const categoryBadgeTextHoverDecl = categoryBadgeColourHover
-		? `color:${ resolveColourToken( categoryBadgeColourHover, colourPalette ) } !important;`
+		? `color:${ resolveColourToken(
+				categoryBadgeColourHover,
+				colourPalette
+		  ) } !important;`
 		: '';
 	const postGridHoverPreviewCss = [
 		categoryBadgeBgHoverDecl
@@ -248,11 +304,17 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			: '',
 		categoryBadgeTextHoverDecl
 			? `.${ postGridPreviewScope } .sgs-post-grid__badge:hover,.${ postGridPreviewScope } .sgs-post-grid__badge:focus-visible,.${ postGridPreviewScope } .sgs-post-grid__category:hover,.${ postGridPreviewScope } .sgs-post-grid__category:focus-visible{${ categoryBadgeTextHoverDecl }}`
-			: ''
-	].filter( Boolean ).join( '' );
+			: '',
+	]
+		.filter( Boolean )
+		.join( '' );
 
 	const previewTier = usePreviewTier();
-	const { rootStyle, bandStyle, hasBandProps } = postGridWrapperPreview( attributes, previewTier, colourPalette );
+	const { rootStyle, bandStyle, hasBandProps } = postGridWrapperPreview(
+		attributes,
+		previewTier,
+		colourPalette
+	);
 	const separatorsCanvas = useSeparatorsCanvas( {
 		separators: attributes.separators,
 		device: previewTier,
@@ -260,8 +322,17 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		deps: [ columnsDesktop, gap, posts?.length ],
 	} );
 	const blockProps = useBlockProps( {
-		className: `sgs-post-grid sgs-post-grid--${ layout } ${ postGridPreviewScope }${ keepEmptyColumns && 'grid' === layout ? ' sgs-post-grid--fixed-columns' : '' }`,
-		style:     { ...inlineStyles, ...rootStyle, ...filterChipVarsPreview( attributes, colourPalette ), ...( cardRadius ? { '--sgs-card-radius': cardRadius } : {} ) },
+		className: `sgs-post-grid sgs-post-grid--${ layout } ${ postGridPreviewScope }${
+			keepEmptyColumns && 'grid' === layout
+				? ' sgs-post-grid--fixed-columns'
+				: ''
+		}`,
+		style: {
+			...inlineStyles,
+			...rootStyle,
+			...filterChipVarsPreview( attributes, colourPalette ),
+			...( cardRadius ? { '--sgs-card-radius': cardRadius } : {} ),
+		},
 	} );
 
 	// -----------------------------------------------------------------------
@@ -269,21 +340,28 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// -----------------------------------------------------------------------
 	// The carousel keeps style.css's own scrolling row (the root's --sgs-columns-* and --sgs-gap size its cards), so
 	// the canvas scrolls as the page does and shows the row's scrollbar choice; the other layouts preview as a grid.
-	const previewGridStyle = 'carousel' === layout
-		? { ...separatorsCanvas.style }
-		: {
-			display:             'grid',
-			gridTemplateColumns: 'masonry' === layout
-				? undefined
-				: `repeat( ${ columnsDesktop }, 1fr )`,
-			columnCount:         'masonry' === layout ? columnsDesktop : undefined,
-			gap:                 gapCss,
-			...separatorsCanvas.style,
-		};
+	const previewGridStyle =
+		'carousel' === layout
+			? { ...separatorsCanvas.style }
+			: {
+					display: 'grid',
+					gridTemplateColumns:
+						'masonry' === layout
+							? undefined
+							: `repeat( ${ columnsDesktop }, 1fr )`,
+					columnCount:
+						'masonry' === layout ? columnsDesktop : undefined,
+					gap: gapCss,
+					...separatorsCanvas.style,
+			  };
 	// The carousel row's scrollbar, the twin of render-scoped-css.php's sgs_scrollbar_css() call: hidden unless chosen.
-	const scrollbarPreviewCss = 'carousel' === layout
-		? scrollbarCss( `.${ postGridPreviewScope } .sgs-post-grid__inner`, scrollbarChoice( attributes.scrollbarStyle, 'hidden' ) )
-		: '';
+	const scrollbarPreviewCss =
+		'carousel' === layout
+			? scrollbarCss(
+					`.${ postGridPreviewScope } .sgs-post-grid__inner`,
+					scrollbarChoice( attributes.scrollbarStyle, 'hidden' )
+			  )
+			: '';
 
 	return (
 		<>
@@ -339,25 +417,36 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: titleColour,
-								onChange: ( val ) => setAttributes( { titleColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( { titleColour: val ?? '' } ),
 								gradientValue: titleColourGradient,
-								onGradientChange: ( val ) => setAttributes( { titleColourGradient: val ?? '' } ),
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										titleColourGradient: val ?? '',
+									} ),
 								linked: true,
 							},
 						],
 					},
 					{
 						key: 'meta',
-						label: __( 'Meta colour (date / author)', 'sgs-blocks' ),
+						label: __(
+							'Meta colour (date / author)',
+							'sgs-blocks'
+						),
 						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: metaColour,
-								onChange: ( val ) => setAttributes( { metaColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( { metaColour: val ?? '' } ),
 								gradientValue: metaColourGradient,
-								onGradientChange: ( val ) => setAttributes( { metaColourGradient: val ?? '' } ),
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										metaColourGradient: val ?? '',
+									} ),
 								linked: true,
 							},
 						],
@@ -371,16 +460,25 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: categoryBadgeColour,
-								onChange: ( val ) => setAttributes( { categoryBadgeColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										categoryBadgeColour: val ?? '',
+									} ),
 								gradientValue: categoryBadgeColourGradient,
-								onGradientChange: ( val ) => setAttributes( { categoryBadgeColourGradient: val ?? '' } ),
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										categoryBadgeColourGradient: val ?? '',
+									} ),
 								linked: true,
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: categoryBadgeColourHover,
-								onChange: ( val ) => setAttributes( { categoryBadgeColourHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										categoryBadgeColourHover: val ?? '',
+									} ),
 							},
 						],
 					},
@@ -400,36 +498,59 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: categoryBadgeBgColour,
-								onChange: ( val ) => setAttributes( { categoryBadgeBgColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										categoryBadgeBgColour: val ?? '',
+									} ),
 								gradientValue: categoryBadgeBgColourGradient,
-								onGradientChange: ( val ) => setAttributes( { categoryBadgeBgColourGradient: val ?? '' } ),
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										categoryBadgeBgColourGradient:
+											val ?? '',
+									} ),
 								linked: true,
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: categoryBadgeBgColourHover,
-								onChange: ( val ) => setAttributes( { categoryBadgeBgColourHover: val ?? '' } ),
-								gradientValue: categoryBadgeBgColourHoverGradient,
-								onGradientChange: ( val ) => setAttributes( { categoryBadgeBgColourHoverGradient: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										categoryBadgeBgColourHover: val ?? '',
+									} ),
+								gradientValue:
+									categoryBadgeBgColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										categoryBadgeBgColourHoverGradient:
+											val ?? '',
+									} ),
 								linked: true,
 							},
 						],
 					},
 					{
 						key: 'text-hover',
-						label: __( 'Text hover colour (title / excerpt / meta / read more)', 'sgs-blocks' ),
+						label: __(
+							'Text hover colour (title / excerpt / meta / read more)',
+							'sgs-blocks'
+						),
 						gradientCapable: true,
 						states: [
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: textColourHover,
-								onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										textColourHover: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: textColourHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { textColourHoverGradient: val ?? '' } ),
+									setAttributes( {
+										textColourHoverGradient: val ?? '',
+									} ),
 							},
 						],
 					},
@@ -442,10 +563,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: excerptColour,
-								onChange: ( val ) => setAttributes( { excerptColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										excerptColour: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: excerptColourGradient,
-								onGradientChange: ( val ) => setAttributes( { excerptColourGradient: val ?? '' } ),
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										excerptColourGradient: val ?? '',
+									} ),
 							},
 						],
 					},
@@ -458,10 +585,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: readMoreColour,
-								onChange: ( val ) => setAttributes( { readMoreColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										readMoreColour: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: readMoreColourGradient,
-								onGradientChange: ( val ) => setAttributes( { readMoreColourGradient: val ?? '' } ),
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										readMoreColourGradient: val ?? '',
+									} ),
 							},
 						],
 					},
@@ -474,16 +607,25 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: cardBgColour,
-								onChange: ( val ) => setAttributes( { cardBgColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										cardBgColour: val ?? '',
+									} ),
 								gradientValue: cardBgColourGradient,
-								onGradientChange: ( val ) => setAttributes( { cardBgColourGradient: val ?? '' } ),
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										cardBgColourGradient: val ?? '',
+									} ),
 								linked: true,
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: backgroundColourHover,
-								onChange: ( val ) => setAttributes( { backgroundColourHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										backgroundColourHover: val ?? '',
+									} ),
 								linked: true,
 							},
 						],
@@ -494,21 +636,45 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			     Inspector panels
 			     ============================================================ */ }
 			<InspectorControls>
-
 				{ /* Panel 1: Query */ }
-				<QueryPanel attributes={ attributes } set={ set } catSuggestions={ catSuggestions } tagSuggestions={ tagSuggestions } selectedCatNames={ selectedCatNames } selectedTagNames={ selectedTagNames } onCategoriesChange={ onCategoriesChange } onTagsChange={ onTagsChange } />
+				<QueryPanel
+					attributes={ attributes }
+					set={ set }
+					catSuggestions={ catSuggestions }
+					tagSuggestions={ tagSuggestions }
+					selectedCatNames={ selectedCatNames }
+					selectedTagNames={ selectedTagNames }
+					onCategoriesChange={ onCategoriesChange }
+					onTagsChange={ onTagsChange }
+				/>
 
 				{ /* Panel 2: Layout */ }
-				<PostGridLayoutPanel attributes={ attributes } setAttributes={ setAttributes } set={ set } />
+				<PostGridLayoutPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					set={ set }
+				/>
 
 				{ /* Panel 3: Content */ }
-				<ContentPanel attributes={ attributes } setAttributes={ setAttributes } set={ set } />
+				<ContentPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					set={ set }
+				/>
 
 				{ /* Panel 4: Card Style */ }
-				<CardStylePanel attributes={ attributes } setAttributes={ setAttributes } set={ set } />
+				<CardStylePanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					set={ set }
+				/>
 
 				{ /* Panel 5: Pagination & Filters */ }
-				<PaginationFiltersPanel attributes={ attributes } setAttributes={ setAttributes } set={ set } />
+				<PaginationFiltersPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					set={ set }
+				/>
 
 				{ /* Panel: Container wrapper (WS-4 mirror) */ }
 				{ /* showLayout={false}: this block owns its own Layout control
@@ -528,9 +694,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 				{ /* Panel 8: Carousel (conditional) — converted to ToolsPanel (S7 pilot, 2026-09-02, item 03). */ }
 				{ 'carousel' === layout && (
-					<CarouselPanel attributes={ attributes } setAttributes={ setAttributes } set={ set } />
+					<CarouselPanel
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						set={ set }
+					/>
 				) }
-
 			</InspectorControls>
 
 			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
@@ -538,7 +707,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			   the adopted panels on the image slot, without a Source row, because each card shows its own post's image. */ }
 			{ showImage && (
 				<MediaElementPanel
-					attributes={ { ...attributes, imageSource: { desktop: { kind: 'image' } } } }
+					attributes={ {
+						...attributes,
+						imageSource: { desktop: { kind: 'image' } },
+					} }
 					setAttributes={ setAttributes }
 					prefix="image"
 					blockSlug="sgs/post-grid"
@@ -557,61 +729,105 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				    actual target was the post title, not the block root — defaults
 				    also now expose weight/style, which native typography never offered
 				    here. */ }
-				<PostGridTypographyPanel attributes={ attributes } setAttributes={ setAttributes } />
-				<BorderPanel attributes={ attributes } setAttributes={ setAttributes } />
+				<PostGridTypographyPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+				<BorderPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 			</InspectorControls>
 
 			{ /* ============================================================
 			     Live preview canvas
 			     ============================================================ */ }
 			<div { ...blockProps }>
-				{ postGridHoverPreviewCss && <style>{ postGridHoverPreviewCss }</style> }
-				{ scrollbarPreviewCss && <style>{ scrollbarPreviewCss }</style> }
-				{ 'carousel' === layout && attributes.carouselAutoplay && attributes.carouselPauseButton && (
-					<MotionPausePreview block="sgs-post-grid" />
+				{ postGridHoverPreviewCss && (
+					<style>{ postGridHoverPreviewCss }</style>
 				) }
+				{ scrollbarPreviewCss && (
+					<style>{ scrollbarPreviewCss }</style>
+				) }
+				{ 'carousel' === layout &&
+					attributes.carouselAutoplay &&
+					attributes.carouselPauseButton && (
+						<MotionPausePreview block="sgs-post-grid" />
+					) }
 				{ showFilters && orderedFilterTerms.length > 0 && (
-					<div className="sgs-post-grid__filters" role="group" aria-hidden="true">
-						<span className="sgs-post-grid__filter sgs-post-grid__filter--active" style={ tierBoxLonghands( attributes.filterPadding, previewTier, 'padding' ) }>{ __( 'All', 'sgs-blocks' ) }</span>
+					<div
+						className="sgs-post-grid__filters"
+						role="group"
+						aria-hidden="true"
+					>
+						<span
+							className="sgs-post-grid__filter sgs-post-grid__filter--active"
+							style={ tierBoxLonghands(
+								attributes.filterPadding,
+								previewTier,
+								'padding'
+							) }
+						>
+							{ __( 'All', 'sgs-blocks' ) }
+						</span>
 						{ orderedFilterTerms.map( ( term ) => (
-							<span key={ term.id } className="sgs-post-grid__filter" style={ tierBoxLonghands( attributes.filterPadding, previewTier, 'padding' ) }>{ term.name }</span>
+							<span
+								key={ term.id }
+								className="sgs-post-grid__filter"
+								style={ tierBoxLonghands(
+									attributes.filterPadding,
+									previewTier,
+									'padding'
+								) }
+							>
+								{ term.name }
+							</span>
 						) ) }
 					</div>
 				) }
 				{ isResolving && (
 					<div className="sgs-post-grid-editor__loading">
 						<Spinner />
-						<span>{ __( 'Loading posts\u2026', 'sgs-blocks' ) }</span>
+						<span>
+							{ __( 'Loading posts\u2026', 'sgs-blocks' ) }
+						</span>
 					</div>
 				) }
 
 				{ ! isResolving && ( ! posts || posts.length === 0 ) && (
 					<div className="sgs-post-grid-editor__placeholder">
-						<p>{ __( 'No posts found. Adjust the Query settings in the sidebar.', 'sgs-blocks' ) }</p>
+						<p>
+							{ __(
+								'No posts found. Adjust the Query settings in the sidebar.',
+								'sgs-blocks'
+							) }
+						</p>
 					</div>
 				) }
 
 				{ ! isResolving && posts && posts.length > 0 && (
 					<div
-						className={ hasBandProps ? 'sgs-container__inner' : undefined }
+						className={
+							hasBandProps ? 'sgs-container__inner' : undefined
+						}
 						style={ hasBandProps ? bandStyle : undefined }
 					>
-					<div
-						ref={ separatorsCanvas.ref }
-						className="sgs-post-grid__inner"
-						style={ previewGridStyle }
-					>
-						{ posts.map( ( post ) => (
-							<PreviewCard
-								key={ post.id }
-								post={ post }
-								attributes={ attributes }
-								palette={ colourPalette }
-								tier={ previewTier }
-								clientId={ clientId }
-							/>
-						) ) }
-					</div>
+						<div
+							ref={ separatorsCanvas.ref }
+							className="sgs-post-grid__inner"
+							style={ previewGridStyle }
+						>
+							{ posts.map( ( post ) => (
+								<PreviewCard
+									key={ post.id }
+									post={ post }
+									attributes={ attributes }
+									palette={ colourPalette }
+									tier={ previewTier }
+									clientId={ clientId }
+								/>
+							) ) }
+						</div>
 					</div>
 				) }
 
@@ -619,12 +835,23 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				     (includes/class-grid-pagination.php), so a static, non-interactive
 				     sample wears the same classes and the client's typography shows. */ }
 				{ 'standard' === pagination && (
-					<div className="sgs-post-grid__pagination" aria-hidden="true">
+					<div
+						className="sgs-post-grid__pagination"
+						aria-hidden="true"
+					>
 						{ [ 1, 2, 3 ].map( ( n ) => (
 							<span
 								key={ n }
-								className={ 1 === n ? 'sgs-post-grid__page-btn sgs-post-grid__page-btn--current' : 'sgs-post-grid__page-btn' }
-								style={ typographyPreviewStyle( attributes, 'pageButton', previewTier ) }
+								className={
+									1 === n
+										? 'sgs-post-grid__page-btn sgs-post-grid__page-btn--current'
+										: 'sgs-post-grid__page-btn'
+								}
+								style={ typographyPreviewStyle(
+									attributes,
+									'pageButton',
+									previewTier
+								) }
 							>
 								{ n }
 							</span>
@@ -632,10 +859,17 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					</div>
 				) }
 				{ 'load-more' === pagination && (
-					<div className="sgs-post-grid__load-more-wrap" aria-hidden="true">
+					<div
+						className="sgs-post-grid__load-more-wrap"
+						aria-hidden="true"
+					>
 						<span
 							className="sgs-post-grid__load-more"
-							style={ typographyPreviewStyle( attributes, 'loadMore', previewTier ) }
+							style={ typographyPreviewStyle(
+								attributes,
+								'loadMore',
+								previewTier
+							) }
 						>
 							{ __( 'Load more', 'sgs-blocks' ) }
 						</span>

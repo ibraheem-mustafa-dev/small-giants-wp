@@ -21,15 +21,26 @@ import {
  * @return {{ root: Object, heading: Object, item: Object, text: Object, description: Object }} Styles per element.
  */
 export function iconListPreview( attributes, tier, palette ) {
-	const root = backgroundPaintPreview( attributes.backgroundColour, attributes.backgroundColourGradient, palette );
-	Object.assign( root, borderRadiusLonghands( attributes.borderRadius, tier ) );
+	const root = backgroundPaintPreview(
+		attributes.backgroundColour,
+		attributes.backgroundColourGradient,
+		palette
+	);
+	Object.assign(
+		root,
+		borderRadiusLonghands( attributes.borderRadius, tier )
+	);
 	return {
 		root,
 		heading: typographyPreviewStyle( attributes, 'heading', tier ),
 		item: typographyPreviewStyle( attributes, 'item', tier ),
 		text: {
 			...typographyPreviewStyle( attributes, 'textEl', tier ),
-			...textPaintPreview( attributes.textColour, attributes.textColourGradient, palette ),
+			...textPaintPreview(
+				attributes.textColour,
+				attributes.textColourGradient,
+				palette
+			),
 		},
 		description: typographyPreviewStyle( attributes, 'description', tier ),
 	};

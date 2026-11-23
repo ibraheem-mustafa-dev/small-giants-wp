@@ -97,10 +97,7 @@
  */
 
 import { __, sprintf } from '@wordpress/i18n';
-import {
-	ToggleGroupControl,
-	ToggleGroupControlOptionIcon,
-} from './primitives';
+import { ToggleGroupControl, ToggleGroupControlOptionIcon } from './primitives';
 
 /**
  * The shape catalogue, keyed by column count. Each entry is a list of `fr`
@@ -113,14 +110,38 @@ import {
 const SHAPES = {
 	2: [
 		{ key: 'equal', weights: [ 1, 1 ], name: __( 'Equal', 'sgs-blocks' ) },
-		{ key: 'wide-first', weights: [ 2, 1 ], name: __( 'Wide first', 'sgs-blocks' ) },
-		{ key: 'wide-last', weights: [ 1, 2 ], name: __( 'Wide last', 'sgs-blocks' ) },
+		{
+			key: 'wide-first',
+			weights: [ 2, 1 ],
+			name: __( 'Wide first', 'sgs-blocks' ),
+		},
+		{
+			key: 'wide-last',
+			weights: [ 1, 2 ],
+			name: __( 'Wide last', 'sgs-blocks' ),
+		},
 	],
 	3: [
-		{ key: 'equal', weights: [ 1, 1, 1 ], name: __( 'Equal', 'sgs-blocks' ) },
-		{ key: 'wide-centre', weights: [ 1, 2, 1 ], name: __( 'Wide centre', 'sgs-blocks' ) },
-		{ key: 'wide-first', weights: [ 2, 1, 1 ], name: __( 'Wide first', 'sgs-blocks' ) },
-		{ key: 'wide-last', weights: [ 1, 1, 2 ], name: __( 'Wide last', 'sgs-blocks' ) },
+		{
+			key: 'equal',
+			weights: [ 1, 1, 1 ],
+			name: __( 'Equal', 'sgs-blocks' ),
+		},
+		{
+			key: 'wide-centre',
+			weights: [ 1, 2, 1 ],
+			name: __( 'Wide centre', 'sgs-blocks' ),
+		},
+		{
+			key: 'wide-first',
+			weights: [ 2, 1, 1 ],
+			name: __( 'Wide first', 'sgs-blocks' ),
+		},
+		{
+			key: 'wide-last',
+			weights: [ 1, 1, 2 ],
+			name: __( 'Wide last', 'sgs-blocks' ),
+		},
 		{
 			key: 'fit-centre',
 			weights: [ 1, 'auto', 1 ],
@@ -128,9 +149,21 @@ const SHAPES = {
 		},
 	],
 	4: [
-		{ key: 'equal', weights: [ 1, 1, 1, 1 ], name: __( 'Equal', 'sgs-blocks' ) },
-		{ key: 'wide-first', weights: [ 2, 1, 1, 1 ], name: __( 'Wide first', 'sgs-blocks' ) },
-		{ key: 'wide-last', weights: [ 1, 1, 1, 2 ], name: __( 'Wide last', 'sgs-blocks' ) },
+		{
+			key: 'equal',
+			weights: [ 1, 1, 1, 1 ],
+			name: __( 'Equal', 'sgs-blocks' ),
+		},
+		{
+			key: 'wide-first',
+			weights: [ 2, 1, 1, 1 ],
+			name: __( 'Wide first', 'sgs-blocks' ),
+		},
+		{
+			key: 'wide-last',
+			weights: [ 1, 1, 1, 2 ],
+			name: __( 'Wide last', 'sgs-blocks' ),
+		},
 	],
 };
 
@@ -158,7 +191,9 @@ function isAutoWeight( w ) {
 
 /** `[1,'auto',1]` -> `'1fr auto 1fr'`. The ONLY place a track string is produced. */
 export function weightsToTrack( weights ) {
-	return weights.map( ( w ) => ( isAutoWeight( w ) ? 'auto' : `${ w }fr` ) ).join( ' ' );
+	return weights
+		.map( ( w ) => ( isAutoWeight( w ) ? 'auto' : `${ w }fr` ) )
+		.join( ' ' );
 }
 
 /**
@@ -172,7 +207,9 @@ function weightsToRatio( weights ) {
 		return weightsToTrack( weights ).split( ' ' ).join( ' / ' );
 	}
 	const total = weights.reduce( ( a, b ) => a + b, 0 );
-	return weights.map( ( w ) => Math.round( ( w / total ) * 100 ) ).join( ' / ' );
+	return weights
+		.map( ( w ) => Math.round( ( w / total ) * 100 ) )
+		.join( ' / ' );
 }
 
 /**
@@ -271,7 +308,10 @@ function barSpaceFor( shapes ) {
  * @param {number}   props.barSpace Total px of bar for the whole rendered set.
  */
 function ShapeDiagram( { weights, barSpace } ) {
-	const total = weights.reduce( ( a, w ) => a + ( isAutoWeight( w ) ? 1 : w ), 0 );
+	const total = weights.reduce(
+		( a, w ) => a + ( isAutoWeight( w ) ? 1 : w ),
+		0
+	);
 	const unit = barSpace / total;
 
 	return (

@@ -39,7 +39,9 @@ export function parseSvgGradient( gradientCss ) {
 	if ( ! gradientCss || 'string' !== typeof gradientCss ) {
 		return null;
 	}
-	const match = gradientCss.trim().match( /^(linear|radial)-gradient\((.+)\)$/i );
+	const match = gradientCss
+		.trim()
+		.match( /^(linear|radial)-gradient\((.+)\)$/i );
 	if ( ! match ) {
 		return null;
 	}
@@ -105,7 +107,10 @@ export function parseSvgGradient( gradientCss ) {
 		if ( ! colour ) {
 			return;
 		}
-		stops.push( { offset: Math.max( 0, Math.min( 100, offset ) ), colour } );
+		stops.push( {
+			offset: Math.max( 0, Math.min( 100, offset ) ),
+			colour,
+		} );
 	} );
 	if ( ! stops.length ) {
 		return null;
@@ -118,7 +123,8 @@ export function parseSvgGradient( gradientCss ) {
 	// CSS gradient-angle → SVG objectBoundingBox line endpoints (0deg = "to
 	// top", clockwise) — same conversion as sgs_svg_stroke_gradient().
 	const rad = ( angleDeg * Math.PI ) / 180;
-	const half = 0.5 * ( Math.abs( Math.sin( rad ) ) + Math.abs( Math.cos( rad ) ) );
+	const half =
+		0.5 * ( Math.abs( Math.sin( rad ) ) + Math.abs( Math.cos( rad ) ) );
 	const dx = Math.sin( rad ) * half;
 	const dy = -Math.cos( rad ) * half;
 	return {
@@ -137,8 +143,8 @@ export function parseSvgGradient( gradientCss ) {
  *
  * @param {Object} props
  * @param {string} props.id       Unique DOM id for this gradient (scope per
- *                                  block instance + state, e.g.
- *                                  `${clientId}-icon-grad`).
+ *                                block instance + state, e.g.
+ *                                `${clientId}-icon-grad`).
  * @param {Object} props.gradient Parsed gradient — the `parseSvgGradient()` return value.
  * @return {?JSX.Element}
  */
@@ -147,17 +153,32 @@ export function SvgGradientDefs( { id, gradient } ) {
 		return null;
 	}
 	const stopEls = gradient.stops.map( ( stop, i ) => (
-		<stop key={ i } offset={ `${ stop.offset }%` } stopColor={ stop.colour } />
+		<stop
+			key={ i }
+			offset={ `${ stop.offset }%` }
+			stopColor={ stop.colour }
+		/>
 	) );
 	if ( 'radial' === gradient.type ) {
 		return (
-			<radialGradient id={ id } cx={ `${ gradient.cx }%` } cy={ `${ gradient.cy }%` } r={ `${ gradient.r }%` }>
+			<radialGradient
+				id={ id }
+				cx={ `${ gradient.cx }%` }
+				cy={ `${ gradient.cy }%` }
+				r={ `${ gradient.r }%` }
+			>
 				{ stopEls }
 			</radialGradient>
 		);
 	}
 	return (
-		<linearGradient id={ id } x1={ gradient.x1 } y1={ gradient.y1 } x2={ gradient.x2 } y2={ gradient.y2 }>
+		<linearGradient
+			id={ id }
+			x1={ gradient.x1 }
+			y1={ gradient.y1 }
+			x2={ gradient.x2 }
+			y2={ gradient.y2 }
+		>
 			{ stopEls }
 		</linearGradient>
 	);
@@ -206,12 +227,17 @@ export function svgStrokeGradientPreview( gradientCss, id, target = 'stroke' ) {
 		return empty;
 	}
 
-	const stops = gradient.stops.filter( ( stop ) => isSafeGradientStopColour( stop.colour ) );
+	const stops = gradient.stops.filter( ( stop ) =>
+		isSafeGradientStopColour( stop.colour )
+	);
 	if ( ! stops.length ) {
 		return empty;
 	}
 	const stopMarkup = stops
-		.map( ( stop ) => `<stop offset="${ stop.offset }%" stop-color="${ stop.colour }"/>` )
+		.map(
+			( stop ) =>
+				`<stop offset="${ stop.offset }%" stop-color="${ stop.colour }"/>`
+		)
 		.join( '' );
 
 	let defs;
@@ -219,7 +245,13 @@ export function svgStrokeGradientPreview( gradientCss, id, target = 'stroke' ) {
 		defs = `<defs><radialGradient id="${ cleanId }" cx="${ gradient.cx }%" cy="${ gradient.cy }%" r="${ gradient.r }%">${ stopMarkup }</radialGradient></defs>`;
 	} else {
 		const round4 = ( n ) => Math.round( n * 10000 ) / 10000;
-		defs = `<defs><linearGradient id="${ cleanId }" x1="${ round4( gradient.x1 ) }" y1="${ round4( gradient.y1 ) }" x2="${ round4( gradient.x2 ) }" y2="${ round4( gradient.y2 ) }">${ stopMarkup }</linearGradient></defs>`;
+		defs = `<defs><linearGradient id="${ cleanId }" x1="${ round4(
+			gradient.x1
+		) }" y1="${ round4( gradient.y1 ) }" x2="${ round4(
+			gradient.x2
+		) }" y2="${ round4(
+			gradient.y2
+		) }">${ stopMarkup }</linearGradient></defs>`;
 	}
 
 	return { defs, css: `${ resolvedTarget }:url(#${ cleanId })` };
@@ -241,7 +273,12 @@ export function svgStrokeGradientPreview( gradientCss, id, target = 'stroke' ) {
  * @return {string} The markup with the gradient defs + style injected, or the
  *   original markup unchanged when the gradient is empty/invalid/unsupported.
  */
-export function withSvgStrokeGradient( svgMarkup, gradientCss, id, target = 'stroke' ) {
+export function withSvgStrokeGradient(
+	svgMarkup,
+	gradientCss,
+	id,
+	target = 'stroke'
+) {
 	if ( ! svgMarkup ) {
 		return svgMarkup;
 	}
@@ -255,7 +292,10 @@ export function withSvgStrokeGradient( svgMarkup, gradientCss, id, target = 'str
 		injected = true;
 		let newAttrs = attrs;
 		if ( /\sstyle="/.test( newAttrs ) ) {
-			newAttrs = newAttrs.replace( /style="([^"]*)"/, ( m2, existing ) => `style="${ existing };${ css }"` );
+			newAttrs = newAttrs.replace(
+				/style="([^"]*)"/,
+				( m2, existing ) => `style="${ existing };${ css }"`
+			);
 		} else {
 			newAttrs += ` style="${ css }"`;
 		}

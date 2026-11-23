@@ -21,8 +21,21 @@ import {
 	ShapeDividersPanel,
 	MIN_HEIGHT_OPTIONS,
 } from '../container/components/ContainerWrapperControls';
-import { ResponsiveBoxControl, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsColourPanel, SgsBorderControl, resolveColourToken, SgsBoxControl, StarterLookPresetControl } from '../../components';
-import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+import {
+	ResponsiveBoxControl,
+	ResponsiveOverride,
+	BOX_UNITS,
+	normaliseResponsiveBox,
+	SgsColourPanel,
+	SgsBorderControl,
+	resolveColourToken,
+	SgsBoxControl,
+	StarterLookPresetControl,
+} from '../../components';
+import {
+	ToggleGroupControl,
+	ToggleGroupControlOption,
+} from '../../components/primitives';
 import {
 	backgroundPaintPreview,
 	backgroundMediaPreview,
@@ -33,7 +46,11 @@ import {
 	wrapperPreview,
 	sectionPreview,
 } from '../../utils';
-import { calculateRelativeLuminance, calculateContrastRatio, meetsWCAG_AA } from '../../utils/wcag-contrast';
+import {
+	calculateRelativeLuminance,
+	calculateContrastRatio,
+	meetsWCAG_AA,
+} from '../../utils/wcag-contrast';
 
 const ALLOWED_BLOCKS = [ 'sgs/site-footer-row' ];
 
@@ -85,7 +102,10 @@ const TEMPLATE = [
 			// Column 1 — brand: logo + tagline + socials from Business Details.
 			[
 				'sgs/container',
-				{ className: 'sgs-site-footer__brand', layout: { type: 'constrained' } },
+				{
+					className: 'sgs-site-footer__brand',
+					layout: { type: 'constrained' },
+				},
 				[
 					[ 'sgs/responsive-logo', { width: 160, linkToHome: true } ],
 					[ 'sgs/business-info', { displayType: 'description' } ],
@@ -95,25 +115,25 @@ const TEMPLATE = [
 			// Column 2 — Shop links.
 			[
 				'sgs/container',
-				{ className: 'sgs-site-footer__links', layout: { type: 'constrained' } },
+				{
+					className: 'sgs-site-footer__links',
+					layout: { type: 'constrained' },
+				},
 				[
 					[ 'sgs/heading', { level: 'h2' } ],
-						[
-							'sgs/text',
-							{},
-						],
+					[ 'sgs/text', {} ],
 				],
 			],
 			// Column 3 — Legal links.
 			[
 				'sgs/container',
-				{ className: 'sgs-site-footer__links', layout: { type: 'constrained' } },
+				{
+					className: 'sgs-site-footer__links',
+					layout: { type: 'constrained' },
+				},
 				[
 					[ 'sgs/heading', { level: 'h2' } ],
-						[
-							'sgs/text',
-							{},
-						],
+					[ 'sgs/text', {} ],
 				],
 			],
 		],
@@ -141,9 +161,7 @@ const TEMPLATE = [
 			borderWidth: { top: '1px' },
 			borderColour: 'accent',
 		},
-		[
-			[ 'sgs/business-info', { displayType: 'copyright' } ],
-		],
+		[ [ 'sgs/business-info', { displayType: 'copyright' } ] ],
 	],
 ];
 
@@ -175,8 +193,6 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		colourPalette
 	);
 
-
-
 	// Decorative SVG background layer — editor mirror. Deliberately
 	// NOT folded into backgroundPreview()'s return: that helper paints via
 	// `--sgs-ed-bg-*` custom properties on a ::before, whereas the SVG layer is a
@@ -201,17 +217,27 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	const previewTier = useSelect( ( select ) => {
 		const ed = select( 'core/editor' );
 		const device =
-			ed && typeof ed.getDeviceType === 'function' ? ed.getDeviceType() : null;
+			ed && typeof ed.getDeviceType === 'function'
+				? ed.getDeviceType()
+				: null;
 		return { Tablet: 'tablet', Mobile: 'mobile' }[ device ] || 'desktop';
 	}, [] );
 
-	const bgPreview = backgroundMediaPreview( attributes, colourPalette, gradientPresets, previewTier );
+	const bgPreview = backgroundMediaPreview(
+		attributes,
+		colourPalette,
+		gradientPresets,
+		previewTier
+	);
 
 	// Padding/margin canvas preview. `padding`/`margin` are each ONE
 	// tier-of-boxes object attr { desktop, tablet, mobile }, read directly.
-	const spacePreview = spacingPreview( {
-		margin: attributes.margin,
-	}, previewTier );
+	const spacePreview = spacingPreview(
+		{
+			margin: attributes.margin,
+		},
+		previewTier
+	);
 
 	// Layout, gap, max-width, border, radius and the content band come from the
 	// shared wrapper mirror (`layout` is fixed to 'flex'; flexDirection defaults
@@ -219,20 +245,42 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	// applyGridLayoutPreview). Min-height, shadow, tablet/mobile background
 	// images and the surface tone come from the section mirror.
 	const wrapper = wrapperPreview( attributes, previewTier, colourPalette );
-	const section = sectionPreview( attributes, previewTier, colourPalette, gradientPresets );
+	const section = sectionPreview(
+		attributes,
+		previewTier,
+		colourPalette,
+		gradientPresets
+	);
 
 	// Text colour/gradient canvas preview. `textColour` is also read inside the
 	// WCAG contrast-check useEffect further down, but that is a contrast
 	// comparison, not canvas paint — the paint comes from `textPaintPreview()`,
 	// which handles both the flat and gradient cases in one call
 	// (gradient-text technique when set, plain `color` otherwise).
-	const textPreview = textPaintPreview( attributes.textColour, attributes.textColourGradient, colourPalette );
+	const textPreview = textPaintPreview(
+		attributes.textColour,
+		attributes.textColourGradient,
+		colourPalette
+	);
 
 	const blockProps = useBlockProps( {
-		className: [ 'sgs-site-footer', bgPreview.className, section.className, ...svgPreview.className ]
+		className: [
+			'sgs-site-footer',
+			bgPreview.className,
+			section.className,
+			...svgPreview.className,
+		]
 			.filter( Boolean )
 			.join( ' ' ),
-		style: { ...backgroundPaint, ...bgPreview.style, ...svgPreview.style, ...spacePreview, ...wrapper.style, ...section.style, ...textPreview },
+		style: {
+			...backgroundPaint,
+			...bgPreview.style,
+			...svgPreview.style,
+			...spacePreview,
+			...wrapper.style,
+			...section.style,
+			...textPreview,
+		},
 	} );
 	const refEl = useRef( null );
 
@@ -341,7 +389,8 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		}
 
 		const bgLuminance = calculateRelativeLuminance(
-			resolveColourToken( backgroundColour, colourPalette ) || backgroundColour,
+			resolveColourToken( backgroundColour, colourPalette ) ||
+				backgroundColour,
 			refEl.current
 		);
 		const textLuminance = calculateRelativeLuminance(
@@ -354,7 +403,10 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		// Check both normal text (4.5:1) and large text (3:1) — use the stricter threshold
 		if ( ! meetsWCAG_AA( ratio, false ) ) {
 			setContrastNotice(
-				__( 'This text colour may be hard to read on this background. Consider adjusting the colour for better readability.', 'sgs-blocks' )
+				__(
+					'This text colour may be hard to read on this background. Consider adjusting the colour for better readability.',
+					'sgs-blocks'
+				)
 			);
 		} else {
 			setContrastNotice( null );
@@ -378,19 +430,29 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: textColour,
-								onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( { textColour: val ?? '' } ),
 								linked: true,
 								gradientValue: textColourGradient,
-								onGradientChange: ( val ) => setAttributes( { textColourGradient: val ?? '' } ),
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										textColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: textColourHover,
-								onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										textColourHover: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: textColourHoverGradient,
-								onGradientChange: ( val ) => setAttributes( { textColourHoverGradient: val ?? '' } ),
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										textColourHoverGradient: val ?? '',
+									} ),
 							},
 						],
 					},
@@ -402,21 +464,32 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: backgroundColour,
-								onChange: ( val ) => setAttributes( { backgroundColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										backgroundColour: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: backgroundColourGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { backgroundColourGradient: val ?? '' } ),
+									setAttributes( {
+										backgroundColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: backgroundColourHover,
-								onChange: ( val ) => setAttributes( { backgroundColourHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										backgroundColourHover: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: backgroundColourHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { backgroundColourHoverGradient: val ?? '' } ),
+									setAttributes( {
+										backgroundColourHoverGradient:
+											val ?? '',
+									} ),
 							},
 						],
 					},
@@ -437,34 +510,57 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 			</InspectorControls>
 
 			<InspectorControls group="styles">
-				<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } name={ name } />
-				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+				<BackgroundPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					name={ name }
+				/>
+				<PanelBody
+					title={ __( 'Border', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SgsBorderControl
 						widthValues={ attributes.borderWidth ?? {} }
-						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						onWidthChange={ ( next ) =>
+							setAttributes( { borderWidth: next } )
+						}
 						widthPresets={ [ '10', '20', '30' ] }
 						styleValue={ attributes.borderStyle }
-						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						onStyleChange={ ( val ) =>
+							setAttributes( { borderStyle: val } )
+						}
 						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
 						colourValue={ attributes.borderColour }
-						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						onColourChange={ ( val ) =>
+							setAttributes( { borderColour: val ?? '' } )
+						}
 						colourGradientValue={ attributes.borderColourGradient }
-						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+						onColourGradientChange={ ( val ) =>
+							setAttributes( { borderColourGradient: val ?? '' } )
+						}
 						colourLinked={ true }
 						contrastAgainst={ footerContrastAgainst }
 						radiusValues={ {
-								base: attributes.borderRadius?.desktop ?? {},
-								tablet: attributes.borderRadius?.tablet ?? {},
-								mobile: attributes.borderRadius?.mobile ?? {},
-							} }
+							base: attributes.borderRadius?.desktop ?? {},
+							tablet: attributes.borderRadius?.tablet ?? {},
+							mobile: attributes.borderRadius?.mobile ?? {},
+						} }
 						onRadiusChange={ ( tier, next ) => {
 							const key = tier === 'base' ? 'desktop' : tier;
-							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+							setAttributes( {
+								borderRadius: {
+									...attributes.borderRadius,
+									[ key ]: next,
+								},
+							} );
 						} }
 					/>
 				</PanelBody>
 
-				<ShapeDividersPanel attributes={ attributes } setAttributes={ setAttributes } />
+				<ShapeDividersPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 			</InspectorControls>
 
 			<InspectorControls>
@@ -485,17 +581,26 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					<hr style={ { margin: '16px 0' } } />
 					<ResponsiveOverride
 						value={ attributes.minHeight }
-						onChange={ ( obj ) => setAttributes( { minHeight: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { minHeight: obj } )
+						}
 					>
 						{ ( { tier, ownValue, setOwnValue } ) => (
 							<SelectControl
 								label={ __( 'Min height', 'sgs-blocks' ) }
 								value={ ownValue || '' }
 								options={ MIN_HEIGHT_OPTIONS }
-								onChange={ ( val ) => setOwnValue( val || undefined ) }
-								help={ tier === 'desktop'
-									? __( 'Desktop / base. Tablet and mobile override it at narrower widths.', 'sgs-blocks' )
-									: undefined }
+								onChange={ ( val ) =>
+									setOwnValue( val || undefined )
+								}
+								help={
+									tier === 'desktop'
+										? __(
+												'Desktop / base. Tablet and mobile override it at narrower widths.',
+												'sgs-blocks'
+										  )
+										: undefined
+								}
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							/>
@@ -519,32 +624,63 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 				     ARE honoured by that same flex branch, so they get real
 				     controls + real canvas preview below (mirrors sgs/container's
 				     own edit.js flex-branch preview). */ }
-				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Layout', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<ToggleGroupControl
 						label={ __( 'Flex direction', 'sgs-blocks' ) }
 						value={ attributes.flexDirection || 'column' }
-						onChange={ ( val ) => setAttributes( { flexDirection: val } ) }
-						help={ __( 'Column (the default) stacks the three footer rows top to bottom. Row places them side by side.', 'sgs-blocks' ) }
+						onChange={ ( val ) =>
+							setAttributes( { flexDirection: val } )
+						}
+						help={ __(
+							'Column (the default) stacks the three footer rows top to bottom. Row places them side by side.',
+							'sgs-blocks'
+						) }
 						isBlock
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					>
-						<ToggleGroupControlOption value="row" label={ __( 'Row', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="row-reverse" label={ __( 'Row rev.', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="column" label={ __( 'Column', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="column-reverse" label={ __( 'Col. rev.', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption
+							value="row"
+							label={ __( 'Row', 'sgs-blocks' ) }
+						/>
+						<ToggleGroupControlOption
+							value="row-reverse"
+							label={ __( 'Row rev.', 'sgs-blocks' ) }
+						/>
+						<ToggleGroupControlOption
+							value="column"
+							label={ __( 'Column', 'sgs-blocks' ) }
+						/>
+						<ToggleGroupControlOption
+							value="column-reverse"
+							label={ __( 'Col. rev.', 'sgs-blocks' ) }
+						/>
 					</ToggleGroupControl>
 					<ToggleGroupControl
 						label={ __( 'Flex wrap', 'sgs-blocks' ) }
 						value={ attributes.flexWrap || 'wrap' }
-						onChange={ ( val ) => setAttributes( { flexWrap: val } ) }
-						help={ __( 'No effect while Flex direction is Column or Col. rev. — a wrapped column axis would ignore the footer width, so the frontend always forces No wrap for those directions.', 'sgs-blocks' ) }
+						onChange={ ( val ) =>
+							setAttributes( { flexWrap: val } )
+						}
+						help={ __(
+							'No effect while Flex direction is Column or Col. rev. — a wrapped column axis would ignore the footer width, so the frontend always forces No wrap for those directions.',
+							'sgs-blocks'
+						) }
 						isBlock
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					>
-						<ToggleGroupControlOption value="wrap" label={ __( 'Wrap', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="nowrap" label={ __( 'No wrap', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption
+							value="wrap"
+							label={ __( 'Wrap', 'sgs-blocks' ) }
+						/>
+						<ToggleGroupControlOption
+							value="nowrap"
+							label={ __( 'No wrap', 'sgs-blocks' ) }
+						/>
 					</ToggleGroupControl>
 				</PanelBody>
 
@@ -553,18 +689,31 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 				     (this block declares no supports.spacing, so there is NO
 				     duplicate Styles > Dimensions panel); each attr holds
 				     desktop, tablet and mobile, read by the wrapper's @media tiers. */ }
-				<PanelBody title={ __( 'Padding & margin', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Padding & margin', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<ResponsiveOverride
 						value={ attributes.padding }
-						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { padding: obj } )
+						}
 					>
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
-							presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								presets
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
@@ -576,15 +725,22 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
 				</PanelBody>
-
 			</InspectorControls>
 
 			{ /* Spread first, then state children explicitly: innerBlocksProps
@@ -592,13 +748,19 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 			     with it rather than added alongside the spread. */ }
 			{ wrapper.hasBandProps ? (
 				<div ref={ refEl } { ...blockProps }>
-					<BackgroundLayers media={ bgPreview.media } overlay={ bgPreview.overlay } />
+					<BackgroundLayers
+						media={ bgPreview.media }
+						overlay={ bgPreview.overlay }
+					/>
 					{ svgLayer }
 					<div { ...innerBlocksProps } />
 				</div>
 			) : (
 				<div ref={ refEl } { ...innerBlocksProps }>
-					<BackgroundLayers media={ bgPreview.media } overlay={ bgPreview.overlay } />
+					<BackgroundLayers
+						media={ bgPreview.media }
+						overlay={ bgPreview.overlay }
+					/>
 					{ svgLayer }
 					{ innerBlocksProps.children }
 				</div>

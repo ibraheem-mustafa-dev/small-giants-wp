@@ -94,11 +94,19 @@ export function travelDistance( el, track, travelEnd = 'first-start' ) {
 	const hostLeft = layoutLeft( el );
 	// Every mode travels at least until the last panel's centre reaches the host's centre, so the pin holds until
 	// the last card sits in the middle of the screen rather than releasing as soon as it is fully in view.
-	const centred = layoutLeft( last ) - hostLeft + last.offsetWidth / 2 - el.clientWidth / 2;
+	const centred =
+		layoutLeft( last ) -
+		hostLeft +
+		last.offsetWidth / 2 -
+		el.clientWidth / 2;
 	if ( 'track-end' === travelEnd ) {
 		const startInset = layoutLeft( first ) - hostLeft;
 		const lastRight = layoutLeft( last ) - hostLeft + last.offsetWidth;
-		return Math.max( 0, lastRight - ( el.clientWidth - Math.max( 0, startInset ) ), centred );
+		return Math.max(
+			0,
+			lastRight - ( el.clientWidth - Math.max( 0, startInset ) ),
+			centred
+		);
 	}
 	return Math.max( 0, ideal, flushRight, centred );
 }

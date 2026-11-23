@@ -38,10 +38,7 @@ export const queryWidth = ( edge, width ) => {
 		return '';
 	}
 	let value = 'number' === typeof width ? `${ width }px` : width;
-	if (
-		'max' === edge &&
-		/^\d+(?:px)?$/.test( String( width ).trim() )
-	) {
+	if ( 'max' === edge && /^\d+(?:px)?$/.test( String( width ).trim() ) ) {
 		value = `${ parseInt( width, 10 ) }${ UPPER_FRACTION }px`;
 	}
 	return `(${ edge }-width:${ value })`;
@@ -54,9 +51,15 @@ export const queryWidth = ( edge, width ) => {
  */
 export const QUERY_TABLET = `(max-width: ${ SGS_BREAKPOINTS.TABLET_MAX }${ UPPER_FRACTION }px)`;
 export const QUERY_MOBILE = `(max-width: ${ SGS_BREAKPOINTS.MOBILE_MAX }${ UPPER_FRACTION }px)`;
-export const QUERY_TABLET_UP = `(min-width: ${ SGS_BREAKPOINTS.MOBILE_MAX + 1 }px)`;
-export const QUERY_DESKTOP = `(min-width: ${ SGS_BREAKPOINTS.TABLET_MAX + 1 }px)`;
-export const QUERY_TABLET_ONLY = `(min-width: ${ SGS_BREAKPOINTS.MOBILE_MAX + 1 }px) and ${ QUERY_TABLET }`;
+export const QUERY_TABLET_UP = `(min-width: ${
+	SGS_BREAKPOINTS.MOBILE_MAX + 1
+}px)`;
+export const QUERY_DESKTOP = `(min-width: ${
+	SGS_BREAKPOINTS.TABLET_MAX + 1
+}px)`;
+export const QUERY_TABLET_ONLY = `(min-width: ${
+	SGS_BREAKPOINTS.MOBILE_MAX + 1
+}px) and ${ QUERY_TABLET }`;
 /** Aliases of QUERY_MOBILE and QUERY_TABLET_ONLY, kept for callers that name the fractional-width guarantee. */
 export const QUERY_MOBILE_FRACTIONAL = QUERY_MOBILE;
 export const QUERY_TABLET_ONLY_FRACTIONAL = QUERY_TABLET_ONLY;

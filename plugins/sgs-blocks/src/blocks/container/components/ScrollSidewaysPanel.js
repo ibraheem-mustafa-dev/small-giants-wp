@@ -26,7 +26,14 @@ import { resolveOnTiers } from '../../../utils/responsive';
  * @return {Element|null} The controls (mounted inside the container's Layout panel).
  */
 export default function ScrollSidewaysPanel( { attributes, setAttributes } ) {
-	const { scrollSideways, scrollItemWidth, scrollRegionLabel, scrollArrows, scrollDots, scrollDrag } = attributes;
+	const {
+		scrollSideways,
+		scrollItemWidth,
+		scrollRegionLabel,
+		scrollArrows,
+		scrollDots,
+		scrollDrag,
+	} = attributes;
 	// `fx` is the effects extension's attribute (not declared in this block.json).
 	if ( 'horizontal-panel' === attributes.fx ) {
 		return null;
@@ -42,23 +49,37 @@ export default function ScrollSidewaysPanel( { attributes, setAttributes } ) {
 					'sgs-blocks'
 				) }
 				value={ scrollSideways }
-				onChange={ ( value ) => setAttributes( { scrollSideways: value } ) }
+				onChange={ ( value ) =>
+					setAttributes( { scrollSideways: value } )
+				}
 				defaultValue="off"
 			/>
 			{ onAnywhere && (
 				<ResponsiveOverride
 					label={ __( 'Item width', 'sgs-blocks' ) }
 					value={ scrollItemWidth }
-					onChange={ ( obj ) => setAttributes( { scrollItemWidth: obj } ) }
+					onChange={ ( obj ) =>
+						setAttributes( { scrollItemWidth: obj } )
+					}
 				>
-					{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+					{ ( {
+						ownValue,
+						effectiveValue,
+						inherited,
+						setOwnValue,
+					} ) => (
 						<SgsLengthControl
 							label={ __( 'Item width', 'sgs-blocks' ) }
 							hideLabelFromVision
-							help={ __( 'Width of each item in the row. Empty: 80%.', 'sgs-blocks' ) }
+							help={ __(
+								'Width of each item in the row. Empty: 80%.',
+								'sgs-blocks'
+							) }
 							value={ ownValue || '' }
 							placeholder={ inherited ? effectiveValue : '80%' }
-							onChange={ ( value ) => setOwnValue( value || undefined ) }
+							onChange={ ( value ) =>
+								setOwnValue( value || undefined )
+							}
 						/>
 					) }
 				</ResponsiveOverride>
@@ -66,27 +87,42 @@ export default function ScrollSidewaysPanel( { attributes, setAttributes } ) {
 			{ onAnywhere && (
 				<ToggleControl
 					label={ __( 'Previous and next arrows', 'sgs-blocks' ) }
-					help={ __( 'Two buttons under the row that move it one step. They show only at the devices where the row scrolls and its items overflow.', 'sgs-blocks' ) }
+					help={ __(
+						'Two buttons under the row that move it one step. They show only at the devices where the row scrolls and its items overflow.',
+						'sgs-blocks'
+					) }
 					checked={ !! scrollArrows }
-					onChange={ ( value ) => setAttributes( { scrollArrows: value } ) }
+					onChange={ ( value ) =>
+						setAttributes( { scrollArrows: value } )
+					}
 					__nextHasNoMarginBottom
 				/>
 			) }
 			{ onAnywhere && (
 				<ToggleControl
 					label={ __( 'Position dots', 'sgs-blocks' ) }
-					help={ __( 'One dot for each place the row can rest, the current one marked. Shown like the arrows.', 'sgs-blocks' ) }
+					help={ __(
+						'One dot for each place the row can rest, the current one marked. Shown like the arrows.',
+						'sgs-blocks'
+					) }
 					checked={ !! scrollDots }
-					onChange={ ( value ) => setAttributes( { scrollDots: value } ) }
+					onChange={ ( value ) =>
+						setAttributes( { scrollDots: value } )
+					}
 					__nextHasNoMarginBottom
 				/>
 			) }
 			{ onAnywhere && (
 				<ToggleControl
 					label={ __( 'Drag with the mouse', 'sgs-blocks' ) }
-					help={ __( 'Lets a mouse drag the row. A finger already swipes it.', 'sgs-blocks' ) }
+					help={ __(
+						'Lets a mouse drag the row. A finger already swipes it.',
+						'sgs-blocks'
+					) }
 					checked={ !! scrollDrag }
-					onChange={ ( value ) => setAttributes( { scrollDrag: value } ) }
+					onChange={ ( value ) =>
+						setAttributes( { scrollDrag: value } )
+					}
 					__nextHasNoMarginBottom
 				/>
 			) }
@@ -98,7 +134,9 @@ export default function ScrollSidewaysPanel( { attributes, setAttributes } ) {
 						'sgs-blocks'
 					) }
 					value={ scrollRegionLabel || '' }
-					onChange={ ( value ) => setAttributes( { scrollRegionLabel: value } ) }
+					onChange={ ( value ) =>
+						setAttributes( { scrollRegionLabel: value } )
+					}
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 				/>

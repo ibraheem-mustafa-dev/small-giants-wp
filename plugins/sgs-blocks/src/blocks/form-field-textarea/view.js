@@ -17,8 +17,12 @@
  * @return {string} The text written.
  */
 export function updateCounter( textarea, counter ) {
-	const max = parseInt( counter.getAttribute( 'data-sgs-counter-max' ), 10 ) || 0;
-	const used = max > 0 ? Math.min( textarea.value.length, max ) : textarea.value.length;
+	const max =
+		parseInt( counter.getAttribute( 'data-sgs-counter-max' ), 10 ) || 0;
+	const used =
+		max > 0
+			? Math.min( textarea.value.length, max )
+			: textarea.value.length;
 	const text = `${ used } / ${ max }`;
 	counter.textContent = text;
 	return text;
@@ -32,13 +36,19 @@ export function updateCounter( textarea, counter ) {
  */
 export function initCounters( root = document ) {
 	let bound = 0;
-	root.querySelectorAll( '.sgs-form-field__counter[data-sgs-counter-for]' ).forEach( ( counter ) => {
-		const textarea = ( root.ownerDocument || root ).getElementById( counter.getAttribute( 'data-sgs-counter-for' ) );
+	root.querySelectorAll(
+		'.sgs-form-field__counter[data-sgs-counter-for]'
+	).forEach( ( counter ) => {
+		const textarea = ( root.ownerDocument || root ).getElementById(
+			counter.getAttribute( 'data-sgs-counter-for' )
+		);
 		if ( ! textarea || textarea.hasAttribute( 'data-sgs-counter-bound' ) ) {
 			return;
 		}
 		textarea.setAttribute( 'data-sgs-counter-bound', '' );
-		textarea.addEventListener( 'input', () => updateCounter( textarea, counter ) );
+		textarea.addEventListener( 'input', () =>
+			updateCounter( textarea, counter )
+		);
 		updateCounter( textarea, counter );
 		bound += 1;
 	} );

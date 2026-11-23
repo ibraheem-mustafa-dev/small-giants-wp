@@ -16,17 +16,17 @@ import { LINK_SOURCES_BLOCK_LINK } from '../../../../shared/link-source-options'
  * @param {string}   props.sgsBlockLink
  * @param {boolean}  props.sgsBlockLinkTarget
  * @param {string}   props.sgsBlockLinkLabel
- * @param {string}   props.sgsBlockLinkSource  Where the link goes ('' = the typed
- *                                             sgsBlockLink); see LinkSourcePicker.
- * @param {boolean}  props.sgsBlockLinkAuto    Whole-block link using the
- *                                             block's own destination.
- * @param {boolean}  props.hasAutoUrl          The block declares
- *                                             supports.sgs.blockLinkAutoUrl,
- *                                             so it resolves its own URL at
- *                                             render time.
- * @param {string}   props.autoUrlHelp         Plain-English description of
- *                                             where this block's own
- *                                             destination goes.
+ * @param {string}   props.sgsBlockLinkSource Where the link goes ('' = the typed
+ *                                            sgsBlockLink); see LinkSourcePicker.
+ * @param {boolean}  props.sgsBlockLinkAuto   Whole-block link using the
+ *                                            block's own destination.
+ * @param {boolean}  props.hasAutoUrl         The block declares
+ *                                            supports.sgs.blockLinkAutoUrl,
+ *                                            so it resolves its own URL at
+ *                                            render time.
+ * @param {string}   props.autoUrlHelp        Plain-English description of
+ *                                            where this block's own
+ *                                            destination goes.
  * @param {Function} props.setAttributes
  */
 export default function BlockLinkPanel( {
@@ -66,24 +66,35 @@ export default function BlockLinkPanel( {
 			{ alwaysOn && (
 				<p className="sgs-block-link-panel__always">
 					{ autoUrlHelp ||
-						__( 'The whole block is one link to the destination it already has. Buttons and controls inside it keep working. A block with no destination of its own uses the link below.', 'sgs-blocks' ) }
+						__(
+							'The whole block is one link to the destination it already has. Buttons and controls inside it keep working. A block with no destination of its own uses the link below.',
+							'sgs-blocks'
+						) }
 				</p>
 			) }
 			{ hasAutoUrl && ! alwaysOn && (
 				<ToggleControl
-					label={ __( 'Make the whole block one link', 'sgs-blocks' ) }
+					label={ __(
+						'Make the whole block one link',
+						'sgs-blocks'
+					) }
 					help={
 						autoUrlHelp ||
-						__( 'The whole block becomes clickable, using the destination this block already has. Buttons inside it keep working.', 'sgs-blocks' )
+						__(
+							'The whole block becomes clickable, using the destination this block already has. Buttons inside it keep working.',
+							'sgs-blocks'
+						)
 					}
 					checked={ !! sgsBlockLinkAuto }
-					onChange={ ( val ) => setAttributes( { sgsBlockLinkAuto: !! val } ) }
+					onChange={ ( val ) =>
+						setAttributes( { sgsBlockLinkAuto: !! val } )
+					}
 					__nextHasNoMarginBottom
 				/>
 			) }
 			{ ! ( hasAutoUrl && sgsBlockLinkAuto ) && (
-			<>
-			{ /* Spec 35 §2 LINK standard (promoted from `sgs/button`'s
+				<>
+					{ /* Spec 35 §2 LINK standard (promoted from `sgs/button`'s
 			   Bean-approved popover 2026-08-13) — replaces the raw
 			   TextControl (type url) this panel used to render.
 			   ⚠ CORRECTED 2026-08-19 — "67-block reach via this ONE
@@ -104,42 +115,56 @@ export default function BlockLinkPanel( {
 			   other consumer has one), passed via `renderExtraFields`
 			   rather than forcing a new field onto the shared
 			   component's contract. */ }
-			<LinkPopoverField
-				label={ __( 'Link URL', 'sgs-blocks' ) }
-				help={ __( 'Makes the whole card clickable. Any link/button already inside the block stays clickable too. Leave empty to disable.', 'sgs-blocks' ) }
-				value={ {
-					url: sgsBlockLink,
-					linkTarget: sgsBlockLinkTarget ? '_blank' : '_self',
-					linkSource: sgsBlockLinkSource,
-				} }
-				linkSources={ LINK_SOURCES_BLOCK_LINK }
-				targetMode="boolean"
-				showRel={ false }
-				onChange={ ( next ) => {
-					const patch = {};
-					if ( undefined !== next.url ) {
-						patch.sgsBlockLink = next.url;
-					}
-					if ( undefined !== next.linkSource ) {
-						patch.sgsBlockLinkSource = next.linkSource;
-					}
-					if ( undefined !== next.linkTarget ) {
-						patch.sgsBlockLinkTarget = '_blank' === next.linkTarget;
-					}
-					setAttributes( patch );
-				} }
-				renderExtraFields={ () => (
-					<TextControl
-						label={ __( 'Accessible label for the card link', 'sgs-blocks' ) }
-						help={ __( 'Read by screen readers — the card link has no visible text of its own. Leave empty to fall back to the link’s domain.', 'sgs-blocks' ) }
-						value={ sgsBlockLinkLabel }
-						onChange={ ( val ) => setAttributes( { sgsBlockLinkLabel: val || '' } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
+					<LinkPopoverField
+						label={ __( 'Link URL', 'sgs-blocks' ) }
+						help={ __(
+							'Makes the whole card clickable. Any link/button already inside the block stays clickable too. Leave empty to disable.',
+							'sgs-blocks'
+						) }
+						value={ {
+							url: sgsBlockLink,
+							linkTarget: sgsBlockLinkTarget ? '_blank' : '_self',
+							linkSource: sgsBlockLinkSource,
+						} }
+						linkSources={ LINK_SOURCES_BLOCK_LINK }
+						targetMode="boolean"
+						showRel={ false }
+						onChange={ ( next ) => {
+							const patch = {};
+							if ( undefined !== next.url ) {
+								patch.sgsBlockLink = next.url;
+							}
+							if ( undefined !== next.linkSource ) {
+								patch.sgsBlockLinkSource = next.linkSource;
+							}
+							if ( undefined !== next.linkTarget ) {
+								patch.sgsBlockLinkTarget =
+									'_blank' === next.linkTarget;
+							}
+							setAttributes( patch );
+						} }
+						renderExtraFields={ () => (
+							<TextControl
+								label={ __(
+									'Accessible label for the card link',
+									'sgs-blocks'
+								) }
+								help={ __(
+									'Read by screen readers — the card link has no visible text of its own. Leave empty to fall back to the link’s domain.',
+									'sgs-blocks'
+								) }
+								value={ sgsBlockLinkLabel }
+								onChange={ ( val ) =>
+									setAttributes( {
+										sgsBlockLinkLabel: val || '',
+									} )
+								}
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						) }
 					/>
-				) }
-			/>
-			</>
+				</>
 			) }
 		</PanelBody>
 	);

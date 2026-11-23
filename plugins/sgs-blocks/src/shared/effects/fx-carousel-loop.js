@@ -188,7 +188,9 @@ function neutraliseClone( clone ) {
 	clone.querySelectorAll( '*' ).forEach( deactivate );
 
 	clone
-		.querySelectorAll( '[id], a, button, input, select, textarea, [tabindex]' )
+		.querySelectorAll(
+			'[id], a, button, input, select, textarea, [tabindex]'
+		)
 		.forEach( ( node ) => {
 			node.removeAttribute( 'id' );
 			node.setAttribute( 'tabindex', '-1' );
@@ -242,7 +244,9 @@ export function initCarouselLoop( el ) {
 	// then reposition scrollLeft in the SAME synchronous execution, before
 	// the browser has a chance to paint the un-repositioned frame.
 	const firstOriginal = originals[ 0 ];
-	leadingClones.forEach( ( clone ) => el.insertBefore( clone, firstOriginal ) );
+	leadingClones.forEach( ( clone ) =>
+		el.insertBefore( clone, firstOriginal )
+	);
 	trailingClones.forEach( ( clone ) => el.appendChild( clone ) );
 
 	el.scrollLeft += layoutOffset( firstOriginal, el ).x;

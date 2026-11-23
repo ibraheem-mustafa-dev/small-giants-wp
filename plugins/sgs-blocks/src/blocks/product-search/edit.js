@@ -6,9 +6,23 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-editor';
+import {
+	useBlockProps,
+	InspectorControls,
+	useSettings,
+} from '@wordpress/block-editor';
 import { PanelBody, SelectControl, TextControl } from '@wordpress/components';
-import { ResponsiveBoxControl, ResponsiveOverride, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl, ScrimControls, scrimColourRow } from '../../components';
+import {
+	ResponsiveBoxControl,
+	ResponsiveOverride,
+	SgsColourPanel,
+	BOX_UNITS,
+	normaliseResponsiveBox,
+	SgsBoxControl,
+	SgsBorderControl,
+	ScrimControls,
+	scrimColourRow,
+} from '../../components';
 import { ToolsPanel } from '../../components/primitives';
 import {
 	borderPaintPreview,
@@ -84,19 +98,36 @@ export default function Edit( { attributes, setAttributes } ) {
 		style: {
 			...tierBoxLonghands( attributes.padding, previewTier, 'padding' ),
 			...tierBoxLonghands( attributes.margin, previewTier, 'margin' ),
-			...sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient, radiusValues: attributes.borderRadius }, previewTier, colourPalette ),
+			...sgsBorderPreview(
+				{
+					widthValues: borderWidth,
+					styleValue: borderStyle,
+					colourValue: borderColour,
+					colourGradientValue: borderColourGradient,
+					radiusValues: attributes.borderRadius,
+				},
+				previewTier,
+				colourPalette
+			),
 		},
 	} );
 
 	// CHECK A: inputBorderColour/Gradient paints `.sgs-product-search__input`
 	// directly (style.css:37 + render.php's sgs_border_states_css() scoped
 	// rule).
-	const inputPreviewStyle = borderPaintPreview( inputBorderColour, inputBorderColourGradient, colourPalette );
+	const inputPreviewStyle = borderPaintPreview(
+		inputBorderColour,
+		inputBorderColourGradient,
+		colourPalette
+	);
 
 	// The search button's own look (the built-in button kit, prefix `submit`), previewed at the device being edited on the inline
 	// bar's button, the one the front end's form prints; the compact trigger of the other display modes is a different element. A
 	// named preset gives the canvas button the shared button look's classes, as the page prints the preset on the button.
-	const submitPreview = buttonKitStyle( attributes, 'submit', { tier: previewTier, palette: colourPalette } );
+	const submitPreview = buttonKitStyle( attributes, 'submit', {
+		tier: previewTier,
+		palette: colourPalette,
+	} );
 	const submitClass = presetNames().includes( attributes.submitStyle )
 		? `sgs-product-search__submit sgs-button sgs-button--${ attributes.submitStyle }`
 		: 'sgs-product-search__submit';
@@ -176,7 +207,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								gradientValue: inputBorderColourHoverGradient,
 								onGradientChange: ( val ) =>
 									setAttributes( {
-										inputBorderColourHoverGradient: val ?? '',
+										inputBorderColourHoverGradient:
+											val ?? '',
 									} ),
 							},
 						],
@@ -197,7 +229,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								gradientValue: listboxBackgroundColourGradient,
 								onGradientChange: ( val ) =>
 									setAttributes( {
-										listboxBackgroundColourGradient: val ?? '',
+										listboxBackgroundColourGradient:
+											val ?? '',
 									} ),
 							},
 							{
@@ -208,10 +241,12 @@ export default function Edit( { attributes, setAttributes } ) {
 									setAttributes( {
 										listboxBackgroundColourHover: val ?? '',
 									} ),
-								gradientValue: listboxBackgroundColourHoverGradient,
+								gradientValue:
+									listboxBackgroundColourHoverGradient,
 								onGradientChange: ( val ) =>
 									setAttributes( {
-										listboxBackgroundColourHoverGradient: val ?? '',
+										listboxBackgroundColourHoverGradient:
+											val ?? '',
 									} ),
 							},
 						],
@@ -232,10 +267,12 @@ export default function Edit( { attributes, setAttributes } ) {
 									setAttributes( {
 										resultHoverBackgroundColour: val ?? '',
 									} ),
-								gradientValue: resultHoverBackgroundColourGradient,
+								gradientValue:
+									resultHoverBackgroundColourGradient,
 								onGradientChange: ( val ) =>
 									setAttributes( {
-										resultHoverBackgroundColourGradient: val ?? '',
+										resultHoverBackgroundColourGradient:
+											val ?? '',
 									} ),
 							},
 							{
@@ -244,12 +281,15 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: resultHoverBackgroundColourHover,
 								onChange: ( val ) =>
 									setAttributes( {
-										resultHoverBackgroundColourHover: val ?? '',
+										resultHoverBackgroundColourHover:
+											val ?? '',
 									} ),
-								gradientValue: resultHoverBackgroundColourHoverGradient,
+								gradientValue:
+									resultHoverBackgroundColourHoverGradient,
 								onGradientChange: ( val ) =>
 									setAttributes( {
-										resultHoverBackgroundColourHoverGradient: val ?? '',
+										resultHoverBackgroundColourHoverGradient:
+											val ?? '',
 									} ),
 							},
 						],
@@ -281,15 +321,18 @@ export default function Edit( { attributes, setAttributes } ) {
 									setAttributes( {
 										matchHighlightColourHover: val ?? '',
 									} ),
-								gradientValue: matchHighlightColourHoverGradient,
+								gradientValue:
+									matchHighlightColourHoverGradient,
 								onGradientChange: ( val ) =>
 									setAttributes( {
-										matchHighlightColourHoverGradient: val ?? '',
+										matchHighlightColourHoverGradient:
+											val ?? '',
 									} ),
 							},
 						],
 					},
-					( isOverlay || isPalette ) && scrimColourRow( { attributes, setAttributes } ),
+					( isOverlay || isPalette ) &&
+						scrimColourRow( { attributes, setAttributes } ),
 				] }
 			/>
 			<InspectorControls>
@@ -345,7 +388,9 @@ export default function Edit( { attributes, setAttributes } ) {
 						) }
 						__next40pxDefaultSize
 					/>
-					<SgsFreeTextField type="rich" noLink
+					<SgsFreeTextField
+						type="rich"
+						noLink
 						label={ __( 'Button label', 'sgs-blocks' ) }
 						value={ buttonLabel }
 						onChange={ ( value ) =>
@@ -373,10 +418,20 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { maxResults: obj } )
 						}
 					>
-						{ ( { tier, ownValue, effectiveValue, setOwnValue } ) => {
+						{ ( {
+							tier,
+							ownValue,
+							effectiveValue,
+							setOwnValue,
+						} ) => {
 							if ( 'tablet' === tier ) {
 								return (
-									<p style={ { margin: 0, fontStyle: 'italic' } }>
+									<p
+										style={ {
+											margin: 0,
+											fontStyle: 'italic',
+										} }
+									>
 										{ __(
 											'Tablet uses the desktop value above — there is no separate tablet cap (Baymard research covers mobile only).',
 											'sgs-blocks'
@@ -445,15 +500,25 @@ export default function Edit( { attributes, setAttributes } ) {
 				>
 					<ResponsiveOverride
 						value={ attributes.padding }
-						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { padding: obj } )
+						}
 					>
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
@@ -464,32 +529,67 @@ export default function Edit( { attributes, setAttributes } ) {
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
 				</PanelBody>
 
-				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Border', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SgsBorderControl
 						widthValues={ borderWidth ?? {} }
-						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						onWidthChange={ ( next ) =>
+							setAttributes( { borderWidth: next } )
+						}
 						widthPresets={ [ '10', '20', '30' ] }
 						styleValue={ borderStyle }
-						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						onStyleChange={ ( val ) =>
+							setAttributes( { borderStyle: val } )
+						}
 						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
 						colourStates={ [
-							{ key: 'normal', label: __( 'Normal', 'sgs-blocks' ), value: borderColour,
-							  onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
-							  gradientValue: borderColourGradient,
-							  onGradientChange: ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) },
-							{ key: 'hover', label: __( 'Hover', 'sgs-blocks' ), value: borderColourHover,
-							  onChange: ( val ) => setAttributes( { borderColourHover: val ?? '' } ),
-							  gradientValue: borderColourHoverGradient,
-							  onGradientChange: ( val ) => setAttributes( { borderColourHoverGradient: val ?? '' } ) },
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: borderColour,
+								onChange: ( val ) =>
+									setAttributes( {
+										borderColour: val ?? '',
+									} ),
+								gradientValue: borderColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										borderColourGradient: val ?? '',
+									} ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: borderColourHover,
+								onChange: ( val ) =>
+									setAttributes( {
+										borderColourHover: val ?? '',
+									} ),
+								gradientValue: borderColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										borderColourHoverGradient: val ?? '',
+									} ),
+							},
 						] }
 						radiusValues={ {
 							base: attributes.borderRadius?.desktop ?? {},
@@ -498,7 +598,12 @@ export default function Edit( { attributes, setAttributes } ) {
 						} }
 						onRadiusChange={ ( tier, next ) => {
 							const key = tier === 'base' ? 'desktop' : tier;
-							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+							setAttributes( {
+								borderRadius: {
+									...attributes.borderRadius,
+									[ key ]: next,
+								},
+							} );
 						} }
 					/>
 				</PanelBody>
@@ -519,7 +624,10 @@ export default function Edit( { attributes, setAttributes } ) {
 							} )
 						}
 					>
-						<ScrimControls attributes={ attributes } setAttributes={ setAttributes } />
+						<ScrimControls
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+						/>
 					</ToolsPanel>
 				) }
 			</InspectorControls>
@@ -596,7 +704,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								style={ submitPreview }
 								disabled
 								aria-label={
-									authoredTextPlain( buttonLabel ) || __( 'Search', 'sgs-blocks' )
+									authoredTextPlain( buttonLabel ) ||
+									__( 'Search', 'sgs-blocks' )
 								}
 							>
 								<svg
@@ -645,9 +754,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							<li role="option">
 								<div className="sgs-product-search__result-info">
 									<span className="sgs-product-search__result-title">
-										<mark style={ markBgPreview }>
-											Ex
-										</mark>
+										<mark style={ markBgPreview }>Ex</mark>
 										ample Product
 									</span>
 								</div>

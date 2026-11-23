@@ -53,10 +53,17 @@ export function formatMinor( minor, decimals, trimZeros = false ) {
  */
 function variationNames( axes, attributes ) {
 	return Object.keys( axes ).reduce( ( names, taxonomy ) => {
-		const slug = attributes[ taxonomy ] || attributes[ `attribute_${ taxonomy }` ] || '';
+		const slug =
+			attributes[ taxonomy ] ||
+			attributes[ `attribute_${ taxonomy }` ] ||
+			'';
 		const name = slug ? axes[ taxonomy ].terms?.[ slug ] || '' : '';
 		if ( name ) {
-			names.push( axes[ taxonomy ].banded || /^\d/.test( name ) ? `${ axes[ taxonomy ].label } ${ name }` : name );
+			names.push(
+				axes[ taxonomy ].banded || /^\d/.test( name )
+					? `${ axes[ taxonomy ].label } ${ name }`
+					: name
+			);
 		}
 		return names;
 	}, [] );
@@ -81,7 +88,9 @@ export function buildSummary( flowRoot, panelEl, pricing ) {
 
 	const meta = [
 		...variationNames( axes, base.attributes || {} ),
-		...plain.filter( ( answer ) => answer.product ).map( ( answer ) => answer.value ),
+		...plain
+			.filter( ( answer ) => answer.product )
+			.map( ( answer ) => answer.value ),
 	].join( ' · ' );
 
 	const format = ( minor ) => formatMinor( minor, base.decimals, trimZeros );
@@ -95,23 +104,44 @@ export function buildSummary( flowRoot, panelEl, pricing ) {
 	let addonMinor = 0;
 	// In question order, whatever order the answers were recorded in (a
 	// default is recorded at load, before the questions ahead of it).
-	const priced = addonRows.filter( reached ).sort( ( a, b ) => a.stepIndex - b.stepIndex );
+	const priced = addonRows
+		.filter( reached )
+		.sort( ( a, b ) => a.stepIndex - b.stepIndex );
 	priced.forEach( ( answer ) => {
 		const priceValue = parseFloat( answer.price );
-		const minor = Number.isFinite( priceValue ) ? Math.round( priceValue * 10 ** base.decimals ) : 0;
+		const minor = Number.isFinite( priceValue )
+			? Math.round( priceValue * 10 ** base.decimals )
+			: 0;
 		addonMinor += minor;
 		let value = 'included';
 		if ( minor > 0 ) {
-			value = answer.startingPrice ? format( minor ) : `+${ format( minor ) }`;
+			value = answer.startingPrice
+				? format( minor )
+				: `+${ format( minor ) }`;
 		}
-		lines.push( { label: answer.summaryText || answer.label, value, muted: false } );
+		lines.push( {
+			label: answer.summaryText || answer.label,
+			value,
+			muted: false,
+		} );
 	} );
 	plain
 		.filter( ( answer ) => ! answer.product )
-		.forEach( ( answer ) => lines.push( { label: answer.stageLabel, value: answer.stageValue, muted: true } ) );
+		.forEach( ( answer ) =>
+			lines.push( {
+				label: answer.stageLabel,
+				value: answer.stageValue,
+				muted: true,
+			} )
+		);
 	const pendingLabel = panelEl.getAttribute( 'data-pending-label' ) || '';
 	if ( ! priced.length && pendingLabel ) {
-		lines.push( { label: pendingLabel, value: panelEl.getAttribute( 'data-pending-text' ) || '', muted: true, rich: true } );
+		lines.push( {
+			label: pendingLabel,
+			value: panelEl.getAttribute( 'data-pending-text' ) || '',
+			muted: true,
+			rich: true,
+		} );
 	}
 
 	const withEffect = [ ...priced, ...plain ]
@@ -122,7 +152,8 @@ export function buildSummary( flowRoot, panelEl, pricing ) {
 	return {
 		meta,
 		lines,
-		totalMinor: base.priceMinor !== null ? base.priceMinor + addonMinor : null,
+		totalMinor:
+			base.priceMinor !== null ? base.priceMinor + addonMinor : null,
 		effect: withEffect ? withEffect.effect : '',
 		effectLabel: withEffect ? withEffect.label : '',
 	};

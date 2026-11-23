@@ -25,9 +25,9 @@ const CUSTOM_PREFIX = 'custom:';
 /**
  * Every target the row offers, each label marked with a dot when the target carries a layer of the panel.
  *
- * @param {Object|null}      elements `supports.sgs.elements`.
- * @param {Object|undefined} motion   The block's motion value.
- * @param {string}           panel    `hover`, `entrance` or `effects`.
+ * @param {Object|null}      elements  `supports.sgs.elements`.
+ * @param {Object|undefined} motion    The block's motion value.
+ * @param {string}           panel     `hover`, `entrance` or `effects`.
  * @param {Function}         [kindsOf] `( part ) => kinds per device|null` (`TargetPicker.js::targetOptions`).
  * @return {{value: string, label: string}[]} The options.
  */
@@ -44,12 +44,14 @@ export function targetRowOptions( elements, motion, panel, kindsOf = null ) {
 			),
 		} ) );
 	const held = Object.keys( motion?.elements || {} );
-	return [ ...targetOptions( elements, held, kindsOf ), ...custom ].map( ( option ) => ( {
-		value: option.value,
-		label: marked.includes( option.value )
-			? `${ option.label } ${ DOT }`
-			: option.label,
-	} ) );
+	return [ ...targetOptions( elements, held, kindsOf ), ...custom ].map(
+		( option ) => ( {
+			value: option.value,
+			label: marked.includes( option.value )
+				? `${ option.label } ${ DOT }`
+				: option.label,
+		} )
+	);
 }
 
 /**

@@ -5,7 +5,11 @@
  * @package SGS\Blocks
  */
 
-import { containerWrapperPreview, textPaintPreview, RADIUS_STYLE_KEYS } from '../../utils';
+import {
+	containerWrapperPreview,
+	textPaintPreview,
+	RADIUS_STYLE_KEYS,
+} from '../../utils';
 
 /**
  * @param {Object} attributes Block attributes.
@@ -16,10 +20,24 @@ import { containerWrapperPreview, textPaintPreview, RADIUS_STYLE_KEYS } from '..
 export function footerRowPaint( attributes, tier, palette ) {
 	const wrapper = containerWrapperPreview( attributes, tier, palette ).style;
 	const style = {};
-	[ 'borderWidth', 'borderStyle', 'borderColor', 'borderImage', ...RADIUS_STYLE_KEYS, 'flexWrap' ].forEach( ( key ) => {
+	[
+		'borderWidth',
+		'borderStyle',
+		'borderColor',
+		'borderImage',
+		...RADIUS_STYLE_KEYS,
+		'flexWrap',
+	].forEach( ( key ) => {
 		if ( undefined !== wrapper[ key ] ) {
 			style[ key ] = wrapper[ key ];
 		}
 	} );
-	return { ...style, ...textPaintPreview( attributes.textColour, attributes.textColourGradient, palette ) };
+	return {
+		...style,
+		...textPaintPreview(
+			attributes.textColour,
+			attributes.textColourGradient,
+			palette
+		),
+	};
 }

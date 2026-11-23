@@ -7,7 +7,13 @@
  * @package SGS\Blocks
  */
 import { __ } from '@wordpress/i18n';
-import { DesignTokenPicker, ResponsiveBoxControl, ShadowControl, SgsBorderControl, TypographyControls } from '../../../components';
+import {
+	DesignTokenPicker,
+	ResponsiveBoxControl,
+	ShadowControl,
+	SgsBorderControl,
+	TypographyControls,
+} from '../../../components';
 import { COMMERCE_LOOK_TABLE_ATTRIBUTES } from './attributes-table.generated';
 
 const TIERS = [ 'desktop', 'tablet', 'mobile' ];
@@ -35,18 +41,24 @@ export const boxTiers = ( value ) => ( {
 export const writeTier = ( current, tier, next ) => {
 	const key = 'base' === tier ? 'desktop' : tier;
 	const merged = { ...( current || {} ), [ key ]: next };
-	const filled = TIERS.some( ( t ) => merged[ t ] && Object.values( merged[ t ] ).some( ( v ) => '' !== v && undefined !== v && null !== v ) );
+	const filled = TIERS.some(
+		( t ) =>
+			merged[ t ] &&
+			Object.values( merged[ t ] ).some(
+				( v ) => '' !== v && undefined !== v && null !== v
+			)
+	);
 	return filled ? merged : undefined;
 };
 
 /**
  * A single colour row.
  *
- * @param {Object} props               Props.
- * @param {string} props.label         Row label.
- * @param {Object} props.attributes    Block attributes.
+ * @param {Object}   props               Props.
+ * @param {string}   props.label         Row label.
+ * @param {Object}   props.attributes    Block attributes.
  * @param {Function} props.setAttributes Block setAttributes.
- * @param {string} props.name          Attribute name.
+ * @param {string}   props.name          Attribute name.
  * @return {JSX.Element} The row.
  */
 export function ColourRow( { label, attributes, setAttributes, name } ) {
@@ -60,7 +72,8 @@ export function ColourRow( { label, attributes, setAttributes, name } ) {
 					key: 'normal',
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: attributes[ name ] || '',
-					onChange: ( picked ) => setAttributes( { [ name ]: picked || undefined } ),
+					onChange: ( picked ) =>
+						setAttributes( { [ name ]: picked || undefined } ),
 					linked: true,
 				},
 			] }
@@ -81,28 +94,71 @@ export function ColourRow( { label, attributes, setAttributes, name } ) {
  * @param {boolean}  [props.noFill]      Omit the fill row (the element's colours come from elsewhere).
  * @return {JSX.Element} The rows.
  */
-export function CardControls( { attributes, setAttributes, prefix, noPadding = false, noShadow = false, noRadius = false, noFill = false } ) {
+export function CardControls( {
+	attributes,
+	setAttributes,
+	prefix,
+	noPadding = false,
+	noShadow = false,
+	noRadius = false,
+	noFill = false,
+} ) {
 	return (
 		<>
-			{ ! noFill && <ColourRow label={ __( 'Fill', 'sgs-blocks' ) } attributes={ attributes } setAttributes={ setAttributes } name={ prefix + 'Background' } /> }
+			{ ! noFill && (
+				<ColourRow
+					label={ __( 'Fill', 'sgs-blocks' ) }
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					name={ prefix + 'Background' }
+				/>
+			) }
 			<SgsBorderControl
 				widthValues={ attributes[ prefix + 'BorderWidth' ] ?? {} }
-				onWidthChange={ ( next ) => setAttributes( { [ prefix + 'BorderWidth' ]: next } ) }
+				onWidthChange={ ( next ) =>
+					setAttributes( { [ prefix + 'BorderWidth' ]: next } )
+				}
 				styleValue={ attributes[ prefix + 'BorderStyle' ] }
-				onStyleChange={ ( val ) => setAttributes( { [ prefix + 'BorderStyle' ]: val || undefined } ) }
+				onStyleChange={ ( val ) =>
+					setAttributes( {
+						[ prefix + 'BorderStyle' ]: val || undefined,
+					} )
+				}
 				colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
 				colourValue={ attributes[ prefix + 'BorderColour' ] }
-				onColourChange={ ( val ) => setAttributes( { [ prefix + 'BorderColour' ]: val || undefined } ) }
+				onColourChange={ ( val ) =>
+					setAttributes( {
+						[ prefix + 'BorderColour' ]: val || undefined,
+					} )
+				}
 				colourLinked
-				radiusValues={ noRadius ? undefined : boxTiers( attributes[ prefix + 'BorderRadius' ] ) }
-				onRadiusChange={ noRadius ? undefined : ( tier, next ) => setAttributes( { [ prefix + 'BorderRadius' ]: writeTier( attributes[ prefix + 'BorderRadius' ], tier, next ) } ) }
+				radiusValues={
+					noRadius
+						? undefined
+						: boxTiers( attributes[ prefix + 'BorderRadius' ] )
+				}
+				onRadiusChange={
+					noRadius
+						? undefined
+						: ( tier, next ) =>
+								setAttributes( {
+									[ prefix + 'BorderRadius' ]: writeTier(
+										attributes[ prefix + 'BorderRadius' ],
+										tier,
+										next
+									),
+								} )
+				}
 			/>
 			{ ! noShadow && (
 				<ShadowControl
 					label={ __( 'Shadow', 'sgs-blocks' ) }
 					attributes={ attributes }
 					setAttributes={ setAttributes }
-					attrNames={ { base: prefix + 'Shadow', colour: prefix + 'ShadowColour' } }
+					attrNames={ {
+						base: prefix + 'Shadow',
+						colour: prefix + 'ShadowColour',
+					} }
 				/>
 			) }
 			{ ! noPadding && (
@@ -110,7 +166,15 @@ export function CardControls( { attributes, setAttributes, prefix, noPadding = f
 					presets
 					label={ __( 'Padding', 'sgs-blocks' ) }
 					values={ boxTiers( attributes[ prefix + 'Padding' ] ) }
-					onChange={ ( tier, next ) => setAttributes( { [ prefix + 'Padding' ]: writeTier( attributes[ prefix + 'Padding' ], tier, next ) } ) }
+					onChange={ ( tier, next ) =>
+						setAttributes( {
+							[ prefix + 'Padding' ]: writeTier(
+								attributes[ prefix + 'Padding' ],
+								tier,
+								next
+							),
+						} )
+					}
 				/>
 			) }
 		</>
@@ -120,28 +184,43 @@ export function CardControls( { attributes, setAttributes, prefix, noPadding = f
 /**
  * A text style: the shared typography controls and a colour.
  *
- * @param {Object}   props               Props.
- * @param {Object}   props.attributes    Block attributes.
- * @param {Function} props.setAttributes Block setAttributes.
- * @param {string}   props.prefix        Attribute prefix (`sgsStepTitle`, ...).
- * @param {boolean}  [props.noColour]    Omit the colour row (the button's colours come from the preset).
+ * @param {Object}   props                 Props.
+ * @param {Object}   props.attributes      Block attributes.
+ * @param {Function} props.setAttributes   Block setAttributes.
+ * @param {string}   props.prefix          Attribute prefix (`sgsStepTitle`, ...).
+ * @param {boolean}  [props.noColour]      Omit the colour row (the button's colours come from the preset).
  * @param {boolean}  [props.showTextAlign] Offer a text alignment row (the row declares `{prefix}TextAlign`).
  * @return {JSX.Element} The rows.
  */
-export function TextControls( { attributes, setAttributes, prefix, noColour = false, showTextAlign = false } ) {
+export function TextControls( {
+	attributes,
+	setAttributes,
+	prefix,
+	noColour = false,
+	showTextAlign = false,
+} ) {
 	return (
 		<>
 			<TypographyControls
 				showFontFamily
 				showTransform
 				showLetterSpacing
-				showDecoration={ ( prefix + 'TextDecoration' ) in COMMERCE_LOOK_TABLE_ATTRIBUTES }
+				showDecoration={
+					prefix + 'TextDecoration' in COMMERCE_LOOK_TABLE_ATTRIBUTES
+				}
 				showTextAlign={ showTextAlign }
 				attributes={ attributes }
 				setAttributes={ setAttributes }
 				prefix={ prefix }
 			/>
-			{ ! noColour && <ColourRow label={ __( 'Text colour', 'sgs-blocks' ) } attributes={ attributes } setAttributes={ setAttributes } name={ prefix + 'Colour' } /> }
+			{ ! noColour && (
+				<ColourRow
+					label={ __( 'Text colour', 'sgs-blocks' ) }
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					name={ prefix + 'Colour' }
+				/>
+			) }
 		</>
 	);
 }

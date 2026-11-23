@@ -79,7 +79,9 @@ function getFocusable( container ) {
 	if ( ! container ) {
 		return [];
 	}
-	return Array.from( container.querySelectorAll( FOCUSABLE_SELECTOR ) ).filter(
+	return Array.from(
+		container.querySelectorAll( FOCUSABLE_SELECTOR )
+	).filter(
 		( el ) => el.offsetParent !== null || el === document.activeElement
 	);
 }
@@ -296,7 +298,9 @@ function panelBounds( root ) {
 	 * scrollbars overlay.
 	 */
 	const pageWidth = document.documentElement.clientWidth;
-	const header = root.closest( 'header.sgs-site-header[data-sgs-header-float]' );
+	const header = root.closest(
+		'header.sgs-site-header[data-sgs-header-float]'
+	);
 	if ( ! header ) {
 		return viewportBounds( pageWidth );
 	}
@@ -340,13 +344,22 @@ function measurePanelContentWidth( panel, wrapWidth, scale = 1 ) {
 			continue;
 		}
 		found = true;
-		widest = Math.max( widest, child.getBoundingClientRect().width / scale );
+		widest = Math.max(
+			widest,
+			child.getBoundingClientRect().width / scale
+		);
 	}
 	// Nothing laid out yet (0px) is not a width: keep the wrap's own.
 	return found && widest > 0 ? widest : wrapWidth;
 }
 
-const WRAP_FILL_PROPS = [ '--sgs-mm-wrap-bg-colour', '--sgs-mm-wrap-bg-image', '--sgs-mm-wrap-edge-w', '--sgs-mm-wrap-edge-colour', '--sgs-mm-wrap-shadow' ];
+const WRAP_FILL_PROPS = [
+	'--sgs-mm-wrap-bg-colour',
+	'--sgs-mm-wrap-bg-image',
+	'--sgs-mm-wrap-edge-w',
+	'--sgs-mm-wrap-edge-colour',
+	'--sgs-mm-wrap-shadow',
+];
 
 /**
  * Under `full-width` placement the wrap spans the viewport while the mega panel block inside it keeps its own capped,
@@ -357,9 +370,13 @@ const WRAP_FILL_PROPS = [ '--sgs-mm-wrap-bg-colour', '--sgs-mm-wrap-bg-image', '
  * @param {boolean}     full True under `full-width` placement.
  */
 function publishWrapFill( wrap, full ) {
-	const block = full ? wrap.querySelector( ':scope > .wp-block-sgs-mega-panel' ) : null;
+	const block = full
+		? wrap.querySelector( ':scope > .wp-block-sgs-mega-panel' )
+		: null;
 	if ( ! block ) {
-		WRAP_FILL_PROPS.forEach( ( prop ) => wrap.style.removeProperty( prop ) );
+		WRAP_FILL_PROPS.forEach( ( prop ) =>
+			wrap.style.removeProperty( prop )
+		);
 		wrap.removeAttribute( 'data-sgs-mm-bleed' );
 		return;
 	}
@@ -556,9 +573,15 @@ function repositionPanel( root ) {
 		 * width to centre/align at, when that is narrower than the box.
 		 */
 		const scale = liveScale( panel );
-		const contentWidth = isDropdown ? null : measurePanelContentWidth( panel, boxWidth / scale, scale );
+		const contentWidth = isDropdown
+			? null
+			: measurePanelContentWidth( panel, boxWidth / scale, scale );
 		const placed = placePanel( {
-			align: PANEL_ALIGNS.includes( align ) ? align : ( isDropdown ? 'start' : 'page-centred' ),
+			align: PANEL_ALIGNS.includes( align )
+				? align
+				: isDropdown
+				? 'start'
+				: 'page-centred',
 			isDropdown,
 			anchorLeft: anchor.left,
 			anchorWidth: anchor.width,
@@ -568,7 +591,10 @@ function repositionPanel( root ) {
 			contentWidth,
 		} );
 		if ( null !== placed.width ) {
-			panel.style.setProperty( '--sgs-mm-panel-width', `${ placed.width.toFixed( 2 ) }px` );
+			panel.style.setProperty(
+				'--sgs-mm-panel-width',
+				`${ placed.width.toFixed( 2 ) }px`
+			);
 		} else {
 			panel.style.removeProperty( '--sgs-mm-panel-width' );
 		}
@@ -607,7 +633,8 @@ function repositionPanel( root ) {
 		 * an 8px dead strip above the panel (measured live, 2026-09-25).
 		 */
 		const restingTop =
-			parentRect.top + ( parseFloat( window.getComputedStyle( panel ).top ) || 0 );
+			parentRect.top +
+			( parseFloat( window.getComputedStyle( panel ).top ) || 0 );
 		panel.style.setProperty(
 			'--sgs-mm-panel-max-h',
 			`${ Math.max(
@@ -639,7 +666,8 @@ function panelTopEdge( root, bounds ) {
 		return bounds.bottom;
 	}
 	const host =
-		root.closest( '.sgs-site-header' ) || root.closest( '.sgs-site-header-row' );
+		root.closest( '.sgs-site-header' ) ||
+		root.closest( '.sgs-site-header-row' );
 	if ( ! host ) {
 		return null;
 	}
@@ -744,8 +772,8 @@ function attachAncestorFlagWatcher( panel, root ) {
 /**
  * Reverse `attachAncestorFlagWatcher()` — drop both flags and the listener.
  *
- * @param {HTMLElement} panel       The panel being un-reparented.
- * @param {HTMLElement} root        The disclosure root.
+ * @param {HTMLElement} panel        The panel being un-reparented.
+ * @param {HTMLElement} root         The disclosure root.
  * @param {Function}    focusHandler The handler returned by the attach call.
  */
 function detachAncestorFlagWatcher( panel, root, focusHandler ) {
@@ -790,8 +818,12 @@ function syncFixedScrollWatcher() {
 		fixedScrollHandler = () => {
 			state.openMegaId = null;
 		};
-		window.addEventListener( 'scroll', fixedScrollHandler, { passive: true } );
-		window.addEventListener( 'resize', fixedScrollHandler, { passive: true } );
+		window.addEventListener( 'scroll', fixedScrollHandler, {
+			passive: true,
+		} );
+		window.addEventListener( 'resize', fixedScrollHandler, {
+			passive: true,
+		} );
 	} else if ( ! reparentedPanels.size && fixedScrollHandler ) {
 		window.removeEventListener( 'scroll', fixedScrollHandler );
 		window.removeEventListener( 'resize', fixedScrollHandler );
@@ -841,8 +873,14 @@ function reparentPanelIfNeeded( root, panel, megaId ) {
 	// CSS-var VALUES only (Spec 32 no-inline) — style.css's
 	// `[data-sgs-nav-fixed]` rule reads these two and switches the panel to
 	// `position:fixed`.
-	panel.style.setProperty( '--sgs-mm-fixed-top', `${ rect.top.toFixed( 2 ) }px` );
-	panel.style.setProperty( '--sgs-mm-fixed-left', `${ ( rect.left + panelBleed( panel ).left ).toFixed( 2 ) }px` );
+	panel.style.setProperty(
+		'--sgs-mm-fixed-top',
+		`${ rect.top.toFixed( 2 ) }px`
+	);
+	panel.style.setProperty(
+		'--sgs-mm-fixed-left',
+		`${ ( rect.left + panelBleed( panel ).left ).toFixed( 2 ) }px`
+	);
 	panel.setAttribute( 'data-sgs-nav-fixed', '' );
 	document.body.appendChild( panel );
 	syncFixedScrollWatcher();
@@ -863,7 +901,14 @@ function revertReparent( megaId ) {
 		return;
 	}
 	reparentedPanels.delete( megaId );
-	const { panel, root, originalParent, originalNextSibling, focusHandler, scopeClasses } = rec;
+	const {
+		panel,
+		root,
+		originalParent,
+		originalNextSibling,
+		focusHandler,
+		scopeClasses,
+	} = rec;
 	detachAncestorFlagWatcher( panel, root, focusHandler );
 	if ( originalParent ) {
 		originalParent.insertBefore( panel, originalNextSibling );
@@ -1017,11 +1062,11 @@ function warmPanelImages( root ) {
 	if ( window.navigator?.connection?.saveData ) {
 		return;
 	}
-	nav.querySelectorAll(
-		'[data-sgs-mega-panel] img[loading="lazy"]'
-	).forEach( ( img ) => {
-		img.loading = 'eager';
-	} );
+	nav.querySelectorAll( '[data-sgs-mega-panel] img[loading="lazy"]' ).forEach(
+		( img ) => {
+			img.loading = 'eager';
+		}
+	);
 }
 
 /** True while focusTrigger() hands focus back, so linkTriggerFocus does not reopen. */
@@ -1121,7 +1166,9 @@ const { state } = store( 'sgs/mega', {
 			const decision = focusInDecision( {
 				target,
 				root,
-				panel: root.querySelector( '[data-sgs-mega-panel]' ) || panelFor( ctx ),
+				panel:
+					root.querySelector( '[data-sgs-mega-panel]' ) ||
+					panelFor( ctx ),
 				isOpen: ctx.isOpen,
 				refocusing: refocusingTrigger,
 				focusVisible: !! target && target.matches( ':focus-visible' ),
@@ -1152,7 +1199,9 @@ const { state } = store( 'sgs/mega', {
 			const ctx = getContext();
 			const { ref } = getElement();
 			const root = rootFor( ref );
-			const panel = root.querySelector( '[data-sgs-mega-panel]' ) || panelFor( ctx );
+			const panel =
+				root.querySelector( '[data-sgs-mega-panel]' ) ||
+				panelFor( ctx );
 			if (
 				! focusOutShouldClose( {
 					openedByFocus: focusOpened.has( ctx.megaId ),
@@ -1322,7 +1371,9 @@ const { state } = store( 'sgs/mega', {
 			clearOpenTimer( ctx.megaId );
 			const rec = timersFor( ctx.megaId );
 			clearCloseTimer( ctx.megaId );
-			const grace = Number.isFinite( ctx.closeGrace ) ? ctx.closeGrace : 170;
+			const grace = Number.isFinite( ctx.closeGrace )
+				? ctx.closeGrace
+				: 170;
 			rec.close = window.setTimeout( () => {
 				rec.close = null;
 				ctx.isOpen = false;
@@ -1433,9 +1484,13 @@ const { state } = store( 'sgs/mega', {
 				if ( ! focusables.length ) {
 					return;
 				}
-				const isLast = event.target === focusables[ focusables.length - 1 ];
+				const isLast =
+					event.target === focusables[ focusables.length - 1 ];
 				const isFirst = event.target === focusables[ 0 ];
-				if ( ( ! event.shiftKey && isLast ) || ( event.shiftKey && isFirst ) ) {
+				if (
+					( ! event.shiftKey && isLast ) ||
+					( event.shiftKey && isFirst )
+				) {
 					ctx.isOpen = false;
 					state.openMegaId = null;
 					syncTriangleWatcher();

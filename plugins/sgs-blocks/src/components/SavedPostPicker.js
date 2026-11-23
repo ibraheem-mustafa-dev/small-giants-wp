@@ -24,7 +24,13 @@ import { useSelect } from '@wordpress/data';
 import { store as coreStore } from '@wordpress/core-data';
 import { decodeEntities } from '@wordpress/html-entities';
 import { useInstanceId, useDebounce } from '@wordpress/compose';
-import { BaseControl, Button, Popover, SearchControl, Spinner } from '@wordpress/components';
+import {
+	BaseControl,
+	Button,
+	Popover,
+	SearchControl,
+	Spinner,
+} from '@wordpress/components';
 import { link as linkIcon } from '@wordpress/icons';
 import { VStack } from './primitives';
 import './SavedPostPicker.css';
@@ -32,7 +38,11 @@ import './SavedPostPicker.css';
 const PER_PAGE = 20;
 
 function titleOf( record ) {
-	return decodeEntities( record?.title?.rendered || record?.title?.raw || '' ) || record?.slug || '';
+	return (
+		decodeEntities( record?.title?.rendered || record?.title?.raw || '' ) ||
+		record?.slug ||
+		''
+	);
 }
 
 /**
@@ -61,7 +71,10 @@ export default function SavedPostPicker( {
 	const listRef = useRef();
 	const debounceSearch = useDebounce( setSearch, 250 );
 
-	const instanceId = useInstanceId( SavedPostPicker, 'sgs-saved-post-picker' );
+	const instanceId = useInstanceId(
+		SavedPostPicker,
+		'sgs-saved-post-picker'
+	);
 	const id = `sgs-saved-post-picker-${ instanceId }`;
 	const helpId = help ? `${ id }__help` : undefined;
 
@@ -69,15 +82,37 @@ export default function SavedPostPicker( {
 		( select ) => {
 			const core = select( coreStore );
 			const type = core.getPostType( postType );
-			const query = { search, per_page: PER_PAGE, status: 'publish', _fields: 'id,slug,title' };
-			const chosenQuery = { slug: value, per_page: 1, status: 'publish', _fields: 'id,slug,title' };
+			const query = {
+				search,
+				per_page: PER_PAGE,
+				status: 'publish',
+				_fields: 'id,slug,title',
+			};
+			const chosenQuery = {
+				slug: value,
+				per_page: 1,
+				status: 'publish',
+				_fields: 'id,slug,title',
+			};
 			return {
 				typeLabel: type?.labels?.singular_name || '',
-				results: isOpen ? core.getEntityRecords( 'postType', postType, query ) : null,
+				results: isOpen
+					? core.getEntityRecords( 'postType', postType, query )
+					: null,
 				isResolving: isOpen
-					? ! core.hasFinishedResolution( 'getEntityRecords', [ 'postType', postType, query ] )
+					? ! core.hasFinishedResolution( 'getEntityRecords', [
+							'postType',
+							postType,
+							query,
+					  ] )
 					: false,
-				chosen: value ? core.getEntityRecords( 'postType', postType, chosenQuery )?.[ 0 ] : null,
+				chosen: value
+					? core.getEntityRecords(
+							'postType',
+							postType,
+							chosenQuery
+					  )?.[ 0 ]
+					: null,
 			};
 		},
 		[ postType, search, value, isOpen ]
@@ -110,7 +145,9 @@ export default function SavedPostPicker( {
 	};
 
 	const onListKeyDown = ( event ) => {
-		const rows = Array.from( listRef.current?.querySelectorAll( 'button' ) || [] );
+		const rows = Array.from(
+			listRef.current?.querySelectorAll( 'button' ) || []
+		);
 		const index = rows.indexOf( event.target );
 		if ( 'ArrowDown' === event.key && index < rows.length - 1 ) {
 			event.preventDefault();
@@ -121,11 +158,20 @@ export default function SavedPostPicker( {
 		}
 	};
 
-	const triggerText = value ? ( chosen ? titleOf( chosen ) : value ) : emptyLabel || __( 'Choose', 'sgs-blocks' );
+	const triggerText = value
+		? chosen
+			? titleOf( chosen )
+			: value
+		: emptyLabel || __( 'Choose', 'sgs-blocks' );
 	const rows = Array.isArray( results ) ? results : [];
 
 	return (
-		<BaseControl id={ id } label={ label } help={ help } __nextHasNoMarginBottom>
+		<BaseControl
+			id={ id }
+			label={ label }
+			help={ help }
+			__nextHasNoMarginBottom
+		>
 			<Button
 				ref={ triggerRef }
 				variant="tertiary"
@@ -137,7 +183,9 @@ export default function SavedPostPicker( {
 				aria-expanded={ isOpen }
 				onClick={ () => setIsOpen( ! isOpen ) }
 			>
-				<span className="sgs-link-popover__row-label">{ triggerText }</span>
+				<span className="sgs-link-popover__row-label">
+					{ triggerText }
+				</span>
 			</Button>
 			{ isOpen && (
 				<Popover
@@ -148,10 +196,16 @@ export default function SavedPostPicker( {
 					shift
 					className="sgs-link-popover sgs-saved-post-picker"
 				>
-					<VStack className="sgs-link-popover__inner sgs-saved-post-picker__inner" spacing={ 3 }>
+					<VStack
+						className="sgs-link-popover__inner sgs-saved-post-picker__inner"
+						spacing={ 3 }
+					>
 						<SearchControl
 							label={ __( 'Search', 'sgs-blocks' ) }
-							placeholder={ __( 'Search by title', 'sgs-blocks' ) }
+							placeholder={ __(
+								'Search by title',
+								'sgs-blocks'
+							) }
 							value={ term }
 							onChange={ ( next ) => {
 								setTerm( next );
@@ -171,7 +225,10 @@ export default function SavedPostPicker( {
 							{ isResolving && ! rows.length && <Spinner /> }
 							{ ! isResolving && ! rows.length && (
 								<p className="sgs-saved-post-picker__empty">
-									{ __( 'Nothing found. Only published items are listed.', 'sgs-blocks' ) }
+									{ __(
+										'Nothing found. Only published items are listed.',
+										'sgs-blocks'
+									) }
 								</p>
 							) }
 							{ rows.map( ( record ) => (
@@ -182,9 +239,13 @@ export default function SavedPostPicker( {
 									aria-selected={ record.slug === value }
 									onClick={ () => choose( record ) }
 								>
-									<span className="sgs-saved-post-picker__title">{ titleOf( record ) }</span>
+									<span className="sgs-saved-post-picker__title">
+										{ titleOf( record ) }
+									</span>
 									{ typeLabel && (
-										<span className="sgs-saved-post-picker__badge">{ typeLabel }</span>
+										<span className="sgs-saved-post-picker__badge">
+											{ typeLabel }
+										</span>
 									) }
 								</Button>
 							) ) }

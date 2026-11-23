@@ -36,14 +36,18 @@ const NATIVE_ANIMATION =
 	CSS.supports( 'interpolate-size', 'allow-keywords' ) &&
 	CSS.supports( 'selector(::details-content)' );
 const NATIVE_GROUPS =
-	typeof document !== 'undefined' && 'name' in document.createElement( 'details' );
+	typeof document !== 'undefined' &&
+	'name' in document.createElement( 'details' );
 
 let groupCounter = 0;
 
 function syncAriaExpanded( details ) {
 	const summary = details.querySelector( ':scope > summary' );
 	if ( summary ) {
-		summary.setAttribute( 'aria-expanded', details.open ? 'true' : 'false' );
+		summary.setAttribute(
+			'aria-expanded',
+			details.open ? 'true' : 'false'
+		);
 	}
 }
 
@@ -122,8 +126,7 @@ function initAccordions() {
 	const accordions = document.querySelectorAll( '.sgs-accordion' );
 
 	accordions.forEach( ( accordion ) => {
-		const allowMultiple =
-			accordion.dataset.allowMultiple === 'true';
+		const allowMultiple = accordion.dataset.allowMultiple === 'true';
 		const defaultOpen = parseInt(
 			accordion.dataset.defaultOpen ?? '-1',
 			10
@@ -158,7 +161,10 @@ function initAccordions() {
 
 			// Start aria-expanded from the item's real open state (the default-open
 			// item above is opened here, after the server wrote aria-expanded).
-			summary.setAttribute( 'aria-expanded', details.open ? 'true' : 'false' );
+			summary.setAttribute(
+				'aria-expanded',
+				details.open ? 'true' : 'false'
+			);
 			preloadMotionState( details );
 			publishExpanded( details, true );
 
@@ -168,8 +174,7 @@ function initAccordions() {
 			);
 			if ( ! wrapper ) {
 				wrapper = document.createElement( 'div' );
-				wrapper.className =
-					'sgs-accordion-item__content-inner';
+				wrapper.className = 'sgs-accordion-item__content-inner';
 				while ( content.firstChild ) {
 					wrapper.appendChild( content.firstChild );
 				}
@@ -198,14 +203,12 @@ function initAccordions() {
 								sibling.hasAttribute( 'open' ) &&
 								! animatingItems.has( sibling )
 							) {
-								const sibContent =
-									sibling.querySelector(
-										'.sgs-accordion-item__content'
-									);
-								const sibWrapper =
-									sibling.querySelector(
-										'.sgs-accordion-item__content-inner'
-									);
+								const sibContent = sibling.querySelector(
+									'.sgs-accordion-item__content'
+								);
+								const sibWrapper = sibling.querySelector(
+									'.sgs-accordion-item__content-inner'
+								);
 								if ( sibContent && sibWrapper ) {
 									closeItem(
 										sibling,
@@ -254,7 +257,9 @@ function openItem( details, content, wrapper, animatingItems ) {
 	content.classList.add( 'is-open' );
 	content.style.setProperty( '--sgs-accordion-height', '0px' );
 
-	const prefersReducedMotion = window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
+	const prefersReducedMotion = window.matchMedia(
+		'(prefers-reduced-motion: reduce)'
+	).matches;
 
 	requestAnimationFrame( () => {
 		if ( ! prefersReducedMotion ) {
@@ -299,7 +304,9 @@ function closeItem( details, content, wrapper, animatingItems ) {
 	content.classList.add( 'is-open' );
 	content.style.setProperty( '--sgs-accordion-height', height + 'px' );
 
-	const prefersReducedMotion = window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
+	const prefersReducedMotion = window.matchMedia(
+		'(prefers-reduced-motion: reduce)'
+	).matches;
 
 	requestAnimationFrame( () => {
 		if ( ! prefersReducedMotion ) {

@@ -67,8 +67,14 @@ export function BuyboxStickerPanels( { attributes, setAttributes } ) {
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 				>
-					<ToggleGroupControlOption value="typed" label={ __( 'Typed here', 'sgs-blocks' ) } />
-					<ToggleGroupControlOption value="product" label={ __( 'Each product', 'sgs-blocks' ) } />
+					<ToggleGroupControlOption
+						value="typed"
+						label={ __( 'Typed here', 'sgs-blocks' ) }
+					/>
+					<ToggleGroupControlOption
+						value="product"
+						label={ __( 'Each product', 'sgs-blocks' ) }
+					/>
 				</ToggleGroupControl>
 				{ 'product' !== galleryStickerSource && (
 					<TextControl
@@ -85,7 +91,8 @@ export function BuyboxStickerPanels( { attributes, setAttributes } ) {
 						__next40pxDefaultSize
 					/>
 				) }
-				{ ( !! galleryStickerText || 'product' === galleryStickerSource ) && (
+				{ ( !! galleryStickerText ||
+					'product' === galleryStickerSource ) && (
 					<>
 						<ToggleGroupControl
 							label={ __( 'Corner', 'sgs-blocks' ) }
@@ -158,7 +165,8 @@ export function BuyboxStickerPanels( { attributes, setAttributes } ) {
 								label={ __( 'Tag', 'sgs-blocks' ) }
 							/>
 						</ToggleGroupControl>
-						{ 'rounded' === ( galleryStickerShape || 'rounded' ) && (
+						{ 'rounded' ===
+							( galleryStickerShape || 'rounded' ) && (
 							<SgsLengthControl
 								label={ __( 'Corner radius', 'sgs-blocks' ) }
 								value={ galleryStickerRadius || '' }
@@ -218,7 +226,9 @@ export function BuyboxStickerPanels( { attributes, setAttributes } ) {
 									galleryStickerBorderStyle: val,
 								} )
 							}
-							contrastAgainst={ galleryStickerBackgroundColour || '' }
+							contrastAgainst={
+								galleryStickerBackgroundColour || ''
+							}
 							colourLabel={ __(
 								'Sticker border colour',
 								'sgs-blocks'

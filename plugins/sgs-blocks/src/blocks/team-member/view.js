@@ -32,9 +32,13 @@ function initTeamMemberOverlay() {
 			const isActive = wrapper.classList.contains( 'is-overlay-active' );
 
 			// Close any other open overlays first.
-			document.querySelectorAll(
-				'.sgs-team-member__photo--has-overlay.is-overlay-active'
-			).forEach( ( el ) => el.classList.remove( 'is-overlay-active' ) );
+			document
+				.querySelectorAll(
+					'.sgs-team-member__photo--has-overlay.is-overlay-active'
+				)
+				.forEach( ( el ) =>
+					el.classList.remove( 'is-overlay-active' )
+				);
 
 			if ( ! isActive ) {
 				wrapper.classList.add( 'is-overlay-active' );
@@ -47,9 +51,11 @@ function initTeamMemberOverlay() {
 
 	// Tap outside any overlay card closes all open overlays.
 	document.addEventListener( 'click', () => {
-		document.querySelectorAll(
-			'.sgs-team-member__photo--has-overlay.is-overlay-active'
-		).forEach( ( el ) => el.classList.remove( 'is-overlay-active' ) );
+		document
+			.querySelectorAll(
+				'.sgs-team-member__photo--has-overlay.is-overlay-active'
+			)
+			.forEach( ( el ) => el.classList.remove( 'is-overlay-active' ) );
 	} );
 }
 

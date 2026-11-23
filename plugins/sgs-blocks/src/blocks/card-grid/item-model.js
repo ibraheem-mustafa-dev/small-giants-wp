@@ -11,7 +11,11 @@ import { hasFile } from '../../components/media/mediaSlotWrites.js';
 import { resolveTierSource } from '../../components/media/deviceValues.js';
 
 /** The card grid's one media slot. */
-export const IMAGE_SLOT = { prefix: 'image', kinds: [ 'image' ], context: 'item' };
+export const IMAGE_SLOT = {
+	prefix: 'image',
+	kinds: [ 'image' ],
+	context: 'item',
+};
 
 /** The card fields the media fields own. */
 const MEDIA_KEYS = [ 'source', 'alt', 'decorative', 'fit', 'focal' ];

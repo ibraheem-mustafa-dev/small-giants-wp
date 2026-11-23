@@ -9,7 +9,11 @@
  */
 
 /** The timeline's one media slot. */
-export const ENTRY_SLOT = { prefix: 'entry', kinds: [ 'image', 'video' ], context: 'content' };
+export const ENTRY_SLOT = {
+	prefix: 'entry',
+	kinds: [ 'image', 'video' ],
+	context: 'content',
+};
 
 const upperFirst = ( text ) => text.charAt( 0 ).toUpperCase() + text.slice( 1 );
 const lowerFirst = ( text ) => text.charAt( 0 ).toLowerCase() + text.slice( 1 );

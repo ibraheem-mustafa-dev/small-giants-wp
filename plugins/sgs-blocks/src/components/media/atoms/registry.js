@@ -23,7 +23,12 @@
 
 import { MEDIA_BASES } from '../../MediaElementControls.js';
 import { settingsForBases } from '../atom-settings.js';
-import { FILTER_SETTINGS, LAYOUT_SETTINGS, SHAPE_SETTINGS, SIZING_SETTINGS } from '../emit/kinds-settings.js';
+import {
+	FILTER_SETTINGS,
+	LAYOUT_SETTINGS,
+	SHAPE_SETTINGS,
+	SIZING_SETTINGS,
+} from '../emit/kinds-settings.js';
 
 /**
  * Every atom, with the base set it owns.
@@ -93,7 +98,8 @@ export const MEDIA_ATOMS = {
 				image: 'bare URL string, no attachment ID, no tiers',
 			},
 			'sgs/decorative-image': {
-				decorMedia: 'legacy composite object with no prefix/base decomposition',
+				decorMedia:
+					'legacy composite object with no prefix/base decomposition',
 			},
 			'sgs/before-after': {
 				beforeImageId: 'integer|string union',
@@ -109,9 +115,12 @@ export const MEDIA_ATOMS = {
 			// declaration always wins" rule means the atom-shaped Thumbnail
 			// object is never what these three names actually resolve to.
 			'sgs/media': {
-				thumbnail: 'legacy string URL, pre-atom-migration; ThumbnailId/Thumbnail wins when set',
-				thumbnailTablet: 'legacy string URL, pre-atom-migration; ThumbnailId/Thumbnail wins when set',
-				thumbnailMobile: 'legacy string URL, pre-atom-migration; ThumbnailId/Thumbnail wins when set',
+				thumbnail:
+					'legacy string URL, pre-atom-migration; ThumbnailId/Thumbnail wins when set',
+				thumbnailTablet:
+					'legacy string URL, pre-atom-migration; ThumbnailId/Thumbnail wins when set',
+				thumbnailMobile:
+					'legacy string URL, pre-atom-migration; ThumbnailId/Thumbnail wins when set',
 			},
 		},
 	},
@@ -190,7 +199,8 @@ export const MEDIA_ATOMS = {
 		reads: {
 			// The backdrop vocabulary is NARROWER: cover/contain/auto only.
 			'sgs/container': {
-				backgroundSize: 'backdrop vocabulary — cover/contain/auto, no fill/none/scale-down',
+				backgroundSize:
+					'backdrop vocabulary — cover/contain/auto, no fill/none/scale-down',
 			},
 			// `fit`'s bases are `[ 'ObjectFit', 'Size' ]` — declaring the atom for
 			// ANY prefix injects both, even when only ObjectFit is wanted (no
@@ -203,7 +213,8 @@ export const MEDIA_ATOMS = {
 			// keyword). The element context never renders a background on the
 			// badge image, so the atom's Size resolution is inert here regardless.
 			'sgs/trust-bar': {
-				badgeImageSize: 'pre-existing NUMBER px dimension (width+height), unrelated to the Size base\'s background-size vocabulary',
+				badgeImageSize:
+					"pre-existing NUMBER px dimension (width+height), unrelated to the Size base's background-size vocabulary",
 			},
 		},
 		vocabulary: {
@@ -239,7 +250,8 @@ export const MEDIA_ATOMS = {
 				// comes back empty — byte-identical output for every other caller of
 				// this atom (before-after/card-grid/decorative-image/media/
 				// product-card/testimonial), which still use the flat 3-key shape.
-				splitMediaObjectPosition: 'TIER OBJECT {desktop,tablet,mobile}, not the atom base string',
+				splitMediaObjectPosition:
+					'TIER OBJECT {desktop,tablet,mobile}, not the atom base string',
 			},
 		},
 	},
@@ -264,7 +276,8 @@ export const MEDIA_ATOMS = {
 		},
 		reads: {
 			'sgs/product-card': {
-				imageHeight: 'plain "180px" STRING, non-responsive — not the tier object',
+				imageHeight:
+					'plain "180px" STRING, non-responsive — not the tier object',
 			},
 		},
 		vocabulary: {
@@ -272,7 +285,17 @@ export const MEDIA_ATOMS = {
 			// server-side ratio allowlist (image-sequence/render.php).
 			// `card-grid`/`gallery`/`post-grid` take free unspaced strings and
 			// are READ, not matched.
-			ratio: [ '1 / 1', '4 / 3', '3 / 2', '16 / 9', '21 / 9', '4 / 5', '3 / 4', '2 / 3', '9 / 16' ],
+			ratio: [
+				'1 / 1',
+				'4 / 3',
+				'3 / 2',
+				'16 / 9',
+				'21 / 9',
+				'4 / 5',
+				'3 / 4',
+				'2 / 3',
+				'9 / 16',
+			],
 			shape: [ 'none', 'rounded', 'circle', 'square' ],
 			// 'fill' (2026-09-29): the picture covers a frame sized by the layout and
 			// Minimum height (SGS_Media_Element::CLASS_BOX_FILL, box-shape.css).
@@ -299,8 +322,10 @@ export const MEDIA_ATOMS = {
 			// opacity, blend mode, hover or tiers. Routing it through the atom
 			// is what gives that surface the missing four.
 			'sgs/hero': {
-				splitMediaOverlayColour: 'split-column overlay, bypasses sgs_overlay_decls()',
-				splitMediaOverlayGradient: 'split-column overlay, bypasses sgs_overlay_decls()',
+				splitMediaOverlayColour:
+					'split-column overlay, bypasses sgs_overlay_decls()',
+				splitMediaOverlayGradient:
+					'split-column overlay, bypasses sgs_overlay_decls()',
 			},
 		},
 	},

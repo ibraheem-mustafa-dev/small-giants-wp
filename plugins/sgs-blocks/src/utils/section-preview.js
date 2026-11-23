@@ -6,15 +6,18 @@
  * @package SGS\Blocks
  */
 
-import { backgroundPreview, tierBackgroundImageUrl } from './background-preview';
+import {
+	backgroundPreview,
+	tierBackgroundImageUrl,
+} from './background-preview';
 import { tierValueOf } from './responsive';
 import { wrapperToneClass } from './surface-preview';
 import { resolveShadowPreviewComposed } from './tokens';
 
 /**
- * @param {Object} attributes     Block attributes.
- * @param {string} tier           Previewed device tier from usePreviewTier().
- * @param {Array}  palette        Theme colour palette.
+ * @param {Object} attributes      Block attributes.
+ * @param {string} tier            Previewed device tier from usePreviewTier().
+ * @param {Array}  palette         Theme colour palette.
  * @param {Array}  gradientPresets Theme gradient presets.
  * @return {{ style: Object, className: string }} Outer style fragment and class names.
  */
@@ -25,15 +28,27 @@ export function sectionPreview( attributes, tier, palette, gradientPresets ) {
 	if ( minHeight ) {
 		style.minHeight = minHeight;
 	}
-	const shadow = resolveShadowPreviewComposed( attributes.shadow, attributes.shadowColour );
+	const shadow = resolveShadowPreviewComposed(
+		attributes.shadow,
+		attributes.shadowColour
+	);
 	if ( shadow ) {
 		style.boxShadow = shadow;
 	}
 
 	// Tablet and mobile background images paint at their own device tier; a mobile
 	// preview falls back to the tablet image, as the front end's cascading media queries do.
-	const tierImageUrl = tierBackgroundImageUrl( null, attributes.backgroundImageTablet, attributes.backgroundImageMobile, tier );
-	let className = wrapperToneClass( { ...attributes, surfaceTone: attributes.surfaceTone }, palette, gradientPresets );
+	const tierImageUrl = tierBackgroundImageUrl(
+		null,
+		attributes.backgroundImageTablet,
+		attributes.backgroundImageMobile,
+		tier
+	);
+	let className = wrapperToneClass(
+		{ ...attributes, surfaceTone: attributes.surfaceTone },
+		palette,
+		gradientPresets
+	);
 	if ( tierImageUrl ) {
 		const tierBackground = backgroundPreview(
 			{
@@ -46,7 +61,9 @@ export function sectionPreview( attributes, tier, palette, gradientPresets ) {
 			gradientPresets
 		);
 		Object.assign( style, tierBackground.style );
-		className = [ className, tierBackground.className ].filter( Boolean ).join( ' ' );
+		className = [ className, tierBackground.className ]
+			.filter( Boolean )
+			.join( ' ' );
 	}
 
 	return { style, className };

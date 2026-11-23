@@ -48,9 +48,13 @@ const DROP_ATTR = 'data-sgs-overflow-dropped';
  * @return {HTMLElement[]} Badge elements in document order.
  */
 function badgesFor( wrapper ) {
-	const track = wrapper.querySelector( '.sgs-trust-bar__track:not([data-sgs-marquee-clone])' );
+	const track = wrapper.querySelector(
+		'.sgs-trust-bar__track:not([data-sgs-marquee-clone])'
+	);
 	const scope = track || wrapper;
-	return Array.from( scope.querySelectorAll( ':scope > .sgs-trust-bar__badge' ) );
+	return Array.from(
+		scope.querySelectorAll( ':scope > .sgs-trust-bar__badge' )
+	);
 }
 
 /**
@@ -98,8 +102,15 @@ function layOutDrop( wrapper ) {
 		const top = Math.round( badge.getBoundingClientRect().top );
 		if ( top > firstTop ) {
 			// A separator glyph beside a dropped badge goes with it, so the last visible badge does not end on one.
-			[ badge, badge.previousElementSibling, badge.nextElementSibling ].forEach( ( el ) => {
-				if ( el === badge || el?.classList.contains( 'sgs-trust-bar__separator' ) ) {
+			[
+				badge,
+				badge.previousElementSibling,
+				badge.nextElementSibling,
+			].forEach( ( el ) => {
+				if (
+					el === badge ||
+					el?.classList.contains( 'sgs-trust-bar__separator' )
+				) {
 					el.setAttribute( 'hidden', '' );
 					el.setAttribute( DROP_ATTR, '' );
 				}
@@ -108,7 +119,9 @@ function layOutDrop( wrapper ) {
 	} );
 }
 
-const dropWrappers = document.querySelectorAll( '.sgs-trust-bar[data-overflow-mode="drop"]' );
+const dropWrappers = document.querySelectorAll(
+	'.sgs-trust-bar[data-overflow-mode="drop"]'
+);
 
 dropWrappers.forEach( ( wrapper ) => {
 	layOutDrop( wrapper );

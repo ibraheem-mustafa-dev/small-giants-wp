@@ -46,11 +46,19 @@ if ( ! window.__sgsPostTimeToReadShortRegistered ) {
 				<>
 					<BlockEdit { ...props } />
 					<InspectorControls>
-						<PanelBody title={ __( 'Reading time format', 'sgs-blocks' ) } initialOpen>
+						<PanelBody
+							title={ __( 'Reading time format', 'sgs-blocks' ) }
+							initialOpen
+						>
 							<ToggleControl
-								label={ __( 'Short format (e.g. 2 min read)', 'sgs-blocks' ) }
+								label={ __(
+									'Short format (e.g. 2 min read)',
+									'sgs-blocks'
+								) }
 								checked={ !! attributes.sgsShortFormat }
-								onChange={ ( val ) => setAttributes( { sgsShortFormat: !! val } ) }
+								onChange={ ( val ) =>
+									setAttributes( { sgsShortFormat: !! val } )
+								}
 								__nextHasNoMarginBottom
 							/>
 						</PanelBody>
@@ -61,5 +69,9 @@ if ( ! window.__sgsPostTimeToReadShortRegistered ) {
 		'withSgsShortFormatControl'
 	);
 
-	addFilter( 'editor.BlockEdit', 'sgs/post-time-to-read-short/control', withShortFormatControl );
+	addFilter(
+		'editor.BlockEdit',
+		'sgs/post-time-to-read-short/control',
+		withShortFormatControl
+	);
 }

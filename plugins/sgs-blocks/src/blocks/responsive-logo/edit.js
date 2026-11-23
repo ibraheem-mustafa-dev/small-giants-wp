@@ -23,7 +23,11 @@ import {
 import metadata from './block.json';
 
 // The attribute each device's width is stored in.
-const WIDTH_ATTR = { desktop: 'width', tablet: 'widthTablet', mobile: 'widthMobile' };
+const WIDTH_ATTR = {
+	desktop: 'width',
+	tablet: 'widthTablet',
+	mobile: 'widthMobile',
+};
 
 const SLOTS = metadata.supports.sgs.mediaElements;
 const LOGO_SLOT = SLOTS.find( ( e ) => 'logo' === e.prefix );
@@ -141,13 +145,20 @@ export default function Edit( { attributes, setAttributes } ) {
 		className: 'sgs-responsive-logo-editor',
 		style:
 			width !== undefined && width !== null && width !== ''
-				? { '--logo-width': `${ Math.abs( parseInt( width, 10 ) || 0 ) }px` }
+				? {
+						'--logo-width': `${ Math.abs(
+							parseInt( width, 10 ) || 0
+						) }px`,
+				  }
 				: undefined,
 	} );
 
 	// Chain tier 1 is the block's own desktop image; when it is empty the
 	// frontend falls through to the site-level logo (Site Info, then WordPress).
-	const hasOwnLogo = !! ( attributes.logoSource?.desktop?.id || attributes.logoSource?.desktop?.url );
+	const hasOwnLogo = !! (
+		attributes.logoSource?.desktop?.id ||
+		attributes.logoSource?.desktop?.url
+	);
 	const siteLogo = getSiteLogo();
 	const siteLogoNote = hasOwnLogo ? '' : siteLogoHint( siteLogo.source );
 
@@ -211,7 +222,10 @@ export default function Edit( { attributes, setAttributes } ) {
 
 					{ 'custom' === logoSwitchMode && (
 						<RangeControl
-							label={ __( 'Custom breakpoint (px)', 'sgs-blocks' ) }
+							label={ __(
+								'Custom breakpoint (px)',
+								'sgs-blocks'
+							) }
 							help={ __(
 								'Below this width the compact logo shows.',
 								'sgs-blocks'
@@ -257,7 +271,9 @@ export default function Edit( { attributes, setAttributes } ) {
 					title={ __( 'Sizing + behaviour', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<ResponsiveControl label={ __( 'Width (px)', 'sgs-blocks' ) }>
+					<ResponsiveControl
+						label={ __( 'Width (px)', 'sgs-blocks' ) }
+					>
 						{ ( breakpoint ) => {
 							const key = WIDTH_ATTR[ breakpoint ] || 'width';
 							const own = attributes[ key ];

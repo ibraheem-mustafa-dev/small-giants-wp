@@ -9,23 +9,44 @@
  * @package SGS\Blocks
  */
 import { __ } from '@wordpress/i18n';
-import { alignLeft, alignCenter, alignRight, alignJustify } from '@wordpress/icons';
+import {
+	alignLeft,
+	alignCenter,
+	alignRight,
+	alignJustify,
+} from '@wordpress/icons';
 import { ToggleGroupControl, ToggleGroupControlOptionIcon } from './primitives';
 import ResponsiveOverride from './ResponsiveOverride';
 
 export const SGS_TEXT_ALIGN_OPTIONS = [
-	{ label: __( 'Align text left', 'sgs-blocks' ), value: 'left', icon: alignLeft },
-	{ label: __( 'Align text center', 'sgs-blocks' ), value: 'center', icon: alignCenter },
-	{ label: __( 'Align text right', 'sgs-blocks' ), value: 'right', icon: alignRight },
-	{ label: __( 'Justify text', 'sgs-blocks' ), value: 'justify', icon: alignJustify },
+	{
+		label: __( 'Align text left', 'sgs-blocks' ),
+		value: 'left',
+		icon: alignLeft,
+	},
+	{
+		label: __( 'Align text center', 'sgs-blocks' ),
+		value: 'center',
+		icon: alignCenter,
+	},
+	{
+		label: __( 'Align text right', 'sgs-blocks' ),
+		value: 'right',
+		icon: alignRight,
+	},
+	{
+		label: __( 'Justify text', 'sgs-blocks' ),
+		value: 'justify',
+		icon: alignJustify,
+	},
 ];
 
 /**
  * @param {Object}   props
- * @param {string}   [props.label]    Row label.
- * @param {Object}   props.value      The `{desktop, tablet, mobile}` object.
- * @param {Function} props.onChange   Receives the new object.
- * @param {Array}    [props.options]  Icon options (defaults to left, centre, right, justify).
+ * @param {string}   [props.label]   Row label.
+ * @param {Object}   props.value     The `{desktop, tablet, mobile}` object.
+ * @param {Function} props.onChange  Receives the new object.
+ * @param {Array}    [props.options] Icon options (defaults to left, centre, right, justify).
  */
 export default function TextAlignTierControl( {
 	label = __( 'Text alignment', 'sgs-blocks' ),
@@ -34,14 +55,22 @@ export default function TextAlignTierControl( {
 	options = SGS_TEXT_ALIGN_OPTIONS,
 } ) {
 	return (
-		<ResponsiveOverride label={ label } value={ value } onChange={ onChange }>
+		<ResponsiveOverride
+			label={ label }
+			value={ value }
+			onChange={ onChange }
+		>
 			{ ( { ownValue, setOwnValue } ) => (
 				<ToggleGroupControl
 					isDeselectable
 					hideLabelFromVision
 					label={ label }
 					value={ ownValue || undefined }
-					onChange={ ( val ) => setOwnValue( val === ( ownValue || undefined ) ? '' : val ?? '' ) }
+					onChange={ ( val ) =>
+						setOwnValue(
+							val === ( ownValue || undefined ) ? '' : val ?? ''
+						)
+					}
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 				>

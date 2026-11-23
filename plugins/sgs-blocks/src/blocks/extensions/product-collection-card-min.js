@@ -67,7 +67,10 @@ if ( ! window.__sgsCardMinRegistered ) {
 							initialOpen={ false }
 						>
 							<ResponsiveOverride
-								label={ __( 'Minimum card width', 'sgs-blocks' ) }
+								label={ __(
+									'Minimum card width',
+									'sgs-blocks'
+								) }
 								value={ attributes.sgsCardMinWidth }
 								onChange={ ( obj ) =>
 									setAttributes( { sgsCardMinWidth: obj } )
@@ -75,14 +78,18 @@ if ( ! window.__sgsCardMinRegistered ) {
 							>
 								{ ( { tier, ownValue, setOwnValue } ) => (
 									<SgsLengthControl
-										label={ __( 'Minimum card width', 'sgs-blocks' ) }
+										label={ __(
+											'Minimum card width',
+											'sgs-blocks'
+										) }
 										hideLabelFromVision
 										value={ ownValue }
 										placeholder={
 											ownValue
 												? undefined
 												: resolveResponsiveTier(
-														attributes.sgsCardMinWidth || {},
+														attributes.sgsCardMinWidth ||
+															{},
 														tier
 												  ).value || ''
 										}
@@ -114,20 +121,43 @@ if ( ! window.__sgsCardMinRegistered ) {
 	 * product-collection-card-min.scss reads (custom properties only: Spec 32 forbids inline
 	 * declarations; the front end gets its scoped rule from includes/product-collection-card-min.php).
 	 */
-	const withCardMinPreview = createHigherOrderComponent( ( BlockListBlock ) => ( props ) => {
-		const tier = usePreviewTier();
-		const { attributes, name } = props;
-		const min = TARGET_BLOCK_NAME === name && attributes ? resolveResponsiveTier( attributes.sgsCardMinWidth || {}, tier ).value : '';
-		if ( ! min ) {
-			return <BlockListBlock { ...props } />;
-		}
-		const wrapperProps = {
-			...( props.wrapperProps || {} ),
-			className: [ props.wrapperProps?.className, 'sgs-card-min-preview' ].filter( Boolean ).join( ' ' ),
-			style: { ...( props.wrapperProps?.style || {} ), '--sgs-card-min': min },
-		};
-		return <BlockListBlock { ...props } wrapperProps={ wrapperProps } />;
-	}, 'withCardMinPreview' );
+	const withCardMinPreview = createHigherOrderComponent(
+		( BlockListBlock ) => ( props ) => {
+			const tier = usePreviewTier();
+			const { attributes, name } = props;
+			const min =
+				TARGET_BLOCK_NAME === name && attributes
+					? resolveResponsiveTier(
+							attributes.sgsCardMinWidth || {},
+							tier
+					  ).value
+					: '';
+			if ( ! min ) {
+				return <BlockListBlock { ...props } />;
+			}
+			const wrapperProps = {
+				...( props.wrapperProps || {} ),
+				className: [
+					props.wrapperProps?.className,
+					'sgs-card-min-preview',
+				]
+					.filter( Boolean )
+					.join( ' ' ),
+				style: {
+					...( props.wrapperProps?.style || {} ),
+					'--sgs-card-min': min,
+				},
+			};
+			return (
+				<BlockListBlock { ...props } wrapperProps={ wrapperProps } />
+			);
+		},
+		'withCardMinPreview'
+	);
 
-	addFilter( 'editor.BlockListBlock', 'sgs/product-collection-card-min/preview', withCardMinPreview );
+	addFilter(
+		'editor.BlockListBlock',
+		'sgs/product-collection-card-min/preview',
+		withCardMinPreview
+	);
 } // end guard: window.__sgsCardMinRegistered

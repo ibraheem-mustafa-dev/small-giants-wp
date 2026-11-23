@@ -14,9 +14,17 @@ import { asTierObject, makeResponsive } from '../../utils/responsive.js';
 export const DEVICES = [ 'desktop', 'tablet', 'mobile' ];
 
 /** Each device's wider neighbours, nearest first. */
-const WIDER = { desktop: [], tablet: [ 'desktop' ], mobile: [ 'tablet', 'desktop' ] };
+const WIDER = {
+	desktop: [],
+	tablet: [ 'desktop' ],
+	mobile: [ 'tablet', 'desktop' ],
+};
 
-const DEVICE_FROM_EDITOR = { Desktop: 'desktop', Tablet: 'tablet', Mobile: 'mobile' };
+const DEVICE_FROM_EDITOR = {
+	Desktop: 'desktop',
+	Tablet: 'tablet',
+	Mobile: 'mobile',
+};
 
 /**
  * @param {string} device 'desktop' | 'tablet' | 'mobile'.
@@ -41,7 +49,9 @@ export function useActiveDevice() {
 	return useSelect( ( select ) => {
 		const editor = select( 'core/editor' );
 		const type =
-			editor && 'function' === typeof editor.getDeviceType ? editor.getDeviceType() : null;
+			editor && 'function' === typeof editor.getDeviceType
+				? editor.getDeviceType()
+				: null;
 		return DEVICE_FROM_EDITOR[ type ] || 'desktop';
 	}, [] );
 }
@@ -51,7 +61,12 @@ export function useActiveDevice() {
  * @return {boolean} True when the tier holds nothing of its own.
  */
 export function isUnset( value ) {
-	return undefined === value || null === value || '' === value || 'inherit' === value;
+	return (
+		undefined === value ||
+		null === value ||
+		'' === value ||
+		'inherit' === value
+	);
 }
 
 /**
@@ -62,7 +77,11 @@ export function isUnset( value ) {
  * @param {Function} [isSet] Says whether a tier's value counts as set; defaults to "not blank".
  * @return {{value: *, from: (string|null), own: boolean}} `from` is the holding tier, null when none holds one.
  */
-export function resolveTierSource( stored, device, isSet = ( v ) => ! isUnset( v ) ) {
+export function resolveTierSource(
+	stored,
+	device,
+	isSet = ( v ) => ! isUnset( v )
+) {
 	const tiers = asTierObject( stored );
 	for ( const tier of [ device, ...( WIDER[ device ] || [] ) ] ) {
 		if ( isSet( tiers[ tier ] ) ) {
@@ -101,14 +120,26 @@ export function writeDevice( stored, device, value ) {
 export function describeInheritance( device, from, noun = '' ) {
 	if ( ! from ) {
 		/* translators: %s: device name. */
-		return sprintf( __( '%s: default', 'sgs-blocks' ), deviceName( device ) );
+		return sprintf(
+			__( '%s: default', 'sgs-blocks' ),
+			deviceName( device )
+		);
 	}
 	if ( noun ) {
 		/* translators: 1: device name, 2: the wider device, 3: what is inherited (photo, video). */
-		return sprintf( __( "%1$s: using %2$s's %3$s", 'sgs-blocks' ), deviceName( device ), deviceName( from ), noun );
+		return sprintf(
+			__( "%1$s: using %2$s's %3$s", 'sgs-blocks' ),
+			deviceName( device ),
+			deviceName( from ),
+			noun
+		);
 	}
 	/* translators: 1: device name, 2: the wider device it uses. */
-	return sprintf( __( '%1$s: using %2$s', 'sgs-blocks' ), deviceName( device ), deviceName( from ) );
+	return sprintf(
+		__( '%1$s: using %2$s', 'sgs-blocks' ),
+		deviceName( device ),
+		deviceName( from )
+	);
 }
 
 /**
@@ -135,5 +166,8 @@ export function panelResetLabel( device ) {
 		return __( 'Reset this panel', 'sgs-blocks' );
 	}
 	/* translators: %s: device name. */
-	return sprintf( __( 'Reset %s in this panel', 'sgs-blocks' ), deviceName( device ) );
+	return sprintf(
+		__( 'Reset %s in this panel', 'sgs-blocks' ),
+		deviceName( device )
+	);
 }

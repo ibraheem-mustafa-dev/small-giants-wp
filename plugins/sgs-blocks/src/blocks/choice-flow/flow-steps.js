@@ -68,7 +68,9 @@ export function advanceModeOf( flowRoot ) {
  * @return {HTMLElement|null} The visible result element, or null.
  */
 export function getActiveResultEl( flowRoot ) {
-	return flowRoot.querySelector( `${ STEP_SELECTOR }:not([hidden]) ${ RESULT_SELECTOR }` );
+	return flowRoot.querySelector(
+		`${ STEP_SELECTOR }:not([hidden]) ${ RESULT_SELECTOR }`
+	);
 }
 
 /**
@@ -79,17 +81,21 @@ export function getActiveResultEl( flowRoot ) {
  * 'pick' shows Continue only on a question that already holds an answer
  * (`updateContinueState()`).
  *
- * @param {HTMLElement}      flowRoot    Flow wrapper element.
+ * @param {HTMLElement}      flowRoot     Flow wrapper element.
  * @param {HTMLElement|null} targetStepEl The step now shown.
  */
 export function updateFooterActions( flowRoot, targetStepEl ) {
 	const continueBtn = flowRoot.querySelector( CONTINUE_BUTTON_SELECTOR );
-	const addToBasketBtn = flowRoot.querySelector( ADD_TO_BASKET_BUTTON_SELECTOR );
+	const addToBasketBtn = flowRoot.querySelector(
+		ADD_TO_BASKET_BUTTON_SELECTOR
+	);
 	const buyNowBtn = flowRoot.querySelector( BUY_NOW_BUTTON_SELECTOR );
 
 	hideContinueHint( flowRoot );
 
-	const resultEl = targetStepEl ? targetStepEl.querySelector( RESULT_SELECTOR ) : null;
+	const resultEl = targetStepEl
+		? targetStepEl.querySelector( RESULT_SELECTOR )
+		: null;
 
 	if ( ! resultEl ) {
 		// A question step. Continue only exists in 'continue' advanceMode —
@@ -102,7 +108,12 @@ export function updateFooterActions( flowRoot, targetStepEl ) {
 		}
 		if ( continueBtn ) {
 			// A multi-answer question needs Continue even in 'tap' advanceMode.
-			continueBtn.hidden = 'tap' === advanceModeOf( flowRoot ) && ! ( targetStepEl && targetStepEl.querySelector( '[data-answers-max]' ) );
+			continueBtn.hidden =
+				'tap' === advanceModeOf( flowRoot ) &&
+				! (
+					targetStepEl &&
+					targetStepEl.querySelector( '[data-answers-max]' )
+				);
 			if ( ! continueBtn.hidden && targetStepEl ) {
 				updateContinueState( flowRoot, targetStepEl );
 			}
@@ -117,18 +128,25 @@ export function updateFooterActions( flowRoot, targetStepEl ) {
 
 	const isAddToBag = 'add-to-bag' === resultEl.getAttribute( 'data-action' );
 	if ( addToBasketBtn ) {
-		const show = isAddToBag && '1' === resultEl.getAttribute( 'data-show-add-to-basket' );
+		const show =
+			isAddToBag &&
+			'1' === resultEl.getAttribute( 'data-show-add-to-basket' );
 		addToBasketBtn.hidden = ! show;
 		if ( show ) {
-			addToBasketBtn.textContent = resultEl.getAttribute( 'data-add-to-basket-label' ) || addToBasketBtn.textContent;
+			addToBasketBtn.textContent =
+				resultEl.getAttribute( 'data-add-to-basket-label' ) ||
+				addToBasketBtn.textContent;
 			appendButtonTotal( flowRoot, addToBasketBtn, resultEl );
 		}
 	}
 	if ( buyNowBtn ) {
-		const show = isAddToBag && '1' === resultEl.getAttribute( 'data-show-buy-now' );
+		const show =
+			isAddToBag && '1' === resultEl.getAttribute( 'data-show-buy-now' );
 		buyNowBtn.hidden = ! show;
 		if ( show ) {
-			buyNowBtn.textContent = resultEl.getAttribute( 'data-buy-now-label' ) || buyNowBtn.textContent;
+			buyNowBtn.textContent =
+				resultEl.getAttribute( 'data-buy-now-label' ) ||
+				buyNowBtn.textContent;
 			appendButtonTotal( flowRoot, buyNowBtn, resultEl );
 		}
 	}
@@ -148,7 +166,9 @@ function appendButtonTotal( flowRoot, buttonEl, resultEl ) {
 	}
 	const totalEl = document.createElement( 'span' );
 	totalEl.className = 'sgs-choice-flow__action-total';
-	const stageTotal = flowRoot.querySelector( '.sgs-choice-flow__summary-total-value' );
+	const stageTotal = flowRoot.querySelector(
+		'.sgs-choice-flow__summary-total-value'
+	);
 	totalEl.textContent = stageTotal ? stageTotal.textContent : '';
 	buttonEl.appendChild( totalEl );
 }
@@ -167,15 +187,26 @@ export function updateContinueState( flowRoot, stepEl ) {
 	}
 	const selectedEl = stepEl.querySelector( `.${ SELECTED_CLASS }` );
 	// FR-43-27: a multi-answer question is ready once its least is chosen.
-	const hasSelection = !! selectedEl && meetsLeast( chosenButtons( selectedEl ).length, questionLimits( selectedEl.closest( QUESTION_SELECTOR ) ).min );
+	const hasSelection =
+		!! selectedEl &&
+		meetsLeast(
+			chosenButtons( selectedEl ).length,
+			questionLimits( selectedEl.closest( QUESTION_SELECTOR ) ).min
+		);
 	// 'pick' advanceMode: picking already moves on, so Continue shows only once this
 	// question holds an answer (the shopper came back to it with Back, or the pick
 	// routes to a result). A multi-answer question always needs it.
-	if ( 'pick' === advanceModeOf( flowRoot ) && ! stepEl.querySelector( '[data-answers-max]' ) ) {
+	if (
+		'pick' === advanceModeOf( flowRoot ) &&
+		! stepEl.querySelector( '[data-answers-max]' )
+	) {
 		continueBtn.hidden = ! hasSelection;
 	}
 	continueBtn.classList.toggle( 'is-muted', ! hasSelection );
-	continueBtn.setAttribute( 'aria-disabled', hasSelection ? 'false' : 'true' );
+	continueBtn.setAttribute(
+		'aria-disabled',
+		hasSelection ? 'false' : 'true'
+	);
 }
 
 /**
@@ -186,7 +217,9 @@ export function updateContinueState( flowRoot, stepEl ) {
 export function showContinueHint( flowRoot ) {
 	const hintEl = flowRoot.querySelector( CONTINUE_HINT_SELECTOR );
 	if ( hintEl ) {
-		hintEl.textContent = hintEl.getAttribute( 'data-message' ) || 'Choose an option to continue';
+		hintEl.textContent =
+			hintEl.getAttribute( 'data-message' ) ||
+			'Choose an option to continue';
 	}
 }
 
@@ -224,7 +257,10 @@ export function replayStepEntrance( flowRoot ) {
 	if ( hasStateMotion( flowRoot ) ) {
 		return;
 	}
-	if ( window.matchMedia && window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches ) {
+	if (
+		window.matchMedia &&
+		window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches
+	) {
 		return;
 	}
 	const stepEl = getSteps( flowRoot ).find( ( el ) => ! el.hidden );

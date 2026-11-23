@@ -15,10 +15,7 @@
  * @package
  */
 import { __ } from '@wordpress/i18n';
-import {
-	useBlockProps,
-	InspectorControls,
-} from '@wordpress/block-editor';
+import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import { getBlockType } from '@wordpress/blocks';
 import {
 	PanelBody,
@@ -108,7 +105,9 @@ function omitNullAttributes( attrs ) {
  */
 function slotHasContent( attributes, side ) {
 	const stored = attributes[ `${ side }Source` ];
-	return [ 'desktop', 'tablet', 'mobile' ].some( ( device ) => hasFile( stored?.[ device ] ) );
+	return [ 'desktop', 'tablet', 'mobile' ].some( ( device ) =>
+		hasFile( stored?.[ device ] )
+	);
 }
 
 /**
@@ -118,8 +117,14 @@ function slotHasContent( attributes, side ) {
  * @return {{kinds: string[], atoms: string[], context: string}} The entry.
  */
 function slotEntry( side ) {
-	const entries = getBlockType( 'sgs/before-after' )?.supports?.sgs?.mediaElements || [];
-	return entries.find( ( entry ) => entry.prefix === side ) || { kinds: [ 'image', 'video', 'svg' ], context: 'content' };
+	const entries =
+		getBlockType( 'sgs/before-after' )?.supports?.sgs?.mediaElements || [];
+	return (
+		entries.find( ( entry ) => entry.prefix === side ) || {
+			kinds: [ 'image', 'video', 'svg' ],
+			context: 'content',
+		}
+	);
 }
 
 export default function Edit( { attributes, setAttributes } ) {
@@ -191,9 +196,16 @@ export default function Edit( { attributes, setAttributes } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: labelBackgroundColour,
-								onChange: ( val ) => setAttributes( { labelBackgroundColour: val } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										labelBackgroundColour: val,
+									} ),
 								gradientValue: labelBackgroundColourGradient,
-								onGradientChange: ( val ) => setAttributes( { labelBackgroundColourGradient: val ?? '' } ),
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										labelBackgroundColourGradient:
+											val ?? '',
+									} ),
 							},
 						],
 					},
@@ -207,7 +219,11 @@ export default function Edit( { attributes, setAttributes } ) {
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						prefix={ side }
-						label={ 'before' === side ? __( 'Before', 'sgs-blocks' ) : __( 'After', 'sgs-blocks' ) }
+						label={
+							'before' === side
+								? __( 'Before', 'sgs-blocks' )
+								: __( 'After', 'sgs-blocks' )
+						}
 						blockName="sgs/before-after"
 						blockSlug="sgs/before-after"
 						atoms={ entry.atoms }
@@ -300,18 +316,27 @@ export default function Edit( { attributes, setAttributes } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: dividerColour,
-								onChange: ( val ) => setAttributes( { dividerColour: val } ),
+								onChange: ( val ) =>
+									setAttributes( { dividerColour: val } ),
 								gradientValue: dividerColourGradient,
-								onGradientChange: ( val ) => setAttributes( { dividerColourGradient: val ?? '' } ),
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										dividerColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: dividerColourHover,
-								onChange: ( val ) => setAttributes( { dividerColourHover: val } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										dividerColourHover: val,
+									} ),
 								gradientValue: dividerColourHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { dividerColourHoverGradient: val ?? '' } ),
+									setAttributes( {
+										dividerColourHoverGradient: val ?? '',
+									} ),
 							},
 						] }
 					/>
@@ -340,18 +365,25 @@ export default function Edit( { attributes, setAttributes } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: handleColour,
-								onChange: ( val ) => setAttributes( { handleColour: val } ),
+								onChange: ( val ) =>
+									setAttributes( { handleColour: val } ),
 								gradientValue: handleColourGradient,
-								onGradientChange: ( val ) => setAttributes( { handleColourGradient: val ?? '' } ),
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										handleColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: handleColourHover,
-								onChange: ( val ) => setAttributes( { handleColourHover: val } ),
+								onChange: ( val ) =>
+									setAttributes( { handleColourHover: val } ),
 								gradientValue: handleColourHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { handleColourHoverGradient: val ?? '' } ),
+									setAttributes( {
+										handleColourHoverGradient: val ?? '',
+									} ),
 							},
 						] }
 					/>
@@ -362,27 +394,42 @@ export default function Edit( { attributes, setAttributes } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: handleIconColour,
-								onChange: ( val ) => setAttributes( { handleIconColour: val } ),
+								onChange: ( val ) =>
+									setAttributes( { handleIconColour: val } ),
 								gradientValue: handleIconColourGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { handleIconColourGradient: val ?? '' } ),
+									setAttributes( {
+										handleIconColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: handleIconColourHover,
-								onChange: ( val ) => setAttributes( { handleIconColourHover: val } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										handleIconColourHover: val,
+									} ),
 								gradientValue: handleIconColourHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { handleIconColourHoverGradient: val ?? '' } ),
+									setAttributes( {
+										handleIconColourHoverGradient:
+											val ?? '',
+									} ),
 							},
 						] }
 					/>
 					<IconPicker
 						label={ __( 'Handle icon', 'sgs-blocks' ) }
-						value={ { source: handleIconSource, name: handleIconName } }
+						value={ {
+							source: handleIconSource,
+							name: handleIconName,
+						} }
 						onChange={ ( { source, name } ) =>
-							setAttributes( { handleIconSource: source, handleIconName: name } )
+							setAttributes( {
+								handleIconSource: source,
+								handleIconName: name,
+							} )
 						}
 					/>
 				</PanelBody>
@@ -401,14 +448,16 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 					{ showLabels && (
 						<>
-							<SgsFreeTextField type="rich"
+							<SgsFreeTextField
+								type="rich"
 								label={ __( 'Before label', 'sgs-blocks' ) }
 								value={ beforeLabel }
 								onChange={ ( val ) =>
 									setAttributes( { beforeLabel: val } )
 								}
 							/>
-							<SgsFreeTextField type="rich"
+							<SgsFreeTextField
+								type="rich"
 								label={ __( 'After label', 'sgs-blocks' ) }
 								value={ afterLabel }
 								onChange={ ( val ) =>
@@ -444,13 +493,20 @@ export default function Edit( { attributes, setAttributes } ) {
 						value={ attributes.height }
 						onChange={ ( obj ) => setAttributes( { height: obj } ) }
 					>
-						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+						{ ( {
+							ownValue,
+							effectiveValue,
+							inherited,
+							setOwnValue,
+						} ) => (
 							<SgsLengthControl
 								presets={ false }
 								label={ __( 'Height', 'sgs-blocks' ) }
 								hideLabelFromVision
 								value={ ownValue || '' }
-								placeholder={ inherited ? effectiveValue || '' : '' }
+								placeholder={
+									inherited ? effectiveValue || '' : ''
+								}
 								onChange={ ( v ) => setOwnValue( v || '' ) }
 								units={ HEIGHT_UNITS }
 							/>
@@ -468,40 +524,65 @@ export default function Edit( { attributes, setAttributes } ) {
 					<ResponsiveOverride
 						label={ __( 'Max width', 'sgs-blocks' ) }
 						value={ attributes.maxWidth }
-						onChange={ ( obj ) => setAttributes( { maxWidth: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { maxWidth: obj } )
+						}
 					>
-						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+						{ ( {
+							ownValue,
+							effectiveValue,
+							inherited,
+							setOwnValue,
+						} ) => (
 							<SgsLengthControl
 								presets={ false }
 								value={ ownValue || '' }
-								placeholder={ inherited ? effectiveValue || '' : '' }
+								placeholder={
+									inherited ? effectiveValue || '' : ''
+								}
 								onChange={ ( v ) => setOwnValue( v || '' ) }
 								units={ WIDTH_UNITS }
 							/>
 						) }
 					</ResponsiveOverride>
 				</PanelBody>
-				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Border', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SgsBorderControl
 						widthValues={ attributes.borderWidth ?? {} }
-						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						onWidthChange={ ( next ) =>
+							setAttributes( { borderWidth: next } )
+						}
 						widthPresets={ [ '10', '20', '30' ] }
 						styleValue={ attributes.borderStyle }
-						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						onStyleChange={ ( val ) =>
+							setAttributes( { borderStyle: val } )
+						}
 						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
 						colourValue={ attributes.borderColour }
-						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						onColourChange={ ( val ) =>
+							setAttributes( { borderColour: val ?? '' } )
+						}
 						colourGradientValue={ attributes.borderColourGradient }
-						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+						onColourGradientChange={ ( val ) =>
+							setAttributes( { borderColourGradient: val ?? '' } )
+						}
 						colourLinked={ true }
 						radiusValues={ {
-								base: attributes.borderRadius?.desktop ?? {},
-								tablet: attributes.borderRadius?.tablet ?? {},
-								mobile: attributes.borderRadius?.mobile ?? {},
-							} }
+							base: attributes.borderRadius?.desktop ?? {},
+							tablet: attributes.borderRadius?.tablet ?? {},
+							mobile: attributes.borderRadius?.mobile ?? {},
+						} }
 						onRadiusChange={ ( tier, next ) => {
 							const key = tier === 'base' ? 'desktop' : tier;
-							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+							setAttributes( {
+								borderRadius: {
+									...attributes.borderRadius,
+									[ key ]: next,
+								},
+							} );
 						} }
 					/>
 				</PanelBody>
@@ -527,7 +608,10 @@ export default function Edit( { attributes, setAttributes } ) {
 						label={ __( 'Shadow', 'sgs-blocks' ) }
 						hasValue={ () => !! boxShadow }
 						onDeselect={ () =>
-							setAttributes( { boxShadow: '', boxShadowColour: '' } )
+							setAttributes( {
+								boxShadow: '',
+								boxShadowColour: '',
+							} )
 						}
 						isShownByDefault
 					>
@@ -535,7 +619,10 @@ export default function Edit( { attributes, setAttributes } ) {
 							label={ __( 'Shadow', 'sgs-blocks' ) }
 							attributes={ attributes }
 							setAttributes={ setAttributes }
-							attrNames={ shadowAttrKeys( 'boxShadow', { hover: true, hoverColour: true } ) }
+							attrNames={ shadowAttrKeys( 'boxShadow', {
+								hover: true,
+								hoverColour: true,
+							} ) }
 						/>
 					</ToolsPanelItem>
 				</ToolsPanel>
@@ -578,7 +665,10 @@ export default function Edit( { attributes, setAttributes } ) {
 									</div>
 								) }
 								ErrorResponsePlaceholder={ ( { response } ) => (
-									<Notice status="error" isDismissible={ false }>
+									<Notice
+										status="error"
+										isDismissible={ false }
+									>
 										{ response?.errorMsg ||
 											__(
 												'Preview failed to load.',

@@ -32,14 +32,14 @@ import { initGift } from './panel-gift';
 /**
  * Wire one panel instance against the Store API.
  *
- * @param {HTMLElement} panelRoot                  The `[data-sgs-cart-panel]` element.
- * @param {Object}      [opts]                     Options.
- * @param {Object}      [opts.freeDelivery]        Wave B, U-2 free-delivery progress data
- *                                                 (from the block wrapper's
- *                                                 `data-free-delivery-*` attributes).
- * @param {string}      [opts.freeDelivery.threshold] The resolved threshold, as a
- *                                                    numeric string, or '' to hide the bar.
- * @param {string}      [opts.freeDelivery.message] The "you're %s away" message template.
+ * @param {HTMLElement} panelRoot                          The `[data-sgs-cart-panel]` element.
+ * @param {Object}      [opts]                             Options.
+ * @param {Object}      [opts.freeDelivery]                Wave B, U-2 free-delivery progress data
+ *                                                         (from the block wrapper's
+ *                                                         `data-free-delivery-*` attributes).
+ * @param {string}      [opts.freeDelivery.threshold]      The resolved threshold, as a
+ *                                                         numeric string, or '' to hide the bar.
+ * @param {string}      [opts.freeDelivery.message]        The "you're %s away" message template.
  * @param {string}      [opts.freeDelivery.successMessage] The message shown once unlocked.
  * @return {Object} A `{ refresh }` controller.
  */
@@ -53,17 +53,25 @@ export function initPanel( panelRoot, { freeDelivery } = {} ) {
 	const footerEl = panelRoot.querySelector( '[data-sgs-cart-footer]' );
 	const subtotalEl = panelRoot.querySelector( '[data-sgs-cart-subtotal]' );
 	const statusEl = panelRoot.querySelector( '[data-sgs-cart-status]' );
-	const freeDeliveryEl = initFreeDeliveryElement( panelRoot, itemsEl, freeDelivery );
+	const freeDeliveryEl = initFreeDeliveryElement(
+		panelRoot,
+		itemsEl,
+		freeDelivery
+	);
 	// The gift box (opt-in): shown while the basket has an item, filled from the session value the cart read returns.
 	const gift = initGift( panelRoot );
 	// Counts every drawing of the cart, so a cart read can tell that a newer one was drawn while it was in flight.
 	let drawn = 0;
 	// The centred empty state (opt-in): server-built markup kept in a template and copied in whenever the basket is empty.
-	const emptyTemplate = panelRoot.querySelector( '[data-sgs-cart-empty-template]' );
+	const emptyTemplate = panelRoot.querySelector(
+		'[data-sgs-cart-empty-template]'
+	);
 	// Opt-in pieces that sit under the basket lines inside the scrolling list (the gift box placed after the items, the upsell
 	// row): printed after the list, moved in under the rows while the basket has lines, and moved back out before the list is
 	// replaced by the empty or error state. They are never rebuilt, so their fields keep what the shopper typed and focus.
-	const afterRows = [ ...panelRoot.querySelectorAll( '[data-sgs-cart-after-rows]' ) ];
+	const afterRows = [
+		...panelRoot.querySelectorAll( '[data-sgs-cart-after-rows]' ),
+	];
 	const upsellEl = panelRoot.querySelector( '[data-sgs-cart-upsell]' );
 
 	const emptyMessage = itemsEl.dataset.emptyMessage || 'Your cart is empty';
@@ -185,10 +193,18 @@ export function initPanel( panelRoot, { freeDelivery } = {} ) {
 	 */
 	function renderItems( cart ) {
 		itemsEl.removeAttribute( 'aria-busy' );
-		setRows( cart.items.map( ( item ) => itemRowHtml( item, cart.totals, itemOpts ) ).join( '' ) );
-		itemsEl.querySelectorAll( '[data-sgs-rich-remove]' ).forEach( ( slot ) => {
-			appendAuthoredText( slot, itemOpts.removeLabel || 'Remove', { links: false } );
-		} );
+		setRows(
+			cart.items
+				.map( ( item ) => itemRowHtml( item, cart.totals, itemOpts ) )
+				.join( '' )
+		);
+		itemsEl
+			.querySelectorAll( '[data-sgs-rich-remove]' )
+			.forEach( ( slot ) => {
+				appendAuthoredText( slot, itemOpts.removeLabel || 'Remove', {
+					links: false,
+				} );
+			} );
 
 		if ( subtotalEl ) {
 			subtotalEl.textContent = formatMoney(
@@ -224,7 +240,13 @@ export function initPanel( panelRoot, { freeDelivery } = {} ) {
 			// The upsell row shows while the basket has lines and none of them is its product (or a variation of it).
 			const offered = Number( upsellEl.dataset.sgsCartUpsell ) || 0;
 			const lines = Array.isArray( cart?.items ) ? cart.items : [];
-			upsellEl.hidden = ! lines.length || lines.some( ( line ) => offered === Number( line.id ) || offered === Number( line.parent_id ) );
+			upsellEl.hidden =
+				! lines.length ||
+				lines.some(
+					( line ) =>
+						offered === Number( line.id ) ||
+						offered === Number( line.parent_id )
+				);
 		}
 		publishCart( cart );
 	}
@@ -290,9 +312,18 @@ export function initPanel( panelRoot, { freeDelivery } = {} ) {
 		if ( ! was ) {
 			return;
 		}
-		const row = [ ...itemsEl.querySelectorAll( '.sgs-cart__item' ) ].find( ( el ) => el.dataset.key === was.key );
-		const target = row?.querySelector( `.sgs-cart__item-qty-${ 'input' === was.role ? 'input' : `step--${ was.role }` }` );
-		const usable = target && ! target.disabled ? target : row?.querySelector( '.sgs-cart__item-qty-input' );
+		const row = [ ...itemsEl.querySelectorAll( '.sgs-cart__item' ) ].find(
+			( el ) => el.dataset.key === was.key
+		);
+		const target = row?.querySelector(
+			`.sgs-cart__item-qty-${
+				'input' === was.role ? 'input' : `step--${ was.role }`
+			}`
+		);
+		const usable =
+			target && ! target.disabled
+				? target
+				: row?.querySelector( '.sgs-cart__item-qty-input' );
 		usable?.focus();
 	}
 
@@ -333,7 +364,10 @@ export function initPanel( panelRoot, { freeDelivery } = {} ) {
 		if ( ! input ) {
 			return;
 		}
-		setQuantity( input.dataset.key, Math.max( 0, Number.parseInt( input.value, 10 ) || 0 ) );
+		setQuantity(
+			input.dataset.key,
+			Math.max( 0, Number.parseInt( input.value, 10 ) || 0 )
+		);
 	} );
 
 	// The stepper's minus and plus buttons: one step from the number shown, through the same update path.
@@ -342,8 +376,12 @@ export function initPanel( panelRoot, { freeDelivery } = {} ) {
 		if ( ! button || button.disabled ) {
 			return;
 		}
-		const input = button.closest( '.sgs-cart__item-stepper' )?.querySelector( 'input.sgs-cart__item-qty-input' );
-		const next = ( Number.parseInt( input?.value, 10 ) || 0 ) + ( Number.parseInt( button.dataset.step, 10 ) || 0 );
+		const input = button
+			.closest( '.sgs-cart__item-stepper' )
+			?.querySelector( 'input.sgs-cart__item-qty-input' );
+		const next =
+			( Number.parseInt( input?.value, 10 ) || 0 ) +
+			( Number.parseInt( button.dataset.step, 10 ) || 0 );
 		setQuantity( button.dataset.key, Math.max( 0, next ) );
 	} );
 
@@ -354,7 +392,9 @@ export function initPanel( panelRoot, { freeDelivery } = {} ) {
 	 * first button of the line is skipped when it is off.
 	 */
 	function focusFirstLine() {
-		const target = itemsEl.querySelector( '.sgs-cart__item :is(a[href], button, input, select, textarea):not(:disabled)' );
+		const target = itemsEl.querySelector(
+			'.sgs-cart__item :is(a[href], button, input, select, textarea):not(:disabled)'
+		);
 		target?.focus();
 		if ( target && itemsEl.contains( document.activeElement ) ) {
 			return;
@@ -370,7 +410,9 @@ export function initPanel( panelRoot, { freeDelivery } = {} ) {
 	 * @return {number} The line's position, or -1.
 	 */
 	function lineIndex( key ) {
-		return [ ...itemsEl.querySelectorAll( '.sgs-cart__item' ) ].findIndex( ( el ) => el.dataset.key === key );
+		return [ ...itemsEl.querySelectorAll( '.sgs-cart__item' ) ].findIndex(
+			( el ) => el.dataset.key === key
+		);
 	}
 
 	/**
@@ -390,9 +432,15 @@ export function initPanel( panelRoot, { freeDelivery } = {} ) {
 		const rows = [ ...itemsEl.querySelectorAll( '.sgs-cart__item' ) ];
 		const row = rows[ Math.min( Math.max( index, 0 ), rows.length - 1 ) ];
 		const target = row
-			? row.querySelector( ':is(a[href], button, input, select, textarea):not(:disabled)' )
-			: itemsEl.querySelector( '.sgs-cart__panel-empty :is(button, a[href]):not(:disabled)' ) ||
-			  panelRoot.querySelector( '.sgs-cart__panel-close:not(:disabled)' );
+			? row.querySelector(
+					':is(a[href], button, input, select, textarea):not(:disabled)'
+			  )
+			: itemsEl.querySelector(
+					'.sgs-cart__panel-empty :is(button, a[href]):not(:disabled)'
+			  ) ||
+			  panelRoot.querySelector(
+					'.sgs-cart__panel-close:not(:disabled)'
+			  );
 		target?.focus();
 		if ( target && panelRoot.contains( document.activeElement ) ) {
 			return;
@@ -403,7 +451,9 @@ export function initPanel( panelRoot, { freeDelivery } = {} ) {
 
 	// The empty state's button: add its one product through the Store API, redraw the panel with the new line, keep focus in the list.
 	itemsEl.addEventListener( 'click', async ( event ) => {
-		const button = event.target.closest( 'button[data-sgs-cart-empty-add]' );
+		const button = event.target.closest(
+			'button[data-sgs-cart-empty-add]'
+		);
 		if ( ! button || button.disabled ) {
 			return;
 		}
@@ -416,7 +466,11 @@ export function initPanel( panelRoot, { freeDelivery } = {} ) {
 			let cart;
 			if ( button.dataset.addBody ) {
 				// A variation or picks: the buy box's own add route, then read the cart it changed.
-				await addViaProxy( button.dataset.restUrl, button.dataset.nonce, JSON.parse( button.dataset.addBody ) );
+				await addViaProxy(
+					button.dataset.restUrl,
+					button.dataset.nonce,
+					JSON.parse( button.dataset.addBody )
+				);
 				cart = await fetchCart( gift.headers );
 			} else {
 				cart = await addCartItem( id, 1, gift.headers );
@@ -425,7 +479,10 @@ export function initPanel( panelRoot, { freeDelivery } = {} ) {
 			focusFirstLine();
 			announce( 'Added to your basket.' );
 		} catch ( error ) {
-			announce( error?.message || 'Could not add that to your basket. Please try again.' );
+			announce(
+				error?.message ||
+					'Could not add that to your basket. Please try again.'
+			);
 			button.disabled = false;
 			button.focus();
 		}

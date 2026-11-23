@@ -9,7 +9,11 @@
  * @package SGS\Blocks
  */
 
-import { colourVar, isCssGradient, resolveShadowPreviewComposed } from '../../utils';
+import {
+	colourVar,
+	isCssGradient,
+	resolveShadowPreviewComposed,
+} from '../../utils';
 import { fontFamilyCssValue } from '../../utils/typography-preview';
 import { MEDIA_TABLET, MEDIA_MOBILE } from '../../utils/breakpoints';
 
@@ -28,7 +32,9 @@ const padBox = ( box ) =>
 	box && 'object' === typeof box
 		? BOX_SIDES.map( ( side ) => {
 				const value = String( box[ side ] ?? '' ).trim();
-				return value && SAFE_LENGTH_RE.test( value ) ? `padding-${ side }:${ value };` : '';
+				return value && SAFE_LENGTH_RE.test( value )
+					? `padding-${ side }:${ value };`
+					: '';
 		  } ).join( '' )
 		: '';
 
@@ -48,7 +54,9 @@ export const cardSlotSel = ( aside, n, tail = '' ) => {
 	// The card's link overlay is never a slot and does not count as the last child.
 	const last = ':nth-last-child(1 of :not(.sgs-block-link-overlay))';
 	const guard = 2 === n ? `:not(.wp-block-sgs-container${ last })` : '';
-	return `${ aside } > :nth-child(${ n }):not(.sgs-block-link-overlay)${ guard }${ tail },${ aside } > .wp-block-sgs-container:nth-child(2)${ last } > .sgs-container__inner > :nth-child(${ n - 1 })${ tail }`;
+	return `${ aside } > :nth-child(${ n }):not(.sgs-block-link-overlay)${ guard }${ tail },${ aside } > .wp-block-sgs-container:nth-child(2)${ last } > .sgs-container__inner > :nth-child(${
+		n - 1
+	})${ tail }`;
 };
 
 /**
@@ -61,15 +69,22 @@ export const cardSlotSel = ( aside, n, tail = '' ) => {
  */
 export function drawerShellPreviewCss( scope, row, v ) {
 	let css = '';
-	const shadow = resolveShadowPreviewComposed( v.drawerShellShadow, v.drawerShellShadowColour );
+	const shadow = resolveShadowPreviewComposed(
+		v.drawerShellShadow,
+		v.drawerShellShadowColour
+	);
 	const shell =
-		( v.drawerShellRadius ? `border-radius:${ v.drawerShellRadius };` : '' ) +
+		( v.drawerShellRadius
+			? `border-radius:${ v.drawerShellRadius };`
+			: '' ) +
 		padBox( v.drawerShellPadding ) +
 		( shadow ? `box-shadow:${ shadow };` : '' );
 	if ( shell ) {
 		css += `${ scope }{${ shell }}`;
 	}
-	const rest = ( v.drawerLinkRadius ? `border-radius:${ v.drawerLinkRadius };` : '' ) + fill( v.drawerLinkBg, v.drawerLinkBgGradient );
+	const rest =
+		( v.drawerLinkRadius ? `border-radius:${ v.drawerLinkRadius };` : '' ) +
+		fill( v.drawerLinkBg, v.drawerLinkBgGradient );
 	if ( rest ) {
 		css += `${ row }{${ rest }}`;
 	}
@@ -89,10 +104,14 @@ export function drawerShellPreviewCss( scope, row, v ) {
  */
 export function drawerTilePreviewCss( scope, v ) {
 	const tile = `${ scope } .sgs-gallery__item`;
-	const paint = ( colour ) => ( colour ? `border-color:${ colourVar( colour ) || colour };` : '' );
+	const paint = ( colour ) =>
+		colour ? `border-color:${ colourVar( colour ) || colour };` : '';
 	const rest = paint( v.drawerTileBorderColour );
 	const hover = paint( v.drawerTileBorderColourHover );
-	return ( rest ? `${ tile }{${ rest }}` : '' ) + ( hover ? `${ tile }:hover,${ tile }:focus-within{${ hover }}` : '' );
+	return (
+		( rest ? `${ tile }{${ rest }}` : '' ) +
+		( hover ? `${ tile }:hover,${ tile }:focus-within{${ hover }}` : '' )
+	);
 }
 
 /**
@@ -102,7 +121,10 @@ export function drawerTilePreviewCss( scope, v ) {
  * @return {string} Declarations.
  */
 export function drawerCardBoxPreviewDecls( v ) {
-	return ( v.drawerCardRadius ? `border-radius:${ v.drawerCardRadius };` : '' ) + ( v.drawerCardPadding ? `padding:${ v.drawerCardPadding };` : '' );
+	return (
+		( v.drawerCardRadius ? `border-radius:${ v.drawerCardRadius };` : '' ) +
+		( v.drawerCardPadding ? `padding:${ v.drawerCardPadding };` : '' )
+	);
 }
 
 /**
@@ -129,15 +151,25 @@ function mediaHeightValue( raw ) {
  * @return {string} CSS, or ''.
  */
 export function drawerMediaHeightPreviewCss( aside, v ) {
-	const obj = v.drawerCardMediaHeight && 'object' === typeof v.drawerCardMediaHeight ? v.drawerCardMediaHeight : {};
+	const obj =
+		v.drawerCardMediaHeight && 'object' === typeof v.drawerCardMediaHeight
+			? v.drawerCardMediaHeight
+			: {};
 	const desktop = mediaHeightValue( obj.desktop );
 	const tablet = mediaHeightValue( obj.tablet ) || desktop;
 	const mobile = mediaHeightValue( obj.mobile ) || tablet;
 	const sel = `${ aside } .sgs-media-box--fill`;
-	const rule = ( value ) => `${ sel }{height:${ value };aspect-ratio:auto;max-height:none;}`;
+	const rule = ( value ) =>
+		`${ sel }{height:${ value };aspect-ratio:auto;max-height:none;}`;
 	let css = desktop ? rule( desktop ) : '';
-	css += tablet && tablet !== desktop ? `${ MEDIA_TABLET }{${ rule( tablet ) }}` : '';
-	css += mobile && mobile !== tablet ? `${ MEDIA_MOBILE }{${ rule( mobile ) }}` : '';
+	css +=
+		tablet && tablet !== desktop
+			? `${ MEDIA_TABLET }{${ rule( tablet ) }}`
+			: '';
+	css +=
+		mobile && mobile !== tablet
+			? `${ MEDIA_MOBILE }{${ rule( mobile ) }}`
+			: '';
 	return css;
 }
 
@@ -152,22 +184,55 @@ export function drawerMediaHeightPreviewCss( aside, v ) {
 export function drawerStackedPreviewCss( aside, cardDecls, v ) {
 	const pad = v.drawerCardPadding || '14px';
 	let css =
-		`${ aside }{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:${ v.drawerCardGap || '12px' };align-items:center;position:relative;overflow:hidden;flex:none;width:100%;padding:0;` +
+		`${ aside }{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:${
+			v.drawerCardGap || '12px'
+		};align-items:center;position:relative;overflow:hidden;flex:none;width:100%;padding:0;` +
 		( v.drawerCardRadius ? `border-radius:${ v.drawerCardRadius };` : '' ) +
 		`${ cardDecls }}`;
-	css += `${ cardSlotSel( aside, 1 ) }{grid-column:1 / -1;grid-row:1;width:100%;margin:0;}`;
-	css += `${ cardSlotSel( aside, 2 ) }{position:absolute;inset-block-start:12px;inset-inline-start:12px;z-index:1;margin:0;pointer-events:none;}`;
-	css += `${ cardSlotSel( aside, 3 ) }{grid-column:1;grid-row:2;margin:0;padding-block-start:${ pad };padding-inline-start:${ pad };}`;
-	css += `${ cardSlotSel( aside, 4 ) }{grid-column:1;grid-row:3;margin:4px 0 0;padding-block-end:${ pad };padding-inline-start:${ pad };}`;
-	css += `${ cardSlotSel( aside, 5 ) }{grid-column:2;grid-row:2 / span 2;margin:0;padding-inline-end:${ pad };}`;
-	css += `${ cardSlotSel( aside, 5, '.sgs-button' ) },${ cardSlotSel( aside, 5, ' .sgs-button' ) }{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;width:40px;height:40px;min-width:40px;padding:0;border-radius:50%;}`;
-	css += `${ cardSlotSel( aside, 5, ' .sgs-button__label' ) }{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}`;
+	css += `${ cardSlotSel(
+		aside,
+		1
+	) }{grid-column:1 / -1;grid-row:1;width:100%;margin:0;}`;
+	css += `${ cardSlotSel(
+		aside,
+		2
+	) }{position:absolute;inset-block-start:12px;inset-inline-start:12px;z-index:1;margin:0;pointer-events:none;}`;
+	css += `${ cardSlotSel(
+		aside,
+		3
+	) }{grid-column:1;grid-row:2;margin:0;padding-block-start:${ pad };padding-inline-start:${ pad };}`;
+	css += `${ cardSlotSel(
+		aside,
+		4
+	) }{grid-column:1;grid-row:3;margin:4px 0 0;padding-block-end:${ pad };padding-inline-start:${ pad };}`;
+	css += `${ cardSlotSel(
+		aside,
+		5
+	) }{grid-column:2;grid-row:2 / span 2;margin:0;padding-inline-end:${ pad };}`;
+	css += `${ cardSlotSel( aside, 5, '.sgs-button' ) },${ cardSlotSel(
+		aside,
+		5,
+		' .sgs-button'
+	) }{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;width:40px;height:40px;min-width:40px;padding:0;border-radius:50%;}`;
+	css += `${ cardSlotSel(
+		aside,
+		5,
+		' .sgs-button__label'
+	) }{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}`;
 	// A fill photo in the stacked card has no definite height: it takes its width and the chosen ratio (render.php: sgs_mega_panel_drawer_media_css()).
 	const ratio = String( v.drawerCardMediaRatio || '' ).trim();
-	css += `${ aside } .sgs-media-box--fill{height:auto;aspect-ratio:${ /^\d+(\.\d+)?\s*\/\s*\d+(\.\d+)?$/.test( ratio ) ? ratio : '2 / 1' };}`;
+	css += `${ aside } .sgs-media-box--fill{height:auto;aspect-ratio:${
+		/^\d+(\.\d+)?\s*\/\s*\d+(\.\d+)?$/.test( ratio ) ? ratio : '2 / 1'
+	};}`;
 	css += drawerMediaHeightPreviewCss( aside, v );
 	if ( v.drawerCardTitleSize || v.drawerCardTitleLineHeight ) {
-		css += `${ cardSlotSel( aside, 3 ) }{${ v.drawerCardTitleSize ? `font-size:${ v.drawerCardTitleSize };` : '' }${ v.drawerCardTitleLineHeight ? `line-height:${ v.drawerCardTitleLineHeight };` : '' }}`;
+		css += `${ cardSlotSel( aside, 3 ) }{${
+			v.drawerCardTitleSize ? `font-size:${ v.drawerCardTitleSize };` : ''
+		}${
+			v.drawerCardTitleLineHeight
+				? `line-height:${ v.drawerCardTitleLineHeight };`
+				: ''
+		}}`;
 	}
 	return css;
 }
@@ -181,9 +246,15 @@ export function drawerStackedPreviewCss( aside, cardDecls, v ) {
  * @return {string} CSS, or ''.
  */
 export function drawerCardLinkPreviewCss( aside, v ) {
-	const bg = v.drawerCardLinkBg ? colourVar( v.drawerCardLinkBg ) || v.drawerCardLinkBg : '';
-	const colour = v.drawerCardLinkColour ? colourVar( v.drawerCardLinkColour ) || v.drawerCardLinkColour : '';
-	const paint = ( bg ? `background-color:${ bg };` : '' ) + ( colour ? `color:${ colour };` : '' );
+	const bg = v.drawerCardLinkBg
+		? colourVar( v.drawerCardLinkBg ) || v.drawerCardLinkBg
+		: '';
+	const colour = v.drawerCardLinkColour
+		? colourVar( v.drawerCardLinkColour ) || v.drawerCardLinkColour
+		: '';
+	const paint =
+		( bg ? `background-color:${ bg };` : '' ) +
+		( colour ? `color:${ colour };` : '' );
 	let css = '';
 	if ( paint ) {
 		const last = `${ aside } > :last-child:not(.wp-block-sgs-container:nth-child(2))`;
@@ -211,7 +282,12 @@ export function drawerCardLinkPreviewCss( aside, v ) {
 export function drawerTagTypePreviewDecls( v ) {
 	const family = fontFamilyCssValue( v.drawerCardTagFontFamily );
 	const spacing = String( v.drawerCardTagLetterSpacing || '' ).trim();
-	return ( family ? `font-family:${ family };` : '' ) + ( spacing && SAFE_LENGTH_RE.test( spacing ) ? `letter-spacing:${ spacing };` : '' );
+	return (
+		( family ? `font-family:${ family };` : '' ) +
+		( spacing && SAFE_LENGTH_RE.test( spacing )
+			? `letter-spacing:${ spacing };`
+			: '' )
+	);
 }
 
 /**
@@ -224,12 +300,23 @@ export function drawerTagTypePreviewDecls( v ) {
  */
 export function drawerCardTagPreviewCss( aside, v ) {
 	const tagPad = padBox( v.drawerCardTagPadding );
-	const tagRadius = v.drawerCardTagRadius && SAFE_LENGTH_RE.test( v.drawerCardTagRadius ) ? `border-radius:${ v.drawerCardTagRadius };` : '';
+	const tagRadius =
+		v.drawerCardTagRadius && SAFE_LENGTH_RE.test( v.drawerCardTagRadius )
+			? `border-radius:${ v.drawerCardTagRadius };`
+			: '';
 	const tagType = drawerTagTypePreviewDecls( v );
 	if ( ! v.drawerCardTagSize && ! tagPad && ! tagRadius && ! tagType ) {
 		return '';
 	}
-	return `${ cardSlotSel( aside, 2, '.wp-block-sgs-label' ) },${ cardSlotSel( aside, 2, ' .wp-block-sgs-label' ) }{${ tagType }${ v.drawerCardTagSize ? `font-size:${ v.drawerCardTagSize };line-height:1.5;` : '' }${ tagRadius }${ tagPad }}`;
+	return `${ cardSlotSel( aside, 2, '.wp-block-sgs-label' ) },${ cardSlotSel(
+		aside,
+		2,
+		' .wp-block-sgs-label'
+	) }{${ tagType }${
+		v.drawerCardTagSize
+			? `font-size:${ v.drawerCardTagSize };line-height:1.5;`
+			: ''
+	}${ tagRadius }${ tagPad }}`;
 }
 
 /**
@@ -242,7 +329,9 @@ export function drawerCardTagPreviewCss( aside, v ) {
  * @return {string} CSS, or ''.
  */
 export function drawerCardDescPreviewCss( aside, v ) {
-	const colour = v.drawerCardDescColour ? colourVar( v.drawerCardDescColour ) || v.drawerCardDescColour : '';
+	const colour = v.drawerCardDescColour
+		? colourVar( v.drawerCardDescColour ) || v.drawerCardDescColour
+		: '';
 	if ( ! colour ) {
 		return '';
 	}
@@ -261,9 +350,16 @@ export function drawerTrailingPreviewCss( row, v ) {
 	if ( 'arrow' !== v.drawerLinkTrailingIcon ) {
 		return '';
 	}
-	const colour = v.drawerLinkTrailingColour ? colourVar( v.drawerLinkTrailingColour ) || v.drawerLinkTrailingColour : '';
-	const mask = "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14M13 6l6 6-6 6'/%3E%3C/svg%3E\")";
-	return `${ row } > .sgs-container__inner::after{content:"";flex:none;align-self:center;margin-inline-start:auto;width:16px;height:16px;background-color:${ colour || 'currentColor' };${ colour ? '' : 'opacity:.6;' }-webkit-mask:${ mask } center/contain no-repeat;mask:${ mask } center/contain no-repeat;}`;
+	const colour = v.drawerLinkTrailingColour
+		? colourVar( v.drawerLinkTrailingColour ) || v.drawerLinkTrailingColour
+		: '';
+	const mask =
+		"url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14M13 6l6 6-6 6'/%3E%3C/svg%3E\")";
+	return `${ row } > .sgs-container__inner::after{content:"";flex:none;align-self:center;margin-inline-start:auto;width:16px;height:16px;background-color:${
+		colour || 'currentColor'
+	};${
+		colour ? '' : 'opacity:.6;'
+	}-webkit-mask:${ mask } center/contain no-repeat;mask:${ mask } center/contain no-repeat;}`;
 }
 
 const EASING_CURVES = {
@@ -276,7 +372,10 @@ const EASING_CURVES = {
 	drafts: 'cubic-bezier(0.16, 0.84, 0.32, 1)',
 };
 
-const clampNumber = ( value, min, max ) => ( Number.isFinite( Number( value ) ) && '' !== value && null !== value ? Math.max( min, Math.min( max, Number( value ) ) ) : 0 );
+const clampNumber = ( value, min, max ) =>
+	Number.isFinite( Number( value ) ) && '' !== value && null !== value
+		? Math.max( min, Math.min( max, Number( value ) ) )
+		: 0;
 
 /**
  * The drawer's own hover (row text slide, trailing arrow colour, card lift, tilt and link nudge), twin of
@@ -292,13 +391,19 @@ export function drawerHoverPreviewCss( row, aside, v ) {
 	const lift = clampNumber( v.drawerCardHoverLift, 0, 40 );
 	const rotate = clampNumber( v.drawerCardHoverRotate, -15, 15 );
 	const nudge = clampNumber( v.drawerCardLinkShiftHover, 0, 40 );
-	const arrowRaw = 'arrow' === v.drawerLinkTrailingIcon ? v.drawerLinkTrailingColourHover : '';
+	const arrowRaw =
+		'arrow' === v.drawerLinkTrailingIcon
+			? v.drawerLinkTrailingColourHover
+			: '';
 	const arrow = arrowRaw ? colourVar( arrowRaw ) || arrowRaw : '';
 	if ( ! shift && ! lift && ! rotate && ! nudge && ! arrow ) {
 		return '';
 	}
 	const ms = clampNumber( v.drawerHoverDuration ?? 300, 0, 3000 );
-	const curve = 'custom' === v.drawerHoverEasing ? v.drawerHoverEasingCustom || 'ease' : EASING_CURVES[ v.drawerHoverEasing ] || 'ease';
+	const curve =
+		'custom' === v.drawerHoverEasing
+			? v.drawerHoverEasingCustom || 'ease'
+			: EASING_CURVES[ v.drawerHoverEasing ] || 'ease';
 	const time = `${ ms }ms ${ curve }`;
 	const text = `${ row } > .sgs-container__inner > .wp-block-sgs-container,${ row } > .wp-block-sgs-container`;
 	let css = '';
@@ -309,10 +414,16 @@ export function drawerHoverPreviewCss( row, aside, v ) {
 		css += `${ row } > .sgs-container__inner::after{transition:background-color ${ time },opacity ${ time };}${ row }:hover > .sgs-container__inner::after{background-color:${ arrow };opacity:1;}`;
 	}
 	if ( lift || rotate ) {
-		css += `${ aside }{transition:transform ${ time },rotate ${ time };}${ aside }:hover{${ lift ? `transform:translateY(-${ lift }px);` : '' }${ rotate ? `rotate:${ rotate }deg;` : '' }}`;
+		css += `${ aside }{transition:transform ${ time },rotate ${ time };}${ aside }:hover{${
+			lift ? `transform:translateY(-${ lift }px);` : ''
+		}${ rotate ? `rotate:${ rotate }deg;` : '' }}`;
 	}
 	if ( nudge ) {
-		css += `${ cardSlotSel( aside, 5, ' .sgs-button__icon' ) }{transition:transform ${ time };}${ aside }:hover > :last-child .sgs-button__icon,${ aside }:hover > .wp-block-sgs-container:nth-child(2):last-child > .sgs-container__inner > :last-child .sgs-button__icon{transform:translateX(${ nudge }px);}`;
+		css += `${ cardSlotSel(
+			aside,
+			5,
+			' .sgs-button__icon'
+		) }{transition:transform ${ time };}${ aside }:hover > :last-child .sgs-button__icon,${ aside }:hover > .wp-block-sgs-container:nth-child(2):last-child > .sgs-container__inner > :last-child .sgs-button__icon{transform:translateX(${ nudge }px);}`;
 	}
 	return css;
 }

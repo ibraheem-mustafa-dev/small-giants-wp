@@ -24,13 +24,17 @@ const LISTS = Object.freeze( [
 const VALUE_KINDS = Object.freeze( [ 'same-value', 'refused-value' ] );
 
 const clone = ( value ) => JSON.parse( JSON.stringify( value ) );
-const isPlain = ( v ) => v !== null && typeof v === 'object' && ! Array.isArray( v );
+const isPlain = ( v ) =>
+	v !== null && typeof v === 'object' && ! Array.isArray( v );
 
 function splitPath( path ) {
 	const bracket = path.indexOf( '[' );
 	return bracket === -1
 		? { list: path, index: null }
-		: { list: path.slice( 0, bracket ), index: parseInt( path.slice( bracket + 1 ), 10 ) };
+		: {
+				list: path.slice( 0, bracket ),
+				index: parseInt( path.slice( bracket + 1 ), 10 ),
+		  };
 }
 
 function rank( path ) {
@@ -81,7 +85,10 @@ function removePath( element, path ) {
 		}
 	}
 	[ 'hover', 'entrance' ].forEach( ( panel ) => {
-		if ( isPlain( out[ panel ] ) && Object.keys( out[ panel ] ).length === 0 ) {
+		if (
+			isPlain( out[ panel ] ) &&
+			Object.keys( out[ panel ] ).length === 0
+		) {
 			delete out[ panel ];
 		}
 	} );
@@ -99,7 +106,10 @@ function unsetIn( node, parts ) {
 
 function removeValue( element, path, valuePath ) {
 	const keys = path.split( '.' );
-	if ( keys.length !== 2 || ! isPlain( element?.[ keys[ 0 ] ]?.[ keys[ 1 ] ] ) ) {
+	if (
+		keys.length !== 2 ||
+		! isPlain( element?.[ keys[ 0 ] ]?.[ keys[ 1 ] ] )
+	) {
 		return removePath( element, path );
 	}
 	const out = clone( element );
@@ -119,7 +129,7 @@ function removeValue( element, path, valuePath ) {
 /**
  * Drop refused layers and values from one sanitised element, as the renderer does.
  *
- * @param {Object} element A sanitised element.
+ * @param {Object} element   A sanitised element.
  * @param {Object} [context] Facts about where the element sits (`parent-owned`).
  * @return {{element: Object, dropped: Array<{path: string, id: string, text: string}>}} The resolved element.
  */
@@ -139,7 +149,10 @@ export function resolveLayerDrops( element, context = {} ) {
 			id: first.id,
 			text: first.text,
 		} );
-		current = value === null ? removePath( current, later ) : removeValue( current, later, value );
+		current =
+			value === null
+				? removePath( current, later )
+				: removeValue( current, later, value );
 	}
 	return { element: current, dropped };
 }

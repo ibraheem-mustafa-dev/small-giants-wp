@@ -37,173 +37,178 @@ import { __ } from '@wordpress/i18n';
  * this without throwing any console errors.
  */
 if ( ! window.__sgsDeviceVisibilityRegistered ) {
-window.__sgsDeviceVisibilityRegistered = true;
+	window.__sgsDeviceVisibilityRegistered = true;
 
-/**
- * Check whether a block type supports the className prop.
- *
- * If a block explicitly sets supports.className to false,
- * there is nowhere to add our visibility class — skip it.
- *
- * @param {Object} settings Block settings object.
- * @return {boolean} True if the block supports className.
- */
-/**
- * `sgsCollapseVisibility` value → wrapper class. The header writes the rules
- * for these classes at its own burger-owning menu's collapse point
- * (site-header/render.php); the PHP twin is device-visibility.php.
- *
- * @type {Object<string,string>}
- */
-const COLLAPSE_CLASSES = {
-	hide: 'sgs-hide-collapsed',
-	only: 'sgs-only-collapsed',
-};
-
-function supportsClassName( settings ) {
-	if ( settings?.supports?.className === false ) {
-		return false;
-	}
-	return true;
-}
-
-/**
- * Inject visibility attributes into all block types.
- *
- * @param {Object} settings Block settings.
- * @param {string} name     Block name.
- * @return {Object} Modified settings with visibility attributes.
- */
-function addVisibilityAttributes( settings, name ) {
-	if ( ! supportsClassName( settings ) ) {
-		return settings;
-	}
-
-	return {
-		...settings,
-		attributes: {
-			...settings.attributes,
-			sgsHideOnMobile: { type: 'boolean', default: false },
-			sgsHideOnTablet: { type: 'boolean', default: false },
-			sgsHideOnDesktop: { type: 'boolean', default: false },
-			sgsCollapseVisibility: { type: 'string', default: '' },
-		},
+	/**
+	 * Check whether a block type supports the className prop.
+	 *
+	 * If a block explicitly sets supports.className to false,
+	 * there is nowhere to add our visibility class — skip it.
+	 *
+	 * @param {Object} settings Block settings object.
+	 * @return {boolean} True if the block supports className.
+	 */
+	/**
+	 * `sgsCollapseVisibility` value → wrapper class. The header writes the rules
+	 * for these classes at its own burger-owning menu's collapse point
+	 * (site-header/render.php); the PHP twin is device-visibility.php.
+	 *
+	 * @type {Object<string,string>}
+	 */
+	const COLLAPSE_CLASSES = {
+		hide: 'sgs-hide-collapsed',
+		only: 'sgs-only-collapsed',
 	};
-}
 
-addFilter(
-	'blocks.registerBlockType',
-	'sgs/device-visibility-attributes',
-	addVisibilityAttributes
-);
+	function supportsClassName( settings ) {
+		if ( settings?.supports?.className === false ) {
+			return false;
+		}
+		return true;
+	}
 
-/**
- * Add visibility CSS classes to the block wrapper for static blocks.
- *
- * This filter runs on save (blocks.getSaveContent.extraProps) and adds
- * the appropriate sgs-hide-* classes to the saved HTML. For dynamic
- * blocks, the server-side render_block filter handles this instead.
- *
- * @param {Object} props      Block wrapper props.
- * @param {Object} blockType  Block type definition.
- * @param {Object} attributes Block attributes.
- * @return {Object} Modified props with visibility classes.
- */
-function addVisibilityClasses( props, blockType, attributes ) {
-	if ( blockType?.supports?.className === false ) {
+	/**
+	 * Inject visibility attributes into all block types.
+	 *
+	 * @param {Object} settings Block settings.
+	 * @param {string} name     Block name.
+	 * @return {Object} Modified settings with visibility attributes.
+	 */
+	function addVisibilityAttributes( settings, name ) {
+		if ( ! supportsClassName( settings ) ) {
+			return settings;
+		}
+
+		return {
+			...settings,
+			attributes: {
+				...settings.attributes,
+				sgsHideOnMobile: { type: 'boolean', default: false },
+				sgsHideOnTablet: { type: 'boolean', default: false },
+				sgsHideOnDesktop: { type: 'boolean', default: false },
+				sgsCollapseVisibility: { type: 'string', default: '' },
+			},
+		};
+	}
+
+	addFilter(
+		'blocks.registerBlockType',
+		'sgs/device-visibility-attributes',
+		addVisibilityAttributes
+	);
+
+	/**
+	 * Add visibility CSS classes to the block wrapper for static blocks.
+	 *
+	 * This filter runs on save (blocks.getSaveContent.extraProps) and adds
+	 * the appropriate sgs-hide-* classes to the saved HTML. For dynamic
+	 * blocks, the server-side render_block filter handles this instead.
+	 *
+	 * @param {Object} props      Block wrapper props.
+	 * @param {Object} blockType  Block type definition.
+	 * @param {Object} attributes Block attributes.
+	 * @return {Object} Modified props with visibility classes.
+	 */
+	function addVisibilityClasses( props, blockType, attributes ) {
+		if ( blockType?.supports?.className === false ) {
+			return props;
+		}
+
+		const classes = [];
+		if ( attributes.sgsHideOnMobile ) {
+			classes.push( 'sgs-hide-mobile' );
+		}
+		if ( attributes.sgsHideOnTablet ) {
+			classes.push( 'sgs-hide-tablet' );
+		}
+		if ( attributes.sgsHideOnDesktop ) {
+			classes.push( 'sgs-hide-desktop' );
+		}
+		const collapseClass =
+			COLLAPSE_CLASSES[ attributes.sgsCollapseVisibility ];
+		if ( collapseClass ) {
+			classes.push( collapseClass );
+		}
+
+		if ( classes.length ) {
+			return {
+				...props,
+				className: [ props.className, ...classes ]
+					.filter( Boolean )
+					.join( ' ' ),
+			};
+		}
+
 		return props;
 	}
 
-	const classes = [];
-	if ( attributes.sgsHideOnMobile ) {
-		classes.push( 'sgs-hide-mobile' );
-	}
-	if ( attributes.sgsHideOnTablet ) {
-		classes.push( 'sgs-hide-tablet' );
-	}
-	if ( attributes.sgsHideOnDesktop ) {
-		classes.push( 'sgs-hide-desktop' );
-	}
-	const collapseClass = COLLAPSE_CLASSES[ attributes.sgsCollapseVisibility ];
-	if ( collapseClass ) {
-		classes.push( collapseClass );
-	}
+	addFilter(
+		'blocks.getSaveContent.extraProps',
+		'sgs/device-visibility-classes',
+		addVisibilityClasses
+	);
 
-	if ( classes.length ) {
-		return {
-			...props,
-			className: [ props.className, ...classes ]
-				.filter( Boolean )
-				.join( ' ' ),
-		};
-	}
+	/**
+	 * Add visual indicators in the editor when a block is hidden
+	 * on one or more devices (reduced opacity + dashed border).
+	 */
+	const withVisibilityEditorStyles = createHigherOrderComponent(
+		( BlockListBlock ) => {
+			return ( props ) => {
+				const { attributes } = props;
+				const isHidden =
+					attributes.sgsHideOnMobile ||
+					attributes.sgsHideOnTablet ||
+					attributes.sgsHideOnDesktop ||
+					!! COLLAPSE_CLASSES[ attributes.sgsCollapseVisibility ];
 
-	return props;
-}
+				if ( ! isHidden ) {
+					return <BlockListBlock { ...props } />;
+				}
 
-addFilter(
-	'blocks.getSaveContent.extraProps',
-	'sgs/device-visibility-classes',
-	addVisibilityClasses
-);
+				// Build a label showing which devices are hidden.
+				const hiddenOn = [];
+				if ( attributes.sgsHideOnMobile ) {
+					hiddenOn.push( __( 'mobile', 'sgs-blocks' ) );
+				}
+				if ( attributes.sgsHideOnTablet ) {
+					hiddenOn.push( __( 'tablet', 'sgs-blocks' ) );
+				}
+				if ( attributes.sgsHideOnDesktop ) {
+					hiddenOn.push( __( 'desktop', 'sgs-blocks' ) );
+				}
+				if ( 'hide' === attributes.sgsCollapseVisibility ) {
+					hiddenOn.push( __( 'burger menu', 'sgs-blocks' ) );
+				}
+				if ( 'only' === attributes.sgsCollapseVisibility ) {
+					hiddenOn.push( __( 'full menu', 'sgs-blocks' ) );
+				}
 
-/**
- * Add visual indicators in the editor when a block is hidden
- * on one or more devices (reduced opacity + dashed border).
- */
-const withVisibilityEditorStyles = createHigherOrderComponent(
-	( BlockListBlock ) => {
-		return ( props ) => {
-			const { attributes } = props;
-			const isHidden =
-				attributes.sgsHideOnMobile ||
-				attributes.sgsHideOnTablet ||
-				attributes.sgsHideOnDesktop ||
-				!! COLLAPSE_CLASSES[ attributes.sgsCollapseVisibility ];
+				const wrapperProps = {
+					...( props.wrapperProps || {} ),
+					style: {
+						...( props.wrapperProps?.style || {} ),
+						opacity: 0.5,
+						border: '1px dashed var(--wp-admin-theme-color, #007cba)',
+						position: 'relative',
+					},
+					'data-sgs-hidden-on': hiddenOn.join( ', ' ),
+				};
 
-			if ( ! isHidden ) {
-				return <BlockListBlock { ...props } />;
-			}
-
-			// Build a label showing which devices are hidden.
-			const hiddenOn = [];
-			if ( attributes.sgsHideOnMobile ) {
-				hiddenOn.push( __( 'mobile', 'sgs-blocks' ) );
-			}
-			if ( attributes.sgsHideOnTablet ) {
-				hiddenOn.push( __( 'tablet', 'sgs-blocks' ) );
-			}
-			if ( attributes.sgsHideOnDesktop ) {
-				hiddenOn.push( __( 'desktop', 'sgs-blocks' ) );
-			}
-			if ( 'hide' === attributes.sgsCollapseVisibility ) {
-				hiddenOn.push( __( 'burger menu', 'sgs-blocks' ) );
-			}
-			if ( 'only' === attributes.sgsCollapseVisibility ) {
-				hiddenOn.push( __( 'full menu', 'sgs-blocks' ) );
-			}
-
-			const wrapperProps = {
-				...( props.wrapperProps || {} ),
-				style: {
-					...( props.wrapperProps?.style || {} ),
-					opacity: 0.5,
-					border: '1px dashed var(--wp-admin-theme-color, #007cba)',
-					position: 'relative',
-				},
-				'data-sgs-hidden-on': hiddenOn.join( ', ' ),
+				return (
+					<BlockListBlock
+						{ ...props }
+						wrapperProps={ wrapperProps }
+					/>
+				);
 			};
+		},
+		'withDeviceVisibilityEditorStyles'
+	);
 
-			return <BlockListBlock { ...props } wrapperProps={ wrapperProps } />;
-		};
-	},
-	'withDeviceVisibilityEditorStyles'
-);
-
-addFilter(
-	'editor.BlockListBlock',
-	'sgs/device-visibility-editor-styles',
-	withVisibilityEditorStyles
-);
-
+	addFilter(
+		'editor.BlockListBlock',
+		'sgs/device-visibility-editor-styles',
+		withVisibilityEditorStyles
+	);
 } // end guard: window.__sgsDeviceVisibilityRegistered

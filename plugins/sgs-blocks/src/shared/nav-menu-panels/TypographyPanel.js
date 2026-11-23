@@ -42,7 +42,10 @@ export default function TypographyPanel( {
 	setAttributes,
 } ) {
 	return (
-		<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Typography', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			{ children }
 
 			{ /* ⛔ The hover trio above is an OPTIONAL SECONDARY DECORATION. It is not
@@ -84,7 +87,9 @@ export default function TypographyPanel( {
 				label={ __( 'Current-page weight', 'sgs-blocks' ) }
 				value={ itemFontWeightCurrent ?? '600' }
 				options={ SGS_FONT_WEIGHT_OPTIONS }
-				onChange={ ( val ) => setAttributes( { itemFontWeightCurrent: val } ) }
+				onChange={ ( val ) =>
+					setAttributes( { itemFontWeightCurrent: val } )
+				}
 				help={ __(
 					'Makes the link for the page someone is on heavier than the rest, so they can tell where they are without relying on colour. Its hover counterpart is the item border’s own hover setting in the Colour panel.',
 					'sgs-blocks'

@@ -11,10 +11,10 @@ import { sgsBorderPreview } from './border-preview';
 /**
  * Border, border colour and radius for a block's outer wrapper.
  *
- * @param {Object}  attributes Block attributes.
- * @param {string}  tier       Previewed device tier.
- * @param {Array}   palette    Theme colour palette.
- * @param {Object}  [options]  Forwarded to sgsBorderPreview().
+ * @param {Object} attributes Block attributes.
+ * @param {string} tier       Previewed device tier.
+ * @param {Array}  palette    Theme colour palette.
+ * @param {Object} [options]  Forwarded to sgsBorderPreview().
  * @return {Object} React style fragment.
  */
 export function wrapperBorderPreview( attributes, tier, palette, options ) {

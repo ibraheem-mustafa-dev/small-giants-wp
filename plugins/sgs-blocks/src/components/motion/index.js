@@ -37,7 +37,11 @@ export {
 } from './PerDeviceAtom';
 export { default as CustomisedTag } from './CustomisedTag';
 export { presetValueFor, sameValue } from './atom-utils';
-export { default as TargetPicker, targetOptions, ROOT_TARGET } from './TargetPicker';
+export {
+	default as TargetPicker,
+	targetOptions,
+	ROOT_TARGET,
+} from './TargetPicker';
 export { default as TriggerPicker, triggersFor } from './TriggerPicker';
 export {
 	default as IntensityPicker,

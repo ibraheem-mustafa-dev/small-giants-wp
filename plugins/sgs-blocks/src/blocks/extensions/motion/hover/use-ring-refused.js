@@ -17,10 +17,19 @@ import { ringRefused } from '../canvas/emit-ring';
  * @param {string}      target    The panel's target.
  * @return {boolean} True when the ring is refused for the target.
  */
-export default function useRingRefused( clientId, blockName, elements, target ) {
+export default function useRingRefused(
+	clientId,
+	blockName,
+	elements,
+	target
+) {
 	return useSelect(
 		( select ) =>
-			ringRefused( elements, target, select( 'core/block-editor' )?.getBlockAttributes?.( clientId ) ),
+			ringRefused(
+				elements,
+				target,
+				select( 'core/block-editor' )?.getBlockAttributes?.( clientId )
+			),
 		[ clientId, blockName, elements, target ]
 	);
 }

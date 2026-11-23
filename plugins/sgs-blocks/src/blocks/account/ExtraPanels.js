@@ -6,49 +6,189 @@
  */
 import { __ } from '@wordpress/i18n';
 import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
-import { ResponsiveOverride, SgsBorderControl, SgsLengthControl, ShadowControl } from '../../components';
+import {
+	ResponsiveOverride,
+	SgsBorderControl,
+	SgsLengthControl,
+	ShadowControl,
+} from '../../components';
 import { Choice, TextField, TierBox, Toggle } from './extraControls';
 
 const WORDING = [
-	[ 'signIn', __( 'Sign in button (WooCommerce: Log in)', 'sgs-blocks' ), 'Log in' ],
-	[ 'signInHeading', __( 'Sign in panel heading (WooCommerce: Login)', 'sgs-blocks' ), 'Login' ],
-	[ 'registerHeading', __( 'Register panel heading', 'sgs-blocks' ), 'Register' ],
-	[ 'usernameLabel', __( 'Sign in field label', 'sgs-blocks' ), 'Username or email address' ],
-	[ 'passwordLabel', __( 'Sign in password field label', 'sgs-blocks' ), 'Password' ],
-	[ 'lostUsernameLabel', __( 'Lost password field label', 'sgs-blocks' ), 'Username or email' ],
+	[
+		'signIn',
+		__( 'Sign in button (WooCommerce: Log in)', 'sgs-blocks' ),
+		'Log in',
+	],
+	[
+		'signInHeading',
+		__( 'Sign in panel heading (WooCommerce: Login)', 'sgs-blocks' ),
+		'Login',
+	],
+	[
+		'registerHeading',
+		__( 'Register panel heading', 'sgs-blocks' ),
+		'Register',
+	],
+	[
+		'usernameLabel',
+		__( 'Sign in field label', 'sgs-blocks' ),
+		'Username or email address',
+	],
+	[
+		'passwordLabel',
+		__( 'Sign in password field label', 'sgs-blocks' ),
+		'Password',
+	],
+	[
+		'lostUsernameLabel',
+		__( 'Lost password field label', 'sgs-blocks' ),
+		'Username or email',
+	],
 	[ 'rememberMe', __( 'Remember me', 'sgs-blocks' ), 'Remember me' ],
-	[ 'lostPassword', __( 'Lost password link', 'sgs-blocks' ), 'Lost your password?' ],
-	[ 'resetPassword', __( 'Reset password button', 'sgs-blocks' ), 'Reset password' ],
+	[
+		'lostPassword',
+		__( 'Lost password link', 'sgs-blocks' ),
+		'Lost your password?',
+	],
+	[
+		'resetPassword',
+		__( 'Reset password button', 'sgs-blocks' ),
+		'Reset password',
+	],
 	[ 'register', __( 'Register button', 'sgs-blocks' ), 'Register' ],
-	[ 'registerEmailLabel', __( 'Email field label (register form and account details)', 'sgs-blocks' ), 'Email address' ],
-	[ 'registerPasswordLabel', __( 'Register password field label', 'sgs-blocks' ), 'Password' ],
-	[ 'registerPasswordPlaceholder', __( 'Register password field placeholder', 'sgs-blocks' ), '' ],
-	[ 'newPasswordLabel', __( 'New password field label', 'sgs-blocks' ), 'New password (leave blank to leave unchanged)' ],
-	[ 'confirmPasswordLabel', __( 'Confirm new password field label', 'sgs-blocks' ), 'Confirm new password' ],
-	[ 'currentPasswordLabel', __( 'Current password field label', 'sgs-blocks' ), 'Current password (leave blank to leave unchanged)' ],
+	[
+		'registerEmailLabel',
+		__(
+			'Email field label (register form and account details)',
+			'sgs-blocks'
+		),
+		'Email address',
+	],
+	[
+		'registerPasswordLabel',
+		__( 'Register password field label', 'sgs-blocks' ),
+		'Password',
+	],
+	[
+		'registerPasswordPlaceholder',
+		__( 'Register password field placeholder', 'sgs-blocks' ),
+		'',
+	],
+	[
+		'newPasswordLabel',
+		__( 'New password field label', 'sgs-blocks' ),
+		'New password (leave blank to leave unchanged)',
+	],
+	[
+		'confirmPasswordLabel',
+		__( 'Confirm new password field label', 'sgs-blocks' ),
+		'Confirm new password',
+	],
+	[
+		'currentPasswordLabel',
+		__( 'Current password field label', 'sgs-blocks' ),
+		'Current password (leave blank to leave unchanged)',
+	],
 	[ 'signOut', __( 'Sign out (menu)', 'sgs-blocks' ), 'Log out' ],
 	[ 'orders', __( 'Orders (menu)', 'sgs-blocks' ), 'Orders' ],
 	[ 'addresses', __( 'Addresses (menu)', 'sgs-blocks' ), 'Addresses' ],
-	[ 'accountDetails', __( 'Account details (menu)', 'sgs-blocks' ), 'Account details' ],
+	[
+		'accountDetails',
+		__( 'Account details (menu)', 'sgs-blocks' ),
+		'Account details',
+	],
 	[ 'savedItems', __( 'Saved items (menu)', 'sgs-blocks' ), 'Saved items' ],
-	[ 'passwordMismatch', __( 'Reset form: passwords do not match line', 'sgs-blocks' ), 'Passwords do not match.' ],
-	[ 'billingAddress', __( 'Billing address title', 'sgs-blocks' ), 'Billing address' ],
-	[ 'shippingAddress', __( 'Shipping address title', 'sgs-blocks' ), 'Shipping address' ],
-	[ 'addAddressLink', __( 'Add address link (whole text; %s is the address title)', 'sgs-blocks' ), 'Add %s' ],
-	[ 'editAddressLink', __( 'Edit address link (whole text; %s is the address title)', 'sgs-blocks' ), 'Edit %s' ],
-	[ 'passwordChange', __( 'Password change heading', 'sgs-blocks' ), 'Password change' ],
-	[ 'updatePassword', __( 'Password change button (account details page)', 'sgs-blocks' ), 'Update password' ],
-	[ 'resetConfirmLabel', __( 'Choose a new password: repeat field label', 'sgs-blocks' ), 'Re-enter new password' ],
-	[ 'savePassword', __( 'Choose a new password: button', 'sgs-blocks' ), 'Save' ],
+	[
+		'passwordMismatch',
+		__( 'Reset form: passwords do not match line', 'sgs-blocks' ),
+		'Passwords do not match.',
+	],
+	[
+		'billingAddress',
+		__( 'Billing address title', 'sgs-blocks' ),
+		'Billing address',
+	],
+	[
+		'shippingAddress',
+		__( 'Shipping address title', 'sgs-blocks' ),
+		'Shipping address',
+	],
+	[
+		'addAddressLink',
+		__(
+			'Add address link (whole text; %s is the address title)',
+			'sgs-blocks'
+		),
+		'Add %s',
+	],
+	[
+		'editAddressLink',
+		__(
+			'Edit address link (whole text; %s is the address title)',
+			'sgs-blocks'
+		),
+		'Edit %s',
+	],
+	[
+		'passwordChange',
+		__( 'Password change heading', 'sgs-blocks' ),
+		'Password change',
+	],
+	[
+		'updatePassword',
+		__( 'Password change button (account details page)', 'sgs-blocks' ),
+		'Update password',
+	],
+	[
+		'resetConfirmLabel',
+		__( 'Choose a new password: repeat field label', 'sgs-blocks' ),
+		'Re-enter new password',
+	],
+	[
+		'savePassword',
+		__( 'Choose a new password: button', 'sgs-blocks' ),
+		'Save',
+	],
 ];
 
 // [ view, label, eyebrow attribute, title attribute, intro attribute ]
 const VIEWS = [
-	[ 'headerSignIn', __( 'Sign in page', 'sgs-blocks' ), 'headerSignInEyebrow', 'headerSignInTitle', 'headerSignInIntro' ],
-	[ 'headerLost', __( 'Lost password page', 'sgs-blocks' ), 'headerLostEyebrow', 'headerLostTitle', 'headerLostIntro' ],
-	[ 'headerLostSent', __( 'Lost password: email sent', 'sgs-blocks' ), '', 'headerLostSentTitle', 'headerLostSentIntro' ],
-	[ 'headerLostReset', __( 'Lost password: choose a new one', 'sgs-blocks' ), '', 'headerLostResetTitle', 'headerLostResetIntro' ],
-	[ 'headerAccount', __( 'Signed-in account', 'sgs-blocks' ), 'headerAccountEyebrow', 'headerAccountTitle', 'headerAccountIntro' ],
+	[
+		'headerSignIn',
+		__( 'Sign in page', 'sgs-blocks' ),
+		'headerSignInEyebrow',
+		'headerSignInTitle',
+		'headerSignInIntro',
+	],
+	[
+		'headerLost',
+		__( 'Lost password page', 'sgs-blocks' ),
+		'headerLostEyebrow',
+		'headerLostTitle',
+		'headerLostIntro',
+	],
+	[
+		'headerLostSent',
+		__( 'Lost password: email sent', 'sgs-blocks' ),
+		'',
+		'headerLostSentTitle',
+		'headerLostSentIntro',
+	],
+	[
+		'headerLostReset',
+		__( 'Lost password: choose a new one', 'sgs-blocks' ),
+		'',
+		'headerLostResetTitle',
+		'headerLostResetIntro',
+	],
+	[
+		'headerAccount',
+		__( 'Signed-in account', 'sgs-blocks' ),
+		'headerAccountEyebrow',
+		'headerAccountTitle',
+		'headerAccountIntro',
+	],
 ];
 
 /**
@@ -58,10 +198,21 @@ const VIEWS = [
  * @return {JSX.Element} The Wording panel.
  */
 export function WordingPanel( { attributes, setAttributes } ) {
-	const strings = attributes.strings && 'object' === typeof attributes.strings ? attributes.strings : {};
+	const strings =
+		attributes.strings && 'object' === typeof attributes.strings
+			? attributes.strings
+			: {};
 	return (
-		<PanelBody title={ __( 'Wording', 'sgs-blocks' ) } initialOpen={ false }>
-			<p>{ __( 'Replace WooCommerce’s wording in this block only. Leave a field empty to keep the default. A trailing arrow such as “Sign in →” works.', 'sgs-blocks' ) }</p>
+		<PanelBody
+			title={ __( 'Wording', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
+			<p>
+				{ __(
+					'Replace WooCommerce’s wording in this block only. Leave a field empty to keep the default. A trailing arrow such as “Sign in →” works.',
+					'sgs-blocks'
+				) }
+			</p>
 			{ WORDING.map( ( [ key, label, placeholder ] ) => (
 				<TextControl
 					key={ key }
@@ -92,7 +243,10 @@ export function WordingPanel( { attributes, setAttributes } ) {
 export function HeaderPanel( { attributes, setAttributes } ) {
 	const p = { attributes, setAttributes };
 	return (
-		<PanelBody title={ __( 'Page header', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Page header', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			<Choice
 				{ ...p }
 				name="headerTitleTag"
@@ -105,18 +259,55 @@ export function HeaderPanel( { attributes, setAttributes } ) {
 			/>
 			{ VIEWS.map( ( [ prefix, label, eyebrow, title, intro ] ) => (
 				<PanelBody key={ prefix } title={ label } initialOpen={ false }>
-					{ '' !== eyebrow && <TextField { ...p } name={ eyebrow } label={ __( 'Eyebrow', 'sgs-blocks' ) } /> }
+					{ '' !== eyebrow && (
+						<TextField
+							{ ...p }
+							name={ eyebrow }
+							label={ __( 'Eyebrow', 'sgs-blocks' ) }
+						/>
+					) }
 					<TextField
 						{ ...p }
 						name={ title }
 						label={ __( 'Title', 'sgs-blocks' ) }
-						help={ 'headerAccount' === prefix ? __( 'Use {first_name} for the customer’s first name.', 'sgs-blocks' ) : undefined }
+						help={
+							'headerAccount' === prefix
+								? __(
+										'Use {first_name} for the customer’s first name.',
+										'sgs-blocks'
+								  )
+								: undefined
+						}
 					/>
-					{ '' !== intro && <TextField { ...p } name={ intro } label={ __( 'Intro line', 'sgs-blocks' ) } /> }
+					{ '' !== intro && (
+						<TextField
+							{ ...p }
+							name={ intro }
+							label={ __( 'Intro line', 'sgs-blocks' ) }
+						/>
+					) }
 					{ 'headerLost' === prefix && (
 						<>
-							<TextField { ...p } name="headerLostBackLabel" label={ __( 'Back to sign in link', 'sgs-blocks' ) } />
-							<Toggle { ...p } name="resetErrorsInline" label={ __( 'Reset form errors under the fields', 'sgs-blocks' ) } help={ __( 'The choose-a-new-password form shows its errors as text under the fields, not a boxed notice above. Off = WooCommerce’s own form.', 'sgs-blocks' ) } />
+							<TextField
+								{ ...p }
+								name="headerLostBackLabel"
+								label={ __(
+									'Back to sign in link',
+									'sgs-blocks'
+								) }
+							/>
+							<Toggle
+								{ ...p }
+								name="resetErrorsInline"
+								label={ __(
+									'Reset form errors under the fields',
+									'sgs-blocks'
+								) }
+								help={ __(
+									'The choose-a-new-password form shows its errors as text under the fields, not a boxed notice above. Off = WooCommerce’s own form.',
+									'sgs-blocks'
+								) }
+							/>
 						</>
 					) }
 					{ 'headerAccount' === prefix && (
@@ -125,9 +316,19 @@ export function HeaderPanel( { attributes, setAttributes } ) {
 								{ ...p }
 								name="headerAccountMeta"
 								label={ __( 'Right-hand line', 'sgs-blocks' ) }
-								help={ __( 'For example “Signed in as {email}”.', 'sgs-blocks' ) }
+								help={ __(
+									'For example “Signed in as {email}”.',
+									'sgs-blocks'
+								) }
 							/>
-							<Toggle { ...p } name="headerAccountRule" label={ __( 'Rule under the header', 'sgs-blocks' ) } />
+							<Toggle
+								{ ...p }
+								name="headerAccountRule"
+								label={ __(
+									'Rule under the header',
+									'sgs-blocks'
+								) }
+							/>
 						</>
 					) }
 				</PanelBody>
@@ -146,24 +347,100 @@ export function AddressesPanel( { attributes, setAttributes } ) {
 	const p = { attributes, setAttributes };
 	const radius = attributes.addressCardBorderRadius;
 	return (
-		<PanelBody title={ __( 'Address cards', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Address cards', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			<Toggle
 				{ ...p }
 				name="addressEditor"
 				label={ __( 'Edit addresses inside the cards', 'sgs-blocks' ) }
-				help={ __( 'Replaces WooCommerce’s address list and address page: each card opens its own form and saves through WooCommerce. Off = WooCommerce’s own screens.', 'sgs-blocks' ) }
+				help={ __(
+					'Replaces WooCommerce’s address list and address page: each card opens its own form and saves through WooCommerce. Off = WooCommerce’s own screens.',
+					'sgs-blocks'
+				) }
 			/>
 			{ attributes.addressEditor && (
 				<>
-					<TextField { ...p } name="addressEditLabel" label={ __( 'Edit link', 'sgs-blocks' ) } help={ __( 'Empty = “Edit” plus the card title.', 'sgs-blocks' ) } />
-					<TextField { ...p } name="addressAddLabel" label={ __( 'Add link (card with no address)', 'sgs-blocks' ) } help={ __( 'Empty = “Add” plus the card title.', 'sgs-blocks' ) } />
-					<TextField { ...p } name="addressSaveLabel" label={ __( 'Save button', 'sgs-blocks' ) } />
-					<TextField { ...p } name="addressCancelLabel" label={ __( 'Cancel link', 'sgs-blocks' ) } />
-					<TextField { ...p } name="addressLine1Label" label={ __( 'First address line label', 'sgs-blocks' ) } help={ __( 'For example “Address”. Empty = WooCommerce’s own label.', 'sgs-blocks' ) } />
-					<TextField { ...p } name="addressCityLabel" label={ __( 'Town field label', 'sgs-blocks' ) } help={ __( 'For example “Town or city”. Empty = WooCommerce’s own label.', 'sgs-blocks' ) } />
-					<TextField { ...p } name="addressLine2Label" label={ __( 'Second address line label', 'sgs-blocks' ) } help={ __( 'For example “Flat / building”. Empty = WooCommerce’s own label.', 'sgs-blocks' ) } />
-					<TextField { ...p } name="addressPairs" label={ __( 'Fields side by side', 'sgs-blocks' ) } help={ __( 'Comma-separated, for example “city, postcode”. First and last name already sit together.', 'sgs-blocks' ) } />
-					<TextField { ...p } name="addressHideFields" label={ __( 'Fields to leave out', 'sgs-blocks' ) } help={ __( 'Comma-separated, for example “company, state”. A left-out field keeps its saved value (the billing email falls back to the account email), so a required one still passes WooCommerce’s check.', 'sgs-blocks' ) } />
+					<TextField
+						{ ...p }
+						name="addressEditLabel"
+						label={ __( 'Edit link', 'sgs-blocks' ) }
+						help={ __(
+							'Empty = “Edit” plus the card title.',
+							'sgs-blocks'
+						) }
+					/>
+					<TextField
+						{ ...p }
+						name="addressAddLabel"
+						label={ __(
+							'Add link (card with no address)',
+							'sgs-blocks'
+						) }
+						help={ __(
+							'Empty = “Add” plus the card title.',
+							'sgs-blocks'
+						) }
+					/>
+					<TextField
+						{ ...p }
+						name="addressSaveLabel"
+						label={ __( 'Save button', 'sgs-blocks' ) }
+					/>
+					<TextField
+						{ ...p }
+						name="addressCancelLabel"
+						label={ __( 'Cancel link', 'sgs-blocks' ) }
+					/>
+					<TextField
+						{ ...p }
+						name="addressLine1Label"
+						label={ __( 'First address line label', 'sgs-blocks' ) }
+						help={ __(
+							'For example “Address”. Empty = WooCommerce’s own label.',
+							'sgs-blocks'
+						) }
+					/>
+					<TextField
+						{ ...p }
+						name="addressCityLabel"
+						label={ __( 'Town field label', 'sgs-blocks' ) }
+						help={ __(
+							'For example “Town or city”. Empty = WooCommerce’s own label.',
+							'sgs-blocks'
+						) }
+					/>
+					<TextField
+						{ ...p }
+						name="addressLine2Label"
+						label={ __(
+							'Second address line label',
+							'sgs-blocks'
+						) }
+						help={ __(
+							'For example “Flat / building”. Empty = WooCommerce’s own label.',
+							'sgs-blocks'
+						) }
+					/>
+					<TextField
+						{ ...p }
+						name="addressPairs"
+						label={ __( 'Fields side by side', 'sgs-blocks' ) }
+						help={ __(
+							'Comma-separated, for example “city, postcode”. First and last name already sit together.',
+							'sgs-blocks'
+						) }
+					/>
+					<TextField
+						{ ...p }
+						name="addressHideFields"
+						label={ __( 'Fields to leave out', 'sgs-blocks' ) }
+						help={ __(
+							'Comma-separated, for example “company, state”. A left-out field keeps its saved value (the billing email falls back to the account email), so a required one still passes WooCommerce’s check.',
+							'sgs-blocks'
+						) }
+					/>
 				</>
 			) }
 			<TextField
@@ -175,22 +452,41 @@ export function AddressesPanel( { attributes, setAttributes } ) {
 				{ ...p }
 				name="addressEmptyText"
 				label={ __( 'Line in a card with no address', 'sgs-blocks' ) }
-				help={ __( '{type} becomes the card title without the word address, for example “No {type} address saved yet.”', 'sgs-blocks' ) }
+				help={ __(
+					'{type} becomes the card title without the word address, for example “No {type} address saved yet.”',
+					'sgs-blocks'
+				) }
 			/>
 			<TextField
 				{ ...p }
 				name="addressSameText"
-				label={ __( 'Line in an empty billing card while a delivery address is saved', 'sgs-blocks' ) }
-				help={ __( 'For example “Same as delivery address”.', 'sgs-blocks' ) }
+				label={ __(
+					'Line in an empty billing card while a delivery address is saved',
+					'sgs-blocks'
+				) }
+				help={ __(
+					'For example “Same as delivery address”.',
+					'sgs-blocks'
+				) }
 			/>
 			<SgsBorderControl
 				widthValues={ attributes.addressCardBorderWidth ?? {} }
-				onWidthChange={ ( next ) => setAttributes( { addressCardBorderWidth: next } ) }
+				onWidthChange={ ( next ) =>
+					setAttributes( { addressCardBorderWidth: next } )
+				}
 				styleValue={ attributes.addressCardBorderStyle }
-				onStyleChange={ ( val ) => setAttributes( { addressCardBorderStyle: val || undefined } ) }
+				onStyleChange={ ( val ) =>
+					setAttributes( {
+						addressCardBorderStyle: val || undefined,
+					} )
+				}
 				colourLabel={ __( 'Card border colour', 'sgs-blocks' ) }
 				colourValue={ attributes.addressCardBorderColour }
-				onColourChange={ ( val ) => setAttributes( { addressCardBorderColour: val || undefined } ) }
+				onColourChange={ ( val ) =>
+					setAttributes( {
+						addressCardBorderColour: val || undefined,
+					} )
+				}
 				colourLinked
 				radiusValues={ {
 					base: radius?.desktop ?? {},
@@ -199,16 +495,25 @@ export function AddressesPanel( { attributes, setAttributes } ) {
 				} }
 				onRadiusChange={ ( tier, next ) => {
 					const key = 'base' === tier ? 'desktop' : tier;
-					setAttributes( { addressCardBorderRadius: { ...radius, [ key ]: next } } );
+					setAttributes( {
+						addressCardBorderRadius: { ...radius, [ key ]: next },
+					} );
 				} }
 			/>
 			<ShadowControl
 				label={ __( 'Card shadow', 'sgs-blocks' ) }
 				attributes={ attributes }
 				setAttributes={ setAttributes }
-				attrNames={ { base: 'addressCardShadow', colour: 'addressCardShadowColour' } }
+				attrNames={ {
+					base: 'addressCardShadow',
+					colour: 'addressCardShadowColour',
+				} }
 			/>
-			<TierBox { ...p } name="addressCardPadding" label={ __( 'Card padding', 'sgs-blocks' ) } />
+			<TierBox
+				{ ...p }
+				name="addressCardPadding"
+				label={ __( 'Card padding', 'sgs-blocks' ) }
+			/>
 		</PanelBody>
 	);
 }
@@ -222,14 +527,31 @@ export function AddressesPanel( { attributes, setAttributes } ) {
 export function AccountDetailsPanel( { attributes, setAttributes } ) {
 	const p = { attributes, setAttributes };
 	return (
-		<PanelBody title={ __( 'Account details form', 'sgs-blocks' ) } initialOpen={ false }>
-			<Toggle { ...p } name="accountDetailsCards" label={ __( 'Details and password as two cards', 'sgs-blocks' ) } help={ __( 'One form laid out as a details card and a password card, each with its own button. Off = WooCommerce’s single form.', 'sgs-blocks' ) } />
+		<PanelBody
+			title={ __( 'Account details form', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
+			<Toggle
+				{ ...p }
+				name="accountDetailsCards"
+				label={ __(
+					'Details and password as two cards',
+					'sgs-blocks'
+				) }
+				help={ __(
+					'One form laid out as a details card and a password card, each with its own button. Off = WooCommerce’s single form.',
+					'sgs-blocks'
+				) }
+			/>
 			<Choice
 				{ ...p }
 				name="accountFormColumns"
 				label={ __( 'Field columns', 'sgs-blocks' ) }
 				options={ [
-					{ label: __( 'WooCommerce default', 'sgs-blocks' ), value: '' },
+					{
+						label: __( 'WooCommerce default', 'sgs-blocks' ),
+						value: '',
+					},
 					{ label: __( 'One column', 'sgs-blocks' ), value: '1' },
 					{ label: __( 'Two columns', 'sgs-blocks' ), value: '2' },
 				] }
@@ -253,23 +575,42 @@ export function AccountDetailsPanel( { attributes, setAttributes } ) {
 			<Toggle
 				{ ...p }
 				name="accountDisplayFromNames"
-				label={ __( 'Display name from first and last name', 'sgs-blocks' ) }
-				help={ __( 'Hides the Display name field and fills it from the two names on save.', 'sgs-blocks' ) }
+				label={ __(
+					'Display name from first and last name',
+					'sgs-blocks'
+				) }
+				help={ __(
+					'Hides the Display name field and fills it from the two names on save.',
+					'sgs-blocks'
+				) }
 			/>
 			<Toggle
 				{ ...p }
 				name="accountShowMobile"
 				label={ __( 'Show a Mobile field', 'sgs-blocks' ) }
-				help={ __( 'Saved to the customer’s billing phone.', 'sgs-blocks' ) }
+				help={ __(
+					'Saved to the customer’s billing phone.',
+					'sgs-blocks'
+				) }
 			/>
 			{ attributes.accountShowMobile && (
 				<>
-					<TextField { ...p } name="accountMobileLabel" label={ __( 'Mobile field label', 'sgs-blocks' ) } />
+					<TextField
+						{ ...p }
+						name="accountMobileLabel"
+						label={ __( 'Mobile field label', 'sgs-blocks' ) }
+					/>
 					<TextField
 						{ ...p }
 						name="accountMobileHint"
-						label={ __( 'Line under the Mobile field', 'sgs-blocks' ) }
-						help={ __( 'Empty = no line. It takes the password helper’s type and colour.', 'sgs-blocks' ) }
+						label={ __(
+							'Line under the Mobile field',
+							'sgs-blocks'
+						) }
+						help={ __(
+							'Empty = no line. It takes the password helper’s type and colour.',
+							'sgs-blocks'
+						) }
 					/>
 				</>
 			) }
@@ -277,13 +618,32 @@ export function AccountDetailsPanel( { attributes, setAttributes } ) {
 				{ ...p }
 				name="accountShowMarketingOptIn"
 				label={ __( 'Show an email-me tick', 'sgs-blocks' ) }
-				help={ __( 'Ticked from the customer’s saved choice and saved with the form; nothing is sent.', 'sgs-blocks' ) }
+				help={ __(
+					'Ticked from the customer’s saved choice and saved with the form; nothing is sent.',
+					'sgs-blocks'
+				) }
 			/>
 			{ attributes.accountShowMarketingOptIn && (
-				<TextField { ...p } name="accountMarketingOptInLabel" label={ __( 'Email-me tick label', 'sgs-blocks' ) } help={ __( 'Empty uses “Email me news and offers”.', 'sgs-blocks' ) } />
+				<TextField
+					{ ...p }
+					name="accountMarketingOptInLabel"
+					label={ __( 'Email-me tick label', 'sgs-blocks' ) }
+					help={ __(
+						'Empty uses “Email me news and offers”.',
+						'sgs-blocks'
+					) }
+				/>
 			) }
-			<TextField { ...p } name="accountPasswordHelper" label={ __( 'Text under the password heading', 'sgs-blocks' ) } />
-			<Toggle { ...p } name="accountSaveFullWidth" label={ __( 'Save button full width', 'sgs-blocks' ) } />
+			<TextField
+				{ ...p }
+				name="accountPasswordHelper"
+				label={ __( 'Text under the password heading', 'sgs-blocks' ) }
+			/>
+			<Toggle
+				{ ...p }
+				name="accountSaveFullWidth"
+				label={ __( 'Save button full width', 'sgs-blocks' ) }
+			/>
 		</PanelBody>
 	);
 }
@@ -297,67 +657,135 @@ export function AccountDetailsPanel( { attributes, setAttributes } ) {
 export function RegisterFormPanel( { attributes, setAttributes } ) {
 	const p = { attributes, setAttributes };
 	return (
-		<PanelBody title={ __( 'Register form', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Register form', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			<Toggle
 				{ ...p }
 				name="registerShowFirstName"
 				label={ __( 'Ask for a first name', 'sgs-blocks' ) }
-				help={ __( 'A required First name field, saved to the customer’s name and billing first name.', 'sgs-blocks' ) }
+				help={ __(
+					'A required First name field, saved to the customer’s name and billing first name.',
+					'sgs-blocks'
+				) }
 			/>
 			{ attributes.registerShowFirstName && (
-				<TextField { ...p } name="registerFirstNameLabel" label={ __( 'First name field label', 'sgs-blocks' ) } />
+				<TextField
+					{ ...p }
+					name="registerFirstNameLabel"
+					label={ __( 'First name field label', 'sgs-blocks' ) }
+				/>
 			) }
 			<Toggle
 				{ ...p }
 				name="registerShowLastName"
 				label={ __( 'Ask for a last name', 'sgs-blocks' ) }
-				help={ __( 'A required Last name field under First name, saved to the customer’s name and billing last name.', 'sgs-blocks' ) }
+				help={ __(
+					'A required Last name field under First name, saved to the customer’s name and billing last name.',
+					'sgs-blocks'
+				) }
 			/>
 			{ attributes.registerShowLastName && (
-				<TextField { ...p } name="registerLastNameLabel" label={ __( 'Last name field label', 'sgs-blocks' ) } />
+				<TextField
+					{ ...p }
+					name="registerLastNameLabel"
+					label={ __( 'Last name field label', 'sgs-blocks' ) }
+				/>
 			) }
-			{ attributes.registerShowFirstName && attributes.registerShowLastName && (
-				<>
-					<ToggleControl
-						__nextHasNoMarginBottom
-						label={ __( 'First and last name side by side', 'sgs-blocks' ) }
-						help={ __( 'Two equal columns, with the form’s row gap between them. Off keeps them stacked.', 'sgs-blocks' ) }
-						checked={ !! attributes.registerNameRow }
-						onChange={ ( on ) =>
-							setAttributes( { registerNameRow: on ? { desktop: true, tablet: true, mobile: false } : undefined } )
-						}
-					/>
-					{ attributes.registerNameRow &&
-						[
-							[ 'desktop', __( 'Side by side on desktop', 'sgs-blocks' ) ],
-							[ 'tablet', __( 'Side by side on tablet', 'sgs-blocks' ) ],
-							[ 'mobile', __( 'Side by side on mobile', 'sgs-blocks' ) ],
-						].map( ( [ device, label ] ) => (
-							<ToggleControl
-								key={ device }
-								__nextHasNoMarginBottom
-								label={ label }
-								checked={ true === attributes.registerNameRow[ device ] }
-								onChange={ ( on ) =>
-									setAttributes( { registerNameRow: { ...attributes.registerNameRow, [ device ]: on } } )
-								}
-							/>
-						) ) }
-				</>
-			) }
-			<TextField { ...p } name="registerPasswordHint" label={ __( 'Hint under the password field', 'sgs-blocks' ) } />
+			{ attributes.registerShowFirstName &&
+				attributes.registerShowLastName && (
+					<>
+						<ToggleControl
+							__nextHasNoMarginBottom
+							label={ __(
+								'First and last name side by side',
+								'sgs-blocks'
+							) }
+							help={ __(
+								'Two equal columns, with the form’s row gap between them. Off keeps them stacked.',
+								'sgs-blocks'
+							) }
+							checked={ !! attributes.registerNameRow }
+							onChange={ ( on ) =>
+								setAttributes( {
+									registerNameRow: on
+										? {
+												desktop: true,
+												tablet: true,
+												mobile: false,
+										  }
+										: undefined,
+								} )
+							}
+						/>
+						{ attributes.registerNameRow &&
+							[
+								[
+									'desktop',
+									__(
+										'Side by side on desktop',
+										'sgs-blocks'
+									),
+								],
+								[
+									'tablet',
+									__(
+										'Side by side on tablet',
+										'sgs-blocks'
+									),
+								],
+								[
+									'mobile',
+									__(
+										'Side by side on mobile',
+										'sgs-blocks'
+									),
+								],
+							].map( ( [ device, label ] ) => (
+								<ToggleControl
+									key={ device }
+									__nextHasNoMarginBottom
+									label={ label }
+									checked={
+										true ===
+										attributes.registerNameRow[ device ]
+									}
+									onChange={ ( on ) =>
+										setAttributes( {
+											registerNameRow: {
+												...attributes.registerNameRow,
+												[ device ]: on,
+											},
+										} )
+									}
+								/>
+							) ) }
+					</>
+				) }
+			<TextField
+				{ ...p }
+				name="registerPasswordHint"
+				label={ __( 'Hint under the password field', 'sgs-blocks' ) }
+			/>
 			<Toggle
 				{ ...p }
 				name="registerShowMarketingOptIn"
 				label={ __( 'Offer an “email me” tick', 'sgs-blocks' ) }
-				help={ __( 'An optional, unticked box. A ticked box saves the choice and the time on the new customer; nothing is sent from here.', 'sgs-blocks' ) }
+				help={ __(
+					'An optional, unticked box. A ticked box saves the choice and the time on the new customer; nothing is sent from here.',
+					'sgs-blocks'
+				) }
 			/>
 			{ attributes.registerShowMarketingOptIn && (
 				<TextField
 					{ ...p }
 					name="registerMarketingOptInLabel"
 					label={ __( 'Email-me tick label', 'sgs-blocks' ) }
-					help={ __( 'Empty uses “Email me news and offers”.', 'sgs-blocks' ) }
+					help={ __(
+						'Empty uses “Email me news and offers”.',
+						'sgs-blocks'
+					) }
 				/>
 			) }
 		</PanelBody>
@@ -373,14 +801,26 @@ export function RegisterFormPanel( { attributes, setAttributes } ) {
 export function SignInButtonPanel( { attributes, setAttributes } ) {
 	const p = { attributes, setAttributes };
 	return (
-		<PanelBody title={ __( 'Sign in button scope and link', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Sign in button scope and link', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			<Choice
 				{ ...p }
 				name="loginButtonScope"
 				label={ __( 'Applies to', 'sgs-blocks' ) }
 				options={ [
-					{ label: __( 'Sign in button only', 'sgs-blocks' ), value: '' },
-					{ label: __( 'Every form button (register, reset, account, address)', 'sgs-blocks' ), value: 'all-forms' },
+					{
+						label: __( 'Sign in button only', 'sgs-blocks' ),
+						value: '',
+					},
+					{
+						label: __(
+							'Every form button (register, reset, account, address)',
+							'sgs-blocks'
+						),
+						value: 'all-forms',
+					},
 				] }
 			/>
 			<Choice
@@ -388,12 +828,25 @@ export function SignInButtonPanel( { attributes, setAttributes } ) {
 				name="loginLinkPlacement"
 				label={ __( 'Lost password link', 'sgs-blocks' ) }
 				options={ [
-					{ label: __( 'On its own line (default)', 'sgs-blocks' ), value: '' },
-					{ label: __( 'On the Remember me row', 'sgs-blocks' ), value: 'remember-row' },
-					{ label: __( 'Beside the sign in button', 'sgs-blocks' ), value: 'beside-button' },
+					{
+						label: __( 'On its own line (default)', 'sgs-blocks' ),
+						value: '',
+					},
+					{
+						label: __( 'On the Remember me row', 'sgs-blocks' ),
+						value: 'remember-row',
+					},
+					{
+						label: __( 'Beside the sign in button', 'sgs-blocks' ),
+						value: 'beside-button',
+					},
 				] }
 			/>
-			<Toggle { ...p } name="hideRememberMe" label={ __( 'Hide Remember me', 'sgs-blocks' ) } />
+			<Toggle
+				{ ...p }
+				name="hideRememberMe"
+				label={ __( 'Hide Remember me', 'sgs-blocks' ) }
+			/>
 		</PanelBody>
 	);
 }

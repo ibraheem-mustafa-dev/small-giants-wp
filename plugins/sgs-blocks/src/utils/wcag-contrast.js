@@ -9,7 +9,10 @@
  * mirror the PHP `sgs_wcag_relative_luminance()` algorithm — keep both in
  * sync if either changes.
  */
-import { getGradientAstWithDefault, getStopCssColor } from '../components/gradient-picker/utils';
+import {
+	getGradientAstWithDefault,
+	getStopCssColor,
+} from '../components/gradient-picker/utils';
 
 /**
  * Compute WCAG 2.1 relative luminance from an sRGB hex, RGB, or CSS variable colour.
@@ -21,7 +24,9 @@ import { getGradientAstWithDefault, getStopCssColor } from '../components/gradie
 export function calculateRelativeLuminance( hex, refEl = null ) {
 	// Handle CSS variables: resolve via computed style on a probe element
 	if ( /^var\(/i.test( hex ) ) {
-		if ( ! refEl ) return -1.0;
+		if ( ! refEl ) {
+			return -1.0;
+		}
 		const probe = document.createElement( 'div' );
 		probe.style.color = hex;
 		refEl.appendChild( probe );
@@ -40,7 +45,11 @@ export function calculateRelativeLuminance( hex, refEl = null ) {
 		const linearise = ( c ) =>
 			c <= 0.03928 ? c / 12.92 : Math.pow( ( c + 0.055 ) / 1.055, 2.4 );
 
-		return 0.2126 * linearise( r ) + 0.7152 * linearise( g ) + 0.0722 * linearise( b );
+		return (
+			0.2126 * linearise( r ) +
+			0.7152 * linearise( g ) +
+			0.0722 * linearise( b )
+		);
 	}
 
 	// Handle hex: normalise, expand shorthand, parse
@@ -59,7 +68,11 @@ export function calculateRelativeLuminance( hex, refEl = null ) {
 	const linearise = ( c ) =>
 		c <= 0.03928 ? c / 12.92 : Math.pow( ( c + 0.055 ) / 1.055, 2.4 );
 
-	return 0.2126 * linearise( r ) + 0.7152 * linearise( g ) + 0.0722 * linearise( b );
+	return (
+		0.2126 * linearise( r ) +
+		0.7152 * linearise( g ) +
+		0.0722 * linearise( b )
+	);
 }
 
 /**
@@ -70,7 +83,9 @@ export function calculateRelativeLuminance( hex, refEl = null ) {
  * @return {number} Contrast ratio, or -1 on invalid input
  */
 export function calculateContrastRatio( l1, l2 ) {
-	if ( l1 < 0 || l2 < 0 ) return -1;
+	if ( l1 < 0 || l2 < 0 ) {
+		return -1;
+	}
 	const lighter = Math.max( l1, l2 );
 	const darker = Math.min( l1, l2 );
 	return ( lighter + 0.05 ) / ( darker + 0.05 );
@@ -79,12 +94,14 @@ export function calculateContrastRatio( l1, l2 ) {
 /**
  * Determine if contrast meets WCAG 2.1 AA thresholds.
  *
- * @param {number}  ratio        Contrast ratio
+ * @param {number}  ratio       Contrast ratio
  * @param {boolean} isLargeText True if text is 18px+ or 14px+ bold
  * @return {boolean} True if contrast meets AA standard
  */
 export function meetsWCAG_AA( ratio, isLargeText = false ) {
-	if ( ratio < 0 ) return false;
+	if ( ratio < 0 ) {
+		return false;
+	}
 	return isLargeText ? ratio >= 3.0 : ratio >= 4.5;
 }
 
@@ -103,17 +120,25 @@ export function meetsWCAG_AA( ratio, isLargeText = false ) {
  *                   when there is no gradient, it fails to parse, or the
  *                   background is invalid.
  */
-export function worstGradientContrastRatio( gradientValue, backgroundHex, refEl = null ) {
+export function worstGradientContrastRatio(
+	gradientValue,
+	backgroundHex,
+	refEl = null
+) {
 	if ( ! gradientValue ) {
 		return -1;
 	}
 
-	const { gradientAST, hasGradient } = getGradientAstWithDefault( gradientValue );
+	const { gradientAST, hasGradient } =
+		getGradientAstWithDefault( gradientValue );
 	if ( ! hasGradient || ! gradientAST?.colorStops?.length ) {
 		return -1;
 	}
 
-	const backgroundLuminance = calculateRelativeLuminance( backgroundHex, refEl );
+	const backgroundLuminance = calculateRelativeLuminance(
+		backgroundHex,
+		refEl
+	);
 	if ( backgroundLuminance < 0 ) {
 		return -1;
 	}
@@ -122,7 +147,10 @@ export function worstGradientContrastRatio( gradientValue, backgroundHex, refEl 
 	gradientAST.colorStops.forEach( ( stop ) => {
 		const cssColor = getStopCssColor( stop );
 		const stopLuminance = calculateRelativeLuminance( cssColor, refEl );
-		const ratio = calculateContrastRatio( backgroundLuminance, stopLuminance );
+		const ratio = calculateContrastRatio(
+			backgroundLuminance,
+			stopLuminance
+		);
 		if ( ratio < 0 ) {
 			return;
 		}

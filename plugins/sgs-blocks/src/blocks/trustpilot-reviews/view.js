@@ -45,8 +45,12 @@ const initCarousel = ( root ) => {
 		return;
 	}
 
-	const prevBtn = root.querySelector( '.sgs-trustpilot-reviews__arrow--prev' );
-	const nextBtn = root.querySelector( '.sgs-trustpilot-reviews__arrow--next' );
+	const prevBtn = root.querySelector(
+		'.sgs-trustpilot-reviews__arrow--prev'
+	);
+	const nextBtn = root.querySelector(
+		'.sgs-trustpilot-reviews__arrow--next'
+	);
 	const dots = root.querySelectorAll( '.sgs-trustpilot-reviews__dot' );
 
 	// Whether `fx-carousel-loop.js` is attached to THIS track — read off the
@@ -57,11 +61,16 @@ const initCarousel = ( root ) => {
 
 	const getStep = () => {
 		const cardWidth = layoutBox( cards[ 0 ] ).width;
-		const gap = parseFloat( getComputedStyle( track ).columnGap || getComputedStyle( track ).gap || 16 );
+		const gap = parseFloat(
+			getComputedStyle( track ).columnGap ||
+				getComputedStyle( track ).gap ||
+				16
+		);
 		return cardWidth + gap;
 	};
 
-	const maxScrollLeft = () => Math.max( 0, track.scrollWidth - track.clientWidth );
+	const maxScrollLeft = () =>
+		Math.max( 0, track.scrollWidth - track.clientWidth );
 
 	const atEnd = () => track.scrollLeft >= maxScrollLeft() - SCROLL_EPSILON;
 	const atStart = () => track.scrollLeft <= SCROLL_EPSILON;
@@ -148,8 +157,11 @@ const initCarousel = ( root ) => {
 
 	// Autoplay (only if enabled and user hasn't requested reduced motion).
 	const autoplay = root.getAttribute( 'data-autoplay' ) === 'true';
-	const speed = parseInt( root.getAttribute( 'data-autoplay-speed' ), 10 ) || 5000;
-	const reduceMotion = window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
+	const speed =
+		parseInt( root.getAttribute( 'data-autoplay-speed' ), 10 ) || 5000;
+	const reduceMotion = window.matchMedia(
+		'(prefers-reduced-motion: reduce)'
+	).matches;
 
 	if ( autoplay && ! reduceMotion ) {
 		let timer = null;
@@ -171,7 +183,9 @@ const initCarousel = ( root ) => {
 };
 
 const init = () => {
-	document.querySelectorAll( '.wp-block-sgs-trustpilot-reviews' ).forEach( initCarousel );
+	document
+		.querySelectorAll( '.wp-block-sgs-trustpilot-reviews' )
+		.forEach( initCarousel );
 };
 
 if ( document.readyState === 'loading' ) {

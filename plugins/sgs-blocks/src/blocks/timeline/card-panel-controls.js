@@ -10,7 +10,11 @@ import {
 	ShadowControl,
 	TypographyControls,
 } from '../../components';
-import { CARD_DEVICE_ATTRS, CardDeviceShadowItems, CardLayoutItems } from './card-device-controls';
+import {
+	CARD_DEVICE_ATTRS,
+	CardDeviceShadowItems,
+	CardLayoutItems,
+} from './card-device-controls';
 
 const CARD_ATTRS = {
 	cardBackgroundColour: '',
@@ -28,7 +32,8 @@ const CARD_ATTRS = {
 	...CARD_DEVICE_ATTRS,
 };
 
-const hasKeys = ( value ) => !! value && 'object' === typeof value && Object.keys( value ).length > 0;
+const hasKeys = ( value ) =>
+	!! value && 'object' === typeof value && Object.keys( value ).length > 0;
 
 /**
  * The colour row for the card background, appended to the timeline's colour panel while the timeline is horizontal.
@@ -51,10 +56,14 @@ export function cardColourRows( attributes, setAttributes ) {
 					key: 'normal',
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: attributes.cardBackgroundColour,
-					onChange: ( val ) => setAttributes( { cardBackgroundColour: val ?? '' } ),
+					onChange: ( val ) =>
+						setAttributes( { cardBackgroundColour: val ?? '' } ),
 					linked: true,
 					gradientValue: attributes.cardBackgroundColourGradient,
-					onGradientChange: ( val ) => setAttributes( { cardBackgroundColourGradient: val ?? '' } ),
+					onGradientChange: ( val ) =>
+						setAttributes( {
+							cardBackgroundColourGradient: val ?? '',
+						} ),
 				},
 			],
 		},
@@ -64,10 +73,10 @@ export function cardColourRows( attributes, setAttributes ) {
 /**
  * One per-device box setting.
  *
- * @param {Object}   props               Props.
- * @param {string}   props.label         Control label.
- * @param {Object}   props.value         Stored tier object.
- * @param {Function} props.onChange      Receives the next tier object.
+ * @param {Object}   props          Props.
+ * @param {string}   props.label    Control label.
+ * @param {Object}   props.value    Stored tier object.
+ * @param {Function} props.onChange Receives the next tier object.
  * @return {JSX.Element} The control.
  */
 export function TierBox( { label, value, onChange } ) {
@@ -76,10 +85,14 @@ export function TierBox( { label, value, onChange } ) {
 			{ ( { ownValue, setOwnValue } ) => (
 				<SgsBoxControl
 					label={ label }
-					values={ ownValue && 'object' === typeof ownValue ? ownValue : {} }
+					values={
+						ownValue && 'object' === typeof ownValue ? ownValue : {}
+					}
 					units={ BOX_UNITS }
 					presets
-					onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+					onChange={ ( next ) =>
+						setOwnValue( normaliseResponsiveBox( next ) )
+					}
 				/>
 			) }
 		</ResponsiveOverride>
@@ -101,7 +114,8 @@ export function EntryCardControls( { attributes, setAttributes } ) {
 	const radius = attributes.cardBorderRadius || {};
 	// The border-contrast check compares against a flat card colour only; a card gradient paints instead of it.
 	const cardContrastAgainst =
-		attributes.cardBackgroundColour && ! attributes.cardBackgroundColourGradient
+		attributes.cardBackgroundColour &&
+		! attributes.cardBackgroundColourGradient
 			? attributes.cardBackgroundColour
 			: '';
 	return (
@@ -118,7 +132,9 @@ export function EntryCardControls( { attributes, setAttributes } ) {
 				<TierBox
 					label={ __( 'Card padding', 'sgs-blocks' ) }
 					value={ attributes.cardPadding }
-					onChange={ ( obj ) => setAttributes( { cardPadding: obj } ) }
+					onChange={ ( obj ) =>
+						setAttributes( { cardPadding: obj } )
+					}
 				/>
 			</ToolsPanelItem>
 			<ToolsPanelItem
@@ -142,15 +158,23 @@ export function EntryCardControls( { attributes, setAttributes } ) {
 			>
 				<SgsBorderControl
 					widthValues={ attributes.cardBorderWidth ?? {} }
-					onWidthChange={ ( next ) => setAttributes( { cardBorderWidth: next } ) }
+					onWidthChange={ ( next ) =>
+						setAttributes( { cardBorderWidth: next } )
+					}
 					widthPresets={ [ '10', '20', '30' ] }
 					styleValue={ attributes.cardBorderStyle }
-					onStyleChange={ ( val ) => setAttributes( { cardBorderStyle: val } ) }
+					onStyleChange={ ( val ) =>
+						setAttributes( { cardBorderStyle: val } )
+					}
 					colourLabel={ __( 'Card border colour', 'sgs-blocks' ) }
 					colourValue={ attributes.cardBorderColour }
-					onColourChange={ ( val ) => setAttributes( { cardBorderColour: val ?? '' } ) }
+					onColourChange={ ( val ) =>
+						setAttributes( { cardBorderColour: val ?? '' } )
+					}
 					colourGradientValue={ attributes.cardBorderColourGradient }
-					onColourGradientChange={ ( val ) => setAttributes( { cardBorderColourGradient: val ?? '' } ) }
+					onColourGradientChange={ ( val ) =>
+						setAttributes( { cardBorderColourGradient: val ?? '' } )
+					}
 					colourLinked
 					contrastAgainst={ cardContrastAgainst }
 					radiusLabel={ __( 'Card corner radius', 'sgs-blocks' ) }
@@ -160,25 +184,41 @@ export function EntryCardControls( { attributes, setAttributes } ) {
 						mobile: radius.mobile ?? {},
 					} }
 					onRadiusChange={ ( tier, next ) =>
-						setAttributes( { cardBorderRadius: { ...radius, [ 'base' === tier ? 'desktop' : tier ]: next } } )
+						setAttributes( {
+							cardBorderRadius: {
+								...radius,
+								[ 'base' === tier ? 'desktop' : tier ]: next,
+							},
+						} )
 					}
 				/>
 			</ToolsPanelItem>
 			<ToolsPanelItem
 				label={ __( 'Card shadow', 'sgs-blocks' ) }
 				hasValue={ () => !! attributes.cardShadow }
-				onDeselect={ () => setAttributes( { cardShadow: '', cardShadowColour: '' } ) }
+				onDeselect={ () =>
+					setAttributes( { cardShadow: '', cardShadowColour: '' } )
+				}
 				isShownByDefault
 			>
 				<ShadowControl
 					label={ __( 'Card shadow', 'sgs-blocks' ) }
 					attributes={ attributes }
 					setAttributes={ setAttributes }
-					attrNames={ { base: 'cardShadow', colour: 'cardShadowColour' } }
+					attrNames={ {
+						base: 'cardShadow',
+						colour: 'cardShadowColour',
+					} }
 				/>
 			</ToolsPanelItem>
-			<CardDeviceShadowItems attributes={ attributes } setAttributes={ setAttributes } />
-			<CardLayoutItems attributes={ attributes } setAttributes={ setAttributes } />
+			<CardDeviceShadowItems
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+			/>
+			<CardLayoutItems
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+			/>
 			<ToolsPanelItem
 				label={ __( 'Gap between text and image', 'sgs-blocks' ) }
 				hasValue={ () => hasKeys( attributes.cardColumnGap ) }
@@ -187,15 +227,25 @@ export function EntryCardControls( { attributes, setAttributes } ) {
 				<ResponsiveOverride
 					label={ __( 'Gap between text and image', 'sgs-blocks' ) }
 					value={ attributes.cardColumnGap }
-					onChange={ ( obj ) => setAttributes( { cardColumnGap: obj } ) }
+					onChange={ ( obj ) =>
+						setAttributes( { cardColumnGap: obj } )
+					}
 				>
 					{ ( { ownValue, setOwnValue } ) => (
 						<SgsLengthControl
-							label={ __( 'Gap between text and image', 'sgs-blocks' ) }
+							label={ __(
+								'Gap between text and image',
+								'sgs-blocks'
+							) }
 							hideLabelFromVision
-							value={ 'string' === typeof ownValue ? ownValue : '' }
+							value={
+								'string' === typeof ownValue ? ownValue : ''
+							}
 							onChange={ ( val ) => setOwnValue( val ) }
-							help={ __( 'Used with the Text beside image layout. The image column width is the Milestone image width setting.', 'sgs-blocks' ) }
+							help={ __(
+								'Used with the Text beside image layout. The image column width is the Milestone image width setting.',
+								'sgs-blocks'
+							) }
 						/>
 					) }
 				</ResponsiveOverride>
@@ -208,15 +258,22 @@ export function EntryCardControls( { attributes, setAttributes } ) {
 				<ResponsiveOverride
 					label={ __( 'Widest card', 'sgs-blocks' ) }
 					value={ attributes.cardMaxWidth }
-					onChange={ ( obj ) => setAttributes( { cardMaxWidth: obj } ) }
+					onChange={ ( obj ) =>
+						setAttributes( { cardMaxWidth: obj } )
+					}
 				>
 					{ ( { ownValue, setOwnValue } ) => (
 						<SgsLengthControl
 							label={ __( 'Widest card', 'sgs-blocks' ) }
 							hideLabelFromVision
-							value={ 'string' === typeof ownValue ? ownValue : '' }
+							value={
+								'string' === typeof ownValue ? ownValue : ''
+							}
 							onChange={ ( val ) => setOwnValue( val ) }
-							help={ __( 'The most a card may grow to, for example 900px. Empty means no cap.', 'sgs-blocks' ) }
+							help={ __(
+								'The most a card may grow to, for example 900px. Empty means no cap.',
+								'sgs-blocks'
+							) }
 						/>
 					) }
 				</ResponsiveOverride>

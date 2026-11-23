@@ -79,7 +79,9 @@ export function motionParts( elements ) {
 		) {
 			return;
 		}
-		out[ key ] = Boolean( isObject && spec.isWrapper ) && declaredSelector( elements, key, 'motionSelector' ) === '';
+		out[ key ] =
+			Boolean( isObject && spec.isWrapper ) &&
+			declaredSelector( elements, key, 'motionSelector' ) === '';
 	} );
 	return out;
 }
@@ -96,10 +98,17 @@ export function motionParts( elements ) {
  */
 export function declaredSelector( elements, part, key ) {
 	if ( ! key ) {
-		return declaredSelector( elements, part, 'motionSelector' ) || declaredSelector( elements, part, 'selector' );
+		return (
+			declaredSelector( elements, part, 'motionSelector' ) ||
+			declaredSelector( elements, part, 'selector' )
+		);
 	}
 	const spec = elements?.[ part ];
-	if ( ! spec || typeof spec !== 'object' || typeof spec[ key ] !== 'string' ) {
+	if (
+		! spec ||
+		typeof spec !== 'object' ||
+		typeof spec[ key ] !== 'string'
+	) {
 		return '';
 	}
 	const selector = spec[ key ].trim();
@@ -133,7 +142,9 @@ export function lastCompound( selector ) {
 		/::?[a-zA-Z-]+(\([^)]*\))?|\[[^\]]*\]/g,
 		''
 	);
-	const classes = [ ...compound.matchAll( /\.([A-Za-z0-9_-]+)/g ) ].map( ( m ) => m[ 1 ] );
+	const classes = [ ...compound.matchAll( /\.([A-Za-z0-9_-]+)/g ) ].map(
+		( m ) => m[ 1 ]
+	);
 	const tag = /^([a-zA-Z][a-zA-Z0-9]*)/.exec( compound );
 	return { classes, tag: tag ? tag[ 1 ].toUpperCase() : null };
 }
@@ -164,12 +175,20 @@ export function resolveTarget( blockName, elements, root, target, element ) {
 		return shape( root, true, [], null );
 	}
 	if ( target.startsWith( 'custom:' ) ) {
-		const selector = typeof element?.selector === 'string' ? element.selector.trim() : '';
+		const selector =
+			typeof element?.selector === 'string'
+				? element.selector.trim()
+				: '';
 		if ( ! isReviewed( element ) || ! isScoped( selector ) ) {
 			return null;
 		}
 		const last = lastCompound( selector );
-		return shape( `${ root } ${ selector }`, false, last.classes, last.tag );
+		return shape(
+			`${ root } ${ selector }`,
+			false,
+			last.classes,
+			last.tag
+		);
 	}
 	const parts = motionParts( elements );
 	if ( ! Object.prototype.hasOwnProperty.call( parts, target ) ) {
@@ -179,12 +198,18 @@ export function resolveTarget( blockName, elements, root, target, element ) {
 		return shape( root, true, [], null );
 	}
 	const declared = declaredSelector( elements, target );
-	const cls = declared !== '' ? declared.slice( 1 ) : partClass( blockName, target );
+	const cls =
+		declared !== '' ? declared.slice( 1 ) : partClass( blockName, target );
 	if ( bandClasses( blockName ).includes( cls ) ) {
 		return shape( `${ root } > .${ cls }`, false, [ cls ], null, true );
 	}
 	if ( declared !== '' ) {
-		return shape( `${ root } ${ declared }`, false, lastCompound( declared ).classes, null );
+		return shape(
+			`${ root } ${ declared }`,
+			false,
+			lastCompound( declared ).classes,
+			null
+		);
 	}
 	return shape( `${ root } .${ cls }`, false, [ cls ], null );
 }
@@ -207,7 +232,10 @@ export function itemMatches( blockName, elements, animationItems = '' ) {
 		.map( ( token ) => token.trim() )
 		.filter( ( token ) => /^\.[A-Za-z][A-Za-z0-9_-]*$/.test( token ) )
 		.forEach( ( token ) =>
-			matches.set( token.slice( 1 ), { root: false, classes: [ token.slice( 1 ) ] } )
+			matches.set( token.slice( 1 ), {
+				root: false,
+				classes: [ token.slice( 1 ) ],
+			} )
 		);
 	const parts = motionParts( elements );
 	if ( Object.prototype.hasOwnProperty.call( parts, 'item' ) ) {
@@ -245,14 +273,23 @@ export function bandClasses( blockName ) {
  * @return {boolean} True when a band part carries a layer.
  */
 export function namesBand( motion, blockName, elements ) {
-	const stored = motion?.elements && typeof motion.elements === 'object' ? motion.elements : {};
+	const stored =
+		motion?.elements && typeof motion.elements === 'object'
+			? motion.elements
+			: {};
 	return [ 'content-band', 'inner' ].some( ( part ) => {
 		const value = stored[ part ];
-		if ( ! value || ( typeof value === 'object' && Object.keys( value ).length === 0 ) ) {
+		if (
+			! value ||
+			( typeof value === 'object' && Object.keys( value ).length === 0 )
+		) {
 			return false;
 		}
 		const declared = declaredSelector( elements, part );
-		const cls = declared !== '' ? declared.slice( 1 ) : partClass( blockName, part );
+		const cls =
+			declared !== ''
+				? declared.slice( 1 )
+				: partClass( blockName, part );
 		return bandClasses( blockName ).includes( cls );
 	} );
 }
@@ -267,5 +304,9 @@ export function namesBand( motion, blockName, elements ) {
  * @return {boolean} True when a band part carries a layer.
  */
 export function motionNamesBand( attributes, blockName, elements ) {
-	return namesBand( attributes?.[ MOTION_ATTRIBUTE_NAME ], blockName, elements );
+	return namesBand(
+		attributes?.[ MOTION_ATTRIBUTE_NAME ],
+		blockName,
+		elements
+	);
 }

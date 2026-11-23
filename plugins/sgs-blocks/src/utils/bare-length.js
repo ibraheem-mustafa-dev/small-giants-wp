@@ -15,7 +15,8 @@
  */
 function themeSpacingSlugs() {
 	try {
-		const sizes = window.wp.data.select( 'core/block-editor' ).getSettings().__experimentalFeatures?.spacing?.spacingSizes;
+		const sizes = window.wp.data.select( 'core/block-editor' ).getSettings()
+			.__experimentalFeatures?.spacing?.spacingSizes;
 		return Object.values( sizes ?? {} )
 			.flat()
 			.map( ( size ) => String( size.slug ) );
@@ -25,7 +26,7 @@ function themeSpacingSlugs() {
 }
 
 /**
- * @param {string|undefined} value  A stored length.
+ * @param {string|undefined} value   A stored length.
  * @param {string[]}         [slugs] Registered spacing-preset slugs; read from the editor when omitted.
  * @return {string|undefined} The value, with a unit or preset reference when it was digits only.
  */
@@ -33,5 +34,7 @@ export function bareLength( value, slugs ) {
 	if ( 'string' !== typeof value || ! /^\d+$/.test( value ) ) {
 		return value;
 	}
-	return ( slugs ?? themeSpacingSlugs() ).includes( value ) ? `var(--wp--preset--spacing--${ value })` : `${ value }px`;
+	return ( slugs ?? themeSpacingSlugs() ).includes( value )
+		? `var(--wp--preset--spacing--${ value })`
+		: `${ value }px`;
 }

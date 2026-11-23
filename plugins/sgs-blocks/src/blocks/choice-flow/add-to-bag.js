@@ -54,22 +54,28 @@ function flowHasVariationSteps( flowRoot ) {
  * seen). Its problems go to the toast, since the result step's status region
  * is on a step that is not showing.
  *
- * @param {HTMLElement} flowRoot Flow wrapper element.
- * @param {HTMLElement} resultEl The `add-to-bag` result carrying the endpoint, nonce and checkout URL.
+ * @param {HTMLElement} flowRoot                   Flow wrapper element.
+ * @param {HTMLElement} resultEl                   The `add-to-bag` result carrying the endpoint, nonce and checkout URL.
  * @param {Object}      options
  * @param {HTMLElement} options.buttonEl           The control that was pressed (disabled while the request runs).
  * @param {boolean}     options.redirectToCheckout True for "Buy now".
  * @param {boolean}     options.bareFrame          True for the skip link's frame-only add.
  * @return {Promise<boolean>} True when the item was added.
  */
-async function addFlowToBag( flowRoot, resultEl, { buttonEl, redirectToCheckout, bareFrame } ) {
+async function addFlowToBag(
+	flowRoot,
+	resultEl,
+	{ buttonEl, redirectToCheckout, bareFrame }
+) {
 	// In the normal path this region is VALIDATION ONLY. The outcome of the
 	// add request itself goes to the one shared toast; a "you haven't
 	// finished choosing" message has to stay next to the controls that are
 	// unfinished (WCAG 3.3.1), and a toast that clears itself after 5s cannot
 	// do that. It is the same in-context treatment validateTerminalFields()
 	// already gives a required field via reportValidity().
-	const statusEl = resultEl.querySelector( '.sgs-choice-flow-result__cart-status' );
+	const statusEl = resultEl.querySelector(
+		'.sgs-choice-flow-result__cart-status'
+	);
 	const reportProblem = ( message ) => {
 		if ( bareFrame ) {
 			toastActions.showError( message );
@@ -87,19 +93,34 @@ async function addFlowToBag( flowRoot, resultEl, { buttonEl, redirectToCheckout,
 	// page buybox's base. Only when they DON'T resolve (this flow has no such
 	// steps at all) does the existing buybox/seeded base apply.
 	const resolvedVariation = getResolvedVariation( flowRoot );
-	const { productId, variationId, attributes, addons } = getAddonSummary( flowRoot );
+	const { productId, variationId, attributes, addons } =
+		getAddonSummary( flowRoot );
 
-	if ( ! bareFrame && flowHasVariationSteps( flowRoot ) && ! resolvedVariation ) {
-		reportProblem( 'Please choose every option above before adding this to your bag.' );
+	if (
+		! bareFrame &&
+		flowHasVariationSteps( flowRoot ) &&
+		! resolvedVariation
+	) {
+		reportProblem(
+			'Please choose every option above before adding this to your bag.'
+		);
 		return false;
 	}
 
-	const finalProductId = resolvedVariation ? resolvedVariation.productId : productId;
-	const finalVariationId = resolvedVariation ? resolvedVariation.variationId : variationId;
-	const finalAttributes = resolvedVariation ? resolvedVariation.attributes : attributes;
+	const finalProductId = resolvedVariation
+		? resolvedVariation.productId
+		: productId;
+	const finalVariationId = resolvedVariation
+		? resolvedVariation.variationId
+		: variationId;
+	const finalAttributes = resolvedVariation
+		? resolvedVariation.attributes
+		: attributes;
 
 	if ( ! finalProductId && ! finalVariationId ) {
-		reportProblem( 'No product to add — please start again from the product page.' );
+		reportProblem(
+			'No product to add — please start again from the product page.'
+		);
 		return false;
 	}
 
@@ -107,10 +128,12 @@ async function addFlowToBag( flowRoot, resultEl, { buttonEl, redirectToCheckout,
 	// Taxonomy-keyed (the proxy accepts taxonomy-keyed attributes) —
 	// identical shape whether the attributes came from the flow's own
 	// resolution or the buybox fallback.
-	const variation = Object.entries( finalAttributes ).map( ( [ attribute, value ] ) => ( {
-		attribute,
-		value,
-	} ) );
+	const variation = Object.entries( finalAttributes ).map(
+		( [ attribute, value ] ) => ( {
+			attribute,
+			value,
+		} )
+	);
 
 	const body = { id, quantity: 1, addons: bareFrame ? [] : addons };
 	const fields = bareFrame ? [] : collectFlowFields( flowRoot, resultEl );
@@ -172,7 +195,9 @@ async function addFlowToBag( flowRoot, resultEl, { buttonEl, redirectToCheckout,
 		}
 		return true;
 	} catch ( _e ) {
-		toastActions.showError( 'Sorry, something went wrong adding this item.' );
+		toastActions.showError(
+			'Sorry, something went wrong adding this item.'
+		);
 		return false;
 	} finally {
 		buttonEl.disabled = false;
@@ -206,7 +231,11 @@ async function handleTerminalPurchase( buttonEl, redirectToCheckout ) {
 		return;
 	}
 
-	const added = await addFlowToBag( flowRoot, resultEl, { buttonEl, redirectToCheckout, bareFrame: false } );
+	const added = await addFlowToBag( flowRoot, resultEl, {
+		buttonEl,
+		redirectToCheckout,
+		bareFrame: false,
+	} );
 	// "Add to basket" closes the pop-up the flow sits in; "Buy now" is already leaving for checkout.
 	if ( added && ! redirectToCheckout ) {
 		closeEnclosingModal( flowRoot );
@@ -226,15 +255,23 @@ export async function addFrameToBag( buttonEl ) {
 		return false;
 	}
 	const flowRoot = buttonEl.closest( FLOW_SELECTOR );
-	const resultEl = flowRoot ? flowRoot.querySelector( '[data-action="add-to-bag"][data-endpoint]' ) : null;
+	const resultEl = flowRoot
+		? flowRoot.querySelector( '[data-action="add-to-bag"][data-endpoint]' )
+		: null;
 	if ( ! resultEl ) {
-		toastActions.showError( 'Sorry, this item could not be added to your bag.' );
+		toastActions.showError(
+			'Sorry, this item could not be added to your bag.'
+		);
 		return false;
 	}
 	// The frame alone: the request sends no add-ons (`bareFrame`). The shopper's
 	// picks are dropped only once the frame is in the bag, so a failed add
 	// leaves the pop-up exactly as it was.
-	const added = await addFlowToBag( flowRoot, resultEl, { buttonEl, redirectToCheckout: false, bareFrame: true } );
+	const added = await addFlowToBag( flowRoot, resultEl, {
+		buttonEl,
+		redirectToCheckout: false,
+		bareFrame: true,
+	} );
 	if ( added ) {
 		resetAddonAnswers( flowRoot );
 	}

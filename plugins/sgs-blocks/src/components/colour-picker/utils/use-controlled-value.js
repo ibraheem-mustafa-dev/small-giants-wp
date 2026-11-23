@@ -15,7 +15,11 @@ import { useCallback, useState } from '@wordpress/element';
  * @param {Function} [props.onChange]
  * @return {Array} The controlled value and the value setter.
  */
-export function useControlledValue( { defaultValue, onChange, value: valueProp } ) {
+export function useControlledValue( {
+	defaultValue,
+	onChange,
+	value: valueProp,
+} ) {
 	const hasValue = typeof valueProp !== 'undefined';
 	const initialValue = hasValue ? valueProp : defaultValue;
 	const [ state, setState ] = useState( initialValue );

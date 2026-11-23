@@ -11,10 +11,23 @@ import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { useState } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
-import { BandWrap, tierBoxProperties, usePreviewTier, gapVar } from '../../utils';
+import {
+	BandWrap,
+	tierBoxProperties,
+	usePreviewTier,
+	gapVar,
+} from '../../utils';
 import { SvgGradientDefs } from '../../utils/svg-gradient-preview';
-import { itemWrapperPreview, itemShadowPreview, headerPreview, iconRingPreview } from './preview-style';
-import { SgsColourPanel, fillRow, textRow,
+import {
+	itemWrapperPreview,
+	itemShadowPreview,
+	headerPreview,
+	iconRingPreview,
+} from './preview-style';
+import {
+	SgsColourPanel,
+	fillRow,
+	textRow,
 	SgsBorderControl,
 	resolveColourToken,
 } from '../../components';
@@ -48,7 +61,12 @@ function Chevron( { gradient, gradientId } ) {
 	);
 }
 
-export default function Edit( { attributes, setAttributes, context, clientId } ) {
+export default function Edit( {
+	attributes,
+	setAttributes,
+	context,
+	clientId,
+} ) {
 	const { title, isOpen } = attributes;
 
 	// D288/D636 pattern (mirrors sgs/container): resolve the wrapper's textColour/
@@ -100,8 +118,7 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 			.slice( tier === 'mobile' ? 0 : tier === 'tablet' ? 1 : 2 )
 			.map( ( t ) => ( obj || {} )[ t ] )
 			.find(
-				( v ) =>
-					typeof v === 'number' && ( allowZero ? v >= 0 : v > 0 )
+				( v ) => typeof v === 'number' && ( allowZero ? v >= 0 : v > 0 )
 			);
 	const strokeRaw = Number( context[ 'sgs/accordionIconStrokeWidth' ] );
 	const iconStrokeWidth =
@@ -119,18 +136,29 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 		true
 	);
 	const slotVars = {
-		...tierBoxProperties( context[ 'sgs/accordionHeaderPadding' ], tier, '--sgs-accordion-header-pad-' ),
-		...tierBoxProperties( context[ 'sgs/accordionContentPadding' ], tier, '--sgs-accordion-content-pad-' ),
+		...tierBoxProperties(
+			context[ 'sgs/accordionHeaderPadding' ],
+			tier,
+			'--sgs-accordion-header-pad-'
+		),
+		...tierBoxProperties(
+			context[ 'sgs/accordionContentPadding' ],
+			tier,
+			'--sgs-accordion-content-pad-'
+		),
 		// typeof, not truthiness: a height floor of 0 must still emit.
 		'--sgs-accordion-header-gap': gapVar( headerGapTier ),
 		'--sgs-accordion-header-min-h':
 			typeof headerMinHeightTier === 'number'
 				? `${ headerMinHeightTier }px`
 				: undefined,
-		'--sgs-accordion-icon-size': iconSizeTier ? `${ iconSizeTier }px` : undefined,
+		'--sgs-accordion-icon-size': iconSizeTier
+			? `${ iconSizeTier }px`
+			: undefined,
 		'--sgs-accordion-icon-stroke-width':
 			iconStrokeWidth !== 2 ? iconStrokeWidth : undefined,
-		'--sgs-accordion-icon-rotate': iconRotation > 0 ? `${ iconRotation }deg` : undefined,
+		'--sgs-accordion-icon-rotate':
+			iconRotation > 0 ? `${ iconRotation }deg` : undefined,
 	};
 
 	const className = [
@@ -170,12 +198,15 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 		}
 	);
 
-
 	const filterOn = !! context[ 'sgs/accordionFilterEnabled' ];
 	// The category line prints with the filter on, or always when the accordion says so (render.php does the same).
-	const categoryOn = filterOn || !! context[ 'sgs/accordionCategoryEyebrowAlways' ];
+	const categoryOn =
+		filterOn || !! context[ 'sgs/accordionCategoryEyebrowAlways' ];
 	const { category, showCategoryEyebrow } = attributes;
-	const showEyebrow = categoryOn && '' !== ( category ?? '' ).trim() && !! showCategoryEyebrow;
+	const showEyebrow =
+		categoryOn &&
+		'' !== ( category ?? '' ).trim() &&
+		!! showCategoryEyebrow;
 	const titleField = (
 		<RichText
 			tagName="span"
@@ -190,14 +221,22 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 	);
 
 	const chevron = (
-		<span className="sgs-accordion-item__icons" style={ iconRingPreview( context, tier, editorOpen ) }>
+		<span
+			className="sgs-accordion-item__icons"
+			style={ iconRingPreview( context, tier, editorOpen ) }
+		>
 			<span
 				className={ `sgs-accordion-item__icon-open ${
-					iconRotation > 0 ? 'sgs-accordion-item__icon-open--rotates' : ''
+					iconRotation > 0
+						? 'sgs-accordion-item__icon-open--rotates'
+						: ''
 				}` }
 				style={ head.icon }
 			>
-				<Chevron gradient={ head.iconGradient } gradientId={ iconGradientId } />
+				<Chevron
+					gradient={ head.iconGradient }
+					gradientId={ iconGradientId }
+				/>
 			</span>
 		</span>
 	);
@@ -246,83 +285,127 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 					setAttributes={ setAttributes }
 					kind="content"
 				/>
-				<PanelBody title={ __( 'Item', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Item', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<ToggleControl
 						label={ __( 'Open when the page loads', 'sgs-blocks' ) }
 						checked={ !! isOpen }
-						onChange={ ( value ) => setAttributes( { isOpen: value } ) }
+						onChange={ ( value ) =>
+							setAttributes( { isOpen: value } )
+						}
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
 				{ categoryOn && (
-					<PanelBody title={ __( 'Category', 'sgs-blocks' ) } initialOpen>
+					<PanelBody
+						title={ __( 'Category', 'sgs-blocks' ) }
+						initialOpen
+					>
 						<TextControl
 							label={ __( 'Category', 'sgs-blocks' ) }
-							help={ filterOn
-								? __( 'The topic chip this item belongs to. Items with the same category share a chip.', 'sgs-blocks' )
-								: __( 'The topic this item belongs to, printed as a small line above the heading.', 'sgs-blocks' ) }
+							help={
+								filterOn
+									? __(
+											'The topic chip this item belongs to. Items with the same category share a chip.',
+											'sgs-blocks'
+									  )
+									: __(
+											'The topic this item belongs to, printed as a small line above the heading.',
+											'sgs-blocks'
+									  )
+							}
 							value={ category ?? '' }
-							onChange={ ( value ) => setAttributes( { category: value } ) }
+							onChange={ ( value ) =>
+								setAttributes( { category: value } )
+							}
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
 						<ToggleControl
-							label={ __( 'Show the category above the heading', 'sgs-blocks' ) }
+							label={ __(
+								'Show the category above the heading',
+								'sgs-blocks'
+							) }
 							checked={ !! showCategoryEyebrow }
-							onChange={ ( value ) => setAttributes( { showCategoryEyebrow: value } ) }
+							onChange={ ( value ) =>
+								setAttributes( { showCategoryEyebrow: value } )
+							}
 							__nextHasNoMarginBottom
 						/>
 					</PanelBody>
 				) }
-				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Border', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SgsBorderControl
 						widthValues={ attributes.borderWidth ?? {} }
-						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						onWidthChange={ ( next ) =>
+							setAttributes( { borderWidth: next } )
+						}
 						widthPresets={ [ '10', '20', '30' ] }
 						styleValue={ attributes.borderStyle }
-						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						onStyleChange={ ( val ) =>
+							setAttributes( { borderStyle: val } )
+						}
 						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
 						colourValue={ attributes.borderColour }
-						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						onColourChange={ ( val ) =>
+							setAttributes( { borderColour: val ?? '' } )
+						}
 						colourGradientValue={ attributes.borderColourGradient }
-						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+						onColourGradientChange={ ( val ) =>
+							setAttributes( { borderColourGradient: val ?? '' } )
+						}
 						colourLinked={ true }
 						contrastAgainst={ accordionItemContrastAgainst }
 						radiusValues={ {
-								base: attributes.borderRadius?.desktop ?? {},
-								tablet: attributes.borderRadius?.tablet ?? {},
-								mobile: attributes.borderRadius?.mobile ?? {},
-							} }
+							base: attributes.borderRadius?.desktop ?? {},
+							tablet: attributes.borderRadius?.tablet ?? {},
+							mobile: attributes.borderRadius?.mobile ?? {},
+						} }
 						onRadiusChange={ ( tier, next ) => {
 							const key = tier === 'base' ? 'desktop' : tier;
-							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+							setAttributes( {
+								borderRadius: {
+									...attributes.borderRadius,
+									[ key ]: next,
+								},
+							} );
 						} }
 					/>
 				</PanelBody>
 			</InspectorControls>
 			<div { ...blockProps }>
-			{ /* The content band (.sgs-container__inner) wraps the header and panel
+				{ /* The content band (.sgs-container__inner) wraps the header and panel
 			   when a content width is set, as SGS_Container_Wrapper renders it. */ }
-			<BandWrap hasBandProps={ wrapper.hasBandProps } bandStyle={ wrapper.bandStyle }>
-			{ /* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */ }
-			<div
-				className="sgs-accordion-item__header"
-				style={ head.header }
-				onClick={ () => setManualOpen( ! editorOpen ) }
-			>
-				{ iconPosition === 'left' && chevron }
-				{ showEyebrow ? (
-					<span className="sgs-accordion-item__heading">
-						<span className="sgs-accordion-item__eyebrow">{ category }</span>
-						{ titleField }
-					</span>
-				) : (
-					titleField
-				) }
-				{ iconPosition === 'right' && chevron }
-			</div>
-			<div { ...innerBlocksProps } />
-			</BandWrap>
+				<BandWrap
+					hasBandProps={ wrapper.hasBandProps }
+					bandStyle={ wrapper.bandStyle }
+				>
+					{ /* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */ }
+					<div
+						className="sgs-accordion-item__header"
+						style={ head.header }
+						onClick={ () => setManualOpen( ! editorOpen ) }
+					>
+						{ iconPosition === 'left' && chevron }
+						{ showEyebrow ? (
+							<span className="sgs-accordion-item__heading">
+								<span className="sgs-accordion-item__eyebrow">
+									{ category }
+								</span>
+								{ titleField }
+							</span>
+						) : (
+							titleField
+						) }
+						{ iconPosition === 'right' && chevron }
+					</div>
+					<div { ...innerBlocksProps } />
+				</BandWrap>
 			</div>
 		</>
 	);

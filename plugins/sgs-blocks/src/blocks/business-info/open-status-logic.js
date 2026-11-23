@@ -13,7 +13,10 @@ const MINUTES_PER_DAY = 1440;
 const MINUTES_PER_WEEK = MINUTES_PER_DAY * 7;
 
 const TIME = '(\\d{1,2})(?:\\s*[:.]\\s*(\\d{2}))?\\s*(a\\.?m\\.?|p\\.?m\\.?)?';
-const RANGE_RE = new RegExp( TIME + '\\s*(?:-|\\u2013|\\u2014|to|until|till)\\s*' + TIME, 'gi' );
+const RANGE_RE = new RegExp(
+	TIME + '\\s*(?:-|\\u2013|\\u2014|to|until|till)\\s*' + TIME,
+	'gi'
+);
 const CLOSED_RE = /\b(closed|shut)\b/i;
 const ALL_DAY_RE = /\b(24\s*(?:hours?|hrs?|h)|open\s*24|all\s*day)\b/i;
 
@@ -36,7 +39,8 @@ function toMinutes( hours, minutes, meridiem ) {
 	return h * 60 + m;
 }
 
-const meridiemOf = ( raw ) => ( raw ? raw.replace( /\./g, '' ).toLowerCase() : '' );
+const meridiemOf = ( raw ) =>
+	raw ? raw.replace( /\./g, '' ).toLowerCase() : '';
 
 /**
  * Parse the sessions of one day, e.g. "9.30-12:00, 14:30-17:00" or "9am - 5pm".
@@ -59,7 +63,10 @@ export function parseDay( text ) {
 	// "Closed" before any time range means the day is closed ("Closed", "Closed today (was 9-5)");
 	// a range before it keeps the day's ranges ("9-12, 1-5 (closed for lunch)").
 	const closedAt = source.search( CLOSED_RE );
-	if ( closedAt >= 0 && ! new RegExp( RANGE_RE.source, 'i' ).test( source.slice( 0, closedAt ) ) ) {
+	if (
+		closedAt >= 0 &&
+		! new RegExp( RANGE_RE.source, 'i' ).test( source.slice( 0, closedAt ) )
+	) {
 		return [];
 	}
 	const sessions = [];
@@ -85,7 +92,15 @@ export function parseDay( text ) {
 			}
 		}
 		let end = toMinutes( match[ 4 ], match[ 5 ], eMer );
-		if ( ! sMer && ! eMer && end <= start && Number( match[ 4 ] ) >= 1 && Number( match[ 4 ] ) <= 8 && Number( match[ 1 ] ) >= 5 && Number( match[ 1 ] ) <= 12 ) {
+		if (
+			! sMer &&
+			! eMer &&
+			end <= start &&
+			Number( match[ 4 ] ) >= 1 &&
+			Number( match[ 4 ] ) <= 8 &&
+			Number( match[ 1 ] ) >= 5 &&
+			Number( match[ 1 ] ) <= 12
+		) {
 			// "9-5", "9:00-5:00": UK opening hours written without am/pm close in the afternoon.
 			end = toMinutes( match[ 4 ], match[ 5 ], 'pm' );
 		}
@@ -110,9 +125,18 @@ export function parseSchedule( hours ) {
 }
 
 /** True when at least one day has a session. */
-export const hasAnySession = ( schedule ) => schedule.some( ( day ) => day.length > 0 );
+export const hasAnySession = ( schedule ) =>
+	schedule.some( ( day ) => day.length > 0 );
 
-const WEEKDAY_INDEX = { Mon: 0, Tue: 1, Wed: 2, Thu: 3, Fri: 4, Sat: 5, Sun: 6 };
+const WEEKDAY_INDEX = {
+	Mon: 0,
+	Tue: 1,
+	Wed: 2,
+	Thu: 3,
+	Fri: 4,
+	Sat: 5,
+	Sun: 6,
+};
 
 /**
  * The day and clock time in a time zone at a moment.
@@ -124,7 +148,9 @@ const WEEKDAY_INDEX = { Mon: 0, Tue: 1, Wed: 2, Thu: 3, Fri: 4, Sat: 5, Sun: 6 }
 export function zonedNow( date, timeZone ) {
 	const offset = /^([+-])(\d{2}):?(\d{2})$/.exec( timeZone || '' );
 	if ( offset ) {
-		const total = ( parseInt( offset[ 2 ], 10 ) * 60 + parseInt( offset[ 3 ], 10 ) ) * ( '-' === offset[ 1 ] ? -1 : 1 );
+		const total =
+			( parseInt( offset[ 2 ], 10 ) * 60 + parseInt( offset[ 3 ], 10 ) ) *
+			( '-' === offset[ 1 ] ? -1 : 1 );
 		const shifted = new Date( date.getTime() + total * 60000 );
 		return {
 			day: ( shifted.getUTCDay() + 6 ) % 7,
@@ -138,10 +164,13 @@ export function zonedNow( date, timeZone ) {
 		minute: '2-digit',
 		hourCycle: 'h23',
 	} ).formatToParts( date );
-	const get = ( type ) => parts.find( ( part ) => part.type === type )?.value || '';
+	const get = ( type ) =>
+		parts.find( ( part ) => part.type === type )?.value || '';
 	return {
 		day: WEEKDAY_INDEX[ get( 'weekday' ) ] ?? 0,
-		minutes: ( parseInt( get( 'hour' ), 10 ) % 24 ) * 60 + parseInt( get( 'minute' ), 10 ),
+		minutes:
+			( parseInt( get( 'hour' ), 10 ) % 24 ) * 60 +
+			parseInt( get( 'minute' ), 10 ),
 	};
 }
 
@@ -172,8 +201,8 @@ function weekSessions( schedule ) {
  * `dayOffset` is how many days ahead the change falls (0 today, 1 tomorrow); `day` is its
  * weekday index. Null `change` means no session exists anywhere in the week.
  *
- * @param {Array}  schedule parseSchedule() output.
- * @param {{day:number,minutes:number}} now zonedNow() output.
+ * @param {Array}                       schedule parseSchedule() output.
+ * @param {{day:number,minutes:number}} now      zonedNow() output.
  * @return {{open:boolean,change:null|{kind:string,minutes:number,dayOffset:number,day:number}}} Status.
  */
 export function computeStatus( schedule, now ) {
@@ -189,21 +218,34 @@ export function computeStatus( schedule, now ) {
 			current = { start: current.start, end: next.end };
 			next = sessions.find( ( s ) => s.start === current.end );
 		}
-		return { open: true, change: describe( 'closes', current.end, dayStart ) };
+		return {
+			open: true,
+			change: describe( 'closes', current.end, dayStart ),
+		};
 	}
 
 	const upcoming = sessions.find( ( s ) => s.start > at );
 	if ( ! upcoming ) {
 		return { open: false, change: null };
 	}
-	const endedToday = sessions.some( ( s ) => s.start >= dayStart && s.end <= at );
+	const endedToday = sessions.some(
+		( s ) => s.start >= dayStart && s.end <= at
+	);
 	const sameDay = upcoming.start < dayStart + MINUTES_PER_DAY;
-	return { open: false, change: describe( endedToday && sameDay ? 'reopens' : 'opens', upcoming.start, dayStart ) };
+	return {
+		open: false,
+		change: describe(
+			endedToday && sameDay ? 'reopens' : 'opens',
+			upcoming.start,
+			dayStart
+		),
+	};
 }
 
 function describe( kind, absolute, dayStart ) {
 	const dayOffset = Math.floor( ( absolute - dayStart ) / MINUTES_PER_DAY );
-	const minutes = ( ( absolute % MINUTES_PER_DAY ) + MINUTES_PER_DAY ) % MINUTES_PER_DAY;
+	const minutes =
+		( ( absolute % MINUTES_PER_DAY ) + MINUTES_PER_DAY ) % MINUTES_PER_DAY;
 	const day = ( ( Math.floor( absolute / MINUTES_PER_DAY ) % 7 ) + 7 ) % 7;
 	return { kind, minutes, dayOffset, day };
 }
@@ -219,7 +261,9 @@ export function formatTime( minutes ) {
 	const m = minutes % 60;
 	const suffix = h < 12 ? 'am' : 'pm';
 	const hour = h % 12 || 12;
-	return m ? `${ hour }:${ String( m ).padStart( 2, '0' ) }${ suffix }` : `${ hour }${ suffix }`;
+	return m
+		? `${ hour }:${ String( m ).padStart( 2, '0' ) }${ suffix }`
+		: `${ hour }${ suffix }`;
 }
 
 const DEFAULT_LINE_PATTERN = '{lead} {time} {when}';
@@ -233,7 +277,7 @@ const DEFAULT_LINE_PATTERN = '{lead} {time} {when}';
  * opensPattern, when set, is the word order of the opens line alone.
  *
  * @param {{kind:string,minutes:number,dayOffset:number,day:number}} change computeStatus().change.
- * @param {Object} labels Wording.
+ * @param {Object}                                                   labels Wording.
  * @return {string} The line.
  */
 export function buildLine( change, labels ) {
@@ -249,7 +293,10 @@ export function buildLine( change, labels ) {
 	if ( 'reopens' === change.kind ) {
 		return `${ labels.reopens } ${ time }`;
 	}
-	const pattern = ( 'closes' !== change.kind && labels.opensPattern ) || labels.pattern || DEFAULT_LINE_PATTERN;
+	const pattern =
+		( 'closes' !== change.kind && labels.opensPattern ) ||
+		labels.pattern ||
+		DEFAULT_LINE_PATTERN;
 	let lead = 'closes' === change.kind ? labels.closes : labels.opens;
 	if ( /\bat\s+\{time\}/.test( pattern ) ) {
 		// The pattern supplies its own "at" before the time, so a lead that already ends in "at" ("Closes at") drops it.

@@ -34,7 +34,9 @@ export const LINK_SOURCE_SITE_INFO_KEYS = {
  * @return {number} Post ID or 0.
  */
 export function linkSourcePostId( source ) {
-	const match = /^post:([1-9][0-9]*)$/.exec( 'string' === typeof source ? source : '' );
+	const match = /^post:([1-9][0-9]*)$/.exec(
+		'string' === typeof source ? source : ''
+	);
 	return match ? Number( match[ 1 ] ) : 0;
 }
 
@@ -55,7 +57,9 @@ export function isSafeLinkUrl( url ) {
 	if ( ! scheme ) {
 		return true;
 	}
-	return [ 'http', 'https', 'mailto', 'tel' ].includes( scheme[ 1 ].toLowerCase() );
+	return [ 'http', 'https', 'mailto', 'tel' ].includes(
+		scheme[ 1 ].toLowerCase()
+	);
 }
 
 /**
@@ -64,7 +68,10 @@ export function isSafeLinkUrl( url ) {
  * @return {Object} `{ [key]: { value, link, filled } }`.
  */
 export function editorSiteInfo() {
-	const data = 'undefined' !== typeof window ? window.sgsBlocksData?.siteInfo : undefined;
+	const data =
+		'undefined' !== typeof window
+			? window.sgsBlocksData?.siteInfo
+			: undefined;
 	return data && 'object' === typeof data ? data : {};
 }
 
@@ -72,22 +79,27 @@ export function editorSiteInfo() {
  * Resolve a stored source and typed URL to the href the page prints.
  * Twin: sgs_resolve_link_source().
  *
- * @param {string} source            Stored source value ('' = the typed URL).
- * @param {string} typedUrl          Typed URL (the fallback for every source that cannot resolve).
+ * @param {string} source                 Stored source value ('' = the typed URL).
+ * @param {string} typedUrl               Typed URL (the fallback for every source that cannot resolve).
  * @param {Object} [context]
- * @param {Object} [context.siteInfo]  `window.sgsBlocksData.siteInfo` shape; defaults to the live one.
- * @param {string} [context.permalink] Current permalink of a `post:<id>` target, when known.
- * @param {string} [context.accountUrl] The account destination, when known.
+ * @param {Object} [context.siteInfo]     `window.sgsBlocksData.siteInfo` shape; defaults to the live one.
+ * @param {string} [context.permalink]    Current permalink of a `post:<id>` target, when known.
+ * @param {string} [context.accountUrl]   The account destination, when known.
  * @param {string} [context.orderViewUrl] The current order's view address, when known (never in the editor).
  * @return {{url: string, attrs: Object<string,string>}} Resolved href ('' = no link) and extra attributes.
  */
 export function resolveLinkSource( source, typedUrl, context = {} ) {
-	const typed = { url: 'string' === typeof typedUrl ? typedUrl : '', attrs: {} };
+	const typed = {
+		url: 'string' === typeof typedUrl ? typedUrl : '',
+		attrs: {},
+	};
 	const value = 'string' === typeof source ? source : '';
 
 	if ( linkSourcePostId( value ) > 0 ) {
 		const permalink = context.permalink || '';
-		return permalink && isSafeLinkUrl( permalink ) ? { url: permalink, attrs: {} } : typed;
+		return permalink && isSafeLinkUrl( permalink )
+			? { url: permalink, attrs: {} }
+			: typed;
 	}
 
 	const key = LINK_SOURCE_SITE_INFO_KEYS[ value ];
@@ -105,7 +117,9 @@ export function resolveLinkSource( source, typedUrl, context = {} ) {
 	}
 	if ( 'order-view' === value ) {
 		const orderUrl = context.orderViewUrl || '';
-		return orderUrl && isSafeLinkUrl( orderUrl ) ? { url: orderUrl, attrs: {} } : typed;
+		return orderUrl && isSafeLinkUrl( orderUrl )
+			? { url: orderUrl, attrs: {} }
+			: typed;
 	}
 	return typed;
 }

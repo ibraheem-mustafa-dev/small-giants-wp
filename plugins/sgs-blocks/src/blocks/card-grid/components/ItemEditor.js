@@ -2,11 +2,7 @@
  * One editable card in sgs/card-grid's manual-items inspector list.
  */
 import { __ } from '@wordpress/i18n';
-import {
-	Button,
-	SelectControl,
-	TextControl,
-} from '@wordpress/components';
+import { Button, SelectControl, TextControl } from '@wordpress/components';
 import { LinkPopoverField, IconPicker } from '../../../components';
 import { LINK_SOURCES_ALL } from '../../../shared/link-source-options';
 import ItemImageField from '../../../components/media/ItemImageField.js';
@@ -43,9 +39,24 @@ export default function ItemEditor( { item, index, onChange, onRemove } ) {
 			</p>
 			{ /* The card's photo: the shared media field (picker, Alt text, Decorative), its fit and its focal point, each
 			     written into this card's own `source`, `alt`, `decorative`, `fit` and `focal` (Spec 49 section 8.3). */ }
-			<MediaSlotField attributes={ slotAttrs } setAttributes={ setSlot } prefix={ IMAGE_SLOT.prefix } slot={ IMAGE_SLOT } label={ __( 'Card image', 'sgs-blocks' ) } />
-			<FitField attributes={ slotAttrs } setAttributes={ setSlot } prefix={ IMAGE_SLOT.prefix } slot={ IMAGE_SLOT } />
-			<FocalField attributes={ slotAttrs } setAttributes={ setSlot } prefix={ IMAGE_SLOT.prefix } />
+			<MediaSlotField
+				attributes={ slotAttrs }
+				setAttributes={ setSlot }
+				prefix={ IMAGE_SLOT.prefix }
+				slot={ IMAGE_SLOT }
+				label={ __( 'Card image', 'sgs-blocks' ) }
+			/>
+			<FitField
+				attributes={ slotAttrs }
+				setAttributes={ setSlot }
+				prefix={ IMAGE_SLOT.prefix }
+				slot={ IMAGE_SLOT }
+			/>
+			<FocalField
+				attributes={ slotAttrs }
+				setAttributes={ setSlot }
+				prefix={ IMAGE_SLOT.prefix }
+			/>
 			{ /* Per-item glyph icon — reuses the
 			   shared framework icon registry (same IconPicker as sgs/icon and
 			   sgs/trust-bar's icon-circle items), never a second icon system.
@@ -85,12 +96,19 @@ export default function ItemEditor( { item, index, onChange, onRemove } ) {
 						onChange( {
 							...item,
 							glyphImage: media
-								? { url: media.url, id: media.id, alt: media.alt || '' }
+								? {
+										url: media.url,
+										id: media.id,
+										alt: media.alt || '',
+								  }
 								: null,
 						} )
 					}
 					onRemove={ () => onChange( { ...item, glyphImage: null } ) }
-					label={ __( 'Select an image glyph (optional)', 'sgs-blocks' ) }
+					label={ __(
+						'Select an image glyph (optional)',
+						'sgs-blocks'
+					) }
 					instructions={ __(
 						'Choose an image (a logo mark, a shape outline, a badge) instead of the Lucide icon above',
 						'sgs-blocks'
@@ -98,7 +116,13 @@ export default function ItemEditor( { item, index, onChange, onRemove } ) {
 				/>
 			</div>
 			{ !! item.glyphImage?.url && (
-				<p style={ { margin: '0 0 8px', fontSize: 12, color: '#757575' } }>
+				<p
+					style={ {
+						margin: '0 0 8px',
+						fontSize: 12,
+						color: '#757575',
+					} }
+				>
 					{ __(
 						'This image glyph is shown instead of the Lucide icon above.',
 						'sgs-blocks'
@@ -158,10 +182,18 @@ export default function ItemEditor( { item, index, onChange, onRemove } ) {
 				targetMode="boolean"
 				onChange={ ( next ) => {
 					const patch = { ...item };
-					if ( undefined !== next.url ) patch.link = next.url;
-					if ( undefined !== next.linkSource ) patch.linkSource = next.linkSource;
-					if ( undefined !== next.linkTarget ) patch.linkTarget = next.linkTarget;
-					if ( undefined !== next.rel ) patch.linkRel = next.rel;
+					if ( undefined !== next.url ) {
+						patch.link = next.url;
+					}
+					if ( undefined !== next.linkSource ) {
+						patch.linkSource = next.linkSource;
+					}
+					if ( undefined !== next.linkTarget ) {
+						patch.linkTarget = next.linkTarget;
+					}
+					if ( undefined !== next.rel ) {
+						patch.linkRel = next.rel;
+					}
 					onChange( patch );
 				} }
 			/>

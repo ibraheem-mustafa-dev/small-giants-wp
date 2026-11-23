@@ -49,10 +49,16 @@ export function shadowLiftAttrKeys( prefix = '' ) {
  * @param {string}   [props.attrPrefix]  Attribute prefix for a second shadow on the block ('' = the block root).
  * @return {JSX.Element|null} The switch, or null when the block has no lift.
  */
-export default function ShadowLiftControls( { attributes, setAttributes, liftLabel = '', attrPrefix = '' } ) {
+export default function ShadowLiftControls( {
+	attributes,
+	setAttributes,
+	liftLabel = '',
+	attrPrefix = '',
+} ) {
 	const names = shadowLiftAttrKeys( attrPrefix );
 	const declaresLift =
-		Boolean( attributes ) && Object.prototype.hasOwnProperty.call( attributes, names.lift );
+		Boolean( attributes ) &&
+		Object.prototype.hasOwnProperty.call( attributes, names.lift );
 	if ( ! declaresLift ) {
 		return null;
 	}
@@ -62,7 +68,10 @@ export default function ShadowLiftControls( { attributes, setAttributes, liftLab
 	if ( liftOnHover ) {
 		help = liftLabel
 			? __( 'Lifts to: ', 'sgs-blocks' ) + liftLabel
-			: __( 'Lifts to the matching hover shadow of the shadow you picked.', 'sgs-blocks' );
+			: __(
+					'Lifts to the matching hover shadow of the shadow you picked.',
+					'sgs-blocks'
+			  );
 	}
 
 	return (

@@ -52,25 +52,25 @@ import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
  * The lines BETWEEN submenu rows are not here: they are the shared Separators setting
  * (`submenuSeparators`), mounted beside this panel by each block's edit.js.
  *
- * @param {Object}   root0                          Props.
- * @param {boolean}  root0.showSizingControls       True on `sgs/nav-bar-menu`, false on
- *                                                  `sgs/nav-drawer-menu` (see docblock above).
- * @param {boolean}  [root0.showBoxControls]        True on `sgs/nav-drawer-menu`: shows the section's
- *                                                  corner radius and box shadow without the bar-only sizing controls.
- * @param {string}   [root0.submenuTopOffset]       `submenuTopOffset` — bar only.
- * @param {string}   [root0.submenuMinWidth]        `submenuMinWidth` — bar only.
- * @param {Object}   root0.submenuPadding           `submenuPadding` — responsive tier object, BOTH.
- * @param {Object}   root0.submenuBorderWidth       `submenuBorderWidth`, BOTH.
- * @param {string}   root0.submenuBorderStyle       `submenuBorderStyle`, BOTH.
- * @param {Object}   [root0.submenuBorderRadius]    `submenuBorderRadius` — with `showSizingControls` or `showBoxControls`.
- * @param {string}   [root0.submenuShadow]          `submenuShadow` — with `showSizingControls` or `showBoxControls`. Named explicitly,
- *                                                  not read off `attributes`, so the attribute
- *                                                  name appears in `edit.js` where
- *                                                  inspector-scan rule 21's corpus can see it.
- * @param {string}   [root0.submenuShadowColour]    `submenuShadowColour` — with `showSizingControls` or `showBoxControls`.
- * @param {Object}   [root0.attributes]             Full attributes — `ShadowControl` reads and
- *                                                  writes its own key pair (bar, and the drawer with `showBoxControls`).
- * @param {Function} root0.setAttributes            The block's attribute setter.
+ * @param {Object}   root0                       Props.
+ * @param {boolean}  root0.showSizingControls    True on `sgs/nav-bar-menu`, false on
+ *                                               `sgs/nav-drawer-menu` (see docblock above).
+ * @param {boolean}  [root0.showBoxControls]     True on `sgs/nav-drawer-menu`: shows the section's
+ *                                               corner radius and box shadow without the bar-only sizing controls.
+ * @param {string}   [root0.submenuTopOffset]    `submenuTopOffset` — bar only.
+ * @param {string}   [root0.submenuMinWidth]     `submenuMinWidth` — bar only.
+ * @param {Object}   root0.submenuPadding        `submenuPadding` — responsive tier object, BOTH.
+ * @param {Object}   root0.submenuBorderWidth    `submenuBorderWidth`, BOTH.
+ * @param {string}   root0.submenuBorderStyle    `submenuBorderStyle`, BOTH.
+ * @param {Object}   [root0.submenuBorderRadius] `submenuBorderRadius` — with `showSizingControls` or `showBoxControls`.
+ * @param {string}   [root0.submenuShadow]       `submenuShadow` — with `showSizingControls` or `showBoxControls`. Named explicitly,
+ *                                               not read off `attributes`, so the attribute
+ *                                               name appears in `edit.js` where
+ *                                               inspector-scan rule 21's corpus can see it.
+ * @param {string}   [root0.submenuShadowColour] `submenuShadowColour` — with `showSizingControls` or `showBoxControls`.
+ * @param {Object}   [root0.attributes]          Full attributes — `ShadowControl` reads and
+ *                                               writes its own key pair (bar, and the drawer with `showBoxControls`).
+ * @param {Function} root0.setAttributes         The block's attribute setter.
  */
 export default function DropdownStylePanel( {
 	showSizingControls,
@@ -109,12 +109,16 @@ export default function DropdownStylePanel( {
 				<ToolsPanelItem
 					hasValue={ () => !! submenuTopOffset }
 					label={ __( 'Distance below the bar', 'sgs-blocks' ) }
-					onDeselect={ () => setAttributes( { submenuTopOffset: '' } ) }
+					onDeselect={ () =>
+						setAttributes( { submenuTopOffset: '' } )
+					}
 				>
 					<SgsLengthControl
 						label={ __( 'Distance below the bar', 'sgs-blocks' ) }
 						value={ submenuTopOffset }
-						onChange={ ( val ) => setAttributes( { submenuTopOffset: val || '' } ) }
+						onChange={ ( val ) =>
+							setAttributes( { submenuTopOffset: val || '' } )
+						}
 						help={ __(
 							'The gap between the menu bar and the dropdown. A larger gap looks airier, but the pointer has further to travel — the dropdown bridges the gap so it does not close on the way down.',
 							'sgs-blocks'
@@ -128,12 +132,16 @@ export default function DropdownStylePanel( {
 				<ToolsPanelItem
 					hasValue={ () => !! submenuMinWidth }
 					label={ __( 'Minimum width', 'sgs-blocks' ) }
-					onDeselect={ () => setAttributes( { submenuMinWidth: '' } ) }
+					onDeselect={ () =>
+						setAttributes( { submenuMinWidth: '' } )
+					}
 				>
 					<SgsLengthControl
 						label={ __( 'Minimum width', 'sgs-blocks' ) }
 						value={ submenuMinWidth }
-						onChange={ ( val ) => setAttributes( { submenuMinWidth: val || '' } ) }
+						onChange={ ( val ) =>
+							setAttributes( { submenuMinWidth: val || '' } )
+						}
 						help={ __(
 							'Stops a dropdown shrinking to the width of its shortest link.',
 							'sgs-blocks'
@@ -165,7 +173,10 @@ export default function DropdownStylePanel( {
 					onChange={ ( tier, next ) => {
 						const key = tier === 'base' ? 'desktop' : tier;
 						setAttributes( {
-							submenuPadding: { ...submenuPadding, [ key ]: next },
+							submenuPadding: {
+								...submenuPadding,
+								[ key ]: next,
+							},
 						} );
 					} }
 				/>
@@ -202,7 +213,9 @@ export default function DropdownStylePanel( {
 						? {
 								radiusValues: submenuBorderRadius || {},
 								onRadiusChange: ( next ) =>
-									setAttributes( { submenuBorderRadius: next || {} } ),
+									setAttributes( {
+										submenuBorderRadius: next || {},
+									} ),
 						  }
 						: {} ) }
 				/>
@@ -217,10 +230,15 @@ export default function DropdownStylePanel( {
 			   colour, and a gradient there is invalid CSS the browser drops. */ }
 			{ showBox && (
 				<ToolsPanelItem
-					hasValue={ () => !! submenuShadow || !! submenuShadowColour }
+					hasValue={ () =>
+						!! submenuShadow || !! submenuShadowColour
+					}
 					label={ __( 'Box shadow', 'sgs-blocks' ) }
 					onDeselect={ () =>
-						setAttributes( { submenuShadow: '', submenuShadowColour: '' } )
+						setAttributes( {
+							submenuShadow: '',
+							submenuShadowColour: '',
+						} )
 					}
 				>
 					<ShadowControl

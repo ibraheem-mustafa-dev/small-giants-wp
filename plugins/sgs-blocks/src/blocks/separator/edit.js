@@ -18,8 +18,28 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, SelectControl, RangeControl } from '@wordpress/components';
-import { LogicalAlignControl, IconPicker, IconPreview, ResponsiveOverride, ResponsiveBoxControl, TypographyControls, SgsColourPanel, SgsLengthControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, textRow } from '../../components';
-import { colourVar, resolveTextColourPreviewStyle, usePreviewTier, typographyPreviewStyle,  tierBoxLonghands, resolveTier } from '../../utils';
+import {
+	LogicalAlignControl,
+	IconPicker,
+	IconPreview,
+	ResponsiveOverride,
+	ResponsiveBoxControl,
+	TypographyControls,
+	SgsColourPanel,
+	SgsLengthControl,
+	BOX_UNITS,
+	normaliseResponsiveBox,
+	SgsBoxControl,
+	textRow,
+} from '../../components';
+import {
+	colourVar,
+	resolveTextColourPreviewStyle,
+	usePreviewTier,
+	typographyPreviewStyle,
+	tierBoxLonghands,
+	resolveTier,
+} from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { cssLengthValue } from '../../utils/css-length';
 
@@ -100,13 +120,19 @@ function currentIconName( attrs ) {
  */
 export function separatorSizePreview( width, thickness, tier ) {
 	return {
-		width: cssLengthValue( resolveTier( width, tier ).value ?? '' ) || undefined,
-		borderBottomWidth: cssLengthValue( resolveTier( thickness, tier ).value ?? '' ) || undefined,
+		width:
+			cssLengthValue( resolveTier( width, tier ).value ?? '' ) ||
+			undefined,
+		borderBottomWidth:
+			cssLengthValue( resolveTier( thickness, tier ).value ?? '' ) ||
+			undefined,
 	};
 }
 
 export default function Edit( { attributes, setAttributes } ) {
-	const { padding, margin,
+	const {
+		padding,
+		margin,
 		lineStyle,
 		width,
 		thickness,
@@ -127,7 +153,8 @@ export default function Edit( { attributes, setAttributes } ) {
 	// attr each holding {desktop,tablet,mobile}. A narrower tier inherits the
 	// wider one, as the front-end media rules do; the previewed device decides.
 	const previewTier = usePreviewTier();
-	const { width: previewWidth, borderBottomWidth: previewThickness } = separatorSizePreview( width, thickness, previewTier );
+	const { width: previewWidth, borderBottomWidth: previewThickness } =
+		separatorSizePreview( width, thickness, previewTier );
 
 	// ---- Editor-canvas preview (mirrors render.php's scoped output) ----
 	const lineDecls = {};
@@ -156,7 +183,11 @@ export default function Edit( { attributes, setAttributes } ) {
 				: undefined,
 	};
 
-	const paddingLonghands = tierBoxLonghands( padding, previewTier, 'padding' );
+	const paddingLonghands = tierBoxLonghands(
+		padding,
+		previewTier,
+		'padding'
+	);
 	Object.assign( rootPreviewStyle, paddingLonghands );
 	const marginProps = alignmentMargin( alignment );
 	const marginLonghands = tierBoxLonghands( margin, previewTier, 'margin' );
@@ -164,8 +195,12 @@ export default function Edit( { attributes, setAttributes } ) {
 		// The explicit margin's set top/bottom (an unset one keeps the stylesheet's value, as
 		// render.php prints only set sides) with the alignment-driven left/right.
 		Object.assign( rootPreviewStyle, {
-			...( marginLonghands.marginTop ? { marginTop: marginLonghands.marginTop } : {} ),
-			...( marginLonghands.marginBottom ? { marginBottom: marginLonghands.marginBottom } : {} ),
+			...( marginLonghands.marginTop
+				? { marginTop: marginLonghands.marginTop }
+				: {} ),
+			...( marginLonghands.marginBottom
+				? { marginBottom: marginLonghands.marginBottom }
+				: {} ),
 			marginInlineStart: marginProps.marginInlineStart,
 			marginInlineEnd: marginProps.marginInlineEnd,
 		} );
@@ -218,11 +253,14 @@ export default function Edit( { attributes, setAttributes } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: colour,
-								onChange: ( val ) => setAttributes( { colour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( { colour: val ?? '' } ),
 								linked: true,
 								gradientValue: lineGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { lineGradient: val ?? '' } ),
+									setAttributes( {
+										lineGradient: val ?? '',
+									} ),
 							},
 						],
 					},
@@ -255,7 +293,12 @@ export default function Edit( { attributes, setAttributes } ) {
 						value={ width }
 						onChange={ ( obj ) => setAttributes( { width: obj } ) }
 					>
-						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+						{ ( {
+							ownValue,
+							effectiveValue,
+							inherited,
+							setOwnValue,
+						} ) => (
 							<SgsLengthControl
 								presets={ false }
 								label={ __( 'Width', 'sgs-blocks' ) }
@@ -328,7 +371,8 @@ export default function Edit( { attributes, setAttributes } ) {
 
 					{ 'text' === contentMode && (
 						<>
-							<SgsFreeTextField type="rich"
+							<SgsFreeTextField
+								type="rich"
 								label={ __( 'Label text', 'sgs-blocks' ) }
 								value={ contentText }
 								onChange={ ( val ) =>
@@ -338,7 +382,17 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 							{ /* Text colour moved to the top-level SgsColourPanel
 							   (D618/D621) — "Content colour" row. */ }
-							<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextStroke showTextColumns showWritingMode
+							<TypographyControls
+								fontSizePresets
+								showFontFamily
+								showDecoration
+								showTransform
+								showLetterSpacing
+								showTextAlign
+								showTextWrap
+								showTextStroke
+								showTextColumns
+								showWritingMode
 								attributes={ attributes }
 								setAttributes={ setAttributes }
 								prefix="content"
@@ -369,7 +423,9 @@ export default function Edit( { attributes, setAttributes } ) {
 					<ToolsPanelItem
 						label={ __( 'Line style', 'sgs-blocks' ) }
 						hasValue={ () => lineStyle !== 'solid' }
-						onDeselect={ () => setAttributes( { lineStyle: 'solid' } ) }
+						onDeselect={ () =>
+							setAttributes( { lineStyle: 'solid' } )
+						}
 						isShownByDefault
 					>
 						<SelectControl
@@ -396,7 +452,10 @@ export default function Edit( { attributes, setAttributes } ) {
 							!! (
 								thickness &&
 								Object.values( thickness ).some(
-									( v ) => v !== undefined && v !== null && v !== ''
+									( v ) =>
+										v !== undefined &&
+										v !== null &&
+										v !== ''
 								)
 							)
 						}
@@ -412,7 +471,12 @@ export default function Edit( { attributes, setAttributes } ) {
 								setAttributes( { thickness: obj } )
 							}
 						>
-							{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+							{ ( {
+								ownValue,
+								effectiveValue,
+								inherited,
+								setOwnValue,
+							} ) => (
 								<SgsLengthControl
 									presets={ false }
 									label={ __( 'Thickness', 'sgs-blocks' ) }
@@ -422,7 +486,9 @@ export default function Edit( { attributes, setAttributes } ) {
 										inherited ? effectiveValue || '' : ''
 									}
 									units={ THICKNESS_UNITS }
-									onChange={ ( raw ) => setOwnValue( raw || '' ) }
+									onChange={ ( raw ) =>
+										setOwnValue( raw || '' )
+									}
 								/>
 							) }
 						</ResponsiveOverride>
@@ -461,15 +527,25 @@ export default function Edit( { attributes, setAttributes } ) {
 				>
 					<ResponsiveOverride
 						value={ attributes.padding }
-						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { padding: obj } )
+						}
 					>
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
@@ -480,10 +556,18 @@ export default function Edit( { attributes, setAttributes } ) {
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
@@ -499,7 +583,11 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 					<span
 						className="sgs-separator__content"
-						style={ typographyPreviewStyle( attributes, 'content', previewTier ) }
+						style={ typographyPreviewStyle(
+							attributes,
+							'content',
+							previewTier
+						) }
 					>
 						{ 'icon' === contentMode && (
 							<span
@@ -527,7 +615,12 @@ export default function Edit( { attributes, setAttributes } ) {
 									colourVar
 								) }
 							>
-								<AuthoredText value={ contentText || __( 'Label…', 'sgs-blocks' ) } />
+								<AuthoredText
+									value={
+										contentText ||
+										__( 'Label…', 'sgs-blocks' )
+									}
+								/>
 							</span>
 						) }
 					</span>

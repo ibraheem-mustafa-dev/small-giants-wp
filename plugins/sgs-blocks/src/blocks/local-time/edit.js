@@ -214,7 +214,8 @@ export default function Edit( { attributes, setAttributes } ) {
 						allowReset
 						__nextHasNoMarginBottom
 					/>
-					<SgsFreeTextField type="rich"
+					<SgsFreeTextField
+						type="rich"
 						label={ __( 'Label', 'sgs-blocks' ) }
 						help={ __(
 							'e.g. a city name — "London", "LA".',

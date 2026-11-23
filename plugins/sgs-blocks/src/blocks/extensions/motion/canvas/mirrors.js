@@ -21,10 +21,18 @@ export const MIRROR_ATTR = 'data-sgs-motion-mirror';
  * @return {Element[]} The mirror roots.
  */
 export function mirrorRoots( clientId, rootEl ) {
-	if ( ! rootEl || typeof clientId !== 'string' || ! /^[A-Za-z0-9-]+$/.test( clientId ) ) {
+	if (
+		! rootEl ||
+		typeof clientId !== 'string' ||
+		! /^[A-Za-z0-9-]+$/.test( clientId )
+	) {
 		return [];
 	}
-	return [ ...rootEl.ownerDocument.querySelectorAll( `[${ MIRROR_ATTR }="${ clientId }"]` ) ]
+	return [
+		...rootEl.ownerDocument.querySelectorAll(
+			`[${ MIRROR_ATTR }="${ clientId }"]`
+		),
+	]
 		.filter( ( host ) => ! host.closest( '[hidden]' ) )
 		.map( ( host ) => host.querySelector( '[data-block]' ) )
 		.filter( Boolean );

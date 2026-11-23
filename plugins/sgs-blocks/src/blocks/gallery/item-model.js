@@ -8,11 +8,18 @@
  * @package SGS\Blocks
  */
 import { generateItemKey } from '../../utils';
-import { hasFile, sourceFromAttachment } from '../../components/media/mediaSlotWrites.js';
+import {
+	hasFile,
+	sourceFromAttachment,
+} from '../../components/media/mediaSlotWrites.js';
 import { resolveTierSource } from '../../components/media/deviceValues.js';
 
 /** The gallery's one media slot. */
-export const ITEM_SLOT = { prefix: 'item', kinds: [ 'image', 'video' ], context: 'item' };
+export const ITEM_SLOT = {
+	prefix: 'item',
+	kinds: [ 'image', 'video' ],
+	context: 'item',
+};
 
 const upperFirst = ( text ) => text.charAt( 0 ).toUpperCase() + text.slice( 1 );
 const lowerFirst = ( text ) => text.charAt( 0 ).toLowerCase() + text.slice( 1 );
@@ -65,7 +72,11 @@ export function itemFile( item, device = 'desktop' ) {
 		return { kind: 'image', url: '', poster: '' };
 	}
 	return {
-		kind: found.kind || ( /\.(mp4|webm|mov|ogv|m4v)(\?|#|$)/i.test( found.url || '' ) ? 'video' : 'image' ),
+		kind:
+			found.kind ||
+			( /\.(mp4|webm|mov|ogv|m4v)(\?|#|$)/i.test( found.url || '' )
+				? 'video'
+				: 'image' ),
 		url: found.url || '',
 		poster: found.poster?.url || '',
 	};

@@ -11,7 +11,11 @@ import {
 	RangeControl,
 	SelectControl,
 } from '@wordpress/components';
-import { FlexWrapControl, ResponsiveControl, SgsLengthControl } from '../../../components';
+import {
+	FlexWrapControl,
+	ResponsiveControl,
+	SgsLengthControl,
+} from '../../../components';
 
 import SgsFreeTextField from '../../../components/SgsFreeTextField';
 /**
@@ -47,7 +51,10 @@ export default function WishlistLayoutPanel( { attributes, setAttributes } ) {
 				value={ layout }
 				help={
 					'product-cards' === layout
-						? __( 'Each saved product is drawn with the product card inside the panel. Style that card like a Shop card, or paste a Shop card over it.', 'sgs-blocks' )
+						? __(
+								'Each saved product is drawn with the product card inside the panel. Style that card like a Shop card, or paste a Shop card over it.',
+								'sgs-blocks'
+						  )
 						: undefined
 				}
 				options={ [
@@ -58,17 +65,24 @@ export default function WishlistLayoutPanel( { attributes, setAttributes } ) {
 						value: 'strip',
 					},
 					{
-						label: __( 'Cards (photo, brand, heart, price)', 'sgs-blocks' ),
+						label: __(
+							'Cards (photo, brand, heart, price)',
+							'sgs-blocks'
+						),
 						value: 'cards',
 					},
 					{
-						label: __( 'Site product cards (same as the shop)', 'sgs-blocks' ),
+						label: __(
+							'Site product cards (same as the shop)',
+							'sgs-blocks'
+						),
 						value: 'product-cards',
 					},
 				] }
 				onChange={ ( value ) => setAttributes( { layout: value } ) }
 			/>
-			<SgsFreeTextField type="rich"
+			<SgsFreeTextField
+				type="rich"
 				label={ __( 'Heading', 'sgs-blocks' ) }
 				value={ heading }
 				onChange={ ( value ) => setAttributes( { heading: value } ) }
@@ -116,12 +130,15 @@ export default function WishlistLayoutPanel( { attributes, setAttributes } ) {
 					/>
 				</>
 			) }
-			<SgsFreeTextField type="rich"
+			<SgsFreeTextField
+				type="rich"
 				label={ __( 'Empty-wishlist text', 'sgs-blocks' ) }
 				value={ emptyText }
 				onChange={ ( value ) => setAttributes( { emptyText: value } ) }
 			/>
-			<SgsFreeTextField type="rich" noLink
+			<SgsFreeTextField
+				type="rich"
+				noLink
 				label={ __( 'Empty-wishlist link label', 'sgs-blocks' ) }
 				value={ emptyLinkLabel }
 				onChange={ ( value ) =>
@@ -205,7 +222,9 @@ export default function WishlistLayoutPanel( { attributes, setAttributes } ) {
 			<FlexWrapControl
 				label={ __( 'Wrap item buttons', 'sgs-blocks' ) }
 				value={ rowActionsFlexWrap }
-				onChange={ ( value ) => setAttributes( { rowActionsFlexWrap: value } ) }
+				onChange={ ( value ) =>
+					setAttributes( { rowActionsFlexWrap: value } )
+				}
 			/>
 		</PanelBody>
 	);

@@ -18,7 +18,9 @@ import { motionParts } from './resolve-target';
 
 const hasBase = ( element ) => {
 	const base = element?.entrance?.base;
-	return Boolean( base ) && typeof base === 'object' && ! Array.isArray( base );
+	return (
+		Boolean( base ) && typeof base === 'object' && ! Array.isArray( base )
+	);
 };
 
 const copy = ( value ) => JSON.parse( JSON.stringify( value ) );
@@ -50,7 +52,11 @@ function containerTarget( targets, elements ) {
  * @return {string|null} The target key.
  */
 export function movedEntranceTarget( motion, targets, elements ) {
-	if ( motion?.stagger?.apply !== true || ! targets || typeof targets !== 'object' ) {
+	if (
+		motion?.stagger?.apply !== true ||
+		! targets ||
+		typeof targets !== 'object'
+	) {
 		return null;
 	}
 	return containerTarget( targets, elements );
@@ -91,7 +97,9 @@ export function withoutDelays( base ) {
 	} );
 	if ( Array.isArray( out.customised ) ) {
 		out.customised = out.customised.filter(
-			( path ) => typeof path !== 'string' || ! /(?:^|\.)(?:delay|closeDelay)$/.test( path )
+			( path ) =>
+				typeof path !== 'string' ||
+				! /(?:^|\.)(?:delay|closeDelay)$/.test( path )
 		);
 	}
 	return out;
@@ -129,5 +137,7 @@ export function inheritedItem( motion, targets, elements, motionItems ) {
  * @return {string|null} The target key.
  */
 export function delegatedMove( motion, targets, elements, delegation ) {
-	return delegation?.childRootEntrance === true ? null : movedEntranceTarget( motion, targets, elements );
+	return delegation?.childRootEntrance === true
+		? null
+		: movedEntranceTarget( motion, targets, elements );
 }

@@ -40,7 +40,12 @@
  * @package SGS\Blocks
  */
 import { __ } from '@wordpress/i18n';
-import { useState, useRef, forwardRef, useImperativeHandle } from '@wordpress/element';
+import {
+	useState,
+	useRef,
+	forwardRef,
+	useImperativeHandle,
+} from '@wordpress/element';
 import { BaseControl, Button } from '@wordpress/components';
 import { useInstanceId } from '@wordpress/compose';
 import { link as linkIcon } from '@wordpress/icons';
@@ -59,42 +64,42 @@ export { LinkPopoverContent, TARGET_ENUM_OPTIONS } from './LinkPopoverContent';
  * `sgs/button` doesn't use this wrapper (it needs two independently-styled
  * triggers), but a future consumer with the same need can.
  *
- * @param {Object}   props
- * @param {string}   props.label                 Row/BaseControl label.
- * @param {string}   [props.help]                Help text.
- * @param {Object}   props.value                 { url, linkId, linkKind, linkTarget, rel, download,
- *                                                 linkSource }.
- * @param {Function} props.onChange               Receives the next partial value object — merge
- *                                                 into attributes yourself (matches `setAttributes`'s
- *                                                 own merge semantics). With `linkSources` it may
- *                                                 carry `linkSource` (map it to the call site's
- *                                                 source attribute like any other key).
- * @param {string[]} [props.linkSources]          Turns on the "Link to" choice and lists the
- *                                                 sources offered besides the typed URL
- *                                                 (`LINK_SOURCES_ALL` / `_WEB` / `_PAGES`). The
- *                                                 stored source is `value.linkSource`, or the
- *                                                 `linkSource` prop with `searchOnly`, where
- *                                                 `onChange( url, { linkSource } )` gets it as a
- *                                                 second argument whenever it changes.
- * @param {string}   [props.linkSource]           searchOnly only: the stored source.
- * @param {'enum'|'boolean'} [props.targetMode]   See `LinkPopoverContent`. Default 'boolean'
- *                                                 (matches icon/media's existing SgsLinkControl shape).
- * @param {boolean}  [props.showTarget=true]      Show the open-in-new-tab control.
- * @param {boolean}  [props.showRel=true]         Show the rel field.
- * @param {boolean}  [props.showDownload=false]   Show the download toggle.
- * @param {boolean}  [props.enableInternalResolution=false] See `LinkPopoverContent`.
- * @param {Function} [props.renderExtraFields]    See `LinkPopoverContent`.
- * @param {boolean}  [props.searchOnly=false]     Opt-in variant for plain string-URL attributes
- *                                                that have no new-tab/rel/download concept (e.g.
- *                                                `sgs/product-card`'s `ctaUrl`). `value` is a bare
- *                                                URL STRING and `onChange` receives the next url
- *                                                STRING directly — matches `SgsLinkControl`'s own
- *                                                `searchOnly` contract, which this supersedes.
- *                                                Forces target/rel/download rows off regardless of
- *                                                the show* props.
- * @param {Object}   [props.suggestionsQuery]     See `LinkPopoverContent`.
- * @param {string}   [props.emptyLabel]           Button text while nothing is chosen (default
- *                                                "Add link"), e.g. "Choose a saved form".
+ * @param {Object}           props
+ * @param {string}           props.label                            Row/BaseControl label.
+ * @param {string}           [props.help]                           Help text.
+ * @param {Object}           props.value                            { url, linkId, linkKind, linkTarget, rel, download,
+ *                                                                  linkSource }.
+ * @param {Function}         props.onChange                         Receives the next partial value object — merge
+ *                                                                  into attributes yourself (matches `setAttributes`'s
+ *                                                                  own merge semantics). With `linkSources` it may
+ *                                                                  carry `linkSource` (map it to the call site's
+ *                                                                  source attribute like any other key).
+ * @param {string[]}         [props.linkSources]                    Turns on the "Link to" choice and lists the
+ *                                                                  sources offered besides the typed URL
+ *                                                                  (`LINK_SOURCES_ALL` / `_WEB` / `_PAGES`). The
+ *                                                                  stored source is `value.linkSource`, or the
+ *                                                                  `linkSource` prop with `searchOnly`, where
+ *                                                                  `onChange( url, { linkSource } )` gets it as a
+ *                                                                  second argument whenever it changes.
+ * @param {string}           [props.linkSource]                     searchOnly only: the stored source.
+ * @param {'enum'|'boolean'} [props.targetMode]                     See `LinkPopoverContent`. Default 'boolean'
+ *                                                                  (matches icon/media's existing SgsLinkControl shape).
+ * @param {boolean}          [props.showTarget=true]                Show the open-in-new-tab control.
+ * @param {boolean}          [props.showRel=true]                   Show the rel field.
+ * @param {boolean}          [props.showDownload=false]             Show the download toggle.
+ * @param {boolean}          [props.enableInternalResolution=false] See `LinkPopoverContent`.
+ * @param {Function}         [props.renderExtraFields]              See `LinkPopoverContent`.
+ * @param {boolean}          [props.searchOnly=false]               Opt-in variant for plain string-URL attributes
+ *                                                                  that have no new-tab/rel/download concept (e.g.
+ *                                                                  `sgs/product-card`'s `ctaUrl`). `value` is a bare
+ *                                                                  URL STRING and `onChange` receives the next url
+ *                                                                  STRING directly — matches `SgsLinkControl`'s own
+ *                                                                  `searchOnly` contract, which this supersedes.
+ *                                                                  Forces target/rel/download rows off regardless of
+ *                                                                  the show* props.
+ * @param {Object}           [props.suggestionsQuery]               See `LinkPopoverContent`.
+ * @param {string}           [props.emptyLabel]                     Button text while nothing is chosen (default
+ *                                                                  "Add link"), e.g. "Choose a saved form".
  */
 const LinkPopoverField = forwardRef( function LinkPopoverField(
 	{
@@ -123,9 +128,10 @@ const LinkPopoverField = forwardRef( function LinkPopoverField(
 		open: () => setIsOpen( true ),
 	} ) );
 
-	const url = searchOnly ? ( value || '' ) : ( value?.url || '' );
+	const url = searchOnly ? value || '' : value?.url || '';
 	const sourceOn = Array.isArray( linkSources ) && linkSources.length > 0;
-	const linkSource = ( searchOnly ? searchOnlySource : value?.linkSource ) || '';
+	const linkSource =
+		( searchOnly ? searchOnlySource : value?.linkSource ) || '';
 	const rowText = sourceOn ? linkSourceRowText( linkSource, url ) : url;
 	// searchOnly hands the url as a string, so a source change rides as a second argument.
 	const emitLink = ( next ) => {
@@ -139,18 +145,29 @@ const LinkPopoverField = forwardRef( function LinkPopoverField(
 			onChange( next.url || '' );
 		}
 	};
-	const emitSource = ( next ) => ( searchOnly ? onChange( url, { linkSource: next } ) : onChange( { linkSource: next } ) );
+	const emitSource = ( next ) =>
+		searchOnly
+			? onChange( url, { linkSource: next } )
+			: onChange( { linkSource: next } );
 
 	// `id` is required for BaseControl to give its own `help` paragraph an id
 	// (`${id}__help`, the same convention every native self-wiring control
 	// gets from useBaseControlProps()) — without it the paragraph renders
 	// with no id at all and nothing can point aria-describedby at it.
-	const instanceId = useInstanceId( LinkPopoverField, 'sgs-link-popover-field' );
+	const instanceId = useInstanceId(
+		LinkPopoverField,
+		'sgs-link-popover-field'
+	);
 	const id = `sgs-link-popover-field-${ instanceId }`;
 	const helpId = help ? `${ id }__help` : undefined;
 
 	return (
-		<BaseControl id={ id } label={ label } help={ help } __nextHasNoMarginBottom>
+		<BaseControl
+			id={ id }
+			label={ label }
+			help={ help }
+			__nextHasNoMarginBottom
+		>
 			<Button
 				ref={ triggerRef }
 				variant="tertiary"
@@ -161,7 +178,9 @@ const LinkPopoverField = forwardRef( function LinkPopoverField(
 				onClick={ () => setIsOpen( true ) }
 			>
 				<span className="sgs-link-popover__row-label">
-					{ rowText ? rowText : emptyLabel || __( 'Add link', 'sgs-blocks' ) }
+					{ rowText
+						? rowText
+						: emptyLabel || __( 'Add link', 'sgs-blocks' ) }
 				</span>
 			</Button>
 			{ isOpen && (
@@ -175,12 +194,28 @@ const LinkPopoverField = forwardRef( function LinkPopoverField(
 					rel={ searchOnly ? undefined : value?.rel }
 					download={ searchOnly ? undefined : value?.download }
 					targetMode={ targetMode }
-					enableInternalResolution={ ! searchOnly && enableInternalResolution }
+					enableInternalResolution={
+						! searchOnly && enableInternalResolution
+					}
 					onChangeLink={ emitLink }
-					onChangeTarget={ ! searchOnly && showTarget ? ( val ) => onChange( { linkTarget: val } ) : undefined }
-					onChangeRel={ ! searchOnly && showRel ? ( val ) => onChange( { rel: val } ) : undefined }
-					onChangeDownload={ ! searchOnly && showDownload ? ( val ) => onChange( { download: val } ) : undefined }
-					renderExtraFields={ searchOnly ? undefined : renderExtraFields }
+					onChangeTarget={
+						! searchOnly && showTarget
+							? ( val ) => onChange( { linkTarget: val } )
+							: undefined
+					}
+					onChangeRel={
+						! searchOnly && showRel
+							? ( val ) => onChange( { rel: val } )
+							: undefined
+					}
+					onChangeDownload={
+						! searchOnly && showDownload
+							? ( val ) => onChange( { download: val } )
+							: undefined
+					}
+					renderExtraFields={
+						searchOnly ? undefined : renderExtraFields
+					}
 					suggestionsQuery={ suggestionsQuery }
 					linkSource={ linkSource }
 					linkSources={ linkSources }

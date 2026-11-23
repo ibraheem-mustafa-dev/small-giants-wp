@@ -12,7 +12,13 @@
 
 import { __ } from '@wordpress/i18n';
 import { useSelect } from '@wordpress/data';
-import { RawHTML, useEffect, useMemo, useState, memo } from '@wordpress/element';
+import {
+	RawHTML,
+	useEffect,
+	useMemo,
+	useState,
+	memo,
+} from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
 import { Spinner } from '@wordpress/components';
 import {
@@ -58,8 +64,13 @@ function TemplateCard( { sample = false } ) {
  * @param {Function} props.onActivate Makes this product the active one.
  */
 function TemplatePreview( { blocks, item, isHidden, onActivate } ) {
-	const itemBlocks = useMemo( () => previewBlocks( blocks, item ), [ blocks, item ] );
-	const templateId = blocks.find( ( block ) => block.name === TEMPLATE_CARD )?.clientId;
+	const itemBlocks = useMemo(
+		() => previewBlocks( blocks, item ),
+		[ blocks, item ]
+	);
+	const templateId = blocks.find(
+		( block ) => block.name === TEMPLATE_CARD
+	)?.clientId;
 	const previewProps = useBlockPreview( {
 		blocks: itemBlocks,
 		props: {
@@ -72,9 +83,14 @@ function TemplatePreview( { blocks, item, isHidden, onActivate } ) {
 			{ ...previewProps }
 			tabIndex={ 0 }
 			role="button"
-			aria-label={ __( 'Edit the card design on this product', 'sgs-blocks' ) }
+			aria-label={ __(
+				'Edit the card design on this product',
+				'sgs-blocks'
+			) }
 			onClick={ onActivate }
-			onKeyDown={ ( event ) => ( 'Enter' === event.key || ' ' === event.key ) && onActivate() }
+			onKeyDown={ ( event ) =>
+				( 'Enter' === event.key || ' ' === event.key ) && onActivate()
+			}
 			hidden={ isHidden }
 		/>
 	);
@@ -88,19 +104,34 @@ const MemoTemplatePreview = memo( TemplatePreview );
  * @return {{items: Array|null, paginationHtml: string, emptyMessage: string, error: string}} Null items while loading.
  */
 function useGridItems( query ) {
-	const [ state, setState ] = useState( { items: null, paginationHtml: '', emptyMessage: '', error: '' } );
+	const [ state, setState ] = useState( {
+		items: null,
+		paginationHtml: '',
+		emptyMessage: '',
+		error: '',
+	} );
 	const key = JSON.stringify( query );
 	useEffect( () => {
 		let live = true;
 		setState( ( prev ) => ( { ...prev, items: null } ) );
-		apiFetch( { path: '/sgs/v1/card-grid-items', method: 'POST', data: { attributes: query } } )
+		apiFetch( {
+			path: '/sgs/v1/card-grid-items',
+			method: 'POST',
+			data: { attributes: query },
+		} )
 			.then(
 				( res ) =>
 					live &&
 					setState( {
 						items: Array.isArray( res?.items ) ? res.items : [],
-						paginationHtml: typeof res?.paginationHtml === 'string' ? res.paginationHtml : '',
-						emptyMessage: typeof res?.emptyMessage === 'string' ? res.emptyMessage : '',
+						paginationHtml:
+							typeof res?.paginationHtml === 'string'
+								? res.paginationHtml
+								: '',
+						emptyMessage:
+							typeof res?.emptyMessage === 'string'
+								? res.emptyMessage
+								: '',
 						error: '',
 					} )
 			)
@@ -111,7 +142,9 @@ function useGridItems( query ) {
 						items: [],
 						paginationHtml: '',
 						emptyMessage: '',
-						error: err?.message || __( 'Products could not be loaded.', 'sgs-blocks' ),
+						error:
+							err?.message ||
+							__( 'Products could not be loaded.', 'sgs-blocks' ),
 					} )
 			);
 		return () => {
@@ -123,33 +156,59 @@ function useGridItems( query ) {
 	return state;
 }
 
-export default function ProductTemplateCanvas( { query, clientId, blockProps, gridStyle, sep } ) {
-	const { items, paginationHtml, emptyMessage, error } = useGridItems( query );
+export default function ProductTemplateCanvas( {
+	query,
+	clientId,
+	blockProps,
+	gridStyle,
+	sep,
+} ) {
+	const { items, paginationHtml, emptyMessage, error } =
+		useGridItems( query );
 	const [ activeId, setActiveId ] = useState( null );
-	const blocks = useSelect( ( select ) => select( blockEditorStore ).getBlocks( clientId ), [ clientId ] );
+	const blocks = useSelect(
+		( select ) => select( blockEditorStore ).getBlocks( clientId ),
+		[ clientId ]
+	);
 
 	const list = items || [];
-	const active = list.some( ( item ) => item.id === activeId ) ? activeId : list[ 0 ]?.id;
+	const active = list.some( ( item ) => item.id === activeId )
+		? activeId
+		: list[ 0 ]?.id;
 
 	return (
 		<div { ...blockProps }>
-			<div className="sgs-card-grid sgs-card-grid--card" ref={ sep?.ref } style={ { ...gridStyle, ...( sep?.style || {} ) } }>
+			<div
+				className="sgs-card-grid sgs-card-grid--card"
+				ref={ sep?.ref }
+				style={ { ...gridStyle, ...( sep?.style || {} ) } }
+			>
 				{ null === items && <Spinner /> }
 				{ null !== items && 0 === list.length && (
 					<>
 						{ ( error || emptyMessage ) && (
 							<div className="sgs-card-grid__empty">
-								<p className="sgs-card-grid__empty-message">{ error || <AuthoredText value={ emptyMessage } /> }</p>
+								<p className="sgs-card-grid__empty-message">
+									{ error || (
+										<AuthoredText value={ emptyMessage } />
+									) }
+								</p>
 							</div>
 						) }
 						<p className="sgs-card-grid__template-note">
-							{ __( 'The card below is the design every product will use. Visitors do not see it.', 'sgs-blocks' ) }
+							{ __(
+								'The card below is the design every product will use. Visitors do not see it.',
+								'sgs-blocks'
+							) }
 						</p>
 						<TemplateCard sample />
 					</>
 				) }
 				{ list.map( ( item ) => (
-					<BlockContextProvider key={ item.id } value={ itemContext( item ) }>
+					<BlockContextProvider
+						key={ item.id }
+						value={ itemContext( item ) }
+					>
 						{ item.id === active && <TemplateCard /> }
 						<MemoTemplatePreview
 							blocks={ blocks }
@@ -159,7 +218,9 @@ export default function ProductTemplateCanvas( { query, clientId, blockProps, gr
 						/>
 					</BlockContextProvider>
 				) ) }
-				{ '' !== paginationHtml && <RawHTML>{ paginationHtml }</RawHTML> }
+				{ '' !== paginationHtml && (
+					<RawHTML>{ paginationHtml }</RawHTML>
+				) }
 			</div>
 		</div>
 	);

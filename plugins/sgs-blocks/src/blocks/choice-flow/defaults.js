@@ -33,9 +33,11 @@ export function applyDefaultSelections( flowEl ) {
 		return;
 	}
 
-	flowEl.querySelectorAll( DEFAULT_OPTION_SELECTOR ).forEach( ( buttonEl ) => {
-		buttonEl.classList.add( SELECTED_CLASS );
-	} );
+	flowEl
+		.querySelectorAll( DEFAULT_OPTION_SELECTOR )
+		.forEach( ( buttonEl ) => {
+			buttonEl.classList.add( SELECTED_CLASS );
+		} );
 }
 
 /**

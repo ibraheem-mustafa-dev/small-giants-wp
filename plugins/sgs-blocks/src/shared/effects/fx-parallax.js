@@ -98,7 +98,9 @@ export function restRect( el ) {
 	const style = window.getComputedStyle( el );
 	const layoutHeight = layoutBox( el ).height;
 	const originY =
-		Number.parseFloat( String( style.transformOrigin || '' ).split( ' ' )[ 1 ] ) || 0;
+		Number.parseFloat(
+			String( style.transformOrigin || '' ).split( ' ' )[ 1 ]
+		) || 0;
 	// A held scale moves the painted top by originY * (1 - scale); undo it so the rest top is the layout one.
 	return {
 		top:
@@ -164,7 +166,11 @@ export function register( el ) {
 		observe( el, { basis: 'page' } );
 	} else {
 		viewElements.add( el );
-		observe( el, { basis: 'view', measure: restRect, onUpdate: writeTravel } );
+		observe( el, {
+			basis: 'view',
+			measure: restRect,
+			onUpdate: writeTravel,
+		} );
 	}
 	listen();
 }

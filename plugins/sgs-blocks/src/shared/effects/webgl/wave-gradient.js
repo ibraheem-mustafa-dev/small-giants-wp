@@ -342,17 +342,17 @@ function compile( gl, type, source ) {
  * program that will not link. The caller treats null as "leave the CSS fallback
  * visible", which is the whole fail-open contract.
  *
- * @param {HTMLCanvasElement} canvas   Target canvas.
- * @param {Object}            opts     Options.
- * @param {number[][]}        opts.colours [base, layer1, layer2, layer3] as 0-1 RGB.
+ * @param {HTMLCanvasElement} canvas           Target canvas.
+ * @param {Object}            opts             Options.
+ * @param {number[][]}        opts.colours     [base, layer1, layer2, layer3] as 0-1 RGB.
  * @param {number}            [opts.amplitude] How strongly the 3 layers assert
- *   against the base colour, 0-1ish (NOT geometric displacement — this effect
- *   has no geometry to displace). Same option name as before for API/inspector
- *   compatibility; its meaning changed with the 2026-08-27 technique change.
+ *                                             against the base colour, 0-1ish (NOT geometric displacement — this effect
+ *                                             has no geometry to displace). Same option name as before for API/inspector
+ *                                             compatibility; its meaning changed with the 2026-08-27 technique change.
  * @param {number}            [opts.sharpness] Layer edge softness exponent,
- *   default 1.6. Lower = softer/more translucent edges; higher = more defined
- *   bands. Kept well below the old vertex-mesh version's exponent because a
- *   soft edge IS the point of this technique.
+ *                                             default 1.6. Lower = softer/more translucent edges; higher = more defined
+ *                                             bands. Kept well below the old vertex-mesh version's exponent because a
+ *                                             soft edge IS the point of this technique.
  * @param {Function}          [opts.onLost]    Called when the GPU context is lost.
  * @return {{draw: Function, resize: Function, destroy: Function}|null} Handle.
  */
@@ -433,7 +433,10 @@ export function createWaveGradient( canvas, opts = {} ) {
 	// Softness exponent for the per-layer alpha curve. Deliberately low: a
 	// soft, translucent edge is the whole point of this technique, unlike the
 	// vertex-mesh version's sharpness uniform, which fought a hard-edged mesh.
-	gl.uniform1f( u( 'u_sharpness' ), opts.sharpness === undefined ? 1.6 : opts.sharpness );
+	gl.uniform1f(
+		u( 'u_sharpness' ),
+		opts.sharpness === undefined ? 1.6 : opts.sharpness
+	);
 
 	// Per-layer scale, drift and ceiling. Three genuinely different fields —
 	// different frequency, different drift DIRECTION (not just speed) and a
@@ -464,9 +467,20 @@ export function createWaveGradient( canvas, opts = {} ) {
 	];
 	const LAYER_OPACITY = [ 0.85, 0.65, 0.55 ];
 	for ( let i = 0; i < WAVE_LAYERS; i++ ) {
-		gl.uniform3fv( u( `u_layerColour[${ i }]` ), toLinear( colours[ i + 1 ] ) );
-		gl.uniform2f( u( `u_layerFreq[${ i }]` ), LAYER_FREQ[ i ][ 0 ], LAYER_FREQ[ i ][ 1 ] );
-		gl.uniform2f( u( `u_layerDrift[${ i }]` ), LAYER_DRIFT[ i ][ 0 ], LAYER_DRIFT[ i ][ 1 ] );
+		gl.uniform3fv(
+			u( `u_layerColour[${ i }]` ),
+			toLinear( colours[ i + 1 ] )
+		);
+		gl.uniform2f(
+			u( `u_layerFreq[${ i }]` ),
+			LAYER_FREQ[ i ][ 0 ],
+			LAYER_FREQ[ i ][ 1 ]
+		);
+		gl.uniform2f(
+			u( `u_layerDrift[${ i }]` ),
+			LAYER_DRIFT[ i ][ 0 ],
+			LAYER_DRIFT[ i ][ 1 ]
+		);
 		gl.uniform1f( u( `u_layerOpacity[${ i }]` ), LAYER_OPACITY[ i ] );
 		gl.uniform1f( u( `u_layerSeed[${ i }]` ), i * 37.4 );
 	}

@@ -21,7 +21,18 @@
 
 import { colourVar, isCssGradient } from '../../utils';
 import { fontFamilyCssValue } from '../../utils/typography-preview';
-import { drawerShellPreviewCss, drawerTilePreviewCss, drawerCardBoxPreviewDecls, drawerStackedPreviewCss, drawerMediaHeightPreviewCss, drawerTrailingPreviewCss, drawerCardLinkPreviewCss, drawerCardTagPreviewCss, drawerCardDescPreviewCss, drawerHoverPreviewCss } from './drawer-preview-extras';
+import {
+	drawerShellPreviewCss,
+	drawerTilePreviewCss,
+	drawerCardBoxPreviewDecls,
+	drawerStackedPreviewCss,
+	drawerMediaHeightPreviewCss,
+	drawerTrailingPreviewCss,
+	drawerCardLinkPreviewCss,
+	drawerCardTagPreviewCss,
+	drawerCardDescPreviewCss,
+	drawerHoverPreviewCss,
+} from './drawer-preview-extras';
 
 const SAFE_LENGTH_RE = /^[-\w.\s%(),+*/]+$/;
 const BOX_SIDES = [ 'top', 'right', 'bottom', 'left' ];
@@ -40,7 +51,9 @@ function boxSideDecls( box, family ) {
 	}
 	return BOX_SIDES.map( ( side ) => {
 		const value = String( box[ side ] ?? '' ).trim();
-		return value && SAFE_LENGTH_RE.test( value ) ? `${ family }-${ side }:${ value };` : '';
+		return value && SAFE_LENGTH_RE.test( value )
+			? `${ family }-${ side }:${ value };`
+			: '';
 	} ).join( '' );
 }
 
@@ -92,7 +105,9 @@ export default function drawerPreviewCss( scope, v ) {
 		drawerPreviewBaseCss( scope, v ) +
 		drawerCardTagPreviewCss( aside, v ) +
 		drawerCardLinkPreviewCss( aside, v ) +
-		( v.drawerCardCompact && 'stacked-overlay' !== v.drawerCardLayout ? '' : drawerCardDescPreviewCss( aside, v ) )
+		( v.drawerCardCompact && 'stacked-overlay' !== v.drawerCardLayout
+			? ''
+			: drawerCardDescPreviewCss( aside, v ) )
 	);
 }
 
@@ -123,7 +138,12 @@ function drawerPreviewBaseCss( scope, v ) {
 			v.drawerLinkNumWeight,
 			v.drawerLinkNumFontFamily,
 		],
-		[ `${ row } .wp-block-sgs-heading`, v.drawerLinkLabelColour, v.drawerLinkLabelColourGradient, v.drawerLinkLabelSize ],
+		[
+			`${ row } .wp-block-sgs-heading`,
+			v.drawerLinkLabelColour,
+			v.drawerLinkLabelColourGradient,
+			v.drawerLinkLabelSize,
+		],
 		[
 			`${ row } .wp-block-sgs-container .wp-block-sgs-text`,
 			v.drawerLinkDescColour,
@@ -132,7 +152,11 @@ function drawerPreviewBaseCss( scope, v ) {
 		],
 	];
 	parts.forEach( ( [ selector, colour, grad, size, weight, family ] ) => {
-		const decls = textPaint( colour, grad ) + decl( 'font-size', size ) + decl( 'font-weight', weight ) + decl( 'font-family', fontFamilyCssValue( family ) );
+		const decls =
+			textPaint( colour, grad ) +
+			decl( 'font-size', size ) +
+			decl( 'font-weight', weight ) +
+			decl( 'font-family', fontFamilyCssValue( family ) );
 		if ( decls ) {
 			css += `${ selector }{${ decls }}`;
 		}
@@ -154,12 +178,19 @@ function drawerPreviewBaseCss( scope, v ) {
 		? `background-image:${ cardGradient };`
 		: decl( 'background-color', flat( v.drawerCardBg ) );
 	if ( v.drawerCardSpacing ) {
-		cardDecls += `${ orderFirst ? 'margin-bottom' : 'margin-top' }:${ v.drawerCardSpacing };`;
+		cardDecls += `${ orderFirst ? 'margin-bottom' : 'margin-top' }:${
+			v.drawerCardSpacing
+		};`;
 	}
 	if ( 'stacked-overlay' === v.drawerCardLayout ) {
-		const ring = v.drawerCardBorderColour || gradient( v.drawerCardBorderColourGradient )
-			? `border:1px solid transparent;${ borderPaint( v.drawerCardBorderColour, v.drawerCardBorderColourGradient ) }`
-			: '';
+		const ring =
+			v.drawerCardBorderColour ||
+			gradient( v.drawerCardBorderColourGradient )
+				? `border:1px solid transparent;${ borderPaint(
+						v.drawerCardBorderColour,
+						v.drawerCardBorderColourGradient
+				  ) }`
+				: '';
 		return css + drawerStackedPreviewCss( aside, cardDecls + ring, v );
 	}
 	if ( ! v.drawerCardCompact ) {
@@ -169,16 +200,30 @@ function drawerPreviewBaseCss( scope, v ) {
 	}
 
 	const thumb = v.drawerCardThumbSize || '64px';
-	const hasBorder = !! ( v.drawerCardBorderColour || gradient( v.drawerCardBorderColourGradient ) );
+	const hasBorder = !! (
+		v.drawerCardBorderColour || gradient( v.drawerCardBorderColourGradient )
+	);
 	css +=
 		`${ aside }{display:grid;grid-template-columns:${ thumb } minmax(0,1fr);` +
-		`column-gap:${ v.drawerCardGap || '14px' };align-items:center;align-content:center;flex:none;width:100%;` +
+		`column-gap:${
+			v.drawerCardGap || '14px'
+		};align-items:center;align-content:center;flex:none;width:100%;` +
 		`border-style:solid;border-width:${ hasBorder ? '1px' : '0' };` +
-		`border-radius:${ v.drawerCardRadius || '0' };padding:${ v.drawerCardPadding || '0' };` +
-		`${ cardDecls }${ borderPaint( v.drawerCardBorderColour, v.drawerCardBorderColourGradient ) }}`;
+		`border-radius:${ v.drawerCardRadius || '0' };padding:${
+			v.drawerCardPadding || '0'
+		};` +
+		`${ cardDecls }${ borderPaint(
+			v.drawerCardBorderColour,
+			v.drawerCardBorderColourGradient
+		) }}`;
 	css += `${ aside } > :nth-child(1):not(.sgs-block-link-overlay){grid-column:1;grid-row:1 / span 3;width:${ thumb };height:${ thumb };min-height:0;margin:0;overflow:hidden;}`;
-	css += `${ aside } > :nth-child(2):not(.sgs-block-link-overlay){grid-column:2;grid-row:1;justify-self:start;margin:0 0 6px;${ boxSideDecls( v.drawerCardTagMargin, 'margin' ) }}`;
-	css += `${ aside } > :nth-child(3):not(.sgs-block-link-overlay){grid-column:2;grid-row:2;margin:0;letter-spacing:normal;line-height:${ v.drawerCardTitleLineHeight || 'normal' };}`;
+	css += `${ aside } > :nth-child(2):not(.sgs-block-link-overlay){grid-column:2;grid-row:1;justify-self:start;margin:0 0 6px;${ boxSideDecls(
+		v.drawerCardTagMargin,
+		'margin'
+	) }}`;
+	css += `${ aside } > :nth-child(3):not(.sgs-block-link-overlay){grid-column:2;grid-row:2;margin:0;letter-spacing:normal;line-height:${
+		v.drawerCardTitleLineHeight || 'normal'
+	};}`;
 	css += `${ aside } > :nth-child(4):not(.sgs-block-link-overlay){display:none;}`;
 	css += `${ aside } > :nth-child(5):not(.sgs-block-link-overlay){grid-column:2;grid-row:3;margin:6px 0 0;}`;
 

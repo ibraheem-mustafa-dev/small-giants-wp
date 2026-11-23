@@ -41,12 +41,9 @@ const DEFAULT_GROUPS = registry.defaultGroups;
 const BASES = new Set( ROWS.map( ( row ) => row.base ) );
 
 /** The typography bases stored as `{desktop,tablet,mobile}` objects. */
-const TIER_TYPOGRAPHY_BASES = ROWS
-	.filter(
-		( row ) =>
-			'typography' === row.group && 'tier_object' === row.tier_shape
-	)
-	.map( ( row ) => row.base );
+const TIER_TYPOGRAPHY_BASES = ROWS.filter(
+	( row ) => 'typography' === row.group && 'tier_object' === row.tier_shape
+).map( ( row ) => row.base );
 
 /** The hover lift is a length in px, at most the ceiling `includes/helpers-hover-lift.php` clamps to (SGS_HOVER_LIFT_MAX_PX). */
 const HOVER_LIFT_UNITS = [ 'px' ];
@@ -109,12 +106,12 @@ const TYPOGRAPHY_TARGET = {
 
 /**
  * @param {Object}   props
- * @param {Object}   props.attributes    Block attributes.
- * @param {Function} props.setAttributes Block `setAttributes`.
- * @param {string}   props.blockName     Block name, for the padding's declared defaults.
- * @param {string}   props.prefix        The button's attribute prefix.
- * @param {string}   props.label         Panel title.
- * @param {string[]} [props.groups]      Declared groups; omitted means every group except `gradient`.
+ * @param {Object}   props.attributes      Block attributes.
+ * @param {Function} props.setAttributes   Block `setAttributes`.
+ * @param {string}   props.blockName       Block name, for the padding's declared defaults.
+ * @param {string}   props.prefix          The button's attribute prefix.
+ * @param {string}   props.label           Panel title.
+ * @param {string[]} [props.groups]        Declared groups; omitted means every group except `gradient`.
  * @param {Function} [props.seedForPreset] Optional: the preset slug just picked in, further attributes out, written in the same step.
  * @return {JSX.Element|null} The panels.
  */
@@ -267,7 +264,9 @@ export default function BuiltinButtonPanelBody( {
 							onChange={ ( value ) =>
 								setAttributes( {
 									[ attr( 'Style' ) ]: value,
-									...( seedForPreset ? seedForPreset( value ) : {} ),
+									...( seedForPreset
+										? seedForPreset( value )
+										: {} ),
 								} )
 							}
 						/>

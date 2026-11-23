@@ -25,7 +25,9 @@ export function clipAnchors() {
 
 function complement( amount ) {
 	const rest = 100 - Number( amount );
-	return `${ Number.isInteger( rest ) ? rest : Number( rest.toFixed( 4 ) ) }%`;
+	return `${
+		Number.isInteger( rest ) ? rest : Number( rest.toFixed( 4 ) )
+	}%`;
 }
 
 function edges( def, amount, edge, anchor, report ) {
@@ -40,11 +42,18 @@ function edges( def, amount, edge, anchor, report ) {
 	const row = clipAnchors()[ anchor ];
 	const side = row ? String( row.measuredFrom || '' ) : '';
 	const prop = row ? String( row.property || '' ) : '';
-	if ( ! EDGES[ side ] || ! /^--[a-z0-9-]+$/.test( prop ) || ( edge !== side && OPPOSITE[ side ] !== edge ) ) {
+	if (
+		! EDGES[ side ] ||
+		! /^--[a-z0-9-]+$/.test( prop ) ||
+		( edge !== side && OPPOSITE[ side ] !== edge )
+	) {
 		report( { id: 'clip-anchor-edge', anchor, edge } );
 		return out;
 	}
-	out[ EDGES[ edge ] ] = edge === side ? `var(${ prop }, ${ css })` : `calc(100% - var(${ prop }, ${ complement( amount ) }))`;
+	out[ EDGES[ edge ] ] =
+		edge === side
+			? `var(${ prop }, ${ css })`
+			: `calc(100% - var(${ prop }, ${ complement( amount ) }))`;
 	return out;
 }
 
@@ -66,17 +75,30 @@ export function applyClipEdge( tiers, decls, report = () => {} ) {
 		let single = false;
 		const settings = {};
 		TIERS.forEach( ( tier ) => {
-			const values = tiers[ tier ][ end ] && typeof tiers[ tier ][ end ] === 'object' ? tiers[ tier ][ end ] : {};
+			const values =
+				tiers[ tier ][ end ] && typeof tiers[ tier ][ end ] === 'object'
+					? tiers[ tier ][ end ]
+					: {};
 			let set = false;
-			if ( has( values, 'clip' ) && valueCss( def, 'clip', values.clip ) !== null ) {
+			if (
+				has( values, 'clip' ) &&
+				valueCss( def, 'clip', values.clip ) !== null
+			) {
 				amount = values.clip;
 				set = true;
 			}
-			if ( has( values, 'clipEdge' ) && valueCss( def, 'clipEdge', values.clipEdge ) !== null ) {
+			if (
+				has( values, 'clipEdge' ) &&
+				valueCss( def, 'clipEdge', values.clipEdge ) !== null
+			) {
 				edge = String( values.clipEdge );
 				set = true;
 			}
-			if ( has( values, 'clipFromAnchor' ) && valueCss( def, 'clipFromAnchor', values.clipFromAnchor ) !== null ) {
+			if (
+				has( values, 'clipFromAnchor' ) &&
+				valueCss( def, 'clipFromAnchor', values.clipFromAnchor ) !==
+					null
+			) {
 				anchor = String( values.clipFromAnchor );
 				set = true;
 			}
@@ -91,9 +113,11 @@ export function applyClipEdge( tiers, decls, report = () => {} ) {
 		const uniform = `${ ME_PREFIX }${ end }-clip`;
 		Object.entries( settings ).forEach( ( [ tier, [ a, e, n ] ] ) => {
 			delete decls[ tier ][ uniform ];
-			Object.entries( edges( def, a, e, n, report ) ).forEach( ( [ suffix, css ] ) => {
-				decls[ tier ][ `${ uniform }-${ suffix }` ] = css;
-			} );
+			Object.entries( edges( def, a, e, n, report ) ).forEach(
+				( [ suffix, css ] ) => {
+					decls[ tier ][ `${ uniform }-${ suffix }` ] = css;
+				}
+			);
 		} );
 	} );
 }
@@ -109,17 +133,24 @@ export function applyClipEdge( tiers, decls, report = () => {} ) {
  * @param {Object} decls Per-tier close declarations (mutated).
  */
 export function applyCloseClipEdge( base, decls ) {
-	const plain = ( v ) => ( v && typeof v === 'object' && ! Array.isArray( v ) ? v : {} );
+	const plain = ( v ) =>
+		v && typeof v === 'object' && ! Array.isArray( v ) ? v : {};
 	let amount = null;
 	const ends = { from: 'all', to: 'all' };
 	let single = false;
 	const settings = {};
 	TIERS.forEach( ( tier ) => {
-		const source = tier === 'desktop' ? plain( base ) : plain( base?.devices?.[ tier ] );
+		const source =
+			tier === 'desktop'
+				? plain( base )
+				: plain( base?.devices?.[ tier ] );
 		const values = tier === 'desktop' ? plain( base?.values ) : source;
 		const close = plain( plain( source.close ).to );
 		let set = false;
-		if ( has( close, 'clip' ) && valueCss( 'EntranceCloseTo', 'clip', close.clip ) !== null ) {
+		if (
+			has( close, 'clip' ) &&
+			valueCss( 'EntranceCloseTo', 'clip', close.clip ) !== null
+		) {
 			amount = close.clip;
 			set = true;
 		}
@@ -128,7 +159,10 @@ export function applyCloseClipEdge( base, decls ) {
 			[ 'to', 'EntranceTo' ],
 		].forEach( ( [ end, def ] ) => {
 			const endValues = plain( values[ end ] );
-			if ( has( endValues, 'clipEdge' ) && valueCss( def, 'clipEdge', endValues.clipEdge ) !== null ) {
+			if (
+				has( endValues, 'clipEdge' ) &&
+				valueCss( def, 'clipEdge', endValues.clipEdge ) !== null
+			) {
 				ends[ end ] = String( endValues.clipEdge );
 				set = true;
 			}
@@ -145,7 +179,9 @@ export function applyCloseClipEdge( base, decls ) {
 	const uniform = `${ ME_PREFIX }close-to-clip`;
 	Object.entries( settings ).forEach( ( [ tier, [ a, e ] ] ) => {
 		delete decls[ tier ][ uniform ];
-		Object.entries( edges( 'EntranceCloseTo', a, e, 'none', () => {} ) ).forEach( ( [ suffix, css ] ) => {
+		Object.entries(
+			edges( 'EntranceCloseTo', a, e, 'none', () => {} )
+		).forEach( ( [ suffix, css ] ) => {
 			decls[ tier ][ `${ uniform }-${ suffix }` ] = css;
 		} );
 	} );

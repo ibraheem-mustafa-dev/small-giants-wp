@@ -36,9 +36,18 @@ export function chunkIds( list, size ) {
  * @param {Function} [send] The fetch function (a test passes its own).
  * @return {Promise<Map<number,string>>} Product ID to card HTML.
  */
-export async function fetchProductCards( labels, ids, send = window.fetch.bind( window ) ) {
+export async function fetchProductCards(
+	labels,
+	ids,
+	send = window.fetch.bind( window )
+) {
 	const cards = new Map();
-	if ( ! labels.cardsUrl || ! labels.cardTemplate || ! labels.cardSig || ! ids.length ) {
+	if (
+		! labels.cardsUrl ||
+		! labels.cardTemplate ||
+		! labels.cardSig ||
+		! ids.length
+	) {
 		return cards;
 	}
 	await Promise.all(
@@ -48,14 +57,24 @@ export async function fetchProductCards( labels, ids, send = window.fetch.bind( 
 					method: 'POST',
 					credentials: 'same-origin',
 					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify( { ids: chunk, template: labels.cardTemplate, sig: labels.cardSig } ),
+					body: JSON.stringify( {
+						ids: chunk,
+						template: labels.cardTemplate,
+						sig: labels.cardSig,
+					} ),
 				} );
 				if ( ! response.ok ) {
 					return;
 				}
 				const json = await response.json();
-				for ( const item of Array.isArray( json?.items ) ? json.items : [] ) {
-					if ( item && 'string' === typeof item.html && Number( item.id ) > 0 ) {
+				for ( const item of Array.isArray( json?.items )
+					? json.items
+					: [] ) {
+					if (
+						item &&
+						'string' === typeof item.html &&
+						Number( item.id ) > 0
+					) {
 						cards.set( Number( item.id ), item.html );
 					}
 				}

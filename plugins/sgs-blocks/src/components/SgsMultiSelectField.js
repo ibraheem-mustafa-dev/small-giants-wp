@@ -32,16 +32,22 @@ import { FormTokenField } from '@wordpress/components';
 
 /**
  * @param {Object}   props
- * @param {string}   props.label        Field label.
- * @param {string[]} props.value        Current tokens (display names).
- * @param {Function} props.onChange     Receives the next token array.
- * @param {string[]} props.suggestions  The full list of valid names — only an
- *   exact match (typed in full, or picked from the dropdown) becomes a
- *   token.
- * @param {string}   [props.help]       Overrides the default hint. Pass an
- *   empty string to suppress it entirely.
+ * @param {string}   props.label       Field label.
+ * @param {string[]} props.value       Current tokens (display names).
+ * @param {Function} props.onChange    Receives the next token array.
+ * @param {string[]} props.suggestions The full list of valid names — only an
+ *                                     exact match (typed in full, or picked from the dropdown) becomes a
+ *                                     token.
+ * @param {string}   [props.help]      Overrides the default hint. Pass an
+ *                                     empty string to suppress it entirely.
  */
-export default function SgsMultiSelectField( { label, value, onChange, suggestions, help } ) {
+export default function SgsMultiSelectField( {
+	label,
+	value,
+	onChange,
+	suggestions,
+	help,
+} ) {
 	return (
 		<FormTokenField
 			label={ label }
@@ -55,7 +61,10 @@ export default function SgsMultiSelectField( { label, value, onChange, suggestio
 			messages={ {
 				added: __( 'Item added.', 'sgs-blocks' ),
 				removed: __( 'Item removed.', 'sgs-blocks' ),
-				__experimentalInvalid: __( 'That name doesn’t match anything — check the spelling and try again.', 'sgs-blocks' ),
+				__experimentalInvalid: __(
+					'That name doesn’t match anything — check the spelling and try again.',
+					'sgs-blocks'
+				),
 			} }
 			help={ help }
 		/>

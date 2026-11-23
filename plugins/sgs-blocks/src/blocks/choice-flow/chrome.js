@@ -20,14 +20,14 @@
 
 import { replayStepEntrance } from './flow-steps.js';
 
-const EYEBROW_SELECTOR         = '.sgs-choice-flow__chrome-eyebrow';
-const HEADER_SELECTOR          = '.sgs-choice-flow__chrome-header';
+const EYEBROW_SELECTOR = '.sgs-choice-flow__chrome-eyebrow';
+const HEADER_SELECTOR = '.sgs-choice-flow__chrome-header';
 const SOURCE_STEP_COUNT_SELECTOR = '.sgs-choice-flow__step-count';
 const SOURCE_STEP_LABEL_SELECTOR = '.sgs-choice-flow__step-label';
-const CLOSE_SELECTOR           = '.sgs-choice-flow__chrome-close';
-const MODAL_DIALOG_SELECTOR    = 'dialog.sgs-modal__dialog';
-const MODAL_CLOSE_SELECTOR     = '.sgs-modal__close';
-const SHOWCASE_CLASS           = 'sgs-choice-flow--layout-showcase';
+const CLOSE_SELECTOR = '.sgs-choice-flow__chrome-close';
+const MODAL_DIALOG_SELECTOR = 'dialog.sgs-modal__dialog';
+const MODAL_CLOSE_SELECTOR = '.sgs-modal__close';
+const SHOWCASE_CLASS = 'sgs-choice-flow--layout-showcase';
 
 /**
  * `showcase`'s eyebrow: the step name on the first question, then
@@ -43,7 +43,10 @@ const SHOWCASE_CLASS           = 'sgs-choice-flow--layout-showcase';
 function composeShowcaseEyebrow( flowEl ) {
 	const headerEl = flowEl.querySelector( HEADER_SELECTOR );
 	const brandEl = flowEl.querySelector( '.sgs-choice-flow__summary-brand' );
-	const product = [ brandEl ? brandEl.textContent.trim() : '', headerEl ? headerEl.getAttribute( 'data-product-name' ) || '' : '' ]
+	const product = [
+		brandEl ? brandEl.textContent.trim() : '',
+		headerEl ? headerEl.getAttribute( 'data-product-name' ) || '' : '',
+	]
 		.filter( Boolean )
 		.join( ' ' );
 	const stepLabelEl = flowEl.querySelector( SOURCE_STEP_LABEL_SELECTOR );
@@ -75,7 +78,9 @@ function mirrorStepEyebrow( flowEl ) {
 	const showcase = flowEl.classList.contains( SHOWCASE_CLASS );
 
 	const sync = () => {
-		eyebrowEl.textContent = showcase ? composeShowcaseEyebrow( flowEl ) : sourceEl.textContent;
+		eyebrowEl.textContent = showcase
+			? composeShowcaseEyebrow( flowEl )
+			: sourceEl.textContent;
 	};
 
 	// Pick up whatever showStepByIndex() has already written by the time
@@ -84,12 +89,20 @@ function mirrorStepEyebrow( flowEl ) {
 	sync();
 
 	const observer = new MutationObserver( sync );
-	observer.observe( sourceEl, { childList: true, characterData: true, subtree: true } );
+	observer.observe( sourceEl, {
+		childList: true,
+		characterData: true,
+		subtree: true,
+	} );
 
 	if ( showcase ) {
 		const stepLabelEl = flowEl.querySelector( SOURCE_STEP_LABEL_SELECTOR );
 		if ( stepLabelEl ) {
-			observer.observe( stepLabelEl, { childList: true, characterData: true, subtree: true } );
+			observer.observe( stepLabelEl, {
+				childList: true,
+				characterData: true,
+				subtree: true,
+			} );
 		}
 	}
 }
@@ -139,11 +152,15 @@ function wireClose( flowEl ) {
 			flowEl.focus( { preventScroll: true } );
 			// The first question was revealed while the dialog was closed; rise it in now it can be seen.
 			replayStepEntrance( flowEl );
-			flowEl.querySelectorAll( '.sgs-choice-flow__summary-total-value, .sgs-choice-flow__summary-summary-total-value' ).forEach( ( totalEl ) => {
-				totalEl.classList.remove( 'is-updated' );
-				void totalEl.offsetWidth; // Restart the animation.
-				totalEl.classList.add( 'is-updated' );
-			} );
+			flowEl
+				.querySelectorAll(
+					'.sgs-choice-flow__summary-total-value, .sgs-choice-flow__summary-summary-total-value'
+				)
+				.forEach( ( totalEl ) => {
+					totalEl.classList.remove( 'is-updated' );
+					void totalEl.offsetWidth; // Restart the animation.
+					totalEl.classList.add( 'is-updated' );
+				} );
 		}
 	} ).observe( dialog, { attributes: true, attributeFilter: [ 'open' ] } );
 

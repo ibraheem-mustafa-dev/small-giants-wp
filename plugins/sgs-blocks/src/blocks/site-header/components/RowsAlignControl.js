@@ -67,15 +67,22 @@ export default function RowsAlignControl( { attributes, setAttributes } ) {
 										{
 											label: sprintf(
 												/* translators: %s: the alignment inherited from the wider device, e.g. "Centre". */
-												__( '— same as wider screens (%s) —', 'sgs-blocks' ),
-												ROWS_ALIGN_LABELS[ effectiveValue ] || ROWS_ALIGN_LABELS.center
+												__(
+													'— same as wider screens (%s) —',
+													'sgs-blocks'
+												),
+												ROWS_ALIGN_LABELS[
+													effectiveValue
+												] || ROWS_ALIGN_LABELS.center
 											),
 											value: '',
 										},
 										...ROWS_ALIGN_OPTIONS,
 								  ]
 						}
-						onChange={ ( value ) => setOwnValue( value || undefined ) }
+						onChange={ ( value ) =>
+							setOwnValue( value || undefined )
+						}
 						help={ __(
 							'Where the rows sit when the header is taller than their own content — for example a Min height set above the tallest row. Stretch grows the rows to fill the extra height instead of leaving a gap.',
 							'sgs-blocks'

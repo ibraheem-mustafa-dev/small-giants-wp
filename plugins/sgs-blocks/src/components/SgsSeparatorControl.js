@@ -23,7 +23,12 @@ import { link as linkIcon, linkOff as linkOffIcon } from '@wordpress/icons';
 import { ToggleGroupControl, ToggleGroupControlOption } from './primitives';
 import SeparatorAxisRow from './SeparatorAxisRow';
 import SweepAngleControl from './SweepAngleControl';
-import { SEPARATOR_AXES, axesMatch, patchSeparatorAxis, separatorAxis } from '../utils/separators';
+import {
+	SEPARATOR_AXES,
+	axesMatch,
+	patchSeparatorAxis,
+	separatorAxis,
+} from '../utils/separators';
 
 const AXIS_TITLE = {
 	row: __( 'Between rows', 'sgs-blocks' ),
@@ -32,19 +37,25 @@ const AXIS_TITLE = {
 
 const EDGE_OPTIONS = [
 	{ label: __( 'Between items only', 'sgs-blocks' ), value: 'between' },
-	{ label: __( 'Between items and at both ends', 'sgs-blocks' ), value: 'all' },
-	{ label: __( 'Between items and after the last', 'sgs-blocks' ), value: 'end' },
+	{
+		label: __( 'Between items and at both ends', 'sgs-blocks' ),
+		value: 'all',
+	},
+	{
+		label: __( 'Between items and after the last', 'sgs-blocks' ),
+		value: 'end',
+	},
 ];
 
 /**
  * @param {Object}   props
- * @param {string}   [props.label]   Heading above the control. Omit it when the panel title already says it.
- * @param {Object}   props.value     The stored `separators` object.
- * @param {Function} props.onChange  Receives the whole next object.
- * @param {string[]} [props.axes]    The axes this list offers. Default both.
- * @param {boolean}  [props.edges]   Offer the outer-lines choice.
- * @param {boolean}  [props.hover]   Offer a hover colour (and the treatment).
- * @param {boolean}  [props.sweep]   Offer the sweep treatment (needs `hover`).
+ * @param {string}   [props.label]  Heading above the control. Omit it when the panel title already says it.
+ * @param {Object}   props.value    The stored `separators` object.
+ * @param {Function} props.onChange Receives the whole next object.
+ * @param {string[]} [props.axes]   The axes this list offers. Default both.
+ * @param {boolean}  [props.edges]  Offer the outer-lines choice.
+ * @param {boolean}  [props.hover]  Offer a hover colour (and the treatment).
+ * @param {boolean}  [props.sweep]  Offer the sweep treatment (needs `hover`).
  * @return {JSX.Element} The control.
  */
 export default function SgsSeparatorControl( {
@@ -59,7 +70,12 @@ export default function SgsSeparatorControl( {
 	const stored = value && typeof value === 'object' ? value : {};
 	const both = axes.length > 1;
 	const [ linked, setLinked ] = useState(
-		() => both && axesMatch( separatorAxis( stored, axes[ 0 ] ), separatorAxis( stored, axes[ 1 ] ) )
+		() =>
+			both &&
+			axesMatch(
+				separatorAxis( stored, axes[ 0 ] ),
+				separatorAxis( stored, axes[ 1 ] )
+			)
 	);
 
 	const toggleLinked = () => {
@@ -74,9 +90,13 @@ export default function SgsSeparatorControl( {
 	const treatments = [
 		{ value: 'none', label: __( 'None', 'sgs-blocks' ) },
 		{ value: 'swap', label: __( 'Swap', 'sgs-blocks' ) },
-		...( sweep ? [ { value: 'sweep', label: __( 'Sweep', 'sgs-blocks' ) } ] : [] ),
+		...( sweep
+			? [ { value: 'sweep', label: __( 'Sweep', 'sgs-blocks' ) } ]
+			: [] ),
 	];
-	const linkLabel = linked ? __( 'Unlink rows and columns', 'sgs-blocks' ) : __( 'Link rows and columns', 'sgs-blocks' );
+	const linkLabel = linked
+		? __( 'Unlink rows and columns', 'sgs-blocks' )
+		: __( 'Link rows and columns', 'sgs-blocks' );
 
 	return (
 		<div className="sgs-separator-control">
@@ -98,10 +118,24 @@ export default function SgsSeparatorControl( {
 			{ shown.map( ( axis ) => (
 				<SeparatorAxisRow
 					key={ axis }
-					title={ linked && both ? __( 'Between rows and columns', 'sgs-blocks' ) : AXIS_TITLE[ axis ] }
+					title={
+						linked && both
+							? __( 'Between rows and columns', 'sgs-blocks' )
+							: AXIS_TITLE[ axis ]
+					}
 					axis={ separatorAxis( stored, axis ) }
 					hover={ hover }
-					onPatch={ ( patch ) => onChange( patchSeparatorAxis( stored, axes, axis, patch, linked && both ) ) }
+					onPatch={ ( patch ) =>
+						onChange(
+							patchSeparatorAxis(
+								stored,
+								axes,
+								axis,
+								patch,
+								linked && both
+							)
+						)
+					}
 				/>
 			) ) }
 			{ edges && (
@@ -111,7 +145,9 @@ export default function SgsSeparatorControl( {
 					label={ __( 'Outer lines', 'sgs-blocks' ) }
 					value={ stored.edges || 'between' }
 					options={ EDGE_OPTIONS }
-					onChange={ ( next ) => onChange( { ...stored, edges: next } ) }
+					onChange={ ( next ) =>
+						onChange( { ...stored, edges: next } )
+					}
 				/>
 			) }
 			{ hover && (
@@ -121,18 +157,31 @@ export default function SgsSeparatorControl( {
 					isBlock
 					label={ __( 'Line on hover', 'sgs-blocks' ) }
 					value={ treatment }
-					onChange={ ( next ) => onChange( { ...stored, hoverTreatment: next || 'swap' } ) }
+					onChange={ ( next ) =>
+						onChange( {
+							...stored,
+							hoverTreatment: next || 'swap',
+						} )
+					}
 				>
 					{ treatments.map( ( option ) => (
-						<ToggleGroupControlOption key={ option.value } value={ option.value } label={ option.label } />
+						<ToggleGroupControlOption
+							key={ option.value }
+							value={ option.value }
+							label={ option.label }
+						/>
 					) ) }
 				</ToggleGroupControl>
 			) }
 			{ hover && sweep && 'sweep' === treatment && (
 				<SweepAngleControl
 					angle={ stored.sweepAngle }
-					fallback={ 1 === axes.length && 'row' === axes[ 0 ] ? 90 : 180 }
-					onAngleChange={ ( next ) => onChange( { ...stored, sweepAngle: next } ) }
+					fallback={
+						1 === axes.length && 'row' === axes[ 0 ] ? 90 : 180
+					}
+					onAngleChange={ ( next ) =>
+						onChange( { ...stored, sweepAngle: next } )
+					}
 				/>
 			) }
 		</div>

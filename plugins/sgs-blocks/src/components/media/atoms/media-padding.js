@@ -34,7 +34,12 @@
  */
 import { mediaStoredAttrName } from '../../MediaElementControls.js';
 import { toLengthValue } from './box-shape.js';
-import { isLegacyCall, rulesFor, kindIn, omitted } from '../panels/disclosure-context.js';
+import {
+	isLegacyCall,
+	rulesFor,
+	kindIn,
+	omitted,
+} from '../panels/disclosure-context.js';
 
 import { DEVICES, add, nodes, own, rulesCss, scalar } from '../emit/core.js';
 import { mediaColour, mediaPx } from '../emit/values.js';
@@ -69,14 +74,17 @@ export function sidesToShorthand( sides ) {
 	}
 	const order = [ 'top', 'right', 'bottom', 'left' ];
 	const hasAny = order.some(
-		( k ) => undefined !== sides[ k ] && null !== sides[ k ] && '' !== sides[ k ]
+		( k ) =>
+			undefined !== sides[ k ] && null !== sides[ k ] && '' !== sides[ k ]
 	);
 	if ( ! hasAny ) {
 		return '';
 	}
 	return order
 		.map( ( k ) =>
-			undefined !== sides[ k ] && null !== sides[ k ] && '' !== sides[ k ] ? sides[ k ] : '0'
+			undefined !== sides[ k ] && null !== sides[ k ] && '' !== sides[ k ]
+				? sides[ k ]
+				: '0'
 		)
 		.join( ' ' );
 }
@@ -96,8 +104,18 @@ export function sideDecls( sides, suffix ) {
 		return [];
 	}
 	return [ 'top', 'right', 'bottom', 'left' ]
-		.filter( ( k ) => undefined !== sides[ k ] && null !== sides[ k ] && '' !== sides[ k ] )
-		.map( ( k ) => `--sgs-media-padding-${ k }${ suffix }:${ toLengthValue( sides[ k ] ) }` );
+		.filter(
+			( k ) =>
+				undefined !== sides[ k ] &&
+				null !== sides[ k ] &&
+				'' !== sides[ k ]
+		)
+		.map(
+			( k ) =>
+				`--sgs-media-padding-${ k }${ suffix }:${ toLengthValue(
+					sides[ k ]
+				) }`
+		);
 }
 
 /** Unconditional — nothing gates padding off. */

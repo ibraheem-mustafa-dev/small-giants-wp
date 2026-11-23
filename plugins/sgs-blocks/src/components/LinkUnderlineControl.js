@@ -17,33 +17,54 @@ import SgsLengthControl from './SgsLengthControl';
 import DesignTokenPicker from './DesignTokenPicker';
 
 const MODE_HELP = {
-	none: __( 'Links show no underline, so only their colour marks them. Not recommended for links inside paragraphs.', 'sgs-blocks' ),
-	hover: __( 'An underline appears when the link is hovered or focused with the keyboard.', 'sgs-blocks' ),
-	sweep: __( 'No underline until the link is hovered or focused with the keyboard. Links inside paragraphs are easier to spot with Always.', 'sgs-blocks' ),
-	always: __( 'This styles the links inside the text. Text decoration under Typography styles the whole text.', 'sgs-blocks' ),
+	none: __(
+		'Links show no underline, so only their colour marks them. Not recommended for links inside paragraphs.',
+		'sgs-blocks'
+	),
+	hover: __(
+		'An underline appears when the link is hovered or focused with the keyboard.',
+		'sgs-blocks'
+	),
+	sweep: __(
+		'No underline until the link is hovered or focused with the keyboard. Links inside paragraphs are easier to spot with Always.',
+		'sgs-blocks'
+	),
+	always: __(
+		'This styles the links inside the text. Text decoration under Typography styles the whole text.',
+		'sgs-blocks'
+	),
 };
 
 // The wording when the control styles a whole element that is itself the link (a button), not the links in its text.
 const BUTTON_MODE_HELP = {
 	none: __( 'The button shows no underline.', 'sgs-blocks' ),
-	hover: __( 'An underline appears under the button text when it is hovered or focused with the keyboard.', 'sgs-blocks' ),
-	sweep: __( 'No underline until the button is hovered or focused with the keyboard, then a line slides in under the label. Not used when the button has a hover fill, a gradient or an image.', 'sgs-blocks' ),
-	always: __( 'The whole button text is underlined, at rest, on hover and on keyboard focus.', 'sgs-blocks' ),
+	hover: __(
+		'An underline appears under the button text when it is hovered or focused with the keyboard.',
+		'sgs-blocks'
+	),
+	sweep: __(
+		'No underline until the button is hovered or focused with the keyboard, then a line slides in under the label. Not used when the button has a hover fill, a gradient or an image.',
+		'sgs-blocks'
+	),
+	always: __(
+		'The whole button text is underlined, at rest, on hover and on keyboard focus.',
+		'sgs-blocks'
+	),
 };
 
 /**
  * @param {Object}   props
- * @param {string}   [props.wording]              'links' (the links inside the text, the default) or 'button' (the whole button).
- * @param {string}   [props.mode]                 '', 'none', 'always', 'hover' or 'sweep'.
- * @param {string}   [props.thickness]            The line's thickness (a CSS length).
- * @param {string}   [props.colour]               The line's colour at rest (a palette slug or any CSS colour).
- * @param {string}   [props.colourHover]          The line's colour on hover and keyboard focus.
- * @param {string}   [props.offset]               The gap between the text and the line (a CSS length).
- * @param {Function} props.onModeChange           Receives the next mode.
- * @param {Function} props.onThicknessChange      Receives the next thickness string.
- * @param {Function} props.onColourChange         Receives the next line colour.
- * @param {Function} props.onColourHoverChange    Receives the next hover line colour.
- * @param {Function} props.onOffsetChange         Receives the next gap string.
+ * @param {string}   [props.wording]           'links' (the links inside the text, the default) or 'button' (the whole button).
+ * @param {string}   [props.mode]              '', 'none', 'always', 'hover' or 'sweep'.
+ * @param {string}   [props.thickness]         The line's thickness (a CSS length).
+ * @param {string}   [props.colour]            The line's colour at rest (a palette slug or any CSS colour).
+ * @param {string}   [props.colourHover]       The line's colour on hover and keyboard focus.
+ * @param {string}   [props.offset]            The gap between the text and the line (a CSS length).
+ * @param {Function} props.onModeChange        Receives the next mode.
+ * @param {Function} props.onThicknessChange   Receives the next thickness string.
+ * @param {Function} props.onColourChange      Receives the next line colour.
+ * @param {Function} props.onColourHoverChange Receives the next hover line colour.
+ * @param {Function} props.onOffsetChange      Receives the next gap string.
  * @return {Element} The control.
  */
 export default function LinkUnderlineControl( {
@@ -68,14 +89,24 @@ export default function LinkUnderlineControl( {
 			<SelectControl
 				__next40pxDefaultSize
 				__nextHasNoMarginBottom
-				label={ isButton ? __( 'Button underline', 'sgs-blocks' ) : __( 'Link underline', 'sgs-blocks' ) }
+				label={
+					isButton
+						? __( 'Button underline', 'sgs-blocks' )
+						: __( 'Link underline', 'sgs-blocks' )
+				}
 				value={ mode }
 				options={ [
 					{ label: __( 'Theme default', 'sgs-blocks' ), value: '' },
 					{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
 					{ label: __( 'Always', 'sgs-blocks' ), value: 'always' },
-					{ label: __( 'Shows on hover', 'sgs-blocks' ), value: 'hover' },
-					{ label: __( 'Slides in on hover', 'sgs-blocks' ), value: 'sweep' },
+					{
+						label: __( 'Shows on hover', 'sgs-blocks' ),
+						value: 'hover',
+					},
+					{
+						label: __( 'Slides in on hover', 'sgs-blocks' ),
+						value: 'sweep',
+					},
 				] }
 				help={ help[ mode ] }
 				onChange={ ( next ) => onModeChange( next ) }
@@ -85,14 +116,28 @@ export default function LinkUnderlineControl( {
 					label={ __( 'Underline thickness', 'sgs-blocks' ) }
 					value={ thickness }
 					units={ [ { value: 'px', label: 'px', default: 1 } ] }
-					placeholder={ 'sweep' === mode ? __( 'Site default', 'sgs-blocks' ) : __( 'Default', 'sgs-blocks' ) }
+					placeholder={
+						'sweep' === mode
+							? __( 'Site default', 'sgs-blocks' )
+							: __( 'Default', 'sgs-blocks' )
+					}
 					onChange={ ( next ) => onThicknessChange( next ?? '' ) }
 				/>
 			) }
 			{ hasLine && (
 				<DesignTokenPicker
 					label={ __( 'Underline colour', 'sgs-blocks' ) }
-					help={ isButton ? __( 'Leave empty to draw the underline in the button text colour.', 'sgs-blocks' ) : __( 'Leave empty to draw the underline in the link colour.', 'sgs-blocks' ) }
+					help={
+						isButton
+							? __(
+									'Leave empty to draw the underline in the button text colour.',
+									'sgs-blocks'
+							  )
+							: __(
+									'Leave empty to draw the underline in the link colour.',
+									'sgs-blocks'
+							  )
+					}
 					states={ [
 						{
 							key: 'normal',
@@ -105,7 +150,8 @@ export default function LinkUnderlineControl( {
 							key: 'hover',
 							label: __( 'Hover', 'sgs-blocks' ),
 							value: colourHover,
-							onChange: ( next ) => onColourHoverChange( next ?? '' ),
+							onChange: ( next ) =>
+								onColourHoverChange( next ?? '' ),
 							linked: true,
 						},
 					] }
@@ -114,7 +160,10 @@ export default function LinkUnderlineControl( {
 			{ hasGap && (
 				<SgsLengthControl
 					label={ __( 'Underline gap', 'sgs-blocks' ) }
-					help={ __( 'Space between the text and its underline.', 'sgs-blocks' ) }
+					help={ __(
+						'Space between the text and its underline.',
+						'sgs-blocks'
+					) }
 					value={ offset }
 					units={ [ { value: 'px', label: 'px', default: 2 } ] }
 					placeholder={ __( 'Default', 'sgs-blocks' ) }

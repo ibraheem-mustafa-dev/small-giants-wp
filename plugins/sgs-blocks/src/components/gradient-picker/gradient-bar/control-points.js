@@ -79,7 +79,11 @@ function ControlPointButton( { isOpen, position, color, ...additionalProps } ) {
 	);
 }
 
-function GradientColorPickerDropdown( { isRenderedInSidebar, className, ...props } ) {
+function GradientColorPickerDropdown( {
+	isRenderedInSidebar,
+	className,
+	...props
+} ) {
 	const popoverProps = useMemo(
 		() => ( {
 			placement: 'bottom',
@@ -134,7 +138,10 @@ function StopColourEditor( { value, token, disableAlpha, onChange } ) {
 									picked,
 									palette
 								);
-								onChange( picked, resolved?.token ?? undefined );
+								onChange(
+									picked,
+									resolved?.token ?? undefined
+								);
 							} }
 							clearable={ false }
 							disableCustomColors
@@ -227,7 +234,9 @@ function ControlPoints( {
 				return (
 					ignoreMarkerPosition !== initialPosition && (
 						<GradientColorPickerDropdown
-							isRenderedInSidebar={ __experimentalIsRenderedInSidebar }
+							isRenderedInSidebar={
+								__experimentalIsRenderedInSidebar
+							}
 							key={ index }
 							onClose={ onStopControlPointChange }
 							renderToggle={ ( { isOpen, onToggle } ) => (
@@ -249,7 +258,10 @@ function ControlPoints( {
 										onToggle();
 									} }
 									onMouseDown={ () => {
-										if ( window && window.addEventListener ) {
+										if (
+											window &&
+											window.addEventListener
+										) {
 											controlPointMoveStateRef.current = {
 												initialPosition,
 												index,
@@ -280,7 +292,9 @@ function ControlPoints( {
 													)
 												)
 											);
-										} else if ( event.code === 'ArrowRight' ) {
+										} else if (
+											event.code === 'ArrowRight'
+										) {
 											event.stopPropagation();
 											onChange(
 												updateControlPointPosition(
@@ -320,9 +334,9 @@ function ControlPoints( {
 										controlPoints.length > 2 && (
 											<HStack
 												className={ clsx(
-									'components-custom-gradient-picker__remove-control-point-wrapper',
-									'sgs-gradient-picker__remove-control-point-wrapper'
-								) }
+													'components-custom-gradient-picker__remove-control-point-wrapper',
+													'sgs-gradient-picker__remove-control-point-wrapper'
+												) }
 												alignment="center"
 											>
 												<Button

@@ -5,8 +5,11 @@
  * @package SGS\Blocks
  */
 
-import { typographyPreviewStyle, isCssGradient, tierBoxLonghands } from '../../utils';
-
+import {
+	typographyPreviewStyle,
+	isCssGradient,
+	tierBoxLonghands,
+} from '../../utils';
 
 /**
  * The twin of `sgs_border_gradient_css()` for one selector: a masked ::before
@@ -18,8 +21,10 @@ import { typographyPreviewStyle, isCssGradient, tierBoxLonghands } from '../../u
  * @return {string} CSS text.
  */
 function gradientRingCss( selector, paint, width ) {
-	return `${ selector }{border-color:transparent;position:relative;background-clip:padding-box;}` +
-		`${ selector }::before{content:"";position:absolute;inset:0;margin:-${ width };border-radius:inherit;padding:${ width };background:${ paint };-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;}`;
+	return (
+		`${ selector }{border-color:transparent;position:relative;background-clip:padding-box;}` +
+		`${ selector }::before{content:"";position:absolute;inset:0;margin:-${ width };border-radius:inherit;padding:${ width };background:${ paint };-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;}`
+	);
 }
 
 /**
@@ -32,13 +37,28 @@ function gradientRingCss( selector, paint, width ) {
  */
 export function tabsIndicatorGradientCss( attributes, scope ) {
 	const thickness = String( attributes.tabIndicatorThickness || '' ).trim();
-	const width = thickness && ! /[;{}<>]/.test( thickness ) ? thickness : '2px';
+	const width =
+		thickness && ! /[;{}<>]/.test( thickness ) ? thickness : '2px';
 	let css = '';
-	if ( isCssGradient( attributes.tabIndicatorColourGradient, { whole: true } ) ) {
-		css += gradientRingCss( `.${ scope } .sgs-tabs__tab:not([aria-selected='true'])`, attributes.tabIndicatorColourGradient, width );
+	if (
+		isCssGradient( attributes.tabIndicatorColourGradient, { whole: true } )
+	) {
+		css += gradientRingCss(
+			`.${ scope } .sgs-tabs__tab:not([aria-selected='true'])`,
+			attributes.tabIndicatorColourGradient,
+			width
+		);
 	}
-	if ( isCssGradient( attributes.tabActiveIndicatorColourGradient, { whole: true } ) ) {
-		css += gradientRingCss( `.${ scope } .sgs-tabs__tab[aria-selected='true']`, attributes.tabActiveIndicatorColourGradient, width );
+	if (
+		isCssGradient( attributes.tabActiveIndicatorColourGradient, {
+			whole: true,
+		} )
+	) {
+		css += gradientRingCss(
+			`.${ scope } .sgs-tabs__tab[aria-selected='true']`,
+			attributes.tabActiveIndicatorColourGradient,
+			width
+		);
 	}
 	return css;
 }
@@ -54,6 +74,13 @@ export function tabsIndicatorGradientCss( attributes, scope ) {
 export function tabButtonStyle( attributes, tier ) {
 	const style = typographyPreviewStyle( attributes, 'tab', tier );
 	// tabPadding is a flat box (one value for every device): previewed as the desktop tier, set sides only.
-	Object.assign( style, tierBoxLonghands( { desktop: attributes.tabPadding }, 'desktop', 'padding' ) );
+	Object.assign(
+		style,
+		tierBoxLonghands(
+			{ desktop: attributes.tabPadding },
+			'desktop',
+			'padding'
+		)
+	);
 	return style;
 }

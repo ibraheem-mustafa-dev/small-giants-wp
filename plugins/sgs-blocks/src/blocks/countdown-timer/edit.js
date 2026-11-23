@@ -1,5 +1,9 @@
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-editor';
+import {
+	useBlockProps,
+	InspectorControls,
+	useSettings,
+} from '@wordpress/block-editor';
 import {
 	PanelBody,
 	SelectControl,
@@ -7,8 +11,26 @@ import {
 	ToggleControl,
 	RangeControl,
 } from '@wordpress/components';
-import { SgsColourPanel, ResponsiveBoxControl, SgsBorderControl, TypographyControls, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, textRow } from '../../components';
-import { textPaintPreview, backgroundPaintPreview, tierBoxLonghands, usePreviewTier, typographyPreviewStyle, sgsBorderPreview } from '../../utils';
+import {
+	SgsColourPanel,
+	ResponsiveBoxControl,
+	SgsBorderControl,
+	TypographyControls,
+	resolveColourToken,
+	ResponsiveOverride,
+	BOX_UNITS,
+	normaliseResponsiveBox,
+	SgsBoxControl,
+	textRow,
+} from '../../components';
+import {
+	textPaintPreview,
+	backgroundPaintPreview,
+	tierBoxLonghands,
+	usePreviewTier,
+	typographyPreviewStyle,
+	sgsBorderPreview,
+} from '../../utils';
 import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 
 const CARD_STYLES = [
@@ -22,7 +44,6 @@ const DIGIT_STYLES = [
 	{ label: __( 'Simple', 'sgs-blocks' ), value: 'simple' },
 	{ label: __( 'Flip', 'sgs-blocks' ), value: 'flip' },
 ];
-
 
 /**
  * Per-element typography previews — the twins of render.php's three
@@ -90,7 +111,11 @@ function buildElementTypography( attributes, previewTier = 'desktop' ) {
  * mobile tiers are not simulated on the fixed-width canvas, matching quote/
  * media precedent).
  */
-function buildPreviewStyle( attributes, colourPalette, previewTier = 'desktop' ) {
+function buildPreviewStyle(
+	attributes,
+	colourPalette,
+	previewTier = 'desktop'
+) {
 	const {
 		padding,
 		margin,
@@ -112,27 +137,55 @@ function buildPreviewStyle( attributes, colourPalette, previewTier = 'desktop' )
 
 	const preview = {};
 
-	Object.assign( preview, tierBoxLonghands( padding, previewTier, 'padding' ), tierBoxLonghands( margin, previewTier, 'margin' ) );
+	Object.assign(
+		preview,
+		tierBoxLonghands( padding, previewTier, 'padding' ),
+		tierBoxLonghands( margin, previewTier, 'margin' )
+	);
 
 	// Border is the block's own borderWidth/borderStyle/borderColour/
 	// borderRadius attrs (SgsBorderControl, below) — NOT WP-native
 	// `style.border`, which no control in this file ever writes to; the
 	// block.json `supports` block declares no `__experimentalBorder` at all.
-	Object.assign( preview, sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: attributes.borderColourGradient, radiusValues: borderRadius }, previewTier, colourPalette ) );
+	Object.assign(
+		preview,
+		sgsBorderPreview(
+			{
+				widthValues: borderWidth,
+				styleValue: borderStyle,
+				colourValue: borderColour,
+				colourGradientValue: attributes.borderColourGradient,
+				radiusValues: borderRadius,
+			},
+			previewTier,
+			colourPalette
+		)
+	);
 
 	// Wrapper text/background colour — block-private, gradient-capable attrs
 	// (WP-native `supports.color` is disabled; the old `style.color.*` path
 	// was never populated — colour-conformance track fix, 2026-09-06).
-	const wrapperTextPreview = textPaintPreview( textColour, textColourGradient, colourPalette );
+	const wrapperTextPreview = textPaintPreview(
+		textColour,
+		textColourGradient,
+		colourPalette
+	);
 	if ( wrapperTextPreview ) {
 		Object.assign( preview, wrapperTextPreview );
 	}
-	const wrapperBgPreview = backgroundPaintPreview( backgroundColour, backgroundColourGradient, colourPalette );
+	const wrapperBgPreview = backgroundPaintPreview(
+		backgroundColour,
+		backgroundColourGradient,
+		colourPalette
+	);
 	if ( wrapperBgPreview ) {
 		Object.assign( preview, wrapperBgPreview );
 	}
 	// Typography: the twin of render.php's sgs_typography_css_rule( $attributes, '' ).
-	Object.assign( preview, typographyPreviewStyle( attributes, '', previewTier ) );
+	Object.assign(
+		preview,
+		typographyPreviewStyle( attributes, '', previewTier )
+	);
 
 	return preview;
 }
@@ -164,14 +217,19 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	// render.php hides the grid and shows the message when expired, and the
 	// reverse otherwise.
 	const targetTime = targetDate ? new Date( targetDate ).getTime() : NaN;
-	const isExpired = ! evergreenMode && ! Number.isNaN( targetTime ) && targetTime <= Date.now();
+	const isExpired =
+		! evergreenMode &&
+		! Number.isNaN( targetTime ) &&
+		targetTime <= Date.now();
 
 	const className = [
 		'sgs-countdown',
 		`sgs-countdown--${ cardStyle }`,
 		`sgs-countdown--digit-${ 'flip' === digitStyle ? 'flip' : 'simple' }`,
 		isExpired ? 'sgs-countdown--ended' : '',
-	].filter( Boolean ).join( ' ' );
+	]
+		.filter( Boolean )
+		.join( ' ' );
 
 	// numberColour/numberColourGradient + labelColour/labelColourGradient real
 	// mechanism (render.php): a flat colour is a `--sgs-countdown-*-colour`
@@ -189,7 +247,11 @@ export default function Edit( { attributes, setAttributes, name } ) {
 
 	const elementTypography = buildElementTypography( attributes, previewTier );
 	const numberPreview = {
-		...textPaintPreview( numberColour, numberColourGradient, colourPalette ),
+		...textPaintPreview(
+			numberColour,
+			numberColourGradient,
+			colourPalette
+		),
 		...elementTypography.number,
 	};
 	const labelPreview = {
@@ -199,10 +261,18 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	const expiredPreview = elementTypography.expired;
 
 	const units = [];
-	if ( showDays ) units.push( { value: '00', label: __( 'Days', 'sgs-blocks' ) } );
-	if ( showHours ) units.push( { value: '00', label: __( 'Hours', 'sgs-blocks' ) } );
-	if ( showMinutes ) units.push( { value: '00', label: __( 'Minutes', 'sgs-blocks' ) } );
-	if ( showSeconds ) units.push( { value: '00', label: __( 'Seconds', 'sgs-blocks' ) } );
+	if ( showDays ) {
+		units.push( { value: '00', label: __( 'Days', 'sgs-blocks' ) } );
+	}
+	if ( showHours ) {
+		units.push( { value: '00', label: __( 'Hours', 'sgs-blocks' ) } );
+	}
+	if ( showMinutes ) {
+		units.push( { value: '00', label: __( 'Minutes', 'sgs-blocks' ) } );
+	}
+	if ( showSeconds ) {
+		units.push( { value: '00', label: __( 'Seconds', 'sgs-blocks' ) } );
+	}
 
 	// Contrast check for border colour — warn if border fails WCAG 3:1 contrast
 	// against the block's own background. When the background is a gradient,
@@ -243,9 +313,15 @@ export default function Edit( { attributes, setAttributes, name } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: backgroundColour,
-								onChange: ( val ) => setAttributes( { backgroundColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										backgroundColour: val ?? '',
+									} ),
 								gradientValue: backgroundColourGradient,
-								onGradientChange: ( val ) => setAttributes( { backgroundColourGradient: val ?? '' } ),
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										backgroundColourGradient: val ?? '',
+									} ),
 							},
 						],
 					},
@@ -258,9 +334,13 @@ export default function Edit( { attributes, setAttributes, name } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: numberColour,
-								onChange: ( val ) => setAttributes( { numberColour: val } ),
+								onChange: ( val ) =>
+									setAttributes( { numberColour: val } ),
 								gradientValue: numberColourGradient,
-								onGradientChange: ( val ) => setAttributes( { numberColourGradient: val ?? '' } ),
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										numberColourGradient: val ?? '',
+									} ),
 							},
 						],
 					},
@@ -273,9 +353,13 @@ export default function Edit( { attributes, setAttributes, name } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: labelColour,
-								onChange: ( val ) => setAttributes( { labelColour: val } ),
+								onChange: ( val ) =>
+									setAttributes( { labelColour: val } ),
 								gradientValue: labelColourGradient,
-								onGradientChange: ( val ) => setAttributes( { labelColourGradient: val ?? '' } ),
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										labelColourGradient: val ?? '',
+									} ),
 							},
 						],
 					},
@@ -285,17 +369,27 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				<PanelBody title={ __( 'Timer Settings', 'sgs-blocks' ) }>
 					<ToggleControl
 						label={ __( 'Evergreen mode', 'sgs-blocks' ) }
-						help={ __( 'Starts fresh for each visitor', 'sgs-blocks' ) }
+						help={ __(
+							'Starts fresh for each visitor',
+							'sgs-blocks'
+						) }
 						checked={ evergreenMode }
-						onChange={ ( val ) => setAttributes( { evergreenMode: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { evergreenMode: val } )
+						}
 						__nextHasNoMarginBottom
 					/>
 					{ ! evergreenMode && (
 						<TextControl
 							label={ __( 'Target date/time', 'sgs-blocks' ) }
-							help={ __( 'Format: YYYY-MM-DDTHH:MM', 'sgs-blocks' ) }
+							help={ __(
+								'Format: YYYY-MM-DDTHH:MM',
+								'sgs-blocks'
+							) }
 							value={ targetDate }
-							onChange={ ( val ) => setAttributes( { targetDate: val } ) }
+							onChange={ ( val ) =>
+								setAttributes( { targetDate: val } )
+							}
 							type="datetime-local"
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
@@ -306,7 +400,9 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							<RangeControl
 								label={ __( 'Hours', 'sgs-blocks' ) }
 								value={ evergreenHours }
-								onChange={ ( val ) => setAttributes( { evergreenHours: val } ) }
+								onChange={ ( val ) =>
+									setAttributes( { evergreenHours: val } )
+								}
 								min={ 0 }
 								max={ 720 }
 								__nextHasNoMarginBottom
@@ -315,7 +411,9 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							<RangeControl
 								label={ __( 'Minutes', 'sgs-blocks' ) }
 								value={ evergreenMinutes }
-								onChange={ ( val ) => setAttributes( { evergreenMinutes: val } ) }
+								onChange={ ( val ) =>
+									setAttributes( { evergreenMinutes: val } )
+								}
 								min={ 0 }
 								max={ 59 }
 								__nextHasNoMarginBottom
@@ -326,54 +424,77 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					<TextControl
 						label={ __( 'Expired message', 'sgs-blocks' ) }
 						value={ expiredMessage }
-						onChange={ ( val ) => setAttributes( { expiredMessage: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { expiredMessage: val } )
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
-				<PanelBody title={ __( 'Display', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Display', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<ToggleControl
 						label={ __( 'Show days', 'sgs-blocks' ) }
 						checked={ showDays }
-						onChange={ ( val ) => setAttributes( { showDays: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { showDays: val } )
+						}
 						__nextHasNoMarginBottom
 					/>
 					<ToggleControl
 						label={ __( 'Show hours', 'sgs-blocks' ) }
 						checked={ showHours }
-						onChange={ ( val ) => setAttributes( { showHours: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { showHours: val } )
+						}
 						__nextHasNoMarginBottom
 					/>
 					<ToggleControl
 						label={ __( 'Show minutes', 'sgs-blocks' ) }
 						checked={ showMinutes }
-						onChange={ ( val ) => setAttributes( { showMinutes: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { showMinutes: val } )
+						}
 						__nextHasNoMarginBottom
 					/>
 					<ToggleControl
 						label={ __( 'Show seconds', 'sgs-blocks' ) }
 						checked={ showSeconds }
-						onChange={ ( val ) => setAttributes( { showSeconds: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { showSeconds: val } )
+						}
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
 
-				<PanelBody title={ __( 'Styling', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Styling', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SelectControl
 						label={ __( 'Card style', 'sgs-blocks' ) }
 						value={ cardStyle }
 						options={ CARD_STYLES }
-						onChange={ ( val ) => setAttributes( { cardStyle: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { cardStyle: val } )
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
 					<SelectControl
 						label={ __( 'Digit style', 'sgs-blocks' ) }
-						help={ __( 'Flip animates each digit when it changes. Disabled when "Reduce motion" is on.', 'sgs-blocks' ) }
+						help={ __(
+							'Flip animates each digit when it changes. Disabled when "Reduce motion" is on.',
+							'sgs-blocks'
+						) }
 						value={ digitStyle }
 						options={ DIGIT_STYLES }
-						onChange={ ( val ) => setAttributes( { digitStyle: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { digitStyle: val } )
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
@@ -397,7 +518,10 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				    surfaces do not style), then the number, label and expired-message
 				    elements each own their own surface. TypographyControls offers the
 				    text-align field itself, so there is no block-private one. */ }
-				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Typography', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<TypographyControls
 						attributes={ attributes }
 						setAttributes={ setAttributes }
@@ -465,19 +589,35 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						] }
 					/>
 				</PanelBody>
-				<PanelBody title={ __( 'Responsive spacing', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Responsive spacing', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<ResponsiveOverride
 						value={ attributes.padding }
-						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { padding: obj } )
+						}
 					>
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								defaults={ spacingDefaultsFor( name, 'padding' ) }
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								defaults={ spacingDefaultsFor(
+									name,
+									'padding'
+								) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
@@ -488,36 +628,60 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
 				</PanelBody>
-				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Border', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SgsBorderControl
 						widthValues={ attributes.borderWidth ?? {} }
-						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						onWidthChange={ ( next ) =>
+							setAttributes( { borderWidth: next } )
+						}
 						widthPresets={ [ '10', '20', '30' ] }
 						styleValue={ attributes.borderStyle }
-						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						onStyleChange={ ( val ) =>
+							setAttributes( { borderStyle: val } )
+						}
 						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
 						colourValue={ attributes.borderColour }
-						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						onColourChange={ ( val ) =>
+							setAttributes( { borderColour: val ?? '' } )
+						}
 						colourGradientValue={ attributes.borderColourGradient }
-						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+						onColourGradientChange={ ( val ) =>
+							setAttributes( { borderColourGradient: val ?? '' } )
+						}
 						colourLinked={ true }
 						contrastAgainst={ countdownTimerContrastAgainst }
 						radiusValues={ {
-								base: attributes.borderRadius?.desktop ?? {},
-								tablet: attributes.borderRadius?.tablet ?? {},
-								mobile: attributes.borderRadius?.mobile ?? {},
-							} }
+							base: attributes.borderRadius?.desktop ?? {},
+							tablet: attributes.borderRadius?.tablet ?? {},
+							mobile: attributes.borderRadius?.mobile ?? {},
+						} }
 						onRadiusChange={ ( tier, next ) => {
 							const key = tier === 'base' ? 'desktop' : tier;
-							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+							setAttributes( {
+								borderRadius: {
+									...attributes.borderRadius,
+									[ key ]: next,
+								},
+							} );
 						} }
 					/>
 				</PanelBody>
@@ -533,12 +697,27 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				<div className="sgs-countdown__grid">
 					{ units.map( ( unit, i ) => (
 						<div key={ i } className="sgs-countdown__unit">
-							<span className="sgs-countdown__number" style={ numberPreview }>{ unit.value }</span>
-							<span className="sgs-countdown__label" style={ labelPreview }>{ unit.label }</span>
+							<span
+								className="sgs-countdown__number"
+								style={ numberPreview }
+							>
+								{ unit.value }
+							</span>
+							<span
+								className="sgs-countdown__label"
+								style={ labelPreview }
+							>
+								{ unit.label }
+							</span>
 						</div>
 					) ) }
 				</div>
-				<div className="sgs-countdown__expired" style={ expiredPreview }>{ expiredMessage }</div>
+				<div
+					className="sgs-countdown__expired"
+					style={ expiredPreview }
+				>
+					{ expiredMessage }
+				</div>
 			</div>
 		</>
 	);

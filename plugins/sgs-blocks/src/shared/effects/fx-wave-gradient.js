@@ -79,9 +79,9 @@ function getColourProbe() {
  * @return {number[]|null} [r,g,b] 0-1, or null if it did not match.
  */
 function parseRgbString( str ) {
-	const m = typeof str === 'string' && str.match(
-		/rgba?\(\s*([\d.]+)[\s,]+([\d.]+)[\s,]+([\d.]+)/i
-	);
+	const m =
+		typeof str === 'string' &&
+		str.match( /rgba?\(\s*([\d.]+)[\s,]+([\d.]+)[\s,]+([\d.]+)/i );
 	if ( ! m ) {
 		return null;
 	}
@@ -239,7 +239,9 @@ function attach( el ) {
 	 * into paper. The shader measures the base colour and picks the
 	 * compositing itself, so there is one code path and no mode flag.
 	 */
-	const variant = ( el.getAttribute( 'data-sgs-fx-wave-variant' ) || 'pastel' ).trim();
+	const variant = (
+		el.getAttribute( 'data-sgs-fx-wave-variant' ) || 'pastel'
+	).trim();
 	if ( variant !== 'aurora' && variant !== 'ink' ) {
 		return null;
 	}
@@ -256,7 +258,9 @@ function attach( el ) {
 	canvas.setAttribute( 'aria-hidden', 'true' );
 
 	const speed = parseFloat( el.getAttribute( 'data-sgs-fx-wave-speed' ) );
-	const amplitude = parseFloat( el.getAttribute( 'data-sgs-fx-wave-amplitude' ) );
+	const amplitude = parseFloat(
+		el.getAttribute( 'data-sgs-fx-wave-amplitude' )
+	);
 
 	/*
 	 * Only the aurora variant reaches here, so the renderer choice is a
@@ -285,7 +289,9 @@ function attach( el ) {
 		return null;
 	}
 
-	const rate = isNaN( speed ) ? 1 : Math.max( 0.1, Math.min( 3, speed / 50 ) );
+	const rate = isNaN( speed )
+		? 1
+		: Math.max( 0.1, Math.min( 3, speed / 50 ) );
 
 	let frame = null;
 	let visible = false;

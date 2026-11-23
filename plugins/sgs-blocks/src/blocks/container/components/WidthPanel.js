@@ -11,8 +11,15 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { ResponsiveControl, ResponsiveOverride, SgsLengthControl } from '../../../components';
-import { ToggleGroupControl, ToggleGroupControlOption } from '../../../components/primitives';
+import {
+	ResponsiveControl,
+	ResponsiveOverride,
+	SgsLengthControl,
+} from '../../../components';
+import {
+	ToggleGroupControl,
+	ToggleGroupControlOption,
+} from '../../../components/primitives';
 import { LENGTH_UNITS } from './_shared';
 
 /**
@@ -34,7 +41,7 @@ const CONTENT_WIDTH_PRESET_OPTIONS = [
  * a literal CSS length.
  *
  * @param {string} v The contentWidth attribute value.
- * @returns {boolean}
+ * @return {boolean}
  */
 function isToken( v ) {
 	return [ 'normal', 'wide', 'full' ].includes( v );
@@ -46,7 +53,7 @@ function isToken( v ) {
  * when value is a literal CSS length (contains at least one digit).
  *
  * @param {string} v
- * @returns {string}
+ * @return {string}
  */
 function contentWidthPreset( v ) {
 	if ( isToken( v ) ) {
@@ -111,7 +118,11 @@ function contentWidthPreset( v ) {
  * Used by all three kinds.
  */
 
-export function WidthPanel( { attributes, setAttributes, showContentBand = true } ) {
+export function WidthPanel( {
+	attributes,
+	setAttributes,
+	showContentBand = true,
+} ) {
 	// ── ONE control per property family, all three tiers ──────────────────
 	//
 	// Both families previously rendered a standalone DESKTOP control plus a
@@ -144,7 +155,8 @@ export function WidthPanel( { attributes, setAttributes, showContentBand = true 
 
 	// Mirrors the previous per-tier literal derivation exactly (a non-token
 	// value containing a digit is a literal CSS length; anything else is not).
-	const literalOf = ( raw ) => ( ! isToken( raw ) && /\d/.test( raw || '' ) ? raw : '' );
+	const literalOf = ( raw ) =>
+		! isToken( raw ) && /\d/.test( raw || '' ) ? raw : '';
 
 	return (
 		<>
@@ -176,7 +188,10 @@ export function WidthPanel( { attributes, setAttributes, showContentBand = true 
 			{ showContentBand && (
 				<>
 					<hr style={ { margin: '16px 0' } } />
-					<ContentBandWidthControl attributes={ attributes } setAttributes={ setAttributes } />
+					<ContentBandWidthControl
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
 				</>
 			) }
 		</>
@@ -209,7 +224,8 @@ export function WidthPanel( { attributes, setAttributes, showContentBand = true 
  * @param {Function} props.setAttributes Block setAttributes function.
  */
 export function ContentBandWidthControl( { attributes, setAttributes } ) {
-	const literalOf = ( raw ) => ( ! isToken( raw ) && /\d/.test( raw || '' ) ? raw : '' );
+	const literalOf = ( raw ) =>
+		! isToken( raw ) && /\d/.test( raw || '' ) ? raw : '';
 
 	return (
 		<>
@@ -260,11 +276,19 @@ export function ContentBandWidthControl( { attributes, setAttributes } ) {
 							{ preset === 'custom' && (
 								<SgsLengthControl
 									presets={ false }
-									label={ __( 'Custom content band width', 'sgs-blocks' ) }
+									label={ __(
+										'Custom content band width',
+										'sgs-blocks'
+									) }
 									value={ literal }
 									units={ LENGTH_UNITS }
-									onChange={ ( val ) => setOwnValue( val ?? '' ) }
-									help={ __( 'Exact CSS length, e.g. 900px or 60rem.', 'sgs-blocks' ) }
+									onChange={ ( val ) =>
+										setOwnValue( val ?? '' )
+									}
+									help={ __(
+										'Exact CSS length, e.g. 900px or 60rem.',
+										'sgs-blocks'
+									) }
 								/>
 							) }
 						</>
@@ -275,7 +299,10 @@ export function ContentBandWidthControl( { attributes, setAttributes } ) {
 			     non-technical client is told what the tokens mean, and inside the
 			     render prop it would show on one tier at a time. */ }
 			<p className="components-base-control__help">
-				{ __( 'Caps the inner content band. Normal ≈ 1200px (content-size) is the default, Wide ≈ 1400px (wide-size), Full = no cap.', 'sgs-blocks' ) }
+				{ __(
+					'Caps the inner content band. Normal ≈ 1200px (content-size) is the default, Wide ≈ 1400px (wide-size), Full = no cap.',
+					'sgs-blocks'
+				) }
 			</p>
 		</>
 	);

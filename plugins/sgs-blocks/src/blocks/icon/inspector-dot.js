@@ -43,24 +43,41 @@ export default function IconDotPanel( { attributes, setAttributes } ) {
 				<ToggleControl
 					__nextHasNoMarginBottom
 					label={ __( 'Show a signed-in dot', 'sgs-blocks' ) }
-					help={ __( 'A small dot on the icon, visible only to a signed-in visitor. Safe with page caching.', 'sgs-blocks' ) }
+					help={ __(
+						'A small dot on the icon, visible only to a signed-in visitor. Safe with page caching.',
+						'sgs-blocks'
+					) }
 					checked={ on }
-					onChange={ ( value ) => setAttributes( { showSignedInDot: value } ) }
+					onChange={ ( value ) =>
+						setAttributes( { showSignedInDot: value } )
+					}
 				/>
 			</ToolsPanelItem>
 			{ on && (
 				<ToolsPanelItem
 					label={ __( 'Dot size', 'sgs-blocks' ) }
 					hasValue={ () => filled( attributes.signedInDotSize ) }
-					onDeselect={ () => setAttributes( { signedInDotSize: {} } ) }
+					onDeselect={ () =>
+						setAttributes( { signedInDotSize: {} } )
+					}
 				>
 					<ResponsiveControl label={ __( 'Dot size', 'sgs-blocks' ) }>
 						{ ( tier ) => (
 							<SgsLengthControl
 								label={ __( 'Dot size', 'sgs-blocks' ) }
 								hideLabelFromVision
-								value={ attributes.signedInDotSize?.[ tier ] ?? '' }
-								onChange={ ( value ) => patchTier( attributes, setAttributes, 'signedInDotSize', tier, value ) }
+								value={
+									attributes.signedInDotSize?.[ tier ] ?? ''
+								}
+								onChange={ ( value ) =>
+									patchTier(
+										attributes,
+										setAttributes,
+										'signedInDotSize',
+										tier,
+										value
+									)
+								}
 							/>
 						) }
 					</ResponsiveControl>
@@ -72,13 +89,28 @@ export default function IconDotPanel( { attributes, setAttributes } ) {
 					hasValue={ () => filled( attributes.signedInDotTop ) }
 					onDeselect={ () => setAttributes( { signedInDotTop: {} } ) }
 				>
-					<ResponsiveControl label={ __( 'Distance from the top', 'sgs-blocks' ) }>
+					<ResponsiveControl
+						label={ __( 'Distance from the top', 'sgs-blocks' ) }
+					>
 						{ ( tier ) => (
 							<SgsLengthControl
-								label={ __( 'Distance from the top', 'sgs-blocks' ) }
+								label={ __(
+									'Distance from the top',
+									'sgs-blocks'
+								) }
 								hideLabelFromVision
-								value={ attributes.signedInDotTop?.[ tier ] ?? '' }
-								onChange={ ( value ) => patchTier( attributes, setAttributes, 'signedInDotTop', tier, value ) }
+								value={
+									attributes.signedInDotTop?.[ tier ] ?? ''
+								}
+								onChange={ ( value ) =>
+									patchTier(
+										attributes,
+										setAttributes,
+										'signedInDotTop',
+										tier,
+										value
+									)
+								}
 							/>
 						) }
 					</ResponsiveControl>
@@ -88,15 +120,35 @@ export default function IconDotPanel( { attributes, setAttributes } ) {
 				<ToolsPanelItem
 					label={ __( 'Distance from the end edge', 'sgs-blocks' ) }
 					hasValue={ () => filled( attributes.signedInDotRight ) }
-					onDeselect={ () => setAttributes( { signedInDotRight: {} } ) }
+					onDeselect={ () =>
+						setAttributes( { signedInDotRight: {} } )
+					}
 				>
-					<ResponsiveControl label={ __( 'Distance from the end edge', 'sgs-blocks' ) }>
+					<ResponsiveControl
+						label={ __(
+							'Distance from the end edge',
+							'sgs-blocks'
+						) }
+					>
 						{ ( tier ) => (
 							<SgsLengthControl
-								label={ __( 'Distance from the end edge', 'sgs-blocks' ) }
+								label={ __(
+									'Distance from the end edge',
+									'sgs-blocks'
+								) }
 								hideLabelFromVision
-								value={ attributes.signedInDotRight?.[ tier ] ?? '' }
-								onChange={ ( value ) => patchTier( attributes, setAttributes, 'signedInDotRight', tier, value ) }
+								value={
+									attributes.signedInDotRight?.[ tier ] ?? ''
+								}
+								onChange={ ( value ) =>
+									patchTier(
+										attributes,
+										setAttributes,
+										'signedInDotRight',
+										tier,
+										value
+									)
+								}
 							/>
 						) }
 					</ResponsiveControl>
@@ -106,13 +158,22 @@ export default function IconDotPanel( { attributes, setAttributes } ) {
 				<ToolsPanelItem
 					label={ __( 'Ring width', 'sgs-blocks' ) }
 					hasValue={ () => !! attributes.signedInDotRingWidth }
-					onDeselect={ () => setAttributes( { signedInDotRingWidth: '' } ) }
+					onDeselect={ () =>
+						setAttributes( { signedInDotRingWidth: '' } )
+					}
 				>
 					<SgsLengthControl
 						label={ __( 'Ring width', 'sgs-blocks' ) }
-						help={ __( 'Used when a ring colour is set; empty = 2px.', 'sgs-blocks' ) }
+						help={ __(
+							'Used when a ring colour is set; empty = 2px.',
+							'sgs-blocks'
+						) }
 						value={ attributes.signedInDotRingWidth ?? '' }
-						onChange={ ( value ) => setAttributes( { signedInDotRingWidth: value || '' } ) }
+						onChange={ ( value ) =>
+							setAttributes( {
+								signedInDotRingWidth: value || '',
+							} )
+						}
 					/>
 				</ToolsPanelItem>
 			) }

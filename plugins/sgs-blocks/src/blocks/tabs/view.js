@@ -30,8 +30,8 @@ function initTabBlocks() {
  * @param {HTMLElement} block The .sgs-tabs wrapper element.
  */
 function initTabBlock( block ) {
-	const nav        = block.querySelector( '.sgs-tabs__nav' );
-	const panels     = block.querySelectorAll( '.sgs-tabs__panel' );
+	const nav = block.querySelector( '.sgs-tabs__nav' );
+	const panels = block.querySelectorAll( '.sgs-tabs__panel' );
 	const tabButtons = nav ? nav.querySelectorAll( '[role="tab"]' ) : [];
 
 	// Mark block as JS-enhanced for the cross-fade CSS hook.
@@ -42,8 +42,8 @@ function initTabBlock( block ) {
 	}
 
 	const orientation = nav.getAttribute( 'aria-orientation' ) || 'horizontal';
-	const tabCount    = tabButtons.length;
-	const isVertical  = orientation === 'vertical';
+	const tabCount = tabButtons.length;
+	const isVertical = orientation === 'vertical';
 
 	/**
 	 * Update the sliding indicator CSS custom properties on the nav element
@@ -60,11 +60,23 @@ function initTabBlock( block ) {
 		}
 
 		if ( isVertical ) {
-			nav.style.setProperty( '--sgs-indicator-top', activeBtn.offsetTop + 'px' );
-			nav.style.setProperty( '--sgs-indicator-height', activeBtn.offsetHeight + 'px' );
+			nav.style.setProperty(
+				'--sgs-indicator-top',
+				activeBtn.offsetTop + 'px'
+			);
+			nav.style.setProperty(
+				'--sgs-indicator-height',
+				activeBtn.offsetHeight + 'px'
+			);
 		} else {
-			nav.style.setProperty( '--sgs-indicator-left', activeBtn.offsetLeft + 'px' );
-			nav.style.setProperty( '--sgs-indicator-width', activeBtn.offsetWidth + 'px' );
+			nav.style.setProperty(
+				'--sgs-indicator-left',
+				activeBtn.offsetLeft + 'px'
+			);
+			nav.style.setProperty(
+				'--sgs-indicator-width',
+				activeBtn.offsetWidth + 'px'
+			);
 		}
 	}
 
@@ -74,9 +86,9 @@ function initTabBlock( block ) {
 	 * Updates ARIA attributes, shows the correct panel, and optionally moves
 	 * focus to the newly active tab button.
 	 *
-	 * @param {number}  index         Zero-based tab index to activate.
-	 * @param {boolean} moveFocus     Whether to focus the tab button (keyboard nav).
-	 * @param {boolean} updateHash    Whether to update the URL hash.
+	 * @param {number}  index      Zero-based tab index to activate.
+	 * @param {boolean} moveFocus  Whether to focus the tab button (keyboard nav).
+	 * @param {boolean} updateHash Whether to update the URL hash.
 	 */
 	function activateTab( index, moveFocus, updateHash ) {
 		if ( index < 0 || index >= tabCount ) {
@@ -84,7 +96,7 @@ function initTabBlock( block ) {
 		}
 
 		tabButtons.forEach( ( btn, i ) => {
-			const isActive = ( i === index );
+			const isActive = i === index;
 			btn.setAttribute( 'aria-selected', isActive ? 'true' : 'false' );
 			btn.setAttribute( 'tabindex', isActive ? '0' : '-1' );
 			btn.classList.toggle( 'sgs-tabs__tab--active', isActive );
@@ -130,9 +142,9 @@ function initTabBlock( block ) {
 	 * @param {KeyboardEvent} event
 	 */
 	function handleKeydown( event ) {
-		const isHorizontal = ( 'horizontal' === orientation );
-		const prevKey      = isHorizontal ? 'ArrowLeft'  : 'ArrowUp';
-		const nextKey      = isHorizontal ? 'ArrowRight' : 'ArrowDown';
+		const isHorizontal = 'horizontal' === orientation;
+		const prevKey = isHorizontal ? 'ArrowLeft' : 'ArrowUp';
+		const nextKey = isHorizontal ? 'ArrowRight' : 'ArrowDown';
 
 		const currentIndex = Array.from( tabButtons ).findIndex(
 			( btn ) => btn === document.activeElement

@@ -35,7 +35,9 @@ export default function SectionMotionPanel( { attributes, setAttributes } ) {
 			label={ label }
 			help={ help }
 			value={ value ?? fallback }
-			onChange={ ( next ) => setAttributes( { [ key ]: next ?? fallback } ) }
+			onChange={ ( next ) =>
+				setAttributes( { [ key ]: next ?? fallback } )
+			}
 			min={ min }
 			max={ max }
 			step={ step }
@@ -47,7 +49,10 @@ export default function SectionMotionPanel( { attributes, setAttributes } ) {
 	);
 
 	return (
-		<PanelBody title={ __( 'Section motion', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Section motion', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			<SelectControl
 				label={ __( 'Open and close animation', 'sgs-blocks' ) }
 				help={ __(
@@ -58,7 +63,10 @@ export default function SectionMotionPanel( { attributes, setAttributes } ) {
 				options={ [
 					{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
 					{ label: __( 'Fade', 'sgs-blocks' ), value: 'fade' },
-					{ label: __( 'Fade and lift', 'sgs-blocks' ), value: 'fade-lift' },
+					{
+						label: __( 'Fade and lift', 'sgs-blocks' ),
+						value: 'fade-lift',
+					},
 					{ label: __( 'Height', 'sgs-blocks' ), value: 'height' },
 				] }
 				onChange={ ( val ) =>
@@ -69,7 +77,15 @@ export default function SectionMotionPanel( { attributes, setAttributes } ) {
 			/>
 			{ animated && (
 				<>
-					{ range( __( 'Opening time (ms)', 'sgs-blocks' ), 'submenuAnimationDuration', submenuAnimationDuration, 180, 0, 3000, 10 ) }
+					{ range(
+						__( 'Opening time (ms)', 'sgs-blocks' ),
+						'submenuAnimationDuration',
+						submenuAnimationDuration,
+						180,
+						0,
+						3000,
+						10
+					) }
 					{ range(
 						__( 'Closing time (ms)', 'sgs-blocks' ),
 						'submenuExitDuration',
@@ -80,13 +96,20 @@ export default function SectionMotionPanel( { attributes, setAttributes } ) {
 						10,
 						__( '0 closes instantly.', 'sgs-blocks' )
 					) }
-					<EasingAtom vocab="nav"
+					<EasingAtom
+						vocab="nav"
 						label={ __( 'Speed curve', 'sgs-blocks' ) }
 						value={ submenuAnimationEasing }
 						custom={ submenuAnimationEasingCustom }
 						fallback="ease-out"
-						onChange={ ( value ) => setAttributes( { submenuAnimationEasing: value } ) }
-						onCustomChange={ ( value ) => setAttributes( { submenuAnimationEasingCustom: value } ) }
+						onChange={ ( value ) =>
+							setAttributes( { submenuAnimationEasing: value } )
+						}
+						onCustomChange={ ( value ) =>
+							setAttributes( {
+								submenuAnimationEasingCustom: value,
+							} )
+						}
 					/>
 				</>
 			) }

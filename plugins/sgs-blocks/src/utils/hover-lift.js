@@ -18,7 +18,9 @@ export const HOVER_LIFT_MAX_PX = 24;
  */
 export function hoverLiftPx( raw ) {
 	const px = Math.trunc( Number( raw ) );
-	return Number.isFinite( px ) ? Math.min( HOVER_LIFT_MAX_PX, Math.max( 0, px ) ) : 0;
+	return Number.isFinite( px )
+		? Math.min( HOVER_LIFT_MAX_PX, Math.max( 0, px ) )
+		: 0;
 }
 
 /**
@@ -41,8 +43,8 @@ export function hoverLiftDecls( raw, resetTransform = false ) {
  * The editor-canvas hover rule for a lift, for a scoped `<style>`. Like the PHP twin it sits
  * inside `@media (prefers-reduced-motion:no-preference)`, so reduced motion shows no lift.
  *
- * @param {string} selector Selector for the element (no `:hover` suffix).
- * @param {*}      raw      Stored attribute value.
+ * @param {string}  selector               Selector for the element (no `:hover` suffix).
+ * @param {*}       raw                    Stored attribute value.
  * @param {boolean} [resetTransform=false] Also print transform:none, over a preset lift.
  * @return {string} The rule, or '' when there is no lift.
  */

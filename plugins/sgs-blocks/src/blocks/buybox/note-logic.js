@@ -26,7 +26,9 @@ export function charsLeft( value, max ) {
  * @return {boolean} True when left is within the near-limit window and the limit is above 0.
  */
 export function isNearLimit( left, max ) {
-	return max > 0 && left <= Math.max( NEAR_LIMIT_FLOOR, Math.ceil( max / 5 ) );
+	return (
+		max > 0 && left <= Math.max( NEAR_LIMIT_FLOOR, Math.ceil( max / 5 ) )
+	);
 }
 
 /**
@@ -38,7 +40,9 @@ export function isNearLimit( left, max ) {
  * @return {{label:string,value:string,note:true}|null} The row.
  */
 export function noteRow( label, value, max ) {
-	const text = Array.from( String( value ).trim() ).slice( 0, max > 0 ? max : undefined ).join( '' );
+	const text = Array.from( String( value ).trim() )
+		.slice( 0, max > 0 ? max : undefined )
+		.join( '' );
 	return '' === text ? null : { label, value: text, note: true };
 }
 

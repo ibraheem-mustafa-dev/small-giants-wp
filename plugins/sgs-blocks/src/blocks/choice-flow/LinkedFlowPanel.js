@@ -13,7 +13,11 @@ import { SavedPostPicker } from '../../components';
 
 export const FLOW_CPT = 'sgs_choice_flow';
 
-export default function LinkedFlowPanel( { flowId, flowIsLinked, setAttributes } ) {
+export default function LinkedFlowPanel( {
+	flowId,
+	flowIsLinked,
+	setAttributes,
+} ) {
 	return (
 		<PanelBody title={ __( 'Linked flow', 'sgs-blocks' ) }>
 			<SavedPostPicker
@@ -25,8 +29,12 @@ export default function LinkedFlowPanel( { flowId, flowIsLinked, setAttributes }
 					'sgs-blocks'
 				) }
 				value={ flowIsLinked ? flowId : '' }
-				onSelect={ ( slug ) => setAttributes( { flowId: slug, flowIsLinked: true } ) }
-				onClear={ () => setAttributes( { flowId: '', flowIsLinked: false } ) }
+				onSelect={ ( slug ) =>
+					setAttributes( { flowId: slug, flowIsLinked: true } )
+				}
+				onClear={ () =>
+					setAttributes( { flowId: '', flowIsLinked: false } )
+				}
 			/>
 		</PanelBody>
 	);

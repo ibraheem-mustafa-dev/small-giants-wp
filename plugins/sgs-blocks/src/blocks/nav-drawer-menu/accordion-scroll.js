@@ -24,7 +24,10 @@ const VISIBLE_FRACTION = 0.4;
 function scrollParent( el ) {
 	for ( let node = el.parentElement; node; node = node.parentElement ) {
 		const overflow = window.getComputedStyle( node ).overflowY;
-		if ( ( 'auto' === overflow || 'scroll' === overflow ) && node.scrollHeight > node.clientHeight ) {
+		if (
+			( 'auto' === overflow || 'scroll' === overflow ) &&
+			node.scrollHeight > node.clientHeight
+		) {
 			return node;
 		}
 	}
@@ -41,9 +44,16 @@ function expandSettled( row ) {
 	return new Promise( ( resolve ) => {
 		// One frame first, so transitions started by the `open` change exist.
 		window.requestAnimationFrame( () => {
-			const running = typeof row.getAnimations === 'function' ? row.getAnimations( { subtree: true } ) : [];
-			const finite = running.filter( ( anim ) => Number.isFinite( anim.effect?.getComputedTiming?.().endTime ) );
-			Promise.all( finite.map( ( anim ) => anim.finished.catch( () => null ) ) ).then( () => resolve() );
+			const running =
+				typeof row.getAnimations === 'function'
+					? row.getAnimations( { subtree: true } )
+					: [];
+			const finite = running.filter( ( anim ) =>
+				Number.isFinite( anim.effect?.getComputedTiming?.().endTime )
+			);
+			Promise.all(
+				finite.map( ( anim ) => anim.finished.catch( () => null ) )
+			).then( () => resolve() );
 		} );
 	} );
 }
@@ -58,15 +68,24 @@ function bringIntoView( row ) {
 	if ( ! scroller ) {
 		return;
 	}
-	const margin = parseFloat( window.getComputedStyle( row ).scrollMarginTop ) || 0;
+	const margin =
+		parseFloat( window.getComputedStyle( row ).scrollMarginTop ) || 0;
 	const top = Math.max(
 		0,
-		row.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop - margin
+		row.getBoundingClientRect().top -
+			scroller.getBoundingClientRect().top +
+			scroller.scrollTop -
+			margin
 	);
-	if ( top >= scroller.scrollTop && top <= scroller.scrollTop + scroller.clientHeight * VISIBLE_FRACTION ) {
+	if (
+		top >= scroller.scrollTop &&
+		top <= scroller.scrollTop + scroller.clientHeight * VISIBLE_FRACTION
+	) {
 		return;
 	}
-	const reduce = window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
+	const reduce = window.matchMedia(
+		'(prefers-reduced-motion: reduce)'
+	).matches;
 	scroller.scrollTo( { top, behavior: reduce ? 'auto' : 'smooth' } );
 }
 
@@ -79,7 +98,12 @@ function bringIntoView( row ) {
 export function initAccordionScroll( bar ) {
 	const onToggle = ( event ) => {
 		const details = event.target;
-		if ( ! details || 'DETAILS' !== details.tagName || ! details.open || ! bar.contains( details ) ) {
+		if (
+			! details ||
+			'DETAILS' !== details.tagName ||
+			! details.open ||
+			! bar.contains( details )
+		) {
 			return;
 		}
 		const row = details.closest( '.sgs-nav-drawer-menu__item' ) || details;

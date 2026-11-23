@@ -8,8 +8,16 @@
 import { Button } from '@wordpress/components';
 import { useDispatch } from '@wordpress/data';
 
-import { INSPECTOR_FOCUS_STORE, nextRequestId } from '../inspector-focus-store.js';
-import { backgroundTarget, effectLayers, motionLineButton, motionLineText } from './motion-line.js';
+import {
+	INSPECTOR_FOCUS_STORE,
+	nextRequestId,
+} from '../inspector-focus-store.js';
+import {
+	backgroundTarget,
+	effectLayers,
+	motionLineButton,
+	motionLineText,
+} from './motion-line.js';
 import './MotionLine.css';
 
 const MOTION_ATTRIBUTE = 'sgsMotion';
@@ -27,12 +35,21 @@ export default function MotionLine( { clientId, attributes, kind } ) {
 	const layers = effectLayers( attributes?.[ MOTION_ATTRIBUTE ], target );
 	return (
 		<div className="sgs-media-motion-line">
-			<span className="sgs-media-motion-line__text">{ motionLineText( layers ) }</span>
+			<span className="sgs-media-motion-line__text">
+				{ motionLineText( layers ) }
+			</span>
 			<Button
 				variant="secondary"
 				size="compact"
 				className="sgs-media-motion-line__button"
-				onClick={ () => open( { clientId, panel: 'effects', target, requestId: nextRequestId() } ) }
+				onClick={ () =>
+					open( {
+						clientId,
+						panel: 'effects',
+						target,
+						requestId: nextRequestId(),
+					} )
+				}
 			>
 				{ motionLineButton( layers ) }
 			</Button>

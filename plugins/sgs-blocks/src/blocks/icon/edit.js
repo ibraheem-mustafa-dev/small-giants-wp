@@ -6,7 +6,12 @@
  */
 
 import { __, sprintf } from '@wordpress/i18n';
-import { useBlockProps, BlockControls, useSettings, store as blockEditorStore } from '@wordpress/block-editor';
+import {
+	useBlockProps,
+	BlockControls,
+	useSettings,
+	store as blockEditorStore,
+} from '@wordpress/block-editor';
 import { useSelect } from '@wordpress/data';
 import { LogicalAlignToolbar } from '../../components';
 import { resolveLinkSource } from '../../utils/link-source';
@@ -52,16 +57,36 @@ import AuthoredText from '../../components/AuthoredText';
  * @param {Object}   hoverMap    `settings.custom.shadowHover`, for a shadow preset's automatic lift.
  * @return {Object} React style.
  */
-export function canvasRootStyle( attributes, tier, brand, presetSlugs, hoverMap = {} ) {
-	const { iconSize, shapeSize, shape, shapeSizeLinked = true, iconRotate, textAlign } = attributes;
+export function canvasRootStyle(
+	attributes,
+	tier,
+	brand,
+	presetSlugs,
+	hoverMap = {}
+) {
+	const {
+		iconSize,
+		shapeSize,
+		shape,
+		shapeSizeLinked = true,
+		iconRotate,
+		textAlign,
+	} = attributes;
 	const style = {};
-	const size = iconLengthValue( resolveTier( iconSize, tier ).value, 512, presetSlugs );
+	const size = iconLengthValue(
+		resolveTier( iconSize, tier ).value,
+		512,
+		presetSlugs
+	);
 	if ( size ) {
 		style[ '--sgs-icon-size' ] = size;
 	}
 	const box = resolveTier( shapeSize, tier ).value;
 	const width = iconLengthValue( box?.width, 640, presetSlugs );
-	const height = shapeUsesWidthOnly( shape ) || shapeSizeLinked ? '' : iconLengthValue( box?.height, 640, presetSlugs );
+	const height =
+		shapeUsesWidthOnly( shape ) || shapeSizeLinked
+			? ''
+			: iconLengthValue( box?.height, 640, presetSlugs );
 	if ( width ) {
 		style[ '--sgs-icon-shape-w' ] = width;
 	}
@@ -107,21 +132,48 @@ export function canvasRootStyle( attributes, tier, brand, presetSlugs, hoverMap 
 	}
 	if ( brand.groundGradient ) {
 		style[ '--sgs-icon-brand-ground-image' ] = brand.groundGradient;
-		style[ '--sgs-icon-brand-ground-image-hover' ] = brand.hold ? brand.groundGradient : 'none';
+		style[ '--sgs-icon-brand-ground-image-hover' ] = brand.hold
+			? brand.groundGradient
+			: 'none';
 	}
 	if ( iconRotate ) {
 		style[ '--sgs-icon-rotate' ] = `${ iconRotate }deg`;
 	}
 	if ( ! isOutlineShape( shape ) ) {
-		const { boxShadow, boxShadowColour, boxShadowHover, boxShadowColourHover, shadowLiftOnHover } = attributes;
-		Object.assign( style, iconShadowStyle( { shadow: boxShadow, colour: boxShadowColour, hover: boxShadowHover, hoverColour: boxShadowColourHover, lift: shadowLiftOnHover }, '--sgs-icon', { pinHover: true, hoverMap } ) );
+		const {
+			boxShadow,
+			boxShadowColour,
+			boxShadowHover,
+			boxShadowColourHover,
+			shadowLiftOnHover,
+		} = attributes;
+		Object.assign(
+			style,
+			iconShadowStyle(
+				{
+					shadow: boxShadow,
+					colour: boxShadowColour,
+					hover: boxShadowHover,
+					hoverColour: boxShadowColourHover,
+					lift: shadowLiftOnHover,
+				},
+				'--sgs-icon',
+				{ pinHover: true, hoverMap }
+			)
+		);
 	}
 	const tierAlign = resolveTier( textAlign, tier ).value;
 	if ( [ 'left', 'center', 'right', 'justify' ].includes( tierAlign ) ) {
 		style.textAlign = tierAlign;
 	}
-	Object.assign( style, tierBoxLonghands( attributes.padding, tier, 'padding' ) );
-	Object.assign( style, tierBoxLonghands( attributes.margin, tier, 'margin' ) );
+	Object.assign(
+		style,
+		tierBoxLonghands( attributes.padding, tier, 'padding' )
+	);
+	Object.assign(
+		style,
+		tierBoxLonghands( attributes.margin, tier, 'margin' )
+	);
 	return style;
 }
 
@@ -136,7 +188,11 @@ export function canvasRootStyle( attributes, tier, brand, presetSlugs, hoverMap 
  */
 export function canvasLabelRootStyle( attributes, tier, presetSlugs ) {
 	const style = {};
-	const gap = iconLengthValue( resolveTier( attributes.labelGap, tier ).value, 640, presetSlugs );
+	const gap = iconLengthValue(
+		resolveTier( attributes.labelGap, tier ).value,
+		640,
+		presetSlugs
+	);
 	if ( gap ) {
 		style[ '--sgs-icon-label-gap' ] = gap;
 	}
@@ -173,40 +229,89 @@ export function CanvasLabel( { text, attributes, tier } ) {
 	);
 }
 
-export default function Edit( { attributes: ownAttributes, setAttributes, context, clientId } ) {
+export default function Edit( {
+	attributes: ownAttributes,
+	setAttributes,
+	context,
+	clientId,
+} ) {
 	const tier = usePreviewTier();
 	const [ palette ] = useSettings( 'color.palette' );
 	const [ spacingSizes ] = useSettings( 'spacing.spacingSizes' );
-	const presetSlugs = flattenPresetSetting( spacingSizes ).map( ( s ) => s.slug );
+	const presetSlugs = flattenPresetSetting( spacingSizes ).map(
+		( s ) => s.slug
+	);
 	const [ shadowHoverMap ] = useSettings( 'custom.shadowHover' );
 
 	// Inside an sgs/social-icons row the canvas paints the row's group defaults (render.php's twin); the inspector
 	// keeps editing the icon's own attributes.
 	const group = iconGroupContext( context );
 	const attributes = attributesInGroup( ownAttributes, group );
-	const { iconSource, iconAlign, iconFill, shape = 'square', showBackground, linkUrl, borderWidth, borderStyle, borderColour, borderColourGradient, borderRadius, backgroundColourGradient } = attributes;
+	const {
+		iconSource,
+		iconAlign,
+		iconFill,
+		shape = 'square',
+		showBackground,
+		linkUrl,
+		borderWidth,
+		borderStyle,
+		borderColour,
+		borderColourGradient,
+		borderRadius,
+		backgroundColourGradient,
+	} = attributes;
 
 	const boundKey = boundLinkKey( attributes );
-	const hiddenInRow = group.inGroup && !! boundKey && group.hidden.includes( boundKey );
+	const hiddenInRow =
+		group.inGroup && !! boundKey && group.hidden.includes( boundKey );
 	const link = siteInfoLinkState( boundKey, window.sgsBlocksData?.siteInfo );
 	// The editor hands a bound attribute its binding's value, so the typed fallback link is read from the stored block.
-	const storedLinkUrl = useSelect( ( select ) => select( blockEditorStore ).getBlockAttributes( clientId )?.linkUrl ?? '', [ clientId ] );
-	const fallback = linkFallbackState( link, { linkUrl: storedLinkUrl, linkSource: attributes.linkSource } );
+	const storedLinkUrl = useSelect(
+		( select ) =>
+			select( blockEditorStore ).getBlockAttributes( clientId )
+				?.linkUrl ?? '',
+		[ clientId ]
+	);
+	const fallback = linkFallbackState( link, {
+		linkUrl: storedLinkUrl,
+		linkSource: attributes.linkSource,
+	} );
 	// The Site Info key names the link only while the link is the Site Info one; a typed link is named from itself.
 	const nameKey = link.bound && ! fallback.fromSite ? '' : boundKey;
 	const boundUrl = fallback.fromSite ? link.link : fallback.url || link.link;
 	const brand = resolveBrand( attributes, boundKey );
-	const name = accessibleName( { ariaLabel: attributes.ariaLabel, boundKey: nameKey, glyphBrand: brand.glyphBrand, url: boundUrl } );
+	const name = accessibleName( {
+		ariaLabel: attributes.ariaLabel,
+		boundKey: nameKey,
+		glyphBrand: brand.glyphBrand,
+		url: boundUrl,
+	} );
 	// A bound link the editor cannot resolve still names the label from its key, as the page does once it resolves.
 	// An unbound link is the typed one, or the page / back-to-top its linkUrlSource names.
-	const unboundUrl = resolveLinkSource( attributes.linkUrlSource, linkUrl ).url;
-	const labelNameArgs = { ariaLabel: attributes.ariaLabel, boundKey: nameKey, glyphBrand: brand.glyphBrand, url: link.bound ? boundUrl : unboundUrl };
+	const unboundUrl = resolveLinkSource(
+		attributes.linkUrlSource,
+		linkUrl
+	).url;
+	const labelNameArgs = {
+		ariaLabel: attributes.ariaLabel,
+		boundKey: nameKey,
+		glyphBrand: brand.glyphBrand,
+		url: link.bound ? boundUrl : unboundUrl,
+	};
 	const defaultLabel = visibleLabel( '', labelNameArgs );
-	const labelText = attributes.showLabel ? visibleLabel( attributes.labelText, labelNameArgs ) : '';
+	const labelText = attributes.showLabel
+		? visibleLabel( attributes.labelText, labelNameArgs )
+		: '';
 	const labelPosition = labelPositionFor( attributes.labelPosition, '' );
 	const showBg = !! showBackground || ( brand.brandOn && ! brand.glyphOnly );
 	// Logo only: a gradient logo (Instagram) paints the glyph unless the client set a glyph colour or gradient (render.php's twin).
-	const logoGradient = brand.glyphOnly && ! attributes.iconColour && ! attributes.iconColourGradient ? brand.paint?.gradient || '' : '';
+	const logoGradient =
+		brand.glyphOnly &&
+		! attributes.iconColour &&
+		! attributes.iconColourGradient
+			? brand.paint?.gradient || ''
+			: '';
 	// An outline shape draws its border as the SVG's stroke (render.php's twin): the box takes no border preview.
 	const outline = outlineCanvas( attributes, group, tier, presetSlugs );
 
@@ -222,47 +327,97 @@ export default function Edit( { attributes: ownAttributes, setAttributes, contex
 		palette
 	);
 	const shapeStyle = outline.outline ? {} : boxBorder;
-	const hasBorder = outline.outline ? outline.own : !! ( boxBorder.borderWidth || boxBorder.borderTopWidth || boxBorder.borderStyle );
-	const groupBorder = outline.outline ? ! outline.own && outline.stroke : ! hasBorder && group.border;
+	const hasBorder = outline.outline
+		? outline.own
+		: !! (
+				boxBorder.borderWidth ||
+				boxBorder.borderTopWidth ||
+				boxBorder.borderStyle
+		  );
+	const groupBorder = outline.outline
+		? ! outline.own && outline.stroke
+		: ! hasBorder && group.border;
 	if ( showBg && backgroundColourGradient && ! outline.outline ) {
 		shapeStyle.backgroundImage = backgroundColourGradient;
 	}
 
-	const fillGlyph = iconFill && ! [ 'emoji', 'dashicon' ].includes( iconSource ) && ! ( 'brand' === iconSource && brand.glyphBrand?.glyph?.svg );
+	const fillGlyph =
+		iconFill &&
+		! [ 'emoji', 'dashicon' ].includes( iconSource ) &&
+		! ( 'brand' === iconSource && brand.glyphBrand?.glyph?.svg );
 	const className = [
 		'sgs-icon',
 		`sgs-icon--source-${ iconSource || 'lucide' }`,
 		`sgs-icon--shape-${ shape }`,
 		attributes.showSignedInDot && 'sgs-icon--has-dot',
 		showBg && 'sgs-icon--has-bg',
-		! showBg && attributes.backgroundColourHover && 'sgs-icon--has-bg-hover',
+		! showBg &&
+			attributes.backgroundColourHover &&
+			'sgs-icon--has-bg-hover',
 		( showBg || hasBorder || groupBorder ) && 'sgs-icon--boxed',
 		groupBorder && ! outline.outline && 'sgs-icon--group-border',
 		outline.outline && 'sgs-icon--outline',
-		outline.stroke && 'solid' !== outline.dash && `sgs-icon--outline-${ outline.dash }`,
+		outline.stroke &&
+			'solid' !== outline.dash &&
+			`sgs-icon--outline-${ outline.dash }`,
 		brand.brandOn && 'sgs-icon--brand',
 		brand.glyphOnly && 'sgs-icon--brand-glyph',
 		fillGlyph && 'sgs-icon--fill',
-		( attributes.iconColour || attributes.iconColourGradient ) && 'sgs-icon--own-colour',
-		'brand' === iconSource && brand.glyphBrand?.glyph?.svg && 'sgs-icon--mark',
+		( attributes.iconColour || attributes.iconColourGradient ) &&
+			'sgs-icon--own-colour',
+		'brand' === iconSource &&
+			brand.glyphBrand?.glyph?.svg &&
+			'sgs-icon--mark',
 		iconAlign && 'start' !== iconAlign && `sgs-icon--align-${ iconAlign }`,
 		( fallback.hidden || hiddenInRow ) && 'sgs-icon--hidden-empty',
 		labelText && 'sgs-icon--has-label',
-		labelText && 'end' !== labelPosition && `sgs-icon--label-${ labelPosition }`,
-		labelText && ( attributes.labelColour || attributes.labelColourGradient ) && 'sgs-icon--own-label-colour',
+		labelText &&
+			'end' !== labelPosition &&
+			`sgs-icon--label-${ labelPosition }`,
+		labelText &&
+			( attributes.labelColour || attributes.labelColourGradient ) &&
+			'sgs-icon--own-label-colour',
 	]
 		.filter( Boolean )
 		.join( ' ' );
 
-	const labelRootStyle = labelText ? canvasLabelRootStyle( attributes, tier, presetSlugs ) : {};
-	const blockProps = useBlockProps( { className, style: { ...canvasRootStyle( attributes, tier, brand, presetSlugs, shadowHoverMap || {} ), ...outline.style, ...labelRootStyle } } );
+	const labelRootStyle = labelText
+		? canvasLabelRootStyle( attributes, tier, presetSlugs )
+		: {};
+	const blockProps = useBlockProps( {
+		className,
+		style: {
+			...canvasRootStyle(
+				attributes,
+				tier,
+				brand,
+				presetSlugs,
+				shadowHoverMap || {}
+			),
+			...outline.style,
+			...labelRootStyle,
+		},
+	} );
 	const linked = !! unboundUrl || link.bound;
 	const dotStyle = canvasDotStyle( attributes, tier, presetSlugs );
 	const shapeEl = (
 		<span className="sgs-icon__shape" style={ shapeStyle }>
-			{ outline.outline && ( showBg || outline.stroke ) && <CanvasOutline shape={ shape } /> }
-			<CanvasGlyph attributes={ attributes } glyphBrand={ brand.glyphBrand } drawFixed={ brand.drawFixed } logoGradient={ logoGradient } />
-			{ dotStyle && <span className="sgs-icon__dot" aria-hidden="true" style={ dotStyle } /> }
+			{ outline.outline && ( showBg || outline.stroke ) && (
+				<CanvasOutline shape={ shape } />
+			) }
+			<CanvasGlyph
+				attributes={ attributes }
+				glyphBrand={ brand.glyphBrand }
+				drawFixed={ brand.drawFixed }
+				logoGradient={ logoGradient }
+			/>
+			{ dotStyle && (
+				<span
+					className="sgs-icon__dot"
+					aria-hidden="true"
+					style={ dotStyle }
+				/>
+			) }
 		</span>
 	);
 
@@ -272,7 +427,9 @@ export default function Edit( { attributes: ownAttributes, setAttributes, contex
 				<LogicalAlignToolbar
 					label={ __( 'Icon alignment', 'sgs-blocks' ) }
 					value={ iconAlign }
-					onChange={ ( value ) => setAttributes( { iconAlign: value } ) }
+					onChange={ ( value ) =>
+						setAttributes( { iconAlign: value } )
+					}
 				/>
 			</BlockControls>
 			<IconInspector
@@ -296,13 +453,23 @@ export default function Edit( { attributes: ownAttributes, setAttributes, contex
 				{ linked && (
 					<span className="sgs-icon__link">
 						{ shapeEl }
-						{ labelText && <CanvasLabel text={ labelText } attributes={ attributes } tier={ tier } /> }
+						{ labelText && (
+							<CanvasLabel
+								text={ labelText }
+								attributes={ attributes }
+								tier={ tier }
+							/>
+						) }
 					</span>
 				) }
 				{ ! linked && labelText && (
 					<span className="sgs-icon__inner">
 						{ shapeEl }
-						<CanvasLabel text={ labelText } attributes={ attributes } tier={ tier } />
+						<CanvasLabel
+							text={ labelText }
+							attributes={ attributes }
+							tier={ tier }
+						/>
 					</span>
 				) }
 				{ ! linked && ! labelText && shapeEl }
@@ -310,7 +477,10 @@ export default function Edit( { attributes: ownAttributes, setAttributes, contex
 					<span className="sgs-icon__notice" role="note">
 						{ sprintf(
 							/* translators: %s: Site Info field, e.g. WhatsApp. */
-							__( 'Hidden in this row: tick %s under Links on the Social Icons block to show it.', 'sgs-blocks' ),
+							__(
+								'Hidden in this row: tick %s under Links on the Social Icons block to show it.',
+								'sgs-blocks'
+							),
 							link.label
 						) }
 					</span>
@@ -319,10 +489,17 @@ export default function Edit( { attributes: ownAttributes, setAttributes, contex
 					<span className="sgs-icon__notice" role="note">
 						{ sprintf(
 							/* translators: %s: Site Info field, e.g. WhatsApp. */
-							__( 'Hidden on your site: %s is empty in Site Info.', 'sgs-blocks' ),
+							__(
+								'Hidden on your site: %s is empty in Site Info.',
+								'sgs-blocks'
+							),
 							link.label
 						) }{ ' ' }
-						<a href={ SITE_INFO_ADMIN_URL } target="_blank" rel="noopener noreferrer">
+						<a
+							href={ SITE_INFO_ADMIN_URL }
+							target="_blank"
+							rel="noopener noreferrer"
+						>
 							{ __( 'Open Site Info', 'sgs-blocks' ) }
 						</a>
 					</span>

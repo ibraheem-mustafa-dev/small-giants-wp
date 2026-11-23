@@ -50,8 +50,14 @@ export function clampHiddenStarts( tiers ) {
 			let start = 0;
 			frames.forEach( ( frame, index ) => {
 				const offset = isRow( frame ) ? frame.offset : null;
-				const least = isRow( frames[ start ] ) ? frames[ start ].offset : null;
-				if ( isNumeric( offset ) && isNumeric( least ) && offset < least ) {
+				const least = isRow( frames[ start ] )
+					? frames[ start ].offset
+					: null;
+				if (
+					isNumeric( offset ) &&
+					isNumeric( least ) &&
+					offset < least
+				) {
 					start = index;
 				}
 			} );

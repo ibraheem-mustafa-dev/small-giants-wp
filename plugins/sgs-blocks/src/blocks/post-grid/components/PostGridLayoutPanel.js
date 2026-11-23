@@ -3,26 +3,31 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { PanelBody, RangeControl, RadioControl, ToggleControl } from '@wordpress/components';
+import {
+	PanelBody,
+	RangeControl,
+	RadioControl,
+	ToggleControl,
+} from '@wordpress/components';
 import ResponsiveOverride from '../../../components/ResponsiveOverride';
 import { LAYOUT_OPTIONS } from './constants';
 
-export default function PostGridLayoutPanel( { attributes, setAttributes, set } ) {
-	const {
-		layout,
-		columns,
-		keepEmptyColumns,
-	} = attributes;
+export default function PostGridLayoutPanel( {
+	attributes,
+	setAttributes,
+	set,
+} ) {
+	const { layout, columns, keepEmptyColumns } = attributes;
 
 	return (
-				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ false }>
-					<RadioControl
-						label={ __( 'Layout', 'sgs-blocks' ) }
-						selected={ layout }
-						options={ LAYOUT_OPTIONS }
-						onChange={ set( 'layout' ) }
-					/>
-					{ /*
+		<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ false }>
+			<RadioControl
+				label={ __( 'Layout', 'sgs-blocks' ) }
+				selected={ layout }
+				options={ LAYOUT_OPTIONS }
+				onChange={ set( 'layout' ) }
+			/>
+			{ /*
 						  columns is a TIER OBJECT — ONE attr holding
 						  {desktop,tablet,mobile} (Spec 35 pass 4). It must
 						  therefore use ResponsiveOverride, which reads and
@@ -38,40 +43,49 @@ export default function PostGridLayoutPanel( { attributes, setAttributes, set } 
 						  its default, dropping the whole setting (D563 bug
 						  class).
 					*/ }
-					<ResponsiveOverride
-						label={ __( 'Columns', 'sgs-blocks' ) }
-						value={ columns }
-						onChange={ ( obj ) => setAttributes( { columns: obj } ) }
-					>
-						{ ( { tier, ownValue, effectiveValue, setOwnValue } ) => {
-							return (
-								<RangeControl
-									label={ __( 'Columns', 'sgs-blocks' ) }
-									hideLabelFromVision
-									value={
-										ownValue !== ''
-											? ownValue
-											: ( effectiveValue !== '' ? effectiveValue : ( tier === 'mobile' ? 1 : 3 ) )
-									}
-									onChange={ setOwnValue }
-									min={ 1 }
-									max={ 6 }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
-							);
-						} }
-					</ResponsiveOverride>
-					{ 'grid' === layout && (
-						<ToggleControl
-							label={ __( 'Keep empty columns', 'sgs-blocks' ) }
-							help={ __( 'With fewer posts than columns, cards keep their column width instead of stretching.', 'sgs-blocks' ) }
-							checked={ !! keepEmptyColumns }
-							onChange={ ( v ) => setAttributes( { keepEmptyColumns: v } ) }
+			<ResponsiveOverride
+				label={ __( 'Columns', 'sgs-blocks' ) }
+				value={ columns }
+				onChange={ ( obj ) => setAttributes( { columns: obj } ) }
+			>
+				{ ( { tier, ownValue, effectiveValue, setOwnValue } ) => {
+					return (
+						<RangeControl
+							label={ __( 'Columns', 'sgs-blocks' ) }
+							hideLabelFromVision
+							value={
+								ownValue !== ''
+									? ownValue
+									: effectiveValue !== ''
+									? effectiveValue
+									: tier === 'mobile'
+									? 1
+									: 3
+							}
+							onChange={ setOwnValue }
+							min={ 1 }
+							max={ 6 }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
+					);
+				} }
+			</ResponsiveOverride>
+			{ 'grid' === layout && (
+				<ToggleControl
+					label={ __( 'Keep empty columns', 'sgs-blocks' ) }
+					help={ __(
+						'With fewer posts than columns, cards keep their column width instead of stretching.',
+						'sgs-blocks'
 					) }
-					{ /* Gap is provided by the shared ContainerWrapperControls panel below. */ }
-				</PanelBody>
+					checked={ !! keepEmptyColumns }
+					onChange={ ( v ) =>
+						setAttributes( { keepEmptyColumns: v } )
+					}
+					__nextHasNoMarginBottom
+				/>
+			) }
+			{ /* Gap is provided by the shared ContainerWrapperControls panel below. */ }
+		</PanelBody>
 	);
 }

@@ -16,11 +16,23 @@ export function BuyboxExpressLoadPanel( { attributes, setAttributes } ) {
 			initialOpen={ false }
 		>
 			<SelectControl
-				label={ __( 'Load the Apple Pay and Google Pay buttons', 'sgs-blocks' ) }
+				label={ __(
+					'Load the Apple Pay and Google Pay buttons',
+					'sgs-blocks'
+				) }
 				value={ attributes.expressLoad || 'page' }
 				options={ [
-					{ value: 'page', label: __( 'When the page opens', 'sgs-blocks' ) },
-					{ value: 'interaction', label: __( 'When the shopper first scrolls, taps or types', 'sgs-blocks' ) },
+					{
+						value: 'page',
+						label: __( 'When the page opens', 'sgs-blocks' ),
+					},
+					{
+						value: 'interaction',
+						label: __(
+							'When the shopper first scrolls, taps or types',
+							'sgs-blocks'
+						),
+					},
 				] }
 				onChange={ ( val ) => setAttributes( { expressLoad: val } ) }
 				help={ __(

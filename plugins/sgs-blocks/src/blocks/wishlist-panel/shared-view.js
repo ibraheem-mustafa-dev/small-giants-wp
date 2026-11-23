@@ -40,12 +40,17 @@ export function parseShareToken( search ) {
  * @return {Promise<{ok:boolean, status:number, ids:number[]}>}
  */
 export async function fetchSharedList( token ) {
-	const root = String( window?.sgsWishlistData?.restUrl || '/wp-json/' ).replace( /\/$/, '' );
+	const root = String(
+		window?.sgsWishlistData?.restUrl || '/wp-json/'
+	).replace( /\/$/, '' );
 	let response;
 	try {
-		response = await window.fetch( root + '/sgs/v1/wishlist/shared/' + token, {
-			credentials: 'same-origin',
-		} );
+		response = await window.fetch(
+			root + '/sgs/v1/wishlist/shared/' + token,
+			{
+				credentials: 'same-origin',
+			}
+		);
 	} catch ( e ) {
 		return { ok: false, status: 0, ids: [] };
 	}
@@ -56,7 +61,9 @@ export async function fetchSharedList( token ) {
 		json = null;
 	}
 	const ids = Array.isArray( json?.items )
-		? json.items.map( ( item ) => Number( item.id ) ).filter( ( id ) => id > 0 )
+		? json.items
+				.map( ( item ) => Number( item.id ) )
+				.filter( ( id ) => id > 0 )
 		: [];
 	return { ok: response.ok, status: response.status, ids };
 }
@@ -100,7 +107,9 @@ export async function renderSharedView( elements, labels, token ) {
 		products = await fetchWishlistProducts( result.ids );
 	} catch {
 		itemsEl.removeAttribute( 'aria-busy' );
-		itemsEl.innerHTML = `<p class="sgs-wishlist-panel__error">${ escapeHtml( labels.errorText ) }</p>`;
+		itemsEl.innerHTML = `<p class="sgs-wishlist-panel__error">${ escapeHtml(
+			labels.errorText
+		) }</p>`;
 		return;
 	}
 	itemsEl.removeAttribute( 'aria-busy' );

@@ -25,11 +25,17 @@ const LINED_LAYOUTS = [ 'grid', 'flex', 'stack' ];
  */
 export function SeparatorsPanel( { attributes, setAttributes, layout } ) {
 	const resolved = layout ?? attributes.layout;
-	if ( undefined === attributes.separators || ! LINED_LAYOUTS.includes( resolved ) ) {
+	if (
+		undefined === attributes.separators ||
+		! LINED_LAYOUTS.includes( resolved )
+	) {
 		return null;
 	}
 	return (
-		<PanelBody title={ __( 'Separators', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Separators', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			<SgsSeparatorControl
 				value={ attributes.separators }
 				onChange={ ( next ) => setAttributes( { separators: next } ) }

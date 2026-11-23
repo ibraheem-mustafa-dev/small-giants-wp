@@ -1,6 +1,11 @@
 import { __ } from '@wordpress/i18n';
 import { PanelBody } from '@wordpress/components';
-import { ResponsiveOverride, SgsBorderControl, SgsLengthControl, TypographyControls } from '../../components';
+import {
+	ResponsiveOverride,
+	SgsBorderControl,
+	SgsLengthControl,
+	TypographyControls,
+} from '../../components';
 
 // The stepper's number and buttons share one text style (size and weight).
 const QTY_TARGETS = [
@@ -23,13 +28,28 @@ const QTY_TARGETS = [
  * @param {Function} root0.setAttributes The block's attribute setter.
  * @param {boolean}  root0.hasPanel      Whether displayMode is flyout|drawer.
  */
-export default function PanelItemRowDesign( { attributes, setAttributes, hasPanel } ) {
-	if ( ! hasPanel || false === attributes.itemShowQty || 'stepper' !== attributes.itemQtyStyle ) {
+export default function PanelItemRowDesign( {
+	attributes,
+	setAttributes,
+	hasPanel,
+} ) {
+	if (
+		! hasPanel ||
+		false === attributes.itemShowQty ||
+		'stepper' !== attributes.itemQtyStyle
+	) {
 		return null;
 	}
 	return (
-		<PanelBody title={ __( 'Mini-cart quantity stepper', 'sgs-blocks' ) } initialOpen={ false }>
-			<TypographyControls attributes={ attributes } setAttributes={ setAttributes } targets={ QTY_TARGETS } />
+		<PanelBody
+			title={ __( 'Mini-cart quantity stepper', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
+			<TypographyControls
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				targets={ QTY_TARGETS }
+			/>
 			<ResponsiveOverride
 				label={ __( 'Stepper height', 'sgs-blocks' ) }
 				value={ attributes.itemQtyHeight }
@@ -48,11 +68,17 @@ export default function PanelItemRowDesign( { attributes, setAttributes, hasPane
 			</ResponsiveOverride>
 			<SgsBorderControl
 				widthValues={ attributes.itemQtyBorderWidth ?? {} }
-				onWidthChange={ ( next ) => setAttributes( { itemQtyBorderWidth: next } ) }
+				onWidthChange={ ( next ) =>
+					setAttributes( { itemQtyBorderWidth: next } )
+				}
 				styleValue={ attributes.itemQtyBorderStyle }
-				onStyleChange={ ( val ) => setAttributes( { itemQtyBorderStyle: val } ) }
+				onStyleChange={ ( val ) =>
+					setAttributes( { itemQtyBorderStyle: val } )
+				}
 				colourValue={ attributes.itemQtyBorderColour }
-				onColourChange={ ( val ) => setAttributes( { itemQtyBorderColour: val ?? '' } ) }
+				onColourChange={ ( val ) =>
+					setAttributes( { itemQtyBorderColour: val ?? '' } )
+				}
 				colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
 				colourLinked
 			/>
@@ -61,7 +87,9 @@ export default function PanelItemRowDesign( { attributes, setAttributes, hasPane
 				label={ __( 'Stepper corners', 'sgs-blocks' ) }
 				help={ __( 'Leave blank for fully rounded.', 'sgs-blocks' ) }
 				value={ attributes.itemQtyRadius || '' }
-				onChange={ ( val ) => setAttributes( { itemQtyRadius: val || '' } ) }
+				onChange={ ( val ) =>
+					setAttributes( { itemQtyRadius: val || '' } )
+				}
 			/>
 		</PanelBody>
 	);

@@ -5,10 +5,24 @@ import {
 	TextControl,
 	ToggleControl,
 } from '@wordpress/components';
-import { useBlockEditContext, store as blockEditorStore } from '@wordpress/block-editor';
+import {
+	useBlockEditContext,
+	store as blockEditorStore,
+} from '@wordpress/block-editor';
 import { useSelect } from '@wordpress/data';
-import { SgsLengthControl, IconPicker, ResponsiveOverride, ResponsiveBoxControl, SgsBorderControl, ShadowControl, shadowAttrKeys } from '../../components';
-import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+import {
+	SgsLengthControl,
+	IconPicker,
+	ResponsiveOverride,
+	ResponsiveBoxControl,
+	SgsBorderControl,
+	ShadowControl,
+	shadowAttrKeys,
+} from '../../components';
+import {
+	ToggleGroupControl,
+	ToggleGroupControlOption,
+} from '../../components/primitives';
 import { resolveTier } from '../../utils';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
@@ -60,9 +74,9 @@ const BURGER_MORPH_OPTIONS = [
  *
  * @param {Object}   root0                       Props.
  * @param {string}   root0.burgerSize            `burgerSize` — the button's HEIGHT (and, unless
- *                                                `burgerWidth` overrides it, its width too).
+ *                                               `burgerWidth` overrides it, its width too).
  * @param {Object}   root0.triggerMode           `triggerMode` — tier object {desktop,tablet,mobile},
- *                                                each icon | text | icon-and-text.
+ *                                               each icon | text | icon-and-text.
  * @param {string}   root0.triggerLabel          `triggerLabel`.
  * @param {string}   root0.triggerHoverLabel     `triggerHoverLabel` (Wave 3C U-6, M-25).
  * @param {string}   root0.triggerOpenLabel      `triggerOpenLabel` (Spec 36 FR-36-27 swap-label).
@@ -71,8 +85,8 @@ const BURGER_MORPH_OPTIONS = [
  * @param {boolean}  root0.triggerMagnetEnabled  `triggerMagnetEnabled`.
  * @param {number}   root0.triggerMagnetRadius   `triggerMagnetRadius`.
  * @param {number}   root0.triggerMagnetStrength `triggerMagnetStrength`.
- * @param {number}   root0.burgerBarCount         `burgerBarCount` — 3 | 2.
- * @param {string}   root0.burgerMorph            `burgerMorph` — x | x-rotate | line | none.
+ * @param {number}   root0.burgerBarCount        `burgerBarCount` — 3 | 2.
+ * @param {string}   root0.burgerMorph           `burgerMorph` — x | x-rotate | line | none.
  * @param {Function} root0.setAttributes         The block's attribute setter.
  */
 export default function BurgerPanel( {
@@ -96,24 +110,31 @@ export default function BurgerPanel( {
 	// actually holds (no prop-drilling round trip needed).
 	const { clientId } = useBlockEditContext();
 	const burgerWidth = useSelect(
-		( select ) => select( blockEditorStore ).getBlockAttributes( clientId )?.burgerWidth,
+		( select ) =>
+			select( blockEditorStore ).getBlockAttributes( clientId )
+				?.burgerWidth,
 		[ clientId ]
 	);
 	// U-18 G6: same reason as `burgerWidth` above — this panel's `edit.js`
 	// caller does not pass `burgerIconWidth`/`burgerIconHeight` as props.
 	const burgerIconWidth = useSelect(
-		( select ) => select( blockEditorStore ).getBlockAttributes( clientId )?.burgerIconWidth,
+		( select ) =>
+			select( blockEditorStore ).getBlockAttributes( clientId )
+				?.burgerIconWidth,
 		[ clientId ]
 	);
 	const burgerIconHeight = useSelect(
-		( select ) => select( blockEditorStore ).getBlockAttributes( clientId )?.burgerIconHeight,
+		( select ) =>
+			select( blockEditorStore ).getBlockAttributes( clientId )
+				?.burgerIconHeight,
 		[ clientId ]
 	);
 	// Menu button box controls (padding, corner radius, border, bar gap) —
 	// same reason as `burgerWidth` above: read off the stored attributes.
 	const burgerBox = useSelect(
 		( select ) => {
-			const stored = select( blockEditorStore ).getBlockAttributes( clientId ) || {};
+			const stored =
+				select( blockEditorStore ).getBlockAttributes( clientId ) || {};
 			return {
 				burgerPadding: stored.burgerPadding,
 				burgerBorderRadius: stored.burgerBorderRadius,
@@ -135,7 +156,17 @@ export default function BurgerPanel( {
 		},
 		[ clientId ]
 	);
-	const { burgerPadding, burgerBorderRadius, burgerBorderWidth, burgerBorderStyle, burgerBorderColour, burgerBarGap, burgerBarThickness, burgerTextGap, burgerBarAlign } = burgerBox;
+	const {
+		burgerPadding,
+		burgerBorderRadius,
+		burgerBorderWidth,
+		burgerBorderStyle,
+		burgerBorderColour,
+		burgerBarGap,
+		burgerBarThickness,
+		burgerTextGap,
+		burgerBarAlign,
+	} = burgerBox;
 
 	// `triggerMode` is a TIER OBJECT. The icon picker, the
 	// Label field and the morph controls apply to EVERY tier at once (one
@@ -144,13 +175,20 @@ export default function BurgerPanel( {
 	const modes = [ 'desktop', 'tablet', 'mobile' ].map(
 		( tier ) => resolveTier( triggerMode, tier, 'icon' ).value
 	);
-	const showsIcon = modes.some( ( m ) => 'icon' === m || 'icon-and-text' === m );
-	const showsText = modes.some( ( m ) => 'text' === m || 'icon-and-text' === m );
+	const showsIcon = modes.some(
+		( m ) => 'icon' === m || 'icon-and-text' === m
+	);
+	const showsText = modes.some(
+		( m ) => 'text' === m || 'icon-and-text' === m
+	);
 	const showsBoth = modes.some( ( m ) => 'icon-and-text' === m );
 	const morph = burgerMorph || 'x';
 
 	return (
-		<PanelBody title={ __( 'Menu Button', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Menu Button', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			<p style={ { marginTop: 0 } }>
 				{ __(
 					'Controls the button that opens the mobile menu (the ‘burger’).',
@@ -164,7 +202,9 @@ export default function BurgerPanel( {
 				<IconPicker
 					label={ __( 'Icon', 'sgs-blocks' ) }
 					value={ triggerIcon || { source: 'lucide', name: 'menu' } }
-					onChange={ ( next ) => setAttributes( { triggerIcon: next } ) }
+					onChange={ ( next ) =>
+						setAttributes( { triggerIcon: next } )
+					}
 				/>
 			) }
 
@@ -186,8 +226,14 @@ export default function BurgerPanel( {
 						__next40pxDefaultSize
 						onChange={ ( val ) => setOwnValue( val || undefined ) }
 					>
-						<ToggleGroupControlOption value="icon" label={ __( 'Icon', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="text" label={ __( 'Text', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption
+							value="icon"
+							label={ __( 'Icon', 'sgs-blocks' ) }
+						/>
+						<ToggleGroupControlOption
+							value="text"
+							label={ __( 'Text', 'sgs-blocks' ) }
+						/>
 						<ToggleGroupControlOption
 							value="icon-and-text"
 							label={ __( 'Both', 'sgs-blocks' ) }
@@ -200,7 +246,9 @@ export default function BurgerPanel( {
 				<TextControl
 					label={ __( 'Label', 'sgs-blocks' ) }
 					value={ triggerLabel ?? 'Menu' }
-					onChange={ ( val ) => setAttributes( { triggerLabel: val } ) }
+					onChange={ ( val ) =>
+						setAttributes( { triggerLabel: val } )
+					}
 					help={ __(
 						'The word shown on the button. It is also what a screen reader announces.',
 						'sgs-blocks'
@@ -215,17 +263,34 @@ export default function BurgerPanel( {
 			   a screen reader announces while the menu is open. */ }
 			{ showsText && (
 				<>
-					<SgsFreeTextField type="rich" noLink
+					<SgsFreeTextField
+						type="rich"
+						noLink
 						label={ __( 'Word on hover (optional)', 'sgs-blocks' ) }
 						value={ triggerHoverLabel ?? '' }
-						onChange={ ( val ) => setAttributes( { triggerHoverLabel: val } ) }
-						help={ __( 'Rolls in on hover when Label roll is on (Item effects).', 'sgs-blocks' ) }
+						onChange={ ( val ) =>
+							setAttributes( { triggerHoverLabel: val } )
+						}
+						help={ __(
+							'Rolls in on hover when Label roll is on (Item effects).',
+							'sgs-blocks'
+						) }
 					/>
-					<SgsFreeTextField type="rich" noLink
-						label={ __( 'Word while open (optional)', 'sgs-blocks' ) }
+					<SgsFreeTextField
+						type="rich"
+						noLink
+						label={ __(
+							'Word while open (optional)',
+							'sgs-blocks'
+						) }
 						value={ triggerOpenLabel ?? '' }
-						onChange={ ( val ) => setAttributes( { triggerOpenLabel: val } ) }
-						help={ __( 'For example "Close". Rolls in while the menu is open when Label roll is on.', 'sgs-blocks' ) }
+						onChange={ ( val ) =>
+							setAttributes( { triggerOpenLabel: val } )
+						}
+						help={ __(
+							'For example "Close". Rolls in while the menu is open when Label roll is on.',
+							'sgs-blocks'
+						) }
 					/>
 				</>
 			) }
@@ -234,13 +299,21 @@ export default function BurgerPanel( {
 				<ToggleGroupControl
 					label={ __( 'Icon position', 'sgs-blocks' ) }
 					value={ triggerIconPosition || 'after' }
-					onChange={ ( val ) => setAttributes( { triggerIconPosition: val || 'after' } ) }
+					onChange={ ( val ) =>
+						setAttributes( { triggerIconPosition: val || 'after' } )
+					}
 					isBlock
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 				>
-					<ToggleGroupControlOption value="before" label={ __( 'Before', 'sgs-blocks' ) } />
-					<ToggleGroupControlOption value="after" label={ __( 'After', 'sgs-blocks' ) } />
+					<ToggleGroupControlOption
+						value="before"
+						label={ __( 'Before', 'sgs-blocks' ) }
+					/>
+					<ToggleGroupControlOption
+						value="after"
+						label={ __( 'After', 'sgs-blocks' ) }
+					/>
 				</ToggleGroupControl>
 			) }
 
@@ -248,7 +321,9 @@ export default function BurgerPanel( {
 				label={ __( 'Height', 'sgs-blocks' ) }
 				value={ burgerSize }
 				units={ [ { value: 'px', label: 'px', default: 44 } ] }
-				onChange={ ( val ) => setAttributes( { burgerSize: val || '44px' } ) }
+				onChange={ ( val ) =>
+					setAttributes( { burgerSize: val || '44px' } )
+				}
 				help={ __(
 					'44px minimum for a comfortable touch target (WCAG 2.2 AA).',
 					'sgs-blocks'
@@ -270,10 +345,17 @@ export default function BurgerPanel( {
 						hideLabelFromVision
 						label={ __( 'Width', 'sgs-blocks' ) }
 						value={ ownValue || '' }
-						placeholder={ inherited ? effectiveValue || burgerSize : burgerSize }
+						placeholder={
+							inherited
+								? effectiveValue || burgerSize
+								: burgerSize
+						}
 						units={ [ { value: 'px', label: 'px', default: 44 } ] }
 						onChange={ ( val ) => setOwnValue( val || undefined ) }
-						help={ __( 'Leave empty to match the height.', 'sgs-blocks' ) }
+						help={ __(
+							'Leave empty to match the height.',
+							'sgs-blocks'
+						) }
 						presets={ false }
 					/>
 				) }
@@ -286,14 +368,18 @@ export default function BurgerPanel( {
 			<ResponsiveOverride
 				label={ __( 'Bar length', 'sgs-blocks' ) }
 				value={ burgerIconWidth }
-				onChange={ ( obj ) => setAttributes( { burgerIconWidth: obj } ) }
+				onChange={ ( obj ) =>
+					setAttributes( { burgerIconWidth: obj } )
+				}
 			>
 				{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
 					<SgsLengthControl
 						hideLabelFromVision
 						label={ __( 'Bar length', 'sgs-blocks' ) }
 						value={ ownValue || '' }
-						placeholder={ inherited ? effectiveValue || '24px' : '24px' }
+						placeholder={
+							inherited ? effectiveValue || '24px' : '24px'
+						}
 						units={ [ { value: 'px', label: 'px', default: 24 } ] }
 						onChange={ ( val ) => setOwnValue( val || undefined ) }
 						presets={ false }
@@ -304,14 +390,18 @@ export default function BurgerPanel( {
 			<ResponsiveOverride
 				label={ __( 'Bar stack height', 'sgs-blocks' ) }
 				value={ burgerIconHeight }
-				onChange={ ( obj ) => setAttributes( { burgerIconHeight: obj } ) }
+				onChange={ ( obj ) =>
+					setAttributes( { burgerIconHeight: obj } )
+				}
 			>
 				{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
 					<SgsLengthControl
 						hideLabelFromVision
 						label={ __( 'Bar stack height', 'sgs-blocks' ) }
 						value={ ownValue || '' }
-						placeholder={ inherited ? effectiveValue || '18px' : '18px' }
+						placeholder={
+							inherited ? effectiveValue || '18px' : '18px'
+						}
 						units={ [ { value: 'px', label: 'px', default: 18 } ] }
 						onChange={ ( val ) => setOwnValue( val || undefined ) }
 						presets={ false }
@@ -323,17 +413,31 @@ export default function BurgerPanel( {
 				<ResponsiveOverride
 					label={ __( 'Bar thickness', 'sgs-blocks' ) }
 					value={ burgerBarThickness }
-					onChange={ ( obj ) => setAttributes( { burgerBarThickness: obj } ) }
+					onChange={ ( obj ) =>
+						setAttributes( { burgerBarThickness: obj } )
+					}
 				>
-					{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+					{ ( {
+						ownValue,
+						effectiveValue,
+						inherited,
+						setOwnValue,
+					} ) => (
 						<SgsLengthControl
 							hideLabelFromVision
 							label={ __( 'Bar thickness', 'sgs-blocks' ) }
 							value={ ownValue || '' }
-							placeholder={ inherited ? effectiveValue || '2px' : '2px' }
+							placeholder={
+								inherited ? effectiveValue || '2px' : '2px'
+							}
 							units={ [ { value: 'px', label: 'px' } ] }
-							onChange={ ( val ) => setOwnValue( val || undefined ) }
-							help={ __( 'How thick each bar of the menu icon is.', 'sgs-blocks' ) }
+							onChange={ ( val ) =>
+								setOwnValue( val || undefined )
+							}
+							help={ __(
+								'How thick each bar of the menu icon is.',
+								'sgs-blocks'
+							) }
 							presets={ false }
 						/>
 					) }
@@ -344,16 +448,30 @@ export default function BurgerPanel( {
 				<ResponsiveOverride
 					label={ __( 'Space between icon and label', 'sgs-blocks' ) }
 					value={ burgerTextGap }
-					onChange={ ( obj ) => setAttributes( { burgerTextGap: obj } ) }
+					onChange={ ( obj ) =>
+						setAttributes( { burgerTextGap: obj } )
+					}
 				>
-					{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+					{ ( {
+						ownValue,
+						effectiveValue,
+						inherited,
+						setOwnValue,
+					} ) => (
 						<SgsLengthControl
 							hideLabelFromVision
-							label={ __( 'Space between icon and label', 'sgs-blocks' ) }
+							label={ __(
+								'Space between icon and label',
+								'sgs-blocks'
+							) }
 							value={ ownValue || '' }
-							placeholder={ inherited ? effectiveValue || '0px' : '0px' }
+							placeholder={
+								inherited ? effectiveValue || '0px' : '0px'
+							}
 							units={ [ { value: 'px', label: 'px' } ] }
-							onChange={ ( val ) => setOwnValue( val || undefined ) }
+							onChange={ ( val ) =>
+								setOwnValue( val || undefined )
+							}
 							presets={ false }
 						/>
 					) }
@@ -362,54 +480,85 @@ export default function BurgerPanel( {
 
 			{ /* Each bar's corner rounding, per device (nav-menu-trigger-css.php). Bar lengths, at rest and on hover, are
 			   each bar's Hover panel values (Rest width, Width), so there is one home for a length. */ }
-			{ showsIcon && [ 1, 2, 3 ].map( ( n ) => {
-				if ( 3 === n && 2 === burgerBarCount ) {
-					return null;
-				}
-				const attr = BAR_RADIUS_ATTRS[ n ];
-				return (
-					<ResponsiveOverride
-						key={ attr }
-						label={ sprintf(
-							/* translators: %d: bar number, 1 to 3 */
-							__( 'Bar %d corner radius', 'sgs-blocks' ),
-							n
-						) }
-						value={ burgerBox[ attr ] }
-						onChange={ ( obj ) => setAttributes( { [ attr ]: obj } ) }
-					>
-						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-							<SgsLengthControl
-								hideLabelFromVision
-								label={ sprintf(
-									/* translators: %d: bar number, 1 to 3 */
-									__( 'Bar %d corner radius', 'sgs-blocks' ),
-									n
-								) }
-								value={ ownValue || '' }
-								placeholder={ inherited ? effectiveValue || '1px' : '1px' }
-								units={ [ { value: 'px', label: 'px' } ] }
-								onChange={ ( val ) => setOwnValue( val || undefined ) }
-								presets={ false }
-							/>
-						) }
-					</ResponsiveOverride>
-				);
-			} ) }
+			{ showsIcon &&
+				[ 1, 2, 3 ].map( ( n ) => {
+					if ( 3 === n && 2 === burgerBarCount ) {
+						return null;
+					}
+					const attr = BAR_RADIUS_ATTRS[ n ];
+					return (
+						<ResponsiveOverride
+							key={ attr }
+							label={ sprintf(
+								/* translators: %d: bar number, 1 to 3 */
+								__( 'Bar %d corner radius', 'sgs-blocks' ),
+								n
+							) }
+							value={ burgerBox[ attr ] }
+							onChange={ ( obj ) =>
+								setAttributes( { [ attr ]: obj } )
+							}
+						>
+							{ ( {
+								ownValue,
+								effectiveValue,
+								inherited,
+								setOwnValue,
+							} ) => (
+								<SgsLengthControl
+									hideLabelFromVision
+									label={ sprintf(
+										/* translators: %d: bar number, 1 to 3 */
+										__(
+											'Bar %d corner radius',
+											'sgs-blocks'
+										),
+										n
+									) }
+									value={ ownValue || '' }
+									placeholder={
+										inherited
+											? effectiveValue || '1px'
+											: '1px'
+									}
+									units={ [ { value: 'px', label: 'px' } ] }
+									onChange={ ( val ) =>
+										setOwnValue( val || undefined )
+									}
+									presets={ false }
+								/>
+							) }
+						</ResponsiveOverride>
+					);
+				} ) }
 
 			{ showsIcon && (
 				<ToggleGroupControl
 					label={ __( 'Bars line up on', 'sgs-blocks' ) }
 					value={ burgerBarAlign || '' }
-					onChange={ ( val ) => setAttributes( { burgerBarAlign: val || '' } ) }
+					onChange={ ( val ) =>
+						setAttributes( { burgerBarAlign: val || '' } )
+					}
 					isBlock
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
-					help={ __( 'Matters when a bar is set shorter than the icon in its Hover panel: which side the bars line up on, and so which edge a growing bar grows from.', 'sgs-blocks' ) }
+					help={ __(
+						'Matters when a bar is set shorter than the icon in its Hover panel: which side the bars line up on, and so which edge a growing bar grows from.',
+						'sgs-blocks'
+					) }
 				>
-					<ToggleGroupControlOption value="" label={ __( 'Start', 'sgs-blocks' ) } />
-					<ToggleGroupControlOption value="center" label={ __( 'Centre', 'sgs-blocks' ) } />
-					<ToggleGroupControlOption value="end" label={ __( 'End', 'sgs-blocks' ) } />
+					<ToggleGroupControlOption
+						value=""
+						label={ __( 'Start', 'sgs-blocks' ) }
+					/>
+					<ToggleGroupControlOption
+						value="center"
+						label={ __( 'Centre', 'sgs-blocks' ) }
+					/>
+					<ToggleGroupControlOption
+						value="end"
+						label={ __( 'End', 'sgs-blocks' ) }
+					/>
 				</ToggleGroupControl>
 			) }
 
@@ -417,7 +566,10 @@ export default function BurgerPanel( {
 				label={ __( 'Button shadow', 'sgs-blocks' ) }
 				attributes={ burgerBox }
 				setAttributes={ setAttributes }
-				attrNames={ shadowAttrKeys( 'burgerShadow', { hover: true, hoverColour: true } ) }
+				attrNames={ shadowAttrKeys( 'burgerShadow', {
+					hover: true,
+					hoverColour: true,
+				} ) }
 			/>
 
 			{ /* Space between the default glyph's bars, per device. Writes the
@@ -426,17 +578,33 @@ export default function BurgerPanel( {
 				<ResponsiveOverride
 					label={ __( 'Bar gap', 'sgs-blocks' ) }
 					value={ burgerBarGap }
-					onChange={ ( obj ) => setAttributes( { burgerBarGap: obj } ) }
+					onChange={ ( obj ) =>
+						setAttributes( { burgerBarGap: obj } )
+					}
 				>
-					{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+					{ ( {
+						ownValue,
+						effectiveValue,
+						inherited,
+						setOwnValue,
+					} ) => (
 						<SgsLengthControl
 							hideLabelFromVision
 							label={ __( 'Bar gap', 'sgs-blocks' ) }
 							value={ ownValue || '' }
-							placeholder={ inherited ? effectiveValue || '' : '' }
-							units={ [ { value: 'px', label: 'px', default: 6 } ] }
-							onChange={ ( val ) => setOwnValue( val || undefined ) }
-							help={ __( 'Leave empty to keep the default spacing. Overrides Bar stack height.', 'sgs-blocks' ) }
+							placeholder={
+								inherited ? effectiveValue || '' : ''
+							}
+							units={ [
+								{ value: 'px', label: 'px', default: 6 },
+							] }
+							onChange={ ( val ) =>
+								setOwnValue( val || undefined )
+							}
+							help={ __(
+								'Leave empty to keep the default spacing. Overrides Bar stack height.',
+								'sgs-blocks'
+							) }
 							presets={ false }
 						/>
 					) }
@@ -453,14 +621,21 @@ export default function BurgerPanel( {
 				} }
 				onChange={ ( tier, next ) => {
 					const key = 'base' === tier ? 'desktop' : tier;
-					setAttributes( { burgerPadding: { ...( burgerPadding || {} ), [ key ]: next } } );
+					setAttributes( {
+						burgerPadding: {
+							...( burgerPadding || {} ),
+							[ key ]: next,
+						},
+					} );
 				} }
 			/>
 
 			<ResponsiveOverride
 				label={ __( 'Button corner radius', 'sgs-blocks' ) }
 				value={ burgerBorderRadius }
-				onChange={ ( obj ) => setAttributes( { burgerBorderRadius: obj } ) }
+				onChange={ ( obj ) =>
+					setAttributes( { burgerBorderRadius: obj } )
+				}
 			>
 				{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
 					<SgsLengthControl
@@ -473,7 +648,10 @@ export default function BurgerPanel( {
 							{ value: '%', label: '%', default: 50 },
 						] }
 						onChange={ ( val ) => setOwnValue( val || undefined ) }
-						help={ __( 'Leave empty for the default rounded corners; 0 gives square corners.', 'sgs-blocks' ) }
+						help={ __(
+							'Leave empty for the default rounded corners; 0 gives square corners.',
+							'sgs-blocks'
+						) }
 						presets={ false }
 					/>
 				) }
@@ -482,19 +660,27 @@ export default function BurgerPanel( {
 			<SgsBorderControl
 				label={ __( 'Button border', 'sgs-blocks' ) }
 				widthValues={ burgerBorderWidth ?? {} }
-				onWidthChange={ ( next ) => setAttributes( { burgerBorderWidth: next } ) }
+				onWidthChange={ ( next ) =>
+					setAttributes( { burgerBorderWidth: next } )
+				}
 				styleValue={ burgerBorderStyle }
-				onStyleChange={ ( value ) => setAttributes( { burgerBorderStyle: value } ) }
+				onStyleChange={ ( value ) =>
+					setAttributes( { burgerBorderStyle: value } )
+				}
 				colourLabel={ __( 'Button border colour', 'sgs-blocks' ) }
 				colourValue={ burgerBorderColour }
-				onColourChange={ ( value ) => setAttributes( { burgerBorderColour: value ?? '' } ) }
+				onColourChange={ ( value ) =>
+					setAttributes( { burgerBorderColour: value ?? '' } )
+				}
 				colourLinked
 			/>
 
 			<ToggleControl
 				label={ __( 'Magnetic pull', 'sgs-blocks' ) }
 				checked={ !! triggerMagnetEnabled }
-				onChange={ ( val ) => setAttributes( { triggerMagnetEnabled: val } ) }
+				onChange={ ( val ) =>
+					setAttributes( { triggerMagnetEnabled: val } )
+				}
 				help={ __(
 					'Makes the menu button lean toward the visitor’s cursor as they approach it. Off automatically on touch devices and when reduced motion is requested.',
 					'sgs-blocks'
@@ -509,13 +695,16 @@ export default function BurgerPanel( {
 					<RangeControl
 						label={ __( 'Pull distance', 'sgs-blocks' ) }
 						value={
-							typeof triggerMagnetRadius === 'number' ? triggerMagnetRadius : 120
+							typeof triggerMagnetRadius === 'number'
+								? triggerMagnetRadius
+								: 120
 						}
 						min={ 20 }
 						max={ 400 }
 						onChange={ ( val ) =>
 							setAttributes( {
-								triggerMagnetRadius: typeof val === 'number' ? val : 120,
+								triggerMagnetRadius:
+									typeof val === 'number' ? val : 120,
 							} )
 						}
 						__nextHasNoMarginBottom
@@ -524,13 +713,16 @@ export default function BurgerPanel( {
 					<RangeControl
 						label={ __( 'Pull strength', 'sgs-blocks' ) }
 						value={
-							typeof triggerMagnetStrength === 'number' ? triggerMagnetStrength : 24
+							typeof triggerMagnetStrength === 'number'
+								? triggerMagnetStrength
+								: 24
 						}
 						min={ 2 }
 						max={ 80 }
 						onChange={ ( val ) =>
 							setAttributes( {
-								triggerMagnetStrength: typeof val === 'number' ? val : 24,
+								triggerMagnetStrength:
+									typeof val === 'number' ? val : 24,
 							} )
 						}
 						__nextHasNoMarginBottom
@@ -554,7 +746,9 @@ export default function BurgerPanel( {
 					) }
 					value={ 2 === burgerBarCount ? 2 : 3 }
 					onChange={ ( val ) =>
-						setAttributes( { burgerBarCount: 2 === Number( val ) ? 2 : 3 } )
+						setAttributes( {
+							burgerBarCount: 2 === Number( val ) ? 2 : 3,
+						} )
 					}
 					isBlock
 					__nextHasNoMarginBottom
@@ -578,7 +772,9 @@ export default function BurgerPanel( {
 						'sgs-blocks'
 					) }
 					value={ morph }
-					onChange={ ( val ) => setAttributes( { burgerMorph: val || 'x' } ) }
+					onChange={ ( val ) =>
+						setAttributes( { burgerMorph: val || 'x' } )
+					}
 					isBlock
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize

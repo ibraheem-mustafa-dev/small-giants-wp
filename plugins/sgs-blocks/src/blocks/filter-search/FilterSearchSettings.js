@@ -10,7 +10,12 @@
  * @package SGS\Blocks
  */
 import { __ } from '@wordpress/i18n';
-import { PanelBody, TextControl, SelectControl, ToggleControl } from '@wordpress/components';
+import {
+	PanelBody,
+	TextControl,
+	SelectControl,
+	ToggleControl,
+} from '@wordpress/components';
 
 // Guard the experimental NumberControl import — it may not exist on older WP
 // versions. Falls back to a plain text input (type=number) via TextControl.
@@ -25,12 +30,18 @@ const { __experimentalNumberControl: NumberControl } = wp?.components ?? {};
  * @param {Function} props.setAttributes Block editor setAttributes.
  */
 export default function FilterSearchSettings( { attributes, setAttributes } ) {
-	const { searchMode, taxonomy, showCounts, attributeId, threshold, placeholder } = attributes;
+	const {
+		searchMode,
+		taxonomy,
+		showCounts,
+		attributeId,
+		threshold,
+		placeholder,
+	} = attributes;
 	const isTermsMode = 'taxonomy-terms' === searchMode;
 
 	return (
 		<PanelBody title={ __( 'Filter Search Settings', 'sgs-blocks' ) }>
-
 			<SelectControl
 				label={ __( 'Search in', 'sgs-blocks' ) }
 				help={ __(
@@ -39,8 +50,20 @@ export default function FilterSearchSettings( { attributes, setAttributes } ) {
 				) }
 				value={ searchMode }
 				options={ [
-					{ label: __( 'Existing attribute filter (chips)', 'sgs-blocks' ), value: 'attribute-chips' },
-					{ label: __( "A taxonomy's terms (own list)", 'sgs-blocks' ), value: 'taxonomy-terms' },
+					{
+						label: __(
+							'Existing attribute filter (chips)',
+							'sgs-blocks'
+						),
+						value: 'attribute-chips',
+					},
+					{
+						label: __(
+							"A taxonomy's terms (own list)",
+							'sgs-blocks'
+						),
+						value: 'taxonomy-terms',
+					},
 				] }
 				onChange={ ( val ) => setAttributes( { searchMode: val } ) }
 				__nextHasNoMarginBottom
@@ -56,7 +79,9 @@ export default function FilterSearchSettings( { attributes, setAttributes } ) {
 							'sgs-blocks'
 						) }
 						value={ taxonomy }
-						onChange={ ( val ) => setAttributes( { taxonomy: val.trim() } ) }
+						onChange={ ( val ) =>
+							setAttributes( { taxonomy: val.trim() } )
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
@@ -67,11 +92,13 @@ export default function FilterSearchSettings( { attributes, setAttributes } ) {
 							'sgs-blocks'
 						) }
 						checked={ showCounts }
-						onChange={ ( val ) => setAttributes( { showCounts: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { showCounts: val } )
+						}
 						__nextHasNoMarginBottom
 					/>
 				</>
-			) : ( NumberControl ? (
+			) : NumberControl ? (
 				<NumberControl
 					label={ __( 'Attribute ID', 'sgs-blocks' ) }
 					help={ __(
@@ -81,7 +108,9 @@ export default function FilterSearchSettings( { attributes, setAttributes } ) {
 					value={ attributeId }
 					min={ 0 }
 					onChange={ ( val ) =>
-						setAttributes( { attributeId: parseInt( val, 10 ) || 0 } )
+						setAttributes( {
+							attributeId: parseInt( val, 10 ) || 0,
+						} )
 					}
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
@@ -97,12 +126,14 @@ export default function FilterSearchSettings( { attributes, setAttributes } ) {
 					min={ 0 }
 					value={ String( attributeId ) }
 					onChange={ ( val ) =>
-						setAttributes( { attributeId: parseInt( val, 10 ) || 0 } )
+						setAttributes( {
+							attributeId: parseInt( val, 10 ) || 0,
+						} )
 					}
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 				/>
-			) ) }
+			) }
 
 			{ NumberControl ? (
 				<NumberControl
@@ -114,7 +145,9 @@ export default function FilterSearchSettings( { attributes, setAttributes } ) {
 					value={ threshold }
 					min={ 2 }
 					onChange={ ( val ) =>
-						setAttributes( { threshold: Math.max( 2, parseInt( val, 10 ) || 16 ) } )
+						setAttributes( {
+							threshold: Math.max( 2, parseInt( val, 10 ) || 16 ),
+						} )
 					}
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
@@ -130,7 +163,9 @@ export default function FilterSearchSettings( { attributes, setAttributes } ) {
 					min={ 2 }
 					value={ String( threshold ) }
 					onChange={ ( val ) =>
-						setAttributes( { threshold: Math.max( 2, parseInt( val, 10 ) || 16 ) } )
+						setAttributes( {
+							threshold: Math.max( 2, parseInt( val, 10 ) || 16 ),
+						} )
 					}
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
@@ -148,7 +183,6 @@ export default function FilterSearchSettings( { attributes, setAttributes } ) {
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>
-
 		</PanelBody>
 	);
 }

@@ -13,7 +13,8 @@
 export const SITE_INFO_LABEL_SOURCES = [ 'phone', 'email', 'whatsapp' ];
 
 const EMAIL_PATTERN = /^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/;
-const WHATSAPP_LINK = /^(?:https?:\/\/)?(?:www\.)?(?:wa\.me\/|api\.whatsapp\.com\/send\/?\?phone=)\+?([0-9]+)/i;
+const WHATSAPP_LINK =
+	/^(?:https?:\/\/)?(?:www\.)?(?:wa\.me\/|api\.whatsapp\.com\/send\/?\?phone=)\+?([0-9]+)/i;
 
 /**
  * The plain-text Site Info value for a link source.
@@ -27,7 +28,8 @@ export function siteInfoLabelText( source, siteInfo ) {
 		return '';
 	}
 	const key = 'whatsapp' === source ? 'socials.whatsapp' : source;
-	const entry = siteInfo && 'object' === typeof siteInfo ? siteInfo[ key ] : undefined;
+	const entry =
+		siteInfo && 'object' === typeof siteInfo ? siteInfo[ key ] : undefined;
 	const value = 'string' === typeof entry?.value ? entry.value.trim() : '';
 	if ( '' === value ) {
 		return '';

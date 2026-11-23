@@ -153,7 +153,8 @@ const SITE_INFO_FIELDS = {
  * @param {string} attrName Bound attribute name.
  * @return {boolean} True for a link attribute: `url`, or a name ending `Url` (linkUrl, imageUrl …).
  */
-const isLinkAttribute = ( attrName ) => 'url' === attrName || ( attrName.length > 3 && attrName.endsWith( 'Url' ) );
+const isLinkAttribute = ( attrName ) =>
+	'url' === attrName || ( attrName.length > 3 && attrName.endsWith( 'Url' ) );
 
 registerBlockBindingsSource( {
 	name: 'sgs/site-info',
@@ -182,7 +183,9 @@ registerBlockBindingsSource( {
 			}
 			// A link attribute takes the link the key makes; any other attribute its plain value
 			// (Sgs_Site_Info_Binding::is_link_attribute is the PHP twin of this rule).
-			values[ attrName ] = isLinkAttribute( attrName ) ? entry.link : entry.value;
+			values[ attrName ] = isLinkAttribute( attrName )
+				? entry.link
+				: entry.value;
 		} );
 
 		return values;

@@ -16,7 +16,9 @@ presetNames()
 		registerBlockVariation( metadata.name, {
 			name,
 			title: presetLabel( name ),
-			description: `The site's ${ presetLabel( name ).toLowerCase() } button preset.`,
+			description: `The site's ${ presetLabel(
+				name
+			).toLowerCase() } button preset.`,
 			scope: [ 'block', 'transform' ],
 			isActive: ( attributes ) => name === attributes.inheritStyle,
 			attributes: { inheritStyle: name },

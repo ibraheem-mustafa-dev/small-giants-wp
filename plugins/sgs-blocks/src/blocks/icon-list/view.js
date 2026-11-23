@@ -37,16 +37,16 @@ function normalisePath( pathname ) {
  */
 function markCurrentPage( root ) {
 	const current = normalisePath( window.location.pathname );
-	root.querySelectorAll( '.sgs-icon-list__item-link[data-sgs-nav-path]' ).forEach(
-		( link ) => {
-			const path = normalisePath( link.dataset.sgsNavPath || '' );
-			if ( path !== '' && path === current ) {
-				link.setAttribute( 'aria-current', 'page' );
-			} else {
-				link.removeAttribute( 'aria-current' );
-			}
+	root.querySelectorAll(
+		'.sgs-icon-list__item-link[data-sgs-nav-path]'
+	).forEach( ( link ) => {
+		const path = normalisePath( link.dataset.sgsNavPath || '' );
+		if ( path !== '' && path === current ) {
+			link.setAttribute( 'aria-current', 'page' );
+		} else {
+			link.removeAttribute( 'aria-current' );
 		}
-	);
+	} );
 }
 
 /**

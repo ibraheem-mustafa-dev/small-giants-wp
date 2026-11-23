@@ -19,7 +19,8 @@ const DATE_RING_ATTRS = {
 	dateRingSize: {},
 };
 
-const hasKeys = ( value ) => !! value && 'object' === typeof value && Object.keys( value ).length > 0;
+const hasKeys = ( value ) =>
+	!! value && 'object' === typeof value && Object.keys( value ).length > 0;
 
 /**
  * The colour row for the year ring background, appended to the timeline's colour panel while the timeline is
@@ -43,10 +44,16 @@ export function dateRingColourRows( attributes, setAttributes ) {
 					key: 'normal',
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: attributes.dateRingBackgroundColour,
-					onChange: ( val ) => setAttributes( { dateRingBackgroundColour: val ?? '' } ),
+					onChange: ( val ) =>
+						setAttributes( {
+							dateRingBackgroundColour: val ?? '',
+						} ),
 					linked: true,
 					gradientValue: attributes.dateRingBackgroundColourGradient,
-					onGradientChange: ( val ) => setAttributes( { dateRingBackgroundColourGradient: val ?? '' } ),
+					onGradientChange: ( val ) =>
+						setAttributes( {
+							dateRingBackgroundColourGradient: val ?? '',
+						} ),
 				},
 			],
 		},
@@ -68,7 +75,8 @@ export default function DateRingControls( { attributes, setAttributes } ) {
 	}
 	const radius = attributes.dateRingBorderRadius || {};
 	const contrastAgainst =
-		attributes.dateRingBackgroundColour && ! attributes.dateRingBackgroundColourGradient
+		attributes.dateRingBackgroundColour &&
+		! attributes.dateRingBackgroundColourGradient
 			? attributes.dateRingBackgroundColour
 			: '';
 	return (
@@ -79,7 +87,10 @@ export default function DateRingControls( { attributes, setAttributes } ) {
 			<TierLengthItem
 				name="dateRingSize"
 				label={ __( 'Ring size', 'sgs-blocks' ) }
-				help={ __( 'Makes the year a square marker of this width and height, centred on the connecting line, with the dot hidden (768px and up). Use a corner radius of 50% for a circle. Empty leaves the year where it is, sized by its text.', 'sgs-blocks' ) }
+				help={ __(
+					'Makes the year a square marker of this width and height, centred on the connecting line, with the dot hidden (768px and up). Use a corner radius of 50% for a circle. Empty leaves the year where it is, sized by its text.',
+					'sgs-blocks'
+				) }
 				attributes={ attributes }
 				setAttributes={ setAttributes }
 			/>
@@ -91,7 +102,9 @@ export default function DateRingControls( { attributes, setAttributes } ) {
 				<TierBox
 					label={ __( 'Ring padding', 'sgs-blocks' ) }
 					value={ attributes.dateRingPadding }
-					onChange={ ( obj ) => setAttributes( { dateRingPadding: obj } ) }
+					onChange={ ( obj ) =>
+						setAttributes( { dateRingPadding: obj } )
+					}
 				/>
 			</ToolsPanelItem>
 			<ToolsPanelItem
@@ -115,15 +128,27 @@ export default function DateRingControls( { attributes, setAttributes } ) {
 			>
 				<SgsBorderControl
 					widthValues={ attributes.dateRingBorderWidth ?? {} }
-					onWidthChange={ ( next ) => setAttributes( { dateRingBorderWidth: next } ) }
+					onWidthChange={ ( next ) =>
+						setAttributes( { dateRingBorderWidth: next } )
+					}
 					widthPresets={ [ '10', '20', '30' ] }
 					styleValue={ attributes.dateRingBorderStyle }
-					onStyleChange={ ( val ) => setAttributes( { dateRingBorderStyle: val } ) }
+					onStyleChange={ ( val ) =>
+						setAttributes( { dateRingBorderStyle: val } )
+					}
 					colourLabel={ __( 'Ring border colour', 'sgs-blocks' ) }
 					colourValue={ attributes.dateRingBorderColour }
-					onColourChange={ ( val ) => setAttributes( { dateRingBorderColour: val ?? '' } ) }
-					colourGradientValue={ attributes.dateRingBorderColourGradient }
-					onColourGradientChange={ ( val ) => setAttributes( { dateRingBorderColourGradient: val ?? '' } ) }
+					onColourChange={ ( val ) =>
+						setAttributes( { dateRingBorderColour: val ?? '' } )
+					}
+					colourGradientValue={
+						attributes.dateRingBorderColourGradient
+					}
+					onColourGradientChange={ ( val ) =>
+						setAttributes( {
+							dateRingBorderColourGradient: val ?? '',
+						} )
+					}
 					colourLinked
 					contrastAgainst={ contrastAgainst }
 					radiusLabel={ __( 'Ring corner radius', 'sgs-blocks' ) }
@@ -133,20 +158,33 @@ export default function DateRingControls( { attributes, setAttributes } ) {
 						mobile: radius.mobile ?? {},
 					} }
 					onRadiusChange={ ( tier, next ) =>
-						setAttributes( { dateRingBorderRadius: { ...radius, [ 'base' === tier ? 'desktop' : tier ]: next } } )
+						setAttributes( {
+							dateRingBorderRadius: {
+								...radius,
+								[ 'base' === tier ? 'desktop' : tier ]: next,
+							},
+						} )
 					}
 				/>
 			</ToolsPanelItem>
 			<ToolsPanelItem
 				label={ __( 'Ring shadow', 'sgs-blocks' ) }
 				hasValue={ () => !! attributes.dateRingShadow }
-				onDeselect={ () => setAttributes( { dateRingShadow: '', dateRingShadowColour: '' } ) }
+				onDeselect={ () =>
+					setAttributes( {
+						dateRingShadow: '',
+						dateRingShadowColour: '',
+					} )
+				}
 			>
 				<ShadowControl
 					label={ __( 'Ring shadow', 'sgs-blocks' ) }
 					attributes={ attributes }
 					setAttributes={ setAttributes }
-					attrNames={ { base: 'dateRingShadow', colour: 'dateRingShadowColour' } }
+					attrNames={ {
+						base: 'dateRingShadow',
+						colour: 'dateRingShadowColour',
+					} }
 				/>
 			</ToolsPanelItem>
 		</ToolsPanel>

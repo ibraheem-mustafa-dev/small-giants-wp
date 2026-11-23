@@ -31,7 +31,9 @@ import CoreServerSideRender from '@wordpress/server-side-render';
  */
 export function omitNullish( value ) {
 	if ( Array.isArray( value ) ) {
-		return value.filter( ( item ) => null !== item && undefined !== item ).map( omitNullish );
+		return value
+			.filter( ( item ) => null !== item && undefined !== item )
+			.map( omitNullish );
 	}
 	if ( value && 'object' === typeof value ) {
 		const out = {};

@@ -27,10 +27,18 @@
  *
  * @package SGS\Blocks
  */
-import { TextControl, TextareaControl, RangeControl, BaseControl } from '@wordpress/components';
+import {
+	TextControl,
+	TextareaControl,
+	RangeControl,
+	BaseControl,
+} from '@wordpress/components';
 import { RichText } from '@wordpress/block-editor';
 import { useInstanceId } from '@wordpress/compose';
-import { RICH_TEXT_FREE_TEXT, RICH_TEXT_FREE_TEXT_NO_LINK } from '../utils/rich-text-formats';
+import {
+	RICH_TEXT_FREE_TEXT,
+	RICH_TEXT_FREE_TEXT_NO_LINK,
+} from '../utils/rich-text-formats';
 import './SgsFreeTextField.css';
 // NumberControl is __experimentalNumberControl at runtime (confirmed 2026-08-19
 // against the live wp.components bundle; bare `NumberControl` does not exist) —
@@ -41,7 +49,13 @@ import './SgsFreeTextField.css';
 import { NumberControl } from './primitives';
 
 // Two mounts, one per format list, so the formats survey reads each RichText's list as a constant.
-function RichInput( { value: html, onChange, labelId, placeholder, multiline } ) {
+function RichInput( {
+	value: html,
+	onChange,
+	labelId,
+	placeholder,
+	multiline,
+} ) {
 	return (
 		<RichText
 			identifier={ labelId }
@@ -58,7 +72,13 @@ function RichInput( { value: html, onChange, labelId, placeholder, multiline } )
 	);
 }
 
-function RichInputNoLink( { value: htmlText, onChange, labelId, placeholder, multiline } ) {
+function RichInputNoLink( {
+	value: htmlText,
+	onChange,
+	labelId,
+	placeholder,
+	multiline,
+} ) {
 	return (
 		<RichText
 			identifier={ labelId }
@@ -76,19 +96,26 @@ function RichInputNoLink( { value: htmlText, onChange, labelId, placeholder, mul
 }
 
 /**
- * @param {Object}   props
+ * @param {Object}                                    props
  * @param {'text'|'textarea'|'number'|'range'|'rich'} [props.type='text'] Which
- *   primitive to render.
- * @param {string}   props.label     Control label.
- * @param {*}        props.value     Current value (string for text/textarea,
- *   number for number/range).
- * @param {Function} props.onChange  Receives the next value.
- * @param {string}   [props.help]    Help text.
- * @param {Object}   [props.rest]    Any other prop is passed straight through
- *   to the underlying primitive (min/max/step for range/number, rows for
- *   textarea, etc.).
+ *                                                                        primitive to render.
+ * @param {string}                                    props.label         Control label.
+ * @param {*}                                         props.value         Current value (string for text/textarea,
+ *                                                                        number for number/range).
+ * @param {Function}                                  props.onChange      Receives the next value.
+ * @param {string}                                    [props.help]        Help text.
+ * @param {Object}                                    [props.rest]        Any other prop is passed straight through
+ *                                                                        to the underlying primitive (min/max/step for range/number, rows for
+ *                                                                        textarea, etc.).
  */
-export default function SgsFreeTextField( { type = 'text', label, value, onChange, help, ...rest } ) {
+export default function SgsFreeTextField( {
+	type = 'text',
+	label,
+	value,
+	onChange,
+	help,
+	...rest
+} ) {
 	const instanceId = useInstanceId( SgsFreeTextField, 'sgs-free-text' );
 	if ( 'rich' === type ) {
 		const { noLink = false, multiline = false, placeholder } = rest;
@@ -101,10 +128,19 @@ export default function SgsFreeTextField( { type = 'text', label, value, onChang
 				help={ help }
 				__nextHasNoMarginBottom
 			>
-				<span id={ labelId } className="sgs-free-text-field__label components-base-control__label">
+				<span
+					id={ labelId }
+					className="sgs-free-text-field__label components-base-control__label"
+				>
 					{ label }
 				</span>
-				<Input value={ value } onChange={ onChange } labelId={ labelId } placeholder={ placeholder } multiline={ multiline } />
+				<Input
+					value={ value }
+					onChange={ onChange }
+					labelId={ labelId }
+					placeholder={ placeholder }
+					multiline={ multiline }
+				/>
 			</BaseControl>
 		);
 	}

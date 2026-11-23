@@ -22,9 +22,16 @@ import { KIND_DEVICES } from './kind-fit.js';
  * @return {Object} `{ desktop, tablet, mobile }` to a kind.
  */
 export function kindsByDeviceFor( attributes, entry ) {
-	const opts = { kinds: entry.kinds || [], context: entry.context || 'element', adopted: true };
+	const opts = {
+		kinds: entry.kinds || [],
+		context: entry.context || 'element',
+		adopted: true,
+	};
 	return Object.fromEntries(
-		KIND_DEVICES.map( ( device ) => [ device, createContext( attributes, device, entry.prefix || '', opts ).kind ] )
+		KIND_DEVICES.map( ( device ) => [
+			device,
+			createContext( attributes, device, entry.prefix || '', opts ).kind,
+		] )
 	);
 }
 
@@ -40,7 +47,11 @@ export function slotEntryFor( supportsSgs, part ) {
 	if ( undefined === slot || null === slot ) {
 		return null;
 	}
-	return ( supportsSgs?.mediaElements || [] ).find( ( e ) => ( e.prefix || '' ) === slot && Array.isArray( e.kinds ) ) || null;
+	return (
+		( supportsSgs?.mediaElements || [] ).find(
+			( e ) => ( e.prefix || '' ) === slot && Array.isArray( e.kinds )
+		) || null
+	);
 }
 
 /**
@@ -52,11 +63,17 @@ export function slotEntryFor( supportsSgs, part ) {
  * @return {Function} `( part ) => Object|null`.
  */
 export function usePartKinds( clientId, blockName ) {
-	const attributes = useSelect( ( select ) => select( blockEditorStore )?.getBlockAttributes?.( clientId ), [ clientId ] );
+	const attributes = useSelect(
+		( select ) =>
+			select( blockEditorStore )?.getBlockAttributes?.( clientId ),
+		[ clientId ]
+	);
 	const supportsSgs = getBlockType( blockName )?.supports?.sgs;
 	return ( part ) => {
 		const entry = slotEntryFor( supportsSgs, part );
-		return entry && attributes ? kindsByDeviceFor( attributes, entry ) : null;
+		return entry && attributes
+			? kindsByDeviceFor( attributes, entry )
+			: null;
 	};
 }
 
@@ -70,7 +87,10 @@ const DEVICE_KEYS = { Desktop: 'desktop', Tablet: 'tablet', Mobile: 'mobile' };
 export function useActiveDevice() {
 	return useSelect( ( select ) => {
 		const editor = select( 'core/editor' );
-		const device = editor && 'function' === typeof editor.getDeviceType ? editor.getDeviceType() : null;
+		const device =
+			editor && 'function' === typeof editor.getDeviceType
+				? editor.getDeviceType()
+				: null;
 		return DEVICE_KEYS[ device ] || 'desktop';
 	}, [] );
 }

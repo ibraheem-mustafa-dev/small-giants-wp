@@ -26,65 +26,99 @@ const NAMES = {
 	},
 };
 
-export default function GalleryBorderControl( { attributes, setAttributes, prefix = '' } ) {
+export default function GalleryBorderControl( {
+	attributes,
+	setAttributes,
+	prefix = '',
+} ) {
 	const key = ( part ) => NAMES[ prefix ][ part ];
 	const radius = attributes[ key( 'BorderRadius' ) ];
 
 	// The tile's border colour has a Hover tab (the helper reads tileBorderColourHover*); the grid wrapper has none.
-	const colourProps = 'tile' === prefix
-		? {
-			colourStates: [
-				{
-					key: 'normal',
-					label: __( 'Normal', 'sgs-blocks' ),
-					value: attributes.tileBorderColour,
-					onChange: ( val ) => setAttributes( { tileBorderColour: val ?? '' } ),
-					gradientValue: attributes.tileBorderColourGradient,
-					onGradientChange: ( val ) => setAttributes( { tileBorderColourGradient: val ?? '' } ),
-					linked: true,
-				},
-				{
-					key: 'hover',
-					label: __( 'Hover', 'sgs-blocks' ),
-					value: attributes.tileBorderColourHover,
-					onChange: ( val ) => setAttributes( { tileBorderColourHover: val ?? '' } ),
-					gradientValue: attributes.tileBorderColourHoverGradient,
-					onGradientChange: ( val ) => setAttributes( { tileBorderColourHoverGradient: val ?? '' } ),
-					linked: true,
-				},
-			],
-		}
-		: {
-			colourValue: attributes[ key( 'BorderColour' ) ],
-			onColourChange: ( val ) => setAttributes( { [ key( 'BorderColour' ) ]: val ?? '' } ),
-			colourGradientValue: attributes[ key( 'BorderColourGradient' ) ],
-			onColourGradientChange: ( val ) => setAttributes( { [ key( 'BorderColourGradient' ) ]: val ?? '' } ),
-			colourLinked: true,
-		};
+	const colourProps =
+		'tile' === prefix
+			? {
+					colourStates: [
+						{
+							key: 'normal',
+							label: __( 'Normal', 'sgs-blocks' ),
+							value: attributes.tileBorderColour,
+							onChange: ( val ) =>
+								setAttributes( {
+									tileBorderColour: val ?? '',
+								} ),
+							gradientValue: attributes.tileBorderColourGradient,
+							onGradientChange: ( val ) =>
+								setAttributes( {
+									tileBorderColourGradient: val ?? '',
+								} ),
+							linked: true,
+						},
+						{
+							key: 'hover',
+							label: __( 'Hover', 'sgs-blocks' ),
+							value: attributes.tileBorderColourHover,
+							onChange: ( val ) =>
+								setAttributes( {
+									tileBorderColourHover: val ?? '',
+								} ),
+							gradientValue:
+								attributes.tileBorderColourHoverGradient,
+							onGradientChange: ( val ) =>
+								setAttributes( {
+									tileBorderColourHoverGradient: val ?? '',
+								} ),
+							linked: true,
+						},
+					],
+			  }
+			: {
+					colourValue: attributes[ key( 'BorderColour' ) ],
+					onColourChange: ( val ) =>
+						setAttributes( {
+							[ key( 'BorderColour' ) ]: val ?? '',
+						} ),
+					colourGradientValue:
+						attributes[ key( 'BorderColourGradient' ) ],
+					onColourGradientChange: ( val ) =>
+						setAttributes( {
+							[ key( 'BorderColourGradient' ) ]: val ?? '',
+						} ),
+					colourLinked: true,
+			  };
 
 	return (
 		<>
-					{ /* Border + radius — collapsed into this same Layout family panel
+			{ /* Border + radius — collapsed into this same Layout family panel
 					   (was a standalone "Border" PanelBody further down; border is a
 					   box-shape property of the same `grid` wrapper element). */ }
-					<SgsBorderControl
-						widthValues={ attributes[ key( 'BorderWidth' ) ] ?? {} }
-						onWidthChange={ ( next ) => setAttributes( { [ key( 'BorderWidth' ) ]: next } ) }
-						widthPresets={ [ '10', '20', '30' ] }
-						styleValue={ attributes[ key( 'BorderStyle' ) ] }
-						onStyleChange={ ( val ) => setAttributes( { [ key( 'BorderStyle' ) ]: val } ) }
-						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
-						{ ...colourProps }
-						radiusValues={ {
-								base: radius?.desktop ?? {},
-								tablet: radius?.tablet ?? {},
-								mobile: radius?.mobile ?? {},
-							} }
-						onRadiusChange={ ( tier, next ) => {
-							const tierKey = tier === 'base' ? 'desktop' : tier;
-							setAttributes( { [ key( 'BorderRadius' ) ]: { ...radius, [ tierKey ]: next } } );
-						} }
-					/>
+			<SgsBorderControl
+				widthValues={ attributes[ key( 'BorderWidth' ) ] ?? {} }
+				onWidthChange={ ( next ) =>
+					setAttributes( { [ key( 'BorderWidth' ) ]: next } )
+				}
+				widthPresets={ [ '10', '20', '30' ] }
+				styleValue={ attributes[ key( 'BorderStyle' ) ] }
+				onStyleChange={ ( val ) =>
+					setAttributes( { [ key( 'BorderStyle' ) ]: val } )
+				}
+				colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+				{ ...colourProps }
+				radiusValues={ {
+					base: radius?.desktop ?? {},
+					tablet: radius?.tablet ?? {},
+					mobile: radius?.mobile ?? {},
+				} }
+				onRadiusChange={ ( tier, next ) => {
+					const tierKey = tier === 'base' ? 'desktop' : tier;
+					setAttributes( {
+						[ key( 'BorderRadius' ) ]: {
+							...radius,
+							[ tierKey ]: next,
+						},
+					} );
+				} }
+			/>
 		</>
 	);
 }

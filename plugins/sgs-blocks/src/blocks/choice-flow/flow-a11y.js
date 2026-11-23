@@ -8,7 +8,8 @@
 
 import { RESULT_SELECTOR, ANNOUNCER_SELECTOR } from './flow-constants.js';
 
-const HEADING_SELECTOR = '.sgs-choice-flow-question__title, .sgs-choice-flow-result__heading';
+const HEADING_SELECTOR =
+	'.sgs-choice-flow-question__title, .sgs-choice-flow-result__heading';
 const DEFAULT_TEMPLATE = 'Step %1$s of %2$s: %3$s';
 
 /**
@@ -19,7 +20,11 @@ const DEFAULT_TEMPLATE = 'Step %1$s of %2$s: %3$s';
  */
 function stepQuestionText( stepEl ) {
 	const headingEl = stepEl.querySelector( HEADING_SELECTOR );
-	return ( ( headingEl ? headingEl.textContent : '' ) || stepEl.getAttribute( 'data-step-label' ) || '' ).trim();
+	return (
+		( headingEl ? headingEl.textContent : '' ) ||
+		stepEl.getAttribute( 'data-step-label' ) ||
+		''
+	).trim();
 }
 
 /**
@@ -38,7 +43,9 @@ export function announceStep( flowRoot, steps, targetIndex ) {
 		return;
 	}
 
-	const questionSteps = steps.filter( ( stepEl ) => ! stepEl.querySelector( RESULT_SELECTOR ) );
+	const questionSteps = steps.filter(
+		( stepEl ) => ! stepEl.querySelector( RESULT_SELECTOR )
+	);
 	const questionIndex = questionSteps.indexOf( targetStepEl );
 	let position = targetIndex + 1;
 	let total = steps.length;
@@ -73,7 +80,8 @@ export function moveFocusToStep( targetStepEl ) {
 	if ( ! lost ) {
 		return;
 	}
-	const target = targetStepEl.querySelector( HEADING_SELECTOR ) || targetStepEl;
+	const target =
+		targetStepEl.querySelector( HEADING_SELECTOR ) || targetStepEl;
 	if ( ! target.hasAttribute( 'tabindex' ) ) {
 		target.setAttribute( 'tabindex', '-1' );
 	}

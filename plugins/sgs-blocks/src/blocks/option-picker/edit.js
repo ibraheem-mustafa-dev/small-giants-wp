@@ -209,19 +209,27 @@ function buildRootPreviewStyle( attributes, tier, palette ) {
 		rootStyle[ '--sgs-option-picker-tile-gap' ] = tileGap;
 	}
 	if ( attributes.swatchTickInside && attributes.swatchTickColour ) {
-		rootStyle[ '--sgs-op-swatch-tick' ] = colourVar( attributes.swatchTickColour );
+		rootStyle[ '--sgs-op-swatch-tick' ] = colourVar(
+			attributes.swatchTickColour
+		);
 	}
 	// Resting and selected shadow and the selected shift, read by style.css (same channel as the colours above).
 	const restShadow = composeShadow( pillShadow, pillShadowColour );
 	if ( restShadow ) {
 		rootStyle[ '--sgs-op-shadow' ] = restShadow;
 	}
-	const selShadow = composeShadow( pillSelectedShadow, pillSelectedShadowColour );
+	const selShadow = composeShadow(
+		pillSelectedShadow,
+		pillSelectedShadowColour
+	);
 	if ( selShadow ) {
 		rootStyle[ '--sgs-op-sel-shadow' ] = selShadow;
 	}
 	if ( pillSelectedOffsetX || pillSelectedOffsetY ) {
-		rootStyle[ '--sgs-op-sel-translate' ] = ( pillSelectedOffsetX || '0' ) + ' ' + ( pillSelectedOffsetY || '0' );
+		rootStyle[ '--sgs-op-sel-translate' ] =
+			( pillSelectedOffsetX || '0' ) +
+			' ' +
+			( pillSelectedOffsetY || '0' );
 	}
 
 	return rootStyle;
@@ -235,13 +243,26 @@ function buildRootPreviewStyle( attributes, tier, palette ) {
  * @return {Object|null} Style for the sample dot.
  */
 function swatchDotPreviewStyle( attributes ) {
-	const { pillStyle, swatchShape, swatchSize, swatchRingWidth, swatchRingColour, swatchTickInside } = attributes;
+	const {
+		pillStyle,
+		swatchShape,
+		swatchSize,
+		swatchRingWidth,
+		swatchRingColour,
+		swatchTickInside,
+	} = attributes;
 	if ( 'tile' === pillStyle ) {
 		return null;
 	}
 	// The dot's shape is the swatch slot's Shape on desktop: circle rounds it, none squares it.
 	const shapeKind = swatchShape?.desktop?.shape || '';
-	if ( ! shapeKind && ! swatchSize && ! swatchRingWidth && ! swatchRingColour && ! swatchTickInside ) {
+	if (
+		! shapeKind &&
+		! swatchSize &&
+		! swatchRingWidth &&
+		! swatchRingColour &&
+		! swatchTickInside
+	) {
 		return null;
 	}
 	const dot = {};
@@ -468,7 +489,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		return optionItems.map( ( item, index ) => {
 			const isSelected = item.key === effectiveDefault;
 			// The option's own picture (render.php draws it ahead of the label, through the shared item renderer).
-			const itemHasPicture = [ 'desktop', 'tablet', 'mobile' ].some( ( device ) => hasFile( item.source?.[ device ] ) );
+			const itemHasPicture = [ 'desktop', 'tablet', 'mobile' ].some(
+				( device ) => hasFile( item.source?.[ device ] )
+			);
 			const pillClass = [
 				'sgs-option-picker__option',
 				isSelected ? 'sgs-option-picker__option--selected' : '',
@@ -479,7 +502,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			return (
 				<span key={ index } className={ pillClass }>
 					<span
-						className={ `sgs-option-picker__pill${ itemHasPicture ? ' sgs-option-picker__pill--has-image' : '' }` }
+						className={ `sgs-option-picker__pill${
+							itemHasPicture
+								? ' sgs-option-picker__pill--has-image'
+								: ''
+						}` }
 						style={ {
 							...typographyPreviewStyle(
 								attributes,
@@ -568,7 +595,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					} ),
 					textRow( {
 						key: 'swatchTick',
-						label: __( 'Tick colour inside the colour dot', 'sgs-blocks' ),
+						label: __(
+							'Tick colour inside the colour dot',
+							'sgs-blocks'
+						),
 						attrs: { base: 'swatchTickColour' },
 						attributes,
 						setAttributes,
@@ -728,7 +758,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					title={ __( 'Label', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<SgsFreeTextField type="rich" noLink
+					<SgsFreeTextField
+						type="rich"
+						noLink
 						label={ __( 'Label text', 'sgs-blocks' ) }
 						value={ label }
 						onChange={ ( val ) => setAttributes( { label: val } ) }
@@ -805,9 +837,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 										slot={ SWATCH_SLOT }
 										label={ __( 'Image', 'sgs-blocks' ) }
 										onChange={ ( next ) => {
-											const next_items = [ ...optionItems ];
+											const next_items = [
+												...optionItems,
+											];
 											next_items[ index ] = next;
-											setAttributes( { optionItems: next_items } );
+											setAttributes( {
+												optionItems: next_items,
+											} );
 										} }
 									/>
 								</FlexBlock>
@@ -1036,9 +1072,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					{ 'tile' !== pillStyle && (
 						<FlexWrapControl
 							label={ __( 'Wrap options', 'sgs-blocks' ) }
-							help={ __( 'Applies to the pill layouts only; tiles sit on a grid that fits as many columns as the width allows. Default keeps the pills wrapping.', 'sgs-blocks' ) }
+							help={ __(
+								'Applies to the pill layouts only; tiles sit on a grid that fits as many columns as the width allows. Default keeps the pills wrapping.',
+								'sgs-blocks'
+							) }
 							value={ flexWrap }
-							onChange={ ( val ) => setAttributes( { flexWrap: val } ) }
+							onChange={ ( val ) =>
+								setAttributes( { flexWrap: val } )
+							}
 						/>
 					) }
 					{ 'tile' === pillStyle && (
@@ -1136,48 +1177,85 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						className="sgs-nested-tools-panel"
 						label={ __( 'Hover', 'sgs-blocks' ) }
 						resetAll={ () =>
-							setAttributes( { pillHoverOffsetX: '', pillHoverOffsetY: '', pillHoverStill: false } )
+							setAttributes( {
+								pillHoverOffsetX: '',
+								pillHoverOffsetY: '',
+								pillHoverStill: false,
+							} )
 						}
 					>
 						<ToolsPanelItem
 							label={ __( 'Hover shift (across)', 'sgs-blocks' ) }
 							hasValue={ () => !! attributes.pillHoverOffsetX }
-							onDeselect={ () => setAttributes( { pillHoverOffsetX: '' } ) }
+							onDeselect={ () =>
+								setAttributes( { pillHoverOffsetX: '' } )
+							}
 						>
 							<SgsLengthControl
-								label={ __( 'Hover shift (across)', 'sgs-blocks' ) }
+								label={ __(
+									'Hover shift (across)',
+									'sgs-blocks'
+								) }
 								scale="spacing"
 								value={ attributes.pillHoverOffsetX || '' }
 								units={ LENGTH_UNITS }
-								onChange={ ( val ) => setAttributes( { pillHoverOffsetX: val ?? '' } ) }
+								onChange={ ( val ) =>
+									setAttributes( {
+										pillHoverOffsetX: val ?? '',
+									} )
+								}
 								presets={ false }
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
 							label={ __( 'Hover shift (down)', 'sgs-blocks' ) }
 							hasValue={ () => !! attributes.pillHoverOffsetY }
-							onDeselect={ () => setAttributes( { pillHoverOffsetY: '' } ) }
+							onDeselect={ () =>
+								setAttributes( { pillHoverOffsetY: '' } )
+							}
 						>
 							<SgsLengthControl
-								label={ __( 'Hover shift (down)', 'sgs-blocks' ) }
+								label={ __(
+									'Hover shift (down)',
+									'sgs-blocks'
+								) }
 								scale="spacing"
 								value={ attributes.pillHoverOffsetY || '' }
 								units={ LENGTH_UNITS }
-								onChange={ ( val ) => setAttributes( { pillHoverOffsetY: val ?? '' } ) }
+								onChange={ ( val ) =>
+									setAttributes( {
+										pillHoverOffsetY: val ?? '',
+									} )
+								}
 								presets={ false }
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
-							label={ __( 'No brightening on hover', 'sgs-blocks' ) }
-							hasValue={ () => true === attributes.pillHoverStill }
-							onDeselect={ () => setAttributes( { pillHoverStill: false } ) }
+							label={ __(
+								'No brightening on hover',
+								'sgs-blocks'
+							) }
+							hasValue={ () =>
+								true === attributes.pillHoverStill
+							}
+							onDeselect={ () =>
+								setAttributes( { pillHoverStill: false } )
+							}
 							isShownByDefault
 						>
 							<ToggleControl
-								label={ __( 'No brightening on hover', 'sgs-blocks' ) }
-								help={ __( 'Keeps the fill and text colour on hover; only the hover shift moves the option.', 'sgs-blocks' ) }
+								label={ __(
+									'No brightening on hover',
+									'sgs-blocks'
+								) }
+								help={ __(
+									'Keeps the fill and text colour on hover; only the hover shift moves the option.',
+									'sgs-blocks'
+								) }
 								checked={ true === attributes.pillHoverStill }
-								onChange={ ( val ) => setAttributes( { pillHoverStill: val } ) }
+								onChange={ ( val ) =>
+									setAttributes( { pillHoverStill: val } )
+								}
 								__nextHasNoMarginBottom
 							/>
 						</ToolsPanelItem>
@@ -1197,42 +1275,73 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						<ToolsPanelItem
 							label={ __( 'Colour dot size', 'sgs-blocks' ) }
 							hasValue={ () => !! attributes.swatchSize }
-							onDeselect={ () => setAttributes( { swatchSize: '' } ) }
+							onDeselect={ () =>
+								setAttributes( { swatchSize: '' } )
+							}
 						>
 							<SgsLengthControl
 								label={ __( 'Colour dot size', 'sgs-blocks' ) }
 								scale="spacing"
 								value={ attributes.swatchSize || '' }
 								units={ LENGTH_UNITS }
-								onChange={ ( val ) => setAttributes( { swatchSize: val ?? '' } ) }
+								onChange={ ( val ) =>
+									setAttributes( { swatchSize: val ?? '' } )
+								}
 								presets={ false }
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
-							label={ __( 'Colour dot ring width', 'sgs-blocks' ) }
+							label={ __(
+								'Colour dot ring width',
+								'sgs-blocks'
+							) }
 							hasValue={ () => !! attributes.swatchRingWidth }
-							onDeselect={ () => setAttributes( { swatchRingWidth: '' } ) }
+							onDeselect={ () =>
+								setAttributes( { swatchRingWidth: '' } )
+							}
 						>
 							<SgsLengthControl
-								label={ __( 'Colour dot ring width', 'sgs-blocks' ) }
+								label={ __(
+									'Colour dot ring width',
+									'sgs-blocks'
+								) }
 								scale="spacing"
 								value={ attributes.swatchRingWidth || '' }
 								units={ LENGTH_UNITS }
-								onChange={ ( val ) => setAttributes( { swatchRingWidth: val ?? '' } ) }
+								onChange={ ( val ) =>
+									setAttributes( {
+										swatchRingWidth: val ?? '',
+									} )
+								}
 								presets={ false }
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
-							label={ __( 'Tick inside the colour dot', 'sgs-blocks' ) }
-							hasValue={ () => true === attributes.swatchTickInside }
-							onDeselect={ () => setAttributes( { swatchTickInside: false } ) }
+							label={ __(
+								'Tick inside the colour dot',
+								'sgs-blocks'
+							) }
+							hasValue={ () =>
+								true === attributes.swatchTickInside
+							}
+							onDeselect={ () =>
+								setAttributes( { swatchTickInside: false } )
+							}
 							isShownByDefault
 						>
 							<ToggleControl
-								label={ __( 'Tick inside the colour dot', 'sgs-blocks' ) }
-								help={ __( 'The selected tick sits inside the dot instead of before the label.', 'sgs-blocks' ) }
+								label={ __(
+									'Tick inside the colour dot',
+									'sgs-blocks'
+								) }
+								help={ __(
+									'The selected tick sits inside the dot instead of before the label.',
+									'sgs-blocks'
+								) }
 								checked={ true === attributes.swatchTickInside }
-								onChange={ ( val ) => setAttributes( { swatchTickInside: val } ) }
+								onChange={ ( val ) =>
+									setAttributes( { swatchTickInside: val } )
+								}
 								__nextHasNoMarginBottom
 							/>
 						</ToolsPanelItem>
@@ -1325,7 +1434,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							}
 						>
 							<ShadowControl
-								label={ __( 'Selected pill shadow', 'sgs-blocks' ) }
+								label={ __(
+									'Selected pill shadow',
+									'sgs-blocks'
+								) }
 								attributes={ attributes }
 								setAttributes={ setAttributes }
 								attrNames={ {
@@ -1335,37 +1447,59 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
-							label={ __( 'Selected pill shift (across)', 'sgs-blocks' ) }
+							label={ __(
+								'Selected pill shift (across)',
+								'sgs-blocks'
+							) }
 							hasValue={ () => !! attributes.pillSelectedOffsetX }
 							onDeselect={ () =>
 								setAttributes( { pillSelectedOffsetX: '' } )
 							}
 						>
 							<SgsLengthControl
-								label={ __( 'Selected pill shift (across)', 'sgs-blocks' ) }
-								help={ __( 'Moves the selected pill sideways. Negative moves it left.', 'sgs-blocks' ) }
+								label={ __(
+									'Selected pill shift (across)',
+									'sgs-blocks'
+								) }
+								help={ __(
+									'Moves the selected pill sideways. Negative moves it left.',
+									'sgs-blocks'
+								) }
 								value={ attributes.pillSelectedOffsetX || '' }
 								units={ LENGTH_UNITS }
 								onChange={ ( val ) =>
-									setAttributes( { pillSelectedOffsetX: val ?? '' } )
+									setAttributes( {
+										pillSelectedOffsetX: val ?? '',
+									} )
 								}
 								presets={ false }
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
-							label={ __( 'Selected pill shift (down)', 'sgs-blocks' ) }
+							label={ __(
+								'Selected pill shift (down)',
+								'sgs-blocks'
+							) }
 							hasValue={ () => !! attributes.pillSelectedOffsetY }
 							onDeselect={ () =>
 								setAttributes( { pillSelectedOffsetY: '' } )
 							}
 						>
 							<SgsLengthControl
-								label={ __( 'Selected pill shift (down)', 'sgs-blocks' ) }
-								help={ __( 'Moves the selected pill up or down. Negative moves it up.', 'sgs-blocks' ) }
+								label={ __(
+									'Selected pill shift (down)',
+									'sgs-blocks'
+								) }
+								help={ __(
+									'Moves the selected pill up or down. Negative moves it up.',
+									'sgs-blocks'
+								) }
 								value={ attributes.pillSelectedOffsetY || '' }
 								units={ LENGTH_UNITS }
 								onChange={ ( val ) =>
-									setAttributes( { pillSelectedOffsetY: val ?? '' } )
+									setAttributes( {
+										pillSelectedOffsetY: val ?? '',
+									} )
 								}
 								presets={ false }
 							/>
@@ -1607,7 +1741,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						{ label || __( 'Choose an option', 'sgs-blocks' ) }
 					</legend>
 				) }
-				<div className="sgs-option-picker__options" role="group" style={ flexWrap && 'tile' !== pillStyle ? { flexWrap } : undefined }>
+				<div
+					className="sgs-option-picker__options"
+					role="group"
+					style={
+						flexWrap && 'tile' !== pillStyle
+							? { flexWrap }
+							: undefined
+					}
+				>
 					{ renderPills() }
 				</div>
 			</fieldset>

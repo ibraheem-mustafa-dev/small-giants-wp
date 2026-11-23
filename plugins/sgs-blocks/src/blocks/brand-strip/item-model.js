@@ -11,7 +11,11 @@ import { generateItemKey } from '../../utils';
 import { sourceFromAttachment } from '../../components/media/mediaSlotWrites.js';
 
 /** The strip's one media slot. */
-export const LOGO_SLOT = { prefix: 'logo', kinds: [ 'image' ], context: 'item' };
+export const LOGO_SLOT = {
+	prefix: 'logo',
+	kinds: [ 'image' ],
+	context: 'item',
+};
 
 const upperFirst = ( text ) => text.charAt( 0 ).toUpperCase() + text.slice( 1 );
 const lowerFirst = ( text ) => text.charAt( 0 ).toLowerCase() + text.slice( 1 );
@@ -63,7 +67,12 @@ export function resolveLogoItem( media ) {
 	}
 	const item = {
 		_key: generateItemKey(),
-		source: { desktop: sourceFromAttachment( { ...media, mime: media.mime || media.mime_type || '' }, 'image' ) },
+		source: {
+			desktop: sourceFromAttachment(
+				{ ...media, mime: media.mime || media.mime_type || '' },
+				'image'
+			),
+		},
 		name: '',
 		linkUrl: '',
 		linkTarget: '_self',
@@ -81,7 +90,13 @@ export function resolveLogoItem( media ) {
  * @return {Object} The item, with a stable key.
  */
 export function emptyLogoItem() {
-	return { _key: generateItemKey(), name: '', linkUrl: '', linkTarget: '_self', linkRel: '' };
+	return {
+		_key: generateItemKey(),
+		name: '',
+		linkUrl: '',
+		linkTarget: '_self',
+		linkRel: '',
+	};
 }
 
 /**

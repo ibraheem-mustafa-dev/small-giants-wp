@@ -78,7 +78,9 @@ export default function EndShapePanel( { attributes, setAttributes } ) {
 					value={ endDepth ?? 45 }
 					min={ 10 }
 					max={ 150 }
-					onChange={ ( val ) => setAttributes( { endDepth: val ?? 45 } ) }
+					onChange={ ( val ) =>
+						setAttributes( { endDepth: val ?? 45 } )
+					}
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 				/>
@@ -86,14 +88,22 @@ export default function EndShapePanel( { attributes, setAttributes } ) {
 			<SgsBorderControl
 				label={ __( 'Border', 'sgs-blocks' ) }
 				widthValues={ borderWidth ?? {} }
-				onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+				onWidthChange={ ( next ) =>
+					setAttributes( { borderWidth: next } )
+				}
 				styleValue={ borderStyle }
-				onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+				onStyleChange={ ( val ) =>
+					setAttributes( { borderStyle: val } )
+				}
 				colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
 				colourValue={ borderColour }
-				onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+				onColourChange={ ( val ) =>
+					setAttributes( { borderColour: val ?? '' } )
+				}
 				colourGradientValue={ borderColourGradient }
-				onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+				onColourGradientChange={ ( val ) =>
+					setAttributes( { borderColourGradient: val ?? '' } )
+				}
 				colourLinked={ true }
 				contrastAgainst={ labelContrastAgainst }
 			/>

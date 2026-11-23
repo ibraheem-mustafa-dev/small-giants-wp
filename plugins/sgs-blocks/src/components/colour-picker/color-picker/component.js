@@ -143,7 +143,10 @@ const UnconnectedColorPicker = ( props, forwardedRef ) => {
 		<div
 			ref={ forwardedRef }
 			{ ...divProps }
-			className={ clsx( 'sgs-colour-picker__colorful-wrapper', className ) }
+			className={ clsx(
+				'sgs-colour-picker__colorful-wrapper',
+				className
+			) }
 			onPasteCapture={ maybeHandlePaste }
 		>
 			<Picker

@@ -15,7 +15,12 @@ const EFFECTS = defs[ 'x-sgs-effects' ];
 const INTENSITY_WORDS = { subtle: 'gentle', standard: 'medium', bold: 'bold' };
 
 /** The motion target of a background by the kind it shows (§10.1: the part matching the resolved kind). */
-export const BACKGROUND_TARGETS = { image: 'background', video: 'background-video', embed: 'background-video', svg: 'svg-bg' };
+export const BACKGROUND_TARGETS = {
+	image: 'background',
+	video: 'background-video',
+	embed: 'background-video',
+	svg: 'svg-bg',
+};
 
 /**
  * The part a background's motion is set on for a kind.
@@ -48,7 +53,9 @@ export function layerWords( layer ) {
  */
 export function effectLayers( motion, target ) {
 	const stored = motion?.elements?.[ target ]?.effects;
-	return Array.isArray( stored ) ? stored.filter( ( layer ) => layer && layer.effect ) : [];
+	return Array.isArray( stored )
+		? stored.filter( ( layer ) => layer && layer.effect )
+		: [];
 }
 
 /**
@@ -61,7 +68,10 @@ export function motionLineText( layers ) {
 	if ( ! layers.length ) {
 		return __( 'Background motion: none', 'sgs-blocks' );
 	}
-	const shown = layers.slice( 0, 2 ).map( layerWords ).join( ` ${ __( 'and', 'sgs-blocks' ) } ` );
+	const shown = layers
+		.slice( 0, 2 )
+		.map( layerWords )
+		.join( ` ${ __( 'and', 'sgs-blocks' ) } ` );
 	const extra = layers.length - 2;
 	return sprintf(
 		/* translators: 1: the first two effects, for example "Parallax, gentle and Ken Burns"; 2: how many more, appended as "+2" when there are any. */
@@ -78,5 +88,7 @@ export function motionLineText( layers ) {
  * @return {string} Change, or Choose motion.
  */
 export function motionLineButton( layers ) {
-	return layers.length ? __( 'Change', 'sgs-blocks' ) : __( 'Choose motion', 'sgs-blocks' );
+	return layers.length
+		? __( 'Change', 'sgs-blocks' )
+		: __( 'Choose motion', 'sgs-blocks' );
 }

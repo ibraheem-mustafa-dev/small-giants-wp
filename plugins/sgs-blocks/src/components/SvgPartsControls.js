@@ -183,7 +183,10 @@ const NUMBER_FIELDS = [
 	],
 	[
 		'hoverRateDuration',
-		__( 'Hover speed-up lasts (ms; 0 = while hovered or held)', 'sgs-blocks' ),
+		__(
+			'Hover speed-up lasts (ms; 0 = while hovered or held)',
+			'sgs-blocks'
+		),
 		0,
 		60000,
 		50,

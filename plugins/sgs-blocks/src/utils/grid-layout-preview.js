@@ -82,10 +82,16 @@ export function applyGridLayoutPreview(
 		// gridTemplateColumns is a TIER OBJECT — calling .trim() on it bare throws
 		// `p?.trim is not a function` and CRASHES the editor canvas. The canvas
 		// preview represents the DESKTOP tier, so resolve that tier.
-		const gtcDesktop = resolveResponsiveTier( gridTemplateColumns, 'desktop' )?.value;
+		const gtcDesktop = resolveResponsiveTier(
+			gridTemplateColumns,
+			'desktop'
+		)?.value;
 		// columns is also a TIER OBJECT — resolve the desktop tier the same way, or
 		// this renders "repeat([object Object], 1fr)" and silently breaks the grid preview.
-		const columnsDesktop = resolveResponsiveTier( columns, 'desktop' )?.value;
+		const columnsDesktop = resolveResponsiveTier(
+			columns,
+			'desktop'
+		)?.value;
 		style.gridTemplateColumns = String( gtcDesktop ?? '' ).trim()
 			? String( gtcDesktop ).trim()
 			: `repeat(${ columnsDesktop || 2 }, 1fr)`;
@@ -105,7 +111,8 @@ export function applyGridLayoutPreview(
 		style.alignItems = alignItems;
 		const isColumnAxis = flexDirection.indexOf( 'column' ) === 0;
 		const effectiveFlexWrap =
-			isColumnAxis && ( flexWrap === 'wrap' || flexWrap === 'wrap-reverse' )
+			isColumnAxis &&
+			( flexWrap === 'wrap' || flexWrap === 'wrap-reverse' )
 				? 'nowrap'
 				: flexWrap;
 		if ( '' !== effectiveFlexWrap ) {
@@ -124,7 +131,9 @@ export function applyGridLayoutPreview(
 		style.display = 'flex';
 		style.alignItems = alignItems;
 		const stackEffectiveFlexWrap =
-			flexWrap === 'wrap' || flexWrap === 'wrap-reverse' ? 'nowrap' : flexWrap;
+			flexWrap === 'wrap' || flexWrap === 'wrap-reverse'
+				? 'nowrap'
+				: flexWrap;
 		if ( '' !== stackEffectiveFlexWrap ) {
 			style.flexWrap = stackEffectiveFlexWrap;
 		}

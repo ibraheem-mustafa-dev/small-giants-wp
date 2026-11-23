@@ -7,23 +7,30 @@
  */
 
 import registry from '../../includes/data/brand-registry.json';
-import { calculateRelativeLuminance, calculateContrastRatio } from './wcag-contrast';
+import {
+	calculateRelativeLuminance,
+	calculateContrastRatio,
+} from './wcag-contrast';
 
 /** The near-black glyph a light brand colour gets when white fails 3:1 on it (D5). Twin: SGS_BRAND_DARK_GLYPH. */
 export const BRAND_DARK_GLYPH = '#1E1E1E';
 
 const HEX = /^(#[0-9A-Fa-f]{6})?$/;
 /** A gradient logo's CSS gradient: linear, hex stops. Twin of the pattern in sgs_brand_registry(). */
-const LOGO_GRADIENT = /^linear-gradient\(\d{1,3}deg(, #[0-9A-Fa-f]{6}( \d{1,3}%)?)+\)$/;
+const LOGO_GRADIENT =
+	/^linear-gradient\(\d{1,3}deg(, #[0-9A-Fa-f]{6}( \d{1,3}%)?)+\)$/;
 /** A gradient ground's CSS gradient: linear or radial, hex stops. Twin of the pattern in sgs_brand_registry(). */
-const GROUND_GRADIENT = /^(?:linear|radial)-gradient\((?:\d{1,3}deg|circle at \d{1,3}% \d{1,3}%)(, #[0-9A-Fa-f]{6}( \d{1,3}%)?)+\)$/;
+const GROUND_GRADIENT =
+	/^(?:linear|radial)-gradient\((?:\d{1,3}deg|circle at \d{1,3}% \d{1,3}%)(, #[0-9A-Fa-f]{6}( \d{1,3}%)?)+\)$/;
 
 /**
  * Registry entries in order, with the same validation as `sgs_brand_registry()`.
  *
  * @type {Array<Object>}
  */
-export const BRANDS = ( Array.isArray( registry?.brands ) ? registry.brands : [] )
+export const BRANDS = (
+	Array.isArray( registry?.brands ) ? registry.brands : []
+)
 	.filter(
 		( b ) =>
 			/^[a-z0-9-]+$/.test( b?.slug || '' ) &&
@@ -39,10 +46,17 @@ export const BRANDS = ( Array.isArray( registry?.brands ) ? registry.brands : []
 		autoLabel: String( b.autoLabel ?? '' ),
 		colour: b.colour ?? '',
 		glyph: b.glyph,
-		glyphBrand: b.glyphBrand && 'object' === typeof b.glyphBrand ? b.glyphBrand : null,
+		glyphBrand:
+			b.glyphBrand && 'object' === typeof b.glyphBrand
+				? b.glyphBrand
+				: null,
 		ground: b.ground ?? '',
-		logoGradient: LOGO_GRADIENT.test( b.logoGradient ?? '' ) ? b.logoGradient : '',
-		groundGradient: GROUND_GRADIENT.test( b.groundGradient ?? '' ) ? b.groundGradient : '',
+		logoGradient: LOGO_GRADIENT.test( b.logoGradient ?? '' )
+			? b.logoGradient
+			: '',
+		groundGradient: GROUND_GRADIENT.test( b.groundGradient ?? '' )
+			? b.groundGradient
+			: '',
 	} ) );
 
 /**
@@ -66,7 +80,10 @@ export function brandBySiteInfoKey( key ) {
  * @return {Object|null} The brand whose own mark that icon is (never a contact entry). Twin: sgs_brand_by_lucide_name().
  */
 export function brandByLucideName( name ) {
-	return BRANDS.find( ( b ) => '' !== b.colour && b.glyph?.lucide === name ) || null;
+	return (
+		BRANDS.find( ( b ) => '' !== b.colour && b.glyph?.lucide === name ) ||
+		null
+	);
 }
 
 /**
@@ -90,7 +107,8 @@ export function brandGlyph( brand, branded = false ) {
  */
 export function brandSvgPaths( brand, branded = false ) {
 	const svg = brandGlyph( brand, branded ).svg || '';
-	const viewBox = ( /viewBox="([^"]+)"/.exec( svg ) || [] )[ 1 ] || '0 0 24 24';
+	const viewBox =
+		( /viewBox="([^"]+)"/.exec( svg ) || [] )[ 1 ] || '0 0 24 24';
 	const paths = [ ...svg.matchAll( /<path([^>]*)\/?>/g ) ].map( ( m ) => ( {
 		d: ( /\sd="([^"]+)"/.exec( m[ 1 ] ) || [] )[ 1 ] || '',
 		fill: ( /\sfill="([^"]+)"/.exec( m[ 1 ] ) || [] )[ 1 ] || '',
@@ -126,7 +144,17 @@ export function contrastRatio( a, b ) {
  *         Hex colours, '' where the brand sets nothing.
  */
 export function brandPaint( brand, fixedMark = false, mode = 'brand' ) {
-	const none = { ground: '', glyph: '', border: '', groundHover: '', glyphHover: '', fixed: false, borderHover: '', ring: '', gradient: '' };
+	const none = {
+		ground: '',
+		glyph: '',
+		border: '',
+		groundHover: '',
+		glyphHover: '',
+		fixed: false,
+		borderHover: '',
+		ring: '',
+		gradient: '',
+	};
 	const colour = brand?.colour || '';
 	if ( ! colour ) {
 		return none;
@@ -144,7 +172,13 @@ export function brandPaint( brand, fixedMark = false, mode = 'brand' ) {
 	}
 	if ( fixedMark && brand.glyphBrand ) {
 		const ground = brand.ground || colour;
-		return { ...none, ground, border: colour, groundHover: ground, fixed: true };
+		return {
+			...none,
+			ground,
+			border: colour,
+			groundHover: ground,
+			fixed: true,
+		};
 	}
 	let glyph = '';
 	if ( contrastRatio( '#FFFFFF', colour ) >= 3 ) {
@@ -169,5 +203,7 @@ export function brandPaint( brand, fixedMark = false, mode = 'brand' ) {
  * @return {Object} The paint with the hover ground and glyph equal to the resting ones.
  */
 export function brandPaintHold( paint ) {
-	return paint ? { ...paint, groundHover: paint.ground, glyphHover: paint.glyph } : paint;
+	return paint
+		? { ...paint, groundHover: paint.ground, glyphHover: paint.glyph }
+		: paint;
 }

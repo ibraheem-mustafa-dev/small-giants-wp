@@ -15,11 +15,11 @@ import { useRef } from '@wordpress/element';
 
 /**
  * @param {Object}   props
- * @param {Array}    props.items    [{ key, label, render() }].
- * @param {string}   props.value    Currently-selected key (or null).
- * @param {Function} props.onSelect (key) => void.
+ * @param {Array}    props.items     [{ key, label, render() }].
+ * @param {string}   props.value     Currently-selected key (or null).
+ * @param {Function} props.onSelect  (key) => void.
  * @param {number}   [props.columns] Grid column count for arrow nav. Default 8.
- * @param {string}   props.label    Accessible group label.
+ * @param {string}   props.label     Accessible group label.
  */
 export default function IconGrid( {
 	items,

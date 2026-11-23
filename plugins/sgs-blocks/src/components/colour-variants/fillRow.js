@@ -74,32 +74,32 @@ import { __ } from '@wordpress/i18n';
  *   for the second), so it is refused loudly rather than half-wired.
  *
  * @param {Object}   o
- * @param {string}   o.key            Row key, stable — used by rule 31 and by
- *                                    supports.sgs.colourExemptions lookups.
- * @param {string}   o.label          Already translated by the caller.
- * @param {Object}   [o.attrs]        The BLOCK'S OWN top-level attribute names:
- *                                    { base, hover?, current?, gradient?,
- *                                    hoverGradient?, currentGradient? }.
- *                                    Mutually exclusive with o.get/o.set — see below.
- * @param {Object}   [o.attributes]   The block's attributes object. Required when
- *                                    o.attrs is used; ignored (and not required) on
- *                                    the o.get/o.set path.
+ * @param {string}   o.key             Row key, stable — used by rule 31 and by
+ *                                     supports.sgs.colourExemptions lookups.
+ * @param {string}   o.label           Already translated by the caller.
+ * @param {Object}   [o.attrs]         The BLOCK'S OWN top-level attribute names:
+ *                                     { base, hover?, current?, gradient?,
+ *                                     hoverGradient?, currentGradient? }.
+ *                                     Mutually exclusive with o.get/o.set — see below.
+ * @param {Object}   [o.attributes]    The block's attributes object. Required when
+ *                                     o.attrs is used; ignored (and not required) on
+ *                                     the o.get/o.set path.
  * @param {Function} [o.setAttributes] The block's setAttributes. Required when
- *                                    o.attrs is used; ignored (and not required) on
- *                                    the o.get/o.set path.
- * @param {Function} [o.get]          NON-TOP-LEVEL BINDING (2026-08-30). Reads the
- *                                    resting value from wherever it actually lives —
- *                                    an object-attribute field (`asideSeparator.colour`)
- *                                    or a repeater item (`plans[i].ribbonColour`). Must
- *                                    be paired with o.set; supplying only one of the
- *                                    pair throws (see below) rather than silently
- *                                    rendering a row that reads or writes nowhere.
- * @param {Function} [o.set]          Companion writer for o.get. Receives the picked
- *                                    value (or `undefined` on clear — mirror the
- *                                    `val ?? ''` normalisation done on the attrs path)
- *                                    and is responsible for the whole write, however
- *                                    deep — e.g.
- *                                    `( val ) => setAttributes( { asideSeparator: { ...asideSeparator, colour: val ?? '' } } )`.
+ *                                     o.attrs is used; ignored (and not required) on
+ *                                     the o.get/o.set path.
+ * @param {Function} [o.get]           NON-TOP-LEVEL BINDING (2026-08-30). Reads the
+ *                                     resting value from wherever it actually lives —
+ *                                     an object-attribute field (`asideSeparator.colour`)
+ *                                     or a repeater item (`plans[i].ribbonColour`). Must
+ *                                     be paired with o.set; supplying only one of the
+ *                                     pair throws (see below) rather than silently
+ *                                     rendering a row that reads or writes nowhere.
+ * @param {Function} [o.set]           Companion writer for o.get. Receives the picked
+ *                                     value (or `undefined` on clear — mirror the
+ *                                     `val ?? ''` normalisation done on the attrs path)
+ *                                     and is responsible for the whole write, however
+ *                                     deep — e.g.
+ *                                     `( val ) => setAttributes( { asideSeparator: { ...asideSeparator, colour: val ?? '' } } )`.
  * @return {Object} A row descriptor: { key, label, states }.
  */
 export default function fillRow( {
@@ -165,7 +165,8 @@ export default function fillRow( {
 		};
 	}
 
-	const { base, hover, current, gradient, hoverGradient, currentGradient } = attrs || {};
+	const { base, hover, current, gradient, hoverGradient, currentGradient } =
+		attrs || {};
 
 	if ( ! base ) {
 		throw new Error(
@@ -202,7 +203,8 @@ export default function fillRow( {
 		...( gradient
 			? {
 					gradientValue: attributes[ gradient ],
-					onGradientChange: ( val ) => setAttributes( { [ gradient ]: val ?? '' } ),
+					onGradientChange: ( val ) =>
+						setAttributes( { [ gradient ]: val ?? '' } ),
 			  }
 			: {} ),
 	};
@@ -216,7 +218,8 @@ export default function fillRow( {
 		...( hoverGradient
 			? {
 					gradientValue: attributes[ hoverGradient ],
-					onGradientChange: ( val ) => setAttributes( { [ hoverGradient ]: val ?? '' } ),
+					onGradientChange: ( val ) =>
+						setAttributes( { [ hoverGradient ]: val ?? '' } ),
 			  }
 			: {} ),
 	};

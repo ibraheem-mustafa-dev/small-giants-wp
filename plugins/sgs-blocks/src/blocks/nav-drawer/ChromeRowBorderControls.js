@@ -14,7 +14,10 @@ import { TierBorderControl } from '../../components';
  * @param {Function} props.setAttributes Setter.
  * @return {Element} The control.
  */
-export default function ChromeRowBorderControls( { attributes, setAttributes } ) {
+export default function ChromeRowBorderControls( {
+	attributes,
+	setAttributes,
+} ) {
 	return (
 		<TierBorderControl
 			label={ __( 'Top row bottom border', 'sgs-blocks' ) }

@@ -34,8 +34,14 @@ const plainAnswers = new WeakMap();
  */
 export function recordPlainAnswer( flowRoot, stepIndex, stepEl, buttonEl ) {
 	const optionLabel = ( el ) => {
-		const labelEl = el.querySelector( '.sgs-choice-flow-question__option-label' );
-		return ( labelEl ? labelEl.textContent : el.getAttribute( 'data-value' ) || '' ).trim();
+		const labelEl = el.querySelector(
+			'.sgs-choice-flow-question__option-label'
+		);
+		return (
+			labelEl
+				? labelEl.textContent
+				: el.getAttribute( 'data-value' ) || ''
+		).trim();
 	};
 	// FR-43-27: a multi-answer question is one answer, its chosen labels joined in the order shown.
 	const chosen = chosenButtons( buttonEl );
@@ -44,7 +50,9 @@ export function recordPlainAnswer( flowRoot, stepIndex, stepEl, buttonEl ) {
 	if ( ! label ) {
 		return;
 	}
-	const rest = ( plainAnswers.get( flowRoot ) || [] ).filter( ( entry ) => entry.stepIndex !== stepIndex );
+	const rest = ( plainAnswers.get( flowRoot ) || [] ).filter(
+		( entry ) => entry.stepIndex !== stepIndex
+	);
 	if ( ! value ) {
 		// Every pick of a multi-answer question was toggled off.
 		plainAnswers.set( flowRoot, rest );
@@ -55,11 +63,18 @@ export function recordPlainAnswer( flowRoot, stepIndex, stepEl, buttonEl ) {
 		stepIndex,
 		label,
 		value,
-		stageLabel: ( questionEl && questionEl.getAttribute( 'data-summary-label' ) ) || label,
-		stageValue: chosen.length > 1 ? value : buttonEl.getAttribute( 'data-summary-text' ) || value,
+		stageLabel:
+			( questionEl && questionEl.getAttribute( 'data-summary-label' ) ) ||
+			label,
+		stageValue:
+			chosen.length > 1
+				? value
+				: buttonEl.getAttribute( 'data-summary-text' ) || value,
 		product: buttonEl.hasAttribute( 'data-product-attribute' ),
 		effect: buttonEl.getAttribute( 'data-stage-effect' ) || '',
-		bagLine: ! ( questionEl && '0' === questionEl.getAttribute( 'data-bag-line' ) ),
+		bagLine: ! (
+			questionEl && '0' === questionEl.getAttribute( 'data-bag-line' )
+		),
 	};
 	plainAnswers.set( flowRoot, [ ...rest, answer ] );
 }
@@ -88,7 +103,10 @@ export function getPlainAnswers( flowRoot ) {
 export function forgetAnswersFrom( flowRoot, stepIndex ) {
 	const list = plainAnswers.get( flowRoot );
 	if ( list ) {
-		plainAnswers.set( flowRoot, list.filter( ( answer ) => answer.stepIndex < stepIndex ) );
+		plainAnswers.set(
+			flowRoot,
+			list.filter( ( answer ) => answer.stepIndex < stepIndex )
+		);
 	}
 }
 
@@ -100,7 +118,9 @@ export function forgetAnswersFrom( flowRoot, stepIndex ) {
  */
 function terminalFields( resultEl ) {
 	const stepEl = resultEl.closest( '.sgs-form-step' );
-	return stepEl ? Array.from( stepEl.querySelectorAll( '.sgs-form-field' ) ) : [];
+	return stepEl
+		? Array.from( stepEl.querySelectorAll( '.sgs-form-field' ) )
+		: [];
 }
 
 /**
@@ -114,7 +134,9 @@ function fieldLabel( fieldEl ) {
 	}
 	// Without the required marker, the Optional tag and their screen-reader text.
 	const copy = labelEl.cloneNode( true );
-	copy.querySelectorAll( '.sgs-form-field__required, .sgs-form-field__optional, .sgs-sr-only, .screen-reader-text' ).forEach( ( el ) => el.remove() );
+	copy.querySelectorAll(
+		'.sgs-form-field__required, .sgs-form-field__optional, .sgs-sr-only, .screen-reader-text'
+	).forEach( ( el ) => el.remove() );
 	return copy.textContent.trim();
 }
 
@@ -132,14 +154,20 @@ export function validateTerminalFields( resultEl ) {
 			const idInput = fieldEl.querySelector( 'input[data-file-id]' );
 			const uploaded = idInput && idInput.getAttribute( 'data-file-id' );
 			if ( fileInput.required && ! uploaded ) {
-				fileInput.setCustomValidity( fileInput.files.length ? 'Your photo is still uploading.' : 'Please add a photo.' );
+				fileInput.setCustomValidity(
+					fileInput.files.length
+						? 'Your photo is still uploading.'
+						: 'Please add a photo.'
+				);
 				fileInput.reportValidity();
 				return false;
 			}
 			fileInput.setCustomValidity( '' );
 			continue;
 		}
-		const input = fieldEl.querySelector( 'input:not([type="hidden"]), select, textarea' );
+		const input = fieldEl.querySelector(
+			'input:not([type="hidden"]), select, textarea'
+		);
 		if ( input && ! input.checkValidity() ) {
 			input.reportValidity();
 			return false;
@@ -157,7 +185,10 @@ export function validateTerminalFields( resultEl ) {
  * @return {Array<{label: string, value?: string, file_id?: number, bag_line?: boolean}>} Entries.
  */
 export function collectFlowFields( flowRoot, resultEl ) {
-	const entries = ( plainAnswers.get( flowRoot ) || [] ).map( ( { label, value, bagLine } ) => ( bagLine ? { label, value } : { label, value, bag_line: false } ) );
+	const entries = ( plainAnswers.get( flowRoot ) || [] ).map(
+		( { label, value, bagLine } ) =>
+			bagLine ? { label, value } : { label, value, bag_line: false }
+	);
 	for ( const fieldEl of terminalFields( resultEl ) ) {
 		const label = fieldLabel( fieldEl );
 		if ( ! label ) {
@@ -165,13 +196,18 @@ export function collectFlowFields( flowRoot, resultEl ) {
 		}
 		const idInput = fieldEl.querySelector( 'input[data-file-id]' );
 		if ( fieldEl.querySelector( 'input[type="file"]' ) ) {
-			const fileId = parseInt( idInput ? idInput.getAttribute( 'data-file-id' ) : '', 10 );
+			const fileId = parseInt(
+				idInput ? idInput.getAttribute( 'data-file-id' ) : '',
+				10
+			);
 			if ( fileId > 0 ) {
 				entries.push( { label, file_id: fileId } );
 			}
 			continue;
 		}
-		const input = fieldEl.querySelector( 'input:not([type="hidden"]), select, textarea' );
+		const input = fieldEl.querySelector(
+			'input:not([type="hidden"]), select, textarea'
+		);
 		const value = input ? String( input.value || '' ).trim() : '';
 		if ( value ) {
 			entries.push( { label, value } );
@@ -191,7 +227,9 @@ export async function uploadFlowFile( event ) {
 	const input = event.target;
 	const fieldEl = input.closest( '.sgs-form-field' );
 	const stepEl = input.closest( '.sgs-form-step' );
-	const buttonEl = stepEl ? stepEl.querySelector( '.sgs-choice-flow-result__add-to-bag' ) : null;
+	const buttonEl = stepEl
+		? stepEl.querySelector( '.sgs-choice-flow-result__add-to-bag' )
+		: null;
 	const file = input.files && input.files[ 0 ];
 	if ( ! fieldEl || ! buttonEl || ! file ) {
 		return;
@@ -200,7 +238,10 @@ export async function uploadFlowFile( event ) {
 	const progressEl = fieldEl.querySelector( '.sgs-form-file__progress' );
 	const previewEl = fieldEl.querySelector( '.sgs-form-file__preview' );
 	const errorEl = fieldEl.querySelector( '.sgs-form-field__error' );
-	const endpoint = ( buttonEl.getAttribute( 'data-endpoint' ) || '' ).replace( /\/cart\/add-item$/, '/cart/upload' );
+	const endpoint = ( buttonEl.getAttribute( 'data-endpoint' ) || '' ).replace(
+		/\/cart\/add-item$/,
+		'/cart/upload'
+	);
 
 	if ( idInput ) {
 		idInput.setAttribute( 'data-file-id', '' );
@@ -222,7 +263,9 @@ export async function uploadFlowFile( event ) {
 		);
 		const result = await response.json().catch( () => ( {} ) );
 		if ( ! response.ok || ! result.id ) {
-			throw new Error( result.message || 'Upload failed. Please try again.' );
+			throw new Error(
+				result.message || 'Upload failed. Please try again.'
+			);
 		}
 		if ( idInput ) {
 			idInput.setAttribute( 'data-file-id', String( result.id ) );

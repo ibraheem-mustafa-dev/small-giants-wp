@@ -17,10 +17,10 @@ import SgsLengthControl from './SgsLengthControl';
 import { ToolsPanelItem } from './primitives';
 
 /**
- * @param {Object}   props                 Component props.
- * @param {Object}   props.attributes      Block attributes.
- * @param {Function} props.setAttributes   Attribute setter.
- * @param {boolean}  [props.showOpacity]   Offer the fill-opacity control (default true).
+ * @param {Object}   props               Component props.
+ * @param {Object}   props.attributes    Block attributes.
+ * @param {Function} props.setAttributes Attribute setter.
+ * @param {boolean}  [props.showOpacity] Offer the fill-opacity control (default true).
  * @return {JSX.Element} The controls.
  */
 export default function SurfaceGroundControls( {
@@ -55,7 +55,9 @@ export default function SurfaceGroundControls( {
 			<ToolsPanelItem
 				label={ __( 'Background saturation', 'sgs-blocks' ) }
 				hasValue={ () => typeof surfaceSaturate === 'number' }
-				onDeselect={ () => setAttributes( { surfaceSaturate: undefined } ) }
+				onDeselect={ () =>
+					setAttributes( { surfaceSaturate: undefined } )
+				}
 			>
 				<RangeControl
 					label={ __( 'Background saturation (%)', 'sgs-blocks' ) }
@@ -63,14 +65,19 @@ export default function SurfaceGroundControls( {
 						'Boosts or mutes the colour of what shows through the blur. 150 is a common frosted look. Leave unset for none.',
 						'sgs-blocks'
 					) }
-					value={ typeof surfaceSaturate === 'number' ? surfaceSaturate : undefined }
+					value={
+						typeof surfaceSaturate === 'number'
+							? surfaceSaturate
+							: undefined
+					}
 					min={ 0 }
 					max={ 300 }
 					step={ 10 }
 					allowReset
 					onChange={ ( value ) =>
 						setAttributes( {
-							surfaceSaturate: typeof value === 'number' ? value : undefined,
+							surfaceSaturate:
+								typeof value === 'number' ? value : undefined,
 						} )
 					}
 					__nextHasNoMarginBottom
@@ -82,7 +89,9 @@ export default function SurfaceGroundControls( {
 				<ToolsPanelItem
 					label={ __( 'Fill opacity', 'sgs-blocks' ) }
 					hasValue={ () => typeof surfaceOpacity === 'number' }
-					onDeselect={ () => setAttributes( { surfaceOpacity: undefined } ) }
+					onDeselect={ () =>
+						setAttributes( { surfaceOpacity: undefined } )
+					}
 				>
 					<RangeControl
 						label={ __( 'Fill opacity', 'sgs-blocks' ) }
@@ -90,14 +99,21 @@ export default function SurfaceGroundControls( {
 							'How much of the background colour shows: 1 is solid, lower lets the page through. Applies to a plain colour, not a gradient.',
 							'sgs-blocks'
 						) }
-						value={ typeof surfaceOpacity === 'number' ? surfaceOpacity : undefined }
+						value={
+							typeof surfaceOpacity === 'number'
+								? surfaceOpacity
+								: undefined
+						}
 						min={ 0 }
 						max={ 1 }
 						step={ 0.05 }
 						allowReset
 						onChange={ ( value ) =>
 							setAttributes( {
-								surfaceOpacity: typeof value === 'number' ? value : undefined,
+								surfaceOpacity:
+									typeof value === 'number'
+										? value
+										: undefined,
 							} )
 						}
 						__nextHasNoMarginBottom

@@ -18,7 +18,11 @@ import { __ } from '@wordpress/i18n';
 import { PanelBody, ToggleControl } from '@wordpress/components';
 import { useEntityProp } from '@wordpress/core-data';
 
-const DEFAULT_FEATURES = { priceAlerts: false, stockAlerts: false, sharing: false };
+const DEFAULT_FEATURES = {
+	priceAlerts: false,
+	stockAlerts: false,
+	sharing: false,
+};
 
 /**
  * @return {JSX.Element} The panel.
@@ -31,11 +35,19 @@ export default function SiteFeaturesPanel() {
 	);
 	const value = { ...DEFAULT_FEATURES, ...( features || {} ) };
 
-	const toggle = ( key ) => ( checked ) => setFeatures( { ...value, [ key ]: checked } );
+	const toggle = ( key ) => ( checked ) =>
+		setFeatures( { ...value, [ key ]: checked } );
 
 	return (
-		<PanelBody title={ __( 'Site-wide saved-item features', 'sgs-blocks' ) }>
-			<p>{ __( 'These switches apply to the whole site.', 'sgs-blocks' ) }</p>
+		<PanelBody
+			title={ __( 'Site-wide saved-item features', 'sgs-blocks' ) }
+		>
+			<p>
+				{ __(
+					'These switches apply to the whole site.',
+					'sgs-blocks'
+				) }
+			</p>
 			<ToggleControl
 				__nextHasNoMarginBottom
 				label={ __( 'Price-drop alerts', 'sgs-blocks' ) }

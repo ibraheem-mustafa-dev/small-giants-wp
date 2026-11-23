@@ -41,11 +41,11 @@ const ITEM_OPTION = Object.freeze( {
  * the choice.
  *
  * @param {Object}      args
- * @param {string}      args.blockName      The block's name.
- * @param {Object|null} args.elements       The block's `supports.sgs.elements`.
+ * @param {string}      args.blockName        The block's name.
+ * @param {Object|null} args.elements         The block's `supports.sgs.elements`.
  * @param {string}      [args.animationItems] The block's `supports.sgs.animationItems`.
- * @param {string}      args.target         The chosen target key.
- * @param {string}      [args.current]      The source stored on the target's hover layers.
+ * @param {string}      args.target           The chosen target key.
+ * @param {string}      [args.current]        The source stored on the target's hover layers.
  * @return {{value: string, label: string}[]} The choices.
  */
 export function sourceOptionsFor( {
@@ -76,8 +76,11 @@ export function sourceOptionsFor( {
  */
 export function hoverPresetChoices( { omitKeys = [] } = {} ) {
 	const touches = ( row ) =>
-		[ row.values, ...Object.values( row.devices || {} ) ].some( ( values ) =>
-			Object.keys( values || {} ).some( ( key ) => omitKeys.includes( key ) )
+		[ row.values, ...Object.values( row.devices || {} ) ].some(
+			( values ) =>
+				Object.keys( values || {} ).some( ( key ) =>
+					omitKeys.includes( key )
+				)
 		);
 	return presetFile.presets
 		.filter(

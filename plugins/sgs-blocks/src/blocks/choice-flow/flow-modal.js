@@ -16,7 +16,9 @@ const MODAL_CLOSE_SELECTOR = '.sgs-modal__close';
  */
 export function closeEnclosingModal( flowRoot ) {
 	const dialog = flowRoot.closest( MODAL_DIALOG_SELECTOR );
-	const closeEl = dialog ? dialog.querySelector( MODAL_CLOSE_SELECTOR ) : null;
+	const closeEl = dialog
+		? dialog.querySelector( MODAL_CLOSE_SELECTOR )
+		: null;
 	if ( closeEl ) {
 		closeEl.click();
 	}

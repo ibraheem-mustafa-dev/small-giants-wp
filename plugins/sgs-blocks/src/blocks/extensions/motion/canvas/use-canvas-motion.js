@@ -48,52 +48,91 @@ export { replay, canReplay, REPLAY_REDUCED_NOTICE } from './replay';
  */
 export function useCanvasMotion( { clientId, name, attributes } ) {
 	const motion = attributes?.[ MOTION_ATTRIBUTE_NAME ];
-	const linked = Boolean( attributes?.sgsBlockLink || attributes?.sgsBlockLinkAuto || attributes?.hoverAsCard );
+	const linked = Boolean(
+		attributes?.sgsBlockLink ||
+			attributes?.sgsBlockLinkAuto ||
+			attributes?.hoverAsCard
+	);
 	const preview = useSelect(
-		( select ) => Boolean( select( 'core/block-editor' )?.getSettings?.()?.__unstableIsPreviewMode ),
+		( select ) =>
+			Boolean(
+				select( 'core/block-editor' )?.getSettings?.()
+					?.__unstableIsPreviewMode
+			),
 		[]
 	);
 	// Whether the block holds inner blocks: then the stagger's "Apply entrance to children" moves the container's entrance
 	// to them (`stagger-apply.js`).
 	const hasInnerBlocks = useSelect(
-		( select ) => ( select( 'core/block-editor' )?.getBlockCount?.( clientId ) ?? 0 ) > 0,
+		( select ) =>
+			( select( 'core/block-editor' )?.getBlockCount?.( clientId ) ??
+				0 ) > 0,
 		[ clientId ]
 	);
 	// Only the attributes that decide the hover ring's refusal (the shadow attributes) reach the options, so editing
 	// anything else does not re-emit the block's motion.
 	const shadows = JSON.stringify(
-		shadowValues( getBlockType( name )?.supports?.sgs?.elements, attributes )
+		shadowValues(
+			getBlockType( name )?.supports?.sgs?.elements,
+			attributes
+		)
 	);
 	// In a delegating mode the grid hands its stagger entrance to the cards unless its template card's root keeps an
 	// entrance of its own (`delegated-children.js`); a template card is mirrored by the grid's product previews.
 	const { delegation, mirrored, parentOwned } = useSelect(
 		( select ) => {
 			const store = select( 'core/block-editor' );
-			const active = activeDelegation( getBlockType( name )?.supports?.sgs, attributes );
+			const active = activeDelegation(
+				getBlockType( name )?.supports?.sgs,
+				attributes
+			);
 			const parentId = store?.getBlockRootClientId?.( clientId );
 			const parentName = parentId ? store.getBlockName( parentId ) : null;
 			const parentDelegation = parentName
-				? activeDelegation( getBlockType( parentName )?.supports?.sgs, store.getBlockAttributes( parentId ) )
+				? activeDelegation(
+						getBlockType( parentName )?.supports?.sgs,
+						store.getBlockAttributes( parentId )
+				  )
 				: null;
-			const template = active ? ( store?.getBlocks?.( clientId ) || [] ).find( ( block ) => block.name === active.block ) : null;
-			const base = template?.attributes?.[ MOTION_ATTRIBUTE_NAME ]?.elements?.root?.entrance?.base;
+			const template = active
+				? ( store?.getBlocks?.( clientId ) || [] ).find(
+						( block ) => block.name === active.block
+				  )
+				: null;
+			const base =
+				template?.attributes?.[ MOTION_ATTRIBUTE_NAME ]?.elements?.root
+					?.entrance?.base;
 			return {
 				delegation: active
 					? JSON.stringify( {
 							...active,
-							childRootEntrance: Boolean( base ) && typeof base === 'object' && ! Array.isArray( base ),
-							childStates: declaredStates( getBlockType( active.block )?.supports?.sgs?.motion ),
+							childRootEntrance:
+								Boolean( base ) &&
+								typeof base === 'object' &&
+								! Array.isArray( base ),
+							childStates: declaredStates(
+								getBlockType( active.block )?.supports?.sgs
+									?.motion
+							),
 					  } )
 					: 'null',
 				mirrored: parentDelegation?.block === name,
 				// A block placed directly inside another SGS block may carry its perspective on that parent.
-				parentOwned: Boolean( parentName ) && parentName.startsWith( 'sgs/' ),
+				parentOwned:
+					Boolean( parentName ) && parentName.startsWith( 'sgs/' ),
 			};
 		},
 		[ clientId, name, attributes ]
 	);
 	// The grid columns per tier, which decide the stagger's per-item delays of a block that prints its items itself.
-	const loopColumns = JSON.stringify( Object.fromEntries( TIERS.map( ( tier ) => [ tier, columnsAt( name, attributes, tier ) ] ) ) );
+	const loopColumns = JSON.stringify(
+		Object.fromEntries(
+			TIERS.map( ( tier ) => [
+				tier,
+				columnsAt( name, attributes, tier ),
+			] )
+		)
+	);
 	const options = useMemo( () => {
 		const sgs = getBlockType( name )?.supports?.sgs || {};
 		return {
@@ -109,7 +148,16 @@ export function useCanvasMotion( { clientId, name, attributes } ) {
 			loopColumns: JSON.parse( loopColumns ),
 			context: { parentOwned },
 		};
-	}, [ name, clientId, shadows, delegation, mirrored, hasInnerBlocks, loopColumns, parentOwned ] );
+	}, [
+		name,
+		clientId,
+		shadows,
+		delegation,
+		mirrored,
+		hasInnerBlocks,
+		loopColumns,
+		parentOwned,
+	] );
 
 	useEffect( () => {
 		if ( preview || ( ! motion && ! linked ) ) {
@@ -118,7 +166,8 @@ export function useCanvasMotion( { clientId, name, attributes } ) {
 		let rootEl = null;
 		let touched = [];
 		let observer = null;
-		const mirrorsOf = ( el ) => ( mirrored ? mirrorRoots( clientId, el ) : [] );
+		const mirrorsOf = ( el ) =>
+			mirrored ? mirrorRoots( clientId, el ) : [];
 		let frame = 0;
 		let stopWatch = () => {};
 
@@ -134,20 +183,30 @@ export function useCanvasMotion( { clientId, name, attributes } ) {
 			const win = rootEl.ownerDocument.defaultView || window;
 			const mirrors = mirrorsOf( rootEl );
 			observer = new win.MutationObserver( schedule );
-			[ rootEl, ...mirrors ].forEach( ( el ) => observer.observe( el, { childList: true, subtree: true } ) );
+			[ rootEl, ...mirrors ].forEach( ( el ) =>
+				observer.observe( el, { childList: true, subtree: true } )
+			);
 			if ( rootEl.parentNode ) {
 				observer.observe( rootEl.parentNode, { childList: true } );
 			}
 			if ( mirrored && rootEl.parentNode?.parentNode ) {
 				// The list the template card and its mirrors sit in: a product added or removed adds or removes a mirror.
-				observer.observe( rootEl.parentNode.parentNode, { childList: true } );
+				observer.observe( rootEl.parentNode.parentNode, {
+					childList: true,
+				} );
 			}
 			const emitted = planCanvas( rootEl, motion, options );
 			if ( linked ) {
-				emitted.rootAttrs = { ...emitted.rootAttrs, 'data-sgs-hover-group': '' };
+				emitted.rootAttrs = {
+					...emitted.rootAttrs,
+					'data-sgs-hover-group': '',
+				};
 			}
 			writeStyle( rootEl, clientId, emitted.css );
-			touched = [ rootEl, ...mirrors ].map( ( el ) => [ stamp( el, emitted ), el ] );
+			touched = [ rootEl, ...mirrors ].map( ( el ) => [
+				stamp( el, emitted ),
+				el,
+			] );
 			registry.set( clientId, {
 				emitted,
 				element: () => findBlockElement( clientId ),

@@ -16,7 +16,10 @@
  * @package
  */
 import registry from './registry.json';
-import { backgroundPaintPreview, textPaintPreview } from '../../utils/background-preview';
+import {
+	backgroundPaintPreview,
+	textPaintPreview,
+} from '../../utils/background-preview';
 import { sgsBorderPreview } from '../../utils/border-preview';
 import { tierLengthPreview } from '../../utils/cssLength';
 import { tierValueOf } from '../../utils/responsive';
@@ -37,24 +40,38 @@ const BASES = new Set(
 );
 
 /**
- * @param {Object} attributes         Block attributes.
- * @param {string} prefix             The button's attribute prefix (for example 'flowOpener').
+ * @param {Object} attributes        Block attributes.
+ * @param {string} prefix            The button's attribute prefix (for example 'flowOpener').
  * @param {Object} [options]
- * @param {string} [options.tier]     Previewed device tier from usePreviewTier(); 'desktop' by default.
- * @param {Array}  [options.palette]  Theme colour palette, for colour slugs.
+ * @param {string} [options.tier]    Previewed device tier from usePreviewTier(); 'desktop' by default.
+ * @param {Array}  [options.palette] Theme colour palette, for colour slugs.
  * @return {Object} React style fragment; `{}` when nothing is set.
  */
-export default function buttonKitStyle( attributes, prefix, { tier = 'desktop', palette = [] } = {} ) {
+export default function buttonKitStyle(
+	attributes,
+	prefix,
+	{ tier = 'desktop', palette = [] } = {}
+) {
 	const attr = ( base ) => {
 		if ( ! BASES.has( base ) ) {
-			throw new Error( `buttonKitStyle: "${ base }" is not in button-kit/registry.json` );
+			throw new Error(
+				`buttonKitStyle: "${ base }" is not in button-kit/registry.json`
+			);
 		}
 		return attributes?.[ prefix + base ];
 	};
 	const style = {
 		...typographyPreviewStyle( attributes || {}, prefix, tier ),
-		...backgroundPaintPreview( attr( 'ColourBackground' ), attr( 'ColourBackgroundGradient' ), palette ),
-		...textPaintPreview( attr( 'ColourText' ), attr( 'ColourTextGradient' ), palette ),
+		...backgroundPaintPreview(
+			attr( 'ColourBackground' ),
+			attr( 'ColourBackgroundGradient' ),
+			palette
+		),
+		...textPaintPreview(
+			attr( 'ColourText' ),
+			attr( 'ColourTextGradient' ),
+			palette
+		),
 		...sgsBorderPreview(
 			{
 				widthValues: attr( 'BorderWidth' ),

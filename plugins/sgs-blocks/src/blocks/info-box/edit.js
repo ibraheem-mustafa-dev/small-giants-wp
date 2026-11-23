@@ -13,7 +13,23 @@ import {
 	TextControl,
 } from '@wordpress/components';
 import { createBlock } from '@wordpress/blocks';
-import { DesignTokenPicker, ResponsiveBoxControl, SgsColourPanel, ShadowControl, fillRow, textRow, SgsLengthControl, SgsBorderControl, resolveColourToken, TypographyControls, ResponsiveOverride, TextAlignTierControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
+import {
+	DesignTokenPicker,
+	ResponsiveBoxControl,
+	SgsColourPanel,
+	ShadowControl,
+	fillRow,
+	textRow,
+	SgsLengthControl,
+	SgsBorderControl,
+	resolveColourToken,
+	TypographyControls,
+	ResponsiveOverride,
+	TextAlignTierControl,
+	BOX_UNITS,
+	normaliseResponsiveBox,
+	SgsBoxControl,
+} from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import {
 	colourVar,
@@ -82,7 +98,7 @@ const LENGTH_UNITS = [
  * WYSIWYG approximation.
  *
  * @param {Object} attributes Block attributes.
- * @returns {Object} React inline-style object.
+ * @return {Object} React inline-style object.
  */
 function buildPreviewStyle( attributes, tier ) {
 	const {
@@ -122,7 +138,10 @@ function buildPreviewStyle( attributes, tier ) {
 	// background gradient already owns that property on this preview element.
 	Object.assign(
 		preview,
-		textPaintPreview( textColour, backgroundColourGradient ? '' : attributes.textColourGradient )
+		textPaintPreview(
+			textColour,
+			backgroundColourGradient ? '' : attributes.textColourGradient
+		)
 	);
 
 	// Border is entirely the block's own borderWidth/borderStyle/borderColour/
@@ -131,9 +150,25 @@ function buildPreviewStyle( attributes, tier ) {
 	// never populated here (the old inline comment above claiming a native
 	// resting-colour control was stale; verified against the current Border
 	// PanelBody, which is fully SgsBorderControl-driven).
-	Object.assign( preview, sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient, radiusValues: borderRadius }, tier ) );
+	Object.assign(
+		preview,
+		sgsBorderPreview(
+			{
+				widthValues: borderWidth,
+				styleValue: borderStyle,
+				colourValue: borderColour,
+				colourGradientValue: borderColourGradient,
+				radiusValues: borderRadius,
+			},
+			tier
+		)
+	);
 
-	Object.assign( preview, tierBoxLonghands( padding, tier, 'padding' ), tierBoxLonghands( margin, tier, 'margin' ) );
+	Object.assign(
+		preview,
+		tierBoxLonghands( padding, tier, 'padding' ),
+		tierBoxLonghands( margin, tier, 'margin' )
+	);
 
 	if ( maxWidth ) {
 		preview.maxWidth = maxWidth;
@@ -182,11 +217,24 @@ const MEDIA_TYPE_OPTIONS = [
 const MEDIA_TYPE_DEFAULTS = {
 	// Attr names and shapes MUST match sgs/icon block.json (iconSize is per device,
 	// shape + showBackground draw the disc) — WP silently discards undeclared attrs (D338).
-	icon:  { blockName: 'sgs/icon',  attrs: { iconSource: 'lucide', iconName: 'star', backgroundColour: 'accent-light', shape: 'circle', showBackground: true, iconSize: { desktop: '32px' } } },
-	emoji: { blockName: 'sgs/icon',  attrs: { iconSource: 'emoji', emojiChar: '⭐' } },
+	icon: {
+		blockName: 'sgs/icon',
+		attrs: {
+			iconSource: 'lucide',
+			iconName: 'star',
+			backgroundColour: 'accent-light',
+			shape: 'circle',
+			showBackground: true,
+			iconSize: { desktop: '32px' },
+		},
+	},
+	emoji: {
+		blockName: 'sgs/icon',
+		attrs: { iconSource: 'emoji', emojiChar: '⭐' },
+	},
 	image: { blockName: 'sgs/media', attrs: { mediaType: 'image' } },
 	video: { blockName: 'sgs/media', attrs: { mediaType: 'video' } },
-	svg:   { blockName: 'sgs/media', attrs: { mediaType: 'svg' } },
+	svg: { blockName: 'sgs/media', attrs: { mediaType: 'svg' } },
 };
 
 /**
@@ -234,12 +282,30 @@ const INFO_BOX_TEMPLATE = [
 			className: 'sgs-info-box__icon',
 		},
 	],
-	[ 'sgs/heading', { level: 'h3', headingRole: 'heading', content: __( 'Feature heading', 'sgs-blocks' ) } ],
-	[ 'sgs/text', { text: __( 'Describe the feature or benefit here.', 'sgs-blocks' ) } ],
+	[
+		'sgs/heading',
+		{
+			level: 'h3',
+			headingRole: 'heading',
+			content: __( 'Feature heading', 'sgs-blocks' ),
+		},
+	],
+	[
+		'sgs/text',
+		{ text: __( 'Describe the feature or benefit here.', 'sgs-blocks' ) },
+	],
 	[
 		'sgs/multi-button',
 		{},
-		[ [ 'sgs/button', { inheritStyle: 'primary', label: __( 'Learn More', 'sgs-blocks' ) } ] ],
+		[
+			[
+				'sgs/button',
+				{
+					inheritStyle: 'primary',
+					label: __( 'Learn More', 'sgs-blocks' ),
+				},
+			],
+		],
 	],
 ];
 
@@ -276,10 +342,11 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		[ clientId ]
 	);
 
-	const { replaceBlock, updateBlockAttributes, insertBlock } = useDispatch( 'core/block-editor' );
+	const { replaceBlock, updateBlockAttributes, insertBlock } =
+		useDispatch( 'core/block-editor' );
 
 	// Derived — never stored on the info-box itself.
-	const firstBlock     = innerBlocks[ 0 ];
+	const firstBlock = innerBlocks[ 0 ];
 	const currentMediaType = deriveMediaType( firstBlock );
 
 	/**
@@ -310,11 +377,16 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 
 		if ( ! firstBlock ) {
 			// No children at all — insert at index 0 only.
-			insertBlock( createBlock( target.blockName, target.attrs ), 0, clientId );
+			insertBlock(
+				createBlock( target.blockName, target.attrs ),
+				0,
+				clientId
+			);
 			return;
 		}
 
-		const isIconSwitch = firstBlock.name === 'sgs/icon' && target.blockName === 'sgs/icon';
+		const isIconSwitch =
+			firstBlock.name === 'sgs/icon' && target.blockName === 'sgs/icon';
 
 		if ( isIconSwitch ) {
 			// Icon ↔ Emoji: same underlying block — update attrs in place.
@@ -341,7 +413,10 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 
 		// Cross-type switch (e.g. Icon → Image, Image → Video, etc.):
 		// replace the first child block entirely. All other children are unaffected.
-		replaceBlock( firstBlock.clientId, createBlock( target.blockName, target.attrs ) );
+		replaceBlock(
+			firstBlock.clientId,
+			createBlock( target.blockName, target.attrs )
+		);
 	}
 
 	// -------------------------------------------------------------------------
@@ -364,19 +439,24 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	// against the info-box's own background. When the background is a gradient,
 	// the flat backgroundColour is not rendered, so skip the check in that case.
 	const infoBoxContrastAgainst =
-		backgroundColour && ! backgroundColourGradient
-			? backgroundColour
-			: '';
+		backgroundColour && ! backgroundColourGradient ? backgroundColour : '';
 
 	const previewTier = usePreviewTier();
 	const linkPreviewUid = `sgs-info-box-link-preview-${ clientId }`;
-	const linkPreviewCss = linkColourPreviewCss(
-		`.${ linkPreviewUid }`,
-		attributes.linkColour,
-		attributes.linkColourHover,
-		attributes.linkColourGradient,
-		attributes.linkColourHoverGradient
-	) + textIndentPreviewCss( attributes, '', `.${ linkPreviewUid }`, previewTier );
+	const linkPreviewCss =
+		linkColourPreviewCss(
+			`.${ linkPreviewUid }`,
+			attributes.linkColour,
+			attributes.linkColourHover,
+			attributes.linkColourGradient,
+			attributes.linkColourHoverGradient
+		) +
+		textIndentPreviewCss(
+			attributes,
+			'',
+			`.${ linkPreviewUid }`,
+			previewTier
+		);
 	const blockProps = useBlockProps( {
 		className: `${ className } ${ linkPreviewUid }`,
 		style: {
@@ -387,7 +467,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 
 	// FR-22-6: single InnerBlocks slot covers ALL card content.
 	const innerBlocksProps = useInnerBlocksProps( blockProps, {
-		template:     INFO_BOX_TEMPLATE,
+		template: INFO_BOX_TEMPLATE,
 		// Open: converter injects varied child block combinations.
 		// Do not lock allowedBlocks so the editor remains flexible.
 	} );
@@ -452,11 +532,16 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: borderColourHover,
-								onChange: ( val ) => setAttributes( { borderColourHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										borderColourHover: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: borderColourHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { borderColourHoverGradient: val ?? '' } ),
+									setAttributes( {
+										borderColourHoverGradient: val ?? '',
+									} ),
 							},
 						],
 					},
@@ -475,45 +560,81 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 				   (D971/D972 full-replacement track). Root prefix "" — this
 				   block's typography support targeted the block root
 				   (.wp-block-sgs-info-box), same as sgs/accordion. */ }
-				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
-					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextStroke showTextColumns showTextIndent showWritingMode
+				<PanelBody
+					title={ __( 'Typography', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<TypographyControls
+						fontSizePresets
+						showFontFamily
+						showDecoration
+						showTransform
+						showLetterSpacing
+						showTextAlign
+						showTextWrap
+						showTextStroke
+						showTextColumns
+						showTextIndent
+						showWritingMode
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						prefix=""
 					/>
 				</PanelBody>
-				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Border', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SgsBorderControl
 						widthValues={ attributes.borderWidth ?? {} }
-						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						onWidthChange={ ( next ) =>
+							setAttributes( { borderWidth: next } )
+						}
 						widthPresets={ [ '10', '20', '30' ] }
 						styleValue={ attributes.borderStyle }
-						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						onStyleChange={ ( val ) =>
+							setAttributes( { borderStyle: val } )
+						}
 						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
 						colourValue={ attributes.borderColour }
-						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						onColourChange={ ( val ) =>
+							setAttributes( { borderColour: val ?? '' } )
+						}
 						colourGradientValue={ attributes.borderColourGradient }
-						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+						onColourGradientChange={ ( val ) =>
+							setAttributes( { borderColourGradient: val ?? '' } )
+						}
 						colourLinked={ true }
 						contrastAgainst={ infoBoxContrastAgainst }
 						radiusValues={ {
-								base: attributes.borderRadius?.desktop ?? {},
-								tablet: attributes.borderRadius?.tablet ?? {},
-								mobile: attributes.borderRadius?.mobile ?? {},
-							} }
+							base: attributes.borderRadius?.desktop ?? {},
+							tablet: attributes.borderRadius?.tablet ?? {},
+							mobile: attributes.borderRadius?.mobile ?? {},
+						} }
 						onRadiusChange={ ( tier, next ) => {
 							const key = tier === 'base' ? 'desktop' : tier;
-							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+							setAttributes( {
+								borderRadius: {
+									...attributes.borderRadius,
+									[ key ]: next,
+								},
+							} );
 						} }
 					/>
 				</PanelBody>
 			</InspectorControls>
 			<InspectorControls>
 				{ /* ===== Media type (convenience swap — first child only) ===== */ }
-				<PanelBody title={ __( 'Media', 'sgs-blocks' ) } initialOpen={ true }>
+				<PanelBody
+					title={ __( 'Media', 'sgs-blocks' ) }
+					initialOpen={ true }
+				>
 					<SelectControl
 						label={ __( 'Media type', 'sgs-blocks' ) }
-						help={ __( 'Swaps the visual element at the top of this card. Your heading, text and button are never changed.', 'sgs-blocks' ) }
+						help={ __(
+							'Swaps the visual element at the top of this card. Your heading, text and button are never changed.',
+							'sgs-blocks'
+						) }
 						value={ currentMediaType }
 						options={ MEDIA_TYPE_OPTIONS }
 						onChange={ handleMediaTypeChange }
@@ -523,13 +644,18 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 				</PanelBody>
 
 				{ /* ===== Width (kept-scalar, base only — matches render.php scope) ===== */ }
-				<PanelBody title={ __( 'Width', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Width', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SgsLengthControl
 						presets={ false }
 						label={ __( 'Outer max-width', 'sgs-blocks' ) }
 						value={ maxWidth || '' }
 						units={ LENGTH_UNITS }
-						onChange={ ( val ) => setAttributes( { maxWidth: val ?? '' } ) }
+						onChange={ ( val ) =>
+							setAttributes( { maxWidth: val ?? '' } )
+						}
 						help={ __( 'Leave blank for no cap.', 'sgs-blocks' ) }
 					/>
 					<SgsLengthControl
@@ -537,8 +663,13 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						label={ __( 'Width', 'sgs-blocks' ) }
 						value={ width || '' }
 						units={ LENGTH_UNITS }
-						onChange={ ( val ) => setAttributes( { width: val ?? '' } ) }
-						help={ __( 'Exact CSS length, e.g. 900px. Leave blank for full width.', 'sgs-blocks' ) }
+						onChange={ ( val ) =>
+							setAttributes( { width: val ?? '' } )
+						}
+						help={ __(
+							'Exact CSS length, e.g. 900px. Leave blank for full width.',
+							'sgs-blocks'
+						) }
 					/>
 				</PanelBody>
 
@@ -546,19 +677,35 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 				   tier-object attr { desktop, tablet, mobile }, written via
 				   ResponsiveOverride + SgsBoxControl; read by SGS_Container_Wrapper's
 				   tier-object emission path. ===== */ }
-				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Spacing', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<ResponsiveOverride
 						value={ attributes.padding }
-						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { padding: obj } )
+						}
 					>
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								defaults={ spacingDefaultsFor( name, 'padding' ) }
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								defaults={ spacingDefaultsFor(
+									name,
+									'padding'
+								) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
@@ -569,10 +716,18 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
@@ -594,14 +749,18 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					<ToolsPanelItem
 						label={ __( 'Card style', 'sgs-blocks' ) }
 						hasValue={ () => cardStyle !== 'elevated' }
-						onDeselect={ () => setAttributes( { cardStyle: 'elevated' } ) }
+						onDeselect={ () =>
+							setAttributes( { cardStyle: 'elevated' } )
+						}
 						isShownByDefault
 					>
 						<SelectControl
 							label={ __( 'Card style', 'sgs-blocks' ) }
 							value={ cardStyle }
 							options={ CARD_STYLE_OPTIONS }
-							onChange={ ( val ) => setAttributes( { cardStyle: val } ) }
+							onChange={ ( val ) =>
+								setAttributes( { cardStyle: val } )
+							}
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
@@ -609,7 +768,9 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					<ToolsPanelItem
 						label={ __( 'Shadow (hover)', 'sgs-blocks' ) }
 						hasValue={ () => shadowHover !== '' }
-						onDeselect={ () => setAttributes( { shadowHover: '' } ) }
+						onDeselect={ () =>
+							setAttributes( { shadowHover: '' } )
+						}
 						isShownByDefault
 					>
 						{ /* shadowHover — declared + read by render.php (preset-slug ONLY,
@@ -621,18 +782,29 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							label={ __( 'Shadow (hover)', 'sgs-blocks' ) }
 							attributes={ attributes }
 							setAttributes={ setAttributes }
-							attrNames={ { base: 'shadowHover', colour: 'shadowColourHover' } }
+							attrNames={ {
+								base: 'shadowHover',
+								colour: 'shadowColourHover',
+							} }
 						/>
 					</ToolsPanelItem>
 					<ToolsPanelItem
-						label={ __( 'Scale on hover (e.g. 1.03)', 'sgs-blocks' ) }
+						label={ __(
+							'Scale on hover (e.g. 1.03)',
+							'sgs-blocks'
+						) }
 						hasValue={ () => scaleHover !== '' }
 						onDeselect={ () => setAttributes( { scaleHover: '' } ) }
 					>
 						<TextControl
-							label={ __( 'Scale on hover (e.g. 1.03)', 'sgs-blocks' ) }
+							label={ __(
+								'Scale on hover (e.g. 1.03)',
+								'sgs-blocks'
+							) }
 							value={ scaleHover }
-							onChange={ ( val ) => setAttributes( { scaleHover: val } ) }
+							onChange={ ( val ) =>
+								setAttributes( { scaleHover: val } )
+							}
 							placeholder="1.03"
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
@@ -646,9 +818,16 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						}
 					>
 						<RangeControl
-							label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
+							label={ __(
+								'Transition duration (ms)',
+								'sgs-blocks'
+							) }
 							value={ parseInt( transitionDuration, 10 ) || 300 }
-							onChange={ ( val ) => setAttributes( { transitionDuration: String( val ) } ) }
+							onChange={ ( val ) =>
+								setAttributes( {
+									transitionDuration: String( val ),
+								} )
+							}
 							min={ 0 }
 							max={ 1000 }
 							step={ 50 }
@@ -667,7 +846,9 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							label={ __( 'Transition easing', 'sgs-blocks' ) }
 							value={ transitionEasing }
 							options={ EASING_OPTIONS }
-							onChange={ ( val ) => setAttributes( { transitionEasing: val } ) }
+							onChange={ ( val ) =>
+								setAttributes( { transitionEasing: val } )
+							}
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
@@ -675,22 +856,28 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 				</ToolsPanel>
 
 				{ /* ===== Layout ===== */ }
-				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Layout', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SelectControl
 						label={ __( 'Media position', 'sgs-blocks' ) }
 						value={ iconPosition }
 						options={ ICON_POSITION_OPTIONS }
-						onChange={ ( val ) => setAttributes( { iconPosition: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { iconPosition: val } )
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
 					<TextAlignTierControl
 						label={ __( 'Text align', 'sgs-blocks' ) }
 						value={ attributes.textAlign }
-						onChange={ ( val ) => setAttributes( { textAlign: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { textAlign: val } )
+						}
 					/>
 				</PanelBody>
-
 			</InspectorControls>
 
 			{ /* FR-22-6: innerBlocksProps spread onto the wrapper div — the

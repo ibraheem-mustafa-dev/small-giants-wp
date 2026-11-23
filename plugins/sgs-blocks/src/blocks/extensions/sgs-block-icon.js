@@ -22,7 +22,12 @@ import { SGS_TEAL } from '../../utils/icons';
  * @return {Object} The icon object.
  */
 export function withSgsTeal( icon ) {
-	if ( icon && 'object' === typeof icon && ! isValidElement( icon ) && 'src' in icon ) {
+	if (
+		icon &&
+		'object' === typeof icon &&
+		! isValidElement( icon ) &&
+		'src' in icon
+	) {
 		return icon.foreground ? icon : { ...icon, foreground: SGS_TEAL };
 	}
 	return { src: icon || 'block-default', foreground: SGS_TEAL };
@@ -39,9 +44,16 @@ export function tealBlockIcon( settings, name ) {
 	}
 	const out = { ...settings, icon: withSgsTeal( settings.icon ) };
 	if ( Array.isArray( settings.variations ) ) {
-		out.variations = settings.variations.map( ( v ) => ( v && v.icon ? { ...v, icon: withSgsTeal( v.icon ) } : v ) );
+		out.variations = settings.variations.map( ( v ) =>
+			v && v.icon ? { ...v, icon: withSgsTeal( v.icon ) } : v
+		);
 	}
 	return out;
 }
 
-addFilter( 'blocks.registerBlockType', 'sgs/teal-block-icon', tealBlockIcon, 5 );
+addFilter(
+	'blocks.registerBlockType',
+	'sgs/teal-block-icon',
+	tealBlockIcon,
+	5
+);

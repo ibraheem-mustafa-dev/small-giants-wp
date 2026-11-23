@@ -16,8 +16,16 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { PanelBody, ToggleControl, SelectControl, TextControl } from '@wordpress/components';
-import { SITE_INFO_LINK_SOURCE_OPTIONS, LINK_SOURCE_HELP } from '../../shared/link-source-options';
+import {
+	PanelBody,
+	ToggleControl,
+	SelectControl,
+	TextControl,
+} from '@wordpress/components';
+import {
+	SITE_INFO_LINK_SOURCE_OPTIONS,
+	LINK_SOURCE_HELP,
+} from '../../shared/link-source-options';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
 /**
@@ -45,14 +53,20 @@ export default function SummaryPanel( {
 		return null;
 	}
 
-	const link = stageNoteLink && 'object' === typeof stageNoteLink ? stageNoteLink : {};
+	const link =
+		stageNoteLink && 'object' === typeof stageNoteLink ? stageNoteLink : {};
 
 	return (
-		<PanelBody title={ __( 'Summary panel', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Summary panel', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			<ToggleControl
 				label={ __( 'Show product image', 'sgs-blocks' ) }
 				checked={ !! summaryShowImage }
-				onChange={ ( val ) => setAttributes( { summaryShowImage: val } ) }
+				onChange={ ( val ) =>
+					setAttributes( { summaryShowImage: val } )
+				}
 				help={ __(
 					'The resolved variation’s photo once one is chosen, else the product’s own featured image.',
 					'sgs-blocks'
@@ -63,10 +77,18 @@ export default function SummaryPanel( {
 				label={ __( 'Panel position (desktop)', 'sgs-blocks' ) }
 				value={ summaryPosition || 'start' }
 				options={ [
-					{ label: __( 'Left of the steps', 'sgs-blocks' ), value: 'start' },
-					{ label: __( 'Right of the steps', 'sgs-blocks' ), value: 'end' },
+					{
+						label: __( 'Left of the steps', 'sgs-blocks' ),
+						value: 'start',
+					},
+					{
+						label: __( 'Right of the steps', 'sgs-blocks' ),
+						value: 'end',
+					},
 				] }
-				onChange={ ( val ) => setAttributes( { summaryPosition: val } ) }
+				onChange={ ( val ) =>
+					setAttributes( { summaryPosition: val } )
+				}
 				help={ __(
 					'Below 1024px the panel is a collapsible "Your box" row above the steps either way.',
 					'sgs-blocks'
@@ -77,7 +99,9 @@ export default function SummaryPanel( {
 			<TextControl
 				label={ __( 'Base price label', 'sgs-blocks' ) }
 				value={ summaryBaseLabel || '' }
-				onChange={ ( val ) => setAttributes( { summaryBaseLabel: val } ) }
+				onChange={ ( val ) =>
+					setAttributes( { summaryBaseLabel: val } )
+				}
 				help={ __(
 					'FIXES item 4: the running lines’ first row label — default "Base price"; e.g. "Frame" for an eyewear flow.',
 					'sgs-blocks'
@@ -85,7 +109,9 @@ export default function SummaryPanel( {
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>
-			<SgsFreeTextField type="rich" noLink
+			<SgsFreeTextField
+				type="rich"
+				noLink
 				label={ __( 'Help note', 'sgs-blocks' ) }
 				value={ stageNote || '' }
 				onChange={ ( val ) => setAttributes( { stageNote: val } ) }
@@ -99,7 +125,11 @@ export default function SummaryPanel( {
 					<TextControl
 						label={ __( 'Note link text', 'sgs-blocks' ) }
 						value={ link.text || '' }
-						onChange={ ( val ) => setAttributes( { stageNoteLink: { ...link, text: val } } ) }
+						onChange={ ( val ) =>
+							setAttributes( {
+								stageNoteLink: { ...link, text: val },
+							} )
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
@@ -107,19 +137,37 @@ export default function SummaryPanel( {
 						label={ __( 'Note link source', 'sgs-blocks' ) }
 						value={ link.source || 'url' }
 						options={ SITE_INFO_LINK_SOURCE_OPTIONS }
-						onChange={ ( val ) => setAttributes( { stageNoteLink: { ...link, source: val } } ) }
-						help={ 'url' === ( link.source || 'url' ) ? undefined : LINK_SOURCE_HELP[ link.source ] }
+						onChange={ ( val ) =>
+							setAttributes( {
+								stageNoteLink: { ...link, source: val },
+							} )
+						}
+						help={
+							'url' === ( link.source || 'url' )
+								? undefined
+								: LINK_SOURCE_HELP[ link.source ]
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
 					<TextControl
 						label={ __( 'Note link URL', 'sgs-blocks' ) }
 						value={ link.url || '' }
-						onChange={ ( val ) => setAttributes( { stageNoteLink: { ...link, url: val } } ) }
+						onChange={ ( val ) =>
+							setAttributes( {
+								stageNoteLink: { ...link, url: val },
+							} )
+						}
 						help={
 							'url' === ( link.source || 'url' )
-								? __( 'Both text and URL are needed for the link to show.', 'sgs-blocks' )
-								: __( 'Used only as a fallback while the Site Info field is empty.', 'sgs-blocks' )
+								? __(
+										'Both text and URL are needed for the link to show.',
+										'sgs-blocks'
+								  )
+								: __(
+										'Used only as a fallback while the Site Info field is empty.',
+										'sgs-blocks'
+								  )
 						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize

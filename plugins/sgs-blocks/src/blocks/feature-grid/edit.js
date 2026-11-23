@@ -92,9 +92,10 @@ function buildGridStyle( attributes, tier = 'desktop' ) {
 	const gapDesktop = resolveResponsiveTier( gap, 'desktop' )?.value;
 	// For editor preview: if gap looks like a bare slug (digits only), render
 	// it as a spacing-preset CSS var; otherwise pass through as-is.
-	const gapCss = gapDesktop && /^\d+$/.test( String( gapDesktop ) )
-		? `var(--wp--preset--spacing--${ gapDesktop })`
-		: ( gapDesktop || '24px' );
+	const gapCss =
+		gapDesktop && /^\d+$/.test( String( gapDesktop ) )
+			? `var(--wp--preset--spacing--${ gapDesktop })`
+			: gapDesktop || '24px';
 
 	if ( 'auto-flex' === layoutMode ) {
 		const minItem =
@@ -120,8 +121,12 @@ function buildGridStyle( attributes, tier = 'desktop' ) {
 	// object yields "[object Object]", which is a NON-EMPTY string — so the
 	// preview would have set a bogus track list instead of falling back to the
 	// column count. Resolve the DESKTOP tier, which is what the canvas shows.
-	const gtcDesktop = resolveResponsiveTier( gridTemplateColumns, 'desktop' )?.value;
-	const columnsDesktop = resolveResponsiveTier( columns, 'desktop' )?.value ?? 4;
+	const gtcDesktop = resolveResponsiveTier(
+		gridTemplateColumns,
+		'desktop'
+	)?.value;
+	const columnsDesktop =
+		resolveResponsiveTier( columns, 'desktop' )?.value ?? 4;
 	const templateCols = String( gtcDesktop ?? '' ).trim()
 		? String( gtcDesktop ).trim()
 		: `repeat(${ columnsDesktop }, 1fr)`;
@@ -183,27 +188,43 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	// Border, radius, max-width, row/flex alignment and the content band as the wrapper emits
 	// them; the block's own grid wins and moves onto the band with the rest of the layout.
-	const { style: wrapperStyle, bandStyle, hasBandProps } = wrapperPreview(
-		attributes,
-		previewTier,
-		colourPalette,
-		{ ...buildGridStyle( attributes, previewTier ), ...sep.style }
-	);
+	const {
+		style: wrapperStyle,
+		bandStyle,
+		hasBandProps,
+	} = wrapperPreview( attributes, previewTier, colourPalette, {
+		...buildGridStyle( attributes, previewTier ),
+		...sep.style,
+	} );
 
 	const blockProps = useBlockProps( {
 		ref: hasBandProps ? undefined : sep.ref,
 		className: `sgs-feature-grid sgs-feature-grid--${ layoutMode }`,
 		style: {
 			...wrapperStyle,
-			...backgroundPaintPreview( attributes.backgroundColour, attributes.backgroundColourGradient, colourPalette ),
-			...textPaintPreview( textColour, textColourGradient, colourPalette ),
+			...backgroundPaintPreview(
+				attributes.backgroundColour,
+				attributes.backgroundColourGradient,
+				colourPalette
+			),
+			...textPaintPreview(
+				textColour,
+				textColourGradient,
+				colourPalette
+			),
 		},
 	} );
 
 	// With a band the front end nests the grid in `.sgs-container__inner`; the block's own
 	// element carries the band so InnerBlocks stay the grid's direct children.
 	const innerBlocksProps = useInnerBlocksProps(
-		hasBandProps ? { ref: sep.ref, className: 'sgs-container__inner', style: bandStyle } : blockProps,
+		hasBandProps
+			? {
+					ref: sep.ref,
+					className: 'sgs-container__inner',
+					style: bandStyle,
+			  }
+			: blockProps,
 		{
 			allowedBlocks: [ 'sgs/info-box' ],
 			template: TEMPLATE,
@@ -253,7 +274,12 @@ export default function Edit( { attributes, setAttributes } ) {
 				     /systematic-debugging 2026-08-20; card-grid, the sibling using
 				     the same kind="layout" pattern, never exposes this dropdown
 				     conflict because it has no competing bespoke selector. */ }
-				<ContainerWrapperControls attributes={ attributes } setAttributes={ setAttributes } kind="layout" showLayout={ false } />
+				<ContainerWrapperControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					kind="layout"
+					showLayout={ false }
+				/>
 				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'Layout mode', 'sgs-blocks' ) }
@@ -293,18 +319,35 @@ export default function Edit( { attributes, setAttributes } ) {
 							} ) => (
 								<SgsLengthControl
 									presets={ false }
-									label={ __( 'Min item width', 'sgs-blocks' ) }
+									label={ __(
+										'Min item width',
+										'sgs-blocks'
+									) }
 									hideLabelFromVision
 									value={ ownValue || '' }
 									placeholder={
 										inherited ? effectiveValue || '' : ''
 									}
 									units={ [
-										{ value: 'px', label: 'px', default: 200 },
-										{ value: 'em', label: 'em', default: 10 },
-										{ value: 'rem', label: 'rem', default: 10 },
+										{
+											value: 'px',
+											label: 'px',
+											default: 200,
+										},
+										{
+											value: 'em',
+											label: 'em',
+											default: 10,
+										},
+										{
+											value: 'rem',
+											label: 'rem',
+											default: 10,
+										},
 									] }
-									onChange={ ( val ) => setOwnValue( val || '' ) }
+									onChange={ ( val ) =>
+										setOwnValue( val || '' )
+									}
 								/>
 							) }
 						</ResponsiveOverride>
@@ -328,18 +371,31 @@ export default function Edit( { attributes, setAttributes } ) {
 						<ResponsiveOverride
 							label={ __( 'Columns', 'sgs-blocks' ) }
 							value={ attributes.columns }
-							onChange={ ( obj ) => setAttributes( { columns: obj } ) }
+							onChange={ ( obj ) =>
+								setAttributes( { columns: obj } )
+							}
 						>
-							{ ( { tier, ownValue, effectiveValue, setOwnValue } ) => {
-								const maxMap = { desktop: 6, tablet: 4, mobile: 2 };
+							{ ( {
+								tier,
+								ownValue,
+								effectiveValue,
+								setOwnValue,
+							} ) => {
+								const maxMap = {
+									desktop: 6,
+									tablet: 4,
+									mobile: 2,
+								};
 								return (
 									<RangeControl
 										value={
 											ownValue !== ''
 												? ownValue
-												: ( effectiveValue !== ''
-													? effectiveValue
-													: ( tier === 'mobile' ? 1 : 2 ) )
+												: effectiveValue !== ''
+												? effectiveValue
+												: tier === 'mobile'
+												? 1
+												: 2
 										}
 										onChange={ setOwnValue }
 										min={ 1 }
@@ -352,7 +408,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						</ResponsiveOverride>
 					) }
 				</PanelBody>
-
 			</InspectorControls>
 
 			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
@@ -365,8 +420,13 @@ export default function Edit( { attributes, setAttributes } ) {
 						label={ __( 'Align items (cross-axis)', 'sgs-blocks' ) }
 						value={ alignItems }
 						options={ ALIGN_OPTIONS }
-						onChange={ ( obj ) => setAttributes( { alignItems: obj } ) }
-						help={ __( 'Controls vertical alignment of items within each row.', 'sgs-blocks' ) }
+						onChange={ ( obj ) =>
+							setAttributes( { alignItems: obj } )
+						}
+						help={ __(
+							'Controls vertical alignment of items within each row.',
+							'sgs-blocks'
+						) }
 					/>
 					<TierSelectControl
 						label={ __(
@@ -384,28 +444,44 @@ export default function Edit( { attributes, setAttributes } ) {
 						) }
 					/>
 				</PanelBody>
-				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Border', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SgsBorderControl
 						widthValues={ attributes.borderWidth ?? {} }
-						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						onWidthChange={ ( next ) =>
+							setAttributes( { borderWidth: next } )
+						}
 						widthPresets={ [ '10', '20', '30' ] }
 						styleValue={ attributes.borderStyle }
-						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						onStyleChange={ ( val ) =>
+							setAttributes( { borderStyle: val } )
+						}
 						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
 						colourValue={ attributes.borderColour }
-						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						onColourChange={ ( val ) =>
+							setAttributes( { borderColour: val ?? '' } )
+						}
 						colourGradientValue={ attributes.borderColourGradient }
-						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+						onColourGradientChange={ ( val ) =>
+							setAttributes( { borderColourGradient: val ?? '' } )
+						}
 						colourLinked={ true }
 						contrastAgainst={ featureGridContrastAgainst }
 						radiusValues={ {
-								base: attributes.borderRadius?.desktop ?? {},
-								tablet: attributes.borderRadius?.tablet ?? {},
-								mobile: attributes.borderRadius?.mobile ?? {},
-							} }
+							base: attributes.borderRadius?.desktop ?? {},
+							tablet: attributes.borderRadius?.tablet ?? {},
+							mobile: attributes.borderRadius?.mobile ?? {},
+						} }
 						onRadiusChange={ ( tier, next ) => {
 							const key = tier === 'base' ? 'desktop' : tier;
-							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+							setAttributes( {
+								borderRadius: {
+									...attributes.borderRadius,
+									[ key ]: next,
+								},
+							} );
 						} }
 					/>
 				</PanelBody>

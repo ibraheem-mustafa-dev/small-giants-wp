@@ -30,9 +30,15 @@
  */
 export function resolveContentWidthPreview( value ) {
 	const v = String( value ?? '' );
-	if ( v === 'normal' ) return 'var(--wp--style--global--content-size,1200px)';
-	if ( v === 'wide' ) return 'var(--wp--style--global--wide-size,1400px)';
-	if ( v === 'full' || v === '' ) return '';
+	if ( v === 'normal' ) {
+		return 'var(--wp--style--global--content-size,1200px)';
+	}
+	if ( v === 'wide' ) {
+		return 'var(--wp--style--global--wide-size,1400px)';
+	}
+	if ( v === 'full' || v === '' ) {
+		return '';
+	}
 	return v;
 }
 
@@ -51,17 +57,25 @@ export function resolveContentWidthPreview( value ) {
  *
  * @param {Object} params
  * @param {string} params.contentWidth  Resolved contentWidth CSS length (from
- *                                       `resolveContentWidthPreview()`) or '' for no cap.
+ *                                      `resolveContentWidthPreview()`) or '' for no cap.
  * @param {Object} [params.bandPadding] {top,right,bottom,left} band padding box.
  * @param {Object} params.style         The MUTABLE outer style object built so far —
- *                                       grid/flex/layout keys are migrated OUT of this
- *                                       when a band exists.
+ *                                      grid/flex/layout keys are migrated OUT of this
+ *                                      when a band exists.
  * @param {string} params.layout        'grid'|'flex'|'stack'|other.
  * @return {{hasBandProps: boolean, bandStyle: Object}}
  */
-export function contentBandPreview( { contentWidth, bandPadding = {}, style, layout } ) {
-	const pad = bandPadding && typeof bandPadding === 'object' ? bandPadding : {};
-	const hasBandPadding = [ 'top', 'right', 'bottom', 'left' ].some( ( side ) => !! pad[ side ] );
+export function contentBandPreview( {
+	contentWidth,
+	bandPadding = {},
+	style,
+	layout,
+} ) {
+	const pad =
+		bandPadding && typeof bandPadding === 'object' ? bandPadding : {};
+	const hasBandPadding = [ 'top', 'right', 'bottom', 'left' ].some(
+		( side ) => !! pad[ side ]
+	);
 	const hasBandProps = contentWidth !== '' || hasBandPadding;
 
 	const bandStyle = {};
@@ -69,16 +83,38 @@ export function contentBandPreview( { contentWidth, bandPadding = {}, style, lay
 		bandStyle.maxWidth = contentWidth;
 		bandStyle.marginInline = 'auto';
 	}
-	if ( pad.top ) bandStyle.paddingTop = pad.top;
-	if ( pad.right ) bandStyle.paddingRight = pad.right;
-	if ( pad.bottom ) bandStyle.paddingBottom = pad.bottom;
-	if ( pad.left ) bandStyle.paddingLeft = pad.left;
+	if ( pad.top ) {
+		bandStyle.paddingTop = pad.top;
+	}
+	if ( pad.right ) {
+		bandStyle.paddingRight = pad.right;
+	}
+	if ( pad.bottom ) {
+		bandStyle.paddingBottom = pad.bottom;
+	}
+	if ( pad.left ) {
+		bandStyle.paddingLeft = pad.left;
+	}
 
-	const gridOnInner = ( layout === 'grid' || layout === 'flex' || layout === 'stack' ) && hasBandProps;
+	const gridOnInner =
+		( layout === 'grid' || layout === 'flex' || layout === 'stack' ) &&
+		hasBandProps;
 	if ( gridOnInner ) {
-		for ( const key of [ 'display', 'gridTemplateColumns', 'gridAutoRows', 'gap', 'alignItems',
-			'justifyItems', 'alignContent', 'flexWrap', 'flexDirection', 'justifyContent',
-			'rowRule', 'columnRule', 'ruleVisibilityItems' ] ) {
+		for ( const key of [
+			'display',
+			'gridTemplateColumns',
+			'gridAutoRows',
+			'gap',
+			'alignItems',
+			'justifyItems',
+			'alignContent',
+			'flexWrap',
+			'flexDirection',
+			'justifyContent',
+			'rowRule',
+			'columnRule',
+			'ruleVisibilityItems',
+		] ) {
 			if ( style[ key ] !== undefined ) {
 				bandStyle[ key ] = style[ key ];
 				delete style[ key ];

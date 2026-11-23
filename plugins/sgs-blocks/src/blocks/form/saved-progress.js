@@ -46,12 +46,20 @@ export function progressKey( formRoot ) {
  * @return {HTMLElement[]} Storable controls.
  */
 function storableFields( formRoot ) {
-	return Array.from( formRoot.querySelectorAll( 'input, select, textarea' ) ).filter( ( el ) => {
+	return Array.from(
+		formRoot.querySelectorAll( 'input, select, textarea' )
+	).filter( ( el ) => {
 		const name = el.getAttribute( 'name' );
-		if ( ! name || name.startsWith( 'sgs_hp_' ) || name.startsWith( '_sgs_' ) ) {
+		if (
+			! name ||
+			name.startsWith( 'sgs_hp_' ) ||
+			name.startsWith( '_sgs_' )
+		) {
 			return false;
 		}
-		return ! [ 'file', 'hidden', 'password', 'submit', 'button' ].includes( el.type );
+		return ! [ 'file', 'hidden', 'password', 'submit', 'button' ].includes(
+			el.type
+		);
 	} );
 }
 
@@ -94,7 +102,10 @@ export function serialiseFields( formRoot ) {
 export function applyFields( formRoot, values ) {
 	storableFields( formRoot ).forEach( ( el ) => {
 		const name = el.getAttribute( 'name' );
-		if ( ! values || ! Object.prototype.hasOwnProperty.call( values, name ) ) {
+		if (
+			! values ||
+			! Object.prototype.hasOwnProperty.call( values, name )
+		) {
 			return;
 		}
 		const stored = values[ name ];
@@ -131,7 +142,12 @@ export function readProgress( formRoot ) {
 			return null;
 		}
 		const data = JSON.parse( raw );
-		if ( ! data || typeof data !== 'object' || typeof data.v !== 'object' || data.v === null ) {
+		if (
+			! data ||
+			typeof data !== 'object' ||
+			typeof data.v !== 'object' ||
+			data.v === null
+		) {
 			return null;
 		}
 		const step = parseInt( data.step, 10 );
@@ -169,7 +185,10 @@ export function writeProgress( formRoot ) {
 	try {
 		window.localStorage.setItem(
 			progressKey( formRoot ),
-			JSON.stringify( { v: serialiseFields( formRoot ), step: stepOf.get( formRoot ) || 0 } )
+			JSON.stringify( {
+				v: serialiseFields( formRoot ),
+				step: stepOf.get( formRoot ) || 0,
+			} )
 		);
 		markSaved( formRoot );
 	} catch ( _e ) {

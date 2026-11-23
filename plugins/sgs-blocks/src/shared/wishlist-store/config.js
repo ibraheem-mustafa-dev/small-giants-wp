@@ -21,7 +21,11 @@ export function config() {
 			restUrl: '/wp-json/',
 			nonce: '',
 			isLoggedIn: false,
-			features: { priceAlerts: false, stockAlerts: false, sharing: false },
+			features: {
+				priceAlerts: false,
+				stockAlerts: false,
+				sharing: false,
+			},
 			savedItemsUrl: '',
 		}
 	);

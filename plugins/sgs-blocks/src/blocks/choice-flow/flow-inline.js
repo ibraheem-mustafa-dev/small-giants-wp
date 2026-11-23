@@ -15,9 +15,15 @@
  */
 
 import { OPTION_BUTTON_SELECTOR, SELECTED_CLASS } from './flow-constants.js';
-import { getSteps, updateFooterActions, advanceModeOf, showStepByIndex } from './flow-steps.js';
+import {
+	getSteps,
+	updateFooterActions,
+	advanceModeOf,
+	showStepByIndex,
+} from './flow-steps.js';
 
-const INLINE_QUESTION_SELECTOR = '.sgs-choice-flow-question[data-inline-next="1"]';
+const INLINE_QUESTION_SELECTOR =
+	'.sgs-choice-flow-question[data-inline-next="1"]';
 export const INLINE_STEP_CLASS = 'sgs-choice-flow__step--inline';
 
 /**
@@ -48,12 +54,20 @@ export function openInlineStep( flowRoot, stepEl ) {
 	if ( ! questionEl ) {
 		return;
 	}
-	const selected = questionEl.querySelector( `${ OPTION_BUTTON_SELECTOR }.${ SELECTED_CLASS }` );
+	const selected = questionEl.querySelector(
+		`${ OPTION_BUTTON_SELECTOR }.${ SELECTED_CLASS }`
+	);
 	const steps = getSteps( flowRoot );
-	const targetIndex = selected ? parseInt( selected.getAttribute( 'data-next-step-id' ) || '', 10 ) : NaN;
-	const targetEl = Number.isInteger( targetIndex ) && targetIndex >= 0 && targetIndex < steps.length && steps[ targetIndex ] !== stepEl
-		? steps[ targetIndex ]
-		: null;
+	const targetIndex = selected
+		? parseInt( selected.getAttribute( 'data-next-step-id' ) || '', 10 )
+		: NaN;
+	const targetEl =
+		Number.isInteger( targetIndex ) &&
+		targetIndex >= 0 &&
+		targetIndex < steps.length &&
+		steps[ targetIndex ] !== stepEl
+			? steps[ targetIndex ]
+			: null;
 
 	steps.forEach( ( el ) => {
 		if ( el.classList.contains( INLINE_STEP_CLASS ) && el !== targetEl ) {
@@ -70,4 +84,3 @@ export function openInlineStep( flowRoot, stepEl ) {
 	targetEl.hidden = false;
 	updateFooterActions( flowRoot, targetEl );
 }
-

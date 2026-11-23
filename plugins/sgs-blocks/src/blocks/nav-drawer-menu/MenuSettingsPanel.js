@@ -11,15 +11,15 @@ import { PanelBody, SelectControl, ToggleControl } from '@wordpress/components';
  * "Burger Menu" panel here would write to an undeclared attribute — a dead
  * control, exactly what `check-dead-controls.js` bans.
  *
- * @param {Object}   root0               Props.
- * @param {number}   root0.menuRef       The block's `ref` attribute (menu id).
- *                                       Named `menuRef`, NOT `ref` — `ref` is a
- *                                       reserved JSX prop name.
- * @param {Array}    root0.menuOptions   From useNavMenuSource().
- * @param {boolean}  root0.isResolving   From useNavMenuSource().
+ * @param {Object}   root0                         Props.
+ * @param {number}   root0.menuRef                 The block's `ref` attribute (menu id).
+ *                                                 Named `menuRef`, NOT `ref` — `ref` is a
+ *                                                 reserved JSX prop name.
+ * @param {Array}    root0.menuOptions             From useNavMenuSource().
+ * @param {boolean}  root0.isResolving             From useNavMenuSource().
  * @param {boolean}  root0.accordionScrollIntoView Scroll an opened row near the top.
- * @param {string}   root0.parentRowAction The block's `parentRowAction` attribute.
- * @param {Function} root0.setAttributes The block's attribute setter.
+ * @param {string}   root0.parentRowAction         The block's `parentRowAction` attribute.
+ * @param {Function} root0.setAttributes           The block's attribute setter.
  */
 export default function MenuSettingsPanel( {
 	menuRef,
@@ -50,19 +50,41 @@ export default function MenuSettingsPanel( {
 				label={ __( 'Tapping a parent row', 'sgs-blocks' ) }
 				value={ 'toggle' === parentRowAction ? 'toggle' : 'navigate' }
 				options={ [
-					{ label: __( 'Goes to the parent page', 'sgs-blocks' ), value: 'navigate' },
-					{ label: __( 'Opens and closes its section', 'sgs-blocks' ), value: 'toggle' },
+					{
+						label: __( 'Goes to the parent page', 'sgs-blocks' ),
+						value: 'navigate',
+					},
+					{
+						label: __(
+							'Opens and closes its section',
+							'sgs-blocks'
+						),
+						value: 'toggle',
+					},
 				] }
-				onChange={ ( val ) => setAttributes( { parentRowAction: val } ) }
-				help={ __( 'Applies to parent rows that have a page. With Opens and closes the whole row is one button, so add the parent page as a child link if visitors need it.', 'sgs-blocks' ) }
+				onChange={ ( val ) =>
+					setAttributes( { parentRowAction: val } )
+				}
+				help={ __(
+					'Applies to parent rows that have a page. With Opens and closes the whole row is one button, so add the parent page as a child link if visitors need it.',
+					'sgs-blocks'
+				) }
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>
 			<ToggleControl
-				label={ __( 'Scroll an opened section into view', 'sgs-blocks' ) }
-				help={ __( 'When a section opens low down, the drawer scrolls so it sits near the top. Instant for visitors who prefer reduced motion.', 'sgs-blocks' ) }
+				label={ __(
+					'Scroll an opened section into view',
+					'sgs-blocks'
+				) }
+				help={ __(
+					'When a section opens low down, the drawer scrolls so it sits near the top. Instant for visitors who prefer reduced motion.',
+					'sgs-blocks'
+				) }
 				checked={ !! accordionScrollIntoView }
-				onChange={ ( value ) => setAttributes( { accordionScrollIntoView: value } ) }
+				onChange={ ( value ) =>
+					setAttributes( { accordionScrollIntoView: value } )
+				}
 				__nextHasNoMarginBottom
 			/>
 		</PanelBody>

@@ -80,7 +80,8 @@ export function bezierEase( x1, y1, x2, y2 ) {
 	};
 }
 
-const CUBIC_BEZIER = /^cubic-bezier\(\s*([^,()]+),([^,()]+),([^,()]+),([^,()]+)\)$/i;
+const CUBIC_BEZIER =
+	/^cubic-bezier\(\s*([^,()]+),([^,()]+),([^,()]+),([^,()]+)\)$/i;
 const LINEAR_FUNCTION = /^linear\(([^()]+)\)$/i;
 
 /**
@@ -121,7 +122,10 @@ function linearEase( list ) {
 	}
 	for ( let i = 1; i < points.length; i++ ) {
 		if ( null !== points[ i ].input ) {
-			points[ i ].input = Math.max( points[ i ].input, points[ i - 1 ].input );
+			points[ i ].input = Math.max(
+				points[ i ].input,
+				points[ i - 1 ].input
+			);
 			continue;
 		}
 		let next = i;
@@ -144,7 +148,9 @@ function linearEase( list ) {
 			if ( progress <= b.input ) {
 				const span = b.input - a.input;
 				return span > 0
-					? a.output + ( ( progress - a.input ) / span ) * ( b.output - a.output )
+					? a.output +
+							( ( progress - a.input ) / span ) *
+								( b.output - a.output )
 					: b.output;
 			}
 		}
@@ -177,7 +183,9 @@ export function parseEase( value ) {
 	if ( ! match ) {
 		return null;
 	}
-	const [ x1, y1, x2, y2 ] = match.slice( 1, 5 ).map( ( part ) => Number( part.trim() ) );
+	const [ x1, y1, x2, y2 ] = match
+		.slice( 1, 5 )
+		.map( ( part ) => Number( part.trim() ) );
 	if ( [ x1, y1, x2, y2 ].some( ( n ) => ! Number.isFinite( n ) ) ) {
 		return null;
 	}

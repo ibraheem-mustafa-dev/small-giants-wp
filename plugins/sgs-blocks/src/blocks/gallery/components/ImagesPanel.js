@@ -31,11 +31,18 @@ export default function ImagesPanel( {
 	return (
 		<PanelBody title={ __( 'Images', 'sgs-blocks' ) } initialOpen={ true }>
 			<p className="sgs-gallery-editor__panel-note">
-				{ __( 'Add several photos or videos from the Media Library at once. Drag an item by its picture, or use the arrows, to reorder.', 'sgs-blocks' ) }
+				{ __(
+					'Add several photos or videos from the Media Library at once. Drag an item by its picture, or use the arrows, to reorder.',
+					'sgs-blocks'
+				) }
 			</p>
 
 			{ items.length > 0 && (
-				<div className="sgs-gallery-editor__thumbs" role="list" aria-label={ __( 'Gallery items', 'sgs-blocks' ) }>
+				<div
+					className="sgs-gallery-editor__thumbs"
+					role="list"
+					aria-label={ __( 'Gallery items', 'sgs-blocks' ) }
+				>
 					{ items.map( ( item, index ) => (
 						<GalleryThumbnail
 							key={ item._key || index }
@@ -67,13 +74,18 @@ export default function ImagesPanel( {
 			{ items.length > 0 && (
 				<p className="sgs-gallery-editor__panel-note sgs-gallery-editor__count">
 					{ items.length }{ ' ' }
-					{ items.length === 1 ? __( 'item selected', 'sgs-blocks' ) : __( 'items selected', 'sgs-blocks' ) }
+					{ items.length === 1
+						? __( 'item selected', 'sgs-blocks' )
+						: __( 'items selected', 'sgs-blocks' ) }
 				</p>
 			) }
 
 			<SelectControl
 				label={ __( 'Load priority', 'sgs-blocks' ) }
-				help={ __( 'Automatic loads the pictures above the fold first and the rest as they scroll into view.', 'sgs-blocks' ) }
+				help={ __(
+					'Automatic loads the pictures above the fold first and the rest as they scroll into view.',
+					'sgs-blocks'
+				) }
 				value={ attributes.itemLoading || '' }
 				options={ LOADING_OPTIONS }
 				onChange={ ( val ) => setAttributes( { itemLoading: val } ) }
@@ -83,8 +95,14 @@ export default function ImagesPanel( {
 
 			<SgsFreeTextField
 				type="rich"
-				label={ __( 'Message when the gallery is empty', 'sgs-blocks' ) }
-				help={ __( 'Shown on the live site. Leave empty to show nothing.', 'sgs-blocks' ) }
+				label={ __(
+					'Message when the gallery is empty',
+					'sgs-blocks'
+				) }
+				help={ __(
+					'Shown on the live site. Leave empty to show nothing.',
+					'sgs-blocks'
+				) }
 				value={ attributes.emptyMessage || '' }
 				onChange={ ( val ) => setAttributes( { emptyMessage: val } ) }
 			/>

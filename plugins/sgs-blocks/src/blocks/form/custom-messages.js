@@ -44,7 +44,15 @@ export function reasons( field ) {
 		out.push( 'badinput' );
 	}
 	// PHP prints data-sgs-msg-invalid and data-sgs-msg-toolong: every failure other than a missing value is "invalid", and an over-long value is "toolong".
-	if ( v.typeMismatch || v.patternMismatch || v.tooShort || v.rangeUnderflow || v.rangeOverflow || v.stepMismatch || v.badInput ) {
+	if (
+		v.typeMismatch ||
+		v.patternMismatch ||
+		v.tooShort ||
+		v.rangeUnderflow ||
+		v.rangeOverflow ||
+		v.stepMismatch ||
+		v.badInput
+	) {
 		out.push( 'invalid' );
 	}
 	if ( v.tooLong ) {
@@ -63,11 +71,16 @@ const GROUP_SELECTOR = 'fieldset[data-sgs-group-required]';
  * @param {HTMLElement} group Fieldset carrying data-sgs-group-required.
  */
 export function syncGroupRequired( group ) {
-	const boxes = Array.from( group.querySelectorAll( 'input[type="checkbox"]' ) );
+	const boxes = Array.from(
+		group.querySelectorAll( 'input[type="checkbox"]' )
+	);
 	const anyTicked = boxes.some( ( box ) => box.checked );
 	boxes.forEach( ( box, index ) => {
 		if ( 0 === index && ! anyTicked ) {
-			box.setCustomValidity( box.getAttribute( 'data-sgs-msg-required' ) || 'Please select at least one option.' );
+			box.setCustomValidity(
+				box.getAttribute( 'data-sgs-msg-required' ) ||
+					'Please select at least one option.'
+			);
 		} else {
 			box.setCustomValidity( '' );
 		}
@@ -82,12 +95,18 @@ export function syncGroupRequired( group ) {
  * @return {HTMLElement|null} Error element.
  */
 function errorLineFor( field ) {
-	const own = field.id ? document.getElementById( field.id + '-error' ) : null;
+	const own = field.id
+		? document.getElementById( field.id + '-error' )
+		: null;
 	if ( own ) {
 		return own;
 	}
 	const group = field.closest( GROUP_SELECTOR );
-	return group ? group.closest( '.sgs-form-field' )?.querySelector( '.sgs-form-field__error' ) ?? null : null;
+	return group
+		? group
+				.closest( '.sgs-form-field' )
+				?.querySelector( '.sgs-form-field__error' ) ?? null
+		: null;
 }
 
 /**
@@ -124,7 +143,8 @@ export function validateField( field ) {
 	}
 	field.setAttribute( 'aria-invalid', 'true' );
 	if ( errorEl ) {
-		errorEl.textContent = message || field.validationMessage || 'This field is required.';
+		errorEl.textContent =
+			message || field.validationMessage || 'This field is required.';
 	}
 	return false;
 }
@@ -132,7 +152,9 @@ export function validateField( field ) {
 // A tick-several group re-checks its rule whenever a box changes, and clears the error it showed once one is ticked.
 if ( 'undefined' !== typeof document ) {
 	document.addEventListener( 'change', ( event ) => {
-		const group = event.target?.closest ? event.target.closest( GROUP_SELECTOR ) : null;
+		const group = event.target?.closest
+			? event.target.closest( GROUP_SELECTOR )
+			: null;
 		if ( ! group ) {
 			return;
 		}

@@ -27,7 +27,9 @@ import { initScrollRowControls } from '../../shared/scroll-row-controls/index.js
 		// "Scroll sideways" rows become focusable, named regions while they overflow.
 		initScrollRegions( '.sgs-container__inner[data-sgs-scroll-region]' );
 		// Their optional arrows, position dots and mouse drag (each off by default).
-		initScrollRowControls( '.sgs-container__inner[data-sgs-scroll-controls]' );
+		initScrollRowControls(
+			'.sgs-container__inner[data-sgs-scroll-controls]'
+		);
 	}
 
 	if ( document.readyState === 'loading' ) {

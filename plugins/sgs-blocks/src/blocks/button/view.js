@@ -61,7 +61,9 @@ function resolveFocusTarget() {
 function handleTopButtonClick( event ) {
 	event.preventDefault();
 
-	const prefersReducedMotion = window.matchMedia && window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
+	const prefersReducedMotion =
+		window.matchMedia &&
+		window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
 
 	window.scrollTo( {
 		top: 0,
@@ -87,7 +89,9 @@ function handleTopButtonClick( event ) {
  * at least one `[data-sgs-link-source="top"]` element is present.
  */
 function bootTopButtons() {
-	const topButtons = document.querySelectorAll( '[data-sgs-link-source="top"]' );
+	const topButtons = document.querySelectorAll(
+		'[data-sgs-link-source="top"]'
+	);
 
 	if ( 0 === topButtons.length ) {
 		return;
@@ -98,8 +102,10 @@ function bootTopButtons() {
 	} );
 }
 
-const ADD_BUTTON_SELECTOR = '[data-sgs-link-source="add-to-basket"][data-sgs-add-body]';
-const GENERIC_ADD_ERROR = 'Could not add that to your basket. Please try again.';
+const ADD_BUTTON_SELECTOR =
+	'[data-sgs-link-source="add-to-basket"][data-sgs-add-body]';
+const GENERIC_ADD_ERROR =
+	'Could not add that to your basket. Please try again.';
 
 /**
  * The message region that follows an add-to-basket button: created once, empty, so a screen reader hears the text the
@@ -132,11 +138,21 @@ function ensureMessageRegion( button ) {
  * @param {MouseEvent} event The click event.
  */
 async function handleAddClick( event ) {
-	const button = event.target instanceof window.Element ? event.target.closest( ADD_BUTTON_SELECTOR ) : null;
+	const button =
+		event.target instanceof window.Element
+			? event.target.closest( ADD_BUTTON_SELECTOR )
+			: null;
 	if ( ! button ) {
 		return;
 	}
-	if ( event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey ) {
+	if (
+		event.defaultPrevented ||
+		event.button !== 0 ||
+		event.metaKey ||
+		event.ctrlKey ||
+		event.shiftKey ||
+		event.altKey
+	) {
 		return;
 	}
 	if ( 'true' === button.dataset.sgsAddFailed ) {
@@ -151,18 +167,28 @@ async function handleAddClick( event ) {
 	region.textContent = '';
 	button.setAttribute( 'aria-busy', 'true' );
 	try {
-		await addViaProxy( button.dataset.sgsAddUrl, button.dataset.sgsAddNonce, JSON.parse( button.dataset.sgsAddBody ) );
+		await addViaProxy(
+			button.dataset.sgsAddUrl,
+			button.dataset.sgsAddNonce,
+			JSON.parse( button.dataset.sgsAddBody )
+		);
 	} catch ( error ) {
 		// A network failure reaches here as a TypeError with the browser's own wording; the shopper gets the plain sentence.
-		const message = error && 'TypeError' !== error.name && error.message ? error.message : GENERIC_ADD_ERROR;
+		const message =
+			error && 'TypeError' !== error.name && error.message
+				? error.message
+				: GENERIC_ADD_ERROR;
 		button.dataset.sgsAddFailed = 'true';
 		button.removeAttribute( 'aria-busy' );
-		region.textContent = message + ' Select the button again to see the product instead.';
+		region.textContent =
+			message + ' Select the button again to see the product instead.';
 		return;
 	}
 
 	// The same signals the buy box and the product card send, so the header count and the mini-cart update.
-	document.dispatchEvent( new window.CustomEvent( 'wc-blocks_added_to_cart' ) );
+	document.dispatchEvent(
+		new window.CustomEvent( 'wc-blocks_added_to_cart' )
+	);
 	window.dispatchEvent( new window.CustomEvent( 'sgs-cart-updated' ) );
 
 	if ( button.dataset.sgsAddReload ) {
@@ -170,7 +196,10 @@ async function handleAddClick( event ) {
 		window.location.reload();
 		return;
 	}
-	if ( 'basket' === button.dataset.sgsAddAfter && button.dataset.sgsAddBasketUrl ) {
+	if (
+		'basket' === button.dataset.sgsAddAfter &&
+		button.dataset.sgsAddBasketUrl
+	) {
 		window.location.assign( button.dataset.sgsAddBasketUrl );
 		return;
 	}

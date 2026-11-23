@@ -111,7 +111,8 @@ export function readMarquee( root ) {
 			? below
 			: 'always',
 		pauseControl: attr( 'pause-control' ) === 'true',
-		reducedMotionMode: attr( 'reduced-motion-mode' ) === 'swap' ? 'swap' : 'wrap',
+		reducedMotionMode:
+			attr( 'reduced-motion-mode' ) === 'swap' ? 'swap' : 'wrap',
 		swapInterval: swapSeconds( attr( 'swap-interval' ) ),
 	};
 }
@@ -288,15 +289,26 @@ export function createMarquee( root ) {
 
 	function restingPadding( vertical ) {
 		return restingChain().reduce( ( sum, style ) => {
-			const start = parseFloat( vertical ? style.paddingTop : style.paddingLeft ) || 0;
-			const end = parseFloat( vertical ? style.paddingBottom : style.paddingRight ) || 0;
+			const start =
+				parseFloat( vertical ? style.paddingTop : style.paddingLeft ) ||
+				0;
+			const end =
+				parseFloat(
+					vertical ? style.paddingBottom : style.paddingRight
+				) || 0;
 			return sum + start + end;
 		}, 0 );
 	}
 
 	// The running layout drops the gaps between items, so the widest gap in the chain stands in for the resting one.
 	function restingGaps( vertical ) {
-		const gap = Math.max( 0, ...restingChain().map( ( style ) => parseFloat( vertical ? style.rowGap : style.columnGap ) || 0 ) );
+		const gap = Math.max(
+			0,
+			...restingChain().map(
+				( style ) =>
+					parseFloat( vertical ? style.rowGap : style.columnGap ) || 0
+			)
+		);
 		return gap * Math.max( 0, original.children.length - 1 );
 	}
 
@@ -340,8 +352,14 @@ export function createMarquee( root ) {
 				keyframes: () => {
 					const end = `-${ state.distance }px`;
 					return 'y' === state.axis
-						? [ { translate: '0px 0px' }, { translate: `0px ${ end }` } ]
-						: [ { translate: '0px 0px' }, { translate: `${ end } 0px` } ];
+						? [
+								{ translate: '0px 0px' },
+								{ translate: `0px ${ end }` },
+						  ]
+						: [
+								{ translate: '0px 0px' },
+								{ translate: `${ end } 0px` },
+						  ];
 				},
 				// Every copy takes its visibility from the block root, so the copies pause and run together.
 				observe: root,
@@ -381,7 +399,10 @@ export function createMarquee( root ) {
 			const laneMark = lane.getAttribute( 'data-sgs-marquee-lane' );
 			root.removeAttribute( 'data-sgs-marquee' );
 			lane.removeAttribute( 'data-sgs-marquee-lane' );
-			resting = { gaps: restingGaps( vertical ), padding: restingPadding( vertical ) };
+			resting = {
+				gaps: restingGaps( vertical ),
+				padding: restingPadding( vertical ),
+			};
 			if ( null !== rootMark ) {
 				root.setAttribute( 'data-sgs-marquee', rootMark );
 			}
@@ -406,7 +427,10 @@ export function createMarquee( root ) {
 			}
 			return;
 		}
-		if ( 'overflow' === settings.below && size + resting.gaps <= view - resting.padding ) {
+		if (
+			'overflow' === settings.below &&
+			size + resting.gaps <= view - resting.padding
+		) {
 			// The un-duplicated set fits: nothing to scroll, and the block's own layout is all that is left. The hold
 			// painted that layout already (same positions), so nothing moves. The copies are never measured, so the
 			// resize observer's callback cannot loop on them.
@@ -464,7 +488,11 @@ export function createMarquee( root ) {
 				return;
 			}
 			layout();
-			if ( 'overflow' === settings.below && window.document.fonts && window.document.fonts.ready ) {
+			if (
+				'overflow' === settings.below &&
+				window.document.fonts &&
+				window.document.fonts.ready
+			) {
 				// A web font that arrives after the measuring changes the row's width without resizing the root.
 				window.document.fonts.ready.then( () => layout( false ) );
 			}

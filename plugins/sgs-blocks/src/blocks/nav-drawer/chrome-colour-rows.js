@@ -38,7 +38,10 @@ export default function chromeColourRows( { attributes, setAttributes } ) {
 			fillRow( {
 				key: 'chromeLogoBoxBg',
 				label: __( 'Logo box background', 'sgs-blocks' ),
-				attrs: { base: 'chromeLogoBoxBg', gradient: 'chromeLogoBoxBgGradient' },
+				attrs: {
+					base: 'chromeLogoBoxBg',
+					gradient: 'chromeLogoBoxBgGradient',
+				},
 				attributes,
 				setAttributes,
 			} ),
@@ -71,7 +74,10 @@ export default function chromeColourRows( { attributes, setAttributes } ) {
 			textRow( {
 				key: 'chromeSlotColour',
 				label: __( 'Extra item colour', 'sgs-blocks' ),
-				attrs: { base: 'chromeSlotColour', gradient: 'chromeSlotColourGradient' },
+				attrs: {
+					base: 'chromeSlotColour',
+					gradient: 'chromeSlotColourGradient',
+				},
 				attributes,
 				setAttributes,
 			} ),

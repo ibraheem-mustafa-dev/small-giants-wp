@@ -46,7 +46,9 @@ export function asTierObject( value ) {
 		return value;
 	}
 	const text = 'string' === typeof value ? value.trim() : value;
-	return undefined === text || null === text || '' === text ? {} : { desktop: text };
+	return undefined === text || null === text || '' === text
+		? {}
+		: { desktop: text };
 }
 
 /**
@@ -184,7 +186,11 @@ export function resolveResponsiveTier( obj = {}, tier = 'desktop' ) {
 }
 
 /** Narrower tiers fall back to the wider ones, as the front end's max-width media queries cascade. */
-const TIER_FALLBACK = { desktop: [ 'desktop' ], tablet: [ 'tablet', 'desktop' ], mobile: [ 'mobile', 'tablet', 'desktop' ] };
+const TIER_FALLBACK = {
+	desktop: [ 'desktop' ],
+	tablet: [ 'tablet', 'desktop' ],
+	mobile: [ 'mobile', 'tablet', 'desktop' ],
+};
 
 /**
  * The value a `{desktop,tablet,mobile}` attribute paints at a tier: the tier's

@@ -70,16 +70,22 @@ function resolveNeutral( defaultValue, min ) {
  * @return {{x: number, y: number}} Concrete, numeric axis pair.
  */
 function normaliseValue( value, fallback ) {
-	const x = typeof value?.x === 'number' && ! Number.isNaN( value.x ) ? value.x : fallback;
-	const y = typeof value?.y === 'number' && ! Number.isNaN( value.y ) ? value.y : fallback;
+	const x =
+		typeof value?.x === 'number' && ! Number.isNaN( value.x )
+			? value.x
+			: fallback;
+	const y =
+		typeof value?.y === 'number' && ! Number.isNaN( value.y )
+			? value.y
+			: fallback;
 	return { x, y };
 }
 
 /**
  * @param {Object}   props
- * @param {string}   props.label    Label shown for the LINKED single control.
- * @param {Object}   [props.value]  { x, y } — may be undefined/partial, see normaliseValue.
- * @param {Function} props.onChange Receives the next { x, y } object.
+ * @param {string}   props.label          Label shown for the LINKED single control.
+ * @param {Object}   [props.value]        { x, y } — may be undefined/partial, see normaliseValue.
+ * @param {Function} props.onChange       Receives the next { x, y } object.
  * @param {number}   [props.min]          RangeControl minimum.
  * @param {number}   [props.max]          RangeControl maximum.
  * @param {number}   [props.step]         RangeControl step.
@@ -106,7 +112,9 @@ export default function ScaleAxisControl( {
 	// Computed ONCE on mount from the incoming value (core BoxControl's own
 	// isValuesMixed-on-mount pattern) — never persisted, never re-derived on
 	// every render, so toggling the control mid-edit doesn't fight the user.
-	const [ isLinked, setIsLinked ] = useState( () => normalised.x === normalised.y );
+	const [ isLinked, setIsLinked ] = useState(
+		() => normalised.x === normalised.y
+	);
 
 	const suffixedLabel = ( base ) => ( unit ? `${ base } (${ unit })` : base );
 
@@ -136,7 +144,11 @@ export default function ScaleAxisControl( {
 						label={ suffixedLabel( label ) }
 						value={ normalised.x }
 						onChange={ ( next ) => {
-							const v = typeof next === 'number' && ! Number.isNaN( next ) ? next : resetFallback;
+							const v =
+								typeof next === 'number' &&
+								! Number.isNaN( next )
+									? next
+									: resetFallback;
 							onChange( { x: v, y: v } );
 						} }
 						min={ min }
@@ -152,10 +164,16 @@ export default function ScaleAxisControl( {
 					<Flex direction="column" gap={ 2 }>
 						<FlexItem>
 							<RangeControl
-								label={ suffixedLabel( __( 'Horizontal (X)', 'sgs-blocks' ) ) }
+								label={ suffixedLabel(
+									__( 'Horizontal (X)', 'sgs-blocks' )
+								) }
 								value={ normalised.x }
 								onChange={ ( next ) => {
-									const v = typeof next === 'number' && ! Number.isNaN( next ) ? next : resetFallback;
+									const v =
+										typeof next === 'number' &&
+										! Number.isNaN( next )
+											? next
+											: resetFallback;
 									onChange( { x: v, y: normalised.y } );
 								} }
 								min={ min }
@@ -170,10 +188,16 @@ export default function ScaleAxisControl( {
 						</FlexItem>
 						<FlexItem>
 							<RangeControl
-								label={ suffixedLabel( __( 'Vertical (Y)', 'sgs-blocks' ) ) }
+								label={ suffixedLabel(
+									__( 'Vertical (Y)', 'sgs-blocks' )
+								) }
 								value={ normalised.y }
 								onChange={ ( next ) => {
-									const v = typeof next === 'number' && ! Number.isNaN( next ) ? next : resetFallback;
+									const v =
+										typeof next === 'number' &&
+										! Number.isNaN( next )
+											? next
+											: resetFallback;
 									onChange( { x: normalised.x, y: v } );
 								} }
 								min={ min }

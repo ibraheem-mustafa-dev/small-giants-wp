@@ -6,6 +6,6 @@ import './style.css';
 import './editor.css';
 
 registerBlockType( metadata.name, {
-	edit:       Edit,
-	save:       Save,
+	edit: Edit,
+	save: Save,
 } );

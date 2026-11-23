@@ -37,7 +37,11 @@ export function drawingBox( width, height ) {
 export function sourceSize( source ) {
 	for ( const device of [ 'desktop', 'tablet', 'mobile' ] ) {
 		const entry = source?.[ device ];
-		if ( entry && Number( entry.width ) > 0 && Number( entry.height ) > 0 ) {
+		if (
+			entry &&
+			Number( entry.width ) > 0 &&
+			Number( entry.height ) > 0
+		) {
 			return [ entry.width, entry.height ];
 		}
 	}
@@ -53,7 +57,12 @@ export function sourceSize( source ) {
  */
 export function clampPct( value, fallback ) {
 	const num = Number( value );
-	if ( value === null || value === undefined || value === '' || ! Number.isFinite( num ) ) {
+	if (
+		value === null ||
+		value === undefined ||
+		value === '' ||
+		! Number.isFinite( num )
+	) {
 		return fallback;
 	}
 	return Math.min( 100, Math.max( 0, num ) );
@@ -70,7 +79,10 @@ export function clampPct( value, fallback ) {
 export function dotRadius( tickLength, width ) {
 	const num = Number( tickLength );
 	const tick =
-		tickLength === null || tickLength === undefined || tickLength === '' || ! Number.isFinite( num )
+		tickLength === null ||
+		tickLength === undefined ||
+		tickLength === '' ||
+		! Number.isFinite( num )
 			? 1.76
 			: Math.min( 20, Math.max( 0, num ) );
 	return fmt( ( tick * width ) / 100 / 2 );

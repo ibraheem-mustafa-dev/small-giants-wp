@@ -19,7 +19,12 @@
  * @package SGS\Blocks
  */
 import { mediaStoredAttrName } from '../../MediaElementControls.js';
-import { isLegacyCall, rulesFor, kindIn, omitted } from '../panels/disclosure-context.js';
+import {
+	isLegacyCall,
+	rulesFor,
+	kindIn,
+	omitted,
+} from '../panels/disclosure-context.js';
 
 import { emitPlain, nodes, num, rulesCss } from '../emit/core.js';
 import { isNumeric, mediaBlend } from '../emit/values.js';
@@ -101,9 +106,20 @@ export function emit( slot, attrs, uid, helper ) {
 		'Opacity',
 		media,
 		'opacity',
-		( raw ) => ( isNumeric( raw ) ? num( Math.max( 0, Math.min( 100, Number( raw ) ) ) / 100 ) : '' ),
+		( raw ) =>
+			isNumeric( raw )
+				? num( Math.max( 0, Math.min( 100, Number( raw ) ) ) / 100 )
+				: '',
 		'1'
 	);
-	emitPlain( rules, attrs, slot, 'Blend', media, 'mix-blend-mode', mediaBlend );
+	emitPlain(
+		rules,
+		attrs,
+		slot,
+		'Blend',
+		media,
+		'mix-blend-mode',
+		mediaBlend
+	);
 	return rulesCss( rules );
 }

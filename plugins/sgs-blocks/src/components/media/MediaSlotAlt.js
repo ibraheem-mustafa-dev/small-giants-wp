@@ -22,20 +22,39 @@ function altLabel( kind ) {
 	return __( 'Alt text', 'sgs-blocks' );
 }
 
-export default function MediaSlotAlt( { access, device, kind, ownSource, staleAlt, altRef, onAltEdited, writeOwnAlt } ) {
+export default function MediaSlotAlt( {
+	access,
+	device,
+	kind,
+	ownSource,
+	staleAlt,
+	altRef,
+	onAltEdited,
+	writeOwnAlt,
+} ) {
 	const decorative = !! access.read( 'Decorative' );
-	const perDevice = 'desktop' !== device && !! ownSource && hasFile( ownSource );
+	const perDevice =
+		'desktop' !== device && !! ownSource && hasFile( ownSource );
 	const widerDevice = 'mobile' === device ? 'tablet' : 'desktop';
-	const widerFrom = resolveTierSource( access.read( 'Source' ), widerDevice, hasFile ).from || 'desktop';
+	const widerFrom =
+		resolveTierSource( access.read( 'Source' ), widerDevice, hasFile )
+			.from || 'desktop';
 	const value = perDevice ? ownSource.alt || '' : access.read( 'Alt' ) || '';
 	const supportsDecorative = 'embed' !== kind;
 	// A link on a Decorative image is refused (§7.1): the box keeps its alt, and a stored pair is flagged.
 	const linked = '' !== String( access.read( 'LinkUrl' ) || '' ).trim();
 
 	// A photo or an embed that is drawn but has no description or title at this device (§9.5, §9.3).
-	const drawn = hasFile( resolveTierSource( access.read( 'Source' ), device, hasFile ).value );
-	const effectiveAlt = ( perDevice ? ownSource.alt : '' ) || access.read( 'Alt' ) || '';
-	const missingAlt = drawn && ! decorative && ! effectiveAlt && ( 'image' === kind || 'embed' === kind );
+	const drawn = hasFile(
+		resolveTierSource( access.read( 'Source' ), device, hasFile ).value
+	);
+	const effectiveAlt =
+		( perDevice ? ownSource.alt : '' ) || access.read( 'Alt' ) || '';
+	const missingAlt =
+		drawn &&
+		! decorative &&
+		! effectiveAlt &&
+		( 'image' === kind || 'embed' === kind );
 
 	const onChange = ( event ) => {
 		onAltEdited();
@@ -55,32 +74,65 @@ export default function MediaSlotAlt( { access, device, kind, ownSource, staleAl
 						ref={ altRef }
 						rows="3"
 						value={ value }
-						placeholder={ perDevice ? access.read( 'Alt' ) || '' : '' }
-						aria-label={ sprintf( /* translators: 1: the box's label, 2: device name. */ __( '%1$s on %2$s', 'sgs-blocks' ), altLabel( kind ), deviceName( device ) ) }
+						placeholder={
+							perDevice ? access.read( 'Alt' ) || '' : ''
+						}
+						aria-label={ sprintf(
+							/* translators: 1: the box's label, 2: device name. */ __(
+								'%1$s on %2$s',
+								'sgs-blocks'
+							),
+							altLabel( kind ),
+							deviceName( device )
+						) }
 						onChange={ onChange }
 					/>
 					<span className="sgs-media-slot__help">
 						{ 'image' === kind
-							? __( 'Describe the photo for someone who cannot see it.', 'sgs-blocks' )
-							: __( 'Describe this for someone who cannot see it.', 'sgs-blocks' ) }
+							? __(
+									'Describe the photo for someone who cannot see it.',
+									'sgs-blocks'
+							  )
+							: __(
+									'Describe this for someone who cannot see it.',
+									'sgs-blocks'
+							  ) }
 					</span>
 				</label>
 			) }
 			{ perDevice && ! decorative && ! value && (
 				<p className="sgs-media-slot__note" role="status">
-					{ sprintf( /* translators: %s: the wider device. */ __( "This file differs from %s's. Describe it.", 'sgs-blocks' ), deviceName( widerFrom ) ) }
+					{ sprintf(
+						/* translators: %s: the wider device. */ __(
+							"This file differs from %s's. Describe it.",
+							'sgs-blocks'
+						),
+						deviceName( widerFrom )
+					) }
 				</p>
 			) }
 			{ missingAlt && (
-				<p className="sgs-media-slot__warning sgs-media-slot__missing-alt" role="status">
+				<p
+					className="sgs-media-slot__warning sgs-media-slot__missing-alt"
+					role="status"
+				>
 					{ 'embed' === kind
-						? __( 'This embed has no title. Add one so screen readers can name it.', 'sgs-blocks' )
-						: __( 'This photo has no description. Add alt text or tick Decorative.', 'sgs-blocks' ) }
+						? __(
+								'This embed has no title. Add one so screen readers can name it.',
+								'sgs-blocks'
+						  )
+						: __(
+								'This photo has no description. Add alt text or tick Decorative.',
+								'sgs-blocks'
+						  ) }
 				</p>
 			) }
 			{ staleAlt && (
 				<p className="sgs-media-slot__warning" role="alert">
-					{ __( 'Alt text still describes the previous photo. Update it.', 'sgs-blocks' ) }
+					{ __(
+						'Alt text still describes the previous photo. Update it.',
+						'sgs-blocks'
+					) }
 				</p>
 			) }
 			{ supportsDecorative && (
@@ -89,18 +141,29 @@ export default function MediaSlotAlt( { access, device, kind, ownSource, staleAl
 						type="checkbox"
 						checked={ decorative }
 						disabled={ linked && ! decorative }
-						onChange={ ( e ) => access.write( { Decorative: e.target.checked } ) }
+						onChange={ ( e ) =>
+							access.write( { Decorative: e.target.checked } )
+						}
 					/>
 					{ __( 'Decorative', 'sgs-blocks' ) }
 				</label>
 			) }
 			{ supportsDecorative && linked && (
-				<p className={ decorative ? 'sgs-media-slot__warning' : 'sgs-media-slot__note' } role={ decorative ? 'alert' : undefined }>
+				<p
+					className={
+						decorative
+							? 'sgs-media-slot__warning'
+							: 'sgs-media-slot__note'
+					}
+					role={ decorative ? 'alert' : undefined }
+				>
 					{ __( 'A linked image needs alt text', 'sgs-blocks' ) }
 				</p>
 			) }
 			{ 'desktop' !== device && ( decorative || ! perDevice ) && (
-				<p className="sgs-media-slot__note">{ __( 'Applies to all devices', 'sgs-blocks' ) }</p>
+				<p className="sgs-media-slot__note">
+					{ __( 'Applies to all devices', 'sgs-blocks' ) }
+				</p>
 			) }
 		</div>
 	);

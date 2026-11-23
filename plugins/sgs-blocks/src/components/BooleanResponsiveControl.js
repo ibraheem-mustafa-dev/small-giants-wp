@@ -43,9 +43,7 @@
  * `setAttributes({ [key]: val })` write still registers as a controlled
  * attribute for the dead-control guard.
  */
-import {
-	ToggleControl,
-} from '@wordpress/components';
+import { ToggleControl } from '@wordpress/components';
 import { __, sprintf } from '@wordpress/i18n';
 import ResponsiveControl from './ResponsiveControl';
 import { ToggleGroupControl, ToggleGroupControlOption } from './primitives';

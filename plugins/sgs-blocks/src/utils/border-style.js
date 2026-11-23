@@ -39,7 +39,7 @@ export function resolveBorderStyle( style ) {
  * tablet or mobile box that is absent takes the next device up, as the published page's
  * max-width queries do (`sgs_border_element_decls()`).
  *
- * @param {Object|undefined} width Stored width: a flat box or a tier object.
+ * @param {Object|undefined} width            Stored width: a flat box or a tier object.
  * @param {string}           [tier='desktop'] 'desktop' | 'tablet' | 'mobile'.
  * @return {Object|undefined} The box that paints on that device.
  */
@@ -47,12 +47,23 @@ export function borderWidthBoxForTier( width, tier = 'desktop' ) {
 	if ( ! width || 'object' !== typeof width ) {
 		return width;
 	}
-	const tiered = [ 'desktop', 'tablet', 'mobile' ].some( ( key ) => key in width );
+	const tiered = [ 'desktop', 'tablet', 'mobile' ].some(
+		( key ) => key in width
+	);
 	if ( ! tiered ) {
 		return width;
 	}
-	const chain = { desktop: [ 'desktop' ], tablet: [ 'tablet', 'desktop' ], mobile: [ 'mobile', 'tablet', 'desktop' ] }[ tier ] || [ 'desktop' ];
-	const key = chain.find( ( candidate ) => width[ candidate ] && 'object' === typeof width[ candidate ] && boxShorthand( width[ candidate ] ) );
+	const chain = {
+		desktop: [ 'desktop' ],
+		tablet: [ 'tablet', 'desktop' ],
+		mobile: [ 'mobile', 'tablet', 'desktop' ],
+	}[ tier ] || [ 'desktop' ];
+	const key = chain.find(
+		( candidate ) =>
+			width[ candidate ] &&
+			'object' === typeof width[ candidate ] &&
+			boxShorthand( width[ candidate ] )
+	);
 	return key ? width[ key ] : undefined;
 }
 
@@ -61,8 +72,8 @@ export function borderWidthBoxForTier( width, tier = 'desktop' ) {
  * `sgs_border_box_decls()`. Empty when no side has a width or the client
  * chose `none`; unset sides render as `0`.
  *
- * @param {Object|undefined} widthBox A flat `{ top, right, bottom, left }` box or a per-device tier object.
- * @param {string|undefined} style    Stored style attribute.
+ * @param {Object|undefined} widthBox         A flat `{ top, right, bottom, left }` box or a per-device tier object.
+ * @param {string|undefined} style            Stored style attribute.
  * @param {string}           [tier='desktop'] Previewed device.
  * @return {{borderStyle?: string, borderWidth?: string}} React style fragment.
  */

@@ -10,7 +10,10 @@ import { DEVICES, add, nodes, resolved, rulesCss } from '../emit/core.js';
 import { TONE_FILTERS, mediaFilter } from '../emit/values.js';
 
 function filterAt( attrs, slot, device ) {
-	return mediaFilter( resolved( attrs, slot, 'Colour', device ), resolved( attrs, slot, 'Greyscale', device ) );
+	return mediaFilter(
+		resolved( attrs, slot, 'Colour', device ),
+		resolved( attrs, slot, 'Greyscale', device )
+	);
 }
 
 /**
@@ -41,7 +44,11 @@ export function emit( slot, attrs, uid, helper ) {
  * @return {string} `natural`, `greyscale`, `white` or a tone preset; `natural` for anything else.
  */
 export function validate( value ) {
-	return 'greyscale' === value || 'white' === value || Object.prototype.hasOwnProperty.call( TONE_FILTERS, value ) ? value : 'natural';
+	return 'greyscale' === value ||
+		'white' === value ||
+		Object.prototype.hasOwnProperty.call( TONE_FILTERS, value )
+		? value
+		: 'natural';
 }
 
 /**
@@ -59,6 +66,10 @@ export function disclosure( attrs = {}, device = 'desktop', prefix = '' ) {
 		Greyscale:
 			'greyscale' === colour
 				? { state: 'shown', hiddenReason: null }
-				: { state: 'omitted', hiddenReason: 'Strength applies to Black and white only.' },
+				: {
+						state: 'omitted',
+						hiddenReason:
+							'Strength applies to Black and white only.',
+				  },
 	};
 }

@@ -1,8 +1,20 @@
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls, RichText } from '@wordpress/block-editor';
-import { PanelBody, TextControl, SelectControl, ToggleControl } from '@wordpress/components';
+import {
+	useBlockProps,
+	InspectorControls,
+	RichText,
+} from '@wordpress/block-editor';
+import {
+	PanelBody,
+	TextControl,
+	SelectControl,
+	ToggleControl,
+} from '@wordpress/components';
 import { NumberControl } from '../../components/primitives';
-import { RICH_TEXT_BODY, RICH_TEXT_FREE_TEXT } from '../../utils/rich-text-formats';
+import {
+	RICH_TEXT_BODY,
+	RICH_TEXT_FREE_TEXT,
+} from '../../utils/rich-text-formats';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
 import AuthoredText from '../../components/AuthoredText';
@@ -47,9 +59,21 @@ export default function Edit( { attributes, setAttributes } ) {
 						label={ __( 'Action', 'sgs-blocks' ) }
 						value={ action || 'recommend' }
 						options={ [
-							{ label: __( 'Recommendation (heading + body)', 'sgs-blocks' ), value: 'recommend' },
-							{ label: __( 'Add to bag', 'sgs-blocks' ), value: 'add-to-bag' },
-							{ label: __( 'Email capture', 'sgs-blocks' ), value: 'email' },
+							{
+								label: __(
+									'Recommendation (heading + body)',
+									'sgs-blocks'
+								),
+								value: 'recommend',
+							},
+							{
+								label: __( 'Add to bag', 'sgs-blocks' ),
+								value: 'add-to-bag',
+							},
+							{
+								label: __( 'Email capture', 'sgs-blocks' ),
+								value: 'email',
+							},
 						] }
 						onChange={ ( val ) => setAttributes( { action: val } ) }
 						help={ __(
@@ -62,39 +86,69 @@ export default function Edit( { attributes, setAttributes } ) {
 					{ 'add-to-bag' === action && (
 						<>
 							<ToggleControl
-								label={ __( 'Show “Add to basket”', 'sgs-blocks' ) }
+								label={ __(
+									'Show “Add to basket”',
+									'sgs-blocks'
+								) }
 								checked={ showAddToBasket !== false }
-								onChange={ ( val ) => setAttributes( { showAddToBasket: val } ) }
+								onChange={ ( val ) =>
+									setAttributes( { showAddToBasket: val } )
+								}
 								__nextHasNoMarginBottom
 							/>
 							{ showAddToBasket !== false && (
 								<TextControl
-									label={ __( 'Add to basket label', 'sgs-blocks' ) }
+									label={ __(
+										'Add to basket label',
+										'sgs-blocks'
+									) }
 									value={ addToBasketLabel }
-									onChange={ ( val ) => setAttributes( { addToBasketLabel: val } ) }
+									onChange={ ( val ) =>
+										setAttributes( {
+											addToBasketLabel: val,
+										} )
+									}
 									__nextHasNoMarginBottom
 									__next40pxDefaultSize
 								/>
 							) }
 							<ToggleControl
-								label={ __( 'Show the total on the button', 'sgs-blocks' ) }
+								label={ __(
+									'Show the total on the button',
+									'sgs-blocks'
+								) }
 								checked={ !! buttonShowsTotal }
-								onChange={ ( val ) => setAttributes( { buttonShowsTotal: val } ) }
-								help={ __( 'The running total follows the button’s label, e.g. “Add to bag £418.00”.', 'sgs-blocks' ) }
+								onChange={ ( val ) =>
+									setAttributes( { buttonShowsTotal: val } )
+								}
+								help={ __(
+									'The running total follows the button’s label, e.g. “Add to bag £418.00”.',
+									'sgs-blocks'
+								) }
 								__nextHasNoMarginBottom
 							/>
 							<ToggleControl
 								label={ __( 'Show “Buy now”', 'sgs-blocks' ) }
 								checked={ showBuyNow !== false }
-								onChange={ ( val ) => setAttributes( { showBuyNow: val } ) }
-								help={ __( 'Buy now adds the item then goes straight to checkout.', 'sgs-blocks' ) }
+								onChange={ ( val ) =>
+									setAttributes( { showBuyNow: val } )
+								}
+								help={ __(
+									'Buy now adds the item then goes straight to checkout.',
+									'sgs-blocks'
+								) }
 								__nextHasNoMarginBottom
 							/>
 							{ showBuyNow !== false && (
 								<TextControl
-									label={ __( 'Buy now label', 'sgs-blocks' ) }
+									label={ __(
+										'Buy now label',
+										'sgs-blocks'
+									) }
 									value={ buyNowLabel }
-									onChange={ ( val ) => setAttributes( { buyNowLabel: val } ) }
+									onChange={ ( val ) =>
+										setAttributes( { buyNowLabel: val } )
+									}
 									__nextHasNoMarginBottom
 									__next40pxDefaultSize
 								/>
@@ -103,33 +157,57 @@ export default function Edit( { attributes, setAttributes } ) {
 					) }
 					{ 'email' === action && (
 						<>
-						<NumberControl
-							label={ __( 'Rate limit', 'sgs-blocks' ) }
-							value={ rateLimit }
-							min={ 1 }
-							max={ 50 }
-							onChange={ ( value ) =>
-								setAttributes( { rateLimit: parseInt( value, 10 ) || 5 } )
-							}
-							help={ __( 'Maximum submissions accepted per IP address, per hour.', 'sgs-blocks' ) }
-							__next40pxDefaultSize
-						/>
-						<SgsFreeTextField type="rich"
-							label={ __( 'Email field label', 'sgs-blocks' ) }
-							value={ emailLabel }
-							onChange={ ( val ) => setAttributes( { emailLabel: val } ) }
-						/>
-						<SgsFreeTextField type="rich" noLink
-							label={ __( 'Submit button label', 'sgs-blocks' ) }
-							value={ submitLabel }
-							onChange={ ( val ) => setAttributes( { submitLabel: val } ) }
-						/>
-						<SgsFreeTextField type="rich"
-							label={ __( 'Success message', 'sgs-blocks' ) }
-							value={ successMessage }
-							onChange={ ( val ) => setAttributes( { successMessage: val } ) }
-							help={ __( 'Shown in place of the form once the submission succeeds.', 'sgs-blocks' ) }
-						/>
+							<NumberControl
+								label={ __( 'Rate limit', 'sgs-blocks' ) }
+								value={ rateLimit }
+								min={ 1 }
+								max={ 50 }
+								onChange={ ( value ) =>
+									setAttributes( {
+										rateLimit: parseInt( value, 10 ) || 5,
+									} )
+								}
+								help={ __(
+									'Maximum submissions accepted per IP address, per hour.',
+									'sgs-blocks'
+								) }
+								__next40pxDefaultSize
+							/>
+							<SgsFreeTextField
+								type="rich"
+								label={ __(
+									'Email field label',
+									'sgs-blocks'
+								) }
+								value={ emailLabel }
+								onChange={ ( val ) =>
+									setAttributes( { emailLabel: val } )
+								}
+							/>
+							<SgsFreeTextField
+								type="rich"
+								noLink
+								label={ __(
+									'Submit button label',
+									'sgs-blocks'
+								) }
+								value={ submitLabel }
+								onChange={ ( val ) =>
+									setAttributes( { submitLabel: val } )
+								}
+							/>
+							<SgsFreeTextField
+								type="rich"
+								label={ __( 'Success message', 'sgs-blocks' ) }
+								value={ successMessage }
+								onChange={ ( val ) =>
+									setAttributes( { successMessage: val } )
+								}
+								help={ __(
+									'Shown in place of the form once the submission succeeds.',
+									'sgs-blocks'
+								) }
+							/>
 						</>
 					) }
 				</PanelBody>
@@ -154,7 +232,10 @@ export default function Edit( { attributes, setAttributes } ) {
 					className="sgs-choice-flow-result__heading"
 					value={ heading }
 					onChange={ ( val ) => setAttributes( { heading: val } ) }
-					placeholder={ __( 'Your recommended result…', 'sgs-blocks' ) }
+					placeholder={ __(
+						'Your recommended result…',
+						'sgs-blocks'
+					) }
 					allowedFormats={ RICH_TEXT_FREE_TEXT }
 				/>
 				<RichText
@@ -180,12 +261,25 @@ export default function Edit( { attributes, setAttributes } ) {
 					<p className="sgs-choice-flow-result__addon-summary-preview">
 						{ __( 'Shown in the flow’s footer:', 'sgs-blocks' ) }{ ' ' }
 						{ [
-							showAddToBasket !== false ? ( addToBasketLabel || __( 'Add to basket', 'sgs-blocks' ) ) : null,
-							showBuyNow !== false ? ( buyNowLabel || __( 'Buy now', 'sgs-blocks' ) ) : null,
+							showAddToBasket !== false
+								? addToBasketLabel ||
+								  __( 'Add to basket', 'sgs-blocks' )
+								: null,
+							showBuyNow !== false
+								? buyNowLabel || __( 'Buy now', 'sgs-blocks' )
+								: null,
 						]
 							.filter( Boolean )
-							.join( ' · ' ) || __( 'no button — both are switched off', 'sgs-blocks' ) }
-						{ buttonShowsTotal && ` ${ __( '(with the running total)', 'sgs-blocks' ) }` }
+							.join( ' · ' ) ||
+							__(
+								'no button — both are switched off',
+								'sgs-blocks'
+							) }
+						{ buttonShowsTotal &&
+							` ${ __(
+								'(with the running total)',
+								'sgs-blocks'
+							) }` }
 					</p>
 				) }
 				{ /* Canvas preview only — the real submit handler is built client-side
@@ -193,8 +287,16 @@ export default function Edit( { attributes, setAttributes } ) {
 				   attribute reflects visibly in the editor canvas. */ }
 				{ 'email' === action && (
 					<div className="sgs-choice-flow-result__email-form">
-						<label className="sgs-choice-flow-result__email-label" htmlFor="sgs-choice-flow-result-email-preview">
-							<AuthoredText value={ emailLabel || __( 'Email address', 'sgs-blocks' ) } />
+						<label
+							className="sgs-choice-flow-result__email-label"
+							htmlFor="sgs-choice-flow-result-email-preview"
+						>
+							<AuthoredText
+								value={
+									emailLabel ||
+									__( 'Email address', 'sgs-blocks' )
+								}
+							/>
 						</label>
 						<input
 							type="email"
@@ -203,8 +305,16 @@ export default function Edit( { attributes, setAttributes } ) {
 							disabled
 							placeholder="you@example.com"
 						/>
-						<button type="button" disabled className="sgs-choice-flow-result__email-submit">
-							<AuthoredText value={ submitLabel || __( 'Submit', 'sgs-blocks' ) } />
+						<button
+							type="button"
+							disabled
+							className="sgs-choice-flow-result__email-submit"
+						>
+							<AuthoredText
+								value={
+									submitLabel || __( 'Submit', 'sgs-blocks' )
+								}
+							/>
 						</button>
 					</div>
 				) }

@@ -53,7 +53,9 @@ let stopGated = () => {};
 export function rippleDiameter( width, height, factor ) {
 	const side = Math.max( width, height );
 	const value = side * factor;
-	return Number.isFinite( value ) && value > 0 ? Math.round( value * 10 ) / 10 : 0;
+	return Number.isFinite( value ) && value > 0
+		? Math.round( value * 10 ) / 10
+		: 0;
 }
 
 /**
@@ -67,7 +69,9 @@ export function rippleDiameter( width, height, factor ) {
  */
 export function boundedNumber( raw, fallback, min, max ) {
 	const value = parseFloat( raw );
-	return Number.isFinite( value ) ? Math.min( max, Math.max( min, value ) ) : fallback;
+	return Number.isFinite( value )
+		? Math.min( max, Math.max( min, value ) )
+		: fallback;
 }
 
 /**
@@ -79,7 +83,9 @@ export function boundedNumber( raw, fallback, min, max ) {
  */
 export function safeValue( raw, fallback ) {
 	const text = ( raw || '' ).trim();
-	return text !== '' && text.length <= 200 && ! /[;{}<>"'\\]/.test( text ) ? text : fallback;
+	return text !== '' && text.length <= 200 && ! /[;{}<>"'\\]/.test( text )
+		? text
+		: fallback;
 }
 
 /**
@@ -89,7 +95,9 @@ export function safeValue( raw, fallback ) {
  * @return {string} `pointerdown` or `click`.
  */
 export function triggerOf( el ) {
-	return el.getAttribute( 'data-sgs-fx-trigger' ) === 'click' ? 'click' : 'pointerdown';
+	return el.getAttribute( 'data-sgs-fx-trigger' ) === 'click'
+		? 'click'
+		: 'pointerdown';
 }
 
 /**
@@ -112,14 +120,39 @@ function stop( el ) {
  * @return {void}
  */
 function play( el, x, y, rect ) {
-	const factor = boundedNumber( el.getAttribute( 'data-sgs-fx-ripple-size-factor' ), DEFAULT_FACTOR, 0.5, 5 );
-	const duration = boundedNumber( el.getAttribute( 'data-sgs-fx-ripple-duration' ), DEFAULT_DURATION, 0, 10000 );
+	const factor = boundedNumber(
+		el.getAttribute( 'data-sgs-fx-ripple-size-factor' ),
+		DEFAULT_FACTOR,
+		0.5,
+		5
+	);
+	const duration = boundedNumber(
+		el.getAttribute( 'data-sgs-fx-ripple-duration' ),
+		DEFAULT_DURATION,
+		0,
+		10000
+	);
 	el.style.setProperty( '--sgs-ripple-x', x.toFixed( 1 ) + 'px' );
 	el.style.setProperty( '--sgs-ripple-y', y.toFixed( 1 ) + 'px' );
-	el.style.setProperty( '--sgs-ripple-d', rippleDiameter( rect.width, rect.height, factor ) + 'px' );
-	el.style.setProperty( '--sgs-ripple-colour', safeValue( el.getAttribute( 'data-sgs-fx-ripple-colour' ), DEFAULT_COLOUR ) );
+	el.style.setProperty(
+		'--sgs-ripple-d',
+		rippleDiameter( rect.width, rect.height, factor ) + 'px'
+	);
+	el.style.setProperty(
+		'--sgs-ripple-colour',
+		safeValue(
+			el.getAttribute( 'data-sgs-fx-ripple-colour' ),
+			DEFAULT_COLOUR
+		)
+	);
 	el.style.setProperty( '--sgs-ripple-duration', duration + 'ms' );
-	el.style.setProperty( '--sgs-ripple-ease', safeValue( el.getAttribute( 'data-sgs-fx-ripple-easing' ), DEFAULT_EASING ) );
+	el.style.setProperty(
+		'--sgs-ripple-ease',
+		safeValue(
+			el.getAttribute( 'data-sgs-fx-ripple-easing' ),
+			DEFAULT_EASING
+		)
+	);
 	// A layer that stores a peak opacity prints it as a scoped rule (and as the attribute); one that stores none (every
 	// preset) would read the registered initial 0 and paint nothing, so it takes the reference default here.
 	if ( null === el.getAttribute( 'data-sgs-fx-ripple-peak-opacity' ) ) {

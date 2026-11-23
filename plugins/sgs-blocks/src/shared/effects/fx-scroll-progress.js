@@ -78,9 +78,9 @@ function clamp( value ) {
 /**
  * Counter text for a progress value.
  *
- * @param {number}      progress 0 to 1.
- * @param {string}      format   Counter format.
- * @param {number|null} total    Panel count, or null when the source has none.
+ * @param {number}      progress    0 to 1.
+ * @param {string}      format      Counter format.
+ * @param {number|null} total       Panel count, or null when the source has none.
  * @param {number|null} activeIndex 1-based index of the active panel, or null to derive the index from the progress.
  * @return {string} The text to display.
  */

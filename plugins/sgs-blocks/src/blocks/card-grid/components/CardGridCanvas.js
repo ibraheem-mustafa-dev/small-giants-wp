@@ -6,11 +6,7 @@ import { __ } from '@wordpress/i18n';
 import { useMergeRefs } from '@wordpress/compose';
 import { useSettings } from '@wordpress/block-editor';
 import { IconPreview } from '../../../components';
-import {
-	colourVar,
-	BandWrap,
-	usePreviewTier,
-} from '../../../utils';
+import { colourVar, BandWrap, usePreviewTier } from '../../../utils';
 import ItemSlotPicture from '../../../components/media/ItemSlotPicture.js';
 import { glyphSizePx } from '../../../utils/font-size-preset';
 import { itemFile } from '../item-model';
@@ -284,7 +280,10 @@ export default function CardGridCanvas( {
 												attributes,
 												item,
 												itemIndex,
-												`sgs-cg-${ clientId.slice( 0, 8 ) }`,
+												`sgs-cg-${ clientId.slice(
+													0,
+													8
+												) }`,
 												device
 											) }
 											{ overlayStyle && (
@@ -305,7 +304,9 @@ export default function CardGridCanvas( {
 															) || undefined,
 													} }
 												>
-													<AuthoredText value={ noImageLabel } />
+													<AuthoredText
+														value={ noImageLabel }
+													/>
 												</span>
 											) }
 											{ glyphNode && ! glyphInCaption

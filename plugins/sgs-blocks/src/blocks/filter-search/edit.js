@@ -9,15 +9,43 @@
  * @package SGS\Blocks
  */
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-editor';
+import {
+	useBlockProps,
+	InspectorControls,
+	useSettings,
+} from '@wordpress/block-editor';
 import { PanelBody } from '@wordpress/components';
-import { ResponsiveBoxControl, SgsColourPanel, resolveColourToken } from '../../components';
-import { borderPaintPreview, textPaintPreview, tierBoxLonghands, usePreviewTier, isCssGradient } from '../../utils';
+import {
+	ResponsiveBoxControl,
+	SgsColourPanel,
+	resolveColourToken,
+} from '../../components';
+import {
+	borderPaintPreview,
+	textPaintPreview,
+	tierBoxLonghands,
+	usePreviewTier,
+	isCssGradient,
+} from '../../utils';
 import FilterSearchSettings from './FilterSearchSettings';
 import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 
 export default function Edit( { attributes, setAttributes, clientId, name } ) {
-	const { searchMode, taxonomy, showCounts, attributeId, threshold, placeholder, margin, inputBorderColour, inputBorderColourGradient, inputBorderColourHover, inputBorderColourHoverGradient, textColour, textColourHover } = attributes;
+	const {
+		searchMode,
+		taxonomy,
+		showCounts,
+		attributeId,
+		threshold,
+		placeholder,
+		margin,
+		inputBorderColour,
+		inputBorderColourGradient,
+		inputBorderColourHover,
+		inputBorderColourHoverGradient,
+		textColour,
+		textColourHover,
+	} = attributes;
 	const isTermsMode = 'taxonomy-terms' === searchMode;
 
 	// D636/CHECK A: inputBorderColour/inputBorderColourGradient/textColour paint
@@ -27,7 +55,11 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	// applied straight to the preview <input>'s inline style below.
 	const [ colourPalette ] = useSettings( 'color.palette' );
 	const inputPreviewStyle = {
-		...borderPaintPreview( inputBorderColour, inputBorderColourGradient, colourPalette ),
+		...borderPaintPreview(
+			inputBorderColour,
+			inputBorderColourGradient,
+			colourPalette
+		),
 		...textPaintPreview( textColour, '', colourPalette ),
 	};
 
@@ -45,12 +77,14 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	 * of `:hover` matching.
 	 */
 	const filterSearchPreviewScope = `sgs-filter-search-preview-${ clientId }`;
-	const inputBorderHoverDecl =
-		isCssGradient( inputBorderColourHoverGradient )
-			? `border-image:${ inputBorderColourHoverGradient } 1 !important;`
-			: inputBorderColourHover
-				? `border-color:${ resolveColourToken( inputBorderColourHover, colourPalette ) } !important;`
-				: '';
+	const inputBorderHoverDecl = isCssGradient( inputBorderColourHoverGradient )
+		? `border-image:${ inputBorderColourHoverGradient } 1 !important;`
+		: inputBorderColourHover
+		? `border-color:${ resolveColourToken(
+				inputBorderColourHover,
+				colourPalette
+		  ) } !important;`
+		: '';
 	const filterSearchHoverPreviewCss = inputBorderHoverDecl
 		? `.${ filterSearchPreviewScope } .sgs-filter-search__input:hover,.${ filterSearchPreviewScope } .sgs-filter-search__input:has(:focus-visible){${ inputBorderHoverDecl }}`
 		: '';
@@ -76,21 +110,32 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: inputBorderColour,
-								onChange: ( val ) => setAttributes( { inputBorderColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										inputBorderColour: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: inputBorderColourGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { inputBorderColourGradient: val ?? '' } ),
+									setAttributes( {
+										inputBorderColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: inputBorderColourHover,
-								onChange: ( val ) => setAttributes( { inputBorderColourHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										inputBorderColourHover: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: inputBorderColourHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { inputBorderColourHoverGradient: val ?? '' } ),
+									setAttributes( {
+										inputBorderColourHoverGradient:
+											val ?? '',
+									} ),
 							},
 						],
 					},
@@ -102,21 +147,28 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: textColour,
-								onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( { textColour: val ?? '' } ),
 								linked: true,
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: textColourHover,
-								onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										textColourHover: val ?? '',
+									} ),
 							},
 						],
 					},
 				] }
 			/>
 			<InspectorControls>
-				<FilterSearchSettings attributes={ attributes } setAttributes={ setAttributes } />
+				<FilterSearchSettings
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 
 				<PanelBody
 					title={ __( 'Spacing', 'sgs-blocks' ) }
@@ -133,43 +185,56 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						} }
 						onChange={ ( tier, next ) => {
 							const key = 'base' === tier ? 'desktop' : tier;
-							setAttributes( { margin: { ...margin, [ key ]: next } } );
+							setAttributes( {
+								margin: { ...margin, [ key ]: next },
+							} );
 						} }
 					/>
 				</PanelBody>
 			</InspectorControls>
 
-			{ filterSearchHoverPreviewCss && <style>{ filterSearchHoverPreviewCss }</style> }
+			{ filterSearchHoverPreviewCss && (
+				<style>{ filterSearchHoverPreviewCss }</style>
+			) }
 			<div { ...blockProps }>
 				{ /* Static editor preview — filtering is frontend-only. */ }
 				<input
 					type="search"
 					className="sgs-filter-search__input"
 					style={ inputPreviewStyle }
-					placeholder={ placeholder || __( 'Type to filter…', 'sgs-blocks' ) }
+					placeholder={
+						placeholder || __( 'Type to filter…', 'sgs-blocks' )
+					}
 					disabled
-					aria-label={ __( 'Filter search preview (inactive in editor)', 'sgs-blocks' ) }
+					aria-label={ __(
+						'Filter search preview (inactive in editor)',
+						'sgs-blocks'
+					) }
 				/>
 				<p className="sgs-filter-search__editor-hint">
 					{ isTermsMode
-						? ( '' === taxonomy
-							? __( '⚠ Set a taxonomy in the block settings to activate this block.', 'sgs-blocks' )
-							: (
-								/* translators: %d is the minimum-terms threshold number */
-								__( 'Lists every term of "%1$s" as a tickable link. The search box only appears once the taxonomy has %2$d+ terms.', 'sgs-blocks' )
+						? '' === taxonomy
+							? __(
+									'⚠ Set a taxonomy in the block settings to activate this block.',
+									'sgs-blocks'
+							  )
+							: /* translators: %d is the minimum-terms threshold number */
+							  __(
+									'Lists every term of "%1$s" as a tickable link. The search box only appears once the taxonomy has %2$d+ terms.',
+									'sgs-blocks'
+							  )
 									.replace( '%1$s', taxonomy )
 									.replace( '%2$d', String( threshold ) )
-							)
-						)
-						: ( 0 === attributeId
-							? __( '⚠ Set an Attribute ID in the block settings to activate this block.', 'sgs-blocks' )
-							: (
-								/* translators: %d is the minimum-terms threshold number */
-								__( 'Shows on the frontend only when this attribute has %d+ options.', 'sgs-blocks' )
-									.replace( '%d', String( threshold ) )
-							)
-						)
-					}
+						: 0 === attributeId
+						? __(
+								'⚠ Set an Attribute ID in the block settings to activate this block.',
+								'sgs-blocks'
+						  )
+						: /* translators: %d is the minimum-terms threshold number */
+						  __(
+								'Shows on the frontend only when this attribute has %d+ options.',
+								'sgs-blocks'
+						  ).replace( '%d', String( threshold ) ) }
 				</p>
 			</div>
 		</>

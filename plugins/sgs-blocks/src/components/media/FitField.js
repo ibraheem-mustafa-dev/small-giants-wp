@@ -12,45 +12,93 @@ import Chips from './Chips.js';
 import { slotAccess, slotKind } from './fieldBase.js';
 import { deviceName } from './deviceValues.js';
 
-const FRAME = <rect x="3" y="5" width="18" height="14" rx="1" fill="none" stroke="currentColor" strokeWidth="1.5" />;
+const FRAME = (
+	<rect
+		x="3"
+		y="5"
+		width="18"
+		height="14"
+		rx="1"
+		fill="none"
+		stroke="currentColor"
+		strokeWidth="1.5"
+	/>
+);
 
 /** Small 24px pictograms; the frame is the box, the filled shape is the photo. */
 const ICONS = {
 	cover: (
 		<svg viewBox="0 0 24 24" width="24" height="24">
 			{ FRAME }
-			<rect x="3" y="5" width="18" height="14" fill="currentColor" opacity="0.35" />
+			<rect
+				x="3"
+				y="5"
+				width="18"
+				height="14"
+				fill="currentColor"
+				opacity="0.35"
+			/>
 		</svg>
 	),
 	contain: (
 		<svg viewBox="0 0 24 24" width="24" height="24">
 			{ FRAME }
-			<rect x="7" y="5" width="10" height="14" fill="currentColor" opacity="0.35" />
+			<rect
+				x="7"
+				y="5"
+				width="10"
+				height="14"
+				fill="currentColor"
+				opacity="0.35"
+			/>
 		</svg>
 	),
 	fill: (
 		<svg viewBox="0 0 24 24" width="24" height="24">
 			{ FRAME }
-			<path d="M5 12h14M8 9l-3 3 3 3M16 9l3 3-3 3" fill="none" stroke="currentColor" strokeWidth="1.5" />
+			<path
+				d="M5 12h14M8 9l-3 3 3 3M16 9l3 3-3 3"
+				fill="none"
+				stroke="currentColor"
+				strokeWidth="1.5"
+			/>
 		</svg>
 	),
 	none: (
 		<svg viewBox="0 0 24 24" width="24" height="24">
 			{ FRAME }
-			<rect x="9" y="9" width="6" height="6" fill="currentColor" opacity="0.35" />
+			<rect
+				x="9"
+				y="9"
+				width="6"
+				height="6"
+				fill="currentColor"
+				opacity="0.35"
+			/>
 		</svg>
 	),
 	'scale-down': (
 		<svg viewBox="0 0 24 24" width="24" height="24">
 			{ FRAME }
-			<rect x="8" y="8" width="8" height="8" fill="currentColor" opacity="0.35" />
+			<rect
+				x="8"
+				y="8"
+				width="8"
+				height="8"
+				fill="currentColor"
+				opacity="0.35"
+			/>
 			<path d="M13 11l-2 2" stroke="currentColor" strokeWidth="1.5" />
 		</svg>
 	),
 	tile: (
 		<svg viewBox="0 0 24 24" width="24" height="24">
 			{ FRAME }
-			<path d="M3 12h18M12 5v14" stroke="currentColor" strokeWidth="1.5" />
+			<path
+				d="M3 12h18M12 5v14"
+				stroke="currentColor"
+				strokeWidth="1.5"
+			/>
 		</svg>
 	),
 };
@@ -84,12 +132,19 @@ export function fitOptions( kind, context = 'element' ) {
 	return out;
 }
 
-export default function FitField( { attributes, setAttributes, prefix, slot } ) {
+export default function FitField( {
+	attributes,
+	setAttributes,
+	prefix,
+	slot,
+} ) {
 	const access = slotAccess( attributes, setAttributes, prefix );
-	const options = fitOptions( slotKind( slot, access ), slot?.context ).map( ( option ) => ( {
-		...option,
-		icon: ICONS[ option.value ],
-	} ) );
+	const options = fitOptions( slotKind( slot, access ), slot?.context ).map(
+		( option ) => ( {
+			...option,
+			icon: ICONS[ option.value ],
+		} )
+	);
 	if ( ! options.length ) {
 		return null;
 	}
@@ -101,7 +156,13 @@ export default function FitField( { attributes, setAttributes, prefix, slot } ) 
 		>
 			{ ( { tier, ownValue, effectiveValue, setOwnValue } ) => (
 				<Chips
-					label={ sprintf( /* translators: %s: device name. */ __( 'How it fills on %s', 'sgs-blocks' ), deviceName( tier ) ) }
+					label={ sprintf(
+						/* translators: %s: device name. */ __(
+							'How it fills on %s',
+							'sgs-blocks'
+						),
+						deviceName( tier )
+					) }
 					options={ options }
 					value={ ownValue || effectiveValue || 'cover' }
 					onChange={ setOwnValue }

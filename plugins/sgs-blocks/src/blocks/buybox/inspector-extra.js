@@ -1,9 +1,27 @@
 import { __ } from '@wordpress/i18n';
-import { PanelBody, ToggleControl, TextControl, RangeControl, SelectControl } from '@wordpress/components';
-import { fillRow, textRow, SgsLengthControl, ResponsiveLengthControl, ResponsiveControl, ResponsiveOverride } from '../../components';
+import {
+	PanelBody,
+	ToggleControl,
+	TextControl,
+	RangeControl,
+	SelectControl,
+} from '@wordpress/components';
+import {
+	fillRow,
+	textRow,
+	SgsLengthControl,
+	ResponsiveLengthControl,
+	ResponsiveControl,
+	ResponsiveOverride,
+} from '../../components';
 import { patchTier } from '../../utils';
 import { asTierObject } from '../../utils/responsive';
-import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import {
+	ToggleGroupControl,
+	ToggleGroupControlOption,
+	ToolsPanel,
+	ToolsPanelItem,
+} from '../../components/primitives';
 
 const THUMB_BORDER_UNITS = [
 	{ value: 'px', label: 'px', default: 1 },
@@ -35,8 +53,21 @@ function ThumbItem( { label, names, attributes, setAttributes, children } ) {
 	return (
 		<ToolsPanelItem
 			label={ label }
-			hasValue={ () => names.some( ( n ) => JSON.stringify( attributes[ n ] ?? GALLERY_THUMB_DEFAULTS[ n ] ) !== JSON.stringify( GALLERY_THUMB_DEFAULTS[ n ] ) ) }
-			onDeselect={ () => setAttributes( Object.fromEntries( names.map( ( n ) => [ n, GALLERY_THUMB_DEFAULTS[ n ] ] ) ) ) }
+			hasValue={ () =>
+				names.some(
+					( n ) =>
+						JSON.stringify(
+							attributes[ n ] ?? GALLERY_THUMB_DEFAULTS[ n ]
+						) !== JSON.stringify( GALLERY_THUMB_DEFAULTS[ n ] )
+				)
+			}
+			onDeselect={ () =>
+				setAttributes(
+					Object.fromEntries(
+						names.map( ( n ) => [ n, GALLERY_THUMB_DEFAULTS[ n ] ] )
+					)
+				)
+			}
 			isShownByDefault
 		>
 			{ children }
@@ -46,7 +77,13 @@ function ThumbItem( { label, names, attributes, setAttributes, children } ) {
 
 const STICKY_BAR_OPTIONS = [
 	{ label: __( 'Off', 'sgs-blocks' ), value: 'off' },
-	{ label: __( 'Show once the Add button has scrolled out of view', 'sgs-blocks' ), value: 'after-button' },
+	{
+		label: __(
+			'Show once the Add button has scrolled out of view',
+			'sgs-blocks'
+		),
+		value: 'after-button',
+	},
 ];
 
 const STICKY_OFFSET_UNITS = [
@@ -90,11 +127,20 @@ export function BuyboxExtraPanels( { attributes, setAttributes } ) {
 			>
 				<SelectControl
 					label={ __( 'Side by side from', 'sgs-blocks' ) }
-					help={ __( 'Below this width the gallery sits above the details.', 'sgs-blocks' ) }
+					help={ __(
+						'Below this width the gallery sits above the details.',
+						'sgs-blocks'
+					) }
 					value={ stackBelow || 'mobile' }
 					options={ [
-						{ label: __( 'Tablet and up (768px)', 'sgs-blocks' ), value: 'mobile' },
-						{ label: __( 'Desktop only (1024px)', 'sgs-blocks' ), value: 'tablet' },
+						{
+							label: __( 'Tablet and up (768px)', 'sgs-blocks' ),
+							value: 'mobile',
+						},
+						{
+							label: __( 'Desktop only (1024px)', 'sgs-blocks' ),
+							value: 'tablet',
+						},
 					] }
 					onChange={ ( val ) => setAttributes( { stackBelow: val } ) }
 					__nextHasNoMarginBottom
@@ -154,9 +200,7 @@ export function BuyboxExtraPanels( { attributes, setAttributes } ) {
 				<TextControl
 					label={ __( 'RRP meta key', 'sgs-blocks' ) }
 					value={ rrpMetaKey }
-					onChange={ ( val ) =>
-						setAttributes( { rrpMetaKey: val } )
-					}
+					onChange={ ( val ) => setAttributes( { rrpMetaKey: val } ) }
 					placeholder={ __( 'e.g. _sgs_rrp', 'sgs-blocks' ) }
 					help={ __(
 						'Post-meta key holding the recommended retail price as a plain number (e.g. "171.00"). Empty turns the pill off. Set this to whatever key your product import uses to store RRP.',
@@ -204,7 +248,10 @@ export function BuyboxExtraPanels( { attributes, setAttributes } ) {
 				initialOpen={ false }
 			>
 				<ToggleControl
-					label={ __( 'Show in-stock / low-stock indicator', 'sgs-blocks' ) }
+					label={ __(
+						'Show in-stock / low-stock indicator',
+						'sgs-blocks'
+					) }
 					checked={ !! showStockStatus }
 					onChange={ ( val ) =>
 						setAttributes( { showStockStatus: val } )
@@ -221,88 +268,140 @@ export function BuyboxExtraPanels( { attributes, setAttributes } ) {
 				title={ __( 'Gallery thumbnails', 'sgs-blocks' ) }
 				initialOpen={ false }
 			>
-				<ToolsPanel label={ __( 'Settings', 'sgs-blocks' ) } resetAll={ () => setAttributes( { ...GALLERY_THUMB_DEFAULTS } ) }>
-					<ThumbItem label={ __( 'Thumbnails per row', 'sgs-blocks' ) } names={ [ 'thumbsPerRow' ] } attributes={ attributes } setAttributes={ setAttributes }>
-	<ResponsiveControl label={ __( 'Thumbnails per row (0 = fixed size)', 'sgs-blocks' ) }>
-						{ ( bp ) => (
-							<RangeControl
-								label={ __( 'Thumbnails per row (0 = fixed size)', 'sgs-blocks' ) }
-								hideLabelFromVision
-								help={ __(
-									'0 keeps the fixed-size, scrolling strip on this device. 1 to 8 lays the thumbnails out as that many equal square columns across the gallery width, wrapping onto more rows. A thumbnail never goes below 48px. An unset tablet or mobile value follows the next larger device.',
-									'sgs-blocks'
-								) }
-								value={ thumbsPerRow?.[ bp ] ?? 0 }
-								min={ 0 }
-								max={ 8 }
-								step={ 1 }
-								onChange={ ( val ) =>
-									patchTier( attributes, setAttributes, 'thumbsPerRow', bp, val ?? 0 )
-								}
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						) }
-					</ResponsiveControl>
-				
+				<ToolsPanel
+					label={ __( 'Settings', 'sgs-blocks' ) }
+					resetAll={ () =>
+						setAttributes( { ...GALLERY_THUMB_DEFAULTS } )
+					}
+				>
+					<ThumbItem
+						label={ __( 'Thumbnails per row', 'sgs-blocks' ) }
+						names={ [ 'thumbsPerRow' ] }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					>
+						<ResponsiveControl
+							label={ __(
+								'Thumbnails per row (0 = fixed size)',
+								'sgs-blocks'
+							) }
+						>
+							{ ( bp ) => (
+								<RangeControl
+									label={ __(
+										'Thumbnails per row (0 = fixed size)',
+										'sgs-blocks'
+									) }
+									hideLabelFromVision
+									help={ __(
+										'0 keeps the fixed-size, scrolling strip on this device. 1 to 8 lays the thumbnails out as that many equal square columns across the gallery width, wrapping onto more rows. A thumbnail never goes below 48px. An unset tablet or mobile value follows the next larger device.',
+										'sgs-blocks'
+									) }
+									value={ thumbsPerRow?.[ bp ] ?? 0 }
+									min={ 0 }
+									max={ 8 }
+									step={ 1 }
+									onChange={ ( val ) =>
+										patchTier(
+											attributes,
+											setAttributes,
+											'thumbsPerRow',
+											bp,
+											val ?? 0
+										)
+									}
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+							) }
+						</ResponsiveControl>
 					</ThumbItem>
-					<ThumbItem label={ __( 'Thumbnail gap', 'sgs-blocks' ) } names={ [ 'thumbGap' ] } attributes={ attributes } setAttributes={ setAttributes }>
-	<ResponsiveLengthControl
+					<ThumbItem
 						label={ __( 'Thumbnail gap', 'sgs-blocks' ) }
-						value={ asTierObject( thumbGap ) }
-						units={ THUMB_BORDER_UNITS }
-						onChange={ ( obj ) => setAttributes( { thumbGap: obj } ) }
-						help={ __(
-							'Space between thumbnails, per device. Empty keeps the default 0.5rem.',
-							'sgs-blocks'
-						) }
-					/>
-				
+						names={ [ 'thumbGap' ] }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					>
+						<ResponsiveLengthControl
+							label={ __( 'Thumbnail gap', 'sgs-blocks' ) }
+							value={ asTierObject( thumbGap ) }
+							units={ THUMB_BORDER_UNITS }
+							onChange={ ( obj ) =>
+								setAttributes( { thumbGap: obj } )
+							}
+							help={ __(
+								'Space between thumbnails, per device. Empty keeps the default 0.5rem.',
+								'sgs-blocks'
+							) }
+						/>
 					</ThumbItem>
-					<ThumbItem label={ __( 'Thumbnail size', 'sgs-blocks' ) } names={ [ 'galleryThumbSize' ] } attributes={ attributes } setAttributes={ setAttributes }>
-	<ResponsiveLengthControl
+					<ThumbItem
 						label={ __( 'Thumbnail size', 'sgs-blocks' ) }
-						value={ galleryThumbSize }
-						units={ THUMB_BORDER_UNITS }
-						onChange={ ( obj ) => setAttributes( { galleryThumbSize: obj } ) }
-						help={ __(
-							'Width and height of each thumbnail in the fixed-size strip, per device. Never below 48px. Empty keeps the default 64px.',
-							'sgs-blocks'
-						) }
-					/>
-				
+						names={ [ 'galleryThumbSize' ] }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					>
+						<ResponsiveLengthControl
+							label={ __( 'Thumbnail size', 'sgs-blocks' ) }
+							value={ galleryThumbSize }
+							units={ THUMB_BORDER_UNITS }
+							onChange={ ( obj ) =>
+								setAttributes( { galleryThumbSize: obj } )
+							}
+							help={ __(
+								'Width and height of each thumbnail in the fixed-size strip, per device. Never below 48px. Empty keeps the default 64px.',
+								'sgs-blocks'
+							) }
+						/>
 					</ThumbItem>
-					<ThumbItem label={ __( 'Space above thumbnails', 'sgs-blocks' ) } names={ [ 'thumbStripOffset' ] } attributes={ attributes } setAttributes={ setAttributes }>
-	<SgsLengthControl
+					<ThumbItem
 						label={ __( 'Space above thumbnails', 'sgs-blocks' ) }
-						value={ thumbStripOffset }
-						units={ THUMB_BORDER_UNITS }
-						onChange={ ( val ) =>
-							setAttributes( { thumbStripOffset: val ?? '' } )
-						}
-						help={ __(
-							'Space between the main image and the thumbnail strip. Empty keeps the default 0.75rem.',
-							'sgs-blocks'
-						) }
-					/>
-				
+						names={ [ 'thumbStripOffset' ] }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					>
+						<SgsLengthControl
+							label={ __(
+								'Space above thumbnails',
+								'sgs-blocks'
+							) }
+							value={ thumbStripOffset }
+							units={ THUMB_BORDER_UNITS }
+							onChange={ ( val ) =>
+								setAttributes( { thumbStripOffset: val ?? '' } )
+							}
+							help={ __(
+								'Space between the main image and the thumbnail strip. Empty keeps the default 0.75rem.',
+								'sgs-blocks'
+							) }
+						/>
 					</ThumbItem>
-					<ThumbItem label={ __( 'Selected thumbnail scale', 'sgs-blocks' ) } names={ [ 'thumbSelectedScale' ] } attributes={ attributes } setAttributes={ setAttributes }>
-	<RangeControl
-						label={ __( 'Selected thumbnail scale (%)', 'sgs-blocks' ) }
-						help={ __(
-							'105 gently enlarges the selected thumbnail. 100 turns the enlargement off; the selected thumbnail is then shown by its border colour alone, so keep the two border colours clearly different.',
-							'sgs-blocks'
-						) }
-						value={ thumbSelectedScale ?? 105 }
-						min={ 90 }
-						max={ 120 }
-						onChange={ ( val ) =>
-							setAttributes( { thumbSelectedScale: val ?? 105 } )
-						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
+					<ThumbItem
+						label={ __( 'Selected thumbnail scale', 'sgs-blocks' ) }
+						names={ [ 'thumbSelectedScale' ] }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					>
+						<RangeControl
+							label={ __(
+								'Selected thumbnail scale (%)',
+								'sgs-blocks'
+							) }
+							help={ __(
+								'105 gently enlarges the selected thumbnail. 100 turns the enlargement off; the selected thumbnail is then shown by its border colour alone, so keep the two border colours clearly different.',
+								'sgs-blocks'
+							) }
+							value={ thumbSelectedScale ?? 105 }
+							min={ 90 }
+							max={ 120 }
+							onChange={ ( val ) =>
+								setAttributes( {
+									thumbSelectedScale: val ?? 105,
+								} )
+							}
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
 					</ThumbItem>
 				</ToolsPanel>
 			</PanelBody>

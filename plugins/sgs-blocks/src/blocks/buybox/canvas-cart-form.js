@@ -17,27 +17,40 @@ import { presetNames } from '../button/preset-names';
  * @return {boolean} True when the opener shows.
  */
 export function keepsFlowOpener( attributes ) {
-	if ( ! attributes.keepAddToCartWithFlow || 'guided' === ( attributes.buyboxLayout || 'standard' ) ) {
+	if (
+		! attributes.keepAddToCartWithFlow ||
+		'guided' === ( attributes.buyboxLayout || 'standard' )
+	) {
 		return false;
 	}
 	// As sanitize_key() and sanitize_text_field() read the two settings.
-	const action = String( attributes.addToCartAction || 'cart' ).toLowerCase().replace( /[^a-z0-9_-]/g, '' );
-	const popup = String( attributes.addToCartModalId || '' ).replace( /<[^>]*>/g, '' ).trim();
+	const action = String( attributes.addToCartAction || 'cart' )
+		.toLowerCase()
+		.replace( /[^a-z0-9_-]/g, '' );
+	const popup = String( attributes.addToCartModalId || '' )
+		.replace( /<[^>]*>/g, '' )
+		.trim();
 	return ! ( 'modal' === action && '' !== popup );
 }
 
 /**
  * @param {Object} props
- * @param {Object} props.attributes  Block attributes.
- * @param {string} props.cartVariant The Add to Cart preset modifier (' buybox__add-to-cart--<slug>' or '').
- * @param {Object} props.cartStyle   The Add to Cart button's own canvas style.
+ * @param {Object} props.attributes    Block attributes.
+ * @param {string} props.cartVariant   The Add to Cart preset modifier (' buybox__add-to-cart--<slug>' or '').
+ * @param {Object} props.cartStyle     The Add to Cart button's own canvas style.
  * @param {Object} [props.openerStyle] The flow opener's own canvas style (`buttonKitStyle( attributes, 'flowOpener', ... )`): the
  *                                     kit's look settings, as the page prints them.
  * @param {string} [props.noteColour]  The resolved `openerNoteColour`: with it set the opener previews a placeholder note in that
  *                                     colour (the note's words live on the linked flow, which the canvas cannot read).
  * @return {Element} The form, or the form and the flow opener in their wrapper.
  */
-export function cartFormMock( { attributes, cartVariant, cartStyle, openerStyle, noteColour } ) {
+export function cartFormMock( {
+	attributes,
+	cartVariant,
+	cartStyle,
+	openerStyle,
+	noteColour,
+} ) {
 	const form = (
 		<div className="buybox__cart-form">
 			<span
@@ -60,7 +73,9 @@ export function cartFormMock( { attributes, cartVariant, cartStyle, openerStyle,
 	// look when Add to Cart is already secondary.
 	const openerLook = presetNames().includes( attributes.flowOpenerStyle )
 		? ` buybox__add-to-cart--${ attributes.flowOpenerStyle }`
-		: ( 'secondary' === attributes.addToCartStyle ? '' : ' buybox__add-to-cart--secondary' );
+		: 'secondary' === attributes.addToCartStyle
+		? ''
+		: ' buybox__add-to-cart--secondary';
 	const opener = (
 		<div className="buybox__cart-form buybox__cart-form--modal">
 			<span

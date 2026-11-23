@@ -13,10 +13,10 @@ import DesignTokenPicker from './DesignTokenPicker';
 
 /**
  * @param {Object}   props
- * @param {string}   props.title    Group heading, e.g. "Between rows".
- * @param {Object}   props.axis     The stored axis `{ style, width, colour, colourHover }`.
- * @param {boolean}  props.hover    Whether the colour popover carries a Hover tab.
- * @param {Function} props.onPatch  Receives the fields to merge into the axis.
+ * @param {string}   props.title   Group heading, e.g. "Between rows".
+ * @param {Object}   props.axis    The stored axis `{ style, width, colour, colourHover }`.
+ * @param {boolean}  props.hover   Whether the colour popover carries a Hover tab.
+ * @param {Function} props.onPatch Receives the fields to merge into the axis.
  * @return {JSX.Element} The row.
  */
 export default function SeparatorAxisRow( { title, axis, hover, onPatch } ) {
@@ -34,7 +34,8 @@ export default function SeparatorAxisRow( { title, axis, hover, onPatch } ) {
 						key: 'hover',
 						label: __( 'Hover', 'sgs-blocks' ),
 						value: axis.colourHover,
-						onChange: ( val ) => onPatch( { colourHover: val ?? '' } ),
+						onChange: ( val ) =>
+							onPatch( { colourHover: val ?? '' } ),
 						linked: true,
 					},
 			  ]
@@ -45,7 +46,10 @@ export default function SeparatorAxisRow( { title, axis, hover, onPatch } ) {
 			<BaseControl.VisualLabel>{ title }</BaseControl.VisualLabel>
 			<ResponsiveLengthControl
 				label={ __( 'Thickness', 'sgs-blocks' ) }
-				help={ __( 'A CSS length such as 1px. Empty draws no line.', 'sgs-blocks' ) }
+				help={ __(
+					'A CSS length such as 1px. Empty draws no line.',
+					'sgs-blocks'
+				) }
 				value={ axis.width }
 				onChange={ ( width ) => onPatch( { width } ) }
 			/>

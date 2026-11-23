@@ -274,7 +274,9 @@ import { QUERY_MOBILE } from '../../utils/breakpoints';
 		// setting can change while the page is open.
 		const sparksAllowed = () => ! isReducedMotionNow();
 
-		const horizontal = root.classList.contains( 'sgs-timeline--horizontal' );
+		const horizontal = root.classList.contains(
+			'sgs-timeline--horizontal'
+		);
 
 		/**
 		 * Where each milestone dot sits as a FRACTION along the connector.
@@ -573,11 +575,11 @@ import { QUERY_MOBILE } from '../../utils/breakpoints';
 			);
 			roots.forEach( ( root ) => {
 				const cleanup = initProgressDriver( root );
-			// Independent of the driver above — runs on the native CSS path too.
-			const sparkCleanup = initSparks( root );
-			if ( sparkCleanup ) {
-				cleanups.push( sparkCleanup );
-			}
+				// Independent of the driver above — runs on the native CSS path too.
+				const sparkCleanup = initSparks( root );
+				if ( sparkCleanup ) {
+					cleanups.push( sparkCleanup );
+				}
 				if ( cleanup ) {
 					cleanups.push( cleanup );
 				}

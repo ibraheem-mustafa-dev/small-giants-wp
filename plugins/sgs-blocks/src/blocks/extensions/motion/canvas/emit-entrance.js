@@ -34,17 +34,30 @@ const has = ( obj, key ) => Object.prototype.hasOwnProperty.call( obj, key );
  * @return {boolean} Whether an entrance was emitted.
  */
 export function emitEntrance( base, decls, attrs, context ) {
-	const trigger = filterTrigger( String( base.trigger ?? 'scroll' ), base, context.states || [] );
+	const trigger = filterTrigger(
+		String( base.trigger ?? 'scroll' ),
+		base,
+		context.states || []
+	);
 	if ( trigger === '' ) {
 		return false;
 	}
 	let tiers = tierValues( base );
-	if ( ( trigger === 'load' || trigger === 'scroll' ) && Boolean( context.lcp ) && tiers.desktop.allowLcpFade !== true ) {
+	if (
+		( trigger === 'load' || trigger === 'scroll' ) &&
+		Boolean( context.lcp ) &&
+		tiers.desktop.allowLcpFade !== true
+	) {
 		tiers = clampHiddenStarts( tiers );
 	}
 	const map = propertyChannels();
 	const used = {};
-	const timing = { duration: 'dur', delay: 'delay', easing: 'ease', start: 'start' };
+	const timing = {
+		duration: 'dur',
+		delay: 'delay',
+		easing: 'ease',
+		start: 'start',
+	};
 	TIERS.forEach( ( tier ) => {
 		[
 			[ 'from', 'EntranceFrom' ],
@@ -59,11 +72,15 @@ export function emitEntrance( base, decls, attrs, context ) {
 					return;
 				}
 				used[ prop ] = true;
-				decls[ tier ][ ME_PREFIX + end + '-' + prop.slice( ME_PREFIX.length ) ] = css;
+				decls[ tier ][
+					ME_PREFIX + end + '-' + prop.slice( ME_PREFIX.length )
+				] = css;
 			} );
 		} );
 		Object.entries( timing ).forEach( ( [ key, suffix ] ) => {
-			const css = has( tiers[ tier ], key ) ? valueCss( 'EntranceValues', key, tiers[ tier ][ key ] ) : null;
+			const css = has( tiers[ tier ], key )
+				? valueCss( 'EntranceValues', key, tiers[ tier ][ key ] )
+				: null;
 			if ( css !== null ) {
 				decls[ tier ][ ME_PREFIX + suffix ] = css;
 			}
@@ -71,14 +88,22 @@ export function emitEntrance( base, decls, attrs, context ) {
 		const persp = fields( 'EntranceValues' ).perspective?.css ?? null;
 		const css =
 			persp !== null && has( tiers[ tier ], 'perspective' )
-				? valueCss( 'EntranceValues', 'perspective', tiers[ tier ].perspective )
+				? valueCss(
+						'EntranceValues',
+						'perspective',
+						tiers[ tier ].perspective
+				  )
 				: null;
 		if ( css !== null ) {
 			decls[ tier ][ persp ] = css;
 		}
 	} );
 	applyClipEdge( tiers, decls, context.report );
-	const keyframes = keyframesJson( tiers.desktop.keyframes ?? null, used, decls.desktop );
+	const keyframes = keyframesJson(
+		tiers.desktop.keyframes ?? null,
+		used,
+		decls.desktop
+	);
 	if ( keyframes !== null ) {
 		attrs[ 'data-sgs-me-keyframes' ] = keyframes;
 	}
@@ -88,6 +113,8 @@ export function emitEntrance( base, decls, attrs, context ) {
 			channels[ map[ prop ] ] = true;
 		}
 	} );
-	attrs[ 'data-sgs-me' ] = `${ trigger } ${ orderedChannels( channels ).join( ' ' ) }`.trim();
+	attrs[ 'data-sgs-me' ] = `${ trigger } ${ orderedChannels( channels ).join(
+		' '
+	) }`.trim();
 	return true;
 }

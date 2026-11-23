@@ -5,10 +5,30 @@ import {
 	InspectorControls,
 	useSettings,
 } from '@wordpress/block-editor';
-import { PanelBody, TextControl, SelectControl, ToggleControl } from '@wordpress/components';
+import {
+	PanelBody,
+	TextControl,
+	SelectControl,
+	ToggleControl,
+} from '@wordpress/components';
 import { useEffect } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
-import { ResponsiveBoxControl, LinkPopoverField, resolveColourToken, SgsColourPanel, SgsLengthControl, fillRow, textRow, SgsBorderControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, FlexWrapControl } from '../../components';
+import {
+	ResponsiveBoxControl,
+	LinkPopoverField,
+	resolveColourToken,
+	SgsColourPanel,
+	SgsLengthControl,
+	fillRow,
+	textRow,
+	SgsBorderControl,
+	TypographyControls,
+	ResponsiveOverride,
+	BOX_UNITS,
+	normaliseResponsiveBox,
+	SgsBoxControl,
+	FlexWrapControl,
+} from '../../components';
 import { NumberControl } from '../../components/primitives';
 import { hasOwnSubmit } from './form-own-submit';
 import { LINK_SOURCES_PAGES } from '../../shared/link-source-options';
@@ -44,7 +64,10 @@ import ButtonLabelControls from './ButtonLabelControls';
 import FieldMarksPanel from './FieldMarksPanel';
 import UploadZonePanel from './UploadZonePanel';
 import FieldFocusPanel from './FieldFocusPanel';
-import { submitShadowPreviewStyle, submitLiftPreviewRule } from './submit-motion-preview';
+import {
+	submitShadowPreviewStyle,
+	submitLiftPreviewRule,
+} from './submit-motion-preview';
 import { formButtonShapePreviewStyle } from './button-shape-preview';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
@@ -55,7 +78,10 @@ const SUBMIT_ALIGN_OPTIONS = [
 	{ label: __( 'Left', 'sgs-blocks' ), value: 'start' },
 	{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
 	{ label: __( 'Right', 'sgs-blocks' ), value: 'end' },
-	{ label: __( 'Space between (note left, buttons right)', 'sgs-blocks' ), value: 'space-between' },
+	{
+		label: __( 'Space between (note left, buttons right)', 'sgs-blocks' ),
+		value: 'space-between',
+	},
 ];
 
 const FIELD_COLUMNS_FROM_OPTIONS = [
@@ -87,7 +113,11 @@ export default function Edit( props ) {
 			: null;
 	}, [] );
 
-	return FORM_CPT === postType ? <FormDefinitionEdit { ...props } /> : <FormEmbedEdit { ...props } />;
+	return FORM_CPT === postType ? (
+		<FormDefinitionEdit { ...props } />
+	) : (
+		<FormEmbedEdit { ...props } />
+	);
 }
 
 function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
@@ -157,7 +187,8 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 
 	// A form holding its own submit button (an sgs/button set as a submit button) shows no built-in one, as render.php.
 	const ownSubmit = useSelect(
-		( select ) => hasOwnSubmit( select( 'core/block-editor' ).getBlocks( clientId ) ),
+		( select ) =>
+			hasOwnSubmit( select( 'core/block-editor' ).getBlocks( clientId ) ),
 		[ clientId ]
 	);
 
@@ -195,16 +226,32 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 	const previewTier = usePreviewTier();
 	const submitButtonStyle = {
 		...submitTextPreviewStyle,
-		...backgroundPaintPreview( submitBackground, attributes.submitBackgroundGradient, palette ),
+		...backgroundPaintPreview(
+			submitBackground,
+			attributes.submitBackgroundGradient,
+			palette
+		),
 		padding:
 			submitPadding && Object.values( submitPadding ).some( Boolean )
-				? [ 'top', 'right', 'bottom', 'left' ].map( ( side ) => submitPadding[ side ] || '0' ).join( ' ' )
+				? [ 'top', 'right', 'bottom', 'left' ]
+						.map( ( side ) => submitPadding[ side ] || '0' )
+						.join( ' ' )
 				: undefined,
 		minHeight: submitMinHeight ? `${ submitMinHeight }px` : undefined,
 		...submitShadowPreviewStyle( attributes, palette ),
-		...formButtonShapePreviewStyle( attributes, 'submit', palette, previewTier, { full: false } ),
+		...formButtonShapePreviewStyle(
+			attributes,
+			'submit',
+			palette,
+			previewTier,
+			{ full: false }
+		),
 	};
-	const progressBarStyle = backgroundPaintPreview( progressBarColour, progressBarColourGradient, palette );
+	const progressBarStyle = backgroundPaintPreview(
+		progressBarColour,
+		progressBarColourGradient,
+		palette
+	);
 
 	// prevColourBackground(Gradient) canvas preview (2026-09-05) — CHECK A
 	// finding. render.php's `.sgs-form__button--prev` mechanism
@@ -216,14 +263,32 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 	// the Hover-suffixed siblings are already canvas-exempted, same doctrine
 	// as every other hover value this session.
 	const prevButtonStyle = {
-		...backgroundPaintPreview( prevColourBackground, prevColourBackgroundGradient, palette ),
-		...formButtonShapePreviewStyle( attributes, 'prev', palette, previewTier ),
+		...backgroundPaintPreview(
+			prevColourBackground,
+			prevColourBackgroundGradient,
+			palette
+		),
+		...formButtonShapePreviewStyle(
+			attributes,
+			'prev',
+			palette,
+			previewTier
+		),
 	};
 
 	// Next-button canvas preview: the twin of the Previous preview above (resting state only).
 	const nextButtonStyle = {
-		...backgroundPaintPreview( nextColourBackground, nextColourBackgroundGradient, palette ),
-		...formButtonShapePreviewStyle( attributes, 'next', palette, previewTier ),
+		...backgroundPaintPreview(
+			nextColourBackground,
+			nextColourBackgroundGradient,
+			palette
+		),
+		...formButtonShapePreviewStyle(
+			attributes,
+			'next',
+			palette,
+			previewTier
+		),
 	};
 
 	// GROUND-TRUTH: source=file, confirmed against render.php:311-373 +
@@ -245,29 +310,37 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 	// which a static `<style>` string can't reproduce faithfully).
 	const formPreviewScope = `sgs-form-editor-${ clientId }`;
 
-	const tileBorderPreviewDecl =
-		isCssGradient( tileBorderColourGradient )
-			? `border-image:${ tileBorderColourGradient } 1;`
-			: resolveColourToken( tileBorderColour, palette )
-				? `border-color:${ resolveColourToken( tileBorderColour, palette ) };`
-				: '';
+	const tileBorderPreviewDecl = isCssGradient( tileBorderColourGradient )
+		? `border-image:${ tileBorderColourGradient } 1;`
+		: resolveColourToken( tileBorderColour, palette )
+		? `border-color:${ resolveColourToken( tileBorderColour, palette ) };`
+		: '';
 
-	const fileLabelBorderPreviewDecl =
-		isCssGradient( fileLabelBorderColourGradient )
-			? `border-image:${ fileLabelBorderColourGradient } 1;`
-			: resolveColourToken( fileLabelBorderColour, palette )
-				? `border-color:${ resolveColourToken( fileLabelBorderColour, palette ) };`
-				: '';
+	const fileLabelBorderPreviewDecl = isCssGradient(
+		fileLabelBorderColourGradient
+	)
+		? `border-image:${ fileLabelBorderColourGradient } 1;`
+		: resolveColourToken( fileLabelBorderColour, palette )
+		? `border-color:${ resolveColourToken(
+				fileLabelBorderColour,
+				palette
+		  ) };`
+		: '';
 
-	const fileLabelBackgroundPreviewDecl =
-		isCssGradient( fileLabelBackgroundColourGradient )
-			? `background-image:${ fileLabelBackgroundColourGradient };`
-			: resolveColourToken( fileLabelBackgroundColour, palette )
-				? `background-color:${ resolveColourToken( fileLabelBackgroundColour, palette ) };`
-				: '';
+	const fileLabelBackgroundPreviewDecl = isCssGradient(
+		fileLabelBackgroundColourGradient
+	)
+		? `background-image:${ fileLabelBackgroundColourGradient };`
+		: resolveColourToken( fileLabelBackgroundColour, palette )
+		? `background-color:${ resolveColourToken(
+				fileLabelBackgroundColour,
+				palette
+		  ) };`
+		: '';
 
 	const formPreviewCss = [
-		tileBorderPreviewDecl && `.${ formPreviewScope } .sgs-form-tile{${ tileBorderPreviewDecl }}`,
+		tileBorderPreviewDecl &&
+			`.${ formPreviewScope } .sgs-form-tile{${ tileBorderPreviewDecl }}`,
 		( fileLabelBorderPreviewDecl || fileLabelBackgroundPreviewDecl ) &&
 			`.${ formPreviewScope } .sgs-form-field__file-label{${ fileLabelBorderPreviewDecl }${ fileLabelBackgroundPreviewDecl }}`,
 	]
@@ -297,19 +370,23 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 	 * still never paint whenever a resting colour is also set (the common
 	 * case).
 	 */
-	const submitBgHoverDecl =
-		isCssGradient( submitBackgroundHoverGradient )
-			? `background-image:${ submitBackgroundHoverGradient } !important;background-color:transparent !important;`
-			: resolveColourToken( submitBackgroundHover, palette )
-				? `background-color:${ resolveColourToken( submitBackgroundHover, palette ) } !important;`
-				: '';
+	const submitBgHoverDecl = isCssGradient( submitBackgroundHoverGradient )
+		? `background-image:${ submitBackgroundHoverGradient } !important;background-color:transparent !important;`
+		: resolveColourToken( submitBackgroundHover, palette )
+		? `background-color:${ resolveColourToken(
+				submitBackgroundHover,
+				palette
+		  ) } !important;`
+		: '';
 
-	const progressBarHoverDecl =
-		isCssGradient( progressBarColourHoverGradient )
-			? `background-image:${ progressBarColourHoverGradient } !important;`
-			: resolveColourToken( progressBarColourHover, palette )
-				? `background-color:${ resolveColourToken( progressBarColourHover, palette ) } !important;`
-				: '';
+	const progressBarHoverDecl = isCssGradient( progressBarColourHoverGradient )
+		? `background-image:${ progressBarColourHoverGradient } !important;`
+		: resolveColourToken( progressBarColourHover, palette )
+		? `background-color:${ resolveColourToken(
+				progressBarColourHover,
+				palette
+		  ) } !important;`
+		: '';
 
 	/*
 	 * Field style group canvas mirror: render.php's `.uid .sgs-form-field__input`
@@ -321,21 +398,38 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 	 */
 	const fieldTier = ( obj, tier ) =>
 		obj && 'object' === typeof obj
-			? obj[ tier ] ?? ( 'mobile' === tier ? obj.tablet ?? obj.desktop : 'tablet' === tier ? obj.desktop : undefined )
+			? obj[ tier ] ??
+			  ( 'mobile' === tier
+					? obj.tablet ?? obj.desktop
+					: 'tablet' === tier
+					? obj.desktop
+					: undefined )
 			: undefined;
 	const hasValue = ( v ) => '' !== v && null !== v && undefined !== v;
 	const fieldBox = ( box ) =>
 		box && 'object' === typeof box && Object.values( box ).some( hasValue )
-			? [ 'top', 'right', 'bottom', 'left' ].map( ( side ) => box[ side ] || '0' ).join( ' ' )
+			? [ 'top', 'right', 'bottom', 'left' ]
+					.map( ( side ) => box[ side ] || '0' )
+					.join( ' ' )
 			: '';
 	const fieldCorners = ( box ) =>
 		box && 'object' === typeof box && Object.values( box ).some( hasValue )
-			? [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ].map( ( c ) => box[ c ] || '0' ).join( ' ' )
+			? [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ]
+					.map( ( c ) => box[ c ] || '0' )
+					.join( ' ' )
 			: '';
 	// A stored value is a bare number (px) or a CSS length string; it is the height, as render.php prints it.
-	const fieldPx = ( v ) => ( hasValue( v ) ? ( Number.isFinite( Number( v ) ) ? `${ Number( v ) }px` : String( v ) ) : '' );
+	const fieldPx = ( v ) =>
+		hasValue( v )
+			? Number.isFinite( Number( v ) )
+				? `${ Number( v ) }px`
+				: String( v )
+			: '';
 	const fieldHeight = fieldPx;
-	const fieldBorderDecls = borderBoxPreview( fieldBorderWidth, fieldBorderStyle );
+	const fieldBorderDecls = borderBoxPreview(
+		fieldBorderWidth,
+		fieldBorderStyle
+	);
 	const fieldBackgroundValue = resolveColourToken( fieldBackground, palette );
 	const fieldTextValue = resolveColourToken( fieldTextColour, palette );
 	const labelColourValue = resolveColourToken(
@@ -384,71 +478,152 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 	);
 	// The sticky buttons row at the previewed device, as render.php prints it where sticky is on.
 	const stickyOn = !! tierValueOf( attributes.actionsSticky, previewTier );
-	const stickyBg = resolveColourToken( attributes.actionsStickyBackground, palette );
-	const stickyBorder = resolveColourToken( attributes.actionsStickyBorderColour, palette );
+	const stickyBg = resolveColourToken(
+		attributes.actionsStickyBackground,
+		palette
+	);
+	const stickyBorder = resolveColourToken(
+		attributes.actionsStickyBorderColour,
+		palette
+	);
 	const stickyBleed = sgsLengthPreview( attributes.actionsStickyBleed );
-	const markGapValue = tierLengthPreview( attributes.requiredMarkGap, previewTier );
-	const fileIconBoxValue = tierLengthPreview( attributes.fileIconBoxSize, previewTier );
-	const fileIconSizeValue = tierLengthPreview( attributes.fileIconSize, previewTier );
-	const stickyShadow = resolveShadowPreviewComposed( attributes.actionsStickyShadow, attributes.actionsStickyShadowColour );
-	const stickyPadding = Object.entries( tierBoxLonghands( attributes.actionsStickyPadding, previewTier, 'padding' ) )
-		.map( ( [ prop, val ] ) => `${ prop.replace( /[A-Z]/g, ( c ) => `-${ c.toLowerCase() }` ) }:${ val };` )
+	const markGapValue = tierLengthPreview(
+		attributes.requiredMarkGap,
+		previewTier
+	);
+	const fileIconBoxValue = tierLengthPreview(
+		attributes.fileIconBoxSize,
+		previewTier
+	);
+	const fileIconSizeValue = tierLengthPreview(
+		attributes.fileIconSize,
+		previewTier
+	);
+	const stickyShadow = resolveShadowPreviewComposed(
+		attributes.actionsStickyShadow,
+		attributes.actionsStickyShadowColour
+	);
+	const stickyPadding = Object.entries(
+		tierBoxLonghands(
+			attributes.actionsStickyPadding,
+			previewTier,
+			'padding'
+		)
+	)
+		.map(
+			( [ prop, val ] ) =>
+				`${ prop.replace(
+					/[A-Z]/g,
+					( c ) => `-${ c.toLowerCase() }`
+				) }:${ val };`
+		)
 		.join( '' );
 	const stickyDecls = stickyOn
-		? `position:sticky;bottom:0;z-index:5;background-color:${ stickyBg || 'transparent' };${ stickyBorder ? `border-top:1px solid ${ stickyBorder };` : '' }${ stickyBleed ? `margin-inline:calc(-1 * ${ stickyBleed });` : '' }${ stickyShadow ? `box-shadow:${ stickyShadow };` : '' }${ stickyPadding }`
+		? `position:sticky;bottom:0;z-index:5;background-color:${
+				stickyBg || 'transparent'
+		  };${ stickyBorder ? `border-top:1px solid ${ stickyBorder };` : '' }${
+				stickyBleed ? `margin-inline:calc(-1 * ${ stickyBleed });` : ''
+		  }${
+				stickyShadow ? `box-shadow:${ stickyShadow };` : ''
+		  }${ stickyPadding }`
 		: '';
 	const fieldEdgeValue = resolveColourToken( fieldBorderColour, palette );
-	const fieldHolderValue = resolveColourToken( fieldPlaceholderColour, palette );
+	const fieldHolderValue = resolveColourToken(
+		fieldPlaceholderColour,
+		palette
+	);
 	const fieldVars = [
 		fieldEdgeValue && `--sgs-field-edge-colour:${ fieldEdgeValue };`,
-		fieldHolderValue && `--sgs-field-placeholder-colour:${ fieldHolderValue };`,
+		fieldHolderValue &&
+			`--sgs-field-placeholder-colour:${ fieldHolderValue };`,
 	]
 		.filter( Boolean )
 		.join( '' );
 	const fieldSel = `.${ formPreviewScope } .sgs-form-field__input`;
 	const fieldTierDecls = ( tier ) =>
 		[
-			fieldBox( fieldTier( fieldPadding, tier ) ) && `padding:${ fieldBox( fieldTier( fieldPadding, tier ) ) };`,
+			fieldBox( fieldTier( fieldPadding, tier ) ) &&
+				`padding:${ fieldBox( fieldTier( fieldPadding, tier ) ) };`,
 			fieldCorners( fieldTier( fieldBorderRadius, tier ) ) &&
-				`border-radius:${ fieldCorners( fieldTier( fieldBorderRadius, tier ) ) };`,
+				`border-radius:${ fieldCorners(
+					fieldTier( fieldBorderRadius, tier )
+				) };`,
 		]
 			.filter( Boolean )
 			.join( '' );
 	const fieldSingleSel = `.${ formPreviewScope } input.sgs-form-field__input,.${ formPreviewScope } select.sgs-form-field__input`;
 	const fieldTextareaSel = `.${ formPreviewScope } textarea.sgs-form-field__input`;
 	const fieldHeightRule = ( tier, selector, source ) =>
-		fieldHeight( fieldTier( source, tier ) ) ? `${ selector }{min-height:${ fieldHeight( fieldTier( source, tier ) ) };}` : '';
+		fieldHeight( fieldTier( source, tier ) )
+			? `${ selector }{min-height:${ fieldHeight(
+					fieldTier( source, tier )
+			  ) };}`
+			: '';
 	const fieldBaseDecls = [
 		fieldBackgroundValue && `background-color:${ fieldBackgroundValue };`,
 		fieldTextValue && `color:${ fieldTextValue };`,
-		fieldBorderDecls.borderStyle && `border-style:${ fieldBorderDecls.borderStyle };`,
-		fieldBorderDecls.borderWidth && `border-width:${ fieldBorderDecls.borderWidth };`,
+		fieldBorderDecls.borderStyle &&
+			`border-style:${ fieldBorderDecls.borderStyle };`,
+		fieldBorderDecls.borderWidth &&
+			`border-width:${ fieldBorderDecls.borderWidth };`,
 		fieldTierDecls( 'desktop' ),
 	]
 		.filter( Boolean )
 		.join( '' );
-	const submitAlignValue = { start: 'flex-start', center: 'center', end: 'flex-end', 'space-between': 'space-between' }[ submitAlign ];
+	const submitAlignValue = {
+		start: 'flex-start',
+		center: 'center',
+		end: 'flex-end',
+		'space-between': 'space-between',
+	}[ submitAlign ];
 	const fieldPreviewCss = [
 		fieldVars && `.${ formPreviewScope }{${ fieldVars }}`,
 		fieldBaseDecls && `${ fieldSel }{${ fieldBaseDecls }}`,
 		fieldHeightRule( 'desktop', fieldSingleSel, fieldMinHeight ),
 		fieldHeightRule( 'desktop', fieldTextareaSel, fieldTextareaMinHeight ),
 		fieldTierDecls( 'tablet' ) !== fieldTierDecls( 'desktop' ) &&
-			`@media${ QUERY_TABLET }{${ fieldSel }{${ fieldTierDecls( 'tablet' ) }}}`,
+			`@media${ QUERY_TABLET }{${ fieldSel }{${ fieldTierDecls(
+				'tablet'
+			) }}}`,
 		fieldTierDecls( 'mobile' ) !== fieldTierDecls( 'tablet' ) &&
-			`@media${ QUERY_MOBILE }{${ fieldSel }{${ fieldTierDecls( 'mobile' ) }}}`,
-		fieldHeightRule( 'mobile', fieldSingleSel, fieldMinHeight ) !== fieldHeightRule( 'desktop', fieldSingleSel, fieldMinHeight ) &&
-			`@media${ QUERY_MOBILE }{${ fieldHeightRule( 'mobile', fieldSingleSel, fieldMinHeight ) }}`,
-		fieldHeightRule( 'mobile', fieldTextareaSel, fieldTextareaMinHeight ) !== fieldHeightRule( 'desktop', fieldTextareaSel, fieldTextareaMinHeight ) &&
-			`@media${ QUERY_MOBILE }{${ fieldHeightRule( 'mobile', fieldTextareaSel, fieldTextareaMinHeight ) }}`,
-		submitAlignValue && `.${ formPreviewScope } .sgs-form__actions{justify-content:${ submitAlignValue };}`,
-		actionsFlexWrap && `.${ formPreviewScope } .sgs-form__actions{flex-wrap:${ actionsFlexWrap };}`,
+			`@media${ QUERY_MOBILE }{${ fieldSel }{${ fieldTierDecls(
+				'mobile'
+			) }}}`,
+		fieldHeightRule( 'mobile', fieldSingleSel, fieldMinHeight ) !==
+			fieldHeightRule( 'desktop', fieldSingleSel, fieldMinHeight ) &&
+			`@media${ QUERY_MOBILE }{${ fieldHeightRule(
+				'mobile',
+				fieldSingleSel,
+				fieldMinHeight
+			) }}`,
+		fieldHeightRule(
+			'mobile',
+			fieldTextareaSel,
+			fieldTextareaMinHeight
+		) !==
+			fieldHeightRule(
+				'desktop',
+				fieldTextareaSel,
+				fieldTextareaMinHeight
+			) &&
+			`@media${ QUERY_MOBILE }{${ fieldHeightRule(
+				'mobile',
+				fieldTextareaSel,
+				fieldTextareaMinHeight
+			) }}`,
+		submitAlignValue &&
+			`.${ formPreviewScope } .sgs-form__actions{justify-content:${ submitAlignValue };}`,
+		actionsFlexWrap &&
+			`.${ formPreviewScope } .sgs-form__actions{flex-wrap:${ actionsFlexWrap };}`,
 	]
 		.filter( Boolean )
 		.join( '' );
 
 	const formHoverPreviewCss = [
-		submitLiftPreviewRule( `.${ formPreviewScope } .sgs-form__button--submit`, attributes ),
+		submitLiftPreviewRule(
+			`.${ formPreviewScope } .sgs-form__button--submit`,
+			attributes
+		),
 		submitBgHoverDecl &&
 			`.${ formPreviewScope } .sgs-form__button--submit:hover,.${ formPreviewScope } .sgs-form__button--submit:focus-visible{${ submitBgHoverDecl }}`,
 		progressBarHoverDecl &&
@@ -458,15 +633,43 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 		.join( '' );
 
 	// Typography, spacing, border, radius, max-width, layout and the content band the wrapper paints on the form's outer element.
-	const trackHeightValue = tierLengthPreview( attributes.progressTrackHeight, previewTier );
-	const statusGapValue = tierLengthPreview( attributes.statusRowGap, previewTier );
-	const actionsSpaceValue = tierLengthPreview( attributes.actionsTopPadding, previewTier );
-	const actionsMarginValue = tierLengthPreview( attributes.actionsTopMargin, previewTier );
-	const actionsBorderWidth = tierLengthPreview( { desktop: attributes.actionsBorderTopWidth }, 'desktop' );
-	const actionsBorderColour = resolveColourToken( attributes.actionsBorderTopColour, palette ) || 'currentcolor';
-	const actionsGapValue = tierLengthPreview( attributes.actionsGap, previewTier );
-	const actionsAlignValue = tierValueOf( attributes.actionsAlignItems, previewTier );
-	const indentPreviewCss = textIndentPreviewCss( attributes, '', `.${ formPreviewScope }`, previewTier );
+	const trackHeightValue = tierLengthPreview(
+		attributes.progressTrackHeight,
+		previewTier
+	);
+	const statusGapValue = tierLengthPreview(
+		attributes.statusRowGap,
+		previewTier
+	);
+	const actionsSpaceValue = tierLengthPreview(
+		attributes.actionsTopPadding,
+		previewTier
+	);
+	const actionsMarginValue = tierLengthPreview(
+		attributes.actionsTopMargin,
+		previewTier
+	);
+	const actionsBorderWidth = tierLengthPreview(
+		{ desktop: attributes.actionsBorderTopWidth },
+		'desktop'
+	);
+	const actionsBorderColour =
+		resolveColourToken( attributes.actionsBorderTopColour, palette ) ||
+		'currentcolor';
+	const actionsGapValue = tierLengthPreview(
+		attributes.actionsGap,
+		previewTier
+	);
+	const actionsAlignValue = tierValueOf(
+		attributes.actionsAlignItems,
+		previewTier
+	);
+	const indentPreviewCss = textIndentPreviewCss(
+		attributes,
+		'',
+		`.${ formPreviewScope }`,
+		previewTier
+	);
 	const wrapper = wrapperPreview( attributes, previewTier, palette );
 
 	// Label and field typography on the canvas. Both elements are rendered by the
@@ -486,21 +689,52 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 	// The upload zone's box and its icon holder's corners, as render.php prints them through sgs_border_element_decls()
 	// and sgs_emit_responsive_css() (the zone's border colour is fileLabelBorderPreviewDecl above).
 	const zoneBoxDecls = [
-		typographyDecls( sgsBorderPreview( { widthValues: attributes.fileLabelBorderWidth, styleValue: attributes.fileLabelBorderStyle, radiusValues: attributes.fileLabelBorderRadius }, previewTier, palette ) ),
-		typographyDecls( tierBoxLonghands( attributes.fileLabelPadding, previewTier, 'padding' ) ),
-		tierLengthPreview( attributes.fileLabelGap, previewTier ) && `gap:${ tierLengthPreview( attributes.fileLabelGap, previewTier ) };`,
+		typographyDecls(
+			sgsBorderPreview(
+				{
+					widthValues: attributes.fileLabelBorderWidth,
+					styleValue: attributes.fileLabelBorderStyle,
+					radiusValues: attributes.fileLabelBorderRadius,
+				},
+				previewTier,
+				palette
+			)
+		),
+		typographyDecls(
+			tierBoxLonghands(
+				attributes.fileLabelPadding,
+				previewTier,
+				'padding'
+			)
+		),
+		tierLengthPreview( attributes.fileLabelGap, previewTier ) &&
+			`gap:${ tierLengthPreview(
+				attributes.fileLabelGap,
+				previewTier
+			) };`,
 	]
 		.filter( Boolean )
 		.join( '' );
-	const zoneIconRadiusDecls = typographyDecls( sgsBorderPreview( { radiusValues: attributes.fileIconRadius }, previewTier, palette ) );
-	const labelTypographyDecls = typographyDecls( typographyPreviewStyle( attributes, 'label', previewTier ) );
-	const fieldTypographyDecls = typographyDecls( typographyPreviewStyle( attributes, 'field', previewTier ) );
+	const zoneIconRadiusDecls = typographyDecls(
+		sgsBorderPreview(
+			{ radiusValues: attributes.fileIconRadius },
+			previewTier,
+			palette
+		)
+	);
+	const labelTypographyDecls = typographyDecls(
+		typographyPreviewStyle( attributes, 'label', previewTier )
+	);
+	const fieldTypographyDecls = typographyDecls(
+		typographyPreviewStyle( attributes, 'field', previewTier )
+	);
 	// Tile icon, tile label, consent text, review term and answer, help, error,
 	// file status, review heading and step label are emitted by child blocks,
 	// field-render-helpers.php or by view.js, and the submit button is the canvas-only preview
 	// below, so each gets a scoped rule through typographyPreviewCss().
 	const typographyPreviewRules = [
-		labelTypographyDecls && `.${ formPreviewScope } .sgs-form-field__label{${ labelTypographyDecls }}`,
+		labelTypographyDecls &&
+			`.${ formPreviewScope } .sgs-form-field__label{${ labelTypographyDecls }}`,
 		fieldTypographyDecls && `${ fieldSel }{${ fieldTypographyDecls }}`,
 		typographyPreviewCss(
 			attributes,
@@ -669,20 +903,61 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 		actionsMarginValue &&
 			`.${ formPreviewScope } .sgs-form__actions{margin-top:${ actionsMarginValue };}`,
 		// The same declarations and custom properties render.php prints (its sticky-off reset reads the properties).
-		actionsBorderWidth && `.${ formPreviewScope } .sgs-form__actions{border-top:${ actionsBorderWidth } ${ attributes.actionsBorderTopStyle || 'solid' } ${ actionsBorderColour };--sgs-form-actions-border-width:${ actionsBorderWidth };--sgs-form-actions-border-style:${ attributes.actionsBorderTopStyle || 'solid' };--sgs-form-actions-border-colour:${ actionsBorderColour };}`,
-		actionsSpaceValue && `.${ formPreviewScope } .sgs-form__actions{--sgs-form-actions-space:${ actionsSpaceValue };}`,
-		statusGapValue && `.${ formPreviewScope } .sgs-form__status-row{row-gap:${ statusGapValue };}`,
-		attributes.statusRowMarginBottom && `.${ formPreviewScope } .sgs-form__status-row{margin-bottom:${ attributes.statusRowMarginBottom };}`,
-		tierValueOf( attributes.stepCounterNameHidden, previewTier ) && `.${ formPreviewScope } .sgs-form__step-counter-name{display:none;}`,
-		tierValueOf( attributes.stepNamesHidden, previewTier ) && `.${ formPreviewScope } .sgs-form__progress-step-label{display:none;}`,
-		attributes.statusRowWrap && `.${ formPreviewScope } .sgs-form__status-row{flex-wrap:${ attributes.statusRowWrap };}`,
-		resolveColourToken( attributes.stepLabelColour, palette ) && `.${ formPreviewScope } .sgs-form__progress-step:not(.sgs-form__progress-step--active) .sgs-form__progress-step-label{color:${ resolveColourToken( attributes.stepLabelColour, palette ) };}`,
-		resolveColourToken( attributes.stepLabelColourActive, palette ) && `.${ formPreviewScope } .sgs-form__progress-step--active .sgs-form__progress-step-label{color:${ resolveColourToken( attributes.stepLabelColourActive, palette ) };}`,
-		( resolveColourToken( attributes.stepLabelColourCompleted, palette ) || attributes.stepLabelFontWeightCompleted ) && `.${ formPreviewScope } .sgs-form__progress-step.sgs-form__progress-step--completed .sgs-form__progress-step-label{${ resolveColourToken( attributes.stepLabelColourCompleted, palette ) ? `color:${ resolveColourToken( attributes.stepLabelColourCompleted, palette ) };` : '' }${ attributes.stepLabelFontWeightCompleted ? `font-weight:${ attributes.stepLabelFontWeightCompleted };` : '' }}`,
-		actionsGapValue && `.${ formPreviewScope } .sgs-form__actions{gap:${ actionsGapValue };}`,
-		[ 'flex-start', 'center', 'flex-end', 'stretch', 'baseline' ].includes( actionsAlignValue ) && `.${ formPreviewScope } .sgs-form__actions{align-items:${ actionsAlignValue };}`,
-		tierValueOf( attributes.nextButtonFill, previewTier ) && `.${ formPreviewScope } .sgs-form__button--next,.${ formPreviewScope } .sgs-form__button--submit{flex:1 1 0%;}`,
-		attributes.navIconStrokeWidth > 0 && `.${ formPreviewScope } .sgs-form__button-icon svg{stroke-width:${ attributes.navIconStrokeWidth };}`,
+		actionsBorderWidth &&
+			`.${ formPreviewScope } .sgs-form__actions{border-top:${ actionsBorderWidth } ${
+				attributes.actionsBorderTopStyle || 'solid'
+			} ${ actionsBorderColour };--sgs-form-actions-border-width:${ actionsBorderWidth };--sgs-form-actions-border-style:${
+				attributes.actionsBorderTopStyle || 'solid'
+			};--sgs-form-actions-border-colour:${ actionsBorderColour };}`,
+		actionsSpaceValue &&
+			`.${ formPreviewScope } .sgs-form__actions{--sgs-form-actions-space:${ actionsSpaceValue };}`,
+		statusGapValue &&
+			`.${ formPreviewScope } .sgs-form__status-row{row-gap:${ statusGapValue };}`,
+		attributes.statusRowMarginBottom &&
+			`.${ formPreviewScope } .sgs-form__status-row{margin-bottom:${ attributes.statusRowMarginBottom };}`,
+		tierValueOf( attributes.stepCounterNameHidden, previewTier ) &&
+			`.${ formPreviewScope } .sgs-form__step-counter-name{display:none;}`,
+		tierValueOf( attributes.stepNamesHidden, previewTier ) &&
+			`.${ formPreviewScope } .sgs-form__progress-step-label{display:none;}`,
+		attributes.statusRowWrap &&
+			`.${ formPreviewScope } .sgs-form__status-row{flex-wrap:${ attributes.statusRowWrap };}`,
+		resolveColourToken( attributes.stepLabelColour, palette ) &&
+			`.${ formPreviewScope } .sgs-form__progress-step:not(.sgs-form__progress-step--active) .sgs-form__progress-step-label{color:${ resolveColourToken(
+				attributes.stepLabelColour,
+				palette
+			) };}`,
+		resolveColourToken( attributes.stepLabelColourActive, palette ) &&
+			`.${ formPreviewScope } .sgs-form__progress-step--active .sgs-form__progress-step-label{color:${ resolveColourToken(
+				attributes.stepLabelColourActive,
+				palette
+			) };}`,
+		( resolveColourToken( attributes.stepLabelColourCompleted, palette ) ||
+			attributes.stepLabelFontWeightCompleted ) &&
+			`.${ formPreviewScope } .sgs-form__progress-step.sgs-form__progress-step--completed .sgs-form__progress-step-label{${
+				resolveColourToken(
+					attributes.stepLabelColourCompleted,
+					palette
+				)
+					? `color:${ resolveColourToken(
+							attributes.stepLabelColourCompleted,
+							palette
+					  ) };`
+					: ''
+			}${
+				attributes.stepLabelFontWeightCompleted
+					? `font-weight:${ attributes.stepLabelFontWeightCompleted };`
+					: ''
+			}}`,
+		actionsGapValue &&
+			`.${ formPreviewScope } .sgs-form__actions{gap:${ actionsGapValue };}`,
+		[ 'flex-start', 'center', 'flex-end', 'stretch', 'baseline' ].includes(
+			actionsAlignValue
+		) &&
+			`.${ formPreviewScope } .sgs-form__actions{align-items:${ actionsAlignValue };}`,
+		tierValueOf( attributes.nextButtonFill, previewTier ) &&
+			`.${ formPreviewScope } .sgs-form__button--next,.${ formPreviewScope } .sgs-form__button--submit{flex:1 1 0%;}`,
+		attributes.navIconStrokeWidth > 0 &&
+			`.${ formPreviewScope } .sgs-form__button-icon svg{stroke-width:${ attributes.navIconStrokeWidth };}`,
 	]
 		.filter( Boolean )
 		.join( '' );
@@ -693,7 +968,24 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 			...typographyPreviewStyle( attributes, '', previewTier ),
 			...tierBoxLonghands( attributes.margin, previewTier, 'margin' ),
 		},
-		className: `sgs-form ${ formPreviewScope }${ fieldColumnsFrom && '560' !== fieldColumnsFrom ? ` sgs-form--field-cols-${ fieldColumnsFrom }` : '' }${ false === stretchButtonsNarrow ? ' sgs-form--no-narrow-stretch' : '' }${ 'inline' === attributes.stepLayout ? ' sgs-form--stepper-inline' : '' }${ attributes.gap && Object.values( attributes.gap ).some( ( v ) => '' !== String( v ?? '' ).trim() ) ? ' sgs-form--has-gap' : '' }`,
+		className: `sgs-form ${ formPreviewScope }${
+			fieldColumnsFrom && '560' !== fieldColumnsFrom
+				? ` sgs-form--field-cols-${ fieldColumnsFrom }`
+				: ''
+		}${
+			false === stretchButtonsNarrow ? ' sgs-form--no-narrow-stretch' : ''
+		}${
+			'inline' === attributes.stepLayout
+				? ' sgs-form--stepper-inline'
+				: ''
+		}${
+			attributes.gap &&
+			Object.values( attributes.gap ).some(
+				( v ) => '' !== String( v ?? '' ).trim()
+			)
+				? ' sgs-form--has-gap'
+				: ''
+		}`,
 	} );
 
 	// The blocks a form's own children may be: block.json's `allowedBlocks`, the one list. Unlike sgs/container it is
@@ -711,7 +1003,9 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 	// "Add field" adds to the last step (a field never sits beside the steps), or to the form when it has none.
 	const fieldRoot = useSelect(
 		( select ) => {
-			const steps = select( 'core/block-editor' ).getBlocks( clientId ).filter( ( b ) => 'sgs/form-step' === b.name );
+			const steps = select( 'core/block-editor' )
+				.getBlocks( clientId )
+				.filter( ( b ) => 'sgs/form-step' === b.name );
 			return steps.length ? steps[ steps.length - 1 ].clientId : clientId;
 		},
 		[ clientId ]
@@ -747,26 +1041,42 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 					} ),
 					{
 						key: 'submit-background',
-						label: __( 'Submit button background colour', 'sgs-blocks' ),
+						label: __(
+							'Submit button background colour',
+							'sgs-blocks'
+						),
 						states: [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: submitBackground,
-								onChange: ( val ) => setAttributes( { submitBackground: val ?? '' } ),
-								gradientValue: attributes.submitBackgroundGradient,
-								onGradientChange: ( val ) => setAttributes( { submitBackgroundGradient: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										submitBackground: val ?? '',
+									} ),
+								gradientValue:
+									attributes.submitBackgroundGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										submitBackgroundGradient: val ?? '',
+									} ),
 								linked: true,
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: submitBackgroundHover,
-								onChange: ( val ) => setAttributes( { submitBackgroundHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										submitBackgroundHover: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: submitBackgroundHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { submitBackgroundHoverGradient: val ?? '' } ),
+									setAttributes( {
+										submitBackgroundHoverGradient:
+											val ?? '',
+									} ),
 							},
 						],
 					},
@@ -779,20 +1089,32 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: progressBarColour,
-								onChange: ( val ) => setAttributes( { progressBarColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										progressBarColour: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: progressBarColourGradient,
-								onGradientChange: ( val ) => setAttributes( { progressBarColourGradient: val ?? '' } ),
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										progressBarColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: progressBarColourHover,
-								onChange: ( val ) => setAttributes( { progressBarColourHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										progressBarColourHover: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: progressBarColourHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { progressBarColourHoverGradient: val ?? '' } ),
+									setAttributes( {
+										progressBarColourHoverGradient:
+											val ?? '',
+									} ),
 							},
 						],
 					},
@@ -800,13 +1122,20 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 						? [
 								{
 									key: 'saved-dot',
-									label: __( 'Saved-progress dot colour', 'sgs-blocks' ),
+									label: __(
+										'Saved-progress dot colour',
+										'sgs-blocks'
+									),
 									states: [
 										{
 											key: 'normal',
 											label: __( 'Normal', 'sgs-blocks' ),
 											value: savedProgressDotColour,
-											onChange: ( val ) => setAttributes( { savedProgressDotColour: val ?? '' } ),
+											onChange: ( val ) =>
+												setAttributes( {
+													savedProgressDotColour:
+														val ?? '',
+												} ),
 											linked: true,
 										},
 									],
@@ -816,66 +1145,105 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 					textRow( {
 						key: 'next-text',
 						label: __( 'Next button text colour', 'sgs-blocks' ),
-						attrs: { base: 'nextColourText', hover: 'nextColourTextHover' },
+						attrs: {
+							base: 'nextColourText',
+							hover: 'nextColourTextHover',
+						},
 						attributes,
 						setAttributes,
 					} ),
 					textRow( {
 						key: 'prev-text',
-						label: __( 'Previous button text colour', 'sgs-blocks' ),
-						attrs: { base: 'prevColourText', hover: 'prevColourTextHover' },
+						label: __(
+							'Previous button text colour',
+							'sgs-blocks'
+						),
+						attrs: {
+							base: 'prevColourText',
+							hover: 'prevColourTextHover',
+						},
 						attributes,
 						setAttributes,
 					} ),
 					{
 						key: 'prev-button-background',
-						label: __( 'Previous button background colour', 'sgs-blocks' ),
+						label: __(
+							'Previous button background colour',
+							'sgs-blocks'
+						),
 						states: [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: prevColourBackground,
-								onChange: ( val ) => setAttributes( { prevColourBackground: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										prevColourBackground: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: prevColourBackgroundGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { prevColourBackgroundGradient: val ?? '' } ),
+									setAttributes( {
+										prevColourBackgroundGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: prevColourBackgroundHover,
-								onChange: ( val ) => setAttributes( { prevColourBackgroundHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										prevColourBackgroundHover: val ?? '',
+									} ),
 								linked: true,
-								gradientValue: prevColourBackgroundHoverGradient,
+								gradientValue:
+									prevColourBackgroundHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { prevColourBackgroundHoverGradient: val ?? '' } ),
+									setAttributes( {
+										prevColourBackgroundHoverGradient:
+											val ?? '',
+									} ),
 							},
 						],
 					},
 					{
 						key: 'next-button-background',
-						label: __( 'Next button background colour', 'sgs-blocks' ),
+						label: __(
+							'Next button background colour',
+							'sgs-blocks'
+						),
 						states: [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: nextColourBackground,
-								onChange: ( val ) => setAttributes( { nextColourBackground: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										nextColourBackground: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: nextColourBackgroundGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { nextColourBackgroundGradient: val ?? '' } ),
+									setAttributes( {
+										nextColourBackgroundGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: nextColourBackgroundHover,
-								onChange: ( val ) => setAttributes( { nextColourBackgroundHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										nextColourBackgroundHover: val ?? '',
+									} ),
 								linked: true,
-								gradientValue: nextColourBackgroundHoverGradient,
+								gradientValue:
+									nextColourBackgroundHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { nextColourBackgroundHoverGradient: val ?? '' } ),
+									setAttributes( {
+										nextColourBackgroundHoverGradient:
+											val ?? '',
+									} ),
 							},
 						],
 					},
@@ -887,21 +1255,32 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: tileBorderColour,
-								onChange: ( val ) => setAttributes( { tileBorderColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										tileBorderColour: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: tileBorderColourGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { tileBorderColourGradient: val ?? '' } ),
+									setAttributes( {
+										tileBorderColourGradient: val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: tileBorderColourHover,
-								onChange: ( val ) => setAttributes( { tileBorderColourHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										tileBorderColourHover: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: tileBorderColourHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { tileBorderColourHoverGradient: val ?? '' } ),
+									setAttributes( {
+										tileBorderColourHoverGradient:
+											val ?? '',
+									} ),
 							},
 						],
 					},
@@ -913,47 +1292,78 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: fileLabelBorderColour,
-								onChange: ( val ) => setAttributes( { fileLabelBorderColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										fileLabelBorderColour: val ?? '',
+									} ),
 								linked: true,
 								gradientValue: fileLabelBorderColourGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { fileLabelBorderColourGradient: val ?? '' } ),
+									setAttributes( {
+										fileLabelBorderColourGradient:
+											val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: fileLabelBorderColourHover,
-								onChange: ( val ) => setAttributes( { fileLabelBorderColourHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										fileLabelBorderColourHover: val ?? '',
+									} ),
 								linked: true,
-								gradientValue: fileLabelBorderColourHoverGradient,
+								gradientValue:
+									fileLabelBorderColourHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { fileLabelBorderColourHoverGradient: val ?? '' } ),
+									setAttributes( {
+										fileLabelBorderColourHoverGradient:
+											val ?? '',
+									} ),
 							},
 						],
 					},
 					{
 						key: 'file-label-background',
-						label: __( 'File upload background colour', 'sgs-blocks' ),
+						label: __(
+							'File upload background colour',
+							'sgs-blocks'
+						),
 						states: [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: fileLabelBackgroundColour,
-								onChange: ( val ) => setAttributes( { fileLabelBackgroundColour: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										fileLabelBackgroundColour: val ?? '',
+									} ),
 								linked: true,
-								gradientValue: fileLabelBackgroundColourGradient,
+								gradientValue:
+									fileLabelBackgroundColourGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { fileLabelBackgroundColourGradient: val ?? '' } ),
+									setAttributes( {
+										fileLabelBackgroundColourGradient:
+											val ?? '',
+									} ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: fileLabelBackgroundColourHover,
-								onChange: ( val ) => setAttributes( { fileLabelBackgroundColourHover: val ?? '' } ),
+								onChange: ( val ) =>
+									setAttributes( {
+										fileLabelBackgroundColourHover:
+											val ?? '',
+									} ),
 								linked: true,
-								gradientValue: fileLabelBackgroundColourHoverGradient,
+								gradientValue:
+									fileLabelBackgroundColourHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { fileLabelBackgroundColourHoverGradient: val ?? '' } ),
+									setAttributes( {
+										fileLabelBackgroundColourHoverGradient:
+											val ?? '',
+									} ),
 							},
 						],
 					},
@@ -966,14 +1376,20 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 					} ),
 					fillRow( {
 						key: 'field-focus-background',
-						label: __( 'Focused field background colour', 'sgs-blocks' ),
+						label: __(
+							'Focused field background colour',
+							'sgs-blocks'
+						),
 						attrs: { base: 'fieldFocusBackground' },
 						attributes,
 						setAttributes,
 					} ),
 					textRow( {
 						key: 'field-focus-border',
-						label: __( 'Focused field border colour', 'sgs-blocks' ),
+						label: __(
+							'Focused field border colour',
+							'sgs-blocks'
+						),
 						attrs: { base: 'fieldFocusBorderColour' },
 						attributes,
 						setAttributes,
@@ -987,7 +1403,10 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 					} ),
 					textRow( {
 						key: 'field-label-floated',
-						label: __( 'Floated label colour (focused)', 'sgs-blocks' ),
+						label: __(
+							'Floated label colour (focused)',
+							'sgs-blocks'
+						),
 						attrs: { base: 'labelFloatedColour' },
 						attributes,
 						setAttributes,
@@ -1029,7 +1448,10 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 					} ),
 					fillRow( {
 						key: 'file-icon-background',
-						label: __( 'Upload zone icon background', 'sgs-blocks' ),
+						label: __(
+							'Upload zone icon background',
+							'sgs-blocks'
+						),
 						attrs: { base: 'fileIconBackground' },
 						attributes,
 						setAttributes,
@@ -1071,42 +1493,60 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 					} ),
 					textRow( {
 						key: 'step-label-completed',
-						label: __( 'Completed step label colour', 'sgs-blocks' ),
+						label: __(
+							'Completed step label colour',
+							'sgs-blocks'
+						),
 						attrs: { base: 'stepLabelColourCompleted' },
 						attributes,
 						setAttributes,
 					} ),
 					fillRow( {
 						key: 'step-number-inactive',
-						label: __( 'Inactive step number background', 'sgs-blocks' ),
+						label: __(
+							'Inactive step number background',
+							'sgs-blocks'
+						),
 						attrs: { base: 'stepNumberInactiveBackground' },
 						attributes,
 						setAttributes,
 					} ),
 					fillRow( {
 						key: 'step-number-completed-bg',
-						label: __( 'Completed step number background', 'sgs-blocks' ),
+						label: __(
+							'Completed step number background',
+							'sgs-blocks'
+						),
 						attrs: { base: 'stepNumberCompletedBackground' },
 						attributes,
 						setAttributes,
 					} ),
 					textRow( {
 						key: 'step-number-completed-colour',
-						label: __( 'Completed step number colour', 'sgs-blocks' ),
+						label: __(
+							'Completed step number colour',
+							'sgs-blocks'
+						),
 						attrs: { base: 'stepNumberCompletedColour' },
 						attributes,
 						setAttributes,
 					} ),
 					fillRow( {
 						key: 'actions-sticky-bg',
-						label: __( 'Sticky buttons row background', 'sgs-blocks' ),
+						label: __(
+							'Sticky buttons row background',
+							'sgs-blocks'
+						),
 						attrs: { base: 'actionsStickyBackground' },
 						attributes,
 						setAttributes,
 					} ),
 					fillRow( {
 						key: 'actions-sticky-border',
-						label: __( 'Sticky buttons row top line', 'sgs-blocks' ),
+						label: __(
+							'Sticky buttons row top line',
+							'sgs-blocks'
+						),
 						attrs: { base: 'actionsStickyBorderColour' },
 						attributes,
 						setAttributes,
@@ -1134,8 +1574,12 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 					<p className="sgs-form__identity">
 						{ sprintf(
 							/* translators: %s: the saved form's slug. */
-							__( 'Form ID: %s (the form’s URL slug; submissions are filed under it).', 'sgs-blocks' ),
-							formSlug || __( 'set when first published', 'sgs-blocks' )
+							__(
+								'Form ID: %s (the form’s URL slug; submissions are filed under it).',
+								'sgs-blocks'
+							),
+							formSlug ||
+								__( 'set when first published', 'sgs-blocks' )
 						) }
 					</p>
 					<TextControl
@@ -1152,7 +1596,10 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 						__next40pxDefaultSize
 					/>
 					<SelectControl
-						label={ __( 'Put half-width fields side by side from a form width of', 'sgs-blocks' ) }
+						label={ __(
+							'Put half-width fields side by side from a form width of',
+							'sgs-blocks'
+						) }
 						value={ fieldColumnsFrom || '560' }
 						options={ FIELD_COLUMNS_FROM_OPTIONS }
 						onChange={ ( value ) =>
@@ -1171,7 +1618,9 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 					title={ __( 'Submission', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<SgsFreeTextField type="rich" multiline
+					<SgsFreeTextField
+						type="rich"
+						multiline
 						label={ __( 'Success Message', 'sgs-blocks' ) }
 						value={ successMessage }
 						onChange={ ( value ) =>
@@ -1195,7 +1644,12 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 						onChange={ ( url, extra ) =>
 							setAttributes( {
 								successRedirect: url,
-								...( extra ? { successRedirectSource: extra.linkSource } : {} ),
+								...( extra
+									? {
+											successRedirectSource:
+												extra.linkSource,
+									  }
+									: {} ),
 							} )
 						}
 					/>
@@ -1246,7 +1700,9 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 						value={ rateLimit }
 						min={ 1 }
 						onChange={ ( value ) =>
-							setAttributes( { rateLimit: parseInt( value, 10 ) || 5 } )
+							setAttributes( {
+								rateLimit: parseInt( value, 10 ) || 5,
+							} )
 						}
 						help={ __(
 							'Maximum submissions allowed per IP address, per hour.',
@@ -1256,8 +1712,14 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 					/>
 				</PanelBody>
 
-				<StepSettingsPanel attributes={ attributes } setAttributes={ setAttributes } />
-				<SavedProgressPanel attributes={ attributes } setAttributes={ setAttributes } />
+				<StepSettingsPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+				<SavedProgressPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 
 				<EmailSettingsPanel
 					notifyEmail={ notifyEmail }
@@ -1271,7 +1733,10 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 					title={ __( 'Submit Button', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<ButtonLabelControls attributes={ attributes } setAttributes={ setAttributes } />
+					<ButtonLabelControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
 					<SelectControl
 						label={ __( 'Button Style', 'sgs-blocks' ) }
 						value={ submitStyle }
@@ -1284,68 +1749,141 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 					/>
 					<SgsBoxControl
 						label={ __( 'Button Padding', 'sgs-blocks' ) }
-						values={ submitPadding && typeof submitPadding === 'object' ? submitPadding : {} }
+						values={
+							submitPadding && typeof submitPadding === 'object'
+								? submitPadding
+								: {}
+						}
 						units={ BOX_UNITS }
 						presets
-						onChange={ ( next ) => setAttributes( { submitPadding: next || {} } ) }
+						onChange={ ( next ) =>
+							setAttributes( { submitPadding: next || {} } )
+						}
 					/>
 					<NumberControl
-						label={ __( 'Button Minimum Height (px)', 'sgs-blocks' ) }
+						label={ __(
+							'Button Minimum Height (px)',
+							'sgs-blocks'
+						) }
 						value={ submitMinHeight || '' }
 						min={ 0 }
 						onChange={ ( value ) =>
-							setAttributes( { submitMinHeight: value ? parseInt( value, 10 ) : 0 } )
+							setAttributes( {
+								submitMinHeight: value
+									? parseInt( value, 10 )
+									: 0,
+							} )
 						}
-						help={ __( 'Leave blank for the default 44px.', 'sgs-blocks' ) }
+						help={ __(
+							'Leave blank for the default 44px.',
+							'sgs-blocks'
+						) }
 						__next40pxDefaultSize
 					/>
 					<SelectControl
 						label={ __( 'Button alignment', 'sgs-blocks' ) }
 						value={ submitAlign || '' }
 						options={ SUBMIT_ALIGN_OPTIONS }
-						onChange={ ( value ) => setAttributes( { submitAlign: value } ) }
-						help={ __( 'A narrow form stacks the button full width unless the toggle below is off.', 'sgs-blocks' ) }
+						onChange={ ( value ) =>
+							setAttributes( { submitAlign: value } )
+						}
+						help={ __(
+							'A narrow form stacks the button full width unless the toggle below is off.',
+							'sgs-blocks'
+						) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
 					<ToggleControl
-						label={ __( 'Full-width buttons in narrow spaces', 'sgs-blocks' ) }
+						label={ __(
+							'Full-width buttons in narrow spaces',
+							'sgs-blocks'
+						) }
 						checked={ false !== stretchButtonsNarrow }
-						onChange={ ( value ) => setAttributes( { stretchButtonsNarrow: value } ) }
-						help={ __( 'On: a form narrower than 400px stacks the buttons full width. Off: they keep their normal width and order.', 'sgs-blocks' ) }
+						onChange={ ( value ) =>
+							setAttributes( { stretchButtonsNarrow: value } )
+						}
+						help={ __(
+							'On: a form narrower than 400px stacks the buttons full width. Off: they keep their normal width and order.',
+							'sgs-blocks'
+						) }
 						__nextHasNoMarginBottom
 					/>
 					<FlexWrapControl
 						label={ __( 'Wrap buttons', 'sgs-blocks' ) }
 						value={ actionsFlexWrap }
-						onChange={ ( value ) => setAttributes( { actionsFlexWrap: value } ) }
+						onChange={ ( value ) =>
+							setAttributes( { actionsFlexWrap: value } )
+						}
 					/>
-					<SubmitMotionControls attributes={ attributes } setAttributes={ setAttributes } />
+					<SubmitMotionControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
 				</PanelBody>
-				<PanelBody title={ __( 'Submit button border', 'sgs-blocks' ) } initialOpen={ false }>
-					<FormButtonShapeControls attributes={ attributes } setAttributes={ setAttributes } prefix="submit" name={ __( 'Submit button', 'sgs-blocks' ) } />
+				<PanelBody
+					title={ __( 'Submit button border', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<FormButtonShapeControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix="submit"
+						name={ __( 'Submit button', 'sgs-blocks' ) }
+					/>
 				</PanelBody>
-				<PanelBody title={ __( 'Next button shape', 'sgs-blocks' ) } initialOpen={ false }>
-					<FormButtonShapeControls attributes={ attributes } setAttributes={ setAttributes } prefix="next" name={ __( 'Next button', 'sgs-blocks' ) } withPadding withMotion />
+				<PanelBody
+					title={ __( 'Next button shape', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<FormButtonShapeControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix="next"
+						name={ __( 'Next button', 'sgs-blocks' ) }
+						withPadding
+						withMotion
+					/>
 				</PanelBody>
-				<PanelBody title={ __( 'Previous button shape', 'sgs-blocks' ) } initialOpen={ false }>
-					<FormButtonShapeControls attributes={ attributes } setAttributes={ setAttributes } prefix="prev" name={ __( 'Previous button', 'sgs-blocks' ) } withPadding withMotion />
+				<PanelBody
+					title={ __( 'Previous button shape', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<FormButtonShapeControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix="prev"
+						name={ __( 'Previous button', 'sgs-blocks' ) }
+						withPadding
+						withMotion
+					/>
 				</PanelBody>
-
 			</InspectorControls>
 
 			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
 			<InspectorControls group="styles">
-				<PanelBody title={ __( 'Field style', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Field style', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SgsBorderControl
 						widthValues={ fieldBorderWidth ?? {} }
-						onWidthChange={ ( next ) => setAttributes( { fieldBorderWidth: next } ) }
+						onWidthChange={ ( next ) =>
+							setAttributes( { fieldBorderWidth: next } )
+						}
 						widthPresets={ [ '10', '20', '30' ] }
 						styleValue={ fieldBorderStyle }
-						onStyleChange={ ( val ) => setAttributes( { fieldBorderStyle: val } ) }
-						colourLabel={ __( 'Field border colour', 'sgs-blocks' ) }
+						onStyleChange={ ( val ) =>
+							setAttributes( { fieldBorderStyle: val } )
+						}
+						colourLabel={ __(
+							'Field border colour',
+							'sgs-blocks'
+						) }
 						colourValue={ fieldBorderColour }
-						onColourChange={ ( val ) => setAttributes( { fieldBorderColour: val ?? '' } ) }
+						onColourChange={ ( val ) =>
+							setAttributes( { fieldBorderColour: val ?? '' } )
+						}
 						colourLinked={ true }
 						radiusValues={ {
 							base: fieldBorderRadius?.desktop ?? {},
@@ -1354,77 +1892,164 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 						} }
 						onRadiusChange={ ( tier, next ) => {
 							const key = tier === 'base' ? 'desktop' : tier;
-							setAttributes( { fieldBorderRadius: { ...fieldBorderRadius, [ key ]: next } } );
+							setAttributes( {
+								fieldBorderRadius: {
+									...fieldBorderRadius,
+									[ key ]: next,
+								},
+							} );
 						} }
 					/>
 					<ResponsiveOverride
 						value={ fieldPadding }
-						onChange={ ( obj ) => setAttributes( { fieldPadding: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { fieldPadding: obj } )
+						}
 					>
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Field padding', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
 					<ResponsiveOverride
 						label={ __( 'Field minimum height', 'sgs-blocks' ) }
 						value={ fieldMinHeight }
-						onChange={ ( obj ) => setAttributes( { fieldMinHeight: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { fieldMinHeight: obj } )
+						}
 					>
-						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+						{ ( {
+							ownValue,
+							effectiveValue,
+							inherited,
+							setOwnValue,
+						} ) => (
 							<SgsLengthControl
 								presets={ false }
-								label={ __( 'Field minimum height', 'sgs-blocks' ) }
+								label={ __(
+									'Field minimum height',
+									'sgs-blocks'
+								) }
 								hideLabelFromVision
-								help={ __( 'Inputs and selects. The height you set, even below 44px; empty keeps the default 44px.', 'sgs-blocks' ) }
+								help={ __(
+									'Inputs and selects. The height you set, even below 44px; empty keeps the default 44px.',
+									'sgs-blocks'
+								) }
 								value={ ownValue ?? '' }
-								placeholder={ inherited ? effectiveValue : '44px' }
-								onChange={ ( val ) => setOwnValue( val || undefined ) }
+								placeholder={
+									inherited ? effectiveValue : '44px'
+								}
+								onChange={ ( val ) =>
+									setOwnValue( val || undefined )
+								}
 							/>
 						) }
 					</ResponsiveOverride>
 					<ResponsiveOverride
 						label={ __( 'Textarea minimum height', 'sgs-blocks' ) }
 						value={ fieldTextareaMinHeight }
-						onChange={ ( obj ) => setAttributes( { fieldTextareaMinHeight: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { fieldTextareaMinHeight: obj } )
+						}
 					>
-						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+						{ ( {
+							ownValue,
+							effectiveValue,
+							inherited,
+							setOwnValue,
+						} ) => (
 							<SgsLengthControl
 								presets={ false }
-								label={ __( 'Textarea minimum height', 'sgs-blocks' ) }
+								label={ __(
+									'Textarea minimum height',
+									'sgs-blocks'
+								) }
 								hideLabelFromVision
-								help={ __( 'The height you set, even below 44px; empty keeps the default 100px.', 'sgs-blocks' ) }
+								help={ __(
+									'The height you set, even below 44px; empty keeps the default 100px.',
+									'sgs-blocks'
+								) }
 								value={ ownValue ?? '' }
-								placeholder={ inherited ? effectiveValue : '100px' }
-								onChange={ ( val ) => setOwnValue( val || undefined ) }
+								placeholder={
+									inherited ? effectiveValue : '100px'
+								}
+								onChange={ ( val ) =>
+									setOwnValue( val || undefined )
+								}
 							/>
 						) }
 					</ResponsiveOverride>
 					<ResponsiveOverride
 						label={ __( 'Hide the required mark', 'sgs-blocks' ) }
 						value={ attributes.requiredMarkHidden }
-						onChange={ ( obj ) => setAttributes( { requiredMarkHidden: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { requiredMarkHidden: obj } )
+						}
 					>
-						{ ( { tier, ownValue, effectiveValue, setOwnValue } ) => (
+						{ ( {
+							tier,
+							ownValue,
+							effectiveValue,
+							setOwnValue,
+						} ) => (
 							<ToggleControl
-								label={ __( 'Hide the required mark on this device', 'sgs-blocks' ) }
-								help={ __( 'The asterisk after a required field’s label. The field is still required and still announced as required.', 'sgs-blocks' ) }
-								checked={ true === ( '' === ownValue ? effectiveValue : ownValue ) }
-								onChange={ ( value ) => setOwnValue( value ? true : ( 'desktop' === tier ? undefined : false ) ) }
+								label={ __(
+									'Hide the required mark on this device',
+									'sgs-blocks'
+								) }
+								help={ __(
+									'The asterisk after a required field’s label. The field is still required and still announced as required.',
+									'sgs-blocks'
+								) }
+								checked={
+									true ===
+									( '' === ownValue
+										? effectiveValue
+										: ownValue )
+								}
+								onChange={ ( value ) =>
+									setOwnValue(
+										value
+											? true
+											: 'desktop' === tier
+											? undefined
+											: false
+									)
+								}
 								__nextHasNoMarginBottom
 							/>
 						) }
 					</ResponsiveOverride>
 				</PanelBody>
-				<FieldMarksPanel attributes={ attributes } setAttributes={ setAttributes } />
-				<UploadZonePanel attributes={ attributes } setAttributes={ setAttributes } />
-				<FieldFocusPanel attributes={ attributes } setAttributes={ setAttributes } />
-				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
+				<FieldMarksPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+				<UploadZonePanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+				<FieldFocusPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+				<PanelBody
+					title={ __( 'Typography', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					{ /* One Typography panel, one target per surface. 'All text' (prefix '')
 					   paints the form root and is inherited by anything the other targets
 					   do not style. The rest each own an element: label is
@@ -1668,7 +2293,10 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 							},
 							{
 								key: 'gridColHeading',
-								label: __( 'Grid column heading', 'sgs-blocks' ),
+								label: __(
+									'Grid column heading',
+									'sgs-blocks'
+								),
 								prefix: 'gridColHeading',
 								fontSizePresets: true,
 								showFontFamily: true,
@@ -1698,7 +2326,10 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 							},
 							{
 								key: 'stepNumber',
-								label: __( 'Progress step number', 'sgs-blocks' ),
+								label: __(
+									'Progress step number',
+									'sgs-blocks'
+								),
 								prefix: 'stepNumber',
 								fontSizePresets: true,
 								showFontFamily: true,
@@ -1758,7 +2389,10 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 							},
 							{
 								key: 'savedNotice',
-								label: __( 'Saved-progress notice', 'sgs-blocks' ),
+								label: __(
+									'Saved-progress notice',
+									'sgs-blocks'
+								),
 								prefix: 'savedNotice',
 								fontSizePresets: true,
 								showFontFamily: true,
@@ -1793,18 +2427,31 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 					tier-object attr { desktop, tablet, mobile }, written via
 					ResponsiveOverride + SgsBoxControl; read by SGS_Container_Wrapper's
 					tier-object emission path. */ }
-				<PanelBody title={ __( 'Padding & margin', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Padding & margin', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<ResponsiveOverride
 						value={ attributes.padding }
-						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { padding: obj } )
+						}
 					>
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
@@ -1816,35 +2463,59 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
 				</PanelBody>
-				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Border', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SgsBorderControl
 						widthValues={ attributes.borderWidth ?? {} }
-						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						onWidthChange={ ( next ) =>
+							setAttributes( { borderWidth: next } )
+						}
 						widthPresets={ [ '10', '20', '30' ] }
 						styleValue={ attributes.borderStyle }
-						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						onStyleChange={ ( val ) =>
+							setAttributes( { borderStyle: val } )
+						}
 						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
 						colourValue={ attributes.borderColour }
-						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						onColourChange={ ( val ) =>
+							setAttributes( { borderColour: val ?? '' } )
+						}
 						colourGradientValue={ attributes.borderColourGradient }
-						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+						onColourGradientChange={ ( val ) =>
+							setAttributes( { borderColourGradient: val ?? '' } )
+						}
 						colourLinked={ true }
 						radiusValues={ {
-								base: attributes.borderRadius?.desktop ?? {},
-								tablet: attributes.borderRadius?.tablet ?? {},
-								mobile: attributes.borderRadius?.mobile ?? {},
-							} }
+							base: attributes.borderRadius?.desktop ?? {},
+							tablet: attributes.borderRadius?.tablet ?? {},
+							mobile: attributes.borderRadius?.mobile ?? {},
+						} }
 						onRadiusChange={ ( tier, next ) => {
 							const key = tier === 'base' ? 'desktop' : tier;
-							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+							setAttributes( {
+								borderRadius: {
+									...attributes.borderRadius,
+									[ key ]: next,
+								},
+							} );
 						} }
 					/>
 				</PanelBody>
@@ -1857,13 +2528,20 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 
 			<div { ...blockProps }>
 				{ formPreviewCss && <style>{ formPreviewCss }</style> }
-				{ formHoverPreviewCss && <style>{ formHoverPreviewCss }</style> }
+				{ formHoverPreviewCss && (
+					<style>{ formHoverPreviewCss }</style>
+				) }
 				{ fieldPreviewCss && <style>{ fieldPreviewCss }</style> }
-				{ typographyPreviewRules && <style>{ typographyPreviewRules }</style> }
+				{ typographyPreviewRules && (
+					<style>{ typographyPreviewRules }</style>
+				) }
 				{ indentPreviewCss && <style>{ indentPreviewCss }</style> }
-				<BandWrap hasBandProps={ wrapper.hasBandProps } bandStyle={ wrapper.bandStyle }>
-				<div { ...innerBlocksProps } />
-				{ /* Editor-canvas-only submit button preview — render.php mirror.
+				<BandWrap
+					hasBandProps={ wrapper.hasBandProps }
+					bandStyle={ wrapper.bandStyle }
+				>
+					<div { ...innerBlocksProps } />
+					{ /* Editor-canvas-only submit button preview — render.php mirror.
 					There is no real <form> in the editor canvas, so without this
 					element neither submitLabel nor submitStyle showed any visible
 					effect while editing (see render.php:351-360 for the frontend
@@ -1871,89 +2549,131 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 					submitColour/submitBackground added 2026-08-13 — render.php:
 					211-228 emits a real, unconditional `color`/`background-color`
 					rule on this exact element; the preview had never carried it. */ }
-				{ /* Saved-progress notice preview: render.php prints the same notice on the frontend. */ }
-				{ attributes.stepCounter && (
-					<div className="sgs-form__status-row">
-						<span className="sgs-form__step-counter">
-							{ ( attributes.stepCounterLabel || __( 'Step %1$d of %2$d', 'sgs-blocks' ) ).replace( '%1$d', '1' ).replace( '%2$d', '3' ) }
-							{ String( attributes.stepCounterNameSuffix || '' ).includes( '%3$s' ) && (
-								<span className="sgs-form__step-counter-name">
-									{ attributes.stepCounterNameSuffix.replace( '%3$s', __( 'Step 1', 'sgs-blocks' ) ) }
-								</span>
-							) }
-						</span>
-					</div>
-				) }
-				{ savedProgress && (
-					<p className="sgs-form__saved-notice">
-						<span
-							className="sgs-form__saved-dot"
-							aria-hidden="true"
-							style={
-								resolveColourToken( savedProgressDotColour, palette )
-									? { backgroundColor: resolveColourToken( savedProgressDotColour, palette ) }
-									: undefined
-							}
-						/>
-						<span className="sgs-form__saved-text">{ savedProgressLabel || __( 'Saves as you go', 'sgs-blocks' ) }</span>
-					</p>
-				) }
-				<div className="sgs-form__actions">
-					{ attributes.actionsNote && (
-						<span className="sgs-form__actions-note">
-							<AuthoredText value={ attributes.actionsNote } />
-						</span>
+					{ /* Saved-progress notice preview: render.php prints the same notice on the frontend. */ }
+					{ attributes.stepCounter && (
+						<div className="sgs-form__status-row">
+							<span className="sgs-form__step-counter">
+								{ (
+									attributes.stepCounterLabel ||
+									__( 'Step %1$d of %2$d', 'sgs-blocks' )
+								)
+									.replace( '%1$d', '1' )
+									.replace( '%2$d', '3' ) }
+								{ String(
+									attributes.stepCounterNameSuffix || ''
+								).includes( '%3$s' ) && (
+									<span className="sgs-form__step-counter-name">
+										{ attributes.stepCounterNameSuffix.replace(
+											'%3$s',
+											__( 'Step 1', 'sgs-blocks' )
+										) }
+									</span>
+								) }
+							</span>
+						</div>
 					) }
-					{ /* Editor-canvas-only Previous-button preview (2026-09-05) — same
+					{ savedProgress && (
+						<p className="sgs-form__saved-notice">
+							<span
+								className="sgs-form__saved-dot"
+								aria-hidden="true"
+								style={
+									resolveColourToken(
+										savedProgressDotColour,
+										palette
+									)
+										? {
+												backgroundColor:
+													resolveColourToken(
+														savedProgressDotColour,
+														palette
+													),
+										  }
+										: undefined
+								}
+							/>
+							<span className="sgs-form__saved-text">
+								{ savedProgressLabel ||
+									__( 'Saves as you go', 'sgs-blocks' ) }
+							</span>
+						</p>
+					) }
+					<div className="sgs-form__actions">
+						{ attributes.actionsNote && (
+							<span className="sgs-form__actions-note">
+								<AuthoredText
+									value={ attributes.actionsNote }
+								/>
+							</span>
+						) }
+						{ /* Editor-canvas-only Previous-button preview (2026-09-05) — same
 						reasoning as the Submit button preview above: no real multi-step
 						navigation exists in the editor canvas, so without this element
 						prevColourBackground(Gradient) showed no visible effect while
 						editing, even though render.php already paints it correctly via
 						`.sgs-form__button--prev` (sgs_button_element_style_css()). */ }
-					<button
-						type="button"
-						className="sgs-form__button sgs-form__button--prev"
-						style={ prevButtonStyle }
-					>
-						<AuthoredText value={ attributes.prevLabel || __( 'Previous', 'sgs-blocks' ) } />
-					</button>
-					<button
-						type="button"
-						className="sgs-form__button sgs-form__button--next"
-						style={ nextButtonStyle }
-					>
-						<AuthoredText value={ attributes.nextLabel || __( 'Next', 'sgs-blocks' ) } />
-					</button>
-					{ ! ownSubmit && (
 						<button
 							type="button"
-							className={ `sgs-form__button sgs-form__button--submit sgs-form__button--${ submitStyle }` }
-							style={ submitButtonStyle }
+							className="sgs-form__button sgs-form__button--prev"
+							style={ prevButtonStyle }
 						>
-							<AuthoredText value={ submitLabel || __( 'Submit', 'sgs-blocks' ) } />
+							<AuthoredText
+								value={
+									attributes.prevLabel ||
+									__( 'Previous', 'sgs-blocks' )
+								}
+							/>
 						</button>
-					) }
-				</div>
-				{ /* progressBarColour preview (2026-08-13) — render.php:230-241
+						<button
+							type="button"
+							className="sgs-form__button sgs-form__button--next"
+							style={ nextButtonStyle }
+						>
+							<AuthoredText
+								value={
+									attributes.nextLabel ||
+									__( 'Next', 'sgs-blocks' )
+								}
+							/>
+						</button>
+						{ ! ownSubmit && (
+							<button
+								type="button"
+								className={ `sgs-form__button sgs-form__button--submit sgs-form__button--${ submitStyle }` }
+								style={ submitButtonStyle }
+							>
+								<AuthoredText
+									value={
+										submitLabel ||
+										__( 'Submit', 'sgs-blocks' )
+									}
+								/>
+							</button>
+						) }
+					</div>
+					{ /* progressBarColour preview (2026-08-13) — render.php:230-241
 					drives `--sgs-progress-colour` on `.sgs-form__progress`, but the
 					real progress bar only renders once real sgs/form-step
 					InnerBlocks children resolve their step list (Interactivity-API
 					state, frontend only). A REPRESENTATIVE sample swatch — not the
 					full stepped UI — is the honest editor-canvas equivalent, same
 					pattern as this session's table-of-contents active-link preview. */ }
-				{ ( progressBarColour || progressBarColourGradient ) && (
-					<div
-						className="sgs-form__progress-wrapper"
-						style={ { marginTop: '12px' } }
-					>
-						<div className="sgs-form__progress">
-							<div
-								className="sgs-form__progress-bar"
-								style={ { ...progressBarStyle, width: '40%' } }
-							/>
+					{ ( progressBarColour || progressBarColourGradient ) && (
+						<div
+							className="sgs-form__progress-wrapper"
+							style={ { marginTop: '12px' } }
+						>
+							<div className="sgs-form__progress">
+								<div
+									className="sgs-form__progress-bar"
+									style={ {
+										...progressBarStyle,
+										width: '40%',
+									} }
+								/>
+							</div>
 						</div>
-					</div>
-				) }
+					) }
 				</BandWrap>
 			</div>
 		</>

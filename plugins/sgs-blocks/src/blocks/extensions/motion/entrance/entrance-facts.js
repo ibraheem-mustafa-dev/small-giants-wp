@@ -224,17 +224,18 @@ export const hasServerItems = ( blockName ) =>
  * @return {number} The count of children whose block type declares the motion support.
  */
 export const countDelayCarriers = ( children ) =>
-	children.filter( ( child ) => hasMotionSupport( getBlockType( child.name ) ) )
-		.length;
+	children.filter( ( child ) =>
+		hasMotionSupport( getBlockType( child.name ) )
+	).length;
 
 /**
  * Whether a block is a container the stagger helper acts on: it prints its items on the server, it holds a child that can
  * carry a delay, or it is empty and its type has a stored column role. A block whose children cannot carry a delay
  * (accordion items, tab panels, form fields) gets no helper, since it would write nothing.
  *
- * @param {string} blockName      The block's name.
- * @param {number} childCount     Direct inner blocks.
- * @param {number} carrierCount   Direct inner blocks that can carry a delay (`countDelayCarriers`).
+ * @param {string} blockName    The block's name.
+ * @param {number} childCount   Direct inner blocks.
+ * @param {number} carrierCount Direct inner blocks that can carry a delay (`countDelayCarriers`).
  * @return {boolean} True for a container.
  */
 export const isContainerBlock = ( blockName, childCount, carrierCount ) => {

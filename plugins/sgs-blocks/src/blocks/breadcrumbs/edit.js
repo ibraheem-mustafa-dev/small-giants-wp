@@ -1,8 +1,34 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
-import { PanelBody, ToggleControl, SelectControl, TextControl } from '@wordpress/components';
-import { FlexWrapControl, SgsColourPanel, textRow, ResponsiveBoxControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl, SgsLengthControl, LinkPopoverField } from '../../components';
-import { colourVar, resolveTextColourPreviewStyle, typographyPreviewStyle, usePreviewTier, tierBoxLonghands, sgsLengthPreview, sgsBorderPreview } from '../../utils';
+import {
+	PanelBody,
+	ToggleControl,
+	SelectControl,
+	TextControl,
+} from '@wordpress/components';
+import {
+	FlexWrapControl,
+	SgsColourPanel,
+	textRow,
+	ResponsiveBoxControl,
+	TypographyControls,
+	ResponsiveOverride,
+	BOX_UNITS,
+	normaliseResponsiveBox,
+	SgsBoxControl,
+	SgsBorderControl,
+	SgsLengthControl,
+	LinkPopoverField,
+} from '../../components';
+import {
+	colourVar,
+	resolveTextColourPreviewStyle,
+	typographyPreviewStyle,
+	usePreviewTier,
+	tierBoxLonghands,
+	sgsLengthPreview,
+	sgsBorderPreview,
+} from '../../utils';
 
 import AuthoredText from '../../components/AuthoredText';
 import SgsFreeTextField from '../../components/SgsFreeTextField';
@@ -26,11 +52,24 @@ const PRODUCT_PAGE_CRUMBS_OPTIONS = [
 
 /** Build the root's inline preview style for the editor canvas (mirrors render.php's scoped root declarations). */
 function buildRootStyle( attributes, tier ) {
-	const { padding, margin, linkColour, separatorColour, currentColour, borderStyle, borderWidth, borderColour, borderColourGradient, borderRadius } = attributes;
+	const {
+		padding,
+		margin,
+		linkColour,
+		separatorColour,
+		currentColour,
+		borderStyle,
+		borderWidth,
+		borderColour,
+		borderColourGradient,
+		borderRadius,
+	} = attributes;
 	const rootStyle = {
 		'--sgs-breadcrumbs-link-colour': colourVar( linkColour ) || undefined,
-		'--sgs-breadcrumbs-separator-colour': colourVar( separatorColour ) || undefined,
-		'--sgs-breadcrumbs-current-colour': colourVar( currentColour ) || undefined,
+		'--sgs-breadcrumbs-separator-colour':
+			colourVar( separatorColour ) || undefined,
+		'--sgs-breadcrumbs-current-colour':
+			colourVar( currentColour ) || undefined,
 	};
 
 	// Base padding/margin preview — padding/margin are owned tier-object
@@ -39,7 +78,20 @@ function buildRootStyle( attributes, tier ) {
 	Object.assign( rootStyle, tierBoxLonghands( padding, tier, 'padding' ) );
 	Object.assign( rootStyle, tierBoxLonghands( margin, tier, 'margin' ) );
 
-	Object.assign( rootStyle, sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient, radiusValues: borderRadius }, tier, undefined ) );
+	Object.assign(
+		rootStyle,
+		sgsBorderPreview(
+			{
+				widthValues: borderWidth,
+				styleValue: borderStyle,
+				colourValue: borderColour,
+				colourGradientValue: borderColourGradient,
+				radiusValues: borderRadius,
+			},
+			tier,
+			undefined
+		)
+	);
 
 	return Object.fromEntries(
 		Object.entries( rootStyle ).filter( ( [ , v ] ) => v !== undefined )
@@ -86,14 +138,24 @@ export default function Edit( { attributes, setAttributes } ) {
 	const itemGap = sgsLengthPreview( attributes.itemGap );
 	const gapStyle = itemGap ? { gap: itemGap } : undefined;
 	// render.php's flexWrap: on the list only.
-	const listStyle = attributes.flexWrap ? { ...gapStyle, flexWrap: attributes.flexWrap } : gapStyle;
+	const listStyle = attributes.flexWrap
+		? { ...gapStyle, flexWrap: attributes.flexWrap }
+		: gapStyle;
 	// Link and separator paint: a flat colour reaches them through the root's
 	// custom properties; a gradient is painted on the element itself, as render.php does.
 	const linkPaint = attributes.linkColourGradient
-		? resolveTextColourPreviewStyle( attributes.linkColour, attributes.linkColourGradient, colourVar )
+		? resolveTextColourPreviewStyle(
+				attributes.linkColour,
+				attributes.linkColourGradient,
+				colourVar
+		  )
 		: undefined;
 	const separatorPaint = attributes.separatorColourGradient
-		? resolveTextColourPreviewStyle( attributes.separatorColour, attributes.separatorColourGradient, colourVar )
+		? resolveTextColourPreviewStyle(
+				attributes.separatorColour,
+				attributes.separatorColourGradient,
+				colourVar
+		  )
 		: undefined;
 
 	return (
@@ -146,85 +208,145 @@ export default function Edit( { attributes, setAttributes } ) {
 			/>
 			<InspectorControls>
 				<PanelBody title={ __( 'Breadcrumbs Settings', 'sgs-blocks' ) }>
-					<FlexWrapControl label={ __( 'Wrap crumbs', 'sgs-blocks' ) } value={ flexWrap } onChange={ ( val ) => setAttributes( { flexWrap: val } ) } />
+					<FlexWrapControl
+						label={ __( 'Wrap crumbs', 'sgs-blocks' ) }
+						value={ flexWrap }
+						onChange={ ( val ) =>
+							setAttributes( { flexWrap: val } )
+						}
+					/>
 					<ToggleControl
 						label={ __( 'Show home link', 'sgs-blocks' ) }
 						checked={ showHome }
-						onChange={ ( val ) => setAttributes( { showHome: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { showHome: val } )
+						}
 						__nextHasNoMarginBottom
 					/>
 					{ showHome && (
-						<SgsFreeTextField type="rich" noLink
+						<SgsFreeTextField
+							type="rich"
+							noLink
 							label={ __( 'Home label', 'sgs-blocks' ) }
 							value={ homeLabel }
-							onChange={ ( val ) => setAttributes( { homeLabel: val } ) }
+							onChange={ ( val ) =>
+								setAttributes( { homeLabel: val } )
+							}
 						/>
 					) }
 					<TextControl
 						label={ __( 'Middle crumb label', 'sgs-blocks' ) }
-						help={ __( 'One extra crumb straight after Home, replacing the parent-page crumbs. Leave empty for none.', 'sgs-blocks' ) }
+						help={ __(
+							'One extra crumb straight after Home, replacing the parent-page crumbs. Leave empty for none.',
+							'sgs-blocks'
+						) }
 						value={ middleCrumbLabel ?? '' }
-						onChange={ ( val ) => setAttributes( { middleCrumbLabel: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { middleCrumbLabel: val } )
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
 					<LinkPopoverField
 						searchOnly
 						label={ __( 'Middle crumb link', 'sgs-blocks' ) }
-						help={ __( 'Where the middle crumb links to. Leave empty to show it as plain text.', 'sgs-blocks' ) }
+						help={ __(
+							'Where the middle crumb links to. Leave empty to show it as plain text.',
+							'sgs-blocks'
+						) }
 						value={ middleCrumbUrl ?? '' }
-						onChange={ ( url ) => setAttributes( { middleCrumbUrl: url ?? '' } ) }
+						onChange={ ( url ) =>
+							setAttributes( { middleCrumbUrl: url ?? '' } )
+						}
 					/>
 					<SelectControl
 						label={ __( 'Separator', 'sgs-blocks' ) }
 						value={ separator }
 						options={ SEPARATOR_OPTIONS }
-						onChange={ ( val ) => setAttributes( { separator: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { separator: val } )
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
 					<SgsLengthControl
-						label={ __( 'Space around the separator', 'sgs-blocks' ) }
-						help={ __( 'The gap on each side of every separator. Empty keeps the theme’s small gap.', 'sgs-blocks' ) }
+						label={ __(
+							'Space around the separator',
+							'sgs-blocks'
+						) }
+						help={ __(
+							'The gap on each side of every separator. Empty keeps the theme’s small gap.',
+							'sgs-blocks'
+						) }
 						value={ attributes.itemGap || '' }
-						onChange={ ( val ) => setAttributes( { itemGap: val || '' } ) }
+						onChange={ ( val ) =>
+							setAttributes( { itemGap: val || '' } )
+						}
 						presets={ false }
 					/>
 					<SelectControl
-						label={ __( 'On product pages, include', 'sgs-blocks' ) }
-						help={ __( 'Adds the product’s primary category and/or brand to the trail, between the shop link and the product title. Brand needs a "Product brand" taxonomy term set on the product.', 'sgs-blocks' ) }
+						label={ __(
+							'On product pages, include',
+							'sgs-blocks'
+						) }
+						help={ __(
+							'Adds the product’s primary category and/or brand to the trail, between the shop link and the product title. Brand needs a "Product brand" taxonomy term set on the product.',
+							'sgs-blocks'
+						) }
 						value={ productPageCrumbs }
 						options={ PRODUCT_PAGE_CRUMBS_OPTIONS }
-						onChange={ ( val ) => setAttributes( { productPageCrumbs: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { productPageCrumbs: val } )
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
 					<ToggleControl
 						label={ __( 'Show the archive crumb', 'sgs-blocks' ) }
-						help={ __( 'On a single post or product, the link to its archive (e.g. the shop page).', 'sgs-blocks' ) }
+						help={ __(
+							'On a single post or product, the link to its archive (e.g. the shop page).',
+							'sgs-blocks'
+						) }
 						checked={ showArchiveCrumb !== false }
-						onChange={ ( val ) => setAttributes( { showArchiveCrumb: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { showArchiveCrumb: val } )
+						}
 						__nextHasNoMarginBottom
 					/>
 					<ToggleControl
 						label={ __( 'Show the current page', 'sgs-blocks' ) }
-						help={ __( 'End the trail with this page’s own title.', 'sgs-blocks' ) }
+						help={ __(
+							'End the trail with this page’s own title.',
+							'sgs-blocks'
+						) }
 						checked={ showCurrentCrumb !== false }
-						onChange={ ( val ) => setAttributes( { showCurrentCrumb: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { showCurrentCrumb: val } )
+						}
 						__nextHasNoMarginBottom
 					/>
 					<ToggleControl
 						label={ __( 'Show the category', 'sgs-blocks' ) }
-						help={ __( 'On a single post, the link to its first category.', 'sgs-blocks' ) }
+						help={ __(
+							'On a single post, the link to its first category.',
+							'sgs-blocks'
+						) }
 						checked={ showTermCrumb !== false }
-						onChange={ ( val ) => setAttributes( { showTermCrumb: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { showTermCrumb: val } )
+						}
 						__nextHasNoMarginBottom
 					/>
 					<TextControl
 						label={ __( 'Current page label', 'sgs-blocks' ) }
-						help={ __( 'Replaces the page title in the last crumb. Leave empty to use the title.', 'sgs-blocks' ) }
+						help={ __(
+							'Replaces the page title in the last crumb. Leave empty to use the title.',
+							'sgs-blocks'
+						) }
 						value={ currentCrumbLabel ?? '' }
-						onChange={ ( val ) => setAttributes( { currentCrumbLabel: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { currentCrumbLabel: val } )
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
@@ -234,18 +356,31 @@ export default function Edit( { attributes, setAttributes } ) {
 				   tier-object attr { desktop, tablet, mobile }, written via
 				   ResponsiveOverride + SgsBoxControl; read directly by this
 				   block's render.php. ── */ }
-				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Spacing', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<ResponsiveOverride
 						value={ attributes.padding }
-						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { padding: obj } )
+						}
 					>
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
@@ -256,32 +391,67 @@ export default function Edit( { attributes, setAttributes } ) {
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
 				</PanelBody>
 
-				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Border', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SgsBorderControl
 						widthValues={ borderWidth ?? {} }
-						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						onWidthChange={ ( next ) =>
+							setAttributes( { borderWidth: next } )
+						}
 						widthPresets={ [ '10', '20', '30' ] }
 						styleValue={ borderStyle }
-						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						onStyleChange={ ( val ) =>
+							setAttributes( { borderStyle: val } )
+						}
 						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
 						colourStates={ [
-							{ key: 'normal', label: __( 'Normal', 'sgs-blocks' ), value: borderColour,
-							  onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
-							  gradientValue: borderColourGradient,
-							  onGradientChange: ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) },
-							{ key: 'hover', label: __( 'Hover', 'sgs-blocks' ), value: borderColourHover,
-							  onChange: ( val ) => setAttributes( { borderColourHover: val ?? '' } ),
-							  gradientValue: borderColourHoverGradient,
-							  onGradientChange: ( val ) => setAttributes( { borderColourHoverGradient: val ?? '' } ) },
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: borderColour,
+								onChange: ( val ) =>
+									setAttributes( {
+										borderColour: val ?? '',
+									} ),
+								gradientValue: borderColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										borderColourGradient: val ?? '',
+									} ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: borderColourHover,
+								onChange: ( val ) =>
+									setAttributes( {
+										borderColourHover: val ?? '',
+									} ),
+								gradientValue: borderColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										borderColourHoverGradient: val ?? '',
+									} ),
+							},
 						] }
 						radiusValues={ {
 							base: attributes.borderRadius?.desktop ?? {},
@@ -290,7 +460,12 @@ export default function Edit( { attributes, setAttributes } ) {
 						} }
 						onRadiusChange={ ( tier, next ) => {
 							const key = tier === 'base' ? 'desktop' : tier;
-							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+							setAttributes( {
+								borderRadius: {
+									...attributes.borderRadius,
+									[ key ]: next,
+								},
+							} );
 						} }
 					/>
 				</PanelBody>
@@ -304,8 +479,21 @@ export default function Edit( { attributes, setAttributes } ) {
 				   full-replacement track). Root prefix "" since this is a
 				   single-target block; defaults also expose weight/style/line-
 				   height, which native typography never offered here. */ }
-				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
-					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextStroke showTextColumns showWritingMode
+				<PanelBody
+					title={ __( 'Typography', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<TypographyControls
+						fontSizePresets
+						showFontFamily
+						showDecoration
+						showTransform
+						showLetterSpacing
+						showTextAlign
+						showTextWrap
+						showTextStroke
+						showTextColumns
+						showWritingMode
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						prefix=""
@@ -313,8 +501,16 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 				{ /* The current-page crumb's own typography (prefix "current"); render.php scopes it to
 				   .sgs-breadcrumbs__item--current, so it wins over the root value the crumb inherits. */ }
-				<PanelBody title={ __( 'Current page typography', 'sgs-blocks' ) } initialOpen={ false }>
-					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing
+				<PanelBody
+					title={ __( 'Current page typography', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<TypographyControls
+						fontSizePresets
+						showFontFamily
+						showDecoration
+						showTransform
+						showLetterSpacing
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						prefix="current"
@@ -322,55 +518,144 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 			</InspectorControls>
 
-			<nav { ...blockProps } aria-label={ __( 'Breadcrumbs', 'sgs-blocks' ) }>
+			<nav
+				{ ...blockProps }
+				aria-label={ __( 'Breadcrumbs', 'sgs-blocks' ) }
+			>
 				<ol className="sgs-breadcrumbs__list" style={ listStyle }>
 					{ showHome && (
-						<li className="sgs-breadcrumbs__item" style={ gapStyle }>
-							<AuthoredText as="a" href="#" style={ linkPaint } value={ homeLabel } />
-							<span className="sgs-breadcrumbs__separator" aria-hidden="true" style={ separatorPaint }>{ separator }</span>
+						<li
+							className="sgs-breadcrumbs__item"
+							style={ gapStyle }
+						>
+							<AuthoredText
+								as="a"
+								href="#"
+								style={ linkPaint }
+								value={ homeLabel }
+							/>
+							<span
+								className="sgs-breadcrumbs__separator"
+								aria-hidden="true"
+								style={ separatorPaint }
+							>
+								{ separator }
+							</span>
 						</li>
 					) }
 					{ middleCrumbLabel && (
-						<li className="sgs-breadcrumbs__item" style={ gapStyle }>
+						<li
+							className="sgs-breadcrumbs__item"
+							style={ gapStyle }
+						>
 							{ middleCrumbUrl ? (
-								<a href="#" style={ linkPaint }>{ middleCrumbLabel }</a>
+								<a href="#" style={ linkPaint }>
+									{ middleCrumbLabel }
+								</a>
 							) : (
 								<span>{ middleCrumbLabel }</span>
 							) }
-							<span className="sgs-breadcrumbs__separator" aria-hidden="true" style={ separatorPaint }>{ separator }</span>
+							<span
+								className="sgs-breadcrumbs__separator"
+								aria-hidden="true"
+								style={ separatorPaint }
+							>
+								{ separator }
+							</span>
 						</li>
 					) }
 					{ showArchiveCrumb !== false && (
-						<li className="sgs-breadcrumbs__item" style={ gapStyle }>
-							<a href="#" style={ linkPaint }>{ __( 'Parent Page', 'sgs-blocks' ) }</a>
-							<span className="sgs-breadcrumbs__separator" aria-hidden="true" style={ separatorPaint }>{ separator }</span>
+						<li
+							className="sgs-breadcrumbs__item"
+							style={ gapStyle }
+						>
+							<a href="#" style={ linkPaint }>
+								{ __( 'Parent Page', 'sgs-blocks' ) }
+							</a>
+							<span
+								className="sgs-breadcrumbs__separator"
+								aria-hidden="true"
+								style={ separatorPaint }
+							>
+								{ separator }
+							</span>
 						</li>
 					) }
 					{ showTermCrumb !== false && (
-						<li className="sgs-breadcrumbs__item" style={ gapStyle }>
-							<a href="#" style={ linkPaint }>{ __( 'Post category', 'sgs-blocks' ) }</a>
-							<span className="sgs-breadcrumbs__separator" aria-hidden="true" style={ separatorPaint }>{ separator }</span>
+						<li
+							className="sgs-breadcrumbs__item"
+							style={ gapStyle }
+						>
+							<a href="#" style={ linkPaint }>
+								{ __( 'Post category', 'sgs-blocks' ) }
+							</a>
+							<span
+								className="sgs-breadcrumbs__separator"
+								aria-hidden="true"
+								style={ separatorPaint }
+							>
+								{ separator }
+							</span>
 						</li>
 					) }
-					{ ( productPageCrumbs === 'category' || productPageCrumbs === 'both' ) && (
-						<li className="sgs-breadcrumbs__item" style={ gapStyle }>
-							<a href="#" style={ linkPaint }>{ __( 'Category', 'sgs-blocks' ) }</a>
-							<span className="sgs-breadcrumbs__separator" aria-hidden="true" style={ separatorPaint }>{ separator }</span>
+					{ ( productPageCrumbs === 'category' ||
+						productPageCrumbs === 'both' ) && (
+						<li
+							className="sgs-breadcrumbs__item"
+							style={ gapStyle }
+						>
+							<a href="#" style={ linkPaint }>
+								{ __( 'Category', 'sgs-blocks' ) }
+							</a>
+							<span
+								className="sgs-breadcrumbs__separator"
+								aria-hidden="true"
+								style={ separatorPaint }
+							>
+								{ separator }
+							</span>
 						</li>
 					) }
-					{ ( productPageCrumbs === 'brand' || productPageCrumbs === 'both' ) && (
-						<li className="sgs-breadcrumbs__item" style={ gapStyle }>
-							<a href="#" style={ linkPaint }>{ __( 'Brand', 'sgs-blocks' ) }</a>
-							<span className="sgs-breadcrumbs__separator" aria-hidden="true" style={ separatorPaint }>{ separator }</span>
+					{ ( productPageCrumbs === 'brand' ||
+						productPageCrumbs === 'both' ) && (
+						<li
+							className="sgs-breadcrumbs__item"
+							style={ gapStyle }
+						>
+							<a href="#" style={ linkPaint }>
+								{ __( 'Brand', 'sgs-blocks' ) }
+							</a>
+							<span
+								className="sgs-breadcrumbs__separator"
+								aria-hidden="true"
+								style={ separatorPaint }
+							>
+								{ separator }
+							</span>
 						</li>
 					) }
-					{ showCurrentCrumb !== false && ( <li
-						className="sgs-breadcrumbs__item sgs-breadcrumbs__item--current"
-						aria-current="page"
-						style={ { ...gapStyle, ...typographyPreviewStyle( attributes, 'current', tier ), ...resolveTextColourPreviewStyle( currentColour, currentColourGradient, colourVar ) } }
-					>
-						{ currentCrumbLabel || __( 'Current Page', 'sgs-blocks' ) }
-					</li> ) }
+					{ showCurrentCrumb !== false && (
+						<li
+							className="sgs-breadcrumbs__item sgs-breadcrumbs__item--current"
+							aria-current="page"
+							style={ {
+								...gapStyle,
+								...typographyPreviewStyle(
+									attributes,
+									'current',
+									tier
+								),
+								...resolveTextColourPreviewStyle(
+									currentColour,
+									currentColourGradient,
+									colourVar
+								),
+							} }
+						>
+							{ currentCrumbLabel ||
+								__( 'Current Page', 'sgs-blocks' ) }
+						</li>
+					) }
 				</ol>
 			</nav>
 		</>

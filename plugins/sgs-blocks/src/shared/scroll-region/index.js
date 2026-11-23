@@ -24,10 +24,22 @@ const HEADING_SELECTOR = 'h1,h2,h3,h4,h5,h6';
  * @return {string} The heading text, or ''.
  */
 function precedingHeadingText( row ) {
-	for ( let node = row; node && node !== document.body; node = node.parentElement ) {
-		for ( let sib = node.previousElementSibling; sib; sib = sib.previousElementSibling ) {
-			const heading = sib.matches( HEADING_SELECTOR ) ? sib : sib.querySelector( HEADING_SELECTOR );
-			const text = heading ? heading.textContent.trim().replace( /\s+/g, ' ' ) : '';
+	for (
+		let node = row;
+		node && node !== document.body;
+		node = node.parentElement
+	) {
+		for (
+			let sib = node.previousElementSibling;
+			sib;
+			sib = sib.previousElementSibling
+		) {
+			const heading = sib.matches( HEADING_SELECTOR )
+				? sib
+				: sib.querySelector( HEADING_SELECTOR );
+			const text = heading
+				? heading.textContent.trim().replace( /\s+/g, ' ' )
+				: '';
 			if ( text ) {
 				return text;
 			}

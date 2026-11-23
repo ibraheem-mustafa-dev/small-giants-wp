@@ -40,12 +40,18 @@ function refreshNonce() {
 	if ( window[ REFRESH_KEY ] ) {
 		return window[ REFRESH_KEY ];
 	}
-	const url = document.querySelector( `meta[name="${ META_NAME }"]` )?.getAttribute( 'content' );
+	const url = document
+		.querySelector( `meta[name="${ META_NAME }"]` )
+		?.getAttribute( 'content' );
 	if ( ! url ) {
 		return Promise.resolve( '' );
 	}
 	const pending = window
-		.fetch( url, { method: 'POST', credentials: 'same-origin', cache: 'no-store' } )
+		.fetch( url, {
+			method: 'POST',
+			credentials: 'same-origin',
+			cache: 'no-store',
+		} )
 		.then( ( response ) => ( response.ok ? response.json() : null ) )
 		.then( ( json ) => {
 			const nonce = 'string' === typeof json?.nonce ? json.nonce : '';
@@ -84,7 +90,11 @@ export function primeNonce() {
  * @return {Promise<boolean>} True for a 403 carrying one of the nonce error codes.
  */
 async function isNonceFailure( response ) {
-	if ( ! response || 403 !== response.status || 'function' !== typeof response.clone ) {
+	if (
+		! response ||
+		403 !== response.status ||
+		'function' !== typeof response.clone
+	) {
 		return false;
 	}
 	try {
@@ -98,9 +108,9 @@ async function isNonceFailure( response ) {
 /**
  * `fetch` with the page's `wp_rest` nonce, refreshed and retried once when it has expired.
  *
- * @param {string}   url          The request URL.
- * @param {Object}   [init]       Fetch options. Do not set `X-WP-Nonce`; this function does.
- * @param {string}   [pageNonce]  The nonce printed in the page's markup.
+ * @param {string} url         The request URL.
+ * @param {Object} [init]      Fetch options. Do not set `X-WP-Nonce`; this function does.
+ * @param {string} [pageNonce] The nonce printed in the page's markup.
  * @return {Promise<Response>} The reply (the retry's when a retry happened).
  */
 export function fetchWithNonce( url, init = {}, pageNonce = '' ) {
@@ -117,12 +127,17 @@ export function fetchWithNonce( url, init = {}, pageNonce = '' ) {
 			return response;
 		}
 		// Another request may have refreshed the nonce while this one was in flight: use it before asking again.
-		const fresh = window[ NONCE_KEY ] && window[ NONCE_KEY ] !== sent ? window[ NONCE_KEY ] : await refreshNonce();
+		const fresh =
+			window[ NONCE_KEY ] && window[ NONCE_KEY ] !== sent
+				? window[ NONCE_KEY ]
+				: await refreshNonce();
 		if ( ! fresh || fresh === sent ) {
 			return response;
 		}
 		return send( fresh );
 	};
 	// Only a 403 takes the slow path: any other reply reaches the caller one microtask after `fetch` settles.
-	return send( sent ).then( ( response ) => ( 403 === response?.status ? retryIfStale( response ) : response ) );
+	return send( sent ).then( ( response ) =>
+		403 === response?.status ? retryIfStale( response ) : response
+	);
 }

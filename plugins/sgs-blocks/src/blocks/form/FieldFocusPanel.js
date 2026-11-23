@@ -8,8 +8,17 @@
 
 import { __ } from '@wordpress/i18n';
 import { PanelBody, SelectControl } from '@wordpress/components';
-import { ToolsPanel, ToolsPanelItem, NumberControl, UnitControl } from '../../components/primitives';
-import { ResponsiveLengthControl, SgsBoxControl, BOX_UNITS } from '../../components';
+import {
+	ToolsPanel,
+	ToolsPanelItem,
+	NumberControl,
+	UnitControl,
+} from '../../components/primitives';
+import {
+	ResponsiveLengthControl,
+	SgsBoxControl,
+	BOX_UNITS,
+} from '../../components';
 
 const RING_STYLE_OPTIONS = [
 	{ label: __( 'Outside the border', 'sgs-blocks' ), value: '' },
@@ -26,52 +35,90 @@ const hasKeys = ( value ) => Object.keys( value ?? {} ).length > 0;
  */
 export default function FieldFocusPanel( { attributes, setAttributes } ) {
 	return (
-		<PanelBody title={ __( 'Field focus and floating label', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Field focus and floating label', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			<ToolsPanel
 				label={ __( 'Focused field', 'sgs-blocks' ) }
-				resetAll={ () => setAttributes( { fieldFocusBorderWidth: {}, fieldFocusRingWidth: 0, fieldFocusRingStyle: '' } ) }
+				resetAll={ () =>
+					setAttributes( {
+						fieldFocusBorderWidth: {},
+						fieldFocusRingWidth: 0,
+						fieldFocusRingStyle: '',
+					} )
+				}
 			>
 				<ToolsPanelItem
 					label={ __( 'Focus border width', 'sgs-blocks' ) }
 					isShownByDefault
-					hasValue={ () => hasKeys( attributes.fieldFocusBorderWidth ) }
-					onDeselect={ () => setAttributes( { fieldFocusBorderWidth: {} } ) }
+					hasValue={ () =>
+						hasKeys( attributes.fieldFocusBorderWidth )
+					}
+					onDeselect={ () =>
+						setAttributes( { fieldFocusBorderWidth: {} } )
+					}
 				>
 					<SgsBoxControl
 						label={ __( 'Focus border width', 'sgs-blocks' ) }
 						values={ attributes.fieldFocusBorderWidth ?? {} }
 						units={ BOX_UNITS }
-						onChange={ ( next ) => setAttributes( { fieldFocusBorderWidth: next } ) }
+						onChange={ ( next ) =>
+							setAttributes( { fieldFocusBorderWidth: next } )
+						}
 					/>
 				</ToolsPanelItem>
 				<ToolsPanelItem
 					label={ __( 'Focus ring thickness', 'sgs-blocks' ) }
 					isShownByDefault
-					hasValue={ () => Number( attributes.fieldFocusRingWidth ) > 0 }
-					onDeselect={ () => setAttributes( { fieldFocusRingWidth: 0 } ) }
+					hasValue={ () =>
+						Number( attributes.fieldFocusRingWidth ) > 0
+					}
+					onDeselect={ () =>
+						setAttributes( { fieldFocusRingWidth: 0 } )
+					}
 				>
 					<NumberControl
-						label={ __( 'Focus ring thickness (px)', 'sgs-blocks' ) }
+						label={ __(
+							'Focus ring thickness (px)',
+							'sgs-blocks'
+						) }
 						value={ attributes.fieldFocusRingWidth || '' }
 						min={ 0 }
 						max={ 12 }
-						help={ __( 'Used once a Focus ring colour is set in Colours. Empty is 2px.', 'sgs-blocks' ) }
+						help={ __(
+							'Used once a Focus ring colour is set in Colours. Empty is 2px.',
+							'sgs-blocks'
+						) }
 						__next40pxDefaultSize
-						onChange={ ( value ) => setAttributes( { fieldFocusRingWidth: Number( value ) || 0 } ) }
+						onChange={ ( value ) =>
+							setAttributes( {
+								fieldFocusRingWidth: Number( value ) || 0,
+							} )
+						}
 					/>
 				</ToolsPanelItem>
 				<ToolsPanelItem
 					label={ __( 'Focus ring side', 'sgs-blocks' ) }
 					isShownByDefault
-					hasValue={ () => '' !== ( attributes.fieldFocusRingStyle ?? '' ) }
-					onDeselect={ () => setAttributes( { fieldFocusRingStyle: '' } ) }
+					hasValue={ () =>
+						'' !== ( attributes.fieldFocusRingStyle ?? '' )
+					}
+					onDeselect={ () =>
+						setAttributes( { fieldFocusRingStyle: '' } )
+					}
 				>
 					<SelectControl
 						label={ __( 'Focus ring side', 'sgs-blocks' ) }
 						value={ attributes.fieldFocusRingStyle ?? '' }
 						options={ RING_STYLE_OPTIONS }
-						help={ __( 'A set ring replaces the site focus outline and glow on field controls. The border colour and width above still change on focus.', 'sgs-blocks' ) }
-						onChange={ ( fieldFocusRingStyle ) => setAttributes( { fieldFocusRingStyle } ) }
+						help={ __(
+							'A set ring replaces the site focus outline and glow on field controls. The border colour and width above still change on focus.',
+							'sgs-blocks'
+						) }
+						onChange={ ( fieldFocusRingStyle ) =>
+							setAttributes( { fieldFocusRingStyle } )
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
@@ -79,34 +126,60 @@ export default function FieldFocusPanel( { attributes, setAttributes } ) {
 			</ToolsPanel>
 			<ToolsPanel
 				label={ __( 'Floating label', 'sgs-blocks' ) }
-				resetAll={ () => setAttributes( { labelFloatedFontSize: {}, labelFloatedOffset: '' } ) }
+				resetAll={ () =>
+					setAttributes( {
+						labelFloatedFontSize: {},
+						labelFloatedOffset: '',
+					} )
+				}
 			>
 				<ToolsPanelItem
 					label={ __( 'Floated label size', 'sgs-blocks' ) }
 					isShownByDefault
-					hasValue={ () => hasKeys( attributes.labelFloatedFontSize ) }
-					onDeselect={ () => setAttributes( { labelFloatedFontSize: {} } ) }
+					hasValue={ () =>
+						hasKeys( attributes.labelFloatedFontSize )
+					}
+					onDeselect={ () =>
+						setAttributes( { labelFloatedFontSize: {} } )
+					}
 				>
 					<ResponsiveLengthControl
 						label={ __( 'Floated label size', 'sgs-blocks' ) }
 						value={ attributes.labelFloatedFontSize }
 						scale="font-size"
-						onChange={ ( next ) => setAttributes( { labelFloatedFontSize: next } ) }
+						onChange={ ( next ) =>
+							setAttributes( { labelFloatedFontSize: next } )
+						}
 					/>
 				</ToolsPanelItem>
 				<ToolsPanelItem
 					label={ __( 'Floated label offset', 'sgs-blocks' ) }
 					isShownByDefault
-					hasValue={ () => '' !== ( attributes.labelFloatedOffset ?? '' ) }
-					onDeselect={ () => setAttributes( { labelFloatedOffset: '' } ) }
+					hasValue={ () =>
+						'' !== ( attributes.labelFloatedOffset ?? '' )
+					}
+					onDeselect={ () =>
+						setAttributes( { labelFloatedOffset: '' } )
+					}
 				>
 					<UnitControl
 						label={ __( 'Floated label offset', 'sgs-blocks' ) }
 						value={ attributes.labelFloatedOffset ?? '' }
-						units={ [ { value: 'px', label: 'px' }, { value: 'rem', label: 'rem' }, { value: 'em', label: 'em' } ] }
-						help={ __( 'Distance from the top of the field to the label once it has moved up. Empty keeps the default position.', 'sgs-blocks' ) }
+						units={ [
+							{ value: 'px', label: 'px' },
+							{ value: 'rem', label: 'rem' },
+							{ value: 'em', label: 'em' },
+						] }
+						help={ __(
+							'Distance from the top of the field to the label once it has moved up. Empty keeps the default position.',
+							'sgs-blocks'
+						) }
 						__next40pxDefaultSize
-						onChange={ ( labelFloatedOffset ) => setAttributes( { labelFloatedOffset: labelFloatedOffset ?? '' } ) }
+						onChange={ ( labelFloatedOffset ) =>
+							setAttributes( {
+								labelFloatedOffset: labelFloatedOffset ?? '',
+							} )
+						}
 					/>
 				</ToolsPanelItem>
 			</ToolsPanel>

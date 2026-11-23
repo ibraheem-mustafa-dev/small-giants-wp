@@ -34,8 +34,10 @@
 
 import { matches } from '../../utils/filter-text';
 
-const GROUP_SELECTOR = '.wp-block-woocommerce-product-filter-attribute, .wp-block-woocommerce-product-filter-taxonomy';
-const CHIP_ITEM_SELECTOR = '.wc-block-product-filter-chips__item, .wc-block-product-filter-checkbox-list__item';
+const GROUP_SELECTOR =
+	'.wp-block-woocommerce-product-filter-attribute, .wp-block-woocommerce-product-filter-taxonomy';
+const CHIP_ITEM_SELECTOR =
+	'.wc-block-product-filter-chips__item, .wc-block-product-filter-checkbox-list__item';
 const HIDDEN_ATTR = 'data-sgs-fs-hidden';
 
 /**
@@ -60,7 +62,11 @@ function getChipItems( root ) {
  */
 function expandGroup( root ) {
 	const group = root.closest( GROUP_SELECTOR );
-	const more  = group && group.querySelector( '.wc-block-product-filter-checkbox-list__show-more-button' );
+	const more =
+		group &&
+		group.querySelector(
+			'.wc-block-product-filter-checkbox-list__show-more-button'
+		);
 	if ( more && ! more.hidden ) {
 		more.click();
 	}
@@ -76,8 +82,10 @@ function expandGroup( root ) {
  * @return {string} The label text (matching normalises it).
  */
 function chipLabel( chip ) {
-	const labelEl = chip.querySelector( '.wc-block-product-filter-chips__text, .wc-block-product-filter-checkbox-list__text' );
-	return ( labelEl ? labelEl.textContent : chip.textContent );
+	const labelEl = chip.querySelector(
+		'.wc-block-product-filter-chips__text, .wc-block-product-filter-checkbox-list__text'
+	);
+	return labelEl ? labelEl.textContent : chip.textContent;
 }
 
 /**
@@ -87,7 +95,9 @@ function chipLabel( chip ) {
  * @return {HTMLElement[]} Term item elements.
  */
 function getTermItems( root ) {
-	return Array.from( root.querySelectorAll( '.sgs-filter-search__term-item' ) );
+	return Array.from(
+		root.querySelectorAll( '.sgs-filter-search__term-item' )
+	);
 }
 
 /**
@@ -114,16 +124,16 @@ function initInstance( root ) {
 	root.dataset.sgsFilterSearchReady = '1';
 
 	const isTermsMode = 'terms' === root.dataset.sgsFilterSearchMode;
-	const getItems    = isTermsMode ? getTermItems : getChipItems;
-	const getLabel    = isTermsMode ? termLabel : chipLabel;
+	const getItems = isTermsMode ? getTermItems : getChipItems;
+	const getLabel = isTermsMode ? termLabel : chipLabel;
 
 	if ( 0 === getItems( root ).length ) {
 		return;
 	}
 
-	const input  = root.querySelector( '.sgs-filter-search__input' );
+	const input = root.querySelector( '.sgs-filter-search__input' );
 	const status = root.querySelector( '.sgs-filter-search__status' );
-	const empty  = root.querySelector( '.sgs-filter-search__empty' );
+	const empty = root.querySelector( '.sgs-filter-search__empty' );
 
 	// No search input rendered (below the visibility threshold) — the list
 	// still shows in full; there's nothing for this script to wire.
@@ -133,10 +143,12 @@ function initInstance( root ) {
 
 	// i18n strings emitted by render.php as data-attributes — English fallbacks
 	// guard against any edge case where the markup is cached without data attrs.
-	const shownTemplate = status.dataset.shownTemplate || '%1$d of %2$d options shown';
-	const noneText      = status.dataset.noneText      || 'No matching options';
-	const total         = parseInt( status.dataset.total, 10 ) || getItems( root ).length;
-	let expanded        = isTermsMode;
+	const shownTemplate =
+		status.dataset.shownTemplate || '%1$d of %2$d options shown';
+	const noneText = status.dataset.noneText || 'No matching options';
+	const total =
+		parseInt( status.dataset.total, 10 ) || getItems( root ).length;
+	let expanded = isTermsMode;
 
 	/**
 	 * Filter items to those whose label includes the query string.

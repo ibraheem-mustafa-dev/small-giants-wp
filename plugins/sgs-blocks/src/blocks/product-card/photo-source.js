@@ -30,7 +30,9 @@ export function imageMap( card ) {
 		return imagesByRef.get( card );
 	}
 	let map = null;
-	const el = card.querySelector( 'script.sgs-photo-images, script.sgs-buybox-images' );
+	const el = card.querySelector(
+		'script.sgs-photo-images, script.sgs-buybox-images'
+	);
 	if ( el ) {
 		try {
 			const parsed = JSON.parse( el.textContent || '{}' );
@@ -53,7 +55,9 @@ export function imageMap( card ) {
  */
 export function photoFor( card, id, fallback ) {
 	const map = imageMap( card );
-	const entry = map ? ( id > 0 && map[ id ] ) || map[ fallback ] || null : null;
+	const entry = map
+		? ( id > 0 && map[ id ] ) || map[ fallback ] || null
+		: null;
 	if ( entry && entry.src ) {
 		return { src: entry.src, srcset: entry.srcset || '', sharp: true };
 	}
@@ -84,7 +88,8 @@ export function applyPhoto( ctx, card, id, fallback ) {
 		ctx.imageSrcset = '';
 		return true;
 	}
-	const changed = ctx.imageSrc !== next.src || ( ctx.imageSrcset || '' ) !== next.srcset;
+	const changed =
+		ctx.imageSrc !== next.src || ( ctx.imageSrcset || '' ) !== next.srcset;
 	ctx.imageSrc = next.src;
 	ctx.imageSrcset = next.srcset;
 	return changed;

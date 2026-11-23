@@ -31,7 +31,12 @@ function pageScrollY() {
  * @return {boolean} True when it is shown.
  */
 function isShown( el ) {
-	if ( ! el || ! el.isConnected || 'function' !== typeof el.getClientRects || 0 === el.getClientRects().length ) {
+	if (
+		! el ||
+		! el.isConnected ||
+		'function' !== typeof el.getClientRects ||
+		0 === el.getClientRects().length
+	) {
 		return false;
 	}
 	const host = el.closest( 'dialog' );
@@ -47,9 +52,15 @@ function isShown( el ) {
  */
 function controlOf( id ) {
 	if ( window.CSS && 'function' === typeof window.CSS.escape ) {
-		return document.querySelector( `[aria-controls="${ window.CSS.escape( id ) }"]` );
+		return document.querySelector(
+			`[aria-controls="${ window.CSS.escape( id ) }"]`
+		);
 	}
-	return Array.from( document.querySelectorAll( '[aria-controls]' ) ).find( ( el ) => el.getAttribute( 'aria-controls' ) === id ) || null;
+	return (
+		Array.from( document.querySelectorAll( '[aria-controls]' ) ).find(
+			( el ) => el.getAttribute( 'aria-controls' ) === id
+		) || null
+	);
 }
 
 /**
@@ -65,7 +76,11 @@ export function restoreModalFocus( dialog ) {
 	const active = document.activeElement;
 	// The `close` event fires before the browser moves focus off the dialog's own control (its close button), so
 	// focus still inside the dialog counts as not yet returned. Focus the visitor already put elsewhere stays.
-	const stranded = ! active || active === document.body || active === document.documentElement || dialog.contains( active );
+	const stranded =
+		! active ||
+		active === document.body ||
+		active === document.documentElement ||
+		dialog.contains( active );
 	if ( ! stranded ) {
 		return;
 	}
@@ -113,7 +128,8 @@ export function restoreModalFocus( dialog ) {
 export function openModal( dialog, closeButton, opener ) {
 	// Where focus goes back to on close: the opener, else whatever held focus.
 	const active = document.activeElement;
-	dialog.__sgsReturnFocus = opener || ( active && active !== document.body ? active : null );
+	dialog.__sgsReturnFocus =
+		opener || ( active && active !== document.body ? active : null );
 	// Read before showModal: a nav drawer's scroll lock may still be on, which reports window.scrollY as 0.
 	const scrollY = pageScrollY();
 	dialog.showModal();
@@ -125,7 +141,10 @@ export function openModal( dialog, closeButton, opener ) {
 	// Spec 32); only the scroll-position VALUE is written here, as a CSS
 	// custom-property value (allowed).
 	document.body.classList.add( 'sgs-modal-scroll-locked' );
-	document.body.style.setProperty( '--sgs-modal-scroll-y', `-${ scrollY }px` );
+	document.body.style.setProperty(
+		'--sgs-modal-scroll-y',
+		`-${ scrollY }px`
+	);
 	dialog.dataset.scrollY = scrollY;
 
 	// Track the opener so the dialog's own 'close' listener (view.js) can

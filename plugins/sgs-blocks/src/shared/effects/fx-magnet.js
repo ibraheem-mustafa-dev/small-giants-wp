@@ -69,8 +69,12 @@ function readNumber( el, name, fallback, min, max ) {
  * @return {HTMLElement} The moving element.
  */
 export function resolveMovingPart( el ) {
-	const part = ( el.getAttribute( 'data-sgs-fx-magnet-moving-part' ) || '' ).trim();
-	const selector = ( el.getAttribute( 'data-sgs-fx-magnet-part-selector' ) || '' ).trim();
+	const part = (
+		el.getAttribute( 'data-sgs-fx-magnet-moving-part' ) || ''
+	).trim();
+	const selector = (
+		el.getAttribute( 'data-sgs-fx-magnet-part-selector' ) || ''
+	).trim();
 	if ( ! part || 'root' === part || ! selector ) {
 		return el;
 	}
@@ -102,7 +106,8 @@ export function readOptions( el ) {
 	const followEasing = (
 		el.getAttribute( 'data-sgs-fx-magnet-follow-easing' ) || ''
 	).trim();
-	const hasStrength = null !== el.getAttribute( 'data-sgs-fx-magnet-strength' );
+	const hasStrength =
+		null !== el.getAttribute( 'data-sgs-fx-magnet-strength' );
 	const maxPullX = readNumber(
 		el,
 		'data-sgs-fx-magnet-strength',

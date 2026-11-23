@@ -87,10 +87,9 @@ export function flattenMenuItems( blocks, parentPath = '', depth = 0 ) {
 		// can't expand a page-list without a REST call, so page-list items are
 		// not offered in the featured checklist this phase.
 		if (
-			! [
-				'core/navigation-link',
-				'core/navigation-submenu',
-			].includes( block.name )
+			! [ 'core/navigation-link', 'core/navigation-submenu' ].includes(
+				block.name
+			)
 		) {
 			return;
 		}

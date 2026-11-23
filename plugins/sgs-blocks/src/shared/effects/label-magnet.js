@@ -21,7 +21,9 @@ function loadMagnet() {
 	if ( null === loading ) {
 		// A script module the browser resolves through the import map, not a package on disk.
 		// eslint-disable-next-line import/no-unresolved
-		loading = import( /* webpackIgnore: true */ '@sgs/magnet' ).catch( () => null );
+		loading = import( /* webpackIgnore: true */ '@sgs/magnet' ).catch(
+			() => null
+		);
 	}
 	return loading;
 }
@@ -36,13 +38,15 @@ function loadMagnet() {
 export function initLabelMagnet( el, opts ) {
 	let stop = null;
 	let cancelled = false;
-	loadMagnet().then( ( mod ) => {
-		if ( ! cancelled && mod && 'function' === typeof mod.initMagnet ) {
-			stop = opts ? mod.initMagnet( el, opts ) : mod.initMagnet( el );
-		}
-	} ).catch( () => {
-		// A throw inside the shared initMagnet leaves the label still: the pull is decoration.
-	} );
+	loadMagnet()
+		.then( ( mod ) => {
+			if ( ! cancelled && mod && 'function' === typeof mod.initMagnet ) {
+				stop = opts ? mod.initMagnet( el, opts ) : mod.initMagnet( el );
+			}
+		} )
+		.catch( () => {
+			// A throw inside the shared initMagnet leaves the label still: the pull is decoration.
+		} );
 	return () => {
 		cancelled = true;
 		if ( stop ) {

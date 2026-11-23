@@ -11,15 +11,22 @@ import { SgsSeparatorControl } from '../../components';
 
 /**
  * @param {Object}   props
- * @param {string}   props.title     Panel title.
- * @param {Object}   props.value     The stored separators object.
- * @param {Function} props.onChange  Receives the whole next object.
- * @param {string[]} props.axes      The axes this list offers.
- * @param {boolean}  [props.edges]   Offer the outer-lines choice.
- * @param {boolean}  [props.sweep]   Offer the sweep hover treatment.
+ * @param {string}   props.title    Panel title.
+ * @param {Object}   props.value    The stored separators object.
+ * @param {Function} props.onChange Receives the whole next object.
+ * @param {string[]} props.axes     The axes this list offers.
+ * @param {boolean}  [props.edges]  Offer the outer-lines choice.
+ * @param {boolean}  [props.sweep]  Offer the sweep hover treatment.
  * @return {JSX.Element} The panel.
  */
-export default function SeparatorsPanel( { title, value, onChange, axes, edges = false, sweep = false } ) {
+export default function SeparatorsPanel( {
+	title,
+	value,
+	onChange,
+	axes,
+	edges = false,
+	sweep = false,
+} ) {
 	return (
 		<PanelBody title={ title } initialOpen={ false }>
 			<SgsSeparatorControl

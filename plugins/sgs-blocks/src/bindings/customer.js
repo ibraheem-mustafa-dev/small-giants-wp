@@ -15,7 +15,10 @@ const SAMPLES = {
 };
 
 const FIELDS = {
-	first_name: __( 'Customer first name (else their display name)', 'sgs-blocks' ),
+	first_name: __(
+		'Customer first name (else their display name)',
+		'sgs-blocks'
+	),
 	display_name: __( 'Customer display name', 'sgs-blocks' ),
 	email: __( 'Customer email address', 'sgs-blocks' ),
 };

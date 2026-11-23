@@ -16,7 +16,11 @@
 import { emitScopedCss } from './emit-scoped-css';
 import { sharedLosers } from './shared-element';
 import { loopDelayCss } from './loop-delays';
-import { delegatedCardPlan, delegatedCardTarget, shownCards } from './delegated-children';
+import {
+	delegatedCardPlan,
+	delegatedCardTarget,
+	shownCards,
+} from './delegated-children';
 import { resolveTarget } from './resolve-target';
 import { declaredItemPart } from './stagger-apply';
 import { MIRROR_ATTR } from './mirrors';
@@ -42,7 +46,9 @@ const STYLE_PREFIX = 'sgs-motion-canvas-';
  */
 export function canvasRootSelector( clientId, mirrored = false ) {
 	const own = `[id="block-${ clientId }"]`;
-	return mirrored ? `:is(${ own },:where([${ MIRROR_ATTR }="${ clientId }"]) [data-block])` : own;
+	return mirrored
+		? `:is(${ own },:where([${ MIRROR_ATTR }="${ clientId }"]) [data-block])`
+		: own;
 }
 
 /**
@@ -100,9 +106,9 @@ function ownedBy( el, rootEl ) {
  * Call `onFound` once the block's canvas element exists: at once when it is mounted, else when a mutation in the editor
  * document or in an editor-canvas iframe (including one that loads later) adds it. No timers.
  *
- * @param {string}                 clientId Block client id.
- * @param {(el: Element) => void}  onFound  Called once with the element.
- * @param {Document}               doc      The editor document.
+ * @param {string}                clientId Block client id.
+ * @param {(el: Element) => void} onFound  Called once with the element.
+ * @param {Document}              doc      The editor document.
  * @return {() => void} Stops watching.
  */
 export function watchForMount( clientId, onFound, doc = document ) {
@@ -118,7 +124,9 @@ export function watchForMount( clientId, onFound, doc = document ) {
 	const stop = () => {
 		done = true;
 		observer?.disconnect();
-		frames.forEach( ( frame ) => frame.removeEventListener( 'load', check ) );
+		frames.forEach( ( frame ) =>
+			frame.removeEventListener( 'load', check )
+		);
 	};
 	function attach() {
 		canvasDocuments( doc ).forEach( ( candidate ) => {
@@ -128,12 +136,14 @@ export function watchForMount( clientId, onFound, doc = document ) {
 				observer.observe( body, { childList: true, subtree: true } );
 			}
 		} );
-		doc.querySelectorAll( 'iframe[name="editor-canvas"]' ).forEach( ( frame ) => {
-			if ( ! frames.has( frame ) ) {
-				frames.add( frame );
-				frame.addEventListener( 'load', check );
+		doc.querySelectorAll( 'iframe[name="editor-canvas"]' ).forEach(
+			( frame ) => {
+				if ( ! frames.has( frame ) ) {
+					frames.add( frame );
+					frame.addEventListener( 'load', check );
+				}
 			}
-		} );
+		);
 	}
 	function check() {
 		if ( done ) {
@@ -169,15 +179,23 @@ export function planElements( rootEl, plan ) {
 	if ( classes.length === 0 && ! plan.tag ) {
 		return [];
 	}
-	const compound = ( plan.tag ? plan.tag.toLowerCase() : '' ) + classes.map( ( c ) => `.${ c }` ).join( '' );
+	const compound =
+		( plan.tag ? plan.tag.toLowerCase() : '' ) +
+		classes.map( ( c ) => `.${ c }` ).join( '' );
 	let found;
 	try {
-		found = [ ...rootEl.querySelectorAll( plan.child ? `:scope > ${ compound }` : compound ) ];
+		found = [
+			...rootEl.querySelectorAll(
+				plan.child ? `:scope > ${ compound }` : compound
+			),
+		];
 	} catch ( error ) {
 		return [];
 	}
 	// A delegating block's cards are block elements of their own; its card target takes the shown cards.
-	return plan.delegated ? shownCards( found, rootEl, classes[ 0 ] ) : found.filter( ( el ) => ownedBy( el, rootEl ) );
+	return plan.delegated
+		? shownCards( found, rootEl, classes[ 0 ] )
+		: found.filter( ( el ) => ownedBy( el, rootEl ) );
 }
 
 /**
@@ -194,9 +212,22 @@ export function planElements( rootEl, plan ) {
  */
 export function planCanvas( rootEl, motion, options ) {
 	const cards = cardCount( rootEl, options );
-	const out = withLoopDelays( rootEl, motion, { ...options, cards }, planTargets( rootEl, motion, options, cards ) );
-	const handed = rootEl ? delegatedCardPlan( motion, { ...options, cards } ) : null;
-	return handed === null ? out : { ...out, css: out.css + handed.css, plans: [ ...out.plans, handed.plan ] };
+	const out = withLoopDelays(
+		rootEl,
+		motion,
+		{ ...options, cards },
+		planTargets( rootEl, motion, options, cards )
+	);
+	const handed = rootEl
+		? delegatedCardPlan( motion, { ...options, cards } )
+		: null;
+	return handed === null
+		? out
+		: {
+				...out,
+				css: out.css + handed.css,
+				plans: [ ...out.plans, handed.plan ],
+		  };
 }
 
 /**
@@ -229,10 +260,22 @@ function withLoopDelays( rootEl, motion, options, out ) {
 	}
 	let items = null;
 	if ( options.delegation ) {
-		items = options.cards > 0 ? delegatedCardTarget( options.delegation, options.root ) : null;
+		items =
+			options.cards > 0
+				? delegatedCardTarget( options.delegation, options.root )
+				: null;
 	} else {
 		const part = declaredItemPart( options.elements, options.motionItems );
-		items = part && ! options.hasInnerBlocks ? resolveTarget( options.blockName, options.elements, options.root, part, {} ) : null;
+		items =
+			part && ! options.hasInnerBlocks
+				? resolveTarget(
+						options.blockName,
+						options.elements,
+						options.root,
+						part,
+						{}
+				  )
+				: null;
 	}
 	if ( ! items ) {
 		return out;
@@ -257,8 +300,13 @@ function withLoopDelays( rootEl, motion, options, out ) {
 function planTargets( rootEl, motion, options, cards = 0 ) {
 	let first = emitScopedCss( motion, options );
 	const inherited = first.plans.find( ( plan ) => plan.inheritedFrom );
-	const noChild = Boolean( rootEl ) && Boolean( options.delegation ) && cards === 0;
-	if ( rootEl && ( noChild || ( inherited && planElements( rootEl, inherited ).length === 0 ) ) ) {
+	const noChild =
+		Boolean( rootEl ) && Boolean( options.delegation ) && cards === 0;
+	if (
+		rootEl &&
+		( noChild ||
+			( inherited && planElements( rootEl, inherited ).length === 0 ) )
+	) {
 		// No item or delegated child shows, so nothing takes the container's entrance: it stays on the container, as on
 		// the page (`render-delegated.php` prints an empty result before it hands any child the entrance).
 		options = { ...options, noItems: true };
@@ -268,7 +316,9 @@ function planTargets( rootEl, motion, options, cards = 0 ) {
 	if ( ! rootEl || stored.length < 2 ) {
 		return { ...first, losers: {} };
 	}
-	const losers = sharedLosers( stored, options.elements, ( plan ) => planElements( rootEl, plan ) );
+	const losers = sharedLosers( stored, options.elements, ( plan ) =>
+		planElements( rootEl, plan )
+	);
 	return Object.keys( losers ).length === 0
 		? { ...first, losers }
 		: { ...emitScopedCss( motion, { ...options, losers } ), losers };
@@ -329,16 +379,19 @@ export function joinTokens( existing, added ) {
 /**
  * Stamp attributes on one element, recording each name written so `unstamp()` removes exactly those.
  *
- * @param {Element}              el      Element.
- * @param {Object<string,string>} attrs  Attributes.
- * @param {WeakMap}              written Element => Set of names written this pass.
+ * @param {Element}               el      Element.
+ * @param {Object<string,string>} attrs   Attributes.
+ * @param {WeakMap}               written Element => Set of names written this pass.
  */
 export function stampAttrs( el, attrs, written ) {
 	const names = written.get( el ) || new Set();
 	Object.entries( attrs ).forEach( ( [ name, value ] ) => {
 		if ( names.has( name ) ) {
 			if ( TOKEN_ATTRS.includes( name ) ) {
-				el.setAttribute( name, joinTokens( el.getAttribute( name ), value ) );
+				el.setAttribute(
+					name,
+					joinTokens( el.getAttribute( name ), value )
+				);
 			}
 			return;
 		}

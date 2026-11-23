@@ -23,22 +23,40 @@ import {
  * @return {Object} Style objects keyed by the element each one paints.
  */
 export function languageSwitchPreview( attributes, tier, palette ) {
-	const linkPaint = textPaintPreview( attributes.linkColour, attributes.linkColourGradient, palette );
+	const linkPaint = textPaintPreview(
+		attributes.linkColour,
+		attributes.linkColourGradient,
+		palette
+	);
 	const linkStyle = {
 		...typographyPreviewStyle( attributes, '', tier ),
 		// With no client colour the link takes the palette text token, as render.php does.
-		...( Object.keys( linkPaint ).length ? linkPaint : { color: 'var(--wp--preset--color--text)' } ),
+		...( Object.keys( linkPaint ).length
+			? linkPaint
+			: { color: 'var(--wp--preset--color--text)' } ),
 	};
 
-	const currentColour = resolveColourToken( attributes.currentColour, palette );
-	const separatorColour = resolveColourToken( attributes.separatorColour, palette );
-	const panelBackground = resolveColourToken( attributes.panelBackground, palette );
+	const currentColour = resolveColourToken(
+		attributes.currentColour,
+		palette
+	);
+	const separatorColour = resolveColourToken(
+		attributes.separatorColour,
+		palette
+	);
+	const panelBackground = resolveColourToken(
+		attributes.panelBackground,
+		palette
+	);
 	const gapRaw = resolveResponsiveTier( attributes.gap, tier )?.value;
 	const gap = sgsNormaliseLength( gapRaw );
 
 	return {
 		linkStyle,
-		currentLinkStyle: { ...linkStyle, ...( currentColour ? { color: currentColour } : {} ) },
+		currentLinkStyle: {
+			...linkStyle,
+			...( currentColour ? { color: currentColour } : {} ),
+		},
 		separatorStyle: separatorColour ? { color: separatorColour } : {},
 		panelStyle: {
 			...( panelBackground ? { backgroundColor: panelBackground } : {} ),
@@ -46,7 +64,10 @@ export function languageSwitchPreview( attributes, tier, palette ) {
 		},
 		listStyle: {
 			...( gap ? { gap } : {} ),
-			...( 'nowrap' === attributes.flexWrap || 'wrap' === attributes.flexWrap ? { flexWrap: attributes.flexWrap } : {} ),
+			...( 'nowrap' === attributes.flexWrap ||
+			'wrap' === attributes.flexWrap
+				? { flexWrap: attributes.flexWrap }
+				: {} ),
 		},
 	};
 }

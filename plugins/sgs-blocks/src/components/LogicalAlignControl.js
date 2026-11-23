@@ -16,7 +16,12 @@
  */
 import { __ } from '@wordpress/i18n';
 import { AlignmentControl } from '@wordpress/block-editor';
-import { alignLeft, alignCenter, alignRight, justifyStretch } from '@wordpress/icons';
+import {
+	alignLeft,
+	alignCenter,
+	alignRight,
+	justifyStretch,
+} from '@wordpress/icons';
 import { ToggleGroupControl, ToggleGroupControlOption } from './primitives';
 
 /**
@@ -32,7 +37,10 @@ function logicalAlignOptions( withStretch ) {
 		{ value: 'end', label: __( 'End', 'sgs-blocks' ) },
 	];
 	if ( withStretch ) {
-		options.push( { value: 'stretch', label: __( 'Stretch', 'sgs-blocks' ) } );
+		options.push( {
+			value: 'stretch',
+			label: __( 'Stretch', 'sgs-blocks' ),
+		} );
 	}
 	return options;
 }
@@ -96,12 +104,28 @@ export function LogicalAlignToolbar( {
 	withStretch = false,
 } ) {
 	const controls = [
-		{ icon: alignLeft, title: __( 'Align start', 'sgs-blocks' ), align: 'start' },
-		{ icon: alignCenter, title: __( 'Align centre', 'sgs-blocks' ), align: 'center' },
-		{ icon: alignRight, title: __( 'Align end', 'sgs-blocks' ), align: 'end' },
+		{
+			icon: alignLeft,
+			title: __( 'Align start', 'sgs-blocks' ),
+			align: 'start',
+		},
+		{
+			icon: alignCenter,
+			title: __( 'Align centre', 'sgs-blocks' ),
+			align: 'center',
+		},
+		{
+			icon: alignRight,
+			title: __( 'Align end', 'sgs-blocks' ),
+			align: 'end',
+		},
 	];
 	if ( withStretch ) {
-		controls.push( { icon: justifyStretch, title: __( 'Stretch', 'sgs-blocks' ), align: 'stretch' } );
+		controls.push( {
+			icon: justifyStretch,
+			title: __( 'Stretch', 'sgs-blocks' ),
+			align: 'stretch',
+		} );
 	}
 	return (
 		<AlignmentControl

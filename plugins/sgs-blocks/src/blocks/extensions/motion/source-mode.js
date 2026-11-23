@@ -84,7 +84,11 @@ export function heldTargets( motion ) {
  */
 export function elementsForSourceMode( supportsSgs, attributes, held = [] ) {
 	const elements = supportsSgs?.elements;
-	if ( ! activeDelegation( supportsSgs, attributes ) || ! elements || typeof elements !== 'object' ) {
+	if (
+		! activeDelegation( supportsSgs, attributes ) ||
+		! elements ||
+		typeof elements !== 'object'
+	) {
 		return elements;
 	}
 	return Object.fromEntries(
@@ -92,7 +96,9 @@ export function elementsForSourceMode( supportsSgs, attributes, held = [] ) {
 			if ( spec?.isWrapper === true ) {
 				return [ [ key, spec ] ];
 			}
-			return held.includes( key ) ? [ [ key, { ...spec, notInMode: true } ] ] : [];
+			return held.includes( key )
+				? [ [ key, { ...spec, notInMode: true } ] ]
+				: [];
 		} )
 	);
 }

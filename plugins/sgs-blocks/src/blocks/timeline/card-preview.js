@@ -6,7 +6,13 @@
  * @package SGS\Blocks
  */
 
-import { colourVar, sgsBorderPreview, resolveShadowPreviewComposed, tierBoxLonghands, tierValueOf } from '../../utils';
+import {
+	colourVar,
+	sgsBorderPreview,
+	resolveShadowPreviewComposed,
+	tierBoxLonghands,
+	tierValueOf,
+} from '../../utils';
 
 const RATIO_RE = /^\s*(\d+(?:\.\d+)?)\s*(?:\/\s*(\d+(?:\.\d+)?)\s*)?$/;
 
@@ -20,7 +26,9 @@ function lengthOf( raw ) {
 	if ( undefined === raw || null === raw || '' === raw ) {
 		return undefined;
 	}
-	return /^-?\d+(\.\d+)?$/.test( String( raw ) ) ? `${ raw }px` : String( raw );
+	return /^-?\d+(\.\d+)?$/.test( String( raw ) )
+		? `${ raw }px`
+		: String( raw );
 }
 
 /**
@@ -35,10 +43,13 @@ function tierShadowOf( attributes, tier ) {
 		[ attributes.cardShadowTablet, attributes.cardShadowTabletColour ],
 		[ attributes.cardShadowMobile, attributes.cardShadowMobileColour ],
 	];
-	const order = 'mobile' === tier ? [ pairs[ 1 ], pairs[ 0 ] ] : [ pairs[ 0 ] ];
+	const order =
+		'mobile' === tier ? [ pairs[ 1 ], pairs[ 0 ] ] : [ pairs[ 0 ] ];
 	for ( const [ shape, colour ] of order ) {
 		if ( shape ) {
-			return resolveShadowPreviewComposed( shape, colourVar( colour ) ) || '';
+			return (
+				resolveShadowPreviewComposed( shape, colourVar( colour ) ) || ''
+			);
 		}
 	}
 	return '';
@@ -54,7 +65,11 @@ function tierShadowOf( attributes, tier ) {
  */
 export function timelineEntryAlignPreviewStyle( attributes, tier ) {
 	const align = tierValueOf( attributes.cardAlign, tier );
-	if ( 'horizontal' !== attributes.orientation || 'same-side' === attributes.contentLayout || ( 'start' !== align && 'center' !== align ) ) {
+	if (
+		'horizontal' !== attributes.orientation ||
+		'same-side' === attributes.contentLayout ||
+		( 'start' !== align && 'center' !== align )
+	) {
 		return {};
 	}
 	return { textAlign: align };
@@ -81,15 +96,22 @@ export function timelineCardPreviewStyle( attributes, tier ) {
 	if ( attributes.cardBackgroundColourGradient ) {
 		style.backgroundImage = attributes.cardBackgroundColourGradient;
 	}
-	const boxShadow = resolveShadowPreviewComposed( attributes.cardShadow, colourVar( attributes.cardShadowColour ) );
+	const boxShadow = resolveShadowPreviewComposed(
+		attributes.cardShadow,
+		colourVar( attributes.cardShadowColour )
+	);
 	if ( boxShadow ) {
 		style.boxShadow = boxShadow;
 	}
-	const tierShadow = 'desktop' === tier ? null : tierShadowOf( attributes, tier );
+	const tierShadow =
+		'desktop' === tier ? null : tierShadowOf( attributes, tier );
 	if ( tierShadow ) {
 		style.boxShadow = tierShadow;
 	}
-	if ( 'stacked' === tierValueOf( attributes.cardLayout, tier ) && 'same-side' === attributes.contentLayout ) {
+	if (
+		'stacked' === tierValueOf( attributes.cardLayout, tier ) &&
+		'same-side' === attributes.contentLayout
+	) {
 		style.display = 'grid';
 		style.gridTemplateColumns = 'minmax(0, 1fr)';
 		style.gridTemplateAreas = "'media' 'date' 'content'";
@@ -106,7 +128,10 @@ export function timelineCardPreviewStyle( attributes, tier ) {
 	Object.assign( style, timelineEntryAlignPreviewStyle( attributes, tier ) );
 	if ( 'desktop' === tier || 'tablet' === tier ) {
 		const align = tierValueOf( attributes.cardAlign, tier );
-		if ( 'same-side' !== attributes.contentLayout && ( 'start' === align || 'center' === align ) ) {
+		if (
+			'same-side' !== attributes.contentLayout &&
+			( 'start' === align || 'center' === align )
+		) {
 			style.alignItems = 'start' === align ? 'flex-start' : 'center';
 		}
 	}
@@ -128,9 +153,16 @@ export function timelineStripPreviewStyle( attributes, tier ) {
 	if ( rowGap ) {
 		style.rowGap = rowGap;
 	}
-	if ( attributes.cardsShareRow && 'pinned-horizontal' !== attributes.scrollEffect ) {
+	if (
+		attributes.cardsShareRow &&
+		'pinned-horizontal' !== attributes.scrollEffect
+	) {
 		// The equal-column row (style.scss `.sgs-timeline--cards-share`); the editor's list is the block root.
-		Object.assign( style, { display: 'grid', gridAutoFlow: 'column', gridAutoColumns: 'minmax(0, 1fr)' } );
+		Object.assign( style, {
+			display: 'grid',
+			gridAutoFlow: 'column',
+			gridAutoColumns: 'minmax(0, 1fr)',
+		} );
 	}
 	return style;
 }
@@ -158,16 +190,24 @@ export function timelineDateRingPreviewStyle( attributes, tier ) {
 		tier
 	);
 	if ( attributes.dateRingBackgroundColour ) {
-		style.backgroundColor = colourVar( attributes.dateRingBackgroundColour );
+		style.backgroundColor = colourVar(
+			attributes.dateRingBackgroundColour
+		);
 	}
 	if ( attributes.dateRingBackgroundColourGradient ) {
 		style.backgroundImage = attributes.dateRingBackgroundColourGradient;
 	}
-	const boxShadow = resolveShadowPreviewComposed( attributes.dateRingShadow, colourVar( attributes.dateRingShadowColour ) );
+	const boxShadow = resolveShadowPreviewComposed(
+		attributes.dateRingShadow,
+		colourVar( attributes.dateRingShadowColour )
+	);
 	if ( boxShadow ) {
 		style.boxShadow = boxShadow;
 	}
-	return { ...style, ...tierBoxLonghands( attributes.dateRingPadding, tier, 'padding' ) };
+	return {
+		...style,
+		...tierBoxLonghands( attributes.dateRingPadding, tier, 'padding' ),
+	};
 }
 
 /**
@@ -178,10 +218,17 @@ export function timelineDateRingPreviewStyle( attributes, tier ) {
  * @return {Object} React style fragment.
  */
 export function timelineMediaPreviewStyle( attributes, tier ) {
-	const style = sgsBorderPreview( { radiusValues: attributes.entryRadius }, tier );
-	const ratio = RATIO_RE.exec( String( tierValueOf( attributes.entryRatio, tier ) ?? '' ) );
+	const style = sgsBorderPreview(
+		{ radiusValues: attributes.entryRadius },
+		tier
+	);
+	const ratio = RATIO_RE.exec(
+		String( tierValueOf( attributes.entryRatio, tier ) ?? '' )
+	);
 	if ( ratio && Number( ratio[ 1 ] ) > 0 && Number( ratio[ 2 ] ?? 1 ) > 0 ) {
-		style.aspectRatio = ratio[ 2 ] ? `${ ratio[ 1 ] } / ${ ratio[ 2 ] }` : ratio[ 1 ];
+		style.aspectRatio = ratio[ 2 ]
+			? `${ ratio[ 1 ] } / ${ ratio[ 2 ] }`
+			: ratio[ 1 ];
 	}
 	const height = lengthOf( tierValueOf( attributes.entryHeight, tier ) );
 	if ( height ) {

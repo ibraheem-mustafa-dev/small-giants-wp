@@ -78,12 +78,18 @@ export function borderStyleValue( attr, value ) {
 		return value;
 	}
 	const allowed = SCHEMA[ attr ]?.enum;
-	return Array.isArray( allowed ) && ! allowed.includes( '' ) && allowed.includes( 'none' ) ? 'none' : '';
+	return Array.isArray( allowed ) &&
+		! allowed.includes( '' ) &&
+		allowed.includes( 'none' )
+		? 'none'
+		: '';
 }
 
 /** A setAttributes patch that puts every named attribute back to its block.json default. */
 export function resetPatch( attrs ) {
-	return Object.fromEntries( attrs.map( ( attr ) => [ attr, defaultOf( attr ) ] ) );
+	return Object.fromEntries(
+		attrs.map( ( attr ) => [ attr, defaultOf( attr ) ] )
+	);
 }
 
 /** Every attribute TypographyControls reads or writes for the given prefixes, that block.json declares. */
@@ -107,7 +113,10 @@ export function Section( { title, attrs, setAttributes, children } ) {
 			<PanelBody title={ title } initialOpen={ false }>
 				<ToolsPanel
 					/* translators: %s: section name, e.g. "Card". The PanelBody above already carries the bare name. */
-					label={ sprintf( __( '%s settings', 'sgs-blocks' ), title ) }
+					label={ sprintf(
+						__( '%s settings', 'sgs-blocks' ),
+						title
+					) }
 					resetAll={ () => setAttributes( resetPatch( attrs ) ) }
 				>
 					{ children }
@@ -126,7 +135,9 @@ export function Row( { label, attrs, attributes, setAttributes, children } ) {
 	return (
 		<ToolsPanelItem
 			label={ label }
-			hasValue={ () => attrs.some( ( attr ) => isSet( attributes, attr ) ) }
+			hasValue={ () =>
+				attrs.some( ( attr ) => isSet( attributes, attr ) )
+			}
 			onDeselect={ () => setAttributes( resetPatch( attrs ) ) }
 			isShownByDefault
 		>

@@ -25,8 +25,16 @@
  */
 import { __ } from '@wordpress/i18n';
 
-import { mediaAttrName, mediaStoredAttrName } from '../../MediaElementControls.js';
-import { isLegacyCall, rulesFor, kindIn, omitted } from '../panels/disclosure-context.js';
+import {
+	mediaAttrName,
+	mediaStoredAttrName,
+} from '../../MediaElementControls.js';
+import {
+	isLegacyCall,
+	rulesFor,
+	kindIn,
+	omitted,
+} from '../panels/disclosure-context.js';
 
 export const TYPE_VOCABULARY = [ 'image', 'video', 'svg' ];
 
@@ -108,9 +116,13 @@ export function disclosure( attrs, device, prefix = '', opts = {} ) {
 			return ! c.background && c.has( 'LinkUrl' ) ? omitted() : undefined;
 		}
 		if ( 'ImageAlt' === base ) {
-			return kindIn( c, 'image', 'svg' ) && ! decorative ? undefined : omitted();
+			return kindIn( c, 'image', 'svg' ) && ! decorative
+				? undefined
+				: omitted();
 		}
-		return kindIn( c, 'video', 'embed' ) && ! decorative ? undefined : omitted();
+		return kindIn( c, 'video', 'embed' ) && ! decorative
+			? undefined
+			: omitted();
 	} );
 }
 

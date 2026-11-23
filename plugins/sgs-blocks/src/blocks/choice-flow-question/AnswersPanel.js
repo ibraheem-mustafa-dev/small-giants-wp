@@ -20,7 +20,9 @@ const LIMIT = 12;
  */
 function clamp( value, floor, ceil ) {
 	const n = parseInt( value, 10 );
-	return Number.isInteger( n ) ? Math.min( Math.max( n, floor ), ceil ) : floor;
+	return Number.isInteger( n )
+		? Math.min( Math.max( n, floor ), ceil )
+		: floor;
 }
 
 /**
@@ -37,14 +39,19 @@ export default function AnswersPanel( { attributes, setAttributes } ) {
 	const min = clamp( attributes.answersMin, 1, max );
 
 	return (
-		<PanelBody title={ __( 'Answers to pick', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody
+			title={ __( 'Answers to pick', 'sgs-blocks' ) }
+			initialOpen={ false }
+		>
 			<VStack spacing={ 3 }>
 				<NumberControl
 					label={ __( 'Fewest answers', 'sgs-blocks' ) }
 					value={ min }
 					min={ 1 }
 					max={ max }
-					onChange={ ( v ) => setAttributes( { answersMin: clamp( v, 1, max ) } ) }
+					onChange={ ( v ) =>
+						setAttributes( { answersMin: clamp( v, 1, max ) } )
+					}
 					__next40pxDefaultSize
 				/>
 				<NumberControl
@@ -54,9 +61,15 @@ export default function AnswersPanel( { attributes, setAttributes } ) {
 					max={ LIMIT }
 					onChange={ ( v ) => {
 						const next = clamp( v, 1, LIMIT );
-						setAttributes( { answersMax: next, answersMin: Math.min( min, next ) } );
+						setAttributes( {
+							answersMax: next,
+							answersMin: Math.min( min, next ),
+						} );
 					} }
-					help={ __( 'Above 1 the options become toggles, Continue waits for the fewest, and a pick past the most is refused with a message. A priced step takes one answer.', 'sgs-blocks' ) }
+					help={ __(
+						'Above 1 the options become toggles, Continue waits for the fewest, and a pick past the most is refused with a message. A priced step takes one answer.',
+						'sgs-blocks'
+					) }
 					__next40pxDefaultSize
 				/>
 			</VStack>

@@ -13,14 +13,41 @@
 
 import { forgetAnswersFrom } from './flow-fields.js';
 import { clearVariationChoicesAfter } from './variation.js';
-import { FLOW_SELECTOR, STEP_SELECTOR, OPTIONS_GROUP_SELECTOR, OPTION_BUTTON_SELECTOR, SELECTED_CLASS } from './flow-constants.js';
+import {
+	FLOW_SELECTOR,
+	STEP_SELECTOR,
+	OPTIONS_GROUP_SELECTOR,
+	OPTION_BUTTON_SELECTOR,
+	SELECTED_CLASS,
+} from './flow-constants.js';
 import { openInlineStep, showStep } from './flow-inline.js';
 import { refreshPricePanel } from './pricing.js';
-import { getSteps, updateContinueState, showContinueHint, hideContinueHint, advanceModeOf } from './flow-steps.js';
-import { flowState, ensureNavigationState, persistFlowState } from './flow-persistence.js';
-import { recordOptionAnswer, commitStepRouting, routesToQuestionStep } from './flow-routing.js';
+import {
+	getSteps,
+	updateContinueState,
+	showContinueHint,
+	hideContinueHint,
+	advanceModeOf,
+} from './flow-steps.js';
+import {
+	flowState,
+	ensureNavigationState,
+	persistFlowState,
+} from './flow-persistence.js';
+import {
+	recordOptionAnswer,
+	commitStepRouting,
+	routesToQuestionStep,
+} from './flow-routing.js';
 import { QUESTION_SELECTOR } from './flow-constants.js';
-import { isMultiQuestion, questionLimits, chosenButtons, routingButton, toggleMultiOption, meetsLeast } from './flow-multi.js';
+import {
+	isMultiQuestion,
+	questionLimits,
+	chosenButtons,
+	routingButton,
+	toggleMultiOption,
+	meetsLeast,
+} from './flow-multi.js';
 
 /** How long after a 'pick' advance option clicks are ignored (a double tap's second half). */
 const PICK_SETTLE_MS = 400;
@@ -32,7 +59,8 @@ const PICK_SETTLE_MS = 400;
  * @param {HTMLElement} buttonEl The clicked option.
  */
 function selectOption( buttonEl ) {
-	const scope = buttonEl.closest( OPTIONS_GROUP_SELECTOR ) || buttonEl.parentElement;
+	const scope =
+		buttonEl.closest( OPTIONS_GROUP_SELECTOR ) || buttonEl.parentElement;
 	if ( ! scope ) {
 		return;
 	}
@@ -56,7 +84,10 @@ export function handleOptionClick( buttonEl ) {
 	// 'pick' advanceMode: the next step appears where the picked option was, so
 	// the second half of a double tap would answer it unseen. Clicks in the
 	// moment after an advance are ignored.
-	if ( Date.now() - Number( flowRoot.dataset.pickAdvancedAt || 0 ) < PICK_SETTLE_MS ) {
+	if (
+		Date.now() - Number( flowRoot.dataset.pickAdvancedAt || 0 ) <
+		PICK_SETTLE_MS
+	) {
 		return;
 	}
 
@@ -101,7 +132,10 @@ export function handleOptionClick( buttonEl ) {
 	// 'pick' advanceMode: a click (which Enter and Space also deliver on a
 	// button; arrow keys never do) on a single-choice question moves on at
 	// once, by the same routing Continue commits. Continue stays for Back.
-	if ( 'pick' === advanceModeOf( flowRoot ) && routesToQuestionStep( flowRoot, buttonEl, currentIndex ) ) {
+	if (
+		'pick' === advanceModeOf( flowRoot ) &&
+		routesToQuestionStep( flowRoot, buttonEl, currentIndex )
+	) {
 		flowRoot.dataset.pickAdvancedAt = String( Date.now() );
 		commitStepRouting( flowRoot, buttonEl, currentIndex );
 	}
@@ -127,11 +161,15 @@ export function handleContinueClick( buttonEl ) {
 	}
 	const currentIndex = steps.indexOf( currentStepEl );
 
-	let selectedButtonEl = currentStepEl.querySelector( `.${ SELECTED_CLASS }` );
+	let selectedButtonEl = currentStepEl.querySelector(
+		`.${ SELECTED_CLASS }`
+	);
 	if ( selectedButtonEl ) {
 		// FR-43-27: a multi-answer question needs its least, then routes by its first routed pick.
 		const chosen = chosenButtons( selectedButtonEl );
-		const { min } = questionLimits( selectedButtonEl.closest( QUESTION_SELECTOR ) );
+		const { min } = questionLimits(
+			selectedButtonEl.closest( QUESTION_SELECTOR )
+		);
 		if ( ! meetsLeast( chosen.length, min ) ) {
 			showContinueHint( flowRoot );
 			return;
@@ -171,5 +209,10 @@ export function handleBackClick( buttonEl ) {
 	forgetAnswersFrom( flowRoot, previousIndex );
 	clearVariationChoicesAfter( flowRoot, previousIndex );
 	showStep( flowRoot, previousIndex );
-	persistFlowState( flowRoot, previousIndex, instanceState.tags, instanceState.history );
+	persistFlowState(
+		flowRoot,
+		previousIndex,
+		instanceState.tags,
+		instanceState.history
+	);
 }

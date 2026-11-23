@@ -54,7 +54,8 @@ export function buildPaletteDefaultGradient( palette ) {
 	}
 
 	const usable = palette.filter(
-		( entry ) => typeof entry?.slug === 'string' && SAFE_SLUG.test( entry.slug )
+		( entry ) =>
+			typeof entry?.slug === 'string' && SAFE_SLUG.test( entry.slug )
 	);
 
 	const preferred = PREFERRED_SLUGS.map( ( slug ) =>
@@ -72,7 +73,9 @@ export function buildPaletteDefaultGradient( palette ) {
 
 	const stopCss = stops.map(
 		( entry, index ) =>
-			`var(--wp--preset--color--${ entry.slug }) ${ index === 0 ? 0 : 100 }%`
+			`var(--wp--preset--color--${ entry.slug }) ${
+				index === 0 ? 0 : 100
+			}%`
 	);
 
 	return `linear-gradient(${ SEED_ANGLE_DEG }deg, ${ stopCss.join( ', ' ) })`;

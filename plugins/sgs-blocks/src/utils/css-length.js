@@ -26,7 +26,11 @@ function consumeFunctionCalls( value ) {
 		}
 		let depth = 0;
 		let close = -1;
-		for ( let i = match.index + match[ 0 ].length - 1; i < value.length; i++ ) {
+		for (
+			let i = match.index + match[ 0 ].length - 1;
+			i < value.length;
+			i++
+		) {
 			if ( '(' === value[ i ] ) {
 				depth++;
 			} else if ( ')' === value[ i ] ) {
@@ -101,8 +105,10 @@ export function cssMathHasAdjacentTerms( value ) {
 		if ( -1 === close ) {
 			continue;
 		}
-		let body = value.slice( open + 1, close ).replace( /(['"])(?:(?!\1)[\s\S])*\1/g, 's' );
-		for ( ;; ) {
+		let body = value
+			.slice( open + 1, close )
+			.replace( /(['"])(?:(?!\1)[\s\S])*\1/g, 's' );
+		for (;;) {
 			const v = /\bvar\(/i.exec( body );
 			if ( ! v ) {
 				break;
@@ -111,7 +117,9 @@ export function cssMathHasAdjacentTerms( value ) {
 			if ( -1 === vClose ) {
 				break;
 			}
-			body = `${ body.slice( 0, v.index ) }x${ body.slice( vClose + 1 ) }`;
+			body = `${ body.slice( 0, v.index ) }x${ body.slice(
+				vClose + 1
+			) }`;
 		}
 		if ( /[\w%.)]\s+[\w%.(]/.test( body ) ) {
 			return true;
@@ -135,7 +143,9 @@ export function cssLengthValue( raw, presetSlugs = [] ) {
 		return '';
 	}
 	if ( /^\d+$/.test( value ) ) {
-		return presetSlugs.includes( value ) ? `var(--wp--preset--spacing--${ value })` : `${ value }px`;
+		return presetSlugs.includes( value )
+			? `var(--wp--preset--spacing--${ value })`
+			: `${ value }px`;
 	}
 	if ( /url\s*\(|expression\s*\(|@import/i.test( value ) ) {
 		return '';
@@ -162,14 +172,20 @@ export function cssLengthValue( raw, presetSlugs = [] ) {
  * @return {string} CSS length.
  */
 export function cssSingleLengthValue( raw, presetSlugs = [] ) {
-	const value = cssLengthValue( 'string' === typeof raw ? raw : '', presetSlugs );
+	const value = cssLengthValue(
+		'string' === typeof raw ? raw : '',
+		presetSlugs
+	);
 	if ( '' === value ) {
 		return '';
 	}
 	if ( /^\d+(\.\d+)?[a-z%]+$/i.test( value ) ) {
 		return value;
 	}
-	if ( ! /^(var|calc|min|max|minmax|clamp)\(/i.test( value ) || ! value.endsWith( ')' ) ) {
+	if (
+		! /^(var|calc|min|max|minmax|clamp)\(/i.test( value ) ||
+		! value.endsWith( ')' )
+	) {
 		return '';
 	}
 	let depth = 0;

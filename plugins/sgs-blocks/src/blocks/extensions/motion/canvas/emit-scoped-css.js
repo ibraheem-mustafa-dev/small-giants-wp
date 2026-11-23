@@ -55,11 +55,26 @@ import { sanitiseDocument } from './document-sanitise';
 import { resolveLayerDrops } from './layer-drops';
 import { stripShared } from './shared-element';
 import { emitFocus, focusAllowed, FOCUS_REFUSAL } from './emit-focus';
-import { hasRing, RING_REFUSAL, ringPaints, ringRefused, stripRing } from './emit-ring';
-import { delegatedMove, inheritedItem, movedEntranceTarget } from './stagger-apply';
+import {
+	hasRing,
+	RING_REFUSAL,
+	ringPaints,
+	ringRefused,
+	stripRing,
+} from './emit-ring';
+import {
+	delegatedMove,
+	inheritedItem,
+	movedEntranceTarget,
+} from './stagger-apply';
 
 /** Hover colour and shadow properties whose timing the hover state owns (FR-38A-7). */
-const HOVER_PAINT = [ 'color', 'background-color', 'border-color', 'box-shadow' ];
+const HOVER_PAINT = [
+	'color',
+	'background-color',
+	'border-color',
+	'box-shadow',
+];
 // The hover state's colour-and-shadow timing override (Sgs_Motion_Emitter::PAINT_TIMING): field key => its slot.
 const PAINT_TIMING = {
 	paintDuration: 'duration',
@@ -116,7 +131,10 @@ function hoverState( state, decls, trans, channels, extra, context ) {
 	let ownerCount = 0;
 	const origin = {};
 	let listSeen = false;
-	const itemClass = context.match && ! context.match.root ? context.match.classes || [] : [];
+	const itemClass =
+		context.match && ! context.match.root
+			? context.match.classes || []
+			: [];
 	TIERS.forEach( ( tier ) => {
 		let timingChanged = tier === 'desktop';
 		const angleChanged = {};
@@ -150,7 +168,11 @@ function hoverState( state, decls, trans, channels, extra, context ) {
 				angleChanged[ key ] = true;
 				if ( key === 'restRotate' ) {
 					// A list's angles are clamped and capped; a root target has no siblings to cycle through.
-					const checked = fieldCss( f[ key ].type, value, f[ key ].node );
+					const checked = fieldCss(
+						f[ key ].type,
+						value,
+						f[ key ].node
+					);
 					restHere = checked.ok ? checked.value : null;
 					if ( Array.isArray( restHere ) && itemClass.length === 0 ) {
 						restHere = restHere[ 0 ];
@@ -160,7 +182,9 @@ function hoverState( state, decls, trans, channels, extra, context ) {
 			} else if ( [ 'rest', 'active' ].includes( f[ key ].state ) ) {
 				decls[ tier ][ prop ] = css;
 			} else if ( prop.startsWith( MH_PREFIX ) ) {
-				decls[ tier ][ MH_PREFIX + 'to-' + prop.slice( MH_PREFIX.length ) ] = css;
+				decls[ tier ][
+					MH_PREFIX + 'to-' + prop.slice( MH_PREFIX.length )
+				] = css;
 				owners[ prop ] = true;
 			} else {
 				decls[ tier ][ MH_PREFIX + 'to-' + key ] = css;
@@ -171,7 +195,10 @@ function hoverState( state, decls, trans, channels, extra, context ) {
 			hoverAngles( angles, raw, angleChanged, tier, decls, owners );
 		}
 		if ( restHere !== null && ( Array.isArray( restHere ) || listSeen ) ) {
-			extra[ tier ] = [ ...extra[ tier ], ...nthRules( restHere, itemClass ) ];
+			extra[ tier ] = [
+				...extra[ tier ],
+				...nthRules( restHere, itemClass ),
+			];
 		}
 		listSeen = listSeen || Array.isArray( restHere );
 		if ( originChanged ) {
@@ -183,15 +210,21 @@ function hoverState( state, decls, trans, channels, extra, context ) {
 		// A tier repeats the whole list when its timing or its owner set differs from the wider tier's.
 		if ( timingChanged || Object.keys( owners ).length !== ownerCount ) {
 			const paintTiming = ( shadow ) => {
-				const duration = ( shadow ? paint[ 'shadow-duration' ] : undefined ) ?? paint.duration;
-				const easing = ( shadow ? paint[ 'shadow-easing' ] : undefined ) ?? paint.easing;
+				const duration =
+					( shadow ? paint[ 'shadow-duration' ] : undefined ) ??
+					paint.duration;
+				const easing =
+					( shadow ? paint[ 'shadow-easing' ] : undefined ) ??
+					paint.easing;
 				if ( duration === undefined && easing === undefined ) {
 					return `var(--wp--custom--transition--fast, ${ tokenOr(
 						'token:duration.fast',
 						'200ms'
 					) } ease)`;
 				}
-				return `${ duration ?? tokenOr( 'token:duration.fast', '200ms' ) } ${ easing ?? tokenOr( 'token:easing.default', 'ease' ) }`;
+				return `${
+					duration ?? tokenOr( 'token:duration.fast', '200ms' )
+				} ${ easing ?? tokenOr( 'token:easing.default', 'ease' ) }`;
 			};
 			trans[ tier ] = [
 				...Object.keys( owners ).map(
@@ -200,11 +233,16 @@ function hoverState( state, decls, trans, channels, extra, context ) {
 				),
 				...HOVER_PAINT.map(
 					( prop ) =>
-						`${ prop } ${ paintTiming( prop === 'box-shadow' ) } ${ timing[ 'transition-delay' ] }`
+						`${ prop } ${ paintTiming( prop === 'box-shadow' ) } ${
+							timing[ 'transition-delay' ]
+						}`
 				),
 			];
 			if ( isFollow ) {
-				trans[ tier ] = [ ...trans[ tier ], ...followEntries( follow ) ];
+				trans[ tier ] = [
+					...trans[ tier ],
+					...followEntries( follow ),
+				];
 			}
 		}
 		ownerCount = Object.keys( owners ).length;
@@ -265,29 +303,50 @@ function effectTransition( layer, trans ) {
 	let durKey = null;
 	let easeKey = null;
 	Object.entries( fields( def ) ).forEach( ( [ key, field ] ) => {
-		durKey = betterTimingKey( durKey, key, field.type === 'duration', 'Duration' );
-		easeKey = betterTimingKey( easeKey, key, field.type === 'easing', 'Easing' );
+		durKey = betterTimingKey(
+			durKey,
+			key,
+			field.type === 'duration',
+			'Duration'
+		);
+		easeKey = betterTimingKey(
+			easeKey,
+			key,
+			field.type === 'easing',
+			'Easing'
+		);
 	} );
 	let duration = tokenOr( 'token:duration.medium', '300ms' );
 	let easing = tokenOr(
-			'token:easing.emphasised',
-			'cubic-bezier(0.2, 0.7, 0.2, 1)'
-		);
+		'token:easing.emphasised',
+		'cubic-bezier(0.2, 0.7, 0.2, 1)'
+	);
 	const tiers = tierValues( layer );
-	if ( easeKey !== null && tiers.desktop[ easeKey ] !== undefined && tiers.desktop[ easeKey ] !== null ) {
+	if (
+		easeKey !== null &&
+		tiers.desktop[ easeKey ] !== undefined &&
+		tiers.desktop[ easeKey ] !== null
+	) {
 		easing = valueCss( def, easeKey, tiers.desktop[ easeKey ] ) ?? easing;
 	}
 	const runtime = effectRuntimeTiming( effect );
 	if ( runtime ) {
 		props.forEach( ( prop ) =>
-			trans.desktop.push( `${ prop } var(${ runtime.duration }, 0ms) var(${ runtime.easing }, ${ easing }) 0ms` )
+			trans.desktop.push(
+				`${ prop } var(${ runtime.duration }, 0ms) var(${ runtime.easing }, ${ easing }) 0ms`
+			)
 		);
 		return;
 	}
 	TIERS.forEach( ( tier ) => {
 		let changed = tier === 'desktop';
-		if ( durKey !== null && tiers[ tier ][ durKey ] !== undefined && tiers[ tier ][ durKey ] !== null ) {
-			duration = valueCss( def, durKey, tiers[ tier ][ durKey ] ) ?? duration;
+		if (
+			durKey !== null &&
+			tiers[ tier ][ durKey ] !== undefined &&
+			tiers[ tier ][ durKey ] !== null
+		) {
+			duration =
+				valueCss( def, durKey, tiers[ tier ][ durKey ] ) ?? duration;
 			changed = true;
 		}
 		if ( changed ) {
@@ -317,16 +376,24 @@ export function hoverPartMarkers( state ) {
 	if ( String( state.source ?? 'self' ) !== 'self' ) {
 		return markers;
 	}
-	[ state.values, state.devices?.tablet, state.devices?.mobile ].forEach( ( values ) => {
-		if ( ! values || typeof values !== 'object' ) {
-			return;
-		}
-		Object.entries( HOVER_PART_MARKERS ).forEach( ( [ key, marker ] ) => {
-			if ( values[ key ] !== undefined && values[ key ] !== null && values[ key ] !== '' ) {
-				markers[ marker ] = '';
+	[ state.values, state.devices?.tablet, state.devices?.mobile ].forEach(
+		( values ) => {
+			if ( ! values || typeof values !== 'object' ) {
+				return;
 			}
-		} );
-	} );
+			Object.entries( HOVER_PART_MARKERS ).forEach(
+				( [ key, marker ] ) => {
+					if (
+						values[ key ] !== undefined &&
+						values[ key ] !== null &&
+						values[ key ] !== ''
+					) {
+						markers[ marker ] = '';
+					}
+				}
+			);
+		}
+	);
 	return markers;
 }
 
@@ -360,11 +427,19 @@ export function emitTarget( element, selector, context = {} ) {
 	} );
 	let played = false;
 	const base = element?.entrance?.base;
-	if ( base && typeof base === 'object' && ! Array.isArray( base ) && ! context.suppressEntrance ) {
+	if (
+		base &&
+		typeof base === 'object' &&
+		! Array.isArray( base ) &&
+		! context.suppressEntrance
+	) {
 		played = emitEntrance( base, decls, attrs, context );
 	}
 	const meChannels = ( attrs[ 'data-sgs-me' ] ?? '' ).split( ' ' );
-	defaultPerspective( decls, Boolean( channels.transform ) || meChannels.includes( 'transform' ) );
+	defaultPerspective(
+		decls,
+		Boolean( channels.transform ) || meChannels.includes( 'transform' )
+	);
 	if ( Object.keys( channels ).length > 0 ) {
 		attrs[ 'data-sgs-mc' ] = orderedChannels( channels ).join( ' ' );
 	}
@@ -373,7 +448,10 @@ export function emitTarget( element, selector, context = {} ) {
 		// The colour to-values join the one per-element list; a tier with its own hover list carries them too.
 		const colours = paintTransitionEntries( base );
 		TIERS.forEach( ( tier ) => {
-			if ( colours.length > 0 && ( tier === 'desktop' || trans[ tier ].length > 0 ) ) {
+			if (
+				colours.length > 0 &&
+				( tier === 'desktop' || trans[ tier ].length > 0 )
+			) {
 				trans[ tier ] = [ ...trans[ tier ], ...colours ];
 			}
 		} );
@@ -383,10 +461,19 @@ export function emitTarget( element, selector, context = {} ) {
 			decls[ tier ].transition = trans[ tier ].join( ', ' );
 		}
 	} );
-	const parent = parentPerspective( decls, state, Boolean( context.parentOwned ) );
+	const parent = parentPerspective(
+		decls,
+		state,
+		Boolean( context.parentOwned )
+	);
 	let css = rules( selector, decls, extra );
 	if ( Object.keys( parent ).length > 0 ) {
-		css += rules( `:has(> ${ selector })`, { desktop: {}, tablet: {}, mobile: {}, ...parent } );
+		css += rules( `:has(> ${ selector })`, {
+			desktop: {},
+			tablet: {},
+			mobile: {},
+			...parent,
+		} );
 	}
 	if ( played ) {
 		css += triggerCss( base, selector, attrs );
@@ -408,7 +495,8 @@ export function emitTarget( element, selector, context = {} ) {
 function usesSource( targets, source ) {
 	return Object.values( targets ).some( ( element ) =>
 		[ element?.hover?.state, ...listOf( element?.hover?.effects ) ].some(
-			( layer ) => layer && typeof layer === 'object' && layer.source === source
+			( layer ) =>
+				layer && typeof layer === 'object' && layer.source === source
 		)
 	);
 }
@@ -423,27 +511,68 @@ function usesSource( targets, source ) {
  * @param {Object} options `emitScopedCss()` options (`hasInnerBlocks`: the block holds blocks; `noItems`: no item shows).
  * @return {{moved:?string,plan:?Object,css:string}} The hand-over.
  */
-function itemHandOver( motion, targets, { blockName, elements, root, states, context, motionItems, delegation, hasInnerBlocks, noItems } ) {
+function itemHandOver(
+	motion,
+	targets,
+	{
+		blockName,
+		elements,
+		root,
+		states,
+		context,
+		motionItems,
+		delegation,
+		hasInnerBlocks,
+		noItems,
+	}
+) {
 	const none = { moved: null, plan: null, css: '' };
 	if ( delegation ) {
 		// No child shows (an empty result), so nothing takes the container's entrance, as on the page.
-		return noItems ? none : { ...none, moved: delegatedMove( motion, targets, elements, delegation ) };
+		return noItems
+			? none
+			: {
+					...none,
+					moved: delegatedMove(
+						motion,
+						targets,
+						elements,
+						delegation
+					),
+			  };
 	}
 	if ( hasInnerBlocks ) {
-		return { ...none, moved: movedEntranceTarget( motion, targets, elements ) };
+		return {
+			...none,
+			moved: movedEntranceTarget( motion, targets, elements ),
+		};
 	}
-	const item = noItems ? null : inheritedItem( motion, targets, elements, motionItems );
-	const resolved = item ? resolveTarget( blockName, elements, root, item.part, {} ) : null;
+	const item = noItems
+		? null
+		: inheritedItem( motion, targets, elements, motionItems );
+	const resolved = item
+		? resolveTarget( blockName, elements, root, item.part, {} )
+		: null;
 	if ( resolved === null ) {
 		return none;
 	}
-	const emitted = emitTarget( { entrance: { base: item.base } }, resolved.selector, { ...context, suppressEntrance: false, states } );
+	const emitted = emitTarget(
+		{ entrance: { base: item.base } },
+		resolved.selector,
+		{ ...context, suppressEntrance: false, states }
+	);
 	if ( ! emitted.entrance || Object.keys( emitted.attrs ).length === 0 ) {
 		return none;
 	}
 	return {
 		moved: item.from,
-		plan: { target: item.part, ...resolved, attrs: emitted.attrs, entrance: true, inheritedFrom: item.from },
+		plan: {
+			target: item.part,
+			...resolved,
+			attrs: emitted.attrs,
+			entrance: true,
+			inheritedFrom: item.from,
+		},
 		css: emitted.css,
 	};
 }
@@ -467,23 +596,63 @@ function itemHandOver( motion, targets, { blockName, elements, root, states, con
  * @return {{css:string,plans:Array,rootAttrs:Object,dropped:Array,itemMatches?:Array}} Empty for an absent or invalid
  *         attribute; `itemMatches` (the elements to mark `data-sgs-mitem`) only when a hover layer uses source item.
  */
-export function emitScopedCss( motion, { blockName, elements, root, states = [], losers = {}, context = {}, animationItems = '', attributes, motionItems, delegation = null, hasInnerBlocks = false, noItems = false } ) {
+export function emitScopedCss(
+	motion,
+	{
+		blockName,
+		elements,
+		root,
+		states = [],
+		losers = {},
+		context = {},
+		animationItems = '',
+		attributes,
+		motionItems,
+		delegation = null,
+		hasInnerBlocks = false,
+		noItems = false,
+	}
+) {
 	const out = { css: '', plans: [], rootAttrs: {}, dropped: [] };
 	const doc = sanitiseDocument( motion );
 	const targets = doc.elements;
-	if ( ! targets || typeof targets !== 'object' || Array.isArray( targets ) ) {
+	if (
+		! targets ||
+		typeof targets !== 'object' ||
+		Array.isArray( targets )
+	) {
 		return out;
 	}
-	const handOver = itemHandOver( motion, targets, { blockName, elements, root, states, context, motionItems, delegation, hasInnerBlocks, noItems } );
+	const handOver = itemHandOver( motion, targets, {
+		blockName,
+		elements,
+		root,
+		states,
+		context,
+		motionItems,
+		delegation,
+		hasInnerBlocks,
+		noItems,
+	} );
 	const moved = handOver.moved;
 	Object.entries( targets ).forEach( ( [ target, stored ] ) => {
-		const resolved = resolveTarget( blockName, elements, root, target, stored || {} );
+		const resolved = resolveTarget(
+			blockName,
+			elements,
+			root,
+			target,
+			stored || {}
+		);
 		if ( resolved === null ) {
 			return;
 		}
 		const owned = Boolean( context.parentOwned ) && target === 'root';
-		const result = resolveLayerDrops( stored || {}, { 'parent-owned': owned } );
-		result.dropped.forEach( ( drop ) => out.dropped.push( { target, ...drop } ) );
+		const result = resolveLayerDrops( stored || {}, {
+			'parent-owned': owned,
+		} );
+		result.dropped.forEach( ( drop ) =>
+			out.dropped.push( { target, ...drop } )
+		);
 		const loser = Object.prototype.hasOwnProperty.call( losers, target );
 		let element = loser ? stripShared( result.element ) : result.element;
 		if (
@@ -500,22 +669,54 @@ export function emitScopedCss( motion, { blockName, elements, root, states = [],
 			element = { ...element, hover };
 		}
 		const state = element?.hover?.state;
-		if ( state && typeof state === 'object' && ! Array.isArray( state ) && hasRing( state ) ) {
+		if (
+			state &&
+			typeof state === 'object' &&
+			! Array.isArray( state ) &&
+			hasRing( state )
+		) {
 			// The ring and the accent line are a `box-shadow`: a shadowed element drops both (FR-38A-42); an invisible
 			// pair is dropped on its own.
-			const refused = Boolean( attributes ) && ringRefused( elements, target, attributes );
+			const refused =
+				Boolean( attributes ) &&
+				ringRefused( elements, target, attributes );
 			if ( refused || ! ringPaints( state ) ) {
-				element = { ...element, hover: { ...element.hover, state: stripRing( state, refused ) } };
+				element = {
+					...element,
+					hover: {
+						...element.hover,
+						state: stripRing( state, refused ),
+					},
+				};
 			}
 			if ( refused ) {
-				out.dropped.push( { target, id: RING_REFUSAL, layer: 'hover.state' } );
+				out.dropped.push( {
+					target,
+					id: RING_REFUSAL,
+					layer: 'hover.state',
+				} );
 			}
 		}
-		const report = ( drop ) => out.dropped.push( { target, layer: 'entrance.base', ...drop } );
-		const suppressEntrance = Boolean( context.suppressEntrance ) || target === moved;
-		const emitted = emitTarget( element, resolved.selector, { ...context, parentOwned: owned, suppressEntrance, states, noTransition: loser, report, match: resolved } );
+		const report = ( drop ) =>
+			out.dropped.push( { target, layer: 'entrance.base', ...drop } );
+		const suppressEntrance =
+			Boolean( context.suppressEntrance ) || target === moved;
+		const emitted = emitTarget( element, resolved.selector, {
+			...context,
+			parentOwned: owned,
+			suppressEntrance,
+			states,
+			noTransition: loser,
+			report,
+			match: resolved,
+		} );
 		out.css += emitted.css;
-		out.plans.push( { target, ...resolved, attrs: emitted.attrs, entrance: emitted.entrance } );
+		out.plans.push( {
+			target,
+			...resolved,
+			attrs: emitted.attrs,
+			entrance: emitted.entrance,
+		} );
 	} );
 	if ( handOver.plan ) {
 		out.css += handOver.css;

@@ -7,7 +7,10 @@ import {
 	SelectControl,
 } from '@wordpress/components';
 import FormFieldAdvancedPanel from '../../components/FormFieldAdvancedPanel';
-import { fieldLabelClasses, fieldDefaultValue } from '../../components/form-field-preview';
+import {
+	fieldLabelClasses,
+	fieldDefaultValue,
+} from '../../components/form-field-preview';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
 import AuthoredText from '../../components/AuthoredText';
@@ -48,7 +51,9 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					<SgsFreeTextField type="rich" noLink
+					<SgsFreeTextField
+						type="rich"
+						noLink
 						label={ __( 'Label', 'sgs-blocks' ) }
 						value={ label }
 						onChange={ ( val ) => setAttributes( { label: val } ) }
@@ -91,7 +96,15 @@ export default function Edit( { attributes, setAttributes } ) {
 				<FormFieldAdvancedPanel
 					attributes={ attributes }
 					setAttributes={ setAttributes }
-					features={ [ 'floatingLabel', 'autocomplete', 'inputmode', 'defaultValue', 'valueFromParam', 'msgRequired', 'msgInvalid' ] }
+					features={ [
+						'floatingLabel',
+						'autocomplete',
+						'inputmode',
+						'defaultValue',
+						'valueFromParam',
+						'msgRequired',
+						'msgInvalid',
+					] }
 				/>
 			</InspectorControls>
 
@@ -100,9 +113,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					<label className="sgs-form-field__label">
 						<AuthoredText value={ label } />
 						{ required && (
-							<span className="sgs-form-field__required">
-								*
-							</span>
+							<span className="sgs-form-field__required">*</span>
 						) }
 					</label>
 				) }

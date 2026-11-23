@@ -20,7 +20,9 @@ import { fetchWithNonce } from '../../shared/rest-nonce';
  */
 function restRoot() {
 	const root =
-		window?.sgsWishlistData?.restUrl || window?.wpApiSettings?.root || '/wp-json/';
+		window?.sgsWishlistData?.restUrl ||
+		window?.wpApiSettings?.root ||
+		'/wp-json/';
 	return root.replace( /\/$/, '' );
 }
 
@@ -42,11 +44,15 @@ function formHtml( productId, labels ) {
 		: '';
 	return (
 		'<form class="sgs-wishlist-panel__notify-inner">' +
-		`<label for="${ emailId }">${ escapeHtml( labels.notifyEmailLabel ) }</label>` +
+		`<label for="${ emailId }">${ escapeHtml(
+			labels.notifyEmailLabel
+		) }</label>` +
 		`<input type="email" id="${ emailId }" name="email" required autocomplete="email" />` +
 		'<div class="sgs-wishlist-panel__notify-consent">' +
 		`<input type="checkbox" id="${ consentId }" name="consent" required />` +
-		`<label for="${ consentId }">${ escapeHtml( labels.notifyConsentText ) }</label>` +
+		`<label for="${ consentId }">${ escapeHtml(
+			labels.notifyConsentText
+		) }</label>` +
 		privacyLink +
 		'</div>' +
 		`<button type="submit">${ escapeHtml( labels.notifyLabel ) }</button>` +
@@ -68,12 +74,16 @@ export function mountNotifyForm( container, productId, labels ) {
 		container.dataset.sgsMounted = '1';
 
 		const form = container.querySelector( 'form' );
-		const messageEl = container.querySelector( '.sgs-wishlist-panel__notify-message' );
+		const messageEl = container.querySelector(
+			'.sgs-wishlist-panel__notify-message'
+		);
 
 		form.addEventListener( 'submit', async ( event ) => {
 			event.preventDefault();
 			const email = form.querySelector( 'input[name="email"]' ).value;
-			const consent = form.querySelector( 'input[name="consent"]' ).checked;
+			const consent = form.querySelector(
+				'input[name="consent"]'
+			).checked;
 			const submitButton = form.querySelector( 'button[type="submit"]' );
 			submitButton.disabled = true;
 			messageEl.textContent = '';
@@ -94,7 +104,9 @@ export function mountNotifyForm( container, productId, labels ) {
 					messageEl.textContent = labels.notifySuccessText;
 					form.querySelector( 'button[type="submit"]' ).hidden = true;
 					form.querySelector( 'input[name="email"]' ).disabled = true;
-					form.querySelector( 'input[name="consent"]' ).disabled = true;
+					form.querySelector(
+						'input[name="consent"]'
+					).disabled = true;
 				} else {
 					messageEl.textContent = json?.message || labels.errorText;
 				}

@@ -50,11 +50,7 @@ const COLLAPSE_BREAKPOINTS = [
  * @return {JSX.Element} The controls.
  */
 export default function FloatControls( { attributes, setAttributes } ) {
-	const {
-		headerFloat,
-		headerFloatInset,
-		headerFloatCollapse,
-	} = attributes;
+	const { headerFloat, headerFloatInset, headerFloatCollapse } = attributes;
 	const isFloating = isFloatOnAtAnyTier( headerFloat );
 	const collapse = headerFloatCollapse || {};
 
@@ -62,9 +58,13 @@ export default function FloatControls( { attributes, setAttributes } ) {
 		<>
 			<ToolsPanelItem
 				label={ __( 'Float as a pill', 'sgs-blocks' ) }
-				hasValue={ () => ! isFloatDefault( 'headerFloat', headerFloat ) }
+				hasValue={ () =>
+					! isFloatDefault( 'headerFloat', headerFloat )
+				}
 				onDeselect={ () =>
-					setAttributes( { headerFloat: floatDefault( 'headerFloat' ) } )
+					setAttributes( {
+						headerFloat: floatDefault( 'headerFloat' ),
+					} )
 				}
 			>
 				<ResponsiveTriStateControl
@@ -74,7 +74,9 @@ export default function FloatControls( { attributes, setAttributes } ) {
 						'sgs-blocks'
 					) }
 					value={ headerFloat }
-					onChange={ ( value ) => setAttributes( { headerFloat: value } ) }
+					onChange={ ( value ) =>
+						setAttributes( { headerFloat: value } )
+					}
 					defaultValue="off"
 				/>
 			</ToolsPanelItem>
@@ -94,22 +96,36 @@ export default function FloatControls( { attributes, setAttributes } ) {
 					}
 					onDeselect={ () =>
 						setAttributes( {
-							headerFloatInset: floatDefault( 'headerFloatInset' ),
+							headerFloatInset:
+								floatDefault( 'headerFloatInset' ),
 						} )
 					}
 				>
 					<ResponsiveOverride
 						value={ headerFloatInset }
-						onChange={ ( obj ) => setAttributes( { headerFloatInset: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { headerFloatInset: obj } )
+						}
 					>
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
-								label={ __( 'Gap around the pill', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								label={ __(
+									'Gap around the pill',
+									'sgs-blocks'
+								) }
+								values={
+									ownValue && typeof ownValue === 'object'
+										? ownValue
+										: {}
+								}
 								units={ BOX_UNITS }
 								sides={ INSET_SIDES }
 								presets
-								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								onChange={ ( next ) =>
+									setOwnValue(
+										normaliseResponsiveBox( next )
+									)
+								}
 							/>
 						) }
 					</ResponsiveOverride>
@@ -140,7 +156,10 @@ export default function FloatControls( { attributes, setAttributes } ) {
 					}
 				>
 					<ToggleControl
-						label={ __( 'Full width on small screens', 'sgs-blocks' ) }
+						label={ __(
+							'Full width on small screens',
+							'sgs-blocks'
+						) }
 						help={ __(
 							'Off by default: the pill keeps its gap and rounded corners on a phone. Turn this on to drop the gap and go edge-to-edge below the width you pick.',
 							'sgs-blocks'
@@ -162,12 +181,15 @@ export default function FloatControls( { attributes, setAttributes } ) {
 						<SelectControl
 							label={ __( 'Go full width below', 'sgs-blocks' ) }
 							value={ String(
-								collapse.breakpoint || DEFAULT_COLLAPSE_BREAKPOINT
+								collapse.breakpoint ||
+									DEFAULT_COLLAPSE_BREAKPOINT
 							) }
-							options={ COLLAPSE_BREAKPOINTS.map( ( option ) => ( {
-								value: String( option.value ),
-								label: option.label,
-							} ) ) }
+							options={ COLLAPSE_BREAKPOINTS.map(
+								( option ) => ( {
+									value: String( option.value ),
+									label: option.label,
+								} )
+							) }
 							onChange={ ( value ) =>
 								setAttributes( {
 									headerFloatCollapse: {

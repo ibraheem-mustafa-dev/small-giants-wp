@@ -22,8 +22,12 @@ const PRICES_KEY = 'sgs-wishlist-prices';
  */
 export function readGuestPrices() {
 	try {
-		const parsed = JSON.parse( window.localStorage.getItem( PRICES_KEY ) || '{}' );
-		return parsed && 'object' === typeof parsed && ! Array.isArray( parsed ) ? parsed : {};
+		const parsed = JSON.parse(
+			window.localStorage.getItem( PRICES_KEY ) || '{}'
+		);
+		return parsed && 'object' === typeof parsed && ! Array.isArray( parsed )
+			? parsed
+			: {};
 	} catch ( e ) {
 		return {};
 	}

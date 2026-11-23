@@ -70,7 +70,10 @@ import SgsFreeTextField from '../../components/SgsFreeTextField';
 // Variants whose stylesheet already paints a border: a chosen colour, style or
 // width overrides it part by part, as render.php emits each alone.
 /** The three media slots (Spec 49 §10.4), by prefix, with the label each panel title carries. */
-const MEDIA_SLOTS = metadata.supports.sgs.mediaElements.reduce( ( all, entry ) => ( { ...all, [ entry.prefix ]: entry } ), {} );
+const MEDIA_SLOTS = metadata.supports.sgs.mediaElements.reduce(
+	( all, entry ) => ( { ...all, [ entry.prefix ]: entry } ),
+	{}
+);
 
 const STYLESHEET_BORDER_VARIANTS = [
 	'classic-card',
@@ -210,13 +213,35 @@ const VARIANTS = [
 		label: __( 'Review card', 'sgs-blocks' ),
 		thumb: (
 			<svg viewBox="0 0 48 32" aria-hidden="true">
-				<rect x="2" y="2" width="44" height="28" rx="3" fill="#fff" stroke="#cbd5d5" />
+				<rect
+					x="2"
+					y="2"
+					width="44"
+					height="28"
+					rx="3"
+					fill="#fff"
+					stroke="#cbd5d5"
+				/>
 				<text x="8" y="10" fontSize="7" fill="#F87A1F">
 					★★★★★
 				</text>
-				<rect x="8" y="13" width="20" height="2" rx="1" fill="#1E1E1E" />
+				<rect
+					x="8"
+					y="13"
+					width="20"
+					height="2"
+					rx="1"
+					fill="#1E1E1E"
+				/>
 				<rect x="8" y="17" width="32" height="2" rx="1" fill="#9aa" />
-				<line x1="8" y1="22" x2="40" y2="22" stroke="#9aa" strokeDasharray="2 2" />
+				<line
+					x1="8"
+					y1="22"
+					x2="40"
+					y2="22"
+					stroke="#9aa"
+					strokeDasharray="2 2"
+				/>
 				<rect x="8" y="25" width="20" height="2" rx="1" fill="#778" />
 			</svg>
 		),
@@ -333,7 +358,8 @@ function reviewFooterRulePreview( border, tier ) {
 	}
 	const tiers = [ 'desktop', 'tablet', 'mobile' ];
 	const order = tiers.slice( 0, tiers.indexOf( tier ) + 1 );
-	const pick = ( member ) => order.reduce( ( found, t ) => border[ t ]?.[ member ] || found, '' );
+	const pick = ( member ) =>
+		order.reduce( ( found, t ) => border[ t ]?.[ member ] || found, '' );
 	const width = pick( 'width' );
 	const style = pick( 'style' );
 	const colour = pick( 'colour' );
@@ -590,9 +616,13 @@ export default function Edit( {
 
 	// The decorative quote mark: colour and per-device size, as render.php prints them.
 	const markStyle = {
-		...( quoteMarkColour && { color: colourVar( quoteMarkColour ) || quoteMarkColour } ),
+		...( quoteMarkColour && {
+			color: colourVar( quoteMarkColour ) || quoteMarkColour,
+		} ),
 		fontSize:
-			cssLengthValue( resolveTier( quoteMarkSize, previewTier, '' ).value ?? '' ) || undefined,
+			cssLengthValue(
+				resolveTier( quoteMarkSize, previewTier, '' ).value ?? ''
+			) || undefined,
 	};
 
 	const showSummary =
@@ -612,7 +642,8 @@ export default function Edit( {
 		effectiveVariant === 'review-card' ||
 		effectiveVariant === 'rating-led';
 
-	const slotUid = ( prefix ) => `sgs-testimonial-${ clientId.slice( 0, 8 ) }-${ prefix }`;
+	const slotUid = ( prefix ) =>
+		`sgs-testimonial-${ clientId.slice( 0, 8 ) }-${ prefix }`;
 	const slotProps = ( prefix ) => ( {
 		attributes,
 		setAttributes,
@@ -637,9 +668,12 @@ export default function Edit( {
 
 	return (
 		<>
-			{ showAvatar && slotPanel( 'avatar', __( 'Author photo', 'sgs-blocks' ) ) }
-			{ showLogo && slotPanel( 'logo', __( 'Organisation logo', 'sgs-blocks' ) ) }
-			{ showWork && slotPanel( 'work', __( 'Work image', 'sgs-blocks' ) ) }
+			{ showAvatar &&
+				slotPanel( 'avatar', __( 'Author photo', 'sgs-blocks' ) ) }
+			{ showLogo &&
+				slotPanel( 'logo', __( 'Organisation logo', 'sgs-blocks' ) ) }
+			{ showWork &&
+				slotPanel( 'work', __( 'Work image', 'sgs-blocks' ) ) }
 			{ ( rootLinkPreviewCss || linkPreviewCss ) && (
 				<style>{ rootLinkPreviewCss + linkPreviewCss }</style>
 			) }
@@ -1004,33 +1038,51 @@ export default function Edit( {
 					<ToolsPanel
 						label={ __( 'Review line', 'sgs-blocks' ) }
 						resetAll={ () =>
-							setAttributes( { reviewDate: '', reviewFooterBorder: {} } )
+							setAttributes( {
+								reviewDate: '',
+								reviewFooterBorder: {},
+							} )
 						}
 					>
 						<ToolsPanelItem
 							label={ __( 'Review date', 'sgs-blocks' ) }
 							hasValue={ () => reviewDate !== '' }
-							onDeselect={ () => setAttributes( { reviewDate: '' } ) }
+							onDeselect={ () =>
+								setAttributes( { reviewDate: '' } )
+							}
 							isShownByDefault
 						>
-							<SgsFreeTextField type="rich" noLink
+							<SgsFreeTextField
+								type="rich"
+								noLink
 								label={ __( 'Review date', 'sgs-blocks' ) }
 								value={ reviewDate }
-								onChange={ ( val ) => setAttributes( { reviewDate: val } ) }
+								onChange={ ( val ) =>
+									setAttributes( { reviewDate: val } )
+								}
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
-							label={ __( 'Rule above the name line', 'sgs-blocks' ) }
+							label={ __(
+								'Rule above the name line',
+								'sgs-blocks'
+							) }
 							hasValue={ () =>
 								!! reviewFooterBorder &&
 								Object.keys( reviewFooterBorder ).length > 0
 							}
-							onDeselect={ () => setAttributes( { reviewFooterBorder: {} } ) }
+							onDeselect={ () =>
+								setAttributes( { reviewFooterBorder: {} } )
+							}
 							isShownByDefault
 						>
 							<ReviewLineBorder
 								value={ reviewFooterBorder }
-								onChange={ ( next ) => setAttributes( { reviewFooterBorder: next } ) }
+								onChange={ ( next ) =>
+									setAttributes( {
+										reviewFooterBorder: next,
+									} )
+								}
 							/>
 						</ToolsPanelItem>
 					</ToolsPanel>
@@ -1238,7 +1290,9 @@ export default function Edit( {
 										setAttributes( { sourcePlatform: '' } )
 									}
 								>
-									<SgsFreeTextField type="rich" noLink
+									<SgsFreeTextField
+										type="rich"
+										noLink
 										label={ __(
 											'Source platform',
 											'sgs-blocks'
@@ -1262,7 +1316,9 @@ export default function Edit( {
 										setAttributes( { reviewDate: '' } )
 									}
 								>
-									<SgsFreeTextField type="rich" noLink
+									<SgsFreeTextField
+										type="rich"
+										noLink
 										label={ __(
 											'Review date',
 											'sgs-blocks'
@@ -2124,13 +2180,23 @@ export default function Edit( {
 				) }
 				{ showWork && (
 					<figure className="sgs-testimonial__work">
-						<SlotPicture { ...slotProps( 'work' ) } title={ __( 'Work image', 'sgs-blocks' ) } instructions={ __( 'Choose the case-study picture', 'sgs-blocks' ) } />
+						<SlotPicture
+							{ ...slotProps( 'work' ) }
+							title={ __( 'Work image', 'sgs-blocks' ) }
+							instructions={ __(
+								'Choose the case-study picture',
+								'sgs-blocks'
+							) }
+						/>
 					</figure>
 				) }
 
 				{ showLogo && (
 					<div className="sgs-testimonial__logo">
-						<SlotPicture { ...slotProps( 'logo' ) } placeholder={ false } />
+						<SlotPicture
+							{ ...slotProps( 'logo' ) }
+							placeholder={ false }
+						/>
 					</div>
 				) }
 
@@ -2203,15 +2269,30 @@ export default function Edit( {
 				<footer
 					className={ [
 						'sgs-testimonial__footer',
-						'review-card' === effectiveVariant && 'sgs-testimonial__footer--review',
+						'review-card' === effectiveVariant &&
+							'sgs-testimonial__footer--review',
 					]
 						.filter( Boolean )
 						.join( ' ' ) }
-					style={ 'review-card' === effectiveVariant ? reviewFooterRulePreview( reviewFooterBorder, previewTier ) : undefined }
+					style={
+						'review-card' === effectiveVariant
+							? reviewFooterRulePreview(
+									reviewFooterBorder,
+									previewTier
+							  )
+							: undefined
+					}
 				>
 					{ showAvatar && (
 						<div className="sgs-testimonial__avatar">
-							<SlotPicture { ...slotProps( 'avatar' ) } title={ __( 'Author photo', 'sgs-blocks' ) } instructions={ __( 'Choose the reviewer photo', 'sgs-blocks' ) } />
+							<SlotPicture
+								{ ...slotProps( 'avatar' ) }
+								title={ __( 'Author photo', 'sgs-blocks' ) }
+								instructions={ __(
+									'Choose the reviewer photo',
+									'sgs-blocks'
+								) }
+							/>
 						</div>
 					) }
 					<div className="sgs-testimonial__meta">

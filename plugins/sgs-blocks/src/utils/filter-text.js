@@ -14,7 +14,9 @@
  * @return {string} Trimmed lower-case text.
  */
 export function normalise( text ) {
-	return String( text ?? '' ).trim().toLowerCase();
+	return String( text ?? '' )
+		.trim()
+		.toLowerCase();
 }
 
 /**
@@ -24,7 +26,9 @@ export function normalise( text ) {
  * @return {string} Single-spaced text.
  */
 export function squash( text ) {
-	return String( text ?? '' ).replace( /\s+/g, ' ' ).trim();
+	return String( text ?? '' )
+		.replace( /\s+/g, ' ' )
+		.trim();
 }
 
 /**
