@@ -2,7 +2,7 @@
 // scripts/wp-build-page.js child it starts attaches to it through SGS_CDP_URL, and the login is kept between runs in a
 // per-site profile under scripts/computed-route/cache/ (gitignored), so a run logs in at most once and a later run not at
 // all. A host's edge that blocks bursts of automated logins (Hostinger answers 403 to every request for about 20 minutes)
-// sees one session instead of one login per page. Used by calibrate.mjs, site-build.mjs and site-run.mjs.
+// sees one session instead of one login per page. Used by site-build.mjs and site-run.mjs.
 // SGS_CDP_URL already set: attach to that browser instead (an everyday Chrome started with --remote-debugging-port, which
 // the host's edge does not challenge as it does Playwright's Chrome for Testing); only the run's own tab closes.
 // SGS_HEADED=1 runs headed (Hostinger's edge challenges a headless browser under load).

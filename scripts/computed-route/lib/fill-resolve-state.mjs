@@ -142,7 +142,7 @@ function shownAt( st, index, prop, w, ownFontPx ) {
 }
 
 // The block's own paint of an inherited property at a slot, where its stylesheet sets one on that element (calibration
-// records it as `_own:<prop>` beside the element's font size `_fs`, lib/calibrate-read.mjs::readInstancesInPage). A line
+// records it as `_own:<prop>` beside the element's font size `_fs`). A line
 // height is carried as its ratio of the font size to the element's own font size fs. Undefined where the element inherits.
 export function ownPaint( cal, slot, w, prop, fs ) {
 	const v = defaultPaint( cal, slot, w, `_own:${ prop }` );

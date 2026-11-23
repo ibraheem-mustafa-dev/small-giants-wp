@@ -30,7 +30,7 @@ export const CONTEXT_PROPS = new Set( [ 'direction', 'column-count', 'column-wid
 
 // Properties read on an element's ::before and ::after layers (a painted ring, an overlay ground), only where the layer
 // paints (its content is not none). Rows carry `pseudo` and the layer's path is the element's path plus the pseudo,
-// the key calibration gives the same layer (computed-route lib/calibrate-read.mjs).
+// the key calibration gives the same layer (the route's calibration).
 export const PSEUDO_PROPS = [ 'content', 'background-color', 'background-image', 'border-image-source', 'opacity', 'color', 'border-top-color', 'border-top-width', 'box-shadow', 'transform', 'width', 'height' ];
 
 // Properties read at rest and again at the hover end state.

@@ -1,5 +1,5 @@
 {
-  "_doc": "Known faults of the calibration reader (scripts/computed-route/lib/calibrate-read.mjs::readInstancesInPage). A reference part matching an entry is listed in the score's referenceFaults and scored neither for nor against the scan. Delete an entry when the reader is fixed.",
+  "_doc": "Known faults of the calibration reader. A reference part matching an entry is listed in the score's referenceFaults and scored neither for nor against the scan. Delete an entry when the reader is fixed.",
   "faults": [
     {
       "id": "first-letter-on-faded-text",

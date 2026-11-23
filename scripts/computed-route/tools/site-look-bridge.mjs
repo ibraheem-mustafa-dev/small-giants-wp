@@ -59,8 +59,8 @@ export function planFor( block, { db, fixtures, snapshot } ) {
 	return { discover: [ ...styleSide, ...extraBases ].map( keep ), content: content.instances.map( keep ), forms: forms.map( marked ), states: states.map( marked ), stateLookProps: STATE_LOOK_PROPS, noMarker: [ ...plan.noMarker, ...content.noMarker ] };
 }
 
-// The readings folded into the keys the route reads, exactly as calibration folded them (lib/calibrate-block.mjs::
-// foldMeasured for `discovered`, collectContent for the rest).
+// The readings folded into the keys the route reads, exactly as calibration folded them (lib/calibrate-content.mjs::
+// collectContent for the content, the `discovered` fold for the rest).
 export function foldReadings( { discover = [], content = [] } ) {
 	const discovered = {};
 	for ( const inst of discover ) {

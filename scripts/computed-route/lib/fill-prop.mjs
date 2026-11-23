@@ -249,7 +249,7 @@ export function defaultPaint( cal, slot, width, prop ) {
 	return /gap$/.test( prop ) && 'normal' === v ? '0px' : v;
 }
 
-// The context calibration read an element's default paint in at a width (lib/calibrate-read.mjs::readInstancesInPage:
+// The context calibration read an element's default paint in at a width (the reader's
 // `_parentDisplay`, `_position`, the read direction, and as `own` the properties its paint marks `_own:` because the
 // block's stylesheet sets them), or null where its paint carries none (a paint read before the context was recorded).
 export function calibratedContext( cal, slot, width ) {

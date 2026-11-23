@@ -107,7 +107,7 @@ const pathOf = ( effect ) => effect.slice( 0, effect.lastIndexOf( '|' ) );
 const propOf = ( effect ) => effect.slice( effect.lastIndexOf( '|' ) + 1 );
 
 // The block's own look in one state, per element: { [LOOSE path]: Set of longhands }. Calibration reads each state setting's
-// marker in that state against the block's default read at rest (calibrate.mjs::slotFor), so a change the block makes in the
+// marker in that state against the block's default read at rest (lib/calibrate.mjs::slotFor), so a change the block makes in the
 // state by itself shows in every such reading of the element, as a side effect (`effects`) or under the setting's own
 // property, which the marker overrides. A property is the block's own when at least one reading lists it as an effect and
 // every reading of that element lists it or owns it; a marker's own side effect (a border following its colour) is in

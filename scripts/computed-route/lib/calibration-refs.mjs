@@ -163,7 +163,7 @@ export function checkRefsExist( refs, roles, runPhp ) {
 export function refsProblem( fixture, refs, exists = {}, site = 'this target' ) {
 	const { missing } = resolveFixture( fixture, refs );
 	if ( missing.length ) {
-		return `the fixture needs references ${ site } does not supply: ${ missing.join( ', ' ) } (calibration-targets.json refs; provision-calibration-refs.mjs creates them)`;
+		return `the fixture needs references ${ site } does not supply: ${ missing.join( ', ' ) } (calibration-targets.json refs)`;
 	}
 	const gone = fixtureRoles( fixture ).filter( ( r ) => true !== exists[ r ] ).map( ( r ) => `${ r } ${ JSON.stringify( idOf( refs[ r ] ) ) }: ${ exists[ r ] ?? 'not checked' }` );
 	return gone.length ? `referenced objects missing on ${ site }: ${ gone.join( '; ' ) }` : '';

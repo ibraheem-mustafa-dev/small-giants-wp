@@ -1,4 +1,4 @@
-// The calibration product (the fixtures' `{{product}}` role) that provision-calibration-refs.mjs finds or completes on a
+// The calibration product (the fixtures' `{{product}}` role) that the route finds or completes on a
 // site: a published VARIABLE product, so every product setting has an element to paint. Generic for any client: every
 // name is a "CR calibration" / "cr-" fixture name, nothing from a client's catalogue.
 //   - two variation attributes, colour (each term carries a `_sgs_swatch_color` hex, so the card prints its colour dots

@@ -141,7 +141,7 @@ test( 'MUST FAIL TO RECORD: the template setting records repeat from a three-tra
 	// A number in a template tier is ignored by the render (the default stays); the template paints three tracks.
 	const acc = foldGrid( r, TEMPLATE, { 'tiers-value': { 375: '340px', 768: '340px 340px', 1440: '600px 600px' }, repeat: same( tracksOf( 3 ) ) } );
 	assert.deepEqual( acc.settings.gridTemplateColumns.forms, [ 'repeat' ] );
-	// The setting is in settings, so calibrate.mjs drops it from the dead list.
+	// The setting is in settings, so lib/calibrate.mjs drops it from the dead list.
 	assert.ok( acc.settings.gridTemplateColumns );
 } );
 
@@ -206,7 +206,7 @@ function foldHeld( defaults, probe ) {
 
 test( 'MUST FAIL TO RECORD: a template setting whose default render already shows three tracks at two widths records repeat and is not dead', () => {
 	const acc = foldHeld( HELD_DEFAULT, { 375: '105.656px 105.656px 105.656px', 768: HELD_DEFAULT[ 768 ][ '' ][ 'grid-template-columns' ], 1440: HELD_DEFAULT[ 1440 ][ '' ][ 'grid-template-columns' ] } );
-	assert.deepEqual( acc.dead, [ 'gridTemplateColumns' ], 'the dead count marker still lists it until calibrate.mjs drops located settings' );
+	assert.deepEqual( acc.dead, [ 'gridTemplateColumns' ], 'the dead count marker still lists it until lib/calibrate.mjs drops located settings' );
 	assert.deepEqual( acc.settings.gridTemplateColumns.forms, [ 'repeat' ] );
 	assert.deepEqual( acc.settings.gridTemplateColumns.reachedAt, WIDTHS, 'the widths that already showed the tracks count as reached' );
 	assert.deepEqual( acc.oneWidth, [] );

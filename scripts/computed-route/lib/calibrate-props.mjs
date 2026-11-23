@@ -44,13 +44,13 @@ export const TEXT_PSEUDO_PROPS = [ 'color', 'font-size', 'font-family', 'font-we
 // the parent would miss.
 export const INHERITED = [ 'color', 'font-family', 'font-size', 'font-weight', 'font-style', 'line-height', 'letter-spacing', 'text-transform', 'text-align', 'text-wrap', 'text-shadow' ];
 
-// The inherited properties whose own paint calibration records (lib/calibrate-read.mjs::readInstancesInPage): where a
+// The inherited properties whose own paint calibration records: where a
 // block's stylesheet sets one on its element (a button's `line-height: 1.2`), the element shows that value whatever its
 // parent shows, so Fill compares the draft with it (lib/fill-resolve-state.mjs::baselineFn), never with the parent's.
 export const OWN_INHERITED = [ ...INHERITED ];
 
 // The key of what calibration reads. Every cache file carries the key it was read under, and one read under another list
-// is stale on every site (lib/cache.mjs, lib/stage0.mjs::blockState): a property added to a list is measured, never taken
+// is stale on every site (lib/cache.mjs): a property added to a list is measured, never taken
 // as absent from a file that did not look for it. The key covers these five lists in their order (reordering one
 // re-measures every site); the read widths, the markers and the reader's code are not part of it.
 export const READ_KEY = createHash( 'md5' ).update( JSON.stringify( [ READ_PROPS, CAL_PSEUDO_PROPS, TEXT_PSEUDO_PROPS, INHERITED, OWN_INHERITED ] ) ).digest( 'hex' ).slice( 0, 12 );
@@ -99,7 +99,7 @@ export function longhands( cssProperty ) {
 }
 
 // The properties a block's routed rows paint beyond READ_PROPS, read for that block alone: its pages carry them, its
-// default paint records them and its paint key names them (calibrate.mjs::paintKeyOf), while READ_KEY and every other
+// default paint records them and its paint key names them, while READ_KEY and every other
 // block's files stay as they are.
 export function unreadProps( rows ) {
 	return [ ...new Set( rows.flatMap( ( r ) => longhands( r.css_property ) ) ) ].filter( ( p ) => ! READ_PROPS.includes( p ) ).sort();

@@ -4,7 +4,7 @@
 WHAT AND WHY
 ------------
 Drops `block_attributes.css_state_selector`. No script writes or reads it: calibration reaches a setting's state by
-probing the `states` vocabulary on the live element (`scripts/computed-route/lib/calibrate-probe.mjs::probeState`), and
+probing the `states` vocabulary on the live element (the route's former probe trigger), and
 `block_attributes.css_state` holds the state word.
 
 SAFETY

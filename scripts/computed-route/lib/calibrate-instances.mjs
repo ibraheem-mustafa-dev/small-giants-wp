@@ -22,9 +22,9 @@ const SHARED_STATE_ELEMENTS = JSON.parse( fs.readFileSync( new URL( '../data/sha
 // 'focus' by keyboard-visible focus on it; 'scroll' by scrolling the window past the header offset (the header script
 // toggles is-header-scrolled); 'class' by adding the state's ancestor class (a shrunk header row sets
 // is-header-shrunk on its ancestors); 'open' by opening a disclosure the instance owns, unless the fixture renders one
-// open already (lib/calibrate-open.mjs); 'fixture' when the fixture renders the state at rest (the first tab, a nav
+// open already (the state's own opener); 'fixture' when the fixture renders the state at rest (the first tab, a nav
 // item linking to the page itself). Any other state the state vocabulary can enter gets
-// 'probe' (lib/calibrate-probe.mjs: the vocabulary's mechanisms tried on the target and its ancestors); a state with
+// 'probe' (probeMechanisms: the vocabulary's mechanisms tried on the target and its ancestors); a state with
 // neither is reported, never calibrated.
 export const STATE_TRIGGERS = { hover: 'hover', focus: 'focus', 'focus-visible': 'focus', scrolled: 'scroll', shrunk: 'class', open: 'open', current: 'fixture' };
 export const STATE_CLASSES = { shrunk: 'is-header-shrunk' };
@@ -65,7 +65,7 @@ export function stateLook( stateReads, slots, own = [] ) {
 // The element a hover or focus marker is applied to: the selector the block's manifest declares for css_element
 // (post-grid's read-more element is .sgs-post-grid__readmore), else its BEM name, or the instance root (null) for the
 // wrapper and for an element the manifest marks isWrapper. A selector that matches nothing leaves the state untested
-// (lib/calibrate-read.mjs::markTargetInPage); it is never read on the root instead.
+// (the marked target); it is never read on the root instead.
 export function stateTarget( block, row ) {
 	const el = row.css_element;
 	if ( ! el || /^(wrapper|root|block)$/.test( el ) || blockWrapperElements( block ).has( el ) ) {

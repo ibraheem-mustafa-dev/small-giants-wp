@@ -1,6 +1,6 @@
 // The clone difference ledger's hover rows (tools/clone-ledger.mjs). The page at rest is read by lib/ledger-page.mjs; here
 // each paired element a node's hover settings paint is hovered with the real mouse (as the calibration does,
-// lib/calibrate-read.mjs::readUnderTrigger: scrolled into view, moved to the middle of the viewport when a fixed or sticky box
+// calibration's trigger read: scrolled into view, moved to the middle of the viewport when a fixed or sticky box
 // covers it, then hovered) on both sides, and its hover look is compared.
 //   - Which elements: a target whose block's slot map records a hover setting (`state: hover`) painting the target's own
 //     part, or a ::before / ::after layer of it; the properties read are those settings' properties (longhands).

@@ -213,7 +213,7 @@ test( 'an ambiguous wrapper keeps the one part that holds its paired children', 
 	assert.deepEqual( made.slots, { '.a': { tpl: 'Root/2#0' } }, 'the panel holding the button is .a, not .b' );
 } );
 
-// Round 3 piece 2: the parts' own words and boxes the paint file records (`parts`, lib/calibrate-read.mjs::readPartsInPage).
+// Round 3 piece 2: the parts' own words and boxes the paint file records (`parts`).
 const node = ( key, tag, kids2 = [], { words = '', box = null } = {} ) => ( { key, tag, kids: kids2, visible: { 1440: true }, box: { 1440: box ?? { x: 0, y: 0, w: 100, h: 40 } }, position: { 1440: 'static' }, words, attrs: {} } );
 const flat = ( tag, extra = {} ) => ( { 1440: { _tag: tag, _position: 'static', width: '100px', 'background-color': 'rgba(0, 0, 0, 0)', 'border-top-width': '0px', ...extra } } );
 const BUTTONS = {

@@ -555,7 +555,7 @@ def resting(els: dict, props: dict) -> dict:
 
 
 def state_paint(els: dict, props) -> dict:
-    """lib/calibrate-block.mjs::statePaint: a paint state drawn with attributes it needs only to render keeps only the
+    """The route's former statePaint: a paint state drawn with attributes it needs only to render keeps only the
     properties its `props` names."""
     if not isinstance(props, list):
         return els
@@ -682,7 +682,7 @@ def link_from(needle: str, mark_read: dict):
 
 
 def fold(discover: list, content: list) -> dict:
-    """lib/calibrate-block.mjs::foldMeasured's `discovered` and lib/calibrate-content.mjs::collectContent, from readings
+    """The route's former `discovered` fold and lib/calibrate-content.mjs::collectContent, from readings
     in calibration's shape (tests/test_site_look.py holds this fold equal to the route's own, tools/site-look-bridge.mjs fold)."""
     discovered = {}
     for inst in discover:

@@ -7,7 +7,7 @@
 //
 // Everything block-specific comes from the block's calibration: its default paint (`elements`: each part's selector path with
 // `_tag` and `_position` per width), its parts' own words and boxes inside the block where the paint file records them
-// (`parts`, lib/calibrate-read.mjs::readPartsInPage), its settings (the slot each is calibrated at) and its text fields
+// (`parts`), its settings (the slot each is calibrated at) and its text fields
 // (`text`). Both sides are described by signals each carries:
 // - kind: a control, a picture, a glyph, a mark (a box with no words), words, or a box holding other boxes;
 // - repetition: a part whose path counts `:nth-of-type` steps repeats once per item, and so does a draft element with loop

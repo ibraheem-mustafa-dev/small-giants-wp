@@ -2,7 +2,7 @@
 // (presence), which element's text it prints (text), and which element it makes a link (link). These settings paint no
 // CSS property, so lib/db.mjs::attrsFor never returns them and the slot map cannot see them; they are queried by their
 // framework-database `role` instead, and read for node existence, text content and link attributes rather than for
-// computed style. The style reader is lib/calibrate-read.mjs; this is its content counterpart.
+// computed style. The style side of the old reader is gone; this is the content reading the site look bridge still plans.
 import { WIDTHS, CAL_PREFIX, EDITOR_TIMEOUT_MS } from './calibrate-props.mjs';
 import { preconditionsFor, variantAttributes } from './calibrate-instances.mjs';
 import { elementPath } from '../../parity/lib/ref-trace.mjs';
@@ -216,7 +216,7 @@ export const needlesOf = ( instances ) => [ ...new Set( instances.map( ( i ) => 
 
 // In-page: for every element of each instance (or only the instance `only`), whether it is present and which of
 // `needles` its text and its link attributes carry. Self-contained; pathSrc is elementPath's source. Element keys are
-// the style reader's keys exactly (lib/calibrate-read.mjs), so a content path and a slot path are the same path.
+// the style reader's keys exactly, so a content path and a slot path are the same path.
 export function readContentInPage( [ count, prefix, pathSrc, needles, linkAttrs, only ] ) {
 	// eslint-disable-next-line no-new-func
 	const pathOf = new Function( `return (${ pathSrc });` )();
@@ -269,7 +269,7 @@ export function readContentInPage( [ count, prefix, pathSrc, needles, linkAttrs,
 // readContentInPage's arguments for every instance of a page.
 export const contentReadArgs = ( count, needles ) => [ count, CAL_PREFIX, elementPath.toString(), needles, LINK_ATTRS, undefined ];
 
-// The content read of one loaded calibration page at one width, for lib/calibrate-read.mjs::readAll's `contentAt`: the page's
+// The content read of one loaded calibration page at one width, for a reader's `contentAt`: the page's
 // style pass reads it on the same load, so no page is loaded again for it.
 export const contentReader = ( count, needles ) => ( p ) => p.evaluate( readContentInPage, contentReadArgs( count, needles ) );
 

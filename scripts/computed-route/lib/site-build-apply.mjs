@@ -88,7 +88,7 @@ export const TEST_ORDER_META = '_sgs_site_run_test_order';
 // show: status `pending`, which sends no customer or admin email (WooCommerce mails on the move to processing, on-hold
 // or completed), marked with `meta` (TEST_ORDER_META, or calibration's own key, so neither deletes the other's order).
 // With `customer` (a login) the order is that user's own, as the account block's latest-order card needs
-// (lib/calibrate-order.mjs); without it the order is a guest's. Prints { id, url } (the order-received address with its
+// (a test order for a signed-in user); without it the order is a guest's. Prints { id, url } (the order-received address with its
 // key), or { error } when the site has no WooCommerce, no product or no such user.
 export function testOrderPhp( { customer = null, meta = TEST_ORDER_META } = {} ) {
 	const login = null === customer ? null : `'${ String( customer ).replace( /\\/g, '\\\\' ).replace( /'/g, "\\'" ) }'`;
