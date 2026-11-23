@@ -11,7 +11,8 @@ A site's logins live in the file and under the key its entry in `scripts/compute
 
   Node and route code   scripts/computed-route/lib/site-targets.mjs::secretsOf (then secretsPath)
   Python                plugins/sgs-blocks/scripts/lib/site_secrets.py::secrets_of
-  shell                 scripts/computed-route/tools/site-secrets.mjs <site>   (prints the file, a tab, the key)
+  plugin Node probes    plugins/sgs-blocks/scripts/lib/site-secrets.mjs::siteSecrets (siteLogin, readEnvFile)
+  shell                 python plugins/sgs-blocks/scripts/lib/site_secrets.py <site>   (prints the file, a tab, the key)
 
 A name with no entry falls back to `.claude/secrets/<name>.env` and its derived key (a scratch copy of a mirror), and that
 fallback is written once in each lookup above. Reading a secrets file by a name that is not a site (a fixed
@@ -58,6 +59,8 @@ KEY_FROM_NAME = re.compile(r"toUpperCase\(\)\s*\.replace\(|re\.sub\([^)]*\)\s*\.
 EXEMPT: Dict[Tuple[str, str], str] = {
     ("scripts/computed-route/lib/site-targets.mjs", "path"): "conventionalSecrets and scratchEntry: the one fallback for a name with no entry",
     ("scripts/computed-route/lib/site-targets.mjs", "key"): "conventionalSecrets and scratchEntry: the one fallback for a name with no entry",
+    ("plugins/sgs-blocks/scripts/lib/site_secrets.py", "path"): "conventional_secrets: the one Python fallback for a name with no entry",
+    ("plugins/sgs-blocks/scripts/lib/site_secrets.py", "key"): "conventional_secrets: the one Python fallback for a name with no entry",
     ("scripts/local-wp/scratch-mirror.sh", "path"): "writes and reads the login file of a scratch copy and of its committed mirror, whose entries name <name>.env",
     ("scripts/local-wp/scratch-mirror.sh", "key"): "writes both key spellings of a scratch copy's name into its own login file",
 }
@@ -129,7 +132,7 @@ def run_check() -> int:
     for name in stale:
         print(f"stale exemption (nothing matches it any more, remove it): {name}")
     if hits or stale:
-        print("A site's secrets file and key come from its calibration-targets entry: scripts/computed-route/lib/site-targets.mjs::secretsOf (Node), plugins/sgs-blocks/scripts/lib/site_secrets.py::secrets_of (Python), scripts/computed-route/tools/site-secrets.mjs (shell).")
+        print("A site's secrets file and key come from its calibration-targets entry: scripts/computed-route/lib/site-targets.mjs::secretsOf (route Node), plugins/sgs-blocks/scripts/lib/site-secrets.mjs::siteSecrets (plugin Node), plugins/sgs-blocks/scripts/lib/site_secrets.py::secrets_of (Python and shell).")
         return 1
     print("check-secrets-lookup: no secrets path or key is built from a site name")
     return 0

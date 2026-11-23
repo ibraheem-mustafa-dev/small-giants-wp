@@ -23,9 +23,6 @@
  *
  * @package SGS\Blocks
  */
-import { execFileSync } from 'child_process';
-import fs from 'fs';
-import path from 'path';
 import { chromium } from 'playwright';
 import { loadSite, makeReporter } from '../motion-qa/probe-editor-canvas-lib.mjs';
 import { importedNamesByPackage, runtimeOnlyPackages } from '../check-wp-package-exports.mjs';
@@ -135,28 +132,7 @@ const finish = async () => {
 	process.exit( reporter.exitCode() );
 };
 
-/** The mirror's login. loadSite() expects WP_URL_LOCAL_INDUS; the mirror files name the key WP_URL_LOCALINDUS. */
-function loadMirror( key ) {
-	try {
-		return loadSite( key );
-	} catch ( first ) {
-		// Same lookup as loadSite(): this checkout's secrets folder, else the main checkout's (a worktree has none).
-		let file = path.resolve( `.claude/secrets/${ key }.env` );
-		if ( ! fs.existsSync( file ) ) {
-			const common = execFileSync( 'git', [ 'rev-parse', '--path-format=absolute', '--git-common-dir' ], { encoding: 'utf8' } ).trim();
-			file = path.join( path.dirname( common ), '.claude', 'secrets', `${ key }.env` );
-		}
-		if ( ! fs.existsSync( file ) ) throw first;
-		const env = Object.fromEntries( fs.readFileSync( file, 'utf8' ).split( /\r?\n/ ).filter( ( l ) => l && ! l.startsWith( '#' ) && l.includes( '=' ) )
-			.map( ( l ) => [ l.slice( 0, l.indexOf( '=' ) ).trim(), l.slice( l.indexOf( '=' ) + 1 ).trim().replace( /^['"]|['"]$/g, '' ) ] ) );
-		const suffix = key.toUpperCase().replace( /-/g, '' );
-		const found = { url: ( env[ `WP_URL_${ suffix }` ] || '' ).replace( /\/$/, '' ), user: env[ `WP_USER_${ suffix }` ], pass: env[ `WP_PWD_${ suffix }` ] };
-		if ( ! found.url || ! found.user || ! found.pass ) throw first;
-		return found;
-	}
-}
-
-const site = await attempt( 'load-credentials', async () => loadMirror( siteKey ) );
+const site = await attempt( 'load-credentials', async () => loadSite( siteKey ) );
 if ( ! site ) await finish();
 const loggedIn = await attempt( 'login', async () => {
 	await page.goto( `${ site.url }/wp-login.php`, { waitUntil: 'domcontentloaded', timeout: 30000 } );

@@ -4,8 +4,9 @@
 # Usage (from Git Bash on Windows, which holds the SSH key):
 #   bash scripts/local-wp/push-to-remote.sh <local-site> <remote-target> [--dry-run] [--client <slug>]
 #   e.g. bash scripts/local-wp/push-to-remote.sh local-eye-care eye-care-clone-test --dry-run
-# <local-site> and <remote-target> name secrets files: .claude/secrets/<name>.env, each holding WP_URL_<KEY> (the key is
-# the name upper-cased with the hyphens removed). SECRETS_DIR overrides the secrets folder (a worktree has none).
+# <local-site> and <remote-target> are site names: each one's secrets file and WP_URL_<KEY> come from its calibration-targets
+# entry (plugins/sgs-blocks/scripts/lib/site_secrets.py), else .claude/secrets/<name>.env. SECRETS_DIR overrides the secrets
+# folder the file is read from (a worktree has none).
 # --dry-run performs every read and check and prints each step, but writes nothing on the server and imports nothing;
 # it also has the server syntax-check the uploads copy script it would run.
 # Before anything is read from the database, the sgs-blocks build on the mirror is compared with the one on the test site
@@ -50,9 +51,9 @@ eval "$TARGET_VARS"
 [ -n "$TARGET_HOST" ] && [ -n "$TARGET_DOCROOT" ] && [ -n "$SSH_USER_HOST" ] || { echo "push_target.py returned no settings for $REMOTE" >&2; exit 1; }
 
 url_of() {
-  local name="$1" key
-  key="$( echo "$name" | tr '[:lower:]' '[:upper:]' | tr -d '-' )"
-  grep -E "^WP_URL_${key}=" "$SECRETS_DIR/$name.env" | head -1 | cut -d= -f2- | tr -d '"'"'"'\r' | sed 's:/*$::'
+  local name="$1" file key
+  IFS=$'\t' read -r file key < <( python "$REPO/plugins/sgs-blocks/scripts/lib/site_secrets.py" "$name" | tr -d '\r' ) || return 0
+  grep -E "^WP_URL_${key}=" "$SECRETS_DIR/$(basename "$file")" | head -1 | cut -d= -f2- | tr -d '"'"'"'\r' | sed 's:/*$::'
 }
 REMOTE_URL="$( url_of "$REMOTE" )"
 LOCAL_URL="$( url_of "$LOCAL" )"

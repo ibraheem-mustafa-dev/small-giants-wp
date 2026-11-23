@@ -6,7 +6,7 @@
  * @package SGS\Blocks
  */
 
-import { execFileSync } from 'node:child_process';
+import { readEnvFile, siteSecrets } from '../lib/site-secrets.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -41,19 +41,15 @@ export function parseArgs( argv ) {
 }
 
 /**
- * The site's public base URL from `.claude/secrets/<site>.env` (the first WP_URL_* line; credentials are never read).
- * The secrets folder is gitignored, so a run inside a git worktree (build-deploy.py's isolated deploy tree) reads it
- * from the main checkout, found through the worktree's common git directory.
+ * The site's public base URL: its WP_URL_<key> line in its login file (lib/site-secrets.mjs: the site's calibration-targets
+ * entry names the file and the key; credentials are never read). The secrets folder is gitignored, so a run inside a git
+ * worktree (build-deploy.py's isolated deploy tree) reads it from the main checkout, found through the worktree's common git directory.
  */
-export function siteBase( site ) {
-	let file = path.join( REPO, '.claude', 'secrets', `${ site }.env` );
-	if ( ! fs.existsSync( file ) ) {
-		const common = execFileSync( 'git', [ 'rev-parse', '--path-format=absolute', '--git-common-dir' ], { cwd: REPO, encoding: 'utf8' } ).trim();
-		file = path.join( path.dirname( common ), '.claude', 'secrets', `${ site }.env` );
-	}
-	const line = fs.readFileSync( file, 'utf8' ).split( /\r?\n/ ).find( ( l ) => /^WP_URL_[A-Z0-9]+=/.test( l ) );
-	if ( ! line ) throw new Error( `No WP_URL_* line in ${ file }` );
-	return line.slice( line.indexOf( '=' ) + 1 ).trim().replace( /^['"]|['"]$/g, '' ).replace( /\/+$/, '' );
+export function siteBase( site, options = {} ) {
+	const { envKey, file } = siteSecrets( site, { repo: REPO, ...options } );
+	const url = readEnvFile( file )[ `WP_URL_${ envKey }` ];
+	if ( ! url ) throw new Error( `No WP_URL_${ envKey } line in ${ file }` );
+	return url.replace( /\/+$/, '' );
 }
 
 /** Every `sgsMotion` value in a block tree, with the block name and className that carries it. */

@@ -12,7 +12,7 @@ whose layer lists `values.delay` in `customised` is skipped (the client chose th
                script's port of the delay function with tests/fixtures/motion/stagger-parity-cases.json, the file the
                JS (src/components/motion/stagger-delays.js) and PHP (Sgs_Motion_Stagger) implementations also run.
   --site NAME  by hand only: the same drift check over a site's pages, posts, patterns and templates, read through the
-               REST API with .claude/secrets/NAME.env (GET requests only; nothing is written).
+               REST API with NAME's secrets file (named by its calibration-targets entry, else .claude/secrets/NAME.env; GET requests only; nothing is written).
   --self-test  plants an out-of-order delay in a copy of a fixture and requires --check to report it, a customised
                plant to be skipped, an unplanted copy to be clean, and a wrong expectation to fail the parity.
 
@@ -34,6 +34,8 @@ from pathlib import Path
 from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
+from site_secrets import read_env, secrets_file, secrets_of  # noqa: E402
 from tls_urlopen import urlopen_tls  # noqa: E402
 
 sys.stdout.reconfigure(encoding="utf-8")
@@ -42,7 +44,6 @@ REPO = PLUGIN.parents[1]
 FIXTURES = PLUGIN / "scripts" / "fixtures" / "motion-stagger-drift"
 PARITY_CASES = PLUGIN / "tests" / "fixtures" / "motion" / "stagger-parity-cases.json"
 GRID_COLUMNS = PLUGIN / "src" / "blocks" / "extensions" / "motion" / "stagger" / "generated-grid-columns.json"
-SECRETS = REPO / ".claude" / "secrets"
 TIERS = ("desktop", "tablet", "mobile")
 ORDERS = ("row-first", "column-first", "from-centre", "reverse", "flatten")
 # What the helper shows for a setting the client has not set (StaggerHelper.js::STAGGER_DEFAULTS).
@@ -304,16 +305,13 @@ def parse_blocks(markup: str) -> list[dict]:
     return root["innerBlocks"]
 
 
-def site_credentials(site: str) -> tuple[str, str, str]:
-    path = SECRETS / f"{site}.env"
+def site_credentials(site: str, repo: Path = REPO, targets: dict | None = None) -> tuple[str, str, str]:
+    """(url, user, application password) of `site`: lib/site_secrets.py names its login file and key from its calibration-targets entry."""
+    env_file, suffix = secrets_of(site, targets)
+    path = secrets_file(env_file, repo)
     if not path.is_file():
         raise SystemExit(f"no credentials file {path}")
-    suffix = re.sub(r"[^A-Za-z0-9]", "", site).upper()
-    env = {}
-    for line in path.read_text(encoding="utf-8").splitlines():
-        if "=" in line and not line.lstrip().startswith("#"):
-            key, _, value = line.partition("=")
-            env[key.strip()] = value.strip().strip("\"'")
+    env = read_env(path)
     missing = [k for k in (f"WP_USER_{suffix}", f"WP_APP_PWD_{suffix}", f"WP_URL_{suffix}") if k not in env]
     if missing:
         raise SystemExit(f"{path} lacks {', '.join(missing)}")

@@ -5,8 +5,8 @@
 # Usage (from Git Bash on Windows, which holds the SSH key):
 #   bash scripts/local-wp/refresh-from-remote.sh <local-site> <remote-target>
 #   e.g. bash scripts/local-wp/refresh-from-remote.sh local-eye-care eye-care-test
-# <local-site> and <remote-target> name secrets files: .claude/secrets/<name>.env, each holding WP_URL_<KEY> (the key is
-# the name upper-cased with the hyphens removed). The local database is backed up in WSL before the import; the local
+# <local-site> and <remote-target> are site names: each one's secrets file and WP_URL_<KEY> come from its calibration-targets
+# entry (plugins/sgs-blocks/scripts/lib/site_secrets.py), else .claude/secrets/<name>.env. The local database is backed up in WSL before the import; the local
 # safety settings (mail block, local environment type, cron off) live in files and wp-config, which this never touches.
 set -euo pipefail
 
@@ -16,9 +16,9 @@ REMOTE="${2:-}"
 [ -n "$LOCAL" ] && [ -n "$REMOTE" ] || { echo "Usage: $0 <local-site> <remote-target>" >&2; exit 2; }
 
 url_of() {
-  local name="$1" key
-  key="$( echo "$name" | tr '[:lower:]' '[:upper:]' | tr -d '-' )"
-  grep -E "^WP_URL_${key}=" "$REPO/.claude/secrets/$name.env" | head -1 | cut -d= -f2- | tr -d '"'"'"'\r' | sed 's:/*$::'
+  local name="$1" file key
+  IFS=$'\t' read -r file key < <( python "$REPO/plugins/sgs-blocks/scripts/lib/site_secrets.py" "$name" | tr -d '\r' ) || return 0
+  grep -E "^WP_URL_${key}=" "$REPO/$file" | head -1 | cut -d= -f2- | tr -d '"'"'"'\r' | sed 's:/*$::'
 }
 REMOTE_URL="$( url_of "$REMOTE" )"
 LOCAL_URL="$( url_of "$LOCAL" )"

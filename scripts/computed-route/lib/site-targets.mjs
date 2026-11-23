@@ -4,6 +4,9 @@
 //     copy of a mirror is recorded (tools/scratch-target.mjs). A local entry never replaces a committed one.
 //   - surfaceOnSite, surfacesOnSite: a surface entry (or every entry) of surfaces.json retargeted to another copy of its site (same post ids), or a refusal.
 //   - assertUnprotected: a site whose target carries `protected` is never written by a route run.
+//   - secretsOf: the secrets file and key of a site name, from its entry (envFile, envKey), else the `.claude/secrets/<name>.env`
+//     convention (a scratch copy of a mirror). Every reader of a site's logins goes through it, so a file name never has to match
+//     a site name (scripts/check-secrets-lookup.py refuses a path or key built from a name anywhere else).
 //   - secretsPath, siteUrl: a secrets file resolves against SGS_SECRETS_ROOT when set (a worktree holds no secrets), else the repo.
 //   - assertScratchRunPlace: a scratch-copy run writes files under sites/<client>/build, so it runs from a git worktree.
 // lint.mjs fails a route file other than this one that reads the committed file itself.
@@ -83,6 +86,17 @@ export function assertUnprotected( site, targets ) {
 	}
 }
 
+// The secrets file and key a name with no entry uses: `.claude/secrets/<name>.env`, the name upper-cased without punctuation.
+// The one place this convention is written (a scratch copy's entry and secretsOf's fallback).
+export const conventionalSecrets = ( name ) => ( { envFile: `.claude/secrets/${ name }.env`, envKey: String( name ).toUpperCase().replace( /[^A-Z0-9]/g, '' ) } );
+
+// { envFile, envKey } of `site`: its entry's when the entry names both, else the convention (conventionalSecrets). `targets` is
+// readTargets()'s object (default: this checkout's committed and local files; a test passes its own).
+export function secretsOf( site, targets = readTargets() ) {
+	const t = Object.hasOwn( targets, site ) ? targets[ site ] : null;
+	return t?.envFile && t?.envKey ? { envFile: t.envFile, envKey: t.envKey } : conventionalSecrets( site );
+}
+
 // A secrets file's path: SGS_SECRETS_ROOT (the checkout that holds the gitignored secrets, set in a worktree) else `repo`.
 export const secretsPath = ( envFile, repo ) => path.resolve( process.env.SGS_SECRETS_ROOT || repo, envFile );
 
@@ -145,8 +159,7 @@ export function scratchEntry( { name, source, url }, committed ) {
 	}
 	return {
 		...move( from ),
-		envFile: `.claude/secrets/${ name }.env`,
-		envKey: name.toUpperCase().replace( /-/g, '' ),
+		...conventionalSecrets( name ),
 		pluginDir,
 		mirrorOf: from.mirrorOf,
 		scratchOf: source,

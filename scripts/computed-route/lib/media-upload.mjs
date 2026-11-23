@@ -13,7 +13,7 @@ import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 import { assertSiteContact } from './site-contact.mjs';
-import { secretsPath } from './site-targets.mjs';
+import { readTargets, secretsOf, secretsPath } from './site-targets.mjs';
 import { downloadStock, stockDownloadUrl, stockFileName, stockKey, stockSurvey } from './media-stock.mjs';
 import { recordSite } from './cache.mjs';
 
@@ -41,22 +41,23 @@ export function safeSiteUrl( url ) {
 	return 'https:' === u.protocol || ( 'http:' === u.protocol && [ 'localhost', '127.0.0.1', '[::1]' ].includes( u.hostname ) );
 }
 
-// A site's REST credentials from `.claude/secrets/<site>.env` under SGS_SECRETS_ROOT, else `repo` (lib/site-targets.mjs::secretsPath; WP_URL_<SITE>, WP_USER_<SITE>, WP_APP_PWD_<SITE>, the
-// suffix being the site name upper-cased without its punctuation). A URL that is neither https nor loopback http is
+// A site's REST credentials from its secrets file under SGS_SECRETS_ROOT, else `repo` (lib/site-targets.mjs::secretsOf names the
+// file and the key suffix from the site's entry in `targets`, default repo's calibration-targets.json; secretsPath places it):
+// WP_URL_<key>, WP_USER_<key>, WP_APP_PWD_<key>. A URL that is neither https nor loopback http is
 // refused, since the application password travels as Basic auth.
-export function siteCredentials( repo, site ) {
-	const file = secretsPath( path.join( '.claude', 'secrets', `${ site }.env` ), repo );
+export function siteCredentials( repo, site, targets = readTargets( { repo } ) ) {
+	const { envFile, envKey } = secretsOf( site, targets );
+	const file = secretsPath( envFile, repo );
 	if ( ! fs.existsSync( file ) ) {
-		throw new Error( `no secrets file for ${ site } (.claude/secrets/${ site }.env)` );
+		throw new Error( `no secrets file for ${ site } (${ envFile })` );
 	}
 	const env = Object.fromEntries( fs.readFileSync( file, 'utf8' ).split( /\r?\n/ ).map( ( l ) => /^\s*([A-Z0-9_]+)\s*=\s*(.*?)\s*$/.exec( l ) ).filter( Boolean ).map( ( [ , k, v ] ) => [ k, v.replace( /^(['"])(.*)\1$/, '$2' ) ] ) );
-	const suffix = site.toUpperCase().replace( /[^A-Z0-9]/g, '' );
-	const [ url, user, pass ] = [ 'WP_URL', 'WP_USER', 'WP_APP_PWD' ].map( ( k ) => env[ `${ k }_${ suffix }` ] );
+	const [ url, user, pass ] = [ 'WP_URL', 'WP_USER', 'WP_APP_PWD' ].map( ( k ) => env[ `${ k }_${ envKey }` ] );
 	if ( ! url || ! user || ! pass ) {
-		throw new Error( `.claude/secrets/${ site }.env lacks WP_URL_${ suffix }, WP_USER_${ suffix } or WP_APP_PWD_${ suffix }` );
+		throw new Error( `${ envFile } lacks WP_URL_${ envKey }, WP_USER_${ envKey } or WP_APP_PWD_${ envKey }` );
 	}
 	if ( ! safeSiteUrl( url ) ) {
-		throw new Error( `WP_URL_${ suffix } (${ url }) is not https (plain http is allowed only to localhost), and the application password would travel in the clear` );
+		throw new Error( `WP_URL_${ envKey } (${ url }) is not https (plain http is allowed only to localhost), and the application password would travel in the clear` );
 	}
 	return { url: url.replace( /\/+$/, '' ), auth: `Basic ${ Buffer.from( `${ user }:${ pass.replace( /\s+/g, '' ) }` ).toString( 'base64' ) }` };
 }

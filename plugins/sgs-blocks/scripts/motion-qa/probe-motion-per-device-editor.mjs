@@ -9,11 +9,11 @@
  * @package SGS\Blocks
  */
 
-import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import { chromium } from 'playwright';
 import { REPO } from './probe-motion-model-lib.mjs';
+import { siteLogin, siteSecrets } from '../lib/site-secrets.mjs';
 
 const wpSession = createRequire( import.meta.url )( path.join( REPO, 'scripts', 'lib', 'wp-session.js' ) );
 
@@ -21,15 +21,10 @@ const INVALID = 'cubic-bezier(2, 0, 1, 1)';
 const VALID = 'cubic-bezier(0.3, 1.4, 0.5, 1)';
 const SELECTOR = 'm39-ease-bezier';
 
-/** `WP_USER_*`, `WP_PWD_*` of a site from its gitignored env file (never printed). */
+/** `WP_USER_<key>`, `WP_PWD_<key>` of a site from its gitignored env file (lib/site-secrets.mjs names the file and key; never printed). */
 function credentials( site ) {
-	const key = site.toUpperCase();
-	const out = {};
-	for ( const line of fs.readFileSync( path.join( REPO, '.claude', 'secrets', `${ site }.env` ), 'utf8' ).split( /\r?\n/ ) ) {
-		const m = line.match( /^([A-Z0-9_]+)=(.*)$/ );
-		if ( m ) out[ m[ 1 ] ] = m[ 2 ].trim().replace( /^["']|["']$/g, '' );
-	}
-	return { user: out[ `WP_USER_${ key }` ], pwd: out[ `WP_PWD_${ key }` ] };
+	const { user, pass } = siteLogin( site, { repo: REPO } );
+	return { user, pwd: pass };
 }
 
 /** The stored easing of the fixture heading, read from the editor's block state. */
@@ -77,7 +72,7 @@ async function openCurveField( page ) {
 export async function editorCurveCheck( { rep, site, base, pageId } ) {
 	const { user, pwd } = credentials( site );
 	if ( ! user || ! pwd ) {
-		rep.check( 'editor-invalid-curve-refused', { pass: null, why: `no WP_USER/WP_PWD for ${ site } in .claude/secrets/${ site }.env` } );
+		rep.check( 'editor-invalid-curve-refused', { pass: null, why: `no WP_USER/WP_PWD for ${ site } in ${ siteSecrets( site, { repo: REPO } ).envFile }` } );
 		return;
 	}
 	const browser = await chromium.launch();

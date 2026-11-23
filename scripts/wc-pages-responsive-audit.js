@@ -15,7 +15,7 @@
  * Usage:
  *   node scripts/wc-pages-responsive-audit.js [--base https://site] [--pdp /product/<slug>/] [--out dir] [--only key,key]
  *
- * Pages marked `auth` are audited logged in from `.claude/secrets/<site>.env`
+ * Pages marked `auth` are audited logged in from the site's secrets file (its calibration-targets entry names it)
  * (`--env sandybrown` by default): the shopper account
  * `WP_CUSTOMER_USER_*` / `WP_CUSTOMER_PWD_*` when present, else the admin
  * `WP_USER_*` / `WP_PWD_*`. The rest are audited as a guest.
@@ -30,6 +30,8 @@
 const { chromium } = require( 'playwright' );
 const fs = require( 'fs' );
 const path = require( 'path' );
+// The site's login file and key come from its calibration-targets entry (an ES module: Node 22.12+ requires it).
+const { readEnvFile, siteSecrets } = require( '../plugins/sgs-blocks/scripts/lib/site-secrets.mjs' );
 
 const args = process.argv.slice( 2 );
 const argVal = ( name, dflt ) => {
@@ -66,15 +68,8 @@ const PAGES = {
  * @return {Promise<Object>} Playwright storage state.
  */
 async function loginState( browser ) {
-	const envFile = path.join( __dirname, '..', '.claude', 'secrets', `${ ENV_NAME }.env` );
-	const env = {};
-	fs.readFileSync( envFile, 'utf8' ).split( /\r?\n/ ).forEach( ( line ) => {
-		const i = line.indexOf( '=' );
-		if ( i > 0 && ! line.startsWith( '#' ) ) {
-			env[ line.slice( 0, i ).trim() ] = line.slice( i + 1 ).trim().replace( /^["']|["']$/g, '' );
-		}
-	} );
-	const suffix = ENV_NAME.toUpperCase().replace( /-/g, '_' );
+	const { envKey: suffix, file } = siteSecrets( ENV_NAME );
+	const env = readEnvFile( file );
 	const ctx = await browser.newContext();
 	const page = await ctx.newPage();
 	await page.goto( `${ BASE }/my-account/`, { waitUntil: 'domcontentloaded', timeout: 60000 } );

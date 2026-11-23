@@ -13,7 +13,7 @@
 // --with-cart, one basket line in this run's own WooCommerce session): on a site calibration-targets.json marks protected both are
 // refused, and SGS_NO_SITE stops the whole run, before the browser opens (lib/site-check-site.mjs::assertCheckContact).
 // `--site` is a calibration-targets.json key (a local-* mirror and its test site share page-map ids through `mirrorOf`)
-// or any `.claude/secrets/<site>.env`; only its WP_URL_* is read.
+// or any site whose secrets file is `.claude/secrets/<site>.env`; only its WP_URL_* is read.
 // Output: sites/<client>/build/qa/site-check/<stamp>/ (or --out): result.json, result.md and the screenshots.
 // Exit 0 every check passed or n-a, 1 a check failed, 2 usage or the site unreachable.
 import fs from 'fs';
@@ -32,7 +32,7 @@ import { wpCommand } from './lib/calibration-refs.mjs';
 import { formSlug } from './lib/form-submit-run.mjs';
 import { loadChromium } from './lib/fill-read.mjs';
 import { browserPidOf, closeBrowser } from './lib/browser-close.mjs';
-import { readTargets } from './lib/site-targets.mjs';
+import { conventionalSecrets, readTargets } from './lib/site-targets.mjs';
 import { FLOWS, MIN_GAP_MS } from '../parity/flows/run-all.mjs';
 import { execute, writeFlowResult } from '../parity/flows/lib/flow.mjs';
 
@@ -84,7 +84,7 @@ async function main() {
 	const targets = readTargets();
 	const target = targetOf( args.site, targets, roots );
 	if ( ! target ) {
-		console.error( `${ args.site } is neither a calibration-targets.json key nor a .claude/secrets/${ args.site }.env\n${ USAGE }` );
+		console.error( `${ args.site } is neither a calibration-targets.json key nor a ${ conventionalSecrets( args.site ).envFile }\n${ USAGE }` );
 		return 2;
 	}
 	// Before anything reaches the site: the kill switch, and on a protected site no check that writes.

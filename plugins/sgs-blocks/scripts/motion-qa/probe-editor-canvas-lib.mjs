@@ -4,25 +4,11 @@
  *
  * @package SGS\Blocks
  */
-import fs from 'node:fs';
-import path from 'node:path';
-import { execFileSync } from 'node:child_process';
+import { siteLogin } from '../lib/site-secrets.mjs';
 
-/** Read `.claude/secrets/<site>.env` (from the main checkout when run in a worktree) into { url, user, pass }. */
-export function loadSite( siteKey ) {
-	let file = path.resolve( `.claude/secrets/${ siteKey }.env` );
-	if ( ! fs.existsSync( file ) ) {
-		const common = execFileSync( 'git', [ 'rev-parse', '--path-format=absolute', '--git-common-dir' ], { encoding: 'utf8' } ).trim();
-		file = path.join( path.dirname( common ), '.claude', 'secrets', `${ siteKey }.env` );
-	}
-	const env = Object.fromEntries(
-		fs.readFileSync( file, 'utf8' )
-			.split( /\r?\n/ )
-			.filter( ( l ) => l && ! l.startsWith( '#' ) && l.includes( '=' ) )
-			.map( ( l ) => [ l.slice( 0, l.indexOf( '=' ) ).trim(), l.slice( l.indexOf( '=' ) + 1 ).trim().replace( /^['"]|['"]$/g, '' ) ] )
-	);
-	const key = siteKey.toUpperCase().replace( /-/g, '_' );
-	const site = { url: ( env[ `WP_URL_${ key }` ] || '' ).replace( /\/$/, '' ), user: env[ `WP_USER_${ key }` ], pass: env[ `WP_PWD_${ key }` ] };
+/** Read the site's login file (lib/site-secrets.mjs: its calibration-targets entry names the file and key; the main checkout's when run in a worktree) into { url, user, pass }. */
+export function loadSite( siteKey, options = {} ) {
+	const { envKey: key, file, ...site } = siteLogin( siteKey, options );
 	if ( ! site.url || ! site.user || ! site.pass ) {
 		throw new Error( `Missing WP_URL_${ key }, WP_USER_${ key } or WP_PWD_${ key } in ${ file }` );
 	}

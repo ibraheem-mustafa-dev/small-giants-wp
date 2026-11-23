@@ -6,15 +6,16 @@ import { candidateRoots, parseEnv } from '../../parity/flows/lib/browser.mjs';
 import { flowsOutRoot } from '../../parity/flows/lib/flow.mjs';
 import { hasPost, rowKey, readIdsSite, readPageMap, rowsForSite, siteOf } from './site-build-map.mjs';
 import { assertSiteContact } from './site-contact.mjs';
+import { conventionalSecrets } from './site-targets.mjs';
 
 // The calibration target of `site` (calibration-targets.json: envFile, envKey, mirrorOf, pluginDir), else the plain
-// `.claude/secrets/<site>.env` convention (the key is the site name upper-cased without punctuation). null when neither.
+// convention (lib/site-targets.mjs::conventionalSecrets: `.claude/secrets/<site>.env`) when a root holds that file. null when neither.
 export function targetOf( site, targets, roots ) {
 	if ( targets[ site ]?.envFile && targets[ site ]?.envKey ) {
 		return { ...targets[ site ], site };
 	}
-	const envFile = `.claude/secrets/${ site }.env`;
-	return roots.some( ( r ) => fs.existsSync( path.join( r, envFile ) ) ) ? { site, envFile, envKey: site.toUpperCase().replace( /[^A-Z0-9]/g, '' ) } : null;
+	const { envFile, envKey } = conventionalSecrets( site );
+	return roots.some( ( r ) => fs.existsSync( path.join( r, envFile ) ) ) ? { site, envFile, envKey } : null;
 }
 
 // The site's address (WP_URL_<key>) from the first root holding the secrets file: the repo, then, inside a worktree,

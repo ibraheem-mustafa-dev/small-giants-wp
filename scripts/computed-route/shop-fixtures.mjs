@@ -13,7 +13,7 @@ import { ShopFixturesError, applyFixtures, imageChoice, planFixtureVariesBy, pla
 import { VariesByError } from './lib/shop-fixtures-variesby.mjs';
 import { wpFetch } from './lib/shop-fixtures-wp.mjs';
 import { assertSiteContact } from './lib/site-contact.mjs';
-import { assertUnprotected, readTargets } from './lib/site-targets.mjs';
+import { assertUnprotected, readTargets, secretsOf } from './lib/site-targets.mjs';
 
 // The sites the fixtures may be written to: fresh test sites that hold no client content.
 export const FIXTURE_SITES = [ 'eye-care-clone-test', 'local-mamas', 'local-eye-care' ];
@@ -32,10 +32,11 @@ if ( args.includes( '--apply' ) && ! FIXTURE_SITES.includes( site ) ) {
 }
 const here = path.dirname( fileURLToPath( import.meta.url ) );
 const repo = opt( '--repo' ) || path.resolve( here, '../..' );
+const targets = readTargets( { repo } );
 // Credentials are gitignored, so a worktree reads them from the main checkout.
 const secretsRepo = opt( '--secrets' ) || ( () => {
 	let dir = repo;
-	while ( dir !== path.dirname( dir ) && ! existsSync( path.join( dir, '.claude', 'secrets', `${ site }.env` ) ) ) {
+	while ( dir !== path.dirname( dir ) && ! existsSync( path.join( dir, secretsOf( site, targets ).envFile ) ) ) {
 		dir = path.dirname( dir );
 	}
 	return dir;
@@ -44,7 +45,6 @@ const secretsRepo = opt( '--secrets' ) || ( () => {
 // The site's calibration target: a local mirror's names its WSL docroot (`pluginDir`), so wp-cli runs there instead of over
 // SSH. A mirror keeps no application password, so its REST requests are dispatched in-process through wp-cli; a hosted test
 // site is reached over REST with its application password.
-const targets = readTargets( { repo } );
 const target = targets[ site ] || {};
 if ( args.includes( '--apply' ) ) {
 	try {
@@ -58,7 +58,7 @@ const wp = wpCommand( target, site, repo, { readOnly: ! args.includes( '--apply'
 const mirror = /^\/\/wsl\.localhost\//.test( target.pluginDir || '' );
 
 try {
-	const creds = mirror ? { url: 'http://localhost', auth: 'wp-cli' } : siteCredentials( secretsRepo, site );
+	const creds = mirror ? { url: 'http://localhost', auth: 'wp-cli' } : siteCredentials( secretsRepo, site, targets );
 	// A hosted site's REST calls pass the site-contact guard too (a dry run only reads).
 	const fetchImpl = mirror ? wpFetch( wp ) : ( ...a ) => assertSiteContact( { site, readOnly: ! args.includes( '--apply' ) } ) ?? fetch( ...a );
 	if ( args.includes( '--apply' ) ) {

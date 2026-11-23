@@ -54,7 +54,7 @@ import { PHASES, planBuild, tally } from './lib/site-build-plan.mjs';
 import { promoteSiteOptions, withSiteOptions } from './lib/site-build-options.mjs';
 import { applyPhase, wpBuildPage } from './lib/site-build-apply.mjs';
 import { openDetachedSession, readEnv } from './lib/wp-run-session.mjs';
-import { assertScratchRunPlace, assertUnprotected, readTargets, secretsPath } from './lib/site-targets.mjs';
+import { assertScratchRunPlace, assertUnprotected, readTargets, secretsOf, secretsPath } from './lib/site-targets.mjs';
 import { runFlowLinks } from './lib/site-build-flow-links.mjs';
 import { openerControlsOf, runOpenerLabels } from './lib/site-build-flow-opener-label.mjs';
 import { flowProductIdsFor } from './lib/site-build-flow-product.mjs';
@@ -248,11 +248,11 @@ try {
 		console.log( `${ counts.creates } to create, ${ counts.changes } to change (${ first.actions.filter( ( a ) => 'template-remove' === a.type ).length } of them saved templates removed), ${ counts.adopts } to adopt (dry run: re-run with --apply)` );
 		process.exit( templatesOnly || onlyRows ? 0 : runFlowLinks( { rows, runPhp, apply: false, pending: true } ) || runOpenerLabels( { rows, controlsOf: openerControlsOf( { repo, client } ), runPhp, apply: false, pending: true } ) || runAccountRegistration( { rows, repo, client, runPhp, apply: false } ) || runShopOptions( { repo, client, runPhp, apply: false } ) || runCheckoutContent( { repo, client, runPhp, apply: false } ) );
 	}
-	const build = wpBuildPage( repo, site );
+	const build = wpBuildPage( repo, site, targets );
 	// One logged-in browser for every page the run builds, as its own process because the builds below run synchronously
 	// (lib/wp-run-session.mjs::openDetachedSession): each wp-build-page.js child attaches through SGS_CDP_URL instead of
 	// launching and logging in on its own.
-	const session = await openDetachedSession( site, readEnv( secretsPath( path.join( '.claude', 'secrets', `${ site }.env` ), repo ), site.toUpperCase().replace( /[^A-Z0-9]/g, '' ) ) );
+	const session = await openDetachedSession( site, readEnv( secretsPath( secretsOf( site, targets ).envFile, repo ), secretsOf( site, targets ).envKey ) );
 	writeIdsSite( mapFile, site );
 	const onId = ( key, id ) => {
 		ids[ key ] = id;

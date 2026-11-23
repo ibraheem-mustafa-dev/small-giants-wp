@@ -15,7 +15,7 @@
 import fs from 'fs';
 import path from 'path';
 import { validate } from './ledger.mjs';
-import { assertScratchRunPlace, assertUnprotected, targetOf } from './site-targets.mjs';
+import { assertScratchRunPlace, assertUnprotected, secretsOf, targetOf } from './site-targets.mjs';
 
 export const MIN_FREE_GB = 20;
 const GB = 1024 ** 3;
@@ -81,9 +81,9 @@ export async function runPreflight( { client, site, repo, targets, probes, deep 
 	try {
 		const creds = probes.credentials( site );
 		const r = await probes.restCheck( creds );
-		add( r.ok ? pass( 'password', `${ site }'s application password is accepted (${ r.detail })` ) : fail( 'password', `${ site }'s REST API refused its application password (${ r.detail })`, /^local-mediatest/.test( site ) ? `give the copy its own: wsl -d Ubuntu -u root -- bash <worktree>/scripts/local-wp/scratch-mirror.sh secrets ${ site }` : `make a new application password for the user in .claude/secrets/${ site }.env` ) );
+		add( r.ok ? pass( 'password', `${ site }'s application password is accepted (${ r.detail })` ) : fail( 'password', `${ site }'s REST API refused its application password (${ r.detail })`, /^local-mediatest/.test( site ) ? `give the copy its own: wsl -d Ubuntu -u root -- bash <worktree>/scripts/local-wp/scratch-mirror.sh secrets ${ site }` : `make a new application password for the user in ${ secretsOf( site, targets ).envFile }` ) );
 	} catch ( e ) {
-		add( fail( 'password', e.message, `check .claude/secrets/${ site }.env (WP_URL_, WP_USER_ and WP_APP_PWD_ for ${ site })` ) );
+		add( fail( 'password', e.message, `check ${ secretsOf( site, targets ).envFile } (WP_URL_, WP_USER_ and WP_APP_PWD_ ending ${ secretsOf( site, targets ).envKey })` ) );
 	}
 	return out;
 }

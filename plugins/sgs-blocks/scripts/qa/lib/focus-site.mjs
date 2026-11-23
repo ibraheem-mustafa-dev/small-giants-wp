@@ -10,18 +10,19 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { summarise } from './focus-probe-lib.mjs';
+import { readEnvFile, siteSecrets } from '../../lib/site-secrets.mjs';
 import { tabThrough } from './focus-measure.mjs';
 import { AXE_TAGS, axeSourcePath } from '../../motion-qa/probe-motion-a11y-lib.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..', '..', '..', '..', '..' );
 
-/** The site's base URL from `.claude/secrets/<target>.env` (the first WP_URL_* key; the value is a public address). */
-export function siteUrl( target ) {
-	const file = path.join( REPO, '.claude', 'secrets', `${ target }.env` );
+/** The site's base URL: the WP_URL_<key> of its login file (lib/site-secrets.mjs names the file and key from its calibration-targets entry; the value is a public address). */
+export function siteUrl( target, options = {} ) {
+	const { envKey, file } = siteSecrets( target, { repo: REPO, ...options } );
 	if ( ! fs.existsSync( file ) ) throw new Error( `no secrets file for target "${ target }" (${ file })` );
-	const line = fs.readFileSync( file, 'utf8' ).split( /\r?\n/ ).find( ( l ) => /^WP_URL_[A-Z0-9_]+=/.test( l ) );
-	if ( ! line ) throw new Error( `no WP_URL_* key in ${ file }` );
-	return line.split( '=' )[ 1 ].trim().replace( /^["']|["']$/g, '' ).replace( /\/+$/, '' );
+	const url = readEnvFile( file )[ `WP_URL_${ envKey }` ];
+	if ( ! url ) throw new Error( `no WP_URL_${ envKey } key in ${ file }` );
+	return url.replace( /\/+$/, '' );
 }
 
 const sleep = ( ms ) => new Promise( ( r ) => setTimeout( r, ms ) );
