@@ -8,7 +8,8 @@
 //      it is written through the generic resolver, which formats it and checks it against the setting.
 //   2. A tier-shaped sibling: another setting of the block for the same property that paints the same element and holds a
 //      value per device (a tier object, or Tablet / Mobile siblings): the value of each device, written where it changes; a box
-//      setting (padding, margin) takes it through the resolver as one side of each device's box, never as a bare value.
+//      setting (padding, margin) takes it through the resolver as one side of each device's box, never as a bare value; any
+//      other setting takes it only where it can hold it (holdsValue: a setting whose default holds a number takes numbers).
 //   3. The block's own breakpoint setting: a block that draws its own narrow alternative under a width (the navigation's
 //      collapse point) takes the wide value; the narrow one is that alternative.
 //   4. A scoped `sgsCustomCss` @media rule on the instance (lib/fill-width-gate.mjs::scopedCssPuts), one rule per width
@@ -22,7 +23,7 @@
 // (lib/fill-regap.mjs::answer: each row written or settled, with the read widths it answers), notes, ledger }.
 import { ONE_VALUE_EVERY_WIDTH, LOOSE, ownElementSetting, blockSchema } from './resolve.mjs';
 import { pinEdges } from './resolve-enum.mjs';
-import { siblings, candidates } from './db.mjs';
+import { siblings, candidates, attrsFor } from './db.mjs';
 import { setAttr } from './tree.mjs';
 import { mediaRule, scopedCssPuts, snapThreshold, snapEntry, ownBreakpoint, collapseAttributes } from './fill-width-gate.mjs';
 import { notInForce } from './fill-device-mode.mjs';
@@ -94,6 +95,23 @@ export function visibleChildren( { nodes, reads }, rec, w ) {
 }
 
 // Whether a calibrated setting paints (or is reached at) an element path.
+// Whether a per-device setting can hold the value rung 2 would write raw (not through the resolver). A setting whose DB default
+// holds a number (a degrees or count control: `{ "desktop": 0 }`, or `0` on a flat sibling) takes only a number at every device;
+// a CSS value such as a turned layer's `matrix(...)` is no number, so the row is left for the pass that converts it
+// (lib/fill-layer-rotation.mjs). A setting whose default holds no number takes the value as before.
+export function holdsValue( db, block, attr, value ) {
+	const row = attrsFor( db, block ).find( ( r ) => r.attr_name === attr );
+	let def = null;
+	try {
+		def = JSON.parse( row?.default_value ?? 'null' );
+	} catch {
+		def = row?.default_value ?? null;
+	}
+	const numeric = 'number' === typeof def || ( def && 'object' === typeof def && Object.values( def ).some( ( v ) => 'number' === typeof v ) );
+	const values = value && 'object' === typeof value ? Object.values( value ) : [ value ];
+	return ! numeric || values.every( ( v ) => '' !== String( v ).trim() && Number.isFinite( Number( v ) ) );
+}
+
 const paints = ( cal, attr, slot ) => {
 	const c = cal?.settings?.[ attr ];
 	return !! c && [ ...( c.slots || ( undefined !== c.slot ? [ c.slot ] : [] ) ), ...( c.reaches || [] ) ].some( ( p ) => LOOSE( p ) === LOOSE( slot ) );
@@ -327,7 +345,7 @@ function ladder( { row, hit, nodes, flat, ctx, out, scope, entries, date, collap
 		const writes = 'flat_sibling' === r.tier_shape
 			? Object.entries( tiers ).map( ( [ t, value ] ) => ( { attr: siblings( db, rec.name, r.attr_name ).find( ( s ) => s.css_tier === t )?.attr_name, value, merge: 'replace' } ) )
 			: [ { attr: r.attr_name, value: tiers, merge: 'deep' } ];
-		if ( ! r.box_family && writes.every( ( w ) => w.attr ) ) {
+		if ( ! r.box_family && writes.every( ( w ) => w.attr ) && writes.every( ( w ) => holdsValue( db, rec.name, w.attr, w.value ) ) ) {
 			return took( { writes, included: Object.fromEntries( widths.map( ( w ) => [ w, true ] ) ) }, 'width-ladder', `${ r.attr_name } holds a value per device, so the draft's ${ widths.map( ( w ) => `${ values[ w ] } at ${ w }` ).join( ', ' ) } is written there` );
 		}
 	}

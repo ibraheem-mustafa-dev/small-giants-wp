@@ -1,0 +1,26 @@
+[
+	{
+		"file": "lib/fill-width-ladder.mjs",
+		"find": " && writes.every( ( w ) => holdsValue( db, rec.name, w.attr, w.value ) ) ) {",
+		"replace": " ) {",
+		"why": "rung 2 writes a value raw whatever the setting holds (a matrix into a degrees setting)"
+	},
+	{
+		"file": "lib/fill-width-ladder.mjs",
+		"find": "const numeric = 'number' === typeof def || ( def && 'object' === typeof def && Object.values( def ).some( ( v ) => 'number' === typeof v ) );",
+		"replace": "const numeric = 'number' === typeof def;",
+		"why": "a per-device default holding numbers is not read as numeric"
+	},
+	{
+		"file": "lib/fill-width-ladder.mjs",
+		"find": "return ! numeric || values.every( ( v ) => '' !== String( v ).trim() && Number.isFinite( Number( v ) ) );",
+		"replace": "return ! numeric || values.every( ( v ) => Number.isFinite( Number( v ) ) );",
+		"why": "an empty value counts as a number (Number('') is 0)"
+	},
+	{
+		"file": "lib/fill-width-ladder.mjs",
+		"find": "return ! numeric || values.every(",
+		"replace": "return true || values.every(",
+		"why": "every setting takes every value"
+	}
+]
