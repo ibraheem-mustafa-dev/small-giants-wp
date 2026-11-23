@@ -1,0 +1,10 @@
+[
+	{ "file": "lib/fill-same-box.mjs", "find": "if ( undrawn.includes( LOOSE( a ) ) || undrawn.includes( LOOSE( b ) ) ) {", "replace": "if ( false ) {", "why": "a part the node never draws counts as its box again, so the frame's mat goes to the layer's own picture" },
+	{ "file": "lib/fill-same-box.mjs", "find": "if ( undrawn.includes( LOOSE( a ) ) || undrawn.includes( LOOSE( b ) ) ) {", "replace": "if ( undrawn.includes( LOOSE( a ) ) ) {", "why": "only the first element is checked, so the root-to-part order slips through" },
+	{ "file": "lib/paint-state.mjs", "find": "if ( ! lacks.length || lacks.some( ( a ) => isSet( attrs[ a ] ) ) ) {", "replace": "if ( ! lacks.length ) {", "why": "a node that sets the attribute still loses the part" },
+	{ "file": "lib/paint-state.mjs", "find": "if ( has.some( ( a ) => lacks.includes( a ) ) && ! has.some( ( a ) => isSet( attrs[ a ] ) ) ) {", "replace": "if ( has.some( ( a ) => lacks.includes( a ) ) ) {", "why": "a node that draws the part through another attribute loses it" },
+	{ "file": "lib/paint-state.mjs", "find": "if ( has.some( ( a ) => lacks.includes( a ) ) && ! has.some( ( a ) => isSet( attrs[ a ] ) ) ) {", "replace": "if ( ! has.some( ( a ) => isSet( attrs[ a ] ) ) ) {", "why": "a state drawn by an unrelated attribute counts as evidence" },
+	{ "file": "lib/paint-state.mjs", "find": ".filter( ( p ) => ! Object.hasOwn( off.elements || {}, p ) )", "replace": "", "why": "every part the drawing state holds is undrawn, the root included" },
+	{ "file": "lib/paint-state.mjs", "find": "return withUndrawn( stateView( raw, node, { fixture, schema } ), raw, node );", "replace": "return stateView( raw, node, { fixture, schema } );", "why": "the node view never names its undrawn parts" },
+	{ "file": "lib/paint-state.mjs", "find": "if ( ! view || ! undrawn.length ) {", "replace": "if ( ! view ) {", "why": "a node with nothing undrawn gets a new view every call" }
+]

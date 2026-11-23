@@ -29,6 +29,44 @@ export function matchesPaintState( when = {}, node = {} ) {
 	return ! ( Array.isArray( when.lacks ) && when.lacks.some( ( a ) => isSet( attrs[ a ] ) ) );
 }
 
+// The parts of the look a node never draws. The look reads every way the block draws (its default variants merged, and each
+// paint state alone), so it holds parts only some nodes print: a layer's own picture is printed when the layer has a source,
+// not when it holds blocks instead (`.sgs-media-el` beside `.sgs-decorative-image__content`). A part one state draws when an
+// attribute is set (`has`) and another state leaves out when that attribute is unset (`lacks`) depends on the attribute; a
+// node that sets none of the attributes that draw it and none of those the leaving state lacks never prints it.
+export function undrawnParts( states, attrs = {} ) {
+	const list = Object.values( states || {} );
+	const out = new Set();
+	for ( const off of list ) {
+		const lacks = Array.isArray( off?.when?.lacks ) ? off.when.lacks : [];
+		if ( ! lacks.length || lacks.some( ( a ) => isSet( attrs[ a ] ) ) ) {
+			continue;
+		}
+		for ( const on of list ) {
+			const has = Array.isArray( on?.when?.has ) ? on.when.has : [];
+			if ( has.some( ( a ) => lacks.includes( a ) ) && ! has.some( ( a ) => isSet( attrs[ a ] ) ) ) {
+				Object.keys( on.elements || {} ).filter( ( p ) => ! Object.hasOwn( off.elements || {}, p ) ).forEach( ( p ) => out.add( p ) );
+			}
+		}
+	}
+	return [ ...out ].sort();
+}
+
+// The view with `undrawn` (undrawnParts) added when the node leaves any part undrawn, built once per view and part list.
+function withUndrawn( view, raw, node ) {
+	const undrawn = undrawnParts( raw?.paintStates, node?.attributes || {} );
+	if ( ! view || ! undrawn.length ) {
+		return view;
+	}
+	const byView = views.get( view ) || new Map();
+	views.set( view, byView );
+	const key = `undrawn:${ undrawn.join( '|' ) }`;
+	if ( ! byView.has( key ) ) {
+		byView.set( key, { ...view, undrawn } );
+	}
+	return byView.get( key );
+}
+
 // The state's paint laid over the default property by property, per element and width: a property the state does not
 // carry (a state that keeps only what its render shape changes) keeps the default's value.
 function overlay( base, top ) {
@@ -54,8 +92,14 @@ function overlayAt( base, top, width ) {
 // over it, or the calibration itself when no state matches (or the block has none). The view is built once per state.
 // A node whose way of drawing differs by device (lib/fill-device-mode.mjs::deviceModes, given the block's `fixture` and
 // `schema`) is judged per read width: each width's paint is the state matching the node as it draws there, and the view
-// carries `modeAt`, the fixture variants in force at each width.
+// carries `modeAt`, the fixture variants in force at each width. A view of a node that never draws some of the look's
+// parts carries them as `undrawn` (undrawnParts), which lib/fill-same-box.mjs::calSameBox never counts as the root's box.
 export function calibrationForNode( raw, node, { fixture = null, schema = null } = {} ) {
+	return withUndrawn( stateView( raw, node, { fixture, schema } ), raw, node );
+}
+
+// The view `calibrationForNode` gives before the parts the node never draws are named.
+function stateView( raw, node, { fixture, schema } ) {
 	const cal = raw && node ? withNodeValues( raw, node.attributes || {}, schema ) : raw;
 	const modeAt = cal && node && fixture ? deviceModes( fixture, schema, node.attributes || {} ) : null;
 	if ( modeAt ) {
