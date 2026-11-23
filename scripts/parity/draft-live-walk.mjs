@@ -11,7 +11,7 @@
 //
 // Usage: node scripts/parity/draft-live-walk.mjs <config.mjs> [--out dir] [--widths 1440,768,375,1920]
 //        [--states a,b] [--no-accept] [--no-review] [--lint] [--inject-live-css "css"] [--inject-live-js "js"]
-//        [--headless] [--self draft|live] [--no-auto] [--dump-auto] [--lean] [--draft-cache file]
+//        [--headless] [--self draft|live] [--no-auto] [--dump-auto] [--lean] [--draft-cache file [--draft-dir folder]]
 // --lean reads only what a settings writer uses (styles, boxes, hover end states, structure, scroll-ins): no load
 // entrances, motion timelines, automatic check, links, reveal sweep, screenshots or focus pass (Spec 48 Solve rounds).
 // A state may name `region: { draft: '<selector>', live: '<selector>' }` (a drawer or panel its action opens): its entrance is
@@ -21,8 +21,10 @@
 // the page is loaded afresh (and the config's `open` run again) when the previous state left it off rest, and the state is
 // refused when it still is not at rest; a state may set `from: 'previous'` (run on the previous state's page) or `from: 'rest'`
 // (always load afresh). A state that finds nothing to trigger on either side is one report line, not one row per property.
-// --draft-cache keeps the draft side's reads per width, state list and mode in a file and reuses them: the draft does not
-// change between the walks of one run.
+// --draft-cache keeps the draft side's reads per width, state list and mode in a file and reuses them. The key also holds a hash of the
+// folder the draft is served from (--draft-dir), of this walker's modules and of the config's draft side (lib/draft-cache.mjs::cacheParts),
+// so the file may outlive a run: a changed draft file, walker module or draft-side config reads the draft afresh. Without --draft-dir the
+// key cannot say the draft's files are unchanged, so reuse is safe only within one run (computed-route solve.mjs).
 // Runs headed unless --headless is passed. Needs NODE_EXTRA_CA_CERTS set to certifi's bundle for the Hostinger sites.
 // --inject-live-css / --inject-live-js are the negative controls: they plant a known difference on the live side
 // (the catch-rate benchmark, scripts/parity/benchmark.mjs, replays past gaps this way).
@@ -39,9 +41,9 @@ import { sampleEntrances, sampleRegion } from './lib/entrances.mjs';
 import { isAccepted } from './lib/compare.mjs';
 import { compareState } from './lib/compare-state.mjs';
 import { everyStateMap } from './lib/state-changes.mjs';
-import { draftCacheKey, currentEntries } from './lib/draft-cache.mjs';
+import { draftCacheKey, currentEntries, storeEntry, cacheParts } from './lib/draft-cache.mjs';
 import { writeReport, sideBySide } from './lib/report.mjs';
-import { clearCaptures, cachedShots } from './lib/captures.mjs';
+import { clearCaptures, cachedShots, shotsExist } from './lib/captures.mjs';
 import { lintRun } from './lib/lint.mjs';
 import { collectStructure } from './lib/structure.mjs';
 import { writeContactSheet } from './lib/review.mjs';
@@ -70,6 +72,8 @@ if ( ! argv[ 0 ] || ! fs.existsSync( cfgPath ) ) {
 }
 // SGS_LIVE_ORIGIN: measure a local mirror of the live site instead (computed-route solve.mjs --site).
 const cfg = retargetLive( ( await import( pathToFileURL( cfgPath ).href ) ).default, process.env.SGS_LIVE_ORIGIN );
+// The draft cache's key parts are taken from the config as loaded: the walk adds to cfg as it goes, and the key must not see that.
+const parts = flag( '--draft-cache' ) ? cacheParts( { cfg, draftDir: flag( '--draft-dir' ), walker: fileURLToPath( import.meta.url ), self: flag( '--self' ) } ) : {};
 const onlyStates = flag( '--states' )?.split( ',' );
 const problems = lintRun( cfgPath, cfg, onlyStates );
 if ( problems.length || argv.includes( '--lint' ) ) {
@@ -80,6 +84,7 @@ const widths = ( flag( '--widths' ) || ( cfg.widths || [ 1440, 768, 375, 1920 ] 
 const accept = argv.includes( '--no-accept' ) ? [] : cfg.accept || [];
 const lean = argv.includes( '--lean' );
 const draftCache = flag( '--draft-cache' );
+const draftDir = flag( '--draft-dir' );
 const injectCss = flag( '--inject-live-css' );
 const injectJs = flag( '--inject-live-js' );
 const outDir = path.resolve( flag( '--out' ) || path.join( path.dirname( cfgPath ), 'out', cfg.name ) );
@@ -354,15 +359,16 @@ const results = { config: cfg.name, when: new Date().toISOString(), injectCss, i
 const linksSeen = new Set();
 const allLiveLinks = [];
 const origins = { draft: new URL( cb( cfg.draft.url ) ).origin, live: new URL( cb( cfg.live.url ) ).origin };
-const cached = currentEntries( draftCache && fs.existsSync( draftCache ) ? JSON.parse( fs.readFileSync( draftCache, 'utf8' ) ) : {} );
-const cacheKey = ( width ) => draftCacheKey( { config: cfg.name, width, states: onlyStates || null, lean, self } );
+const cached = Object.fromEntries( Object.entries( currentEntries( draftCache && fs.existsSync( draftCache ) ? JSON.parse( fs.readFileSync( draftCache, 'utf8' ) ) : {} ) ).filter( ( [ , e ] ) => shotsExist( e ) ) );
+const cacheKey = ( width ) => draftCacheKey( { config: cfg.name, width, states: onlyStates || null, lean, self, ...parts } );
 // The folder holds only this walk's files (lib/captures.mjs, GAP-CHECKLIST.md section 41): the walker's own shots, reports
 // and dumps from an earlier run go first, except the draft shots of the cached draft walks this run reuses.
 clearCaptures( outDir, cachedShots( widths.map( ( w ) => cached[ cacheKey( w ) ] ) ) );
 for ( const width of widths ) {
 	const draft = cached[ cacheKey( width ) ] || await walkSide( browser, 'draft', width );
 	if ( draftCache ) {
-		cached[ cacheKey( width ) ] = draft;
+		storeEntry( cached, cacheKey( width ), draft );
+		fs.mkdirSync( path.dirname( draftCache ), { recursive: true } );
 		fs.writeFileSync( draftCache, JSON.stringify( cached ) );
 	}
 	const live = await walkSide( browser, 'live', width, draft.states );

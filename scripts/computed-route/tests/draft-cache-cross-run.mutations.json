@@ -1,0 +1,128 @@
+[
+	{
+		"file": "../parity/lib/draft-cache.mjs",
+		"find": "export const cacheParts = ( { cfg, draftDir, walker, self } ) => ( { draft: draftDir && 'live' !== self ? hashTree( draftDir ) : null,",
+		"replace": "export const cacheParts = ( { cfg, draftDir, walker, self } ) => ( { draft: null,",
+		"why": "the key ignores the draft's files, so a changed draft file hits"
+	},
+	{
+		"file": "../parity/lib/draft-cache.mjs",
+		"find": "code: codeHash( walker ), configHash: draftSideHash( cfg, { keepLive: 'live' === self } ) } );",
+		"replace": "code: null, configHash: draftSideHash( cfg, { keepLive: 'live' === self } ) } );",
+		"why": "the key ignores the walker's code, so a changed walker module hits"
+	},
+	{
+		"file": "../parity/lib/draft-cache.mjs",
+		"find": "code: codeHash( walker ), configHash: draftSideHash( cfg, { keepLive: 'live' === self } ) } );",
+		"replace": "code: codeHash( walker ), configHash: null } );",
+		"why": "the key ignores the config, so a changed draft finder hits"
+	},
+	{
+		"file": "../parity/lib/draft-cache.mjs",
+		"find": "\t\t\t\tvisit( path.resolve( path.dirname( real ), m[ 2 ] ) );\n",
+		"replace": "\t\t\t\t// not followed\n",
+		"why": "the code hash covers only the entry file, not the modules it imports"
+	},
+	{
+		"file": "../parity/lib/draft-cache.mjs",
+		"find": "|\\bimport\\s*\\(\\s*|",
+		"replace": "|",
+		"why": "an import() call is not followed, so a dynamically imported module is not hashed"
+	},
+	{
+		"file": "../parity/lib/draft-cache.mjs",
+		"find": "\t\tif ( seen.has( real ) || ! fs.existsSync( real ) || ! fs.statSync( real ).isFile() ) {\n\t\t\treturn;\n\t\t}\n\t\tconst text",
+		"replace": "\t\tif ( seen.has( real ) || ! fs.existsSync( real ) || ! fs.statSync( real ).isFile() || seen.size ) {\n\t\t\treturn;\n\t\t}\n\t\tconst text",
+		"why": "only the first file is hashed"
+	},
+	{
+		"file": "../parity/lib/draft-cache.mjs",
+		"find": "\t\t\tconst { live, ...kept } = v;\n\t\t\tconst o = ! keepLive && 'draft' in v && 'live' in v ? kept : v;",
+		"replace": "\t\t\tconst o = 'draft' in v && 'live' in v ? { draft: v.draft } : v;",
+		"why": "a pair keeps only its draft finder, so a changed draft-side property does not miss"
+	},
+	{
+		"file": "../parity/lib/draft-cache.mjs",
+		"find": "origin.replace( /:\\d+$/, '' )",
+		"replace": "origin",
+		"why": "the draft's port stays in the key, so a new port per run never hits"
+	},
+	{
+		"file": "../parity/lib/draft-cache.mjs",
+		"find": "snapshot: SNAPSHOT_VERSION, draft, code, configHash } );",
+		"replace": "snapshot: SNAPSHOT_VERSION, draft, code } );",
+		"why": "the key drops the config hash"
+	},
+	{
+		"file": "../parity/lib/draft-cache.mjs",
+		"find": "if ( k !== key && slotOf( k ) === slot ) {",
+		"replace": "if ( k !== key && false ) {",
+		"why": "an entry of an older draft or walker stays in the file for ever"
+	},
+	{
+		"file": "../parity/lib/draft-cache.mjs",
+		"find": "if ( k !== key && slotOf( k ) === slot ) {",
+		"replace": "if ( k !== key ) {",
+		"why": "storing one width drops the cached walks of every other width"
+	},
+	{
+		"file": "../parity/lib/draft-cache.mjs",
+		"find": "draft: draftDir && 'live' !== self ? hashTree( draftDir ) : null",
+		"replace": "draft: draftDir ? hashTree( draftDir ) : null",
+		"why": "a --self live walk is keyed by the draft folder though it reads the live site"
+	},
+	{
+		"file": "../parity/draft-live-walk.mjs",
+		"find": "const parts = flag( '--draft-cache' ) ? cacheParts( { cfg, draftDir: flag( '--draft-dir' ), walker: fileURLToPath( import.meta.url ), self: flag( '--self' ) } ) : {};",
+		"replace": "const parts = {};",
+		"why": "the walker never passes the draft, code and config hashes to the key"
+	},
+	{
+		"file": "../parity/draft-live-walk.mjs",
+		"find": "\t\tstoreEntry( cached, cacheKey( width ), draft );\n",
+		"replace": "\t\tcached[ cacheKey( width ) ] = draft;\n",
+		"why": "the cache file grows by one entry per changed draft or walker"
+	},
+	{
+		"file": "lib/site-run-walk.mjs",
+		"find": "...( fresh ? [] : [ '--draft-cache', draftCacheFile( { build, key } ), '--draft-dir', draftDir ] ),",
+		"replace": "...[ '--draft-cache', draftCacheFile( { build, key } ), '--draft-dir', draftDir ],",
+		"why": "--fresh-draft still passes the cache"
+	},
+	{
+		"file": "lib/site-run-walk.mjs",
+		"find": "...( fresh ? [] : [ '--draft-cache', draftCacheFile( { build, key } ), '--draft-dir', draftDir ] ),",
+		"replace": "...( fresh ? [] : [ '--draft-cache', draftCacheFile( { build, key } ) ] ),",
+		"why": "the walk passes the cache but not the draft's folder, so the key cannot see a changed draft"
+	},
+	{
+		"file": "lib/site-run-walk.mjs",
+		"find": "...( fresh ? [] : [ '--draft-cache', draftCacheFile( { build, key } ), '--draft-dir', draftDir ] ),",
+		"replace": "...( [] ),",
+		"why": "the walk stage never passes the draft cache"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "headless: headlessFlag(), fresh: freshDraft } )",
+		"replace": "headless: headlessFlag(), fresh: false } )",
+		"why": "--fresh-draft is read but never reaches the walk"
+	},
+	{
+		"file": "../parity/draft-live-walk.mjs",
+		"find": "\t\tfs.mkdirSync( path.dirname( draftCache ), { recursive: true } );\n",
+		"replace": "",
+		"why": "the walker writes a cache file into a folder that does not exist yet and crashes after its first draft walk"
+	},
+	{
+		"file": "../parity/lib/draft-cache.mjs",
+		"find": "! keepLive && 'draft' in v",
+		"replace": "'draft' in v",
+		"why": "a --self live walk drops the live half of the config from its key"
+	},
+	{
+		"file": "../parity/draft-live-walk.mjs",
+		"find": "cacheParts( { cfg, draftDir: flag( '--draft-dir' )",
+		"replace": "cacheParts( { cfg: { ...cfg, drift: Math.random() }, draftDir: flag( '--draft-dir' )",
+		"why": "a volatile value in the config makes the key differ every run, so a later run never hits"
+	}
+]

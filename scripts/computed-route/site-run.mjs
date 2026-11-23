@@ -19,7 +19,7 @@
 // before (lib/site-run-layout.mjs, FR-48-55); a run whose `--only` leaves it out changes no pointer.
 //   node scripts/computed-route/site-run.mjs <client> --site <target> [--only a,b]
 //        [--stages inventory,propose,fill,build,apply,walk[,verify]] [--jobs 3] [--widths 1440,768,375] [--live-base <url>] [--with-content]
-//        [--no-copies] [--strict]
+//        [--fresh-draft] [--no-copies] [--strict]
 // --site is the only site the run reads or writes (prepareSite): every surfaces.json entry moves onto it, its address is the live
 // address (--live-base overrides it), and a protected site, a site with other post ids than the surfaces' and a scratch copy
 // (`local-mediatest*`) in a main checkout are refused before any stage. The run stops before any stage, naming the file and how to
@@ -40,6 +40,8 @@
 // sites/<client>/build/qa/ledger/<surface>/<Fill stamp>/run.jsonl (the skeleton's drops, Fill's records and silent drops, the
 // build's saved markup against Fill's writes in built.json beside it, the applier's plan); --stages ...,verify adds the verify
 // stage after apply, tools/clone-ledger.mjs on the built page with that file, writing ledger.json and LEDGER.md beside it.
+// The walk stage reuses the draft side an earlier run kept (sites/<client>/build/qa/parity/draft-cache/<surface>.json, keyed by the
+// draft's files, the walker's code and the config's draft side: lib/site-run-walk.mjs); --fresh-draft walks the draft afresh.
 // Output: sites/<client>/build/qa/site-run/<stamp>/status.json (rewritten after every stage) and <surface>.<stage>.log.
 // Fill and walks run <jobs> at a time; builds run one at a time (they write the site's database).
 import fs from 'fs';
@@ -59,6 +61,7 @@ import { savedInventoryOf, servedInventoryOf } from './lib/skeleton-saved-invent
 import { openRunSession, readEnv } from './lib/wp-run-session.mjs';
 import { isContentOnlySurface, isUnwalkedWooPage, wooContentRole } from './lib/site-build-plan.mjs';
 import { walkChecked } from './lib/site-check-openers.mjs';
+import { walkArgs } from './lib/site-run-walk.mjs';
 import { openerRow } from './lib/site-run-opener-row.mjs';
 import { rowKey, treeHash } from './lib/site-build-map.mjs';
 import { deleteTestOrdersPhp, templateRecordPhp, testOrderPhp } from './lib/site-build-apply.mjs';
@@ -377,7 +380,7 @@ export async function main( argv ) {
 	const flag = ( n, d = null ) => ( argv.includes( n ) ? argv[ argv.indexOf( n ) + 1 ] : d );
 	const site = flag( '--site' );
 	if ( ! client || ! site ) {
-		throw new Error( 'usage: site-run.mjs <client> --site <target> [--only a,b] [--stages inventory,propose,fill,build,apply,walk[,verify]] [--jobs 3] [--widths 1440,768,375] [--live-base <url>] [--with-content] [--no-copies] [--strict] [--allow-missing-paint sgs/a,sgs/b]' );
+		throw new Error( 'usage: site-run.mjs <client> --site <target> [--only a,b] [--stages inventory,propose,fill,build,apply,walk[,verify]] [--jobs 3] [--widths 1440,768,375] [--live-base <url>] [--with-content] [--fresh-draft] [--no-copies] [--strict] [--allow-missing-paint sgs/a,sgs/b]' );
 	}
 	const stages = ( flag( '--stages' ) || ALL_STAGES.join( ',' ) ).split( ',' );
 	if ( unknownStages( stages ).length ) {
@@ -388,6 +391,8 @@ export async function main( argv ) {
 	const widths = flag( '--widths', '1440,768,375' );
 	const liveOverride = flag( '--live-base' );
 	const withContent = argv.includes( '--with-content' );
+	// --fresh-draft: the walk reads the draft afresh instead of reusing the draft side an earlier run kept (lib/site-run-walk.mjs).
+	const freshDraft = argv.includes( '--fresh-draft' );
 	const build = path.join( REPO, 'sites', client, 'build' );
 	const { surfaces, base, target } = prepareSite( { site, surfaces: readJson( path.join( build, 'surfaces.json' ) ), targets: readTargets(), repo: REPO, liveOverride } );
 	const rows = readJson( path.join( build, 'page-map.json' ) );
@@ -614,8 +619,7 @@ export async function main( argv ) {
 		}
 		const parity = path.join( build, 'qa', 'parity' );
 		// A walk whose live element is absent fails instead of passing (lib/site-check-openers.mjs::walkAbsent).
-		await step( 'walk', async () => walkChecked( path.join( parity, 'out', key, 'report.json' ), await exec( 'walk', 'node', [ 'scripts/parity/draft-live-walk.mjs', path.join( parity, path.basename( entry.walkerFull ) ),
-			'--out', path.join( parity, 'out', key ), '--widths', widths, ...headlessFlag(), '--no-review' ], { SGS_DRAFT_URL: ctx.walkUrl, SGS_LIVE_ORIGIN: new URL( base ).origin, NODE_EXTRA_CA_CERTS: certs } ).catch( ( e ) => {
+		await step( 'walk', async () => walkChecked( path.join( parity, 'out', key, 'report.json' ), await exec( 'walk', 'node', walkArgs( { build, key, parity, walkerFull: entry.walkerFull, draftDir: path.join( REPO, entry.draftDir ), widths, headless: headlessFlag(), fresh: freshDraft } ), { SGS_DRAFT_URL: ctx.walkUrl, SGS_LIVE_ORIGIN: new URL( base ).origin, NODE_EXTRA_CA_CERTS: certs } ).catch( ( e ) => {
 			// The walker exits 1 for open differences; the report is what counts.
 			if ( fs.existsSync( path.join( parity, 'out', key, 'report.json' ) ) ) {
 				return `report written (${ String( e.message ).slice( 0, 200 ) })`;
