@@ -1,0 +1,32 @@
+[
+	{
+		"file": "lib/fill-same-box.mjs",
+		"find": "\t\treturn declaredOneBox( cal, a, b, axis, w );",
+		"replace": "\t\treturn false;",
+		"why": "the record's declared look could never show the root and its band as one box: padding lands on the outer box as Custom CSS"
+	},
+	{
+		"file": "lib/fill-same-box.mjs",
+		"find": "AXIS[ axis ][ 1 ].every( ( p ) => zero( root[ p ] ) ) && ",
+		"replace": "",
+		"why": "a root that pads or borders its band would count as the band's box"
+	},
+	{
+		"file": "lib/fill-same-box.mjs",
+		"find": " && MARGINS[ axis ].every( ( p ) => 'auto' === inner[ p ] || zero( inner[ p ] ) )",
+		"replace": "",
+		"why": "a band set off the root by a margin would count as the root's box"
+	},
+	{
+		"file": "lib/fill-same-box.mjs",
+		"find": "if ( ! band || ! pair.includes( '' ) || ! pair.includes( LOOSE( band ) ) ) {",
+		"replace": "if ( ! pair.includes( '' ) ) {",
+		"why": "any element would count as the root's box, not only the band the record names"
+	},
+	{
+		"file": "lib/fill-same-box.mjs",
+		"find": "\t\tif ( Number.isFinite( x ) && Number.isFinite( y ) ) {\n\t\t\treturn Math.abs( x - y ) <= TOL;\n\t\t}",
+		"replace": "",
+		"why": "measured sizes that differ would be overruled by the declared reading"
+	}
+]

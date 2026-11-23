@@ -1,8 +1,10 @@
 // Two elements of one block that are the same box (Spec 48 FR-48-8), for the Fill post-passes. A block's root and its content
 // band (`sgs/container` and every block built on it: `.sgs-container__inner` inside the root) are two elements in the live
 // DOM and one element in the draft: the draft's single element carries the size and the layout the block splits across the
-// two. Calibration measured both boxes at every width, so two elements whose measured boxes are equal on an axis at every
-// width are one box on that axis, and a setting that paints one of them paints the other as far as that axis goes.
+// two. Two elements whose boxes are equal on an axis at every width are one box on that axis, and a setting that paints one of
+// them paints the other as far as that axis goes. The boxes are calibration's measured sizes; where a size is declared rather
+// than laid out (the setting record's site look keeps `auto` and `100%`), the root and the content band the record names are
+// one box on an axis when nothing lies between them (declaredOneBox).
 //   - calSameBox: calibration measured the two elements as the same box (both axes by default) at every width.
 //   - layoutHome: the element a layout setting (flex-direction, align-items, justify-content ...) of the block paints, when the
 //     draft element's own slot has no such setting and one of the block's settings paints an element that is the same box.
@@ -23,12 +25,35 @@ const elementAt = ( cal, slot ) => {
 };
 const sizeAt = ( cal, slot, w, prop ) => parseFloat( elementAt( cal, slot )?.[ w ]?.[ prop ] );
 
-// Whether calibration measured two elements as the same box on the given axes (default both) at every width.
+const zero = ( v ) => 0 === parseFloat( v );
+const MARGINS = { h: [ 'margin-top', 'margin-bottom' ], w: [ 'margin-left', 'margin-right' ] };
+
+// The root and the block's content band at a width where the sizes are declared, not laid out (the setting record's site
+// look keeps `auto` and `100%` as written): one box on the axis when the pair is the root and `cal.contentBand` (the band
+// the record names, lib/setting-record.mjs), the root declares no padding or border on that axis and the band no margin other
+// than `auto` (it centres in the root). The draft's one element is the block's root and its band (Spec 22 FR-22-21's
+// content-width layer, which dissolves into the block).
+function declaredOneBox( cal, a, b, axis, w ) {
+	const band = cal?.contentBand;
+	const pair = [ LOOSE( a ), LOOSE( b ) ];
+	if ( ! band || ! pair.includes( '' ) || ! pair.includes( LOOSE( band ) ) ) {
+		return false;
+	}
+	const root = elementAt( cal, '' )?.[ w ];
+	const inner = elementAt( cal, band )?.[ w ];
+	return !! root && !! inner && AXIS[ axis ][ 1 ].every( ( p ) => zero( root[ p ] ) ) && MARGINS[ axis ].every( ( p ) => 'auto' === inner[ p ] || zero( inner[ p ] ) );
+}
+
+// Whether two elements are the same box on the given axes (default both) at every width: calibration's measured boxes equal,
+// or, where the sizes are declared, the root and its content band with nothing between them (declaredOneBox).
 export function calSameBox( cal, a, b, axes = [ 'h', 'w' ] ) {
 	return LOOSE( a ) === LOOSE( b ) || axes.every( ( axis ) => WIDTHS.every( ( w ) => {
 		const x = sizeAt( cal, a, w, AXIS[ axis ][ 0 ] );
 		const y = sizeAt( cal, b, w, AXIS[ axis ][ 0 ] );
-		return Number.isFinite( x ) && Number.isFinite( y ) && Math.abs( x - y ) <= TOL;
+		if ( Number.isFinite( x ) && Number.isFinite( y ) ) {
+			return Math.abs( x - y ) <= TOL;
+		}
+		return declaredOneBox( cal, a, b, axis, w );
 	} ) );
 }
 

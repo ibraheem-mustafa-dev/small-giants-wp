@@ -33,15 +33,15 @@ function fixtureDb( rows, { testedNoPaint = [], attrs = [] } = {} ) {
 	const db = new DatabaseSync( ':memory:' );
 	db.exec( `CREATE TABLE setting_placements ( block_slug TEXT, setting TEXT, part TEXT, props TEXT, state TEXT, tiers TEXT, kind TEXT, unproved TEXT, accepted TEXT, selector TEXT, setting_values TEXT, symbolic TEXT );
 		CREATE TABLE setting_record_blocks ( block_slug TEXT, tested_no_paint TEXT, replaces_block TEXT, unvalued TEXT );
-		CREATE TABLE block_attributes ( block_slug TEXT, attr_name TEXT, attr_type TEXT, default_value TEXT, enum_values TEXT, is_responsive INT, css_property TEXT, css_element TEXT, css_state TEXT, css_tier TEXT, tier_shape TEXT, box_family TEXT, source TEXT, role TEXT );` );
+		CREATE TABLE block_attributes ( block_slug TEXT, attr_name TEXT, attr_type TEXT, default_value TEXT, enum_values TEXT, is_responsive INT, css_property TEXT, css_element TEXT, css_state TEXT, css_tier TEXT, tier_shape TEXT, box_family TEXT, source TEXT, role TEXT, canonical_slot TEXT );` );
 	const put = db.prepare( 'INSERT INTO setting_placements VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )' );
 	for ( const r of rows ) {
 		put.run( BLOCK, r.setting, r.part, JSON.stringify( r.props ), r.state || '', JSON.stringify( r.tiers || [] ), r.kind || 'value', r.unproved ?? null, r.accepted ?? null, '', null, r.symbolic ? JSON.stringify( r.symbolic ) : null );
 	}
 	db.prepare( 'INSERT INTO setting_record_blocks VALUES ( ?, ?, ?, ? )' ).run( BLOCK, JSON.stringify( testedNoPaint ), '[]', '[]' );
-	const attr = db.prepare( 'INSERT INTO block_attributes ( block_slug, attr_name, attr_type, css_property, css_element, css_state, source ) VALUES ( ?, ?, ?, ?, ?, ?, ? )' );
+	const attr = db.prepare( 'INSERT INTO block_attributes ( block_slug, attr_name, attr_type, css_property, css_element, css_state, source, canonical_slot ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ? )' );
 	for ( const a of attrs ) {
-		attr.run( BLOCK, a.attr, a.type || 'string', a.property ?? null, a.element ?? null, a.state ?? null, 'sgs' );
+		attr.run( BLOCK, a.attr, a.type || 'string', a.property ?? null, a.element ?? null, a.state ?? null, 'sgs', a.slot ?? null );
 	}
 	return db;
 }
@@ -244,4 +244,14 @@ test( 'tier conditions as a plain screen holds them', () => {
 	assert.equal( tierHolds( '@container (min-width: 600px)', 375 ), true );
 	assert.deepEqual( reachedAtOf( [] ), [ 375, 768, 1440 ] );
 	assert.deepEqual( symbolicTiers( [ '@media(min-width:768px)' ], { edge: 'min', setting: 'x', offset: 0 }, 640 ), [ '@media(min-width:640px)' ] );
+} );
+
+test( 'MUST FAIL: the record names the block\'s content band, the slot its content max-width setting paints', () => {
+	// lib/fill-same-box.mjs::calSameBox reads the root and this band as one box where the look holds sizes as declared.
+	const look = { ...LOOK, elements: { ...LOOK.elements, '.sgs-demo__inner': at( { _tag: 'div', display: 'block', 'max-width': '1240px' } ) }, pathClasses: { ...LOOK.pathClasses, '.sgs-demo__inner': [ 'sgs-demo__inner' ] } };
+	const band = { attr: 'contentWidth', property: 'max-width', element: 'content-band', slot: 'content' };
+	const db = fixtureDb( [ { setting: 'contentWidth', part: 'sgs-demo__inner', props: [ 'max-width' ] } ], { attrs: [ band ] } );
+	assert.equal( loadRecord( BLOCK, CLIENT, { db, dir: lookDir( look ), build: false } ).contentBand, '.sgs-demo__inner' );
+	const none = fixtureDb( [ { setting: 'contentWidth', part: 'sgs-demo__inner', props: [ 'max-width' ] } ], { attrs: [ { ...band, slot: null } ] } );
+	assert.equal( loadRecord( BLOCK, CLIENT, { db: none, dir: lookDir( look ), build: false } ).contentBand, undefined, 'a max-width setting off the content slot names no band' );
 } );

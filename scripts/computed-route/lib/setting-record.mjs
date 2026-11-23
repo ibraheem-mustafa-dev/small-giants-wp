@@ -27,6 +27,7 @@ import { openDb, attrRow } from './db.mjs';
 import { longhands } from './calibrate.mjs';
 import { splitProperty, blockElements } from './resolve.mjs';
 import { INHERITED } from './calibrate-props.mjs';
+import { bandSetting } from './fill-band.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../../..' );
@@ -566,11 +567,16 @@ function readRecord( block, client, { db = null, dir = SITE_LOOK_DIR, repo = REP
 			unplaced[ name ] = `its element ${ row?.css_element || '(none named)' } is not drawn in the default look`;
 		}
 	}
+	// The block's content band (the slot its content max-width setting paints, lib/fill-band.mjs::bandSetting): the element
+	// the draft folds into the block's root, which lib/fill-same-box.mjs::calSameBox reads as one box with the root where the
+	// look holds sizes as declared rather than laid out.
+	const band = bandSetting( handle, block, { settings } );
 	return {
 		block,
 		client,
 		source: 'setting-record',
 		settings,
+		...( band ? { contentBand: band.slot } : {} ),
 		discovered: look?.discovered || {},
 		...( look?.text ? { text: look.text } : {} ),
 		...( look?.link ? { link: look.link } : {} ),
