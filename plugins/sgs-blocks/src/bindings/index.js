@@ -205,3 +205,4 @@ registerBlockBindingsSource( {
 import './product-field';
 import './order';
 import './customer';
+import './archive';
