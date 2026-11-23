@@ -1,6 +1,6 @@
 # site-look: what each SGS block looks like by default on one site
 
-The cloning route needs two things about a block: where each of its settings paints, and what the block looks like by default on the client's site. The first is the setting record (`../setting-record/`, in the framework database). The second is the site look, built here offline from the block's code and the site's theme snapshot. It replaces calibration's browser-measured default paint (setting-record plan, Task 4; Bean 2026-11-23): no site, no browser.
+The cloning route needs two things about a block: where each of its settings paints, and what the block looks like by default on the client's site. The first is the setting record (`../setting-record/`, in the framework database). The second is the site look, built here offline from the block's code and the site's theme snapshot. It gives the route each block's default paint with no site and no browser; calibration's browser measurement of it is retired (setting-record plan, Task 4; Bean 2026-11-23).
 
 ## Use
 
@@ -15,13 +15,13 @@ A block's file is rebuilt only when its key changes: this builder and the settin
 ## How a block's look is read
 
 1. Each variant's default render and each paint state (the setting record's plan and fixtures, `../setting-record/fixtures.json`) is rendered by the record's runner (`render.py`), from the fixture's `attributes` alone: the plain block a new node renders. The `checkAttributes` the record check adds to test a part (a shown label, a background image) never reach the look, since a part the draft's element lacks makes the route refuse that element as the block's part (`scripts/computed-route/lib/fill-part-pairing.mjs::rootIsPart`). Switch: `plain-fixture` (and `fixture-key` for the key).
-2. The render is drawn as a page draws it: inside a section (an `sgs/container`, the way calibration drew every block; straight inside the post content the theme's constrained layout would cap its width). An `sgs/container` is drawn inside one too, as every section of a cloned page sits inside the page's root container, so its default is a nested section's: the snapshot's section padding (Spec 32 FR-32-15) skips a nested section. The block's root is the first element of its own `wp-block-sgs-<name>` class that is not the section's root (`SECTION_ROOT_ATTR` marks it). A block whose fixture names parents is drawn inside them instead (`proof.py::Pages`). What `wp_footer` printed is moved to the end of `<body>` and the theme's overlay-scroll script applied (`settle`).
+2. The render is drawn as a page draws it: inside a section (an `sgs/container`, the way a page draws every block; straight inside the post content the theme's constrained layout would cap its width). An `sgs/container` is drawn inside one too, as every section of a cloned page sits inside the page's root container, so its default is a nested section's: the snapshot's section padding (Spec 32 FR-32-15) skips a nested section. The block's root is the first element of its own `wp-block-sgs-<name>` class that is not the section's root (`SECTION_ROOT_ATTR` marks it). A block whose fixture names parents is drawn inside them instead (`proof.py::Pages`). What `wp_footer` printed is moved to the end of `<body>` and the theme's overlay-scroll script applied (`settle`).
 3. The site's CSS is what WordPress prints for the site: the theme's `theme.json` with the snapshot merged over it, turned into global styles (presets, the element styles for buttons, links and headings, core block styles), the colour roles, the theme's front-end sheets, the type scale, and the snapshot's own custom CSS (`site_css`). A snapshot sets far more than token values, so only the whole ranking gives a part's look.
 4. The record's cascade reader (`computed.py::Page`) computes every element at 375, 768 and 1440 px. Element paths are the route's (`element_path`, ported from `scripts/parity/lib/ref-trace.mjs::elementPath`); the block's root is the element its wrapper attributes print on (`wp-block-sgs-<name>`).
 
 ## What a file holds
 
-The keys `scripts/computed-route/lib/cache.mjs::loadCalibration` returned from calibration, in the same shape:
+The keys `scripts/computed-route/lib/cache.mjs::loadCalibration` hands the route's readers, which keep the shape calibration gave them:
 
 | Key | What |
 |---|---|
@@ -31,7 +31,7 @@ The keys `scripts/computed-route/lib/cache.mjs::loadCalibration` returned from c
 | `discovered[setting][property]` | `{slots, values: {value: {width: computed}}}`: what each value of a setting whose values are not CSS keywords paints |
 | `text`, `link`, `presence` | Where a text or link setting lands, and which parts a value shows or hides |
 
-The renders behind `discovered`, `text`, `link` and `presence` are planned, and their readings folded, by calibration's own pure functions through `scripts/computed-route/tools/site-look-bridge.mjs`; the fold is ported here for speed and held equal to the route's by `tests/test_site_look.py::test_fold_matches_the_route`.
+The renders behind `discovered`, `text`, `link` and `presence` are planned, and their readings folded, by the pure functions the route kept from calibration (`lib/calibrate*.mjs`), through `scripts/computed-route/tools/site-look-bridge.mjs`; the fold is ported here for speed and held equal to the route's by `tests/test_site_look.py::test_fold_matches_the_route`.
 
 ## Not read offline
 
