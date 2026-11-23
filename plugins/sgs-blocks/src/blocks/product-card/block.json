@@ -1221,7 +1221,7 @@
 		"cardMaxWidth": {
 			"type": "string",
 			"default": "",
-			"description": "Override the card max-width (e.g. 320px, 100%). Empty = use theme default (380px). Sets --sgs-product-card-max-width inline."
+			"description": "Override the card max-width. Accepts a CSS length (e.g. 320px, 100%, calc(100% - 2rem)) or the keyword none (no cap: the card fills its column). Empty = use theme default (380px). Sets --sgs-product-card-max-width inline."
 		},
 		"cardPadding": {
 			"type": "object",
