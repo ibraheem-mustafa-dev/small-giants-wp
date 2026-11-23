@@ -16,6 +16,9 @@ Output per block, in the shape the cloning route reads (scripts/computed-route/l
   `_parentDisplay` and `_position` on the default renders; `<path>::before` / `::after` where content is drawn; `@controls`
   for a panel the block opens that sits outside its root, `@companion` for a piece the block prints elsewhere (its instance
   class), `@scrim` for its scrim. paintStates[name] = {when, elements} for the record fixture's paint states.
+  pathClasses[path] the element's classes; pathAttrs[path] the attributes a rule of the site's CSS tests that the element
+  carries (tested_attrs: an item saved open is `{open: ''}`, the current link `{aria-current: 'page'}`), so a reader can
+  place a setting a selector keys on such an attribute only where it holds.
 A path keeps the reading of the first variant that draws it (as calibration did). Sizes the reader cannot lay out (an
 `auto` width) stay as the cascade gives them; the route compares sizes as declared.
 
@@ -269,6 +272,36 @@ def path_classes(page, out: dict) -> None:
         walk(t, '@controls' if n == 1 else f'@controls:{n}')
 
 
+# An attribute a rule's selector tests: `[open]`, `[aria-current="page"]`, `[data-x~="y"]`.
+ATTR_SELECTOR = re.compile(r'\[\s*([A-Za-z_][\w:-]*)\s*(?:[~|^$*]?=|\])')
+
+
+def tested_attrs(texts) -> set:
+    """The attribute names a rule of the page's CSS tests (`class` and `style` aside: the classes are pathClasses), the
+    attributes that decide which rules an element matches, such as the open item of an accordion or the current link."""
+    return {m.group(1).lower() for t in texts for m in ATTR_SELECTOR.finditer(t or '')} - {'class', 'style'}
+
+
+def path_attrs(page, out: dict, names: set) -> None:
+    """{path: {attribute: value}} for every element read_page keys that carries an attribute in `names` (a path keeps
+    the first variant's element; an element with none is left out)."""
+    root = page.root
+    if root is None:
+        return
+
+    def walk(top, prefix):
+        for el in [top, *top.find_all(True)]:
+            p = element_path(el, top)
+            key = (f'{prefix} > {p}' if p else prefix) if prefix else p
+            if key in out or el.name in ('style', 'script', 'template'):
+                continue
+            got = {a: (' '.join(v) if isinstance(v, list) else str(v)) for a, v in el.attrs.items() if a.lower() in names}
+            out[key] = got
+    walk(root, '')
+    for n, t in enumerate(controlled(page, root), 1):
+        walk(t, '@controls' if n == 1 else f'@controls:{n}')
+
+
 def read_page(page, els: dict, props: dict, with_own: bool) -> None:
     root = page.root
     if root is None:
@@ -290,6 +323,8 @@ def read_page(page, els: dict, props: dict, with_own: bool) -> None:
 
 
 SECTION_MARK = '<!--sgs-site-look-block-->'
+# The section shell's root carries this attribute (no stylesheet tests it), so the reader never takes the shell for the block.
+SECTION_ROOT_ATTR = 'data-sgs-site-look-section'
 
 
 def section_shell(rn, short: str):
@@ -303,6 +338,7 @@ def section_shell(rn, short: str):
     if SECTION_MARK not in html:
         raise RuntimeError(f'sgs/container did not print the block it holds: {(res.get("error") or html)[:200]}')
     before, _, after = html.partition(SECTION_MARK)
+    before = re.sub(r'<(?!style\b)([a-z][a-z0-9]*)', lambda m: f'<{m.group(1)} {SECTION_ROOT_ATTR}=""', before, count=1)
     return before, after, res.get('css', '')
 
 
@@ -330,7 +366,11 @@ def settle(page, res: dict) -> None:
     # The block's root is the element its wrapper attributes print on (WordPress's wp-block-sgs-<name> class), where
     # calibration put its instance class: computed.py::Page takes the first element with the block's own class, which in a
     # block whose wrapper prints only the WordPress class (sgs/icon-list, sgs/business-info) is an inner element.
-    wrapper = page.soup.select_one(f'.wp-block-sgs-{page.short}')
+    # A block drawn in its section is never the section's own container: an sgs/container sits inside the section shell
+    # (section_shell), nested as every section of a cloned page sits inside the page's root container, so its default is a
+    # nested section's (FR-32-15's section padding skips a section nested in another).
+    shell = page.soup.find(attrs={SECTION_ROOT_ATTR: True})
+    wrapper = next((w for w in page.soup.select(f'.wp-block-sgs-{page.short}') if w is not shell), None)
     if wrapper is not None and 'wrapper-root' not in MUTATE:
         page.root = wrapper
     moved = False
@@ -398,18 +438,20 @@ def build_block(short: str, snapshot_file: Path, woocommerce: bool) -> dict:
     jobs = {i['key']: RN.with_defaults(PLUGIN, short, RN.fill(i['attrs'])) for i in insts}
     jobs.update({f'b:{i["key"]}': RN.with_defaults(PLUGIN, short, RN.fill(i['attrs'])) for i in marked})
     results = rn.render_many(f'sgs/{short}', jobs, content, inner)
-    section = None if fixture.get('parents') or short == 'container' or 'section' in MUTATE else section_shell(rn, short)
+    section = None if fixture.get('parents') or 'section' in MUTATE else section_shell(rn, short)
     shown = {k: framed(r, section) for k, r in results.items()}
     run = {'plugin': PLUGIN, 'children': children + (['container'] if section else []), 'results': shown, 'jobs': dict(jobs),
            'plan': pl, 'renderer': rn, 'theme_css': site_css(snapshot, woocommerce), 'layout': site_layout(snapshot)}
     pages = PF.Pages(short, run)
     errors = {k: (r.get('error') or '')[:300] for k, r in results.items() if not r.get('ok')}
     reader = Reader(pages, results, props)
-    elements, classes = {}, {}
+    elements, classes, attrs = {}, {}, {}
+    names = set() if 'path-attrs' in MUTATE else tested_attrs([pages.theme_text, *pages.texts, *(r.get('css') or '' for r in results.values())])
     for i in sorted((i for i in insts if i['isDefault']), key=lambda i: i['variant']):
         if results[i['key']].get('ok'):
             read_page(reader.page(i['key']), elements, props, True)
             path_classes(reader.page(i['key']), classes)
+            path_attrs(reader.page(i['key']), attrs, names)
     paint_states = {}
     for st in fixture.get('paintStates') or []:
         i = next((x for x in insts if x.get('paintState') == st['name']), None)
@@ -421,7 +463,7 @@ def build_block(short: str, snapshot_file: Path, woocommerce: bool) -> dict:
     facts = setting_facts(bridge, reader)
     record = record_facts(short, bridge, reader, elements, classes)
     return {'block': f'sgs/{short}', 'format': FORMAT, 'codeHash': rn.hash, 'elements': resting(elements, props),
-            'pathClasses': classes, **({'settingFacts': record} if record else {}),
+            'pathClasses': classes, 'pathAttrs': {k: v for k, v in attrs.items() if v}, **({'settingFacts': record} if record else {}),
             **({'paintStates': paint_states} if paint_states else {}), **facts,
             **({'renderErrors': errors} if errors else {}), 'themeLoaded': pages.theme}
 

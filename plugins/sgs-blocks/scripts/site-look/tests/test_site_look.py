@@ -133,7 +133,32 @@ def test_element_path_names_as_the_route_does():
     assert SL.element_path(b, root) == 'b'
 
 
-@pytest.mark.parametrize('name', ['snapshot', 'custom-css', 'section', 'footer-move', 'wrapper-root', 'fold-depth'])
+def test_container_is_a_nested_section(tmp_path):
+    # SITE_LOOK_MUTATE=section must fail: drawn with no section round it, the container is a top-level section and takes
+    # the snapshot's section padding (FR-32-15), which no section of a cloned page shows (each sits in the page's root
+    # container), so Fill took the draft's section padding as already held and wrote none.
+    look = build(tmp_path, 'container')
+    assert {look['elements'][''][w]['padding-top'] for w in ('375', '768', '1440')} == {'0px'}
+    assert '' in look['elements'] and not any(p.startswith('.sgs-container__inner > .sgs-container') for p in look['elements'])
+
+
+def test_open_item_carries_its_attribute(tmp_path):
+    # SITE_LOOK_MUTATE=path-attrs must fail: the accordion fixture saves its first item open, and a rule of the site's CSS
+    # tests [open], so the look records it on that item only (the route's unit pairing reads which child is open from it).
+    look = build(tmp_path, 'accordion')
+    attrs = look.get('pathAttrs', {})
+    assert attrs.get('.sgs-container:nth-of-type(1)') == {'open': ''}
+    assert 'open' not in attrs.get('.sgs-container:nth-of-type(2)', {})
+    assert all('class' not in a and 'style' not in a for a in attrs.values())
+
+
+def test_tested_attrs_reads_attribute_selectors():
+    names = SL.tested_attrs(['.a[open] > b, .c[aria-current="page"], :not([hidden]) .x[class*=y]', '.d{grid-area:1}'])
+    assert {'open', 'aria-current', 'hidden'} <= names
+    assert 'class' not in names
+
+
+@pytest.mark.parametrize('name', ['snapshot', 'custom-css', 'section', 'footer-move', 'wrapper-root', 'fold-depth', 'path-attrs'])
 def test_every_switch_is_named_in_the_builder(name):
     """Each switch a must-fail test names is one the builder reads."""
     assert f"'{name}'" in (LOOK / 'site_look.py').read_text(encoding='utf-8')
