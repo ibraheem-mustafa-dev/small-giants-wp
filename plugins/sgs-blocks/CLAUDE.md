@@ -81,6 +81,14 @@ Keyboard focus is one system (`theme/sgs-theme/assets/css/focus.css`, Spec 32 §
 
 New text settings and repeater fields: Spec 02 §11 (a text setting whose words the author types is rich text) and §12 (every repeater `items.properties.<field>` declares a `role`); the fast-tier gates `check-authored-text-rich.py` and `check-item-field-roles.py` refuse a setting without one.
 
+## Lint
+
+`npm run lint:js` (`wp-scripts lint-js src/`, from PowerShell) reports 3,018 errors after the formatting autofix of 2026-11-23, none a layout error except in the files listed below. Re-run it with `--fix` only with these fixers off, because each changes more than layout: `--rule 'jsdoc/require-param:off' --rule 'jsdoc/empty-tags:off' --rule '@wordpress/i18n-no-flanking-whitespace:off' --rule '@wordpress/i18n-hyphenated-range:off' --rule '@wordpress/i18n-ellipsis:off'` (the first adds `@param root0` placeholders, the second strips the text after `@package`, the rest edit translatable strings).
+
+Twelve files keep their old layout because a test or gate reads their source text: `choice-flow/flow-multi.js`, `google-reviews/edit.js`, `tabs/edit.js`, `header-behaviours/view.js`, `shared/effects/nav-drilldown.js`, `components/TypographyControls.js` (Jest source-text tests), `pricing-table/edit.js`, `extensions/commerce-look/panels.js`, `audio/edit.js`, `components/shadow-control/SimpleTab.js` (the fast gates `survey-rich-text-formats`, `survey-length-control-scale`, `check-button-preset-names`), `utils/typography-preview.js` and `utils/shape-dividers.js` (`check-wiring-fingerprint` reads their quoted keys as string literals). Make the test or gate layout-tolerant before formatting one of them.
+
+What the 3,018 are, by rule (count, files): `prettier/prettier` 1,138 in 12 (the files above); `jsdoc/empty-tags` 468 (`@package SGS\Blocks` lines; the rule's fix deletes the text, so drop the rule for `@package` instead); `jsdoc/require-param` 462 (its fix writes placeholder tags, so add real descriptions by hand or relax the rule); `no-unused-vars` 190 and `no-undef` 148 (read each: some are real dead code, some are globals the config does not know); `jsdoc/check-param-names` 100 and `jsdoc/require-returns-description` 81 (comment edits by hand); `@wordpress/no-unused-vars-before-return` 96 and `no-nested-ternary` 86 (code changes, one at a time with a test); `@wordpress/i18n-translator-comments` 56 (add the comment by hand); the remaining 193 are smaller rules (accessibility labels, `eqeqeq`, `camelcase`, `no-bitwise`, imports), each a small hand fix.
+
 ## Where the rest moved
 
 Path-scoped rule files in `.claude/rules/` load automatically when you touch their paths. No-dead-controls (HC2): `.claude/specs/02-SGS-BLOCKS.md` § Block Customisation Standard.
