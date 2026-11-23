@@ -113,17 +113,21 @@ def place(e: dict) -> tuple:
 
 
 # ---------------------------------------------------------------- running the code
-def load_plan(short: str, plugin: Path, fixtures: dict, instances: Path | None) -> dict:
-    """The instance plan: a saved one (replay) or one generated from block.json."""
+def load_plan(short: str, plugin: Path, fixtures: dict, instances: Path | None, plain: bool = False) -> dict:
+    """The instance plan: a saved one (replay) or one generated from block.json. The check's plan renders the fixture's
+    `checkAttributes` over its `attributes` (instances.py::check_fixture); `plain` plans the block as a new node renders
+    it, `attributes` alone (the site look)."""
+    import instances as I
     if instances:
         pl = json.loads(instances.read_text(encoding='utf-8'))
         fx = dict(fixtures.get(f'sgs/{short}') or {})
         fx.update(pl.get('fixture') or {})
         pl['fixture'] = fx
         return pl
-    import instances as I
-    pl = I.plan(short, plugin, fixtures)
-    pl['fixture'] = {**(fixtures.get(f'sgs/{short}') or {}), **(pl.get('fixture') or {})}
+    pl = I.plan(short, plugin, fixtures, plain=plain)
+    raw = fixtures.get(f'sgs/{short}') or {}
+    raw = {k: v for k, v in raw.items() if k != 'checkAttributes'} if plain else I.check_fixture(raw)
+    pl['fixture'] = {**raw, **(pl.get('fixture') or {})}
     return pl
 
 

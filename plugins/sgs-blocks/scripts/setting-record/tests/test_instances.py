@@ -214,9 +214,9 @@ def test_instance_shape_matches_the_trial_plans():
 # ---------------------------------------------------------------- the seeded fixtures and the real blocks
 def test_fixtures_switch_every_part_on():
     fx = I.load_fixtures()
-    cart = fx['sgs/cart']['attributes']
+    cart = I.check_fixture(fx['sgs/cart'])['attributes']  # the check's renders: the plain block with its extras over it
     assert cart['panelTaxNote'] and cart['panelShowViewCart'] is True
-    nav = fx['sgs/nav-bar-menu']
+    nav = I.check_fixture(fx['sgs/nav-bar-menu'])
     post = json.loads((HERE.parent / nav['harness']['postFile']).read_text(encoding='utf-8'))
     post = post[0] if isinstance(post, list) else post  # the menu post comes first; the file also holds the mega panel and a second page
     for ident in nav['attributes']['featuredItemIds'] + nav['attributes']['disabledItemIds']:

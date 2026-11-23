@@ -2530,5 +2530,15 @@
     "budget_ms": 3000,
     "order": 286,
     "tier_reason": "Pre-deploy: the same blocks with the cascade proof (seconds to minutes a block); a change every block loads re-renders the canaries and proves one only if its output moved. Never the whole library (Bean, 2026-11-22)."
+  },
+  {
+    "id": "setting-record-fixture-split",
+    "cmd": "python scripts/setting-record/split_fixtures.py --check",
+    "tier": "full",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 3000,
+    "order": 287,
+    "tier_reason": "Pre-deploy: every fixture that carries checkAttributes still renders its plain block (attributes alone) with its root printed and not empty, and no attribute sits in both keys with one value; the site look draws attributes alone (Bean chose the split, 2026-11-23). One cached render per such fixture."
   }
 ]

@@ -1,0 +1,889 @@
+{
+ "tool": "plugins/sgs-blocks/scripts/setting-record/split_fixtures.py --survey",
+ "date": "2026-11-23",
+ "counts": {
+  "entries": 104,
+  "split": 42,
+  "attributesMoved": 124,
+  "unrecognised": 0
+ },
+ "rows": [
+  {
+   "block": "sgs/cart",
+   "state": "split",
+   "calibration": true,
+   "attributes": [
+    "displayMode",
+    "emptyCartCtaLabel",
+    "emptyCartMessage",
+    "freeDeliveryHideWhenEmpty",
+    "freeDeliveryMessage",
+    "freeDeliverySuccessMessage",
+    "freeDeliveryThresholdOverride",
+    "itemRemoveLabel",
+    "itemShowQty",
+    "itemShowSaveForLater",
+    "panelEmptyTextAlign",
+    "panelHeading",
+    "panelInstalmentsCount",
+    "panelInstalmentsNote",
+    "panelShowCount",
+    "panelShowViewCart",
+    "panelSlideEasingCustom",
+    "panelTaxNote",
+    "pillLabel",
+    "showZero"
+   ],
+   "checkAttributes": [
+    "emptyProductId",
+    "panelShowViewCart",
+    "panelTaxNote",
+    "upsellProductId",
+    "upsellText",
+    "upsellTitle"
+   ],
+   "why": {
+    "panelTaxNote": "changed value: calibration plain, the record value tested",
+    "panelShowViewCart": "changed value: calibration plain, the record value tested",
+    "emptyProductId": "extra: the plain render passes without it",
+    "upsellProductId": "extra: the plain render passes without it",
+    "upsellTitle": "extra: the plain render passes without it",
+    "upsellText": "extra: the plain render passes without it"
+   }
+  },
+  {
+   "block": "sgs/nav-bar-menu",
+   "state": "split",
+   "calibration": true,
+   "attributes": [
+    "disabledItemIds",
+    "drawerRef",
+    "megaAlign",
+    "ref",
+    "splitAfterItemId",
+    "submenuCaret",
+    "submenuOpenOn",
+    "triggerMode"
+   ],
+   "checkAttributes": [
+    "disabledItemIds",
+    "featuredItemIds"
+   ],
+   "why": {
+    "disabledItemIds": "changed value: calibration plain, the record value tested",
+    "featuredItemIds": "extra: the plain render passes without it"
+   }
+  },
+  {
+   "block": "sgs/accordion",
+   "state": "split",
+   "calibration": true,
+   "attributes": [
+    "accordionStyle",
+    "allowMultiple",
+    "categoryEyebrowAlways",
+    "closeIcon",
+    "defaultOpen",
+    "openIcon"
+   ],
+   "checkAttributes": [
+    "iconPosition",
+    "iconRotation"
+   ],
+   "why": {
+    "iconPosition": "extra: the plain render passes without it",
+    "iconRotation": "extra: the plain render passes without it"
+   }
+  },
+  {
+   "block": "sgs/before-after",
+   "state": "split",
+   "calibration": true,
+   "attributes": [
+    "afterAlt",
+    "afterSource",
+    "beforeAlt",
+    "beforeSource"
+   ],
+   "checkAttributes": [
+    "afterLabel",
+    "beforeLabel",
+    "showLabels"
+   ],
+   "why": {
+    "showLabels": "extra: the plain render passes without it",
+    "beforeLabel": "extra: the plain render passes without it",
+    "afterLabel": "extra: the plain render passes without it"
+   }
+  },
+  {
+   "block": "sgs/brand-strip",
+   "state": "split",
+   "calibration": true,
+   "attributes": [
+    "logos",
+    "showNames",
+    "source"
+   ],
+   "checkAttributes": [
+    "title"
+   ],
+   "why": {
+    "title": "extra: the plain render passes without it"
+   }
+  },
+  {
+   "block": "sgs/breadcrumbs",
+   "state": "split",
+   "calibration": true,
+   "attributes": [
+    "showArchiveCrumb",
+    "showCurrentCrumb"
+   ],
+   "checkAttributes": [
+    "homeLabel",
+    "showHome"
+   ],
+   "why": {
+    "showHome": "extra: the plain render passes without it",
+    "homeLabel": "extra: the plain render passes without it"
+   }
+  },
+  {
+   "block": "sgs/buybox",
+   "state": "split",
+   "calibration": true,
+   "attributes": [
+    "addToCartLabel",
+    "addToCartShowIcon",
+    "addToCartShowPrice",
+    "extrasBeforeCartCount",
+    "extrasBeforeCount",
+    "gallerySavingBadge",
+    "pickerAlwaysShowAxes",
+    "pickerBandAxis",
+    "pickerBandScale",
+    "pickerLabelLinkAxis",
+    "pickerLabelLinkText",
+    "pickerLabelLinkUrl",
+    "pickerShowSelectedTick",
+    "pickerShowSelectedValue",
+    "pickerSubLabelMetaKey",
+    "rrpMetaKey",
+    "rrpSavingFormat",
+    "rrpSavingPrefix",
+    "rrpShowPrice",
+    "showLadder",
+    "showStockStatus",
+    "stickyBar",
+    "stickyEnabled",
+    "stickyOffset",
+    "stockInStockLabel",
+    "stockLineHairline"
+   ],
+   "checkAttributes": [
+    "instalmentsNote",
+    "productId"
+   ],
+   "why": {
+    "productId": "extra: the plain render passes without it",
+    "instalmentsNote": "extra: the plain render passes without it"
+   }
+  },
+  {
+   "block": "sgs/card-grid",
+   "state": "split",
+   "calibration": true,
+   "attributes": [
+    "imageFallback",
+    "items",
+    "noImageLabel",
+    "variant"
+   ],
+   "checkAttributes": [
+    "contentWidth",
+    "overlayColour",
+    "overlayOpacity"
+   ],
+   "why": {
+    "contentWidth": "extra: the plain render passes without it",
+    "overlayColour": "extra: the plain render passes without it",
+    "overlayOpacity": "extra: the plain render passes without it"
+   }
+  },
+  {
+   "block": "sgs/commerce-note",
+   "state": "split",
+   "calibration": false,
+   "attributes": [
+    "text"
+   ],
+   "checkAttributes": [
+    "linkLabel",
+    "linkUrl"
+   ],
+   "why": {
+    "text": "stand-in: without it the plain render fails the coverage floor (no block root, or an empty one)",
+    "linkLabel": "extra: the plain render passes without it",
+    "linkUrl": "extra: the plain render passes without it"
+   }
+  },
+  {
+   "block": "sgs/container",
+   "state": "split",
+   "calibration": true,
+   "attributes": [
+    "tagName"
+   ],
+   "checkAttributes": [
+    "backgroundSource",
+    "bgSvgContent"
+   ],
+   "why": {
+    "bgSvgContent": "extra: the plain render passes without it",
+    "backgroundSource": "extra: the plain render passes without it"
+   }
+  },
+  {
+   "block": "sgs/countdown-timer",
+   "state": "split",
+   "calibration": true,
+   "attributes": [
+    "targetDate"
+   ],
+   "checkAttributes": [
+    "expiredMessage",
+    "showDays",
+    "showHours",
+    "showMinutes",
+    "showSeconds"
+   ],
+   "why": {
+    "showDays": "extra: the plain render passes without it",
+    "showHours": "extra: the plain render passes without it",
+    "showMinutes": "extra: the plain render passes without it",
+    "showSeconds": "extra: the plain render passes without it",
+    "expiredMessage": "extra: the plain render passes without it"
+   }
+  },
+  {
+   "block": "sgs/counter",
+   "state": "split",
+   "calibration": true,
+   "attributes": [
+    "label",
+    "number",
+    "suffix"
+   ],
+   "checkAttributes": [
+    "duration",
+    "prefix"
+   ],
+   "why": {
+    "prefix": "extra: the plain render passes without it",
+    "duration": "extra: the plain render passes without it"
+   }
+  },
+  {
+   "block": "sgs/feature-grid",
+   "state": "split",
+   "calibration": true,
+   "attributes": [],
+   "checkAttributes": [
+    "contentWidth"
+   ],
+   "why": {
+    "contentWidth": "extra: the plain render passes without it"
+   }
+  },
+  {
+   "block": "sgs/filter-search",
+   "state": "split",
+   "calibration": true,
+   "attributes": [
+    "placeholder",
+    "searchMode",
+    "taxonomy",
+    "threshold"
+   ],
+   "checkAttributes": [
+    "showCounts"
+   ],
+   "why": {
+    "showCounts": "extra: the plain render passes without it"
+   }
+  },
+  {
+   "block": "sgs/form-field-tiles",
+   "state": "split",
+   "calibration": true,
+   "attributes": [
+    "fieldName",
+    "label",
+    "tiles"
+   ],
+   "checkAttributes": [
+    "contentWidth"
+   ],
+   "why": {
+    "contentWidth": "extra: the plain render passes without it"
+   }
+  },
+  {
+   "block": "sgs/free-delivery-bar",
+   "state": "split",
+   "calibration": false,
+   "attributes": [
+    "freeDeliveryThresholdOverride"
+   ],
+   "checkAttributes": [
+    "freeDeliveryHideWhenEmpty"
+   ],
+   "why": {
+    "freeDeliveryThresholdOverride": "stand-in: without it the plain render fails the coverage floor (no block root, or an empty one)",
+    "freeDeliveryHideWhenEmpty": "extra: the plain render passes without it"
+   }
+  },
+  {
+   "block": "sgs/gallery",
+   "state": "split",
+   "calibration": true,
+   "attributes": [
+    "mediaItems",
+    "showCaptions"
+   ],
+   "checkAttributes": [
+    "contentWidth"
+   ],
+   "why": {
+    "mediaItems": "stand-in: calibration named a live site here; this is the offline value",
+    "contentWidth": "extra: the plain render passes without it"
+   }
+  },
+  {
+   "block": "sgs/gift-order",
+   "state": "split",
+   "calibration": false,
+   "attributes": [],
+   "checkAttributes": [
+    "basketHelp",
+    "messagePlaceholder"
+   ],
+   "why": {
+    "basketHelp": "extra: the plain render passes without it",
+    "messagePlaceholder": "extra: the plain render passes without it"
+   }
+  },
+  {
+   "block": "sgs/google-reviews",
+   "state": "split",
+   "calibration": true,
+   "attributes": [
+    "arrowStep",
+    "averageRating",
+    "cardStyle",
+    "footnote",
+    "reviewCount",
+    "reviewLinkLabel",
+    "reviewRequestUrl",
+    "reviews",
+    "seeAllLabel",
+    "seeAllUrl",
+    "showCardLogo",
+    "showReviewLink",
+    "sourceLabel",
+    "writeReviewLabel"
+   ],
+   "checkAttributes": [
+    "dataSource",
+    "showAggregate",
+    "showArrows",
+    "showBreakdown",
+    "showDate"
+   ],
+   "why": {
+    "dataSource": "extra: the plain render passes without it",
+    "showAggregate": "extra: the plain render passes without it",
+    "showDate": "extra: the plain render passes without it",
+    "showBreakdown": "extra: the plain render passes without it",
+    "showArrows": "extra: the plain render passes without it"
+   }
+  },
+  {
+   "block": "sgs/hero",
+   "state": "split",
+   "calibration": true,
+   "attributes": [
+    "backgroundSource"
+   ],
+   "checkAttributes": [
+    "backgroundOverlayColour",
+    "backgroundOverlayOpacity",
+    "bgSvgContent",
+    "splitAlt",
+    "splitSource",
+    "splitWidth"
+   ],
+   "why": {
+    "backgroundOverlayColour": "extra: the plain render passes without it",
+    "bgSvgContent": "extra: the plain render passes without it",
+    "splitSource": "extra: the plain render passes without it",
+    "splitAlt": "extra: the plain render passes without it",
+    "backgroundOverlayOpacity": "extra: the plain render passes without it",
+    "splitWidth": "extra: the plain render passes without it"
+   }
+  },
+  {
+   "block": "sgs/icon",
+   "state": "split",
+   "calibration": true,
+   "attributes": [
+    "iconName"
+   ],
+   "checkAttributes": [
+    "iconSource",
+    "labelText",
+    "showLabel"
+   ],
+   "why": {
+    "iconSource": "extra: the plain render passes without it",
+    "showLabel": "extra: the plain render passes without it",
+    "labelText": "extra: the plain render passes without it"
+   }
+  },
+  {
+   "block": "sgs/image-sequence",
+   "state": "split",
+   "calibration": true,
+   "attributes": [
+    "thumbnailAlt",
+    "thumbnailSource"
+   ],
+   "checkAttributes": [
+    "desktopFrameCount",
+    "desktopFramesUrl"
+   ],
+   "why": {
+    "desktopFramesUrl": "extra: the plain render passes without it",
+    "desktopFrameCount": "extra: the plain render passes without it"
+   }
+  },
+  {
+   "block": "sgs/language-switch",
+   "state": "split",
+   "calibration": true,
+   "attributes": [
+    "languages"
+   ],
+   "checkAttributes": [
+    "separator"
+   ],
+   "why": {
+    "separator": "extra: the plain render passes without it"
+   }
+  },
+  {
+   "block": "sgs/message-preview",
+   "state": "split",
+   "calibration": false,
+   "attributes": [],
+   "checkAttributes": [
+    "fields",
+    "group"
+   ],
+   "why": {
+    "group": "extra: the plain render passes without it",
+    "fields": "extra: the plain render passes without it"
+   }
+  },
+  {
+   "block": "sgs/multi-button",
+   "state": "split",
+   "calibration": true,
+   "attributes": [],
+   "checkAttributes": [
+    "backgroundSource",
+    "bgSvgContent",
+    "contentWidth"
+   ],
+   "why": {
+    "contentWidth": "extra: the plain render passes without it",
+    "bgSvgContent": "extra: the plain render passes without it",
+    "backgroundSource": "extra: the plain render passes without it"
+   }
+  },
+  {
+   "block": "sgs/nav-drawer-menu",
+   "state": "split",
+   "calibration": true,
+   "attributes": [
+    "itemMedia",
+    "itemMediaReveal",
+    "itemMediaWidth",
+    "itemOrnament",
+    "ref"
+   ],
+   "checkAttributes": [],
+   "why": {
+    "ref": "stand-in: without it the plain render fails the coverage floor (no block root, or an empty one)"
+   }
+  },
+  {
+   "block": "sgs/pay-later-message",
+   "state": "split",
+   "calibration": false,
+   "attributes": [],
+   "checkAttributes": [
+    "countryCode"
+   ],
+   "why": {
+    "countryCode": "extra: the plain render passes without it"
+   }
+  },
+  {
+   "block": "sgs/physics-canvas",
+   "state": "split",
+   "calibration": true,
+   "attributes": [],
+   "checkAttributes": [
+    "backgroundSource",
+    "bgSvgContent"
+   ],
+   "why": {
+    "bgSvgContent": "extra: the plain render passes without it",
+    "backgroundSource": "extra: the plain render passes without it"
+   }
+  },
+  {
+   "block": "sgs/post-grid",
+   "state": "split",
+   "calibration": true,
+   "attributes": [
+    "postsPerPage"
+   ],
+   "checkAttributes": [
+    "contentWidth",
+    "pagination",
+    "showAuthor",
+    "showCategory",
+    "showDate",
+    "showExcerpt",
+    "showImage",
+    "showReadMore",
+    "showTitle"
+   ],
+   "why": {
+    "contentWidth": "extra: the plain render passes without it",
+    "showImage": "extra: the plain render passes without it",
+    "showTitle": "extra: the plain render passes without it",
+    "showExcerpt": "extra: the plain render passes without it",
+    "showDate": "extra: the plain render passes without it",
+    "showAuthor": "extra: the plain render passes without it",
+    "showCategory": "extra: the plain render passes without it",
+    "showReadMore": "extra: the plain render passes without it",
+    "pagination": "extra: the plain render passes without it"
+   }
+  },
+  {
+   "block": "sgs/pricing-table",
+   "state": "split",
+   "calibration": true,
+   "attributes": [],
+   "checkAttributes": [
+    "columns",
+    "plans"
+   ],
+   "why": {
+    "plans": "extra: the plain render passes without it",
+    "columns": "extra: the plain render passes without it"
+   }
+  },
+  {
+   "block": "sgs/product-card",
+   "state": "split",
+   "calibration": true,
+   "attributes": [
+    "attributeTagTaxonomy",
+    "attributeTagTerm",
+    "attributeTagText",
+    "description",
+    "noImageLabel",
+    "noReviewsText",
+    "overrideElements",
+    "productId",
+    "ratingValue",
+    "reviewCount",
+    "rrpMetaKey",
+    "savingBadgePosition",
+    "showAttributeTag",
+    "showBrandOverlay",
+    "showCta",
+    "showDescription",
+    "showPickers",
+    "showRating",
+    "showSavingBadge",
+    "showWishlist",
+    "sourceMode",
+    "swatchMaxVisible"
+   ],
+   "checkAttributes": [
+    "attributeTagSource",
+    "brandName",
+    "colourSwatches",
+    "cta2Text",
+    "featuredTag",
+    "savingLabel",
+    "variantStyle"
+   ],
+   "why": {
+    "variantStyle": "extra: the plain render passes without it",
+    "featuredTag": "extra: the plain render passes without it",
+    "brandName": "extra: the plain render passes without it",
+    "savingLabel": "extra: the plain render passes without it",
+    "cta2Text": "extra: the plain render passes without it",
+    "colourSwatches": "extra: the plain render passes without it",
+    "attributeTagSource": "extra: the plain render passes without it"
+   }
+  },
+  {
+   "block": "sgs/quote",
+   "state": "split",
+   "calibration": true,
+   "attributes": [
+    "attribution"
+   ],
+   "checkAttributes": [
+    "attributionEnabled"
+   ],
+   "why": {
+    "attributionEnabled": "extra: the plain render passes without it"
+   }
+  },
+  {
+   "block": "sgs/site-footer",
+   "state": "split",
+   "calibration": true,
+   "attributes": [],
+   "checkAttributes": [
+    "backgroundSource",
+    "bgSvgContent"
+   ],
+   "why": {
+    "bgSvgContent": "extra: the plain render passes without it",
+    "backgroundSource": "extra: the plain render passes without it"
+   }
+  },
+  {
+   "block": "sgs/site-header",
+   "state": "split",
+   "calibration": true,
+   "attributes": [
+    "headerSticky",
+    "scrolledOffset"
+   ],
+   "checkAttributes": [
+    "backgroundSource",
+    "bgSvgContent"
+   ],
+   "why": {
+    "bgSvgContent": "extra: the plain render passes without it",
+    "backgroundSource": "extra: the plain render passes without it"
+   }
+  },
+  {
+   "block": "sgs/star-rating",
+   "state": "split",
+   "calibration": true,
+   "attributes": [
+    "label",
+    "rating"
+   ],
+   "checkAttributes": [
+    "maxRating"
+   ],
+   "why": {
+    "maxRating": "extra: the plain render passes without it"
+   }
+  },
+  {
+   "block": "sgs/team-member",
+   "state": "split",
+   "calibration": true,
+   "attributes": [
+    "bio",
+    "name",
+    "photoAlt",
+    "photoSource",
+    "role"
+   ],
+   "checkAttributes": [
+    "photoRatio",
+    "photoShape",
+    "socialLinks"
+   ],
+   "why": {
+    "socialLinks": "extra: the plain render passes without it",
+    "photoShape": "extra: the plain render passes without it",
+    "photoRatio": "extra: the plain render passes without it"
+   }
+  },
+  {
+   "block": "sgs/testimonial",
+   "state": "split",
+   "calibration": true,
+   "attributes": [
+    "orgName",
+    "quote",
+    "ratingStars",
+    "reviewerName",
+    "reviewerRole",
+    "showRating"
+   ],
+   "checkAttributes": [
+    "avatarAlt",
+    "avatarSource",
+    "logoAlt",
+    "logoSource",
+    "ratingType",
+    "reviewDate",
+    "sourcePlatform",
+    "summaryPhrase",
+    "verified",
+    "workAlt",
+    "workSource"
+   ],
+   "why": {
+    "summaryPhrase": "extra: the plain render passes without it",
+    "ratingType": "extra: the plain render passes without it",
+    "reviewDate": "extra: the plain render passes without it",
+    "verified": "extra: the plain render passes without it",
+    "sourcePlatform": "extra: the plain render passes without it",
+    "avatarSource": "extra: the plain render passes without it",
+    "avatarAlt": "extra: the plain render passes without it",
+    "logoSource": "extra: the plain render passes without it",
+    "logoAlt": "extra: the plain render passes without it",
+    "workSource": "extra: the plain render passes without it",
+    "workAlt": "extra: the plain render passes without it"
+   }
+  },
+  {
+   "block": "sgs/testimonial-slider",
+   "state": "split",
+   "calibration": true,
+   "attributes": [],
+   "checkAttributes": [
+    "autoplay",
+    "contentWidth",
+    "slidesVisible"
+   ],
+   "why": {
+    "contentWidth": "extra: the plain render passes without it",
+    "slidesVisible": "extra: the plain render passes without it",
+    "autoplay": "extra: the plain render passes without it"
+   }
+  },
+  {
+   "block": "sgs/trust-bar",
+   "state": "split",
+   "calibration": true,
+   "attributes": [
+    "items",
+    "title"
+   ],
+   "checkAttributes": [
+    "backgroundSource",
+    "bgSvgContent",
+    "contentWidth"
+   ],
+   "why": {
+    "contentWidth": "extra: the plain render passes without it",
+    "bgSvgContent": "extra: the plain render passes without it",
+    "backgroundSource": "extra: the plain render passes without it"
+   }
+  },
+  {
+   "block": "sgs/trustpilot-reviews",
+   "state": "split",
+   "calibration": true,
+   "attributes": [
+    "dataSource",
+    "totalReviews",
+    "trustScore",
+    "trustScoreLabel"
+   ],
+   "checkAttributes": [
+    "businessUnitUrl",
+    "reviews",
+    "reviewsAverage",
+    "showArrows",
+    "showAuthor",
+    "showDate",
+    "showDots",
+    "showSourceHeader",
+    "showTrustpilotLogo",
+    "showVerifiedBadge"
+   ],
+   "why": {
+    "reviews": "extra: the plain render passes without it",
+    "reviewsAverage": "extra: the plain render passes without it",
+    "showSourceHeader": "extra: the plain render passes without it",
+    "showTrustpilotLogo": "extra: the plain render passes without it",
+    "showVerifiedBadge": "extra: the plain render passes without it",
+    "showDate": "extra: the plain render passes without it",
+    "showAuthor": "extra: the plain render passes without it",
+    "showArrows": "extra: the plain render passes without it",
+    "showDots": "extra: the plain render passes without it",
+    "businessUnitUrl": "extra: the plain render passes without it"
+   }
+  },
+  {
+   "block": "sgs/whatsapp-cta",
+   "state": "split",
+   "calibration": true,
+   "attributes": [
+    "label",
+    "message",
+    "phoneNumber",
+    "variant"
+   ],
+   "checkAttributes": [
+    "cardSubline",
+    "cardTitle"
+   ],
+   "why": {
+    "cardTitle": "extra: the plain render passes without it",
+    "cardSubline": "extra: the plain render passes without it"
+   }
+  },
+  {
+   "block": "sgs/wishlist-link",
+   "state": "split",
+   "calibration": true,
+   "attributes": [],
+   "checkAttributes": [
+    "label",
+    "showCount",
+    "showLabel"
+   ],
+   "why": {
+    "label": "extra: the plain render passes without it",
+    "showLabel": "extra: the plain render passes without it",
+    "showCount": "extra: the plain render passes without it"
+   }
+  },
+  {
+   "block": "sgs/wishlist-panel",
+   "state": "split",
+   "calibration": true,
+   "attributes": [
+    "showWhenEmpty"
+   ],
+   "checkAttributes": [
+    "heading"
+   ],
+   "why": {
+    "heading": "extra: the plain render passes without it"
+   }
+  }
+ ]
+}

@@ -20,6 +20,7 @@
     "prebuild": "python scripts/consistency/build-roster.py && npm run clean:build && node scripts/generate-icons.js && node scripts/generate-extension-attributes.js && node scripts/generate-svg-allowlist.js && node scripts/generate-media-attributes.mjs && node scripts/generate-button-attributes.mjs && node scripts/generate-carousel-dots-attributes.mjs && node scripts/run-motion-fx-generators.js",
     "check:tier-db-parity": "python scripts/migrate-tier-object.py --check-db-parity",
     "check:scalar-tier": "python scripts/migrate-scalar-tier.py --check",
+    "check:fixture-split": "python scripts/setting-record/split_fixtures.py --check",
     "check:scalar-tier-saved": "python scripts/find-scalar-tier-attrs.py --check --no-box",
     "check:box-longhands": "python scripts/migrate-box-longhands.py --check",
     "check:container-band-layers": "python scripts/check-container-band-layers.py --check --ratchet",

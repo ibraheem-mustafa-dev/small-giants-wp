@@ -156,6 +156,18 @@ def with_shared(fixture: dict, shared: dict) -> dict:
     return {**fixture, 'preconditions': pre, '_unvalued': {**(shared.get('unvalued') or {}), **(fixture.get('_unvalued') or {})}}
 
 
+def check_fixture(fixture: dict) -> dict:
+    """The fixture as the record check renders it: its `checkAttributes` (what the check adds to test a part's settings,
+    such as a label shown or a background image set) laid over its `attributes` (the plain block, as a new node renders
+    it, with the stand-ins it needs to render offline at all). The site look draws `attributes` alone."""
+    extra = fixture.get('checkAttributes')
+    if not extra:
+        return fixture
+    out = {k: v for k, v in fixture.items() if k != 'checkAttributes'}
+    out['attributes'] = {**(fixture.get('attributes') or {}), **extra}
+    return out
+
+
 def load_fixtures(path=None) -> dict:
     """The fixtures file (keyed by block name, `_meta` dropped)."""
     data = json.loads(Path(path or FIXTURES_FILE).read_text(encoding='utf-8'))
@@ -1092,9 +1104,11 @@ def plan_block(bj: dict, fixture: dict | None = None, *, places: dict | None = N
             'rows': [a for a in settings if rows[a]['props']], 'unvalued': [{'setting': a, 'why': w} for a, w in unvalued.items()]}
 
 
-def plan(short: str, plugin: Path = PLUGIN, fixtures: dict | None = None, *, scan: bool = True) -> dict:
+def plan(short: str, plugin: Path = PLUGIN, fixtures: dict | None = None, *, scan: bool = True, plain: bool = False) -> dict:
     """The plan for block `short` in `plugin` (default: this checkout's sgs-blocks), its fixture from `fixtures`
-    (default: fixtures.json beside this file); a block with no entry gets {attributes: {}, variants: [{}]}."""
+    (default: fixtures.json beside this file); a block with no entry gets {attributes: {}, variants: [{}]}. The check's
+    plan carries the fixture's `checkAttributes` (check_fixture); `plain` leaves them out, for the block as a new node
+    renders it (the site look)."""
     plugin = Path(plugin)
     fixtures = load_fixtures() if fixtures is None else fixtures
     bj = block_json(plugin, short)
@@ -1103,6 +1117,7 @@ def plan(short: str, plugin: Path = PLUGIN, fixtures: dict | None = None, *, sca
     places = scanned_props(blocks_dir, short) if scan else {}
     places = {**places, **declared_props(bj, schema, plugin)}
     fixture = fixtures.get(bj['name']) or {'attributes': {}, 'variants': [{}]}
+    fixture = {k: v for k, v in fixture.items() if k != 'checkAttributes'} if plain else check_fixture(fixture)
     fixture = with_shared(fixture, fixtures.get('_shared') if '_shared' in fixtures else load_shared())
     roster = extension_roster(str(plugin))
     ext = extension_attrs(bj, roster)

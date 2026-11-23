@@ -152,6 +152,30 @@ def test_open_item_carries_its_attribute(tmp_path):
     assert all('class' not in a and 'style' not in a for a in attrs.values())
 
 
+def test_look_is_the_plain_block(tmp_path):
+    # SITE_LOOK_MUTATE=plain-fixture must fail: the record check's fixtures switch on parts to test their settings (the
+    # icon's label, the container's background image and SVG layer: setting-record/fixtures.json `checkAttributes`).
+    # A look drawn with them holds parts a new node lacks, and Fill's pairing (scripts/computed-route/lib/
+    # fill-part-pairing.mjs::rootIsPart) then refuses the draft's one element as the block's part.
+    icon = build(tmp_path, 'icon')
+    assert not any('sgs-icon__label-text' in c for c in icon['pathClasses'].values())
+    assert 'sgs-icon--has-label' not in icon['pathClasses']['']
+    container = build(tmp_path, 'container')
+    assert not any(p.startswith('.sgs-bg-media') or p.startswith('.sgs-container__svg-bg') for p in container['elements'])
+
+
+def test_look_key_follows_the_fixture_entry(tmp_path, monkeypatch):
+    # SITE_LOOK_MUTATE=fixture-key must fail: the look is drawn from the block's fixture entry, so an edit to that entry
+    # alone (no code, snapshot or stylesheet change) must make the stored look stale.
+    data = json.loads(SL.FIXTURES.read_text(encoding='utf-8'))
+    before = SL.look_key('icon', SNAPSHOT, True)
+    data['sgs/icon']['attributes']['iconName'] = 'heart'
+    moved = tmp_path / 'fixtures.json'
+    moved.write_text(json.dumps(data), encoding='utf-8')
+    monkeypatch.setattr(SL, 'FIXTURES', moved)
+    assert SL.look_key('icon', SNAPSHOT, True) != before
+
+
 def test_tested_attrs_reads_attribute_selectors():
     names = SL.tested_attrs(['.a[open] > b, .c[aria-current="page"], :not([hidden]) .x[class*=y] {color:red}',
                              '@media (min-width:1px){.d{grid-template-columns:[full-start] 1fr [full-end]}} .e[data-x]{content:"[nope]"}'])
@@ -159,7 +183,7 @@ def test_tested_attrs_reads_attribute_selectors():
     assert not names & {'class', 'full-start', 'full-end', 'nope'}
 
 
-@pytest.mark.parametrize('name', ['snapshot', 'custom-css', 'section', 'footer-move', 'wrapper-root', 'fold-depth', 'path-attrs'])
+@pytest.mark.parametrize('name', ['snapshot', 'custom-css', 'section', 'footer-move', 'wrapper-root', 'fold-depth', 'path-attrs', 'plain-fixture', 'fixture-key'])
 def test_every_switch_is_named_in_the_builder(name):
     """Each switch a must-fail test names is one the builder reads."""
     assert f"'{name}'" in (LOOK / 'site_look.py').read_text(encoding='utf-8')

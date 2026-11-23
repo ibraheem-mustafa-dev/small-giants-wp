@@ -1,6 +1,6 @@
 {
 	"_meta": {
-		"purpose": "Per-block fixtures for the offline setting check (instances.py): the attributes, variants, partner preconditions, children, parents and paint states each block renders with, plus `harness` (the render harness options: stubWoocommerce, renderFile, postFile, productFile, attachmentsFile; paths relative to this folder) and `post` (steps the renderer applies to the rendered markup, standing in for a view script). Seeded from scripts/computed-route/calibration-fixtures.json, with every part switched on (see each block's `notes`)."
+		"purpose": "Per-block fixtures for the offline setting check (instances.py) and the site look (../site-look/site_look.py). `attributes` is the plain block, as a new node renders it, with the stand-ins it needs to render offline at all; the site look draws it alone. `checkAttributes` is what the check adds to test a part's settings (a shown label, a background image, a content width); instances.py::check_fixture lays it over `attributes` for every render the check plans (split_fixtures.py decides and guards the split). Also per block: variants, partner preconditions, children, parents and paint states, plus `harness` (the render harness options: stubWoocommerce, renderFile, postFile, productFile, attachmentsFile; paths relative to this folder) and `post` (steps the renderer applies to the rendered markup, standing in for a view script). Seeded from scripts/computed-route/calibration-fixtures.json (see each block's `notes`)."
 	},
 	"_shared": {
 		"purpose": "Partners and reasons for settings every block receives from a shared extension; a block's own preconditions win.",
@@ -124,15 +124,19 @@
 			"itemShowQty": false,
 			"itemShowSaveForLater": false,
 			"itemRemoveLabel": "Remove",
-			"panelTaxNote": "Prices include VAT",
-			"panelShowViewCart": true,
+			"panelTaxNote": "",
+			"panelShowViewCart": false,
 			"freeDeliveryHideWhenEmpty": true,
 			"freeDeliveryThresholdOverride": "75",
 			"freeDeliverySuccessMessage": "Free UK delivery unlocked",
 			"panelInstalmentsNote": "Or 3 payments of %s with Klarna",
 			"panelInstalmentsCount": 3,
 			"panelSlideEasingCustom": "cubic-bezier(0.2, 0.7, 0.2, 1)",
-			"displayMode": "flyout",
+			"displayMode": "flyout"
+		},
+		"checkAttributes": {
+			"panelTaxNote": "Prices include VAT",
+			"panelShowViewCart": true,
 			"emptyProductId": "{{product}}",
 			"upsellProductId": "{{product}}",
 			"upsellTitle": "Goes well with",
@@ -396,8 +400,7 @@
 			"ref": "{{menu}}",
 			"splitAfterItemId": "id:{{menuItem}}",
 			"disabledItemIds": [
-				"id:{{menuItem}}",
-				"id:9104>id:9106"
+				"id:{{menuItem}}"
 			],
 			"submenuOpenOn": "hover",
 			"triggerMode": {
@@ -408,7 +411,13 @@
 			"drawerRef": "{{drawer}}",
 			"megaAlign": {
 				"desktop": "full-width"
-			},
+			}
+		},
+		"checkAttributes": {
+			"disabledItemIds": [
+				"id:{{menuItem}}",
+				"id:9104>id:9106"
+			],
 			"featuredItemIds": [
 				"id:9104>id:9105"
 			]
@@ -514,13 +523,15 @@
 	"sgs/accordion": {
 		"attributes": {
 			"accordionStyle": "flush",
-			"iconPosition": "right",
-			"iconRotation": 90,
 			"allowMultiple": false,
 			"defaultOpen": 0,
 			"openIcon": "plus",
 			"closeIcon": "x",
 			"categoryEyebrowAlways": true
+		},
+		"checkAttributes": {
+			"iconPosition": "right",
+			"iconRotation": 90
 		},
 		"inner": [
 			{
@@ -598,9 +609,6 @@
 	},
 	"sgs/before-after": {
 		"attributes": {
-			"showLabels": true,
-			"beforeLabel": "Before",
-			"afterLabel": "After",
 			"beforeSource": {
 				"desktop": {
 					"kind": "image",
@@ -620,11 +628,15 @@
 			},
 			"afterAlt": "After"
 		},
+		"checkAttributes": {
+			"showLabels": true,
+			"beforeLabel": "Before",
+			"afterLabel": "After"
+		},
 		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
 	},
 	"sgs/brand-strip": {
 		"attributes": {
-			"title": "Brands we stock",
 			"logos": [
 				{
 					"_key": "cal-logo-1",
@@ -652,6 +664,9 @@
 			"source": "manual",
 			"showNames": true
 		},
+		"checkAttributes": {
+			"title": "Brands we stock"
+		},
 		"variants": [
 			{},
 			{
@@ -669,10 +684,12 @@
 	},
 	"sgs/breadcrumbs": {
 		"attributes": {
-			"showHome": true,
-			"homeLabel": "Home",
 			"showCurrentCrumb": true,
 			"showArchiveCrumb": false
+		},
+		"checkAttributes": {
+			"showHome": true,
+			"homeLabel": "Home"
 		},
 		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
 	},
@@ -728,8 +745,6 @@
 	},
 	"sgs/buybox": {
 		"attributes": {
-			"productId": 52,
-			"instalmentsNote": "Or 3 payments of %s",
 			"rrpMetaKey": "_sgs_rrp",
 			"showLadder": false,
 			"gallerySavingBadge": true,
@@ -760,6 +775,10 @@
 			"stickyBar": {
 				"desktop": "after-button"
 			}
+		},
+		"checkAttributes": {
+			"productId": 52,
+			"instalmentsNote": "Or 3 payments of %s"
 		},
 		"variants": [
 			{},
@@ -953,14 +972,9 @@
 	},
 	"sgs/card-grid": {
 		"attributes": {
-			"contentWidth": {
-				"desktop": "640px"
-			},
 			"variant": "overlay",
 			"imageFallback": true,
 			"noImageLabel": "Photo to come",
-			"overlayColour": "#000000",
-			"overlayOpacity": 40,
 			"items": [
 				{
 					"title": "Pilot",
@@ -1055,6 +1069,13 @@
 					"subtitle": "Short subtitle 6"
 				}
 			]
+		},
+		"checkAttributes": {
+			"contentWidth": {
+				"desktop": "640px"
+			},
+			"overlayColour": "#000000",
+			"overlayOpacity": 40
 		},
 		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
 	},
@@ -1421,7 +1442,9 @@
 	},
 	"sgs/commerce-note": {
 		"attributes": {
-			"text": "Free returns on every order",
+			"text": "Free returns on every order"
+		},
+		"checkAttributes": {
 			"linkLabel": "Read our returns policy",
 			"linkUrl": "https://example.test/returns/"
 		},
@@ -1432,6 +1455,9 @@
 	},
 	"sgs/container": {
 		"attributes": {
+			"tagName": "div"
+		},
+		"checkAttributes": {
 			"bgSvgContent": "<svg viewBox=\"0 0 10 10\"><circle cx=\"5\" cy=\"5\" r=\"4\"/></svg>",
 			"backgroundSource": {
 				"desktop": {
@@ -1440,8 +1466,7 @@
 					"width": 1200,
 					"height": 800
 				}
-			},
-			"tagName": "div"
+			}
 		},
 		"variants": [
 			{},
@@ -1489,21 +1514,25 @@
 	},
 	"sgs/countdown-timer": {
 		"attributes": {
+			"targetDate": "2027-12-31T12:00:00"
+		},
+		"checkAttributes": {
 			"showDays": true,
 			"showHours": true,
 			"showMinutes": true,
 			"showSeconds": true,
-			"expiredMessage": "This offer has expired.",
-			"targetDate": "2027-12-31T12:00:00"
+			"expiredMessage": "This offer has expired."
 		},
 		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
 	},
 	"sgs/counter": {
 		"attributes": {
 			"number": 5000,
-			"prefix": "",
 			"suffix": "+",
-			"label": "Sample count",
+			"label": "Sample count"
+		},
+		"checkAttributes": {
+			"prefix": "",
 			"duration": 2000
 		},
 		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
@@ -1610,7 +1639,8 @@
 		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
 	},
 	"sgs/feature-grid": {
-		"attributes": {
+		"attributes": {},
+		"checkAttributes": {
 			"contentWidth": {
 				"desktop": "640px"
 			}
@@ -1638,7 +1668,9 @@
 			"threshold": 2,
 			"placeholder": "Search brands",
 			"taxonomy": "product_brand",
-			"searchMode": "taxonomy-terms",
+			"searchMode": "taxonomy-terms"
+		},
+		"checkAttributes": {
 			"showCounts": true
 		},
 		"harness": {
@@ -1959,9 +1991,6 @@
 	},
 	"sgs/form-field-tiles": {
 		"attributes": {
-			"contentWidth": {
-				"desktop": "640px"
-			},
 			"fieldName": "kind",
 			"label": "Which kind?",
 			"tiles": [
@@ -1976,6 +2005,11 @@
 					"iconSource": "lucide"
 				}
 			]
+		},
+		"checkAttributes": {
+			"contentWidth": {
+				"desktop": "640px"
+			}
 		},
 		"parents": [
 			{
@@ -2119,7 +2153,9 @@
 	},
 	"sgs/free-delivery-bar": {
 		"attributes": {
-			"freeDeliveryThresholdOverride": "75",
+			"freeDeliveryThresholdOverride": "75"
+		},
+		"checkAttributes": {
 			"freeDeliveryHideWhenEmpty": true
 		},
 		"variants": [
@@ -2139,9 +2175,6 @@
 	},
 	"sgs/gallery": {
 		"attributes": {
-			"contentWidth": {
-				"desktop": "640px"
-			},
 			"showCaptions": true,
 			"mediaItems": [
 				{
@@ -2194,6 +2227,11 @@
 				}
 			]
 		},
+		"checkAttributes": {
+			"contentWidth": {
+				"desktop": "640px"
+			}
+		},
 		"variants": [
 			{},
 			{
@@ -2217,7 +2255,8 @@
 		]
 	},
 	"sgs/gift-order": {
-		"attributes": {
+		"attributes": {},
+		"checkAttributes": {
 			"basketHelp": "We wrap it for you",
 			"messagePlaceholder": "Write a short note"
 		},
@@ -2251,9 +2290,6 @@
 	},
 	"sgs/google-reviews": {
 		"attributes": {
-			"dataSource": "placeholder",
-			"showAggregate": true,
-			"showDate": true,
 			"showCardLogo": true,
 			"showReviewLink": true,
 			"reviewLinkLabel": "Read the full review",
@@ -2261,8 +2297,6 @@
 			"seeAllUrl": "https://example.com/",
 			"sourceLabel": "Google Reviews",
 			"footnote": "Scroll for more — 13 of the 15 reviews left a comment.",
-			"showBreakdown": true,
-			"showArrows": true,
 			"averageRating": 4.7,
 			"cardStyle": "google-card",
 			"reviewCount": 15,
@@ -2302,6 +2336,13 @@
 				"mobile": "1"
 			}
 		},
+		"checkAttributes": {
+			"dataSource": "placeholder",
+			"showAggregate": true,
+			"showDate": true,
+			"showBreakdown": true,
+			"showArrows": true
+		},
 		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
 	},
 	"sgs/heading": {
@@ -2313,6 +2354,15 @@
 	},
 	"sgs/hero": {
 		"attributes": {
+			"backgroundSource": {
+				"desktop": {
+					"kind": "video",
+					"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/calibration-loop.mp4",
+					"mime": "video/mp4"
+				}
+			}
+		},
+		"checkAttributes": {
 			"backgroundOverlayColour": "#000000",
 			"bgSvgContent": "<svg viewBox=\"0 0 10 10\"><circle cx=\"5\" cy=\"5\" r=\"4\"/></svg>",
 			"splitSource": {
@@ -2324,13 +2374,6 @@
 				}
 			},
 			"splitAlt": "A view",
-			"backgroundSource": {
-				"desktop": {
-					"kind": "video",
-					"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/calibration-loop.mp4",
-					"mime": "video/mp4"
-				}
-			},
 			"backgroundOverlayOpacity": {
 				"desktop": 30
 			},
@@ -2381,8 +2424,10 @@
 	},
 	"sgs/icon": {
 		"attributes": {
+			"iconName": "star"
+		},
+		"checkAttributes": {
 			"iconSource": "lucide",
-			"iconName": "star",
 			"showLabel": true,
 			"labelText": "Rated"
 		},
@@ -2471,8 +2516,6 @@
 	"sgs/image-sequence": {
 		"attributes": {
 			"thumbnailAlt": "Sample image",
-			"desktopFramesUrl": "https://example.test/frames/d-",
-			"desktopFrameCount": 30,
 			"thumbnailSource": {
 				"desktop": {
 					"kind": "image",
@@ -2481,6 +2524,10 @@
 					"mime": "image/jpeg"
 				}
 			}
+		},
+		"checkAttributes": {
+			"desktopFramesUrl": "https://example.test/frames/d-",
+			"desktopFrameCount": 30
 		},
 		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
 	},
@@ -2529,7 +2576,9 @@
 					"url": "#",
 					"customLabel": ""
 				}
-			],
+			]
+		},
+		"checkAttributes": {
 			"separator": "/"
 		},
 		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
@@ -3126,7 +3175,8 @@
 		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
 	},
 	"sgs/message-preview": {
-		"attributes": {
+		"attributes": {},
+		"checkAttributes": {
 			"group": "note",
 			"fields": [
 				{
@@ -3174,7 +3224,8 @@
 		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
 	},
 	"sgs/multi-button": {
-		"attributes": {
+		"attributes": {},
+		"checkAttributes": {
 			"contentWidth": {
 				"desktop": "640px"
 			},
@@ -3556,7 +3607,8 @@
 		]
 	},
 	"sgs/pay-later-message": {
-		"attributes": {
+		"attributes": {},
+		"checkAttributes": {
 			"countryCode": "GB"
 		},
 		"harness": {
@@ -3568,7 +3620,8 @@
 		]
 	},
 	"sgs/physics-canvas": {
-		"attributes": {
+		"attributes": {},
+		"checkAttributes": {
 			"bgSvgContent": "<svg viewBox=\"0 0 10 10\"><circle cx=\"5\" cy=\"5\" r=\"4\"/></svg>",
 			"backgroundSource": {
 				"desktop": {
@@ -3597,6 +3650,9 @@
 	},
 	"sgs/post-grid": {
 		"attributes": {
+			"postsPerPage": 2
+		},
+		"checkAttributes": {
 			"contentWidth": {
 				"desktop": "640px"
 			},
@@ -3607,8 +3663,7 @@
 			"showAuthor": true,
 			"showCategory": true,
 			"showReadMore": true,
-			"pagination": "none",
-			"postsPerPage": 2
+			"pagination": "none"
 		},
 		"harness": {
 			"post": [
@@ -3653,7 +3708,8 @@
 		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
 	},
 	"sgs/pricing-table": {
-		"attributes": {
+		"attributes": {},
+		"checkAttributes": {
 			"plans": [
 				{
 					"name": "Starter",
@@ -3723,8 +3779,6 @@
 	},
 	"sgs/product-card": {
 		"attributes": {
-			"variantStyle": "featured",
-			"featuredTag": "New",
 			"overrideElements": [
 				"description"
 			],
@@ -3732,10 +3786,29 @@
 			"ratingValue": 4.6,
 			"reviewCount": 12,
 			"showBrandOverlay": true,
-			"brandName": "Oakco",
 			"showSavingBadge": true,
-			"savingLabel": "Save 10%",
 			"showWishlist": true,
+			"swatchMaxVisible": 4,
+			"showAttributeTag": true,
+			"attributeTagTerm": "cr-tagged",
+			"attributeTagText": "Tagged",
+			"noImageLabel": "Photo to come",
+			"noReviewsText": "No reviews yet",
+			"savingBadgePosition": "bottom-left",
+			"showPickers": false,
+			"showDescription": false,
+			"showCta": false,
+			"rrpMetaKey": "_sgs_rrp",
+			"sourceMode": "wc-product",
+			"productId": "{{product}}",
+			"description": "A short description with a <a href=\"https://example.com/\">link</a>.",
+			"attributeTagTaxonomy": "pa_cr-feature"
+		},
+		"checkAttributes": {
+			"variantStyle": "featured",
+			"featuredTag": "New",
+			"brandName": "Oakco",
+			"savingLabel": "Save 10%",
 			"cta2Text": "Details",
 			"colourSwatches": [
 				{
@@ -3759,22 +3832,7 @@
 					"label": "Teal"
 				}
 			],
-			"swatchMaxVisible": 4,
-			"showAttributeTag": true,
-			"attributeTagSource": "tag",
-			"attributeTagTerm": "cr-tagged",
-			"attributeTagText": "Tagged",
-			"noImageLabel": "Photo to come",
-			"noReviewsText": "No reviews yet",
-			"savingBadgePosition": "bottom-left",
-			"showPickers": false,
-			"showDescription": false,
-			"showCta": false,
-			"rrpMetaKey": "_sgs_rrp",
-			"sourceMode": "wc-product",
-			"productId": "{{product}}",
-			"description": "A short description with a <a href=\"https://example.com/\">link</a>.",
-			"attributeTagTaxonomy": "pa_cr-feature"
+			"attributeTagSource": "tag"
 		},
 		"variants": [
 			{},
@@ -4024,7 +4082,9 @@
 	},
 	"sgs/quote": {
 		"attributes": {
-			"attribution": "Sample Author, <a href=\"https://example.com/source\">Source</a>",
+			"attribution": "Sample Author, <a href=\"https://example.com/source\">Source</a>"
+		},
+		"checkAttributes": {
 			"attributionEnabled": true
 		},
 		"inner": [
@@ -4069,7 +4129,8 @@
 		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
 	},
 	"sgs/site-footer": {
-		"attributes": {
+		"attributes": {},
+		"checkAttributes": {
 			"bgSvgContent": "<svg viewBox=\"0 0 10 10\"><circle cx=\"5\" cy=\"5\" r=\"4\"/></svg>",
 			"backgroundSource": {
 				"desktop": {
@@ -4126,6 +4187,12 @@
 	},
 	"sgs/site-header": {
 		"attributes": {
+			"headerSticky": {
+				"desktop": "on"
+			},
+			"scrolledOffset": 40
+		},
+		"checkAttributes": {
 			"bgSvgContent": "<svg viewBox=\"0 0 10 10\"><circle cx=\"5\" cy=\"5\" r=\"4\"/></svg>",
 			"backgroundSource": {
 				"desktop": {
@@ -4134,11 +4201,7 @@
 					"width": 1200,
 					"height": 800
 				}
-			},
-			"headerSticky": {
-				"desktop": "on"
-			},
-			"scrolledOffset": 40
+			}
 		},
 		"variants": [
 			{},
@@ -4357,8 +4420,10 @@
 	"sgs/star-rating": {
 		"attributes": {
 			"rating": 4.5,
-			"maxRating": 5,
 			"label": "4.5 out of 5"
+		},
+		"checkAttributes": {
+			"maxRating": 5
 		},
 		"variants": [
 			{},
@@ -4461,6 +4526,17 @@
 			"name": "Sample Person",
 			"role": "Sample role",
 			"bio": "A short supporting statement.",
+			"photoSource": {
+				"desktop": {
+					"kind": "image",
+					"id": 3459,
+					"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
+					"mime": "image/jpeg"
+				}
+			},
+			"photoAlt": "Sample image"
+		},
+		"checkAttributes": {
 			"socialLinks": [
 				{
 					"platform": "linkedin",
@@ -4471,15 +4547,6 @@
 					"url": "alex@example.test"
 				}
 			],
-			"photoSource": {
-				"desktop": {
-					"kind": "image",
-					"id": 3459,
-					"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
-					"mime": "image/jpeg"
-				}
-			},
-			"photoAlt": "Sample image",
 			"photoShape": {
 				"desktop": {
 					"shape": "circle"
@@ -4494,13 +4561,15 @@
 	"sgs/testimonial": {
 		"attributes": {
 			"quote": "A sample testimonial quotation with a <a href=\"https://example.com/review\">linked phrase</a>.",
-			"summaryPhrase": "Sample summary phrase",
 			"reviewerName": "Sample Reviewer",
 			"reviewerRole": "Sample role",
 			"orgName": "Sample Organisation",
 			"showRating": true,
+			"ratingStars": 5
+		},
+		"checkAttributes": {
+			"summaryPhrase": "Sample summary phrase",
 			"ratingType": "stars",
-			"ratingStars": 5,
 			"reviewDate": "2026-01-01",
 			"verified": true,
 			"sourcePlatform": "Google",
@@ -4535,7 +4604,8 @@
 		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
 	},
 	"sgs/testimonial-slider": {
-		"attributes": {
+		"attributes": {},
+		"checkAttributes": {
 			"contentWidth": {
 				"desktop": "640px"
 			},
@@ -4653,10 +4723,6 @@
 	},
 	"sgs/trust-bar": {
 		"attributes": {
-			"contentWidth": {
-				"desktop": "640px"
-			},
-			"bgSvgContent": "<svg viewBox=\"0 0 10 10\"><circle cx=\"5\" cy=\"5\" r=\"4\"/></svg>",
 			"title": "Why shop with us",
 			"items": [
 				{
@@ -4675,7 +4741,13 @@
 					"icon": "rotate-ccw",
 					"label": "30 days to return, free adjustments for life"
 				}
-			],
+			]
+		},
+		"checkAttributes": {
+			"contentWidth": {
+				"desktop": "640px"
+			},
+			"bgSvgContent": "<svg viewBox=\"0 0 10 10\"><circle cx=\"5\" cy=\"5\" r=\"4\"/></svg>",
 			"backgroundSource": {
 				"desktop": {
 					"kind": "image",
@@ -4712,6 +4784,11 @@
 	"sgs/trustpilot-reviews": {
 		"attributes": {
 			"dataSource": "placeholder",
+			"trustScore": 4.6,
+			"trustScoreLabel": "Excellent",
+			"totalReviews": 250
+		},
+		"checkAttributes": {
 			"reviews": [
 				{
 					"author": "Alex Sample",
@@ -4730,9 +4807,6 @@
 					"isVerified": true
 				}
 			],
-			"trustScore": 4.6,
-			"trustScoreLabel": "Excellent",
-			"totalReviews": 250,
 			"reviewsAverage": 4.5,
 			"showSourceHeader": true,
 			"showTrustpilotLogo": true,
@@ -4750,9 +4824,11 @@
 			"phoneNumber": "447700900000",
 			"message": "Hi, I'd like to know more about your services.",
 			"label": "Message me",
-			"cardTitle": "Chat on WhatsApp",
-			"cardSubline": "We reply within an hour",
 			"variant": "inline"
+		},
+		"checkAttributes": {
+			"cardTitle": "Chat on WhatsApp",
+			"cardSubline": "We reply within an hour"
 		},
 		"variants": [
 			{},
@@ -4765,7 +4841,8 @@
 		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
 	},
 	"sgs/wishlist-link": {
-		"attributes": {
+		"attributes": {},
+		"checkAttributes": {
 			"label": "Wishlist",
 			"showLabel": true,
 			"showCount": true
@@ -4774,8 +4851,10 @@
 	},
 	"sgs/wishlist-panel": {
 		"attributes": {
-			"heading": "Saved for later",
 			"showWhenEmpty": true
+		},
+		"checkAttributes": {
+			"heading": "Saved for later"
 		},
 		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json. Calibration-only keys not carried (they set up a live site): settleGone, wishlist."
 	}

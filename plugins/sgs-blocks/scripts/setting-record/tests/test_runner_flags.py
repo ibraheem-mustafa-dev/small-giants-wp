@@ -87,7 +87,10 @@ def test_no_flag_output_is_unchanged_by_the_flag_code(slug):
 # ---- The stand-ins a fixture's post, product and mega menu need (each opt-in: --wp-fidelity, --render-block-filters) ----
 
 SR = HERE.parent
-FX = json.loads(FIXTURES.read_text(encoding='utf-8'))
+import instances as I  # noqa: E402
+
+# each block's fixture as the check renders it: the plain attributes with the check's extras over them
+FX = {k: I.check_fixture(v) if k.startswith('sgs/') else v for k, v in json.loads(FIXTURES.read_text(encoding='utf-8')).items()}
 FIDELITY = ('--render-block-filters', '--print-footer', '--wp-fidelity', '--interactivity-state')
 
 

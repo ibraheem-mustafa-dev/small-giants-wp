@@ -440,7 +440,9 @@ def build_block(short: str, snapshot_file: Path, woocommerce: bool) -> dict:
     snapshot = json.loads(snapshot_file.read_text(encoding='utf-8'))
     props = load_props()
     fixtures = json.loads(FIXTURES.read_text(encoding='utf-8'))
-    pl = CK.load_plan(short, PLUGIN, fixtures, None)
+    # the block as a new node renders it: the fixture's `attributes` alone, never the `checkAttributes` the record check
+    # adds to test a part's settings (a shown label or a background image would be a part the draft's element lacks)
+    pl = CK.load_plan(short, PLUGIN, fixtures, None, plain='plain-fixture' not in MUTATE)
     fixture = pl['fixture'] or {}
     rn = RN.Renderer(PLUGIN, fixture, FIXTURES_DIR, short)
     content, inner = rn.render_inner(fixture.get('inner'))
@@ -904,7 +906,9 @@ def look_key(short: str, snapshot_file: Path, woocommerce: bool) -> str:
     theme_files = sorted((REPO / TH.THEME_REL).rglob('*.css')) + [REPO / TH.THEME_REL / 'theme.json', REPO / TH.THEME_REL / 'functions.php']
     h = hashlib.sha256()
     rec = RECORDS / f'{short}.json'
-    for part in (builder_hash(), rn_hash, hashlib.md5(snapshot_file.read_bytes()).hexdigest(), str(woocommerce), ','.join(sorted(MUTATE)),
+    # the fixture entry as written: a look is drawn from it, so an edit to it alone builds the look again
+    entry = '' if 'fixture-key' in MUTATE else hashlib.md5(json.dumps(fixture, sort_keys=True).encode()).hexdigest()
+    for part in (builder_hash(), rn_hash, entry, hashlib.md5(snapshot_file.read_bytes()).hexdigest(), str(woocommerce), ','.join(sorted(MUTATE)),
                  hashlib.md5(rec.read_bytes()).hexdigest() if rec.is_file() else 'no-record',
                  *(hashlib.md5(f.read_bytes()).hexdigest() for f in sheet_inputs(short) + theme_files if f.is_file())):
         h.update(part.encode())
