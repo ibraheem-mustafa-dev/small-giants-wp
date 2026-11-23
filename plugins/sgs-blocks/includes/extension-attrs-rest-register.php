@@ -16,7 +16,9 @@
  * This filter mirrors the JS-added attribute schema onto every block that
  * supports `className` (the same set the JS extensions target), so
  * `WP_Block_Type::get_attributes()` — the schema source the block-renderer
- * validates against — contains them.
+ * validates against — contains them. A `named` extension's attributes (the
+ * commerce look on the Cart and Checkout) go to the blocks its rule names only:
+ * `scripts/check-named-extension-scope.py` reads a copy's live registry.
  *
  * DRIFT-PROOFING: the attribute list is NOT hand-maintained here. It is read
  * from `includes/extension-attributes.generated.php`, which is regenerated from
@@ -52,10 +54,47 @@ function sgs_extension_attribute_schema(): array {
 }
 
 /**
+ * The attributes of each `named` extension (extension-roster.json rule mode
+ * "named", such as the commerce look on the Cart and Checkout), grouped by the
+ * blocks the rule names. Generated with the schema from the roster
+ * (`includes/extension-attributes-scope.generated.php`).
+ *
+ * @return array<int, array{blocks: string[], attributes: string[]}>
+ */
+function sgs_extension_attribute_scope(): array {
+	static $scope = null;
+	if ( null === $scope ) {
+		$file  = __DIR__ . '/extension-attributes-scope.generated.php';
+		$scope = is_readable( $file ) ? (array) require $file : array();
+	}
+	return $scope;
+}
+
+/**
+ * The extension attribute schema for one block type: every attribute, less those
+ * of named extensions whose rule does not name this block. Every attribute a
+ * block type carries is sent to the editor with its settings, so a named
+ * extension's attributes on every block type multiplied the editor's block
+ * settings payload (15.4 MB on a shop site, 719 attributes on 388 block types).
+ *
+ * @param string $block_name Block name.
+ * @return array<string, array<string, string>>
+ */
+function sgs_extension_attribute_schema_for( string $block_name ): array {
+	$schema = sgs_extension_attribute_schema();
+	foreach ( sgs_extension_attribute_scope() as $group ) {
+		if ( ! in_array( $block_name, $group['blocks'], true ) ) {
+			$schema = array_diff_key( $schema, array_flip( $group['attributes'] ) );
+		}
+	}
+	return $schema;
+}
+
+/**
  * Merge the extension attribute schema into every block type that supports
- * `className` (mirrors the JS extensions' targeting). Existing block.json
- * attributes always win — only attributes the block does not already declare
- * are added.
+ * `className` (mirrors the JS extensions' targeting); a named extension's
+ * attributes go to its named blocks only. Existing block.json attributes
+ * always win — only attributes the block does not already declare are added.
  *
  * @param array  $args       register_block_type args (incl. 'attributes', 'supports').
  * @param string $block_name Block name.
@@ -67,7 +106,7 @@ function sgs_register_extension_attrs_for_rest( array $args, string $block_name 
 		return $args;
 	}
 
-	$schema = sgs_extension_attribute_schema();
+	$schema = sgs_extension_attribute_schema_for( $block_name );
 	if ( empty( $schema ) ) {
 		return $args;
 	}

@@ -77,5 +77,43 @@ namespace {
 			}
 			$this->assertSame( array_keys( $want ), array_keys( $got ), 'the scope file holds an attribute the roster does not name' );
 		}
+
+		public function test_a_named_extension_attribute_stays_off_a_block_its_rule_does_not_name(): void {
+			$schema = \SGS\Blocks\sgs_extension_attribute_schema_for( 'core/paragraph' );
+			$this->assertArrayNotHasKey( 'sgsActionsMargin', $schema, 'a commerce look attribute reached core/paragraph' );
+			$this->assertArrayNotHasKey( 'sgsListGap', $schema, 'a post-content attribute reached core/paragraph' );
+			$this->assertArrayHasKey( 'sgsHideOnDesktop', $schema, 'a universal extension attribute stays on core/paragraph' );
+		}
+
+		public function test_a_named_extension_attribute_reaches_the_blocks_its_rule_names(): void {
+			foreach ( array( 'woocommerce/cart', 'woocommerce/checkout' ) as $block ) {
+				$this->assertArrayHasKey( 'sgsActionsMargin', \SGS\Blocks\sgs_extension_attribute_schema_for( $block ), "$block lost a commerce look attribute" );
+			}
+			$post_content = \SGS\Blocks\sgs_extension_attribute_schema_for( 'core/post-content' );
+			$this->assertArrayHasKey( 'sgsListGap', $post_content );
+			$this->assertArrayNotHasKey( 'sgsActionsMargin', $post_content, 'core/post-content carries the commerce look' );
+		}
+
+		public function test_every_other_extension_attribute_stays_on_every_block(): void {
+			$full   = \SGS\Blocks\sgs_extension_attribute_schema();
+			$scoped = array();
+			foreach ( \SGS\Blocks\sgs_extension_attribute_scope() as $group ) {
+				$scoped = array_merge( $scoped, $group['attributes'] );
+			}
+			$universal = array_diff_key( $full, array_flip( $scoped ) );
+			$this->assertNotEmpty( $universal );
+			$this->assertSame( $universal, \SGS\Blocks\sgs_extension_attribute_schema_for( 'core/paragraph' ) );
+		}
+
+		public function test_the_registration_filter_adds_only_the_scoped_schema_and_keeps_a_blocks_own_attribute(): void {
+			$out = \SGS\Blocks\sgs_register_extension_attrs_for_rest(
+				array( 'attributes' => array( 'sgsBarGap' => array( 'type' => 'string' ) ) ),
+				'core/paragraph'
+			);
+			$this->assertArrayNotHasKey( 'sgsActionsMargin', $out['attributes'] );
+			$this->assertSame( array( 'type' => 'string' ), $out['attributes']['sgsBarGap'], 'a block.json attribute wins' );
+			$cart = \SGS\Blocks\sgs_register_extension_attrs_for_rest( array(), 'woocommerce/cart' );
+			$this->assertArrayHasKey( 'sgsActionsMargin', $cart['attributes'] );
+		}
 	}
 }
