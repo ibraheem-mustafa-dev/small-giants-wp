@@ -45,7 +45,6 @@ import { pairAbsorbed, pairingNotes, unpairedRecords, isSummaryRow, drawsSummary
 import { switchesFor, switchAttributes } from './skeleton-part-switch.mjs';
 import { hostParts } from './skeleton-part-reads.mjs';
 import { copylessKey } from './fact-key.mjs';
-import { slotMapFile } from './cache.mjs';
 
 // A carried or decided value as text: an id as itself, a Source object as its JSON.
 const shown = ( v ) => ( v && 'object' === typeof v ? JSON.stringify( v ) : String( v ) );
@@ -571,7 +570,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		}
 		const absorbed = unread.filter( ( x ) => x.host === hostKey ).map( ( x ) => ( { element: m.byKey[ x.key ], looks: Object.keys( x.looks ) } ) ).filter( ( a ) => a.element );
 		const kidsOf = ( x ) => m.kids( x ).filter( ( k ) => ! m.isPart( k ) );
-		const made = absorbedSlots( { host, node, absorbed, kids: kidsOf, finder, settings: calSettings( node.name ), tags: calTags( node.name ), block: node.name, checked: slotMapFile( 'cache', node.name ).split( '\\' ).join( '/' ), leading: !! rowOf[ hostKey ]?.wordsOwn } );
+		const made = absorbedSlots( { host, node, absorbed, kids: kidsOf, finder, settings: calSettings( node.name ), tags: calTags( node.name ), block: node.name, checked: `the setting record of ${ node.name }`, leading: !! rowOf[ hostKey ]?.wordsOwn } );
 		// Where no slot walk lands, the general pairing (lib/skeleton-part-pairing.mjs) decides which measured part each left
 		// element is, and reads it at that part's slots; an element with several fitting parts is a problem naming them.
 		const left = new Set( made.unmatched.map( ( u ) => u.key ) );

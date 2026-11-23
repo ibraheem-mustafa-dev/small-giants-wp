@@ -1,21 +1,16 @@
 // Proves Spec 48 §3.2's portable fixtures: tokens resolve per target and a mirror inherits its test site's refs; a block
 // whose token the target does not supply is never built and is reported (MUST FAIL); a reference the site reports
-// missing blocks its block with the site's reason (MUST FAIL); Eye Care's references resolve to the literal values the
-// fixtures carried before they were tokenised; the fixture detector's self-test passes and the real fixtures pass its
-// check. Offline: the site's existence check is injected.
+// missing blocks its block with the site's reason (MUST FAIL). Offline: the site's existence check is injected.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { refsFor, resolveFixture, tokensIn, fixtureRoles, refGate, checkRefsExist, refsProblem, existencePhp, hostedRoot } from '../lib/calibration-refs.mjs';
-import { checkFixtureRefs } from '../lib/fixture-refs.mjs';
 import { remotePlugin } from '../lib/deploy-hash.mjs';
-import { selfTest } from '../fixture-refs.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const ROOT = path.join( HERE, '..' );
-const fixtures = JSON.parse( fs.readFileSync( path.join( ROOT, 'calibration-fixtures.json' ), 'utf8' ) );
 const targets = JSON.parse( fs.readFileSync( path.join( ROOT, 'calibration-targets.json' ), 'utf8' ) );
 
 test( 'a mirror inherits its test site\'s refs, and its own refs win', () => {
@@ -80,32 +75,6 @@ test( 'the existence PHP checks each role\'s kind, and a menu item\'s menu', () 
 	assert.deepEqual( data, { menuItem: { id: 6, kind: 'post', postType: 'nav_menu_item', menu: 5 } } );
 	assert.match( php, /is_object_in_term\( \$id, 'nav_menu'/ );
 	assert.match( php, /get_term\( \$id, \$r\['taxonomy'\] \)/ );
-} );
-
-test( 'Eye Care\'s refs resolve every fixture to the literal ids it carried before tokenising', () => {
-	const refs = refsFor( targets, 'eye-care-test' );
-	const r = ( b ) => resolveFixture( fixtures[ b ], refs );
-	for ( const b of Object.keys( fixtures ) ) {
-		assert.deepEqual( r( b ).missing, [], `${ b } resolves on eye-care-test` );
-	}
-	const nav = r( 'sgs/nav-bar-menu' ).fixture.attributes;
-	assert.deepEqual( [ nav.ref, nav.splitAfterItemId, nav.disabledItemIds, nav.drawerRef ], [ 96, 'id:195', [ 'id:195' ], 203 ] );
-	assert.deepEqual( r( 'sgs/nav-drawer-menu' ).fixture.variants[ 1 ].itemTrailingIcons, { 'id:195': { source: 'lucide', name: 'arrow-right' } } );
-	const media = r( 'sgs/media' ).fixture.attributes;
-	assert.deepEqual( [ media.source.desktop.id, media.source.desktop.url ], [ 202, 'https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/aboutstrip.jpg' ] );
-	assert.deepEqual( r( 'sgs/buybox' ).fixture.parents[ 0 ].attributes.query.woocommerceHandPickedProducts, [ '71' ] );
-	assert.equal( r( 'sgs/buybox' ).fixture.parents[ 0 ].attributes.queryId, 91, 'a query loop\'s own number is not a reference' );
-	assert.equal( r( 'sgs/product-card' ).fixture.attributes.productId, 71 );
-	assert.equal( r( 'sgs/responsive-logo' ).fixture.attributes.logoSource.desktop.id, 202 );
-} );
-
-test( 'the fixtures carry no bare reference, and the detector\'s own cases pass', () => {
-	assert.deepEqual( checkFixtureRefs( fixtures ), [] );
-	assert.deepEqual( selfTest(), [] );
-	// Negative control: one literal id put back is caught.
-	const broken = structuredClone( fixtures );
-	broken[ 'sgs/nav-bar-menu' ].attributes.ref = 96;
-	assert.equal( checkFixtureRefs( broken ).length, 1 );
 } );
 
 test( 'a hosted site\'s WordPress root comes from deploy_common.py TARGETS', () => {

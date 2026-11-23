@@ -1,13 +1,11 @@
-"""Give every block a fixture in fixtures.json from the two curated sources that already exist, never by hand per block.
+"""Give every block a fixture in fixtures.json from the curated source that exists, never by hand per block.
 
-Sources, both curated against each block's render.php:
-  1. scripts/computed-route/calibration-fixtures.json (repo root): the attributes, variants, preconditions, children,
-     parents and paint states calibration rendered each block with (the shape fixtures.json was first seeded from).
-     Copied, not referenced, because the setting record replaces calibration and its files go with it.
-  2. plugins/sgs-blocks/tests/fixtures/motion/render-paths.json: the stand-ins the offline runner needs to reach a
-     block's part-bearing branch (a product, a post, site options, saved child markup...), read for the same runner by
-     scripts/check-motion-part-render-paths.py::php_render. Taken from the block's rendered paths, as inline `harness`
-     stand-ins (render.py::INLINE_STANDINS); its `base` attributes sit under calibration's.
+The source, curated against each block's render.php: plugins/sgs-blocks/tests/fixtures/motion/render-paths.json, the
+stand-ins the offline runner needs to reach a block's part-bearing branch (a product, a post, site options, saved child
+markup...), read for the same runner by scripts/check-motion-part-render-paths.py::php_render. Taken from the block's
+rendered paths, as inline `harness` stand-ins (render.py::INLINE_STANDINS), with its `base` attributes. The entries that
+exist were first seeded from calibration's fixtures as well (their `notes` say so); calibration is retired, so a new
+block's entry starts from its render paths alone (entry_for still takes a second source's entries, `cal`, first).
 
 Rules, in order, for a block that has no entry yet (an existing entry is never changed):
   - calibration's keys the check reads (CONSUMED) are copied; calibration-only keys are named in `notes`;
@@ -32,7 +30,6 @@ HERE = Path(__file__).resolve().parent
 PLUGIN = HERE.parents[1]
 REPO = PLUGIN.parents[1]
 FIXTURES = HERE / 'fixtures.json'
-CALIBRATION = REPO / 'scripts' / 'computed-route' / 'calibration-fixtures.json'
 RENDER_PATHS = PLUGIN / 'tests' / 'fixtures' / 'motion' / 'render-paths.json'
 
 CONSUMED = ('attributes', 'variants', 'preconditions', 'familyPreconditions', 'paintStates', 'inner', 'parents')
@@ -119,11 +116,10 @@ def main(argv=None) -> int:
     fixtures = json.loads(FIXTURES.read_text(encoding='utf-8'))
     names = roster()
     if not args.check:
-        cal = json.loads(CALIBRATION.read_text(encoding='utf-8'))
         paths = json.loads(RENDER_PATHS.read_text(encoding='utf-8')).get('blocks') or {}
         added = [n for n in names if n not in fixtures]
         for n in added:
-            fixtures[n] = entry_for(n, cal, paths)
+            fixtures[n] = entry_for(n, {}, paths)
         FIXTURES.write_text(json.dumps(fixtures, indent='\t', ensure_ascii=False) + '\n', encoding='utf-8', newline='\n')
         print(f'{len(added)} entries added; {len(fixtures) - 1} blocks have a fixture')
     found = problems(fixtures, names)

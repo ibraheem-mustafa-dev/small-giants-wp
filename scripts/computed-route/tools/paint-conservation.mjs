@@ -10,13 +10,13 @@
 //   Every count is three numbers: READ (a block reads the look, a delivering record's destination verified), RECORDED-UNREAD
 //   (a record that delivers nothing to the clone: no-part, not-calibrated, handover, own-surface, site-decision) and FAILING.
 //   --check: exit 1 when any row is FAILING; --strict (STRICT_DEFAULT when absent) fails RECORDED-UNREAD rows too. Without
-//   --check the exit is 0: the list is a report. --cache: the calibration slot maps a no-part record is verified against
-//   (the route's cache folder by default).
+//   --check the exit is 0: the list is a report. A no-part record is verified against the setting record's settings in the
+//   client's site look (lib/setting-record.mjs::loadRecord; a look not yet built is not built by this report).
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { conservationRows, namedIdentities, heldIdentities, groupRows, STRICT_DEFAULT } from '../lib/skeleton-paint-conservation.mjs';
-import { readSlotMap } from '../lib/cache.mjs';
+import { loadRecord } from '../lib/setting-record.mjs';
 import { recordFor, recordView } from '../lib/skeleton-record.mjs';
 import { factsFile } from '../lib/fact-record.mjs';
 import { isServedInventory } from '../lib/key-space.mjs';
@@ -76,8 +76,9 @@ export function factRecordOf( { repo, client } ) {
 // draft numbers its elements differently, and its keys then name other elements of the record.
 const sameElement = ( entry, e ) => entry.template.realTag === String( e.srcTag ?? e.tag ).replace( /^sc-raw-/, '' ) || entry.template.tag === e.srcTag;
 
-// calibration( block ): the block's calibrated settings from the cache's slot map, or null where it has none.
-export const calibrationFrom = ( dir ) => ( block ) => ( block ? readSlotMap( dir, block )?.settings ?? null : null );
+// calibration( client )( block ): the block's settings from the setting record and the client's site look, or null where the
+// block has no record.
+export const recordSettings = ( client ) => ( block ) => ( block ? loadRecord( block, client, { build: false } )?.settings ?? null : null );
 
 // Every client's rows and counts: { rows, counts: { client: { surface: counts } }, unlisted: { client: [ surface ] }, facts:
 // { client: { surface: null | why } } }. Each row carries its client and surface; `unlisted` names the surfaces left unread
@@ -85,7 +86,7 @@ export const calibrationFrom = ( dir ) => ( block ) => ( block ? readSlotMap( di
 // as propose builds it), so the looks the template declares count; `facts` holds, per surface, null where the view was built
 // and the reason where it was not: the client has no record (`factRecord( client )`: factRecordOf by default), or the record
 // is out of step with the surface's inventory (an element keyed to an entry of another tag: sameElement).
-export function listAll( { repo, clients, dirs = {}, skip = new Set(), calibration = calibrationFrom( path.join( HERE, '..', 'cache' ) ), factRecord = ( client ) => factRecordOf( { repo, client } ) } ) {
+export function listAll( { repo, clients, dirs = {}, skip = new Set(), calibration = recordSettings, factRecord = ( client ) => factRecordOf( { repo, client } ) } ) {
 	const rows = [];
 	const counts = {};
 	const unlisted = {};
@@ -106,7 +107,7 @@ export function listAll( { repo, clients, dirs = {}, skip = new Set(), calibrati
 			const off = built ? s.inventory.elements.filter( ( e ) => built.has( e ) && ! sameElement( built.entry( e ), e ) ).length : 0;
 			const view = off ? null : built;
 			facts[ client ][ s.surface ] = ! record ? why : off ? `the record is out of step with this inventory: ${ off } of ${ s.inventory.elements.length } elements are another tag there` : null;
-			const r = conservationRows( { ...s, view, otherSurfaces: named.filter( ( n ) => n.surface !== s.surface ), ownedElsewhere, calibration } );
+			const r = conservationRows( { ...s, view, otherSurfaces: named.filter( ( n ) => n.surface !== s.surface ), ownedElsewhere, calibration: calibration( client ) } );
 			counts[ client ][ s.surface ] = r.counts;
 			rows.push( ...r.rows.map( ( row ) => ( { client, surface: s.surface, ...row } ) ) );
 		}
@@ -157,7 +158,7 @@ export function main( argv, { log = console.log } = {} ) {
 		log( 'usage: paint-conservation.mjs (--client <slug>[,<slug>...] | --all) [--root <repo>] [--dir <client>=<folder>]... [--skip <client>/<surface>[,...]] [--out <folder>] [--json] [--check [--strict]] [--cache <folder>]' );
 		return 2;
 	}
-	const result = listAll( { repo, clients, dirs, skip, ...( flag( '--cache' ) ? { calibration: calibrationFrom( path.resolve( flag( '--cache' ) ) ) } : {} ) } );
+	const result = listAll( { repo, clients, dirs, skip } );
 	const out = flag( '--out' );
 	if ( out ) {
 		fs.mkdirSync( out, { recursive: true } );

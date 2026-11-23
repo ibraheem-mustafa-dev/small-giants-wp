@@ -84,8 +84,8 @@ export const glyphHolders = ( settings = {} ) => new Set( Object.values( setting
 const LETTER = /\p{L}/u;
 
 // One host node's absorbed painted elements. host: the block's own draft element; node: its skeleton node; absorbed:
-// [ { element, looks: [ look ] } ]; settings, tags: the block's calibration settings and slot tags; checked: the calibration
-// file read. Returns { slots: { slot: finder }, records: Map( key -> record ), unmatched: [ { key, looks, parts } ] }.
+// [ { element, looks: [ look ] } ]; settings, tags: the block's calibration settings and slot tags; checked: where the
+// settings were read (the setting record). Returns { slots: { slot: finder }, records: Map( key -> record ), unmatched: [ { key, looks, parts } ] }.
 export function absorbedSlots( { host, node, absorbed = [], kids, finder, settings = {}, tags = {}, block, checked, leading = false } ) {
 	const out = { slots: {}, records: new Map(), unmatched: [] };
 	const parts = partLooks( settings, tags );

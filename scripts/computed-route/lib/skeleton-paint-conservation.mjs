@@ -340,8 +340,8 @@ export const INHERITED_LOOKS = [ 'text-centre' ];
 //                 strikethrough), which draws `looks` (lib/skeleton-write-content.mjs::makeContent). Verified when that node is in
 //                 the skeleton and a text attribute holds `<format>`.
 //   no-part      the host block `block` draws the element as a part with a fixed look: a missing block setting. The check
-//                 verifies it against the block's calibration (`calibration( block )`, the slot map `cache/<block>.json`
-//                 named in `checked`): no setting at any slot paints any of `looks`, or the record is refused.
+//                 verifies it against the block's settings (`calibration( block )`: the setting record in the client's site
+//                 look, named in `checked`): no setting at any slot paints any of `looks`, or the record is refused.
 //   not-calibrated the host block `block` has no calibration to check, so whether a part paints the look is unknown.
 //   unpaired      the host block `block` absorbed the element and the proposal's part pairing
 //                 (lib/skeleton-part-pairing.mjs) refused it: several of the block's measured parts fit it (`candidates`), or
