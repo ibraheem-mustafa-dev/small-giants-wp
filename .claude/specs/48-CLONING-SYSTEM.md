@@ -107,7 +107,7 @@ Status: built (2026-10-11). `lib/resolve.mjs::TIER_OF` maps 375, 768 and 1440 on
 
 ### 3.2 Block calibration: `lib/calibrate.mjs` and `calibrate.mjs` (FR-47-2)
 
-The route no longer reads this section's cache: since 2026-11-23 it reads the setting record (database `setting_placements`) and each client's site look (`plugins/sgs-blocks/scripts/site-look/site_look.py`), and the paint gate no longer advises `calibrate.mjs` (setting-record plan Task 4 steps 1 to 3). Calibration itself, and this section's text about its outputs, is retired and rewritten at plan Task 4 step 4.
+The route reads where each setting paints from the setting record (database `setting_placements`) and each block's default look for a client from that client's site look (`plugins/sgs-blocks/scripts/site-look/site_look.py`, built from `sites/<client>/theme-snapshot.json`); its paint gate advises the site look command. The calibration run this section describes is kept until setting-record plan Task 4 step 4 retires it and rewrites this section.
 
 The modules that implement it (`lib/calibrate-props.mjs`, `lib/calibrate-markers.mjs`, `lib/calibrate-instances.mjs`, `lib/calibrate-read.mjs`, `lib/calibrate-content.mjs`, `lib/calibrate-chunk.mjs`, `lib/calibrate-container.mjs`, `lib/calibrate-block.mjs`, `lib/calibrate-pages.mjs`, `lib/calibrate-incremental.mjs`, `lib/calibrate-timing.mjs`, `lib/cache.mjs`, `lib/deploy-hash.mjs`) are indexed in `scripts/computed-route/README.md`.
 
