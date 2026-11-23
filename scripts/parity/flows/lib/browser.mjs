@@ -9,12 +9,14 @@ export const REPO_ROOT = path.resolve( HERE, '..', '..', '..', '..' );
 const ENV_FILE = '.claude/secrets/eye-care-test.env';
 const ENV_KEY = 'WP_URL_EYECARETEST';
 
-// The repo root, then (inside a git worktree under .claude/worktrees/<name>) the main checkout, because a worktree
-// has neither the gitignored secrets nor the node_modules junction.
-export function candidateRoots( root = REPO_ROOT ) {
+// The repo root, then the checkout that holds the gitignored secrets and the node_modules junction a worktree lacks:
+// SGS_SECRETS_ROOT when set (as scripts/computed-route/lib/site-targets.mjs::secretsPath reads it, for a worktree anywhere,
+// such as E:\sgs-tmp), else, inside a git worktree under .claude/worktrees/<name>, the main checkout.
+export function candidateRoots( root = REPO_ROOT, env = process.env ) {
 	const norm = root.split( path.sep ).join( '/' );
 	const at = norm.indexOf( '/.claude/worktrees/' );
-	return at === -1 ? [ root ] : [ root, path.normalize( norm.slice( 0, at ) ) ];
+	const extra = env.SGS_SECRETS_ROOT ? [ path.normalize( env.SGS_SECRETS_ROOT ) ] : at === -1 ? [] : [ path.normalize( norm.slice( 0, at ) ) ];
+	return [ root, ...extra.filter( ( r ) => path.normalize( r ) !== path.normalize( root ) ) ];
 }
 
 // Parses KEY=value lines. Quotes are stripped; blank lines and # comments are skipped.

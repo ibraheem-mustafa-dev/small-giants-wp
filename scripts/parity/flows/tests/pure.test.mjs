@@ -64,10 +64,17 @@ test( 'env parsing and base URL precedence, without printing or requiring any se
 	assert.throws( () => baseUrl( { env: {}, fileEnv: {} } ), /No base URL/ );
 } );
 test( 'inside a worktree the main checkout is searched for secrets and node_modules', () => {
-	const roots = candidateRoots( 'C:\\repo\\.claude\\worktrees\\agent-1' );
+	const roots = candidateRoots( 'C:\\repo\\.claude\\worktrees\\agent-1', {} );
 	assert.equal( roots.length, 2 );
 	assert.match( roots[ 1 ].replace( /\\/g, '/' ), /repo$/ );
-	assert.equal( candidateRoots( 'C:\\repo' ).length, 1 );
+	assert.equal( candidateRoots( 'C:\\repo', {} ).length, 1 );
+} );
+test( 'MUST FAIL WITHOUT SGS_SECRETS_ROOT: a worktree outside .claude/worktrees finds secrets in the checkout SGS_SECRETS_ROOT names, after its own root', () => {
+	const roots = candidateRoots( 'E:\\sgs-tmp\\wt-x', { SGS_SECRETS_ROOT: 'C:\\repo' } );
+	assert.equal( roots.length, 2 );
+	assert.match( roots[ 1 ].replace( /\\/g, '/' ), /repo$/ );
+	assert.equal( candidateRoots( 'E:\\sgs-tmp\\wt-x', {} ).length, 1 );
+	assert.equal( candidateRoots( 'C:\\repo', { SGS_SECRETS_ROOT: 'C:\\repo' } ).length, 1 );
 } );
 
 test( 'a flow that throws is an ERROR, never a pass or a fail; exit codes keep the three apart', async () => {
