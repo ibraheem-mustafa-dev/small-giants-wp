@@ -11,7 +11,7 @@ last_updated: 2026-11-23
 - **The one active track is general cloning (Front H, Spec 48):** before 2026-11-28 you clone two new sites from Claude Design drafts, SGS and MIC (which has a shop), with no hand-built copy to lean on. Plan `plans/2026-11-19-general-cloning-work.md`; a session starts from `prompts/2026-11-22-general-cloning-next-session.md` (the proof clones of all three clients, one findings report, then your register of confirmed issues).
 - **The rest of the WordPress framework is frozen** (your decision, 2026-11-12): security updates and client fixes only. The web engine is a separate project (`C:\Users\Bean\Projects\small-giants-engine`, its own LEDGER).
 - **Live sites:** Mama's Munches is a live shop (`mamasmunches.com`); Indus and Eye Care are signed off. Each site's open items sit in its own brief (`sites/<client>/CLAUDE.md`).
-- **Need you:** wheatgerm, the launch leftovers and the account borders on Mama's (its brief, "Live shop: open items"); the same never-shown account borders on Eye Care (below); your eye on the proof pairs when the general track brings them.
+- **Need you:** Eye Care's phone hero framing (below); whether the two empty placeholder hosting entries (`lightgreen-whale-237337`, `palegreen-goose-450620`, Hostinger's default page only) are deleted or kept for SGS and MIC; Mama's CookieYes text and the secrets line (its brief, "Live shop: open items"); your eye on the proof pairs when the general track brings them.
 
 ## Blockers
 
@@ -21,7 +21,7 @@ None.
 
 **State (2026-11-23):** calibration is retired. The route reads where each block setting paints from the setting record (DB table `setting_placements`, records in `plugins/sgs-blocks/scripts/data/setting-records/`) and each block's default look from the client's site look (`plugins/sgs-blocks/scripts/site-look/site_look.py`, built offline); the gate `retire-calibration` keeps the removed files gone. The last proof of the setting record (Mama's home on the scratch copy `local-mediatest-setrec4`) and the framed pictures' mat fix are in the plan's Task 8. Next: the plan's Task 8 (proof), as the start prompt orders it.
 
-**Open with you:** the account borders that never showed (`sgs/account` box widths saved in a shape the block cannot read: on eye-care-test three 1px borders, on the menu sidebar, the tab row and the sign-in pair, plus four at 0; on Mama's one 2px border on the password-reset form). Dropping them keeps today's look; converting them shows the borders. The deploy audit's classification of these 169 box settings waits on that answer (commit `fad311422`, worktree `E:\sgs-tmp\wt-small`).
+**Open with you:** Eye Care's home hero (eye-care-test post 208) has a Custom CSS rule for the phone framing of its photo (62% 12%, your round 12) that has printed nothing since the media system renamed the class it names (2026-11-12), so phones show the desktop framing (78% 45%). Either the hero's own focal setting takes the phone value (the photo reframes on phones, as round 12 had it) or the dead rule is deleted (today's look stays); backup `darkcyan-grouse-898606.hostingersite.com-20261123-215224-before-hero-focal.sql.gz`, script `sites/eye-care-ward-end/build/content/hero-focal.php` (dry run by default, `write` to apply). Two more dead rules name classes the framework no longer prints (Mama's Home and Indus post 432, in their briefs).
 
 ## Live sites
 
@@ -44,5 +44,5 @@ None.
 
 - **PHP:** 89 of 5,287 fail on `main` (83 failures, 6 errors; full run 2026-11-23), among them `CustomCssOutranksSettingsTest`'s commerce-look row at `root_repeat` 4 and `BuyboxSnapshotTest`. Compare failures test by test, never by the total.
 - **Jest:** about 11 suites fail on `main`, among them `configurator-schema-compat` and `cursor-field-reveal-open`.
-- **Python:** `plugins/sgs-blocks/scripts/tests/test_box_string_rules.py::test_every_box_row_is_classified` (169 box settings unclassified, waiting on the account-border answer above); `plugins/sgs-blocks/scripts/db-consistency/tests/test_f6_consistency.py::TestCheck5VariantReseed` (4 tests whose fixtures predate the `slot_value` column).
+- **Python:** `plugins/sgs-blocks/scripts/db-consistency/tests/test_f6_consistency.py::TestCheck5VariantReseed` (4 tests whose fixtures predate the `slot_value` column).
 - **Route:** `scripts/computed-route/tests/lint.test.mjs` fails 2 tests in a worktree without `plugins/sgs-blocks/node_modules` (the walker loads Playwright from there); a fresh worktree needs `npm ci` in `plugins/sgs-blocks` (`dev-setup.md`).
