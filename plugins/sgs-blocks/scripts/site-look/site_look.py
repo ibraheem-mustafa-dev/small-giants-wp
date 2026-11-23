@@ -276,10 +276,25 @@ def path_classes(page, out: dict) -> None:
 ATTR_SELECTOR = re.compile(r'\[\s*([A-Za-z_][\w:-]*)\s*(?:[~|^$*]?=|\])')
 
 
+DECLARATIONS = re.compile(r'\{[^{}]*\}')
+
+
+def selectors_only(css: str) -> str:
+    """The CSS with every declaration block emptied, innermost first (`[full-start]` in a grid template is a value, not a
+    selector), so what is left is selectors and at-rule preludes."""
+    text = re.sub(r'/\*.*?\*/', '', css or '', flags=re.S)
+    while True:
+        out = DECLARATIONS.sub('{}', text)
+        if out == text:
+            return out
+        text = out.replace('{}', '\x00')
+
+
 def tested_attrs(texts) -> set:
-    """The attribute names a rule of the page's CSS tests (`class` and `style` aside: the classes are pathClasses), the
-    attributes that decide which rules an element matches, such as the open item of an accordion or the current link."""
-    return {m.group(1).lower() for t in texts for m in ATTR_SELECTOR.finditer(t or '')} - {'class', 'style'}
+    """The attribute names a rule of the page's CSS tests in its selectors (`class` and `style` aside: the classes are
+    pathClasses), the attributes that decide which rules an element matches, such as the open item of an accordion or
+    the current link."""
+    return {m.group(1).lower() for t in texts for m in ATTR_SELECTOR.finditer(selectors_only(t))} - {'class', 'style'}
 
 
 def path_attrs(page, out: dict, names: set) -> None:

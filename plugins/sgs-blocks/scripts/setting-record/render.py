@@ -14,6 +14,7 @@ import json
 import os
 import re
 import subprocess
+import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
@@ -128,13 +129,31 @@ INLINE_STANDINS = {'product': '--product-file', 'manifest': '--manifest-file', '
                    'postContent': '--post-content-file'}
 
 
+def write_whole(f: Path, text: str) -> None:
+    """Write `text` to `f` so no reader ever sees part of it: a file beside it, renamed over it."""
+    tmp = f.with_name(f'{f.name}.{os.getpid()}-{threading.get_ident()}.tmp')
+    tmp.write_text(text, encoding='utf-8')
+    os.replace(tmp, f)
+
+
+# One lock per render key: render_many renders a context-providing block's children for every job, and jobs that hand
+# down the same context render the same child, so two threads would otherwise write and read one key's files at once.
+_KEY_LOCKS: dict = {}
+_KEY_LOCKS_GUARD = threading.Lock()
+
+
+def key_lock(key: str) -> threading.Lock:
+    with _KEY_LOCKS_GUARD:
+        return _KEY_LOCKS.setdefault(key, threading.Lock())
+
+
 def standin_file(value, ext: str) -> Path:
-    """The file holding one inline stand-in, named by its content (written once)."""
+    """The file holding one inline stand-in, named by its content (written once, whole)."""
     text = value if isinstance(value, str) and ext == 'html' else json.dumps(value, sort_keys=True)
     f = CACHE_ROOT / 'standins' / f'{hashlib.md5(text.encode()).hexdigest()}.{ext}'
     if not f.is_file():
         f.parent.mkdir(parents=True, exist_ok=True)
-        f.write_text(text, encoding='utf-8')
+        write_whole(f, text)
     return f
 
 
@@ -226,22 +245,26 @@ class Renderer:
         self.options = (fixture.get('harness') or {}).get('options')
         self.included = set()  # every plugin PHP file any render here loaded (the block's, its children's, its parents')
 
-    def render(self, slug: str, attrs: dict, content: str = '', inner=None, context=None) -> dict:
-        """One render, cached. `context`: the block context its ancestors hand it (render_inner), over any context the
-        fixture's `harness` stands in for the block's own place on a page."""
+    def render(self, slug: str, attrs: dict, content: str = '', inner=None, context=None, child: bool = False) -> dict:
+        """One render, cached. The fixture's block takes the context its `harness` stands in for its place on a page. A
+        child (render_inner, `child`) takes only `context`: the keys its usesContext lists, from its ancestors or the page."""
         extra, key_extra = list(self.extra), list(self.key_extra)
-        if context:
-            own = (self.fixture.get('harness') or {}).get('context') or {}
-            merged = {**(own if isinstance(own, dict) else {}), **context}
+        if child:
             if '--context-file' in extra:
                 i = extra.index('--context-file')
                 del extra[i:i + 2]
                 j = key_extra.index('--context-file')
                 del key_extra[j:j + 2]
-            extra += ['--context-file', str(standin_file(merged, 'json'))]
-            key_extra += ['context', merged]
+            if context:
+                extra += ['--context-file', str(standin_file(context, 'json'))]
+                key_extra += ['context', context]
         key_parts = [slug, attrs, content, inner, key_extra, self.post] + ([self.options] if self.options else [])
         key = hashlib.md5(json.dumps(key_parts, sort_keys=True).encode()).hexdigest()
+        with key_lock(key):
+            return self._render_at(key, slug, attrs, content, inner, extra)
+
+    def _render_at(self, key: str, slug: str, attrs: dict, content: str, inner, extra: list) -> dict:
+        """render() for one cache key, under that key's lock."""
         cf = self.cache / f'{key}.json'
         if cf.is_file():
             res = json.loads(cf.read_text(encoding='utf-8'))
@@ -288,14 +311,14 @@ class Renderer:
         if res.get('ok') and self.post:
             res['html'] = apply_post(res.get('html', ''), self.post)
         if res.get('ok'):
-            cf.write_text(json.dumps(res), encoding='utf-8')  # a failed render is retried next run, never cached
+            write_whole(cf, json.dumps(res))  # a failed render is retried next run, never cached
         return res
 
     def render_inner(self, rows, context=None):
         """Each fixture child rendered through its real render.php with its defaults, its own children first, as WordPress
         renders it inside its parent: `context` is the block context the ancestors hand down (provided_context, merged
-        down the tree), and a child receives the keys its block.json `usesContext` lists. Returns (content html,
-        inner-blocks rows)."""
+        down the tree) over the page-level context the fixture's `harness` stands in, and a child receives only the keys
+        its block.json `usesContext` lists. Returns (content html, inner-blocks rows)."""
         context = context or {}
         html, out = [], []
         for row in rows or []:
@@ -308,8 +331,10 @@ class Renderer:
             down = {**context, **(provided_context(self.plugin, short, full) if meta else {})}
             sub_html, sub_rows = self.render_inner(row.get('innerBlocks'), down)
             if has_render:
-                uses = {k: v for k, v in context.items() if k in (meta.get('usesContext') or [])}
-                r = self.render(name, full, sub_html, sub_rows, uses or None)
+                page = (self.fixture.get('harness') or {}).get('context') or {}
+                given = {**(page if isinstance(page, dict) else {}), **context}
+                uses = {k: v for k, v in given.items() if k in (meta.get('usesContext') or [])}
+                r = self.render(name, full, sub_html, sub_rows, uses or None, child=True)
                 h = r.get('html', '') if r.get('ok') else f'<!-- child {name} failed: {r.get("error", "")[:200]} -->'
             else:
                 h = sub_html  # a static (save.js) child: its saved markup is not available offline
@@ -330,6 +355,10 @@ class Renderer:
         def one(a):
             if gives:
                 c, i = self.render_inner(rows, provided_context(self.plugin, short, a))
+                failed = re.search(r'<!-- child (\S+) failed: (.*?) -->', c, re.S)
+                if failed:
+                    # a child this job's context broke is the job's failure, never a parent drawn round a gap
+                    return {'ok': False, 'error': f'child {failed.group(1)} failed with the context this job gives it: {failed.group(2)[:200]}', 'notices': []}
                 return self.render(slug, a, c, i)
             return self.render(slug, a, content, inner)
         with ThreadPoolExecutor(WORKERS) as ex:

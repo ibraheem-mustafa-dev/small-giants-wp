@@ -153,9 +153,10 @@ def test_open_item_carries_its_attribute(tmp_path):
 
 
 def test_tested_attrs_reads_attribute_selectors():
-    names = SL.tested_attrs(['.a[open] > b, .c[aria-current="page"], :not([hidden]) .x[class*=y]', '.d{grid-area:1}'])
-    assert {'open', 'aria-current', 'hidden'} <= names
-    assert 'class' not in names
+    names = SL.tested_attrs(['.a[open] > b, .c[aria-current="page"], :not([hidden]) .x[class*=y] {color:red}',
+                             '@media (min-width:1px){.d{grid-template-columns:[full-start] 1fr [full-end]}} .e[data-x]{content:"[nope]"}'])
+    assert {'open', 'aria-current', 'hidden', 'data-x'} <= names
+    assert not names & {'class', 'full-start', 'full-end', 'nope'}
 
 
 @pytest.mark.parametrize('name', ['snapshot', 'custom-css', 'section', 'footer-move', 'wrapper-root', 'fold-depth', 'path-attrs'])

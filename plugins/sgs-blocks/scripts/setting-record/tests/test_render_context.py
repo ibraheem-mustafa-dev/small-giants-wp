@@ -62,3 +62,45 @@ def test_must_fail_a_child_blocks_instance_id_is_its_own_class():
     m = D.uid_map(html, 'accordion')
     assert m['sgs-accordion-89d368aa'] == 'sgs-accordion'
     assert m['sgs-accordion-item-b2602553'] == 'sgs-accordion-item'
+
+
+def test_must_fail_a_child_the_jobs_context_breaks_fails_the_job(monkeypatch):
+    # Breaks if a child's failure is drawn into an ok parent render: the job would read as the setting removing the child.
+    fixture = json.loads(FIXTURES.read_text(encoding='utf-8'))['sgs/accordion']
+    rn = RN.Renderer(PLUGIN, fixture, FIXTURES.parent, 'accordion')
+    content, inner = rn.render_inner(fixture.get('inner'))
+    real = rn.render
+
+    def flaky(slug, attrs, content='', inner=None, context=None, child=False):
+        if slug == 'sgs/accordion-item' and (context or {}).get('sgs/accordionItemBackgroundOpen') == MARK:
+            return {'ok': False, 'error': 'planted child failure'}
+        return real(slug, attrs, content, inner, context, child)
+    monkeypatch.setattr(rn, 'render', flaky)
+    base = RN.with_defaults(PLUGIN, 'accordion', RN.fill(fixture.get('attributes') or {}))
+    out = rn.render_many('sgs/accordion', {'plain': base, 'marked': {**base, 'itemBackgroundOpen': MARK}}, content, inner)
+    assert out['plain'].get('ok')
+    assert not out['marked'].get('ok') and 'planted child failure' in out['marked']['error']
+
+
+def test_a_stand_in_file_is_written_whole(tmp_path, monkeypatch):
+    monkeypatch.setattr(RN, 'CACHE_ROOT', tmp_path)
+    f = RN.standin_file({'a': 1}, 'json')
+    assert json.loads(f.read_text(encoding='utf-8')) == {'a': 1}
+    assert not list(f.parent.glob('*.tmp'))
+
+
+def test_must_fail_a_child_takes_only_the_context_it_uses(monkeypatch, tmp_path):
+    # Breaks if a child keeps the fixture's page-level context file whatever its usesContext lists (the buy box's postId
+    # reached every child).
+    fixture = {'harness': {'context': {'postId': 52, 'sgs/accordionItemShadow': 'from-page'}},
+               'inner': [{'name': 'sgs/accordion-item', 'attributes': {'title': 'Q'}}, {'name': 'sgs/button', 'attributes': {'label': 'Go'}}]}
+    rn = RN.Renderer(PLUGIN, fixture, FIXTURES.parent, 'accordion')
+    seen = {}
+
+    def spy(slug, attrs, content='', inner=None, context=None, child=False):
+        seen[slug] = (context, child)
+        return {'ok': True, 'html': ''}
+    monkeypatch.setattr(rn, 'render', spy)
+    rn.render_inner(fixture['inner'], {'sgs/accordionItemShadow': 'md'})
+    assert seen['sgs/accordion-item'] == ({'sgs/accordionItemShadow': 'md'}, True)
+    assert seen['sgs/button'] == (None, True)
