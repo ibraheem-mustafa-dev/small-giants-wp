@@ -19,8 +19,8 @@ Searching one directory and concluding a tool does not exist is a live failure m
 
 | Directory | Runnable files | Holds |
 |---|---|---|
-| `scripts/` | 1649 | repo-wide tooling (naming lint, site utilities) |
-| `plugins/sgs-blocks/scripts/` | 985 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
+| `scripts/` | 1650 | repo-wide tooling (naming lint, site utilities) |
+| `plugins/sgs-blocks/scripts/` | 988 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
 | `.claude/hooks/` | 7 | session + commit hooks (handoff preflight, doc gates) |
 | `.claude/skills/wp-sgs-deploy/scripts/` | 0 | deploy-skill helpers |
 
@@ -71,8 +71,8 @@ Every field below is extracted from the script's own executable code (regex over
 - Non-zero exit sites found: exit(0), exit(1), exit(2)
 
 **`plugins/sgs-blocks/scripts/generate-extension-attributes.js`** (build)
-- Reads: `OUT_FILE`
-- Writes: `OUT_FILE`
+- Reads: `OUT_FILE`, `ROSTER_FILE`, `SCOPE_FILE`
+- Writes: `OUT_FILE`, `SCOPE_FILE`
 - Non-zero exit sites found: exit(1)
 
 **`plugins/sgs-blocks/scripts/generate-icons.js`** (build)
@@ -102,7 +102,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 
 ⚠ The naming is not consistent — the same idea appears as `census-*`, `survey-*`, `audit-*`, `check-*`, `scan-*`, `probe-*` and `report-*`. Grep for the SUBJECT (colour, gradient, token, element, inline, parity), never for the verb you happen to have in mind.
 
-#### `plugins/sgs-blocks/scripts/` — 874 scripts
+#### `plugins/sgs-blocks/scripts/` — 876 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -233,6 +233,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `check-motion-stagger-drift.py` | — | stored stagger delays must match what the helper would write (Spec 38A FR-38A-25). |
 | `check-motion-style-writes.py` | — | front-end motion scripts write custom properties only (Spec 38A FR-38A-47). |
 | `check-motion-token-consumers.py` | script-call | motion tokens and their readers agree (Spec 38A section 7, FR-38A-14, FR-38A-15). |
+| `check-named-extension-scope.py` | manifest+npm+script-call | Detector: a `named` extension's attributes are registered on its named blocks only. |
 | `check-nested-global-settings.py` | manifest | reject nested-path wp_get_global_settings() reads. |
 | `check-nested-panel-title-rule.py` | manifest | the nested-ToolsPanel title rule lives once, in assets/css/inspector-controls.css. |
 | `check-no-core-blocks.py` | manifest+script-call | Prebuild gate: NO banned core blocks in theme pattern/part/template FILES. |
@@ -723,6 +724,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `motion_source_scan.py` | script-call | comment-aware source reading for the motion gates (PHP and JS/JSX). |
 | `n8n/push-site-events.py` | — | Push or check the "Build emails" code of the live SGS site-events N8N workflow. |
 | `n8n/site-events-build-emails.js` | script-call | SGS site events: turns one webhook POST into zero or more ready-to-send emails. |
+| `named-extension-scope-probe.php` | script-call | Probe for check-named-extension-scope.py: reads a site's block registry and reports every block type that carries an attribute of a `named` extension… |
 | `nav-qa/axe-run.mjs` | script-call | blocks (Spec 36 §8 / FR-36-16: "axe = 0 on the OPEN drawer AND an OPEN desktop mega"). |
 | `nav-qa/build-header-fixtures.py` | — | nav QA fixtures whose nav blocks sit INSIDE a real site header. |
 | `nav-qa/build-poc-fixtures.py` | manifest+skill | create the nav-drawer variant POC fixtures on the canary. |

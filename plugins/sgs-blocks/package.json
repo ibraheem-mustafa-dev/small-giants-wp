@@ -28,6 +28,7 @@
     "check:motion-pause-control": "python scripts/check-motion-pause-control.py --check",
     "check:motion-item-parts": "python scripts/check-motion-item-parts.py --check",
     "check:motion-stagger-columns": "python scripts/generate-motion-stagger-columns.py --check",
+    "check:named-extension-scope": "python scripts/check-named-extension-scope.py --check",
     "check:styled-part-has-setting": "python scripts/check-styled-part-has-setting.py --check",
     "check:styled-part-has-setting:parts": "python scripts/check-styled-part-has-setting.py --check --pass parts",
     "check:styled-part-has-setting:unmapped": "python scripts/check-styled-part-has-setting.py --check --pass unmapped",
