@@ -395,7 +395,10 @@ namespace {
 	$check( 'a finite window saves days as a number, with method and fees', 14 === $finite['merchantReturnDays'] && 'https://schema.org/ReturnByMail' === $finite['returnMethod'] && 'https://schema.org/FreeReturn' === $finite['returnFees'] );
 	$other = Shop_Policy_Settings::sanitise_returns( array( 'returnPolicyCategory' => 'https://schema.org/MerchantReturnNotPermitted', 'applicableCountry' => 'GB', 'merchantReturnDays' => '30', 'returnMethod' => 'https://schema.org/ReturnByMail' ) );
 	$check( 'days, method and fees are dropped when returns are not permitted', ! isset( $other['merchantReturnDays'] ) && ! isset( $other['returnMethod'] ) );
-	$check( 'a key the form does not show (set by WP-CLI) is kept', 'https://schema.org/FullRefund' === Shop_Policy_Settings::sanitise_returns( $finite + array( 'refundType' => 'https://schema.org/FullRefund' ) )['refundType'] );
+	$GLOBALS['t']['options']['sgs_configurator_returns'] = $clean + array( 'refundType' => 'https://schema.org/FullRefund' );
+	$check( 'a stored key the form does not show (set by WP-CLI) is kept', 'https://schema.org/FullRefund' === ( Shop_Policy_Settings::sanitise_returns( $finite )['refundType'] ?? '' ) );
+	$GLOBALS['t']['options']['sgs_configurator_returns'] = $clean;
+	$check( 'a submitted key the form does not show is dropped, never printed into the structured data', ! isset( Shop_Policy_Settings::sanitise_returns( $finite + array( 'name' => '</script><script>x()</script>' ) )['name'] ) );
 	$check( 'delivery time input: whole numbers kept, blanks and junk dropped', array( 'transitMin' => 2, 'transitMax' => 3 ) === Shop_Policy_Settings::sanitise_delivery_time( array( 'handlingMin' => '', 'handlingMax' => 'x', 'transitMin' => '2', 'transitMax' => '3' ) ) );
 	$check( 'delivery time: a range typed the wrong way round is turned round, never printed inverted', array( 'transitMin' => 2, 'transitMax' => 4 ) === Shop_Policy_Settings::sanitise_delivery_time( array( 'transitMin' => '4', 'transitMax' => '2' ) ) );
 	$check( 'the opt-in is saved as 1 or nothing', '1' === Shop_Policy_Settings::sanitise_flag( 'on' ) && '' === Shop_Policy_Settings::sanitise_flag( '' ) );

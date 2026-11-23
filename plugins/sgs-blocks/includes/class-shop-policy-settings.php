@@ -178,9 +178,9 @@ final class Shop_Policy_Settings {
 			}
 		}
 
-		// A key the form does not show (set by WP-CLI) stays as it was submitted or stored.
+		// A key the form does not show (set by WP-CLI) stays as stored; a submitted key the form does not show is dropped.
 		$shown = array( '@type', 'applicableCountry', 'returnPolicyCategory', 'merchantReturnDays', 'returnMethod', 'returnFees' );
-		$extra = \array_diff_key( $value + $stored, \array_flip( $shown ) );
+		$extra = \array_diff_key( $stored, \array_flip( $shown ) );
 		unset( $extra['returnPolicyCountry'] );
 		return $policy + $extra;
 	}
