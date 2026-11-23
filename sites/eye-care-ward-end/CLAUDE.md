@@ -83,3 +83,8 @@ The draft is deliberately non-standardised (no SGS-BEM convention, technical con
 - **Anything designed that the theme cannot do is a roadmap item**, not a design error.
 
 Context: `.claude/plans/archive/2026-09-10-bem-recognition-and-template-detection-brainstorm.md` (Q1 section, re-read before running the pass).
+
+## eye-care-test: finishing changes of 2026-11-23
+
+- The account pages' seven border widths that never showed are converted (three 1px borders now show).
+- The phone hero's focal point (62% 12%) sits in the hero's own focal setting, not Custom CSS: the old rule printed nothing after the media class rename of 2026-11-12. Script `sites/eye-care-ward-end/build/content/hero-focal.php`.

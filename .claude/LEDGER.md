@@ -15,7 +15,8 @@ last_updated: 2026-11-23
 
 ## Blockers
 
-None.
+- **Record stamps are stale** (blocks the deploy's full gate tier, so any `build-deploy.py` run that needs it): the lint autofix of 2026-11-23 touched 18 blocks, and their setting records need fresh browser verdicts, then `python plugins/sgs-blocks/scripts/setting-record/check.py --changed --restamp`. In hand in worktree `E:\sgs-tmp\wt-record`; clear this line when that lands on `main`.
+- **Secrets lookup** (blocks media upload, refresh-from-remote, editor checks and motion probes for `mamas-test`): tools that build `.claude/secrets/<target>.env` from a target name do not find `live-mamas.env`. The fix, one lookup through the target's `calibration-targets.json` entry, is in hand in `E:\sgs-tmp\wt-secrets`; clear this line when it lands on `main`.
 
 ## Front H: general cloning
 
