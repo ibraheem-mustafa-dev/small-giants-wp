@@ -413,7 +413,7 @@ export async function fillSurface( o ) {
 		Object.assign( result, result.settleHeld( result ) );
 		// FR-48-109: what every pass left that no setting can hold is written as scoped Custom CSS on its block, listed rule by
 		// rule, and each distinct block, part and property is a gap row for the framework (lib/fill-residual-css.mjs).
-		const residual = residualCssWrites( { nodes, flat, refOf, reads, db, unmapped: result.unmapped, calFor, snapshot, scope: o.surface, entries: loadLedger( ledgerFile ), facts, rootComponent: intakeParts.rootComponent } );
+		const residual = residualCssWrites( { nodes, flat, refOf, reads, db, unmapped: result.unmapped, calFor: nodeCal, snapshot, scope: o.surface, entries: loadLedger( ledgerFile ), facts, rootComponent: intakeParts.rootComponent } );
 		addEntries( ledgerFile, residual.ledger );
 		result.writes.push( ...residual.writes );
 		result.settled.push( ...passSettled( result.unmapped, residual.unmapped, PASS_RESIDUAL, residual.answered ) );

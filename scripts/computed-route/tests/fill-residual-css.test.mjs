@@ -100,6 +100,21 @@ test( 'MUST FAIL WITHOUT THE SAME-BOX RAIL: a setting that paints the property o
 	assert.equal( classifyRow( { ...row( { property: 'padding-left', value: '52px' } ), slot: '' }, { calFor, db } ).cls, 'residual', 'the root is not the same box as .f__box' );
 } );
 
+// Mama's framed cards: the look merges the block's variants, so it holds a part (the layer's own picture) measured as the
+// root's box, whose padding setting pairs the frame's mat away; a card that holds its picture as a block never prints that
+// part (its node view lists it as `undrawn`), so the mat is Custom CSS on the frame (proof run 6, 2026-11-23).
+test( 'MUST FAIL WITHOUT THE NODE VIEW: a row is judged against its own node\'s view, so a part the node never prints is no same-box home', () => {
+	const box = perW( { display: 'block', width: '300px', height: '80px', 'padding-left': '0px' } );
+	const merged = { settings: { boxPadLeft: { slot: '.f__box', slots: [ '.f__box' ], property: 'padding-left', state: null, reachedAt: W, effects: [] } }, elements: { '': box, '.f__box': box } };
+	const nodeView = ( b, rec ) => ( 'sgs/field' === b ? ( rec ? { ...merged, undrawn: [ '.f__box' ] } : merged ) : null );
+	const r0 = { node: 'n0', block: 'sgs/field', slot: '', state: null, property: 'padding-left', value: '8px', reason: gapReason( 'padding-left' ) };
+	assert.match( classifyRow( r0, { calFor: nodeView, db } ).cause, /^pairing: boxPadLeft/, 'control: the merged look pairs the row away' );
+	const w = world();
+	const out = run( w, [ r0 ], { calFor: nodeView } );
+	assert.equal( out.classes.residual, 1 );
+	assert.match( css( w ) ?? '', /padding-left: 8px/ );
+} );
+
 test( 'negative control: held, inert-zero, initial-value, timing and non-style rows never reach the writer', () => {
 	const w = world();
 	const rows = [

@@ -1,0 +1,4 @@
+[
+	{ "file": "lib/fill-residual-css.mjs", "find": "const { cls, cause } = classifyRow( row, { calFor: ( block ) => calFor( block, at?.rec ?? null ), db } );", "replace": "const { cls, cause } = classifyRow( row, { calFor, db } );", "why": "every row is judged against the block's merged look again, so a part the node never prints pairs the row away" },
+	{ "file": "lib/fill-residual-css.mjs", "find": "calFor( block, at?.rec ?? null )", "replace": "calFor( block, null )", "why": "the row's node is found but never handed to the look" }
+]

@@ -266,11 +266,15 @@ export function residualCssWrites( { nodes, flat, refOf, reads, db, unmapped, ca
 	const out = { writes: [], unmapped: [], answered: [], notes: [], ledger: [], rules: [], refused: [], gaps: [], backlog: [], classes: { residual: 0, route: 0, unneeded: 0, outside: 0 }, causes: {}, bytes: 0 };
 	const byNode = new Map();
 	for ( const row of perNode( unmapped ) ) {
-		const { cls, cause } = classifyRow( row, { calFor, db } );
+		// Each row is judged against its own node's view of the look (`calFor( block, rec )`, lib/fill-resolve.mjs::nodeCalFor):
+		// the block's merged look holds parts only some nodes print (a layer's own picture), and a part this node never prints
+		// is no same-box home for the row (lib/fill-same-box.mjs::calSameBox).
+		const at = rowTarget( { nodes, flat, refOf }, row );
+		const { cls, cause } = classifyRow( row, { calFor: ( block ) => calFor( block, at?.rec ?? null ), db } );
 		out.classes[ cls ]++;
 		const key = `${ cls }: ${ cause.split( ':' )[ 0 ] }`;
 		out.causes[ key ] = ( out.causes[ key ] || 0 ) + 1;
-		const hit = 'residual' === cls ? rowTarget( { nodes, flat, refOf }, row ) : null;
+		const hit = 'residual' === cls ? at : null;
 		if ( ! hit ) {
 			out.unmapped.push( row );
 			continue;
@@ -289,7 +293,7 @@ export function residualCssWrites( { nodes, flat, refOf, reads, db, unmapped, ca
 			rows.forEach( ( r ) => refuse( r, `${ rec.name } has no Custom CSS setting (sgsCustomCss, framework DB)` ) );
 			continue;
 		}
-		const cal = calFor( rec.name );
+		const cal = calFor( rec.name, rec );
 		// One home part per property and state among the parts that read one draft element.
 		const kept = [];
 		const twins = [];
