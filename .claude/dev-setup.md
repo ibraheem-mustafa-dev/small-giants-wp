@@ -312,6 +312,8 @@ Before landing any change under `scripts/computed-route` that reaches how a surf
 
 Gitignored; never committed.
 
+A site's file and key are its entry's `envFile` and `envKey` in `scripts/computed-route/calibration-targets.json` (and the gitignored `calibration-targets.local.json`), so a file name never has to match a site or deploy-target name (`mamas-test` reads `live-mamas.env`, keys `WP_*_MAMAS`); a name with no entry, such as a scratch copy, uses `.claude/secrets/<name>.env` and the name upper-cased without punctuation as the key. Tools read them through `scripts/computed-route/lib/site-targets.mjs::secretsOf` (route Node), `plugins/sgs-blocks/scripts/lib/site-secrets.mjs` (plugin Node probes) or `plugins/sgs-blocks/scripts/lib/site_secrets.py` (Python; shell scripts call its command line, `python plugins/sgs-blocks/scripts/lib/site_secrets.py <site>`, which prints the file name and key, never a value). `python scripts/check-secrets-lookup.py --check` refuses a secrets path or key built from a site name anywhere else.
+
 | Path | What | Keys / loader |
 |---|---|---|
 | `.claude/secrets/sandybrown.env` | Canary (sandybrown-nightingale-600381.hostingersite.com) logins — ALWAYS available | `WP_USER_SANDYBROWN` + `WP_PWD_SANDYBROWN` (browser/admin login); `WP_APP_PWD_SANDYBROWN` (REST + WC Store-API Basic auth); `WP_URL_SANDYBROWN`. Use for Playwright editor login + REST verification: `grep KEY .claude/secrets/sandybrown.env` |
