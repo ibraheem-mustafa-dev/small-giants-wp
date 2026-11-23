@@ -326,6 +326,10 @@ Sitemap_Exclusions::register();
 require_once SGS_BLOCKS_PATH . 'includes/class-product-page-schema.php';
 Product_Page_Schema::register();
 
+// Settings > SGS shop policies: the return policy, the WooCommerce shipping opt-in and the delivery time the product structured data publishes.
+require_once SGS_BLOCKS_PATH . 'includes/class-shop-policy-settings.php';
+Shop_Policy_Settings::register();
+
 // Titles that sit before the page's h1 (the basket drawer's) are plain elements wearing the theme's heading look.
 require_once SGS_BLOCKS_PATH . 'includes/class-heading-look.php';
 Heading_Look::register();

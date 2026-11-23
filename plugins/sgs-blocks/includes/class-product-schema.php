@@ -25,6 +25,7 @@ require_once __DIR__ . '/class-sgs-schema.php';
 require_once __DIR__ . '/class-product-manifest.php';
 require_once __DIR__ . '/class-configurator-meta.php';
 require_once __DIR__ . '/class-product-offer-policy.php';
+require_once __DIR__ . '/class-product-reviews.php';
 
 /**
  * Class Product_Schema
@@ -89,6 +90,40 @@ final class Product_Schema {
 			return '';
 		}
 
+		$data = self::group_node( $parent, $product_id, $manifest, $combos );
+
+		// Encode and size-cap (SEC-3). build_has_variant() puts the low- and
+		// high-price anchor nodes FIRST, so when a large product (e.g. the 48-SKU
+		// fixture) would overflow the size cap we drop filler nodes from the END
+		// until it fits — the AggregateOffer still carries the TRUE offerCount, so
+		// trimming the hasVariant SAMPLE keeps the price-range rich result intact
+		// rather than suppressing the whole block. (Spec FR-27-E1: "hasVariant ≤50 =
+		// low+high+sample; offerCount = true total".) Only a product whose envelope
+		// + the two anchors alone still exceed the cap emits nothing.
+		$json       = self::encode( $data );
+		$node_count = \count( $data['hasVariant'] );
+		while ( false !== $json && \mb_strlen( $json ) >= self::MAX_JSON_CHARS && $node_count > 2 ) {
+			\array_pop( $data['hasVariant'] );
+			--$node_count;
+			$json = self::encode( $data );
+		}
+		if ( false === $json || \mb_strlen( $json ) >= self::MAX_JSON_CHARS ) {
+			return '';
+		}
+
+		return '<script type="application/ld+json">' . $json . '</script>' . "\n";
+	}
+
+	/**
+	 * The `ProductGroup` node for a variable product.
+	 *
+	 * @param \WC_Product $parent     The parent product.
+	 * @param int         $product_id Parent product ID.
+	 * @param array       $manifest   The product manifest.
+	 * @param array       $combos     The combos with a numeric inc-VAT price.
+	 * @return array<string,mixed>
+	 */
+	private static function group_node( \WC_Product $parent, int $product_id, array $manifest, array $combos ): array {
 		$permalink = \esc_url_raw( (string) \get_permalink( $product_id ) );
 		$currency  = \get_woocommerce_currency();
 		$decimals  = (int) $manifest['decimals'];
@@ -103,11 +138,8 @@ final class Product_Schema {
 			'url'            => $permalink,
 		);
 
-		// Description: short description → excerpt → omit.
-		$description = self::sanitise_text( $parent->get_short_description() );
-		if ( '' === $description ) {
-			$description = self::sanitise_text( $parent->get_description() );
-		}
+		// Description: short description → long description → omit.
+		$description = self::description_for( $parent );
 		if ( '' !== $description ) {
 			$data['description'] = $description;
 		}
@@ -133,11 +165,8 @@ final class Product_Schema {
 			$data['variesBy'] = $varies_by;
 		}
 
-		// aggregateRating — only when reviews exist.
-		$aggregate_rating = self::build_aggregate_rating( $parent );
-		if ( null !== $aggregate_rating ) {
-			$data['aggregateRating'] = $aggregate_rating;
-		}
+		// aggregateRating and review: the product's own approved reviews only, none when it has none.
+		$data += Product_Reviews::fields( $parent );
 
 		// AggregateOffer (price-from / price-to rich result).
 		// The shop's shipping and return policies print once, here; each variant's Offer points at them by @id.
@@ -154,26 +183,7 @@ final class Product_Schema {
 			$currency
 		);
 
-		// Encode and size-cap (SEC-3). build_has_variant() puts the low- and
-		// high-price anchor nodes FIRST, so when a large product (e.g. the 48-SKU
-		// fixture) would overflow the size cap we drop filler nodes from the END
-		// until it fits — the AggregateOffer still carries the TRUE offerCount, so
-		// trimming the hasVariant SAMPLE keeps the price-range rich result intact
-		// rather than suppressing the whole block. (Spec FR-27-E1: "hasVariant ≤50 =
-		// low+high+sample; offerCount = true total".) Only a product whose envelope
-		// + the two anchors alone still exceed the cap emits nothing.
-		$json       = self::encode( $data );
-		$node_count = \count( $data['hasVariant'] );
-		while ( false !== $json && \mb_strlen( $json ) >= self::MAX_JSON_CHARS && $node_count > 2 ) {
-			\array_pop( $data['hasVariant'] );
-			--$node_count;
-			$json = self::encode( $data );
-		}
-		if ( false === $json || \mb_strlen( $json ) >= self::MAX_JSON_CHARS ) {
-			return '';
-		}
-
-		return '<script type="application/ld+json">' . $json . '</script>' . "\n";
+		return $data;
 	}
 
 	/**
@@ -235,6 +245,19 @@ final class Product_Schema {
 	 */
 	public static function text( string $text ): string {
 		return self::sanitise_text( $text );
+	}
+
+	/**
+	 * A product's description as plain text: its short description, else its long description, else ''.
+	 *
+	 * Shared by the group, the plain product and each variant's fallback, so every node reads the same rule.
+	 *
+	 * @param \WC_Product $wc_product Product.
+	 * @return string
+	 */
+	public static function description_for( \WC_Product $wc_product ): string {
+		$description = self::sanitise_text( $wc_product->get_short_description() );
+		return '' !== $description ? $description : self::sanitise_text( $wc_product->get_description() );
 	}
 
 	/**
@@ -340,26 +363,6 @@ final class Product_Schema {
 			}
 		}
 		return $varies_by;
-	}
-
-	/**
-	 * Build aggregateRating node, or null when no reviews exist.
-	 *
-	 * @param \WC_Product $wc_product Parent product object.
-	 * @return array|null
-	 */
-	private static function build_aggregate_rating( \WC_Product $wc_product ): ?array {
-		$count = (int) $wc_product->get_review_count();
-		if ( $count < 1 ) {
-			return null;
-		}
-		return array(
-			'@type'       => 'AggregateRating',
-			'ratingValue' => $wc_product->get_average_rating(),
-			'reviewCount' => $count,
-			'bestRating'  => 5,
-			'worstRating' => 1,
-		);
 	}
 
 	/**
@@ -507,8 +510,9 @@ final class Product_Schema {
 			}
 		}
 
-		$parent_name = self::sanitise_text( $wc_product->get_name() );
-		$nodes       = array();
+		$parent_name        = self::sanitise_text( $wc_product->get_name() );
+		$parent_description = self::description_for( $wc_product );
+		$nodes              = array();
 
 		// One query for every selected variation's SKU and stock status.
 		$variation_ids = array();
@@ -532,7 +536,8 @@ final class Product_Schema {
 				$parent_image,
 				$permalink,
 				$decimals,
-				$currency
+				$currency,
+				$parent_description
 			);
 		}
 
@@ -551,6 +556,7 @@ final class Product_Schema {
 	 * @param string $permalink    Product permalink.
 	 * @param int    $decimals     Price decimal places.
 	 * @param string $currency     Currency code.
+	 * @param string $fallback_description The parent's description, used when the variation has none of its own.
 	 * @return array
 	 */
 	private static function variant_node(
@@ -562,7 +568,8 @@ final class Product_Schema {
 		string $parent_image,
 		string $permalink,
 		int $decimals,
-		string $currency
+		string $currency,
+		string $fallback_description = ''
 	): array {
 		$variation_id = (int) $combo['variationId'];
 
@@ -595,6 +602,15 @@ final class Product_Schema {
 			'@id'   => $permalink . '#variant-' . $variation_id,
 			'name'  => $variant_name,
 		);
+
+		// Description: the variation's own, else the parent's (Google asks every variant for one).
+		$description = self::sanitise_text( (string) \get_post_meta( $variation_id, '_variation_description', true ) );
+		if ( '' === $description ) {
+			$description = $fallback_description;
+		}
+		if ( '' !== $description ) {
+			$node['description'] = $description;
+		}
 
 		// SKU: the variation's own saved SKU only. WooCommerce's default read returns the PARENT's SKU for a
 		// variation with none, which would print one code on every variant; a variant with no code of its own

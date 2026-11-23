@@ -23,6 +23,7 @@ defined( 'ABSPATH' ) || exit;
 require_once __DIR__ . '/class-sgs-schema.php';
 require_once __DIR__ . '/class-product-schema.php';
 require_once __DIR__ . '/class-product-offer-policy.php';
+require_once __DIR__ . '/class-product-reviews.php';
 
 /**
  * Class Product_Schema_Simple
@@ -72,10 +73,7 @@ final class Product_Schema_Simple {
 			'url'      => $permalink,
 		);
 
-		$description = Product_Schema::text( $product->get_short_description() );
-		if ( '' === $description ) {
-			$description = Product_Schema::text( $product->get_description() );
-		}
+		$description = Product_Schema::description_for( $product );
 		if ( '' !== $description ) {
 			$node['description'] = $description;
 		}
@@ -107,6 +105,9 @@ final class Product_Schema_Simple {
 		}
 
 		$node['offers'] = self::offer( $product, $permalink );
+
+		// aggregateRating and review: the product's own approved reviews only, none when it has none.
+		$node += Product_Reviews::fields( $product );
 
 		return $node;
 	}

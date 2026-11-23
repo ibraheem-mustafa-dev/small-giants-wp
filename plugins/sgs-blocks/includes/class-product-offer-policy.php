@@ -14,10 +14,11 @@
  * - `sgs_configurator_returns`: a `MerchantReturnPolicy` object (array), for example
  *   `array( '@type' => 'MerchantReturnPolicy', 'applicableCountry' => 'GB', 'returnPolicyCategory' =>
  *   'https://schema.org/MerchantReturnFiniteReturnWindow', 'merchantReturnDays' => 14, 'returnMethod' =>
- *   'https://schema.org/ReturnByMail', 'returnFees' => 'https://schema.org/ReturnFeesCustomerResponsibility' )`.
+ *   'https://schema.org/ReturnByMail', 'returnFees' => 'https://schema.org/FreeReturn' )`.
  *   `returnPolicyCountry` is added at print time from WooCommerce's base country.
  *
- * Nothing is printed for an option that is empty or not an array: a value is never invented. Google reads
+ * Nothing is printed for an option that is empty or not an array: a value is never invented. Shipping can also come from
+ * WooCommerce's own settings ({@see Product_Shipping_Woo}) for a site that opts in; the hand-set option wins. Google reads
  * both on an `Offer` (merchant listings) and on the `Organization` (the shop-wide default), so
  * the product emitters print {@see self::offer_fields()} once per page (inside the only `Offer`, or the group's
  * `AggregateOffer`), each variant's `Offer` points at it with {@see self::offer_references()}, and the Organisation
@@ -30,13 +31,15 @@ namespace SGS\Blocks;
 
 defined( 'ABSPATH' ) || exit;
 
+require_once __DIR__ . '/class-product-shipping-woo.php';
+
 /**
  * Class Product_Offer_Policy
  */
 final class Product_Offer_Policy {
 
 	/**
-	 * The shipping details, or null when the shop has set none.
+	 * The hand-set shipping details (the `sgs_configurator_shipping` option), or null when the shop has set none.
 	 *
 	 * @return array<string,mixed>|null
 	 */
@@ -83,17 +86,21 @@ final class Product_Offer_Policy {
 	}
 
 	/**
-	 * The shipping details as the Organisation's `hasShippingService` (a `ShippingService`), or null when none is set.
+	 * The shop's shipping policy as the Organisation's `hasShippingService` (a `ShippingService`), or null when none is set.
+	 *
+	 * The hand-set `sgs_configurator_shipping` option wins; without it, a site that opted in publishes what its
+	 * WooCommerce shipping zones say ({@see Product_Shipping_Woo}).
 	 *
 	 * Google's shop-wide shipping policy is a `ShippingService` holding `ShippingConditions`, not an
-	 * `OfferShippingDetails`; the rate, destination, handling time and transit time carry across.
+	 * `OfferShippingDetails`. From a hand-set object the rate, destination and transit time carry into the conditions
+	 * (the transit time as a `ServicePeriod`) and the handling time sits on the service, as Google documents them.
 	 *
-	 * @return array<string,mixed>|null
+	 * @return array<string,mixed>|null One service, or a list of them.
 	 */
 	public static function shipping_service(): ?array {
 		$shipping = self::shipping();
 		if ( null === $shipping ) {
-			return null;
+			return self::woo_services();
 		}
 		$objects  = self::is_list( $shipping ) ? $shipping : array( $shipping );
 		$services = array();
@@ -109,21 +116,64 @@ final class Product_Offer_Policy {
 				}
 			}
 			$delivery = isset( $details['deliveryTime'] ) && \is_array( $details['deliveryTime'] ) ? $details['deliveryTime'] : array();
-			foreach ( array( 'handlingTime', 'transitTime' ) as $key ) {
-				if ( ! empty( $delivery[ $key ] ) ) {
-					$conditions[ $key ] = $delivery[ $key ];
-				}
+			if ( ! empty( $delivery['transitTime'] ) ) {
+				$conditions['transitTime'] = self::service_period( $delivery['transitTime'] );
 			}
-			$services[] = array(
+			$service = array(
 				'@type'              => 'ShippingService',
 				'@id'                => self::node_id( 'shipping-service', $n, $total ),
 				'shippingConditions' => $conditions,
 			);
+			if ( ! empty( $delivery['handlingTime'] ) ) {
+				$service['handlingTime'] = self::service_period( $delivery['handlingTime'] );
+			}
+			$services[] = $service;
 		}
 		if ( empty( $services ) ) {
 			return null;
 		}
 		return 1 === \count( $services ) ? $services[0] : $services;
+	}
+
+	/**
+	 * The services built from WooCommerce's shipping settings, each with its `@id`; null when the site has not
+	 * opted in or WooCommerce holds nothing Google can read.
+	 *
+	 * @return array<string,mixed>|null One service, or a list of them.
+	 */
+	private static function woo_services(): ?array {
+		if ( ! Product_Shipping_Woo::enabled() ) {
+			return null;
+		}
+		$nodes = Product_Shipping_Woo::services();
+		$total = \count( $nodes );
+		if ( 0 === $total ) {
+			return null;
+		}
+		foreach ( $nodes as $n => $node ) {
+			$nodes[ $n ] = array(
+				'@type' => 'ShippingService',
+				'@id'   => self::node_id( 'shipping-service', (int) $n, $total ),
+			) + $node;
+		}
+		return 1 === $total ? $nodes[0] : $nodes;
+	}
+
+	/**
+	 * A handling or transit time as the `ServicePeriod` Google reads: a bare `QuantitativeValue` becomes the
+	 * period's `duration`; a value already typed `ServicePeriod` stays as it is.
+	 *
+	 * @param mixed $time A `QuantitativeValue` or `ServicePeriod` array.
+	 * @return mixed
+	 */
+	private static function service_period( $time ) {
+		if ( ! \is_array( $time ) || 'ServicePeriod' === ( $time['@type'] ?? '' ) ) {
+			return $time;
+		}
+		return array(
+			'@type'    => 'ServicePeriod',
+			'duration' => $time + array( '@type' => 'QuantitativeValue' ),
+		);
 	}
 
 	/**

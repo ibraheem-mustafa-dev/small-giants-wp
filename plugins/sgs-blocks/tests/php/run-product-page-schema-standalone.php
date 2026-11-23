@@ -51,6 +51,8 @@ namespace {
 		public function get_image_id() { return 0; }
 		public function get_attribute( $a ) { return ''; }
 		public function get_review_count() { return 0; }
+		public function get_rating_count() { return 0; }
+		public function get_average_rating() { return '0'; }
 	}
 
 	function add_action() {}
@@ -73,6 +75,8 @@ namespace {
 	function get_permalink( $id ) { return 'https://shop.example/product/' . $id . '/'; }
 	function esc_url_raw( $u ) { return $u; }
 	function get_bloginfo( $k ) { return 'Mama&#039;s Munches'; }
+	function get_comments() { return array(); }
+	function get_comment_meta() { return ''; }
 	function wp_strip_all_tags( $s ) { return strip_tags( $s ); }
 	function sanitize_text_field( $s ) { return trim( $s ); }
 	function taxonomy_exists( $t ) { return false; }
