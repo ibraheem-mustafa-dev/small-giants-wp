@@ -76,6 +76,10 @@ test( 'MUST FAIL WITHOUT SGS_SECRETS_ROOT: a worktree outside .claude/worktrees 
 	assert.equal( candidateRoots( 'E:\\sgs-tmp\\wt-x', {} ).length, 1 );
 	assert.equal( candidateRoots( 'C:\\repo', { SGS_SECRETS_ROOT: 'C:\\repo' } ).length, 1 );
 } );
+test( 'MUST FAIL WITHOUT BOTH ROOTS: inside .claude/worktrees with SGS_SECRETS_ROOT set, the named checkout and the main checkout are both searched, each once whatever its case', () => {
+	assert.equal( candidateRoots( 'C:\\repo\\.claude\\worktrees\\a', { SGS_SECRETS_ROOT: 'D:\\secrets' } ).length, 3 );
+	assert.equal( candidateRoots( 'C:\\repo', { SGS_SECRETS_ROOT: 'c:\\REPO' } ).length, 1 );
+} );
 
 test( 'a flow that throws is an ERROR, never a pass or a fail; exit codes keep the three apart', async () => {
 	const boom = { meta: { name: 'x', precondition: '', expected: '', failureSignals: [] }, run: async () => {

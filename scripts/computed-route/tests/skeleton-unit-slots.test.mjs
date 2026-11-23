@@ -151,7 +151,23 @@ test( 'MUST FAIL WITHOUT THE LOOK\'S ATTRIBUTES: with every setting on both chil
 
 test( 'negative control: a look that records no attributes keeps the settings\' own slots, and one with no child open names no current child', () => {
 	assert.deepEqual( unitSlots( { cfg: openCfg, units: [ a.u, b.u ], open: [ 0 ], m, finder, settings } ).slots, run().slots );
-	const shut = unitSlots( { cfg: openCfg, units: [ a.u, b.u ], open: [ 0 ], m, finder, settings: recorded, attrs: {} } );
+	assert.deepEqual( unitSlots( { cfg: openCfg, units: [ a.u, b.u ], open: [ 0 ], m, finder, settings, attrs: {} } ).slots, run().slots );
+	const shut = unitSlots( { cfg: openCfg, units: [ a.u, b.u ], open: [ 0 ], m, finder, settings: recorded, attrs: { [ ONE ]: { 'data-x': '' } } } );
 	assert.equal( undefined, shut.slots[ `${ ONE } > .content` ] );
 	assert.match( shut.notes.join( ' ' ), /no slot for itemBackgroundOpen/ );
+} );
+
+test( 'MUST FAIL WITHOUT THE CHILD-NAMING SETTINGS ONLY: a part setting reaching an element that is no child (a filter row) never becomes the resting child', () => {
+	// The child-naming settings reach only the open child; a part setting also reaches a filter row beside the items.
+	const onlyOpen = { ...recorded, headerFontWeight: { slot: `${ ONE } > .header`, slots: [ `${ ONE } > .header` ] }, itemBackgroundOpen: { slot: ONE, slots: [ ONE ] }, itemShadow: { slot: '.filter', slots: [ '.filter', ONE, TWO ] } };
+	const r = unitSlots( { cfg: openCfg, units: [ a.u, b.u ], open: [ 0 ], m, finder, settings: onlyOpen, attrs: { [ ONE ]: { open: '' } } } );
+	assert.ok( Object.keys( r.slots ).every( ( k ) => ! k.startsWith( '.filter' ) ), Object.keys( r.slots ).join( ', ' ) );
+	assert.equal( r.slots[ ONE ]?.tpl, 'unit0' );
+} );
+
+test( 'MUST FAIL WITHOUT THE ARIA-CURRENT VALUE: aria-current="false" is not current', async () => {
+	const { inState } = await import( '../lib/skeleton-child-slots.mjs' );
+	assert.equal( inState( { 'aria-current': 'page' }, 'current' ), true );
+	assert.equal( inState( { 'aria-current': 'false' }, 'current' ), false );
+	assert.equal( inState( { 'aria-expanded': 'false' }, 'open' ), false );
 } );

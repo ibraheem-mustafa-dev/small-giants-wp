@@ -11,12 +11,17 @@ const ENV_KEY = 'WP_URL_EYECARETEST';
 
 // The repo root, then the checkout that holds the gitignored secrets and the node_modules junction a worktree lacks:
 // SGS_SECRETS_ROOT when set (as scripts/computed-route/lib/site-targets.mjs::secretsPath reads it, for a worktree anywhere,
-// such as E:\sgs-tmp), else, inside a git worktree under .claude/worktrees/<name>, the main checkout.
+// such as E:\sgs-tmp), and, inside a git worktree under .claude/worktrees/<name>, the main checkout; each once (a drive
+// path compared without case).
 export function candidateRoots( root = REPO_ROOT, env = process.env ) {
 	const norm = root.split( path.sep ).join( '/' );
 	const at = norm.indexOf( '/.claude/worktrees/' );
-	const extra = env.SGS_SECRETS_ROOT ? [ path.normalize( env.SGS_SECRETS_ROOT ) ] : at === -1 ? [] : [ path.normalize( norm.slice( 0, at ) ) ];
-	return [ root, ...extra.filter( ( r ) => path.normalize( r ) !== path.normalize( root ) ) ];
+	const same = ( a, b ) => ( 'win32' === process.platform || /^[a-z]:/i.test( a ) ? path.normalize( a ).toLowerCase() === path.normalize( b ).toLowerCase() : path.normalize( a ) === path.normalize( b ) );
+	const out = [ root ];
+	for ( const r of [ env.SGS_SECRETS_ROOT, -1 === at ? null : norm.slice( 0, at ) ].filter( Boolean ).map( ( x ) => path.normalize( x ) ) ) {
+		out.some( ( o ) => same( o, r ) ) || out.push( r );
+	}
+	return out;
 }
 
 // Parses KEY=value lines. Quotes are stripped; blank lines and # comments are skipped.

@@ -77,7 +77,8 @@ export const UNIT_PARTS = Object.keys( PARTS );
 // Which child is which is a fact of the block's render where the look records its elements' attributes (`attrs`, the
 // look's pathAttrs: the item the fixture saves open carries `open`): the current child is the first child the settings
 // reach whose element is in `currentState` (inState), the resting child the first that is not. A setting placed on every
-// child says nothing about which is open, so the settings' own slots decide only when the look records no attributes.
+// child says nothing about which is open, so the settings' own slots decide only when the look records no attributes (no
+// `pathAttrs`, or an empty one: a look built before it recorded them, or with SITE_LOOK_MUTATE=path-attrs).
 // units: [{ el, control, rendered, title, category, key }]; open: the indices of the units shown open. Returns { slots,
 // states, reveals, notes }.
 export function unitSlots( { cfg, units = [], open = [], m, finder, settings = {}, revealed = [], attrs = null } ) {
@@ -86,7 +87,7 @@ export function unitSlots( { cfg, units = [], open = [], m, finder, settings = {
 		return out;
 	}
 	const stepOf = ( name ) => stepsOf( settings[ name ]?.slot )[ 0 ] ?? null;
-	const child = attrs && cfg.currentState ? childrenByState( cfg, settings, attrs ) : { resting: stepOf( cfg.resting ), current: stepOf( cfg.current ) };
+	const child = attrs && Object.keys( attrs ).length && cfg.currentState ? childrenByState( cfg, settings, attrs ) : { resting: stepOf( cfg.resting ), current: stepOf( cfg.current ) };
 	const shown = units.find( ( u, i ) => open.includes( i ) ) ?? null;
 	const opened = shown ? null : units.map( ( u ) => shownOpen( u, revealed, m ) ).find( Boolean ) ?? null;
 	const unit = { resting: units.find( ( u, i ) => ! open.includes( i ) ) ?? null, current: shown ?? opened?.unit ?? null };
@@ -120,15 +121,17 @@ export function unitSlots( { cfg, units = [], open = [], m, finder, settings = {
 
 // The attributes that put an element in a state as the record names it (setting-record/instances.py::STATE_TRIGGERS and
 // its aria- names): an open disclosure, the current page's link.
+// `null` is any value but `false` (ARIA's aria-current="false" is not current; an `open` attribute has no value).
 const STATE_ATTRS = { open: [ [ 'open', null ], [ 'aria-expanded', 'true' ] ], current: [ [ 'aria-current', null ] ] };
 
 // Whether an element carrying `own` ({ attribute: value }) is in `state`.
-export const inState = ( own, state ) => ( STATE_ATTRS[ state ] || [] ).some( ( [ a, v ] ) => undefined !== own?.[ a ] && ( null === v || own[ a ] === v ) );
+export const inState = ( own, state ) => ( STATE_ATTRS[ state ] || [] ).some( ( [ a, v ] ) => undefined !== own?.[ a ] && ( null === v ? 'false' !== own[ a ] : own[ a ] === v ) );
 
-// { resting, current }: the first steps of the slots the childSlots settings reach, the current child the first whose
-// element is in cfg.currentState, the resting child the first that is not (null where none is).
+// { resting, current }: the first steps of the slots the two child-naming settings (cfg.resting, cfg.current) reach, the
+// current child the first whose element is in cfg.currentState, the resting child the first that is not (null where none
+// is). A part's setting can reach elements that are no child (a filter row), so it never names a child.
 function childrenByState( cfg, settings, attrs ) {
-	const names = [ cfg.resting, cfg.current, ...( cfg.parts || [] ).map( ( p ) => p.setting ) ];
+	const names = [ cfg.resting, cfg.current ];
 	const steps = [ ...new Set( names.flatMap( ( n ) => [ settings[ n ]?.slot, ...( settings[ n ]?.slots || [] ) ] ).map( ( s ) => stepsOf( s )[ 0 ] ).filter( Boolean ) ) ];
 	return { resting: steps.find( ( c ) => ! inState( attrs[ c ], cfg.currentState ) ) ?? null, current: steps.find( ( c ) => inState( attrs[ c ], cfg.currentState ) ) ?? null };
 }
