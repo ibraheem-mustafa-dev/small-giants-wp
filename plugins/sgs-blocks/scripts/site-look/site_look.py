@@ -169,7 +169,31 @@ def element_path(el, ref) -> str:
 # ---------------------------------------------------------------- reading one page
 
 
+MATH = re.compile(r'\s*(clamp|min|max|calc)\(.*\)\s*')
+
+
+def _math(v, width):
+    """A length the cascade reader left as a math function (math written straight inside clamp(), which it does not
+    evaluate) computed to px the way the browser computes it (theme.py::to_px evaluates clamp, min, max and calc)."""
+    if isinstance(v, str) and MATH.fullmatch(v):
+        try:
+            return CP.fmt_px(TH.to_px(v, width))
+        except Exception:  # noqa: BLE001 - not a length after all (a colour or a time): kept as the reader gave it
+            return v
+    return v
+
+
 def _value(page, el, pseudo, prop, width, parent_vals):
+    return _math(_value_raw(page, el, pseudo, prop, width, parent_vals), width)
+
+
+def _value_raw(page, el, pseudo, prop, width, parent_vals):
+    if prop == 'font-size':
+        # the reader computes a font size through its own length reader, which falls back to the parent's size on math
+        # written inside clamp(); a declared math font size is evaluated here instead
+        raw = page.raw(el, pseudo, width).get('font-size')
+        if isinstance(raw, str) and MATH.fullmatch(raw):
+            return raw
     if prop == 'gap':
         # the reader expands the shorthand into its longhands; the browser serialises it back (one value when both agree)
         comp = page.computed(el, pseudo, width)
@@ -226,6 +250,23 @@ def collect(page, top, prefix: str, els: dict, props: dict, with_own: bool) -> N
             els[f'{key}::{ps}'] = {str(w): {q: v for q in props['pseudo'] if (v := _value(page, el, ps, q, w, None)) is not None} for w in WIDTHS}
         if el.name in ('input', 'textarea'):
             els[f'{key}::placeholder'] = {str(w): {q: v for q in props['text'] if (v := _value(page, el, 'placeholder', q, w, None)) is not None} for w in WIDTHS}
+
+
+def path_classes(page, out: dict) -> None:
+    """{path: [classes]} for every element read_page keys (a path keeps the first variant's element)."""
+    root = page.root
+    if root is None:
+        return
+
+    def walk(top, prefix):
+        for el in [top, *top.find_all(True)]:
+            p = element_path(el, top)
+            key = (f'{prefix} > {p}' if p else prefix) if prefix else p
+            if key not in out and el.name not in ('style', 'script', 'template'):
+                out[key] = list(el.get('class') or [])
+    walk(root, '')
+    for n, t in enumerate(controlled(page, root), 1):
+        walk(t, '@controls' if n == 1 else f'@controls:{n}')
 
 
 def read_page(page, els: dict, props: dict, with_own: bool) -> None:
@@ -353,7 +394,7 @@ def build_block(short: str, snapshot_file: Path, woocommerce: bool) -> dict:
     children = sorted(set(re.findall(r'"name": "sgs/([a-z0-9-]+)"', json.dumps(fixture.get('inner') or []))))
     insts = [i for i in pl['instances'] if i['isDefault'] or i.get('paintState')]
     bridge = bridge_plan(f'sgs/{short}', snapshot_file)
-    marked = [i for i in bridge.get('discover', []) + bridge.get('content', [])]
+    marked = bridge.get('discover', []) + bridge.get('content', []) + bridge.get('forms', []) + bridge.get('states', [])
     jobs = {i['key']: RN.with_defaults(PLUGIN, short, RN.fill(i['attrs'])) for i in insts}
     jobs.update({f'b:{i["key"]}': RN.with_defaults(PLUGIN, short, RN.fill(i['attrs'])) for i in marked})
     results = rn.render_many(f'sgs/{short}', jobs, content, inner)
@@ -364,10 +405,11 @@ def build_block(short: str, snapshot_file: Path, woocommerce: bool) -> dict:
     pages = PF.Pages(short, run)
     errors = {k: (r.get('error') or '')[:300] for k, r in results.items() if not r.get('ok')}
     reader = Reader(pages, results, props)
-    elements = {}
+    elements, classes = {}, {}
     for i in sorted((i for i in insts if i['isDefault']), key=lambda i: i['variant']):
         if results[i['key']].get('ok'):
             read_page(reader.page(i['key']), elements, props, True)
+            path_classes(reader.page(i['key']), classes)
     paint_states = {}
     for st in fixture.get('paintStates') or []:
         i = next((x for x in insts if x.get('paintState') == st['name']), None)
@@ -377,7 +419,9 @@ def build_block(short: str, snapshot_file: Path, woocommerce: bool) -> dict:
         read_page(reader.page(i['key']), els, props, True)
         paint_states[st['name']] = {'when': st.get('when') or {}, 'elements': state_paint(resting(els, props), st.get('props'))}
     facts = setting_facts(bridge, reader)
+    record = record_facts(short, bridge, reader, elements, classes)
     return {'block': f'sgs/{short}', 'format': FORMAT, 'codeHash': rn.hash, 'elements': resting(elements, props),
+            'pathClasses': classes, **({'settingFacts': record} if record else {}),
             **({'paintStates': paint_states} if paint_states else {}), **facts,
             **({'renderErrors': errors} if errors else {}), 'themeLoaded': pages.theme}
 
@@ -408,23 +452,25 @@ class Reader:
         self.pages, self.results, self.props = pages, results, props
         self.memo, self.style_memo, self.content_memo = {}, {}, {}
 
-    def page(self, job: str):
-        if job not in self.memo:
-            pg = self.pages.get(job)
+    def page(self, job: str, held=()):
+        key = (job, tuple(held))
+        if key not in self.memo:
+            pg = self.pages.get(job, held=held)
             settle(pg, self.results[job])
-            self.memo[job] = pg
-        return self.memo[job]
+            self.memo[key] = pg
+        return self.memo[key]
 
     def ok(self, job: str) -> bool:
         return bool(self.results.get(job, {}).get('ok'))
 
-    def style(self, job: str) -> dict:
-        """{width: {path: {property: value}}}, as calibration's style reader returned a reading."""
-        if job not in self.style_memo:
+    def style(self, job: str, held=()) -> dict:
+        """{width: {path: {property: value}}}, as calibration's style reader returned a reading; `held` the states held."""
+        key = (job, tuple(held))
+        if key not in self.style_memo:
             els = {}
-            read_page(self.page(job), els, self.props, False)
-            self.style_memo[job] = transpose(els)
-        return self.style_memo[job]
+            read_page(self.page(job, held), els, self.props, False)
+            self.style_memo[key] = transpose(els)
+        return self.style_memo[key]
 
     def content(self, job: str, needles: tuple) -> dict:
         """{width: {path: {shown, t?, a?}}}, as lib/calibrate-content.mjs::readContentInPage returned a reading."""
@@ -605,6 +651,162 @@ def fold(discover: list, content: list) -> dict:
     return {'discovered': discovered, **({'text': text} if text else {}), **({'presence': presence} if presence else {}), **({'link': link} if link else {})}
 
 
+RECORDS = PLUGIN / 'scripts' / 'data' / 'setting-records'
+# A state as the cascade reader holds it (computed.py::Page `held`); a state the reader cannot hold here gets no look.
+HELD = {'hover': ('hover',), 'focus': ('focus', 'focus-visible'), 'focus-visible': ('focus-visible', 'focus'),
+        'active': ('active',), 'focus-within': ('focus-within',)}
+
+
+def record_of(short: str):
+    f = RECORDS / f'{short}.json'
+    return json.loads(f.read_text(encoding='utf-8')) if f.is_file() else None
+
+
+def part_paths(part: str, elements: dict, classes: dict) -> list:
+    """The site look's element paths whose element a record part names: `ROOT` the root, a class every element carrying
+    it (all its classes, not only the one its path step shows), `<class> <tag>` a tag inside one, a trailing `::before` or
+    `::after` that pseudo-element. Shallowest first."""
+    key, _, pe = part.partition('::')
+    pseudo = f'::{pe}' if pe else ''
+    head, _, tag = key.strip().partition(' ')
+    hosts = [p for p in classes if (p == '' if head == 'ROOT' else head in classes[p])]
+    # a pseudo-element part is its host's path with the pseudo-element: the setting that draws it switches it on, so the
+    # default look need not hold it
+    out = []
+    for base in elements:
+        if '::' in base:
+            continue
+        if tag:
+            el_tag = (elements.get(base) or {}).get('375', {}).get('_tag')
+            if el_tag == tag.strip() and any(base != h and (h == '' or base.startswith(h + ' > ')) for h in hosts):
+                out.append(base + pseudo)
+        elif base in hosts:
+            out.append(base + pseudo)
+    return sorted(set(out), key=lambda p: (_depth(p), p))
+
+
+def track_count(value):
+    """lib/calibrate.mjs::trackCount, reading a declared template too (the offline reader keeps `repeat(3, 1fr)` where a
+    browser reports three px tracks)."""
+    v = str(value or '').strip()
+    v = re.sub(r'repeat\(\s*(\d+)\s*,\s*([^()]+|[^()]*\([^()]*\)[^()]*)\)', lambda m: ' '.join([m.group(2).strip()] * int(m.group(1))), v)
+    v = re.sub(r'\[[^\]]*\]', ' ', v)
+    toks = [t for t in re.split(r'\s+(?![^(]*\))', v) if t]
+    ok = re.compile(r'^(-?[\d.]+(px|fr|%|em|rem)|minmax\(.*\)|auto|min-content|max-content|fit-content\(.*\))$')
+    return len(toks) if toks and all(ok.match(t) for t in toks) else None
+
+
+def _px(v):
+    m = re.fullmatch(r'\s*(-?[\d.]+)px\s*', str(v or ''))
+    return float(m.group(1)) if m else None
+
+
+def hit(prop, value, marker, w) -> bool:
+    """lib/calibrate.mjs::hitOf: the reading carries the marker's value at width `w`."""
+    if marker.get('tracks'):
+        return prop == 'grid-template-columns' and track_count(value) == marker['tracks'].get(str(w))
+    if not marker.get('expect'):
+        return True
+    want = marker['expect'].get(str(w))
+    if marker.get('tolerance'):
+        a, b = _px(value), _px(want)
+        if a is not None and b is not None:
+            return abs(a - b) <= marker['tolerance']
+    return _same_val(value, want)
+
+
+def form_accepted(marker, props, paths, def_read, read) -> bool:
+    """Whether a value-form marker took on one of the setting's own elements (lib/calibrate.mjs::formAccepted, FORM_ACCEPT):
+    clamp, vw and repeat carry the marker's value at all three widths on one element the marker changed; count changes
+    an element's track list and every change computes the marker's count; any other form (hex, slug) changes the
+    setting's property on one of its elements, holding the marker's value where it names one."""
+    form = marker.get('form')
+    for p in paths:
+        changed = {(str(w), q) for w in WIDTHS for q in props
+                   if (v := ((read.get(str(w)) or {}).get(p) or {}).get(q)) is not None
+                   and not _same_val(v, ((def_read.get(str(w)) or {}).get(p) or {}).get(q))}
+        if not changed:
+            continue
+        if form in ('clamp', 'vw', 'repeat'):
+            if all(any(hit(q, ((read.get(str(w)) or {}).get(p) or {}).get(q), marker, w) for q in props) for w in WIDTHS):
+                return True
+        elif form == 'count':
+            tracked = [(w, q) for w, q in changed if q == 'grid-template-columns']
+            if tracked and all(hit(q, read[w][p][q], marker, int(w)) for w, q in tracked):
+                return True
+        elif form not in ('clamp', 'vw', 'repeat', 'count'):
+            return True  # calibration recorded a non-strict form (hex, slug) whenever its marker changed the setting's property
+    return False
+
+
+def state_look(reading: dict, paths: list, props: list, look_props: list) -> dict:
+    """lib/calibrate-instances.mjs::stateLook: a state setting's elements in that state, per property and width, the
+    setting's own properties left out."""
+    out = {}
+    for w, els in reading.items():
+        for p in paths:
+            for q in (x for x in look_props if x not in props):
+                v = (els.get(p) or {}).get(q)
+                if v not in (None, ''):
+                    out.setdefault(p, {}).setdefault(q, {})[w] = v
+    return out
+
+
+def record_paths(record, elements, classes) -> dict:
+    """{setting: {state or '': [paths]}} for every placement the route may act on: a proved entry, or an unproved one
+    with `accepted` (Bean, 2026-11-22)."""
+    out = {}
+    for e in (record or {}).get('entries', []):
+        if e.get('unproved') and not e.get('accepted'):
+            continue
+        ps = part_paths(e['part'], elements, classes) if e.get('part') else []
+        if ps:
+            bucket = out.setdefault(e['setting'], {}).setdefault(e.get('state') or '', [])
+            bucket.extend(x for x in ps if x not in bucket)
+    return out
+
+
+def record_facts(short: str, bridge: dict, reader: Reader, elements: dict, classes: dict) -> dict:
+    """{setting: {forms, look}}: the facts the setting record does not describe, judged on the record's own elements only.
+    forms: the value forms a marker of that form took on (a form is claimed only on this positive evidence: a claimed
+    clamp() the block cannot hold would have Fill write a broken value). look: a state setting's look in its state."""
+    paths = record_paths(record_of(short), elements, classes)
+    plan = bridge.get('discover', []) + bridge.get('forms', []) + bridge.get('states', [])
+    out = {}
+    for i in bridge.get('forms', []):
+        state = i.get('state')
+        held = HELD.get(state, ()) if state else ()
+        if state and not held:
+            continue  # a state the reader cannot hold: no form is claimed without seeing it take
+        by_state = paths.get(i['setting'], {})
+        ps = by_state.get(state, []) if state else sorted({p for b in by_state.values() for p in b}, key=_depth)
+        base, job = _baseline(i, plan), f'b:{i["key"]}'
+        if not ps or not base or not (reader.ok(base) and reader.ok(job)):
+            continue
+        if form_accepted(i['marker'], i['props'], ps, reader.style(base, held), reader.style(job, held)):
+            forms = out.setdefault(i['setting'], {}).setdefault('forms', [])
+            if i['marker']['form'] not in forms:
+                forms.append(i['marker']['form'])
+    for i in bridge.get('states', []):
+        held = HELD.get(i.get('state'))
+        ps = (paths.get(i['setting']) or {}).get(i.get('state'), [])
+        job = f'b:{i["key"]}'
+        if not held or not ps or not reader.ok(job) or 'look' in out.get(i['setting'], {}):
+            continue
+        look = state_look(reader.style(job, held), ps, i['props'], bridge.get('stateLookProps') or [])
+        if look:
+            out.setdefault(i['setting'], {})['look'] = look
+    return out
+
+
+def _baseline(i, plan):
+    if i.get('baseKey'):
+        b = next((x for x in plan if x.get('isBase') and x.get('baseKey') == i['baseKey']), None)
+    else:
+        b = next((x for x in plan if x.get('isDefault') and x.get('variant', 0) == i.get('variant', 0)), None)
+    return f'b:{b["key"]}' if b else None
+
+
 def setting_facts(bridge: dict, reader: Reader) -> dict:
     """The per-setting facts the route reads beside the setting record: `discovered` (what each value of a setting whose
     values are not CSS keywords paints) and `text`, `link`, `presence` (where a setting's text and link land, and which
@@ -644,7 +846,9 @@ def look_key(short: str, snapshot_file: Path, woocommerce: bool) -> str:
     rn_hash = RN.code_hash(PLUGIN, RN.fixture_files(fixture, FIXTURES_DIR), None)
     theme_files = sorted((REPO / TH.THEME_REL).rglob('*.css')) + [REPO / TH.THEME_REL / 'theme.json', REPO / TH.THEME_REL / 'functions.php']
     h = hashlib.sha256()
+    rec = RECORDS / f'{short}.json'
     for part in (builder_hash(), rn_hash, hashlib.md5(snapshot_file.read_bytes()).hexdigest(), str(woocommerce), ','.join(sorted(MUTATE)),
+                 hashlib.md5(rec.read_bytes()).hexdigest() if rec.is_file() else 'no-record',
                  *(hashlib.md5(f.read_bytes()).hexdigest() for f in sheet_inputs(short) + theme_files if f.is_file())):
         h.update(part.encode())
     return h.hexdigest()[:20]

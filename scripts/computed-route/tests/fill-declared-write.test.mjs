@@ -7,7 +7,7 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { fillSurface } from '../fill.mjs';
-import { splitCalibration, writeSlotMap, writePaint } from '../lib/cache.mjs';
+import { writeRecordFixture } from '../lib/setting-record.mjs';
 
 // sgs/heading and sgs/text pair each typography setting with a unit setting (font size px, letter spacing and line height
 // em). h1: a rem font size, an em letter spacing and a unitless line height; p.plain: an em letter spacing; p.runtime: a
@@ -48,9 +48,7 @@ before( async () => {
 	const cache = path.join( work, 'cache' );
 	fs.mkdirSync( cache );
 	for ( const cal of Object.values( CAL ) ) {
-		const { slotMap, paint } = splitCalibration( { ...cal, site: 'acme-test' } );
-		writeSlotMap( cache, cal.block, slotMap );
-		writePaint( cache, 'acme-test', cal.block, paint );
+		writeRecordFixture( cache, cal.block, cal );
 	}
 	const draft = path.join( work, 'draft' );
 	fs.mkdirSync( draft );

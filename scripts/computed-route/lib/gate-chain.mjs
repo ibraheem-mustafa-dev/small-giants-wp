@@ -20,9 +20,9 @@ const blank = ( v ) => null == v || '' === String( v ).trim();
 const refused = ( e ) => ( 'W-walker' === e?.gateClass && isEvidence( e.evidence ) ? fail( 'W-walker', e.evidence ) : null );
 const time = ( v ) => ( blank( v ) ? NaN : Date.parse( v ) );
 
-// G0 Freshness. i: { dbRefreshedAt, blockCommittedAt (ISO times), cache: { slotKey, playwrightVersion, browserVersion },
-// blockChanges (git status --porcelain lines for the block's source folder; any means uncommitted edits),
-// deployHash (the local build's hash, which calibration also records: a stale remote deploy is not seen here), installed: { playwrightVersion, browserVersion }, manifest: { schema_version,
+// G0 Freshness. i: { dbRefreshedAt, blockCommittedAt (ISO times), cache: the block's record (lib/setting-record.mjs,
+// `paintMissing` when it has no site look), blockChanges (git status --porcelain lines for the block's source folder; any
+// means uncommitted edits), manifest: { schema_version,
 // files: { path: sha256 } } (MANIFEST.json), intake: the same shape from intake.json, schemaVersion (expected) }.
 function g0FreshnessRead( i ) {
 	const stale = ( why ) => fail( 'I-stale', why );
@@ -43,21 +43,15 @@ function g0FreshnessRead( i ) {
 	if ( i.blockChanges.length ) {
 		return stale( `the block has uncommitted changes (${ i.blockChanges.slice( 0, 3 ).join( '; ' ) }); the DB cannot reflect them` );
 	}
+	// The block's setting record and site look (lib/setting-record.mjs): the build gate keeps every record current with
+	// the block's code, and the site look is rebuilt whenever its inputs change, so a record that loads with its look is
+	// current; one without a look has nothing to judge against.
 	const c = i.cache;
-	if ( ! c || blank( c.slotKey ) || blank( i.deployHash ) ) {
-		return stale( 'the calibration cache or the current deploy hash is unreadable' );
+	if ( ! c ) {
+		return stale( 'the block has no setting record' );
 	}
-	if ( c.slotKey !== i.deployHash ) {
-		return stale( `the cache measured deploy ${ c.slotKey }; the current deploy is ${ i.deployHash }` );
-	}
-	// The browser the cache was measured in (FR-48-75): both versions must be recorded and equal the installed ones.
-	for ( const k of [ 'playwrightVersion', 'browserVersion' ] ) {
-		if ( blank( c[ k ] ) || blank( i.installed?.[ k ] ) ) {
-			return stale( `${ k } is not recorded in the cache or not readable from the install` );
-		}
-		if ( String( c[ k ] ) !== String( i.installed[ k ] ) ) {
-			return stale( `the cache was measured with ${ k } ${ c[ k ] }; installed is ${ i.installed[ k ] }` );
-		}
+	if ( c.paintMissing ) {
+		return stale( c.paintMissing );
 	}
 	const [ m, t ] = [ i.manifest, i.intake ];
 	if ( ! m?.files || ! t?.files || blank( i.schemaVersion ) ) {
@@ -67,7 +61,7 @@ function g0FreshnessRead( i ) {
 		return stale( `schema_version is ${ m.schema_version } in MANIFEST.json and ${ t.schema_version } in intake.json; expected ${ i.schemaVersion }` );
 	}
 	const differ = [ ...new Set( [ ...Object.keys( m.files ), ...Object.keys( t.files ) ] ) ].filter( ( f ) => m.files[ f ] !== t.files[ f ] );
-	return differ.length ? stale( `intake.json hashes differ from MANIFEST.json: ${ differ.slice( 0, 5 ).join( ', ' ) }` ) : ok( `DB ${ i.dbRefreshedAt } after commit ${ i.blockCommittedAt }; deploy ${ i.deployHash }; browser ${ c.browserVersion }; intake matches MANIFEST` );
+	return differ.length ? stale( `intake.json hashes differ from MANIFEST.json: ${ differ.slice( 0, 5 ).join( ', ' ) }` ) : ok( `DB ${ i.dbRefreshedAt } after commit ${ i.blockCommittedAt }; site look ${ c.recordKey ?? 'read' }; intake matches MANIFEST` );
 }
 
 // G1 Pair and paint. i: { row, pairing: { by: 'identity' | 'words' }, paint: { inert, paints }, stateListed }.

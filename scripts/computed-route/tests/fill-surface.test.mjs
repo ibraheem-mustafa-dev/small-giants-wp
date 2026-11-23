@@ -8,7 +8,7 @@ import os from 'os';
 import path from 'path';
 import { pathToFileURL } from 'url';
 import { fillSurface, calibrationLoader } from '../fill.mjs';
-import { splitCalibration, writeSlotMap, writePaint } from '../lib/cache.mjs';
+import { writeRecordFixture } from '../lib/setting-record.mjs';
 import { lintConfig } from '../../parity/lib/lint.mjs';
 
 const DRAFT = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><style>
@@ -62,9 +62,7 @@ before( async () => {
 	const cache = path.join( work, 'cache' );
 	fs.mkdirSync( cache );
 	for ( const [ name, cal ] of Object.entries( CAL ) ) {
-		const { slotMap, paint } = splitCalibration( { ...cal, site: 'acme-test' } );
-		writeSlotMap( cache, cal.block, slotMap );
-		writePaint( cache, 'acme-test', cal.block, paint );
+		writeRecordFixture( cache, cal.block, cal );
 	}
 	const draft = path.join( work, 'draft' );
 	fs.mkdirSync( draft );
@@ -147,11 +145,10 @@ test( 'the report names its sections and the generated walker config is accepted
 	assert.ok( cfg.pairs.some( ( p ) => '.cr-ref-home-0' === p.live ) );
 } );
 
-test( 'calibrationLoader reads a cache directory and answers null for a block without a file', () => {
+test( 'calibrationLoader reads a test\'s record from the folder it names and answers null for a block with no record', () => {
 	const load = calibrationLoader( 'acme-test', path.join( work, 'cache' ) );
 	assert.equal( load( 'sgs/text' ).block, 'sgs/text' );
-	assert.ok( Object.keys( load( 'sgs/text' ).elements ).length, 'the site own default paint is merged in' );
-	assert.deepEqual( calibrationLoader( 'other-site', path.join( work, 'cache' ) )( 'sgs/text' ).elements, {}, 'another site has no paint here' );
+	assert.ok( Object.keys( load( 'sgs/text' ).elements ).length, 'the record carries its default look' );
 	assert.equal( load( 'sgs/nothing' ), null );
 } );
 

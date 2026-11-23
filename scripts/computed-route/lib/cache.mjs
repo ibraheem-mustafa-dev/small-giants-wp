@@ -16,6 +16,7 @@ import fs from 'fs';
 import path from 'path';
 import { READ_KEY } from './calibrate-props.mjs';
 import { readTargets, SCRATCH_NAME } from './site-targets.mjs';
+import { loadRecord, recordFixtureFile, readRecordFixture } from './setting-record.mjs';
 
 let siteTargets = null;
 const targetsNow = () => ( siteTargets ||= readTargets() );
@@ -116,20 +117,15 @@ export function writePaint( dir, site, block, paint ) {
 	fs.writeFileSync( f, JSON.stringify( { ...paint, paintFolder: paintSite( site ) }, null, 1 ) );
 }
 
-// The calibration a reader works from: the slot map with THIS site's default paint merged in as `elements`. Null when the
-// block has no slot map; `paintReadKey` is the read list the paint was measured under. A site with no paint file gets `elements: {}` and `paintMissing` naming the site, never another
-// site's paint. A file read under an older READ_KEY is returned as it is: what it recorded is still true, and a property
-// the read list gained since reads as absent until the site is recalibrated (stage 0 reports that slot map stale).
+// What a reader works from for one block on one site: the setting record and the site look (lib/setting-record.mjs::
+// loadRecord), in the keys calibration gave. `dir` is kept for the readers that pass one and is no longer read: the
+// record is in the framework database and the site look in scripts/computed-route/site-look. Null when the block has no
+// record.
 export function loadCalibration( dir, block, site ) {
-	const slotMap = readSlotMap( dir, block );
-	if ( ! slotMap ) {
-		return null;
+	if ( dir && fs.existsSync( recordFixtureFile( dir, block, site ) ) ) {
+		return readRecordFixture( dir, block, site || null );
 	}
-	const paint = site ? readPaint( dir, site, block ) : null;
-	if ( ! paint ) {
-		return { ...slotMap, elements: {}, paintMissing: site ? `no default paint for ${ site }; run calibrate.mjs on that site` : 'no site named, so no default paint to read' };
-	}
-	return { ...slotMap, elements: paint.elements || {}, ...( paint.parts ? { parts: paint.parts } : {} ), ...( paint.paintStates ? { paintStates: paint.paintStates } : {} ), paintKey: paint.paintKey, paintSite: paint.site, paintReadKey: paint.readKey ?? null };
+	return loadRecord( block, site || null );
 }
 
 // The properties of the block's own read list a slot map was measured without.

@@ -1,5 +1,6 @@
 {
   "eye-care-test": {
+    "client": "eye-care-ward-end",
     "envFile": ".claude/secrets/eye-care-test.env",
     "protected": "the hand-built site Bean presents: no route step, push or calibration ever writes to it (Spec 48 §12)",
     "envKey": "EYECARETEST",
@@ -21,6 +22,7 @@
     }
   },
   "eye-care-clone-test": {
+    "client": "eye-care-ward-end",
     "envFile": ".claude/secrets/eye-care-clone-test.env",
     "envKey": "EYECARECLONETEST",
     "postId": 23,
@@ -83,6 +85,7 @@
     }
   },
   "indus-test": {
+    "client": "indus-foods",
     "envFile": ".claude/secrets/indus-test.env",
     "envKey": "INDUSTEST",
     "postId": 15,
@@ -113,6 +116,7 @@
     }
   },
   "mamas-test": {
+    "client": "mamas-munches-redesign",
     "envFile": ".claude/secrets/mamas-test.env",
     "protected": "the live shop, serving customers on its own domain: a route run never writes to it",
     "envKey": "MAMASTEST",

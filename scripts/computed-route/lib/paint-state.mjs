@@ -8,6 +8,7 @@
 // one is set ], lacks: [ attributes of which none is set ], equals: { attribute: value each must hold } }; a key left out
 // is not tested. `equals` names a way a block's variant setting draws it (a split hero, `{ variant: 'split' }`), whose
 // resting paint differs from the default variant's on the elements both draw. The first state that matches wins.
+import { withNodeValues } from './setting-record.mjs';
 import { deviceModes, modeKeys, attributesAt, MODE_WIDTHS } from './fill-device-mode.mjs';
 
 const isSet = ( v ) => ! ( null === v || undefined === v || '' === v || ( Array.isArray( v ) && ! v.length ) || ( 'object' === typeof v && ! Array.isArray( v ) && ! Object.keys( v ).length ) );
@@ -54,7 +55,8 @@ function overlayAt( base, top, width ) {
 // A node whose way of drawing differs by device (lib/fill-device-mode.mjs::deviceModes, given the block's `fixture` and
 // `schema`) is judged per read width: each width's paint is the state matching the node as it draws there, and the view
 // carries `modeAt`, the fixture variants in force at each width.
-export function calibrationForNode( cal, node, { fixture = null, schema = null } = {} ) {
+export function calibrationForNode( raw, node, { fixture = null, schema = null } = {} ) {
+	const cal = raw && node ? withNodeValues( raw, node.attributes || {}, schema ) : raw;
 	const modeAt = cal && node && fixture ? deviceModes( fixture, schema, node.attributes || {} ) : null;
 	if ( modeAt ) {
 		return perWidthView( cal, node, modeAt, modeKeys( fixture, schema ), schema );

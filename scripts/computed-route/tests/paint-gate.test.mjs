@@ -11,7 +11,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { assertPaints, paintGaps, treeBlocks } from '../lib/paint-gate.mjs';
-import { writeSlotMap, writePaint } from '../lib/cache.mjs';
+import { writeRecordFixture } from '../lib/setting-record.mjs';
 import { READ_KEY } from '../lib/calibrate-props.mjs';
 import { fillSurface, calibrationLoader } from '../fill.mjs';
 import { proposeSurface } from '../skeleton.mjs';
@@ -24,17 +24,13 @@ const REPO = path.resolve( ROUTE, '../..' );
 const SITE = 'acme-test';
 const db = openDb();
 
-// A cache where, for SITE, container and text have their default paint, heading has none and button's file in SITE's
-// folder belongs to another site; every one of the four has a slot map.
+// Records where container and text have their default look on SITE and heading and button have none; every one of the
+// four has a record.
 function fixtureCache() {
 	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'cr-paint-gate-' ) );
 	for ( const block of [ 'sgs/container', 'sgs/text', 'sgs/heading', 'sgs/button' ] ) {
-		writeSlotMap( dir, block, { block, site: SITE, slotKey: 'k', readKey: READ_KEY, settings: {} } );
+		writeRecordFixture( dir, block, { block, site: SITE, settings: {}, ...( [ 'sgs/container', 'sgs/text' ].includes( block ) ? { elements: { '': { 1440: { color: 'red' } } } } : {} ) } );
 	}
-	for ( const block of [ 'sgs/container', 'sgs/text' ] ) {
-		writePaint( dir, SITE, block, { block, site: SITE, paintKey: 'pk', readKey: READ_KEY, elements: { '': { 1440: { color: 'red' } } } } );
-	}
-	fs.writeFileSync( path.join( dir, SITE, 'button.paint.json' ), JSON.stringify( { block: 'sgs/button', site: 'other-test', paintFolder: 'other-test', paintKey: 'pk', readKey: READ_KEY, elements: {} } ) );
 	return dir;
 }
 
@@ -44,7 +40,7 @@ const SKELETON = [ { name: 'sgs/container', draftRef: 'main', attributes: { tagN
 	{ name: 'sgs/heading', draftRef: 'h1', attributes: { level: 'h1' } },
 	{ name: 'sgs/container', draftRef: '.card', attributes: {}, innerBlocks: [ { name: 'sgs/button', draftRef: 'a', attributes: {} } ] },
 ] } ];
-const GAPS = /2 blocks in its tree have no default paint for acme-test \(sgs\/button, sgs\/heading\)[\s\S]*calibrate\.mjs --site acme-test --client acme --blocks sgs\/button,sgs\/heading/;
+const GAPS = /2 blocks in its tree have no default paint for acme-test \(sgs\/button, sgs\/heading\)[\s\S]*site_look\.py --snapshot sites\/acme\/theme-snapshot\.json --site acme --out scripts\/computed-route\/site-look --blocks sgs\/button,sgs\/heading/;
 
 test( 'MUST FAIL: Fill stops before it writes anything when a skeleton block has no default paint on the surface\'s site', async () => {
 	const cache = fixtureCache();

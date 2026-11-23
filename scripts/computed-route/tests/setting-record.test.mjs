@@ -1,0 +1,151 @@
+// Proves the route's reader of the setting record and the site look (lib/setting-record.mjs): which placements the route
+// may act on (proved, or unproved and accepted; never unproved alone), a breakpoint a setting names follows the node's
+// own value of it, a setting that paints only beside its partner is placed from its block_attributes row, a record part
+// names the right elements (all their classes, a pseudo-element its setting draws), and tier conditions read as a plain
+// screen holds them. An in-memory database and a hand-written site look: no site, no framework database, no cache folder.
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { DatabaseSync } from 'node:sqlite';
+import { loadRecord, partPaths, tierHolds, reachedAtOf, symbolicTiers, withNodeValues } from '../lib/setting-record.mjs';
+import { calibrationForNode } from '../lib/paint-state.mjs';
+
+const BLOCK = 'sgs/demo';
+const TARGETS = { 'demo-test': { client: 'demo-client' }, 'local-demo': { mirrorOf: 'demo-test' } };
+const at = ( v ) => ( { 375: v, 768: v, 1440: v } );
+
+// The look the builder would write: a root, a label carrying two classes (its path names the first), an inner span.
+const LOOK = {
+	key: 'k1',
+	elements: {
+		'': at( { _tag: 'div', display: 'flex', color: 'rgb(0, 0, 0)' } ),
+		'.sgs-demo__label': at( { _tag: 'span', display: 'inline' } ),
+		'.sgs-demo__label > span': at( { _tag: 'span', display: 'inline', '_own:color': 'rgb(9, 9, 9)' } ),
+		'.sgs-demo__panel': at( { _tag: 'div', display: 'block' } ),
+	},
+	pathClasses: { '': [ 'sgs-demo', 'wp-block-sgs-demo' ], '.sgs-demo__label': [ 'sgs-demo__label', 'sgs-demo__text' ], '.sgs-demo__label > span': [], '.sgs-demo__panel': [ 'sgs-demo__panel' ] },
+	settingFacts: { size: { forms: [ 'clamp', 'vw' ] } },
+};
+
+function fixtureDb( rows, { testedNoPaint = [], attrs = [] } = {} ) {
+	const db = new DatabaseSync( ':memory:' );
+	db.exec( `CREATE TABLE setting_placements ( block_slug TEXT, setting TEXT, part TEXT, props TEXT, state TEXT, tiers TEXT, kind TEXT, unproved TEXT, accepted TEXT, selector TEXT, setting_values TEXT, symbolic TEXT );
+		CREATE TABLE setting_record_blocks ( block_slug TEXT, tested_no_paint TEXT, replaces_block TEXT, unvalued TEXT );
+		CREATE TABLE block_attributes ( block_slug TEXT, attr_name TEXT, attr_type TEXT, default_value TEXT, enum_values TEXT, is_responsive INT, css_property TEXT, css_element TEXT, css_state TEXT, css_tier TEXT, tier_shape TEXT, box_family TEXT, source TEXT, role TEXT );` );
+	const put = db.prepare( 'INSERT INTO setting_placements VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )' );
+	for ( const r of rows ) {
+		put.run( BLOCK, r.setting, r.part, JSON.stringify( r.props ), r.state || '', JSON.stringify( r.tiers || [] ), r.kind || 'value', r.unproved ?? null, r.accepted ?? null, '', null, r.symbolic ? JSON.stringify( r.symbolic ) : null );
+	}
+	db.prepare( 'INSERT INTO setting_record_blocks VALUES ( ?, ?, ?, ? )' ).run( BLOCK, JSON.stringify( testedNoPaint ), '[]', '[]' );
+	const attr = db.prepare( 'INSERT INTO block_attributes ( block_slug, attr_name, attr_type, css_property, css_element, css_state, source ) VALUES ( ?, ?, ?, ?, ?, ?, ? )' );
+	for ( const a of attrs ) {
+		attr.run( BLOCK, a.attr, a.type || 'string', a.property ?? null, a.element ?? null, a.state ?? null, 'sgs' );
+	}
+	return db;
+}
+
+function lookDir( look = LOOK ) {
+	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'cr-setting-record-' ) );
+	fs.mkdirSync( path.join( dir, 'demo-client' ), { recursive: true } );
+	fs.writeFileSync( path.join( dir, 'demo-client', 'demo.json' ), JSON.stringify( look ) );
+	return dir;
+}
+
+const load = ( db, extra = {} ) => loadRecord( BLOCK, 'local-demo', { db, dir: lookDir(), targets: TARGETS, build: false, ...extra } );
+
+test( 'MUST FAIL: an unproved placement is acted on only when accepted; one that is not is listed with its cause', () => {
+	const db = fixtureDb( [
+		{ setting: 'colour', part: 'ROOT', props: [ 'color' ] },
+		{ setting: 'gapLine', part: 'sgs-demo__label', props: [ 'border-color' ], unproved: 'part-not-rendered', accepted: '["sgs/other"]' },
+		{ setting: 'ghost', part: 'sgs-demo__panel', props: [ 'opacity' ], unproved: 'rule-needs-absent-markup' },
+	] );
+	const r = load( db );
+	assert.ok( r.settings.colour, 'a proved placement is a setting' );
+	assert.ok( r.settings.gapLine?.accepted, 'an accepted unproved placement is a setting, marked accepted' );
+	assert.equal( r.settings.ghost, undefined, 'an unproved placement that is not accepted never enters settings' );
+	assert.deepEqual( r.untestedStates, [ 'ghost' ] );
+	assert.deepEqual( r.unproved, { ghost: [ 'rule-needs-absent-markup' ] } );
+} );
+
+test( 'a setting with a usable placement is not listed untested for a state it also has unproved rows on', () => {
+	const db = fixtureDb( [
+		{ setting: 'colour', part: 'ROOT', props: [ 'color' ] },
+		{ setting: 'colour', part: 'sgs-demo__panel', props: [ 'color' ], unproved: 'part-not-rendered' },
+	] );
+	assert.deepEqual( load( db ).untestedStates, [] );
+} );
+
+test( 'MUST FAIL: a breakpoint a setting names follows the node\'s own value (collapse point 900: max edge 899.98)', () => {
+	const db = fixtureDb( [ { setting: 'collapsePoint', part: 'sgs-demo__panel', props: [ 'display' ], kind: 'switched-on', tiers: [ '@media(max-width:767.98px)' ], symbolic: { edge: 'max', setting: 'collapsePoint', offset: -0.02 } } ] );
+	const r = load( db );
+	assert.deepEqual( r.settings.collapsePoint.reachedAt, [ 375 ], 'the record\'s own value (768: max 767.98, short of the tablet)' );
+	const node = calibrationForNode( r, { name: BLOCK, attributes: { collapsePoint: 900 } } );
+	assert.deepEqual( node.settings.collapsePoint.tiers[ 0 ], [ '@media(max-width:899.98px)' ] );
+	assert.deepEqual( node.settings.collapsePoint.reachedAt, [ 375, 768 ] );
+	assert.deepEqual( calibrationForNode( r, { name: BLOCK, attributes: { collapsePoint: 600 } } ).settings.collapsePoint.reachedAt, [ 375 ], 'a narrower collapse point leaves the tablet' );
+	assert.equal( withNodeValues( r, {} ), withNodeValues( r, {} ), 'one view per value' );
+} );
+
+test( 'MUST FAIL: a setting that paints only beside its partner is placed from its block_attributes row; one with no property paints nothing', () => {
+	const db = fixtureDb( [ { setting: 'colour', part: 'ROOT', props: [ 'color' ] } ], {
+		testedNoPaint: [ 'panelBackground', 'ariaLabel', 'drawerBorder' ],
+		attrs: [ { attr: 'panelBackground', property: 'background-color', element: 'panel' }, { attr: 'ariaLabel' }, { attr: 'drawerBorder', property: 'border-color', element: 'drawer' } ],
+	} );
+	const r = loadRecord( BLOCK, 'local-demo', { db, dir: lookDir(), targets: TARGETS, build: false, elementsOf: () => ( { panel: '.sgs-demo__panel', drawer: '.sgs-demo__drawer' } ) } );
+	assert.deepEqual( r.settings.panelBackground?.slots, [ '.sgs-demo__panel' ] );
+	assert.equal( r.settings.panelBackground.property, 'background-color' );
+	assert.equal( r.settings.panelBackground.fromAttributes, true );
+	assert.deepEqual( r.dead, [ 'ariaLabel' ], 'a setting whose element this look does not draw is not placed, and not dead either' );
+	assert.equal( r.settings.drawerBorder, undefined );
+} );
+
+test( 'MUST FAIL: a record part names every element carrying its class, a tag inside one, and a pseudo-element its setting draws', () => {
+	assert.deepEqual( partPaths( 'ROOT', LOOK ), [ '' ] );
+	assert.deepEqual( partPaths( 'sgs-demo__text', LOOK ), [ '.sgs-demo__label' ], 'a class the path step does not show' );
+	assert.deepEqual( partPaths( 'sgs-demo__label span', LOOK ), [ '.sgs-demo__label > span' ] );
+	assert.deepEqual( partPaths( 'ROOT::before', LOOK ), [ '::before' ], 'drawn only when the setting is on' );
+	assert.deepEqual( partPaths( 'sgs-demo__label span::after', LOOK ), [ '.sgs-demo__label > span::after' ] );
+	assert.deepEqual( partPaths( 'sgs-demo__missing', LOOK ), [] );
+} );
+
+test( 'an inherited setting reaches its descendants up to the one that paints the property itself', () => {
+	const r = load( fixtureDb( [ { setting: 'colour', part: 'ROOT', props: [ 'color' ] } ] ) );
+	assert.deepEqual( r.settings.colour.overriddenBy, [ '.sgs-demo__label > span' ] );
+	assert.ok( r.settings.colour.reaches.includes( '.sgs-demo__label' ) );
+	assert.ok( ! r.settings.colour.reaches.includes( '.sgs-demo__label > span' ) );
+} );
+
+test( 'a setting\'s own state is its block_attributes row\'s; the same paint on focus is an effect', () => {
+	const db = fixtureDb( [
+		{ setting: 'colour', part: 'ROOT', props: [ 'color' ], state: 'focus' },
+		{ setting: 'colour', part: 'ROOT', props: [ 'color' ] },
+	], { attrs: [ { attr: 'colour', property: 'color' } ] } );
+	assert.equal( load( db ).settings.colour.state, null );
+} );
+
+test( 'forms come from the site look\'s positive evidence only', () => {
+	const r = load( fixtureDb( [ { setting: 'size', part: 'ROOT', props: [ 'font-size' ] }, { setting: 'colour', part: 'ROOT', props: [ 'color' ] } ] ) );
+	assert.deepEqual( r.settings.size.forms, [ 'clamp', 'vw' ] );
+	assert.deepEqual( r.settings.colour.forms, [] );
+} );
+
+test( 'a site with no client, or no site look, reads as missing its look', () => {
+	const db = fixtureDb( [ { setting: 'colour', part: 'ROOT', props: [ 'color' ] } ] );
+	assert.match( loadRecord( BLOCK, 'nowhere', { db, dir: lookDir(), targets: TARGETS, build: false } ).paintMissing, /names no client/ );
+	const empty = fs.mkdtempSync( path.join( os.tmpdir(), 'cr-setting-record-empty-' ) );
+	const r = loadRecord( BLOCK, 'local-demo', { db, dir: empty, targets: TARGETS, build: false } );
+	assert.match( r.paintMissing, /no site look/ );
+	assert.equal( r.settings.colour.slot, null, 'without a look a setting has no element' );
+} );
+
+test( 'tier conditions as a plain screen holds them', () => {
+	assert.equal( tierHolds( '@media(max-width:767.98px)', 375 ), true );
+	assert.equal( tierHolds( '@media(max-width:767.98px)', 768 ), false );
+	assert.equal( tierHolds( '@media (min-width:768px) and (max-width:1023.98px)', 768 ), true );
+	assert.equal( tierHolds( '@media(prefers-reduced-motion:reduce)', 375 ), false );
+	assert.equal( tierHolds( '@container (min-width: 600px)', 375 ), true );
+	assert.deepEqual( reachedAtOf( [] ), [ 375, 768, 1440 ] );
+	assert.deepEqual( symbolicTiers( [ '@media(min-width:768px)' ], { edge: 'min', setting: 'x', offset: 0 }, 640 ), [ '@media(min-width:640px)' ] );
+} );

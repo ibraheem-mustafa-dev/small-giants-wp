@@ -9,7 +9,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { writeSlotMap, writePaint } from '../lib/cache.mjs';
+import { writeRecordFixture } from '../lib/setting-record.mjs';
 import { READ_KEY } from '../lib/calibrate-props.mjs';
 import { proposeSurface } from '../skeleton.mjs';
 import { openDb } from '../lib/db.mjs';
@@ -43,8 +43,9 @@ function fixture() {
 	fs.mkdirSync( path.join( repo, 'plugins/sgs-blocks/src/blocks', list ), { recursive: true } );
 	fs.copyFileSync( path.join( REPO, 'plugins/sgs-blocks/src/blocks', list, 'block.json' ), path.join( repo, 'plugins/sgs-blocks/src/blocks', list, 'block.json' ) );
 	const cache = fs.mkdtempSync( path.join( os.tmpdir(), 'cr-run-site-cache-' ) );
-	writeSlotMap( cache, 'sgs/text', { block: 'sgs/text', site: RUN_SITE, slotKey: 'k', readKey: READ_KEY, settings: {} } );
-	writePaint( cache, RUN_SITE, 'sgs/text', { block: 'sgs/text', site: RUN_SITE, paintKey: 'pk', readKey: READ_KEY, elements: { '': { 1440: { color: 'red' } } } } );
+	// sgs/text has a record on both sites and a default look only on RUN_SITE
+	writeRecordFixture( cache, 'sgs/text', { block: 'sgs/text', settings: {} } );
+	writeRecordFixture( cache, 'sgs/text', { block: 'sgs/text', site: RUN_SITE, settings: {}, elements: { '': { 1440: { color: 'red' } } } }, RUN_SITE );
 	return { repo, cache };
 }
 

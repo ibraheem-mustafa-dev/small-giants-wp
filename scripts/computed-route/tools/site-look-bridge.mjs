@@ -21,6 +21,7 @@ import { openDb, attrsFor, enumSettings, variantInfo, controlsOf } from '../lib/
 import { blockSchema } from '../lib/resolve.mjs';
 import { loadSnapshot } from '../lib/normalise.mjs';
 import { planInstances, instanceCtx, longhands, discoverEffects } from '../lib/calibrate.mjs';
+import { STATE_LOOK_PROPS } from '../lib/calibrate-instances.mjs';
 import { contentRowsFor, planContentInstances, collectContent } from '../lib/calibrate-content.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
@@ -47,7 +48,15 @@ export function planFor( block, { db, fixtures, snapshot } ) {
 	const bases = new Set( discover.map( ( i ) => i.baseKey ).filter( Boolean ) );
 	const styleSide = plan.instances.filter( ( i ) => i.isDefault || ( i.isBase && bases.has( i.baseKey ) ) || i.discover );
 	const content = planContentInstances( block, { contentRows: contentRowsFor( db, block ), variant, schema, fixture, ctx } );
-	return { discover: styleSide.map( keep ), content: content.instances.map( keep ), noMarker: [ ...plan.noMarker, ...content.noMarker ] };
+	// The value-form markers (lib/calibrate-markers.mjs: clamp, vw, repeat probes; count, hex and slug plain markers) and
+	// the state markers (a hover or focus setting), each read against its baseline: the site look judges a form by the
+	// marker's own expectation and reads a state setting's look in its state.
+	const marked = ( i ) => ( { ...keep( i ), setting: i.row.attr_name, props: longhands( i.row.css_property ), ...( i.row.css_state ? { state: i.row.css_state } : {} ), marker: { label: i.marker?.label, form: i.marker?.form ?? null, probe: !! i.marker?.probe, expect: i.marker?.expect ?? null, tracks: i.marker?.tracks ?? null, tolerance: i.marker?.tolerance ?? null } } );
+	const forms = plan.instances.filter( ( i ) => i.row && i.marker?.form );
+	const states = plan.instances.filter( ( i ) => i.row && i.row.css_state && i.marker && ! i.marker.probe );
+	const needBases = new Set( [ ...forms, ...states ].map( ( i ) => i.baseKey ).filter( Boolean ) );
+	const extraBases = plan.instances.filter( ( i ) => i.isBase && needBases.has( i.baseKey ) && ! bases.has( i.baseKey ) );
+	return { discover: [ ...styleSide, ...extraBases ].map( keep ), content: content.instances.map( keep ), forms: forms.map( marked ), states: states.map( marked ), stateLookProps: STATE_LOOK_PROPS, noMarker: [ ...plan.noMarker, ...content.noMarker ] };
 }
 
 // The readings folded into the keys the route reads, exactly as calibration folded them (lib/calibrate-block.mjs::

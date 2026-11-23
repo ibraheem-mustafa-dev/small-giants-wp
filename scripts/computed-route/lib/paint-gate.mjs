@@ -1,5 +1,5 @@
-// A run stops before it writes when a block its tree uses has no default paint on the run's site. Without one, the block's
-// calibration (lib/cache.mjs::loadCalibration) carries `paintMissing` and `elements: {}`, and every reader downstream would
+// A run stops before it writes when a block its tree uses has no default look on the run's site (its site look,
+// lib/setting-record.mjs::siteLook). Without one, the block's record (lib/cache.mjs::loadCalibration) carries `paintMissing` and `elements: {}`, and every reader downstream would
 // judge the block against nothing and write wrong settings without a word. Fill (fill.mjs::fillSurface), Solve
 // (solve.mjs), the applier (apply.mjs) and the skeleton proposal (skeleton.mjs::proposeSurface,
 // lib/skeleton-rerun.mjs::rerunSkeletons, lib/intake-skeletons.mjs::proposeSkeletons) call assertPaints once the tree's
@@ -26,7 +26,7 @@ export const paintGaps = ( blocks, calFor ) => [ ...new Set( blocks ) ].filter( 
 // The stop message: the blocks and the one command that measures their paint on `site`, and the allowance that lets the run
 // go on without it.
 export const paintGapMessage = ( { gaps, site, client = null, what = 'this run' } ) =>
-	`${ what } stops before writing: ${ gaps.length } block${ 1 === gaps.length ? '' : 's' } in its tree ha${ 1 === gaps.length ? 's' : 've' } no default paint for ${ site } (${ gaps.join( ', ' ) }), so every setting written for ${ 1 === gaps.length ? 'it' : 'them' } would be judged against nothing. Measure ${ 1 === gaps.length ? 'it' : 'them' } first: node scripts/computed-route/calibrate.mjs --site ${ site } --client ${ client || '<client slug>' } --blocks ${ gaps.join( ',' ) }; or, when ${ 1 === gaps.length ? 'it cannot' : 'they cannot' } be calibrated, name ${ 1 === gaps.length ? 'it' : 'them' } in ${ FLAG } ${ gaps.join( ',' ) } to resolve ${ 1 === gaps.length ? 'its' : 'their' } settings without default paint`;
+	`${ what } stops before writing: ${ gaps.length } block${ 1 === gaps.length ? '' : 's' } in its tree ha${ 1 === gaps.length ? 's' : 've' } no default paint for ${ site } (${ gaps.join( ', ' ) }), so every setting written for ${ 1 === gaps.length ? 'it' : 'them' } would be judged against nothing. Build ${ 1 === gaps.length ? 'its' : 'their' } site look first: python plugins/sgs-blocks/scripts/site-look/site_look.py --snapshot sites/${ client || '<client slug>' }/theme-snapshot.json --site ${ client || '<client slug>' } --out scripts/computed-route/site-look --blocks ${ gaps.join( ',' ) } (the site's target names its client in calibration-targets.json); or, when ${ 1 === gaps.length ? 'it cannot' : 'they cannot' } be calibrated, name ${ 1 === gaps.length ? 'it' : 'them' } in ${ FLAG } ${ gaps.join( ',' ) } to resolve ${ 1 === gaps.length ? 'its' : 'their' } settings without default paint`;
 
 // The one line a run prints for each named block its tree uses without default paint.
 export const missingPaintLine = ( { block, site, what = 'this run' } ) =>

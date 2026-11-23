@@ -11,7 +11,7 @@ import { extraProps, usedValueDraft, CSS_WIDE } from '../lib/fill-declared.mjs';
 import { compareDR, propertyType, draftIdOf, defectIndex, verdictOf, confirmRecords } from '../lib/fill-confirm.mjs';
 import { fillSurface } from '../fill.mjs';
 import { PROPS } from '../lib/fill-read.mjs';
-import { splitCalibration, writeSlotMap, writePaint } from '../lib/cache.mjs';
+import { writeRecordFixture } from '../lib/setting-record.mjs';
 
 test( 'MUST FAIL: extraProps keeps what the code declares beyond the list, leaving out motion timings and CSS-wide keywords', () => {
 	const declared = { color: 'red', position: 'sticky', height: '42px', 'transition-duration': '0.3s', animation: 'x 1s', 'background-clip': 'initial', cursor: 'pointer', top: 'unset' };
@@ -120,9 +120,7 @@ before( async () => {
 	const cache = path.join( work, 'cache' );
 	fs.mkdirSync( cache );
 	for ( const cal of Object.values( CAL ) ) {
-		const { slotMap, paint } = splitCalibration( { ...cal, site: 'acme-test' } );
-		writeSlotMap( cache, cal.block, slotMap );
-		writePaint( cache, 'acme-test', cal.block, paint );
+		writeRecordFixture( cache, cal.block, cal );
 	}
 	const draft = path.join( work, 'draft' );
 	fs.mkdirSync( draft );

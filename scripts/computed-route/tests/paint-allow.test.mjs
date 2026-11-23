@@ -11,7 +11,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { assertPaints, parseAllowMissingPaint, allowMissingPaintArg, allowMissingPaintArgs, missingPaintLine } from '../lib/paint-gate.mjs';
-import { writeSlotMap, writePaint, splitCalibration } from '../lib/cache.mjs';
+import { writeRecordFixture } from '../lib/setting-record.mjs';
 import { READ_KEY } from '../lib/calibrate-props.mjs';
 import { fillSurface, calibrationLoader } from '../fill.mjs';
 import { fillReport } from '../lib/fill-report.mjs';
@@ -43,13 +43,11 @@ const SKELETON = [ { name: 'sgs/container', draftRef: 'main', attributes: { tagN
 	{ name: 'sgs/heading', draftRef: 'h1', attributes: { level: 'h1' } },
 ] } ];
 
-// Every block of CAL has a slot map; each except `without` has SITE's default paint.
+// Every block of CAL has a record; each except `without` has its default look on SITE.
 function cacheWithout( without ) {
 	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'cr-paint-allow-' ) );
 	for ( const [ block, cal ] of Object.entries( CAL ) ) {
-		const { slotMap, paint } = splitCalibration( { block, site: SITE, slotKey: 'k', readKey: READ_KEY, elements: { '': tiers() }, discovered: {}, ...cal } );
-		writeSlotMap( dir, block, slotMap );
-		without.includes( block ) || writePaint( dir, SITE, block, paint );
+		writeRecordFixture( dir, block, { block, site: SITE, discovered: {}, ...cal, ...( without.includes( block ) ? {} : { elements: { '': tiers() } } ) } );
 	}
 	return dir;
 }
