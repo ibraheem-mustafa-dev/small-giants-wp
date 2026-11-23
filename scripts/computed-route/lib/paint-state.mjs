@@ -53,8 +53,12 @@ export function undrawnParts( states, attrs = {} ) {
 }
 
 // The view with `undrawn` (undrawnParts) added when the node leaves any part undrawn, built once per view and part list.
+// A view with no node names no undrawn parts: with no attributes to read, an attribute-gated state would look undrawn.
 function withUndrawn( view, raw, node ) {
-	const undrawn = undrawnParts( raw?.paintStates, node?.attributes || {} );
+	if ( ! node ) {
+		return view;
+	}
+	const undrawn = undrawnParts( raw?.paintStates, node.attributes || {} );
 	if ( ! view || ! undrawn.length ) {
 		return view;
 	}

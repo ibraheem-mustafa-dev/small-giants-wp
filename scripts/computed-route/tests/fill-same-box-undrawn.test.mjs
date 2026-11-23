@@ -66,3 +66,10 @@ test( 'a node with nothing undrawn keeps the same view, and one view is built pe
 	const plain = { block: BLOCK, elements: { '': ROOT }, settings: {}, discovered: {} };
 	assert.equal( calibrationForNode( plain, card ), plain, 'a look with no paint states is the view itself' );
 } );
+
+test( 'a view with no node names no undrawn parts, whatever the paint states', () => {
+	const c = look();
+	assert.equal( calibrationForNode( c, null ), c, 'no node: the look itself, not a view that claims the picture is undrawn' );
+	assert.equal( calibrationForNode( c, undefined ).undrawn, undefined );
+	assert.deepEqual( calibrationForNode( c, card ).undrawn, [ '.sgs-media-el' ], 'a node that really leaves it out still does' );
+} );

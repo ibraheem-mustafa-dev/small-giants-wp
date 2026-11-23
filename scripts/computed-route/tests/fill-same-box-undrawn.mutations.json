@@ -6,5 +6,6 @@
 	{ "file": "lib/paint-state.mjs", "find": "if ( has.some( ( a ) => lacks.includes( a ) ) && ! has.some( ( a ) => isSet( attrs[ a ] ) ) ) {", "replace": "if ( ! has.some( ( a ) => isSet( attrs[ a ] ) ) ) {", "why": "a state drawn by an unrelated attribute counts as evidence" },
 	{ "file": "lib/paint-state.mjs", "find": ".filter( ( p ) => ! Object.hasOwn( off.elements || {}, p ) )", "replace": "", "why": "every part the drawing state holds is undrawn, the root included" },
 	{ "file": "lib/paint-state.mjs", "find": "return withUndrawn( stateView( raw, node, { fixture, schema } ), raw, node );", "replace": "return stateView( raw, node, { fixture, schema } );", "why": "the node view never names its undrawn parts" },
-	{ "file": "lib/paint-state.mjs", "find": "if ( ! view || ! undrawn.length ) {", "replace": "if ( ! view ) {", "why": "a node with nothing undrawn gets a new view every call" }
+	{ "file": "lib/paint-state.mjs", "find": "if ( ! view || ! undrawn.length ) {", "replace": "if ( ! view ) {", "why": "a node with nothing undrawn gets a new view every call" },
+	{ "file": "lib/paint-state.mjs", "find": "function withUndrawn( view, raw, node ) {\n\tif ( ! node ) {", "replace": "function withUndrawn( view, raw, node ) {\n\tif ( false ) {", "why": "a view with no node reads empty attributes and claims every attribute-gated part is undrawn" }
 ]
