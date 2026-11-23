@@ -117,15 +117,15 @@ export function writePaint( dir, site, block, paint ) {
 	fs.writeFileSync( f, JSON.stringify( { ...paint, paintFolder: paintSite( site ) }, null, 1 ) );
 }
 
-// What a reader works from for one block on one site: the setting record and the site look (lib/setting-record.mjs::
-// loadRecord), in the keys calibration gave. `dir` is kept for the readers that pass one and is no longer read: the
-// record is in the framework database and the site look in scripts/computed-route/site-look. Null when the block has no
-// record.
-export function loadCalibration( dir, block, site ) {
-	if ( dir && fs.existsSync( recordFixtureFile( dir, block, site ) ) ) {
-		return readRecordFixture( dir, block, site || null );
+// What a reader works from for one block in one client's look: the setting record and the site look built from the
+// client's theme snapshot (lib/setting-record.mjs::loadRecord), in the keys calibration gave. `dir` is read only for a
+// test's fixture record (writeRecordFixture); the record is in the framework database and the site look in
+// scripts/computed-route/site-look. Null when the block has no record.
+export function loadCalibration( dir, block, client ) {
+	if ( dir && fs.existsSync( recordFixtureFile( dir, block, client ) ) ) {
+		return readRecordFixture( dir, block, client || null );
 	}
-	return loadRecord( block, site || null );
+	return loadRecord( block, client || null );
 }
 
 // The properties of the block's own read list a slot map was measured without.

@@ -4,8 +4,8 @@
 //   node scripts/computed-route/fill.mjs --client <slug> --surface <name> --skeleton <file>
 //        (--draft-url <url> | --draft-dir <folder> [--draft-index <file>]) --live-url <url>
 //        [--site <target>] [--out <dir>] [--open <regex>] [--cache <dir>] [--no-sweep] [--headed] [--allow-external] [--mirror <url> <file>]... [--run-ledger <run.jsonl>]
-//   --site: the site the run is aimed at (site-run passes its own --site); the paint gate reads and names it. Default: the
-//   surface entry's site in surfaces.json.
+//   --site: the site the run is aimed at (site-run passes its own --site), whose uploaded images the run links. Default:
+//   the surface entry's site in surfaces.json. The blocks' default look is the client's, whatever the site.
 //   node scripts/computed-route/fill.mjs --serve <folder> [--draft-index <file>]    serve a draft folder until Ctrl-C
 // Reads sites/<client>/build/surfaces.json (the surface's walker states), sites/<client>/theme-snapshot.json and the
 // divergence ledger; writes into --out (and adds each width-threshold snap to that ledger as a `breakpoint-snap` entry): filled.tree.json, fill-report.md, fill-report.json, unmapped.json,
@@ -86,10 +86,10 @@ import { surfaceRefusal } from './lib/skeleton-commerce-refusal.mjs';
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
 
-// The calibration loader for one site: the route's own cache (solve.mjs::calibrationFor), or the cache files in `dir` (a
-// run against another checkout's measured cache). Default paint comes from `site`'s own file only.
-export function calibrationLoader( site, dir = null ) {
-	return ( block ) => calibrationFor( block, site, dir ? path.resolve( dir ) : undefined );
+// The record loader for one client (solve.mjs::calibrationFor): each block's setting record and its look in the client's
+// theme snapshot, or a test's fixture records in `dir` (lib/setting-record.mjs::writeRecordFixture).
+export function calibrationLoader( client, dir = null ) {
+	return ( block ) => calibrationFor( block, client, dir ? path.resolve( dir ) : undefined );
 }
 
 // `--mirror <url> <file>` (repeatable) as { url: absolute file path }.
@@ -150,7 +150,7 @@ export async function fillSurface( o ) {
 		throw new Error( `no surface "${ o.surface }" in sites/${ o.client }/build/surfaces.json` );
 	}
 	if ( ! entry.site ) {
-		throw new Error( `surface "${ o.surface }" names no site in sites/${ o.client }/build/surfaces.json, so there is no default paint to read` );
+		throw new Error( `surface "${ o.surface }" names no site in sites/${ o.client }/build/surfaces.json, so the run has no site to link its images on` );
 	}
 	const db = openDb();
 	const snapshotFile = path.join( repo, 'sites', o.client, 'theme-snapshot.json' );
@@ -167,12 +167,13 @@ export async function fillSurface( o ) {
 		throw new Error( noRegion );
 	}
 	const skeleton = expandSiteInfoRows( authored );
-	// Every block of the skeleton has this site's default paint, or the run stops here, before any output (lib/paint-gate.mjs).
-	// The site the run is aimed at (--site, site-run passes its own), else the surface entry's: the paint gate reads and names it.
+	// Every block of the skeleton has a default look in the client's theme snapshot, or the run stops here, before any output
+	// (lib/paint-gate.mjs). A block named in o.allowMissingPaint (--allow-missing-paint) goes on without it, printed here and
+	// listed in the report.
+	const calFor = calibrationLoader( o.client, o.cache );
+	// The site the run is aimed at (--site, site-run passes its own), else the surface entry's: its uploaded images are linked.
 	const site = o.site || entry.site;
-	const calFor = calibrationLoader( site, o.cache );
-	// A block named in o.allowMissingPaint (--allow-missing-paint) goes on without it, printed here and listed in the report.
-	const missingPaint = assertPaints( { blocks: treeBlocks( skeleton ), calFor, site, client: o.client, what: `fill ${ o.surface }`, allow: o.allowMissingPaint || [], log: o.log || console.log } );
+	const missingPaint = assertPaints( { blocks: treeBlocks( skeleton ), calFor, client: o.client, what: `fill ${ o.surface }`, allow: o.allowMissingPaint || [], log: o.log || console.log } );
 	const outDir = path.resolve( o.out || path.join( buildDir, 'qa', 'fill', o.surface, stamp() ) );
 	fs.mkdirSync( outDir, { recursive: true } );
 	const tree = cleanTree( skeleton );

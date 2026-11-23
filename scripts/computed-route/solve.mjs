@@ -45,16 +45,16 @@ const WIDTHS = '375,768,1440,1920';
 // A positioned element's left/top computes to pixels too; only a declared length or percentage is written.
 export const USED_VALUES = [ 'width', 'left', 'top' ];
 
-// The calibration for a block on a site, or null (the resolver then returns `uncalibrated`): the library-wide slot map
-// with the site's own default paint as `elements` (lib/cache.mjs::loadCalibration). A site with no paint file gets
-// `paintMissing` and no elements, never another site's paint.
-export function calibrationFor( block, site, dir = path.join( HERE, 'cache' ) ) {
-	const cal = loadCalibration( dir, block, site );
+// What a block's settings do and its default look in one client's look, or null (the resolver then returns
+// `uncalibrated`): its setting record with the client's site look as `elements` (lib/cache.mjs::loadCalibration). A
+// client with no site look for the block gets `paintMissing` and no elements.
+export function calibrationFor( block, client, dir = path.join( HERE, 'cache' ) ) {
+	const cal = loadCalibration( dir, block, client );
 	return cal ? withInnerRootAliases( cal, block ) : null;
 }
 
-// The block-to-calibration function for one site, the shape every reader takes as `calFor`.
-export const calibrationForSite = ( site, dir = path.join( HERE, 'cache' ) ) => ( block ) => calibrationFor( block, site, dir );
+// The block-to-record function for one client, the shape every reader takes as `calFor`.
+export const calibrationForClient = ( client, dir = path.join( HERE, 'cache' ) ) => ( block ) => calibrationFor( block, client, dir );
 
 // A block that wraps its own root element only in some modes (icon-list adds a <div> or <nav> around its <ul> when it has
 // a heading or a landmark; business-info wraps its value) is calibrated in one mode and measured on a page in another. A
@@ -496,17 +496,13 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 		console.error( `${ s.walkerFull || s.walker } has no refPrefix: rows would carry no ref` );
 		process.exit( 2 );
 	}
-	// The default paint is read from the site this surface is built on (--site, else the surface's own `site`).
-	if ( ! s.site ) {
-		console.error( `surface "${ surface }" names no site in surfaces.json and no --site was given, so there is no default paint to read` );
-		process.exit( 2 );
-	}
-	const calFor = calibrationForSite( s.site );
+	// The default look is the client's (its theme snapshot), whatever site the surface is built on.
+	const calFor = calibrationForClient( client );
 	const tree = readTree( treeFile );
 	// Every block of the tree has this site's default paint, or is named in --allow-missing-paint (printed), or the run stops
 	// here, before any output (lib/paint-gate.mjs).
 	try {
-		assertPaints( { blocks: treeBlocks( tree ), calFor, site: s.site, client, what: `solve ${ surface }`, allow: allowMissingPaintArg( argv ) } );
+		assertPaints( { blocks: treeBlocks( tree ), calFor, client, what: `solve ${ surface }`, allow: allowMissingPaintArg( argv ) } );
 	} catch ( e ) {
 		console.error( e.message );
 		process.exit( 2 );

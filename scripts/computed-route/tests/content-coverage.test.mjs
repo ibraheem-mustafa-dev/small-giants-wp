@@ -1,5 +1,5 @@
 // The content coverage check (lib/content-coverage.mjs, content-coverage.mjs): every content setting of an SGS block has a route
-// a re-clone fills it by, or a named gap row. The fixture DB and slot maps hold one setting per route, and each MUST FAIL case
+// a re-clone fills it by, or a named gap row. The fixture DB and records hold one setting per route, and each MUST FAIL case
 // plants a setting with none. tests/content-coverage.mutations.json proves each assertion bites.
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -8,6 +8,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fixtureDb } from './fixtures/framework-db.mjs';
 import { openDb } from '../lib/db.mjs';
+import { writeRecordFixture } from '../lib/setting-record.mjs';
 import { loadFacts } from '../lib/skeleton-facts.mjs';
 import { contentCoverage, reportLines, NO_ELEMENT_SHAPES, contentRows } from '../lib/content-coverage.mjs';
 import { coverageProblems, contentSettingId, parseContentSettingId, contentSettingProblems } from '../lib/clone-coverage.mjs';
@@ -60,12 +61,14 @@ const SLOT_MAP = { block: 'sgs/measured', text: { title: { path: '.sgs-measured_
 
 function world( { extra = [], entries = {}, cache = { measured: SLOT_MAP, skel: { block: 'sgs/skel' } }, withRoutes = ROUTED } = {} ) {
 	const file = fixtureDb( { roles, blocks, block_attributes: [ ...withRoutes, ...extra ], block_composition: [ { block_slug: 'sgs/hosty', composition_role: 'content-block', accepts_allowed_blocks: '["sgs/hosty-item"]' } ] } );
+	// Each record has a site look (its `elements`), so its text, link and presence readings are the look's; each is written
+	// for client acme alone, so a check that read no client's look would find none.
 	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'content-cov-cache-' ) );
 	for ( const [ name, map ] of Object.entries( cache ) ) {
-		fs.writeFileSync( path.join( dir, `${ name }.json` ), JSON.stringify( map ) );
+		writeRecordFixture( dir, `sgs/${ name }`, { elements: { '': {} }, ...map }, 'acme' );
 	}
 	const db = openDb( file );
-	return { db, dir, run: ( more = {} ) => contentCoverage( { db, cacheDir: dir, schemaOf, facts: loadFacts( { db, client: '' } ), coverage: { entries }, ...more } ) };
+	return { db, dir, run: ( more = {} ) => contentCoverage( { db, client: 'acme', cacheDir: dir, schemaOf, facts: loadFacts( { db, client: '' } ), coverage: { entries }, ...more } ) };
 }
 const gapRow = ( o = {} ) => ( { recognise: null, write: null, check: null, wave: 'content, media and icons', reason: 'a mechanism', owner: 'Track W', ...o } );
 const routeOf = ( result, block, a ) => result.rows.find( ( r ) => r.block === block && r.attr === a );
@@ -104,21 +107,21 @@ test( 'MUST FAIL: a content setting with no route fails and is named with its ro
 	assert.equal( r.ok, false );
 	assert.equal( r.failing.length, 1 );
 	assert.deepEqual( [ r.failing[ 0 ].block, r.failing[ 0 ].attr, r.failing[ 0 ].role, r.failing[ 0 ].type ], [ 'sgs/orphan', 'tagline', 'text-content', 'string' ] );
-	assert.match( r.failing[ 0 ].why.join( '\n' ), /not calibrated: no slot map for sgs\/orphan/ );
+	assert.match( r.failing[ 0 ].why.join( '\n' ), /no setting record for sgs\/orphan/ );
 	const text = reportLines( r ).join( '\n' );
 	assert.match( text, /NO ROUTE sgs\/orphan\.tagline \[role text-content, string/ );
 	assert.match( text, /no route 1/ );
 } );
 
-test( 'MUST FAIL: a second text-content setting of a block whose slot map has no reading for it has no route', () => {
+test( 'MUST FAIL: a second text-content setting of a block whose site look has no reading for it has no route', () => {
 	const r = world( { extra: [ attr( 'sgs/skel', 'subheading', 'text-content' ) ] } ).run();
 	assert.deepEqual( r.failing.map( ( f ) => `${ f.block }.${ f.attr }` ), [ 'sgs/skel.subheading' ] );
-	assert.match( r.failing[ 0 ].why[ 0 ], /calibration has no text, link or presence reading/ );
+	assert.match( r.failing[ 0 ].why[ 0 ], /the site look has no text, link or presence reading/ );
 } );
 
-test( 'the reason names the slot map list that holds the setting', () => {
+test( 'the reason names the record list that holds the setting', () => {
 	const w = world( { extra: [ attr( 'sgs/skel', 'subheading', 'text-content' ) ], cache: { measured: SLOT_MAP, skel: { block: 'sgs/skel', noMarker: [ 'subheading' ], text: { heading: { path: '.x' } } } } } );
-	assert.match( w.run().failing[ 0 ].why[ 0 ], /the slot map lists it in noMarker/ );
+	assert.match( w.run().failing[ 0 ].why[ 0 ], /the record lists it in noMarker/ );
 	assert.match( w.run().failing[ 0 ].why[ 0 ], /reads text/ );
 } );
 
@@ -178,11 +181,13 @@ test( 'MUST FAIL: a malformed gap ID fails', () => {
 	assert.match( r.badGaps[ 0 ].why, /content-setting:sgs\/<block>\.<setting>/ );
 } );
 
-test( 'a calibrated block whose slot map reads nothing for a setting says so; an uncalibrated block says not calibrated', () => {
+test( 'a block whose site look reads nothing for a setting says so; a block with no record says so, and one with no look says that', () => {
 	const r = world( { extra: [ attr( 'sgs/skel', 'blurb', 'text-content' ), attr( 'sgs/orphan', 'blurb', 'text-content' ) ] } ).run();
 	const why = ( b ) => r.failing.find( ( f ) => f.block === b ).why[ 0 ];
-	assert.match( why( 'sgs/skel' ), /calibration has no text, link or presence reading/ );
-	assert.match( why( 'sgs/orphan' ), /^not calibrated/ );
+	assert.match( why( 'sgs/skel' ), /the site look has no text, link or presence reading/ );
+	assert.match( why( 'sgs/orphan' ), /^no setting record/ );
+	const unlooked = world( { extra: [ attr( 'sgs/skel', 'blurb', 'text-content' ) ], cache: { measured: SLOT_MAP, skel: { block: 'sgs/skel', elements: undefined } } } ).run();
+	assert.match( unlooked.failing.find( ( f ) => f.block === 'sgs/skel' ).why[ 0 ], /^no site look to read it from/ );
 } );
 
 test( 'the emit_shape values that mean no element are exactly script-rendered, editor-only, output-only and context', () => {

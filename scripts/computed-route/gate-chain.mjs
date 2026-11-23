@@ -23,7 +23,7 @@ import { renderEvidence } from './lib/gate-evidence.mjs';
 import { issuesOf } from './lib/triage.mjs';
 import { cssProp, settingState } from './lib/solve-rows.mjs';
 import { declaredRead, defectNamed, loadDraftIdentity } from './lib/draft-identity.mjs';
-import { calibrationForSite } from './solve.mjs';
+import { calibrationForClient } from './solve.mjs';
 import { readTree, nodeByRef } from './lib/tree.mjs';
 import { localBlockHash } from './lib/deploy-hash.mjs';
 import { manifestSchemaVersion } from './lib/handoff.mjs';
@@ -139,7 +139,7 @@ export function buildContext( { report, walk, surfaces, surface, client, probes,
 	const buildDir = client ? path.join( REPO, 'sites', client, 'build' ) : null;
 	const tree = s && buildDir ? readTree( surfaceTreeFile( buildDir, surface, s, { treeFile, log } ) ) : null;
 	const blockOf = ( row ) => ( tree && row.ref ? nodeByRef( tree, row.ref )?.name ?? null : null );
-	const calFor = s?.site ? calibrationForSite( s.site, path.join( REPO, 'scripts', 'computed-route', 'cache' ) ) : () => null;
+	const calFor = client ? calibrationForClient( client ) : () => null;
 	const intake = intakeFile && fs.existsSync( intakeFile ) ? JSON.parse( fs.readFileSync( intakeFile, 'utf8' ) ) : null;
 	const ancestors = ancestorsOf( db );
 	const draftIdOf = loadDraftIdentity( { buildDir, surface, s, intake } );
@@ -275,7 +275,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 			const dir = path.join( REPO, 'plugins', 'sgs-blocks', 'build', 'blocks', short );
 			return fs.existsSync( dir ) ? localBlockHash( dir ) : null;
 		} } );
-		const known = knownRows( { rows: [ ...unroutedKnown( { db, isDiscovered: ( r ) => !! calibrationForSite( surfaces?.[ report.surface ]?.site ?? '', cacheDir )( r.block_slug )?.discovered?.[ r.attr_name ] } ), ...stale.rows ], inTree, surface: report.surface } );
+		const known = knownRows( { rows: [ ...unroutedKnown( { db, isDiscovered: ( r ) => !! calibrationForClient( client )( r.block_slug )?.discovered?.[ r.attr_name ] } ), ...stale.rows ], inTree, surface: report.surface } );
 		const written = writeDebt( { file: path.resolve( flag( '--debt-out' ) || debtPath( client, REPO ) ), rows: [ ...debtRows( out, { surface: report.surface } ), ...known ], surface: report.surface, publishedOn: new Date().toISOString().slice( 0, 10 ) } );
 		console.log( `instrument debt: ${ written.rows.length } rows by owner ${ JSON.stringify( written.byOwner ) }; ${ debtRows( out, { surface: report.surface } ).length } from the chain, ${ known.length } known items${ stale.missing.length ? `; inputs missing: ${ stale.missing.slice( 0, 3 ).join( '; ' ) }` : '' }. Written ${ written.file }` );
 	}

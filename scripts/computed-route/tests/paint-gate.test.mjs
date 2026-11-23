@@ -1,7 +1,7 @@
-// Proves the paint gate (lib/paint-gate.mjs): a run stops before it writes when a block its tree uses has no default paint
-// on the run's site, naming every such block and the calibrate.mjs command that measures them. A block the tree does not
-// use, a block with no slot map and a run with no site never stop it. Fill (fill.mjs::fillSurface) and the skeleton
-// proposal (skeleton.mjs::proposeSurface, lib/skeleton-rerun.mjs::rerunSkeletons) are called with a fixture cache; solve.mjs
+// Proves the paint gate (lib/paint-gate.mjs): a run stops before it writes when a block its tree uses has no default look
+// for the client, naming every such block and the site look command that builds them. A block the tree does not use, a
+// block with no record and a run with no client never stop it. Fill (fill.mjs::fillSurface) and the skeleton
+// proposal (skeleton.mjs::proposeSurface, lib/skeleton-rerun.mjs::rerunSkeletons) are called with fixture records; solve.mjs
 // and apply.mjs run the gate inside main(), which a test never starts (it reaches a site), so their source is read for the
 // call's place. Local files only: no site, no host, no browser.
 import test from 'node:test';
@@ -12,7 +12,6 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { assertPaints, paintGaps, treeBlocks } from '../lib/paint-gate.mjs';
 import { writeRecordFixture } from '../lib/setting-record.mjs';
-import { READ_KEY } from '../lib/calibrate-props.mjs';
 import { fillSurface, calibrationLoader } from '../fill.mjs';
 import { proposeSurface } from '../skeleton.mjs';
 import { rerunSkeletons } from '../lib/skeleton-rerun.mjs';
@@ -21,15 +20,15 @@ import { loadFacts } from '../lib/skeleton-facts.mjs';
 
 const ROUTE = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..' );
 const REPO = path.resolve( ROUTE, '../..' );
-const SITE = 'acme-test';
+const ACME = 'acme';
 const db = openDb();
 
-// Records where container and text have their default look on SITE and heading and button have none; every one of the
-// four has a record.
+// Records where container and text have a default look and heading and button have none; every one of the four has a
+// record. Written for any client, so the skeleton tests' client reads them too.
 function fixtureCache() {
 	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'cr-paint-gate-' ) );
 	for ( const block of [ 'sgs/container', 'sgs/text', 'sgs/heading', 'sgs/button' ] ) {
-		writeRecordFixture( dir, block, { block, site: SITE, settings: {}, ...( [ 'sgs/container', 'sgs/text' ].includes( block ) ? { elements: { '': { 1440: { color: 'red' } } } } : {} ) } );
+		writeRecordFixture( dir, block, { block, settings: {}, ...( [ 'sgs/container', 'sgs/text' ].includes( block ) ? { elements: { '': { 1440: { color: 'red' } } } } : {} ) } );
 	}
 	return dir;
 }
@@ -40,14 +39,14 @@ const SKELETON = [ { name: 'sgs/container', draftRef: 'main', attributes: { tagN
 	{ name: 'sgs/heading', draftRef: 'h1', attributes: { level: 'h1' } },
 	{ name: 'sgs/container', draftRef: '.card', attributes: {}, innerBlocks: [ { name: 'sgs/button', draftRef: 'a', attributes: {} } ] },
 ] } ];
-const GAPS = /2 blocks in its tree have no default paint for acme-test \(sgs\/button, sgs\/heading\)[\s\S]*site_look\.py --snapshot sites\/acme\/theme-snapshot\.json --site acme --out scripts\/computed-route\/site-look --blocks sgs\/button,sgs\/heading/;
+const GAPS = /2 blocks in its tree have no default look for acme \(sgs\/button, sgs\/heading\)[\s\S]*site_look\.py --snapshot sites\/acme\/theme-snapshot\.json --site acme --out scripts\/computed-route\/site-look --blocks sgs\/button,sgs\/heading/;
 
-test( 'MUST FAIL: Fill stops before it writes anything when a skeleton block has no default paint on the surface\'s site', async () => {
+test( 'MUST FAIL: Fill stops before it writes anything when a skeleton block has no default look for the client', async () => {
 	const cache = fixtureCache();
 	const work = fs.mkdtempSync( path.join( os.tmpdir(), 'cr-paint-gate-fill-' ) );
 	const build = path.join( work, 'sites', 'acme', 'build' );
 	fs.mkdirSync( build, { recursive: true } );
-	fs.writeFileSync( path.join( build, 'surfaces.json' ), JSON.stringify( { home: { site: SITE, tree: 'home.tree.json', states: { opening: null } } } ) );
+	fs.writeFileSync( path.join( build, 'surfaces.json' ), JSON.stringify( { home: { site: 'acme-test', tree: 'home.tree.json', states: { opening: null } } } ) );
 	fs.writeFileSync( path.join( work, 'sites', 'acme', 'theme-snapshot.json' ), JSON.stringify( { settings: { color: { palette: [] } } } ) );
 	const skeleton = path.join( work, 'home.skeleton.json' );
 	fs.writeFileSync( skeleton, JSON.stringify( SKELETON ) );
@@ -57,15 +56,15 @@ test( 'MUST FAIL: Fill stops before it writes anything when a skeleton block has
 	assert.equal( fs.existsSync( path.join( work, 'sites', 'acme', 'build', 'home.origin.json' ) ), false, 'no origin map' );
 } );
 
-test( 'negative control: a tree whose blocks all have paint passes, a block the tree does not use never stops it, and a block with no slot map is not a gap', () => {
+test( 'negative control: a tree whose blocks all have a look passes, a block the tree does not use never stops it, and a block with no record is not a gap', () => {
 	const cache = fixtureCache();
-	const calFor = calibrationLoader( SITE, cache );
+	const calFor = calibrationLoader( ACME, cache );
 	const tree = [ { name: 'sgs/container', innerBlocks: [ { name: 'sgs/text' }, { name: 'core/paragraph' }, { name: 'sgs/no-slot-map' } ] } ];
-	assert.doesNotThrow( () => assertPaints( { blocks: treeBlocks( tree ), calFor, site: SITE, client: 'acme', what: 'fill home' } ) );
+	assert.doesNotThrow( () => assertPaints( { blocks: treeBlocks( tree ), calFor, client: ACME, what: 'fill home' } ) );
 	assert.deepEqual( paintGaps( treeBlocks( tree ), calFor ), [] );
 	assert.deepEqual( paintGaps( treeBlocks( SKELETON ), calFor ), [ 'sgs/button', 'sgs/heading' ], 'each gap once, sorted, nested ones included' );
-	assert.throws( () => assertPaints( { blocks: treeBlocks( SKELETON ), calFor, site: SITE, client: 'acme', what: 'fill home' } ), GAPS );
-	assert.doesNotThrow( () => assertPaints( { blocks: treeBlocks( SKELETON ), calFor: calibrationLoader( null, cache ), site: null, what: 'census' } ), 'a run with no site reads no paint by design' );
+	assert.throws( () => assertPaints( { blocks: treeBlocks( SKELETON ), calFor, client: ACME, what: 'fill home' } ), GAPS );
+	assert.doesNotThrow( () => assertPaints( { blocks: treeBlocks( SKELETON ), calFor: calibrationLoader( null, cache ), client: null, what: 'census' } ), 'a run with no client reads no look by design' );
 	assert.deepEqual( treeBlocks( SKELETON ), [ 'sgs/container', 'sgs/text', 'sgs/heading', 'sgs/button' ] );
 } );
 
@@ -77,7 +76,7 @@ function skeletonRepo() {
 	fs.mkdirSync( path.join( build, 'intake', 'inventories' ), { recursive: true } );
 	fs.mkdirSync( path.join( build, 'skeleton' ), { recursive: true } );
 	const footer = fs.readFileSync( path.join( REPO, 'sites', CLIENT, 'build', 'skeleton', 'footer.inventory.json' ), 'utf8' );
-	fs.writeFileSync( path.join( build, 'surfaces.json' ), JSON.stringify( { footer: { site: SITE, intakeSurface: 'site-footer' } } ) );
+	fs.writeFileSync( path.join( build, 'surfaces.json' ), JSON.stringify( { footer: { site: 'acme-test', intakeSurface: 'site-footer' } } ) );
 	const skeletons = { 'site-footer': { id: 'S-14', kind: 'footer', name: 'Footer', inventory: {} } };
 	fs.writeFileSync( path.join( build, 'intake', 'intake.json' ), JSON.stringify( { skeletons } ) );
 	fs.writeFileSync( path.join( build, 'intake', 'inventories', 'site-footer.json' ), footer );
@@ -90,16 +89,16 @@ function skeletonRepo() {
 }
 const proposing = ( skeleton ) => () => ( { skeleton, proposal: { counts: {}, rows: [] }, problems: [] } );
 
-test( 'the skeleton writer writes no skeleton that uses a block with no paint on the surface\'s site, and writes one that does not', () => {
+test( 'the skeleton writer writes no skeleton that uses a block with no look for the client, and writes one that does not', () => {
 	const cache = fixtureCache();
 	const f = skeletonRepo();
 	assert.throws( () => proposeSurface( { client: CLIENT, surface: 'footer', repo: f.repo, db, cache, propose: proposing( SKELETON ) } ), /^Error: skeleton propose footer stops before writing: 2 blocks/ );
 	assert.equal( fs.existsSync( f.file ), false );
 	proposeSurface( { client: CLIENT, surface: 'footer', repo: f.repo, db, cache, propose: proposing( [ { name: 'sgs/container', innerBlocks: [ { name: 'sgs/text' } ] } ] ) } );
-	assert.equal( fs.existsSync( f.file ), true, 'the fixture cache, not the route\'s own, is the one read' );
+	assert.equal( fs.existsSync( f.file ), true, 'the fixture records, not the framework database, are the ones read' );
 } );
 
-test( 'a skeleton re-run stops on a surface whose skeleton uses a block with no paint, and passes one that does not', () => {
+test( 'a skeleton re-run stops on a surface whose skeleton uses a block with no look, and passes one that does not', () => {
 	const cache = fixtureCache();
 	const f = skeletonRepo();
 	assert.throws( () => rerunSkeletons( { client: CLIENT, db, repo: f.repo, skeletons: f.skeletons, cache, propose: proposing( SKELETON ) } ), /skeleton site-footer stops before writing[\s\S]*sgs\/button,sgs\/heading/ );
@@ -116,13 +115,13 @@ const at = ( src, needle, file ) => {
 
 test( 'solve.mjs and apply.mjs run the gate over their tree\'s blocks before their first write', () => {
 	const solve = fs.readFileSync( path.join( ROUTE, 'solve.mjs' ), 'utf8' );
-	const gate = at( solve, 'assertPaints( { blocks: treeBlocks( tree ), calFor, site: s.site', 'solve.mjs' );
+	const gate = at( solve, 'assertPaints( { blocks: treeBlocks( tree ), calFor, client', 'solve.mjs' );
 	assert.ok( gate < at( solve, 'fs.mkdirSync( outDir', 'solve.mjs' ) && gate < at( solve, 'writeTree( treeFile', 'solve.mjs' ), 'solve gates before it makes its output folder or rewrites the tree' );
 	const apply = fs.readFileSync( path.join( ROUTE, 'apply.mjs' ), 'utf8' );
 	const applyGate = at( apply, 'assertPaints( { blocks: surfaces.flatMap( ( s ) => Object.values( blocks[ s.postId ]?.blocks ?? {} )', 'apply.mjs' );
 	assert.ok( applyGate > at( apply, 'const blocks = readBlocks(', 'apply.mjs' ) && applyGate < at( apply, 'const browser = await chromium.launch()', 'apply.mjs' ), 'apply gates once the saved blocks are read, before any draft read or write' );
 	const intake = fs.readFileSync( path.join( ROUTE, 'lib', 'intake-skeletons.mjs' ), 'utf8' );
 	const proposed = at( intake, 'const r = propose( { inventory, facts: f.facts', 'lib/intake-skeletons.mjs' );
-	const intakeGate = at( intake, 'assertSkeletonPaints( { skeleton: r.skeleton, site, client', 'lib/intake-skeletons.mjs' );
+	const intakeGate = at( intake, 'assertSkeletonPaints( { skeleton: r.skeleton, client: readLook ? client : null', 'lib/intake-skeletons.mjs' );
 	assert.ok( intakeGate > proposed && intakeGate < at( intake, 'u.out.push( { surface: s.slug, id: s.id', 'lib/intake-skeletons.mjs' ), 'an intake surface with a paint gap is recorded as a gap, never proposed' );
 } );

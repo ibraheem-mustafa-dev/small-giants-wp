@@ -3,23 +3,23 @@
 // residual (class a: all five equivalence layers failed and no setting paints it on that part), route (class b: a setting
 // paints or reaches it, or the row is a shape, pairing, reach or conflict verdict), unneeded (class c: held, inert or an
 // unpainted initial value) and outside (content, motion and walker rows). Reads the run's unmapped.json, the route's
-// calibration cache and the framework DB; contacts no site and writes nothing.
-//   node scripts/computed-route/tools/residual-classify.mjs <run folder or unmapped.json> [...] --paint-site <site> [--rows <class>] [--json]
+// setting record in the client's look and the framework DB; contacts no site and writes nothing.
+//   node scripts/computed-route/tools/residual-classify.mjs <run folder or unmapped.json> [...] --client <slug> [--rows <class>] [--json]
 import fs from 'fs';
 import path from 'path';
 import { classifyRow } from '../lib/fill-residual-css.mjs';
-import { calibrationForSite } from '../solve.mjs';
+import { calibrationForClient } from '../solve.mjs';
 import { openDb } from '../lib/db.mjs';
 
 const argv = process.argv.slice( 2 );
 const flag = ( n ) => ( argv.includes( n ) ? argv[ argv.indexOf( n ) + 1 ] : null );
-const site = flag( '--paint-site' );
-const files = argv.filter( ( a, i ) => ! a.startsWith( '--' ) && ! [ '--paint-site', '--rows' ].includes( argv[ i - 1 ] ) );
-if ( ! site || ! files.length ) {
-	console.error( 'usage: residual-classify.mjs <run folder or unmapped.json> [...] --paint-site <site> [--rows <class>] [--json]' );
+const client = flag( '--client' );
+const files = argv.filter( ( a, i ) => ! a.startsWith( '--' ) && ! [ '--client', '--rows' ].includes( argv[ i - 1 ] ) );
+if ( ! client || ! files.length ) {
+	console.error( 'usage: residual-classify.mjs <run folder or unmapped.json> [...] --client <slug> [--rows <class>] [--json]' );
 	process.exit( 2 );
 }
-const calFor = calibrationForSite( site );
+const calFor = calibrationForClient( client );
 const db = openDb();
 const report = [];
 for ( const f of files ) {

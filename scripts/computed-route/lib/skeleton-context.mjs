@@ -14,36 +14,30 @@ import { draftLinksFor } from './draft-link.mjs';
 
 const CACHE = path.join( path.dirname( fileURLToPath( import.meta.url ) ), '..', 'cache' );
 
-// The calibration of a block on a site (lib/cache.mjs::loadCalibration over the route's cache), the reader the two below and
-// assertSkeletonPaints share. `dir` is the cache folder (tests point it at a fixture).
-export const calibrationsAt = ( site, dir = CACHE ) => ( slug ) => loadCalibration( dir, slug, site );
+// A block's setting record in one client's look (lib/cache.mjs::loadCalibration), the reader the ones below and
+// assertSkeletonPaints share. `dir` holds a test's fixture records (lib/setting-record.mjs::writeRecordFixture).
+export const calibrationsAt = ( client, dir = CACHE ) => ( slug ) => loadCalibration( dir, slug, client );
 
-// The calibration cache's element keys for a block on a site (slot targets), or none when it has no default paint there.
-export const calKeysFor = ( site, dir = CACHE ) => ( slug ) => Object.keys( calibrationsAt( site, dir )( slug )?.elements || {} );
+// The element keys of a block's default look for a client (slot targets), or none when it has no look.
+export const calKeysFor = ( client, dir = CACHE ) => ( slug ) => Object.keys( calibrationsAt( client, dir )( slug )?.elements || {} );
 
-// The tag of each element in a block's calibrated default paint on a site ({ slot: tag }, from the read's `_tag`), or {}.
-export const calTagsFor = ( site, dir = CACHE ) => ( slug ) => Object.fromEntries( Object.entries( calibrationsAt( site, dir )( slug )?.elements || {} ).map( ( [ k, byWidth ] ) => [ k, Object.values( byWidth || {} ).find( ( v ) => v?._tag )?._tag ?? null ] ) );
+// The tag of each element in a block's default look for a client ({ slot: tag }, from the look's `_tag`), or {}.
+export const calTagsFor = ( client, dir = CACHE ) => ( slug ) => Object.fromEntries( Object.entries( calibrationsAt( client, dir )( slug )?.elements || {} ).map( ( [ k, byWidth ] ) => [ k, Object.values( byWidth || {} ).find( ( v ) => v?._tag )?._tag ?? null ] ) );
 
-// The calibration's settings (each with the slot it was measured on) for a block on a site.
-export const calSettingsFor = ( site, dir = CACHE ) => ( slug ) => calibrationsAt( site, dir )( slug )?.settings || {};
+// The record's settings (each with the slot it paints) for a block.
+export const calSettingsFor = ( client, dir = CACHE ) => ( slug ) => calibrationsAt( client, dir )( slug )?.settings || {};
 
-// A block's measured parts for the general pairing (lib/skeleton-part-pairing.mjs): its default paint on the site, else its
-// default paint on the site its slot map was calibrated on (a block draws the same parts with the same tags on every site; only
-// their values differ), with its settings and text fields. Null for a block with no calibration.
-export const calPartsFor = ( site, dir = CACHE ) => ( slug ) => {
-	const cal = calibrationsAt( site, dir )( slug );
-	if ( ! cal ) {
-		return null;
-	}
-	const own = Object.keys( cal.elements || {} ).length ? cal : null;
-	const paint = own ?? ( cal.site && cal.site !== site ? loadCalibration( dir, slug, cal.site ) : null ) ?? {};
-	return { elements: paint.elements || {}, parts: paint.parts || {}, settings: cal.settings || {}, text: cal.text || {} };
+// A block's parts for the general pairing (lib/skeleton-part-pairing.mjs): its default look for the client, with its
+// settings and text fields. Null for a block with no record.
+export const calPartsFor = ( client, dir = CACHE ) => ( slug ) => {
+	const cal = calibrationsAt( client, dir )( slug );
+	return cal ? { elements: cal.elements || {}, parts: cal.parts || {}, settings: cal.settings || {}, text: cal.text || {} } : null;
 };
 
-// A proposed skeleton is written only when every block it uses has `site`'s default paint, since calKeysFor reads none
-// for a block without it (lib/paint-gate.mjs::assertPaints); a block named in `allow` (--allow-missing-paint) goes on
-// without it and is printed. No site: nothing to check. Returns the named blocks the skeleton used without paint.
-export const assertSkeletonPaints = ( { skeleton, site, client, what, cache: dir = CACHE, allow = [], log = console.log } ) => assertPaints( { blocks: treeBlocks( skeleton ), calFor: calibrationsAt( site, dir ), site, client, what, allow, log } );
+// A proposed skeleton is written only when every block it uses has a default look for `client`, since calKeysFor reads
+// none for a block without it (lib/paint-gate.mjs::assertPaints); a block named in `allow` (--allow-missing-paint) goes
+// on without it and is printed. Returns the named blocks the skeleton used without a look.
+export const assertSkeletonPaints = ( { skeleton, client, what, cache: dir = CACHE, allow = [], log = console.log } ) => assertPaints( { blocks: treeBlocks( skeleton ), calFor: calibrationsAt( client, dir ), client, what, allow, log } );
 
 const readJson = ( file, fallback ) => ( fs.existsSync( file ) ? JSON.parse( fs.readFileSync( file, 'utf8' ) ) : fallback );
 
@@ -60,9 +54,9 @@ export function siteOf( { repo, client, slug } ) {
 	return Object.values( surfaces ).find( ( s ) => s && s.intakeSurface === slug )?.site || null;
 }
 
-// Everything proposeSkeleton takes beyond the inventory and the decisions, for one intake skeleton. `cache`: the calibration
-// cache folder (the route's own by default).
-export function proposalContext( { repo, client, slug, id, breakpoints, site = siteOf( { repo, client, slug } ), cache = CACHE } ) {
+// Everything proposeSkeleton takes beyond the inventory and the decisions, for one intake skeleton. `cache`: a folder of
+// fixture records (tests), else the setting record and the client's look.
+export function proposalContext( { repo, client, slug, id, breakpoints, cache = CACHE } ) {
 	const refs = detectReferences();
-	return { calKeys: calKeysFor( site, cache ), calTags: calTagsFor( site, cache ), calSettings: calSettingsFor( site, cache ), calParts: calPartsFor( site, cache ), states: statesOfRecord( { repo, client, id } ), thresholds: thresholdsOf( breakpoints ), formLinks: formLinksFor( { repo, client, refs } ), refs, draftLinks: draftLinksFor( { repo, client } ) };
+	return { calKeys: calKeysFor( client, cache ), calTags: calTagsFor( client, cache ), calSettings: calSettingsFor( client, cache ), calParts: calPartsFor( client, cache ), states: statesOfRecord( { repo, client, id } ), thresholds: thresholdsOf( breakpoints ), formLinks: formLinksFor( { repo, client, refs } ), refs, draftLinks: draftLinksFor( { repo, client } ) };
 }

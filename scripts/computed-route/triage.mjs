@@ -21,7 +21,7 @@ import { measuredEmitsFrom } from './lib/cite-emission.mjs';
 import { loadDraftBranches } from './lib/draft-branches-io.mjs';
 import { helperIndex } from './lib/triage-source.mjs';
 import { load as loadLedger } from './lib/ledger.mjs';
-import { calibrationForSite } from './solve.mjs';
+import { calibrationForClient } from './solve.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..', '..' );
 const ROSTER = path.join( BLOCKS_DIR, 'extensions', 'extension-roster.json' );
@@ -158,7 +158,7 @@ export function surfaceContext( { client, surface, report: reportArg = null, mea
 		},
 		roster: JSON.parse( fs.readFileSync( ROSTER, 'utf8' ) ).extensions || [],
 		supportsFor: ( block ) => supports[ block ] || {},
-		calFor: calibrationForSite( s.site ),
+		calFor: calibrationForClient( client ),
 		// The client's divergence ledger: an entry accepting a node in full places every row positioned after it.
 		ledger: loadLedger( path.join( buildDir, 'qa', 'divergences.json' ) ),
 		measuredReach,

@@ -129,13 +129,12 @@ export function reviewSurface( { client, surface, repo = REPO } ) {
 
 // Runs propose from the files on disk and writes <surface>.skeleton.json and <surface>.proposal.json. Returns the result.
 // A served inventory (`Root/…` keys) is proposed with the decisions and motion keys written in intake's space rewritten
-// to its root (lib/key-space.mjs). `cache`: the calibration cache folder (the route's own by default). A skeleton that uses a block
-// with no default paint on the surface's site is not written (lib/skeleton-context.mjs::assertSkeletonPaints), unless
-// `allowMissingPaint` (--allow-missing-paint) names the block.
-// `site`: the site the run is aimed at (site-run's --site). Every per-site record propose reads is that site's: the carried
-// menu, menu items, logo and shop attributes (lib/skeleton-carried.mjs::carriedIds), the calibration's keys, tags, settings
-// and parts, and the paint gate, which names it, so its advice never names the mirror the surface entry records. Default:
-// the surface entry's site.
+// to its root (lib/key-space.mjs). `cache`: a folder of fixture records (tests), else the setting record and the client's
+// look. A skeleton that uses a block with no default look for the client is not written
+// (lib/skeleton-context.mjs::assertSkeletonPaints), unless `allowMissingPaint` (--allow-missing-paint) names the block.
+// `site`: the site the run is aimed at (site-run's --site), whose carried menu, menu items, logo and shop attributes
+// propose reads (lib/skeleton-carried.mjs::carriedIds). Default: the surface entry's site. The blocks' keys, tags,
+// settings and parts are the client's look, whatever the site.
 export function proposeSurface( { client, surface, repo = REPO, siteName = null, db = openDb(), propose = proposeSkeleton, cache = undefined, allowMissingPaint = [], site: runSite = null, runLedger = null } ) {
 	const p = skeletonPaths( { client, surface, repo } );
 	const inventory = JSON.parse( fs.readFileSync( p.inventory, 'utf8' ) );
@@ -157,7 +156,7 @@ export function proposeSurface( { client, surface, repo = REPO, siteName = null,
 	// the surface's template, else its page row's.
 	const target = readSurface( repo, client, surface ).target || {};
 	const products = tileProducts( { catalogue, template: target.template ?? pageRows.find( ( row ) => null != target.postId && row.id === target.postId )?.template ?? null, commerce } );
-	const r = propose( { inventory, facts, formLinks, refs, draftLinks: draftLinksFor( { repo, client } ), surface: ctx.slug, surfaceKind: ctx.kind, surfaceName: ctx.name, commerce, products, built: ctx.built, carried: carriedIds( { repo, client, site, rootComponent: served ? ctx.rootComponent : null } ), motion: served ? servedMotion( ctx.motion, ctx.rootComponent ) : ctx.motion, clientDecisions, rootComponent: served ? ctx.rootComponent : null, picks: readPicks( p.picks ), calKeys: calKeysFor( site, cache ), calTags: calTagsFor( site, cache ), calSettings: calSettingsFor( site, cache ), calParts: calPartsFor( site, cache ), states: ctx.states, thresholds: ctx.thresholds, pageMap: ctx.pageMap, surfaceId: ctx.id, surfaceRoute: ctx.route, db } );
+	const r = propose( { inventory, facts, formLinks, refs, draftLinks: draftLinksFor( { repo, client } ), surface: ctx.slug, surfaceKind: ctx.kind, surfaceName: ctx.name, commerce, products, built: ctx.built, carried: carriedIds( { repo, client, site, rootComponent: served ? ctx.rootComponent : null } ), motion: served ? servedMotion( ctx.motion, ctx.rootComponent ) : ctx.motion, clientDecisions, rootComponent: served ? ctx.rootComponent : null, picks: readPicks( p.picks ), calKeys: calKeysFor( client, cache ), calTags: calTagsFor( client, cache ), calSettings: calSettingsFor( client, cache ), calParts: calPartsFor( client, cache ), states: ctx.states, thresholds: ctx.thresholds, pageMap: ctx.pageMap, surfaceId: ctx.id, surfaceRoute: ctx.route, db } );
 	// A template's working pieces (the buy box, the bound title, the shop's sorting) replace the draft's imitation of them (data/template-pieces.json).
 	// Paint conservation is then checked again on the tree with the pieces in it, its lines replacing the proposal's; the paint
 	// inside a piece's replaced draft elements that no located part reads is the piece's missing features (lib/template-pieces-context.mjs::piecesPaint).
@@ -168,17 +167,17 @@ export function proposeSurface( { client, surface, repo = REPO, siteName = null,
 	const railed = railPass( { inventory, proposal: r.proposal, skeleton: r.skeleton, source: draftFile && fs.existsSync( draftFile ) ? fs.readFileSync( draftFile, 'utf8' ) : null } );
 	Object.assign( r.proposal, railed.proposal );
 	r.skeleton = railed.skeleton;
-	const pieces = piecesPass( { repo, client, entry: readSurface( repo, client, surface ), tree: r.skeleton, inventory, paint: { runs: [ railed.run, regionRun( { proposal: r.proposal, skeleton: r.skeleton, inventory } ) ].filter( Boolean ), problems: r.problems, rows: r.proposal.rows, facts, rootComponent: served ? ctx.rootComponent : null, calibration: calSettingsFor( site, cache ) } } );
+	const pieces = piecesPass( { repo, client, entry: readSurface( repo, client, surface ), tree: r.skeleton, inventory, paint: { runs: [ railed.run, regionRun( { proposal: r.proposal, skeleton: r.skeleton, inventory } ) ].filter( Boolean ), problems: r.problems, rows: r.proposal.rows, facts, rootComponent: served ? ctx.rootComponent : null, calibration: calSettingsFor( client, cache ) } } );
 	const paint = pieces.paint;
 	paint && Object.assign( r.proposal, { problems: paint.problems, paintUnread: paint.unread } );
 	Object.assign( r, { skeleton: pieces.tree, problems: [ ...( paint?.problems ?? r.problems ), ...pieces.problems ] } );
 	r.proposal.templatePieces = { placed: pieces.placed, problems: pieces.problems, notes: [ ...pieces.notes, ...( paint?.notes ?? [] ) ], missingFeatures: paint?.missing ?? [] };
-	assertSkeletonPaints( { skeleton: r.skeleton, site, client, what: `skeleton propose ${ surface }`, cache, allow: allowMissingPaint } );
+	assertSkeletonPaints( { skeleton: r.skeleton, client, what: `skeleton propose ${ surface }`, cache, allow: allowMissingPaint } );
 	json( p.skeleton, r.skeleton );
 	json( p.proposal, r.proposal );
 	// The run ledger (lib/run-ledger.mjs, a writer from openRunLedger): what the proposal did with each painted element it does
 	// not carry on, appended after the proposal and skeleton are written (lib/run-ledger-skeleton.mjs).
-	runLedger?.append( skeletonRunRows( { surface, inventory, proposal: r.proposal, skeleton: r.skeleton, calTags: calTagsFor( site, cache ) } ) );
+	runLedger?.append( skeletonRunRows( { surface, inventory, proposal: r.proposal, skeleton: r.skeleton, calTags: calTagsFor( client, cache ) } ) );
 	return { ...r, paths: p, facts, inventory, clientDecisions };
 }
 

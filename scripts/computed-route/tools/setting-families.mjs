@@ -1,21 +1,21 @@
 #!/usr/bin/env node
 // Lists the rows of saved Fill runs that a block already has a setting for and Fill left unwritten, by family
-// (lib/setting-families.mjs). Reads saved files only: each fill-report.json given, and the route's calibration cache for
-// the site its default paint was measured on.
-//   node tools/setting-families.mjs --site <site> <fill-report.json> [...] [--rows]
+// (lib/setting-families.mjs). Reads saved files only: each fill-report.json given, and the setting record in the
+// client's look.
+//   node tools/setting-families.mjs --client <slug> <fill-report.json> [...] [--rows]
 // Prints one line per family and report with its row count; --rows prints every row.
 import fs from 'node:fs';
 import { calibrationsAt } from '../lib/skeleton-context.mjs';
 import { settingFamilyRows } from '../lib/setting-families.mjs';
 
 const argv = process.argv.slice( 2 );
-const site = argv[ argv.indexOf( '--site' ) + 1 ];
-const files = argv.filter( ( a, i ) => a.endsWith( '.json' ) && '--site' !== argv[ i - 1 ] );
-if ( ! argv.includes( '--site' ) || ! site || ! files.length ) {
-	console.error( 'usage: node tools/setting-families.mjs --site <site> <fill-report.json> [...] [--rows]' );
+const client = argv[ argv.indexOf( '--client' ) + 1 ];
+const files = argv.filter( ( a, i ) => a.endsWith( '.json' ) && '--client' !== argv[ i - 1 ] );
+if ( ! argv.includes( '--client' ) || ! client || ! files.length ) {
+	console.error( 'usage: node tools/setting-families.mjs --client <slug> <fill-report.json> [...] [--rows]' );
 	process.exit( 2 );
 }
-const calFor = calibrationsAt( site );
+const calFor = calibrationsAt( client );
 let total = 0;
 for ( const f of files ) {
 	const rows = settingFamilyRows( JSON.parse( fs.readFileSync( f, 'utf8' ) ), calFor );

@@ -1,7 +1,7 @@
 [
 	{ "file": "lib/paint-gate.mjs", "find": "const stop = gaps.filter( ( b ) => ! allow.includes( b ) );", "replace": "const stop = gaps;", "why": "the code before the allowance: a named block still stops the run" },
 	{ "file": "lib/paint-gate.mjs", "find": "const stop = gaps.filter( ( b ) => ! allow.includes( b ) );", "replace": "const stop = allow.length ? [] : gaps;", "why": "any allowance lets every gap through" },
-	{ "file": "lib/paint-gate.mjs", "find": "gaps.forEach( ( block ) => log( missingPaintLine( { block, site, what } ) ) );", "replace": "", "why": "a named block goes through silently" },
+	{ "file": "lib/paint-gate.mjs", "find": "gaps.forEach( ( block ) => log( missingPaintLine( { block, client, what } ) ) );", "replace": "", "why": "a named block goes through silently" },
 	{ "file": "lib/paint-gate.mjs", "find": "return gaps;", "replace": "return allow;", "why": "the named blocks the tree does not use are reported as used" },
 	{ "file": "lib/paint-gate.mjs", "find": "const BLOCK_NAME = /^[a-z0-9-]+\\/[a-z0-9-]+$/;", "replace": "const BLOCK_NAME = /./;", "why": "a wildcard or all is accepted" },
 	{ "file": "lib/paint-gate.mjs", "find": "if ( undefined === value || value.startsWith( '--' ) ) {", "replace": "if ( undefined === value ) {", "why": "the next flag is taken as the list" },
@@ -13,7 +13,7 @@
 	{ "file": "lib/fill-report.mjs", "find": "...( missingPaint.length ? [ '## Resolved without default paint',", "replace": "...( false ? [ '## Resolved without default paint',", "why": "fill-report.md omits the list" },
 	{ "file": "skeleton.mjs", "find": "cache, allow: allowMissingPaint } );", "replace": "cache } );", "why": "skeleton propose ignores its allowance" },
 	{ "file": "lib/skeleton-rerun.mjs", "find": "cache, allow: allowMissingPaint } );", "replace": "cache } );", "why": "the skeleton re-run ignores its allowance" },
-	{ "file": "lib/skeleton-context.mjs", "find": "site, client, what, allow, log } );", "replace": "site, client, what, log } );", "why": "the skeleton gate drops the allowance" },
+	{ "file": "lib/skeleton-context.mjs", "find": "calibrationsAt( client, dir ), client, what, allow, log } );", "replace": "calibrationsAt( client, dir ), client, what, log } );", "why": "the skeleton gate drops the allowance" },
 	{ "file": "freeze.mjs", "find": "opts.propose( args[ 0 ], ! noBuilt, opts.repo, opts.allowMissingPaint );", "replace": "opts.propose( args[ 0 ], ! noBuilt, opts.repo );", "why": "freeze drops its allowance" },
 	{ "file": "lib/intake-run.mjs", "find": "o.allowMissingPaint = parseAllowMissingPaint( value() ?? '' );", "replace": "o.allowMissingPaint = ( value() ?? '' ).split( ',' );", "why": "intake accepts all as a block name" },
 	{ "file": "solve.mjs", "find": "allow: allowMissingPaintArg( argv ) } );", "replace": "} );", "why": "Solve ignores its allowance" },

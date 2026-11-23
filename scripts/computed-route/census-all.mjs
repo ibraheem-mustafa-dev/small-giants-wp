@@ -13,8 +13,8 @@ import { openDb } from './lib/db.mjs';
 import { loadRules } from './lib/fill-census.mjs';
 import { blockLookup, surfaceRows, groupRows, SIGNATURE_PARTS } from './lib/census-mechanism.mjs';
 import { classifyRows, classCounts, gitFreshness } from './lib/census-gap-class.mjs';
-import { calibrationForSite } from './solve.mjs';
-import { paintFile, slotMapFile } from './lib/cache.mjs';
+import { calibrationForClient } from './solve.mjs';
+import { siteLookFile } from './lib/setting-record.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const args = process.argv.slice( 2 );
@@ -94,32 +94,18 @@ export function renderTable( { groups, unclassified, surfaces, clients, classes 
 	return lines.join( '\n' ) + '\n';
 }
 
-// The calibration of a block on the site a surface builds on (sites/<client>/build/surfaces.json), or null when the surface
-// names no site or the block has no cache; `.files` gives the same block's cache files ({ slotMap, paint }, repo-relative),
-// or null when the surface names no site.
+// A block's setting record in the client's look (solve.mjs::calibrationFor), or null when the block has no record;
+// `.files` names where the same block's facts come from ({ slotMap: the framework database's setting record, paint: the
+// client's site look file }, repo-relative). The surface does not matter: the look is the client's.
 function calibrationReader( repo ) {
-	const cacheDir = path.join( repo, 'scripts', 'computed-route', 'cache' );
-	const sites = new Map();
 	const readers = new Map();
-	const siteOf = ( client, surface ) => {
-		const file = path.join( repo, 'sites', client, 'build', 'surfaces.json' );
-		sites.has( file ) || sites.set( file, fs.existsSync( file ) ? readJson( file ) : {} );
-		return sites.get( file )[ surface ]?.site ?? null;
-	};
 	const read = ( client, surface, block ) => {
-		const site = siteOf( client, surface );
-		if ( ! site ) {
-			return null;
-		}
-		const key = `${ site }${ block }`;
-		readers.has( key ) || readers.set( key, calibrationForSite( site, cacheDir )( block ) );
+		const key = `${ client }|${ block }`;
+		readers.has( key ) || readers.set( key, calibrationForClient( client )( block ) );
 		return readers.get( key );
 	};
 	const rel = ( f ) => path.relative( repo, f ).split( path.sep ).join( '/' );
-	read.files = ( client, surface, block ) => {
-		const site = siteOf( client, surface );
-		return site ? { slotMap: rel( slotMapFile( cacheDir, block ) ), paint: rel( paintFile( cacheDir, site, block ) ) } : null;
-	};
+	read.files = ( client, surface, block ) => ( { slotMap: `setting_placements of ${ block } (sgs-framework.db)`, paint: rel( siteLookFile( client, block ) ) } );
 	return read;
 }
 

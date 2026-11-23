@@ -347,7 +347,7 @@ async function main() {
 	const calCache = path.join( HERE, 'cache' );
 	const calibrations = new Map();
 	const calFor = ( block ) => {
-		calibrations.has( block ) || calibrations.set( block, loadCalibration( calCache, block, site ) );
+		calibrations.has( block ) || calibrations.set( block, loadCalibration( calCache, block, client ) );
 		return calibrations.get( block );
 	};
 	const props = familyProps( FAMILIES );
@@ -362,7 +362,7 @@ async function main() {
 	shelled.forEach( ( s ) => ( s.postId = blocks.templates?.home || s.postId ) );
 	// Every block saved on the surfaces this run works on has this site's default paint, or is named in --allow-missing-paint
 	// (printed), or the run stops here, before any read or write (lib/paint-gate.mjs).
-	assertPaints( { blocks: surfaces.flatMap( ( s ) => Object.values( blocks[ s.postId ]?.blocks ?? {} ).map( ( b ) => b?.block ) ).filter( Boolean ), calFor, site, client, what: `apply ${ client }`, allow: allowMissingPaintArg( process.argv ) } );
+	assertPaints( { blocks: surfaces.flatMap( ( s ) => Object.values( blocks[ s.postId ]?.blocks ?? {} ).map( ( b ) => b?.block ) ).filter( Boolean ), calFor, client, what: `apply ${ client }`, allow: allowMissingPaintArg( process.argv ) } );
 	const clientData = { ...loadClientData( REPO, client ), draftSource: loadDraftSource( REPO, client ) };
 	const skeleton = loadSkeleton( REPO, client );
 	const tools = motionTools( db, rawSnapshot );

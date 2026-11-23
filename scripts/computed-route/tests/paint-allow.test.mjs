@@ -43,11 +43,11 @@ const SKELETON = [ { name: 'sgs/container', draftRef: 'main', attributes: { tagN
 	{ name: 'sgs/heading', draftRef: 'h1', attributes: { level: 'h1' } },
 ] } ];
 
-// Every block of CAL has a record; each except `without` has its default look on SITE.
+// Every block of CAL has a record, for any client; each except `without` has a default look.
 function cacheWithout( without ) {
 	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'cr-paint-allow-' ) );
 	for ( const [ block, cal ] of Object.entries( CAL ) ) {
-		writeRecordFixture( dir, block, { block, site: SITE, discovered: {}, ...cal, ...( without.includes( block ) ? {} : { elements: { '': tiers() } } ) } );
+		writeRecordFixture( dir, block, { block, discovered: {}, ...cal, ...( without.includes( block ) ? {} : { elements: { '': tiers() } } ) } );
 	}
 	return dir;
 }
@@ -71,7 +71,7 @@ test( 'MUST FAIL: Fill goes through with a named block that has no default paint
 	const lines = [];
 	const r = await fill( work, cacheWithout( [ 'sgs/heading' ] ), [ 'sgs/heading' ], lines );
 	assert.deepEqual( r.missingPaint, [ 'sgs/heading' ] );
-	assert.deepEqual( lines.filter( ( l ) => /without default paint/.test( l ) ), [ missingPaintLine( { block: 'sgs/heading', site: SITE, what: 'fill home' } ) ] );
+	assert.deepEqual( lines.filter( ( l ) => /without default paint/.test( l ) ), [ missingPaintLine( { block: 'sgs/heading', client: 'acme', what: 'fill home' } ) ] );
 	assert.deepEqual( JSON.parse( fs.readFileSync( path.join( work, 'out', 'fill-report.json' ), 'utf8' ) ).missingPaint, [ 'sgs/heading' ] );
 	assert.match( fs.readFileSync( path.join( work, 'out', 'fill-report.md' ), 'utf8' ), /## Resolved without default paint[\s\S]*resolved without it: sgs\/heading\./ );
 } );
@@ -79,7 +79,7 @@ test( 'MUST FAIL: Fill goes through with a named block that has no default paint
 test( 'negative control: a block not named still stops Fill, before any output', async () => {
 	const work = fillRepo();
 	// A served draft is not needed: the gate stops first, and a gate that did not would fail at once on the closed port.
-	await assert.rejects( fillSurface( { repo: work, client: 'acme', surface: 'home', skeleton: path.join( work, 'skeleton.json' ), draftUrl: 'http://127.0.0.1:9/', liveUrl: 'http://127.0.0.1:9/home/', out: path.join( work, 'out' ), cache: cacheWithout( [ 'sgs/heading' ] ), allowMissingPaint: [ 'sgs/text' ], sweep: false, log: () => {} } ), /fill home stops before writing: 1 block in its tree has no default paint for acme-test \(sgs\/heading\)[\s\S]*name it in --allow-missing-paint sgs\/heading to resolve its settings without default paint/ );
+	await assert.rejects( fillSurface( { repo: work, client: 'acme', surface: 'home', skeleton: path.join( work, 'skeleton.json' ), draftUrl: 'http://127.0.0.1:9/', liveUrl: 'http://127.0.0.1:9/home/', out: path.join( work, 'out' ), cache: cacheWithout( [ 'sgs/heading' ] ), allowMissingPaint: [ 'sgs/text' ], sweep: false, log: () => {} } ), /fill home stops before writing: 1 block in its tree has no default look for acme \(sgs\/heading\)[\s\S]*name it in --allow-missing-paint sgs\/heading to resolve its settings without default paint/ );
 	assert.equal( fs.existsSync( path.join( work, 'out' ) ), false );
 } );
 
@@ -90,12 +90,12 @@ test( 'negative control: a report with no block resolved without paint has no su
 } );
 
 test( 'negative control: a named block the tree does not use changes nothing, and the gate returns the named gaps it used', () => {
-	const calFor = calibrationLoader( SITE, cacheWithout( [ 'sgs/heading' ] ) );
+	const calFor = calibrationLoader( 'acme', cacheWithout( [ 'sgs/heading' ] ) );
 	const lines = [];
-	assert.deepEqual( assertPaints( { blocks: [ 'sgs/container', 'sgs/text' ], calFor, site: SITE, what: 'x', allow: [ 'sgs/heading' ], log: ( m ) => lines.push( m ) } ), [] );
+	assert.deepEqual( assertPaints( { blocks: [ 'sgs/container', 'sgs/text' ], calFor, client: 'acme', what: 'x', allow: [ 'sgs/heading' ], log: ( m ) => lines.push( m ) } ), [] );
 	assert.deepEqual( lines, [] );
-	assert.throws( () => assertPaints( { blocks: [ 'sgs/heading' ], calFor, site: SITE, what: 'x', allow: [ 'sgs/button' ], log: () => {} } ), /sgs\/heading/ );
-	assert.deepEqual( assertPaints( { blocks: [ 'sgs/heading', 'sgs/text' ], calFor, site: SITE, what: 'x', allow: [ 'sgs/heading', 'sgs/button' ], log: ( m ) => lines.push( m ) } ), [ 'sgs/heading' ] );
+	assert.throws( () => assertPaints( { blocks: [ 'sgs/heading' ], calFor, client: 'acme', what: 'x', allow: [ 'sgs/button' ], log: () => {} } ), /sgs\/heading/ );
+	assert.deepEqual( assertPaints( { blocks: [ 'sgs/heading', 'sgs/text' ], calFor, client: 'acme', what: 'x', allow: [ 'sgs/heading', 'sgs/button' ], log: ( m ) => lines.push( m ) } ), [ 'sgs/heading' ] );
 	assert.equal( lines.length, 1 );
 } );
 
@@ -151,7 +151,7 @@ test( 'the skeleton writer and the re-run go through with a named block, and sti
 	} finally {
 		console.log = quiet;
 	}
-	assert.deepEqual( lines.filter( ( l ) => /without default paint/.test( l ) ), [ missingPaintLine( { block: 'sgs/heading', site: SITE, what: 'skeleton propose footer' } ), missingPaintLine( { block: 'sgs/heading', site: SITE, what: 'skeleton site-footer' } ) ] );
+	assert.deepEqual( lines.filter( ( l ) => /without default paint/.test( l ) ), [ missingPaintLine( { block: 'sgs/heading', client: CLIENT, what: 'skeleton propose footer' } ), missingPaintLine( { block: 'sgs/heading', client: CLIENT, what: 'skeleton site-footer' } ) ] );
 } );
 
 test( 'freeze passes its allowance to the proposer and refuses "all"', async () => {

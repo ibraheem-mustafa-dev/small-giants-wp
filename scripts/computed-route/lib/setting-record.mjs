@@ -13,6 +13,7 @@
 //                       property (a setting whose row names its property and element paints once its partner draws
 //                       the element, Bean 2026-11-22, and takes its placement from that row)
 //   untestedStates      'setting:state (unproved: cause)' for each placement the route may not act on
+//   client              the client whose theme snapshot the look was built from
 //   recordKey           the site look's key (what the block's look was built from)
 //   paintMissing        why there is no site look, when there is none
 import fs from 'fs';
@@ -23,7 +24,6 @@ import { openDb, attrRow } from './db.mjs';
 import { longhands } from './calibrate.mjs';
 import { splitProperty, blockElements } from './resolve.mjs';
 import { INHERITED } from './calibrate-props.mjs';
-import { readTargets } from './site-targets.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../../..' );
@@ -43,46 +43,37 @@ const json = ( v, fallback ) => {
 	}
 };
 
-let targetsMemo = null;
-const targetsNow = () => ( targetsMemo ||= readTargets() );
-
-// The site a site's records live under: the test site a mirror (or a scratch copy registered with `mirrorOf`) copies.
-export function lookSite( site, targets = targetsNow() ) {
-	return ( Object.hasOwn( targets, String( site ) ) && targets[ site ].mirrorOf ) || site;
-}
-
-// The client a site belongs to (calibration-targets.json `client`), through its mirror's test site.
-export function clientOf( site, targets = targetsNow() ) {
-	return targets[ lookSite( site, targets ) ]?.client ?? null;
-}
-
-// Whether a site runs WooCommerce, so the theme prints its shop stylesheet: a shop site's target names a stand-in product.
-export function runsShop( site, targets = targetsNow() ) {
-	return !! targets[ lookSite( site, targets ) ]?.refs?.product;
+// Whether a client runs WooCommerce, so the theme prints its shop stylesheet: its page map (sites/<client>/build/
+// page-map.json) holds a shop or product row, the rule the intake adds WooCommerce's pages by
+// (lib/intake-pagemap-owners.mjs::wooPages). A client with no page map yet runs no shop.
+export function runsShop( client, repo = REPO ) {
+	const file = path.join( repo, 'sites', String( client ), 'build', 'page-map.json' );
+	const rows = fs.existsSync( file ) ? json( fs.readFileSync( file, 'utf8' ), [] ) : [];
+	return Array.isArray( rows ) && rows.some( ( r ) => [ 'shop', 'product' ].includes( r?.postType ) );
 }
 
 const lookFile = ( dir, client, block ) => path.join( dir, client, `${ slugOf( block ) }.json` );
 
+// The file a block's site look for a client is kept in.
+export const siteLookFile = ( client, block, dir = SITE_LOOK_DIR ) => lookFile( dir, String( client ), block );
+
 const checked = new Set();
 
-// The block's site look for the client, built (or confirmed current) by the builder once per process. With SGS_NO_SITE
-// set (the route's tests) nothing is built: a missing look reads as missing.
-export function siteLook( block, site, { dir = SITE_LOOK_DIR, targets = targetsNow(), build = ! process.env.SGS_NO_SITE } = {} ) {
-	const client = clientOf( site, targets );
-	if ( ! client ) {
-		return { missing: `${ site } names no client in calibration-targets.json, so its theme snapshot is unknown` };
-	}
+// The block's site look for the client (sites/<client>/theme-snapshot.json), built (or confirmed current) by the builder
+// once per process. With SGS_NO_SITE set (the route's tests) nothing is built: a missing look reads as missing.
+export function siteLook( block, client, { dir = SITE_LOOK_DIR, repo = REPO, build = ! process.env.SGS_NO_SITE } = {} ) {
 	const file = lookFile( dir, client, block );
 	const key = `${ dir }|${ client }|${ block }`;
 	if ( build && ! checked.has( key ) ) {
 		checked.add( key );
-		const snapshot = path.join( REPO, 'sites', client, 'theme-snapshot.json' );
-		if ( fs.existsSync( snapshot ) ) {
-			const args = [ BUILDER, '--snapshot', snapshot, '--site', client, '--out', dir, '--blocks', block, '--jobs', '1', ...( runsShop( site, targets ) ? [ '--woocommerce' ] : [] ) ];
-			const r = spawnSync( 'python', args, { encoding: 'utf8', cwd: REPO } );
-			if ( r.status ) {
-				return { missing: `the site look of ${ block } for ${ client } did not build: ${ ( r.stderr || r.stdout || '' ).slice( -400 ) }` };
-			}
+		const snapshot = path.join( repo, 'sites', client, 'theme-snapshot.json' );
+		if ( ! fs.existsSync( snapshot ) ) {
+			return { missing: `${ client } has no theme snapshot (sites/${ client }/theme-snapshot.json), so its look cannot be built` };
+		}
+		const args = [ BUILDER, '--snapshot', snapshot, '--site', client, '--out', dir, '--blocks', block, '--jobs', '1', ...( runsShop( client, repo ) ? [ '--woocommerce' ] : [] ) ];
+		const r = spawnSync( 'python', args, { encoding: 'utf8', cwd: REPO } );
+		if ( r.status ) {
+			return { missing: `the site look of ${ block } for ${ client } did not build: ${ ( r.stderr || r.stdout || '' ).slice( -400 ) }` };
 		}
 	}
 	if ( ! fs.existsSync( file ) ) {
@@ -269,39 +260,39 @@ function elementPaths( block, element, look, elementsOf = blockElements ) {
 	return cls ? partPaths( cls, look ) : [];
 }
 
-// A test's record for one block (writeRecordFixture): the whole object the loader returns, written for one site
-// (`<dir>/<site>/<block>.record.json`, read only on that site) or for any (`<dir>/<block>.record.json`). Only a folder a
-// test names holds one; the route's own runs read the framework database and the site look.
-export function recordFixtureFile( dir, block, site = null ) {
-	const own = site ? path.join( dir, String( site ), `${ slugOf( block ) }.record.json` ) : null;
+// A test's record for one block (writeRecordFixture): the whole object the loader returns, written for one client
+// (`<dir>/<client>/<block>.record.json`, read only for that client) or for any (`<dir>/<block>.record.json`). Only a
+// folder a test names holds one; the route's own runs read the framework database and the site look.
+export function recordFixtureFile( dir, block, client = null ) {
+	const own = client ? path.join( dir, String( client ), `${ slugOf( block ) }.record.json` ) : null;
 	return own && fs.existsSync( own ) ? own : path.join( dir, `${ slugOf( block ) }.record.json` );
 }
 
-export function writeRecordFixture( dir, block, record, site = null ) {
-	const file = site ? path.join( dir, String( site ), `${ slugOf( block ) }.record.json` ) : path.join( dir, `${ slugOf( block ) }.record.json` );
+export function writeRecordFixture( dir, block, record, client = null ) {
+	const file = client ? path.join( dir, String( client ), `${ slugOf( block ) }.record.json` ) : path.join( dir, `${ slugOf( block ) }.record.json` );
 	fs.mkdirSync( path.dirname( file ), { recursive: true } );
 	fs.writeFileSync( file, JSON.stringify( record, null, 1 ) );
 }
 
 // A fixture record as the loader returns it: one with no `elements` has no site look, so it carries `paintMissing`.
-export function readRecordFixture( dir, block, site ) {
-	const rec = JSON.parse( fs.readFileSync( recordFixtureFile( dir, block, site ), 'utf8' ) );
+export function readRecordFixture( dir, block, client ) {
+	const rec = JSON.parse( fs.readFileSync( recordFixtureFile( dir, block, client ), 'utf8' ) );
 	if ( rec.elements ) {
 		return rec;
 	}
-	return { ...rec, elements: {}, paintMissing: site ? `no site look of ${ block } for ${ site }` : 'no site named, so no site look to read' };
+	return { ...rec, elements: {}, paintMissing: client ? `no site look of ${ block } for ${ client }` : 'no client named, so no site look to read' };
 }
 
 let dbMemo = null;
 const loaded = new Map();
 
-// The calibration-shaped object for one block on one site, or null when the block has no record. Read once per process
-// for each block, site and folder (a reader asks for a block's record many times while it fills one surface).
-export function loadRecord( block, site, opts = {} ) {
-	const key = `${ block }|${ site }|${ opts.dir || SITE_LOOK_DIR }`;
-	const custom = opts.db || opts.targets || opts.elementsOf;
+// The calibration-shaped object for one block in one client's look, or null when the block has no record. Read once per
+// process for each block, client and folder (a reader asks for a block's record many times while it fills one surface).
+export function loadRecord( block, client, opts = {} ) {
+	const key = `${ block }|${ client }|${ opts.dir || SITE_LOOK_DIR }`;
+	const custom = opts.db || opts.repo || opts.elementsOf;
 	if ( custom || ! loaded.has( key ) ) {
-		const r = readRecord( block, site, opts );
+		const r = readRecord( block, client, opts );
 		if ( custom ) {
 			return r;
 		}
@@ -310,13 +301,13 @@ export function loadRecord( block, site, opts = {} ) {
 	return loaded.get( key );
 }
 
-function readRecord( block, site, { db = null, dir = SITE_LOOK_DIR, targets = targetsNow(), build, elementsOf = blockElements } = {} ) {
+function readRecord( block, client, { db = null, dir = SITE_LOOK_DIR, repo = REPO, build, elementsOf = blockElements } = {} ) {
 	const handle = db || ( dbMemo ||= openDb() );
 	const rec = recordRows( handle, block );
 	if ( ! rec.hasRecord ) {
 		return null;
 	}
-	const { look, missing } = site ? siteLook( block, site, { dir, targets, ...( undefined === build ? {} : { build } ) } ) : { missing: 'no site named, so no site look to read' };
+	const { look, missing } = client ? siteLook( block, client, { dir, repo, ...( undefined === build ? {} : { build } ) } ) : { missing: 'no client named, so no site look to read' };
 	const facts = look?.settingFacts || {};
 	const usable = new Map();
 	const unprovedAt = {};
@@ -354,7 +345,7 @@ function readRecord( block, site, { db = null, dir = SITE_LOOK_DIR, targets = ta
 	}
 	return {
 		block,
-		site,
+		client,
 		source: 'setting-record',
 		settings,
 		discovered: look?.discovered || {},

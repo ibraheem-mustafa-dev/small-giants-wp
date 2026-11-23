@@ -369,7 +369,7 @@ function factsFor( { db, client, repo, facts } ) {
 // resize. A root that does not render at rest is opened first (openers: its surfaces.json state keys, else a trigger
 // `census`'s template handlers link to it through `opened_by`), read, then closed again; the entry's `opened` says how,
 // where it renders and which widths were read at a neighbour (`readAt`). `openStates: false` switches opening off (the
-// tests' negative control). o: { folder, harPath, surfaces, client, db?, facts?, entry?, routing?, site?, shotsDir?,
+// tests' negative control). o: { folder, harPath, surfaces, client, db?, facts?, entry?, routing?, readLook?, shotsDir?,
 // widths, repo?, harness? (harness options), log?, census?, openStates?, inventoriesDir? (each surface's full inventory is
 // written there as <surface>.json, so lib/skeleton-rerun.mjs can propose again offline), propose? (the proposer; proposeSkeleton by default, called with the client's saved
 // form links and its draft-link context), pageMap? (this run's proposed page map rows, the draft-link context's rows until a
@@ -379,7 +379,7 @@ function factsFor( { db, client, repo, facts } ) {
 // keeps its entry with `gap` and adds a gap row naming what was tried. The proposals read the client's saved fact record
 // through lib/skeleton-record.mjs::recordForIntakeRun: a stale or invalid one is the record the intake run is replacing, so
 // they are made without it and `log` says so.
-export async function proposeSkeletons( { folder, harPath, surfaces, client, db = null, facts = null, entry = null, routing = null, site = null, shotsDir = null, widths = INVENTORY_WIDTHS, repo = REPO, harness = {}, log = () => {}, census = null, openStates = true, inventoriesDir = null, propose = proposeSkeleton, pageMap = null, allowMissingPaint = [] } ) {
+export async function proposeSkeletons( { folder, harPath, surfaces, client, db = null, facts = null, entry = null, routing = null, readLook = false, shotsDir = null, widths = INVENTORY_WIDTHS, repo = REPO, harness = {}, log = () => {}, census = null, openStates = true, inventoriesDir = null, propose = proposeSkeleton, pageMap = null, allowMissingPaint = [] } ) {
 	if ( [ ...widths ].sort().join() !== [ ...INVENTORY_WIDTHS ].sort().join() ) {
 		throw new Error( `the skeleton inventory reads at ${ INVENTORY_WIDTHS.join( ', ' ) } (Spec 48 §3.4), not ${ widths.join( ', ' ) }` );
 	}
@@ -399,7 +399,9 @@ export async function proposeSkeletons( { folder, harPath, surfaces, client, db 
 	// invalid). Any other failure to read it throws inside each surface's proposal, so each surface keeps its gap row.
 	let runRecord;
 	const factRecord = () => ( undefined === runRecord ? ( runRecord = recordForIntakeRun( f.facts, { log } ) ) : runRecord );
-	const calKeys = calKeysFor( site );
+	// The client's look is read, and the paint gate run, only when the caller asks (`readLook`): intake proposes before
+	// the client's theme snapshot, which the look is built from, need exist, so its own run (intake-run-stages) does not.
+	const calKeys = calKeysFor( readLook ? client : null );
 	const sources = inventoriesDir ? sourcesOf( folder ) : null;
 	// The state keys each component writes from the viewport width: a state bounding one opens only at the widths inside it.
 	const widthKeys = widthStateKeys( readBreakpoints( { folder } ) );
@@ -487,7 +489,7 @@ export async function proposeSkeletons( { folder, harPath, surfaces, client, db 
 							throw new Error( f.error );
 						}
 						const r = propose( { inventory, facts: f.facts, surface: s.slug, surfaceKind: s.kind, surfaceName: s.name, built: builtFor( s ), clientDecisions: f.clientDecisions, carried: carriedIds( { repo, client, site: siteOf( { repo, client, slug: s.slug } ) } ), calKeys, formLinks: formLinks(), refs, draftLinks: draftLinks(), db: theDb, factRecord: factRecord() } );
-						assertSkeletonPaints( { skeleton: r.skeleton, site, client, what: `skeleton ${ s.slug }`, allow: allowMissingPaint, log } );
+						assertSkeletonPaints( { skeleton: r.skeleton, client: readLook ? client : null, what: `skeleton ${ s.slug }`, allow: allowMissingPaint, log } );
 						// A width another state opened (the same state at its other breakpoint) is named in `statesAt`.
 						const other = open ? Object.entries( open.ways ).filter( ( [ , x ] ) => x !== open.opener ).map( ( [ w, x ] ) => [ w, x.state ] ) : [];
 						const opened = open && { ...open.opener, at: open.at, readAt: open.readAt, ...( other.length ? { statesAt: Object.fromEntries( other ) } : {} ), tried: open.tried };

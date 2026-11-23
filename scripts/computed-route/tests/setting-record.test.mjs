@@ -9,11 +9,11 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
-import { loadRecord, partPaths, tierHolds, reachedAtOf, symbolicTiers, withNodeValues } from '../lib/setting-record.mjs';
+import { loadRecord, partPaths, tierHolds, reachedAtOf, symbolicTiers, withNodeValues, runsShop } from '../lib/setting-record.mjs';
 import { calibrationForNode } from '../lib/paint-state.mjs';
 
 const BLOCK = 'sgs/demo';
-const TARGETS = { 'demo-test': { client: 'demo-client' }, 'local-demo': { mirrorOf: 'demo-test' } };
+const CLIENT = 'demo-client';
 const at = ( v ) => ( { 375: v, 768: v, 1440: v } );
 
 // The look the builder would write: a root, a label carrying two classes (its path names the first), an inner span.
@@ -53,7 +53,7 @@ function lookDir( look = LOOK ) {
 	return dir;
 }
 
-const load = ( db, extra = {} ) => loadRecord( BLOCK, 'local-demo', { db, dir: lookDir(), targets: TARGETS, build: false, ...extra } );
+const load = ( db, extra = {} ) => loadRecord( BLOCK, CLIENT, { db, dir: lookDir(), build: false, ...extra } );
 
 test( 'MUST FAIL: an unproved placement is acted on only when accepted; one that is not is listed with its cause', () => {
 	const db = fixtureDb( [
@@ -93,7 +93,7 @@ test( 'MUST FAIL: a setting that paints only beside its partner is placed from i
 		testedNoPaint: [ 'panelBackground', 'ariaLabel', 'drawerBorder' ],
 		attrs: [ { attr: 'panelBackground', property: 'background-color', element: 'panel' }, { attr: 'ariaLabel' }, { attr: 'drawerBorder', property: 'border-color', element: 'drawer' } ],
 	} );
-	const r = loadRecord( BLOCK, 'local-demo', { db, dir: lookDir(), targets: TARGETS, build: false, elementsOf: () => ( { panel: '.sgs-demo__panel', drawer: '.sgs-demo__drawer' } ) } );
+	const r = loadRecord( BLOCK, CLIENT, { db, dir: lookDir(), build: false, elementsOf: () => ( { panel: '.sgs-demo__panel', drawer: '.sgs-demo__drawer' } ) } );
 	assert.deepEqual( r.settings.panelBackground?.slots, [ '.sgs-demo__panel' ] );
 	assert.equal( r.settings.panelBackground.property, 'background-color' );
 	assert.equal( r.settings.panelBackground.fromAttributes, true );
@@ -131,13 +131,29 @@ test( 'forms come from the site look\'s positive evidence only', () => {
 	assert.deepEqual( r.settings.colour.forms, [] );
 } );
 
-test( 'a site with no client, or no site look, reads as missing its look', () => {
+test( 'no client named, or a client with no site look for the block, reads as missing its look', () => {
 	const db = fixtureDb( [ { setting: 'colour', part: 'ROOT', props: [ 'color' ] } ] );
-	assert.match( loadRecord( BLOCK, 'nowhere', { db, dir: lookDir(), targets: TARGETS, build: false } ).paintMissing, /names no client/ );
+	assert.match( loadRecord( BLOCK, null, { db, dir: lookDir(), build: false } ).paintMissing, /no client named/ );
+	assert.match( loadRecord( BLOCK, 'other-client', { db, dir: lookDir(), build: false } ).paintMissing, /no site look of sgs\/demo for other-client/, 'the look is keyed by client: another client\'s folder is never read' );
 	const empty = fs.mkdtempSync( path.join( os.tmpdir(), 'cr-setting-record-empty-' ) );
-	const r = loadRecord( BLOCK, 'local-demo', { db, dir: empty, targets: TARGETS, build: false } );
+	const r = loadRecord( BLOCK, CLIENT, { db, dir: empty, build: false } );
 	assert.match( r.paintMissing, /no site look/ );
 	assert.equal( r.settings.colour.slot, null, 'without a look a setting has no element' );
+} );
+
+test( 'MUST FAIL: a client runs a shop when its page map holds a shop or product row', () => {
+	const repo = fs.mkdtempSync( path.join( os.tmpdir(), 'cr-setting-record-shop-' ) );
+	const map = ( client, rows ) => {
+		fs.mkdirSync( path.join( repo, 'sites', client, 'build' ), { recursive: true } );
+		fs.writeFileSync( path.join( repo, 'sites', client, 'build', 'page-map.json' ), JSON.stringify( rows ) );
+	};
+	map( 'shop-client', [ { slug: 'home', postType: 'page' }, { slug: 'shop', postType: 'shop' } ] );
+	map( 'product-client', [ { slug: 'tea', postType: 'product' } ] );
+	map( 'brochure-client', [ { slug: 'home', postType: 'page' }, { slug: 'news', postType: 'post' } ] );
+	assert.equal( runsShop( 'shop-client', repo ), true );
+	assert.equal( runsShop( 'product-client', repo ), true );
+	assert.equal( runsShop( 'brochure-client', repo ), false, 'negative control: pages and posts only' );
+	assert.equal( runsShop( 'no-map-yet', repo ), false, 'a client with no page map runs no shop' );
 } );
 
 test( 'tier conditions as a plain screen holds them', () => {

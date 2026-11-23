@@ -67,9 +67,9 @@
 	},
 	{
 		"file": "lib/content-coverage.mjs",
-		"find": "if ( ! fs.existsSync( slotMapFile( cacheDir, row.block ) ) ) {",
-		"replace": "if ( false ) {",
-		"why": "an uncalibrated block is not named as such"
+		"find": "\tif ( ! cal ) {\n\t\twhy.push( `no setting record",
+		"replace": "\tif ( false ) {\n\t\twhy.push( `no setting record",
+		"why": "a block with no record is not named as such"
 	},
 	{
 		"file": "lib/content-coverage.mjs",
@@ -166,5 +166,17 @@
 		"find": "\t\tif ( isContentSettingId( id ) ) {\n\t\t\tproblems.push",
 		"replace": "\t\tif ( false ) {\n\t\t\tproblems.push",
 		"why": "a gap row is held against the inventory"
+	},
+	{
+		"file": "lib/content-coverage.mjs",
+		"find": "\t} else if ( cal.paintMissing ) {",
+		"replace": "\t} else if ( false ) {",
+		"why": "a block with no site look is reported as reading nothing"
+	},
+	{
+		"file": "lib/content-coverage.mjs",
+		"find": "\t\tconst cal = loadCalibration( cacheDir, block, client );",
+		"replace": "\t\tconst cal = loadCalibration( cacheDir, block, null );",
+		"why": "the claims read no client's look"
 	}
 ]

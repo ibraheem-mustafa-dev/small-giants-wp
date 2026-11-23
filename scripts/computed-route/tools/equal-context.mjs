@@ -2,11 +2,11 @@
 // Lists every settled `equal` row of saved Fill reports whose baseline is the calibrated default and whose node sits in a
 // context other than the one calibration measured that default in (lib/equal-context.mjs::reportContexts), by kind of
 // difference, block, part and property, and counts every surface's equal rows per baseline kind. Reads files only: the
-// report, the filled tree beside it, the calibration cache and block.json; no browser, no site.
-//   node scripts/computed-route/tools/equal-context.mjs --site <calibration site> [--cache <dir>] [--out <folder>] [--json]
+// report, the filled tree beside it, the setting record in the client's look and block.json; no browser, no site.
+//   node scripts/computed-route/tools/equal-context.mjs --client <slug> [--cache <dir>] [--out <folder>] [--json]
 //        <fill-report.json | fill run folder>...
-//   --site: the site whose default paint Fill read (a scratch copy's paint folder is its mirror's). --cache: the calibration
-//   cache (default: the route's own). --out: writes rows.json (every flagged row) there. --json prints the result as JSON.
+//   --client: the client whose look Fill read. --cache: a folder of fixture records (lib/setting-record.mjs::
+//   writeRecordFixture; default: none, the framework database and the client's site look). --out: writes rows.json (every flagged row) there. --json prints the result as JSON.
 // Exit 0 always: the list is a report.
 import fs from 'fs';
 import path from 'path';
@@ -40,14 +40,14 @@ export function treeNodes( tree ) {
 }
 
 // One surface's result: { surface, counts, flagged: [ { node, block, slot, property, value, kinds } ] }.
-export function surfaceResult( reportFile, { site, cache } ) {
+export function surfaceResult( reportFile, { client, cache } ) {
 	const report = readJson( reportFile );
 	const treeFile = path.join( path.dirname( reportFile ), 'filled.tree.json' );
 	const nodes = fs.existsSync( treeFile ) ? treeNodes( readJson( treeFile ) ) : [];
 	const cals = new Map();
 	const calFor = ( name, node ) => {
 		if ( ! cals.has( name ) ) {
-			cals.set( name, loadCalibration( cache, name, site ) );
+			cals.set( name, loadCalibration( cache, name, client ) );
 		}
 		return calibrationForNode( cals.get( name ), node );
 	};
@@ -70,16 +70,16 @@ export function groupFlagged( flagged ) {
 
 function main( argv ) {
 	const opt = ( name ) => ( argv.includes( name ) ? argv[ argv.indexOf( name ) + 1 ] : null );
-	const site = opt( '--site' );
+	const client = opt( '--client' );
 	const cache = path.resolve( opt( '--cache' ) || path.join( HERE, '..', 'cache' ) );
 	const out = opt( '--out' );
-	const taken = new Set( [ '--site', '--cache', '--out' ].flatMap( ( n ) => ( argv.includes( n ) ? [ argv.indexOf( n ), argv.indexOf( n ) + 1 ] : [] ) ) );
+	const taken = new Set( [ '--client', '--cache', '--out' ].flatMap( ( n ) => ( argv.includes( n ) ? [ argv.indexOf( n ), argv.indexOf( n ) + 1 ] : [] ) ) );
 	const files = argv.filter( ( a, i ) => ! taken.has( i ) && ! a.startsWith( '--' ) ).map( ( f ) => ( fs.statSync( f ).isDirectory() ? path.join( f, 'fill-report.json' ) : f ) );
-	if ( ! site || ! files.length ) {
-		console.error( 'usage: equal-context.mjs --site <site> [--cache <dir>] [--out <folder>] [--json] <fill-report.json | run folder>...' );
+	if ( ! client || ! files.length ) {
+		console.error( 'usage: equal-context.mjs --client <slug> [--cache <dir>] [--out <folder>] [--json] <fill-report.json | run folder>...' );
 		process.exit( 2 );
 	}
-	const results = files.map( ( f ) => surfaceResult( f, { site, cache } ) );
+	const results = files.map( ( f ) => surfaceResult( f, { client, cache } ) );
 	const flagged = results.flatMap( ( r ) => r.flagged.map( ( f ) => ( { surface: r.surface, ...f } ) ) );
 	const groups = groupFlagged( flagged );
 	if ( out ) {

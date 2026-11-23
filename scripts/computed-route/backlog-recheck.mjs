@@ -13,7 +13,7 @@ import path from 'path';
 import { execFileSync } from 'child_process';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { openDb } from './lib/db.mjs';
-import { calibrationForSite } from './solve.mjs';
+import { calibrationForClient } from './solve.mjs';
 import { defaultProbes } from './gate-chain.mjs';
 import { recheckBacklog } from './lib/backlog-recheck.mjs';
 import { BACKLOG_FILE, writeBacklog } from './lib/framework-backlog.mjs';
@@ -61,7 +61,7 @@ const envFor = async ( client, surface ) => {
 	db ||= openDb();
 	const probes = override || await defaultProbes( { s, client, db } );
 	opened.push( probes );
-	return { db, cache: calibrationForSite( s.site ), states: s.states, probes };
+	return { db, cache: calibrationForClient( client ), states: s.states, probes };
 };
 
 const today = new Date().toISOString().slice( 0, 10 );

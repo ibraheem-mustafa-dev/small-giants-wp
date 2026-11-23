@@ -2,7 +2,8 @@
 // surface entry in surfaces.json records: on 2026-11-21 a header re-clone on a scratch copy of the Eye Care mirror read the
 // menu map's record for the mirror (which holds no menu items), so neither half of the split menu carried
 // splitAfterItemId and both halves drew every item. skeleton.mjs::proposeSurface is called with a stub proposer that
-// records what it is given; the menu map, the catalogue and the calibration cache are fixtures. No site.
+// records what it is given; the menu map, the catalogue and the blocks' records are fixtures. The blocks' default look is
+// the client's on every site. No site.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -10,7 +11,6 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { writeRecordFixture } from '../lib/setting-record.mjs';
-import { READ_KEY } from '../lib/calibrate-props.mjs';
 import { proposeSurface } from '../skeleton.mjs';
 import { openDb } from '../lib/db.mjs';
 import { loadFacts } from '../lib/skeleton-facts.mjs';
@@ -43,9 +43,9 @@ function fixture() {
 	fs.mkdirSync( path.join( repo, 'plugins/sgs-blocks/src/blocks', list ), { recursive: true } );
 	fs.copyFileSync( path.join( REPO, 'plugins/sgs-blocks/src/blocks', list, 'block.json' ), path.join( repo, 'plugins/sgs-blocks/src/blocks', list, 'block.json' ) );
 	const cache = fs.mkdtempSync( path.join( os.tmpdir(), 'cr-run-site-cache-' ) );
-	// sgs/text has a record on both sites and a default look only on RUN_SITE
+	// sgs/text has a record for any client and a default look only in CLIENT's
 	writeRecordFixture( cache, 'sgs/text', { block: 'sgs/text', settings: {} } );
-	writeRecordFixture( cache, 'sgs/text', { block: 'sgs/text', site: RUN_SITE, settings: {}, elements: { '': { 1440: { color: 'red' } } } }, RUN_SITE );
+	writeRecordFixture( cache, 'sgs/text', { block: 'sgs/text', client: CLIENT, settings: {}, elements: { '': { 1440: { color: 'red' } } } }, CLIENT );
 	return { repo, cache };
 }
 
@@ -56,7 +56,7 @@ function given( opts ) {
 	return seen;
 }
 
-test( 'MUST FAIL: a run aimed at another site reads that site\'s menu items, menu, catalogue and calibration', () => {
+test( 'MUST FAIL: a run aimed at another site reads that site\'s menu items, menu and catalogue, and the client\'s look', () => {
 	const f = fixture();
 	const a = given( { repo: f.repo, cache: f.cache, site: RUN_SITE } );
 	assert.deepEqual( a.carried.items( 'header' ), { Glasses: 'id:695', Help: 'id:129' } );
@@ -72,5 +72,5 @@ test( 'negative control: a run naming no site reads the surface entry\'s records
 	assert.deepEqual( a.carried.items( 'header' ), {} );
 	assert.equal( a.carried.menu( 'header' ), 30 );
 	assert.match( a.carried.attribute( 'colour' ).reason, /acme-mirror/ );
-	assert.deepEqual( a.calKeys( 'sgs/text' ), [] );
+	assert.deepEqual( a.calKeys( 'sgs/text' ), [ '' ], 'the client\'s look, whatever the site' );
 } );

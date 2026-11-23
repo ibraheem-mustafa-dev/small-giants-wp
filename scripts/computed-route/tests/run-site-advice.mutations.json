@@ -1,6 +1,8 @@
 [
-	{ "file": "site-run.mjs", "find": "proposeSurface( { client, surface: key, allowMissingPaint, site, runLedger: ledger } )", "replace": "proposeSurface( { client, surface: key, allowMissingPaint, runLedger: ledger } )", "why": "the propose stage names the surface entry's mirror" },
-	{ "file": "site-run.mjs", "find": "'--site', site, '--allow-external'", "replace": "'--allow-external'", "why": "Fill is not told the run's site" },
-	{ "file": "skeleton.mjs", "find": "const site = runSite ?? readSurface( repo, client, surface ).site;", "replace": "const site = readSurface( repo, client, surface ).site;", "why": "propose ignores the run's site" },
-	{ "file": "fill.mjs", "find": "const site = o.site || entry.site;", "replace": "const site = entry.site;", "why": "Fill ignores --site" }
+	{"file": "site-run.mjs", "find": "proposeSurface( { client, surface: key, allowMissingPaint, site, runLedger: ledger } )", "replace": "proposeSurface( { client, surface: key, allowMissingPaint, runLedger: ledger } )", "why": "the propose stage names the surface entry's mirror"},
+	{"file": "site-run.mjs", "find": "'--site', site, '--allow-external'", "replace": "'--allow-external'", "why": "Fill is not told the run's site"},
+	{"file": "skeleton.mjs", "find": "const site = runSite ?? readSurface( repo, client, surface ).site;", "replace": "const site = readSurface( repo, client, surface ).site;", "why": "propose ignores the run's site"},
+	{"file": "fill.mjs", "find": "const site = o.site || entry.site;", "replace": "const site = entry.site;", "why": "Fill ignores --site"},
+	{"file": "fill.mjs", "find": "const calFor = calibrationLoader( o.client, o.cache );", "replace": "const calFor = calibrationLoader( o.site || entry.site, o.cache );", "why": "Fill reads its blocks' look by site, not the client's"},
+	{"file": "lib/paint-gate.mjs", "find": "--snapshot sites/${ client }/theme-snapshot.json --site ${ client }", "replace": "--snapshot sites/<client>/theme-snapshot.json --site <client>", "why": "the advice names no client"}
 ]

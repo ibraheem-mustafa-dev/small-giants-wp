@@ -18,8 +18,7 @@
 //   gap          a `content-setting:<block>.<setting>` row in data/clone-coverage.json naming the mechanism, owner and wave
 // A row with none of these fails the check, and so does a gap row that names a setting the DB no longer holds as content, or
 // one whose setting now has a route a to d (a stale gap row must be deleted, never left to hide a later regression).
-import fs from 'node:fs';
-import { loadCalibration, slotMapFile } from './cache.mjs';
+import { loadCalibration } from './cache.mjs';
 import { textSettings, linkSettings, presenceSettings } from './fill-presence.mjs';
 import { listTarget, listClaims } from './fill-list-content.mjs';
 import { mediaSettings } from './media/slots.mjs';
@@ -67,15 +66,16 @@ export function gapRowsOf( coverage ) {
 }
 
 // The settings every writer claims, per block, as a Map key `<block>.<setting>` to the list of { route, writer } that claim it.
-// db: the framework DB handle; cacheDir: the slot-map folder; schemaOf( block ): block.json attributes; facts: skeleton-facts.mjs::loadFacts.
-export function claimsOf( { db, cacheDir, schemaOf, facts, blocks } ) {
+// db: the framework DB handle; client: the client whose site look gives the text, link and show/hide readings; cacheDir: a
+// folder of fixture records (tests), else none; schemaOf( block ): block.json attributes; facts: skeleton-facts.mjs::loadFacts.
+export function claimsOf( { db, client, cacheDir, schemaOf, facts, blocks } ) {
 	const claims = new Map();
 	const claim = ( block, attr, route, writer ) => {
 		const k = tag( block, attr );
 		claims.set( k, [ ...( claims.get( k ) || [] ), { route, writer } ] );
 	};
 	for ( const block of blocks ) {
-		const cal = loadCalibration( cacheDir, block, null );
+		const cal = loadCalibration( cacheDir, block, client );
 		textSettings( cal ).forEach( ( a ) => claim( block, a, 'measured', 'text' ) );
 		linkSettings( cal ).forEach( ( a ) => claim( block, a, 'measured', 'link' ) );
 		presenceSettings( cal ).forEach( ( a ) => claim( block, a, 'measured', 'presence' ) );
@@ -90,16 +90,19 @@ export function claimsOf( { db, cacheDir, schemaOf, facts, blocks } ) {
 	return claims;
 }
 
-// Why no route claims a row, as sentences (one per route), read from the slot map, the list target and the writers' choices.
-function whyMissed( row, { cacheDir, db, schemaOf, facts } ) {
+// Why no route claims a row, as sentences (one per route), read from the setting record and site look, the list target and
+// the writers' choices.
+function whyMissed( row, { client, cacheDir, db, schemaOf, facts } ) {
 	const why = [];
-	const cal = loadCalibration( cacheDir, row.block, null );
-	if ( ! fs.existsSync( slotMapFile( cacheDir, row.block ) ) ) {
-		why.push( `not calibrated: no slot map for ${ row.block } in ${ cacheDir }` );
+	const cal = loadCalibration( cacheDir, row.block, client );
+	if ( ! cal ) {
+		why.push( `no setting record for ${ row.block }` );
+	} else if ( cal.paintMissing ) {
+		why.push( `no site look to read it from: ${ cal.paintMissing }` );
 	} else {
 		const lists = [ 'noMarker', 'dead', 'rejected' ].filter( ( k ) => ( cal?.[ k ] || [] ).includes( row.attr ) );
 		const kinds = [ 'text', 'link', 'presence' ].filter( ( k ) => cal?.[ k ] );
-		why.push( `calibration has no text, link or presence reading for it${ lists.length ? `; the slot map lists it in ${ lists.join( ', ' ) }` : '' }${ cal?.settings?.[ row.attr ] ? '; it is a measured style setting' : '' }${ cal?.discovered?.[ row.attr ] ? '; it is a discovered setting' : '' } (the slot map reads ${ kinds.join( ', ' ) || 'no content' })` );
+		why.push( `the site look has no text, link or presence reading for it${ lists.length ? `; the record lists it in ${ lists.join( ', ' ) }` : '' }${ cal?.settings?.[ row.attr ] ? '; it is a placed style setting' : '' }${ cal?.discovered?.[ row.attr ] ? '; it is a discovered setting' : '' } (the site look reads ${ kinds.join( ', ' ) || 'no content' })` );
 	}
 	const target = listTarget( db, row.block, schemaOf );
 	why.push( target ? `the list writer fills ${ target.kind === 'attr' ? target.attr : `the items of ${ target.child }` }, not this setting` : 'the block keeps no list the list writer fills' );
@@ -115,11 +118,11 @@ function whyMissed( row, { cacheDir, db, schemaOf, facts } ) {
 //   failing   [{ block, attr, role, type, shape, why: [sentences] }]: a row with no route and no gap row
 //   staleGaps [{ id, route, writer }]: a gap row whose setting now has a route
 //   badGaps   [{ id, why }]: a gap row naming a setting the DB no longer holds as content, or a malformed ID
-export function contentCoverage( { db, cacheDir, schemaOf, facts, coverage } ) {
+export function contentCoverage( { db, client, cacheDir = null, schemaOf, facts, coverage } ) {
 	const rows = contentRows( db );
 	// Every SGS block is asked what it writes: a list host with no content row of its own still claims its child block's rows.
 	const blocks = db.prepare( "SELECT block_slug FROM block_attributes WHERE block_slug LIKE 'sgs/%' UNION SELECT block_slug FROM block_composition WHERE block_slug LIKE 'sgs/%' ORDER BY block_slug" ).all().map( ( r ) => r.block_slug );
-	const claims = claimsOf( { db, cacheDir, schemaOf, facts, blocks } );
+	const claims = claimsOf( { db, client, cacheDir, schemaOf, facts, blocks } );
 	const gaps = gapRowsOf( coverage );
 	const counts = Object.fromEntries( [ ...ROUTES, 'none' ].map( ( r ) => [ r, 0 ] ) );
 	const writers = {};
@@ -138,7 +141,7 @@ export function contentCoverage( { db, cacheDir, schemaOf, facts, coverage } ) {
 		const route = hit?.route ?? ( gap ? 'gap' : null );
 		counts[ route ?? 'none' ]++;
 		hit && ( writers[ `${ hit.route }:${ hit.writer }` ] = ( writers[ `${ hit.route }:${ hit.writer }` ] || 0 ) + 1 );
-		! route && failing.push( { ...row, why: whyMissed( row, { cacheDir, db, schemaOf, facts } ) } );
+		! route && failing.push( { ...row, why: whyMissed( row, { client, cacheDir, db, schemaOf, facts } ) } );
 		return { ...row, route, writer: hit?.writer ?? null };
 	} );
 	const badGaps = Object.entries( gaps ).filter( ( [ k, g ] ) => ! g.parsed || ! known.has( k ) ).map( ( [ , g ] ) => ( { id: g.id, why: g.parsed ? 'the framework DB holds no such content-bearing setting' : 'the ID is not content-setting:sgs/<block>.<setting>' } ) );

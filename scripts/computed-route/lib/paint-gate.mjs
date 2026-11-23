@@ -1,5 +1,5 @@
-// A run stops before it writes when a block its tree uses has no default look on the run's site (its site look,
-// lib/setting-record.mjs::siteLook). Without one, the block's record (lib/cache.mjs::loadCalibration) carries `paintMissing` and `elements: {}`, and every reader downstream would
+// A run stops before it writes when a block its tree uses has no default look in the client's theme snapshot (its site
+// look, lib/setting-record.mjs::siteLook). Without one, the block's record (lib/cache.mjs::loadCalibration) carries `paintMissing` and `elements: {}`, and every reader downstream would
 // judge the block against nothing and write wrong settings without a word. Fill (fill.mjs::fillSurface), Solve
 // (solve.mjs), the applier (apply.mjs) and the skeleton proposal (skeleton.mjs::proposeSurface,
 // lib/skeleton-rerun.mjs::rerunSkeletons, lib/intake-skeletons.mjs::proposeSkeletons) call assertPaints once the tree's
@@ -23,14 +23,14 @@ export function treeBlocks( tree ) {
 // The blocks of `blocks` whose calibration (`calFor( block )`) carries `paintMissing`, each once, sorted.
 export const paintGaps = ( blocks, calFor ) => [ ...new Set( blocks ) ].filter( ( b ) => calFor( b )?.paintMissing ).sort();
 
-// The stop message: the blocks and the one command that measures their paint on `site`, and the allowance that lets the run
-// go on without it.
-export const paintGapMessage = ( { gaps, site, client = null, what = 'this run' } ) =>
-	`${ what } stops before writing: ${ gaps.length } block${ 1 === gaps.length ? '' : 's' } in its tree ha${ 1 === gaps.length ? 's' : 've' } no default paint for ${ site } (${ gaps.join( ', ' ) }), so every setting written for ${ 1 === gaps.length ? 'it' : 'them' } would be judged against nothing. Build ${ 1 === gaps.length ? 'its' : 'their' } site look first: python plugins/sgs-blocks/scripts/site-look/site_look.py --snapshot sites/${ client || '<client slug>' }/theme-snapshot.json --site ${ client || '<client slug>' } --out scripts/computed-route/site-look --blocks ${ gaps.join( ',' ) } (the site's target names its client in calibration-targets.json); or, when ${ 1 === gaps.length ? 'it cannot' : 'they cannot' } be calibrated, name ${ 1 === gaps.length ? 'it' : 'them' } in ${ FLAG } ${ gaps.join( ',' ) } to resolve ${ 1 === gaps.length ? 'its' : 'their' } settings without default paint`;
+// The stop message: the blocks and the one command that builds their look for `client`, and the allowance that lets the
+// run go on without it.
+export const paintGapMessage = ( { gaps, client, what = 'this run' } ) =>
+	`${ what } stops before writing: ${ gaps.length } block${ 1 === gaps.length ? '' : 's' } in its tree ha${ 1 === gaps.length ? 's' : 've' } no default look for ${ client } (${ gaps.join( ', ' ) }), so every setting written for ${ 1 === gaps.length ? 'it' : 'them' } would be judged against nothing. Build ${ 1 === gaps.length ? 'its' : 'their' } site look first: python plugins/sgs-blocks/scripts/site-look/site_look.py --snapshot sites/${ client }/theme-snapshot.json --site ${ client } --out scripts/computed-route/site-look --blocks ${ gaps.join( ',' ) }; or, when ${ 1 === gaps.length ? 'it cannot' : 'they cannot' } be calibrated, name ${ 1 === gaps.length ? 'it' : 'them' } in ${ FLAG } ${ gaps.join( ',' ) } to resolve ${ 1 === gaps.length ? 'its' : 'their' } settings without default paint`;
 
 // The one line a run prints for each named block its tree uses without default paint.
-export const missingPaintLine = ( { block, site, what = 'this run' } ) =>
-	`${ what }: ${ block } has no default paint for ${ site }; its settings were resolved without default paint (${ FLAG })`;
+export const missingPaintLine = ( { block, client, what = 'this run' } ) =>
+	`${ what }: ${ block } has no default look for ${ client }; its settings were resolved without default paint (${ FLAG })`;
 
 // The allowance list from a comma-separated value: block names (namespace/slug), each once. Throws on a wildcard, `all`, an
 // empty entry or any other name that is not a block name.
@@ -60,19 +60,19 @@ export function allowMissingPaintArg( argv ) {
 // The arguments that pass an allowance on to a spawned stage: none when the list is empty.
 export const allowMissingPaintArgs = ( allow ) => ( allow?.length ? [ FLAG, allow.join( ',' ) ] : [] );
 
-// Throws paintGapMessage when a block of `blocks` has no default paint on `site` and is not named in `allow`. Each gap that
-// `allow` names is printed with `log` (missingPaintLine) and returned, so the caller can carry it in its report. A run
-// with no site reads no paint by design (loadCalibration( dir, block, null ), the census tools), so it is never stopped
-// here and returns [].
-export function assertPaints( { blocks, calFor, site, client = null, what, allow = [], log = console.log } ) {
-	if ( ! site ) {
+// Throws paintGapMessage when a block of `blocks` has no default look for `client` and is not named in `allow`. Each gap
+// that `allow` names is printed with `log` (missingPaintLine) and returned, so the caller can carry it in its report. A
+// run with no client reads no look by design (loadCalibration( dir, block, null ), the census tools), so it is never
+// stopped here and returns [].
+export function assertPaints( { blocks, calFor, client = null, what, allow = [], log = console.log } ) {
+	if ( ! client ) {
 		return [];
 	}
 	const gaps = paintGaps( blocks, calFor );
 	const stop = gaps.filter( ( b ) => ! allow.includes( b ) );
 	if ( stop.length ) {
-		throw new Error( paintGapMessage( { gaps: stop, site, client, what } ) );
+		throw new Error( paintGapMessage( { gaps: stop, client, what } ) );
 	}
-	gaps.forEach( ( block ) => log( missingPaintLine( { block, site, what } ) ) );
+	gaps.forEach( ( block ) => log( missingPaintLine( { block, client, what } ) ) );
 	return gaps;
 }
