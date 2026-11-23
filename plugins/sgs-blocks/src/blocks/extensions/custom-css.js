@@ -13,7 +13,11 @@
  * block's copied key is replaced. `sgsCustomCssNote` is a plain-English label shown with the field, set
  * by the cloning route to say what a rule it wrote is for.
  *
- * Server-side: includes/custom-css.php handles output and scoping.
+ * Anyone who may edit the post may use the field; for a user the server refuses (`sgs_custom_css_capability`) it is
+ * read-only (`custom-css-field.js`) and the instance key is left alone, because the server keeps the stored rule whatever
+ * a save sends (Spec 32 FR-32-30).
+ *
+ * Server-side: includes/custom-css.php handles output and scoping, includes/custom-css-save.php who may write it.
  *
  * Also disables WordPress core's native `customCSS` block support
  * (WP 7.0+, https://make.wordpress.org/core/2026/03/15/custom-css-for-individual-block-instances-in-wordpress-7-0/).
@@ -32,14 +36,13 @@
  */
 import { addFilter } from '@wordpress/hooks';
 import { InspectorAdvancedControls } from '@wordpress/block-editor';
-import { Notice, TextareaControl } from '@wordpress/components';
 import { createHigherOrderComponent } from '@wordpress/compose';
 import { useEffect } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
 import {
 	CUSTOM_CSS_SCOPE_REPEAT,
 	scopeCustomCss,
 } from '../../utils/custom-css-scope';
+import { CustomCssField, useCustomCssSettings } from './custom-css-field';
 
 /** Instance key -> the clientId that holds it, so a duplicated block's copied key is detected. */
 const keyOwners = new Map();
@@ -89,9 +92,10 @@ const withCustomCssControl = createHigherOrderComponent( ( BlockEdit ) => {
 		const { attributes, setAttributes, isSelected, clientId } = props;
 		const { sgsCustomCss, sgsCustomCssId, sgsCustomCssNote } = attributes;
 		const hasCss = !! String( sgsCustomCss || '' ).trim();
+		const { canEdit, siteHosts } = useCustomCssSettings();
 
 		useEffect( () => {
-			if ( ! hasCss ) {
+			if ( ! hasCss || ! canEdit ) {
 				return undefined;
 			}
 			const owner = sgsCustomCssId
@@ -109,11 +113,11 @@ const withCustomCssControl = createHigherOrderComponent( ( BlockEdit ) => {
 					keyOwners.delete( sgsCustomCssId );
 				}
 			};
-		}, [ hasCss, sgsCustomCssId, clientId, setAttributes ] );
+		}, [ hasCss, canEdit, sgsCustomCssId, clientId, setAttributes ] );
 
 		const refused =
 			isSelected && hasCss
-				? scopeCustomCss( sgsCustomCss, '&' ).refused
+				? scopeCustomCss( sgsCustomCss, '&', siteHosts ).refused
 				: [];
 
 		return (
@@ -121,30 +125,15 @@ const withCustomCssControl = createHigherOrderComponent( ( BlockEdit ) => {
 				<BlockEdit { ...props } />
 				{ isSelected && (
 					<InspectorAdvancedControls>
-						{ sgsCustomCssNote && (
-							<Notice status="info" isDismissible={ false }>
-								{ sgsCustomCssNote }
-							</Notice>
-						) }
-						<TextareaControl
-							label={ __( 'Custom CSS', 'sgs-blocks' ) }
-							help={ __(
-								'CSS rules applied to this block only. Use &selector for the block itself; any other selector styles elements inside it. A @keyframes animation written here is renamed for this block, so it never clashes with another; wrap the animation rule in @media (prefers-reduced-motion: no-preference).',
-								'sgs-blocks'
-							) }
-							value={ sgsCustomCss || '' }
+						<CustomCssField
+							value={ sgsCustomCss }
+							note={ sgsCustomCssNote }
+							refused={ refused }
+							readOnly={ ! canEdit }
 							onChange={ ( val ) =>
 								setAttributes( { sgsCustomCss: val } )
 							}
-							rows={ 6 }
-							__nextHasNoMarginBottom
 						/>
-						{ refused.length > 0 && (
-							<Notice status="warning" isDismissible={ false }>
-								{ __( 'Not applied:', 'sgs-blocks' ) }{ ' ' }
-								{ refused.join( '; ' ) }
-							</Notice>
-						) }
 					</InspectorAdvancedControls>
 				) }
 			</>
@@ -173,10 +162,12 @@ addFilter(
 const withCustomCssCanvas = createHigherOrderComponent( ( BlockListBlock ) => {
 	return ( props ) => {
 		const { attributes = {} } = props;
+		const { siteHosts } = useCustomCssSettings();
 		const scope = `sgs-c-ed-${ props.clientId }`;
 		const { css } = scopeCustomCss(
 			attributes.sgsCustomCss,
-			`.${ scope }`.repeat( CUSTOM_CSS_SCOPE_REPEAT )
+			`.${ scope }`.repeat( CUSTOM_CSS_SCOPE_REPEAT ),
+			siteHosts
 		);
 		if ( ! css ) {
 			return <BlockListBlock { ...props } />;

@@ -10,8 +10,9 @@
  * appended after the block, which the CSS collector lifts into the head
  * (class-sgs-css-registry.php::sgs_lift_block_css) for SGS and core blocks alike.
  *
- * Only a user who may edit CSS (`edit_css`, as WordPress core requires for its own per-block CSS)
- * can save it: for anyone else the attribute is stripped from the post on save.
+ * Who may write the attribute, and what a save by anyone else keeps, is includes/custom-css-save.php.
+ * A `url()` that points outside the site is refused by the scoper; the hosts it may name are the site's own
+ * (`sgs_custom_css_site_hosts()`).
  *
  * @package SGS\Blocks
  */
@@ -23,6 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 require_once __DIR__ . '/class-custom-css-scoper.php';
+require_once __DIR__ . '/custom-css-save.php';
 
 /**
  * How many times Custom CSS repeats the scope class (`.uid.uid.uid.uid`), and how many times any settings emitter may.
@@ -79,7 +81,7 @@ function render_custom_css( string $block_content, array $block ): string {
 	// The scope class is repeated SGS_CUSTOM_CSS_SCOPE_REPEAT times (`.uid.uid.uid.uid`), one more than any settings emitter
 	// repeats it, so the residual out-ranks every setting for the same part on specificity and not on source order (it is
 	// also appended after the block). Never an ID or `!important` (Spec 32 FR-32-13).
-	$result = Custom_Css_Scoper::scope( $custom_css, str_repeat( '.' . $uid, SGS_CUSTOM_CSS_SCOPE_REPEAT ) );
+	$result = Custom_Css_Scoper::scope( $custom_css, str_repeat( '.' . $uid, SGS_CUSTOM_CSS_SCOPE_REPEAT ), sgs_custom_css_site_hosts() );
 	if ( '' === $result['css'] ) {
 		return $block_content;
 	}
@@ -92,92 +94,3 @@ function render_custom_css( string $block_content, array $block ): string {
 	return $block_content . '<style id="sgs-custom-css-' . esc_attr( $uid ) . '">' . $result['css'] . '</style>';
 }
 add_filter( 'render_block', __NAMESPACE__ . '\render_custom_css', 10, 2 );
-
-/**
- * Strip the Additional-CSS attributes from every block in post content (for users without `edit_css`).
- *
- * Mirrors WordPress core's `wp_strip_custom_css_from_blocks()` for its own per-block CSS: the block
- * delimiters are tokenised with WP_Block_Parser and only the attribute JSON of a block carrying one
- * of the keys is re-serialised.
- *
- * @param string $content Slashed post content.
- * @return string Slashed post content without the attributes.
- */
-function sgs_strip_custom_css_from_blocks( $content ) {
-	if ( ! is_string( $content ) || false === strpos( $content, 'sgsCustomCss' ) || ! has_blocks( $content ) ) {
-		return $content;
-	}
-
-	$unslashed        = stripslashes( $content );
-	$parser           = new \WP_Block_Parser();
-	$parser->document = $unslashed;
-	$parser->offset   = 0;
-	$end              = strlen( $unslashed );
-	$replacements     = array();
-
-	while ( $parser->offset < $end ) {
-		$next_token = $parser->next_token();
-		if ( 'no-more-tokens' === $next_token[0] ) {
-			break;
-		}
-		list( $token_type, , $attrs, $start_offset, $token_length ) = $next_token;
-
-		$parser->offset = $start_offset + $token_length;
-		if ( 'block-opener' !== $token_type && 'void-block' !== $token_type ) {
-			continue;
-		}
-
-		$found = false;
-		foreach ( SGS_CUSTOM_CSS_ATTRS as $key ) {
-			if ( array_key_exists( $key, $attrs ) ) {
-				unset( $attrs[ $key ] );
-				$found = true;
-			}
-		}
-		if ( ! $found ) {
-			continue;
-		}
-
-		$token_string   = substr( $unslashed, $start_offset, $token_length );
-		$json_rel_start = strcspn( $token_string, '{' );
-		$json_rel_end   = strrpos( $token_string, '}' );
-		$json_start     = $start_offset + $json_rel_start;
-		$json_length    = $json_rel_end - $json_rel_start + 1;
-
-		$replacements[] = empty( $attrs )
-			? array( $json_start, $json_length + 1, '' )
-			: array( $json_start, $json_length, serialize_block_attributes( $attrs ) );
-	}
-
-	if ( empty( $replacements ) ) {
-		return $content;
-	}
-
-	$result = '';
-	$was_at = 0;
-	foreach ( $replacements as $replacement ) {
-		list( $offset, $length, $new_json ) = $replacement;
-		$result                            .= substr( $unslashed, $was_at, $offset - $was_at ) . $new_json;
-		$was_at                             = $offset + $length;
-	}
-	if ( $was_at < $end ) {
-		$result .= substr( $unslashed, $was_at );
-	}
-
-	return addslashes( $result );
-}
-
-/**
- * Strip the attributes on save unless the current user may edit CSS. Priority 8, as core's
- * equivalent, runs before kses (10).
- */
-function sgs_custom_css_kses_init() {
-	remove_filter( 'content_save_pre', __NAMESPACE__ . '\sgs_strip_custom_css_from_blocks', 8 );
-	remove_filter( 'content_filtered_save_pre', __NAMESPACE__ . '\sgs_strip_custom_css_from_blocks', 8 );
-	if ( ! current_user_can( 'edit_css' ) ) {
-		add_filter( 'content_save_pre', __NAMESPACE__ . '\sgs_strip_custom_css_from_blocks', 8 );
-		add_filter( 'content_filtered_save_pre', __NAMESPACE__ . '\sgs_strip_custom_css_from_blocks', 8 );
-	}
-}
-add_action( 'init', __NAMESPACE__ . '\sgs_custom_css_kses_init', 20 );
-add_action( 'set_current_user', __NAMESPACE__ . '\sgs_custom_css_kses_init' );
