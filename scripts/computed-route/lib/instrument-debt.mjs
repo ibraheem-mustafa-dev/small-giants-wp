@@ -2,7 +2,7 @@
 // chain produced, grouped by owner (the seeder, or calibration), each with its block, attribute and the gate's evidence
 // (treated as opaque: a string, or the structured { command, line } or { file, key } shape, passed through unchanged). A row
 // with no evidence is refused. The known items are read from the real inputs: a NULL css_property named in
-// data/instrument-debt-known.json, and every slot map whose deploy hash or read key no longer matches the local build.
+// data/instrument-debt-known.json.
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -35,7 +35,7 @@ export function debtRow( r, { surface, known = false } ) {
 // Every I-class row of the chain's results as debt rows; every row is checked before any is returned.
 export const debtRows = ( rows, { surface } ) => rows.filter( ( r ) => I_CLASSES.includes( r.class ) ).map( ( r ) => debtRow( r, { surface } ) );
 
-// The known items (unroutedKnown's and staleSlotMaps's rows alike) as debt rows of one surface: only those whose block the
+// The known items (unroutedKnown's rows) as debt rows of one surface: only those whose block the
 // surface's tree holds (inTree: a Set of block names).
 export const knownRows = ( { rows, inTree, surface } ) => rows.filter( ( r ) => inTree.has( r.block ) ).map( ( r ) => debtRow( r, { surface, known: true } ) );
 
@@ -51,36 +51,6 @@ export function unroutedKnown( { db, isDiscovered = () => false } ) {
 		}
 	}
 	return out;
-}
-
-// Every slot map in the cache folder whose deploy key differs from the local build's hash, or whose read key differs from the
-// current one. i: { cacheDir, readKey, localHash( short ) -> hash | null }. Returns { rows, missing }: `missing` names an input
-// that could not be read (no cache folder, no local build for a block), so an absent input is reported, never read as current.
-export function staleSlotMaps( { cacheDir, readKey, localHash } ) {
-	if ( ! fs.existsSync( cacheDir ) ) {
-		return { rows: [], missing: [ `the calibration cache folder ${ cacheDir } does not exist` ] };
-	}
-	const [ rows, missing ] = [ [], [] ];
-	for ( const f of fs.readdirSync( cacheDir ).filter( ( n ) => /^[\w-]+\.json$/.test( n ) ).sort() ) {
-		let cal;
-		try {
-			cal = JSON.parse( fs.readFileSync( path.join( cacheDir, f ), 'utf8' ) );
-		} catch {
-			missing.push( `${ f } is not readable JSON` );
-			continue;
-		}
-		if ( ! cal?.block || ! cal.slotKey ) {
-			continue;
-		}
-		const have = localHash( cal.block.replace( /^sgs\//, '' ) );
-		if ( ! have ) {
-			missing.push( `${ cal.block }: no local build to hash` );
-			continue;
-		}
-		const why = cal.slotKey !== have ? `slotKey ${ cal.slotKey } is not the local build hash ${ have }` : ( cal.readKey !== readKey ? `readKey ${ cal.readKey ?? 'none' } is not the current ${ readKey }` : null );
-		why && rows.push( { key: `${ cal.block }:slot-map`, class: 'I-stale', gate: 'G0', block: cal.block, attribute: null, property: null, evidence: { file: `scripts/computed-route/cache/${ f }`, key: why } } );
-	}
-	return { rows, missing };
 }
 
 // Writes the debt file for a client from one surface's debt rows (debtRows for its chain results, knownRows for the known

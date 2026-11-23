@@ -7,7 +7,7 @@ import os from 'os';
 import path from 'path';
 import assert from 'node:assert/strict';
 import { DatabaseSync } from 'node:sqlite';
-import { debtRow, debtRows, knownRows, unroutedKnown, staleSlotMaps, writeDebt } from '../lib/instrument-debt.mjs';
+import { debtRow, debtRows, knownRows, unroutedKnown, writeDebt } from '../lib/instrument-debt.mjs';
 import { classifyRows, classCounts, baseClass } from '../lib/census-gap-class.mjs';
 
 const tmp = () => fs.mkdtempSync( path.join( os.tmpdir(), 'debt-' ) );
@@ -53,22 +53,6 @@ test( 'MUST FAIL: the known NULL css_property item appears from the DB; a routed
 	assert.ok( rows[ 0 ].evidence.file && rows[ 0 ].evidence.key );
 	assert.equal( unroutedKnown( { db: db( 'display' ) } ).length, 0 );
 	assert.equal( unroutedKnown( { db: db( null ), isDiscovered: ( r ) => 'skipAddsToBag' === r.attr_name } ).length, 0 );
-} );
-
-test( 'MUST FAIL: a slot map keyed to another build or read key is I-stale; a missing input is reported, never read as current', () => {
-	const dir = tmp();
-	const put = ( name, o ) => fs.writeFileSync( path.join( dir, name ), JSON.stringify( o ) );
-	put( 'media.json', { block: 'sgs/media', slotKey: 'old', readKey: 'rk' } );
-	put( 'text.json', { block: 'sgs/text', slotKey: 'h-text', readKey: 'rk' } );
-	put( 'hero.json', { block: 'sgs/hero', slotKey: 'h-hero', readKey: 'older' } );
-	put( 'ghost.json', { block: 'sgs/ghost', slotKey: 'x', readKey: 'rk' } );
-	put( 'media.paint.json', { block: 'sgs/media', slotKey: 'ignored' } );
-	const r = staleSlotMaps( { cacheDir: dir, readKey: 'rk', localHash: ( s ) => ( { media: 'h-media', text: 'h-text', hero: 'h-hero' }[ s ] ?? null ) } );
-	assert.deepEqual( r.rows.map( ( x ) => x.block ).sort(), [ 'sgs/hero', 'sgs/media' ] );
-	assert.match( r.rows.find( ( x ) => 'sgs/media' === x.block ).evidence.key, /slotKey old is not the local build hash h-media/ );
-	assert.match( r.rows.find( ( x ) => 'sgs/hero' === x.block ).evidence.key, /readKey older is not the current rk/ );
-	assert.deepEqual( r.missing, [ 'sgs/ghost: no local build to hash' ] );
-	assert.match( staleSlotMaps( { cacheDir: path.join( dir, 'nope' ), readKey: 'rk', localHash: () => null } ).missing[ 0 ], /does not exist/ );
 } );
 
 const rowsDb = () => {
@@ -117,9 +101,9 @@ test( 'MUST FAIL: the known NULL css_property items and the stale slot maps are 
 	assert.equal( unrouted.length, 1 );
 	assert.deepEqual( knownRows( { rows: unrouted, inTree: new Set( [ 'sgs/container' ] ), surface: 's1' } ), [] );
 	assert.deepEqual( knownRows( { rows: unrouted, inTree: new Set( [ 'sgs/choice-flow' ] ), surface: 's1' } ).map( ( r ) => r.id ), [ 's1:known:sgs/choice-flow:skipAddsToBag' ] );
-	// the command passes both kinds, unfiltered, through knownRows for its own surface
+	// the command passes the known items, unfiltered, through knownRows for its own surface
 	const src = fs.readFileSync( new URL( '../gate-chain.mjs', import.meta.url ), 'utf8' );
-	assert.match( src, /knownRows\( \{ rows: \[ \.\.\.unroutedKnown\( .* \), \.\.\.stale\.rows \], inTree, surface: report\.surface \} \)/ );
+	assert.match( src, /knownRows\( \{ rows: \[ \.\.\.unroutedKnown\( .* \) \], inTree, surface: report\.surface \} \)/ );
 } );
 
 test( 'negative control: a routed fitting setting on the resting state keeps an F candidate; a stale unknown block or a non-property key is not probed', () => {

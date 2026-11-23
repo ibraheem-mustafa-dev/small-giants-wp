@@ -1,8 +1,7 @@
 """Acceptance measurements for the wiring-fingerprint gate (Task 2 of
 .claude/plans/archive/2026-10-04-wiring-fingerprint-gate.md), measured against the QC
-council's labelled evidence and the calibration cache. The oracles live outside
-the shipped tree (`.claude/reports/2026-10-04-route-data-audit/council/`, the
-gitignored route cache, see `lib/route_cache_dir.py`); each measurement reports `None`
+council's labelled evidence. The oracle lives outside the shipped tree
+(`.claude/reports/2026-10-04-route-data-audit/council/`); each measurement reports `None`
 when its oracle is absent. Never imported by the gate itself.
 
     python scripts/wiring-fingerprint/wf_acceptance.py [--report report.json]
@@ -20,16 +19,12 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
 from wf_paint import EXTRA_SUFFIXES, PaintClassifier  # noqa: E402
-from wf_paths import REPO, SCRIPTS, real_roots  # noqa: E402
-
-sys.path.insert(0, str(SCRIPTS / "lib"))
-from route_cache_dir import route_cache_dir  # noqa: E402
+from wf_paths import REPO, real_roots  # noqa: E402
 
 BRIEF_SUFFIX = PaintClassifier([])
 BRIEF_EXTRA = {s for s, _css in EXTRA_SUFFIXES}
 
 COUNCIL = REPO / ".claude" / "reports" / "2026-10-04-route-data-audit" / "council"
-CACHE = route_cache_dir(REPO)
 LINK_ALIASES = {"L3": ("L3", "L3-tier", "L3-state", "L3-runtime"), "L2": ("L2",), "L4": ("L4",), "L5": ("L5",), "L6": ("L6",), "L7": ("L7",), "C1": ("C1",)}
 KNOWN_BUGS = (
     ("sgs/accordion-item", None, "B1"),
@@ -113,30 +108,6 @@ def rater_b(report: dict) -> dict | None:
     }
 
 
-def calibration(report: dict) -> dict | None:
-    if not CACHE.exists():
-        return None
-    rec = {(r["block"], r["attr"]): r for r in report["records"]}
-    # An extension attribute (every block carries it) is one record per extension.
-    ext = {r["attr"]: r for r in report["records"] if r["block"].startswith("ext/")}
-    total = 0
-    outside, flagged = [], []
-    for f in sorted(CACHE.glob("*.json")):
-        if f.name.endswith(".tree.json"):
-            continue
-        d = json.loads(f.read_text(encoding="utf-8"))
-        for attr in sorted(d.get("settings", {})):
-            total += 1
-            r = rec.get((d["block"], attr)) or ext.get(attr)
-            if not r or r["category"] == "not":
-                outside.append(f"{d['block']}::{attr}")
-                continue
-            bad = [m for m in r.get("missing", []) if m in ("L5", "L7")]
-            if bad:
-                flagged.append(f"{d['block']}::{attr}::{'+'.join(bad)}")
-    return {"calibrated_settings": total, "outside_population": outside, "with_L5_or_L7": flagged}
-
-
 def known_bugs(report: dict) -> dict:
     out = {}
     for block, attr, link in KNOWN_BUGS:
@@ -146,7 +117,7 @@ def known_bugs(report: dict) -> dict:
 
 
 def measure(report: dict) -> dict:
-    return {"rater_a": rater_a(report), "rater_b": rater_b(report), "calibration": calibration(report), "known_bugs": known_bugs(report),
+    return {"rater_a": rater_a(report), "rater_b": rater_b(report), "known_bugs": known_bugs(report),
             "summary": report["summary"]}
 
 
@@ -174,9 +145,6 @@ def main() -> int:
         print(f"Rater B: painting rows inside {rb['painting_rows_in_population_pct']}% of {rb['painting_rows']} "
               f"(+{rb['unit_companions_excluded']} unit companions excluded), not-paint rows outside {rb['not_paint_rows_outside_pct']}% of {rb['not_paint_rows']} "
               f"(+{len(rb['brief_suffix_overrides_excluded'])} rows the brief's suffix list classes as paint)")
-    cal = m["calibration"]
-    if cal:
-        print(f"Calibration: {cal['calibrated_settings']} settings, outside population {len(cal['outside_population'])}, with L5/L7 {len(cal['with_L5_or_L7'])}")
     for k, v in m["known_bugs"].items():
         print(f"Known bug {k}: {'FOUND ' + ','.join(v[:4]) if v else 'MISSING'}")
     print("Counts:", Counter({k: v for k, v in m["summary"]["links"].items()}))

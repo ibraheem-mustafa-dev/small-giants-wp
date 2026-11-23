@@ -11,8 +11,8 @@ without a second setting. `center` and `stretch` are already direction-neutral.
 
 THREE CORPORA
   data    block-comment JSON in theme patterns/templates/parts, and block trees
-          (`{"name":"sgs/x","attributes":{...}}`) in sites/*/build, scripts/nav-qa and
-          the route's calibration cache (lib/route_cache_dir.py). `--fix --apply` rewrites these.
+          (`{"name":"sgs/x","attributes":{...}}`) in sites/*/build and scripts/nav-qa.
+          `--fix --apply` rewrites these.
   schema  each block's own block.json: enum, default and example. Checked, never rewritten.
   source  edit.js / render.php / style.css markers of the old shape (SOURCE_MARKERS). Checked.
 
@@ -41,7 +41,6 @@ sys.stderr.reconfigure(encoding='utf-8')
 
 sys.path.insert(0, str(Path(__file__).resolve().parent / 'lib'))
 from block_source_files import edit_source, render_source  # noqa: E402
-from route_cache_dir import route_cache_dir  # noqa: E402
 
 # Anchored on a repo-unique marker, never CLAUDE.md (plugins/sgs-blocks has its own).
 ROOT = next(p for p in Path(__file__).resolve().parents if (p / '.git').exists())
@@ -104,9 +103,6 @@ def narrow_targets():
     nav = ROOT / 'plugins' / 'sgs-blocks' / 'scripts' / 'nav-qa'
     if nav.is_dir():
         out.update(nav.rglob('*.json'))
-    cache = route_cache_dir(ROOT)
-    if cache.is_dir():
-        out.update(cache.glob('*.tree.json'))
     return sorted(p for p in out if p.is_file())
 
 

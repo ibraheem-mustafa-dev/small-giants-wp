@@ -30,7 +30,7 @@ const surfaces = {
 	account: { tree: 'trees/page/account.json', target: { postId: 9 }, shell: 'page', states: { default: null } },
 	about: { tree: 'trees/page/about.json', target: { postId: 7 }, states: { default: null } },
 };
-const blockOf = ( surface, ref ) => buildContext( { report: {}, walk: { runs: [] }, surfaces, surface, client: 'demo', probes: null, installed: {}, db, intakeFile: null } ).blockOf( { ref } );
+const blockOf = ( surface, ref ) => buildContext( { report: {}, walk: { runs: [] }, surfaces, surface, client: 'demo', probes: null, db, intakeFile: null } ).blockOf( { ref } );
 
 test( 'MUST FAIL: a whole-tree template surface reads its copy at trees/template/<slug>.json', () => {
 	assert.equal( blockOf( 'shop', 'cr-ref-shop-1' ), 'woocommerce/product-collection' );
@@ -45,13 +45,13 @@ test( 'a recorded tree is read before any Fill', () => {
 } );
 
 test( 'a surface with no recorded tree and no Fill still fails, naming the tree it looked for', () => {
-	assert.throws( () => buildContext( { report: {}, walk: { runs: [] }, surfaces: { none: { tree: 'trees/page/none.json', target: { postId: 1 }, states: {} } }, surface: 'none', client: 'demo', probes: null, installed: {}, db, intakeFile: null } ), /none\.json/ );
+	assert.throws( () => buildContext( { report: {}, walk: { runs: [] }, surfaces: { none: { tree: 'trees/page/none.json', target: { postId: 1 }, states: {} } }, surface: 'none', client: 'demo', probes: null, db, intakeFile: null } ), /none\.json/ );
 } );
 
 // The tree the build used (--tree; site-run.mjs::gateChainArgs passes it): a newer Fill whose build failed is never read.
 write( 'qa/fill/checkout/2026-11-20T10-00-00/filled.tree.json', [ node( 'sgs/heading', 'cr-ref-checkout-1' ) ] );
 write( 'qa/fill/checkout/2026-11-22T10-00-00/filled.tree.json', [ node( 'sgs/text', 'cr-ref-checkout-1' ) ] );
-const builtCtx = ( treeFile, log = () => {} ) => buildContext( { report: {}, walk: { runs: [] }, surfaces: { checkout: { tree: 'trees/page/checkout.json', target: { postId: 5 }, states: {} } }, surface: 'checkout', client: 'demo', probes: null, installed: {}, db, intakeFile: null, treeFile, log } );
+const builtCtx = ( treeFile, log = () => {} ) => buildContext( { report: {}, walk: { runs: [] }, surfaces: { checkout: { tree: 'trees/page/checkout.json', target: { postId: 5 }, states: {} } }, surface: 'checkout', client: 'demo', probes: null, db, intakeFile: null, treeFile, log } );
 
 test( 'MUST FAIL: the tree the build used is read, never a newer Fill whose build failed', () => {
 	assert.equal( builtCtx( 'sites/demo/build/qa/fill/checkout/2026-11-20T10-00-00/filled.tree.json' ).blockOf( { ref: 'cr-ref-checkout-1' } ), 'sgs/heading' );

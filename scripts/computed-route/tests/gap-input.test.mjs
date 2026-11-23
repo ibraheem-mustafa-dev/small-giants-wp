@@ -85,7 +85,7 @@ test( 'MUST FAIL: buildContext exposes the setting state the G3 input computes',
 	const db = new DatabaseSync( ':memory:' );
 	db.exec( 'CREATE TABLE blocks ( slug TEXT, parent_block TEXT )' );
 	const surfaces = { header: { states: { rest: null, scrolled: 'scrolled' } } };
-	const c = buildContext( { report: {}, walk: { runs: [] }, surfaces, surface: 'header', client: null, probes: null, installed: {}, db, intakeFile: null } );
+	const c = buildContext( { report: {}, walk: { runs: [] }, surfaces, surface: 'header', client: null, probes: null, db, intakeFile: null } );
 	assert.equal( c.stateOf( { state: 'scrolled', kind: 'style' } ), 'scrolled' );
 	assert.equal( c.stateOf( { state: 'rest', kind: 'style' } ), null );
 	assert.equal( c.stateOf( { state: 'unmapped', kind: 'style' } ), null );

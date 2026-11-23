@@ -34,7 +34,7 @@ const walk = { runs: [
 		unplaced: { draft: { declared: { width: '8px' } } } } },
 	{ state: 'other', width: 1440, pairs: { head: { draft: { declared: { width: '99px' }, declaredPath: '' } } } },
 ] };
-const ctxOf = ( over = {} ) => buildContext( { report: {}, walk, surfaces, surface: 'header', client: 'demo', probes: null, installed: {}, db, intakeFile, ...over } );
+const ctxOf = ( over = {} ) => buildContext( { report: {}, walk, surfaces, surface: 'header', client: 'demo', probes: null, db, intakeFile, ...over } );
 const row = ( over = {} ) => ( { ref: 'cr-ref-header-1', path: '', pair: 'head', key: 'width', kind: 'style', state: 'rest', width: 1440, draft: '24px', live: '16px', ...over } );
 
 test( 'MUST FAIL: the row\'s draft identity comes from the origin map, and the FR-48-34 defect on that element is seen', async () => {
@@ -86,7 +86,7 @@ test( 'MUST FAIL: a node the surface tree lacks is the route\'s (W-route) and a 
 	assert.deepEqual( await at( row() ), [ 'G0', 'W-route' ] );
 	assert.deepEqual( await at( row( { ref: undefined } ) ), [ 'G0', 'W-walker' ] );
 	// negative control: no surface tree at all is still unreadable instrument input
-	const bare = buildContext( { report: {}, walk, surfaces: null, surface: 'header', client: null, probes: null, installed: {}, db, intakeFile } );
+	const bare = buildContext( { report: {}, walk, surfaces: null, surface: 'header', client: null, probes: null, db, intakeFile } );
 	assert.deepEqual( ( ( x ) => [ x.gate, x.class ] )( await runChain( row(), bare ) ), [ 'G0', 'I-stale' ] );
 	const res = await runChain( row(), ctx );
 	const file = path.join( repo, 'gaps.json' );
