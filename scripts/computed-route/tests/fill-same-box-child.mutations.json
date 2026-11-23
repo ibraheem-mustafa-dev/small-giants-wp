@@ -1,13 +1,74 @@
 [
-	{ "file": "lib/fill-same-box.mjs", "find": "return declaredOneBox( cal, a, b, axis, w ) || declaredOneChild( cal, a, b, axis, w );", "replace": "return declaredOneBox( cal, a, b, axis, w );", "why": "a declared look never shows a root and its only child as one box: the icon's circle goes to Custom CSS" },
-	{ "file": "lib/fill-same-box.mjs", "find": " && ! Object.keys( cal.elements ).includes( `${ k } > ${ partKey }` );", "replace": ";", "why": "a variant's link wrapper counts as a second child" },
-	{ "file": "lib/fill-same-box.mjs", "find": "\tif ( beside.length ) {\n\t\treturn false;\n\t}", "replace": "", "why": "a label beside the part is ignored" },
-	{ "file": "lib/fill-same-box.mjs", "find": "\tif ( 'w' === axis && BLOCK_FLOW.test( display ) && fills ) {\n\t\treturn true;\n\t}", "replace": "", "why": "a block box's filling part loses the root's width when it has stacked siblings" },
-	{ "file": "lib/fill-same-box.mjs", "find": "if ( ! ( 'auto' === floor || zero( floor ) ) || ", "replace": "if ( ", "why": "a root with a minimum height of its own counts as its child's box" },
-	{ "file": "lib/fill-same-box.mjs", "find": "const capped = ! [ 'none', '100%', undefined ].includes( inner[ 'max-width' ] );", "replace": "const capped = false;", "why": "a part with a maximum width counts as filling the root" },
-	{ "file": "lib/fill-same-box.mjs", "find": "return /^-?[\\d.]+px$/.test( v ) ? parseFloat( v ) : NaN;", "replace": "return parseFloat( v );", "why": "a declared 100% on both reads as a measured match" },
-	{ "file": "lib/fill-same-box.mjs", "find": "return ( ! capped && '100%' === inner.width ) || ( 'auto' === root.width && INLINE_BOX.test( display ) );", "replace": "return true;", "why": "any root shrink-wraps or hands its width to the part (a flex row root too)" },
-	{ "file": "lib/fill-same-box.mjs", "find": "\t\treturn 'auto' === root.height && ( itemised || BLOCK_LEVEL.test( String( inner.display || '' ) ) );", "replace": "\t\treturn false;", "why": "the height axis never judges a root and its child one box" },
-	{ "file": "lib/fill-same-box.mjs", "find": "|| OUT_OF_FLOW.test( inner.position || '' ) ) {", "replace": ") {", "why": "an out-of-flow part counts as the root's content" },
-	{ "file": "lib/fill-same-box.mjs", "find": "const childSlots = ( cal ) => Object.keys( cal?.elements || {} ).filter( ( k ) => '' !== k && ! /::/.test( k ) && ! k.includes( ' > ' ) );", "replace": "const childSlots = ( cal ) => Object.keys( cal?.elements || {} ).filter( ( k ) => '' !== k && ! /::/.test( k ) );", "why": "a grandchild is judged as a child of the root" }
+	{
+		"file": "lib/fill-same-box.mjs",
+		"find": "return declaredOneBox( cal, a, b, axis, w ) || declaredOneChild( cal, a, b, axis, w );",
+		"replace": "return declaredOneBox( cal, a, b, axis, w );",
+		"why": "a declared look never shows a root and its only child as one box: the icon's circle goes to Custom CSS"
+	},
+	{
+		"file": "lib/fill-same-box.mjs",
+		"find": " && ! Object.keys( cal.elements ).includes( `${ k } > ${ partKey }` );",
+		"replace": ";",
+		"why": "a variant's link wrapper counts as a second child"
+	},
+	{
+		"file": "lib/fill-same-box.mjs",
+		"find": "\tif ( beside.length ) {\n\t\treturn false;\n\t}",
+		"replace": "",
+		"why": "a label beside the part is ignored"
+	},
+	{
+		"file": "lib/fill-same-box.mjs",
+		"find": "\tif ( 'w' === axis && BLOCK_FLOW.test( display ) && fills ) {\n\t\treturn true;\n\t}",
+		"replace": "",
+		"why": "a block box's filling part loses the root's width when it has stacked siblings"
+	},
+	{
+		"file": "lib/fill-same-box.mjs",
+		"find": "if ( ! ( 'auto' === floor || zero( floor ) ) || ",
+		"replace": "if ( ",
+		"why": "a root with a minimum height of its own counts as its child's box"
+	},
+	{
+		"file": "lib/fill-same-box.mjs",
+		"find": "const capped = ! [ 'none', '100%', undefined ].includes( inner[ 'max-width' ] );",
+		"replace": "const capped = false;",
+		"why": "a part with a maximum width counts as filling the root"
+	},
+	{
+		"file": "lib/fill-same-box.mjs",
+		"find": "return /^-?[\\d.]+px$/.test( v ) ? parseFloat( v ) : NaN;",
+		"replace": "return parseFloat( v );",
+		"why": "a declared 100% on both reads as a measured match"
+	},
+	{
+		"file": "lib/fill-same-box.mjs",
+		"find": "return ( ! capped && fullWidth ) || ( 'auto' === root.width && INLINE_BOX.test( display ) );",
+		"replace": "return true;",
+		"why": "any root shrink-wraps or hands its width to the part (a flex row root too)"
+	},
+	{
+		"file": "lib/fill-same-box.mjs",
+		"find": "\t\treturn 'auto' === root.height && ( itemised || BLOCK_LEVEL.test( String( inner.display || '' ) ) );",
+		"replace": "\t\treturn false;",
+		"why": "the height axis never judges a root and its child one box"
+	},
+	{
+		"file": "lib/fill-same-box.mjs",
+		"find": "|| OUT_OF_FLOW.test( inner.position || '' ) ) {",
+		"replace": ") {",
+		"why": "an out-of-flow part counts as the root's content"
+	},
+	{
+		"file": "lib/fill-same-box.mjs",
+		"find": "const childSlots = ( cal ) => Object.keys( cal?.elements || {} ).filter( ( k ) => '' !== k && ! /::/.test( k ) && ! k.includes( ' > ' ) );",
+		"replace": "const childSlots = ( cal ) => Object.keys( cal?.elements || {} ).filter( ( k ) => '' !== k && ! /::/.test( k ) );",
+		"why": "a grandchild is judged as a child of the root"
+	},
+	{
+		"file": "lib/fill-same-box.mjs",
+		"find": "'border-box' === inner[ 'box-sizing' ] || AXIS.w[ 1 ].every( ( p ) => undefined === inner[ p ] || zero( inner[ p ] ) )",
+		"replace": "true",
+		"why": "a 100%-wide part counts as the root's width whatever its own side padding"
+	}
 ]

@@ -2549,6 +2549,6 @@
     "added_commit": null,
     "budget_ms": 15000,
     "order": 288,
-    "tier_reason": "Pre-deploy: the retired calibration (browser measurement, its cache bookkeeping, calibration's fixture file and the fixture-reference tools) stays gone: none of its 25 paths exists and no live file imports, runs or names one (the setting record and the site look replace it, 2026-11-23). Reads files only."
+    "tier_reason": "Pre-deploy: the retired calibration (browser measurement, its cache bookkeeping, calibration's fixture file and the fixture-reference tools) stays gone: no path it lists (tools/retire-calibration.mjs::REMOVED) exists and no live file imports, runs or names one (the setting record and the site look replace it, 2026-11-23). Reads files only."
   }
 ]

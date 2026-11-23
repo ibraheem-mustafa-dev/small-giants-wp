@@ -142,3 +142,28 @@ test( 'site-run.mjs builds the walk command through walkArgs with --fresh-draft,
 	assert.match( src, /walkArgs\( \{[^}]*draftDir: path\.join\( REPO, entry\.draftDir \)[^}]*fresh: freshDraft \} \)/ );
 	assert.match( src, /usage: site-run\.mjs[^']*\[--fresh-draft\]/ );
 } );
+
+// Code review 2026-11-23: walker configs hold their state actions and openers as functions, which JSON.stringify drops.
+test( 'MUST FAIL: an edited draft action function gives a different key; an edited live action does not', () => {
+	const cfg = ( draft, live ) => ( { name: 'home', states: [ { name: 'open', draft, live } ] } );
+	const before = draftSideHash( cfg( async ( h ) => h.click( '.a' ), async () => {} ) );
+	assert.notEqual( draftSideHash( cfg( async ( h ) => h.click( '.b' ), async () => {} ) ), before );
+	assert.equal( draftSideHash( cfg( async ( h ) => h.click( '.a' ), async ( h ) => h.click( '.z' ) ) ), before );
+	assert.notEqual( draftSideHash( { name: 'x', open: () => 1 } ), draftSideHash( { name: 'x', open: () => 2 } ) );
+} );
+
+// Code review 2026-11-23: a linked folder in the draft reads as a non-directory entry, and reading it as a file threw EISDIR.
+test( 'MUST FAIL: a draft folder holding a linked folder is hashed through the link, and a change behind it moves the key', () => {
+	const d = tmp( 'link' );
+	const target = tmp( 'link-target' );
+	put( d, 'index.html', '<p>a</p>' );
+	put( target, 'logo.svg', '<svg/>' );
+	try {
+		fs.symlinkSync( target, path.join( d, 'assets' ), 'junction' );
+	} catch {
+		return; // the machine refuses links: nothing to prove here
+	}
+	const first = hashTree( d );
+	put( target, 'logo.svg', '<svg id="x"/>' );
+	assert.notEqual( hashTree( d ), first );
+} );

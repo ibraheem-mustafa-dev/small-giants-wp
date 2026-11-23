@@ -51,3 +51,12 @@ test( 'negative controls: two boxes stay two', () => {
 	assert.equal( calSameBox( look( { more: { '.sgs-ic__x': part() } } ), '.sgs-ic__x', SHAPE ), false, 'two parts, neither the root' );
 	assert.equal( calSameBox( { elements: { '': root(), [ SHAPE ]: part(), [ `${ SHAPE } > .sgs-ic__glyph` ]: part() } }, '', `${ SHAPE } > .sgs-ic__glyph` ), false, 'a grandchild is not judged' );
 } );
+
+// Code review 2026-11-23: under content-box sizing a part declared 100% wide with its own side padding or border is wider than the root.
+test( 'MUST FAIL: a 100%-wide part with its own side padding is not the root\'s width unless it sizes by its border box', () => {
+	const r = root( { display: 'block', width: '100%' } );
+	const padded = { width: '100%', display: 'block', 'padding-left': '20px', 'padding-right': '0px', 'border-left-width': '0px', 'border-right-width': '0px' };
+	assert.equal( calSameBox( look( { r, p: part( { ...padded, 'box-sizing': 'content-box' } ) } ), '', SHAPE, [ 'w' ] ), false );
+	assert.equal( calSameBox( look( { r, p: part( { ...padded, 'box-sizing': 'border-box' } ) } ), '', SHAPE, [ 'w' ] ), true );
+	assert.equal( calSameBox( look( { r, p: part( { ...padded, 'padding-left': '0px', 'box-sizing': 'content-box' } ) } ), '', SHAPE, [ 'w' ] ), true );
+} );

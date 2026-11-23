@@ -108,7 +108,8 @@ export function holdsValue( db, block, attr, value ) {
 		def = row?.default_value ?? null;
 	}
 	const numeric = 'number' === typeof def || ( def && 'object' === typeof def && Object.values( def ).some( ( v ) => 'number' === typeof v ) );
-	const values = value && 'object' === typeof value ? Object.values( value ) : [ value ];
+	// A device the value leaves unset (undefined or null) holds nothing to refuse.
+	const values = value && 'object' === typeof value ? Object.values( value ).filter( ( v ) => null != v ) : [ value ];
 	return ! numeric || values.every( ( v ) => '' !== String( v ).trim() && Number.isFinite( Number( v ) ) );
 }
 

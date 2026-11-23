@@ -45,7 +45,7 @@ const NAME_PATTERNS = [
 	...REMOVED.filter( ( r ) => ! r.path.startsWith( `${ ROUTE }/lib/` ) ).map( ( r ) => {
 		const tail = r.path.replace( `${ ROUTE }/`, '' );
 		const root = ROOT_COMMANDS.includes( tail );
-		return { path: r.path, re: new RegExp( `(?:${ esc( root ? r.path.replace( 'scripts/', '' ) : tail ) }${ root ? `|(?<![\w./-])${ esc( tail ) }` : '' })(?![\w-])` ) };
+		return { path: r.path, re: new RegExp( `(?:${ esc( root ? r.path.replace( 'scripts/', '' ) : tail ) }${ root ? `|(?<![\\w./-])${ esc( tail ) }` : '' })(?![\\w-])` ) };
 	} ),
 	{ path: 'plugins/sgs-blocks/scripts/lib/route_cache_dir.py', re: /route_cache_dir/ },
 ];

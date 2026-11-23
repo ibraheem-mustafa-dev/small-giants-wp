@@ -145,8 +145,8 @@
 	},
 	{
 		"file": "lib/foundation-plan.mjs",
-		"find": "fileSha( at( 'plugins', 'sgs-blocks', 'scripts', 'setting-record', 'fixtures.json' ) ), ",
-		"replace": "",
+		"find": " || 'fixtures.json' === n, false ),",
+		"replace": ", false ),",
 		"why": "changed fixtures leave the looks as they were"
 	},
 	{
@@ -184,5 +184,17 @@
 		"find": "\t\t\tid: 'skeletons', deps: [ 'looks' ],",
 		"replace": "\t\t\tid: 'skeletons', deps: [],",
 		"why": "the skeletons are proposed from looks that failed to build"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "...[ 'theme.json', 'functions.php' ].map( ( n ) => at( 'theme', 'sgs-theme', n ) ),",
+		"replace": "",
+		"why": "a changed theme.json leaves the looks as they were"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "( n ) => n.endsWith( '.py' ) || 'fixtures.json' === n, false ),",
+		"replace": "( n ) => 'fixtures.json' === n, false ),",
+		"why": "a changed record module the builder imports leaves the looks as they were"
 	}
 ]

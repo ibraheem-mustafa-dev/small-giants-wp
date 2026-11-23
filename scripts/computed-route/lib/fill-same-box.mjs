@@ -91,7 +91,10 @@ function declaredOneChild( cal, a, b, axis, w ) {
 	const display = String( root.display || '' );
 	const itemised = /(^|-)(flex|grid)$/.test( display );
 	const capped = ! [ 'none', '100%', undefined ].includes( inner[ 'max-width' ] );
-	const fills = ! capped && ( '100%' === inner.width || ( BLOCK_LEVEL.test( String( inner.display || '' ) ) && 'auto' === inner.width ) );
+	// A part declared 100% wide is the root's width only when its own side padding and border add nothing to it: none drawn, or
+	// sized by its border box (a side the look does not record counts as none).
+	const fullWidth = '100%' === inner.width && ( 'border-box' === inner[ 'box-sizing' ] || AXIS.w[ 1 ].every( ( p ) => undefined === inner[ p ] || zero( inner[ p ] ) ) );
+	const fills = ! capped && ( fullWidth || ( BLOCK_LEVEL.test( String( inner.display || '' ) ) && 'auto' === inner.width ) );
 	// In a block box the children stack, so a sibling never narrows a part that fills the root's width.
 	if ( 'w' === axis && BLOCK_FLOW.test( display ) && fills ) {
 		return true;
@@ -102,7 +105,7 @@ function declaredOneChild( cal, a, b, axis, w ) {
 	if ( 'h' === axis ) {
 		return 'auto' === root.height && ( itemised || BLOCK_LEVEL.test( String( inner.display || '' ) ) );
 	}
-	return ( ! capped && '100%' === inner.width ) || ( 'auto' === root.width && INLINE_BOX.test( display ) );
+	return ( ! capped && fullWidth ) || ( 'auto' === root.width && INLINE_BOX.test( display ) );
 }
 
 // Whether two elements are the same box on the given axes (default both) at every width: calibration's measured boxes equal,

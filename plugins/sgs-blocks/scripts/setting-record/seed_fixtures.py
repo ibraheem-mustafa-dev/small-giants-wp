@@ -84,8 +84,9 @@ def entry_for(name: str, cal: dict, paths: dict) -> dict:
             harness[file_key] = file
     if harness:
         out['harness'] = harness
-    notes = [f'Seeded by seed_fixtures.py from {"the fixtures given" if c else "its render paths"}'
-             f'{" and render-paths.json" if rendered else ""}.']
+    sources = (['the fixtures given'] if c else []) + (['render-paths.json'] if rendered else [])
+    notes = [f'Seeded by seed_fixtures.py from {" and ".join(sources)}.' if sources
+             else 'Seeded by seed_fixtures.py from no curated source: complete it by hand.']
     extra = sorted(k for k in c if k not in CONSUMED)
     if extra:
         notes.append('Calibration-only keys not carried (they set up a live site): ' + ', '.join(extra) + '.')

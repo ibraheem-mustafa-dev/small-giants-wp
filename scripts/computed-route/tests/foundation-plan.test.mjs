@@ -220,6 +220,26 @@ test( 'MUST FAIL: the looks are rebuilt when what they are drawn from changes (t
 	assert.ok( ! ids( w.execs ).includes( 'looks' ), 'nothing changed: the looks hold' );
 } );
 
+// Code review 2026-11-23: the builder also reads the record's modules, its property list and the theme's stylesheets.
+test( 'MUST FAIL: the looks are rebuilt when the record code the builder imports, its property list or the theme changes', async () => {
+	const w = world();
+	assert.equal( ( await w.go() ).ok, true );
+	for ( const [ rel, text ] of [
+		[ [ 'plugins', 'sgs-blocks', 'scripts', 'setting-record', 'computed.py' ], 'X = 2\n' ],
+		[ [ 'plugins', 'sgs-blocks', 'scripts', 'site-look', 'props.json' ], '["color"]' ],
+		[ [ 'theme', 'sgs-theme', 'assets', 'css', 'core-blocks.css' ], 'p{margin:0}' ],
+		[ [ 'theme', 'sgs-theme', 'theme.json' ], '{"version":3}' ],
+	] ) {
+		w.execs.length = 0;
+		write( path.join( w.repo, ...rel ), text );
+		await w.go();
+		assert.ok( ids( w.execs ).includes( 'looks' ), `a change to ${ rel.join( '/' ) } rebuilds the looks` );
+	}
+	w.execs.length = 0;
+	await w.go();
+	assert.ok( ! ids( w.execs ).includes( 'looks' ), 'nothing changed: the looks hold' );
+} );
+
 test( 'MUST FAIL: a block named in --allow-missing-paint is passed on to the surface stages', async () => {
 	const w = world( { allow: [ 'sgs/gallery' ] } );
 	const r = await w.go();

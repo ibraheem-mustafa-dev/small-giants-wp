@@ -309,11 +309,11 @@ export function compareSweeps( before, after ) {
 				failures.push( `${ key }: real faults ${ row.before ?? 0 } -> ${ row.after }, ${ row.newProblems.length } new line(s)` );
 			}
 			// A block proposed without its default look reads no default paint, so its settings are guessed: one the baseline had a
-			// look for fails the landing.
+			// look for fails the landing. A baseline written before the count was kept (no `withoutLook`) says nothing either way.
 			const hadLook = new Set( b?.withoutLook ?? [] );
-			row.newWithoutLook = ( a.withoutLook ?? [] ).filter( ( x ) => ! hadLook.has( x ) );
-			if ( b && row.newWithoutLook.length ) {
-				'same' === row.status && ( row.status = 'WORSE' );
+			row.newWithoutLook = b && Array.isArray( b.withoutLook ) ? ( a.withoutLook ?? [] ).filter( ( x ) => ! hadLook.has( x ) ) : [];
+			if ( row.newWithoutLook.length ) {
+				row.status = 'WORSE';
 				failures.push( `${ key }: proposed without the default look of ${ row.newWithoutLook.join( ', ' ) }` );
 			}
 		}

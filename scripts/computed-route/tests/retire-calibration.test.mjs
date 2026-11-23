@@ -2,7 +2,10 @@
 // and a live file that imports or names one, and it stays quiet about the kept modules that share a stem with a removed command.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { REMOVED, selfTest } from '../tools/retire-calibration.mjs';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { REMOVED, selfTest, scan } from '../tools/retire-calibration.mjs';
 
 test( 'MUST FAIL WITHOUT THE SCAN: the self-test sees a planted file, a planted import and a planted root-command import, and a clean tree stays clean', () => {
 	const r = selfTest();
@@ -16,4 +19,14 @@ test( 'the list names each path once, in a part the retirement hands out', () =>
 	assert.equal( new Set( REMOVED.map( ( r ) => r.path ) ).size, REMOVED.length );
 	assert.ok( REMOVED.every( ( r ) => [ 'A', 'B' ].includes( r.part ) ) );
 	assert.ok( ! REMOVED.some( ( r ) => /lib\/(calibrate|calibrate-instances|calibrate-markers|calibrate-content|calibrate-props|calibration-refs)\.mjs$/.test( r.path ) ), 'the kept modules are never listed' );
+} );
+
+// Code review 2026-11-23: the root-command pattern's word guard was written `\w` inside a template literal, which reads as a plain `w`.
+test( 'MUST FAIL: a longer name that only ends in a removed command\'s name is not a reference; the command itself is', () => {
+	const root = fs.mkdtempSync( path.join( os.tmpdir(), 'retire-words-' ) );
+	fs.mkdirSync( path.join( root, 'scripts', 'x' ), { recursive: true } );
+	fs.writeFileSync( path.join( root, 'scripts', 'x', 'a.py' ), "run('recalibrate.mjs')\nrun('xstage0.mjs')\n" );
+	assert.deepEqual( scan( root ).refs, [] );
+	fs.writeFileSync( path.join( root, 'scripts', 'x', 'a.py' ), "run('stage0.mjs')\n" );
+	assert.equal( scan( root ).refs.length, 1 );
 } );

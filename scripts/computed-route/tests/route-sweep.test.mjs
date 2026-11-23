@@ -380,3 +380,13 @@ test( 'MUST FAIL: prepareSweepLooks builds every client\'s looks before the prop
 	assert.deepEqual( calls.map( ( c ) => [ c.client, c.build, c.blocks.length ] ), [ [ 'a', true, 2 ], [ 'b', true, 2 ] ] );
 	assert.deepEqual( failed, { b: [ 'sgs/x' ] } );
 } );
+
+test( 'MUST FAIL: a baseline written before the look count was kept is no evidence of a lost look, and a lost look fails a surface that is otherwise better', () => {
+	const old = { surfaces: { 'a/header': sum( 'a/header', [ 'p' ] ) }, nodes: {} };
+	const after = { surfaces: { 'a/header': sum( 'a/header', [ 'p' ], { withoutLook: [ 'sgs/whatsapp-cta' ] } ) }, nodes: {} };
+	assert.equal( compareSweeps( old, after ).ok, true, 'no withoutLook in the baseline: the look check is skipped' );
+	const before = { surfaces: { 'a/header': sum( 'a/header', [ 'p', 'q' ], { withoutLook: [] } ) }, nodes: {} };
+	const cmp = compareSweeps( before, after );
+	assert.equal( cmp.ok, false );
+	assert.equal( cmp.rows[ 0 ].status, 'WORSE', 'one fault fewer does not hide a lost look' );
+} );

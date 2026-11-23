@@ -115,7 +115,16 @@ export function buildSteps( ctx ) {
 	const snapshotSha = () => fileSha( p.snapshot );
 	// The looks' inputs: the snapshot, the block build, the fixtures the looks are drawn from and the builder (site_look.py keeps
 	// its own per-block key as well, so a run whose inputs moved rebuilds only the looks whose key moved).
-	const looksFp = async () => joinFp( client, snapshotSha(), await ports.buildDigest(), fileSha( at( 'plugins', 'sgs-blocks', 'scripts', 'setting-record', 'fixtures.json' ) ), fileSha( at( 'plugins', 'sgs-blocks', 'scripts', 'site-look', 'site_look.py' ) ), runsShop( client, repo ) );
+	// The builder's own code is site_look.py, its property list and the record modules it imports (site_look.py::builder_hash);
+	// the theme's theme.json, functions.php and stylesheets are drawn under every look (setting-record/theme.py::theme_css).
+	const filesIn = ( dir, test, recursive = true ) => ( fs.existsSync( dir ) ? fs.readdirSync( dir, { withFileTypes: true, recursive } ).filter( ( e ) => e.isFile() && test( e.name ) ).map( ( e ) => path.join( e.parentPath ?? e.path, e.name ) ).sort() : [] );
+	const builderFiles = () => [
+		...filesIn( at( 'plugins', 'sgs-blocks', 'scripts', 'site-look' ), ( n ) => 'site_look.py' === n || 'props.json' === n, false ),
+		...filesIn( at( 'plugins', 'sgs-blocks', 'scripts', 'setting-record' ), ( n ) => n.endsWith( '.py' ) || 'fixtures.json' === n, false ),
+		...[ 'theme.json', 'functions.php' ].map( ( n ) => at( 'theme', 'sgs-theme', n ) ),
+		...filesIn( at( 'theme', 'sgs-theme', 'assets', 'css' ), ( n ) => n.endsWith( '.css' ) ),
+	];
+	const looksFp = async () => joinFp( client, snapshotSha(), await ports.buildDigest(), ...builderFiles().map( ( f ) => `${ path.relative( repo, f ) }:${ fileSha( f ) }` ), runsShop( client, repo ) );
 	const localOnly = ( what ) => ( local ? null : `${ site } is a hosted site: ${ what }` );
 
 	const steps = [

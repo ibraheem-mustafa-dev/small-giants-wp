@@ -54,7 +54,9 @@ export function hashTree( dir ) {
 	const walk = ( d ) => {
 		for ( const e of fs.readdirSync( d, { withFileTypes: true } ).sort( ( a, b ) => ( a.name < b.name ? -1 : 1 ) ) ) {
 			const f = path.join( d, e.name );
-			e.isDirectory() ? walk( f ) : files.push( f );
+			// A linked folder or file is followed (statSync reads through the link); anything else that is not a file is left out.
+			const st = e.isSymbolicLink() ? fs.statSync( f, { throwIfNoEntry: false } ) : e;
+			st?.isDirectory() ? walk( f ) : st?.isFile() && files.push( f );
 		}
 	};
 	walk( dir );
@@ -90,6 +92,10 @@ export function codeHash( entry ) {
 // live selectors a new Fill writes) does not change it.
 export function draftSideHash( cfg, { keepLive = false } = {} ) {
 	const lift = ( v ) => {
+		// A state action or an opener is a function, which JSON drops: its source text stands for it.
+		if ( 'function' === typeof v ) {
+			return `function:${ v.toString() }`;
+		}
 		if ( Array.isArray( v ) ) {
 			return v.map( lift );
 		}

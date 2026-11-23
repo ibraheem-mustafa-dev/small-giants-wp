@@ -56,3 +56,10 @@ test( 'holdsValue: a numeric setting takes numbers and refuses anything else; a 
 	assert.equal( holdsValue( db, 'sgs/layer', 'count', 3 ), true );
 	assert.equal( holdsValue( db, 'sgs/layer', 'edgeLeft', { desktop: '2%' } ), true );
 } );
+
+// Code review 2026-11-23: a device the pinned value leaves unset reaches holdsValue as undefined or null.
+test( 'MUST FAIL: an unset device does not stop a numeric setting from holding the other devices\' numbers', () => {
+	assert.equal( holdsValue( db, 'sgs/layer', 'turn', { desktop: 45, tablet: undefined } ), true );
+	assert.equal( holdsValue( db, 'sgs/layer', 'turn', { desktop: 45, mobile: null } ), true );
+	assert.equal( holdsValue( db, 'sgs/layer', 'turn', { desktop: undefined, mobile: MATRIX } ), false, 'a CSS value at a set device is still refused' );
+} );
