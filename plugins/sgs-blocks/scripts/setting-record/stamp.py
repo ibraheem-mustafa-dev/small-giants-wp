@@ -21,8 +21,10 @@ it only where it changes the shipped text.
 from __future__ import annotations
 
 import hashlib
+import io
 import json
 import re
+import tokenize
 from pathlib import Path
 
 STAMP_VERSION = 2
@@ -40,7 +42,7 @@ def check_hash(plugin: Path) -> str:
     h = hashlib.md5()
     for f in sorted(set(files), key=lambda f: f.as_posix()):
         h.update(f.name.encode())
-        h.update(file_hash(f).encode())
+        h.update(code_hash(f).encode())
     return h.hexdigest()[:16]
 CORE_MIN = 20  # stamps needed before the files they all load count as core
 
@@ -51,6 +53,35 @@ def file_hash(f: Path) -> str:
         return hashlib.md5(f.read_bytes().replace(b'\r\n', b'\n')).hexdigest()[:16]
     except OSError:
         return ''
+
+
+def code_hash(f: Path) -> str:
+    """md5 of a Python module's code (16 hex): its tokens without comments, blank lines or bare string statements
+    (docstrings), indentation kept as tokens, so an edit to a comment or a docstring moves no stamp and no site look while
+    any change to what runs does. Any other file, or a module that does not tokenize, is file_hash."""
+    if f.suffix != '.py':
+        return file_hash(f)
+    try:
+        text = f.read_text(encoding='utf-8')
+        toks = list(tokenize.generate_tokens(io.StringIO(text).readline))
+    except (OSError, SyntaxError, tokenize.TokenError, UnicodeDecodeError):
+        return file_hash(f)
+    lines, line = [], []
+    for t in toks:
+        if t.type in (tokenize.COMMENT, tokenize.NL, tokenize.ENCODING, tokenize.ENDMARKER):
+            continue
+        if t.type in (tokenize.INDENT, tokenize.DEDENT):
+            lines.append([tokenize.tok_name[t.type]])
+            continue
+        if t.type == tokenize.NEWLINE:
+            if line and not all(k == tokenize.STRING for k, _ in line):
+                lines.append([s for _, s in line])
+            line = []
+            continue
+        line.append((t.type, t.string))
+    if line and not all(k == tokenize.STRING for k, _ in line):
+        lines.append([s for _, s in line])
+    return hashlib.md5('\n'.join('\x1f'.join(x) for x in lines).encode('utf-8')).hexdigest()[:16]
 
 
 def text_hash(t: str) -> str:

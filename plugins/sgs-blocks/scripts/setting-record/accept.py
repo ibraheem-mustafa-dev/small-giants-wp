@@ -66,20 +66,26 @@ def mark(doc: dict, proved: dict, removed: dict) -> int:
     return n
 
 
+def is_record(d) -> bool:
+    """Whether a parsed JSON file is a setting record (record.schema.json: a block, a schema version and its entries), not
+    a check report or a self-test summary that may share its folder."""
+    return isinstance(d, dict) and isinstance(d.get('block'), str) and 'schemaVersion' in d and isinstance(d.get('entries'), list)
+
+
 def mark_against_folder(doc: dict, folder: Path) -> int:
-    """Marks one record against the other records in its folder (check.py --write)."""
+    """Marks one record against the other records in its folder (check.py --write); other JSON there is left out."""
     others = {}
     for f in sorted(Path(folder).glob('*.json')):
         d = json.loads(f.read_text(encoding='utf-8'))
-        if d.get('block') != doc['block']:
+        if is_record(d) and d['block'] != doc['block']:
             others[d['block']] = d
     return mark(doc, *library(others))
 
 
 def main(argv) -> int:
     folder = Path(argv[0])
-    files = sorted(folder.glob('*.json'))
-    docs = {f: json.loads(f.read_text(encoding='utf-8')) for f in files}
+    docs = {f: d for f in sorted(folder.glob('*.json')) if is_record(d := json.loads(f.read_text(encoding='utf-8')))}
+    files = list(docs)
     proved, removed = library({d['block']: d for d in docs.values()})
     total = 0
     for f, d in docs.items():

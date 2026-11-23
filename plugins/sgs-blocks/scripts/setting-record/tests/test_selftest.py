@@ -111,3 +111,26 @@ def test_judge_needs_the_named_finding():
     assert not S.judge(part, {'parts': {'orderChanged': {'record': ['sgs-button__label'], 'code': ['sgs-button__label']}}})[0]
     state = {'expect': {'kind': 'state', 'setting': 'colourHover', 'part': 'ROOT', 'state': 'active'}}
     assert S.judge(state, {'change': [{'setting': 'colourHover', 'part': 'ROOT', 'props': ['color'], 'record': [['hover', []]], 'code': [['active', []]]}]})[0]
+
+
+def test_copy_code_copies_the_theme_beside_the_plugin(tmp_path):
+    """MUST FAIL before 2026-11-23: the stamp a clean write makes reads the theme's CSS from the copy's repo root
+    (theme.py::theme_css, THEME_REL), and copy_code copied only the plugin, so `check.py --self-test` stopped at its first
+    write with no theme.json."""
+    repo = tmp_path / 'repo'
+    plugin = repo / 'plugins' / 'sgs-blocks'
+    (plugin / 'includes').mkdir(parents=True)
+    (plugin / 'includes' / 'h.php').write_text('<?php', encoding='utf-8')
+    theme = repo / 'theme' / 'sgs-theme'
+    (theme / 'assets' / 'css').mkdir(parents=True)
+    (theme / 'node_modules' / 'x').mkdir(parents=True)
+    (theme / 'theme.json').write_text('{}', encoding='utf-8')
+    (theme / 'assets' / 'css' / 'a.css').write_text('a{}', encoding='utf-8')
+    dst = tmp_path / 'copy' / 'plugins' / 'sgs-blocks'
+    S.copy_code(plugin, dst)
+    S.copy_code(plugin, dst)  # a second copy over the first replaces it
+    copied = tmp_path / 'copy' / 'theme' / 'sgs-theme'
+    assert (dst / 'includes' / 'h.php').is_file()
+    assert (copied / 'theme.json').is_file()
+    assert (copied / 'assets' / 'css' / 'a.css').is_file()
+    assert not (copied / 'node_modules').exists()

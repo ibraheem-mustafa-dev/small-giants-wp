@@ -199,3 +199,14 @@ def test_property_lists_match_the_route():
     p = subprocess.run(['node', '-e', js], capture_output=True, text=True, cwd=str(SL.ROUTE))
     assert p.returncode == 0, p.stderr
     assert json.loads(p.stdout) == SL.load_props()
+
+
+def test_builder_hash_ignores_a_comment_edit_and_follows_a_code_edit(tmp_path):
+    """MUST FAIL before 2026-11-23: the builder's hash was its files' raw bytes, so a comment edit rebuilt every look."""
+    mod = tmp_path / 'mod.py'
+    mod.write_text('def f():\n    # note\n    return 1\n', encoding='utf-8')
+    base = SL.builder_hash([mod])
+    mod.write_text('def f():\n    # another note\n    """Says what f does."""\n    return 1\n', encoding='utf-8')
+    assert SL.builder_hash([mod]) == base
+    mod.write_text('def f():\n    return 2\n', encoding='utf-8')
+    assert SL.builder_hash([mod]) != base

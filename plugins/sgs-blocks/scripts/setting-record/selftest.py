@@ -30,6 +30,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import render as RN  # noqa: E402
+import theme as TH  # noqa: E402
 sys.path.insert(0, str(HERE.parent / 'lib'))
 import block_source_files as BSF  # noqa: E402
 
@@ -313,19 +314,26 @@ def expected_text(fault: dict) -> str:
 
 # ---------------------------------------------------------------- the run
 def copy_code(src: Path, dst: Path) -> None:
-    """A real copy (never a link) of every folder a render reads."""
+    """A real copy (never a link) of every folder a render reads, and of the theme the stamp reads beside the plugin
+    (theme.py::theme_css reads `<repo>/theme/sgs-theme` from the plugin's repo root: `src` and `dst` are
+    `<repo>/plugins/sgs-blocks`)."""
     def unlock(fn, p, _exc):
         os.chmod(p, stat.S_IWRITE)
         fn(p)
-    if dst.exists():
-        shutil.rmtree(dst, onerror=unlock)
+    skip = shutil.ignore_patterns('__pycache__', 'node_modules')
+    theme_src, theme_dst = src.parents[1] / TH.THEME_REL, dst.parents[1] / TH.THEME_REL
+    for d in (dst, theme_dst):
+        if d.exists():
+            shutil.rmtree(d, onerror=unlock)
     for root in RN.CODE_ROOTS:
         s, d = src / root, dst / root
         if s.is_dir():
-            shutil.copytree(s, d, ignore=shutil.ignore_patterns('__pycache__', 'node_modules'))
+            shutil.copytree(s, d, ignore=skip)
         elif s.is_file():
             d.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(s, d)
+    if theme_src.is_dir():
+        shutil.copytree(theme_src, theme_dst, ignore=skip)
 
 
 def check_cmd(args, plugin: Path, out: Path, *mode: str) -> list:

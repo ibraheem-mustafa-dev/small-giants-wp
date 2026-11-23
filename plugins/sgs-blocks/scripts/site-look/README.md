@@ -10,7 +10,7 @@ python site_look.py --snapshot ... --site <site> --out DIR --all --jobs 4
 python -m pytest tests                     each mechanism has a test that fails with SITE_LOOK_MUTATE=<mechanism>
 ```
 
-A block's file is rebuilt only when its key changes: this builder and the setting-record modules it reads, the block's render code (the record renderer's code hash), the block's fixture entry as written, the snapshot, every plugin and theme stylesheet, and the switches in force. A warm build takes seconds a block; a cold one renders through the record's runner (renders cached under `SGS_SETTING_RECORD_CACHE`).
+A block's file is rebuilt only when its key changes: the code of this builder and the setting-record modules it reads (`builder_hash`, through `stamp.py::code_hash`, so a comment or docstring edit rebuilds nothing), the block's render code (the record renderer's code hash), the block's fixture entry as written, the snapshot, every plugin and theme stylesheet, and the switches in force. A warm build takes seconds a block; a cold one renders through the record's runner (renders cached under `SGS_SETTING_RECORD_CACHE`).
 
 ## How a block's look is read
 

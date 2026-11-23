@@ -50,6 +50,7 @@ import check as CK  # noqa: E402
 import computed as CP  # noqa: E402
 import proof as PF  # noqa: E402
 import render as RN  # noqa: E402
+import stamp as ST  # noqa: E402
 import theme as TH  # noqa: E402
 from bs4 import Tag  # noqa: E402
 
@@ -70,12 +71,13 @@ UID_CLASS = re.compile(r'^sgs-[a-z0-9-]+-[0-9a-f]{8}$')
 EXTRA_INHERITED = {'font-style': 'normal', 'text-shadow': 'none'}
 
 
-def builder_hash() -> str:
-    """The hash of this builder and the record modules it reads, so a change to either rebuilds every site look."""
+def builder_hash(files=None) -> str:
+    """The hash of this builder and the record modules it reads (`files`, default those), so a change to the code of either
+    rebuilds every site look; an edit to a comment or a docstring does not (setting-record/stamp.py::code_hash)."""
     h = hashlib.sha256()
-    for f in sorted([Path(__file__), PROPS_FILE, *SETREC.glob('*.py')]):
+    for f in sorted(files if files is not None else [Path(__file__), PROPS_FILE, *SETREC.glob('*.py')]):
         h.update(f.name.encode())
-        h.update(f.read_bytes())
+        h.update(ST.code_hash(f).encode())
     return h.hexdigest()[:16]
 
 
