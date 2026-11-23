@@ -1,6 +1,8 @@
-"""The measured reference the score compares the scan with: a block's calibration slot
-map (where each setting painted, which property, in which state, at which widths) and
-its default paint files (every element and layer the instance rendered).
+"""The measured reference the score compares the scan with: a block's slot map from the
+retired calibration (where each setting painted, which property, in which state, at
+which widths) and its default paint files (every element and layer the instance
+rendered). The route no longer writes these files: the manifest names files an earlier
+calibration run left, so a fresh score needs them supplied from elsewhere.
 
 A measured path is turned into a part key the scan's parts can be compared with:
   ''                      -> the block root (ROOT)

@@ -1,7 +1,8 @@
 <?php
 /**
  * Plugin Name: SGS calibration render context (local mirror only)
- * Description: Lets calibration measure sgs/mega-panel as the drawer renders it. The panel's drawer look (link rows,
+ * Description: Lets a render measure sgs/mega-panel as the drawer renders it (written for the retired calibration; the
+ * cloning route no longer uses it). The panel's drawer look (link rows,
  * cards, shell) prints only while includes/helpers-mega-render.php::sgs_mega_render_panel renders a mega menu post for
  * the drawer menu, which pushes 'drawer' on $GLOBALS['sgs_mega_render_context_stack']. A calibration page places the
  * panel directly, so a fixture variant names its instance `sgs-cal-mega-drawer` (the block's metadata name) and this

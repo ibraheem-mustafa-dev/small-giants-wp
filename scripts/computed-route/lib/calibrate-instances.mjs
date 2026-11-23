@@ -1,4 +1,4 @@
-// Which instances one block's calibration page holds (FR-47-2): a default per fixture variant, then one marked
+// Which instances one block's plan holds (FR-47-2): a default per fixture variant, then one marked
 // instance per setting and marker, each carrying the preconditions its element needs to render, plus one instance
 // per enum value of a setting with no css_property (discovery). No browser, no site; it reads the block manifests and data/shared-state-elements.json.
 import { markersFor, borderPartners, shadowPartners, defOf, types, everyTier } from './calibrate-markers.mjs';

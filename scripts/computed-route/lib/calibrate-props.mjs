@@ -1,4 +1,4 @@
-// What calibration reads and how a setting's css_property maps onto it (FR-47-2).
+// The properties the route and the site look read, and how a setting's css_property maps onto them (FR-47-2).
 import { createHash } from 'crypto';
 import { DEFAULT_PROPS, HOVER_PROPS, PSEUDO_PROPS } from '../../parity/lib/collect.mjs';
 import { REF_PROPS } from '../../parity/lib/ref-trace.mjs';

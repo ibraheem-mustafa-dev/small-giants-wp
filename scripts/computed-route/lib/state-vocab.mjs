@@ -1,6 +1,6 @@
-// The state vocabulary as the route's intake and calibration use it (Spec 48 FR-48-81, FP-1): read once from the
+// The state vocabulary as the route's intake and the setting record use it (Spec 48 FR-48-81, FP-1): read once from the
 // framework DB's `states` table (lib/db.mjs::statesVocabulary), never from a list in code. A DB without the table is an
-// error here, because intake and calibration cannot judge states without it.
+// error here, because intake and the record cannot judge states without it.
 
 import { openDb, statesVocabulary } from './db.mjs';
 

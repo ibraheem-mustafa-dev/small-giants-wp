@@ -1,9 +1,9 @@
-// The theme's side gutter on a page-level section, which a calibrated default paint cannot show.
+// The theme's side gutter on a page-level section, which a site-look default paint cannot show.
 //
 // A banded block (a container with a content width, or any block that prints a content band) takes core's
 // `.has-global-padding` and pays the page gutter as its own side padding (class-sgs-container-wrapper.php: the gutter
 // goes to a banded block whose side padding is unset; a block with side padding of its own takes `sgs-band-gutter`
-// instead). Core zeroes that padding on a gutter-payer nested inside another one. Calibration builds every instance
+// instead). Core zeroes that padding on a gutter-payer nested inside another one. The site look draws every instance
 // inside a banded wrapper of its own (lib/calibrate.mjs::buildTree), so the instance is always the nested one and its
 // default paint of side padding is 0px at every width. A section placed straight in the page's main shows the gutter
 // (40, 32 and 20px on the clone's theme tokens), so a draft whose section has no side padding at all is not "equal to the

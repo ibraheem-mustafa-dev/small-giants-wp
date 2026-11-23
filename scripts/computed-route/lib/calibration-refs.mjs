@@ -1,5 +1,5 @@
-// Site references in calibration fixtures (Spec 48 §3.2). A fixture names a WordPress object it needs (a menu, a menu
-// item, a drawer post, an attachment, a product) by a token such as "{{menu}}"; each calibration target maps the token to
+// Site references a fixture can name (Spec 48 §3.2); only the token functions' test calls them now, and `wpCommand` and `evalScript` serve the site commands. A fixture names a WordPress object it needs (a menu, a menu
+// item, a drawer post, an attachment, a product) by a token such as "{{menu}}"; each site target maps the token to
 // its own object in calibration-targets.json `refs`, so one fixture renders on every site that supplies its references.
 //   "{{role}}"        the whole string becomes the role's id as a number
 //   "{{role:text}}"   the whole string becomes the role's id as text (an attribute that stores ids as strings)

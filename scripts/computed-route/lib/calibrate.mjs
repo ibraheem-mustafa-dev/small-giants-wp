@@ -1,6 +1,6 @@
-// Block calibration library (FR-47-2, R-47-6). Builds one calibration tree per block (a default instance plus one
-// marked instance per setting and marker), and works out from the readings which element and property each setting
-// paints (the slot map) and each element's default paint. Markers: lib/calibrate-markers.mjs; instance planning and
+// Pure functions kept from calibration (FR-47-2, R-47-6), which the setting record's instance planning and the readers
+// reuse. Builds one tree per block (a default instance plus one marked instance per setting and marker), and works out
+// from readings which element and property each setting paints and each element's default paint. Markers: lib/calibrate-markers.mjs; instance planning and
 import { WIDTHS, INHERITED, CAL_PREFIX, longhands } from './calibrate-props.mjs';
 import { splitProperty } from './resolve.mjs';
 import { stateLook } from './calibrate-instances.mjs';

@@ -1,7 +1,7 @@
-// The applier's part hover read. A hover look held by a calibrated part of a block (an icon list's text and icons, an icon's
+// The applier's part hover read. A hover look held by a recorded part of a block (an icon list's text and icons, an icon's
 // circle) is read on that part: a real pointer is put on the part's own element, and the part's computed style is read at rest
-// and under the hover. The part is found by the slot selector calibration tied the setting to (cache/<block>.json
-// settings[ attr ].slot), among the elements inside the block's own element. The read lands in facts[ key ].parts[ slot ] and a
+// and under the hover. The part is found by the slot selector the setting record places the setting at
+// (lib/setting-record.mjs::loadRecord settings[ attr ].slot), among the elements inside the block's own element. The read lands in facts[ key ].parts[ slot ] and a
 // check with `part: <slot>` reads it (apply.mjs::judge).
 
 // The finder of the part inside the block found by `rootFinder` (a selector string), or null when the root has no such finder.

@@ -1,4 +1,4 @@
-// The page baseline for inherited properties (R-47-5). Calibration records no default for an inherited property
+// The page baseline for inherited properties (R-47-5). The setting record and site look hold no default for an inherited property
 // (lib/calibrate-props.mjs::INHERITED) and the parent of a surface's top blocks is the page, which is not built when Fill
 // runs. What the page shows comes from the client's theme snapshot: root typography and text colour, then the element
 // styles that apply to the node's tag (heading and h1..h6 for a heading, link for a link, button), then the CSS initial

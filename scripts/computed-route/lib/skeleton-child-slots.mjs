@@ -1,5 +1,5 @@
 // What a block that draws the draft's children itself still needs from them (Spec 48 FR-48-6): the draft elements its
-// calibrated child slots are measured on, and the width its navigation collapses at. Both are read from the draft's code
+// recorded child slots are read on, and the width its navigation collapses at. Both are read from the draft's code
 // (the handoff record's states and the inventory's sc-if membership), never from a name.
 const wordsOf = ( s ) => String( s ?? '' ).toLowerCase().split( /[^a-z0-9]+/ ).filter( Boolean );
 const scIfIds = ( e ) => ( e.membership || [] ).filter( ( x ) => 'sc-if' === x.kind ).map( ( x ) => String( x.tpl ) );

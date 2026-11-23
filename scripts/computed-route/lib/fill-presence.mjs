@@ -1,5 +1,5 @@
 // Presence and content for Fill (FR-47-4): which elements a block shows, and the draft's words and links, decided
-// from calibration's `presence`, `text` and `link` keys (all optional; a block with none of a kind omits the key):
+// from the setting record's `presence`, `text` and `link` keys (all optional; a block with none of a kind omits the key):
 //   presence: { "<attr>": { shows: [paths], hides: [paths] }, "<variantAttr>=<value>": { shows, hides } }
 //             what appears and disappears when that setting moves off its default (a boolean flips, a variant takes the value)
 //   text:     { "<attr>": { path, reachedAt } }   the element a content setting prints its text in

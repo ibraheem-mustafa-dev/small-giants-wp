@@ -1,5 +1,5 @@
 // The values FR-47-4 says need care. Fluid sizes: sampled at five widths, linear within 0.5px means fluid, written as
-// clamp() only where calibration showed the setting accepts one. Breakpoints: swept every 16px from 320 to 1920, each
+// clamp() only where the setting record lists the form. Breakpoints: swept every 16px from 320 to 1920, each
 // step logged against the nearest SGS boundary so a human can decide (nothing here writes a ledger entry).
 import { parseLength, round } from './normalise.mjs';
 

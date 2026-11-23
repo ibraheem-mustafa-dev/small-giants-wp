@@ -1,6 +1,6 @@
-// The content side of calibration (FR-47-2, Spec 48 §3.2): which elements a setting makes appear or disappear
+// The content side of the setting record's instance planning (FR-47-2, Spec 48 §3.2): which elements a setting makes appear or disappear
 // (presence), which element's text it prints (text), and which element it makes a link (link). These settings paint no
-// CSS property, so lib/db.mjs::attrsFor never returns them and the slot map cannot see them; they are queried by their
+// CSS property, so lib/db.mjs::attrsFor never returns them and the record's placements cannot hold them; they are queried by their
 // framework-database `role` instead, and read for node existence, text content and link attributes rather than for
 // computed style. The style side of the old reader is gone; this is the content reading the site look bridge still plans.
 import { WIDTHS, CAL_PREFIX, EDITOR_TIMEOUT_MS } from './calibrate-props.mjs';

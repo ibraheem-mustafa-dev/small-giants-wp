@@ -1,9 +1,9 @@
-// What Fill leaves unjudged on one measured node (FR-47-4 step 5): every setting the block's calibration or the
+// What Fill leaves unjudged on one measured node (FR-47-4 step 5): every setting the block's setting record or the
 // framework database knows that no read reached and no decision judged, with the reason, so nothing is dropped
 // silently. Four kinds:
-//   element   a style setting whose calibrated element no draftRef or draftSlots finder read;
-//   presence  a visibility setting calibration never read, or whose shown or hidden element no finder read;
-//   text/link a content setting calibration has no reading for;
+//   element   a style setting whose recorded element no draftRef or draftSlots finder read;
+//   presence  a visibility setting the record holds no presence for, or whose shown or hidden element no finder read;
+//   text/link a content setting the record has no reading for;
 //   structure an enum setting with no CSS property (a layout or a mode) calibration reads no presence for, so the draft
 //             cannot choose its value.
 // A setting the skeleton sets itself, or that Fill wrote, is never listed. Content settings come from the database's

@@ -1,6 +1,6 @@
-// A calibration fixture's styling preconditions, as Fill sees them (Spec 48 §3.4). Calibration renders a block's
+// A setting-record fixture's styling preconditions, as Fill sees them (Spec 48 §3.4). The site look renders a block's
 // default instance with its fixture's attributes, so a styling setting the fixture switches on to make another setting
-// measurable (sgs/social-icons: childIconShowBackground, a 1px childIconBorderWidth) paints in the calibrated rest
+// measurable (sgs/social-icons: childIconShowBackground, a 1px childIconBorderWidth) paints in the recorded rest
 // though the block's own defaults paint none of it. Fill compares the draft with the unstyled value of every property
 // such a precondition paints, so the draft's real value is written, and a written setting carries the switch the
 // fixture turned on for it. Scaffolding (brand names, links, words, inner blocks) is never a precondition.

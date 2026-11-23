@@ -1,11 +1,11 @@
-// Whether a calibrated default paint describes the node it is compared with (mechanism A of the 2026-11-20 fault census).
+// Whether a site-look default paint describes the node it is compared with (mechanism A of the 2026-11-20 fault census).
 //
-// Calibration measures a block's default paint on one instance in one context: alone in a banded wrapper, in its fixture's
+// The site look draws a block's default paint on one instance in one context: alone in a banded wrapper, in its fixture's
 // paint state, under its default settings (lib/calibrate.mjs::buildTree). A
 // node of the same block can sit in another context: an out-of-flow box where the fixture's was in flow, a flex or grid item
 // where the fixture's was a block's child, a flex or grid container where the fixture's was a block box, a section straight
 // in the page where the fixture's was nested in a band, or a node holding a setting that paints the property (a variant the
-// fixture did not hold). Where the property's value depends on that difference, the calibrated default is not what the node
+// fixture did not hold). Where the property's value depends on that difference, the site-look default is not what the node
 // shows, and a draft value equal to it is no evidence that nothing needs writing. This module names those differences; it is
 // shared by Fill's baseline (lib/fill-resolve-state.mjs::baselineSourceFn) and the offline detector (tools/equal-context.mjs).
 

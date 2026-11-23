@@ -1,5 +1,5 @@
-// The deploy key calibration stamps on a cache: md5 of a block's front-end build files, locally and on the site, so a
-// cache is used only while the deployed build is the one it measured.
+// The block-build hashes: md5 of a block's front-end build files, locally and on the site, so a build comparison and
+// the foundation chain can tell whether the deployed build is the local one.
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
