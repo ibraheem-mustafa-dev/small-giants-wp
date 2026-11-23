@@ -3,7 +3,7 @@
 // each width when the setting works; null means "any change". base: attributes the marker's own baseline instance
 // carries too (a partner setting the marker needs before it can paint), so only the marker's own effect is measured.
 import { WIDTHS, MARKER_HEX, MARKER_RGB, MARKER_GRADIENT, MARKER_REST_GRADIENT } from './calibrate-props.mjs';
-import { CORNERS, isSizeBox } from './resolve.mjs';
+import { CORNERS, isSizeBox, tierEnumDef } from './resolve.mjs';
 import { modifierOf } from './db.mjs';
 import { LENGTH_PROPS, FLUID_TOL } from './fill-values.mjs';
 import { longhands } from './calibrate-props.mjs';
@@ -285,9 +285,10 @@ export function formMarkers( row, schema ) {
 	return out;
 }
 
-// The plain markers for one setting (the §3.2 marker table).
+// The plain markers for one setting (the §3.2 marker table). A per-device choice takes the choices of one tier the
+// framework database stores for it (lib/resolve.mjs::tierEnumDef: block.json declares none on an object), as Fill does.
 function plainMarkers( row, schema, snapshot, current, ctx ) {
-	const def = defOf( row, schema );
+	const def = tierEnumDef( defOf( row, schema ), row );
 	const t = types( def );
 	// A modifier row (`grid-template-columns:count`) is marked as the property it modifies (lib/db.mjs::modifierOf).
 	const listedAll = row.css_property.split( ',' ).map( ( p ) => p.trim() );

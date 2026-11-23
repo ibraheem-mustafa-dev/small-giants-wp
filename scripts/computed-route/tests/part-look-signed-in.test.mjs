@@ -252,9 +252,9 @@ test( 'the account\'s view switches follow what the draft draws: order cards, th
 	const at = ( n = 1 ) => ( { 1440: Array.from( { length: n }, () => ( { text: '', styles: {} } ) ) } );
 	const rows = rules.map( ( r ) => ( { attr_name: r.setting } ) );
 	const all = evaluateModes( { block: 'sgs/account', rules, rows, reads: { ordersRows: at( 2 ), 'order-row-thumbs': at( 2 ), 'od-placed': at(), detailsPhone: at(), detailsOptIn: at() } } );
-	assert.deepEqual( all.writes.map( ( w ) => [ w.attr, w.value ] ), [ [ 'ordersRowList', true ], [ 'ordersRowThumbs', true ], [ 'orderDetailLook', true ], [ 'accountShowMobile', true ], [ 'accountShowMarketingOptIn', true ] ] );
+	assert.deepEqual( all.writes.map( ( w ) => [ w.attr, w.value ] ), [ [ 'hideUnofferedTabs', true ], [ 'ordersRowList', true ], [ 'ordersRowThumbs', true ], [ 'orderDetailLook', true ], [ 'accountShowMobile', true ], [ 'accountShowMarketingOptIn', true ] ] );
 	const none = evaluateModes( { block: 'sgs/account', rules, rows, reads: { 'order-row-thumbs': at( 2 ) } } );
-	assert.deepEqual( none.writes, [], 'negative control: a draft that draws none of them switches nothing on' );
+	assert.deepEqual( none.writes.map( ( w ) => [ w.attr, w.value ] ), [ [ 'hideUnofferedTabs', true ] ], 'negative control: a draft that draws none of them switches on only the rule with no condition' );
 } );
 
 test( 'MUST FAIL: a tab whose control did not open is noted and not read, so the previous view is never recorded under its name', async () => {

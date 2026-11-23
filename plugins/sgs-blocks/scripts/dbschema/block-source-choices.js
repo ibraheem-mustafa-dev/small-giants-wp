@@ -31,7 +31,7 @@ try {
 const CONTROLS = new Set( [ 'SelectControl', 'RadioControl', 'ToggleGroupControl' ] );
 // SGS's own per-breakpoint controls: `value` is the `{desktop, tablet, mobile}` attribute and the options are the choices of ONE
 // tier. A control without an `options` prop (the text-alignment row) states its default list in its own module.
-const TIER_COMPONENTS = new Set( [ 'AlignItemsTierControl', 'TextAlignTierControl' ] );
+const TIER_COMPONENTS = new Set( [ 'TierSelectControl', 'TextAlignTierControl' ] );
 const TIER_DEFAULT_OPTIONS = { TextAlignTierControl: 'SGS_TEXT_ALIGN_OPTIONS' };
 const OPTION_ELEMENTS = new Set( [ 'ToggleGroupControlOption', 'ToggleGroupControlOptionIcon' ] );
 const PARSE_OPTIONS = { sourceType: 'module', plugins: [ 'jsx', 'classProperties', 'objectRestSpread', 'optionalChaining', 'nullishCoalescingOperator' ], errorRecovery: false };

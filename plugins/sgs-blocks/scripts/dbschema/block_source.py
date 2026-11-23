@@ -152,7 +152,7 @@ def _self_test() -> int:
             "    <SelectControl value={ shape } options={ SHAPES } onChange={ () => {} } />\n"
             "    <ToggleGroupControl value={ mode }><ToggleGroupControlOption value=\"a\" /><ToggleGroupControlOption value=\"b\" /></ToggleGroupControl>\n"
             "    <SelectControl value={ dyn } options={ buildOptions() } />\n"
-            "    <AlignItemsTierControl value={ align } options={ SHAPES } />\n"
+            "    <TierSelectControl value={ align } options={ SHAPES } />\n"
             "    <ResponsiveOverride value={ inline }>{ ( { ownValue } ) => <SelectControl value={ ownValue } options={ SHAPES } /> }</ResponsiveOverride>\n"
             "    <SelectControl value={ record } options={ SHAPES } />\n"
             "  </> );\n}\n", encoding="utf-8")

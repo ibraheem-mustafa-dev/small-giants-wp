@@ -47,10 +47,21 @@ test( 'MUST FAIL (sweepAngle no marker): an angle setting is turned a quarter fr
 	assert.deepEqual( m.attrs, { sweepAngle: 180 } );
 } );
 
-test( 'MUST FAIL (card-grid justifyItems no marker): a string whose row stores its choices is marked with each one but the default', () => {
+// mega-panel's drawerAsideOrder is a string whose row stores its choices (first, last) and block.json lists none.
+test( 'MUST FAIL (mega-panel drawerAsideOrder no marker): a string whose row stores its choices is marked with each one but the default', () => {
+	const ms = markers( 'sgs/mega-panel', 'drawerAsideOrder' );
+	assert.deepEqual( ms.map( ( m ) => m.attrs.drawerAsideOrder ), [ 'first' ] );
+	assert.deepEqual( ms.map( ( m ) => m.enumValue ), [ 'first' ] );
+} );
+
+// The layout alignment settings became per-device objects on 2026-11-22: block.json lists no choices on an object, so the
+// framework database stores the choices of one tier (read from the editor's TierSelectControl), and each is marked at every
+// tier. With no stored choices (the reader missing the control) they took two generic values and no choice was read.
+test( 'MUST FAIL (card-grid justifyItems no choice markers): a per-device choice is marked with each stored choice at every tier', () => {
 	const ms = markers( 'sgs/card-grid', 'justifyItems' );
-	assert.deepEqual( ms.map( ( m ) => m.attrs.justifyItems ), [ 'stretch', 'start', 'center', 'end' ] );
 	assert.deepEqual( ms.map( ( m ) => m.enumValue ), [ 'stretch', 'start', 'center', 'end' ] );
+	assert.deepEqual( ms.find( ( m ) => 'center' === m.enumValue ).attrs, { justifyItems: { desktop: 'center', tablet: 'center', mobile: 'center' } } );
+	assert.deepEqual( markers( 'sgs/container', 'alignItems' ).map( ( m ) => m.enumValue ), [ 'start', 'center', 'end', 'stretch' ] );
 } );
 
 test( 'negative control: settings that already had markers keep exactly them', () => {
@@ -68,7 +79,7 @@ test( 'negative control: settings that already had markers keep exactly them', (
 	assert.deepEqual( markersFor( choice, { x: { type: 'string', default: 'start' } }, SNAP ).map( ( m ) => m.attrs.x ), [ 'end' ] );
 	// A switch with no tri-state control recorded stays unmarked (the control is the evidence of the on/off shape).
 	assert.deepEqual( markers( 'sgs/container', 'scrollSideways', { controls: {} } ), [] );
-	// A string with block.json choices keeps its own enum markers (accordion justifyItems declares them).
-	const acc = markers( 'sgs/accordion', 'justifyItems' );
+	// A string with block.json choices keeps its own enum markers (accordion flexDirection declares them).
+	const acc = markers( 'sgs/accordion', 'flexDirection' );
 	assert.ok( acc.every( ( m ) => m.label.startsWith( 'enum-' ) ) && acc.length > 0 );
 } );

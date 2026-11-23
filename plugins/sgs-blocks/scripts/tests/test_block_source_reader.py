@@ -56,11 +56,17 @@ def test_real_tier_objects_state_the_choices_of_one_tier():
     source = block_source.BlockSource.read()
     gaps: list = []
     attrs = {
-        "alignItems": {"type": "object", "default": {"desktop": "stretch"}},  # feature-grid: AlignItemsTierControl options
+        "alignItems": {"type": "object", "default": {"desktop": "stretch"}},  # feature-grid: TierSelectControl options
         "textAlign": {"type": "object", "default": {}},  # feature-grid reads no text alignment: neither
     }
     merged = _SEED._with_source_declarations(attrs, "feature-grid", "sgs/feature-grid", source, gaps)
     assert merged["alignItems"]["enum"] == ["stretch", "start", "center", "end"]
+    # Every layout alignment setting the 2026-11-22 per-device change moved onto TierSelectControl states its choices
+    # (sgs/container's LayoutPanel): a renamed or new per-device control the reader does not know empties them all.
+    layout = {a: {"type": "object", "default": {}} for a in ("alignItems", "justifyContent", "justifyItems", "alignContent")}
+    held = _SEED._with_source_declarations(layout, "container", "sgs/container", source, gaps)
+    for a in layout:
+        assert "center" in (held[a].get("enum") or []), f"sgs/container {a} states no choices"
     assert "enum" not in merged["textAlign"] and not gaps
     # Text alignment through the shared TypographyControls row (a target with showTextAlign) states the row's own list.
     typo = _SEED._with_source_declarations({"textAlign": {"type": "object", "default": {}}}, "text", "sgs/text", source, gaps)
