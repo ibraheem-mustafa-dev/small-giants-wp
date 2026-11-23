@@ -23,4 +23,13 @@ check "the newest routine dump stays" "$(ls "$DIR/$HOST-20260215-120000.sql.gz" 
 check "a labelled dump stays" "$(ls "$DIR/$HOST-20260101-000001-before-button-kit-sweep.sql.gz" | wc -l | tr -d ' ')" 1
 check "another labelled dump stays" "$(ls "$DIR/$HOST-20260101-000002-before-box-string-sweep.sql.gz" | wc -l | tr -d ' ')" 1
 check "another host's dump stays" "$(ls "$DIR/other.org-20260101-000003.sql.gz" | wc -l | tr -d ' ')" 1
+
+# A folder with no routine dump (a host's first backup, or only labelled dumps) is not an error under the remote script's
+# `set -eo pipefail`: the function must return 0 and leave the labelled dump alone.
+EMPTY="$DIR/labelled-only"
+mkdir "$EMPTY"
+touch "$EMPTY/$HOST-20260101-000001-before-x.sql.gz"
+rc=$( ( set -eo pipefail; source "$HERE/prune-db-backups.sh"; prune_db_backups "$EMPTY" "$HOST" 12; echo reached ) 2>&1 | tail -n 1 )
+check "a folder with no routine dump returns success" "$rc" reached
+check "the labelled dump in it stays" "$(ls "$EMPTY"/*.sql.gz | wc -l | tr -d ' ')" 1
 exit $fail
