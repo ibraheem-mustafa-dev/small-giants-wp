@@ -99,15 +99,47 @@ function urlAllowed( value ) {
 }
 
 /**
+ * Decode CSS escapes the way a browser reads them (the PHP copy's `decode_css_escapes`), so `\75rl(` is judged as
+ * `url(` and `ht\74ps:` as `https:`.
+ *
+ * A backslash plus 1 to 6 hex digits (and one optional whitespace that ends them) is that code point (U+FFFD for
+ * zero, a surrogate or beyond U+10FFFF); a backslash plus a newline vanishes; a backslash plus any other character
+ * is that character.
+ *
+ * @param {string} text CSS, comments already removed.
+ * @return {string} The decoded text.
+ */
+function decodeCssEscapes( text ) {
+	return text.replace(
+		/\\(?:([0-9A-Fa-f]{1,6})(?:\r\n|[ \t\n\r\f])?|(\r\n|[\n\r\f])|([^]))/g,
+		( match, hex, newline, other ) => {
+			if ( hex !== undefined ) {
+				let code = parseInt( hex, 16 );
+				if (
+					code === 0 ||
+					code > 0x10ffff ||
+					( code >= 0xd800 && code <= 0xdfff )
+				) {
+					code = 0xfffd;
+				}
+				return String.fromCodePoint( code );
+			}
+			return newline !== undefined ? '' : other;
+		}
+	);
+}
+
+/**
  * Whether a declaration body names a URL that points outside the site (the PHP copy's `has_off_site_url`).
  *
  * Every `url(` and `src(` is read strictly; one that cannot be read counts as off-site. A body holding
  * `image-set(` has every quoted string after it checked as a URL.
  *
- * @param {string} text Declarations, comments already removed.
+ * @param {string} raw Declarations, comments already removed.
  * @return {boolean} True when a URL is off-site.
  */
-function hasOffSiteUrl( text ) {
+function hasOffSiteUrl( raw ) {
+	const text = decodeCssEscapes( raw );
 	const call = /(?<![\w-])(?:url|src)\s*\(/gi;
 	let hit = call.exec( text );
 	while ( hit !== null ) {

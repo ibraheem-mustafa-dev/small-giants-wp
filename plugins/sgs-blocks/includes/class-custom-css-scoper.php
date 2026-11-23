@@ -25,6 +25,7 @@
  *    host), an absolute `http(s)` URL or `//` URL whose host is one of the site's own hosts, and a `data:image/` URL (the
  *    image is inline, so it fetches nothing). Refused: any other host, any other scheme, userinfo (`a@b`), a backslash
  *    (browsers read `/\` and `https:\` as `//`, so the host cannot be told) and a `url(` the parser cannot read.
+ *    CSS escapes are decoded before the check (`\75rl(` is `url(`, `ht\74ps:` is `https:`), so an escaped spelling is judged as the plain one.
  *  - Unbalanced braces, an unterminated string or an unterminated comment refuse the whole input.
  *
  * `src/utils/custom-css-scope.js` is the editor's copy of this algorithm. Both are run against
@@ -398,7 +399,7 @@ if ( ! class_exists( __NAMESPACE__ . '\\Custom_Css_Scoper' ) ) {
 		/**
 		 * Whether a declaration body names a URL that points outside the site.
 		 *
-		 * Every `url(` and `src(` is read strictly (quoted or bare argument, no backslash); one that cannot be read counts as
+		 * The text is decoded first (CSS escapes, so `\75rl(` reads as `url(`); every `url(` and `src(` is then read strictly (quoted or bare argument, no backslash left); one that cannot be read counts as
 		 * off-site, so a spelling the browser accepts and this parser misses is refused, never let through. A rule holding
 		 * `image-set(` has every quoted string after it checked as a URL, because `image-set("a.png" 1x)` takes bare strings.
 		 *
@@ -406,6 +407,7 @@ if ( ! class_exists( __NAMESPACE__ . '\\Custom_Css_Scoper' ) ) {
 		 * @return bool
 		 */
 		private static function has_off_site_url( string $text ): bool {
+			$text = self::decode_css_escapes( $text );
 			if ( preg_match_all( '/(?<![\w-])(?:url|src)\s*\(/i', $text, $hits, PREG_OFFSET_CAPTURE ) ) {
 				foreach ( $hits[0] as $hit ) {
 					$rest = substr( $text, $hit[1] + strlen( $hit[0] ) );
@@ -430,6 +432,42 @@ if ( ! class_exists( __NAMESPACE__ . '\\Custom_Css_Scoper' ) ) {
 				}
 			}
 			return false;
+		}
+
+		/**
+		 * Decode CSS escapes the way a browser reads them, so `\75rl(` is judged as `url(` and `ht\74ps:` as `https:`.
+		 *
+		 * A backslash plus 1 to 6 hex digits (and one optional whitespace that ends them) is that code point
+		 * (U+FFFD for zero, a surrogate or beyond U+10FFFF); a backslash plus a newline is a line continuation and
+		 * vanishes; a backslash plus any other character is that character.
+		 *
+		 * @param string $text CSS, comments already removed.
+		 * @return string
+		 */
+		private static function decode_css_escapes( string $text ): string {
+			return (string) preg_replace_callback(
+				'/\\\\(?:([0-9A-Fa-f]{1,6})(?:\r\n|[ \t\n\r\f])?|(\r\n|[\n\r\f])|(.))/s',
+				static function ( array $m ): string {
+					if ( '' !== $m[1] ) {
+						$cp = (int) hexdec( $m[1] );
+						if ( 0 === $cp || $cp > 0x10FFFF || ( $cp >= 0xD800 && $cp <= 0xDFFF ) ) {
+							$cp = 0xFFFD;
+						}
+						if ( $cp < 0x80 ) {
+							return chr( $cp );
+						}
+						if ( $cp < 0x800 ) {
+							return chr( 0xC0 | ( $cp >> 6 ) ) . chr( 0x80 | ( $cp & 0x3F ) );
+						}
+						if ( $cp < 0x10000 ) {
+							return chr( 0xE0 | ( $cp >> 12 ) ) . chr( 0x80 | ( ( $cp >> 6 ) & 0x3F ) ) . chr( 0x80 | ( $cp & 0x3F ) );
+						}
+						return chr( 0xF0 | ( $cp >> 18 ) ) . chr( 0x80 | ( ( $cp >> 12 ) & 0x3F ) ) . chr( 0x80 | ( ( $cp >> 6 ) & 0x3F ) ) . chr( 0x80 | ( $cp & 0x3F ) );
+					}
+					return '' !== ( $m[2] ?? '' ) ? '' : ( $m[3] ?? '' );
+				},
+				$text
+			);
 		}
 
 		/**

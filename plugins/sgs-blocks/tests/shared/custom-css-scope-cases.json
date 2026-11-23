@@ -56,6 +56,20 @@
 		{ "name": "a string in image-set on the site stays", "css": "&selector { background-image: image-set(\"/a.png\" 1x, \"/b.png\" 2x) }", "out": ".s.s{background-image: image-set(\"/a.png\" 1x, \"/b.png\" 2x)}", "refused": [] },
 		{ "name": "another scheme is refused", "css": "&selector { background: url(ftp://example.test/a.png) }", "out": "", "refused": ["off-site url: &selector"] },
 		{ "name": "an off-site url inside @keyframes refuses the whole @keyframes", "css": "@keyframes k { to { background: url(https://evil.test/a.png) } } &selector { color: red }", "out": ".s.s{color: red}", "refused": ["off-site url: @keyframes k"] },
-		{ "name": "an off-site url inside @media is refused with its rule", "css": "@media (min-width: 600px) { &selector { background: url(https://evil.test/a.png) } }", "out": "", "refused": ["off-site url: &selector"] }
+		{ "name": "an off-site url inside @media is refused with its rule", "css": "@media (min-width: 600px) { &selector { background: url(https://evil.test/a.png) } }", "out": "", "refused": ["off-site url: &selector"] },
+		{ "name": "an escaped function name is read as url(", "css": "&selector { background: \\75rl(https://evil.test/x.png) }", "out": "", "refused": ["off-site url: &selector"] },
+		{ "name": "an escaped function name ending in a space is read as url(", "css": "&selector { background: \\75 rl(https://evil.test/x.png) }", "out": "", "refused": ["off-site url: &selector"] },
+		{ "name": "an upper-case and a six-digit escape are read as url(", "css": "&selector { background: \\55RL(https://evil.test/x.png); border-image: \\000075rl(https://evil.test/y.png) }", "out": "", "refused": ["off-site url: &selector"] },
+		{ "name": "an escaped image-set is read as image-set", "css": "&selector { background-image: \\69mage-set(\"https://evil.test/a.png\" 1x) }", "out": "", "refused": ["off-site url: &selector"] },
+		{ "name": "an escaped -webkit-image-set is read as image-set", "css": "&selector { background-image: -webkit-\\69mage-set(\"https://evil.test/a.png\" 1x) }", "out": "", "refused": ["off-site url: &selector"] },
+		{ "name": "an escaped src( is read as src(", "css": "&selector { content: \\73rc(https://evil.test/x.png) }", "out": "", "refused": ["off-site url: &selector"] },
+		{ "name": "an escaped scheme in a quoted url is decoded before the host is read", "css": "&selector { background: url(\"ht\\74ps://evil.test/x\") }", "out": "", "refused": ["off-site url: &selector"] },
+		{ "name": "an escaped letter in an unquoted host is decoded before the host is read", "css": "&selector { background: url(https://ev\\69l.test/x) }", "out": "", "refused": ["off-site url: &selector"] },
+		{ "name": "an escaped scheme that is not http is refused", "css": "&selector { background: url(f\\74p://example.test/a.png) }", "out": "", "refused": ["off-site url: &selector"] },
+		{ "name": "an escaped backslash in an url is refused", "css": "&selector { background: url(\"https:\\5c evil.test/x\") }", "out": "", "refused": ["off-site url: &selector"] },
+		{ "name": "an escaped letter in a site host leaves the url on the site", "css": "&selector { background: url(https://exam\\70le.test/a.png) }", "out": ".s.s{background: url(https://exam\\70le.test/a.png)}", "refused": [] },
+		{ "name": "an escaped function name on a site host stays", "css": "&selector { background: \\75rl(https://example.test/a.png) }", "out": ".s.s{background: \\75rl(https://example.test/a.png)}", "refused": [] },
+		{ "name": "an escape in a content string is not refused", "css": "&selector::before { content: \"\\201C\" }", "out": ".s.s::before{content: \"\\201C\"}", "refused": [] },
+		{ "name": "a comment between url and ( is removed first, so the call it leaves is judged", "css": "&selector { background: url/**/(https://evil.test/x.png) }", "out": "", "refused": ["off-site url: &selector"] }
 	]
 }
