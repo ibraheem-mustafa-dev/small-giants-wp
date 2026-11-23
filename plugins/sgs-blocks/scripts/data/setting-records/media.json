@@ -6920,7 +6920,7 @@
  },
  "stamp": {
   "version": 2,
-  "check": "50fe66df9433c151",
+  "check": "45737e42a5300605",
   "inputs": {
    "assets/css/accordion-filter.css": "1bae515f798524b3",
    "assets/css/device-toggle.css": "23d9bfd781a843c0",
