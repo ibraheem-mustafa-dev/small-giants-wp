@@ -20,6 +20,11 @@
  *  - Every other at-rule (`@import`, `@font-face`, `@-webkit-keyframes`, `@charset`, `@namespace`, `@page`, …) is refused,
  *    as is a rule nested inside a rule body, a rule whose body could run script (`expression(`, `javascript:`,
  *    `behavior:`, `-moz-binding`), and any input containing markup (`<`), which closes the `</style>` breakout.
+ *  - A `url()`, `src()` or `image-set()` string that points outside the site is refused with its rule, so a rule can never
+ *    make a visitor's browser call another host (FR-32-30). Allowed: a relative URL (it resolves against the page's own
+ *    host), an absolute `http(s)` URL or `//` URL whose host is one of the site's own hosts, and a `data:image/` URL (the
+ *    image is inline, so it fetches nothing). Refused: any other host, any other scheme, userinfo (`a@b`), a backslash
+ *    (browsers read `/\` and `https:\` as `//`, so the host cannot be told) and a `url(` the parser cannot read.
  *  - Unbalanced braces, an unterminated string or an unterminated comment refuse the whole input.
  *
  * `src/utils/custom-css-scope.js` is the editor's copy of this algorithm. Both are run against
@@ -59,14 +64,34 @@ if ( ! class_exists( __NAMESPACE__ . '\\Custom_Css_Scoper' ) ) {
 		/** Whitespace as CSS defines it; the JS copy uses the same class so both trim identically. */
 		const WS = " \t\n\r\f";
 
+		/** Lower-case hosts whose absolute URLs a rule may name; held for the duration of one `scope()` call. */
+		private static $site_hosts = array();
+
 		/**
 		 * Scope `$css` to `$scope` (a complete selector such as `.sgs-c-1a2b.sgs-c-1a2b`).
 		 *
 		 * @param string $css   Raw CSS from the block attribute.
-		 * @param string $scope Selector every emitted rule is confined to.
+		 * @param string   $scope      Selector every emitted rule is confined to.
+		 * @param string[] $site_hosts Hosts (no scheme or port) whose absolute URLs a rule may name; none by default.
 		 * @return array{css: string, refused: string[]} The scoped CSS and a reason per refused part.
 		 */
-		public static function scope( string $css, string $scope ): array {
+		public static function scope( string $css, string $scope, array $site_hosts = array() ): array {
+			self::$site_hosts = array_values( array_unique( array_map( 'strtolower', array_map( 'strval', $site_hosts ) ) ) );
+			try {
+				return self::scope_input( $css, $scope );
+			} finally {
+				self::$site_hosts = array();
+			}
+		}
+
+		/**
+		 * The scoping itself, with the allowed hosts already set.
+		 *
+		 * @param string $css   Raw CSS from the block attribute.
+		 * @param string $scope Selector every emitted rule is confined to.
+		 * @return array{css: string, refused: string[]}
+		 */
+		private static function scope_input( string $css, string $scope ): array {
 			if ( '' === trim( $css, self::WS ) ) {
 				return array(
 					'css'     => '',
@@ -346,6 +371,10 @@ if ( ! class_exists( __NAMESPACE__ . '\\Custom_Css_Scoper' ) ) {
 					$refused[] = 'unsafe value: ' . $prelude;
 					continue;
 				}
+				if ( self::has_off_site_url( $declarations ) ) {
+					$refused[] = 'off-site url: ' . $prelude;
+					continue;
+				}
 				if ( '' === $declarations ) {
 					continue;
 				}
@@ -356,12 +385,78 @@ if ( ! class_exists( __NAMESPACE__ . '\\Custom_Css_Scoper' ) ) {
 				$joined = self::trim_semicolon( implode( ';', $decls ) );
 				if ( preg_match( self::UNSAFE_BODY, $joined ) ) {
 					$refused[] = 'unsafe value: declarations on the block';
+				} elseif ( self::has_off_site_url( $joined ) ) {
+					$refused[] = 'off-site url: declarations on the block';
 				} elseif ( '' !== $joined ) {
 					$out = $scope . '{' . self::rename_animations( $joined, $renames ) . '}' . $out;
 				}
 			}
 
 			return $out;
+		}
+
+		/**
+		 * Whether a declaration body names a URL that points outside the site.
+		 *
+		 * Every `url(` and `src(` is read strictly (quoted or bare argument, no backslash); one that cannot be read counts as
+		 * off-site, so a spelling the browser accepts and this parser misses is refused, never let through. A rule holding
+		 * `image-set(` has every quoted string after it checked as a URL, because `image-set("a.png" 1x)` takes bare strings.
+		 *
+		 * @param string $text Declarations, comments already removed.
+		 * @return bool
+		 */
+		private static function has_off_site_url( string $text ): bool {
+			if ( preg_match_all( '/(?<![\w-])(?:url|src)\s*\(/i', $text, $hits, PREG_OFFSET_CAPTURE ) ) {
+				foreach ( $hits[0] as $hit ) {
+					$rest = substr( $text, $hit[1] + strlen( $hit[0] ) );
+					if ( ! preg_match( '/^\s*(?:"((?:[^"\\\\]|\\\\.)*)"|\'((?:[^\'\\\\]|\\\\.)*)\'|([^)\s"\'\\\\()]*))\s*\)/', $rest, $arg ) ) {
+						return true;
+					}
+					$value = '' !== ( $arg[1] ?? '' ) ? $arg[1] : ( '' !== ( $arg[2] ?? '' ) ? $arg[2] : ( $arg[3] ?? '' ) );
+					if ( ! self::url_allowed( $value ) ) {
+						return true;
+					}
+				}
+			}
+			if ( preg_match( '/(?<![\w-])(?:-webkit-)?image-set\s*\(/i', $text, $set, PREG_OFFSET_CAPTURE ) ) {
+				$after = substr( $text, $set[0][1] );
+				if ( preg_match_all( '/"((?:[^"\\\\]|\\\\.)*)"|\'((?:[^\'\\\\]|\\\\.)*)\'/', $after, $strings, PREG_SET_ORDER ) ) {
+					foreach ( $strings as $string ) {
+						$value = '' !== $string[1] ? $string[1] : ( $string[2] ?? '' );
+						if ( ! self::url_allowed( $value ) ) {
+							return true;
+						}
+					}
+				}
+			}
+			return false;
+		}
+
+		/**
+		 * Whether one URL value may stay: relative, `data:image/`, or an http(s) URL on a listed site host.
+		 *
+		 * @param string $value The URL as written.
+		 * @return bool
+		 */
+		private static function url_allowed( string $value ): bool {
+			// Browsers drop tabs and newlines inside a URL and trim control characters and spaces around it.
+			$value = trim( (string) preg_replace( '/[\t\n\r]/', '', $value ), " \x00..\x20" );
+			if ( '' === $value ) {
+				return true;
+			}
+			if ( false !== strpos( $value, '\\' ) ) {
+				return false;
+			}
+			if ( 1 === preg_match( '/^data:image\//i', $value ) ) {
+				return true;
+			}
+			if ( 1 === preg_match( '/^(?:[a-z][a-z0-9+.\-]*:|\/\/)/i', $value ) ) {
+				if ( 1 !== preg_match( '#^(?:https?:)?//([^/?\#:@]+)(?::\d+)?(?:[/?\#]|$)#i', $value, $parts ) ) {
+					return false;
+				}
+				return in_array( strtolower( $parts[1] ), self::$site_hosts, true );
+			}
+			return true;
 		}
 
 		/**
@@ -424,6 +519,10 @@ if ( ! class_exists( __NAMESPACE__ . '\\Custom_Css_Scoper' ) ) {
 				$declarations = self::squash( $frame[0] );
 				if ( preg_match( self::UNSAFE_BODY, $declarations ) ) {
 					$refused[] = 'unsafe value: ' . $label;
+					return null;
+				}
+				if ( self::has_off_site_url( $declarations ) ) {
+					$refused[] = 'off-site url: ' . $label;
 					return null;
 				}
 				$declarations = self::trim_semicolon( $declarations );

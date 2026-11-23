@@ -36,14 +36,14 @@ if ( ! is_array( $table ) || empty( $table['cases'] ) ) {
  * Count rows where the scoper disagrees with the table.
  *
  * @param array    $table  Decoded table.
- * @param callable $scoper fn( string $css, string $scope ): array{css:string,refused:string[]}.
+ * @param callable $scoper fn( string $css, string $scope, string[] $hosts ): array{css:string,refused:string[]}.
  * @param bool     $report Print each failure.
  * @return int
  */
 function sgs_scope_case_failures( array $table, callable $scoper, bool $report ): int {
 	$failed = 0;
 	foreach ( $table['cases'] as $row ) {
-		$got = $scoper( $row['css'], $table['scope'] );
+		$got = $scoper( $row['css'], $table['scope'], $table['hosts'] ?? array() );
 		if ( $got['css'] !== $row['out'] || $got['refused'] !== $row['refused'] ) {
 			++$failed;
 			if ( $report ) {
@@ -59,7 +59,7 @@ $failed = sgs_scope_case_failures( $table, array( Custom_Css_Scoper::class, 'sco
 // Negative control: a scoper that only swaps `&selector` (the pre-FR-32-20 behaviour) must fail many rows.
 $caught = sgs_scope_case_failures(
 	$table,
-	static function ( string $css, string $scope ): array {
+	static function ( string $css, string $scope, array $hosts = array() ): array {
 		return array(
 			'css'     => str_replace( '&selector', $scope, $css ),
 			'refused' => array(),

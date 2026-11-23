@@ -7,7 +7,9 @@
  * is kept as `<name>-<token>` (the token is the scope's first class) and every `animation` / `animation-name`
  * in the same input naming it is rewritten to match; an undefined name is left alone, and a bad name,
  * keyframe selector or value refuses the whole `@keyframes`. Every other at-rule (`@-webkit-keyframes`
- * included), a nested rule, a script-capable value and any `<` are refused; malformed input refuses all.
+ * included), a nested rule, a script-capable value and any `<` are refused; malformed input refuses all. A `url()`,
+ * `src()` or `image-set()` string pointing outside the site is refused with its rule (FR-32-30): a relative URL, an
+ * http(s) URL on a listed site host and a `data:image/` URL stay.
  *
  * Both copies run `tests/shared/custom-css-scope-cases.json`, so the canvas and the page scope a rule
  * identically. Change the two together.
@@ -63,6 +65,77 @@ function squash( text ) {
  */
 function trimSemicolon( text ) {
 	return trimWs( trimWs( text ).replace( /[; ]+$/, '' ) );
+}
+
+/** Lower-case hosts whose absolute URLs a rule may name; held for the duration of one `scopeCustomCss` call. */
+let siteHosts = [];
+
+/**
+ * Whether one URL value may stay: relative, `data:image/`, or an http(s) URL on a listed site host.
+ *
+ * @param {string} value The URL as written.
+ * @return {boolean} True when it may stay.
+ */
+function urlAllowed( value ) {
+	// Browsers drop tabs and newlines inside a URL and trim control characters and spaces around it.
+	const url = value
+		.replace( /[\t\n\r]/g, '' )
+		// eslint-disable-next-line no-control-regex
+		.replace( /^[\x00-\x20]+|[\x00-\x20]+$/g, '' );
+	if ( url === '' ) {
+		return true;
+	}
+	if ( url.includes( '\\' ) ) {
+		return false;
+	}
+	if ( /^data:image\//i.test( url ) ) {
+		return true;
+	}
+	if ( /^(?:[a-z][a-z0-9+.\-]*:|\/\/)/i.test( url ) ) {
+		const parts = /^(?:https?:)?\/\/([^/?#:@]+)(?::\d+)?(?:[/?#]|$)/i.exec( url );
+		return parts !== null && siteHosts.includes( parts[ 1 ].toLowerCase() );
+	}
+	return true;
+}
+
+/**
+ * Whether a declaration body names a URL that points outside the site (the PHP copy's `has_off_site_url`).
+ *
+ * Every `url(` and `src(` is read strictly; one that cannot be read counts as off-site. A body holding
+ * `image-set(` has every quoted string after it checked as a URL.
+ *
+ * @param {string} text Declarations, comments already removed.
+ * @return {boolean} True when a URL is off-site.
+ */
+function hasOffSiteUrl( text ) {
+	const call = /(?<![\w-])(?:url|src)\s*\(/gi;
+	let hit = call.exec( text );
+	while ( hit !== null ) {
+		const rest = text.slice( hit.index + hit[ 0 ].length );
+		const arg =
+			/^\s*(?:"((?:[^"\\]|\\.)*)"|'((?:[^'\\]|\\.)*)'|([^)\s"'\\()]*))\s*\)/.exec(
+				rest
+			);
+		if ( arg === null ) {
+			return true;
+		}
+		if ( ! urlAllowed( arg[ 1 ] || arg[ 2 ] || arg[ 3 ] || '' ) ) {
+			return true;
+		}
+		hit = call.exec( text );
+	}
+	const set = /(?<![\w-])(?:-webkit-)?image-set\s*\(/i.exec( text );
+	if ( set !== null ) {
+		const after = text.slice( set.index );
+		for ( const string of after.matchAll(
+			/"((?:[^"\\]|\\.)*)"|'((?:[^'\\]|\\.)*)'/g
+		) ) {
+			if ( ! urlAllowed( string[ 1 ] || string[ 2 ] || '' ) ) {
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
 /**
@@ -410,6 +483,10 @@ function keyframes( prelude, body, suffix, renames, refused ) {
 			refused.push( `unsafe value: ${ label }` );
 			return null;
 		}
+		if ( hasOffSiteUrl( squashed ) ) {
+			refused.push( `off-site url: ${ label }` );
+			return null;
+		}
 		const declarations = trimSemicolon( squashed );
 		if ( ! declarations ) {
 			continue;
@@ -596,6 +673,10 @@ function parseBlock(
 			refused.push( `unsafe value: ${ prelude }` );
 			continue;
 		}
+		if ( hasOffSiteUrl( declarations ) ) {
+			refused.push( `off-site url: ${ prelude }` );
+			continue;
+		}
 		if ( ! declarations ) {
 			continue;
 		}
@@ -609,6 +690,8 @@ function parseBlock(
 		const joined = trimSemicolon( decls.join( ';' ) );
 		if ( UNSAFE_BODY.test( joined ) ) {
 			refused.push( 'unsafe value: declarations on the block' );
+		} else if ( hasOffSiteUrl( joined ) ) {
+			refused.push( 'off-site url: declarations on the block' );
 		} else if ( joined ) {
 			out = `${ scope }{${ renameAnimations(
 				joined,
@@ -623,10 +706,27 @@ function parseBlock(
  * Scope `css` to `scope` (a full selector such as `.sgs-c-ed-x.sgs-c-ed-x`).
  *
  * @param {string} css   Raw CSS from the block attribute.
+ * @param {string}   scope Selector every emitted rule is confined to.
+ * @param {string[]} hosts Hosts (no scheme or port) whose absolute URLs a rule may name; none by default.
+ * @return {{css: string, refused: string[]}} Scoped CSS and a reason per refused part.
+ */
+export function scopeCustomCss( css, scope, hosts = [] ) {
+	siteHosts = hosts.map( ( host ) => String( host ).toLowerCase() );
+	try {
+		return scopeInput( css, scope );
+	} finally {
+		siteHosts = [];
+	}
+}
+
+/**
+ * The scoping itself, with the allowed hosts already set.
+ *
+ * @param {string} css   Raw CSS from the block attribute.
  * @param {string} scope Selector every emitted rule is confined to.
  * @return {{css: string, refused: string[]}} Scoped CSS and a reason per refused part.
  */
-export function scopeCustomCss( css, scope ) {
+function scopeInput( css, scope ) {
 	const source = String( css ?? '' );
 	if ( ! trimWs( source ) ) {
 		return { css: '', refused: [] };

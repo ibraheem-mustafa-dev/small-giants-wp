@@ -1,6 +1,8 @@
 {
 	"_note": "Spec 32 FR-32-20. Input CSS -> scoped output for Custom_Css_Scoper::scope (PHP) and scopeCustomCss (JS). Both test suites read this file; scope is the instance selector passed to both.",
 	"scope": ".s.s",
+	"hosts": ["example.test"],
+	"hosts": ["example.test"],
 	"cases": [
 		{ "name": "&selector becomes the doubled scope", "css": "&selector { color: red; }", "out": ".s.s{color: red}", "refused": [] },
 		{ "name": "a selector without &selector is scoped as a descendant, never page-wide", "css": "h2 { color: red }", "out": ".s.s h2{color: red}", "refused": [] },
@@ -36,6 +38,24 @@
 		{ "name": "an unterminated comment refuses everything", "css": "&selector { color: red } /* open", "out": "", "refused": ["syntax: an unterminated comment"] },
 		{ "name": "an unterminated string refuses everything", "css": "&selector { content: \"x }", "out": "", "refused": ["syntax: unbalanced braces or an unterminated string"] },
 		{ "name": "empty input", "css": "  \n ", "out": "", "refused": [] },
-		{ "name": "an empty rule emits nothing", "css": "&selector { }", "out": "", "refused": [] }
+		{ "name": "an empty rule emits nothing", "css": "&selector { }", "out": "", "refused": [] },
+		{ "name": "a relative url stays (it resolves against the page's own host)", "css": "&selector { background: url(img/a.png) }", "out": ".s.s{background: url(img/a.png)}", "refused": [] },
+		{ "name": "a root-relative url in quotes stays", "css": "&selector { background-image: url( '/wp-content/uploads/a.png' ) }", "out": ".s.s{background-image: url( '/wp-content/uploads/a.png' )}", "refused": [] },
+		{ "name": "an absolute url on a site host stays, whatever its case", "css": "&selector { background-image: url(\"HTTPS://Example.Test/wp-content/uploads/a.png\") }", "out": ".s.s{background-image: url(\"HTTPS://Example.Test/wp-content/uploads/a.png\")}", "refused": [] },
+		{ "name": "a site host with a port stays", "css": "&selector { background-image: url(https://example.test:8443/a.png) }", "out": ".s.s{background-image: url(https://example.test:8443/a.png)}", "refused": [] },
+		{ "name": "a data:image url stays", "css": "&selector { background: url(data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27/%3E) }", "out": ".s.s{background: url(data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27/%3E)}", "refused": [] },
+		{ "name": "an url on another host is refused with its rule, and the sibling rule stays", "css": "&selector { color: red } p { background: url(https://evil.test/x.png) }", "out": ".s.s{color: red}", "refused": ["off-site url: p"] },
+		{ "name": "a protocol-relative url on another host is refused", "css": "&selector { background: url(//evil.test/x.png) }", "out": "", "refused": ["off-site url: &selector"] },
+		{ "name": "an off-site url among a block's own declarations is refused", "css": "background: url(\"http://evil.test/x.png\"); color: red", "out": "", "refused": ["off-site url: declarations on the block"] },
+		{ "name": "a subdomain of a site host is another host", "css": "&selector { background: url(https://cdn.example.test/x.png) }", "out": "", "refused": ["off-site url: &selector"] },
+		{ "name": "a data url that is not an image is refused", "css": "&selector { background: url(data:text/html,hi) }", "out": "", "refused": ["off-site url: &selector"] },
+		{ "name": "userinfo cannot dress another host as the site's", "css": "&selector { background: url(https://example.test@evil.test/x.png) }", "out": "", "refused": ["off-site url: &selector"] },
+		{ "name": "a backslash is refused because browsers read it as a slash", "css": "&selector { background: url(\"https:\\\\evil.test/x.png\") }", "out": "", "refused": ["off-site url: &selector"] },
+		{ "name": "an url the parser cannot read is refused", "css": "&selector { background: url(a b) }", "out": "", "refused": ["off-site url: &selector"] },
+		{ "name": "a bare string in image-set is an url too", "css": "&selector { background-image: image-set(\"https://evil.test/a.png\" 1x) }", "out": "", "refused": ["off-site url: &selector"] },
+		{ "name": "a string in image-set on the site stays", "css": "&selector { background-image: image-set(\"/a.png\" 1x, \"/b.png\" 2x) }", "out": ".s.s{background-image: image-set(\"/a.png\" 1x, \"/b.png\" 2x)}", "refused": [] },
+		{ "name": "another scheme is refused", "css": "&selector { background: url(ftp://example.test/a.png) }", "out": "", "refused": ["off-site url: &selector"] },
+		{ "name": "an off-site url inside @keyframes refuses the whole @keyframes", "css": "@keyframes k { to { background: url(https://evil.test/a.png) } } &selector { color: red }", "out": ".s.s{color: red}", "refused": ["off-site url: @keyframes k"] },
+		{ "name": "an off-site url inside @media is refused with its rule", "css": "@media (min-width: 600px) { &selector { background: url(https://evil.test/a.png) } }", "out": "", "refused": ["off-site url: &selector"] }
 	]
 }

@@ -792,6 +792,12 @@ if ( ! function_exists( 'home_url' ) ) {
 	}
 }
 
+if ( ! function_exists( 'site_url' ) ) {
+	function site_url( string $path = '' ): string {
+		return 'https://example.test/' . ltrim( $path, '/' );
+	}
+}
+
 if ( ! function_exists( 'current_user_can' ) ) {
 	// The harness request has no user, so no capability is held.
 	function current_user_can( $capability, ...$args ): bool {

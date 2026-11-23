@@ -22,7 +22,7 @@ const table = JSON.parse( readFileSync( join( here, '..', '..', 'tests', 'shared
 function failures( scoper, report ) {
 	let failed = 0;
 	for ( const row of table.cases ) {
-		const got = scoper( row.css, table.scope );
+		const got = scoper( row.css, table.scope, table.hosts ?? [] );
 		if ( got.css !== row.out || JSON.stringify( got.refused ) !== JSON.stringify( row.refused ) ) {
 			failed++;
 			if ( report ) {
