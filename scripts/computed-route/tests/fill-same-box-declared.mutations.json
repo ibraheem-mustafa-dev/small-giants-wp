@@ -1,8 +1,8 @@
 [
 	{
 		"file": "lib/fill-same-box.mjs",
-		"find": "\t\treturn declaredOneBox( cal, a, b, axis, w );",
-		"replace": "\t\treturn false;",
+		"find": "\t\treturn declaredOneBox( cal, a, b, axis, w ) || declaredOneChild( cal, a, b, axis, w );",
+		"replace": "\t\treturn declaredOneChild( cal, a, b, axis, w );",
 		"why": "the record's declared look could never show the root and its band as one box: padding lands on the outer box as Custom CSS"
 	},
 	{
