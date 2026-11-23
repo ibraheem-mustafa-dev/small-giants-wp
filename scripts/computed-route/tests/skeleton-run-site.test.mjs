@@ -66,6 +66,18 @@ test( 'MUST FAIL: a run aimed at another site reads that site\'s menu items, men
 	assert.deepEqual( a.calTags( 'sgs/text' ), { '': null } );
 } );
 
+test( 'MUST FAIL: propose has the client\'s looks of every SGS block built in one batch before it proposes; never for fixture records', () => {
+	const f = fixture();
+	const order = [];
+	const prepare = ( blocks, client ) => ( order.push( [ 'prepare', client, blocks.length, blocks.includes( 'sgs/container' ), blocks.every( ( b ) => b.startsWith( 'sgs/' ) ) ] ), [] );
+	proposeSurface( { client: CLIENT, surface: 'header', db, repo: f.repo, prepare, propose: () => ( order.push( [ 'propose' ] ), { skeleton: [], proposal: { counts: {}, rows: [] }, problems: [] } ) } );
+	assert.deepEqual( order.map( ( o ) => o[ 0 ] ), [ 'prepare', 'propose' ] );
+	assert.deepEqual( order[ 0 ].slice( 1 ), [ CLIENT, db.prepare( "SELECT COUNT(*) n FROM blocks WHERE slug LIKE 'sgs/%'" ).get().n, true, true ] );
+	order.length = 0;
+	proposeSurface( { client: CLIENT, surface: 'header', db, repo: f.repo, cache: f.cache, prepare, propose: () => ( order.push( [ 'propose' ] ), { skeleton: [], proposal: { counts: {}, rows: [] }, problems: [] } ) } );
+	assert.deepEqual( order.map( ( o ) => o[ 0 ] ), [ 'propose' ], 'negative control: a test\'s fixture records need no look' );
+} );
+
 test( 'negative control: a run naming no site reads the surface entry\'s records', () => {
 	const f = fixture();
 	const a = given( { repo: f.repo, cache: f.cache } );

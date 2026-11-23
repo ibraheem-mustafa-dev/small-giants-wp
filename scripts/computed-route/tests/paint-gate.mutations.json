@@ -14,5 +14,6 @@
 	{"file": "lib/intake-skeletons.mjs", "find": "assertSkeletonPaints( { skeleton: r.skeleton, client: readLook ? client : null, what: `skeleton ${ s.slug }`, allow: allowMissingPaint, log } );", "replace": "", "why": "an intake surface with a paint gap is proposed"},
 	{"file": "solve.mjs", "find": "assertPaints( { blocks: treeBlocks( tree ), calFor, client, what: `solve ${ surface }`, allow: allowMissingPaintArg( argv ) } );", "replace": "", "why": "Solve runs on with no default look"},
 	{"file": "apply.mjs", "find": "assertPaints( { blocks: surfaces.flatMap( ( s ) => Object.values( blocks[ s.postId ]?.blocks ?? {} ).map( ( b ) => b?.block ) ).filter( Boolean ), calFor, client, what: `apply ${ client }`, allow: allowMissingPaintArg( process.argv ) } );", "replace": "", "why": "the applier runs on with no default look"},
-	{"file": "lib/paint-gate.mjs", "find": "\tcalFor.prepare?.( blocks );\n", "replace": "", "why": "the gate reads each look one at a time, never building them in a batch"}
+	{"file": "lib/paint-gate.mjs", "find": "\tcalFor.prepare?.( blocks );\n", "replace": "", "why": "the gate reads each look one at a time, never building them in a batch"},
+	{"file": "lib/skeleton-rerun.mjs", "find": "\tprepareProposalLooks( { db, client, cache, ...( prepare ? { prepare } : {} ) } );\n", "replace": "", "why": "the skeleton re-run builds each look one at a time"}
 ]

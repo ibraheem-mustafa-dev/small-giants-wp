@@ -35,6 +35,18 @@ export const calPartsFor = ( client, dir = CACHE ) => ( slug ) => {
 	return cal ? { elements: cal.elements || {}, parts: cal.parts || {}, settings: cal.settings || {}, text: cal.text || {} } : null;
 };
 
+// Has the client's site look of every SGS block built (or confirmed current) in one parallel batch before a proposal
+// reads them: a proposal reads a block's look while it proposes, before the paint gate knows its tree, and siteLook alone
+// builds one block at a time. A cold client is built once in parallel; a current one is confirmed in one builder call.
+// Nothing happens for a test's fixture records (`cache`), with SGS_NO_SITE set (prepareLooks) or without a client.
+// Returns the blocks whose look could not be built.
+export function prepareProposalLooks( { db, client, cache = undefined, prepare = prepareLooks } ) {
+	if ( ! client || ( undefined !== cache && CACHE !== cache ) ) {
+		return [];
+	}
+	return prepare( db.prepare( "SELECT slug FROM blocks WHERE slug LIKE 'sgs/%' ORDER BY slug" ).all().map( ( r ) => r.slug ), client );
+}
+
 // A proposed skeleton is written only when every block it uses has a default look for `client`, since calKeysFor reads
 // none for a block without it (lib/paint-gate.mjs::assertPaints); a block named in `allow` (--allow-missing-paint) goes
 // on without it and is printed. Returns the named blocks the skeleton used without a look.

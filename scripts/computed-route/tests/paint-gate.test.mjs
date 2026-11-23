@@ -103,6 +103,16 @@ test( 'the skeleton writer writes no skeleton that uses a block with no look for
 	assert.equal( fs.existsSync( f.file ), true, 'the fixture records, not the framework database, are the ones read' );
 } );
 
+test( 'a skeleton re-run has the client\'s looks built in one batch first, and not for fixture records', () => {
+	const f = skeletonRepo();
+	const asked = [];
+	const prepare = ( blocks, client ) => ( asked.push( [ client, blocks.length > 50 ] ), [] );
+	rerunSkeletons( { client: CLIENT, db, repo: f.repo, skeletons: f.skeletons, prepare, propose: proposing( [] ) } );
+	assert.deepEqual( asked, [ [ CLIENT, true ] ] );
+	rerunSkeletons( { client: CLIENT, db, repo: f.repo, skeletons: f.skeletons, cache: fixtureCache(), prepare, propose: proposing( [] ) } );
+	assert.equal( asked.length, 1, 'negative control: fixture records' );
+} );
+
 test( 'a skeleton re-run stops on a surface whose skeleton uses a block with no look, and passes one that does not', () => {
 	const cache = fixtureCache();
 	const f = skeletonRepo();

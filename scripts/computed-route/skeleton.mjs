@@ -36,7 +36,7 @@ import { isServedInventory, servedDecisions, servedMotion } from './lib/key-spac
 import { reviewHtml } from './lib/skeleton-review.mjs';
 import { openRunLedger } from './lib/run-ledger.mjs';
 import { skeletonRunRows } from './lib/run-ledger-skeleton.mjs';
-import { calKeysFor, calTagsFor, calSettingsFor, calPartsFor, statesOfRecord, thresholdsOf, assertSkeletonPaints } from './lib/skeleton-context.mjs';
+import { calKeysFor, calTagsFor, calSettingsFor, calPartsFor, statesOfRecord, thresholdsOf, assertSkeletonPaints, prepareProposalLooks } from './lib/skeleton-context.mjs';
 import { allowMissingPaintArg } from './lib/paint-gate.mjs';
 import { assertCurrent } from './lib/freshness.mjs';
 import { carriedIds } from './lib/skeleton-carried.mjs';
@@ -135,11 +135,12 @@ export function reviewSurface( { client, surface, repo = REPO } ) {
 // `site`: the site the run is aimed at (site-run's --site), whose carried menu, menu items, logo and shop attributes
 // propose reads (lib/skeleton-carried.mjs::carriedIds). Default: the surface entry's site. The blocks' keys, tags,
 // settings and parts are the client's look, whatever the site.
-export function proposeSurface( { client, surface, repo = REPO, siteName = null, db = openDb(), propose = proposeSkeleton, cache = undefined, allowMissingPaint = [], site: runSite = null, runLedger = null } ) {
+export function proposeSurface( { client, surface, repo = REPO, siteName = null, db = openDb(), propose = proposeSkeleton, cache = undefined, allowMissingPaint = [], site: runSite = null, runLedger = null, prepare = undefined } ) {
 	const p = skeletonPaths( { client, surface, repo } );
 	const inventory = JSON.parse( fs.readFileSync( p.inventory, 'utf8' ) );
 	const { ctx, saved, served, clientDecisions } = surfaceDecisions( { client, surface, repo, inventory, file: p.decisions } );
 	const facts = loadFacts( { db, client, repo, siteName: siteName || saved.siteName || null } );
+	prepareProposalLooks( { db, client, cache, ...( prepare ? { prepare } : {} ) } );
 	const bad = decisionsProblems( facts );
 	if ( bad.length ) {
 		throw new Error( `the decisions data is not sound:\n- ${ bad.join( '\n- ' ) }` );
