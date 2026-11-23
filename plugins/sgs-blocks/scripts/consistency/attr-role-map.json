@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 14434,
+    "row_count": 14435,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -2428,7 +2428,7 @@
     "sgs/buybox::addToCartMinHeight": "layout",
     "sgs/buybox::addToCartModalId": "enum-class-probe",
     "sgs/buybox::addToCartPadding": "layout",
-    "sgs/buybox::addToCartPriceSeparator": null,
+    "sgs/buybox::addToCartPriceSeparator": "text-content",
     "sgs/buybox::addToCartShadow": "visual",
     "sgs/buybox::addToCartShadowColour": "color",
     "sgs/buybox::addToCartShadowColourHover": "color",
@@ -2966,6 +2966,7 @@
     "sgs/buybox::stockTextWrap": "typography",
     "sgs/buybox::stockWritingMode": "select-from-enum",
     "sgs/buybox::summaryText": "text-content",
+    "sgs/buybox::summaryTextOne": "technical",
     "sgs/buybox::textColour": "color",
     "sgs/buybox::textColourGradient": "colour-gradient",
     "sgs/buybox::textColourHover": "color",
