@@ -108,7 +108,7 @@ test( 'MUST FAIL: a tier setting is marked with values its emitter holds; a leng
 	assert.deepEqual( values( 'sgs/post-grid', 'readMorePin' ), [ 'pinned', 'inline' ] );
 	assert.ok( values( 'sgs/button', 'contentAlign' ).every( ( v ) => [ 'flex-start', 'center', 'flex-end', 'space-between' ].includes( v ) ), 'never a keyword the emitter drops (sgs/button render.php::$content_align_allowed)' );
 	assert.ok( values( 'sgs/button', 'contentAlign' ).includes( 'space-between' ), 'a choice the emitter holds is marked' );
-	assert.deepEqual( values( 'sgs/text', 'maxWidthAlign' ), [ 'left', 'centre' ], 'an alignment on margin-inline is marked with its choices, never a length' );
+	assert.deepEqual( values( 'sgs/text', 'maxWidthAlign' ), [ 'left', 'centre', 'right' ], 'an alignment on margin-inline is marked with each of its choices, never a length' );
 	assert.ok( values( 'sgs/container', 'minHeight' ).every( ( v ) => /^\d+px$/.test( v ) ), 'a preset never replaces a length marker' );
 } );
 

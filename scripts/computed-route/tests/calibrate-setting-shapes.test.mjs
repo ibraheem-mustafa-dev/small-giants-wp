@@ -57,8 +57,10 @@ test( 'MUST FAIL (gallery layout refused): a per-device variant setting is given
 } );
 
 test( 'negative control: a flat choice, a plain colour and a flat variant setting keep their shapes', () => {
-	// A flat string choice stays a string (accordion justifyItems lists its choices in block.json).
-	assert.ok( markers( 'sgs/accordion', 'justifyItems' ).every( ( m ) => 'string' === typeof m.attrs.justifyItems ) );
+	// A flat string choice stays a string (accordion flexDirection lists its choices in block.json; its justifyItems became a
+	// per-device object on 2026-11-22). The list is not empty, so `every` cannot pass on no markers.
+	const flat = markers( 'sgs/accordion', 'flexDirection' );
+	assert.ok( flat.length && flat.every( ( m ) => 'string' === typeof m.attrs.flexDirection ) );
 	// A colour with no listed choices keeps its hex and palette markers.
 	assert.deepEqual( markers( 'sgs/nav-drawer-menu', 'itemBadgeColour' ).map( ( m ) => m.label ), [ 'hex', 'slug' ] );
 	// A choice declared a string stays bare even on a per-device row, and a row with no tier shape is never wrapped.
