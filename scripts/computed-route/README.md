@@ -1880,7 +1880,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `envUrl(file, key)` → `WP_URL_<key>` from a secrets env file, or null.
 
 ### `fill.mjs` (runs Chromium, serves a local folder)
-- `calibrationLoader(site, dir?)` → the block-to-calibration function for `site`: `solve.mjs::calibrationFor` over the route's cache, or over the cache folder `dir`.
+- `calibrationLoader(client, dir?)` → the block-to-record function for `client` (`solve.mjs::calibrationFor`): each block's setting record and its look in the client's theme snapshot, or a test's fixture records in the folder `dir`; its `prepare(blocks)` builds the missing site looks in one batch.
 - `parseMirrors(argv)` → `{ url: absolute file }` from repeated `--mirror <url> <file>`; throws on a lone url.
 - `animationInventory(buildDir, draftIndex, log)` → `{ records, rootComponent, draftDefects, flags }` from the client's intake; `rootComponent` is the component of the draft `draftIndex` names (`lib/key-space.mjs::rootDraftOf`), else the first draft; no records when intake has not run.
 - `draftIndexOf(options, entry)` → the draft file whose component is the surface's served `Root`: `--draft-index`, else (a run on a served URL, which names no file) the surface's `draftIndex` in `surfaces.json`, else null.
