@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""2026-11-22-setting-record-tables.py -- the setting record's three tables (plan .claude/plans/2026-11-21-setting-record.md, Task 3).
+"""2026-11-22-setting-record-tables.py -- the setting record's three tables (plan .claude/plans/archive/2026-11-21-setting-record.md, Task 3).
 
 WHAT AND WHY
 ------------

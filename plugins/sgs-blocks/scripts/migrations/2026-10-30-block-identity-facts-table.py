@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""2026-10-30-block-identity-facts-table.py -- Spec 48 F1 step A0/A1 (plan .claude/plans/2026-10-30-clone-recognition-fixes.md,
+"""2026-10-30-block-identity-facts-table.py -- Spec 48 F1 step A0/A1 (plan .claude/plans/archive/2026-10-30-clone-recognition-fixes.md,
 "F1: identify blocks by elimination").
 
 WHAT AND WHY

@@ -6,3 +6,7 @@
 - **Kept beside it:** `theme-snapshot.json` (tokens, pushed by `push-theme-snapshot.py`), `old-site-logos/` (real partner logos from the old site, local only), `assets/notes/` (client research), `assets/indus-logo*.svg` and `assets/logos/` (logo masters), `assets/decorative-foods/optimised/` (web-sized food images).
 - **Test site:** deploy target `indus-test` (opt-in), logins in `.claude/secrets/indus-test.env`. URL and the snapshot push command: `.claude/dev-setup.md` (deploy targets table and "Per-client theme snapshot deploy").
 - **Awaiting the client:** real testimonials; BRC, Halal, SALSA, Unitas and FWD certification logos; the Falak Rice logo; professional photography.
+
+## Open items (2026-11-23)
+
+- **A dead Custom CSS rule on post 432:** it names `.sgs-article-meta`, a class the framework no longer prints, so it does nothing on indus-test; find what it was for and move it to a setting or delete it.

@@ -1,6 +1,6 @@
 # Mama's Munches: Bean's issue register of mamas-test against the draft (2026-11-17)
 
-Bean's own words, one item per line, each given an ID (`<Section> <number>`) so the plan (`.claude/plans/2026-11-16-mamas-fix-and-surface-cloning.md`) and the fix catalogue (`fix-catalogue.md`, beside this file) can name it. "Live" is `mamas-test`; "draft" is the Claude Design draft in `sites/mamas-munches-redesign/handoff/`. Status is kept in the fix catalogue, not here.
+Bean's own words, one item per line, each given an ID (`<Section> <number>`) so the plan (`.claude/plans/archive/2026-11-16-mamas-fix-and-surface-cloning.md`) and the fix catalogue (`fix-catalogue.md`, beside this file) can name it. "Live" is `mamas-test`; "draft" is the Claude Design draft in `sites/mamas-munches-redesign/handoff/`. Status is kept in the fix catalogue, not here.
 
 Round two (Bean's list of 2026-11-17 evening, after the first ship) is in `issue-register-round-2.md`, beside this file; its IDs carry on from this file's numbers (Header 10, Home 24 and so on), so an ID names one item across both files.
 

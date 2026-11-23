@@ -648,8 +648,8 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `migrations/2026-10-20-property-equivalents-table.py` | manifest+script-call | - Spec 48 FR-48-8 step 5 (Bean, 2026-10-19). |
 | `migrations/2026-10-20-states-table.py` | manifest | - Spec 48 FR-48-81, the states wave (plan .claude/plans/archive/2026-10-20-states-wave.md). |
 | `migrations/2026-10-21-property-equivalents-intrinsic-ratio.py` | manifest | - Spec 48 FR-48-8 step 5, the `intrinsic-ratio` condition. |
-| `migrations/2026-10-30-block-identity-facts-table.py` | manifest+script-call | - Spec 48 F1 step A0/A1 (plan .claude/plans/2026-10-30-clone-recognition-fixes.md, |
-| `migrations/2026-11-22-setting-record-tables.py` | manifest+test-import | - the setting record's three tables (plan .claude/plans/2026-11-21-setting-record.md, Task 3). |
+| `migrations/2026-10-30-block-identity-facts-table.py` | manifest+script-call | - Spec 48 F1 step A0/A1 (plan .claude/plans/archive/2026-10-30-clone-recognition-fixes.md, |
+| `migrations/2026-11-22-setting-record-tables.py` | manifest+test-import | - the setting record's three tables (plan .claude/plans/archive/2026-11-21-setting-record.md, Task 3). |
 | `minify-css.mjs` | script-call | Minify hand-written CSS for the deploy payload (deploy_minify.py calls it). |
 | `minify-js.mjs` | script-call | Minify hand-written JavaScript for the deploy payload (deploy_minify.py calls it). |
 | `motion-qa/lib/form-states-judges.mjs` | script-call | Pure judges, self-test and argument parsing for `probe-motion-form-states.mjs`. |

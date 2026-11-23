@@ -1,6 +1,6 @@
 # Mama's Munches: causes and proposed fixes for Bean's issue register
 
-One table per section of `issue-register.md` (beside this file), in the order of the plan (`.claude/plans/2026-11-16-mamas-fix-and-surface-cloning.md`). A row holds the cause, how it was proved, its layer and the proposed fix. Status moves: verified (the main session checked the cause against the files) → approved (Bean) → fixed (screenshot pairs on `local-mamas`) → closed (Bean has seen it on `mamas-test`). Each change made is also a row in `fix-catalogue.md`.
+One table per section of `issue-register.md` (beside this file), in the order of the plan (`.claude/plans/archive/2026-11-16-mamas-fix-and-surface-cloning.md`). A row holds the cause, how it was proved, its layer and the proposed fix. Status moves: verified (the main session checked the cause against the files) → approved (Bean) → fixed (screenshot pairs on `local-mamas`) → closed (Bean has seen it on `mamas-test`). Each change made is also a row in `fix-catalogue.md`.
 
 ## Footer (post 176 on `local-mamas`, measured 2026-11-17 at 1440; probes and screenshots in `E:\sgs-tmp\mamas-register\footer\`)
 

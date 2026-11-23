@@ -1,6 +1,6 @@
 # setting-record: what each block setting changes, checked against the block's own code
 
-Each block gets a written record of where every setting paints: the part, the CSS properties, the state and the media conditions. `check.py` runs the block's real `render.php` offline for every setting (no site, no browser), compares what changes with the record both ways, and proves each placement with a CSS cascade. It is the cloning route's source for where each setting paints (plan `.claude/plans/2026-11-21-setting-record.md`); the browser measurement it replaced is retired.
+Each block gets a written record of where every setting paints: the part, the CSS properties, the state and the media conditions. `check.py` runs the block's real `render.php` offline for every setting (no site, no browser), compares what changes with the record both ways, and proves each placement with a CSS cascade. It is the cloning route's source for where each setting paints (plan `.claude/plans/archive/2026-11-21-setting-record.md`); the browser measurement it replaced is retired.
 
 ## Use
 

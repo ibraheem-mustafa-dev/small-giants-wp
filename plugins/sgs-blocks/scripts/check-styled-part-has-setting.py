@@ -6,7 +6,7 @@ WHY THIS EXISTS
     fixed-looks-audit.md) found blocks that draw a button whose look is fixed in
     code: the buy box flow opener wore the secondary preset with no setting, so a
     draft that drew it differently could only be matched with hand-written CSS.
-    Plan Task 6 (.claude/plans/2026-11-18-template-rework.md, "A setting for every
+    Plan Task 6 (.claude/plans/archive/2026-11-18-template-rework.md, "A setting for every
     reusable look") fixes that with a built-in button kit declared in block.json as
     `supports.sgs.builtinButtons`. This detector is what must exist BEFORE the
     button migrations (migration-method Step 4: the detector is the first

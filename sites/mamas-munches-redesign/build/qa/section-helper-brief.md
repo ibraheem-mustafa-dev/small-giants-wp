@@ -1,6 +1,6 @@
 # Brief for a helper working one section of Bean's issue register
 
-This is the standing brief for a subagent that diagnoses one section of `issue-register.md` or `issue-register-round-2.md` (beside this file; IDs carry on across the two, so one ID names one row in `register-findings.md` and `fix-catalogue.md`) and applies its simple fixes. The main session adds the section's name, its posts and its particular notes. Plan: `.claude/plans/2026-11-16-mamas-fix-and-surface-cloning.md`.
+This is the standing brief for a subagent that diagnoses one section of `issue-register.md` or `issue-register-round-2.md` (beside this file; IDs carry on across the two, so one ID names one row in `register-findings.md` and `fix-catalogue.md`) and applies its simple fixes. The main session adds the section's name, its posts and its particular notes. Plan: `.claude/plans/archive/2026-11-16-mamas-fix-and-surface-cloning.md`.
 
 ## The job
 

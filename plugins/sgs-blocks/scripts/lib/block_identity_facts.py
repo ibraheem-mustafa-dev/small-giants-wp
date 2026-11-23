@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """block_identity_facts -- each SGS block's identification facts, read from code, as `block_identity_facts` rows (Spec 48
-F1, plan `.claude/plans/2026-10-30-clone-recognition-fixes.md` "F1: identify blocks by elimination", step A1).
+F1, plan `.claude/plans/archive/2026-10-30-clone-recognition-fixes.md` "F1: identify blocks by elimination", step A1).
 
 One row per (block, fact, value): `state` yes / no / unknown, `source` 'code', `evidence` the unit and literal that
 proves it, or for a `no` every source that was searched. The facts (the A0 vocabulary; meanings in `.claude/dev-setup.md`
