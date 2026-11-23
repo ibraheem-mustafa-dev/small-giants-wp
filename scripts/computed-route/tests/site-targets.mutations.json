@@ -151,8 +151,8 @@
 	},
 	{
 		"file": "lib/site-targets.mjs",
-		"find": "envKey: name.toUpperCase().replace( /-/g, '' ),",
-		"replace": "envKey: name.toUpperCase(),",
+		"find": "envKey: String( name ).toUpperCase().replace( /[^A-Z0-9]/g, '' ) }",
+		"replace": "envKey: String( name ).toUpperCase() }",
 		"why": "the key keeps its hyphens"
 	},
 	{

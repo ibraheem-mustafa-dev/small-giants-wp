@@ -93,7 +93,7 @@ test( 'MUST FAIL: site-build refuses a scratch-copy write from the main checkout
 	const place = src.indexOf( 'assertScratchRunPlace( site, repo );' );
 	assert.ok( place > 0, 'site-build calls assertScratchRunPlace' );
 	assert.ok( place > src.indexOf( 'if ( apply ) {' ) && place < src.indexOf( 'wpEvalRunner(', src.indexOf( 'readTargets(' ) ), 'inside the --apply guard, before the first wp-cli runner' );
-	assert.match( src, /openDetachedSession\( site, readEnv\( secretsPath\( path\.join\( '\.claude', 'secrets', `\$\{ site \}\.env` \), repo \),/ );
+	assert.match( src, /openDetachedSession\( site, readEnv\( secretsPath\( secretsOf\( site, targets \)\.envFile, repo \), secretsOf\( site, targets \)\.envKey \)/ );
 } );
 
 test( 'MUST FAIL: the page builder and the media credentials read a secrets file under SGS_SECRETS_ROOT, as a worktree run needs', () => {

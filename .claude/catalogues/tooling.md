@@ -19,8 +19,8 @@ Searching one directory and concluding a tool does not exist is a live failure m
 
 | Directory | Runnable files | Holds |
 |---|---|---|
-| `scripts/` | 1650 | repo-wide tooling (naming lint, site utilities) |
-| `plugins/sgs-blocks/scripts/` | 988 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
+| `scripts/` | 1657 | repo-wide tooling (naming lint, site utilities) |
+| `plugins/sgs-blocks/scripts/` | 994 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
 | `.claude/hooks/` | 7 | session + commit hooks (handoff preflight, doc gates) |
 | `.claude/skills/wp-sgs-deploy/scripts/` | 0 | deploy-skill helpers |
 
@@ -102,7 +102,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 
 ⚠ The naming is not consistent — the same idea appears as `census-*`, `survey-*`, `audit-*`, `check-*`, `scan-*`, `probe-*` and `report-*`. Grep for the SUBJECT (colour, gradient, token, element, inline, parity), never for the verb you happen to have in mind.
 
-#### `plugins/sgs-blocks/scripts/` — 876 scripts
+#### `plugins/sgs-blocks/scripts/` — 879 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -230,7 +230,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `check-motion-part-selectors.py` | script-call | every declared motion part reaches an element (Spec 38A section 6.2, FR-38A-16). |
 | `check-motion-pause-control.py` | manifest+npm | content that moves on its own carries the shared pause control. |
 | `check-motion-schema.py` | script-call | the sgsMotion schema is well formed and complete (Spec 38A FR-38A-2, FR-38A-55). |
-| `check-motion-stagger-drift.py` | — | stored stagger delays must match what the helper would write (Spec 38A FR-38A-25). |
+| `check-motion-stagger-drift.py` | test-import | stored stagger delays must match what the helper would write (Spec 38A FR-38A-25). |
 | `check-motion-style-writes.py` | — | front-end motion scripts write custom properties only (Spec 38A FR-38A-47). |
 | `check-motion-token-consumers.py` | script-call | motion tokens and their readers agree (Spec 38A section 7, FR-38A-14, FR-38A-15). |
 | `check-named-extension-scope.py` | manifest+npm+script-call | Detector: a `named` extension's attributes are registered on its named blocks only. |
@@ -356,6 +356,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `deploy_minify.py` | script-call | minify the hand-written CSS and JavaScript a deploy ships. |
 | `deploy_multi.py` | script-call | build-deploy.py's multi-site run: one build and gate:full, then every site at once. |
 | `deploy_qa_tier.py` | script-call | build-deploy.py's choice of live motion-QA tier: smoke, or the full set. |
+| `deploy_scratch.py` | script-call+test-import | Where the deploy scripts put their temporary worktrees, upload batches, logs and locks. |
 | `deploy_selftest.py` | script-call | build-deploy.py --self-test: each case proves a deploy guard rejects its unsafe case, |
 | `deploy_ship.py` | script-call | build-deploy.py's build and shipping steps: npm build, collecting the payload, sending only what |
 | `deploy_timing.py` | script-call | wall-clock time of each deploy stage, a summary table and an append-only history. |
@@ -520,6 +521,8 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `lib/object_attr_shape.py` | script-call+test-import | shared object-attribute shape discriminator. |
 | `lib/render_emits.py` | script-call | render_emits -- does a block's own render emit a given attribute? |
 | `lib/scalar_tier_rules.py` | script-call+test-import | Rules for attributes that moved from one scalar to a {desktop, tablet, mobile} object. |
+| `lib/site-secrets.mjs` | script-call+test-import | A site's login file and key for the plugin's Node probes: they come from the site's entry in scripts/computed-route/calibration-targets.json… |
+| `lib/site_secrets.py` | script-call+test-import | A site's secrets file and key, from its entry in scripts/computed-route/calibration-targets.json. |
 | `lib/stage8-cli.js` | script-call | to keep stage8-audit.js under the repo's 250-line limit. No browser, no network — `makeRunId` is deterministic given an explicit `now` (never calls… |
 | `lib/stage8-lighthouse.js` | script-call | out purely to keep stage8-audit.js under the repo's 250-line limit. This is the ONLY module in the stage8 family that touches a real browser/network… |
 | `lib/stage8-network-console-builders.js` | script-call | stage8-audit.js. CWV builder + the shared LHR helpers (`hasRuntimeError`, `auditErrored`, `auditItems`, `hostnameOf`) live in the sibling… |
@@ -664,7 +667,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `motion-qa/probe-drawer-entrances-lib.mjs` | script-call | The pure judges and the offline harness of `probe-drawer-entrances.mjs` (Spec 38A M5.D): the expected clip extents and band insets from the fixture's… |
 | `motion-qa/probe-drawer-entrances.mjs` | script-call | Spec 38A unit M5.D: acceptance of the drawer entrances on the motion model in real engines: the one-edge clip |
 | `motion-qa/probe-drawer-open.mjs` | script-call | Open a nav drawer the way a visitor does, for the drawer probes. |
-| `motion-qa/probe-editor-canvas-lib.mjs` | script-call | Helpers for probe-editor-canvas.mjs (Spec 38A unit M3.7): the site's credentials, the verdict reporter, the in-page readers (each is serialised into… |
+| `motion-qa/probe-editor-canvas-lib.mjs` | script-call+test-import | Helpers for probe-editor-canvas.mjs (Spec 38A unit M3.7): the site's credentials, the verdict reporter, the in-page readers (each is serialised into… |
 | `motion-qa/probe-editor-canvas.mjs` | script-call | Spec 38A unit M3.7 (FR-38A-28): the block editor shows motion at its final state, carries the shared motion assets in the canvas iframe, mounts the… |
 | `motion-qa/probe-entrance-input-scope.mjs` | — | Probe: a nested motion element never takes its ancestor's entrance or hover inputs (Spec 38A §10, FR-38A-18). |
 | `motion-qa/probe-first-paint.mjs` | — | gate's `first_paint_capture_passed` field is supposed to attest. |
@@ -689,7 +692,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `motion-qa/probe-motion-loop-delays.mjs` | script-call | Spec 38A unit M4.3: live acceptance of the server-written loop delays (FR-38A-26) on a deployed archive or a page holding a post-grid, a core… |
 | `motion-qa/probe-motion-model-entrance.mjs` | script-call | Entrance, reveal, keyframes, scroll-driver and asset-loading checks for probe-motion-model.mjs (Spec 38A unit M2.9). |
 | `motion-qa/probe-motion-model-hover.mjs` | manifest+script-call | Hover, focus, tilt, reduced-motion and inline-style checks for probe-motion-model.mjs (Spec 38A unit M2.9). |
-| `motion-qa/probe-motion-model-lib.mjs` | manifest+script-call | Shared helpers for probe-motion-model.mjs (Spec 38A unit M2.9): argument parsing, site lookup, fixture schema validation, the result reporter and the… |
+| `motion-qa/probe-motion-model-lib.mjs` | manifest+script-call+test-import | Shared helpers for probe-motion-model.mjs (Spec 38A unit M2.9): argument parsing, site lookup, fixture schema validation, the result reporter and the… |
 | `motion-qa/probe-motion-model.mjs` | script-call | Spec 38A unit M2.9: live acceptance of the motion model on a deployed site. |
 | `motion-qa/probe-motion-nav-bar-judges.mjs` | script-call | Spec 38A unit M4.6 (Gate 5b): the pure half of `probe-motion-nav-bar.mjs`, its expectations read from the fixture trees, its judges and the offline… |
 | `motion-qa/probe-motion-nav-bar.mjs` | script-call | Spec 38A unit M4.6 (Gate 5b): live acceptance of the nav bar's mega panel on the Entrance model (FR-38A-51 clause a, the bar and mega half; clause d… |
@@ -791,7 +794,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `qa/lib/focus-measure.mjs` | script-call | The browser side of probe-focus-system.mjs: press Tab, read what the focused element paints, take an unfocused and a focused screenshot of its box… |
 | `qa/lib/focus-probe-lib.mjs` | script-call | Pure helpers for probe-focus-system.mjs (unified keyboard focus system, plan 2026-10-17 Task 2): colour maths, the box-shadow layer reader, the… |
 | `qa/lib/focus-selftest-browser.mjs` | script-call | The browser half of probe-focus-system.mjs --self-test: a small fixture that exercises the probe's own measuring rules |
-| `qa/lib/focus-site.mjs` | script-call | `--site` mode of probe-focus-system.mjs: resolve a target's URL from its secrets file, load each requested page SERIALLY (parallel loads trip the… |
+| `qa/lib/focus-site.mjs` | script-call+test-import | `--site` mode of probe-focus-system.mjs: resolve a target's URL from its secrets file, load each requested page SERIALLY (parallel loads trip the… |
 | `qa/lib/google-reviews-settings-stub.php` | script-call | Thin stand-in for SGS\Blocks\Google_Reviews_Settings |
 | `qa/lib/live-colour-probe.php` | script-call | WP-CLI probe for check-custom-colour-survives.py --live: renders each job's block through the real render_block() on a live site and prints the… |
 | `qa/lib/manifest-stub.php` | script-call | A variable product's configurator for the render harness, loaded only by `--manifest-file` (with `--product-file` naming a `"type": "variable"`… |
@@ -983,7 +986,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `wiring-fingerprint/wf_table.py` | script-call | The names the Cart and Checkout look table builds (`includes/woocommerce/commerce-look/selectors.json`). |
 | `wiring-fingerprint/wf_tokens.py` | manifest+script-call | Channel tokens: what one PHP statement emits. |
 
-#### `scripts/` — 822 scripts
+#### `scripts/` — 827 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -992,6 +995,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `check-no-client-names.py` | manifest+script-call+skill | : keep client names and reference-site names out of the framework. |
 | `check-page-weight.mjs` | manifest+script-call | Page-weight gate against a LIVE site (.claude/plans/archive/2026-11-03-page-weight-budget.md, "Gate"). |
 | `check-rule-labels.py` | manifest | : the framework principles are cited as FP-<n>, never by an archived spec's number. |
+| `check-secrets-lookup.py` | manifest+script-call | A site's secrets file and key come from its calibration-targets entry, never from its name: refuses a secrets path or key built from a site name. |
 | `check-spec-id-landing.py` | manifest | Prove every ID the Spec 32 and Spec 47 section ledgers carry lands in a live spec. |
 | `computed-route/answer-sheet.mjs` | script-call+skill | Answer-sheet scorer (Spec 48 route-accuracy R1). |
 | `computed-route/apply-options.mjs` | manifest+script-call | The applier's site-option step: values that live in site options, not block settings, read from the draft and written on the local mirror. Today: the… |
@@ -1700,20 +1704,24 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `lint-patterns-for-personal-data.py` | manifest+npm+test-import | Lint SGS pattern PHP files for hardcoded personal data. |
 | `local-wp/backup-remote-db.sh` | script-call | Backs up a deploy target's database on its own server, outside public_html, and proves the backup is whole. |
 | `local-wp/export-block-tree.php` | — | Prints a post's blocks as a scripts/wp-build-page.js tree (an array of { name, attributes, innerBlocks }), so a hand edit starts from what the post… |
+| `local-wp/mirror_precheck.py` | script-call | The two checks push-to-remote.sh makes on a mirror's content before it copies the mirror onto a test site. |
 | `local-wp/mirror_theme_json.py` | script-call | : write the theme.json a local mirror must run, the same bytes a deploy ships to the test site it copies. |
 | `local-wp/mu-plugins/sgs-calibration-context.php` | — | Plugin Name: SGS calibration render context (local mirror only) Description: Lets a render measure sgs/mega-panel as the drawer renders it (written… |
 | `local-wp/patch-block-attrs.php` | script-call | Patches the block settings of one post on a local mirror, by block className, without touching anything else. |
 | `local-wp/patch-block-attrs.py` | script-call+skill | Patch block settings in one post on a local WSL mirror, by block className (scripts/local-wp/patch-block-attrs.php). |
-| `local-wp/push-to-remote.sh` | script-call+skill | Copies a local WSL mirror's database and uploads onto its Hostinger test site, so a clone built on the mirror lands on the test site with identical… |
+| `local-wp/prune-db-backups.sh` | script-call | Sourced by backup-remote-db.sh (its text is sent to the server) and by test-prune-db-backups.sh. |
+| `local-wp/push-to-remote.sh` | script-call+skill+test-import | Copies a local WSL mirror's database and uploads onto its Hostinger test site, so a clone built on the mirror lands on the test site with identical… |
 | `local-wp/push_target.py` | script-call | Resolve a push-to-remote.sh target from the one deploy roster. |
 | `local-wp/read-block-attrs.php` | script-call | Lists every block of the given posts that carries a `cr-ref-` class token, with its block name and saved attributes. |
 | `local-wp/read-block-attrs.py` | script-call | List the `cr-ref-` blocks of posts on a local WSL mirror, with their saved attributes (scripts/local-wp/read-block-attrs.php). |
-| `local-wp/refresh-from-remote.sh` | script-call | Refreshes a local WSL mirror's database and uploads from its Hostinger test site, so measurements run on the local copy see the same content… |
+| `local-wp/refresh-from-remote.sh` | script-call+test-import | Refreshes a local WSL mirror's database and uploads from its Hostinger test site, so measurements run on the local copy see the same content… |
 | `local-wp/reset-login.mjs` | script-call | Sets a local mirror's WordPress login to the password its secrets file holds, after refresh-from-remote.sh has copied the test site's users over it… |
 | `local-wp/reset-shop-pages.php` | script-call+test-import | Puts a scratch copy's basket, checkout and account pages back to WooCommerce's own default content (MERGED S-6). |
 | `local-wp/scratch-mirror.sh` | script-call+test-import | Served scratch copies of the local mirrors, for work that must not touch the four real mirrors (other sessions use them on main's code). A scratch… |
 | `local-wp/sync-build.sh` | script-call | Copies the repo's built plugins and theme into the local WSL mirror sites. |
 | `local-wp/test-patch-block-attrs.py` | — | Proves patch-block-attrs.php refuses a `set` of an attribute the block does not declare, in dry run too, and that its |
+| `local-wp/test-prune-db-backups.sh` | script-call | Test for prune-db-backups.sh against a fake backup folder. |
+| `local-wp/test_mirror_precheck.py` | — | Tests for mirror_precheck.py: the old-shape audit and the media check run on a mirror before push-to-remote.sh copies it. |
 | `md_wrap_blocks.py` | script-call | The block reader behind scripts/check-md-wrap.py: joins the lines of each paragraph and list item, copies the rest. |
 | `media-ac25/capture.mjs` | script-call | Records every media paint of each URL at 375, 768 and 1440 (Spec 49 AC-25 BEFORE/AFTER capture). |
 | `media-ac25/compare.mjs` | manifest+script-call+skill | Compares two capture folders (Spec 49 AC-25). Exit 1 when any unallowed difference exists. |

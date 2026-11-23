@@ -2559,5 +2559,41 @@
     "added_commit": null,
     "budget_ms": 3000,
     "order": 289
+  },
+  {
+    "id": "check-secrets-lookup",
+    "cmd": "python ../../scripts/check-secrets-lookup.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 3000,
+    "order": 290
+  },
+  {
+    "id": "check-secrets-lookup-selftest",
+    "cmd": "python ../../scripts/check-secrets-lookup.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1000,
+    "order": 291
+  },
+  {
+    "id": "test-site-secrets-lookup",
+    "cmd": "node scripts/tests/test-site-secrets-lookup.mjs",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1000,
+    "order": 292
+  },
+  {
+    "id": "test-site-secrets-lookup-py",
+    "cmd": "python -m pytest scripts/tests/test_site_secrets.py ../../scripts/tests/test_remote_url_lookup.py -q -p no:cacheprovider",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 4000,
+    "order": 293
   }
 ]

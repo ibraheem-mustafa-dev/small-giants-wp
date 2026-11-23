@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-check-secrets-lookup.py: a site's secrets file and key come from its calibration-targets entry, never from its name.
+A site's secrets file and key come from its calibration-targets entry, never from its name: refuses a secrets path or key built from a site name.
 
 THE RULE (Bean, 2026-11-23)
 ---------------------------

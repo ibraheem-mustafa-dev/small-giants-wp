@@ -73,20 +73,20 @@
 	},
 	{
 		"file": "site-build.mjs",
-		"find": "readEnv( secretsPath( path.join( '.claude', 'secrets', `${ site }.env` ), repo ), site.toUpperCase().replace( /[^A-Z0-9]/g, '' ) )",
-		"replace": "readEnv( path.join( '.claude', 'secrets', `${ site }.env` ), site.toUpperCase().replace( /[^A-Z0-9]/g, '' ), repo )",
+		"find": "readEnv( secretsPath( secretsOf( site, targets ).envFile, repo ), secretsOf( site, targets ).envKey )",
+		"replace": "readEnv( secretsOf( site, targets ).envFile, secretsOf( site, targets ).envKey, repo )",
 		"why": "the build session reads secrets from the repo, which a worktree lacks"
 	},
 	{
 		"file": "lib/site-build-apply.mjs",
-		"find": "'--env-file', secretsPath( path.join( '.claude', 'secrets', `${ site }.env` ), repo ),",
-		"replace": "'--env-file', path.join( repo, '.claude', 'secrets', `${ site }.env` ),",
+		"find": "'--env-file', secretsPath( envFile, repo ),",
+		"replace": "'--env-file', path.join( repo, envFile ),",
 		"why": "the page builder reads secrets from the repo, which a worktree lacks"
 	},
 	{
 		"file": "lib/media-upload.mjs",
-		"find": "const file = secretsPath( path.join( '.claude', 'secrets', `${ site }.env` ), repo );",
-		"replace": "const file = path.join( repo, '.claude', 'secrets', `${ site }.env` );",
+		"find": "const file = secretsPath( envFile, repo );",
+		"replace": "const file = path.join( repo, envFile );",
 		"why": "the media credentials ignore SGS_SECRETS_ROOT"
 	},
 	{
