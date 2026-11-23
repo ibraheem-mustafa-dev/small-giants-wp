@@ -77,7 +77,7 @@ $mobile_only = sgs_header_ink_css(
 	'',
 	''
 );
-ok( false !== strpos( $mobile_only['css'], '@media (max-width:767.98px)' ), 'mobile-only adapt emits inside the mobile @media block' );
+ok( false !== strpos( $mobile_only['css'], '@media(max-width:767.98px)' ), 'mobile-only adapt emits inside the mobile @media block' );
 ok( false !== strpos( $mobile_only['css'], 'is-header-on-dark' ), 'mobile-only adapt emits the ink selector' );
 // Negative control: the SAME css string must NOT carry an un-media-scoped
 // (desktop) ink rule — proves the assertion above is not just "css is
@@ -192,9 +192,9 @@ $tone_fill_transparent = sgs_header_ink_css(
 	''
 );
 ok( false !== strpos( $tone_fill_transparent['css'], $root_sel . '.is-header-on-dark.is-header-scrolled{background:' ), 'transparent + tone fill: fill only in the scrolled state' );
-$tft_desktop = substr( $tone_fill_transparent['css'], 0, (int) strpos( $tone_fill_transparent['css'], '@media (min-width:768px)' ) );
+$tft_desktop = substr( $tone_fill_transparent['css'], 0, (int) strpos( $tone_fill_transparent['css'], '@media(min-width:768px)' ) );
 ok( false === strpos( $tft_desktop, $root_sel . '.is-header-on-dark{background:' ), 'NEGATIVE CONTROL: transparent + tone fill paints no fill at rest (desktop, where Transparent is on)' );
-ok( false !== strpos( $tone_fill_transparent['css'], '@media (max-width:767.98px){' ) && false !== strpos( substr( $tone_fill_transparent['css'], (int) strpos( $tone_fill_transparent['css'], '@media (max-width:767.98px){' ) ), $root_sel . '.is-header-on-dark{background:' ), 'mobile, Transparent off: the tone fill is stateless' );
+ok( false !== strpos( $tone_fill_transparent['css'], '@media(max-width:767.98px){' ) && false !== strpos( substr( $tone_fill_transparent['css'], (int) strpos( $tone_fill_transparent['css'], '@media(max-width:767.98px){' ) ), $root_sel . '.is-header-on-dark{background:' ), 'mobile, Transparent off: the tone fill is stateless' );
 ok( 0 === strpos( $tone_fill_transparent['live'], 'desktop:always' ), 'transparent + tone fill: ink live in both states' );
 ok( false === strpos( $tone_fill_transparent['css'], 'revert' ), 'no tier ever cancels with revert' );
 ok( false !== strpos( $tone_fill_transparent['css'], '.is-header-on-dark .sgs-nav-bar-menu__item>.sgs-nav-bar-menu__link:not(:hover):not(:focus-visible)' ), 'live ink overrides the menu link colour, except on hover and focus' );
