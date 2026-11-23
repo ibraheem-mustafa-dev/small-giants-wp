@@ -1,4 +1,5 @@
 import path from 'node:path';
+import { EDITOR_TIMEOUT_MS } from './calibrate-props.mjs';
 
 // How calibration builds a block's page in pieces (FR-47-2): the child process that saves a calibration page, the size of
 // each piece, and halving a piece whose build timed out. Pure: no browser, no site.
@@ -18,7 +19,7 @@ export const needsBiggerHeap = ( heapLimitBytes ) => heapLimitBytes < RUN_HEAP_B
 // the editor load, the save and the reload that reads the save back). A chunk is a large page by design: on the local
 // mirror a 744-block page took 150 s to return its edit screen, then 1.3 s to boot (2026-10-07), against
 // wp-build-page.js's 60 s default.
-export const EDITOR_TIMEOUT_MS = 240000;
+export { EDITOR_TIMEOUT_MS };
 export const CHILD_TIMEOUT_MS = 3 * EDITOR_TIMEOUT_MS;
 
 // The argument list for `node` running wp-build-page.js against one calibration tree.

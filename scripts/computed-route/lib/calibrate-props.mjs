@@ -12,6 +12,9 @@ export const MARKER_GRADIENT = 'linear-gradient(90deg, #13579b 0%, #9b1357 100%)
 // A resting gradient that differs from MARKER_GRADIENT, for a hover gradient to be compared with.
 export const MARKER_REST_GRADIENT = 'linear-gradient(90deg, #9b1357 0%, #13579b 100%)';
 export const CAL_PREFIX = 'cr-ref-cal-';
+// How long a page load or wait for the editor may take when the content reader opens a block's page: on a local mirror a
+// 744-block page took 150 s to return its edit screen (2026-10-07), so this sits well above that.
+export const EDITOR_TIMEOUT_MS = 240000;
 
 // Properties calibration reads beyond the walker's own: a setting painting one of them is still located (its slot
 // and default paint are recorded) even before the walker compares that property. The second line holds what a block's

@@ -5,16 +5,7 @@
 // kept. Measured, never parsed: a selector a block builds in PHP from variables is found the same way as one in its
 // stylesheet. Every mechanism is undone before the next is tried.
 
-import { stateRows } from './state-vocab.mjs';
-
-export const PROBE_REACHES = [ 'set-attribute', 'toggle-class', 'force-pseudo' ];
 const HOST = 'data-cr-probe-host';
-
-// The vocabulary rows a probe tries for a state, in vocabulary order. A prefix token (`[data-state`, `is-effect-`)
-// names no single value to apply, so it is left out.
-export function probeMechanisms( state, rows = stateRows() ) {
-	return rows.filter( ( r ) => r.state === state && PROBE_REACHES.includes( r.reach ) && 'media' !== r.kind && ! ( r.token.startsWith( '[' ) && ! r.token.endsWith( ']' ) ) && ! r.token.endsWith( '-' ) );
-}
 
 // In-page: marks the host `up` levels above the target (never past the instance root) and applies one attribute or
 // class mechanism to it. Returns what to undo, { pseudo } for a pseudo-class the node side forces, or null when there

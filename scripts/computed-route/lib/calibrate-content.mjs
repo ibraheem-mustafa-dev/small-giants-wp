@@ -3,10 +3,9 @@
 // CSS property, so lib/db.mjs::attrsFor never returns them and the slot map cannot see them; they are queried by their
 // framework-database `role` instead, and read for node existence, text content and link attributes rather than for
 // computed style. The style reader is lib/calibrate-read.mjs; this is its content counterpart.
-import { WIDTHS, CAL_PREFIX } from './calibrate-props.mjs';
+import { WIDTHS, CAL_PREFIX, EDITOR_TIMEOUT_MS } from './calibrate-props.mjs';
 import { preconditionsFor, variantAttributes } from './calibrate-instances.mjs';
 import { elementPath } from '../../parity/lib/ref-trace.mjs';
-import { EDITOR_TIMEOUT_MS } from './calibrate-chunk.mjs';
 
 // The marker a text setting prints: letters and digits only, so esc_html, esc_attr, sanitize_text_field and wp_kses
 // all leave it unchanged, wp_trim_words cannot split it (it carries no space), and percent-encoding is a no-op. It is

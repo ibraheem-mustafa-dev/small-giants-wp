@@ -4,8 +4,9 @@
 // aria-controls (a cart dialog moved to <body>, a drawer) is keyed `@controls > <path>` (`@controls:2` for a second).
 import { WIDTHS, CAL_PREFIX, READ_PROPS, CAL_PSEUDO_PROPS, TEXT_PSEUDO_PROPS, OWN_INHERITED } from './calibrate-props.mjs';
 import { elementPath } from '../../parity/lib/ref-trace.mjs';
-import { EDITOR_TIMEOUT_MS } from './calibrate-chunk.mjs';
-import { probeState, probeMechanisms } from './calibrate-probe.mjs';
+import { EDITOR_TIMEOUT_MS } from './calibrate-props.mjs';
+import { probeState } from './calibrate-probe.mjs';
+import { probeMechanisms } from './calibrate-instances.mjs';
 import { listedProperties } from './db.mjs';
 import { markOpenToggleInPage, openOwnToggle } from './calibrate-open.mjs';
 

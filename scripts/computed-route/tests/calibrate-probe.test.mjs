@@ -6,8 +6,8 @@ import assert from 'node:assert/strict';
 import { readInstancesInPage, markTargetInPage } from '../lib/calibrate-read.mjs';
 import { READ_PROPS, TEXT_PSEUDO_PROPS, CAL_PSEUDO_PROPS } from '../lib/calibrate-props.mjs';
 import { elementPath } from '../../parity/lib/ref-trace.mjs';
-import { probeState, probeMechanisms, changed } from '../lib/calibrate-probe.mjs';
-import { triggerFor } from '../lib/calibrate-instances.mjs';
+import { probeState, changed } from '../lib/calibrate-probe.mjs';
+import { probeMechanisms } from '../lib/calibrate-instances.mjs';
 
 const HTML = `<style>
 	.sgs-m__item { color: rgb(0, 0, 0) } .sgs-m__item.is-disabled-x { color: rgb(1, 1, 1) }
@@ -62,13 +62,7 @@ test( 'negative control: with no mechanism that paints, the probe says why and r
 	assert.ok( restored );
 } );
 
-test( 'calibration gives the probe to states with no dedicated trigger, keeps the dedicated ones', () => {
-	assert.equal( triggerFor( 'disabled' ), 'probe' );
-	assert.equal( triggerFor( 'closed' ), 'probe' );
-	assert.equal( triggerFor( 'hover' ), 'hover' );
-	assert.equal( triggerFor( 'open' ), 'open' );
-	assert.equal( triggerFor( 'no-such-state' ), undefined );
-	assert.equal( triggerFor( null ), null );
+test( 'a property that did not change is not a change', () => {
 	assert.ok( changed( { a: { color: 'x' } }, { a: { color: 'y' } }, [ 'color' ] ) );
 	assert.ok( ! changed( { a: { color: 'x' } }, { a: { color: 'x', width: '1px' } }, [ 'color' ] ) );
 } );

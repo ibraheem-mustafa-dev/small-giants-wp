@@ -6,8 +6,15 @@ import { modifierOf } from './db.mjs';
 import fs from 'fs';
 import { blockElements, blockWrapperElements } from './resolve.mjs';
 import { MARKER_HEX } from './calibrate-props.mjs';
-import { probeMechanisms } from './calibrate-probe.mjs';
+import { stateRows } from './state-vocab.mjs';
 import { HOVER_PROPS, FOCUS_PROPS } from '../../parity/lib/collect.mjs';
+// The vocabulary rows that enter a state with no dedicated trigger (the framework DB's `states` rows: an attribute set, a
+// class added, a pseudo-class forced), in vocabulary order. A prefix token (`[data-state`, `is-effect-`) names no single
+// value to apply, so it is left out.
+const PROBE_REACHES = [ 'set-attribute', 'toggle-class', 'force-pseudo' ];
+export function probeMechanisms( state, rows = stateRows() ) {
+	return rows.filter( ( r ) => r.state === state && PROBE_REACHES.includes( r.reach ) && 'media' !== r.kind && ! ( r.token.startsWith( '[' ) && ! r.token.endsWith( ']' ) ) && ! r.token.endsWith( '-' ) );
+}
 // Elements shared code prints inside many blocks (the shared wrapper's overlay, the link helper's `a`), by css_element.
 const SHARED_STATE_ELEMENTS = JSON.parse( fs.readFileSync( new URL( '../data/shared-state-elements.json', import.meta.url ), 'utf8' ) );
 
