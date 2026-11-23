@@ -169,6 +169,7 @@
  },
  "stamp": {
   "version": 2,
+  "check": "e06373c9c8601d6f",
   "inputs": {
    "assets/css/accordion-filter.css": "1bae515f798524b3",
    "assets/css/device-toggle.css": "23d9bfd781a843c0",
@@ -409,14 +410,12 @@
    "includes/trustpilot-helpers.php": "4166b2887e3c2cfc",
    "includes/wishlist/class-wishlist-cards-rest.php": "798a1e92e1c2dc2a",
    "src/blocks/pay-later-message/block.json": "1596dc46da62cd13",
-   "src/blocks/pay-later-message/edit.js": "c6560d55a008a9c0",
-   "src/blocks/pay-later-message/index.js": "1680fa824117bab7",
    "src/blocks/pay-later-message/render.php": "9481ba04375f51f5",
    "src/blocks/pay-later-message/style.css": "412c5df55577693c",
    "src/shared/info-toggle.css": "210a5fa94dc11c4a",
    "shipped:src/blocks/pay-later-message/style.css": "412c5df55577693c",
    "fixture:pay-later-message-wc.php": "c4c016cdc2f8dc0a",
-   "fixture-entry": "8c7ba7164a7a7424",
+   "fixture-entry": "3b2a698dcde6614a",
    "fixture-shared": "61d9f70d4bb7e36a"
   },
   "outputs": "451b72eaf8d37560",
@@ -431,7 +430,35 @@
   ],
   "tags": [
    "div"
-  ],
-  "check": "00207896689d27d1"
- }
+  ]
+ },
+ "proofCache": [
+  {
+   "fp": "47af8df4de7159bf",
+   "v": "blind",
+   "kind": "switched-on",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "04f04d19e462b198",
+   "v": "blind",
+   "kind": "switched-on",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "0d7d7d448abf4817",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "8fc381e25eb64cd0",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "ca8b6466dbc648aa",
+   "v": "proved",
+   "kind": "switched-on"
+  }
+ ]
 }
