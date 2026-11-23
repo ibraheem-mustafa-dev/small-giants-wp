@@ -37,6 +37,7 @@ import subprocess
 import sys
 import tarfile
 import tempfile
+from deploy_scratch import scratch_dir
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -503,7 +504,7 @@ def self_test() -> list[str]:
     def tree_bytes(base: Path) -> dict[str, bytes]:
         return {p.relative_to(base).as_posix(): p.read_bytes() for p in sorted(base.rglob("*")) if p.is_file()}
 
-    with tempfile.TemporaryDirectory(prefix="sgs-delta-selftest-") as td:
+    with tempfile.TemporaryDirectory(dir=scratch_dir(), prefix="sgs-delta-selftest-") as td:
         base = Path(td)
         repo = base / "repo"
         blocks_dir = repo / "plugins" / "sgs-blocks"

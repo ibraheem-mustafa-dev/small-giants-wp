@@ -17,6 +17,7 @@ import re
 import subprocess
 import sys
 import tempfile
+from deploy_scratch import scratch_dir
 import time
 from pathlib import Path
 from typing import Callable, Iterable
@@ -64,7 +65,7 @@ def run_children(script: Path, argv: list[str], targets: list[str],
     stamp = f"{os.getpid()}-{int(time.time())}"
     running = []
     for target in targets:
-        log_path = Path(tempfile.gettempdir()) / f"sgs-deploy-{target}-{stamp}.log"
+        log_path = Path(scratch_dir()) / f"sgs-deploy-{target}-{stamp}.log"
         cmd = [sys.executable, str(script)] + child_argv(argv, target)
         fh = log_path.open("w", encoding="utf-8")
         proc = subprocess.Popen(cmd, stdout=fh, stderr=subprocess.STDOUT, env=dict(os.environ))
@@ -115,7 +116,7 @@ def self_test() -> list[str]:
     got = child_argv(["--theme-only", "--target", "a,b", "--no-isolate", "--target=c"], "b")
     if got != ["--theme-only", "--no-isolate", "--target", "b", "--built-by-parent"]:
         failures.append(f"child_argv kept a parent --target or lost a flag: {got}")
-    with tempfile.TemporaryDirectory() as td:
+    with tempfile.TemporaryDirectory(dir=scratch_dir()) as td:
         p = Path(td) / "x.log"
         p.write_text("[plan] x\n[ABORTED] reason: y\n", encoding="utf-8")
         if not last_status(p).startswith("[ABORTED]"):

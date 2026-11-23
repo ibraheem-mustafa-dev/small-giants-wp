@@ -32,6 +32,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+from deploy_scratch import scratch_dir
 import time
 from pathlib import Path
 from typing import Callable, Iterator
@@ -197,7 +198,7 @@ def prune(root: Path, keep: int = KEEP) -> None:
 def package_lock(log: Callable[[str], None], path: Path | None = None,
                  timeout_s: float = LOCK_TIMEOUT_S) -> Iterator[None]:
     """Holds the machine-wide packaging lock: one deploy packages at a time."""
-    path = path or Path(tempfile.gettempdir()) / "sgs-deploy-package.lock"
+    path = path or Path(scratch_dir()) / "sgs-deploy-package.lock"
     fh = path.open("a+b")
     start = time.time()
     told = False
@@ -243,7 +244,7 @@ def _unlock(fh) -> None:
 def self_test() -> list[str]:
     """Each case proves a guard rejects its unsafe case. Returns the failures."""
     failures: list[str] = []
-    with tempfile.TemporaryDirectory(prefix="sgs-deploy-cache-selftest-") as td:
+    with tempfile.TemporaryDirectory(dir=scratch_dir(), prefix="sgs-deploy-cache-selftest-") as td:
         base = Path(td)
         os.environ["SGS_DEPLOY_CACHE_DIR"] = str(base / "cache")
         repo = base / "repo"

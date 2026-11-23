@@ -245,6 +245,7 @@ def self_test() -> list[str]:
     import fnmatch
     import io
     import tempfile
+    from deploy_scratch import scratch_dir
     import deploy_verify
 
     failures: list[str] = []
@@ -279,7 +280,7 @@ def self_test() -> list[str]:
     # The record: missing and corrupt files read as no record, and a write failure never raises.
     def check_reader(read) -> list[str]:
         problems: list[str] = []
-        with tempfile.TemporaryDirectory(prefix="sgs-qa-tier-") as td:
+        with tempfile.TemporaryDirectory(dir=scratch_dir(), prefix="sgs-qa-tier-") as td:
             base = Path(td)
             bad = {"missing": None, "garbage": "{not json", "wrong type": "[1, 2]", "no time": '{"commit": "abc"}',
                    "bad time": '{"commit": "abc", "passed_at": "yesterday"}'}
@@ -302,7 +303,7 @@ def self_test() -> list[str]:
         return json.loads(path.read_text(encoding="utf-8"))
 
     def check_write_failure(write) -> list[str]:
-        with tempfile.TemporaryDirectory(prefix="sgs-qa-tier-") as td:
+        with tempfile.TemporaryDirectory(dir=scratch_dir(), prefix="sgs-qa-tier-") as td:
             buf = io.StringIO()
             try:
                 with contextlib.redirect_stdout(buf):
@@ -317,7 +318,7 @@ def self_test() -> list[str]:
     # Wiring: the record follows a passing full run only, through the real step_motion_qa with npm stubbed out.
     def run_step(step, requested: str, rc: int, dry_run: bool, **extra) -> bool:
         """True when the step left a record file behind."""
-        with tempfile.TemporaryDirectory(prefix="sgs-qa-tier-") as td:
+        with tempfile.TemporaryDirectory(dir=scratch_dir(), prefix="sgs-qa-tier-") as td:
             target = Path(td) / "record.json"
             saved_env, saved_run = os.environ.get(RECORD_ENV), deploy_verify.run
             os.environ[RECORD_ENV] = str(target)
@@ -383,7 +384,7 @@ def self_test() -> list[str]:
 
     def check_uncommitted(resolve) -> list[str]:
         problems: list[str] = []
-        with tempfile.TemporaryDirectory(prefix="sgs-qa-tier-") as td:
+        with tempfile.TemporaryDirectory(dir=scratch_dir(), prefix="sgs-qa-tier-") as td:
             repo = make_temp_repo(Path(td) / "repo", {"README.md": "x\n"})
             head = head_commit(repo) or ""
             record = Path(td) / "record.json"
@@ -406,7 +407,7 @@ def self_test() -> list[str]:
         return resolve_tier(requested, repo_root, now)  # the commit diff only
 
     def check_shipped(fn) -> list[str]:
-        with tempfile.TemporaryDirectory(prefix="sgs-qa-tier-") as td:
+        with tempfile.TemporaryDirectory(dir=scratch_dir(), prefix="sgs-qa-tier-") as td:
             repo = make_temp_repo(Path(td) / "repo", {"plugins/p/blocks/m/a.js": "1\n", "plugins/p/blocks/m/sub/b.js": "2\n"})
             (repo / "plugins/p/new.php").write_text("3\n", encoding="utf-8")
             got = fn(["plugins\\p\\x.php"], ["plugins/p/blocks/m", "plugins/p/new.php"], repo)

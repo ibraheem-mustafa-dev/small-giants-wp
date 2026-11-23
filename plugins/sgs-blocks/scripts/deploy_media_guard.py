@@ -11,6 +11,7 @@ import json
 import subprocess
 import sys
 import tempfile
+from deploy_scratch import scratch_dir
 from pathlib import Path
 
 from deploy_common import err, log, ssh_base_cmd
@@ -98,7 +99,7 @@ def step_media_guard(dry_run: bool, use_alias: bool, target_key: str, wp_content
         err(f"[media-guard] {target_key}: cannot read saved content: {e}")
         err("fail-closed on purpose: unchecked saved content cannot be shown free of old media attributes")
         return 1
-    with tempfile.TemporaryDirectory() as td:
+    with tempfile.TemporaryDirectory(dir=scratch_dir()) as td:
         path = Path(td) / f"{target_key}.json"
         path.write_text(json.dumps(posts), encoding="utf-8")
         res = run_detector(path, site_base(wp_root))

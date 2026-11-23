@@ -12,6 +12,7 @@ import re
 import shutil
 import subprocess
 import tempfile
+from deploy_scratch import scratch_dir
 from pathlib import Path
 import deploy_cache
 import deploy_delta
@@ -46,7 +47,7 @@ def self_test_theme_json() -> list[str]:
     def md5(b: bytes | None) -> str | None:
         return hashlib.md5(b).hexdigest() if b is not None else None
 
-    with tempfile.TemporaryDirectory(prefix="sgs-deploy-themejson-") as td:
+    with tempfile.TemporaryDirectory(dir=scratch_dir(), prefix="sgs-deploy-themejson-") as td:
         base = Path(td)
         repo = base / "repo"
         (repo / "theme" / "sgs-theme").mkdir(parents=True)
@@ -264,7 +265,7 @@ def self_test_timing() -> list[str]:
 
     def check_short_commit(fn) -> list[str]:
         """fn(repo) must read that repo's HEAD even when the process sits in another repo."""
-        with tempfile.TemporaryDirectory(prefix="sgs-deploy-timing-repo-") as td:
+        with tempfile.TemporaryDirectory(dir=scratch_dir(), prefix="sgs-deploy-timing-repo-") as td:
             repo = deploy_qa_tier.make_temp_repo(Path(td) / "repo", {"a.txt": "1\n"})
             want = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=repo, capture_output=True, text=True, check=True).stdout.strip()
             here = os.getcwd()
@@ -279,7 +280,7 @@ def self_test_timing() -> list[str]:
         out = subprocess.run(["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True, check=False)
         return out.stdout.strip() or "unknown"  # the process cwd, not the given directory
 
-    with tempfile.TemporaryDirectory(prefix="sgs-deploy-timing-") as td:
+    with tempfile.TemporaryDirectory(dir=scratch_dir(), prefix="sgs-deploy-timing-") as td:
         base = Path(td)
         cases = [
             ("short_commit reads the given directory's HEAD, not the process cwd", check_short_commit(deploy_timing.short_commit),
@@ -330,7 +331,7 @@ def self_test_motion_qa_args() -> list[str]:
         """Run `step` with deploy_verify.run replaced by a recorder, so no npm process ever starts."""
         seen: list[list[str]] = []
         original, saved_env = deploy_verify.run, os.environ.get("SGS_MOTION_QA_FULL_FILE")
-        deploy_deadend = tempfile.mkdtemp(prefix="sgs-qa-record-")  # a full run records its pass: keep that off the real file
+        deploy_deadend = tempfile.mkdtemp(dir=scratch_dir(), prefix="sgs-qa-record-")  # a full run records its pass: keep that off the real file
         os.environ["SGS_MOTION_QA_FULL_FILE"] = str(Path(deploy_deadend) / "record.json")
         deploy_verify.run = lambda cmd, **kw: seen.append(list(cmd)) or 0
         try:
@@ -475,7 +476,7 @@ def self_test_upload_resume() -> list[str]:
     def attempt(impl, script, sizes=None, attempts=4, dry_run=False):
         """Run `impl` against a scripted server. `script` is one (exit code, bytes held after) per transfer;
         `sizes` is what the remote reports before each retry (default: the bytes held after the last transfer)."""
-        with tempfile.TemporaryDirectory(prefix="sgs-upload-selftest-") as td:
+        with tempfile.TemporaryDirectory(dir=scratch_dir(), prefix="sgs-upload-selftest-") as td:
             local = Path(td) / "pack.tar"
             local.write_bytes(b"x" * total)
             state = {"held": None, "verbs": [], "sleeps": 0, "size_calls": 0}
@@ -507,7 +508,7 @@ def self_test_upload_resume() -> list[str]:
         """Restarts from byte zero on every retry."""
         rc = 1
         for _ in range(attempts):
-            batch = Path(tempfile.mkdtemp(prefix="sgs-upload-fault-")) / "b"
+            batch = Path(tempfile.mkdtemp(dir=scratch_dir(), prefix="sgs-upload-fault-")) / "b"
             batch.write_text(f'put "{local}" "{remote}"\n', encoding="utf-8")
             rc = runner(["sftp", "-b", str(batch), "hd"], dry_run=dry_run)
             if rc == 0:
@@ -516,7 +517,7 @@ def self_test_upload_resume() -> list[str]:
 
     def faulty_trust_exit_code(use_alias, local, remote, dry_run, *, runner, remote_size, attempts, pause, sleep):
         """Believes a zero exit code without checking the remote size."""
-        batch = Path(tempfile.mkdtemp(prefix="sgs-upload-fault-")) / "b"
+        batch = Path(tempfile.mkdtemp(dir=scratch_dir(), prefix="sgs-upload-fault-")) / "b"
         batch.write_text(f'put "{local}" "{remote}"\n', encoding="utf-8")
         return runner(["sftp", "-b", str(batch), "hd"], dry_run=dry_run)
 
@@ -531,7 +532,7 @@ def self_test_upload_resume() -> list[str]:
         rc = 1
         for n in range(attempts):
             verb = "put" if n == 0 else ("reput" if remote_size(use_alias, remote) else "put")
-            batch = Path(tempfile.mkdtemp(prefix="sgs-upload-fault-")) / "b"
+            batch = Path(tempfile.mkdtemp(dir=scratch_dir(), prefix="sgs-upload-fault-")) / "b"
             batch.write_text(f'{verb} "{local}" "{remote}"\n', encoding="utf-8")
             rc = runner(["sftp", "-b", str(batch), "hd"], dry_run=dry_run)
             if rc == 0:
@@ -601,7 +602,7 @@ def self_test_ship() -> list[str]:
     if not bash:
         return ["ship self-test needs bash on PATH (Git Bash on Windows)"]
     roots = deploy_delta.roots_for(theme=True, blocks=False)
-    with tempfile.TemporaryDirectory(prefix="sgs-ship-selftest-") as td:
+    with tempfile.TemporaryDirectory(dir=scratch_dir(), prefix="sgs-ship-selftest-") as td:
         base = Path(td)
         repo = base / "repo"
         (repo / "theme" / "sgs-theme" / "parts").mkdir(parents=True)
@@ -626,7 +627,7 @@ def self_test_ship() -> list[str]:
                     if q.is_file()} if (w / "themes" / "sgs-theme").is_dir() else {}
 
         def batch_file(local: str, remote: str) -> str:
-            f = Path(tempfile.mkdtemp(prefix="sgs-ship-batch-")) / "b"
+            f = Path(tempfile.mkdtemp(dir=scratch_dir(), prefix="sgs-ship-batch-")) / "b"
             f.write_text(f'put "{local}" "{remote}"\n', encoding="utf-8")
             return str(f)
 
@@ -744,7 +745,7 @@ def self_test_vendor_shell() -> list[str]:
 
     def problems_with(build) -> list[str]:
         found = []
-        with tempfile.TemporaryDirectory(prefix="sgs-vendor-shell-") as td:
+        with tempfile.TemporaryDirectory(dir=scratch_dir(), prefix="sgs-vendor-shell-") as td:
             shared = Path(td) / "shared" / "vendor"
             (shared / "composer").mkdir(parents=True)
             (shared / "spatie" / "color").mkdir(parents=True)
@@ -799,7 +800,7 @@ def self_test() -> int:
       4. NO PAYLOAD — with NO ``--payload`` at all, both files are uncovered.
     """
     failures: list[str] = []
-    with tempfile.TemporaryDirectory(prefix="sgs-deploy-selftest-") as td:
+    with tempfile.TemporaryDirectory(dir=scratch_dir(), prefix="sgs-deploy-selftest-") as td:
         repo = Path(td)
 
         def git(*a: str) -> None:

@@ -12,6 +12,7 @@ import shlex
 import subprocess
 import sys
 import tempfile
+from deploy_scratch import scratch_dir
 import time
 from pathlib import Path
 
@@ -339,7 +340,7 @@ def step_oldshape_audit(dry_run: bool, use_alias: bool, target_key: str,
         return 1
     audit = Path(__file__).resolve().parent / "audit-post-content-blocks.py"
     baseline = Path(__file__).resolve().parent / "oldshape-audit-baseline.json"
-    with tempfile.TemporaryDirectory() as td:
+    with tempfile.TemporaryDirectory(dir=scratch_dir()) as td:
         # Subdir named after the target so finding keys match the register/baseline
         # convention ("<target>/<post id>|sgs/hero|…").
         site_dir = Path(td) / target_key

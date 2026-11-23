@@ -12,6 +12,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+from deploy_scratch import scratch_dir
 import time
 from pathlib import Path
 import deploy_cache
@@ -153,7 +154,7 @@ def upload_resumable(use_alias: bool, local: str, remote: str, dry_run: bool, *,
             if held == expected:
                 return 0
             verb = "reput" if held and held < expected else "put"
-        with tempfile.TemporaryDirectory(prefix="sgs-upload-") as td:
+        with tempfile.TemporaryDirectory(dir=scratch_dir(), prefix="sgs-upload-") as td:
             batch = Path(td) / "upload.batch"
             batch.write_text(f'{verb} "{local}" "{remote}"\n', encoding="utf-8")
             rc = runner(sftp_batch_cmd(use_alias, str(batch)), dry_run=dry_run, cwd=REPO_ROOT)
@@ -321,7 +322,7 @@ def run_isolated(args: "argparse.Namespace") -> int:
     with the same argv plus --no-isolate, and clean the worktree up after —
     success, failure, or exception. Returns the child process's exit code.
     """
-    wt_dir = Path(tempfile.gettempdir()) / f"{ISOLATION_WORKTREE_PREFIX}-{os.getpid()}-{int(time.time())}"
+    wt_dir = Path(scratch_dir()) / f"{ISOLATION_WORKTREE_PREFIX}-{os.getpid()}-{int(time.time())}"
     log(f"[isolate] creating worktree at {wt_dir}")
     created = subprocess.run(
         ["git", "worktree", "add", str(wt_dir), "HEAD"],
