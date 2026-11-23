@@ -1,4 +1,4 @@
-// A block's paint states (calibration-fixtures.json `paintStates`, lib/paint-state.mjs): a node that renders in another
+// A block's paint states (the setting record's fixtures.json `paintStates`, lib/paint-state.mjs): a node that renders in another
 // way than the block's default instance is judged against that way's default paint. The Indus rings are empty Floating
 // layers, inert as drawn (pointer-events none, the stylesheet's rule for a layer holding no blocks), while the default
 // instance holds blocks and takes pointer events; judged against it, every ring's pointer-events row read as a missing

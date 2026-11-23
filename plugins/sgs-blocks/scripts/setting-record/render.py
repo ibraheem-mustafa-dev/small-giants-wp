@@ -33,7 +33,7 @@ TIMEOUT = int(os.environ.get('SGS_SETTING_RECORD_TIMEOUT') or 120)  # seconds on
 PLACEHOLDERS = {'{{image}}': 9001, '{{image.url}}': 'https://example.test/wp-content/uploads/calibration.jpg',
                 '{{menu}}': 9101, '{{menuItem}}': 9102, '{{drawer}}': 9103,
                 '{{post2}}': 9201, '{{mega}}': 9202, '{{product}}': 9301,
-                '{{product:text}}': '9301'}  # the product id written as text (computed-route lib/fixture-refs.mjs)
+                '{{product:text}}': '9301'}  # the product id written as text (the fixtures' {{role:text}} token form)
 # What the setting check alone wants of the runner: the plugin's render_block filters, what wp_footer prints, WordPress's
 # own wrapper classes and spacing styles, and the Interactivity state each render collected (apply_directives reads it).
 # Loaded before the runner: writes the PHP files a render loaded (get_included_files()) where SGS_SETTING_RECORD_INCLUDED

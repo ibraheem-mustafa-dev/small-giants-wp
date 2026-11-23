@@ -182,7 +182,7 @@ function withFamilies( cal ) {
 // skeleton record) is its paint state's default paint, per read width where the node draws differently by device
 // (lib/paint-state.mjs::calibrationForNode, lib/fill-device-mode.mjs), with the CSS families completed. `flatOf()` is the
 // filled tree's flat node list, read when the view is asked for (a node's attributes change as Fill writes them); `fixtures`
-// is calibration-fixtures.json (null reads every rest paint as the block's default). Without `rec` the block's own paint.
+// is the setting record's fixtures (lib/setting-record.mjs::recordFixtures; null reads every rest paint as the block's default). Without `rec` the block's own paint.
 // Fill's own passes and every later pass that asks the resolver again (the width ladder, the size pass) take their
 // calibration through this, so a node is never judged at one width against the paint of another width's mode.
 export function nodeCalFor( { raw, flatOf, fixtures = null } ) {
@@ -194,7 +194,7 @@ export function nodeCalFor( { raw, flatOf, fixtures = null } ) {
 // against its paint state's default paint, lib/paint-state.mjs, through st.calFor( name, rec ), per read width where its
 // way of drawing differs by device, lib/fill-device-mode.mjs), ledger: the
 // divergence entries, ledgerStates: the walker states that are the rest state (the ledger's `state` names one),
-// fixtures: calibration-fixtures.json (null reads every rest paint as the block's default).
+// fixtures: the setting record's fixtures (lib/setting-record.mjs::recordFixtures; null reads every rest paint as the block's default).
 // Returns { writes, unmapped, alreadyHeld, notes, handover, spacing, fluid, held, snaps, settleHeld } — `settleHeld( result )` moves
 // every row of result.unmapped whose value the element already renders (lib/fill-held.mjs) into result.alreadyHeld, for the
 // caller to run once all its writers have added their rows and writes.

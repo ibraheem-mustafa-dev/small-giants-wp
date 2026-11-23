@@ -213,7 +213,7 @@ export function planInstances( block, { rows, enumRows = [], schema, snapshot, f
 		}
 		return baseKey;
 	};
-	// A paint state (calibration-fixtures.json `paintStates`) is a way the block renders whose resting paint differs from
+	// A paint state (the setting record's fixtures.json `paintStates`) is a way the block renders whose resting paint differs from
 	// the default instance's (an empty Floating layer is inert, a layer holding blocks takes pointer events): one more
 	// default instance each, read for its paint only, never for a setting. A state drawn with attributes it needs only to
 	// render (an empty layer's border and size) names in `props` the properties its render shape changes, and keeps only

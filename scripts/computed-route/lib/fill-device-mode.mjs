@@ -1,5 +1,5 @@
 // A block that draws itself one way on one device and another way on another (Spec 48 FR-48-8): a setting choosing how the
-// block draws (a calibration fixture variant's key, calibration-fixtures.json `variants`, or a paint state's `equals`) that
+// block draws (a fixture variant's key, the setting record's fixtures.json `variants`, or a paint state's `equals`) that
 // holds a value per device, as Tablet / Mobile siblings (`triggerStyle`, `triggerStyleTablet`, `triggerStyleMobile`) or as a
 // tier object (`{ desktop, tablet, mobile }`). A bag drawn as a pill on the desktop and as an icon on the phone is in its pill
 // mode at 1440 and its icon mode at 375: a setting calibration measured only in the pill variant (its `variants`) paints

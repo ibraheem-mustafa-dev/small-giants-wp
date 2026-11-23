@@ -10,7 +10,7 @@
 //   node tools/site-look-bridge.mjs fold < readings.json            -> JSON { discovered, text?, presence?, link? }
 //
 // plan: the instances to render, each { key, attrs, variant, isDefault?, isBase?, baseKey?, discover?, content? }, the
-// fixture taken from the setting record's fixtures.json (the record's fixtures replace calibration-fixtures.json). The
+// fixture taken from the setting record's fixtures.json (the fixtures the site look and Fill both read). The
 // media object is the runner's stand-in image (setting-record/render.py::PLACEHOLDERS), named by placeholder so the
 // runner fills it. fold: { discover: [ { discover, def, read } ], content: [ { content, contentDef, contentRead } ] }, a
 // read being { width: { path: reading } } as calibration's page readers returned it.

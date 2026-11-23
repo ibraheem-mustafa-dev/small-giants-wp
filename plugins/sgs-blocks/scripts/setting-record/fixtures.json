@@ -1,6 +1,6 @@
 {
 	"_meta": {
-		"purpose": "Per-block fixtures for the offline setting check (instances.py) and the site look (../site-look/site_look.py). `attributes` is the plain block, as a new node renders it, with the stand-ins it needs to render offline at all; the site look draws it alone. `checkAttributes` is what the check adds to test a part's settings (a shown label, a background image, a content width); instances.py::check_fixture lays it over `attributes` for every render the check plans (split_fixtures.py decides and guards the split). Also per block: variants, partner preconditions, children, parents and paint states, plus `harness` (the render harness options: stubWoocommerce, renderFile, postFile, productFile, attachmentsFile; paths relative to this folder) and `post` (steps the renderer applies to the rendered markup, standing in for a view script). Seeded from scripts/computed-route/calibration-fixtures.json (see each block's `notes`)."
+		"purpose": "Per-block fixtures for the offline setting check (instances.py) and the site look (../site-look/site_look.py). `attributes` is the plain block, as a new node renders it, with the stand-ins it needs to render offline at all; the site look draws it alone. `checkAttributes` is what the check adds to test a part's settings (a shown label, a background image, a content width); instances.py::check_fixture lays it over `attributes` for every render the check plans (split_fixtures.py decides and guards the split). Also per block: variants, partner preconditions, children, parents and paint states, plus `harness` (the render harness options: stubWoocommerce, renderFile, postFile, productFile, attachmentsFile; paths relative to this folder) and `post` (steps the renderer applies to the rendered markup, standing in for a view script). Seeded from calibration's fixture file, retired 2026-11-23, and the motion render paths (see each block's `notes`); Fill reads these entries too (computed-route lib/setting-record.mjs::recordFixtures)."
 	},
 	"_shared": {
 		"purpose": "Partners and reasons for settings every block receives from a shared extension; a block's own preconditions win.",
@@ -568,7 +568,7 @@
 				]
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/accordion-item": {
 		"attributes": {
@@ -588,14 +588,14 @@
 				"attributes": {}
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23)."
 	},
 	"sgs/account": {
 		"attributes": {},
 		"harness": {
 			"stubWoocommerce": true
 		},
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json. Calibration-only keys not carried (they set up a live site): order."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json. Calibration-only keys not carried (they set up a live site): order."
 	},
 	"sgs/audio": {
 		"attributes": {
@@ -605,7 +605,7 @@
 			"audioMimeType": "audio/wav",
 			"title": "Sample sound"
 		},
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23)."
 	},
 	"sgs/before-after": {
 		"attributes": {
@@ -633,7 +633,7 @@
 			"beforeLabel": "Before",
 			"afterLabel": "After"
 		},
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/brand-strip": {
 		"attributes": {
@@ -680,7 +680,7 @@
 				"brandTextTile": true
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/breadcrumbs": {
 		"attributes": {
@@ -691,7 +691,7 @@
 			"showHome": true,
 			"homeLabel": "Home"
 		},
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/business-info": {
 		"attributes": {
@@ -741,7 +741,7 @@
 				}
 			}
 		},
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json. Calibration-only keys not carried (they set up a live site): chunk."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json. Calibration-only keys not carried (they set up a live site): chunk."
 	},
 	"sgs/buybox": {
 		"attributes": {
@@ -968,7 +968,7 @@
 				"postId": 52
 			}
 		},
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/card-grid": {
 		"attributes": {
@@ -1077,7 +1077,7 @@
 			"overlayColour": "#000000",
 			"overlayOpacity": 40
 		},
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/choice-flow": {
 		"attributes": {
@@ -1276,7 +1276,7 @@
 				]
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/choice-flow-question": {
 		"attributes": {
@@ -1379,7 +1379,7 @@
 				}
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/choice-flow-result": {
 		"attributes": {
@@ -1430,7 +1430,7 @@
 				}
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23)."
 	},
 	"sgs/collapsible-text": {
 		"attributes": {
@@ -1438,7 +1438,7 @@
 			"collapsible": true,
 			"collapsedLines": 2
 		},
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/commerce-note": {
 		"attributes": {
@@ -1510,7 +1510,7 @@
 				}
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/countdown-timer": {
 		"attributes": {
@@ -1523,7 +1523,7 @@
 			"showSeconds": true,
 			"expiredMessage": "This offer has expired."
 		},
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/counter": {
 		"attributes": {
@@ -1535,7 +1535,7 @@
 			"prefix": "",
 			"duration": 2000
 		},
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/decorative-image": {
 		"attributes": {
@@ -1607,7 +1607,7 @@
 				}
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23)."
 	},
 	"sgs/diagram-dimension": {
 		"attributes": {
@@ -1636,7 +1636,7 @@
 				}
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23)."
 	},
 	"sgs/feature-grid": {
 		"attributes": {},
@@ -1661,7 +1661,7 @@
 				}
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/filter-search": {
 		"attributes": {
@@ -1705,7 +1705,7 @@
 			"renderFile": "fixtures/filter-search-wc.php"
 		},
 		"notes": [
-			"Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json; the entry was then corrected, as follows.",
+			"Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json; the entry was then corrected, as follows.",
 			"The attributes name taxonomy product_brand in taxonomy-terms mode, but the stand-in registry held product_cat only: src/blocks/filter-search/resolve-taxonomy-terms.php::sgs_filter_search_resolve_taxonomy_terms returns null (render.php returns, nothing prints) unless taxonomy_exists() and get_object_taxonomies( 'product' ) hold the name. harness.taxonomies now registers product_brand against the product object type (the runner's taxonomies file; wp-stubs.php::taxonomy_exists, get_object_taxonomies, get_taxonomy, get_terms) with three terms: the list prints, and the search input prints because the term count (3) reaches the threshold (render.php::$show_input, threshold 2).",
 			"showCounts is true, so each term row prints its count (resolve-taxonomy-terms.php::$show_counts).",
 			"The runner's stubs lack add_query_arg(), which builds each term's toggle link (resolve-taxonomy-terms.php::sgs_filter_search_resolve_taxonomy_terms): fixtures/filter-search-wc.php declares it (only when absent) and requires the block's render.php."
@@ -1726,7 +1726,7 @@
 				}
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23)."
 	},
 	"sgs/form-field-checkbox": {
 		"attributes": {
@@ -1746,7 +1746,7 @@
 				}
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23)."
 	},
 	"sgs/form-field-consent": {
 		"attributes": {
@@ -1762,7 +1762,7 @@
 				}
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23)."
 	},
 	"sgs/form-field-date": {
 		"attributes": {
@@ -1779,7 +1779,7 @@
 				}
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23)."
 	},
 	"sgs/form-field-email": {
 		"attributes": {
@@ -1798,7 +1798,7 @@
 				}
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23)."
 	},
 	"sgs/form-field-file": {
 		"attributes": {
@@ -1829,7 +1829,7 @@
 				}
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23)."
 	},
 	"sgs/form-field-hidden": {
 		"attributes": {
@@ -1845,7 +1845,7 @@
 				}
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23)."
 	},
 	"sgs/form-field-number": {
 		"attributes": {
@@ -1869,7 +1869,7 @@
 				}
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23)."
 	},
 	"sgs/form-field-phone": {
 		"attributes": {
@@ -1888,7 +1888,7 @@
 				}
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23)."
 	},
 	"sgs/form-field-radio": {
 		"attributes": {
@@ -1908,7 +1908,7 @@
 				}
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23)."
 	},
 	"sgs/form-field-select": {
 		"attributes": {
@@ -1949,7 +1949,7 @@
 				}
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23)."
 	},
 	"sgs/form-field-text": {
 		"attributes": {
@@ -1968,7 +1968,7 @@
 				}
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23)."
 	},
 	"sgs/form-field-textarea": {
 		"attributes": {
@@ -1987,7 +1987,7 @@
 				}
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23)."
 	},
 	"sgs/form-field-tiles": {
 		"attributes": {
@@ -2020,7 +2020,7 @@
 				}
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/form-review": {
 		"attributes": {
@@ -2035,7 +2035,7 @@
 				}
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23)."
 	},
 	"sgs/form-step": {
 		"attributes": {
@@ -2149,7 +2149,7 @@
 				}
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23)."
 	},
 	"sgs/free-delivery-bar": {
 		"attributes": {
@@ -2249,7 +2249,7 @@
 			}
 		},
 		"notes": [
-			"Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json; the entry was then corrected, as follows.",
+			"Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json; the entry was then corrected, as follows.",
 			"The second variant held layout as the string \"carousel\", but layout is a per-device object ({desktop,tablet,mobile}, block.json attributes.layout): instances.py::_object_values reads the held value's desktop tier and raised AttributeError ('str' object has no attribute 'get'). The variant now holds the object, carousel at every device, because sgs_gallery_layout_tiers honours a carousel only when all three tiers are carousel (src/blocks/gallery/render.php::$sgs_gal_tiers).",
 			"mediaItems held the retired flat shape (id, url, mime at the item's top level); render.php::$images reads each item's picture or video from source.<device> ({kind,id,url,width,height}), so the old items drew nothing. They now follow the render paths' attachment and media-slot paths: two images with an attachment id (11 and 12, in harness.attachments, so wp_get_attachment_image() draws them), an image with no id (the shared media renderer draws it) and a video (the media renderer's video markup). showCaptions is true, so each item draws its caption; enableLightbox is true by default, so each tile sits in the lightbox trigger."
 		]
@@ -2286,7 +2286,7 @@
 				"badgeStyle": "stacked"
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/google-reviews": {
 		"attributes": {
@@ -2343,14 +2343,14 @@
 			"showBreakdown": true,
 			"showArrows": true
 		},
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/heading": {
 		"attributes": {
 			"content": "Calibration heading with a <a href=\"https://example.com/\">link</a>",
 			"level": "h4"
 		},
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23)."
 	},
 	"sgs/hero": {
 		"attributes": {
@@ -2420,7 +2420,7 @@
 		"harness": {
 			"attachmentsFile": "fixtures/attachments.json"
 		},
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/icon": {
 		"attributes": {
@@ -2446,7 +2446,7 @@
 				"linkUrl": "/"
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/icon-list": {
 		"attributes": {
@@ -2511,7 +2511,7 @@
 				]
 			}
 		},
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/image-sequence": {
 		"attributes": {
@@ -2529,14 +2529,14 @@
 			"desktopFramesUrl": "https://example.test/frames/d-",
 			"desktopFrameCount": 30
 		},
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/info-box": {
 		"attributes": {
 			"heading": "A sample heading",
 			"description": "A short supporting statement."
 		},
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23)."
 	},
 	"sgs/label": {
 		"attributes": {
@@ -2561,7 +2561,7 @@
 				"linkUnderline": "always"
 			}
 		},
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23)."
 	},
 	"sgs/language-switch": {
 		"attributes": {
@@ -2581,14 +2581,14 @@
 		"checkAttributes": {
 			"separator": "/"
 		},
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/local-time": {
 		"attributes": {
 			"timeZone": "Europe/London",
 			"label": "London"
 		},
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/measured-diagram": {
 		"attributes": {
@@ -2634,7 +2634,7 @@
 				}
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23)."
 	},
 	"sgs/media": {
 		"attributes": {
@@ -2752,7 +2752,7 @@
 		"harness": {
 			"attachmentsFile": "fixtures/attachments.json"
 		},
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/mega-aside": {
 		"attributes": {},
@@ -2779,7 +2779,7 @@
 				}
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23)."
 	},
 	"sgs/mega-group": {
 		"attributes": {},
@@ -3019,7 +3019,7 @@
 				}
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23)."
 	},
 	"sgs/mega-panel": {
 		"attributes": {
@@ -3172,7 +3172,7 @@
 				]
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/message-preview": {
 		"attributes": {},
@@ -3221,7 +3221,7 @@
 				}
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/multi-button": {
 		"attributes": {},
@@ -3257,7 +3257,7 @@
 				}
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/nav-drawer": {
 		"attributes": {
@@ -3431,7 +3431,7 @@
 				]
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/nav-drawer-menu": {
 		"attributes": {
@@ -3506,7 +3506,7 @@
 				"55": "https://example.test/thumb.jpg"
 			}
 		},
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/notice-banner": {
 		"attributes": {
@@ -3554,7 +3554,7 @@
 				]
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/notice-message": {
 		"attributes": {
@@ -3576,7 +3576,7 @@
 				}
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23)."
 	},
 	"sgs/option-picker": {
 		"attributes": {
@@ -3593,7 +3593,7 @@
 			],
 			"defaultSelected": "small"
 		},
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/order-items": {
 		"attributes": {},
@@ -3646,7 +3646,7 @@
 				}
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/post-grid": {
 		"attributes": {
@@ -3705,7 +3705,7 @@
 				"202": "https://example.test/t2.jpg"
 			}
 		},
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/pricing-table": {
 		"attributes": {},
@@ -3753,7 +3753,7 @@
 			],
 			"columns": 2
 		},
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/process-steps": {
 		"attributes": {
@@ -3775,7 +3775,7 @@
 				}
 			]
 		},
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/product-card": {
 		"attributes": {
@@ -4013,7 +4013,7 @@
 				"31": "https://example.test/a.jpg"
 			}
 		},
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/product-faq": {
 		"attributes": {
@@ -4050,7 +4050,7 @@
 				]
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23)."
 	},
 	"sgs/product-faq-item": {
 		"attributes": {
@@ -4071,14 +4071,14 @@
 				"attributes": {}
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23)."
 	},
 	"sgs/product-search": {
 		"attributes": {
 			"placeholder": "Search products",
 			"buttonLabel": "Search"
 		},
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/quote": {
 		"attributes": {
@@ -4095,7 +4095,7 @@
 				}
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/responsive-logo": {
 		"attributes": {
@@ -4111,7 +4111,7 @@
 		"harness": {
 			"attachmentsFile": "fixtures/attachments.json"
 		},
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/separator": {
 		"attributes": {},
@@ -4126,7 +4126,7 @@
 				"contentIconName": "star"
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/site-footer": {
 		"attributes": {},
@@ -4163,7 +4163,7 @@
 				]
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/site-footer-row": {
 		"attributes": {
@@ -4183,7 +4183,7 @@
 				"attributes": {}
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/site-header": {
 		"attributes": {
@@ -4279,7 +4279,7 @@
 		"harness": {
 			"postFile": "fixtures/menu-post.json"
 		},
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/site-header-row": {
 		"attributes": {
@@ -4315,7 +4315,7 @@
 				}
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/social-icons": {
 		"attributes": {
@@ -4415,7 +4415,7 @@
 				}
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23)."
 	},
 	"sgs/star-rating": {
 		"attributes": {
@@ -4431,7 +4431,7 @@
 				"displayMode": "stars-with-value-and-count"
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/store-selector": {
 		"attributes": {
@@ -4451,7 +4451,7 @@
 				}
 			]
 		},
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/tab": {
 		"attributes": {
@@ -4474,7 +4474,7 @@
 				}
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23)."
 	},
 	"sgs/table-of-contents": {
 		"attributes": {
@@ -4483,7 +4483,7 @@
 		"harness": {
 			"postContent": "<!-- wp:core/heading {\"level\":2} --><h2 class=\"wp-block-heading\">First section</h2><!-- /wp:core/heading --><!-- wp:core/paragraph --><p>Text.</p><!-- /wp:core/paragraph --><!-- wp:core/heading {\"level\":3} --><h3 class=\"wp-block-heading\">A subsection</h3><!-- /wp:core/heading --><!-- wp:core/heading {\"level\":2} --><h2 class=\"wp-block-heading\">Second section</h2><!-- /wp:core/heading -->"
 		},
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json. Calibration-only keys not carried (they set up a live site): before."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json. Calibration-only keys not carried (they set up a live site): before."
 	},
 	"sgs/tabs": {
 		"attributes": {
@@ -4519,7 +4519,7 @@
 				]
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/team-member": {
 		"attributes": {
@@ -4556,7 +4556,7 @@
 				"desktop": "1 / 1"
 			}
 		},
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/testimonial": {
 		"attributes": {
@@ -4601,7 +4601,7 @@
 			},
 			"workAlt": "Work"
 		},
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/testimonial-slider": {
 		"attributes": {},
@@ -4628,7 +4628,7 @@
 				}
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/text": {
 		"attributes": {
@@ -4654,7 +4654,7 @@
 				"dropCap": true
 			}
 		},
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23)."
 	},
 	"sgs/theme-toggle": {
 		"attributes": {
@@ -4676,7 +4676,7 @@
 				}
 			}
 		},
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/timeline": {
 		"attributes": {
@@ -4719,7 +4719,7 @@
 				"21": "https://example.test/t.jpg"
 			}
 		},
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/trust-bar": {
 		"attributes": {
@@ -4779,7 +4779,7 @@
 				}
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/trustpilot-reviews": {
 		"attributes": {
@@ -4817,7 +4817,7 @@
 			"showDots": true,
 			"businessUnitUrl": "https://example.test/tp"
 		},
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/whatsapp-cta": {
 		"attributes": {
@@ -4838,7 +4838,7 @@
 				"cardSubline": "We usually reply within the hour"
 			}
 		],
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/wishlist-link": {
 		"attributes": {},
@@ -4847,7 +4847,7 @@
 			"showLabel": true,
 			"showCount": true
 		},
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
 	},
 	"sgs/wishlist-panel": {
 		"attributes": {
@@ -4856,6 +4856,6 @@
 		"checkAttributes": {
 			"heading": "Saved for later"
 		},
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json. Calibration-only keys not carried (they set up a live site): settleGone, wishlist."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json. Calibration-only keys not carried (they set up a live site): settleGone, wishlist."
 	}
 }

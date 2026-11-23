@@ -1,9 +1,0 @@
-[
-	{ "file": "lib/cache.mjs", "find": "return paint && paintOwner( paint, own ) === own ? paint : null;", "replace": "return paint && paintSite( paint.site ) === own ? paint : null;", "why": "the code before the rule: a removed scratch copy's paint is refused in its own folder" },
-	{ "file": "lib/cache.mjs", "find": "return SCRATCH_NAME.test( String( recorded ) ) && ! Object.hasOwn( targets, recorded ) ? folder : paintSite( recorded, targets );", "replace": "return paintSite( recorded, targets );", "why": "an unstamped scratch-copy paint is never adopted by its folder" },
-	{ "file": "lib/cache.mjs", "find": "SCRATCH_NAME.test( String( recorded ) ) && ! Object.hasOwn( targets, recorded ) ? folder", "replace": "! Object.hasOwn( targets, recorded ) ? folder", "why": "any unknown recorded site is adopted by its folder, not only a scratch copy" },
-	{ "file": "lib/cache.mjs", "find": "SCRATCH_NAME.test( String( recorded ) ) && ! Object.hasOwn( targets, recorded ) ? folder", "replace": "SCRATCH_NAME.test( String( recorded ) ) ? folder", "why": "a scratch copy the targets files still name is adopted by whatever folder holds it" },
-	{ "file": "lib/cache.mjs", "find": "if ( paint?.paintFolder ) {", "replace": "if ( false ) {", "why": "the stamp is ignored, so a stamped file copied into another folder is read there" },
-	{ "file": "lib/cache.mjs", "find": "JSON.stringify( { ...paint, paintFolder: paintSite( site ) }, null, 1 )", "replace": "JSON.stringify( paint, null, 1 )", "why": "writePaint leaves the file unstamped" },
-	{ "file": "lib/cache.mjs", "find": "return ( Object.hasOwn( targets, String( site ) ) && targets[ site ].mirrorOf ) || site;", "replace": "return site;", "why": "a mirror no longer shares its test site's folder" }
-]

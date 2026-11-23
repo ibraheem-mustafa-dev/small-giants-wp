@@ -1,4 +1,4 @@
-// A block's paint states (calibration-fixtures.json `paintStates`, measured by calibrate.mjs into the default paint file):
+// A block's paint states (the setting record's fixtures.json `paintStates`, drawn by the site look into its `paintStates`):
 // ways the block renders whose resting paint differs from its default instance's. An empty Floating layer renders as an
 // inert shape (pointer-events none) while the default instance holds blocks (pointer-events auto); judged against the
 // default paint, the empty layer's draft row read as a missing setting though the page already matched. Fill judges a

@@ -11,8 +11,8 @@ check switches on is never taken for the block's default look.
                                                       check makes equals REV's (the split moves no record)
     python split_fixtures.py --self-test              plant each fault in a synthetic fixture and show --check finds it
 
-How --survey decides, per entry (the reference is the route's scripts/computed-route/calibration-fixtures.json, the
-minimal attribute sets calibration drew each block with):
+How --survey decides, per entry (the reference, --reference FILE, is calibration's retired fixture file as of commit
+d1723f886, read from git: the minimal attribute sets calibration drew each block with):
   - an attribute calibration's entry holds with the same value is plain;
   - an attribute calibration's entry holds with another value: when calibration's value names a live site (an absolute URL
     off example.test) the record's offline value is the stand-in and stays plain; otherwise calibration's value is plain
@@ -40,7 +40,6 @@ HERE = Path(__file__).resolve().parent
 PLUGIN = HERE.parents[1]
 REPO = PLUGIN.parents[1]
 FIXTURES = HERE / 'fixtures.json'
-CALIBRATION = REPO / 'scripts' / 'computed-route' / 'calibration-fixtures.json'
 REL = FIXTURES.relative_to(REPO).as_posix()
 LIVE_URL = re.compile(r'https?://(?!example\.test)[a-z0-9.-]+\.[a-z]{2,}', re.I)
 sys.path.insert(0, str(HERE))
@@ -254,7 +253,7 @@ def self_test() -> int:
     merged = split({'_meta': {}, 'sgs/x': {'attributes': {'need': 1, 'data': 1, 'label': 1}, 'variants': [{}]}},
                    [survey_entry('sgs/x', {'attributes': {'need': 1, 'data': 1, 'label': 1}}, None, fake)])
     want(list(merged['sgs/x']) == ['attributes', 'checkAttributes', 'variants'] and I.check_fixture(merged['sgs/x'])['attributes'] == {'need': 1, 'data': 1, 'label': 1}, 'the fix keeps key order and merges back to the old attributes')
-    want(FIXTURES.is_file() and CALIBRATION.parent.is_dir(), 'the paths this tool reads exist')
+    want(FIXTURES.is_file(), 'the fixtures file exists')
     print('self-test', 'passed' if ok else 'FAILED')
     return 0 if ok else 1
 
@@ -271,6 +270,7 @@ def main(argv=None) -> int:
     ap.add_argument('--apply', action='store_true', help='--fix: write fixtures.json')
     ap.add_argument('--against', help='--check: a git revision whose fixtures.json the split must merge back to')
     ap.add_argument('--blocks', help='comma-separated block names (default: every entry)')
+    ap.add_argument('--reference', type=Path, help="--survey, --fix: the pre-split reference fixtures (calibration's file at d1723f886)")
     a = ap.parse_args(argv)
     if a.self_test:
         return self_test()
@@ -284,10 +284,10 @@ def main(argv=None) -> int:
             print(f)
         print(f'{len(found)} fault(s) in {len(blocks_of(sel))} entries' + (f' (against {a.against})' if old else ''))
         return 1 if found else 0
-    if not CALIBRATION.is_file():
-        print(f'{CALIBRATION} is gone: the survey has no reference; --check still runs')
-        return 1
-    rows = survey(data, load(CALIBRATION), only=only)
+    if not a.reference or not a.reference.is_file():
+        print("--survey and --fix need --reference FILE: calibration's fixture file as of commit d1723f886 (git show it to a file)")
+        return 2
+    rows = survey(data, load(a.reference), only=only)
     counts = {}
     for r in rows:
         counts[r['state']] = counts.get(r['state'], 0) + 1

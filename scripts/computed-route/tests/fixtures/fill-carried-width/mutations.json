@@ -2,6 +2,5 @@
 	{"file":"lib/fill-fixture.mjs","find":"if ( ! ( fixture?.carries || [] ).includes( attr ) ) {","replace":"if ( false ) {","why":"every fixture precondition would be written beside its setting, not only the listed switches"},
 	{"file":"lib/fill-fixture.mjs","find":"filter( ( [ name ] ) => undefined === attributes[ name ] )","replace":"filter( () => true )","why":"a width type the node already holds would be overwritten"},
 	{"file":"lib/fill-fixture.mjs","find":"fixture.preconditions?.[ attr ] || {}","replace":"{}","why":"the switch's value would never be read, so none would be written"},
-	{"file":"lib/fill-resolve-element.mjs","find":"carriedFor( st, rec.name, w.attr, node.attributes ) || {}","replace":"{}","why":"a button's fixed width would paint nothing (the 2026-11-19 swatch rows)"},
-	{"file":"lib/calibrate-incremental.mjs","find":"const { carries, ...measured } = fixture || {};","replace":"const measured = fixture || {};","why":"listing a carried setting would recalibrate the block"}
+	{"file":"lib/fill-resolve-element.mjs","find":"carriedFor( st, rec.name, w.attr, node.attributes ) || {}","replace":"{}","why":"a button's fixed width would paint nothing (the 2026-11-19 swatch rows)"}
 ]

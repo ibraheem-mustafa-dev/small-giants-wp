@@ -53,7 +53,7 @@ export function unreadOf( { db, block, cal, attributes = {}, slots = [], written
 		}
 		const p = cal?.presence?.[ attr ];
 		if ( ! p ) {
-			out.push( { kind: 'presence', slot: '', settings: [ attr ], reason: `calibration has no presence reading for ${ attr } (recalibrate, or give it a precondition in calibration-fixtures.json)` } );
+			out.push( { kind: 'presence', slot: '', settings: [ attr ], reason: `the site look has no presence reading for ${ attr } (give it a precondition in the setting record's fixtures.json)` } );
 			continue;
 		}
 		const paths = [ ...( p.shows || [] ), ...( p.hides || [] ) ];

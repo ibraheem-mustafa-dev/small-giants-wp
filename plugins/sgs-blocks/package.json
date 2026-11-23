@@ -21,6 +21,7 @@
     "check:tier-db-parity": "python scripts/migrate-tier-object.py --check-db-parity",
     "check:scalar-tier": "python scripts/migrate-scalar-tier.py --check",
     "check:fixture-split": "python scripts/setting-record/split_fixtures.py --check",
+    "check:retire-calibration": "node ../../scripts/computed-route/tools/retire-calibration.mjs --check",
     "check:scalar-tier-saved": "python scripts/find-scalar-tier-attrs.py --check --no-box",
     "check:box-longhands": "python scripts/migrate-box-longhands.py --check",
     "check:container-band-layers": "python scripts/check-container-band-layers.py --check --ratchet",

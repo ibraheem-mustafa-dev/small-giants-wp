@@ -2540,5 +2540,15 @@
     "budget_ms": 3000,
     "order": 287,
     "tier_reason": "Pre-deploy: every fixture that carries checkAttributes still renders its plain block (attributes alone) with its root printed and not empty, and no attribute sits in both keys with one value; the site look draws attributes alone (Bean chose the split, 2026-11-23). One cached render per such fixture."
+  },
+  {
+    "id": "retire-calibration",
+    "cmd": "node ../../scripts/computed-route/tools/retire-calibration.mjs --check",
+    "tier": "full",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 15000,
+    "order": 288,
+    "tier_reason": "Pre-deploy: the retired calibration (browser measurement, its cache bookkeeping, calibration-fixtures.json and the fixture-reference tools) stays gone: none of its 25 paths exists and no live file imports, runs or names one (the setting record and the site look replace it, 2026-11-23). Reads files only."
   }
 ]
