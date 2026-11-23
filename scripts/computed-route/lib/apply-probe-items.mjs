@@ -75,16 +75,15 @@ export function partItems( { ctx, element, prop, state = null, drafts, lives, la
 	if ( ! at ) {
 		return [ { status: 'no-setting', prop: label ?? prefix, state: state ?? undefined, why: `${ ctx.block } has no ${ state ?? 'resting' } setting for ${ prop } on ${ element }${ why }` } ];
 	}
-	// No slot, or a part that stands for a state its record paints in (asked at rest: the resolver would find the resting
-	// setting of the same element there too): the part's own setting is written by its name.
-	if ( ! at.slot || ( at.paints && ! state ) ) {
+	if ( ! at.slot ) {
 		const row = candidates( ctx.db, ctx.block, prop, state ).find( ( r ) => r.css_element === element );
 		const direct = directItem( { ctx, at, row, element, prop, state, want: want[ 0 ], label, check } );
 		if ( direct ) {
 			return [ direct ];
 		}
 	}
-	const item = stateItem( { ctx, prop, value: want[ 0 ], state, slot: at.slot, label: label ?? at.attr, extra: check, fontPx } );
+	// A part that stands for a state its record paints in is resolved among the settings placed in that state.
+	const item = stateItem( { ctx, prop, value: want[ 0 ], state, paintState: state ? null : at.paints, slot: at.slot, label: label ?? at.attr, extra: check, fontPx } );
 	// The resolver may paint a prop through a setting of another part (the wrapper's); only a setting of this part counts.
 	const own = candidates( ctx.db, ctx.block, prop, state ).filter( ( r ) => r.css_element === element ).map( ( r ) => r.attr_name );
 	const stray = 'op' === item.status ? item.writes.filter( ( w ) => ! own.includes( w.attr ) ) : [];

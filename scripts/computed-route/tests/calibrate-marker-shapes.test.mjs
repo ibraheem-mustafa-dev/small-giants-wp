@@ -62,6 +62,8 @@ test( 'MUST FAIL (card-grid justifyItems no choice markers): a per-device choice
 	assert.deepEqual( ms.map( ( m ) => m.enumValue ), [ 'stretch', 'start', 'center', 'end' ] );
 	assert.deepEqual( ms.find( ( m ) => 'center' === m.enumValue ).attrs, { justifyItems: { desktop: 'center', tablet: 'center', mobile: 'center' } } );
 	assert.deepEqual( markers( 'sgs/container', 'alignItems' ).map( ( m ) => m.enumValue ), [ 'start', 'center', 'end', 'stretch' ] );
+	// A per-device default (feature-grid alignItems: desktop stretch) is no marker: it would read no change.
+	assert.ok( ! markers( 'sgs/feature-grid', 'alignItems' ).some( ( m ) => 'stretch' === m.enumValue ) && markers( 'sgs/feature-grid', 'alignItems' ).length > 0 );
 } );
 
 test( 'negative control: settings that already had markers keep exactly them', () => {

@@ -399,7 +399,7 @@ const clampOk = ( cal, writes ) => writes.length > 0 && writes.every( ( w ) => a
 // modeGaps? (the widths of a mode no setting answers, beside a written mode: byMode) }.
 // 'equal': the draft matches what the node shows at every tier, nothing to write.
 export function resolveProperty( ctx ) {
-	const { node, owned: given = OWNED.get( node ) ?? null, block, prop, draft, baseline, slots, calibration, db, snapshot, log, fontPx = {}, siblings = {}, fluid = null, state = null, declared = {}, declaredFluid = null, contextAt = () => ( {} ), rest } = ctx;
+	const { node, owned: given = OWNED.get( node ) ?? null, block, prop, draft, baseline, slots, calibration, db, snapshot, log, fontPx = {}, siblings = {}, fluid = null, state = null, paintState = null, declared = {}, declaredFluid = null, contextAt = () => ( {} ), rest } = ctx;
 	// The skeleton's content selectors (Site Info's displayType) stay as written: a look never changes which parts a block renders.
 	const selectors = contentSelectors( { db, block, attributes: node.attributes, calibration } );
 	const owned = Object.keys( selectors ).length ? { ...selectors, ...( given || {} ) } : given;
@@ -428,7 +428,7 @@ export function resolveProperty( ctx ) {
 		const call = ( perWidth ) => {
 			sink.length = 0;
 			const declaredForm = Object.fromEntries( Object.keys( perWidth ).filter( ( w ) => undefined !== declared[ w ] ).map( ( w ) => [ w, declared[ w ] ] ) );
-			return resolve( { block, slot, anyIndex: false, tag: null, prop, state, perWidth, fontPx, current: node.attributes || {}, ...( owned ? { owned } : {} ), siblings, declaredForm, ...( rest ? { rest } : {} ), ...( declaredFluid ? { declared: declaredFluid } : {} ) }, { db, snapshot, calibration, log: sink } );
+			return resolve( { block, slot, anyIndex: false, tag: null, prop, state, perWidth, fontPx, current: node.attributes || {}, ...( owned ? { owned } : {} ), siblings, declaredForm, ...( rest ? { rest } : {} ), ...( paintState ? { paintState } : {} ), ...( declaredFluid ? { declared: declaredFluid } : {} ) }, { db, snapshot, calibration, log: sink } );
 		};
 		let r = call( included );
 		const split = 'no-setting' === r.gap ? byMode( { calibration, included, draft, call, sink, log, slot } ) : null;

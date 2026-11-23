@@ -334,7 +334,9 @@ function plainMarkers( row, schema, snapshot, current, ctx ) {
 		const extra = pair ? pair.attrs : {};
 		// A per-device choice (an object holding a value per tier) is written at every tier.
 		const perDevice = 'tier_object' === row.tier_shape && t.includes( 'object' ) && ! t.includes( 'string' );
-		return def.enum.filter( ( v ) => '' !== v && v !== def.default ).map( ( v ) => ( { label: `enum-${ v }`, enumValue: v, attrs: { ...set( perDevice ? everyTier( v ) : v ), ...extra }, expect: null, ...( pair ? { base: pair.attrs } : {} ) } ) );
+		// A per-device choice's default is the value its desktop tier holds (an unset tier inherits it).
+		const dflt = perDevice && def.default && 'object' === typeof def.default ? def.default.desktop : def.default;
+		return def.enum.filter( ( v ) => '' !== v && v !== dflt ).map( ( v ) => ( { label: `enum-${ v }`, enumValue: v, attrs: { ...set( perDevice ? everyTier( v ) : v ), ...extra }, expect: null, ...( pair ? { base: pair.attrs } : {} ) } ) );
 	}
 	// Transition timing: only a setting whose value is a time or an easing (transitionMarker's two-fact gate); a setting
 	// that merely triggers a transition has no time to write, so it gets no marker. An enum setting returned above.

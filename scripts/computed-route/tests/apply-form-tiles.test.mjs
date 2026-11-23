@@ -45,6 +45,13 @@ test( 'tiles: the selected ground, border and label colour are written to the ti
 	assert.deepEqual( writes( tiles.decide( ctx( d, d ) ) ), [] );
 } );
 
+test( 'MUST FAIL: a selected tile\'s shadow, which no direct write holds, is resolved among the settings placed in the checked state', () => {
+	const d = read( { selectedBg: 'rgb(10, 126, 168)', check: tick, hoverBorder: 'rgba(0, 0, 0, 0)' } );
+	const l = read( { selectedBg: 'rgb(10, 126, 168)', check: tick, hoverBorder: 'rgba(0, 0, 0, 0)' } );
+	d.selected.tile[ 'box-shadow' ] = 'rgba(0, 0, 0, 0.2) 0px 4px 12px 0px';
+	assert.deepEqual( writes( tiles.decide( ctx( d, l ) ) ).map( ( w ) => w[ 0 ] ), [ 'tileSelectedShadow' ] );
+} );
+
 test( 'tiles: a tick the draft shows in line, over a live tick that is hidden, writes selectedCheckPosition; a shown tick writes none', () => {
 	const d = read( { selectedBg: 'rgb(10, 126, 168)', check: tick, hoverBorder: 'rgba(0, 0, 0, 0)' } );
 	const l = read( { selectedBg: 'rgb(10, 126, 168)', check: hidden, hoverBorder: 'rgba(0, 0, 0, 0)' } );

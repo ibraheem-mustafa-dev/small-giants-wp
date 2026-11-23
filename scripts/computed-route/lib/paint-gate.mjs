@@ -9,6 +9,7 @@
 // stage): a block named there does not stop the run, and the run says so in one line per block (missingPaintLine), so a
 // clone goes through without its default paint and never silently. Only block names are accepted, never a wildcard or `all`.
 import { walk } from './tree.mjs';
+import { runsShop } from './setting-record.mjs';
 
 const FLAG = '--allow-missing-paint';
 const BLOCK_NAME = /^[a-z0-9-]+\/[a-z0-9-]+$/;
@@ -25,8 +26,10 @@ export const paintGaps = ( blocks, calFor ) => [ ...new Set( blocks ) ].filter( 
 
 // The stop message: the blocks and the one command that builds their look for `client`, and the allowance that lets the
 // run go on without it.
-export const paintGapMessage = ( { gaps, client, what = 'this run' } ) =>
-	`${ what } stops before writing: ${ gaps.length } block${ 1 === gaps.length ? '' : 's' } in its tree ha${ 1 === gaps.length ? 's' : 've' } no default look for ${ client } (${ gaps.join( ', ' ) }), so every setting written for ${ 1 === gaps.length ? 'it' : 'them' } would be judged against nothing. Build ${ 1 === gaps.length ? 'its' : 'their' } site look first: python plugins/sgs-blocks/scripts/site-look/site_look.py --snapshot sites/${ client }/theme-snapshot.json --site ${ client } --out scripts/computed-route/site-look --blocks ${ gaps.join( ',' ) }; or, when ${ 1 === gaps.length ? 'it cannot' : 'they cannot' } be calibrated, name ${ 1 === gaps.length ? 'it' : 'them' } in ${ FLAG } ${ gaps.join( ',' ) } to resolve ${ 1 === gaps.length ? 'its' : 'their' } settings without default paint`;
+// `reasons`: { block: why its look is missing } (the record's paintMissing, the builder's error when it failed); `shop`:
+// the client runs WooCommerce, so its looks are built with the shop stylesheet.
+export const paintGapMessage = ( { gaps, client, what = 'this run', reasons = {}, shop = false } ) =>
+	`${ what } stops before writing: ${ gaps.length } block${ 1 === gaps.length ? '' : 's' } in its tree ha${ 1 === gaps.length ? 's' : 've' } no default look for ${ client } (${ gaps.join( ', ' ) }), so every setting written for ${ 1 === gaps.length ? 'it' : 'them' } would be judged against nothing.${ gaps.filter( ( b ) => reasons[ b ] ).map( ( b ) => ` ${ b }: ${ String( reasons[ b ] ).slice( 0, 300 ) }.` ).join( '' ) } Build ${ 1 === gaps.length ? 'its' : 'their' } site look first: python plugins/sgs-blocks/scripts/site-look/site_look.py --snapshot sites/${ client }/theme-snapshot.json --site ${ client } --out scripts/computed-route/site-look --blocks ${ gaps.join( ',' ) }${ shop ? ' --woocommerce' : '' }; or, when ${ 1 === gaps.length ? 'it cannot' : 'they cannot' } be calibrated, name ${ 1 === gaps.length ? 'it' : 'them' } in ${ FLAG } ${ gaps.join( ',' ) } to resolve ${ 1 === gaps.length ? 'its' : 'their' } settings without default paint`;
 
 // The one line a run prints for each named block its tree uses without default paint.
 export const missingPaintLine = ( { block, client, what = 'this run' } ) =>
@@ -73,7 +76,8 @@ export function assertPaints( { blocks, calFor, client = null, what, allow = [],
 	const gaps = paintGaps( blocks, calFor );
 	const stop = gaps.filter( ( b ) => ! allow.includes( b ) );
 	if ( stop.length ) {
-		throw new Error( paintGapMessage( { gaps: stop, client, what } ) );
+		const reasons = Object.fromEntries( stop.map( ( b ) => [ b, calFor( b )?.paintMissing ] ) );
+		throw new Error( paintGapMessage( { gaps: stop, client, what, reasons, shop: runsShop( client ) } ) );
 	}
 	gaps.forEach( ( block ) => log( missingPaintLine( { block, client, what } ) ) );
 	return gaps;

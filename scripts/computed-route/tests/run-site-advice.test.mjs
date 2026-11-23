@@ -13,6 +13,30 @@ import { assertPaints } from '../lib/paint-gate.mjs';
 const ROUTE = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..' );
 const src = ( f ) => fs.readFileSync( path.join( ROUTE, f ), 'utf8' );
 
+test( 'MUST FAIL: the stop message gives each block\'s reason and the shop flag a shop client\'s looks are built with', () => {
+	const shopRepoClient = 'mamas-munches-redesign';
+	const e = ( () => {
+		try {
+			assertPaints( { blocks: [ 'sgs/hero' ], calFor: () => ( { paintMissing: 'the site look of sgs/hero did not build: boom' } ), client: shopRepoClient, what: 'fill home', log: () => {} } );
+		} catch ( err ) {
+			return err.message;
+		}
+		return '';
+	} )();
+	assert.match( e, /sgs\/hero: the site look of sgs\/hero did not build: boom/ );
+	assert.match( e, /--blocks sgs\/hero --woocommerce;/ );
+	assert.doesNotMatch( assertPaintsMessage( 'indus-foods' ), /--woocommerce/, 'negative control: a client with no shop' );
+} );
+
+const assertPaintsMessage = ( client ) => {
+	try {
+		assertPaints( { blocks: [ 'sgs/hero' ], calFor: () => ( { paintMissing: true } ), client, what: 'x', log: () => {} } );
+	} catch ( e ) {
+		return e.message;
+	}
+	return '';
+};
+
 test( 'the paint gate names the client and its site look command in its advice', () => {
 	assert.throws( () => assertPaints( { blocks: [ 'sgs/hero' ], calFor: () => ( { paintMissing: true } ), client: 'c', what: 'fill home', log: () => {} } ), /no default look for c \(sgs\/hero\)[\s\S]*site_look\.py --snapshot sites\/c\/theme-snapshot\.json --site c / );
 } );

@@ -9,6 +9,7 @@
 //                         proved entries or unproved ones Bean's certainty rule accepted (`accepted`); an unproved entry
 //                         that is not accepted never enters `settings` and is listed in `untestedStates` with its cause
 //   discovered, text, link, presence, elements, paintStates  from the site look
+//   unplaced            { setting: why } for a setting the record places whose element the default look does not draw
 //   dead                settings the record tested that paint nothing and whose block_attributes row names no
 //                       property (a setting whose row names its property and element paints once its partner draws
 //                       the element, Bean 2026-11-22, and takes its placement from that row)
@@ -249,7 +250,8 @@ export function rowPaths( row, look, block ) {
 		return own;
 	}
 	const short = slugOf( block );
-	const names = ( c ) => ( 'ROOT' === part ? ownClasses( c.text ).some( ( k ) => k === `sgs-${ short }` || k === `wp-block-sgs-${ short }` ) : ownClasses( c.text ).includes( part ) );
+	// The root is named by its own class, its wp-block class or one of its modifiers (`.sgs-container--grid`).
+	const names = ( c ) => ( 'ROOT' === part ? ownClasses( c.text ).some( ( k ) => k === `sgs-${ short }` || k === `wp-block-sgs-${ short }` || k.startsWith( `sgs-${ short }--` ) ) : ownClasses( c.text ).includes( part ) );
 	const at = comps.map( names ).lastIndexOf( true );
 	if ( at < 0 || at === comps.length - 1 ) {
 		return own;
@@ -285,23 +287,66 @@ export function rowPaths( row, look, block ) {
 
 // ---------------------------------------------------------------- tiers
 
-const CONDITION = /\((min|max)-width\s*:\s*([\d.]+)px\)/g;
+// The media features a plain desktop screen read holds (the browser the drafts are read in: a mouse, motion allowed,
+// no forced colours, light scheme). Any other feature (reduced motion, forced colours, a coarse pointer) does not hold.
+const PLAIN_SCREEN = new Set( [ 'hover:hover', 'any-hover:hover', 'pointer:fine', 'any-pointer:fine', 'prefers-reduced-motion:no-preference', 'forced-colors:none', 'prefers-color-scheme:light', 'prefers-contrast:no-preference' ] );
 
-// Whether one tier (a media or container condition list as the record writes it) holds on a plain screen `w` px wide.
-// Width tests are evaluated; a container query is taken to hold (its width follows the block's container, `containerTier`);
-// any other condition (reduced motion, forced colours, a pointer) is not the plain screen calibration read, so it does not.
+// The top-level parts of a list, split at commas outside brackets.
+const topLevel = ( text ) => {
+	const out = [];
+	let depth = 0;
+	let cur = '';
+	for ( const ch of text ) {
+		depth += '(' === ch ? 1 : ')' === ch ? -1 : 0;
+		if ( 0 === depth && ',' === ch ) {
+			out.push( cur );
+			cur = '';
+		} else {
+			cur += ch;
+		}
+	}
+	return [ ...out, cur ].map( ( s ) => s.trim() ).filter( Boolean );
+};
+
+// Whether one bracketed media condition (its text without the brackets, spaces removed) holds at width `w`: a min or max
+// width, a range (`768px<=width<=1023.98px`, `width>=768px`), or a plain-screen feature.
+function conditionHolds( c, w ) {
+	const edge = c.match( /^(min|max)-width:([\d.]+)px$/ );
+	if ( edge ) {
+		return 'min' === edge[ 1 ] ? w >= Number( edge[ 2 ] ) : w <= Number( edge[ 2 ] );
+	}
+	const range = c.match( /^(?:([\d.]+)px(<=?))?width(?:(<=?|>=?)([\d.]+)px)?$/ );
+	if ( range && ( range[ 1 ] || range[ 4 ] ) ) {
+		const low = range[ 1 ] ? ( '<' === range[ 2 ] ? w > Number( range[ 1 ] ) : w >= Number( range[ 1 ] ) ) : true;
+		const op = range[ 3 ];
+		const n = Number( range[ 4 ] );
+		const high = ! op || ( '<' === op ? w < n : '<=' === op ? w <= n : '>' === op ? w > n : w >= n );
+		return low && high;
+	}
+	return PLAIN_SCREEN.has( c );
+}
+
+// Whether one tier (a media, container or supports condition as the record writes it) holds on a plain screen `w` px
+// wide. A media query list holds when any query holds; a query holds when its media type is a screen one and every
+// bracketed condition holds (`not` inverts it). Spaces inside the brackets do not matter. A container query is taken to
+// hold (its width follows the block's container, `containerTier`). An @supports test is taken to hold (the drafts are read
+// in a current Chromium, which has the features the block code tests for), and `@supports not …` not to.
 export function tierHolds( tier, w ) {
-	const t = String( tier );
+	const t = String( tier ).trim();
 	if ( /^@container/.test( t ) ) {
 		return true;
 	}
-	const body = t.replace( /^@media\s*/, '' );
-	const tests = [ ...body.matchAll( CONDITION ) ];
-	const rest = body.replace( CONDITION, '' ).replace( /\band\b|\bscreen\b|\ball\b|\bonly\b|[\s()]/g, '' );
-	if ( rest ) {
-		return false;
+	if ( /^@supports/.test( t ) ) {
+		return ! /^@supports\s+not\b/.test( t );
 	}
-	return tests.every( ( [ , edge, n ] ) => ( 'min' === edge ? w >= Number( n ) : w <= Number( n ) ) );
+	return topLevel( t.replace( /^@media\s*/, '' ) ).some( ( query ) => {
+		const not = /^not\s/.test( query );
+		const conditions = [ ...query.matchAll( /\(([^()]*)\)/g ) ].map( ( m ) => m[ 1 ].replace( /\s+/g, '' ) );
+		const words = query.replace( /\([^()]*\)/g, ' ' ).split( /\s+/ ).filter( ( x ) => x && ! [ 'and', 'only', 'not' ].includes( x ) );
+		const typeHolds = words.every( ( x ) => [ 'screen', 'all' ].includes( x ) );
+		const holds = typeHolds && conditions.every( ( c ) => conditionHolds( c, w ) );
+		return not ? ! holds : holds;
+	} );
 }
 
 // The tiers of an entry with its symbolic edges moved to the value `value` of their setting (the record's `symbolic`
@@ -494,11 +539,16 @@ function readRecord( block, client, { db = null, dir = SITE_LOOK_DIR, repo = REP
 	const usableAt = new Set( [ ...usable.values() ].flat().map( ( r ) => ( r.state ? `${ r.setting }:${ r.state }` : r.setting ) ) );
 	const untested = Object.keys( unprovedAt ).filter( ( k ) => ! usableAt.has( k ) );
 	const settings = {};
+	// A setting the record places whose rule picks no element of the default look (a part drawn only beside a partner
+	// setting, a sibling the fixture lacks): kept with why, so a reader can say the record holds it.
+	const unplaced = {};
 	for ( const [ name, rows ] of usable ) {
 		const row = attrRow( handle, block, name );
 		const e = look ? settingEntry( block, name, rows, row, look, facts[ name ] ) : bareEntry( rows, row );
 		if ( e ) {
 			settings[ name ] = e;
+		} else {
+			unplaced[ name ] = `its rule picks no element of the default look (${ [ ...new Set( rows.map( ( r ) => r.part ) ) ].join( ', ' ) })`;
 		}
 	}
 	// A setting the record tested that painted nothing alone: placed from its block_attributes row when the row names its
@@ -512,6 +562,8 @@ function readRecord( block, client, { db = null, dir = SITE_LOOK_DIR, repo = REP
 			settings[ name ] = { slot: slots[ 0 ], slots, property: splitProperty( props[ 0 ] ).short, state: row.css_state || null, forms: facts[ name ]?.forms || [], transform: null, reachedAt: [ ...WIDTHS ], effects: [], tiers: [ [] ], fromAttributes: true };
 		} else if ( ! props.length ) {
 			dead.push( name );
+		} else if ( ! settings[ name ] && look ) {
+			unplaced[ name ] = `its element ${ row?.css_element || '(none named)' } is not drawn in the default look`;
 		}
 	}
 	return {
@@ -526,6 +578,7 @@ function readRecord( block, client, { db = null, dir = SITE_LOOK_DIR, repo = REP
 		elements: look?.elements || {},
 		...( look?.paintStates ? { paintStates: look.paintStates } : {} ),
 		dead: dead.sort(),
+		unplaced,
 		replacesBlock: rec.replacesBlock,
 		untestedStates: untested.sort(),
 		unproved: Object.fromEntries( untested.map( ( k ) => [ k, [ ...unprovedAt[ k ] ].sort() ] ) ),

@@ -1,3 +1,3 @@
 [
-	{"file": "lib/apply-probe-items.mjs", "find": "\tif ( ! at.slot || ( at.paints && ! state ) ) {", "replace": "\tif ( ! at.slot ) {", "why": "a part standing for a state is resolved at rest beside the resting setting"}
+	{"file": "lib/apply-probe-items.mjs", "find": "paintState: state ? null : at.paints, ", "replace": "", "why": "a state part's other properties are resolved at rest"}
 ]

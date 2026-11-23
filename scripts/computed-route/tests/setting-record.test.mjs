@@ -176,10 +176,17 @@ test( 'MUST FAIL: a rule whose selector picks elements below the part paints tho
 	assert.deepEqual( paths( 'sgs-demo__inner', '.sgs-demo__inner > span' ), [], 'a child combinator is not a descendant' );
 	assert.deepEqual( paths( 'sgs-demo__inner', '.sgs-demo__inner > :first-child::before' ), [ `${ P1 }::before`, `${ P2 }::before`, `${ P3 }::before`, `${ SVG }::before` ], 'a positional pseudo-class is not tested; the pseudo-element is kept' );
 	assert.deepEqual( paths( 'sgs-demo__inner', '.sgs-demo__inner > h2' ), [], 'a subject the look does not draw places nothing' );
+	assert.deepEqual( paths( 'ROOT', '.sgs-demo--grid > .sgs-demo__inner' ), [ '.sgs-demo__inner' ], 'a root named by its modifier' );
 	// The loader places a setting from such a row on those elements.
 	const db = fixtureDb( [ { setting: 'itemPadding', part: 'sgs-demo__inner', props: [ 'padding' ] } ] );
 	db.prepare( 'UPDATE setting_placements SET selector = ? WHERE setting = ?' ).run( '.sgs-demo--grid > .sgs-demo__inner > :not( svg )', 'itemPadding' );
 	assert.deepEqual( loadRecord( BLOCK, CLIENT, { db, dir: lookDir( NESTED ), build: false } ).settings.itemPadding.slots, [ P1, P2, P3 ] );
+	// A setting whose rule picks no element of the look is listed as unplaced with why, never dropped silently.
+	db.prepare( 'INSERT INTO setting_placements ( block_slug, setting, part, props, state, tiers, kind, selector ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ? )' ).run( BLOCK, 'headingGap', 'sgs-demo__inner', '["margin-top"]', '', '[]', 'value', '.sgs-demo__inner > h2' );
+	const r = loadRecord( BLOCK, CLIENT, { db, dir: lookDir( NESTED ), build: false } );
+	assert.equal( r.settings.headingGap, undefined );
+	assert.match( r.unplaced.headingGap, /picks no element of the default look/ );
+	assert.equal( r.unplaced.itemPadding, undefined, 'negative control: a placed setting is not unplaced' );
 	// negative controls: a rule on the part itself, a selector that does not name the part, a tag part and a selector list keep the part
 	assert.deepEqual( paths( 'sgs-demo__inner', '.sgs-demo > .sgs-demo__inner' ), [ '.sgs-demo__inner' ] );
 	assert.deepEqual( paths( 'sgs-demo__inner', '.sgs-demo--pill .sgs-demo__badge' ), [ '.sgs-demo__inner' ] );
@@ -212,6 +219,21 @@ test( 'MUST FAIL: the missing looks of a run are built in one call of the builde
 	assert.deepEqual( prepareLooks( [ 'sgs/icon' ], 'acme', { dir, repo, build: false, run } ), [] );
 	assert.deepEqual( prepareLooks( [ 'sgs/icon' ], 'nobody', { dir, repo, build: true, run } ), [] );
 	assert.equal( calls.length, 2 );
+} );
+
+test( 'MUST FAIL: a tier is read as the browser reads it: spaces in the brackets, ranges, lists, plain-screen features, @supports', () => {
+	const at = ( t ) => [ 375, 768, 1440 ].filter( ( w ) => tierHolds( t, w ) );
+	assert.deepEqual( at( '@media ( max-width: 767.98px )' ), [ 375 ], 'spaces inside the brackets' );
+	assert.deepEqual( at( '@media ( 768px <= width <= 1023.98px )' ), [ 768 ], 'range syntax' );
+	assert.deepEqual( at( '@media (width >= 768px)' ), [ 768, 1440 ] );
+	assert.deepEqual( at( '@media (min-width:1024px),(max-width:767.98px)' ), [ 375, 1440 ], 'a list holds where any query holds' );
+	assert.deepEqual( at( '@media(hover:hover) and (prefers-reduced-motion:no-preference)' ), [ 375, 768, 1440 ] );
+	assert.deepEqual( at( '@supports (animation-timeline: scroll())' ), [ 375, 768, 1440 ] );
+	// negative controls: reduced motion, forced colours, print and @supports not never hold on the plain screen
+	assert.deepEqual( at( '@media ( prefers-reduced-motion: reduce )' ), [] );
+	assert.deepEqual( at( '@media (forced-colors:active),print' ), [] );
+	assert.deepEqual( at( '@supports not (display:grid)' ), [] );
+	assert.deepEqual( at( '@media not all and (min-width:768px)' ), [ 375 ] );
 } );
 
 test( 'tier conditions as a plain screen holds them', () => {

@@ -634,10 +634,11 @@ export function resolve( input, ctx ) {
 	};
 	// A setting painting the slot itself wins; otherwise one whose inherited value calibration saw reach the slot. A setting
 	// its record places in a state (a tile's selected ground, painted while it is checked) is no candidate for another state,
-	// even where its block_attributes row names none.
+	// even where its block_attributes row names none. `input.paintState` names that state where the caller reads a part
+	// that stands for it at rest (form-field-tiles' tile-selected: the tile while checked).
 	const tiedBy = ( paths ) => rows.filter( ( r ) => {
 		const c = ctx.calibration.settings?.[ r.attr_name ];
-		return c && paths( c ).some( ( p ) => loose( p ) === slot && sameKind( p ) ) && ( ! c.property || c.property === short || reachedBy( prop ).includes( c.property ) ) && ( c.state ?? null ) === ( state ?? null ) && canGive( r, c ) && holdsDisplay( r ) && inForce( c );
+		return c && paths( c ).some( ( p ) => loose( p ) === slot && sameKind( p ) ) && ( ! c.property || c.property === short || reachedBy( prop ).includes( c.property ) ) && ( c.state ?? null ) === ( input.paintState ?? state ?? null ) && canGive( r, c ) && holdsDisplay( r ) && inForce( c );
 	} );
 	const direct = tiedBy( ( c ) => c.slots || [ c.slot ] );
 	const reached = direct.length ? direct : tiedBy( ( c ) => c.reaches || [] );
