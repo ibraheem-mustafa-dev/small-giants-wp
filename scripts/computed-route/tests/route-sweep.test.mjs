@@ -7,7 +7,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {
 	HELD_OUT, freezeFiles, heldOutFile, surfaceList, recordClients, buildWork, freezeClient, problemKind, summariseSurface, failedSummary, fingerprintNodes, diffNodes,
-	compareSweeps, formatComparison, clientTotals, splitProblems, instrumentCarried, realFaultLines, writeSweep, readSweep, acquireSlots, releaseSlots, shardItems, summariseFill,
+	compareSweeps, formatComparison, formatSweep, prepareSweepLooks, clientTotals, splitProblems, instrumentCarried, realFaultLines, writeSweep, readSweep, acquireSlots, releaseSlots, shardItems, summariseFill,
 } from '../lib/route-sweep.mjs';
 import { parseArgs, defaultFills } from '../tools/route-sweep.mjs';
 
@@ -136,10 +136,9 @@ test( 'heldOutFile and surfaceList leave the held-out surfaces out, by exact nam
 	assert.deepEqual( HELD_OUT.length, 3 );
 } );
 
-test( 'freezeClient copies the build records and the calibration cache with each file\'s source, and leaves out what a propose never reads', () => {
+test( 'freezeClient copies the build records with each file\'s source, and leaves out what a propose never reads', () => {
 	const src = tmp();
 	const gen = tmp();
-	const cache = tmp();
 	const dest = tmp();
 	for ( const f of [ 'surfaces.json', 'page-map.json', 'media-map.json', 'home.origin.json', 'home.tree.json', 'gen.py', 'notes.md', 'intake/intake.json', 'intake/intake.prev.json', 'skeleton/home.inventory.json', 'skeleton/home.skeleton.json', 'skeleton/home.proposal.json', 'skeleton/decisions.json', 'skeleton/about.inventory.json', 'qa/x.json' ] ) {
 		put( path.join( src, f ) );
@@ -147,15 +146,12 @@ test( 'freezeClient copies the build records and the calibration cache with each
 	for ( const f of [ 'intake/inventories/page-home.json', 'intake/inventories/page-about.json', 'intake/replay/abc.har', 'intake/facts.json', 'surfaces.json', 'skeleton/home.inventory.json' ] ) {
 		put( path.join( gen, f ), '{"gen":1}' );
 	}
-	for ( const f of [ 'button.json', 'button.tree.json', 'text.json', '.profile-x/state.json', 'site-a/button.paint.json', 'site-b/button.paint.json' ] ) {
-		put( path.join( cache, f ) );
-	}
-	const m = freezeClient( { dest, client: 'c1', sources: [ { dir: src, label: 'main' }, { dir: gen, label: 'worktree', only: /^intake\/(inventories\/|replay\/|facts\.json$)/ } ], cache: { dir: cache, label: 'cache wt', paintSite: 'site-a' } } );
+	const m = freezeClient( { dest, client: 'c1', sources: [ { dir: src, label: 'main' }, { dir: gen, label: 'worktree', only: /^intake\/(inventories\/|replay\/|facts\.json$)/ } ] } );
 	const names = Object.keys( m.files ).sort();
 	assert.deepEqual( names, [
 		'build/intake/facts.json', 'build/intake/intake.json', 'build/intake/inventories/page-home.json', 'build/intake/replay/abc.har', 'build/media-map.json', 'build/page-map.json', 'build/skeleton/decisions.json', 'build/skeleton/home.inventory.json', 'build/surfaces.json',
-		'cache/button.json', 'cache/site-a/button.paint.json', 'cache/text.json',
 	] );
+	assert.equal( fs.existsSync( path.join( dest, 'c1', 'cache' ) ), false, 'no calibration cache is frozen: the default looks are built from the checkout under test' );
 	assert.equal( m.files[ 'build/intake/facts.json' ].source, 'worktree' );
 	assert.equal( m.files[ 'build/surfaces.json' ].source, 'main', 'the generated source supplies only what intake writes' );
 	assert.match( m.files[ 'build/media-map.json' ].date, /^\d{4}-\d\d-\d\dT/ );
@@ -230,7 +226,7 @@ test( 'parseArgs: a sweep needs records and out, a freeze needs records and a so
 	assert.equal( o.reread, true );
 	assert.deepEqual( o.only, [ 'a/home', 'b/header' ] );
 	assert.equal( parseArgs( [ '--records', 'r', '--out', 'o', '--fill', 'a/home,b/footer' ] ).fill, 'a/home,b/footer' );
-	assert.equal( parseArgs( [ '--freeze', '--records', 'r', '--from', 'a:wt:cache' ] ).from[ 0 ], 'a:wt:cache' );
+	assert.equal( parseArgs( [ '--freeze', '--records', 'r', '--from', 'a:wt' ] ).from[ 0 ], 'a:wt' );
 	assert.ok( parseArgs( [ '--freeze', '--records', 'r' ] ).error );
 } );
 
@@ -351,4 +347,36 @@ test( 'realFaultLines takes the carry-less lines when there are some, and a line
 	const other = 'Root/4#0: no logoSource is carried: some other reason no lookup gave';
 	assert.deepEqual( realFaultLines( { problems: [ other ], carryless: null, reasons: [ REASON ] } ).lines, [ other ] );
 	assert.deepEqual( realFaultLines( { problems: [ FAULT ], carryless: null } ).lines, [ FAULT ] );
+} );
+
+// The default looks (lib/setting-record.mjs::prepareLooks): the propose reads each block's default look for the client, and
+// a block without one is proposed with no default paint. Before 2026-11-23 the sweep read the frozen calibration cache, so it
+// never built a look and, with none on disk, proposed every block without one and said so only in its log.
+test( 'MUST FAIL: a surface proposed with a block that has no default look, where the baseline had one, fails the comparison', () => {
+	const before = { surfaces: { 'a/header': sum( 'a/header', [ 'p' ], { withoutLook: [] } ) }, nodes: {} };
+	const after = { surfaces: { 'a/header': sum( 'a/header', [ 'p' ], { withoutLook: [ 'sgs/site-header' ] } ) }, nodes: {} };
+	const cmp = compareSweeps( before, after );
+	assert.equal( cmp.ok, false );
+	assert.match( cmp.failures[ 0 ], /a\/header: proposed without the default look of sgs\/site-header/ );
+	assert.equal( compareSweeps( after, JSON.parse( JSON.stringify( after ) ) ).ok, true, 'a block the baseline also lacked a look for is no new failure' );
+	assert.equal( compareSweeps( { surfaces: { 'a/header': sum( 'a/header', [ 'p' ] ) }, nodes: {} }, before ).ok, true, 'a baseline from before the count was kept reads as none' );
+} );
+
+test( 'MUST FAIL: summariseSurface keeps the blocks proposed without a default look, and the sweep table counts them', () => {
+	const s = summariseSurface( { client: 'a', surface: 'header', proposal: { counts: {} }, problems: [], skeleton: [], withoutLook: [ 'sgs/trust-bar', 'sgs/site-header' ] } );
+	assert.deepEqual( s.withoutLook, [ 'sgs/site-header', 'sgs/trust-bar' ] );
+	const text = formatSweep( { surfaces: { 'a/header': s } } );
+	assert.match( text, /no default look/ );
+	assert.match( text, /a\/header \| 0 \| 0 \| 0 \| - \| 2/ );
+} );
+
+test( 'MUST FAIL: prepareSweepLooks builds every client\'s looks before the propose, with the build on, and names the blocks it could not build', () => {
+	const calls = [];
+	const prepare = ( blocks, client, opts ) => {
+		calls.push( { blocks, client, build: opts.build } );
+		return 'b' === client ? [ 'sgs/x' ] : [];
+	};
+	const failed = prepareSweepLooks( { clients: [ 'a', 'b' ], blocks: [ 'sgs/x', 'sgs/y' ], prepare } );
+	assert.deepEqual( calls.map( ( c ) => [ c.client, c.build, c.blocks.length ] ), [ [ 'a', true, 2 ], [ 'b', true, 2 ] ] );
+	assert.deepEqual( failed, { b: [ 'sgs/x' ] } );
 } );

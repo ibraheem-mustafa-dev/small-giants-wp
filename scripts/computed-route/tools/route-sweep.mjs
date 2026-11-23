@@ -3,8 +3,8 @@
 // offline, and compares the result with an earlier sweep, failing when any surface gets worse (lib/route-sweep.mjs).
 //   node tools/route-sweep.mjs --records <dir> --out <dir> [--fill <list>] [--baseline <dir>] [--jobs N] [--reread]
 //        [--only client/surface,...] [--repo <checkout>] [--slot-dir <dir>] [--keep-work] [--held-out a,b]
-//   node tools/route-sweep.mjs --freeze --records <dir> --from <client>:<source worktree>[:<cache worktree>] ... [--repo <checkout>]
-// --records: the frozen records (`<records>/<client>/{build,cache,MANIFEST.json}`); --out: where the sweep is written
+//   node tools/route-sweep.mjs --freeze --records <dir> --from <client>:<source worktree> ... [--repo <checkout>]
+// --records: the frozen records (`<records>/<client>/{build,MANIFEST.json}`); --out: where the sweep is written
 // (sweep.json, SUMMARY.txt, `<client>/<surface>.{proposal,skeleton,nodes}.json`, and `fill/` with --fill).
 // --fill: `default` (the first of each client's header, home or footer found, in that order: header), or a comma list of
 // `client/surface`; each is Filled offline once its propose has finished (a browser on the served draft, no site).
@@ -18,7 +18,9 @@
 // lib/skeleton-inventory*, intake*.mjs). A surface whose intake saved no inventory keeps its frozen one.
 // --jobs: processes proposing at once (default 3), each taking a heavy slot when --slot-dir names the slot folder; the jobs
 // are the slots held (at least one), so the sweep never takes more than the machine's other sessions leave.
-// --repo: the checkout under test (default this one): its code is run and its committed drafts are read.
+// --repo: the checkout under test (default this one): its code is run and its committed drafts are read. Before proposing,
+// the sweep builds every client's default looks from it (lib/route-sweep.mjs::prepareSweepLooks: site_look.py, offline, into
+// its scripts/computed-route/site-look); a block proposed with no look is counted per surface and fails a comparison.
 // Runs with SGS_NO_SITE=1 whatever the environment. Exit 0 pass, 1 a surface got worse or a stage failed, 2 usage.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -27,7 +29,7 @@ import { spawn, spawnSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import {
 	HELD_OUT, instrumentCarried, realFaultLines, freezeClient, recordClients, surfaceList, buildWork, summariseSurface, failedSummary, fingerprintNodes, writeSweep, readSweep, compareSweeps,
-	formatComparison, formatSweep, acquireSlots, releaseSlots, shardItems, summariseFill, failedFill, filesUnder,
+	formatComparison, formatSweep, prepareSweepLooks, acquireSlots, releaseSlots, shardItems, summariseFill, failedFill, filesUnder,
 } from '../lib/route-sweep.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
@@ -49,7 +51,7 @@ export function parseArgs( argv ) {
 		return o;
 	}
 	if ( ! o.records || ( ! o.freeze && ! o.out ) || ( o.freeze && ! o.from.length ) || ! Number.isInteger( o.jobs ) || o.jobs < 1 ) {
-		return { error: 'usage: route-sweep.mjs --records <dir> --out <dir> [--fill <list>] [--baseline <dir>] [--jobs N] [--reread] [--only client/surface,...]  |  --freeze --records <dir> --from <client>:<worktree>[:<cache worktree>]...' };
+		return { error: 'usage: route-sweep.mjs --records <dir> --out <dir> [--fill <list>] [--baseline <dir>] [--jobs N] [--reread] [--only client/surface,...]  |  --freeze --records <dir> --from <client>:<worktree>...' };
 	}
 	return o;
 }
@@ -66,24 +68,17 @@ export function defaultFills( records, clients, heldOut = HELD_OUT ) {
 const gitSha = ( repo ) => spawnSync( 'git', [ '-C', repo, 'rev-parse', '--short', 'HEAD' ], { encoding: 'utf8' }).stdout?.trim() || null;
 
 // ---- freeze ----
-// `--from <client>:<worktree>[:<cache worktree>]`: the checkout under test supplies every committed record of the client's
-// build folder; the worktree supplies what intake generates and git does not keep (facts.json, inventories/, replay/); the
-// cache worktree (default the same) supplies the calibration cache of the client's site.
+// `--from <client>:<worktree>`: the checkout under test supplies every committed record of the client's build folder; the
+// worktree supplies what intake generates and git does not keep (facts.json, inventories/, replay/).
 async function freeze( o ) {
-	const { paintSite } = await import( pathToFileURL( path.join( ROUTE, 'lib', 'cache.mjs' ) ).href );
 	for ( const spec of o.from ) {
-		const [ client, wt, cacheWt ] = spec.split( /:(?![\\/])/ );
+		const [ client, wt ] = spec.split( /:(?![\\/])/ );
 		const build = path.join( o.repo, 'sites', client, 'build' );
-		const surfaces = readJson( path.join( build, 'surfaces.json' ) );
-		const sites = Object.values( surfaces ).map( ( s ) => s.site ).filter( Boolean );
-		const site = [ ...new Set( sites ) ].sort( ( a, b ) => sites.filter( ( x ) => x === b ).length - sites.filter( ( x ) => x === a ).length )[ 0 ];
-		const cacheDir = path.join( cacheWt || wt, 'scripts', 'computed-route', 'cache' );
 		const m = freezeClient( {
 			dest: o.records, client, heldOut: o.heldOut,
 			sources: [ { dir: build, label: `${ o.repo } @ ${ gitSha( o.repo ) } (committed)` }, { dir: path.join( wt, 'sites', client, 'build' ), label: `${ wt } (generated by intake)`, only: /^intake\/(inventories\/|replay\/|facts\.json$)/ } ],
-			cache: { dir: cacheDir, label: `${ cacheWt || wt } calibration cache`, paintSite: paintSite( site ) },
 		} );
-		console.log( `froze ${ client }: ${ Object.keys( m.files ).length } files, calibration site ${ site } (paint folder ${ paintSite( site ) })` );
+		console.log( `froze ${ client }: ${ Object.keys( m.files ).length } files` );
 	}
 }
 
@@ -95,7 +90,6 @@ async function proposeWorker( o ) {
 	const allow = {};
 	for ( const item of o.items ) {
 		const [ client, surface ] = item.split( '/' );
-		const cache = path.join( o.records, client, 'cache' );
 		const a = ( allow[ client ] ||= [] );
 		// The propose, with the allowed missing paint growing as the paint gate names blocks; `carried` is the carried-ids reader
 		// (a probe says whether any lookup could have written a hand-over line) or null (no carried id at all).
@@ -104,7 +98,7 @@ async function proposeWorker( o ) {
 			let err = null;
 			for ( let i = 0; i < 12 && ! r; i++ ) {
 				try {
-					r = proposeSurface( { client, surface, repo: o.work, cache, allowMissingPaint: a, propose: ( args ) => proposeSkeleton( { ...args, carried: 'keep' === carried ? instrumentCarried( args.carried, probe ) : null } ) } );
+					r = proposeSurface( { client, surface, repo: o.work, allowMissingPaint: a, propose: ( args ) => proposeSkeleton( { ...args, carried: 'keep' === carried ? instrumentCarried( args.carried, probe ) : null } ) } );
 				} catch ( e ) {
 					err = e;
 					// Two jobs opening the framework database at once can find it locked: wait and try again.
@@ -142,7 +136,7 @@ async function proposeWorker( o ) {
 			write( r.paths.skeleton, r.skeleton );
 			write( r.paths.proposal, r.proposal );
 		}
-		const summary = summariseSurface( { client, surface, proposal: r.proposal, problems: r.problems, realProblems: classified.lines, classifiedBy: classified.by, skeleton: r.skeleton } );
+		const summary = summariseSurface( { client, surface, proposal: r.proposal, problems: r.problems, realProblems: classified.lines, classifiedBy: classified.by, skeleton: r.skeleton, withoutLook: r.withoutLook ?? [] } );
 		fs.writeFileSync( path.join( dir, `${ surface }.summary.json` ), JSON.stringify( summary ) );
 		fs.writeFileSync( path.join( dir, `${ surface }.nodes.json` ), JSON.stringify( fingerprintNodes( r.skeleton, r.proposal ) ) );
 		fs.writeFileSync( path.join( dir, `${ surface }.proposal.json` ), JSON.stringify( r.proposal, null, 1 ) );
@@ -163,7 +157,7 @@ async function fillWorker( o ) {
 		try {
 			const report = await fillSurface( {
 				client, surface, skeleton: path.join( site, 'build', 'skeleton', `${ surface }.skeleton.json` ), draftDir: path.join( site, 'handoff' ), draftIndex: entry.draftIndex, liveUrl: 'http://127.0.0.1/', external: true,
-				cache: path.join( o.records, client, 'cache' ), out: dir, repo: o.work, allowMissingPaint: [ 'sgs/whatsapp-cta', 'sgs/product-card' ], log: () => {},
+				out: dir, repo: o.work, allowMissingPaint: [ 'sgs/whatsapp-cta', 'sgs/product-card' ], log: () => {},
 			} );
 			summary = summariseFill( { client, surface, report, opener: readJson( path.join( dir, 'opener.json' ) ) } );
 		} catch ( e ) {
@@ -237,11 +231,22 @@ async function sweep( o ) {
 			buildWork( { records: o.records, client: c, repo: o.repo, work: o.work } );
 		}
 		const notes = o.reread ? await reread( o, clients.filter( ( x ) => wanted.has( x ) ) ) : [];
+		// Every client's default looks, built from the checkout under test before the propose (its workers run with SGS_NO_SITE
+		// and build none): the propose reads them from that checkout's site-look folder.
+		const lib = ( f ) => import( pathToFileURL( path.join( o.repo, 'scripts', 'computed-route', 'lib', f ) ).href );
+		const [ { prepareLooks }, { openDb } ] = await Promise.all( [ lib( 'setting-record.mjs' ), lib( 'db.mjs' ) ] );
+		const db = openDb();
+		const blocks = db.prepare( "SELECT slug FROM blocks WHERE slug LIKE 'sgs/%' ORDER BY slug" ).all().map( ( r ) => r.slug );
+		db.close();
+		const tLooks = Date.now();
+		console.log( `building the default looks of ${ blocks.length } blocks for ${ wanted.size } client(s)` );
+		const lookFailed = prepareSweepLooks( { clients: [ ...wanted ], blocks, prepare: prepareLooks } );
+		Object.entries( lookFailed ).forEach( ( [ c, b ] ) => console.log( `${ c }: no default look built for ${ b.join( ', ' ) }` ) );
+		console.log( `looks ${ Math.round( ( Date.now() - tLooks ) / 1000 ) }s` );
 		// The re-read records, kept as frozen records of their own (`<out>/records`): a baseline made with --reread can be
 		// re-run later without reading the drafts again.
 		for ( const c of o.reread ? clients.filter( ( x ) => wanted.has( x ) ) : [] ) {
 			freezeClient( { dest: path.join( o.out, 'records' ), client: c, sources: [ { dir: path.join( o.work, 'sites', c, 'build' ), label: `intake re-read of the committed draft at ${ gitSha( o.repo ) }` } ], heldOut: o.heldOut } );
-			fs.cpSync( path.join( o.records, c, 'cache' ), path.join( o.out, 'records', c, 'cache' ), { recursive: true } );
 		}
 		console.log( `proposing ${ items.length } surface(s) of ${ wanted.size } client(s) with ${ jobs } job(s)` );
 		const tPropose = Date.now();

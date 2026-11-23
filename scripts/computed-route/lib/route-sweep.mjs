@@ -4,9 +4,9 @@
 //
 // A records folder holds one folder per client: `<records>/<client>/build/` (a copy of the client's `sites/<client>/build/`
 // inputs: surfaces.json, the page map, the media and menu maps, the catalogue, `intake/` (intake.json, facts.json,
-// inventories/, replay/ ...) and `skeleton/` (each surface's inventory, decisions.json)) and `<records>/<client>/cache/` (the
-// calibration cache: the slot maps and the default paint of the site the client's surfaces run on), with a MANIFEST.json beside
-// them naming each file's source and date. A sweep never reads the live `sites/<client>/build/`: `buildWork` lays the records
+// inventories/, replay/ ...) and `skeleton/` (each surface's inventory, decisions.json)), with a MANIFEST.json beside it
+// naming each file's source and date. Each block's default look is not frozen: the sweep builds it from the checkout under
+// test before proposing (prepareSweepLooks), so a landing that changes a block's look is swept with that look. A sweep never reads the live `sites/<client>/build/`: `buildWork` lays the records
 // and the committed draft (`sites/<client>/handoff/`) out as a scratch repository, which is what the propose and Fill read.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -70,18 +70,12 @@ export function freezeFiles( buildDir, heldOut = HELD_OUT ) {
 	} );
 }
 
-// The calibration cache files a client's frozen copy holds: the slot maps at the cache's top and the default paint of `site`
-// (browser profile folders, the saved block trees and other sites' paint are not read by a propose).
-export function cacheFiles( cacheDir, paintSite ) {
-	return filesUnder( cacheDir ).filter( ( f ) => ! f.startsWith( '.' ) && ( ! f.includes( '/' ) ? /\.json$/.test( f ) && ! /\.tree\.json$/.test( f ) : f.split( '/' )[ 0 ] === paintSite ) );
-}
-
 const mtimeOf = ( file ) => fs.statSync( file ).mtime.toISOString();
 
 // Copies one client's records into `<dest>/<client>`: the files of `sources` (a list of { dir, label, only }, copied in order,
-// a later source replacing an earlier file of the same name) and the calibration cache `cache` ({ dir, paintSite }). Returns the
-// client's manifest: every file with its source and the source file's date.
-export function freezeClient( { dest, client, sources, cache, heldOut = HELD_OUT, now = new Date() } ) {
+// a later source replacing an earlier file of the same name). Returns the client's manifest: every file with its source and
+// the source file's date.
+export function freezeClient( { dest, client, sources, heldOut = HELD_OUT, now = new Date() } ) {
 	const root = path.join( dest, client );
 	const files = {};
 	for ( const s of sources ) {
@@ -89,12 +83,6 @@ export function freezeClient( { dest, client, sources, cache, heldOut = HELD_OUT
 			const to = path.join( root, 'build', f );
 			copyFile( path.join( s.dir, f ), to );
 			files[ `build/${ f }` ] = { source: s.label, date: mtimeOf( path.join( s.dir, f ) ) };
-		}
-	}
-	if ( cache ) {
-		for ( const f of cacheFiles( cache.dir, cache.paintSite ) ) {
-			copyFile( path.join( cache.dir, f ), path.join( root, 'cache', f ) );
-			files[ `cache/${ f }` ] = { source: cache.label, date: mtimeOf( path.join( cache.dir, f ) ) };
 		}
 	}
 	const manifest = { client, frozenAt: now.toISOString(), heldOut, files };
@@ -212,7 +200,7 @@ export function realFaultLines( { problems, carryless, reasons = [] } ) {
 // propose wrote; `realProblems` the lines of it that are real route faults (splitProblems; omitted, every line is one).
 // `problemCount`, `byKind` and `problems` are the real faults, which a comparison fails on; `handoverCount` and `handovers` are
 // the hand-overs, which it lists.
-export function summariseSurface( { client, surface, proposal, problems, realProblems = null, classifiedBy = null, skeleton } ) {
+export function summariseSurface( { client, surface, proposal, problems, realProblems = null, classifiedBy = null, skeleton, withoutLook = [] } ) {
 	const { real, handovers } = splitProblems( problems, null === realProblems ? problems : realProblems );
 	const byKind = {};
 	for ( const l of real ) {
@@ -220,7 +208,19 @@ export function summariseSurface( { client, surface, proposal, problems, realPro
 		byKind[ k ] = ( byKind[ k ] || 0 ) + 1;
 	}
 	const c = proposal?.counts || {};
-	return { client, surface, ok: true, nodes: fingerprintNodes( skeleton, proposal ).length, rows: c.rows ?? null, low: c.low ?? null, unresolved: c.unresolved ?? null, problemCount: real.length, byKind, problems: real, handoverCount: handovers.length, handovers, ...( classifiedBy ? { classifiedBy } : {} ) };
+	return { client, surface, ok: true, nodes: fingerprintNodes( skeleton, proposal ).length, rows: c.rows ?? null, low: c.low ?? null, unresolved: c.unresolved ?? null, problemCount: real.length, byKind, problems: real, handoverCount: handovers.length, handovers, withoutLook: [ ...new Set( withoutLook ) ].sort(), ...( classifiedBy ? { classifiedBy } : {} ) };
+}
+
+// Builds every client's default looks (lib/setting-record.mjs::prepareLooks, passed as `prepare`) for `blocks` before the
+// propose, with the build on whatever SGS_NO_SITE says (the builder is offline: it renders from the checkout, not a site).
+// Returns { client: [ blocks the builder could not build ] } for the clients with any.
+export function prepareSweepLooks( { clients, blocks, prepare } ) {
+	const failed = {};
+	for ( const c of clients ) {
+		const missed = prepare( blocks, c, { build: true } );
+		missed.length && ( failed[ c ] = missed );
+	}
+	return failed;
 }
 
 // A surface that could not be proposed: it counts as a failure when the baseline proposed it.
@@ -308,6 +308,14 @@ export function compareSweeps( before, after ) {
 			if ( 'WORSE' === row.status || ( 'NEW' === row.status && row.newProblems.length ) ) {
 				failures.push( `${ key }: real faults ${ row.before ?? 0 } -> ${ row.after }, ${ row.newProblems.length } new line(s)` );
 			}
+			// A block proposed without its default look reads no default paint, so its settings are guessed: one the baseline had a
+			// look for fails the landing.
+			const hadLook = new Set( b?.withoutLook ?? [] );
+			row.newWithoutLook = ( a.withoutLook ?? [] ).filter( ( x ) => ! hadLook.has( x ) );
+			if ( b && row.newWithoutLook.length ) {
+				'same' === row.status && ( row.status = 'WORSE' );
+				failures.push( `${ key }: proposed without the default look of ${ row.newWithoutLook.join( ', ' ) }` );
+			}
 		}
 		rows.push( row );
 	}
@@ -338,9 +346,9 @@ export function formatSweep( { surfaces, mainSha = null } ) {
 	for ( const [ c, t ] of Object.entries( totals ) ) {
 		out.push( `${ c } | ${ t.surfaces } | ${ t.proposed } | ${ t.failed } | ${ t.nodes } | ${ t.problems } | ${ t.handovers }` );
 	}
-	out.push( '', 'surface | nodes | real faults | hand-overs | unresolved' );
+	out.push( '', 'surface | nodes | real faults | hand-overs | unresolved | blocks with no default look' );
 	for ( const [ k, s ] of Object.entries( surfaces ).sort( ( x, y ) => x[ 0 ].localeCompare( y[ 0 ] ) ) ) {
-		out.push( s.ok ? `${ k } | ${ s.nodes } | ${ s.problemCount } | ${ s.handoverCount ?? 0 } | ${ s.unresolved ?? '-' }` : `${ k } | CANNOT PROPOSE: ${ s.error }` );
+		out.push( s.ok ? `${ k } | ${ s.nodes } | ${ s.problemCount } | ${ s.handoverCount ?? 0 } | ${ s.unresolved ?? '-' } | ${ ( s.withoutLook ?? [] ).length }` : `${ k } | CANNOT PROPOSE: ${ s.error }` );
 	}
 	return `${ out.join( '\n' ) }\n`;
 }
@@ -356,6 +364,7 @@ export function formatComparison( cmp ) {
 		out.push( `${ r.status.padEnd( 8 ) } ${ r.key }: real faults ${ r.before ?? '-' } -> ${ r.after ?? '-' }, hand-overs ${ r.handoversBefore ?? '-' } -> ${ r.handoversAfter ?? '-' }` );
 		r.newProblems.forEach( ( l ) => out.push( `    real fault NEW: ${ clip( l ) }` ) );
 		r.goneProblems.forEach( ( l ) => out.push( `    real fault gone: ${ clip( l ) }` ) );
+		( r.newWithoutLook ?? [] ).forEach( ( b ) => out.push( `    no default look NEW: ${ b }` ) );
 		r.newHandovers.forEach( ( l ) => out.push( `    hand-over new: ${ clip( l ) }` ) );
 		r.goneHandovers.forEach( ( l ) => out.push( `    hand-over gone: ${ clip( l ) }` ) );
 		r.nodes.added.forEach( ( n ) => out.push( `    node + ${ n.id } ${ n.block } ${ clip( JSON.stringify( n.settings ), 120 ) }` ) );
@@ -365,7 +374,7 @@ export function formatComparison( cmp ) {
 	const moved = cmp.rows.reduce( ( n, r ) => n + r.nodes.added.length + r.nodes.removed.length + r.nodes.changed.length, 0 );
 	out.push( '', `${ cmp.rows.length } surfaces compared, ${ moved } changed node(s) for a person to judge, ${ cmp.failures.length } failure(s)` );
 	cmp.failures.forEach( ( f ) => out.push( `FAIL ${ f }` ) );
-	out.push( cmp.ok ? 'PASS: no surface gained a real fault' : 'FAIL: a surface gained a real fault' );
+	out.push( cmp.ok ? 'PASS: no surface gained a real fault or lost a default look' : 'FAIL: a surface gained a real fault or lost a default look' );
 	return `${ out.join( '\n' ) }\n`;
 }
 

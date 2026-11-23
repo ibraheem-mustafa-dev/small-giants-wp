@@ -131,7 +131,8 @@ export function reviewSurface( { client, surface, repo = REPO } ) {
 // A served inventory (`Root/…` keys) is proposed with the decisions and motion keys written in intake's space rewritten
 // to its root (lib/key-space.mjs). `cache`: a folder of fixture records (tests), else the setting record and the client's
 // look. A skeleton that uses a block with no default look for the client is not written
-// (lib/skeleton-context.mjs::assertSkeletonPaints), unless `allowMissingPaint` (--allow-missing-paint) names the block.
+// (lib/skeleton-context.mjs::assertSkeletonPaints), unless `allowMissingPaint` (--allow-missing-paint) names the block; the
+// result's `withoutLook` lists the blocks the skeleton uses with no look.
 // `site`: the site the run is aimed at (site-run's --site), whose carried menu, menu items, logo and shop attributes
 // propose reads (lib/skeleton-carried.mjs::carriedIds). Default: the surface entry's site. The blocks' keys, tags,
 // settings and parts are the client's look, whatever the site.
@@ -173,13 +174,13 @@ export function proposeSurface( { client, surface, repo = REPO, siteName = null,
 	paint && Object.assign( r.proposal, { problems: paint.problems, paintUnread: paint.unread } );
 	Object.assign( r, { skeleton: pieces.tree, problems: [ ...( paint?.problems ?? r.problems ), ...pieces.problems ] } );
 	r.proposal.templatePieces = { placed: pieces.placed, problems: pieces.problems, notes: [ ...pieces.notes, ...( paint?.notes ?? [] ) ], missingFeatures: paint?.missing ?? [] };
-	assertSkeletonPaints( { skeleton: r.skeleton, client, what: `skeleton propose ${ surface }`, cache, allow: allowMissingPaint } );
+	const withoutLook = assertSkeletonPaints( { skeleton: r.skeleton, client, what: `skeleton propose ${ surface }`, cache, allow: allowMissingPaint } );
 	json( p.skeleton, r.skeleton );
 	json( p.proposal, r.proposal );
 	// The run ledger (lib/run-ledger.mjs, a writer from openRunLedger): what the proposal did with each painted element it does
 	// not carry on, appended after the proposal and skeleton are written (lib/run-ledger-skeleton.mjs).
 	runLedger?.append( skeletonRunRows( { surface, inventory, proposal: r.proposal, skeleton: r.skeleton, calTags: calTagsFor( client, cache ) } ) );
-	return { ...r, paths: p, facts, inventory, clientDecisions };
+	return { ...r, paths: p, facts, inventory, clientDecisions, withoutLook };
 }
 
 export async function main( argv, { read = readInventory, repo = REPO, cache = undefined } = {} ) {
