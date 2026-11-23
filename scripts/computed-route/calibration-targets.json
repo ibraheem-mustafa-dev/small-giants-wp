@@ -113,9 +113,9 @@
     }
   },
   "mamas-test": {
-    "envFile": ".claude/secrets/mamas-test.env",
+    "envFile": ".claude/secrets/live-mamas.env",
     "protected": "the live shop, serving customers on its own domain: a route run never writes to it",
-    "envKey": "MAMASTEST",
+    "envKey": "MAMAS",
     "postId": 115,
     "image": {
       "id": 98,

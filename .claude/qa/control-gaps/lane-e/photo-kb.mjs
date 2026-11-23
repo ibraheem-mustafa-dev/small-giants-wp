@@ -1,5 +1,5 @@
 import {chromium,env,login,openEditor,desc} from './lib.mjs';
-const e=env('.claude/secrets/mamas-test.env','MAMASTEST');
+const e=env('.claude/secrets/live-mamas.env','MAMAS');
 const b=await chromium.launch({channel:'chrome',headless:false});
 for(const w of [1440,768,375]){
  const ctx=await b.newContext({viewport:{width:w,height:900}});const page=await ctx.newPage();page.on('dialog',d=>d.accept());

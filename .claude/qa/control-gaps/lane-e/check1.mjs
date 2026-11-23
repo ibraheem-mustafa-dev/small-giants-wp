@@ -1,7 +1,7 @@
 import {chromium,env,login,openEditor,desc} from './lib.mjs';
 const ID=process.argv[2]; const widths=(process.argv[3]||'1440,768,375').split(',').map(Number);
 const SHOTS='C:/Users/Bean/Projects/small-giants-wp/.claude/qa/control-gaps/lane-e/';
-const e=env('.claude/secrets/mamas-test.env','MAMASTEST');
+const e=env('.claude/secrets/live-mamas.env','MAMAS');
 const b=await chromium.launch({channel:'chrome',headless:false});
 const log=(...a)=>console.log(...a);
 const ad=(page)=>page.evaluate(desc);

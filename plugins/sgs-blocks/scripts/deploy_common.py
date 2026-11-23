@@ -100,7 +100,7 @@ TARGETS = {
     # redesign's test site and keeps that target name and folder: mamasmunches.com's own folder on the server is a
     # link to this one, so the hosting entry named lightsalmon-... IS the live shop and must never be deleted.
     # Kind "live": nothing may copy a local mirror's database over it.
-    # Credentials: .claude/secrets/mamas-test.env (gitignored).
+    # Credentials: .claude/secrets/live-mamas.env (gitignored; keys WP_*_MAMAS).
     "mamas-test": {
         "host": "mamasmunches.com",
         "wp_content": "domains/lightsalmon-tarsier-683012.hostingersite.com/public_html/wp-content",
