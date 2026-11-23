@@ -10,6 +10,9 @@
 # it also has the server syntax-check the uploads copy script it would run.
 # Before anything is read from the database, the sgs-blocks build on the mirror is compared with the one on the test site
 # (scripts/computed-route/build-compare.mjs, --dry-run included); a mismatch refuses, with the build-deploy.py fix.
+# Before anything is dumped, the mirror's stored content must pass the deploy's old-shape audit (mirror_precheck.py audit:
+# no HIGH finding) and every attachment its posts use must have its file in the mirror's uploads (mirror_precheck.py media);
+# either failure refuses, and --dry-run reports both and exits 1.
 # After the copy, `--client <slug>` runs scripts/computed-route/site-check.mjs against the test site; without it the exact
 # command is printed as the last step.
 # The remote database is backed up on the server before anything is written; a failed run prints the restore command.
@@ -101,6 +104,28 @@ echo "table prefix: $LPREFIX (both sides)"
 # The plugin build the clone was made with must be the build the test site runs.
 node "$REPO/scripts/computed-route/build-compare.mjs" --local "$LOCAL" --target "$REMOTE" || { echo "Refusing: the sgs-blocks build differs (see above); nothing was written" >&2; exit 1; }
 echo "remote siteurl now: $( rsh "wp option get siteurl" )"
+
+# The mirror's stored content must pass the deploy's old-shape audit (no HIGH finding) and every attachment its posts use
+# must have its file in the mirror's uploads folder, or the test site would take content that renders empty or images
+# that 404. A refusal here writes nothing; --dry-run reports both and exits 1 at the end when either would refuse.
+step "audit the mirror's content and check its media"
+SKIP_TYPES="$( python -c "import sys; sys.path.insert(0, sys.argv[1]); import deploy_common as d; print('|'.join(d.NON_BLOCK_POST_TYPES))" "$REPO/plugins/sgs-blocks/scripts" )"
+[ -n "$SKIP_TYPES" ] || { echo "Could not read NON_BLOCK_POST_TYPES from deploy_common.py" >&2; exit 1; }
+lwp "post list --post_type=\$(wp --allow-root --path='$DOCROOT' post-type list --field=name | grep -Ev '^($SKIP_TYPES)\$' | paste -sd,) --post_status=any --fields=ID,post_content --format=json" > "$WORK/mirror-posts.json"
+lwp "post list --post_type=attachment --post_status=any --field=ID" > "$WORK/mirror-attachment-ids.txt"
+lwp "db query \"SELECT post_id, meta_key, meta_value FROM ${LPREFIX}postmeta WHERE meta_key IN ('_wp_attached_file','_thumbnail_id')\" --skip-column-names" > "$WORK/mirror-meta.tsv"
+lsh "cd '$DOCROOT/wp-content/uploads' && find . -type f | sed 's#^\./##'" > "$WORK/mirror-uploads.txt"
+PRECHECK_FAILED=0
+python "$REPO/scripts/local-wp/mirror_precheck.py" audit --posts "$WORK/mirror-posts.json" --target "$REMOTE" || PRECHECK_FAILED=1
+python "$REPO/scripts/local-wp/mirror_precheck.py" media --posts "$WORK/mirror-posts.json" --attachment-ids "$WORK/mirror-attachment-ids.txt" --meta "$WORK/mirror-meta.tsv" --files "$WORK/mirror-uploads.txt" || PRECHECK_FAILED=1
+if [ "$PRECHECK_FAILED" = 1 ]; then
+  if [ "$DRY" = 1 ]; then
+    echo "   [dry-run] a real run would REFUSE here: the mirror's content failed the audit or its media check (above)"
+  else
+    echo "Refusing: the mirror's content failed the old-shape audit or its media check (above); nothing was written" >&2
+    exit 1
+  fi
+fi
 
 # 6. The search-replace pairs: the mirror's URL (and its other scheme) in plain, JSON-escaped and scheme-relative form.
 LOCAL_SCHEME="${LOCAL_URL%%://*}"
@@ -278,6 +303,7 @@ fi
 step "verify"
 if [ "$DRY" = 1 ]; then
   would "check siteurl and home on the server equal $REMOTE_URL exactly"
+  if [ "$PRECHECK_FAILED" = 1 ]; then echo "Dry run complete: nothing was written, and a real run would refuse (the content audit or media check above)." >&2; exit 1; fi
   echo "Dry run complete: nothing was written."
   exit 0
 fi
