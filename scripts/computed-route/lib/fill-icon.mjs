@@ -340,7 +340,7 @@ function markIsBrand( slug, tree, href, ariaLabel = '' ) {
 
 // The settings iconDecisions can write: the icon's source, its brand, its Lucide name, its own markup, whether the markup is
 // filled and which side of the label it sits. The decisions write nothing for a block that declares no `iconSvg`, and only
-// the settings the block declares; lib/content-coverage.mjs asks here which settings a re-clone writes.
+// the settings the block declares.
 export const ICON_SETTINGS = [ 'iconSource', 'brandName', 'iconName', 'iconSvg', 'iconFill', 'iconPosition' ];
 export const iconSettings = ( schema ) => ( schema && 'iconSvg' in schema ? ICON_SETTINGS.filter( ( a ) => a in schema ) : [] );
 

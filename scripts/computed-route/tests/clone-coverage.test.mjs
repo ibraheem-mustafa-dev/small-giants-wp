@@ -8,7 +8,6 @@ import os from 'os';
 import path from 'path';
 import { buildInventory, readInventoryFile } from '../lib/capabilities.mjs';
 import { loadCoverage, loadBaseline, coverageProblems, declaredWrites, statusOf, referenceProblem, testProblem, seedGaps, gapList, COVERAGE_SCHEMA } from '../lib/clone-coverage.mjs';
-import { likeEntries, draftGaps, reviewCoverageIds, backfillTests } from '../lib/coverage-register.mjs';
 import { loadAjv, schemaProblems } from '../lib/handoff.mjs';
 import { fixtureDb, BASE_ROWS } from './fixtures/framework-db.mjs';
 
@@ -185,36 +184,6 @@ test( 'MUST FAIL: a reference or test under sites/ is refused', () => {
 	const p = coverageProblems( ONE, withEntry( { ...COVERED, write: 'sites/some-draft/fix.mjs#fix', test: 'sites/some-draft/t.test.mjs' } ), { baseline: [] } );
 	assert.ok( p.some( ( x ) => x.startsWith( 'html:planted write:' ) && x.includes( 'sites/' ) ) );
 	assert.ok( p.some( ( x ) => x.startsWith( 'html:planted test:' ) && x.includes( 'sites/' ) ) );
-} );
-
-test( '--like: same write reference, or the same id prefix when the entry has no write; a gap and the entry itself are never listed', () => {
-	const cov = { entries: {
-		'a:one': { ...COVERED, write: 'w.mjs#x' }, 'a:two': { ...COVERED, write: 'w.mjs#x' }, 'a:three': { ...COVERED, write: 'other.mjs#y' },
-		'a:gap': { recognise: null, write: 'w.mjs#x', check: null, wave: 'w' }, 'svg:new': { recognise: null, write: null, check: null, wave: 'w' },
-		'svg:old': COVERED, 'html:old': COVERED,
-	} };
-	assert.deepEqual( likeEntries( cov, 'a:one' ).map( ( x ) => x.id ), [ 'a:two' ] );
-	assert.deepEqual( likeEntries( cov, 'svg:new' ).map( ( x ) => x.id ), [ 'svg:old' ] );
-	assert.equal( likeEntries( cov, 'nope:x' ), null );
-} );
-
-test( '--drafts: ids from missing:coverage cells that are still gaps, grouped by wave with the draft folder name; covered ids are dropped, an id with no entry lands under wave none', () => {
-	const cov = { entries: { 'x:gap1': { recognise: null, write: null, check: null, wave: 'wave a' }, 'x:gap2': { recognise: null, write: null, check: null, wave: 'wave b' }, 'x:done': COVERED } };
-	const row = ( id ) => `| \`missing:coverage:${ id }\` | ${ id } seen | gap |`;
-	const reviews = [ { draft: 'draft-one', markdown: [ row( 'x:gap1' ), row( 'x:gap1' ), row( 'x:done' ) ].join( '\n' ) }, { draft: 'draft-two', markdown: [ row( 'x:gap1' ), row( 'x:gap2' ), row( 'x:unknown' ) ].join( '\n' ) } ];
-	const r = draftGaps( cov, reviews );
-	assert.deepEqual( r.byWave, { 'wave a': { 'x:gap1': [ 'draft-one', 'draft-two' ] }, 'wave b': { 'x:gap2': [ 'draft-two' ] }, none: { 'x:unknown': [ 'draft-two' ] } } );
-	assert.equal( r.ids, 3 );
-	assert.deepEqual( r.drafts, { 'draft-one': 1, 'draft-two': 3 } );
-	assert.deepEqual( reviewCoverageIds( row( 'a:b' ) ), [ 'a:b' ] );
-} );
-
-test( 'backfill: a note naming an existing test sets it; the rest goes to the baseline', () => {
-	const cov = { entries: { 'x:a': { ...COVERED, note: 'proved by tests/resolve.test.mjs' }, 'x:b': { ...COVERED, note: 'proved by tests/no-such.test.mjs' }, 'x:c': { ...COVERED, note: 'none' }, 'x:d': { ...COVERED, test: TEST_FILE } } };
-	const r = backfillTests( cov );
-	assert.equal( r.coverage.entries[ 'x:a' ].test, TEST_FILE );
-	assert.equal( r.backfilled, 1 );
-	assert.deepEqual( r.baseline, [ 'x:b', 'x:c' ] );
 } );
 
 test( 'the seven fluid and presentational-hint entries are covered with a test', () => {
