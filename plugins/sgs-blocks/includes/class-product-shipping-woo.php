@@ -9,8 +9,11 @@
  *
  * - a method that is switched off, has a cost formula (`[qty]`, `[fee]`), needs a coupon, or is not a flat rate or
  *   free shipping (local pickup, a plugin's own method) prints nothing;
- * - a zone with no country, state or continent (a postcode-only zone) has no destination Google can read and prints
- *   nothing;
+ * - a zone with a postcode location (alone, or beside a country, state or continent) prints nothing: WooCommerce
+ *   matches it only when the postcode matches, so its price is not for the whole area;
+ * - WooCommerce charges only the first zone (by zone order) that matches an address, so a country or state an earlier
+ *   zone already holds is dropped from a later zone's destinations (a continent zone after a UK zone prints the
+ *   continent without GB), and a whole country is also dropped when an earlier zone holds one of its states;
  * - the delivery time comes only from `sgs_shipping_delivery_time` (whole days: `handlingMin`, `handlingMax`,
  *   `transitMin`, `transitMax`), because WooCommerce holds none; with the option empty no time is printed.
  *
@@ -233,8 +236,27 @@ final class Product_Shipping_Woo {
 		if ( ! \class_exists( '\WC_Shipping_Zones' ) ) {
 			return self::$entries;
 		}
+		// WooCommerce charges only the first zone (by zone order) that matches an address, so a place an earlier zone covers is never published again for a later one.
+		$whole  = array();
+		$states = array();
 		foreach ( (array) \WC_Shipping_Zones::get_zones() as $zone ) {
-			$destinations = self::destinations( (array) ( $zone['zone_locations'] ?? array() ) );
+			$regions = self::destinations( (array) ( $zone['zone_locations'] ?? array() ) );
+			if ( empty( $regions ) ) {
+				continue;
+			}
+			$destinations = array();
+			foreach ( $regions as $region ) {
+				if ( ! self::is_covered( $region, $whole, $states ) ) {
+					$destinations[] = $region;
+				}
+			}
+			foreach ( $regions as $region ) {
+				if ( isset( $region['addressRegion'] ) ) {
+					$states[ $region['addressCountry'] . ':' . $region['addressRegion'] ] = true;
+				} else {
+					$whole[ $region['addressCountry'] ] = true;
+				}
+			}
 			if ( empty( $destinations ) ) {
 				continue;
 			}
@@ -387,8 +409,37 @@ final class Product_Shipping_Woo {
 	}
 
 	/**
+	 * Whether an earlier zone already prices a destination, wholly or in part.
+	 *
+	 * A country is covered when an earlier zone holds the country or any of its states (a whole-country price would
+	 * then also state a price for a state that zone charges instead); a state is covered when an earlier zone holds it
+	 * or its country.
+	 *
+	 * @param array<string,string> $region `DefinedRegion` node: `addressCountry`, optionally `addressRegion`.
+	 * @param array<string,true>   $whole  Countries earlier zones hold whole.
+	 * @param array<string,true>   $states Earlier zones' states as `CC:REGION`.
+	 * @return bool
+	 */
+	private static function is_covered( array $region, array $whole, array $states ): bool {
+		$country = $region['addressCountry'];
+		if ( isset( $whole[ $country ] ) ) {
+			return true;
+		}
+		if ( isset( $region['addressRegion'] ) ) {
+			return isset( $states[ $country . ':' . $region['addressRegion'] ] );
+		}
+		foreach ( \array_keys( $states ) as $key ) {
+			if ( 0 === \strpos( (string) $key, $country . ':' ) ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * A zone's locations as `DefinedRegion` nodes: a country, a state (country plus region) or a continent
-	 * (every country in it). A postcode location is skipped.
+	 * (every country in it), each once. A zone with a postcode location returns none: WooCommerce matches it only when
+	 * the postcode matches too, so its price is not for the whole country or state beside it.
 	 *
 	 * @param array<int,object> $locations The zone's `code` and `type` pairs.
 	 * @return array<int,array<string,string>>
@@ -398,14 +449,17 @@ final class Product_Shipping_Woo {
 		foreach ( $locations as $location ) {
 			$code = (string) ( $location->code ?? '' );
 			$type = (string) ( $location->type ?? '' );
+			if ( 'postcode' === $type ) {
+				return array();
+			}
 			if ( 'country' === $type ) {
-				$regions[] = array(
+				$regions[ $code ] = array(
 					'@type'          => 'DefinedRegion',
 					'addressCountry' => $code,
 				);
 			} elseif ( 'state' === $type && false !== \strpos( $code, ':' ) ) {
 				list( $country, $region ) = \explode( ':', $code, 2 );
-				$regions[]                = array(
+				$regions[ $code ]         = array(
 					'@type'          => 'DefinedRegion',
 					'addressCountry' => $country,
 					'addressRegion'  => $region,
@@ -413,14 +467,14 @@ final class Product_Shipping_Woo {
 			} elseif ( 'continent' === $type && \function_exists( 'WC' ) && \WC()->countries ) {
 				$continents = \WC()->countries->get_continents();
 				foreach ( (array) ( $continents[ $code ]['countries'] ?? array() ) as $country ) {
-					$regions[] = array(
+					$regions[ (string) $country ] = array(
 						'@type'          => 'DefinedRegion',
 						'addressCountry' => (string) $country,
 					);
 				}
 			}
 		}
-		return $regions;
+		return \array_values( $regions );
 	}
 
 	/**

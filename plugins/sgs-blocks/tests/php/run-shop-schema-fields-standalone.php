@@ -118,7 +118,7 @@ namespace {
 			public $countries;
 			public function __construct() {
 				$this->countries = new class() {
-					public function get_continents() { return array( 'EU' => array( 'countries' => array( 'FR', 'DE' ) ) ); }
+					public function get_continents() { return array( 'EU' => array( 'countries' => array( 'FR', 'DE' ) ), 'EUA' => array( 'countries' => array( 'GB', 'FR', 'DE' ) ) ); }
 				};
 			}
 			public function shipping() {
@@ -357,22 +357,67 @@ namespace {
 	$check( 'a disabled method, a cost formula, a coupon rule and local pickup print nothing', array( 'Always free', 'Free with either' ) === $names, implode( ',', $names ) );
 	$check( 'free shipping with no condition has no orderValue', ! isset( ( $services[0] ?? $services )['shippingConditions']['orderValue'] ) );
 
+	$zone_state = (object) array( 'code' => 'GB:ENG', 'type' => 'state' );
+	$zone_eu    = (object) array( 'code' => 'EU', 'type' => 'continent' );
+	$zone_post  = static function ( string $code ) {
+		return (object) array( 'code' => $code, 'type' => 'postcode' );
+	};
+	$region     = static function ( string $country, string $state = '' ) {
+		return '' === $state ? array( '@type' => 'DefinedRegion', 'addressCountry' => $country ) : array( '@type' => 'DefinedRegion', 'addressCountry' => $country, 'addressRegion' => $state );
+	};
+	$published  = static function () {
+		Product_Shipping_Woo::reset_cache();
+		$all = Product_Offer_Policy::shipping_service();
+		return null === $all ? array() : ( isset( $all['name'] ) ? array( $all ) : $all );
+	};
+	$dest_of    = static function ( array $service ) {
+		$d = $service['shippingConditions']['shippingDestination'];
+		return isset( $d['@type'] ) ? array( $d ) : $d;
+	};
+	$flat       = static function ( string $title, string $cost ) use ( $method ) {
+		return array( $method( 'flat_rate', $title, array( 'cost' => $cost ) ) );
+	};
+
+	$GLOBALS['t']['zones'] = array( $uk_zone( $flat( 'Standard', '4' ), array( $zone_state, $zone_eu ) ) );
+	$list = $published();
+	$check( 'a state keeps its country and region and a continent expands to its countries', 1 === count( $list ) && array( $region( 'GB', 'ENG' ), $region( 'FR' ), $region( 'DE' ) ) === $dest_of( $list[0] ) );
+
 	$GLOBALS['t']['zones'] = array(
-		$uk_zone(
-			array( $method( 'flat_rate', 'Standard', array( 'cost' => '4' ) ) ),
-			array(
-				(object) array( 'code' => 'GB:ENG', 'type' => 'state' ),
-				(object) array( 'code' => 'EU', 'type' => 'continent' ),
-				(object) array( 'code' => 'B1 1AA', 'type' => 'postcode' ),
-			)
-		),
-		$uk_zone( array( $method( 'flat_rate', 'Postcode only', array( 'cost' => '4' ) ) ), array( (object) array( 'code' => 'B1 1AA', 'type' => 'postcode' ) ) ),
+		$uk_zone( $flat( 'Standard', '4' ), array( $zone_state, $zone_eu, $zone_post( 'B1 1AA' ) ) ),
+		$uk_zone( $flat( 'Postcode only', '4' ), array( $zone_post( 'B1 1AA' ) ) ),
 	);
-	Product_Shipping_Woo::reset_cache();
-	$services = Product_Offer_Policy::shipping_service();
-	$dest     = $services['shippingConditions']['shippingDestination'];
-	$check( 'a state keeps its country and region, a continent expands to its countries, a postcode is skipped', array( array( '@type' => 'DefinedRegion', 'addressCountry' => 'GB', 'addressRegion' => 'ENG' ), array( '@type' => 'DefinedRegion', 'addressCountry' => 'FR' ), array( '@type' => 'DefinedRegion', 'addressCountry' => 'DE' ) ) === $dest );
-	$check( 'a zone known only by postcode prints no service (no destination Google can read)', ! isset( $services[0] ) && 'Standard' === $services['name'] );
+	$check( 'a zone limited by postcode (alone, or beside a state or continent) prints nothing: its price is not for the whole area', array() === $published() );
+
+	$GLOBALS['t']['zones'] = array(
+		$uk_zone( $flat( 'UK', '3.95' ) ),
+		$uk_zone( $flat( 'Highlands', '12' ), array( (object) array( 'code' => 'GB', 'type' => 'country' ), $zone_post( 'IV*' ), $zone_post( 'KW*' ) ) ),
+	);
+	$list = $published();
+	$check( 'a Highlands zone (GB plus postcodes) after a UK zone prints only the UK service', 1 === count( $list ) && 'UK' === $list[0]['name'] && '3.95' === $list[0]['shippingConditions']['shippingRate']['value'] );
+	$GLOBALS['t']['zones'] = array_reverse( $GLOBALS['t']['zones'] );
+	$list = $published();
+	$check( 'the Highlands zone placed first does not change that: the UK service still covers the country', 1 === count( $list ) && 'UK' === $list[0]['name'] );
+
+	$GLOBALS['t']['zones'] = array(
+		$uk_zone( $flat( 'UK', '3.95' ) ),
+		$uk_zone( $flat( 'Europe', '9' ), array( (object) array( 'code' => 'EUA', 'type' => 'continent' ) ) ),
+	);
+	$list = $published();
+	$check( 'a Europe zone after a UK zone is published without GB (WooCommerce charges the first matching zone)', 2 === count( $list ) && array( $region( 'GB' ) ) === $dest_of( $list[0] ) && array( $region( 'FR' ), $region( 'DE' ) ) === $dest_of( $list[1] ) );
+	$GLOBALS['t']['zones'] = array_reverse( $GLOBALS['t']['zones'] );
+	$list = $published();
+	$check( 'a Europe zone before a UK zone keeps GB, and the UK zone prints nothing (GB is already Europe\'s)', 1 === count( $list ) && 'Europe' === $list[0]['name'] && array( $region( 'GB' ), $region( 'FR' ), $region( 'DE' ) ) === $dest_of( $list[0] ) );
+
+	$GLOBALS['t']['zones'] = array(
+		$uk_zone( $flat( 'England', '4' ), array( $zone_state ) ),
+		$uk_zone( $flat( 'Rest of UK', '8' ), array( (object) array( 'code' => 'GB', 'type' => 'country' ), (object) array( 'code' => 'GB:ENG', 'type' => 'state' ), (object) array( 'code' => 'GB:SCT', 'type' => 'state' ) ) ),
+	);
+	$list = $published();
+	$check( 'a state already priced by an earlier zone is not priced again, and a whole country that contains it is left out rather than priced wrongly', 2 === count( $list ) && array( $region( 'GB', 'ENG' ) ) === $dest_of( $list[0] ) && array( $region( 'GB', 'SCT' ) ) === $dest_of( $list[1] ) );
+
+	$GLOBALS['t']['zones'] = array( $uk_zone( $flat( 'Twice', '5' ), array( (object) array( 'code' => 'FR', 'type' => 'country' ), $zone_eu ) ) );
+	$list = $published();
+	$check( 'a country named twice in one zone (directly and through a continent) is printed once', 1 === count( $list ) && array( $region( 'FR' ), $region( 'DE' ) ) === $dest_of( $list[0] ) );
 
 	$GLOBALS['t']['zones'] = array();
 	Product_Shipping_Woo::reset_cache();
