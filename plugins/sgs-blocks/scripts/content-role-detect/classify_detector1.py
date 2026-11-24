@@ -16,6 +16,11 @@ Usage:
 import json
 import re
 import sys
+from pathlib import Path
+from typing import Callable
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from view_text_flow import view_script_writes_data_attr_as_text  # noqa: E402
 
 FUNC_CATEGORY = {
     "esc_html": "visible-text",
@@ -81,7 +86,22 @@ JS_RENDERED_TEXT_KEY_HINTS = re.compile(
 JS_RENDERED_ADORNMENT_KEY_HINTS = re.compile(r"^(prefix|suffix|separator)$", re.IGNORECASE)
 
 
-def _classify_esc_attr_core(before: str, after: str, stmt: str, key: str) -> str:
+_DATA_ATTR_NAME = re.compile(r"(data-[a-z0-9]+(?:-[a-z0-9]+)*)[ '\"\]=>]*$", re.IGNORECASE)
+
+
+def _data_attr_before_value(window: str) -> str | None:
+    """The `data-*` attribute name the escaped value is printed into, or None when the window does not end in one."""
+    match = _DATA_ATTR_NAME.search(window.rstrip(" .\t\n"))
+    return match.group(1).lower() if match else None
+
+
+def _classify_esc_attr_core(
+    before: str,
+    after: str,
+    stmt: str,
+    key: str,
+    written_as_text: Callable[[str], bool] | None = None,
+) -> str:
     """Core esc_attr classification given an explicit 'before' window.
 
     Factored out 2026-08-05 (D1 forward variable-tracking fix) so the SAME
@@ -166,6 +186,11 @@ def _classify_esc_attr_core(before: str, after: str, stmt: str, key: str) -> str
         if JS_RENDERED_ADORNMENT_KEY_HINTS.search(key):
             return "numeric-adornment"
         if JS_RENDERED_TEXT_KEY_HINTS.search(key):
+            return "visible-text"
+        # The key's spelling gives no hint, so follow the value: a view script that reads this
+        # data attribute and writes it into the page makes it visible text (view_text_flow.py).
+        data_attr = _data_attr_before_value(window)
+        if data_attr and written_as_text is not None and written_as_text(data_attr):
             return "visible-text"
         return "NOT-content"
 
@@ -252,13 +277,18 @@ def classify_esc_attr(row: dict) -> str:
     # The tie-break is now STATED: structural placeholder resolution beats
     # textual proximity. The statement window remains the fallback for every
     # non-printf call site, which is the overwhelming majority.
+    render_file = row.get("file")
+
+    def written_as_text(data_attr: str) -> bool:
+        return bool(render_file) and view_script_writes_data_attr_as_text(render_file, data_attr, row.get("block_slug"))
+
     printf_ctx = row.get("printf_context")
     if printf_ctx:
-        printf_result = _classify_esc_attr_core(printf_ctx, "", printf_ctx, key)
+        printf_result = _classify_esc_attr_core(printf_ctx, "", printf_ctx, key, written_as_text)
         if printf_result != "esc_attr-unresolved":
             return printf_result
 
-    result = _classify_esc_attr_core(before, after, stmt, key)
+    result = _classify_esc_attr_core(before, after, stmt, key, written_as_text)
     if result != "esc_attr-unresolved":
         return result
 
@@ -284,7 +314,7 @@ def classify_esc_attr(row: dict) -> str:
         ctx = row.get(ctx_field)
         if not ctx:
             continue
-        ctx_result = _classify_esc_attr_core(ctx, "", ctx, key)
+        ctx_result = _classify_esc_attr_core(ctx, "", ctx, key, written_as_text)
         if ctx_result != "esc_attr-unresolved":
             return ctx_result
 
