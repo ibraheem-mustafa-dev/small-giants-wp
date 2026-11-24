@@ -73,7 +73,7 @@ All reports are read-only investigations, each checked by a second helper that d
 - **Instances:** the 0.5px tolerance decides whether to write (`lib/css-equivalence/tolerance.mjs`; burger bars 1.5px and 2.5px treated as the 2px default); initial values written over a block's own layout and into Custom CSS (Indus heroes `grid-template-columns: none` on 21 surfaces, `flex-grow: 0` on mega groups, default font properties on `sgs/media`); an unwrap promotes children into a grid without re-deriving its tracks (hero content squeezed; 250 unwrap rows); a residual rule cancels a setting (list-style against `markerType`); the residual writer refuses a static fixed copy (burger bar 3) and a value on a partly drawn element (basket icon); Mama's header order (`lib/skeleton-header-slots.mjs::mergeWidthAlternatives` drops moved nodes to the tail, from `647007ae1`); the apply width family writes the wrong `maxWidth` (`lib/apply-family-width.mjs::maxWidth`; Indus careers 720 against 1240, 20 surfaces).
 - **Fix:** a stated value is written exactly unless it equals the default exactly; the tolerance stays only for comparing measured renders, in the one tolerance module, applied the same in Fill and in `confirm-live`; applicability through the existing `lib/css-equivalence/inert.mjs::appliesIn` inside `resolveProperty` and the residual writer; unwrap re-derives the parent's layout; the residual writer skips a property a setting on the node owns and allows a static set and the drawn widths; moved nodes keep their own slot in each width's order; the apply width op pairs per ref, not per template (prove the pairing first).
 - **Guard:** a lint refusing tolerance literals outside the tolerance module; a reading-order gate (visible nodes follow their draft elements' order per width); a post-Fill check that explicit tracks match the in-flow child count.
-- **Spec:** S3, S4. Decision D3 (the 5% snap).
+- **Spec:** S3, S4. The 5% breakpoint snap stays (FR-48-50).
 
 ### RF6. Motion and timing through the existing controls
 
@@ -124,10 +124,10 @@ Bean's rule: before building, find the design that once worked and restore or ad
 | Eye Care mega panel cap and padding | `megaPanelRow` carries `decided` per device, as `formControl.wrapperCap` (`822b6b400`) does | Half built |
 | Indus hero content in a two-column grid | `heroInner` used to unwrap the hero's layout wrappers (proven at `0ea1a6cb2~1`); restore the unwrap (trigger: `822b6b400` or the removed hero picture, to prove) | Regression |
 | Mama's logo `maxHeight` | Lost when the offline look replaced measured paint; `blockPaint` treats a declared `max-*: none` as unbounded, or the look stores measured boxes | Regression |
-| Footer list headings lose their look | `listHeading` (`289a0b54c`) emits the heading's `draftSlots` also when the node sits on the first link | Half built |
+| Footer column headings lose their look | Bean (2026-11-24): a footer column heading is written as a standard heading block above its list, not as the list block's own heading (some columns have a heading and no links); `listHeading` stops absorbing it | Ruling |
 | Trust bar dots | `headerStripBar` writes `textBadgeSeparator` from the repeated glyph and its colour | Never built |
 | Eye Care FAQ answers (7 of 8) | The reader cannot resolve `const C = Component; C.FAQS`; `memberRefs` resolves a class alias's static members (also `C.IMG`, `C.COLS`, `C.PRODUCTS`) | Never built |
-| Page dimming behind drawers | Reuse the modal frame's backdrop reading (`lib/skeleton-openers.mjs::frameParts`, `frameLook`) for a sibling full-screen backdrop | Never built for drawers |
+| Page dimming behind drawers and the basket | Built and working on every site: `sgs/nav-drawer` and `sgs/cart` dim by default (black, 0.55); Mama's sets `scrimColour` `#3a2a22`, `scrimOpacity` 0.45, `scrimFadeDuration` 250, exactly its draft's `rgba(58,42,34,.45)` backdrop. The clone does not copy the draft's backdrop colour, opacity and blur into those settings: read the backdrop element through the universal matching | Clone gap |
 | Indus posts with two titles and breadcrumbs | The proven design is an empty post body under the `single` template (FR-48-56); the proof ran posts with content. Narrowing a with-content body is new design: Bean's call | Run choice |
 | Unrolled current items (Mama's nav) | Restore `7721da8e2` (`fill-current-attr.mjs`) with the state-parts module it deleted alongside | Rewind loss |
 | Time-of-day text | Restore `7f18560bd` (`skeleton-clock.mjs`) | Rewind loss |
@@ -142,10 +142,10 @@ Every "never built / half built / partly built" verdict was checked against the 
 
 - **Eye Care collapse at 1060: built and lost.** The width gate wrote `collapsePoint` (1024, the snap rule) in Eye Care run 13 (2026-11-21); the proof wrote none (suspect: the split-menu change `ce642bca8`, to prove). Fix: the nav halves take the existing `ownAlternativeBelow` branch of `lib/fill-width-gate.mjs::widthGateWrites` (`05b44ffa4`); add the `Object.assign` case to `valueOfKey`. Most of Eye Care's width rules work (ladders, tier hides, step rungs).
 - **Structured breakpoint reader: built and lost** (`8c48dec56` with its test, removed by the rewind): restore; `state_keys.w` is added through the same reader.
-- **Phone hidden below 1160: partly built.** `lib/fill-width-gate.mjs::presenceStep` finds the width a node appears at but only the filter rail uses it: run it for any node hidden at a non-tier width and write FR-48-50 step 5's scoped rule.
+- **Phone hidden below 1160: one universal visibility rule (Bean 2026-11-24, Spec 48 FR-48-50).** A draft element whose visibility depends on screen width is a visibility setting: the threshold comes from the draft's code (here `phoneDisplay: effW >= 1160`); within 5% of a tier it becomes the tier hide flags, otherwise the block's own breakpoint setting where it has one, otherwise a scoped rule in the block's Custom CSS control. No presence search; the filter rail's `presenceStep` is a different feature.
 - **Mega panel cap and padding: a working general mechanism is bypassed.** Bean's wrapper-absorb rule (`4a0a6e537`, `lib/skeleton-absorb-wrapper.mjs::absorbSlot`, `lib/fill-absorbed.mjs`) works; `megaPanelRow` unwraps around it. Route the panel wrapper through it.
 - **Social icon sizes: built and broken.** Mama's footer wrote 48px and 20px on 2026-11-19 (`0acc3d028`); lost by a later change (suspects `43c395b42`, `d75dbf82b`, `60b253da1`, `0eaf001ec`): bisect with offline Fill.
-- **Footer list headings: partly built.** Text and level reach all three lists (`289a0b54c`); the look reaches one of three because the heading part is paired on one node only.
+- **Footer column headings: Bean's ruling** (see the Restore map row): a standard heading block above the list.
 - **Filter chips: built and lost** (`d2bcd2a91`, removed by the rewind): restore the wrapper, taxonomy and chips into `categoryFilter`.
 - **Card look: built and working through part-look** (the saved clone's card matches the hand-built one); the Fill pairing is still to fix, and `variantStyle` is never written for a template card. Related-product cards need the same card rules.
 - **part-look: a standalone command by design** (template-rework Task 4); it becomes a run stage.
@@ -157,7 +157,7 @@ Every "never built / half built / partly built" verdict was checked against the 
 - **A block's own transition: narrower behaviour reversed** by `684491a03` (no reason given).
 - **Image ratio and height: built modules left unwired by FR-49-35's rule;** the universal route cannot write the slot's `ratio`.
 - **Indus review step: the block supports a review inside a step;** the clone's writer `7f957c87c` makes it a sibling; Spec 04's two trees disagree.
-- **Not built after a full search:** the separator writer (the block setting `textBadgeSeparator` exists), drawer scrim (modals have it), the FAQ class alias, the "any of" form condition, `featuredItemIds`, `triggerMode`, `state_keys.w`.
+- **Not built after a full search:** the FAQ class alias, the "any of" form condition (the form fields' `conditionalOperator` offers equals, not equals, contains, greater than and is empty, ANDed; Spec 04 governs field conditions, Spec 42 the saved `sgs_form` posts), `triggerMode`, `state_keys.w`. The trust bar separator is a content setting of the block (`textBadgeSeparator`, the glyph printed after each text-only badge, and `textBadgeSeparatorColour`): the draft's repeated glyph between labels is matched to it like any other part, not dropped by `headerStripBar`. A featured menu item is left (no draft uses one).
 
 ## Order
 
@@ -166,10 +166,13 @@ Every "never built / half built / partly built" verdict was checked against the 
 3. Wave C: RF9 and the remaining restores.
 4. Reclone all three clients surface by surface; side-by-sides for Bean.
 
-## Decisions for Bean
+## Decisions and rulings
 
-- **D1** Approve this plan and its order.
-- **D2** Spec changes (from `deep\spec.out`, most match Bean's own rulings): S1 strict is test-only, invalid versus advisory; S2 a variant-only setting is offered only to a node drawn in that variant, read from the setting's own element and selector; S3 exact stated values, tolerance only for measured comparison (and whether colour ΔE ≤ 2 stays; recommended: lengths only for now); S4 narrow the residual refusals; S5 a link-only list is written; S6 menu labels from the draft's link text including href anchors; S7 refuse a stale page map, strip clears ids; S8 a setting the skeleton writes is never overwritten from a paint reading; S9 no new transition settings, timing through the motion panel and Custom CSS; S10 shrink timing written from the draft; S11 the handover shape and content attribute storage shapes; S12 the look also stores measured boxes beside declared sizes; S13 the trust bar's ticker default replaces FR-48-108/112's approach; S14 Spec 48A's motion token row and whether a handoff must export a motion token file (FR-48A-17); S15 correct the Status of the eight "built" requirements the proof shows broken.
-- **D3** The 5% breakpoint snap (Spec 48 FR-48-50, Bean's ruling in Spec 32 FR-32-13: 1060 snaps to 1024). Recommended: keep the snap only where a tier flag is the only home; write the exact value where a setting holds a number (`collapsePoint`) or in scoped Custom CSS. This changes output on any site whose threshold is within 5% of a tier.
-- **D4** Withdrawn: RF1 no longer changes the record schema, so no full re-prove is needed for it.
-- **D5** "Glasses (soon)" stays out under Bean's ruling (2026-10-09, confirmed 2026-11-22) unless Bean reverses it.
+- **D1 (Bean 2026-11-24):** build as much as possible in parallel, not piece by piece; the main session's agent owns integration: the fixes work together, cause no regressions, and each fix clears every issue it is credited with (checked on the real surfaces before it counts).
+- **D2:** the spec changes are not finalised; they are presented to Bean in plain words before any is made.
+- **The 5% breakpoint snap stays** (Spec 48 FR-48-50, Spec 32 FR-32-13: 1060 snaps to 1024). Not reopened.
+- **Blog posts:** an empty post body under the `single` template (Spec 48 FR-48-56, FR-48-96). Not reopened.
+- **Footer column headings** are standard heading blocks above their lists (Bean 2026-11-24).
+- **Visibility by screen width** follows FR-48-50 universally: tier flags within 5% of a tier, else the block's own breakpoint setting, else scoped Custom CSS.
+- **D4** withdrawn. **"Glasses (soon)"** stays out. **Featured menu items:** left.
+- **Framework bug to log (not a clone fault):** on Mama's live site the nav drawer's dimming stays for a few seconds after the drawer closes, while the other drawers and modals clear in step (Mama's `scrimFadeDuration` is 250); track it in the framework backlog before Mama's next deploy.
