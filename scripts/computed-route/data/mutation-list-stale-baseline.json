@@ -10,12 +10,6 @@
 		"structure: rowsOf( STRUCTURE_ROLES, ' AND css_property IS NULL AND enum_values IS NOT NULL' ),",
 		" AND css_property IS NULL AND enum_values IS NOT NULL' ),"
 	],
-	"tests/fixtures/delivery-map-evidence/mutations.json": [
-		".filter( ( e ) => ! facts.effects.has( e ) )",
-		".filter( ( f ) => ! facts.flags.has( f ) )",
-		"facts.nodes.some( ( n ) => effects.every( ( e ) => n.effects.has( e ) ) && flags.every( ( f ) => n.flags.has( f ) ) )",
-		"want.every( ( e ) => names( r.live ).includes( e ) )"
-	],
 	"tests/fixtures/equivalence-tolerance/mutations.json": [
 		"\treturn samePaint( prop, a, b );"
 	],

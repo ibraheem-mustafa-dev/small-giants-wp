@@ -8,12 +8,6 @@
 	"census-conservation.test.mjs": {
 		"census.mjs": "reads a fixture client's qa reports under SGS_REPO_ROOT (a temporary folder) and the framework DB; its only browser use is the local draft server"
 	},
-	"delivery-map-live.test.mjs": {
-		"delivery-map.mjs": "--status reads the delivery plan, git and verify.json; it calls no site function (its only lib/tree.mjs import is walk)"
-	},
-	"delivery-split.test.mjs": {
-		"delivery-map.mjs": "--status --verify reads a verify.json file, the plan and git; it calls no site function"
-	},
 	"fill-census.test.mjs": {
 		"census.mjs": "reads a fixture client's qa reports under SGS_REPO_ROOT (a temporary folder) and the framework DB; its only browser use is the local draft server"
 	},
@@ -34,9 +28,6 @@
 	},
 	"sweep.test.mjs": {
 		"sweep.mjs": "reads and rewrites framework files named by the test; its import closure is three modules with no wp-cli, REST, session or browser call"
-	},
-	"verify-live.test.mjs": {
-		"verify-live.mjs": "--site is only a host name recorded on each row and checked against deploy_common.py; the command reads measurement files and git and fetches nothing"
 	},
 	"wp-build-page-inserter-defaults.test.mjs": {
 		"wp-build-page.js": { "live": "a live test on the canary (REST and a page build), skipped when the secrets file is absent or SGS_NO_SITE is set" }

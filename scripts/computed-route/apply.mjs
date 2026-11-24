@@ -9,7 +9,7 @@
 // --site names the copy of the surfaces' site to read and write (it must share their post ids; default: the first surface's own);
 // a --write run on a scratch copy (`local-mediatest*`) runs from a git worktree.
 // Output in sites/<client>/build/qa/apply/: <surface>.plan.json (every target's outcome), summary.md, and with --write
-// verify.json (read by delivery-map.mjs) and no-effect.json (writes rolled back after their re-read; --retry tries them again). Every instance ends written, unchecked (written, no automatic re-read), equal, ledger,
+// verify.json (the re-read measurements, one row per record, target and state) and no-effect.json (writes rolled back after their re-read; --retry tries them again). Every instance ends written, unchecked (written, no automatic re-read), equal, ledger,
 // no-setting, unpaired or no-effect. A whole run fails while a no-setting row names something the block has a setting for
 // (lib/apply-gate.mjs; no-setting-review.json lists them).
 import { spawnSync } from 'node:child_process';
