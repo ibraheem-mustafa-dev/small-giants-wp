@@ -1,17 +1,17 @@
 ---
 doc_type: ledger
 project: small-giants-wp
-last_updated: 2026-11-23
+last_updated: 2026-11-24
 ---
 
 # small-giants-wp: LEDGER (the one living status)
 
 ## Summary for Bean
 
-- **The one active track is general cloning (Front H, Spec 48):** before 2026-11-28 you clone two new sites from Claude Design drafts, SGS and MIC (which has a shop), with no hand-built copy to lean on. Plan `plans/2026-11-19-general-cloning-work.md`; a session starts from `prompts/2026-11-22-general-cloning-next-session.md` (the proof clones of all three clients, one findings report, then your register of confirmed issues).
+- **The one active track is general cloning (Front H, Spec 48):** before 2026-11-28 you clone two new sites from Claude Design drafts, SGS and MIC (which has a shop), with no hand-built copy to lean on. Plan `plans/2026-11-19-general-cloning-work.md` (Task 8). The 2026-11-24 proof clones came out far worse than the tracks' results; the findings report (with the verified causes of the drop) is at https://claude.ai/artifact/9rduQeqHHTCJ9wWfT6JseK, and two measurements that pin the causes down are being collected.
 - **The rest of the WordPress framework is frozen** (your decision, 2026-11-12): security updates and client fixes only. The web engine is a separate project (`C:\Users\Bean\Projects\small-giants-engine`, its own LEDGER).
 - **Live sites:** Mama's Munches is a live shop (`mamasmunches.com`); Indus and Eye Care are signed off. Each site's open items sit in its own brief (`sites/<client>/CLAUDE.md`).
-- **Need you:** your eye on the proof pairs when the general track brings them.
+- **Need you:** approve the register of causes once the two measurements are in; decide whether the clone-coverage register stays (recommended: intake's missing-features list reads it).
 
 ## Blockers
 
@@ -19,7 +19,7 @@ last_updated: 2026-11-23
 
 ## Front H: general cloning
 
-**State (2026-11-23):** calibration is retired. The route reads where each block setting paints from the setting record (DB table `setting_placements`, records in `plugins/sgs-blocks/scripts/data/setting-records/`) and each block's default look from the client's site look (`plugins/sgs-blocks/scripts/site-look/site_look.py`, built offline); the gate `retire-calibration` keeps the removed files gone. The framed pictures' mat fix is in the plan's Task 8. Since 2026-11-24 ~02:30 three full reclones run to the end with nothing fixed in between (Mama's, Indus, Eye Care; each on its own scratch copy `local-mediatest-rc-<mm|in|ec>`, driver and logs in `E:\sgs-tmp\general-cloning\reclone-2026-11-24\`, the four held-out pages not cloned). Next: the plan's Task 8 (proof) from those runs, as the start prompt orders it.
+**State (2026-11-24):** `main` at `113ef48fd`; nothing deployed this session (hosted sites unchanged). The proof reclones ran (second attempt: Mama's and Eye Care from `fd06bc065`, Indus from `c8b4a3f78`, two at a time); site-run steps passed Mama's 75 of 79, Eye Care 83 of 97, Indus 194 of 230; nine surfaces were not built, four of them showing older output that looks built. Bean judged the clones far worse than the header, footer, drawer, shop and handoff tracks' results; a full second opinion found the causes, recorded in the plan's Task 8 ("Why the clones dropped") and the report: new stop-gates with strict mode against the 2026-11-21 ruling (D1), new writers the next stage refuses (D2), the setting-record switch `0eaf001ec` changing the data under existing rules (D3), the foundation command's first end-to-end run (D4), and the lost rewind fix `a98de66c4` (D6). Two measurements are being collected (`E:\sgs-tmp\general-cloning\regression\b1.out`, the setting-record switch A/B; `b2.out`, which lost rewind fixes today's clones need). Fixed this session: main's build (`fd06bc065`) and, by Bean's ruling, the trust bar scrolling as a ticker by default (`00eac2c01`, DB `113ef48fd`); no other fix before Bean approves the register. The three scratch copies (ports 8131 to 8133) and the draft viewers (ports 5181 to 5183) stay up for Bean's review.
 
 **Dead Custom CSS:** two rules name classes the framework no longer prints (Mama's Home, post 154, `.sgs-buybox__form`; Indus post 432, `.sgs-article-meta`), in their site briefs. Eye Care's phone hero framing had the same cause (a media class renamed on 2026-11-12) and now sits in the hero's own focal setting (62% 12% on phones, Bean's round 12; backup `darkcyan-grouse-898606.hostingersite.com-20261123-225354-before-hero-focal-write.sql.gz`).
 
