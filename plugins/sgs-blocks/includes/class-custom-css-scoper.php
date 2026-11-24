@@ -400,10 +400,10 @@ if ( ! class_exists( __NAMESPACE__ . '\\Custom_Css_Scoper' ) ) {
 		/**
 		 * Whether a declaration body names a URL that points outside the site.
 		 *
-		 * The decoded text (CSS escapes resolved, so `=rl(` reads as `url(`) only locates each `url(`, `src(` and
+		 * The decoded text (CSS escapes resolved, so `\75rl(` reads as `url(`) only locates each `url(`, `src(` and
 		 * `image-set(`; every argument is then judged from the RAW text, strictly: a quoted or bare argument that cannot be
-		 * read, or that holds a backslash, counts as off-site. A browser reads `9` or ` ` inside an argument as a
-		 * literal character that does not end the token, so judging the decoded argument would let `url(//good.com9@evil.com/x)`
+		 * read, or that holds a backslash, counts as off-site. A browser reads `\29` or `\22 ` inside an argument as a
+		 * literal character that does not end the token, so judging the decoded argument would let `url(//good.com\29@evil.com/x)`
 		 * pass as `url(//good.com)`. A rule holding `image-set(` has every quoted string after it checked as a URL, because
 		 * `image-set("a.png" 1x)` takes bare strings.
 		 *
@@ -440,7 +440,7 @@ if ( ! class_exists( __NAMESPACE__ . '\\Custom_Css_Scoper' ) ) {
 		}
 
 		/**
-		 * Decode CSS escapes the way a browser reads them, so `=rl(` is located as `url(` and `ht<ps:` as `https:`.
+		 * Decode CSS escapes the way a browser reads them, so `\75rl(` is located as `url(` and `ht\74ps:` as `https:`.
 		 *
 		 * A backslash plus 1 to 6 hex digits (and one optional whitespace that ends them) is that code point
 		 * (U+FFFD for zero, a surrogate or beyond U+10FFFF); a backslash plus a newline is a line continuation and
