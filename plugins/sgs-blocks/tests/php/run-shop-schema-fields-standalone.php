@@ -575,6 +575,35 @@ namespace {
 	$check( 'a stored key the form does not show (set by WP-CLI) is kept', 'https://schema.org/FullRefund' === ( Shop_Policy_Settings::sanitise_returns( $finite )['refundType'] ?? '' ) );
 	$GLOBALS['t']['options']['sgs_configurator_returns'] = $clean;
 	$check( 'a submitted key the form does not show is dropped, never printed into the structured data', ! isset( Shop_Policy_Settings::sanitise_returns( $finite + array( 'name' => '</script><script>x()</script>' ) )['name'] ) );
+	// A stored policy the form cannot show (a list of policies, or a category outside the three) survives a save.
+	$two = array(
+		array( '@type' => 'MerchantReturnPolicy', 'applicableCountry' => 'GB', 'returnPolicyCategory' => 'https://schema.org/MerchantReturnFiniteReturnWindow', 'merchantReturnDays' => 14 ),
+		array( '@type' => 'MerchantReturnPolicy', 'applicableCountry' => 'IE', 'returnPolicyCategory' => 'https://schema.org/MerchantReturnNotPermitted' ),
+	);
+	$unspecified = array( '@type' => 'MerchantReturnPolicy', 'applicableCountry' => 'GB', 'returnPolicyCategory' => 'https://schema.org/MerchantReturnUnspecified', 'refundType' => 'https://schema.org/FullRefund' );
+	$blank_save  = array( 'returnPolicyCategory' => '', 'applicableCountry' => '', 'merchantReturnDays' => '', 'returnMethod' => '', 'returnFees' => '' );
+	$GLOBALS['t']['options']['sgs_configurator_returns'] = $two;
+	$check( 'a list of several policies is returned unchanged when a save picks no category (a delivery-time save must not wipe it)', $two === Shop_Policy_Settings::sanitise_returns( $blank_save ) );
+	$GLOBALS['t']['options']['sgs_configurator_returns'] = $unspecified;
+	$check( 'a stored category outside the three is returned unchanged when a save picks no category', $unspecified === Shop_Policy_Settings::sanitise_returns( $blank_save ) );
+	$GLOBALS['t']['options']['sgs_configurator_returns'] = $two;
+	$picked = Shop_Policy_Settings::sanitise_returns( array( 'returnPolicyCategory' => 'https://schema.org/MerchantReturnUnlimitedWindow', 'applicableCountry' => 'gb' ) );
+	$check( 'picking a category over a list writes one policy and copies none of the list\'s numeric keys', array( '@type' => 'MerchantReturnPolicy', 'applicableCountry' => 'GB', 'returnPolicyCategory' => 'https://schema.org/MerchantReturnUnlimitedWindow' ) === $picked, json_encode( $picked ) );
+	$GLOBALS['t']['options']['sgs_configurator_returns'] = $unspecified;
+	$picked = Shop_Policy_Settings::sanitise_returns( array( 'returnPolicyCategory' => 'https://schema.org/MerchantReturnUnlimitedWindow', 'applicableCountry' => 'GB' ) );
+	$check( 'picking a category over an unspecified one replaces the category and keeps the other stored keys', 'https://schema.org/MerchantReturnUnlimitedWindow' === $picked['returnPolicyCategory'] && 'https://schema.org/FullRefund' === ( $picked['refundType'] ?? '' ) );
+	$GLOBALS['t']['options']['sgs_configurator_returns'] = $clean;
+	$check( 'a policy the form can show is still cleared by choosing "No policy published"', array() === Shop_Policy_Settings::sanitise_returns( $blank_save ) );
+	$GLOBALS['t']['options']['sgs_configurator_returns'] = $two;
+	ob_start();
+	Shop_Policy_Settings::render_page();
+	$page = ob_get_clean();
+	$check( 'the settings page shows a policy it cannot edit read-only, and says saving keeps it', str_contains( $page, 'sgs-returns-readonly' ) && str_contains( $page, 'MerchantReturnNotPermitted' ) && str_contains( $page, 'Keep the policy shown above' ) );
+	$GLOBALS['t']['options']['sgs_configurator_returns'] = $clean;
+	ob_start();
+	Shop_Policy_Settings::render_page();
+	$page = ob_get_clean();
+	$check( 'a policy the form can show has no read-only block', ! str_contains( $page, 'sgs-returns-readonly' ) && str_contains( $page, 'No policy published' ) );
 	$check( 'delivery time input: whole numbers kept, blanks and junk dropped', array( 'transitMin' => 2, 'transitMax' => 3 ) === Shop_Policy_Settings::sanitise_delivery_time( array( 'handlingMin' => '', 'handlingMax' => 'x', 'transitMin' => '2', 'transitMax' => '3' ) ) );
 	$check( 'delivery time: a range typed the wrong way round is turned round, never printed inverted', array( 'transitMin' => 2, 'transitMax' => 4 ) === Shop_Policy_Settings::sanitise_delivery_time( array( 'transitMin' => '4', 'transitMax' => '2' ) ) );
 	$check( 'the opt-in is saved as 1 or nothing', '1' === Shop_Policy_Settings::sanitise_flag( 'on' ) && '' === Shop_Policy_Settings::sanitise_flag( '' ) );

@@ -6,7 +6,9 @@
  *
  * - `sgs_configurator_returns`: the shop's `MerchantReturnPolicy` as a schema.org object. The form writes the keys
  *   it shows (`returnPolicyCategory`, `applicableCountry`, `merchantReturnDays`, `returnMethod`, `returnFees`) and
- *   keeps any other key already stored (one set through WP-CLI). A choice of "no policy" stores nothing.
+ *   keeps any other key already stored (one set through WP-CLI). A choice of "no policy" stores nothing. A stored
+ *   policy the form cannot show (a list of several policies, or a category outside the three it offers) is printed
+ *   read-only and survives every save unless the operator picks a category, which replaces it.
  * - `sgs_shipping_from_woocommerce`: `1` when the shop publishes the shipping zones and methods WooCommerce holds
  *   ({@see Product_Shipping_Woo}).
  * - `sgs_shipping_delivery_time`: whole days for handling (baking, packing) and transit, which WooCommerce does not
@@ -145,7 +147,8 @@ final class Shop_Policy_Settings {
 		$stored   = \is_array( $stored ) ? $stored : array();
 		$category = (string) ( $value['returnPolicyCategory'] ?? '' );
 		if ( ! isset( self::categories()[ $category ] ) ) {
-			return array();
+			// A policy the form cannot show was never offered for editing, so a save that picks nothing keeps it.
+			return self::form_can_show( $stored ) ? array() : $stored;
 		}
 
 		$country = \strtoupper( \trim( (string) ( $value['applicableCountry'] ?? '' ) ) );
@@ -180,9 +183,29 @@ final class Shop_Policy_Settings {
 
 		// A key the form does not show (set by WP-CLI) stays as stored; a submitted key the form does not show is dropped.
 		$shown = array( '@type', 'applicableCountry', 'returnPolicyCategory', 'merchantReturnDays', 'returnMethod', 'returnFees' );
-		$extra = \array_diff_key( $stored, \array_flip( $shown ) );
+		// A list's numeric keys are policies, not keys of this one, so they are never copied in.
+		$extra = \array_filter( \array_diff_key( $stored, \array_flip( $shown ) ), 'is_string', ARRAY_FILTER_USE_KEY );
 		unset( $extra['returnPolicyCountry'] );
 		return $policy + $extra;
+	}
+
+	/**
+	 * Whether the Returns fields can display and re-save the stored policy: none stored, or one policy whose category is
+	 * one of the three the form offers. A list of several policies, or a category outside the three, cannot be shown.
+	 *
+	 * @param array<mixed> $stored The stored `sgs_configurator_returns`.
+	 * @return bool
+	 */
+	private static function form_can_show( array $stored ): bool {
+		if ( empty( $stored ) ) {
+			return true;
+		}
+		foreach ( \array_keys( $stored ) as $key ) {
+			if ( \is_int( $key ) ) {
+				return false;
+			}
+		}
+		return isset( self::categories()[ (string) ( $stored['returnPolicyCategory'] ?? '' ) ] );
 	}
 
 	/**
@@ -245,9 +268,15 @@ final class Shop_Policy_Settings {
 		\settings_fields( self::GROUP_KEY );
 
 		echo '<h2>' . \esc_html__( 'Returns', 'sgs-blocks' ) . '</h2><table class="form-table" role="presentation">';
+		$can_show = self::form_can_show( $returns );
 		echo '<tr><th scope="row"><label for="sgs-returns-category">' . \esc_html__( 'Returns policy', 'sgs-blocks' ) . '</label></th><td>';
+		if ( ! $can_show ) {
+			echo '<div class="sgs-returns-readonly"><p>' . \esc_html__( 'A returns policy was set outside this screen (more than one policy, or a type this form does not offer). It is published as it is. Saving keeps it unless you choose a policy below, which replaces it.', 'sgs-blocks' ) . '</p>';
+			echo '<pre>' . \esc_html( (string) \wp_json_encode( $returns, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) ) . '</pre></div>';
+		}
 		echo '<select id="sgs-returns-category" name="sgs_configurator_returns[returnPolicyCategory]">';
-		self::options( array( '' => \__( 'No policy published', 'sgs-blocks' ) ) + self::categories(), (string) ( $returns['returnPolicyCategory'] ?? '' ) );
+		$none = $can_show ? \__( 'No policy published', 'sgs-blocks' ) : \__( 'Keep the policy shown above', 'sgs-blocks' );
+		self::options( array( '' => $none ) + self::categories(), $can_show ? (string) ( $returns['returnPolicyCategory'] ?? '' ) : '' );
 		echo '</select></td></tr>';
 		self::text_row( 'sgs-returns-country', 'sgs_configurator_returns[applicableCountry]', \__( 'Country it applies to', 'sgs-blocks' ), (string) ( $returns['applicableCountry'] ?? '' ), \__( 'Two letters, for example GB. Required with a policy.', 'sgs-blocks' ), 'text', 2 );
 		self::text_row( 'sgs-returns-days', 'sgs_configurator_returns[merchantReturnDays]', \__( 'Days to return', 'sgs-blocks' ), isset( $returns['merchantReturnDays'] ) ? (string) $returns['merchantReturnDays'] : '', \__( 'Only for "within a number of days".', 'sgs-blocks' ), 'number', 3 );
