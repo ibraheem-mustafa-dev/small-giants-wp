@@ -19,7 +19,7 @@ Searching one directory and concluding a tool does not exist is a live failure m
 
 | Directory | Runnable files | Holds |
 |---|---|---|
-| `scripts/` | 1657 | repo-wide tooling (naming lint, site utilities) |
+| `scripts/` | 1639 | repo-wide tooling (naming lint, site utilities) |
 | `plugins/sgs-blocks/scripts/` | 997 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
 | `.claude/hooks/` | 8 | session + commit hooks (handoff preflight, doc gates) |
 | `.claude/skills/wp-sgs-deploy/scripts/` | 0 | deploy-skill helpers |
@@ -1012,11 +1012,9 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/check-refs.mjs` | — | Checks that every draft link of a skeleton names exactly one draft element (Spec 48 §3.4, R-47-4). |
 | `computed-route/clone-surface.mjs` | manifest+script-call | The surface command: one or more surfaces of a client cloned onto a site through every stage, passing only when every stage ran. |
 | `computed-route/confirm-canvas.mjs` | script-call | Live confirmation of lib/triage.mjs::canvasSettable's claims, BY FAMILY, read-only. |
-| `computed-route/content-coverage.mjs` | manifest+script-call | The content coverage check: every content setting of an SGS block has a way a re-clone fills it from the draft, or a named gap row… |
 | `computed-route/content-sync.mjs` | manifest | Copies a client's built surfaces from its local mirror to the test site it mirrors (lib/content-sync.mjs): node… |
 | `computed-route/data/runtimes/8fe7df74405f.support.js` | manifest | GENERATED from dc-runtime/src/*.ts — do not edit. Rebuild with `cd dc-runtime && bun run build`. |
 | `computed-route/data/runtimes/c60c49083997.support.js` | manifest | GENERATED from dc-runtime/src/*.ts — do not edit. Rebuild with `cd dc-runtime && bun run build`. |
-| `computed-route/delivery-map.mjs` | manifest+script-call+skill | Checks a client's delivery map against its intake review, handoff animations and surfaces, the plan the map names and the coverage map… |
 | `computed-route/fill.mjs` | manifest+script-call+skill+test-import | Fill (FR-47-4): from a skeleton tree (which blocks, nested how, with the draft's words, each node naming the draft element it copies) to a tree… |
 | `computed-route/form-submit-check.mjs` | manifest+script-call+skill | The live form submission check (Spec 48 FR-48-57, FR-48-83 §10.1). |
 | `computed-route/framework-backlog.mjs` | manifest+script-call+skill | Framework backlog merge (Spec 48 FR-48-68): merges the F-class rows of every client's sites/<client>/build/qa/gaps.json, and the residual Custom CSS… |
@@ -1130,9 +1128,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/lib/clone-coverage.mjs` | manifest+script-call | The clone coverage map (clone coverage plan Phase 1, steps 1.3 and 1.4): for every capability ID in data/capabilities.json, how the route recognises… |
 | `computed-route/lib/clone-surface.mjs` | manifest+script-call | The surface command's logic (clone-surface.mjs): one or more surfaces of a client taken through every stage by site-run.mjs, with nothing left to a… |
 | `computed-route/lib/confirm-live.mjs` | manifest+script-call | The rendered-live half of the confirm record (Spec 48 FR-48-36). Fill writes the record with the declared and rendered-draft values (D–R) before the… |
-| `computed-route/lib/content-coverage.mjs` | manifest+script-call | Content coverage (clone coverage register, per-setting): every content setting of an SGS block has exactly one way a re-clone fills it from the… |
 | `computed-route/lib/content-sync.mjs` | manifest+script-call | Copying a mirror's built content to the site it mirrors (Spec 48 FR-48-55, Bean 2026-10-26): a client's surfaces are built and walked on its local… |
-| `computed-route/lib/coverage-register.mjs` | script-call | The coverage map as a register of solved gaps: worked examples for a new gap (--like), the gaps a draft's review reports (--drafts) and the one-off… |
 | `computed-route/lib/css-equivalence/effect.mjs` | manifest+script-call+skill | Layer 4 of the equivalence engine (Spec 48 FR-48-86): the setting's measured effect replaces its declared name. |
 | `computed-route/lib/css-equivalence/index.mjs` | manifest+script-call+skill+test-import | The equivalence engine (Spec 48 FR-48-86): consulted before any "no setting" verdict, so a draft declaration reaches every setting that paints the… |
 | `computed-route/lib/css-equivalence/inert.mjs` | script-call | Layer 3 of the equivalence engine (Spec 48 FR-48-86): values that paint nothing. A draft value is inert at a width when the property does not apply… |
@@ -1143,9 +1139,6 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/lib/css-matrix.mjs` | manifest+script-call | A CSS transform list as the 4x4 matrix a browser draws it with (CSS Transforms 1 and 2), in Node, so the motion writer's render check can compare the… |
 | `computed-route/lib/db.mjs` | manifest+script-call | Read-only access to the framework database (R-47-2). Opened with node:sqlite in read-only mode, which refuses every write; the route never seeds… |
 | `computed-route/lib/decoration-layers.mjs` | script-call | The bare decorative layers of a draft: one reading of which of them something else delivers (the skeleton rule `decorationDelivered` and the… |
-| `computed-route/lib/delivery-bind.mjs` | script-call | Binds tree evidence for a delivery-map animation record to the block that renders the record's own draft element. A block's draft element is the… |
-| `computed-route/lib/delivery-map.mjs` | manifest+script-call+skill | Live verification (sites/<client>/build/qa/apply/verify.json, written by the tool that reads the live page): { generated: <ISO time>, rows: [ {… |
-| `computed-route/lib/delivery-state-files.mjs` | script-call | Whether the commit a done `state:<surface>:<name>` key names changed that surface. A surface's files come from the data: the build entries in… |
 | `computed-route/lib/deploy-hash.mjs` | manifest+script-call | The block-build hashes: md5 of a block's front-end build files, locally and on the site, so a build comparison and the foundation chain can tell… |
 | `computed-route/lib/discovered-layout.mjs` | manifest+script-call | Which discovered values may answer a row (lib/resolve.mjs::resolveDiscovered, lib/css-equivalence/effect.mjs::discoveredWrite). A discovered… |
 | `computed-route/lib/draft-branches-io.mjs` | script-call | The files lib/draft-branches.mjs::branchIndex joins for one surface: `<surface>.origin.json` (written by fill.mjs), the fact record… |
@@ -1639,7 +1632,6 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/lib/trial-page.mjs` | manifest+script-call | Try before write, the page side (Spec 48 route-accuracy R6; the judgement is lib/trial.mjs). A logged-in admin page renders blocks through core's… |
 | `computed-route/lib/trial-run.mjs` | manifest+script-call | Try before write, one round (Spec 48 route-accuracy R6): opens a logged-in admin session and the live page of a surface's site, and tries each… |
 | `computed-route/lib/trial.mjs` | manifest+script-call | Try before write (Spec 48 route-accuracy R6): a Solve write is tried in the open live page before it is saved. The block is rendered twice through… |
-| `computed-route/lib/verify-live.mjs` | manifest+script-call | Live verification rows (sites/<client>/build/qa/apply/verify.json, read by lib/delivery-map.mjs::liveStatus). |
 | `computed-route/lib/walk-lint-gate.mjs` | manifest+script-call | FR-48-12 for the gate chain's own walks: a walker config that fails its lint (lib/walker-lint.mjs) is not walked. The guard lints the config for the… |
 | `computed-route/lib/walker-check.mjs` | script-call | The walker check (Spec 48 §3.6, FR-48-13): every surface whose `surfaces.json` entry names a walker config has that file, and the config walks every… |
 | `computed-route/lib/walker-lint.mjs` | script-call | FR-48-12 item 1: the walker config's lint as a route gate. Each surface's generated walker config (walkerFull, else the hand walker) is linted with… |
@@ -1691,7 +1683,6 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/trace-check.mjs` | script-call+skill | node scripts/computed-route/trace-check.mjs <handoff folder> [entry .dc.html] [--shift=<ms>] Loads the entry page at 1440, scrolls it, and logs every… |
 | `computed-route/triage.mjs` | manifest+script-call+skill | Triage command (Spec 48, Session B1): a candidate class (W, F, T, U, L) with its evidence for every distinct open issue of a surface's Solve report… |
 | `computed-route/trial.mjs` | manifest+script-call | Try-before-write replay (Spec 48 route-accuracy R6). |
-| `computed-route/verify-live.mjs` | manifest+script-call | Writes sites/<client>/build/qa/apply/verify.json rows from live measurements (the file delivery-map.mjs --status reads). |
 | `css-pattern-audit.js` | skill | CSS pattern audit — static analysis for risky patterns in deployed/built CSS. |
 | `font-source-audit.js` | manifest+npm | Font source audit — static analysis for external CDN URLs in theme.json fontFace declarations. |
 | `global-styles-reset.js` | skill | wp_global_styles reset + reapply. |
