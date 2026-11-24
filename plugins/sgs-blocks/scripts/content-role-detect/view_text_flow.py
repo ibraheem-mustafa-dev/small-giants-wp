@@ -15,7 +15,9 @@ How it follows the value:
      taints `name`, so `const text = format( { template, templateOne } )` carries it across a function call.
   4. A text sink is a statement that assigns `textContent`, `innerText`, `innerHTML`, `nodeValue` or
      `data`, or calls `createTextNode` / `insertAdjacentText` / `insertAdjacentHTML`, with a tainted name
-     after the sink token.
+     after the sink token. A tainted name that is only an index (`labels[ name ]`), an operand of an equality
+     test (`name === 'a'`) or the condition of a ternary (`name ? 'On' : 'Off'`) does not count: it picks what is
+     written, it is not what is written.
 
 The analysis is name-based inside one file and ignores scope. It reads a value that merely shares a
 name with a tainted one as tainted too; a wrong content verdict there is caught in the before/after
@@ -139,8 +141,50 @@ def _without_index_expressions(text: str) -> str:
     return text
 
 
+_OPERAND = r"[\w$.]+(?:\([^()]*\))?"
+_LITERAL = r"'(?:[^'\\]|\\.)*'|\"(?:[^\"\\]|\\.)*\""
+_EQUALITY = r"(?:===|!==|==|!=)"
+_COMPARISON = re.compile(
+    rf"{_OPERAND}\s*{_EQUALITY}\s*(?:{_OPERAND}|{_LITERAL})|(?:{_LITERAL})\s*{_EQUALITY}\s*{_OPERAND}"
+)
+_STRING = re.compile(rf"{_LITERAL}|`(?:[^`\\]|\\.)*`")
+_TERNARY = re.compile(r"(?<!\?)\?(?![.?])")
+
+
+def _without_comparisons(text: str) -> str:
+    """`x === 'a'` keeps no `x`: an equality test yields a boolean, never the value compared. Only equality is
+    stripped; `<` and `>` also open and close markup inside a string and would swallow the text around it."""
+    return _COMPARISON.sub(" ", text)
+
+
+def _without_ternary_tests(text: str) -> str:
+    """`test ? a : b` keeps `a` and `b` and drops `test`: the condition picks a branch, and only a branch is written.
+    The test runs back from the `?` to the nearest unmatched opening bracket, `,`, `:` or `;` (`:` ends an earlier
+    branch, so `a ? b : c ? d : e` drops `a` and `c`). String contents are masked while looking for `?` and the
+    boundary, so a question mark in text never counts."""
+    while True:
+        masked = _STRING.sub(lambda m: m.group(0)[0] + "_" * (len(m.group(0)) - 2) + m.group(0)[-1], text)
+        mark = _TERNARY.search(masked)
+        if mark is None:
+            return text
+        depth = 0
+        i = mark.start() - 1
+        while i >= 0:
+            char = masked[i]
+            if char in ")]}":
+                depth += 1
+            elif char in "([{":
+                if depth == 0:
+                    break
+                depth -= 1
+            elif char in ",:;" and depth == 0:
+                break
+            i -= 1
+        text = text[: i + 1] + " " + text[mark.end():]
+
+
 def _tainted_in(text: str, tainted: set[str]) -> bool:
-    text = _without_index_expressions(text)
+    text = _without_ternary_tests(_without_comparisons(_without_index_expressions(text)))
     return any(re.search(rf"(?<![\w$.]){re.escape(name)}(?![\w$])", text) for name in tainted)
 
 

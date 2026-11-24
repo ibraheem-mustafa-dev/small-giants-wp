@@ -50,6 +50,12 @@ const caption = shell.querySelector( '.caption' );
 caption.textContent = labels[ axis ];
 """
 
+VIEW_ONLY_COMPARES = """
+const button = document.querySelector( '[data-sgs-demo]' );
+const label = button.querySelector( '.label' );
+label.textContent = button.dataset.demoText === 'a' ? 'On' : 'Off';
+"""
+
 
 def _block(root: Path, view: str, name: str = "demo") -> Path:
     folder = root / "src" / "blocks" / name
@@ -79,6 +85,11 @@ def test_a_data_attribute_the_view_script_writes_into_text_is_visible_text(tmp_p
 
 def test_a_data_attribute_used_only_as_a_lookup_key_stays_not_content(tmp_path):
     folder = _block(tmp_path, VIEW_ONLY_PICKS_AN_ENTRY)
+    assert _category(_row(folder / "render.php")) == "NOT-content"
+
+
+def test_a_data_attribute_the_view_script_only_compares_stays_not_content(tmp_path):
+    folder = _block(tmp_path, VIEW_ONLY_COMPARES)
     assert _category(_row(folder / "render.php")) == "NOT-content"
 
 
@@ -154,4 +165,32 @@ def test_the_aggregator_still_vetoes_the_attribute_when_the_view_script_never_sh
     ("const t = el.dataset.demoText;\nel.classList.add( t );", False),
 ])
 def test_the_text_sink_rule_on_small_sources(source, expected):
+    assert flow.source_reaches_text_sink(source, "data-demo-text") is expected
+
+
+@pytest.mark.parametrize("source,expected", [
+    # A value that only decides a choice is not the text written.
+    ("el.textContent = btn.dataset.demoText === 'a' ? 'On' : 'Off';", False),
+    ("const m = el.dataset.demoText;\nel.textContent = m === 'a' ? 'On' : 'Off';", False),
+    ("const m = el.dataset.demoText;\nel.textContent = 'a' !== m ? 'On' : 'Off';", False),
+    ("el.textContent = el.dataset.demoText == 'a' ? 'On' : 'Off';", False),
+    ("el.textContent = el.dataset.demoText ? 'On' : 'Off';", False),
+    ("const on = el.dataset.demoText === 'a';\nel.textContent = on ? 'On' : 'Off';", False),
+    ("el.textContent = Number( el.dataset.demoText ) === 3 ? 'Three' : 'Other';", False),
+    ("el.textContent = ready && el.dataset.demoText !== 'x' ? 'Yes' : 'No';", False),
+    ("el.textContent = 'Total: ' + ( el.dataset.demoText === 'a' ? 'On' : 'Off' );", False),
+    # What a branch or an operand shows is still text.
+    ("el.textContent = el.dataset.demoText === 'a' ? el.dataset.demoText : '';", True),
+    ("el.textContent = ready ? el.dataset.demoText : '';", True),
+    ("el.textContent = ready ? 'x' : el.dataset.demoText;", True),
+    ("el.textContent = el.dataset.demoText || 'Fallback';", True),
+    ("el.textContent = el.dataset.demoText ?? 'Fallback';", True),
+    ("el.textContent = el.dataset.demoText + ' items';", True),
+    ("el.textContent = String( el.dataset.demoText );", True),
+    ("el.innerHTML = '<b>' + el.dataset.demoText + '</b>';", True),
+    ("el.textContent = el.dataset.demoText + ' what?';", True),
+    ("el.textContent = el.dataset.demoText?.trim();", True),
+    ("el.textContent = a ? b : c ? el.dataset.demoText : 'x';", True),
+])
+def test_a_comparison_or_a_condition_is_not_a_write(source, expected):
     assert flow.source_reaches_text_sink(source, "data-demo-text") is expected
