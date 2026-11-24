@@ -9,7 +9,7 @@ You are the orchestrator. Helpers do the heavy work; you land any commits on mai
 
 ## Where things stand (2026-11-24)
 
-- **The three proof reclones are already running** (started about 02:25 on 2026-11-24, main `7ed5eb7d4`), so the long runs are under way before this session starts. One driver per client, `E:\sgs-tmp\general-cloning\reclone-2026-11-24\run-client.sh`:
+- **The three proof reclones are already running** (started about 02:30 on 2026-11-24, main `7ed5eb7d4`), so the long runs are under way before this session starts. They run as detached Windows processes (Git Bash started with `Start-Process`), so they survive the session that started them; to stop one, end the processes whose command line names its worktree (`Get-CimInstance Win32_Process | Where-Object CommandLine -match 'wt-clone-<mm|in|ec>'`), then drop its copy and rmdir its slot. One driver per client, `E:\sgs-tmp\general-cloning\reclone-2026-11-24\run-client.sh`:
 
   | Client | Worktree | Scratch copy (port) | Logs |
   |---|---|---|---|
