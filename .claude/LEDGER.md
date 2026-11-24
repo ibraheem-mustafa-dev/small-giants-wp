@@ -11,7 +11,7 @@ last_updated: 2026-11-24
 - **The one active track is general cloning (Front H, Spec 48):** before 2026-11-28 you clone two new sites from Claude Design drafts, SGS and MIC (which has a shop), with no hand-built copy to lean on. Plan `plans/2026-11-19-general-cloning-work.md` (Task 8). The 2026-11-24 proof clones came out far worse than the tracks' results; the findings report (with the verified causes of the drop) is at https://claude.ai/artifact/9rduQeqHHTCJ9wWfT6JseK, and two measurements that pin the causes down are being collected.
 - **The rest of the WordPress framework is frozen** (your decision, 2026-11-12): security updates and client fixes only. The web engine is a separate project (`C:\Users\Bean\Projects\small-giants-engine`, its own LEDGER).
 - **Live sites:** Mama's Munches is a live shop (`mamasmunches.com`); Indus and Eye Care are signed off. Each site's open items sit in its own brief (`sites/<client>/CLAUDE.md`).
-- **Need you:** go on the root-fix plan `.claude/plans/2026-11-24-clone-root-fixes.md` and its decisions D1–D5 (spec changes S1–S15, the 5% breakpoint snap, piloting the setting-record port on cart and nav, "Glasses (soon)").
+- **Need you:** the spec changes in plan `.claude/plans/2026-11-24-clone-root-fixes.md` (Decisions and rulings: S1, S2, S3, R-47-10; S11 under investigation) and the footer column headings question; everything else in that plan is cleared to build in parallel. Requirements marked built that the proof showed broken are listed there (Spec 48 §3.2/FR-48-3, FR-48-6 Links, FR-48A-13, FR-48-113, FR-48-55, FR-48-81, FR-48-94, §3.6 item 20); the spec Status lines stay until the fixes land.
 
 ## Blockers
 
