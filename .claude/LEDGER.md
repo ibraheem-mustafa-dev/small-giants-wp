@@ -11,7 +11,7 @@ last_updated: 2026-11-24
 - **The one active track is general cloning (Front H, Spec 48):** before 2026-11-28 you clone two new sites from Claude Design drafts, SGS and MIC (which has a shop), with no hand-built copy to lean on. Plan `plans/2026-11-19-general-cloning-work.md` (Task 8). The 2026-11-24 proof clones came out far worse than the tracks' results; the findings report (with the verified causes of the drop) is at https://claude.ai/artifact/9rduQeqHHTCJ9wWfT6JseK, and two measurements that pin the causes down are being collected.
 - **The rest of the WordPress framework is frozen** (your decision, 2026-11-12): security updates and client fixes only. The web engine is a separate project (`C:\Users\Bean\Projects\small-giants-engine`, its own LEDGER).
 - **Live sites:** Mama's Munches is a live shop (`mamasmunches.com`); Indus and Eye Care are signed off. Each site's open items sit in its own brief (`sites/<client>/CLAUDE.md`).
-- **Need you:** approve the register of causes (report section "The register"), choose fix forward or step back for the setting record (row 2), say where the Eye Care footer links were seen working; decide whether the clone-coverage register stays (recommended: intake's missing-features list reads it).
+- **Need you:** a go on the compressed fix order in plan Task 8 (Bean 2026-11-24: fix the setting record forward, keep the clone-coverage register, the Eye Care footer links are a regression: the track sessions' scratch-copy clones had them).
 
 ## Blockers
 
