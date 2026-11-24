@@ -99,7 +99,7 @@ function urlAllowed( value ) {
 }
 
 /**
- * Decode CSS escapes the way a browser reads them (the PHP copy's `decode_css_escapes`), so `\75rl(` is judged as
+ * Decode CSS escapes the way a browser reads them (the PHP copy's `decode_css_escapes`), so `\75rl(` is located as
  * `url(` and `ht\74ps:` as `https:`.
  *
  * A backslash plus 1 to 6 hex digits (and one optional whitespace that ends them) is that code point (U+FFFD for
@@ -107,45 +107,66 @@ function urlAllowed( value ) {
  * is that character.
  *
  * @param {string} text CSS, comments already removed.
- * @return {string} The decoded text.
+ * @return {{decoded: string, map: number[]}} The decoded text, and for each decoded index (plus the end) the index in `text` where its source starts.
  */
 function decodeCssEscapes( text ) {
-	return text.replace(
-		/\\(?:([0-9A-Fa-f]{1,6})(?:\r\n|[ \t\n\r\f])?|(\r\n|[\n\r\f])|([^]))/g,
-		( match, hex, newline, other ) => {
-			if ( hex !== undefined ) {
-				let code = parseInt( hex, 16 );
-				if (
-					code === 0 ||
-					code > 0x10ffff ||
-					( code >= 0xd800 && code <= 0xdfff )
-				) {
-					code = 0xfffd;
-				}
-				return String.fromCodePoint( code );
-			}
-			return newline !== undefined ? '' : other;
+	let decoded = '';
+	const map = [];
+	const emit = ( chars, source ) => {
+		for ( let i = 0; i < chars.length; i++ ) {
+			map.push( source );
 		}
-	);
+		decoded += chars;
+	};
+	let pos = 0;
+	const escape =
+		/\\(?:([0-9A-Fa-f]{1,6})(?:\r\n|[ \t\n\r\f])?|(\r\n|[\n\r\f])|([^]))/g;
+	for ( const m of text.matchAll( escape ) ) {
+		for ( ; pos < m.index; pos++ ) {
+			emit( text[ pos ], pos );
+		}
+		pos = m.index + m[ 0 ].length;
+		if ( m[ 1 ] !== undefined ) {
+			let code = parseInt( m[ 1 ], 16 );
+			if (
+				code === 0 ||
+				code > 0x10ffff ||
+				( code >= 0xd800 && code <= 0xdfff )
+			) {
+				code = 0xfffd;
+			}
+			emit( String.fromCodePoint( code ), m.index );
+		} else if ( m[ 2 ] === undefined ) {
+			emit( m[ 3 ], m.index );
+		}
+	}
+	for ( ; pos < text.length; pos++ ) {
+		emit( text[ pos ], pos );
+	}
+	map.push( text.length );
+	return { decoded, map };
 }
 
 /**
  * Whether a declaration body names a URL that points outside the site (the PHP copy's `has_off_site_url`).
  *
- * Every `url(` and `src(` is read strictly; one that cannot be read counts as off-site. A body holding
- * `image-set(` has every quoted string after it checked as a URL.
+ * The decoded text (CSS escapes resolved, so `\75rl(` reads as `url(`) only locates each `url(`, `src(` and
+ * `image-set(`; every argument is then judged from the RAW text, strictly: one that cannot be read, or that holds a
+ * backslash, counts as off-site. A browser reads `\29` or `\22 ` inside an argument as a literal character that does
+ * not end the token, so judging the decoded argument would let `url(//good.com\29@evil.com/x)` pass as
+ * `url(//good.com)`. A body holding `image-set(` has every quoted string after it checked as a URL.
  *
  * @param {string} raw Declarations, comments already removed.
  * @return {boolean} True when a URL is off-site.
  */
 function hasOffSiteUrl( raw ) {
-	const text = decodeCssEscapes( raw );
+	const { decoded, map } = decodeCssEscapes( raw );
 	const call = /(?<![\w-])(?:url|src)\s*\(/gi;
-	let hit = call.exec( text );
+	let hit = call.exec( decoded );
 	while ( hit !== null ) {
-		const rest = text.slice( hit.index + hit[ 0 ].length );
+		const rest = raw.slice( map[ hit.index + hit[ 0 ].length ] );
 		const arg =
-			/^\s*(?:"((?:[^"\\]|\\.)*)"|'((?:[^'\\]|\\.)*)'|([^)\s"'\\()]*))\s*\)/.exec(
+			/^\s*(?:"((?:[^"\\]|\\.)*)"|'((?:[^'\\]|\\.)*)'|([^)\s"'\\()]*))\s*\)/s.exec(
 				rest
 			);
 		if ( arg === null ) {
@@ -154,13 +175,14 @@ function hasOffSiteUrl( raw ) {
 		if ( ! urlAllowed( arg[ 1 ] || arg[ 2 ] || arg[ 3 ] || '' ) ) {
 			return true;
 		}
-		hit = call.exec( text );
+		hit = call.exec( decoded );
 	}
-	const set = /(?<![\w-])(?:-webkit-)?image-set\s*\(/i.exec( text );
+	const set = /(?<![\w-])(?:-webkit-)?image-set\s*\(/i.exec( decoded );
 	if ( set !== null ) {
-		const after = text.slice( set.index );
+		const after = raw.slice( map[ set.index ] );
+		// A backslash plus its character outside a string (`\"`) is skipped, so it never opens a string.
 		for ( const string of after.matchAll(
-			/"((?:[^"\\]|\\.)*)"|'((?:[^'\\]|\\.)*)'/g
+			/\\.|"((?:[^"\\]|\\.)*)"|'((?:[^'\\]|\\.)*)'/gs
 		) ) {
 			if ( ! urlAllowed( string[ 1 ] || string[ 2 ] || '' ) ) {
 				return true;
