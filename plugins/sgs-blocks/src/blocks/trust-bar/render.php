@@ -114,14 +114,18 @@ if ( $tb_marquee_track ) {
 	}
 }
 
-// --- Overflow mode ('wrap' default / 'drop') ----------------------------------
+// --- Overflow mode ('ticker' default / 'wrap' / 'drop') -----------------------
+// 'ticker' (the default) is the overflow-only marquee: a bar that stores no marquee layer of its own is given one
+// before this file runs (`includes/motion/class-sgs-motion-ticker-default.php`), so by the time it reaches here a
+// ticker bar already holds the layer above and takes the marquee path. 'wrap' lets the badges flow onto further lines.
 // 'drop' keeps a single row and lets view.js hide whichever trailing badges do
 // not fit (see overflow-drop.js). It coexists with the marquee when the layer is
 // limited to a width range: the marquee runs inside the range (every badge in the
 // scrolling track) and drop applies outside it. A marquee at every width never
-// leaves a static row to drop from, so drop is not emitted there.
-$tb_overflow_mode_raw = isset( $attributes['overflowMode'] ) ? sanitize_key( (string) $attributes['overflowMode'] ) : 'wrap';
-$tb_overflow_mode     = in_array( $tb_overflow_mode_raw, array( 'wrap', 'drop' ), true ) ? $tb_overflow_mode_raw : 'wrap';
+// leaves a static row to drop from, so drop is not emitted there. Outside a
+// layer's width range a 'ticker' bar wraps, like 'wrap'.
+$tb_overflow_mode_raw = isset( $attributes['overflowMode'] ) ? sanitize_key( (string) $attributes['overflowMode'] ) : 'ticker';
+$tb_overflow_mode     = in_array( $tb_overflow_mode_raw, array( 'ticker', 'wrap', 'drop' ), true ) ? $tb_overflow_mode_raw : 'ticker';
 $tb_overflow_drop     = ( 'drop' === $tb_overflow_mode && ! $tb_marquee_always );
 
 // Clamp circle size.

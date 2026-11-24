@@ -8,6 +8,7 @@ import {
 } from '@wordpress/block-editor';
 import { useSelect } from '@wordpress/data';
 import '../../../assets/css/fx-marquee.css';
+import DEFAULT_TICKER_LAYER from '../../../includes/motion/data/trust-bar-default-ticker.json';
 import { Fragment, useEffect, useMemo } from '@wordpress/element';
 import {
 	PanelBody,
@@ -571,9 +572,21 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	// single-row `flex-wrap:nowrap` rule in style.css (never reached on the
 	// frontend, since render.php/view.js never add this class there).
 	// Ignored while a marquee runs at every width, matching render.php's own gating.
-	const marqueeLayer = (
+	const storedMarqueeLayer = (
 		attributes.sgsMotion?.elements?.root?.effects ?? []
 	).find( ( layer ) => layer?.effect === 'marquee' );
+	const storedMarqueeAlways =
+		!! storedMarqueeLayer &&
+		! [ 'mobile', 'tablet' ].includes(
+			storedMarqueeLayer.values?.belowBreakpoint
+		);
+	// The default ticker: a bar with no marquee layer of its own and `overflowMode` ticker (the default) runs the
+	// overflow-only layer in `includes/motion/data/trust-bar-default-ticker.json`, which the server adds the same way
+	// (`Sgs_Motion_Ticker_Default`). The preview reads that file, so the canvas shows the ticker's one-row layout.
+	const tickerDefault =
+		! storedMarqueeLayer && 'wrap' !== overflowMode && 'drop' !== overflowMode;
+	const marqueeLayer =
+		storedMarqueeLayer ?? ( tickerDefault ? DEFAULT_TICKER_LAYER : undefined );
 	const marqueeAlways =
 		!! marqueeLayer &&
 		! [ 'mobile', 'tablet' ].includes(
@@ -1293,28 +1306,42 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					title={ __( 'Overflow', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					{ ! marqueeAlways && (
+					{ ! storedMarqueeAlways && (
 						<ToggleGroupControl
 							label={ __( "When items don't fit", 'sgs-blocks' ) }
 							help={
-								marqueeLayer
+								storedMarqueeLayer
 									? __(
 											"Applies outside the width range where the marquee scrolls: items that don't fit on one line are hidden. Inside it the row scrolls and shows every item. Hidden items are removed from the tab order and from screen readers too. Only visible once published.",
 											'sgs-blocks'
 									  )
 									: __(
-											"What happens when the badges don't all fit on one line. Hidden items are removed from the tab order and from screen readers too. Only visible once published — the editor canvas always shows every badge.",
+											"What happens when the badges don't all fit on one line. Ticker scrolls them only while they don't fit, and keeps them still while they do. Hidden items are removed from the tab order and from screen readers too. Only visible once published.",
 											'sgs-blocks'
 									  )
 							}
-							value={ overflowMode ?? 'wrap' }
+							value={
+								storedMarqueeLayer
+									? 'drop' === overflowMode
+										? 'drop'
+										: 'wrap'
+									: overflowMode ?? 'ticker'
+							}
 							onChange={ ( val ) =>
-								setAttributes( { overflowMode: val || 'wrap' } )
+								setAttributes( {
+									overflowMode: val || 'ticker',
+								} )
 							}
 							isBlock
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						>
+							{ ! storedMarqueeLayer && (
+								<ToggleGroupControlOption
+									value="ticker"
+									label={ __( 'Ticker', 'sgs-blocks' ) }
+								/>
+							) }
 							<ToggleGroupControlOption
 								value="wrap"
 								label={ __( 'Wrap', 'sgs-blocks' ) }
