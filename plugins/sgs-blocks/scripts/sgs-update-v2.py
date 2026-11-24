@@ -7703,6 +7703,14 @@ def main() -> None:
     results: dict[int, dict] = {}
     stage_seconds: dict[int, float] = {}
     run_began = time.perf_counter()
+    # Stage 1 ends by assigning roles from the suffix and modifier vocabulary, so a vocabulary row added to data/*.json must
+    # be in the DB before stage 1 starts, or the first run after the change assigns from the old table. Skipped on a DB
+    # with no tables yet (a rebuild from empty), which the after-stage-1 seed below covers.
+    if 1 in stages_to_run and not args.dry_run and conn.execute(
+        "SELECT 1 FROM sqlite_master WHERE type='table' AND name='modifier_suffixes'"
+    ).fetchone():
+        conn.commit()
+        reseed_reference_tables(SGS_DB)
     for stage_num in stages_to_run:
         print(f"\n{'=' * 50}\n=== Stage {stage_num} ===\n{'=' * 50}")
         if stage_num not in dispatch:

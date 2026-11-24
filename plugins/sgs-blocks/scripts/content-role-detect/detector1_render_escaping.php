@@ -1669,15 +1669,15 @@ function d1_self_test(string $repoRoot): int {
 
     // --- 6. SECOND NEGATIVE CONTROL: name collision without reachability -----
     //
-    // `includes/product-card-builtin-render.php` escapes `imageAlt`, and
-    // `sgs/decorative-image` ALSO declares an attribute called `imageAlt` —
+    // `includes/product-card-builtin-render.php` reads `ctaStyle`, and
+    // `sgs/pricing-table` ALSO declares an attribute called `ctaStyle` —
     // but never calls that helper. Declaring the name must not be enough.
     $pcHelper = $repoRoot . '/plugins/sgs-blocks/includes/product-card-builtin-render.php';
     if (!is_file($pcHelper)) {
         $failures[] = "CHECK 6: helper not found at $pcHelper";
-    } elseif (!in_array('sgs/decorative-image', $index['imageAlt'] ?? [], true)) {
+    } elseif (!in_array('sgs/pricing-table', $index['ctaStyle'] ?? [], true)) {
         // Vacuity guard: with no collision there is nothing to reject.
-        $failures[] = 'CHECK 6: sgs/decorative-image no longer declares imageAlt — the collision this check rejects is gone, pick a live one.';
+        $failures[] = 'CHECK 6: sgs/pricing-table no longer declares ctaStyle — the collision this check rejects is gone, pick a live one.';
     } else {
         $pcRows = d1_collect([$pcHelper], $index, $repoRoot);
         if (count($pcRows) === 0) {
@@ -1685,8 +1685,8 @@ function d1_self_test(string $repoRoot): int {
         }
         $sawReachable = false;
         foreach ($pcRows as $r) {
-            if ('sgs/decorative-image' === $r['block_slug']) {
-                $failures[] = 'CHECK 6: imageAlt was attributed to sgs/decorative-image, which cannot reach this helper — reachability constraint BROKEN.';
+            if ('sgs/pricing-table' === $r['block_slug']) {
+                $failures[] = 'CHECK 6: ctaStyle was attributed to sgs/pricing-table, which cannot reach this helper — reachability constraint BROKEN.';
             }
             if ('sgs/product-card' === $r['block_slug']) {
                 $sawReachable = true;
@@ -1768,7 +1768,7 @@ function d1_self_test(string $repoRoot): int {
 // 546 added.
 if (PHP_SAPI === 'cli' && isset($argv[0]) && realpath($argv[0]) === realpath(__FILE__)) {
     $args = array_slice($argv, 1);
-    $repoRoot = 'c:/Users/Bean/Projects/small-giants-wp';
+    $repoRoot = str_replace('\\', '/', dirname(__DIR__, 4)); // the checkout this file is in, so a worktree scans itself
 
     if (!empty($args) && $args[0] === '--self-test') {
         exit(d1_self_test($repoRoot));
