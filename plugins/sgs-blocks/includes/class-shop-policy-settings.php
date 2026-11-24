@@ -272,7 +272,7 @@ final class Shop_Policy_Settings {
 		echo '<tr><th scope="row"><label for="sgs-returns-category">' . \esc_html__( 'Returns policy', 'sgs-blocks' ) . '</label></th><td>';
 		if ( ! $can_show ) {
 			echo '<div class="sgs-returns-readonly"><p>' . \esc_html__( 'A returns policy was set outside this screen (more than one policy, or a type this form does not offer). It is published as it is. Saving keeps it unless you choose a policy below, which replaces it.', 'sgs-blocks' ) . '</p>';
-			echo '<pre>' . \esc_html( (string) \wp_json_encode( $returns, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) ) . '</pre></div>';
+			echo '<pre>' . \esc_html( (string) \wp_json_encode( $returns, JSON_PRETTY_PRINT | JSON_HEX_TAG | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) ) . '</pre></div>';
 		}
 		echo '<select id="sgs-returns-category" name="sgs_configurator_returns[returnPolicyCategory]">';
 		$none = $can_show ? \__( 'No policy published', 'sgs-blocks' ) : \__( 'Keep the policy shown above', 'sgs-blocks' );
