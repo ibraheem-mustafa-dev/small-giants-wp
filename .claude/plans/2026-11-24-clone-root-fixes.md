@@ -136,6 +136,29 @@ Bean's rule: before building, find the design that once worked and restore or ad
 | Script reveals; the older scrolled-header reader | Restore `36044f919`, `e8a7a8916`, and check `a979a54c9` against today's behaviour writer | Rewind loss |
 | Eye Care width rules, phone hide, collapse point, shrink timing | Never built: see RF4 and RF6 | Never built |
 
+## Built-check corrections (2026-11-24, governs the Restore map where it differs)
+
+Every "never built / half built / partly built" verdict was checked against the project's own record (all plans live and archived, Spec 48, 48A and the area specs, git history, the track sessions' outputs): `E:\sgs-tmp\general-cloning\deep\BC1.out` (header, nav, drawer, mega, footer), `BC2.out` (pages, forms, media, motion), `BC3.out` (shop). Spec-first table: `.claude/reports/2026-11-24-clone-faults-spec-first.md`.
+
+- **Eye Care collapse at 1060: built and lost.** The width gate wrote `collapsePoint` (1024, the snap rule) in Eye Care run 13 (2026-11-21); the proof wrote none (suspect: the split-menu change `ce642bca8`, to prove). Fix: the nav halves take the existing `ownAlternativeBelow` branch of `lib/fill-width-gate.mjs::widthGateWrites` (`05b44ffa4`); add the `Object.assign` case to `valueOfKey`. Most of Eye Care's width rules work (ladders, tier hides, step rungs).
+- **Structured breakpoint reader: built and lost** (`8c48dec56` with its test, removed by the rewind): restore; `state_keys.w` is added through the same reader.
+- **Phone hidden below 1160: partly built.** `lib/fill-width-gate.mjs::presenceStep` finds the width a node appears at but only the filter rail uses it: run it for any node hidden at a non-tier width and write FR-48-50 step 5's scoped rule.
+- **Mega panel cap and padding: a working general mechanism is bypassed.** Bean's wrapper-absorb rule (`4a0a6e537`, `lib/skeleton-absorb-wrapper.mjs::absorbSlot`, `lib/fill-absorbed.mjs`) works; `megaPanelRow` unwraps around it. Route the panel wrapper through it.
+- **Social icon sizes: built and broken.** Mama's footer wrote 48px and 20px on 2026-11-19 (`0acc3d028`); lost by a later change (suspects `43c395b42`, `d75dbf82b`, `60b253da1`, `0eaf001ec`): bisect with offline Fill.
+- **Footer list headings: partly built.** Text and level reach all three lists (`289a0b54c`); the look reaches one of three because the heading part is paired on one node only.
+- **Filter chips: built and lost** (`d2bcd2a91`, removed by the rewind): restore the wrapper, taxonomy and chips into `categoryFilter`.
+- **Card look: built and working through part-look** (the saved clone's card matches the hand-built one); the Fill pairing is still to fix, and `variantStyle` is never written for a template card. Related-product cards need the same card rules.
+- **part-look: a standalone command by design** (template-rework Task 4); it becomes a run stage.
+- **Test products: the hiding code exists** (`29f7008f7`, `shop-fixtures.mjs` `hide`), uncalled: call it from a run stage.
+- **`disabledItemIds`: built and working**; "soon" entries are dropped by Bean's ruling. `featuredItemIds` and `triggerMode` are not built (`triggerMode` from the draft's hidden "Menu" label).
+- **Shrink timing: partly built.** `lib/motion-record-text.mjs::durationOf` and `easingOf` exist; `scrollShrinkOf` does not call them.
+- **Logo `maxHeight`: built and broken** (`9454cb152`, `31ac60837`; broken by the site look's `max-height: none`).
+- **Hero grid: built and broken**; leading suspect the paint guard `822b6b400` (to prove with propose before and after).
+- **A block's own transition: narrower behaviour reversed** by `684491a03` (no reason given).
+- **Image ratio and height: built modules left unwired by FR-49-35's rule;** the universal route cannot write the slot's `ratio`.
+- **Indus review step: the block supports a review inside a step;** the clone's writer `7f957c87c` makes it a sibling; Spec 04's two trees disagree.
+- **Not built after a full search:** the separator writer (the block setting `textBadgeSeparator` exists), drawer scrim (modals have it), the FAQ class alias, the "any of" form condition, `featuredItemIds`, `triggerMode`, `state_keys.w`.
+
 ## Order
 
 1. Wave A (hours, unblocks everything): RF2's strict default and shared validator with the writer fixes, RF8's Solve address, RF10.
