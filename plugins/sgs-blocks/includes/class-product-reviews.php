@@ -25,6 +25,12 @@ final class Product_Reviews {
 	private const MAX_REVIEWS = 10;
 
 	/**
+	 * The longest `reviewBody` to print, ellipsis included: ten reviews of a few thousand characters each would
+	 * otherwise fill the script's size cap on their own.
+	 */
+	private const MAX_BODY_CHARS = 500;
+
+	/**
 	 * The `aggregateRating` and `review` keys for a product, empty when it has no approved, rated reviews.
 	 *
 	 * @param \WC_Product $product The product (the parent of a variable product).
@@ -90,7 +96,7 @@ final class Product_Reviews {
 			);
 			$body   = \trim( \sanitize_text_field( \wp_strip_all_tags( (string) $comment->comment_content ) ) );
 			if ( '' !== $body ) {
-				$review['reviewBody'] = $body;
+				$review['reviewBody'] = self::shorten( $body );
 			}
 			$reviews[] = $review;
 			if ( \count( $reviews ) >= self::MAX_REVIEWS ) {
@@ -98,5 +104,24 @@ final class Product_Reviews {
 			}
 		}
 		return $reviews;
+	}
+
+	/**
+	 * A review body cut to `MAX_BODY_CHARS` at a word boundary (when one falls in the second half) with an ellipsis; a
+	 * shorter body is returned as it is.
+	 *
+	 * @param string $body Plain-text body.
+	 * @return string
+	 */
+	private static function shorten( string $body ): string {
+		if ( \mb_strlen( $body ) <= self::MAX_BODY_CHARS ) {
+			return $body;
+		}
+		$cut   = \mb_substr( $body, 0, self::MAX_BODY_CHARS - 1 );
+		$space = \mb_strrpos( $cut, ' ' );
+		if ( false !== $space && $space > self::MAX_BODY_CHARS / 2 ) {
+			$cut = \mb_substr( $cut, 0, $space );
+		}
+		return \rtrim( $cut ) . "\u{2026}";
 	}
 }

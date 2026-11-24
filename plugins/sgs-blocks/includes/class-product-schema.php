@@ -92,26 +92,43 @@ final class Product_Schema {
 
 		$data = self::group_node( $parent, $product_id, $manifest, $combos );
 
-		// Encode and size-cap (SEC-3). build_has_variant() puts the low- and
-		// high-price anchor nodes FIRST, so when a large product (e.g. the 48-SKU
-		// fixture) would overflow the size cap we drop filler nodes from the END
-		// until it fits — the AggregateOffer still carries the TRUE offerCount, so
-		// trimming the hasVariant SAMPLE keeps the price-range rich result intact
-		// rather than suppressing the whole block. (Spec FR-27-E1: "hasVariant ≤50 =
-		// low+high+sample; offerCount = true total".) Only a product whose envelope
-		// + the two anchors alone still exceed the cap emits nothing.
+		$json = self::encode_within_cap( $data );
+		if ( '' === $json ) {
+			return '';
+		}
+
+		return '<script type="application/ld+json">' . $json . '</script>' . "\n";
+	}
+
+	/**
+	 * Encode the `ProductGroup` and hold it under the size cap (SEC-3), or return '' when it cannot be.
+	 *
+	 * `build_has_variant()` puts the low- and high-price anchor nodes FIRST, so a large product (e.g. the 48-SKU
+	 * fixture) drops filler nodes from the END until it fits; the `AggregateOffer` still carries the TRUE `offerCount`,
+	 * so trimming the `hasVariant` sample keeps the price-range rich result (Spec FR-27-E1: "hasVariant <= 50 =
+	 * low+high+sample; offerCount = true total"). If the anchors and the envelope alone still exceed the cap, the
+	 * shipping details (a zone that is not worldwide lists its countries once per method) are removed from the group
+	 * and its variants, so the product prints without them rather than not at all; only then does it emit nothing.
+	 *
+	 * @param array<string,mixed> $data The `ProductGroup` node.
+	 * @return string The JSON, or ''.
+	 */
+	private static function encode_within_cap( array $data ): string {
 		$json       = self::encode( $data );
-		$node_count = \count( $data['hasVariant'] );
+		$node_count = \count( $data['hasVariant'] ?? array() );
 		while ( false !== $json && \mb_strlen( $json ) >= self::MAX_JSON_CHARS && $node_count > 2 ) {
 			\array_pop( $data['hasVariant'] );
 			--$node_count;
 			$json = self::encode( $data );
 		}
-		if ( false === $json || \mb_strlen( $json ) >= self::MAX_JSON_CHARS ) {
-			return '';
+		if ( false !== $json && \mb_strlen( $json ) >= self::MAX_JSON_CHARS ) {
+			unset( $data['offers']['shippingDetails'] );
+			foreach ( \array_keys( $data['hasVariant'] ?? array() ) as $i ) {
+				unset( $data['hasVariant'][ $i ]['offers']['shippingDetails'] );
+			}
+			$json = self::encode( $data );
 		}
-
-		return '<script type="application/ld+json">' . $json . '</script>' . "\n";
+		return ( false === $json || \mb_strlen( $json ) >= self::MAX_JSON_CHARS ) ? '' : $json;
 	}
 
 	/**

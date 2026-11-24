@@ -11,6 +11,10 @@
  *   free shipping (local pickup, a plugin's own method) prints nothing;
  * - a zone with a postcode location (alone, or beside a country, state or continent) prints nothing: WooCommerce
  *   matches it only when the postcode matches, so its price is not for the whole area;
+ * - a zone that holds every country WooCommerce knows is stated with no `shippingDestination`, which Google reads as
+ *   worldwide; this keeps a worldwide zone's few methods from repeating about 250 countries each. Google's documents
+ *   give no way to reference one `DefinedRegion` list from several `ShippingConditions`, so a zone that is not
+ *   worldwide repeats its list per method;
  * - WooCommerce charges only the first zone (by zone order) that matches an address, so a country or state an earlier
  *   zone already holds is dropped from a later zone's destinations (a continent zone after a UK zone prints the
  *   continent without GB), and a whole country is also dropped when an earlier zone holds one of its states;
@@ -45,7 +49,7 @@ final class Product_Shipping_Woo {
 	private static ?array $cache = null;
 
 	/**
-	 * Memo of the zones' usable methods with their destinations for this request.
+	 * Memo of the zones' usable methods with their destinations for this request (an empty list is worldwide).
 	 *
 	 * @var array<int,array{destinations:array<int,array<string,string>>,method:object}>|null
 	 */
@@ -99,11 +103,11 @@ final class Product_Shipping_Woo {
 			if ( null === $terms ) {
 				continue;
 			}
-			$conditions = array(
-				'@type'               => 'ShippingConditions',
-				'shippingDestination' => self::one_or_list( $entry['destinations'] ),
-				'shippingRate'        => self::money( $terms['cost'], $currency, $decimals ),
-			);
+			$conditions = array( '@type' => 'ShippingConditions' );
+			if ( ! empty( $entry['destinations'] ) ) {
+				$conditions['shippingDestination'] = self::one_or_list( $entry['destinations'] );
+			}
+			$conditions['shippingRate'] = self::money( $terms['cost'], $currency, $decimals );
 			if ( null !== $terms['min_order'] ) {
 				$conditions['orderValue'] = array(
 					'@type'    => 'MonetaryAmount',
@@ -160,10 +164,12 @@ final class Product_Shipping_Woo {
 				continue;
 			}
 			$node = array(
-				'@type'               => 'OfferShippingDetails',
-				'shippingRate'        => self::money( $terms['cost'], $currency, $decimals ),
-				'shippingDestination' => self::one_or_list( $entry['destinations'] ),
+				'@type'        => 'OfferShippingDetails',
+				'shippingRate' => self::money( $terms['cost'], $currency, $decimals ),
 			);
+			if ( ! empty( $entry['destinations'] ) ) {
+				$node['shippingDestination'] = self::one_or_list( $entry['destinations'] );
+			}
 			if ( null !== $time ) {
 				$node['deliveryTime'] = $time;
 			}
@@ -259,6 +265,10 @@ final class Product_Shipping_Woo {
 			}
 			if ( empty( $destinations ) ) {
 				continue;
+			}
+			// A zone that holds every country WooCommerce knows is stated with no destination, which Google reads as worldwide.
+			if ( self::covers_every_country( $destinations ) ) {
+				$destinations = array();
 			}
 			foreach ( (array) ( $zone['shipping_methods'] ?? array() ) as $method ) {
 				if ( 'yes' === ( $method->enabled ?? '' ) && \in_array( (string) ( $method->id ?? '' ), array( 'flat_rate', 'free_shipping' ), true ) ) {
@@ -406,6 +416,34 @@ final class Product_Shipping_Woo {
 	private static function title( $method ): string {
 		$title = \method_exists( $method, 'get_title' ) ? (string) $method->get_title() : '';
 		return \trim( \sanitize_text_field( \wp_strip_all_tags( '' !== $title ? $title : (string) ( $method->id ?? '' ) ) ) );
+	}
+
+	/**
+	 * Whether the destinations hold every country WooCommerce knows, each whole.
+	 *
+	 * @param array<int,array<string,string>> $regions `DefinedRegion` nodes.
+	 * @return bool
+	 */
+	private static function covers_every_country( array $regions ): bool {
+		if ( ! \function_exists( 'WC' ) || ! \WC()->countries || ! \method_exists( \WC()->countries, 'get_countries' ) ) {
+			return false;
+		}
+		$known = \array_keys( (array) \WC()->countries->get_countries() );
+		if ( empty( $known ) ) {
+			return false;
+		}
+		$held = array();
+		foreach ( $regions as $region ) {
+			if ( ! isset( $region['addressRegion'] ) ) {
+				$held[ $region['addressCountry'] ] = true;
+			}
+		}
+		foreach ( $known as $code ) {
+			if ( ! isset( $held[ (string) $code ] ) ) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**

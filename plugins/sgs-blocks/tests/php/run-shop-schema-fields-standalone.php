@@ -118,7 +118,16 @@ namespace {
 			public $countries;
 			public function __construct() {
 				$this->countries = new class() {
-					public function get_continents() { return array( 'EU' => array( 'countries' => array( 'FR', 'DE' ) ), 'EUA' => array( 'countries' => array( 'GB', 'FR', 'DE' ) ) ); }
+					public function get_continents() { return array( 'EU' => array( 'countries' => array( 'FR', 'DE' ) ), 'EUA' => array( 'countries' => array( 'GB', 'FR', 'DE' ) ), 'WORLD' => array( 'countries' => array_keys( $this->get_countries() ) ) ); }
+					public function get_countries() {
+						$all = array();
+						foreach ( range( 'A', 'J' ) as $a ) {
+							foreach ( range( 'A', 'Z' ) as $b ) {
+								$all[ $a . $b ] = $a . $b;
+							}
+						}
+						return $all;
+					}
 				};
 			}
 			public function shipping() {
@@ -649,6 +658,60 @@ namespace {
 	$GLOBALS['t']['products'][11] = new WC_Product( array( 'id' => 11, 'type' => 'simple', 'name' => 'Taster Trio' ) );
 	$simple = \SGS\Blocks\Product_Schema_Simple::build_node( $GLOBALS['t']['products'][11] );
 	$check( 'a simple product with no reviews prints neither', ! isset( $simple['aggregateRating'] ) && ! isset( $simple['review'] ) );
+
+	// ── 5b. The size cap: long reviews and a worldwide zone must not push the whole ProductGroup out. ──
+	$cap  = ( new ReflectionClassConstant( Product_Schema::class, 'MAX_JSON_CHARS' ) )->getValue();
+	$fits = static function ( array $data ) {
+		if ( ! method_exists( Product_Schema::class, 'encode_within_cap' ) ) {
+			return null;
+		}
+		$m = new ReflectionMethod( Product_Schema::class, 'encode_within_cap' );
+		$m->setAccessible( true );
+		return $m->invoke( null, $data );
+	};
+	$words = trim( str_repeat( 'Lovely soft cookies with plenty of oat and chocolate. ', 100 ) );
+	$reset();
+	$GLOBALS['t']['comments'][10] = array( $review( 1, 'Amira', '5', $words ), $review( 2, 'Sam', '4', 'Short and sweet.' ) );
+	$f    = Product_Reviews::fields( $rg_product( array( 'avg' => '4.5', 'ratings' => 2, 'reviews' => 2 ) ) );
+	$long = (string) $f['review'][0]['reviewBody'];
+	$check( 'a long review body is cut to 500 characters or fewer, at a word, with an ellipsis', mb_strlen( $long ) <= 500 && mb_strlen( $long ) > 400 && str_ends_with( $long, "\xE2\x80\xA6" ) && str_starts_with( $words, rtrim( mb_substr( $long, 0, -1 ) ) ) && ' ' === $words[ strlen( rtrim( mb_substr( $long, 0, -1 ) ) ) ], mb_strlen( $long ) . ' chars' );
+	$check( 'a short review body is left as it is', 'Short and sweet.' === $f['review'][1]['reviewBody'] );
+
+	$ten = array();
+	for ( $i = 1; $i <= 10; $i++ ) { $ten[] = $review( 200 + $i, 'Reviewer ' . $i, '5', str_repeat( 'Very long review text goes on and on. ', 150 ) ); }
+	$world_zone = static function () use ( $method, $uk_zone ) {
+		return $uk_zone(
+			array(
+				$method( 'flat_rate', 'Economy', array( 'cost' => '5' ) ),
+				$method( 'flat_rate', 'Standard', array( 'cost' => '7' ) ),
+				$method( 'flat_rate', 'Express', array( 'cost' => '9' ) ),
+				$method( 'free_shipping', 'Free over 100', array( 'requires' => 'min_amount', 'min_amount' => '100' ) ),
+			),
+			array( (object) array( 'code' => 'WORLD', 'type' => 'continent' ) )
+		);
+	};
+	$GLOBALS['t']['options']['sgs_shipping_from_woocommerce'] = '1';
+	$GLOBALS['t']['comments'][10] = $ten;
+	$GLOBALS['t']['zones'] = array( $world_zone() );
+	Product_Shipping_Woo::reset_cache();
+	$services = Product_Offer_Policy::shipping_service();
+	$check( 'a zone that covers every country WooCommerce knows states no destination (Google reads that as worldwide)', 4 === count( $services ) && ! isset( $services[0]['shippingConditions']['shippingDestination'] ) && ! isset( $services[3]['shippingConditions']['shippingDestination'] ) );
+	$p = $rg_product( array( 'avg' => '5', 'ratings' => 10, 'reviews' => 10 ) );
+	$GLOBALS['t']['products'][10] = $p;
+	$json = $fits( $build_group( $p ) );
+	$check( 'a worldwide zone with four methods and ten long reviews prints the whole ProductGroup under the cap, shipping included', is_string( $json ) && '' !== $json && mb_strlen( $json ) < $cap && str_contains( $json, 'hasShippingService' ) && 10 === count( json_decode( $json, true )['review'] ), is_string( $json ) ? mb_strlen( $json ) . ' chars' : 'no helper' );
+
+	$GLOBALS['t']['zones'] = array( $uk_zone( $flat( 'UK', '3.95' ) ), $world_zone() );
+	Product_Shipping_Woo::reset_cache();
+	$near = Product_Offer_Policy::shipping_service();
+	$full = Sgs_Schema::encode_jsonld( $near );
+	$check( 'a zone that is the world minus one country keeps its destination list (the measure that makes the next check needed)', is_array( $near ) && 5 === count( $near ) && mb_strlen( $full ) > $cap, mb_strlen( (string) $full ) . ' chars' );
+	$json = $fits( $build_group( $p ) );
+	$data = is_string( $json ) && '' !== $json ? json_decode( $json, true ) : array();
+	$check( 'when shipping alone would overflow the cap the product still prints, without its shipping, rather than printing nothing', ! empty( $data ) && 'ProductGroup' === $data['@type'] && ! isset( $data['offers']['shippingDetails'] ) && ! isset( $data['hasVariant'][0]['offers']['shippingDetails'] ) && isset( $data['hasVariant'][0]['offers']['price'] ), is_string( $json ) ? mb_strlen( $json ) . ' chars' : 'no helper' );
+	$GLOBALS['t']['options']['sgs_shipping_from_woocommerce'] = '';
+	$GLOBALS['t']['zones'] = array();
+	Product_Shipping_Woo::reset_cache();
 
 	// ── 6. Everything printed passes the schema.org check, in the fullest state a shop can reach. ──
 	$reset();
