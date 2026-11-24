@@ -20,7 +20,9 @@
  *   - the scrim's own opacity is only the open/close fade: the scrim carries its
  *     owner's open selector (`data-sgs-scrim-open`) and the shared
  *     `assets/js/scrim-state.js` sets `data-sgs-scrim-on` while it matches, so
- *     no block wires its own scrim. Every owner opens through script (a
+ *     no block wires its own scrim; an owner carrying `.is-closing` (a drawer
+ *     the shared nav store is closing, its `[open]` kept until the exit
+ *     animations end) counts as closed, so the fade runs with the close. Every owner opens through script (a
  *     `<dialog>` `showModal()`, or a disclosure's `aria-expanded`). The open
  *     state is never a CSS `:root:has()`: a `:has()` on the document root
  *     makes the browser re-check the whole page on every style pass;

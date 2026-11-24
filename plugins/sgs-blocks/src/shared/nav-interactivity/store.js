@@ -56,7 +56,9 @@
  *              includes/helpers-scrim.php::sgs_scrim_render(), carrying
  *              data-sgs-nav-scrim="{drawerRef}". Its visibility follows
  *              the drawer's `[open]` through the shared
- *              assets/js/scrim-state.js (it sets `data-sgs-scrim-on`), not a
+ *              assets/js/scrim-state.js (it sets `data-sgs-scrim-on`, and
+ *              clears it as soon as runClose adds `.is-closing`, so the scrim
+ *              fades with the close and not after the last exit animation), not a
  *              class this store toggles, so ONE mechanism covers modal and
  *              non-modal alike. This store only wires its click-to-close.
  *
