@@ -87,6 +87,41 @@ All reports are read-only investigations, each checked by a second helper that d
 - A gate refusing a commit that deletes route tests without a stated reason (the rewind deleted the tests with the fixes, so nothing failed).
 - Every restore brings its tests; test fixtures come from real records and the real DB.
 
+## Restore map: the working design behind each fix (lost-design hunts, 2026-11-24)
+
+Bean's rule: before building, find the design that once worked and restore or adapt it. Reports: `E:\sgs-tmp\general-cloning\deep\L1.out` (forms, modals, flows), `L2.out` (shop), `L3.out` (widths), `L4.out` (menus, drawers, footers, page frames), `L5.out` (the draft's JavaScript into settings). These correct the groups above where they differ.
+
+| Fault | Design to restore or adapt | Kind |
+|---|---|---|
+| Indus section widths wrong (careers 720 against 1240; 87 of 88 width ops) | Fill writes them right; the apply stage reads the stale committed `build/<surface>.pairs.json` (34 Indus files from 2026-11-02) over the fresh origin in `lib/apply-targets.mjs::pairsReport`. Origin wins; delete the stale files; gate: every apply op's element equals the origin's | Regression |
+| Eye Care drawer lists both on the header menu; Mama's drawer 4 items | Restore `421c512f9` (`drawerMenuNames`: `drawer`, `drawer-<n>`, by order; also the drawer's own close) with its tests | Rewind loss |
+| Size-guide modal and openers never placed; lens flow measured on the home page | Today's `proposePageMap` writes `opens`; the rewind reset the page maps and nothing regenerated them. Rerun `intake.mjs --page-map` for all three clients; gate: refuse a page map older than its reader | Rewind loss (data) |
+| Indus trade form: card gone, aside below; form padding and field look lost | Restore `bfb53147d` and `52aca34ef` (RC11: the linked form stands on the card, the page builds grid and aside) and `1294b5ae3` (form prefill) with tests | Rewind loss |
+| Indus stepper 4 labels, review always visible | A schema step with no fields becomes an `sgs/form-step` holding `sgs/form-review` (`lib/skeleton-form-steps.mjs`) | Never built |
+| Conditional fields break field pairing; "Companies House" always shown | `lib/apply-form-width.mjs::fieldWidths` pairs by `fieldName`, not position; an any-of condition in `sgs/form` `view.js` and `render.php` | Never reconciled / block gap |
+| Forms, modals, flows cloned after pages | Pages already link them by reference (`formIsLinked`, `formId`, `flowId`; FR-48-57); move them before pages in the run, like the header and footer (Bean) | Order |
+| Product card paired with the loop cell | `commerceRegion` adds a `card` field for the mounted component root (keep `item`); no `variantStyle` on a template card; related cards take the same look | Never worked through Fill |
+| Card, buy-box, account options (`showPickers` and the rest) | `part-look.mjs` becomes a run stage after the shop-role builds, as the shop track ran it (`chain-pl.sh`); its strict verify must pass; no shop is done without it | Never wired |
+| Buy-box configurator layout | New part-look rules for `buyboxLayout`, `pickGroupNumbers`, `pickGroupHeadings`, `groupStyles` (MERGED F-51; deferred in the shop plan's Task 11) | Specified, not built |
+| Shop filter chips without their wrapper | `categoryFilter` (`913dadb49`) wraps the taxonomy filter in `woocommerce/product-filters` with `overlayMode: off` | Regression |
+| Cart template kind `layout`; order heading `level: 1` | The shop track's own bugs (`beab1574b`, `d4de9c1af`), caught by RF2's contract test | Regression |
+| Eye Care shop shows test products | The catalogue step (or `strip`) hides existing fixture products | Gap |
+| `sgs/media` ratio and height (Indus mega cards) | Spec 49's `style-rows`, `fill-height`, `absorb` modules are built but never wired: pass element reads through `slotFromReads` in `mediaDecisions` | Never wired |
+| Eye Care mega panel cap and padding | `megaPanelRow` carries `decided` per device, as `formControl.wrapperCap` (`822b6b400`) does | Half built |
+| Indus hero content in a two-column grid | `heroInner` used to unwrap the hero's layout wrappers (proven at `0ea1a6cb2~1`); restore the unwrap (trigger: `822b6b400` or the removed hero picture, to prove) | Regression |
+| Mama's logo `maxHeight` | Lost when the offline look replaced measured paint; `blockPaint` treats a declared `max-*: none` as unbounded, or the look stores measured boxes | Regression |
+| Footer list headings lose their look | `listHeading` (`289a0b54c`) emits the heading's `draftSlots` also when the node sits on the first link | Half built |
+| Trust bar dots | `headerStripBar` writes `textBadgeSeparator` from the repeated glyph and its colour | Never built |
+| Eye Care FAQ answers (7 of 8) | The reader cannot resolve `const C = Component; C.FAQS`; `memberRefs` resolves a class alias's static members (also `C.IMG`, `C.COLS`, `C.PRODUCTS`) | Never built |
+| Page dimming behind drawers | Reuse the modal frame's backdrop reading (`lib/skeleton-openers.mjs::frameParts`, `frameLook`) for a sibling full-screen backdrop | Never built for drawers |
+| Indus posts with two titles and breadcrumbs | The proven design is an empty post body under the `single` template (FR-48-56); the proof ran posts with content. Narrowing a with-content body is new design: Bean's call | Run choice |
+| Unrolled current items (Mama's nav) | Restore `7721da8e2` (`fill-current-attr.mjs`) with the state-parts module it deleted alongside | Rewind loss |
+| Time-of-day text | Restore `7f18560bd` (`skeleton-clock.mjs`) | Rewind loss |
+| Surfaces opened through the draft's store calls (MIC's shop) | Restore `19b0b1395`, `8c48dec56` (`intake-store-calls.mjs`) | Rewind loss |
+| Indus logo from the draft, its part motion and touch effect | Restore `2a393e23a`, `82bc238bf`, `99770b683`; one owner for the logo's parts write (the client file `logo-svgparts.json` becomes a fallback) | Rewind loss |
+| Script reveals; the older scrolled-header reader | Restore `36044f919`, `e8a7a8916`, and check `a979a54c9` against today's behaviour writer | Rewind loss |
+| Eye Care width rules, phone hide, collapse point, shrink timing | Never built: see RF4 and RF6 | Never built |
+
 ## Order
 
 1. Wave A (hours, unblocks everything): RF2's strict default and shared validator with the writer fixes, RF8's Solve address, RF10.
