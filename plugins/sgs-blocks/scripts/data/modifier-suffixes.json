@@ -95,6 +95,11 @@
       null
     ],
     [
+      "One",
+      "variant",
+      "The ordinal variant of a setting: summaryTextOne is summaryText for exactly one pick. Peeled so the property suffix (Text) still gives the role. Case-sensitive camelCase boundary, so linkPhone is not peeled."
+    ],
+    [
       "Unit",
       "unit",
       null
