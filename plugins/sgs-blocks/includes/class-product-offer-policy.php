@@ -18,7 +18,8 @@
  *   `returnPolicyCountry` is added at print time from WooCommerce's base country.
  *
  * Nothing is printed for an option that is empty or not an array: a value is never invented. Shipping can also come from
- * WooCommerce's own settings ({@see Product_Shipping_Woo}) for a site that opts in; the hand-set option wins. Google reads
+ * WooCommerce's own settings ({@see Product_Shipping_Woo}) for a site that opts in; the hand-set option wins. A product
+ * whose WooCommerce shipping class changes a flat rate's price carries its own `OfferShippingDetails`. Google reads
  * both on an `Offer` (merchant listings) and on the `Organization` (the shop-wide default), so
  * the product emitters print {@see self::offer_fields()} once per page (inside the only `Offer`, or the group's
  * `AggregateOffer`), each variant's `Offer` points at it with {@see self::offer_references()}, and the Organisation
@@ -177,17 +178,53 @@ final class Product_Offer_Policy {
 	}
 
 	/**
+	 * Whether each product's own WooCommerce shipping classes can change what its Offer says: the site publishes its
+	 * WooCommerce shipping and has no hand-set override.
+	 *
+	 * @return bool
+	 */
+	public static function per_product_shipping(): bool {
+		return null === self::shipping() && Product_Shipping_Woo::enabled();
+	}
+
+	/**
+	 * The product's own `shippingDetails` when its WooCommerce shipping class makes its rates differ from the shop-wide
+	 * service's: one `OfferShippingDetails`, or a list of them. Null when the Offer should carry the shop-wide
+	 * service; an empty array when the rates differ but none can be published (nothing is printed for the Offer).
+	 *
+	 * @param \WC_Product|null $product The product or variation the Offer is for.
+	 * @return array<mixed>|null
+	 */
+	private static function product_shipping( ?\WC_Product $product ): ?array {
+		if ( null === $product || ! self::per_product_shipping() ) {
+			return null;
+		}
+		$details = Product_Shipping_Woo::offer_details( $product );
+		if ( null === $details || 1 !== \count( $details ) ) {
+			return $details;
+		}
+		return $details[0];
+	}
+
+	/**
 	 * The full policies to print inside one `Offer` (a product with one offer, or the group's `AggregateOffer`).
 	 *
 	 * `hasMerchantReturnPolicy` carries the policy with its `@id`; `shippingDetails` is an `OfferShippingDetails`
-	 * whose `hasShippingService` carries the `ShippingService` with its `@id`. Each key only when the shop set it.
+	 * whose `hasShippingService` carries the `ShippingService` with its `@id`, or, for a product whose WooCommerce
+	 * shipping class changes its rates, that product's own `OfferShippingDetails`. Each key only when the shop set it.
 	 *
+	 * @param \WC_Product|null $product The product the Offer is for; null for the shop-wide policy alone.
 	 * @return array<string,mixed>
 	 */
-	public static function offer_fields(): array {
+	public static function offer_fields( ?\WC_Product $product = null ): array {
 		$fields  = array();
-		$service = self::shipping_service();
-		if ( null !== $service ) {
+		$own     = self::product_shipping( $product );
+		$service = null === $own ? self::shipping_service() : null;
+		if ( null !== $own ) {
+			if ( array() !== $own ) {
+				$fields['shippingDetails'] = $own;
+			}
+		} elseif ( null !== $service ) {
 			$fields['shippingDetails'] = array(
 				'@type'              => 'OfferShippingDetails',
 				'hasShippingService' => $service,
@@ -206,14 +243,21 @@ final class Product_Offer_Policy {
 	 *
 	 * Google documents a global policy under `Organization` and a reference to it from an `Offer` by `@id` alone
 	 * (shipping: `OfferShippingDetails.hasShippingService`; returns: `hasMerchantReturnPolicy`), so a variant's `Offer`
-	 * carries a few dozen bytes, not a copy of the policy.
+	 * carries a few dozen bytes, not a copy of the policy. A variant whose WooCommerce shipping class changes its rates
+	 * carries its own `OfferShippingDetails` in full instead of the reference.
 	 *
+	 * @param \WC_Product|null $product The variation the Offer is for; null when it can only point at the shop-wide policy.
 	 * @return array<string,mixed>
 	 */
-	public static function offer_references(): array {
+	public static function offer_references( ?\WC_Product $product = null ): array {
 		$fields  = array();
-		$service = self::shipping_service();
-		if ( null !== $service ) {
+		$own     = self::product_shipping( $product );
+		$service = null === $own ? self::shipping_service() : null;
+		if ( null !== $own ) {
+			if ( array() !== $own ) {
+				$fields['shippingDetails'] = $own;
+			}
+		} elseif ( null !== $service ) {
 			$fields['shippingDetails'] = array(
 				'@type'              => 'OfferShippingDetails',
 				'hasShippingService' => self::references( $service ),

@@ -8,6 +8,9 @@
  * - `description` on every variant `Product` (the variation's own, else the parent's short, else its long description);
  * - `shippingDetails` built from WooCommerce's shipping zones and methods when the site opts in, with the delivery
  *   time printed only when the site has set one, in Google's `ServicePeriod` shape;
+ * - a product whose WooCommerce shipping class changes a flat rate's price carrying its own `OfferShippingDetails`
+ *   (the class cost rules of `WC_Shipping_Flat_Rate::calculate_shipping`, free shipping over a minimum, a variation's
+ *   own class, an empty or formula class cost) and the settings preview listing each such class;
  * - `hasMerchantReturnPolicy` from the shop's return option, and the settings screen that writes it;
  * - `aggregateRating` and `review` from the product's own approved WooCommerce reviews only;
  * - every typed node printed passing a small schema.org property check.
@@ -35,6 +38,7 @@ namespace {
 		'asked'    => array(),
 		'errors'   => array(),
 		'products' => array(),
+		'classes'  => array(),
 	);
 
 	class WC_Product {
@@ -56,6 +60,8 @@ namespace {
 		public function get_review_count() { return $this->data['reviews']; }
 		public function get_rating_count() { return $this->data['ratings']; }
 		public function get_average_rating() { return $this->data['avg']; }
+		public function get_shipping_class_id() { return $this->data['class_id'] ?? 0; }
+		public function get_shipping_class() { return $this->data['class_slug'] ?? ''; }
 	}
 	class WC_Shipping_Zones {
 		public static function get_zones() { return $GLOBALS['t']['zones']; }
@@ -75,7 +81,9 @@ namespace {
 	function home_url( $p = '' ) { return 'https://shop.example' . $p; }
 	function get_post_meta( $id, $key, $single = false ) { return $GLOBALS['t']['meta'][ $id ][ $key ] ?? ''; }
 	function update_meta_cache() {}
-	function wc_get_price_including_tax( $p ) { return 15.0; }
+	function wc_get_price_including_tax( $p ) { return $p->data['inc'] ?? 15.0; }
+	function wc_get_price_excluding_tax( $p ) { return $p->data['exc'] ?? 12.5; }
+	function get_woocommerce_currency_symbol() { return '&pound;'; }
 	function get_permalink( $id ) { return 'https://shop.example/product/' . $id . '/'; }
 	function wc_get_product( $id ) { return $GLOBALS['t']['products'][ $id ] ?? null; }
 	function wc_get_price_decimals() { return 2; }
@@ -106,11 +114,19 @@ namespace {
 	function is_404() { return false; }
 	function is_front_page() { return true; }
 	function WC() {
-		return (object) array(
-			'countries' => new class() {
-				public function get_continents() { return array( 'EU' => array( 'countries' => array( 'FR', 'DE' ) ) ); }
-			},
-		);
+		return new class() {
+			public $countries;
+			public function __construct() {
+				$this->countries = new class() {
+					public function get_continents() { return array( 'EU' => array( 'countries' => array( 'FR', 'DE' ) ) ); }
+				};
+			}
+			public function shipping() {
+				return new class() {
+					public function get_shipping_classes() { return $GLOBALS['t']['classes']; }
+				};
+			}
+		};
 	}
 }
 
@@ -147,6 +163,7 @@ namespace {
 		$GLOBALS['t']['cmeta']    = array();
 		$GLOBALS['t']['asked']    = array();
 		$GLOBALS['t']['errors']   = array();
+		$GLOBALS['t']['classes']  = array();
 		Product_Shipping_Woo::reset_cache();
 	};
 
@@ -159,6 +176,7 @@ namespace {
 		'Offer'                 => array( 'price', 'priceCurrency', 'availability', 'url', 'itemCondition', 'priceValidUntil', 'shippingDetails', 'hasMerchantReturnPolicy' ),
 		'AggregateOffer'        => array( 'priceCurrency', 'lowPrice', 'highPrice', 'offerCount', 'availability', 'shippingDetails', 'hasMerchantReturnPolicy' ),
 		'OfferShippingDetails'  => array( 'hasShippingService', 'shippingRate', 'shippingDestination', 'deliveryTime' ),
+		'ShippingDeliveryTime'  => array( 'handlingTime', 'transitTime', 'businessDays', 'cutoffTime' ),
 		'ShippingService'       => array( '@id', 'name', 'shippingConditions', 'handlingTime', 'fulfillmentType', 'description' ),
 		'ShippingConditions'    => array( 'shippingDestination', 'shippingRate', 'orderValue', 'transitTime', 'doesNotShip' ),
 		'ServicePeriod'         => array( 'duration', 'businessDays', 'cutoffTime' ),
@@ -374,6 +392,119 @@ namespace {
 	$check( 'the hand-set option wins over WooCommerce\'s settings', 'https://shop.example/#shipping-service' === $service['@id'] && isset( $service['shippingConditions']['shippingRate'] ) );
 	$check( 'its transit time is a ServicePeriod holding the QuantitativeValue, as Google reads it', 'ServicePeriod' === $service['shippingConditions']['transitTime']['@type'] && 5 === $service['shippingConditions']['transitTime']['duration']['maxValue'] );
 	$check( 'its handling time sits on the service, not in the conditions', 'ServicePeriod' === $service['handlingTime']['@type'] && ! isset( $service['shippingConditions']['handlingTime'] ) );
+
+	// ── 3b. Shipping classes: a product's own rates, as WooCommerce charges a basket holding only that product. ──
+	$letterbox  = (object) array( 'term_id' => 73, 'slug' => 'letterbox', 'name' => 'letterbox' );
+	$mamas_live = static function () use ( $method, $uk_zone ) {
+		return $uk_zone(
+			array(
+				$method( 'free_shipping', 'Free delivery', array( 'requires' => 'min_amount', 'min_amount' => '35' ) ),
+				$method( 'flat_rate', 'Royal Mail Tracked 48', array( 'cost' => '0', 'type' => 'class', 'no_class_cost' => '3.95', 'class_cost_73' => '0' ) ),
+				$method( 'flat_rate', 'Royal Mail Tracked 24', array( 'cost' => '5.45', 'type' => 'class', 'class_cost_73' => '' ) ),
+			)
+		);
+	};
+	$setup = static function ( array $zones, array $classes ) use ( $reset ): void {
+		$reset();
+		$GLOBALS['t']['zones']   = $zones;
+		$GLOBALS['t']['classes'] = $classes;
+		$GLOBALS['t']['options']['sgs_shipping_from_woocommerce'] = '1';
+		Product_Shipping_Woo::reset_cache();
+	};
+	$one_zone = static function ( array $methods ) use ( $uk_zone ) { return array( $uk_zone( $methods ) ); };
+	$rates_of = static function ( $details ): array {
+		$list = isset( $details['@type'] ) ? array( $details ) : (array) $details;
+		return array_map( static fn( $d ) => $d['shippingRate']['value'] ?? '?', $list );
+	};
+	$offer_of = static function ( WC_Product $p ) { return \SGS\Blocks\Product_Schema_Simple::build_node( $p )['offers']; };
+	$service_names = static function (): array {
+		$s = Product_Offer_Policy::shipping_service();
+		return null === $s ? array() : array_column( isset( $s['name'] ) ? array( $s ) : $s, 'name' );
+	};
+	$classed = static function ( int $id, array $over = array() ) {
+		return new WC_Product( $over + array( 'id' => $id, 'type' => 'simple', 'name' => 'Classed', 'class_id' => 73, 'class_slug' => 'letterbox' ) );
+	};
+
+	$setup( array( $mamas_live() ), array( $letterbox ) );
+	$services = Product_Offer_Policy::shipping_service();
+	$check( 'the shop-wide service states the price for a product with no class: cost plus the no-class cost (3.95, 5.45)', '3.95' === $services[1]['shippingConditions']['shippingRate']['value'] && '5.45' === $services[2]['shippingConditions']['shippingRate']['value'] && '35.00' === $services[0]['shippingConditions']['orderValue']['minValue'], json_encode( array_column( array_column( $services, 'shippingConditions' ), 'shippingRate' ) ) );
+	$trio  = $classed( 11, array( 'name' => 'Taster Trio', 'exc' => 5.0, 'inc' => 5.0 ) );
+	$offer = $offer_of( $trio );
+	$check( 'Mama\'s Taster Trio (class letterbox): Tracked 48 is 0.00 and Tracked 24 is 5.45 on its own offer', array( '0.00', '5.45' ) === $rates_of( $offer['shippingDetails'] ), json_encode( $offer['shippingDetails'] ) );
+	$check( 'each is an OfferShippingDetails with the zone\'s destination and no reference to the shop-wide service', 'OfferShippingDetails' === $offer['shippingDetails'][0]['@type'] && 'GB' === $offer['shippingDetails'][1]['shippingDestination']['addressCountry'] && ! isset( $offer['shippingDetails'][0]['hasShippingService'] ) );
+	$check( 'free shipping over 35 is left out for a 5.00 product (a one-item basket does not reach it)', 2 === count( $offer['shippingDetails'] ) );
+	$check( 'the override passes the schema.org check', array() === $problems( $offer ), implode( '; ', $problems( $offer ) ) );
+	$plain = new WC_Product( array( 'id' => 12, 'type' => 'simple', 'name' => 'Cookies', 'exc' => 12.0 ) );
+	$offer = $offer_of( $plain );
+	$check( 'a product with no class keeps the reference to the shop-wide service (three services)', 'OfferShippingDetails' === $offer['shippingDetails']['@type'] && 3 === count( $offer['shippingDetails']['hasShippingService'] ) && ! isset( $offer['shippingDetails']['shippingRate'] ) );
+	$check( 'free shipping over 35 is printed for a classed product whose basket price reaches it (40 without VAT, the default basket display)', array( '0.00', '0.00', '5.45' ) === $rates_of( $offer_of( $classed( 13, array( 'exc' => 40.0, 'inc' => 48.0 ) ) )['shippingDetails'] ) );
+	$boxed = $classed( 14, array( 'exc' => 30.0, 'inc' => 36.0 ) );
+	$check( 'and not for 30 without VAT, though 36 with VAT would reach it', array( '0.00', '5.45' ) === $rates_of( $offer_of( $boxed )['shippingDetails'] ) );
+	$GLOBALS['t']['options']['woocommerce_tax_display_cart'] = 'incl';
+	$check( 'the minimum is compared with the VAT-inclusive price when the basket shows prices with VAT', array( '0.00', '0.00', '5.45' ) === $rates_of( $offer_of( $boxed )['shippingDetails'] ) );
+	$GLOBALS['t']['options']['woocommerce_tax_display_cart'] = 'excl';
+
+	$GLOBALS['t']['options']['sgs_shipping_delivery_time'] = array( 'handlingMin' => 1, 'handlingMax' => 2, 'transitMin' => 2, 'transitMax' => 3 );
+	$time = $offer_of( $trio )['shippingDetails'][0]['deliveryTime'] ?? array();
+	$check( 'the delivery time the site set prints on each override in the offer-level shape', 'ShippingDeliveryTime' === ( $time['@type'] ?? '' ) && 3 === ( $time['transitTime']['maxValue'] ?? 0 ) && 'DAY' === ( $time['transitTime']['unitCode'] ?? '' ) && 1 === ( $time['handlingTime']['minValue'] ?? 0 ), json_encode( $time ) );
+	$bad = $problems( $offer_of( $trio ) );
+	$check( 'and the override with a delivery time passes the schema.org check', array() === $bad, implode( '; ', $bad ) );
+	$GLOBALS['t']['options']['sgs_shipping_delivery_time'] = array();
+
+	$check( 'the settings preview data lists the class whose prices differ', array( 'letterbox' => 'Royal Mail Tracked 48 £0, Royal Mail Tracked 24 £5.45' ) === Product_Shipping_Woo::class_differences(), json_encode( Product_Shipping_Woo::class_differences() ) );
+	ob_start();
+	Shop_Policy_Settings::render_page();
+	$page = ob_get_clean();
+	$check( 'the settings page prints it, so the shop sees it before ticking the box', str_contains( $page, 'letterbox: Royal Mail Tracked 48 £0, Royal Mail Tracked 24 £5.45' ) );
+	$setup( array( $mamas() ), array( $letterbox ) );
+	$check( 'a class that changes no price is not listed (no class cost fields set)', array() === Product_Shipping_Woo::class_differences() );
+
+	// A variation: its own class (WooCommerce reports the parent's when the variation says "same as parent").
+	$setup( array( $mamas_live() ), array( $letterbox ) );
+	$GLOBALS['t']['products'][10]  = $rg_product();
+	$GLOBALS['t']['products'][258] = $classed( 258, array( 'type' => 'variation', 'exc' => 12.5 ) );
+	$group = $build_group( $GLOBALS['t']['products'][10] );
+	$check( 'a variation in class letterbox carries its own rates on its Offer', array( '0.00', '5.45' ) === $rates_of( $group['hasVariant'][0]['offers']['shippingDetails'] ), json_encode( $group['hasVariant'][0]['offers']['shippingDetails'] ) );
+	$check( 'while the group, whose parent has no class, keeps the full shop-wide service', 3 === count( $group['offers']['shippingDetails']['hasShippingService'] ) );
+	$GLOBALS['t']['products'][258] = new WC_Product( array( 'id' => 258, 'type' => 'variation', 'exc' => 12.5 ) );
+	$group = $build_group( $GLOBALS['t']['products'][10] );
+	$check( 'a variation with no class points at the shop-wide service by @id', array( '@id' => 'https://shop.example/#shipping-service-1' ) === $group['hasVariant'][0]['offers']['shippingDetails']['hasShippingService'][0] );
+	$GLOBALS['t']['products'][10]  = $rg_product( array( 'class_id' => 73, 'class_slug' => 'letterbox' ) );
+	$GLOBALS['t']['products'][258] = $classed( 258, array( 'type' => 'variation', 'exc' => 12.5 ) );
+	$group = $build_group( $GLOBALS['t']['products'][10] );
+	$check( 'a parent in class letterbox whose variation inherits it: the group and the variant both carry the class rates', array( '0.00', '5.45' ) === $rates_of( $group['offers']['shippingDetails'] ) && array( '0.00', '5.45' ) === $rates_of( $group['hasVariant'][0]['offers']['shippingDetails'] ) );
+	$bad = $problems( $group );
+	$check( 'the group with class rates passes the schema.org check', array() === $bad, implode( '; ', $bad ) );
+
+	// An empty class cost adds nothing; a method with every cost empty is not offered; a formula excludes the method.
+	$setup( $one_zone( array(
+		$method( 'flat_rate', 'Standard', array( 'cost' => '2', 'class_cost_73' => '' ) ),
+		$method( 'flat_rate', 'Only no-class', array( 'cost' => '', 'no_class_cost' => '4', 'class_cost_73' => '' ) ),
+	) ), array( $letterbox ) );
+	$check( 'a product with no class: Standard at its cost and the second method at its no-class cost', array( 'Standard', 'Only no-class' ) === $service_names() && '4.00' === Product_Offer_Policy::shipping_service()[1]['shippingConditions']['shippingRate']['value'] );
+	$check( 'in the class, an empty class cost adds nothing (Standard stays 2.00) and the method with every cost field empty is not offered', array( '2.00' ) === $rates_of( $offer_of( $classed( 15 ) )['shippingDetails'] ), json_encode( $offer_of( $classed( 15 ) )['shippingDetails'] ) );
+	$setup( $one_zone( array(
+		$method( 'flat_rate', 'Parcel', array( 'cost' => '3', 'no_class_cost' => '1', 'class_cost_73' => '[qty] * 2' ) ),
+		$method( 'flat_rate', 'Letter', array( 'cost' => '1', 'class_cost_73' => '0.5' ) ),
+	) ), array( $letterbox ) );
+	$check( 'a formula class cost leaves that method out for the class (never a guessed price)', array( '1.50' ) === $rates_of( $offer_of( $classed( 15 ) )['shippingDetails'] ), json_encode( $offer_of( $classed( 15 ) )['shippingDetails'] ) );
+	$setup( $one_zone( array(
+		$method( 'flat_rate', 'Formula base', array( 'cost' => '2 + [qty] * 1.5', 'class_cost_73' => '1' ) ),
+		$method( 'flat_rate', 'Plain', array( 'cost' => '2', 'class_cost_73' => '1' ) ),
+	) ), array( $letterbox ) );
+	$check( 'a formula in the method\'s own cost leaves it out of the shop-wide service and of every product', array( 'Plain' ) === $service_names() && array( '3.00' ) === $rates_of( $offer_of( $classed( 15 ) )['shippingDetails'] ) );
+	$setup( $one_zone( array( $method( 'flat_rate', 'Per order', array( 'cost' => '4', 'type' => 'order', 'class_cost_73' => '-1' ) ) ) ), array( $letterbox ) );
+	$check( 'a "per order" method ignores a negative class cost, so the rates match and the Offer keeps the reference', isset( $offer_of( $classed( 15 ) )['shippingDetails']['hasShippingService'] ) );
+	$setup( $one_zone( array( $method( 'flat_rate', 'Per class', array( 'cost' => '4', 'type' => 'class', 'class_cost_73' => '1.5' ) ) ) ), array( $letterbox ) );
+	$check( 'a "per class" method adds the class cost to the method cost (4 + 1.5)', array( '5.50' ) === $rates_of( $offer_of( $classed( 15 ) )['shippingDetails'] ) );
+	$setup( $one_zone( array( $method( 'flat_rate', 'No classes', array( 'cost' => '3', 'no_class_cost' => '1', 'class_cost_73' => '9' ) ) ) ), array() );
+	$check( 'a shop with no shipping classes adds no class cost at all, as WooCommerce does', '3.00' === Product_Offer_Policy::shipping_service()['shippingConditions']['shippingRate']['value'] && isset( $offer_of( $classed( 15 ) )['shippingDetails']['hasShippingService'] ) );
+	$setup( array( $mamas_live() ), array( $letterbox ) );
+	$GLOBALS['t']['options']['sgs_configurator_shipping'] = array( 'shippingRate' => array( '@type' => 'MonetaryAmount', 'value' => '9.99', 'currency' => 'GBP' ) );
+	$check( 'the hand-set shipping option still wins over a product\'s class rates', '9.99' === $offer_of( $trio )['shippingDetails']['hasShippingService']['shippingConditions']['shippingRate']['value'] );
+	$GLOBALS['t']['options']['sgs_configurator_shipping'] = array();
+	$GLOBALS['t']['options']['sgs_shipping_from_woocommerce'] = '';
+	$check( 'a site that has not opted in prints no shipping for a classed product either', ! isset( $offer_of( $trio )['shippingDetails'] ) );
 
 	// ── 4. Return policy: the option, and the settings screen that writes it. ──
 	$reset();

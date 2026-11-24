@@ -260,7 +260,7 @@ final class Shop_Policy_Settings {
 
 		echo '<h2>' . \esc_html__( 'Delivery', 'sgs-blocks' ) . '</h2><table class="form-table" role="presentation">';
 		echo '<tr><th scope="row">' . \esc_html__( 'Shipping costs', 'sgs-blocks' ) . '</th><td><label><input type="checkbox" name="sgs_shipping_from_woocommerce" value="1"' . ( Product_Shipping_Woo::enabled() ? ' checked' : '' ) . '> ' . \esc_html__( 'Publish the delivery methods and prices set in WooCommerce > Settings > Shipping', 'sgs-blocks' ) . '</label>';
-		echo '<p class="description">' . \esc_html__( 'Flat rates with a plain price and free shipping (always, or over a minimum order) are published, for zones with a country, state or continent. Other methods are left out.', 'sgs-blocks' ) . '</p>';
+		echo '<p class="description">' . \esc_html__( 'Flat rates with a plain price (including the extra cost of a shipping class) and free shipping (always, or over a minimum order) are published, for zones with a country, state or continent. Other methods are left out.', 'sgs-blocks' ) . '</p>';
 		self::preview();
 		echo '</td></tr>';
 		foreach ( array(
@@ -299,6 +299,14 @@ final class Shop_Policy_Settings {
 			echo '<li>' . \esc_html( (string) $service['name'] . ': ' . $rate . $minimum ) . '</li>';
 		}
 		echo '</ul>';
+		$classes = Product_Shipping_Woo::class_differences();
+		if ( ! empty( $classes ) ) {
+			echo '<p class="description">' . \esc_html__( 'These prices are for products with no shipping class. A product in a shipping class below is published with the prices of its own class:', 'sgs-blocks' ) . '</p><ul>';
+			foreach ( $classes as $name => $prices ) {
+				echo '<li>' . \esc_html( (string) $name . ': ' . $prices ) . '</li>';
+			}
+			echo '</ul>';
+		}
 	}
 
 	/**

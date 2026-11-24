@@ -135,7 +135,7 @@ final class Product_Schema_Simple {
 			$offer['priceValidUntil'] = $sale_end->date( 'Y-m-d' );
 		}
 
-		return $offer + Product_Offer_Policy::offer_fields();
+		return $offer + Product_Offer_Policy::offer_fields( $product );
 	}
 
 	/**

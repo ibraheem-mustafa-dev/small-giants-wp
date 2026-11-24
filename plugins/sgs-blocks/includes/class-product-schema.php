@@ -170,7 +170,7 @@ final class Product_Schema {
 
 		// AggregateOffer (price-from / price-to rich result).
 		// The shop's shipping and return policies print once, here; each variant's Offer points at them by @id.
-		$data['offers'] = self::build_aggregate_offer( $combos, $decimals, $currency ) + Product_Offer_Policy::offer_fields();
+		$data['offers'] = self::build_aggregate_offer( $combos, $decimals, $currency ) + Product_Offer_Policy::offer_fields( $parent );
 
 		// hasVariant nodes (max 50, selection rule applied).
 		$data['hasVariant'] = self::build_has_variant(
@@ -679,7 +679,9 @@ final class Product_Schema {
 			$offer['priceValidUntil'] = $sale_end;
 		}
 
-		$node['offers'] = $offer + Product_Offer_Policy::offer_references();
+		// A variation's own shipping class (or its parent's) can change what WooCommerce charges for it.
+		$variation      = Product_Offer_Policy::per_product_shipping() ? \wc_get_product( $variation_id ) : null;
+		$node['offers'] = $offer + Product_Offer_Policy::offer_references( $variation instanceof \WC_Product ? $variation : null );
 
 		return $node;
 	}
