@@ -62,6 +62,24 @@ namespace {
 		public function get_average_rating() { return $this->data['avg']; }
 		public function get_shipping_class_id() { return $this->data['class_id'] ?? 0; }
 		public function get_shipping_class() { return $this->data['class_slug'] ?? ''; }
+		public function get_tax_class() { return $this->data['tax_class'] ?? ''; }
+		public function is_shipping_taxable() { return $this->data['ship_taxable'] ?? true; }
+	}
+	class WC_Tax {
+		// Rates are held as $GLOBALS['t']['tax_rates'][ "<tax class>|<country>" ] = list of array( 'rate' => percent, 'compound' => 'no', 'shipping' => 'yes' ).
+		public static function find_shipping_rates( $args = array() ) {
+			$key   = ( $args['tax_class'] ?? '' ) . '|' . ( $args['country'] ?? '' );
+			$found = array();
+			foreach ( $GLOBALS['t']['tax_rates'][ $key ] ?? array() as $i => $rate ) {
+				if ( 'yes' === $rate['shipping'] ) { $found[ $i + 1 ] = $rate; }
+			}
+			return $found;
+		}
+		public static function calc_shipping_tax( $price, $rates ) {
+			$taxes = array();
+			foreach ( $rates as $id => $rate ) { $taxes[ $id ] = $price * $rate['rate'] / 100; }
+			return $taxes;
+		}
 	}
 	class WC_Shipping_Zones {
 		public static function get_zones() { return $GLOBALS['t']['zones']; }
@@ -87,6 +105,7 @@ namespace {
 	function get_permalink( $id ) { return 'https://shop.example/product/' . $id . '/'; }
 	function wc_get_product( $id ) { return $GLOBALS['t']['products'][ $id ] ?? null; }
 	function wc_get_price_decimals() { return 2; }
+	function wc_tax_enabled() { return 'yes' === ( $GLOBALS['t']['options']['woocommerce_calc_taxes'] ?? 'no' ); }
 	function get_woocommerce_currency() { return 'GBP'; }
 	function esc_url_raw( $u ) { return $u; }
 	function get_bloginfo( $k ) { return 'Mama&#039;s Munches'; }
@@ -119,6 +138,8 @@ namespace {
 			public function __construct() {
 				$this->countries = new class() {
 					public function get_continents() { return array( 'EU' => array( 'countries' => array( 'FR', 'DE' ) ), 'EUA' => array( 'countries' => array( 'GB', 'FR', 'DE' ) ), 'WORLD' => array( 'countries' => array_keys( $this->get_countries() ) ) ); }
+					public function get_base_country() { return 'GB'; }
+					public function get_base_state() { return ''; }
 					public function get_countries() {
 						$all = array();
 						foreach ( range( 'A', 'J' ) as $a ) {
@@ -712,6 +733,61 @@ namespace {
 	$GLOBALS['t']['options']['sgs_shipping_from_woocommerce'] = '';
 	$GLOBALS['t']['zones'] = array();
 	Product_Shipping_Woo::reset_cache();
+
+	// ── 3c. VAT on shipping: the published rate is what checkout charges for a basket holding one of the product. ──
+	$tax_on = static function ( array $rates, string $shipping_class = 'inherit' ): void {
+		$GLOBALS['t']['options']['woocommerce_calc_taxes']          = 'yes';
+		$GLOBALS['t']['options']['woocommerce_shipping_tax_class']  = $shipping_class;
+		$GLOBALS['t']['tax_rates']                                  = $rates;
+		Product_Shipping_Woo::reset_cache();
+	};
+	$vat20    = array( 'rate' => 20.0, 'compound' => 'no', 'shipping' => 'yes' );
+	$taxed_zone = static function () use ( $method, $uk_zone ) {
+		return $uk_zone(
+			array(
+				$method( 'flat_rate', 'Standard', array( 'cost' => '4' ) ),
+				$method( 'flat_rate', 'Untaxed', array( 'cost' => '2', 'tax_status' => 'none' ) ),
+				$method( 'free_shipping', 'Free over 50', array( 'requires' => 'min_amount', 'min_amount' => '50' ) ),
+			)
+		);
+	};
+	$shop_rates = static function (): array {
+		return array_map( static fn( $s ) => $s['shippingConditions']['shippingRate']['value'], (array) Product_Offer_Policy::shipping_service() );
+	};
+	$setup( array( $taxed_zone() ), array() );
+	$check( 'tax switched off: the published rate is the method\'s cost, as before', array( '4.00', '2.00', '0.00' ) === $shop_rates() );
+	$tax_on( array( '|GB' => array( $vat20 ) ) );
+	$check( 'tax on, shipping tax class inherited: a taxable flat rate is published with the shop\'s standard VAT (4.00 becomes 4.80), a method with tax status none and a free rate are not', array( '4.80', '2.00', '0.00' ) === $shop_rates(), json_encode( $shop_rates() ) );
+	$standard_product = new WC_Product( array( 'id' => 31, 'type' => 'simple', 'name' => 'Standard-rated', 'exc' => 12.0 ) );
+	$offer = $offer_of( $standard_product );
+	$check( 'a product taxed at the standard class keeps the reference to the shop-wide service', isset( $offer['shippingDetails']['hasShippingService'] ) );
+	$zero_product = new WC_Product( array( 'id' => 32, 'type' => 'simple', 'name' => 'Zero-rated', 'exc' => 12.0, 'tax_class' => 'zero-rate' ) );
+	$offer = $offer_of( $zero_product );
+	$check( 'a zero-rated product, with shipping tax inherited from the basket, has its own details at the untaxed 4.00 (WooCommerce adds no VAT to a basket of it); free over 50 is out for a 12.00 basket', ! isset( $offer['shippingDetails']['hasShippingService'] ) && array( '4.00', '2.00' ) === $rates_of( $offer['shippingDetails'] ), json_encode( $offer['shippingDetails'] ?? null ) );
+	$exempt_product = new WC_Product( array( 'id' => 33, 'type' => 'simple', 'name' => 'No shipping tax', 'exc' => 12.0, 'ship_taxable' => false ) );
+	$check( 'a product whose tax status leaves shipping untaxed also has its own untaxed details', ! isset( $offer_of( $exempt_product )['shippingDetails']['hasShippingService'] ) );
+	$tax_on( array( '|GB' => array( $vat20 ) ), '' );
+	$check( 'shipping tax class set to Standard: the zero-rated product is charged the same VAT on shipping, so it keeps the reference', isset( $offer_of( $zero_product )['shippingDetails']['hasShippingService'] ) && array( '4.80', '2.00', '0.00' ) === $shop_rates() );
+	$tax_on( array( 'reduced|GB' => array( array( 'rate' => 5.0, 'compound' => 'no', 'shipping' => 'yes' ) ), '|GB' => array( $vat20 ) ), 'reduced' );
+	$check( 'a named shipping tax class uses that class\'s rate (4.00 at 5% is 4.20)', '4.20' === $shop_rates()[0] );
+	$tax_on( array( '|GB' => array( array( 'rate' => 20.0, 'compound' => 'no', 'shipping' => 'no' ) ) ) );
+	$check( 'a tax rate that does not apply to shipping adds nothing', '4.00' === $shop_rates()[0] );
+	$tax_on( array( '|GB' => array( $vat20 ) ) );
+
+	$GLOBALS['t']['zones'] = array( $uk_zone( array( $method( 'flat_rate', 'Standard', array( 'cost' => '4' ) ) ), array( (object) array( 'code' => 'GB', 'type' => 'country' ), (object) array( 'code' => 'FR', 'type' => 'country' ) ) ) );
+	Product_Shipping_Woo::reset_cache();
+	$one = Product_Offer_Policy::shipping_service();
+	$cond = $one['shippingConditions'] ?? array();
+	$check( 'a zone whose countries are taxed differently (GB 20%, FR none) is one service with a condition per price, each with its own countries', isset( $cond[0], $cond[1] ) && '4.80' === $cond[0]['shippingRate']['value'] && 'GB' === $cond[0]['shippingDestination']['addressCountry'] && '4.00' === $cond[1]['shippingRate']['value'] && 'FR' === $cond[1]['shippingDestination']['addressCountry'], json_encode( $cond ) );
+	$bad = $problems( $one );
+	$check( 'and that passes the schema.org check', array() === $bad, implode( '; ', $bad ) );
+
+	$GLOBALS['t']['zones'] = array( $world_zone() );
+	Product_Shipping_Woo::reset_cache();
+	$world = Product_Offer_Policy::shipping_service();
+	$check( 'a worldwide zone is priced with the shop\'s own country\'s VAT (documented limit) and still states no destination', '5.00' !== $world[0]['shippingConditions']['shippingRate']['value'] && '6.00' === $world[0]['shippingConditions']['shippingRate']['value'] && ! isset( $world[0]['shippingConditions']['shippingDestination'] ), json_encode( $world[0]['shippingConditions'] ?? null ) );
+	$GLOBALS['t']['options']['woocommerce_calc_taxes'] = 'no';
+	$GLOBALS['t']['tax_rates'] = array();
 
 	// ── 6. Everything printed passes the schema.org check, in the fullest state a shop can reach. ──
 	$reset();

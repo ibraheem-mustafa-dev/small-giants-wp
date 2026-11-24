@@ -27,7 +27,18 @@
  * cost adds nothing; a method whose every cost field is empty is not offered for that product. The shop-wide service
  * states the price for a product with no shipping class. A product (or variation) whose class changes a flat rate's price
  * gets its own `OfferShippingDetails` ({@see self::offer_details()}), because Google ranks product-level markup above the
- * Organisation's. The VAT on a taxable method is not added.
+ * Organisation's.
+ *
+ * Tax: with WooCommerce's taxes on, a taxable flat rate (the method's `tax_status`) is published as checkout charges
+ * it, the shipping tax rates for the zone's country added ({@see self::priced_groups()}), because Google's Merchant
+ * Center specification asks for the shipping price "including VAT if required" outside the US and Canada and its
+ * structured-data pages are silent on tax. Which tax class applies follows WooCommerce's "Shipping tax class" setting
+ * (the product's own class when it is "based on cart items", so a zero-rated product gets its own untaxed details). A
+ * worldwide zone is taxed as the shop's own country; free shipping costs nothing to tax.
+ *
+ * Limit: WooCommerce compares a free-shipping minimum with the basket after coupon discounts unless the method's
+ * "ignore discounts" option is on. Google's `orderValue` has no way to say so, so the minimum is published as the
+ * order value before coupons.
  *
  * @package SGS\Blocks
  */
@@ -98,30 +109,36 @@ final class Product_Shipping_Woo {
 		$handling = self::period( 'handling' );
 		$transit  = self::period( 'transit' );
 
+		$tax_class = self::shipping_tax_class( null );
+
 		foreach ( self::entries() as $entry ) {
 			$terms = self::method_terms( $entry['method'] );
 			if ( null === $terms ) {
 				continue;
 			}
-			$conditions = array( '@type' => 'ShippingConditions' );
-			if ( ! empty( $entry['destinations'] ) ) {
-				$conditions['shippingDestination'] = self::one_or_list( $entry['destinations'] );
-			}
-			$conditions['shippingRate'] = self::money( $terms['cost'], $currency, $decimals );
-			if ( null !== $terms['min_order'] ) {
-				$conditions['orderValue'] = array(
-					'@type'    => 'MonetaryAmount',
-					'minValue' => \number_format( $terms['min_order'], $decimals, '.', '' ),
-					'currency' => $currency,
-				);
-			}
-			if ( null !== $transit ) {
-				$conditions['transitTime'] = $transit;
+			$built = array();
+			foreach ( self::priced_groups( $entry, $terms['cost'], $tax_class, $decimals ) as $group ) {
+				$conditions = array( '@type' => 'ShippingConditions' );
+				if ( ! empty( $group['destinations'] ) ) {
+					$conditions['shippingDestination'] = self::one_or_list( $group['destinations'] );
+				}
+				$conditions['shippingRate'] = self::money( $group['cost'], $currency, $decimals );
+				if ( null !== $terms['min_order'] ) {
+					$conditions['orderValue'] = array(
+						'@type'    => 'MonetaryAmount',
+						'minValue' => \number_format( $terms['min_order'], $decimals, '.', '' ),
+						'currency' => $currency,
+					);
+				}
+				if ( null !== $transit ) {
+					$conditions['transitTime'] = $transit;
+				}
+				$built[] = $conditions;
 			}
 			$service = array(
 				'@type'              => 'ShippingService',
 				'name'               => self::title( $entry['method'] ),
-				'shippingConditions' => $conditions,
+				'shippingConditions' => 1 === \count( $built ) ? $built[0] : $built,
 			);
 			if ( null !== $handling ) {
 				$service['handlingTime'] = $handling;
@@ -150,7 +167,8 @@ final class Product_Shipping_Woo {
 		$decimals = (int) \wc_get_price_decimals();
 		$entries  = self::entries();
 
-		if ( ! self::class_changes_rates( $entries, $class_id, $slug, $decimals ) ) {
+		$tax_class = self::shipping_tax_class( $product );
+		if ( ! self::class_changes_rates( $entries, $class_id, $slug, $decimals, $tax_class ) ) {
 			return null;
 		}
 
@@ -163,17 +181,19 @@ final class Product_Shipping_Woo {
 			if ( null === $terms || ( null !== $terms['min_order'] && $price < \round( $terms['min_order'], $decimals ) ) ) {
 				continue;
 			}
-			$node = array(
-				'@type'        => 'OfferShippingDetails',
-				'shippingRate' => self::money( $terms['cost'], $currency, $decimals ),
-			);
-			if ( ! empty( $entry['destinations'] ) ) {
-				$node['shippingDestination'] = self::one_or_list( $entry['destinations'] );
+			foreach ( self::priced_groups( $entry, $terms['cost'], $tax_class, $decimals ) as $group ) {
+				$node = array(
+					'@type'        => 'OfferShippingDetails',
+					'shippingRate' => self::money( $group['cost'], $currency, $decimals ),
+				);
+				if ( ! empty( $group['destinations'] ) ) {
+					$node['shippingDestination'] = self::one_or_list( $group['destinations'] );
+				}
+				if ( null !== $time ) {
+					$node['deliveryTime'] = $time;
+				}
+				$details[] = $node;
 			}
-			if ( null !== $time ) {
-				$node['deliveryTime'] = $time;
-			}
-			$details[] = $node;
 		}
 		return $details;
 	}
@@ -190,7 +210,7 @@ final class Product_Shipping_Woo {
 		foreach ( self::shipping_classes() as $class ) {
 			$id   = (int) ( $class->term_id ?? 0 );
 			$slug = (string) ( $class->slug ?? '' );
-			if ( ! self::class_changes_rates( $entries, $id, $slug, $decimals ) ) {
+			if ( ! self::class_changes_rates( $entries, $id, $slug, $decimals, self::shipping_tax_class( null ) ) ) {
 				continue;
 			}
 			$prices = array();
@@ -207,26 +227,118 @@ final class Product_Shipping_Woo {
 	}
 
 	/**
-	 * Whether a shipping class changes any flat rate's price (or whether it is offered) compared with no class.
+	 * Whether a shipping class, or the product's tax class under tax-inherited shipping, changes what a flat rate
+	 * charges (or whether it is offered) compared with the shop-wide service for a product with neither.
 	 *
-	 * @param array<int,array{destinations:array<int,array<string,string>>,method:object}> $entries  The usable methods.
-	 * @param int                                                                          $class_id Class term id, 0 for none.
-	 * @param string                                                                       $slug     Class slug.
-	 * @param int                                                                          $decimals Price decimals.
+	 * @param array<int,array{destinations:array<int,array<string,string>>,method:object}> $entries   The usable methods.
+	 * @param int                                                                          $class_id  Class term id, 0 for none.
+	 * @param string                                                                       $slug      Class slug.
+	 * @param int                                                                          $decimals  Price decimals.
+	 * @param string|null                                                                  $tax_class The product's shipping tax class (see {@see self::shipping_tax_class()}).
 	 * @return bool
 	 */
-	private static function class_changes_rates( array $entries, int $class_id, string $slug, int $decimals ): bool {
+	private static function class_changes_rates( array $entries, int $class_id, string $slug, int $decimals, ?string $tax_class ): bool {
+		$default_tax = self::shipping_tax_class( null );
 		foreach ( $entries as $entry ) {
 			if ( 'flat_rate' !== (string) ( $entry['method']->id ?? '' ) ) {
 				continue;
 			}
 			$own     = self::method_terms( $entry['method'], $class_id, $slug );
 			$default = self::method_terms( $entry['method'] );
-			if ( ( null === $own ? null : \round( $own['cost'], $decimals ) ) !== ( null === $default ? null : \round( $default['cost'], $decimals ) ) ) {
+			if ( null === $own || null === $default ) {
+				if ( ( null === $own ) !== ( null === $default ) ) {
+					return true;
+				}
+				continue;
+			}
+			if ( self::priced_groups( $entry, $own['cost'], $tax_class, $decimals ) !== self::priced_groups( $entry, $default['cost'], $default_tax, $decimals ) ) {
 				return true;
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * The shipping tax class a basket holding one of the product is charged under, or null when no tax is added.
+	 *
+	 * Follows `WC_Tax::get_shipping_tax_rates`: no tax at all when the shop's taxes are off; otherwise the class set at
+	 * WooCommerce > Settings > Tax > Shipping tax class, or, for "based on cart items" (the default), the product's own
+	 * tax class, and none when the product's tax status leaves shipping untaxed. With no product (the shop-wide service)
+	 * the Standard class stands in for the basket.
+	 *
+	 * @param \WC_Product|null $product The product, null for the shop-wide service.
+	 * @return string|null Tax class slug ('' is Standard), or null for no tax.
+	 */
+	private static function shipping_tax_class( ?\WC_Product $product ): ?string {
+		if ( ! \function_exists( 'wc_tax_enabled' ) || ! \wc_tax_enabled() || ! \class_exists( '\WC_Tax' ) ) {
+			return null;
+		}
+		$class = (string) \get_option( 'woocommerce_shipping_tax_class', 'inherit' );
+		if ( 'inherit' !== $class ) {
+			return $class;
+		}
+		if ( null === $product ) {
+			return '';
+		}
+		return $product->is_shipping_taxable() ? (string) $product->get_tax_class() : null;
+	}
+
+	/**
+	 * What a method charges, grouped by price, for a basket holding one product.
+	 *
+	 * Without tax this is one group: the cost for every destination. With tax on, a taxable flat rate (the method's
+	 * `tax_status`; free shipping costs nothing to tax) is charged the shipping tax rates that apply to each
+	 * destination, as checkout adds them, so the published rate is the one the basket total shows. Destinations that
+	 * come to different prices (GB taxed, FR not) become separate groups. A worldwide zone, which has no destination
+	 * list, is taxed as the shop's own country.
+	 *
+	 * @param array{destinations:array<int,array<string,string>>,method:object} $entry     The method and its destinations.
+	 * @param float                                                              $cost      The cost before tax.
+	 * @param string|null                                                        $tax_class The shipping tax class, null for no tax.
+	 * @param int                                                                $decimals  Price decimals.
+	 * @return array<int,array{cost:float,destinations:array<int,array<string,string>>}>
+	 */
+	private static function priced_groups( array $entry, float $cost, ?string $tax_class, int $decimals ): array {
+		$destinations = (array) $entry['destinations'];
+		if ( null === $tax_class || $cost <= 0 || 'taxable' !== (string) $entry['method']->get_option( 'tax_status', 'taxable' ) ) {
+			return array(
+				array(
+					'cost'         => \round( $cost, $decimals ),
+					'destinations' => $destinations,
+				),
+			);
+		}
+		$regions = $destinations;
+		if ( empty( $regions ) ) {
+			$base    = array( 'addressCountry' => (string) \WC()->countries->get_base_country() );
+			$state   = (string) \WC()->countries->get_base_state();
+			$regions = array( '' !== $state ? $base + array( 'addressRegion' => $state ) : $base );
+		}
+		$groups = array();
+		foreach ( $regions as $region ) {
+			$rates   = \WC_Tax::find_shipping_rates(
+				array(
+					'country'   => $region['addressCountry'],
+					'state'     => $region['addressRegion'] ?? '',
+					'postcode'  => '',
+					'city'      => '',
+					'tax_class' => $tax_class,
+				)
+			);
+			$charged = empty( $rates ) ? $cost : $cost + \array_sum( \WC_Tax::calc_shipping_tax( $cost, $rates ) );
+			$charged = \round( $charged, $decimals );
+			$key     = \number_format( $charged, $decimals, '.', '' );
+			if ( ! isset( $groups[ $key ] ) ) {
+				$groups[ $key ] = array(
+					'cost'         => $charged,
+					'destinations' => array(),
+				);
+			}
+			if ( ! empty( $destinations ) ) {
+				$groups[ $key ]['destinations'][] = $region;
+			}
+		}
+		return \array_values( $groups );
 	}
 
 	/**
