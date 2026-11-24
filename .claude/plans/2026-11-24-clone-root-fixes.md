@@ -12,6 +12,21 @@ Status (2026-11-24, evening): diagnosis complete and fact-checked; no fix built.
 
 Bean clones two new sites (SGS, and MIC, which has a shop) from Claude Design drafts before 2026-11-28, with no hand fixes. The 2026-11-24 proof reclones of Mama's, Eye Care and Indus came out far worse than last week's per-surface sessions. Bean's rule for every fix (2026-11-24): remove the root cause at its layer, cure the same fault everywhere it occurs, and add a guard so the class cannot return in another context; never a patch that only crosses a register row off. Every fix makes the clone write what the framework already has (per-device settings, Custom CSS for non-tier widths and outliers, the motion panel for timings, the handoff's tokens for site defaults), checked against how the hand-built sites set the same look.
 
+## Settled by Bean (do not reopen; check every brief against this list)
+
+- Mama's "Build your Zookie" configurator is a custom build job, not a cloning target (2026-11-21, 2026-11-23); the buy box's configurator layout is not written by the route.
+- Hover colour and shadow timing are set through the motion settings (the hover state's `paintDuration`, `paintEasing`, `shadowDuration`, `shadowEasing`); no new transition settings. The route's only job is to write them, including for a hover that changes colour or shadow without moving.
+- Draft-first matching (Spec 48 R-47-4, FR-48-8): read the draft's values per width and state, match each to a setting through the tables, Custom CSS for anything no setting holds (RF1).
+- "Featured", current, open, detached and pill are conditions of one kind; no stored per-placement condition schema.
+- Forms, modals and flows are linked into pages by reference and are cloned before pages, like the header, footer, mega menus and drawer.
+- Strict mode is for tests only (2026-11-21); a listed look never stops the clone.
+- The clone writes the draft's exact stated value; the half-pixel tolerance is only for comparing measured renders.
+- The setting record is fixed forward, not replaced by calibration.
+- The trust bar scrolls as a ticker when its items do not fit (`00eac2c01`).
+- "Glasses (soon)" menu entries are dropped (2026-10-09, confirmed 2026-11-22).
+- The clone-coverage register stays (the intake review reads it).
+- Last week's header, footer, drawer, mega-menu and shop fixes were route work that made the clones match: a fault there is a loss or regression to restore before anything new is designed.
+
 ## Evidence
 
 All reports are read-only investigations, each checked by a second helper that did not write it. Index of every cause, correction and verdict: `E:\sgs-tmp\general-cloning\hunt\INDEX.md`. Reports: `E:\sgs-tmp\general-cloning\hunt\` (hunts H1–H5, `reconcile.out` on Bean's nine points, `rescan-b.out`, `element-finding.out`) and `E:\sgs-tmp\general-cloning\deep\` (`r1.out` and `r2.out` design reviews, `s1.out`–`s3.out` surface sweeps, `h1.out` history audit, `t1.out` tooling health, `spec.out` spec conformance, `calib-diff.out` calibration against the record), with fact-checks `v-*.out` beside each. Lost-fix lists: `E:\sgs-tmp\general-cloning\regression\b2-verified.md`, `hunt\rescan-b.out`, `deep\h1.out`. Before/after offline Fill of the setting-record switch: `E:\sgs-tmp\meas-out-B` (calibration, `d1723f886`), `E:\sgs-tmp\meas-out-A` (record, `c8b4a3f78`).
@@ -69,8 +84,8 @@ All reports are read-only investigations, each checked by a second helper that d
 
 ### RF7. Commerce and forms (MIC has a shop: weighted highest)
 
-- **Instances:** the product card is paired with the loop cell, not the card component's root (`commerceRegion`; Mama's `Root/30#0` against `Root>ProductCard@31#0/0#0`, Eye Care `Root>Frame Card@325#0/0#0`), so border, radius, shadow and parts are lost and `variantStyle` comes from the first item; the card, buy-box and account option rules (`showPickers`, `showLadder`, `showShadow`, `showCta`) live only in `part-look.mjs`, which writes scratch copies only and is never part of a run; the buy-box layout (configurator) is never chosen from the draft (13 settings against about 100 hand-built); shop filter chips (no `woocommerce/product-filters` wrapper; the filter block has no look); the catalogue chain (restore `ca6cc7ca5` then `463bd4d9a` then `23a3b93cb`, the catalogue part of `be77be626`, `a3e7fc27e`; `62d4707f5` may fix the pick-up-to-3 limit); forms: card and field paint dropped (`formSteps` host-unread), focus looks judged on the field though `sgs/form` holds `fieldFocus*`, conditional fields break field pairing, Indus step layout, form prefill (lost `1294b5ae3`).
-- **Fix:** the card's `draftRef` is the component root; the part-look mode rules move into Fill's output; the buy-box layout and picker styles are chosen from what the draft draws; the filter wrapper is written and the filter blocks get looks; the restores; field state looks resolve through the parent form; fields pair by visible rest-state field.
+- **Instances:** the product card is paired with the loop cell, not the card component's root (`commerceRegion`; Mama's `Root/30#0` against `Root>ProductCard@31#0/0#0`, Eye Care `Root>Frame Card@325#0/0#0`), so border, radius, shadow and parts are lost and `variantStyle` comes from the first item; the card, buy-box and account option rules (`showPickers`, `showLadder`, `showShadow`, `showCta`) live only in `part-look.mjs`, which writes scratch copies only and is never part of a run; shop filter chips (no `woocommerce/product-filters` wrapper; the filter block has no look); the catalogue chain (restore `ca6cc7ca5` then `463bd4d9a` then `23a3b93cb`, the catalogue part of `be77be626`, `a3e7fc27e`; `62d4707f5` may fix the pick-up-to-3 limit); forms: card and field paint dropped (`formSteps` host-unread), focus looks judged on the field though `sgs/form` holds `fieldFocus*`, conditional fields break field pairing, Indus step layout, form prefill (lost `1294b5ae3`).
+- **Fix:** the card's `draftRef` is the component root; the part-look mode rules move into Fill's output; the filter wrapper is written and the filter blocks get looks; the restores; field state looks resolve through the parent form; fields pair by visible rest-state field.
 - **Guard:** propose fails when a written block's `draftRef` is a layout cell (not a painted box or component root); no written block keeps unpaired parts.
 
 ### RF8. Foundation and run plumbing
@@ -102,7 +117,6 @@ Bean's rule: before building, find the design that once worked and restore or ad
 | Forms, modals, flows cloned after pages | Pages already link them by reference (`formIsLinked`, `formId`, `flowId`; FR-48-57); move them before pages in the run, like the header and footer (Bean) | Order |
 | Product card paired with the loop cell | `commerceRegion` adds a `card` field for the mounted component root (keep `item`); no `variantStyle` on a template card; related cards take the same look | Never worked through Fill |
 | Card, buy-box, account options (`showPickers` and the rest) | `part-look.mjs` becomes a run stage after the shop-role builds, as the shop track ran it (`chain-pl.sh`); its strict verify must pass; no shop is done without it | Never wired |
-| Buy-box configurator layout | New part-look rules for `buyboxLayout`, `pickGroupNumbers`, `pickGroupHeadings`, `groupStyles` (MERGED F-51; deferred in the shop plan's Task 11) | Specified, not built |
 | Shop filter chips without their wrapper | `categoryFilter` (`913dadb49`) wraps the taxonomy filter in `woocommerce/product-filters` with `overlayMode: off` | Regression |
 | Cart template kind `layout`; order heading `level: 1` | The shop track's own bugs (`beab1574b`, `d4de9c1af`), caught by RF2's contract test | Regression |
 | Eye Care shop shows test products | The catalogue step (or `strip`) hides existing fixture products | Gap |
