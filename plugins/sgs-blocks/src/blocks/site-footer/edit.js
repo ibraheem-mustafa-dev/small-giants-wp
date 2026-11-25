@@ -22,6 +22,10 @@ import {
 	MIN_HEIGHT_OPTIONS,
 } from '../container/components/ContainerWrapperControls';
 import {
+	ShapeDividerPreviews,
+	shapeDividerClassName,
+} from '../../components/ShapeDividerPreview';
+import {
 	ResponsiveBoxControl,
 	ResponsiveOverride,
 	BOX_UNITS,
@@ -269,6 +273,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 			bgPreview.className,
 			section.className,
 			...svgPreview.className,
+			shapeDividerClassName( attributes ),
 		]
 			.filter( Boolean )
 			.join( ' ' ),
@@ -753,6 +758,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						overlay={ bgPreview.overlay }
 					/>
 					{ svgLayer }
+					<ShapeDividerPreviews attributes={ attributes } />
 					<div { ...innerBlocksProps } />
 				</div>
 			) : (
@@ -762,6 +768,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						overlay={ bgPreview.overlay }
 					/>
 					{ svgLayer }
+					<ShapeDividerPreviews attributes={ attributes } />
 					{ innerBlocksProps.children }
 				</div>
 			) }

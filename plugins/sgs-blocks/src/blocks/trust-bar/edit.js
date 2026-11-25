@@ -86,6 +86,10 @@ import {
 	ShapeDividersPanel,
 	MIN_HEIGHT_OPTIONS,
 } from '../container/components/ContainerWrapperControls';
+import {
+	ShapeDividerPreviews,
+	shapeDividerClassName,
+} from '../../components/ShapeDividerPreview';
 import { RICH_TEXT_BODY } from '../../utils/rich-text-formats';
 import { cssLengthValue } from '../../utils/css-length';
 // GridItemDefaultsPanel deliberately NOT imported — see the withdrawal note
@@ -679,7 +683,11 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	);
 
 	const blockProps = useBlockProps( {
-		className: [ blockClassName, section.className ]
+		className: [
+			blockClassName,
+			section.className,
+			shapeDividerClassName( attributes ),
+		]
 			.filter( Boolean )
 			.join( ' ' ),
 		...( marqueeActive
@@ -1964,6 +1972,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						overlay={ bgPreview.overlay }
 					/>
 					{ svgLayer }
+					<ShapeDividerPreviews attributes={ attributes } />
 
 					{ /* Optional title (text-only + image-badge variants) */ }
 					{ ( badgeStyle === 'text-only' ||
