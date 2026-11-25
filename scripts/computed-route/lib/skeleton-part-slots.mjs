@@ -101,8 +101,10 @@ export function partSlots( { db, block, cal, part, opener, m, finder, named = []
 		return { ...n, at, slot: null === at ? null : settingSlots.find( ( p ) => LOOSE( p ) === at ) };
 	} ).filter( ( n ) => n.slot );
 	roles.filter( ( n ) => n.element ).forEach( ( n ) => ( out.slots[ n.slot ] = finder( n.element ) ) );
-	for ( const p of paths ) {
-		const plain = p.replace( PSEUDO, '' );
+	// A pseudo-element layer is read from its element (Fill refuses a slot that names the layer, lib/fill-skeleton.mjs::skeletonProblems):
+	// each calibrated path is walked once, at the element its plain path names, so a layer's settings are read there.
+	for ( const p of new Set( paths.map( ( x ) => x.replace( PSEUDO, '' ) ) ) ) {
+		const plain = p;
 		const role = roles.find( ( n ) => LOOSE( plain ) === n.at || LOOSE( plain ).startsWith( `${ n.at } > ` ) );
 		if ( role ) {
 			// The role's own slot (and its pseudo-element layers) is read at the role's element; a path under it is walked from there.
