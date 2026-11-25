@@ -219,7 +219,7 @@ export function decisionsProblems( facts ) {
 	( r.surfaceRoot?.entries || [] ).forEach( ( x, i ) => specs0.push( [ `rules.surfaceRoot[${ i }]`, { patterns: [ x.namePattern ], flags: 'i' } ] ) );
 	const specs = [ ...specs0, ...( d.briefOnlyLines || [] ).map( ( s ) => [ `briefOnlyLines.${ s.id }`, s ] ), ...Object.entries( d.siteInfoPatterns || {} ).map( ( [ k, s ] ) => [ `siteInfoPatterns.${ k }`, s ] ), [ 'addressLinkPatterns', d.addressLinkPatterns ], [ 'logoImage', d.logoImage ],
 		...( r.decorationDelivered?.kinds || [] ).map( ( k ) => [ `rules.decorationDelivered.${ k.id }`, k ] ),
-		...[ 'typedDivider', 'homeLink', 'backToTop', 'mapEmbed', 'openStatus' ].map( ( k ) => [ `rules.${ k }`, r[ k ] ] ), [ 'rules.backToTop.handlers', r.backToTop?.handlers ], [ 'rules.navigation.briefOnlyEntry', r.navigation?.briefOnlyEntry ] ];
+		...[ 'typedDivider', 'homeLink', 'backToTop', 'mapEmbed' ].map( ( k ) => [ `rules.${ k }`, r[ k ] ] ), [ 'rules.backToTop.handlers', r.backToTop?.handlers ], [ 'rules.navigation.briefOnlyEntry', r.navigation?.briefOnlyEntry ] ];
 	for ( const [ where, spec ] of specs ) {
 		try {
 			rxList( spec );

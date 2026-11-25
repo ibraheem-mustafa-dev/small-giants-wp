@@ -7,6 +7,7 @@ import { blockMediaSlots } from './media/slots.mjs';
 import { itemSource } from './media/write.mjs';
 import { LOGO_HANDOVER } from './skeleton-write-units.mjs';
 import { elementHandler, handlerOf, linkWrite } from './draft-link.mjs';
+import { makeClock, timeTextRanges } from './skeleton-clock.mjs';
 import fs from 'fs';
 import path from 'path';
 import { decodeEntities, loadDraft } from './intake-ast.mjs';
@@ -81,6 +82,16 @@ export function makeContent( ctx ) {
 	const tokens = draftTokenLookup( handoffOf( facts ) );
 	const declared = ( e ) => declaredRaw( e, tokens );
 	const attrExists = ( slug, name ) => !! facts.attr( slug, name );
+	const clock = makeClock( { facts, view, read: { textHoles: ( e ) => ( view.entry( e )?.template?.holes ?? [] ).filter( ( h ) => 'text' === h.where ) } } );
+	// The time-based text option of a text block whose words the draft's code picks by the hour of the clock
+	// (lib/skeleton-clock.mjs, rules.timeText): the hour ranges with their words, and the time zone when the code names one.
+	// {} when the element's words are no such value or the block does not take the option (the framework DB).
+	const timeTextAttrs = ( block, e ) => {
+		const T = facts.decisions.rules?.timeText;
+		const c = T?.attribute && attrExists( block, T.attribute ) ? clock( e ) : null;
+		const ranges = c && ! c.openStatus ? timeTextRanges( c ) : null;
+		return ranges ? { [ T.attribute ]: ranges, ...( c.zone && T.zoneAttribute && attrExists( block, T.zoneAttribute ) ? { [ T.zoneAttribute ]: c.zone } : {} ) } : {};
+	};
 	const layoutOf = ( slug, e ) => {
 		const opts = attrExists( slug, 'layout' ) ? enumOf( slug, 'layout' ) || [] : [];
 		const want = 'flex' === e.display && 'column' === e.flexDirection && opts.includes( 'stack' ) ? 'stack' : e.display;
@@ -355,6 +366,7 @@ export function makeContent( ctx ) {
 			return { a: { ...a, ...( top.attributes || {} ) }, handover };
 		}
 		textAttr && t && ( a[ textAttr ] = m.textWithBreaks( e ).includes( '<br>' ) ? m.textWithBreaks( e ) : t );
+		textAttr && t && Object.assign( a, timeTextAttrs( block, e ) );
 		// A wordless element with no block inside it writes its text setting empty, so the block's default words never print. Only
 		// a leaf block (the element is its text: button, heading, label) is that element's words: a composite block's first text
 		// setting is another part's (sgs/cart's `panelHeading`), which a wordless trigger says nothing about.

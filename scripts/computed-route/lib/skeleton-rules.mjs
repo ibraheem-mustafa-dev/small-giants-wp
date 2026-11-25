@@ -31,6 +31,7 @@ import { blockPartSurfaces } from './skeleton-surface-role.mjs';
 import { handlerOpens, handlerCloses, opensOn } from './skeleton-handler-opens.mjs';
 import { makeFieldGroups } from './skeleton-field-groups.mjs';
 import { widgetModel } from './skeleton-widgets.mjs';
+import { makeClock } from './skeleton-clock.mjs';
 import { keptSvg, lucideNearest, statedSvgSize } from './fill-icon.mjs';
 import { draftTokenLookup, handoffOf, resolvedOrRaw } from './draft-tokens.mjs';
 import { heroSplitOrder, heroMediaAlignment } from './skeleton-hero-order.mjs';
@@ -267,6 +268,17 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		return E && char && ( facts.enumOf?.( block, E.sourceSetting ) || [] ).includes( E.source ) ? { [ E.sourceSetting ]: E.source, [ char ]: glyph } : {};
 	};
 	const desc = ( e ) => m.blockKids( e ).flatMap( ( k ) => [ k, ...desc( k ) ] );
+	// A live open or closed line, read from the draft's code (lib/skeleton-clock.mjs), never from the words a read showed: the
+	// element's own text is a value the clock decides by the opening hours the code holds, or it has no words of its own and
+	// every worded piece inside it is such a line.
+	const clock = makeClock( { facts, view, read: { textHoles: ( e ) => ( view.entry( e )?.template?.holes ?? [] ).filter( ( h ) => 'text' === h.where ) } } );
+	const openLine = ( x ) => {
+		if ( clock( x )?.openStatus ) {
+			return true;
+		}
+		const worded = desc( x ).filter( ( y ) => m.words( y ) );
+		return ! m.words( x ) && worded.length > 0 && worded.every( ( y ) => clock( y )?.openStatus );
+	};
 	const handlerOf = ( e ) => /sc-camel-on-click="\{\{\s*([^}\s]+)\s*\}\}"/.exec( e.snippet || '' )?.[ 1 ] || '';
 	// A control the visitor operates: a button, anything with a click handler, a pressed or expanded state. It is never
 	// static text (a label, a heading, a card title).
@@ -773,13 +785,13 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		( { e } ) => ( 'iframe' === e.tag && specHit( R.mapEmbed, srcOf( e ) ) ? v( 'mapEmbed', { block: R.mapEmbed?.block, attributes: { displayType: 'map' }, absorb: true, handover: { owner: 'site-info', kind: 'presence', detail: R.mapEmbed.handover } } ) : null ),
 		// A live open or closed line; a second line beside the first is part of the same display.
 		( { e, text } ) => {
-			if ( ! specHit( R.openStatus, text ) || desc( e ).length > 2 ) {
+			if ( ! openLine( e ) || desc( e ).length > 2 ) {
 				return null;
 			}
 			// An earlier open-status line within the same block (up to two levels up, as a sibling or a cousin) holds it.
 			const scope = m.byKey[ m.byKey[ e.parentKey ]?.parentKey ] || m.byKey[ e.parentKey ];
 			const order = m.els.indexOf( e );
-			const first = scope ? desc( scope ).find( ( x ) => m.els.indexOf( x ) < order && specHit( R.openStatus, all( x ) ) && desc( x ).length <= 2 ) : null;
+			const first = scope ? desc( scope ).find( ( x ) => m.els.indexOf( x ) < order && openLine( x ) && desc( x ).length <= 2 ) : null;
 			return first ? v( 'openStatus', { action: 'absorbed', into: first.key } ) : v( 'openStatus', { block: R.openStatus?.block, attributes: { displayType: 'open-status' }, absorb: true } );
 		},
 		// An hours row: a few pieces of text (a day, its times) and nothing nested, reading as a day and a clock time. The
@@ -1183,7 +1195,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	};
 
 	// A business detail (an open status, opening hours or a Site Info value) has a rule of its own: it is never a trust badge.
-	const businessDetail = ( k ) => !! specHit( R.openStatus, all( k ) ) || !! specHit( facts.decisions.siteInfoPatterns?.hours, all( k ) ) || hooks.siteInfoKinds( k ).size > 0;
+	const businessDetail = ( k ) => openLine( k ) || !! specHit( facts.decisions.siteInfoPatterns?.hours, all( k ) ) || hooks.siteInfoKinds( k ).size > 0;
 	// Whether an element of a header surface sits in a strip above or below its main bar: the element under the outermost one
 	// on its way up (a child of the header's root, or of a strip root read beside the header) holds no navigation and no logo
 	// (the main bar holds those: lib/skeleton-write-slots.mjs::holdsMain).
