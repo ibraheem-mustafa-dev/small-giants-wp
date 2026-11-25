@@ -70,7 +70,7 @@ const run = ( t = tree(), o = {} ) => {
 	const absorbed = [];
 	const notes = [];
 	const out = formStepNodes( t, { factRecord: o.record || RECORD(), surfaceKind: 'form', rules: o.rules || RULES, has, draftOf: ( n ) => n.d || null, absorb: ( n, reason, role ) => absorbed.push( { n, reason, role } ), note: ( x ) => notes.push( x ) } );
-	return { out, form: out[ 0 ], steps: out[ 0 ].innerBlocks.filter( ( n ) => 'sgs/form-step' === n.name ), absorbed, notes };
+	return { out, form: out[ 0 ], steps: out[ 0 ].innerBlocks.filter( ( n ) => 'sgs/form-step' === n.name && ! n.innerBlocks.some( ( k ) => 'sgs/form-review' === k.name ) ), reviewStep: out[ 0 ].innerBlocks.find( ( n ) => 'sgs/form-step' === n.name && n.innerBlocks.some( ( k ) => 'sgs/form-review' === k.name ) ), absorbed, notes };
 };
 const names = ( list ) => list.map( ( n ) => n.name );
 const all = ( list, out = [] ) => {
@@ -82,9 +82,12 @@ const all = ( list, out = [] ) => {
 };
 
 test( 'a multi-step schema becomes steps and a review under the form, labels from the draft, before what follows the form', () => {
-	const { form, steps } = run();
-	assert.deepEqual( names( form.innerBlocks ).slice( 0, 4 ), [ 'sgs/text', 'sgs/form-step', 'sgs/form-step', 'sgs/form-review' ], 'the steps go where the first field sat, after what came before it' );
+	const { form, steps, reviewStep } = run();
+	assert.deepEqual( names( form.innerBlocks ).slice( 0, 4 ), [ 'sgs/text', 'sgs/form-step', 'sgs/form-step', 'sgs/form-step' ], 'the steps go where the first field sat, after what came before it' );
 	assert.deepEqual( steps.map( ( n ) => n.attributes.label ), [ 'Your business', 'How you order' ] );
+	// RF7: the review is a step of its own holding the review block (the form's script finds it inside the current step), never a sibling of the steps.
+	assert.deepEqual( names( reviewStep.innerBlocks ), [ 'sgs/form-review' ] );
+	assert.equal( form.innerBlocks.filter( ( n ) => 'sgs/form-review' === n.name ).length, 0, 'no review beside the steps' );
 	assert.equal( form.innerBlocks.at( -1 ).attributes.label, 'Call us', 'what follows the form stays after the steps' );
 	const outside = all( form.innerBlocks.filter( ( n ) => 'sgs/form-step' !== n.name ) );
 	assert.ok( ! outside.some( ( n ) => 'sgs/container' === n.name && ! n.innerBlocks.length ), 'a wrapper the move empties goes' );
@@ -183,7 +186,7 @@ test( 'NEGATIVE chrome: a count of another total, a button that leaves the form,
 test( 'a form node is made when the root is not one; nothing changes for a single-step schema, a non-form surface, no schema, or a form that already has steps', () => {
 	const out = formStepNodes( [ nd( 'sgs/container', {}, [ nd( 'sgs/form-field-text', { label: 'Trading name' }, [], null, '#a' ) ] ) ], { factRecord: RECORD(), surfaceKind: 'form', rules: RULES, has } );
 	assert.equal( out[ 0 ].name, 'sgs/form' );
-	assert.deepEqual( names( out[ 0 ].innerBlocks ), [ 'sgs/form-step', 'sgs/form-step', 'sgs/form-review' ] );
+	assert.deepEqual( names( out[ 0 ].innerBlocks ), [ 'sgs/form-step', 'sgs/form-step', 'sgs/form-step' ] );
 	const one = RECORD( [ SCHEMA()[ 0 ] ] );
 	for ( const args of [ { factRecord: one, surfaceKind: 'form' }, { factRecord: RECORD(), surfaceKind: 'page' }, { factRecord: null, surfaceKind: 'form' } ] ) {
 		assert.equal( JSON.stringify( formStepNodes( tree(), { ...args, rules: RULES, has } ) ), JSON.stringify( tree() ) );

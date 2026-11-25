@@ -1269,7 +1269,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		},
 		// A WooCommerce page's commerce region is WooCommerce's working piece, an ordinary block that draws the region
 		// itself (rules.commerceRegion): the region's children are absorbed into it.
-		( { e } ) => ( region?.key === e.key ? v( 'commerceRegion', { block: region.block, absorb: true, attributes: region.attributes, inner: region.inner, item: region.item?.key ?? null, reason: region.reason } ) : null ),
+		( { e } ) => ( region?.key === e.key ? v( 'commerceRegion', { block: region.block, absorb: true, attributes: region.attributes, inner: region.inner, item: region.item?.key ?? null, card: region.card?.key ?? region.item?.key ?? null, reason: region.reason } ) : null ),
 		// The shop's filter rail is the framework's working filter (rules.filterRail): the rail's children are absorbed into it.
 		( { e } ) => ( rail?.key === e.key ? v( 'filterRail', { block: R.filterRail.block, absorb: true, attributes: rail.attributes, inner: rail.inner, reason: rail.reason, ...( rail.ownAlternativeBelow ? { ownAlternativeBelow: rail.ownAlternativeBelow } : {} ) } ) : null ),
 		// A tile of a priced loop naming a catalogue product, on a page that is not the shop, is the site's product card bound

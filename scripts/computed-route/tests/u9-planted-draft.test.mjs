@@ -58,7 +58,7 @@ const TREE = [ { name: 'sgs/form', attributes: {}, innerBlocks: [
 		{ name: 'sgs/form-field-file', draftRef: FIELD( 'ta-docs' ), attributes: {} },
 		{ name: 'sgs/button', draftRef: '#go', attributes: {} },
 	] },
-	{ name: 'sgs/form-review', attributes: {}, innerBlocks: [] },
+	{ name: 'sgs/form-step', attributes: {}, innerBlocks: [ { name: 'sgs/form-review', attributes: {}, innerBlocks: [] } ] },
 ] } ];
 
 // The planted fact record: the draft's logic holds a schema (steps, fields, a review step), a link elsewhere hands a page

@@ -244,7 +244,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		// A row of chips that is the shop's category filter (rules.optionSetFilter.categoryFilter) draws that filter's own inner block.
 		'optionSetFilter' === r.rule && r.inner && ( node.innerBlocks = r.inner.map( ( n ) => ( { name: n.name, attributes: { ...( n.attributes || {} ) }, innerBlocks: [] } ) ) );
 		if ( 'commerceRegion' === r.rule && r.inner ) {
-			const item = r.item ? m.byKey[ r.item ] : null;
+			const item = r.card ? m.byKey[ r.card ] : r.item ? m.byKey[ r.item ] : null;
 			const copy = ( n ) => ( { name: n.name, attributes: { ...( n.attributes || {} ) }, innerBlocks: ( n.innerBlocks || [] ).map( copy ) } );
 			const read = ( n ) => ( 'sgs/' === n.name.slice( 0, 4 ) && item ? { ...n, draftRef: finder( item ), draftFingerprint: m.fingerprint( item ) } : n );
 			const mark = ( n ) => read( { ...n, innerBlocks: n.innerBlocks.map( mark ) } );

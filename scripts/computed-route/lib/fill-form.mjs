@@ -258,7 +258,7 @@ export function formWrites( { nodes, flat, refOf, reads, facts, flags = [], db, 
 	const params = linkParams( facts );
 	const conditions = schema ? conditionsFromSource( sources[ schema.component ] ) : {};
 	const copies = Object.fromEntries( Object.entries( sources ).map( ( [ c, src ] ) => [ c, requiredCopyOf( src ) ] ) );
-	const steps = schema ? schema.steps.filter( ( s ) => s.fields.length ) : [];
+	const steps = schema ? schema.steps : [];
 	const review = schema ? schema.steps.find( ( s ) => ! s.fields.length ) : null;
 	let stepNo = 0;
 	for ( const rec of nodes ) {
