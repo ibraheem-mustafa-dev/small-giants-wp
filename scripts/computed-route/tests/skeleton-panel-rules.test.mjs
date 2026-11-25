@@ -645,6 +645,32 @@ test( 'NEGATIVE megaGroup.headedRun: a label over a gallery of picture links, a 
 	assert.equal( firstColumn( direct, { facts: facts( 'megaGroup.headedRun' ) } ).rule, 'megaGroup', 'and needs no headedRun entry' );
 } );
 
+// A column title set in capitals: with a run of text links below it (directly, or one wrapper down) it is the column's heading,
+// the same reading as megaGroup.headedRun; a kicker over more text stays a label.
+const capsTitle = ( words ) => N( 'p', { words, style: 'text-transform:uppercase' } );
+const blockOf = ( col, words ) => byWords( run( headedPanel( col ), { kind: 'menu', name: 'Panel', surfaces: header, openers: OPEN } ), words )?.block;
+
+test( 'column title: a caps title over one wrapper holding a run of text links is a heading, like a direct run; MUST FAIL on the direct-siblings-only reading', () => {
+	const wrapped = headedCol( [ capsTitle( 'By style' ), linkLoop() ] );
+	assert.equal( firstColumn( wrapped ).rule, 'megaGroup', 'the panel rule takes the column as a group' );
+	assert.equal( blockOf( wrapped, 'By style' ), 'sgs/heading', 'so its title is the heading of the group' );
+	const direct = headedCol( [ capsTitle( 'Shop by' ), N( 'a', { words: 'One', attrs: { href: '/one' } } ), N( 'a', { words: 'Two', attrs: { href: '/two' } } ) ] );
+	assert.equal( blockOf( direct, 'Shop by' ), 'sgs/heading', 'direct sibling links: unchanged' );
+	const inWrapper = headedCol( [ N( 'div', {}, [ capsTitle( 'Help' ), linkLoop() ] ) ] );
+	assert.equal( blockOf( inWrapper, 'Help' ), 'sgs/heading', 'the heading and the run together inside one wrapper' );
+} );
+
+test( 'NEGATIVE column title: a caps kicker over text, a title over a picture gallery, a title with its run two wrappers below and a lone link stay labels', () => {
+	const kicker = headedCol( [ capsTitle( 'Single vision' ), N( 'p', { words: 'From 99' } ), N( 'p', { words: 'One pair of lenses' } ) ] );
+	assert.equal( blockOf( kicker, 'Single vision' ), 'sgs/label', 'a kicker followed by text lines is a kicker' );
+	const gallery = headedCol( [ capsTitle( 'Gallery' ), N( 'div', { style: 'display:grid' }, [ N( 'a', { loop: true, attrs: { href: '/b' } }, [ N( 'img', { attrs: { src: 'a.png', alt: '' } } ) ] ) ] ) ] );
+	assert.equal( blockOf( gallery, 'Gallery' ), 'sgs/label' );
+	const deep = headedCol( [ capsTitle( 'Deep' ), N( 'div', {}, [ N( 'div', {}, [ linkLoop() ] ) ] ) ] );
+	assert.equal( blockOf( deep, 'Deep' ), 'sgs/label', 'a run two wrappers below the title is out of reach of both readings' );
+	const lone = headedCol( [ capsTitle( 'Only' ), N( 'div', {}, [ N( 'a', { words: 'One', attrs: { href: '/one' } } ) ] ) ] );
+	assert.equal( blockOf( lone, 'Only' ), 'sgs/label', 'one link is no run' );
+} );
+
 // Columns of a panel row whose grid is an auto-fit or auto-fill repeat, a loop of text cards, a painted hairline row and a sole
 // column behind a width cap.
 const AUTO = 'display:grid;grid-template-columns:repeat(auto-fit, minmax(min(100%, 200px), 1fr))';

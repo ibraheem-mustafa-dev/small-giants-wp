@@ -10,6 +10,32 @@ import { gridTracks, trackAt, sharesSpace, fixedTrack } from './skeleton-record.
 const UNSET = new Set( [ '', 'initial', 'unset', 'inherit', 'auto', 'none' ] );
 const grows = ( v ) => /^[\d.]+$/.test( String( v ?? '' ).trim() ) && Number( v ) > 0;
 
+// Whether a column is a heading over a run of text links: a leaf of words that is not a link, then (at most one plain
+// wrapper down, `cfg.maxWrappers`, the decisions' `rules.megaGroup.headedRun`) an element holding a run of links that each
+// carry words and no block of their own. Under a heading two or more text links are a run whatever their styles (one link
+// in the stack may be coloured or bold: `linkRun` wants one style). A gallery of picture links, a grid of cards and a promo
+// are not (their links hold pictures or blocks). The classifier's column-title check (lib/skeleton-classify.mjs) reads the
+// same function, so a title the panel rule takes as the head of a column is also a heading, never a label. Returns
+// ( column ) => boolean; false throughout without a record view or without the rule's entry.
+export function headedRunOf( { m, view, cfg } ) {
+	return ( e ) => {
+		if ( ! cfg || ! view ) {
+			return false;
+		}
+		const label = ( k ) => view.has( k ) && 'a' !== k.tag && !! m.words( k ) && ! m.blockKids( k ).length;
+		const textRun = ( k ) => view.has( k ) && ! view.repeated( k ) && ( view.linkRun( k ) || m.blockKids( k ).length >= 2 ) && m.blockKids( k ).every( ( l ) => m.isTextLink( l ) );
+		const parts = ( x, wrappers ) => {
+			const kids = m.blockKids( x );
+			if ( kids.some( ( k, i ) => textRun( k ) && kids.slice( 0, i ).some( label ) ) ) {
+				return true;
+			}
+			const only = 1 === kids.length ? kids[ 0 ] : null;
+			return wrappers < ( cfg.maxWrappers ?? 1 ) && !! only && view.has( only ) && ! view.repeated( only ) && 'a' !== only.tag && ! m.words( only ) && ! view.ownPaint( only ) && parts( only, wrappers + 1 );
+		};
+		return parts( e, 0 );
+	};
+}
+
 // o: { m (lib/skeleton-model.mjs), view (lib/skeleton-record.mjs::recordView), scope (surfaceContext, or null), R (the
 // decisions `rules`), facts, surface: { kind }, declared (lib/skeleton-rules.mjs::declared) }.
 export function makePanelRules( { m, view, scope, R, facts, surface = {}, declared } ) {
@@ -35,27 +61,7 @@ export function makePanelRules( { m, view, scope, R, facts, surface = {}, declar
 		return { grows: sharesSpace( at ), fixed: ratio || ( !! at.track && fixedTrack( at.track ) ) };
 	};
 
-	// Whether a column is a heading over a run of text links: a leaf of words that is not a link, then (at most one plain
-	// wrapper down, `R.megaGroup.headedRun.maxWrappers`) an element holding a run of links that each carry words and no block
-	// of their own. Under a heading two or more
-	// text links are a run whatever their styles (one link in the stack may be coloured or bold: `linkRun` wants one style). A gallery of picture links, a grid of cards and a promo are not (their links hold pictures or blocks).
-	const headedRun = ( e ) => {
-		const cfg = R.megaGroup?.headedRun;
-		if ( ! cfg ) {
-			return false;
-		}
-		const label = ( k ) => view.has( k ) && 'a' !== k.tag && !! m.words( k ) && ! m.blockKids( k ).length;
-		const textRun = ( k ) => view.has( k ) && ! view.repeated( k ) && ( view.linkRun( k ) || m.blockKids( k ).length >= 2 ) && m.blockKids( k ).every( ( l ) => m.isTextLink( l ) );
-		const parts = ( x, wrappers ) => {
-			const kids = m.blockKids( x );
-			if ( kids.some( ( k, i ) => textRun( k ) && kids.slice( 0, i ).some( label ) ) ) {
-				return true;
-			}
-			const only = 1 === kids.length ? kids[ 0 ] : null;
-			return wrappers < ( cfg.maxWrappers ?? 1 ) && !! only && view.has( only ) && ! view.repeated( only ) && 'a' !== only.tag && ! m.words( only ) && ! view.ownPaint( only ) && parts( only, wrappers + 1 );
-		};
-		return parts( e, 0 );
-	};
+	const headedRun = headedRunOf( { m, view, cfg: R.megaGroup?.headedRun } );
 
 	// Whether a column is a stack of text and no more: two or more block children (`R.megaGroup.textColumn.minLeaves`), each a
 	// leaf of words that is not a link and holds no block (no picture or link inside; an inline icon is a part of the block). A column that heads an item (a

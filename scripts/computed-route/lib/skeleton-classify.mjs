@@ -6,6 +6,7 @@
 import { brandOwnsAddress } from './brand-registry.mjs';
 import { specHit } from './skeleton-facts.mjs';
 import { makeRules } from './skeleton-rules.mjs';
+import { headedRunOf } from './skeleton-panel-rules.mjs';
 
 export const W = { tag: 0.5, composition: 0.35, capability: 0.25, structure: 0.4, siteInfo: 0.3, pattern: 0.5, decision: 1, logo: 0.5, rule: 1 };
 
@@ -109,9 +110,14 @@ export function makeClassifier( { m, facts, overrides, surface = {}, blockOfKey 
 	};
 
 	const briefOnly = ( e ) => ( decisions.briefOnlyLines || [] ).find( ( d ) => specHit( d, m.words( e ) ) ) || null;
+	// A column title: the first leaf of words in a column, followed by a run of text links, either its own direct siblings or
+	// one wrapper's children (the same reading as the panel rule's headedRun, lib/skeleton-panel-rules.mjs, so a title the
+	// panel rule takes as a column's head is a heading and never a label).
+	const headedRun = headedRunOf( { m, view, cfg: facts.decisions.rules?.megaGroup?.headedRun } );
 	const isColumnLabel = ( e ) => {
-		const sibs = m.blockKids( m.byKey[ e.parentKey ] || { key: null } );
-		return !! m.words( e ) && 'a' !== e.tag && ! m.blockKids( e ).length && sibs[ 0 ] === e && sibs.slice( 1 ).filter( m.isTextLink ).length >= minLinks;
+		const parent = m.byKey[ e.parentKey ] || { key: null };
+		const sibs = m.blockKids( parent );
+		return !! m.words( e ) && 'a' !== e.tag && ! m.blockKids( e ).length && sibs[ 0 ] === e && ( sibs.slice( 1 ).filter( m.isTextLink ).length >= minLinks || ( !! parent.key && headedRun( parent ) ) );
 	};
 
 	const rules = makeRules( { m, facts, surface, motion, view, scope, hooks: { siteInfoKinds, isColumnLabel, blockOfKey, formLinkOf, siteLink, unwrapReads, absorbInto, overlayInto, topBlock: ( k ) => classify( k, null ).candidates[ 0 ]?.block, brandOf: ( k ) => brandFor( k )[ 0 ]?.brand?.slug ?? null } } );
