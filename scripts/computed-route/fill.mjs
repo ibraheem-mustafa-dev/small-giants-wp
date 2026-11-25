@@ -51,6 +51,8 @@ import { draftCssOf, templateOf } from './lib/fill-behaviour.mjs';
 import { groupBindings, noFactsWarning } from './lib/fill-binding-group.mjs';
 import { factsFile, loadFacts } from './lib/fact-record.mjs';
 import { currentItemGroups } from './lib/fill-current-item.mjs';
+import { currentAttrKeys } from './lib/fill-current-attr.mjs';
+import { scrimWrites } from './lib/fill-scrim.mjs';
 import { widthGateWrites, maskHiddenVariants, draftThresholds } from './lib/fill-width-gate.mjs';
 import { pictureBoxReads } from './lib/fill-picture-box.mjs';
 import { sumAbsorbedPadding } from './lib/fill-absorbed.mjs';
@@ -214,6 +216,8 @@ export async function fillSurface( o ) {
 		// The entry draft's component and the draft defects intake lists (the served root host is named `Root`, the fact record names it after the component).
 		const intakeParts = animationInventory( buildDir, draftIndexOf( o, entry ), log );
 		const currentGroups = facts ? currentItemGroups( facts, intakeParts.rootComponent ) : [];
+		// Aria-current bound as an attribute on a component's items: read on the draft's other pages (lib/fill-current-attr.mjs).
+		const currentAttr = { keys: facts ? currentAttrKeys( facts ) : [], pages: facts ? [ ...new Set( ( facts.pages || [] ).map( ( p ) => p.route ) ) ] : [], rootComponent: intakeParts.rootComponent };
 		// A drawer or mega-menu panel exists only while its draft state holds: the opener (lib/fill-open.mjs) names the state
 		// from the surface's handoff record, and a route-mounted component is read on its own route. Null for any other surface.
 		const intakeData = fs.existsSync( intakeFile ) ? JSON.parse( fs.readFileSync( intakeFile, 'utf8' ) ) : null;
@@ -234,7 +238,7 @@ export async function fillSurface( o ) {
 		// from it) and the place of each slot's draft element (a part drawn outside its block's).
 		const invFile = o.skeleton.replace( /\.skeleton\.json$/, '.inventory.json' );
 		const inventory = invFile !== o.skeleton && fs.existsSync( invFile ) ? JSON.parse( fs.readFileSync( invFile, 'utf8' ) ) : null;
-		const reads = await readDraft( { url: readUrl, nodes, open: o.open || null, opener, branches: branchesShown( inventory ), headless: o.headless ?? true, sweep: o.sweep ?? true, external: !! o.external, mirror: o.mirror || {}, states: vocab.rows, logicRows, currentGroups, log } );
+		const reads = await readDraft( { url: readUrl, nodes, open: o.open || null, opener, branches: branchesShown( inventory ), headless: o.headless ?? true, sweep: o.sweep ?? true, external: !! o.external, mirror: o.mirror || {}, states: vocab.rows, logicRows, currentGroups, currentAttr, log } );
 		// FR-48-69: a state declaration the draft never paints (intake.json `draftDefects`) is built from the code value, as a code look.
 		maskHiddenVariants( reads, nodes, facts, intakeParts.rootComponent );
 		// A picture the draft paints as a box's background is read at the block's picture part, its size and position as fit and focal.
@@ -350,6 +354,12 @@ export async function fillSurface( o ) {
 		result.writes.push( ...columns.writes );
 		result.unmapped.push( ...columns.unmapped );
 		result.notes.push( ...columns.notes );
+		// FR-48-8: the draft's backdrop beside its drawers, written to the scrim settings of the drawers and the basket panel (lib/fill-scrim.mjs).
+		const scrimBlocks = new Set( db.prepare( "SELECT DISTINCT block_slug FROM block_attributes WHERE css_element = 'scrim' AND attr_name = 'scrimColour'" ).all().map( ( r ) => r.block_slug ) );
+		const scrim = scrimWrites( { nodes, flat, refOf, facts, scrimBlocks, defaultOf: ( b, a ) => JSON.parse( db.prepare( 'SELECT default_value FROM block_attributes WHERE block_slug = ? AND attr_name = ?' ).get( b, a )?.default_value ?? 'null' ) } );
+		result.writes.push( ...scrim.writes );
+		result.unmapped.push( ...scrim.unmapped );
+		result.notes.push( ...scrim.notes );
 		// FR-48-8: the draft's scrollbar colours, written to the theme's scrollbar tokens (the same snapshot patch).
 		const bars = scrollbarPatch( { nodes, flat, refOf, reads, snapshot, site: rawSnapshot?.settings?.custom?.scrollbar } );
 		states.patch = mergePatch( states.patch, bars.patch );

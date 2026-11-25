@@ -1,0 +1,358 @@
+{
+ "surfaces": {
+  "S-01": {
+   "id": "S-01",
+   "kind": "header",
+   "dc": "SiteHeader",
+   "roots": [
+    "SiteHeader/13"
+   ],
+   "parts": [
+    {
+     "id": "S-02",
+     "kind": "drawer",
+     "roots": [
+      "SiteHeader/56"
+     ]
+    },
+    {
+     "id": "S-03",
+     "kind": "backdrop",
+     "roots": [
+      "SiteHeader/55"
+     ]
+    },
+    {
+     "id": "S-04",
+     "kind": "drawer",
+     "roots": [
+      "SiteHeader/128"
+     ]
+    }
+   ]
+  }
+ },
+ "elements": {
+  "SiteHeader/55": {
+   "template": {
+    "key": "SiteHeader/55",
+    "component": "SiteHeader",
+    "n": "55",
+    "tag": "div",
+    "realTag": "div",
+    "attrs": {
+     "onClick": "{{ close }}"
+    },
+    "style": {
+     "static": [
+      [
+       "position",
+       "fixed"
+      ],
+      [
+       "top",
+       "0px"
+      ],
+      [
+       "right",
+       "0px"
+      ],
+      [
+       "bottom",
+       "0px"
+      ],
+      [
+       "left",
+       "0px"
+      ],
+      [
+       "background-image",
+       "initial"
+      ],
+      [
+       "background-position-x",
+       "initial"
+      ],
+      [
+       "background-position-y",
+       "initial"
+      ],
+      [
+       "background-size",
+       "initial"
+      ],
+      [
+       "background-repeat",
+       "initial"
+      ],
+      [
+       "background-attachment",
+       "initial"
+      ],
+      [
+       "background-origin",
+       "initial"
+      ],
+      [
+       "background-clip",
+       "initial"
+      ],
+      [
+       "background-color",
+       "rgba(58, 42, 34, 0.45)"
+      ],
+      [
+       "transition-behavior",
+       "normal"
+      ],
+      [
+       "transition-duration",
+       "0.25s"
+      ],
+      [
+       "transition-timing-function",
+       "ease"
+      ],
+      [
+       "transition-delay",
+       "0s"
+      ],
+      [
+       "transition-property",
+       "opacity"
+      ],
+      [
+       "z-index",
+       "90"
+      ]
+     ],
+     "holes": [
+      "style:opacity#1",
+      "style:pointer-events#2"
+     ]
+    },
+    "pseudo": {},
+    "holes": [
+     {
+      "id": "attr:onClick#0",
+      "where": "attr:onClick",
+      "expr": "close",
+      "path": "close",
+      "whole": true
+     },
+     {
+      "id": "style:opacity#1",
+      "where": "style:opacity",
+      "expr": "scrimOp",
+      "path": "scrimOp",
+      "whole": true
+     },
+     {
+      "id": "style:pointer-events#2",
+      "where": "style:pointer-events",
+      "expr": "scrimPe",
+      "path": "scrimPe",
+      "whole": true
+     }
+    ],
+    "parent": "SiteHeader/4",
+    "realParent": "SiteHeader/4",
+    "parentChain": [
+     "SiteHeader/4"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [
+     {
+      "name": "onClick",
+      "expr": "close"
+     }
+    ],
+    "words": "",
+    "srcLine": 58
+   },
+   "logic": {
+    "holes": {
+     "attr:onClick#0": {
+      "375": {
+       "v": [
+        {
+         "t": "function"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "768": {
+       "v": [
+        {
+         "t": "function"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "function"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      }
+     },
+     "style:opacity#1": {
+      "375": {
+       "v": [
+        {
+         "t": "string",
+         "v": "0"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "768": {
+       "v": [
+        {
+         "t": "string",
+         "v": "0"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "string",
+         "v": "0"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      }
+     },
+     "style:pointer-events#2": {
+      "375": {
+       "v": [
+        {
+         "t": "string",
+         "v": "none"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "768": {
+       "v": [
+        {
+         "t": "string",
+         "v": "none"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "string",
+         "v": "none"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      }
+     }
+    }
+   },
+   "surfaces": [
+    {
+     "id": "S-03",
+     "kind": "backdrop",
+     "parent": "S-01",
+     "root": true,
+     "states": [],
+     "otherStates": [
+      {
+       "name": "hidden",
+       "state_keys": {
+        "nav": false,
+        "basket": false
+       },
+       "in_sc_if": false,
+       "animation_ids": []
+      },
+      {
+       "name": "visible",
+       "state_keys": {
+        "nav || basket": true
+       },
+       "in_sc_if": false,
+       "animation_ids": [
+        "TR-101"
+       ]
+      }
+     ],
+     "closed_by": "Click (close) or Escape",
+     "time_dependent": {
+      "value": false,
+      "reason": "Reads no clock, random value, storage or timer."
+     },
+     "unresolved": null
+    }
+   ],
+   "effects": [
+    {
+     "id": "TR-101",
+     "name": "SiteHeader \u00b7 div \u00b7 transition",
+     "mechanism": "css-transition",
+     "group": "state-transition",
+     "status": "active",
+     "flagged": null,
+     "reach": "self",
+     "target": "SiteHeader/55",
+     "via": "template_tpl_id",
+     "trigger": {
+      "type": "state",
+      "detail": "inline value bound to a {{ }} hole; changes when renderVals() output changes",
+      "state_keys": [
+       "nav",
+       "basket"
+      ]
+     },
+     "breakpoints": [],
+     "routes": [
+      "*"
+     ],
+     "reduced_motion": {
+      "behaviour": "unchanged",
+      "detail": "No reduced-motion rule in the draft. The production WordPress theme applies a global prefers-reduced-motion rule to CSS transitions (client decision 2026-10-11), so none is added here."
+     }
+    }
+   ],
+   "assets": [],
+   "instances": [],
+   "fingerprint": {
+    "tag": "div",
+    "cls": "",
+    "styleHash": "3d311b25",
+    "parentTags": [
+     "div"
+    ],
+    "textHash": "1505",
+    "line": 58
+   }
+  }
+ }
+}
