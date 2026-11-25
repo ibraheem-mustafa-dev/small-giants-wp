@@ -37,7 +37,7 @@ export const copyrightPrefixOf = ( text, siteName = null ) => copyrightPrefixPar
 // ones a draft element's words and address go to; `others` are the identity and structure settings it writes by name: a
 // wrapper shell's tag and layout, a section root's layout, the Site Info display type with its copyright prefix, a link's
 // target, and the ids the build carries (a logo block's Source, any block's menu `ref`). contentAttrs and carriedAttrs
-// write through this.
+// write through this; lib/content-coverage.mjs asks it which settings a re-clone writes.
 // A logo block's Source setting: its one content media slot that takes an image (lib/media/slots.mjs), as a list.
 const logoSource = ( block ) => blockMediaSlots( block ).filter( ( m ) => 'content' === m.context && m.kinds.includes( 'image' ) ).slice( 0, 1 ).map( ( m ) => m.source );
 

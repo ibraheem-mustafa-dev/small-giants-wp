@@ -58,8 +58,13 @@ export const COVERAGE_WRITES = [
 	'input-type:text',
 ];
 
-// A form field block (`sgs/form-field-*`) takes the draft control's settings (formFieldWrites).
+// The settings Fill's form pass writes, by block: every field block (`sgs/form-field-*`) takes the draft control's settings
+// (formFieldWrites), the form its button words and saved-progress flag, a step its label, the review its intro and edit
+// label, and a submit button its flag. lib/content-coverage.mjs asks formSettings which settings a re-clone writes.
 export const isFormFieldBlock = ( slug ) => /^sgs\/form-field-/.test( slug );
+export const FORM_FIELD_SETTINGS = [ 'placeholder', 'autocomplete', 'inputmode', 'rows', 'min', 'max', 'step', 'maxLength', 'showCounter', 'options', 'defaultValue', 'defaultChecked', 'allowedTypes', 'tiles', 'multiSelect', 'floatingLabel', 'floatingLabelPosition', 'msgInvalid', 'msgRequired', 'msgTooLong', 'valueFromParam', 'conditionalField', 'conditionalOperator', 'conditionalValue' ];
+export const FORM_BLOCK_SETTINGS = { 'sgs/button': [ 'isSubmit' ], 'sgs/form': [ 'savedProgress', 'nextLabel', 'submitLabel', 'prevLabel' ], 'sgs/form-step': [ 'label' ], 'sgs/form-review': [ 'intro', 'editLabel' ] };
+export const formSettings = ( block ) => ( isFormFieldBlock( block ) ? FORM_FIELD_SETTINGS : FORM_BLOCK_SETTINGS[ block ] || [] );
 
 // The attribute definition of a block by framework-DB query: { default } or null when the block holds no such attribute.
 export function attrDef( db, block, attr ) {

@@ -17,6 +17,41 @@ export const COVERAGE_SCHEMA = path.join( ROUTE, 'data', 'clone-coverage.schema.
 export const STEPS = [ 'recognise', 'write', 'check' ];
 export const BASELINE_FILE = path.join( ROUTE, 'data', 'coverage-test-baseline.json' );
 
+// A per-setting gap row (content-coverage.mjs): `content-setting:<block>.<setting>`, a content setting of an SGS block that
+// no writer fills from a draft. It is not a capability of the inventory, so coverageProblems never asks the inventory for it;
+// content-coverage.mjs holds it against the framework DB (a row naming a setting the DB no longer holds, or one a writer now
+// fills, fails there). A row is always a gap: it names the mechanism (`reason`), who closes it (`owner`) and its `wave`.
+export const CONTENT_SETTING_PREFIX = 'content-setting:';
+export const isContentSettingId = ( id ) => String( id ).startsWith( CONTENT_SETTING_PREFIX );
+export const CONTENT_SETTING_OWNERS = [ 'Track S', 'Track F', 'Track W' ];
+export const contentSettingId = ( block, attr ) => `${ CONTENT_SETTING_PREFIX }${ block }.${ attr }`;
+// { block, attr } of a content-setting ID, or null when it is malformed.
+export function parseContentSettingId( id ) {
+	const m = /^content-setting:(sgs\/[a-z0-9-]+)\.([A-Za-z0-9_]+)$/.exec( String( id ) );
+	return m ? { block: m[ 1 ], attr: m[ 2 ] } : null;
+}
+
+// The problems of one content-setting row, as sentences.
+export function contentSettingProblems( id, e ) {
+	const problems = [];
+	if ( ! parseContentSettingId( id ) ) {
+		problems.push( `${ id }: a content-setting ID is content-setting:sgs/<block>.<setting>` );
+	}
+	if ( e.excluded || e.recognise || e.write || e.check || e.test ) {
+		problems.push( `${ id }: a content-setting row is a gap: it names no recogniser, writer, check or test (a setting a writer fills needs no row)` );
+	}
+	if ( ! String( e.reason || '' ).trim() ) {
+		problems.push( `${ id }: a content-setting gap names its mechanism in "reason"` );
+	}
+	if ( ! CONTENT_SETTING_OWNERS.includes( e.owner ) ) {
+		problems.push( `${ id }: a content-setting gap names its "owner" (${ CONTENT_SETTING_OWNERS.join( ', ' ) })` );
+	}
+	if ( ! String( e.wave || '' ).trim() ) {
+		problems.push( `${ id }: a gap names its Phase 4 wave ("unassigned" until triaged)` );
+	}
+	return problems;
+}
+
 // The grandfathered covered entries that name no test yet: a sorted id list that may only shrink.
 export function loadBaseline( file = BASELINE_FILE ) {
 	const r = readJsonResult( file );
@@ -165,6 +200,10 @@ export function coverageProblems( inventory, coverage, { root = REPO, registry, 
 		}
 	}
 	for ( const [ id, e ] of Object.entries( entries ) ) {
+		if ( isContentSettingId( id ) ) {
+			problems.push( ...contentSettingProblems( id, e ) );
+			continue;
+		}
 		if ( ! ids.has( id ) && ! absent.has( sectionOf( id ) ) ) {
 			problems.push( `${ id }: a coverage entry for an ID the inventory does not hold` );
 		}
