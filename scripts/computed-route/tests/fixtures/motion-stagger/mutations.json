@@ -17,6 +17,6 @@
 	{ "file": "lib/fill-motion-stagger.mjs", "find": "[ { ...p.r, delay_ms: 0, stagger: null } ]", "replace": "[ { ...p.r, delay_ms: 140, stagger: null } ]", "why": "the entrance would carry a delay the stagger already holds" },
 	{ "file": "lib/fill-motion.mjs", "find": "p.items.forEach( ( k ) => byElement.has( k ) && byElement.set( k, byElement.get( k ).filter( ( r ) => r !== p.r ) ) );", "replace": "", "why": "each item would also take the entrance itself" },
 	{ "file": "lib/fill-motion.mjs", "find": "out.unmapped.push( ...staggers.filter( ( p ) => p.at?.t === t && p.refused )", "replace": "[].push( ...staggers.filter( ( p ) => p.at?.t === t && p.refused )", "why": "a refused formula would be silent" },
-	{ "file": "lib/fill-motion.mjs", "find": "&& ! loops[ t.id ] && ! lists.length ) {", "replace": "&& ! loops[ t.id ] ) {", "why": "a holder with no records of its own would be skipped" },
+	{ "file": "lib/fill-motion.mjs", "find": "&& ! loops[ t.id ] && ! lists.length && ! Object.keys( paintTiming ).length ) {", "replace": "&& ! loops[ t.id ] && ! Object.keys( paintTiming ).length ) {", "why": "a holder with no records of its own would be skipped" },
 	{ "file": "lib/fill-motion-stagger.mjs", "find": "const stop = chain.find( ( k ) => targets.has( k ) || template.elements[ k ]?.attrs?.ref );", "replace": "const stop = chain.find( ( k ) => targets.has( k ) );", "why": "a list whose own scope is no target would be written on a block further up" }
 ]

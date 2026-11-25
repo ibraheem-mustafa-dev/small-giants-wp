@@ -37,8 +37,8 @@
 	},
 	{
 		"file": "lib/motion-behaviour-settings.mjs",
-		"find": "{ attr: 'autoplaySpeed', value: Math.round( secs * 1000 ) }",
-		"replace": "{ attr: 'autoplaySpeed', value: secs }",
+		"find": "{ attr: 'autoplaySpeed', value: Math.round( ms ) }",
+		"replace": "{ attr: 'autoplaySpeed', value: Math.round( ms / 1000 ) }",
 		"why": "the interval is stored in seconds"
 	},
 	{
