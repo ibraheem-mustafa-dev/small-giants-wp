@@ -9,7 +9,7 @@ import { attrsFor } from './db.mjs';
 import { LOOSE } from './resolve.mjs';
 import { defaultPaint, INHERITED } from './fill-prop.mjs';
 import { longhands } from './calibrate-props.mjs';
-import { reachedBy } from './css-families.mjs';
+import { reachedBy, paintedProps } from './css-families.mjs';
 
 const WIDTHS = [ 375, 768, 1440 ];
 
@@ -145,7 +145,7 @@ export function unpairedPart( { db, block, cal, attr, readSlot, prop, value, tar
 	// whatever the other settings the DB ties to the same part name paint (an icon trigger's corners on the trigger button,
 	// where the icon's colour paints its glyph layer).
 	const own = cal?.settings?.[ attr ];
-	if ( '' !== LOOSE( readSlot ) && own?.property && ( own.property === prop || reachedBy( prop ).includes( own.property ) ) && [ ...( own.slots || [] ), own.slot ].some( ( s ) => 'string' === typeof s && LOOSE( s ) === LOOSE( readSlot ) ) ) {
+	if ( '' !== LOOSE( readSlot ) && own?.property && paintedProps( own ).some( ( q ) => q === prop || reachedBy( prop ).includes( q ) ) && [ ...( own.slots || [] ), own.slot ].some( ( s ) => 'string' === typeof s && LOOSE( s ) === LOOSE( readSlot ) ) ) {
 		return null;
 	}
 	// An inherited property the setting's own value reached the read element with (calibration's `reaches`, the elements that

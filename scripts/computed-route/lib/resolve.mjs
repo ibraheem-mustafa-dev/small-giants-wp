@@ -11,7 +11,7 @@ import { fileURLToPath } from 'url';
 import { candidates, siblings, isPseudoProperty, listedProperties } from './db.mjs';
 import { parseLength, toPx, pxTo, snapColour, snapFontFamily, ratioSetting, tracksSetting, trackCount, declaredTracks, round } from './normalise.mjs';
 import { applyClamp } from './fill-values.mjs';
-import { familyOf, settingKey, foldParts, unfoldValue, physicalOf, storedKeys, reachedBy, canonicalName } from './css-families.mjs';
+import { familyOf, settingKey, foldParts, unfoldValue, physicalOf, storedKeys, reachedBy, canonicalName, paintedProps } from './css-families.mjs';
 import { declaredTiers, declaredUnit, declaredLength, resolveWeightKeyword, sizeKeyword, sizePercent, keywordForm, sizeShape, isSizeProperty, holdsString, holdsCount } from './resolve-declared.mjs';
 import { consult } from './css-equivalence/index.mjs';
 import { valueBlind } from './css-equivalence/effect.mjs';
@@ -641,7 +641,7 @@ export function resolve( input, ctx ) {
 	// that stands for it at rest (form-field-tiles' tile-selected: the tile while checked).
 	const tiedBy = ( paths, layer = false ) => rows.filter( ( r ) => {
 		const c = ctx.calibration.settings?.[ r.attr_name ];
-		return c && variantHeld( c, input.variants ) && paths( c ).some( ( p ) => ( loose( p ) === slot || ( layer && coversSlot( c, p, slot, short ) ) ) && sameKind( p ) ) && ( ! c.property || c.property === short || reachedBy( prop ).includes( c.property ) ) && ( c.state ?? null ) === ( input.paintState ?? state ?? null ) && canGive( r, c ) && holdsDisplay( r ) && inForce( c );
+		return c && variantHeld( c, input.variants ) && paths( c ).some( ( p ) => ( loose( p ) === slot || ( layer && coversSlot( c, p, slot, short ) ) ) && sameKind( p ) ) && ( ! c.property || paintedProps( c ).some( ( q ) => q === short || reachedBy( prop ).includes( q ) ) ) && ( c.state ?? null ) === ( input.paintState ?? state ?? null ) && canGive( r, c ) && holdsDisplay( r ) && inForce( c );
 	} );
 	const painting = ( c ) => c.slots || [ c.slot ];
 	// A setting on the element itself, else one on a cover layer over it (lib/resolve-layer.mjs), else one whose inherited value reaches it.
@@ -888,7 +888,7 @@ export function resolveViaAncestor( input, ctx ) {
 		const painted = rows.find( ( r ) => {
 			const c = a.calibration?.settings?.[ r.attr_name ];
 			return c && [ ...( c.slots || ( c.slot ? [ c.slot ] : [] ) ), ...( c.reaches || [] ) ].some( ( p ) => LOOSE( p ) === LOOSE( a.path ) ) &&
-				( ! c.property || c.property === short || reachedBy( prop ).includes( c.property ) ) && ( ( c.state || null ) === ( state || null ) );
+				( ! c.property || paintedProps( c ).some( ( q ) => q === short || reachedBy( prop ).includes( q ) ) ) && ( ( c.state || null ) === ( state || null ) );
 		} );
 		// Write-prover 2: the block-context channel. The row's block `usesContext` a key this ancestor
 		// `providesContext`, and the attribute behind that key is one of the candidates.

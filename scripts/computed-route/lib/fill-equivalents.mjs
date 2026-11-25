@@ -8,6 +8,7 @@ import { resolveProperty } from './fill-prop.mjs';
 import { refOf } from './tree.mjs';
 import { READ_WIDTHS } from './fill-read.mjs';
 import { equivalentRows } from './db.mjs';
+import { paintedProps } from './css-families.mjs';
 import { contentExtent } from './fill-dimensions.mjs';
 import { elementContext } from './fill-held.mjs';
 import { PX_TOL } from './css-equivalence/tolerance.mjs';
@@ -18,7 +19,7 @@ export { equivalentRows };
 export const CONDITIONS = [ 'every-child-same', 'render-matches' ];
 
 // The paths a block's calibration shows a resting setting for `prop` painting.
-const layoutSlots = ( cal, prop ) => Object.values( cal?.settings || {} ).filter( ( s ) => s.property === prop && ! s.state ).flatMap( ( s ) => s.slots || [ s.slot ] );
+const layoutSlots = ( cal, prop ) => Object.values( cal?.settings || {} ).filter( ( s ) => paintedProps( s ).includes( prop ) && ! s.state ).flatMap( ( s ) => s.slots || [ s.slot ] );
 
 // every-child-same: every child of the parent was measured and asks the same value as the draft at each of its widths.
 // styleOf( childIndex, width ): that child's root styles, or null when it has no reading there.

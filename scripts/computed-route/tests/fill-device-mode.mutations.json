@@ -25,8 +25,8 @@
 	},
 	{
 		"file": "lib/resolve.mjs",
-		"find": "return c && variantHeld( c, input.variants ) && paths( c ).some( ( p ) => ( loose( p ) === slot || ( layer && coversSlot( c, p, slot, short ) ) ) && sameKind( p ) ) && ( ! c.property || c.property === short || reachedBy( prop ).includes( c.property ) ) && ( c.state ?? null ) === ( input.paintState ?? state ?? null ) && canGive( r, c ) && holdsDisplay( r ) && inForce( c );",
-		"replace": "return c && variantHeld( c, input.variants ) && paths( c ).some( ( p ) => ( loose( p ) === slot || ( layer && coversSlot( c, p, slot, short ) ) ) && sameKind( p ) ) && ( ! c.property || c.property === short || reachedBy( prop ).includes( c.property ) ) && ( c.state ?? null ) === ( input.paintState ?? state ?? null ) && canGive( r, c ) && holdsDisplay( r );",
+		"find": "return c && variantHeld( c, input.variants ) && paths( c ).some( ( p ) => ( loose( p ) === slot || ( layer && coversSlot( c, p, slot, short ) ) ) && sameKind( p ) ) && ( ! c.property || paintedProps( c ).some( ( q ) => q === short || reachedBy( prop ).includes( q ) ) ) && ( c.state ?? null ) === ( input.paintState ?? state ?? null ) && canGive( r, c ) && holdsDisplay( r ) && inForce( c );",
+		"replace": "return c && variantHeld( c, input.variants ) && paths( c ).some( ( p ) => ( loose( p ) === slot || ( layer && coversSlot( c, p, slot, short ) ) ) && sameKind( p ) ) && ( ! c.property || paintedProps( c ).some( ( q ) => q === short || reachedBy( prop ).includes( q ) ) ) && ( c.state ?? null ) === ( input.paintState ?? state ?? null ) && canGive( r, c ) && holdsDisplay( r );",
 		"why": "a setting of the other mode stays a candidate, so the pill's radius ties with the icon's"
 	},
 	{
@@ -67,7 +67,7 @@
 	},
 	{
 		"file": "lib/fill-part-pairing.mjs",
-		"find": "if ( '' !== LOOSE( readSlot ) && own?.property && ( own.property === prop || reachedBy( prop ).includes( own.property ) ) &&",
+		"find": "if ( '' !== LOOSE( readSlot ) && own?.property && paintedProps( own ).some( ( q ) => q === prop || reachedBy( prop ).includes( q ) ) &&",
 		"replace": "if ( false &&",
 		"why": "the icon trigger radius measured on the trigger is refused as the glyph part, so the phone capsule keeps square corners"
 	},

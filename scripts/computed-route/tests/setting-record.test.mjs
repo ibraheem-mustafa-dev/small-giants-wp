@@ -314,3 +314,19 @@ test( 'MUST FAIL: the look builder runs two workers by default, never one per co
 	assert.equal( lookJobs( { SGS_LOOK_JOBS: '3' } ), 3 );
 	assert.equal( lookJobs( {} ), LOOK_JOBS );
 } );
+
+test( 'MUST FAIL: a setting that paints height and width keeps both properties, in a placed entry, a bare one and one placed from its row', () => {
+	const rows = [ { setting: 'size', part: 'ROOT', props: [ 'height', 'width' ] }, { setting: 'single', part: 'ROOT', props: [ 'color' ] } ];
+	const attrs = [ { attr: 'size', property: 'height,width' }, { attr: 'single', property: 'color' } ];
+	const placed = load( fixtureDb( rows, { attrs } ) );
+	assert.equal( placed.settings.size.property, 'height', 'the first stays `property`' );
+	assert.deepEqual( placed.settings.size.properties, [ 'height', 'width' ] );
+	assert.equal( placed.settings.single.properties, undefined, 'a one-property setting keeps its old shape' );
+	// A reader that names no site gets the bare entry, which keeps both too.
+	const bare = loadRecord( BLOCK, null, { db: fixtureDb( rows, { attrs } ), build: false } );
+	assert.deepEqual( bare.settings.size.properties, [ 'height', 'width' ] );
+	assert.equal( bare.settings.single.properties, undefined );
+	// A setting the record tested that painted nothing alone, placed from its block_attributes row.
+	const fromRow = load( fixtureDb( [ { setting: 'single', part: 'ROOT', props: [ 'color' ] } ], { testedNoPaint: [ 'badge' ], attrs: [ { attr: 'single', property: 'color' }, { attr: 'badge', property: 'height,width', element: 'label' } ] } ), { elementsOf: () => ( { label: '.sgs-demo__label' } ) } );
+	assert.deepEqual( fromRow.settings.badge?.properties, [ 'height', 'width' ] );
+} );

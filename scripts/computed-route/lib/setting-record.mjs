@@ -445,6 +445,14 @@ export function recordRows( db, block ) {
 	};
 }
 
+// A setting that paints several properties at once (`height,width`) names every one: `properties` lists their short names,
+// `property` stays the first. Empty for a one-property setting, so its entry keeps its old shape (lib/css-families.mjs::paintedProps
+// reads either).
+function manyProperties( props, first ) {
+	const shorts = [ ...new Set( [ first, ...props ].map( ( p ) => splitProperty( p ).short ) ) ];
+	return shorts.length > 1 ? { properties: shorts } : {};
+}
+
 // One setting's entry from its usable rows: the rows on its own property (the block_attributes row's, else the first
 // row's) give its slots and widths; its other rows are its effects.
 function settingEntry( block, name, rows, row, look, facts ) {
@@ -469,6 +477,7 @@ function settingEntry( block, name, rows, row, look, facts ) {
 		slot: slots[ 0 ],
 		slots,
 		property: splitProperty( prop ).short,
+		...manyProperties( main.flatMap( ( r ) => r.props ).filter( ( p ) => long( [ p ] ).some( ( q ) => primaryProps.includes( q ) ) ), prop ),
 		state: row?.css_state || main[ 0 ].state || null,
 		forms: facts?.forms || [],
 		transform: null,
@@ -501,7 +510,7 @@ function settingEntry( block, name, rows, row, look, facts ) {
 function bareEntry( rows, row ) {
 	const prop = longhands( row?.css_property || '' )[ 0 ] || rows[ 0 ].props[ 0 ];
 	const reached = new Set( rows.flatMap( ( r ) => reachedAtOf( r.tiers ) ) );
-	return { slot: null, slots: [], property: splitProperty( prop ).short, state: row?.css_state || rows[ 0 ].state || null, forms: [], transform: null, reachedAt: WIDTHS.filter( ( w ) => reached.has( w ) ), effects: [], tiers: rows.map( ( r ) => r.tiers ) };
+	return { slot: null, slots: [], property: splitProperty( prop ).short, ...manyProperties( row?.css_property ? longhands( row.css_property ) : rows.flatMap( ( r ) => r.props ), prop ), state: row?.css_state || rows[ 0 ].state || null, forms: [], transform: null, reachedAt: WIDTHS.filter( ( w ) => reached.has( w ) ), effects: [], tiers: rows.map( ( r ) => r.tiers ) };
 }
 
 // The path of a block.json element (supports.sgs.elements) in the site look: its selector's last class, else the root.
@@ -599,7 +608,7 @@ function readRecord( block, client, { db = null, dir = SITE_LOOK_DIR, repo = REP
 		const props = longhands( row?.css_property || '' );
 		const slots = look && row?.css_element ? elementPaths( block, row.css_element, look, elementsOf ) : [];
 		if ( props.length && slots.length && ! settings[ name ] ) {
-			settings[ name ] = { slot: slots[ 0 ], slots, property: splitProperty( props[ 0 ] ).short, state: row.css_state || null, forms: facts[ name ]?.forms || [], transform: null, reachedAt: [ ...WIDTHS ], effects: [], tiers: [ [] ], fromAttributes: true };
+			settings[ name ] = { slot: slots[ 0 ], slots, property: splitProperty( props[ 0 ] ).short, ...manyProperties( props, props[ 0 ] ), state: row.css_state || null, forms: facts[ name ]?.forms || [], transform: null, reachedAt: [ ...WIDTHS ], effects: [], tiers: [ [] ], fromAttributes: true };
 		} else if ( ! props.length ) {
 			dead.push( name );
 		} else if ( ! settings[ name ] && look ) {

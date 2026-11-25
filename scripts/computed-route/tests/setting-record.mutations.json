@@ -31,5 +31,8 @@
 	{"file": "lib/setting-record.mjs", "find": "\tif ( range && ( range[ 1 ] || range[ 4 ] ) ) {", "replace": "\tif ( false ) {", "why": "range syntax holds nowhere"},
 	{"file": "lib/setting-record.mjs", "find": " || k.startsWith( `sgs-${ short }--` ) ) : ownClasses", "replace": " ) : ownClasses", "why": "a root named by its modifier is not found in the selector"},
 	{"file": "lib/setting-record.mjs", "find": "\t\t\tunplaced[ name ] = `its rule picks no element of the default look", "replace": "\t\t\tvoid `its rule picks no element of the default look", "why": "a setting the look cannot place is dropped silently"},
-	{ "file": "lib/setting-record.mjs", "find": "\t\t...( band ? { contentBand: band.slot } : {} ),", "replace": "", "why": "the record would name no band, so the declared reading never applies" }
+	{ "file": "lib/setting-record.mjs", "find": "\t\t...( band ? { contentBand: band.slot } : {} ),", "replace": "", "why": "the record would name no band, so the declared reading never applies" },
+	{"file": "lib/setting-record.mjs", "find": "\t\t...manyProperties( main.flatMap( ( r ) => r.props ).filter( ( p ) => long( [ p ] ).some( ( q ) => primaryProps.includes( q ) ) ), prop ),\n", "replace": "", "why": "a placed setting that paints height and width keeps only the first property"},
+	{"file": "lib/setting-record.mjs", "find": "...manyProperties( row?.css_property ? longhands( row.css_property ) : rows.flatMap( ( r ) => r.props ), prop ), ", "replace": "", "why": "a bare setting that paints height and width keeps only the first property"},
+	{"file": "lib/setting-record.mjs", "find": "...manyProperties( props, props[ 0 ] ), ", "replace": "", "why": "a setting placed from its row that paints height and width keeps only the first property"}
 ]

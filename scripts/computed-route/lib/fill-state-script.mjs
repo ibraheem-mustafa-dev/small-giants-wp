@@ -21,6 +21,7 @@ import { renderedOf } from './fill-state-apply.mjs';
 import { snapshotDraftState, restoreDraftState } from './intake-state.mjs';
 import { LOOSE } from './resolve.mjs';
 import { longhands } from './calibrate-props.mjs';
+import { paintedProps } from './css-families.mjs';
 
 // The React handler props that follow the pointer or focus, by the state they enter, with the DOM events the runtime
 // listens for to call them (enter) and to end them (leave).
@@ -212,6 +213,6 @@ export function openSlots( cal, prop, slot, state ) {
 		return [];
 	}
 	const own = lastStep( slot );
-	const paths = Object.values( cal?.settings || {} ).filter( ( s ) => 'open' === s.state && ( s.property === prop || longhands( s.property ).includes( prop ) ) ).flatMap( ( s ) => s.slots || [ s.slot ] );
+	const paths = Object.values( cal?.settings || {} ).filter( ( s ) => 'open' === s.state && paintedProps( s ).some( ( q ) => q === prop || longhands( q ).includes( prop ) ) ).flatMap( ( s ) => s.slots || [ s.slot ] );
 	return [ ...new Set( paths ) ].filter( ( p ) => LOOSE( p ) !== LOOSE( slot ) && lastStep( p ) === own );
 }

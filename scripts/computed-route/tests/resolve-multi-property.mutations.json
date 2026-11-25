@@ -1,0 +1,8 @@
+[
+	{
+		"file": "lib/resolve.mjs",
+		"find": "( ! c.property || paintedProps( c ).some( ( q ) => q === short || reachedBy( prop ).includes( q ) ) ) && ( c.state ?? null ) === ( input.paintState ?? state ?? null )",
+		"replace": "( ! c.property || c.property === short || reachedBy( prop ).includes( c.property ) ) && ( c.state ?? null ) === ( input.paintState ?? state ?? null )",
+		"why": "the resolver reads only the first property of a multi-property entry"
+	}
+]

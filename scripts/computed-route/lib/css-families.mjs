@@ -167,6 +167,10 @@ export function reachedBy( prop, opts = {} ) {
 	return [ ...new Set( [ prop, physicalOf( prop, opts.dir ), ...( fam && 'mixed' !== fam.kind ? [ fam.short ] : [] ), ...( VALUE_PRIMARY[ prop ] ? [ VALUE_PRIMARY[ prop ] ] : [] ) ] ) ];
 }
 
+// The properties a setting's entry (the record's or a calibration's) paints: `properties` for a setting that paints several
+// (`height,width`), else its one `property`.
+export const paintedProps = ( entry ) => ( entry?.properties?.length ? entry.properties : entry?.property ? [ entry.property ] : [] );
+
 // A stored css_property as the names it can be matched by: itself and its physical spelling.
 export const storedKeys = ( stored, opts = {} ) => [ ...new Set( [ stored, physicalOf( stored, opts.dir ) ] ) ];
 

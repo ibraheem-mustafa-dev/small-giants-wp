@@ -38,6 +38,7 @@ import { BLOCKS_DIR, defaultPaint, LOOSE } from './resolve.mjs';
 import { WIDTHS, TIER_OF, rowTarget, rowValues, rectAt, reresolve, commit, perNode, regroup, answer } from './fill-regap.mjs';
 import { innerToRoot } from './fill-same-box.mjs';
 import { attrRow } from './db.mjs';
+import { paintedProps } from './css-families.mjs';
 import { inlineBox, INLINE_LEVEL } from './fill-inline-box.mjs';
 import { PX_TOL } from './css-equivalence/tolerance.mjs';
 
@@ -65,7 +66,7 @@ export function innerImageSlot( cal ) {
 const FLUID = /^(clamp|min|max|calc)\(/i;
 
 // Whether a setting painting `prop` at rest is calibrated on `slot` of the block.
-export const calibratedAt = ( cal, slot, prop ) => Object.values( cal?.settings || {} ).some( ( s ) => s?.property === prop && ! s.state && [ s.slot, ...( s.slots || [] ) ].some( ( x ) => 'string' === typeof x && LOOSE( x ) === LOOSE( slot ) ) );
+export const calibratedAt = ( cal, slot, prop ) => Object.values( cal?.settings || {} ).some( ( s ) => paintedProps( s ).includes( prop ) && ! s.state && [ s.slot, ...( s.slots || [] ) ].some( ( x ) => 'string' === typeof x && LOOSE( x ) === LOOSE( slot ) ) );
 const ONLY_GAPS = /^(shape|no-setting)\b/;
 const pxOf = ( v ) => ( /^-?\d+(\.\d+)?(px)?$/.test( String( v ).trim() ) ? parseFloat( v ) : null );
 

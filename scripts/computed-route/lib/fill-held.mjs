@@ -22,7 +22,7 @@ import { LOOSE } from './resolve.mjs';
 import { refOf } from './tree.mjs';
 import { INHERITED, canon, defaultPaint } from './fill-prop.mjs';
 import { snapsOf, ownPaint } from './fill-resolve-state.mjs';
-import { familyOf, expand, physicalOf, partKey, isCssProperty } from './css-families.mjs';
+import { familyOf, expand, physicalOf, partKey, isCssProperty, paintedProps } from './css-families.mjs';
 import { propertyChannels, IDENTITY } from './motion-channels.mjs';
 import { clientTokens } from './motion-tokens.mjs';
 import { layerGives, rootLayerTimings } from './census-conservation.mjs';
@@ -117,7 +117,7 @@ function reaches( c, row, slot ) {
 	}
 	const prop = physicalOf( row.property );
 	const sets = ( stored ) => stored.split( ',' ).map( ( s ) => s.trim() ).flatMap( ( s ) => expand( s ) ).includes( prop );
-	if ( c.property && sets( c.property ) ) {
+	if ( paintedProps( c ).some( sets ) ) {
 		return true;
 	}
 	return ( c.effects || [] ).some( ( e ) => {
