@@ -132,6 +132,7 @@ Status: not started.
 - Kit colours join the main Colour panel, shown only when the feature is on (13).
 - Label-less `ResponsiveOverride` mounts get their labels.
 - `sgsFocusRests` and the button's `focusStyle` stay as they are (Bean, 2026-11-25): retiring them would change focus behaviour on all three clients, Mama's live shop included, for more work than it saves.
+- The "Keyboard focus" switch moves out of its own panel on 85 blocks into a block-wide row at the top of the shared Hover panel; the 4 blocks with hover colours but no Hover panel show it in Colour, and the 3 with no hover value hide it (Bean, 2026-11-25). Only the control moves: the attribute, its behaviour and saved content are unchanged, so no site renders differently.
 
 Status: not started.
 
