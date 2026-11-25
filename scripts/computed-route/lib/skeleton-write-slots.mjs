@@ -84,12 +84,13 @@ export function makeSlotRows( ctx ) {
 		};
 		const own = ( n ) => [ elOf( n ), ...( n.innerBlocks || [] ).flatMap( own ) ].filter( Boolean );
 		// A node holding an absorbed part (the burger) also stands for the block the part belongs to, which the part placement
-		// moves into it afterwards (lib/skeleton-part-slots.mjs::placePart); that block takes no place of its own.
+		// places at it afterwards (lib/skeleton-part-slots.mjs::placePart); that block is listed right after the node, so it keeps
+		// its place in each width's order when the placement drops the node.
 		const hosted = ( n ) => ( ctx.partPending || [] ).filter( ( p ) => own( n ).some( ( d ) => within( p.e, d ) ) ).map( ( p ) => m.byKey[ p.into ] ).filter( Boolean );
 		const drawn = ( n ) => [ ...own( n ), ...hosted( n ) ];
 		const pool = rowsIn.flatMap( ( r ) => r.innerBlocks );
-		const moves = ( n ) => pool.some( ( o ) => o !== n && hosted( o ).includes( elOf( n ) ) );
-		const alt = rowsIn.length === nodes.length ? mergeWidthAlternatives( rowsIn, { elOf, kidsOf: m.blockKids, shownAt: m.shownAt, moves, holds: ( n, el ) => drawn( n ).some( ( d ) => within( d, el ) ) } ) : null;
+		const hostOf = ( n ) => pool.find( ( o ) => o !== n && hosted( o ).includes( elOf( n ) ) ) ?? null;
+		const alt = rowsIn.length === nodes.length ? mergeWidthAlternatives( rowsIn, { elOf, kidsOf: m.blockKids, shownAt: m.shownAt, hostOf, holds: ( n, el ) => drawn( n ).some( ( d ) => within( d, el ) ) } ) : null;
 		const middle = alt ? alt.row : 1 === rowsIn.length ? rowsIn[ 0 ] : { name: H.rowBlock, attributes: {}, innerBlocks: [] };
 		middle.innerBlocks = alt ? alt.innerBlocks : nodes.flatMap( ( n ) => ( n.name === H.rowBlock ? n.innerBlocks : [ n ] ) );
 		middle.attributes[ H.slotAttribute ] = 'middle';

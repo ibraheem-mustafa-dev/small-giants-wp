@@ -123,11 +123,13 @@ export function slotPlan( { beside, inside } ) {
 // that draws an element of two alternatives (a menu block placed at the burger's place that also draws the desktop links)
 // sits where both orders put it. rows: the row nodes in document order; elOf( node ): its draft element; kidsOf( el ): an
 // element's block children in order; holds( node, el ): whether the node or a node inside it draws `el` or an element inside
-// it; shownAt( el ): the read widths the element renders at; moves( node ): a node a later step moves into another pooled node
-// (a block placed at its absorbed part's wrapper), which takes no place of its own in the order. Returns null when the rows are not width alternatives (one
+// it; shownAt( el ): the read widths the element renders at; hostOf( node ): the pooled node that stands for a block a later step
+// places at its absorbed part's wrapper (null for any other node). Such a block keeps its own slot: it is listed right after
+// the node that stands for it, where both bars put it, so it is still in the order when the step drops that node (a wrapper
+// holding only the part) and the block draws where it stands. Returns null when the rows are not width alternatives (one
 // renders at every width, or two render at one width), else { row, innerBlocks, others } (others: the rows whose own settings
 // had no row to live on).
-export function mergeWidthAlternatives( rows, { elOf, kidsOf, holds, shownAt, moves = () => false } ) {
+export function mergeWidthAlternatives( rows, { elOf, kidsOf, holds, shownAt, hostOf = () => null } ) {
 	const els = rows.map( elOf );
 	const shown = els.map( ( e ) => ( e ? shownAt( e ) : [] ) );
 	const all = new Set( shown.flat() );
@@ -138,7 +140,7 @@ export function mergeWidthAlternatives( rows, { elOf, kidsOf, holds, shownAt, mo
 	const keep = rows.map( ( r, i ) => i ).sort( ( a, b ) => widest( b ) - widest( a ) )[ 0 ];
 	const pool = rows.flatMap( ( r ) => r.innerBlocks );
 	// Each alternative's order: for each of its element's children, the pooled node that draws it.
-	const seqs = els.map( ( e ) => [ ...new Set( kidsOf( e ).map( ( k ) => pool.find( ( n ) => ! moves( n ) && holds( n, k ) ) ).filter( Boolean ) ) ] );
+	const seqs = els.map( ( e ) => [ ...new Set( kidsOf( e ).map( ( k ) => pool.find( ( n ) => ! hostOf( n ) && holds( n, k ) ) ).filter( Boolean ) ) ] );
 	const merge = ( a, b ) => {
 		const out = [];
 		let i = 0;
@@ -156,6 +158,7 @@ export function mergeWidthAlternatives( rows, { elOf, kidsOf, holds, shownAt, mo
 		return [ ...out, ...a.slice( i ), ...b.slice( j ) ];
 	};
 	const ordered = [ keep, ...rows.map( ( r, i ) => i ).filter( ( i ) => i !== keep ) ].map( ( i ) => seqs[ i ] ).reduce( merge );
-	const innerBlocks = [ ...new Set( [ ...ordered, ...pool ] ) ];
+	const placed = ordered.flatMap( ( n ) => [ n, ...pool.filter( ( x ) => hostOf( x ) === n ) ] );
+	const innerBlocks = [ ...new Set( [ ...placed, ...pool ] ) ];
 	return { row: rows[ keep ], innerBlocks, others: rows.filter( ( r, i ) => i !== keep ) };
 }
