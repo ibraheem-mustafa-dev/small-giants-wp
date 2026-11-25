@@ -495,6 +495,44 @@ if ( ! function_exists( 'sgs_pcm_fill_ratio' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_pcm_no_photo_css' ) ) {
+	/**
+	 * The "photo to come" box sized like the photo, per device: the photo slot's px Height when it sets one, else its
+	 * Ratio (the photo's own rule); '' when the slot sets neither (the box keeps its fixed height). A Height that is
+	 * Fill, Auto or natural, and a Ratio that is natural, size nothing here.
+	 *
+	 * @param array  $attrs    Block attributes.
+	 * @param string $prefix   Slot prefix.
+	 * @param string $selector The placeholder's selector (it must outrank `.product-card--live .product-card__no-image`).
+	 * @return string
+	 */
+	function sgs_pcm_no_photo_css( array $attrs, string $prefix, string $selector ): string {
+		$heights = sgs_media_device_values( $attrs[ sgs_media_element_attr( $prefix, 'Height' ) ] ?? null );
+		$ratios  = sgs_media_device_values( $attrs[ sgs_media_element_attr( $prefix, 'Ratio' ) ] ?? null );
+		$css     = '';
+		$prev    = '';
+		foreach ( sgs_media_devices() as $device ) {
+			$height = is_string( $heights[ $device ] ) && ! in_array( trim( $heights[ $device ] ), array( 'fill', 'auto', 'natural' ), true ) ? sgs_media_length( trim( $heights[ $device ] ) ) : '';
+			$ratio  = is_string( $ratios[ $device ] ) ? sgs_media_ratio( $ratios[ $device ] ) : '';
+			if ( '' !== $height ) {
+				$body = 'height:' . $height . ';aspect-ratio:auto;';
+			} elseif ( '' !== $ratio ) {
+				$body = 'aspect-ratio:' . $ratio . ';height:auto;';
+			} else {
+				$body = '';
+			}
+			if ( $body === $prev ) {
+				continue;
+			}
+			// A device with neither setting after one with a setting goes back to the box's fixed height.
+			$rule = $selector . '{' . ( '' !== $body ? $body : 'aspect-ratio:auto;height:var(--sgs-product-card-image-height,220px);' ) . '}';
+			$css .= 'desktop' === $device ? $rule : '@media ' . sgs_media_device_query( $device ) . '{' . $rule . '}';
+			$prev = $body;
+		}
+		return $css;
+	}
+}
+
 if ( ! function_exists( 'sgs_pcm_fill_ratio_css' ) ) {
 	/**
 	 * The photo box's Ratio as rules on `$selector`, per device (see `sgs_pcm_fill_ratio()`); '' when none.

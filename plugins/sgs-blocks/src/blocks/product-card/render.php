@@ -592,6 +592,10 @@ if ( '' !== $sgs_pc_box_ratio_css ) {
 	$sgs_card_typo_css .= $sgs_pc_box_ratio_css;
 	$classes[]          = 'product-card--image-ratio';
 }
+// The "photo to come" box takes the photo's Height or Ratio too, so a card with no photo is as tall as one with a photo.
+if ( in_array( 'product-card--image-sized', $classes, true ) ) {
+	$sgs_card_typo_css .= sgs_pcm_no_photo_css( $attributes, 'image', '.' . $sgs_card_uid . '.product-card--image-sized .product-card__no-image' );
+}
 
 // ── Block-private colour/border (R2c, B-3/B-8) → scoped, NOT inline ──────
 // block.json's native color/border supports are now radius-only + gradients
