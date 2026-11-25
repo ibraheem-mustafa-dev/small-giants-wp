@@ -8,7 +8,7 @@ created: 2026-11-25
 
 **Goal and why:** Bean must clone SGS and MIC from Claude Design drafts by 2026-11-28 with no hand fixes. The deadline lane (Tasks 1 to 10 and 14 to 16) holds what the clones need. The editor lane (Tasks 11 to 13) is the block editor clean-up Bean approved on 2026-11-25; it builds alongside but merges only after the deadline proof. Done for the deadline means: tonight's branch work and the clone root fixes are on `main`; an offline reclone of Mama's, Eye Care and Indus improves on every named surface with nothing worse; a timed fresh-site rehearsal passes; SGS and MIC have sites to clone onto; Bean's eye check passes.
 
-**Evidence:** every proposal comes from a read-only investigation dated 2026-11-25 in `E:\sgs-tmp\general-cloning\investigate\` (cited as `iN`), reviewed by three independent reviewers with every finding verified (2026-11-25). Fix groups RF1 to RF10 and the Restore map come from `.claude/plans/2026-11-24-clone-root-fixes.md`; this plan governs where they differ. Worker briefs: `E:\sgs-tmp\general-cloning\tracks\` (`_common.md` plus one per track).
+**Evidence:** every proposal comes from a read-only investigation dated 2026-11-25, kept in `.claude/reports/2026-11-25-clone-investigations/` (cited as `iN`; their scratch scripts stay in `E:\sgs-tmp\general-cloning\investigate\`), reviewed by three independent reviewers with every finding verified (2026-11-25). Fix groups RF1 to RF10 and the Restore map come from `.claude/plans/2026-11-24-clone-root-fixes.md`; this plan governs where they differ. Worker briefs: `.claude/plans/2026-11-25-land-fixes-tracks/` (`_common.md` plus one per track, and the second-session prompt).
 
 **How it runs:**
 - Up to 8 workers per session (Claude Code's limit); the editor lane can run in a second session with its own 8 (Bean, 2026-11-25). Launch order, deadline first: A1, A2, A3, A4, B, C, D, F, L. As slots free: G1, then E1, E2, G2 and S when their branches have merged, then the editor lane W1 to W4. Agent-tool subagents (worker API credits are exhausted).
@@ -102,7 +102,7 @@ Depends on: the drafts. Status: waiting on the drafts.
 
 ### Task 10: Combined proof, rehearsal, deploys (main session)
 Changes:
-- Tag the deadline lane's head.
+- Tag the deadline lane's head `deadline-proof-2026-11-27` (the editor lane merges only after it).
 - Run the full suite alone, one sweep against `baseline-main`, render-scope, then render-check on the states the tracks named.
 - Run render-scope from each test site's deployed commit to the tag.
 - Run the saved-content migrations each test site needs (cart trigger, account merge, marquee bars), in order with backups.

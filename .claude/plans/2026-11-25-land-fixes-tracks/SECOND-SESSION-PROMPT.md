@@ -1,0 +1,12 @@
+You are running the editor lane (Tasks 11 to 13) of the plan `C:\Users\Bean\Projects\small-giants-wp\.claude\plans\2026-11-25-land-fixes-and-editor-cleanup.md`, in parallel with another session that runs the deadline lane. Read the plan in full, then `.claude/plans/2026-11-25-land-fixes-tracks/_common.md` and the four Stage E1 briefs `w1-editor-shared.md`, `w2-editor-packages.md`, `w3-editor-switcher.md` and `w4-trustbar-editor.md` in the same folder.
+
+How to run it:
+1. Launch the four Stage E1 tracks as background subagents (Agent tool, general-purpose), each told: "Read `.claude/plans/2026-11-25-land-fixes-tracks/_common.md` in full, then your brief `<brief path>`, and carry out the brief under the shared rules. Your label is `<label from the brief title>`. Save your final report to `E:\sgs-tmp\general-cloning\build\<label>\REPORT.md` before returning it."
+2. When each returns, check its claims against its branch (run its changed tests and `check-mutation-lists.mjs`, read the diff; use `/code-review` on the branch). Send a worker back with specific fixes where a check fails.
+3. W1 stops for Bean's look at the inner-section screenshots: show Bean the screenshot paths and wait for his answer before any block uses the inner section.
+4. When Stage E1 is reviewed, write the Stage E2 brief (Task 12) and, after it, the Stage E3 owner briefs (Task 13) in the same folder and format as the others, from the plan and the evidence it cites (`E:\sgs-tmp\general-cloning\investigate\i8`, `i11`, `i12`, `i14`, `i16` to `i24`). Every mass change builds its detector first, and Bean sees each list before it is applied.
+5. Do not merge any editor-lane branch into `main` until the deadline lane has tagged its proof (`git -C C:/Users/Bean/Projects/small-giants-wp tag -l "deadline-proof-*"` shows one). Then merge one branch at a time, reseed the framework DB (`python plugins/sgs-blocks/scripts/sgs-update-v2.py`), regenerate the setting records (`python plugins/sgs-blocks/scripts/setting-record/check.py --changed --write`), run render-scope, and push.
+
+Shared machine rules: heavy runs (sweeps, browsers, render-check, plugin builds) go through `scripts/computed-route/tools/heavy-slot.mjs run`, which both sessions share. Temp is always on E:. Never deploy, never write to a site, and never touch the deadline lane's branches (`fix/rf*`, `fix/cart-trigger`, `fix/a*`, `fix/b-*`, `fix/c-*`, `fix/d-*`, `fix/e*`, `fix/f-*`, `fix/g1-*`, `fix/g2-*`, `fix/l-*`, `fix/s-*`).
+
+Report to Bean in plain UK English, outcome first, after each stage.

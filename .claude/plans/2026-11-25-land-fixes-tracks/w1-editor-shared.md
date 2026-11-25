@@ -1,0 +1,10 @@
+# Track W1 (label w1-shared; plan Task 11): shared editor components
+
+Phase 4 (editor) work: build on your branch; the main session merges it only after the deadline proof. Files: `plugins/sgs-blocks/src/components/`, the shared media panels, and `plugins/sgs-blocks/src/blocks/container/components/BackgroundMediaPanel.js` and `BackgroundPanel.js` (shared by 8 blocks). No other block folder. Evidence: `i11-editor-ui.out` sections 1, 4 and 7; `i21-compat.out` sections 4 and 5; `i23-details.out` sections 1 and 2.
+
+1. Device markers: `ResponsiveOverride` draws the diamond and circle on the label's row. Where a mount passes a visible label, the component draws that label with the markers beside it and hides the inner control's own label. Where a mount passes no label (154 of 360), keep today's behaviour for now and list those mounts: Stage E2 adds their labels. Add a check that lists label-less mounts (a report, not a failure, until Stage E2). Markers keep today's meaning: shown when a tablet or mobile value is stored.
+2. A light collapsible inner section `SgsInnerSection` (a `PanelBody` with a lighter CSS class, collapsed by default, with a check against a third nesting level). Screenshot it in your private scratch mirror's editor (`SITE=local-mediatest-w1-shared`) and stop before any block uses it: report the screenshot paths for Bean's look.
+3. Background: "Background surface" and "Extra SVG layer" render as inner sections inside the shared Background panel (`MediaPanels` `panelContent.background`), collapsed by default; mount the media panel's inspector slot at once and lazy-load only its body, so it no longer lands last on first select.
+4. A small per-panel reset component, shown only when the panel holds a value, ready for Stage E2 to replace reset-only menus.
+
+Done when: the screenshots exist; the markers report lists every label-less mount; and the census (`SITE=local-mediatest-w1-shared OUT=E:\sgs-tmp\general-cloning\build\w1-shared\census.json node E:\sgs-tmp\general-cloning\investigate\i8-editor\census.mjs sgs/container sgs/hero`) shows the Background panel in its place on first select.

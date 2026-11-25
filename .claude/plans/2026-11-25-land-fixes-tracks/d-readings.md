@@ -1,0 +1,9 @@
+# Track D (label d-readings; plan Task 4): choice readings and underlines
+
+Evidence: `i10-underline.out` Q1 and Q2 (including the 9-row decision table); the `sgs/account` row of `i7-dupes.out`'s table only.
+
+1. Restore what each choice value paints: `scripts/computed-route/tools/site-look-bridge.mjs::planFor` passes the per-value instances that `planInstances` already plans; `plugins/sgs-blocks/scripts/site-look/site_look.py::record_facts` renders and reads them (the default value, and the hover and focus states, included); `scripts/computed-route/lib/setting-record.mjs::settingEntry` copies them as `enumReads`. `lib/resolve-enum.mjs::holdsValue` and `::mapTiers` then work unchanged. Add one test that reads a real record, not a hand-written `enumReads`. Track C edits `site_look.py::build_block` and `setting-record.mjs::readRecord`, and Track B the property list in `settingEntry`: keep to your parts.
+2. Fill reads the three underline looks per the decision table: rows 1, 2 and 4 to 9 with the existing reads; row 3 (sweep) adds the missing draft reads (`background-size` at rest and on hover, `background-image` on hover, `transition-property`, hover reads of `::before` and `::after`).
+3. Merge `sgs/account`'s duplicate `emptyStatePadding`/`ordersEmptyButtonPadding` and `emptyStateMinHeight`/`ordersEmptyButtonMinHeight` into one setting each, with a saved-content migration script (FP-14, no `deprecated.js`). Test it on a private DB copy and a scratch mirror; name the reseed and the migration for the main session.
+
+Done when: an offline Fill of `mamas-munches-redesign/footer,home,template-checkout` (against `baseline-main`) resolves those surfaces' 6 button underline ties and lists every other write that changed; the contact tie is checked with the same Fill on the proof records in `E:\sgs-tmp\wt-clone-mm`; Eye Care's 2 trust-bar layout ties resolve in `eye-care-ward-end/header`.

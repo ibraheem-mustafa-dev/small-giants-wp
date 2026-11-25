@@ -1,0 +1,9 @@
+# Track G2 (label g2-marquee; plan Task 6): the trust bar's clone-relevant fixes
+
+Start from `main` once rf1, rf5 and rf6 have merged (the main session tells you): the clone side touches `lib/fill-motion.mjs` and `lib/fill-prop.mjs`, which those branches edit. Evidence: `i12-blocks.out` section 2 (marquee), `i3-trustbar.out` section 2 (fill colour), `i22-gridonly.out` (marquee under Grid; read only "What matches Flex exactly").
+
+1. One stored marquee value: the Overflow control writes the Effects marquee layer directly (existing `addLayer`/`updateLayer` helpers); store the default layer on insert; remove the render-time filter that adds a default layer; keep `drop` (hide extras) as its own switch. Write the saved-bar migration as a script with `--dry-run`, run it only on your scratch mirror, and list which sites hold bars (Mama's three, Eye Care's, the canary's). Eye Care's header stores a mobile-only marquee plus `drop`: it must keep working.
+2. Fill writes the marquee condition the draft shows ("overflow" when the strip only scrolls when it overflows) through the Effects layer.
+3. Icon fill colour: the block's fill rule reaches an icon's own path fills, so the control works on any custom SVG, not only one with a root-level fill (`i3` section 2); and `scripts/computed-route/lib/fill-icon.mjs` records the draft's icon colours in the icon colour and fill settings when it imports a custom SVG. Check `sgs/icon`, `sgs/button` and `sgs/cart` for the same root-only rule and fix them the same way.
+
+Done when: render-check (with `--step` running the migration) shows Mama's three saved bars and the canary's bars unchanged; an offline Fill of `mamas-munches-redesign/footer` and `eye-care-ward-end/header` writes the marquee through the Effects layer with the draft's condition; Mama's home trust-strip icons take the draft's colours.
