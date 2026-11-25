@@ -513,10 +513,11 @@ async function main() {
 	console.log( text );
 	fs.writeFileSync( path.join( outDir, 'no-setting-review.json' ), JSON.stringify( gate.judged, null, 1 ) );
 	console.log( `no-setting rows: ${ gate.confirmed } confirmed, ${ gate.unjudged } unjudged, ${ gate.unresolved } unresolved (no-setting-review.json)` );
-	// A part-run (--surfaces, --families) is work in progress; a whole run cannot end clean with a setting left unused.
-	if ( gate.unresolved && ! only && ! wanted ) {
-		console.error( `${ gate.unresolved } no-setting row(s) name something the block has a setting for: see no-setting-review.json` );
-		process.exitCode = 1;
+	// A look the clone cannot place is listed, never a failed run (Bean 2026-11-20): the rows are in no-setting-review.json and the
+	// run report, and the verify and walk that follow judge the page.
+	if ( gate.unresolved ) {
+		console.log( `${ gate.unresolved } no-setting row(s) name something the block has a setting for, and are listed, not failed: see no-setting-review.json` );
+		gate.judged.filter( ( r ) => 'unresolved' === r.verdict ).forEach( ( r ) => console.log( `unresolved: ${ [ r.surface, r.block, r.prop ].filter( Boolean ).join( ' ' ) }: ${ String( r.why ?? '' ).replace( /\s+/g, ' ' ) }` ) );
 	}
 }
 

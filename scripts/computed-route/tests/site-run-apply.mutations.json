@@ -1,0 +1,20 @@
+[
+	{
+		"file": "site-run.mjs",
+		"find": "\treturn unresolved ? `${ detail }; ${ unresolved } look(s)",
+		"replace": "\tif ( unresolved ) {\n\t\tthrow new Error( `${ detail }: a no-setting row names a setting the block has` );\n\t}\n\treturn unresolved ? `${ detail }; ${ unresolved } look(s)",
+		"why": "an unresolved row throws in the apply stage and stops the surface"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "const listed = [ ...log.matchAll( /^unresolved: (.+)$/gm ) ].map( ( m ) => m[ 1 ].trim() );",
+		"replace": "const listed = [];",
+		"why": "the stage result does not name the rows"
+	},
+	{
+		"file": "apply.mjs",
+		"find": "\tif ( gate.unresolved ) {\n\t\tconsole.log( `${ gate.unresolved } no-setting row(s)",
+		"replace": "\tif ( gate.unresolved ) {\n\t\tprocess.exitCode = 1;\n\t\tconsole.log( `${ gate.unresolved } no-setting row(s)",
+		"why": "an unresolved row fails the applier's exit code"
+	}
+]

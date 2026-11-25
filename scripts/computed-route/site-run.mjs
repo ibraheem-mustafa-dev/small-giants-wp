@@ -34,8 +34,8 @@
 // shared verify.json) sets the existing block settings the Fill and build cannot see, from the draft's runtime, on a local
 // mirror (a page or post surface only: a template copy and a Hostinger target are skipped with a note; a template copy's tree instead takes
 // the rules that read only the draft element, lib/site-run-template-apply.mjs, before it is written). Its failure stops the
-// surface like any stage; the stage result names the ops written and any no-setting row naming a setting the block has
-// (apply-gate's `unresolved`, which the applier's own exit code fails only on a whole run).
+// surface like any stage; the stage result names the ops written and lists any no-setting row naming a setting the block has
+// (apply-gate's `unresolved`): a look the clone cannot place is listed there and never fails the stage or the applier.
 // The run ledger (lib/run-ledger.mjs): every surface's stages append what they did with each draft look to
 // sites/<client>/build/qa/ledger/<surface>/<Fill stamp>/run.jsonl (the skeleton's drops, Fill's records and silent drops, the
 // build's saved markup against Fill's writes in built.json beside it, the applier's plan); --stages ...,verify adds the verify
@@ -111,8 +111,9 @@ function run( cmd, args, { logFile, env = {}, cwd = REPO } ) {
 }
 
 // The apply stage's result, read from the applier's log: the ops planned, the rows by status (from its summary table) and the
-// gate's count. A no-setting row naming a setting the block has fails the stage (`--surfaces` runs skip the applier's own gate,
-// so this is where a part-run is held to it); a no-effect or unchecked write is reported.
+// gate's count. A look the clone cannot place (a no-setting row naming a setting the block has, the gate's `unresolved`) is
+// listed in the result and never stops the surface: verify and the walk still run, and no-setting-review.json names each row
+// (Bean 2026-11-20); a no-effect or unchecked write is reported the same way.
 export function applyDetail( logFile, fallback ) {
 	const log = fs.existsSync( logFile ) ? fs.readFileSync( logFile, 'utf8' ) : '';
 	const ops = /^[^\s:]+: (\d+) ops, (\d+) rows$/m.exec( log );
@@ -125,10 +126,10 @@ export function applyDetail( logFile, fallback ) {
 	const total = ( n ) => rows.reduce( ( a, r ) => a + r[ n ], 0 );
 	const unresolved = Number( gate?.[ 3 ] ?? 0 );
 	const detail = `${ ops ? `${ ops[ 1 ] } ops` : 'no ops' }${ gate ? `, ${ gate[ 1 ] } no-setting, ${ unresolved } unresolved` : '' }, ${ total( 6 ) } no-effect, ${ total( 1 ) } unchecked`;
-	if ( unresolved ) {
-		throw new Error( `${ detail }: a no-setting row names a setting the block has (no-setting-review.json)` );
-	}
-	return detail;
+	// The applier's own listing (`unresolved: <surface> <block> <prop>: <why>`), so the run report names each look without the
+	// review file, which the next surface's apply overwrites.
+	const listed = [ ...log.matchAll( /^unresolved: (.+)$/gm ) ].map( ( m ) => m[ 1 ].trim() );
+	return unresolved ? `${ detail }; ${ unresolved } look(s) the clone could not place, listed not failed${ listed.length ? `: ${ listed.join( ' | ' ) }` : ' (no-setting-review.json)' }` : detail;
 }
 
 // A mutex: tasks passed to `exclusive` run one after another.
