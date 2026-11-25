@@ -29,11 +29,11 @@ export const calTagsFor = ( client, dir = CACHE ) => ( slug ) => Object.fromEntr
 export const calSettingsFor = ( client, dir = CACHE ) => ( slug ) => calibrationsAt( client, dir )( slug )?.settings || {};
 
 // A block's parts for the general pairing (lib/skeleton-part-pairing.mjs): its default look for the client, with its
-// settings, text fields and the attributes its elements carry (`pathAttrs`, absent when the look records none). Null for a
-// block with no record.
+// settings, text fields, the attributes its elements carry (`pathAttrs`, absent when the look records none) and the parts only
+// a page that sets a setting draws (`conditionalParts`, offered after the default parts fail). Null for a block with no record.
 export const calPartsFor = ( client, dir = CACHE ) => ( slug ) => {
 	const cal = calibrationsAt( client, dir )( slug );
-	return cal ? { elements: cal.elements || {}, parts: cal.parts || {}, settings: cal.settings || {}, text: cal.text || {}, ...( cal.pathAttrs ? { pathAttrs: cal.pathAttrs } : {} ) } : null;
+	return cal ? { elements: cal.elements || {}, parts: cal.parts || {}, settings: cal.settings || {}, text: cal.text || {}, ...( cal.pathAttrs ? { pathAttrs: cal.pathAttrs } : {} ), ...( cal.conditionalParts ? { conditionalParts: cal.conditionalParts } : {} ) } : null;
 };
 
 // Has the client's site look of every SGS block built (or confirmed current) in one parallel batch before a proposal

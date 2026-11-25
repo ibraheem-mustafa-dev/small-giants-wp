@@ -1,0 +1,9 @@
+[
+	{ "file": "lib/skeleton-part-pairing.mjs", "find": "if ( underSummary.size && ! rowLoops.size ) {", "replace": "if ( false ) {", "why": "a draft menu with no summary row is still offered the link inside the submenu row wrapper, so the link fits two parts" },
+	{ "file": "lib/skeleton-part-pairing.mjs", "find": "shownParts.length && ( cands = shownParts );", "replace": "void shownParts;", "why": "a part the block never displays stays a candidate beside the displayed one" },
+	{ "file": "lib/skeleton-part-pairing.mjs", "find": "hidden: oof && null !== width && width <= 1.5, none: neverShown( byWidth ),", "replace": "hidden: oof && null !== width && width <= 1.5, none: false,", "why": "no part is ever read as display none at every width" },
+	{ "file": "lib/skeleton-part-pairing.mjs", "find": "const never = ( p ) => p.none || ( null !== p.parent && !! parts.get( p.parent ) && never( parts.get( p.parent ) ) );", "replace": "const never = ( p ) => p.none;", "why": "a part inside a part the block never displays still counts as displayed" },
+	{ "file": "lib/skeleton-part-pairing.mjs", "find": "if ( ! retry.size || ! Object.keys( cond ).length ) {", "replace": "if ( true ) {", "why": "a draft element no default part fits is never offered the conditional parts" },
+	{ "file": "lib/skeleton-part-pairing.mjs", "find": "const first = pairCore( args );", "replace": "const first = pairCore( { ...args, calibration: { ...args.calibration, elements: { ...conditionalElements( args.calibration?.conditionalParts ), ...args.calibration?.elements } } } );", "why": "the conditional parts join the default parts in the first run, so an element the default parts pair turns ambiguous" },
+	{ "file": "lib/skeleton-context.mjs", "find": ", ...( cal.conditionalParts ? { conditionalParts: cal.conditionalParts } : {} ) } : null;", "replace": " } : null;", "why": "calPartsFor drops the look's conditional parts" }
+]
