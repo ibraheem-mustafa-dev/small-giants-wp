@@ -36,6 +36,7 @@ import { recordIndexFor } from './lib/apply-records.mjs';
 import { loadSkeleton, panelIds } from './lib/apply-skeleton.mjs';
 import { motionTools } from './lib/apply-drawer-core.mjs';
 import { loadSurfaces, withSkeleton } from './lib/apply-targets.mjs';
+import { staleRecordProblems, targetsOffOrigin } from './lib/apply-origin-gate.mjs';
 import { layerTargets } from './lib/apply-layer-targets.mjs';
 import { hostedFacts } from './lib/apply-group-read.mjs';
 import { partsOf, partStyles } from './lib/apply-part-hover.mjs';
@@ -330,6 +331,10 @@ async function main() {
 	if ( ! loaded.surfaces.length ) {
 		throw new Error( 'no surface to work on' );
 	}
+	const staleRecords = staleRecordProblems( loaded.surfaces, client );
+	if ( staleRecords.length ) {
+		throw new Error( `a pair record disagrees with the origin of the run that saved the post, nothing planned:\n${ staleRecords.join( '\n' ) }` );
+	}
 	// The site this run reads and writes (--site, else the first surface's): checked before anything is written.
 	const { site, surfaces } = applySite( { surfaces: loaded.surfaces, named: flag( '--site' ), targets: readTargets(), repo: REPO, write } );
 	fs.mkdirSync( outDir, { recursive: true } );
@@ -408,6 +413,10 @@ async function main() {
 			const drafts = await draftReads( { browser, surface, widths, props, extras, cache: tmp, fresh: has( '--fresh' ) } );
 			const lives = await liveReads( { browser, surface, widths, props, extras } );
 			const closed = await closedReads( { browser, surface, props, wanted: families.some( ( f ) => f.closedClock?.( { saved: blocks[ surface.postId ]?.blocks ?? {} } ) ) } );
+			const offOrigin = targetsOffOrigin( surface );
+			if ( offOrigin.length ) {
+				throw new Error( `${ surface.name }: a target is not the origin's element, nothing planned:\n${ offOrigin.join( '\n' ) }` );
+			}
 			const { rows, ops: decided } = decideSurface( { surface, drafts, lives, blocks, families, ledger, db, records, recordsIndex, calFor, clientData, closed, skeleton, snapshot, links, rawSnapshot } );
 			const saved = blocks[ surface.postId ]?.blocks ?? {};
 			// Position matching (lib/apply-position.mjs): draft elements no pair reaches, matched to live blocks by where they sit,

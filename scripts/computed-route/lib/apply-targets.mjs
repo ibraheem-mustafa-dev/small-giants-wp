@@ -14,8 +14,12 @@ const readJson = ( f, fallback = null ) => ( fs.existsSync( f ) ? JSON.parse( fs
 // once the post's blocks are known (withSkeleton).
 export const pairsOf = ( cfg, origin = {}, refreshed = null ) => pairsReport( cfg, origin, refreshed ).pairs;
 
-// { pairs, refused, stale }. `refreshed` is `<surface>.pairs.json` (lib/refresh-pairs.mjs): its pairs replace the config's and origin's for
-// the same ref, and a ref it names unpaired is dropped with its reason. A pair with `reveal` is an element the draft shows only
+// { pairs, refused, stale, disagree }. The origin file (`<surface>.origin.json`, written by the same run that saved the post) holds each saved
+// block's exact draft element, so it wins over every other source for a ref it holds: a config pair or a `<surface>.pairs.json` pair that
+// names another element is a stale record, left out and listed in `disagree` as { ref, source: 'pair' | 'refresh', was, origin } (loadSurfaces
+// carries it to the applier, which refuses to run on it). `refreshed` is `<surface>.pairs.json` (lib/refresh-pairs.mjs): its pairs replace the
+// config's for a ref the origin does not hold, and a ref it names unpaired is dropped with its reason. A part or reveal pair names a different
+// element of the same block by design, so it is never compared with the origin's. A pair with `reveal` is an element the draft shows only
 // in that state, read with the draft put in it (lib/apply-reveal-read.mjs). A draft element that several refs claim with different
 // content (their origin fingerprints' text differs) is refused for all of them: a write for one block would land on the others.
 export function pairsReport( cfg, origin = {}, refreshed = null ) {
@@ -26,10 +30,15 @@ export function pairsReport( cfg, origin = {}, refreshed = null ) {
 			out.set( ref, { key: ref, ref, tpl: p.draft.tpl, via: 'pair' } );
 		}
 	}
+	const disagree = [];
 	for ( const [ ref, row ] of Object.entries( origin ) ) {
-		if ( ! out.has( ref ) && row?.tpl ) {
-			out.set( ref, { key: ref, ref, tpl: row.tpl, via: 'origin' } );
+		if ( ! row?.tpl ) {
+			continue;
 		}
+		if ( out.has( ref ) && out.get( ref ).tpl !== row.tpl ) {
+			disagree.push( { ref, source: 'pair', was: out.get( ref ).tpl, origin: row.tpl } );
+		}
+		out.set( ref, { key: ref, ref, tpl: row.tpl, via: out.has( ref ) && out.get( ref ).tpl === row.tpl ? 'pair' : 'origin' } );
 	}
 	const refused = [];
 	// The refreshed file names every saved block, paired or with a reason: an old pair whose ref it does not name is on no block of
@@ -37,6 +46,11 @@ export function pairsReport( cfg, origin = {}, refreshed = null ) {
 	const stale = refreshed ? [ ...out.keys() ].filter( ( ref ) => ! ( ref in ( refreshed.pairs || {} ) ) && ! ( ref in ( refreshed.unpaired || {} ) ) && ! ( ref in ( refreshed.structural || {} ) ) ) : [];
 	stale.forEach( ( ref ) => out.delete( ref ) );
 	for ( const [ ref, tpl ] of Object.entries( refreshed?.pairs || {} ) ) {
+		const held = origin[ ref ]?.tpl;
+		if ( held && held !== tpl.tpl && ! tpl.part && ! tpl.reveal ) {
+			disagree.push( { ref, source: 'refresh', was: tpl.tpl, origin: held } );
+			continue;
+		}
 		out.set( ref, { key: ref, ref, tpl: tpl.tpl, via: 'refresh', ...( tpl.reveal ? { reveal: tpl.reveal } : {} ), ...( tpl.part ? { part: tpl.part } : {} ) } );
 	}
 	// A structural block is one the draft draws no element for (lib/pair-wrappers.mjs): reported, never paired.
@@ -61,7 +75,7 @@ export function pairsReport( cfg, origin = {}, refreshed = null ) {
 			} );
 		}
 	}
-	return { pairs: [ ...out.values() ], refused, stale };
+	return { pairs: [ ...out.values() ], refused, stale, disagree };
 }
 
 // The draft's address for a surface, on the origin the draft is served from now: a config records the port of its own run.
@@ -101,8 +115,8 @@ export async function loadSurfaces( { repo, client, only = null, draftOrigin } )
 		}
 		const cfg = ( await import( pathToFileURL( config ).href ) ).default;
 		const origin = readJson( path.join( build, `${ name }.origin.json` ), {} );
-		const { pairs, refused } = pairsReport( cfg, origin, readJson( path.join( build, `${ name }.pairs.json` ) ) );
-		out.push( { name, postId: Number( postId ), shell: s.shell ?? null, draftIndex: s.draftIndex ?? null, site: s.site, cfg: { ...cfg, draft: { ...cfg.draft, url: draftUrl( cfg.draft.url, draftOrigin ) } }, pairs, refused } );
+		const { pairs, refused, disagree } = pairsReport( cfg, origin, readJson( path.join( build, `${ name }.pairs.json` ) ) );
+		out.push( { name, disagree, origin, postId: Number( postId ), shell: s.shell ?? null, draftIndex: s.draftIndex ?? null, site: s.site, cfg: { ...cfg, draft: { ...cfg.draft, url: draftUrl( cfg.draft.url, draftOrigin ) } }, pairs, refused } );
 	}
 	return { surfaces: out, skipped };
 }
