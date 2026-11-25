@@ -5,6 +5,7 @@
 // either quote), so prose such as `MM.cart.add(...)` is never a call and no expression the page could run is ever built from
 // the text. The page-side half (lib/intake-state.mjs::logicState, op `reach`) runs only a call whose root is a plain-object global
 // the draft defines (never a built-in such as Math or console), and only a function reached by plain property names.
+import { structuredReach } from './intake-reach-calls.mjs';
 const IDENT = '[A-Za-z_$][\\w$]*';
 
 // A JS-literal subset as an array of arguments, or null when the text is anything else.
@@ -89,7 +90,7 @@ export function preconditionWays( needs, surfaces ) {
 		for ( const s of surfaces || [] ) {
 			for ( const st of s.states || [] ) {
 				const v = st.state_keys?.[ need ];
-				const calls = true === v || 'true' === v ? storeCalls( st.how_to_reach ) : [];
+				const calls = true === v || 'true' === v ? ( structuredReach( st )?.store ?? storeCalls( st.how_to_reach ) ) : [];
 				const id = calls.map( describeStoreCall ).join( '; ' );
 				if ( calls.length && ! seen.has( id ) ) {
 					seen.add( id );
