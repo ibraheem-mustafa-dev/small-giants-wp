@@ -11,12 +11,14 @@ import { driverProblems, driverMessage, DRIVER_FOLDERS } from '../tools/run-test
 
 const TOOL = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..', 'tools', 'run-tests.mjs' );
 
-// A checkout skeleton holding only the run-tests tool, with the driver's package files in `installed` folders.
+// A checkout skeleton holding only the run-tests tool and the temp guard it imports, with the driver's package files in `installed` folders.
 const checkout = ( installed = [] ) => {
 	const repo = fs.mkdtempSync( path.join( os.tmpdir(), 'sgs-run-tests-' ) );
 	const tools = path.join( repo, 'scripts', 'computed-route', 'tools' );
 	fs.mkdirSync( tools, { recursive: true } );
 	fs.copyFileSync( TOOL, path.join( tools, 'run-tests.mjs' ) );
+	fs.mkdirSync( path.join( repo, 'scripts', 'computed-route', 'lib' ), { recursive: true } );
+	fs.copyFileSync( path.join( path.dirname( TOOL ), '..', 'lib', 'temp-guard.mjs' ), path.join( repo, 'scripts', 'computed-route', 'lib', 'temp-guard.mjs' ) );
 	for ( const folder of installed ) {
 		const pkg = path.join( repo, folder, 'node_modules', 'playwright' );
 		fs.mkdirSync( pkg, { recursive: true } );
