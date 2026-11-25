@@ -165,7 +165,7 @@ export function paintsBox( element, { declared = {}, parent = null, children = 0
 	// for the tag (null) the computed read reports no padding at all, so it refutes a declared padding only where every
 	// recorded side is zero.
 	const decides = null === paddingBase ? new Map( resolvedWidths( element ).map( ( w ) => [ w, computedLooks( element.resolved[ w ], parent?.resolved?.[ w ] ) ] ) ) : computed;
-	const refuted = ( look, w ) => decides.has( w ) && ! decides.get( w ).has( look ) && ( COMPUTED_DECIDES[ look ] ?? [] ).length > 0 && COMPUTED_DECIDES[ look ].every( ( n ) => undefined !== element.resolved[ w ][ n ] );
+	const refuted = ( look, w ) => ! decides.get( w )?.has( look ) && ( COMPUTED_DECIDES[ look ] ?? [] ).length > 0 && COMPUTED_DECIDES[ look ].every( ( n ) => undefined !== element.resolved[ w ][ n ] );
 	for ( const w of widths ) {
 		stated.forEach( ( look ) => refuted( look, w ) || add( look, w ) );
 		children >= 2 && LAYS_OUT.has( low( displayAt( w ) ) ) && add( 'layout', w );
@@ -331,6 +331,8 @@ export const INHERITED_LOOKS = [ 'text-centre' ];
 //                 verified when that node is in the skeleton and holds `setting` among its attributes or its decided settings.
 //   inherited     `looks` are inherited (INHERITED_LOOKS) and a node inside the element reads them from its own computed values.
 //   host-layout   the block at `node` lays the element's children out itself (a hero's split columns): `looks` is layout only.
+//   host-band     the block at `node` draws its columns within its own content width, so the width cap and auto side margins of
+//                 the wrapper that held those columns (`looks`: BAND_LOOKS only) are that width (rules.heroInner.hostBand).
 //   absorbed      the parent block at `node` absorbed the element (lib/skeleton-absorb-wrapper.mjs): it is that node's draft
 //                 element at the part `slot`, whose `settings` carry `looks`. Verified when that node is in the skeleton and its
 //                 draftSlots names a finder at `slot`.
@@ -357,6 +359,7 @@ export const RECORD_KINDS = {
 	setting: { needs: [ 'node', 'setting', 'looks' ], delivers: true },
 	inherited: { needs: [ 'looks' ], delivers: true },
 	'host-layout': { needs: [ 'node', 'looks' ], delivers: true },
+	'host-band': { needs: [ 'node', 'looks' ], delivers: true },
 	absorbed: { needs: [ 'node', 'slot', 'settings', 'looks' ], delivers: true },
 	'link-slot': { needs: [ 'node', 'slot', 'looks' ], delivers: true },
 	overlay: { needs: [ 'node', 'slot', 'setting', 'layer', 'looks' ], delivers: true },
@@ -419,7 +422,7 @@ export function checkRecords( records, { looks, nodes, below = false, calibratio
 		}
 		const named = [].concat( rec.looks ).filter( ( l ) => looks.includes( l ) );
 		const node = rec.node ? nodes.get( rec.node ) : null;
-		const ok = 'setting' === rec.kind ? !! node && ( undefined !== node.attributes?.[ rec.setting ] || undefined !== node.decided?.[ rec.setting ] ) : 'absorbed' === rec.kind || 'link-slot' === rec.kind ? !! node?.draftSlots?.[ rec.slot ] : 'overlay' === rec.kind ? rec.slot === node?.draftOverlay?.slot && !! node.draftSlots?.[ rec.slot ] && ( node.draftOverlay.layers || [] ).some( ( f ) => rec.layer === f?.tpl ) : 'format' === rec.kind ? !! node && Object.values( node.attributes || {} ).some( ( v ) => 'string' === typeof v && v.includes( `<${ rec.format }>` ) ) : 'inherited' === rec.kind ? below && named.every( ( l ) => INHERITED_LOOKS.includes( l ) ) : !! node && named.every( ( l ) => 'layout' === l );
+		const ok = 'setting' === rec.kind ? !! node && ( undefined !== node.attributes?.[ rec.setting ] || undefined !== node.decided?.[ rec.setting ] ) : 'absorbed' === rec.kind || 'link-slot' === rec.kind ? !! node?.draftSlots?.[ rec.slot ] : 'overlay' === rec.kind ? rec.slot === node?.draftOverlay?.slot && !! node.draftSlots?.[ rec.slot ] && ( node.draftOverlay.layers || [] ).some( ( f ) => rec.layer === f?.tpl ) : 'format' === rec.kind ? !! node && Object.values( node.attributes || {} ).some( ( v ) => 'string' === typeof v && v.includes( `<${ rec.format }>` ) ) : 'inherited' === rec.kind ? below && named.every( ( l ) => INHERITED_LOOKS.includes( l ) ) : 'host-band' === rec.kind ? !! node && named.every( ( l ) => BAND_LOOKS.includes( l ) ) : !! node && named.every( ( l ) => 'layout' === l );
 		ok ? out.delivered.push( ...named ) : out.bad.push( `${ rec.kind } ${ rec.node ?? '' } ${ rec.setting ?? '' } cannot be verified` );
 	}
 	return out;

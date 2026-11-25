@@ -1631,14 +1631,18 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		const setting = records.flatMap( ( r ) => ( 'setting' === r.kind ? r.looks : [] ) );
 		const inherited = x.kidsB.length ? painted.filter( ( l ) => INHERITED_LOOKS.includes( l ) ) : [];
 		const laid = out.hostLays && painted.includes( 'layout' ) ? [ 'layout' ] : [];
+		// The width cap and auto side margins on the wrapper that holds the host's own columns (rules.<rule>.hostBand): the host
+		// draws its columns within its own content width, so that width is the band the host draws.
+		const banded = out.hostLays ? painted.filter( ( l ) => ( R[ out.rule ]?.hostBand || [] ).includes( l ) && ! setting.includes( l ) ) : [];
 		// The looks the link part of the block inside reads (dest.sizing.looks): only those, never every band look.
 		const linked = painted.filter( ( l ) => ( dest.sizing?.looks || [] ).includes( l ) && ! setting.includes( l ) );
-		const left = painted.filter( ( l ) => ! setting.includes( l ) && ! inherited.includes( l ) && ! laid.includes( l ) && ! ( dest.band && BAND_LOOKS.includes( l ) ) && ! linked.includes( l ) );
+		const left = painted.filter( ( l ) => ! setting.includes( l ) && ! inherited.includes( l ) && ! laid.includes( l ) && ! banded.includes( l ) && ! ( dest.band && BAND_LOOKS.includes( l ) ) && ! linked.includes( l ) );
 		if ( ! painted.length || dest.all ) {
 			return { kept: true, left, conserve: out.conserve ?? [] };
 		}
 		inherited.length && records.push( { kind: 'inherited', looks: inherited } );
 		laid.length && records.push( { kind: 'host-layout', node: out.hostLays, looks: laid } );
+		banded.length && records.push( { kind: 'host-band', node: out.hostLays, looks: banded } );
 		linked.length && records.push( { kind: 'link-slot', node: dest.sizing.node, slot: dest.sizing.slot, looks: linked } );
 		return { kept: ! left.length, left, conserve: records };
 	};

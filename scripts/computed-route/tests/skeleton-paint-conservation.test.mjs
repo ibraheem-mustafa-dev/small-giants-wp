@@ -682,3 +682,12 @@ test( 'conservationRows counts computed padding against the inventory\'s measure
 	assert.equal( uaKeyOf( { tag: 'input', attrs: {} } ), 'input' );
 	assert.equal( uaKeyOf( { tag: 'td' } ), 'td' );
 } );
+
+test( 'MUST FAIL: a host-band record delivers a width cap and auto margins when its node is in the skeleton, and nothing else', () => {
+	const nodes = new Map( [ [ 'Root/2#0', { draftRef: { tpl: 'Root/2#0' } } ] ] );
+	const rec = [ { kind: 'host-band', node: 'Root/2#0', looks: [ 'max-width', 'margin-auto' ] } ];
+	assert.deepEqual( checkRecords( rec, { looks: [ 'max-width', 'margin-auto' ], nodes } ), { delivered: [ 'max-width', 'margin-auto' ], listed: null, bad: [] } );
+	assert.deepEqual( checkRecords( rec, { looks: [ 'max-width', 'margin-auto' ], nodes: new Map() } ).bad, [ 'host-band Root/2#0  cannot be verified' ], 'no such node in the skeleton' );
+	assert.deepEqual( checkRecords( [ { kind: 'host-band', node: 'Root/2#0', looks: [ 'background' ] } ], { looks: [ 'background' ], nodes } ).bad, [ 'host-band Root/2#0  cannot be verified' ], 'a background is no band look' );
+	assert.deepEqual( checkRecords( [ { kind: 'host-band', looks: [ 'max-width' ] } ], { looks: [ 'max-width' ], nodes } ).bad, [ 'host-band names no node' ] );
+} );

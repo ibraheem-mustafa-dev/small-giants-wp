@@ -748,5 +748,11 @@
 		"find": "'link-slot': { needs: [ 'node', 'slot', 'looks' ], delivers: true },",
 		"replace": "'link-slot': { needs: [ 'node', 'looks' ], delivers: true },",
 		"why": "a link-slot record naming no part passes"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "'host-band' === rec.kind ? !! node && named.every( ( l ) => BAND_LOOKS.includes( l ) ) :",
+		"replace": "'host-band' === rec.kind ? !! node :",
+		"why": "a host-band record would deliver any look, a background included"
 	}
 ]
