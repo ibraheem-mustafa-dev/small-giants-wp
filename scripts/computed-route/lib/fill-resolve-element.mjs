@@ -218,7 +218,7 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 			draft = { ...draft };
 			for ( const w of Object.keys( draft ) ) {
 				const declaredHere = st.reads.declared?.[ w ]?.[ target.id ] ?? null;
-				if ( notPainted( prop, snaps[ w ].styles || {}, snaps[ w ], declaredHere ) ) {
+				if ( notPainted( prop, snaps[ w ].styles || {}, snaps[ w ], declaredHere, defaultPaint( cal, slot, Number( w ), prop ) ) ) {
 					settled( st, rec, ref, { slot, property: prop, value: String( draft[ w ] ), widths: [ Number( w ) ], reason: 'not-painted', detail: `at ${ w }: ${ notPaintedWhy( prop, snaps[ w ].styles || {}, snaps[ w ], declaredHere ) }` } );
 					delete draft[ w ];
 				}

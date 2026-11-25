@@ -139,6 +139,15 @@ export function paintTimings( reads, id ) {
 	return out;
 }
 
+// The paint timing of an element whose hover look changes colour, background, border colour or shadow (paintTimings'
+// result), or {} where it has no such hover look. Such an element needs the motion hover layer's `paintDuration` and
+// `shadowDuration` whether or not its hover moves it (Bean 2026-11-24: the timing of a hover colour or shadow lives in
+// the motion settings).
+export function paintHoverTimings( reads, id ) {
+	const looks = ( w ) => ( reads.states?.[ w ]?.looks?.[ id ] || [] ).filter( ( l ) => 'hover' === [ ...l.states ].sort().join( '+' ) && ! l.pseudo );
+	return READ_WIDTHS.some( ( w ) => looks( w ).some( ( l ) => Object.keys( l.declared || {} ).some( isPaint ) ) ) ? paintTimings( reads, id ) : {};
+}
+
 // The resting rule's transition longhands at a width: the cascade winner of the resting read, its property list the
 // rendered one where the code states none.
 function restDeclOf( reads, id, w ) {
@@ -270,7 +279,7 @@ export function timingWrites( { node, ref, rec, target, cal, db, snapshot, reads
 			}
 		}
 	}
-	out.unmapped.push( ...splitRows( { facts, homes, tried, where, rec, target, shown, motion: stateHover( reads, target ).base, paint: paintTimings( reads, target.id ) } ) );
+	out.unmapped.push( ...splitRows( { facts, homes, tried, where, rec, target, shown, motion: stateHover( reads, target ).base ?? ( Object.keys( paintHoverTimings( reads, target.id ) ).length ? PAINT_ONLY_LAYER : null ), paint: paintTimings( reads, target.id ) } ) );
 	return out;
 }
 
@@ -292,6 +301,9 @@ function inertTiming( prop, rest, duration ) {
 	const zero = ( v ) => 0 === timeToMs( oneTiming( v ) );
 	return Object.entries( rest ).every( ( [ w, v ] ) => ( 'transition-timing-function' === prop ? undefined !== duration?.[ w ] && zero( duration[ w ] ) : zero( v ) ) );
 }
+
+// The stand-in for a motion hover layer that moves nothing and only times paint (the layer a colour or shadow hover gets).
+const PAINT_ONLY_LAYER = { paintOnly: true };
 
 const named = ( groups ) => groups.map( ( g ) => `${ g.properties.join( ', ' ) } at ${ g.value }` ).join( '; ' );
 

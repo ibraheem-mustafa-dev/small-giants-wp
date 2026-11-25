@@ -7,7 +7,7 @@
 import { colourHex } from './tokens.mjs';
 import { shadowParts } from './motion-shadow.mjs';
 import { templateKey, templateKeyOf } from './fact-key.mjs';
-import { props, nameOf, words, blob, triggerOf, MINUS, NUMBER, number, durationOf } from './motion-record-text.mjs';
+import { props, nameOf, words, blob, triggerOf, MINUS, NUMBER, number, durationOf, easingOf } from './motion-record-text.mjs';
 
 const px = ( n ) => `${ n }px`;
 
@@ -210,6 +210,31 @@ const SCROLLED_OFFSET_DEFAULT = 50;
 // The property a scrolled look is a look of, as an animation record names it.
 const LOOK_PROPERTY = { 'style:padding': 'padding', 'attr:width': 'width' };
 
+// The row block's own shrink timing (`rowShrinkDuration` 0 keeps 200ms; `rowShrinkEasing` empty keeps ease), in the units
+// the block's settings hold: the record's duration in ms and its easing as a named curve the block knows (a cubic-bezier()
+// is `custom` with `rowShrinkEasingCustom`). A timing equal to the block's own default is not written; an easing the
+// block has no name or custom field for is noted.
+const SHRINK_EASING_NAMES = [ 'ease', 'ease-out', 'ease-in-out', 'linear' ];
+const SHRINK_DURATION_DEFAULT = 200;
+function shrinkTiming( r, notes ) {
+	const ms = durationOf( r );
+	const curve = easingOf( r )?.trim().toLowerCase() ?? null;
+	const out = [];
+	if ( null !== ms && ms !== SHRINK_DURATION_DEFAULT ) {
+		out.push( { attr: 'rowShrinkDuration', value: Math.round( ms ) } );
+	}
+	if ( null !== curve && 'ease' !== curve ) {
+		if ( SHRINK_EASING_NAMES.includes( curve ) ) {
+			out.push( { attr: 'rowShrinkEasing', value: curve } );
+		} else if ( /^cubic-bezier\(/.test( curve ) ) {
+			out.push( { attr: 'rowShrinkEasing', value: 'custom' }, { attr: 'rowShrinkEasingCustom', value: curve } );
+		} else {
+			notes.push( `the row shrinks with the easing "${ curve }", which rowShrinkEasing has no name for` );
+		}
+	}
+	return out;
+}
+
 // A transition of a property the draft's scrolled state changes on that element (`ctx.template.scrolled`, scrolledLooksOf): a
 // row whose padding changes with it shrinks on scroll (`rowShrink` and `rowShrinkPadding` on the `sgs/site-header-row`, and
 // the draft's threshold as `scrolledOffset` on the header it sits in where it is not the default), and a logo whose width
@@ -237,6 +262,7 @@ export function scrollShrinkOf( r, ctx ) {
 		( placements[ key ] ??= {} )[ 'sgs/site-header-row' ] = [
 			{ attr: 'rowShrink', value: on },
 			...( held ? [ { attr: 'rowShrinkPadding', value: tiersOf( Object.fromEntries( TIER_WIDTHS.map( ( [ , w ] ) => [ w, boxes[ w ] ] ) ) ) } ] : [] ),
+			...shrinkTiming( r, notes ),
 		];
 		held || notes.push( `the shrunk padding is not in pixels at every width, so the row's own default (half the resting top and bottom) stands` );
 		if ( null !== offset && offset !== SCROLLED_OFFSET_DEFAULT ) {

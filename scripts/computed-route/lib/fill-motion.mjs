@@ -13,7 +13,7 @@ import { writeEffect, loadEffectOffers, PANEL_LISTS } from './motion-effects.mjs
 import { applyBehaviours, applyControls, applyGlobals, applySettings, applyStrip, behaviourIndex, hasAttrOf, place, sharedLayerRow } from './fill-behaviour.mjs';
 import { accountedIds, accountedAt, targetKey, silentRows, makeHomeOf, readingProgressHandover, motionWidths, styleSourceIds } from './fill-motion-account.mjs';
 import { elementMotion, elementEffects, snapLayer, paintLayer } from './fill-motion-element.mjs';
-import { paintTimings } from './fill-timing.mjs';
+import { paintHoverTimings, paintTimings } from './fill-timing.mjs';
 import { openWords } from './motion-states.mjs';
 import { setRecord } from './motion-set.mjs';
 import { stateRows } from './state-vocab.mjs';
@@ -334,7 +334,8 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 			own.forEach( ( r ) => expected.set( r.id, { ...( expected.get( r.id ) || {} ), [ at.key ]: where } ) );
 			const lists = staggers.filter( ( p ) => p.at?.t === t && ! p.refused );
 			out.unmapped.push( ...staggers.filter( ( p ) => p.at?.t === t && p.refused ).map( ( p ) => ( { ...where, property: 'motion', value: p.r.id, reason: p.refused } ) ) );
-			if ( ! own.length && ! sampled[ t.id ]?.[ 1440 ] && ! loops[ t.id ] && ! lists.length ) {
+			const paintTiming = reads ? paintHoverTimings( reads, t.id ) : {};
+			if ( ! own.length && ! sampled[ t.id ]?.[ 1440 ] && ! loops[ t.id ] && ! lists.length && ! Object.keys( paintTiming ).length ) {
 				continue;
 			}
 			const target = targetName( n, t, targets, home );
@@ -352,14 +353,17 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 			used.push( ...m.used );
 			out.notes.push( ...m.notes.map( ( text ) => ( { ...where, text } ) ) );
 			out.unmapped.push( ...m.unmapped.map( ( u ) => ( { ...where, property: 'motion', value: u.record, reason: u.reason } ) ) );
-			// The hover layer times colour, background, border colour and shadow apart from the movement (paint*, and shadow* for a shadow apart).
-			const hover = m.element.hover?.state;
-			if ( hover && reads ) {
+			// The hover layer times colour, background, border colour and shadow apart from the movement (paint*, and shadow* for a
+			// shadow apart). A hover that only changes colour or shadow has no movement: it gets a layer of timing fields alone.
+			if ( reads && ( m.element.hover?.state || Object.keys( paintTiming ).length ) ) {
 				const paint = paintLayer( paintTimings( reads, t.id ), ctx );
-				paint.values && Object.assign( hover.values, paint.values );
-				Object.entries( paint.devices ).forEach( ( [ tier, v ] ) => ( ( hover.devices ??= {} )[ tier ] = { ...( hover.devices[ tier ] || {} ), ...v } ) );
-				out.notes.push( ...paint.notes.map( ( text ) => ( { ...where, text } ) ) );
-				out.unmapped.push( ...paint.unmapped.map( ( u ) => ( { ...where, property: 'transition-timing-function', value: u.field, reason: `timing-conflict: ${ u.reason }` } ) ) );
+				const hover = m.element.hover?.state || ( paint.values && mdb.field( 'hover.state', 'values.paintDuration' ) ? ( m.element.hover = { state: { values: {} } } ).state : null );
+				if ( hover ) {
+					paint.values && Object.assign( hover.values, paint.values );
+					Object.entries( paint.devices ).forEach( ( [ tier, v ] ) => ( ( hover.devices ??= {} )[ tier ] = { ...( hover.devices[ tier ] || {} ), ...v } ) );
+					out.notes.push( ...paint.notes.map( ( text ) => ( { ...where, text } ) ) );
+					out.unmapped.push( ...paint.unmapped.map( ( u ) => ( { ...where, property: 'transition-timing-function', value: u.field, reason: `timing-conflict: ${ u.reason }` } ) ) );
+				}
 			}
 			if ( Object.keys( m.element ).length ) {
 				doc.elements[ target ] = { ...( doc.elements[ target ] || {} ), ...m.element };

@@ -2,7 +2,7 @@
 // comes from lib/resolve.mjs::resolve (R-47-3); this module decides only which tiers differ from what the node already
 // shows (R-47-5), tries the slots a setting could paint, and turns a fluid size into a clamp() where the setting takes one.
 import { contentSelectors } from './fill-content-selector.mjs';
-import { resolve, splitProperty, LOOSE } from './resolve.mjs';
+import { resolve, splitProperty, LOOSE, timeToMs } from './resolve.mjs';
 import { samePaint, exactPaint, paintCanon, PX_TOL } from './css-equivalence/tolerance.mjs';
 import { fitFluid, acceptsClamp, applyClamp, LENGTH_PROPS } from './fill-values.mjs';
 import { INHERITED } from './calibrate-props.mjs';
@@ -170,9 +170,11 @@ export const canon = ( prop, v, ctx = {} ) => paintCanon( prop, v, ctx );
 // computed leftover (currentcolor, a gap's `normal`), not a design value. A transition-duration of 0s is a leftover too
 // where the draft declares none (the CSS initial value on an element it gives no transition): it is judged only where
 // the draft's declared values for the element are known (`declared`: { longhand: value }, FR-48-8), never when the
-// declared read failed. styles: the element's collected styles; snap: the element's whole reading at this width, where
-// the caller has it (a gap is judged from it).
-export function notPainted( prop, styles, snap = null, declared = null ) {
+// declared read failed. It is a design value, though, where the block's own paint of the element lasts (`own`: the
+// block's calibrated default transition-duration there, from defaultPaint): the draft's undeclared 0s then removes the
+// block's own transition, and the 0 is written. styles: the element's collected styles; snap: the element's whole
+// reading at this width, where the caller has it (a gap is judged from it).
+export function notPainted( prop, styles, snap = null, declared = null, own = undefined ) {
 	if ( GAP_PROPS.includes( prop ) ) {
 		return null !== gapPaintsNothing( prop, styles, snap );
 	}
@@ -191,7 +193,7 @@ export function notPainted( prop, styles, snap = null, declared = null ) {
 		return 'none' === ( styles[ 'text-decoration-line' ] ?? 'none' );
 	}
 	if ( 'transition-duration' === prop ) {
-		return null !== declared && undefined === declared[ 'transition-duration' ] && /^\s*0(\.0+)?m?s(\s*,\s*0(\.0+)?m?s)*\s*$/.test( styles[ prop ] );
+		return null !== declared && undefined === declared[ 'transition-duration' ] && ! lasts( own ) && /^\s*0(\.0+)?m?s(\s*,\s*0(\.0+)?m?s)*\s*$/.test( styles[ prop ] );
 	}
 	return /^transition-(delay|timing-function)$/.test( prop ) && zero( styles[ 'transition-duration' ] );
 }
@@ -217,6 +219,9 @@ export function undeclaredInitial( prop, value, declared, paint ) {
 	const initial = initialOf( prop );
 	return null !== initial && sameCanonical( prop, value, initial ) && sameCanonical( prop, paint, initial );
 }
+
+// Whether a transition-duration list holds a duration above 0 (a block's own transition); an unmeasured one does not.
+const lasts = ( v ) => undefined !== v && String( v ).split( ',' ).some( ( t ) => 0 < ( timeToMs( t.trim() ) ?? 0 ) );
 
 const GAP_PROPS = [ 'gap', 'row-gap', 'column-gap' ];
 // The properties only a flex container lays out by: on any other box the computed value is the initial one (a block's

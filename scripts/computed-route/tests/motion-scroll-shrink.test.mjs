@@ -63,7 +63,7 @@ const BOX = { top: '10px', right: '24px', bottom: '10px', left: '24px' };
 
 test( 'MUST FAIL: a row whose padding the draft changes with its scrolled state shrinks on scroll: rowShrink, the shrunk padding and the draft threshold on the header', () => {
 	const { out, attrs } = run( [ ROW, LOGO, WORDMARK ] );
-	assert.deepEqual( attrs( 1 ), { rowShrink: { desktop: 'on' }, rowShrinkPadding: { desktop: BOX } } );
+	assert.deepEqual( attrs( 1 ), { rowShrink: { desktop: 'on' }, rowShrinkPadding: { desktop: BOX }, rowShrinkDuration: 350 } );
 	assert.deepEqual( attrs( 0 ), { scrolledOffset: 40 } );
 	assert.deepEqual( out.unmapped.map( ( u ) => `${ u.value }: ${ u.reason }` ), [] );
 } );
@@ -77,7 +77,7 @@ test( 'MUST FAIL: a logo whose width the draft changes with its scrolled state g
 test( 'MUST FAIL: a narrower tier whose shrunk padding differs is written on its own tier; a width with no change is off beneath a tier that shrinks', () => {
 	const own = facts( { scrolledPad: { 375: str( '8px 12px' ), 1440: str( '10px 24px' ) } } );
 	const { attrs } = run( [ ROW ], own );
-	assert.deepEqual( attrs( 1 ), { rowShrink: { desktop: 'on', tablet: 'off', mobile: 'on' }, rowShrinkPadding: { desktop: BOX, mobile: { top: '8px', right: '12px', bottom: '8px', left: '12px' } } } );
+	assert.deepEqual( attrs( 1 ), { rowShrink: { desktop: 'on', tablet: 'off', mobile: 'on' }, rowShrinkPadding: { desktop: BOX, mobile: { top: '8px', right: '12px', bottom: '8px', left: '12px' } }, rowShrinkDuration: 350 } );
 } );
 
 test( 'negative: the threshold is written only when it differs from the header default 50', () => {
@@ -109,7 +109,7 @@ test( 'negative: a record of a property the scrolled state does not change, an e
 test( 'a padding that is not in pixels keeps rowShrink on without a shrunk padding, and says so', () => {
 	const calc = facts( { scrolledPad: same( str, 'calc(1rem + 2px) 24px' ) } );
 	const { out, attrs } = run( [ ROW ], calc );
-	assert.deepEqual( attrs( 1 ), { rowShrink: { desktop: 'on' } } );
+	assert.deepEqual( attrs( 1 ), { rowShrink: { desktop: 'on' }, rowShrinkDuration: 350 } );
 	assert.match( out.notes.map( ( n ) => n.text ).join( ' ' ), /not in pixels at every width/ );
 } );
 
@@ -118,4 +118,15 @@ test( 'paddingBox reads one to four pixel lengths as the four sides, else null',
 	assert.deepEqual( paddingBox( '8' ), { top: '8px', right: '8px', bottom: '8px', left: '8px' } );
 	assert.equal( paddingBox( '1rem 2px' ), null );
 	assert.equal( paddingBox( '1px 2px 3px 4px 5px' ), null );
+} );
+
+test( 'MUST FAIL: the row shrinks with the draft\'s own duration and easing (rowShrinkDuration, rowShrinkEasing), a default or an unnamed curve writes none', () => {
+	const timed = ( over ) => run( [ { ...ROW, ...over } ] ).attrs( 1 );
+	assert.deepEqual( timed( { duration_ms: 350, easing: 'ease-in-out' } ), { rowShrink: { desktop: 'on' }, rowShrinkPadding: { desktop: BOX }, rowShrinkDuration: 350, rowShrinkEasing: 'ease-in-out' } );
+	const bezier = timed( { duration_ms: 400, easing: 'cubic-bezier(0.4, 0, 0.2, 1)' } );
+	assert.deepEqual( [ bezier.rowShrinkDuration, bezier.rowShrinkEasing, bezier.rowShrinkEasingCustom ], [ 400, 'custom', 'cubic-bezier(0.4, 0, 0.2, 1)' ] );
+	// Negative controls: the block's own 200ms and ease are not written; an easing with no name and no bezier is noted, not guessed.
+	assert.deepEqual( timed( { duration_ms: 200, easing: 'ease' } ), { rowShrink: { desktop: 'on' }, rowShrinkPadding: { desktop: BOX } } );
+	assert.deepEqual( timed( { duration_ms: null } ), { rowShrink: { desktop: 'on' }, rowShrinkPadding: { desktop: BOX } }, 'a record with no duration' );
+	assert.equal( timed( { easing: 'ease-in' } ).rowShrinkEasing, undefined );
 } );
