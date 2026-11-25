@@ -41,7 +41,7 @@ import {
 	omitted,
 } from '../panels/disclosure-context.js';
 
-import { DEVICES, add, nodes, own, rulesCss, scalar } from '../emit/core.js';
+import { DEVICES, add, frameOwns, nodes, own, rulesCss, scalar } from '../emit/core.js';
 import { mediaColour, mediaPx } from '../emit/values.js';
 /**
  * [D-tier-object-render-fix 2026-09-07] Padding is ONE owned tier-object
@@ -168,7 +168,8 @@ export function validate( value ) {
 export function emit( slot, attrs, uid, helper ) {
 	const { surface } = nodes( slot, uid, helper );
 	const rules = {};
-	for ( const device of DEVICES ) {
+	// A slot whose frame owns Padding paints it on the frame, so the picture inside takes none.
+	for ( const device of frameOwns( slot, 'Padding' ) ? [] : DEVICES ) {
 		const box = own( attrs, slot, 'Padding', device );
 		if ( box && 'object' === typeof box && ! Array.isArray( box ) ) {
 			for ( const side of [ 'top', 'right', 'bottom', 'left' ] ) {

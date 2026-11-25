@@ -123,6 +123,8 @@ export function itemSlotAttrs( prefix, item, attributes ) {
  * @param {string[]} [props.kinds]     The slot's kinds; default image.
  * @param {string}   [props.context]   The slot's context; default item.
  * @param {string}   [props.className] Extra class for the picture.
+ * @param {string[]} [props.frame]     Settings the block paints on the box around the picture (`Padding`, `Height`,
+ *                                     `Ratio`); the picture prints none of them and fills the box.
  * @return {JSX.Element|null} The picture, or null when the item has no file.
  */
 export default function ItemSlotPicture( {
@@ -134,6 +136,7 @@ export default function ItemSlotPicture( {
 	kinds = [ 'image' ],
 	context = 'item',
 	className = '',
+	frame,
 } ) {
 	return (
 		<SlotPicture
@@ -145,6 +148,7 @@ export default function ItemSlotPicture( {
 			uid={ `${ uid }-i${ index }` }
 			className={ className }
 			placeholder={ false }
+			frame={ frame }
 		/>
 	);
 }

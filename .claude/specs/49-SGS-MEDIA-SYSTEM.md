@@ -295,6 +295,8 @@ The helper is printed if, at any device, on resolved values, any of these hold: 
 
 With the helper and no mask, it has `overflow:hidden; overflow:clip`, as core Cover does, so sticky children keep working. With a mask, the mask layer clips.
 
+**A frame the block owns.** A block that paints Padding, Height or Ratio on its own box around the picture (the card grid's `.sgs-card-grid__image-wrap`; a form tile's own padding) declares it on the slot as `frame: ['Padding', 'Height', 'Ratio']`. The `media-padding` and `sizing` emitters then print none of those on the picture, which fills the box (width 100%), in PHP (`includes/media/media-values.php::sgs_media_frame_owns`) and in the editor (`src/components/media/emit/core.js::frameOwns`). A slot with no `frame` prints every setting on the picture as the table says. Background is not part of it: the picture keeps its own.
+
 Spacing around a slot belongs to the parent's gap or Alignment. The cloner never writes a margin onto a slot.
 
 ### 7.5 Shapes

@@ -146,6 +146,54 @@ final class MediaAtomEmittersTest extends TestCase {
 		$this->assertSame( array( 'width' => 'auto' ), $mixed['.u .sgs-media-el']['mobile'] );
 	}
 
+	/**
+	 * A slot whose frame owns Padding, Height or Ratio (a card's picture frame) prints none of them on the picture; the
+	 * same settings on a slot with no `frame` still print, and the picture fills the frame (width 100%).
+	 */
+	public function test_a_frame_owned_padding_height_and_ratio_print_nothing_on_the_picture(): void {
+		$set  = array(
+			'Padding' => array(
+				'desktop' => array(
+					'top'    => '14px',
+					'right'  => '14px',
+					'bottom' => '0px',
+					'left'   => '14px',
+				),
+			),
+			'Height'  => '46px',
+			'Ratio'   => '16 / 9',
+		);
+		$attr = self::attrs( $set );
+
+		$free_padding = sgs_media_atom_media_padding_emit( self::SLOT, $attr, 'u', false );
+		$this->assertStringContainsString( 'padding-top:14px', $free_padding, 'with no frame the picture is padded' );
+		$free_sizing = sgs_media_atom_sizing_emit( self::SLOT, $attr, 'u', false );
+		$this->assertStringContainsString( 'height:46px', $free_sizing );
+		$this->assertStringContainsString( 'aspect-ratio:16 / 9', $free_sizing );
+
+		$framed = array_merge( self::SLOT, array( 'frame' => array( 'Padding', 'Height', 'Ratio' ) ) );
+		$this->assertSame( '', sgs_media_atom_media_padding_emit( $framed, $attr, 'u', false ), 'the frame owns Padding' );
+		$sizing = sgs_media_atom_sizing_emit( $framed, $attr, 'u', false );
+		$this->assertStringNotContainsString( 'height:46px', $sizing, 'the frame owns Height' );
+		$this->assertStringNotContainsString( 'aspect-ratio', $sizing, 'the frame owns Ratio' );
+		$this->assertStringContainsString( 'width:100%', $sizing, 'the picture still fills the frame' );
+	}
+
+	public function test_a_frame_that_owns_only_padding_leaves_height_and_ratio_on_the_picture_and_keeps_the_background(): void {
+		$attr   = self::attrs(
+			array(
+				'Padding'    => array( 'desktop' => array( 'top' => '8px' ) ),
+				'Background' => '#ffffff',
+				'Height'     => '46px',
+			)
+		);
+		$framed = array_merge( self::SLOT, array( 'frame' => array( 'Padding' ) ) );
+		$css    = sgs_media_atom_media_padding_emit( $framed, $attr, 'u', false );
+		$this->assertStringNotContainsString( 'padding-top', $css );
+		$this->assertStringContainsString( 'background-color', $css, 'a frame that owns Padding still leaves the picture its Background' );
+		$this->assertStringContainsString( 'height:46px', sgs_media_atom_sizing_emit( $framed, $attr, 'u', false ) );
+	}
+
 	public function test_sizing_prints_nothing_when_nothing_is_set_and_sorts_properties(): void {
 		$this->assertSame( '', sgs_media_atom_sizing_emit( self::SLOT, array(), 'u', false ) );
 		$css = sgs_media_atom_sizing_emit(

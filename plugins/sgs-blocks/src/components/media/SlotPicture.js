@@ -45,6 +45,7 @@ export default function SlotPicture( {
 	instructions,
 	className = '',
 	placeholder = true,
+	frame,
 } ) {
 	const device = useActiveDevice();
 	const access = slotAccess( attributes, setAttributes, prefix );
@@ -82,7 +83,7 @@ export default function SlotPicture( {
 	}
 
 	const { css, needsHelper } = mediaPreview(
-		{ prefix, kinds, context },
+		{ prefix, kinds, context, frame },
 		attributes,
 		uid
 	);

@@ -31,6 +31,21 @@ if ( ! function_exists( 'sgs_media_devices' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_media_frame_owns' ) ) {
+	/**
+	 * Whether the slot's frame owns a setting: the block paints that setting on the box the picture sits in (a card's
+	 * picture frame), so the picture itself prints none of it and fills the frame. A slot declares it as
+	 * `frame: ['Padding', 'Height', 'Ratio']`; JS twin: `emit/core.js::frameOwns()`.
+	 *
+	 * @param array  $slot Slot `{prefix, kinds, context, frame}`.
+	 * @param string $base Setting base name (`Padding`, `Height`, `Ratio`).
+	 * @return bool
+	 */
+	function sgs_media_frame_owns( array $slot, string $base ): bool {
+		return is_array( $slot['frame'] ?? null ) && in_array( $base, $slot['frame'], true );
+	}
+}
+
 if ( ! function_exists( 'sgs_media_key' ) ) {
 	/**
 	 * The stored attribute name of a base: `{prefix}{Base}`, with the first letter lower-cased when the prefix is empty.

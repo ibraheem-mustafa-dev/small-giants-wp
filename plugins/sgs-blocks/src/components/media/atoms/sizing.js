@@ -10,7 +10,7 @@
  * @package SGS\Blocks
  */
 
-import { DEVICES, add, nodes, resolved, rulesCss } from '../emit/core.js';
+import { DEVICES, add, frameOwns, nodes, resolved, rulesCss } from '../emit/core.js';
 import { mediaLength, mediaRatio } from '../emit/values.js';
 
 const CANCEL = {
@@ -92,11 +92,14 @@ export function emit( slot, attrs, uid, helper ) {
 	// a Width resolves.
 	const inner = ! helper && n.media !== n.layout;
 	let innerWas = false;
+	const ownsHeight = frameOwns( slot, 'Height' );
+	const ownsRatio = frameOwns( slot, 'Ratio' );
 	for ( const device of DEVICES ) {
 		const r = resolveSizing( attrs, slot, device );
-		const fill = 'fill' === r.Height;
-		const height = fill ? null : r.Height;
-		const ratio = fill ? null : r.Ratio;
+		// A slot whose frame owns Height or Ratio sizes the frame with it: the picture prints neither and fills the frame.
+		const fill = ! ownsHeight && 'fill' === r.Height;
+		const height = fill || ownsHeight ? null : r.Height;
+		const ratio = fill || ownsRatio ? null : r.Ratio;
 		const any = Object.values( r ).some( ( v ) => null !== v );
 		let width;
 		if ( null !== r.Width ) {

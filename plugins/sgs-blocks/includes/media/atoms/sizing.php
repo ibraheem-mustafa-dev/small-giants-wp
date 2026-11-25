@@ -103,11 +103,14 @@ if ( ! function_exists( 'sgs_media_atom_sizing_emit' ) ) {
 		// wrapper, so the element takes the wrapper's width wherever a Width resolves.
 		$inner  = ! $helper && $nodes['media'] !== $nodes['layout'];
 		$inner_was = false;
+		$owns_height = sgs_media_frame_owns( $slot, 'Height' );
+		$owns_ratio  = sgs_media_frame_owns( $slot, 'Ratio' );
 		foreach ( sgs_media_devices() as $device ) {
 			$r      = sgs_media_atom_sizing_resolve( $attrs, $slot, $device );
-			$fill   = 'fill' === $r['Height'];
-			$height = $fill ? null : $r['Height'];
-			$ratio  = $fill ? null : $r['Ratio'];
+			// A slot whose frame owns Height or Ratio sizes the frame with it: the picture prints neither and fills the frame.
+			$fill   = ! $owns_height && 'fill' === $r['Height'];
+			$height = $fill || $owns_height ? null : $r['Height'];
+			$ratio  = $fill || $owns_ratio ? null : $r['Ratio'];
 			$any    = false;
 			foreach ( $r as $v ) {
 				$any = $any || null !== $v;

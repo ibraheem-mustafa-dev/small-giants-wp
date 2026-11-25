@@ -440,7 +440,8 @@ if ( ! empty( $attributes['label'] ?? '' ) ) {
 require_once dirname( __DIR__, 3 ) . '/includes/media/render-item-slot.php';
 $sgs_ft_media_css    = '';
 $sgs_ft_render_image = sgs_media_item_renderer(
-	sgs_media_item_slot_for( $block, 'tile' ),
+	// The tile paints its own padding (`tilePadding`), so the picture inside takes none (edit.js's twin: TILE_FRAME_OWNS).
+	array_merge( sgs_media_item_slot_for( $block, 'tile' ), array( 'frame' => array( 'Padding' ) ) ),
 	$attributes,
 	'sgs/form-field-tiles',
 	$sgs_ft_uid . '-media',

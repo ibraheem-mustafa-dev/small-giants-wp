@@ -20,6 +20,19 @@ const DEVICE_MEDIA = {
 };
 
 /**
+ * Whether the slot's frame owns a setting: the block paints it on the box the picture sits in (a card's picture frame),
+ * so the picture prints none of it and fills the frame. A slot declares it as `frame: [ 'Padding', 'Height', 'Ratio' ]`.
+ * PHP twin: `sgs_media_frame_owns()`.
+ *
+ * @param {Object} slot Slot `{ prefix, kinds, context, frame }`.
+ * @param {string} base Setting base name.
+ * @return {boolean} True when the frame owns it.
+ */
+export function frameOwns( slot, base ) {
+	return Array.isArray( slot?.frame ) && slot.frame.includes( base );
+}
+
+/**
  * The stored attribute name of a base: `{prefix}{Base}`, first letter lower-cased when the prefix is empty.
  *
  * @param {Object} slot Slot.

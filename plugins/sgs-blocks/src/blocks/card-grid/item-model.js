@@ -17,6 +17,9 @@ export const IMAGE_SLOT = {
 	context: 'item',
 };
 
+/** The settings the card's picture frame (`.sgs-card-grid__image-wrap`) paints; the picture inside takes none of them. */
+export const IMAGE_FRAME_OWNS = [ 'Padding', 'Height', 'Ratio' ];
+
 /** The card fields the media fields own. */
 const MEDIA_KEYS = [ 'source', 'alt', 'decorative', 'fit', 'focal' ];
 

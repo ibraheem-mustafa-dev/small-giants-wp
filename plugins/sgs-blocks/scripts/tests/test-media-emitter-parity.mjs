@@ -56,12 +56,12 @@ const toAttrs = ( settings, file ) => {
 
 const FILE = sizing.context.file;
 const cases = [];
-const add = ( label, atom, attrs, helper, wrapper ) =>
+const add = ( label, atom, attrs, helper, wrapper, frame ) =>
 	cases.push( {
 		id: `${ label }|${ atom }|h${ helper ? 1 : 0 }|w${ wrapper ? 1 : 0 }`,
 		label,
 		atom,
-		slot: { prefix: PREFIX, wrapper },
+		slot: frame ? { prefix: PREFIX, wrapper, frame } : { prefix: PREFIX, wrapper },
 		attrs,
 		uid: 'u1',
 		helper,
@@ -122,6 +122,21 @@ for ( const [ label, settings ] of Object.entries( extras ) ) {
 	attrSets.push( { label: `extra:${ label }`, attrs, helper: true } );
 }
 
+// A slot whose frame owns Padding, Height and Ratio (a card's picture frame): the picture prints none of them.
+for ( const [ label, frame ] of [
+	[ 'frame-all', [ 'Padding', 'Height', 'Ratio' ] ],
+	[ 'frame-padding', [ 'Padding' ] ],
+	[ 'frame-height-ratio', [ 'Height', 'Ratio' ] ],
+] ) {
+	const attrs = toAttrs( {}, FILE );
+	attrs[ PREFIX + 'Padding' ] = T( { top: '14px', right: '14px', bottom: '0px', left: '14px' }, { top: '8px' }, {} );
+	attrs[ PREFIX + 'Background' ] = 'primary';
+	attrs[ PREFIX + 'Height' ] = T( '46px', '40px', 'fill' );
+	attrs[ PREFIX + 'Ratio' ] = T( '16 / 9', '1 / 1', '4 / 3' );
+	attrSets.push( { label: `frame:${ label }`, attrs, helper: false, frame } );
+	attrSets.push( { label: `frame:${ label }`, attrs, helper: true, frame } );
+}
+
 // Breakouts: every refused value, in every setting that takes its type of value.
 const BREAKOUT_BASES = {
 	any: [ 'Height', 'Width', 'MaxWidth', 'MinHeight', 'Ratio', 'OverlayColour', 'OverlayGradient', 'OverlayColourHover', 'Background', 'BorderColour', 'BoxShadow', 'BoxShadowColour', 'OverlayBlend', 'Blend', 'Alignment', 'Padding' ],
@@ -148,7 +163,7 @@ const atomIds = Object.keys( MEDIA_EMITTERS );
 for ( const s of attrSets ) {
 	for ( const atom of atomIds ) {
 		for ( const wrapper of s.bad ? [ false ] : [ false, true ] ) {
-			add( s.label + ( s.helper ? ':helper' : '' ), atom, s.attrs, s.helper, wrapper );
+			add( s.label + ( s.helper ? ':helper' : '' ), atom, s.attrs, s.helper, wrapper, s.frame );
 		}
 	}
 }
@@ -231,6 +246,18 @@ for ( const atom of PAINTS ) {
 }
 for ( const atom of atomIds.filter( ( a ) => ! PAINTS.includes( a ) ) ) {
 	ck( `${ atom }: prints no CSS of its own`, ! printedBy[ atom ], `printed in ${ printedBy[ atom ] }` );
+}
+
+// 2b. A frame that owns Padding, Height and Ratio takes them off the picture; the same settings print without a frame.
+{
+	const attrs = cases.find( ( c ) => c.id.startsWith( 'frame:frame-all|sizing|h0|w0' ) ).attrs;
+	const free = { prefix: PREFIX };
+	const framed = { prefix: PREFIX, frame: [ 'Padding', 'Height', 'Ratio' ] };
+	const css = ( atom, slot ) => MEDIA_EMITTERS[ atom ]( slot, attrs, 'u1', false );
+	ck( 'media-padding prints padding on a picture with no frame', css( 'media-padding', free ).includes( 'padding-top:14px' ) );
+	ck( 'media-padding prints no padding where the frame owns it (and keeps the Background)', ! css( 'media-padding', framed ).includes( 'padding-' ) && css( 'media-padding', framed ).includes( 'background-color' ), css( 'media-padding', framed ) );
+	ck( 'sizing prints Height and Ratio on a picture with no frame', css( 'sizing', free ).includes( 'height:46px' ) && css( 'sizing', free ).includes( 'aspect-ratio:16 / 9' ) );
+	ck( 'sizing prints no Height or Ratio where the frame owns them, and the picture still fills the frame', ! /height:|aspect-ratio/.test( css( 'sizing', framed ) ) && css( 'sizing', framed ).includes( 'width:100%' ), css( 'sizing', framed ) );
 }
 
 // 3. The sizing emitter equals the fixture's declarations.

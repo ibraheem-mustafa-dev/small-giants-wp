@@ -108,7 +108,8 @@ if ( ! function_exists( 'sgs_media_atom_media_padding_emit' ) ) {
 	function sgs_media_atom_media_padding_emit( array $slot, array $attrs, string $uid, bool $helper ): string {
 		$surface = sgs_media_nodes( $slot, $uid, $helper )['surface'];
 		$rules   = array();
-		foreach ( sgs_media_devices() as $device ) {
+		// A slot whose frame owns Padding paints it on the frame, so the picture inside takes none.
+		foreach ( sgs_media_frame_owns( $slot, 'Padding' ) ? array() : sgs_media_devices() as $device ) {
 			$box = sgs_media_own( $attrs, $slot, 'Padding', $device );
 			foreach ( is_array( $box ) ? array( 'top', 'right', 'bottom', 'left' ) : array() as $side ) {
 				$value = sgs_media_px( $box[ $side ] ?? null );

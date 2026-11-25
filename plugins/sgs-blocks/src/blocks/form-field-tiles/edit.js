@@ -58,6 +58,8 @@ import AuthoredText from '../../components/AuthoredText';
 // the tile grid element the shared wrapper lays out.
 /** The block's one media slot: each tile's picture (Spec 49 §10.4: Source, Fit, Width, Shape). */
 const TILE_SLOT = { prefix: 'tile', kinds: [ 'image' ], context: 'item' };
+/** The tile paints its own padding (`tilePadding`), so the picture inside takes none (render.php's twin). */
+const TILE_FRAME_OWNS = [ 'Padding' ];
 
 const ROOT_BORDER_KEYS = [
 	'borderWidth',
@@ -1186,6 +1188,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									prefix={ TILE_SLOT.prefix }
 									kinds={ TILE_SLOT.kinds }
 									context={ TILE_SLOT.context }
+									frame={ TILE_FRAME_OWNS }
 									uid={ `sgs-ft-${ clientId.slice( 0, 8 ) }` }
 								/>
 								<span

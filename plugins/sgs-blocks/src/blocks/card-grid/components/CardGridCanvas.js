@@ -9,7 +9,7 @@ import { IconPreview } from '../../../components';
 import { colourVar, BandWrap, usePreviewTier } from '../../../utils';
 import ItemSlotPicture from '../../../components/media/ItemSlotPicture.js';
 import { glyphSizePx } from '../../../utils/font-size-preset';
-import { itemFile } from '../item-model';
+import { IMAGE_FRAME_OWNS, itemFile } from '../item-model';
 import ProductTemplateCanvas from './ProductTemplateCanvas';
 
 import AuthoredText from '../../../components/AuthoredText';
@@ -34,6 +34,7 @@ function renderMedia( attributes, item, index, uid, device ) {
 			item={ item }
 			index={ index }
 			prefix="image"
+			frame={ IMAGE_FRAME_OWNS }
 			uid={ uid }
 			className="sgs-card-grid__image sgs-card-grid__media"
 		/>
