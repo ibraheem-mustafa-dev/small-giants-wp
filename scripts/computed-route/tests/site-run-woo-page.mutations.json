@@ -31,8 +31,8 @@
 	},
 	{
 		"file": "site-run.mjs",
-		"find": "\t\t\tnote( key, stage, false, Date.now() - t, String( e.message || e ).slice( 0, 600 ) );\n\t\t\treturn false;",
-		"replace": "\t\t\tnote( key, stage, false, Date.now() - t, String( e.message || e ).slice( 0, 600 ) );\n\t\t\treturn true;",
+		"find": "\t\t\tnote( key, stage, false, Date.now() - t, String( e.message || e ).slice( 0, 600 ), null, false, e.failureClass );\n\t\t\treturn false;",
+		"replace": "\t\t\tnote( key, stage, false, Date.now() - t, String( e.message || e ).slice( 0, 600 ), null, false, e.failureClass );\n\t\t\treturn true;",
 		"why": "a failed stage no longer stops the surface"
 	}
 ]
