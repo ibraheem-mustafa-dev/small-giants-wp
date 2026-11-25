@@ -1,0 +1,20 @@
+[
+	{
+		"file": "lib/fill-prop.mjs",
+		"find": "variants: node.drawnVariants || [],",
+		"replace": "variants: [],",
+		"why": "Fill hands the resolver no variant, so a node drawn in the featured variant never takes a featured setting"
+	},
+	{
+		"file": "lib/resolve.mjs",
+		"find": "variantHeld( c, input.variants )",
+		"replace": "true",
+		"why": "a variant-only setting is offered to every node, so a plain link's hover pill lands in featuredBgHover"
+	},
+	{
+		"file": "lib/setting-variant.mjs",
+		"find": "! entry?.variantOnly || ( variants || [] ).includes( entry.variantOnly )",
+		"replace": "true",
+		"why": "the held check passes every node, drawn in the variant or not"
+	}
+]

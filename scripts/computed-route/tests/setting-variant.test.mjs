@@ -12,6 +12,7 @@ import { recordRows, compounds, readRecordFixture } from '../lib/setting-record.
 import { variantOnlyOf, variantHeld, rowHoldsVariant } from '../lib/setting-variant.mjs';
 import { coversSlot } from '../lib/resolve-layer.mjs';
 import { resolve } from '../lib/resolve.mjs';
+import { resolveProperty } from '../lib/fill-prop.mjs';
 import { parseColour } from '../lib/normalise.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
@@ -79,4 +80,14 @@ test( 'MUST FAIL: a plain link\'s hover background is the item hover setting, ne
 test( 'negative control: a link drawn in the featured variant may take the featured hover setting', () => {
 	const r = hoverOf( { variants: [ 'featured' ] } );
 	assert.ok( ! r.writes || r.writes.every( ( w ) => /^(item|featured)BgHover$/.test( w.attr ) ), JSON.stringify( r ) );
+} );
+
+// Fill's own call (lib/fill-prop.mjs::resolveProperty) hands the node's `drawnVariants` to the resolver: nothing in the route
+// sets that field today (no draft singles out one menu item, and `featuredItemIds` is not built), so a variant-only setting is
+// written to no node; the field is the one place a later reader of a featured item stamps its variant.
+const hoverWrites = ( node ) => resolveProperty( { node, block: 'sgs/nav-bar-menu', prop: 'background-color', state: 'hover', draft: { 375: '#F9D5D3', 768: '#F9D5D3', 1440: '#F9D5D3' }, baseline: () => undefined, slots: [ LINK ], calibration: navRecord(), db, snapshot, log: [] } );
+
+test( 'MUST FAIL: through Fill, a node drawn in the featured variant takes featuredBgHover and a plain node takes itemBgHover', () => {
+	assert.deepEqual( hoverWrites( { attributes: {}, drawnVariants: [ 'featured' ] } ).writes?.map( ( w ) => w.attr ), [ 'featuredBgHover' ] );
+	assert.deepEqual( hoverWrites( { attributes: {} } ).writes?.map( ( w ) => w.attr ), [ 'itemBgHover' ] );
 } );
