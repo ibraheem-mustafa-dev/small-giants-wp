@@ -16,9 +16,9 @@
 // replay recorded when the records hold none) into a copy of the records, and rebuild every surface's inventory from what
 // intake saved, then propose from that copy (the mode for a landing that touches the draft reading: lib/intake*,
 // lib/skeleton-inventory*, intake*.mjs). A surface whose intake saved no inventory keeps its frozen one.
-// --jobs: processes proposing at once (default 3), each taking a heavy slot when --slot-dir names the slot folder; the jobs
-// are the slots held (at least one) of the two normal heavy slots, plus the overflow slot after a long wait when the machine
-// has room (lib/heavy-slot.mjs), so the sweep never takes more than the machine's other sessions leave. It refuses to start with
+// --jobs: processes proposing at once (default 2). With --slot-dir the whole sweep holds exactly one heavy slot (a normal one,
+// or the overflow slot after a long wait when the machine has room, lib/heavy-slot.mjs): one job never takes two slots (Bean,
+// 2026-11-25), so the other sessions' heavy runs are never starved. It refuses to start with
 // the system temp folder on C: (lib/temp-guard.mjs).
 // --repo: the checkout under test (default this one): its code is run and its committed drafts are read. Before proposing,
 // the sweep builds every client's default looks from it (lib/route-sweep.mjs::prepareSweepLooks: site_look.py, offline, into
@@ -47,7 +47,7 @@ export function parseArgs( argv ) {
 	const o = {
 		freeze: argv.includes( '--freeze' ), records: flag( '--records' ), out: flag( '--out' ), baseline: flag( '--baseline' ), reread: argv.includes( '--reread' ), keepWork: argv.includes( '--keep-work' ),
 		fill: argv.includes( '--fill' ) ? ( flag( '--fill' ) && ! flag( '--fill' ).startsWith( '--' ) ? flag( '--fill' ) : 'default' ) : null,
-		jobs: Number( flag( '--jobs' ) ?? 3 ), only: flag( '--only' ) ? flag( '--only' ).split( ',' ) : null, repo: path.resolve( flag( '--repo' ) ?? path.join( ROUTE, '..', '..' ) ),
+		jobs: Number( flag( '--jobs' ) ?? 2 ), only: flag( '--only' ) ? flag( '--only' ).split( ',' ) : null, repo: path.resolve( flag( '--repo' ) ?? path.join( ROUTE, '..', '..' ) ),
 		slotDir: flag( '--slot-dir' ), heldOut: flag( '--held-out' ) ? [ ...HELD_OUT, ...flag( '--held-out' ).split( ',' ) ] : HELD_OUT, from: all( '--from' ),
 		worker: flag( '--worker' ), work: flag( '--work' ), items: flag( '--items' ) ? flag( '--items' ).split( ',' ) : [],
 	};
@@ -227,9 +227,9 @@ async function sweep( o ) {
 	fs.mkdirSync( o.out, { recursive: true } );
 	let items = clients.flatMap( ( c ) => surfaceList( o.records, c, o.heldOut ).map( ( s ) => `${ c }/${ s }` ) );
 	o.only && ( items = items.filter( ( i ) => o.only.includes( i ) ) );
-	const held = o.slotDir ? await acquireSlots( { dir: o.slotDir, names: NORMAL_SLOTS, overflow: OVERFLOW_SLOT, want: o.jobs } ) : [];
+	const held = o.slotDir ? await acquireSlots( { dir: o.slotDir, names: NORMAL_SLOTS, overflow: OVERFLOW_SLOT, want: 1 } ) : [];
 	const stopBeat = keepAlive( held, { label: 'route-sweep', pid: process.pid } );
-	const jobs = o.slotDir ? held.length : o.jobs;
+	const jobs = o.jobs;
 	try {
 		const wanted = new Set( items.map( ( i ) => i.split( '/' )[ 0 ] ) );
 		for ( const c of clients.filter( ( x ) => wanted.has( x ) ) ) {
