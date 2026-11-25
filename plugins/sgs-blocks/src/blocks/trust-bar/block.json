@@ -33,6 +33,18 @@
 				"shapeDividers",
 				"childSizing"
 			],
+			"_comment_trim": "A trust bar is one row or one grid of badges, so the shared Layout panel leaves out what a one-row strip never uses. Default and Stack stay offered on a bar that already stores one; a custom column template, row template, auto rows, justify items and align content stay shown on a bar that stores one. Columns (Grid) is the one column control.",
+			"trim": [
+				"layout.default",
+				"layout.stack",
+				"layout.flex-direction",
+				"layout.flex-wrap",
+				"layout.grid-template-columns",
+				"layout.grid-template-rows",
+				"layout.grid-auto-rows",
+				"layout.justify-items",
+				"layout.align-content"
+			],
 			"arrayContentLift": true,
 			"scalarStylingLift": true,
 			"_comment_mediaElements": "The `badge` slot: each image badge's own picture (`items[].source`) printed by the shared media renderer, with the block-level Fit (contain when unset), Width (60px when unset), Radius, Shape and Colour. The `background` slot is the bar's own background.",
