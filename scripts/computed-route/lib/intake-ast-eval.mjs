@@ -135,6 +135,13 @@ function writtenRefs( idx, node, name, depth, stack ) {
 	} );
 }
 
+// The static members called `member` of the class `cls` names (`static FAQS = [ … ]`): the class itself, or a local that holds it
+// (`const C = Component; C.FAQS`, resolved to the class's identifier before this is asked).
+function classStatics( idx, cls, member ) {
+	const decl = idx.all.find( ( n ) => /^Class(Declaration|Expression)$/.test( n.type ) && cls === n.id?.name );
+	return ( decl?.body.body || [] ).filter( ( m ) => m.static && /^Class(Property|Method)$/.test( m.type ) && member === keyName( m ) );
+}
+
 // The refs property `name` holds across terminal refs `objs` (object literals, Object.assign merges, array indexes).
 export function propRefs( idx, objs, name, depth = 0, stack = new Map() ) {
 	const out = [];
@@ -165,6 +172,8 @@ export function propRefs( idx, objs, name, depth = 0, stack = new Map() ) {
 					break;
 				}
 			}
+		} else if ( 'Identifier' === t.node?.type && classStatics( idx, t.node.name, name ).length ) {
+			out.push( ...classStatics( idx, t.node.name, name ).flatMap( ( p ) => ( 'ClassMethod' === p.type && 'get' === p.kind ? returnsOf( idx, p ).flatMap( ( e ) => resolveRefs( idx, ref( e, t.env ), depth + 1, stack ) ) : resolveRefs( idx, ref( p.value, t.env ), depth + 1, stack ) ) ) );
 		} else if ( /^\d+$/.test( name ) ) {
 			const lead = 'ArrayExpression' === t.node?.type ? t.node.elements.slice( 0, Number( name ) + 1 ) : null;
 			if ( lead && lead.length === Number( name ) + 1 && lead.every( ( el ) => el && 'SpreadElement' !== el.type ) ) {

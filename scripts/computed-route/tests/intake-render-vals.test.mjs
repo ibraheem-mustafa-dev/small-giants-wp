@@ -7,6 +7,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { splitDraft, parseLogic } from '../lib/intake-ast.mjs';
 import { renderValNode } from '../lib/intake-render-vals.mjs';
+import { elementsOf, propRefs, resolveRefs, oneString, ref } from '../lib/intake-ast-eval.mjs';
+import { rootData } from '../lib/fill-list-items.mjs';
 import { widthConditions } from '../lib/read-logic-conditions.mjs';
 
 const draft = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../../sites/eye-care-ward-end/handoff/Eye Care Birmingham.dc.html' );
@@ -38,4 +40,11 @@ test( 'MUST FAIL (guard): every renderVals key the draft\'s sc-ifs name resolves
 	// Names an sc-for binds (a loop variable) are no renderVals key.
 	const loopVars = new Set( [ ...text.matchAll( /<sc-for[^>]*\bas="(\w+)"/g ) ].map( ( m ) => m[ 1 ] ) );
 	assert.deepEqual( unresolved.filter( ( k ) => ! loopVars.has( k ) ), [] );
+} );
+
+test( 'MUST FAIL (class alias statics): `const C = Component; C.FAQS.map(...)` reads every answer of the FAQ', () => {
+	const faqs = elementsOf( idx, propRefs( idx, rootData( idx ), 'faqs' )[ 0 ] );
+	assert.equal( faqs.length, 8, 'the draft\'s FAQS holds eight entries' );
+	const answers = faqs.map( ( el ) => propRefs( idx, [ el ], 'a' ).map( ( r ) => oneString( idx, r.node, r.env ) ).find( ( v ) => null !== v ) ?? null );
+	assert.equal( answers.filter( ( a ) => a && a.length > 10 ).length, 8, JSON.stringify( answers ).slice( 0, 200 ) );
 } );
