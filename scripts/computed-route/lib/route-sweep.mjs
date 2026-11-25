@@ -10,6 +10,7 @@
 // and the committed draft (`sites/<client>/handoff/`) out as a scratch repository, which is what the propose and Fill read.
 import fs from 'node:fs';
 import path from 'node:path';
+import { tryTake, machineLoad, hasRoom, OVERFLOW_AFTER_MS } from './heavy-slot.mjs';
 
 // Surfaces the route work never reads (the held-out pages): named exactly, never matched by part of a name, because a
 // surface such as a mega menu may carry the same word without being the page.
@@ -408,20 +409,24 @@ export function readSweep( dir ) {
 // Heavy-job slots (the folder the machine's other sessions take theirs in): each slot is a folder made with mkdir, which fails
 // when it exists. Takes up to `want` of `names`, waiting (`wait(ms)`) until at least one is held; returns the folders this call
 // made, which release() removes by exact path.
-export async function acquireSlots( { dir, names, want, wait = ( ms ) => new Promise( ( r ) => setTimeout( r, ms ) ), pollMs = 30000, maxPolls = 120 } ) {
+// Takes up to `want` of the heavy slots `names` in `dir` (lib/heavy-slot.mjs: each slot records this process as its owner, and a
+// slot whose owner is gone is freed), waiting while none is free. Once `overflowAfterMs` has passed with none free, it also tries
+// the `overflow` slot when the machine has room.
+export async function acquireSlots( { dir, names, want, overflow = null, overflowAfterMs = OVERFLOW_AFTER_MS, wait = ( ms ) => new Promise( ( r ) => setTimeout( r, ms ) ),
+	pollMs = 30000, maxPolls = 120, load = machineLoad, owner = { label: 'route-sweep', pid: process.pid } } ) {
 	const held = [];
+	const start = Date.now();
 	for ( let poll = 0; ! held.length; poll++ ) {
 		for ( const n of names ) {
 			if ( held.length >= want ) {
 				break;
 			}
-			const p = path.join( dir, n );
-			try {
-				fs.mkdirSync( p );
-				held.push( p );
-			} catch {
-				// held by another session
-			}
+			const p = tryTake( dir, n, owner );
+			p && held.push( p );
+		}
+		if ( ! held.length && overflow && Date.now() - start >= overflowAfterMs && hasRoom( await load() ) ) {
+			const p = tryTake( dir, overflow, owner );
+			p && held.push( p );
 		}
 		if ( ! held.length ) {
 			if ( poll >= maxPolls ) {
@@ -435,11 +440,7 @@ export async function acquireSlots( { dir, names, want, wait = ( ms ) => new Pro
 
 export function releaseSlots( held ) {
 	for ( const p of held ) {
-		try {
-			fs.rmdirSync( p );
-		} catch {
-			// already gone
-		}
+		fs.rmSync( p, { recursive: true, force: true } );
 	}
 }
 

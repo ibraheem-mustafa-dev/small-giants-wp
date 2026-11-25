@@ -17,11 +17,15 @@
 // intake saved, then propose from that copy (the mode for a landing that touches the draft reading: lib/intake*,
 // lib/skeleton-inventory*, intake*.mjs). A surface whose intake saved no inventory keeps its frozen one.
 // --jobs: processes proposing at once (default 3), each taking a heavy slot when --slot-dir names the slot folder; the jobs
-// are the slots held (at least one), so the sweep never takes more than the machine's other sessions leave.
+// are the slots held (at least one) of the two normal heavy slots, plus the overflow slot after a long wait when the machine
+// has room (lib/heavy-slot.mjs), so the sweep never takes more than the machine's other sessions leave. It refuses to start with
+// the system temp folder on C: (lib/temp-guard.mjs).
 // --repo: the checkout under test (default this one): its code is run and its committed drafts are read. Before proposing,
 // the sweep builds every client's default looks from it (lib/route-sweep.mjs::prepareSweepLooks: site_look.py, offline, into
 // its scripts/computed-route/site-look); a block proposed with no look is counted per surface and fails a comparison.
 // Runs with SGS_NO_SITE=1 whatever the environment. Exit 0 pass, 1 a surface got worse or a stage failed, 2 usage.
+import { NORMAL_SLOTS, OVERFLOW_SLOT } from '../lib/heavy-slot.mjs';
+import { assertTempOffC } from '../lib/temp-guard.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
@@ -34,7 +38,7 @@ import {
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const ROUTE = path.resolve( HERE, '..' );
-const SLOTS = [ 'slot-1', 'slot-2', 'slot-3' ];
+
 const readJson = ( file, fallback = null ) => ( fs.existsSync( file ) ? JSON.parse( fs.readFileSync( file, 'utf8' ) ) : fallback );
 
 export function parseArgs( argv ) {
@@ -223,7 +227,7 @@ async function sweep( o ) {
 	fs.mkdirSync( o.out, { recursive: true } );
 	let items = clients.flatMap( ( c ) => surfaceList( o.records, c, o.heldOut ).map( ( s ) => `${ c }/${ s }` ) );
 	o.only && ( items = items.filter( ( i ) => o.only.includes( i ) ) );
-	const held = o.slotDir ? await acquireSlots( { dir: o.slotDir, names: SLOTS, want: o.jobs } ) : [];
+	const held = o.slotDir ? await acquireSlots( { dir: o.slotDir, names: NORMAL_SLOTS, overflow: OVERFLOW_SLOT, want: o.jobs } ) : [];
 	const jobs = o.slotDir ? held.length : o.jobs;
 	try {
 		const wanted = new Set( items.map( ( i ) => i.split( '/' )[ 0 ] ) );
@@ -303,6 +307,7 @@ async function sweep( o ) {
 }
 
 if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( import.meta.url ) ) {
+	assertTempOffC( 'route-sweep' );
 	const o = parseArgs( process.argv.slice( 2 ) );
 	if ( o.error ) {
 		process.stderr.write( `${ o.error }\n` );
