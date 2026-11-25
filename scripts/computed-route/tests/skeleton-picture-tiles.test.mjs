@@ -163,6 +163,8 @@ test( 'negative controls for text tiles: one-line links (a link list), three lin
 	assert.equal( textGrids( page( slot ) ).grids.size, 0, 'a tile holding a picture slot still to be filled is a picture tile' );
 	const stepTabs = four( ( i ) => textTile( i, { script: true, tag: 'button' } ) );
 	assert.equal( textGrids( page( stepTabs ) ).grids.size, 0, 'a button is a step tab or a picker, not a link tile' );
+	const painted = [ ...four( textTile ), ...[ 0, 1, 2, 3 ].map( ( i ) => el( `Root/18#${ i }`, `Root/10#${ i }`, 'span', '', { depth: 4, loop: 9, attrs: { style: PHOTO( i ) } } ) ) ];
+	assert.equal( textGrids( page( painted ) ).grids.size, 0, 'a tile painting a background picture is a picture tile' );
 	const withGlyph = [ ...four( textTile ), el( 'Root/14#0', 'Root/10#0', 'svg', '', { depth: 4, loop: 9 } ) ];
 	assert.equal( textGrids( page( withGlyph ) ).grids.size, 0, 'a tile drawing a glyph is not text only' );
 	assert.equal( textGrids( page( four( textTile ).map( ( e ) => ( 'Root/12#1' === e.key ? { ...e, words: '£139' } : e ) ) ) ).grids.size, 0, 'a priced tile belongs to the product card' );

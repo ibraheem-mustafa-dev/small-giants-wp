@@ -62,10 +62,10 @@
  { "file": "lib/skeleton-panel-rules.mjs", "find": "if ( view.ownPaint( c ) && ! lays ) {", "replace": "if ( view.ownPaint( c ) ) {", "why": "a painted row stays a node" },
  { "file": "lib/skeleton-panel-rules.mjs", "find": "( view.linkRun( k ) || m.blockKids( k ).length >= 2 )", "replace": "( view.linkRun( k ) || m.blockKids( k ).length >= 0 )", "why": "one text link under a heading is a run" },
  { "file": "lib/skeleton-panel-rules.mjs", "find": "( view.linkRun( k ) || m.blockKids( k ).length >= 2 )", "replace": "view.linkRun( k )", "why": "links of differing styles under a heading are no run" },
- { "file": "lib/skeleton-classify.mjs", "find": "( !! parent.key && headedRun( parent ) )", "replace": "false", "why": "a title over one wrapper of links is a heading" },
- { "file": "lib/skeleton-classify.mjs", "find": "( !! parent.key && headedRun( parent ) )", "replace": "( !! parent.key && true )", "why": "a kicker over text is no column title" },
+ { "file": "lib/skeleton-classify.mjs", "find": "( panel && !! parent.key && headedRun( parent ) )", "replace": "false", "why": "a title over one wrapper of links is a heading" },
+ { "file": "lib/skeleton-classify.mjs", "find": "( panel && !! parent.key && headedRun( parent ) )", "replace": "( panel && !! parent.key && true )", "why": "a kicker over text is no column title" },
  { "file": "lib/skeleton-classify.mjs", "find": "sibs[ 0 ] === e && ( sibs.slice", "replace": "sibs[ 0 ] !== e && ( sibs.slice", "why": "only the first leaf of the column is its title" },
- { "file": "lib/skeleton-classify.mjs", "find": "|| headedRun.titlesRun( e ) )", "replace": ")", "why": "a title directly above its own run of links, further down the column, is a heading" },
+ { "file": "lib/skeleton-classify.mjs", "find": "|| ( panel && headedRun.titlesRun( e ) ) )", "replace": ")", "why": "a title directly above its own run of links, further down the column, is a heading" },
  { "file": "lib/skeleton-classify.mjs", "find": "( panel && headedRun.titlesRun( e ) )", "replace": "( headedRun.titlesRun( e ) )", "why": "a leaf above a link run outside a header panel is the draft's own text" },
  { "file": "lib/skeleton-classify.mjs", "find": "( panel && !! parent.key && headedRun( parent ) )", "replace": "( !! parent.key && headedRun( parent ) )", "why": "the wrapper reading is the header panel's" }
 ]
