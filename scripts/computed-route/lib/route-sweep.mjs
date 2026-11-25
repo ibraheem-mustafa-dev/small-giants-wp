@@ -406,9 +406,6 @@ export function readSweep( dir ) {
 	return { surfaces, nodes, meta };
 }
 
-// Heavy-job slots (the folder the machine's other sessions take theirs in): each slot is a folder made with mkdir, which fails
-// when it exists. Takes up to `want` of `names`, waiting (`wait(ms)`) until at least one is held; returns the folders this call
-// made, which release() removes by exact path.
 // Takes up to `want` of the heavy slots `names` in `dir` (lib/heavy-slot.mjs: each slot records this process as its owner, and a
 // slot whose owner is gone is freed), waiting while none is free. Once `overflowAfterMs` has passed with none free, it also tries
 // the `overflow` slot when the machine has room.

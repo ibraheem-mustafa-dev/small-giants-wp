@@ -24,7 +24,7 @@
 // the sweep builds every client's default looks from it (lib/route-sweep.mjs::prepareSweepLooks: site_look.py, offline, into
 // its scripts/computed-route/site-look); a block proposed with no look is counted per surface and fails a comparison.
 // Runs with SGS_NO_SITE=1 whatever the environment. Exit 0 pass, 1 a surface got worse or a stage failed, 2 usage.
-import { NORMAL_SLOTS, OVERFLOW_SLOT } from '../lib/heavy-slot.mjs';
+import { NORMAL_SLOTS, OVERFLOW_SLOT, keepAlive } from '../lib/heavy-slot.mjs';
 import { assertTempOffC } from '../lib/temp-guard.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -228,6 +228,7 @@ async function sweep( o ) {
 	let items = clients.flatMap( ( c ) => surfaceList( o.records, c, o.heldOut ).map( ( s ) => `${ c }/${ s }` ) );
 	o.only && ( items = items.filter( ( i ) => o.only.includes( i ) ) );
 	const held = o.slotDir ? await acquireSlots( { dir: o.slotDir, names: NORMAL_SLOTS, overflow: OVERFLOW_SLOT, want: o.jobs } ) : [];
+	const stopBeat = keepAlive( held, { label: 'route-sweep', pid: process.pid } );
 	const jobs = o.slotDir ? held.length : o.jobs;
 	try {
 		const wanted = new Set( items.map( ( i ) => i.split( '/' )[ 0 ] ) );
@@ -284,6 +285,7 @@ async function sweep( o ) {
 		Object.values( fillSummaries ).forEach( ( f ) => console.log( f.ok ? `fill ${ f.client }/${ f.surface }: writes ${ f.writes }, unmapped ${ f.unmapped }, refusals ${ f.refusals }` : `fill ${ f.client }/${ f.surface }: FAILED ${ f.error }` ) );
 		console.log( `propose ${ proposeSecs }s, whole sweep ${ Math.round( ( Date.now() - t0 ) / 1000 ) }s` );
 	} finally {
+		stopBeat();
 		releaseSlots( held );
 		! o.keepWork && fs.rmSync( o.work, { recursive: true, force: true } );
 	}

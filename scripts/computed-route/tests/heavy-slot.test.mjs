@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { tryTake, isStale, releaseLabel, acquire, hasRoom, ROOM } from '../lib/heavy-slot.mjs';
+import { tryTake, isStale, releaseLabel, acquire, hasRoom, ROOM, readOwner } from '../lib/heavy-slot.mjs';
+import { parseArgv, runCommand } from '../tools/heavy-slot.mjs';
 import { tempOnC, assertTempOffC } from '../lib/temp-guard.mjs';
 import { acquireSlots } from '../lib/route-sweep.mjs';
 
@@ -62,4 +63,33 @@ test( 'the temp guard refuses a temp folder on C: and allows one on E:', () => {
 	assert.equal( tempOnC( 'E:\\sgs-tmp\\tmp-a' ), false );
 	assert.throws( () => assertTempOffC( 'run-tests', 'c:\\temp' ), /on C:/ );
 	assert.doesNotThrow( () => assertTempOffC( 'run-tests', 'E:\\sgs-tmp\\tmp-a' ) );
+} );
+
+test( 'a process-held slot whose heartbeat is five minutes old is stale even if its process id is alive again', ( t ) => {
+	const dir = tmp();
+	t.after( () => fs.rmSync( dir, { recursive: true, force: true } ) );
+	tryTake( dir, 'slot-1', { label: 'old', pid: process.pid, beat: Date.now() - 6 * 60 * 1000 } );
+	assert.equal( isStale( path.join( dir, 'slot-1' ) ), true, 'a reused pid with an old beat is stale' );
+	tryTake( dir, 'slot-2', { label: 'fresh', pid: process.pid, beat: Date.now() } );
+	assert.equal( isStale( path.join( dir, 'slot-2' ) ), false );
+} );
+
+test( 'a stale slot is reclaimed under a lock: while another process holds the reclaim lock it is left alone', ( t ) => {
+	const dir = tmp();
+	t.after( () => fs.rmSync( dir, { recursive: true, force: true } ) );
+	tryTake( dir, 'slot-1', { label: 'dead', pid: 999999 } );
+	fs.writeFileSync( path.join( dir, 'slot-1.reclaim' ), '1' );
+	assert.equal( tryTake( dir, 'slot-1', { label: 'b', pid: process.pid }, { alive: () => false } ), null, 'a live reclaim lock blocks the second taker' );
+	fs.rmSync( path.join( dir, 'slot-1.reclaim' ) );
+	assert.ok( tryTake( dir, 'slot-1', { label: 'b', pid: process.pid }, { alive: ( pid ) => pid === process.pid } ) );
+	assert.equal( readOwner( path.join( dir, 'slot-1' ) ).label, 'b' );
+	assert.equal( fs.existsSync( path.join( dir, 'slot-1.reclaim' ) ), false, 'the lock is removed after the reclaim' );
+} );
+
+test( 'heavy-slot reads its options only before --, refuses a --dir with no folder, and runs several words without a shell', async () => {
+	assert.deepEqual( parseArgv( [ 'run', 'x', '--', 'node', 'sweep.mjs', '--dir', 'out' ] ).command, [ 'node', 'sweep.mjs', '--dir', 'out' ] );
+	assert.equal( parseArgv( [ 'run', 'x', '--', 'node', '--dir', 'out' ] ).dir.endsWith( 'heavy' ), true );
+	assert.equal( parseArgv( [ '--dir', 'E:/x', 'status' ] ).dir, 'E:/x' );
+	assert.match( parseArgv( [ 'run', 'x', '--dir' ] ).error, /needs a folder/ );
+	assert.equal( await runCommand( [ process.execPath, '-e', 'process.exit(process.argv[1] === "a b&c" ? 0 : 3)', 'a b&c' ] ), 0 );
 } );

@@ -3,10 +3,12 @@
 // build. Two slots are always available; a third (overflow) slot is taken only after a long wait and only when the machine
 // has room (CPU, free memory and free space on C:), so a log jam clears without overloading the PC.
 //
-// A slot is a folder (created atomically with mkdir) holding owner.json: { label, pid } for a slot held by a running process
-// (freed as soon as that process is gone), or { label, expires } for a slot taken by `heavy-slot.mjs acquire` and released by
-// `release` (freed when the lease runs out). A slot folder with no owner.json older than ten minutes is a lock left by a
-// crashed run and is freed too.
+// A slot is a folder (created atomically with mkdir) holding owner.json: { label, pid, beat } for a slot held by a running
+// process, which rewrites `beat` every minute (keepAlive); it is freed once that process is gone or its beat is five minutes
+// old, so a crashed run whose process id Windows hands to another program still lets go. { label, expires } is a slot taken by
+// `heavy-slot.mjs acquire`, freed by `release` or when the lease runs out (a lease is never renewed). A slot folder with no
+// owner.json older than ten minutes is a lock left by a crashed run and is freed too. Freeing a stale slot happens under a
+// short exclusive reclaim lock, so two processes that both find it stale cannot both take it.
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -17,6 +19,9 @@ export const OVERFLOW_SLOT = 'slot-3';
 export const LEASE_MS = 90 * 60 * 1000;
 export const OVERFLOW_AFTER_MS = 10 * 60 * 1000;
 const ORPHAN_MS = 10 * 60 * 1000;
+export const BEAT_MS = 60 * 1000;
+export const BEAT_STALE_MS = 5 * 60 * 1000;
+const RECLAIM_LOCK_MS = 30 * 1000;
 // The room a third heavy run needs: CPU busy below this share, at least this much free memory and free space on C:.
 export const ROOM = { cpuBusy: 0.7, freeMemBytes: 6 * 1024 ** 3, freeCBytes: 10 * 1024 ** 3 };
 
@@ -54,7 +59,7 @@ export function isStale( p, now = Date.now(), alive = pidAlive ) {
 		}
 	}
 	if ( owner.pid ) {
-		return ! alive( owner.pid );
+		return ! alive( owner.pid ) || ( undefined !== owner.beat && now - owner.beat > BEAT_STALE_MS );
 	}
 	return now > ( owner.expires || 0 );
 }
@@ -64,7 +69,7 @@ export function tryTake( dir, name, owner, { now = Date.now(), alive = pidAlive 
 	const p = path.join( dir, name );
 	fs.mkdirSync( dir, { recursive: true } );
 	if ( fs.existsSync( p ) && isStale( p, now, alive ) ) {
-		fs.rmSync( p, { recursive: true, force: true } );
+		reclaim( p, now, alive );
 	}
 	try {
 		fs.mkdirSync( p );
@@ -73,6 +78,44 @@ export function tryTake( dir, name, owner, { now = Date.now(), alive = pidAlive 
 	}
 	fs.writeFileSync( ownerFile( p ), JSON.stringify( owner ) );
 	return p;
+}
+
+// Frees the stale slot `p` under an exclusive lock file, re-checking staleness inside the lock so a slot another process
+// has just taken is left alone. A lock older than RECLAIM_LOCK_MS is left by a crash and is broken.
+function reclaim( p, now, alive ) {
+	const lock = `${ p }.reclaim`;
+	try {
+		if ( fs.existsSync( lock ) && now - fs.statSync( lock ).mtimeMs > RECLAIM_LOCK_MS ) {
+			fs.rmSync( lock, { force: true } );
+		}
+		fs.writeFileSync( lock, String( process.pid ), { flag: 'wx' } );
+	} catch {
+		return;
+	}
+	try {
+		if ( fs.existsSync( p ) && isStale( p, now, alive ) ) {
+			fs.rmSync( p, { recursive: true, force: true } );
+		}
+	} finally {
+		fs.rmSync( lock, { force: true } );
+	}
+}
+
+// Rewrites `beat` in each slot's owner.json every BEAT_MS while the caller runs; returns a function that stops it.
+export function keepAlive( paths, owner, everyMs = BEAT_MS ) {
+	const beat = () => {
+		for ( const p of paths ) {
+			try {
+				fs.writeFileSync( ownerFile( p ), JSON.stringify( { ...owner, beat: Date.now() } ) );
+			} catch {
+				// slot already released
+			}
+		}
+	};
+	beat();
+	const t = setInterval( beat, everyMs );
+	t.unref?.();
+	return () => clearInterval( t );
 }
 
 // Frees every slot `label` holds in `dir`; returns how many.
