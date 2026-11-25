@@ -212,7 +212,7 @@ export function codeItemSlots( { at, settings = [], calibrated = {} } ) {
 // setting calibrated, every slot of the setting. Returns { slots: { <path>: finder }, notes }.
 export function codeIconSlots( { at, settings = [], calibrated = {}, modeSettings = [] } ) {
 	const out = { slots: {}, notes: [] };
-	if ( ! Array.isArray( at ) || ! at.length || ! at.every( ( i ) => Number.isInteger( i ) && i >= 0 ) ) {
+	if ( ! Array.isArray( at ) || ! at.length || at.some( ( i ) => ! Number.isInteger( i ) || i < 0 ) ) {
 		return out;
 	}
 	const finder = { js: `( root ) => { const item = [ ${ at.join( ', ' ) } ].reduce( ( x, i ) => ( x ? x.children[ i ] : null ), root ); return ( item && item.querySelector( 'svg' ) ) || null; }` };

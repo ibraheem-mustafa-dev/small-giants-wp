@@ -43,8 +43,8 @@
 	},
 	{
 		"file": "lib/skeleton-part-pairing.mjs",
-		"find": "const readSlot = [ ...slotLooks.keys() ].sort().find(",
-		"replace": "const readSlot = null && [ ...slotLooks.keys() ].sort().find(",
+		"find": "const readSlot = lands ? undefined : [ ...slotLooks.keys() ].sort().find(",
+		"replace": "const readSlot = undefined && [ ...slotLooks.keys() ].sort().find(",
 		"why": "a draft sibling whose position the part has no slot at is listed as unpaired instead of read as its group"
 	}
 ]
