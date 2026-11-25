@@ -37,8 +37,8 @@
 	},
 	{
 		"file": "lib/skeleton-rules.mjs",
-		"find": "...( decided ? { decided } : {} ), firstItem: labels[ 0 ].key } );",
-		"replace": "firstItem: labels[ 0 ].key } );",
+		"find": "...( decided ? { decided } : {} ), ...( separator ? { separator: separator.key } : {} ), firstItem: labels[ 0 ].key } );",
+		"replace": "...( separator ? { separator: separator.key } : {} ), firstItem: labels[ 0 ].key } );",
 		"why": "Fill could answer the badge style from the draft's styling and undo the rule's choice"
 	},
 	{

@@ -27,7 +27,8 @@ const facts = ( ...off ) => {
 };
 
 // N( tag, { style, words, attrs, loop, holes, hole, kids } ): style is a CSS declaration string (rendered and recorded);
-// `loop` makes the node the item of a loop under its parent; `holes` are style-bound properties; `hole` a text binding.
+// `loop` makes the node the item of a loop under its parent; `holes` are style-bound properties; `hole` a text binding;
+// `resolved` the browser's computed read per width ({ 1440: { 'padding-top': '36px', ... } }).
 const N = ( tag, o = {}, kids = [] ) => ( { tag, o, kids } );
 const decl = ( css ) => String( css || '' ).split( ';' ).map( ( p ) => p.split( /:(.+)/ ).slice( 0, 2 ).map( ( x ) => x.trim() ) ).filter( ( p ) => p[ 0 ] && p[ 1 ] );
 function build( root ) {
@@ -41,7 +42,7 @@ function build( root ) {
 		const attrs = { ...( node.o.attrs || {} ), ...( node.o.style ? { style: node.o.style } : {} ) };
 		const words = node.o.words || '';
 		const el = { key, parentKey, depth, tag: node.tag, template: 'Root', tpl: id, attrs, words, allText: words, membership: [], srcTag: node.tag, srcOwnText: words, snippet: `<${ node.tag } data-dc-tpl="${ id }">${ words }</${ node.tag }>`,
-			box: Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, { x: 0, y: id * 30, w: 100, h: 20 } ] ) ), visible: { 375: true, 768: true, 1440: true }, display: /display:\s*(flex|grid)/.exec( node.o.style || '' )?.[ 1 ] || 'block', flexDirection: 'row', screenshots: {} , ...( node.o.codeItems ? { codeItems: node.o.codeItems } : {} ) };
+			box: Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, { x: 0, y: id * 30, w: 100, h: 20 } ] ) ), visible: { 375: true, 768: true, 1440: true }, display: /display:\s*(flex|grid)/.exec( node.o.style || '' )?.[ 1 ] || 'block', flexDirection: 'row', screenshots: {} , ...( node.o.codeItems ? { codeItems: node.o.codeItems } : {} ), ...( node.o.resolved ? { resolved: node.o.resolved } : {} ) };
 		elements.push( el );
 		const parentTk = parentKey ? parentKey.replace( /#0$/, '' ) : null;
 		const loopKey = node.o.loop ? `Root/f${ id }` : null;
@@ -500,6 +501,43 @@ test( 'MUST FAIL: the cap wrapper\'s width and padding reach the panel node as d
 	assert.deepEqual( capOnly.decided, { maxWidth: { desktop: '1100px' } }, 'no padding declared: no padding setting' );
 	const bare = behindRun( behind( { cap: 'display:block' } ) ).skeleton[ 0 ];
 	assert.equal( bare.decided, undefined, 'a wrapper declaring neither a cap nor padding decides nothing' );
+} );
+
+test( 'MUST FAIL: the cap wrapper\'s width and padding are written per device as the browser read of the draft gives them, a narrower device only where it differs from what it inherits', () => {
+	const side = ( top, right ) => ( { 'padding-top': top, 'padding-right': right, 'padding-bottom': top, 'padding-left': right } );
+	const withRead = ( resolved ) => N( 'div', { style: 'background-color:rgb(1, 2, 3)' }, [
+		N( 'div', { style: 'max-width:1440px;margin-left:auto;margin-right:auto;padding-top:36px;padding-right:52px;padding-bottom:36px;padding-left:52px', resolved }, [
+			N( 'div', { style: 'display:grid;grid-template-columns:minmax(0, 1fr) 300px' }, [
+				N( 'div', {}, [ card( 'One', '/one' ), card( 'Two', '/two' ) ] ),
+				N( 'div', { style: 'aspect-ratio:4 / 3;box-shadow:0 1px 2px #000' }, [ N( 'p', { words: 'Feature' } ) ] ),
+			] ),
+		] ),
+	] );
+	const read = { 1440: { 'max-width': '1440px', ...side( '36px', '52px' ) }, 768: { 'max-width': '1440px', ...side( '36px', '52px' ) }, 375: { 'max-width': '100%', ...side( '20px', '16px' ) } };
+	const mobileOnly = behindRun( withRead( read ) ).skeleton[ 0 ].decided;
+	assert.deepEqual( mobileOnly.panelPadding, { desktop: { top: '36px', right: '52px', bottom: '36px', left: '52px' }, mobile: { top: '20px', right: '16px', bottom: '20px', left: '16px' } }, 'tablet matches desktop so it writes none; the phone differs' );
+	assert.deepEqual( mobileOnly.maxWidth, { desktop: '1440px', mobile: '100%' } );
+	const tabletToo = behindRun( withRead( { ...read, 768: { 'max-width': '960px', ...side( '28px', '40px' ) } } ) ).skeleton[ 0 ].decided;
+	assert.deepEqual( Object.keys( tabletToo.panelPadding ), [ 'desktop', 'tablet', 'mobile' ] );
+	assert.deepEqual( tabletToo.maxWidth, { desktop: '1440px', tablet: '960px', mobile: '100%' } );
+	const same = behindRun( withRead( { 1440: read[ 1440 ], 768: read[ 1440 ], 375: read[ 1440 ] } ) ).skeleton[ 0 ].decided;
+	assert.deepEqual( Object.keys( same.panelPadding ), [ 'desktop' ], 'a draft whose padding never changes writes the desktop tier alone' );
+	assert.deepEqual( Object.keys( same.maxWidth ), [ 'desktop' ] );
+	const none = behindRun( withRead( { 1440: read[ 1440 ], 768: { ...side( '36px', '52px' ) }, 375: { ...side( '36px', '52px' ) } } ) ).skeleton[ 0 ].decided;
+	assert.deepEqual( Object.keys( none.maxWidth ), [ 'desktop' ], 'a device the draft leaves uncapped adds no width cap' );
+	// A device the draft was not read at inherits from the one above it, never from desktop.
+	const noPhone = behindRun( withRead( { 1440: read[ 1440 ], 768: { 'max-width': '960px', ...side( '28px', '40px' ) } } ) ).skeleton[ 0 ].decided;
+	assert.deepEqual( Object.keys( noPhone.panelPadding ), [ 'desktop', 'tablet' ], 'no read at 375: no phone value' );
+	assert.deepEqual( noPhone.maxWidth, { desktop: '1440px', tablet: '960px' } );
+	// A padding the draft writes through a variable is the browser's px, not the variable's name; a width the read holds no cap for keeps the declared one.
+	const viaVar = ( resolved ) => N( 'div', { style: 'background-color:rgb(1, 2, 3)' }, [
+		N( 'div', { style: 'max-width:1440px;padding-top:var(--band);padding-right:var(--band);padding-bottom:var(--band);padding-left:var(--band)', resolved }, [
+			N( 'div', { style: 'display:grid;grid-template-columns:minmax(0, 1fr) 300px' }, [ N( 'div', {}, [ card( 'One', '/one' ), card( 'Two', '/two' ) ] ), N( 'div', { style: 'aspect-ratio:4 / 3;box-shadow:0 1px 2px #000' }, [ N( 'p', { words: 'Feature' } ) ] ) ] ),
+		] ),
+	] );
+	const vars = behindRun( viaVar( { 1440: side( '44px', '44px' ) } ) ).skeleton[ 0 ].decided;
+	assert.deepEqual( vars.panelPadding.desktop, { top: '44px', right: '44px', bottom: '44px', left: '44px' } );
+	assert.deepEqual( vars.maxWidth, { desktop: '1440px' } );
 } );
 
 test( 'NEGATIVE megaPanelRow: a root that lays its columns out itself keeps the direct rule; a wrapper over a loop\'s cards, over a row with no column, or more than three levels up is left alone', () => {

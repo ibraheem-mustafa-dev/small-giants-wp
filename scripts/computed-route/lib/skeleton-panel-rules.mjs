@@ -154,17 +154,39 @@ export function makePanelRules( { m, view, scope, R, facts, surface = {}, declar
 		return [ ...( UNSET.has( view.declared( c )[ 'max-width' ] ?? '' ) ? [] : [ band.maxWidth ] ), ...( hasPadding( c ) ? [ band.padding ] : [] ) ];
 	};
 
-	// The values the cap stands for, as the panel's own settings for the desktop tier (the shapes `sgs/mega-panel` holds: maxWidth
-	// `{ desktop: length }`, panelPadding `{ desktop: { top, right, bottom, left } }`), taken from the wrapper's declared style. A
-	// style value cannot sit among the skeleton's attributes (R-47-10), so the panel node's `decided` carries them and Fill writes
-	// them (lib/fill-resolve.mjs::fillContent), as rules.formControl.wrapperCap does for a field.
+	// The values the cap stands for, as the panel's own settings per device (the shapes `sgs/mega-panel` holds: maxWidth
+	// `{ desktop: length, tablet?, mobile? }`, panelPadding `{ desktop: { top, right, bottom, left }, tablet?, mobile? }`), as the
+	// draft gives them: the browser's read of the wrapper at 1440, 768 and 375 (`resolved`: its padding, its max-width where it
+	// caps), or its declared style where no read was taken. Desktop is always written; a narrower device only when its value
+	// differs from the one the cascade already gives it (tablet inherits desktop, mobile tablet), and a device the draft leaves
+	// uncapped adds no maxWidth (a width cap has no "none" to write). A style value cannot sit among the skeleton's attributes
+	// (R-47-10), so the panel node's `decided` carries them and Fill writes them (lib/fill-resolve.mjs::fillContent), as
+	// rules.formControl.wrapperCap does for a field.
+	const SIDES = [ 'top', 'right', 'bottom', 'left' ];
 	const bandDecided = ( c, settings ) => {
 		const band = R.megaPanelRow.band;
 		const style = view.declared( c );
-		const side = ( k ) => ( UNSET.has( style[ `padding-${ k }` ] ?? '' ) ? '0' : style[ `padding-${ k }` ] );
-		return Object.fromEntries( settings.map( ( setting ) => [ setting, setting === band.padding
-			? { desktop: Object.fromEntries( [ 'top', 'right', 'bottom', 'left' ].map( ( k ) => [ k, side( k ) ] ) ) }
-			: { desktop: style[ 'max-width' ] } ] ) );
+		const capOf = ( v ) => ( UNSET.has( v ?? '' ) ? null : v );
+		const declaredBand = { cap: capOf( style[ 'max-width' ] ), pad: Object.fromEntries( SIDES.map( ( k ) => [ k, UNSET.has( style[ `padding-${ k }` ] ?? '' ) ? '0' : style[ `padding-${ k }` ] ] ) ) };
+		const readAt = ( w ) => {
+			const rs = c.resolved?.[ w ];
+			return rs ? { cap: capOf( rs[ 'max-width' ] ), pad: Object.fromEntries( SIDES.map( ( k ) => [ k, rs[ `padding-${ k }` ] ?? declaredBand.pad[ k ] ] ) ) } : null;
+		};
+		const desktop = readAt( 1440 ) ?? declaredBand;
+		const cap = { desktop: desktop.cap ?? declaredBand.cap };
+		const pad = { desktop: desktop.pad };
+		let [ capNow, padNow ] = [ desktop.cap, desktop.pad ];
+		for ( const [ w, device ] of [ [ 768, 'tablet' ], [ 375, 'mobile' ] ] ) {
+			const at = readAt( w );
+			if ( ! at ) {
+				continue;
+			}
+			at.cap && at.cap !== capNow && ( cap[ device ] = at.cap );
+			SIDES.some( ( k ) => at.pad[ k ] !== padNow[ k ] ) && ( pad[ device ] = at.pad );
+			capNow = at.cap ?? capNow;
+			padNow = at.pad;
+		}
+		return Object.fromEntries( settings.map( ( setting ) => [ setting, setting === band.padding ? pad : cap ] ) );
 	};
 
 	// The verdict for an element of a header disclosure panel, or null. A direct child of the panel's root that lays its own

@@ -22,5 +22,41 @@
 		"find": "...( Object.keys( plain ).length ? { decided: plain } : {} ), ",
 		"replace": "decided: plain, ",
 		"why": "an empty decision is attached when no style was chosen"
+	},
+	{
+		"file": "lib/skeleton-panel-rules.mjs",
+		"find": "at.cap && at.cap !== capNow && ( cap[ device ] = at.cap );",
+		"replace": "at.cap && ( cap[ device ] = at.cap );",
+		"why": "a device whose cap equals the one it inherits gets its own"
+	},
+	{
+		"file": "lib/skeleton-panel-rules.mjs",
+		"find": "SIDES.some( ( k ) => at.pad[ k ] !== padNow[ k ] ) && ( pad[ device ] = at.pad );",
+		"replace": "pad[ device ] = at.pad;",
+		"why": "a device whose padding equals the one it inherits gets its own"
+	},
+	{
+		"file": "lib/skeleton-panel-rules.mjs",
+		"find": "const desktop = readAt( 1440 ) ?? declaredBand;",
+		"replace": "const desktop = declaredBand;",
+		"why": "the desktop value is the declared style, not the browser's read of it"
+	},
+	{
+		"file": "lib/skeleton-panel-rules.mjs",
+		"find": "const cap = { desktop: desktop.cap ?? declaredBand.cap };",
+		"replace": "const cap = { desktop: desktop.cap };",
+		"why": "a read with no cap at desktop drops the declared one"
+	},
+	{
+		"file": "lib/skeleton-panel-rules.mjs",
+		"find": "const at = readAt( w );\n\t\t\tif ( ! at ) {\n\t\t\t\tcontinue;\n\t\t\t}\n",
+		"replace": "const at = readAt( w ) ?? desktop;\n",
+		"why": "a device with no browser read is read as desktop"
+	},
+	{
+		"file": "lib/skeleton-panel-rules.mjs",
+		"find": "for ( const [ w, device ] of [ [ 768, 'tablet' ], [ 375, 'mobile' ] ] ) {",
+		"replace": "for ( const [ w, device ] of [ [ 768, 'tablet' ] ] ) {",
+		"why": "the phone device is never written"
 	}
 ]
