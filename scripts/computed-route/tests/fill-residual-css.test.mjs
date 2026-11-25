@@ -175,9 +175,15 @@ test( 'MUST FAIL WITHOUT THE REFUSALS: display, an out-of-flow position with its
 	assert.equal( css( w ), undefined );
 	assert.deepEqual( r.refused.map( ( x ) => x.property ), [ 'display', 'position', 'left', 'transform', 'justify-content' ] );
 	assert.match( r.refused[ 4 ].reason, /lays them out differently/ );
-	const one = world( { missing: [ 375, 768 ] } );
-	const r2 = run( one, [ row( { property: 'width', value: '100%' } ) ] );
+	// The element is drawn at every width, and the draft states the width at 1440 alone: the layout value is not held at the others.
+	const one = world();
+	const r2 = run( one, [ row( { property: 'width', value: JSON.stringify( { 1440: '100%' } ) } ) ] );
 	assert.match( r2.refused[ 0 ].reason, /layout property and the draft states it only at 1440/ );
+	// A width the element is not drawn at (no read there) states nothing, so a value at the widths it is drawn at is complete.
+	const undrawn = world( { missing: [ 375, 768 ] } );
+	const r2b = run( undrawn, [ row( { property: 'width', value: '100%' } ) ] );
+	assert.deepEqual( r2b.refused, [] );
+	assert.equal( css( undrawn ), '& .f__input { width: 100%; }' );
 	const core = world( { block: 'core/group' } );
 	const r3 = run( core, [ { ...row( { property: 'font-size', value: '17px' } ), block: 'core/group' } ], { calFor: () => cal } );
 	assert.match( r3.refused[ 0 ].reason, /has no Custom CSS setting/ );
