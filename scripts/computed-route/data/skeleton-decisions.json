@@ -872,6 +872,10 @@
 			},
 			"reason": "a multi-step draft form is the form block with one sgs/form-step per schema step (Spec 42, Spec 48 FR-48-57): each step holds its schema fields, those the page never rendered built from the schema by their type (an input type or tag of rules.formControl, else the draft's own type word here), and the draft's step list, step count and Next / Back buttons are the form's own progress and step navigation, never static blocks beside it (2026-10-27)"
 		},
+		"formPrefillOpener": {
+			"block": "sgs/button",
+			"reason": "a button or link whose click handler scrolls to a form and sets its fields (a class method that looks a form element up and scrolls to it, called with the field values; lib/skeleton-form-prefill.mjs) opens that form on the clone, with the fields prefilled: the control is a button linking ?<field>=<value> (the query before the hash) and #<the form's anchor>, each loop copy's values read from the element printing them in that copy, and the form's fields read the query through valueFromParam; the draft's control is never a dead button"
+		},
 		"formHost": {
 			"tag": "form",
 			"block": "sgs/form",

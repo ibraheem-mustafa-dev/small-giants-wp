@@ -144,7 +144,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	// The page map's role for the surface: a choice flow, a part another row's block draws, or a part another row holds
 	// (lib/skeleton-surface-role.mjs).
 	const role = surfaceRole( { pageMap, id: surfaceId ?? scope?.id ?? null, kind: surfaceKind, name: surfaceName, route: surfaceRoute, m, view, postType: facts.decisions.rules?.choiceFlow?.postType } );
-	const cls = makeClassifier( { m, facts, overrides, surface: { slug: surface, kind: surfaceKind, name: surfaceName, commerce, products, role, pageMap, megaOpeners: megaOpenerMenus( draftLinks?.menuItems ), splitMenu: splitMenuOf( draftLinks?.menuItems ) }, motion, view, scope, formLinkOf, siteLink, blockOfKey: ( k ) => rowOf[ k ]?.block ?? null, unwrapReads: ( e, r, at ) => w.unwrapReads( e, r, at ), absorbInto: ( e, looks ) => w.absorbInto( e, looks ), overlayInto: ( e ) => w.overlayInto( e ) } );
+	const cls = makeClassifier( { m, facts, overrides, surface: { slug: surface, kind: surfaceKind, name: surfaceName, commerce, products, role, pageMap, formLinks, megaOpeners: megaOpenerMenus( draftLinks?.menuItems ), splitMenu: splitMenuOf( draftLinks?.menuItems ) }, motion, view, scope, formLinkOf, siteLink, blockOfKey: ( k ) => rowOf[ k ]?.block ?? null, unwrapReads: ( e, r, at ) => w.unwrapReads( e, r, at ), absorbInto: ( e, looks ) => w.absorbInto( e, looks ), overlayInto: ( e ) => w.overlayInto( e ) } );
 	const R = facts.decisions.rules || {};
 	const rows = [];
 	const finder = ( e ) => m.tplFinder( e );

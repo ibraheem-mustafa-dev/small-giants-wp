@@ -19,6 +19,7 @@
 // into it (lib/fill-form-buttons.mjs). A button is
 // `isSubmit` when the draft's is `type="submit"`. A linked reference block (a page's `sgs/form` with `formIsLinked`) renders the
 // saved post's blocks and ignores its own settings, so nothing on it or inside it is written.
+import { prefillParams } from './skeleton-form-prefill.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import { setAttr } from './tree.mjs';
@@ -255,7 +256,8 @@ export function formWrites( { nodes, flat, refOf, reads, facts, flags = [], db, 
 		}
 	} );
 	const schema = formSchemaOf( facts, component );
-	const params = linkParams( facts );
+	// `params`: the query names a link of the draft hands to a form, and the fields a control that scrolls to the form sets (lib/skeleton-form-prefill.mjs).
+	const params = new Set( [ ...linkParams( facts ), ...( folder ? prefillParams( { folder, record: facts } ) : [] ) ] );
 	const conditions = schema ? conditionsFromSource( sources[ schema.component ] ) : {};
 	const copies = Object.fromEntries( Object.entries( sources ).map( ( [ c, src ] ) => [ c, requiredCopyOf( src ) ] ) );
 	const steps = schema ? schema.steps : [];
