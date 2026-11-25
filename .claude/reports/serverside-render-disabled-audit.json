@@ -1,12 +1,12 @@
 {
-	"generatedAt": "2026-11-19T22:15:32.658Z",
+	"generatedAt": "2026-11-25T21:48:13.480Z",
 	"total": 16,
 	"violations": 0,
 	"findings": [
 		{
 			"file": "src/blocks/account/edit.js",
 			"block": "sgs/account",
-			"line": 390,
+			"line": 473,
 			"wrapped": true,
 			"ancestors": [
 				"",
@@ -17,7 +17,7 @@
 		{
 			"file": "src/blocks/before-after/edit.js",
 			"block": "sgs/before-after",
-			"line": 567,
+			"line": 654,
 			"wrapped": true,
 			"ancestors": [
 				"",
@@ -30,7 +30,7 @@
 		{
 			"file": "src/blocks/brand-strip/edit.js",
 			"block": "sgs/brand-strip",
-			"line": 1013,
+			"line": 1061,
 			"wrapped": true,
 			"ancestors": [
 				"",
@@ -42,7 +42,7 @@
 		{
 			"file": "src/blocks/business-info/edit.js",
 			"block": "sgs/business-info",
-			"line": 956,
+			"line": 964,
 			"wrapped": true,
 			"ancestors": [
 				"",
@@ -55,7 +55,7 @@
 		{
 			"file": "src/blocks/form/FormEmbedEdit.js",
 			"block": "sgs/form",
-			"line": 141,
+			"line": 199,
 			"wrapped": true,
 			"ancestors": [
 				"div",
@@ -86,7 +86,7 @@
 		{
 			"file": "src/blocks/google-rating-badge/edit.js",
 			"block": "sgs/google-rating-badge",
-			"line": 629,
+			"line": 631,
 			"wrapped": true,
 			"ancestors": [
 				"",
@@ -108,7 +108,7 @@
 		{
 			"file": "src/blocks/nav-bar-menu/edit.js",
 			"block": "sgs/nav-bar-menu",
-			"line": 969,
+			"line": 1032,
 			"wrapped": true,
 			"ancestors": [
 				"",
@@ -119,7 +119,7 @@
 		{
 			"file": "src/blocks/nav-drawer/ChromePreview.js",
 			"block": "sgs/nav-drawer",
-			"line": 109,
+			"line": 156,
 			"wrapped": true,
 			"ancestors": [
 				"div",
@@ -130,7 +130,7 @@
 		{
 			"file": "src/blocks/nav-drawer-menu/edit.js",
 			"block": "sgs/nav-drawer-menu",
-			"line": 810,
+			"line": 871,
 			"wrapped": true,
 			"ancestors": [
 				"",
@@ -141,7 +141,7 @@
 		{
 			"file": "src/blocks/order-items/edit.js",
 			"block": "sgs/order-items",
-			"line": 360,
+			"line": 436,
 			"wrapped": true,
 			"ancestors": [
 				"",
@@ -152,7 +152,7 @@
 		{
 			"file": "src/blocks/product-card/edit.js",
 			"block": "sgs/product-card",
-			"line": 3526,
+			"line": 3787,
 			"wrapped": true,
 			"ancestors": [
 				"",
@@ -163,7 +163,7 @@
 		{
 			"file": "src/blocks/responsive-logo/edit.js",
 			"block": "sgs/responsive-logo",
-			"line": 631,
+			"line": 673,
 			"wrapped": true,
 			"ancestors": [
 				"",
@@ -174,7 +174,7 @@
 		{
 			"file": "src/blocks/trustpilot-reviews/edit.js",
 			"block": "sgs/trustpilot-reviews",
-			"line": 807,
+			"line": 1112,
 			"wrapped": true,
 			"ancestors": [
 				"",

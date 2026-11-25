@@ -8,19 +8,19 @@ Finds every `<ServerSideRender>` JSX usage across `src/blocks/*/edit.js` and rep
 
 | Block | File | Line | Wrapped in `<Disabled>`? |
 |---|---|---|---|
-| sgs/account | src/blocks/account/edit.js | 390 | yes |
-| sgs/before-after | src/blocks/before-after/edit.js | 567 | yes |
-| sgs/brand-strip | src/blocks/brand-strip/edit.js | 1013 | yes |
-| sgs/business-info | src/blocks/business-info/edit.js | 956 | yes |
-| sgs/form | src/blocks/form/FormEmbedEdit.js | 141 | yes |
+| sgs/account | src/blocks/account/edit.js | 473 | yes |
+| sgs/before-after | src/blocks/before-after/edit.js | 654 | yes |
+| sgs/brand-strip | src/blocks/brand-strip/edit.js | 1061 | yes |
+| sgs/business-info | src/blocks/business-info/edit.js | 964 | yes |
+| sgs/form | src/blocks/form/FormEmbedEdit.js | 199 | yes |
 | sgs/free-delivery-bar | src/blocks/free-delivery-bar/edit.js | 411 | yes |
 | sgs/gift-order | src/blocks/gift-order/edit.js | 111 | yes |
-| sgs/google-rating-badge | src/blocks/google-rating-badge/edit.js | 629 | yes |
+| sgs/google-rating-badge | src/blocks/google-rating-badge/edit.js | 631 | yes |
 | sgs/google-reviews | src/blocks/google-reviews/edit.js | 647 | yes |
-| sgs/nav-bar-menu | src/blocks/nav-bar-menu/edit.js | 969 | yes |
-| sgs/nav-drawer | src/blocks/nav-drawer/ChromePreview.js | 109 | yes |
-| sgs/nav-drawer-menu | src/blocks/nav-drawer-menu/edit.js | 810 | yes |
-| sgs/order-items | src/blocks/order-items/edit.js | 360 | yes |
-| sgs/product-card | src/blocks/product-card/edit.js | 3526 | yes |
-| sgs/responsive-logo | src/blocks/responsive-logo/edit.js | 631 | yes |
-| sgs/trustpilot-reviews | src/blocks/trustpilot-reviews/edit.js | 807 | yes |
+| sgs/nav-bar-menu | src/blocks/nav-bar-menu/edit.js | 1032 | yes |
+| sgs/nav-drawer | src/blocks/nav-drawer/ChromePreview.js | 156 | yes |
+| sgs/nav-drawer-menu | src/blocks/nav-drawer-menu/edit.js | 871 | yes |
+| sgs/order-items | src/blocks/order-items/edit.js | 436 | yes |
+| sgs/product-card | src/blocks/product-card/edit.js | 3787 | yes |
+| sgs/responsive-logo | src/blocks/responsive-logo/edit.js | 673 | yes |
+| sgs/trustpilot-reviews | src/blocks/trustpilot-reviews/edit.js | 1112 | yes |
