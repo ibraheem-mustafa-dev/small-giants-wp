@@ -15,6 +15,7 @@ import { parseLogic, resolveName, isThisMember, keyName, snippet, classMethod, r
 import { returnsOf, evalDeep } from './intake-ast-eval.mjs';
 import { widthReader, numberOf } from './intake-breakpoints.mjs';
 import { stateObjects } from './intake-state-objects.mjs';
+import { renderValNode } from './intake-render-vals.mjs';
 
 const NEGATED = { '<': '>=', '<=': '>', '>': '<=', '>=': '<', '===': '!==', '!==': '===', '==': '!=', '!=': '==' };
 const MIRROR = { '<': '>', '<=': '>=', '>': '<', '>=': '<=', '===': '===', '!==': '!==', '==': '==', '!=': '!=' };
@@ -199,39 +200,8 @@ function conditionReader( idx, tags, file ) {
 		}
 	}
 
-	// The node a renderVals key holds: its value in a returned object literal, a spread helper's, or a class getter.
-	const valueOfKey = ( key ) => {
-		const rv = classMethod( idx, 'renderVals' );
-		const seen = new Set();
-		const find = ( obj, depth ) => {
-			for ( const p of obj.properties ) {
-				if ( 'ObjectProperty' === p.type && key === keyName( p ) ) {
-					return p.value;
-				}
-				if ( 'SpreadElement' === p.type && 'CallExpression' === p.argument.type && isThisMember( p.argument.callee ) && depth < MAX_DEPTH && ! seen.has( p.argument.callee.property.name ) ) {
-					seen.add( p.argument.callee.property.name );
-					const m = classMethod( idx, p.argument.callee.property.name );
-					const fn = m && ( /Function|Method/.test( m.type ) ? m : m.value );
-					for ( const o of ( fn ? returnsOf( idx, fn ) : [] ).filter( ( x ) => 'ObjectExpression' === x.type ) ) {
-						const hit = find( o, depth + 1 );
-						if ( hit ) {
-							return hit;
-						}
-					}
-				}
-			}
-			return null;
-		};
-		const fn = rv && ( /Function|Method/.test( rv.type ) ? rv : rv.value );
-		for ( const o of ( fn ? returnsOf( idx, fn ) : [] ).filter( ( x ) => 'ObjectExpression' === x.type ) ) {
-			const hit = find( o, 0 );
-			if ( hit ) {
-				return hit;
-			}
-		}
-		const getter = classMethod( idx, key );
-		return getter && 'get' === getter.kind && 1 === returnsOf( idx, getter ).length ? returnsOf( idx, getter )[ 0 ] : null;
-	};
+	// The node a renderVals key holds (lib/intake-render-vals.mjs).
+	const valueOfKey = ( key ) => renderValNode( idx, key );
 
 	// The condition of a template expression (the text between the braces of an sc-if value): a renderVals key, its
 	// negation, or a key compared with a string.
