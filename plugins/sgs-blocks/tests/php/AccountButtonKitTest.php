@@ -152,13 +152,13 @@ final class AccountButtonKitTest extends TestCase {
 			array(
 				'card'  => array( 'fn' => 'empty', 'args' => array( 'h', 't', 'Shop', '/shop/', $set ) ),
 				'css'   => array( 'fn' => 'kit_css', 'attrs' => $set, 'args' => array( '.r' ) ),
-				'other' => array( 'fn' => 'kit_css', 'attrs' => array( 'ordersEmptyButtonMinHeight' => array( 'desktop' => '52px' ), 'signedOutSignInLabel' => 'x' ), 'args' => array( '.r' ) ),
+				'other' => array( 'fn' => 'kit_css', 'attrs' => array( 'ordersEmptyButtonLabel' => 'x', 'signedOutSignInLabel' => 'x' ), 'args' => array( '.r' ) ),
 			)
 		);
 		$this->assertArrayNotHasKey( 'className', self::button( $out['card'], 0 ), 'one button in the card: no hook class' );
 		$sel = '.r .sgs-account__orders-empty-actions .sgs-button.sgs-button';
 		$this->assertMatchesRegularExpression( '/' . preg_quote( $sel, '/' ) . '\{[^}]*background-color:[^;}]*accent/', $out['css'] );
 		$this->assertMatchesRegularExpression( '/' . preg_quote( $sel, '/' ) . '\{[^}]*padding[^}]*9px/', $out['css'] );
-		$this->assertSame( '', $out['other'], 'the existing empty-orders settings and a link setting print nothing from the kit' );
+		$this->assertSame( '', $out['other'], 'the empty-orders button label and a link setting print nothing from the kit' );
 	}
 }

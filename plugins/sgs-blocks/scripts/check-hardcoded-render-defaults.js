@@ -462,8 +462,6 @@ const ATTR_ELEMENT_OVERRIDES = {
 	'account::orderDetailTotalRowRuleWidth': [ 'order-detail-total-row-rule-width' ],
 	'account::orderDetailTitleMarginBottom': [ 'order-detail-title-margin-bottom' ],
 	'account::orderDetailItemMetaMarginTop': [ 'order-detail-item-meta-margin-top' ],
-	'account::ordersEmptyButtonMinHeight': [ 'orders-empty-button-min-height' ],
-	'account::ordersEmptyButtonPadding': [ 'orders-empty-button-padding' ],
 	'account::tabHeadingMarginBottom': [ 'tab-heading-margin-bottom' ],
 	'account::signedOutMaxWidth': [ 'signed-out-max-width' ],
 };

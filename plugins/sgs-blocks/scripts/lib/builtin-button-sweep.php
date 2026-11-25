@@ -13,9 +13,13 @@
  *   true-to-full               true becomes "full"; false is unset.
  *   fit-to-unset               "fit" is unset (the key is dropped); "full" stays. The CTA width choice's default was "fit", which printed
  *                              no width, and the kit prints "fit" as width:fit-content, so a saved "fit" would otherwise change the look.
+ *   merge-tier-object          Two settings that painted one property on one element become one: the old value is folded into the new
+ *                              setting per device and per side, the new setting's own values winning, and the old key is dropped
+ *                              (scripts/data/account-empty-button-renames.json: sgs/account's empty orders button).
  *
  * Every step is idempotent: a value already in the new shape, or a name already renamed, is left alone, and when both the old and the new
- * name are saved the new one wins and the old is dropped. Only the named attributes of the named blocks change.
+ * name are saved the new one wins and the old is dropped (a `merge-tier-object` row folds the old into the new instead). Only the named
+ * attributes of the named blocks change.
  *
  * @package SGS\Blocks
  */
@@ -146,6 +150,11 @@ if ( ! function_exists( 'sgs_builtin_button_sweep_attrs' ) ) {
 			}
 			if ( $old !== $new ) {
 				unset( $out[ $old ] );
+				if ( 'merge-tier-object' === $kind && array_key_exists( $new, $out ) && is_array( $out[ $new ] ) && is_array( $value ) ) {
+					// Both settings were saved: each device and side the new one leaves unset keeps the old one's value, as the cascade painted it.
+					$out[ $new ] = array_replace_recursive( $value, $out[ $new ] );
+					continue;
+				}
 				if ( array_key_exists( $new, $out ) ) {
 					continue; // The new name is already saved: it wins, the old one is dropped.
 				}

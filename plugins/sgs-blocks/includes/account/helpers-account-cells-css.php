@@ -119,8 +119,6 @@ if ( ! function_exists( 'sgs_account_cell_rows' ) ) {
 		array( 'ordersRowRadius', 'len', '@r.sgs-account--orders-rows table.woocommerce-orders-table .woocommerce-orders-table__row,@r .sgs-account__orders-list .sgs-account__order', array( 'border-radius' ), '' ),
 		array( 'ordersRowTextDecoration', 'sel', '@r .sgs-account__order,@r .sgs-account__order:hover,@r .sgs-account__order *', array( 'text-decoration' ), '' ),
 		// Orders, tabs and signed-out width.
-		array( 'ordersEmptyButtonMinHeight', 'len', '@r .sgs-account__orders-empty-actions .sgs-button', array( 'min-height' ), '' ),
-		array( 'ordersEmptyButtonPadding', 'box', '@r .sgs-account__orders-empty-actions .sgs-button', array( 'padding' ), '' ),
 		array( 'tabHeadingMarginBottom', 'len', '@r .sgs-account__tab-heading,@r .sgs-account__tab-head .sgs-account__tab-heading', array( 'margin-bottom' ), '' ),
 		array( 'signedOutMaxWidth', 'len', '@root:not(:has(nav.woocommerce-MyAccount-navigation))', array( 'max-width' ), '' ),
 		);

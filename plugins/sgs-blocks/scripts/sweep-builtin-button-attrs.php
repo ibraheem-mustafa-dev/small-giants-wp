@@ -22,6 +22,7 @@
  *   wp eval-file wp-content/plugins/sgs-blocks/scripts/sweep-builtin-button-attrs.php --user=1            # dry run
  *   wp eval-file wp-content/plugins/sgs-blocks/scripts/sweep-builtin-button-attrs.php apply --user=1      # write
  *   ... blocks=sgs/buybox,sgs/account                                                                   # only these blocks (default: sgs/buybox, sgs/product-card, sgs/account, sgs/choice-flow)
+ *   ... map=account-empty-button-renames.json                                                           # another rename map in scripts/data/ (default: builtin-button-renames.json); its blocks are the default blocks
  *   ... json                                                                                            # the counts as one JSON line
  * Back the database up first on a site that matters (`wp db export`); the sweep never writes without `apply`.
  *
@@ -100,12 +101,21 @@ function sgs_builtin_button_sweep_run( array $words ): void {
 	$apply     = in_array( 'apply', $words, true ) || '1' === getenv( 'SGS_SWEEP_APPLY' );
 	$json_only = in_array( 'json', $words, true );
 	$blocks    = array( 'sgs/buybox', 'sgs/product-card', 'sgs/account', 'sgs/choice-flow' );
+	$map_file  = '';
+	foreach ( $words as $word ) {
+		if ( 0 === strpos( (string) $word, 'map=' ) ) {
+			$map_file = dirname( __DIR__ ) . '/scripts/data/' . basename( substr( (string) $word, 4 ) );
+		}
+	}
+	$map = sgs_builtin_button_sweep_map( $map_file );
+	if ( '' !== $map_file ) {
+		$blocks = array_keys( $map );
+	}
 	foreach ( $words as $word ) {
 		if ( 0 === strpos( (string) $word, 'blocks=' ) ) {
 			$blocks = array_values( array_filter( array_map( 'trim', explode( ',', substr( (string) $word, 7 ) ) ) ) );
 		}
 	}
-	$map = sgs_builtin_button_sweep_map();
 
 	$like = array();
 	foreach ( $blocks as $b ) {

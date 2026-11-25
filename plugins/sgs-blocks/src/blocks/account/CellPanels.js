@@ -349,16 +349,6 @@ const ROWS_ORDER = [
 
 const ROWS_TABS = [
 	[
-		'ordersEmptyButtonMinHeight',
-		'len',
-		__( 'Empty orders button minimum height', 'sgs-blocks' ),
-	],
-	[
-		'ordersEmptyButtonPadding',
-		'box',
-		__( 'Empty orders button padding', 'sgs-blocks' ),
-	],
-	[
 		'tabHeadingMarginBottom',
 		'len',
 		__( 'Tab heading: space under', 'sgs-blocks' ),
