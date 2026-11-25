@@ -5,6 +5,8 @@ import { PX_TOL } from './css-equivalence/tolerance.mjs';
 //   sgs/form: also the consent sentence's text (`consent`: the checkbox's label text) and the first floating label under focus (`focusLabel`), where the draft's moves up and shrinks.
 //   sgs/form-field-tiles: the first tile at rest, selected (clicked, pointer moved away) with its check mark and label, and hovered;
 //     `multi` says whether a second click leaves the first tile chosen, `tplId` and `dc` name the draft's tile element.
+import { normalLineBox } from './fill-normal-keywords.mjs';
+
 export const FIELD_REST_PROPS = [ 'background-color', 'color', 'border-top-color', 'border-top-width', 'border-top-style', 'font-size', 'font-weight' ];
 export const FIELD_FOCUS_PROPS = [ 'background-color', 'border-top-color', 'border-top-width', 'box-shadow', 'outline-color', 'outline-style', 'outline-width' ];
 export const LABEL_PROPS = [ 'color', 'font-size', 'font-weight', 'font-family', 'letter-spacing', 'text-transform', 'line-height' ];
@@ -17,7 +19,7 @@ const FIELD_SELECTOR = 'input:not([type=hidden]):not([type=checkbox]):not([type=
 // In page: the element that paints a field's label text. A label's own words win when they are words; a required marker or an
 // icon (text of only '*', a bullet, '(required)', or no letters or digits) is skipped, so a label that wraps its field
 // (`<label><span>Name</span><input></label>`, `<label><span>*</span><span>Name</span>...`) reads at the descendant whose own text
-// holds the most letters and digits (the first on a tie).
+// holds the most letters and digits (the first on a tie), never inside a select, datalist, textarea or button.
 export function labelTextHolder( label, field ) {
 	if ( ! label || ! label.contains( field ) ) {
 		return label;
@@ -32,16 +34,18 @@ export function labelTextHolder( label, field ) {
 	}
 	let best = null;
 	for ( const el of label.querySelectorAll( '*' ) ) {
-		if ( ! el.contains( field ) && weight( el ) > ( best ? weight( best ) : 0 ) ) {
+		// The words of a control's own parts (a <select>'s options, a <textarea>'s default text, a button) are never the label's.
+		if ( ! el.contains( field ) && ! el.closest( 'select, datalist, textarea, button' ) && weight( el ) > ( best ? weight( best ) : 0 ) ) {
 			best = el;
 		}
 	}
 	return best || label;
 }
 const textHolderSrc = labelTextHolder.toString();
+const normalSrc = normalLineBox.toString();
 
 // In page: every field under `root` with its label's styles.
-function fieldsOf( [ finder, resolveSrc, restProps, labelProps, selector, textHolderSrc ] ) {
+function fieldsOf( [ finder, resolveSrc, restProps, labelProps, selector, textHolderSrc, normalSrc ] ) {
 	// eslint-disable-next-line no-new-func
 	const root = new Function( `return (${ resolveSrc });` )()( finder );
 	if ( ! root ) {
@@ -50,6 +54,10 @@ function fieldsOf( [ finder, resolveSrc, restProps, labelProps, selector, textHo
 	const read = ( el, props ) => Object.fromEntries( props.map( ( p ) => [ p, getComputedStyle( el ).getPropertyValue( p ).trim() ] ) );
 	// eslint-disable-next-line no-new-func
 	const textHolder = new Function( `return (${ textHolderSrc });` )();
+	// eslint-disable-next-line no-new-func
+	const normalBox = new Function( `return (${ normalSrc });` )();
+	// A label's line height that computes to `normal` also reads as the px of its one line box (`normalLineHeight`), as Fill's read does.
+	const readLabel = ( el, props ) => ( { ...read( el, props ), ...( normalBox( el ) ? { normalLineHeight: normalBox( el ) } : {} ) } );
 	// The field's grid cell (its nearest ancestor that is a grid item) and the grid that places it: the cell's width against the grid's
 	// content width and track count say whether the field sits in a column or spans the row. `form` is the form's own grid.
 	const layoutOf = ( field ) => {
@@ -72,18 +80,21 @@ function fieldsOf( [ finder, resolveSrc, restProps, labelProps, selector, textHo
 	};
 	return [ ...root.querySelectorAll( selector ) ].map( ( field ) => {
 		const label = textHolder( ( field.id && root.querySelector( `label[for="${ CSS.escape( field.id ) }"]` ) ) || field.closest( 'label' ) || field.parentElement?.querySelector( 'label' ), field );
-		return { field: read( field, restProps ), label: label ? read( label, labelProps ) : null, type: field.type || field.tagName.toLowerCase(), layout: layoutOf( field ), honeypot: Boolean( field.closest( '.sgs-form__honeypot' ) ) };
+		return { field: read( field, restProps ), label: label ? readLabel( label, labelProps ) : null, type: field.type || field.tagName.toLowerCase(), layout: layoutOf( field ), honeypot: Boolean( field.closest( '.sgs-form__honeypot' ) ) };
 	} );
 }
 
 // In page: the text of the first consent checkbox's label, as the visitor reads it.
-function consentFacts( [ finder, resolveSrc, props ] ) {
+function consentFacts( [ finder, resolveSrc, props, normalSrc ] ) {
 	// eslint-disable-next-line no-new-func
 	const root = new Function( `return (${ resolveSrc });` )()( finder );
 	const box = root?.querySelector( 'input[type=checkbox]' );
 	const label = box && ( box.closest( 'label' ) || box.parentElement );
 	const text = label && ( label.querySelector( '.sgs-form-field__consent-text' ) || label );
-	return text ? Object.fromEntries( props.map( ( p ) => [ p, getComputedStyle( text ).getPropertyValue( p ).trim() ] ) ) : null;
+	// eslint-disable-next-line no-new-func
+	const normalBox = new Function( `return (${ normalSrc });` )();
+	const normal = text ? normalBox( text ) : null;
+	return text ? { ...Object.fromEntries( props.map( ( p ) => [ p, getComputedStyle( text ).getPropertyValue( p ).trim() ] ) ), ...( normal ? { normalLineHeight: normal } : {} ) } : null;
 }
 
 // The vertical offset a CSS transform and the translate property add to a box, in px (the matrix's f, or a matrix3d's 14th value).
@@ -168,7 +179,7 @@ async function stepsRead( page, { finder, resolveSrc, tpl } ) {
 		if ( ! key ) {
 			break;
 		}
-		steps.push( await page.evaluate( fieldsOf, [ finder, resolveSrc, FIELD_REST_PROPS, LABEL_PROPS, FIELD_SELECTOR, textHolderSrc ] ) );
+		steps.push( await page.evaluate( fieldsOf, [ finder, resolveSrc, FIELD_REST_PROPS, LABEL_PROPS, FIELD_SELECTOR, textHolderSrc, normalSrc ] ) );
 	}
 	key && ( await reach( 0 ) );
 	return key ? steps : null;
@@ -176,7 +187,7 @@ async function stepsRead( page, { finder, resolveSrc, tpl } ) {
 
 async function formProbe( page, args ) {
 	const { finder, resolveSrc, side } = args;
-	const first = await page.evaluate( fieldsOf, [ finder, resolveSrc, FIELD_REST_PROPS, LABEL_PROPS, FIELD_SELECTOR, textHolderSrc ] );
+	const first = await page.evaluate( fieldsOf, [ finder, resolveSrc, FIELD_REST_PROPS, LABEL_PROPS, FIELD_SELECTOR, textHolderSrc, normalSrc ] );
 	let fields = first;
 	let steps = 1;
 	if ( 'draft' === side ) {
@@ -190,7 +201,7 @@ async function formProbe( page, args ) {
 		return null;
 	}
 	const focused = await focusRead( page, args );
-	return { fields, steps, focus: focused?.read ?? null, focusLabel: focused?.label ?? null, consent: await page.evaluate( consentFacts, [ finder, resolveSrc, CONSENT_PROPS ] ) };
+	return { fields, steps, focus: focused?.read ?? null, focusLabel: focused?.label ?? null, consent: await page.evaluate( consentFacts, [ finder, resolveSrc, CONSENT_PROPS, normalSrc ] ) };
 }
 
 function tileFacts( [ finder, resolveSrc, props, checkProps, labelProps ] ) {

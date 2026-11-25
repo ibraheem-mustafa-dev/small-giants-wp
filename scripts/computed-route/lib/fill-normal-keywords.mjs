@@ -11,6 +11,26 @@
 // from, to } ] }.
 export const NORMAL_KEYWORD_PROPS = [ 'letter-spacing', 'line-height' ];
 
+// In page (it holds everything it uses, so a page.evaluate can carry its source): where the element's line-height computes to
+// normal, the px height of one line box of its font at normal, else null. Fill's draft read (lib/fill-read-collect.mjs) and the
+// applier's probes (lib/apply-probes.mjs) both read it, so the two stages write the same value for the same `normal`.
+export function normalLineBox( el ) {
+	const cs = getComputedStyle( el );
+	if ( 'normal' !== cs.lineHeight ) {
+		return null;
+	}
+	const probe = document.createElement( 'div' );
+	probe.style.cssText = 'position:absolute;visibility:hidden;left:-99999px;top:0;margin:0;padding:0;border:0;white-space:nowrap;line-height:normal';
+	for ( const p of [ 'font-family', 'font-size', 'font-weight', 'font-style', 'font-stretch', 'font-variant', 'font-feature-settings', 'font-variation-settings', 'font-optical-sizing' ] ) {
+		probe.style.setProperty( p, cs.getPropertyValue( p ) );
+	}
+	probe.textContent = 'Hg';
+	document.body.appendChild( probe );
+	const lh = probe.getBoundingClientRect().height;
+	probe.remove();
+	return lh > 0 ? Math.round( lh * 1000 ) / 1000 : null;
+}
+
 export function normalKeywords( prop, draft, { snaps = {}, base = () => undefined } = {} ) {
 	if ( ! NORMAL_KEYWORD_PROPS.includes( prop ) ) {
 		return { draft, declared: {}, changed: [] };

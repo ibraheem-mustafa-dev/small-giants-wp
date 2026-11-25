@@ -118,10 +118,10 @@ export const form = {
 		// A unitless line height and an em letter spacing are held against the part's own font size, the draft's (the size this run writes).
 		const labelPx = parseFloat( col( d.fields, 'label', 'font-size' ).find( Boolean ) ) || null;
 		for ( const prop of LABEL_PROPS ) {
-			items.push( ...partItems( { ctx, element: 'field-label', prop, drafts: col( d.fields, 'label', prop ), lives: col( l.fields, 'label', prop ), check: { all: 'label' }, why, fontPx: labelPx } ) );
+			items.push( ...partItems( { ctx, element: 'field-label', prop, drafts: col( d.fields, 'label', prop ), lives: col( l.fields, 'label', prop ), check: { all: 'label' }, why, fontPx: labelPx, normalPx: Number( col( d.fields, 'label', 'normalLineHeight' ).find( Boolean ) ) || null } ) );
 		}
 		for ( const prop of CONSENT_PROPS ) {
-			items.push( ...partItems( { ctx, element: 'consent-text', prop, drafts: [ d.consent?.[ prop ] ], lives: [ l.consent?.[ prop ] ], check: { probe: [ 'consent' ] }, fontPx: parseFloat( d.consent?.[ 'font-size' ] ) || null } ) );
+			items.push( ...partItems( { ctx, element: 'consent-text', prop, drafts: [ d.consent?.[ prop ] ], lives: [ l.consent?.[ prop ] ], check: { probe: [ 'consent' ] }, fontPx: parseFloat( d.consent?.[ 'font-size' ] ) || null, normalPx: Number( d.consent?.normalLineHeight ) || null } ) );
 		}
 		items.push( ...focusRing( { saved: ctx.saved, d, l } ) );
 		for ( const prop of FOCUS.filter( ( p ) => 'box-shadow' !== p || ! ringOf( d.focus?.[ p ] ) ).filter( () => d.focus && l.focus ) ) {

@@ -1,0 +1,26 @@
+[
+	{
+		"file": "lib/apply-probe-items.mjs",
+		"find": "value: normal?.draft[ 1440 ] ?? want[ 0 ], state",
+		"replace": "value: want[ 0 ], state",
+		"why": "a draft label at line-height normal is refused as a keyword no setting holds"
+	},
+	{
+		"file": "lib/apply-probes.mjs",
+		"find": "( normalBox( el ) ? { normalLineHeight: normalBox( el ) } : {} )",
+		"replace": "{}",
+		"why": "the label read collects no measured line box"
+	},
+	{
+		"file": "lib/apply-family-form.mjs",
+		"find": "normalPx: Number( col( d.fields, 'label', 'normalLineHeight' ).find( Boolean ) ) || null",
+		"replace": "normalPx: null",
+		"why": "the form family passes no measured line box to the label's line height"
+	},
+	{
+		"file": "lib/apply-family-form.mjs",
+		"find": "normalPx: Number( d.consent?.normalLineHeight ) || null",
+		"replace": "normalPx: null",
+		"why": "the form family passes no measured line box to the consent text's line height"
+	}
+]
