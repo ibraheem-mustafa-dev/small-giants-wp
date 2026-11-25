@@ -15,7 +15,7 @@ const source = fs.readFileSync( path.join( ROUTE, 'site-run.mjs' ), 'utf8' );
 test( 'MUST FAIL: a stage that did not run is recorded ok with its reason and no failure; a run stage keeps its seconds and detail', () => {
 	assert.deepEqual( stageRecord( { ok: true, ms: 0, skipped: 'not in --stages' } ), { ok: true, skipped: 'not in --stages', seconds: 0 } );
 	assert.deepEqual( stageRecord( { ok: true, ms: 4200, detail: '3 nodes' } ), { ok: true, seconds: 4, detail: '3 nodes' } );
-	assert.deepEqual( stageRecord( { ok: false, ms: 900, detail: 'exit 1' } ), { ok: false, seconds: 1, detail: 'exit 1' } );
+	assert.deepEqual( stageRecord( { ok: false, ms: 900, detail: 'exit 1' } ), { ok: false, seconds: 1, detail: 'exit 1', failureClass: 'other' } );
 	assert.equal( stageRecord( { ok: true, ms: 1, skipped: null } ).skipped, undefined, 'negative control: no reason, no skipped field' );
 } );
 
@@ -96,7 +96,7 @@ test( 'MUST FAIL: the inventory stage on a state-driven or form surface stops wh
 test( 'MUST FAIL: the command records not-run stages, returns the exit code, names no --skip-stages and fails a page with no recorded shell under --no-copies', () => {
 	assert.match( source, /note\( key, stage, true, 0, null, 'not in --stages' \);\n\t\t\treturn true;/ );
 	assert.match( source, /note\( key, 'apply', true, 0, null, 'not in --stages' \);/ );
-	assert.match( source, /const record = stageRecord\( \{ ok, ms, detail, skipped, na \} \);/ );
+	assert.match( source, /const record = stageRecord\( \{ ok, ms, detail, skipped, na, failureClass \} \);/ );
 	assert.match( source, /return runExit\( status, \{ strict \} \);/ );
 	assert.match( source, /main\( process\.argv\.slice\( 2 \) \)\.then\( \( code \) => \{\n\t\tprocess\.exitCode = code;/ );
 	assert.match( source, /if \( missingInputs\.length \) \{\n\t\tthrow new Error\( missingInputs\.join\( '\\n' \) \);\n\t\}\n\tconst dir = path\.join/ );

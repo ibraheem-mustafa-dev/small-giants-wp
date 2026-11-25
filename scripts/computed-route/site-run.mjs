@@ -61,6 +61,7 @@ import { savedInventoryOf, servedInventoryOf } from './lib/skeleton-saved-invent
 import { openRunSession, readEnv } from './lib/wp-run-session.mjs';
 import { isContentOnlySurface, isUnwalkedWooPage, wooContentRole } from './lib/site-build-plan.mjs';
 import { walkChecked } from './lib/site-check-openers.mjs';
+import { failureClass, failureCounts } from './lib/failure-class.mjs';
 import { walkArgs } from './lib/site-run-walk.mjs';
 import { openerRow } from './lib/site-run-opener-row.mjs';
 import { rowKey, treeHash } from './lib/site-build-map.mjs';
@@ -253,13 +254,14 @@ export function gateChainArgs( { surface, gateDir, client, site, built } ) {
 	return tree ? [ 'scripts/computed-route/gate-chain.mjs', path.join( gateDir, 'solve-report.json' ), '--client', client, '--site', site, '--tree', tree ] : null;
 }
 
-// One stage's record in status.json: { ok, seconds, detail? }; a stage that did not run is { ok: true, skipped: <reason>, seconds: 0 }
+// One stage's record in status.json: { ok, seconds, detail?, failureClass? }; a stage that failed carries its class (`failureClass`:
+// the error's own, else classed from the message, lib/failure-class.mjs); a stage that did not run is { ok: true, skipped: <reason>, seconds: 0 }
 // (it did not fail, and it did not run). A stage that has nothing to do by design (`na`: a template copy has no post of its own to
 // apply, WooCommerce keeps its own page's content) also carries `notApplicable: true`, which --strict does not count as a gap.
-export function stageRecord( { ok, ms = 0, detail = null, skipped = null, na = false } ) {
+export function stageRecord( { ok, ms = 0, detail = null, skipped = null, na = false, failureClass: own = null } ) {
 	return skipped
 		? { ok: true, skipped, seconds: 0, ...( na ? { notApplicable: true } : {} ), ...( detail ? { detail } : {} ) }
-		: { ok, seconds: Math.round( ms / 1000 ), ...( detail ? { detail } : {} ) };
+		: { ok, seconds: Math.round( ms / 1000 ), ...( detail ? { detail } : {} ), ...( ok ? {} : { failureClass: failureClass( detail, own ) } ) };
 }
 
 // The printed line of a stage: `ok`, `FAIL` or `skip`, the surface, the stage, its seconds and its detail or skip reason.
@@ -306,7 +308,7 @@ export function surfaceStepper( { stages, note } ) {
 			note( key, stage, true, Date.now() - t, r );
 			return true;
 		} catch ( e ) {
-			note( key, stage, false, Date.now() - t, String( e.message || e ).slice( 0, 600 ) );
+			note( key, stage, false, Date.now() - t, String( e.message || e ).slice( 0, 600 ), null, false, e.failureClass );
 			return false;
 		}
 	};
@@ -421,8 +423,8 @@ export async function main( argv ) {
 	const builtTrees = new Map();
 	const save = () => fs.writeFileSync( path.join( dir, 'status.json' ), `${ JSON.stringify( status, null, 2 ) }\n` );
 	// `skipped`: why the stage did not run (it is recorded ok, with the reason, and printed `skip`); `na`: it has nothing to do by design.
-	const note = ( key, stage, ok, ms, detail, skipped = null, na = false ) => {
-		const record = stageRecord( { ok, ms, detail, skipped, na } );
+	const note = ( key, stage, ok, ms, detail, skipped = null, na = false, failureClass = null ) => {
+		const record = stageRecord( { ok, ms, detail, skipped, na, failureClass } );
 		( status[ key ] ||= {} )[ stage ] = record;
 		save();
 		console.log( stageLine( key, stage, record ) );
@@ -770,6 +772,8 @@ export async function main( argv ) {
 	// --strict: a stage that did not run counts as a failure of the run, and the run lists each one.
 	strict && problems.skipped.forEach( ( l ) => console.log( `strict: not run: ${ l }` ) );
 	problems.failed.forEach( ( l ) => console.log( `failed: ${ l }` ) );
+	const classes = Object.entries( failureCounts( status ) );
+	classes.length && console.log( `failure classes: ${ classes.map( ( [ c, n ] ) => `${ c } ${ n }` ).join( ', ' ) }` );
 	return runExit( status, { strict } );
 }
 
