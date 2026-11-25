@@ -1,6 +1,6 @@
 // Spec 49 section 8.3 and 11: a block's media slots, read from `block.json::supports.sgs.mediaElements` (the slot declaration) and
 // its attributes. A slot's settings are named `{prefix}{Base}` with the first letter lower-cased when the prefix is empty
-// (`source`, `alt`, `decorative`, `caption`). Only a slot that declares `kinds` and whose Source attribute is an object is
+// (`source`, `alt`, `decorative`, `caption`); a slot with a per-device Ratio or Height object names them too (`ratio`, `height`). Only a slot that declares `kinds` and whose Source attribute is an object is
 // adopted; an `element` slot with no kinds (a flag, a thumbnail fit) has no Source and is not a slot the route writes.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -22,12 +22,12 @@ function load() {
 			.filter( ( m ) => Array.isArray( m.kinds ) && m.kinds.length && 'object' === attrs[ slotAttr( m.prefix, 'Source' ) ]?.type )
 			.map( ( m ) => {
 				const has = ( base, type ) => ( type === [].concat( attrs[ slotAttr( m.prefix, base ) ]?.type ?? [] )[ 0 ] ? slotAttr( m.prefix, base ) : null );
-				return { prefix: m.prefix, context: m.context, kinds: m.kinds, source: slotAttr( m.prefix, 'Source' ), alt: has( 'Alt', 'string' ), decorative: has( 'Decorative', 'boolean' ), caption: has( 'Caption', 'string' ) };
+				return { prefix: m.prefix, context: m.context, kinds: m.kinds, source: slotAttr( m.prefix, 'Source' ), alt: has( 'Alt', 'string' ), decorative: has( 'Decorative', 'boolean' ), caption: has( 'Caption', 'string' ), ratio: has( 'Ratio', 'object' ), height: has( 'Height', 'object' ) };
 			} );
 	}
 }
 
-/** @param {string} slug Block name. @return {Object[]} Its adopted media slots: { prefix, context, kinds, source, alt, decorative, caption }. */
+/** @param {string} slug Block name. @return {Object[]} Its adopted media slots: { prefix, context, kinds, source, alt, decorative, caption, ratio, height }. */
 export function blockMediaSlots( slug ) {
 	index || load();
 	return index[ slug ] || [];
@@ -59,5 +59,5 @@ export function pickSlot( slots, group, kinds ) {
 	return { slot: null, reason: `the block has no ${ contexts[ 0 ] } media setting that takes ${ kinds.join( ' and ' ) || 'this media' }` };
 }
 
-/** @param {string} slug Block name. @return {string[]} Every setting the media writer can write for the block (each slot's Source, Alt, Decorative and Caption). */
-export const mediaSettings = ( slug ) => blockMediaSlots( slug ).filter( ( s ) => 'item' !== s.context ).flatMap( ( s ) => [ s.source, s.alt, s.decorative, s.caption ].filter( Boolean ) );
+/** @param {string} slug Block name. @return {string[]} Every setting the media writer can write for the block (each slot's Source, Alt, Decorative, Caption, Ratio and Height). */
+export const mediaSettings = ( slug ) => blockMediaSlots( slug ).filter( ( s ) => 'item' !== s.context ).flatMap( ( s ) => [ s.source, s.alt, s.decorative, s.caption, s.ratio, s.height ].filter( Boolean ) );

@@ -6,6 +6,18 @@ import { slotFromReads } from './index.mjs';
 import { placement } from './absorb.mjs';
 import { mimeOf, kindOfTag } from './kind-per-width.mjs';
 import { pickSlot } from './slots.mjs';
+import fs from 'node:fs';
+import path from 'node:path';
+import { BLOCKS_DIR } from '../resolve.mjs';
+
+// The slot schema's responsive keys (a per-device Ratio or Height object, not one value): slotFromReads reads which keys are per device from it.
+let schema = null;
+const slotSchema = () => ( schema ||= JSON.parse( fs.readFileSync( path.join( BLOCKS_DIR, '..', '..', 'schemas', 'media-slot.schema.json' ), 'utf8' ) ) );
+
+// The sizing a draft media element states that the block's slot holds beside its Source (Spec 49 section 11 rows 2 and 3,
+// lib/media/style-rows.mjs and fill-height.mjs): the ratio and the height; every other style row of the element is the universal
+// property route's (never written twice).
+const SIZING = [ 'ratio', 'height' ];
 
 const WIDTHS = [ 1440, 768, 375 ];
 const TIER = { 1440: 'desktop', 768: 'tablet', 375: 'mobile' };
@@ -68,7 +80,7 @@ export function mediaWrites( { slots, attributes = {}, reads, resolve, fact = nu
 			continue;
 		}
 		const visible = Object.fromEntries( WIDTHS.map( ( w ) => [ w, perWidth[ w ][ 0 ] || null ] ) );
-		const composed = slotFromReads( { reads: Object.fromEntries( WIDTHS.map( ( w ) => [ w, { visible: visible[ w ] } ] ) ), schema: null } );
+		const composed = slotFromReads( { reads: Object.fromEntries( WIDTHS.map( ( w ) => [ w, { visible: visible[ w ], element: visible[ w ]?.element?.declared ? visible[ w ].element : undefined } ] ) ), schema: slotSchema() } );
 		out.notes.push( ...composed.notes );
 		const source = {};
 		const tierWidth = Object.fromEntries( WIDTHS.map( ( w ) => [ TIER[ w ], w ] ) );
@@ -99,6 +111,7 @@ export function mediaWrites( { slots, attributes = {}, reads, resolve, fact = nu
 			continue;
 		}
 		put( slot.source, source );
+		SIZING.forEach( ( key ) => slot[ key ] && undefined !== composed.slot[ key ] && put( slot[ key ], composed.slot[ key ] ) );
 		const alt = composed.slot.alt ?? fact?.alt ?? null;
 		if ( composed.slot.decorative && slot.decorative ) {
 			put( slot.decorative, true );
