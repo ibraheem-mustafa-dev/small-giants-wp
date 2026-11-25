@@ -367,9 +367,9 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 					pillBorderWidth={ pillBorderWidth }
 					pillBorderStyle={ pillBorderStyle }
 					contrastAgainst={
-						attributes.triggerBgColour &&
-						! attributes.triggerBgColourGradient
-							? attributes.triggerBgColour
+						attributes.pillBgColour &&
+						! attributes.pillBgColourGradient
+							? attributes.pillBgColour
 							: ''
 					}
 					setAttributes={ setAttributes }

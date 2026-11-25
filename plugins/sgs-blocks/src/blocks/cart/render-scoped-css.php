@@ -136,15 +136,22 @@ if ( $has_panel ) {
 	}
 }
 
-// Trigger pill (Wave B, U-1): the pill's own text, border and shadow. pillTextColour styles the LABEL only — the count
-// beside it keeps reading badgeTextColour/badgeTextColourGradient (same badge element, restyled for the pill by style.css).
-// Border-colour is flat-only (no gradient sibling). The trigger's radius, size, padding and background are shared with the icon
-// button and print below.
+// Trigger pill (Wave B, U-1): the pill's own background, text, border and shadow. The background is the HAND-BUILT ::after layer
+// of the badge and panel above (`.sgs-cart__trigger` is already `position:relative` in style.css). pillTextColour styles the LABEL
+// only — the count beside it keeps reading badgeTextColour/badgeTextColourGradient (same badge element, restyled for the pill by
+// style.css). Border-colour is flat-only (no gradient sibling). The trigger's radius, size and padding are shared with the icon
+// button and print below; the icon button keeps its own background (iconBg*), because a colour is not per device.
 if ( $trigger_has_pill ) {
 	// Every pill rule below is collected, then wrapped in the pill tiers' media ranges when the styles are mixed.
 	$pill_rules_start = count( $scoped_css );
 	$pill_sel       = $sel . ' .sgs-cart__trigger';
 	$pill_label_sel = $sel . ' .sgs-cart__pill-label';
+
+	$pill_bg_gradient = (string) ( $attributes['pillBgColourGradient'] ?? '' );
+	$pill_bg_paint    = sgs_background_paint_decl( (string) ( $attributes['pillBgColour'] ?? '' ), $pill_bg_gradient );
+	if ( '' !== $pill_bg_paint ) {
+		$scoped_css[] = $pill_sel . '::after{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;' . $pill_bg_paint . ';}';
+	}
 
 	$pill_text_gradient  = (string) ( $attributes['pillTextColourGradient'] ?? '' );
 	$pill_text_effective = sgs_resolve_text_colour_or_gradient( $pill_text_colour, $pill_text_gradient );
@@ -188,7 +195,19 @@ if ( $trigger_has_pill ) {
 		$scoped_css[] = $pill_typo_css;
 	}
 
-	// Hover and keyboard focus: the label colour. Touch-safe through sgs_hover_state_rules().
+	// Hover and keyboard focus: the fill on the same ::after layer as the resting fill (created here when only a hover fill is
+	// set), and the label colour. Touch-safe through sgs_hover_state_rules().
+	$pill_bg_hover_paint = sgs_background_paint_decl(
+		(string) ( $attributes['pillBgColourHover'] ?? '' ),
+		(string) ( $attributes['pillBgColourHoverGradient'] ?? '' )
+	);
+	if ( '' !== $pill_bg_hover_paint ) {
+		if ( '' === $pill_bg_paint ) {
+			$scoped_css[] = $pill_sel . '::after{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;}';
+		}
+		$scoped_css[] = $pill_sel . '::after{transition:background-color var(--wp--custom--duration--fast, .25s) var(--wp--custom--easing--ease, ease);}';
+		$scoped_css[] = sgs_hover_state_rules( $pill_sel, $pill_bg_hover_paint, ':focus-visible', '::after' );
+	}
 	$pill_text_hover = sgs_resolve_text_colour_or_gradient(
 		(string) ( $attributes['pillTextColourHover'] ?? '' ),
 		(string) ( $attributes['pillTextColourHoverGradient'] ?? '' )
@@ -230,10 +249,9 @@ if ( $trigger_has_pill ) {
 	}
 }
 
-// The trigger's shared look: corner radius, padding, size and background (normal and hover). The icon button and the text pill are
-// one element and each device shows one of them, so these print once for whichever style a device shows. The background paints
-// on the trigger's own ::after layer, the badge's pattern, so a stroke gradient on the glyph never meets background-clip:text; the
-// trigger is its own stacking context so the layer sits behind the glyph, not the page.
+// The trigger's shared look: corner radius, padding and size. The icon button and the text pill are one element and each device
+// shows one of them, so these print once for whichever style a device shows. The backgrounds stay separate: the pill's prints in
+// the pill block above, the icon button's below, each only in its own style's devices.
 $trigger_sel = $sel . ' .sgs-cart__trigger';
 
 $trigger_radius = sgs_css_length_value( (string) ( $attributes['triggerBorderRadius'] ?? '' ) );
@@ -303,22 +321,35 @@ if ( $trigger_mixed ) {
 	}
 }
 
-$trigger_fill = sgs_fill_decls(
-	$attributes,
-	array(
-		'base'           => 'triggerBgColour',
-		'gradient'       => 'triggerBgColourGradient',
-		'hover'          => 'triggerBgColourHover',
-		'hover_gradient' => 'triggerBgColourHoverGradient',
-	)
-);
-if ( $trigger_fill['normal'] || $trigger_fill['hover'] ) {
-	$scoped_css[] = $trigger_sel . '{isolation:isolate;}';
-	$trigger_fill_normal = $trigger_fill['normal'] ? implode( ';', $trigger_fill['normal'] ) . ';' : '';
-	$scoped_css[]        = $trigger_sel . '::after{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;' . $trigger_fill_normal . '}';
-	if ( $trigger_fill['hover'] ) {
-		$scoped_css[] = $trigger_sel . '::after{transition:background-color var(--wp--custom--duration--fast, .25s) var(--wp--custom--easing--ease, ease);}';
-		$scoped_css[] = sgs_hover_state_rules( $trigger_sel, implode( ';', $trigger_fill['hover'] ), ':focus-visible', '::after' );
+// Icon button background (normal and hover) on the trigger's own ::after layer, the pill's and badge's pattern, so a stroke gradient
+// on the glyph never meets background-clip:text. Printed bare in a block with one icon trigger style, and inside each icon media
+// range in a mixed block, so a device showing the pill never paints it (the pill's fill is pillBgColour). The trigger is its own
+// stacking context so the layer sits behind the glyph, not the page.
+if ( in_array( 'icon', $trigger_tiers, true ) ) {
+	$icon_bg_fill = sgs_fill_decls(
+		$attributes,
+		array(
+			'base'           => 'iconBg',
+			'gradient'       => 'iconBgGradient',
+			'hover'          => 'iconBgHover',
+			'hover_gradient' => 'iconBgHoverGradient',
+		)
+	);
+	if ( $icon_bg_fill['normal'] || $icon_bg_fill['hover'] ) {
+		$icon_bg_rules   = array();
+		$icon_bg_rules[] = $trigger_sel . '{isolation:isolate;}';
+		$icon_bg_rules[] = $trigger_sel . '::after{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;' . implode( ';', $icon_bg_fill['normal'] ) . ';}';
+		if ( $icon_bg_fill['hover'] ) {
+			$icon_bg_rules[] = $trigger_sel . '::after{transition:background-color var(--wp--custom--duration--fast, .25s) var(--wp--custom--easing--ease, ease);}';
+			$icon_bg_rules[] = sgs_hover_state_rules( $trigger_sel, implode( ';', $icon_bg_fill['hover'] ), ':focus-visible', '::after' );
+		}
+		if ( $trigger_mixed ) {
+			foreach ( $trigger_ranges['icon'] as $icon_bg_range ) {
+				$scoped_css[] = '@media ' . $icon_bg_range . '{' . implode( '', $icon_bg_rules ) . '}';
+			}
+		} else {
+			$scoped_css = array_merge( $scoped_css, $icon_bg_rules );
+		}
 	}
 }
 

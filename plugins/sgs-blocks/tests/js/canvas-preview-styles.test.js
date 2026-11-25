@@ -149,10 +149,14 @@ describe( 'cart panel preview', () => {
 		expect( panelRootStyle( { panelBgGradient: GRADIENT }, 'desktop', PALETTE )[ '--sgs-cart-editor-panel-fill' ] ).toBe( GRADIENT );
 		expect( panelRootStyle( {}, 'desktop', PALETTE ) ).toEqual( {} );
 		expect( triggerStyles( { badgeColourGradient: GRADIENT }, 'desktop', PALETTE, false ).badge[ '--sgs-cart-editor-badge-fill' ] ).toBe( GRADIENT );
-		// One trigger fill, whichever style the device shows.
-		expect( triggerStyles( { triggerBgColourGradient: GRADIENT }, 'desktop', PALETTE, true ).trigger[ '--sgs-cart-editor-trigger-fill' ] ).toBe( GRADIENT );
-		expect( triggerStyles( { triggerBgColourGradient: GRADIENT }, 'desktop', PALETTE, false ).trigger[ '--sgs-cart-editor-trigger-fill' ] ).toBe( GRADIENT );
+		// Each style keeps its own fill: the pill's in pillBgColour, the icon button's in iconBg, so a device never paints the other's.
+		expect( triggerStyles( { pillBgColourGradient: GRADIENT }, 'desktop', PALETTE, true ).trigger[ '--sgs-cart-editor-pill-fill' ] ).toBe( GRADIENT );
+		expect( triggerStyles( { pillBgColourGradient: GRADIENT }, 'desktop', PALETTE, false ).trigger ).toEqual( {} );
+		expect( triggerStyles( { iconBgGradient: GRADIENT }, 'desktop', PALETTE, false ).trigger[ '--sgs-cart-editor-icon-fill' ] ).toBe( GRADIENT );
+		expect( triggerStyles( { iconBgGradient: GRADIENT }, 'desktop', PALETTE, true ).trigger ).toEqual( {} );
 		expect( triggerStyles( {}, 'desktop', PALETTE, false ).trigger ).toEqual( {} );
+		const scrim = scrimPreviewStyle( { scrimColour: 'brand', scrimOpacity: { desktop: 0.4 }, scrimBlur: { desktop: '6px' } }, 'desktop', PALETTE );
+		expect( scrim ).toEqual( { '--sgs-scrim-fill': '#112233', '--sgs-scrim-opacity': 0.4, '--sgs-scrim-blur': '6px' } );
 	} );
 	it( 'sizes the trigger per device: a pill takes the height only, an icon button both, never below 24px', () => {
 		const triggerSize = { desktop: { height: '48px' }, tablet: { width: '48px', height: '10px' } };
@@ -162,7 +166,5 @@ describe( 'cart panel preview', () => {
 		expect( triggerStyles( { triggerSize }, 'tablet', PALETTE, true ).trigger.minWidth ).toBeUndefined();
 		// The mobile device inherits the tablet's size.
 		expect( triggerStyles( { triggerSize }, 'mobile', PALETTE, false ).trigger ).toMatchObject( { minWidth: '48px', minHeight: '24px' } );
-		const scrim = scrimPreviewStyle( { scrimColour: 'brand', scrimOpacity: { desktop: 0.4 }, scrimBlur: { desktop: '6px' } }, 'desktop', PALETTE );
-		expect( scrim ).toEqual( { '--sgs-scrim-fill': '#112233', '--sgs-scrim-opacity': 0.4, '--sgs-scrim-blur': '6px' } );
 	} );
 } );

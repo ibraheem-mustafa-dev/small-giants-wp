@@ -33,12 +33,16 @@ export default function buildCartColourRows( {
 		triggerStyleTablet,
 		triggerStyleMobile,
 		pillShowIcon,
-		triggerBgColour,
-		triggerBgColourGradient,
-		triggerBgColourHover,
-		triggerBgColourHoverGradient,
+		pillBgColour,
+		pillBgColourGradient,
 		pillTextColour,
 		pillTextColourGradient,
+		iconBg,
+		iconBgGradient,
+		iconBgHover,
+		iconBgHoverGradient,
+		pillBgColourHover,
+		pillBgColourHoverGradient,
 		pillTextColourHover,
 		pillTextColourHoverGradient,
 	} = attributes;
@@ -53,6 +57,8 @@ export default function buildCartColourRows( {
 	const hasPill = [ desktop, tablet, mobile ].includes( 'pill' );
 	const hasIcon =
 		[ desktop, tablet, mobile ].includes( 'icon' ) || !! pillShowIcon;
+	// The icon button's own background only paints in an icon tier.
+	const hasIconTier = [ desktop, tablet, mobile ].includes( 'icon' );
 
 	return [
 		hasIcon && {
@@ -83,35 +89,64 @@ export default function buildCartColourRows( {
 				},
 			],
 		},
-		{
-			key: 'triggerBackground',
-			label: __( 'Button background', 'sgs-blocks' ),
+		hasIconTier && {
+			key: 'iconBackground',
+			label: __(
+				'Icon button background (icon button only)',
+				'sgs-blocks'
+			),
 			gradientCapable: true,
 			states: [
 				{
 					key: 'normal',
 					label: __( 'Normal', 'sgs-blocks' ),
-					value: triggerBgColour,
-					onChange: ( val ) =>
-						setAttributes( { triggerBgColour: val ?? '' } ),
+					value: iconBg,
+					onChange: ( val ) => setAttributes( { iconBg: val ?? '' } ),
 					linked: true,
-					gradientValue: triggerBgColourGradient,
+					gradientValue: iconBgGradient,
 					onGradientChange: ( val ) =>
-						setAttributes( {
-							triggerBgColourGradient: val ?? '',
-						} ),
+						setAttributes( { iconBgGradient: val ?? '' } ),
 				},
 				{
 					key: 'hover',
 					label: __( 'Hover', 'sgs-blocks' ),
-					value: triggerBgColourHover,
+					value: iconBgHover,
 					onChange: ( val ) =>
-						setAttributes( { triggerBgColourHover: val ?? '' } ),
+						setAttributes( { iconBgHover: val ?? '' } ),
 					linked: true,
-					gradientValue: triggerBgColourHoverGradient,
+					gradientValue: iconBgHoverGradient,
+					onGradientChange: ( val ) =>
+						setAttributes( { iconBgHoverGradient: val ?? '' } ),
+				},
+			],
+		},
+		hasPill && {
+			key: 'pillBackground',
+			label: __( 'Pill background', 'sgs-blocks' ),
+			gradientCapable: true,
+			states: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: pillBgColour,
+					onChange: ( val ) =>
+						setAttributes( { pillBgColour: val ?? '' } ),
+					linked: true,
+					gradientValue: pillBgColourGradient,
+					onGradientChange: ( val ) =>
+						setAttributes( { pillBgColourGradient: val ?? '' } ),
+				},
+				{
+					key: 'hover',
+					label: __( 'Hover', 'sgs-blocks' ),
+					value: pillBgColourHover,
+					onChange: ( val ) =>
+						setAttributes( { pillBgColourHover: val ?? '' } ),
+					linked: true,
+					gradientValue: pillBgColourHoverGradient,
 					onGradientChange: ( val ) =>
 						setAttributes( {
-							triggerBgColourHoverGradient: val ?? '',
+							pillBgColourHoverGradient: val ?? '',
 						} ),
 				},
 			],

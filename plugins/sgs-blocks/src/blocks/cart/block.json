@@ -174,17 +174,21 @@
 					"prefix": "icon",
 					"attrMap": {
 						"css:color": "iconColour",
-						"css:stroke": "iconColourGradient"
+						"css:stroke": "iconColourGradient",
+						"css:background-color": "iconBg",
+						"css:background-image": "iconBgGradient"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
 								"css:color": "iconColourHover",
-								"css:stroke": "iconColourHoverGradient"
+								"css:stroke": "iconColourHoverGradient",
+								"css:background-color": "iconBgHover",
+								"css:background-image": "iconBgHoverGradient"
 							}
 						}
 					},
-					"_note": "The cart icon's own colour. iconSize (the glyph size) is mapped on the iconGlyph element. `css:stroke` (icon/SVG gradient mechanism) is explicit-mapped to iconColourGradient: non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php). iconColourHover/iconColourHoverGradient mirror sgs/icon's own hover states shape exactly, resolved via sgs_icon_gradient_css() on .sgs-cart__trigger:hover.",
+					"_note": "The cart icon's own colour, and the icon button's background (iconBg and its gradient and hover siblings, painted on the trigger's ::after layer in icon devices only, because the pill keeps its own background in pillBgColour). iconSize (the glyph size) is mapped on the iconGlyph element. `css:stroke` (icon/SVG gradient mechanism) is explicit-mapped to iconColourGradient: non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php). iconColourHover/iconColourHoverGradient mirror sgs/icon's own hover states shape exactly, resolved via sgs_icon_gradient_css() on .sgs-cart__trigger:hover.",
 					"absentIn": [ "pill-link" ],
 					"absentWhy": "The pill trigger shows its label and count in place of the icon."
 				},
@@ -192,25 +196,15 @@
 					"selector": ".sgs-cart__trigger",
 					"label": "Trigger button",
 					"order": 3,
-					"clusters": [ "fill", "layout" ],
+					"clusters": [ "layout" ],
 					"prefix": "trigger",
 					"attrMap": {
-						"css:background-color": "triggerBgColour",
-						"css:background-image": "triggerBgColourGradient",
 						"css:border-radius": "triggerBorderRadius",
 						"css:min-width": "triggerSize",
 						"css:min-height": "triggerSize",
 						"css:padding": "triggerPadding"
 					},
-					"states": {
-						"hover": {
-							"attrMap": {
-								"css:background-color": "triggerBgColourHover",
-								"css:background-image": "triggerBgColourHoverGradient"
-							}
-						}
-					},
-					"_note": "The icon button and the text pill are one element (.sgs-cart__trigger) and each device shows one of them, so the radius, size, padding and background are one setting each. triggerSize prints min-width and min-height in an icon device and min-height only in a pill device. The background paints on the trigger's own ::after layer."
+					"_note": "The icon button and the text pill are one element (.sgs-cart__trigger) and each device shows one of them, so the radius, size and padding are one setting each. triggerSize prints min-width and min-height in an icon device and min-height only in a pill device. The backgrounds stay separate (iconBg* on the icon element, pillBgColour* on the pill element) because a colour is not per device: a block that shows the pill on desktop and the icon button on tablet keeps a different fill for each."
 				},
 				"iconGlyph": {
 					"selector": ".sgs-cart__icon svg",
@@ -283,6 +277,8 @@
 					"clusters": [ "text", "fill", "layout" ],
 					"prefix": "pill",
 					"attrMap": {
+						"css:background-color": "pillBgColour",
+						"css:background-image": "pillBgColourGradient",
 						"css:color": "pillTextColour",
 						"css:color-gradient": "pillTextColourGradient",
 						"css:border-color": "pillBorderColour",
@@ -294,13 +290,15 @@
 						"hover": {
 							"attrMap": {
 								"css:box-shadow": "pillShadowHover",
+								"css:background-color": "pillBgColourHover",
+								"css:background-image": "pillBgColourHoverGradient",
 								"css:color": "pillTextColourHover",
 								"css:color-gradient": "pillTextColourHoverGradient"
 							}
 						}
 					},
 					"contentAttrs": [ "pillLabel" ],
-					"_note": "triggerStyle:'pill' swaps the icon+badge trigger for a word (pillLabel) beside the live item count, in a pill (matches a 'Bag'/'Cart' text trigger draft shape). Only the pill's own text, border and shadow are mapped here; the trigger's radius, size, padding and background are shared with the icon button (the trigger element above). pillTextColour styles the LABEL only; the count beside it keeps using badgeTextColour/badgeTextColourGradient (same badge element, restyled for the pill by style.css, so one colour control governs the count in both trigger styles). Border: pillBorderWidth (box object, base only) + pillBorderStyle (enum) + pillBorderColour (flat, no gradient sibling) mount through `SgsBorderControl` (Spec 35 section 14, field 9f). The layout cluster is claimed only so css:border-color, css:border-width and css:border-style resolve against this element's own attrMap instead of reporting ORPHAN:STYLE-DEFECT."
+					"_note": "triggerStyle:'pill' swaps the icon+badge trigger for a word (pillLabel) beside the live item count, in a pill (matches a 'Bag'/'Cart' text trigger draft shape). The pill's own background, text, border and shadow are mapped here; the trigger's radius, size and padding are shared with the icon button (the trigger element above), and the icon button keeps its own background in iconBg*. pillTextColour styles the LABEL only; the count beside it keeps using badgeTextColour/badgeTextColourGradient (same badge element, restyled for the pill by style.css, so one colour control governs the count in both trigger styles). Border: pillBorderWidth (box object, base only) + pillBorderStyle (enum) + pillBorderColour (flat, no gradient sibling) mount through `SgsBorderControl` (Spec 35 section 14, field 9f). The layout cluster is claimed only so css:border-color, css:border-width and css:border-style resolve against this element's own attrMap instead of reporting ORPHAN:STYLE-DEFECT."
 				},
 				"freeDeliveryTrack": {
 					"selector": ".sgs-cart__free-delivery-track",
@@ -1142,20 +1140,20 @@
 			"default": "",
 			"description": "CSS length (e.g. \"999px\" or \"50%\") for the trigger's corners, icon button and text pill alike. Empty keeps style.css's own radius (4px for the icon button, fully rounded for the pill)."
 		},
-		"triggerBgColour": {
+		"iconBg": {
 			"type": "string",
 			"default": ""
 		},
-		"triggerBgColourGradient": {
+		"iconBgGradient": {
 			"type": "string",
 			"default": "",
-			"description": "CSS gradient painting the trigger's background via background-image, icon button and text pill alike. Non-empty wins over triggerBgColour at render time."
+			"description": "CSS gradient painting the icon button's background. Non-empty wins over iconBg."
 		},
-		"triggerBgColourHover": {
+		"iconBgHover": {
 			"type": "string",
 			"default": ""
 		},
-		"triggerBgColourHoverGradient": {
+		"iconBgHoverGradient": {
 			"type": "string",
 			"default": ""
 		},
@@ -1425,6 +1423,14 @@
 			"type": "string",
 			"default": ""
 		},
+		"pillBgColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"pillBgColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"pillTextColourHover": {
 			"type": "string",
 			"default": ""
@@ -1432,6 +1438,15 @@
 		"pillTextColourHoverGradient": {
 			"type": "string",
 			"default": ""
+		},
+		"pillBgColour": {
+			"type": "string",
+			"default": ""
+		},
+		"pillBgColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the trigger pill's background via background-image. Non-empty wins over pillBgColour at render time."
 		},
 		"pillTextColour": {
 			"type": "string",

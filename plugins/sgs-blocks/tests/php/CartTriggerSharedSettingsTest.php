@@ -1,7 +1,8 @@
 <?php
 /**
- * The cart trigger's radius, size, padding and background are one setting each for the icon button and the text pill, and the
- * sweep moves the old two-setting content across with the same result.
+ * The cart trigger's radius, size and padding are one setting each for the icon button and the text pill, and the sweep moves the old
+ * two-setting content across with the same result. The backgrounds stay two settings (iconBg* and pillBgColour*), each painted only
+ * in the devices that show its own style, so a block that shows the pill on desktop and the icon button on tablet keeps both fills.
  *
  * Renders the real src/blocks/cart/render.php through the QA harness (an opt-in WooCommerce presence stub); the sweep's rewrite is
  * loaded from scripts/lib/cart-trigger-sweep.php, which needs no WordPress.
@@ -45,13 +46,13 @@ final class CartTriggerSharedSettingsTest extends TestCase {
 
 	private const TRIGGER = '.UID.wp-block-sgs-cart .sgs-cart__trigger';
 
-	public function test_an_icon_button_prints_the_shared_radius_size_padding_and_fill(): void {
+	public function test_an_icon_button_prints_the_shared_radius_size_padding_and_its_own_fill(): void {
 		$css = $this->css(
 			array(
 				'triggerBorderRadius' => '999px',
 				'triggerSize'         => array( 'desktop' => array( 'width' => '48px', 'height' => '40px' ) ),
 				'triggerPadding'      => array( 'desktop' => array( 'top' => '1px', 'right' => '2px', 'bottom' => '3px', 'left' => '4px' ) ),
-				'triggerBgColour'     => '#112233',
+				'iconBg'              => '#112233',
 			)
 		);
 		$this->assertStringContainsString( self::TRIGGER . '{border-radius:999px;}', $css );
@@ -102,16 +103,47 @@ final class CartTriggerSharedSettingsTest extends TestCase {
 				'iconTriggerSize'   => array( 'desktop' => 66 ),
 				'pillBorderRadius'  => '11px',
 				'iconTriggerRadius' => '22px',
-				'pillBgColour'      => '#aa0000',
-				'iconBg'            => '#00aa00',
 			)
 		);
 		$this->assertStringNotContainsString( '77px', $css );
 		$this->assertStringNotContainsString( '66px', $css );
 		$this->assertStringNotContainsString( '11px', $css );
 		$this->assertStringNotContainsString( '22px', $css );
-		$this->assertStringNotContainsString( '#aa0000', $css );
 		$this->assertStringNotContainsString( 'padding-top:9px', $css );
+	}
+
+	/** Mama's hand-built header: a pill on desktop with its own fill and hover, an icon button on tablet with only a hover fill. */
+	private function two_fill_attrs(): array {
+		return array(
+			'triggerStyle'       => 'pill',
+			'triggerStyleTablet' => 'icon',
+			'pillBgColour'       => '#ffeecc',
+			'pillBgColourHover'  => '#ffee00',
+			'iconBgHover'        => '#ffaabb',
+		);
+	}
+
+	public function test_a_mixed_block_paints_each_fill_only_in_its_own_style(): void {
+		$css = $this->css( $this->two_fill_attrs() );
+		$this->assertMatchesRegularExpression( '/@media \(min-width:1024px\)\{[^@]*#ffeecc[^@]*#ffee00[^@]*\}(?=@media|$)/', $css );
+		$this->assertMatchesRegularExpression( '/@media \(max-width:1023\.98px\)\{[^@]*#ffaabb[^@]*\}$/', $css );
+		// The desktop pill never takes the icon button's hover fill, and the tablet icon button never takes the pill's fill or hover.
+		$desktop = (string) preg_replace( '/@media \(max-width:1023\.98px\)\{.*$/s', '', $css );
+		$tablet  = (string) preg_replace( '/^.*@media \(max-width:1023\.98px\)\{/s', '', $css );
+		$this->assertStringNotContainsString( '#ffaabb', $desktop );
+		$this->assertStringNotContainsString( '#ffeecc', $tablet );
+		$this->assertStringNotContainsString( '#ffee00', $tablet );
+	}
+
+	public function test_a_block_showing_one_style_paints_only_that_styles_fill(): void {
+		$pill = $this->css( array( 'triggerStyle' => 'pill', 'pillBgColour' => '#ffeecc', 'iconBg' => '#ffaabb', 'iconBgHover' => '#aa00ff' ) );
+		$this->assertStringContainsString( '#ffeecc', $pill );
+		$this->assertStringNotContainsString( '#ffaabb', $pill );
+		$this->assertStringNotContainsString( '#aa00ff', $pill );
+		$icon = $this->css( array( 'pillBgColour' => '#ffeecc', 'pillBgColourHover' => '#ffee00', 'iconBg' => '#ffaabb' ) );
+		$this->assertStringContainsString( '#ffaabb', $icon );
+		$this->assertStringNotContainsString( '#ffeecc', $icon );
+		$this->assertStringNotContainsString( '#ffee00', $icon );
 	}
 
 	/** The saved header of a pill on desktop and an icon button on tablet, as the hand-built Mama's header carries it. */
@@ -124,9 +156,7 @@ final class CartTriggerSharedSettingsTest extends TestCase {
 			'iconTriggerSize'    => array( 'tablet' => 48 ),
 			'pillBorderRadius'   => '999px',
 			'iconTriggerRadius'  => '999px',
-			'pillBgColour'       => 'paper',
-			'pillBgColourHover'  => 'yellow',
-		);
+		) + $this->two_fill_attrs();
 	}
 
 	public function test_the_sweep_merges_the_mixed_header_per_device(): void {
@@ -143,17 +173,21 @@ final class CartTriggerSharedSettingsTest extends TestCase {
 		$this->assertSame( '18px', $new['triggerPadding']['desktop']['right'] );
 		$this->assertSame( '0px', $new['triggerPadding']['tablet']['right'] );
 		$this->assertSame( '999px', $new['triggerBorderRadius'] );
-		$this->assertSame( 'paper', $new['triggerBgColour'] );
-		$this->assertSame( 'yellow', $new['triggerBgColourHover'] );
+		// The two styles' fills are left exactly as saved, and the sweep reports nothing about them.
+		$this->assertSame( '#ffeecc', $new['pillBgColour'] );
+		$this->assertSame( '#ffee00', $new['pillBgColourHover'] );
+		$this->assertSame( '#ffaabb', $new['iconBgHover'] );
+		$this->assertArrayNotHasKey( 'triggerBgColour', $new );
+		$this->assertSame( array(), $result['conflicts'] );
 		$this->assertSame( array(), array_intersect_key( $new, array_flip( sgs_cart_trigger_sweep_old_keys() ) ) );
 	}
 
-	public function test_the_sweep_reports_a_value_the_two_styles_carried_differently(): void {
+	public function test_the_sweep_reports_a_radius_the_two_styles_carried_differently(): void {
 		$old                      = $this->mixed_old_attrs();
-		$old['iconBgHover']       = 'pink';
+		$old['iconTriggerRadius'] = '50%';
 		$result                   = sgs_cart_trigger_sweep_attrs( $old );
-		$this->assertSame( 'yellow', $result['attrs']['triggerBgColourHover'] );
-		$this->assertCount( 2, $result['conflicts'] ); // The icon style had no fill, and a different hover.
+		$this->assertSame( '999px', $result['attrs']['triggerBorderRadius'] );
+		$this->assertCount( 1, $result['conflicts'] ); // The icon style carried a different radius.
 	}
 
 	public function test_the_sweep_is_idempotent_and_leaves_a_block_without_old_settings_alone(): void {
