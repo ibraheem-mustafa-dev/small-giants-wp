@@ -22,6 +22,6 @@
 	{"file": "lib/skeleton-rules.mjs", "find": "'text' === h.where && field === h.path", "replace": "'text' === h.where", "why": "a value is the words of the element printing the item path"},
 	{"file": "lib/skeleton-rules.mjs", "find": "( surface.formLinks || [] ).find( ( l ) => l.recordId === scope.id )", "replace": "( surface.formLinks || [] ).find( ( l ) => true )", "why": "a form is anchored by its own link"},
 	{"file": "lib/skeleton-rules.mjs", "find": "attributes: formAnchor ? { anchor: formAnchor } : {} }", "replace": "attributes: {} }", "why": "the form that roots a saved form post carries the anchor"},
-	{"file": "lib/skeleton-propose.mjs", "find": "role, pageMap, loops, formLinks }", "replace": "role, pageMap, loops }", "why": "the rules know the page's links to saved forms"},
-	{"file": "lib/fill-form.mjs", "find": "( draftFolder ? prefillParams( { folder: draftFolder, record: facts } ) : [] )", "replace": "[]", "why": "a field a form opener sets reads the query"}
+	{"file": "lib/skeleton-propose.mjs", "find": "pageMap, formLinks, megaOpeners", "replace": "pageMap, megaOpeners", "why": "the rules know the page's links to saved forms"},
+	{"file": "lib/fill-form.mjs", "find": "( folder ? prefillParams( { folder, record: facts } ) : [] )", "replace": "[]", "why": "a field a form opener sets reads the query"}
 ]

@@ -2,5 +2,5 @@
 	{"file": "lib/skeleton-rules.mjs", "find": "if ( ! hero || ownedBelowHero( e, hero.key ) ) {", "replace": "if ( ! hero ) {", "why": "a form inside the hero is unwrapped by the hero's inner rule"},
 	{"file": "lib/skeleton-rules.mjs", "find": "if ( hooks.formLinkOf( x ) || 'form' === view.realTag( x ) ) {", "replace": "if ( 'form' === view.realTag( x ) ) {", "why": "a linked form's parts are unwrapped by the hero's inner rule"},
 	{"file": "lib/skeleton-rules.mjs", "find": "if ( hooks.formLinkOf( x ) || 'form' === view.realTag( x ) ) {", "replace": "if ( hooks.formLinkOf( x ) ) {", "why": "a <form> with no saved form is unwrapped by the hero's inner rule"},
-	{"file": "lib/skeleton-form-link.mjs", "find": "const form = own ?? list[ 0 ];", "replace": "const form = list[ 0 ];", "why": "a record rooted on the <form> links its first child"}
+	{"file": "lib/skeleton-form-link.mjs", "find": "const form = own ?? ( m ? formElement( m, list[ 0 ] ) : list[ 0 ] );", "replace": "const form = ( m ? formElement( m, list[ 0 ] ) : list[ 0 ] );", "why": "a record rooted on the <form> links its first child"}
 ]
