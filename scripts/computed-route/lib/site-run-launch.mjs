@@ -6,6 +6,7 @@ import fs from 'fs';
 import path from 'path';
 import { spawn } from 'child_process';
 import { fileURLToPath } from 'url';
+import { serveSurfaceDraft } from './solve-draft.mjs';
 
 const ROUTE = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..' );
 const REPO = path.resolve( ROUTE, '..', '..' );
@@ -35,18 +36,26 @@ export async function launchSiteRun( { repo = REPO, client, args, start = startS
 export const solveArgs = ( { client, site, key, allowMissingPaint = [] } ) => [ '--client', client, '--site', site, '--surface', key, ...( allowMissingPaint.length ? [ '--allow-missing-paint', allowMissingPaint.join( ',' ) ] : [] ) ];
 
 // Runs `node solve.mjs` for one surface from the repo root, its output kept in <build>/qa/solve/<surface>.stage.log, and resolves { code, tail, logFile } (the last
-// four lines). `start( args, logFile )` is the process launch (injected in tests; the default is a child process writing the log).
-export async function launchSolve( { repo = REPO, client, site, key, allowMissingPaint = [], start = startSolve } ) {
+// four lines). The surface's draft is served for the length of the run and its address passed as SGS_DRAFT_URL (lib/solve-draft.mjs: the
+// walker config records the port of an earlier run's server). `start( args, logFile, repo, env )` is the process launch (injected in
+// tests; the default is a child process writing the log), `serve` the draft server.
+export async function launchSolve( { repo = REPO, client, site, key, allowMissingPaint = [], start = startSolve, serve = serveSurfaceDraft } ) {
 	const logFile = path.join( repo, 'sites', client, 'build', 'qa', 'solve', `${ key }.stage.log` );
 	fs.mkdirSync( path.dirname( logFile ), { recursive: true } );
-	const code = await start( solveArgs( { client, site, key, allowMissingPaint } ), logFile, repo );
+	const draft = await serve( { repo, client, key } );
+	let code;
+	try {
+		code = await start( solveArgs( { client, site, key, allowMissingPaint } ), logFile, repo, draft ? { SGS_DRAFT_URL: draft.url } : {} );
+	} finally {
+		await draft?.close();
+	}
 	const lines = fs.existsSync( logFile ) ? fs.readFileSync( logFile, 'utf8' ).trimEnd().split( /\r?\n/ ) : [];
 	return { code, tail: lines.slice( -4 ).join( ' | ' ).slice( 0, 600 ), logFile };
 }
 
-export const startSolve = ( args, logFile, cwd = REPO ) => new Promise( ( resolve ) => {
+export const startSolve = ( args, logFile, cwd = REPO, env = {} ) => new Promise( ( resolve ) => {
 	const out = fs.createWriteStream( logFile );
-	const child = spawn( process.execPath, [ path.join( ROUTE, 'solve.mjs' ), ...args ], { cwd, stdio: [ 'ignore', 'pipe', 'pipe' ] } );
+	const child = spawn( process.execPath, [ path.join( ROUTE, 'solve.mjs' ), ...args ], { cwd, env: { ...process.env, ...env }, stdio: [ 'ignore', 'pipe', 'pipe' ] } );
 	child.stdout.pipe( out, { end: false } );
 	child.stderr.pipe( out, { end: false } );
 	child.on( 'close', ( code ) => {

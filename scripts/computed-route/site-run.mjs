@@ -65,7 +65,7 @@ import { failureClass, failureCounts } from './lib/failure-class.mjs';
 import { walkArgs } from './lib/site-run-walk.mjs';
 import { openerRow, openersUnrecorded } from './lib/site-run-opener-row.mjs';
 import { rowKey, treeHash } from './lib/site-build-map.mjs';
-import { deleteTestOrdersPhp, templateRecordPhp, testOrderPhp } from './lib/site-build-apply.mjs';
+import { buildThenMarkPost, deleteTestOrdersPhp, markPost, templateRecordPhp, testOrderPhp } from './lib/site-build-apply.mjs';
 import { draftProductSlugs, liveFactsPhp, readLiveFacts, templateAddresses, livePrimeFor } from './lib/template-live-address.mjs';
 import { wpCommand, wpEvalRunner } from './lib/calibration-refs.mjs';
 import { pointAfterBuild } from './lib/site-run-layout.mjs';
@@ -73,6 +73,7 @@ import { removeStaleTemplates } from './lib/site-run-stale-templates.mjs';
 import { writeFlowTree } from './lib/site-run-flow-tree.mjs';
 import { writeSolveTree } from './lib/site-run-solve-tree.mjs';
 import { TOP_N, writeRanking } from './lib/site-run-rank.mjs';
+import { buildRank } from './lib/site-run-order.mjs';
 import { assertScratchRunPlace, assertUnprotected, readTargets, secretsPath, siteUrl, surfacesOnSite, targetOf } from './lib/site-targets.mjs';
 import { WHOLE_TREE, commonChain, contentUnder, copyFile, copyTree, readShell, splitShell, writeCopy } from './lib/template-copies.mjs';
 import { inventoryRootFor, partsOf, writePart } from './lib/template-frame.mjs';
@@ -596,7 +597,8 @@ export async function main( argv ) {
 			const builtFile = ! slug && ctx.ledger ? path.join( path.dirname( ctx.ledger.file ), 'built.json' ) : null;
 			builtFile && fs.mkdirSync( path.dirname( builtFile ), { recursive: true } );
 			builtFile && builder.push( '--save-built', builtFile );
-			const said = await exec( 'build', 'node', builder );
+			// The post gets the site build's content marker (lib/site-build-apply.mjs), so a rebuild stops only for a person's edit.
+			const said = await buildThenMarkPost( { build: () => exec( 'build', 'node', builder ), postId: slug ? null : entry.target.postId, runPhp } );
 			builtFile && fs.existsSync( builtFile ) && ctx.ledger.append( buildLedgerRows( { key, ctx, tree: readJson( path.join( REPO, tree ) ), builtFile } ) );
 			// Recorded as the site build records its own copies, so a later site build sees it as built from this tree.
 			slug && recordTemplate( slug, treeHash( readJson( path.join( REPO, tree ) ) ) );
@@ -653,6 +655,8 @@ export async function main( argv ) {
 		return step( 'apply', () => exclusive( async () => {
 			const origin = new URL( ( await serverFor( entry ) ).url ).origin;
 			const said = await exec( 'apply', 'node', [ 'scripts/computed-route/apply.mjs', client, '--surfaces', key, '--draft', origin, '--site', site, '--write', ...allowMissingPaintArgs( allowMissingPaint ) ] );
+			// The applier patches the post's content after the build, so the marker is stored again over the content the run leaves.
+			markPost( { postId: entry.target.postId, runPhp } );
 			// The applier's plan, as the run ledger's apply rows.
 			const planFile = path.join( build, 'qa', 'apply', `${ key }.plan.json` );
 			ctx.ledger && fs.existsSync( planFile ) && ctx.ledger.append( applyRunRows( { plan: readJson( planFile ), planFile: path.relative( build, planFile ).split( path.sep ).join( '/' ) } ) );
@@ -743,8 +747,9 @@ export async function main( argv ) {
 		// SGS_CDP_URL instead of launching and logging in on its own.
 		const withEnv = keys.map( ( k ) => surfaces[ k ] ).find( ( e ) => e?.envFile && e?.envKey );
 		const session = stages.includes( 'build' ) && withEnv ? await openRunSession( site, readEnv( withEnv.envFile, withEnv.envKey ) ) : null;
-		// The template copies build first, so a page never shows its content-only post inside the theme's generic template.
-		const rank = ( c ) => ( c.entry.target?.template ? 0 : 1 );
+		// The template copies build first, so a page never shows its content-only post inside the theme's generic template; then the
+		// header, footer, drawer, menus, forms, modals and flows pages link by reference (lib/site-run-order.mjs).
+		const rank = ( c ) => buildRank( { entry: c.entry, kind: intake.skeletons?.[ c.entry.intakeSurface ]?.kind, buildDir: build } );
 		await pool( ready.sort( ( a, b ) => rank( a ) - rank( b ) ), finish );
 		session && await session.close();
 	} finally {

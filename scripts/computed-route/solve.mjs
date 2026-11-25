@@ -169,9 +169,13 @@ function targetArgs( t ) {
 	return t.templatePart ? [ '--template-part', t.templatePart ] : [ '--template', t.template ];
 }
 
+// The wp-build-page.js arguments for one surface's build: the secrets file is placed through lib/site-targets.mjs::secretsPath
+// (SGS_SECRETS_ROOT when set), because a worktree holds no secrets and the child runs from the repo root.
+export const buildArgs = ( s, treeFile, dry, repo = REPO ) => [ 'scripts/wp-build-page.js', '--env-file', secretsPath( s.envFile, repo ), '--env-key', s.envKey, '--tree', treeFile, ...targetArgs( s.target ), ...( dry ? [ '--dry-run' ] : [] ) ];
+
 function build( s, treeFile ) {
 	for ( const dry of [ true, false ] ) {
-		const r = spawnSync( 'node', [ 'scripts/wp-build-page.js', '--env-file', s.envFile, '--env-key', s.envKey, '--tree', treeFile, ...targetArgs( s.target ), ...( dry ? [ '--dry-run' ] : [] ) ], { cwd: REPO, encoding: 'utf8', timeout: 600000 } );
+		const r = spawnSync( 'node', buildArgs( s, treeFile, dry ), { cwd: REPO, encoding: 'utf8', timeout: 600000 } );
 		if ( 0 !== r.status ) {
 			return { ok: false, err: ( r.stderr || '' ) + ( r.stdout || '' ) };
 		}

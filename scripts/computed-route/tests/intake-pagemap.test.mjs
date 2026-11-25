@@ -58,7 +58,8 @@ test( 'rows carry the route data: titles, parents from menu grouping, post rows 
 	assert.equal( bySlug( hashMap, 'first-article' ).title, 'First article', 'a crumb shared by every article falls through to hero.title' );
 	assert.deepEqual( [ bySlug( hashMap, 'first-article' ).postType, bySlug( hashMap, 'first-article' ).route ], [ 'post', 'post-first' ] );
 	assert.equal( bySlug( hashMap, 'team' ).parent, 'about', 'About links to its own page and holds Our team' );
-	assert.equal( bySlug( hashMap, 'repairs' ).parent, null, 'Services only links to its first child, so it parents nothing' );
+	assert.equal( bySlug( hashMap, 'repairs' ).parent, 'cleaning', 'Services only links to its first child, which is its landing page: Repairs sits under it (register D7)' );
+	assert.equal( bySlug( hashMap, 'cleaning' ).parent, null, 'the landing page itself stays at the top' );
 	assert.equal( bySlug( hashMap, 'news' ).collection, 'live', 'the news page lists the articles that have their own routes' );
 	assert.equal( bySlug( hashMap, 'about' ).collection, 'static' );
 	assert.deepEqual( bySlug( hashMap, 'contact' ).menus, [ { menu: 'header', position: 4, parentItem: null }, { menu: 'footer', position: 1, parentItem: null } ] );
