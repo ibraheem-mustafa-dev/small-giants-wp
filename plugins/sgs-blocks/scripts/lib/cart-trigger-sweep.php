@@ -1,6 +1,6 @@
 <?php
 /**
- * The cart trigger sweep's rewrite: the icon button's and the text pill's separate settings become one shared set.
+ * The cart trigger sweep's rewrite: the icon button's and the text pill's separate padding, size and radius become one shared set.
  *
  * Pure functions with no WordPress dependency, so the sweep script and its test both load them.
  *
@@ -8,15 +8,16 @@
  *   pillPadding                                    triggerPadding
  *   pillMinHeight + iconTriggerSize                triggerSize {desktop:{width,height},…}
  *   pillBorderRadius + iconTriggerRadius           triggerBorderRadius
- *   pillBgColour(+Gradient, Hover, HoverGradient)  triggerBgColour(+Gradient, Hover, HoverGradient)
- *   + iconBg(+Gradient, Hover, HoverGradient)
+ *
+ * The backgrounds (pillBgColour* and iconBg*) are not touched: a colour is not per device, so each style keeps its own and the block
+ * paints each only in the devices that show that style.
  *
  * The old block printed the pill's padding and height in the devices that showed the pill, and the icon button's size in the devices
  * that showed the icon, each cascading down from the device above. The new settings cascade across both styles, so a device whose
  * style would inherit a value the old block never printed there gets an explicit value that keeps the old result (zero padding on an
- * icon device below a padded pill, the 44px tap floor on a device below a taller button). The radius and the background are one value
- * for the whole block: the one the desktop device's style carried, or the other style's when that was empty. Where the two styles
- * carried different values the second one cannot be kept, and the rewrite reports it in `conflicts`.
+ * icon device below a padded pill, the 44px tap floor on a device below a taller button). The radius is one value for the whole
+ * block: the one the desktop device's style carried, or the other style's when that was empty. Where the two styles carried
+ * different radii the second one cannot be kept, and the rewrite reports it in `conflicts`.
  *
  * @package SGS\Blocks
  */
@@ -34,14 +35,6 @@ if ( ! function_exists( 'sgs_cart_trigger_sweep_old_keys' ) ) {
 			'iconTriggerSize',
 			'pillBorderRadius',
 			'iconTriggerRadius',
-			'pillBgColour',
-			'pillBgColourGradient',
-			'pillBgColourHover',
-			'pillBgColourHoverGradient',
-			'iconBg',
-			'iconBgGradient',
-			'iconBgHover',
-			'iconBgHoverGradient',
 		);
 	}
 
@@ -286,7 +279,7 @@ if ( ! function_exists( 'sgs_cart_trigger_sweep_old_keys' ) ) {
 			$new['triggerSize'] = $size;
 		}
 
-		// Radius and background: one value for the block.
+		// Radius: one value for the block.
 		$radius = sgs_cart_trigger_sweep_pick(
 			array(
 				'pill' => (string) ( $attrs['pillBorderRadius'] ?? '' ),
@@ -298,25 +291,6 @@ if ( ! function_exists( 'sgs_cart_trigger_sweep_old_keys' ) ) {
 		);
 		if ( '' !== $radius ) {
 			$new['triggerBorderRadius'] = $radius;
-		}
-		foreach ( array(
-			'triggerBgColour'              => array( 'pillBgColour', 'iconBg' ),
-			'triggerBgColourGradient'      => array( 'pillBgColourGradient', 'iconBgGradient' ),
-			'triggerBgColourHover'         => array( 'pillBgColourHover', 'iconBgHover' ),
-			'triggerBgColourHoverGradient' => array( 'pillBgColourHoverGradient', 'iconBgHoverGradient' ),
-		) as $target => $sources ) {
-			$value = sgs_cart_trigger_sweep_pick(
-				array(
-					'pill' => (string) ( $attrs[ $sources[0] ] ?? '' ),
-					'icon' => (string) ( $attrs[ $sources[1] ] ?? '' ),
-				),
-				$modes,
-				$target,
-				$conflicts
-			);
-			if ( '' !== $value ) {
-				$new[ $target ] = $value;
-			}
 		}
 
 		return array(

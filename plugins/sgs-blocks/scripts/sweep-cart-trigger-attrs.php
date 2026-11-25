@@ -1,12 +1,13 @@
 <?php
 /**
- * WP-CLI sweep: the basket trigger's shared settings (one radius, size, padding and background for the icon button and the text pill).
+ * WP-CLI sweep: the basket trigger's shared settings (one radius, size and padding for the icon button and the text pill).
  *
  * The cart block used to keep two settings for each of three properties of its one trigger element (the pill's `pillPadding`,
- * `pillMinHeight`, `pillBorderRadius` and `pillBgColour*`, and the icon button's `iconTriggerSize`, `iconTriggerRadius` and `iconBg*`).
- * The block now reads `triggerPadding`, `triggerSize` (`{desktop:{width,height},…}`), `triggerBorderRadius` and `triggerBgColour*`,
- * and nothing reads the old names (no `deprecated.js`, no fallback in render code: FP-14), so this moves every saved `sgs/cart`
- * delimiter across. The rewrite rules and what it reports are in `scripts/lib/cart-trigger-sweep.php`.
+ * `pillMinHeight` and `pillBorderRadius`, and the icon button's `iconTriggerSize` and `iconTriggerRadius`). The block now reads
+ * `triggerPadding`, `triggerSize` (`{desktop:{width,height},…}`) and `triggerBorderRadius`, and nothing reads the old names (no
+ * `deprecated.js`, no fallback in render code: FP-14), so this moves every saved `sgs/cart` delimiter across. The backgrounds stay
+ * separate (`pillBgColour*` for the pill, `iconBg*` for the icon button) and are not touched. The rewrite rules and what it reports
+ * are in `scripts/lib/cart-trigger-sweep.php`.
  *
  * What it touches: the `post_content` of every row in the posts table except revisions and auto drafts (pages, posts, `wp_template`,
  * `wp_template_part`, `wp_block` and the plugin's own post types), nested blocks included. Only a `sgs/cart` comment's JSON attributes
@@ -14,7 +15,7 @@
  * `$wpdb->update()` and a cache clean, so no kses or content filter touches any other block. Each written post is read back and its
  * block tree compared with the tree the old content gives after the same rewrite: a mismatch restores the old content and reports the post.
  *
- * Dry run by default: prints each post that would change, the values that cannot be kept (a radius or background the two styles
+ * Dry run by default: prints each post that would change, the values that cannot be kept (a radius the two styles
  * carried differently, one value per block remains), then the totals. `apply` writes. It is idempotent: a second run finds nothing.
  *
  * Run (`apply` is a positional word because eval-file passes those to the file):
