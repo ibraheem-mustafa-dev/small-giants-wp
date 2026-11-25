@@ -35,7 +35,7 @@ function isReference( idx, n ) {
 }
 
 // Where a name is declared: { init } for a variable (destructured or not), { fn, param } for a parameter (an array
-// pattern included), or null.
+// pattern included, found by lib/intake-ast.mjs::resolveName), or null.
 function bindingOf( idx, n ) {
 	const r = resolveName( idx, n );
 	if ( r?.kind === 'var' ) {
@@ -43,11 +43,6 @@ function bindingOf( idx, n ) {
 	}
 	if ( r?.kind === 'param' ) {
 		return { fn: r.fn };
-	}
-	for ( let up = idx.parent.get( n ); up; up = idx.parent.get( up ) ) {
-		if ( isFn( up ) && up.params.some( ( p ) => 'ArrayPattern' === p.type && p.elements.some( ( x ) => 'Identifier' === x?.type && x.name === n.name ) ) ) {
-			return { fn: up };
-		}
 	}
 	return null;
 }

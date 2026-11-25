@@ -1,7 +1,6 @@
 [
 	{ "file": "lib/skeleton-clock.mjs", "find": "isDate( n.callee ) && ! n.arguments.length )", "replace": "isDate( n.callee ) )", "why": "new Date( args ) is a fixed date, not the clock" },
 	{ "file": "lib/skeleton-clock.mjs", "find": "isDate( n.callee.object ) && 'now' === n.callee.property.name );", "replace": "isDate( n.callee.object ) && 'never' === n.callee.property.name );", "why": "Date.now() reads the clock" },
-	{ "file": "lib/skeleton-clock.mjs", "find": "if ( isFn( up ) && up.params.some( ( p ) => 'ArrayPattern' === p.type", "replace": "if ( false && isFn( up ) && up.params.some( ( p ) => 'ArrayPattern' === p.type", "why": "an iteration callback's array-pattern parameter is bound to the table it iterates" },
 	{ "file": "lib/skeleton-clock.mjs", "find": "return isThisMember( m ) ? classMethod( idx, m.property.name ) : null;", "replace": "return null;", "why": "this.method() and a getter stand for the component method" },
 	{ "file": "lib/skeleton-clock.mjs", "find": "const method = isThisMember( n ) ? classMethod( idx, n.property.name ) : null;", "replace": "const method = null;", "why": "the clock is followed into the component methods a value calls" },
 	{ "file": "lib/skeleton-clock.mjs", "find": "if ( b?.init && ! ( b.init.start >= node.start && b.init.end <= node.end ) && follows(", "replace": "if ( false && follows(", "why": "the clock is followed through the declarations of the names a value reads" },
@@ -22,6 +21,7 @@
 	{ "file": "lib/skeleton-rules.mjs", "find": "if ( ! openLine( e ) || desc( e ).length > 2 ) {", "replace": "if ( true ) {", "why": "the open line is the open-status display" },
 	{ "file": "lib/skeleton-write-content.mjs", "find": "const c = T?.attribute && attrExists( block, T.attribute ) ? clock( e ) : null;", "replace": "const c = T?.attribute ? clock( e ) : null;", "why": "a block the framework DB gives no time-based text setting takes none" },
 	{ "file": "lib/skeleton-write-content.mjs", "find": "...( c.zone && T.zoneAttribute", "replace": "...( false && T.zoneAttribute", "why": "the zone the code names is written" },
-	{ "file": "lib/skeleton-write-content.mjs", "find": "attributes: { [ textAttr ]: words, ...timeTextAttrs( textBlock, e ) }", "replace": "attributes: { [ textAttr ]: words }", "why": "a container's own clock-picked words take the option on their text child" },
-	{ "file": "lib/skeleton-write-content.mjs", "find": "textAttr && t && ! quoteBody && Object.assign( a, timeTextAttrs( block, e ) );", "replace": "", "why": "a text element's clock-picked words take the option on its own block" }
+	{ "file": "lib/skeleton-propose.mjs", "find": "m.words( e ), ...timeTextAttrs( R.wrappedWords.block, e ) }, innerBlocks: [] };", "replace": "m.words( e ) }, innerBlocks: [] };", "why": "a container's own clock-picked words take the option on their text child" },
+	{ "file": "lib/skeleton-write-content.mjs", "find": "textAttr && t && Object.assign( a, timeTextAttrs( block, e ) );", "replace": "", "why": "a text element's clock-picked words take the option on its own block" },
+	{ "file": "lib/skeleton-write-content.mjs", "find": "textAttr && Object.assign( a, timeTextAttrs( block, e, r.html ) );", "replace": "", "why": "an element whose own words sit beside inline children (a glyph before the greeting) takes the option with the children kept in every range" }
 ]

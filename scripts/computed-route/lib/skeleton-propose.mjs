@@ -170,7 +170,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	Object.assign( w, makeUnits( ctx ) );
 	Object.assign( w, makeContent( ctx ) );
 	Object.assign( w, makeSlotRows( ctx ) );
-	const { record, removeSubtree, absorbSubtree, absorbWidthKids, takeVariants, unitsOf, buildBrand, buildIcons, buildList, contentAttrs, carriedAttrs, wrappedBody, buildHeaderRows, buildFooterRows, hostSlot, bandWrapper } = w;
+	const { record, removeSubtree, absorbSubtree, absorbWidthKids, takeVariants, unitsOf, buildBrand, buildIcons, buildList, contentAttrs, carriedAttrs, wrappedBody, timeTextAttrs, buildHeaderRows, buildFooterRows, hostSlot, bandWrapper } = w;
 	Object.assign( w, { buildNode, buildChildren } );
 
 	function buildNode( e, parentBlock ) {
@@ -400,7 +400,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		if ( facts.wrapperShells.includes( block ) && m.words( e ) ) {
 			const text = R.wrappedWords?.block ? skeletonSettings( facts, R.wrappedWords.block ).text : null;
 			if ( text ) {
-				const child = { name: R.wrappedWords.block, attributes: { [ text ]: m.textWithBreaks( e ).includes( '<br>' ) ? m.textWithBreaks( e ) : m.words( e ) }, innerBlocks: [] };
+				const child = { name: R.wrappedWords.block, attributes: { [ text ]: m.textWithBreaks( e ).includes( '<br>' ) ? m.textWithBreaks( e ) : m.words( e ), ...timeTextAttrs( R.wrappedWords.block, e ) }, innerBlocks: [] };
 				/^<[^>]*>\s*[^<\s]/.test( e.snippet || '' ) ? node.innerBlocks.unshift( child ) : node.innerBlocks.push( child );
 				row.rowNote = [ row.rowNote, `its own words are one ${ R.wrappedWords.block } inside it` ].filter( Boolean ).join( '; ' );
 			} else {

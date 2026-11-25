@@ -86,10 +86,15 @@ export function makeContent( ctx ) {
 	// The time-based text option of a text block whose words the draft's code picks by the hour of the clock
 	// (lib/skeleton-clock.mjs, rules.timeText): the hour ranges with their words, and the time zone when the code names one.
 	// {} when the element's words are no such value or the block does not take the option (the framework DB).
-	const timeTextAttrs = ( block, e ) => {
+	// An element whose own words sit beside inline children (a glyph before the greeting) passes its rich text as `inlineHtml`:
+	// each range's words replace the element's own rendered words inside it, so the children stay in every range.
+	const timeTextAttrs = ( block, e, inlineHtml = null ) => {
 		const T = facts.decisions.rules?.timeText;
 		const c = T?.attribute && attrExists( block, T.attribute ) ? clock( e ) : null;
-		const ranges = c && ! c.openStatus ? timeTextRanges( c ) : null;
+		const own = String( m.words( e ) ).trim();
+		const around = ( x ) => ( inlineHtml && own && 2 === inlineHtml.split( own ).length ? inlineHtml.split( own ).join( x ) : null );
+		const bare = c && ! c.openStatus ? timeTextRanges( c ) : null;
+		const ranges = inlineHtml ? ( bare?.every( ( r ) => null !== around( r.text ) ) ? bare.map( ( r ) => ( { ...r, text: around( r.text ) } ) ) : null ) : bare;
 		return ranges ? { [ T.attribute ]: ranges, ...( c.zone && T.zoneAttribute && attrExists( block, T.zoneAttribute ) ? { [ T.zoneAttribute ]: c.zone } : {} ) } : {};
 	};
 	const layoutOf = ( slug, e ) => {
@@ -330,6 +335,7 @@ export function makeContent( ctx ) {
 			const { text: textAttr } = skeletonSettings( facts, block );
 			const r = inlineContent( e );
 			textAttr && ( a[ textAttr ] = r.html );
+			textAttr && Object.assign( a, timeTextAttrs( block, e, r.html ) );
 			return { a: { ...a, ...( top.attributes || {} ) }, handover: r.handover, formats: r.formats ?? [] };
 		}
 		if ( facts.wrapperShells.includes( block ) ) {
@@ -462,5 +468,5 @@ export function makeContent( ctx ) {
 		}
 		return out;
 	}
-	return { contentAttrs, carriedAttrs, wrappedBody };
+	return { contentAttrs, carriedAttrs, wrappedBody, timeTextAttrs };
 }
