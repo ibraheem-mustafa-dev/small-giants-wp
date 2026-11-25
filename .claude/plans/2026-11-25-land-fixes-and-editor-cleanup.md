@@ -29,7 +29,7 @@ created: 2026-11-25
 ### Task 1: A safe machine (main session)
 Done (2026-11-25): `904c517dc` (heavy-run slots, temp guard on route tools), `4c4451ba6` (a gate that failed on the git-ignored Stackable copy), `~/.claude` `78ce309` (API workers' temp on E:), C: clear-out (5.2 GB), plugin `npm ci` and build passing.
 
-Left: a `tests/lib/tmp.mjs::scratchDir` helper and a detector that moves the 85 route tests (and the plugin's Python checks) that leave temp folders behind onto it. This runs after the branches merge, because it rewrites test files the tracks edit.
+Left: a `tests/lib/tmp.mjs::scratchDir` helper and a detector that moves the 85 route tests (and the plugin's Python checks) that leave temp folders behind onto it. This runs after the branches merge, because it rewrites test files the tracks edit. <!-- dangling-ok: files a worker creates or that exist only on its branch -->
 
 Status: mostly done.
 
