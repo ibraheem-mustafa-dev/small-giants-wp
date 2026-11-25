@@ -9,7 +9,8 @@ import {
 import { useSelect } from '@wordpress/data';
 import '../../../assets/css/fx-marquee.css';
 import DEFAULT_TICKER_LAYER from '../../../includes/motion/data/trust-bar-default-ticker.json';
-import { Fragment, useEffect, useMemo } from '@wordpress/element';
+import { Fragment, useEffect, useMemo, useRef } from '@wordpress/element';
+import useOverflowRuns from './use-overflow-fit';
 import {
 	PanelBody,
 	SelectControl,
@@ -120,38 +121,6 @@ function gapCssValue( gap ) {
 		return `var(--wp--preset--spacing--${ gapDesktop })`;
 	}
 	return String( gapDesktop );
-}
-
-/**
- * Resolve the desktop-tier `grid-template-columns` preview value.
- *
- * Mirrors the REAL winning mechanism in class-sgs-container-wrapper.php: an
- * object-shaped `gridTemplateColumns` attr is ALWAYS emitted (the unconditional
- * `isset() && is_array()` check at ~:2150, which lands in the responsive CSS
- * string after — and so overrides in the cascade — the legacy `columns`-based
- * base rule at ~:865). `columns` only drives the rendered grid when
- * `gridTemplateColumns`'s own tier is empty (render.php's `$gtc_base` fallback,
- * ~:854-858) — this is the ONLY case genuinely covered by `columns` any more,
- * since trust-bar declares `gridTemplateColumns` with a real, always-populated
- * default ({desktop:"repeat(4, 1fr)", …}), so that fallback rarely fires on a
- * fresh instance. Preserved anyway for a legacy/edge instance whose
- * `gridTemplateColumns` tier really is unset.
- *
- * @param {Object|null|undefined} gtc  gridTemplateColumns attribute ({desktop,tablet,mobile}).
- * @param {Object|null|undefined} cols columns attribute ({desktop,tablet,mobile}).
- * @return {string|undefined}
- */
-function gridTemplateColumnsPreview( gtc, cols ) {
-	const gtcDesktop = resolveResponsiveTier( gtc, 'desktop' )?.value;
-	if ( gtcDesktop ) {
-		return String( gtcDesktop );
-	}
-	const colsDesktop = resolveResponsiveTier( cols, 'desktop' )?.value;
-	const count = colsDesktop ? parseInt( colsDesktop, 10 ) : 4;
-	if ( ! count || count < 1 ) {
-		return undefined;
-	}
-	return `repeat(${ count },1fr)`;
 }
 
 const BADGE_STYLE_OPTIONS = [
@@ -392,6 +361,7 @@ function GenericBadgeItemEditor( {
 
 // ─── Main Edit component ──────────────────────────────────────────────────────
 export default function Edit( { attributes, setAttributes, name } ) {
+	const rootRef = useRef( null );
 	const {
 		badgeStyle,
 		items: rawItems,
@@ -439,14 +409,8 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		backgroundColourGradient,
 		backgroundColourHover,
 		backgroundColourHoverGradient,
-		columns,
 		gap,
 		layout,
-		gridTemplateColumns,
-		justifyItems,
-		alignContent,
-		alignItems,
-		gridAutoRows,
 		overflowMode,
 		shadow,
 	} = attributes;
@@ -592,6 +556,15 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		! [ 'mobile', 'tablet' ].includes(
 			marqueeLayer.values?.belowBreakpoint
 		);
+	// An `overflow` ticker runs only while its set does not fit one row: the canvas measures that the way the
+	// runtime does (use-overflow-fit.js) and shows the authored layout while the set fits.
+	const overflowOnly =
+		'overflow' === marqueeLayer?.values?.belowBreakpoint;
+	const overflowRuns = useOverflowRuns(
+		overflowOnly && items.length > 0,
+		rootRef,
+		JSON.stringify( [ attributes, previewTier ] )
+	);
 	const isOverflowDrop = 'drop' === overflowMode && ! marqueeAlways;
 
 	// Marquee canvas reflection. The motion runtime (fx-marquee.js) never runs in the
@@ -607,7 +580,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	const marqueeActive =
 		!! marqueeLayer &&
 		! marqueeTierOff &&
-		( marqueeAlways ||
+		( ( marqueeAlways && ( ! overflowOnly || overflowRuns ) ) ||
 			( 'tablet' === marqueeRange && 'desktop' !== previewTier ) ||
 			( 'mobile' === marqueeRange && 'mobile' === previewTier ) );
 	const marqueeValues = marqueeLayer?.values ?? {};
@@ -645,19 +618,6 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		colourPalette
 	);
 
-	// Grid preview (icon-circle only — text-only/image-badge always render
-	// `.sgs-trust-bar--text-only`/`--image-badge`'s own hardcoded flex-wrap,
-	// style.css:111-117/155-158, regardless of layout/columns/gridTemplateColumns;
-	// the "Badges" panel's Columns control is gated to icon-circle only for the
-	// same reason). Ungated on `layout` presence matches render.php: layout
-	// defaults to 'grid' (block.json), and only an explicit 'flex' would fall
-	// back to the natural inline-flex wrap this block already renders without
-	// any style here.
-	const showBadgeGrid = isIconStyle && 'flex' !== layout;
-	const badgeGridTemplateColumns = showBadgeGrid
-		? gridTemplateColumnsPreview( gridTemplateColumns, columns )
-		: undefined;
-
 	// Border, radius, max-width, flex layout and the content band, as the wrapper emits them;
 	// the badge grid below still wins for the icon variants it already mirrors.
 	const wrapper = wrapperPreview( attributes, previewTier, colourPalette );
@@ -679,6 +639,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	);
 
 	const blockProps = useBlockProps( {
+		ref: rootRef,
 		className: [ blockClassName, section.className ]
 			.filter( Boolean )
 			.join( ' ' ),
@@ -750,55 +711,6 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				: {} ),
 			...( isIconStyle && iconStrokeWidth !== 1.8
 				? { '--sgs-trust-badge-icon-stroke-width': iconStrokeWidth }
-				: {} ),
-			...( badgeGridTemplateColumns
-				? {
-						display: 'grid',
-						gridTemplateColumns: badgeGridTemplateColumns,
-						gap: gapCssValue( gap ),
-						// CHECK A (2026-09-05) — justifyItems/alignContent/alignItems/
-						// gridAutoRows are declared in block.json (css:grid-auto-rows,
-						// css:justify-items, css:align-content, + the alignItems attr)
-						// and render correctly on the frontend via
-						// class-sgs-container-wrapper.php's grid branch, but were never
-						// mirrored on this canvas. Hand-adapted (not routed through the
-						// shared applyGridLayoutPreview()) because that helper resolves
-						// gridTemplateColumns/columns itself via resolveResponsiveTier() —
-						// this block has ALREADY resolved its own tier via
-						// gridTemplateColumnsPreview() into a plain string above, and
-						// handing that resolved string back into the shared helper's
-						// tier-object resolver would silently return '' (resolveResponsiveTier
-						// indexes a plain string by tier key, which is always undefined).
-						// The 4-line body below is copied verbatim from
-						// applyGridLayoutPreview()'s grid branch (src/utils/grid-layout-preview.js)
-						// so behaviour still matches class-sgs-container-wrapper.php exactly.
-						...( gridAutoRows ? { gridAutoRows } : {} ),
-						alignItems:
-							resolveResponsiveTier( alignItems, previewTier )
-								?.value || undefined,
-						...( ( resolveResponsiveTier(
-							justifyItems,
-							previewTier
-						)?.value || 'stretch' ) !== 'stretch'
-							? {
-									justifyItems: resolveResponsiveTier(
-										justifyItems,
-										previewTier
-									).value,
-							  }
-							: {} ),
-						...( ( resolveResponsiveTier(
-							alignContent,
-							previewTier
-						)?.value || 'stretch' ) !== 'stretch'
-							? {
-									alignContent: resolveResponsiveTier(
-										alignContent,
-										previewTier
-									).value,
-							  }
-							: {} ),
-				  }
 				: {} ),
 		},
 	} );
@@ -1886,71 +1798,6 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					control was the Label colour picker, now moved to the
 					Colour panel. An empty PanelBody is a dead control
 					(check-empty-inspector-containers.js). */ }
-
-				{ /* ── Badges (icon-circle only) ──────────────────────────────
-				     Named for the ELEMENT it controls, not the property cluster
-				     (CO-2, element-first panel naming). It was "Layout" until
-				     2026-08-08, which collided verbatim with the SECTION's own
-				     "Layout" panel higher up the same tab: two panels, same word,
-				     different scopes. A cluster name is only correct when the
-				     controls apply to no single element — this one is badge-scoped
-				     (`columns` drives the badge grid), so it takes the element's
-				     name, exactly as sgs/button names its icon panel "Icon". */ }
-				{ isIconStyle && (
-					<PanelBody
-						title={ __( 'Badges', 'sgs-blocks' ) }
-						initialOpen={ false }
-					>
-						{ /*
-							  columns is a TIER OBJECT — ONE attr holding
-							  {desktop,tablet,mobile} (Spec 35 pass 4). It must
-							  therefore use ResponsiveOverride, which reads and
-							  writes the object, NOT a bare RangeControl writing
-							  a raw number — that would coerce the object-typed
-							  attr to its default and drop the whole setting
-							  (D563 bug class). `columnsTablet`/`columnsMobile`
-							  are no longer declared by block.json; the tier
-							  object's tablet/mobile keys carry the "at 600px+"
-							  stacking behaviour that used to be an implicit
-							  default (4/4/2).
-						*/ }
-						<ResponsiveOverride
-							label={ __( 'Columns', 'sgs-blocks' ) }
-							value={ columns }
-							onChange={ ( obj ) =>
-								setAttributes( { columns: obj } )
-							}
-						>
-							{ ( {
-								tier,
-								ownValue,
-								effectiveValue,
-								setOwnValue,
-							} ) => (
-								<RangeControl
-									value={
-										ownValue !== ''
-											? ownValue
-											: effectiveValue !== ''
-											? effectiveValue
-											: tier === 'mobile'
-											? 2
-											: 4
-									}
-									onChange={ setOwnValue }
-									min={ 2 }
-									max={ 6 }
-									step={ 1 }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
-							) }
-						</ResponsiveOverride>
-						{ /* Gap between badges is provided by the shared ContainerWrapperControls
-						     "Gap" responsive control (writes the same `gap` attr via the wrapper
-						     helper). Removed here to eliminate UI duplication. */ }
-					</PanelBody>
-				) }
 			</InspectorControls>
 
 			{ /* ── Editor canvas ───────────────────────────────────────────── */ }

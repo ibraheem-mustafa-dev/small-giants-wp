@@ -861,11 +861,8 @@
 		},
 		"gridTemplateColumns": {
 			"type": "object",
-			"default": {
-				"desktop": "repeat(4, 1fr)",
-				"tablet": "repeat(4, 1fr)",
-				"mobile": "1fr 1fr"
-			}
+			"default": {},
+			"description": "A custom grid-template-columns per device. Empty by default: the Columns count drives the grid, and a template set here wins over it."
 		},
 		"surfaceTone": {
 			"type": "string",
