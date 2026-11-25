@@ -1,0 +1,172 @@
+#!/usr/bin/env python3
+"""report-label-less-responsive-overrides.py - lists every <ResponsiveOverride> mount that passes no `label`.
+
+`ResponsiveOverride` draws the Tablet and Mobile markers on its label's row. A mount that passes no `label` leaves the
+markers alone on a line above the inner control's own label, so Stage E2 gives each such mount a label. This is a
+REPORT, not a gate: it exits 0 whatever it finds, until Stage E2 turns the count into a failure.
+
+A mount counts as label-less when its opening tag has no `label=` prop and no `{...spread}`. A mount with a spread is
+listed apart as "unknown" because the spread may carry the label.
+
+Run from plugins/sgs-blocks:
+    python scripts/report-label-less-responsive-overrides.py            # summary, then one line per mount
+    python scripts/report-label-less-responsive-overrides.py --json out.json
+    python scripts/report-label-less-responsive-overrides.py --self-test
+"""
+import argparse
+import json
+import re
+import sys
+from collections import Counter
+from pathlib import Path
+
+sys.stdout.reconfigure(encoding="utf-8")
+PLUGIN = Path(__file__).resolve().parents[1]
+SRC = PLUGIN / "src"
+TAG = re.compile(r"<ResponsiveOverride\b")
+SYMBOL = re.compile(r"(?:function\s+([A-Za-z_$][\w$]*)|(?:const|let)\s+([A-Za-z_$][\w$]*)\s*=\s*(?:\(|async|function|[A-Za-z_$][\w$]*\s*=>))")
+
+
+def tag_end(text: str, start: int) -> int:
+    """Index just past the `>` that closes the opening tag that starts at `start` (braces and quotes skipped)."""
+    depth = 0
+    quote = ""
+    i = start
+    while i < len(text):
+        c = text[i]
+        if quote:
+            if c == "\\":
+                i += 1
+            elif c == quote:
+                quote = ""
+        elif depth:
+            if c in "'\"`":
+                quote = c
+            elif c == "{":
+                depth += 1
+            elif c == "}":
+                depth -= 1
+        elif c in "'\"":
+            quote = c
+        elif c == "{":
+            depth = 1
+        elif c == ">":
+            return i + 1
+        i += 1
+    return len(text)
+
+
+def top_level_props(tag: str) -> tuple[bool, bool]:
+    """(has_label, has_spread) for the text of one opening tag."""
+    has_label = False
+    has_spread = False
+    depth = 0
+    quote = ""
+    i = len("<ResponsiveOverride")
+    while i < len(tag):
+        c = tag[i]
+        if quote:
+            if c == "\\":
+                i += 1
+            elif c == quote:
+                quote = ""
+        elif depth:
+            if c in "'\"`":
+                quote = c
+            elif c == "{":
+                depth += 1
+            elif c == "}":
+                depth -= 1
+        elif c in "'\"":
+            quote = c
+        elif c == "{":
+            if re.match(r"\s*\.\.\.", tag[i + 1 :]):
+                has_spread = True
+            depth = 1
+        elif re.match(r"label\s*=", tag[i:]) and not re.match(r"[\w$-]", tag[i - 1]):
+            has_label = True
+        i += 1
+    return has_label, has_spread
+
+
+def scan_text(text: str) -> list[dict]:
+    """One record per mount: line, enclosing symbol, `labelled` ('yes', 'no' or 'unknown')."""
+    records = []
+    for m in TAG.finditer(text):
+        tag = text[m.start() : tag_end(text, m.start())]
+        has_label, has_spread = top_level_props(tag)
+        symbols = [s for s in SYMBOL.finditer(text, 0, m.start())]
+        symbol = ""
+        if symbols:
+            last = symbols[-1]
+            symbol = last.group(1) or last.group(2) or ""
+        records.append(
+            {
+                "line": text.count("\n", 0, m.start()) + 1,
+                "symbol": symbol,
+                "labelled": "yes" if has_label else ("unknown" if has_spread else "no"),
+            }
+        )
+    return records
+
+
+def scan() -> list[dict]:
+    out = []
+    for f in sorted(SRC.rglob("*.js")):
+        if f.name.endswith(".test.js"):
+            continue
+        for rec in scan_text(f.read_text(encoding="utf-8", errors="replace")):
+            out.append({"file": f.relative_to(PLUGIN).as_posix(), **rec})
+    return out
+
+
+def self_test() -> int:
+    sample = """
+export function Panel() {
+	return (
+		<ResponsiveOverride label={ __( 'Gap', 'x' ) } value={ a } onChange={ b }>{ () => null }</ResponsiveOverride>
+	);
+}
+const Row = ( { x } ) => (
+	<ResponsiveOverride value={ x } onChange={ ( v ) => v >= 1 }>{ () => <A label="inner" /> }</ResponsiveOverride>
+);
+function Spread( props ) {
+	return <ResponsiveOverride { ...props }>{ () => null }</ResponsiveOverride>;
+}
+function Sublabel() {
+	return <ResponsiveOverride value={ { label: 1 } } sublabel="x" />;
+}
+"""
+    got = [(r["symbol"], r["labelled"]) for r in scan_text(sample)]
+    want = [("Panel", "yes"), ("Row", "no"), ("Spread", "unknown"), ("Sublabel", "no")]
+    ok = got == want
+    print("[report-label-less-responsive-overrides] self-test", "PASS" if ok else f"FAIL got {got}")
+    return 0 if ok else 1
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--json", metavar="FILE")
+    ap.add_argument("--self-test", action="store_true")
+    a = ap.parse_args()
+    if a.self_test:
+        return self_test()
+    records = scan()
+    counts = Counter(r["labelled"] for r in records)
+    less = [r for r in records if "yes" != r["labelled"]]
+    files = Counter(r["file"] for r in less)
+    print(
+        f"[report-label-less-responsive-overrides] {len(records)} mounts: {counts['yes']} labelled, "
+        f"{counts['no']} label-less, {counts['unknown']} unknown (spread props); label-less or unknown in {len(files)} files"
+    )
+    for r in less:
+        print(f"{r['labelled']:8} {r['file']}::{r['symbol'] or '(module)'} (line {r['line']})")
+    if a.json:
+        Path(a.json).write_text(
+            json.dumps({"total": len(records), "counts": counts, "mounts": less}, indent=1), encoding="utf-8"
+        )
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

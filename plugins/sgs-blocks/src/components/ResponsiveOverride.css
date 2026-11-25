@@ -5,6 +5,31 @@
 	gap: 6px;
 }
 
+/* A mount with a label: the label and the markers share one row, styled as core's control label. */
+.sgs-responsive-override--labelled > .sgs-responsive-override__header {
+	margin-bottom: 8px;
+}
+
+.sgs-responsive-override__label {
+	font-size: 11px;
+	font-weight: 500;
+	line-height: 1.4;
+	text-transform: uppercase;
+}
+
+/* A label an inner control repeats (`hideDuplicateLabels.js`): visually hidden, still its accessible name. */
+.sgs-responsive-override__duplicate-label {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}
+
 .sgs-responsive-override__dots {
 	display: inline-flex;
 	gap: 6px;
