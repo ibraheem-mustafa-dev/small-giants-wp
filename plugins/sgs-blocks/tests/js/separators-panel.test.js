@@ -7,7 +7,7 @@
  * `supports.sgs.separators` moves the panel.
  *
  * Negative controls (each guard was proven able to fail by breaking the source and re-running this file):
- *   1 the panel passes hand-picked options instead of block.json's   -> "offers what block.json declares"
+ *   1 the panel ignores block.json's `edges`                          -> "offers what block.json declares"
  *   2 the `lined` gate is dropped                                    -> "a lined block shows no panel for a layout with nothing to separate"
  *   3 `bare` still wraps the control in a PanelBody                  -> "bare renders the control alone"
  *   4 the write goes to `separators` whatever the attribute          -> "writes the attribute it was given"
