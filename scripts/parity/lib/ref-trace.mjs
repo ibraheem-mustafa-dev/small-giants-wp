@@ -37,7 +37,7 @@ export function elementPath( el, refEl ) {
 }
 
 // In-page: the ref, its block root class and the paths for one measured element. `carrier` is the element that
-// paints the first text (collectPair reads text properties from it), so text rows get that element's path; `layoutEl`
+// paints most of the text (paint.mjs::textCarrier; collectPair reads text properties from it), so text rows get that element's path; `layoutEl`
 // is the element laying out the children (collectPair reads layout properties from it), so layout rows get its path;
 // `iconEl` is the pair's first painted svg, so icon size rows get its path; `decoEl` is the element whose underline
 // collectPair reads (paint.mjs::decoratedElement), so underline rows get its path; `paintEl` is the element painting the

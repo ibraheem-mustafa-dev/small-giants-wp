@@ -37,7 +37,7 @@ function sameAlignment( r, ds, ls ) {
 	return ! reversed && alignWord( r.draft ) === alignWord( r.live );
 }
 
-// The properties read from the element painting the first text (collect.mjs::collectPair): absent on a side that paints no text.
+// The properties read from the paint carrying most of the text (collect.mjs::collectPair, parity/lib/paint.mjs::textCarrier): absent on a side that paints no text.
 export const TEXT_READ = new Set( [ 'font-family', 'font-size', 'font-weight', 'font-style', 'line-height', 'letter-spacing', 'text-transform', 'color', 'text-shadow', 'text-decoration-line', 'text-decoration-color', 'text-decoration-thickness', 'text-underline-offset' ] );
 
 // One side paints text and the other none: one `text presence` row in place of a row per text property.

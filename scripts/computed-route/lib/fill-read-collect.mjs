@@ -375,7 +375,7 @@ export function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, ps
 				snap.styles[ 'text-underline-offset' ] = dc ? dc.textUnderlineOffset : 'none';
 			}
 		}
-		// collectPair reads a text colour off the element painting the first text; an element with no text (an icon-only link)
+		// collectPair reads a text colour off the paint carrying most of its text (parity/lib/paint.mjs::textCarrier); an element with no text (an icon-only link)
 		// keeps its own, which a glyph drawn in currentColor paints and lib/fill-state.mjs::holdDefaults holds with its ground.
 		if ( props.includes( 'color' ) && ! snap.styles.color ) {
 			snap.styles.color = srgb( getComputedStyle( el ).color );

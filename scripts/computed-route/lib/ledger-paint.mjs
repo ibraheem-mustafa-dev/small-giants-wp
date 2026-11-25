@@ -14,7 +14,7 @@
 //      one of them (not a pseudo layer) whose default paint differs from the root's at every width is where the block's root
 //      look holds it, and the property is compared there.
 //   3. Otherwise on the target's own element.
-// The properties the walker reads from the element painting the first text (lib/ledger-diff.mjs::TEXT_READ: colour and
+// The properties the walker reads from the paint carrying most of the text (lib/ledger-diff.mjs::TEXT_READ: colour and
 // typography) are never moved: they are already read where the words paint, on both sides. Box keys (x, y, w, h) are the
 // target's own box. Pure functions.
 import { longhandsOf } from './css-families.mjs';
