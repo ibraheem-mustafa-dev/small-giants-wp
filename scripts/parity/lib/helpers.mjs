@@ -17,6 +17,13 @@ export async function waitOutHostCheck( page ) {
 	await page.waitForTimeout( 500 );
 }
 
+// Whether navigating from `from` to `to` stays in the same document: the same address up to a fragment that `to` carries
+// (the HTML standard's navigate-to-a-fragment, which loads nothing).
+export function sameDocument( from, to ) {
+	const [ target, fragment ] = String( to ).split( /#(.*)/s );
+	return undefined !== fragment && String( from ).split( '#' )[ 0 ] === target;
+}
+
 export function makeHelpers( page, side, { cb, RESOLVE, onAction } ) {
 	let inflight = 0;
 	page.on( 'request', () => inflight++ );
@@ -54,11 +61,17 @@ export function makeHelpers( page, side, { cb, RESOLVE, onAction } ) {
 		// set on the live logic after every load of it (goto, and the load entrances' reload through `route`).
 		routed: false,
 		route: async () => ( h.routed ? ( await import( '../../computed-route/lib/state-route.mjs' ) ).applyStateRoute( page ) : null ),
+		// A load is always a new document: navigating to the page's own address with a fragment (a state-page draft's route) is a
+		// same-document navigation that keeps the page's scroll, focus and script state, so that load goes through a blank page.
 		goto: async ( url ) => {
 			h.log.push( { type: 'goto', target: url } );
+			const target = cb( url );
+			if ( sameDocument( page.url(), target ) ) {
+				await page.goto( 'about:blank' );
+			}
 			// A page with a payment widget (Stripe's fraud and wallet frames) never goes network-idle,
 			// so the load is the hard wait and idle is waited for as long as it comes.
-			await page.goto( cb( url ), { waitUntil: 'load' } );
+			await page.goto( target, { waitUntil: 'load' } );
 			await page.waitForLoadState( 'networkidle' ).catch( () => {} );
 			await waitOutHostCheck( page );
 			h.routed = 'draft' === side && String( url ).includes( '#@state/' );

@@ -7,7 +7,10 @@
 // Layers are named by tag, id and first class, each name once, so a carousel's slide giving way to the next is no change. Before every later state the signature is read again: a page still at rest runs
 // the state where it is (a wizard step chosen inside a modal the config's `open` opened is at rest), a page that is not
 // (a drawer, a scroll, a lock the previous state left) is loaded afresh and the config's `open` runs again, and a page
-// still not at rest after that is refused with its reason, never measured. A state marked `from: 'previous'` runs on the
+// still not at rest after that is refused with its reason, never measured. A load that differs from the first read only in where
+// the page is (the scroll, the focused element, the layers in view) is loaded a second time and the two fresh loads compared: two
+// that agree are the page's rest (the first read caught an offset the load entrances' reload left), and only a page whose two fresh
+// loads disagree is refused. A lock, a dialog or any other field differing after a fresh load is always a refusal. A state marked `from: 'previous'` runs on the
 // previous state's page as it is (a step that needs the panel the step before opened); `from: 'rest'` loads afresh
 // whatever the signature says.
 // A state whose action finds nothing to trigger on either side (every click, tap or hover it tried found no target: a
@@ -64,6 +67,9 @@ export function restSignature() {
 
 const LABELS = { scroll: 'scroll', lock: 'scroll lock (html, body overflow-y; body, html position)', dialogs: 'open dialogs', modals: 'shown modals', popovers: 'open popovers', disclosures: 'open disclosures (details, aria-expanded)', inert: 'inert elements', hidden: 'page-level aria-hidden', focus: 'focused element', layers: 'fixed or transformed layers in the viewport' };
 
+// The fields that say where the page is, not what it holds open: a fresh load differing in these alone is judged against a second fresh load.
+const PLACEMENT = [ 'scroll', 'focus', 'layers' ];
+
 // What differs between the signature at rest and now: one line per field, empty when the page is at rest.
 export function restDiff( rest, now ) {
 	if ( ! rest || ! now ) {
@@ -90,20 +96,32 @@ export async function readRest( page, floor = 300 ) {
 	return last;
 }
 
-// Brings the page to rest before a state after the first. reload() loads the page afresh and runs the config's `open`.
-// Returns { how: 'previous' | 'at rest' | 'reloaded', refused?: reason, rest?: the signature a fresh load reached at rest,
-// which the caller keeps as the page's rest from then on }.
-export async function toRest( page, state, rest, reload ) {
+// Brings the page to rest before a state after the first. reload() loads the page afresh and runs the config's `open`; `read` is
+// the rest read (readRest). Returns { how: 'previous' | 'at rest' | 'reloaded', refused?: reason, rest?: the signature a fresh
+// load reached at rest, which the caller keeps as the page's rest from then on, moved?: what that rest has that the first read
+// had not }. A fresh load that differs from the first read only in placement is repeated: two fresh loads that agree are the
+// page's rest, and a page whose two fresh loads disagree is refused, naming what moved between them.
+export async function toRest( page, state, rest, reload, read = readRest ) {
 	if ( 'previous' === state.from ) {
 		return { how: 'previous' };
 	}
-	if ( 'rest' !== state.from && ! restDiff( rest, await readRest( page ) ).length ) {
+	if ( 'rest' !== state.from && ! restDiff( rest, await read( page ) ).length ) {
 		return { how: 'at rest' };
 	}
 	await reload();
-	const now = await readRest( page );
+	const now = await read( page );
 	const left = restDiff( rest, now );
-	return left.length ? { how: 'reloaded', refused: `not at rest after a fresh load: ${ left.join( '; ' ) }` } : { how: 'reloaded', rest: now };
+	if ( ! left.length ) {
+		return { how: 'reloaded', rest: now };
+	}
+	const refused = ( lines ) => ( { how: 'reloaded', refused: `not at rest after a fresh load: ${ lines.join( '; ' ) }` } );
+	if ( Object.keys( LABELS ).some( ( k ) => ! PLACEMENT.includes( k ) && String( rest[ k ] ) !== String( now[ k ] ) ) ) {
+		return refused( left );
+	}
+	await reload();
+	const again = await read( page );
+	const apart = restDiff( now, again );
+	return apart.length ? refused( apart ) : { how: 'reloaded', rest: again, moved: left };
 }
 
 // The targets a state's action tried and found nothing at, when it found nothing at all: null when the action triggered

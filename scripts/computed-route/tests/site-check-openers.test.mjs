@@ -7,7 +7,7 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { missingModalRows, deadOpeners, openersInPage, walkAbsent, walkChecked } from '../lib/site-check-openers.mjs';
+import { missingModalRows, deadOpeners, openersInPage, walkAbsent, walkChecked, refusedRuns } from '../lib/site-check-openers.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const ROWS = [
@@ -95,14 +95,18 @@ test( 'MUST FAIL: a walk whose live root, or every live element, is absent fails
 	assert.equal( walkAbsent( null ), null );
 } );
 
-// A run the walker refused (lib/state-rest.mjs::unmeasuredRun) holds only its `(state)` row, so it has no root to find missing.
-test( 'MUST FAIL: a refused run fails the walk, whichever side was not at rest; a run with differences or a settled untriggered run does not', () => {
+// A run the walker refused (lib/state-rest.mjs::unmeasuredRun) holds only its `(state)` row, so it has no root to find missing. It is
+// one open row of the report (Spec 48 section 3.6 item 20), named by refusedRuns and the walk step's detail, never a failed walk.
+test( 'MUST FAIL: a refused run is an open row, not a failed walk, whichever side was not at rest; a run missing its live root still fails', () => {
 	const refused = ( who ) => ( { state: 'open', width: 375, refused: who, pairs: { '(state)': { diffs: [ { kind: 'state', key: 'not-at-rest' } ] } } } );
-	assert.match( walkAbsent( { runs: [ refused( { draft: null, live: 'the page never settled' } ) ] } ), /run "open" at 375 was refused, not measured \(live the page never settled\)/ );
-	assert.match( walkAbsent( { runs: [ run( { 'gen-x-0': { draft: shown, live: shown } } ), refused( { draft: 'the draft never settled', live: null } ) ] } ), /refused, not measured \(draft the draft never settled\)/, 'a later run counts' );
+	assert.equal( walkAbsent( { runs: [ refused( { draft: null, live: 'the page never settled' } ) ] } ), null );
+	assert.equal( walkAbsent( { runs: [ run( { 'gen-x-0': { draft: shown, live: shown } } ), refused( { draft: 'the draft never settled', live: null } ) ] } ), null );
+	assert.deepEqual( refusedRuns( { runs: [ refused( { draft: null, live: 'the page never settled' } ), run( { 'gen-x-0': { draft: shown, live: shown } } ), refused( { draft: 'x', live: 'y' } ) ] } ), [ 'open @ 375 (live the page never settled)', 'open @ 375 (draft x; live y)' ] );
+	// A refusal beside a run whose live root is missing: the absence still fails the walk.
+	assert.match( walkAbsent( { runs: [ refused( { draft: 'x', live: null } ), run( { 'gen-x-0': { draft: shown, live: { missing: true } } } ) ] } ), /the live page has no element for the surface's root/ );
 	// Negative controls: differences are parity rows, and a run both sides found nothing to trigger in is settled, not refused.
 	assert.equal( walkAbsent( { runs: [ run( { 'gen-x-0': { draft: shown, live: shown, diffs: [ { key: 'color' } ] } } ) ] } ), null );
-	assert.equal( walkAbsent( { runs: [ { state: 'open', width: 375, untriggered: { draft: 'x', live: 'x' }, pairs: { '(state)': { diffs: [ { key: 'nothing-to-trigger' } ] } } } ] } ), null );
+	assert.deepEqual( refusedRuns( { runs: [ { state: 'open', width: 375, untriggered: { draft: 'x', live: 'x' }, pairs: { '(state)': { diffs: [ { key: 'nothing-to-trigger' } ] } } } ] } ), [] );
 } );
 
 test( 'MUST FAIL: the walk step fails on an absent live element and passes its answer on otherwise, and site-run uses it', () => {
@@ -113,6 +117,8 @@ test( 'MUST FAIL: the walk step fails on an absent live element and passes its a
 	fs.writeFileSync( file, JSON.stringify( { runs: [ run( { 'gen-x-0': { draft: shown, live: shown } } ) ] } ) );
 	assert.equal( walkChecked( file, 'report written' ), 'report written' );
 	assert.equal( walkChecked( path.join( dir, 'none.json' ), 'said' ), 'said' );
+	fs.writeFileSync( file, JSON.stringify( { runs: [ run( { 'gen-x-0': { draft: shown, live: shown } } ), { state: 'auto-scrolled', width: 768, refused: { draft: null, live: 'not at rest after a fresh load: scroll: 0,4 at rest, 0,0 now' }, pairs: { '(state)': { diffs: [] } } } ] } ) );
+	assert.equal( walkChecked( file, 'report written' ), 'report written; 1 state run not measured, left as open rows: auto-scrolled @ 768 (live not at rest after a fresh load: scroll: 0,4 at rest, 0,0 now)' );
 	const siteRun = fs.readFileSync( path.join( HERE, '..', 'site-run.mjs' ), 'utf8' );
 	assert.ok( siteRun.includes( "await step( 'walk', async () => walkChecked( path.join( parity, 'out', key, 'report.json' ), await exec( 'walk'," ) );
 	const siteCheck = fs.readFileSync( path.join( HERE, '..', 'site-check.mjs' ), 'utf8' );

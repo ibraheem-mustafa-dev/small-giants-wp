@@ -5,7 +5,8 @@
 // - a link on a page to the anchor of a modal or flow row opens something: the page holds a frame with that anchor, else the
 //   link is a dead opener and fails, as does a link to any other anchor that no frame and no element of the page holds;
 // - a parity walk whose live element is absent (the surface's root, shown by the draft, never found on the live page in a run)
-//   or whose run was refused fails instead of passing (site-run.mjs's walk step).
+//   fails instead of passing (site-run.mjs's walk step); a run the walker refused is one open `(state)` row of the report, named in
+//   the walk step's detail, and never a failed walk (Spec 48 section 3.6 item 20).
 import fs from 'fs';
 import { OPENABLE } from './intake-pagemap-openers.mjs';
 
@@ -49,16 +50,24 @@ export function deadOpeners( rows, page ) {
 		.map( ( a ) => ( { status: 'fail', subject: `opener #${ a } on ${ page.key }`, url: page.url, error: targets.has( a ) ? `a link opens the ${ OPENABLE[ targets.get( a ).postType ] } ${ a }, and the page holds no frame with that anchor` : `a link points at #${ a }, and the page holds no frame with that anchor and no element with that id or name` } ) );
 }
 
-// Why a walker report (scripts/parity/draft-live-walk.mjs report.json) fails, or null. A run the walker refused (a side
-// never reached its page's rest, lib/state-rest.mjs::unmeasuredRun: `run.refused`, its only pair the `(state)` row) measured
-// nothing, so it fails the walk rather than passing as a run with no differences. Otherwise only pairs the draft shows in the
-// run count (a state the draft does not show at that width is no absence): a run fails when the surface's first such pair,
-// its root, is missing on the live side; a missing child is a parity row of the report.
+// The runs the walker refused (a side never reached its page's rest, lib/state-rest.mjs::unmeasuredRun: `run.refused`, its
+// only pair the open `(state)` row `not-at-rest`), as "<state> @ <width> (<why>)" lines. They measured nothing and stay open
+// rows in the report; they are not failures of the walk.
+export function refusedRuns( report ) {
+	return ( report?.runs || [] ).filter( ( run ) => run.refused ).map( ( run ) => {
+		const why = [ run.refused.draft && `draft ${ run.refused.draft }`, run.refused.live && `live ${ run.refused.live }` ].filter( Boolean ).join( '; ' );
+		return `${ run.state } @ ${ run.width } (${ why || 'a side was not at rest' })`;
+	} );
+}
+
+// Why a walker report (scripts/parity/draft-live-walk.mjs report.json) fails, or null. Only pairs the draft shows in the run
+// count (a state the draft does not show at that width is no absence): a run fails when the surface's first such pair, its
+// root, is missing on the live side; a missing child is a parity row of the report. A refused run holds only its `(state)`
+// row, so it has no root to find missing (refusedRuns names it).
 export function walkAbsent( report ) {
 	for ( const run of report?.runs || [] ) {
 		if ( run.refused ) {
-			const why = [ run.refused.draft && `draft ${ run.refused.draft }`, run.refused.live && `live ${ run.refused.live }` ].filter( Boolean ).join( '; ' );
-			return `run "${ run.state }" at ${ run.width } was refused, not measured (${ why || 'a side was not at rest' })`;
+			continue;
 		}
 		const root = Object.entries( run.pairs || {} ).find( ( [ name, p ] ) => ! /^\(/.test( name ) && p?.draft && ! p.draft.missing );
 		if ( root?.[ 1 ]?.live?.missing ) {
@@ -68,13 +77,15 @@ export function walkAbsent( report ) {
 	return null;
 }
 
-// A walk step's answer once its report is read: `said` when the report's live elements are present, else an error naming the
-// absent element (site-run.mjs marks the step failed). A walk that wrote no report is left to the walk step's own error.
+// A walk step's answer once its report is read: `said`, followed by the runs left as open rows because the walker refused them,
+// when the report's live elements are present, else an error naming the absent element (site-run.mjs marks the step failed).
+// A walk that wrote no report is left to the walk step's own error.
 export function walkChecked( reportFile, said ) {
 	const report = fs.existsSync( reportFile ) ? JSON.parse( fs.readFileSync( reportFile, 'utf8' ) ) : null;
 	const absent = walkAbsent( report );
 	if ( absent ) {
 		throw new Error( `walk failed: ${ absent }` );
 	}
-	return said;
+	const refused = refusedRuns( report );
+	return refused.length ? `${ said }; ${ refused.length } state run${ 1 === refused.length ? '' : 's' } not measured, left as open rows: ${ refused.join( '; ' ) }`.slice( 0, 600 ) : said;
 }
