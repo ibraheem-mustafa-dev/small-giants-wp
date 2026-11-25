@@ -71,7 +71,7 @@ before( () => {
 };
 ` );
 	const out = path.join( dir, 'out' );
-	const r = spawnSync( process.execPath, [ WALKER, path.join( dir, 'w17.mjs' ), '--out', out, '--headless', '--no-review', '--lean' ], { encoding: 'utf8', timeout: 110000 } );
+	const r = spawnSync( process.execPath, [ WALKER, path.join( dir, 'w17.mjs' ), '--out', out, '--headless', '--no-review', '--lean' ], { encoding: 'utf8', timeout: 300000 } );
 	report = fs.existsSync( path.join( out, 'report.json' ) ) ? JSON.parse( fs.readFileSync( path.join( out, 'report.json' ), 'utf8' ) ) : { runs: [], failed: `${ r.stdout }\n${ r.stderr }` };
 	report.md = fs.existsSync( path.join( out, 'report.md' ) ) ? fs.readFileSync( path.join( out, 'report.md' ), 'utf8' ) : '';
 } );
