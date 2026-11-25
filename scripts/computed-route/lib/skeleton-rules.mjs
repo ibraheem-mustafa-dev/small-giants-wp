@@ -986,7 +986,10 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			return null;
 		}
 		const counted = chips.some( ( c ) => m.blockKids( c ).some( ( k ) => /^\d+$/.test( norm( m.words( k ) ) ) ) );
-		return { name: group.name, attributes: { taxonomy: group.attributes.taxonomy, displayStyle: style, showCounts: counted }, innerBlocks: [ { name: style, attributes: {}, innerBlocks: [] } ], reason: C.reason };
+		// The taxonomy filter sits inside WooCommerce's product-filters wrapper (overlayMode off: the chips are never an overlay), as the
+		// hand-built shop template holds it; the wrapper draws nothing of its own, the taxonomy block takes the chip row's paint.
+		const taxonomy = { name: group.name, attributes: { taxonomy: group.attributes.taxonomy, displayStyle: style, showCounts: counted }, innerBlocks: [ { name: style, attributes: {}, innerBlocks: [] } ] };
+		return { name: C.wrapper.name, attributes: { ...( C.wrapper.attributes || {} ) }, innerBlocks: [ taxonomy ], reason: C.reason };
 	};
 
 	// The blocks already proposed for the element's ancestors, nearest first (an unwrapped ancestor has none).
