@@ -79,3 +79,32 @@ test( 'negative control: a picture with both sides declared, or a block with no 
 	run( noCeiling, { ...CAL(), settings: {} } );
 	assert.equal( noCeiling.flat[ 0 ].attributes.maxHeight, undefined, 'an inner image with no calibrated max-height holds no ceiling' );
 } );
+
+// The site look keeps the cascade's own values for the logo's inner image: height `auto` under `max-height: none`, no length. The
+// block bounds the picture nowhere, so a declared 60px is smaller than what it paints and the ceiling is written (Mama's header
+// logo lost its maxHeight when the site look replaced calibration's measured 704px box, 2026-11-23).
+const UNBOUNDED = ( { height = 'auto', maxHeight = 'none' } = {} ) => ( {
+	settings: { maxHeight: { slot: IMG, slots: [ IMG ], property: 'max-height' } },
+	elements: {
+		'': Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, { _tag: 'div' } ] ) ),
+		[ IMG ]: Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, { _tag: 'img', height, 'max-height': maxHeight } ] ) ),
+	},
+} );
+const SIXTY = { 375: '48px', 768: '56px', 1440: '60px' };
+
+test( 'MUST FAIL: an inner image the site look leaves unbounded (height auto, max-height none) takes the declared height as its ceiling', () => {
+	calls.length = 0;
+	const w = world( { tag: 'img', declared: ( x ) => ( { height: SIXTY[ x ] } ) } );
+	const list = [ { node: 'n0', block: 'sgs/responsive-logo', slot: '', property: 'height', value: '60px', reason: 'no-setting: sgs/responsive-logo has no setting for height' } ];
+	const r = run( w, UNBOUNDED(), list );
+	assert.deepEqual( w.flat[ 0 ].attributes.maxHeight, { desktop: '60px', tablet: '56px', mobile: '48px' } );
+	assert.deepEqual( r.unmapped, [] );
+	assert.match( r.notes[ 0 ], /the block paints it with no limit/ );
+} );
+
+test( 'negative control: an inner image the block itself caps (max-height 40px) is not given a second ceiling by this rule', () => {
+	const w = world( { tag: 'img', declared: ( x ) => ( { height: SIXTY[ x ] } ) } );
+	const list = [ { node: 'n0', block: 'sgs/responsive-logo', slot: '', property: 'height', value: '60px', reason: 'no-setting: sgs/responsive-logo has no setting for height' } ];
+	run( w, UNBOUNDED( { maxHeight: '40px' } ), list );
+	assert.equal( w.flat[ 0 ].attributes.maxHeight, undefined );
+} );

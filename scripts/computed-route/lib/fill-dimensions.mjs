@@ -21,7 +21,7 @@
 //   2b. A declared height or width on a replaced image (img, picture, video, canvas) whose other dimension is not declared as a
 //      length, so it keeps its proportions, goes to the block's ceiling in that dimension (max-height, max-width) when a setting
 //      of that ceiling is calibrated on the element read and the block paints the element larger than the declared size at
-//      every width: the ceiling clamps the image to the declared size and the other dimension follows. A block that paints it
+//      every width (an image the block leaves unbounded, an `auto` size under a `none` ceiling as the site look keeps it, is larger than any declared size): the ceiling clamps the image to the declared size and the other dimension follows. A block that paints it
 //      smaller, or an element with both dimensions declared, is left to rule 2. A picture a custom element draws (a logo
 //      element inlining its SVG) read at the block's root counts as the image, and the ceiling goes to the block's one
 //      calibrated inner image when the root has none. A fluid declared size (clamp(), min(), calc()) is the image's rendered
@@ -82,6 +82,18 @@ function stylesheetPaint( block, prop ) {
 	const m = cssFloors.get( block ).match( new RegExp( `(?:^|;|\\s)${ prop }\\s*:\\s*([^;]+)` ) );
 	const px = m ? [ ...m[ 1 ].matchAll( /(-?\d+(?:\.\d+)?)px/g ) ].at( -1 )?.[ 1 ] : null;
 	return null === px || undefined === px ? {} : Object.fromEntries( WIDTHS.map( ( w ) => [ w, parseFloat( px ) ] ) );
+}
+
+// The size the block paints for a replaced image at each width, in px, for the ceiling rule (2b). Where the element paints no
+// length of its own, an `auto` size under a `none` ceiling (what the site look keeps from the cascade: nothing bounds the
+// picture), it is as large as the picture is, so it is larger than any size the draft declares: Infinity.
+function pictureRoom( { block, slot, prop, cal } ) {
+	const paint = blockPaint( { block, slot, prop, cal } );
+	const same = ( a, b ) => LOOSE( a ) === LOOSE( b );
+	const size = defaultPaint( cal, slot, prop, same );
+	const ceiling = defaultPaint( cal, slot, `max-${ prop }`, same );
+	const unbounded = ( w ) => 'auto' === String( size[ w ] ?? '' ).trim() && 'none' === String( ceiling[ w ] ?? '' ).trim();
+	return Object.fromEntries( WIDTHS.map( ( w ) => [ w, paint[ w ] ?? ( unbounded( w ) ? Infinity : undefined ) ] ).filter( ( [ , v ] ) => undefined !== v ) );
 }
 
 // A ceiling the block paints as something other than a length or `none` (100%, a calc()): its size is the page's.
@@ -272,9 +284,10 @@ function handle( { row, size, hit, nodes, flat, ctx, out, scope, entries, date, 
 			return pxOf( v ) ?? ( FLUID.test( String( v ?? '' ).trim() ) ? rendered[ w ] : null );
 		};
 		const declared = Object.fromEntries( widths.map( ( w ) => [ w, sizeAt( w ) ] ).filter( ( [ , v ] ) => null !== v && undefined !== v ) );
-		const paint = blockPaint( { block: rec.name, slot: ceilingSlot, prop, cal } );
+		const paint = pictureRoom( { block: rec.name, slot: ceilingSlot, prop, cal } );
+		const shown = ( w ) => ( Number.isFinite( paint[ w ] ) ? `${ Math.round( paint[ w ] * 100 ) / 100 }px` : 'with no limit' );
 		if ( Object.keys( declared ).length === widths.length && widths.every( ( w ) => undefined !== paint[ w ] && paint[ w ] > declared[ w ] + PX_TOL ) ) {
-			return settle( `max-${ prop }`, declared, `the draft declares ${ prop } ${ widths.map( ( w ) => `${ Math.round( declared[ w ] * 100 ) / 100 }px` ).join( ' / ' ) }${ widths.some( ( w ) => null === pxOf( declaredAt( w ) ?? given[ w ] ) ) ? ' (a fluid size as its rendered value)' : '' } on ${ custom ? 'a picture a custom element draws' : 'a replaced image' } that keeps its proportions (${ other } not declared), and the block paints it ${ widths.map( ( w ) => `${ Math.round( paint[ w ] * 100 ) / 100 }px` ).join( ' / ' ) }, so the block's max-${ prop }${ ceilingSlot === slot ? '' : ` on its inner image (${ ceilingSlot })` } clamps it to the declared size`, null, true, ceilingSlot );
+			return settle( `max-${ prop }`, declared, `the draft declares ${ prop } ${ widths.map( ( w ) => `${ Math.round( declared[ w ] * 100 ) / 100 }px` ).join( ' / ' ) }${ widths.some( ( w ) => null === pxOf( declaredAt( w ) ?? given[ w ] ) ) ? ' (a fluid size as its rendered value)' : '' } on ${ custom ? 'a picture a custom element draws' : 'a replaced image' } that keeps its proportions (${ other } not declared), and the block paints it ${ widths.map( shown ).join( ' / ' ) }, so the block's max-${ prop }${ ceilingSlot === slot ? '' : ` on its inner image (${ ceilingSlot })` } clamps it to the declared size`, null, true, ceilingSlot );
 		}
 	}
 	// 2: a declared size in a dimension with no setting of its own.
