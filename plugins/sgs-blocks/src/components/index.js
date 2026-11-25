@@ -108,3 +108,4 @@ export {
 } from './motion/EasingAtom';
 export { isValidCubicBezier } from './motion/field-types';
 export { default as ShadowLiftControls } from './ShadowLiftControls';
+export { default as ElementSwitcher } from './element-switcher/ElementSwitcher';
