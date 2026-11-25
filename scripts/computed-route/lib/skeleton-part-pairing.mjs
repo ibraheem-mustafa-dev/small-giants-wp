@@ -688,11 +688,13 @@ function pairCore( { host, absorbed = [], kids, isNode = () => false, calibratio
 			out.paired.push( { key: e.key, part: g.head, slots: placed } );
 			continue;
 		}
-		// No slot of the part lies at this element's position (the block draws that position as another kind of row), or the
-		// slots at its position went to its neighbours: when an element of its own repetition group, of the same sort and tag, is
-		// read at one of the part's slots, the block draws one look for the group and that read stands for this element.
+		// No slot of the part lies at this element's position (the block draws that position as another kind of row): when an
+		// element of its own repetition group, of the same sort and tag, is read at one of the part's slots, the block draws one
+		// look for the group and that read stands for this element. A slot that does lie at its position and that another finder
+		// holds is no such case: the element stays unpaired, and says so.
 		const group = repGroup( e ).filter( ( x ) => x !== e );
-		const readSlot = [ ...slotLooks.keys() ].sort().find( ( sl ) => ( ( r ) => r && group.includes( r ) && sameSort( r, e ) && r.tag === e.tag )( placedAt.get( sl ) ) );
+		const lands = [ ...slotLooks.keys() ].some( ( sl ) => instanceOf( e, [ ...sl.matchAll( NTH ) ].map( ( x ) => Number( x[ 1 ] ) ), { chain: chain.get( e ), parent, kids, host, repGroup } ) === e );
+		const readSlot = lands ? undefined : [ ...slotLooks.keys() ].sort().find( ( sl ) => ( ( r ) => r && group.includes( r ) && sameSort( r, e ) && r.tag === e.tag )( placedAt.get( sl ) ) );
 		if ( readSlot ) {
 			out.paired.push( { key: e.key, part: g.head, slots: [] } );
 			const named = settings.filter( ( [ , s ] ) => ( ! s.state || 'current' === s.state ) && [ s?.slot, ...( s?.slots || [] ) ].includes( readSlot ) && ( null === looks || looks.includes( lookOfProperty( s.property, model.parts.get( templateOf( readSlot ) )?.tag ?? '' ) ) ) ).map( ( [ name ] ) => name );
