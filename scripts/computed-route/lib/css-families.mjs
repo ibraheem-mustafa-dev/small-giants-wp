@@ -280,6 +280,20 @@ export function initialOf( prop ) {
 	return 'string' === typeof m && ! /^[a-z]+[A-Z]/.test( m ) ? m : null;
 }
 
+// The properties whose mdn-data `appliesto` is one of `categories` (mdn-data's own names for what a property applies to,
+// `gridContainers`, `flexItemsAndInFlowPseudos`), a shorthand when every longhand it sets does. A vendor-prefixed name and a
+// legacy alias (@webref/css `legacyAliasOf`) are left out: the standard property stands for them.
+export function propertiesApplyingTo( categories ) {
+	const wanted = new Set( categories );
+	const direct = Object.keys( MDN ).filter( ( p ) => ! p.startsWith( '-' ) && wanted.has( MDN[ p ].appliesto ) && ! WEBREF.get( p )?.legacyAliasOf );
+	const set = new Set( direct );
+	for ( const p of Object.keys( MDN ) ) {
+		const kids = Array.isArray( MDN[ p ].computed ) ? longhandsOf( p ) : [];
+		! p.startsWith( '-' ) && kids.length > 1 && kids.every( ( k ) => set.has( k ) ) && set.add( p );
+	}
+	return [ ...set ];
+}
+
 // Whether a property is inherited (mdn-data `inherited`).
 export const isInherited = ( prop ) => true === MDN[ canonicalName( prop ) ]?.inherited;
 

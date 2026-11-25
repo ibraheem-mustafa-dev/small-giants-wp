@@ -7,7 +7,7 @@ import { samePaint, exactPaint, paintCanon, PX_TOL } from './css-equivalence/tol
 import { fitFluid, acceptsClamp, applyClamp, LENGTH_PROPS } from './fill-values.mjs';
 import { INHERITED } from './calibrate-props.mjs';
 import { paintedAt, TIER_OF } from './fill-held.mjs';
-import { initialOf, longhandsOf } from './css-families.mjs';
+import { initialOf, longhandsOf, propertiesApplyingTo } from './css-families.mjs';
 import { appliesIn, contextAt as inertContextAt } from './css-equivalence/inert.mjs';
 import { sameCanonical } from './css-equivalence/values.mjs';
 import { modeGroups } from './fill-device-mode.mjs';
@@ -198,13 +198,17 @@ export function notPainted( prop, styles, snap = null, declared = null ) {
 
 // The layout properties whose initial value is what an element computes when nothing declares it (a hero's `grid-template-columns:
 // none`, a mega group's `flex-grow: 0`). Writing that value would replace the block's own layout with a value the draft never
-// stated (Spec 48 R-47-5: a stated value is written, an unstated initial one is not).
-export const INITIAL_UNSTATED = /^(grid-template-(columns|rows|areas)|grid-auto-(columns|rows|flow)|grid-(row|column)(-start|-end)?|flex-(grow|shrink|basis)|order|align-(self|content)|justify-(self|items)|place-(self|items|content))$/;
+// stated (Spec 48 R-47-5: a stated value is written, an unstated initial one is not). They are the properties mdn-data says
+// apply only to a box inside a grid or flex layout the element may not be part of (a grid container, a flex or grid item, a
+// multi-line flex container), by its `appliesto` category; the initial value is mdn-data's (`initialOf`). The flex container's
+// own direction, wrap and justification, and the gaps, apply to every such container and are judged by their own rules.
+const LAYOUT_ROLE = [ 'gridContainers', 'gridItemsAndBoxesWithinGridContainer', 'flexItemsAndInFlowPseudos', 'flexItemsGridItemsAbsolutelyPositionedContainerChildren', 'flexItemsGridItemsAndAbsolutelyPositionedBoxes', 'blockLevelBoxesAndAbsolutelyPositionedBoxesAndGridItems', 'multilineFlexContainers', 'blockContainersMultiColumnContainersFlexContainersGridContainers' ];
+export const INITIAL_UNSTATED = new Set( propertiesApplyingTo( LAYOUT_ROLE ) );
 
 // Whether a read value is the property's initial value with no declaration behind it. declared: the element's declared
 // longhands at the width ({ prop: value }), or null where the declared read failed (then nothing is judged).
 export function undeclaredInitial( prop, value, declared ) {
-	if ( ! declared || ! INITIAL_UNSTATED.test( prop ) || Object.keys( declared ).some( ( k ) => k === prop || longhandsOf( k ).includes( prop ) ) ) {
+	if ( ! declared || ! INITIAL_UNSTATED.has( prop ) || Object.keys( declared ).some( ( k ) => k === prop || longhandsOf( k ).includes( prop ) ) ) {
 		return false;
 	}
 	const initial = initialOf( prop );
