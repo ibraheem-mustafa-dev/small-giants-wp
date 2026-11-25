@@ -56,8 +56,9 @@ test( 'MUST FAIL: the menu is drawn twice: the nav before the split, the far sid
 	const r = run( header() );
 	const [ first, second, ...rest ] = navs( r );
 	assert.equal( rest.length, 0, 'two menu bars, one per half' );
-	assert.deepEqual( [ first.attributes.ref, first.attributes.splitSide, first.attributes.splitAfterItemId ], [ 30, 'before', 'id:12' ] );
-	assert.deepEqual( [ second.attributes.ref, second.attributes.splitSide, second.attributes.splitAfterItemId, second.attributes.showBurger ], [ 30, 'after', 'id:12', false ] );
+	assert.deepEqual( [ first.attributes.ref, first.decided?.splitSide, first.attributes.splitAfterItemId ], [ 30, 'before', 'id:12' ] );
+	assert.equal( first.attributes.splitSide, undefined, 'the side is decided, which Fill never replaces from a paint reading, not an attribute' );
+	assert.deepEqual( [ second.attributes.ref, second.decided?.splitSide, second.attributes.splitAfterItemId, second.attributes.showBurger ], [ 30, 'after', 'id:12', false ] );
 	assert.equal( first.attributes.showBurger, undefined, 'the nav keeps its burger' );
 	assert.deepEqual( second.innerBlocks, [], 'the second half draws its items from the menu: no words inside it' );
 	assert.deepEqual( buttons( r ), [ 'Call', 'Sign in' ], 'About and Help are no buttons; the links that are no split item stay as they are' );
@@ -93,7 +94,7 @@ test( 'MUST FAIL: an identifier menu-map.json lacks is reported on both halves, 
 test( 'negative control: a header menu with no split draws one nav, and the links stay as they were', () => {
 	const r = run( header(), { menuItems: split( null ) } );
 	assert.equal( navs( r ).length, 1 );
-	assert.equal( navs( r )[ 0 ].attributes.splitSide, undefined );
+	assert.equal( navs( r )[ 0 ].decided?.splitSide, undefined );
 	assert.ok( buttons( r ).includes( 'About us' ) );
 	const none = proposeSkeleton( { inventory: inv( header() ), facts: facts(), surface: 'header', surfaceKind: 'header', surfaceName: 'Header', db, carried } );
 	assert.equal( navs( none ).length, 1, 'no draft menus at all changes nothing' );
@@ -101,7 +102,7 @@ test( 'negative control: a header menu with no split draws one nav, and the link
 
 test( 'negative control: a drawer is never split', () => {
 	const r = run( header(), { kind: 'drawer' } );
-	assert.equal( flat( r.skeleton ).filter( ( n ) => 'splitMenu' === n.rule || undefined !== n.attributes?.splitSide ).length, 0 );
+	assert.equal( flat( r.skeleton ).filter( ( n ) => 'splitMenu' === n.rule || undefined !== n.decided?.splitSide ).length, 0 );
 } );
 
 test( 'MUST FAIL: splitMenuOf reads the main header menu\'s split; a nav after the far side\'s links takes the second half', () => {

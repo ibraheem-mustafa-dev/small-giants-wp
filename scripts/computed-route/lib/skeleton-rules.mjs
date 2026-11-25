@@ -855,7 +855,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			if ( link.first !== link.key ) {
 				return v( 'splitMenu', { action: 'absorbed', into: link.first } );
 			}
-			return v( 'splitMenu', { block: R.splitMenu.block, absorb: true, menu: surface.splitMenu.menu, split: { after: surface.splitMenu.after, readAt: link.group }, attributes: { ...R.splitMenu.attributes, splitSide: sidesOf( surface.splitMenu ).links } } );
+			return v( 'splitMenu', { block: R.splitMenu.block, absorb: true, menu: surface.splitMenu.menu, split: { after: surface.splitMenu.after, readAt: link.group }, attributes: { ...R.splitMenu.attributes }, decided: { splitSide: sidesOf( surface.splitMenu ).links } } );
 		},
 		( { e } ) => {
 			const menu = R.megaOpenerMenu ? menuOfOpener( { e, byKey: m.byKey, openers: surface.megaOpeners, surfaceKind: surface.kind } ) : null;
@@ -867,7 +867,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 				return null;
 			}
 			const split = R.splitMenu && 'header' === surface.kind ? surface.splitMenu : null;
-			return v( 'navigation', { block: R.navigation.bySurface[ surface.kind ], absorb: true, ...( split ? { split: { after: split.after, readAt: e.key }, attributes: { splitSide: sidesOf( split ).nav } } : {} ) } );
+			return v( 'navigation', { block: R.navigation.bySurface[ surface.kind ], absorb: true, ...( split ? { split: { after: split.after, readAt: e.key }, decided: { splitSide: sidesOf( split ).nav } } : {} ) } );
 		},
 		( { e, st } ) => {
 			if ( m.isIconLink( e ) ) {
