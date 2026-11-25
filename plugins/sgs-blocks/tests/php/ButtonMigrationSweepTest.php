@@ -180,6 +180,62 @@ final class ButtonMigrationSweepTest extends TestCase {
 		$this->assertSame( $swept, self::attrs( 'sgs/choice-flow', $swept ), 'a second pass changes nothing' );
 	}
 
+	/** @return array<string, array<int, array<string, mixed>>> The account empty button merge map's rows by block. */
+	private static function account_merge_map(): array {
+		$data = json_decode( (string) file_get_contents( dirname( __DIR__, 2 ) . '/scripts/data/account-empty-button-renames.json' ), true, 512, JSON_THROW_ON_ERROR );
+		$by   = array();
+		foreach ( $data['renames'] as $row ) {
+			$by[ $row['block'] ][] = $row;
+		}
+		return $by;
+	}
+
+	/** @return array<string, mixed> The sweep of one block's attributes through the account empty button merge map. */
+	private static function merged( array $attrs ): array {
+		return self::run_cases( array( 'c' => array( 'fn' => 'attrs', 'block' => 'sgs/account', 'attrs' => $attrs, 'map' => self::account_merge_map() ) ) )['c'];
+	}
+
+	public function test_the_empty_orders_button_settings_fold_into_the_kits_and_the_old_keys_go(): void {
+		$old = array(
+			'ordersEmptyButtonPadding'   => array( 'desktop' => array( 'left' => '26px', 'right' => '26px' ) ),
+			'ordersEmptyButtonMinHeight' => array( 'desktop' => '52px', 'mobile' => '44px' ),
+			'ordersEmptyButtonLabel'     => 'Shop',
+		);
+		$expect = array(
+			'emptyStatePadding'      => array( 'desktop' => array( 'left' => '26px', 'right' => '26px' ) ),
+			'emptyStateMinHeight'    => array( 'desktop' => '52px', 'mobile' => '44px' ),
+			'ordersEmptyButtonLabel' => 'Shop',
+		);
+		$got    = self::merged( $old );
+		ksort( $expect );
+		ksort( $got );
+		$this->assertSame( $expect, $got, 'the values move to the kit names, the label (a different setting) stays where it was' );
+	}
+
+	public function test_a_device_or_side_the_kit_setting_holds_keeps_its_value_and_the_old_one_fills_the_rest(): void {
+		$both = self::merged(
+			array(
+				'ordersEmptyButtonPadding'   => array( 'desktop' => array( 'top' => '4px', 'left' => '26px' ), 'tablet' => array( 'left' => '10px' ) ),
+				'emptyStatePadding'          => array( 'desktop' => array( 'top' => '9px' ) ),
+				'ordersEmptyButtonMinHeight' => array( 'desktop' => '52px', 'tablet' => '48px' ),
+				'emptyStateMinHeight'        => array( 'desktop' => '60px' ),
+			)
+		);
+		$this->assertSame( array( 'desktop' => array( 'top' => '9px', 'left' => '26px' ), 'tablet' => array( 'left' => '10px' ) ), $both['emptyStatePadding'], 'the kit wins side by side (its rule weighs more); the old setting paints the sides the kit leaves' );
+		$this->assertSame( array( 'desktop' => '60px', 'tablet' => '48px' ), $both['emptyStateMinHeight'] );
+		$this->assertArrayNotHasKey( 'ordersEmptyButtonPadding', $both );
+		$this->assertArrayNotHasKey( 'ordersEmptyButtonMinHeight', $both );
+		$this->assertSame( $both, self::merged( $both ), 'a second pass changes nothing' );
+	}
+
+	public function test_the_merge_map_names_the_kit_settings_and_the_block_declares_only_those(): void {
+		$json = json_decode( (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/account/block.json' ), true, 512, JSON_THROW_ON_ERROR );
+		foreach ( self::account_merge_map()['sgs/account'] as $row ) {
+			$this->assertArrayHasKey( $row['new'], $json['attributes'], 'sgs/account declares ' . $row['new'] );
+			$this->assertArrayNotHasKey( $row['old'], $json['attributes'], 'sgs/account no longer declares ' . $row['old'] );
+		}
+	}
+
 	public function test_with_no_map_rows_nothing_changes(): void {
 		$content = '<!-- wp:sgs/buybox {"addToCartBackgroundColour":"x"} /-->';
 		$out     = self::run_cases( array( 'c' => array( 'fn' => 'content', 'blocks' => array( 'sgs/buybox' ), 'content' => $content, 'map' => array( 'sgs/other' => array() ) ) ) )['c'];

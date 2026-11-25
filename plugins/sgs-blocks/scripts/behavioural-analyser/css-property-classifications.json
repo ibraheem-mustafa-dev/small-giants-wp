@@ -41700,22 +41700,6 @@
     },
     {
       "slug": "sgs/account",
-      "attr": "ordersEmptyButtonMinHeight",
-      "fields": {
-        "css_property": "min-height",
-        "css_element": "ordersEmptyButton"
-      }
-    },
-    {
-      "slug": "sgs/account",
-      "attr": "ordersEmptyButtonPadding",
-      "fields": {
-        "css_property": "padding",
-        "css_element": "ordersEmptyButton"
-      }
-    },
-    {
-      "slug": "sgs/account",
       "attr": "ordersEmptyState",
       "fields": {
         "css_element": "ordersEmpty"

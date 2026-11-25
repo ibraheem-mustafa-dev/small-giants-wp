@@ -1311,18 +1311,6 @@
 						},
 						"_note": "The line holding the back link above the title."
 					},
-					"ordersEmptyButton": {
-						"selector": ".sgs-account__orders-empty-actions .sgs-button",
-						"motion": false,
-						"label": "Empty orders button",
-						"order": 119,
-						"clusters": [ "layout" ],
-						"attrMap": {
-							"css:min-height": "ordersEmptyButtonMinHeight",
-							"css:padding": "ordersEmptyButtonPadding"
-						},
-						"_note": "The button in the empty orders card."
-					},
 					"addressTitleRow": {
 						"selector": ".woocommerce-Address-title",
 						"motion": false,
@@ -3780,14 +3768,6 @@
 					"underline"
 				],
 				"description": "Order row underline. Unset keeps the stylesheet."
-			},
-			"ordersEmptyButtonMinHeight": {
-				"type": "object",
-				"description": "Empty orders button minimum height per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
-			},
-			"ordersEmptyButtonPadding": {
-				"type": "object",
-				"description": "Empty orders button padding per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
 			},
 			"tabHeadingMarginBottom": {
 				"type": "object",
