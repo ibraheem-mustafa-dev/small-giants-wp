@@ -269,6 +269,29 @@ def test_conditional_parts_are_in_the_look_of_a_block_with_marker_pages(tmp_path
     assert {'tag', 'classes', 'parent', 'siblings', 'firstJob', 'setting'} <= set(one)
 
 
+def test_a_part_the_record_places_that_no_render_draws_must_be_listed():
+    """MUST FAIL before the check existed: a placed part drawn by no render (nav-drawer-menu's trailing icon, while the fixture
+    variants that draw it rendered nothing) was silent, so the look lacked it and pairing had nothing to pair with."""
+    record = {'entries': [{'setting': 'a', 'part': 'sgs-m__link'}, {'setting': 'b', 'part': 'sgs-m__trailing svg'}, {'setting': 'c', 'part': 'sgs-m__trailing'},
+                          {'setting': 'd', 'part': 'sgs-m__badge::after'}, {'setting': 'e', 'part': 'sgs-bg-media'}, {'setting': 'f', 'part': 'ROOT'}]}
+    classes = {'': ['sgs-m'], '.sgs-m__link': ['sgs-m__link']}
+    # the trailing icon and the badge are drawn by no render; the shared class and the root are not the block's own parts
+    got = SL.undrawn_parts(record, 'm', classes, {})
+    assert got == {'sgs-m__badge': ['d'], 'sgs-m__trailing': ['b', 'c']}
+    # a page that sets a setting draws the badge: it is drawn somewhere
+    cond = {'.sgs-m__link > .sgs-m__badge': {'tag': 'span', 'classes': ['sgs-m__badge']}}
+    assert SL.undrawn_parts(record, 'm', classes, cond) == {'sgs-m__trailing': ['b', 'c']}
+    faults = SL.completeness({'undrawnParts': got}, 'm', {'sgs-m__badge': 'view.js draws it after load'})
+    assert len(faults) == 1
+    assert 'sgs-m__trailing' in faults[0]
+    assert 'does not list it' in faults[0]
+    # listed and now drawn: stale entry
+    stale = SL.completeness({}, 'm', {'sgs-m__badge': 'old reason'})
+    assert len(stale) == 1
+    assert 'remove it from the list' in stale[0]
+    assert SL.completeness({'undrawnParts': got}, 'm', {'sgs-m__badge': 'x', 'sgs-m__trailing': 'y'}) == []
+
+
 def test_tested_attrs_reads_attribute_selectors():
     names = SL.tested_attrs(['.a[open] > b, .c[aria-current="page"], :not([hidden]) .x[class*=y] {color:red}',
                              '@media (min-width:1px){.d{grid-template-columns:[full-start] 1fr [full-end]}} .e[data-x]{content:"[nope]"}'])

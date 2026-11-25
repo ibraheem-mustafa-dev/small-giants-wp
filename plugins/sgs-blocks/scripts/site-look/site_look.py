@@ -27,7 +27,11 @@ code, so a file added there would mark every record stale.
 
 Usage:
   python site_look.py --snapshot sites/<client>/theme-snapshot.json --site <site> --out DIR [--blocks sgs/a,sgs/b | --all]
-                      [--woocommerce] [--jobs N]
+                      [--woocommerce] [--jobs N] [--check-parts]
+--check-parts is the completeness check: every part of the block's own the setting record places (`sgs-<block>__<part>`) is drawn
+by at least one render the look read (the default renders and the pages that set a setting: `undrawnParts` names the rest), or
+is listed in unreachable-parts.json with the reason no offline render draws it (`conditionalParts` holds the parts only those
+pages draw).
 """
 from __future__ import annotations
 
@@ -526,9 +530,10 @@ def build_block(short: str, snapshot_file: Path, woocommerce: bool) -> dict:
     facts = setting_facts(bridge, reader)
     record = record_facts(short, bridge, reader, elements, classes)
     conditional = {} if 'conditional-parts' in MUTATE else conditional_parts(reader.seen, elements, marker_settings(bridge))
+    undrawn = undrawn_parts(record_of(short), short, classes, conditional)
     return {'block': f'sgs/{short}', 'format': FORMAT, 'codeHash': rn.hash, 'elements': resting(elements, props),
             'pathClasses': classes, 'pathAttrs': {k: v for k, v in attrs.items() if v}, **({'settingFacts': record} if record else {}),
-            **({'paintStates': paint_states} if paint_states else {}), **({'conditionalParts': conditional} if conditional else {}), **facts,
+            **({'paintStates': paint_states} if paint_states else {}), **({'conditionalParts': conditional} if conditional else {}), **({'undrawnParts': undrawn} if undrawn else {}), **facts,
             **({'renderErrors': errors} if errors else {}), 'themeLoaded': pages.theme}
 
 
@@ -819,6 +824,33 @@ def part_paths(part: str, elements: dict, classes: dict) -> list:
     return sorted(set(out), key=lambda p: (_depth(p), p))
 
 
+UNREACHABLE = HERE / 'unreachable-parts.json'
+
+
+def undrawn_parts(record, short: str, classes: dict, conditional: dict) -> dict:
+    """{part class: [settings]} for each of the block's own parts (`sgs-<block>__<part>`) the setting record places that no page
+    the look read draws: its class is on no element of the default look and none of the conditional parts. Shared extension
+    classes (`sgs-bg-media`, `sgs-info-toggle`) and the root are not the block's own parts."""
+    prefix = f'sgs-{short}__'
+    drawn = {c for cl in [*classes.values(), *((v or {}).get('classes') or [] for v in conditional.values())] for c in cl}
+    placed = {}
+    for e in (record or {}).get('entries', []):
+        head = (e.get('part') or '').partition('::')[0].strip().split(' ')[0]
+        if head.startswith(prefix):
+            placed.setdefault(head, set()).add(e['setting'])
+    return {h: sorted(ss) for h, ss in sorted(placed.items()) if h not in drawn}
+
+
+def completeness(look: dict, short: str, listed: dict) -> list:
+    """The faults of one look's part completeness: a part the record places that no render draws and `unreachable-parts.json`
+    does not list (with the reason it cannot be drawn offline), and a part listed there that a render now draws."""
+    undrawn = look.get('undrawnParts') or {}
+    out = [f'{short}: the record places {part} ({", ".join(ss[:4])}{" ..." if len(ss) > 4 else ""}) but no render draws it, and '
+           f'{UNREACHABLE.name} does not list it: give the fixture a variant that draws it, or list it with the reason' for part, ss in undrawn.items() if part not in listed]
+    out += [f'{short}: {part} is listed in {UNREACHABLE.name} but a render draws it now: remove it from the list' for part in listed if part not in undrawn]
+    return out
+
+
 def track_count(value):
     """lib/calibrate.mjs::trackCount, reading a declared template too (the offline reader keeps `repeat(3, 1fr)` where a
     browser reports three px tracks)."""
@@ -1028,6 +1060,7 @@ def main(argv=None) -> int:
     ap.add_argument('--all', action='store_true')
     ap.add_argument('--woocommerce', action='store_true')
     ap.add_argument('--jobs', type=int, default=4)
+    ap.add_argument('--check-parts', action='store_true', help='fail when a part the record places is drawn by no render and not listed in unreachable-parts.json')
     a = ap.parse_args(argv)
     blocks = all_blocks() if a.all else [b.split('/', 1)[-1] for b in (a.blocks or '').split(',') if b]
     if not blocks:
@@ -1054,6 +1087,14 @@ def main(argv=None) -> int:
             except Exception as exc:  # noqa: BLE001 - one block's failure is reported, the rest still build
                 failed += 1
                 print(f'{j[0]}: FAILED {type(exc).__name__}: {exc}', flush=True)
+    if a.check_parts:
+        listed_all = json.loads(UNREACHABLE.read_text(encoding='utf-8')) if UNREACHABLE.is_file() else {}
+        for b in blocks:
+            f = a.out / a.site / f'{b}.json'
+            if f.is_file():
+                for line in completeness(json.loads(f.read_text(encoding='utf-8')), b, listed_all.get(f'sgs/{b}') or {}):
+                    failed += 1
+                    print(line)
     return 1 if failed else 0
 
 
