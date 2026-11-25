@@ -100,9 +100,21 @@ export function orderRows( rows ) {
 	return out;
 }
 
-// The page-map menu a layout surface binds: its own, except a drawer with no drawer menu, which binds the header menu
-// (the bar and the drawer then share one menu and its mega panels, Spec 36 FR-36-6).
-export const boundMenu = ( kind, menuNames ) => ( 'drawer' === kind && ! menuNames.includes( 'drawer' ) ? 'header' : kind );
+// The page-map menus a drawer owns, in order: `drawer` first, then `drawer-<n>` in numeric order (the page map names a
+// drawer's navigation groups `drawer-1`, `drawer-2`, lib/intake-pagemap-surfaces.mjs).
+export const drawerMenuNames = ( menuNames ) => menuNames.filter( ( n ) => 'drawer' === n || n.startsWith( 'drawer-' ) )
+	.sort( ( a, b ) => ( 'drawer' === a ? -1 : 'drawer' === b ? 1 : a.localeCompare( b, 'en', { numeric: true } ) ) );
+
+// The page-map menu a layout surface binds: its own. A drawer binds the menu the page map made for its `index`-th
+// navigation group (null when it has fewer menus than groups), except a drawer with no menu of its own, which binds the header
+// menu (the bar and the drawer then share one menu and its mega panels, Spec 36 FR-36-6).
+export function boundMenu( kind, menuNames, index = 0 ) {
+	if ( 'drawer' !== kind ) {
+		return kind;
+	}
+	const own = drawerMenuNames( menuNames );
+	return own.length ? own[ index ] ?? null : 'header';
+}
 
 // The layout surface kind a page-map menu feeds: the menu named like a kind, else the build manifest's surface of that
 // name (its tree folder `sgs_<kind>`), else the kind its name starts with (`footer-shop`, `drawer-menu-links`); null when
@@ -120,7 +132,7 @@ export function menuSurfaceKind( name, surfaces = {} ) {
 }
 
 // The one-block placeholder tree a row gets until it has a stage 3 tree. A header binds its menu in a bar (whose
-// burger opens the active drawer), a drawer binds its menu (boundMenu) inside the drawer dialog; every other row is
+// burger opens the active drawer), a drawer holds one menu block per menu it owns (drawerMenuNames) inside the drawer dialog; every other row is
 // its title. `menuIds` holds an entry (0 until made) for every menu the page map names.
 // A header or footer post's template locks one slotted root (`sgs/site-header`, `sgs/site-footer`) holding its rows
 // (scripts/lib/surface-tree-shape.js, read from each container's edit.js TEMPLATE), so its placeholder is that root with
@@ -137,7 +149,8 @@ export function placeholderTree( row, menuIds = {} ) {
 		return [ { name: 'sgs/nav-bar-menu', attributes: { ref: menuIds.header || 0 } } ];
 	}
 	if ( 'drawer' === kind ) {
-		return [ { name: 'sgs/nav-drawer', innerBlocks: [ { name: 'sgs/nav-drawer-menu', attributes: { ref: menuIds[ boundMenu( kind, Object.keys( menuIds ) ) ] || 0 } } ] } ];
+		const own = drawerMenuNames( Object.keys( menuIds ) );
+		return [ { name: 'sgs/nav-drawer', innerBlocks: ( own.length ? own : [ 'header' ] ).map( ( name ) => ( { name: 'sgs/nav-drawer-menu', attributes: { ref: menuIds[ name ] || 0 } } ) ) } ];
 	}
 	// The account page always holds WooCommerce's working account piece, so it is never a placeholder heading.
 	if ( isAccountRow( row ) ) {

@@ -103,8 +103,8 @@ export function carriedIds( { repo, client, site, rootComponent = null } ) {
 			const file = logoFile( { e, maps, view, rootComponent } );
 			return file ? mediaEntry( { map, site, repo, folder, file } ) : null;
 		},
-		menu: ( kind ) => {
-			const id = menus[ boundMenu( kind, Object.keys( menus ) ) ];
+		menu: ( kind, index = 0 ) => {
+			const id = menus[ boundMenu( kind, Object.keys( menus ), index ) ];
 			return Number.isInteger( id ) && id > 0 ? id : null;
 		},
 		// The identifier the menu blocks read for each top-level item of the menu a surface of `kind` binds, by the label it
