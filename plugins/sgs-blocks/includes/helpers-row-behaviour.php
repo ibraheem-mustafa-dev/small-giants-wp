@@ -228,11 +228,6 @@ if ( ! function_exists( 'sgs_row_shrink_settings_css' ) ) {
 			$css .= implode( ',', $off ) . '{transition:none;}';
 			return $css;
 		}
-		if ( $shrinks && $duration <= 0 && '' === $easing ) {
-			// No timing set: the shrunk padding still eases over the default 200ms, so the row shrinks smoothly instead of jumping.
-			$css .= $root_sel . '.is-row-shrink-active>.sgs-container__inner{transition:padding-top 200ms ease,padding-bottom 200ms ease,padding-left 200ms ease,padding-right 200ms ease;}';
-			$css .= '@media (prefers-reduced-motion: reduce){' . $root_sel . '.is-row-shrink-active>.sgs-container__inner{transition:none;}}';
-		}
 		if ( $duration > 0 || '' !== $easing ) {
 			$ms    = $duration > 0 ? min( 3000, $duration ) : 200;
 			$ease  = function_exists( 'sgs_motion_easing_css' )

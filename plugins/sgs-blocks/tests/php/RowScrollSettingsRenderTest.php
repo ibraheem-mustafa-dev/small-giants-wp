@@ -122,6 +122,37 @@ final class RowScrollSettingsRenderTest extends TestCase {
 	}
 
 	/**
+	 * A shrinking row prints a padding transition on its inner box only when the author (or the clone, from the draft's own
+	 * timing) sets `rowShrinkDuration` or `rowShrinkEasing`: with neither set, no default easing is added to a row that never had one.
+	 *
+	 * @param string $slug Row block slug.
+	 */
+	#[DataProvider( 'rows' )]
+	public function test_a_shrinking_row_prints_no_padding_transition_unless_its_timing_is_set( string $slug ): void {
+		$none = $this->row_css( $slug, array( 'rowShrink' => array( 'desktop' => 'on' ) ) );
+		$this->assertStringNotContainsString( 'padding-top 200ms', $none, 'no default duration is printed' );
+		$this->assertDoesNotMatchRegularExpression( '/transition:[^}]*padding-(top|bottom|left|right)/', $none, 'no padding transition without a duration or easing' );
+
+		$timed = $this->row_css(
+			$slug,
+			array(
+				'rowShrink'         => array( 'desktop' => 'on' ),
+				'rowShrinkDuration' => 400,
+			)
+		);
+		$this->assertMatchesRegularExpression( '/\.is-row-shrink-active>\.sgs-container__inner\{transition:padding-top 400ms ease,/', $timed, 'a set duration times the padding' );
+
+		$curved = $this->row_css(
+			$slug,
+			array(
+				'rowShrink'       => array( 'desktop' => 'on' ),
+				'rowShrinkEasing' => 'linear',
+			)
+		);
+		$this->assertMatchesRegularExpression( '/\.is-row-shrink-active>\.sgs-container__inner\{transition:padding-top 200ms linear,/', $curved, 'a set curve alone prints the padding transition' );
+	}
+
+	/**
 	 * Negative control: a row with neither behaviour prints none of the settings.
 	 *
 	 * @param string $slug Row block slug.
