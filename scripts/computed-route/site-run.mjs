@@ -761,6 +761,8 @@ export async function main( argv ) {
 		}
 		const fb = await run( 'node', [ 'scripts/computed-route/framework-backlog.mjs' ], { logFile: path.join( dir, 'framework-backlog.log' ) } );
 		note( 'run', 'framework-backlog', 0 === fb.code, 0, fb.tail );
+		const cl = await run( 'node', [ 'scripts/computed-route/custom-css-log.mjs', '--client', client, '--check' ], { logFile: path.join( dir, 'custom-css-log.log' ) } );
+		note( 'run', 'custom-css-log', 0 === cl.code, 0, cl.tail );
 	}
 	const failed = Object.entries( status ).filter( ( [ , s ] ) => Object.values( s ).some( ( x ) => ! x.ok ) );
 	const problems = stageProblems( status );
