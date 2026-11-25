@@ -11,12 +11,12 @@ created: 2026-11-25
 **Evidence:** every proposal comes from a read-only investigation dated 2026-11-25 in `E:\sgs-tmp\general-cloning\investigate\` (cited as `iN`), reviewed by three independent reviewers with every finding verified (2026-11-25). Fix groups RF1 to RF10 and the Restore map come from `.claude/plans/2026-11-24-clone-root-fixes.md`; this plan governs where they differ. Worker briefs: `E:\sgs-tmp\general-cloning\tracks\` (`_common.md` plus one per track).
 
 **How it runs:**
-- Up to 9 workers. Launch order, deadline first: A1, A2, A3, A4, B, C, D, F, L. As slots free: G1, then E1, E2, G2 and S when their branches have merged, then the editor lane W1 to W4. Agent-tool subagents (worker API credits are exhausted).
+- Up to 8 workers per session (Claude Code's limit); the editor lane can run in a second session with its own 8 (Bean, 2026-11-25). Launch order, deadline first: A1, A2, A3, A4, B, C, D, F, L. As slots free: G1, then E1, E2, G2 and S when their branches have merged, then the editor lane W1 to W4. Agent-tool subagents (worker API credits are exhausted).
 - Heavy runs (sweeps, browsers, render-check, plugin builds, multi-block record checks) go through `scripts/computed-route/tools/heavy-slot.mjs`: two slots, a third only after a ten-minute wait when CPU, memory and C: have room (Bean, 2026-11-25). The full suite runs only in the main session, alone.
 - Workers commit on `fix/<label>` in `E:\sgs-tmp\wt-<label>`; temp, the record cache and scratch are on E:. The main session reviews each branch (`/code-review`, its tests, `check-mutation-lists.mjs` showing 0 new), then merges. No new pre-commit gate is added (Bean, 2026-11-25); the existing hook (gitleaks, generated-file sync) stays.
 - After each merge group the main session reseeds the shared DB, regenerates the setting records (`check.py --changed --write`), applies the README text workers report, and runs the merged branches' tests.
 - Merge order for the three conflicts: rf9 keeps both sides of `tools/run-tests.mjs`; rf5 before rf6 (`fill-prop.mjs`, `fill-resolve-element.mjs`); rf3 before rf7 (`skeleton-classify.mjs`).
-- Deploys: before the deadline only `sandybrown`, `indus-test`, `eye-care-clone-test` and the new SGS and MIC sites. Mama's live shop and `eye-care-test` wait for a calm deploy after 2026-11-28 (pending Bean).
+- Deploys (Bean, 2026-11-25): Mama's live shop is brought up to date with `main` once now (backup, render-scope from its deployed commit, render-check on the states that lists, basket/checkout/account checks before and after), then paused until this plan is complete. `eye-care-test` is a test site and deploys with the others.
 
 **Out of scope:** the text-only trust bar style (Bean: not restored); the chrome style choices' repair and "More options" (Task 30); stored conditions and "show when" (Task 29).
 
@@ -94,11 +94,11 @@ Depends on: rf7 and rf8 merged. Status: not started.
 ### Task 16: SGS and MIC sites (main session, with Bean)
 Why: no draft, deploy target, route target, secrets file or local mirror exists for SGS or MIC. The LEDGER names their hosting entries (`lightgreen-whale-237337`, `palegreen-goose-450620`); nothing is created on the hosting account until Bean says so.
 
-Changes: on Bean's go and once the drafts are in `sites/<client>/handoff/`, add each site to `deploy_common.py` `TARGETS`, `scripts/computed-route/calibration-targets.json` and `.claude/secrets/`; create its local mirror; run `provision-site-mail.py`.
+Changes: Bean starts the two drafts once the pipeline is ready (Bean, 2026-11-25). Once they are in `sites/<client>/handoff/`, add each site to `deploy_common.py` `TARGETS`, `scripts/computed-route/calibration-targets.json` and `.claude/secrets/`; create its local mirror; run `provision-site-mail.py`.
 
 Done when: `site-run.mjs` can target each site.
 
-Depends on: Bean. Status: waiting on Bean.
+Depends on: the drafts. Status: waiting on the drafts.
 
 ### Task 10: Combined proof, rehearsal, deploys (main session)
 Changes:
@@ -131,9 +131,7 @@ Status: not started.
 - Every block moves onto the shared spacing panel, including the 8 Dimensions blocks (12).
 - Kit colours join the main Colour panel, shown only when the feature is on (13).
 - Label-less `ResponsiveOverride` mounts get their labels.
-- `sgsFocusRests` is retired: keyboard focus always plays the block's hover effects, as a tap does (Bean, 2026-11-25). Remove `extensions/focus-rests.js`, `includes/class-sgs-focus-rests.php` and the clone's writer `lib/fill-state-focus.mjs`, and migrate saved content (FP-14).
-  - The clone wrote it on all three clients: Mama's header, footer, single-product and archive templates; Indus's header and home; Eye Care.
-  - Render-scope lists the pages before each site's next deploy.
+- `sgsFocusRests` and the button's `focusStyle` stay as they are (Bean, 2026-11-25): retiring them would change focus behaviour on all three clients, Mama's live shop included, for more work than it saves.
 
 Status: not started.
 
@@ -150,7 +148,6 @@ Named owners:
 - **Product card:** a Settings "Buttons" panel (None, One or Two); one "Button style" panel with a switcher; Frame card removed; margin into Spacing; one shared shadow.
 - **Nav drawer menu and nav bar menu:** dissolve "List layout"; rename to "Mega menu"; "Accordion open and close" moves to the Settings tab.
 - **Responsive logo:** one "Logo" panel with "Use a different logo on dark backgrounds".
-- **The button's `focusStyle`:** removed (Bean, 2026-11-25). Mama's single-product template uses "signature" on 3 buttons, which the migration clears (pending Bean's confirmation).
 
 Done when (Tasks 11 to 13): the browser panel census (`i8`) shows 0 single-control panels outside the register's kept cases, 0 duplicate titles, 0 order changes after a tab switch, and only first panels open; render-check shows no front-end change except the listed fixes.
 
