@@ -658,6 +658,9 @@ test( 'column title: a caps title over one wrapper holding a run of text links i
 	assert.equal( blockOf( direct, 'Shop by' ), 'sgs/heading', 'direct sibling links: unchanged' );
 	const inWrapper = headedCol( [ N( 'div', {}, [ capsTitle( 'Help' ), linkLoop() ] ) ] );
 	assert.equal( blockOf( inWrapper, 'Help' ), 'sgs/heading', 'the heading and the run together inside one wrapper' );
+	const second = headedCol( [ capsTitle( 'Most asked for' ), N( 'p', { words: 'Twelve frames people ask for most' } ), linkLoop(), capsTitle( 'All brands' ), linkLoop() ] );
+	assert.equal( blockOf( second, 'Most asked for' ), 'sgs/heading', 'the first title with a line of text before its run: the reading of the panel rule' );
+	assert.equal( blockOf( second, 'All brands' ), 'sgs/heading', 'a second title directly above its own run heads that run' );
 } );
 
 test( 'NEGATIVE column title: a caps kicker over text, a title over a picture gallery, a title with its run two wrappers below and a lone link stay labels', () => {

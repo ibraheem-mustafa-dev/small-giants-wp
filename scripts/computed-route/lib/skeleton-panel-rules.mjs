@@ -18,12 +18,12 @@ const grows = ( v ) => /^[\d.]+$/.test( String( v ?? '' ).trim() ) && Number( v 
 // same function, so a title the panel rule takes as the head of a column is also a heading, never a label. Returns
 // ( column ) => boolean; false throughout without a record view or without the rule's entry.
 export function headedRunOf( { m, view, cfg } ) {
-	return ( e ) => {
+	const label = ( k ) => view.has( k ) && 'a' !== k.tag && !! m.words( k ) && ! m.blockKids( k ).length;
+	const textRun = ( k ) => view.has( k ) && ! view.repeated( k ) && ( view.linkRun( k ) || m.blockKids( k ).length >= 2 ) && m.blockKids( k ).every( ( l ) => m.isTextLink( l ) );
+	const headed = ( e ) => {
 		if ( ! cfg || ! view ) {
 			return false;
 		}
-		const label = ( k ) => view.has( k ) && 'a' !== k.tag && !! m.words( k ) && ! m.blockKids( k ).length;
-		const textRun = ( k ) => view.has( k ) && ! view.repeated( k ) && ( view.linkRun( k ) || m.blockKids( k ).length >= 2 ) && m.blockKids( k ).every( ( l ) => m.isTextLink( l ) );
 		const parts = ( x, wrappers ) => {
 			const kids = m.blockKids( x );
 			if ( kids.some( ( k, i ) => textRun( k ) && kids.slice( 0, i ).some( label ) ) ) {
@@ -34,6 +34,17 @@ export function headedRunOf( { m, view, cfg } ) {
 		};
 		return parts( e, 0 );
 	};
+	// Whether a leaf of words sits directly above a run of text links (its next block sibling is the run): the title of that
+	// run, wherever it stands in its column (a second title further down the column heads its own run).
+	headed.titlesRun = ( e ) => {
+		if ( ! cfg || ! view ) {
+			return false;
+		}
+		const sibs = m.blockKids( m.byKey[ e.parentKey ] || { key: null } );
+		const next = sibs[ sibs.indexOf( e ) + 1 ];
+		return label( e ) && !! next && textRun( next );
+	};
+	return headed;
 }
 
 // o: { m (lib/skeleton-model.mjs), view (lib/skeleton-record.mjs::recordView), scope (surfaceContext, or null), R (the

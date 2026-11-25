@@ -112,12 +112,13 @@ export function makeClassifier( { m, facts, overrides, surface = {}, blockOfKey 
 	const briefOnly = ( e ) => ( decisions.briefOnlyLines || [] ).find( ( d ) => specHit( d, m.words( e ) ) ) || null;
 	// A column title: the first leaf of words in a column, followed by a run of text links, either its own direct siblings or
 	// one wrapper's children (the same reading as the panel rule's headedRun, lib/skeleton-panel-rules.mjs, so a title the
-	// panel rule takes as a column's head is a heading and never a label).
+	// panel rule takes as a column's head is a heading and never a label); also a leaf of words directly above a run of text
+	// links further down the column (the second title of a column of two runs).
 	const headedRun = headedRunOf( { m, view, cfg: facts.decisions.rules?.megaGroup?.headedRun } );
 	const isColumnLabel = ( e ) => {
 		const parent = m.byKey[ e.parentKey ] || { key: null };
 		const sibs = m.blockKids( parent );
-		return !! m.words( e ) && 'a' !== e.tag && ! m.blockKids( e ).length && sibs[ 0 ] === e && ( sibs.slice( 1 ).filter( m.isTextLink ).length >= minLinks || ( !! parent.key && headedRun( parent ) ) );
+		return !! m.words( e ) && 'a' !== e.tag && ! m.blockKids( e ).length && ( sibs[ 0 ] === e && ( sibs.slice( 1 ).filter( m.isTextLink ).length >= minLinks || ( !! parent.key && headedRun( parent ) ) ) || headedRun.titlesRun( e ) );
 	};
 
 	const rules = makeRules( { m, facts, surface, motion, view, scope, hooks: { siteInfoKinds, isColumnLabel, blockOfKey, formLinkOf, siteLink, unwrapReads, absorbInto, overlayInto, topBlock: ( k ) => classify( k, null ).candidates[ 0 ]?.block, brandOf: ( k ) => brandFor( k )[ 0 ]?.brand?.slug ?? null } } );
