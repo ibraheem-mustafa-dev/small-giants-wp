@@ -18,6 +18,7 @@
 	"supports": {
 		"sgs": {
 			"enabledExtensions": [ "childSizing" ],
+			"builtinButtons": [ { "prefix": "arrow", "part": "arrow", "label": "Slider arrows and pause button", "groups": [ "colour", "gradient", "border", "size" ], "elements": [ "pause" ] } ],
 			"motion": true,
 			"collection": true,
 			"arrayContentLift": true,

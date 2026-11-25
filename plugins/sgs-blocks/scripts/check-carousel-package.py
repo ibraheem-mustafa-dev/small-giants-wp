@@ -38,13 +38,17 @@ from pathlib import Path
 sys.stdout.reconfigure(encoding="utf-8")
 BLOCKS = Path(__file__).resolve().parent.parent / "src" / "blocks"
 
-# block slug -> reason it keeps its own carousel code for now. The three blocks below carry their own view scripts and look
-# controls from before the package; moving them is a separate track (the track that built the package moved google-reviews,
-# trustpilot-reviews and post-grid only).
+# block slug -> { rule -> reason }: the rules a block is let off, each with why. "*" names every rule. The first three blocks keep
+# their own carousel code (not part of the W3 move). google-reviews moved its view and its arrows; its dots wait for the dots kit to
+# paint a gradient and a resting colour on the current dot too (see the reason).
 EXCLUDED = {
-    "gallery": "own 467-line view script and its own carousel modes (swipe row, masonry); not part of the W3 move",
-    "testimonial-slider": "own 631-line view script (slide stage, peek, bleed); not part of the W3 move",
-    "container": "scroll-row arrows and dots are `shared/scroll-row-controls` and `class-sgs-container-wrapper.php`; not part of the W3 move",
+    "gallery": {"*": "own 467-line view script and its own carousel modes (swipe row, masonry); not part of the W3 move"},
+    "testimonial-slider": {"*": "own 631-line view script (slide stage, peek, bleed); not part of the W3 move"},
+    "container": {"*": "scroll-row arrows and dots are `shared/scroll-row-controls` and `class-sgs-container-wrapper.php`; not part of the W3 move"},
+    "google-reviews": {
+        "KITS": "the dots keep their own colour panel and CSS: dotColour and dotColourHover take a gradient and also paint the current dot, which the dots kit does not do yet",
+        "ATTRS": "dotColour, dotColourGradient, dotColourHover, dotColourHoverGradient: same reason as KITS",
+    },
 }
 
 MARKUP_RE = re.compile(r"__arrow\b|__dots?\b|carousel-prev|carousel-next|carousel-dots")
@@ -120,10 +124,14 @@ def inspect(blocks_dir: Path) -> list[dict]:
         status = "OK"
         reason = ""
         if findings:
-            if slug in EXCLUDED:
-                status, reason = "EXCLUDED", EXCLUDED[slug]
-            else:
+            let_off = EXCLUDED.get(slug, {})
+            open_findings = [f for f in findings if f.split(":", 1)[0] not in let_off and "*" not in let_off]
+            if open_findings:
                 status = "FINDING"
+                findings = open_findings
+            else:
+                status = "EXCLUDED"
+                reason = "; ".join(sorted(set(let_off.values())))
         rows.append({"block": slug, "status": status, "reason": reason, "findings": findings,
                      "arrow_kit": has_arrow_kit, "dots_kit": has_dots_kit})
     return rows
