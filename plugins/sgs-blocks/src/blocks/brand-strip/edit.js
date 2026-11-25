@@ -639,6 +639,18 @@ export default function Edit( { attributes, setAttributes } ) {
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							/>
+							<ToggleControl
+								label={ __( 'Even visual size', 'sgs-blocks' ) }
+								help={ __(
+									'Sizes every logo by the same picture area instead of the same height, so a long thin wordmark looks as big as a squarer logo. The whole set then grows until the biggest logo just fits its slot (the width above by the height cap). Off keeps every logo at the height cap.',
+									'sgs-blocks'
+								) }
+								checked={ !! attributes.logoEvenSize }
+								onChange={ ( val ) =>
+									setAttributes( { logoEvenSize: !! val } )
+								}
+								__nextHasNoMarginBottom
+							/>
 							<RangeControl
 								label={ __(
 									'Resting opacity (%)',

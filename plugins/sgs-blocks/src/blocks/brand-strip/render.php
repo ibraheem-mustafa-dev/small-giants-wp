@@ -63,6 +63,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/helpers-motion-effect.php';
 require_once __DIR__ . '/product-brands-source.php';
 require_once __DIR__ . '/brand-display-render.php';
 require_once __DIR__ . '/logo-media.php';
+require_once __DIR__ . '/logo-even-size.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-logo-media.php';
 
 // ---------------------------------------------------------------------------
@@ -647,6 +648,18 @@ $wrapper_attributes = get_block_wrapper_attributes(
  */
 $logos_html  = '';
 $sgs_bs_slot = sgs_media_item_slot_for( $block, 'logo' );
+// Even visual size (row layout, off by default): each logo's px width from its box area (logo-even-size.php). The widest one
+// is the image's `sizes` cap, so the browser picks a file big enough for the largest logo rather than the Max height.
+$sgs_bs_even = array(
+	'css' => '',
+	'cap' => 0,
+);
+if ( $logo_layout_row && ! empty( $attributes['logoEvenSize'] ) && ! empty( $logos ) ) {
+	$sgs_bs_even = sgs_brand_strip_even_size( (array) $logos, $attributes, $root_sel );
+	if ( '' !== $sgs_bs_even['css'] ) {
+		$scoped_css[] = $sgs_bs_even['css'];
+	}
+}
 if ( ! empty( $logos ) ) {
 	$logo_index       = 0;
 	$sgs_bs_media_idx = 0;
@@ -685,7 +698,7 @@ if ( ! empty( $logos ) ) {
 		} else {
 			// A decorative logo (an editorial choice, WCAG 2.1 AA 1.1.1) or one named by an on-screen caption is hidden from
 			// assistive technology, so the name is announced once.
-			$logo_out  = sgs_brand_strip_render_logo( (array) $logo, $sgs_bs_media_idx, $attributes, $sgs_bs_slot, $uid, $logo_decorative || $has_caption, array( 'desktop' => $columns_desktop, 'tablet' => $columns_tablet, 'mobile' => $columns_mobile ), (int) $max_height );
+			$logo_out  = sgs_brand_strip_render_logo( (array) $logo, $sgs_bs_media_idx, $attributes, $sgs_bs_slot, $uid, $logo_decorative || $has_caption, array( 'desktop' => $columns_desktop, 'tablet' => $columns_tablet, 'mobile' => $columns_mobile ), $sgs_bs_even['cap'] > 0 ? $sgs_bs_even['cap'] : (int) $max_height );
 			$logo_html = $logo_out['html'];
 			if ( '' === $logo_html ) {
 				// The renderer refused the file (for example a URL with no attachment and no size, FR-49-16): in
