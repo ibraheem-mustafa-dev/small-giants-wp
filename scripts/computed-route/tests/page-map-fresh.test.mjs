@@ -51,5 +51,5 @@ test( 'a client with no draft export or no page map has nothing to compare', () 
 test( 'site-run stops on a stale page map before any stage', () => {
 	const source = fs.readFileSync( path.join( REPO, 'scripts', 'computed-route', 'site-run.mjs' ), 'utf8' );
 	assert.match( source, /const staleMap = pageMapStaleProblem\( \{ repo: REPO, client \} \);\r?\n\s*if \( staleMap \) \{\r?\n\s*throw new Error\( staleMap \);/ );
-	assert.ok( source.indexOf( 'pageMapStaleProblem( {' ) < source.indexOf( 'intakeInputsMissing( {' ), 'it runs ahead of the other input checks' );
+	assert.ok( source.indexOf( 'pageMapStaleProblem( {' ) < source.indexOf( 'const missingInputs = intakeInputsMissing(' ), 'it runs ahead of the other input checks' );
 } );
