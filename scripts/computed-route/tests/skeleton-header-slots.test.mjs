@@ -461,6 +461,17 @@ test( 'MUST FAIL: the copy of the run a header strip draws only on a phone is ab
 	assert.equal( top.innerBlocks[ 0 ].widthVariants, undefined, 'and is no width variation' );
 } );
 
+test( 'MUST FAIL: the glyph a word-only strip repeats between its labels is the textBadgeSeparator setting and the separator part of the trust bar; no glyph, or icons on the items, writes none', () => {
+	const bar = rows( run( inv( [ ...header(), ...stripBar( { icons: false, sep: true } ) ], [ near( 'Root/10#0', 'before' ) ] ) ) )[ 0 ].innerBlocks[ 0 ];
+	assert.equal( bar.attributes.textBadgeSeparator, '·' );
+	const sepRun = run( inv( [ ...header(), ...stripBar( { icons: false, sep: true } ) ], [ near( 'Root/10#0', 'before' ) ] ) );
+	assert.equal( sepRun.proposal.rows.find( ( x ) => 'headerStripBar' === x.rule )?.separator, 'Root/41#0', 'the first glyph is named as the draft element of the separator part' );
+	const none = rows( run( inv( [ ...header(), ...stripBar( { icons: false } ) ], [ near( 'Root/10#0', 'before' ) ] ) ) )[ 0 ].innerBlocks[ 0 ];
+	assert.equal( none.attributes.textBadgeSeparator, undefined, 'no glyph between the labels: no separator' );
+	const iconed = rows( run( inv( [ ...header(), ...stripBar( { sep: true } ) ], [ near( 'Root/10#0', 'before' ) ] ) ) )[ 0 ].innerBlocks[ 0 ];
+	assert.equal( iconed.attributes.textBadgeSeparator, undefined, 'the icon style prints no separator' );
+} );
+
 test( 'a header strip of plain labels is a word-only trust bar; links, a page section and the main bar are not this rule', () => {
 	const plain = run( inv( [ ...header(), ...stripBar( { icons: false, sep: true } ) ], [ near( 'Root/10#0', 'before' ) ] ) );
 	const bar = rows( plain )[ 0 ].innerBlocks[ 0 ];

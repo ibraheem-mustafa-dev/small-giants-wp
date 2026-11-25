@@ -316,6 +316,8 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		const self = R[ r.rule ]?.selfPart && db && ! r.action ? partSlots( { db, block, cal: { settings: calSettings( block ) }, part: R[ r.rule ].selfPart, opener: e, m, finder, named: r.triggerParts ? Object.entries( R[ r.rule ].selfPartRoles || {} ).map( ( [ role, part ] ) => ( { part, element: m.byKey[ [].concat( r.triggerParts[ role ] ?? [] )[ 0 ] ] ?? null } ) ) : [] } ) : null;
 		self && Object.assign( slots, self.slots );
 		// The wrapper framing a hero's picture is read at the split-media part's slot once the part's own element has been placed (below).
+		// The trust bar's separator glyph is the draft element of the block's separator part (rules.headerStripBar.separator).
+		r.separator && R[ r.rule ]?.separator?.part && m.byKey[ r.separator ] && ( row.separator = r.separator, partPending.push( { e: m.byKey[ r.separator ], into: e.key, part: R[ r.rule ].separator.part } ) );
 		r.mediaFrame && R.heroInner?.part && framePending.push( { node, row, block, frame: m.byKey[ r.mediaFrame ], part: R.heroInner.part } );
 		const codeNotes = [ ...( codeSlots?.notes || [] ), ...( self?.notes || [] ), ...( r.glyphNote ? [ r.glyphNote ] : [] ) ];
 		codeNotes.length && ( row.slotNotes = [ ...( row.slotNotes || [] ), ...codeNotes ] );

@@ -1417,7 +1417,12 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			const sizes = new Set( shown.map( ( k ) => statedSvgSize( markupOf( k ) ) ) );
 			const size = S.style?.iconSize && style === S.style.icons && 1 === sizes.size ? [ ...sizes ][ 0 ] : null;
 			const decided = style ? { [ S.style.setting ]: style, ...( null !== size ? { [ S.style.iconSize ]: size } : {} ) } : null;
-			return v( 'headerStripBar', { block: S.block, absorb: true, attributes: { [ S.items.setting ]: items, ...( style ? { [ S.style.setting ]: style } : {} ) }, ...( decided ? { decided } : {} ), firstItem: labels[ 0 ].key } );
+			// The glyph the draft repeats between the labels (one glyph, no letter) is the word-only items' separator: the block
+				// prints it after each item (S.separator.setting), and the first one is the draft element of its separator part, where
+				// Fill reads the glyph's colour.
+				const glyphs = kidsB.filter( ( k ) => ! lettered( k ) && all( k ).trim() );
+				const separator = S.separator && style === S.style?.plain && glyphs.length && glyphs.every( ( k ) => all( k ).trim() === all( glyphs[ 0 ] ).trim() ) ? glyphs[ 0 ] : null;
+				return v( 'headerStripBar', { block: S.block, absorb: true, attributes: { [ S.items.setting ]: items, ...( style ? { [ S.style.setting ]: style } : {} ), ...( separator ? { [ S.separator.setting ]: all( separator ).trim() } : {} ) }, ...( decided ? { decided } : {} ), ...( separator ? { separator: separator.key } : {} ), firstItem: labels[ 0 ].key } );
 		},
 		// A lone label with a glyph before its words in a header (rules.headerStripBar.loneLabel) is a trust bar of one item: the
 		// glyph is the item's icon (the rendered SVG) and the words its label, so the glyph is drawn and no longer unread. The

@@ -664,6 +664,7 @@
 			"items": { "setting": "items", "text": "label", "svg": "iconSvg" },
 			"style": { "setting": "badgeStyle", "icons": "icon-bare", "plain": "text-only", "iconSize": "iconBareSize" },
 			"itemSlots": [ "itemGap", "labelFontSize" ],
+			"separator": { "setting": "textBadgeSeparator", "part": "separator" },
 			"loneLabel": {
 				"reason": "a lone label whose glyph comes before its words, in a header (a header surface, or a template's own header element), outside any link or button, is a trust bar of one item: the glyph is the item's icon, drawn bare, and the words its label; a label that reads differently at other widths is noted for the content page"
 			},
