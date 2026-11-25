@@ -60,6 +60,26 @@ describe( 'ItemSlotPicture', () => {
 		unmount();
 	} );
 
+	it( 'a frame that owns Padding, Height and Ratio takes them off the picture, which fills the frame', () => {
+		global.__device = 'Desktop';
+		const attributes = {
+			imagePadding: { desktop: { top: '14px', right: '14px', bottom: '0px', left: '14px' } },
+			imageHeight: { desktop: '46px' },
+			imageRatio: { desktop: '16 / 9' },
+		};
+		const item = { source: { desktop: PHOTO } };
+		const free = mount( h( ItemSlotPicture, { attributes, item, index: 0, prefix: 'image', uid: 'sgs-cg-test' } ) );
+		const freeCss = free.container.querySelector( 'style' ).textContent;
+		expect( freeCss ).toMatch( /padding-top:14px/ );
+		expect( freeCss ).toMatch( /height:46px/ );
+		free.unmount();
+		const framed = mount( h( ItemSlotPicture, { attributes, item, index: 0, prefix: 'image', uid: 'sgs-cg-test', frame: [ 'Padding', 'Height', 'Ratio' ] } ) );
+		const css = framed.container.querySelector( 'style' )?.textContent || '';
+		expect( css ).not.toMatch( /padding-|height:46px|aspect-ratio/ );
+		expect( css ).toMatch( /width:100%/ );
+		framed.unmount();
+	} );
+
 	it( 'a slot with no settings prints no border or radius rule (negative control)', () => {
 		const { container, unmount } = render( {}, { source: { desktop: PHOTO } } );
 		const css = container.querySelector( 'style' )?.textContent || '';
