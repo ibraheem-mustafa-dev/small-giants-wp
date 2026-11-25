@@ -4,5 +4,11 @@
 		"find": "\tconst counted = ! part && OFFSET.test( prop ) ?",
 		"replace": "\tconst counted = false && OFFSET.test( prop ) ?",
 		"why": "a part's inset resolves the block's own top row"
+	},
+	{
+		"file": "lib/apply-gate.mjs",
+		"find": "SELECT attr_name, css_property, css_element, css_state FROM",
+		"replace": "SELECT attr_name, css_property, css_state FROM",
+		"why": "the gate reads settings without their element, so a part's inset resolves the block's own offset"
 	}
 ]

@@ -58,3 +58,15 @@ test( 'MUST FAIL: a row about the block\'s own offset is not resolved by a setti
 	// A named attribute is still unresolved whatever its element.
 	assert.equal( judgeRow( { block: 'sgs/y', prop: 'arrowInsetTop' }, of ), 'unresolved' );
 } );
+
+test( 'MUST FAIL: the gate reads each setting with the element it paints, from the framework DB, and the applier uses that reader', async () => {
+	const { openDb } = await import( '../lib/db.mjs' );
+	const { gateSettingsOf } = await import( '../lib/apply-gate.mjs' );
+	const fs = await import( 'node:fs' );
+	const read = gateSettingsOf( openDb() );
+	assert.equal( read( 'sgs/container' ).find( ( s ) => 'arrowInsetTop' === s.attr_name )?.css_element, 'arrow' );
+	assert.deepEqual( read( null ), [] );
+	// The modal's own `top` row against the real container settings: only the arrow's inset paints `top`, and it is a part.
+	assert.notEqual( judgeRow( { block: 'sgs/container', prop: 'top' }, read ), 'unresolved' );
+	assert.match( fs.readFileSync( new URL( '../apply.mjs', import.meta.url ), 'utf8' ), /gateRows\( allRows, gateSettingsOf\( db \) \)/ );
+} );

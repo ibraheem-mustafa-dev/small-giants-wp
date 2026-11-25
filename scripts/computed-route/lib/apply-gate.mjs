@@ -57,6 +57,10 @@ export function judgeRow( row, settingsOf ) {
 	return painted ? 'unresolved' : 'no-setting';
 }
 
+// The block's settings as the gate reads them: the attribute, the property it paints, the element it paints and its state. The
+// element is what lets a row about a part, or about the block's own offset, count only the settings of that element.
+export const gateSettingsOf = ( db ) => ( block ) => ( block ? db.prepare( 'SELECT attr_name, css_property, css_element, css_state FROM block_attributes WHERE block_slug = ?' ).all( block ) : [] );
+
 // rows: every row of a run. Returns the no-setting rows judged, with counts.
 export function gateRows( rows, settingsOf ) {
 	const judged = rows.filter( ( r ) => 'no-setting' === r.status ).map( ( r ) => ( { ...r, verdict: judgeRow( r, settingsOf ) } ) );

@@ -24,7 +24,7 @@ import { assertScratchRunPlace, assertUnprotected, readTargets, siteUrl, surface
 import { retargetLive } from '../parity/lib/helpers.mjs';
 import { FAMILIES, familyProps } from './lib/apply-families.mjs';
 import { ledgerIndex, ledgerMatch, surfaceNames } from './lib/apply-ledger.mjs';
-import { gateRows } from './lib/apply-gate.mjs';
+import { gateRows, gateSettingsOf } from './lib/apply-gate.mjs';
 import { finish, noopWhy, rulingFor, same } from './lib/apply-rulings.mjs';
 import { changesPost, matches, patchesFor, restoreOf } from './lib/apply-ops.mjs';
 import { applyOptions } from './apply-options.mjs';
@@ -500,8 +500,7 @@ async function main() {
 			fs.rmSync( pendingPath, { force: true } );
 		}
 		// Before the DB closes: what the block's own settings say about every no-setting row (lib/apply-gate.mjs).
-		const settingsOf = ( block ) => ( block ? db.prepare( 'SELECT attr_name, css_property, css_state FROM block_attributes WHERE block_slug = ?' ).all( block ) : [] );
-		gate = gateRows( allRows, settingsOf );
+		gate = gateRows( allRows, gateSettingsOf( db ) );
 	} finally {
 		await browser.close();
 		db.close?.();
