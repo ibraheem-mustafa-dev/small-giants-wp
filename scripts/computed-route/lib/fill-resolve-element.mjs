@@ -19,6 +19,7 @@ import { fillLayerBox } from './fill-layer-box.mjs';
 import { tokenWrites } from './fill-token-ref.mjs';
 import { normalKeywords } from './fill-normal-keywords.mjs';
 import { gutterBaseline } from './fill-gutter.mjs';
+import { sweepResult } from './fill-underline-sweep.mjs';
 import { BOX_LOOK, parentDrawsBox } from './fill-shared-element.mjs';
 import { notInForce } from './fill-device-mode.mjs';
 import { GAP_PROPS, RADIUS_CORNERS, mergedRadius, valueText, json, alternateSlots, baselineFn, baselineSourceFn, equalBaseline, ledgerView, gapTarget, draftOf, recordDisplay } from './fill-resolve-state.mjs';
@@ -199,8 +200,19 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 	const boxed = layer ? new Set() : fillLayerBox( { st, rec, ref, target, snaps, apply } );
 	// A block reading the element its parent reads leaves the box look to the parent (lib/fill-shared-element.mjs).
 	const parentBox = ! layer && parentDrawsBox( st, rec, target );
+	// A link drawn with no line whose underline grows on hover is the block's `sweep` underline (lib/fill-underline-sweep.mjs): the
+	// one write answers its text-decoration-line, and the gradient it grows from is the setting's own, so it is left out below.
+	const sweep = layer ? null : sweepResult( { db: st.db, cal, block: rec.name, slot, snaps, reads: st.reads, id: target.id } );
+	if ( sweep ) {
+		apply( st, rec, ref, target, 'text-decoration-line', { ...sweep, readSlot: slot, answers: sweep.widths ?? Object.keys( sweep.included ).map( Number ) }, sweep.slot );
+		sweep.writes.forEach( ( w ) => recordOwner( st, rec, target, 'text-decoration-line', w.attr, target.slot === sweep.slot ) );
+	}
 	for ( const prop of merged ? [ ...ids.filter( ( p ) => ! RADIUS_CORNERS.includes( p ) ), 'border-radius' ] : ids ) {
 		if ( boxed.has( prop ) ) {
+			continue;
+		}
+		if ( sweep && ( 'text-decoration-line' === prop || 'background-image' === prop ) ) {
+			settled( st, rec, ref, { slot, property: prop, value: valueText( allDrafts[ prop ] || {} ), widths: Object.keys( allDrafts[ prop ] || {} ).map( Number ), reason: 'held-by-setting', detail: `${ sweep.writes[ 0 ].attr } sweep draws this underline (its line and the gradient it grows from)` } );
 			continue;
 		}
 		if ( parentBox && BOX_LOOK.test( prop ) && allDrafts[ prop ] && Object.keys( allDrafts[ prop ] ).length ) {

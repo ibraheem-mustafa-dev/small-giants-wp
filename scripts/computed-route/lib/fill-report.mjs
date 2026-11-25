@@ -7,10 +7,10 @@ import { HELD_REASONS, heldCounts } from './fill-held.mjs';
 // element already shows it; `already-set`, the tree already holds the setting's value; `used-size`, the rendered value is a
 // layout result the code does not declare as a length (an auto margin, an undeclared width or height); `not-painted`, the
 // value paints nothing there; `row-held`, a generated icon's value the icon row's shared setting holds
-// (lib/fill-row-lift.mjs::liftChildren); `parent-held`, a block's box look at an element its parent block reads as its own root (lib/fill-shared-element.mjs); `child-held`, a parent's read of an element a block inside it reads as its own
+// (lib/fill-row-lift.mjs::liftChildren); `parent-held`, a block's box look at an element its parent block reads as its own root (lib/fill-shared-element.mjs); `held-by-setting`, a look a setting's own value draws (the gradient and line of a `linkUnderline: sweep`, lib/fill-underline-sweep.mjs); `child-held`, a parent's read of an element a block inside it reads as its own
 // root, the property that block met (lib/fill-child-held.mjs::childHeld); `logo-size`, `width-ladder`, `dimension`, `layer-rotation`, `motion`, `rest-width` and `residual-css`, an UNMAPPED row that pass
 // wrote or settled (passSettled).
-export const SETTLED = [ 'equal', 'already-set', 'used-size', 'not-painted', 'row-held', 'child-held', 'logo-size', 'width-ladder', 'dimension', 'part-margin', 'layer-rotation', 'motion', 'rest-width', 'residual-css', 'parent-held' ];
+export const SETTLED = [ 'equal', 'already-set', 'used-size', 'not-painted', 'row-held', 'child-held', 'logo-size', 'width-ladder', 'dimension', 'part-margin', 'layer-rotation', 'motion', 'rest-width', 'residual-css', 'parent-held', 'held-by-setting' ];
 
 // The file of each pass a settled row names.
 const PASS_FILE = { 'logo-size': 'fill-logo-size.mjs', 'width-ladder': 'fill-width-ladder.mjs', dimension: 'fill-dimensions.mjs', 'layer-rotation': 'fill-layer-rotation.mjs', motion: 'fill-motion-settle.mjs', 'rest-width': 'fill-rest-width.mjs', 'residual-css': 'fill-residual-css.mjs' };

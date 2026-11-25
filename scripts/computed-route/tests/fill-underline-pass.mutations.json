@@ -1,0 +1,14 @@
+[
+	{
+		"file": "lib/fill-resolve-element.mjs",
+		"find": "const sweep = layer ? null : sweepResult(",
+		"replace": "const sweep = true ? null : sweepResult(",
+		"why": "a growing underline is not told from a static gradient"
+	},
+	{
+		"file": "lib/fill-state.mjs",
+		"find": "pseudo || atRest || asHover || ! [ 'hover', 'focus' ].includes( state ) ? null : stateChoice(",
+		"replace": "true ? null : stateChoice(",
+		"why": "the resting setting that underlines on hover is never asked"
+	}
+]
