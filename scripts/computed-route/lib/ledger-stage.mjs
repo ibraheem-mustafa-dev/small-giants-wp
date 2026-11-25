@@ -5,6 +5,7 @@
 import { sameValue } from '../../parity/lib/compare.mjs';
 import { longhandsOf } from './css-families.mjs';
 import { writeProps } from './ledger-paint.mjs';
+import { PX_TOL } from './css-equivalence/tolerance.mjs';
 
 // The closed set of stages, in the order they are tried for a paired element's difference (no-node, other-block and
 // live-only are decided for unpaired elements and the surface's own root, lib/ledger-pairs.mjs).
@@ -115,7 +116,7 @@ export function stageOf( diff, target, ctx ) {
 	// The inventory's own reading of the same element, where it holds the property.
 	const inv = target.draftKey ? ctx.inventory.get( target.draftKey ) : null;
 	const invVal = ! diff.pseudo && ! state ? inv?.resolved?.[ width ]?.[ key ] : undefined;
-	if ( undefined !== invVal && undefined !== diff.draft && ! sameValue( key, String( invVal ), String( diff.draft ), 0.5 ) ) {
+	if ( undefined !== invVal && undefined !== diff.draft && ! sameValue( key, String( invVal ), String( diff.draft ), PX_TOL ) ) {
 		return { stage: 'draft-read', proof: { record: 'inventory.resolved', key: target.draftKey, width, inventory: invVal, draftLive: diff.draft } };
 	}
 	const props = propsFor( key );

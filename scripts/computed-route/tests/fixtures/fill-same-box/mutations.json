@@ -1,7 +1,7 @@
 [
 	{ "file": "lib/fill-same-box.mjs", "find": "return painted.find( ( p ) => calSameBox( cal, slot, p ) ) ?? slot;", "replace": "return slot;", "why": "a setting painting the same-box content band would never be the home of a layout keyword" },
 	{ "file": "lib/fill-same-box.mjs", "find": "if ( ! root || '' === slot || ! calSameBox( cal, '', slot, [ axis ] ) ) {", "replace": "if ( ! root || '' === slot ) {", "why": "an inner element calibration measures as a different box would be taken as the root's size" },
-	{ "file": "lib/fill-same-box.mjs", "find": "if ( Math.abs( box - frame - part ) > TOL + 0.5 ) {", "replace": "if ( false ) {", "why": "an inner element filling only part of the root would be taken as the root's content box" },
+	{ "file": "lib/fill-same-box.mjs", "find": "if ( Math.abs( box - frame - part ) > TOL + PX_TOL ) {", "replace": "if ( false ) {", "why": "an inner element filling only part of the root would be taken as the root's content box" },
 	{ "file": "lib/fill-same-box.mjs", "find": "extra[ w ] = Math.round( ( box - part ) * 100 ) / 100;", "replace": "extra[ w ] = 0;", "why": "the root's own border would not be added to the root minimum" },
 	{ "file": "lib/fill-width-ladder.mjs", "find": "values[ w ] !== carried || differs( w )", "replace": "values[ w ] !== carried", "why": "a per-device block default that differs from the draft would not be overridden" },
 	{ "file": "lib/fill-width-ladder.mjs", "find": "widths.every( ( w ) => null !== base[ w ] && ! differs( w ) ) ) {", "replace": "false ) {", "why": "a default that already does the draft's effect would not settle the row" },

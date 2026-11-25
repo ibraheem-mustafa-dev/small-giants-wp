@@ -12,7 +12,7 @@ import { recordsFor } from './apply-records.mjs';
 import { validateMotionWrite, verdictProblems } from './motion-validate.mjs';
 import { matches } from './apply-ops.mjs';
 import { shadowParts } from './motion-shadow.mjs';
-import { PX_TOL, SCALE_TOL } from './css-equivalence/tolerance.mjs';
+import { PX_TOL, SCALE_TOL, ROTATE_TOL } from './css-equivalence/tolerance.mjs';
 
 const SELECTED = [ 'background-color', 'border-top-color', 'border-top-width', 'box-shadow', 'color' ];
 const CHECK = [ 'color', 'background-color', 'width', 'top' ];
@@ -61,7 +61,7 @@ function hoverShadow( { ctx, d, l } ) {
 }
 
 // Two poses within half a pixel: a lift of two pixels is the whole of a tile's hover, so the looser comparison the other families use would read it as still.
-const poseClose = ( a, b ) => Boolean( a && b ) && Math.abs( a.scale - b.scale ) <= SCALE_TOL && Math.abs( a.x - b.x ) <= PX_TOL && Math.abs( a.y - b.y ) <= PX_TOL && Math.abs( a.rotate - b.rotate ) <= 1;
+const poseClose = ( a, b ) => Boolean( a && b ) && Math.abs( a.scale - b.scale ) <= SCALE_TOL && Math.abs( a.x - b.x ) <= PX_TOL && Math.abs( a.y - b.y ) <= PX_TOL && Math.abs( a.rotate - b.rotate ) <= ROTATE_TOL;
 
 // The draft's tile hover pose and shadow as the tile element's hover layer of sgsMotion, from the hover records of the draft's tile.
 function hoverLayer( { ctx, d, l } ) {

@@ -12,6 +12,7 @@ import { MOTION_LOOKS, motionClose, motionOf } from './apply-hover.mjs';
 import { draftId, recordsFor } from './apply-records.mjs';
 import { indentHover } from './apply-state-indent.mjs';
 import { cardGroup } from './apply-card-group.mjs';
+import { SCALE_TOL } from './css-equivalence/tolerance.mjs';
 
 const shared = new Map();
 export function motionTools( db, rawSnapshot ) {
@@ -80,7 +81,7 @@ export function hoverMotion( { target, block, saved, draft, live, recordsIndex, 
 	const rec = records.find( holdsMotion );
 	const op = writeOf( { saved, merge: { hover: m.element.hover }, schema, why: `hover pose ${ JSON.stringify( want ) } from ${ rec.id }`, record: rec.id, checks: [ { width: 1440, state: 'hover', prop: 'transform', motion: true, want } ] } );
 	// A built-in hover movement (a button style's scale) paints under the motion layer, so a pose without it turns the block's own off.
-	const scaled = motionOf( live[ 1440 ]?.hover )?.scale > want.scale + 0.011;
+	const scaled = motionOf( live[ 1440 ]?.hover )?.scale > want.scale + SCALE_TOL;
 	if ( scaled && 'writes' in op && declaredAttr( block, 'builtInHoverLift', db ) && false !== saved.builtInHoverLift ) {
 		op.writes = [ ...op.writes, { attr: 'builtInHoverLift', value: false } ];
 	}

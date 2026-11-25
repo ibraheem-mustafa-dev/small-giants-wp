@@ -25,7 +25,7 @@
 	},
 	{
 		"file": "lib/fill-held.mjs",
-		"find": "const TOL = 0.5;",
+		"find": "const TOL = PX_TOL;",
 		"replace": "const TOL = 5;",
 		"why": "a value several pixels from its parent's would be held as inherited"
 	},

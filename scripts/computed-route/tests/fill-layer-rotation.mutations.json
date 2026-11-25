@@ -1,7 +1,7 @@
 [
 	{
 		"file": "lib/layer-box.mjs",
-		"find": "return turned && Math.abs( e ) <= 0.5 && Math.abs( f ) <= 0.5 ?",
+		"find": "return turned && Math.abs( e ) <= PX_TOL && Math.abs( f ) <= PX_TOL ?",
 		"replace": "return turned ?",
 		"why": "a turn with a pixel offset (a centred tape) would be written as a plain rotation"
 	},

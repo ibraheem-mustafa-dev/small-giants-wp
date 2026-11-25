@@ -17,7 +17,7 @@ import { discoveredEffects } from './resolve.mjs';
 import { PX_TOL } from './css-equivalence/tolerance.mjs';
 
 // FR-48-36's tolerances by property type (provisional until calibrated on the first client clone).
-export const TOLERANCE = { colour: `ΔE ${ COLOUR_DE }, alpha 0.02`, length: '0.5px', 'font-family': 'first family', 'font-weight': 'exact', 'line-height': '0.5px', transform: 'matrix entries 0.01', time: '10ms', keyword: 'exact' };
+export const TOLERANCE = { colour: `ΔE ${ COLOUR_DE }, alpha 0.02`, length: `${ PX_TOL }px`, 'font-family': 'first family', 'font-weight': 'exact', 'line-height': `${ PX_TOL }px`, transform: 'matrix entries 0.01', time: '10ms', keyword: 'exact' };
 
 // A value the code computes at run time: its rendered value is what it resolves to, so there is nothing to compare.
 const RUNTIME = /\b(?:var|calc|clamp|min|max|env|attr)\(|\bv[wh]\b|\d(?:vw|vh|vmin|vmax|dvh|svh|lvh|cq[whib])\b/;

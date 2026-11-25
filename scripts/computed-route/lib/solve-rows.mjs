@@ -1,6 +1,7 @@
 // Solve's reading of a walker report (FR-47-3): which open rows it may write, the draft value at every width for each
 // (node, element, property), and the classification of the rows that survive the last round.
 import { isContentRow, HANDOVER_OWNERS } from './issue-classes.mjs';
+import { PX_TOL } from './css-equivalence/tolerance.mjs';
 
 // The property kinds Solve writes through the property-to-setting resolver (box rows are split off and never written).
 // Content rows (text, presence, link coverage) are not here: they resolve through calibration's content entries
@@ -489,6 +490,6 @@ export function regressedRows( prev, report ) {
 	const before = new Map( openRows( prev ).filter( ( r ) => [ 'style', 'box' ].includes( r.kind ) ).map( ( r ) => [ key( r ), r ] ) );
 	return openRows( report ).filter( ( r ) => [ 'style', 'box' ].includes( r.kind ) && r.ref ).filter( ( r ) => {
 		const b = before.get( key( r ) );
-		return ! b || rowDistance( r ) > rowDistance( b ) + 0.5;
+		return ! b || rowDistance( r ) > rowDistance( b ) + PX_TOL;
 	} );
 }

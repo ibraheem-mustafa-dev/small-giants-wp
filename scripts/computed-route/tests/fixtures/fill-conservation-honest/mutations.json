@@ -55,7 +55,7 @@
  },
  {
   "file": "lib/fill-resolve-element.mjs",
-  "find": "return undefined === source || from === w || samePaint( prop, draft[ w ], source );",
+  "find": "return undefined === source || from === w || exactPaint( prop, draft[ w ], source );",
   "replace": "return true;",
   "why": "a write answers every draft width (main's Object.keys( draft ))"
  },

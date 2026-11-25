@@ -4,6 +4,7 @@
 // the framework DB paints as width, left, right, top, inset or offset that is not a per-device object.
 import { attrRow } from './db.mjs';
 import { TIER_WIDTHS } from './fill-prop.mjs';
+import { PX_TOL, PCT_TOL } from './css-equivalence/tolerance.mjs';
 
 const TIER = { [ TIER_WIDTHS[ 0 ] ]: 'desktop', [ TIER_WIDTHS[ 1 ] ]: 'tablet', [ TIER_WIDTHS[ 2 ] ]: 'mobile' };
 const POSITIONAL = /^(?:width|min-width|max-width|left|right|top|bottom|inset(?:-[a-z]+)*|offset)$/;
@@ -24,7 +25,7 @@ export function relativeLength( { db, block, attr, samples } ) {
 	if ( pct.some( ( p ) => null === p ) ) {
 		return { reason: `${ attr } is one length for every device and the box it sits in was not read` };
 	}
-	if ( Math.max( ...pct ) - Math.min( ...pct ) > 0.5 ) {
+	if ( Math.max( ...pct ) - Math.min( ...pct ) > PCT_TOL ) {
 		return { reason: `${ attr } is one length for every device, and the draft's is ${ pct.map( ( p, i ) => `${ round( p ) }% at ${ widths[ i ] }` ).join( ', ' ) }: no single relative length holds them` };
 	}
 	return { value: `${ round( pct.reduce( ( a, b ) => a + b, 0 ) / pct.length ) }%` };
@@ -38,7 +39,7 @@ export function constantLength( { db, block, attr, samples } ) {
 		return { value: Object.fromEntries( widths.map( ( w ) => [ TIER[ w ], `${ round( samples[ w ].px ) }px` ] ) ) };
 	}
 	const px = widths.map( ( w ) => samples[ w ].px );
-	if ( ! px.length || Math.max( ...px ) - Math.min( ...px ) > 0.5 ) {
+	if ( ! px.length || Math.max( ...px ) - Math.min( ...px ) > PX_TOL ) {
 		return { reason: `${ attr } is one length for every device and the draft's differs by device (${ px.join( ', ' ) })` };
 	}
 	return { value: `${ round( px[ 0 ] ) }px` };

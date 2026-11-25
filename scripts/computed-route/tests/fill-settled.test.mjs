@@ -44,12 +44,14 @@ test( 'MUST FAIL: a letter spacing of -0.17px against a normal baseline is writt
 	assert.equal( r.settled.filter( ( s ) => 'letter-spacing' === s.property ).length, 0, 'never settled as equal' );
 } );
 
-test( 'control: an exact 0px letter spacing matches normal and a length within tolerance of another length stays equal', () => {
+test( 'control: an exact 0px letter spacing matches normal, and a length 0.3px from the default is a stated value, written as it stands', () => {
 	const zero = run( [ { name: 'sgs/text', draftRef: '.a', attributes: { text: 'A' } } ], { '0:': snap( { 'letter-spacing': '0px' }, 'A' ) } );
 	assert.equal( zero.writes.filter( ( x ) => 'letter-spacing' === x.prop ).length, 0 );
 	assert.ok( zero.settled.some( ( s ) => 'letter-spacing' === s.property && 'equal' === s.reason ), '0px against normal is settled as equal' );
 	const near = run( [ { name: 'sgs/text', draftRef: '.a', attributes: { text: 'A' } } ], { '0:': snap( { 'font-size': '16.3px' }, 'A' ) } );
-	assert.equal( near.writes.filter( ( x ) => 'font-size' === x.prop ).length, 0, 'two lengths 0.3px apart are within the tolerance' );
+	assert.equal( near.writes.filter( ( x ) => 'font-size' === x.prop ).length, 1, 'the draft states 16.3px: that is not the default, so it is written (the tolerance only compares measured renders)' );
+	const same = run( [ { name: 'sgs/text', draftRef: '.a', attributes: { text: 'A' } } ], { '0:': snap( { 'font-size': '16px' }, 'A' ) } );
+	assert.equal( same.writes.filter( ( x ) => 'font-size' === x.prop ).length, 0, 'a value exactly the default is not written' );
 } );
 
 test( 'MUST FAIL: every property read on a measured element ends written, unwritten, held or settled with a known reason', () => {

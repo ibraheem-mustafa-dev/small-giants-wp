@@ -19,7 +19,7 @@
 	},
 	{
 		"file": "lib/normalise.mjs",
-		"find": "if ( ! list.auto && ( list.length !== px.length || list.some( ( t, i ) => /^-?\\d*\\.?\\d+px$/.test( t ) && Math.abs( parseFloat( t ) - px[ i ] ) > 0.5 ) ) ) {",
+		"find": "if ( ! list.auto && ( list.length !== px.length || list.some( ( t, i ) => /^-?\\d*\\.?\\d+px$/.test( t ) && Math.abs( parseFloat( t ) - px[ i ] ) > PX_TOL ) ) ) {",
 		"replace": "if ( ! list.auto && list.length !== px.length ) {",
 		"why": "a fixed track the draft does not render at that width would be taken as agreeing"
 	},

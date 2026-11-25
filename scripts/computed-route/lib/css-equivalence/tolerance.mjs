@@ -17,6 +17,8 @@ const MDN = createRequire( import.meta.url )( 'mdn-data/css/properties.json' );
 export const PX_TOL = 0.5;
 // The tolerance for the sub-pixel difference between two measured boxes (their position and size), and for a transform pose.
 export const BOX_TOL = PX_TOL;
+// The tolerance for two percentages of one box (a length held relative to its container), in percentage points.
+export const PCT_TOL = 0.5;
 export const SCALE_TOL = 0.011;
 export const ROTATE_TOL = 1;
 // A value that equals another at this precision is the same value: a computed length is read at 1/64px, so two reads of

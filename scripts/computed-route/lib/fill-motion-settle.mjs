@@ -17,6 +17,7 @@ import { CSS_WIDE } from './fill-declared.mjs';
 import { longhandsOf, layerTimings, layerGives } from './census-conservation.mjs';
 import { READ_WIDTHS } from './fill-read.mjs';
 import { timingDuplicates } from './fill-timing.mjs';
+import { PX_TOL, READ_EPSILON } from './css-equivalence/tolerance.mjs';
 
 // A row's value per width: a per-width JSON object as written, a plain value at every width the read declares.
 function perWidth( row, declaredAt ) {
@@ -73,7 +74,7 @@ export function restPoseGives( raw, values ) {
 	const got = 'none' === v ? [ 1, 0, 0, 1, 0, 0 ] : m ? m[ 1 ].split( ',' ).map( Number ) : null;
 	const rad = ( deg * Math.PI ) / 180;
 	const want = [ Math.cos( rad ), Math.sin( rad ), -Math.sin( rad ), Math.cos( rad ), 0, 0 ];
-	return !! got && 6 === got.length && got.every( ( x, i ) => Math.abs( x - want[ i ] ) <= ( i < 4 ? 1e-3 : 0.5 ) );
+	return !! got && 6 === got.length && got.every( ( x, i ) => Math.abs( x - want[ i ] ) <= ( i < 4 ? READ_EPSILON : PX_TOL ) );
 }
 
 // opts: { unmapped, writes (the motion pass's writes), nodes, flat, refOf, mdb, db, calFor, reads, rawSnapshot }.

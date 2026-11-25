@@ -4,9 +4,10 @@
 // place inside the enclosing pair (x, y: never its page position, which every height above it moves) and its picture.
 // Pure functions: no browser, no site.
 import { comparePair, tagClass } from '../../parity/lib/compare.mjs';
+import { PX_TOL } from './css-equivalence/tolerance.mjs';
 
 // A length within half a pixel (the pixel after rounding); a box within 1px.
-export const TOLERANCE = { box: 1, px: 0.5 };
+export const TOLERANCE = { box: 1, px: PX_TOL };
 
 const STATIC = new Set( [ 'static', 'relative', 'sticky', undefined ] );
 const OUT_OF_FLOW = new Set( [ 'absolute', 'fixed' ] );

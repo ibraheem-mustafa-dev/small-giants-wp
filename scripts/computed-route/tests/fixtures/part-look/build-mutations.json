@@ -85,7 +85,7 @@
 	},
 	{
 		"file": "lib/fill-part-look.mjs",
-		"find": "return all.every( ( v ) => Math.abs( v - all[ 0 ] ) <= 0.5 ) ?",
+		"find": "return all.every( ( v ) => Math.abs( v - all[ 0 ] ) <= PX_TOL ) ?",
 		"replace": "return true ?",
 		"why": "uneven corners are written as one radius"
 	},

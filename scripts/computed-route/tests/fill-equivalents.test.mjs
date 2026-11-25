@@ -148,7 +148,7 @@ function fillWith( alignments ) {
 	const tree = cleanTree( skeleton );
 	addRefs( tree, 'eq' );
 	const kid = ( a, i ) => ( { styles: { ...BASE, 'align-self': a }, pseudo: {}, rect: { x: 0, y: i * 40, w: 300, h: 40 }, inFlow: true, words: `T${ i }`, href: null } );
-	const widths = Object.fromEntries( FIVE.map( ( w ) => [ w, { '0:': { styles: BASE, pseudo: {}, rect: { x: 0, y: 0, w: 300, h: 200 }, inFlow: true, words: '', href: null }, ...Object.fromEntries( alignments.map( ( a, i ) => [ `${ i + 1 }:`, kid( a, i ) ] ) ) } ] ) );
+	const widths = Object.fromEntries( FIVE.map( ( w ) => [ w, { '0:': { styles: { ...BASE, display: 'flex' }, pseudo: {}, rect: { x: 0, y: 0, w: 300, h: 200 }, inFlow: true, words: '', href: null }, ...Object.fromEntries( alignments.map( ( a, i ) => [ `${ i + 1 }:`, kid( a, i ) ] ) ) } ] ) );
 	const declared = Object.fromEntries( FIVE.map( ( w ) => [ w, Object.fromEntries( alignments.map( ( a, i ) => [ `${ i + 1 }:`, { 'align-self': a } ] ) ) ] ) );
 	const nodes = skeletonNodes( skeleton );
 	const reads = { widths, declared, sweep: {}, origin: 'http://127.0.0.1:1' };

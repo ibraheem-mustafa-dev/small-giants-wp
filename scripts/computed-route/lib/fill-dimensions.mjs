@@ -39,6 +39,7 @@ import { WIDTHS, TIER_OF, rowTarget, rowValues, rectAt, reresolve, commit, perNo
 import { innerToRoot } from './fill-same-box.mjs';
 import { attrRow } from './db.mjs';
 import { inlineBox, INLINE_LEVEL } from './fill-inline-box.mjs';
+import { PX_TOL } from './css-equivalence/tolerance.mjs';
 
 const LOGICAL = { 'block-size': 'height', 'inline-size': 'width', 'min-block-size': 'min-height', 'min-inline-size': 'min-width', 'max-block-size': 'max-height', 'max-inline-size': 'max-width' };
 // The size family: physical name -> { kind: exact | min | max, axis: h | w }.
@@ -223,7 +224,7 @@ function handle( { row, size, hit, nodes, flat, ctx, out, scope, entries, date, 
 	// 1: a floor or ceiling the draft does not declare but the block paints.
 	const against = ( kind, p ) => {
 		const paint = blockPaint( { block: rec.name, slot, prop: p, cal } );
-		const clash = widths.filter( ( w ) => undefined !== paint[ w ] && ( 'min' === kind ? paint[ w ] > rendered[ w ] + 0.5 : paint[ w ] < rendered[ w ] - 0.5 ) );
+		const clash = widths.filter( ( w ) => undefined !== paint[ w ] && ( 'min' === kind ? paint[ w ] > rendered[ w ] + PX_TOL : paint[ w ] < rendered[ w ] - PX_TOL ) );
 		const raw = defaultPaint( cal, slot, p, ( a, b ) => LOOSE( a ) === LOOSE( b ) );
 		const relative = 'max' === kind ? widths.filter( ( w ) => undefined === paint[ w ] && relativeCeiling( raw[ w ] ) ) : [];
 		if ( ! clash.length && ! relative.length ) {
@@ -242,7 +243,7 @@ function handle( { row, size, hit, nodes, flat, ctx, out, scope, entries, date, 
 			return { raise: `the block paints a ${ p } ceiling, but the draft's rendered size is unknown at ${ unknown.join( ', ' ) }, so no ceiling equal to ${ row.property } ${ none } can be written` };
 		}
 		return settle( p, rendered, `${ why } as the ceiling (a ceiling at the unconstrained size paints the same as ${ none })`, ( res ) => {
-			const below = widths.filter( ( w ) => null === writtenPx( res, w ) || writtenPx( res, w ) < rendered[ w ] - 0.5 );
+			const below = widths.filter( ( w ) => null === writtenPx( res, w ) || writtenPx( res, w ) < rendered[ w ] - PX_TOL );
 			return below.length ? `the ${ p } the setting would hold (${ below.map( ( w ) => `${ writtenPx( res, w ) ?? 'not a px length' } at ${ w }` ).join( ', ' ) }) is below the draft's rendered ${ below.map( ( w ) => `${ Math.round( rendered[ w ] * 100 ) / 100 }px` ).join( ' / ' ) }, so it would clip the box ${ row.property } ${ none } leaves whole; not written` : null;
 		} );
 	};
@@ -271,7 +272,7 @@ function handle( { row, size, hit, nodes, flat, ctx, out, scope, entries, date, 
 		};
 		const declared = Object.fromEntries( widths.map( ( w ) => [ w, sizeAt( w ) ] ).filter( ( [ , v ] ) => null !== v && undefined !== v ) );
 		const paint = blockPaint( { block: rec.name, slot: ceilingSlot, prop, cal } );
-		if ( Object.keys( declared ).length === widths.length && widths.every( ( w ) => undefined !== paint[ w ] && paint[ w ] > declared[ w ] + 0.5 ) ) {
+		if ( Object.keys( declared ).length === widths.length && widths.every( ( w ) => undefined !== paint[ w ] && paint[ w ] > declared[ w ] + PX_TOL ) ) {
 			return settle( `max-${ prop }`, declared, `the draft declares ${ prop } ${ widths.map( ( w ) => `${ Math.round( declared[ w ] * 100 ) / 100 }px` ).join( ' / ' ) }${ widths.some( ( w ) => null === pxOf( declaredAt( w ) ?? given[ w ] ) ) ? ' (a fluid size as its rendered value)' : '' } on ${ custom ? 'a picture a custom element draws' : 'a replaced image' } that keeps its proportions (${ other } not declared), and the block paints it ${ widths.map( ( w ) => `${ Math.round( paint[ w ] * 100 ) / 100 }px` ).join( ' / ' ) }, so the block's max-${ prop }${ ceilingSlot === slot ? '' : ` on its inner image (${ ceilingSlot })` } clamps it to the declared size`, null, true, ceilingSlot );
 		}
 	}
@@ -281,7 +282,7 @@ function handle( { row, size, hit, nodes, flat, ctx, out, scope, entries, date, 
 		if ( Object.keys( declared ).length !== widths.length ) {
 			return { raise: `the code declares ${ prop } as ${ widths.map( ( w ) => declaredAt( w ) ?? given[ w ] ).join( ' / ' ) }, which is not a plain length` };
 		}
-		const taller = widths.map( ( w ) => [ w, contentExtent( { nodes, reads }, rec, target, size.axis, w ) ] ).filter( ( [ w, e ] ) => null === e || e > declared[ w ] + 0.5 );
+		const taller = widths.map( ( w ) => [ w, contentExtent( { nodes, reads }, rec, target, size.axis, w ) ] ).filter( ( [ w, e ] ) => null === e || e > declared[ w ] + PX_TOL );
 		if ( taller.length ) {
 			return { raise: `the content is ${ taller.map( ( [ w, e ] ) => ( null === e ? `of unknown ${ 'h' === size.axis ? 'height' : 'width' } at ${ w }` : `${ Math.round( e ) }px at ${ w }` ) ).join( ', ' ) } against a declared ${ prop } of ${ taller.map( ( [ w ] ) => `${ declared[ w ] }px` ).join( ' / ' ) }, so a minimum would grow the box the draft overflows; not written` };
 		}

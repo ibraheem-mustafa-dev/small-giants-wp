@@ -36,6 +36,7 @@ import { dcOf, draftLogic, inventoryIndex, locatedKeys, locateParts, nodesWithin
 import { SERVED_ROOT } from './key-space.mjs';
 import { instalmentsNote } from './template-piece-buybox-instalments.mjs';
 import { blockSchema } from './resolve.mjs';
+import { BOX_TOL } from './css-equivalence/tolerance.mjs';
 
 // Homes that put a part outside the buy box block (the template part's title, the accordion on its own surface).
 const ELSEWHERE = [ 'part', 'elsewhere' ];
@@ -190,7 +191,7 @@ const round2 = ( x ) => Math.round( x * 100 ) / 100;
 export function sideGap( a, b, w ) {
 	const A = a?.box?.[ w ];
 	const B = b?.box?.[ w ];
-	if ( ! A || ! B || ! a.visible?.[ w ] || ! b.visible?.[ w ] || Math.abs( A.y - B.y ) > 1 || A.x + A.w > B.x + 0.5 ) {
+	if ( ! A || ! B || ! a.visible?.[ w ] || ! b.visible?.[ w ] || Math.abs( A.y - B.y ) > 1 || A.x + A.w > B.x + BOX_TOL ) {
 		return null;
 	}
 	return round2( B.x - ( A.x + A.w ) );

@@ -7,6 +7,7 @@
 //   rendered: { w, h } | null (the image's drawn size inside its box) }.
 // `shapes` (optional): { slug: [[x, y], ...] } polygons in 0..100 units, the registry's polygon shapes.
 // Returns { writes: { key: value }, reported: [{ property, value, reason }] } keyed by the slot schema's lower camel keys.
+import { PX_TOL } from '../css-equivalence/tolerance.mjs';
 const px = ( v ) => ( /^-?\d*\.?\d+px$/.test( String( v ).trim() ) ? parseFloat( v ) : null );
 const KEYWORD = { left: 0, top: 0, center: 50, right: 100, bottom: 100 };
 const SIZING = { ratio: 'aspect-ratio', width: 'width', height: 'height', minWidth: 'min-width', maxWidth: 'max-width', minHeight: 'min-height', maxHeight: 'max-height' };
@@ -100,7 +101,7 @@ function radiusRows( e, shapes, out ) {
 		return;
 	}
 	const half = Math.min( w, h ) / 2;
-	if ( all.every( ( v ) => null !== px( v ) && px( v ) >= half - 0.5 ) && ! square ) {
+	if ( all.every( ( v ) => null !== px( v ) && px( v ) >= half - PX_TOL ) && ! square ) {
 		out.writes.shape = { shape: 'pill' };
 		return;
 	}

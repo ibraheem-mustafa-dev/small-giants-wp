@@ -31,13 +31,13 @@
 	},
 	{
 		"file": "lib/fill-prop.mjs",
-		"find": "if ( ! samePaint( prop, draft[ w ], shown, contextAt( w ) ) || ! carried ) {",
-		"replace": "if ( ! samePaint( prop, draft[ w ], shown, contextAt( w ) ) ) {",
+		"find": "if ( ! exactPaint( prop, draft[ w ], shown, contextAt( w ) ) || ! carried ) {",
+		"replace": "if ( ! exactPaint( prop, draft[ w ], shown, contextAt( w ) ) ) {",
 		"why": "under a written wider tier the block's fallback still decides the narrower tier, so a phone hero stays in two columns"
 	},
 	{
 		"file": "lib/fill-prop.mjs",
-		"find": "const carried = undefined === wider || samePaint( prop, draft[ w ], out[ wider ], contextAt( w ) );",
+		"find": "const carried = undefined === wider || exactPaint( prop, draft[ w ], out[ wider ], contextAt( w ) );",
 		"replace": "const carried = undefined === wider;",
 		"why": "every narrower tier under a written wider one is written, even one equal to the wider value"
 	},

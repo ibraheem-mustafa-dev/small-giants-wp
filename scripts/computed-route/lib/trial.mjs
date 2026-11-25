@@ -7,6 +7,7 @@
 import fs from 'fs';
 import path from 'path';
 import { nodeByRef } from './tree.mjs';
+import { PX_TOL } from './css-equivalence/tolerance.mjs';
 
 // A block's style uid class: `sgs-<prefix>-<8 hex>` (class-sgs-container-wrapper.php: a hash of the attributes).
 export const UID_RE = /^sgs-[a-z0-9]+(?:-[a-z0-9]+)*-[0-9a-f]{8}$/;
@@ -113,7 +114,7 @@ export function judgeTrial( { before, after, draft, blockX, anchorY = {} }, tol 
 			a - b > tol && worse.push( { width: Number( w ), pair, by: +( a - b ).toFixed( 1 ) } );
 		}
 	}
-	const sumTol = Math.max( tol, 0.5 * Math.sqrt( pairs.length ) );
+	const sumTol = Math.max( tol, PX_TOL * Math.sqrt( pairs.length ) );
 	const verdict = worse.length || delta > sumTol ? 'reject' : ( delta < -sumTol ? 'keep' : 'no-box-change' );
 	return { verdict, keep: 'keep' === verdict, delta: +delta.toFixed( 1 ), sumTol: +sumTol.toFixed( 1 ), worse, pairs };
 }

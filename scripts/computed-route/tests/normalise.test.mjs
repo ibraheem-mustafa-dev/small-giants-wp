@@ -37,8 +37,9 @@ test( 'MUST FAIL TO SNAP: a colour just beyond ΔE 2 (2.72 from text-label) stay
 	assert.equal( log[ 0 ].kind, 'literal' );
 } );
 
-test( 'snaps lengths to spacing tokens within 0.5px, else null', () => {
-	assert.equal( snapLength( 16.4, snapshot.spacing ).slug, '30' );
+test( 'snaps a length to the spacing token of exactly that px, else null (a stated length takes a token only when equal)', () => {
+	assert.equal( snapLength( 16, snapshot.spacing ).slug, '30' );
+	assert.equal( snapLength( 16.4, snapshot.spacing ), null, '0.4px from a token is its own length, written as it stands' );
 	assert.equal( snapLength( 18, snapshot.spacing ), null );
 } );
 

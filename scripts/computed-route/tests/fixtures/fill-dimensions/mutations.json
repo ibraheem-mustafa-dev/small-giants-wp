@@ -1,7 +1,7 @@
 [
-	{ "file": "lib/fill-dimensions.mjs", "find": "'min' === kind ? paint[ w ] > rendered[ w ] + 0.5", "replace": "'min' === kind ? paint[ w ] < rendered[ w ] + 0.5", "why": "a floor above the draft would no longer be a contradiction" },
+	{ "file": "lib/fill-dimensions.mjs", "find": "'min' === kind ? paint[ w ] > rendered[ w ] + PX_TOL", "replace": "'min' === kind ? paint[ w ] < rendered[ w ] + PX_TOL", "why": "a floor above the draft would no longer be a contradiction" },
 	{ "file": "lib/fill-dimensions.mjs", "find": "if ( px < MIN_TARGET && interactive( reads, target, w ) ) {", "replace": "if ( false ) {", "why": "an interactive size under 24px would be written as drawn" },
-	{ "file": "lib/fill-dimensions.mjs", "find": "null === e || e > declared[ w ] + 0.5 )", "replace": "null === e || e > declared[ w ] + 9999 )", "why": "a declared height under taller content would be written" },
+	{ "file": "lib/fill-dimensions.mjs", "find": "null === e || e > declared[ w ] + PX_TOL )", "replace": "null === e || e > declared[ w ] + 9999 )", "why": "a declared height under taller content would be written" },
 	{ "file": "lib/fill-dimensions.mjs", "find": "return Object.keys( out ).length || '' !== slot ? out : stylesheetPaint( block, prop );", "replace": "return out;", "why": "the block's own stylesheet floor would not be known without calibration" },
 	{ "file": "lib/fill-dimensions.mjs", "find": "if ( 'exact' === size.kind && widths.every( noSize ) ) {", "replace": "if ( false ) {", "why": "an auto height or width would not check the block's minimum" },
 	{ "file": "lib/fill-dimensions.mjs", "find": "if ( 'max' === size.kind && widths.every( noSize ) ) {", "replace": "if ( false ) {", "why": "a ceiling below the draft would stay in force" },
@@ -11,7 +11,7 @@
 	{ "file": "lib/fill-dimensions.mjs", "find": "&& replaced && null !== ceilingSlot &&", "replace": "&& null !== ceilingSlot &&", "why": "a declared height on a div would be written as the block's maximum height" },
 	{ "file": "lib/fill-dimensions.mjs", "find": "const ceilingSlot = calibratedAt( cal, slot, `max-${ prop }` ) ? slot :", "replace": "const ceilingSlot = true ? slot :", "why": "an image read at an element with no ceiling setting would be written there" },
 	{ "file": "lib/fill-dimensions.mjs", "find": "&& ! widths.some( ( w ) => null !== pxOf( reads.declared?.[ w ]?.[ target.id ]?.[ other ] ?? '' ) ) ) {", "replace": ") {", "why": "an image with both sides declared would lose its own shape to a ceiling" },
-	{ "file": "lib/fill-dimensions.mjs", "find": "undefined !== paint[ w ] && paint[ w ] > declared[ w ] + 0.5 ) ) {", "replace": "true ) ) {", "why": "a ceiling would be written where the block paints the image smaller, which cannot give the declared size" },
+	{ "file": "lib/fill-dimensions.mjs", "find": "undefined !== paint[ w ] && paint[ w ] > declared[ w ] + PX_TOL ) ) {", "replace": "true ) ) {", "why": "a ceiling would be written where the block paints the image smaller, which cannot give the declared size" },
 	{ "file": "lib/fill-dimensions.mjs", "find": "return settle( `max-${ prop }`, declared, `the draft declares", "replace": "return settle( `min-${ prop }`, declared, `the draft declares", "why": "the image would get a minimum, which leaves the block's taller paint in force" },
 	{ "file": "lib/fill-dimensions.mjs", "find": "clamps it to the declared size`, null, true, ceilingSlot );", "replace": "clamps it to the declared size`, null, false, ceilingSlot );", "why": "an image that is the root's content box would be asked on the root, where no ceiling is calibrated" }
 ]

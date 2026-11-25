@@ -1,0 +1,8 @@
+[
+	{ "file": "lib/fill-dimensions.mjs", "find": "rendered[ w ] + PX_TOL :", "replace": "rendered[ w ] + 0.5 :", "why": "a box-size bound written as a literal in fill-dimensions" },
+	{ "file": "lib/apply-lengths.mjs", "find": "Math.min( ...px ) > PX_TOL )", "replace": "Math.min( ...px ) > 0.5 )", "why": "a length-spread bound written as a literal in apply-lengths" },
+	{ "file": "lib/ledger-diff.mjs", "find": "px: PX_TOL };", "replace": "px: 0.5 };", "why": "the ledger's px tolerance field written as a literal" },
+	{ "file": "lib/trial.mjs", "find": "PX_TOL * Math.sqrt( pairs.length )", "replace": "0.5 * Math.sqrt( pairs.length )", "why": "the root-sum rounding bound written as a literal" },
+	{ "file": "lib/ledger-stage.mjs", "find": "String( diff.draft ), PX_TOL )", "replace": "String( diff.draft ), 0.5 )", "why": "the sameValue tolerance argument written as a literal" },
+	{ "file": "lib/fill-motion-settle.mjs", "find": "( i < 4 ? READ_EPSILON : PX_TOL )", "replace": "( i < 4 ? READ_EPSILON : 0.5 )", "why": "a conditional comparison bound written as a literal" }
+]

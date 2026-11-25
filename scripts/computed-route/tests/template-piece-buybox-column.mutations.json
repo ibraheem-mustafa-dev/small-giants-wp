@@ -13,7 +13,7 @@
 	},
 	{
 		"file": "lib/template-piece-buybox.mjs",
-		"find": " || A.x + A.w > B.x + 0.5 ) {",
+		"find": " || A.x + A.w > B.x + BOX_TOL ) {",
 		"replace": " ) {",
 		"why": "a gallery drawn right of the column counts as left of it"
 	},
