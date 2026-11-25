@@ -3,37 +3,14 @@
 // property that does not apply are not written; a setting that owns a property keeps a Custom CSS rule off it.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import fs from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { exactPaint, samePaint, PX_TOL } from '../lib/css-equivalence/tolerance.mjs';
-import { tiersDiffering, undeclaredInitial } from '../lib/fill-prop.mjs';
+import { createRequire } from 'module';
+import { tiersDiffering, undeclaredInitial, INITIAL_UNSTATED } from '../lib/fill-prop.mjs';
 import { snapLength } from '../lib/normalise.mjs';
-import { ownedBySetting } from '../lib/fill-residual-owned.mjs';
+import { ownedBySetting, ownedProperties } from '../lib/fill-residual-owned.mjs';
+import { openDb } from '../lib/db.mjs';
 
-const LIB = path.join( path.dirname( fileURLToPath( import.meta.url ) ), '..', 'lib' );
-const TOLERANCE_MODULE = path.join( 'css-equivalence', 'tolerance.mjs' );
-
-const files = ( dir ) => fs.readdirSync( dir, { withFileTypes: true } ).flatMap( ( e ) => ( e.isDirectory() ? files( path.join( dir, e.name ) ) : e.name.endsWith( '.mjs' ) ? [ path.join( dir, e.name ) ] : [] ) );
-// A tolerance literal: a *TOL* constant or a tol option given 0.5, a px difference compared to 0.5, a scale pose compared to 0.011.
-const LITERALS = [
-	/\b\w*TOL\w*\s*[=:]\s*0\.5\b/,
-	/\btol(?:Px)?\s*[=:]\s*0\.5\b/,
-	/Math\.abs\((?:[^()]|\((?:[^()]|\([^()]*\))*\))*\)\s*(?:<=|<|>=|>)\s*(?:0\.5|0\.011)\b/,
-	/\bTOL \+ 0\.5\b/,
-];
-
-test( 'MUST FAIL if a tolerance literal returns outside lib/css-equivalence/tolerance.mjs', () => {
-	const found = files( LIB ).filter( ( f ) => ! f.endsWith( TOLERANCE_MODULE ) ).flatMap( ( f ) => fs.readFileSync( f, 'utf8' ).split( '\n' ).flatMap( ( line, i ) => ( LITERALS.some( ( re ) => re.test( line ) ) ? [ `${ path.relative( LIB, f ) }:${ i + 1 }: ${ line.trim().slice( 0, 100 ) }` ] : [] ) ) );
-	assert.deepEqual( found, [], 'import PX_TOL, SCALE_TOL or READ_EPSILON from lib/css-equivalence/tolerance.mjs' );
-} );
-
-test( 'negative control: the lint patterns catch each literal form', () => {
-	for ( const line of [ 'const TOL = 0.5;', 'function f( a, tol = 0.5 ) {}', 'Math.abs( a - b ) <= 0.5', 'Math.abs( a.scale - b.scale ) <= 0.011', 'x > TOL + 0.5' ] ) {
-		assert.ok( LITERALS.some( ( re ) => re.test( line ) ), line );
-	}
-	assert.ok( ! LITERALS.some( ( re ) => re.test( 'Math.abs( a - b ) <= PX_TOL' ) ) );
-} );
+// The tolerance-literal lint is tests/tolerance-literals.test.mjs.
 
 test( 'a 1.5px stated bar is not the 2px default; 2px is; the measured-render tolerance still holds a 0.4px difference', () => {
 	assert.equal( exactPaint( 'height', '1.5px', '2px' ), false );
@@ -72,10 +49,42 @@ test( 'an initial layout value no code declares is not written; a declared one, 
 	assert.equal( undeclaredInitial( 'margin-top', '0px', {} ), false, 'only the layout properties' );
 } );
 
-test( 'a property of a setting the node holds is owned: list-style against markerType', () => {
-	assert.equal( ownedBySetting( 'list-style', { markerType: 'check' } ), 'markerType' );
-	assert.equal( ownedBySetting( 'list-style-type', { markerType: 'check' } ), 'markerType' );
-	assert.equal( ownedBySetting( 'list-style', { markerType: '' } ), null );
-	assert.equal( ownedBySetting( 'list-style', {} ), null );
-	assert.equal( ownedBySetting( 'margin', { markerType: 'check' } ), null );
+test( 'MUST FAIL: the properties judged as unstated initial values are the ones mdn-data says apply only inside a grid or flex layout, with initial values from mdn-data', () => {
+	const MDN = createRequire( import.meta.url )( 'mdn-data/css/properties.json' );
+	const roles = [ ...INITIAL_UNSTATED ].filter( ( p ) => MDN[ p ] );
+	for ( const p of [ 'grid-template-columns', 'grid-auto-flow', 'grid-row-start', 'flex-grow', 'flex-basis', 'order', 'align-self', 'align-content', 'justify-self', 'place-self', 'place-content', 'flex', 'grid-row' ] ) {
+		assert.ok( INITIAL_UNSTATED.has( p ), `${ p } applies to ${ MDN[ p ].appliesto }` );
+	}
+	// no property that applies to every element, a flex container's own direction or the gaps
+	for ( const p of [ 'margin-top', 'color', 'display', 'flex-direction', 'flex-wrap', 'justify-content', 'align-items', 'gap', 'row-gap', 'column-gap' ] ) {
+		assert.ok( ! INITIAL_UNSTATED.has( p ), `${ p } (${ MDN[ p ].appliesto }) is judged by its own rule` );
+	}
+	assert.ok( roles.every( ( p ) => /grid|flex|multiline|absolutely|blockLevel/i.test( MDN[ p ].appliesto ) ), 'every one is a layout role mdn-data names' );
+	// the initial value the judgement compares with is mdn-data's: a non-initial value is written
+	assert.equal( undeclaredInitial( 'grid-auto-flow', 'row', {} ), true );
+	assert.equal( undeclaredInitial( 'grid-auto-flow', 'column', {} ), false );
+	assert.equal( undeclaredInitial( 'order', '0', {} ), true );
+	assert.equal( undeclaredInitial( 'order', '2', {} ), false );
+	assert.equal( undeclaredInitial( 'align-content', 'normal', {} ), true );
+} );
+
+// The framework DB as seeded: block_attributes.owns_css, from each setting's `sgs.ownsCss` in block.json (FP-1).
+const db = openDb();
+
+test( 'a property of a setting the node holds is owned, read from the DB: list-style against the icon list marker type', () => {
+	const LIST = 'sgs/icon-list';
+	assert.equal( ownedBySetting( db, LIST, 'list-style', { markerType: 'check' } ), 'markerType' );
+	assert.equal( ownedBySetting( db, LIST, 'list-style-type', { markerType: 'check' } ), 'markerType', 'a shorthand a setting owns owns its longhands' );
+	assert.equal( ownedBySetting( db, LIST, 'list-style-position', { markerType: 'check' } ), 'markerType' );
+	assert.equal( ownedBySetting( db, LIST, 'list-style', { markerType: '' } ), null, 'a setting holding no value owns nothing here' );
+	assert.equal( ownedBySetting( db, LIST, 'list-style', {} ), null );
+	assert.equal( ownedBySetting( db, LIST, 'margin', { markerType: 'check' } ), null );
+	assert.equal( ownedBySetting( db, 'sgs/text', 'list-style', { markerType: 'check' } ), null, 'an attribute of that name on another block owns nothing' );
+	assert.deepEqual( ownedProperties( db, LIST ), [ { attr: 'markerType', props: [ 'list-style' ] } ] );
+	assert.deepEqual( ownedProperties( db, 'sgs/text' ), [] );
+} );
+
+test( 'a DB with no owns_css column is refused, not read as owning nothing', () => {
+	const old = { prepare: ( sql ) => ( { all: () => ( /PRAGMA/.test( sql ) ? [ { name: 'attr_name' } ] : [] ) } ) };
+	assert.throws( () => ownedBySetting( old, 'sgs/icon-list', 'list-style', { markerType: 'check' } ), /no block_attributes\.owns_css column: reseed it/ );
 } );

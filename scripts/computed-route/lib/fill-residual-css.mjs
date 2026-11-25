@@ -355,7 +355,7 @@ export function residualCssWrites( { nodes, flat, refOf, reads, db, unmapped, ca
 				refuse( r, `${ heldBy.attr_name } already holds ${ node.attributes[ heldBy.attr_name ] } on this instance, which does what the draft's ${ row.value } does` );
 				continue;
 			}
-			const owner = ownedBySetting( prop, node.attributes );
+			const owner = ownedBySetting( db, rec.name, prop, node.attributes );
 			if ( owner ) {
 				refuse( r, `${ owner } is set on this instance and draws ${ prop }; a rule would cancel it` );
 				continue;

@@ -601,7 +601,12 @@
 		},
 		"markerType": {
 			"type": "string",
-			"default": "icon"
+			"default": "icon",
+			"sgs": {
+				"ownsCss": [
+					"list-style"
+				]
+			}
 		},
 		"siblingDimColour": {
 			"type": "string",

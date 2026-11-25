@@ -3487,6 +3487,89 @@ def _populate_setting_meanings(
     }
 
 
+def _populate_owned_css(
+    blocks_dir: Path,
+    conn: "sqlite3.Connection",
+    dry_run: bool,
+) -> dict:
+    """Stage 1 sub-step D3: seed block_attributes.owns_css from each attribute's `sgs.ownsCss`.
+
+    `ownsCss` lists the CSS properties a setting draws that the framework DB records no `css_property` for (a marker
+    type draws `list-style` through the block's own markup), as a JSON array of property names. The computed route reads
+    it so a Custom CSS rule never cancels a setting that already draws that property (Spec 48 FR-48-109); a shorthand
+    named here owns its longhands.
+
+    Every run CLEARS the column first and reseeds it in the same transaction, so an entry removed from block.json never
+    survives in the DB. An entry on an attribute with no block_attributes row is reported, never inserted (Stage 1 owns
+    the rows); a value that is no list of property names is reported and skipped.
+    """
+    c = conn.cursor()
+    has_column = "owns_css" in [r[1] for r in c.execute("PRAGMA table_info(block_attributes)").fetchall()]
+    if not has_column and not dry_run:
+        c.execute("ALTER TABLE block_attributes ADD COLUMN owns_css TEXT")
+        has_column = True
+
+    stored_before = c.execute(
+        "SELECT COUNT(*) FROM block_attributes WHERE owns_css IS NOT NULL"
+    ).fetchone()[0] if has_column else 0
+    if not dry_run:
+        c.execute("UPDATE block_attributes SET owns_css = NULL WHERE owns_css IS NOT NULL")
+
+    seeded = 0
+    no_row: list = []
+    invalid: list = []
+    for block_dir in sorted(blocks_dir.iterdir()):
+        bj_path = block_dir / "block.json"
+        if not block_dir.is_dir() or block_dir.name in EXCLUDED_DIRS or not bj_path.exists():
+            continue
+        try:
+            with open(bj_path, encoding="utf-8") as f:
+                block_json = json.load(f)
+        except Exception as exc:  # noqa: BLE001
+            print(f"Stage 1 (owns_css): WARN unreadable {bj_path}: {exc}")
+            continue
+        slug = block_json.get("name", f"sgs/{block_dir.name}")
+        if not slug.startswith("sgs/"):
+            continue
+        for attr, spec in (block_json.get("attributes") or {}).items():
+            owns = ((spec or {}).get("sgs") or {}).get("ownsCss") if isinstance(spec, dict) else None
+            if owns is None:
+                continue
+            if (
+                not isinstance(owns, list)
+                or not owns
+                or not all(isinstance(p, str) and re.fullmatch(r"[a-z][a-z-]*", p) for p in owns)
+            ):
+                invalid.append(f"{slug}.{attr}")
+                continue
+            value = json.dumps(sorted(set(owns)), ensure_ascii=False)
+            if dry_run:
+                print(f"[dry-run owns_css] {slug}.{attr}: {value}")
+                seeded += 1
+                continue
+            c.execute(
+                "UPDATE block_attributes SET owns_css = ? WHERE block_slug = ? AND attr_name = ?",
+                (value, slug, attr),
+            )
+            if c.rowcount:
+                seeded += 1
+            else:
+                no_row.append(f"{slug}.{attr}")
+
+    for name in no_row:
+        print(f"Stage 1 (owns_css): WARN {name} carries sgs.ownsCss but has no block_attributes row")
+    for name in invalid:
+        print(f"Stage 1 (owns_css): WARN {name} carries sgs.ownsCss that is not a list of CSS property names; skipped")
+    if not dry_run:
+        conn.commit()
+    return {
+        "owns_css_cleared": 0 if dry_run else stored_before,
+        "owns_css_seeded": seeded,
+        "owns_css_no_row": no_row,
+        "owns_css_invalid": invalid,
+    }
+
+
 def _is_tier_object(definition: dict) -> bool:
     """A per-breakpoint setting (dbschema/block_source.py::is_tier_object)."""
     return is_tier_object(definition)
@@ -3773,6 +3856,14 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
         print(
             f"Stage 1 (meaning): cleared={sm_counts['meaning_cleared']}, "
             f"seeded={sm_counts['meaning_seeded']}, no_row={len(sm_counts['meaning_no_row'])}."
+        )
+
+        # --- Stage 1 sub-step D3: seed block_attributes.owns_css (FR-48-109: a rule never fights a setting) ---
+        oc_counts = _timed(timings, "owned css", _populate_owned_css, blocks_dir, conn, dry_run=False)
+        print(
+            f"Stage 1 (owns_css): cleared={oc_counts['owns_css_cleared']}, "
+            f"seeded={oc_counts['owns_css_seeded']}, no_row={len(oc_counts['owns_css_no_row'])}, "
+            f"invalid={len(oc_counts['owns_css_invalid'])}."
         )
 
         # --- Stage 1 tail: apply composition_role corrections (seed data, no
