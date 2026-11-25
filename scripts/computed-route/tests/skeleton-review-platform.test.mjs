@@ -11,6 +11,7 @@ import { loadFacts } from '../lib/skeleton-facts.mjs';
 import { proposeSkeleton } from '../lib/skeleton-propose.mjs';
 import { inventoryModel } from '../lib/skeleton-model.mjs';
 import { reviewPlatformRegions, signalsOf } from '../lib/skeleton-review-platform.mjs';
+import { handoverProblems } from '../lib/fill-handover.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
 const db = openDb();
@@ -70,7 +71,10 @@ test( 'MUST FAIL: a review section naming Google by its mark, name and links is 
 	assert.equal( row.rule, 'reviewPlatform' );
 	assert.deepEqual( proposal.reviewPlatforms, { regions: { 'Root/4#0': 'Google' }, notes: [] } );
 	assert.match( row.reason, /3 reviews .* naming Google by its mark, name, link/ );
-	assert.match( blocks[ 0 ].handover?.[ 0 ] ?? '', /place ID/ );
+	assert.match( blocks[ 0 ].handover?.[ 0 ]?.detail ?? '', /place ID/ );
+	assert.deepEqual( handoverProblems( blocks[ 0 ].handover, 'the Google reviews' ), [], 'the hand-over is an object with an owner, a kind and a detail Fill accepts' );
+	assert.equal( blocks[ 0 ].handover[ 0 ].owner, 'site-info' );
+	assert.equal( blocks[ 0 ].handover[ 0 ].kind, 'presence' );
 	assert.equal( proposal.rows.find( ( r ) => 'Root/13#0' === r.key )?.rule, 'reviewPlatform', 'the reviews are drawn by the block' );
 	assert.ok( all( skeleton, 'sgs/heading' ).length, 'the section heading outside the card stays' );
 } );

@@ -63,6 +63,17 @@ export function ruleAttr( db, block, rule ) {
 // The type of one setting of a block in the framework database, or null when the block holds no such setting.
 export const settingType = ( db, block, attr ) => db.prepare( 'SELECT attr_type FROM block_attributes WHERE block_slug = ? AND attr_name = ?' ).get( block, attr )?.attr_type ?? null;
 
+// The values a setting's enum holds in the framework database ([] for a setting with none).
+export function settingEnum( db, block, attr ) {
+	const raw = db.prepare( 'SELECT enum_values FROM block_attributes WHERE block_slug = ? AND attr_name = ?' ).get( block, attr )?.enum_values;
+	try {
+		const list = raw ? JSON.parse( raw ) : [];
+		return Array.isArray( list ) ? list : [];
+	} catch {
+		return [];
+	}
+}
+
 // What is wrong with the order facts file against the plugin and the database: a key the binding source does not hold, a
 // Show-to rule no block setting lists, an order-items setting the block does not hold or holds with another type.
 export function orderFactsProblems( { facts, plugin, db } ) {

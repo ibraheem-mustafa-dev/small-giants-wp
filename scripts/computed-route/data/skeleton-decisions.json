@@ -167,6 +167,10 @@
 		},
 		"commerceRegion": {
 			"reason": "the draft's commerce region on a WooCommerce page is WooCommerce's working piece, placed as an ordinary block that draws the region itself (Bean, 2026-10-26: these are SGS pages with the WooCommerce piece in them); the region is found by structure (lib/skeleton-commerce-region.mjs), never by words, and everything around it stays the draft's own blocks",
+			"basketCount": {
+				"wordSpaceEm": 0.25,
+				"reason": "the basket count the draft sets inside a heading's line (a pill after the words) is a row of the heading and the count; the draft's line carried a word space between them, so the row's gap is that space at the heading's font size, in em of that size (a typical word space is a quarter em), and its items are centred when the count is `vertical-align: middle` (2026-11-25, lib/template-piece-woo-layout.mjs::countRowDecided)"
+			},
 			"money": "(£|\\$|€|¥|₹)\\s?\\d|\\d[\\d.,]*\\s?(€|zł|kr)(?![a-z])",
 			"checkoutEntry": {
 				"reason": "a checkout draft that shows no card fields or no order lines loop (wallet buttons, an empty basket) is still found from the fields the visitor types into: enough shown entry fields, one of them an email or phone field, a name, address or card autocomplete token, or two numeric fields",
@@ -245,7 +249,7 @@
 						"goo.gl",
 						"maps.app.goo.gl"
 					],
-					"handover": "the reviews are the draft's, written into the block; for Google's live reviews set the block's place ID (placeId) with the site's Google API key"
+					"handover": { "owner": "site-info", "kind": "presence", "detail": "the reviews are the draft's, written into the block; for Google's live reviews set the block's place ID (placeId) with the site's Google API key" }
 				},
 				{
 					"name": "Trustpilot",
@@ -259,7 +263,7 @@
 					"domains": [
 						"trustpilot.com"
 					],
-					"handover": "the reviews are the draft's, written into the block; for Trustpilot's live reviews set the block's business unit address (businessUnitUrl) and switch its source to synced"
+					"handover": { "owner": "site-info", "kind": "presence", "detail": "the reviews are the draft's, written into the block; for Trustpilot's live reviews set the block's business unit address (businessUnitUrl) and switch its source to synced" }
 				}
 			]
 		},

@@ -48,6 +48,7 @@ import { loadCatalogue } from './catalogue-read.mjs';
 import { draftLinksFor } from './draft-link.mjs';
 import { commerceOf } from './skeleton-commerce-region.mjs';
 import { lintSkeleton } from '../lint.mjs';
+import { skeletonProblems } from './fill-skeleton.mjs';
 import { openDb } from './db.mjs';
 import { conservationRows, identityOf, paintProblems, unreadList, STRICT_DEFAULT } from './skeleton-paint-conservation.mjs';
 import { recordFor, openersFor, recordView } from './skeleton-record.mjs';
@@ -128,13 +129,15 @@ function readRows( file ) {
 	return Array.isArray( data ) ? data : data.rows || [];
 }
 
-// What the builders added that the skeleton lint (lint.mjs::lintSkeleton, rule R-47-10: a Fill skeleton carries no
-// attribute that paints a CSS property) refuses: its findings on `after` that `before` does not have, by message with
-// the node number left out. A setting that paints a property is Fill's to write, never a builder's.
+// What the builders added that the whole skeleton check refuses, the one a proposed skeleton and Fill's input pass
+// (lint.mjs::lintSkeleton: rule R-47-10, a Fill skeleton carries no attribute that paints a CSS property, and the handover
+// shape; lib/fill-skeleton.mjs::skeletonProblems: the draft keys Fill reads): its findings on `after` that `before` does not
+// have, by message with the node number left out. A setting that paints a property is Fill's to write, never a builder's.
 export function placedLint( before, after, db ) {
 	const bare = ( m ) => m.replace( /node \d+ /, '' );
-	const had = lintSkeleton( before, db ).map( bare );
-	return lintSkeleton( after, db ).map( bare ).filter( ( m ) => {
+	const check = ( tree ) => [ ...new Set( [ ...skeletonProblems( tree ), ...lintSkeleton( tree, db ) ] ) ].map( bare );
+	const had = check( before );
+	return check( after ).filter( ( m ) => {
 		const i = had.indexOf( m );
 		return i < 0 || ! had.splice( i, 1 );
 	} );

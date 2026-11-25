@@ -57,9 +57,10 @@ test( 'MUST FAIL: a surface whose draft record matched with no intake skeleton s
 	assert.equal( ( await cloneSurfaces( { client: 'acme', site: 's', keys: [ 'template-page' ], intake, surfaces, noIntake: [ gap ], run: async () => ( { status: clean( [ 'template-page' ] ) } ), log: () => {} } ) ).ok, true, 'negative control: another surface\'s gap stops nothing' );
 } );
 
-test( 'MUST FAIL: the one site-run command runs every stage strictly, one job, with the template copies, and carries the allowances', () => {
+test( 'MUST FAIL: the one site-run command runs every stage, not strict (strict is for tests only), one job, with the template copies, and carries the allowances', () => {
 	const args = siteRunArgs( { client: 'acme', site: 'local-mediatest-acme', keys: [ 'header', 'footer' ], allowMissingPaint: [ 'sgs/gallery' ] } );
-	assert.deepEqual( args, [ 'acme', '--site', 'local-mediatest-acme', '--only', 'header,footer', '--stages', 'inventory,propose,fill,build,apply,walk', '--jobs', '1', '--strict', '--allow-missing-paint', 'sgs/gallery' ] );
+	assert.deepEqual( args, [ 'acme', '--site', 'local-mediatest-acme', '--only', 'header,footer', '--stages', 'inventory,propose,fill,build,apply,walk', '--jobs', '1', '--allow-missing-paint', 'sgs/gallery' ] );
+	assert.ok( siteRunArgs( { client: 'acme', site: 'x', keys: [ 'home' ], strict: true } ).includes( '--strict' ), 'strict mode is still there for a test that asks for it' );
 	assert.ok( ! args.includes( '--no-copies' ), "a page's template copy is rebuilt with the page" );
 	const retry = siteRunArgs( { client: 'acme', site: 'x', keys: [ 'home' ], stages: RETRY_STAGES, strict: false } );
 	assert.deepEqual( retry, [ 'acme', '--site', 'x', '--only', 'home', '--stages', 'build,apply,walk', '--jobs', '1' ], 'negative control: the retry names the later stages only and is not strict' );

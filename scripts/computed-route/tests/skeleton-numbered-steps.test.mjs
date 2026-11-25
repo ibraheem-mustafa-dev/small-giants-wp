@@ -63,9 +63,10 @@ test( 'MUST FAIL: a stacked list whose items type 1, 2, 3 beside their words is 
 	const [ block ] = steps( skeleton );
 	assert.ok( block );
 	assert.equal( block.draftRef.tpl, 'Root/3#0', 'placed at the steps\' parent' );
-	assert.deepEqual( block.attributes.steps, [ { number: '1', title: 'Pick a frame today' }, { number: '2', title: 'Tell me what it is for' }, { number: '3', title: 'Send your prescription now' } ] );
+	assert.deepEqual( block.decided.steps, [ { number: '1', title: 'Pick a frame today' }, { number: '2', title: 'Tell me what it is for' }, { number: '3', title: 'Send your prescription now' } ] );
 	assert.equal( block.attributes.layout, 'list' );
-	assert.equal( block.attributes.headingLevel, 'p', 'a title that is no h tag is the block\'s paragraph level' );
+	assert.equal( block.attributes.steps, undefined, 'the steps are a style-valued setting: never among a skeleton attributes (R-47-10)' );
+	assert.equal( block.decided.headingLevel, 'p', 'a title that is no h tag is the block\'s paragraph level' );
 	assert.equal( all( skeleton, 'sgs/icon-list' ).length, 0, 'no numbered icon list' );
 	assert.equal( proposal.rows.find( ( r ) => 'Root/11#0' === r.key )?.action, 'absorbed', 'the steps\' elements are drawn by the block' );
 } );
@@ -74,9 +75,9 @@ test( 'MUST FAIL: steps side by side with a title heading and a description are 
 	const { skeleton } = run( page( { titleTag: 'h3', descriptions: true, at: side, numbers: [ '01', '02', '03' ] } ) );
 	const [ block ] = steps( skeleton );
 	assert.ok( block );
-	assert.deepEqual( block.attributes.steps[ 1 ], { number: '02', title: 'Tell me what it is for', description: 'We do step 2 for you.' } );
+	assert.deepEqual( block.decided.steps[ 1 ], { number: '02', title: 'Tell me what it is for', description: 'We do step 2 for you.' } );
 	assert.equal( block.attributes.layout, 'row' );
-	assert.equal( block.attributes.headingLevel, 'h3' );
+	assert.equal( block.decided.headingLevel, 'h3' );
 } );
 
 test( 'negative control: a number beside a short label is a contents list, the list block' + "'" + 's numbered marker', () => {

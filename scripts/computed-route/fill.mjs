@@ -159,7 +159,7 @@ export async function fillSurface( o ) {
 	const snapshot = loadSnapshot( snapshotFile );
 	const rawSnapshot = JSON.parse( fs.readFileSync( snapshotFile, 'utf8' ) );
 	const authored = readTree( o.skeleton );
-	const problems = [ ...skeletonProblems( authored ), ...lintSkeleton( authored, db, path.basename( o.skeleton ) ) ];
+	const problems = [ ...new Set( [ ...skeletonProblems( authored ), ...lintSkeleton( authored, db, path.basename( o.skeleton ) ) ] ) ];
 	if ( problems.length ) {
 		throw new Error( `the skeleton is not valid (R-47-10):\n- ${ problems.join( '\n- ' ) }` );
 	}

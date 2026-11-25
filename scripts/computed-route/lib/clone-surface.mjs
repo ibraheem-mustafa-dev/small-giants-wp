@@ -4,7 +4,7 @@
 //   - finaliserVerdict: the finaliser picks. A skeleton row the writer is unsure of awaits an agent's pick (intake.mjs --finalise
 //     and --apply-picks); a surface with such rows fails the command, naming the next action, unless the run names the allowance
 //     `--allow-unpicked` (the rows then go through on the writer's proposal, listed).
-//   - siteRunArgs: the one site-run.mjs command line, `--strict`, one job, never `--no-copies`, so a page's template copy is rebuilt
+//   - siteRunArgs: the one site-run.mjs command line, not strict (strict is for tests only), one job, never `--no-copies`, so a page's template copy is rebuilt
 //     with the page and a recorded shell that names a colour the Fill no longer writes is replaced.
 //   - timedOutBuilds, mergeRetry: a build that timed out is retried once with `--stages build,apply,walk`, which builds the surface's
 //     newest Fill (site-run.mjs::fillOutDir) and does not Fill again; the retry's records replace the failed ones.
@@ -87,8 +87,9 @@ export async function applyPicksFile( { repo, client, file, exec } ) {
 }
 
 // The arguments of the one site-run.mjs command for `keys` (after the script path). Every stage by default; the retry passes
-// RETRY_STAGES and `strict: false`, because the stages left out are the earlier run's.
-export function siteRunArgs( { client, site, keys, stages = SURFACE_STAGES, strict = true, jobs = 1, allowMissingPaint = [] } ) {
+// RETRY_STAGES, because the stages left out are the earlier run's. Strict mode is for tests only (Spec 48 FR-48-113, section 3.4):
+// a look the route lists as unwritten never stops a clone, so `--strict` is added only when the caller asks for it.
+export function siteRunArgs( { client, site, keys, stages = SURFACE_STAGES, strict = false, jobs = 1, allowMissingPaint = [] } ) {
 	return [ client, '--site', site, '--only', keys.join( ',' ), '--stages', stages.join( ',' ), '--jobs', String( jobs ), ...( strict ? [ '--strict' ] : [] ), ...allowMissingPaintArgs( allowMissingPaint ) ];
 }
 

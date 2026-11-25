@@ -1463,7 +1463,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		// (rules.numberedSteps): the block draws the steps, so the steps' elements are absorbed.
 		( { e } ) => {
 			const g = stepRuns.get( e.key );
-			return g && 'form' !== surface.kind ? v( 'numberedSteps', { block: R.numberedSteps.block, absorb: true, attributes: g.attributes, reason: `${ R.numberedSteps.reason }; ${ g.reason }` } ) : null;
+			return g && 'form' !== surface.kind ? v( 'numberedSteps', { block: R.numberedSteps.block, absorb: true, attributes: g.attributes, decided: g.decided, reason: `${ R.numberedSteps.reason }; ${ g.reason }` } ) : null;
 		},
 		// The first section of a page holding its h1 is the hero; with an image inside it is the split hero. A page wrapper (the
 		// `<main>`, or an element holding two or more stacked sections) is never the hero: the hero is its first block child

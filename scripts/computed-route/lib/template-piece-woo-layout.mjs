@@ -30,7 +30,8 @@
 // basket's `{{ count }}`, `items.reduce( ( a, x ) => a + x.qty, 0 )` over the `items` the lines loop) is the live basket count
 // (basketCounts): the node becomes a row holding its own words and an `sgs/text` drawing the "Basket count" format
 // (`<span class="sgs-basket-count">`, filled by src/shared/cart-live/basket-count.js), which reads the piece's look. The row
-// has no draft element, so its gap and alignment are a handover row (a skeleton carries no style value).
+// has no draft element, so its gap (one word space at the heading's font size) and its centring (the count's
+// `vertical-align: middle`) are read from the heading's and the count's draft elements and travel as the row's `decided`.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -193,9 +194,30 @@ export function basketCounts( v, regionKey, L ) {
 	} );
 }
 
+// A declared px length in an element's served inline style ("font-size: 68px" -> 68), else null.
+const pxOf = ( el, property ) => {
+	const hit = String( el?.attrs?.style ?? '' ).match( new RegExp( `(?:^|;)\\s*${ property }\\s*:\\s*(-?[\\d.]+)px\\s*(?:;|$)`, 'i' ) );
+	return hit ? Number( hit[ 1 ] ) : null;
+};
+
+// The row's own settings, read from the draft: its gap is one word space at the host heading's font size (the space the
+// draft's line carried between the words and the count; rules.commerceRegion.basketCount.wordSpaceEm is that space in em),
+// and its items sit centred on the line when the draft's count is `vertical-align: middle`. They travel as the row's
+// `decided` (R-47-10: a setting that paints a CSS property is never a skeleton attribute), which Fill writes. The row has
+// no draft element of its own, so no reader would find them.
+function countRowDecided( { hostEl, chipEl, rule } ) {
+	const size = pxOf( hostEl, 'font-size' );
+	const em = rule?.basketCount?.wordSpaceEm;
+	const middle = /(?:^|;)\s*vertical-align\s*:\s*middle\s*(?:;|$)/i.test( String( chipEl?.attrs?.style ?? '' ) );
+	return {
+		...( size && em ? { gap: { desktop: `${ Math.round( size * em * 100 ) / 100 }px` } } : {} ),
+		...( middle ? { alignItems: { desktop: 'center' } } : {} ),
+	};
+}
+
 // The row standing for a node whose element holds a basket count: its own words, then the count (or the count first when the
 // draft draws it before the words).
-function countRow( n, { hostEl, chipEl, expr, m } ) {
+function countRow( n, { hostEl, chipEl, expr, m, rule } ) {
 	const words = ws( hostEl.words );
 	const text = 'sgs/heading' === n.name ? 'content' : 'text';
 	const handover = ( n.handover || [] ).filter( ( h ) => ! String( h.detail || '' ).includes( `{{ ${ expr } }}` ) && ! String( h.detail || '' ).includes( `"${ ws( chipEl.words ) }" as a piece of its own` ) );
@@ -204,10 +226,8 @@ function countRow( n, { hostEl, chipEl, expr, m } ) {
 	const chip = { name: 'sgs/text', attributes: { text: '<span class="sgs-basket-count">0</span>' }, draftRef: { tpl: chipEl.key }, draftFingerprint: fingerprintOf( chipEl, m.byKey ), innerBlocks: [] };
 	const snippet = String( hostEl.snippet || '' ).replace( /^<[^>]*>/, '' );
 	const first = ! ws( snippet.slice( 0, Math.max( 0, snippet.indexOf( '<' ) ) ) );
-	// The row has no draft element of its own (the draft sets the count in the heading's line), so no reader writes its gap or
-	// cross alignment and a skeleton may carry no style value: they are handed over.
-	const line = { owner: 'content-page', kind: 'layout', detail: `the basket count ${ chipEl.key } sits in the line of ${ hostEl.key }'s words (a word space ${ first ? 'after' : 'before' } it, centred on the line by vertical-align): set this row's gap and its items' alignment to match` };
-	return { name: 'sgs/container', attributes: { tagName: 'div', layout: 'flex' }, handover: [ line ], innerBlocks: first ? [ chip, own ] : [ own, chip ] };
+	const decided = countRowDecided( { hostEl, chipEl, rule } );
+	return { name: 'sgs/container', attributes: { tagName: 'div', layout: 'flex' }, ...( Object.keys( decided ).length ? { decided } : {} ), innerBlocks: first ? [ chip, own ] : [ own, chip ] };
 }
 
 export function place( ctx, piece ) {
@@ -264,7 +284,7 @@ export function place( ctx, piece ) {
 		const chipEl = c && m.byKey[ `Root/${ nOf( c.chip ) }#0` ];
 		if ( hostEl && chipEl && [ 'sgs/heading', 'sgs/text' ].includes( n.name ) ) {
 			counted.push( `${ ctx.key }: ${ chipEl.key } in ${ keyOf( n ) } counts the region's lines ({{ ${ c.expr } }}): built as the live basket count beside the ${ n.name }'s words` );
-			return countRow( n, { hostEl, chipEl, expr: c.expr, m } );
+			return countRow( n, { hostEl, chipEl, expr: c.expr, m, rule } );
 		}
 		return n.innerBlocks?.length ? { ...n, innerBlocks: split( n.innerBlocks ) } : n;
 	} );

@@ -311,10 +311,12 @@ test( 'MUST FAIL: a piece counting the basket\'s lines beside the heading become
 	const hero = got.tree[ 0 ].innerBlocks[ 0 ];
 	assert.deepEqual( shape( hero.innerBlocks ), [ [ 'sgs/text', 'Root/10#0' ], [ 'sgs/container', null, [ [ 'sgs/heading', 'Root/11#0' ], [ 'sgs/text', 'Root/12#0' ] ] ], [ 'core/post-content', null ] ] );
 	const row = hero.innerBlocks[ 1 ];
-	// The row carries no style value (the skeleton lint); its gap and alignment are handed over.
+	// The row carries no style value (the skeleton lint) and no handover: its gap (one word space at the heading's 68px) and its
+	// centring (the count's vertical-align: middle) are read from the draft's elements and travel as its `decided`.
 	assert.deepEqual( row.attributes, { tagName: 'div', layout: 'flex' } );
 	assert.equal( row.draftRef, undefined );
-	assert.match( row.handover[ 0 ].detail, /Root\/12#0 sits in the line of Root\/11#0's words \(a word space before it/ );
+	assert.equal( row.handover, undefined );
+	assert.deepEqual( row.decided, { gap: { desktop: '17px' }, alignItems: { desktop: 'center' } } );
 	const [ heading, chip ] = row.innerBlocks;
 	assert.equal( heading.attributes.content, 'Your basket' );
 	assert.equal( heading.draftFingerprint.tag, 'h1' );

@@ -14,7 +14,8 @@
 //     from its own pinned install (FR-48-75);
 //   - a --tree carries a core `style` attribute or a native_wp setting (both serialise as inline style, Spec 32), or a
 //     `content` or `text` markup string holding a tag with a style attribute (rich-text formats are class-only);
-//   - a --skeleton carries any attribute whose css_property is not null (Fill skeletons hold no style values);
+//   - a --skeleton carries any attribute whose css_property is not null (Fill skeletons hold no style values: a value the
+//     skeleton decides travels in the node's `decided`), or a node's handover is not a list of { owner, kind, detail };
 //   - a --surfaces manifest has a tree printing another post (a linked block, a modal or drawer reference, a template
 //     part) that no surface owns (lib/references.mjs::lintSurfaces);
 //   - the divergence ledger beside a --surfaces manifest has an entry citing no register item, or an item its register
@@ -30,6 +31,7 @@ import { readTree, walk } from './lib/tree.mjs';
 import { lintSurfaces } from './lib/references.mjs';
 import { load } from './lib/ledger.mjs';
 import { brandBySlug, brandOwnsAddress } from './lib/brand-registry.mjs';
+import { handoverProblems } from './lib/fill-handover.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
@@ -286,9 +288,12 @@ export function lintSkeleton( tree, db, label = 'skeleton' ) {
 		}
 		for ( const k of Object.keys( n.attributes || {} ) ) {
 			if ( 'style' === k || attrRow( db, n.name, k )?.css_property ) {
-				problems.push( `${ label } node ${ i } (${ n.name }) carries style value ${ k }` );
+				problems.push( `${ label } node ${ i } (${ n.name }) carries style value ${ k }: a value the skeleton decides (a heading level, a column count, a list of steps) travels in the node's decided, which Fill writes; any other look is Fill's to read from the draft` );
 			}
 		}
+		// The same handover check Fill makes (lib/fill-handover.mjs::handoverProblems), worded as skeletonProblems words it, so a
+		// writer's bad handover fails where the skeleton is made, and one problem reads once when both checks run.
+		problems.push( ...handoverProblems( n.handover, `node ${ i } (${ n.name })` ) );
 	} );
 	return problems;
 }

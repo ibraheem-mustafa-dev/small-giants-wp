@@ -20,7 +20,7 @@ import { templateKeyOf } from './fact-key.mjs';
 import { openDb } from './db.mjs';
 import { draftOf, readOrder, sourceText } from './template-piece-order-read.mjs';
 import { decodeEntities } from './intake-ast.mjs';
-import { boundAttr, loadOrderFacts, orderFactsProblems, pluginFacts, ruleAttr, settingType } from './template-piece-order-plugin.mjs';
+import { boundAttr, loadOrderFacts, orderFactsProblems, pluginFacts, ruleAttr, settingEnum, settingType } from './template-piece-order-plugin.mjs';
 
 // Every node of a tree with the list holding it and its ancestors: [ { node, list, up: [ node ] } ] in document order.
 function walk( tree, up = [] ) {
@@ -375,12 +375,13 @@ function placeAccess( ctx, piece, r ) {
 	const root = roots[ 0 ];
 	const hidden = 'order-not-viewable';
 	const wrapAttr = ruleAttr( db, 'sgs/container', hidden );
-	const level = settingType( db, 'sgs/heading', 'level' );
+	// The page's one title is the heading's level-one member of its enum, written as the enum spells it ("h1", never the number).
+	const level = settingEnum( db, 'sgs/heading', 'level' ).find( ( v ) => /^h?1$/i.test( String( v ) ) ) ?? null;
 	const words = boundAttr( db, r.plugin.supported, 'sgs/heading', 'text-content' );
 	if ( ! wrapAttr || ! words ) {
 		return { tree: ctx.tree, problems: [ at( `${ wrapAttr ? 'sgs/heading holds no words setting' : `sgs/container holds no Show-to setting with ${ hidden }` }, so the order access card is not placed` ) ] };
 	}
-	const heading = { name: 'sgs/heading', attributes: { [ words ]: piece.heading || '', ...( level ? { level: 1 } : {} ) }, innerBlocks: [] };
+	const heading = { name: 'sgs/heading', attributes: { [ words ]: piece.heading || '', ...( level ? { level } : {} ) }, innerBlocks: [] };
 	const card = { name: 'sgs/container', attributes: { [ wrapAttr ]: hidden }, innerBlocks: [ ...( piece.heading ? [ heading ] : [] ), { name: piece.block, attributes: {}, innerBlocks: [] } ] };
 	const placed = [ { id: piece.id, block: piece.block, at: factKeyOf( root, ctx.rootComponent ), rule: hidden } ];
 	const problems = [];

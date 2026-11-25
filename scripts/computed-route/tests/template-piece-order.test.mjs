@@ -123,6 +123,8 @@ function fakeDb( rows = ROWS ) {
 		return { all: ( ...a ) => pick( a ), get: ( ...a ) => pick( a )[ 0 ] };
 	} };
 }
+// The heading's level setting as the framework database holds it (a string setting with the enum h1 to h6), never a typed-in shape.
+const REAL_LEVEL = openDb().prepare( "SELECT block_slug, attr_name, attr_type, role, enum_values FROM block_attributes WHERE block_slug = 'sgs/heading' AND attr_name = 'level'" ).get();
 const PLUGIN = { source: 'sgs/order', keys: [ 'number', 'email', 'delivery_method', 'total', 'date', 'view_url', 'gift_to', 'gift_message', 'item_count', 'shipping_name', 'shipping_address', 'billing_name', 'billing_address', 'phone', 'payment_method' ], supported: { 'sgs/text': [ 'text' ], 'sgs/heading': [ 'content' ], 'sgs/button': [ 'url', 'label' ] } };
 
 // A skeleton of the planted page: a node per drafted element that the proposer would build, keyed `Root/<n>#0`.
@@ -811,10 +813,10 @@ test( 'MUST FAIL: the order access piece puts the status block in a not-viewable
 	const access = { id: 'order-access', block: 'woocommerce/order-confirmation-status', kind: 'order', find: 'order-access', heading: 'Find your order' };
 	const tree = plantedTree( record );
 	tree[ 0 ].innerBlocks[ 1 ].attributes = { sgsConditionLoggedIn: 'order-owner' };
-	const ctx = { key: 'order-confirmation', factRecord: record, rootComponent: 'Page', draft, db: fakeDb( [ ...ROWS, { id: 99, block_slug: 'sgs/heading', attr_name: 'level', attr_type: 'integer', role: null, enum_values: null } ] ), plugin: PLUGIN, orderFacts: FACTS };
+	const ctx = { key: 'order-confirmation', factRecord: record, rootComponent: 'Page', draft, db: fakeDb( [ ...ROWS, { id: 99, ...REAL_LEVEL } ] ), plugin: PLUGIN, orderFacts: FACTS };
 	const got = place( { ...ctx, tree }, access );
 	const main = got.tree[ 0 ];
-	assert.deepEqual( main.innerBlocks[ 0 ], { name: 'sgs/container', attributes: { sgsConditionLoggedIn: 'order-not-viewable' }, innerBlocks: [ { name: 'sgs/heading', attributes: { content: 'Find your order', level: 1 }, innerBlocks: [] }, { name: 'woocommerce/order-confirmation-status', attributes: {}, innerBlocks: [] } ] } );
+	assert.deepEqual( main.innerBlocks[ 0 ], { name: 'sgs/container', attributes: { sgsConditionLoggedIn: 'order-not-viewable' }, innerBlocks: [ { name: 'sgs/heading', attributes: { content: 'Find your order', level: 'h1' }, innerBlocks: [] }, { name: 'woocommerce/order-confirmation-status', attributes: {}, innerBlocks: [] } ] } );
 	// Every top-level block takes the viewable rule, except the one already shown only for the order's owner.
 	assert.deepEqual( main.innerBlocks.slice( 1 ).map( ( n ) => n.attributes.sgsConditionLoggedIn ), [ 'order-viewable', 'order-owner', ...Array( main.innerBlocks.length - 3 ).fill( 'order-viewable' ) ] );
 	assert.equal( main.attributes.sgsConditionLoggedIn, undefined );

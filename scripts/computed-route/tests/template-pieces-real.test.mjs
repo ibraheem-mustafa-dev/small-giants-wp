@@ -178,7 +178,9 @@ test( 'MUST FAIL: whatever a builder places that the skeleton lint refuses is a 
 		return { tree: ctx.tree, placed: [ { id: 'sorting', block: 'sgs/container', at: 'end' } ] };
 	} };
 	const got = piecesPass( { ...input, builders: { 'shop-sort': planted } } );
-	assert.deepEqual( got.problems.filter( ( p ) => /skeleton lint/.test( p ) ), [ 'archive-product: a placed piece breaks the skeleton lint: skeleton (sgs/container) carries style value justifyContent' ] );
+	const broken = got.problems.filter( ( p ) => /skeleton lint/.test( p ) );
+	assert.equal( broken.length, 1 );
+	assert.match( broken[ 0 ], /^archive-product: a placed piece breaks the skeleton lint: skeleton \(sgs\/container\) carries style value justifyContent: a value the skeleton decides .* travels in the node's decided/ );
 	// A finding the skeleton already had is not the builder's.
 	assert.deepEqual( placedLint( got.tree, got.tree, openDb() ), [] );
 } );

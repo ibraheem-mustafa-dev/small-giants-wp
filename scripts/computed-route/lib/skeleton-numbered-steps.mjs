@@ -23,7 +23,7 @@ const PICTURES = new Set( [ 'img', 'picture', 'video', 'canvas' ] );
 const control = ( e ) => CONTROLS.has( e.tag ) || /sc-camel-on-click="\{\{/.test( e.snippet || '' );
 const count = ( s ) => String( s ?? '' ).split( /\s+/ ).filter( ( w ) => /[\p{L}\p{N}]/u.test( w ) ).length;
 
-// { Map( parent key -> { attributes, steps: [ { number, title, description, titleKey } ], reason } ) }.
+// { Map( parent key -> { attributes, decided, steps: [ { number, title, description, titleKey } ], reason } ) }.
 export function numberedSteps( { m, rule, headingLevels = [] } ) {
 	const runs = new Map();
 	if ( ! rule?.block ) {
@@ -78,10 +78,12 @@ export function numberedSteps( { m, rule, headingLevels = [] } ) {
 		const level = tag && headingLevels.includes( `h${ tag[ 1 ] }` ) ? `h${ tag[ 1 ] }` : rule.fallbackLevel;
 		const sameLevel = read.every( ( r ) => r.titleEl.tag === read[ 0 ].titleEl.tag );
 		runs.set( p.key, {
-			attributes: {
+			attributes: { [ rule.layout.setting ]: m.stacked( steps ) ? rule.layout.stacked : rule.layout.side },
+			// The steps and their heading level are settings the framework database gives a CSS property (the numbered-steps look),
+			// so a skeleton cannot carry them among its attributes (R-47-10): they travel as the node's `decided`, which Fill writes.
+			decided: {
 				[ rule.settings.steps ]: read.map( ( r ) => ( { [ rule.fields.number ]: r.number, [ rule.fields.title ]: r.title, ...( r.description ? { [ rule.fields.description ]: r.description } : {} ) } ) ),
 				[ rule.settings.level ]: sameLevel ? level : rule.fallbackLevel,
-				[ rule.layout.setting ]: m.stacked( steps ) ? rule.layout.stacked : rule.layout.side,
 			},
 			reason: `${ steps.length } steps, each typing its number beside its words, the numbers counting up from 1`,
 		} );
