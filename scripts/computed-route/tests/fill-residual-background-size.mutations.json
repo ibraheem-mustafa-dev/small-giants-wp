@@ -19,8 +19,8 @@
 	},
 	{
 		"file": "lib/fill-read.mjs",
-		"find": "export const TIE_PROPS = [ 'background-clip', 'background-size' ];",
-		"replace": "export const TIE_PROPS = [ 'background-clip' ];",
+		"find": "export const TIE_PROPS = [ 'background-clip', 'background-size', 'transition-property' ];",
+		"replace": "export const TIE_PROPS = [ 'background-clip', 'transition-property' ];",
 		"why": "the size is not read"
 	}
 ]

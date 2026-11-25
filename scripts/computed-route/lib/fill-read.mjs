@@ -44,8 +44,9 @@ export const FLEX_ITEM_PROPS = [ 'flex-shrink' ];
 // clips its background to the text, lib/resolve-side-effects.mjs), never resolved or written from the computed read; a
 // draft that declares one is still resolved through its declarations (lib/fill-resolve-element.mjs::fillElement). A background's
 // size is read for the residual Custom CSS writer, which will not write a background image whose size the draft sets
-// (lib/fill-residual-css.mjs): the image alone would fill the box.
-export const TIE_PROPS = [ 'background-clip', 'background-size' ];
+// (lib/fill-residual-css.mjs): the image alone would fill the box. A transition's property list is read with the background size
+// to tell a link's growing underline (`linkUnderline: sweep`, lib/fill-underline-sweep.mjs) from a static gradient.
+export const TIE_PROPS = [ 'background-clip', 'background-size', 'transition-property' ];
 export const PROPS = [ ...new Set( [ ...DEFAULT_PROPS, ...REF_PROPS, ...SIDE_STYLES, ...FLEX_ITEM_PROPS, ...TIE_PROPS ] ) ].filter( ( p ) => ! /^(animation-|icon-)/.test( p ) && 'gap' !== p );
 
 // Playwright, from the route's own pinned install (scripts/computed-route/node_modules, FR-48-75).
