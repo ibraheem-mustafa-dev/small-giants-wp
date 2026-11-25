@@ -3,11 +3,13 @@
 // shows (R-47-5), tries the slots a setting could paint, and turns a fluid size into a clamp() where the setting takes one.
 import { contentSelectors } from './fill-content-selector.mjs';
 import { resolve, splitProperty, LOOSE } from './resolve.mjs';
-import { samePaint, paintCanon, PX_TOL } from './css-equivalence/tolerance.mjs';
+import { samePaint, exactPaint, paintCanon, PX_TOL } from './css-equivalence/tolerance.mjs';
 import { fitFluid, acceptsClamp, applyClamp, LENGTH_PROPS } from './fill-values.mjs';
 import { INHERITED } from './calibrate-props.mjs';
 import { paintedAt, TIER_OF } from './fill-held.mjs';
-import { initialOf } from './css-families.mjs';
+import { initialOf, longhandsOf } from './css-families.mjs';
+import { appliesIn, contextAt as inertContextAt } from './css-equivalence/inert.mjs';
+import { sameCanonical } from './css-equivalence/values.mjs';
 import { modeGroups } from './fill-device-mode.mjs';
 
 // The clone-coverage IDs this module writes (lib/clone-coverage.mjs::declaredWrites holds each entry's write to it):
@@ -194,6 +196,21 @@ export function notPainted( prop, styles, snap = null, declared = null ) {
 	return /^transition-(delay|timing-function)$/.test( prop ) && zero( styles[ 'transition-duration' ] );
 }
 
+// The layout properties whose initial value is what an element computes when nothing declares it (a hero's `grid-template-columns:
+// none`, a mega group's `flex-grow: 0`). Writing that value would replace the block's own layout with a value the draft never
+// stated (Spec 48 R-47-5: a stated value is written, an unstated initial one is not).
+export const INITIAL_UNSTATED = /^(grid-template-(columns|rows|areas)|grid-auto-(columns|rows|flow)|grid-(row|column)(-start|-end)?|flex-(grow|shrink|basis)|order|align-(self|content)|justify-(self|items)|place-(self|items|content))$/;
+
+// Whether a read value is the property's initial value with no declaration behind it. declared: the element's declared
+// longhands at the width ({ prop: value }), or null where the declared read failed (then nothing is judged).
+export function undeclaredInitial( prop, value, declared ) {
+	if ( ! declared || ! INITIAL_UNSTATED.test( prop ) || Object.keys( declared ).some( ( k ) => k === prop || longhandsOf( k ).includes( prop ) ) ) {
+		return false;
+	}
+	const initial = initialOf( prop );
+	return null !== initial && sameCanonical( prop, value, initial );
+}
+
 const GAP_PROPS = [ 'gap', 'row-gap', 'column-gap' ];
 // The properties only a flex container lays out by: on any other box the computed value is the initial one (a block's
 // flex-direction reads `row`) and no draft value was chosen.
@@ -293,7 +310,7 @@ export function inOwnContext( prop, v, ctx ) {
 // default paint of the property (the baseline when not given); contextAt( width ) the element's context there for canon()
 // ({ parentDisplay, position, direction }); baselineContextAt( width ) the context the baseline was read in, or null where
 // it is the draft's. Each side is canoned in its own context (inOwnContext), then compared in the draft's by the shared
-// rule (lib/css-equivalence/tolerance.mjs::samePaint). Returns { width: value }.
+// rule (lib/css-equivalence/tolerance.mjs::exactPaint: a stated length is the default only when equal). Returns { width: value }.
 export function tiersDiffering( prop, draft, baseline, defaultAt = baseline, contextAt = () => ( {} ), baselineContextAt = () => null ) {
 	const out = {};
 	const fallbackAt = TIER_WIDTHS.every( ( w ) => undefined !== defaultAt( w ) ) ? defaultAt : () => '0px';
@@ -308,8 +325,8 @@ export function tiersDiffering( prop, draft, baseline, defaultAt = baseline, con
 		// the tablet one, over the hero's own one-column phone rule). Calibration records no carry-down per setting, so a
 		// narrower draft value that differs from the nearest written wider value is written; one equal to it is not.
 		const wider = TIER_WIDTHS.filter( ( x ) => x > w && x in out ).sort( ( a, b ) => a - b )[ 0 ];
-		const carried = undefined === wider || samePaint( prop, draft[ w ], out[ wider ], contextAt( w ) );
-		if ( ! samePaint( prop, draft[ w ], shown, contextAt( w ) ) || ! carried ) {
+		const carried = undefined === wider || exactPaint( prop, draft[ w ], out[ wider ], contextAt( w ) );
+		if ( ! exactPaint( prop, draft[ w ], shown, contextAt( w ) ) || ! carried ) {
 			out[ w ] = draft[ w ];
 		}
 	}
@@ -399,12 +416,24 @@ const clampOk = ( cal, writes ) => writes.length > 0 && writes.every( ( w ) => a
 // modeGaps? (the widths of a mode no setting answers, beside a written mode: byMode) }.
 // 'equal': the draft matches what the node shows at every tier, nothing to write.
 export function resolveProperty( ctx ) {
-	const { node, owned: given = OWNED.get( node ) ?? null, block, prop, draft, baseline, slots, calibration, db, snapshot, log, fontPx = {}, siblings = {}, fluid = null, state = null, paintState = null, declared = {}, declaredFluid = null, contextAt = () => ( {} ), rest } = ctx;
+	const { node, owned: given = OWNED.get( node ) ?? null, block, prop, draft: stated, baseline, slots, calibration, db, snapshot, log, fontPx = {}, siblings = {}, fluid = null, state = null, paintState = null, declared = {}, declaredFluid = null, contextAt = () => ( {} ), rest } = ctx;
 	// The skeleton's content selectors (Site Info's displayType) stay as written: a look never changes which parts a block renders.
 	const selectors = contentSelectors( { db, block, attributes: node.attributes, calibration } );
 	const owned = Object.keys( selectors ).length ? { ...selectors, ...( given || {} ) } : given;
 	const contextOf = ( w ) => ( { position: siblings.position?.[ w ], direction: siblings.direction?.[ w ], ...contextAt( w ) } );
 	const known = knownPaths( calibration ).map( LOOSE );
+	// A value on a property that does not apply to the element at a width (a grid template on a flex box, `flex-grow` on a block
+	// child) paints nothing there: lib/css-equivalence/inert.mjs::appliesIn decides it from the element's own display and
+	// position and its parent's display, and an undecided case stays written. A state's value and a painted layer are judged
+	// where they are read, not by the resting element.
+	let draft = stated;
+	if ( ! state && ! paintState && Object.keys( siblings ).length ) {
+		const inapplicable = Object.keys( draft ).filter( ( w ) => false === appliesIn( prop, { ...inertContextAt( siblings, null, w ), parentDisplay: contextAt( w ).parentDisplay } ).applies );
+		if ( inapplicable.length === Object.keys( draft ).length ) {
+			return { status: 'equal', slot: slots[ 0 ], inapplicable: true };
+		}
+		draft = Object.fromEntries( Object.entries( draft ).filter( ( [ w ] ) => ! inapplicable.includes( w ) ) );
+	}
 	let firstGap = null;
 	for ( const slot of slots ) {
 		// The baseline's own context is calibration's where the baseline is the calibrated default paint.

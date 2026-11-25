@@ -10,10 +10,10 @@ import { READ_WIDTHS } from './fill-read.mjs';
 import { equivalentRows } from './db.mjs';
 import { contentExtent } from './fill-dimensions.mjs';
 import { elementContext } from './fill-held.mjs';
+import { PX_TOL } from './css-equivalence/tolerance.mjs';
 
 export { equivalentRows };
 
-const PX_TOL = 0.5;
 // The conditions fillEquivalent evaluates.
 export const CONDITIONS = [ 'every-child-same', 'render-matches' ];
 

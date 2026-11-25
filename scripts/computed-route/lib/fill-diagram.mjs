@@ -1,3 +1,4 @@
+import { PX_TOL } from './css-equivalence/tolerance.mjs';
 // Measure a rendered draft's dimension diagram into sgs/diagram-dimension settings (plan
 // archive/2026-10-07-measured-diagram-block.md §C). R-47-4: every number comes from the rendered page in a real browser: path
 // points from the SVG geometry API (getTotalLength / getPointAtLength in the svg's own user units, i.e. its viewBox),
@@ -80,7 +81,7 @@ export function diagramGeometry( spec ) {
 		const rs = reachOf( near.start );
 		const re = reachOf( near.end );
 		out.extReach = round( rs * pct );
-		out.extReachEnd = Math.abs( re - rs ) < 0.5 ? null : round( re * pct );
+		out.extReachEnd = Math.abs( re - rs ) < PX_TOL ? null : round( re * pct );
 		out.extOvershoot = round( Math.max( overOf( near.start ), overOf( near.end ) ) * pct );
 	}
 

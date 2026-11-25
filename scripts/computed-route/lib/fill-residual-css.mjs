@@ -27,6 +27,7 @@
 // Values per width follow the width ladder's ranges (lib/fill-width-ladder.mjs::widthSpans: the sweep's threshold, snapped to
 // a tier); a value the snapshot carries as a token is written as that token's reference (a palette colour, a font family, a
 // font size or spacing preset of the same px).
+import { ownedBySetting } from './fill-residual-owned.mjs';
 import { isCssProperty, canonicalName, initialOf, isInherited } from './css-families.mjs';
 import { measuredHomes, paintAt } from './css-equivalence/effect.mjs';
 import { sameCanonical } from './css-equivalence/values.mjs';
@@ -39,6 +40,7 @@ import { setAttr } from './tree.mjs';
 import { copyClassSlot } from './fill-loop-copy.mjs';
 import { placementHost } from './fill-placement-host.mjs';
 import { snapColour, snapFontFamily, snapLength, toPx } from './normalise.mjs';
+import { PX_TOL } from './css-equivalence/tolerance.mjs';
 
 export const PASS = 'residual-css';
 // A page's residual rules stop at a fifth of the 100 KB per-page CSS budget; what is left over is listed, not written.
@@ -74,6 +76,7 @@ const OUT_OF_FLOW = /^(absolute|sticky)$/;
 const PLACED_BY_POSITION = /^(top|right|bottom|left|inset(-.+)?|transform|translate|z-index)$/;
 
 const holdsAttr = ( db, block, attr ) => !! db?.prepare( 'SELECT 1 FROM block_attributes WHERE block_slug = ? AND attr_name = ?' ).get( block, attr );
+const widthsOf = ( v ) => JSON.stringify( v );
 const LOOSE = ( p ) => String( p ?? '' ).replace( /:nth-of-type\(\d+\)/g, '' );
 
 // The offsets (top, right, bottom, left) the draft declares on an element at any of `widths` that no kept row of the block's pass
@@ -231,7 +234,7 @@ function sameElement( reads, a, b ) {
 	return both.length > 0 && both.every( ( w ) => {
 		const x = reads.widths[ w ][ a.id ].rect;
 		const y = reads.widths[ w ][ b.id ].rect;
-		return [ 'x', 'y', 'w', 'h' ].every( ( k ) => Math.abs( ( x[ k ] ?? 0 ) - ( y[ k ] ?? 0 ) ) <= 0.5 );
+		return [ 'x', 'y', 'w', 'h' ].every( ( k ) => Math.abs( ( x[ k ] ?? 0 ) - ( y[ k ] ?? 0 ) ) <= PX_TOL );
 	} );
 }
 
@@ -352,6 +355,11 @@ export function residualCssWrites( { nodes, flat, refOf, reads, db, unmapped, ca
 				refuse( r, `${ heldBy.attr_name } already holds ${ node.attributes[ heldBy.attr_name ] } on this instance, which does what the draft's ${ row.value } does` );
 				continue;
 			}
+			const owner = ownedBySetting( prop, node.attributes );
+			if ( owner ) {
+				refuse( r, `${ owner } is set on this instance and draws ${ prop }; a rule would cancel it` );
+				continue;
+			}
 			// The draft's side padding sits inside its element's border box. A size this instance holds on a part that is the root's
 			// box at rest (a disc the block draws as a shape inside its root) is that whole border box, so the root's padding added
 			// on top would grow the root past the draft's size.
@@ -377,7 +385,10 @@ export function residualCssWrites( { nodes, flat, refOf, reads, db, unmapped, ca
 			// lib/fill-loop-copy.mjs::copyClassSlot gives the part's class where the copies are one `sc-for` loop body the draft draws
 			// alike at each width and the block draws the part at every copy; any other copy keeps the refusal.
 			const cssSlot = /:nth-of-type\(/.test( target.slot ) ? copyClassSlot( { slot: target.slot, target, prop, state, rec, cal, db, facts, rootComponent, paint: 'part' } ) : target.slot;
-			if ( /:nth-of-type\(/.test( cssSlot ) ) {
+			// A fixed set of parts (the burger's three bars) is no loop: where this copy's draft value differs from another copy's, the
+			// draft styles this copy alone and a rule on it is right. Copies that share the value stay the loop's to write.
+			const staticSet = /:nth-of-type\(/.test( cssSlot ) && rec.targets.some( ( t ) => t.id !== target.id && LOOSE( t.slot ) === LOOSE( target.slot ) && t.slot !== target.slot && widthsOf( rowValues( row, reads, t ) ) !== widthsOf( rowValues( row, reads, target ) ) );
+			if ( /:nth-of-type\(/.test( cssSlot ) && ! staticSet ) {
 				refuse( r, `${ target.slot } names one copy of a repeated part; a rule there would style that copy alone` );
 				continue;
 			}
@@ -394,7 +405,9 @@ export function residualCssWrites( { nodes, flat, refOf, reads, db, unmapped, ca
 				refuse( r, 'the draft element is not read at any width' );
 				continue;
 			}
-			if ( LAYOUT.test( prop ) && widths.length < WIDTHS.length ) {
+			// A layout property is stated at every width the element is drawn at: a width where it is display none states nothing.
+			const drawn = read.filter( ( w ) => state || 'none' !== reads.widths?.[ w ]?.[ target.id ]?.styles?.display );
+			if ( LAYOUT.test( prop ) && widths.length < drawn.length ) {
 				refuse( r, `${ prop } is a layout property and the draft states it only at ${ widths.join( ', ' ) }` );
 				continue;
 			}

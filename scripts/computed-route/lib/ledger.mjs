@@ -3,6 +3,7 @@
 import fs from 'fs';
 import path from 'path';
 import { CONTEXT_PROPS } from '../../parity/lib/collect.mjs';
+import { PX_TOL } from './css-equivalence/tolerance.mjs';
 
 // Rule names an entry may use instead of a value, each with its meaning. An unknown rule name fails the run.
 export const RULES = {
@@ -110,7 +111,7 @@ const same = ( a, b ) => {
 	const n = ( v ) => String( v ?? '' ).replace( /\s+/g, '' );
 	const pa = parseFloat( a );
 	const pb = parseFloat( b );
-	return n( a ) === n( b ) || ( /px$/.test( a ) && /px$/.test( b ) && Math.abs( pa - pb ) <= 0.5 );
+	return n( a ) === n( b ) || ( /px$/.test( a ) && /px$/.test( b ) && Math.abs( pa - pb ) <= PX_TOL );
 };
 
 // Stale entries: a cr-ref node no longer in the tree, a path-scoped entry whose path no measured element of its node has,

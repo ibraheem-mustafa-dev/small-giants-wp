@@ -14,9 +14,10 @@
 // Never a block name, a slot name or a pixel value: the boxes come from the site look and the draft's reads.
 import { LOOSE } from './resolve.mjs';
 import { candidates } from './db.mjs';
+import { PX_TOL } from './css-equivalence/tolerance.mjs';
 
 const WIDTHS = [ 375, 768, 1440 ];
-const TOL = 0.5;
+const TOL = PX_TOL;
 const AXIS = { h: [ 'height', [ 'padding-top', 'padding-bottom', 'border-top-width', 'border-bottom-width' ] ], w: [ 'width', [ 'padding-left', 'padding-right', 'border-left-width', 'border-right-width' ] ] };
 
 const elementAt = ( cal, slot ) => {
@@ -170,7 +171,7 @@ export function innerToRoot( { rec, target, axis, reads, cal, widths = WIDTHS } 
 			return null;
 		}
 		const frame = edges.reduce( ( s, p ) => s + ( parseFloat( own.styles?.[ p ] ) || 0 ), 0 );
-		if ( Math.abs( box - frame - part ) > TOL + 0.5 ) {
+		if ( Math.abs( box - frame - part ) > TOL + PX_TOL ) {
 			return null;
 		}
 		extra[ w ] = Math.round( ( box - part ) * 100 ) / 100;

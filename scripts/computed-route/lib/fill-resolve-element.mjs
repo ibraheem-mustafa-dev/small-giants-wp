@@ -7,14 +7,14 @@ import { usedValueTarget } from './solve-rows.mjs';
 import { PROPS, READ_WIDTHS, TIE_PROPS } from './fill-read.mjs';
 import { extraProps, usedValueDrafts, USED_VALUE } from './fill-declared.mjs';
 import { FLUID_WIDTHS } from './fill-values.mjs';
-import { INHERITED, resolveProperty, notPainted, gapPaintsNothing, flexOnlyPaintsNothing, calibratedContext } from './fill-prop.mjs';
+import { INHERITED, resolveProperty, notPainted, undeclaredInitial, gapPaintsNothing, flexOnlyPaintsNothing, calibratedContext } from './fill-prop.mjs';
 import { draftParents, unpairedPart } from './fill-part-pairing.mjs';
 import { gateFor, carriedFor } from './fill-fixture.mjs';
 import { fillEquivalent } from './fill-equivalents.mjs';
 import { compareDR } from './fill-confirm.mjs';
 import { declaredTracks } from './normalise.mjs';
 import { elementContext } from './fill-held.mjs';
-import { samePaint } from './css-equivalence/tolerance.mjs';
+import { exactPaint } from './css-equivalence/tolerance.mjs';
 import { fillLayerBox } from './fill-layer-box.mjs';
 import { tokenWrites } from './fill-token-ref.mjs';
 import { normalKeywords } from './fill-normal-keywords.mjs';
@@ -90,7 +90,7 @@ export function answeredWidths( prop, draft, res ) {
 		const tier = chainAt( w ).find( ( t ) => held.has( t ) );
 		const from = tier ? TIER_WIDTH[ tier ] : null;
 		const source = null === from ? undefined : res.included?.[ from ] ?? draft[ from ];
-		return undefined === source || from === w || samePaint( prop, draft[ w ], source );
+		return undefined === source || from === w || exactPaint( prop, draft[ w ], source );
 	} );
 }
 
@@ -171,7 +171,14 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 	// an outline or border side with no width, a decoration with no line, a 0s transition) is left out there and recorded
 	// as a settled row with its reason (notPaintedWhy), never dropped silently.
 	const allDrafts = Object.fromEntries( ( layer ? ids : [ ...new Set( [ ...ids, ...CONTEXT_PROPS, ...TIE_PROPS ] ) ] ).map( ( p ) => [ p, Object.fromEntries( Object.entries( draftOf( snaps, ( s ) => valueAt( s, p ) ) ).filter( ( [ w ] ) => {
-		if ( layer || ! notPainted( p, snaps[ w ].styles || {}, snaps[ w ] ) ) {
+		if ( layer ) {
+			return true;
+		}
+		if ( undeclaredInitial( p, valueAt( snaps[ w ], p ), st.reads.declared?.[ w ]?.[ target.id ] ?? null ) ) {
+			settled( st, rec, ref, { slot, property: p, value: String( valueAt( snaps[ w ], p ) ), widths: [ Number( w ) ], reason: 'not-painted', detail: `at ${ w }: ${ p } is its initial value and nothing in the draft's code declares it, so the block's own layout stands` } );
+			return false;
+		}
+		if ( ! notPainted( p, snaps[ w ].styles || {}, snaps[ w ] ) ) {
 			return true;
 		}
 		settled( st, rec, ref, { slot, property: p, value: String( valueAt( snaps[ w ], p ) ), widths: [ Number( w ) ], reason: 'not-painted', detail: `at ${ w }: ${ notPaintedWhy( p, snaps[ w ].styles || {}, snaps[ w ] ) }` } );

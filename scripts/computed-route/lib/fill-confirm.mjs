@@ -14,6 +14,7 @@ import { templateKeyOfSelector } from './fact-key.mjs';
 import { READ_WIDTHS } from './fill-read.mjs';
 import { safeAreaRead } from './fill-safe-area.mjs';
 import { discoveredEffects } from './resolve.mjs';
+import { PX_TOL } from './css-equivalence/tolerance.mjs';
 
 // FR-48-36's tolerances by property type (provisional until calibrated on the first client clone).
 export const TOLERANCE = { colour: `ΔE ${ COLOUR_DE }, alpha 0.02`, length: '0.5px', 'font-family': 'first family', 'font-weight': 'exact', 'line-height': '0.5px', transform: 'matrix entries 0.01', time: '10ms', keyword: 'exact' };
@@ -50,7 +51,7 @@ const colourOf = ( v ) => ( 'transparent' === String( v ).trim().toLowerCase() ?
 // A value's top-level parts (split on spaces and commas outside brackets).
 const parts = ( v ) => String( v ).match( /(?:[^\s,(]+|\([^)]*\))+/g ) || [];
 // Two parts agree: colours within ΔE and alpha, lengths within 0.5px, anything else equal ignoring case.
-function samePart( a, b, fontPx, tol = 0.5 ) {
+function samePart( a, b, fontPx, tol = PX_TOL ) {
 	const [ ca, cb ] = [ colourOf( a ), colourOf( b ) ];
 	if ( ca && cb ) {
 		return deltaE( ca, cb ) <= COLOUR_DE && Math.abs( ca.a - cb.a ) <= 0.02;
@@ -66,7 +67,7 @@ function samePart( a, b, fontPx, tol = 0.5 ) {
 // tolerance }. fontPx is the element's font size there (em lengths and unitless line heights).
 // `opts.rendered` compares two rendered values (R–L): no run-time shortcut, and lengths take `opts.tol` (the rendered
 // ±1px, FR-48-36) in place of the declared ±0.5px.
-export function compareDR( prop, declared, rendered, fontPx = 16, { tol = 0.5, rendered: bothRendered = false } = {} ) {
+export function compareDR( prop, declared, rendered, fontPx = 16, { tol = PX_TOL, rendered: bothRendered = false } = {} ) {
 	if ( null == declared || '' === String( declared ).trim() ) {
 		return { dr: 'no-declared', type: null, tolerance: null };
 	}
@@ -94,7 +95,7 @@ export function compareDR( prop, declared, rendered, fontPx = 16, { tol = 0.5, r
 		case 'line-height': {
 			const unitless = /^\d*\.?\d+$/.test( d ) ? Number( d ) * fontPx : null;
 			const [ a, b ] = [ unitless ?? toPx( d, fontPx ), toPx( r, fontPx ) ];
-			return out( null !== a && null !== b ? Math.abs( a - b ) <= 0.5 : null );
+			return out( null !== a && null !== b ? Math.abs( a - b ) <= PX_TOL : null );
 		}
 		case 'transform': {
 			const [ a, b ] = [ transformMatrix( d ), transformMatrix( r ) ];

@@ -1,10 +1,11 @@
 // Value normalisation and token snapping (R-47-7). Measured values arrive as computed styles (px lengths, rgb()
-// colours). Tokens come from the site's theme-snapshot.json. Snap order: exact token, then the nearest within
-// tolerance (colour ΔE ≤ 2, length ±0.5px), then a literal flagged in the log. Every snap is logged with its distance.
+// colours). Tokens come from the site's theme-snapshot.json. Snap order: exact token, then (a colour only) the nearest within
+// ΔE 2, then a literal flagged in the log: a length takes a token only when equal (Spec 48 R-47-7). Every snap is logged with its distance.
 import fs from 'fs';
 import path from 'path';
 import { parseRatio, sameRatio, trackRatios } from '../../parity/lib/ratio.mjs';
 import { assertSnapshotFresh } from './snapshot-freshness.mjs';
+import { PX_TOL } from './css-equivalence/tolerance.mjs';
 
 export const COVERAGE_WRITES = [
 	'css-function:minmax',
@@ -13,7 +14,6 @@ export const COVERAGE_WRITES = [
 ];
 
 export const COLOUR_DE = 2;
-export const LENGTH_TOL = 0.5;
 const ROOT_PX = 16;
 
 export const round = ( n ) => Math.round( n * 1000 ) / 1000;
@@ -202,7 +202,7 @@ export function declaredTracks( declared, rendered ) {
 	if ( ! list || px.some( Number.isNaN ) ) {
 		return null;
 	}
-	if ( ! list.auto && ( list.length !== px.length || list.some( ( t, i ) => /^-?\d*\.?\d+px$/.test( t ) && Math.abs( parseFloat( t ) - px[ i ] ) > 0.5 ) ) ) {
+	if ( ! list.auto && ( list.length !== px.length || list.some( ( t, i ) => /^-?\d*\.?\d+px$/.test( t ) && Math.abs( parseFloat( t ) - px[ i ] ) > PX_TOL ) ) ) {
 		return null;
 	}
 	return { value: d };
@@ -253,12 +253,12 @@ export function snapColour( value, snapshot, { log = [], where = '', prefer = nu
 	return out;
 }
 
-// Snaps a px length to a token list (spacing or font sizes): exact, then nearest within ±0.5px, else null (the caller
+// Snaps a px length to a token list (spacing or font sizes): a token of the same px, else null (the caller
 // writes a literal and logs it).
 export function snapLength( px, tokens, { log = [], where = '' } = {} ) {
 	const ranked = tokens.map( ( t ) => ( { slug: t.slug, d: round( Math.abs( t.px - px ) ) } ) ).sort( ( a, b ) => a.d - b.d );
 	const best = ranked[ 0 ];
-	const out = best && best.d <= LENGTH_TOL ? { slug: best.slug, distance: best.d, kind: 0 === best.d ? 'exact' : 'nearest' } : null;
+	const out = best && 0 === best.d ? { slug: best.slug, distance: 0, kind: 'exact' } : null;
 	log.push( { where, from: `${ px }px`, to: out ? out.slug : `${ round( px ) }px`, distance: out ? out.distance : null, kind: out ? out.kind : 'literal' } );
 	return out;
 }

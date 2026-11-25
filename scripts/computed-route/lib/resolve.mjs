@@ -19,6 +19,7 @@ import { holdsValue, mapTiers, pinEdges } from './resolve-enum.mjs';
 import { inForceAt } from './fill-device-mode.mjs';
 export { valueBlind };
 import { sameAlignment } from './css-equivalence/keywords.mjs';
+import { PX_TOL } from './css-equivalence/tolerance.mjs';
 
 export const COVERAGE_WRITES = [
 	'aria-attr:aria-hidden',
@@ -193,7 +194,7 @@ const sameMeasured = ( prop, a, b ) => {
 	}
 	const la = parseLength( a );
 	const lb = parseLength( b );
-	return la && lb ? la.unit === lb.unit && Math.abs( la.n - lb.n ) <= 0.5 : String( a ) === String( b );
+	return la && lb ? la.unit === lb.unit && Math.abs( la.n - lb.n ) <= PX_TOL : String( a ) === String( b );
 };
 
 // One CSS time ("0.25s", "250ms", "1s") as a whole number of milliseconds, or null when it is not one non-negative time.

@@ -9,6 +9,7 @@ import { probeRead } from './apply-probes.mjs';
 import { recordsFor, stateLook } from './apply-records.mjs';
 import { groupHosts, groupRead } from './apply-group-read.mjs';
 import { partReads } from './apply-part-hover.mjs';
+import { SCALE_TOL } from './css-equivalence/tolerance.mjs';
 
 export const HOVER_READ_PROPS = [ ...HOVER_PROPS, 'border-top-width', 'text-decoration-thickness', 'gap' ];
 // Hover looks the motion layer holds; the state family leaves them to it.
@@ -136,7 +137,7 @@ export function motionOf( styles ) {
 }
 
 // Whether two poses agree to a hundredth of a scale, two pixels and a degree.
-export const motionClose = ( a, b ) => Boolean( a && b ) && Math.abs( a.scale - b.scale ) <= 0.011 && Math.abs( a.x - b.x ) <= 2 && Math.abs( a.y - b.y ) <= 2 && Math.abs( a.rotate - b.rotate ) <= 1;
+export const motionClose = ( a, b ) => Boolean( a && b ) && Math.abs( a.scale - b.scale ) <= SCALE_TOL && Math.abs( a.x - b.x ) <= 2 && Math.abs( a.y - b.y ) <= 2 && Math.abs( a.rotate - b.rotate ) <= 1;
 
 // The same with six pixels, for a re-read: a magnet pulls an element up to five pixels towards the pointer.
-export const motionNear = ( a, b ) => Boolean( a && b ) && Math.abs( a.scale - b.scale ) <= 0.011 && Math.abs( a.x - b.x ) <= 6 && Math.abs( a.y - b.y ) <= 6 && Math.abs( a.rotate - b.rotate ) <= 1;
+export const motionNear = ( a, b ) => Boolean( a && b ) && Math.abs( a.scale - b.scale ) <= SCALE_TOL && Math.abs( a.x - b.x ) <= 6 && Math.abs( a.y - b.y ) <= 6 && Math.abs( a.rotate - b.rotate ) <= 1;

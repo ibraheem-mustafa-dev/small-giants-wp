@@ -8,6 +8,7 @@ import { candidates } from './db.mjs';
 import { DECISIONS_FILE } from './skeleton-facts.mjs';
 import { declaredSides } from './decoration-layers.mjs';
 import { TIER_WIDTHS } from './fill-prop.mjs';
+import { PX_TOL } from './css-equivalence/tolerance.mjs';
 
 export const LAYER_BLOCK = 'sgs/decorative-image';
 const TIER_OF = { 1440: 'desktop', 768: 'tablet', 375: 'mobile' };
@@ -67,7 +68,7 @@ export function rotationOf( raw ) {
 		return null;
 	}
 	const turned = Math.abs( a - d ) < 1e-3 && Math.abs( b + c ) < 1e-3 && Math.abs( ( a * a ) + ( b * b ) - 1 ) < 1e-2;
-	return turned && Math.abs( e ) <= 0.5 && Math.abs( f ) <= 0.5 ? round( ( Math.atan2( b, a ) * 180 ) / Math.PI ) : null;
+	return turned && Math.abs( e ) <= PX_TOL && Math.abs( f ) <= PX_TOL ? round( ( Math.atan2( b, a ) * 180 ) / Math.PI ) : null;
 }
 
 // The sides a declared-style object (`{ inset: '0', top: … }`) places a layer by.

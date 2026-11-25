@@ -12,6 +12,7 @@ import { setAttr } from './tree.mjs';
 import { breakpointSteps } from './fill-values.mjs';
 import { mediaRule, scopedCssPuts, snapThreshold, snapEntry, TIER_RANGES } from './fill-width-gate.mjs';
 import { rowTarget } from './fill-regap.mjs';
+import { PX_TOL } from './css-equivalence/tolerance.mjs';
 
 // The writes whose value a read width stands for: a per-device or single value written from the tier reads.
 const READ_HOW = [ 'tiers', 'single' ];
@@ -21,7 +22,7 @@ const SAFE_SLOT = /^[\w\s.#>:()+~[\]="'*-]*$/;
 
 const tierOf = ( w ) => Object.keys( TIER_RANGES ).find( ( t ) => TIER_RANGES[ t ][ 0 ] <= w && w < TIER_RANGES[ t ][ 1 ] );
 const px = ( v ) => ( /^-?[\d.]+px$/.test( String( v ) ) ? parseFloat( v ) : null );
-const sameValue = ( a, b ) => ( null !== px( a ) && null !== px( b ) ? Math.abs( px( a ) - px( b ) ) <= 0.5 : String( a ) === String( b ) );
+const sameValue = ( a, b ) => ( null !== px( a ) && null !== px( b ) ? Math.abs( px( a ) - px( b ) ) <= PX_TOL : String( a ) === String( b ) );
 const rangeText = ( [ lo, hi ] ) => ( Infinity === hi ? `${ lo }px and up` : `${ lo }-${ hi - 1 }px` );
 
 // The stretches of a sweep series where the draft's value differs from the tier read that stands for it, each next to a step:

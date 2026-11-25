@@ -11,7 +11,17 @@ import { longhandsOf } from '../css-families.mjs';
 
 const MDN = createRequire( import.meta.url )( 'mdn-data/css/properties.json' );
 
+// The tolerance two MEASURED renders compare within (Spec 48 FR-48-36, R-47-5; Bean 2026-11-24). It never decides whether
+// a stated value is written: that is exactPaint, which holds a draft value equal to the default only when it is exactly it.
+// Every px or fractional tolerance in the route's lib comes from here (tests/tolerance-literals.test.mjs refuses a literal).
 export const PX_TOL = 0.5;
+// The tolerance for the sub-pixel difference between two measured boxes (their position and size), and for a transform pose.
+export const BOX_TOL = PX_TOL;
+export const SCALE_TOL = 0.011;
+export const ROTATE_TOL = 1;
+// A value that equals another at this precision is the same value: a computed length is read at 1/64px, so two reads of
+// one stated length never differ by more than this.
+export const READ_EPSILON = 0.001;
 // The properties whose lengths compare exactly.
 export const EXACT = [ 'letter-spacing', 'word-spacing' ];
 
@@ -67,4 +77,14 @@ export function samePaint( prop, a, b, ctx = {} ) {
 		return false;
 	}
 	return sameValue( prop, String( paintCanon( prop, a, ctx ) ).trim(), String( paintCanon( prop, b, ctx ) ).trim(), toleranceFor( prop, a, b, ctx ) );
+}
+
+// Whether a STATED value (the draft's) equals the default exactly, for the decision to write it (Spec 48 R-47-5, FR-48-36):
+// the paint canon applies, a colour matches within its ΔE rule, and a length matches only when equal (READ_EPSILON is the
+// serialisation noise of one computed length, not a design tolerance), so a 1.5px bar is not the 2px default.
+export function exactPaint( prop, a, b, ctx = {} ) {
+	if ( undefined === a || undefined === b || null === a || null === b ) {
+		return false;
+	}
+	return sameValue( prop, String( paintCanon( prop, a, ctx ) ).trim(), String( paintCanon( prop, b, ctx ) ).trim(), READ_EPSILON );
 }

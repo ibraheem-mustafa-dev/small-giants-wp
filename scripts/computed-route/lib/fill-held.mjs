@@ -26,9 +26,10 @@ import { familyOf, expand, physicalOf, partKey, isCssProperty } from './css-fami
 import { propertyChannels, IDENTITY } from './motion-channels.mjs';
 import { clientTokens } from './motion-tokens.mjs';
 import { layerGives, rootLayerTimings } from './census-conservation.mjs';
+import { PX_TOL } from './css-equivalence/tolerance.mjs';
 
 const WIDTHS = [ 375, 768, 1440 ];
-const TOL = 0.5;
+const TOL = PX_TOL;
 // The properties that paint only through text (every font longhand is inherited).
 const TEXT_ONLY = /^font-/;
 export const HELD_REASONS = [ 'covered', 'inherited', 'inert' ];

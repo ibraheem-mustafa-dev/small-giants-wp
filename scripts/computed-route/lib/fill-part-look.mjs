@@ -18,6 +18,7 @@
 //   - A look the located element carries that no setting of its part holds is `noSetting`, shaped for a Custom CSS writer:
 //     block, part, the look table's selector for the part where it has one, the CSS property, the draft value per width.
 import { deltaE, parseColour, parseLength, round, snapColour, snapFontFamily, toHex } from './normalise.mjs';
+import { PX_TOL, SCALE_TOL } from './css-equivalence/tolerance.mjs';
 
 export { findPartsInPage } from './fill-part-look-page.mjs';
 
@@ -233,7 +234,7 @@ export function samePrimitive( a, b ) {
 		return [ ...keys ].every( ( k ) => samePrimitive( a[ k ], b[ k ] ) );
 	}
 	if ( 'number' === typeof a && 'number' === typeof b ) {
-		return Math.abs( a - b ) <= 0.5 || Math.abs( a - b ) <= 0.011;
+		return Math.abs( a - b ) <= PX_TOL || Math.abs( a - b ) <= SCALE_TOL;
 	}
 	const [ ca, cb ] = [ parseColour( a ), parseColour( b ) ];
 	if ( ca && cb && /^(#|rgb)/i.test( String( a ) ) && /^(#|rgb)/i.test( String( b ) ) ) {
@@ -326,7 +327,7 @@ export function toSetting( row, value, ctx ) {
 				return { value: Object.fromEntries( Object.entries( value ).map( ( [ k, v ] ) => [ k, pxText( v ) ] ) ) };
 			}
 			const all = Object.values( value );
-			return all.every( ( v ) => Math.abs( v - all[ 0 ] ) <= 0.5 ) ? { value: pxText( all[ 0 ] ) } : { why: `${ row.attr_name } holds one radius and the draft's corners differ (${ all.map( pxText ).join( ' ' ) })` };
+			return all.every( ( v ) => Math.abs( v - all[ 0 ] ) <= PX_TOL ) ? { value: pxText( all[ 0 ] ) } : { why: `${ row.attr_name } holds one radius and the draft's corners differ (${ all.map( pxText ).join( ' ' ) })` };
 		}
 		case 'border':
 			return { value: { width: pxText( value.width ), style: value.style, colour: slug( value.colour, row.attr_name ) } };

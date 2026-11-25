@@ -1,3 +1,4 @@
+import { PX_TOL } from './css-equivalence/tolerance.mjs';
 // The applier's element probes: parts of a block the pairing does not reach, read on both sides at 1440 into facts[ key ].probes.
 //   sgs/form: every field of every step (the draft's steps are reached through its component's setState, READING-DC-FILES section 1;
 //     the live form holds every step in its markup) with its label, and the first field under keyboard focus.
@@ -253,7 +254,7 @@ async function aimAt( page, { finder, resolveSrc, second = false } ) {
 	for ( let i = 0; at && i < 8; i++ ) {
 		await page.waitForTimeout( 300 );
 		const now = await where();
-		const still = now && Math.abs( now.x - at.x ) < 0.5 && Math.abs( now.y - at.y ) < 0.5;
+		const still = now && Math.abs( now.x - at.x ) < PX_TOL && Math.abs( now.y - at.y ) < PX_TOL;
 		at = now;
 		if ( still ) {
 			break;

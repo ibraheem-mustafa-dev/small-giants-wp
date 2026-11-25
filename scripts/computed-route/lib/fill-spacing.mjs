@@ -1,3 +1,4 @@
+import { PX_TOL } from './css-equivalence/tolerance.mjs';
 // Spacing ownership (Spec 48 §3.4 step 3). Who owns the space between a parent's children is decided per tier, from the
 // draft's code first: a flex or grid parent that declares a gap on an axis owns that axis at the declared value, and the
 // render confirms it (every rendered gap at least the declared one when the axis is distributed by a `space-*`
@@ -8,7 +9,7 @@
 // confirm is reported on the decision (`disagree`).
 
 // Equal means within this many px (the spread of the gaps).
-export const EQUAL_PX = 0.5;
+export const EQUAL_PX = PX_TOL;
 
 const round2 = ( n ) => Math.round( n * 100 ) / 100;
 const MARGINS = { 'row-gap': [ 'margin-top', 'margin-bottom' ], 'column-gap': [ 'margin-left', 'margin-right' ] };

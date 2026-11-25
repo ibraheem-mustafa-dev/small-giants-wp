@@ -2,6 +2,7 @@
 // clamp() only where the setting record lists the form. Breakpoints: swept every 16px from 320 to 1920, each
 // step logged against the nearest SGS boundary so a human can decide (nothing here writes a ledger entry).
 import { parseLength, round } from './normalise.mjs';
+import { PX_TOL } from './css-equivalence/tolerance.mjs';
 
 export const FLUID_WIDTHS = [ 375, 768, 1024, 1440, 1920 ];
 export const SWEEP_WIDTHS = Array.from( { length: 101 }, ( _, i ) => 320 + i * 16 );
@@ -10,7 +11,7 @@ export const SGS_BOUNDARIES = [ 768, 1024 ];
 // The properties read at the extra fluid widths: the lengths a clamp() could carry.
 export const LENGTH_PROPS = [ 'font-size', 'line-height', 'letter-spacing', 'min-height', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left', 'margin-top', 'margin-right', 'margin-bottom', 'margin-left', 'row-gap', 'column-gap' ];
 // Linear and equal both mean within this many px.
-export const FLUID_TOL = 0.5;
+export const FLUID_TOL = PX_TOL;
 
 const px = ( v ) => {
 	if ( 'number' === typeof v ) {

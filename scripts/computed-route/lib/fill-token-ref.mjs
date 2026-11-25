@@ -16,7 +16,8 @@
 //   - colour (FR-32-28) and font family name the snapshot entry of the token the element uses (the bare slug);
 //   - any other token, a literal and a token the snapshot does not carry stay as the resolver wrote them, each with a row.
 // Radius, shadow, weight, line height, letter spacing, duration and easing are traced and reported, never written.
-import { toPx, parseColour, deltaE, COLOUR_DE, LENGTH_TOL } from './normalise.mjs';
+import { toPx, parseColour, deltaE, COLOUR_DE } from './normalise.mjs';
+import { READ_EPSILON } from './css-equivalence/tolerance.mjs';
 import { readTokens } from './tokens.mjs';
 import { splitProperty } from './resolve.mjs';
 
@@ -101,7 +102,7 @@ function sameValue( kind, snapshotValue, computed, fontPx ) {
 	switch ( kind ) {
 		case 'length': {
 			const [ a, b ] = [ toPx( snapshotValue, fontPx ), toPx( computed, fontPx ) ];
-			return null !== a && null !== b && undefined !== a && undefined !== b && Math.abs( a - b ) <= LENGTH_TOL;
+			return null !== a && null !== b && undefined !== a && undefined !== b && Math.abs( a - b ) <= READ_EPSILON;
 		}
 		case 'family':
 			return '' !== family( snapshotValue ) && family( snapshotValue ) === family( computed );

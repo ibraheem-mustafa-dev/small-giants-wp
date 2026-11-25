@@ -9,7 +9,7 @@
 // tier rules judge it as they judge any other write. The rows it answers are settled naming the host write; a row the hop
 // could not answer records the `ancestor` check as run.
 import { LOOSE, resolveViaAncestor } from './resolve.mjs';
-import { samePaint } from './css-equivalence/tolerance.mjs';
+import { exactPaint } from './css-equivalence/tolerance.mjs';
 import { notPainted, knownPaths, resolveProperty } from './fill-prop.mjs';
 import { refOf } from './tree.mjs';
 import { attrsFor } from './db.mjs';
@@ -82,7 +82,7 @@ export function instanceDraft( st, target, prop ) {
 // Whether two per-width drafts ask the same: the same widths, and the same paint at each.
 export const sameAsk = ( prop, a, b ) => {
 	const widths = Object.keys( a );
-	return widths.length === Object.keys( b ).length && widths.every( ( w ) => w in b && samePaint( prop, a[ w ], b[ w ] ) );
+	return widths.length === Object.keys( b ).length && widths.every( ( w ) => w in b && exactPaint( prop, a[ w ], b[ w ] ) );
 };
 
 // The instances of a host's part (a child block's part whose path the host reaches by `home`): the measured ones, and the

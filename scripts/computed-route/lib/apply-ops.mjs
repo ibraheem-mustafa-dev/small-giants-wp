@@ -2,6 +2,7 @@
 // why, checks: [ { width, prop, want } ] }. Ops fold onto a copy of the block's saved attributes, so two ops on one attribute
 // both land. A patch writes each changed attribute whole, because patch-block-attrs.php replaces a top-level attribute.
 import { setAttr } from './tree.mjs';
+import { PX_TOL } from './css-equivalence/tolerance.mjs';
 
 const same = ( a, b ) => JSON.stringify( a ) === JSON.stringify( b );
 
@@ -109,5 +110,5 @@ export function matches( got, want ) {
 	}
 	const a = parseFloat( got );
 	const b = parseFloat( want );
-	return Number.isFinite( a ) && Number.isFinite( b ) && /px$/.test( norm( got ) ) && Math.abs( a - b ) <= 0.5;
+	return Number.isFinite( a ) && Number.isFinite( b ) && /px$/.test( norm( got ) ) && Math.abs( a - b ) <= PX_TOL;
 }

@@ -40,6 +40,7 @@ import { tileCount, stripGap, squareTile, boxWidths } from './skeleton-tile-coun
 import { menuOfOpener } from './skeleton-mega-opener.mjs';
 import { splitLinkOf, sidesOf } from './skeleton-split-menu.mjs';
 import { openerTargets, controlWrites, openedBy, openerAttributes } from './skeleton-openers.mjs';
+import { PX_TOL } from './css-equivalence/tolerance.mjs';
 
 // Whether words are the Site Info value of a kind itself (a typed phone number or email address), so a label showing
 // them reads Site Info too.
@@ -572,7 +573,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		const both = Object.keys( k.visible || {} ).filter( ( w ) => k.visible[ w ] && e.visible?.[ w ] && k.box?.[ w ] && e.box?.[ w ] );
 		const fill = Object.entries( declared( k, tokens ) ).some( ( [ p, val ] ) => FILL.test( p ) && ! /^(?:none|transparent|rgba\(0,\s*0,\s*0,\s*0\))$/.test( String( val ).trim() ) );
 		const first = /^\s*</.test( String( e.snippet ?? '' ).replace( /^<[^>]*>/, '' ) );
-		return fill && first && both.length > 0 && both.every( ( w ) => Math.abs( k.box[ w ].w - k.box[ w ].h ) <= 0.5 );
+		return fill && first && both.length > 0 && both.every( ( w ) => Math.abs( k.box[ w ].w - k.box[ w ].h ) <= PX_TOL );
 	};
 	// A line of words led by a dot, on one line at every width it renders (shorter than two lines of its type). Rows of a dot and
 	// words stacked or set in a grid's columns are one list (Bean, 2026-10-19): the list writer takes them before any rule

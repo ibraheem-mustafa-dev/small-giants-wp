@@ -1,3 +1,4 @@
+import { PX_TOL } from './css-equivalence/tolerance.mjs';
 // The device safe area for Fill (FR-48-8, the `env()` part): a draft declaration such as the drawer foot's
 // `padding-bottom: calc(16px + env(safe-area-inset-bottom))` asks the browser for the notch inset. A page without
 // `viewport-fit=cover` in its viewport meta never gets a non-zero inset, so the draft renders only its fixed part (16px) and
@@ -47,7 +48,7 @@ export function safeAreaRead( declared, rendered ) {
 	}
 	const fixedPx = fixedPart( declared );
 	const renderedPx = px( String( rendered ?? '' ) );
-	const noInset = null !== fixedPx && null !== renderedPx && Math.abs( renderedPx - fixedPx ) <= 0.5;
+	const noInset = null !== fixedPx && null !== renderedPx && Math.abs( renderedPx - fixedPx ) <= PX_TOL;
 	const note = noInset
 		? `env(safe-area-inset-${ sides.join( '/' ) }) renders 0 in the draft (no viewport-fit=cover), so the rendered ${ renderedPx }px is written`
 		: `env(safe-area-inset-${ sides.join( '/' ) }) is declared and the draft renders ${ rendered ?? 'nothing' } where its fixed part is ${ null === fixedPx ? 'not a plain length' : `${ fixedPx }px` }; the rendered value is written and the difference is named`;

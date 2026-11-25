@@ -7,6 +7,7 @@ import { colourValue, partItems } from './apply-probe-items.mjs';
 import { fieldWidths } from './apply-form-width.mjs';
 import { matches } from './apply-ops.mjs';
 import { parseColour } from './normalise.mjs';
+import { PX_TOL } from './css-equivalence/tolerance.mjs';
 
 const FOCUS = [ 'background-color', 'border-top-color', 'border-top-width', 'box-shadow' ];
 const col = ( fields, key, prop ) => fields.map( ( f ) => f[ key ]?.[ prop ] );
@@ -69,7 +70,7 @@ function floatedColour( { saved, d, l, snapshot } ) {
 function floatedOffset( { saved, d, l } ) {
 	const want = d.focusLabel?.top;
 	const have = l.focusLabel?.top;
-	if ( ! want || ! have || Math.abs( parseFloat( want ) - parseFloat( have ) ) < 0.5 ) {
+	if ( ! want || ! have || Math.abs( parseFloat( want ) - parseFloat( have ) ) < PX_TOL ) {
 		return [];
 	}
 	const value = `${ Math.round( parseFloat( want ) * 100 ) / 100 }px`;

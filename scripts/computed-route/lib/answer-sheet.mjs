@@ -1,3 +1,4 @@
+import { PX_TOL } from './css-equivalence/tolerance.mjs';
 // The answer sheet (Spec 48 route-accuracy R1): a frozen set of hand-labelled rows every route change is scored on.
 // Each row is a false alarm (a difference the tool reports that is not real), a real problem (must stay open) or a wrong
 // write (a setting Solve wrote that moved the page away from the draft). A run is scored per surface from three of its
@@ -44,7 +45,7 @@ function fixedInWalk( report, sheetRow ) {
 		return false;
 	}
 	const bare = ( r ) => String( r || '' ).replace( /^[a-z]+-ref-/, '' );
-	const same = ( a, b ) => ( /^-?[\d.]+px$/.test( a ) && /^-?[\d.]+px$/.test( b ) ? Math.abs( parseFloat( a ) - parseFloat( b ) ) <= 0.5 : a === b );
+	const same = ( a, b ) => ( /^-?[\d.]+px$/.test( a ) && /^-?[\d.]+px$/.test( b ) ? Math.abs( parseFloat( a ) - parseFloat( b ) ) <= PX_TOL : a === b );
 	const run = ( report?.runs || [] ).find( ( x ) => ( x.state ?? '' ) === ( sheetRow.state ?? '' ) && Number( x.width ) === Number( sheetRow.width ) );
 	const pair = Object.values( run?.pairs || {} ).find( ( p ) => p?.live?.trace?.ref && bare( p.live.trace.ref ) === bare( sheetRow.ref ) );
 	const live = pair?.live?.styles?.[ sheetRow.property ];

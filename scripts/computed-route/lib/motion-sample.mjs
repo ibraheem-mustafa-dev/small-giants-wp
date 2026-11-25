@@ -6,6 +6,7 @@
 // transform lists whose functions differ (CSS then interpolates matrices) is not compared.
 import { asPlayed } from './motion-layers.mjs';
 import { transformMatrix, sameMatrix } from './css-matrix.mjs';
+import { PX_TOL } from './css-equivalence/tolerance.mjs';
 
 export const SAMPLE_FRACTIONS = [ 0, 0.5, 1 ];
 
@@ -226,7 +227,7 @@ export function sampledPoseDifferences( width, record, samples ) {
 			continue;
 		}
 		compared++;
-		if ( ! sameMatrix( wm, gm, { tol: 0.005, tolPx: 0.5 } ) ) {
+		if ( ! sameMatrix( wm, gm, { tol: 0.005, tolPx: PX_TOL } ) ) {
 			out.push( `${ at } transform measured ${ got }, the code has ${ want.transform }` );
 		}
 	}
