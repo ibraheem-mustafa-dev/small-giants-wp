@@ -80,7 +80,8 @@ export default function ElementSwitcher( {
 	const current = parts.some( ( part ) => part.value === requested )
 		? requested
 		: parts[ 0 ].value;
-	const render = 'function' === typeof children ? children( current ) : children;
+	const render =
+		'function' === typeof children ? children( current ) : children;
 	if ( 1 === parts.length ) {
 		return render ?? null;
 	}
@@ -104,4 +105,3 @@ export default function ElementSwitcher( {
 		</>
 	);
 }
-

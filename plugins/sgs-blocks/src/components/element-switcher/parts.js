@@ -55,7 +55,9 @@ export function familyAttributes( part, family ) {
 	}
 	const maps = [
 		part.attrMap,
-		...Object.values( part.states || {} ).map( ( state ) => state?.attrMap ),
+		...Object.values( part.states || {} ).map(
+			( state ) => state?.attrMap
+		),
 	];
 	const names = new Set();
 	for ( const map of maps ) {
@@ -125,7 +127,10 @@ export function partHoldsValue( part, family, attributes, defaults = {} ) {
  * @return {boolean} False when the source mode or the media kind leaves the part out.
  */
 export function partDrawn( part, { supportsSgs, attributes, kindsOf } ) {
-	if ( part?.isWrapper !== true && activeDelegation( supportsSgs, attributes ) ) {
+	if (
+		part?.isWrapper !== true &&
+		activeDelegation( supportsSgs, attributes )
+	) {
 		return false;
 	}
 	const kinds = kindsOf ? kindsOf( part ) : null;
