@@ -4,7 +4,7 @@
 //        [--allow-missing-paint sgs/a,sgs/b] [--allow-unpicked] [--picks <file>] [--no-retry] [--no-solve] [--jobs 1]
 // It checks each surface's finaliser picks (lib/clone-surface.mjs::finaliserVerdict; a surface whose draft record matched with no intake
 // skeleton, the manifest's noIntake, stops there instead of passing as a copy), runs site-run.mjs for the surfaces with every stage
-// (inventory, propose, fill, build, apply, walk) and --strict, retries a build that timed out once with --stages build,apply,walk, and prints
+// (inventory, propose, fill, build, apply, walk), not strict (strict is for tests only), retries a build that timed out once with --stages build,apply,walk, and prints
 // one line per surface and stage: `ok`, `skip` or `FAIL` with its reason and, for a failure, the stage log. A template copy a page sits in is
 // run with the page (never --no-copies). A run that includes the page map's account row first sets the registration options its draft's register
 // form needs (accountStep: a register form turns registration on and password generation off), so the walk sees the register card. Solve (solve.mjs)
