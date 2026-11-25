@@ -490,6 +490,18 @@ test( 'megaPanelRow: the cap\'s width and padding are recorded as the panel\'s o
 	assert.ok( rows( painted ).every( ( x ) => 'megaGroup' !== x.rule ) );
 } );
 
+test( 'MUST FAIL: the cap wrapper\'s width and padding reach the panel node as decided settings per device, and a cap that declares neither adds none', () => {
+	const r = behindRun( behind() );
+	const panel = r.skeleton[ 0 ];
+	assert.equal( panel.name, 'sgs/mega-panel' );
+	assert.deepEqual( panel.decided, { maxWidth: { desktop: '1440px' }, panelPadding: { desktop: { top: '36px', right: '52px', bottom: '40px', left: '52px' } } } );
+	assert.equal( panel.attributes?.maxWidth, undefined, 'a style value never sits among the skeleton\'s attributes (R-47-10)' );
+	const capOnly = behindRun( behind( { cap: 'max-width:1100px;margin-left:auto;margin-right:auto' } ) ).skeleton[ 0 ];
+	assert.deepEqual( capOnly.decided, { maxWidth: { desktop: '1100px' } }, 'no padding declared: no padding setting' );
+	const bare = behindRun( behind( { cap: 'display:block' } ) ).skeleton[ 0 ];
+	assert.equal( bare.decided, undefined, 'a wrapper declaring neither a cap nor padding decides nothing' );
+} );
+
 test( 'NEGATIVE megaPanelRow: a root that lays its columns out itself keeps the direct rule; a wrapper over a loop\'s cards, over a row with no column, or more than three levels up is left alone', () => {
 	assert.ok( rows( behindRun( panel() ) ).every( ( x ) => 'megaPanelRow' !== x.rule ), 'the panel root is the row: nothing to unwrap' );
 	const cards = behind( { inner: [ N( 'div', { style: 'display:grid;grid-template-columns:repeat(4, 1fr)' }, [ N( 'a', { loop: true, style: 'background-color:rgb(1, 2, 3)', words: 'Card', attrs: { href: '/c' } } ) ] ) ] } );

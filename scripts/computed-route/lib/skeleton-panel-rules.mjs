@@ -154,6 +154,19 @@ export function makePanelRules( { m, view, scope, R, facts, surface = {}, declar
 		return [ ...( UNSET.has( view.declared( c )[ 'max-width' ] ?? '' ) ? [] : [ band.maxWidth ] ), ...( hasPadding( c ) ? [ band.padding ] : [] ) ];
 	};
 
+	// The values the cap stands for, as the panel's own settings for the desktop tier (the shapes `sgs/mega-panel` holds: maxWidth
+	// `{ desktop: length }`, panelPadding `{ desktop: { top, right, bottom, left } }`), taken from the wrapper's declared style. A
+	// style value cannot sit among the skeleton's attributes (R-47-10), so the panel node's `decided` carries them and Fill writes
+	// them (lib/fill-resolve.mjs::fillContent), as rules.formControl.wrapperCap does for a field.
+	const bandDecided = ( c, settings ) => {
+		const band = R.megaPanelRow.band;
+		const style = view.declared( c );
+		const side = ( k ) => ( UNSET.has( style[ `padding-${ k }` ] ?? '' ) ? '0' : style[ `padding-${ k }` ] );
+		return Object.fromEntries( settings.map( ( setting ) => [ setting, setting === band.padding
+			? { desktop: Object.fromEntries( [ 'top', 'right', 'bottom', 'left' ].map( ( k ) => [ k, side( k ) ] ) ) }
+			: { desktop: style[ 'max-width' ] } ] ) );
+	};
+
 	// The verdict for an element of a header disclosure panel, or null. A direct child of the panel's root that lays its own
 	// grid out and carries its own padding or paint is a container, not the shell. A wrapper above the panel's row is unwrapped
 	// (`megaPanelRow`). A child of the row is read by rowChild; a loop's repeated item (a card with its own paint) is the card
@@ -176,7 +189,8 @@ export function makePanelRules( { m, view, scope, R, facts, surface = {}, declar
 			const first = ( wrapped.column ? wrapped.chain : wrapped.chain.slice( 0, -1 ) ).find( ( c ) => bandOf( c ).length );
 			const rowPaint = wrapped.row === e && R.megaPanelRow.rowPaint && view.ownPaint( e ) ? [ { kind: 'setting', node: root.key, setting: R.megaPanelRow.rowPaint, looks: [ 'background', 'border' ] } ] : [];
 			const conserve = rowPaint.length ? rowPaint : first === e ? bandOf( e ).map( ( setting ) => ( { kind: 'setting', node: root.key, setting, looks: setting === R.megaPanelRow.band.padding ? [ 'padding' ] : [ 'max-width', 'margin-auto' ] } ) ) : [];
-			return { rule: 'megaPanelRow', action: 'unwrap', hostLays: root.key, ...( conserve.length ? { conserve } : {} ) };
+			const band = first === e && ! rowPaint.length ? bandOf( e ) : [];
+			return { rule: 'megaPanelRow', action: 'unwrap', hostLays: root.key, ...( conserve.length ? { conserve } : {} ), ...( band.length ? { decided: bandDecided( e, band ) } : {} ) };
 		}
 		const row = wrapped ? wrapped.row : root;
 		return m.byKey[ e.parentKey ] === row ? rowChild( e, row ) : null;
