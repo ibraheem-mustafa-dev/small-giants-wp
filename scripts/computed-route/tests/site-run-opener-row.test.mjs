@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { openerRow } from '../lib/site-run-opener-row.mjs';
+import { openerRow, openersUnrecorded } from '../lib/site-run-opener-row.mjs';
 import { liveAddress } from '../site-run.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
@@ -40,4 +40,21 @@ test( 'MUST FAIL: site-run reads the surface at the opener row\'s address', () =
 	assert.equal( liveAddress( openerRow( { target: { postId: 120 } }, ROWS ), ROWS, { 'single-product': '/product/frames/' } ), '/product/frames/' );
 	const siteRun = fs.readFileSync( path.join( HERE, '..', 'site-run.mjs' ), 'utf8' );
 	assert.ok( siteRun.includes( 'const address = liveAddress( openerRow( entry, rows ) ?? row, rows, shown );' ), 'prepare reads a modal or flow at its opener row' );
+} );
+
+// The Eye Care intake taken 2026-11-19T07:39Z holds no `opens` on any row (the product row has only `opensFlow`), so every flow and
+// modal of the 2026-11-24 proof clones was read at the home page and walked hollow.
+test( 'MUST FAIL: a modal or flow surface in a page map that records no opener is named, so the run says to run intake again', () => {
+	const stale = ROWS.map( ( { opens, ...r } ) => r );
+	assert.equal( openersUnrecorded( { target: { postId: 120 } }, stale ), true );
+	assert.equal( openersUnrecorded( { target: { postId: 118 } }, stale ), true );
+	// Negative controls: a recorded opener anywhere, a page, a form, an entry with no post and no rows.
+	assert.equal( openersUnrecorded( { target: { postId: 120 } }, ROWS ), false );
+	assert.equal( openersUnrecorded( { target: { postId: 1 } }, stale ), false );
+	assert.equal( openersUnrecorded( { target: { postId: 5 } }, stale ), false );
+	assert.equal( openersUnrecorded( { target: { template: 'single-product' } }, stale ), false );
+	assert.equal( openersUnrecorded( null, stale ), false );
+	assert.equal( openersUnrecorded( { target: { postId: 120 } }, [] ), false );
+	const siteRun = fs.readFileSync( path.join( HERE, '..', 'site-run.mjs' ), 'utf8' );
+	assert.ok( siteRun.includes( 'openersUnrecorded( entry, rows ) && console.log(' ), 'prepare names it' );
 } );
