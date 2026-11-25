@@ -182,7 +182,7 @@ function sgs_media_render_slot( array $slot, array $attrs, array $context = arra
 	$max_widths = sgs_media_device_values( $attr( 'MaxWidth' ) );
 	// `item_width`: a fixed px width per device where the items are not sized by the column count (a swipe row's tracks).
 	$item_widths = (array) ( $item_set['item_width'] ?? array() );
-	// `item_cap`: a px width every item stays within on every device (a brand strip's logo box is at most its Max height).
+	// `item_cap`: a px width every item stays within on every device (a brand strip's logo box is at most its Max height as a tile, its Logo max width as a row).
 	$item_cap = sgs_media_sizes_px( $item_set['item_cap'] ?? null );
 	if ( null === $item_cap && isset( $item_set['item_cap'] ) && is_numeric( $item_set['item_cap'] ) && (float) $item_set['item_cap'] > 0 ) {
 		$item_cap = (float) $item_set['item_cap'];

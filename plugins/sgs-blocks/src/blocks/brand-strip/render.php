@@ -208,6 +208,7 @@ if ( 'text' === $brand_display ) {
 }
 // Row layout: every brand in a text-style slot, logos capped rather than tiled.
 $logo_layout_row = 'row' === ( $attributes['logoLayout'] ?? 'tiles' );
+$sgs_bs_item_cap = sgs_brand_strip_item_cap( $attributes );
 if ( $logo_layout_row ) {
 	$classes[] = 'sgs-brand-strip--layout-row';
 }
@@ -685,7 +686,7 @@ if ( ! empty( $logos ) ) {
 		} else {
 			// A decorative logo (an editorial choice, WCAG 2.1 AA 1.1.1) or one named by an on-screen caption is hidden from
 			// assistive technology, so the name is announced once.
-			$logo_out  = sgs_brand_strip_render_logo( (array) $logo, $sgs_bs_media_idx, $attributes, $sgs_bs_slot, $uid, $logo_decorative || $has_caption, array( 'desktop' => $columns_desktop, 'tablet' => $columns_tablet, 'mobile' => $columns_mobile ), (int) $max_height );
+			$logo_out  = sgs_brand_strip_render_logo( (array) $logo, $sgs_bs_media_idx, $attributes, $sgs_bs_slot, $uid, $logo_decorative || $has_caption, array( 'desktop' => $columns_desktop, 'tablet' => $columns_tablet, 'mobile' => $columns_mobile ), $sgs_bs_item_cap );
 			$logo_html = $logo_out['html'];
 			if ( '' === $logo_html ) {
 				// The renderer refused the file (for example a URL with no attachment and no size, FR-49-16): in
