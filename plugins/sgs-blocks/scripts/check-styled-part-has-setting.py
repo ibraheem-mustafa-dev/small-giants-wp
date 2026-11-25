@@ -63,6 +63,7 @@ import io
 import json
 import os
 import re
+import subprocess
 import sys
 
 # Windows consoles default to cp1252; one non-ASCII glyph kills a census partway.
@@ -100,6 +101,29 @@ STARTERS = ('primary', 'secondary', 'outline')
 
 def rel(path, root=REPO):
     return os.path.relpath(path, root).replace('\\', '/')
+
+
+_IGNORED_DIRS = None
+
+
+def git_ignored_dirs():
+    """Folders git ignores under the repo (a local reference copy of another plugin, scratch output): never source,
+    whatever they are called, so the corpus walks below match what a clean checkout holds."""
+    global _IGNORED_DIRS
+    if _IGNORED_DIRS is None:
+        try:
+            out = subprocess.run(['git', '-C', REPO, 'ls-files', '--others', '--ignored', '--exclude-standard', '--directory'],
+                                 capture_output=True, text=True, check=True).stdout
+            _IGNORED_DIRS = {line.rstrip('/') for line in out.splitlines() if line.endswith('/')}
+        except (OSError, subprocess.CalledProcessError):
+            _IGNORED_DIRS = set()
+    return _IGNORED_DIRS
+
+
+def source_dirs(dirpath, dirnames, never):
+    """The subfolders of `dirpath` a corpus walk descends into: not named in `never`, not ignored by git."""
+    ignored = git_ignored_dirs()
+    return [d for d in dirnames if d not in never and rel(os.path.join(dirpath, d)) not in ignored]
 
 
 _TEXT_CACHE = {}
@@ -285,7 +309,7 @@ def wide_enumeration():
     never_source = PRUNE | {'scripts', 'tests', 'test', 'docs', 'specs', 'languages', 'patterns-data'}
     for root in (os.path.join(REPO, 'plugins', 'sgs-blocks'), os.path.join(REPO, 'theme', 'sgs-theme')):
         for dirpath, dirnames, filenames in os.walk(root):
-            dirnames[:] = [d for d in dirnames if d not in never_source]
+            dirnames[:] = source_dirs(dirpath, dirnames, never_source)
             for fn in filenames:
                 if not fn.endswith(('.php', '.js', '.html')) or fn.endswith('.min.js'):
                     continue
@@ -1418,7 +1442,7 @@ def wide_parts(corpus_files_scope=None):
     never = PRUNE | {'scripts', 'tests', 'test', 'docs', 'specs', 'languages', 'patterns-data', 'assets'}
     root = os.path.join(REPO, 'plugins', 'sgs-blocks')
     for dirpath, dirnames, filenames in os.walk(root):
-        dirnames[:] = [d for d in dirnames if d not in never]
+        dirnames[:] = source_dirs(dirpath, dirnames, never)
         for fn in filenames:
             if not fn.endswith(('.css', '.php')) or fn.endswith('.min.css'):
                 continue
