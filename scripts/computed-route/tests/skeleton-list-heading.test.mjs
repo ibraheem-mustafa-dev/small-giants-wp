@@ -54,6 +54,11 @@ test( 'MUST FAIL: a footer column\'s text above a run of links is the list\'s ow
 	assert.equal( lists[ 0 ].draftRef.tpl, 'Root/3#0', 'the column is the list (rule listWrapper)' );
 } );
 
+test( 'MUST FAIL: the absorbed heading is paired to the list block heading part, so its look is read there', () => {
+	const row = run( page() ).proposal.rows.find( ( x ) => 'Root/4#0' === x.key );
+	assert.deepEqual( [ row.action, row.pairedPart ], [ 'absorbed', 'heading' ] );
+} );
+
 test( 'MUST FAIL: an h4 heading is the list\'s h4 level, an h1 the nearest level the list holds', () => {
 	assert.equal( all( run( page( { tag: 'h4' } ) ).skeleton, 'sgs/icon-list' )[ 0 ].attributes.headingLevel, 'h4' );
 	assert.equal( all( run( page( { tag: 'h1' } ) ).skeleton, 'sgs/icon-list' )[ 0 ].attributes.headingLevel, 'h2' );

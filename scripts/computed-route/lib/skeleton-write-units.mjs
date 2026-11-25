@@ -316,7 +316,13 @@ export function makeUnits( ctx ) {
 		if ( heading ) {
 			const L = R.listHeading;
 			Object.assign( node.attributes, { [ L.settings.text ]: heading.text, [ L.settings.level ]: heading.level } );
-			record( heading.el, { action: 'absorbed', rule: 'listHeading', source: 'rule listHeading', reason: `${ L.reason }; the list ${ node.draftRef?.tpl ?? first?.key } holds it as its heading`, confidence: 1, candidates: [], into: ( host ?? first ).key } );
+			const row = record( heading.el, { action: 'absorbed', rule: 'listHeading', source: 'rule listHeading', reason: `${ L.reason }; the list ${ node.draftRef?.tpl ?? first?.key } holds it as its heading`, confidence: 1, candidates: [], into: ( host ?? first ).key } );
+			// The absorbed heading is the draft element of the list's heading part: it joins the pending part pairings, so Fill reads
+			// the heading's font, size, colour and spacing at the part's calibrated slots (lib/skeleton-propose.mjs, partPending).
+			if ( L.part && node.draftRef ) {
+				row.pairedPart = L.part;
+				ctx.partPending.push( { e: heading.el, into: ( host ?? first ).key, part: L.part } );
+			}
 			absorbSubtree( heading.el, { block: slug, key: ( host ?? first ).key }, 'the heading of the list', 'listHeading' );
 		}
 		// The node's draft element is its first link, which is also the block's link part: the settings calibrated on that part
