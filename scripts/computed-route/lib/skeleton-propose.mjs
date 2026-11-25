@@ -16,7 +16,7 @@ import { collapsePoint, childSlots, unitSlots, slideSlots } from './skeleton-chi
 import { itemFieldSlots } from './skeleton-item-field-slots.mjs';
 import { currentSlide } from './skeleton-current-slide.mjs';
 import { wrapperLinkSlot } from './skeleton-wrapper-link-slot.mjs';
-import { mediaSelfSlot, partSlots, placePart, codeItemSlots, drawnSvgParts, itemSlots, chipSlots } from './skeleton-part-slots.mjs';
+import { mediaSelfSlot, partSlots, placePart, codeItemSlots, codeIconSlots, drawnSvgParts, itemSlots, chipSlots } from './skeleton-part-slots.mjs';
 import { recordFor, openersFor, recordView, surfaceContext } from './skeleton-record.mjs';
 import { formStepNodes, formStepContext } from './skeleton-form-steps.mjs';
 import { scIfFields } from './form-scif-fields.mjs';
@@ -45,6 +45,7 @@ import { pairAbsorbed, pairingNotes, unpairedRecords, isSummaryRow, drawsSummary
 import { switchesFor, switchAttributes } from './skeleton-part-switch.mjs';
 import { hostParts } from './skeleton-part-reads.mjs';
 import { copylessKey } from './fact-key.mjs';
+import { modeSettingsOf } from './db.mjs';
 
 // A carried or decided value as text: an id as itself, a Source object as its JSON.
 const shown = ( v ) => ( v && 'object' === typeof v ? JSON.stringify( v ) : String( v ) );
@@ -306,6 +307,12 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		// (`rules.<rule>.itemSlots`, lib/skeleton-part-slots.mjs::itemSlots).
 		const codeSlots = r.codeItem ? codeItemSlots( { at: r.codeItem, settings: R[ r.rule ]?.items?.slots, calibrated: calSettings( block ) } ) : r.firstItem && m.byKey[ r.firstItem ] && R[ r.rule ]?.itemSlots ? itemSlots( { finder: finder( m.byKey[ r.firstItem ] ), settings: R[ r.rule ].itemSlots, calibrated: calSettings( block ) } ) : null;
 		codeSlots && Object.assign( slots, codeSlots.slots );
+		// The mode the rule chose from the draft (items that all hold an icon draw the bare-icon style) decides which part draws the
+		// icon, so the icon's settings are read at that style's svg, never at the part another style would draw.
+		const iconSpec = r.iconMode && r.codeItem ? R[ r.rule ]?.items?.icons : null;
+		const iconRead = iconSpec && db ? codeIconSlots( { at: r.codeItem, settings: iconSpec.slots, calibrated: calSettings( block ), modeSettings: modeSettingsOf( db, block, iconSpec.value ) } ) : null;
+		iconRead && Object.assign( slots, iconRead.slots );
+		iconRead?.notes.length && ( row.slotNotes = [ ...( row.slotNotes || [] ), ...iconRead.notes ] );
 		// A block that styles one part of each entry (a timeline's year ring) reads that part at the draft element printing the
 		// entry's field in the loop's first copy (`rules.itemFieldSlots`, lib/skeleton-item-field-slots.mjs).
 		const fieldRead = itemFieldSlots( { rule: R.itemFieldSlots, db, block, rootKey: e.key, inventory, factRecord, rootComponent, calibrated: calSettings( block ), finder, byKey: m.byKey } );

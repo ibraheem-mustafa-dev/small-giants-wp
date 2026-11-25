@@ -134,7 +134,7 @@ export function decisionsProblems( facts ) {
 	// A rule's item look settings (`itemSlots`) are settings of its own block.
 	Object.entries( r ).filter( ( [ , x ] ) => Array.isArray( x?.itemSlots ) ).forEach( ( [ id, x ] ) => x.itemSlots.filter( ( a ) => ! facts.attr( x.block ?? x.logoBlock, a ) ).forEach( ( a ) => problems.push( `rules.${ id }.itemSlots names ${ a }, which ${ x.block ?? x.logoBlock } does not have` ) ) );
 	const ci = r.marqueeCodeItems?.items;
-	if ( ci && ( ! facts.attr( r.marqueeCodeItems.block, ci.setting ) || [ ...( ci.clear || [] ), ...( ci.slots || [] ), ...( ci.plain ? [ ci.plain.setting ] : [] ) ].some( ( a ) => ! facts.attr( r.marqueeCodeItems.block, a ) ) ) ) {
+	if ( ci && ( ! facts.attr( r.marqueeCodeItems.block, ci.setting ) || [ ...( ci.clear || [] ), ...( ci.slots || [] ), ...( ci.plain ? [ ci.plain.setting ] : [] ), ...( ci.icons ? [ ci.icons.setting, ...( ci.icons.slots || [] ) ] : [] ) ].some( ( a ) => ! facts.attr( r.marqueeCodeItems.block, a ) ) ) ) {
 		problems.push( `rules.marqueeCodeItems.items must name an items setting and cleared settings ${ r.marqueeCodeItems.block } has` );
 	}
 	// A list arrangement names a setting its block has, and one of that setting's values.
