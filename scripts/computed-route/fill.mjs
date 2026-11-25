@@ -76,6 +76,7 @@ import { calibrationFor } from './solve.mjs';
 import { prepareLooks, recordFixtures } from './lib/setting-record.mjs';
 import { assertPaints, treeBlocks, allowMissingPaintArg } from './lib/paint-gate.mjs';
 import { motionSettled, motionRejudged, transitionListOutcomes } from './lib/fill-motion-settle.mjs';
+import { restWidthWrites } from './lib/fill-rest-width.mjs';
 import { stateMap } from './lib/state-map.mjs';
 import { readMediaMap } from './lib/fill-media.mjs';
 import { assertCurrent } from './lib/freshness.mjs';
@@ -386,7 +387,11 @@ export async function fillSurface( o ) {
 		const turned = layerRotationWrites( { nodes, flat, refOf, reads, db, unmapped: moved.unmapped, motionWrites: motion.writes } );
 		result.writes.push( ...turned.writes );
 		result.settled.push( ...passSettled( moved.unmapped, turned.unmapped, 'layer-rotation', turned.answered ) );
-		moved.unmapped = turned.unmapped;
+		// A part's fixed width no width setting holds is written as the part's hover state resting width (lib/fill-rest-width.mjs).
+		const rested = restWidthWrites( { unmapped: turned.unmapped, nodes, flat, refOf, mdb: motionDb( db ), db, calFor, schema: loadMotionSchema() } );
+		result.writes.push( ...rested.writes );
+		result.settled.push( ...passSettled( turned.unmapped, rested.unmapped, 'rest-width', rested.answered ) );
+		moved.unmapped = rested.unmapped;
 		result.unmapped = moved.unmapped;
 		// A resting timing the stylesheet shows (settled equal) on an element the written layer times is judged by the layer.
 		const rejudged = motionRejudged( { settled: result.settled, writes: motion.writes, nodes, flat, refOf, mdb: motionDb( db ), db, calFor, rawSnapshot } );

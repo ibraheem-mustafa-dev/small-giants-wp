@@ -13,7 +13,7 @@ import { HELD_REASONS, heldCounts } from './fill-held.mjs';
 export const SETTLED = [ 'equal', 'already-set', 'used-size', 'not-painted', 'row-held', 'child-held', 'logo-size', 'width-ladder', 'dimension', 'part-margin', 'layer-rotation', 'motion', 'residual-css', 'parent-held' ];
 
 // The file of each pass a settled row names.
-const PASS_FILE = { 'logo-size': 'fill-logo-size.mjs', 'width-ladder': 'fill-width-ladder.mjs', dimension: 'fill-dimensions.mjs', 'layer-rotation': 'fill-layer-rotation.mjs', motion: 'fill-motion-settle.mjs', 'residual-css': 'fill-residual-css.mjs' };
+const PASS_FILE = { 'logo-size': 'fill-logo-size.mjs', 'width-ladder': 'fill-width-ladder.mjs', dimension: 'fill-dimensions.mjs', 'layer-rotation': 'fill-layer-rotation.mjs', motion: 'fill-motion-settle.mjs', 'rest-width': 'fill-rest-width.mjs', 'residual-css': 'fill-residual-css.mjs' };
 const sameRead = ( u, a ) => ( u.node === a.node || ( u.nodes || [] ).includes( a.node ) ) && ( u.slot ?? '' ) === a.slot && u.property === a.property && String( u.value ) === String( a.value ) && ( u.state ?? null ) === ( a.state ?? null );
 
 // The UNMAPPED rows a later Fill pass (lib/fill-logo-size.mjs, lib/fill-width-ladder.mjs, lib/fill-dimensions.mjs) wrote
