@@ -30,11 +30,12 @@ Accept all: [ ]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `page:page:about` | about → About (page, static, page) | about | drawer-2 #1 | accept |
+| `page:page:about` | **changed** about → About (page, static, page) | about | header #4, drawer-2 #1 |  |
+| `page:page:help` | **changed** help → Help (page, static, page) | help | header #5, drawer-2 #2 |  |
+| `page:sgs_mega_menu:mega-menu-help` | **changed** (no route) → Help mega menu (sgs_mega_menu, static) | mega-menu-help | header #5 |  |
 | `page:page:cart` | (no route) → Your bag (page, static, cart) | cart |  | accept |
 | `page:page:checkout` | checkout → Checkout (page, static, checkout) | checkout |  | accept |
 | `page:page:contact` | contact → Contact (page, static, page) | contact | drawer-2 #3 | accept |
-| `page:page:help` | help → Help (page, static, page) | help | header #4, drawer-2 #2 | accept |
 | `page:page:home` | home → Home (page, static, front-page) | home |  | accept |
 | `page:page:my-account` | signin → Sign in / register (page, static, page) | my-account |  | accept |
 | `page:page:prescription-lenses` | lenses → Lenses (page, static, page) | prescription-lenses | header #3, drawer-1 #3 | accept |
@@ -45,7 +46,6 @@ Accept all: [ ]
 | `page:sgs_form:form-submit-contact` | (no route) → submitContact (sgs_form, static) | form-submit-contact |  | accept |
 | `page:sgs_header:header` | (no route) → Header (sgs_header, static) | header |  | accept |
 | `page:sgs_mega_menu:mega-menu-brands` | (no route) → Brands mega menu (sgs_mega_menu, static) | mega-menu-brands | header #2 | accept |
-| `page:sgs_mega_menu:mega-menu-help` | (no route) → Help mega menu (sgs_mega_menu, static) | mega-menu-help | header #4 | accept |
 | `page:sgs_mega_menu:mega-menu-lenses` | (no route) → Lenses mega menu (sgs_mega_menu, static) | mega-menu-lenses | header #3 | accept |
 | `page:sgs_mega_menu:mega-menu-sunglasses` | (no route) → Sunglasses mega menu (sgs_mega_menu, static) | mega-menu-sunglasses | header #1 | accept |
 | `page:sgs_modal:modal-size-guide` | (no route) → Size guide (sgs_modal, static) | modal-size-guide |  | accept |
@@ -149,21 +149,21 @@ Accept all: [ ]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `flag:placeholder:Eye Care Birmingham.dc.html:js:2463:57` | placeholder: aisha.khan@example.com | accept-flagged | placeholder host example.com |  |
+| `flag:placeholder:Eye Care Birmingham.dc.html:js:2463:57` | placeholder: aisha.khan@example.com | accept-flagged | placeholder host example.com | accept-flagged |
 | `flag:placeholder:README.md:159` | placeholder: - Photography: Unsplash placeholders referenced by URL, not licensed for production. | accept-flagged | the README names this as a placeholder | accept-flagged |
 | `flag:placeholder:README.md:166` | placeholder: 3. Replace the "Placeholder review" entries in the product reviews (all three are placeholders) with real reviews, or keep the zero-review strip until real ones exist. | accept-flagged | the README names this as a placeholder | accept-flagged |
 | `flag:placeholder:README.md:173` | placeholder: 10. Subscriptions: confirm what is sold on subscription. The cards use placeholders (lens care kit £12, anti-fog wipes £9.50) and the shop has no way to start one yet. | accept-flagged | the README names this as a placeholder | accept-flagged |
 | `flag:placeholder:README.md:23` | placeholder: **High fidelity.** Colours, type, spacing, copy and interaction detail are final and should be matched closely. All visible text is signed-off content, not lorem. Imagery is the one unfinished area (Unsplash placeholders and "Photo to come" tiles). | accept-flagged | the README names this as a placeholder | accept-flagged |
-| `flag:stock:Eye Care Birmingham.dc.html:js:2422:7` | stock: https://images.unsplash.com/photo-1572635196237-14b3f281503f | accept-flagged | image URL built on the stock host images.unsplash.com |  |
-| `flag:stock:Eye Care Birmingham.dc.html:js:2423:7` | stock: https://images.unsplash.com/photo-1473496169904-658ba7c44d8a | accept-flagged | image URL built on the stock host images.unsplash.com |  |
-| `flag:stock:Eye Care Birmingham.dc.html:js:2424:7` | stock: https://images.unsplash.com/photo-1508296695146-257a814070b4 | accept-flagged | image URL built on the stock host images.unsplash.com |  |
-| `flag:stock:Eye Care Birmingham.dc.html:js:2425:7` | stock: https://images.unsplash.com/photo-1577803645773-f96470509666 | accept-flagged | image URL built on the stock host images.unsplash.com |  |
-| `flag:stock:Eye Care Birmingham.dc.html:js:2426:7` | stock: https://images.unsplash.com/photo-1509695507497-903c140c43b0 | accept-flagged | image URL built on the stock host images.unsplash.com |  |
-| `flag:stock:Eye Care Birmingham.dc.html:js:2427:7` | stock: https://images.unsplash.com/photo-1511499767150-a48a237f0083 | accept-flagged | image URL built on the stock host images.unsplash.com |  |
-| `flag:stock:Eye Care Birmingham.dc.html:js:2428:7` | stock: https://images.unsplash.com/photo-1556306535-0f09a537f0a3 | accept-flagged | image URL built on the stock host images.unsplash.com |  |
-| `flag:stock:Eye Care Birmingham.dc.html:js:2429:7` | stock: https://images.unsplash.com/photo-1574258495973-f010dfbb5371 | accept-flagged | image URL built on the stock host images.unsplash.com |  |
-| `flag:stock:Eye Care Birmingham:114` | stock: https://images.unsplash.com/photo-1577803645773-f96470509666?w=2200&q=82&auto=format&fit=crop | accept-flagged | image on the stock host images.unsplash.com |  |
-| `flag:stock:Eye Care Birmingham:217` | stock: https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=1500&q=82&auto=format&fit=crop | accept-flagged | image on the stock host images.unsplash.com |  |
+| `flag:stock:Eye Care Birmingham.dc.html:js:2422:7` | stock: https://images.unsplash.com/photo-1572635196237-14b3f281503f | accept-flagged | image URL built on the stock host images.unsplash.com | accept-flagged |
+| `flag:stock:Eye Care Birmingham.dc.html:js:2423:7` | stock: https://images.unsplash.com/photo-1473496169904-658ba7c44d8a | accept-flagged | image URL built on the stock host images.unsplash.com | accept-flagged |
+| `flag:stock:Eye Care Birmingham.dc.html:js:2424:7` | stock: https://images.unsplash.com/photo-1508296695146-257a814070b4 | accept-flagged | image URL built on the stock host images.unsplash.com | accept-flagged |
+| `flag:stock:Eye Care Birmingham.dc.html:js:2425:7` | stock: https://images.unsplash.com/photo-1577803645773-f96470509666 | accept-flagged | image URL built on the stock host images.unsplash.com | accept-flagged |
+| `flag:stock:Eye Care Birmingham.dc.html:js:2426:7` | stock: https://images.unsplash.com/photo-1509695507497-903c140c43b0 | accept-flagged | image URL built on the stock host images.unsplash.com | accept-flagged |
+| `flag:stock:Eye Care Birmingham.dc.html:js:2427:7` | stock: https://images.unsplash.com/photo-1511499767150-a48a237f0083 | accept-flagged | image URL built on the stock host images.unsplash.com | accept-flagged |
+| `flag:stock:Eye Care Birmingham.dc.html:js:2428:7` | stock: https://images.unsplash.com/photo-1556306535-0f09a537f0a3 | accept-flagged | image URL built on the stock host images.unsplash.com | accept-flagged |
+| `flag:stock:Eye Care Birmingham.dc.html:js:2429:7` | stock: https://images.unsplash.com/photo-1574258495973-f010dfbb5371 | accept-flagged | image URL built on the stock host images.unsplash.com | accept-flagged |
+| `flag:stock:Eye Care Birmingham:114` | stock: https://images.unsplash.com/photo-1577803645773-f96470509666?w=2200&q=82&auto=format&fit=crop | accept-flagged | image on the stock host images.unsplash.com | accept-flagged |
+| `flag:stock:Eye Care Birmingham:217` | stock: https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=1500&q=82&auto=format&fit=crop | accept-flagged | image on the stock host images.unsplash.com | accept-flagged |
 
 ## Draft defects (draft-defect)
 

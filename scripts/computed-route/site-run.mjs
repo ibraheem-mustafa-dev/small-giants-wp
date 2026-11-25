@@ -80,6 +80,7 @@ import { openRunLedger, runLedgerFileOfFill } from './lib/run-ledger.mjs';
 import { applyRunRows, buildRunRows } from './lib/run-ledger-build.mjs';
 import { ledgerTargets } from './lib/ledger-pairs.mjs';
 import { blockSchema } from './lib/resolve.mjs';
+import { pageMapStaleProblem } from './lib/page-map-fresh.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..', '..' );
 const ALL_STAGES = [ 'inventory', 'propose', 'fill', 'build', 'apply', 'walk' ];
@@ -403,6 +404,11 @@ export async function main( argv ) {
 	const allowMissingPaint = allowMissingPaintArg( argv );
 	allowMissingPaint.length && console.log( `site-run: --allow-missing-paint ${ allowMissingPaint.join( ',' ) }: a stage whose tree uses one of these without default paint prints it in its log, and Fill's report lists it` );
 	const keys = runKeys( surfaces, only, { copies: withCopies } );
+	// A page map older than the reader that builds it runs every stage on missing openers and flows: stop, naming the regenerating command.
+	const staleMap = pageMapStaleProblem( { repo: REPO, client } );
+	if ( staleMap ) {
+		throw new Error( staleMap );
+	}
 	// A run that would carry on with worse proposals for want of a gitignored intake file stops here, before any stage.
 	const missingInputs = intakeInputsMissing( { client, build, stages, surfaces, keys, intake, withContent } );
 	if ( missingInputs.length ) {

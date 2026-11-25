@@ -48,7 +48,18 @@
     "collection": "live",
     "flags": [],
     "id": null,
-    "opensFlow": "choice-flow-add-prescription-lenses"
+    "opensFlow": "choice-flow-add-prescription-lenses",
+    "opens": [
+      {
+        "kind": "modal",
+        "slug": "modal-size-guide"
+      },
+      {
+        "kind": "flow",
+        "slug": "choice-flow-add-prescription-lenses",
+        "buyBox": true
+      }
+    ]
   },
   {
     "route": "lenses",
@@ -81,6 +92,11 @@
     "template": "page",
     "menus": [
       {
+        "menu": "header",
+        "position": 4,
+        "parentItem": null
+      },
+      {
         "menu": "drawer-2",
         "position": 1,
         "parentItem": null
@@ -100,7 +116,7 @@
     "menus": [
       {
         "menu": "header",
-        "position": 4,
+        "position": 5,
         "parentItem": null
       },
       {
@@ -112,7 +128,13 @@
     "postType": "page",
     "collection": "static",
     "flags": [],
-    "id": 111
+    "id": 111,
+    "opens": [
+      {
+        "kind": "modal",
+        "slug": "modal-size-guide"
+      }
+    ]
   },
   {
     "route": "contact",
@@ -167,6 +189,9 @@
     "collection": "static",
     "flags": [],
     "id": 9,
+    "folds": [
+      "account"
+    ],
     "parts": [
       {
         "kind": "form",
@@ -259,7 +284,13 @@
     "collection": "static",
     "flags": [],
     "id": 139,
-    "draftId": "surfaces.json S-06"
+    "draftId": "surfaces.json S-06",
+    "opens": [
+      {
+        "kind": "modal",
+        "slug": "modal-size-guide"
+      }
+    ]
   },
   {
     "slug": "drawer-eye-care-birmingham",
@@ -271,7 +302,13 @@
     "collection": "static",
     "flags": [],
     "id": 141,
-    "draftId": "surfaces.json S-05"
+    "draftId": "surfaces.json S-05",
+    "opens": [
+      {
+        "kind": "modal",
+        "slug": "modal-size-guide"
+      }
+    ]
   },
   {
     "slug": "modal-size-guide",
@@ -357,13 +394,19 @@
     "menus": [
       {
         "menu": "header",
-        "position": 4,
+        "position": 5,
         "parentItem": null
       }
     ],
     "postType": "sgs_mega_menu",
     "collection": "static",
     "flags": [],
-    "id": 129
+    "id": 129,
+    "opens": [
+      {
+        "kind": "modal",
+        "slug": "modal-size-guide"
+      }
+    ]
   }
 ]
