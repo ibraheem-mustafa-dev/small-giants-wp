@@ -118,7 +118,7 @@ test( 'MUST FAIL: a new client\'s chain runs every step in order, builds the sit
 	assert.deepEqual( w.execs.find( ( e ) => 'looks' === e.id ).args.slice( 1, 5 ), [ '--snapshot', 'sites/acme/theme-snapshot.json', '--site', 'acme' ] );
 	assert.equal( w.execs.find( ( e ) => 'intake' === e.id ).args.includes( '--record' ), true, 'no replay file yet, so the draft is recorded' );
 	assert.deepEqual( w.execs.filter( ( e ) => 'skeletons' === e.id ).map( ( e ) => e.args[ 1 ] ), [ '--rerun-skeletons', '--apply-review' ] );
-	assert.deepEqual( statusOf( r ), { preflight: 'ok', 'handoff-check': 'ok', 'intake-files': 'ok', intake: 'ok', 'apply-review': 'ok', tokens: 'ok', 'plugin-build': 'ok', sync: 'ok', 'snapshot-push': 'skip', 'site-info': 'ok', media: 'ok', 'site-build': 'ok', manifest: 'ok', looks: 'ok', skeletons: 'ok', surfaces: 'ok' } );
+	assert.deepEqual( statusOf( r ), { preflight: 'ok', 'handoff-check': 'ok', 'intake-files': 'ok', intake: 'ok', 'apply-review': 'ok', tokens: 'ok', 'plugin-build': 'ok', sync: 'ok', 'snapshot-push': 'skip', 'site-info': 'ok', media: 'ok', 'site-build': 'ok', manifest: 'ok', catalogue: 'skip', looks: 'ok', skeletons: 'ok', surfaces: 'ok' } );
 	assert.equal( w.launches.filter( ( a ) => 'inventory,propose' === a[ a.indexOf( '--stages' ) + 1 ] ).length, 0, 'no propose pass hunts for blocks to measure' );
 	const surfaces = w.launches.at( -1 );
 	assert.deepEqual( surfaces.slice( 0, 4 ), [ 'acme', '--site', SITE, '--only' ] );
@@ -416,4 +416,17 @@ test( 'MUST FAIL: the surfaces step runs Solve on each surface when the ports ca
 	assert.deepEqual( solved.map( ( x ) => x[ 0 ] ).sort(), [ 'drawer-menu', 'footer', 'header' ] );
 	assert.deepEqual( solved[ 0 ][ 1 ], [ 'sgs/hero' ] );
 	assert.ok( r.lines.some( ( l ) => /^ok {3}header solve /.test( l ) ) );
+} );
+
+test( 'MUST FAIL: the catalogue step hides the test products on a shop client\'s fixture site and is not applicable on any other site or for a client with no shop', () => {
+	assert.deepEqual( commands.hideFixtures( { client: 'acme', site: 'local-mamas' } ), [ 'node', [ 'scripts/computed-route/shop-fixtures.mjs', 'acme', '--site', 'local-mamas', '--apply' ] ] );
+	const applicable = ( { site, rows } ) => {
+		const w = world();
+		write( path.join( w.build, 'page-map.json' ), JSON.stringify( rows ) );
+		return buildSteps( { client: 'acme', site, repo: w.repo, targets, ports: w.ports, state: { steps: {} } } ).find( ( s ) => 'catalogue' === s.id ).applicable();
+	};
+	const shop = [ { slug: 'shop', postType: 'shop', id: 3 } ];
+	assert.equal( applicable( { site: 'local-mamas', rows: shop } ), null, 'a shop on a fixture site runs the step' );
+	assert.match( applicable( { site: 'local-mamas', rows: [ { slug: 'home', postType: 'page', id: 1 } ] } ), /no shop or product row/ );
+	assert.match( applicable( { site: 'indus-test', rows: shop } ), /not a fixture site/ );
 } );

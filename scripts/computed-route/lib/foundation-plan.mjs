@@ -35,9 +35,10 @@ import { distroOf, runPreflight } from './foundation-preflight.mjs';
 import { heldByState } from './foundation-run.mjs';
 import { intakeCurrent, layoutSurfaces, pageMapBuilt, snapshotDiff, tokenOutput, wslPath } from './foundation-parts.mjs';
 import { runsShop, LOOK_JOBS } from './setting-record.mjs';
+import { FIXTURE_SITES } from './shop-fixture-sites.mjs';
 import { mediaAssets } from './media-upload.mjs';
 
-export const STEP_IDS = [ 'preflight', 'handoff-check', 'intake-files', 'intake', 'apply-review', 'tokens', 'plugin-build', 'sync', 'snapshot-push', 'site-info', 'media', 'site-build', 'manifest', 'looks', 'skeletons', 'surfaces' ];
+export const STEP_IDS = [ 'preflight', 'handoff-check', 'intake-files', 'intake', 'apply-review', 'tokens', 'plugin-build', 'sync', 'snapshot-push', 'site-info', 'media', 'site-build', 'manifest', 'catalogue', 'looks', 'skeletons', 'surfaces' ];
 const ROUTE = 'scripts/computed-route';
 // The site look builder's worker processes (each renders a block's instances offline).
 export { LOOK_JOBS };
@@ -62,6 +63,7 @@ export const commands = {
 	media: ( { client, site } ) => [ 'node', [ `${ ROUTE }/media-upload.mjs`, client, '--site', site, '--apply' ] ],
 	siteBuild: ( { client, site } ) => [ 'node', [ `${ ROUTE }/site-build.mjs`, client, '--site', site, '--apply' ] ],
 	manifest: ( { client, site } ) => [ 'node', [ `${ ROUTE }/manifest.mjs`, client, '--site', site, '--apply' ] ],
+	hideFixtures: ( { client, site } ) => [ 'node', [ `${ ROUTE }/shop-fixtures.mjs`, client, '--site', site, '--apply' ] ],
 	looks: ( { client, shop } ) => [ 'python', [ 'plugins/sgs-blocks/scripts/site-look/site_look.py', '--snapshot', `sites/${ client }/theme-snapshot.json`, '--site', client, '--out', `${ ROUTE }/site-look`, '--all', '--jobs', String( LOOK_JOBS ), ...( shop ? [ '--woocommerce' ] : [] ) ] ],
 };
 
@@ -261,6 +263,15 @@ export function buildSteps( ctx ) {
 			fingerprint: () => joinFp( fileSha( p.pageMap ), fileSha( p.surfaces ) ),
 			holds: () => ( fs.existsSync( p.surfaces ) && layout().found.length > 0 && 0 === layout().missing.length ? 'every layout row has a surface in surfaces.json' : null ),
 			run: () => cmd( 'manifest', commands.manifest( { client, site } ), 'it lists each row it could not settle' ),
+		},
+		{
+			// The route's own test products are catalogue-hidden (lib/shop-fixtures.mjs: a fixture found listed is hidden, a missing one is made
+			// hidden), so a client's shop shows only the client's products.
+			id: 'catalogue', deps: [ 'site-build' ], title: 'shop-fixtures.mjs --apply: the test products hidden from the shop',
+			applicable: () => ( ! runsShop( client, repo ) ? 'the page map has no shop or product row' : ! FIXTURE_SITES.includes( site ) ? `${ site } is not a fixture site (${ FIXTURE_SITES.join( ', ' ) })` : null ),
+			fingerprint: () => joinFp( site, fileSha( p.pageMap ) ),
+			holds: () => heldBy( 'catalogue', joinFp( site, fileSha( p.pageMap ) ), 'the test products were hidden for this page map' ),
+			run: () => cmd( 'catalogue', commands.hideFixtures( { client, site } ), 'it names the product it could not hide' ),
 		},
 		{
 			id: 'looks', deps: [ 'tokens', 'plugin-build', 'apply-review' ], title: `site_look.py --all: every block's site look for the client, offline`,

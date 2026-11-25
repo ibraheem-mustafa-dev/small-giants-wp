@@ -14,9 +14,9 @@ import { VariesByError } from './lib/shop-fixtures-variesby.mjs';
 import { wpFetch } from './lib/shop-fixtures-wp.mjs';
 import { assertSiteContact } from './lib/site-contact.mjs';
 import { assertUnprotected, readTargets, secretsOf } from './lib/site-targets.mjs';
+import { FIXTURE_SITES } from './lib/shop-fixture-sites.mjs';
 
-// The sites the fixtures may be written to: fresh test sites that hold no client content.
-export const FIXTURE_SITES = [ 'eye-care-clone-test', 'local-mamas', 'local-eye-care' ];
+export { FIXTURE_SITES };
 
 const args = process.argv.slice( 2 );
 const opt = ( name ) => ( args.includes( name ) ? args[ args.indexOf( name ) + 1 ] : null );

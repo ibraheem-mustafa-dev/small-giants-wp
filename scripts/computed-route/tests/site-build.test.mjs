@@ -155,6 +155,19 @@ test( 'a missing stored id stops the run and names the row', () => {
 	assert.match( p.problems[ 0 ], /^page:about: its stored id 999 no longer exists/ );
 } );
 
+test( 'MUST FAIL: a layout row whose stored id names no post (a scratch strip deleted it) is built again, while a page row with a gone id still stops', () => {
+	const site = fakeSite();
+	const rows = ROWS();
+	rows.find( ( r ) => 'sgs_header' === r.postType ).id = 777;
+	const p = planBuild( { rows, state: site.state( rows ), repo: os.tmpdir(), client: 'none' } );
+	assert.deepEqual( p.problems, [] );
+	assert.ok( p.actions.some( ( a ) => 'create' === a.type && 'sgs_header:header' === a.key ), 'the header is created, not stopped on' );
+	assert.ok( p.notes.some( ( n ) => /^sgs_header:header: its stored id 777 names no sgs_header/.test( n ) ) );
+	const page = ROWS();
+	page[ 2 ].id = 999;
+	assert.equal( planBuild( { rows: page, state: site.state( page ), repo: os.tmpdir(), client: 'none' } ).problems.length, 1, 'negative control: a page keeps the stop' );
+} );
+
 test( 'a child row before its parent is reordered and gets the parent\'s new id', () => {
 	const rows = ROWS();
 	const order = orderRows( rows ).map( rowKey );

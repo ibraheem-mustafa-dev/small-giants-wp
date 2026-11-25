@@ -205,10 +205,18 @@ export function siteOf( name, targets = {} ) {
 	return at;
 }
 
+// The site whose post ids a name holds: a scratch copy is the site it copies (`siteOf`), and a mirror is the test site it is a
+// database copy of (`mirrorOf`), so a copy of a mirror holds its test site's ids.
+const idsHolder = ( name, targets ) => {
+	const site = siteOf( name, targets );
+	return siteOf( ( site && Object.hasOwn( targets, site ) && targets[ site ]?.mirrorOf ) || site, targets );
+};
+
 // The rows as a run against `site` should plan from them: ids written for another site name nothing there, so they are
 // dropped (a post carrying a row key is adopted, FR-48-17) and the run's write-back replaces them. A scratch copy counts as
-// the site it copies (`siteOf` through `targets`); with no `targets` the names are compared as they stand.
-export const rowsForSite = ( rows, idsSite, site, targets = {} ) => ( idsSite && siteOf( idsSite, targets ) !== siteOf( site, targets ) ? rows.map( ( r ) => ( { ...r, id: null } ) ) : rows );
+// the site it copies and a mirror as its test site (`idsHolder` through `targets`); with no `targets` the names are compared
+// as they stand.
+export const rowsForSite = ( rows, idsSite, site, targets = {} ) => ( idsSite && idsHolder( idsSite, targets ) !== idsHolder( site, targets ) ? rows.map( ( r ) => ( { ...r, id: null } ) ) : rows );
 
 export const treeHash = ( tree ) => crypto.createHash( 'sha256' ).update( JSON.stringify( tree ) ).digest( 'hex' );
 

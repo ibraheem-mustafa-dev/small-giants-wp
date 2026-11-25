@@ -47,3 +47,10 @@ test( 'MUST FAIL: a scratch copy of a mirror shares ids with the mirror\'s test 
 	assert.equal( rowsFor( rows, 'local-a', { site: 'test-b', mirrorOf: 'local-scratch' }, named )[ 0 ].id, 5, 'a mirrorOf that names a scratch copy resolves to its source' );
 	assert.equal( rowsFor( rows, 'm', { site: 'local-a' }, named )[ 0 ].id, 5, 'the ids of a site mirroring a scratch copy are kept by its source' );
 } );
+
+test( 'MUST FAIL: a mirror and its test site hold the same ids in rowsForSite, as sharesIds says: ids written on either are kept on the other', () => {
+	assert.equal( rowsForSite( rows, 'site-a', 'local-a', targets )[ 0 ].id, 5, 'the test site\'s ids on its mirror' );
+	assert.equal( rowsForSite( rows, 'local-a', 'site-a', targets )[ 0 ].id, 5, 'the mirror\'s ids on its test site' );
+	assert.equal( rowsForSite( rows, 'site-a', 'local-scratch-2', targets )[ 0 ].id, 5, 'a copy of a copy of the mirror' );
+	assert.equal( rowsForSite( rows, 'site-b', 'local-a', targets )[ 0 ].id, null, 'negative control: another test site\'s ids are dropped' );
+} );

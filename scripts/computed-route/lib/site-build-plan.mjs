@@ -106,6 +106,17 @@ export function planBuild( { rows, state, repo, client, frontRoute = 'home', lin
 	const notes = [];
 	const actions = [];
 	const options = [];
+	// A header, footer or drawer row whose stored id names no post on the site (a scratch copy's strip deletes the layout posts and
+	// keeps the page map) is built again: layout posts are made from the row's tree and hold no person's content, so the run
+	// does not stop on them as it does on a page (FR-48-55).
+	rows = rows.map( ( row ) => {
+		const p = Number.isInteger( row.id ) ? state.posts[ String( row.id ) ] : null;
+		if ( ! LAYOUT_TYPES[ row.postType ] || ! Number.isInteger( row.id ) || ( p && p.type === wpType( row ) && 'trash' !== p.status ) ) {
+			return row;
+		}
+		notes.push( `${ rowKey( row ) }: its stored id ${ row.id } names no ${ wpType( row ) } on the site, so the layout is built again` );
+		return { ...row, id: null };
+	} );
 	const shopClient = rows.some( ( r ) => SHOP_TYPES.includes( r.postType ) );
 	const woo = shopClient ? wooRoles( rows ) : [];
 	let ordered = [];
