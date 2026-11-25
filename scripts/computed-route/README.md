@@ -3030,6 +3030,26 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `currentSelectors`: The two selectors of a group: the copy where the condition holds and a copy where it does not.
 - `readCurrentItems`: Reads the current-item looks at the page's current width: { looks: { [jobId]: [look] }, gaps: [{ ids, reason }] }. groups: currentItemGroups(facts); jobs: lib/fill-read.mjs::jobsFor. The comparison copy is read here, so the look is the current copy against a non-current copy of the same item, never against a target that may itself be the current copy.
 
+
+### `lib/fill-current-attr.mjs`
+- `currentAttrKeys( facts )`: the template keys of the elements whose `aria-current` the draft binds to a value (a header component writing `aria-current="{{ cur.shop }}"` on each nav link, with no sc-if and no selector).
+- `currentAttrJobs( keys, jobs, rootComponent )`: the read jobs that are one of those elements, each with its component and tpl; a job inside the page's own root component is dropped.
+- `readCurrentAttr( { jobs, pages, openSibling, resolveSrc, log } )`: opens the draft's other pages at the read width, and where a peer of the item carries `aria-current` the peer's declared values against a non-current peer's are the item's `current` look (`states: ['current']`, written by `fillStates`); a job no page answers is one gap row. Spec 48 FR-48-81.
+
+### `lib/fill-state-parts.mjs`
+- `partStateSlots( { db, cal, block, prop, slot, state } )`: the slots a state setting was measured at on another instance of a repeated part (`canonical_slot` or `css_element` names the part, a `::before` or `::after` layer counting as the element), for a state look the draft shows on an instance the setting was not measured on. `lib/fill-state.mjs::fillStates` adds them to the slots it tries.
+
+### `lib/setting-variant.mjs`
+- `rowHoldsVariant( comps, part, element )`: whether one record row's selector carries `--<element>` on an element compound above its part (`.x__item--featured .x__link`), the modifier not sitting on the part's own element.
+- `variantOnlyOf( rows, element, compoundsOf )`: the variant (the setting's `css_element`) a setting is limited to, or null; `setting-record.mjs::settingEntry` stamps it as the entry's `variantOnly`. `current` is a state, never a variant.
+- `variantHeld( entry, variants )`: whether a node drawn in `variants` (`node.drawnVariants`, `featured`) may take the entry; `lib/resolve.mjs::resolve` applies it when it ties a setting to an element.
+
+### `lib/resolve-layer.mjs`
+- `coversSlot( c, p, slot, prop )`: whether record path `p` of setting entry `c` is a `::before` or `::after` cover layer (its `inset` among the entry's effects) over the element at `slot`, for a draft background; `resolve` tries such a setting when no setting paints the element itself (`itemBgHover` for a plain link's hover fill).
+
+### `lib/fill-scrim.mjs`
+- `backdropLook( facts )`: the draft's backdrop beside its drawers (the fact record's surface part of kind `backdrop`) as an opaque colour, the strength (the rgba alpha times any opacity it declares), a blur radius and the opacity fade in ms.
+- `scrimWrites( { nodes, flat, refOf, facts, scrimBlocks, defaultOf } )`: writes `scrimColour`, `scrimOpacity`, `scrimBlur` and `scrimFadeDuration` on every node of a block whose settings paint a scrim (`css_element = 'scrim'`: `sgs/nav-drawer`, `sgs/cart`), skipping a default and a value the node already holds. Spec 48 FR-48-8.
 ### `lib/fill-form-schema.mjs`
 - `formSchemaOf`: The form schema the fact record holds for a component: { component, entry, steps } or null. A component whose statics hold no array of steps with named fields has none.
 - `schemaFieldOf`: The schema field a rendered control is: its id or name ends with the field's name (`ta-tradingName` is `tradingName`).
