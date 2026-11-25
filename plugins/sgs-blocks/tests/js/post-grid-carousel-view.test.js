@@ -90,7 +90,7 @@ describe( 'post-grid carousel autoplay: pause (WCAG 2.2.2)', () => {
 		grid.querySelector( 'a' ).dispatchEvent( focusEvent( 'focusin' ) );
 		hover( grid, false );
 		jest.advanceTimersByTime( SPEED * 2 );
-		expect( lastCard() ).toBe( '0' );
+		expect( lastCard() ).toBeNull(); // nothing scrolled: the carousel does not move itself on load or while paused
 	} );
 
 	it( 'hover and focus both ending start one timer, not two', () => {
@@ -114,7 +114,7 @@ describe( 'post-grid carousel autoplay: pause (WCAG 2.2.2)', () => {
 		expect( button.getAttribute( 'aria-pressed' ) ).toBe( 'true' );
 		button.dispatchEvent( focusEvent( 'focusout', document.querySelector( '.outside' ) ) );
 		jest.advanceTimersByTime( SPEED * 2 );
-		expect( lastCard() ).toBe( '0' );
+		expect( lastCard() ).toBeNull(); // nothing scrolled: the carousel does not move itself on load or while paused
 		button.click();
 		jest.advanceTimersByTime( SPEED );
 		expect( lastCard() ).toBe( '1' );
@@ -125,7 +125,7 @@ describe( 'post-grid carousel autoplay: pause (WCAG 2.2.2)', () => {
 		const { grid, button } = buildGrid();
 		start( grid );
 		jest.advanceTimersByTime( SPEED * 2 );
-		expect( lastCard() ).toBe( '0' );
+		expect( lastCard() ).toBeNull(); // nothing scrolled: the carousel does not move itself on load or while paused
 		expect( button.hidden ).toBe( true );
 	} );
 } );
