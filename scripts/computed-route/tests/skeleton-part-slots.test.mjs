@@ -100,6 +100,14 @@ test( 'negative controls: bars of different sizes are no repeated items (no abse
 	assert.ok( ! ( BAR( 3 ) in slotsOf( run( mixed, () => CAL3 ) ) ), 'two elements of different tags are no repeated items' );
 } );
 
+test( 'MUST FAIL (a layer is read at its element): a calibrated path naming the ::before layer of the icon box gives no slot with the suffix; the box is read once, at its plain path', () => {
+	const WITH_LAYER = { ...CAL, burgerIconWidth: { slot: ICON, slots: [ ICON, `${ ICON }::before`, BAR( 1 ), BAR( 2 ), BAR( 3 ) ] } };
+	const slots = slotsOf( run( [ ...HEADER, ...BOXED ], () => WITH_LAYER ) );
+	assert.deepEqual( Object.keys( slots ).filter( ( k ) => /::/.test( k ) ), [], 'no slot names a pseudo-element layer (Fill refuses it, lib/fill-skeleton.mjs::skeletonProblems)' );
+	assert.equal( slots[ ICON ].tpl, 'Root/63#0', 'the layer is read at its element, the icon box' );
+	assert.deepEqual( [ 1, 2, 3 ].map( ( n ) => slots[ BAR( n ) ]?.tpl ), [ 'Root/60#0', 'Root/61#0', 'Root/62#0' ], 'the bars keep their own slots' );
+} );
+
 test( 'MUST FAIL (no calibration, no slot): a block with no calibrated burger gains no slot and says so', () => {
 	const r = run( [ ...HEADER, ...BARS ], () => ( {} ) );
 	assert.ok( ! Object.keys( slotsOf( r ) ).some( ( k ) => k.includes( 'burger' ) ) );

@@ -331,6 +331,20 @@ test( 'MUST FAIL: a piece counting the basket\'s lines beside the heading become
 	assert.deepEqual( got.placed.find( ( p ) => 'core/post-content' === p.block ).run, [ 'Root/22#0', 'Root/14#0' ] );
 } );
 
+test( 'MUST FAIL: the basket count row gap is one word space at the heading computed size, whether the heading is sized inline, by a class (no inline style) or not at all', () => {
+	const gapOf = ( edit ) => {
+		const input = BASKET();
+		const h = input.inventory.elements.find( ( e ) => 'Root/11#0' === e.key );
+		edit( h );
+		const got = placePieces( { key: 'cart', tree: input.tree, data: DATA, ctx: basketCtx( input ), builders: BUILDERS } );
+		return got.tree[ 0 ].innerBlocks[ 0 ].innerBlocks[ 1 ].decided?.gap;
+	};
+	assert.deepEqual( gapOf( ( h ) => ( h.attrs.style = '' ) ), { desktop: '17px' }, 'a heading sized by a class: its computed 68px at 1440 gives the space' );
+	assert.deepEqual( gapOf( ( h ) => { h.attrs.style = ''; h.resolved[ 1440 ][ 'font-size' ] = '40px'; } ), { desktop: '10px' }, 'the computed size wins over a fixed one' );
+	assert.deepEqual( gapOf( ( h ) => { delete h.resolved; h.attrs.style = 'font-size: 68px'; } ), { desktop: '17px' }, 'no browser read: the inline style is still read' );
+	assert.equal( gapOf( ( h ) => { delete h.resolved; h.attrs.style = ''; } ), undefined, 'a heading with no readable size gets no gap, not a guessed one' );
+} );
+
 test( 'basketCounts: only a text hole counting a list the region loops over, held by an element with words of its own outside the region', () => {
 	const input = BASKET();
 	const facts = json( path.join( FIX, 'mamas-facts.json' ) );

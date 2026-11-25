@@ -43,5 +43,7 @@
 	{"file":"lib/shop-parts-logic.mjs","find":"return values.length && decls.every( Boolean ) ? [ ...new Set( decls ) ] : [];","replace":"return [ ...new Set( decls.filter( Boolean ) ) ];","why":"a binding counting nothing is taken to count"},
 	{"file": "lib/template-piece-woo-layout.mjs", "find": "const pruned = band( split( prune( tree ) ) );", "replace": "const pruned = split( prune( tree ) );", "why": "the region's width cap belongs to no node"},
 	{"file": "lib/template-piece-woo-layout.mjs", "find": "if ( parentKey && keyOf( n ) === parentKey ) {", "replace": "if ( parentKey ) {", "why": "the first node of the tree reads the region as its band"},
-	{"file": "lib/template-piece-woo-layout.mjs", "find": "...( banded ? [ `${ ctx.key }: ${ keyOf( banded ) } reads the region ${ region } as its content band (its width cap and centring)` ] : [] ),", "replace": "", "why": "the band is not noted"}
+	{"file": "lib/template-piece-woo-layout.mjs", "find": "...( banded ? [ `${ ctx.key }: ${ keyOf( banded ) } reads the region ${ region } as its content band (its width cap and centring)` ] : [] ),", "replace": "", "why": "the band is not noted"},
+	{"file": "lib/template-piece-woo-layout.mjs", "find": "const computed = /^(-?[\\d.]+)px$/.exec( String( el?.resolved?.[ 1440 ]?.[ property ] ?? '' ).trim() );", "replace": "const computed = null;", "why": "the heading's computed size is never read, so a heading sized by a class gets no gap"},
+	{"file": "lib/template-piece-woo-layout.mjs", "find": "el?.resolved?.[ 1440 ]?.[ property ]", "replace": "el?.resolved?.[ 768 ]?.[ property ]", "why": "the gap reads the tablet's size, not the desktop's the row is written for"}
 ]

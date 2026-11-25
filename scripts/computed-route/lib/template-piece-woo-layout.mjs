@@ -194,13 +194,19 @@ export function basketCounts( v, regionKey, L ) {
 	} );
 }
 
-// A declared px length in an element's served inline style ("font-size: 68px" -> 68), else null.
+// A px length of an element at the desktop width: the browser's computed value from the inventory's read (`resolved`, so a
+// heading sized by a class or a variable counts as much as one sized inline), else the one its served inline style declares
+// ("font-size: 68px" -> 68), else null.
 const pxOf = ( el, property ) => {
+	const computed = /^(-?[\d.]+)px$/.exec( String( el?.resolved?.[ 1440 ]?.[ property ] ?? '' ).trim() );
+	if ( computed ) {
+		return Number( computed[ 1 ] );
+	}
 	const hit = String( el?.attrs?.style ?? '' ).match( new RegExp( `(?:^|;)\\s*${ property }\\s*:\\s*(-?[\\d.]+)px\\s*(?:;|$)`, 'i' ) );
 	return hit ? Number( hit[ 1 ] ) : null;
 };
 
-// The row's own settings, read from the draft: its gap is one word space at the host heading's font size (the space the
+// The row's own settings, read from the draft: its gap is one word space at the host heading's font size (computed at the desktop width, else its inline style; the space the
 // draft's line carried between the words and the count; rules.commerceRegion.basketCount.wordSpaceEm is that space in em),
 // and its items sit centred on the line when the draft's count is `vertical-align: middle`. They travel as the row's
 // `decided` (R-47-10: a setting that paints a CSS property is never a skeleton attribute), which Fill writes. The row has
