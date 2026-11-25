@@ -1,0 +1,32 @@
+[
+	{
+		"file": "lib/skeleton-reading-order.mjs",
+		"find": "const items = row ? standing( list, m ) : [];",
+		"replace": "const items = standing( list, m );",
+		"why": "every list would be checked, a grid of columns included"
+	},
+	{
+		"file": "lib/skeleton-reading-order.mjs",
+		"find": "false === before( x.el.box[ w ], shown[ i ].el.box[ w ] )",
+		"replace": "true === before( x.el.box[ w ], shown[ i ].el.box[ w ] )",
+		"why": "the check would flag the blocks that are in order"
+	},
+	{
+		"file": "lib/skeleton-reading-order.mjs",
+		"find": "x.el.visible?.[ w ] && usable( x.el.box?.[ w ] )",
+		"replace": "usable( x.el.box?.[ w ] )",
+		"why": "a block would be judged at a width its draft element is hidden at"
+	},
+	{
+		"file": "lib/skeleton-reading-order.mjs",
+		"find": "return b.x + b.w <= a.x + TOLERANCE ? false : null;",
+		"replace": "return b.x + b.w <= a.x + TOLERANCE ? false : false;",
+		"why": "overlapping boxes would claim an order"
+	},
+	{
+		"file": "lib/skeleton-reading-order.mjs",
+		"find": "\tif ( b.y + b.h <= a.y + TOLERANCE ) {\n\t\treturn false;\n\t}\n",
+		"replace": "",
+		"why": "a block drawn on a row above another would be judged by its left edge"
+	}
+]
