@@ -1,0 +1,50 @@
+[
+	{
+		"file": "lib/fill-grid-tracks.mjs",
+		"find": "if ( held.every( ( n ) => 1 === n ) ) {",
+		"replace": "if ( false ) {",
+		"why": "tracks that already hold one item per cell would be rewritten"
+	},
+	{
+		"file": "lib/fill-grid-tracks.mjs",
+		"find": "const next = left.map( ( i ) => tracks[ i ] ).join( ' ' );",
+		"replace": "const next = tracks.join( ' ' );",
+		"why": "a cell that kept no item would keep its track, leaving the promoted items in half the width"
+	},
+	{
+		"file": "lib/fill-grid-tracks.mjs",
+		"find": "if ( left.length > 1 && left.some( ( i ) => held[ i ] > 1 ) ) {",
+		"replace": "if ( false ) {",
+		"why": "two cells left with several promoted items would be given a track list that holds neither"
+	},
+	{
+		"file": "lib/fill-grid-tracks.mjs",
+		"find": "|| cells.length > tracks.length ) {",
+		"replace": ") {",
+		"why": "a grid that wraps (more cells than tracks) would be re-derived"
+	},
+	{
+		"file": "lib/fill-grid-tracks.mjs",
+		"find": "if ( orphans.length ) {",
+		"replace": "if ( false ) {",
+		"why": "an item in none of the draft's cells would be ignored"
+	},
+	{
+		"file": "lib/fill-grid-tracks.mjs",
+		"find": "counts && 'object' === typeof counts && gridTracks( value ).length === Number( counts[ tier ] ) && ( counts[ tier ] = r.count );",
+		"replace": "void counts;",
+		"why": "the container's column count would still say two while its tracks say one"
+	},
+	{
+		"file": "lib/fill-grid-tracks.mjs",
+		"find": "prior.forEach( ( x ) => Object.assign( x, { after: w.after, how: 'grid-tracks' } ) );",
+		"replace": "prior.forEach( ( x ) => Object.assign( x, { after: w.after } ) );",
+		"why": "the rewritten write would be judged against the draft's resting tracks and reported as a divergence"
+	},
+	{
+		"file": "lib/fill-grid-tracks.mjs",
+		"find": "return ! prior.length;",
+		"replace": "return true;",
+		"why": "a rewrite would be listed as a second write beside the one it replaced"
+	}
+]
