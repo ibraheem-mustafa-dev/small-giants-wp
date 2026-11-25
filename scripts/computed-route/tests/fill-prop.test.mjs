@@ -15,7 +15,10 @@ test( 'MUST FAIL: a draft value equal to the baseline at every tier writes nothi
 	const base = () => '16px';
 	assert.deepEqual( tiersDiffering( 'font-size', { 1440: '16px', 768: '16px', 375: '16px' }, base ), {} );
 	assert.deepEqual( tiersDiffering( 'font-size', { 1440: '20px', 768: '20px', 375: '20px' }, base ), { 1440: '20px' }, 'tablet and mobile show the desktop value' );
-	assert.deepEqual( tiersDiffering( 'font-size', { 1440: '16.4px', 768: '15.6px', 375: '16px' }, base ), {}, 'within 0.5px is the same' );
+	// A stated value is written unless it is exactly the default; the half pixel only compares measured renders (RF5). The phone
+	// is exactly the default, but a wider tier wrote something else, so it is written too.
+	assert.deepEqual( tiersDiffering( 'font-size', { 1440: '16.4px', 768: '15.6px', 375: '16px' }, base ), { 1440: '16.4px', 768: '15.6px', 375: '16px' } );
+	assert.deepEqual( tiersDiffering( 'font-size', { 1440: '16.4px', 768: '16.4px', 375: '16.4px' }, base ), { 1440: '16.4px' }, 'one stated value at every tier is written once, at the widest' );
 } );
 
 test( 'a narrower tier that returns to the default is written when a wider tier wrote something else (it would otherwise show the wider value)', () => {
