@@ -16,35 +16,20 @@ defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/helpers-separators-css.php';
 
-if ( ! function_exists( 'sgs_container_separators_caps' ) ) {
-	/**
-	 * What `sgs/container` offers (mirrors block.json `supports.sgs.separators.separators`).
-	 *
-	 * @return array Capabilities for sgs_separators_normalise().
-	 */
-	function sgs_container_separators_caps(): array {
-		return array(
-			'axes'  => array( 'row', 'column' ),
-			'edges' => false,
-			'hover' => false,
-			'sweep' => false,
-		);
-	}
-}
-
 if ( ! function_exists( 'sgs_container_separators_active' ) ) {
 	/**
 	 * Whether this container draws any line: a grid or flex layout with a thickness set.
 	 *
 	 * @param array  $attributes Block attributes.
 	 * @param string $layout     The resolved layout ('grid', 'flex', 'stack', '').
+	 * @param string $block_name The block whose `supports.sgs.separators.separators` says what it offers.
 	 * @return bool
 	 */
-	function sgs_container_separators_active( array $attributes, string $layout ): bool {
+	function sgs_container_separators_active( array $attributes, string $layout, string $block_name = 'sgs/container' ): bool {
 		if ( ! in_array( $layout, array( 'grid', 'flex', 'stack' ), true ) ) {
 			return false;
 		}
-		return sgs_separators_active( sgs_separators_normalise( $attributes['separators'] ?? array(), sgs_container_separators_caps() ) );
+		return sgs_separators_active( sgs_separators_normalise( $attributes['separators'] ?? array(), sgs_separators_caps( $block_name ) ) );
 	}
 }
 
@@ -55,10 +40,11 @@ if ( ! function_exists( 'sgs_container_separators_root' ) ) {
 	 * @param array  $attributes    Block attributes.
 	 * @param string $layout        The resolved layout.
 	 * @param bool   $grid_on_inner Whether the grid / flex sits on `.sgs-container__inner`.
+	 * @param string $block_name    The block that carries the lines.
 	 * @return array { class: string, attrs: array<string,string> }, both empty when nothing draws.
 	 */
-	function sgs_container_separators_root( array $attributes, string $layout, bool $grid_on_inner ): array {
-		if ( ! sgs_container_separators_active( $attributes, $layout ) ) {
+	function sgs_container_separators_root( array $attributes, string $layout, bool $grid_on_inner, string $block_name = 'sgs/container' ): array {
+		if ( ! sgs_container_separators_active( $attributes, $layout, $block_name ) ) {
 			return array(
 				'class' => '',
 				'attrs' => array(),
@@ -80,10 +66,11 @@ if ( ! function_exists( 'sgs_container_separators_css' ) ) {
 	 * @param string $layout     The resolved layout.
 	 * @param string $grid_sel   The selector of the element carrying the grid / flex.
 	 * @param bool   $container  Also emit @container tier copies (the block's own container-query opt-in).
+	 * @param string $block_name The block that carries the lines.
 	 * @return string CSS, or '' when nothing draws.
 	 */
-	function sgs_container_separators_css( array $attributes, string $layout, string $grid_sel, bool $container = false ): string {
-		if ( '' === $grid_sel || ! sgs_container_separators_active( $attributes, $layout ) ) {
+	function sgs_container_separators_css( array $attributes, string $layout, string $grid_sel, bool $container = false, string $block_name = 'sgs/container' ): string {
+		if ( '' === $grid_sel || ! sgs_container_separators_active( $attributes, $layout, $block_name ) ) {
 			return '';
 		}
 		return sgs_separators_css(
@@ -94,7 +81,7 @@ if ( ! function_exists( 'sgs_container_separators_css' ) ) {
 				'container' => $container,
 				'gap'       => isset( $attributes['gap'] ) && is_array( $attributes['gap'] ) ? $attributes['gap'] : array(),
 			),
-			sgs_container_separators_caps()
+			sgs_separators_caps( $block_name )
 		);
 	}
 }

@@ -29,7 +29,7 @@ import {
 	SgsBoxControl,
 	GradientCapableColourControl,
 	SgsLengthControl,
-	SgsSeparatorControl,
+	SeparatorsPanel,
 	LinkUnderlineControl,
 	LinkPopoverField,
 } from '../../components';
@@ -46,7 +46,6 @@ import ItemEffectsPanel from '../../shared/nav-menu-panels/ItemEffectsPanel';
 import {
 	colourVar,
 	gapVar,
-	separatorsLineCss,
 	usePreviewTier,
 	tierBoxLonghands,
 	sgsBorderPreview,
@@ -825,16 +824,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	// Lines between items: the canvas mirrors render.php's item-drawn rules for the
 	// previewed device (includes/helpers-separators-line-css.php).
-	const separatorsCss = separatorsLineCss(
+	const separatorsCss = useSeparatorsCanvas( {
 		separators,
-		{
+		device: previewTier,
+		name: 'sgs/icon-list',
+		line: {
 			item: `.sgs-ed-sep-${ clientId } > .sgs-icon-list__item`,
 			direction: 'column',
 			gap: gapVar( gap || '20' ),
 		},
-		previewTier,
-		separators?.edges
-	);
+	} ).css;
 
 	const showIconColourRow = [ 'icon', 'emoji' ].includes(
 		resolvedMarkerType
@@ -1367,14 +1366,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							/>
 						) }
 					</ResponsiveOverride>
-					<SgsSeparatorControl
+					<SeparatorsPanel
+						bare
 						label={ __( 'Lines between items', 'sgs-blocks' ) }
-						value={ separators }
-						onChange={ ( next ) =>
-							setAttributes( { separators: next } )
-						}
-						axes={ [ 'row' ] }
-						edges
+						attributes={ attributes }
+						setAttributes={ setAttributes }
 					/>
 				</PanelBody>
 			</InspectorControls>

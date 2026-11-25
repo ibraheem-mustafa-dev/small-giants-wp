@@ -12,7 +12,8 @@
 import { __ } from '@wordpress/i18n';
 import { useState } from '@wordpress/element';
 import { Button } from '@wordpress/components';
-import { separatorsLineCss, tierLengthPreview } from '../../utils';
+import { tierLengthPreview } from '../../utils';
+import { useSeparatorsCanvas } from '../../shared/separators/useSeparatorsCanvas';
 import { logoUrlFor } from '../../utils/logo-source';
 import { tierValueOf } from '../../utils/responsive';
 import {
@@ -356,15 +357,16 @@ export default function PanelPreview( {
 	// The line between item rows: the canvas mirrors the item-drawn rules the front end
 	// emits (includes/helpers-cart-panel-css.php) for the previewed device, in the space
 	// `panelBodyGap` sets (16px when unset).
-	const separatorsCss = separatorsLineCss(
-		attributes.separators,
-		{
+	const separatorsCss = useSeparatorsCanvas( {
+		separators: attributes.separators,
+		device: tier,
+		name: 'sgs/cart',
+		line: {
 			item: `.${ scope } .sgs-cart__panel-items > .sgs-cart__item`,
 			direction: 'column',
 			gap: tierLengthPreview( attributes.panelBodyGap, tier ) || '16px',
 		},
-		tier
-	);
+	} ).css;
 
 	return (
 		<div

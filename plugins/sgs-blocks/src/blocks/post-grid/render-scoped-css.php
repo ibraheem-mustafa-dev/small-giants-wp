@@ -458,7 +458,7 @@ if ( 'grid' === $layout ) {
 			'layout' => 'flow',
 			'gap'    => is_array( $attributes['gap'] ?? null ) ? $attributes['gap'] : array(),
 		),
-		sgs_container_separators_caps()
+		sgs_separators_caps( 'sgs/post-grid' )
 	);
 	if ( '' !== $sgs_pg_sep_css ) {
 		$responsive_css                    .= $sgs_pg_sep_css;

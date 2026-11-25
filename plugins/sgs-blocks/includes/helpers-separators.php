@@ -105,6 +105,42 @@ if ( ! function_exists( 'sgs_separators_normalise_axis' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_separators_caps' ) ) {
+	/**
+	 * What a block offers for one separators attribute, read from its block.json
+	 * `supports.sgs.separators.<attribute>` (axes, edges, hover, sweep): the same entry
+	 * the editor's SeparatorsPanel reads, so the two cannot disagree. A block that does
+	 * not declare the attribute offers nothing (no axes), so nothing draws.
+	 *
+	 * `$override` is for a block whose own state narrows what it can draw this render
+	 * (a marquee strip is one row) or that draws an edge itself without offering the
+	 * choice; keys in it replace the declared ones.
+	 *
+	 * @param string $block_name Block name, e.g. 'sgs/gallery'.
+	 * @param string $attribute  The attribute, e.g. 'separators' or 'submenuSeparators'.
+	 * @param array  $override   Capabilities that replace the declared ones for this render.
+	 * @return array { axes: string[], edges: bool, hover: bool, sweep: bool }.
+	 */
+	function sgs_separators_caps( string $block_name, string $attribute = 'separators', array $override = array() ): array {
+		$caps = array(
+			'axes'  => array(),
+			'edges' => false,
+			'hover' => false,
+			'sweep' => false,
+		);
+		$type = class_exists( '\\WP_Block_Type_Registry' ) ? \WP_Block_Type_Registry::get_instance()->get_registered( $block_name ) : null;
+		$sgs  = ( null !== $type && is_array( $type->supports ?? null ) ) ? ( $type->supports['sgs'] ?? null ) : null;
+		$decl = is_array( $sgs ) && isset( $sgs['separators'][ $attribute ] ) && is_array( $sgs['separators'][ $attribute ] ) ? $sgs['separators'][ $attribute ] : array();
+		if ( isset( $decl['axes'] ) && is_array( $decl['axes'] ) ) {
+			$caps['axes'] = array_values( array_intersect( sgs_separators_axes(), $decl['axes'] ) );
+		}
+		foreach ( array( 'edges', 'hover', 'sweep' ) as $key ) {
+			$caps[ $key ] = ! empty( $decl[ $key ] );
+		}
+		return array_merge( $caps, $override );
+	}
+}
+
 if ( ! function_exists( 'sgs_separators_normalise' ) ) {
 	/**
 	 * The whole setting, sanitised and resolved.

@@ -18,7 +18,7 @@ import {
 import { Icon, plus, close } from '@wordpress/icons';
 import { DesignTokenPicker, IconPicker, LinkPopoverField, SgsColourPanel, resolveColourToken,
 	SgsBorderControl,
-	SgsSeparatorControl,
+	SeparatorsPanel,
 	TypographyControls,
 	fillRow,
 } from '../../components';
@@ -28,7 +28,6 @@ import {
 	resolveResponsiveTier,
 	resolveTextColourPreviewStyle,
 	resolveBackgroundPaintPreviewStyle,
-	separatorsLineCss,
 	typographyPreviewStyle,
 	usePreviewTier,
 	BandWrap,
@@ -205,16 +204,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	// Lines between each plan's features: the canvas mirrors render.php's item-drawn
 	// rules for the previewed device (includes/helpers-separators-line-css.php).
-	const separatorsCss = separatorsLineCss(
-		featureSeparators,
-		{
+	const separatorsCss = useSeparatorsCanvas( {
+		separators: featureSeparators,
+		device: previewTier,
+		name: 'sgs/pricing-table',
+		attribute: 'featureSeparators',
+		line: {
 			item: `.sgs-ed-sep-${ clientId } .sgs-pricing-table__features > .sgs-pricing-table__feature`,
 			direction: 'column',
 			gap: '0px',
 			pseudo: '::after',
 		},
-		previewTier
-	);
+	} ).css;
 
 	// D649 — heading level is an identity control (document-outline
 	// placement), not a style control; mirrors render.php's own fallback.
@@ -606,11 +607,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					<SgsSeparatorControl
+					<SeparatorsPanel
+						bare
+						attribute="featureSeparators"
 						label={ __( 'Lines between features', 'sgs-blocks' ) }
-						value={ featureSeparators }
-						onChange={ ( next ) => setAttributes( { featureSeparators: next } ) }
-						axes={ [ 'row' ] }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
 					/>
 				</PanelBody>
 				{ /* Typography — replaces the old WP-native supports.typography (fontSize/

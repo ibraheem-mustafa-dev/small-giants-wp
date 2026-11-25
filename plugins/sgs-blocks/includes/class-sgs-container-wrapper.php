@@ -1594,7 +1594,8 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 
 			// Lines between items (includes/helpers-container-separators.php): the root
 			// carries the marker the runtime fallback looks for.
-			$sgs_sep_root = sgs_container_separators_root( $attributes, (string) $layout, (bool) $grid_on_inner );
+			$sgs_sep_block = ( $block instanceof \WP_Block ) ? (string) $block->name : 'sgs/container';
+			$sgs_sep_root  = sgs_container_separators_root( $attributes, (string) $layout, (bool) $grid_on_inner, $sgs_sep_block );
 			if ( '' !== $sgs_sep_root['class'] ) {
 				$classes[]       = $sgs_sep_root['class'];
 				$opt_extra_attrs = array_merge( $opt_extra_attrs, $sgs_sep_root['attrs'] );
@@ -3136,7 +3137,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					$responsive_css .= sgs_emit_responsive_css( $grid_sel, $obj_inner_props, array( 'container' => $container_queries ) );
 				}
 				// Lines between items (includes/helpers-container-separators.php).
-				$responsive_css .= sgs_container_separators_css( $attributes, (string) $layout, $grid_sel, (bool) $container_queries );
+				$responsive_css .= sgs_container_separators_css( $attributes, (string) $layout, $grid_sel, (bool) $container_queries, ( $block instanceof \WP_Block ) ? (string) $block->name : 'sgs/container' );
 
 				// grid-template-columns' count-based tier fallback — its own call,
 				// `'container' => false` always. See the reasoning where
