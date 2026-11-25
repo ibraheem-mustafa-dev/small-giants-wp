@@ -93,8 +93,9 @@
 
 /* ── Trigger — pill style (Wave B, U-1): a word (pillLabel) + the live count,
    in a pill, instead of the icon+badge overlay. Structural shape only —
-   colours/border/radius come from render.php's scoped rule (pillBgColour/
-   pillTextColour/pillBorderColour/pillBorderRadius). ─────────────────────── */
+   text colour and border come from render.php's scoped rule (pillTextColour/
+   pillBorderColour); the radius, size, padding and background are the trigger's
+   own, shared with the icon button (triggerBorderRadius, triggerSize, triggerPadding, triggerBgColour). ─────────────────────── */
 .sgs-cart--trigger-pill .sgs-cart__trigger {
 	min-width: auto;
 	gap: 8px;

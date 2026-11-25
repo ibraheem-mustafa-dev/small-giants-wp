@@ -171,37 +171,37 @@
    "block": "cart",
    "selector": ":where(.sgs-cart__panel) .sgs-cart__panel-upsell-add",
    "property": "min-height",
-   "reason": "Settings checked: iconSize, iconTriggerSize, badgeSize, pillBadgeSize, pillMinHeight, panelCloseSize, panelCloseTapSize, itemThumbSize, itemQtyHeight, freeDeliveryTrackHeight, checkoutMinHeight, upsellImageSize; none sizes the upsell button (upsellButtonPadding pads it), so 44px is SGS's own default."
+   "reason": "Settings checked: iconSize, triggerSize, badgeSize, pillBadgeSize, panelCloseSize, panelCloseTapSize, itemThumbSize, itemQtyHeight, freeDeliveryTrackHeight, checkoutMinHeight, upsellImageSize; none sizes the upsell button (upsellButtonPadding pads it), so 44px is SGS's own default."
   },
   {
    "block": "cart",
    "selector": ":where(.sgs-cart__panel) .sgs-cart__item-remove",
    "property": "min-height",
-   "reason": "Settings checked: iconSize and panelCloseSize (read by the trigger and close button), pillMinHeight, itemThumbSize, freeDeliveryTrackHeight, checkoutMinHeight; none sizes this element, so 44px is SGS's own default."
+   "reason": "Settings checked: iconSize and panelCloseSize (read by the trigger and close button), triggerSize, itemThumbSize, freeDeliveryTrackHeight, checkoutMinHeight; none sizes this element, so 44px is SGS's own default."
   },
   {
    "block": "cart",
    "selector": ":where(.sgs-cart__panel) .sgs-cart__item-remove",
    "property": "min-width",
-   "reason": "Settings checked: iconSize and panelCloseSize (read by the trigger and close button), pillMinHeight, itemThumbSize, freeDeliveryTrackHeight, checkoutMinHeight; none sizes this element, so 44px is SGS's own default."
+   "reason": "Settings checked: iconSize and panelCloseSize (read by the trigger and close button), triggerSize, itemThumbSize, freeDeliveryTrackHeight, checkoutMinHeight; none sizes this element, so 44px is SGS's own default."
   },
   {
    "block": "cart",
    "selector": ":where(.sgs-cart__panel) .sgs-cart__item-save-for-later",
    "property": "min-height",
-   "reason": "Settings checked: iconSize and panelCloseSize (read by the trigger and close button), pillMinHeight, itemThumbSize, freeDeliveryTrackHeight, checkoutMinHeight; none sizes this element, so 44px is SGS's own default."
+   "reason": "Settings checked: iconSize and panelCloseSize (read by the trigger and close button), triggerSize, itemThumbSize, freeDeliveryTrackHeight, checkoutMinHeight; none sizes this element, so 44px is SGS's own default."
   },
   {
    "block": "cart",
    "selector": ":where(.sgs-cart__panel) .sgs-cart__panel-empty-cta",
    "property": "min-height",
-   "reason": "Settings checked: iconSize and panelCloseSize (read by the trigger and close button), pillMinHeight, itemThumbSize, freeDeliveryTrackHeight, checkoutMinHeight; none sizes this element, so 44px is SGS's own default."
+   "reason": "Settings checked: iconSize and panelCloseSize (read by the trigger and close button), triggerSize, itemThumbSize, freeDeliveryTrackHeight, checkoutMinHeight; none sizes this element, so 44px is SGS's own default."
   },
   {
    "block": "cart",
    "selector": ":where(.sgs-cart__panel) .sgs-cart__panel-header",
    "property": "min-height",
-   "reason": "Settings checked: iconSize and panelCloseSize (read by the trigger and close button), pillMinHeight, itemThumbSize, freeDeliveryTrackHeight, checkoutMinHeight; none sizes this element, so 44px is SGS's own default."
+   "reason": "Settings checked: iconSize and panelCloseSize (read by the trigger and close button), triggerSize, itemThumbSize, freeDeliveryTrackHeight, checkoutMinHeight; none sizes this element, so 44px is SGS's own default."
   },
   {
    "block": "cart",

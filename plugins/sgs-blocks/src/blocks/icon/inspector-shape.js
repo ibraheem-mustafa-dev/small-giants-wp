@@ -24,6 +24,84 @@ const LENGTH_UNITS = [
 ];
 
 /**
+ * The per-device width and height control for a `{desktop:{width,height},…}` size setting, in lengths or spacing presets.
+ * `sgs/icon` mounts it for its shape size; `sgs/cart` mounts it for its trigger size.
+ *
+ * @param {Object}   props
+ * @param {string}   props.label         The device switcher's label.
+ * @param {string}   props.attr          The size attribute's name.
+ * @param {Object}   props.attributes    Block attributes.
+ * @param {Function} props.setAttributes Block setAttributes.
+ * @param {string}   props.widthLabel    The width field's label.
+ * @param {string}   props.heightLabel   The height field's label.
+ * @param {boolean}  props.showHeight    Whether the height field shows.
+ * @param {boolean}  props.showWidth     Whether the width field shows.
+ * @param {string}   props.widthHelp     Help under the width field.
+ * @param {string}   props.heightHelp    Help under the height field.
+ * @return {JSX.Element} The size control.
+ */
+export function ShapeSizeControl( {
+	label,
+	attr = 'shapeSize',
+	attributes,
+	setAttributes,
+	widthLabel = __( 'Width', 'sgs-blocks' ),
+	heightLabel = __( 'Height', 'sgs-blocks' ),
+	showHeight = true,
+	showWidth = true,
+	widthHelp,
+	heightHelp,
+} ) {
+	const size = attributes[ attr ];
+	const writeSize = ( tier, side, value ) => {
+		const current =
+			size?.[ tier ] && 'object' === typeof size[ tier ]
+				? size[ tier ]
+				: {};
+		const next = { ...current, [ side ]: value || undefined };
+		patchTier(
+			attributes,
+			setAttributes,
+			attr,
+			tier,
+			next.width || next.height ? next : undefined
+		);
+	};
+	return (
+		<ResponsiveControl label={ label }>
+			{ ( tier ) => (
+				<>
+					{ showWidth && (
+						<SgsLengthControl
+							label={ widthLabel }
+							value={ size?.[ tier ]?.width ?? '' }
+							units={ LENGTH_UNITS }
+							presets
+							help={ widthHelp }
+							onChange={ ( value ) =>
+								writeSize( tier, 'width', value )
+							}
+						/>
+					) }
+					{ showHeight && (
+						<SgsLengthControl
+							label={ heightLabel }
+							value={ size?.[ tier ]?.height ?? '' }
+							units={ LENGTH_UNITS }
+							presets
+							help={ heightHelp }
+							onChange={ ( value ) =>
+								writeSize( tier, 'height', value )
+							}
+						/>
+					) }
+				</>
+			) }
+		</ResponsiveControl>
+	);
+}
+
+/**
  * @param {Object}   props
  * @param {Object}   props.attributes    Block attributes.
  * @param {Function} props.setAttributes Block setAttributes.
@@ -40,7 +118,6 @@ export default function ShapePanels( {
 	const {
 		shape = 'square',
 		showBackground,
-		shapeSize,
 		shapeSizeLinked = true,
 		borderWidth,
 		borderStyle,
@@ -58,21 +135,6 @@ export default function ShapePanels( {
 		attributes.backgroundColour && ! attributes.backgroundColourGradient
 			? attributes.backgroundColour
 			: '';
-
-	const writeSize = ( tier, side, value ) => {
-		const current =
-			shapeSize?.[ tier ] && 'object' === typeof shapeSize[ tier ]
-				? shapeSize[ tier ]
-				: {};
-		const next = { ...current, [ side ]: value || undefined };
-		patchTier(
-			attributes,
-			setAttributes,
-			'shapeSize',
-			tier,
-			next.width || next.height ? next : undefined
-		);
-	};
 
 	return (
 		<>
@@ -120,40 +182,21 @@ export default function ShapePanels( {
 					}
 					__nextHasNoMarginBottom
 				/>
-				<ResponsiveControl label={ __( 'Shape size', 'sgs-blocks' ) }>
-					{ ( tier ) => (
-						<>
-							<SgsLengthControl
-								label={
-									widthOnly || shapeSizeLinked
-										? __( 'Size', 'sgs-blocks' )
-										: __( 'Width', 'sgs-blocks' )
-								}
-								value={ shapeSize?.[ tier ]?.width ?? '' }
-								units={ LENGTH_UNITS }
-								presets
-								help={ __(
-									'Leave blank for the icon size plus a little room each side.',
-									'sgs-blocks'
-								) }
-								onChange={ ( value ) =>
-									writeSize( tier, 'width', value )
-								}
-							/>
-							{ usesHeight && (
-								<SgsLengthControl
-									label={ __( 'Height', 'sgs-blocks' ) }
-									value={ shapeSize?.[ tier ]?.height ?? '' }
-									units={ LENGTH_UNITS }
-									presets
-									onChange={ ( value ) =>
-										writeSize( tier, 'height', value )
-									}
-								/>
-							) }
-						</>
+				<ShapeSizeControl
+					label={ __( 'Shape size', 'sgs-blocks' ) }
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					widthLabel={
+						widthOnly || shapeSizeLinked
+							? __( 'Size', 'sgs-blocks' )
+							: __( 'Width', 'sgs-blocks' )
+					}
+					showHeight={ usesHeight }
+					widthHelp={ __(
+						'Leave blank for the icon size plus a little room each side.',
+						'sgs-blocks'
 					) }
-				</ResponsiveControl>
+				/>
 				{ ! widthOnly && (
 					<ToggleControl
 						label={ __( 'Same width and height', 'sgs-blocks' ) }

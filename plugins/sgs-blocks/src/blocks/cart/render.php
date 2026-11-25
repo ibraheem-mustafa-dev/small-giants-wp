@@ -161,7 +161,6 @@ if ( $trigger_mixed ) {
 	}
 }
 $pill_label        = (string) ( $attributes['pillLabel'] ?? __( 'Cart', 'sgs-blocks' ) );
-$pill_bg_colour    = (string) ( $attributes['pillBgColour'] ?? '' );
 $pill_text_colour  = (string) ( $attributes['pillTextColour'] ?? '' );
 // Spec 38A FR-38A-53: the count pop is the Entrance layer on the badge part; with no layer the count does not pop.
 $count_pop_animation = sgs_cart_count_pop_mode( $attributes ) ?? 'off';

@@ -75,7 +75,7 @@
 	z-index: -1;
 	border-radius: inherit;
 	pointer-events: none;
-	background: var( --sgs-cart-editor-pill-fill, var( --sgs-cart-editor-icon-fill, transparent ) );
+	background: var( --sgs-cart-editor-trigger-fill, transparent );
 }
 
 .sgs-cart--editor-preview .sgs-cart__trigger {
