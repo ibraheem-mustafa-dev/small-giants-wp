@@ -1,0 +1,8 @@
+[
+	{
+		"file": "lib/apply-gate.mjs",
+		"find": "\tconst counted = ! part && OFFSET.test( prop ) ?",
+		"replace": "\tconst counted = false && OFFSET.test( prop ) ?",
+		"why": "a part's inset resolves the block's own top row"
+	}
+]

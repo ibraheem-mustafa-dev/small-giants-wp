@@ -1,14 +1,17 @@
 // The applier's closing gate. A no-setting row is a claim that the block cannot do something, so it is checked against the block's
 // own settings: a row whose attribute exists, or whose property a setting of that block paints, is `unresolved`: the applier gave
 // up on something the framework can do. A row the block has no setting for stays `no-setting`; a row that names no property the
-// DB can judge (a pointer that could not land, a motion part) is `unjudged` and listed. Unresolved rows fail the run: a clean
-// run means every difference was written or really has no setting, not only that nothing is left to write.
+// DB can judge (a pointer that could not land, a motion part) is `unjudged` and listed. Unresolved rows are listed in the run
+// report and never fail a run (a look the clone cannot place is listed loudly, never a stop): the list is where each one is read.
 
 // `hover border-top-color` and `tile hover color` name their property last.
 const propOf = ( prop ) => String( prop ?? '' ).trim().split( /\s+/ ).pop();
 
 // box longhands are stored under their shorthand: border-top-color is painted by a border-color setting.
 const shorthandOf = ( prop ) => prop.replace( /^(border|padding|margin)-(top|right|bottom|left)-?/, ( m, a ) => `${ a }-` ).replace( /-$/, '' );
+
+// A box offset: the edge a positioned element sits from its container's.
+const OFFSET = /^(top|right|bottom|left)$/;
 
 // Hover and focus timing on a block is a recorded framework gap: no block has a per-property setting for it.
 const TIMING = /^transition-(duration|timing-function)$/;
@@ -47,7 +50,10 @@ export function judgeRow( row, settingsOf ) {
 	if ( ! /^[a-z]+(-[a-z]+)*$/.test( prop ) || ! /-|^(color|gap|overflow|top|opacity|transform|background|border|padding|margin)$/.test( prop ) ) {
 		return 'unjudged';
 	}
-	const painted = settings.some( ( s ) => [ prop, shorthandOf( prop ) ].some( ( p ) => String( s.css_property ?? '' ).split( ',' ).map( ( c ) => c.trim() ).includes( p ) ) );
+	// A row about the block's own offset (`top`, no part named) is painted by a setting of the block's own element: a setting on a
+	// part (the arrow's `arrowInsetTop`, a badge's corner offset) places that part, never the block.
+	const counted = ! part && OFFSET.test( prop ) ? settings.filter( ( s ) => ! s.css_element || 'wrapper' === s.css_element ) : settings;
+	const painted = counted.some( ( s ) => [ prop, shorthandOf( prop ) ].some( ( p ) => String( s.css_property ?? '' ).split( ',' ).map( ( c ) => c.trim() ).includes( p ) ) );
 	return painted ? 'unresolved' : 'no-setting';
 }
 

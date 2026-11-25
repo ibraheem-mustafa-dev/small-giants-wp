@@ -44,3 +44,17 @@ test( 'only no-setting rows are judged, and the counts add up', () => {
 	const r = gateRows( [ { status: 'equal', block: 'sgs/x', prop: 'background-color' }, { status: 'no-setting', block: 'sgs/x', prop: 'background-color' }, { status: 'no-setting', block: 'sgs/x', prop: 'letter-spacing' }, { status: 'no-setting', block: 'sgs/x', prop: 'motion' } ], settingsOf );
 	assert.deepEqual( [ r.unresolved, r.confirmed, r.unjudged ], [ 1, 1, 1 ] );
 } );
+
+test( 'MUST FAIL: a row about the block\'s own offset is not resolved by a setting that places a part', () => {
+	const pin = { 'sgs/container': [ { attr_name: 'arrowInsetTop', css_property: 'top', css_element: 'arrow' }, { attr_name: 'pinEdge', css_property: 'position', css_element: 'wrapper' }, { attr_name: 'offsetTop', css_property: 'top', css_element: 'wrapper' } ], 'sgs/y': [ { attr_name: 'arrowInsetTop', css_property: 'top', css_element: 'arrow' } ], 'sgs/z': [ { attr_name: 'sgsInsetTop', css_property: 'top', css_element: null } ] };
+	const of = ( b ) => pin[ b ] ?? [];
+	// The modal's `top` row: only the arrow's inset paints `top` here, and the arrow is not the modal.
+	assert.equal( judgeRow( { block: 'sgs/y', prop: 'top' }, of ), 'no-setting' );
+	// A setting of the block's own element (wrapper, or no element named) still resolves it.
+	assert.equal( judgeRow( { block: 'sgs/container', prop: 'top' }, of ), 'unresolved' );
+	assert.equal( judgeRow( { block: 'sgs/z', prop: 'top' }, of ), 'unresolved' );
+	// A row that names the part still counts that part's setting.
+	assert.equal( judgeRow( { block: 'sgs/y', prop: 'arrow top' }, of ), 'unresolved' );
+	// A named attribute is still unresolved whatever its element.
+	assert.equal( judgeRow( { block: 'sgs/y', prop: 'arrowInsetTop' }, of ), 'unresolved' );
+} );
