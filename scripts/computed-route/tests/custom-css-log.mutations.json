@@ -1,0 +1,4 @@
+[
+	{ "file": "lib/custom-css-log.mjs", "find": "gaps = report.customCssGaps ?? [];", "replace": "gaps = residual.gaps ?? [];", "why": "the per-rule gap rows are read from the aggregated backlog, which names no node" },
+	{ "file": "lib/custom-css-log.mjs", "find": "g.css === r.css && ", "replace": "", "why": "a rule is justified by the gap row of another range of the same property" }
+]

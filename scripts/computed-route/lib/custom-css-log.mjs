@@ -1,6 +1,8 @@
 // The per-draft Custom CSS log and its check (Spec 48 FR-48-109; Bean's ruling F, 2026-10-24). Every surface's latest Fill report
-// (`sites/<client>/build/qa/fill/<surface>/<run>/fill-report.json`, `residualCss`) lists the Custom CSS rules the run wrote, the
-// rows it refused with the reason, and one gap row per written rule naming the setting the block lacks. This merges them into one
+// (`sites/<client>/build/qa/fill/<surface>/<run>/fill-report.json`) lists the Custom CSS rules the run wrote and the rows it
+// refused with the reason (`residualCss.rules`, `residualCss.refused`), and one gap row per written rule naming the setting the
+// block lacks (the report's top-level `customCssGaps`, which Fill writes beside the rules; `residualCss.gaps` is the aggregated
+// backlog by block, part and property, a different list). This merges them into one
 // log per draft, and the check refuses any written rule with no justification: a rule is justified when it carries a reason that
 // names why no setting could hold it (FR-48-109's "all five equivalence layers failed and no setting of the block paints it", or
 // FR-48-50's visibility-by-width reason) and a gap row naming the setting it could not use.
@@ -29,16 +31,20 @@ export function buildCustomCssLog( { client, buildDir } ) {
 	const log = { client, surfaces: [], rules: [], refused: [], unreadable: [] };
 	for ( const { surface, file } of latestReports( buildDir ) ) {
 		let residual;
+		let gaps;
 		try {
-			residual = JSON.parse( fs.readFileSync( file, 'utf8' ) ).residualCss ?? {};
+			const report = JSON.parse( fs.readFileSync( file, 'utf8' ) );
+			residual = report.residualCss ?? {};
+			gaps = report.customCssGaps ?? [];
 		} catch ( e ) {
 			log.unreadable.push( `${ file }: ${ String( e.message || e ).slice( 0, 120 ) }` );
 			continue;
 		}
 		log.surfaces.push( surface );
 		for ( const r of residual.rules ?? [] ) {
-			const gap = ( residual.gaps ?? [] ).find( ( g ) => g.node === r.node && g.block === r.block && ( g.slot ?? '' ) === ( r.part ?? '' ) && ( r.declarations ?? [] ).some( ( d ) => ( g.properties ?? [] ).includes( String( d ).split( ':' )[ 0 ].trim() ) ) ) ?? null;
-			log.rules.push( { surface, node: r.node, block: r.block, part: r.part ?? '', state: r.state ?? null, range: r.range ?? '', declarations: r.declarations ?? [], reason: r.reason ?? '', gap: gap ? { control: gap.control, reason: gap.reason } : null } );
+			// The rule's own gap row: the one for the same element, part, properties and CSS (a property written at two ranges has a row per range).
+			const gap = gaps.find( ( g ) => g.node === r.node && g.block === r.block && ( g.slot ?? '' ) === ( r.part ?? '' ) && g.css === r.css && ( r.declarations ?? [] ).some( ( d ) => ( g.properties ?? [] ).includes( String( d ).split( ':' )[ 0 ].trim() ) ) ) ?? null;
+			log.rules.push( { surface, node: r.node, block: r.block, part: r.part ?? '', state: r.state ?? null, range: r.range ?? '', declarations: r.declarations ?? [], css: r.css ?? '', reason: r.reason ?? '', gap: gap ? { control: gap.control, reason: gap.reason } : null } );
 		}
 		for ( const x of residual.refused ?? [] ) {
 			log.refused.push( { surface, node: x.node, block: x.block, slot: x.slot ?? '', property: x.property, state: x.state ?? null, value: x.value, reason: x.reason } );

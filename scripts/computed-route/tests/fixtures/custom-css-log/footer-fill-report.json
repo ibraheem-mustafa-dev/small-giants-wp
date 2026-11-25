@@ -1,0 +1,279 @@
+{
+ "_source": "trimmed from the 2026-11-24 proof run of the first client draft, footer surface: six residualCss.rules and the customCssGaps rows Fill wrote for them (the rest of the report is dropped)",
+ "residualCss": {
+  "rules": [
+   {
+    "node": "cr-ref-footer-8",
+    "block": "sgs/button",
+    "part": ".sgs-button__icon > svg",
+    "state": null,
+    "range": "every width",
+    "declarations": [
+     "width: 20px"
+    ],
+    "css": "& .sgs-button__icon > svg { width: 20px; }",
+    "bytes": 42,
+    "reason": "all five equivalence layers failed and no setting of the block paints it on this part",
+    "tokens": []
+   },
+   {
+    "node": "cr-ref-footer-9",
+    "block": "sgs/gallery",
+    "part": "",
+    "state": null,
+    "range": "every width",
+    "declarations": [
+     "scroll-snap-type: x mandatory",
+     "scrollbar-width: none"
+    ],
+    "css": "& { scroll-snap-type: x mandatory; scrollbar-width: none; }",
+    "bytes": 59,
+    "reason": "all five equivalence layers failed and no setting of the block paints it on this part",
+    "tokens": []
+   },
+   {
+    "node": "cr-ref-footer-9",
+    "block": "sgs/gallery",
+    "part": ".sgs-gallery__grid > .sgs-gallery__item",
+    "state": null,
+    "range": "every width",
+    "declarations": [
+     "text-decoration-line: underline",
+     "text-decoration-color: var(--wp--preset--color--mm-pink-dark)"
+    ],
+    "css": "& .sgs-gallery__grid > .sgs-gallery__item { text-decoration-line: underline; text-decoration-color: var(--wp--preset--color--mm-pink-dark); }",
+    "bytes": 141,
+    "reason": "all five equivalence layers failed and no setting of the block paints it on this part",
+    "tokens": [
+     "rgb(168, 64, 79) is the palette's mm-pink-dark"
+    ]
+   },
+   {
+    "node": "cr-ref-footer-9",
+    "block": "sgs/gallery",
+    "part": "",
+    "state": null,
+    "range": "0-767px",
+    "declarations": [
+     "overflow-x: auto"
+    ],
+    "css": "@media (max-width: 767px) { & { overflow-x: auto; } }",
+    "bytes": 53,
+    "reason": "all five equivalence layers failed and no setting of the block paints it on this part",
+    "tokens": []
+   },
+   {
+    "node": "cr-ref-footer-9",
+    "block": "sgs/gallery",
+    "part": "",
+    "state": null,
+    "range": "768px and up",
+    "declarations": [
+     "overflow-x: visible"
+    ],
+    "css": "@media (min-width: 768px) { & { overflow-x: visible; } }",
+    "bytes": 56,
+    "reason": "all five equivalence layers failed and no setting of the block paints it on this part",
+    "tokens": []
+   },
+   {
+    "node": "cr-ref-footer-10",
+    "block": "sgs/trust-bar",
+    "part": "",
+    "state": null,
+    "range": "every width",
+    "declarations": [
+     "padding-top: var(--wp--preset--spacing--60)",
+     "padding-bottom: var(--wp--preset--spacing--60)",
+     "overflow-x: hidden",
+     "overflow-y: hidden"
+    ],
+    "css": "& { padding-top: var(--wp--preset--spacing--60); padding-bottom: var(--wp--preset--spacing--60); overflow-x: hidden; overflow-y: hidden; }",
+    "bytes": 138,
+    "reason": "all five equivalence layers failed and no setting of the block paints it on this part",
+    "tokens": [
+     "14px is the spacing preset 60"
+    ]
+   }
+  ],
+  "refused": [
+   {
+    "node": "cr-ref-footer-0",
+    "block": "sgs/site-footer",
+    "slot": "",
+    "property": "line-height",
+    "state": null,
+    "value": "19px",
+    "reason": "line-height is inherited and would pass to the blocks inside this one, whose draft elements differ (sgs/site-footer-row renders normal at 375; sgs/site-footer-row renders normal at 768; sgs/site-footer-row renders normal at 1440)"
+   },
+   {
+    "node": "cr-ref-footer-9",
+    "block": "sgs/gallery",
+    "slot": "",
+    "property": "grid-auto-flow",
+    "state": null,
+    "value": "{\"375\":\"column\",\"768\":\"row\",\"1440\":\"row\"}",
+    "reason": "grid-auto-flow lays out children, and the block's part lays them out differently from the draft's element (display block against the draft's grid at 375; display block against the draft's grid at 768; display block against the draft's grid at 1440)"
+   }
+  ],
+  "gaps": [
+   {
+    "id": "residual:footer:sgs/button|.sgs-button__icon > svg|width",
+    "class": "F-setting",
+    "framework": true,
+    "block": "sgs/button",
+    "attribute": null,
+    "property": "width",
+    "part": ".sgs-button__icon > svg",
+    "rowKey": ".sgs-button__icon > svg",
+    "state": null,
+    "surface": "footer",
+    "instances": [
+     "cr-ref-footer-8"
+    ],
+    "declared": [
+     "cr-ref-footer-8 every width: 20px"
+    ]
+   },
+   {
+    "id": "residual:footer:sgs/gallery||scroll-snap-type",
+    "class": "F-setting",
+    "framework": true,
+    "block": "sgs/gallery",
+    "attribute": null,
+    "property": "scroll-snap-type",
+    "part": "",
+    "rowKey": "",
+    "state": null,
+    "surface": "footer",
+    "instances": [
+     "cr-ref-footer-9"
+    ],
+    "declared": [
+     "cr-ref-footer-9 every width: x mandatory"
+    ]
+   },
+   {
+    "id": "residual:footer:sgs/gallery||scrollbar-width",
+    "class": "F-setting",
+    "framework": true,
+    "block": "sgs/gallery",
+    "attribute": null,
+    "property": "scrollbar-width",
+    "part": "",
+    "rowKey": "",
+    "state": null,
+    "surface": "footer",
+    "instances": [
+     "cr-ref-footer-9"
+    ],
+    "declared": [
+     "cr-ref-footer-9 every width: none"
+    ]
+   }
+  ]
+ },
+ "customCssGaps": [
+  {
+   "node": "cr-ref-footer-8",
+   "block": "sgs/button",
+   "slot": ".sgs-button__icon > svg",
+   "properties": [
+    "width"
+   ],
+   "range": [
+    0,
+    null
+   ],
+   "css": "& .sgs-button__icon > svg { width: 20px; }",
+   "how": "residual-css",
+   "control": "a width setting on .sgs-button__icon > svg",
+   "reason": "custom-css: all five equivalence layers failed and no setting of the block paints it on this part"
+  },
+  {
+   "node": "cr-ref-footer-9",
+   "block": "sgs/gallery",
+   "slot": "",
+   "properties": [
+    "scroll-snap-type",
+    "scrollbar-width"
+   ],
+   "range": [
+    0,
+    null
+   ],
+   "css": "& { scroll-snap-type: x mandatory; scrollbar-width: none; }",
+   "how": "residual-css",
+   "control": "a scroll-snap-type setting on the root; a scrollbar-width setting on the root",
+   "reason": "custom-css: all five equivalence layers failed and no setting of the block paints it on this part"
+  },
+  {
+   "node": "cr-ref-footer-9",
+   "block": "sgs/gallery",
+   "slot": ".sgs-gallery__grid > .sgs-gallery__item",
+   "properties": [
+    "text-decoration-line",
+    "text-decoration-color"
+   ],
+   "range": [
+    0,
+    null
+   ],
+   "css": "& .sgs-gallery__grid > .sgs-gallery__item { text-decoration-line: underline; text-decoration-color: var(--wp--preset--color--mm-pink-dark); }",
+   "how": "residual-css",
+   "control": "a text-decoration-line setting on .sgs-gallery__grid > .sgs-gallery__item; a text-decoration-color setting on .sgs-gallery__grid > .sgs-gallery__item",
+   "reason": "custom-css: all five equivalence layers failed and no setting of the block paints it on this part"
+  },
+  {
+   "node": "cr-ref-footer-9",
+   "block": "sgs/gallery",
+   "slot": "",
+   "properties": [
+    "overflow-x"
+   ],
+   "range": [
+    0,
+    768
+   ],
+   "css": "@media (max-width: 767px) { & { overflow-x: auto; } }",
+   "how": "residual-css",
+   "control": "a overflow-x setting on the root",
+   "reason": "custom-css: all five equivalence layers failed and no setting of the block paints it on this part"
+  },
+  {
+   "node": "cr-ref-footer-9",
+   "block": "sgs/gallery",
+   "slot": "",
+   "properties": [
+    "overflow-x"
+   ],
+   "range": [
+    768,
+    null
+   ],
+   "css": "@media (min-width: 768px) { & { overflow-x: visible; } }",
+   "how": "residual-css",
+   "control": "a overflow-x setting on the root",
+   "reason": "custom-css: all five equivalence layers failed and no setting of the block paints it on this part"
+  },
+  {
+   "node": "cr-ref-footer-10",
+   "block": "sgs/trust-bar",
+   "slot": "",
+   "properties": [
+    "padding-top",
+    "padding-bottom",
+    "overflow-x",
+    "overflow-y"
+   ],
+   "range": [
+    0,
+    null
+   ],
+   "css": "& { padding-top: var(--wp--preset--spacing--60); padding-bottom: var(--wp--preset--spacing--60); overflow-x: hidden; overflow-y: hidden; }",
+   "how": "residual-css",
+   "control": "a padding-top setting on the root; a padding-bottom setting on the root; a overflow-x setting on the root; a overflow-y setting on the root",
+   "reason": "custom-css: all five equivalence layers failed and no setting of the block paints it on this part"
+  }
+ ]
+}
