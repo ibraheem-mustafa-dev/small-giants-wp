@@ -114,7 +114,7 @@ export function joinFacts( { client, sources, widths, template, logic, surfaces,
 		const cond = logic.conditions[ key ];
 		elements[ key ] = {
 			template: rec,
-			logic: { holes: logic.holes[ key ] || {}, ...( logic.holesByState?.[ key ] ? { holesByState: logic.holesByState[ key ] } : {} ), ...( cond ? { width: cond.width, ...( cond.via ? { via: cond.via } : {} ) } : {} ) },
+			logic: { holes: logic.holes[ key ] || {}, ...( logic.holesByState?.[ key ] ? { holesByState: logic.holesByState[ key ] } : {} ), ...( cond ? { width: cond.width, ...( cond.via ? { via: cond.via } : {} ) } : {} ), ...( logic.conditions[ `${ key }:display` ]?.width ? { displayWidth: logic.conditions[ `${ key }:display` ].width, displayVia: logic.conditions[ `${ key }:display` ].via } : {} ) },
 			surfaces: surfaces.byElement[ key ] || [],
 			effects: animations.byElement[ key ] || [],
 			assets: assets.byElement[ key ] || [],

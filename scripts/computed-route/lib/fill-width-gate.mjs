@@ -107,11 +107,13 @@ export const tplKey = ( finder, rootComponent = null ) => 'string' === typeof fi
 // when no enclosing sc-if is gated by width.
 export function shownAt( facts, key ) {
 	const gates = ( facts?.elements?.[ key ]?.template?.membership?.scIf || [] ).filter( ( g ) => facts.elements[ g.key ]?.logic?.width );
-	if ( ! gates.length ) {
+	// The element's own `display` binding picked by width is a gate of the same kind (lib/read-logic-conditions.mjs::widthConditions, `displayWidth`).
+	const own = facts?.elements?.[ key ]?.logic?.displayWidth ? [ { width: facts.elements[ key ].logic.displayWidth, via: facts.elements[ key ].logic.displayVia } ] : [];
+	if ( ! gates.length && ! own.length ) {
 		return null;
 	}
-	const shown = gates.map( ( g ) => shownRanges( facts.elements[ g.key ].logic.width ) ).reduce( ( a, b ) => intersect( a, b ) );
-	return { shown, via: gates.map( ( g ) => facts.elements[ g.key ].logic.via || g.value ) };
+	const shown = [ ...gates.map( ( g ) => facts.elements[ g.key ].logic.width ), ...own.map( ( o ) => o.width ) ].map( ( w ) => shownRanges( w ) ).reduce( ( a, b ) => intersect( a, b ) );
+	return { shown, via: [ ...gates.map( ( g ) => facts.elements[ g.key ].logic.via || g.value ), ...own.map( ( o ) => o.via || 'display' ) ] };
 }
 
 // The snapped hidden ranges of a shown list: { hidden: [ [ lo, hi ] ], snaps: [ { draft, tier, distance } ] }.

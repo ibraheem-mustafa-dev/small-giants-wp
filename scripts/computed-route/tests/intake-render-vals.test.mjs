@@ -10,6 +10,7 @@ import { renderValNode } from '../lib/intake-render-vals.mjs';
 import { elementsOf, propRefs, resolveRefs, oneString, ref } from '../lib/intake-ast-eval.mjs';
 import { rootData } from '../lib/fill-list-items.mjs';
 import { widthConditions } from '../lib/read-logic-conditions.mjs';
+import { shownAt, hiddenRanges } from '../lib/fill-width-gate.mjs';
 
 const draft = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../../sites/eye-care-ward-end/handoff/Eye Care Birmingham.dc.html' );
 const cut = splitDraft( fs.readFileSync( draft, 'utf8' ) );
@@ -47,4 +48,18 @@ test( 'MUST FAIL (class alias statics): `const C = Component; C.FAQS.map(...)` r
 	assert.equal( faqs.length, 8, 'the draft\'s FAQS holds eight entries' );
 	const answers = faqs.map( ( el ) => propRefs( idx, [ el ], 'a' ).map( ( r ) => oneString( idx, r.node, r.env ) ).find( ( v ) => null !== v ) ?? null );
 	assert.equal( answers.filter( ( a ) => a && a.length > 10 ).length, 8, JSON.stringify( answers ).slice( 0, 200 ) );
+} );
+
+test( 'MUST FAIL (display gate): an element whose own `display` the logic picks by width reads as shown from that width (the phone button, 1160)', () => {
+	const got = widthConditions( { source, scIfs: [], displays: [ { key: 'Eye Care Birmingham/33', value: '{{ phoneDisplay }}' } ] } );
+	assert.deepEqual( got.conditions[ 'Eye Care Birmingham/33:display' ].width, { w: '>=', n: 1160 } );
+} );
+
+test( 'MUST FAIL (one visibility rule): the phone button inside the navFull sc-if is hidden below 1160 (the own display gate narrows the sc-if\'s 1060), not below 1060', () => {
+	const facts = { elements: {
+		'Eye Care Birmingham/30': { template: { membership: { scIf: [] } }, logic: { width: { w: '>=', n: 1060 } } },
+		'Eye Care Birmingham/33': { template: { membership: { scIf: [ { key: 'Eye Care Birmingham/30', value: '{{ navFull }}' } ] } }, logic: { displayWidth: { w: '>=', n: 1160 } } },
+	} };
+	const at = shownAt( facts, 'Eye Care Birmingham/33' );
+	assert.deepEqual( hiddenRanges( at.shown ).hidden, [ [ 0, 1160 ] ] );
 } );

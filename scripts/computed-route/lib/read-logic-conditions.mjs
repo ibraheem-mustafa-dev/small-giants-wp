@@ -234,14 +234,31 @@ function conditionReader( idx, tags, file ) {
 		const v = 'Identifier' === h.type ? valueOfKey( h.name ) : null;
 		return { condition: go( ast ), widthish: Boolean( v && wr.widthish( v ) ), snippet: v ? snippet( idx, v, 100 ) : null, known: Boolean( v ) };
 	};
-	return { ofTemplate, gaps, stateInfo };
+	// The width condition under which a `display` key's ternary shows the element (the branch that is not `none`), or null.
+	const ofDisplay = ( text ) => {
+		let ast;
+		try {
+			ast = readBinding( `{{ ${ text } }}` ).expr;
+		} catch {
+			return null;
+		}
+		const v = 'Identifier' === ast.type ? valueOfKey( ast.name ) : null;
+		const none = ( n ) => 'StringLiteral' === n?.type && 'none' === n.value;
+		const shows = ( n ) => 'StringLiteral' === n?.type && 'none' !== n.value;
+		if ( 'ConditionalExpression' !== v?.type || ! ( ( shows( v.consequent ) && none( v.alternate ) ) || ( none( v.consequent ) && shows( v.alternate ) ) ) ) {
+			return null;
+		}
+		const c = condOf( v.test );
+		return c ? { width: shows( v.consequent ) ? c : negate( c ), via: snippet( idx, v.test, 100 ) } : null;
+	};
+	return { ofTemplate, ofDisplay, gaps, stateInfo };
 }
 
 // The width condition of each sc-if of one census source: { conditions: { <template key>: { value, width, via? } }, gaps,
 // state: { keys, widthKeys } | null } (`state`: the logic's class-state keys and those derived from the width; null when
 // the logic does not parse). The gaps include the width reader's (a width basis it cannot determine).
 // `scIfs`: [ { key, n, value } ] (the sc-if records of lib/read-template.mjs, `value` the attribute text).
-export function widthConditions( { source, scIfs } ) {
+export function widthConditions( { source, scIfs, displays = [] } ) {
 	const conditions = {};
 	const gaps = [];
 	let idx = null;
@@ -271,6 +288,13 @@ export function widthConditions( { source, scIfs } ) {
 				gaps.push( { construct: 'sc-if-width', draftId: s.key, error: `${ text } reads a width the reader cannot follow: ${ r.snippet }` } );
 			}
 		}
+	}
+	// An element whose own `display` the logic picks by width (`display: effW >= 1160 ? 'flex' : 'none'`) is shown where the test
+	// selects the non-`none` branch: `<key>:display` holds that width condition.
+	for ( const d of displays ) {
+		const text = /^\{\{([\s\S]*)\}\}$/.exec( d.value )?.[ 1 ].trim();
+		const r = reader && text ? reader.ofDisplay( text ) : null;
+		r?.width && ( conditions[ `${ d.key }:display` ] = { value: d.value, width: r.width, via: r.via } );
 	}
 	for ( const g of reader?.gaps || [] ) {
 		const id = JSON.stringify( g );

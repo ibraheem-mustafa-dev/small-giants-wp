@@ -323,7 +323,9 @@ export async function readLogic( { sandbox, entry, sources, template, widths = R
 	const state = {};
 	for ( const src of sources ) {
 		const scIfs = template.order.map( ( k ) => template.elements[ k ] ).filter( ( r ) => r.component === src.component && 'sc-if' === r.tag ).map( ( r ) => ( { key: r.key, n: r.n, value: r.own.value } ) );
-		const c = widthConditions( { source: src, scIfs } );
+		// An element's own `display: {{ key }}` binding is a visibility gate too (Spec 48 FR-48-50): it reads like an sc-if around the element.
+		const displays = template.order.map( ( k ) => template.elements[ k ] ).filter( ( r ) => r.component === src.component ).flatMap( ( r ) => r.holes.filter( ( h ) => 'style:display' === h.where ).map( ( h ) => ( { key: r.key, value: `{{ ${ h.expr } }}` } ) ) );
+		const c = widthConditions( { source: src, scIfs, displays } );
 		Object.assign( conditions, c.conditions );
 		gaps.push( ...c.gaps );
 		c.state && ( state[ src.component ] = c.state );
