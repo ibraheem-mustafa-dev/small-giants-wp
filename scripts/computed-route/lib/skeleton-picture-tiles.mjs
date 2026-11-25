@@ -31,6 +31,8 @@ const control = ( e ) => ( 'a' === e.tag && null != e.attrs?.href ) || 'button' 
 // A destination the draft writes as an address (not "#", not a template binding).
 const addressOf = ( e ) => ( 'a' === e.tag && e.attrs?.href && '#' !== e.attrs.href && ! /\{\{/.test( e.attrs.href ) ? e.attrs.href : null );
 const paintsPicture = ( e ) => 'img' === e.tag || /background(?:-image)?\s*:[^;]*url\(/i.test( String( e.attrs?.style ?? '' ) );
+// The elements that draw a picture or stand for one still to come (an <image-slot> the client fills later): no text tile holds one.
+const PICTURE_TAGS = new Set( [ 'img', 'picture', 'svg', 'video', 'canvas', 'iframe', 'image-slot' ] );
 const onlyOne = ( list ) => ( 1 === list.length ? list[ 0 ] : null );
 const outOfFlow = ( e ) => Object.entries( e.visible || {} ).filter( ( [ , v ] ) => v ).every( ( [ w ] ) => [ 'absolute', 'fixed' ].includes( e.position?.[ w ] ) );
 
@@ -72,7 +74,7 @@ function tileGrids( { m, rule, money, text } ) {
 		}
 		const inside = items.map( ( it ) => [ it, ...below( it ) ].filter( shown ) );
 		// One action per tile: the tile itself, or the one link or control it holds.
-		const actions = items.map( ( it, i ) => ( control( it ) ? it : onlyOne( inside[ i ].slice( 1 ).filter( control ) ) ) );
+		const actions = items.map( ( it, i ) => ( control( it ) && ( ! text || 'a' === it.tag ) ? it : onlyOne( inside[ i ].slice( 1 ).filter( control ) ) ) );
 		if ( actions.some( ( a ) => ! a ) ) {
 			continue;
 		}
@@ -87,7 +89,7 @@ function tileGrids( { m, rule, money, text } ) {
 		if ( text ) {
 			// Lines of text: the shown elements of the tile with words of their own. Nothing else is drawn in a text tile.
 			const lines = inside.map( ( els ) => els.filter( ( d ) => m.words( d ) ).length );
-			if ( lines.some( ( n ) => n < ( rule.minTileLines ?? 2 ) || n > rule.maxTileLines ) || pictures.some( Boolean ) || inside.some( ( els ) => els.some( ( d ) => 'svg' === d.tag || ( d !== els[ 0 ] && control( d ) ) ) ) ) {
+			if ( lines.some( ( n ) => n < ( rule.minTileLines ?? 2 ) || n > rule.maxTileLines ) || pictures.some( Boolean ) || inside.some( ( els ) => els.some( ( d ) => PICTURE_TAGS.has( d.tag ) || ( d !== els[ 0 ] && control( d ) ) ) ) ) {
 				continue;
 			}
 		} else if ( pictures.filter( Boolean ).length < items.length * ( rule.pictureShare ?? 0.5 ) ) {

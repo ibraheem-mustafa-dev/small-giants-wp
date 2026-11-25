@@ -663,6 +663,15 @@ test( 'column title: a caps title over one wrapper holding a run of text links i
 	assert.equal( blockOf( second, 'All brands' ), 'sgs/heading', 'a second title directly above its own run heads that run' );
 } );
 
+test( 'column title: outside a header panel only the direct-sibling-links reading applies (a hero line above its button loop, a title above one wrapper of links on a page stay as they were); MUST FAIL when the panel readings run everywhere', () => {
+	const asPage = ( col ) => byWords( run( headedPanel( col ), { kind: 'page', name: 'Home' } ), 'Sunglasses' )?.block;
+	const wrapped = headedCol( [ capsTitle( 'Sunglasses' ), linkLoop() ] );
+	assert.equal( asPage( wrapped ), 'sgs/label', 'a caps title over a wrapper of links on a page is a label' );
+	const second = headedCol( [ N( 'p', { words: 'Intro line' } ), capsTitle( 'Sunglasses' ), linkLoop() ] );
+	assert.equal( asPage( second ), 'sgs/label', 'a leaf above a link run, not first in its column, is no column title on a page' );
+	assert.equal( blockOf( second, 'Sunglasses' ), 'sgs/heading', 'the same column in a header panel: the title of the run is a heading' );
+} );
+
 test( 'NEGATIVE column title: a caps kicker over text, a title over a picture gallery, a title with its run two wrappers below and a lone link stay labels', () => {
 	const kicker = headedCol( [ capsTitle( 'Single vision' ), N( 'p', { words: 'From 99' } ), N( 'p', { words: 'One pair of lenses' } ) ] );
 	assert.equal( blockOf( kicker, 'Single vision' ), 'sgs/label', 'a kicker followed by text lines is a kicker' );

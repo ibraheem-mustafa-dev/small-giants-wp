@@ -132,7 +132,7 @@ test( 'a parent shared with other blocks is a note, and the rule is switched by 
 const NAMES = [ 'Pilot', 'Wayfarer', 'Round', 'Square' ];
 // A tile: a link (with an address, or a script click) holding a title over a count; `lines` sets how many text leaves.
 const textTile = ( i, { lines = 2, script = false, tag = 'a' } = {} ) => [
-	el( `Root/10#${ i }`, 'Root/4#0', tag, '', { depth: 3, loop: 9, box: place( i * 320, 300 ), ...( script ? { snippet: '<div sc-camel-on-click="{{ s.go }}" data-dc-tpl="10"></div>' } : { attrs: { href: `https://example.com/shop/${ i }/` } } ) } ),
+	el( `Root/10#${ i }`, 'Root/4#0', tag, '', { depth: 3, loop: 9, box: place( i * 320, 300 ), ...( script ? { attrs: { href: '#' }, snippet: `<${ tag } href="#" sc-camel-on-click="{{ s.go }}" data-dc-tpl="10"></${ tag }>` } : { attrs: { href: `https://example.com/shop/${ i }/` } } ) } ),
 	...[ NAMES[ i ], '48 frames', 'In stock' ].slice( 0, lines ).map( ( w, n ) => el( `Root/${ 11 + n }#${ i }`, `Root/10#${ i }`, 'span', w, { depth: 4, loop: 9 } ) ),
 ];
 const textGrids = ( elements, rule = facts().decisions.rules.textTileGrid ) => textTileGrids( { m: inventoryModel( inv( elements ) ), rule, money: facts().decisions.rules.commerceRegion.money } );
@@ -150,7 +150,7 @@ test( 'MUST FAIL: a loop of whole-link tiles of two text lines and no picture is
 	assert.equal( proposal.rows.find( ( r ) => 'Root/4#0' === r.key )?.rule, 'textTileGrid' );
 	assert.deepEqual( proposal.pictureTileGrids, { grids: { 'Root/4#0': 4 }, notes: [] } );
 	assert.equal( ( blocks[ 0 ].handover || [] ).filter( ( h ) => 'link' === h.kind ).length, 0, 'links with an address need no handover' );
-	const scripted = run( page( four( ( i ) => textTile( i, { script: true, tag: 'div' } ) ) ) );
+	const scripted = run( page( four( ( i ) => textTile( i, { script: true } ) ) ) );
 	assert.equal( ( all( scripted.skeleton, 'sgs/card-grid' )[ 0 ]?.handover || [] ).filter( ( h ) => 'link' === h.kind ).length, 4, 'a script click is a named link handover' );
 } );
 
@@ -159,6 +159,10 @@ test( 'negative controls for text tiles: one-line links (a link list), three lin
 	assert.equal( textGrids( page( four( ( i ) => textTile( i, { lines: 3 } ) ) ) ).grids.size, 0, 'three lines is a container of its own' );
 	const withPicture = [ ...four( textTile ), ...[ 0, 1, 2, 3 ].map( ( i ) => el( `Root/14#${ i }`, `Root/10#${ i }`, 'img', '', { depth: 4, loop: 9, attrs: { src: 'x.jpg' } } ) ) ];
 	assert.equal( textGrids( page( withPicture ) ).grids.size, 0, 'a tile with a picture is a picture tile' );
+	const slot = [ ...four( textTile ), ...[ 0, 1, 2, 3 ].map( ( i ) => el( `Root/17#${ i }`, `Root/10#${ i }`, 'image-slot', '', { depth: 4, loop: 9 } ) ) ];
+	assert.equal( textGrids( page( slot ) ).grids.size, 0, 'a tile holding a picture slot still to be filled is a picture tile' );
+	const stepTabs = four( ( i ) => textTile( i, { script: true, tag: 'button' } ) );
+	assert.equal( textGrids( page( stepTabs ) ).grids.size, 0, 'a button is a step tab or a picker, not a link tile' );
 	const withGlyph = [ ...four( textTile ), el( 'Root/14#0', 'Root/10#0', 'svg', '', { depth: 4, loop: 9 } ) ];
 	assert.equal( textGrids( page( withGlyph ) ).grids.size, 0, 'a tile drawing a glyph is not text only' );
 	assert.equal( textGrids( page( four( textTile ).map( ( e ) => ( 'Root/12#1' === e.key ? { ...e, words: '£139' } : e ) ) ) ).grids.size, 0, 'a priced tile belongs to the product card' );
