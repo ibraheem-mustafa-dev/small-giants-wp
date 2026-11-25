@@ -684,7 +684,22 @@ function pairCore( { host, absorbed = [], kids, isNode = () => false, calibratio
 			continue;
 		}
 		const placed = placeSlots( e, [ ...slotLooks.keys() ].sort() );
-		placed.length ? out.paired.push( { key: e.key, part: g.head, slots: placed } ) : out.ambiguous.push( { key: e.key, candidates: [ g.head ], why: 'the draft has no element at any of the part\'s calibrated positions, or another finder holds them' } );
+		if ( placed.length ) {
+			out.paired.push( { key: e.key, part: g.head, slots: placed } );
+			continue;
+		}
+		// No slot of the part lies at this element's position (the block draws that position as another kind of row), or the
+		// slots at its position went to its neighbours: when an element of its own repetition group, of the same sort and tag, is
+		// read at one of the part's slots, the block draws one look for the group and that read stands for this element.
+		const group = repGroup( e ).filter( ( x ) => x !== e );
+		const readSlot = [ ...slotLooks.keys() ].sort().find( ( sl ) => ( ( r ) => r && group.includes( r ) && sameSort( r, e ) && r.tag === e.tag )( placedAt.get( sl ) ) );
+		if ( readSlot ) {
+			out.paired.push( { key: e.key, part: g.head, slots: [] } );
+			const named = settings.filter( ( [ , s ] ) => ( ! s.state || 'current' === s.state ) && [ s?.slot, ...( s?.slots || [] ) ].includes( readSlot ) && ( null === looks || looks.includes( lookOfProperty( s.property, model.parts.get( templateOf( readSlot ) )?.tag ?? '' ) ) ) ).map( ( [ name ] ) => name );
+			out.siblings.push( { key: e.key, part: g.head, slot: readSlot, settings: [ ...new Set( named ) ], looks: looks ?? [], readBy: placedAt.get( readSlot ).key } );
+		} else {
+			out.ambiguous.push( { key: e.key, candidates: [ g.head ], why: 'the draft has no element at any of the part\'s calibrated positions, or another finder holds them' } );
+		}
 	}
 	return out;
 }
