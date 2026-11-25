@@ -165,20 +165,21 @@ Every "never built / half built / partly built" verdict was checked against the 
 - **The burger's shorter third bar:** the block holds it: each bar is a motion part whose `restWidth` sets its length (`sgsMotion.elements["burger-bar-3"]...restWidth`), with `burgerBarAlign` and `burgerIconWidth`; Mama's hand-built header sets `restWidth` 16px, `burgerBarAlign` start, `burgerIconWidth` 22px, which is exactly the draft's 16px bar with `margin-right: 6px` in a 22px stack. The clone wrote none: `lib/fill-motion-element.mjs::widthHover` fills `restWidth` only from a hover that changes width (`c73411aaf`), and the setting search never offers a motion part's `restWidth`. Fix: write `restWidth` for a static unequal bar, and `burgerBarAlign` and `burgerIconWidth` from the bars' widths and margin; no Custom CSS for it.
 - **Basket and header icon sizes:** `sgs/cart.iconSize` has no CSS property in the framework DB, so the route cannot match it; Mama's hand-built sets `iconSize`, `iconTriggerSize`, `pillBadgeSize`. Fix: the record places `iconSize` on the svg, and the Custom CSS layout refusal counts only the widths where the element is drawn (it now refuses an element hidden at some widths).
 - **Basket trigger: one set of settings for both modes (Bean 2026-11-25; replaces S2).**
-  - **The cause.** The pill and the icon button are the same element (`.sgs-cart__trigger`), and each device shows only one of them. Yet the block keeps two settings for three properties:
+  - **The cause.** The pill and the icon button are the same element (`.sgs-cart__trigger`), and each device shows only one of them. Yet the block kept two settings for three properties:
     - corner radius: `pillBorderRadius` and `iconTriggerRadius`;
     - size: `pillMinHeight` and `iconTriggerSize`;
-    - background: `pillBgColour*` and `iconBg*`, each with a hover setting.
+    - padding: `pillPadding` (the icon button had none).
 
     Their record rows are identical, so no reader can tell them apart. That was S2. The new spec sentence is withdrawn.
   - **The settings.** One setting per property, whichever mode a device shows:
     - **Padding:** `triggerPadding`, the shared `ResponsiveBoxControl`.
     - **Size:** `triggerSize`, per-device `{desktop:{width,height}}` through the Shape size control exported from `blocks/icon/inspector-shape.js`, so Fill's `lib/resolve.mjs::isSizeBox` fills it as it fills `sgs/icon` `shapeSize`. It keeps the 24px floor.
-    - **Radius and background:** one radius, one background, one background hover.
+    - **Radius:** `triggerBorderRadius`, one value.
+    - **Background stays two settings** (decided 2026-11-25): `pillBgColour*` for the pill and `iconBg*` for the icon button, each with its hover and gradient, painted only in the devices that show that style. A colour setting is one value for every device and no colour setting in the framework is per device, so merging the two would make a header that shows the pill on desktop and the icon button on tablet lose one of its two fills (Mama's tablet hover is pink-soft, her desktop pill hover is yellow). Per-device colour objects would need a new editor control and a render change; two settings need neither.
 
-    The pill's label, border and shadow and the icon's glyph and glyph size stay separate. Width and height copy the draft as stated: Mama's icon button is 48×48 with padding 0, and her pill is height 48px with padding 0 18 0 14. `iconTriggerSize` is a bare number that Fill never fills.
+    The pill's label, border, shadow and background and the icon's glyph, glyph size and background stay separate. Width and height copy the draft as stated: Mama's icon button is 48×48 with padding 0, and her pill is height 48px with padding 0 18 0 14. `iconTriggerSize` is a bare number that Fill never fills.
   - **The panels.** The Styles-tab "Icon button" panel goes. The shared settings move to a "Button" panel on the Settings tab, under "Trigger style".
-  - **The migration.** A one-off WP-CLI sweep with no fallback (FP-14). Mama's `pillPadding` becomes `triggerPadding`. `pillMinHeight {desktop:48px}` and `iconTriggerSize {tablet:48}` become `triggerSize {desktop:{height:48px},tablet:{width:48px,height:48px}}`. The two 999px radii become one.
+  - **The migration.** A one-off WP-CLI sweep with no fallback (FP-14). Mama's `pillPadding` becomes `triggerPadding`. `pillMinHeight {desktop:48px}` and `iconTriggerSize {tablet:48}` become `triggerSize {desktop:{height:48px},tablet:{width:48px,height:48px}}`. The two 999px radii become one. The backgrounds are not touched.
   - **The proof.** render-scope, plus `render-check --only` on the header states on `local-mamas`, shows identical output. The live site gets the backup and the basket, checkout and account checks, and is deployed only with Bean's go.
 - **Basket-count row (decided 2026-11-25, not a Bean question).** Mama's basket heading holds the item-count pill inside its line. The route splits it into a row (`lib/template-piece-woo-layout.mjs::countRow`). The row takes its gap (one word space at the heading's font size) and its centre alignment (the draft's `vertical-align: middle`) from the host heading's draft element. The `kind: 'layout'` handover goes.
 - **Review-platform blocks (Bean 2026-11-25, parked).**
