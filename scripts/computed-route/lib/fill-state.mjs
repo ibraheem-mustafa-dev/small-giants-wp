@@ -44,6 +44,7 @@ import { scriptGapReason, openSlots, openAsHover } from './fill-state-script.mjs
 import { partStateSlots } from './fill-state-parts.mjs';
 import { createPatch, tokenRoute, pickValue, pressVariant, ownedBySetting, applyTokenLooks, conflictRow, ringLook, restShadow } from './fill-state-tokens.mjs';
 import { focusSharesHover, settleFocusRests } from './fill-state-focus.mjs';
+import { stateChoice } from './fill-choice-state.mjs';
 
 export { focusSharesHover };
 
@@ -366,7 +367,9 @@ export function fillStates( { tree, nodes, reads, calFor, db, snapshot, rawSnaps
 				const asHover = ! atRest && ! pseudo && openAsHover( { script, state, held, hasHover: candidates( db, rec.name, prop, 'hover' ).length > 0, hasOpen: candidates( db, rec.name, prop, 'open' ).length > 0, hoverLook: drafts.has( `hover|${ pseudo }|${ prop }` ) } );
 				const writeState = asHover ? 'hover' : state;
 				const gap = atRest ? null : stateGap( writeState, held );
-				const res = gap ? { status: 'gap', gap } : resolveProperty( { node, block: rec.name, prop, draft: perWidth, baseline: () => undefined, slots: [ slot, ...( atRest || asHover ? [] : openSlots( cal, prop, slot, state ) ) ].concat( atRest ? [] : partStateSlots( { db, cal, block: rec.name, prop, slot, state: writeState } ) ), calibration: cal, db, snapshot, log: [], state: atRest ? null : writeState, siblings: ctx.siblings, rest: pseudo ? undefined : restValue( reads, target.id, prop ) } );
+				// A resting setting whose value paints this look in this state (linkUnderline: hover) answers before the state settings do.
+				const chosen = pseudo || atRest || asHover || ! [ 'hover', 'focus' ].includes( state ) ? null : stateChoice( { cal, slot, prop, rest: restValue( reads, target.id, prop ), draft: perWidth, state } );
+								const res = chosen ?? ( gap ? { status: 'gap', gap } : resolveProperty( { node, block: rec.name, prop, draft: perWidth, baseline: () => undefined, slots: [ slot, ...( atRest || asHover ? [] : openSlots( cal, prop, slot, state ) ) ].concat( atRest ? [] : partStateSlots( { db, cal, block: rec.name, prop, slot, state: writeState } ) ), calibration: cal, db, snapshot, log: [], state: atRest ? null : writeState, siblings: ctx.siblings, rest: pseudo ? undefined : restValue( reads, target.id, prop ) } ) );
 				if ( 'written' === res.status ) {
 					for ( const w of res.writes ) {
 						const { before, after } = setAttr( node, w );

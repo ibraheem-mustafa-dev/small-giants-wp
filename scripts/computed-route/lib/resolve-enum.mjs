@@ -63,6 +63,22 @@ export function mapTiers( row, def, calibrationSetting, prop, tiers ) {
 	return { tiers: out };
 }
 
+// The values of a setting that paint the draft's resting look at rest and its state look in `state` (hover, focus): `enumReads`
+// holds what each value paints at rest and `enumStateReads[state]` what it paints with the state held (site_look.py::enum_reads).
+// A link the draft draws plain and underlines on hover is `linkUnderline: hover`, which paints `none` at rest and `underline` on
+// hover; `always` rests at `underline`. Both readings must fit at every width the draft was read at. Returns the matching values,
+// [] when the setting has no state reading or no value fits (a rest underline that hover removes: no setting holds it).
+export function valuesForState( calibrationSetting, prop, rest, draft, state ) {
+	const atRest = calibrationSetting?.enumReads ?? {};
+	const inState = calibrationSetting?.enumStateReads?.[ state ] || {};
+	const widths = Object.keys( draft || {} ).map( Number ).filter( ( w ) => [ 375, 768, 1440 ].includes( w ) );
+	if ( ! widths.length || widths.some( ( w ) => undefined === rest?.[ w ] ) ) {
+		return [];
+	}
+	const fits = ( reads, want ) => widths.every( ( w ) => undefined !== reads?.[ prop ]?.[ w ] && same( reads[ prop ][ w ], want[ w ] ) );
+	return Object.keys( inState ).filter( ( v ) => fits( atRest[ v ], rest ) && fits( inState[ v ], draft ) );
+}
+
 // A pin setting whose list names the edge a sticky element sticks to (top, bottom) and no `sticky`: the draft's `position: sticky` is
 // the edge its offset names at that tier's width (`top` set: top; else `bottom` set: bottom; both: top), `static` and `relative` are
 // no pin ("none" where the list holds it). A sticky element with neither offset set has no edge to pin to, so the row says so and
