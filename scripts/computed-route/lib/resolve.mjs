@@ -17,6 +17,8 @@ import { consult } from './css-equivalence/index.mjs';
 import { valueBlind } from './css-equivalence/effect.mjs';
 import { holdsValue, mapTiers, pinEdges } from './resolve-enum.mjs';
 import { inForceAt } from './fill-device-mode.mjs';
+import { variantHeld } from './setting-variant.mjs';
+import { coversSlot } from './resolve-layer.mjs';
 export { valueBlind };
 import { sameAlignment } from './css-equivalence/keywords.mjs';
 import { PX_TOL } from './css-equivalence/tolerance.mjs';
@@ -548,7 +550,7 @@ const slotLookups = new WeakMap();
 // The DB slot a setting is tied to (`block_attributes.canonical_slot`: the named part of the block it paints), or null.
 // A database without the column (a test fixture), or no database at all, ties nothing to a part. The lookup statement is
 // prepared once per database.
-function canonicalSlotOf( db, block, attr ) {
+export function canonicalSlotOf( db, block, attr ) {
 	if ( ! db ) {
 		return null;
 	}
@@ -637,12 +639,15 @@ export function resolve( input, ctx ) {
 	// its record places in a state (a tile's selected ground, painted while it is checked) is no candidate for another state,
 	// even where its block_attributes row names none. `input.paintState` names that state where the caller reads a part
 	// that stands for it at rest (form-field-tiles' tile-selected: the tile while checked).
-	const tiedBy = ( paths ) => rows.filter( ( r ) => {
+	const tiedBy = ( paths, layer = false ) => rows.filter( ( r ) => {
 		const c = ctx.calibration.settings?.[ r.attr_name ];
-		return c && paths( c ).some( ( p ) => loose( p ) === slot && sameKind( p ) ) && ( ! c.property || c.property === short || reachedBy( prop ).includes( c.property ) ) && ( c.state ?? null ) === ( input.paintState ?? state ?? null ) && canGive( r, c ) && holdsDisplay( r ) && inForce( c );
+		return c && variantHeld( c, input.variants ) && paths( c ).some( ( p ) => ( loose( p ) === slot || ( layer && coversSlot( c, p, slot, short ) ) ) && sameKind( p ) ) && ( ! c.property || c.property === short || reachedBy( prop ).includes( c.property ) ) && ( c.state ?? null ) === ( input.paintState ?? state ?? null ) && canGive( r, c ) && holdsDisplay( r ) && inForce( c );
 	} );
-	const direct = tiedBy( ( c ) => c.slots || [ c.slot ] );
-	const reached = direct.length ? direct : tiedBy( ( c ) => c.reaches || [] );
+	const painting = ( c ) => c.slots || [ c.slot ];
+	// A setting on the element itself, else one on a cover layer over it (lib/resolve-layer.mjs), else one whose inherited value reaches it.
+	const direct = tiedBy( painting );
+	const covered = direct.length ? direct : tiedBy( painting, true );
+	const reached = covered.length ? covered : tiedBy( ( c ) => c.reaches || [] );
 	// A tie between settings on the element and on its ancestors goes to the nearest (lib/resolve-nearest.mjs).
 	const near = nearestHome( reached, ( r ) => ( 'string' === typeof ctx.calibration.settings[ r.attr_name ]?.slot ? loose( ctx.calibration.settings[ r.attr_name ].slot ) : undefined ), slot );
 	let tied = near ?? reached;

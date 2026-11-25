@@ -485,7 +485,7 @@ function resolveOne( ctx ) {
 		const call = ( perWidth ) => {
 			sink.length = 0;
 			const declaredForm = Object.fromEntries( Object.keys( perWidth ).filter( ( w ) => undefined !== declared[ w ] ).map( ( w ) => [ w, declared[ w ] ] ) );
-			return resolve( { block, slot, anyIndex: false, tag: null, prop, state, perWidth, fontPx, current: node.attributes || {}, ...( owned ? { owned } : {} ), siblings, declaredForm, ...( rest ? { rest } : {} ), ...( paintState ? { paintState } : {} ), ...( declaredFluid ? { declared: declaredFluid } : {} ) }, { db, snapshot, calibration, log: sink } );
+			return resolve( { block, slot, anyIndex: false, tag: null, prop, state, perWidth, fontPx, current: node.attributes || {}, variants: node.drawnVariants || [], ...( owned ? { owned } : {} ), siblings, declaredForm, ...( rest ? { rest } : {} ), ...( paintState ? { paintState } : {} ), ...( declaredFluid ? { declared: declaredFluid } : {} ) }, { db, snapshot, calibration, log: sink } );
 		};
 		let r = call( included );
 		const split = 'no-setting' === r.gap ? byMode( { calibration, included, draft, call, sink, log, slot } ) : null;

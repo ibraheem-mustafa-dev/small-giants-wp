@@ -27,6 +27,7 @@ import { longhands } from './calibrate.mjs';
 import { splitProperty, blockElements } from './resolve.mjs';
 import { INHERITED } from './calibrate-props.mjs';
 import { bandSetting } from './fill-band.mjs';
+import { variantOnlyOf } from './setting-variant.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../../..' );
@@ -456,6 +457,7 @@ function settingEntry( block, name, rows, row, look, facts ) {
 		tiers: main.map( ( r ) => r.tiers ),
 		...( main.some( ( r ) => r.symbolic ) ? { symbolic: main.filter( ( r ) => r.symbolic ).map( ( r ) => ( { tiers: r.tiers, ...r.symbolic } ) ) } : {} ),
 		...( main.every( ( r ) => r.unproved ) ? { accepted: true } : {} ),
+		...( variantOnlyOf( main, row?.css_element, compounds ) ? { variantOnly: row.css_element } : {} ),
 		...( facts?.look ? { look: facts.look } : {} ),
 		...( main.some( ( r ) => /^@container/.test( r.tiers.join( ' ' ) ) ) ? { containerTier: true } : {} ),
 	};
