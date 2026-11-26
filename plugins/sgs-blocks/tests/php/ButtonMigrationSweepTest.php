@@ -180,6 +180,22 @@ final class ButtonMigrationSweepTest extends TestCase {
 		$this->assertSame( $swept, self::attrs( 'sgs/choice-flow', $swept ), 'a second pass changes nothing' );
 	}
 
+	/** @param array<string, array<string, mixed>> $cases @return array<string, mixed> The account button kit runner's output. */
+	private static function run_kit( array $cases ): array {
+		$file = tempnam( sys_get_temp_dir(), 'sgsak' );
+		file_put_contents( $file, json_encode( $cases, JSON_THROW_ON_ERROR ) );
+		try {
+			$out = (string) shell_exec( escapeshellarg( PHP_BINARY ) . ' ' . escapeshellarg( __DIR__ . '/run-account-button-kit-standalone.php' ) . ' ' . escapeshellarg( $file ) . ' 2>&1' );
+		} finally {
+			unlink( $file );
+		}
+		$decoded = json_decode( substr( $out, (int) strpos( $out, '{' ) ), true );
+		if ( ! is_array( $decoded ) ) {
+			throw new RuntimeException( 'runner failed: ' . $out );
+		}
+		return $decoded;
+	}
+
 	/** @return array<string, array<int, array<string, mixed>>> The account empty button merge map's rows by block. */
 	private static function account_merge_map(): array {
 		$data = json_decode( (string) file_get_contents( dirname( __DIR__, 2 ) . '/scripts/data/account-empty-button-renames.json' ), true, 512, JSON_THROW_ON_ERROR );
@@ -222,10 +238,41 @@ final class ButtonMigrationSweepTest extends TestCase {
 			)
 		);
 		$this->assertSame( array( 'desktop' => array( 'top' => '9px', 'left' => '26px' ), 'tablet' => array( 'left' => '10px' ) ), $both['emptyStatePadding'], 'the kit wins side by side (its rule weighs more); the old setting paints the sides the kit leaves' );
-		$this->assertSame( array( 'desktop' => '60px', 'tablet' => '48px' ), $both['emptyStateMinHeight'] );
+		$this->assertSame( array( 'desktop' => '60px' ), $both['emptyStateMinHeight'], 'the kit prints desktop 60px as a base rule, which beats the old tablet 48px at every width (same weight, printed later): no tablet tier is kept' );
 		$this->assertArrayNotHasKey( 'ordersEmptyButtonPadding', $both );
 		$this->assertArrayNotHasKey( 'ordersEmptyButtonMinHeight', $both );
 		$this->assertSame( $both, self::merged( $both ), 'a second pass changes nothing' );
+	}
+
+	public function test_the_merged_value_paints_what_the_pair_painted_at_every_width(): void {
+		// The kit's rule weighs the same as the old setting's and prints after it, so the kit paints wherever it prints a value (its own
+		// tier or one inherited from a wider tier) and the old setting paints only where the kit prints nothing.
+		$cases = array(
+			'kit desktop beats old tablet and mobile'   => array( array( 'desktop' => '52px', 'tablet' => '48px', 'mobile' => '40px' ), array( 'desktop' => '60px' ), array( 'desktop' => '60px' ) ),
+			'kit tablet beats old mobile, old desktop'  => array( array( 'desktop' => '52px', 'mobile' => '40px' ), array( 'tablet' => '44px' ), array( 'desktop' => '52px', 'tablet' => '44px' ) ),
+			'kit mobile only, old fills desktop, tablet' => array( array( 'desktop' => '52px', 'tablet' => '48px' ), array( 'mobile' => '40px' ), array( 'desktop' => '52px', 'tablet' => '48px', 'mobile' => '40px' ) ),
+			'a tier equal to what it inherits is kept out' => array( array( 'tablet' => '60px' ), array( 'desktop' => '60px' ), array( 'desktop' => '60px' ) ),
+			'an empty kit value prints nothing'         => array( array( 'desktop' => '52px', 'tablet' => '48px' ), array( 'desktop' => '' ), array( 'desktop' => '52px', 'tablet' => '48px' ) ),
+		);
+		foreach ( $cases as $name => list( $old, $kit, $want ) ) {
+			$got = self::merged( array( 'ordersEmptyButtonMinHeight' => $old, 'emptyStateMinHeight' => $kit ) );
+			$this->assertSame( $want, $got['emptyStateMinHeight'], $name );
+		}
+		$pad = self::merged(
+			array(
+				'ordersEmptyButtonPadding' => array( 'desktop' => array( 'top' => '4px', 'left' => '26px' ), 'tablet' => array( 'top' => '2px' ) ),
+				'emptyStatePadding'        => array( 'desktop' => array( 'top' => '9px', 'left' => '' ) ),
+			)
+		);
+		$this->assertSame( array( 'desktop' => array( 'top' => '9px', 'left' => '26px' ) ), $pad['emptyStatePadding'], 'the kit wins the top side at every width; its empty left prints nothing, so the old left shows; the old tablet top never showed' );
+	}
+
+	public function test_the_merged_kit_value_prints_one_base_rule_where_the_kit_alone_won(): void {
+		// Through the real kit printer: old {desktop 52px, tablet 48px} with kit {desktop 60px} used to show 60px at every width.
+		$merged = self::merged( array( 'ordersEmptyButtonMinHeight' => array( 'desktop' => '52px', 'tablet' => '48px' ), 'emptyStateMinHeight' => array( 'desktop' => '60px' ) ) );
+		$out    = self::run_kit( array( 'css' => array( 'fn' => 'kit_css', 'attrs' => array( 'emptyStateMinHeight' => $merged['emptyStateMinHeight'] ), 'args' => array( '.r' ) ) ) );
+		$this->assertStringContainsString( 'min-height:60px', $out['css'] );
+		$this->assertStringNotContainsString( '@media', $out['css'], 'no tablet or mobile rule is printed' );
 	}
 
 	public function test_the_merge_map_names_the_kit_settings_and_the_block_declares_only_those(): void {
