@@ -269,3 +269,28 @@ test( 'MUST FAIL: the skeleton writer turns a button into an opener only for a t
 test( 'negative control: a target whose record runs on another component is opened by no button of this draft', () => {
 	assert.notEqual( scopeRun( 'Home' )?.rule, 'surfaceOpener' );
 } );
+
+// The close control's writes are read on the modal's own component (lib/intake-pagemap-flow-openers.mjs::ownWrites with the
+// record's dc): a close written through dcLogic('Shop') still closes the Shop modal, one written on another component does not.
+const closeVia = ( name ) => {
+	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'frame-close-' ) );
+	for ( const f of fs.readdirSync( FOLDER ) ) {
+		fs.copyFileSync( path.join( FOLDER, f ), path.join( dir, f ) );
+	}
+	const file = path.join( dir, 'Shop.dc.html' );
+	const text = fs.readFileSync( file, 'utf8' );
+	const out = text.replace( 'closeSize: () => this.setState({ modal: null }),', `closeSize: () => dcLogic('${ name }').setState({ modal: null }),` );
+	assert.notEqual( out, text );
+	fs.writeFileSync( file, out );
+	return frameParts( { factRecord: FACTS, surfaceId: 'S-25', folder: dir, opening: targets()[ 0 ].writes } );
+};
+
+test( 'MUST FAIL: a close control written through dcLogic on the modal\'s own component is the frame\'s close', () => {
+	assert.deepEqual( closeVia( 'Shop' ), { root: 'Shop/10', backdrop: 'Shop/11', panel: 'Shop/12', close: 'Shop/15', closesOnBackdrop: true } );
+} );
+
+test( 'negative control: a close written on another component closes nothing of this modal', () => {
+	const parts = closeVia( 'Home' );
+	assert.equal( parts.close, null );
+	assert.equal( parts.closesOnBackdrop, false );
+} );

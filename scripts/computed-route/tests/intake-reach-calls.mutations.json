@@ -55,8 +55,8 @@
 	},
 	{
 		"file": "lib/state-openers.mjs",
-		"find": "c.component ? `${ c.ident }(${ c.component.includes( \"'\" ) ? `\"${ c.component }\"` : `'${ c.component }'` })` : c.ident",
-		"replace": "c.ident",
+		"find": "${ c.component ? `",
+		"replace": "${ false ? `",
 		"why": "the way's text names a call the record never wrote"
 	},
 	{
@@ -73,8 +73,14 @@
 	},
 	{
 		"file": "lib/state-openers.mjs",
-		"find": "c.component.includes( \"'\" ) ? `\"${ c.component }\"` : `'${ c.component }'`",
-		"replace": "`'${ c.component }'`",
+		"find": "! c.component.includes( \"'\" ) ? ",
+		"replace": "true ? ",
 		"why": "a name holding an apostrophe is written in single quotes the reader cannot read back"
+	},
+	{
+		"file": "lib/state-openers.mjs",
+		"find": ": ! c.component.includes( '\"' ) ? ",
+		"replace": ": true ? ",
+		"why": "a name holding both quote kinds is written in double quotes the reader cannot read back"
 	}
 ]

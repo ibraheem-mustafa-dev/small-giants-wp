@@ -127,6 +127,10 @@ export function fnWrites( idx, fn, env = new Map() ) {
 		if ( 'setState' === propName( call.callee ) ) {
 			const arg = call.arguments[ 0 ];
 			const other = dcLogicName( call.callee.object );
+			if ( '' === other ) {
+				// A lookup of a component no literal names: its writes are on a component unknown here, so they count nowhere.
+				continue;
+			}
 			const made = other ? new Set() : out;
 			( isFn( arg ) ? returned( arg ) : [ arg ] ).forEach( ( v ) => valueWrites( ctx, v, [], made ) );
 			other && made.forEach( ( w ) => out.add( `${ other }${ SCOPE }${ w }` ) );
@@ -178,7 +182,16 @@ export function openingComponents( record ) {
 // fnWrites tags a write made through `dcLogic('<X>').setState(…)` with X (`X` + SCOPE + `path=value`); a write with no tag is
 // made on the handler's own component. A literal value is JSON text, so a raw SCOPE character never occurs in one.
 const SCOPE = '\u0000';
-const dcLogicName = ( obj ) => ( 'CallExpression' === obj?.type && 'Identifier' === obj.callee?.type && 'dcLogic' === obj.callee.name && 'StringLiteral' === obj.arguments?.[ 0 ]?.type && named( obj.arguments[ 0 ].value ) ? obj.arguments[ 0 ].value : null );
+// The component a `dcLogic(<name>)` lookup names: a string, or a template literal with no `${}` hole; '' for any other
+// argument (a variable, a hole: the component is unknown); null when `obj` is no dcLogic lookup.
+function dcLogicName( obj ) {
+	if ( 'CallExpression' !== obj?.type || 'Identifier' !== obj.callee?.type || 'dcLogic' !== obj.callee.name ) {
+		return null;
+	}
+	const a = obj.arguments?.[ 0 ];
+	const v = 'StringLiteral' === a?.type ? a.value : 'TemplateLiteral' === a?.type && ! a.expressions.length ? a.quasis[ 0 ]?.value?.cooked : null;
+	return named( v ) ? v : '';
+}
 
 // A handler's writes by the component each is made on: Map( component -> Set( 'path=value' ) ); `own` is the handler's
 // own component (null when unknown).
@@ -191,6 +204,11 @@ export function writesOn( writes, own ) {
 	}
 	return out;
 }
+
+// The writes a handler of component `own` makes on its own component: its untagged writes and those it tags with `own`
+// (`dcLogic('<own>').setState(…)`), as plain 'path=value' strings. Every reader comparing a handler's writes with plain
+// strings reads them through here.
+export const ownWrites = ( writes, own ) => writesOn( writes, own ).get( own ) ?? new Set();
 
 // Whether a handler of component `own` whose writes are `writes` opens `target` ({ writes, components }): on one component
 // the target's opening calls run on (any, when `components` is null), it makes every opening write.

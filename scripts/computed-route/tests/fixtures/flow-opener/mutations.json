@@ -1,5 +1,5 @@
 [
- {"file":"lib/intake-pagemap-flow-openers.mjs","find":"const made = other ? new Set() : out;","replace":"const made = out;","why":"a dcLogic('Home').setState write counts as the handler's own component's"},
+ {"file":"lib/intake-pagemap-flow-openers.mjs","find":"return named( v ) ? v : '';","replace":"return null;","why":"every dcLogic('Home').setState write counts as the handler's own component's"},
  {"file":"lib/intake-pagemap-flow-openers.mjs","find":"const [ comp, plain ] = at > 0 ? [ w.slice( 0, at ), w.slice( at + 1 ) ] : [ own, w ];","replace":"const [ comp, plain ] = [ own, w ];","why":"a tagged write is read as the handler's own, its tag kept"},
  {"file":"lib/intake-pagemap-flow-openers.mjs","find":"return on.length && on.every( named ) ? new Set( on ) : null;","replace":"return on.length ? new Set( on ) : null;","why":"a record with no dc scopes its targets to no component, so nothing opens them"},
  {"file":"lib/intake-pagemap-flow-openers.mjs","find":"return [ ...( target.components ?? on.keys() ) ].some(","replace":"return [ ...on.keys() ].some(","why":"a target is opened on any component the handler writes on, whatever component its record runs on"},
@@ -30,5 +30,9 @@
  {"file":"lib/intake-pagemap-flow-openers.mjs","find":"if ( 'var' === decl?.kind && ! decl.key ) {","replace":"if ( false ) {","why":"a const object a handler passes is not followed to its declaration"},
  {"file":"lib/intake-pagemap-flow-openers.mjs","find":"[ 'member', 'local', 'key' ]","replace":"[ 'local' ]","why":"class members and object keys holding a function are not found by name"},
  {"file":"lib/intake-census-map.mjs","find":"} else if ( 'AssignmentExpression' === x.type && thisName( x.left ) === name ) {","replace":"} else if ( false ) {","why":"a member assigned in the constructor (this.x = …) is not found"},
- {"file":"lib/intake-census-map.mjs","find":"'bind' === keyOf( v.callee.property ) ? v.callee.object : v","replace":"v","why":"this.y.bind(this) is not followed to y"}
+ {"file":"lib/intake-census-map.mjs","find":"'bind' === keyOf( v.callee.property ) ? v.callee.object : v","replace":"v","why":"this.y.bind(this) is not followed to y"},
+ {"file":"lib/intake-pagemap-flow-openers.mjs","find":": 'TemplateLiteral' === a?.type && ! a.expressions.length ? a.quasis[ 0 ]?.value?.cooked : null;","replace":": null;","why":"dcLogic(`Home`) is no named lookup, so its write counts on the handler's own component"},
+ {"file":"lib/intake-pagemap-flow-openers.mjs","find":"if ( '' === other ) {","replace":"if ( false ) {","why":"a lookup of a component no literal names (dcLogic(name)) counts on the handler's own component"},
+ {"file":"lib/intake-pagemap-flow-openers.mjs","find":"! a.expressions.length ? a.quasis","replace":"true ? a.quasis","why":"a template literal with a hole names its first piece as the component"},
+ {"file":"lib/intake-pagemap-flow-openers.mjs","find":"export const ownWrites = ( writes, own ) => writesOn( writes, own ).get( own ) ?? new Set();","replace":"export const ownWrites = ( writes ) => new Set( writes );","why":"a reader of plain writes takes the tagged strings as they are, so a write through dcLogic on its own component is missed"}
 ]

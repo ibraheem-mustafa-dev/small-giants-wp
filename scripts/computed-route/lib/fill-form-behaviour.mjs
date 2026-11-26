@@ -14,7 +14,7 @@ import fs from 'fs';
 import path from 'path';
 import { loadDraft, readBinding, propName } from './intake-ast.mjs';
 import { fnsNamed } from './intake-census-map.mjs';
-import { fnWrites } from './intake-pagemap-flow-openers.mjs';
+import { fnWrites, ownWrites } from './intake-pagemap-flow-openers.mjs';
 import { templateKeyOf } from './form-scif-fields.mjs';
 import { templateKey } from './fact-key.mjs';
 
@@ -54,7 +54,8 @@ export function successMessageOf( { factRecord, record, folder } ) {
 		expr = null;
 	}
 	const name = expr && ( propName( expr ) || ( 'Identifier' === expr.type ? expr.name : null ) );
-	const writes = new Set( idx && name ? [ 'member', 'local', 'key' ].flatMap( ( how ) => fnsNamed( { nodes: idx.all }, name, how ) ).flatMap( ( fn ) => [ ...fnWrites( idx, fn ) ] ) : [] );
+	// The handler's writes on the form's own component (a write through dcLogic('<dc>') included, one on another component not).
+	const writes = ownWrites( idx && name ? [ 'member', 'local', 'key' ].flatMap( ( how ) => fnsNamed( { nodes: idx.all }, name, how ) ).flatMap( ( fn ) => [ ...fnWrites( idx, fn ) ] ) : [], record.dc );
 	const records = Object.values( factRecord?.surfaces || {} ).filter( ( s ) => s.dc === record.dc && ( s === record || 'result' === s.kind ) );
 	const sent = records.flatMap( ( s ) => ( s.states || [] ).map( ( st ) => ( { s, st } ) ) ).find( ( { st } ) => {
 		const keys = Object.entries( st.state_keys || {} );

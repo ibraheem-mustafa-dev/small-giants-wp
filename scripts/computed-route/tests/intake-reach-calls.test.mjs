@@ -62,3 +62,11 @@ test( 'negative controls: a quote of one kind is still closed only by the same k
 	assert.deepEqual( reachCalls( "dcLogic?.('').setState({a:1})" ), [], 'an empty name names nothing' );
 	assert.equal( describeWay( { via: 'reach', state: 's', calls: reachCalls( "dcLogic('Account').setState({x:1})" ) } ), "reach \"s\" dcLogic('Account').setState({x:1})", 'a plain name keeps its single quotes' );
 } );
+
+test( 'MUST FAIL: a name holding both quote kinds is written in backticks, so the way\'s text reads back', () => {
+	const name = `Say "it's"`;
+	const text = describeWay( { via: 'reach', state: 's', calls: [ { ident: 'dcLogic', args: '{x:1}', component: name } ] } );
+	assert.equal( text, 'reach "s" dcLogic(`Say "it\'s"`).setState({x:1})' );
+	assert.deepEqual( reachCalls( text ), [ { ident: 'dcLogic', args: '{x:1}', component: name } ] );
+	assert.equal( describeWay( { via: 'reach', state: 's', calls: [ { ident: 'dcLogic', args: '{x:1}', component: 'Say "hi"' } ] } ), 'reach "s" dcLogic(\'Say "hi"\').setState({x:1})', 'negative control: a name with double quotes alone keeps single quotes' );
+} );

@@ -5,7 +5,7 @@
 	{"file": "lib/template-piece-buybox-flow.mjs", "find": "\tif ( ! adds.length ) {", "replace": "\tif ( false ) {", "why": "a buy box with no add control apart from the opener keeps one"},
 	{"file": "lib/template-piece-buybox-flow.mjs", "find": "\tif ( ! openers.length ) {", "replace": "\tif ( false ) {", "why": "a buy box with no control opening the flow keeps its button"},
 	{"file": "lib/template-piece-buybox-flow.mjs", "find": "const adds = !! effectOf( L, value.replace( /^\\{\\{\\s*|\\s*\\}\\}$/g, '' ).trim() ).appends;", "replace": "const adds = true;", "why": "every control with a handler is an add-to-basket control"},
-	{"file": "lib/template-piece-buybox-flow.mjs", "find": "writes.every( ( w ) => fnWrites( L, fn ).has( w ) )", "replace": "writes.some( ( w ) => fnWrites( L, fn ).has( w ) )", "why": "a control writing part of the opening writes opens the flow"},
+	{"file": "lib/template-piece-buybox-flow.mjs", "find": "return writes.every( ( w ) => made.has( w ) );", "replace": "return writes.some( ( w ) => made.has( w ) );", "why": "a control writing part of the opening writes opens the flow"},
 	{"file": "lib/template-piece-buybox-flow.mjs", "find": "found.index.elements.filter( ( e ) => found.inRun( e.key ) && ! underFixed( found.index, e.key ) )", "replace": "found.index.elements", "why": "a flow opener outside the buy box counts"},
 	{"file": "lib/template-piece-buybox-flow.mjs", "find": "\tif ( ! L ) {", "replace": "\tif ( false ) {", "why": "a draft with no readable logic is read anyway"},
 	{"file": "lib/template-piece-buybox-flow.mjs", "find": " && 'live' === r.collection && r.opensFlow )", "replace": " && r.opensFlow )", "why": "a static product row's flow counts"},
@@ -19,5 +19,7 @@
 	{"file": "lib/template-piece-buybox-flow.mjs", "find": "openerFirst: at( openers ) < at( adds ) }", "replace": "openerFirst: at( openers ) > at( adds ) }", "why": "the order is read backwards"},
 	{"file": "lib/template-piece-buybox-flow.mjs", "find": "const innermost = ( keys ) => keys.filter( ( k ) => ! keys.some( ( o ) => o !== k && found.index.within( o, k ) ) );", "replace": "const innermost = ( keys ) => keys;", "why": "a wrapper holding both controls counts as the opener's place"},
 	{"file": "lib/template-piece-buybox.mjs", "find": "\t\tif ( keep.openerFirst ) {\n\t\t\tbox.attributes.openerBeforeAddToCart = true;", "replace": "\t\tif ( keep.openerFirst ) {\n\t\t\tvoid 0;", "why": "the placed buy box never puts the opener first"},
-	{"file": "lib/template-piece-buybox.mjs", "find": "\t\tif ( keep.openerFirst ) {", "replace": "\t\tif ( true ) {", "why": "the opener is put first whatever the draft's order"}
+	{"file": "lib/template-piece-buybox.mjs", "find": "\t\tif ( keep.openerFirst ) {", "replace": "\t\tif ( true ) {", "why": "the opener is put first whatever the draft's order"},
+	{"file": "lib/template-piece-buybox-flow.mjs", "find": "const made = ownWrites( fnWrites( L, fn ), own );", "replace": "const made = fnWrites( L, fn );", "why": "an opener written through dcLogic on the page's own component is no opener (its writes stay tagged)"},
+	{"file": "lib/template-piece-buybox-flow.mjs", "find": "flow.writes, ctx.draftFile ? componentOf( ctx.draftFile ) : null ) } ) );", "replace": "flow.writes, null ) } ) );", "why": "the buy box never says the draft page's component, so a dcLogic opener on it is missed"}
 ]
