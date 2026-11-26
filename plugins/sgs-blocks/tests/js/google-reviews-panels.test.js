@@ -16,7 +16,7 @@
  *   4 a button border loses contrastAgainst        -> "each button border keeps Normal + Hover colour"
  *   5 the canvas request loses httpMethod POST     -> "a GET query string would pass the 8 KB limit"
  *   6 a typography target dropped                  -> "every typography prefix ... has a target"
- *   7 the arrow border loses its Hover state       -> "the arrow border keeps Normal + Hover colour"
+ *   7 (retired: the arrow look is the shared button kit's panel, `builtin-button-panel.test.js`)
  *   8 a colour row dropped                         -> "every colour attribute it lists is reachable"
  *   9 the outer border loses contrastAgainst       -> "the outer border control passes contrastAgainst"
  * The last describe block holds the controls that can fail without editing source.
@@ -268,8 +268,15 @@ describe( 'the sections together own every attribute that needs a control', () =
 		].join( '\n' );
 	}
 
+	/** The arrows' look is the shared button kit's panel (`BuiltinButtonPanel`, prefix `arrow`): the groups block.json declares. */
+	function arrowKitAttrs() {
+		const registry = require( '../../src/components/button-kit/registry.json' );
+		const declared = require( path.join( BLOCK_DIR, 'block.json' ) ).supports.sgs.builtinButtons.find( ( b ) => 'arrow' === b.prefix );
+		return declared.groups.flatMap( ( group ) => registry.groups[ group ].map( ( row ) => `arrow${ row.base }` ) );
+	}
+
 	function ownedAttrs() {
-		const owned = new Set( [ ...SECTIONS.flatMap( ( s ) => s.owned ), ...ColourPanel.COLOUR_ATTRS ] );
+		const owned = new Set( [ ...SECTIONS.flatMap( ( s ) => s.owned ), ...ColourPanel.COLOUR_ATTRS, ...arrowKitAttrs() ] );
 		const text = otherControlsText();
 		return { owned, text };
 	}
@@ -626,12 +633,10 @@ describe( 'Navigation', () => {
 		expect( m.q( '[data-picker="Slider pagination dot colour"]' ) ).toBeNull();
 		m.type( 'select[aria-label="Scrollbar"]', 'hidden' );
 		m.click( '[data-picker="Scrollbar colour"]' );
-		m.type( 'input[aria-label="Arrow button size"]', '40px' );
 		m.click( '[data-box="Space around the row of reviews"]' );
 		expect( lastPatch( m ) ).toMatchObject( {
 			scrollbarStyle: 'hidden',
 			scrollbarColour: 'primary',
-			arrowSize: { desktop: '40px' },
 			railPadding: { desktop: { top: '4px' } },
 		} );
 		expect( [ ...m.all( 'select[aria-label="Scrollbar"] option' ) ].map( ( o ) => o.value ).sort() ).toEqual( [ ...SCHEMA.scrollbarStyle.enum ].sort() );
@@ -651,18 +656,6 @@ describe( 'Navigation', () => {
 		const m = mount( NavigationPanel.default, { pagination: 'none' } );
 		expect( m.q( 'select[aria-label="Scrollbar"]' ) ).toBeNull();
 		expect( m.q( '[data-picker="Slider pagination dot colour"]' ) ).toBeNull();
-		m.unmount();
-	} );
-
-	test( 'the arrow border keeps Normal + Hover colour with the arrow attribute names, and gets a contrast backdrop', () => {
-		const m = mount( NavigationPanel.default, { arrowColourBackground: 'primary' } );
-		const sel = '[data-border="Arrow border width"]';
-		expect( m.q( sel ).getAttribute( 'data-state-count' ) ).toBe( '2' );
-		expect( m.q( sel ).getAttribute( 'data-contrast' ) ).toBe( 'primary' );
-		[ 'width', 'colour', 'hover', 'radius', 'style-clear' ].forEach( ( act ) => m.click( `${ sel } [data-act="${ act }"]` ) );
-		const patch = lastPatch( m );
-		expect( patch ).toMatchObject( { arrowColourBorder: 'primary', arrowColourBorderHover: 'accent', arrowBorderRadius: { desktop: { topLeft: '8px' } } } );
-		expect( SCHEMA.arrowBorderStyle.enum ).toContain( patch.arrowBorderStyle );
 		m.unmount();
 	} );
 

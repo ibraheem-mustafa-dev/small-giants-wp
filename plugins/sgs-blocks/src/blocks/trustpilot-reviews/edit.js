@@ -18,6 +18,7 @@ import {
 } from '../../components';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import ServerSideRender from '../../components/ServerSideRender';
+import CarouselControls from '../../components/CarouselControls';
 import ScrollbarStyleControl from '../../components/ScrollbarStyleControl';
 import {
 	PanelBody,
@@ -1107,6 +1108,15 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 			</InspectorControls>
 
+			{ /* The carousel's arrows, pause button and dots: the shared kits (button kit `arrow`, carousel dots kit `dot`). */ }
+			{ ( 'carousel' === attributes.variant ||
+				'mini-carousel' === attributes.variant ) && (
+				<CarouselControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					blockName="sgs/trustpilot-reviews"
+				/>
+			) }
 			<div { ...blockProps }>
 				<SsrPreviewGuard>
 					<ServerSideRender

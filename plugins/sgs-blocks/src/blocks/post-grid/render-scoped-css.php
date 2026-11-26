@@ -468,6 +468,22 @@ if ( 'grid' === $layout ) {
 	}
 }
 
+// The carousel's arrows and pause button (the button kit, prefix `arrow`) and dots (the carousel dots kit, prefix `dot`), printed
+// by the one shared emitter (includes/helpers-carousel-dots.php): rules only for a look setting that is set, so a carousel with
+// none set prints what it always did.
+if ( 'carousel' === $layout ) {
+	$responsive_css .= sgs_carousel_controls_css(
+		$attributes,
+		$root_sel,
+		array(
+			'arrows' => array( '.sgs-post-grid__carousel-prev', '.sgs-post-grid__carousel-next', '.sgs-post-grid__pause' ),
+			'dots'   => '.sgs-post-grid__carousel-dots',
+			'dot'    => '.sgs-post-grid__dot',
+			'active' => '.sgs-post-grid__dot--active',
+		)
+	);
+}
+
 // Every value reaching $responsive_css is pre-sanitised (sgs_css_length_value() /
 // sgs_css_keyword_sanitise() / wp_style_engine_get_styles), so no un-sanitised value
 // survives to here.

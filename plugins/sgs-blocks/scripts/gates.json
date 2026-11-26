@@ -2595,5 +2595,23 @@
     "added_commit": null,
     "budget_ms": 4000,
     "order": 293
+  },
+  {
+    "id": "check-carousel-package-selftest",
+    "cmd": "python scripts/check-carousel-package.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 500,
+    "order": 294
+  },
+  {
+    "id": "check-carousel-package",
+    "cmd": "python scripts/check-carousel-package.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 500,
+    "order": 295
   }
 ]
