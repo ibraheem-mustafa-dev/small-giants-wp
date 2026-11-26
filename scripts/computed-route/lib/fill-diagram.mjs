@@ -1,4 +1,3 @@
-import { PX_TOL } from './css-equivalence/tolerance.mjs';
 // Measure a rendered draft's dimension diagram into sgs/diagram-dimension settings (plan
 // archive/2026-10-07-measured-diagram-block.md §C). R-47-4: every number comes from the rendered page in a real browser: path
 // points from the SVG geometry API (getTotalLength / getPointAtLength in the svg's own user units, i.e. its viewBox),
@@ -7,7 +6,8 @@ import { PX_TOL } from './css-equivalence/tolerance.mjs';
 // walker reads (GAP-CHECKLIST 27), returned here only so a skeleton can start from it.
 
 // In-page (self-contained, passed to page.evaluate): one dimension's settings.
-// in: { svg, line, guides?, ticks?, label?, labelAlign? } — CSS selectors; `line`, `guides` and `ticks` are resolved
+// in: { svg, line, guides?, ticks?, label?, labelAlign?, pxTol } — CSS selectors, and pxTol the route's PX_TOL
+// (lib/css-equivalence/tolerance.mjs), passed in because this function runs in the page, where no module is in scope; `line`, `guides` and `ticks` are resolved
 // inside the svg (guides and ticks may each be one path holding both ends). labelAlign is 'start' | 'center' | 'end'.
 // out: { startX, startY, endX, endY, extReach, extReachEnd, extOvershoot, tickLength, labelX, labelY } — positions in %
 // of the drawing (x of its width, y of its height), reach/overshoot/tick in % of its width; or { error }.
@@ -81,7 +81,7 @@ export function diagramGeometry( spec ) {
 		const rs = reachOf( near.start );
 		const re = reachOf( near.end );
 		out.extReach = round( rs * pct );
-		out.extReachEnd = Math.abs( re - rs ) < PX_TOL ? null : round( re * pct );
+		out.extReachEnd = Math.abs( re - rs ) < spec.pxTol ? null : round( re * pct );
 		out.extOvershoot = round( Math.max( overOf( near.start ), overOf( near.end ) ) * pct );
 	}
 

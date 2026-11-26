@@ -5,6 +5,7 @@ import test, { after, before } from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'path';
 import { diagramGeometry } from '../lib/fill-diagram.mjs';
+import { PX_TOL } from '../lib/css-equivalence/tolerance.mjs';
 
 const { chromium } = await import( 'playwright' );
 let browser;
@@ -24,7 +25,7 @@ const DRAWING = `<div style="position:relative;width:680px">
 const measure = async ( spec ) => {
 	const page = await browser.newPage( { viewport: { width: 900, height: 600 } } );
 	await page.setContent( `<!doctype html><html><body style="margin:0">${ DRAWING }</body></html>` );
-	const out = await page.evaluate( diagramGeometry, spec );
+	const out = await page.evaluate( diagramGeometry, { ...spec, pxTol: PX_TOL } );
 	await page.close();
 	return out;
 };
