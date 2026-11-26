@@ -289,6 +289,19 @@ test( 'MUST FAIL: a block the builder ran out of room for is built again in its 
 	assert.equal( ok.length, 1 );
 } );
 
+test( 'MUST FAIL: a block whose bridge Node ran out of memory is built again alone, as one that ran out of room', () => {
+	const repo = fs.mkdtempSync( path.join( os.tmpdir(), 'cr-setting-record-oom-' ) );
+	fs.mkdirSync( path.join( repo, 'sites', 'acme' ), { recursive: true } );
+	fs.writeFileSync( path.join( repo, 'sites', 'acme', 'theme-snapshot.json' ), '{}' );
+	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'cr-setting-record-oom-looks-' ) );
+	const calls = [];
+	const run = ( cmd, args ) => ( calls.push( args ), 1 === calls.length
+		? { status: 1, stdout: 'google-reviews: FAILED RuntimeError: site-look-bridge plan sgs/google-reviews:    682 ms: Scavenge 24.7 (34.0) -> 19.6 (43.5) MB, pooled: 0 MB, 28.01 / 0.00 ms  (average mu = 1.000, current mu = 1.000) allocation failure; \n' }
+		: { status: 0, stdout: 'google-reviews: built\n' } );
+	assert.deepEqual( prepareLooks( [ 'sgs/google-reviews' ], 'acme', { dir, repo, build: true, run } ), [] );
+	assert.equal( calls.length, 2, 'tried again alone' );
+} );
+
 test( 'MUST FAIL: a tier is read as the browser reads it: spaces in the brackets, ranges, lists, plain-screen features, @supports', () => {
 	const at = ( t ) => [ 375, 768, 1440 ].filter( ( w ) => tierHolds( t, w ) );
 	assert.deepEqual( at( '@media ( max-width: 767.98px )' ), [ 375 ], 'spaces inside the brackets' );

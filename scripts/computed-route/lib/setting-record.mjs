@@ -102,9 +102,10 @@ export const LOOK_JOBS = 2;
 export const lookJobs = ( env = process.env ) => Math.max( 1, Number( env.SGS_LOOK_JOBS ) || LOOK_JOBS );
 // A block the builder could not build keeps its reason for this process: it is never built again, and siteLook reports the reason.
 const failures = new Map();
-// What a builder that ran out of room prints for a block (a worker killed, memory, a render that did not finish), or prints
-// nothing: only these are worth a second try; a missing fixture or module fails the same way again.
-const RESOURCE_FAILURE = /BrokenProcessPool|MemoryError|TimeoutExpired|terminated abruptly|printed nothing for it/;
+// What a builder that ran out of room prints for a block (a worker killed, memory, a render that did not finish, the bridge's
+// Node refused memory: V8's `allocation failure`, 2026-11-26 on a loaded machine), or prints nothing: only these are worth a
+// second try; a missing fixture or module fails the same way again.
+const RESOURCE_FAILURE = /BrokenProcessPool|MemoryError|TimeoutExpired|terminated abruptly|allocation failure|heap out of memory|printed nothing for it/;
 export function prepareLooks( blocks, client, { dir = SITE_LOOK_DIR, repo = REPO, build = lookBuildOn(), run = lookRunner, log = () => {} } = {} ) {
 	const snapshot = path.join( repo, 'sites', String( client ), 'theme-snapshot.json' );
 	const keyOf = ( b ) => `${ dir }|${ client }|${ b }`;

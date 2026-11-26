@@ -7,5 +7,6 @@
 	{"file": "lib/setting-record.mjs", "find": "\t\tlog( `look builder: ${ failures.get( keyOf( b ) ) }` );", "replace": "", "why": "a block still missing is told to nobody"},
 	{"file": "lib/setting-record.mjs", "find": "|| `the builder printed nothing for it (exit", "replace": "|| `(exit", "why": "a block the builder printed nothing for is reported without saying so"},
 	{"file": "lib/setting-record.mjs", "find": "[ r.error?.message, String( r.stderr || '' )", "replace": "[ String( r.stderr || '' )", "why": "a spawn failure's message is left out of the reason"},
-	{"file": "lib/setting-record.mjs", "find": "|MemoryError|TimeoutExpired|terminated abruptly|printed nothing for it/;", "replace": "|TimeoutExpired|terminated abruptly|printed nothing for it/;", "why": "a MemoryError is not treated as running out of room"}
+	{"file": "lib/setting-record.mjs", "find": "|MemoryError|TimeoutExpired|terminated abruptly|allocation failure|heap out of memory|printed nothing for it/;", "replace": "|TimeoutExpired|terminated abruptly|allocation failure|heap out of memory|printed nothing for it/;", "why": "a MemoryError is not treated as running out of room"},
+	{"file": "lib/setting-record.mjs", "find": "terminated abruptly|allocation failure|heap out of memory|", "replace": "terminated abruptly|", "why": "the bridge Node running out of memory is a final failure"}
 ]
