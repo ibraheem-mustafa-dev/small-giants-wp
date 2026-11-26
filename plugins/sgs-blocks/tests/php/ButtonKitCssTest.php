@@ -211,13 +211,15 @@ final class ButtonKitCssTest extends TestCase {
 	}
 
 	public function test_the_preset_helper_output_is_unchanged_for_its_existing_callers(): void {
-		// Length and md5 of what each call printed before the outline argument existed (taken from origin/main's helper).
+		// Length and md5 of what each call prints: what it printed before the outline argument existed (origin/main's
+		// helper), plus the hover-on-touch contract's `.sgs-pressed` touch half before each guarded hover member (Spec 38A
+		// FR-38A-17; the colour hover, unguarded before, now carries the guard too).
 		$pinned = array(
-			array( array( '.x', 'primary' ), 2345, 'f2688adcf315fbef73492612355e38a5' ),
-			array( array( '.x', 'secondary' ), 2407, '1377a9bca017451d26b0cce0b11136bf' ),
-			array( array( '.x', 'primary', false ), 1741, 'e1741e7c97d1a29a4e2f81f86f67b1c9' ),
-			array( array( '.x', 'primary', true, false ), 1965, '74ed510868e41a2f9667e86651dae400' ),
-			array( array( '.x,.y', 'secondary' ), 2479, 'ab442b7fecc84f2227b1091c7c5d64a2' ),
+			array( array( '.x', 'primary' ), 2411, 'c5f3722b3704a5e4ceb56c34e3a6ff2a' ),
+			array( array( '.x', 'secondary' ), 2473, '2b960b6acfc8fc61734e58705ba538be' ),
+			array( array( '.x', 'primary', false ), 1807, '84d83c0bc1f12be8f7d63b5009ca1c11' ),
+			array( array( '.x', 'primary', true, false ), 1980, '6b23849fee2576fcfde36232f16687cb' ),
+			array( array( '.x,.y', 'secondary' ), 2611, 'ab7ef7c7d2781c94ebc91364550a7b31' ),
 			array( array( '.x', 'outline' ), 0, md5( '' ) ),
 			array( array( '.x', 'nope' ), 0, md5( '' ) ),
 		);
@@ -490,7 +492,7 @@ final class ButtonKitCssTest extends TestCase {
 
 	public function test_hover_lift_distance_makes_the_total_hover_movement_the_setting(): void {
 		$css = $this->kit( array( 'xHoverLiftDistance' => '2px' ), self::SEL, null, array( 'state_guard' => ':not([disabled])' ) );
-		$this->assertStringContainsString( '@media (prefers-reduced-motion:no-preference){:where(:root:not(.sgs-touch-input)) .u .btn:not([disabled]):hover{translate:0 -2px}.u .btn:not([disabled]):focus-visible{translate:0 -2px}}', $css, 'MUST FAIL: the movement is `translate`, inside the no-preference media query, behind the touch guard and the state guard, with its keyboard-focus twin' );
+		$this->assertStringContainsString( '@media (prefers-reduced-motion:no-preference){.u .btn:not([disabled]).sgs-pressed,:where(:root:not(.sgs-touch-input)) .u .btn:not([disabled]):hover{translate:0 -2px}.u .btn:not([disabled]):focus-visible{translate:0 -2px}}', $css, 'MUST FAIL: the movement is `translate`, inside the no-preference media query, behind the touch guard and the state guard, with its keyboard-focus twin' );
 		$this->assertStringContainsString( ':where(:root:not(.sgs-touch-input)) .u .btn:not([disabled]):hover{transform:none;}.u .btn:not([disabled]):focus-visible{transform:none;}', $css, 'MUST FAIL: an unconditional rule cancels the stylesheet own `transform`, so the total movement is the setting (and none under reduced motion)' );
 		$this->assertStringContainsString( 'translate:0 -24px}', $this->kit( array( 'xHoverLiftDistance' => '99px' ) ), 'the distance is clamped to the shared 24px ceiling' );
 		$this->assertStringContainsString( 'translate:0 -3px}', $this->kit( array( 'xHoverLiftDistance' => '3' ) ), 'a bare number reads as px' );
