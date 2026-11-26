@@ -262,7 +262,12 @@ export async function runPartLook( { client, repo = REPO, entries = {}, derive =
 				const probes = await probeOpenings( { ...tryOn, openings } );
 				// The visitor's way in: add on the product page, then the basket button the page shows at load.
 				const productEntry = Object.values( manifest ).find( ( e ) => e.target?.template === locators.surfaces.product?.template && e.draftIndex );
-				const visitor = visitorOpening( { adds: shopParts[ 'buybox-add-to-basket' ], load: probes[ 0 ], product: productEntry ? { file: productEntry.draftIndex, route: logicRouteOf( draftRouteOf( productEntry ) ) } : null } );
+				// The basket button the page shows at each width the read takes (a header's phone row may draw its own).
+				const loads = { 1440: probes[ 0 ] };
+				for ( const width of [ 768, 375 ] ) {
+					loads[ width ] = ( await probeOpenings( { ...tryOn, openings: [], width } ) )[ 0 ];
+				}
+				const visitor = visitorOpening( { adds: shopParts[ 'buybox-add-to-basket' ], loads, product: productEntry ? { file: productEntry.draftIndex, route: logicRouteOf( draftRouteOf( productEntry ) ) } : null } );
 				// The clicks are replayed at every width the read takes, so the visitor's way in counts only when it opens at each of them.
 				if ( visitor ) {
 					const tries = [];

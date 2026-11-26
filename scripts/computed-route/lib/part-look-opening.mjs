@@ -85,17 +85,20 @@ export function chooseEmptied( pinned, filled, filledShows = [] ) {
 }
 
 // The visitor's way in: { label, script: null, file, route, clicks } when the shop parts record locates the add-to-basket control
-// (`adds`: [ { dc, tpl } ]) and the page as it loads shows the basket button (`load`: its probe), else null. product: { file, route },
-// the product page the control is drawn on. A control the record locates in the product page's own component (its file's name) is
-// stamped `Root` on the served page, or by that name (lib/fill-part-look-page.mjs::findPartsInPage reads both).
-export function visitorOpening( { adds, load, product } ) {
-	const trigger = load?.stamps?.trigger;
+// (`adds`: [ { dc, tpl } ]) and the page as it loads shows the basket button at 1440 (`loads`: the probe of the page as it loads at
+// each width), else null. The basket button is clicked per width (`byWidth`: the stamp each width's page shows; a header's phone
+// row may draw its own); a width showing none has no entry, so the open fails there (lib/part-look-run.mjs::openPage). product:
+// { file, route }, the product page the control is drawn on. A control the record locates in the product page's own component (its
+// file's name) is stamped `Root`, by that name, or not at all on the served page (lib/fill-part-look-page.mjs::findPartsInPage
+// reads each as the page's own markup).
+export function visitorOpening( { adds, loads = {}, product } ) {
 	const add = ( adds || [] )[ 0 ];
-	if ( ! add?.tpl || ! trigger?.tpl || ! product?.file ) {
+	if ( ! add?.tpl || ! loads[ 1440 ]?.stamps?.trigger?.tpl || ! product?.file ) {
 		return null;
 	}
-	const hosts = add.dc === dcOf( product.file ) ? [ 'Root', add.dc ] : [ add.dc ];
-	return { label: 'add to the basket on the product page, then the basket button', script: null, file: product.file, route: product.route ?? null, clicks: [ { tpl: add.tpl, hosts }, { tpl: add.tpl, hosts }, trigger ] };
+	const byWidth = Object.fromEntries( Object.entries( loads ).filter( ( [ , p ] ) => p?.stamps?.trigger?.tpl ).map( ( [ w, p ] ) => [ w, p.stamps.trigger ] ) );
+	const hosts = add.dc === dcOf( product.file ) ? [ 'Root', null, add.dc ] : [ add.dc ];
+	return { label: 'add to the basket on the product page, then the basket button', script: null, file: product.file, route: product.route ?? null, clicks: [ { tpl: add.tpl, hosts }, { tpl: add.tpl, hosts }, { byWidth } ] };
 }
 
 // The visitor's way in tried at each width the read takes (tries: its probes, 1440 first): { probe } (the 1440 probe) when it opens

@@ -1,0 +1,13 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Visitor click</title>
+<style>@media (max-width: 500px) { .wide-only { display: none; } } @media (min-width: 501px) { .phone-only { display: none; } }</style></head>
+<body>
+<div id="dc-root"><div data-sc-name="Root">
+<button data-dc-tpl="108" onclick="document.body.dataset.adds = String( Number( document.body.dataset.adds || 0 ) + 1 )">Add to basket</button>
+<div>
+<button class="wide-only" data-dc-tpl="44" onclick="document.body.dataset.opened = 'desktop'">Basket</button>
+<button class="phone-only" data-dc-tpl="45" onclick="document.body.dataset.opened = 'phone'">Bag</button>
+</div></div></div>
+</body>
+</html>
