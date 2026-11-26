@@ -42,6 +42,7 @@ import {
 	normaliseResponsiveBox,
 	SgsBoxControl,
 	ShadowLiftControls,
+	ResponsiveBoxControls,
 } from '../../components';
 import {
 	ToggleGroupControl,
@@ -1749,62 +1750,11 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						} }
 					/>
 
-					{ /* Padding/margin — same `layout` cluster on the wrapper element,
-				   merged into this panel (was a separate "Spacing" panel). Each is a
-				   single block-owned tier-object attr { desktop, tablet, mobile },
-				   written via ResponsiveOverride + SgsBoxControl; read directly by
-				   this block's render.php. */ }
-					<ResponsiveOverride
-						value={ attributes.padding }
-						onChange={ ( obj ) =>
-							setAttributes( { padding: obj } )
-						}
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								defaults={ spacingDefaultsFor(
-									name,
-									'padding'
-								) }
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-					<ResponsiveOverride
-						value={ attributes.margin }
-						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
 				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 			</InspectorControls>
 
 			<div { ...blockProps }>

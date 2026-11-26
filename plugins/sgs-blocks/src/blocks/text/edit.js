@@ -41,11 +41,9 @@ import {
 	ShadowControl,
 	shadowAttrKeys,
 	ResponsiveOverride,
-	BOX_UNITS,
-	normaliseResponsiveBox,
-	SgsBoxControl,
 	LinkUnderlineControl,
 	SGS_FONT_WEIGHT_OPTIONS,
+	ResponsiveBoxControls,
 } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import {
@@ -1006,58 +1004,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						) }
 					</ResponsiveOverride>
 
-					{ /* padding/margin are each a single block-owned tier-object attr
-					   { desktop, tablet, mobile }, written via ResponsiveOverride +
-					   SgsBoxControl; read directly by this block's render.php. The
-					   device switcher selects desktop/tablet/mobile. */ }
-					<ResponsiveOverride
-						value={ attributes.margin }
-						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-
-					<ResponsiveOverride
-						value={ attributes.padding }
-						onChange={ ( obj ) =>
-							setAttributes( { padding: obj } )
-						}
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-
 					{ /* Box-object interface contract §1/§5: borderWidth is an SGS custom
 					   object attr (base only, no tiers — mirrors sgs/button); border-radius
 					   routes to WP-native style.border.radius (base only — this block has
@@ -1119,6 +1065,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						} }
 					/>
 				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 
 				{ /* ---- Effects — `text`'s TIER-2 "motion" family panel ----
 				   Box shadow (ONE tabbed Normal/Hover ShadowControl mount, Wave A1

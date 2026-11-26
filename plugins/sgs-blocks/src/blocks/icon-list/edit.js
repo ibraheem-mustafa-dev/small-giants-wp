@@ -24,14 +24,12 @@ import {
 	textRow,
 	SgsBorderControl,
 	ResponsiveOverride,
-	BOX_UNITS,
-	normaliseResponsiveBox,
-	SgsBoxControl,
 	GradientCapableColourControl,
 	SgsLengthControl,
 	SeparatorsPanel,
 	LinkUnderlineControl,
 	LinkPopoverField,
+	ResponsiveBoxControls,
 } from '../../components';
 import { SITE_INFO_ADMIN_URL } from '../icon/icon-state';
 import { LINK_SOURCES_ALL } from '../../shared/link-source-options';
@@ -1503,55 +1501,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
            { desktop, tablet, mobile }, written via ResponsiveOverride +
            SgsBoxControl; read directly by this block's render.php. */ }
 				<PanelBody
-					title={ __( 'Spacing', 'sgs-blocks' ) }
+					title={ __( 'Item spacing', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<ResponsiveOverride
-						value={ attributes.padding }
-						onChange={ ( obj ) =>
-							setAttributes( { padding: obj } )
-						}
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-					<ResponsiveOverride
-						value={ attributes.margin }
-						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
 					<SgsLengthControl
 						label={ __( 'Item vertical padding', 'sgs-blocks' ) }
 						help={ __(
@@ -1565,6 +1517,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						presets={ false }
 					/>
 				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 
 				{ /* Box-object interface contract §1/§5: borderWidth is an SGS custom
            object attr (base only, no tiers); border-radius routes to WP-native

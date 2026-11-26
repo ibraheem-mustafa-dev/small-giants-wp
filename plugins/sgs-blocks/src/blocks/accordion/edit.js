@@ -25,6 +25,7 @@ import {
 	SGS_FONT_WEIGHT_OPTIONS,
 	ShadowControl,
 	shadowAttrKeys,
+	ResponsiveBoxControls,
 } from '../../components';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { usePreviewTier } from '../../utils';
@@ -638,62 +639,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						prefix="categoryEyebrow"
 					/>
 				</PanelBody>
-				{ /* Responsive spacing (padding + margin) — box-object interface contract
-            (.claude/plans/2026-07-09-box-object-interface-contract.md §5). `padding`
-            and `margin` are each ONE tier-of-boxes object attr {desktop,tablet,mobile},
-            each tier a {top,right,bottom,left} box, read by the wrapper's @media tiers. */ }
-				<PanelBody
-					title={ __( 'Padding & margin', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<ResponsiveOverride
-						value={ attributes.padding }
-						onChange={ ( obj ) =>
-							setAttributes( { padding: obj } )
-						}
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-					<hr style={ { margin: '16px 0' } } />
-					<ResponsiveOverride
-						value={ attributes.margin }
-						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 				{ /* Item header, answer and toggle icon — slot settings read by every
             sgs/accordion-item through block context. Empty padding and size keep
             the stylesheet's own values; the header font size follows Typography. */ }

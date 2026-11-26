@@ -25,11 +25,8 @@ import {
 	IconPicker,
 	LinkPopoverField,
 	ResponsiveControl,
-	ResponsiveOverride,
 	TextAlignTierControl,
-	SgsBoxControl,
-	BOX_UNITS,
-	normaliseResponsiveBox,
+	ResponsiveBoxControls,
 } from '../../components';
 import { patchTier } from '../../utils';
 import { BRANDS } from '../../utils/brand-registry';
@@ -571,57 +568,10 @@ export default function IconInspector( { attributes, setAttributes, state } ) {
 							: undefined
 					}
 				/>
-				<PanelBody
-					title={ __( 'Spacing', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<ResponsiveOverride
-						value={ attributes.padding }
-						onChange={ ( obj ) =>
-							setAttributes( { padding: obj } )
-						}
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={
-									ownValue && 'object' === typeof ownValue
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-					<ResponsiveOverride
-						value={ attributes.margin }
-						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={
-									ownValue && 'object' === typeof ownValue
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 			</InspectorControls>
 		</>
 	);

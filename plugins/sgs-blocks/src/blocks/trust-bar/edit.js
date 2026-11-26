@@ -36,14 +36,12 @@ import {
 	ShadowControl,
 	SgsColourPanel,
 	LinkPopoverField,
-	BOX_UNITS,
-	normaliseResponsiveBox,
 	SgsLengthControl,
 	fillRow,
 	textRow,
 	SgsBorderControl,
 	resolveColourToken,
-	SgsBoxControl,
+	ResponsiveBoxControls,
 } from '../../components';
 import MediaElementPanel from '../../components/MediaElementPanel';
 import ItemSlotFields from '../../components/media/ItemSlotFields.js';
@@ -1505,63 +1503,10 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				</PanelBody>
 
 				{ /* ── Padding & margin (box-object tiers) ───────────────────── */ }
-				{ /* Box-object interface contract (.claude/plans/2026-07-09-box-object-interface-contract.md
-				     §5): base tier writes to the block-OWNED `padding`/`margin` attrs
-				     (also visible in the Styles > Dimensions panel); each attr holds
-				     desktop, tablet and mobile, read by the shared wrapper's @media
-				     tiers. Mirrors sgs/container's edit.js. */ }
-				<PanelBody
-					title={ __( 'Padding & margin', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<ResponsiveOverride
-						value={ attributes.padding }
-						onChange={ ( obj ) =>
-							setAttributes( { padding: obj } )
-						}
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-					<hr style={ { margin: '16px 0' } } />
-					<ResponsiveOverride
-						value={ attributes.margin }
-						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 
 				{ /* ── Layout (grid/flex, columns, gap) ──────────────────────── */ }
 				<PanelBody
