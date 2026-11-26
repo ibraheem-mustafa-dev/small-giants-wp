@@ -6,6 +6,7 @@
 // paints the instance: `partStateSlots` returns the slots the state setting was measured at, for the resolver to try.
 import { canonicalSlotOf } from './resolve.mjs';
 import { longhands } from './calibrate-props.mjs';
+import { paintedProps } from './css-families.mjs';
 
 // The keys a setting stands for in a part match. A resting setting offers both its `canonical_slot` and its `css_element`. A
 // state setting asks for one: its `canonical_slot`, or, when the slot assigner left it none (itemBgCurrent, itemColourCurrent),
@@ -27,7 +28,7 @@ const slotsOf = ( s ) => s.slots || [ s.slot ];
 // element it was read on; state: the setting state of the look. Returns the calibrated slots (other than `slot` itself) of
 // the state settings of `prop` that belong to a part the block's resting settings of `prop` paint at `slot`.
 export function partStateSlots( { db, cal, block, prop, slot, state } ) {
-	const of = Object.entries( cal?.settings || {} ).filter( ( [ , s ] ) => s.property === prop || longhands( s.property ).includes( prop ) );
+	const of = Object.entries( cal?.settings || {} ).filter( ( [ , s ] ) => paintedProps( s ).includes( prop ) || longhands( paintedProps( s ).join( ',' ) ).includes( prop ) );
 	const parts = new Set( of.filter( ( [ , s ] ) => ! s.state && slotsOf( s ).some( ( p ) => bare( p ) === slot ) ).flatMap( ( [ attr ] ) => partKeys( db, block, attr, true ) ) );
 	const mine = of.filter( ( [ attr, s ] ) => state === s.state && partKeys( db, block, attr ).some( ( k ) => parts.has( k ) ) );
 	return [ ...new Set( mine.flatMap( ( [ , s ] ) => slotsOf( s ) ) ) ].filter( ( p ) => bare( p ) !== slot );
