@@ -134,11 +134,12 @@ if ( ! function_exists( 'sgs_trust_bar_grid_css' ) ) {
 	 * @param array  $attributes   Block attributes.
 	 * @param string $uid_scope    Scoped selector for this instance, e.g. ".sgs-tb-3".
 	 * @param array  $tier_columns sgs_trust_bar_tier_columns().
-	 * @param int    $offset       Siblings before the first badge (1 when a title is printed beside them, else 0).
+	 * @param int    $offset       Siblings before the first badge in ITS parent (1 when a title is printed beside them, else 0): `:nth-child` counts them.
 	 * @param string $glyph        The separator glyph ('' for none).
+	 * @param bool   $title_cell   Whether the bar prints a title. In a static grid the title is a grid item and takes the first cell, wherever it sits in the markup, so it shifts every badge one cell along.
 	 * @return string CSS text; '' for a bar that is not a grid or asks for neither.
 	 */
-	function sgs_trust_bar_grid_css( array $attributes, string $uid_scope, array $tier_columns, int $offset, string $glyph ): string {
+	function sgs_trust_bar_grid_css( array $attributes, string $uid_scope, array $tier_columns, int $offset, string $glyph, bool $title_cell = false ): string {
 		if ( 'grid' !== ( $attributes['layout'] ?? '' ) ) {
 			return '';
 		}
@@ -157,8 +158,9 @@ if ( ! function_exists( 'sgs_trust_bar_grid_css' ) ) {
 				$by_tier[ $tier ] = sgs_trust_bar_column_gap( sgs_container_tier_gap( $attributes, $tier ) );
 			}
 			$css .= $uid_scope . '{--sgs-trust-bar-gap-x:' . $by_tier['desktop'] . ';}';
+			// The tablet rule covers phones too (a max-width query), so a phone that stores no gap of its own keeps the tablet one.
 			if ( $by_tier['tablet'] !== $by_tier['desktop'] ) {
-				$css .= SGS_Breakpoints::media( 'tablet-only' ) . '{' . $uid_scope . '{--sgs-trust-bar-gap-x:' . $by_tier['tablet'] . ';}}';
+				$css .= SGS_Breakpoints::media( 'tablet' ) . '{' . $uid_scope . '{--sgs-trust-bar-gap-x:' . $by_tier['tablet'] . ';}}';
 			}
 			if ( $by_tier['mobile'] !== $by_tier['tablet'] ) {
 				$css .= SGS_Breakpoints::media( 'mobile' ) . '{' . $uid_scope . '{--sgs-trust-bar-gap-x:' . $by_tier['mobile'] . ';}}';
@@ -176,11 +178,15 @@ if ( ! function_exists( 'sgs_trust_bar_grid_css' ) ) {
 				continue;
 			}
 			$rules = '';
+			// A badge's cell is its position plus the title's cell; `:nth-child` counts its siblings in its own parent ($offset). The
+			// two differ only when the badges sit in the marquee track and the title does not.
+			$shift = $offset - ( $title_cell ? 1 : 0 );
 			if ( '' !== $glyph ) {
-				$rules .= $still . ' .sgs-trust-bar__badge:nth-child(' . sgs_trust_bar_nth( $count, $count + $offset ) . ')>.sgs-trust-bar__separator--cell{display:none;}';
+				$end = ( ( $shift % $count ) + $count ) % $count;
+				$rules .= $still . ' .sgs-trust-bar__badge:nth-child(' . sgs_trust_bar_nth( $count, 0 === $end ? $count : $end ) . ')>.sgs-trust-bar__separator--cell{display:none;}';
 			}
 			if ( $centre && $count > 1 ) {
-				$rules .= $still . ' .sgs-trust-bar__badge:last-child:nth-child(' . sgs_trust_bar_nth( $count, $count + 1 + $offset ) . '){grid-column:1 / -1;justify-self:center;}';
+				$rules .= $still . ' .sgs-trust-bar__badge:last-child:nth-child(' . sgs_trust_bar_nth( $count, $count + 1 + $shift ) . '){grid-column:1 / -1;justify-self:center;}';
 			}
 			if ( '' !== $rules ) {
 				$css .= SGS_Breakpoints::media( $range ) . '{' . $rules . '}';

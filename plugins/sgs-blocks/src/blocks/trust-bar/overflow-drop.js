@@ -43,6 +43,13 @@ function isMarqueeActive( wrapper ) {
 const DROP_ATTR = 'data-sgs-overflow-dropped';
 
 /**
+ * DROP_ATTR's value for a badge a grid dropped: hidden by style.css with `visibility`, not removed, so it keeps its cell.
+ * Hiding it would let the badges after it move back a cell, and one of them would land in the column that overflows.
+ * `inert` and `aria-hidden` take it out of the tab order and of what a screen reader reads, as `hidden` does for a row.
+ */
+const KEEP_CELL = 'keep';
+
+/**
  * The badges to measure for one trust-bar wrapper: the original badges only
  * (inside the original track when a marquee is stored, never the marquee clones).
  *
@@ -111,6 +118,10 @@ function passesGridEdge( badge, grid ) {
 export function restoreDropped( wrapper ) {
 	wrapper.querySelectorAll( `[${ DROP_ATTR }]` ).forEach( ( badge ) => {
 		badge.removeAttribute( 'hidden' );
+		if ( KEEP_CELL === badge.getAttribute( DROP_ATTR ) ) {
+			badge.removeAttribute( 'inert' );
+			badge.removeAttribute( 'aria-hidden' );
+		}
 		badge.removeAttribute( DROP_ATTR );
 	} );
 }
@@ -152,10 +163,14 @@ export function layOutDrop( wrapper ) {
 			: Math.round( badge.getBoundingClientRect().top ) > firstTop;
 	} );
 
-	let lastShown = badges[ 0 ];
 	badges.forEach( ( badge, index ) => {
 		if ( ! overflowing[ index ] ) {
-			lastShown = badge;
+			return;
+		}
+		if ( grid ) {
+			badge.setAttribute( DROP_ATTR, KEEP_CELL );
+			badge.setAttribute( 'inert', '' );
+			badge.setAttribute( 'aria-hidden', 'true' );
 			return;
 		}
 		// A separator glyph beside a dropped badge goes with it, so the last visible badge does not end on one.
@@ -174,13 +189,18 @@ export function layOutDrop( wrapper ) {
 		} );
 	} );
 
-	// A grid prints each separator inside its badge, so the last badge left shows none.
-	if ( lastShown !== badges[ badges.length - 1 ] ) {
-		const cell = lastShown.querySelector(
-			':scope > .sgs-trust-bar__separator--cell'
-		);
-		cell?.setAttribute( 'hidden', '' );
-		cell?.setAttribute( DROP_ATTR, '' );
+	// A grid prints each separator inside its badge: a badge shown beside one that was dropped has nothing to its right.
+	if ( grid ) {
+		badges.forEach( ( badge, index ) => {
+			if ( overflowing[ index ] || ! overflowing[ index + 1 ] ) {
+				return;
+			}
+			const cell = badge.querySelector(
+				':scope > .sgs-trust-bar__separator--cell'
+			);
+			cell?.setAttribute( 'hidden', '' );
+			cell?.setAttribute( DROP_ATTR, '' );
+		} );
 	}
 }
 

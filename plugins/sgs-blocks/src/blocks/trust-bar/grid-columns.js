@@ -56,23 +56,33 @@ export function tierColumns( attributes, tier ) {
 /**
  * The canvas twin of the front end's per-device rules for a grid's badges.
  *
- * @param {number}  index        The badge's position, from 0.
- * @param {number}  total        How many badges there are.
- * @param {?number} columns      tierColumns() for the previewed device.
- * @param {boolean} centreLast   The bar's Centre a lone last row setting.
+ * A static grid gives the title (when the bar has one) the first cell, so a badge's cell is its position plus one.
+ *
+ * @param {number}  index      The badge's position, from 0.
+ * @param {number}  total      How many badges there are.
+ * @param {?number} columns    tierColumns() for the previewed device.
+ * @param {boolean} centreLast The bar's Centre a lone last row setting.
+ * @param {boolean} titleCell  Whether a title takes the first cell.
  * @return {{ cell: boolean, centre: boolean }} `cell`: draw this badge's in-badge separator (not the last badge, not the
  *   end of a row); `centre`: this is a lone last badge to span the row and centre.
  */
-export function gridBadgeRules( index, total, columns, centreLast ) {
+export function gridBadgeRules(
+	index,
+	total,
+	columns,
+	centreLast,
+	titleCell = false
+) {
 	const last = index === total - 1;
+	const cell = index + 1 + ( titleCell ? 1 : 0 );
 	return {
-		cell: ! last && ( null === columns || ( index + 1 ) % columns !== 0 ),
+		cell: ! last && ( null === columns || cell % columns !== 0 ),
 		centre:
 			!! centreLast &&
 			last &&
 			columns > 1 &&
-			index % columns === 0 &&
-			index > 0,
+			cell > columns &&
+			( cell - 1 ) % columns === 0,
 	};
 }
 

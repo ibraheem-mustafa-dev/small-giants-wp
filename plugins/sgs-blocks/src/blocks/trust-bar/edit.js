@@ -458,6 +458,14 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		labelColourGradient,
 		colourVar
 	);
+	// An icon bar paints its label with Label colour only once a colour other than the default is stored (render.php);
+	// until then the label keeps the Root text colour, and the row shows that value.
+	const iconLabelFollowsRoot =
+		( 'icon-circle' === badgeStyle || 'icon-bare' === badgeStyle ) &&
+		( ! labelColour || 'text' === labelColour ) &&
+		! labelColourGradient &&
+		! attributes.labelColourHover &&
+		! attributes.labelColourHoverGradient;
 
 	// D717/background-preview: BackgroundPanel (mounted below) writes image/
 	// video/overlay/ken-burns/parallax attrs this block never previewed on
@@ -770,6 +778,9 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		.trim()
 		.slice( 0, 8 );
 	const separatorInCell = 'grid' === layout;
+	// The canvas always draws the title field for these two styles, and a grid gives it the first cell.
+	const titleCell =
+		'text-only' === badgeStyle || 'image-badge' === badgeStyle;
 	const separatorStyle = textBadgeSeparatorColour
 		? { color: colourVar( textBadgeSeparatorColour ) }
 		: undefined;
@@ -806,7 +817,8 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							index,
 							items.length,
 							marqueeActive ? null : gridColumns,
-							centreLastRow && ! marqueeActive
+							centreLastRow && ! marqueeActive,
+							titleCell
 					  )
 					: { cell: false, centre: false };
 				const badgeClass =
@@ -849,7 +861,9 @@ export default function Edit( { attributes, setAttributes, name } ) {
 									style={ {
 										...labelTypography,
 										color: textColourValue,
-										...labelStyle,
+										...( iconLabelFollowsRoot
+											? {}
+											: labelStyle ),
 									} }
 								>
 									{ item.label || (
@@ -891,7 +905,9 @@ export default function Edit( { attributes, setAttributes, name } ) {
 									style={ {
 										...labelTypography,
 										color: textColourValue,
-										...labelStyle,
+										...( iconLabelFollowsRoot
+											? {}
+											: labelStyle ),
 									} }
 								>
 									{ item.label || (
@@ -1231,12 +1247,9 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							gradient: 'labelColourGradient',
 							hoverGradient: 'labelColourHoverGradient',
 						},
-						attributes:
-							isIconStyle &&
-							! labelColour &&
-							! labelColourGradient
-								? { ...attributes, labelColour: textColour }
-								: attributes,
+						attributes: iconLabelFollowsRoot
+							? { ...attributes, labelColour: textColour }
+							: attributes,
 						setAttributes,
 					} ),
 				] }

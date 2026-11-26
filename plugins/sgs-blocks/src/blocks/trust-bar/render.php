@@ -468,20 +468,29 @@ $items = $attributes['items'] ?? array();
 // (labelColourGradient) — no css:background-color exists on this element
 // (that lives on the separate "wrapper" element, a different selector).
 // No real background paint to collide with; sgs_text_states_css() is safe.
-// One Label colour paints the label whichever style prints it: `__label` (icon styles) and `__badge-label` (text-only,
-// image-badge). Unset prints nothing, so an icon bar that stores its label colour in `textColour` (the root text colour,
-// read through --sgs-trust-badge-text-colour) keeps it, and a text bar's label inherits the root colour.
-foreach ( array( '.sgs-trust-bar__label', '.sgs-trust-bar__badge-label' ) as $tb_label_class ) {
-	$tb_extra_scoped_css .= sgs_text_states_css(
-		$uid_scope . ' ' . $tb_label_class,
-		$attributes,
-		array(
-			'base'           => 'labelColour',
-			'hover'          => 'labelColourHover',
-			'gradient'       => 'labelColourGradient',
-			'hover_gradient' => 'labelColourHoverGradient',
-		)
-	);
+// One Label colour paints the label whichever style prints it. A text-only or image-badge bar paints `__badge-label` with it
+// always (the default is the theme text colour), exactly as before. An icon bar's label (`__label`) takes its colour from
+// textColour through --sgs-trust-badge-text-colour, so the Label colour paints it only once the bar STORES a label colour
+// other than the default, or a gradient, or a hover colour (a stored value was dead on an icon bar until now); an icon bar
+// that stores none keeps what it draws today. "Stored" is what the post holds: the value WordPress fills in from the
+// default is not stored.
+$tb_label_map    = array(
+	'base'           => 'labelColour',
+	'hover'          => 'labelColourHover',
+	'gradient'       => 'labelColourGradient',
+	'hover_gradient' => 'labelColourHoverGradient',
+);
+$tb_stored_attrs = ( $block instanceof \WP_Block && is_array( $block->parsed_block['attrs'] ?? null ) ) ? $block->parsed_block['attrs'] : $attributes;
+$tb_label_stored = false;
+foreach ( $tb_label_map as $tb_label_key ) {
+	$tb_label_value = trim( (string) ( $tb_stored_attrs[ $tb_label_key ] ?? '' ) );
+	if ( '' !== $tb_label_value && ! ( 'labelColour' === $tb_label_key && 'text' === $tb_label_value ) ) {
+		$tb_label_stored = true;
+	}
+}
+$tb_extra_scoped_css .= sgs_text_states_css( $uid_scope . ' .sgs-trust-bar__badge-label', $attributes, $tb_label_map );
+if ( $tb_label_stored && ( 'icon-circle' === $badge_style || 'icon-bare' === $badge_style ) ) {
+	$tb_extra_scoped_css .= sgs_text_states_css( $uid_scope . ' .sgs-trust-bar__label', $attributes, $tb_label_map );
 }
 
 // --- image-badge appearance (no-inline contract: scoped rule, not inline style=) -----
@@ -580,7 +589,7 @@ $tb_badge_stride = '' !== $tb_separator_html ? 2 : 1;
 
 // The grid's separators and centred last row need the device's column count and the same sibling offset.
 $tb_columns_authored  = ( $block instanceof \WP_Block && is_array( $block->parsed_block['attrs']['columns'] ?? null ) ) ? $block->parsed_block['attrs']['columns'] : array();
-$tb_extra_scoped_css .= sgs_trust_bar_grid_css( $attributes, $uid_scope, sgs_trust_bar_tier_columns( $attributes, $tb_columns_authored ), $tb_badge_offset, $tb_sep_glyph );
+$tb_extra_scoped_css .= sgs_trust_bar_grid_css( $attributes, $uid_scope, sgs_trust_bar_tier_columns( $attributes, $tb_columns_authored ), $tb_badge_offset, $tb_sep_glyph, '' !== $title_html );
 
 foreach ( $items as $tb_item_index => $item ) {
 	$item       = is_array( $item ) ? $item : array();

@@ -38,6 +38,7 @@ function bar( display, boxes, cells = false ) {
 		if ( cells ) {
 			const cell = document.createElement( 'span' );
 			cell.className = 'sgs-trust-bar__separator sgs-trust-bar__separator--cell';
+			cell.setAttribute( 'aria-hidden', 'true' );
 			badge.appendChild( cell );
 		}
 		root.appendChild( badge );
@@ -46,7 +47,9 @@ function bar( display, boxes, cells = false ) {
 	return root;
 }
 
-const hidden = ( root ) => [ ...root.querySelectorAll( '.sgs-trust-bar__badge' ) ].map( ( b ) => b.hasAttribute( 'hidden' ) );
+// A row hides a dropped badge; a grid keeps its cell and marks it dropped (style.css hides it with visibility).
+const hidden = ( root ) =>
+	[ ...root.querySelectorAll( '.sgs-trust-bar__badge' ) ].map( ( b ) => b.hasAttribute( 'hidden' ) || b.hasAttribute( 'data-sgs-overflow-dropped' ) );
 
 beforeAll( () => {
 	jest.spyOn( window.HTMLElement.prototype, 'getBoundingClientRect' ).mockImplementation( function () {
@@ -97,5 +100,30 @@ describe( 'overflow-drop', () => {
 		restoreDropped( root );
 		expect( hidden( root ) ).toEqual( [ false, false, false, false ] );
 		expect( [ ...root.querySelectorAll( '.sgs-trust-bar__separator--cell' ) ].some( ( c ) => c.hasAttribute( 'hidden' ) ) ).toBe( false );
+	} );
+
+	it( 'a grid keeps each dropped badge in its cell, so the badges after it do not shift into the column that overflows', () => {
+		// Four columns, column four past the edge, eight badges: b4 and b8 overflow. Hiding b4 outright would move b5 into column
+		// four, where it would overflow too.
+		const root = bar( 'grid', [
+			[ 0, 0, 90 ], [ 100, 0, 190 ], [ 200, 0, 290 ], [ 300, 0, 395 ],
+			[ 0, 50, 90 ], [ 100, 50, 190 ], [ 200, 50, 290 ], [ 300, 50, 395 ],
+		], true );
+		layOutDrop( root );
+		const badges = [ ...root.querySelectorAll( '.sgs-trust-bar__badge' ) ];
+
+		expect( hidden( root ) ).toEqual( [ false, false, false, true, false, false, false, true ] );
+		expect( badges[ 3 ].hasAttribute( 'hidden' ) ).toBe( false ); // a dropped grid badge is not display:none
+		expect( badges[ 3 ].getAttribute( 'data-sgs-overflow-dropped' ) ).toBe( 'keep' );
+		expect( badges[ 3 ].hasAttribute( 'inert' ) ).toBe( true );
+		expect( badges[ 3 ].getAttribute( 'aria-hidden' ) ).toBe( 'true' );
+		// b3 and b7 sit beside a dropped badge: no glyph to their right.
+		const cells = badges.map( ( b ) => b.querySelector( '.sgs-trust-bar__separator--cell' ).hasAttribute( 'hidden' ) );
+		expect( cells ).toEqual( [ false, false, true, false, false, false, true, false ] );
+
+		restoreDropped( root );
+		expect( badges[ 3 ].hasAttribute( 'inert' ) ).toBe( false );
+		expect( badges[ 3 ].hasAttribute( 'aria-hidden' ) ).toBe( false );
+		expect( badges[ 0 ].querySelector( '.sgs-trust-bar__separator--cell' ).getAttribute( 'aria-hidden' ) ).toBe( 'true' );
 	} );
 } );

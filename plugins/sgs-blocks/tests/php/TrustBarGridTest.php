@@ -109,12 +109,54 @@ final class TrustBarGridTest extends TestCase {
 		$this->assertStringContainsString( '{--sgs-trust-bar-gap-x:8px;}', $out['css'], 'the phone gap' );
 	}
 
-	public function test_a_title_beside_the_badges_shifts_the_row_end_rule_by_one(): void {
+	public function test_a_title_takes_a_grid_cell_so_the_row_end_rule_counts_it(): void {
+		// A static grid gives the title the first cell: with four columns the end of row one is the third badge, which is
+		// child four (the title is child one), so the rule is `4n+4`, not the badge after it.
 		$attrs          = $this->bar( 'text-only', 'grid' );
 		$attrs['title'] = 'Our promises';
 		$out            = $this->render( $attrs );
 
-		$this->assertStringContainsString( '.sgs-trust-bar__badge:nth-child(4n+5)>.sgs-trust-bar__separator--cell', $out['css'] );
+		$this->assertStringContainsString( '.sgs-trust-bar__badge:nth-child(4n+4)>.sgs-trust-bar__separator--cell', $out['css'] );
+		$this->assertStringNotContainsString( 'nth-child(4n+5)', $out['css'] );
+	}
+
+	public function test_a_title_outside_the_marquee_track_is_not_a_sibling_of_the_badges(): void {
+		// With a marquee layer the badges sit in the track and the title does not: `:nth-child` counts the badges alone, but
+		// the grid still gives the title the first cell, so the third badge (child three) ends row one.
+		$attrs              = $this->bar( 'text-only', 'grid' );
+		$attrs['title']     = 'Our promises';
+		$attrs['sgsMotion'] = array(
+			'v'        => 1,
+			'elements' => array(
+				'root' => array(
+					'effects' => array(
+						array(
+							'id'     => 'marquee',
+							'effect' => 'marquee',
+							'values' => array( 'belowBreakpoint' => 'overflow' ),
+						),
+					),
+				),
+			),
+		);
+		$out                = $this->render( $attrs );
+
+		$this->assertStringContainsString( '.sgs-trust-bar__badge:nth-child(4n+3)>.sgs-trust-bar__separator--cell', $out['css'] );
+	}
+
+	public function test_a_phone_that_stores_no_gap_keeps_the_tablet_gap_for_the_separator(): void {
+		$attrs        = $this->bar( 'text-only', 'grid' );
+		$attrs['gap'] = array(
+			'desktop' => '2rem',
+			'tablet'  => '1rem',
+		);
+		$css          = $this->render( $attrs )['css'];
+
+		$this->assertStringContainsString( '{--sgs-trust-bar-gap-x:2rem;}', $css );
+		// The tablet rule is a max-width query, so it reaches phones as well; no phone rule is needed.
+		$this->assertStringContainsString( '@media(max-width:1023.98px){', $css );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:1023\.98px\)\{[^}]*\{--sgs-trust-bar-gap-x:1rem;\}\}/', $css );
+		$this->assertStringNotContainsString( '(max-width:767.98px){.sgs-tb-1{--sgs-trust-bar-gap-x', $css );
 	}
 
 	public function test_the_separator_colour_reaches_every_style(): void {
@@ -172,36 +214,48 @@ final class TrustBarGridTest extends TestCase {
 
 	// ── One Label colour ─────────────────────────────────────────────────────
 
-	public function test_label_colour_paints_both_label_classes(): void {
-		foreach ( array( 'icon-circle', 'icon-bare', 'text-only', 'image-badge' ) as $style ) {
+	public function test_a_text_or_image_bar_paints_its_label_with_the_label_colour_even_at_the_default(): void {
+		foreach ( array( 'text-only', 'image-badge' ) as $style ) {
+			$attrs                = $this->bar( $style, 'flex' );
+			$attrs['labelColour'] = 'text';
+			$out                  = $this->render( $attrs );
+
+			$this->assertMatchesRegularExpression( '/\.sgs-tb-1 \.sgs-trust-bar__badge-label\{color:[^}]*text/', $out['css'], $style . ': the default label colour still prints, as before' );
+		}
+	}
+
+	public function test_an_icon_bar_with_no_stored_label_colour_keeps_its_root_text_colour_label(): void {
+		foreach ( array( 'icon-circle', 'icon-bare' ) as $style ) {
+			$attrs                = $this->bar( $style, 'flex' );
+			$attrs['labelColour'] = 'text';
+			$attrs['textColour']  = 'accent';
+			$out                  = $this->render( $attrs );
+
+			$this->assertStringNotContainsString( '.sgs-trust-bar__label{color', $out['css'], $style . ': nothing paints the icon label but the root text colour' );
+			$this->assertStringContainsString( '--sgs-trust-badge-text-colour:', $out['css'], $style );
+		}
+	}
+
+	public function test_a_stored_label_colour_now_paints_an_icon_bar_label(): void {
+		foreach ( array( 'icon-circle', 'icon-bare' ) as $style ) {
 			$attrs                = $this->bar( $style, 'flex' );
 			$attrs['labelColour'] = 'accent';
 			$out                  = $this->render( $attrs );
 
-			$this->assertMatchesRegularExpression( '/\.sgs-tb-1 \.sgs-trust-bar__label\{color:[^}]*accent/', $out['css'], $style . ': the icon styles print __label' );
-			$this->assertMatchesRegularExpression( '/\.sgs-tb-1 \.sgs-trust-bar__badge-label\{color:[^}]*accent/', $out['css'], $style . ': the text styles print __badge-label' );
+			$this->assertMatchesRegularExpression( '/\.sgs-tb-1 \.sgs-trust-bar__label\{color:[^}]*accent/', $out['css'], $style );
 		}
+		$hover                      = $this->bar( 'icon-bare', 'flex' );
+		$hover['labelColour']       = 'text';
+		$hover['labelColourHover']  = 'accent';
+		$this->assertStringContainsString( '.sgs-trust-bar__label:focus-visible{color', $this->render( $hover )['css'], 'a stored hover colour paints too' );
 	}
 
-	public function test_an_unset_label_colour_prints_no_label_rule_so_the_root_text_colour_still_reaches_the_label(): void {
-		foreach ( array( 'icon-circle', 'text-only' ) as $style ) {
-			$attrs               = $this->bar( $style, 'flex' );
-			$attrs['textColour'] = 'accent';
-			$out                 = $this->render( $attrs );
-
-			$this->assertStringNotContainsString( '__label{color', $out['css'], $style );
-			$this->assertStringNotContainsString( '__badge-label{color', $out['css'], $style );
-		}
-		$icon               = $this->bar( 'icon-circle', 'flex' );
-		$icon['textColour'] = 'accent';
-		$this->assertStringContainsString( '--sgs-trust-badge-text-colour:', $this->render( $icon )['css'], 'an icon bar keeps the label colour it stored in textColour' );
-	}
-
-	public function test_block_json_default_label_colour_is_unset_and_the_separator_belongs_to_every_style(): void {
+	public function test_block_json_keeps_the_label_colour_default_and_the_separator_belongs_to_every_style(): void {
 		$block = json_decode( (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/trust-bar/block.json' ), true, 512, JSON_THROW_ON_ERROR );
 
-		$this->assertSame( '', $block['attributes']['labelColour']['default'], 'a default colour printed on every text label beat the root text colour' );
+		$this->assertSame( 'text', $block['attributes']['labelColour']['default'], 'a text bar keeps painting its label with the theme text colour' );
 		$this->assertFalse( $block['attributes']['centreLastRow']['default'] );
 		$this->assertNotContains( 'textBadgeSeparator', $block['supports']['sgs']['variants']['text-only'] );
+		$this->assertStringNotContainsString( 'text-only', $block['attributes']['textBadgeSeparator']['description'] );
 	}
 }

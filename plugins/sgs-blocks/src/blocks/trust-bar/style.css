@@ -445,6 +445,11 @@
  * source of truth for the same property. Zero specificity means this only
  * ever wins by being an editor-canvas-only class no other rule targets, not
  * by out-ranking the operator's own flexWrap choice.) */
+/* A grid that drops a badge keeps its cell (overflow-drop.js sets inert and aria-hidden too), so the badges after it stay where they are. */
+.sgs-trust-bar [data-sgs-overflow-dropped="keep"] {
+	visibility: hidden;
+}
+
 :where(.sgs-trust-bar.is-overflow-drop) {
 	flex-wrap: nowrap;
 	overflow: hidden;
