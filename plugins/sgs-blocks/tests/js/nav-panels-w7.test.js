@@ -231,10 +231,12 @@ describe( 'dark logo rows (responsive logo)', () => {
 	const slot = { prefix: 'logoDark', kinds: [ 'image' ], context: 'content', atoms: [ 'source' ] };
 	const file = { desktop: { id: 7, url: 'https://example.test/dark.svg' } };
 
-	it( 'reads a file only from the desktop tier (what the front end reads)', () => {
+	it( 'reads a file stored on any device, so a tablet or mobile entry shows the switch on and can be cleared', () => {
 		expect( holdsDarkLogoFile( file ) ).toBe( true );
 		expect( holdsDarkLogoFile( { desktop: { url: 'x' } } ) ).toBe( true );
-		expect( holdsDarkLogoFile( { tablet: { id: 7 } } ) ).toBe( false );
+		expect( holdsDarkLogoFile( { tablet: { id: 7 } } ) ).toBe( true );
+		expect( holdsDarkLogoFile( { mobile: { url: 'y' } } ) ).toBe( true );
+		expect( holdsDarkLogoFile( { tablet: {}, mobile: {} } ) ).toBe( false );
 		expect( holdsDarkLogoFile( { desktop: {} } ) ).toBe( false );
 		expect( holdsDarkLogoFile( undefined ) ).toBe( false );
 		expect( holdsDarkLogoFile( null ) ).toBe( false );

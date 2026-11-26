@@ -40,14 +40,20 @@ function useActiveDevice() {
 }
 
 /**
- * True when the dark logo holds a desktop file: the one entry the front end reads.
+ * True when the dark logo holds a file on any device, so the switch reads on (and turning it off clears it) even
+ * when only a tablet or mobile entry is stored; the front end reads the desktop entry.
  *
  * @param {Object|undefined} source The block's `logoDarkSource` attribute.
  * @return {boolean} Whether a file is stored.
  */
 export function holdsDarkLogoFile( source ) {
-	const entry = source && 'object' === typeof source ? source.desktop : null;
-	return !! ( entry && ( entry.id || entry.url ) );
+	if ( ! source || 'object' !== typeof source ) {
+		return false;
+	}
+	return [ 'desktop', 'tablet', 'mobile' ].some( ( tier ) => {
+		const entry = source[ tier ];
+		return !! ( entry && ( entry.id || entry.url ) );
+	} );
 }
 
 /**

@@ -10,7 +10,7 @@
  *   A2  the same, Padding only
  *   B   `ResponsiveBoxControl` (singular), no `ResponsiveOverride`
  *   C   the shared `ResponsiveBoxControls` (target; gallery today)
- *   D   the shared nav `ListLayoutPanel` (left to Stage E3, exempt)
+ *   D   the shared nav `ListLayoutPanel` (retired: the two menu blocks mount `ResponsiveBoxControls`)
  *   E   `block.json` `supports.spacing` (core Dimensions, `style.spacing.*` storage)
  * A mount whose attribute is not the block's own `padding` / `margin` (an input's padding, an aside's padding, the grid
  * item defaults) is reported as "other box" and is never a block's spacing panel.
