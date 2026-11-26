@@ -121,3 +121,18 @@ test( 'a draft sibling whose position the part has no slot at is read as its gro
 	const none = pairAbsorbed( { host: el( 'Root/8#0', 'nav', [ lone ], { w: 400 } ), absorbed: [ { element: lone, looks: [ 'padding' ] } ], kids, calibration: { ...cal, settings: { linkPad: { slot: L( 4 ), slots: [ L( 4 ) ], property: 'padding' } } }, finder } );
 	assert.deepEqual( [ none.paired.length, none.siblings.length, none.unmatched.length ], [ 0, 0, 1 ], 'a lone element no part fits is unmatched, never guessed' );
 } );
+
+test( 'a pill of words the draft fills or borders is the part the block paints (a badge with no words recorded), not one of the plain words parts (MUST FAIL without the painted tier: the pill fits two plain parts)', () => {
+	const cal = {
+		elements: { '': at( 'nav' ), '.link': at( 'a' ), '.link > .ornament': at( 'span' ), '.link > .text': at( 'span' ), '.link > .badge': at( 'span', { 'background-color': 'rgb(249, 207, 110)' } ) },
+		settings: { badgeBg: { slot: '.link > .badge', property: 'background-color' }, textPad: { slot: '.link > .text', property: 'padding' }, ornamentBg: { slot: '.link > .ornament', property: 'background-color' } }, text: {},
+	};
+	const label = el( 'Root/3#0', 'span', [], { words: 'Taster Trio' } );
+	const pill = el( 'Root/4#0', 'span', [], { words: '3 for £5' } );
+	const link = el( 'Root/2#0', 'a', [ label, pill ], { w: 360 } );
+	const run = ( looks ) => pairAbsorbed( { host: el( 'Root/1#0', 'nav', [ link ], { w: 400 } ), absorbed: [ { element: pill, looks } ], kids, calibration: cal, finder } );
+	assert.deepEqual( run( [ 'background', 'border' ] ).paired.map( ( p ) => p.part ), [ '.link > .badge' ] );
+	assert.deepEqual( run( [ 'background', 'border' ] ).ambiguous, [] );
+	// negative control: words that paint no box keep the plain words parts, and the painted mark is never offered
+	assert.deepEqual( run( [ 'padding' ] ).ambiguous.map( ( a ) => a.candidates ), [ [ '.link > .ornament', '.link > .text' ] ] );
+} );

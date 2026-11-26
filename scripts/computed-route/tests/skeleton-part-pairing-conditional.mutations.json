@@ -46,5 +46,17 @@
 		"find": "const readSlot = lands ? undefined : [ ...slotLooks.keys() ].sort().find(",
 		"replace": "const readSlot = undefined && [ ...slotLooks.keys() ].sort().find(",
 		"why": "a draft sibling whose position the part has no slot at is listed as unpaired instead of read as its group"
+	},
+	{
+		"file": "lib/skeleton-part-pairing.mjs",
+		"find": "pill && ( cands = cands.filter( filledPart ) );",
+		"replace": "",
+		"why": "a pill of words the draft fills keeps the plain words parts beside the painted one"
+	},
+	{
+		"file": "lib/skeleton-part-pairing.mjs",
+		"find": "( FITS[ kindOf.get( e ) ].includes( g.kind ) || ( 'words' === kindOf.get( e ) && filledPart( g ) && 'mark' === g.kind && fills( e ) ) )",
+		"replace": "FITS[ kindOf.get( e ) ].includes( g.kind )",
+		"why": "a painted part with no words recorded is never offered to a filled pill"
 	}
 ]

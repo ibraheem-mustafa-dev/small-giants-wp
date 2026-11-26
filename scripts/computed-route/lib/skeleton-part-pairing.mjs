@@ -148,7 +148,7 @@ export function partModel( elements = {}, textPaths = [], recorded = {} ) {
 		const head = parts.get( g.head );
 		Object.assign( g, {
 			kind: ms.map( ( p ) => p.kind ).sort( ( a, b ) => KINDS.indexOf( a ) - KINDS.indexOf( b ) )[ 0 ],
-			level: head.level, oof: ms.some( ( p ) => p.oof ), hidden: ms.every( ( p ) => p.hidden ), never: ms.every( ( p ) => p.never ), pseudo: head.pseudo, root: g.members.includes( '' ),
+			level: head.level, painted: ms.some( ( p ) => p.painted ), oof: ms.some( ( p ) => p.oof ), hidden: ms.every( ( p ) => p.hidden ), never: ms.every( ( p ) => p.never ), pseudo: head.pseudo, root: g.members.includes( '' ),
 			parentHead: null === head.parent ? null : headOf.get( head.parent ) ?? null,
 			words: ms.map( ( p ) => p.words ).find( Boolean ) ?? null, box: head.box,
 		} );
@@ -448,8 +448,13 @@ function pairCore( { host, absorbed = [], kids, isNode = () => false, calibratio
 		x = c && w > 0 && cw > 0 && Math.abs( w - cw ) <= Math.max( 2, 0.1 * w ) ? c : null;
 		x && rootChain.add( x );
 	}
+	// An element that draws its own filled or bordered box (a pill of words): the parts the block paints with no words of their
+	// own recorded (a badge) can be it, and it prefers them to the plain words parts.
+	const looksOf = new Map( absorbed.map( ( a ) => [ a.element, a.looks ] ) );
+	const filledPart = ( g ) => g.painted && ! g.pseudo;
+	const fills = ( e ) => ( looksOf.get( e ) || [] ).some( ( l ) => [ 'background', 'border' ].includes( l ) );
 	const baseSets = new Map( order.map( ( e ) => {
-		return [ e, rootChain.has( e ) ? [] : groups.filter( ( g ) => g.level === chain.get( e ).length && FITS[ kindOf.get( e ) ].includes( g.kind ) && ( ! flowsOf( e ).every( Boolean ) || g.oof ) ) ];
+		return [ e, rootChain.has( e ) ? [] : groups.filter( ( g ) => g.level === chain.get( e ).length && ( FITS[ kindOf.get( e ) ].includes( g.kind ) || ( 'words' === kindOf.get( e ) && filledPart( g ) && 'mark' === g.kind && fills( e ) ) ) && ( ! flowsOf( e ).every( Boolean ) || g.oof ) ) ];
 	} ) );
 	const below = new Map( order.map( ( e ) => [ e, order.filter( ( d ) => isAbove( e, d ) ) ] ) );
 	let flatNow = new Map();
@@ -535,7 +540,11 @@ function pairCore( { host, absorbed = [], kids, isNode = () => false, calibratio
 						}
 					}
 				}
-				for ( const tier of [ ( g ) => g.kind === kind, ( g ) => ! up || g.parentHead === up.head, ( g ) => flows.includes( g.oof ) ] ) {
+				// A pill of words the draft fills keeps the parts the block paints (a badge), whichever kind they print as; the tiers
+				// below are for the rest.
+				const pill = 'words' === kind && fills( e ) && cands.some( filledPart );
+				pill && ( cands = cands.filter( filledPart ) );
+				for ( const tier of pill ? [] : [ ( g ) => g.kind === kind, ( g ) => ! up || g.parentHead === up.head, ( g ) => flows.includes( g.oof ) ] ) {
 					const kept = cands.filter( tier );
 					kept.length && ( cands = kept );
 				}
