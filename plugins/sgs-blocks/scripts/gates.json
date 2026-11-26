@@ -2649,5 +2649,23 @@
     "added_commit": null,
     "budget_ms": 500,
     "order": 295
+  },
+  {
+    "id": "check-trim",
+    "cmd": "node scripts/check-trim.js",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 600,
+    "order": 296
+  },
+  {
+    "id": "check-trim-selftest",
+    "cmd": "node scripts/check-trim.js --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 600,
+    "order": 297
   }
 ]

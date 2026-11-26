@@ -1,0 +1,19 @@
+{
+	"_comment": "The controls a block may trim from a shared panel (`supports.sgs.trim` in its block.json, read through hide-extensions.js::isTrimmed). One row per panel: `file` is the panel's source, `controls` its trimmable controls. scripts/check-trim.js fails a block.json entry that is not listed here, and a listed control the panel's file never names.",
+	"layout": {
+		"file": "src/blocks/container/components/LayoutPanel.js",
+		"controls": [
+			"layout.default",
+			"layout.stack",
+			"layout.flex",
+			"layout.grid",
+			"layout.flex-direction",
+			"layout.flex-wrap",
+			"layout.grid-template-columns",
+			"layout.grid-template-rows",
+			"layout.grid-auto-rows",
+			"layout.justify-items",
+			"layout.align-content"
+		]
+	}
+}

@@ -23,6 +23,7 @@ import ResponsiveOverride from '../ResponsiveOverride.js';
 import Chips from './Chips.js';
 import MediaSlotPreview from './MediaSlotPreview.js';
 import MediaSlotAlt from './MediaSlotAlt.js';
+import TrimEdgesButton from './TrimEdgesButton.js';
 import { slotAccess } from './fieldBase.js';
 import {
 	resolveTierSource,
@@ -229,6 +230,15 @@ export default function MediaSlotField( {
 										setAttributes,
 										access,
 									} ) }
+								{ /* Trim empty edges: draws nothing unless the host has Imagick and the file is a trimmable picture. */ }
+								{ own && hasFile( own ) && (
+									<TrimEdgesButton
+										kind={ kind }
+										own={ own }
+										device={ device }
+										access={ access }
+									/>
+								) }
 							</div>
 						) }
 

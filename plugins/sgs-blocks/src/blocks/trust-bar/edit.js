@@ -9,7 +9,9 @@ import {
 import { useSelect } from '@wordpress/data';
 import '../../../assets/css/fx-marquee.css';
 import DEFAULT_TICKER_LAYER from '../../../includes/motion/data/trust-bar-default-ticker.json';
-import { Fragment, useEffect, useMemo } from '@wordpress/element';
+import { Fragment, useEffect, useMemo, useRef } from '@wordpress/element';
+import useOverflowRuns from './use-overflow-fit';
+import { tierColumns, gridBadgeRules, columnGapPreview } from './grid-columns';
 import {
 	PanelBody,
 	SelectControl,
@@ -48,6 +50,7 @@ import ItemSlotFields from '../../components/media/ItemSlotFields.js';
 import { LINK_SOURCES_ALL } from '../../shared/link-source-options';
 import {
 	EditorIconBare,
+	badgeIcon,
 	TrustBarIconPanel,
 	TrustBarItemSpacingPanel,
 } from './edit-panels';
@@ -126,38 +129,6 @@ function gapCssValue( gap ) {
 	return String( gapDesktop );
 }
 
-/**
- * Resolve the desktop-tier `grid-template-columns` preview value.
- *
- * Mirrors the REAL winning mechanism in class-sgs-container-wrapper.php: an
- * object-shaped `gridTemplateColumns` attr is ALWAYS emitted (the unconditional
- * `isset() && is_array()` check at ~:2150, which lands in the responsive CSS
- * string after — and so overrides in the cascade — the legacy `columns`-based
- * base rule at ~:865). `columns` only drives the rendered grid when
- * `gridTemplateColumns`'s own tier is empty (render.php's `$gtc_base` fallback,
- * ~:854-858) — this is the ONLY case genuinely covered by `columns` any more,
- * since trust-bar declares `gridTemplateColumns` with a real, always-populated
- * default ({desktop:"repeat(4, 1fr)", …}), so that fallback rarely fires on a
- * fresh instance. Preserved anyway for a legacy/edge instance whose
- * `gridTemplateColumns` tier really is unset.
- *
- * @param {Object|null|undefined} gtc  gridTemplateColumns attribute ({desktop,tablet,mobile}).
- * @param {Object|null|undefined} cols columns attribute ({desktop,tablet,mobile}).
- * @return {string|undefined}
- */
-function gridTemplateColumnsPreview( gtc, cols ) {
-	const gtcDesktop = resolveResponsiveTier( gtc, 'desktop' )?.value;
-	if ( gtcDesktop ) {
-		return String( gtcDesktop );
-	}
-	const colsDesktop = resolveResponsiveTier( cols, 'desktop' )?.value;
-	const count = colsDesktop ? parseInt( colsDesktop, 10 ) : 4;
-	if ( ! count || count < 1 ) {
-		return undefined;
-	}
-	return `repeat(${ count },1fr)`;
-}
-
 const BADGE_STYLE_OPTIONS = [
 	{
 		label: __( 'Icon circle (default)', 'sgs-blocks' ),
@@ -186,6 +157,7 @@ function EditorIconCircle( {
 	iconColour,
 	iconGradient,
 	iconSlug,
+	svg,
 	borderRadius,
 	border,
 	boxShadow,
@@ -221,8 +193,9 @@ function EditorIconCircle( {
 			style={ style }
 		>
 			<IconPreview
-				source="lucide"
+				source={ svg ? 'custom' : 'lucide' }
 				name={ iconSlug || 'check' }
+				svg={ svg }
 				size={ Math.round( size * 0.45 ) }
 				gradient={ iconGradient }
 			/>
@@ -396,6 +369,7 @@ function GenericBadgeItemEditor( {
 
 // ─── Main Edit component ──────────────────────────────────────────────────────
 export default function Edit( { attributes, setAttributes, name } ) {
+	const rootRef = useRef( null );
 	const {
 		badgeStyle,
 		items: rawItems,
@@ -443,14 +417,9 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		backgroundColourGradient,
 		backgroundColourHover,
 		backgroundColourHoverGradient,
-		columns,
 		gap,
 		layout,
-		gridTemplateColumns,
-		justifyItems,
-		alignContent,
-		alignItems,
-		gridAutoRows,
+		centreLastRow,
 		overflowMode,
 		shadow,
 	} = attributes;
@@ -493,6 +462,14 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		labelColourGradient,
 		colourVar
 	);
+	// An icon bar paints its label with Label colour only once a colour other than the default is stored (render.php);
+	// until then the label keeps the Root text colour, and the row shows that value.
+	const iconLabelFollowsRoot =
+		( 'icon-circle' === badgeStyle || 'icon-bare' === badgeStyle ) &&
+		( ! labelColour || 'text' === labelColour ) &&
+		! labelColourGradient &&
+		! attributes.labelColourHover &&
+		! attributes.labelColourHoverGradient;
 
 	// D717/background-preview: BackgroundPanel (mounted below) writes image/
 	// video/overlay/ken-burns/parallax attrs this block never previewed on
@@ -588,14 +565,25 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	// overflow-only layer in `includes/motion/data/trust-bar-default-ticker.json`, which the server adds the same way
 	// (`Sgs_Motion_Ticker_Default`). The preview reads that file, so the canvas shows the ticker's one-row layout.
 	const tickerDefault =
-		! storedMarqueeLayer && 'wrap' !== overflowMode && 'drop' !== overflowMode;
+		! storedMarqueeLayer &&
+		'wrap' !== overflowMode &&
+		'drop' !== overflowMode;
 	const marqueeLayer =
-		storedMarqueeLayer ?? ( tickerDefault ? DEFAULT_TICKER_LAYER : undefined );
+		storedMarqueeLayer ??
+		( tickerDefault ? DEFAULT_TICKER_LAYER : undefined );
 	const marqueeAlways =
 		!! marqueeLayer &&
 		! [ 'mobile', 'tablet' ].includes(
 			marqueeLayer.values?.belowBreakpoint
 		);
+	// An `overflow` ticker runs only while its set does not fit one row: the canvas measures that the way the
+	// runtime does (use-overflow-fit.js) and shows the authored layout while the set fits.
+	const overflowOnly = 'overflow' === marqueeLayer?.values?.belowBreakpoint;
+	const overflowRuns = useOverflowRuns(
+		overflowOnly && items.length > 0,
+		rootRef,
+		JSON.stringify( [ attributes, previewTier ] )
+	);
 	const isOverflowDrop = 'drop' === overflowMode && ! marqueeAlways;
 
 	// Marquee canvas reflection. The motion runtime (fx-marquee.js) never runs in the
@@ -611,7 +599,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	const marqueeActive =
 		!! marqueeLayer &&
 		! marqueeTierOff &&
-		( marqueeAlways ||
+		( ( marqueeAlways && ( ! overflowOnly || overflowRuns ) ) ||
 			( 'tablet' === marqueeRange && 'desktop' !== previewTier ) ||
 			( 'mobile' === marqueeRange && 'mobile' === previewTier ) );
 	const marqueeValues = marqueeLayer?.values ?? {};
@@ -649,19 +637,6 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		colourPalette
 	);
 
-	// Grid preview (icon-circle only — text-only/image-badge always render
-	// `.sgs-trust-bar--text-only`/`--image-badge`'s own hardcoded flex-wrap,
-	// style.css:111-117/155-158, regardless of layout/columns/gridTemplateColumns;
-	// the "Badges" panel's Columns control is gated to icon-circle only for the
-	// same reason). Ungated on `layout` presence matches render.php: layout
-	// defaults to 'grid' (block.json), and only an explicit 'flex' would fall
-	// back to the natural inline-flex wrap this block already renders without
-	// any style here.
-	const showBadgeGrid = isIconStyle && 'flex' !== layout;
-	const badgeGridTemplateColumns = showBadgeGrid
-		? gridTemplateColumnsPreview( gridTemplateColumns, columns )
-		: undefined;
-
 	// Border, radius, max-width, flex layout and the content band, as the wrapper emits them;
 	// the badge grid below still wins for the icon variants it already mirrors.
 	const wrapper = wrapperPreview( attributes, previewTier, colourPalette );
@@ -683,6 +658,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	);
 
 	const blockProps = useBlockProps( {
+		ref: rootRef,
 		className: [
 			blockClassName,
 			section.className,
@@ -730,6 +706,14 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					attributes.shadowColour
 				),
 			} ),
+			...( separatorGlyph && separatorInCell
+				? {
+						'--sgs-trust-bar-gap-x': columnGapPreview(
+							attributes.gap,
+							previewTier
+						),
+				  }
+				: {} ),
 			...( badgeStyle === 'icon-circle'
 				? {
 						'--sgs-trust-bar-gap': gapCssValue( gap ),
@@ -758,55 +742,6 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				: {} ),
 			...( isIconStyle && iconStrokeWidth !== 1.8
 				? { '--sgs-trust-badge-icon-stroke-width': iconStrokeWidth }
-				: {} ),
-			...( badgeGridTemplateColumns
-				? {
-						display: 'grid',
-						gridTemplateColumns: badgeGridTemplateColumns,
-						gap: gapCssValue( gap ),
-						// CHECK A (2026-09-05) — justifyItems/alignContent/alignItems/
-						// gridAutoRows are declared in block.json (css:grid-auto-rows,
-						// css:justify-items, css:align-content, + the alignItems attr)
-						// and render correctly on the frontend via
-						// class-sgs-container-wrapper.php's grid branch, but were never
-						// mirrored on this canvas. Hand-adapted (not routed through the
-						// shared applyGridLayoutPreview()) because that helper resolves
-						// gridTemplateColumns/columns itself via resolveResponsiveTier() —
-						// this block has ALREADY resolved its own tier via
-						// gridTemplateColumnsPreview() into a plain string above, and
-						// handing that resolved string back into the shared helper's
-						// tier-object resolver would silently return '' (resolveResponsiveTier
-						// indexes a plain string by tier key, which is always undefined).
-						// The 4-line body below is copied verbatim from
-						// applyGridLayoutPreview()'s grid branch (src/utils/grid-layout-preview.js)
-						// so behaviour still matches class-sgs-container-wrapper.php exactly.
-						...( gridAutoRows ? { gridAutoRows } : {} ),
-						alignItems:
-							resolveResponsiveTier( alignItems, previewTier )
-								?.value || undefined,
-						...( ( resolveResponsiveTier(
-							justifyItems,
-							previewTier
-						)?.value || 'stretch' ) !== 'stretch'
-							? {
-									justifyItems: resolveResponsiveTier(
-										justifyItems,
-										previewTier
-									).value,
-							  }
-							: {} ),
-						...( ( resolveResponsiveTier(
-							alignContent,
-							previewTier
-						)?.value || 'stretch' ) !== 'stretch'
-							? {
-									alignContent: resolveResponsiveTier(
-										alignContent,
-										previewTier
-									).value,
-							  }
-							: {} ),
-				  }
 				: {} ),
 		},
 	} );
@@ -845,16 +780,19 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						cssLengthValue( textBadgeRadius ) || undefined,
 			  }
 			: undefined;
-	// A grid layout gives every direct child a column, so style.css keeps the separators out of it (the stylesheet loads in the canvas).
-	const separatorGlyph =
-		badgeStyle === 'text-only' && 'grid' !== layout
-			? String( textBadgeSeparator || '' )
-					.trim()
-					.slice( 0, 8 )
-			: '';
+	// The separator glyph, in every badge style. A row draws it as a sibling after each badge; a grid gives every direct
+	// child a cell, so it draws it inside each badge, as render.php does (style.css centres it on the column gap).
+	const separatorGlyph = String( textBadgeSeparator || '' )
+		.trim()
+		.slice( 0, 8 );
+	const separatorInCell = 'grid' === layout;
+	// The canvas always draws the title field for these two styles, and a grid gives it the first cell.
+	const titleCell =
+		'text-only' === badgeStyle || 'image-badge' === badgeStyle;
 	const separatorStyle = textBadgeSeparatorColour
 		? { color: colourVar( textBadgeSeparatorColour ) }
 		: undefined;
+	const gridColumns = tierColumns( attributes, previewTier );
 
 	const updateItem = ( index, updated ) => {
 		const next = [ ...items ];
@@ -882,86 +820,120 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			</p>
 		) : (
 			items.map( ( item, index ) => {
-				if ( badgeStyle === 'icon-bare' ) {
-					return (
-						<div
-							key={ item._key || index }
-							className="sgs-trust-bar__badge"
-							style={ itemPreviewStyle }
+				const rules = separatorInCell
+					? gridBadgeRules(
+							index,
+							items.length,
+							marqueeActive ? null : gridColumns,
+							centreLastRow && ! marqueeActive,
+							titleCell
+					  )
+					: { cell: false, centre: false };
+				const badgeClass =
+					'sgs-trust-bar__badge' +
+					( rules.centre
+						? ' sgs-trust-bar__badge--centre-last'
+						: '' );
+				// In a grid: inside the badge, and none at the end of a row (the marquee lays its own one row out).
+				const cellSeparator =
+					separatorGlyph && rules.cell ? (
+						<span
+							className="sgs-trust-bar__separator sgs-trust-bar__separator--cell"
+							aria-hidden="true"
+							style={ separatorStyle }
 						>
-							<EditorIconBare
-								size={ iconBareSize }
-								iconSlug={ item.icon || 'check' }
-								gradient={ iconColourGradient }
-								filled={ item.fillStyle === 'filled' }
-								fillColour={
-									item.fillColour
-										? colourVar( item.fillColour )
-										: undefined
-								}
-							/>
-							<span
-								className="sgs-trust-bar__label"
-								style={ {
-									...labelTypography,
-									color: textColourValue,
-								} }
-							>
-								{ item.label || (
-									<em>
-										{ __( '(no label)', 'sgs-blocks' ) }
-									</em>
-								) }
-							</span>
-						</div>
-					);
-				}
-
-				if ( badgeStyle === 'icon-circle' ) {
-					return (
-						<div
-							key={ item._key || index }
-							className="sgs-trust-bar__badge"
-							style={ itemPreviewStyle }
-						>
-							<EditorIconCircle
-								size={ iconCircleSize }
-								circleBg={ circleBgValue }
-								iconColour={ iconColourValue }
-								iconGradient={ iconColourGradient }
-								iconSlug={ item.icon || 'check' }
-								borderRadius={
-									iconCircleBorderRadius !== '50%'
-										? iconCircleBorderRadius
-										: undefined
-								}
-								border={ circleBorderPreview }
-								boxShadow={ circleShadowValue }
-								filled={ item.fillStyle === 'filled' }
-								fillColour={ item.fillColour }
-							/>
-							<span
-								className="sgs-trust-bar__label"
-								style={ {
-									...labelTypography,
-									color: textColourValue,
-								} }
-							>
-								{ item.label || (
-									<em>
-										{ __( '(no label)', 'sgs-blocks' ) }
-									</em>
-								) }
-							</span>
-						</div>
-					);
-				}
-
-				if ( badgeStyle === 'text-only' ) {
-					return (
-						<Fragment key={ item._key || index }>
+							{ separatorGlyph }
+						</span>
+					) : null;
+				const badge = ( () => {
+					if ( badgeStyle === 'icon-bare' ) {
+						return (
 							<div
-								className="sgs-trust-bar__badge"
+								key={ item._key || index }
+								className={ badgeClass }
+								style={ itemPreviewStyle }
+							>
+								<EditorIconBare
+									size={ iconBareSize }
+									{ ...badgeIcon( item ) }
+									gradient={ iconColourGradient }
+									filled={ item.fillStyle === 'filled' }
+									fillColour={
+										item.fillColour
+											? colourVar( item.fillColour )
+											: undefined
+									}
+								/>
+								<span
+									className="sgs-trust-bar__label"
+									style={ {
+										...labelTypography,
+										color: textColourValue,
+										...( iconLabelFollowsRoot
+											? {}
+											: labelStyle ),
+									} }
+								>
+									{ item.label || (
+										<em>
+											{ __( '(no label)', 'sgs-blocks' ) }
+										</em>
+									) }
+								</span>
+								{ cellSeparator }
+							</div>
+						);
+					}
+
+					if ( badgeStyle === 'icon-circle' ) {
+						return (
+							<div
+								key={ item._key || index }
+								className={ badgeClass }
+								style={ itemPreviewStyle }
+							>
+								<EditorIconCircle
+									size={ iconCircleSize }
+									circleBg={ circleBgValue }
+									iconColour={ iconColourValue }
+									iconGradient={ iconColourGradient }
+									{ ...badgeIcon( item ) }
+									borderRadius={
+										iconCircleBorderRadius !== '50%'
+											? iconCircleBorderRadius
+											: undefined
+									}
+									border={ circleBorderPreview }
+									boxShadow={ circleShadowValue }
+									filled={ item.fillStyle === 'filled' }
+									fillColour={ item.fillColour }
+								/>
+								<span
+									className="sgs-trust-bar__label"
+									style={ {
+										...labelTypography,
+										color: textColourValue,
+										...( iconLabelFollowsRoot
+											? {}
+											: labelStyle ),
+									} }
+								>
+									{ item.label || (
+										<em>
+											{ __( '(no label)', 'sgs-blocks' ) }
+										</em>
+									) }
+								</span>
+								{ cellSeparator }
+							</div>
+						);
+					}
+
+					if ( badgeStyle === 'text-only' ) {
+						return (
+							<div
+								key={ item._key || index }
+								className={ badgeClass }
 								style={ textBadgeStyle }
 							>
 								<span
@@ -977,66 +949,78 @@ export default function Edit( { attributes, setAttributes, name } ) {
 										</em>
 									) }
 								</span>
+								{ cellSeparator }
 							</div>
-							{ separatorGlyph && (
+						);
+					}
+
+					// image-badge
+					const mediaUrl = item.source?.desktop?.url || '';
+					const mediaAlt = item.decorative
+						? ''
+						: item.alt || item.label || '';
+					const badgeBox =
+						badgeWidth?.[ previewTier ] ||
+						badgeWidth?.desktop ||
+						'60px';
+					return (
+						<div
+							key={ item._key || index }
+							className={ badgeClass }
+						>
+							{ mediaUrl && (
+								<img
+									src={ mediaUrl }
+									alt={ mediaAlt }
+									className="sgs-trust-bar__badge-img"
+									style={ {
+										width: badgeBox,
+										aspectRatio: '1 / 1',
+										objectFit:
+											item.fit?.desktop ||
+											badgeFit?.desktop ||
+											'contain',
+										borderRadius:
+											'circle' ===
+											badgeShape?.desktop?.shape
+												? '50%'
+												: undefined,
+										boxShadow: resolveShadowPreviewComposed(
+											badgeImageShadow,
+											badgeImageShadowColour
+										),
+									} }
+								/>
+							) }
+							{ item.label && (
 								<span
-									className="sgs-trust-bar__separator"
-									aria-hidden="true"
-									style={ separatorStyle }
+									className="sgs-trust-bar__badge-label"
+									style={ {
+										...labelTypography,
+										...labelStyle,
+									} }
 								>
-									{ separatorGlyph }
+									{ item.label }
 								</span>
 							) }
-						</Fragment>
+							{ cellSeparator }
+						</div>
 					);
-				}
-
-				// image-badge
-				const mediaUrl = item.source?.desktop?.url || '';
-				const mediaAlt = item.decorative
-					? ''
-					: item.alt || item.label || '';
-				const badgeBox =
-					badgeWidth?.[ previewTier ] ||
-					badgeWidth?.desktop ||
-					'60px';
-				return (
-					<div
-						key={ item._key || index }
-						className="sgs-trust-bar__badge"
-					>
-						{ mediaUrl && (
-							<img
-								src={ mediaUrl }
-								alt={ mediaAlt }
-								className="sgs-trust-bar__badge-img"
-								style={ {
-									width: badgeBox,
-									aspectRatio: '1 / 1',
-									objectFit:
-										item.fit?.desktop ||
-										badgeFit?.desktop ||
-										'contain',
-									borderRadius:
-										'circle' === badgeShape?.desktop?.shape
-											? '50%'
-											: undefined,
-									boxShadow: resolveShadowPreviewComposed(
-										badgeImageShadow,
-										badgeImageShadowColour
-									),
-								} }
-							/>
-						) }
-						{ item.label && (
-							<span
-								className="sgs-trust-bar__badge-label"
-								style={ { ...labelTypography, ...labelStyle } }
-							>
-								{ item.label }
-							</span>
-						) }
-					</div>
+				} )();
+				// A row prints its separator as a sibling after every badge.
+				return separatorGlyph && ! separatorInCell ? (
+					<Fragment key={ item._key || index }>
+						{ badge }
+						<span
+							className="sgs-trust-bar__separator"
+							aria-hidden="true"
+							style={ separatorStyle }
+						>
+							{ separatorGlyph }
+						</span>
+					</Fragment>
+				) : (
+					badge
 				);
 			} )
 		);
@@ -1214,7 +1198,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							},
 						],
 					},
-					// Word badge fill, border and separator colours (text-only only; unset keeps the pill).
+					// Word badge fill and border colours (text-only only; unset keeps the pill).
 					badgeStyle === 'text-only' &&
 						fillRow( {
 							key: 'text-badge-background',
@@ -1231,14 +1215,14 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							attributes,
 							setAttributes,
 						} ),
-					badgeStyle === 'text-only' &&
-						fillRow( {
-							key: 'text-badge-separator',
-							label: __( 'Separator colour', 'sgs-blocks' ),
-							attrs: { base: 'textBadgeSeparatorColour' },
-							attributes,
-							setAttributes,
-						} ),
+					// The separator glyph is the bar's, in every style.
+					fillRow( {
+						key: 'text-badge-separator',
+						label: __( 'Separator colour', 'sgs-blocks' ),
+						attrs: { base: 'textBadgeSeparatorColour' },
+						attributes,
+						setAttributes,
+					} ),
 					// ── Consolidated in 2026-08-30 — was the "Title colour"
 					// picker in the Title panel (text-only/image-badge).
 					// Paints the RichText title's `color` -> textRow.
@@ -1256,26 +1240,26 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							attributes,
 							setAttributes,
 						} ),
-					// ── Consolidated in 2026-08-30 — was the "Label colour"
-					// picker in the Label styling panel (text-only/image-badge).
-					// Distinct attribute from textColour's "Label colour" row
-					// above (that one is icon-circle-mode only) — labelColour
-					// governs the text-only/image-badge badge label text ->
-					// textRow.
-					( badgeStyle === 'text-only' ||
-						badgeStyle === 'image-badge' ) &&
-						textRow( {
-							key: 'label-colour',
-							label: __( 'Label colour', 'sgs-blocks' ),
-							attrs: {
-								base: 'labelColour',
-								hover: 'labelColourHover',
-								gradient: 'labelColourGradient',
-								hoverGradient: 'labelColourHoverGradient',
-							},
-							attributes,
-							setAttributes,
-						} ),
+					// ── The one Label colour, in every style: render.php paints it
+					// on `__label` (icon styles) and `__badge-label` (text-only,
+					// image-badge). An icon bar that stored its label colour as
+					// the Root text colour (textColour) still draws it, so the
+					// row shows that value until Label colour is set; the
+					// first edit writes labelColour, which then wins.
+					textRow( {
+						key: 'label-colour',
+						label: __( 'Label colour', 'sgs-blocks' ),
+						attrs: {
+							base: 'labelColour',
+							hover: 'labelColourHover',
+							gradient: 'labelColourGradient',
+							hoverGradient: 'labelColourHoverGradient',
+						},
+						attributes: iconLabelFollowsRoot
+							? { ...attributes, labelColour: textColour }
+							: attributes,
+						setAttributes,
+					} ),
 				] }
 			/>
 			<InspectorControls>
@@ -1588,6 +1572,37 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 					/>
+					{ 'grid' === layout && (
+						<ToggleControl
+							label={ __(
+								'Centre a lone last row',
+								'sgs-blocks'
+							) }
+							help={ __(
+								'When the last row holds one badge, centre it under the row above instead of leaving it at the start.',
+								'sgs-blocks'
+							) }
+							checked={ !! centreLastRow }
+							onChange={ ( val ) =>
+								setAttributes( { centreLastRow: !! val } )
+							}
+							__nextHasNoMarginBottom
+						/>
+					) }
+					<TextControl
+						label={ __( 'Separator glyph', 'sgs-blocks' ) }
+						help={ __(
+							'A mark drawn between the badges, such as a star, in every badge style and layout. Hidden from screen readers. Empty draws none. Its colour is in the Colour panel.',
+							'sgs-blocks'
+						) }
+						value={ textBadgeSeparator || '' }
+						maxLength={ 8 }
+						onChange={ ( val ) =>
+							setAttributes( { textBadgeSeparator: val } )
+						}
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
 				</PanelBody>
 
 				{ /* ── Grid item defaults — WITHDRAWN (2026-08-30) ────────────────
@@ -1838,7 +1853,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					</PanelBody>
 				) }
 
-				{ /* ── Word badge (text-only): border width, corner radius, separator glyph. Their colours are rows of the Colour panel above. ── */ }
+				{ /* ── Word badge (text-only): border width and corner radius. Their colours are rows of the Colour panel above. ── */ }
 				{ badgeStyle === 'text-only' && (
 					<PanelBody
 						title={ __( 'Word badge', 'sgs-blocks' ) }
@@ -1872,20 +1887,6 @@ export default function Edit( { attributes, setAttributes, name } ) {
 								setAttributes( { textBadgeRadius: val || '' } )
 							}
 						/>
-						<TextControl
-							label={ __( 'Separator glyph', 'sgs-blocks' ) }
-							help={ __(
-								'A mark drawn between the badges, such as a star. Hidden from screen readers. Empty draws none. Shows when Layout is Flex (a grid gives every badge its own column).',
-								'sgs-blocks'
-							) }
-							value={ textBadgeSeparator || '' }
-							maxLength={ 8 }
-							onChange={ ( val ) =>
-								setAttributes( { textBadgeSeparator: val } )
-							}
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
 					</PanelBody>
 				) }
 
@@ -1894,71 +1895,6 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					control was the Label colour picker, now moved to the
 					Colour panel. An empty PanelBody is a dead control
 					(check-empty-inspector-containers.js). */ }
-
-				{ /* ── Badges (icon-circle only) ──────────────────────────────
-				     Named for the ELEMENT it controls, not the property cluster
-				     (CO-2, element-first panel naming). It was "Layout" until
-				     2026-08-08, which collided verbatim with the SECTION's own
-				     "Layout" panel higher up the same tab: two panels, same word,
-				     different scopes. A cluster name is only correct when the
-				     controls apply to no single element — this one is badge-scoped
-				     (`columns` drives the badge grid), so it takes the element's
-				     name, exactly as sgs/button names its icon panel "Icon". */ }
-				{ isIconStyle && (
-					<PanelBody
-						title={ __( 'Badges', 'sgs-blocks' ) }
-						initialOpen={ false }
-					>
-						{ /*
-							  columns is a TIER OBJECT — ONE attr holding
-							  {desktop,tablet,mobile} (Spec 35 pass 4). It must
-							  therefore use ResponsiveOverride, which reads and
-							  writes the object, NOT a bare RangeControl writing
-							  a raw number — that would coerce the object-typed
-							  attr to its default and drop the whole setting
-							  (D563 bug class). `columnsTablet`/`columnsMobile`
-							  are no longer declared by block.json; the tier
-							  object's tablet/mobile keys carry the "at 600px+"
-							  stacking behaviour that used to be an implicit
-							  default (4/4/2).
-						*/ }
-						<ResponsiveOverride
-							label={ __( 'Columns', 'sgs-blocks' ) }
-							value={ columns }
-							onChange={ ( obj ) =>
-								setAttributes( { columns: obj } )
-							}
-						>
-							{ ( {
-								tier,
-								ownValue,
-								effectiveValue,
-								setOwnValue,
-							} ) => (
-								<RangeControl
-									value={
-										ownValue !== ''
-											? ownValue
-											: effectiveValue !== ''
-											? effectiveValue
-											: tier === 'mobile'
-											? 2
-											: 4
-									}
-									onChange={ setOwnValue }
-									min={ 2 }
-									max={ 6 }
-									step={ 1 }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
-							) }
-						</ResponsiveOverride>
-						{ /* Gap between badges is provided by the shared ContainerWrapperControls
-						     "Gap" responsive control (writes the same `gap` attr via the wrapper
-						     helper). Removed here to eliminate UI duplication. */ }
-					</PanelBody>
-				) }
 			</InspectorControls>
 
 			{ /* ── Editor canvas ───────────────────────────────────────────── */ }

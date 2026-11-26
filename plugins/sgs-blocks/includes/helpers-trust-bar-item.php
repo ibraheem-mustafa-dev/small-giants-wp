@@ -13,8 +13,8 @@
  * - Stroke width: one control for every outline icon, Lucide sprite or raw SVG.
  * - Item gap and item padding: spacing on each badge item (gap = icon to label),
  *   as responsive tier objects like the block's `gap` and `padding`.
- * - Text-only badge look and separator: the word badge's own fill, border and corner
- *   radius, and a decorative glyph printed after each badge.
+ * - Text-only badge look: the word badge's own fill, border and corner radius.
+ * - Separator: a decorative glyph between the badges, in every style (helpers-trust-bar-grid.php places it in a grid).
  *
  * @package SGS\Blocks
  */
@@ -288,16 +288,13 @@ if ( ! defined( 'SGS_TRUST_BAR_SEPARATOR_MAX_CHARS' ) ) {
 
 if ( ! function_exists( 'sgs_trust_bar_separator_glyph' ) ) {
 	/**
-	 * The separator glyph the bar prints between its badges.
+	 * The separator glyph the bar prints between its badges, in every badge style.
 	 *
-	 * Text-only badges only: the other variants draw icons or pictures and keep their own spacing.
-	 *
-	 * @param array  $attributes  Block attributes.
-	 * @param string $badge_style Active variant.
+	 * @param array $attributes Block attributes.
 	 * @return string Plain text (not yet escaped), at most SGS_TRUST_BAR_SEPARATOR_MAX_CHARS characters; '' when unset.
 	 */
-	function sgs_trust_bar_separator_glyph( array $attributes, string $badge_style ): string {
-		if ( 'text-only' !== $badge_style || ! is_string( $attributes['textBadgeSeparator'] ?? null ) ) {
+	function sgs_trust_bar_separator_glyph( array $attributes ): string {
+		if ( ! is_string( $attributes['textBadgeSeparator'] ?? null ) ) {
 			return '';
 		}
 
@@ -307,28 +304,49 @@ if ( ! function_exists( 'sgs_trust_bar_separator_glyph' ) ) {
 
 if ( ! function_exists( 'sgs_trust_bar_separator_html' ) ) {
 	/**
-	 * The separator element printed after a badge.
+	 * The separator element for one badge.
 	 *
-	 * Decorative, so it is hidden from assistive technology. It follows EVERY badge, the last included, so the seam
-	 * between the marquee's copies carries one too; style.css hides the last one while the bar is not scrolling.
-	 * The shared marquee runtime clones the track with these inside it.
+	 * Decorative, so it is hidden from assistive technology. A row (flex, stack, default) prints it as a sibling after
+	 * EVERY badge, the last included, so the seam between the marquee's copies carries one too; style.css hides the last
+	 * one while the bar is not scrolling. A grid gives every direct child a cell, so a grid bar prints it INSIDE the
+	 * badge (`$in_cell`), where style.css centres it on the gap beside the badge. The shared marquee runtime clones the
+	 * track with these inside it.
 	 *
-	 * @param string $glyph Plain text from sgs_trust_bar_separator_glyph().
+	 * @param string $glyph   Plain text from sgs_trust_bar_separator_glyph().
+	 * @param bool   $in_cell True when it goes inside the badge (a grid bar).
 	 * @return string HTML; '' when there is no glyph.
 	 */
-	function sgs_trust_bar_separator_html( string $glyph ): string {
+	function sgs_trust_bar_separator_html( string $glyph, bool $in_cell = false ): string {
 		if ( '' === $glyph ) {
 			return '';
 		}
 
-		return '<span class="sgs-trust-bar__separator" aria-hidden="true">' . esc_html( $glyph ) . '</span>';
+		return '<span class="sgs-trust-bar__separator' . ( $in_cell ? ' sgs-trust-bar__separator--cell' : '' ) . '" aria-hidden="true">' . esc_html( $glyph ) . '</span>';
+	}
+}
+
+if ( ! function_exists( 'sgs_trust_bar_separator_css' ) ) {
+	/**
+	 * Scoped CSS for the separator's colour. Unset takes the bar's text colour (the separator inherits it).
+	 *
+	 * @param array  $attributes Block attributes.
+	 * @param string $uid_scope  Scoped selector for this instance, e.g. ".sgs-tb-3".
+	 * @return string CSS text; '' when there is no glyph or no colour.
+	 */
+	function sgs_trust_bar_separator_css( array $attributes, string $uid_scope ): string {
+		$colour = sgs_colour_value( is_string( $attributes['textBadgeSeparatorColour'] ?? null ) ? $attributes['textBadgeSeparatorColour'] : '' );
+		if ( '' === $colour || '' === sgs_trust_bar_separator_glyph( $attributes ) ) {
+			return '';
+		}
+
+		return $uid_scope . ' .sgs-trust-bar__separator{color:' . $colour . ';}';
 	}
 }
 
 if ( ! function_exists( 'sgs_trust_bar_text_badge_css' ) ) {
 	/**
-	 * Scoped CSS for the text-only badge's own look (fill, border colour and width, corner radius) and the separator's
-	 * colour. Every value is unset by default: an unset one prints nothing, so style.css's pill stays as it was.
+	 * Scoped CSS for the text-only badge's own look (fill, border colour and width, corner radius). Every value is
+	 * unset by default: an unset one prints nothing, so style.css's pill stays as it was.
 	 *
 	 * A set fill and border colour are repeated on `:hover`, because the stylesheet's hover rule (one more pseudo-class
 	 * than the scoped rule) would otherwise draw its own pill on a strip made plain on purpose.
@@ -336,10 +354,9 @@ if ( ! function_exists( 'sgs_trust_bar_text_badge_css' ) ) {
 	 * @param array  $attributes  Block attributes.
 	 * @param string $badge_style Active variant.
 	 * @param string $root_sel    Block root selector, e.g. ".sgs-tb-3.wp-block-sgs-trust-bar".
-	 * @param string $uid_scope   Scoped selector for this instance, e.g. ".sgs-tb-3".
 	 * @return string CSS text; '' when nothing is set or the variant is not text-only.
 	 */
-	function sgs_trust_bar_text_badge_css( array $attributes, string $badge_style, string $root_sel, string $uid_scope ): string {
+	function sgs_trust_bar_text_badge_css( array $attributes, string $badge_style, string $root_sel ): string {
 		if ( 'text-only' !== $badge_style ) {
 			return '';
 		}
@@ -372,11 +389,6 @@ if ( ! function_exists( 'sgs_trust_bar_text_badge_css' ) ) {
 		}
 		if ( $paint ) {
 			$css .= $sel . ':hover{' . implode( ';', $paint ) . ';}';
-		}
-
-		$separator_colour = sgs_colour_value( is_string( $attributes['textBadgeSeparatorColour'] ?? null ) ? $attributes['textBadgeSeparatorColour'] : '' );
-		if ( '' !== $separator_colour && '' !== sgs_trust_bar_separator_glyph( $attributes, $badge_style ) ) {
-			$css .= $uid_scope . ' .sgs-trust-bar__separator{color:' . $separator_colour . ';}';
 		}
 
 		return $css;
