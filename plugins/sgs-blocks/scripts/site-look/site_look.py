@@ -1125,31 +1125,58 @@ def store_file(store: Path, site: str, short: str, key: str) -> Path:
     return store / site / f'{short}.{key}.json'
 
 
+# How often a read or a rename is tried while Windows refuses it because another process has the file open or is renaming
+# onto it (several workers, sweep workers or checkouts write one look or shared-facts file at once).
+SHARE_TRIES = 10
+
+
+def read_held(f: Path):
+    """The file's text, read again while Windows refuses to open it for a moment (another process is renaming onto it);
+    None when it is missing or stays refused."""
+    for attempt in range(SHARE_TRIES):
+        try:
+            return f.read_text(encoding='utf-8')
+        except PermissionError:
+            if 'share-retry' in MUTATE:
+                return None
+            time.sleep(min(0.02 * 2 ** attempt, 0.5))
+        except OSError:
+            return None
+    return None
+
+
 def read_look(f: Path, short: str, key: str):
     """The text of a look file when it parses and is this block's look under `key`; None for a missing, partial or other file."""
     try:
-        text = f.read_text(encoding='utf-8')
-        doc = json.loads(text)
-    except (OSError, ValueError):
+        text = read_held(f)
+        doc = json.loads(text) if text is not None else None
+    except ValueError:
+        return None
+    if doc is None:
         return None
     ok = isinstance(doc, dict) and doc.get('key') == key and doc.get('block') == f'sgs/{short}' and isinstance(doc.get('elements'), dict)
     return text if ok else None
 
 
 def atomic_write(f: Path, text: str) -> None:
-    """Write beside `f` under a name no other process uses, then rename onto `f`: a reader sees the old file or the whole new one."""
+    """Write beside `f` under a name no other process uses, then rename onto `f`: a reader sees the old file or the whole new one.
+    Windows refuses the rename while another process has `f` open or is renaming onto it: it is tried again with a growing
+    wait, and a refused rename is done when `f` already holds the same text (another writer of the same content won)."""
     f.parent.mkdir(parents=True, exist_ok=True)
     tmp = f.with_name(f'{f.name}.{_os.getpid()}.{uuid.uuid4().hex[:8]}.tmp')
+    tries = 1 if 'share-retry' in MUTATE else SHARE_TRIES
     try:
         tmp.write_text(text, encoding='utf-8')
-        for attempt in range(5):  # Windows refuses a rename onto a file another process has open for a moment
+        for attempt in range(tries):
             try:
                 _os.replace(tmp, f)
                 return
             except PermissionError:
-                if attempt == 4:
+                if read_held(f) == text:
+                    return
+                if attempt == tries - 1:
                     raise
-                time.sleep(0.1 * (attempt + 1))
+                time.sleep(min(0.05 * 2 ** attempt, 1.0))
     finally:
         tmp.unlink(missing_ok=True)
 
@@ -1266,9 +1293,11 @@ def custom_css_reaches(snapshot: dict, classes) -> bool:
 def read_shared(f: Path, short: str, key: str):
     """The text of a shared-facts file when it parses and holds this block's facts under `key`; None otherwise."""
     try:
-        text = f.read_text(encoding='utf-8')
-        doc = json.loads(text)
-    except (OSError, ValueError):
+        text = read_held(f)
+        doc = json.loads(text) if text is not None else None
+    except ValueError:
+        return None
+    if doc is None:
         return None
     ok = (isinstance(doc, dict) and doc.get('key') == key and doc.get('block') == f'sgs/{short}' and doc.get('format') == SHARED_FORMAT
           and isinstance(doc.get('forms'), dict) and isinstance(doc.get('content'), dict) and isinstance(doc.get('classes'), list))
@@ -1322,9 +1351,9 @@ def write_block(args_tuple) -> tuple:
     key = look_key(short, snapshot_file, woocommerce)
     if out.is_file():
         try:
-            if json.loads(out.read_text(encoding='utf-8')).get('key') == key:
+            if json.loads(read_held(out) or '{}').get('key') == key:
                 return short, 'current'
-        except (OSError, ValueError):
+        except (ValueError, AttributeError):
             pass
     store = look_store()
     if store is not None and 'store' not in MUTATE:

@@ -4,6 +4,7 @@ theme's own theme.json and each client's look is assembled from them. The full p
 
     python -m pytest plugins/sgs-blocks/scripts/site-look/tests/test_shared_facts.py
     SITE_LOOK_MUTATE=shared-guard python -m pytest ... -k guard        (must fail)
+    SITE_LOOK_MUTATE=share-retry python -m pytest ... -k parallel     (must fail)
 """
 import json
 import sys
@@ -132,3 +133,44 @@ def test_shared_facts_with_a_failed_render_are_not_taken(tmp_path, monkeypatch):
     plain.write_text('{}', encoding='utf-8')
     SL.build_look('heading', plain, False, tmp_path)
     assert calls == [SL.SHARED_PARTS, None]
+
+
+WRITER = '''
+import json, sys
+sys.path.insert(0, sys.argv[1])
+import site_look as SL
+from pathlib import Path
+store, local, mode = Path(sys.argv[2]), Path(sys.argv[3]), sys.argv[4]
+doc = {'block': 'sgs/heading', 'format': SL.SHARED_FORMAT, 'key': 'K', 'forms': {}, 'content': {'text': {'x': 'y' * 4000000}}, 'classes': []}
+text = json.dumps(doc, indent=1)
+seen = set()
+for _ in range(40):
+    if mode == 'write':
+        SL.atomic_write(local, text)
+        SL.store_look(store, SL.SHARED_SITE, 'heading', 'K', text, check=SL.read_shared)
+    for f in (local, SL.store_file(store, SL.SHARED_SITE, 'heading', 'K')):
+        got = SL.read_shared(f, 'heading', 'K')
+        if got is None:
+            seen.add('LOST' if ('whole', f) in seen else 'none')  # a file once whole must never read as missing again
+        else:
+            seen.update({'whole', ('whole', f)} if got == text else {'PARTIAL'})
+seen = {x for x in seen if isinstance(x, str)}
+print(','.join(sorted(seen)))
+'''
+
+
+def test_parallel_writers_and_readers_of_one_shared_key_never_see_a_partial_file(tmp_path):
+    """Several processes (the --jobs workers, or clients built at once) writing and reading one block's shared facts and
+    its store copy: every write succeeds and every read is the whole file or none, never a part (atomic_write: a temp name
+    per process, then a rename retried while Windows holds the target open)."""
+    import subprocess
+    script = tmp_path / 'writer.py'
+    script.write_text(WRITER, encoding='utf-8')
+    store, local = tmp_path / 'store', tmp_path / 'out' / SL.SHARED_SITE / 'heading.json'
+    procs = [subprocess.Popen([sys.executable, str(script), str(HERE.parent), str(store), str(local), 'write' if n % 2 == 0 else 'read'],
+                              stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True) for n in range(8)]
+    outs = [p.communicate(timeout=300) for p in procs]
+    assert all(p.returncode == 0 for p in procs), [e[-600:] for _, e in outs]
+    assert not any('PARTIAL' in o or 'LOST' in o for o, _ in outs), [o for o, _ in outs]
+    assert SL.read_shared(local, 'heading', 'K') is not None
+    assert [f.name for f in (store / SL.SHARED_SITE).iterdir()] == ['heading.K.json'], 'no temp file left behind'
