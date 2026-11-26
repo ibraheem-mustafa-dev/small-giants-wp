@@ -150,6 +150,7 @@ import { InspectorControls } from '@wordpress/block-editor';
 import { BaseControl, PanelBody } from '@wordpress/components';
 import DesignTokenPicker from './DesignTokenPicker';
 import GradientCapableColourControl from './GradientCapableColourControl';
+import { SgsBlockWideRowsSlot } from './SgsBlockWideRows';
 
 export default function SgsColourPanel( { rows } ) {
 	const visible = ( rows || [] ).filter( Boolean );
@@ -165,6 +166,7 @@ export default function SgsColourPanel( { rows } ) {
 				initialOpen
 				className="sgs-colour-panel"
 			>
+				<SgsBlockWideRowsSlot home="colour" />
 				{ visible.map( ( row ) => {
 					const Control = row.gradientCapable
 						? GradientCapableColourControl

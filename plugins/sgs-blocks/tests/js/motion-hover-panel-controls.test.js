@@ -137,6 +137,16 @@ afterEach( () => {
 } );
 
 describe( 'the rendered controls exist and are named', () => {
+	it( 'keeps the block-wide rows slot at the top of the panel, above the Hover state select', () => {
+		mount( undefined );
+		const slot = host.querySelector( '[data-testid="Slot"]' );
+		expect( slot ).not.toBeNull();
+		const select = byLabel( 'Hover state', 'select' );
+		// eslint-disable-next-line no-bitwise
+		expect( slot.compareDocumentPosition( select ) & Node.DOCUMENT_POSITION_FOLLOWING ).toBeTruthy();
+		expect( host.querySelectorAll( '[data-testid="Slot"]' ) ).toHaveLength( 1 );
+	} );
+
 	it( 'offers the Hover state select, the Driven by choices and Intensity on a state', () => {
 		mount( withState( { ...SCALE } ) );
 		expect( byLabel( 'Hover state', 'select' ) ).toBeDefined();
