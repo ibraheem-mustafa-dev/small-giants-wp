@@ -1,6 +1,6 @@
 {
 	"_comment": "First panel of each inspector tab per block, read from an editor census by `check-panel-initial-open.js --from-census`. `opened` is the state at the census. `source`: block = a PanelBody in the block's own files; colour = SgsColourPanel; media = a media panel; shared = a PanelBody in shared code; tools = a non-collapsing ToolsPanel; unresolved = a core panel or a title the scan cannot read.",
-	"census": "census-all.json",
+	"census": "census.json",
 	"blocks": {
 		"accordion": {
 			"settings": {
@@ -45,7 +45,7 @@
 				"note": "a ToolsPanel has no collapse: always open"
 			},
 			"styles": {
-				"title": "Color",
+				"title": "Colour",
 				"kind": "tools",
 				"opened": true,
 				"source": "tools",
@@ -386,7 +386,7 @@
 				"count": 1
 			},
 			"styles": {
-				"title": "Color",
+				"title": "Colour",
 				"kind": "tools",
 				"opened": true,
 				"source": "tools",
@@ -438,7 +438,7 @@
 				"count": 1
 			},
 			"styles": {
-				"title": "Color",
+				"title": "Colour",
 				"kind": "tools",
 				"opened": true,
 				"source": "tools",
@@ -616,11 +616,12 @@
 		},
 		"measured-diagram": {
 			"settings": {
-				"title": "Media",
+				"title": "Settings",
 				"kind": "body",
 				"opened": true,
-				"source": "media",
-				"note": "media panel \"Media\": the slot opens it by a prop, not by panel-model default"
+				"source": "block",
+				"note": "src/blocks/measured-diagram/edit.js::Edit",
+				"count": 1
 			},
 			"styles": {
 				"title": "Colour",
@@ -876,7 +877,7 @@
 				"count": 1
 			},
 			"styles": {
-				"title": "Color",
+				"title": "Colour",
 				"kind": "tools",
 				"opened": true,
 				"source": "tools",
@@ -1342,23 +1343,6 @@
 				"note": "a ToolsPanel has no collapse: always open"
 			}
 		},
-		"trust-bar": {
-			"settings": {
-				"title": "Style",
-				"kind": "body",
-				"opened": false,
-				"source": "block",
-				"note": "src/blocks/trust-bar/edit.js::Edit",
-				"count": 1
-			},
-			"styles": {
-				"title": "Colour",
-				"kind": "body",
-				"opened": true,
-				"source": "colour",
-				"note": "SgsColourPanel: the mount passes initialOpen"
-			}
-		},
 		"trustpilot-reviews": {
 			"settings": {
 				"title": "Container / Wrapper",
@@ -1403,7 +1387,7 @@
 				"count": 1
 			},
 			"styles": {
-				"title": "Color",
+				"title": "Colour",
 				"kind": "tools",
 				"opened": true,
 				"source": "tools",
