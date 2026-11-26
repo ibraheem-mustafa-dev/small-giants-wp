@@ -52,7 +52,7 @@ import { groupBindings, noFactsWarning } from './lib/fill-binding-group.mjs';
 import { factsFile, loadFacts } from './lib/fact-record.mjs';
 import { currentItemGroups } from './lib/fill-current-item.mjs';
 import { currentAttrKeys } from './lib/fill-current-attr.mjs';
-import { scrimWrites } from './lib/fill-scrim.mjs';
+import { scrimWrites, drawerScrimBlocks } from './lib/fill-scrim.mjs';
 import { widthGateWrites, maskHiddenVariants, draftThresholds } from './lib/fill-width-gate.mjs';
 import { pictureBoxReads } from './lib/fill-picture-box.mjs';
 import { sumAbsorbedPadding } from './lib/fill-absorbed.mjs';
@@ -217,7 +217,7 @@ export async function fillSurface( o ) {
 		const intakeParts = animationInventory( buildDir, draftIndexOf( o, entry ), log );
 		const currentGroups = facts ? currentItemGroups( facts, intakeParts.rootComponent ) : [];
 		// Aria-current bound as an attribute on a component's items: read on the draft's other pages (lib/fill-current-attr.mjs).
-		const currentAttr = { keys: facts ? currentAttrKeys( facts ) : [], pages: facts ? [ ...new Set( ( facts.pages || [] ).map( ( p ) => p.route ) ) ] : [], rootComponent: intakeParts.rootComponent };
+		const currentAttr = { keys: facts ? currentAttrKeys( facts ) : [], pages: facts ? [ ...new Set( ( facts.pages || [] ).map( ( p ) => p.route ).filter( Boolean ) ) ] : [], rootComponent: intakeParts.rootComponent };
 		// A drawer or mega-menu panel exists only while its draft state holds: the opener (lib/fill-open.mjs) names the state
 		// from the surface's handoff record, and a route-mounted component is read on its own route. Null for any other surface.
 		const intakeData = fs.existsSync( intakeFile ) ? JSON.parse( fs.readFileSync( intakeFile, 'utf8' ) ) : null;
@@ -355,8 +355,8 @@ export async function fillSurface( o ) {
 		result.unmapped.push( ...columns.unmapped );
 		result.notes.push( ...columns.notes );
 		// FR-48-8: the draft's backdrop beside its drawers, written to the scrim settings of the drawers and the basket panel (lib/fill-scrim.mjs).
-		const scrimBlocks = new Set( db.prepare( "SELECT DISTINCT block_slug FROM block_attributes WHERE css_element = 'scrim' AND attr_name = 'scrimColour'" ).all().map( ( r ) => r.block_slug ) );
-		const scrim = scrimWrites( { nodes, flat, refOf, facts, scrimBlocks, defaultOf: ( b, a ) => JSON.parse( db.prepare( 'SELECT default_value FROM block_attributes WHERE block_slug = ? AND attr_name = ?' ).get( b, a )?.default_value ?? 'null' ) } );
+		const scrimBlocks = drawerScrimBlocks( db );
+		const scrim = scrimWrites( { nodes, flat, refOf, facts, scrimBlocks, declares: ( b, a ) => !! db.prepare( 'SELECT 1 FROM block_attributes WHERE block_slug = ? AND attr_name = ?' ).get( b, a ), defaultOf: ( b, a ) => JSON.parse( db.prepare( 'SELECT default_value FROM block_attributes WHERE block_slug = ? AND attr_name = ?' ).get( b, a )?.default_value ?? 'null' ) } );
 		result.writes.push( ...scrim.writes );
 		result.unmapped.push( ...scrim.unmapped );
 		result.notes.push( ...scrim.notes );

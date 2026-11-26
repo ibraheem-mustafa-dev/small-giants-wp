@@ -1,0 +1,32 @@
+[
+	{
+		"file": "lib/fill-scrim.mjs",
+		"find": "4 === args.length ? args[ 3 ] : null",
+		"replace": "args.at( -1 )",
+		"why": "rgb(r, g, b) reads its blue as an alpha"
+	},
+	{
+		"file": "lib/fill-scrim.mjs",
+		"find": "undefined === css.opacity || fades || 0 === Number( css.opacity ) ? 1",
+		"replace": "undefined === css.opacity ? 1",
+		"why": "a static opacity of 0 or a fading opacity scales the backdrop strength"
+	},
+	{
+		"file": "lib/fill-scrim.mjs",
+		"find": "undefined === css.opacity || fades || 0 === Number( css.opacity ) ? 1",
+		"replace": "undefined === css.opacity || fades ? 1",
+		"why": "a static opacity of 0 (hidden at rest) zeroes the backdrop strength"
+	},
+	{
+		"file": "lib/fill-scrim.mjs",
+		"find": "! declares( rec.name, attr ) || ",
+		"replace": "",
+		"why": "an attribute the block does not declare is written to it"
+	},
+	{
+		"file": "lib/fill-scrim.mjs",
+		"find": "AND b.category = 'sgs-interactive'",
+		"replace": "",
+		"why": "a gallery lightbox, a dropdown's scrim and the product search take the drawer backdrop"
+	}
+]
