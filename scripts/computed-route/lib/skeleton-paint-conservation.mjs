@@ -165,7 +165,7 @@ export function paintsBox( element, { declared = {}, parent = null, children = 0
 	// for the tag (null) the computed read reports no padding at all, so it refutes a declared padding only where every
 	// recorded side is zero.
 	const decides = null === paddingBase ? new Map( resolvedWidths( element ).map( ( w ) => [ w, computedLooks( element.resolved[ w ], parent?.resolved?.[ w ] ) ] ) ) : computed;
-	const refuted = ( look, w ) => ! decides.get( w )?.has( look ) && ( COMPUTED_DECIDES[ look ] ?? [] ).length > 0 && COMPUTED_DECIDES[ look ].every( ( n ) => undefined !== element.resolved[ w ][ n ] );
+	const refuted = ( look, w ) => decides.has( w ) && ! decides.get( w ).has( look ) && ( COMPUTED_DECIDES[ look ] ?? [] ).length > 0 && COMPUTED_DECIDES[ look ].every( ( n ) => undefined !== element.resolved[ w ][ n ] );
 	for ( const w of widths ) {
 		stated.forEach( ( look ) => refuted( look, w ) || add( look, w ) );
 		children >= 2 && LAYS_OUT.has( low( displayAt( w ) ) ) && add( 'layout', w );
