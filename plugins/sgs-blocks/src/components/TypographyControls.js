@@ -1484,41 +1484,46 @@ function TypographyControlsFields( {
 			{ /* Hover typography (D309). Opt-in: only render for a block that
 			     DECLARES + renders the {prop}Hover companions, else the
 			     dead-control gate flags it. Paired into one compact row, same
-			     as the base fields above — three narrow SelectControls with
-			     short labels fit comfortably at the standard sidebar width. */ }
+			     as the base fields above — two selects side by side and Weight
+			     on its own row, because three across are too narrow to show
+			     their values at the standard sidebar width. */ }
 			{ showHover && (
-				<Flex gap={ 2 } align="flex-start">
-					<FlexItem isBlock>
-						<SelectControl
-							label={ __( 'Decoration (hover)', 'sgs-blocks' ) }
-							value={ attributes[ k.textDecorationHover ] || '' }
-							options={ SGS_TEXT_DECORATION_OPTIONS }
-							onChange={ ( val ) => setAttributes( { [ k.textDecorationHover ]: val } ) }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					</FlexItem>
-					<FlexItem isBlock>
-						<SelectControl
-							label={ __( 'Transform (hover)', 'sgs-blocks' ) }
-							value={ attributes[ k.textTransformHover ] || '' }
-							options={ SGS_TEXT_TRANSFORM_OPTIONS }
-							onChange={ ( val ) => setAttributes( { [ k.textTransformHover ]: val } ) }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					</FlexItem>
-					<FlexItem isBlock>
-						<SelectControl
-							label={ __( 'Weight (hover)', 'sgs-blocks' ) }
-							value={ attributes[ k.fontWeightHover ] || '' }
-							options={ SGS_FONT_WEIGHT_OPTIONS }
-							onChange={ ( val ) => setAttributes( { [ k.fontWeightHover ]: val } ) }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					</FlexItem>
-				</Flex>
+				<VStack spacing={ 2 }>
+					<Flex gap={ 2 } align="flex-start">
+						<FlexItem isBlock>
+							<SelectControl
+								label={ __( 'Decoration (hover)', 'sgs-blocks' ) }
+								value={ attributes[ k.textDecorationHover ] || '' }
+								options={ SGS_TEXT_DECORATION_OPTIONS }
+								onChange={ ( val ) => setAttributes( { [ k.textDecorationHover ]: val } ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						</FlexItem>
+						<FlexItem isBlock>
+							<SelectControl
+								label={ __( 'Transform (hover)', 'sgs-blocks' ) }
+								value={ attributes[ k.textTransformHover ] || '' }
+								options={ SGS_TEXT_TRANSFORM_OPTIONS }
+								onChange={ ( val ) => setAttributes( { [ k.textTransformHover ]: val } ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						</FlexItem>
+					</Flex>
+					<Flex gap={ 2 } align="flex-start">
+						<FlexItem isBlock>
+							<SelectControl
+								label={ __( 'Weight (hover)', 'sgs-blocks' ) }
+								value={ attributes[ k.fontWeightHover ] || '' }
+								options={ SGS_FONT_WEIGHT_OPTIONS }
+								onChange={ ( val ) => setAttributes( { [ k.fontWeightHover ]: val } ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						</FlexItem>
+					</Flex>
+				</VStack>
 			) }
 		</VStack>
 	);
