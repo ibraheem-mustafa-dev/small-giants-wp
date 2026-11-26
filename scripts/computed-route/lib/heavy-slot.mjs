@@ -181,12 +181,28 @@ export async function acquire( { dir = SLOT_DIR, owner, pollMs = 15000, maxWaitM
 	const start = Date.now();
 	const me = { label: String( owner.label ).replace( /\s+/g, '-' ), pid: owner.pid ?? process.pid };
 	const q = { file: queueFile, lockDir: dir, me };
-	const leave = () => leaveQueue( q );
+	// Leaving is best effort: a lock that stays taken must not turn a finished run into a failed one (the next reader drops a
+	// dead waiter anyway).
+	const leave = () => {
+		try {
+			leaveQueue( q );
+		} catch ( e ) {
+			log( e.message );
+		}
+	};
 	process.once( 'exit', leave );
 	try {
 		for ( let told = -1; ; ) {
 			const now = Date.now();
-			const place = queuePlace( { ...q, alive, now } );
+			let place;
+			try {
+				place = queuePlace( { ...q, alive, now } );
+			} catch ( e ) {
+				// The queue could not be read this poll (its lock stayed taken): wait and try again rather than give up the turn.
+				log( e.message );
+				await wait( pollMs );
+				continue;
+			}
 			if ( place !== told ) {
 				place > 0 && log( `${ me.label } is number ${ place + 1 } in the queue (${ queueFile })` );
 				told = place;

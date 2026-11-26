@@ -28,5 +28,17 @@
 		"find": "const head = ( -1 === at ? text : text.slice( 0, at ) ).replace( /\\s+$/, '' );",
 		"replace": "const head = '';",
 		"why": "the text above the list is lost"
+	},
+	{
+		"file": "lib/heavy-queue.mjs",
+		"find": "|| ( holder && ! alive( holder ) ) )",
+		"replace": ")",
+		"why": "a lock left by a dead process is waited on for 30 s"
+	},
+	{
+		"file": "lib/heavy-queue.mjs",
+		"find": "if ( now() - start > LOCK_WAIT_MS ) {",
+		"replace": "if ( now() - start > 500 ) {",
+		"why": "a slow live lock holder kills the waiting job"
 	}
 ]

@@ -6,7 +6,7 @@ import path from 'node:path';
 import { tryTake, isStale, releaseLabel, acquire, hasRoom, ROOM, readOwner } from '../lib/heavy-slot.mjs';
 import { parseArgv, runCommand } from '../tools/heavy-slot.mjs';
 import { tempOnC, assertTempOffC } from '../lib/temp-guard.mjs';
-import { readQueue, queuePlace } from '../lib/heavy-queue.mjs';
+import { readQueue, queuePlace, withQueueLock } from '../lib/heavy-queue.mjs';
 
 const tmp = () => fs.mkdtempSync( path.join( os.tmpdir(), 'heavy-slot-' ) );
 const room = { cpuBusy: 0.1, freeMem: ROOM.freeMemBytes * 2, freeC: ROOM.freeCBytes * 2 };
@@ -129,4 +129,22 @@ test( 'heavy-slot reads its options only before --, refuses a --dir with no fold
 	assert.equal( parseArgv( [ '--dir', 'E:/x', 'status' ] ).dir, 'E:/x' );
 	assert.match( parseArgv( [ 'run', 'x', '--dir' ] ).error, /needs a folder/ );
 	assert.equal( await runCommand( [ process.execPath, '-e', 'process.exit(process.argv[1] === "a b&c" ? 0 : 3)', 'a b&c' ] ), 0 );
+} );
+
+test( 'MUST FAIL: the queue lock is broken at once when its holder is gone, and waited out (not given up) while a live holder is slow', ( t ) => {
+	const dir = tmp();
+	t.after( () => fs.rmSync( dir, { recursive: true, force: true } ) );
+	const lock = path.join( dir, 'queue.lock' );
+	fs.writeFileSync( lock, '999999' );
+	assert.equal( withQueueLock( dir, () => 'ran', { alive: () => false, sleep: () => assert.fail( 'a dead holder is never waited for' ) } ), 'ran' );
+	fs.writeFileSync( lock, String( process.pid ) );
+	let clock = Date.now();
+	let sleeps = 0;
+	const out = withQueueLock( dir, () => 'ran', { alive: () => true, now: () => clock, sleep: ( ms ) => {
+		sleeps++;
+		clock += ms;
+		20 === sleeps && fs.rmSync( lock );
+	} } );
+	assert.equal( out, 'ran', 'a live holder stalled for a second is waited out' );
+	assert.equal( sleeps, 20 );
 } );

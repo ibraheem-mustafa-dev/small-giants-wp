@@ -12,6 +12,16 @@ const HEADING = '## Waiting for a heavy-run slot';
 const NOTE = 'Written by `scripts/computed-route/tools/heavy-slot.mjs` (and `route-sweep.mjs --slot-dir`): a heavy run joins at the bottom, starts when it reaches the top and a slot is free, and leaves the list as it starts. Do not edit the list by hand; run heavy work through the tool.';
 const LINE = /^- (\d\d:\d\d) (\S+) \(pid (\d+)\)(?: <!-- (?:joined (\d+) )?beat (\d+) -->)?$/;
 const LOCK_STALE_MS = 30 * 1000;
+const LOCK_WAIT_MS = 2 * 60 * 1000;
+// Whether the lock's holder process is running (EPERM: it runs as another user).
+function holderAlive( pid ) {
+	try {
+		process.kill( pid, 0 );
+		return true;
+	} catch ( e ) {
+		return 'EPERM' === e.code;
+	}
+}
 // A waiting job rewrites its beat on every poll; one silent this long is gone even if Windows gave its process id to another program.
 export const WAIT_STALE_MS = 5 * 60 * 1000;
 
@@ -50,26 +60,30 @@ function writeQueue( file, { head, entries } ) {
 	fs.writeFileSync( file, `${ head ? `${ head }\n\n` : '' }${ HEADING }\n\n${ NOTE }\n\n${ list }\n` );
 }
 
-// Runs `fn` holding the queue's lock (a file created exclusively beside the queue's slots); a lock older than 30 s is a crash's.
-export function withQueueLock( lockDir, fn, { sleep = ( ms ) => Atomics.wait( new Int32Array( new SharedArrayBuffer( 4 ) ), 0, 0, ms ) } = {} ) {
+// Runs `fn` holding the queue's lock (a file created exclusively beside the queue's slots, holding the holder's process id).
+// A lock whose holder process is gone, or older than 30 s, is a crash's and is broken; a busy machine can stall a live holder
+// for seconds, so the wait is long (LOCK_WAIT_MS) and only a lock still taken after it is an error.
+export function withQueueLock( lockDir, fn, { sleep = ( ms ) => Atomics.wait( new Int32Array( new SharedArrayBuffer( 4 ) ), 0, 0, ms ), alive = holderAlive, now = Date.now } = {} ) {
 	fs.mkdirSync( lockDir, { recursive: true } );
 	const lock = path.join( lockDir, 'queue.lock' );
-	for ( let tries = 0; ; tries++ ) {
+	for ( const start = now(); ; ) {
 		try {
 			fs.writeFileSync( lock, String( process.pid ), { flag: 'wx' } );
 			break;
 		} catch {
 			try {
-				if ( Date.now() - fs.statSync( lock ).mtimeMs > LOCK_STALE_MS ) {
+				const holder = Number( fs.readFileSync( lock, 'utf8' ) );
+				if ( now() - fs.statSync( lock ).mtimeMs > LOCK_STALE_MS || ( holder && ! alive( holder ) ) ) {
 					fs.rmSync( lock, { force: true } );
+					continue;
 				}
 			} catch {
 				// freed meanwhile
 			}
-			if ( tries > 400 ) {
-				throw new Error( `the heavy-run queue lock ${ lock } stayed taken` );
+			if ( now() - start > LOCK_WAIT_MS ) {
+				throw new Error( `the heavy-run queue lock ${ lock } stayed taken for ${ LOCK_WAIT_MS / 1000 } s` );
 			}
-			sleep( 25 );
+			sleep( 50 );
 		}
 	}
 	try {
