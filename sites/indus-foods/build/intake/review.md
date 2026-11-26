@@ -1,6 +1,6 @@
 # Intake review: indus-foods
 
-Taken by default: 32 rows had no mark from Bean and took their proposal (intake.mjs --apply-review --go-through; the Mark cell of such a row stays blank, and a mark Bean writes there overrides the default); rows with no proposal to take are listed in go-through-open.json.
+Taken by default: 36 rows had no mark from Bean and took their proposal (intake.mjs --apply-review --go-through; the Mark cell of such a row stays blank, and a mark Bean writes there overrides the default); rows with no proposal to take are listed in go-through-open.json.
 
 Taken on 2026-11-19T06:19:28.565Z; manifest 1.0, files hash f2d909d8605ef2cb.
 
@@ -30,6 +30,13 @@ Accept all: [ ]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
+| `page:page:catalogue` | **changed** catalogue → Request Catalogue (page, static, page) | apply/catalogue |  |  |
+| `page:page:delivery` | **changed** delivery → Delivery & Logistics (page, static, page) | apply/delivery | footer #4 |  |
+| `page:page:faqs` | **changed** faqs → FAQs (page, static, page) | apply/faqs |  |  |
+| `page:page:manufacturing` | **changed** manufacturing → Manufacturing (page, static, page) | food-service/manufacturing |  |  |
+| `page:page:retail` | **changed** retail → Retail (page, static, page) | food-service/retail |  |  |
+| `page:page:terms` | **changed** terms → Terms & Conditions (page, static, page) | apply/terms | footer #5 |  |
+| `page:page:wholesale` | **changed** wholesale → Wholesale (page, static, page) | food-service/wholesale |  |  |
 | `page:page:about` | about → About Us (page, static, page) | about | header #2 | accept |
 | `page:page:apply` | apply → Apply for Trade Account (page, static, page) | apply | header #5, footer #2 | accept |
 | `page:page:blog` | blog → Blog (page, live, home) | about/blog | footer #6 | edit:parent=null |
@@ -39,20 +46,13 @@ Accept all: [ ]
 | `page:page:brand-shan` | brand-shan → Shan (page, static, page) | brands/brand-shan |  | edit:slug=shan |
 | `page:page:brands` | brands → All Brands (page, static, page) | brands | header #4, footer #3 | accept |
 | `page:page:careers` | careers → Careers (page, static, page) | about/careers |  | accept |
-| `page:page:catalogue` | catalogue → Request Catalogue (page, static, page) | catalogue |  | accept |
 | `page:page:certifications` | certifications → Certifications (page, static, page) | about/certifications | footer #1 | accept |
 | `page:page:community` | community → Community & Charity (page, static, page) | about/community |  | accept |
 | `page:page:contact` | contact → Contact Us (page, static, page) | contact | header #6 | accept |
-| `page:page:delivery` | delivery → Delivery & Logistics (page, static, page) | delivery | footer #4 | accept |
-| `page:page:faqs` | faqs → FAQs (page, static, page) | faqs |  | accept |
 | `page:page:food-service` | food-service → Food Service (page, static, page) | food-service | header #3 |  |
 | `page:page:home` | home → Home (page, static, front-page) | home | header #1 | accept |
-| `page:page:manufacturing` | manufacturing → Manufacturing (page, static, page) | manufacturing |  |  |
 | `page:page:our-story` | our-story → Our Story (page, static, page) | about/our-story |  | accept |
-| `page:page:retail` | retail → Retail (page, static, page) | retail |  |  |
 | `page:page:sustainability` | sustainability → Sustainability (page, static, page) | about/sustainability |  | accept |
-| `page:page:terms` | terms → Terms & Conditions (page, static, page) | terms | footer #5 | accept |
-| `page:page:wholesale` | wholesale → Wholesale (page, static, page) | wholesale |  |  |
 | `page:post:falak-rice-exclusive-uk-distribution` | post-post-2 → Falak rice: exclusive UK distribution (post, live, single) | falak-rice-exclusive-uk-distribution |  | accept |
 | `page:post:inside-our-birmingham-packing-line` | post-post-3 → Inside our Birmingham packing line (post, live, single) | inside-our-birmingham-packing-line |  | accept |
 | `page:post:ordering-ahead-for-eid` | post-post-5 → Ordering ahead for Eid (post, live, single) | ordering-ahead-for-eid |  | accept |

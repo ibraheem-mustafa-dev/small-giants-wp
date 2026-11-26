@@ -62520,7 +62520,7 @@
    "route": "manufacturing",
    "slug": "manufacturing",
    "title": "Manufacturing",
-   "parent": null,
+   "parent": "food-service",
    "template": "page",
    "menus": [],
    "postType": "page",
@@ -62532,7 +62532,7 @@
    "route": "retail",
    "slug": "retail",
    "title": "Retail",
-   "parent": null,
+   "parent": "food-service",
    "template": "page",
    "menus": [],
    "postType": "page",
@@ -62544,7 +62544,7 @@
    "route": "wholesale",
    "slug": "wholesale",
    "title": "Wholesale",
-   "parent": null,
+   "parent": "food-service",
    "template": "page",
    "menus": [],
    "postType": "page",
@@ -62650,7 +62650,7 @@
    "route": "catalogue",
    "slug": "catalogue",
    "title": "Request Catalogue",
-   "parent": null,
+   "parent": "apply",
    "template": "page",
    "menus": [],
    "postType": "page",
@@ -62662,7 +62662,7 @@
    "route": "delivery",
    "slug": "delivery",
    "title": "Delivery & Logistics",
-   "parent": null,
+   "parent": "apply",
    "template": "page",
    "menus": [
     {
@@ -62680,7 +62680,7 @@
    "route": "terms",
    "slug": "terms",
    "title": "Terms & Conditions",
-   "parent": null,
+   "parent": "apply",
    "template": "page",
    "menus": [
     {
@@ -62734,7 +62734,7 @@
    "route": "faqs",
    "slug": "faqs",
    "title": "FAQs",
-   "parent": null,
+   "parent": "apply",
    "template": "page",
    "menus": [],
    "postType": "page",
@@ -138617,35 +138617,38 @@
    "contentHash": "49751060d826467c6a3373ac8c57f1913ccb645d531042ec7768d7d3140cd991",
    "mark": "accept",
    "markedOn": "2026-11-19",
-   "carriedFrom": null,
+   "carriedFrom": "2026-11-19T06:19:28.565Z",
    "by": "go-through"
   },
   {
    "rowId": "page:page:manufacturing",
    "rowType": "page-map",
-   "contentHash": "fbba862c7a1b6fa1f3c7f58b18787c65713aeb2af40b26a0c5c676b63128a5e5",
+   "contentHash": "d3f444b9fbb2d9d1ca421ccd169155fb1311ab8a00ac3f87dbc4cf14a8a28346",
    "mark": "accept",
-   "markedOn": "2026-11-19",
+   "markedOn": "2026-11-26",
    "carriedFrom": null,
-   "by": "go-through"
+   "by": "go-through",
+   "changed": true
   },
   {
    "rowId": "page:page:retail",
    "rowType": "page-map",
-   "contentHash": "e303520f2c6c28db78e2b37e1ab5f6c8b866edaac9bfa9528738e71db56bfe4d",
+   "contentHash": "4033c83d79cee7a3cf0a0b5816000b9b8c66d8dcf4c93d1a0c64455d1d314c2d",
    "mark": "accept",
-   "markedOn": "2026-11-19",
+   "markedOn": "2026-11-26",
    "carriedFrom": null,
-   "by": "go-through"
+   "by": "go-through",
+   "changed": true
   },
   {
    "rowId": "page:page:wholesale",
    "rowType": "page-map",
-   "contentHash": "d672ab9d80cc381ce0bc5ed40b1d327544404905a2f783873c658af08cd8966f",
+   "contentHash": "eb6de86dec3997e82802fa0a380d980182c657d130c801662bafadfd5dd83cf5",
    "mark": "accept",
-   "markedOn": "2026-11-19",
+   "markedOn": "2026-11-26",
    "carriedFrom": null,
-   "by": "go-through"
+   "by": "go-through",
+   "changed": true
   },
   {
    "rowId": "page:page:brands",
@@ -138698,26 +138701,32 @@
   {
    "rowId": "page:page:catalogue",
    "rowType": "page-map",
-   "contentHash": "d2caad164b60a33b15c6680328a708eccb2e99b303b7d43a4ea4c7de23fd8852",
+   "contentHash": "aafb5d4d9b33f608dd8b2ae8c52230a53d7a1e9fc6f0634ae7b1950102051087",
    "mark": "accept",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
+   "markedOn": "2026-11-26",
+   "carriedFrom": null,
+   "by": "go-through",
+   "changed": true
   },
   {
    "rowId": "page:page:delivery",
    "rowType": "page-map",
-   "contentHash": "2d9ffcae3eaaeac945b919a3a9f905a64811cb1ad1f3ef937eb989864e9e6b7f",
+   "contentHash": "df1bee880f90d60fd8479245887a008184213b0fac10745a0750989d6043f5d2",
    "mark": "accept",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
+   "markedOn": "2026-11-26",
+   "carriedFrom": null,
+   "by": "go-through",
+   "changed": true
   },
   {
    "rowId": "page:page:terms",
    "rowType": "page-map",
-   "contentHash": "654c2b18a7dce167aa2e78440943f4f073fed31499250b252ea6f5bac7737c70",
+   "contentHash": "2fe21154350bbeb69632f6272424018a99a8a26d5d95bae7086aa5039faa02b3",
    "mark": "accept",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
+   "markedOn": "2026-11-26",
+   "carriedFrom": null,
+   "by": "go-through",
+   "changed": true
   },
   {
    "rowId": "page:page:blog",
@@ -138738,10 +138747,12 @@
   {
    "rowId": "page:page:faqs",
    "rowType": "page-map",
-   "contentHash": "2d501f9d1ac9c3fe169522b9cfbe68320da5f984060e49443d8fee4602bc285c",
+   "contentHash": "979b16effa69d03e9f8de45868a98573486d9738db992d63c9de54caa848b5a3",
    "mark": "accept",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
+   "markedOn": "2026-11-26",
+   "carriedFrom": null,
+   "by": "go-through",
+   "changed": true
   },
   {
    "rowId": "page:post:supporting-the-trade-through-ramadan",
@@ -139005,7 +139016,7 @@
    "contentHash": "b3d2e65664acd2e97083c0e8062e5e2e5cd72824e35dc62944f4a75032b85373",
    "mark": "accept",
    "markedOn": "2026-11-19",
-   "carriedFrom": null,
+   "carriedFrom": "2026-11-19T06:19:28.565Z",
    "by": "go-through"
   },
   {
@@ -139014,7 +139025,7 @@
    "contentHash": "8b66c8e8be28d45c93e8d026e2f0256dffec07ddb64956c6a0e13183fa6d9c21",
    "mark": "accept",
    "markedOn": "2026-11-19",
-   "carriedFrom": null,
+   "carriedFrom": "2026-11-19T06:19:28.565Z",
    "by": "go-through"
   },
   {
@@ -139031,7 +139042,7 @@
    "contentHash": "5419b1b709677db8fc319badde334e53b5ab742c264447b5b7be854d23d78845",
    "mark": "accept",
    "markedOn": "2026-11-19",
-   "carriedFrom": null,
+   "carriedFrom": "2026-11-19T06:19:28.565Z",
    "by": "go-through"
   },
   {
@@ -139136,7 +139147,7 @@
    "contentHash": "9435ceb99c098850279db1b5c4241ada6c7429cc3d9a608decc36ba92d4f8dce",
    "mark": "accept",
    "markedOn": "2026-11-19",
-   "carriedFrom": null,
+   "carriedFrom": "2026-11-19T06:19:28.565Z",
    "by": "go-through"
   },
   {
@@ -139969,7 +139980,7 @@
    "contentHash": "af3750f0b5bd1c5ba2d994fc473b5f4e02ff138983804bf92f8a567314c248d3",
    "mark": "difference",
    "markedOn": "2026-11-26",
-   "carriedFrom": null,
+   "carriedFrom": "2026-11-19T06:19:28.565Z",
    "by": "go-through"
   },
   {
@@ -140547,7 +140558,7 @@
    "contentHash": "4fbcae7d0d317b27905098dcfeaf8e3e9018f757140fcba3c58709842655aca1",
    "mark": "accept",
    "markedOn": "2026-11-19",
-   "carriedFrom": null,
+   "carriedFrom": "2026-11-19T06:19:28.565Z",
    "by": "go-through"
   },
   {
@@ -140612,7 +140623,7 @@
    "contentHash": "7cc756bf6518a54dc68f7be8b3b727112029af8453baeeaf5b64a3cf19e81e09",
    "mark": "accept",
    "markedOn": "2026-11-19",
-   "carriedFrom": null,
+   "carriedFrom": "2026-11-19T06:19:28.565Z",
    "by": "go-through"
   },
   {
@@ -140621,7 +140632,7 @@
    "contentHash": "f2a0a1b6d1b7b2e4da4221ec67eecd7f7c179300e57801fd5882fcfb12f1282b",
    "mark": "accept",
    "markedOn": "2026-11-19",
-   "carriedFrom": null,
+   "carriedFrom": "2026-11-19T06:19:28.565Z",
    "by": "go-through"
   },
   {
@@ -140969,7 +140980,7 @@
    "contentHash": "9789cde49a240840b6dc58f19f0a20d129b8bfab73e05e2140a2155f5f0e3231",
    "mark": "accept",
    "markedOn": "2026-11-19",
-   "carriedFrom": null,
+   "carriedFrom": "2026-11-19T06:19:28.565Z",
    "by": "go-through"
   },
   {
@@ -141266,7 +141277,7 @@
    "contentHash": "b68b750b0f2cacb4d7744e50a91f4e1b2b3a331b452871f50e35d6c884730a1c",
    "mark": "accept",
    "markedOn": "2026-11-19",
-   "carriedFrom": null,
+   "carriedFrom": "2026-11-19T06:19:28.565Z",
    "by": "go-through"
   },
   {
@@ -141275,7 +141286,7 @@
    "contentHash": "621231ecfc27356ce21736944fcce8a67433ac0507c075279b26a63924e18ba1",
    "mark": "accept",
    "markedOn": "2026-11-19",
-   "carriedFrom": null,
+   "carriedFrom": "2026-11-19T06:19:28.565Z",
    "by": "go-through"
   },
   {
@@ -141733,7 +141744,7 @@
    "contentHash": "d1d7a1be22d16dec1be407fb8c0b6b89584cdafe230a9651718513a12b7c539e",
    "mark": "accept",
    "markedOn": "2026-11-19",
-   "carriedFrom": null,
+   "carriedFrom": "2026-11-19T06:19:28.565Z",
    "by": "go-through"
   },
   {
@@ -141742,7 +141753,7 @@
    "contentHash": "18072075bbbac7a772c84d53a0d28a419c86b31c908d9d245b7d2e1f4e0b8e32",
    "mark": "accept",
    "markedOn": "2026-11-19",
-   "carriedFrom": null,
+   "carriedFrom": "2026-11-19T06:19:28.565Z",
    "by": "go-through"
   },
   {
@@ -141751,7 +141762,7 @@
    "contentHash": "f2bd8b2ac2c96ac44817639f42ac9a0a3a8366dd9c9a1fa5d6796f6dd7d96012",
    "mark": "accept",
    "markedOn": "2026-11-19",
-   "carriedFrom": null,
+   "carriedFrom": "2026-11-19T06:19:28.565Z",
    "by": "go-through"
   },
   {
@@ -141760,7 +141771,7 @@
    "contentHash": "bf524a8cf492406d1ebde94e47e16822cb7b9d38abd81cd4162f92cd7a1f5459",
    "mark": "accept",
    "markedOn": "2026-11-19",
-   "carriedFrom": null,
+   "carriedFrom": "2026-11-19T06:19:28.565Z",
    "by": "go-through"
   },
   {
@@ -141769,7 +141780,7 @@
    "contentHash": "ea07ec5a39b33077bbd784702974c650b2e3902755b37100068498bbb4abaf3a",
    "mark": "accept",
    "markedOn": "2026-11-19",
-   "carriedFrom": null,
+   "carriedFrom": "2026-11-19T06:19:28.565Z",
    "by": "go-through"
   },
   {
@@ -142322,7 +142333,7 @@
    "contentHash": "d7f284ec3826d321a8599e4206896634ee51962c1373534a47be77dd4ad94cc0",
    "mark": "accept",
    "markedOn": "2026-11-19",
-   "carriedFrom": null,
+   "carriedFrom": "2026-11-19T06:19:28.565Z",
    "by": "go-through"
   },
   {
@@ -142539,7 +142550,7 @@
    "contentHash": "3bfc87ed61d7ce64b64ed95733f95fc9438e897779d826592e04f87ab00afff7",
    "mark": "accept",
    "markedOn": "2026-11-19",
-   "carriedFrom": null,
+   "carriedFrom": "2026-11-19T06:19:28.565Z",
    "by": "go-through"
   },
   {
@@ -142548,7 +142559,7 @@
    "contentHash": "1608ec653ddc80ad6124344474abad0fa5327d9137c5e306cf590befdb4c8769",
    "mark": "accept",
    "markedOn": "2026-11-19",
-   "carriedFrom": null,
+   "carriedFrom": "2026-11-19T06:19:28.565Z",
    "by": "go-through"
   },
   {
@@ -142557,7 +142568,7 @@
    "contentHash": "2d1dde491ce0291b03e0c57e102e501ed93d468ba621a7c246e6ed3842833fe1",
    "mark": "accept",
    "markedOn": "2026-11-19",
-   "carriedFrom": null,
+   "carriedFrom": "2026-11-19T06:19:28.565Z",
    "by": "go-through"
   },
   {
@@ -142566,7 +142577,7 @@
    "contentHash": "774be29077c03483acee1f60cea1ebc5def6347db87b32600bdaecdc4fd3782a",
    "mark": "accept",
    "markedOn": "2026-11-19",
-   "carriedFrom": null,
+   "carriedFrom": "2026-11-19T06:19:28.565Z",
    "by": "go-through"
   },
   {
@@ -142575,7 +142586,7 @@
    "contentHash": "5b265c803a0010fa7bad8a98b7da47f35a37d2483232ff28e067e2f9b14155d9",
    "mark": "accept",
    "markedOn": "2026-11-19",
-   "carriedFrom": null,
+   "carriedFrom": "2026-11-19T06:19:28.565Z",
    "by": "go-through"
   },
   {
@@ -142584,7 +142595,7 @@
    "contentHash": "c9a8cdc3533067a109cf773da12fa4b5a27c5950c25761c1b43d604d843086f5",
    "mark": "accept",
    "markedOn": "2026-11-19",
-   "carriedFrom": null,
+   "carriedFrom": "2026-11-19T06:19:28.565Z",
    "by": "go-through"
   },
   {
@@ -142593,7 +142604,7 @@
    "contentHash": "73d067be79d38087da9319573e59ca3c9db7efca74b4935f88702782e2b5e3a7",
    "mark": "accept",
    "markedOn": "2026-11-19",
-   "carriedFrom": null,
+   "carriedFrom": "2026-11-19T06:19:28.565Z",
    "by": "go-through"
   },
   {
@@ -142706,7 +142717,7 @@
    "contentHash": "633df5e2fd4a675c05fc65593efb95bcadc2d0d2bdef7c11efbfa60bdfd5ac9a",
    "mark": "accept",
    "markedOn": "2026-11-19",
-   "carriedFrom": null,
+   "carriedFrom": "2026-11-19T06:19:28.565Z",
    "by": "go-through"
   },
   {
@@ -142779,7 +142790,7 @@
    "contentHash": "51961c247e0989ef9b9da979449bd7f1eac7ca7c2bf5c8a337bfb446651d8114",
    "mark": "accept",
    "markedOn": "2026-11-19",
-   "carriedFrom": null,
+   "carriedFrom": "2026-11-19T06:19:28.565Z",
    "by": "go-through"
   },
   {
@@ -143428,7 +143439,7 @@
    "contentHash": "55b5f1078412209d21d74fc30fa6a5d7c82b966b7c5a4133ccd044f05e27b6cb",
    "mark": "accept",
    "markedOn": "2026-11-19",
-   "carriedFrom": null,
+   "carriedFrom": "2026-11-19T06:19:28.565Z",
    "by": "go-through"
   },
   {
@@ -144915,7 +144926,7 @@
    "contentHash": "c1526014e144c257d618109c8b5c4f3b4e49cc0c913b871833eae2bd1fdededd",
    "mark": "accept",
    "markedOn": "2026-11-19",
-   "carriedFrom": null,
+   "carriedFrom": "2026-11-19T06:19:28.565Z",
    "by": "go-through"
   },
   {
