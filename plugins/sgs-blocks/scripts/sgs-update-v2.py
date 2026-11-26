@@ -2282,6 +2282,34 @@ _ALLOWED_BLOCKS_OPEN_RE = re.compile(
     re.VERBOSE,
 )
 
+# `allowedBlocks: metadata.allowedBlocks`: the list is the block's own block.json `allowedBlocks`, imported as `metadata`
+# (or any name the file imports './block.json' under). Group 1 = that name.
+_ALLOWED_BLOCKS_FROM_METADATA_RE = re.compile(r"allowedBlocks\s*:\s*([A-Za-z_$][\w$]*)\.allowedBlocks\b")
+_BLOCK_JSON_IMPORT_RE = re.compile(r"import\s+([A-Za-z_$][\w$]*)\s+from\s+['\"]\./block\.json['\"]")
+
+
+def _metadata_allowed_blocks(block_dir: Path, text: str):
+    """The list a block's edit.js takes from its block.json (`allowedBlocks: metadata.allowedBlocks`).
+
+    Returns:
+        None            — edit.js does not read block.json's list (nothing to add).
+        list[str]       — block.json's `allowedBlocks` (empty when block.json declares none: `undefined`, accepts any block).
+        _DYNAMIC_SKIP   — the list is read from block.json but block.json cannot be read or its list is not plain strings.
+    """
+    imported = {m.group(1) for m in _BLOCK_JSON_IMPORT_RE.finditer(text)}
+    if not any(m.group(1) in imported for m in _ALLOWED_BLOCKS_FROM_METADATA_RE.finditer(text)):
+        return None
+    try:
+        declared = json.loads((block_dir / "block.json").read_text(encoding="utf-8")).get("allowedBlocks")
+    except (OSError, ValueError):
+        return _DYNAMIC_SKIP
+    if declared is None:
+        return []
+    if not isinstance(declared, list) or not all(isinstance(x, str) for x in declared):
+        return _DYNAMIC_SKIP
+    return list(declared)
+
+
 # Match a single quoted block-slug string inside the array.
 # The backreference \1 ensures opening and closing quotes match (no mixing).
 # Slug pattern: <namespace>/<name> where both parts are lowercase+hyphens only.
@@ -2346,11 +2374,17 @@ def scrape_allowed_blocks(edit_js_path: Path) -> list[str] | None:
     # Every allowedBlocks declaration counts: a block that sets its list per variant (sgs/mega-panel's media-cards,
     # cards-with-aside and default variants) accepts the union of them, in order of first appearance.
     matches = list(_ALLOWED_BLOCKS_OPEN_RE.finditer(text))
+    # A list taken from the block's own block.json (sgs/form): read it from there, beside any literal list in the file.
+    from_metadata = _metadata_allowed_blocks(edit_js_path.parent, text)
+    if from_metadata is _DYNAMIC_SKIP:
+        return _DYNAMIC_SKIP  # type: ignore[return-value]
+    if not matches and from_metadata is not None:
+        return from_metadata or None
     if not matches:
         # Keyword present but not in a recognisable pattern — unknown, not "none".
         return _DYNAMIC_SKIP  # type: ignore[return-value]
 
-    slugs: list[str] = []
+    slugs: list[str] = list(from_metadata or [])
     for match in matches:
         bracket_start = text.index("[", match.start())
 

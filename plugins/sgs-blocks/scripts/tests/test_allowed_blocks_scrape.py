@@ -268,6 +268,35 @@ allowedBlocks: [],
 """)
         assert scrape_allowed_blocks(edit) is _DYNAMIC_SKIP
 
+    def test_list_taken_from_the_blocks_own_block_json(self, tmp_path: Path) -> None:
+        """`allowedBlocks: metadata.allowedBlocks` reads block.json's list (sgs/form), not the keep-what-is-stored skip."""
+        edit = _write_edit_js(tmp_path, """
+import metadata from './block.json';
+const innerBlocksProps = useInnerBlocksProps( {}, { allowedBlocks: metadata.allowedBlocks } );
+""")
+        (tmp_path / "block.json").write_text(json.dumps({"name": "sgs/demo", "allowedBlocks": ["sgs/a", "sgs/b"]}), encoding="utf-8")
+        assert scrape_allowed_blocks(edit) == ["sgs/a", "sgs/b"]
+        # block.json declares no list: edit.js passes undefined, so the block accepts any block.
+        (tmp_path / "block.json").write_text(json.dumps({"name": "sgs/demo"}), encoding="utf-8")
+        assert scrape_allowed_blocks(edit) is None
+        # An unreadable block.json is unknown, never "accepts any".
+        (tmp_path / "block.json").write_text("{not json", encoding="utf-8")
+        assert scrape_allowed_blocks(edit) is _DYNAMIC_SKIP
+
+    def test_metadata_list_joins_a_literal_list_and_ignores_other_objects(self, tmp_path: Path) -> None:
+        edit = _write_edit_js(tmp_path, """
+import metadata from './block.json';
+const A = useInnerBlocksProps( {}, { allowedBlocks: metadata.allowedBlocks } );
+const B = useInnerBlocksProps( {}, { allowedBlocks: [ 'sgs/c' ] } );
+""")
+        (tmp_path / "block.json").write_text(json.dumps({"allowedBlocks": ["sgs/a"]}), encoding="utf-8")
+        assert scrape_allowed_blocks(edit) == ["sgs/a", "sgs/c"]
+        # `other.allowedBlocks` where `other` is not the block.json import stays unknown.
+        edit = _write_edit_js(tmp_path, """
+const innerBlocksProps = useInnerBlocksProps( {}, { allowedBlocks: other.allowedBlocks } );
+""")
+        assert scrape_allowed_blocks(edit) is _DYNAMIC_SKIP
+
     def test_no_declaration_returns_none(self, tmp_path: Path) -> None:
         """A file with no allowedBlocks at all returns None: the block accepts any block."""
         edit = _write_edit_js(tmp_path, "const innerBlocksProps = useInnerBlocksProps( blockProps, { template: TEMPLATE } );")
