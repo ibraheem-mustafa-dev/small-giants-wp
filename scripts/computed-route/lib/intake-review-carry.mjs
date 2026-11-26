@@ -47,14 +47,15 @@ export const earlierIds = ( row, movedFrom = null ) => [ ...new Set( [ ...[ row?
 // whose content changed gets `changed: true` and no mark.
 // Every previous mark that reaches no row is listed with why. Returns { review, changed: [rowId], realigned: [ 'old ->
 // new' ], refused: [ 'rowId: why' ] }: a mark is carried or listed, never dropped.
-export function carryOver( previousIntake, intake ) {
+// `template`: the fact record's template (lib/intake-review.mjs::factTemplate), which the effect rows are read with.
+export function carryOver( previousIntake, intake, { template = null } = {} ) {
 	const prior = new Map( ( previousIntake?.review || [] ).map( ( r ) => [ r.rowId, r ] ) );
 	const moves = skeletonMoves( previousIntake, intake );
 	const changed = [];
 	const realigned = [];
 	const refused = [];
 	const reached = new Set();
-	const review = reviewRows( intake ).map( ( r ) => {
+	const review = reviewRows( intake, { template } ).map( ( r ) => {
 		const fromId = moves.to.get( r.rowId ) ?? ( moves.away.has( r.rowId ) || moves.drifted.has( r.rowId ) ? null : r.rowId );
 		const old = fromId ? prior.get( fromId ) : null;
 		const base = { rowId: r.rowId, rowType: r.rowType, contentHash: r.contentHash, mark: null, markedOn: null, carriedFrom: null };

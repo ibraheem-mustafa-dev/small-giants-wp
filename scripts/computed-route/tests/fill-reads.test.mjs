@@ -104,7 +104,7 @@ test( 'MUST FAIL (R11.5): headerSticky follows the draft\'s position per tier; a
 	assert.deepEqual( stickyTiers( undefined ), { desktop: 'on' } );
 } );
 
-const HEADER = { id: 'S-1', name: 'S-1', mechanism: 'js-style-write', status: 'active', element: { dc: 'Site', template_tpl_id: '10', selector: 'ref setHeaderEl', description: 'Header bar' }, trigger: { type: 'scroll-position', detail: 'window scroll: scrollY > 8' }, source: { code: 'this._headerEl.style.boxShadow = window.scrollY > 8 ?' }, properties: [ { property: 'box-shadow', from: 'none', to: '0 10px 30px -18px rgba(20,40,60,.35)' } ], duration_ms: 300 };
+const HEADER = { id: 'S-1', name: 'S-1', mechanism: 'js-style-write', status: 'active', element: { dc: 'Site', template_tpl_id: '10', selector: 'ref setHeaderEl', description: 'Header bar' }, trigger: { type: 'scroll-position', detail: 'window scroll: scrollY > 8' }, source: { code: "this._headerEl.style.boxShadow = window.scrollY > 8 ? '0 10px 30px -18px rgba(20,40,60,.35)' : 'none'" }, properties: [ { property: 'box-shadow', from: 'none', to: '0 10px 30px -18px rgba(20,40,60,.35)' } ], duration_ms: 300 };
 const TEMPLATE = { elements: { 'Site/10': { realParent: 'Site/1', srcLine: 10, style: { static: [ [ 'position', 'sticky' ], [ 'top', '0' ] ], holes: [] }, parentChain: [ 'Site/1' ] } } };
 const stickyOf = ( positions ) => recogniseBehaviour( HEADER, { template: TEMPLATE, positions } ).blocks[ 'sgs/site-header' ].find( ( s ) => 'headerSticky' === s.attr )?.value;
 

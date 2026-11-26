@@ -138577,9 +138577,8 @@
    "contentHash": "bdaf9266c00aba0ad984d5c4a057169655a34771df522bc04a9bdc33a6ac07fd",
    "mark": "accept",
    "markedOn": "2026-11-26",
-   "carriedFrom": null,
-   "by": "go-through",
-   "changed": true
+   "carriedFrom": "2026-11-19T06:19:28.565Z",
+   "by": "go-through"
   },
   {
    "rowId": "page:page:certifications",
@@ -138587,9 +138586,8 @@
    "contentHash": "ee268a1f1c2897c6034f9f47bc26ef65368fefb899f5d7de4a18025b3c835e95",
    "mark": "accept",
    "markedOn": "2026-11-26",
-   "carriedFrom": null,
-   "by": "go-through",
-   "changed": true
+   "carriedFrom": "2026-11-19T06:19:28.565Z",
+   "by": "go-through"
   },
   {
    "rowId": "page:page:community",
@@ -138597,9 +138595,8 @@
    "contentHash": "1c4c174d2f22a1c9f899325f2fb7eeefa4ce1e258062b590cfbede2481f90046",
    "mark": "accept",
    "markedOn": "2026-11-26",
-   "carriedFrom": null,
-   "by": "go-through",
-   "changed": true
+   "carriedFrom": "2026-11-19T06:19:28.565Z",
+   "by": "go-through"
   },
   {
    "rowId": "page:page:sustainability",
@@ -138607,9 +138604,8 @@
    "contentHash": "6770857846e06ceb700ae1250fdeca75fa6351b53f0509987f2b9d02914edb8f",
    "mark": "accept",
    "markedOn": "2026-11-26",
-   "carriedFrom": null,
-   "by": "go-through",
-   "changed": true
+   "carriedFrom": "2026-11-19T06:19:28.565Z",
+   "by": "go-through"
   },
   {
    "rowId": "page:page:careers",
@@ -138617,9 +138613,8 @@
    "contentHash": "d07ea7a8d3ef68e9bbba99e6fa06012c094f789493346d6710cb58d9842b67b5",
    "mark": "accept",
    "markedOn": "2026-11-26",
-   "carriedFrom": null,
-   "by": "go-through",
-   "changed": true
+   "carriedFrom": "2026-11-19T06:19:28.565Z",
+   "by": "go-through"
   },
   {
    "rowId": "page:page:food-service",
@@ -138636,9 +138631,8 @@
    "contentHash": "fbba862c7a1b6fa1f3c7f58b18787c65713aeb2af40b26a0c5c676b63128a5e5",
    "mark": "accept",
    "markedOn": "2026-11-26",
-   "carriedFrom": null,
-   "by": "go-through",
-   "changed": true
+   "carriedFrom": "2026-11-19T06:19:28.565Z",
+   "by": "go-through"
   },
   {
    "rowId": "page:page:retail",
@@ -138646,9 +138640,8 @@
    "contentHash": "e303520f2c6c28db78e2b37e1ab5f6c8b866edaac9bfa9528738e71db56bfe4d",
    "mark": "accept",
    "markedOn": "2026-11-26",
-   "carriedFrom": null,
-   "by": "go-through",
-   "changed": true
+   "carriedFrom": "2026-11-19T06:19:28.565Z",
+   "by": "go-through"
   },
   {
    "rowId": "page:page:wholesale",
@@ -138656,9 +138649,8 @@
    "contentHash": "d672ab9d80cc381ce0bc5ed40b1d327544404905a2f783873c658af08cd8966f",
    "mark": "accept",
    "markedOn": "2026-11-26",
-   "carriedFrom": null,
-   "by": "go-through",
-   "changed": true
+   "carriedFrom": "2026-11-19T06:19:28.565Z",
+   "by": "go-through"
   },
   {
    "rowId": "page:page:brands",
@@ -138674,8 +138666,7 @@
    "contentHash": "91b05788b5d43bfe77e793c2456d7649ddde167f631ccf6766189a896ed30f39",
    "mark": "edit:slug=sanam",
    "markedOn": "2026-11-26",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-11-19T06:19:28.565Z"
   },
   {
    "rowId": "page:page:brand-shan",
@@ -138683,8 +138674,7 @@
    "contentHash": "6b475b7d987d7e9f822a49d8865e854cc38cef828b80031476caf829b733aca4",
    "mark": "edit:slug=shan",
    "markedOn": "2026-11-26",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-11-19T06:19:28.565Z"
   },
   {
    "rowId": "page:page:brand-green-leaf",
@@ -138692,8 +138682,7 @@
    "contentHash": "8e6e3b351c3befd915a4eb7f69a1101e883721abdb8224ea97b83a6a201b4fb5",
    "mark": "edit:slug=green-leaf",
    "markedOn": "2026-11-26",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-11-19T06:19:28.565Z"
   },
   {
    "rowId": "page:page:brand-lemon-tree",
@@ -138701,8 +138690,7 @@
    "contentHash": "3688af6883ade088dcef1bcfeb32f95664212f6ab6007b58bf0272297d1d4124",
    "mark": "edit:slug=lemon-tree",
    "markedOn": "2026-11-26",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-11-19T06:19:28.565Z"
   },
   {
    "rowId": "page:page:apply",
@@ -138718,9 +138706,8 @@
    "contentHash": "d2caad164b60a33b15c6680328a708eccb2e99b303b7d43a4ea4c7de23fd8852",
    "mark": "accept",
    "markedOn": "2026-11-26",
-   "carriedFrom": null,
-   "by": "go-through",
-   "changed": true
+   "carriedFrom": "2026-11-19T06:19:28.565Z",
+   "by": "go-through"
   },
   {
    "rowId": "page:page:delivery",
@@ -138728,9 +138715,8 @@
    "contentHash": "2d9ffcae3eaaeac945b919a3a9f905a64811cb1ad1f3ef937eb989864e9e6b7f",
    "mark": "accept",
    "markedOn": "2026-11-26",
-   "carriedFrom": null,
-   "by": "go-through",
-   "changed": true
+   "carriedFrom": "2026-11-19T06:19:28.565Z",
+   "by": "go-through"
   },
   {
    "rowId": "page:page:terms",
@@ -138738,9 +138724,8 @@
    "contentHash": "654c2b18a7dce167aa2e78440943f4f073fed31499250b252ea6f5bac7737c70",
    "mark": "accept",
    "markedOn": "2026-11-26",
-   "carriedFrom": null,
-   "by": "go-through",
-   "changed": true
+   "carriedFrom": "2026-11-19T06:19:28.565Z",
+   "by": "go-through"
   },
   {
    "rowId": "page:page:blog",
@@ -138748,9 +138733,8 @@
    "contentHash": "d55b28ba409145fcbf02f9d3b8e6078faa19807fd99fd3715e35f626903e7ce4",
    "mark": "accept",
    "markedOn": "2026-11-26",
-   "carriedFrom": null,
-   "by": "go-through",
-   "changed": true
+   "carriedFrom": "2026-11-19T06:19:28.565Z",
+   "by": "go-through"
   },
   {
    "rowId": "page:page:contact",
@@ -138766,9 +138750,8 @@
    "contentHash": "2d501f9d1ac9c3fe169522b9cfbe68320da5f984060e49443d8fee4602bc285c",
    "mark": "accept",
    "markedOn": "2026-11-26",
-   "carriedFrom": null,
-   "by": "go-through",
-   "changed": true
+   "carriedFrom": "2026-11-19T06:19:28.565Z",
+   "by": "go-through"
   },
   {
    "rowId": "page:post:supporting-the-trade-through-ramadan",
@@ -139871,6 +139854,22 @@
    "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
+   "rowId": "effect:A-02",
+   "rowType": "effect",
+   "contentHash": "79dada3a13ad63e401ee2c7c0b81f40fd83d31ca0575b964ce99977b9f0610e8",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "effect:A-12",
+   "rowType": "effect",
+   "contentHash": "12a4dfd9c5721877253ad5b5302efbe8a4e50e159996b1a6c92130c3c093f9db",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
    "rowId": "effect:A-24",
    "rowType": "effect",
    "contentHash": "6536b0daf00a0fb3575b9fc3a110386ced14e7cde9b29cfebba863bd27d213a1",
@@ -139905,10 +139904,35 @@
   {
    "rowId": "effect:J-05",
    "rowType": "effect",
-   "contentHash": "d5b159e102725a6b3653d1544478c46e15d721b93bdfd0c467d2e2a80b924cf9",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": "2026-10-23T23:58:47.556Z"
+   "contentHash": "1ab76cda172a33a3270c85339a52b2fdf5edfb8c8a011b69b514baa57b7ba92b",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null,
+   "changed": true
+  },
+  {
+   "rowId": "effect:J-06",
+   "rowType": "effect",
+   "contentHash": "ed96e439305532caa5812421187da8681edc58ffa2f8cd0708f80370a5d49e95",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "effect:J-07",
+   "rowType": "effect",
+   "contentHash": "70b0a15b7c486b523b689540c1a1ce0fbb47a44b1f0d45611627eb6b9448e3b6",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "effect:J-08",
+   "rowType": "effect",
+   "contentHash": "9cb77aeaf2ff1eff05591e6c4cbde67270af66ef78ef2907377654c52e899d68",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
   },
   {
    "rowId": "effect:J-09",
@@ -139917,6 +139941,14 @@
    "mark": "accept",
    "markedOn": "2026-10-24",
    "carriedFrom": "2026-10-23T23:58:47.556Z"
+  },
+  {
+   "rowId": "effect:J-10",
+   "rowType": "effect",
+   "contentHash": "f5f90600cd76a05572bce891e80d9bfcf1ebca1058fea0c196ad151620729745",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
   },
   {
    "rowId": "effect:J-11",
@@ -139929,18 +139961,20 @@
   {
    "rowId": "effect:J-12",
    "rowType": "effect",
-   "contentHash": "04fe3fb852480eb421d3490219da1da5d1c9c397a6e0cd00f5be8432ef746d3e",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
-   "carriedFrom": "2026-10-23T23:58:47.556Z"
+   "contentHash": "504ade525eaf896d3491c3cc326498385aa4a9fec123851cd0f608919e7edbcc",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "effect:J-13",
    "rowType": "effect",
-   "contentHash": "d09c8d732f0f7d70034753b9d6f500d8b3b216f8f337ef721163cd069d09c58d",
-   "mark": "difference",
-   "markedOn": "2026-10-24",
-   "carriedFrom": "2026-10-23T23:58:47.556Z"
+   "contentHash": "239e5c9ce6f5a5bc45c391efbeed852a7e442677ff7c65ed7d3b719708ee7d06",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "effect:J-14",
@@ -139949,6 +139983,14 @@
    "mark": "accept",
    "markedOn": "2026-10-24",
    "carriedFrom": "2026-10-23T23:58:47.556Z"
+  },
+  {
+   "rowId": "effect:J-31",
+   "rowType": "effect",
+   "contentHash": "964190f23530a9022e1b6019fe2603fdd7e6f439964e8eace911f305553bfe9e",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
   },
   {
    "rowId": "effect:J-43",
@@ -139973,6 +140015,14 @@
    "mark": "accept",
    "markedOn": "2026-10-24",
    "carriedFrom": "2026-10-23T23:58:47.556Z"
+  },
+  {
+   "rowId": "effect:J-45:glareOpacity",
+   "rowType": "effect",
+   "contentHash": "1c921c896bc9fadebc14f75569f34bcfa1a70eb787cd98e1952cf2d905076f14",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
   },
   {
    "rowId": "effect:J-50",

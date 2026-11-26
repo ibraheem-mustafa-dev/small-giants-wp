@@ -143445,8 +143445,7 @@
    "contentHash": "2bfb831eb3c7fe0b6b6b0f7827ee7655738e42ded1ae2fcc3321dae72977c940",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "page:page:help",
@@ -143454,8 +143453,7 @@
    "contentHash": "f555d66c6ea0557370358a0cac36f7729fa4b8d75fd1197ea991625ae469f043",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "page:page:contact",
@@ -143575,8 +143573,7 @@
    "contentHash": "12ac9004bfbdee880f8bcf1a972152fb59033e45628e322c9981512547c541cb",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "catalogue:1",
@@ -144622,6 +144619,38 @@
    "mark": "difference",
    "markedOn": "2026-10-26",
    "carriedFrom": "2026-10-26T21:15:22.158Z"
+  },
+  {
+   "rowId": "effect:J-15",
+   "rowType": "effect",
+   "contentHash": "319b59905a4367227f6041e5711768341f7f93dc94e77d596325965314af45fe",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "effect:TR-001",
+   "rowType": "effect",
+   "contentHash": "cdc466d1e8b80014850e9a647c08e97ccfe0ef43c18f97d3d78b306667801461",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "effect:TR-005",
+   "rowType": "effect",
+   "contentHash": "efcabaa95de065181689e0113d213528b1e0964990d192f1778af354287bb263",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "effect:TR-006",
+   "rowType": "effect",
+   "contentHash": "2e0488d03f454a7fe21f624168f4cd0567a8114d706cfbc56de62a46760e8355",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:header:Eye Care Birmingham/13#0",

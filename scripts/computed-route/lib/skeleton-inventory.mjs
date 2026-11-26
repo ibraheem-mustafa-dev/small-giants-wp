@@ -289,6 +289,45 @@ function collect( [ rootSelector, keySrc, attrNames, lineSrc, strips, holdsSrc, 
 	return { records: out, beside, unstamped, rootKey: out[ 0 ]?.key ?? null, rootName: window.__dcRootName() };
 }
 
+// In-page (self-contained). The content the draft's code put into each inventoried element at run time (Spec 48 RC12): an
+// <svg> child the element holds with no data-dc-tpl stamp of its own (a fetched SVG written into a holder, or a custom
+// element's own content) whose source is an SVG file the page fetched, as { <data-inv-i>: { tag: 'svg', viewBox, source } }.
+// `source` is the fetched file whose element structure (every element's tag in order, metadata left out) and viewBox equal
+// the injected one (the code may rename ids or drop attributes, not elements), as a path relative to the page. Only files the
+// page's script fetched count (a fetch or XHR request: code can write only markup it fetched), so an <svg> the template binds as
+// markup is not injected content even when the page also shows the same file as an <img>; nor is one no fetched file matches.
+export async function injectedContent() {
+	const shape = ( svg ) => [ ...svg.querySelectorAll( '*' ) ].filter( ( x ) => ! x.closest( 'metadata' ) ).map( ( x ) => x.localName ).join( ',' );
+	const holders = [ ...document.querySelectorAll( '[data-inv-i]' ) ].map( ( e ) => [ e, [ ...e.children ].find( ( c ) => 'svg' === c.localName && ! c.hasAttribute( 'data-dc-tpl' ) ) ] ).filter( ( [ , svg ] ) => svg );
+	if ( ! holders.length ) {
+		return {};
+	}
+	const base = location.href.replace( /[#?].*$/, '' ).replace( /[^/]*$/, '' );
+	const files = [];
+	const fetched = performance.getEntriesByType( 'resource' ).filter( ( r ) => [ 'fetch', 'xmlhttprequest' ].includes( r.initiatorType ) );
+	for ( const url of [ ...new Set( fetched.map( ( r ) => r.name ).filter( ( u ) => /\.svg(?:[?#]|$)/i.test( u ) ) ) ] ) {
+		try {
+			const root = new DOMParser().parseFromString( await ( await fetch( url ) ).text(), 'image/svg+xml' ).documentElement;
+			'svg' === root?.localName && files.push( { url, shape: shape( root ), viewBox: root.getAttribute( 'viewBox' ) } );
+		} catch {
+			// A file the page cannot fetch again names no source.
+		}
+	}
+	const out = {};
+	for ( const [ e, svg ] of holders ) {
+		const hit = files.find( ( f ) => f.shape === shape( svg ) && f.viewBox === svg.getAttribute( 'viewBox' ) );
+		hit && ( out[ e.getAttribute( 'data-inv-i' ) ] = { tag: 'svg', viewBox: svg.getAttribute( 'viewBox' ), source: decodeURI( hit.url.startsWith( base ) ? hit.url.slice( base.length ) : hit.url ) } );
+	}
+	return out;
+}
+
+// Each record's injected content (injectedContent) on the read it belongs to.
+async function withInjected( page, res ) {
+	const injected = await page.evaluate( injectedContent );
+	Object.entries( injected ).forEach( ( [ i, v ] ) => res.records[ Number( i ) ] && ( res.records[ Number( i ) ].injected = v ) );
+	return res;
+}
+
 const safe = ( k ) => k.replace( /[^A-Za-z0-9]+/g, '_' ).replace( /^_|_$/g, '' );
 
 // In-page. The padding the browser itself gives each tag key (lib/skeleton-paint-conservation.mjs::uaKeyOf: a tag, or
@@ -458,7 +497,7 @@ async function readOnPage( { page, url, root, shotsDir, log, settle: settleAt, s
 		if ( res.error ) {
 			throw new Error( `${ res.error } at ${ w }px` );
 		}
-		runs[ w ] = res;
+		runs[ w ] = await withInjected( page, res );
 		log( `inventory ${ w }px: ${ res.records.length } elements` );
 		await shootWidth( { page, res, runs, w, root, shotsDir, shots, skipped } );
 		await addReveals( { page, res, args, reveal, w, log } );
@@ -500,7 +539,7 @@ export async function readInventory( { url, root, shotsDir, log = () => {}, page
 			if ( res.error ) {
 				throw new Error( `${ res.error } at ${ w }px` );
 			}
-			runs[ w ] = res;
+			runs[ w ] = await withInjected( page, res );
 			log( `inventory ${ w }px: ${ res.records.length } elements` );
 			await shootWidth( { page, res, runs, w, root, shotsDir, shots, skipped } );
 			await addReveals( { page, res, args, reveal, w, log } );
@@ -535,6 +574,12 @@ export function withWidthOnly( runs ) {
 	return out;
 }
 
+// The injected content of one element per width ({ injected: { 375, 768, 1440 } }), or nothing when no width holds any.
+const injectedOf = ( atWidth ) => {
+	const by = Object.fromEntries( INVENTORY_WIDTHS.map( ( w ) => [ w, atWidth( w )?.injected ?? null ] ) );
+	return Object.values( by ).some( Boolean ) ? { injected: by } : {};
+};
+
 // The inventory from the per-width reads ({ width: collect result }). Each element keeps its 1440 `display` and its computed
 // display at every width in `displayAt` (null where that width's read has no such element). `uaPadding`, the browser's own
 // padding per tag key (uaPaddingOf), is kept as the inventory's `uaPadding` when given.
@@ -546,7 +591,7 @@ export function summarise( { runs, shots, skipped, url, root, uaPadding = null }
 		const id = recId( r );
 		// The words the element draws at each width, kept only where they differ (a script value that is shorter on a phone).
 		const wordsAt = Object.fromEntries( INVENTORY_WIDTHS.map( ( w ) => [ w, at( w, id )?.words ?? '' ] ) );
-		return { ...rest, ...( new Set( Object.values( wordsAt ).filter( Boolean ) ).size > 1 ? { wordsAt } : {} ), box: { 375: at( 375, id )?.box ?? null, 768: at( 768, id )?.box ?? null, 1440: r.box }, visible: { 375: at( 375, id )?.visible ?? false, 768: at( 768, id )?.visible ?? false, 1440: r.visible }, position: { 375: at( 375, id )?.position ?? null, 768: at( 768, id )?.position ?? null, 1440: r.position ?? null }, displayAt: Object.fromEntries( INVENTORY_WIDTHS.map( ( w ) => [ w, at( w, id )?.display ?? null ] ) ), resolved: { 375: at( 375, id )?.resolved ?? null, 768: at( 768, id )?.resolved ?? null, 1440: r.resolved ?? null }, layoutChanged375: at( 375, id )?.layoutChanged ?? null, screenshots: r.reveal ? {} : shots[ r.key ] || {} };
+		return { ...rest, ...( new Set( Object.values( wordsAt ).filter( Boolean ) ).size > 1 ? { wordsAt } : {} ), box: { 375: at( 375, id )?.box ?? null, 768: at( 768, id )?.box ?? null, 1440: r.box }, visible: { 375: at( 375, id )?.visible ?? false, 768: at( 768, id )?.visible ?? false, 1440: r.visible }, position: { 375: at( 375, id )?.position ?? null, 768: at( 768, id )?.position ?? null, 1440: r.position ?? null }, displayAt: Object.fromEntries( INVENTORY_WIDTHS.map( ( w ) => [ w, at( w, id )?.display ?? null ] ) ), resolved: { 375: at( 375, id )?.resolved ?? null, 768: at( 768, id )?.resolved ?? null, 1440: r.resolved ?? null }, ...injectedOf( ( w ) => ( 1440 === w ? r : at( w, id ) ) ), layoutChanged375: at( 375, id )?.layoutChanged ?? null, screenshots: r.reveal ? {} : shots[ r.key ] || {} };
 	} );
 	// The opening state's elements stay a list of their own; what only a state shows is kept beside it (lib/reveal-merge.mjs).
 	const elements = records.filter( ( r ) => ! r.reveal );

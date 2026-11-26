@@ -49,6 +49,24 @@ export function splitPartRecords( records, template ) {
 	return { parts, rest };
 }
 
+// Moves the part records of a holder no block draws as its own element (the stamped holder a section's SVG background is
+// drawn from) to the nearest template ancestor that is a target, whose block now holds the injected content. Changes `parts`.
+export function rehomeParts( parts, { targetKeys, template } ) {
+	for ( const [ key, list ] of [ ...parts ] ) {
+		if ( targetKeys.has( key ) ) {
+			continue;
+		}
+		let at = template?.elements?.[ key ]?.parent ?? null;
+		for ( let guard = 0; at && ! targetKeys.has( at ) && guard < 100; guard++ ) {
+			at = template.elements[ at ]?.parent ?? null;
+		}
+		if ( at ) {
+			parts.delete( key );
+			parts.set( at, [ ...( parts.get( at ) || [] ), ...list ] );
+		}
+	}
+}
+
 // A hover that replays a keyframe animation there and back: every property ends where it starts and passes through
 // another value.
 const replays = ( r ) => 'hover' === r.trigger?.type && ( r.properties || [] ).length > 0 && r.properties.every( ( p ) => String( p.from ) === String( p.to ) && ( p.keyframes || [] ).some( ( k ) => String( k.value ) !== String( p.from ) ) );
@@ -67,7 +85,7 @@ export function writePartMotion( { n, list, doc, pending, out, where, holder, md
 	list.forEach( ( r ) => String( r.element.selector ).split( /\s*,\s*/ ).forEach( ( piece ) => bySelector.set( piece, [ ...( bySelector.get( piece ) || [] ), r ] ) ) );
 	for ( const [ selector, group ] of bySelector ) {
 		const gap = ( r, what ) => out.unmapped.push( { ...where, property: 'motion', value: r.id, reason: `framework gap: ${ what } on the part ${ selector } of the content the draft's code puts into this element` } );
-		const loops = group.filter( ( r ) => 'effect' === classify( r, { css: ctx.css, records: ctx.records } ).kind );
+		const loops = group.filter( ( r ) => 'effect' === classify( r, { css: ctx.css, records: ctx.records, template: ctx.template } ).kind );
 		for ( const r of loops ) {
 			const box = loopKeyframesCss( asLoop( r ), loopName( r ) );
 			if ( box.css ) {

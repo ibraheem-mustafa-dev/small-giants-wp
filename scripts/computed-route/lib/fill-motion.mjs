@@ -23,8 +23,11 @@ import { scopeKeyOf } from './fill-width-gate.mjs';
 import { templateKey, templateKeyOf } from './fact-key.mjs';
 import { staggerPlans, applyStagger } from './fill-motion-stagger.mjs';
 import { positionsByTemplate } from './motion-behaviour-settings.mjs';
+import { normaliseReveals } from './motion-reveal.mjs';
 import { exactHome } from './fill-part-pairing.mjs';
-import { splitPartRecords, writePartMotion } from './fill-motion-parts.mjs';
+import { effectCssItems } from './effect-css-equivalent.mjs';
+import { LOGO_INLINE } from './apply-chrome-logo.mjs';
+import { splitPartRecords, writePartMotion, rehomeParts } from './fill-motion-parts.mjs';
 
 export { elementMotion, elementEffects, renderRefutes } from './fill-motion-element.mjs';
 
@@ -80,11 +83,27 @@ export function elementKey( finder, rootComponent = null ) {
 
 // Inventory records by element key (`<dc>/<tpl id>`); a record naming several template elements (a ref bound in each)
 // is keyed under each, and a record with no template element is not keyed.
+// An endless linear loop that slides its element along one axis from rest (`translateX(0)` to `translateX(-50%)`): the
+// track a marquee moves, the strip a code-built ticker repeats.
+const TRAVEL = /^translate([XY])\(\s*(-?\d*\.?\d+)(?:px|%)?\s*\)$/;
+export function marqueeTrack( r ) {
+	if ( ! /^(?:css-animation|waapi)$/.test( r.mechanism ) || ! [ 'infinite', Infinity ].includes( r.iterations ) || 'linear' !== String( r.easing ?? '' ).trim() ) {
+		return false;
+	}
+	const moves = ( r.properties || [] ).filter( ( p ) => /^(?:transform|translate)$/.test( String( p.property ) ) );
+	return 1 === moves.length && ( ( from, to ) => !! from && !! to && from[ 1 ] === to[ 1 ] && 0 === Number( from[ 2 ] ) && 0 !== Number( to[ 2 ] ) )( TRAVEL.exec( String( moves[ 0 ].from ?? '' ).trim() ), TRAVEL.exec( String( moves[ 0 ].to ?? '' ).trim() ) );
+}
+
 export function recordsByElement( records ) {
 	const out = new Map();
 	for ( const r of records || [] ) {
 		const tpl = r.element?.template_tpl_id;
-		for ( const id of null === tpl || undefined === tpl ? [] : [ tpl ].flat() ) {
+		// An animation of an element the code builds is keyed under the template element that holds it only when it is a
+		// marquee track (marqueeTrack): the block there renders that track itself (a trust bar's ticker) and its marquee moves
+		// it. Any other loop (a spinner) would animate the whole holding block, so it stays unkeyed and the accounting names
+		// it as a row at its nearest target (lib/fill-motion-account.mjs::makeHomeOf).
+		const near = ( null === tpl || undefined === tpl ) && marqueeTrack( r ) ? r.element?.nearest_tpl_id : null;
+		for ( const id of null !== near && undefined !== near ? [ near ].flat() : null === tpl || undefined === tpl ? [] : [ tpl ].flat() ) {
 			const key = templateKey( { dc: r.element.dc, tpl: id } );
 			if ( ! out.has( key ) ) {
 				out.set( key, [] );
@@ -226,7 +245,7 @@ function writeLoopCss( n, items, { flat, ref, out } ) {
 		return;
 	}
 	const css = [ had( 'sgsCustomCss' ), ...fresh.map( ( i ) => i.css ) ].filter( Boolean ).join( ' ' );
-	const note = [ had( 'sgsCustomCssNote' ), ...fresh.map( ( i ) => `Loop ${ i.record.id }: ${ i.record.name }` ) ].filter( Boolean ).join( '; ' );
+	const note = [ had( 'sgsCustomCssNote' ), ...fresh.map( ( i ) => i.label ?? `Loop ${ i.record.id }: ${ i.record.name }` ) ].filter( Boolean ).join( '; ' );
 	// The scope key includes/custom-css.php::sgs_custom_css_uid accepts: 4 to 16 lowercase letters and digits.
 	// From the node's own ref, so two boxes holding the same record, or two surfaces on one page, never share a key.
 	const id = scopeKeyOf( node, `loop${ String( fresh[ 0 ].record.id ).toLowerCase().replace( /[^a-z0-9]/g, '' ) }` );
@@ -263,14 +282,15 @@ export function sameTriggerResolved( records ) {
 // the entry draft's component (lib/fill-motion.mjs::elementKey); loops: sampleMotion()'s loops by target id; offers:
 // lib/motion-effects.mjs::loadEffectOffers; stateVocab: the `states` table rows that give the words meaning "open"
 // (default: the framework DB's). Returns { writes, unmapped, notes } in the shapes fill-resolve.mjs uses.
-export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}, loops = {}, mdb, schema, rawSnapshot, rootComponent = null, offers = loadEffectOffers(), stateVocab = null, template = null, draftCss = [], hasAttr: givenHasAttr = undefined, db = null, reads = null, calFor = null, fillWrites = [] } ) {
+export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}, loops = {}, mdb, schema, rawSnapshot, rootComponent = null, offers = loadEffectOffers(), stateVocab = null, template = null, draftCss = [], hasAttr: givenHasAttr = undefined, db = null, reads = null, calFor = null, fillWrites = [], cssEffects = new Set(), logoOwned = false } ) {
 	const out = { writes: [], unmapped: [], notes: [], site: [], handover: [] };
 	// The settings Fill measured from the draft's render (`fillWrites`: Fill's writes so far), which a settings behaviour keeps
 	// (lib/fill-behaviour.mjs::applySettings): the slider's visible-card count (lib/fill-visible-count.mjs).
 	const measured = fillWrites.filter( ( w ) => 'visible-count' === w.how );
 	// Every settings write is checked against the framework DB's attributes: the handle given, else the framework DB itself.
 	const hasAttr = givenHasAttr ?? ( db ? hasAttrOf( db ) : undefined );
-	const all = sameTriggerResolved( given );
+	// A script reveal's opacity and rise writes are one entrance (lib/motion-reveal.mjs::normaliseReveals).
+	const all = normaliseReveals( sameTriggerResolved( given ) );
 	// A part of content the draft's code injects is written on its holder's block as a custom target, never as the holder's own
 	// motion: the elements, behaviours, staggers and controls are read from the other records; the accounting reads `all`.
 	const split = splitPartRecords( all, template );
@@ -282,10 +302,11 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 	const runtime = unplaced.filter( ( r ) => 'entrance' === classify( r, cls ).kind );
 	const runtimeLoops = unplaced.filter( ( r ) => 'effect' === classify( r, cls ).kind );
 	const used = [];
-	const ctx = { types: tokenTypes( schema ), tokens: clientTokens( rawSnapshot ), palette: clientPalette( rawSnapshot ), css: draftCss };
+	const ctx = { types: tokenTypes( schema ), tokens: clientTokens( rawSnapshot ), palette: clientPalette( rawSnapshot ), css: draftCss, records, template };
 	// The draft's computed position per template element and width, so a header pinned only at some widths is sticky only there.
 	const idx = behaviourIndex( { records, template, css: draftCss, positions: reads ? positionsByTemplate( { reads, nodes, rootComponent } ) : undefined } );
 	const targetKeys = new Set( nodes.flatMap( ( n ) => n.targets.map( ( t ) => elementKey( t.finder, rootComponent ) ) ).filter( Boolean ) );
+	rehomeParts( split.parts, { targetKeys, template } );
 	adoptDrawnBehaviours( byElement, { targetKeys, template, isBehaviour: ( r ) => idx.found.some( ( x ) => x.r === r ) } );
 	// A list entrance with a per-item delay is the stagger of the block holding the items, so the items do not also take it.
 	const staggers = staggerPlans( { records, template, nodes, keyOf: ( finder ) => elementKey( finder, rootComponent ) } );
@@ -439,6 +460,18 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 		}
 		flush();
 		at = null;
+		// Effect rows Bean marked custom-css (Spec 48 FR-48-17): the hover rule goes in the box that holds the loop's rule. The
+		// whole inventory (`all`) is read: the loop a hover speeds up is often a part record of injected content. A logo whose
+		// parts the apply stage animates from build/logo-svgparts.json (`logoOwned`) takes its hover rate there
+		// (lib/apply-chrome-logo.mjs::logoRule, svgParts), so Fill writes no second hover rule on it.
+		const hover = effectCssItems( { marked: cssEffects, records: all, items: boxes } );
+		if ( hover.items.length && logoOwned && LOGO_INLINE[ n.name ] ) {
+			out.notes.push( ...hover.used.map( ( id ) => ( { node: ref, block: n.name, slot: '', text: `${ id }: the logo's hover rate is written by the apply stage with its parts (build/logo-svgparts.json, lib/apply-chrome-logo.mjs::logoRule)` } ) ) );
+			used.push( ...hover.used );
+		} else if ( hover.items.length ) {
+			boxes.push( ...hover.items );
+			used.push( ...hover.used );
+		}
 		if ( boxes.length ) {
 			writeLoopCss( n, boxes, { flat, ref, out } );
 		}

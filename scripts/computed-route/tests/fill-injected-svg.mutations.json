@@ -1,0 +1,86 @@
+[
+	{
+		"file": "lib/fill-injected-svg.mjs",
+		"find": "AND role = 'svg' AND attr_type = 'string' ORDER BY attr_name",
+		"replace": "AND attr_type = 'string' ORDER BY attr_name",
+		"why": "any string setting holds the SVG"
+	},
+	{
+		"file": "lib/fill-injected-svg.mjs",
+		"find": "AND attr_type = 'boolean' AND ( attr_name = 'inlineSvg' OR attr_name GLOB '*InlineSvg' ) ORDER BY attr_name",
+		"replace": "AND attr_type = 'boolean' ORDER BY attr_name",
+		"why": "any boolean turns the SVG inline"
+	},
+	{
+		"file": "lib/fill-injected-svg.mjs",
+		"find": "const widest = WIDTHS.find( ( w ) => by[ w ] );",
+		"replace": "const widest = [ ...WIDTHS ].reverse().find( ( w ) => by[ w ] );",
+		"why": "the narrowest width's file is written"
+	},
+	{
+		"file": "lib/fill-injected-svg.mjs",
+		"find": "for ( let at = e; at && ! n; at = byKey.get( key( at.parentKey ) ) ) {",
+		"replace": "for ( let at = e; at && ! n; at = null ) {",
+		"why": "an ancestor's block is not reached"
+	},
+	{
+		"file": "lib/fill-injected-svg.mjs",
+		"find": "others.length && out.unmapped.push(",
+		"replace": "false && out.unmapped.push(",
+		"why": "the narrower widths' own files are silent"
+	},
+	{
+		"file": "lib/fill-injected-svg.mjs",
+		"find": "return String( text ).replace( /<\\?xml[^>]*>/g, '' ).replace( /<!--[\\s\\S]*?-->/g, '' ).replace( /<metadata[\\s\\S]*?<\\/metadata>/g, '' ).trim();",
+		"replace": "return String( text ).trim();",
+		"why": "the prolog and editor metadata are written"
+	},
+	{
+		"file": "lib/fill-injected-svg.mjs",
+		"find": "const { before, after } = setAttr( flat[ n.index ], { attr: inline, value: true } );",
+		"replace": "const { before, after } = setAttr( flat[ n.index ], { attr: inline, value: false } );",
+		"why": "the inline SVG stays off"
+	},
+	{
+		"file": "lib/element-facts.mjs",
+		"find": "export const injectedAt = ( e, w ) => e?.injected?.[ w ] ?? null;",
+		"replace": "export const injectedAt = ( e, w ) => null;",
+		"why": "the injected SVG is never read"
+	},
+	{
+		"file": "lib/fill-injected-svg.mjs",
+		"find": "( attr_name = 'inlineSvg' OR attr_name GLOB '*InlineSvg' )",
+		"replace": "lower( attr_name ) LIKE '%svg%'",
+		"why": "an SVG text-shadow switch is taken as the inline switch"
+	},
+	{
+		"file": "lib/fill-injected-svg.mjs",
+		"find": "( attr_name = 'inlineSvg' OR attr_name GLOB '*InlineSvg' )",
+		"replace": "attr_name = 'inlineSvg'",
+		"why": "the drawer's logo switch is not found"
+	},
+	{
+		"file": "lib/fill-injected-svg.mjs",
+		"find": "if ( inline && logoOwned && LOGO_INLINE[ n.name ] === inline ) {",
+		"replace": "if ( false ) {",
+		"why": "Fill writes the logo switch the apply stage owns"
+	},
+	{
+		"file": "lib/fill-injected-svg.mjs",
+		"find": "if ( owner !== e && ! covers( e, owner, widest ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a foreground icon deep inside a block becomes its background"
+	},
+	{
+		"file": "lib/fill-injected-svg.mjs",
+		"find": "return !! a && !! b && b.w > 0 && b.h > 0 && a.w >= COVERS * b.w && a.h >= COVERS * b.h;",
+		"replace": "return true;",
+		"why": "any holder covers its block"
+	},
+	{
+		"file": "lib/fill-injected-svg.mjs",
+		"find": "return !! a && !! b && b.w > 0 && b.h > 0 && a.w >= COVERS * b.w && a.h >= COVERS * b.h;",
+		"replace": "return ! a || ! b || ( a.w >= COVERS * b.w && a.h >= COVERS * b.h );",
+		"why": "an unread box counts as covering"
+	}
+]

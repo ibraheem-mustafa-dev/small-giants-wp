@@ -13,17 +13,20 @@ import { parseColour, toHex } from './normalise.mjs';
 
 const names = new WeakMap();
 
-// The effect names the draft's scripts build, over the whole inventory.
-export function draftEffectNames( records ) {
-	if ( ! names.has( records ) ) {
+// The effect names the draft's scripts build, over the whole inventory. `template`: the fact record's template
+// (lib/fill-behaviour.mjs::templateOf), which a pin's progress bar is recognised from.
+export function draftEffectNames( records, template = null ) {
+	const byTemplate = names.get( records ) ?? new Map();
+	names.set( records, byTemplate );
+	if ( ! byTemplate.has( template ) ) {
 		const out = new Set();
 		for ( const r of records || [] ) {
-			const b = recogniseBehaviour( r, { records } );
+			const b = recogniseBehaviour( r, { records, template } );
 			'effect' === b?.kind && b.effects.forEach( ( e ) => out.add( e.effect ) );
 		}
-		names.set( records, out );
+		byTemplate.set( template, out );
 	}
-	return names.get( records );
+	return byTemplate.get( template );
 }
 
 const POSE = /^(?:scale|translate[XYZ]?|rotate[XYZ]?|skew[XY]?)$/;
@@ -33,7 +36,7 @@ const idsOf = ( r ) => [].concat( r.element?.template_tpl_id ?? [] ).map( Number
 // What the draft gives to other elements near this one: { effects: names, pose: whether a hover pose is another element's }. A record is
 // another element's when it names none of this element's own draft ids (its tpl and the ids its node owns), sits on an id this
 // element reaches, and either another pair holds that id or its hook selector names an element this one is not.
-export function foreignEffects( { target, surface, recordsIndex, records, facts } ) {
+export function foreignEffects( { target, surface, recordsIndex, records, facts, template = null } ) {
 	const own = new Set( [ idOfTpl( target.tpl ), ...( target.owns || [] ) ] );
 	const held = new Set( ( surface?.pairs || [] ).filter( ( p ) => p.ref !== target.ref ).flatMap( ( p ) => [ idOfTpl( p.tpl ), ...( p.owns || [] ) ] ) );
 	// `held`/`heldPose`: the records another pair's id holds. A record only its hook selector sends elsewhere may be a part of this block
@@ -41,7 +44,7 @@ export function foreignEffects( { target, surface, recordsIndex, records, facts 
 	const out = { effects: new Set(), held: new Set(), pose: false, heldPose: false };
 	for ( const id of ( target.reach || [] ).filter( ( x ) => ! own.has( x ) ) ) {
 		for ( const r of recordsFor( recordsIndex, `Root/${ id }#0` ).filter( ( x ) => ! idsOf( x ).some( ( i ) => own.has( i ) ) && ( held.has( id ) || ! carriesHook( x, facts ) ) ) ) {
-			const b = recogniseBehaviour( r, { records } );
+			const b = recogniseBehaviour( r, { records, template } );
 			'effect' === b?.kind && b.effects.forEach( ( e ) => ( out.effects.add( e.effect ), held.has( id ) && out.held.add( e.effect ) ) );
 			out.pose ||= holdsPose( r );
 			out.heldPose ||= held.has( id ) && holdsPose( r );
@@ -52,13 +55,13 @@ export function foreignEffects( { target, surface, recordsIndex, records, facts 
 
 // Removes from doc.elements[ part ] the effects and hover pose that another element's record gives. `wanted`: the effect names this
 // element's own records recognise; `recs`: those records; `foreign`: foreignEffects(). Returns { whys: removals, unchecked: rows }.
-export function strayRemovals( { doc, part, wanted, recs, records, foreign } ) {
+export function strayRemovals( { doc, part, wanted, recs, records, foreign, template = null } ) {
 	const out = { whys: [], unchecked: [] };
 	const el = doc.elements?.[ part ];
 	if ( ! el || ! records?.length ) {
 		return out;
 	}
-	const draft = draftEffectNames( records );
+	const draft = draftEffectNames( records, template );
 	const seen = 'root' === part ? foreign : foreign && { effects: foreign.held, pose: foreign.heldPose };
 	const drop = ( list, where ) => ( list || [] ).filter( ( l ) => {
 		if ( ! draft.has( l.effect ) || wanted.has( l.effect ) ) {

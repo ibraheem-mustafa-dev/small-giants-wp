@@ -18,7 +18,7 @@
 	{"file": "lib/skeleton-rules.mjs", "find": "shape( pxOf( r.width ) ?? px( st.width ), pxOf( r.height ) ?? px( st.height ) )", "replace": "shape( pxOf( r.width ) ?? px( st.width ), px( st.height ) )", "why": "a dot's resolved height is ignored"},
 	{"file": "lib/skeleton-rules.mjs", "find": "if ( ! everyWidth( e, ( r ) => shape(", "replace": "if ( ! someWidth( e, ( r ) => shape(", "why": "a dot at one width only is a marker"},
 	{"file": "lib/skeleton-rules.mjs", "find": "( pxOf( r.height ) ?? 99 ) <= ( R.readingProgress?.maxHeightPx ?? 6 ), () =>", "replace": "( px( st.height ) ?? 99 ) <= ( R.readingProgress?.maxHeightPx ?? 6 ), () =>", "why": "a progress bar's resolved height is ignored"},
-	{"file": "lib/skeleton-inventory.mjs", "find": "1440: r.resolved ?? null }, layoutChanged375", "replace": "1440: null }, layoutChanged375", "why": "the 1440 computed values are dropped from the inventory"},
+	{"file": "lib/skeleton-inventory.mjs", "find": "1440: r.resolved ?? null }, ...injectedOf(", "replace": "1440: null }, ...injectedOf(", "why": "the 1440 computed values are dropped from the inventory"},
 	{"file": "lib/skeleton-inventory.mjs", "find": "768: at( 768, id )?.resolved ?? null,", "replace": "768: null,", "why": "the 768 computed values are dropped from the inventory"},
 	{"file": "lib/skeleton-inventory.mjs", "find": "position: null, resolved: null } );", "replace": "position: null } );", "why": "an element only a narrower width renders carries that width's values as its 1440 ones"}
 ]

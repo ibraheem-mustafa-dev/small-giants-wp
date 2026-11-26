@@ -23,11 +23,13 @@
 // `ctx.records` is the whole animation inventory, whose style records give a code-created effect element's declarations
 // (lib/motion-effect-element.mjs: the sheen band's width, the ripple circle's size and colour).
 
-import { poseOf } from './motion-channels.mjs';
-import { props, nameOf, words, blob, triggerOf, MINUS, TIMES, NUMBER, number, round, durationOf, easingOf, compact } from './motion-record-text.mjs';
-import { PINNED, headerScrollOf, scrollShrinkOf, dotPulseOf, accordionScrollOf, autoplayOf, pinnedTimelineOf } from './motion-behaviour-settings.mjs';
+import { poseOf, IDENTITY } from './motion-channels.mjs';
+import { props, nameOf, words, triggerOf, scrollValueName, MINUS, TIMES, NUMBER, number, round, durationOf, easingOf, compact, cssCallOf, codeTree, nodesOf, readsScrollY } from './motion-record-text.mjs';
+import { pinnedSectionOf, headerScrollOf, scrollShrinkOf, dotPulseOf, accordionScrollOf, autoplayOf, pinnedTimelineOf } from './motion-behaviour-settings.mjs';
+import { hiddenStartOf } from './motion-reveal.mjs';
 import { effectElementStyle, colourOf, largerSideFactor } from './motion-effect-element.mjs';
 import { templateKey } from './fact-key.mjs';
+import { cssEquivalentOf } from './effect-css-equivalent.mjs';
 import { fromPointer, tiltOf, tiltGlareHostOf, tiltResetOf } from './motion-tilt.mjs';
 
 // The attribute selector of the template element a record's script finds its target by (`[data-mag]`), or null.
@@ -172,25 +174,30 @@ function peekDragOf( r ) {
 	return p && 'js-style-write' === r.mechanism && /dragenter|dragover|drop/i.test( words( r.trigger?.detail, r.source?.code ) ) ? p : null;
 }
 
+// Whether a formula reads the scroll as a fraction of the page: it divides the scroll position by a distance, or reads the
+// page's `scrollHeight` (from the syntax tree).
+const scrollFraction = ( q ) => nodesOf( codeTree( q.formula ), ( n ) => ( 'BinaryExpression' === n.type && '/' === n.operator && readsScrollY( n.left ) ) || ( 'MemberExpression' === n.type && 'scrollHeight' === n.property?.name ) || ( 'Identifier' === n.type && 'scrollHeight' === n.name ) ).length > 0;
+
 // A transform or translate written in proportion to the scroll position: a parallax (distance from the page top, or
-// from the element's own place in the view) and, for a scale written to the scroll fraction, a progress bar.
-function scrollOf( r ) {
+// from the element's own place in the view) and, for a scale written to the scroll fraction (the page's, or a pinned
+// section's progress, lib/motion-behaviour-settings.mjs::pinnedSectionOf), a progress bar.
+function scrollOf( r, ctx = {} ) {
 	const list = props( r );
 	if ( 'js-style-write' !== r.mechanism || 'scroll-position' !== triggerOf( r ) ) {
 		return null;
 	}
-	const bar = list.find( ( q ) => 'transform' === nameOf( q ) && /scale([XY])\(/i.test( words( q.to, q.formula ) ) && ( /scrollHeight|scrollable/i.test( words( q.formula ) ) || ( /^scale[XY]\(\s*p\s*\)$/i.test( words( q.formula ).trim() ) && PINNED.test( blob( r ) ) ) ) );
+	const pin = !! pinnedSectionOf( r, ctx );
+	const bar = list.find( ( q ) => 'transform' === nameOf( q ) && /^scale[xy]$/.test( cssCallOf( q )?.name ?? '' ) && ( pin || scrollFraction( q ) ) );
 	if ( bar ) {
-		const axis = /scaleY/i.test( words( bar.to, bar.formula ) ) ? 'bar-y' : 'bar-x';
-		const pin = /data-pin\b|\[data-pin\]/i.test( blob( r ) );
+		const axis = 'scaley' === cssCallOf( bar ).name ? 'bar-y' : 'bar-x';
 		return { effect: 'scroll-progress', panel: 'effects', trigger: 'scroll', values: { source: pin ? 'pin' : 'page', output: axis } };
 	}
-	const move = list.find( ( q ) => /^(?:translate|transform)$/.test( nameOf( q ) ) && /scrollY/i.test( words( q.formula ) ) );
+	const move = list.find( ( q ) => /^(?:translate|transform)$/.test( nameOf( q ) ) && scrollValueName( q, r ) );
 	if ( ! move ) {
 		return null;
 	}
 	const f = words( move.formula );
-	const k = new RegExp( `scrollY\\s*${ TIMES }\\s*(${ MINUS }?\\d*\\.?\\d+)`, 'i' ).exec( f );
+	const k = new RegExp( `${ scrollValueName( move, r ).replace( /\$/g, '\\$' ) }\\s*${ TIMES }\\s*(${ MINUS }?\\d*\\.?\\d+)`, 'i' ).exec( f );
 	const view = /innerHeight\s*\/\s*2/i.test( f );
 	const ratio = k ? number( k[ 1 ].replace( '−', '-' ) ) : view ? number( new RegExp( `${ TIMES }\\s*${ NUMBER }\\s*px`, 'i' ).exec( f )?.[ 1 ] ) : null;
 	if ( null === ratio ) {
@@ -248,20 +255,20 @@ function routeFadeOf( r, ctx ) {
 	return { style: 'fade', durationMs: durationOf( r ), easing: easingOf( r ) };
 }
 
-// The exit of an element's open entrance: a Web Animation on close, from the resting pose to another, held at the end.
-const CLOSE_WORDS = new Set( [ 'close', 'closes', 'closed', 'closing', 'dismiss', 'dismisses', 'dismissed', 'exit', 'exits', 'exiting' ] );
+// The exit of an element's open entrance: a Web Animation on an interaction (not the page's own entering), from the
+// resting pose to another, held at the end: the element leaves its rest and stays away.
 const ENTERING = new Set( [ 'mount', 'load', 'scroll-into-view' ] );
-
-// Whether the record's own function or name says it closes: whole words only, so `closest(` in a trigger's detail is not
-// a close, and the camel-case parts of a function name (`closeDrawer`, `onDismiss`) each count.
-const namesClose = ( r ) => words( r.source?.function, r.name ).replace( /([a-z])([A-Z])/g, '$1 $2' ).toLowerCase().split( /[^a-z]+/ ).some( ( w ) => CLOSE_WORDS.has( w ) );
+const restValue = ( k, v ) => k in IDENTITY && ( Number( v ) === IDENTITY[ k ] || parseFloat( v ) === IDENTITY[ k ] );
 
 function closeOf( r ) {
-	if ( 'waapi' !== r.mechanism || 'forwards' !== r.fill || ENTERING.has( triggerOf( r ) ) || ! namesClose( r ) ) {
+	if ( 'waapi' !== r.mechanism || 'forwards' !== r.fill || ENTERING.has( triggerOf( r ) ) ) {
 		return null;
 	}
 	const pose = poseOf( props( r ) );
 	if ( pose.unsupported.length || pose.other.length || ! Object.keys( pose.to ).length ) {
+		return null;
+	}
+	if ( ! Object.entries( pose.from ).every( ( [ k, v ] ) => restValue( k, v ) ) || Object.entries( pose.to ).every( ( [ k, v ] ) => restValue( k, v ) ) ) {
 		return null;
 	}
 	return { to: pose.to, duration: durationOf( r ), easing: easingOf( r ), delay: 'number' === typeof r.delay_ms && r.delay_ms > 0 ? r.delay_ms : null };
@@ -304,7 +311,7 @@ export function recogniseBehaviour( record, ctx = {} ) {
 	}
 	const rate = hoverRateOf( r );
 	if ( rate ) {
-		return done( r, { kind: 'unmapped', reason: `framework gap: a hover that speeds up a running animation ${ rate } times (a playback-rate control); the marquee's hover rate is the only SGS playback-rate field` } );
+		return done( r, { kind: 'unmapped', css: cssEquivalentOf( r, ctx.records ) ?? undefined, reason: `framework gap: a hover that speeds up a running animation ${ rate } times (a playback-rate control); the marquee's hover rate is the only SGS playback-rate field` } );
 	}
 	if ( scrollResetOf( r ) ) {
 		return done( r, { kind: 'native', reason: 'the draft scrolls to the top when its route changes; each SGS page is its own page load, which starts at the top' } );
@@ -313,11 +320,16 @@ export function recogniseBehaviour( record, ctx = {} ) {
 	if ( fade ) {
 		return done( r, { kind: 'site', option: 'page-transition', value: { ...fade, settings: compact( { page_transitions: true, page_transition_style: fade.style, page_transition_duration: fade.durationMs, page_transition_easing: fade.easing } ) }, notes: [ `the page fades in on a route change: the site's page transition (${ fade.style }, ${ fade.durationMs }ms ${ fade.easing }) with the custom duration and easing, which win over the style's own`, 'the draft fades only the page body; SGS fades the page (an accepted difference, Ruling 5)' ] } );
 	}
-	for ( const make of [ ( x ) => headerScrollOf( x, ctx ), ( x ) => scrollShrinkOf( x, ctx ), dotPulseOf, accordionScrollOf, autoplayOf, pinnedTimelineOf ] ) {
-		const e = make( r );
+	for ( const make of [ headerScrollOf, scrollShrinkOf, dotPulseOf, accordionScrollOf, autoplayOf, pinnedTimelineOf ] ) {
+		const e = make( r, ctx );
 		if ( e ) {
 			return done( r, { kind: 'settings', ...e } );
 		}
+	}
+	// The writes that only hide an element until its reveal.
+	const hides = hiddenStartOf( r, ctx.records );
+	if ( hides ) {
+		return done( r, { kind: 'covered', by: 'entrance', reason: `the script hides the element until its scroll reveal ${ hides } plays it in: the entrance's from-pose` } );
 	}
 	const exit = closeOf( r );
 	if ( exit ) {
@@ -356,8 +368,8 @@ export function recogniseBehaviour( record, ctx = {} ) {
 	if ( reset ) {
 		return done( r, { kind: 'effect', effects: [], hoverState: compact( reset ) } );
 	}
-	for ( const make of [ ( x ) => sheenOf( x, ctx ), ( x ) => rippleOf( x, ctx ), ( x ) => peekOf( x, ctx ), scrollOf ] ) {
-		const e = make( r );
+	for ( const make of [ sheenOf, rippleOf, peekOf, scrollOf ] ) {
+		const e = make( r, ctx );
 		if ( e?.unmapped ) {
 			return done( r, { kind: 'unmapped', reason: e.unmapped } );
 		}
@@ -392,6 +404,7 @@ export function effectRows( records, ctx = {} ) {
 			rowId: `effect:${ r.id }`, draftId: r.id, record: r.id, effect: what, kind: b.kind,
 			text: `${ r.id } ${ r.name ?? '' } (${ r.mechanism }, ${ triggerOf( r ) }) is ${ says }`.replace( /\s+/g, ' ' ),
 			unmapped: 'unmapped' === b.kind ? b.reason : undefined,
+			cssEquivalent: 'unmapped' === b.kind ? b.css : undefined,
 		} );
 		( b.unread || [] ).forEach( ( u ) => rows.push( { rowId: `effect:${ r.id }:${ u.field }`, draftId: r.id, record: r.id, effect: what, kind: b.kind, text: `${ r.id } ${ what } ${ u.field }: ${ u.reason }`, unmapped: u.reason } ) );
 	}

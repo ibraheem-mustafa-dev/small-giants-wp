@@ -23,6 +23,7 @@ import { readAssets } from './read-assets.mjs';
 import { readReadme } from './read-readme.mjs';
 import { openSandbox } from './intake-sandbox.mjs';
 import { draftTokenLookup } from './draft-tokens.mjs';
+import { effectTemplateOf, EFFECT_TEMPLATE } from './motion-behaviour-settings.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '..', '..', '..' );
@@ -177,6 +178,8 @@ export function writeFacts( file, record ) {
 	}
 	fs.mkdirSync( path.dirname( file ), { recursive: true } );
 	fs.writeFileSync( file, `${ JSON.stringify( record ) }\n` );
+	// The committed cut of the template the recognisers read, beside the gitignored record (motion-behaviour-settings.mjs::effectTemplateOf).
+	fs.writeFileSync( path.join( path.dirname( file ), EFFECT_TEMPLATE ), `${ JSON.stringify( effectTemplateOf( record ) ) }\n` );
 	return record.counts;
 }
 

@@ -6,7 +6,7 @@ Taken on 2026-11-19T06:19:28.565Z; manifest 1.0, files hash f2d909d8605ef2cb.
 
 How to mark: put x in a section's `Accept all: [ ]` box to give every row the section's first mark; to mark one row differently, write its mark in that row's Mark cell (a row's own mark always beats Accept all). Flag rows left blank are accepted as flagged and not-a-defect rows left blank stay not defects; every other row needs Accept all or its own mark. Rows marked **changed** differ from the last export, lost their old mark and come first. Then run `node scripts/computed-route/intake.mjs --apply-review indus-foods`.
 
-Rows: 1255; 576 need reading, 679 are confident proposals that Accept all covers (skeleton block choices 645, missing features 34).
+Rows: 1263; 584 need reading, 679 are confident proposals that Accept all covers (skeleton block choices 645, missing features 34).
 
 Not defects counted, not listed: breakpoint 91, dead-code (constant guard) 5, dead-code (data-gated) 7, prop-variant 1, prototype-only 13, reached-when-forced 152, render-wins 552.
 
@@ -19,7 +19,7 @@ Marks per section (first value = Accept all):
 - Draft defects: `accept`, `render-wins`
 - Not defects: unwired code: `not-a-defect`, `defect`
 - Missing features: `map:<block>`, `difference`, `build`, `gap:<wave>`
-- Script effects: `accept`, `block:<slug>`, `difference`
+- Script effects: `accept`, `block:<slug>`, `custom-css`, `difference`
 - Skeleton block choices: `accept`, `block:<slug>`, `remove`
 - Inventory diffs: `ours`, `theirs`
 - Notices: `noted`
@@ -30,29 +30,29 @@ Accept all: [ ]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `page:page:blog` | **changed** blog → Blog (page, live, home) | blog | footer #6 |  |
-| `page:page:brand-green-leaf` | **changed** brand-green-leaf → Green Leaf (page, static, page) | brand-green-leaf |  | edit:slug=green-leaf |
-| `page:page:brand-lemon-tree` | **changed** brand-lemon-tree → The Lemon Tree (page, static, page) | brand-lemon-tree |  | edit:slug=lemon-tree |
-| `page:page:brand-sanam` | **changed** brand-sanam → Sanam (page, static, page) | brand-sanam |  | edit:slug=sanam |
-| `page:page:brand-shan` | **changed** brand-shan → Shan (page, static, page) | brand-shan |  | edit:slug=shan |
-| `page:page:careers` | **changed** careers → Careers (page, static, page) | careers |  |  |
-| `page:page:catalogue` | **changed** catalogue → Request Catalogue (page, static, page) | catalogue |  |  |
-| `page:page:certifications` | **changed** certifications → Certifications (page, static, page) | certifications | footer #1 |  |
-| `page:page:community` | **changed** community → Community & Charity (page, static, page) | community |  |  |
-| `page:page:delivery` | **changed** delivery → Delivery & Logistics (page, static, page) | delivery | footer #4 |  |
-| `page:page:faqs` | **changed** faqs → FAQs (page, static, page) | faqs |  |  |
-| `page:page:manufacturing` | **changed** manufacturing → Manufacturing (page, static, page) | manufacturing |  |  |
-| `page:page:our-story` | **changed** our-story → Our Story (page, static, page) | our-story |  |  |
-| `page:page:retail` | **changed** retail → Retail (page, static, page) | retail |  |  |
-| `page:page:sustainability` | **changed** sustainability → Sustainability (page, static, page) | sustainability |  |  |
-| `page:page:terms` | **changed** terms → Terms & Conditions (page, static, page) | terms | footer #5 |  |
-| `page:page:wholesale` | **changed** wholesale → Wholesale (page, static, page) | wholesale |  |  |
 | `page:page:about` | about → About Us (page, static, page) | about | header #2 | accept |
 | `page:page:apply` | apply → Apply for Trade Account (page, static, page) | apply | header #5, footer #2 | accept |
+| `page:page:blog` | blog → Blog (page, live, home) | blog | footer #6 |  |
+| `page:page:brand-green-leaf` | brand-green-leaf → Green Leaf (page, static, page) | brand-green-leaf |  | edit:slug=green-leaf |
+| `page:page:brand-lemon-tree` | brand-lemon-tree → The Lemon Tree (page, static, page) | brand-lemon-tree |  | edit:slug=lemon-tree |
+| `page:page:brand-sanam` | brand-sanam → Sanam (page, static, page) | brand-sanam |  | edit:slug=sanam |
+| `page:page:brand-shan` | brand-shan → Shan (page, static, page) | brand-shan |  | edit:slug=shan |
 | `page:page:brands` | brands → All Brands (page, static, page) | brands | header #4, footer #3 | accept |
+| `page:page:careers` | careers → Careers (page, static, page) | careers |  |  |
+| `page:page:catalogue` | catalogue → Request Catalogue (page, static, page) | catalogue |  |  |
+| `page:page:certifications` | certifications → Certifications (page, static, page) | certifications | footer #1 |  |
+| `page:page:community` | community → Community & Charity (page, static, page) | community |  |  |
 | `page:page:contact` | contact → Contact Us (page, static, page) | contact | header #6 | accept |
+| `page:page:delivery` | delivery → Delivery & Logistics (page, static, page) | delivery | footer #4 |  |
+| `page:page:faqs` | faqs → FAQs (page, static, page) | faqs |  |  |
 | `page:page:food-service` | food-service → Food Service (page, static, page) | food-service | header #3 |  |
 | `page:page:home` | home → Home (page, static, front-page) | home | header #1 | accept |
+| `page:page:manufacturing` | manufacturing → Manufacturing (page, static, page) | manufacturing |  |  |
+| `page:page:our-story` | our-story → Our Story (page, static, page) | our-story |  |  |
+| `page:page:retail` | retail → Retail (page, static, page) | retail |  |  |
+| `page:page:sustainability` | sustainability → Sustainability (page, static, page) | sustainability |  |  |
+| `page:page:terms` | terms → Terms & Conditions (page, static, page) | terms | footer #5 |  |
+| `page:page:wholesale` | wholesale → Wholesale (page, static, page) | wholesale |  |  |
 | `page:post:falak-rice-exclusive-uk-distribution` | post-post-2 → Falak rice: exclusive UK distribution (post, live, single) | falak-rice-exclusive-uk-distribution |  | accept |
 | `page:post:inside-our-birmingham-packing-line` | post-post-3 → Inside our Birmingham packing line (post, live, single) | inside-our-birmingham-packing-line |  | accept |
 | `page:post:ordering-ahead-for-eid` | post-post-5 → Ordering ahead for Eid (post, live, single) | ordering-ahead-for-eid |  | accept |
@@ -244,20 +244,28 @@ Accept all: [ ]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
+| `effect:J-05` | **changed** J-05 js-style-write in updatePins on [data-pin-track] (js-style-write, scroll-position) is written as the block settings sgs/timeline scrollEffect, mobileLayout | accept |  |  |
+| `effect:J-12` | **changed** J-12 js-style-write in updateHeader on ref setHeaderEl (js-style-write, scroll-position) is written as the block settings sgs/site-header scrolledOffset, shadowScrolled, shadowScrolledColour, headerSticky | accept |  |  |
+| `effect:J-13` | **changed** J-13 js-style-write in updateHeader on ref setProgEl (js-style-write, scroll-position) is the scroll-progress effect | accept |  |  |
+| `effect:A-02` | A-02 Web Animation in setPulseEl on ref setPulseEl (waapi, mount) is written as the block settings sgs/business-info openStatusDotPulse, openStatusDotPulseDuration | accept |  |  |
+| `effect:A-12` | A-12 Web Animation in animatePage on ref setMainEl (waapi, route) is the page-transition effect | accept |  |  |
 | `effect:A-24` | A-24 Web Animation in closeMobile on ref setDrawerEl (waapi, press) is the close of the same element's open entrance (its entrance close values) | accept |  | accept |
 | `effect:A-30` | A-30 Web Animation in fx from bindMotion on sp inserted into e.target.closest && e.target.closest('[data-mag]') (waapi, press) is the ripple effect | accept |  | accept |
 | `effect:A-31` | A-31 Web Animation in fx from bindMotion on sp inserted into e.target.closest && e.target.closest('[data-mag]') (waapi, pointer-move) is the sheen effect | accept |  | accept |
 | `effect:A-32` | A-32 Web Animation in resetTilt from bindMotion on this._tiltEl = t (waapi, pointer-leave) is the follow-pointer effect | accept |  | accept |
-| `effect:J-05` | J-05 js-style-write in updatePins on [data-pin-track] (js-style-write, scroll-position) is written as the block settings sgs/timeline scrollEffect | accept |  | accept |
+| `effect:J-06` | J-06 js-style-write in updatePins on [data-pin-bar] (js-style-write, scroll-position) is the scroll-progress effect | accept |  |  |
+| `effect:J-07` | J-07 js-style-write in updatePins on [...track.querySelectorAll('[data-pin-card]')] (js-style-write, scroll-position) is written as the block settings sgs/timeline panelProximityFocus, panelEdgeOpacity, panelFocusOpacity | accept |  |  |
+| `effect:J-08` | J-08 js-style-write in updatePins on [...track.querySelectorAll('[data-pin-card]')] (js-style-write, scroll-position) is written as the block settings sgs/timeline panelProximityFocus, panelEdgeScale, panelFocusScale | accept |  |  |
 | `effect:J-09` | J-09 js-style-write in updatePins on [data-pin-year] (js-style-write, scroll-position) is written as the block settings sgs/timeline dateActiveColour | accept |  | accept |
+| `effect:J-10` | J-10 js-style-write in updatePins on [data-pin-year] (js-style-write, scroll-position) is written as the block settings sgs/timeline dateActiveTextStrokeColour | accept |  |  |
 | `effect:J-11` | J-11 js-text-write in updatePins on [data-pin-count] (js-text-write, scroll-position) is written as the block settings sgs/timeline panelCounter, panelCounterFormat | accept |  | accept |
-| `effect:J-12` | J-12 js-style-write in updateHeader on ref setHeaderEl (js-style-write, scroll-position) is written as the block settings sgs/site-header scrolledOffset, shadowScrolled, shadowScrolledColour | accept |  | accept |
-| `effect:J-13` | J-13 js-style-write in updateHeader on ref setProgEl (js-style-write, scroll-position) is not expressed by any SGS effect: a scroll handler moves the element, but the factor in "'scaleX(' + (max > 0 ? Math.min(1, window.scrollY / max) : 0) + ')'" is not a number the parallax effect holds | difference | a Spec 38 gap: a scroll handler moves the element, but the factor in "'scaleX(' + (max > 0 ? Math.min(1, window.scrollY / max) : 0) + ')'" is not a number the parallax effect holds | difference |
 | `effect:J-14` | J-14 js-style-write in updateHeader on this._mainEl && this._mainEl.querySelector('[data-hero-img]') (js-style-write, scroll-position) is the parallax effect | accept |  | accept |
-| `effect:J-218` | J-218 waapi-control in IndusLogo.play on this._spin (waapi-control, hover) is not expressed by any SGS effect: framework gap: a hover that speeds up a running animation 14 times (a playback-rate control); the marquee's hover rate is the only SGS playback-rate field | difference | a Spec 38 gap: framework gap: a hover that speeds up a running animation 14 times (a playback-rate control); the marquee's hover rate is the only SGS playback-rate field |  |
+| `effect:J-218` | J-218 waapi-control in IndusLogo.play on this._spin (waapi-control, hover) is not expressed by any SGS effect: framework gap: a hover that speeds up a running animation 14 times (a playback-rate control); the marquee's hover rate is the only SGS playback-rate field | custom-css | a Spec 38 gap: framework gap: a hover that speeds up a running animation 14 times (a playback-rate control); the marquee's hover rate is the only SGS playback-rate field; its CSS equivalent is written to the Custom CSS of the block that draws it |  |
+| `effect:J-31` | J-31 js-scroll in animateAcc on ref setMobEl (js-scroll, state) is written as the block settings sgs/nav-drawer-menu accordionScrollIntoView or sgs/accordion scrollToOpened | accept |  |  |
 | `effect:J-43` | J-43 js-style-write in bindMotion on e.target.closest && e.target.closest('[data-peek]') (js-style-write, pointer-move) is the cursor-field effect | accept |  | accept |
 | `effect:J-44` | J-44 js-style-write in bindMotion on e.target.closest && e.target.closest('[data-peek]') (js-style-write, pointer-move) is the cursor-field effect | accept |  | accept |
 | `effect:J-45` | J-45 js-style-write in bindMotion on e.target.closest && e.target.closest('[data-tilt]') (js-style-write, pointer-move) is the glare + follow-pointer effect | accept |  | accept |
+| `effect:J-45:glareOpacity` | J-45 glare + follow-pointer glareOpacity: the glare layers of the [data-tilt] elements differ in glareOpacity (0.42 on Indus Foods Website v2/231, 0.36 on Indus Foods Website v2/367): the tilt's one glare layer cannot hold them all, so the glare's own default stands | difference | a Spec 38 gap: the glare layers of the [data-tilt] elements differ in glareOpacity (0.42 on Indus Foods Website v2/231, 0.36 on Indus Foods Website v2/367): the tilt's one glare layer cannot hold them all, so the glare's own default stands |  |
 | `effect:J-50` | J-50 js-style-write in bindMotion on e.target.closest && e.target.closest('[data-mag]') (js-style-write, pointer-move) is the magnet effect | accept |  | accept |
 | `effect:J-66` | J-66 js-style-write in magnet on [data-label] (js-style-write, pointer-move) is the magnet effect | accept |  | accept |
 

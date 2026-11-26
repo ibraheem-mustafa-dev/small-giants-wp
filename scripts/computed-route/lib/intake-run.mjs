@@ -15,7 +15,7 @@ import { recheckManifest } from './intake-sandbox.mjs';
 import { runIsolated } from './intake-process.mjs';
 import { loadAjv, schemaProblems } from './handoff.mjs';
 import { pageMapProblems } from './intake-pagemap.mjs';
-import { renderReview, applyReview, carryOver, reviewRows, isoDay, withDefaultsLine, ROW_TYPES } from './intake-review.mjs';
+import { renderReview, applyReview, carryOver, reviewRows, isoDay, withDefaultsLine, ROW_TYPES, factTemplate, missingFacts, NO_FACTS_NOTICE } from './intake-review.mjs';
 import { withUnappliedMarks, writeProposedPageMap, writeConfirmedPageMap } from './intake-review-carry.mjs';
 import { carryIds, lostIds } from './intake-pagemap-regen.mjs';
 import { mergeBlocked } from './intake-run-collapse.mjs';
@@ -181,7 +181,7 @@ export function buildRecord( { client, takenOn, manifest, result, sources = null
 }
 
 // Rows per review section: { rowType: n }.
-export const sectionCounts = ( intake ) => Object.fromEntries( ROW_TYPES.map( ( t ) => [ t, reviewRows( intake ).filter( ( r ) => r.rowType === t ).length ] ) );
+export const sectionCounts = ( intake, { template = null } = {} ) => Object.fromEntries( ROW_TYPES.map( ( t ) => [ t, reviewRows( intake, { template } ).filter( ( r ) => r.rowType === t ).length ] ) );
 
 // Every problem that stops the record being written: the intake schema and the page-map rows.
 export function recordProblems( record, ajv = loadAjv() ) {
@@ -270,7 +270,10 @@ export async function runIntake( o, { log = ( l ) => process.stderr.write( `${ l
 		return 1;
 	}
 	record.catalogue = cat.summary;
-	const carried = carryOver( previous, record );
+	// The fact record this run wrote (job.factsFile): the effect rows are read with its template.
+	const template = factTemplate( at.facts );
+	missingFacts( record, template ) && say( NO_FACTS_NOTICE );
+	const carried = carryOver( previous, record, { template } );
 	record.review = carried.review;
 	carried.realigned.length && say( `review: ${ carried.realigned.length } mark(s) followed their element to a renumbered row: ${ carried.realigned.slice( 0, 5 ).join( '; ' ) }${ carried.realigned.length > 5 ? '; ...' : '' }` );
 	carried.refused.length && say( `review: ${ carried.refused.length } mark(s) NOT carried (the element changed or is gone): ${ carried.refused.join( '; ' ) }` );
@@ -282,10 +285,10 @@ export async function runIntake( o, { log = ( l ) => process.stderr.write( `${ l
 	fs.mkdirSync( at.dir, { recursive: true } );
 	previous && fs.copyFileSync( at.intake, at.prev );
 	fs.writeFileSync( at.intake, `${ JSON.stringify( record, null, 1 ) }\n` );
-	fs.writeFileSync( at.review, renderReview( record ) );
+	fs.writeFileSync( at.review, renderReview( record, { template } ) );
 	const mapKept = ! writeProposedPageMap( at, `${ JSON.stringify( record.pageMap, null, 2 ) }\n` ).written;
 	mapKept && say( `${ path.relative( o.repo, at.pageMap ) } is confirmed, so this run leaves it as it is (the new proposal is in intake.json; --apply-review replaces it)` );
-	const counts = sectionCounts( record );
+	const counts = sectionCounts( record, { template } );
 	const p = result.parts;
 	const sk = p.skeletons?.collapse?.skeletons ?? [ 0, 0 ];
 	say( `collapsed: skeleton rows ${ sk[ 0 ] } -> ${ p.skeletons?.collapse?.skeletonsWithinSurfaces ?? 0 } within surfaces -> ${ sk[ 1 ] } across surfaces, flag rows ${ ( p.flags?.collapse?.flags ?? [ 0, 0 ] ).join( ' -> ' ) }, missing-feature rows ${ ( p[ 'missing features' ]?.collapse?.missing ?? [ 0, 0 ] ).join( ' -> ' ) }` );
@@ -334,7 +337,7 @@ function writeGoThrough( at, res, o, today, say ) {
 	};
 	fs.writeFileSync( at.goThroughOpen, `${ JSON.stringify( file, null, 1 ) }
 ` );
-	fs.writeFileSync( at.review, withDefaultsLine( fs.readFileSync( at.review, 'utf8' ), res.intake ) );
+	fs.writeFileSync( at.review, withDefaultsLine( fs.readFileSync( at.review, 'utf8' ), res.intake, { template: factTemplate( at.facts ) } ) );
 	const byType = ( list ) => [ ...list.reduce( ( m, r ) => m.set( r.rowType, ( m.get( r.rowType ) || 0 ) + 1 ), new Map() ) ].map( ( [ t, n ] ) => `${ t } ${ n }` ).join( ', ' );
 	const types = new Map( res.intake.review.map( ( r ) => [ r.rowId, r.rowType ] ) );
 	say( `go-through: ${ res.taken.length } rows took their proposal as a default mark (by: go-through${ res.taken.length ? `; ${ byType( res.taken.map( ( id ) => ( { rowType: types.get( id ) } ) ) ) }` : '' }); ${ res.open.length } rows had no proposal to take and are open${ res.open.length ? ` (${ byType( res.open ) })` : '' }, listed in ${ path.relative( o.repo, at.goThroughOpen ) } (${ rows.length } in the file)` );
@@ -352,7 +355,7 @@ export function applyIntakeReview( o, { log = ( l ) => process.stderr.write( `${
 			return 1;
 		}
 	}
-	const res = applyReview( readJson( at.intake ), fs.readFileSync( at.review, 'utf8' ), { today, sections: o.sections, goThrough: o.goThrough } );
+	const res = applyReview( readJson( at.intake ), fs.readFileSync( at.review, 'utf8' ), { today, sections: o.sections, goThrough: o.goThrough, template: factTemplate( at.facts ) } );
 	if ( res.problems.length || res.missing.length ) {
 		say( `review.md is not complete, nothing written:\n${ [ ...res.problems, ...res.missing.map( ( r ) => `row ${ r.rowId } (${ r.rowType }) needs a mark: ${ r.why }` ) ].map( ( p ) => `  - ${ p }` ).join( '\n' ) }` );
 		return 1;

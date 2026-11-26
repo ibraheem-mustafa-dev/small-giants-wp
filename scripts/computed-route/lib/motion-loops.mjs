@@ -172,6 +172,16 @@ const isLinear = ( e ) => null === e || 'linear' === e;
 const zero = ( v ) => 0 === v || '0px' === v || '0%' === v;
 // The note for a start offset an effect with no phase or delay field cannot hold: [] when the loop starts at once.
 const delayNotes = ( loop ) => ( ! loop.delay ? [] : [ loop.delay < 0 ? `the draft's loop starts ${ -loop.delay }ms part-way through its cycle; that start offset is not kept (the effect starts at once)` : `the draft's ${ loop.delay }ms start offset is not kept (the effect starts at once)` ] );
+
+// A float written as three keyframes that leave and return to the same pose at the half (`0%, 100% { y: 0 } 50% { y: -10px }`,
+// run forwards) is the two-keyframe float run to and fro at half the cycle: the same motion with the leg as its period.
+// Any other three-keyframe loop is returned as it was.
+function symmetricFloat( loop ) {
+	const [ a, b, c ] = loop.frames;
+	const same = 3 === loop.frames.length && 'normal' === loop.direction && Math.abs( ( loop.offsets?.[ 1 ] ?? 0.5 ) - 0.5 ) <= 0.01
+		&& [ ...new Set( [ ...Object.keys( a ), ...Object.keys( c ) ] ) ].every( ( k ) => JSON.stringify( a[ k ] ?? null ) === JSON.stringify( c[ k ] ?? null ) );
+	return same ? { ...loop, frames: [ a, b ], offsets: [ 0, 1 ], direction: 'alternate', duration: loop.duration / 2, fromThreeKeyframes: true } : loop;
+}
 // A translate end as px (0 for a zero), or null for a percentage the element's size would have to resolve.
 const pxEnd = ( v ) => ( zero( v ?? 0 ) ? 0 : 'number' === typeof v ? v : null );
 
@@ -192,7 +202,8 @@ export const LOOP_BUILDERS = {
 		const direction = 'translateX' === k ? ( sign < 0 ? 'left' : 'right' ) : ( sign < 0 ? 'up' : 'down' );
 		return { values: { speed: round( Math.abs( dist ) / ( loop.duration / 1000 ), 1 ), direction }, notes: [ `marquee speed ${ round( Math.abs( dist ), 1 ) }px over ${ round( loop.duration, 0 ) }ms`, ...delayNotes( loop ) ] };
 	},
-	'ambient-float'( loop, moving ) {
+	'ambient-float'( given, moving ) {
+		const loop = symmetricFloat( given );
 		if ( ! moving.every( ( k ) => /^translate[XY]$/.test( k ) ) || 2 !== loop.frames.length || ! /^(normal|alternate)$/.test( loop.direction ) ) {
 			return null;
 		}
@@ -206,7 +217,7 @@ export const LOOP_BUILDERS = {
 		if ( both ) {
 			values.travelY = to.translateY;
 		}
-		const notes = [];
+		const notes = loop.fromThreeKeyframes && ! /^(?:linear|ease-in-out)$/.test( String( loop.easing ?? '' ).trim() ) ? [ `the draft eases each leg of its three keyframes with ${ loop.easing }; the float runs the return leg as the mirror of the first` ] : [];
 		const cycle = ( 'alternate' === loop.direction ? 2 : 1 ) * loop.duration;
 		if ( loop.delay < 0 ) {
 			values.phase = Math.round( -loop.delay % cycle );

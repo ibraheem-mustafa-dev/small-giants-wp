@@ -1,0 +1,74 @@
+[
+	{
+		"file": "lib/apply-motion-behaviours.mjs",
+		"find": "recogniseBehaviour( r, { records: allRecords, template } );",
+		"replace": "recogniseBehaviour( r, { records: allRecords } );",
+		"why": "the apply stage's behaviour writes read no template"
+	},
+	{
+		"file": "lib/apply-owned.mjs",
+		"find": "recogniseBehaviour( r, { records: allRecords, template } );",
+		"replace": "recogniseBehaviour( r, { records: allRecords } );",
+		"why": "the descendant rows read no template"
+	},
+	{
+		"file": "lib/apply-stray.mjs",
+		"find": "const b = recogniseBehaviour( r, { records, template } );\n\t\t\t'effect' === b?.kind && b.effects.forEach( ( e ) => out.add( e.effect ) );",
+		"replace": "const b = recogniseBehaviour( r, { records } );\n\t\t\t'effect' === b?.kind && b.effects.forEach( ( e ) => out.add( e.effect ) );",
+		"why": "the draft's effect names are read with no template"
+	},
+	{
+		"file": "lib/apply-stray.mjs",
+		"find": "const b = recogniseBehaviour( r, { records, template } );\n\t\t\t'effect' === b?.kind && b.effects.forEach( ( e ) => ( out.effects",
+		"replace": "const b = recogniseBehaviour( r, { records } );\n\t\t\t'effect' === b?.kind && b.effects.forEach( ( e ) => ( out.effects",
+		"why": "another element's effects are read with no template"
+	},
+	{
+		"file": "lib/apply-stray.mjs",
+		"find": "if ( ! byTemplate.has( template ) ) {",
+		"replace": "if ( ! byTemplate.size ) {",
+		"why": "the effect names read without the template are cached for every template"
+	},
+	{
+		"file": "lib/intake-review.mjs",
+		"find": "effectRows( intake.inventory?.animations?.records, { template } ).forEach(",
+		"replace": "effectRows( intake.inventory?.animations?.records ).forEach(",
+		"why": "the review's effect rows read no template"
+	},
+	{
+		"file": "lib/intake-review.mjs",
+		"find": "export const missingFacts = ( intake, template ) => ( intake?.inventory?.animations?.records || [] ).length > 0 && ! template?.elements;",
+		"replace": "export const missingFacts = () => false;",
+		"why": "a review read without the fact record says nothing"
+	},
+	{
+		"file": "lib/intake-review.mjs",
+		"find": "export const missingFacts = ( intake, template ) => ( intake?.inventory?.animations?.records || [] ).length > 0 && ! template?.elements;",
+		"replace": "export const missingFacts = ( intake, template ) => ! template?.elements;",
+		"why": "a review with no script effects warns of a missing fact record"
+	},
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "css: draftCss, records, template };",
+		"replace": "css: draftCss, records };",
+		"why": "the element pass classifies with no template"
+	},
+	{
+		"file": "lib/fill-motion-element.mjs",
+		"find": "classify( r, { css: ctx.css, records: ctx.records, template: ctx.template } )",
+		"replace": "classify( r, { css: ctx.css, records: ctx.records } )",
+		"why": "a template-only behaviour is a skipped row beside its write"
+	},
+	{
+		"file": "lib/apply-motion-behaviours.mjs",
+		"find": "export const templateNotice = ( template ) => ( template?.elements ? null : NO_TEMPLATE );",
+		"replace": "export const templateNotice = () => null;",
+		"why": "a run with no template says nothing"
+	},
+	{
+		"file": "lib/apply-motion-behaviours.mjs",
+		"find": "export const templateNotice = ( template ) => ( template?.elements ? null : NO_TEMPLATE );",
+		"replace": "export const templateNotice = () => NO_TEMPLATE;",
+		"why": "a run with a template is told it has none"
+	}
+]

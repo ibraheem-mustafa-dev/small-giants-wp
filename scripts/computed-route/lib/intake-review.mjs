@@ -25,6 +25,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { isUnwiredEntry } from './intake-defects-static.mjs';
 import { effectRows } from './motion-behaviours.mjs';
+import { templateOf, EFFECT_TEMPLATE } from './motion-behaviour-settings.mjs';
 import { skeletonMissing } from './intake-missing.mjs';
 
 export const ROW_TYPES = [ 'page-map', 'catalogue', 'palette-role', 'site-info', 'flag', 'draft-defect', 'not-a-defect', 'missing-feature', 'effect', 'skeleton-block', 'inventory-diff', 'notice' ];
@@ -69,8 +70,8 @@ export const MARKS = {
 	'not-a-defect': [ { value: 'not-a-defect' }, { value: 'defect' } ],
 	'missing-feature': [ { shape: 'map:<block>', re: /^map:(.+)$/, check: ( m ) => ( BLOCK.test( m[ 1 ] ) ? null : `"${ m[ 1 ] }" is not a block name` ) }, { value: 'difference' }, { value: 'build' },
 		{ shape: 'gap:<wave>', re: /^gap:(.*)$/, check: ( m ) => ( m[ 1 ].trim() ? null : 'the wave is empty' ) } ],
-	// A script-driven effect the recogniser (lib/motion-behaviours.mjs, FR-48-77) maps to an SGS effect: `accept` writes it where the skeleton put the element, `block:<slug>` writes it on that block instead, `difference` records the effect as a deliberate difference and writes nothing.
-	effect: [ { value: 'accept' }, { shape: 'block:<slug>', re: /^block:(.+)$/, check: ( m ) => ( BLOCK.test( m[ 1 ] ) ? null : `"${ m[ 1 ] }" is not a block name` ) }, { value: 'difference' } ],
+	// A script-driven effect the recogniser (lib/motion-behaviours.mjs, FR-48-77) maps to an SGS effect: `accept` writes it where the skeleton put the element, `block:<slug>` writes it on that block instead, `custom-css` writes the effect's CSS equivalent into the Custom CSS of the block that draws the element (Bean 2026-11-01, lib/effect-css-equivalent.mjs; proposed for an effect no SGS effect expresses when a CSS equivalent exists), `difference` records the effect as a deliberate difference and writes nothing.
+	effect: [ { value: 'accept' }, { shape: 'block:<slug>', re: /^block:(.+)$/, check: ( m ) => ( BLOCK.test( m[ 1 ] ) ? null : `"${ m[ 1 ] }" is not a block name` ) }, { value: 'custom-css' }, { value: 'difference' } ],
 	'skeleton-block': [ { value: 'accept' }, { shape: 'block:<slug>', re: /^block:(.+)$/, check: ( m ) => ( BLOCK.test( m[ 1 ] ) ? null : `"${ m[ 1 ] }" is not a block name` ) }, { value: 'remove' } ],
 	'inventory-diff': [ { value: 'ours' }, { value: 'theirs' } ],
 	notice: [ { value: 'noted' } ],
@@ -208,7 +209,32 @@ export function notDefectLine( intake ) {
 const ID_ESCAPES = { '|': '%7C', '`': '%60', '\r': '%0D', '\n': '%0A' };
 export const safeRowId = ( id ) => String( id ).replace( /[|`\r\n]/g, ( c ) => ID_ESCAPES[ c ] );
 
-export function reviewRows( intake ) {
+// The fact record's template (lib/motion-behaviour-settings.mjs::templateOf) from a facts.json path; when that file is absent
+// (it is gitignored: CI and a fresh clone have none), the committed cut beside it, build/intake/effect-template.json
+// (lib/motion-behaviour-settings.mjs::effectTemplateOf, written with facts.json), so the review is a function of committed
+// files; null when neither exists. The effect rows read it: a behaviour recognised from the element it targets (the
+// open-status dot pulse, the pinned timeline, a pin's progress bar) cannot be found without it.
+export function factTemplate( file ) {
+	if ( ! file ) {
+		return null;
+	}
+	if ( fs.existsSync( file ) ) {
+		return templateOf( JSON.parse( fs.readFileSync( file, 'utf8' ) ) );
+	}
+	const cut = path.join( path.dirname( file ), EFFECT_TEMPLATE );
+	return fs.existsSync( cut ) ? JSON.parse( fs.readFileSync( cut, 'utf8' ) ) : null;
+}
+
+// The warning a review read without the fact record's template carries (renderReview prints it under the title, the intake
+// run logs it), so the missing effect rows are never silent. It is not a row: facts.json is gitignored, so a review rendered
+// on a checkout without it must still apply.
+export const NO_FACTS_NOTICE = `Warning: the fact record (build/intake/facts.json) was not read, so the script effects recognised from the draft's template (the open-status dot pulse, the pinned timeline, a pin's progress bar) are missing from Script effects: run intake --facts, then render the review again`;
+
+// Whether an intake's script effects were read without the fact record's template (NO_FACTS_NOTICE applies).
+export const missingFacts = ( intake, template ) => ( intake?.inventory?.animations?.records || [] ).length > 0 && ! template?.elements;
+
+// `template`: the fact record's template (factTemplate); the effect rows are read with it.
+export function reviewRows( intake, { template = null } = {} ) {
 	const out = [];
 	const taken = new Set();
 	const rowIdOf = ( id ) => {
@@ -256,7 +282,7 @@ export function reviewRows( intake ) {
 		add( 'missing-feature', r, r.draftId, describe( r ), tracked ?? ( block ? `map:${ block }` : 'no block proposed' ), text( r.why ?? r.reason ), acceptAll, r.mainFlow ? 'main-flow' : acceptAll ? null : 'no-block', acceptAll ? {} : { open: OPEN_CAUSES[ 'missing-no-block' ] } );
 	} );
 	// FR-48-77: one row per script-driven effect the recogniser maps to an SGS effect, and one per script effect no SGS effect expresses.
-	effectRows( intake.inventory?.animations?.records ).forEach( ( r ) => add( 'effect', r, r.draftId, r.text, r.unmapped ? 'difference' : 'accept', r.unmapped ? 'a Spec 38 gap: ' + r.unmapped : '', r.unmapped ? 'difference' : 'accept' ) );
+	effectRows( intake.inventory?.animations?.records, { template } ).forEach( ( r ) => add( 'effect', r, r.draftId, r.text, r.unmapped ? ( r.cssEquivalent ? 'custom-css' : 'difference' ) : 'accept', r.unmapped ? 'a Spec 38 gap: ' + r.unmapped + ( r.cssEquivalent ? '; its CSS equivalent is written to the Custom CSS of the block that draws it' : '' ) : '', r.unmapped ? ( r.cssEquivalent ? 'custom-css' : 'difference' ) : 'accept' ) );
 	const sk = intake.skeletons || {};
 	( Array.isArray( sk ) ? sk : Object.entries( sk ).map( ( [ surface, s ] ) => ( { surface, ...s } ) ) ).forEach( ( s ) => ( s.rows || [] ).forEach( ( r ) => add( 'skeleton-block',
 		{ surface: s.surface, ...r, action: r.action && 'unresolved' !== r.action ? r.action : undefined, rowId: r.rowId || `skeleton:${ s.surface }:${ r.key }` }, r.key,
@@ -319,9 +345,9 @@ export const CONFIDENT_HEADING = 'Confident proposals (Accept all covers these)'
 
 // { total, read, confident, skeleton, missing }: rows Bean reads one by one versus the confident skeleton and
 // missing-feature proposals that the section's Accept all covers without reading (a changed row is always read).
-export function readingCounts( intake, changed = ( intake.review || [] ).filter( ( r ) => r.changed ).map( ( r ) => r.rowId ) ) {
+export function readingCounts( intake, changed = ( intake.review || [] ).filter( ( r ) => r.changed ).map( ( r ) => r.rowId ), { template = null } = {} ) {
 	const ch = new Set( changed );
-	const rows = reviewRows( intake );
+	const rows = reviewRows( intake, { template } );
 	const confident = rows.filter( ( r ) => SPLIT.has( r.rowType ) && ! r.needs && ! ch.has( r.rowId ) );
 	const by = ( t ) => confident.filter( ( r ) => r.rowType === t ).length;
 	return { total: rows.length, read: rows.length - confident.length, confident: confident.length, skeleton: by( 'skeleton-block' ), missing: by( 'missing-feature' ) };
@@ -332,7 +358,7 @@ const manifestHash = ( m ) => sha( canonical( m?.files || {} ) ).slice( 0, 16 );
 
 // The marks written as go-through defaults (`by: 'go-through'`) that still belong to a row of the record.
 export const GO_THROUGH = 'go-through';
-const defaultedCount = ( intake, rows = reviewRows( intake ) ) => {
+const defaultedCount = ( intake, rows ) => {
 	const live = new Set( rows.map( ( r ) => r.rowId ) );
 	return ( intake.review || [] ).filter( ( e ) => GO_THROUGH === e.by && null !== e.mark && live.has( e.rowId ) ).length;
 };
@@ -340,12 +366,12 @@ export const defaultsLine = ( n ) => `Taken by default: ${ n } row${ 1 === n ? '
 
 // review.md's text with its one "Taken by default" line set to the record's count (removed when the count is 0), put
 // after the title as renderReview puts it; nothing else in the file changes, so Bean's ticks and marks stay.
-export function withDefaultsLine( markdown, intake ) {
+export function withDefaultsLine( markdown, intake, { template = null } = {} ) {
 	const eol = markdown.includes( '\r\n' ) ? '\r\n' : '\n';
 	const lines = markdown.split( /\r?\n/ );
 	const at = lines.findIndex( ( l ) => l.startsWith( 'Taken by default:' ) );
 	at >= 0 && lines.splice( at, '' === lines[ at + 1 ] ? 2 : 1 );
-	const n = defaultedCount( intake );
+	const n = defaultedCount( intake, reviewRows( intake, { template } ) );
 	if ( n ) {
 		const top = lines[ 0 ]?.startsWith( '# ' ) ? ( '' === lines[ 1 ] ? 2 : 1 ) : 0;
 		lines.splice( top, 0, defaultsLine( n ), '' );
@@ -361,14 +387,14 @@ export function withDefaultsLine( markdown, intake ) {
 // covers these)` sub-heading; the header states how
 // many rows need reading. Marks already in intake.review (carried or applied before) show in the Mark cell.
 // Byte-identical for identical input.
-export function renderReview( intake, { changed = ( intake.review || [] ).filter( ( r ) => r.changed ).map( ( r ) => r.rowId ) } = {} ) {
+export function renderReview( intake, { changed = ( intake.review || [] ).filter( ( r ) => r.changed ).map( ( r ) => r.rowId ), template = null } = {} ) {
 	const ch = new Set( changed );
 	const marks = new Map( ( intake.review || [] ).map( ( r ) => [ r.rowId, r ] ) );
-	const rows = reviewRows( intake );
+	const rows = reviewRows( intake, { template } );
 	const taken = defaultedCount( intake, rows );
-	const out = [ `# Intake review: ${ intake.client }`, '', ...( taken ? [ defaultsLine( taken ), '' ] : [] ), `Taken on ${ intake.takenOn }; manifest ${ intake.manifest?.schema_version ?? '?' }, files hash ${ manifestHash( intake.manifest ) }.`, '',
+	const out = [ `# Intake review: ${ intake.client }`, '', ...( taken ? [ defaultsLine( taken ), '' ] : [] ), `Taken on ${ intake.takenOn }; manifest ${ intake.manifest?.schema_version ?? '?' }, files hash ${ manifestHash( intake.manifest ) }.`, '', ...( missingFacts( intake, template ) ? [ NO_FACTS_NOTICE, '' ] : [] ),
 		'How to mark: put x in a section\'s `Accept all: [ ]` box to give every row the section\'s first mark; to mark one row differently, write its mark in that row\'s Mark cell (a row\'s own mark always beats Accept all). Flag rows left blank are accepted as flagged and not-a-defect rows left blank stay not defects; every other row needs Accept all or its own mark. Rows marked **changed** differ from the last export, lost their old mark and come first. Then run `node scripts/computed-route/intake.mjs --apply-review ' + intake.client + '`.', '',
-		readingLine( readingCounts( intake, changed ) ), '',
+		readingLine( readingCounts( intake, changed, { template } ) ), '',
 		notDefectLine( intake ), '',
 		'Marks per section (first value = Accept all):' ];
 	ROW_TYPES.forEach( ( t ) => out.push( `- ${ SECTION_TITLES[ t ] }: ${ markShapes( t ).map( ( s ) => `\`${ s }\`` ).join( ', ' ) }` ) );
@@ -502,9 +528,9 @@ export const isoDay = () => new Date().toISOString().slice( 0, 10 );
 // content hash), else its section's Accept all value recorded as `by: 'go-through'`; a row with no proposal to take (`open`)
 // stays unmarked and is returned in `open` ({ rowId, rowType, why, downstream }) instead of `missing`. `taken` lists the
 // row IDs that took a default. A mark Bean wrote, a refused mark and a ticked Accept all are never replaced by a default.
-export function applyReview( intake, markdown, { today = isoDay(), sections = null, goThrough = false } = {} ) {
+export function applyReview( intake, markdown, { today = isoDay(), sections = null, goThrough = false, template = null } = {} ) {
 	const inScope = ( t ) => ! sections || sections.includes( t );
-	const all = reviewRows( intake );
+	const all = reviewRows( intake, { template } );
 	const rows = all.filter( ( r ) => inScope( r.rowType ) );
 	const known = new Map( all.map( ( r ) => [ r.rowId, r ] ) );
 	const prior = new Map( ( intake.review || [] ).map( ( r ) => [ r.rowId, r ] ) );

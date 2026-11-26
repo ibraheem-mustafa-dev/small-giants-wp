@@ -7,6 +7,10 @@ import { settle } from './apply-chrome-records.mjs';
 
 const DRAWER = { inlineSvg: 'chromeLogoInlineSvg', svgParts: 'chromeLogoSvgParts', svgPartsTrigger: 'chromeLogoSvgPartsTrigger', svgPartsHoverCooldown: 'chromeLogoSvgPartsHoverCooldown' };
 
+// The logo blocks logoRule writes and each one's inline-SVG switch. When the client has build/logo-svgparts.json this stage owns
+// the switch and the parts' motion, hover rate included: Fill leaves them (lib/fill-injected-svg.mjs, lib/fill-motion.mjs).
+export const LOGO_INLINE = { 'sgs/responsive-logo': 'inlineSvg', 'sgs/nav-drawer': DRAWER.inlineSvg };
+
 export function logoRule( { block, target, saved, draft, clientData } ) {
 	if ( target.slot || ! [ 'sgs/responsive-logo', 'sgs/nav-drawer' ].includes( block ) ) {
 		return [];
