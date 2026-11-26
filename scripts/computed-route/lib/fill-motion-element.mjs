@@ -151,8 +151,10 @@ function pickEntrance( own, measured, runtime, others = [] ) {
 	}
 	const m = runtime.length ? matchByPose( runtime, measured ) : null;
 	if ( m?.record ) {
-		notes.push( `${ m.record.id }: the code picks this element at run time, and the render's from-pose matched it` );
-		return { record: m.record, notes, unmapped };
+		notes.push( `${ m.record.id }: the code picks this element at run time, and the render's from-pose matched it${ m.record.mergedFrom?.length > 1 ? ` (the writes ${ m.record.mergedFrom.join( ', ' ) } of one tween)` : '' }` );
+		const same = ( m.identical || [] ).filter( ( id ) => id !== m.record.id );
+		same.length && notes.push( `${ m.record.id }: ${ same.join( ', ' ) } play the same animation (one entrance the code reaches by several callers), so they are this entrance` );
+		return { record: m.record, notes, unmapped, also: same };
 	}
 	const oneShot = others.filter( ( r ) => /^(waapi|css-animation)$/.test( r.mechanism ) );
 	if ( m?.ambiguous ) {
@@ -179,7 +181,7 @@ export function elementMotion( records, { mdb, ctx, sampled, runtime = [], offer
 		if ( s ) {
 			named.set( r.id, s );
 		}
-		return { r, c: s ? { kind: 'entrance' } : classify( r, { css: ctx.css } ) };
+		return { r, c: s ? { kind: 'entrance' } : classify( r, { css: ctx.css, records: ctx.records } ) };
 	} );
 	const unmapped = kinds.filter( ( x ) => 'skip' === x.c.kind ).map( ( x ) => ( { record: x.r.id, reason: x.c.reason } ) );
 	const pick = pickEntrance( kinds.filter( ( x ) => 'entrance' === x.c.kind ).map( ( x ) => x.r ), sampled?.[ 1440 ] || null, runtime, kinds.filter( ( x ) => 'skip' === x.c.kind ).map( ( x ) => x.r ) );
@@ -192,7 +194,7 @@ export function elementMotion( records, { mdb, ctx, sampled, runtime = [], offer
 			unmapped.push( { record: pick.record.id, reason: e.unmapped } );
 		} else {
 			element.entrance = { base: e.layer };
-			used.push( pick.record.id );
+			used.push( pick.record.id, ...( pick.also || [] ) );
 			notes.push( ...e.notes.map( ( n ) => `${ pick.record.id }: ${ n }` ) );
 		}
 	}

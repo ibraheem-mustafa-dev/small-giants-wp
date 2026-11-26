@@ -36,45 +36,48 @@ const memberOf = ( r ) => {
 	return rise ? { kind: 'rise', axis: rise[ 1 ], px: Number( rise[ 2 ] ) } : null;
 };
 
-// The records with each scroll reveal's opacity and rise written by one function, for one caller, replaced by a single
-// entrance record the entrance writer reads like a Web Animation the code starts (`mechanism: 'waapi'`): opacity from 0 to 1
-// and the rise from its distance to none, over the tween's duration and curve, delayed by the index times the stagger step.
-// The merged record keeps the first member's id, element and trigger, names the others in `mergedFrom`, and carries
-// `reveal` ({ axis, px }) for the writes that hide the element beforehand. A tween with no opacity write, or a curve the
-// inventory could not name, is left as the separate records it was.
+// The records with each scroll reveal's opacity and rise written by one function replaced by a single entrance record the
+// entrance writer reads like a Web Animation the code starts (`mechanism: 'waapi'`): opacity from 0 to 1 and the rise from
+// its distance to none, over the tween's duration and curve, delayed by the index times the stagger step. The inventory
+// records the tween once per caller (the observer, the mount, a state change), so the callers' records are one reveal: the
+// merged record takes the scroll-started opacity record's id, element and trigger (else the first's) and names every
+// member in `mergedFrom`; it carries `reveal` ({ axis, px }) for the writes that hide the element beforehand. A tween with
+// no opacity write, or a curve the inventory could not name, is left as the separate records it was.
 export function normaliseReveals( records ) {
 	const list = Array.isArray( records ) ? records : [];
 	const groups = new Map();
 	for ( const r of list ) {
 		const m = 'active' === ( r.status ?? 'active' ) ? memberOf( r ) : null;
 		if ( m ) {
-			const key = [ r.element?.dc, r.source?.function, r.trigger?.type, r.duration_ms, r.easing, JSON.stringify( r.stagger ?? null ) ].join( '|' );
+			const key = [ r.element?.dc, r.source?.function, r.duration_ms, r.easing, JSON.stringify( r.stagger ?? null ) ].join( '|' );
 			groups.set( key, [ ...( groups.get( key ) || [] ), { r, m } ] );
 		}
 	}
 	const drop = new Set();
 	const merged = new Map();
 	for ( const members of groups.values() ) {
-		const opacity = members.find( ( x ) => 'opacity' === x.m.kind );
-		if ( ! opacity ) {
+		const opacities = members.filter( ( x ) => 'opacity' === x.m.kind );
+		if ( ! opacities.length ) {
 			continue;
 		}
-		const rise = members.find( ( x ) => 'rise' === x.m.kind );
-		const first = members[ 0 ].r;
-		const step = opacity.r.stagger?.ms;
+		const lead = opacities.find( ( x ) => 'scroll-into-view' === x.r.trigger?.type ) ?? opacities[ 0 ];
+		const rises = members.filter( ( x ) => 'rise' === x.m.kind );
+		const rise = ( rises.find( ( x ) => x.r.trigger?.type === lead.r.trigger?.type ) ?? rises[ 0 ] )?.m;
+		const first = lead.r;
+		const step = first.stagger?.ms;
 		merged.set( first, {
 			...first,
 			name: `Scroll reveal in ${ first.source?.function }`,
 			mechanism: 'waapi',
-			properties: [ { property: 'opacity', from: 0, to: 1 }, ...( rise ? [ { property: 'transform', from: `translate${ rise.m.axis }(${ rise.m.px }px)`, to: 'none' } ] : [] ) ],
+			properties: [ { property: 'opacity', from: 0, to: 1 }, ...( rise ? [ { property: 'transform', from: `translate${ rise.axis }(${ rise.px }px)`, to: 'none' } ] : [] ) ],
 			easing: EASING_CSS[ first.easing ],
 			delay_ms: Number.isFinite( step ) ? `i * ${ step }` : first.delay_ms,
 			iterations: 1,
 			direction: 'normal',
 			mergedFrom: members.map( ( x ) => x.r.id ),
-			reveal: rise ? { axis: rise.m.axis, px: rise.m.px } : { axis: null, px: 0 },
+			reveal: rise ? { axis: rise.axis, px: rise.px } : { axis: null, px: 0 },
 		} );
-		members.slice( 1 ).forEach( ( x ) => drop.add( x.r ) );
+		members.filter( ( x ) => x.r !== first ).forEach( ( x ) => drop.add( x.r ) );
 	}
 	return list.filter( ( r ) => ! drop.has( r ) ).map( ( r ) => merged.get( r ) ?? r );
 }

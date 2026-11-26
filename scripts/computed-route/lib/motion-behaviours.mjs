@@ -394,7 +394,7 @@ export function effectRows( records, ctx = {} ) {
 		if ( ! b || [ 'native', 'covered' ].includes( b.kind ) ) {
 			continue;
 		}
-		const attrs = 'settings' === b.kind ? Object.entries( b.blocks || {} ).map( ( [ block, s ] ) => `${ block } ${ s.map( ( x ) => x.attr ).join( ', ' ) }` ).join( ' or ' ) : '';
+		const attrs = 'settings' === b.kind ? Object.entries( b.blocks || {} ).map( ( [ block, s ] ) => `${ block } ${ s.filter( ( x ) => ! x.companion ).map( ( x ) => x.attr ).join( ', ' ) }` ).join( ' or ' ) : '';
 		const what = 'effect' === b.kind ? [ ...b.effects.map( ( e ) => e.effect ), ...( b.hoverState ? [ 'follow-pointer' ] : [] ) ].join(  ' + ' ) || 'hover state'
 			: 'control' === b.kind ? `${ b.effect } hover rate of ${ b.of }` : 'site' === b.kind ? b.option : 'settings' === b.kind ? `settings: ${ attrs }` : 'close' === b.kind ? 'close' : 'no SGS effect';
 		const says = 'unmapped' === b.kind ? `not expressed by any SGS effect: ${ b.reason }`

@@ -1,0 +1,158 @@
+[
+	{
+		"file": "lib/motion-loops.mjs",
+		"find": "return same ? { ...loop, frames: [ a, b ], offsets: [ 0, 1 ], direction: 'alternate', duration: loop.duration / 2, fromThreeKeyframes: true } : loop;",
+		"replace": "return loop;",
+		"why": "a three-keyframe float is refused"
+	},
+	{
+		"file": "lib/motion-loops.mjs",
+		"find": "duration: loop.duration / 2, fromThreeKeyframes: true }",
+		"replace": "duration: loop.duration, fromThreeKeyframes: true }",
+		"why": "the leg is the whole cycle"
+	},
+	{
+		"file": "lib/motion-loops.mjs",
+		"find": "const same = 3 === loop.frames.length && 'normal' === loop.direction && Math.abs( ( loop.offsets?.[ 1 ] ?? 0.5 ) - 0.5 ) <= 0.01",
+		"replace": "const same = 3 === loop.frames.length && Math.abs( ( loop.offsets?.[ 1 ] ?? 0.5 ) - 0.5 ) <= 0.01",
+		"why": "an alternating three-keyframe loop is one leg"
+	},
+	{
+		"file": "lib/motion-loops.mjs",
+		"find": "const same = 3 === loop.frames.length && 'normal' === loop.direction && Math.abs( ( loop.offsets?.[ 1 ] ?? 0.5 ) - 0.5 ) <= 0.01",
+		"replace": "const same = 3 === loop.frames.length && 'normal' === loop.direction",
+		"why": "a peak off the half is symmetric"
+	},
+	{
+		"file": "lib/motion-loops.mjs",
+		"find": "[ ...new Set( [ ...Object.keys( a ), ...Object.keys( c ) ] ) ].every( ( k ) => JSON.stringify( a[ k ] ?? null ) === JSON.stringify( c[ k ] ?? null ) )",
+		"replace": "true",
+		"why": "a loop that does not return is symmetric"
+	},
+	{
+		"file": "lib/motion-loops.mjs",
+		"find": "loop.fromThreeKeyframes && ! /^(?:linear|ease-in-out)$/.test( String( loop.easing ?? '' ).trim() )",
+		"replace": "false",
+		"why": "an asymmetric curve is not named"
+	},
+	{
+		"file": "lib/motion-loops.mjs",
+		"find": "loop.fromThreeKeyframes && ! /^(?:linear|ease-in-out)$/.test( String( loop.easing ?? '' ).trim() )",
+		"replace": "loop.fromThreeKeyframes",
+		"why": "a symmetric curve is named as asymmetric"
+	},
+	{
+		"file": "lib/fill-motion-element.mjs",
+		"find": "used.push( pick.record.id, ...( pick.also || [] ) );",
+		"replace": "used.push( pick.record.id );",
+		"why": "the identical entrances are not accounted"
+	},
+	{
+		"file": "lib/fill-motion-element.mjs",
+		"find": "return { record: m.record, notes, unmapped, also: same };",
+		"replace": "return { record: m.record, notes, unmapped };",
+		"why": "the identical entrances are not returned"
+	},
+	{
+		"file": "lib/fill-motion-element.mjs",
+		"find": "same.length && notes.push(",
+		"replace": "false && notes.push(",
+		"why": "the identical entrances are not named"
+	},
+	{
+		"file": "lib/fill-motion-element.mjs",
+		"find": "${ m.record.mergedFrom?.length > 1 ? ` (the writes ${ m.record.mergedFrom.join( ', ' ) } of one tween)` : '' }",
+		"replace": "",
+		"why": "the tween's writes are not named"
+	},
+	{
+		"file": "lib/fill-motion-element.mjs",
+		"find": "classify( r, { css: ctx.css, records: ctx.records } )",
+		"replace": "classify( r, { css: ctx.css } )",
+		"why": "the hiding writes are not seen beside their reveal"
+	},
+	{
+		"file": "lib/motion-layers.mjs",
+		"find": "if ( ! tied.every( ( r ) => sameEntrance( r, tied[ 0 ] ) ) ) {",
+		"replace": "if ( true ) {",
+		"why": "identical entrances stay ambiguous"
+	},
+	{
+		"file": "lib/motion-layers.mjs",
+		"find": "record = tied.find( ( r ) => 'scroll' === TRIGGER[ r.trigger?.type ] ) ?? tied[ 0 ];",
+		"replace": "record = tied[ 0 ];",
+		"why": "the scroll-started record is not preferred"
+	},
+	{
+		"file": "lib/motion-layers.mjs",
+		"find": "const same = candidates.filter( ( r ) => sameEntrance( r, record ) ).map( ( r ) => r.id );\n\treturn same.length > 1 ? { record, identical: same } : { record };",
+		"replace": "return { record };",
+		"why": "the identical set is not returned"
+	},
+	{
+		"file": "lib/motion-layers.mjs",
+		"find": "const same = candidates.filter( ( r ) => sameEntrance( r, record ) ).map( ( r ) => r.id );",
+		"replace": "const same = ranked.filter( ( x ) => sameEntrance( x.r, record ) ).map( ( x ) => x.r.id );",
+		"why": "records the trigger filter set aside are not the same entrance"
+	},
+	{
+		"file": "lib/motion-layers.mjs",
+		"find": "r.duration_ms ?? null, r.delay_ms ?? null, r.easing ?? null, r.direction ?? null, r.fill ?? null, r.stagger ?? null ] );",
+		"replace": "r.delay_ms ?? null, r.easing ?? null, r.direction ?? null, r.fill ?? null, r.stagger ?? null ] );",
+		"why": "a different duration is the same entrance"
+	},
+	{
+		"file": "lib/motion-layers.mjs",
+		"find": "r.duration_ms ?? null, r.delay_ms ?? null, r.easing ?? null, r.direction ?? null, r.fill ?? null, r.stagger ?? null ] );",
+		"replace": "r.duration_ms ?? null, r.easing ?? null, r.direction ?? null, r.fill ?? null, r.stagger ?? null ] );",
+		"why": "a different delay is the same entrance"
+	},
+	{
+		"file": "lib/motion-layers.mjs",
+		"find": "r.duration_ms ?? null, r.delay_ms ?? null, r.easing ?? null, r.direction ?? null, r.fill ?? null, r.stagger ?? null ] );",
+		"replace": "r.duration_ms ?? null, r.delay_ms ?? null, r.direction ?? null, r.fill ?? null, r.stagger ?? null ] );",
+		"why": "a different curve is the same entrance"
+	},
+	{
+		"file": "lib/motion-layers.mjs",
+		"find": "( r.properties || [] ).map( ( p ) => [ p.property, p.from ?? null, p.to ?? null, p.keyframes ?? null ] )",
+		"replace": "( r.properties || [] ).map( ( p ) => [ p.property, p.from ?? null ] )",
+		"why": "a different end pose is the same entrance"
+	},
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "palette: clientPalette( rawSnapshot ), css: draftCss, records };",
+		"replace": "palette: clientPalette( rawSnapshot ), css: draftCss };",
+		"why": "the writer context has no records"
+	},
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "const near = ( null === tpl || undefined === tpl ) && 'infinite' === r.iterations && /^(?:css-animation|waapi)$/.test( r.mechanism ) ? r.element?.nearest_tpl_id : null;",
+		"replace": "const near = null;",
+		"why": "a built loop is not placed by its nearest element"
+	},
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "const near = ( null === tpl || undefined === tpl ) && 'infinite' === r.iterations && /^(?:css-animation|waapi)$/.test( r.mechanism ) ? r.element?.nearest_tpl_id : null;",
+		"replace": "const near = ( null === tpl || undefined === tpl ) && /^(?:css-animation|waapi)$/.test( r.mechanism ) ? r.element?.nearest_tpl_id : null;",
+		"why": "a finite animation is placed by its nearest element"
+	},
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "const near = ( null === tpl || undefined === tpl ) && 'infinite' === r.iterations && /^(?:css-animation|waapi)$/.test( r.mechanism ) ? r.element?.nearest_tpl_id : null;",
+		"replace": "const near = ( null === tpl || undefined === tpl ) && 'infinite' === r.iterations ? r.element?.nearest_tpl_id : null;",
+		"why": "a transition is placed by its nearest element"
+	},
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "const near = ( null === tpl || undefined === tpl ) && 'infinite'",
+		"replace": "const near = 'infinite'",
+		"why": "an own element loses to a nearest one"
+	},
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "const all = normaliseReveals( sameTriggerResolved( given ) );",
+		"replace": "const all = sameTriggerResolved( given );",
+		"why": "a script reveal is not read as an entrance"
+	}
+]
