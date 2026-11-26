@@ -159,7 +159,8 @@ function fillContent( st, rec, ref, cal ) {
 		st.notedBlocks.add( rec.name );
 		st.out.notes.push( `${ rec.name }: calibration has no ${ absent.join( ', ' ) } key, so those were not judged for this block (recalibrate it to read them)` );
 	}
-	take( presenceDecisions( { calibration: cal, schema: blockSchema( rec.name ), attributes: node.attributes || {}, evidence } ) );
+	// A setting the node owns (a loop card's variant, lib/fill-item-template.mjs) counts as held: presence evidence never changes it.
+	take( presenceDecisions( { calibration: cal, schema: blockSchema( rec.name ), attributes: { ...owned, ...( node.attributes || {} ) }, evidence } ) );
 	take( textDecisions( { calibration: cal, attributes: node.attributes || {}, slots: words, leaf: 0 === rec.children.length } ) );
 	take( linkDecisions( { calibration: cal, attributes: node.attributes || {}, slots: hrefs, origin: st.origin, pages: st.pages, draftLink: st.draftLink ?? null } ) );
 	take( linkAttrDecisions( { calibration: cal, schema: blockSchema( rec.name ) || {}, anchor: blockSupportsAnchor( rec.name ), attributes: node.attributes || {}, slots: linkFacts, imageAlts: blockMediaSlots( rec.name ).filter( ( s ) => 'content' === s.context && s.alt ).map( ( s ) => s.alt ), pictureSlot: pictureSlotOf( atDesktop ) } ) );

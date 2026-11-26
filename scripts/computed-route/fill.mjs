@@ -66,6 +66,7 @@ import { formDraftFolder } from './lib/fill-form-behaviour.mjs';
 import { listContentWrites, logicReader, applyChildren, markItemChildren } from './lib/fill-list-content.mjs';
 import { loadShopParts, shopPartWrites } from './lib/fill-shop-parts.mjs';
 import { buyboxColumnWrites } from './lib/fill-buybox-columns.mjs';
+import { holdItemVariants } from './lib/fill-item-template.mjs';
 import { shopPartTargets } from './lib/fill-shop-targets.mjs';
 import { blockSchema } from './lib/resolve.mjs';
 import { motionDb } from './lib/motion-db.mjs';
@@ -251,6 +252,8 @@ export async function fillSurface( o ) {
 		const ledgerFile = path.join( buildDir, 'qa', 'divergences.json' );
 		// The fixtures the site look drew each block from (the plain block, lib/setting-record.mjs::recordFixtures).
 		const fixtures = recordFixtures();
+		// A card standing for every item of its loop keeps its block's variant: one copy's look never chooses it (lib/fill-item-template.mjs).
+		const heldVariants = holdItemVariants( { nodes, flat, db, schemaOf: blockSchema, refOf } );
 		const result = fillTree( {
 			tree, nodes, reads, db, calFor, origin: reads.origin,
 			// The skeleton inventory: each draft element's parent, for a part a draft element lays out (lib/fill-part-pairing.mjs::draftParents).
@@ -271,6 +274,7 @@ export async function fillSurface( o ) {
 		// FR-48-81: each target's state looks, through the settings that hold their states.
 		const states = fillStates( { tree, nodes, reads, calFor, db, snapshot, rawSnapshot } );
 		result.writes.push( ...states.writes );
+		result.notes.push( ...heldVariants );
 		result.notes.push( ...defectLooks.listed.map( ( d ) => `draft defect ${ d.draftId } (${ d.state } ${ d.prop }, ${ d.declared }): the draft never paints it; built from the code value ${ JSON.stringify( d.built ) } by width; listed for Bean (intake.json draftDefects, FR-48-69)` ), ...defectLooks.gaps.map( ( g ) => `draft defect ${ g.draftId } (${ g.state } ${ g.prop }${ g.width ? ` at ${ g.width }px` : '' }): not built: ${ g.reason }` ) );
 		// FR-48-69: the client's draft-defects list, rebuilt from intake (when intake has run) with the value each defect was built as.
 		if ( fs.existsSync( path.join( repo, 'sites', o.client, 'build', 'intake', 'intake.json' ) ) ) {

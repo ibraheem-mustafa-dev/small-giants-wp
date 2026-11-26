@@ -15,7 +15,7 @@
 // whose holder holds anything else, whose nodes do not sit in one list, or whose list reads anything else stays as drawn, with
 // the reason.
 import { countBlocks } from './template-pieces.mjs';
-import { declsOf, draftLogic, holesOf, inventoryIndex, nodesWithin, refKey, treeNodes, wordsSetting } from './template-piece-draft.mjs';
+import { declsOf, draftLogic, holesOf, inventoryIndex, mountedRoot, nodesWithin, refKey, treeNodes, wordsSetting } from './template-piece-draft.mjs';
 import { recordRoots } from './template-piece-product-field.mjs';
 import { blockSchema } from './resolve.mjs';
 import { valuesOf } from './shop-parts-logic.mjs';
@@ -227,6 +227,8 @@ export function place( ctx, piece ) {
 		const first = index.byKey.get( loop.copies[ 0 ] );
 		const top = first?.box?.[ 1440 ]?.y;
 		const columns = Math.max( 1, loop.copies.filter( ( k ) => undefined !== top && Math.abs( ( index.byKey.get( k )?.box?.[ 1440 ]?.y ?? NaN ) - top ) <= 1 ).length );
+		// The card is read at the root of the card the first copy mounts (lib/template-piece-draft.mjs::mountedRoot), and stands for
+		// every product the collection lists (`itemTemplate`), so Fill never takes one product's variant for it.
 		const node = {
 			name: piece.block,
 			attributes: {
@@ -236,7 +238,7 @@ export function place( ctx, piece ) {
 				displayLayout: { type: 'flex', columns: Math.min( columns, rel.count ), shrinkColumns: true },
 				...( tax ? { sgsSameTermAs: tax } : { collection: RELATED_COLLECTION } ),
 			},
-			innerBlocks: [ { name: 'woocommerce/product-template', attributes: {}, innerBlocks: [ { name: 'sgs/product-card', attributes: { sourceMode: 'wc-product' }, innerBlocks: [], draftRef: { tpl: loop.copies[ 0 ] } } ] } ],
+			innerBlocks: [ { name: 'woocommerce/product-template', attributes: {}, innerBlocks: [ { name: 'sgs/product-card', attributes: { sourceMode: 'wc-product' }, innerBlocks: [], draftRef: { tpl: mountedRoot( index, loop.copies[ 0 ] ) }, itemTemplate: true } ] } ],
 		};
 		const list = nodes[ 0 ].list;
 		const at = Math.min( ...nodes.map( ( r ) => list.indexOf( r.node ) ) );

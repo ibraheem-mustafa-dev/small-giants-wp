@@ -34,6 +34,15 @@ export function inventoryIndex( inventory ) {
 	return { elements, byKey, order: ( k ) => rank.get( k ) ?? -1, children: ( k ) => kids.get( k ) || [], chain, within: ( k, anc ) => chain( k ).includes( anc ) };
 }
 
+// The root of the card a loop copy mounts (`key`, an element of the loop): the first element inside it, in stamp order, drawn by
+// another component (the draft's card, mounted by dc-import; a component nested in the card comes after the card's root). Its box
+// carries the card's border, radius, shadow and parts; the copy only places it in the listing. The copy's own key when it mounts none.
+export function mountedRoot( index, key ) {
+	const copy = index.byKey.get( key );
+	const root = copy ? index.elements.find( ( d ) => d.template !== copy.template && index.within( d.key, key ) ) : null;
+	return root?.key ?? key;
+}
+
 // Whether the element or an ancestor the inventory holds is fixed-position at any width (a sticky bar repeating a control).
 export const underFixed = ( index, key ) => index.chain( key ).some( ( a ) => Object.values( index.byKey.get( a )?.position || {} ).some( ( p ) => 'fixed' === p ) );
 

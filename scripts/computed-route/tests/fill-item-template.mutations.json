@@ -1,0 +1,32 @@
+[
+	{
+		"file": "lib/fill-item-template.mjs",
+		"find": "\t\tOWNED.set( node, { ...( OWNED.get( node ) ?? {} ), [ attr ]: value } );",
+		"replace": "",
+		"why": "a loop card's variant is not held, so the read copy's look chooses it"
+	},
+	{
+		"file": "lib/fill-item-template.mjs",
+		"find": "\t\tif ( ! rec.node?.itemTemplate ) {",
+		"replace": "\t\tif ( false ) {",
+		"why": "every card's variant is held, a single card's too"
+	},
+	{
+		"file": "lib/fill-item-template.mjs",
+		"find": "const value = node.attributes?.[ attr ] ?? schemaOf( rec.name )?.[ attr ]?.default;",
+		"replace": "const value = schemaOf( rec.name )?.[ attr ]?.default;",
+		"why": "a variant the skeleton set is replaced by the default"
+	},
+	{
+		"file": "lib/fill-resolve.mjs",
+		"find": "attributes: { ...owned, ...( node.attributes || {} ) }, evidence",
+		"replace": "attributes: node.attributes || {}, evidence",
+		"why": "presence evidence chooses a loop card's variant"
+	},
+	{
+		"file": "lib/template-piece-draft.mjs",
+		"find": "\treturn root?.key ?? key;",
+		"replace": "\treturn key;",
+		"why": "the card is read at the loop cell"
+	}
+]
