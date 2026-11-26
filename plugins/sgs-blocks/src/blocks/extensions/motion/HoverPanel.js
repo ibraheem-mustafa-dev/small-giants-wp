@@ -107,7 +107,6 @@ export default function HoverPanel( {
 			initialOpen={ false }
 			className="sgs-motion-panel sgs-motion-panel--hover"
 		>
-			<SgsBlockWideRowsSlot home="hover" />
 			<TargetRow
 				blockName={ blockName }
 				elements={ elements }
@@ -235,6 +234,8 @@ export default function HoverPanel( {
 					<FocusState actions={ actions } />
 				) }
 			</PanelBody>
+			{ /* The block-wide rows ("Keyboard focus keeps the resting look") close the panel, under a rule. */ }
+			<SgsBlockWideRowsSlot home="hover" />
 		</PanelBody>
 	);
 }

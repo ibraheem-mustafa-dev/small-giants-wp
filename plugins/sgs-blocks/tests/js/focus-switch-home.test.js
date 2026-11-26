@@ -1,8 +1,9 @@
 /**
- * The "Keyboard focus" switch is one block-wide row (Bean, 2026-11-25), not a panel: it sits at the top of the Hover
- * panel for a block with motion, in the shared Colour panel for a block with hover colours and no Hover panel, and
- * nowhere for a block with neither. `blocks/extensions/focus-rests.js::withFocusRestsControl` fills the slot
- * (`components/SgsBlockWideRows.js`); the panels draw it.
+ * The "Keyboard focus" switch is one block-wide row, not a panel (Bean, 2026-11-25). It is the LAST row of the Hover panel
+ * for a block with motion, and sits in WordPress's Advanced section (`InspectorAdvancedControls`) for a block with hover
+ * colours and no Hover panel (Bean, 2026-11-26); a block with neither draws nothing.
+ * `blocks/extensions/focus-rests.js::withFocusRestsControl` fills the slot (`components/SgsBlockWideRows.js`) or the
+ * Advanced section; the Hover panel draws the slot at its foot.
  */
 // The shared components mock has a Slot and a Fill that do not connect, so this test supplies a small working pair:
 // a Fill registers its children in a store keyed by the slot's name, and a Slot draws what is registered.
@@ -58,6 +59,7 @@ jest.mock( '@wordpress/components', () => {
 } );
 jest.mock( '@wordpress/block-editor', () => ( {
 	InspectorControls: ( { children } ) => children,
+	InspectorAdvancedControls: ( { children } ) => require( 'react' ).createElement( 'section', { 'data-panel': 'Advanced' }, children ),
 } ) );
 jest.mock( '../../src/components/DesignTokenPicker', () => ( { __esModule: true, default: ( { label } ) => require( 'react' ).createElement( 'i', { 'data-colour': label } ) } ) );
 jest.mock( '../../src/components/GradientCapableColourControl', () => ( { __esModule: true, default: ( { label } ) => require( 'react' ).createElement( 'i', { 'data-colour': label } ) } ) );
@@ -73,7 +75,6 @@ const { SlotFillProvider } = require( '@wordpress/components' );
 require( '../../src/blocks/extensions/focus-rests' );
 const { focusSwitchHome } = require( '../../src/blocks/extensions/focus-rests' );
 const { SgsBlockWideRowsSlot } = require( '../../src/components/SgsBlockWideRows' );
-const SgsColourPanel = require( '../../src/components/SgsColourPanel' ).default;
 
 global.IS_REACT_ACT_ENVIRONMENT = true;
 const h = React.createElement;
@@ -81,10 +82,10 @@ const LABEL = 'Keyboard focus keeps the resting look';
 let host;
 let root;
 
-// A stand-in for HoverPanel's top: the slot, then the next control (the target picker's place).
-const HoverTop = () => h( 'section', { 'data-panel': 'Hover' }, h( SgsBlockWideRowsSlot, { home: 'hover' } ), h( 'select', { 'aria-label': 'Hover state' } ) );
+// A stand-in for HoverPanel: the target picker's place, a later control, then the slot as the last child.
+const HoverTop = () => h( 'section', { 'data-panel': 'Hover' }, h( 'select', { 'aria-label': 'Hover state' } ), h( 'input', { 'aria-label': 'Fine-tune', type: 'text' } ), h( SgsBlockWideRowsSlot, { home: 'hover' } ) );
 
-function mount( name, { selected = true, setAttributes = () => {}, checked = false, panels = [ 'hover', 'colour' ] } = {} ) {
+function mount( name, { selected = true, setAttributes = () => {}, checked = false, panels = [ 'hover' ] } = {} ) {
 	const Wrapped = applyFilters( 'editor.BlockEdit', () => h( 'div', { className: 'edit' } ) );
 	host = document.createElement( 'div' );
 	document.body.appendChild( host );
@@ -95,8 +96,7 @@ function mount( name, { selected = true, setAttributes = () => {}, checked = fal
 				SlotFillProvider,
 				null,
 				h( Wrapped, { name, isSelected: selected, attributes: { sgsFocusRests: checked }, setAttributes } ),
-				panels.includes( 'hover' ) ? h( HoverTop ) : null,
-				panels.includes( 'colour' ) ? h( SgsColourPanel, { rows: [ { key: 'a', label: 'Background' } ] } ) : null
+				panels.includes( 'hover' ) ? h( HoverTop ) : null
 			)
 		);
 	} );
@@ -110,18 +110,21 @@ const row = () => host.querySelector( `input[aria-label="${ LABEL }"]` );
 const inPanel = ( title ) => host.querySelector( `[data-panel="${ title }"] input[aria-label="${ LABEL }"]` );
 
 describe( 'the Keyboard focus row', () => {
-	it( 'sits at the top of the Hover panel, above the next control, for a block with motion', () => {
+	it( 'is the last row of the Hover panel, after the next control, for a block with motion', () => {
 		mount( 'sgs/hero' );
 		expect( inPanel( 'Hover' ) ).not.toBeNull();
 		const select = host.querySelector( 'select[aria-label="Hover state"]' );
+		const fineTune = host.querySelector( 'input[aria-label="Fine-tune"]' );
 		// eslint-disable-next-line no-bitwise
-		expect( row().compareDocumentPosition( select ) & Node.DOCUMENT_POSITION_FOLLOWING ).toBeTruthy();
+		expect( row().compareDocumentPosition( select ) & Node.DOCUMENT_POSITION_PRECEDING ).toBeTruthy();
+		// eslint-disable-next-line no-bitwise
+		expect( row().compareDocumentPosition( fineTune ) & Node.DOCUMENT_POSITION_PRECEDING ).toBeTruthy();
 		expect( host.querySelectorAll( `input[aria-label="${ LABEL }"]` ) ).toHaveLength( 1 );
 	} );
 
-	it( 'sits in the Colour panel, not the Hover panel, for a block with hover colours and no motion', () => {
+	it( 'sits in the Advanced section, not the Hover panel, for a block with hover colours and no motion', () => {
 		mount( 'sgs/tab' );
-		expect( inPanel( 'Colour' ) ).not.toBeNull();
+		expect( inPanel( 'Advanced' ) ).not.toBeNull();
 		expect( inPanel( 'Hover' ) ).toBeNull();
 	} );
 
@@ -149,9 +152,9 @@ describe( 'the Keyboard focus row', () => {
 		expect( setAttributes ).toHaveBeenCalledWith( { sgsFocusRests: false } );
 	} );
 
-	it( 'a Colour panel with no filler draws nothing extra', () => {
-		mount( 'sgs/gift-order', { panels: [ 'colour' ] } );
-		expect( host.querySelectorAll( 'input' ) ).toHaveLength( 0 );
+	it( 'a Hover panel with no filler draws an empty slot', () => {
+		mount( 'sgs/gift-order' );
+		expect( host.querySelectorAll( 'input[type="checkbox"]' ) ).toHaveLength( 0 );
 	} );
 
 	it( 'holds more than one row in one slot', () => {
@@ -178,7 +181,7 @@ describe( 'the Keyboard focus row', () => {
 describe( 'focusSwitchHome()', () => {
 	it( 'reads the data, and falls back on the motion declaration for an unlisted block', () => {
 		expect( focusSwitchHome( 'sgs/hero' ) ).toBe( 'hover' );
-		expect( focusSwitchHome( 'sgs/tab' ) ).toBe( 'colour' );
+		expect( focusSwitchHome( 'sgs/tab' ) ).toBe( 'advanced' );
 		expect( focusSwitchHome( 'sgs/notice-message' ) ).toBe( '' );
 		expect( focusSwitchHome( 'sgs/unlisted-motion' ) ).toBe( 'hover' );
 		expect( focusSwitchHome( 'sgs/unlisted-plain' ) ).toBe( '' );

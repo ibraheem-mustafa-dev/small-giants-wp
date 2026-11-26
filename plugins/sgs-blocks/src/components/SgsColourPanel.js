@@ -150,7 +150,6 @@ import { InspectorControls } from '@wordpress/block-editor';
 import { BaseControl, PanelBody } from '@wordpress/components';
 import DesignTokenPicker from './DesignTokenPicker';
 import GradientCapableColourControl from './GradientCapableColourControl';
-import { SgsBlockWideRowsSlot } from './SgsBlockWideRows';
 
 // `initialOpen` (default closed): a block passes true only where Colour is the first panel of its Styles tab, because
 // only the first panel of each tab starts open (Spec 49 section 9.1; `scripts/data/first-panels.json`).
@@ -168,7 +167,6 @@ export default function SgsColourPanel( { rows, initialOpen = false } ) {
 				initialOpen={ initialOpen }
 				className="sgs-colour-panel"
 			>
-				<SgsBlockWideRowsSlot home="colour" />
 				{ visible.map( ( row ) => {
 					const Control = row.gradientCapable
 						? GradientCapableColourControl

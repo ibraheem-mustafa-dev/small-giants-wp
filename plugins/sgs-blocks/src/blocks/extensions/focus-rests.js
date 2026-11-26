@@ -10,15 +10,17 @@
  * Roster rule `denylist`: every `sgs/*` block unless `supports.sgs.hideExtensions` lists `focusRests`.
  *
  * The switch is one block-wide row, not a panel (Bean, 2026-11-25). Where it sits is `focus-switch-home.json`
- * (written by `scripts/check-focus-switch-home.js --write`): the top of the motion Hover panel for a block that
- * declares motion, the shared Colour panel for a block with no Hover panel that holds a hover colour, and nowhere for a
- * block with neither (a switch with nothing to act on). The attribute is registered on every block either way.
+ * (written by `scripts/check-focus-switch-home.js --write`): the last row of the motion Hover panel for a block that
+ * declares motion, WordPress's Advanced section (`InspectorAdvancedControls`) for a block with no Hover panel that holds
+ * a hover colour, and nowhere for a block with neither (a switch with nothing to act on). The attribute is registered on
+ * every block either way (Bean, 2026-11-26).
  *
  * @package SGS\Blocks
  */
 import { addFilter } from '@wordpress/hooks';
 import { createHigherOrderComponent } from '@wordpress/compose';
 import { getBlockType } from '@wordpress/blocks';
+import { InspectorAdvancedControls } from '@wordpress/block-editor';
 import { ToggleControl } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { isExtensionHidden } from './hide-extensions';
@@ -57,7 +59,7 @@ addFilter(
 );
 
 /**
- * Where a block's switch sits: 'hover', 'colour' or '' (not drawn). A block the data does not list falls back on its
+ * Where a block's switch sits: 'hover', 'advanced' or '' (not drawn). A block the data does not list falls back on its
  * motion declaration, so a block added later still gets the Hover row.
  *
  * @param {string} name Block name.
@@ -77,26 +79,31 @@ const withFocusRestsControl = createHigherOrderComponent( ( BlockEdit ) => {
 		if ( ! home ) {
 			return <BlockEdit { ...props } />;
 		}
+		const toggle = (
+			<ToggleControl
+				label={ __(
+					'Keyboard focus keeps the resting look',
+					'sgs-blocks'
+				) }
+				help={ __(
+					'Hover colours, shadows and movement stay on pointer hover only; keyboard focus shows the focus ring over the resting look.',
+					'sgs-blocks'
+				) }
+				checked={ !! attributes.sgsFocusRests }
+				onChange={ ( value ) =>
+					setAttributes( { sgsFocusRests: !! value } )
+				}
+				__nextHasNoMarginBottom
+			/>
+		);
 		return (
 			<>
 				<BlockEdit { ...props } />
-				<SgsBlockWideRowsFill home={ home }>
-					<ToggleControl
-						label={ __(
-							'Keyboard focus keeps the resting look',
-							'sgs-blocks'
-						) }
-						help={ __(
-							'Hover colours, shadows and movement stay on pointer hover only; keyboard focus shows the focus ring over the resting look.',
-							'sgs-blocks'
-						) }
-						checked={ !! attributes.sgsFocusRests }
-						onChange={ ( value ) =>
-							setAttributes( { sgsFocusRests: !! value } )
-						}
-						__nextHasNoMarginBottom
-					/>
-				</SgsBlockWideRowsFill>
+				{ 'advanced' === home ? (
+					<InspectorAdvancedControls>{ toggle }</InspectorAdvancedControls>
+				) : (
+					<SgsBlockWideRowsFill home={ home }>{ toggle }</SgsBlockWideRowsFill>
+				) }
 			</>
 		);
 	};
