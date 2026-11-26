@@ -48,6 +48,15 @@ test( 'MUST FAIL: a list with one malformed entry stays in the guard, and that e
 	r.done();
 } );
 
+test( 'MUST FAIL: a *.mutations.json file that is not valid JSON is a named problem, never skipped', () => {
+	const r = routeWith( { 'broken.mutations.json': '[ { "file": "lib/target.mjs", "find": "a", "replace": "b }' } );
+	const { lists, problems } = checkMutationLists( r.dir );
+	assert.deepEqual( lists, [ 'tests/broken.mutations.json' ] );
+	assert.equal( problems.length, 1 );
+	assert.match( problemLine( problems[ 0 ] ), /^tests\/broken\.mutations\.json: the file is not valid JSON/ );
+	r.done();
+} );
+
 test( 'a JSON file that is not a mutation list is not read as one', () => {
 	const r = routeWith( { 'plain.json': { file: 'lib/target.mjs', find: 'nowhere' }, 'rows.json': [ { file: 'lib/target.mjs', find: 'nowhere' } ], 'empty.json': [], 'broken.json': '[ {' } );
 	assert.deepEqual( checkMutationLists( r.dir ), { lists: [], problems: [] } );

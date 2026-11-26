@@ -3,7 +3,7 @@
 // A mutation list is a JSON array whose entries each carry string `file`, `find` and `replace` (`file` relative to the
 // route directory). No browser, no network.
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
-import { join, relative } from 'node:path';
+import path, { join, relative } from 'node:path';
 
 // Every JSON file under dir (recursive), as absolute paths, sorted.
 export function jsonFiles( dir ) {
@@ -70,6 +70,12 @@ export function checkMutationLists( routeDir, testsDir = join( routeDir, 'tests'
 		try {
 			data = JSON.parse( readFileSync( p, 'utf8' ) );
 		} catch {
+			// A file named like a mutation list that is not valid JSON is a list tools/mutate.mjs cannot read: a problem, never a skip.
+			if ( p.endsWith( '.mutations.json' ) ) {
+				const list = prefix + relative( routeDir, p ).split( path.sep ).join( '/' );
+				lists.push( list );
+				problems.push( { list, index: 0, file: '', find: '', why: '', count: null, unreadable: true } );
+			}
 			continue;
 		}
 		if ( ! isMutationList( data ) ) {
@@ -138,4 +144,4 @@ export function baselineOf( problems ) {
 }
 
 // One problem as a line a person can act on.
-export const problemLine = ( x ) => `${ x.list } entry ${ x.index } (${ x.file }): ${ x.malformed ? 'not a mutation (it needs string file, find and replace)' : null === x.count ? 'the target file does not exist' : `its find matches ${ x.count } places, not 1` }${ x.why ? ` - "${ x.why }"` : '' }`;
+export const problemLine = ( x ) => x.unreadable ? `${ x.list }: the file is not valid JSON, so tools/mutate.mjs cannot run it` : `${ x.list } entry ${ x.index } (${ x.file }): ${ x.malformed ? 'not a mutation (it needs string file, find and replace)' : null === x.count ? 'the target file does not exist' : `its find matches ${ x.count } places, not 1` }${ x.why ? ` - "${ x.why }"` : '' }`;
