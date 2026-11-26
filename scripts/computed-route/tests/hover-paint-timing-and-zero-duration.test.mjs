@@ -88,6 +88,18 @@ test( 'MUST FAIL: paintOnlyLayer is the one decision: no motion target, no paint
 	assert.equal( paintOnlyLayer( { reads: reads( '0:', { opacity: '0.5' } ), id: '0:', holds: true, mdb, ctx: ctx() } ), null, 'no colour or shadow hover' );
 } );
 
+test( 'MUST FAIL: paintOnlyLayer builds the holds decision and the motion context only once the draft has a paint timing; a motion schema that cannot be read gives no layer', () => {
+	let calls = 0;
+	const lazy = ( v ) => () => ( calls++, v );
+	const none = reads( '0:', { opacity: '0.5' } );
+	assert.equal( paintOnlyLayer( { reads: none, id: '0:', holds: lazy( true ), mdb, ctx: lazy( ctx() ) } ), null );
+	assert.equal( calls, 0, 'a hover with no colour or shadow timing builds neither' );
+	const r = reads( '0:', PAINT_HOVER );
+	assert.ok( paintOnlyLayer( { reads: r, id: '0:', holds: lazy( true ), mdb, ctx: lazy( ctx() ) } ).values );
+	assert.equal( calls, 2 );
+	assert.equal( paintOnlyLayer( { reads: r, id: '0:', holds: true, mdb, ctx: () => null } ), null, 'no readable motion schema, no layer' );
+} );
+
 test( 'MUST FAIL: the state pass reports a colour and shadow hover\'s split timings by the motion writer\'s decision: none on a motion block, its own rows on any other', () => {
 	const cal = { settings: {}, elements: { '': { 375: {}, 768: {}, 1440: {} } } };
 	const call = ( block ) => fillStates( { tree: [ { name: block, attributes: {} } ], nodes: [ { index: 0, name: block, targets: [ { id: '0:', slot: '', finder: 'a' } ] } ], reads: reads( '0:', PAINT_HOVER, SPLIT ), calFor: () => cal, db: openDb( motionFixtureDb( { 'sgs/icon': [] } ) ), snapshot: { palette: [], spacing: [], fontSizes: [] }, rawSnapshot: { settings: { custom: {} } } } ).unmapped;

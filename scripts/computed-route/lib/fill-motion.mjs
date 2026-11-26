@@ -169,6 +169,17 @@ export function targetName( n, t, targets, home = null ) {
 	return t.slot ? partForSlot( n.name, t.slot, targets, home ) : targets.find( ( x ) => 'root' === x.target )?.target || null;
 }
 
+// Whether the block's motion support holds this target's hover transform (its sgsMotion hover layer, written by
+// motionWrites), so the state pass leaves it there: the same part the motion writer finds, home being
+// the part's exact calibrated slot (lib/fill-part-pairing.mjs::exactHome). A DB without motion tables holds none.
+export function motionHolds( mdb, rec, target, home = null ) {
+	try {
+		return Boolean( targetName( rec, target, mdb.targetsOf( rec.name ), home ) );
+	} catch {
+		return false;
+	}
+}
+
 // Whether a block declares an item host for the hover layer's Card hovered source (supports.sgs.animationItems, read
 // from the framework DB's block_supports row): false without a DB handle.
 const hostsByDb = new WeakMap();
@@ -372,7 +383,7 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 			// The hover layer times colour, background, border colour and shadow apart from the movement (paint*, and shadow* for a
 			// shadow apart). A hover that only changes colour or shadow has no movement: it gets a layer of timing fields alone
 			// where lib/fill-motion-element.mjs::paintOnlyLayer decides one is written (the same decision the timing pass reports by).
-			const paintOnly = reads && ! m.element.hover?.state ? paintOnlyLayer( { reads, id: t.id, holds: true, mdb, ctx } ) : null;
+			const paintOnly = reads && ! m.element.hover?.state ? paintOnlyLayer( { reads, id: t.id, holds: () => motionHolds( mdb, n, t, home ), mdb, ctx } ) : null;
 			if ( reads && ( m.element.hover?.state || paintOnly ) ) {
 				const paint = paintOnly ?? paintLayer( paintTimings( reads, t.id ), ctx );
 				const hover = m.element.hover?.state || ( m.element.hover = { state: { values: {} } } ).state;

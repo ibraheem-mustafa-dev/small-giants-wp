@@ -1,5 +1,5 @@
 [
-	{"file":"lib/fill-state-reach.mjs","find":"return Boolean( targetName( rec, target, mdb.targetsOf( rec.name ), home ) );","replace":"return Boolean( targetName( rec, target, mdb.targetsOf( rec.name ) ) );","why":"the state pass would not find a bar's motion part"},
+	{"file":"lib/fill-motion.mjs","find":"return Boolean( targetName( rec, target, mdb.targetsOf( rec.name ), home ) );","replace":"return Boolean( targetName( rec, target, mdb.targetsOf( rec.name ) ) );","why":"the state pass would not find a bar's motion part"},
 	{"file":"lib/fill-state-reach.mjs","find":"if ( ! [ 'hover', 'active' ].includes( state ) || ","replace":"if ( ","why":"a focused child would follow its ancestor's focus look"},
 	{"file":"lib/fill-state-reach.mjs","find":"|| ! INHERITED.includes( prop ) ||","replace":"||","why":"a property that never inherits would follow an ancestor"},
 	{"file":"lib/fill-state-reach.mjs","find":"|| READ_WIDTHS.some( ( w ) => undefined !== reads.declared?.[ w ]?.[ target.id ]?.[ prop ] ) ) {\n\t\treturn null;","replace":") {\n\t\treturn null;","why":"an element declaring its own colour would follow its ancestor"},

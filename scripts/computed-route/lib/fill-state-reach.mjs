@@ -4,7 +4,6 @@
 import { READ_WIDTHS } from './fill-read.mjs';
 import { TIMING_PROPS } from './fill-timing.mjs';
 import { INHERITED } from './fill-prop.mjs';
-import { targetName } from './fill-motion.mjs';
 import { LOOSE } from './resolve.mjs';
 import { longhands } from './calibrate-props.mjs';
 
@@ -78,13 +77,6 @@ export function ancestorHolds( { cal, state, slot, prop, ancestor, aprop, taken 
 	return ! own.length && settings.some( ( [ attr, s ] ) => longhands( s.property ).includes( aprop ) && paints( s, ancestor.slot ) && taken.has( attr ) );
 }
 
-// Whether the block's motion support holds this target's hover transform (its sgsMotion hover layer, written by
-// lib/fill-motion.mjs::motionWrites), so the state pass leaves it there: the same part the motion writer finds, home being
-// the part's exact calibrated slot (lib/fill-part-pairing.mjs::exactHome). A DB without motion tables holds none.
-export function motionHolds( mdb, rec, target, home = null ) {
-	try {
-		return Boolean( targetName( rec, target, mdb.targetsOf( rec.name ), home ) );
-	} catch {
-		return false;
-	}
-}
+// Whether the block's motion support holds this target's hover transform: lib/fill-motion.mjs::motionHolds, the one decision
+// the motion writer and the state pass share.
+export { motionHolds } from './fill-motion.mjs';

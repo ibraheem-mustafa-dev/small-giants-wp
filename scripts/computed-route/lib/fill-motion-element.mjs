@@ -269,12 +269,18 @@ const TIER = { 1440: 'desktop', 768: 'tablet', 375: 'mobile' };
 // target for the element (`holds` false), the motion DB declares no hover.state paintDuration field, or the draft's paint
 // timing is one paintLayer writes no value for. The one decision lib/fill-motion.mjs::motionWrites writes the layer by and
 // lib/fill-timing.mjs::timingWrites reports the element's split timings by (lib/fill-state.mjs::fillStates passes it on).
+// `holds` and `ctx` may each be a function, called only once the draft has a paint timing for the element (`ctx()` null
+// where the motion schema cannot be read: no layer).
 export function paintOnlyLayer( { reads, id, holds, mdb, ctx } ) {
 	const timing = reads ? paintHoverTimings( reads, id ) : {};
-	if ( ! holds || ! Object.keys( timing ).length || ! mdb?.field( 'hover.state', 'values.paintDuration' ) ) {
+	if ( ! Object.keys( timing ).length || ! mdb?.field( 'hover.state', 'values.paintDuration' ) || ! ( 'function' === typeof holds ? holds() : holds ) ) {
 		return null;
 	}
-	const paint = paintLayer( timing, ctx );
+	const context = 'function' === typeof ctx ? ctx() : ctx;
+	if ( ! context ) {
+		return null;
+	}
+	const paint = paintLayer( timing, context );
 	return paint.values ? paint : null;
 }
 

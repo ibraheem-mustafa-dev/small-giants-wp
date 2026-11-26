@@ -7,7 +7,7 @@
 	},
 	{
 		"file": "lib/fill-motion-element.mjs",
-		"find": "if ( ! holds || ! Object.keys( timing ).length || ! mdb?.field( 'hover.state', 'values.paintDuration' ) ) {",
+		"find": "if ( ! Object.keys( timing ).length || ! mdb?.field( 'hover.state', 'values.paintDuration' ) || ! ( 'function' === typeof holds ? holds() : holds ) ) {",
 		"replace": "if ( ! Object.keys( timing ).length ) {",
 		"why": "a block with no motion target or no paintDuration field is given a paint-only layer"
 	},
@@ -19,7 +19,7 @@
 	},
 	{
 		"file": "lib/fill-motion.mjs",
-		"find": "const paintOnly = reads && ! m.element.hover?.state ? paintOnlyLayer( { reads, id: t.id, holds: true, mdb, ctx } ) : null;",
+		"find": "const paintOnly = reads && ! m.element.hover?.state ? paintOnlyLayer( { reads, id: t.id, holds: () => motionHolds( mdb, n, t, home ), mdb, ctx } ) : null;",
 		"replace": "const paintOnly = null;",
 		"why": "a colour or shadow hover that moves nothing gets no paint timing"
 	},
@@ -28,5 +28,17 @@
 		"find": "&& ! lasts( own ) &&",
 		"replace": "&&",
 		"why": "the draft's 0s is dropped where the block's own transition lasts"
+	},
+	{
+		"file": "lib/fill-motion-element.mjs",
+		"find": "const context = 'function' === typeof ctx ? ctx() : ctx;\n\tif ( ! context ) {\n\t\treturn null;\n\t}",
+		"replace": "const context = 'function' === typeof ctx ? ctx() : ctx;",
+		"why": "an unreadable motion schema throws instead of giving no layer"
+	},
+	{
+		"file": "lib/fill-motion-element.mjs",
+		"find": "if ( ! Object.keys( timing ).length || ! mdb?.field( 'hover.state', 'values.paintDuration' ) || ! ( 'function' === typeof holds ? holds() : holds ) ) {",
+		"replace": "if ( ! ( 'function' === typeof holds ? holds() : holds ) || ! Object.keys( timing ).length || ! mdb?.field( 'hover.state', 'values.paintDuration' ) ) {",
+		"why": "the holds decision is built for a hover with no paint timing"
 	}
 ]

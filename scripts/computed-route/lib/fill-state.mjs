@@ -291,7 +291,14 @@ export function fillStates( { tree, nodes, reads, calFor, db, snapshot, rawSnaps
 	const painted = new Map();
 	const interaction = interactionStates( db );
 	let ctxOf = null;
-	const motionCtx = () => ( ctxOf ??= { types: tokenTypes( loadMotionSchema() ), tokens: clientTokens( rawSnapshot ) } );
+	// The motion context (token types, the client's tokens), built on first use; null where the motion schema cannot be read.
+	const motionCtx = () => {
+		try {
+			return ( ctxOf ??= { types: tokenTypes( loadMotionSchema() ), tokens: clientTokens( rawSnapshot ) } );
+		} catch {
+			return null;
+		}
+	};
 	let mdb = null;
 	try {
 		mdb = motionDb( db );
@@ -319,7 +326,7 @@ export function fillStates( { tree, nodes, reads, calFor, db, snapshot, rawSnaps
 			}
 			// Transition timings follow CSS direction semantics (lib/fill-timing.mjs), not the one-look-one-state rule below.
 			// The paint-only hover layer the motion writer gives the element, decided as it decides it.
-			const paintOnly = Boolean( mdb && paintOnlyLayer( { reads, id: target.id, holds: motionHolds( mdb, rec, target, ( el ) => exactHome( db, rec.name, cal, el ) ), mdb, ctx: motionCtx() } ) );
+			const paintOnly = Boolean( mdb && paintOnlyLayer( { reads, id: target.id, holds: () => motionHolds( mdb, rec, target, ( el ) => exactHome( db, rec.name, cal, el ) ), mdb, ctx: motionCtx } ) );
 			const timing = timingWrites( { node, ref, rec, target, cal, db, snapshot, reads, held, paintOnly } );
 			out.writes.push( ...timing.writes );
 			out.unmapped.push( ...timing.unmapped );
