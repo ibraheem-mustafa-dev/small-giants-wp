@@ -105,3 +105,12 @@
 	padding: 0;
 	border: 0;
 }
+
+/**
+ * A Colour panel row's extra controls (a hover treatment choice, a cross-reference note: `SgsColourPanel`'s `after`
+ * slot) sit 16px below the row's colour control, the same spacing as between two separate controls, so their label
+ * does not touch the colour button.
+ */
+.block-editor-block-inspector .sgs-colour-panel__after {
+	margin-top: 16px;
+}

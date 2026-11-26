@@ -115,7 +115,9 @@
  *                            (FR-41-16).
  *                            · `after` — a React node rendered immediately
  *                            AFTER the row's control, inside the same row
- *                            wrapper. It exists because a hover TREATMENT
+ *                            wrapper, in a `.sgs-colour-panel__after` box that
+ *                            `assets/css/inspector-controls.css` spaces 16px
+ *                            below the colour control. It exists because a hover TREATMENT
  *                            selector and a cross-reference note have to sit
  *                            with the swatch they qualify, in the same panel,
  *                            or the operator meets the control and its
@@ -204,7 +206,11 @@ export default function SgsColourPanel( { rows, initialOpen = false } ) {
 									  }
 									: {} ) }
 							/>
-							{ row.after }
+							{ row.after && (
+								<div className="sgs-colour-panel__after">
+									{ row.after }
+								</div>
+							) }
 						</div>
 					);
 				} ) }
