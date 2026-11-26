@@ -1,0 +1,20 @@
+[
+	{
+		"file": "lib/fill-list-content.mjs",
+		"find": "some( ( k ) => ! named.has( k ) ) ) ) {",
+		"replace": "some( ( k ) => 'link' !== keyRole( k ) && ! named.has( k ) ) ) ) {",
+		"why": "items holding only links are dropped again"
+	},
+	{
+		"file": "lib/fill-list-content.mjs",
+		"find": "( x.image || 'image' === keyRole( x.name ) ) ) ) {",
+		"replace": "false ) ) {",
+		"why": "a picture field the block's items hold no setting for is no row"
+	},
+	{
+		"file": "lib/fill-list-content.mjs",
+		"find": "unmatched.includes( x.name ) && ( x.image",
+		"replace": "( x.image",
+		"why": "a picture field a key already takes is named as unplaceable too"
+	}
+]

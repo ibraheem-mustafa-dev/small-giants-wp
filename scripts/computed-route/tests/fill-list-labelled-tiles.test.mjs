@@ -55,7 +55,7 @@ test( 'MUST FAIL: Fill writes the ten brands as the strip\'s logos, each with it
 	assert.equal( logos.length, 10 );
 	assert.deepEqual( logos.map( ( l ) => l.name ).slice( 0, 5 ), [ 'Sanam', 'Shan', 'Green Leaf', 'The Lemon Tree', 'Indus Foods' ] );
 	assert.equal( r.writes.filter( ( w ) => 'logos' === w.attr ).length, 1 );
-	assert.equal( r.handover.some( ( h ) => /carry no words or uploaded picture/.test( h.reason ) ), false, 'the strip is no longer named as holding nothing the block can show' );
+	assert.equal( r.handover.some( ( h ) => /carry no words, link or uploaded picture/.test( h.reason ) ), false, 'the strip is no longer named as holding nothing the block can show' );
 } );
 
 test( 'a loop is read once only when its second half repeats the first and every item holds something', () => {
