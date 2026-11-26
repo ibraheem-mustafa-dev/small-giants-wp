@@ -12,8 +12,8 @@ created: 2026-11-25
 
 **How it runs:**
 - Up to 8 workers per session (Claude Code's limit); the editor lane can run in a second session with its own 8 (Bean, 2026-11-25). Launch order, deadline first: A1, A2, A3, A4, B, C, D, F, L. As slots free: G1, then E1, E2, G2 and S when their branches have merged, then the editor lane W1 to W4. Agent-tool subagents (worker API credits are exhausted).
-- Heavy runs (sweeps, browsers, render-check, plugin builds, multi-block record checks) go through `scripts/computed-route/tools/heavy-slot.mjs`: two slots, a third only after a ten-minute wait when CPU, memory and C: have room (Bean, 2026-11-25). The full suite runs only in the main session, alone.
-- Workers commit on `fix/<label>` in `E:\sgs-tmp\wt-<label>`; temp, the record cache and scratch are on E:. The main session reviews each branch (`/code-review`, its tests, `check-mutation-lists.mjs` showing 0 new), then merges. No new pre-commit gate is added (Bean, 2026-11-25); the existing hook (gitleaks, generated-file sync) stays.
+- Heavy runs (sweeps, browsers, render-check, plugin builds, multi-block record checks) go through `scripts/computed-route/tools/heavy-slot.mjs run`: a first-come-first-served queue kept in the main checkout's `.claude/queue.md` (both sessions and every worker; nobody edits it by hand), two slots, and a third only after a ten-minute wait from the top of the queue when CPU is under 70% busy and 12 GB of memory and 10 GB on C: are free (Bean, 2026-11-25). One heavy job never takes two slots (Bean): a sweep runs inside `run` without `--slot-dir`. A look build runs 2 workers (`SGS_LOOK_JOBS`). A build only to look at or render-check is `npx wp-scripts build --experimental-modules --webpack-copy-php` (two minutes); `npm run build` runs every gate (26 minutes) and is for proving the gates. The full suite runs only in the main session, alone.
+- Workers commit on `fix/<label>` in `E:\sgs-tmp\wt-<label>`; temp, the record cache and scratch are on E:. The main session reviews each branch (`/code-review`, its tests, `check-mutation-lists.mjs` showing 0 new), then merges only after the whole non-browser route suite passes on the branch with failures no different from main's. Every first review found 4 to 10 real faults per branch and every second review of the fix commits found 2 to 5 more, so a second review of the fix commits runs before or right after each merge. No new pre-commit gate is added (Bean, 2026-11-25); the existing hook (gitleaks, generated-file sync) stays.
 - After each merge group the main session reseeds the shared DB, regenerates the setting records (`check.py --changed --write`), applies the README text workers report, and runs the merged branches' tests.
 - Merge order for the three conflicts: rf9 keeps both sides of `tools/run-tests.mjs`; rf5 before rf6 (`fill-prop.mjs`, `fill-resolve-element.mjs`); rf3 before rf7 (`skeleton-classify.mjs`).
 - Deploys (Bean, 2026-11-25): Mama's live shop is brought up to date with `main` once now (backup, render-scope from its deployed commit, render-check on the states that lists, basket/checkout/account checks before and after), then paused until this plan is complete. `eye-care-test` is a test site and deploys with the others.
@@ -22,7 +22,34 @@ created: 2026-11-25
 
 **Risks:** C: has about 12 GB free; temp, the record cache and scratch are all on E: now. Tracks B, C and D each edit a different part of `lib/setting-record.mjs`, and C and D different functions of `site_look.py`.
 
-**First action:** the main session sweeps `main` once into `E:\sgs-tmp\general-cloning\baseline-main` (every track compares against it), then launches the first nine workers.
+## Where it stands (2026-11-26)
+
+`main` carries the merged branches below; each was code-reviewed, its review faults fixed and its tests and mutations proven. The baseline sweep of `main` (at `58b2b773c`) is `E:\sgs-tmp\general-cloning\baseline-main`, and every track compares against it: 10 of 15 Fills usable; the headers and Indus home failed for want of the nav-bar-menu look (fixed on `main` by `fix/nav-look`), and Eye Care's mega-menu-help and mega-menu-brands need `--allow-external`.
+
+**Merged on `main`:** rf10, rf5, rf3, rf2, rf4, rf9, rf1, rf6, G1 (`dfa7e821b`), `fix/main-regressions` (three tests that rf6 and rf2 broke; the guard `tests/intake-committed-current.test.mjs` fails when a committed intake record is out of date), `fix/form-pairing-test`, `fix/nav-look` (the site-look Reader keeps 8 pages least-recently-used, so the `sgs/nav-bar-menu` look builds in about 0.64 GB, was 3.3 GB; `prepareLooks` retries only a failure that looks like running out of room and reports the builder's reason), and the second-review fixes of rf5 and rf2. The shared framework DB was reseeded for rf5 (`block_attributes.owns_css`). The only known failure left in main's non-browser route suite is the timing-sensitive font-wait test (`MUST FAIL (b): the font wait reads a late font loaded`).
+
+| Branch / job | Worktree under `E:\sgs-tmp` | State |
+|---|---|---|
+| `fix/rf3-review2` | `wt-rf3-review2` | 5 second-review faults fixed; browser test `intake-command` queued; merges after it passes |
+| `fix/rf4-review2` | `wt-rf4-review2` | fixing 4 faults (store getters deleted on restore, a renamed store method silently skipped, JavaScript string escapes dropped, reassigned refs) |
+| `fix/rf6-review2` | `wt-rf6-review2` | fixing 4 faults (animations schema lacks `source.timer`, part id check too wide, carousel autoplay lost, a 0ms shrink turns off the row's other transitions) |
+| `fix/rf8-plumbing` | `wt-rf8-plumbing` | first and second review faults fixed (FIELDS_META settling, tree hash for every built post, provisional ids, a parent change to a published page is reported and not applied, form scroll); browser tests and the form-submit mutation run queued, then merge |
+| `fix/rf7-shop-forms` | none | commits not on `main` (form prefill opener, form element counts every answer control); not in this session's merge list, so its state is for the main session to confirm |
+| `fix/f-mega` | `wt-f-mega` | review fixes done; the Fill proof of `mega-menu-brands` is running and needs the `--allow-external` question answered |
+| `fix/b-runstop` | `wt-b-runstop` | review fixes done, including the `paintedProps` detector; Indus form before and after sweeps queued |
+| `fix/d-readings` | `wt-d-readings` | fixing 6 review faults (the account migration must not change tablet height on live sites, sweep owner check, `mapTiers` raw keyword, sweep pseudo layers, account record regenerate, `stateChoice` conflict) |
+| `fix/c-parts` | `wt-c-parts` | done and proven (Mama's drawer pairing lines 8 to 0, Eye Care 2 to 0); not yet code reviewed |
+| `fix/l-layout` | `wt-l-layout` | items 1 to 3 and 5 proven; item 4 (social icons) wrote `shapeSize` height 20px instead of 48x48, so its worker is fixing or reverting `c839120f1` and `a529523cd`; not yet code reviewed |
+| `fix/cart-trigger` (A4) | `wt-cart-trigger` | full build with gates passed; the render-check of Mama's header has not run; not code reviewed since the gate fixes |
+| Second reviews still to run | | rf9 walker fixes, rf1 menu-hover fixes, rf10 coverage fixes |
+| Mama's live-shop update | frozen target `wt-mamas-target` at `9c35674e9`, old build `wt-mamas-deployed` at `ed5effd01` | render-scope: 24 shared files reach every page; the full render-check on `local-mamas` runs in a heavy slot (`tmp-mamas-update\render-check2.log`); then backup, basket, checkout and account checks, `build-deploy.py --target mamas-test` from the frozen target, the checks again; then Mama's deploys pause until this plan is done |
+| Full suite on `main`, browser tests included | `wt-bisect` | queued as `main-full-suite` (log `tmp-fullsuite\suite.log`) |
+
+**Decisions this session:**
+- A parent-page change to an already built, published page is reported and never applied on a site-build rerun; new pages and rows take the page map's parent (main session, rf8 second review).
+- Featured nav items stay unwritten until a reader of featured items exists; the variant gate stays (rf1).
+- Before each site's next deploy, run render-scope and render-check for G1 (Task 10).
+- Follow-up, not blocking: 82 old `content-setting:` gap rows in `scripts/computed-route/data/clone-coverage.json` name settings the DB no longer holds as content; `content-coverage.mjs` (run by hand only) flags them.
 
 ## Deadline lane
 
@@ -31,7 +58,7 @@ Done (2026-11-25): `904c517dc` (heavy-run slots, temp guard on route tools), `4c
 
 Left: a `tests/lib/tmp.mjs::scratchDir` helper and a detector that moves the 85 route tests (and the plugin's Python checks) that leave temp folders behind onto it. This runs after the branches merge, because it rewrites test files the tracks edit. <!-- dangling-ok: files a worker creates or that exist only on its branch -->
 
-Status: mostly done.
+Status: the safe machine is done (slots with a shared queue, one slot per job, the temp guard, 2-worker look builds); the `scratchDir` helper and its detector are still left.
 
 ### Task 2: Land tonight's branches (main session; tracks A1 to A4)
 Why: the built parts are proven, but four branches change behaviour nobody asked for, six branches carry stale markers, and rf5's Custom CSS log check would fail every real run (`i1`, review).
@@ -40,51 +67,51 @@ Changes: A1 (rf1, rf6), A2 (rf2, rf3, rf4, rf5, rf8), A3 (rf7, rf9, rf10), A4 (c
 
 Done when: all 11 branches are merged, the full suite passes, `check-mutation-lists.mjs` shows 0 new, and A4's render-check shows Mama's header unchanged.
 
-Depends on: none. Status: not started.
+Depends on: none. Status: 8 of the 11 branches are merged (rf1, rf2, rf3, rf4, rf5, rf6, rf9, rf10); the rf3, rf4 and rf6 second-review fixes are in flight, and rf7, rf8 and A4 are not merged (see "Where it stands").
 
 ### Task 3: Track C, every block part findable
 Brief `c-parts.md` (`i15`, `i5`).
 
 Done when: 0 `paint pairing` lines on Mama's and Eye Care's drawers, and Mama's trust-strip icon colour is written.
 
-Depends on: none. Status: not started.
+Depends on: none. Status: built and proven (Mama's drawer 8 to 0, Eye Care 2 to 0); code review pending.
 
 ### Task 4: Track D, choice readings, underlines, the account merge
 Brief `d-readings.md` (`i10`, `i7`).
 
 Done when: Mama's 7 underline ties and Eye Care's 2 trust-bar ties resolve.
 
-Depends on: none. Status: not started.
+Depends on: none. Status: built; its worker is fixing 6 faults from the first review.
 
 ### Task 5: Track G1, render fixes on every site
 Brief `g1-render.md` (`i9`, `i13`): card grid logos, product card placeholder, brand strip `sizes`. "Even visual size" and "Trim empty edges" moved to Task 11 (W4).
 
-Depends on: none. Status: not started.
+Depends on: none. Status: merged (`dfa7e821b`: the card grid's frame owns padding, height and ratio, the product card's no-photo box takes the photo's Height or Ratio, the brand strip sizes from Logo max width); visual proof `E:\sgs-tmp\general-cloning\build\g1-render\VISUAL-CHECK.md`. Render-scope and render-check before each site's next deploy are in Task 10.
 
 ### Task 6: Track G2, the trust bar's clone-relevant fixes
 Brief `g2-trustbar.md` (`i12`, `i3`): one stored marquee value, Fill writing the draft's marquee condition, icon fill colours reaching path fills (also `sgs/icon`, `sgs/button`, `sgs/cart`). The editor features moved to Task 11 (W4).
 
-Depends on: rf1, rf5, rf6 merged. Status: not started.
+Depends on: rf1, rf5, rf6 merged (all three are). Status: not started.
 
 ### Task 7: Track B, a look the clone cannot place never stops the run
 Brief `b-runstop.md` (`i2`).
 
-Depends on: none (the account shadows wait for Task 4). Status: not started.
+Depends on: none (the account shadows wait for Task 4). Status: built; review fixes done, Indus form sweeps queued.
 
 ### Task 8: Tracks E1 and E2, restores
 Briefs `e1-restores.md`, `e2-restores.md` (`i6`). Commits already ported on the branches are skipped.
 
-Depends on: E1 needs rf4 and rf10 merged; E2 needs rf4 and rf6. Status: not started.
+Depends on: E1 needs rf4 and rf10 merged (both are); E2 needs rf4 and rf6 (both are). Status: not started.
 
 ### Task 9: Track F, the mega menu
 Brief `f-mega.md` (`i4`; Bean approved both rules, 2026-11-25).
 
-Depends on: none. Status: not started.
+Depends on: none. Status: built; review fixes done, the Fill proof of `mega-menu-brands` is running.
 
 ### Task 14: Track L, the layout items
 Brief `l-layout.md`: the Indus hero unwrap and grid tracks, Mama's header order, the logo `maxHeight`, social icon sizes, and `sgs/media` ratio and height. These are the five items of the never-started `layout` branch.
 
-Depends on: none. Status: not started.
+Depends on: none. Status: items 1 to 3 and 5 proven; item 4 (social icons) is being fixed; code review pending.
 
 ### Task 15: Track S, the shop pieces MIC needs
 Brief `s-shop.md`: `part-look.mjs` as a run stage, a template card's `variantStyle` and related cards, the buy-box layout write (FR-48-60).
@@ -114,7 +141,7 @@ Changes:
 
 Done when: every named surface improves and none gets worse, the rehearsal passes within the time left, and Bean's eye check passes. Then clone SGS and MIC.
 
-Depends on: 2 to 9, 14 to 16. Status: not started.
+Depends on: 2 to 9, 14 to 16. Status: started with Mama's live-shop update and the baseline sweep (see "Where it stands"); the rest waits on Tasks 2 to 9 and 14 to 16.
 
 ## Editor lane (builds now, merges after Task 10's tag)
 
@@ -125,7 +152,7 @@ Briefs:
 - `w3-editor-switcher.md`: element switcher, border and shadow upgrades, carousels.
 - `w4-trustbar-editor.md`: the trim list (one owner), the trust bar's lean layout and editor fixes, brand strip "Even visual size", "Trim empty edges".
 
-Status: not started.
+Status: in progress in the second session; branches `fix/w1-shared`, `fix/w2-packages`, `fix/w3-switcher` and `fix/w4-trustbar` exist and none is merged (the second session records each one's state).
 
 ### Task 12: Stage E2, codemods across blocks (1 worker, after Task 11)
 - Only each tab's first panel opens (19).

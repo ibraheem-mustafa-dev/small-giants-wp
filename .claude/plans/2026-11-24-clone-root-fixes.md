@@ -6,7 +6,7 @@ created: 2026-11-24
 
 # Clone root fixes: make the route clone a draft as well as last week's per-surface sessions did, on every surface
 
-Status (2026-11-24, evening): diagnosis complete and fact-checked; no fix built. Waiting for Bean's go on this plan and on the decisions below. Governing specs: `.claude/specs/48-CLONING-SYSTEM.md`, `.claude/specs/48A-CLAUDE-DESIGN-HANDOFF-FOLDER.md`; parent plan `.claude/plans/2026-11-19-general-cloning-work.md` Task 8 (the proof run and the register).
+Status (2026-11-26): open, with RF7 and RF8 remaining. The fixes are built as branches landed by `.claude/plans/2026-11-25-land-fixes-and-editor-cleanup.md`, which governs where the two differ and holds each branch's state. On `main`: RF1, RF2, RF3, RF4, RF5, RF6, RF9 and RF10 with their review fixes. Remaining: RF7 (branch `fix/rf7-shop-forms`) and RF8 (branch `fix/rf8-plumbing`, under review fixes). The groups below still describe the diagnosis they were built from. Governing specs: `.claude/specs/48-CLONING-SYSTEM.md`, `.claude/specs/48A-CLAUDE-DESIGN-HANDOFF-FOLDER.md`; parent plan `.claude/plans/2026-11-19-general-cloning-work.md` Task 8 (the proof run and the register).
 
 ## Goal and why
 
@@ -78,7 +78,7 @@ All reports are read-only investigations, each checked by a second helper that d
 
 ### RF6. Motion and timing through the existing controls
 
-- **Instances:** a block's own transition survives where the draft has none (`lib/fill-prop.mjs::notPainted` skips an undeclared 0s even when the block default is non-zero; 3,700 walker rows); `holdDefaults` writes hover equal to rest, so `sgs/text` emits its fixed 300ms; a colour- or shadow-only hover gets no timing because the hover state is created only for a movement (`lib/fill-motion.mjs`); `rowShrinkDuration`/`Easing` have no writer (the `rowShrink` writer is in `lib/motion-behaviour-settings.mjs`); the row's inner padding transition is emitted only when a duration is set (framework: `includes/helpers-row-behaviour.php::sgs_row_shrink_settings_css`); the gradient hover holder `groundOf` was lost (restore `4d7f98389` with `partPresent` from `5b74d432b`).
+- **Instances:** a block's own transition survives where the draft has none (`lib/fill-prop.mjs::notPainted` skips an undeclared 0s even when the block default is non-zero; 3,700 walker rows); `holdDefaults` writes hover equal to rest, so `sgs/text` emits its fixed 300ms; a colour- or shadow-only hover gets no timing because the hover state is created only for a movement (`lib/fill-motion.mjs`); `rowShrinkDuration`/`Easing` had no writer (built: `lib/motion-behaviour-settings.mjs::shrinkTiming`, which always writes the draft's duration and turns `rowAnimate` off for 0ms); the row's inner padding transition is emitted only when a duration is set (framework: `includes/helpers-row-behaviour.php::sgs_row_shrink_settings_css`); the gradient hover holder `groundOf` was lost (restore `4d7f98389` with `partPresent` from `5b74d432b`).
 - **Fix:** the timing-only hover state through `paintDuration`/`shadowDuration`; write 0 where the block's own default is non-zero (block timing setting, else the hover state, else Custom CSS); no transition from `sgs/text` when hover equals rest; the `rowShrink` writer also writes duration and easing; the framework emits the inner padding transition by default (a fix, render-scope listed); the restores.
 - **Guard:** a contract test that every timing attribute with no `css_property` has a named writer or a listed reason; a post-Fill detector for elements whose default transition is non-zero, the draft declares none and nothing is written.
 - **Spec:** S9, S10, S14.
@@ -152,7 +152,7 @@ Every "never built / half built / partly built" verdict was checked against the 
 - **part-look: a standalone command by design** (template-rework Task 4); it becomes a run stage.
 - **Test products: the hiding code exists** (`29f7008f7`, `shop-fixtures.mjs` `hide`), uncalled: call it from a run stage.
 - **`disabledItemIds`: built and working**; "soon" entries are dropped by Bean's ruling. `featuredItemIds` and `triggerMode` are not built (`triggerMode` from the draft's hidden "Menu" label).
-- **Shrink timing: partly built.** `lib/motion-record-text.mjs::durationOf` and `easingOf` exist; `scrollShrinkOf` does not call them.
+- **Shrink timing: built.** `lib/motion-behaviour-settings.mjs::shrinkTiming` reads the record through `lib/motion-record-text.mjs::durationOf` and `easingOf` and writes `rowShrinkDuration`, `rowShrinkEasing` and `rowShrinkEasingCustom`.
 - **Logo `maxHeight`: built and broken** (`9454cb152`, `31ac60837`; broken by the site look's `max-height: none`).
 - **Hero grid: built and broken**; leading suspect the paint guard `822b6b400` (to prove with propose before and after).
 - **A block's own transition: narrower behaviour reversed** by `684491a03` (no reason given).

@@ -1,7 +1,7 @@
 ---
 doc_type: ledger
 project: small-giants-wp
-last_updated: 2026-11-25
+last_updated: 2026-11-26
 ---
 
 # small-giants-wp: LEDGER (the one living status)
@@ -9,10 +9,10 @@ last_updated: 2026-11-25
 ## Summary for Bean
 
 - **The one active track is general cloning (Front H, Spec 48):** before 2026-11-28 you clone two new sites from Claude Design drafts, SGS and MIC (which has a shop). You start the two drafts once the pipeline is ready. The 2026-11-24 proof clones came out far worse than the tracks' results; the causes are proven and their fixes are being built in parallel under the plan below.
-- **Running now (2026-11-25):** plan `plans/2026-11-25-land-fixes-and-editor-cleanup.md` lands the 2026-11-25 fix branches and the clone root fixes before 2026-11-28 (Phases 1 to 3), and runs the block editor clean-up alongside them (Phase 4, Bean 2026-11-25), in parallel tracks of up to 9 workers. Evidence: `E:\sgs-tmp\general-cloning\investigate\`.
+- **Running now (2026-11-26):** plan `plans/2026-11-25-land-fixes-and-editor-cleanup.md` lands the 2026-11-25 fix branches and the clone root fixes before 2026-11-28 (Phases 1 to 3), and runs the block editor clean-up alongside them (Phase 4, Bean 2026-11-25), in parallel tracks of up to 9 workers. Evidence: `E:\sgs-tmp\general-cloning\investigate\`.
 - **The rest of the WordPress framework is frozen** (your decision, 2026-11-12) apart from that plan's Phase 4 editor clean-up (Bean, 2026-11-25): security updates and client fixes only. The web engine is a separate project (`C:\Users\Bean\Projects\small-giants-engine`, its own LEDGER).
 - **Live sites:** Mama's Munches is a live shop (`mamasmunches.com`); Indus and Eye Care are signed off. Each site's open items sit in its own brief (`sites/<client>/CLAUDE.md`).
-- **Need you:** nothing blocking. Later in the plan: the inner-section screenshots (editor lane) and each editor mass-change list before it is applied; the SGS and MIC drafts when the pipeline is ready. Parked for you when a draft needs it: whether a Trustpilot-logo review section keeps the Trustpilot block (plan `.claude/plans/2026-11-24-clone-root-fixes.md`, "Custom CSS log, burger bars, basket icon").
+- **Need you:** nothing blocking. Later in the plan: each editor mass-change list before it is applied; the SGS and MIC drafts when the pipeline is ready. Parked for you when a draft needs it: whether a Trustpilot-logo review section keeps the Trustpilot block (plan `.claude/plans/2026-11-24-clone-root-fixes.md`, "Custom CSS log, burger bars, basket icon").
 
 ## Blockers
 
@@ -20,7 +20,7 @@ last_updated: 2026-11-25
 
 ## Front H: general cloning
 
-**State (2026-11-25):** `main` at `5dc9065cf` (pushed); the plugin builds and its 257 fast gates pass. Plan `.claude/plans/2026-11-25-land-fixes-and-editor-cleanup.md` (resume from its deadline lane: Task 2 onwards) holds every proven cause from the 2026-11-25 investigations (`.claude/reports/2026-11-25-clone-investigations/`) and a verified second-opinion review; worker briefs are in `.claude/plans/2026-11-25-land-fixes-tracks/`. Task 1 (a safe machine) is mostly done: heavy runs go through `scripts/computed-route/tools/heavy-slot.mjs` and route tools refuse a temp folder on C:. Running in this session: deadline-lane workers A1, A2, A3, A4, B, C, D and F (branches `fix/<label>`, worktrees `E:\sgs-tmp\wt-<label>`, reports in `E:\sgs-tmp\general-cloning\build\<label>\REPORT.md`); Track L waits for a free subagent slot; the baseline sweep of `main` writes `E:\sgs-tmp\general-cloning\baseline-main`. A second session runs the editor lane (Tasks 11 to 13), which merges only after the tag `deadline-proof-2026-11-27`. Mama's live shop is being brought up to date with `main` once (plan "How it runs"), then paused until the plan is done; its old build for render-scope is in `E:\sgs-tmp\wt-mamas-deployed`. The 2026-11-24 root-fix plan `.claude/plans/2026-11-24-clone-root-fixes.md` holds the fix groups and Restore map the new plan builds on.
+**State (2026-11-26):** `main` at `b1b5adc76` (pushed). Plan `.claude/plans/2026-11-25-land-fixes-and-editor-cleanup.md` (resume from its deadline lane; "Where it stands" has every branch's state) holds every proven cause from the 2026-11-25 investigations (`.claude/reports/2026-11-25-clone-investigations/`); worker briefs are in `.claude/plans/2026-11-25-land-fixes-tracks/`. On `main`, each code-reviewed with its faults fixed: rf1, rf2, rf3, rf4, rf5, rf6, rf9, rf10, the G1 render fixes, the nav-look fix (the header look builder's peak memory 3.3 GB to about 0.64 GB), the three-test regression repair and the form-pairing test. In flight: second-review fixes for rf3, rf4 and rf6; `fix/rf8-plumbing`, `fix/f-mega`, `fix/b-runstop`, `fix/d-readings`, `fix/c-parts`, `fix/l-layout` and `fix/cart-trigger` (Mama's header render-check not yet run) await merge or review; `fix/rf7-shop-forms` is unmerged and its state is to be confirmed; G2, E1, E2 and S have not started. Heavy jobs queue first come, first served in `.claude/queue.md` through `scripts/computed-route/tools/heavy-slot.mjs run` (one slot per job, two slots, a third only when the machine has room). Mama's live shop is being brought up to date with `main` once from a frozen build (its render-check on `local-mamas` is running), then paused until the plan is done. A second session runs the editor lane (Tasks 11 to 13), which merges only after the tag `deadline-proof-2026-11-27`. The 2026-11-24 root-fix plan `.claude/plans/2026-11-24-clone-root-fixes.md` holds the fix groups and Restore map the new plan builds on.
 
 **Dead Custom CSS:** two rules name classes the framework no longer prints (Mama's Home, post 154, `.sgs-buybox__form`; Indus post 432, `.sgs-article-meta`), in their site briefs. Eye Care's phone hero framing had the same cause (a media class renamed on 2026-11-12) and now sits in the hero's own focal setting (62% 12% on phones, Bean's round 12; backup `darkcyan-grouse-898606.hostingersite.com-20261123-225354-before-hero-focal-write.sql.gz`).
 
@@ -48,4 +48,4 @@ last_updated: 2026-11-25
 - **PHP:** 89 of 5,287 fail on `main` (83 failures, 6 errors; full run 2026-11-23), among them `BuyboxSnapshotTest`. Compare failures test by test, never by the total.
 - **Jest:** about 11 suites fail on `main`, among them `configurator-schema-compat` and `cursor-field-reveal-open`.
 - **Python:** `plugins/sgs-blocks/scripts/db-consistency/tests/test_f6_consistency.py::TestCheck5VariantReseed` (4 tests whose fixtures predate the `slot_value` column).
-- **Route:** `scripts/computed-route/tests/lint.test.mjs` fails 2 tests in a worktree without `plugins/sgs-blocks/node_modules` (the walker loads Playwright from there); a fresh worktree needs `npm ci` in `plugins/sgs-blocks` (`dev-setup.md`).
+- **Route:** the font-wait test (`MUST FAIL (b): the font wait reads a late font loaded`) depends on timing and is the one failure left in `main`'s non-browser suite (2026-11-26). `scripts/computed-route/tests/lint.test.mjs` fails 2 tests in a worktree without `plugins/sgs-blocks/node_modules` (the walker loads Playwright from there); a fresh worktree needs `npm ci` in `plugins/sgs-blocks` (`dev-setup.md`).
