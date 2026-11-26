@@ -1,0 +1,50 @@
+[
+	{
+		"file": "lib/fill-resolve.mjs",
+		"find": "\t\tfillVisibleCount( st, rec, ref, cal );\n",
+		"replace": "",
+		"why": "Fill never reads the visible-card count, so a rail keeps the block's three cards at every width"
+	},
+	{
+		"file": "lib/fill-visible-count.mjs",
+		"find": "c.rect.x >= t.x - TOL && c.rect.x + c.rect.w <= t.x + t.w + TOL",
+		"replace": "true",
+		"why": "a swiped rail's cards past the track's edge count as visible"
+	},
+	{
+		"file": "lib/fill-visible-count.mjs",
+		"find": "value: perDevice ? tiers : counts[ 0 ]",
+		"replace": "value: tiers.desktop",
+		"why": "one number for every device: the tablet shows the desktop's three cards"
+	},
+	{
+		"file": "lib/fill-visible-count.mjs",
+		"find": "if ( undefined === tiers.desktop ) {",
+		"replace": "if ( ! Object.keys( tiers ).length ) {",
+		"why": "a count with no desktop reading is written"
+	},
+	{
+		"file": "lib/fill-visible-count.mjs",
+		"find": "n > 0 && ( tiers[ tier ] = n );",
+		"replace": "tiers[ tier ] = n || 1;",
+		"why": "a tier the draft does not draw is written as one card"
+	},
+	{
+		"file": "lib/fill-visible-count.mjs",
+		"find": "> first.h / 2 );",
+		"replace": "> -Infinity );",
+		"why": "a wrapped grid's second row counts as side by side"
+	},
+	{
+		"file": "lib/fill-visible-count.mjs",
+		"find": "c.rect.w > 0 && false !== c.inFlow",
+		"replace": "c.rect.w >= 0",
+		"why": "a hidden or out-of-flow card counts as a slide"
+	},
+	{
+		"file": "lib/fill-visible-count.mjs",
+		"find": "&& 'string' === typeof cal?.settings?.[ attr ]?.slot )",
+		"replace": ")",
+		"why": "a setting calibration never measured is written"
+	}
+]
