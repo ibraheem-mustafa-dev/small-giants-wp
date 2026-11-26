@@ -12,7 +12,7 @@ import { effectPresetFor, tokenTypes, clientTokens, clientPalette } from './moti
 import { writeEffect, loadEffectOffers, PANEL_LISTS } from './motion-effects.mjs';
 import { applyBehaviours, applyControls, applyGlobals, applySettings, applyStrip, behaviourIndex, hasAttrOf, place, sharedLayerRow } from './fill-behaviour.mjs';
 import { accountedIds, accountedAt, targetKey, silentRows, makeHomeOf, readingProgressHandover, motionWidths, styleSourceIds } from './fill-motion-account.mjs';
-import { elementMotion, elementEffects, snapLayer, paintLayer } from './fill-motion-element.mjs';
+import { elementMotion, elementEffects, snapLayer, paintLayer, paintOnlyLayer } from './fill-motion-element.mjs';
 import { paintHoverTimings, paintTimings } from './fill-timing.mjs';
 import { openWords } from './motion-states.mjs';
 import { setRecord } from './motion-set.mjs';
@@ -255,10 +255,12 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 	const out = { writes: [], unmapped: [], notes: [], site: [], handover: [] };
 	// Every settings write is checked against the framework DB's attributes: the handle given, else the framework DB itself.
 	const hasAttr = givenHasAttr ?? ( db ? hasAttrOf( db ) : undefined );
-	const records = sameTriggerResolved( given );
-	// A part of content the draft's code injects is written on its holder's block as a custom target, never as the holder's own motion.
-	const split = splitPartRecords( records, template );
-	const byElement = recordsByElement( split.rest );
+	const all = sameTriggerResolved( given );
+	// A part of content the draft's code injects is written on its holder's block as a custom target, never as the holder's own
+	// motion: the elements, behaviours, staggers and controls are read from the other records; the accounting reads `all`.
+	const split = splitPartRecords( all, template );
+	const records = split.rest;
+	const byElement = recordsByElement( records );
 	// One classification context everywhere: an empty CSS list is no CSS given (a draft served from a URL), not CSS with no consumer.
 	const cls = { css: draftCss, template };
 	const unplaced = ( records || [] ).filter( ( r ) => null === ( r.element?.template_tpl_id ?? null ) );
@@ -302,7 +304,11 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 			let own = [ ...( byElement.get( key ) || [] ), ...idx.hostedFor( key ).map( ( x ) => x.r ), ...sets.flatMap( ( s ) => ( s.record ? [ s.record ] : [] ) ) ];
 			const where = { node: ref, block: n.name, slot: t.slot };
 			const partList = split.parts.get( key ) || [];
-			if ( partList.length ) {
+			if ( partList.length && ! targets.length ) {
+				// A block with no motion support has no custom target to hold a part's motion.
+				out.unmapped.push( ...partList.map( ( r ) => ( { ...where, property: 'motion', value: r.id, reason: `${ n.name } has no motion support, so the motion on the part ${ r.element.selector } of the content the draft's code puts into this element has no home` } ) ) );
+				split.parts.delete( key );
+			} else if ( partList.length ) {
 				const partWrites = writePartMotion( { n, list: partList, doc, pending, out, where, holder: key, mdb, ctx } );
 				used.push( ...partWrites.used );
 				boxes.push( ...partWrites.css );
@@ -364,16 +370,16 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 			out.notes.push( ...m.notes.map( ( text ) => ( { ...where, text } ) ) );
 			out.unmapped.push( ...m.unmapped.map( ( u ) => ( { ...where, property: 'motion', value: u.record, reason: u.reason } ) ) );
 			// The hover layer times colour, background, border colour and shadow apart from the movement (paint*, and shadow* for a
-			// shadow apart). A hover that only changes colour or shadow has no movement: it gets a layer of timing fields alone.
-			if ( reads && ( m.element.hover?.state || Object.keys( paintTiming ).length ) ) {
-				const paint = paintLayer( paintTimings( reads, t.id ), ctx );
-				const hover = m.element.hover?.state || ( paint.values && mdb.field( 'hover.state', 'values.paintDuration' ) ? ( m.element.hover = { state: { values: {} } } ).state : null );
-				if ( hover ) {
-					paint.values && Object.assign( hover.values, paint.values );
-					Object.entries( paint.devices ).forEach( ( [ tier, v ] ) => ( ( hover.devices ??= {} )[ tier ] = { ...( hover.devices[ tier ] || {} ), ...v } ) );
-					out.notes.push( ...paint.notes.map( ( text ) => ( { ...where, text } ) ) );
-					out.unmapped.push( ...paint.unmapped.map( ( u ) => ( { ...where, property: 'transition-timing-function', value: u.field, reason: `timing-conflict: ${ u.reason }` } ) ) );
-				}
+			// shadow apart). A hover that only changes colour or shadow has no movement: it gets a layer of timing fields alone
+			// where lib/fill-motion-element.mjs::paintOnlyLayer decides one is written (the same decision the timing pass reports by).
+			const paintOnly = reads && ! m.element.hover?.state ? paintOnlyLayer( { reads, id: t.id, holds: true, mdb, ctx } ) : null;
+			if ( reads && ( m.element.hover?.state || paintOnly ) ) {
+				const paint = paintOnly ?? paintLayer( paintTimings( reads, t.id ), ctx );
+				const hover = m.element.hover?.state || ( m.element.hover = { state: { values: {} } } ).state;
+				paint.values && Object.assign( hover.values, paint.values );
+				Object.entries( paint.devices ).forEach( ( [ tier, v ] ) => ( ( hover.devices ??= {} )[ tier ] = { ...( hover.devices[ tier ] || {} ), ...v } ) );
+				out.notes.push( ...paint.notes.map( ( text ) => ( { ...where, text } ) ) );
+				out.unmapped.push( ...paint.unmapped.map( ( u ) => ( { ...where, property: 'transition-timing-function', value: u.field, reason: `timing-conflict: ${ u.reason }` } ) ) );
 			}
 			if ( Object.keys( m.element ).length ) {
 				doc.elements[ target ] = { ...( doc.elements[ target ] || {} ), ...m.element };
@@ -431,8 +437,8 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 		b.notes.forEach( ( text ) => out.notes.push( { node: 'site', block: '', slot: '', text: `${ r.id }: ${ text }` } ) );
 	}
 	// A record on this surface that nothing above wrote, reported or noted is named, never left silent.
-	const homeOf = makeHomeOf( { records, nodes, keyOf: ( finder ) => elementKey( finder, rootComponent ), idx, template } );
-	out.unmapped.push( ...silentRows( { records, accounted: new Set( [ ...accountedIds( { used, written, out } ), ...styleSourceIds( { written, records } ) ] ), accountedAt: accountedAt( { usedAt, written, out } ), expected, refOf: ( n ) => refOf( flat[ n.index ] ), homeOf } ) );
+	const homeOf = makeHomeOf( { records: all, nodes, keyOf: ( finder ) => elementKey( finder, rootComponent ), idx, template } );
+	out.unmapped.push( ...silentRows( { records: all, accounted: new Set( [ ...accountedIds( { used, written, out } ), ...styleSourceIds( { written, records: all } ) ] ), accountedAt: accountedAt( { usedAt, written, out } ), expected, refOf: ( n ) => refOf( flat[ n.index ] ), homeOf } ) );
 	out.handover.push( ...readingProgressHandover( { found: idx.found, homeOf } ) );
 	deferred.forEach( ( write ) => write() );
 	return out;

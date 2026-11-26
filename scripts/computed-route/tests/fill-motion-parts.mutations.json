@@ -1,8 +1,8 @@
 [
 	{
 		"file": "lib/fill-motion.mjs",
-		"find": "const byElement = recordsByElement( split.rest );",
-		"replace": "const byElement = recordsByElement( records );",
+		"find": "const byElement = recordsByElement( records );",
+		"replace": "const byElement = recordsByElement( all );",
 		"why": "a part's motion is written on the holder itself"
 	},
 	{
@@ -88,5 +88,17 @@
 		"find": "\tconst rate = hoverRateOf( r );\n\tif ( rate ) {",
 		"replace": "\tconst rate = null;\n\tif ( rate ) {",
 		"why": "the hover speed-up is silent"
+	},
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "const records = split.rest;",
+		"replace": "const records = all;",
+		"why": "a part record is also read as a behaviour or stagger of the blocks around its holder"
+	},
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "if ( partList.length && ! targets.length ) {",
+		"replace": "if ( false ) {",
+		"why": "a part is written as a custom target into a block with no motion support"
 	}
 ]

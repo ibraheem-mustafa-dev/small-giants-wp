@@ -205,9 +205,10 @@ export function timingFacts( reads, id ) {
 }
 
 // Writes every timing of every target into the tree node in place. opts: { node, ref, rec (skeletonNodes record), target,
-// cal, db, snapshot, reads, held (the setting states this block holds, lib/db.mjs::settingStates) }. Returns
+// cal, db, snapshot, reads, held (the setting states this block holds, lib/db.mjs::settingStates), paintOnly (whether
+// the motion writer gives this element a paint-only hover layer, lib/fill-motion-element.mjs::paintOnlyLayer) }. Returns
 // { writes, unmapped } in the shapes lib/fill-state.mjs::fillStates uses.
-export function timingWrites( { node, ref, rec, target, cal, db, snapshot, reads, held } ) {
+export function timingWrites( { node, ref, rec, target, cal, db, snapshot, reads, held, paintOnly = false } ) {
 	const out = { writes: [], unmapped: [] };
 	const facts = timingFacts( reads, target.id );
 	const where = { node: ref, block: rec.name, slot: target.slot };
@@ -279,7 +280,7 @@ export function timingWrites( { node, ref, rec, target, cal, db, snapshot, reads
 			}
 		}
 	}
-	out.unmapped.push( ...splitRows( { facts, homes, tried, where, rec, target, shown, motion: stateHover( reads, target ).base ?? ( Object.keys( paintHoverTimings( reads, target.id ) ).length ? PAINT_ONLY_LAYER : null ), paint: paintTimings( reads, target.id ) } ) );
+	out.unmapped.push( ...splitRows( { facts, homes, tried, where, rec, target, shown, motion: stateHover( reads, target ).base ?? ( paintOnly ? PAINT_ONLY_LAYER : null ), paint: paintTimings( reads, target.id ) } ) );
 	return out;
 }
 

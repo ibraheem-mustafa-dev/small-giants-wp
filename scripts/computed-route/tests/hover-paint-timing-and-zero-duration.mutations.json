@@ -1,0 +1,32 @@
+[
+	{
+		"file": "lib/fill-timing.mjs",
+		"find": "motion: stateHover( reads, target ).base ?? ( paintOnly ? PAINT_ONLY_LAYER : null ),",
+		"replace": "motion: stateHover( reads, target ).base ?? ( Object.keys( paintHoverTimings( reads, target.id ) ).length ? PAINT_ONLY_LAYER : null ),",
+		"why": "the timing pass assumes a paint-only layer the motion writer may not write, dropping the split rows"
+	},
+	{
+		"file": "lib/fill-motion-element.mjs",
+		"find": "if ( ! holds || ! Object.keys( timing ).length || ! mdb?.field( 'hover.state', 'values.paintDuration' ) ) {",
+		"replace": "if ( ! Object.keys( timing ).length ) {",
+		"why": "a block with no motion target or no paintDuration field is given a paint-only layer"
+	},
+	{
+		"file": "lib/fill-motion-element.mjs",
+		"find": "return paint.values ? paint : null;",
+		"replace": "return paint;",
+		"why": "a paint timing that writes no value still counts as a layer"
+	},
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "const paintOnly = reads && ! m.element.hover?.state ? paintOnlyLayer( { reads, id: t.id, holds: true, mdb, ctx } ) : null;",
+		"replace": "const paintOnly = null;",
+		"why": "a colour or shadow hover that moves nothing gets no paint timing"
+	},
+	{
+		"file": "lib/fill-prop.mjs",
+		"find": "&& ! lasts( own ) &&",
+		"replace": "&&",
+		"why": "the draft's 0s is dropped where the block's own transition lasts"
+	}
+]

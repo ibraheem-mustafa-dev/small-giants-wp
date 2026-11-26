@@ -269,7 +269,7 @@ export async function fillSurface( o ) {
 			ledgerStates: Object.entries( entry.states || {} ).filter( ( [ , v ] ) => null === v ).map( ( [ k ] ) => k ),
 		} );
 		// FR-48-81: each target's state looks, through the settings that hold their states.
-		const states = fillStates( { tree, nodes, reads, calFor, db, snapshot } );
+		const states = fillStates( { tree, nodes, reads, calFor, db, snapshot, rawSnapshot } );
 		result.writes.push( ...states.writes );
 		result.notes.push( ...defectLooks.listed.map( ( d ) => `draft defect ${ d.draftId } (${ d.state } ${ d.prop }, ${ d.declared }): the draft never paints it; built from the code value ${ JSON.stringify( d.built ) } by width; listed for Bean (intake.json draftDefects, FR-48-69)` ), ...defectLooks.gaps.map( ( g ) => `draft defect ${ g.draftId } (${ g.state } ${ g.prop }${ g.width ? ` at ${ g.width }px` : '' }): not built: ${ g.reason }` ) );
 		// FR-48-69: the client's draft-defects list, rebuilt from intake (when intake has run) with the value each defect was built as.

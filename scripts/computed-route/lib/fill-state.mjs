@@ -32,6 +32,9 @@ import { alternateSlots } from './fill-resolve-state.mjs';
 import { READ_WIDTHS } from './fill-read.mjs';
 import { timingWrites } from './fill-timing.mjs';
 import { motionDb } from './motion-db.mjs';
+import { loadMotionSchema } from './motion-schema.mjs';
+import { tokenTypes, clientTokens } from './motion-tokens.mjs';
+import { paintOnlyLayer } from './fill-motion-element.mjs';
 import { exactHome } from './fill-part-pairing.mjs';
 import { stateDrafts, ancestorLook, ancestorHolds, motionHolds } from './fill-state-reach.mjs';
 
@@ -270,10 +273,10 @@ export function holdDefaults( { node, ref, rec, target, cal, db, snapshot, reads
 }
 
 // Writes every state look of every node into the tree in place. opts: { tree, nodes (skeletonNodes), reads, calFor,
-// db, snapshot }. Returns { writes, unmapped, held, patch, patchEntries }: held lists the looks another setting already
+// db, snapshot, rawSnapshot (the client's theme-snapshot.json as read, for its motion tokens) }. Returns { writes, unmapped, held, patch, patchEntries }: held lists the looks another setting already
 // gives (focus as hover); patch is the theme-snapshot.json patch (settings.custom.focus, settings.custom.buttonPresets,
 // styles.elements.link) with patchEntries listing each key it set.
-export function fillStates( { tree, nodes, reads, calFor, db, snapshot } ) {
+export function fillStates( { tree, nodes, reads, calFor, db, snapshot, rawSnapshot = null } ) {
 	const flat = [];
 	walk( tree, ( n, i ) => {
 		flat[ i ] = n;
@@ -287,6 +290,8 @@ export function fillStates( { tree, nodes, reads, calFor, db, snapshot } ) {
 	const shares = [];
 	const painted = new Map();
 	const interaction = interactionStates( db );
+	let ctxOf = null;
+	const motionCtx = () => ( ctxOf ??= { types: tokenTypes( loadMotionSchema() ), tokens: clientTokens( rawSnapshot ) } );
 	let mdb = null;
 	try {
 		mdb = motionDb( db );
@@ -313,7 +318,9 @@ export function fillStates( { tree, nodes, reads, calFor, db, snapshot } ) {
 				continue;
 			}
 			// Transition timings follow CSS direction semantics (lib/fill-timing.mjs), not the one-look-one-state rule below.
-			const timing = timingWrites( { node, ref, rec, target, cal, db, snapshot, reads, held } );
+			// The paint-only hover layer the motion writer gives the element, decided as it decides it.
+			const paintOnly = Boolean( mdb && paintOnlyLayer( { reads, id: target.id, holds: motionHolds( mdb, rec, target, ( el ) => exactHome( db, rec.name, cal, el ) ), mdb, ctx: motionCtx() } ) );
+			const timing = timingWrites( { node, ref, rec, target, cal, db, snapshot, reads, held, paintOnly } );
 			out.writes.push( ...timing.writes );
 			out.unmapped.push( ...timing.unmapped );
 			const drafts = stateDrafts( reads, target.id );

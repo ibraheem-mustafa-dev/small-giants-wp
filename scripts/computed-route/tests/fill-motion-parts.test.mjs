@@ -79,3 +79,28 @@ test( 'MUST FAIL: a hover that speeds up a running part animation is a named fra
 	assert.notEqual( recogniseBehaviour( speed( 1 ) )?.kind, 'unmapped' );
 	assert.notEqual( recogniseBehaviour( speed( 14, 'press' ) )?.kind, 'unmapped', 'a press is not a hover' );
 } );
+
+// A part entrance child by child (a per-item delay) inside a logo whose container is also a target.
+const NESTED = { elements: { 'Site/10': { tag: 'div', attrs: {}, parentChain: [] }, 'Site/43': { tag: 'brand-mark', attrs: {}, parentChain: [ 'Site/10' ] }, 'Site/684': { tag: 'brand-mark', attrs: {}, parentChain: [ 'Site/10' ] } } };
+const LETTERS = rec( 'L-07', '#logo_text > *', { trigger: { type: 'mount', detail: 'connectedCallback' }, properties: [ { property: 'opacity', from: 0, to: 1 } ], duration_ms: 500, delay_ms: 'i * 28', easing: 'ease' } );
+const nested = ( logo ) => {
+	const nodes = [ { index: 0, name: 'sgs/container', targets: [ { id: '0:', slot: '', finder: { tpl: 'Site/10#0' } } ] }, { index: 1, name: logo, targets: [ { id: '1:', slot: '', finder: { tpl: 'Site/43#0' } } ] } ];
+	const flat = nodes.map( ( n ) => ( { name: n.name, attributes: {}, ref: `r${ n.index }` } ) );
+	const out = motionWrites( { nodes, flat, refOf: ( x ) => x.ref, records: [ LETTERS ], mdb: nestedDb, schema, rawSnapshot: { settings: { custom: {} } }, template: NESTED, hasAttr: () => true } );
+	return { out, attrs: flat.map( ( f ) => f.attributes ) };
+};
+const nestedDb = motionDb( openDb( motionFixtureDb( { 'sgs/responsive-logo': [], 'sgs/container': [] } ) ) );
+
+test( 'MUST FAIL: a part record is never also read as a behaviour or stagger of the blocks around its holder', () => {
+	const { attrs } = nested( 'sgs/responsive-logo' );
+	assert.equal( attrs[ 0 ].sgsMotion, undefined, 'the container does not stagger the part entrance as its own items' );
+	assert.equal( Object.values( attrs[ 1 ].sgsMotion.elements ).map( ( e ) => e.selector ).join(), '#logo_text > *' );
+} );
+
+test( 'MUST FAIL: a part inside a block with no motion support is a named unmapped row, never a custom target', () => {
+	const { out, attrs } = nested( 'sgs/text' );
+	assert.equal( attrs[ 1 ].sgsMotion, undefined );
+	const rows = out.unmapped.filter( ( u ) => 'L-07' === u.value );
+	assert.equal( rows.length, 1 );
+	assert.match( rows[ 0 ].reason, /^sgs\/text has no motion support, so the motion on the part #logo_text > \* / );
+} );

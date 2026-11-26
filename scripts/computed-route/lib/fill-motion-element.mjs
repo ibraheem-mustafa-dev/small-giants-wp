@@ -9,7 +9,7 @@ import { loopEffect, loopCheck, chooseEffect, runtimeLoopsFor, smilLoop, marquee
 import { loopKeyframesCss, loopName, isLoopRecord } from './motion-loop-css.mjs';
 import { entranceCheck } from './motion-check.mjs';
 import { stateTrigger } from './motion-states.mjs';
-import { oneTiming, sameTiming, SHADOW } from './fill-timing.mjs';
+import { oneTiming, sameTiming, SHADOW, paintHoverTimings } from './fill-timing.mjs';
 import { timeToMs } from './resolve.mjs';
 
 // Every duration, easing and distance of a layer's values (and its device overrides) to a token reference where one
@@ -263,6 +263,20 @@ export function elementEffects( records, { mdb, loops = null, runtimeLoops = [],
 }
 
 const TIER = { 1440: 'desktop', 768: 'tablet', 375: 'mobile' };
+
+// The paint-only motion hover layer an element whose hover moves nothing gets (a colour or shadow hover,
+// lib/fill-timing.mjs::paintHoverTimings): paintLayer's result, or null where none is written: the block has no motion
+// target for the element (`holds` false), the motion DB declares no hover.state paintDuration field, or the draft's paint
+// timing is one paintLayer writes no value for. The one decision lib/fill-motion.mjs::motionWrites writes the layer by and
+// lib/fill-timing.mjs::timingWrites reports the element's split timings by (lib/fill-state.mjs::fillStates passes it on).
+export function paintOnlyLayer( { reads, id, holds, mdb, ctx } ) {
+	const timing = reads ? paintHoverTimings( reads, id ) : {};
+	if ( ! holds || ! Object.keys( timing ).length || ! mdb?.field( 'hover.state', 'values.paintDuration' ) ) {
+		return null;
+	}
+	const paint = paintLayer( timing, ctx );
+	return paint.values ? paint : null;
+}
 
 // The motion hover layer's paint timing from lib/fill-timing.mjs::paintTimings' result: { values: { paintDuration,
 // paintEasing, shadowDuration, shadowEasing }, devices: { tablet|mobile: { paintDuration, shadowDuration } }, notes,
