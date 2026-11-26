@@ -41,7 +41,8 @@ export function currentAttrJobs( keys, jobs, rootComponent = null ) {
 // In the page: marks one peer that carries a current value and one that does not, among the peers of the element `tpl` of the
 // component's host. The peers are the shown siblings of the same tag of the nearest ancestor-or-self of the element that has
 // any (the link itself in a flat bar, the `li` that wraps each link in a list), each taken at the element's own child path
-// within that ancestor. Returns whether both were found.
+// within that ancestor and kept only when it is the same template element (`data-dc-tpl` equal to the item's), so a lone link
+// in one box never pairs with the first link of another box beside it. Returns whether both were found.
 export function markPeers( [ component, tpl, mark ] ) {
 	const set = ( el ) => {
 		const v = el.getAttribute( 'aria-current' );
@@ -63,7 +64,7 @@ export function markPeers( [ component, tpl, mark ] ) {
 		if ( anc === host || ! anc.parentElement ) {
 			continue;
 		}
-		const peers = [ ...anc.parentElement.children ].filter( ( p ) => p.tagName === anc.tagName ).map( ( p ) => path.reduce( ( el, i ) => el?.children[ i ], p ) ).filter( ( p ) => p && shown( p ) );
+		const peers = [ ...anc.parentElement.children ].filter( ( p ) => p.tagName === anc.tagName ).map( ( p ) => path.reduce( ( el, i ) => el?.children[ i ], p ) ).filter( ( p ) => p && shown( p ) && tpl === p.getAttribute( 'data-dc-tpl' ) );
 		const cur = peers.find( set );
 		const oth = ! set( item ) ? item : peers.find( ( p ) => ! set( p ) );
 		if ( cur && oth ) {

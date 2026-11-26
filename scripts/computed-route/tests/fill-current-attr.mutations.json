@@ -31,8 +31,8 @@
 	},
 	{
 		"file": "lib/fill-current-attr.mjs",
-		"find": ".filter( ( p ) => p && shown( p ) )",
-		"replace": ".filter( ( p ) => p )",
+		"find": ".filter( ( p ) => p && shown( p ) && tpl === p.getAttribute( 'data-dc-tpl' ) );",
+		"replace": ".filter( ( p ) => p && tpl === p.getAttribute( 'data-dc-tpl' ) );",
 		"why": "a hidden peer is compared"
 	},
 	{
@@ -76,5 +76,11 @@
 		"find": "path.unshift( [ ...anc.parentElement.children ].indexOf( anc ) );\n\t\t\tanc = anc.parentElement;",
 		"replace": "break;",
 		"why": "peers are looked for among the siblings of the link only, so a link wrapped in its own li has none"
+	},
+	{
+		"file": "lib/fill-current-attr.mjs",
+		"find": " && tpl === p.getAttribute( 'data-dc-tpl' ) );",
+		"replace": " );",
+		"why": "a lone link in one box pairs with the first link of the box beside it"
 	}
 ]
