@@ -1,0 +1,14 @@
+[
+	{
+		"file": "lib/apply-skeleton.mjs",
+		"find": "! claimed.has( r ) && ! held.has( r ) && ( ! strict || ! used.has( r ) )",
+		"replace": "! claimed.has( r ) && ( ! strict || ! used.has( r ) )",
+		"why": "a block the origin holds but no pair reads is attached to a skeleton node"
+	},
+	{
+		"file": "lib/apply-targets.mjs",
+		"find": "pairs: surface.pairs, saved, held } );",
+		"replace": "pairs: surface.pairs, saved } );",
+		"why": "withSkeleton does not tell the skeleton which blocks the origin holds"
+	}
+]

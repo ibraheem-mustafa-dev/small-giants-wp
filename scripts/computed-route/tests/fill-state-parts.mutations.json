@@ -7,21 +7,15 @@
 	},
 	{
 		"file": "lib/fill-state-parts.mjs",
-		"find": "state === s.state && partKeys( db, block, attr ).some( ( k ) => parts.has( k ) )",
-		"replace": "true && partKeys( db, block, attr ).some( ( k ) => parts.has( k ) )",
+		"find": "state === s.state && partKeys( db, block, attr, false, restingOnElement ).some( ( k ) => parts.has( k ) )",
+		"replace": "true && partKeys( db, block, attr, false, restingOnElement ).some( ( k ) => parts.has( k ) )",
 		"why": "a setting of another state is taken for the look's state"
 	},
 	{
 		"file": "lib/fill-state-parts.mjs",
-		"find": "state === s.state && partKeys( db, block, attr ).some( ( k ) => parts.has( k ) )",
+		"find": "state === s.state && partKeys( db, block, attr, false, restingOnElement ).some( ( k ) => parts.has( k ) )",
 		"replace": "state === s.state",
 		"why": "a state setting of another part is taken for the item's"
-	},
-	{
-		"file": "lib/fill-state-parts.mjs",
-		"find": ".filter( Boolean );",
-		"replace": ";",
-		"why": "a setting tied to no part is a part of its own"
 	},
 	{
 		"file": "lib/fill-state-parts.mjs",
@@ -49,8 +43,8 @@
 	},
 	{
 		"file": "lib/fill-state-parts.mjs",
-		"find": "[ slot ? `slot:${ slot }` : element ] )",
-		"replace": "[ slot ? `slot:${ slot }` : null ] )",
+		"find": "if ( ! slot ) return [ element ].filter( Boolean );",
+		"replace": "if ( ! slot ) return [];",
 		"why": "a state setting without a canonical slot is tied to no part"
 	},
 	{
@@ -61,8 +55,20 @@
 	},
 	{
 		"file": "lib/fill-state-parts.mjs",
-		"find": "( resting ? [ slot && `slot:${ slot }`, element ] : [ slot ? `slot:${ slot }` : element ] )",
-		"replace": "[ slot && `slot:${ slot }`, element ]",
+		"find": "return [ `slot:${ slot }`, element && ! clash && element ].filter( Boolean );",
+		"replace": "return [ `slot:${ slot }`, element ].filter( Boolean );",
 		"why": "a shared css_element ties a state setting with a slot of its own to another part"
+	},
+	{
+		"file": "lib/fill-state-parts.mjs",
+		"find": "GENERIC_SLOT !== r.slot",
+		"replace": "true",
+		"why": "the generic text slot of a resting sibling counts as another part, so the caption and attribution hover settings lose their resting colour"
+	},
+	{
+		"file": "lib/fill-state-parts.mjs",
+		"find": "r.element === row?.css_element && r.slot",
+		"replace": "r.slot",
+		"why": "a resting setting on any element clashes, so a hover setting never ties through its element"
 	}
 ]

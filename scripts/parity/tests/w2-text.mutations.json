@@ -8,7 +8,7 @@
 	{ "file": "lib/compare.mjs", "find": "froms.includes( 'nested' ) && froms.includes( 'none' ) &&", "replace": "froms.includes( 'nested' ) &&", "why": "nested text on both sides collapses to presence" },
 	{ "file": "lib/compare.mjs", "find": "add( 'style', 'text presence', 'none' === d.textFrom ? 'none' : 'text',", "replace": "add( 'style', 'text presence', 'text',", "why": "the draft side is always text" },
 	{ "file": "lib/compare.mjs", "find": "if ( 'icon-colour' === p ? ! mixed : ( loops.has( p ) || ( ( mixed || textAlone ) && GLYPH_TEXT.has( p ) )", "replace": "if ( 'icon-colour' === p ? ! mixed : ( loops.has( p ) || ( mixed && GLYPH_TEXT.has( p ) )", "why": "font rows kept beside the presence row" },
-	{ "file": "lib/compare.mjs", "find": "if ( loops.has( p ) || ( ( mixed || textAlone ) && GLYPH_TEXT.has( p ) ) || borderColourIrrelevant(", "replace": "if ( loops.has( p ) || ( mixed && GLYPH_TEXT.has( p ) ) || borderColourIrrelevant(", "why": "a hover colour row beside the presence row" },
+	{ "file": "lib/compare.mjs", "find": "|| ( ( mixed || textAlone ) && GLYPH_TEXT.has( p ) ) || borderColourIrrelevant(", "replace": "|| ( mixed && GLYPH_TEXT.has( p ) ) || borderColourIrrelevant(", "why": "a hover colour row beside the presence row" },
 	{ "file": "lib/auto-compare.mjs", "find": "'ls', 'lh', 'c',", "replace": "'ls', 'c',", "why": "the auto check ignores line-height" },
 	{ "file": "lib/auto-collect.mjs", "find": "lh: lineHeightOf( cs ),", "replace": "lh: cs.lineHeight,", "why": "normal is not read as pixels" }
 ]

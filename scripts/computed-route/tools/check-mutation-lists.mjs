@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Static check of every mutation list under tests/ (lib/mutation-lists.mjs): each entry's find must occur exactly once in
+// Static check of every mutation list under tests/ and under ../parity/tests/ (lib/mutation-lists.mjs): each entry's find must occur exactly once in
 // its target file, or tools/mutate.mjs skips it and leaves its test unproven.
 //   node scripts/computed-route/tools/check-mutation-lists.mjs [--write-baseline]
 // Prints each stale entry, marked `known` when data/mutation-list-stale-baseline.json names it and `NEW` when not, then each
@@ -9,12 +9,12 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { baselineOf, checkMutationLists, compareBaseline, problemLine } from '../lib/mutation-lists.mjs';
+import { baselineOf, checkAllMutationLists, compareBaseline, problemLine } from '../lib/mutation-lists.mjs';
 
 const ROUTE = join( dirname( fileURLToPath( import.meta.url ) ), '..' );
 const BASELINE = join( ROUTE, 'data', 'mutation-list-stale-baseline.json' );
 
-const { lists, problems } = checkMutationLists( ROUTE );
+const { lists, problems } = checkAllMutationLists( ROUTE );
 if ( process.argv.includes( '--write-baseline' ) ) {
 	writeFileSync( BASELINE, `${ JSON.stringify( baselineOf( problems ), null, '\t' ) }\n` );
 	console.log( `baseline written: ${ problems.length } stale entries in ${ new Set( problems.map( ( x ) => x.list ) ).size } of ${ lists.length } lists` );

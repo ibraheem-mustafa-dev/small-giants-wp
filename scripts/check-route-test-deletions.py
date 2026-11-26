@@ -14,6 +14,8 @@ A file moved out of the tests folder counts as a deletion (the listing is made w
     python scripts/check-route-test-deletions.py --check        the gate (exit 1 when a deletion has no reason, 2 when git cannot list the staged changes)
     python scripts/check-route-test-deletions.py --self-test    proves the gate refuses and allows what it should
 """
+import contextlib
+import io
 import os
 import subprocess
 import sys
@@ -66,6 +68,17 @@ def check():
     return code
 
 
+def git_failure_exit():
+    """check()'s exit code when `git diff` fails (subprocess.run stood in for by a failed listing)."""
+    real = subprocess.run
+    subprocess.run = lambda *args, **kwargs: subprocess.CompletedProcess(args, 128, stdout="", stderr="fatal: not a git repository")
+    try:
+        with contextlib.redirect_stderr(io.StringIO()):
+            return check()
+    finally:
+        subprocess.run = real
+
+
 def self_test():
     gone = f"D\t{TESTS_DIR}fill-x.test.mjs\nM\tscripts/computed-route/fill.mjs\nD\t{TESTS_DIR}fill-x.mutations.json\n"
     assert decide(gone, "")[0] == 1, "a deleted suite with no reason must be refused"
@@ -73,7 +86,12 @@ def self_test():
     assert decide(gone, "   ")[0] == 1, "a blank reason is no reason"
     assert decide(gone, "moved to tests/y.test.mjs")[0] == 0, "a stated reason lets it through"
     assert decide(f"M\t{TESTS_DIR}fill-x.test.mjs\nA\t{TESTS_DIR}new.test.mjs\n", "")[0] == 0, "an edit or an added test is not a deletion"
-    assert decide(f"R100\t{TESTS_DIR}a.test.mjs\t{TESTS_DIR}b.test.mjs\n", "")[0] == 0, "a rename is not a deletion"
+    # --no-renames lists a moved file as a deletion of the old path and an addition of the new one, never as R100.
+    moved = f"D\t{TESTS_DIR}a.test.mjs\nA\t{TESTS_DIR}b.test.mjs\n"
+    assert decide(moved, "")[0] == 1, "a file moved within the tests folder is a deletion of the old path, refused unless a reason is stated"
+    assert decide(moved, "renamed to tests/b.test.mjs")[0] == 0, "a stated reason lets the move through"
+    assert decide(f"D\t{TESTS_DIR}a.test.mjs\nA\tscripts/computed-route/lib/a.mjs\n", "")[0] == 1, "a file moved out of the tests folder is a deletion"
+    assert git_failure_exit() == 2, "when git cannot list the staged changes the gate exits 2, never 0"
     assert decide("D\tscripts/computed-route/lib/fill-x.mjs\nD\tsites/a/build/x.json\n", "")[0] == 0, "other deletions are not this gate's"
     print("check-route-test-deletions: self-test passed")
     return 0

@@ -64,13 +64,17 @@ export function refreshPairs( { blocks, elements, old = {}, boxes = {}, origin =
 	// A block whose old pair has the block's own box, or its own text and a near box, keeps it before any rule runs.
 	const settled = confirmedByBox( { blocks, elements, old, boxes } );
 	// A block the origin holds keeps the element the origin names, before any rule runs (an element no state of the inventory shows
-	// is left to the rules).
+	// is left to the rules). The settled blocks, the origin's and the box-confirmed ones, claim their elements in one pass in the
+	// saved post's document order, so a wrapper block holds its element and a block inside it shares it as a part whichever of the two
+	// the origin names.
+	const fromOrigin = new Set();
 	for ( const { ref } of blocks ) {
 		const el = origin[ ref ]?.tpl && elements.find( ( e ) => e.key === origin[ ref ].tpl && ! e.reveal );
-		el && ( settled[ ref ] = el ) && claim( ref, el, 'the draft element of the run that saved the post (its origin file)' );
+		el && ( settled[ ref ] = el ) && fromOrigin.add( ref );
 	}
-	for ( const [ ref, el ] of Object.entries( settled ).filter( ( [ ref ] ) => ! ( pairs[ ref ] ) ) ) {
-		claim( ref, el, 'kept from the previous pairs: the draft element has its own box' );
+	const ordered = new Set( [ ...blocks.map( ( b ) => b.ref ), ...Object.keys( settled ) ] );
+	for ( const ref of [ ...ordered ].filter( ( r ) => settled[ r ] ) ) {
+		claim( ref, settled[ ref ], fromOrigin.has( ref ) ? 'the draft element of the run that saved the post (its origin file)' : 'kept from the previous pairs: the draft element has its own box' );
 	}
 	for ( const { ref, block, attrs, parent } of blocks ) {
 		if ( settled[ ref ] ) {

@@ -3,5 +3,5 @@
 	{"file": "lib/state-rest.mjs", "find": "if ( ! restDiff( last, now ).length ) {\n\t\t\treturn now;", "replace": "if ( true ) {\n\t\t\treturn last;", "why": "one read is taken as the signature"},
 	{"file": "lib/state-rest.mjs", "find": "if ( ! restDiff( last, now ).length ) {\n\t\t\treturn now;", "replace": "if ( true ) {\n\t\t\treturn now;", "why": "the second read is taken whatever it says"},
 	{"file": "lib/state-rest.mjs", "find": "\t\tlast = now;\n\t}\n\treturn last;", "replace": "\t}\n\treturn last;", "why": "a changing page is compared with its first read for ever"},
-	{"file": "lib/state-rest.mjs", "find": ": { how: 'reloaded', rest: now };", "replace": ": { how: 'reloaded' };", "why": "a fresh load at rest does not refresh the stored rest"}
+	{"file": "lib/state-rest.mjs", "find": "return { how: 'reloaded', rest: now };", "replace": "return { how: 'reloaded' };", "why": "a fresh load at rest does not refresh the stored rest"}
 ]

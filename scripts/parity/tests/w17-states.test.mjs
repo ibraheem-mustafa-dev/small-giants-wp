@@ -165,11 +165,11 @@ test( 'restSignature reads the scroll, the lock, an open modal and a covering fi
 	try {
 		const page = await browser.newPage( { viewport: { width: 800, height: 600 } } );
 		await page.setContent( `<style>main{height:3000px}#layer{position:fixed;inset:0;display:none}#chip{position:fixed;top:0;left:0;width:40px;height:40px}
-			#ghost{position:fixed;inset:0;visibility:hidden}#clear{position:fixed;inset:0;opacity:0}#panel{display:none;width:50px;height:50px}</style>
-			<main>x</main><div id="layer" class="drawer open"></div><div id="chip"></div><div id="ghost"></div><div id="clear"></div>
+			#ghost{position:fixed;inset:0;visibility:hidden}#clear{position:fixed;inset:0;opacity:0}#panel{display:none;width:50px;height:50px}#lift{transform:translateY(2px);width:40px;height:40px}</style>
+			<div id="lift"></div><main>x</main><div id="layer" class="drawer open"></div><div id="chip"></div><div id="ghost"></div><div id="clear"></div>
 			<dialog id="d">hi</dialog><div id="panel" role="dialog">p</div><div id="pop" popover>pop</div><details id="dd"><summary>s</summary>x</details><button aria-expanded="false">m</button>` );
 		const at = await page.evaluate( restSignature );
-		assert.deepEqual( at, { scroll: '0,0', lock: 'visible visible static static', dialogs: 0, modals: 0, popovers: 0, disclosures: 0, inert: '', hidden: '', focus: '', layers: 'div#chip' }, 'a small fixed chip is a layer (w2-rest.test.mjs); a hidden and a transparent layer are none' );
+		assert.deepEqual( at, { scroll: '0,0', lock: 'visible visible static static', dialogs: 0, modals: 0, popovers: 0, disclosures: 0, inert: '', hidden: '', focus: '', layers: 'div#chip' }, 'a small fixed chip is a layer (w2-rest.test.mjs); a hidden and a transparent layer are none; an in-flow element taking a transform (#lift) is content, not a layer' );
 		await page.evaluate( () => {
 			document.getElementById( 'd' ).showModal();
 			document.getElementById( 'layer' ).style.display = 'block';

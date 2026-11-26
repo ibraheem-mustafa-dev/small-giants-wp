@@ -21,10 +21,12 @@ export function currentAttrKeys( facts ) {
 	return Object.entries( facts?.elements || {} ).filter( ( [ , e ] ) => ( e.template?.holes || [] ).some( ( h ) => ATTR_HOLE === h.where ) ).map( ( [ key ] ) => key );
 }
 
-// The jobs (lib/fill-read.mjs::jobsFor) that are one of those elements, each with the component that mounts it and its tpl.
+// The jobs (lib/fill-read.mjs::jobsFor) that are one of those elements, each with the component that mounts it, its tpl and
+// `bound`: the tpls of every element of that component whose aria-current the draft binds (the items that can be its peers).
 // A job inside the page's own root component is dropped: no other page holds that element.
 export function currentAttrJobs( keys, jobs, rootComponent = null ) {
 	const set = new Set( keys );
+	const boundOf = ( dc ) => keys.map( parseTemplateKey ).filter( ( k ) => k?.dc === dc ).map( ( k ) => k.tpl );
 	const out = [];
 	for ( const job of jobs ) {
 		const instance = parseInstanceKey( job?.finder?.tpl );
@@ -33,7 +35,7 @@ export function currentAttrJobs( keys, jobs, rootComponent = null ) {
 			continue;
 		}
 		const parsed = parseTemplateKey( key );
-		out.push( { id: job.id, component: parsed.dc, tpl: parsed.tpl } );
+		out.push( { id: job.id, component: parsed.dc, tpl: parsed.tpl, bound: boundOf( parsed.dc ) } );
 	}
 	return out;
 }
@@ -41,8 +43,11 @@ export function currentAttrJobs( keys, jobs, rootComponent = null ) {
 // In the page: marks one peer that carries a current value and one that does not, among the peers of the element `tpl` of the
 // component's host. The peers are the shown siblings of the same tag of the nearest ancestor-or-self of the element that has
 // any (the link itself in a flat bar, the `li` that wraps each link in a list), each taken at the element's own child path
-// within that ancestor. Returns whether both were found.
-export function markPeers( [ component, tpl, mark ] ) {
+// within that ancestor and kept only when it is an element whose aria-current the draft binds (`data-dc-tpl` in `bound`, the
+// item's own tpl included, so loop copies of one template are peers too). Each hand-written link of a bar is its own template
+// element and binds its own current value, so the bar's links stay peers, while a lone link in one box never pairs with the
+// link at the same path of another box beside it unless that link is a bound item too. Returns whether both were found.
+export function markPeers( [ component, tpl, mark, bound = [ tpl ] ] ) {
 	const set = ( el ) => {
 		const v = el.getAttribute( 'aria-current' );
 		return null !== v && '' !== v && 'false' !== v;
@@ -63,7 +68,7 @@ export function markPeers( [ component, tpl, mark ] ) {
 		if ( anc === host || ! anc.parentElement ) {
 			continue;
 		}
-		const peers = [ ...anc.parentElement.children ].filter( ( p ) => p.tagName === anc.tagName ).map( ( p ) => path.reduce( ( el, i ) => el?.children[ i ], p ) ).filter( ( p ) => p && shown( p ) );
+		const peers = [ ...anc.parentElement.children ].filter( ( p ) => p.tagName === anc.tagName ).map( ( p ) => path.reduce( ( el, i ) => el?.children[ i ], p ) ).filter( ( p ) => p && shown( p ) && bound.includes( p.getAttribute( 'data-dc-tpl' ) ) );
 		const cur = peers.find( set );
 		const oth = ! set( item ) ? item : peers.find( ( p ) => ! set( p ) );
 		if ( cur && oth ) {
@@ -97,7 +102,7 @@ export async function readCurrentAttr( { jobs, pages, openSibling, resolveSrc, l
 		try {
 			for ( const job of open.slice() ) {
 				try {
-					if ( ! await sib.page.evaluate( markPeers, [ job.component, job.tpl, MARK ] ) ) {
+					if ( ! await sib.page.evaluate( markPeers, [ job.component, job.tpl, MARK, job.bound ] ) ) {
 						continue;
 					}
 					const sel = { cur: `[${ MARK }="cur"]`, oth: `[${ MARK }="oth"]` };

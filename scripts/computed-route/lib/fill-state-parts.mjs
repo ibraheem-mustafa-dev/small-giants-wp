@@ -13,11 +13,19 @@ import { paintedProps } from './css-families.mjs';
 // its `css_element`, which is the `item` element its resting and hover siblings are declared on. A `css_element` is shared by
 // unrelated parts of one block (`wrapper`, `item`), so it never overrides a `canonical_slot`: a state setting with a slot of
 // its own is that slot's part whatever element name it shares.
-const partKeys = ( db, block, attr, resting ) => {
-	const row = db ? db.prepare( 'SELECT css_element FROM block_attributes WHERE block_slug = ? AND attr_name = ?' ).get( block, attr ) : null;
+// `text` is the slot the assigner gives an element's own text properties whatever the part (quote's `attributionColour` is
+// `text`, its hover sibling `attribution`, both on the `attribution` element), so it names no part and never conflicts.
+const GENERIC_SLOT = 'text';
+const rowOf = ( db, block, attr ) => ( db ? db.prepare( 'SELECT css_element FROM block_attributes WHERE block_slug = ? AND attr_name = ?' ).get( block, attr ) : null );
+const partKeys = ( db, block, attr, resting, restingOnElement ) => {
+	const row = rowOf( db, block, attr );
 	const slot = canonicalSlotOf( db, block, attr );
 	const element = row?.css_element && `element:${ row.css_element }`;
-	return ( resting ? [ slot && `slot:${ slot }`, element ] : [ slot ? `slot:${ slot }` : element ] ).filter( Boolean );
+	if ( resting ) return [ slot && `slot:${ slot }`, element ].filter( Boolean );
+	if ( ! slot ) return [ element ].filter( Boolean );
+	// A state setting with a slot also ties through its element when no resting setting there is another specific part.
+	const clash = ( restingOnElement || [] ).some( ( r ) => r.element === row?.css_element && r.slot && r.slot !== slot && GENERIC_SLOT !== r.slot );
+	return [ `slot:${ slot }`, element && ! clash && element ].filter( Boolean );
 };
 
 // A paint layer of an element (its ::before or ::after) is the element's own box: the path without the layer.
@@ -29,7 +37,9 @@ const slotsOf = ( s ) => s.slots || [ s.slot ];
 // the state settings of `prop` that belong to a part the block's resting settings of `prop` paint at `slot`.
 export function partStateSlots( { db, cal, block, prop, slot, state } ) {
 	const of = Object.entries( cal?.settings || {} ).filter( ( [ , s ] ) => paintedProps( s ).includes( prop ) || longhands( paintedProps( s ).join( ',' ) ).includes( prop ) );
-	const parts = new Set( of.filter( ( [ , s ] ) => ! s.state && slotsOf( s ).some( ( p ) => bare( p ) === slot ) ).flatMap( ( [ attr ] ) => partKeys( db, block, attr, true ) ) );
-	const mine = of.filter( ( [ attr, s ] ) => state === s.state && partKeys( db, block, attr ).some( ( k ) => parts.has( k ) ) );
+	const resting = of.filter( ( [ , s ] ) => ! s.state );
+	const parts = new Set( resting.filter( ( [ , s ] ) => slotsOf( s ).some( ( p ) => bare( p ) === slot ) ).flatMap( ( [ attr ] ) => partKeys( db, block, attr, true ) ) );
+	const restingOnElement = resting.map( ( [ attr ] ) => ( { element: rowOf( db, block, attr )?.css_element, slot: canonicalSlotOf( db, block, attr ) } ) );
+	const mine = of.filter( ( [ attr, s ] ) => state === s.state && partKeys( db, block, attr, false, restingOnElement ).some( ( k ) => parts.has( k ) ) );
 	return [ ...new Set( mine.flatMap( ( [ , s ] ) => slotsOf( s ) ) ) ].filter( ( p ) => bare( p ) !== slot );
 }

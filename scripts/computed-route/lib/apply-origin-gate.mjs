@@ -11,13 +11,14 @@ const configFile = ( surface, client ) => `sites/${ client }/build/qa/parity/${ 
 
 // One sentence per surface whose pair records disagree with the origin (pairsReport's `disagree`), naming each file and what to do to
 // it. A pairs file is deleted (git rm) or regenerated with refresh-pairs.mjs --write, which keeps the origin's element for a ref the
-// origin holds. A walker config is never deleted: with no config loadSurfaces skips the surface, so its wrong pair is corrected.
+// origin holds only when the draft inventory has that element shown at rest: where the origin's element is missing from the inventory
+// or is only a reveal element, regenerating leaves the disagreement and git rm is the fix, which the sentence says. A walker config is never deleted: with no config loadSurfaces skips the surface, so its wrong pair is corrected.
 export function staleRecordProblems( surfaces, client ) {
 	return surfaces.filter( ( s ) => s.disagree?.length ).map( ( s ) => {
 		const by = ( source ) => s.disagree.filter( ( d ) => source === d.source );
 		const files = [ ...( by( 'refresh' ).length ? [ pairsFile( s, client ) ] : [] ), ...( by( 'pair' ).length ? [ configFile( s, client ) ] : [] ) ];
 		const advice = [
-			...( by( 'refresh' ).length ? [ `delete ${ pairsFile( s, client ) } (git rm ${ pairsFile( s, client ) }) or regenerate it with refresh-pairs.mjs --write` ] : [] ),
+			...( by( 'refresh' ).length ? [ `delete ${ pairsFile( s, client ) } (git rm ${ pairsFile( s, client ) }) or regenerate it with refresh-pairs.mjs --write (regenerating cannot clear a pair whose origin element is missing from the draft inventory or is only a reveal element: git rm the file then)` ] : [] ),
 			...( by( 'pair' ).length ? [ `correct the pair of ${ by( 'pair' ).slice( 0, 3 ).map( ( d ) => d.ref ).join( ', ' ) }${ by( 'pair' ).length > 3 ? ', ...' : '' } in ${ configFile( s, client ) } to the origin's element (keep the file: a surface with no walker config is skipped)` ] : [] ),
 		];
 		const shown = s.disagree.slice( 0, 3 ).map( ( d ) => `${ d.ref } ${ d.was } (origin ${ d.origin })` ).join( ', ' );
@@ -25,9 +26,10 @@ export function staleRecordProblems( surfaces, client ) {
 	} );
 }
 
-// The planned targets of a surface whose element differs from the origin's for the same block. A skeleton target, a part and a reveal pair
-// name an element of their own by design and are not compared.
+// The planned targets of a surface whose element differs from the origin's for the same block. A skeleton target names an element of its
+// own by design and is not compared; a part or reveal pair of a block the origin holds is on the origin's element (pairsReport lists any
+// other as a disagreement), so it is compared like any other.
 export function targetsOffOrigin( { pairs, origin = {} } ) {
-	return pairs.filter( ( t ) => ! t.part && ! t.reveal && ! String( t.via ?? '' ).startsWith( 'skeleton' ) && origin[ t.ref ]?.tpl && origin[ t.ref ].tpl !== t.tpl )
+	return pairs.filter( ( t ) => ! String( t.via ?? '' ).startsWith( 'skeleton' ) && origin[ t.ref ]?.tpl && origin[ t.ref ].tpl !== t.tpl )
 		.map( ( t ) => `${ t.ref }: planned for ${ t.tpl }, the origin records ${ origin[ t.ref ].tpl }` );
 }

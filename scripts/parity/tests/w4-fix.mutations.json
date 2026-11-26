@@ -24,6 +24,6 @@
 	{ "file": "lib/transitions.mjs", "find": "( SHORTHAND[ ( d.get( k ) ?? l.get( k ) )?.of ] || [ k ] )", "replace": "[ k ]", "why": "a shorthand entry judged by its first longhand only" },
 	{ "file": "lib/transitions.mjs", "find": "read.includes( k ) || read.includes( physical( k ) )", "replace": "read.includes( k )", "why": "a logical name not matched with the physical longhand read" },
 	{ "file": "lib/compare-state.mjs", "find": "...( dropRows.length ? { dropped: dropRows } : {} ), ", "replace": "", "why": "a bare-wrapper drop not recorded" },
-	{ "file": "lib/draft-cache.mjs", "find": "self, snapshot: SNAPSHOT_VERSION }", "replace": "self }", "why": "cache key without the schema" },
+	{ "file": "lib/draft-cache.mjs", "find": "lean, self, snapshot: SNAPSHOT_VERSION, draft, code, configHash }", "replace": "lean, self, draft, code, configHash }", "why": "cache key without the schema" },
 	{ "file": "lib/draft-cache.mjs", "find": "return SNAPSHOT_VERSION === JSON.parse( k ).snapshot;", "replace": "return true;", "why": "older cache entries kept" }
 ]

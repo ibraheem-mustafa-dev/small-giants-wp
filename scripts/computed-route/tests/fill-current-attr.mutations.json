@@ -31,8 +31,8 @@
 	},
 	{
 		"file": "lib/fill-current-attr.mjs",
-		"find": ".filter( ( p ) => p && shown( p ) )",
-		"replace": ".filter( ( p ) => p )",
+		"find": ".filter( ( p ) => p && shown( p ) && bound.includes(",
+		"replace": ".filter( ( p ) => p && bound.includes(",
 		"why": "a hidden peer is compared"
 	},
 	{
@@ -76,5 +76,35 @@
 		"find": "path.unshift( [ ...anc.parentElement.children ].indexOf( anc ) );\n\t\t\tanc = anc.parentElement;",
 		"replace": "break;",
 		"why": "peers are looked for among the siblings of the link only, so a link wrapped in its own li has none"
+	},
+	{
+		"file": "lib/fill-current-attr.mjs",
+		"find": " && bound.includes( p.getAttribute( 'data-dc-tpl' ) ) );",
+		"replace": " );",
+		"why": "a lone link in one box pairs with the first link of the box beside it, and an unbound link of the bar is a peer"
+	},
+	{
+		"file": "lib/fill-current-attr.mjs",
+		"find": " && bound.includes( p.getAttribute( 'data-dc-tpl' ) ) );",
+		"replace": " && tpl === p.getAttribute( 'data-dc-tpl' ) );",
+		"why": "peers are the same template element only, so the hand-written links of a bar never pair"
+	},
+	{
+		"file": "lib/fill-current-attr.mjs",
+		"find": " && bound.includes( p.getAttribute( 'data-dc-tpl' ) ) );",
+		"replace": " && bound.filter( ( t ) => t !== tpl ).includes( p.getAttribute( 'data-dc-tpl' ) ) );",
+		"why": "loop copies of one template element are no peers of each other"
+	},
+	{
+		"file": "lib/fill-current-attr.mjs",
+		"find": "filter( ( k ) => k?.dc === dc )",
+		"replace": "filter( ( k ) => true )",
+		"why": "a bound element of another component counts as a peer"
+	},
+	{
+		"file": "lib/fill-current-attr.mjs",
+		"find": "markPeers, [ job.component, job.tpl, MARK, job.bound ] )",
+		"replace": "markPeers, [ job.component, job.tpl, MARK ] )",
+		"why": "the reader never passes the bound elements, so only the same template element is a peer"
 	}
 ]

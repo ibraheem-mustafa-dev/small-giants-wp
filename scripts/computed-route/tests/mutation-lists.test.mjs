@@ -8,7 +8,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { baselineOf, checkMutationLists, compareBaseline, isMutationList, problemLine } from '../lib/mutation-lists.mjs';
+import { baselineOf, checkAllMutationLists, checkMutationLists, compareBaseline, isMutationList, problemLine } from '../lib/mutation-lists.mjs';
 
 const ROUTE = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..' );
 const BASELINE = JSON.parse( fs.readFileSync( path.join( ROUTE, 'data', 'mutation-list-stale-baseline.json' ), 'utf8' ) );
@@ -48,6 +48,15 @@ test( 'MUST FAIL: a list with one malformed entry stays in the guard, and that e
 	r.done();
 } );
 
+test( 'MUST FAIL: a *.mutations.json file that is not valid JSON is a named problem, never skipped', () => {
+	const r = routeWith( { 'broken.mutations.json': '[ { "file": "lib/target.mjs", "find": "a", "replace": "b }' } );
+	const { lists, problems } = checkMutationLists( r.dir );
+	assert.deepEqual( lists, [ 'tests/broken.mutations.json' ] );
+	assert.equal( problems.length, 1 );
+	assert.match( problemLine( problems[ 0 ] ), /^tests\/broken\.mutations\.json: the file is not valid JSON/ );
+	r.done();
+} );
+
 test( 'a JSON file that is not a mutation list is not read as one', () => {
 	const r = routeWith( { 'plain.json': { file: 'lib/target.mjs', find: 'nowhere' }, 'rows.json': [ { file: 'lib/target.mjs', find: 'nowhere' } ], 'empty.json': [], 'broken.json': '[ {' } );
 	assert.deepEqual( checkMutationLists( r.dir ), { lists: [], problems: [] } );
@@ -69,9 +78,30 @@ test( 'MUST FAIL: the baseline names every stale entry it holds and no more: a n
 } );
 
 test( 'MUST FAIL: no mutation list under tests/ has a stale entry beyond the baseline, and every baseline entry is still stale', () => {
-	const { lists, problems } = checkMutationLists( ROUTE );
+	const { lists, problems } = checkAllMutationLists( ROUTE );
 	assert.ok( lists.length > 200, `found only ${ lists.length } mutation lists under tests/; the scan is reading the wrong folder` );
+	assert.ok( lists.some( ( l ) => l.startsWith( 'parity/tests/' ) ), 'the lists of the parity walkers (scripts/parity/tests) are scanned too' );
 	const { fresh, fixed } = compareBaseline( problems, BASELINE );
 	assert.deepEqual( fresh.map( problemLine ), [], 'each list above went stale: re-aim its find at the current code (node tools/check-mutation-lists.mjs lists them)' );
 	assert.deepEqual( fixed.map( ( x ) => `${ x.list }: ${ x.find }` ), [], 'these baseline entries are no longer stale: remove them from data/mutation-list-stale-baseline.json' );
+} );
+
+// RF9 second review: scripts/parity/tests/*.mutations.json (entries relative to scripts/parity) went unchecked, so a re-worded
+// line left its mutation matching nothing for weeks.
+test( 'MUST FAIL: the lists beside the route, under ../parity/tests, are scanned against ../parity and named parity/tests/...', () => {
+	const r = routeWith( { 'a.mutations.json': [ m( 'const a = 1;' ) ] } );
+	// The sibling must be named `parity` next to the route dir, so build the route one level down.
+	const root = fs.mkdtempSync( path.join( os.tmpdir(), 'mut-both-' ) );
+	const route = path.join( root, 'computed-route' );
+	fs.cpSync( r.dir, route, { recursive: true } );
+	fs.mkdirSync( path.join( root, 'parity', 'lib' ), { recursive: true } );
+	fs.mkdirSync( path.join( root, 'parity', 'tests' ) );
+	fs.writeFileSync( path.join( root, 'parity', 'lib', 'walk.mjs' ), 'const walk = 1;\n' );
+	fs.writeFileSync( path.join( root, 'parity', 'tests', 'w.mutations.json' ), JSON.stringify( [ m( 'const walk = 1;', 'lib/walk.mjs' ), m( 'const walk = 2;', 'lib/walk.mjs' ) ] ) );
+	const { lists, problems } = checkAllMutationLists( route );
+	assert.deepEqual( lists, [ 'tests/a.mutations.json', 'parity/tests/w.mutations.json' ] );
+	assert.deepEqual( problems.map( ( x ) => [ x.list, x.index, x.count ] ), [ [ 'parity/tests/w.mutations.json', 1, 0 ] ] );
+	assert.deepEqual( checkAllMutationLists( r.dir ).lists, [ 'tests/a.mutations.json' ], 'no sibling parity folder is no error' );
+	fs.rmSync( root, { recursive: true, force: true } );
+	r.done();
 } );

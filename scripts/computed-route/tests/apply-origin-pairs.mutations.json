@@ -52,5 +52,29 @@
 		"find": "correct the pair of",
 		"replace": "delete the file for",
 		"why": "the refusal advises deleting a walker config"
+	},
+	{
+		"file": "lib/apply-targets.mjs",
+		"find": "if ( held && held !== tpl.tpl ) {",
+		"replace": "if ( held && held !== tpl.tpl && ! tpl.part && ! tpl.reveal ) {",
+		"why": "a refreshed part or reveal pair on another element replaces the origin's pair"
+	},
+	{
+		"file": "lib/apply-origin-gate.mjs",
+		"find": "return pairs.filter( ( t ) => ! String( t.via ?? '' ).startsWith( 'skeleton' )",
+		"replace": "return pairs.filter( ( t ) => ! t.part && ! t.reveal && ! String( t.via ?? '' ).startsWith( 'skeleton' )",
+		"why": "a part or reveal target off the origin is not compared"
+	},
+	{
+		"file": "lib/refresh-pairs.mjs",
+		"find": "const ordered = new Set( [ ...blocks.map( ( b ) => b.ref ), ...Object.keys( settled ) ] );",
+		"replace": "const ordered = new Set( [ ...Object.keys( settled ).filter( ( r ) => fromOrigin.has( r ) ), ...Object.keys( settled ) ] );",
+		"why": "the origin's blocks claim before the box-confirmed ones, so a wrapper block is marked the part of the text block inside it"
+	},
+	{
+		"file": "lib/apply-origin-gate.mjs",
+		"find": " (regenerating cannot clear a pair whose origin element is missing from the draft inventory or is only a reveal element: git rm the file then)",
+		"replace": "",
+		"why": "the refusal advises regenerating without saying it cannot clear a pair whose origin element the inventory lacks or shows only in a state"
 	}
 ]

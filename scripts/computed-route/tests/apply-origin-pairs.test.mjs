@@ -34,10 +34,25 @@ test( "a stale pairs file never replaces the origin's element for a ref the orig
 } );
 
 test( 'a pairs file that agrees with the origin is not stale, and keeps its part and reveal pairs', () => {
-	const agreeing = { pairs: { [ careers11 ]: { tpl: origin[ careers11 ].tpl }, 'cr-ref-careers-12': { tpl: 'Root/9#0', part: 'icon' } }, unpaired: {} };
+	const agreeing = { pairs: { [ careers11 ]: { tpl: origin[ careers11 ].tpl }, 'cr-ref-careers-12': { tpl: origin[ 'cr-ref-careers-12' ].tpl, part: 'text' }, 'cr-ref-careers-13': { tpl: origin[ 'cr-ref-careers-13' ].tpl, reveal: { component: 'Root', keys: [ 'k' ] } } }, unpaired: {} };
 	const report = pairsReport( {}, origin, agreeing );
 	assert.deepEqual( report.disagree, [] );
-	assert.equal( report.pairs.find( ( p ) => 'cr-ref-careers-12' === p.ref ).tpl, 'Root/9#0' );
+	assert.equal( report.pairs.find( ( p ) => 'cr-ref-careers-12' === p.ref ).part, 'text' );
+	assert.deepEqual( report.pairs.find( ( p ) => 'cr-ref-careers-13' === p.ref ).reveal, { component: 'Root', keys: [ 'k' ] } );
+} );
+
+// RF10 second review: a refreshed part or reveal pair on another element than the origin's used to replace the origin's pair, so the
+// block lost its own element, and targetsOffOrigin never compared part or reveal targets.
+test( "MUST FAIL: a refreshed part or reveal pair on another element than the origin's never replaces the origin's pair, and is listed", () => {
+	const off = { pairs: { 'cr-ref-careers-12': { tpl: 'Root/9#0', part: 'text' }, 'cr-ref-careers-13': { tpl: 'Root/8#0', reveal: { component: 'Root', keys: [ 'k' ] } } }, unpaired: {} };
+	const report = pairsReport( {}, origin, off );
+	for ( const ref of [ 'cr-ref-careers-12', 'cr-ref-careers-13' ] ) {
+		const pair = report.pairs.find( ( p ) => ref === p.ref );
+		assert.equal( pair.tpl, origin[ ref ].tpl, ref );
+		assert.equal( pair.part, undefined, `${ ref } keeps no part from the other element` );
+		assert.equal( pair.reveal, undefined, `${ ref } keeps no reveal from the other element` );
+		assert.ok( report.disagree.some( ( d ) => ref === d.ref && 'refresh' === d.source && origin[ ref ].tpl === d.origin ), ref );
+	}
 } );
 
 test( 'a config pair that names another element than the origin is overridden and listed', () => {
@@ -59,9 +74,22 @@ test( 'the applier refuses a surface whose records disagree with its origin, nam
 	assert.equal( problems.length, 1 );
 	assert.match( problems[ 0 ], /^careers: \d+ pairs in careers\.pairs\.json name another draft element than careers\.origin\.json/ );
 	assert.match( problems[ 0 ], /git rm sites\/indus-foods\/build\/careers\.pairs\.json/ );
+	assert.match( problems[ 0 ], /regenerating cannot clear a pair whose origin element is missing from the draft inventory or is only a reveal element: git rm the file then/ );
 } );
 
-test( 'a planned target off the origin is named; skeleton, part and reveal targets are not compared', () => {
+// The advice is true: refresh-pairs keeps the origin's element only when the inventory shows it at rest.
+test( 'MUST FAIL: regenerating the pairs cannot keep an origin element the inventory lacks or shows only in a state, so the pairs still disagree', () => {
+	const el = ( n, extra = {} ) => ( { key: `Root/${ n }#0`, parentKey: 'Root/0#0', depth: 1, tag: 'h2', words: 'Title', ...extra } );
+	const blocks = [ { ref: 'cr-ref-s-1', block: 'sgs/heading', attrs: { content: 'Title' } } ];
+	for ( const [ elements, what ] of [ [ [ el( 1 ) ], 'missing from the inventory' ], [ [ el( 1 ), el( 7, { reveal: 'open' } ) ], 'only a reveal element' ] ] ) {
+		const origin = { 'cr-ref-s-1': { tpl: 'Root/7#0' } };
+		const { pairs, unpaired, structural } = refreshPairs( { blocks, elements, origin } );
+		assert.equal( pairs[ 'cr-ref-s-1' ].tpl, 'Root/1#0', what );
+		assert.equal( pairsReport( {}, origin, { pairs, unpaired, structural } ).disagree.length, 1, `${ what }: the regenerated file still disagrees` );
+	}
+} );
+
+test( 'a planned target off the origin is named, a part or reveal target too; a skeleton target is not compared', () => {
 	const planned = [
 		{ ref: careers11, tpl: stale.pairs[ careers11 ].tpl, via: 'refresh' },
 		{ ref: 'cr-ref-careers-12', tpl: origin[ 'cr-ref-careers-12' ].tpl, via: 'origin' },
@@ -69,7 +97,9 @@ test( 'a planned target off the origin is named; skeleton, part and reveal targe
 		{ ref: 'cr-ref-careers-14', tpl: 'Root/2#0', reveal: 'open' },
 		{ ref: 'cr-ref-careers-15', tpl: 'Root/3#0', via: 'skeleton' },
 	];
-	assert.deepEqual( targetsOffOrigin( { pairs: planned, origin } ), [ `${ careers11 }: planned for ${ stale.pairs[ careers11 ].tpl }, the origin records ${ origin[ careers11 ].tpl }` ] );
+	const line = ( ref, tpl ) => `${ ref }: planned for ${ tpl }, the origin records ${ origin[ ref ].tpl }`;
+	assert.deepEqual( targetsOffOrigin( { pairs: planned, origin } ), [ line( careers11, stale.pairs[ careers11 ].tpl ), line( 'cr-ref-careers-13', 'Root/1#0' ), line( 'cr-ref-careers-14', 'Root/2#0' ) ] );
+	assert.deepEqual( targetsOffOrigin( { pairs: [ { ref: 'cr-ref-careers-13', tpl: origin[ 'cr-ref-careers-13' ].tpl, part: 'icon' } ], origin } ), [], "a part on the origin's element is the origin's" );
 } );
 
 test( 'the refusal names the real repo path of each file: the walker config sits in qa/parity and is corrected, never deleted', () => {
@@ -141,6 +171,21 @@ test( 'a refreshed pairs file keeps the origin\'s element for every ref the orig
 	assert.deepEqual( Object.fromEntries( Object.entries( pairs ).map( ( [ r, p ] ) => [ r, p.tpl ] ) ), { 'cr-ref-s-1': 'Root/2#0', 'cr-ref-s-2': 'Root/1#0' } );
 	const report = pairsReport( {}, origin, { pairs, unpaired, structural } );
 	assert.deepEqual( report.disagree, [] );
+} );
+
+// RF10 second review: the origin's claims ran before the box-confirmed ones, so a text block the origin holds took an element first and
+// the wrapper block whose old pair the live box confirms was marked the part. One pass in document order: the wrapper holds it.
+test( 'MUST FAIL: a wrapper block and the text block inside it claim one element in document order, whichever of the two the origin names', () => {
+	const box = { 1440: { x: 100, y: 0, w: 500, h: 80 } };
+	const elements = [ { key: 'Root/1#0', parentKey: null, depth: 0, tag: 'div', words: 'Hello there', box, visible: { 1440: true } } ];
+	const blocks = [ { ref: 'cr-ref-s-1', block: 'sgs/container', attrs: {} }, { ref: 'cr-ref-s-2', block: 'sgs/text', attrs: { text: 'Hello there' }, parent: 'cr-ref-s-1' } ];
+	const boxes = { 'cr-ref-s-1': { 1440: { x: 100, y: 0, w: 500, h: 80 } } };
+	const { pairs } = refreshPairs( { blocks, elements, old: { 'cr-ref-s-1': 'Root/1#0' }, boxes, origin: { 'cr-ref-s-2': { tpl: 'Root/1#0' } } } );
+	assert.equal( pairs[ 'cr-ref-s-1' ].part, undefined, 'the wrapper block holds the element' );
+	assert.equal( pairs[ 'cr-ref-s-2' ].part, 'text', 'the text block inside it shares it' );
+	assert.equal( pairs[ 'cr-ref-s-2' ].tpl, 'Root/1#0', 'the element the origin names is kept' );
+	const both = refreshPairs( { blocks, elements, old: { 'cr-ref-s-1': 'Root/1#0' }, boxes, origin: { 'cr-ref-s-1': { tpl: 'Root/1#0' }, 'cr-ref-s-2': { tpl: 'Root/1#0' } } } ).pairs;
+	assert.deepEqual( [ both[ 'cr-ref-s-1' ].part, both[ 'cr-ref-s-2' ].part ], [ undefined, 'text' ], 'both named by the origin: document order too' );
 } );
 
 test( 'no committed pairs file disagrees with its origin file (delete it, or regenerate with refresh-pairs.mjs --write)', () => {
