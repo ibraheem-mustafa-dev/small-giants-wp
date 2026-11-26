@@ -1,0 +1,38 @@
+[
+	{
+		"file": "lib/apply-targets.mjs",
+		"find": "for ( const [ ref, row ] of Object.entries( origin ) ) {",
+		"replace": "for ( const [ ref, row ] of Object.entries( {} ) ) {",
+		"why": "the origin is not read as pairing: the form root and tile fields are never paired"
+	},
+	{
+		"file": "lib/apply-targets.mjs",
+		"find": "stale.forEach( ( ref ) => out.delete( ref ) );",
+		"replace": "",
+		"why": "a ref the refreshed file does not name stays a pair without a block"
+	},
+	{
+		"file": "lib/apply-targets.mjs",
+		"find": "! held( ref ) && ! ( ref in ( refreshed.pairs || {} ) )",
+		"replace": "! ( ref in ( refreshed.pairs || {} ) )",
+		"why": "the refreshed file drops the later refs (51 to 78) the origin holds"
+	},
+	{
+		"file": "lib/apply-targets.mjs",
+		"find": "if ( held && held !== tpl.tpl && ! tpl.part && ! tpl.reveal ) {",
+		"replace": "if ( false ) {",
+		"why": "a refreshed pair moves the tile fields off the origin's element"
+	},
+	{
+		"file": "lib/apply-family-statemotion.mjs",
+		"find": "( 'Root' === dc ? false : r.element?.dc === dc )",
+		"replace": "( 'Root' === dc ? false : true )",
+		"why": "the invalid shake takes any form's record instead of the one on the form's own draft component"
+	},
+	{
+		"file": "lib/apply-family-statemotion.mjs",
+		"find": "'validation-fail' === r.trigger?.type && 'waapi' === r.mechanism",
+		"replace": "'waapi' === r.mechanism",
+		"why": "the invalid shake reads a record that is not a validation failure"
+	}
+]
