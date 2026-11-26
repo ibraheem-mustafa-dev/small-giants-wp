@@ -1,0 +1,9 @@
+[
+	{ "file": "lib/apply-form-width.mjs", "find": "const ls = all.filter( ( f ) => false !== f.shown || f.laterStep );", "replace": "const ls = all.filter( ( f ) => false !== f.shown );", "why": "a wizard's later-step live fields, hidden at rest, are dropped from the position pairing" },
+	{ "file": "lib/apply-form-width.mjs", "find": "const ls = all.filter( ( f ) => false !== f.shown || f.laterStep );", "replace": "const ls = all;", "why": "a live field a condition hides at rest takes a place in the position pairing" },
+	{ "file": "lib/apply-form-width.mjs", "find": "all.some( ( x ) => x.name === f.name ) );", "replace": "all.some( ( x ) => x.name === f.name && ( false !== x.shown || x.laterStep ) ) );", "why": "a named live field hidden at rest by its condition is missed, so no field pairs by name" },
+	{ "file": "lib/apply-form-width.mjs", "find": "const ds = d.filter( ( f ) => ! f.honeypot && false !== f.shown );", "replace": "const ds = d.filter( ( f ) => ! f.honeypot );", "why": "a conditional draft field hidden at rest takes a place in the pairing" },
+	{ "file": "lib/apply-form-width.mjs", "find": "const all = l.filter( ( f ) => ! f.honeypot );", "replace": "const all = l;", "why": "the live honeypot is paired" },
+	{ "file": "lib/apply-probes.mjs", "find": "laterStep: Boolean( field.closest( '.sgs-form-step--hidden' ) ) && ! field.closest( '.sgs-form-field--hidden' )", "replace": "laterStep: false", "why": "the live probe records a field hidden by its wizard step" },
+	{ "file": "lib/apply-probes.mjs", "find": "laterStep: Boolean( field.closest( '.sgs-form-step--hidden' ) ) && ! field.closest( '.sgs-form-field--hidden' )", "replace": "laterStep: Boolean( field.closest( '.sgs-form-step--hidden' ) )", "why": "a field a condition hides inside a later step is not counted as hidden by its step" }
+]

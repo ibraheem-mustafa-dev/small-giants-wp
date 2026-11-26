@@ -16,7 +16,7 @@
 	{ "file": "lib/skeleton-form-steps.mjs", "find": "...( s === first ? paired.unclaimed : [] )", "replace": "...[]", "why": "an unclaimed rendered field stays in the first step" },
 	{ "file": "lib/skeleton-form-steps.mjs", "find": "const kept = before.slice( 0, at ).filter( ( n ) => host.innerBlocks.includes( n ) ).length;", "replace": "const kept = host.innerBlocks.length;", "why": "the steps go before what follows the form" },
 	{ "file": "lib/skeleton-form-steps.mjs", "find": "return form ? skeleton : [ host ];", "replace": "return skeleton;", "why": "a form node is made when the root is not one" },
-	{ "file": "lib/skeleton-form-steps.mjs", "find": "return { name: 'sgs/form-review', attributes: {}, innerBlocks: [] };", "replace": "return { name: 'sgs/form-step', attributes: {}, innerBlocks: [] };", "why": "a step with no fields is the review" },
+	{ "file": "lib/skeleton-form-steps.mjs", "find": "return { name: 'sgs/form-step', attributes: { label: s.label }, innerBlocks: [ { name: 'sgs/form-review', attributes: {}, innerBlocks: [] } ] };", "replace": "return { name: 'sgs/form-step', attributes: { label: s.label }, innerBlocks: [] };", "why": "a step with no fields is the review" },
 	{ "file": "lib/skeleton-form-steps.mjs", "find": "! n.innerBlocks.length && list.splice( i--, 1 );", "replace": "", "why": "a wrapper the move empties goes" },
 	{ "file": "lib/skeleton-form-step-parts.mjs", "find": "new RegExp( p, spec.flags || '' )", "replace": "new RegExp( p )", "why": "a pattern's flags apply" },
 	{ "file": "lib/skeleton-form-step-parts.mjs", "find": "t === labels[ i ] && i++;", "replace": "i++;", "why": "a step list holds the steps' labels" },

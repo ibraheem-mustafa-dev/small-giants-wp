@@ -142,6 +142,83 @@ test( 'the form surface is still its own tree: a form host with its fields, neve
 	assert.deepEqual( root.innerBlocks.map( ( n ) => n.name ).filter( ( n ) => /^sgs\/form-field-/.test( n ) ), [ 'sgs/form-field-text', 'sgs/form-field-email' ] );
 } );
 
+// RC11 (lib/skeleton-form-element.mjs::formElement): the form record's first element is a grid of the form card (its fields and
+// button) and an aside shown beside the card. On the page the card is the linked form and the grid and aside are the page's own;
+// on the form surface the grid is unwrapped and the aside removed, so the saved form holds only the card.
+const CARD = Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, { x: 0, y: 0, w: 600, h: 400 } ] ) );
+const ASIDE = Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, { x: 640, y: 0, w: 340, h: 200 } ] ) );
+const gridInventory = () => ( {
+	generated: 'x', source: 'planted', root: 'main', keyFormat: 'x', checks: { duplicateKeys: 0 },
+	elements: [
+		el( 'Root/1#0', null, 'main', '', { depth: 0 } ),
+		el( 'Root/2#0', 'Root/1#0', 'h1', 'Contact us' ),
+		el( 'Root/3#0', 'Root/1#0', 'div', '' ),
+		el( 'Root/6#0', 'Root/3#0', 'div', '', { depth: 2 } ),
+		el( 'Root/11#0', 'Root/6#0', 'div', '', { depth: 3, box: CARD } ),
+		{ ...input( 'Root/7#0', 'Root/11#0' ), depth: 4 },
+		{ ...input( 'Root/8#0', 'Root/11#0', 'email' ), depth: 4 },
+		el( 'Root/9#0', 'Root/11#0', 'button', 'Send', { depth: 4, attrs: { type: 'submit' } } ),
+		el( 'Root/12#0', 'Root/6#0', 'aside', 'Call us on 0121 000 0000', { depth: 3, box: ASIDE } ),
+	],
+} );
+const gridRecord = () => {
+	const rec = divRecord();
+	Object.assign( rec.elements, {
+		'Site/11': entry( 'div', 'Site/6', 'Site/6', [ 'Site/6' ] ),
+		'Site/12': entry( 'aside', 'Site/6', 'Site/6', [ 'Site/6' ] ),
+		'Site/7': entry( 'input', 'Site/11', 'Site/11', [ 'Site/11', 'Site/6' ] ),
+		'Site/8': entry( 'input', 'Site/11', 'Site/11', [ 'Site/11', 'Site/6' ] ),
+		'Site/9': entry( 'button', 'Site/11', 'Site/11', [ 'Site/11', 'Site/6' ] ),
+	} );
+	return rec;
+};
+
+test( 'MUST FAIL: on the page, the card in a grid beside an aside is the linked form; the grid and the aside stay the page\'s own', () => {
+	const r = propose( { inventory: gridInventory(), factRecord: gridRecord() } );
+	const row = ( key ) => r.proposal.rows.find( ( x ) => x.key === key );
+	const forms = nodes( r.skeleton ).filter( ( n ) => 'sgs/form' === n.name );
+	assert.equal( forms.length, 1 );
+	assert.deepEqual( forms[ 0 ].attributes, { formIsLinked: true, formId: 'enquiry' } );
+	assert.equal( row( 'Root/11#0' ).block, 'sgs/form', 'the card is the linked form' );
+	assert.notEqual( row( 'Root/6#0' ).action, 'remove', 'the grid is the page\'s layout' );
+	assert.notEqual( row( 'Root/12#0' ).action, 'remove', 'the aside is the page\'s' );
+	assert.notEqual( row( 'Root/12#0' ).action, 'absorbed', 'the aside is not inside the saved form' );
+	assert.ok( /Call us/.test( JSON.stringify( r.skeleton ) ), 'the aside is drawn on the page' );
+} );
+
+test( 'NEGATIVE: on the page, an aside stacked below the card (never beside it) is the form\'s own: the grid is the linked form, the aside goes with it', () => {
+	const inv = gridInventory();
+	inv.elements = inv.elements.map( ( e ) => ( 'Root/12#0' === e.key ? { ...e, box: Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, { x: 0, y: 420, w: 600, h: 200 } ] ) ) } : e ) );
+	const r = propose( { inventory: inv, factRecord: gridRecord() } );
+	const row = ( key ) => r.proposal.rows.find( ( x ) => x.key === key );
+	const forms = nodes( r.skeleton ).filter( ( n ) => 'sgs/form' === n.name );
+	assert.equal( forms.length, 1 );
+	assert.deepEqual( forms[ 0 ].attributes, { formIsLinked: true, formId: 'enquiry' } );
+	assert.equal( row( 'Root/6#0' ).block, 'sgs/form', 'the grid is the linked form' );
+	assert.equal( row( 'Root/11#0' ).action, 'absorbed' );
+	assert.deepEqual( [ row( 'Root/12#0' ).action, row( 'Root/12#0' ).into ], [ 'absorbed', 'Root/6#0' ], 'the aside goes into the saved form' );
+	assert.equal( /Call us/.test( JSON.stringify( r.skeleton ) ), false, 'the page draws no aside of its own' );
+} );
+
+test( 'MUST FAIL: on the form surface, the grid is unwrapped and the aside removed, so the saved form\'s root is the card', () => {
+	const inv = gridInventory();
+	inv.elements = inv.elements.slice( 3 ).map( ( e, i ) => ( 0 === i ? { ...e, depth: 0, parentKey: null } : { ...e, depth: e.depth - 2 } ) );
+	const r = propose( { inventory: inv, surface: 'form-enquiry', surfaceKind: 'form', surfaceName: 'Enquiry', factRecord: gridRecord() } );
+	const row = ( key ) => r.proposal.rows.find( ( x ) => x.key === key );
+	assert.equal( row( 'Root/6#0' ).action, 'unwrap' );
+	assert.equal( row( 'Root/12#0' ).action, 'remove' );
+	assert.equal( r.skeleton.length, 1 );
+	assert.equal( r.skeleton[ 0 ].name, 'sgs/form' );
+	assert.equal( r.skeleton[ 0 ].draftRef?.tpl, 'Root/11#0' );
+	assert.equal( /Call us/.test( JSON.stringify( r.skeleton ) ), false );
+	// Negative control: the aside stacked below the card (never beside it) leaves the grid the form, aside and all.
+	const stacked = { ...inv, elements: inv.elements.map( ( e ) => ( 'Root/12#0' === e.key ? { ...e, box: Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, { x: 0, y: 420, w: 600, h: 200 } ] ) ) } : e ) ) };
+	const s = propose( { inventory: stacked, surface: 'form-enquiry', surfaceKind: 'form', surfaceName: 'Enquiry', factRecord: gridRecord() } );
+	assert.equal( s.skeleton[ 0 ].name, 'sgs/form' );
+	assert.equal( s.skeleton[ 0 ].draftRef?.tpl, 'Root/6#0' );
+	assert.notEqual( s.proposal.rows.find( ( x ) => x.key === 'Root/12#0' ).action, 'remove' );
+} );
+
 test( 'two draft elements under the form root are one link: the second is dropped', () => {
 	const inv = inventory();
 	inv.elements.push( el( 'Root/10#0', 'Root/3#0', 'div', 'After the form', { depth: 2 } ) );
@@ -187,7 +264,7 @@ test( 'the root of a page is not made a form block because it holds fields', () 
 
 test( 'a form surface takes the steps of its own draft component, never another form\'s schema', () => {
 	const own = propose( { inventory: wizard(), surface: 'form-enquiry', surfaceKind: 'form', surfaceName: 'Enquiry', factRecord: withSchema( 'Site' ) } );
-	assert.deepEqual( own.skeleton[ 0 ].innerBlocks.filter( ( n ) => /^sgs\/form-(step|review)$/.test( n.name ) ).map( ( n ) => n.attributes.label ?? 'review' ), [ 'Business', 'Contact', 'review' ] );
+	assert.deepEqual( own.skeleton[ 0 ].innerBlocks.filter( ( n ) => /^sgs\/form-(step|review)$/.test( n.name ) ).map( ( n ) => n.attributes.label ), [ 'Business', 'Contact', 'Review' ] );
 	const other = propose( { inventory: wizard(), surface: 'form-enquiry', surfaceKind: 'form', surfaceName: 'Enquiry', factRecord: withSchema( 'SomeoneElse' ) } );
 	assert.equal( other.skeleton[ 0 ].innerBlocks.some( ( n ) => /^sgs\/form-(step|review)$/.test( n.name ) ), false );
 } );

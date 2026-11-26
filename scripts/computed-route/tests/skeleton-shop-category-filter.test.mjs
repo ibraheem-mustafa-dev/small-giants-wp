@@ -109,11 +109,14 @@ const LABELS = [ 'All', 'Zookies', 'Vegan', 'Gifts' ];
 test( 'shop category chips: chips narrowing the shop listing by the catalogue categories are the product_cat filter in the chips style, read at the chip row, with counts only when the chips show a number; MUST FAIL on the old rule (an option picker with a hand-over)', () => {
 	const r = run( page( chipRow( LABELS, true ) ), { logic: LOGIC( 'other' ) } );
 	const g = picked( r );
-	assert.deepEqual( [ g.block, g.rule, g.handover ], [ 'woocommerce/product-filter-taxonomy', 'optionSetFilter', undefined ] );
+	assert.deepEqual( [ g.block, g.rule, g.handover ], [ 'woocommerce/product-filters', 'optionSetFilter', undefined ] );
 	const n = node( r, 'woocommerce/product-filter-taxonomy' );
 	assert.deepEqual( n.attributes, { taxonomy: 'product_cat', displayStyle: 'woocommerce/product-filter-chips', showCounts: true } );
 	assert.deepEqual( n.innerBlocks.map( ( x ) => x.name ), [ 'woocommerce/product-filter-chips' ] );
 	assert.equal( n.draftRef.tpl, g.key, 'its paint is read at the chip row' );
+	// RF7: the taxonomy filter sits in WooCommerce's product-filters wrapper (overlay off), which reads nothing from the draft.
+	const wrapper = node( r, 'woocommerce/product-filters' );
+	assert.deepEqual( [ wrapper.attributes, wrapper.innerBlocks.map( ( x ) => x.name ), wrapper.draftRef ], [ { overlayMode: 'off' }, [ 'woocommerce/product-filter-taxonomy' ], undefined ] );
 	assert.equal( node( r, 'sgs/option-picker' ), undefined );
 	assert.ok( rows( r ).filter( ( x ) => 'button' === x.tag ).every( ( x ) => 'absorbed' === x.action && x.into === g.key ), 'the chips are the filter\'s own' );
 	// Chips that show no number give showCounts false.

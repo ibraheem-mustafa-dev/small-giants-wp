@@ -19,6 +19,7 @@
 // into it (lib/fill-form-buttons.mjs). A button is
 // `isSubmit` when the draft's is `type="submit"`. A linked reference block (a page's `sgs/form` with `formIsLinked`) renders the
 // saved post's blocks and ignores its own settings, so nothing on it or inside it is written.
+import { prefillParams } from './skeleton-form-prefill.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import { setAttr } from './tree.mjs';
@@ -236,14 +237,23 @@ export function componentOf( target, candidates ) {
 	return [ ...chain ].reverse().find( ( c ) => candidates.includes( c ) ) || null;
 }
 
+// The draft component that holds a node: the innermost component in its finder chain that has its own `.dc.html` in the fact
+// record (a form imported from TradeApplication.dc.html is TradeApplication's), else `fallback`, the served page's component. Fill
+// names the page's component for the run, which is not the form's when the page imports the form from its own draft file.
+export function draftComponentOf( target, facts, fallback = null ) {
+	const drafts = Object.keys( facts?.sources?.files || {} ).filter( ( f ) => f.endsWith( '.dc.html' ) ).map( ( f ) => f.slice( 0, -'.dc.html'.length ) );
+	return componentOf( target, drafts ) || fallback;
+}
+
 // Fill's form pass. nodes/flat/refOf: the skeleton nodes, their tree nodes and the ref function; reads: readDraft's result;
-// facts: the fact record (or null); flags: intake's flags; db: the framework DB; source: { component: script text } for the
-// draft's conditions ({ component: script text }, see formSources); component: the surface's own component (its handoff
-// record's `dc`), whose schema is used (none named reads the first schema the record holds); refs: lib/references.mjs::detectReferences;
+// facts: the fact record (or null); flags: intake's flags; db: the framework DB; sources: { component: script text } for the
+// draft's conditions and required copy (see formSources), read from `folder` for each form's own component when not given;
+// component: the served page's component, the fallback for a form whose finder chain names no draft component of its own (none
+// named reads the first schema the record holds); refs: lib/references.mjs::detectReferences;
 // idxFor( component ): the parsed logic of a draft component (lib/fill-list-content.mjs::logicReader); buttonRules: rules.formSteps.
 // Returns { writes, unmapped, notes, settled }: `settled` is one row (reason `row-held`) for each node on or inside a linked
 // reference block that the draft read, naming the linked form that holds its settings, so no read there ends silent.
-export function formWrites( { nodes, flat, refOf, reads, facts, flags = [], db, sources = {}, readback = formReadback, component = null, refs = detectReferences(), idxFor = () => null, buttonRules = null, folder = null } ) {
+export function formWrites( { nodes, flat, refOf, reads, facts, flags = [], db, sources = null, readback = formReadback, component = null, refs = detectReferences(), idxFor = () => null, buttonRules = null, folder = null } ) {
 	const has = ( block, attr ) => !! attrDef( db, block, attr );
 	const out = { writes: [], unmapped: [], notes: [], settled: [] };
 	// The nodes of every linked reference block and the blocks inside it, each with the form its reference names.
@@ -254,13 +264,43 @@ export function formWrites( { nodes, flat, refOf, reads, facts, flags = [], db, 
 			walk( [ node ], ( n ) => linked.set( n, ref.value ) );
 		}
 	} );
-	const schema = formSchemaOf( facts, component );
-	const params = linkParams( facts );
-	const conditions = schema ? conditionsFromSource( sources[ schema.component ] ) : {};
-	const copies = Object.fromEntries( Object.entries( sources ).map( ( [ c, src ] ) => [ c, requiredCopyOf( src ) ] ) );
-	const steps = schema ? schema.steps.filter( ( s ) => s.fields.length ) : [];
-	const review = schema ? schema.steps.find( ( s ) => ! s.fields.length ) : null;
-	let stepNo = 0;
+	// Each node reads the form it sits in: the draft component that holds its enclosing `sgs/form` node (itself included; a node
+	// with none reads its own finder chain), by draftComponentOf, else the served page's. A field built from the schema for a step
+	// the page never rendered has no target of its own, and a field drawn by a nested component names that component, so the
+	// enclosing form decides. Per form: its schema, the conditions and required copy of its sources, the fields its page's
+	// openers prefill (lib/skeleton-form-prefill.mjs::prefillParams) and its step count.
+	const byIndex = new Map( nodes.map( ( r ) => [ r.index, r ] ) );
+	const slotTarget = ( r ) => ( r?.targets || [] ).find( ( t ) => '' === t.slot );
+	const formOwner = ( rec ) => {
+		for ( let r = rec; r; r = null == r.parent ? null : byIndex.get( r.parent ) ) {
+			if ( 'sgs/form' === r.name ) {
+				return r;
+			}
+		}
+		return null;
+	};
+	const fromLinks = linkParams( facts );
+	const forms = new Map();
+	const formOf = ( rec ) => {
+		const owner = formOwner( rec );
+		const own = draftComponentOf( slotTarget( owner || rec ), facts, component );
+		const key = owner ? `form ${ owner.index }` : `component ${ own }`;
+		if ( ! forms.has( key ) ) {
+			const schema = formSchemaOf( facts, own );
+			const src = sources || formSources( folder, facts, schema?.component ?? own );
+			forms.set( key, {
+				schema,
+				src,
+				conditions: schema ? conditionsFromSource( src[ schema.component ] ) : {},
+				copies: Object.fromEntries( Object.entries( src ).map( ( [ c, text ] ) => [ c, requiredCopyOf( text ) ] ) ),
+				params: new Set( [ ...fromLinks, ...( folder ? prefillParams( { folder, record: facts, component: own } ) : [] ) ] ),
+				steps: schema ? schema.steps : [],
+				review: schema ? schema.steps.find( ( s ) => ! s.fields.length ) : null,
+				stepNo: 0,
+			} );
+		}
+		return forms.get( key );
+	};
 	for ( const rec of nodes ) {
 		const node = flat[ rec.index ];
 		if ( linked.has( node ) ) {
@@ -270,6 +310,8 @@ export function formWrites( { nodes, flat, refOf, reads, facts, flags = [], db, 
 		}
 		const ref = refOf( node );
 		const target = rec.targets.find( ( t ) => '' === t.slot );
+		const form = formOf( rec );
+		const { schema, conditions, copies, params, steps, review } = form;
 		const el = target ? reads.widths?.[ 1440 ]?.[ target.id ]?.form : null;
 		const take = ( r ) => {
 			r.writes.forEach( ( w ) => apply( out, node, ref, rec, w ) );
@@ -298,8 +340,8 @@ export function formWrites( { nodes, flat, refOf, reads, facts, flags = [], db, 
 				const read = stepButtonLabels( { facts, component: schema.component, idx: idxFor( schema.component ), rules: buttonRules || stepRules() } );
 				take( stepButtonWrites( { ...read, attributes: node.attributes || {}, def: ( attr ) => attrDef( db, rec.name, attr ) } ) );
 			}
-		} else if ( 'sgs/form-step' === rec.name && steps[ stepNo ] ) {
-			apply( out, node, ref, rec, { attr: 'label', value: steps[ stepNo++ ].label, merge: 'replace' } );
+		} else if ( 'sgs/form-step' === rec.name && steps[ form.stepNo ] ) {
+			apply( out, node, ref, rec, { attr: 'label', value: steps[ form.stepNo++ ].label, merge: 'replace' } );
 		} else if ( 'sgs/form-review' === rec.name && review?.intro ) {
 			apply( out, node, ref, rec, { attr: 'intro', value: review.intro, merge: 'replace' } );
 			const edit = Object.values( facts?.elements || {} ).find( ( e ) => 'button' === e.template?.tag && e.template.membership?.scFor?.length && /^edit/i.test( e.template.words || '' ) && String( e.template.key ).startsWith( `${ schema.component }/` ) );

@@ -1,0 +1,3 @@
+[
+	{ "file": "lib/fill-form.mjs", "find": "steps: schema ? schema.steps : [],", "replace": "steps: schema ? schema.steps.filter( ( s ) => s.fields.length ) : [],", "why": "the step that holds the review is labelled by the review step of the schema" }
+]

@@ -8,6 +8,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { openDb } from '../lib/db.mjs';
 import { fixtureDb } from './fixtures/framework-db.mjs';
@@ -32,6 +33,7 @@ const db = openDb( fixtureDb( {
 		attr( 'sgs/form', 'savedProgress', 'boolean', { default_value: 'false' } ),
 		attr( 'sgs/form-step', 'label', 'string', { default_value: '""' } ),
 		attr( 'sgs/form-field-text', 'placeholder', 'string', { default_value: '""' } ),
+		...[ 'conditionalField', 'conditionalOperator', 'conditionalValue' ].map( ( n ) => attr( 'sgs/form-field-text', n, 'string', { default_value: '""' } ) ),
 	],
 } ) );
 
@@ -52,6 +54,42 @@ test( 'MUST FAIL: a form surface is given its own component\'s schema, not the f
 	const trade = run( { flat: [ form(), { name: 'sgs/form-step', attributes: {}, innerBlocks: [], ref: 's0' } ], component: 'Trade' } );
 	assert.deepEqual( trade.writes.map( ( w ) => [ w.node, w.attr, w.after ] ), [ [ 'form', 'savedProgress', true ], [ 's0', 'label', 'Business' ] ] );
 	assert.deepEqual( run( { flat: [ form() ], component: 'Nothing' } ).writes, [], 'a component that holds no schema writes no form settings' );
+} );
+
+// Fill's own arguments: `component` is the served page's (Site, which holds no schema), and the form surface's form is imported from
+// its own draft file (Trade). Every node reads the form it sits in: the steps and fields built from the schema for steps the page
+// never rendered have no target of their own, so the enclosing sgs/form's finder chain names the component whose schema, sources
+// (read from the draft folder: Trade's condition) and step count they take.
+test( 'MUST FAIL: through Fill\'s own arguments, a form imported from its own draft file gives its built steps and fields that file\'s schema and conditions; the page\'s inline form does not', () => {
+	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'form-sources-' ) );
+	const texts = {
+		'Site.dc.html': '<x-dc name="Site"><div></div></x-dc>\n',
+		'Trade.dc.html': '<x-dc name="Trade"><form></form></x-dc>\n<script data-dc-script>\nconst ltd = v.BusinessField === \'ltd\';\nconst fields = [\n\t{ name: \'ContactField\', show: ltd },\n];\nlocalStorage.setItem(KEY, v);\n</script>\n',
+		'Careers.dc.html': '<x-dc name="Careers"><form></form></x-dc>\n',
+	};
+	Object.entries( texts ).forEach( ( [ f, t ] ) => fs.writeFileSync( path.join( dir, f ), t ) );
+	const files = Object.fromEntries( Object.entries( texts ).map( ( [ f, t ] ) => [ f, crypto.createHash( 'sha256' ).update( t ).digest( 'hex' ) ] ) );
+	const facts = { ...FACTS, logic: { statics: { ...FACTS.logic.statics, Site: { entries: [] } } }, sources: { files } };
+	const stepNode = ( ref ) => ( { name: 'sgs/form-step', attributes: {}, innerBlocks: [], ref } );
+	const fieldNode = ( ref, fieldName ) => ( { name: 'sgs/form-field-text', attributes: { fieldName }, innerBlocks: [], ref } );
+	// One form at `tpl` holding a built step that holds a built field: neither built node has a target.
+	const one = ( tpl, at = 0, tag = '' ) => ( {
+		flat: [ { ...form(), ref: `form${ tag }` }, stepNode( `s${ tag }` ), fieldNode( `f${ tag }`, 'ContactField' ) ],
+		nodes: [ { index: at, name: 'sgs/form', parent: null, targets: [ { id: `${ at }:`, slot: '', finder: { tpl } } ] }, { index: at + 1, name: 'sgs/form-step', parent: at, targets: [] }, { index: at + 2, name: 'sgs/form-field-text', parent: at + 1, targets: [] } ],
+	} );
+	// fill.mjs passes `component: intakeParts.rootComponent`, the served page's component (Site), and the draft folder; no sources.
+	const fill = ( { flat, nodes } ) => formWrites( { nodes, flat, refOf: ( n ) => n.ref, reads: { widths: { 1440: {} } }, facts, flags: FLAGS, db, component: 'Site', folder: dir } ).writes.map( ( w ) => [ w.node, w.attr, w.after ] );
+	assert.deepEqual( fill( one( 'Root>Trade@466#0/6#0' ) ), [ [ 'form', 'savedProgress', true ], [ 's', 'label', 'Business' ], [ 'f', 'conditionalField', 'BusinessField' ], [ 'f', 'conditionalOperator', 'equals' ], [ 'f', 'conditionalValue', 'ltd' ] ], 'the imported Trade form: Trade\'s schema and its script\'s condition' );
+	assert.deepEqual( fill( one( 'Root/6#0' ) ), [], 'negative control: the page\'s inline form takes the page\'s schema, which it has none of' );
+	// Two forms of different components on one page each take their own schema and count their own steps.
+	const [ a, b ] = [ one( 'Root>Trade@466#0/6#0', 0, 'A' ), one( 'Root>Careers@470#0/6#0', 3, 'B' ) ];
+	const both = fill( { flat: [ ...a.flat, ...b.flat ], nodes: [ ...a.nodes, ...b.nodes ] } ).filter( ( [ , attr ] ) => 'label' === attr );
+	assert.deepEqual( both, [ [ 'sA', 'label', 'Business' ], [ 'sB', 'label', 'Role' ] ] );
+	// A linked Trade embed on the page is its saved form's: the page's inline form after it keeps the page's schema (none).
+	const embed = one( 'Root/7#0', 1 );
+	const linkedFlat = [ form( { formIsLinked: true, formId: 'trade' } ), ...embed.flat ];
+	assert.deepEqual( fill( { flat: linkedFlat, nodes: [ { index: 0, name: 'sgs/form', parent: null, targets: [ { id: '0:', slot: '', finder: { tpl: 'Root>Trade@466#0/6#0' } } ] }, ...embed.nodes ] } ), [], 'a linked embed names no schema for the page' );
+	assert.ok( fs.readFileSync( path.join( HERE, '..', 'fill.mjs' ), 'utf8' ).includes( 'component: intakeParts.rootComponent, idxFor, folder: draftFolder } );' ), 'Fill hands formWrites the page\'s component and the draft folder, and formWrites reads each form\'s sources' );
 } );
 
 test( 'MUST FAIL: Fill writes nothing on a linked sgs/form embed, nor on a block inside one', () => {

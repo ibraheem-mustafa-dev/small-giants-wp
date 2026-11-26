@@ -58,7 +58,7 @@ const TREE = [ { name: 'sgs/form', attributes: {}, innerBlocks: [
 		{ name: 'sgs/form-field-file', draftRef: FIELD( 'ta-docs' ), attributes: {} },
 		{ name: 'sgs/button', draftRef: '#go', attributes: {} },
 	] },
-	{ name: 'sgs/form-review', attributes: {}, innerBlocks: [] },
+	{ name: 'sgs/form-step', attributes: {}, innerBlocks: [ { name: 'sgs/form-review', attributes: {}, innerBlocks: [] } ] },
 ] } ];
 
 // The planted fact record: the draft's logic holds a schema (steps, fields, a review step), a link elsewhere hands a page
@@ -208,6 +208,7 @@ test( 'MUST FAIL WITHOUT THE WRITER: a draft that keeps answers in the browser s
 	assert.equal( attrs( 'sgs/form' ).savedProgress, true );
 	assert.equal( attrs( 'sgs/form-step', 0 ).label, 'Business' );
 	assert.equal( attrs( 'sgs/form-step', 1 ).label, 'Ordering' );
+	assert.equal( attrs( 'sgs/form-step', 2 ).label, 'Review', 'the step that holds the review is labelled by the review step of the schema' );
 	const review = attrs( 'sgs/form-review' );
 	assert.equal( review.intro, 'Make sure everything looks right. You can edit any section before submitting.' );
 	assert.equal( review.editLabel, 'Edit section' );

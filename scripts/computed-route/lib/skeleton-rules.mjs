@@ -11,6 +11,8 @@ import path from 'path';
 import { narrowedLists, narrowsRenderedList } from './skeleton-narrowing.mjs';
 import { specHit } from './skeleton-facts.mjs';
 import { deliveredKind } from './decoration-layers.mjs';
+import { formElement } from './skeleton-form-element.mjs';
+import { formOpenerOf, prefillHref } from './skeleton-form-prefill.mjs';
 import { templateKey } from './fact-key.mjs';
 import { recordView } from './skeleton-record.mjs';
 import { pxOf, everyWidth, someWidth } from './element-facts.mjs';
@@ -283,6 +285,76 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		return ! m.words( x ) && worded.length > 0 && worded.every( ( y ) => clock( y )?.openStatus );
 	};
 	const handlerOf = ( e ) => /sc-camel-on-click="\{\{\s*([^}\s]+)\s*\}\}"/.exec( e.snippet || '' )?.[ 1 ] || '';
+	// The form element of a form surface's root, found once (lib/skeleton-form-element.mjs).
+	let surfaceForm;
+	const formOfSurface = () => ( undefined === surfaceForm ? ( surfaceForm = 'form' === surface.kind ? formElement( m, m.root ) : null ) : surfaceForm );
+	// The anchor a saved form is reached by (lib/skeleton-form-prefill.mjs): the slug a page's linked form block references it by
+	// (lib/skeleton-form-link.mjs), set on the form block that roots the form's own post, so a link `…#<slug>` on any page lands on it.
+	const formAnchor = 'form' === surface.kind && scope?.id ? ( surface.formLinks || [] ).find( ( l ) => l.recordId === scope.id )?.slug ?? null : null;
+	// The form a page shows, by the slug of the saved form its linked block references: the first element the form-link rule turns
+	// into the linked form block.
+	let formSlug;
+	const pageForm = () => {
+		if ( undefined === formSlug ) {
+			const hit = scope ? m.els.map( ( x ) => hooks.formLinkOf( x ) ).find( ( x ) => x?.block ) : null;
+			formSlug = Object.values( hit?.attributes || {} ).find( ( x ) => 'string' === typeof x ) ?? null;
+		}
+		return formSlug;
+	};
+	// The form opener a button or link runs, as the link it becomes: the page's form with the control's fields in the query. A field is
+	// the same on every copy (a literal), or the words of the element that prints the item path in the control's own loop copy.
+	const opensForm = ( e ) => {
+		const handler = handlerOf( e );
+		if ( ! R.formPrefillOpener || ! handler || ! [ 'a', 'button' ].includes( e.tag ) || ! facts.repo || ! facts.client ) {
+			return null;
+		}
+		const open = formOpenerOf( { folder: path.join( facts.repo, 'sites', facts.client, 'handoff' ), record: { sources: view.sources }, component: view.entry( e )?.template.component, handler } );
+		const anchor = open ? pageForm() : null;
+		if ( ! anchor ) {
+			return null;
+		}
+		// The control's loop copy, read only inside that copy, never by copy number (copy numbers count stampings per host: every
+		// mounted card's elements end `#0`, and a copy whose title an `sc-if` drops shifts the numbers of the copies after it). The
+		// copy's root holding the control is its outermost ancestor (itself included) stamped by the same loop of the same component.
+		// A loop body of one element (a card) is that root's subtree. A body of several top-level elements (a title, a team and a
+		// button, no wrapper) stamps them as siblings under the loop's host, so the copy is the run of those siblings around the
+		// control's root whose template ids rise: ids follow source order, so one copy's elements ascend and the next copy starts
+		// where the id falls again (a copy whose title an `sc-if` drops, or that has no button, stays bounded on its own).
+		const loop = ( e.membership || [] ).filter( ( x ) => 'sc-for' === x.kind ).at( -1 );
+		const inLoop = ( x ) => !! x && !! loop && x.template === e.template && ( x.membership || [] ).some( ( y ) => 'sc-for' === y.kind && y.tpl === loop.tpl );
+		let item = inLoop( e ) ? e : null;
+		while ( item && inLoop( m.byKey[ item.parentKey ] ) ) {
+			item = m.byKey[ item.parentKey ];
+		}
+		const run = item ? m.els.filter( ( x ) => x.parentKey === item.parentKey && inLoop( x ) ) : [];
+		const rises = ( a, b ) => Number( run[ a ]?.tpl ) < Number( run[ b ]?.tpl );
+		let [ first, last ] = [ run.indexOf( item ), run.indexOf( item ) ];
+		while ( first > 0 && rises( first - 1, first ) ) {
+			first--;
+		}
+		while ( last >= 0 && last < run.length - 1 && rises( last, last + 1 ) ) {
+			last++;
+		}
+		const roots = item ? run.slice( first, last + 1 ) : [];
+		const within = ( x, set ) => {
+			for ( let y = x; y; y = m.byKey[ y.parentKey ] ) {
+				if ( set.includes( y ) ) {
+					return true;
+				}
+			}
+			return false;
+		};
+		// A value is read in the control's own root first, and in the wider run only when that root prints none: a body whose
+		// top-level elements are sc-if alternatives (one card per copy, each variant its own template id) can put a lower-numbered
+		// neighbouring copy in the run, whose title is not this copy's.
+		const valueOf = ( rest ) => {
+			const field = item ? `${ loop.as }.${ rest }` : null;
+			const prints = ( x ) => inLoop( x ) && ( view.entry( x )?.template.holes || [] ).some( ( h ) => 'text' === h.where && field === h.path );
+			const from = field ? m.els.find( ( x ) => within( x, [ item ] ) && prints( x ) ) || m.els.find( ( x ) => within( x, roots ) && prints( x ) ) : null;
+			return from ? m.words( from ) : null;
+		};
+		return { href: prefillHref( { fields: open.fields, anchor, valueOf } ), form: anchor };
+	};
 	// A control the visitor operates: a button, anything with a click handler, a pressed or expanded state. It is never
 	// static text (a label, a heading, a card title).
 	const interactive = ( e ) => 'button' === e.tag || !! handlerOf( e ) || null != view.attr( e, 'aria-pressed' ) || null != view.attr( e, 'aria-expanded' );
@@ -700,11 +772,20 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			return delivered || v( 'decorationLayer', { block: R.decorationLayer?.block || null } );
 		},
 		( { e, kidsB } ) => ( ! kidsB.length && specHit( R.typedDivider, m.words( e ) ) ? v( 'typedDivider', { action: 'remove' } ) : null ),
-		// A draft <form> element is the form block; its fields sit inside it. The root of a form surface is the saved form's root
-		// block whatever its tag (a wizard drawn in a <div>): the saved form's root must be the form block, which the linked embed renders.
-		// A form block stands only where there is something to fill in (holdsEntry): a <form> or a form surface's root holding only
-		// a button or a link is that control, never a form with nothing to fill in.
-		( { e } ) => ( R.formHost && ( view.realTag( e ) === R.formHost.tag || ( 'form' === surface.kind && 0 === e.depth ) ) && holdsEntry( e ) ? v( 'formHost', { block: R.formHost.block } ) : null ),
+		// A draft <form> element is the form block; its fields sit inside it. The form element of a form surface's root
+		// (lib/skeleton-form-element.mjs) is the saved form's root block whatever its tag (a wizard drawn in a <div>): the saved
+		// form's root must be the form block, which the linked embed renders. A root that is the page's layout around the form
+		// goes, and what it holds beside the form (an aside, a bar) is the page's, never the saved form's. A form block stands only where there
+		// is something to fill in (holdsEntry): a <form> or the form element holding only a button or a link is that control.
+		( { e } ) => {
+			const form = formOfSurface();
+			if ( ! form || form === m.root || form === e ) {
+				return null;
+			}
+			const inside = ( a, x ) => x === a || ( !! x && inside( a, m.byKey[ x.parentKey ] ) );
+			return inside( e, form ) ? v( 'formHost', { action: 'unwrap', reason: R.formHost?.layoutReason } ) : inside( form, e ) ? null : v( 'formHost', { action: 'remove', reason: R.formHost?.besideReason } );
+		},
+		( { e } ) => ( R.formHost && ( view.realTag( e ) === R.formHost.tag || ( 'form' === surface.kind && e === formOfSurface() ) ) && holdsEntry( e ) ? v( 'formHost', { block: R.formHost.block, attributes: formAnchor ? { anchor: formAnchor } : {} } ) : null ),
 		// A form control is the field block for its type; the field's label, required marker and hint are that block's own
 		// settings, and a <label> wrapped around the control goes so the field takes its place. A radio or checkbox group in a
 		// form is one field: its group element is the radio or checkbox field, holding the options, absorbing its controls.
@@ -986,7 +1067,10 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			return null;
 		}
 		const counted = chips.some( ( c ) => m.blockKids( c ).some( ( k ) => /^\d+$/.test( norm( m.words( k ) ) ) ) );
-		return { name: group.name, attributes: { taxonomy: group.attributes.taxonomy, displayStyle: style, showCounts: counted }, innerBlocks: [ { name: style, attributes: {}, innerBlocks: [] } ], reason: C.reason };
+		// The taxonomy filter sits inside WooCommerce's product-filters wrapper (overlayMode off: the chips are never an overlay), as the
+		// hand-built shop template holds it; the wrapper draws nothing of its own, the taxonomy block takes the chip row's paint.
+		const taxonomy = { name: group.name, attributes: { taxonomy: group.attributes.taxonomy, displayStyle: style, showCounts: counted }, innerBlocks: [ { name: style, attributes: {}, innerBlocks: [] } ] };
+		return { name: C.wrapper.name, attributes: { ...( C.wrapper.attributes || {} ) }, innerBlocks: [ taxonomy ], reason: C.reason };
 	};
 
 	// The blocks already proposed for the element's ancestors, nearest first (an unwrapped ancestor has none).
@@ -1274,7 +1358,14 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		},
 		// A WooCommerce page's commerce region is WooCommerce's working piece, an ordinary block that draws the region
 		// itself (rules.commerceRegion): the region's children are absorbed into it.
-		( { e } ) => ( region?.key === e.key ? v( 'commerceRegion', { block: region.block, absorb: true, attributes: region.attributes, inner: region.inner, item: region.item?.key ?? null, reason: region.reason } ) : null ),
+		( { e } ) => ( region?.key === e.key ? v( 'commerceRegion', { block: region.block, absorb: true, attributes: region.attributes, inner: region.inner, item: region.item?.key ?? null, card: region.card?.key ?? region.item?.key ?? null, reason: region.reason } ) : null ),
+		// A button or link whose click handler scrolls to a form and sets its fields opens that form on the clone (lib/skeleton-form-prefill.mjs):
+		// a button linking the page's form with each field in the query, which the form's fields read through `valueFromParam`.
+		( { e, text } ) => {
+			const hit = opensForm( e );
+			const [ link, label ] = hit ? [ facts.firstAttrByRole( R.formPrefillOpener.block, 'link-href' ), facts.firstAttrByRole( R.formPrefillOpener.block, 'text-content' ) ] : [];
+			return hit && link ? v( 'formPrefillOpener', { block: R.formPrefillOpener.block, absorb: true, attributes: { [ link ]: hit.href, ...( label && text ? { [ label ]: text } : {} ) }, reason: `${ R.formPrefillOpener.reason }; it opens the ${ hit.form } form` } ) : null;
+		},
 		// The shop's filter rail is the framework's working filter (rules.filterRail): the rail's children are absorbed into it.
 		( { e } ) => ( rail?.key === e.key ? v( 'filterRail', { block: R.filterRail.block, absorb: true, attributes: rail.attributes, inner: rail.inner, reason: rail.reason, ...( rail.ownAlternativeBelow ? { ownAlternativeBelow: rail.ownAlternativeBelow } : {} ) } ) : null ),
 		// A tile of a priced loop naming a catalogue product, on a page that is not the shop, is the site's product card bound

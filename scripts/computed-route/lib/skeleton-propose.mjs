@@ -140,13 +140,13 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	const view = recordView( factRecord, { openers: openers ?? ( factRecord ? openersFor( facts ) : {} ), rootComponent } );
 	const scope = factRecord ? surfaceContext( view, { kind: surfaceKind, name: surfaceName } ) : null;
 	m.els.forEach( ( e ) => view.checkParent( e, m.byKey[ e.parentKey ] ) );
-	const formLinkOf = linkedFormOf( { view, scope, links: formLinks, refs, els: m.els, rule: facts.decisions.rules?.formLink } );
+	const formLinkOf = linkedFormOf( { view, scope, links: formLinks, refs, els: m.els, rule: facts.decisions.rules?.formLink, m } );
 	// A draft link's destination as a site address (lib/draft-link.mjs), for every writer of a link setting.
 	const siteLink = siteLinkResolver( draftLinks );
 	// The page map's role for the surface: a choice flow, a part another row's block draws, or a part another row holds
 	// (lib/skeleton-surface-role.mjs).
 	const role = surfaceRole( { pageMap, id: surfaceId ?? scope?.id ?? null, kind: surfaceKind, name: surfaceName, route: surfaceRoute, m, view, postType: facts.decisions.rules?.choiceFlow?.postType } );
-	const cls = makeClassifier( { m, facts, overrides, surface: { slug: surface, kind: surfaceKind, name: surfaceName, commerce, products, role, pageMap, megaOpeners: megaOpenerMenus( draftLinks?.menuItems ), splitMenu: splitMenuOf( draftLinks?.menuItems ) }, motion, view, scope, formLinkOf, siteLink, blockOfKey: ( k ) => rowOf[ k ]?.block ?? null, unwrapReads: ( e, r, at ) => w.unwrapReads( e, r, at ), absorbInto: ( e, looks ) => w.absorbInto( e, looks ), overlayInto: ( e ) => w.overlayInto( e ) } );
+	const cls = makeClassifier( { m, facts, overrides, surface: { slug: surface, kind: surfaceKind, name: surfaceName, commerce, products, role, pageMap, formLinks, megaOpeners: megaOpenerMenus( draftLinks?.menuItems ), splitMenu: splitMenuOf( draftLinks?.menuItems ) }, motion, view, scope, formLinkOf, siteLink, blockOfKey: ( k ) => rowOf[ k ]?.block ?? null, unwrapReads: ( e, r, at ) => w.unwrapReads( e, r, at ), absorbInto: ( e, looks ) => w.absorbInto( e, looks ), overlayInto: ( e ) => w.overlayInto( e ) } );
 	const R = facts.decisions.rules || {};
 	const rows = [];
 	const finder = ( e ) => m.tplFinder( e );
@@ -244,9 +244,16 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 			delete node.draftFingerprint;
 		}
 		// A row of chips that is the shop's category filter (rules.optionSetFilter.categoryFilter) draws that filter's own inner block.
-		'optionSetFilter' === r.rule && r.inner && ( node.innerBlocks = r.inner.map( ( n ) => ( { name: n.name, attributes: { ...( n.attributes || {} ) }, innerBlocks: [] } ) ) );
+		// The wrapper holds nothing to paint: the taxonomy filter inside it reads the chip row's look.
+		if ( 'optionSetFilter' === r.rule && r.inner ) {
+			const copy = ( n ) => ( { name: n.name, attributes: { ...( n.attributes || {} ) }, innerBlocks: ( n.innerBlocks || [] ).map( copy ) } );
+			node.innerBlocks = r.inner.map( copy );
+			Object.assign( node.innerBlocks[ 0 ], { draftRef: finder( e ), draftFingerprint: m.fingerprint( e ) } );
+			delete node.draftRef;
+			delete node.draftFingerprint;
+		}
 		if ( 'commerceRegion' === r.rule && r.inner ) {
-			const item = r.item ? m.byKey[ r.item ] : null;
+			const item = r.card ? m.byKey[ r.card ] : r.item ? m.byKey[ r.item ] : null;
 			const copy = ( n ) => ( { name: n.name, attributes: { ...( n.attributes || {} ) }, innerBlocks: ( n.innerBlocks || [] ).map( copy ) } );
 			const read = ( n ) => ( 'sgs/' === n.name.slice( 0, 4 ) && item ? { ...n, draftRef: finder( item ), draftFingerprint: m.fingerprint( item ) } : n );
 			const mark = ( n ) => read( { ...n, innerBlocks: n.innerBlocks.map( mark ) } );

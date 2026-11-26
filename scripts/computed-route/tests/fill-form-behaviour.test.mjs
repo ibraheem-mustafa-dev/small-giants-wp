@@ -125,7 +125,7 @@ test( 'MUST FAIL: the draft folder falls back from --draft-dir to the surface en
 	// Fill hands the form pass that folder for its sources, as it does the draft's logic (fill.mjs runs no test of its own).
 	const fill = fs.readFileSync( path.join( HERE, '..', 'fill.mjs' ), 'utf8' );
 	assert.ok( fill.includes( 'const draftFolder = formDraftFolder( { draftDir: o.draftDir, repo, entryDraftDir: entry.draftDir, client: o.client } );' ) );
-	assert.ok( fill.includes( 'sources: formSources( draftFolder, facts, intakeParts.rootComponent ), idxFor, folder: draftFolder }' ) );
+	assert.ok( fill.includes( 'component: intakeParts.rootComponent, idxFor, folder: draftFolder }' ) );
 } );
 
 test( 'negative control: no copy, an already required field, or a block with no required setting', () => {

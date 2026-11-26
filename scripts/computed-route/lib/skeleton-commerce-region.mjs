@@ -15,7 +15,8 @@
 //     folded into the account row by the page map) has as its region the shown branch of the condition that holds a link
 //     to that page: the account block draws the sign-in form there for a visitor, and the account itself once signed in;
 //   - shop: the element whose children are the items of the product loop (an `sc-for` of a mounted card that shows a
-//     currency amount); WooCommerce's product collection draws the products, each in the site's own product card.
+//     currency amount); WooCommerce's product collection draws the products, each in the site's own product card. The region
+//     names the loop cell (`item`: the listing's columns) and the mounted card's root (`card`: the card's look is read there).
 // Only shown elements count, so a closed panel (the header's basket drawer) never holds evidence; two candidates for one
 // role leave the surface as it is, with a note naming them. Pure: the inventory model in, the region out.
 
@@ -148,6 +149,9 @@ export function commerceRegion( { m, commerce, rule } ) {
 		}
 		return { region, evidence: [ `${ fields.length } entry field(s)`, summary ? 'the order summary beside them' : 'no order summary beside them' ] };
 	};
+	// The card a loop item mounts: the root element of the draft's card component, the box its border, radius, shadow and parts are
+	// read from. The item is the loop's cell, which only places the card in the listing (its columns, its place), never a card's look.
+	const cardOf = ( item ) => m.els.find( ( d ) => d.template !== item.template && m.byKey[ d.parentKey ]?.template === item.template && ancestors( d ).includes( item ) ) ?? null;
 	const found = [];
 	if ( 'cart' === commerce.role ) {
 		for ( const [ , list ] of moneyLoops ) {
@@ -184,7 +188,7 @@ export function commerceRegion( { m, commerce, rule } ) {
 			const holders = [ ...new Set( items.map( ( e ) => e.parentKey ) ) ];
 			// A mounted card: each item holds elements of another component (the draft's card, mounted by dc-import).
 			const mounted = items.length > 1 && items.every( ( it ) => m.els.some( ( d ) => d.template !== it.template && ancestors( d ).includes( it ) ) );
-			1 === holders.length && mounted && found.push( { region: m.byKey[ holders[ 0 ] ], item: items[ 0 ], evidence: [ `a loop of ${ items.length } mounted cards showing a price` ] } );
+			1 === holders.length && mounted && found.push( { region: m.byKey[ holders[ 0 ] ], item: items[ 0 ], card: cardOf( items[ 0 ] ), evidence: [ `a loop of ${ items.length } mounted cards showing a price` ] } );
 		}
 	}
 	// Of the regions outside an overlay, the page's own markup comes before an imported component's.
@@ -194,7 +198,7 @@ export function commerceRegion( { m, commerce, rule } ) {
 	if ( 1 !== regions.length ) {
 		return regions.length ? { note: `${ regions.length } elements read as the ${ commerce.role } region (${ regions.map( ( f ) => f.region.key ).join( ', ' ) }), so none is replaced` } : null;
 	}
-	const { region, evidence, item } = regions[ 0 ];
+	const { region, evidence, item, card } = regions[ 0 ];
 	const spec = rule.roles[ commerce.role ];
 	const attributes = JSON.parse( JSON.stringify( spec.attributes || {} ) );
 	// The shop's columns: the cards that share the first card's top edge at 1440.
@@ -203,7 +207,7 @@ export function commerceRegion( { m, commerce, rule } ) {
 		const row = m.blockKids( region ).filter( ( k ) => null != top && k.box?.[ 1440 ]?.y === top ).length;
 		row > 0 && ( attributes.displayLayout.columns = row );
 	}
-	return { key: region.key, role: commerce.role, block: spec.block, attributes, inner: spec.inner || null, item: item || null, reason: `${ spec.reason } (${ evidence.join( '; ' ) })` };
+	return { key: region.key, role: commerce.role, block: spec.block, attributes, inner: spec.inner || null, item: item || null, card: card || null, reason: `${ spec.reason } (${ evidence.join( '; ' ) })` };
 }
 
 // The commerce region's run (as lib/skeleton-filter-rail.mjs::railRun is the rail's): { id: 'commerce-region', block, at: <region

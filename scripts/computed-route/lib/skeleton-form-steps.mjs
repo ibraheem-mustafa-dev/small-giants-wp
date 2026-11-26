@@ -1,6 +1,6 @@
 // The steps of a multi-step draft form in the skeleton (Spec 48 FR-48-57, FR-48-83 §10.1). A draft whose logic holds a form
 // schema of more than one step (lib/fill-form-schema.mjs::formSchemaOf) gets its form as `sgs/form` > one `sgs/form-step` per
-// schema step that has fields (its `label` the draft's) and an `sgs/form-review` where the schema has a step with no fields.
+// schema step (its `label` the draft's); a step with no fields holds an `sgs/form-review`.
 // The inventory of a form surface is the rendered page, which shows one step, so:
 //   fields   each step holds its schema fields in schema order. A rendered field node is the schema field whose label is
 //            its label, or whose options are its choices (a tiles field); every other schema field (a later step's, or one
@@ -101,7 +101,9 @@ export function formStepNodes( skeleton, { factRecord, surfaceKind, component = 
 	const paired = pairFields( fields, steps, { rules, draftOf } );
 	const made = steps.map( ( s ) => {
 		if ( ! s.fields.length ) {
-			return { name: 'sgs/form-review', attributes: {}, innerBlocks: [] };
+			// The review is the last step's content: the form's script finds `.sgs-form-review` inside the current step, so a
+			// review beside the steps stays visible on every one and the step list has no label for it.
+			return { name: 'sgs/form-step', attributes: { label: s.label }, innerBlocks: [ { name: 'sgs/form-review', attributes: {}, innerBlocks: [] } ] };
 		}
 		const own = bound.map( ( b ) => ( s === first ? b : { ...b, node: boundCopy( b.node, b.key, first, s ) } ) );
 		const kids = s.fields.flatMap( ( f ) => {
