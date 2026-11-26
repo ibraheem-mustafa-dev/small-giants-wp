@@ -18,6 +18,8 @@ const slotSchema = () => ( schema ||= JSON.parse( fs.readFileSync( path.join( BL
 // lib/media/style-rows.mjs and fill-height.mjs): the ratio and the height; every other style row of the element is the universal
 // property route's (never written twice).
 const SIZING = [ 'ratio', 'height' ];
+// The slot keys lib/media/style-rows.mjs reads from an element's computed styles: the universal property route writes those looks.
+const PROPERTY_ROUTE = [ 'fit', 'focal', 'shape', 'radius', 'filter', 'colour', 'greyscale', 'borderWidth', 'borderStyle', 'borderColour', 'boxShadow', 'padding', 'opacity', 'blend', 'order', 'alignment' ];
 
 const WIDTHS = [ 1440, 768, 375 ];
 const TIER = { 1440: 'desktop', 768: 'tablet', 375: 'mobile' };
@@ -112,11 +114,11 @@ export function mediaWrites( { slots, attributes = {}, reads, resolve, fact = nu
 		}
 		put( slot.source, source );
 		SIZING.forEach( ( key ) => slot[ key ] && undefined !== composed.slot[ key ] && put( slot[ key ], composed.slot[ key ] ) );
-		// What the draft states for the picture and no setting of this slot takes (a `width: auto` beside a declared height, an object-fit,
-		// a clip-path with no media setting) is said, never dropped.
-		const unwritten = Object.keys( composed.slot ).filter( ( key ) => ! [ 'source', 'alt', 'decorative' ].includes( key ) && ! ( SIZING.includes( key ) && slot[ key ] ) );
+		// What the draft states for the picture and no setting of this slot takes (a `width: auto` beside a declared height) is said,
+		// never dropped. A look of the picture's own element (its fit, focal point, shape, filter, border, shadow, padding, opacity,
+		// blend) is written by the universal property route from the element's computed styles, so it is no gap of this writer.
+		const unwritten = Object.keys( composed.slot ).filter( ( key ) => undefined !== composed.slot[ key ] && ! [ 'source', 'alt', 'decorative', ...PROPERTY_ROUTE ].includes( key ) && ! ( SIZING.includes( key ) && slot[ key ] ) );
 		unwritten.length && out.notes.push( `the draft media "${ label }" states ${ unwritten.map( ( key ) => `${ key } ${ JSON.stringify( composed.slot[ key ] ) }` ).join( ', ' ) }, which the media slot of ${ slot.source } has no setting for: not written` );
-		out.notes.push( ...( composed.reported || [] ).map( ( r ) => `the draft media "${ label }" ${ r.property } ${ r.value } at ${ r.width }px is not written: ${ r.reason }` ) );
 		const alt = composed.slot.alt ?? fact?.alt ?? null;
 		if ( composed.slot.decorative && slot.decorative ) {
 			put( slot.decorative, true );

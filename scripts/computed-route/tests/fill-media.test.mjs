@@ -264,6 +264,10 @@ test( 'MUST FAIL: what the draft states for a picture and the slot has no settin
 	const r = mediaDecisions( { slots: [ SIZED ], reads: at( sized( { height: '150px' }, { box: { w: 200, h: 150 }, natural: { w: 400, h: 300 } } ) ), media } );
 	assert.match( r.notes.join( ' ' ), /the draft media "assets\/hero\.png" states width \{"desktop":"auto"\}, which the media slot of source has no setting for: not written/ );
 	assert.deepEqual( val( r, 'height' ), { desktop: '150px' }, 'the setting the slot has is still written' );
+	// A look the property route writes (a crop's object-fit), and a sizing the slot holds, are no gap of this writer.
+	const fit = mediaDecisions( { slots: [ SIZED ], reads: at( sized( { height: '100px' }, { box: { w: 200, h: 100 }, natural: { w: 400, h: 300 }, computed: { position: 'static', objectFit: 'cover', objectPosition: '50% 50%' } } ) ), media } );
+	assert.ok( ! /fit/.test( fit.notes.join( ' ' ) ), 'object-fit belongs to the property route' );
+	assert.ok( ! /undefined/.test( fit.notes.join( ' ' ) ) );
 	// Negative control: a slot that takes the sizing it states says nothing.
 	const quiet = mediaDecisions( { slots: [ SIZED ], reads: at( sized( { 'aspect-ratio': '4 / 3' } ) ), media } );
 	assert.ok( ! quiet.notes.some( ( n ) => /has no setting for: not written/.test( n ) ) );

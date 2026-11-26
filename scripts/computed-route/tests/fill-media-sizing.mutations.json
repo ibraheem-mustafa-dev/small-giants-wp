@@ -58,5 +58,11 @@
 		"find": "unwritten.length && out.notes.push(",
 		"replace": "unwritten.length && void (",
 		"why": "a state of the picture no media setting takes is dropped without a word"
+	},
+	{
+		"file": "lib/media/write.mjs",
+		"find": "'decorative', ...PROPERTY_ROUTE ]",
+		"replace": "'decorative' ]",
+		"why": "a look the property route writes (object-fit) is noted as not written"
 	}
 ]
