@@ -255,6 +255,13 @@ def test_look_key_follows_the_fixture_entry(tmp_path, monkeypatch):
     assert SL.look_key('icon', SNAPSHOT, True) != before
 
 
+def test_look_key_follows_the_route_plan_of_per_value_renders():
+    """The route decides which per-value instances a look reads (tools/site-look-bridge.mjs, lib/enum-read-plan.mjs), so both are
+    among the files a look's key hashes; a look built before a change to either would keep the earlier choice of settings."""
+    names = {f.name for f in SL.reach_files()}
+    assert {'site-look-bridge.mjs', 'enum-read-plan.mjs'} <= names
+
+
 def test_tested_attrs_reads_attribute_selectors():
     names = SL.tested_attrs(['.a[open] > b, .c[aria-current="page"], :not([hidden]) .x[class*=y] {color:red}',
                              '@media (min-width:1px){.d{grid-template-columns:[full-start] 1fr [full-end]}} .e[data-x]{content:"[nope]"}'])
