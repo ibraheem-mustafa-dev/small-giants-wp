@@ -53,6 +53,7 @@ const SGS_MINTED_SCOPE_PREFIXES = array(
 	'sgs-text-hover',
 	'sgs-btn-press',
 	'sgs-btn-kit',
+	'sgs-bleed',
 );
 
 /**

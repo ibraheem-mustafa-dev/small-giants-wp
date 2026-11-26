@@ -122,6 +122,8 @@ require_once SGS_BLOCKS_PATH . 'includes/conditional-visibility.php';
 // Shared helper — scoped-<style> per-instance CSS var injection (Spec 32
 // no-inline contract). Required before block-link.php, which depends on it.
 require_once SGS_BLOCKS_PATH . 'includes/helpers-scoped-instance-vars.php';
+// Sizes each sideways-scrolling row's shadow-bleed band from what its items paint (render_block, priority 90).
+require_once SGS_BLOCKS_PATH . 'includes/helpers-shadow-bleed.php';
 
 // Shared helper — one rule for every block instance whose declarations are identical (Stage C).
 require_once SGS_BLOCKS_PATH . 'includes/helpers-shared-rules.php';
