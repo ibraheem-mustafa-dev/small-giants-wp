@@ -54,6 +54,9 @@ function fakeSite() {
 				const [ , k, v ] = /^--([a-z_]+)=(.*)$/.exec( f );
 				p[ { post_title: 'title', post_name: 'slug', post_status: 'status', post_parent: 'parent', page_template: 'template' }[ k ] ] = 'post_parent' === k ? Number( v ) : v;
 			} );
+		} else if ( 'post' === a && 'get' === b ) {
+			const p = s.posts[ c ];
+			return JSON.stringify( { post_title: p.title, post_name: p.slug, post_parent: p.parent } );
 		} else if ( 'menu' === a && 'create' === b ) {
 			const id = s.next++;
 			s.menus.push( { id, slug: c, name: c } );

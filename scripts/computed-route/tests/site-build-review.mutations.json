@@ -1,0 +1,5 @@
+[
+	{"file": "lib/site-build-plan.mjs", "find": "( null === recorded || ( k in recorded && String( recorded[ k ] ) !== String( have[ k ] ) ) )", "replace": "( null !== recorded && k in recorded && String( recorded[ k ] ) !== String( have[ k ] ) )", "why": "a post with no FIELDS_META has its title, slug and parent overwritten by the page map"},
+	{"file": "lib/site-build-plan.mjs", "find": "record: null === recorded ? null :", "replace": "record: null === recorded ? Object.fromEntries( OWN_FIELDS.map( ( k ) => [ k, have[ k ] ] ) ) :", "why": "a template change on a legacy post records its current title and slug as the build's own"},
+	{"file": "lib/site-build-plan.mjs", "find": "${ null === recorded ? `; this post has no record", "replace": "${ false ? `; this post has no record", "why": "the note names no command that lets the page map win"}
+]

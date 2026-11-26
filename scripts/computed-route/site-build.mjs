@@ -47,7 +47,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { wpCommand, wpEvalRunner } from './lib/calibration-refs.mjs';
-import { readIdsSite, readPageMap, rowsForSite, writeIdsSite, writeMenuMap, writePageMap } from './lib/site-build-map.mjs';
+import { idsProvisional, readIdsSite, readPageMap, rowsForSite, writeIdsSite, writeMenuMap, writePageMap } from './lib/site-build-map.mjs';
 import { readState } from './lib/site-build-state.mjs';
 import { readLinkTextReport, readSurfaces } from './lib/site-build-labels.mjs';
 import { PHASES, planBuild, tally } from './lib/site-build-plan.mjs';
@@ -176,12 +176,13 @@ if ( args.includes( '--flow-links' ) ) {
 if ( args.includes( '--menus' ) ) {
 	try {
 		const rows = rowsForSite( readPageMap( mapFile ), readIdsSite( mapFile ), site, targets );
+		const provisionalIds = idsProvisional( readIdsSite( mapFile ), site, targets );
 		const runPhp = wpEvalRunner( target, site, repo, { readOnly: ! apply } );
 		const planFor = () => {
 			const link = readLinkTextReport( { repo, client } );
 			const state = readState( runPhp, rows );
 			const menuLinks = menuLinksOf( { repo, client, site, rows } );
-			const plan = planBuild( { rows, state, repo, client, linkText: link.text, menuLinks, flowProducts: flowProductIdsFor( { repo, client, site, rows } ).ids } );
+			const plan = planBuild( { rows, state, repo, client, linkText: link.text, menuLinks, flowProducts: flowProductIdsFor( { repo, client, site, rows } ).ids, provisionalIds } );
 			plan.notes.push( ...link.conflicts );
 			return { plan, superseded: supersededItems( rows, state, link.text, readSurfaces( repo, client ), menuLinks ), state };
 		};
@@ -223,13 +224,14 @@ const print = ( plan ) => {
 try {
 	// The rows as this site sees them: ids written for another site name nothing here.
 	const original = rowsForSite( readPageMap( mapFile ), readIdsSite( mapFile ), site, targets );
+	const provisionalIds = idsProvisional( readIdsSite( mapFile ), site, targets );
 	const runPhp = wpEvalRunner( target, site, repo, { readOnly: ! apply } );
 	const wp = wpCommand( target, site, repo, { readOnly: ! apply } );
 	const ids = {};
 	let rows = original;
 	const plan = () => {
 		const link = readLinkTextReport( { repo, client } );
-		const p = planBuild( { rows, state: readState( runPhp, rows ), repo, client, linkText: link.text, menuLinks: menuLinksOf( { repo, client, site, rows } ), flowProducts: flowProductIdsFor( { repo, client, site, rows } ).ids } );
+		const p = planBuild( { rows, state: readState( runPhp, rows ), repo, client, linkText: link.text, menuLinks: menuLinksOf( { repo, client, site, rows } ), flowProducts: flowProductIdsFor( { repo, client, site, rows } ).ids, provisionalIds } );
 		p.notes.push( ...link.conflicts );
 		if ( p.problems.length ) {
 			p.problems.forEach( ( m ) => console.error( `STOP ${ m }` ) );

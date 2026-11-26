@@ -218,6 +218,12 @@ const idsHolder = ( name, targets ) => {
 // as they stand.
 export const rowsForSite = ( rows, idsSite, site, targets = {} ) => ( idsSite && idsHolder( idsSite, targets ) !== idsHolder( site, targets ) ? rows.map( ( r ) => ( { ...r, id: null } ) ) : rows );
 
+// Whether the ids a page map holds for `idsSite` are only presumed to be `site`'s: they were written on a different name that
+// holds the same ids (a mirror and the test site it is a copy of, or a scratch copy of either). The two databases drift after
+// the copy (the clone is built on the mirror, then copied over), so such an id may name another post, or none, on `site`; the
+// planner checks each one and falls back to the row key (lib/site-build-plan.mjs::planBuild, `provisionalIds`).
+export const idsProvisional = ( idsSite, site, targets = {} ) => !! idsSite && idsSite !== site && idsHolder( idsSite, targets ) === idsHolder( site, targets );
+
 export const treeHash = ( tree ) => crypto.createHash( 'sha256' ).update( JSON.stringify( tree ) ).digest( 'hex' );
 
 // The identifier the menu blocks give a classic menu item (sgs/nav-bar-menu and sgs/nav-drawer-menu render.php::from_link

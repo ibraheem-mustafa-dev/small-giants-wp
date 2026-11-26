@@ -11,7 +11,8 @@ export const TREE_META = '_sgs_site_build_tree';
 // The hash of the post_content the site build's own save produced: a later difference is a person's edit, which a rebuild never overwrites.
 export const CONTENT_META = '_sgs_site_build_content';
 // The title, slug and parent the site build last set on a post (JSON): a later difference from it is a person's change,
-// which the site build reports and leaves; a post without it takes the page map's values (FR-48-55, on a rerun).
+// which the site build reports and leaves; a post without it (built before the record existed) keeps all three, reported
+// and left, until `wp post meta update <id> _sgs_site_build_fields '{}'` lets the page map win (FR-48-55, on a rerun).
 export const FIELDS_META = '_sgs_site_build_fields';
 // A mega panel's Section page (Sgs_Mega_Menu_CPT::META_SECTION_PAGE): the page id every item opening it links to.
 export const SECTION_META = '_sgs_mega_section_page';

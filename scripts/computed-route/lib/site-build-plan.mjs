@@ -20,7 +20,7 @@ import { withFlowProduct } from './site-build-flow-product.mjs';
 import { ownParts } from './template-frame.mjs';
 import { COMMERCE_ROLES } from './skeleton-commerce-region.mjs';
 import { commerceRefusal, commerceRoles, rowCommerceRole } from './skeleton-commerce-refusal.mjs';
-import { CONTENT_META, MENU_META, ROW_META, TEMPLATE_OPTION, WOO_ROLE, isWooDefaultContent } from './site-build-state.mjs';
+import { CONTENT_META, FIELDS_META, MENU_META, ROW_META, TEMPLATE_OPTION, WOO_ROLE, isWooDefaultContent } from './site-build-state.mjs';
 
 export const PERMALINKS = '/%postname%/';
 export const PHASES = [ 'posts', 'menus', 'layout', 'site' ];
@@ -94,7 +94,7 @@ function wooRoles( rows ) {
 	];
 }
 
-export function planBuild( { rows, state, repo, client, frontRoute = 'home', linkText = {}, menuLinks, flowProducts = {} } ) {
+export function planBuild( { rows, state, repo, client, frontRoute = 'home', linkText = {}, menuLinks, flowProducts = {}, provisionalIds = false } ) {
 	const problems = [];
 	// Each problem sorted by the step it stops: `map` (a row's post or the rows' order, which every step reads), `menus`,
 	// `posts` (a post, layout surface or template copy) and `site` (the site options and active pointers).
@@ -109,12 +109,20 @@ export function planBuild( { rows, state, repo, client, frontRoute = 'home', lin
 	// A header, footer or drawer row whose stored id names no post on the site (a scratch copy's strip deletes the layout posts and
 	// keeps the page map) is built again: layout posts are made from the row's tree and hold no person's content, so the run
 	// does not stop on them as it does on a page (FR-48-55).
+	// Ids a mirror and its test site only presume to share (`provisionalIds`: lib/site-build-map.mjs::idsProvisional) can fail
+	// for any row after the database copy: a row whose stored id names no post of its type, or a post another row made or nobody
+	// marked, drops the id and finds its post by row key and slug below, as a row with no id does, with a note.
 	rows = rows.map( ( row ) => {
 		const p = Number.isInteger( row.id ) ? state.posts[ String( row.id ) ] : null;
-		if ( ! LAYOUT_TYPES[ row.postType ] || ! Number.isInteger( row.id ) || ( p && p.type === wpType( row ) && 'trash' !== p.status ) ) {
+		if ( ! hasPost( row ) || ! Number.isInteger( row.id ) ) {
 			return row;
 		}
-		notes.push( `${ rowKey( row ) }: its stored id ${ row.id } names no ${ wpType( row ) } on the site, so the layout is built again` );
+		const gone = ! p || p.type !== wpType( row ) || 'trash' === p.status;
+		const stranger = ! gone && p.rowKey !== rowKey( row ) && ! ( ! p.rowKey && ! p.treeHash && p.slug === row.slug );
+		if ( LAYOUT_TYPES[ row.postType ] ? ! gone && ! ( provisionalIds && stranger ) : ! ( provisionalIds && ( gone || stranger ) ) ) {
+			return row;
+		}
+		notes.push( `${ rowKey( row ) }: its stored id ${ row.id } ${ gone ? `names no ${ wpType( row ) } on the site` : `is another post's (${ p.rowKey ? `it carries ${ p.rowKey }` : 'it carries no row key' })` }, so ${ LAYOUT_TYPES[ row.postType ] ? 'the layout is built again' : 'the row is matched by its row key and slug instead' }` );
 		return { ...row, id: null };
 	} );
 	const shopClient = rows.some( ( r ) => SHOP_TYPES.includes( r.postType ) );
@@ -250,19 +258,21 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 		}
 		// Title, slug and parent follow the page map on every run (FR-48-55), except where a person changed them: a value that
 		// differs from the one the site build last set (FIELDS_META) is a person's rename or move, which stays and is
-		// reported. A post with no record takes the map's values. A parent made in this run is set when it exists.
+		// reported. A post with no record (built before the record existed, so nothing says who set its title, slug or parent)
+		// keeps all three and the difference is reported, as every post did before the record: a slug reverted to the map's
+		// would break the public address. A parent made in this run is set when it exists.
 		const want = { post_title: row.title, post_name: row.slug, ...fields };
 		const have = { post_title: p.title, post_name: p.slug, post_parent: p.parent, page_template: p.template };
 		const differs = Object.entries( want ).filter( ( [ k, v ] ) => String( v?.ref ? '' : v ) !== String( have[ k ] ) || v?.ref );
 		const recorded = p.builtFields && 'object' === typeof p.builtFields ? p.builtFields : null;
-		const ownedByPerson = ( [ k, v ] ) => ! v?.ref && OWN_FIELDS.includes( k ) && null !== recorded && k in recorded && String( recorded[ k ] ) !== String( have[ k ] );
+		const ownedByPerson = ( [ k, v ] ) => ! v?.ref && OWN_FIELDS.includes( k ) && ( null === recorded || ( k in recorded && String( recorded[ k ] ) !== String( have[ k ] ) ) );
 		const diff = Object.fromEntries( differs.filter( ( e ) => ! ownedByPerson( e ) ) );
 		const drift = differs.filter( ownedByPerson );
 		if ( drift.length ) {
-			notes.push( `${ key }: post ${ p.id } differs from the page map (${ drift.map( ( [ k, v ] ) => `${ k } ${ JSON.stringify( have[ k ] ) } (map ${ JSON.stringify( v ) })` ).join( '; ' ) }); the site build leaves a person's change` );
+			notes.push( `${ key }: post ${ p.id } differs from the page map (${ drift.map( ( [ k, v ] ) => `${ k } ${ JSON.stringify( have[ k ] ) } (map ${ JSON.stringify( v ) })` ).join( '; ' ) }); the site build leaves a person's change${ null === recorded ? `; this post has no record of what the site build set, so to let the page map win run "wp post meta update ${ p.id } ${ FIELDS_META } '{}'"` : '' }` );
 		}
 		if ( Object.keys( diff ).length ) {
-			actions.push( { phase, type: 'update', key, id: p.id, fields: diff, record: { ...Object.fromEntries( OWN_FIELDS.map( ( k ) => [ k, recorded && k in recorded ? recorded[ k ] : have[ k ] ] ) ), ...Object.fromEntries( Object.entries( diff ).filter( ( [ k ] ) => OWN_FIELDS.includes( k ) ) ) }, say: `${ key }: post ${ p.id }: ${ Object.entries( diff ).map( ( [ k, v ] ) => `${ k } ${ JSON.stringify( have[ k ] ) } -> ${ shown( v ) }` ).join( '; ' ) }` } );
+			actions.push( { phase, type: 'update', key, id: p.id, fields: diff, record: null === recorded ? null : { ...Object.fromEntries( OWN_FIELDS.map( ( k ) => [ k, k in recorded ? recorded[ k ] : have[ k ] ] ) ), ...Object.fromEntries( Object.entries( diff ).filter( ( [ k ] ) => OWN_FIELDS.includes( k ) ) ) }, say: `${ key }: post ${ p.id }: ${ Object.entries( diff ).map( ( [ k, v ] ) => `${ k } ${ JSON.stringify( have[ k ] ) } -> ${ shown( v ) }` ).join( '; ' ) }` } );
 		}
 	}
 

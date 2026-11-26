@@ -129,15 +129,18 @@ test( 'MUST FAIL: a create keeps the saved id, retries a failed mark, and names 
 	const create = { phase: 'posts', type: 'create', key: 'page:home', postType: 'page', title: 'Home', slug: 'home', tree: TREE, hash: 'h', fields: {}, say: 'c' };
 	const ids = [];
 	let fails = 2;
+	// WP-CLI's read-back of the saved post (what the title, slug and parent record is made from).
+	const readBack = ( a ) => ( 'post' === a[ 0 ] && 'get' === a[ 1 ] ? JSON.stringify( { post_title: 'Home', post_name: 'home', post_parent: 0 } ) : '' );
 	const flaky = ( a ) => {
 		if ( a.includes( stateLib.ROW_META ) && fails-- > 0 ) {
 			throw new Error( 'ssh dropped' );
 		}
+		return readBack( a );
 	};
 	applyPhase( [ create ], 'posts', { wp: flaky, build: () => 77, onId: ( k, id ) => ids.push( [ k, id ] ) } );
 	assert.deepEqual( ids, [ [ 'page:home', 77 ] ], 'two failed marks were retried' );
 	const sent = [];
-	applyPhase( [ create ], 'posts', { wp: ( a, input ) => sent.push( [ a.join( ' ' ), input || '' ] ), build: () => 79, onId: () => {} }  );
+	applyPhase( [ create ], 'posts', { wp: ( a, input ) => ( sent.push( [ a.join( ' ' ), input || '' ] ), readBack( a ) ), build: () => 79, onId: () => {} }  );
 	assert.ok( sent.some( ( [ a, input ] ) => 'eval-file -' === a && input.includes( stateLib.CONTENT_META ) && input.includes( '79' ) ), 'a created post records its saved content hash' );
 	const dead = () => {
 		throw new Error( 'ssh down' );
@@ -233,8 +236,20 @@ test( 'MUST FAIL: a parent the site build set itself follows the page map when t
 	const up = own.actions.find( ( a ) => 'update' === a.type && 10 === a.id );
 	assert.deepEqual( up?.fields, { post_parent: 3 }, JSON.stringify( own.notes ) );
 	assert.deepEqual( up.record, { post_title: 'FAQs', post_name: 'faqs', post_parent: 3 } );
-	const unrecorded = plan( rows, state( { posts: { ...posts, 10: post( 10, 'page:faqs', { title: 'FAQs', slug: 'faqs', parent: 0 } ) } } ) );
-	assert.deepEqual( unrecorded.actions.find( ( a ) => 'update' === a.type && 10 === a.id )?.fields, { post_parent: 3 }, 'a post with no record takes the page map parent' );
+} );
+
+test( 'MUST FAIL: a post built before the record existed keeps its title, slug and parent, reported with the command that lets the map win; an empty record lets it win', () => {
+	const rows = [ row( { slug: 'home', title: 'Home', id: 10 } ) ];
+	const renamed = ( extra = {} ) => plan( rows, state( { posts: { 10: post( 10, 'page:home', { title: 'Our home', slug: 'welcome', parent: 3, treeHash: 'h', ...extra } ) } } ) );
+	const legacy = renamed();
+	assert.deepEqual( legacy.actions.filter( ( a ) => 'update' === a.type ), [], 'no record: a rename, a new slug (the public address) and a move are never reverted' );
+	assert.match( legacy.notes.join( ' ' ), /page:home: post 10 differs.*post_title "Our home".*post_name "welcome".*post_parent 3.*wp post meta update 10 _sgs_site_build_fields '\{\}'/ );
+	const up = renamed( { builtFields: [] } ).actions.find( ( a ) => 'update' === a.type );
+	assert.deepEqual( up?.fields, { post_title: 'Home', post_name: 'home', post_parent: 0 }, 'an emptied record hands the three fields back to the page map' );
+	// a legacy post still takes a field the person never owned: its page template
+	const tpl = plan( [ row( { slug: 'home', title: 'Home', id: 10, template: 'cart' } ) ], state( { posts: { 10: post( 10, 'page:home', { title: 'Home', slug: 'home', template: '' } ) } } ) );
+	const t = tpl.actions.find( ( a ) => 'update' === a.type );
+	assert.ok( t && 'cart' === t.fields.page_template && null === t.record, 'a template change on a legacy post records nothing, so its title and slug are not adopted as the build own' );
 } );
 
 test( 'negative control: a page a person moved after the site build set its parent stays where they put it', () => {

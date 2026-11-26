@@ -109,6 +109,26 @@ export function markPost( { postId, runPhp } ) {
 	Number.isInteger( postId ) && runPhp( contentMarkPhp( postId ) );
 }
 
+// The PHP recording the hash of the tree a post was built from (what the site build's `build` and `create` actions record), so a
+// later site build reads the clone's own build as built from the tree file the run kept (lib/site-run-solve-tree.mjs) and does
+// not rebuild the post from that file or from the placeholder on a hash it never recorded.
+export function treeMarkPhp( id, hash ) {
+	if ( ! Number.isInteger( id ) || id <= 0 ) {
+		throw new Error( `post id "${ id }" is not a post id` );
+	}
+	if ( ! /^[0-9a-f]{64}$/.test( String( hash ) ) ) {
+		throw new Error( `tree hash "${ hash }" is not a sha256 hex digest` );
+	}
+	return `<?php
+update_post_meta( ${ id }, '${ TREE_META }', '${ hash }' );
+`;
+}
+
+// Stores the tree hash of `postId` through `runPhp` (a surface with no post id, a template copy, records its own hash).
+export function markTree( { postId, hash, runPhp } ) {
+	Number.isInteger( postId ) && runPhp( treeMarkPhp( postId, hash ) );
+}
+
 // The meta key that marks an order the site run made only to show the order confirmation (FR-48-56).
 export const TEST_ORDER_META = '_sgs_site_run_test_order';
 
@@ -179,9 +199,19 @@ export function applyPhase( actions, phase, { wp, build, onId, log = () => {}, r
 		}
 		return id;
 	};
-	// WordPress ignores an empty page_template, so clearing one sends `default` (get_page_template_slug reads it as '').
-	// The title, slug and parent the site build set, so a later run tells its own value from a person's change.
+	// The title, slug and parent the site build set, so a later run tells its own value from a person's change. `fields` is the three
+	// values to record, or `saved(id)` for what WordPress now holds: it can differ from what was asked for (a slug made unique:
+	// 'about-2'; a title it filtered: '&amp;'), and a record of the asked-for value would read as a person's change on every later run.
 	const recordFields = ( id, fields ) => again( () => wp( [ 'post', 'meta', 'update', String( id ), FIELDS_META, JSON.stringify( Object.fromEntries( Object.entries( fields ).map( ( [ k, v ] ) => [ k, 'post_parent' === k ? Number( val( v ) ) || 0 : String( val( v ) ) ] ) ) ) ] ) );
+	const saved = ( id ) => again( () => {
+		const out = String( wp( [ 'post', 'get', String( id ), '--fields=post_title,post_name,post_parent', '--format=json' ] ) );
+		const got = JSON.parse( out.slice( Math.max( 0, out.indexOf( '{' ) ) ) );
+		if ( ! [ 'post_title', 'post_name', 'post_parent' ].every( ( k ) => k in got ) ) {
+			throw new Error( `post ${ id } was read back without its title, slug and parent: ${ out.trim().slice( 0, 200 ) }` );
+		}
+		return { post_title: got.post_title, post_name: got.post_name, post_parent: got.post_parent };
+	} );
+	// WordPress ignores an empty page_template, so clearing one sends `default` (get_page_template_slug reads it as '').
 	const fieldArgs = ( fields ) => Object.entries( fields ).map( ( [ k, v ] ) => `--${ k }=${ 'page_template' === k && '' === v ? 'default' : val( v ) }` );
 	// A bookkeeping write after a save is tried three times: a dropped connection must not leave a saved post unrecorded.
 	const again = ( fn ) => {
@@ -234,7 +264,7 @@ export function applyPhase( actions, phase, { wp, build, onId, log = () => {}, r
 			if ( Object.keys( a.fields ).length ) {
 				wp( [ 'post', 'update', String( id ), ...fieldArgs( a.fields ) ] );
 			}
-			recordFields( id, { post_title: a.title, post_name: a.slug, post_parent: a.fields.post_parent ?? 0 } );
+			recordFields( id, saved( id ) );
 		} else if ( 'build' === a.type ) {
 			try {
 				build( { postId: a.id }, a.tree );
@@ -277,7 +307,8 @@ export function applyPhase( actions, phase, { wp, build, onId, log = () => {}, r
 			wp( [ 'post', 'meta', 'update', String( val( a.id ) ), SECTION_META, String( val( a.page ) ) ] );
 		} else if ( 'update' === a.type ) {
 			wp( [ 'post', 'update', String( a.id ), ...fieldArgs( a.fields ) ] );
-			a.record && recordFields( a.id, a.record );
+			// What the update changed is read back; the fields it left alone keep the record the planner carried.
+			a.record && recordFields( a.id, { ...a.record, ...Object.fromEntries( Object.entries( saved( a.id ) ).filter( ( [ k ] ) => k in a.fields ) ) } );
 		} else if ( 'menu' === a.type ) {
 			refs[ `menu:${ a.name }` ] = porcelain( wp( [ 'menu', 'create', a.name, '--porcelain' ] ) );
 			wp( [ 'term', 'meta', 'update', String( refs[ `menu:${ a.name }` ] ), MENU_META, a.name ] );

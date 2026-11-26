@@ -65,7 +65,7 @@ import { failureClass, failureCounts } from './lib/failure-class.mjs';
 import { walkArgs } from './lib/site-run-walk.mjs';
 import { openerRow, openersUnrecorded } from './lib/site-run-opener-row.mjs';
 import { rowKey, treeHash } from './lib/site-build-map.mjs';
-import { buildThenMarkPost, deleteTestOrdersPhp, markPost, templateRecordPhp, testOrderPhp } from './lib/site-build-apply.mjs';
+import { buildThenMarkPost, deleteTestOrdersPhp, markPost, markTree, templateRecordPhp, testOrderPhp } from './lib/site-build-apply.mjs';
 import { draftProductSlugs, liveFactsPhp, readLiveFacts, templateAddresses, livePrimeFor } from './lib/template-live-address.mjs';
 import { wpCommand, wpEvalRunner } from './lib/calibration-refs.mjs';
 import { pointAfterBuild } from './lib/site-run-layout.mjs';
@@ -619,6 +619,9 @@ export async function main( argv ) {
 		// without the build stage (inventory and propose, as the foundation's paint step runs) built nothing and keeps nothing.
 		const solved = tree ? writeSolveTree( { buildDir: build, entry, builtFile: path.join( REPO, tree ) } ) : null;
 		solved && console.log( `${ key } solve tree: ${ path.relative( REPO, solved ) }` );
+		// That file is the tree the site build plans this post from, so its hash is recorded as the post's built tree: a later site build
+		// finds nothing to rebuild and keeps the Filled build and the applier's patches (lib/site-build-apply.mjs::markTree).
+		solved && ! slug && markTree( { postId: entry.target.postId, hash: treeHash( readJson( solved ) ), runPhp } );
 		// The applier: set what Fill and the build cannot, from the draft's runtime. It stops the surface like a failed build.
 		if ( ! await applyStage( { ctx, entry, key, slug, step, exec } ) ) {
 			return;

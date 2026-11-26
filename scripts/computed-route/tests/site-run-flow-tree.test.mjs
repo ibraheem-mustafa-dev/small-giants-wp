@@ -72,7 +72,7 @@ test( 'MUST FAIL: an empty or non-list tree is refused and leaves the earlier co
 
 test( 'MUST FAIL: site-run.mjs records the flow tree in its build step, after the build succeeds', () => {
 	const src = fs.readFileSync( path.join( HERE, '..', 'site-run.mjs' ), 'utf8' );
-	const build = src.indexOf( "const said = await exec( 'build', 'node', builder );" );
+	const build = src.indexOf( "const said = await buildThenMarkPost( { build: () => exec( 'build', 'node', builder )" );
 	const write = src.indexOf( 'writeFlowTree( { buildDir: build, entry' );
 	assert.ok( build > 0 && write > build, 'the tree is written after the build command returns' );
 	assert.match( src, /import \{ writeFlowTree \} from '\.\/lib\/site-run-flow-tree\.mjs'/ );
