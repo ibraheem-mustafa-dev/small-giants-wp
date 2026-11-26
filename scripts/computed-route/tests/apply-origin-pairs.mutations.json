@@ -52,5 +52,17 @@
 		"find": "correct the pair of",
 		"replace": "delete the file for",
 		"why": "the refusal advises deleting a walker config"
+	},
+	{
+		"file": "lib/apply-targets.mjs",
+		"find": "if ( held && held !== tpl.tpl ) {",
+		"replace": "if ( held && held !== tpl.tpl && ! tpl.part && ! tpl.reveal ) {",
+		"why": "a refreshed part or reveal pair on another element replaces the origin's pair"
+	},
+	{
+		"file": "lib/apply-origin-gate.mjs",
+		"find": "return pairs.filter( ( t ) => ! String( t.via ?? '' ).startsWith( 'skeleton' )",
+		"replace": "return pairs.filter( ( t ) => ! t.part && ! t.reveal && ! String( t.via ?? '' ).startsWith( 'skeleton' )",
+		"why": "a part or reveal target off the origin is not compared"
 	}
 ]

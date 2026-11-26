@@ -19,9 +19,10 @@ export const pairsOf = ( cfg, origin = {}, refreshed = null ) => pairsReport( cf
 // names another element is a stale record, left out and listed in `disagree` as { ref, source: 'pair' | 'refresh', was, origin } (loadSurfaces
 // carries it to the applier, which refuses to run on it). `refreshed` is `<surface>.pairs.json` (lib/refresh-pairs.mjs): its pairs replace the
 // config's for a ref the origin does not hold, and a ref it names unpaired is dropped with its reason. A ref the origin holds is never
-// dropped by the refreshed file (not named, structural or unpaired): its pair stays the origin's element. A part or reveal pair names a different
-// element of the same block by design, so it is never compared with the origin's. A pair with `reveal` is an element the draft shows only
-// in that state, read with the draft put in it (lib/apply-reveal-read.mjs). A draft element that several refs claim with different
+// dropped by the refreshed file (not named, structural or unpaired): its pair stays the origin's element. A refreshed `part` or `reveal` is
+// copied onto a ref the origin holds only when it names the origin's element; one on another element is listed in `disagree` like any other
+// pair, and the origin's pair stays. A pair with `reveal` is an element the draft shows only in that state, read with the draft put in it
+// (lib/apply-reveal-read.mjs). A draft element that several refs claim with different
 // content (their origin fingerprints' text differs) is refused for all of them: a write for one block would land on the others.
 export function pairsReport( cfg, origin = {}, refreshed = null ) {
 	const out = new Map();
@@ -49,7 +50,7 @@ export function pairsReport( cfg, origin = {}, refreshed = null ) {
 	stale.forEach( ( ref ) => out.delete( ref ) );
 	for ( const [ ref, tpl ] of Object.entries( refreshed?.pairs || {} ) ) {
 		const held = origin[ ref ]?.tpl;
-		if ( held && held !== tpl.tpl && ! tpl.part && ! tpl.reveal ) {
+		if ( held && held !== tpl.tpl ) {
 			disagree.push( { ref, source: 'refresh', was: tpl.tpl, origin: held } );
 			continue;
 		}

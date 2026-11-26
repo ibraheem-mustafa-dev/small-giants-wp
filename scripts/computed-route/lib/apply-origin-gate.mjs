@@ -25,9 +25,10 @@ export function staleRecordProblems( surfaces, client ) {
 	} );
 }
 
-// The planned targets of a surface whose element differs from the origin's for the same block. A skeleton target, a part and a reveal pair
-// name an element of their own by design and are not compared.
+// The planned targets of a surface whose element differs from the origin's for the same block. A skeleton target names an element of its
+// own by design and is not compared; a part or reveal pair of a block the origin holds is on the origin's element (pairsReport lists any
+// other as a disagreement), so it is compared like any other.
 export function targetsOffOrigin( { pairs, origin = {} } ) {
-	return pairs.filter( ( t ) => ! t.part && ! t.reveal && ! String( t.via ?? '' ).startsWith( 'skeleton' ) && origin[ t.ref ]?.tpl && origin[ t.ref ].tpl !== t.tpl )
+	return pairs.filter( ( t ) => ! String( t.via ?? '' ).startsWith( 'skeleton' ) && origin[ t.ref ]?.tpl && origin[ t.ref ].tpl !== t.tpl )
 		.map( ( t ) => `${ t.ref }: planned for ${ t.tpl }, the origin records ${ origin[ t.ref ].tpl }` );
 }
