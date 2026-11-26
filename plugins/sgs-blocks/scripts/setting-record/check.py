@@ -162,15 +162,21 @@ def prints_root(html: str, short: str) -> bool:
                for m in (g for _q, g in re.findall(r'class=(["\'])(.*?)\1', html or '', re.S)))
 
 
-def variant_faults(defaults: list, short: str) -> list:
+def variant_faults(defaults: list, short: str, expected: dict | None = None) -> list:
     """The fixture variants (beyond variant 0, which the coverage floor reads) whose own default render prints nothing, or
-    not the block's root: [{variant, why}]. defaults: [(variant index, the render's html)]."""
+    not the block's root: [{variant, why}]. defaults: [(variant index, the render's html)]. expected: the fixture's
+    `expectEmpty` ({variant: why}), the variants that print nothing on purpose (a picture block with no picture): such a
+    variant is no fault while it prints nothing, and a fault once it prints anything, so the mark cannot go stale."""
+    expected = {int(k): v for k, v in (expected or {}).items()}
     out = []
     for variant, html in sorted(defaults):
         if variant == 0:
             continue
         bare = re.sub(r'<style\b.*?</style>', '', html or '', flags=re.S).strip()
-        if not bare:
+        if variant in expected:
+            if bare:
+                out.append({'variant': variant, 'why': 'is marked expectEmpty in its fixture but prints markup'})
+        elif not bare:
             out.append({'variant': variant, 'why': 'renders nothing'})
         elif not prints_root(bare, short):
             out.append({'variant': variant, 'why': 'does not print the block root'})
@@ -262,7 +268,7 @@ def run_block(short: str, plugin: Path, fixtures: dict, fixtures_dir: Path, inst
     # A fixture variant beyond the plain block is a render the check and the site look draw from too: one that prints
     # nothing (a menu `ref` no stand-in post answers, a map keyed by a placeholder nothing fills) tests nothing and hides
     # the parts it was written to draw.
-    empty_variants = variant_faults([(i['variant'], results[i['_key']].get('html', '')) for i in insts if i['isDefault']], short)
+    empty_variants = variant_faults([(i['variant'], results[i['_key']].get('html', '')) for i in insts if i['isDefault']], short, fixture.get('expectEmpty'))
     stats = {'block': slug, 'instances': len(insts), 'renders': len(jobs), 'failed': sum(1 for r in results.values() if not r.get('ok')),
              'errors': errors[:10], 'secondsRendering': round(t2 - t1, 1), 'secondsRun': round(time.time() - t0, 1),
              'testedNoPaint': sorted(tested - recorded - replaced), 'replacesBlock': sorted(replaced - recorded),

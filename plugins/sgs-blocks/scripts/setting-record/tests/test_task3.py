@@ -113,6 +113,12 @@ def test_a_fixture_variant_that_renders_nothing_is_named(monkeypatch):
         {'variant': 1, 'why': 'renders nothing'}, {'variant': 2, 'why': 'renders nothing'}]
     assert CK.variant_faults([(0, root), (1, '<p class="notice">no menu</p>')], 'demo') == [
         {'variant': 1, 'why': 'does not print the block root'}]
+    # a variant the fixture marks expectEmpty prints nothing on purpose: no fault while it does, a fault once it prints markup
+    assert CK.variant_faults([(0, root), (1, '')], 'demo', {'1': 'a picture block with no picture'}) == []
+    assert CK.variant_faults([(0, root), (1, '<style>.a{}</style>')], 'demo', {1: 'why'}) == []
+    assert CK.variant_faults([(0, root), (1, root)], 'demo', {'1': 'why'}) == [
+        {'variant': 1, 'why': 'is marked expectEmpty in its fixture but prints markup'}]
+    assert CK.variant_faults([(0, root), (1, ''), (2, '')], 'demo', {'1': 'why'}) == [{'variant': 2, 'why': 'renders nothing'}]
     # through the run: a variant whose default renders nothing is in the stats
     plan = {'fixture': {}, 'unvalued': [], 'instances': [
         {'key': 'default-v0', 'attr': None, 'attrs': {}, 'isDefault': True, 'isBase': False, 'variant': 0, 'baseKey': None},
