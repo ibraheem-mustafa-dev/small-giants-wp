@@ -72,13 +72,13 @@ test( 'MUST FAIL: every inventory record whose element is on the surface ends as
 	assert.deepEqual( elsewhere.out.unmapped, [] );
 } );
 
-test( 'MUST FAIL: a close is named by whole words of the record\'s own function or name, not by `closest(` in a trigger, and never on an entrance trigger', () => {
+test( 'MUST FAIL: a close is a held animation that leaves its resting pose on an interaction, whatever its function or name, and never on an entrance trigger', () => {
 	const entrance = rec( 'C-1', { name: 'Web Animation in openMobile on e.target.closest(\'[data-x]\')', mechanism: 'waapi', fill: 'forwards', trigger: { type: 'press', detail: 'handler uses e.target.closest(\'[data-x]\')' }, source: { function: 'openMobile' }, properties: [ { property: 'opacity', from: 0, to: 1 } ] } );
-	assert.equal( recogniseBehaviour( entrance ), null, 'closest( is not a close' );
+	assert.equal( recogniseBehaviour( entrance ), null, 'an animation that arrives at rest is not a close' );
 	const close = { ...entrance, id: 'C-2', source: { function: 'closeMobile' }, properties: [ { property: 'opacity', from: 1, to: 0 } ] };
 	assert.equal( recogniseBehaviour( close ).kind, 'close' );
-	assert.equal( recogniseBehaviour( { ...close, source: { function: 'onDismissPanel' } } ).kind, 'close', 'camel-case words count' );
-	assert.equal( recogniseBehaviour( { ...close, source: { function: 'enclosure' } } ), null, 'a word that merely contains close' );
+	assert.equal( recogniseBehaviour( { ...close, source: { function: 'toggleThing' }, name: 'Effect C-2' } ).kind, 'close', 'the function and name play no part' );
+	assert.equal( recogniseBehaviour( { ...close, properties: [ { property: 'opacity', from: 1, to: 1 } ] } ), null, 'an animation that stays at rest is not a close' );
 	assert.equal( recogniseBehaviour( { ...close, trigger: { type: 'mount', detail: '' } } ), null, 'an entrance trigger is not an exit' );
 } );
 

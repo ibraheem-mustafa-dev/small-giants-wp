@@ -13,8 +13,8 @@
 	},
 	{
 		"file": "lib/motion-behaviour-settings.mjs",
-		"find": "return /^(?:sticky|fixed)$/.test( String( staticStyle( t?.element, 'position' ) ?? '' ).trim() ) ||",
-		"replace": "return true ||",
+		"find": "return /^(?:sticky|fixed)$/.test( String( staticStyle( t?.element, 'position' ) ?? '' ).trim() );",
+		"replace": "return true;",
 		"why": "every header is read as pinned"
 	},
 	{
@@ -25,9 +25,9 @@
 	},
 	{
 		"file": "lib/motion-behaviour-settings.mjs",
-		"find": "! /\\bdot\\b|status|open/i.test( words( r.element?.description, r.name ) )",
-		"replace": "false",
-		"why": "any endless ring is the dot pulse"
+		"find": "|| ! statusDotOf( r, ctx ) ) {",
+		"replace": ") {",
+		"why": "any endless ring is the dot pulse, wherever it sits"
 	},
 	{
 		"file": "lib/motion-behaviour-settings.mjs",
@@ -67,8 +67,8 @@
 	},
 	{
 		"file": "lib/motion-behaviour-settings.mjs",
-		"find": "[ 'panelEdgeOpacity', opacity.from ]",
-		"replace": "[ 'panelEdgeOpacity', opacity.to ]",
+		"find": "[ 'panelEdgeOpacity', o?.edge ]",
+		"replace": "[ 'panelEdgeOpacity', o?.focus ]",
 		"why": "the edge opacity is the focus one"
 	},
 	{
@@ -85,15 +85,15 @@
 	},
 	{
 		"file": "lib/motion-behaviour-settings.mjs",
-		"find": "'scroll-position' !== triggerOf( r ) || ! PINNED.test( blob( r ) ) ) {",
-		"replace": "'scroll-position' !== triggerOf( r ) ) {",
+		"find": "if ( ! pinnedSectionOf( r, ctx ) ) {",
+		"replace": "if ( ! scrollWrite( r ) ) {",
 		"why": "any scroll write is the pinned timeline"
 	},
 	{
 		"file": "lib/motion-behaviours.mjs",
-		"find": "&& PINNED.test( blob( r ) ) ) ) );",
-		"replace": "&& true ) ) );",
-		"why": "any scaleX(p) write is a pin progress bar"
+		"find": "const pin = !! pinnedSectionOf( r, ctx );",
+		"replace": "const pin = true;",
+		"why": "any scale write on scroll is a pin progress bar"
 	},
 	{
 		"file": "lib/motion-behaviours.mjs",
@@ -103,9 +103,9 @@
 	},
 	{
 		"file": "lib/motion-behaviours.mjs",
-		"find": "|| ! namesClose( r ) ) {",
+		"find": "|| Object.entries( pose.to ).every( ( [ k, v ] ) => restValue( k, v ) ) ) {",
 		"replace": ") {",
-		"why": "any held animation is an exit"
+		"why": "an animation that moves to rest is an exit"
 	},
 	{
 		"file": "lib/fill-behaviour.mjs",
