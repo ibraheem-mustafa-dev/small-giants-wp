@@ -684,6 +684,24 @@ test( 'column title: the first leaf is the head of a run only when no later titl
 	assert.equal( blockOf( one, 'Note' ), 'sgs/label', 'a title above one bare link is no run' );
 } );
 
+test( 'column title: one heading per run: of a kicker, a title and the run, or a title, a line of text and the run, only one leaf is the heading (the one that reads as a title by its style when only one does, else the nearest); MUST FAIL when every leaf above a run heads it', () => {
+	const kick = headedCol( [ capsTitle( 'NEW' ), capsTitle( 'Our latest frames' ), linkLoop() ] );
+	assert.notEqual( blockOf( kick, 'NEW' ), 'sgs/heading', 'two titles: the kicker above the nearer title is no second heading' );
+	assert.equal( blockOf( kick, 'Our latest frames' ), 'sgs/heading', 'the nearest title heads the run' );
+	const line = headedCol( [ capsTitle( 'Most asked' ), N( 'p', { words: 'Twelve frames people ask for most' } ), linkLoop() ] );
+	assert.equal( blockOf( line, 'Most asked' ), 'sgs/heading', 'the caps title heads the run, not the line of text under it' );
+	assert.notEqual( blockOf( line, 'Twelve frames people ask for most' ), 'sgs/heading', 'the line of text stays text' );
+	const intro = headedCol( [ N( 'p', { words: 'Intro line' } ), capsTitle( 'Sunglasses' ), linkLoop() ] );
+	assert.equal( blockOf( intro, 'Sunglasses' ), 'sgs/heading', 'a plain line above a caps title: the title heads' );
+	assert.notEqual( blockOf( intro, 'Intro line' ), 'sgs/heading' );
+	const bare = ( words, href ) => N( 'a', { words, attrs: { href } } );
+	const links = headedCol( [ capsTitle( 'Shop by' ), N( 'p', { words: 'Pick one below' } ), bare( 'One', '/one' ), bare( 'Two', '/two' ) ] );
+	assert.equal( blockOf( links, 'Shop by' ), 'sgs/heading' );
+	assert.notEqual( blockOf( links, 'Pick one below' ), 'sgs/heading', 'a line above bare links is no second heading' );
+	const two = headedCol( [ capsTitle( 'Most asked' ), linkLoop(), capsTitle( 'All brands' ), linkLoop() ] );
+	assert.equal( blockOf( two, 'All brands' ), 'sgs/heading', 'a second title above its own run still heads it' );
+} );
+
 test( 'column title: outside a header panel only the direct-sibling-links reading applies (a hero line above its button loop, a title above one wrapper of links on a page stay as they were); MUST FAIL when the panel readings run everywhere', () => {
 	const asPage = ( col ) => byWords( run( headedPanel( col ), { kind: 'page', name: 'Home' } ), 'Sunglasses' )?.block;
 	const wrapped = headedCol( [ capsTitle( 'Sunglasses' ), linkLoop() ] );

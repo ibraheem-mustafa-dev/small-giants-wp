@@ -119,10 +119,33 @@ export function makeClassifier( { m, facts, overrides, surface = {}, blockOfKey 
 	// Inside a header's disclosure panel (a mega menu), where the panel rule reads columns, the two readings above that go beyond
 	// direct sibling links apply; elsewhere a leaf above a link run is the draft's own text (a hero line above its buttons).
 	const panel = !! scope?.headerDisclosure;
+	// A leaf of words that is no link and holds no block.
+	const leafOf = ( s ) => !! m.words( s ) && 'a' !== s.tag && ! m.blockKids( s ).length;
+	// Whether the first leaf of a column is its title by the direct-links reading or, in a header panel, by heading the column's first run.
+	const firstHeads = ( s, sibs ) => leafOf( s ) && sibs[ 0 ] === s && ( sibs.slice( 1 ).filter( m.isTextLink ).length >= minLinks || ( panel && headedRun.headsRun( s ) ) );
+	// Whether a leaf reads as a title by its own declared style: capitals or a bold weight.
+	const titleLike = ( s ) => {
+		const st = view?.has?.( s ) ? view.declared( s ) : {};
+		return /uppercase/.test( st[ 'text-transform' ] ?? '' ) || Number( st[ 'font-weight' ] ) >= 600 || /bold/.test( st[ 'font-weight' ] ?? '' );
+	};
+	// One heading per run. A column's first leaf can head the run below it (firstHeads) and the leaf directly above the run can too
+	// (titlesRun), with only leaves of words between the two: a kicker and a title, a title and a line of text. Then one of them is
+	// the heading: the one that reads as a title by its style when only one does, else the one nearest the run. A leaf with no such
+	// rival is the heading by its own reading.
+	const wins = ( e, sibs ) => {
+		const first = sibs[ 0 ];
+		const at = sibs.indexOf( e );
+		const nearest = e === first ? sibs.find( ( n, i ) => i > at && sibs.slice( at + 1, i ).every( leafOf ) && leafOf( n ) && headedRun.titlesRun( n ) ) : e;
+		const head = e === first ? e : first;
+		if ( ! nearest || nearest === head || ! sibs.slice( 0, sibs.indexOf( nearest ) ).every( leafOf ) || ! firstHeads( head, sibs ) ) {
+			return true;
+		}
+		const pickFirst = titleLike( head ) && ! titleLike( nearest );
+		return e === head ? pickFirst : ! pickFirst;
+	};
 	const isColumnLabel = ( e ) => {
-		const parent = m.byKey[ e.parentKey ] || { key: null };
-		const sibs = m.blockKids( parent );
-		return !! m.words( e ) && 'a' !== e.tag && ! m.blockKids( e ).length && ( sibs[ 0 ] === e && ( sibs.slice( 1 ).filter( m.isTextLink ).length >= minLinks || ( panel && headedRun.headsRun( e ) ) ) || ( panel && headedRun.titlesRun( e ) ) );
+		const sibs = m.blockKids( m.byKey[ e.parentKey ] || { key: null } );
+		return leafOf( e ) && ( ( firstHeads( e, sibs ) || ( panel && headedRun.titlesRun( e ) ) ) && ( ! panel || wins( e, sibs ) ) );
 	};
 
 	const rules = makeRules( { m, facts, surface, motion, view, scope, hooks: { siteInfoKinds, isColumnLabel, blockOfKey, formLinkOf, siteLink, unwrapReads, absorbInto, overlayInto, topBlock: ( k ) => classify( k, null ).candidates[ 0 ]?.block, brandOf: ( k ) => brandFor( k )[ 0 ]?.brand?.slug ?? null } } );
