@@ -34,8 +34,11 @@ from pathlib import Path
 
 sys.stdout.reconfigure(encoding="utf-8")
 PLUGIN = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
+from framework_db import framework_db_path  # noqa: E402
+
+DB = framework_db_path()
 SRC = PLUGIN / "src"
-DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
 WHOLE = Path(__file__).resolve().parent / "data" / "colour-whole-block.json"
 LIMIT = 12
 COLOUR_ROLES = ("color", "colour-text", "colour-background")

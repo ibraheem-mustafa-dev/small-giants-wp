@@ -109,7 +109,10 @@ export default function ResponsiveBoxControls( {
 	const blockName = blockNameProp || context?.name || '';
 	const declared = blockName ? getBlockType( blockName )?.attributes : null;
 	const owns = ( attr ) => ! declared || attr in declared;
-	const { maxWidth, contentWidth } = attributes;
+	// Read by name, not destructured: only a block that passes `showMaxWidth` / `showContentWidth` declares these two, and
+	// `check-undeclared-attrs.py` reads a destructuring of an undeclared attribute as a silent discard.
+	const maxWidth = attributes.maxWidth;
+	const contentWidth = attributes.contentWidth;
 
 	return (
 		<PanelBody title={ title } initialOpen={ initialOpen }>
