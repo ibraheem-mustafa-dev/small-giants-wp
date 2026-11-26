@@ -88,6 +88,22 @@ test( 'MUST FAIL: with two free slots the second waiter starts at once; a waiter
 	assert.equal( queuePlace( { file, lockDir: dir, me: { label: 'late', pid: process.pid }, alive } ), 0, 'a waiter silent for ten minutes is dropped' );
 } );
 
+test( 'MUST FAIL: a --front run joins the queue at the top, ahead of earlier waiters; a routine run still joins at the bottom', ( t ) => {
+	const dir = tmp();
+	t.after( () => fs.rmSync( dir, { recursive: true, force: true } ) );
+	const file = path.join( dir, 'queue.md' );
+	const alive = () => true;
+	queuePlace( { file, lockDir: dir, me: { label: 'first', pid: 4242 }, alive } );
+	queuePlace( { file, lockDir: dir, me: { label: 'second', pid: 4343 }, alive } );
+	assert.equal( queuePlace( { file, lockDir: dir, me: { label: 'deploy', pid: 4444 }, alive, front: true } ), 0 );
+	assert.equal( queuePlace( { file, lockDir: dir, me: { label: 'routine', pid: 4545 }, alive } ), 3 );
+	assert.deepEqual( readQueue( file ).entries.map( ( e ) => e.label ), [ 'deploy', 'first', 'second', 'routine' ] );
+	assert.equal( queuePlace( { file, lockDir: dir, me: { label: 'deploy', pid: 4444 }, alive, front: true } ), 0, 'a listed front run keeps its place' );
+	assert.deepEqual( parseArgv( [ '--front', 'run', 'x', '--', 'cmd' ] ).front, true );
+	assert.deepEqual( parseArgv( [ 'run', 'x', '--', '--front' ] ).front, false, 'an option after -- belongs to the command' );
+	assert.equal( parseArgv( [ '--front', 'run', 'x', '--', 'cmd' ] ).label, 'x' );
+} );
+
 test( 'acquire run outside the real slot folder never touches the shared queue', async ( t ) => {
 	const dir = tmp();
 	t.after( () => fs.rmSync( dir, { recursive: true, force: true } ) );

@@ -97,15 +97,17 @@ const same = ( a, b ) => a.label === b.label && a.pid === b.pid;
 const hhmm = ( now ) => new Date( now ).toTimeString().slice( 0, 5 );
 
 // Drops the waiting jobs whose process is gone or whose beat is WAIT_STALE_MS old, adds `me` at the bottom when it is not
-// listed (or refreshes its beat), writes the list, and returns `me`'s place (0 is the top).
-export function queuePlace( { file, lockDir, me, alive, now = Date.now() } ) {
+// listed (at the top with `front`: a run Bean put ahead of the queue, such as a live-site deploy) or refreshes its beat,
+// writes the list, and returns `me`'s place (0 is the top).
+export function queuePlace( { file, lockDir, me, alive, now = Date.now(), front = false } ) {
 	return withQueueLock( lockDir, () => {
 		const q = readQueue( file );
 		const entries = q.entries.filter( ( e ) => same( e, me ) || ( alive( e.pid ) && now - e.beat <= WAIT_STALE_MS ) );
 		let at = entries.findIndex( ( e ) => same( e, me ) );
 		if ( -1 === at ) {
-			entries.push( { time: hhmm( now ), label: me.label, pid: me.pid, joined: now, beat: now } );
-			at = entries.length - 1;
+			const entry = { time: hhmm( now ), label: me.label, pid: me.pid, joined: now, beat: now };
+			front ? entries.unshift( entry ) : entries.push( entry );
+			at = front ? 0 : entries.length - 1;
 		} else {
 			entries[ at ] = { ...entries[ at ], beat: now };
 		}
