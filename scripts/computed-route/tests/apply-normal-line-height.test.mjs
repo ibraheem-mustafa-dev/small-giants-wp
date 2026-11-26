@@ -83,7 +83,8 @@ test( 'MUST FAIL: labels whose line boxes at normal differ get one no-setting ro
 	const draftOf = ( ...fields ) => at( { probes: { fields, steps: 1, focus: null, consent: null } } );
 	const live = at( probe( lab( { 'line-height': '24px' } ) ) );
 	const seen = ( draft ) => itemFor( form.decide( { ...ctx, draft, live } ), 'labelLineHeight' );
-	assert.equal( seen( draftOf( labelOf( 16.8, false ), labelOf( 19.2, false ) ) ).status, 'no-setting', 'two visible labels that differ' );
+	const rowOf = ( draft ) => itemFor( form.decide( { ...ctx, draft, live } ), 'field-label line-height' );
+	assert.equal( rowOf( draftOf( labelOf( 16.8, false ), labelOf( 19.2, false ) ) ).status, 'no-setting', 'two visible labels that differ' );
 	// The honeypot's label is never seen: its line box neither decides the value nor makes the visible ones differ.
 	const one = seen( draftOf( labelOf( 19.2, true ), labelOf( 16.8, false ) ) );
 	assert.equal( one.status, 'op' );
@@ -94,4 +95,23 @@ test( 'MUST FAIL: the label read measures the line box of a label once, not once
 	const fs = await import( 'node:fs' );
 	const src = fs.readFileSync( new URL( '../lib/apply-probes.mjs', import.meta.url ), 'utf8' );
 	assert.equal( src.match( /normalBox\( el \)/g ).length, 1 );
+} );
+
+test( 'MUST FAIL: labels the live page already paints as the draft draws them get no row, however their line boxes differ', () => {
+	assert.deepEqual( label( { normalPx: null, normalAll: [ 16.8, 19.2 ], lives: [ 'normal' ] } ), [], 'the live labels are at normal too' );
+	assert.equal( label( { normalPx: null, normalAll: [ 16.8, 19.2 ], lives: [ '24px' ] } ).length, 1, 'a live that differs still gets the row' );
+} );
+
+test( 'MUST FAIL: the differing-line-boxes row names its property as the several-values row does, so the gate judges them alike', () => {
+	const [ many ] = label( { drafts: [ 'normal', '1.5' ], normalPx: null } );
+	const [ boxes ] = label( { normalPx: null, normalAll: [ 16.8, 19.2 ] } );
+	assert.match( many.why, /different values/ );
+	assert.equal( boxes.prop, many.prop );
+} );
+
+test( 'MUST FAIL: the honeypot input is no field of the draft or the live page: its look makes no several-values row', () => {
+	const field = ( bg ) => ( { 'background-color': bg, color: 'rgb(0, 0, 0)', 'border-top-color': 'rgb(0, 0, 0)', 'border-top-width': '1px', 'border-top-style': 'solid', 'font-size': '14px', 'font-weight': '400' } );
+	const fields = ( honey ) => [ { field: field( honey ), label: lab(), honeypot: true }, { field: field( 'rgb(255, 255, 255)' ), label: lab(), honeypot: false } ];
+	const items = form.decide( { ...ctx, draft: at( { probes: { fields: fields( 'rgb(255, 0, 0)' ), steps: 1, focus: null, consent: null } } ), live: at( { probes: { fields: fields( 'rgb(0, 0, 255)' ), steps: 1, focus: null, consent: null } } ) } );
+	assert.deepEqual( items.filter( ( i ) => /field-input/.test( i.prop ) || /different values/.test( i.why ?? '' ) ), [] );
 } );

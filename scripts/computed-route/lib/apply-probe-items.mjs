@@ -71,9 +71,6 @@ export function partItems( { ctx, element, prop, state = null, drafts, lives, la
 	const have = collapse( lives );
 	const prefix = `${ element }${ state ? ` ${ state }` : '' } ${ prop }`;
 	const at = settingAt( { db: ctx.db, block: ctx.block, calFor: ctx.calFor, element, prop, state } );
-	if ( 'line-height' === prop && 'normal' === String( want[ 0 ] ).trim() && normalAll.length > 1 ) {
-		return [ { status: 'no-setting', prop: label ?? at?.attr ?? prefix, state: state ?? undefined, why: `${ at ? `${ at.attr } holds one value for all of them` : 'the block has no setting for it' }; the draft's ${ element } parts have different line boxes at normal: ${ normalAll.map( ( px ) => `${ px }px` ).join( ' | ' ) }${ why }` } ];
-	}
 	if ( want.length > 1 ) {
 		return [ { status: 'no-setting', prop: label ?? prefix, state: state ?? undefined, why: `${ at ? `${ at.attr } holds one value for all of them` : 'the block has no setting for it' }; the draft has ${ want.length } different values: ${ want.join( ' | ' ) }${ why }` } ];
 	}
@@ -82,6 +79,9 @@ export function partItems( { ctx, element, prop, state = null, drafts, lives, la
 	const wantAs = normal?.draft[ 1440 ] ?? want[ 0 ];
 	if ( 1 === have.length && ( stacks ? firstFamily( want[ 0 ] ) === firstFamily( have[ 0 ] ) : ! differs( want[ 0 ], have[ 0 ] ) || ! differs( wantAs, have[ 0 ] ) ) ) {
 		return [];
+	}
+	if ( 'line-height' === prop && 'normal' === String( want[ 0 ] ).trim() && normalAll.length > 1 ) {
+		return [ { status: 'no-setting', prop: label ?? prefix, state: state ?? undefined, why: `${ at ? `${ at.attr } holds one value for all of them` : 'the block has no setting for it' }; the draft's ${ element } parts have different line boxes at normal: ${ normalAll.map( ( px ) => `${ px }px` ).join( ' | ' ) }${ why }` } ];
 	}
 	if ( ! at ) {
 		return [ { status: 'no-setting', prop: label ?? prefix, state: state ?? undefined, why: `${ ctx.block } has no ${ state ?? 'resting' } setting for ${ prop } on ${ element }${ why }` } ];

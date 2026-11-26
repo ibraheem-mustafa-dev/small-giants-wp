@@ -111,14 +111,16 @@ export const form = {
 			return [];
 		}
 		const items = [];
+		// The honeypot is never seen, so only the visible fields speak for the draft's and the live page's looks.
+		const dReal = d.fields.filter( ( f ) => ! f.honeypot );
+		const lReal = l.fields.filter( ( f ) => ! f.honeypot );
 		const why = d.steps > 1 ? ` (${ d.steps } steps read)` : '';
 		for ( const prop of FIELD_REST_PROPS.filter( ( p ) => ! /^border-top-(color|width|style)$/.test( p ) ) ) {
-			items.push( ...partItems( { ctx, element: 'field-input', prop, drafts: col( d.fields, 'field', prop ), lives: col( l.fields, 'field', prop ), check: { all: 'field' }, why } ) );
+			items.push( ...partItems( { ctx, element: 'field-input', prop, drafts: col( dReal, 'field', prop ), lives: col( lReal, 'field', prop ), check: { all: 'field' }, why } ) );
 		}
 		// A unitless line height and an em letter spacing are held against the part's own font size, the draft's (the size this run writes).
-		// The honeypot's label is never seen, so only the visible fields' labels speak for the draft's.
-		const dLabels = d.fields.filter( ( f ) => ! f.honeypot );
-		const lLabels = l.fields.filter( ( f ) => ! f.honeypot );
+		const dLabels = dReal;
+		const lLabels = lReal;
 		const labelPx = parseFloat( col( dLabels, 'label', 'font-size' ).find( Boolean ) ) || null;
 		const normals = [ ...new Set( col( dLabels, 'label', 'normalLineHeight' ).map( Number ).filter( Boolean ) ) ];
 		for ( const prop of LABEL_PROPS ) {

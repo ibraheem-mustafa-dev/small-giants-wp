@@ -40,5 +40,23 @@
 		"find": "...( box ? { normalLineHeight: box } : {} )",
 		"replace": "...( normalBox( el ) ? { normalLineHeight: normalBox( el ) } : {} )",
 		"why": "the label read measures the line box twice"
+	},
+	{
+		"file": "lib/apply-probe-items.mjs",
+		"find": "if ( 1 === have.length && ( stacks ?",
+		"replace": "if ( ! ( normalAll.length > 1 ) && 1 === have.length && ( stacks ?",
+		"why": "the differing-line-boxes row is given before the equality check, so labels already right on the live page get a row"
+	},
+	{
+		"file": "lib/apply-probe-items.mjs",
+		"find": "prop: label ?? prefix, state: state ?? undefined, why: `${ at ? `${ at.attr } holds one value for all of them` : 'the block has no setting for it' }; the draft's ${ element } parts",
+		"replace": "prop: label ?? at?.attr ?? prefix, state: state ?? undefined, why: `${ at ? `${ at.attr } holds one value for all of them` : 'the block has no setting for it' }; the draft's ${ element } parts",
+		"why": "the differing-line-boxes row names its property by the setting, so the gate judges it unlike the several-values row"
+	},
+	{
+		"file": "lib/apply-family-form.mjs",
+		"find": "drafts: col( dReal, 'field', prop ), lives: col( lReal, 'field', prop )",
+		"replace": "drafts: col( d.fields, 'field', prop ), lives: col( l.fields, 'field', prop )",
+		"why": "the honeypot input speaks for the draft's and the live page's field looks"
 	}
 ]
