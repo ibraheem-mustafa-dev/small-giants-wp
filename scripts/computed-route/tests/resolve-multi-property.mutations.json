@@ -1,8 +1,32 @@
 [
 	{
 		"file": "lib/resolve.mjs",
-		"find": "( ! c.property || paintedProps( c ).some( ( q ) => q === short || reachedBy( prop ).includes( q ) ) ) && ( c.state ?? null ) === ( input.paintState ?? state ?? null )",
-		"replace": "( ! c.property || c.property === short || reachedBy( prop ).includes( c.property ) ) && ( c.state ?? null ) === ( input.paintState ?? state ?? null )",
+		"find": "( ! c.property || paintedProps( c ).some( ( q ) => q === short || reachedBy( prop ).includes( q ) ) ) && otherSizeAgrees( c, prop, perWidth, input.siblings ) && ( c.state ?? null )",
+		"replace": "( ! c.property || c.property === short || reachedBy( prop ).includes( c.property ) ) && otherSizeAgrees( c, prop, perWidth, input.siblings ) && ( c.state ?? null )",
 		"why": "the resolver reads only the first property of a multi-property entry"
+	},
+	{
+		"file": "lib/resolve.mjs",
+		"find": "otherSizeAgrees( c, prop, perWidth, input.siblings ) && ( c.state ?? null )",
+		"replace": "( c.state ?? null )",
+		"why": "a width row ties to a height,width setting whatever the draft's height is"
+	},
+	{
+		"file": "lib/resolve.mjs",
+		"find": "otherSizeAgrees( c, prop, input.perWidth, input.siblings ) && ( ( c.state || null )",
+		"replace": "( ( c.state || null )",
+		"why": "the ancestor hop proves a height,width setting whatever the draft's height is"
+	},
+	{
+		"file": "lib/resolve.mjs",
+		"find": "undefined === siblings?.[ q ]?.[ w ] || sameMeasured( q, siblings[ q ][ w ], v )",
+		"replace": "true",
+		"why": "the other size is never compared with the draft"
+	},
+	{
+		"file": "lib/resolve.mjs",
+		"find": "if ( ! EXACT_SIZE.test( prop ) ) {\n\t\treturn true;\n\t}\n\tconst own",
+		"replace": "const own",
+		"why": "a non-size row is compared with the other properties the setting paints"
 	}
 ]

@@ -199,6 +199,19 @@ const sameMeasured = ( prop, a, b ) => {
 	return la && lb ? la.unit === lb.unit && Math.abs( la.n - lb.n ) <= PX_TOL : String( a ) === String( b );
 };
 
+// A setting whose record entry paints several properties writes one value to all of them. For a row on one of two exact sizes
+// (width, height) it is no candidate when the draft states the other size as something else (a 320px-wide element with an auto
+// or 48px height): the setting would paint that size off the draft. An unread sibling decides nothing; min-, max- and
+// non-size properties never decide (one value does not paint those alike).
+const EXACT_SIZE = /^(width|height|block-size|inline-size)$/;
+export function otherSizeAgrees( entry, prop, perWidth, siblings = {} ) {
+	if ( ! EXACT_SIZE.test( prop ) ) {
+		return true;
+	}
+	const own = [ prop, ...reachedBy( prop ) ];
+	return paintedProps( entry ).filter( ( q ) => EXACT_SIZE.test( q ) && ! own.includes( q ) ).every( ( q ) => Object.entries( perWidth || {} ).every( ( [ w, v ] ) => undefined === siblings?.[ q ]?.[ w ] || sameMeasured( q, siblings[ q ][ w ], v ) ) );
+}
+
 // One CSS time ("0.25s", "250ms", "1s") as a whole number of milliseconds, or null when it is not one non-negative time.
 export function timeToMs( raw ) {
 	const m = String( raw ?? '' ).trim().match( /^(\d*\.?\d+)(ms|s)$/i );
@@ -641,7 +654,7 @@ export function resolve( input, ctx ) {
 	// that stands for it at rest (form-field-tiles' tile-selected: the tile while checked).
 	const tiedBy = ( paths, layer = false ) => rows.filter( ( r ) => {
 		const c = ctx.calibration.settings?.[ r.attr_name ];
-		return c && variantHeld( c, input.variants ) && paths( c ).some( ( p ) => ( loose( p ) === slot || ( layer && coversSlot( c, p, slot, short ) ) ) && sameKind( p ) ) && ( ! c.property || paintedProps( c ).some( ( q ) => q === short || reachedBy( prop ).includes( q ) ) ) && ( c.state ?? null ) === ( input.paintState ?? state ?? null ) && canGive( r, c ) && holdsDisplay( r ) && inForce( c );
+		return c && variantHeld( c, input.variants ) && paths( c ).some( ( p ) => ( loose( p ) === slot || ( layer && coversSlot( c, p, slot, short ) ) ) && sameKind( p ) ) && ( ! c.property || paintedProps( c ).some( ( q ) => q === short || reachedBy( prop ).includes( q ) ) ) && otherSizeAgrees( c, prop, perWidth, input.siblings ) && ( c.state ?? null ) === ( input.paintState ?? state ?? null ) && canGive( r, c ) && holdsDisplay( r ) && inForce( c );
 	} );
 	const painting = ( c ) => c.slots || [ c.slot ];
 	// A setting on the element itself, else one on a cover layer over it (lib/resolve-layer.mjs), else one whose inherited value reaches it.
@@ -888,7 +901,7 @@ export function resolveViaAncestor( input, ctx ) {
 		const painted = rows.find( ( r ) => {
 			const c = a.calibration?.settings?.[ r.attr_name ];
 			return c && [ ...( c.slots || ( c.slot ? [ c.slot ] : [] ) ), ...( c.reaches || [] ) ].some( ( p ) => LOOSE( p ) === LOOSE( a.path ) ) &&
-				( ! c.property || paintedProps( c ).some( ( q ) => q === short || reachedBy( prop ).includes( q ) ) ) && ( ( c.state || null ) === ( state || null ) );
+				( ! c.property || paintedProps( c ).some( ( q ) => q === short || reachedBy( prop ).includes( q ) ) ) && otherSizeAgrees( c, prop, input.perWidth, input.siblings ) && ( ( c.state || null ) === ( state || null ) );
 		} );
 		// Write-prover 2: the block-context channel. The row's block `usesContext` a key this ancestor
 		// `providesContext`, and the attribute behind that key is one of the candidates.
