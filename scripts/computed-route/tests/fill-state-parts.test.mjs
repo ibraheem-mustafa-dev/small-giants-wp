@@ -125,3 +125,28 @@ test( 'MUST FAIL: a state setting with a canonical slot of its own is not tied t
 	assert.deepEqual( partStateSlots( args ), [ '.h' ], 'the panel\'s hover setting shares the element name but is another part' );
 	assert.deepEqual( partStateSlots( { ...args, state: 'current' } ), [ '.c' ], 'a state setting with no slot still ties through its element' );
 } );
+
+// RF1 second review: quote's `attributionColour` (slot `text`) and `attributionColourHover` (slot `attribution`) sit on one
+// element and are one part; gallery and media `captionColourHover` the same. A shared element still ties them when the resting
+// settings there are the generic `text` slot, and still does not when a resting setting there is another specific part.
+test( 'MUST FAIL: a state setting whose slot differs from the generic `text` slot of its resting sibling on the same element is that sibling\'s part', () => {
+	const mem = new DatabaseSync( ':memory:' );
+	mem.exec( 'CREATE TABLE block_attributes (block_slug TEXT, attr_name TEXT, css_element TEXT, canonical_slot TEXT)' );
+	const add = mem.prepare( 'INSERT INTO block_attributes VALUES (?, ?, ?, ?)' );
+	add.run( 'x/q', 'attributionColour', 'attribution', 'text' );
+	add.run( 'x/q', 'attributionColourHover', 'attribution', 'attribution' );
+	add.run( 'x/q', 'cardColour', 'card', 'card' );
+	const c = { settings: {
+		attributionColour: setting( 'color', null, [ '.a' ] ),
+		attributionColourHover: setting( 'color', 'hover', [ '.h' ] ),
+		cardColour: setting( 'color', null, [ '.card' ] ),
+	} };
+	assert.deepEqual( partStateSlots( { db: mem, cal: c, block: 'x/q', prop: 'color', slot: '.a', state: 'hover' } ), [ '.h' ], 'a resting setting of another element is no clash' );
+} );
+
+test( 'MUST FAIL: the real quote, gallery and media caption hover settings reach their resting text colour', () => {
+	for ( const [ block, rest, hover ] of [ [ 'sgs/quote', 'attributionColour', 'attributionColourHover' ], [ 'sgs/gallery', 'captionColour', 'captionColourHover' ], [ 'sgs/media', 'captionColour', 'captionColourHover' ] ] ) {
+		const c = { settings: { [ rest ]: setting( 'color', null, [ '.a' ] ), [ hover ]: setting( 'color', 'hover', [ '.h' ] ) } };
+		assert.deepEqual( partStateSlots( { db, cal: c, block, prop: 'color', slot: '.a', state: 'hover' } ), [ '.h' ], block );
+	}
+} );
