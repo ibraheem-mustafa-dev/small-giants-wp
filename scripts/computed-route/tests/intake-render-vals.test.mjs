@@ -22,6 +22,15 @@ test( 'MUST FAIL (valueOfKey): a key written in the object an `Object.assign(acc
 	assert.ok( renderValNode( idx, 'coGuest' ), 'coGuest sits in the first merge argument, a local const' );
 } );
 
+test( 'MUST FAIL (return order): the first return that holds a key decides it, and inside one Object.assign merge the last writer does', () => {
+	const logic = 'class Component {\n  renderVals() {\n    if ( this.state.compact ) {\n      return { gate: \'first\', only: \'a\' };\n    }\n    return Object.assign( { gate: \'second\', merged: \'one\' }, { merged: \'two\' } );\n  }\n}';
+	const two = parseLogic( logic, 1 );
+	assert.equal( renderValNode( two, 'gate' ).value, 'first', 'an early return is read before a later one' );
+	assert.equal( renderValNode( two, 'merged' ).value, 'two', 'the later argument of one merge wins' );
+	assert.equal( renderValNode( two, 'only' ).value, 'a' );
+	assert.equal( renderValNode( two, 'absent' ), null );
+} );
+
 test( 'MUST FAIL (ternary test): the node keeps the ternary, not its branches', () => {
 	assert.equal( renderValNode( idx, 'phoneDisplay' ).type, 'ConditionalExpression' );
 } );
