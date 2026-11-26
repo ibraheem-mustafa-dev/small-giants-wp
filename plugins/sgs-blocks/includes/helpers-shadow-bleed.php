@@ -317,6 +317,16 @@ function sgs_shadow_bleed_render( string $block_content, array $block ): string 
 		$css            .= $read[ $path ];
 	}
 	preg_match_all( '#<style\b[^>]*>(.*?)</style>#is', $block_content, $styles );
+	// Rules already in the collector for a scope class this markup carries (the motion renderer collects its own).
+	preg_match_all( '/(?<![\w-])sgs-[a-z0-9-]*?-[0-9a-f]{8,10}(?![\w-])/', $block_content, $uids );
+	foreach ( (array) ( $GLOBALS['sgs_collected_css'] ?? array() ) as $chunk ) {
+		foreach ( array_unique( $uids[0] ) as $uid ) {
+			if ( false !== strpos( (string) $chunk, '.' . $uid ) ) {
+				$css .= (string) $chunk;
+				break;
+			}
+		}
+	}
 	$band = sgs_bleed_compute( $css . implode( '', $styles[1] ), $block_content, sgs_bleed_global_vars(), (array) sgs_global_custom_setting( 'focus' ), str_replace( '/', '-', (string) $block['blockName'] ) );
 	if ( null === $band ) {
 		return $block_content;
