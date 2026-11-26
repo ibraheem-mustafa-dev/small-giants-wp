@@ -91,6 +91,23 @@ test( 'NEGATIVE CONTROL: a link underlined at rest and plain on hover has no set
 	assert.ok( ! r.writes.some( ( w ) => 'linkUnderline' === w.attr ), JSON.stringify( r.writes.map( ( w ) => [ w.attr, w.after ] ) ) );
 } );
 
+test( 'MUST FAIL WITHOUT THE ANY-STATE CHOICE: a link plain at rest and underlined while current is written the value read to underline in that condition', () => {
+	const cal = { ...CAL, settings: { ...CAL.settings, linkUnderline: { ...CAL.settings.linkUnderline, enumStateReads: { ...CAL.settings.linkUnderline.enumStateReads,
+		current: { always: line( 'underline' ), hover: line( 'underline' ), none: line( 'none' ), sweep: line( 'none' ) } } } } };
+	const current = ( c ) => {
+		const tree = [ { name: 'sgs/button', attributes: { className: 'cr-ref-x-0' }, innerBlocks: [] } ];
+		const reads = {
+			states: Object.fromEntries( WIDTHS.map( ( w ) => [ w, { looks: { t: [ { states: [ 'current' ], declared: { 'text-decoration-line': 'underline' }, rendered: { 'text-decoration-line': 'underline' }, read: 'entered' } ] } } ] ) ),
+			widths: Object.fromEntries( WIDTHS.map( ( w ) => [ w, { t: { tag: 'a', href: '/x', styles: { 'text-decoration-line': 'none' } } } ] ) ),
+		};
+		return fillStates( { tree, nodes: [ { index: 0, name: 'sgs/button', targets: [ { id: 't', slot: '' } ] } ], reads, calFor: () => c, db, snapshot } );
+	};
+	const r = current( cal );
+	assert.deepEqual( r.writes.filter( ( w ) => 'linkUnderline' === w.attr ).map( ( w ) => [ w.after, w.state ] ), [ [ 'hover', 'current' ] ], JSON.stringify( r.unmapped.filter( ( u ) => 'current' === u.state ) ) );
+	const none = current( CAL );
+	assert.ok( ! none.writes.some( ( w ) => 'linkUnderline' === w.attr ), 'NEGATIVE CONTROL: with no reading in the condition no value is chosen' );
+} );
+
 // ---- review fixes: owner check, layers and hover looks of a sweep, conflicts of the state choice
 
 test( 'MUST FAIL WITHOUT THE OWNER CHECK: a sweep does not replace what another element of the block already wrote to the setting', () => {
