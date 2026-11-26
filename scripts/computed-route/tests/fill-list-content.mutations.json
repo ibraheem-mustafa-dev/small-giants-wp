@@ -43,8 +43,14 @@
 	},
 	{
 		"file": "lib/fill-list-content.mjs",
-		"find": "const kept = built.filter( ( b ) => Object.keys( b.attrs ).some( ( k ) => ! named.has( k ) ) ||",
+		"find": "const kept = built.filter( ( b ) => Object.keys( b.attrs ).some( ( k ) => ! b.madeUp?.includes( k ) ) ||",
 		"replace": "const kept = built.filter( ( b ) => Object.keys( b.attrs ).length > 0 ||",
 		"why": "an item holding only its made-up identity key is kept"
+	},
+	{
+		"file": "lib/fill-list-content.mjs",
+		"find": "label: `draft item ${ i + 1 }`",
+		"replace": "label: `item ${ i + 1 }`",
+		"why": "a row's item number reads as the written list's, which an item left out shifts"
 	}
 ]

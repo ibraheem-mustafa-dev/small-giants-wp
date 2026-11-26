@@ -235,7 +235,7 @@ test( 'MUST FAIL: an item holding nothing to show and no picture to choose is le
 	// A link field named by another role (brandUrl reads as an organisation) still matched to the link key.
 	const brand = decide( [ { name: 'brandUrl' } ], [ { brandUrl: '/a/' }, { brandUrl: '#' } ] );
 	assert.deepEqual( value( brand ), [ { linkUrl: '/a/' } ] );
-	assert.ok( brand.rows.some( ( r ) => /item 2's link "#" goes to no page/.test( r.reason ) ), 'the dead link keeps its row' );
+	assert.ok( brand.rows.some( ( r ) => /draft item 2's link "#" goes to no page/.test( r.reason ) ), 'the dead link keeps its row, numbered as the draft numbers it (the written list has no item 2)' );
 	assert.match( brand.notes.join( ';' ), /1 item\(s\) holding nothing to show and no picture to choose left out/ );
 	// An item with no link at all is no blank tile either.
 	assert.deepEqual( value( decide( [ { name: 'href' } ], [ { href: '/a/' }, {} ] ) ), [ { linkUrl: '/a/' } ] );

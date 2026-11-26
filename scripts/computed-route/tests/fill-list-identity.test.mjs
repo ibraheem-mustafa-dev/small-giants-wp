@@ -26,6 +26,9 @@ test( 'MUST FAIL: a chip row\'s items get a key from their labels, unique in the
 	assert.deepEqual( written( r ), [ { label: 'All', key: 'all' }, { label: 'Ordering & delivery', key: 'ordering-delivery' }, { label: 'Gifting', key: 'gifting' }, { label: 'Gifting', key: 'gifting-2' } ], 'the fifth chip, with no words, holds only its made-up key and is left out' );
 	assert.match( r.notes.join( ';' ), /1 item\(s\) holding nothing to show/ );
 	assert.equal( keyRole( '_key' ), 'identity' );
+	// A key the draft gave is the pill's words where it has no label (sgs/option-picker renders the key then): such items stay.
+	const own = decide( 'sgs/picker', [ { key: 'all', label: 'All' }, { key: 'small' }, { key: 'large' } ], [ 'label', 'key' ] );
+	assert.deepEqual( written( own ), [ { label: 'All', key: 'all' }, { key: 'small' }, { key: 'large' } ] );
 } );
 
 test( 'negative control: a technical key that is no identity, a key the draft filled, an untechnical value key and a wordless list', () => {
