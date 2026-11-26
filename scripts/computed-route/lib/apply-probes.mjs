@@ -57,7 +57,10 @@ function fieldsOf( [ finder, resolveSrc, restProps, labelProps, selector, textHo
 	// eslint-disable-next-line no-new-func
 	const normalBox = new Function( `return (${ normalSrc });` )();
 	// A label's line height that computes to `normal` also reads as the px of its one line box (`normalLineHeight`), as Fill's read does.
-	const readLabel = ( el, props ) => ( { ...read( el, props ), ...( normalBox( el ) ? { normalLineHeight: normalBox( el ) } : {} ) } );
+	const readLabel = ( el, props ) => {
+		const box = normalBox( el );
+		return { ...read( el, props ), ...( box ? { normalLineHeight: box } : {} ) };
+	};
 	// The field's grid cell (its nearest ancestor that is a grid item) and the grid that places it: the cell's width against the grid's
 	// content width and track count say whether the field sits in a column or spans the row. `form` is the form's own grid.
 	const layoutOf = ( field ) => {

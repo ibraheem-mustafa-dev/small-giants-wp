@@ -70,3 +70,14 @@ test( 'MUST FAIL: the gate reads each setting with the element it paints, from t
 	assert.notEqual( judgeRow( { block: 'sgs/container', prop: 'top' }, read ), 'unresolved' );
 	assert.match( fs.readFileSync( new URL( '../apply.mjs', import.meta.url ), 'utf8' ), /gateRows\( allRows, gateSettingsOf\( db \) \)/ );
 } );
+
+test( 'MUST FAIL: right, bottom and left rows are judged by the same own-offset rule as top', () => {
+	const of = ( b ) => ( { 'sgs/own': [ { attr_name: 'offsetRight', css_property: 'right', css_element: 'wrapper' }, { attr_name: 'offsetLeft', css_property: 'left' } ], 'sgs/part': [ { attr_name: 'badgeBottom', css_property: 'bottom', css_element: 'badge' } ] }[ b ] ?? [] );
+	for ( const prop of [ 'right', 'left' ] ) {
+		assert.equal( judgeRow( { block: 'sgs/own', prop }, of ), 'unresolved', prop );
+	}
+	// A block whose only bottom setting places a part has none for itself; a block with none at all is not judged.
+	assert.equal( judgeRow( { block: 'sgs/part', prop: 'bottom' }, of ), 'no-setting' );
+	assert.equal( judgeRow( { block: 'sgs/nothing', prop: 'left' }, of ), 'unjudged', 'a block the DB holds no settings for is not judged' );
+	assert.equal( judgeRow( { block: 'sgs/part', prop: 'badge bottom' }, of ), 'unresolved', 'a row naming the part counts its setting' );
+} );

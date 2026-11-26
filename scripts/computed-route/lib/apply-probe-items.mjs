@@ -55,11 +55,12 @@ function directItem( { ctx, at, row, element, prop, state, want, label, check } 
 // drafts and lives: the values one property takes across the probed parts of each side. `check` is the extra check shape the
 // judge reads (`probe`: a path into facts.probes; `all`: the key of every field's styles). Several draft values for a property
 // the block holds once are reported, never averaged. `fontPx`: the part's own font size in px, the basis a unitless line height or an
-// em letter spacing is converted against (the resolver's default is the 16px root). `normalPx`: the px of one line box of the part's
+// em letter spacing is converted against (the resolver's default is the 16px root). `normalAll`: every measured line box of the parts read, where
+// more than one is a draft whose parts differ at `normal` (a row says so; no one value stands for them). `normalPx`: the px of one line box of the part's
 // font where its line height computes to `normal` (the probe's `normalLineHeight`): a draft `normal` is written as that length, as
 // Fill writes it (lib/fill-normal-keywords.mjs), instead of refusing a keyword no setting holds; the part's own height, so it is
 // held as the length ratio the setting stores (the descendant-inheriting `declared` form is Fill's, for a whole element).
-export function partItems( { ctx, element, prop, state = null, drafts, lives, label = null, check = {}, why = '', fontPx = null, normalPx = null } ) {
+export function partItems( { ctx, element, prop, state = null, drafts, lives, label = null, check = {}, why = '', fontPx = null, normalPx = null, normalAll = [] } ) {
 	// A font stack paints as its first family (the route's own comparison, fill-confirm.mjs::TOLERANCE): stacks sharing it are one value.
 	const stacks = 'font-family' === prop;
 	const collapse = ( values ) => ( stacks ? [ ...new Map( distinct( values ).map( ( v ) => [ firstFamily( v ), v ] ) ).values() ] : distinct( values ) );
@@ -70,10 +71,16 @@ export function partItems( { ctx, element, prop, state = null, drafts, lives, la
 	const have = collapse( lives );
 	const prefix = `${ element }${ state ? ` ${ state }` : '' } ${ prop }`;
 	const at = settingAt( { db: ctx.db, block: ctx.block, calFor: ctx.calFor, element, prop, state } );
+	if ( 'line-height' === prop && 'normal' === String( want[ 0 ] ).trim() && normalAll.length > 1 ) {
+		return [ { status: 'no-setting', prop: label ?? at?.attr ?? prefix, state: state ?? undefined, why: `${ at ? `${ at.attr } holds one value for all of them` : 'the block has no setting for it' }; the draft's ${ element } parts have different line boxes at normal: ${ normalAll.map( ( px ) => `${ px }px` ).join( ' | ' ) }${ why }` } ];
+	}
 	if ( want.length > 1 ) {
 		return [ { status: 'no-setting', prop: label ?? prefix, state: state ?? undefined, why: `${ at ? `${ at.attr } holds one value for all of them` : 'the block has no setting for it' }; the draft has ${ want.length } different values: ${ want.join( ' | ' ) }${ why }` } ];
 	}
-	if ( 1 === have.length && ( stacks ? firstFamily( want[ 0 ] ) === firstFamily( have[ 0 ] ) : ! differs( want[ 0 ], have[ 0 ] ) ) ) {
+	// A draft line height of `normal` is its measured line box, so a live that already paints that height is equal to it.
+	const normal = 'line-height' === prop && 'normal' === String( want[ 0 ] ).trim() && normalPx > 0 ? normalKeywords( prop, { 1440: want[ 0 ] }, { snaps: { 1440: { normalLineHeight: normalPx, styles: { 'font-size': fontPx ? `${ fontPx }px` : undefined } } } } ) : null;
+	const wantAs = normal?.draft[ 1440 ] ?? want[ 0 ];
+	if ( 1 === have.length && ( stacks ? firstFamily( want[ 0 ] ) === firstFamily( have[ 0 ] ) : ! differs( want[ 0 ], have[ 0 ] ) || ! differs( wantAs, have[ 0 ] ) ) ) {
 		return [];
 	}
 	if ( ! at ) {
@@ -87,8 +94,7 @@ export function partItems( { ctx, element, prop, state = null, drafts, lives, la
 		}
 	}
 	// A part that stands for a state its record paints in is resolved among the settings placed in that state.
-	const normal = 'line-height' === prop && 'normal' === String( want[ 0 ] ).trim() && normalPx > 0 ? normalKeywords( prop, { 1440: want[ 0 ] }, { snaps: { 1440: { normalLineHeight: normalPx, styles: { 'font-size': fontPx ? `${ fontPx }px` : undefined } } } } ) : null;
-	const item = stateItem( { ctx, prop, value: normal?.draft[ 1440 ] ?? want[ 0 ], state, paintState: state ? null : at.paints, slot: at.slot, label: label ?? at.attr, extra: check, fontPx } );
+	const item = stateItem( { ctx, prop, value: wantAs, state, paintState: state ? null : at.paints, slot: at.slot, label: label ?? at.attr, extra: check, fontPx } );
 	// The resolver may paint a prop through a setting of another part (the wrapper's); only a setting of this part counts.
 	const own = candidates( ctx.db, ctx.block, prop, state ).filter( ( r ) => r.css_element === element ).map( ( r ) => r.attr_name );
 	const stray = 'op' === item.status ? item.writes.filter( ( w ) => ! own.includes( w.attr ) ) : [];

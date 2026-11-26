@@ -7,13 +7,13 @@
 	},
 	{
 		"file": "lib/apply-probes.mjs",
-		"find": "( normalBox( el ) ? { normalLineHeight: normalBox( el ) } : {} )",
-		"replace": "{}",
+		"find": "...( box ? { normalLineHeight: box } : {} )",
+		"replace": "",
 		"why": "the label read collects no measured line box"
 	},
 	{
 		"file": "lib/apply-probes.mjs",
-		"find": "...( normal ? { normalLineHeight: normal } : {} )",
+		"find": "...( box ? { normalLineHeight: box } : {} )",
 		"replace": "",
 		"why": "the consent read collects no measured line box"
 	},
@@ -22,5 +22,11 @@
 		"find": "\tconst first = await page.evaluate( fieldsOf, [ finder, resolveSrc, FIELD_REST_PROPS, LABEL_PROPS, FIELD_SELECTOR, textHolderSrc, normalSrc ] );",
 		"replace": "\tconst first = await page.evaluate( fieldsOf, [ finder, resolveSrc, FIELD_REST_PROPS, LABEL_PROPS, FIELD_SELECTOR, textHolderSrc ] );",
 		"why": "the first read of a form passes no line box measurer"
+	},
+	{
+		"file": "lib/apply-probes.mjs",
+		"find": "...( box ? { normalLineHeight: box } : {} )",
+		"replace": "",
+		"why": "the label read collects no measured line box"
 	}
 ]

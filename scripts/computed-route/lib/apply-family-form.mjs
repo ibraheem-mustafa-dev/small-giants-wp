@@ -116,9 +116,13 @@ export const form = {
 			items.push( ...partItems( { ctx, element: 'field-input', prop, drafts: col( d.fields, 'field', prop ), lives: col( l.fields, 'field', prop ), check: { all: 'field' }, why } ) );
 		}
 		// A unitless line height and an em letter spacing are held against the part's own font size, the draft's (the size this run writes).
-		const labelPx = parseFloat( col( d.fields, 'label', 'font-size' ).find( Boolean ) ) || null;
+		// The honeypot's label is never seen, so only the visible fields' labels speak for the draft's.
+		const dLabels = d.fields.filter( ( f ) => ! f.honeypot );
+		const lLabels = l.fields.filter( ( f ) => ! f.honeypot );
+		const labelPx = parseFloat( col( dLabels, 'label', 'font-size' ).find( Boolean ) ) || null;
+		const normals = [ ...new Set( col( dLabels, 'label', 'normalLineHeight' ).map( Number ).filter( Boolean ) ) ];
 		for ( const prop of LABEL_PROPS ) {
-			items.push( ...partItems( { ctx, element: 'field-label', prop, drafts: col( d.fields, 'label', prop ), lives: col( l.fields, 'label', prop ), check: { all: 'label' }, why, fontPx: labelPx, normalPx: Number( col( d.fields, 'label', 'normalLineHeight' ).find( Boolean ) ) || null } ) );
+			items.push( ...partItems( { ctx, element: 'field-label', prop, drafts: col( dLabels, 'label', prop ), lives: col( lLabels, 'label', prop ), check: { all: 'label' }, why, fontPx: labelPx, normalPx: 1 === normals.length ? normals[ 0 ] : null, normalAll: normals } ) );
 		}
 		for ( const prop of CONSENT_PROPS ) {
 			items.push( ...partItems( { ctx, element: 'consent-text', prop, drafts: [ d.consent?.[ prop ] ], lives: [ l.consent?.[ prop ] ], check: { probe: [ 'consent' ] }, fontPx: parseFloat( d.consent?.[ 'font-size' ] ) || null, normalPx: Number( d.consent?.normalLineHeight ) || null } ) );

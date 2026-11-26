@@ -47,7 +47,7 @@ export function judgeRow( row, settingsOf ) {
 	if ( TIMING.test( prop ) ) {
 		return 'no-setting';
 	}
-	if ( ! /^[a-z]+(-[a-z]+)*$/.test( prop ) || ! /-|^(color|gap|overflow|top|opacity|transform|background|border|padding|margin)$/.test( prop ) ) {
+	if ( ! /^[a-z]+(-[a-z]+)*$/.test( prop ) || ! /-|^(color|gap|overflow|top|right|bottom|left|opacity|transform|background|border|padding|margin)$/.test( prop ) ) {
 		return 'unjudged';
 	}
 	// A row about the block's own offset (`top`, no part named) is painted by a setting of the block's own element: a setting on a

@@ -10,5 +10,11 @@
 		"find": "SELECT attr_name, css_property, css_element, css_state FROM",
 		"replace": "SELECT attr_name, css_property, css_state FROM",
 		"why": "the gate reads settings without their element, so a part's inset resolves the block's own offset"
+	},
+	{
+		"file": "lib/apply-gate.mjs",
+		"find": "|top|right|bottom|left|opacity|",
+		"replace": "|top|opacity|",
+		"why": "right, bottom and left rows are unjudged, so the own-offset rule never applies to them"
 	}
 ]

@@ -69,3 +69,29 @@ test( 'MUST FAIL: the form family writes a label and a consent text at line-heig
 	assert.equal( itemFor( bare, 'labelLineHeight' ).status, 'no-setting' );
 	assert.equal( itemFor( bare, 'consentLineHeight' ).status, 'no-setting' );
 } );
+
+test( 'MUST FAIL: a draft line height of normal is equal to a live that already paints that line box in px', () => {
+	assert.deepEqual( label( { lives: [ '16.8px' ], normalPx: 16.8 } ), [], 'the live line box is the draft\'s normal' );
+	assert.equal( label( { lives: [ '24px' ], normalPx: 16.8 } )[ 0 ].status, 'op', 'a live of another height still gets the write' );
+} );
+
+test( 'MUST FAIL: labels whose line boxes at normal differ get one no-setting row naming the values, never the first one written', () => {
+	const [ item ] = label( { normalPx: null, normalAll: [ 16.8, 19.2 ] } );
+	assert.equal( item.status, 'no-setting' );
+	assert.match( item.why, /different line boxes at normal: 16\.8px \| 19\.2px/ );
+	const labelOf = ( normalLineHeight, honeypot ) => ( { field: {}, label: lab( { normalLineHeight } ), honeypot } );
+	const draftOf = ( ...fields ) => at( { probes: { fields, steps: 1, focus: null, consent: null } } );
+	const live = at( probe( lab( { 'line-height': '24px' } ) ) );
+	const seen = ( draft ) => itemFor( form.decide( { ...ctx, draft, live } ), 'labelLineHeight' );
+	assert.equal( seen( draftOf( labelOf( 16.8, false ), labelOf( 19.2, false ) ) ).status, 'no-setting', 'two visible labels that differ' );
+	// The honeypot's label is never seen: its line box neither decides the value nor makes the visible ones differ.
+	const one = seen( draftOf( labelOf( 19.2, true ), labelOf( 16.8, false ) ) );
+	assert.equal( one.status, 'op' );
+	assert.deepEqual( one.writes[ 0 ].value, { desktop: 1.2 } );
+} );
+
+test( 'MUST FAIL: the label read measures the line box of a label once, not once to test it and again to store it', async () => {
+	const fs = await import( 'node:fs' );
+	const src = fs.readFileSync( new URL( '../lib/apply-probes.mjs', import.meta.url ), 'utf8' );
+	assert.equal( src.match( /normalBox\( el \)/g ).length, 1 );
+} );
