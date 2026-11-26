@@ -477,6 +477,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					<ResponsiveBoxControls
 						attributes={ attributes }
 						setAttributes={ setAttributes }
+						showMaxWidth
+						showContentWidth
 					/>
 					<GalleryBorderControl
 						attributes={ attributes }
