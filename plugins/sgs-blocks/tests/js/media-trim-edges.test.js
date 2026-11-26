@@ -13,7 +13,7 @@ jest.mock( '@wordpress/api-fetch', () => ( { __esModule: true, default: jest.fn(
 
 const apiFetch = require( '@wordpress/api-fetch' ).default;
 const MediaSlotField = require( '../../src/components/media/MediaSlotField' ).default;
-const { canTrim, trimmedPatch } = require( '../../src/components/media/TrimEdgesButton' );
+const { canTrim, trimmedPatch, trimmedFocal } = require( '../../src/components/media/TrimEdgesButton' );
 
 const PHOTO = { kind: 'image', id: 7, url: 'https://example.test/a.jpg', mime: 'image/jpeg', alt: 'A frame' };
 const { act } = require( 'react' );
@@ -53,6 +53,32 @@ describe( 'trimmedPatch', () => {
 	it( 'changes the device file and size and nothing else about it', () => {
 		const patch = trimmedPatch( { desktop: PHOTO }, 'desktop', PHOTO, { id: 9, url: 'https://example.test/a-trimmed.jpg', width: 60, height: 20 } );
 		expect( patch.Source.desktop ).toEqual( { ...PHOTO, id: 9, url: 'https://example.test/a-trimmed.jpg', width: 60, height: 20 } );
+	} );
+} );
+
+describe( 'trimmedFocal', () => {
+	// A 300 x 180 picture trimmed to the 140 x 60 block that started 80 across and 60 down.
+	const trimmed = { id: 9, url: 'u', width: 140, height: 60, from_width: 300, from_height: 180, left: 80, top: 60 };
+
+	it( 'moves the focal point to the same spot of the trimmed copy', () => {
+		expect( trimmedFocal( { x: 0.5, y: 0.5 }, trimmed ) ).toEqual( { x: 0.5, y: 0.5 } );
+		// A third of the way across the original (x 100) is 20px into the kept part: 20 / 140.
+		expect( trimmedFocal( { x: 1 / 3, y: 0.5 }, trimmed ).x ).toBeCloseTo( 20 / 140, 3 );
+	} );
+
+	it( 'clamps a point that was in the trimmed-away margin to the nearest edge', () => {
+		expect( trimmedFocal( { x: 0.05, y: 0.95 }, trimmed ) ).toEqual( { x: 0, y: 1 } );
+	} );
+
+	it( 'leaves a missing focal point or an answer without sizes alone', () => {
+		expect( trimmedFocal( undefined, trimmed ) ).toBeUndefined();
+		expect( trimmedFocal( { x: 0.2, y: 0.2 }, { id: 9, width: 10, height: 10 } ) ).toEqual( { x: 0.2, y: 0.2 } );
+	} );
+
+	it( 'trimmedPatch writes the converted focal point for the device that had one, and no Focal for one that had none', () => {
+		const withFocal = trimmedPatch( { desktop: PHOTO }, 'desktop', PHOTO, trimmed, { desktop: { x: 1 / 3, y: 0.5 } } );
+		expect( withFocal.Focal.desktop.x ).toBeCloseTo( 20 / 140, 3 );
+		expect( trimmedPatch( { desktop: PHOTO }, 'desktop', PHOTO, trimmed, undefined ).Focal ).toBeUndefined();
 	} );
 } );
 

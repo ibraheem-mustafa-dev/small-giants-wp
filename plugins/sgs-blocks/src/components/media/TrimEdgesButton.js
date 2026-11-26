@@ -43,16 +43,55 @@ export function canTrim( kind, own, flag ) {
 }
 
 /**
- * The patch that points one device at the trimmed copy: the device's own settings stay, the file and its size change.
+ * A focal point {x, y} (0 to 1, a share of the picture) moved to the same spot of the trimmed copy: the kept part started
+ * `left` and `top` pixels into the original, so the share is measured from there against the copy's size.
+ *
+ * @param {?{x: number, y: number}} focal   The device's focal point.
+ * @param {Object}                  trimmed The server's answer (`width`, `height`, `from_width`, `from_height`, `left`, `top`).
+ * @return {?{x: number, y: number}} The focal point on the copy, or the same value when there is nothing to convert.
+ */
+export function trimmedFocal( focal, trimmed ) {
+	if (
+		! focal ||
+		'object' !== typeof focal ||
+		! ( trimmed?.width > 0 ) ||
+		! ( trimmed?.height > 0 ) ||
+		! ( trimmed?.from_width > 0 ) ||
+		! ( trimmed?.from_height > 0 )
+	) {
+		return focal;
+	}
+	const clamp = ( v ) => Math.max( 0, Math.min( 1, v ) );
+	const round = ( v ) => Math.round( v * 10000 ) / 10000;
+	return {
+		x: round(
+			clamp(
+				( focal.x * trimmed.from_width - ( trimmed.left || 0 ) ) /
+					trimmed.width
+			)
+		),
+		y: round(
+			clamp(
+				( focal.y * trimmed.from_height - ( trimmed.top || 0 ) ) /
+					trimmed.height
+			)
+		),
+	};
+}
+
+/**
+ * The patch that points one device at the trimmed copy: the device's own settings stay, the file and its size change, and
+ * the focal point follows the picture to its new edges (a cover crop would otherwise show the wrong part).
  *
  * @param {Object} stored  The slot's stored `Source`.
  * @param {string} device  The active device.
  * @param {Object} own     The device's current file.
- * @param {Object} trimmed The server's answer `{ id, url, width, height }`.
- * @return {Object} `{ Source }` for `slotAccess().write`.
+ * @param {Object} trimmed The server's answer.
+ * @param {*}      [focal] The slot's stored `Focal` (a tier object), when it holds one for this device.
+ * @return {Object} `{ Source }`, and `{ Focal }` when the device had its own focal point, for `slotAccess().write`.
  */
-export function trimmedPatch( stored, device, own, trimmed ) {
-	return {
+export function trimmedPatch( stored, device, own, trimmed, focal ) {
+	const patch = {
 		Source: writeDevice( stored, device, {
 			...own,
 			id: trimmed.id,
@@ -61,6 +100,16 @@ export function trimmedPatch( stored, device, own, trimmed ) {
 			height: trimmed.height,
 		} ),
 	};
+	const ownFocal =
+		focal && 'object' === typeof focal ? focal[ device ] : undefined;
+	if ( ownFocal && 'object' === typeof ownFocal ) {
+		patch.Focal = writeDevice(
+			focal,
+			device,
+			trimmedFocal( ownFocal, trimmed )
+		);
+	}
+	return patch;
 }
 
 /**
@@ -88,7 +137,13 @@ export default function TrimEdgesButton( { kind, own, device, access } ) {
 				data: { id: own.id },
 			} );
 			access.write(
-				trimmedPatch( access.read( 'Source' ), device, own, trimmed )
+				trimmedPatch(
+					access.read( 'Source' ),
+					device,
+					own,
+					trimmed,
+					access.read( 'Focal' )
+				)
 			);
 			setState( {
 				busy: false,

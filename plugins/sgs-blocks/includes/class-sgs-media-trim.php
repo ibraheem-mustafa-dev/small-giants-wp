@@ -132,7 +132,7 @@ final class Sgs_Media_Trim {
 	 *
 	 * @param string $from Source file.
 	 * @param string $to   Destination file, written only when something was trimmed.
-	 * @return array{width:int,height:int,from_width:int,from_height:int}|\WP_Error `width` and `height` are the saved size; the original's size is in `from_*`.
+	 * @return array{width:int,height:int,from_width:int,from_height:int,left:int,top:int}|\WP_Error `width` and `height` are the saved size; the original's size is in `from_*`; `left` and `top` are where the kept part started in the original, so a focal point can follow it.
 	 */
 	public static function trim_file( string $from, string $to ) {
 		if ( ! self::available() ) {
@@ -145,7 +145,11 @@ final class Sgs_Media_Trim {
 			$from_h = (int) $image->getImageHeight();
 			$range  = $image->getQuantumRange();
 			$image->trimImage( self::FUZZ * (float) $range['quantumRangeLong'] );
-			// Drop the canvas offset the trim leaves behind, so the file is the cropped picture and nothing else.
+			// The trim leaves the kept part's place in the original canvas as the image page: read it, then drop it, so the file is
+			// the cropped picture and nothing else.
+			$page = $image->getImagePage();
+			$left = max( 0, (int) ( $page['x'] ?? 0 ) );
+			$top  = max( 0, (int) ( $page['y'] ?? 0 ) );
 			$image->setImagePage( 0, 0, 0, 0 );
 			$width  = (int) $image->getImageWidth();
 			$height = (int) $image->getImageHeight();
@@ -168,6 +172,8 @@ final class Sgs_Media_Trim {
 			'height'      => $height,
 			'from_width'  => $from_w,
 			'from_height' => $from_h,
+			'left'        => $left,
+			'top'         => $top,
 		);
 	}
 
@@ -230,10 +236,14 @@ final class Sgs_Media_Trim {
 
 		return new \WP_REST_Response(
 			array(
-				'id'     => (int) $new_id,
-				'url'    => (string) \wp_get_attachment_url( $new_id ),
-				'width'  => $trimmed['width'],
-				'height' => $trimmed['height'],
+				'id'          => (int) $new_id,
+				'url'         => (string) \wp_get_attachment_url( $new_id ),
+				'width'       => $trimmed['width'],
+				'height'      => $trimmed['height'],
+				'from_width'  => $trimmed['from_width'],
+				'from_height' => $trimmed['from_height'],
+				'left'        => $trimmed['left'],
+				'top'         => $trimmed['top'],
 			)
 		);
 	}

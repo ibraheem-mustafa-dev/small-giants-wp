@@ -105,6 +105,7 @@ final class MediaTrimTest extends TestCase {
 		$this->assertSame( 60, $res['width'], 'a 100 x 60 file with a 20px margin keeps its 60 x 20 block' );
 		$this->assertSame( 20, $res['height'] );
 		$this->assertSame( 100, $res['from_width'] );
+		$this->assertSame( array( 20, 20 ), array( $res['left'], $res['top'] ), 'where the kept part started in the original, so a focal point can follow it' );
 		$this->assertSame( array( 60, 20 ), array_slice( getimagesize( $out ), 0, 2 ), 'the copy on disk is the cropped size' );
 	}
 
