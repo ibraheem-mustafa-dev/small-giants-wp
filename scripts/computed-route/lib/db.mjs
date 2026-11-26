@@ -148,6 +148,12 @@ export function variantInfo( db, block ) {
 	return { variantAttr: b.variant_attr, variantSlots: db.prepare( 'SELECT variant_value, unique_slot FROM variant_slots WHERE block_slug = ?' ).all( block ).map( plain ) };
 }
 
+// The settings only one value of a block's variant setting has (variant_slots.unique_slot): the settings of that way of
+// drawing the block, whose calibrated slots are the parts it draws.
+export function modeSettingsOf( db, block, value ) {
+	return db.prepare( 'SELECT unique_slot FROM variant_slots WHERE block_slug = ? AND variant_value = ? ORDER BY unique_slot' ).all( block, value ).map( ( r ) => r.unique_slot );
+}
+
 // The property_equivalents rows for one draft property (lib/fill-equivalents.mjs evaluates their conditions), or none
 // when the DB predates the table.
 export function equivalentRows( db, prop ) {

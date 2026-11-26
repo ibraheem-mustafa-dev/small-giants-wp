@@ -7,6 +7,7 @@ The cloning route needs two things about a block: where each of its settings pai
 ```
 python site_look.py --snapshot sites/<client>/theme-snapshot.json --site <site> --out DIR --blocks sgs/button,sgs/cart [--woocommerce]
 python site_look.py --snapshot ... --site <site> --out DIR --all --jobs 4
+python site_look.py ... --check-parts      the completeness check: every part of the block's own that the record places is drawn by a render, or listed in unreachable-parts.json
 python -m pytest tests                     each mechanism has a test that fails with SITE_LOOK_MUTATE=<mechanism>
 ```
 
@@ -42,6 +43,8 @@ The keys `scripts/computed-route/lib/cache.mjs::loadCalibration` hands the route
 | `elements[path][width][property]` | The default look, inherited properties left out (an inherited value the element sets itself is `_own:<property>`), with `_tag`, `_fs`, `_parentDisplay`, `_position`; `::before`, `::after` and `::placeholder` where drawn; `@controls`, `@companion`, `@scrim` for a panel the block opens outside its root, a piece it prints elsewhere and its scrim |
 | `pathClasses[path]`, `pathAttrs[path]` | Each element's classes, and the attributes it carries that a rule of the site's CSS tests (`site_look.py::tested_attrs`: the names in the stylesheets' attribute selectors, read with every declaration block emptied so a value such as a named grid line is never one, `class` and `style` aside; an element with none is left out): the item the fixture saves open carries `{open: ''}`, the current link `{aria-current: 'page'}`. The route's accordion pairing reads which fixture child is open from it (`scripts/computed-route/lib/skeleton-child-slots.mjs::unitSlots`). Switch: `path-attrs` |
 | `paintStates[name]` | `{when, elements}` for each paint state of the record's fixture |
+| `conditionalParts[path]` | `{tag, classes, parent, siblings, firstJob, setting}` for each element path a page the look reads (every marker page that gives `discovered`, `text`, `link` and `presence`) draws and the default look lacks: a part a setting switches on. `parent` and `siblings` are paths; `firstJob` is the first page (in job order) that draws it and `setting` the setting that page changes. The route offers these to a draft element only after the default parts fit nothing (`scripts/computed-route/lib/skeleton-part-pairing.mjs::pairAbsorbed`). Switch: `conditional-parts` |
+| `undrawnParts[part]` | The settings of each of the block's own parts (`sgs-<block>__<part>`) the record places that no render the look read draws. `--check-parts` fails one that is not in `unreachable-parts.json` (`{ "sgs/<block>": { "<part class>": "why no offline render draws it" } }`), and one listed that a render now draws |
 | `discovered[setting][property]` | `{slots, values: {value: {width: computed}}}`: what each value of a setting whose values are not CSS keywords paints |
 | `text`, `link`, `presence` | Where a text or link setting lands, and which parts a value shows or hides |
 

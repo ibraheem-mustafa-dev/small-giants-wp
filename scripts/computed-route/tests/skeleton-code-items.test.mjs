@@ -10,7 +10,12 @@ const WORDS = [ 'boost your milk', 'baked when you order', 'handmade in Birmingh
 const glyphRun = ( n ) => WORDS.slice( 0, n ).map( ( w ) => `<span style="display:inline-flex;gap:28px">${ w }<span style="color:#E86A75">✦</span></span>` ).join( '' );
 const ICON = '<svg width="20" height="20" viewBox="0 0 24 24" style="fill:none;stroke:#3A2A22;stroke-width:1.9;stroke-linecap:round"><title>Tick</title><path d="M20 6 9 17l-5-5"></path></svg>';
 const iconRow = WORDS.map( ( w ) => `<span style="display:inline-flex;gap:12px;color:#3A2A22"><span style="width:40px;height:40px;border-radius:999px">${ ICON }</span>${ w }</span>` ).join( '' );
+const circleRow = ( paint ) => WORDS.map( ( w ) => `<span style="display:inline-flex;gap:12px"><span style="display:inline-flex;width:40px;height:40px;border-radius:999px;${ paint }">${ ICON }</span>${ w }</span>` ).join( '' );
 const PAGE = `<body>
+<div id="filled"><div style="display:grid">${ circleRow( 'background:#FFE4C9' ) }</div></div>
+<div id="bordered"><div style="display:grid">${ circleRow( 'border:2px solid #3A2A22' ) }</div></div>
+<div id="imaged"><div style="display:grid">${ circleRow( 'background-image:linear-gradient(#fff,#eee)' ) }</div></div>
+<div id="paintedItem"><div style="display:grid">${ WORDS.map( ( w ) => `<span style="display:inline-flex;gap:12px;background:#FFE4C9"><span style="display:inline-flex">${ ICON }</span>${ w }</span>` ).join( '' ) }</div></div>
 <div id="marquee"><div data-marquee style="display:inline-flex">${ glyphRun( 3 ) }${ glyphRun( 3 ) }</div></div>
 <div id="row"><div style="display:grid;grid-template-columns:repeat(3,1fr)">${ iconRow }</div></div>
 <div id="stamped"><span data-dc-tpl="9">One</span><span>Two</span></div>
@@ -43,6 +48,15 @@ test( 'MUST FAIL: a doubled marquee run is read once, each item its own words wi
 	assert.match( r.row[ 0 ].svg, /<path[^>]*stroke="currentColor"/, 'a stroke equal to the icon colour is currentColor' );
 	assert.match( r.row[ 0 ].svg, /stroke-linecap="round"/ );
 	assert.match( r.row[ 0 ].svg, /fill="none"/ );
+} );
+
+test( 'MUST FAIL: an item whose svg sits in a box the draft paints (a fill, a gradient or a border round it) is boxed; an unpainted wrapper and a painted item round a bare icon are not', async () => {
+	const r = await read( [ 'row', 'filled', 'bordered', 'imaged', 'paintedItem' ] );
+	assert.deepEqual( r.row.map( ( x ) => x.boxed ), [ false, false, false ], 'an unpainted wrapper is no box' );
+	assert.deepEqual( r.filled.map( ( x ) => x.boxed ), [ true, true, true ], 'a background round the icon' );
+	assert.deepEqual( r.bordered.map( ( x ) => x.boxed ), [ true, true, true ], 'a border round the icon' );
+	assert.deepEqual( r.imaged.map( ( x ) => x.boxed ), [ true, true, true ], 'a background image round the icon' );
+	assert.deepEqual( r.paintedItem.map( ( x ) => x.boxed ), [ false, false, false ], 'the painted item itself is not the icon box' );
 } );
 
 test( 'no items for an element holding a stamped element, one with a single item, and a run that is not doubled stays whole', async () => {

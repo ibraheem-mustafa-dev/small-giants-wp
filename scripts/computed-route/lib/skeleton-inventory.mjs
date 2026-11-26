@@ -67,6 +67,7 @@ export function holdsOtherRoot( s, strips, srcDoc ) {
 // currentColor). A run read twice in a row (a marquee's loop) is read once. Null unless two or more items have words.
 // Each item also carries `at`, its element's child-index path from `e` (Fill reads the first item's look there), and
 // `marks`, the words of its child elements that are not an SVG (a separator glyph drawn beside the words), or '' for none.
+// `boxed` is true when its SVG sits in a box the draft paints (boxedOf).
 export function codeItemsOf( e ) {
 	if ( e.querySelector( '[data-dc-tpl]' ) ) {
 		return null;
@@ -98,8 +99,22 @@ export function codeItemsOf( e ) {
 		} );
 		return new XMLSerializer().serializeToString( copy );
 	};
+	// Whether the item's svg sits in a box the draft paints: the svg or an element between it and the item has a background, a
+	// background image or a border (the item itself is not the icon's box). An icon in such a box is the circle style's, not bare.
+	const boxedOf = ( k ) => {
+		const svg = k.querySelector( 'svg' );
+		for ( let n = svg; svg && n && n !== k; n = n.parentElement ) {
+			const cs = getComputedStyle( n );
+			const filled = ! /^(?:|transparent|rgba\(\s*0,\s*0,\s*0,\s*0\s*\))$/.test( cs.backgroundColor.trim() ) || 'none' !== cs.backgroundImage;
+			const bordered = [ 'Top', 'Right', 'Bottom', 'Left' ].some( ( side ) => parseFloat( cs[ `border${ side }Width` ] ) > 0 && 'none' !== cs[ `border${ side }Style` ] );
+			if ( filled || bordered ) {
+				return true;
+			}
+		}
+		return false;
+	};
 	const marksOf = ( k ) => ws( [ ...k.children ].filter( ( c ) => 'svg' !== c.localName && ! c.querySelector( 'svg' ) ).map( ( c ) => c.textContent ).join( ' ' ) );
-	const items = [ ...lvl.children ].map( ( k, i ) => ( { text: ws( [ ...k.childNodes ].filter( ( c ) => 3 === c.nodeType ).map( ( c ) => c.nodeValue ).join( ' ' ) ), svg: svgOf( k ), marks: marksOf( k ), at: [ ...path, i ] } ) ).filter( ( x ) => x.text );
+	const items = [ ...lvl.children ].map( ( k, i ) => ( { text: ws( [ ...k.childNodes ].filter( ( c ) => 3 === c.nodeType ).map( ( c ) => c.nodeValue ).join( ' ' ) ), svg: svgOf( k ), boxed: boxedOf( k ), marks: marksOf( k ), at: [ ...path, i ] } ) ).filter( ( x ) => x.text );
 	const half = items.length / 2;
 	const twice = items.length > 2 && 0 === items.length % 2 && items.slice( 0, half ).every( ( x, j ) => x.text === items[ half + j ].text );
 	const once = twice ? items.slice( 0, half ) : items;

@@ -156,6 +156,33 @@ def replaces_block(base_html: str, changed_html: str, short: str) -> bool:
     return len(printed) >= REPLACE_MIN_PARTS and not (printed & left)
 
 
+def prints_root(html: str, short: str) -> bool:
+    """True when the render prints the block's own root element (its `sgs-<block>` or `wp-block-sgs-<block>` class)."""
+    return any(f'sgs-{short}' in m.split() or f'wp-block-sgs-{short}' in m.split()
+               for m in (g for _q, g in re.findall(r'class=(["\'])(.*?)\1', html or '', re.S)))
+
+
+def variant_faults(defaults: list, short: str, expected: dict | None = None) -> list:
+    """The fixture variants (beyond variant 0, which the coverage floor reads) whose own default render prints nothing, or
+    not the block's root: [{variant, why}]. defaults: [(variant index, the render's html)]. expected: the fixture's
+    `expectEmpty` ({variant: why}), the variants that print nothing on purpose (a picture block with no picture): such a
+    variant is no fault while it prints nothing, and a fault once it prints anything, so the mark cannot go stale."""
+    expected = {int(k): v for k, v in (expected or {}).items()}
+    out = []
+    for variant, html in sorted(defaults):
+        if variant == 0:
+            continue
+        bare = re.sub(r'<style\b.*?</style>', '', html or '', flags=re.S).strip()
+        if variant in expected:
+            if bare:
+                out.append({'variant': variant, 'why': 'is marked expectEmpty in its fixture but prints markup'})
+        elif not bare:
+            out.append({'variant': variant, 'why': 'renders nothing'})
+        elif not prints_root(bare, short):
+            out.append({'variant': variant, 'why': 'does not print the block root'})
+    return out
+
+
 def run_block(short: str, plugin: Path, fixtures: dict, fixtures_dir: Path, instances: Path | None = None) -> dict:
     """Every setting's placements, with the renders behind each, the default render and timing."""
     t0 = time.time()
@@ -237,8 +264,11 @@ def run_block(short: str, plugin: Path, fixtures: dict, fixtures_dir: Path, inst
     recorded = {e['setting'] for e in entries.values()} | {e['setting'] for e in unnamed}
     # The coverage floor: a default render that prints nothing, or not the block's own root, tests nothing, so every
     # setting would read as painting nothing; such a block fails until its fixture renders it.
-    root_printed = any(f'sgs-{short}' in m.split() or f'wp-block-sgs-{short}' in m.split()
-                       for m in (g for _q, g in re.findall(r'class=(["\'])(.*?)\1', d0.get('html', ''), re.S)))
+    root_printed = prints_root(d0.get('html', ''), short)
+    # A fixture variant beyond the plain block is a render the check and the site look draw from too: one that prints
+    # nothing (a menu `ref` no stand-in post answers, a map keyed by a placeholder nothing fills) tests nothing and hides
+    # the parts it was written to draw.
+    empty_variants = variant_faults([(i['variant'], results[i['_key']].get('html', '')) for i in insts if i['isDefault']], short, fixture.get('expectEmpty'))
     stats = {'block': slug, 'instances': len(insts), 'renders': len(jobs), 'failed': sum(1 for r in results.values() if not r.get('ok')),
              'errors': errors[:10], 'secondsRendering': round(t2 - t1, 1), 'secondsRun': round(time.time() - t0, 1),
              'testedNoPaint': sorted(tested - recorded - replaced), 'replacesBlock': sorted(replaced - recorded),
@@ -247,7 +277,8 @@ def run_block(short: str, plugin: Path, fixtures: dict, fixtures_dir: Path, inst
              # partner the fixture leaves off, content it lacks, or a fault (summarise.py buckets them)
              'noPaintButPlaced': sorted((tested - recorded - replaced) & set(pl.get('rows') or [])),
              'coverage': {'defaultRendered': bool(d0.get('ok')), 'defaultEmpty': not (d0.get('html') or '').strip(),
-                          'rootPrinted': root_printed}}
+                          'rootPrinted': root_printed},
+             'emptyVariants': empty_variants}
     # the plan's own renders, before the proof adds its own (proof.py::Pages stores completions and parent renders in
     # `results`): the stamp's output hash and rendered classes read these, as the gate's re-render does
     return {'entries': entries, 'unnamed': unnamed, 'pairs': pairs, 'sides': sides, 'selectors': sels, 'results': results,
@@ -556,6 +587,8 @@ def check_block(args, block: str) -> int:
             restamp_doc = doc  # written below, once the coverage floor has passed too
     cov = run['stats']['coverage']
     floor = [] if cov['rootPrinted'] else ['the default render ' + ('is empty' if cov['defaultEmpty'] else 'does not print the block root')]
+    for v in run['stats'].get('emptyVariants') or []:
+        floor.append(f"fixture variant {v['variant']} {v['why']}")
     if run['stats']['renderFailedOnly']:
         floor.append(f"{len(run['stats']['renderFailedOnly'])} setting(s) whose every render failed")
     report['coverageFloor'] = floor

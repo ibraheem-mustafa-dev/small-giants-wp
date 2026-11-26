@@ -729,6 +729,8 @@
 			"options": {
 				"sgs_site_info": {
 					"phone": "0121 000 0000",
+					"address": "1 High Street, Birmingham",
+					"copyright": "Example Ltd",
 					"opening_hours": {
 						"mon": "9:00-17:00",
 						"tue": "9:00-17:00",
@@ -3450,21 +3452,23 @@
 		"variants": [
 			{},
 			{
-				"ref": "{{menu}}",
 				"disabledItemIds": [
-					"id:{{menuItem}}"
+					"label:Closed"
 				],
 				"itemTrailingIcons": {
-					"id:{{menuItem}}": {
+					"id:21": {
+						"source": "lucide",
+						"name": "arrow-right"
+					},
+					"label:Sale": {
 						"source": "lucide",
 						"name": "arrow-right"
 					}
 				}
 			},
 			{
-				"ref": "{{menu}}",
 				"featuredItemIds": [
-					"id:{{menuItem}}"
+					"id:21"
 				]
 			}
 		],

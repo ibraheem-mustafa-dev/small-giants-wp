@@ -1,0 +1,98 @@
+[
+	{
+		"file": "lib/skeleton-part-pairing.mjs",
+		"find": "if ( underSummary.size && ! rowLoops.size && ! nestedMenu ) {",
+		"replace": "if ( false ) {",
+		"why": "a draft menu with no summary row is still offered the link inside the submenu row wrapper, so the link fits two parts"
+	},
+	{
+		"file": "lib/skeleton-part-pairing.mjs",
+		"find": "if ( underSummary.size && ! rowLoops.size && ! nestedMenu ) {",
+		"replace": "if ( underSummary.size && ! rowLoops.size ) {",
+		"why": "a draft menu with nested submenu rows and a CSS-only caret loses the submenu row twin"
+	},
+	{
+		"file": "lib/skeleton-part-pairing.mjs",
+		"find": "shownParts.length && ( cands = shownParts );",
+		"replace": "void shownParts;",
+		"why": "a part the block never displays stays a candidate beside the displayed one"
+	},
+	{
+		"file": "lib/skeleton-part-pairing.mjs",
+		"find": "const shownParts = cands.filter( ( g ) => ! g.never || calibrated( g ) );",
+		"replace": "const shownParts = cands.filter( ( g ) => ! g.never );",
+		"why": "a hidden-by-default part a setting calibrates is dropped before the words can choose it"
+	},
+	{
+		"file": "lib/skeleton-part-pairing.mjs",
+		"find": "displayed.length && ( cands = displayed );",
+		"replace": "void displayed;",
+		"why": "a calibrated hidden part stays beside a displayed one when words and place cannot tell"
+	},
+	{
+		"file": "lib/skeleton-part-pairing.mjs",
+		"find": "hidden: oof && null !== width && width <= 1.5, none: neverShown( byWidth ),",
+		"replace": "hidden: oof && null !== width && width <= 1.5, none: false,",
+		"why": "no part is ever read as display none at every width"
+	},
+	{
+		"file": "lib/skeleton-part-pairing.mjs",
+		"find": "const never = ( p ) => p.none || ( null !== p.parent && !! parts.get( p.parent ) && never( parts.get( p.parent ) ) );",
+		"replace": "const never = ( p ) => p.none;",
+		"why": "a part inside a part the block never displays still counts as displayed"
+	},
+	{
+		"file": "lib/skeleton-part-pairing.mjs",
+		"find": "if ( ! retry.size || ! Object.keys( cond ).length ) {",
+		"replace": "if ( true ) {",
+		"why": "a draft element no default part fits is never offered the conditional parts"
+	},
+	{
+		"file": "lib/skeleton-part-pairing.mjs",
+		"find": "const first = pairCore( args );",
+		"replace": "const first = pairCore( { ...args, calibration: { ...args.calibration, elements: { ...conditionalElements( args.calibration?.conditionalParts ), ...args.calibration?.elements } } } );",
+		"why": "the conditional parts join the default parts in the first run, so an element the default parts pair turns ambiguous"
+	},
+	{
+		"file": "lib/skeleton-context.mjs",
+		"find": ", ...( cal.conditionalParts ? { conditionalParts: cal.conditionalParts } : {} ) } : null;",
+		"replace": " } : null;",
+		"why": "calPartsFor drops the look's conditional parts"
+	},
+	{
+		"file": "lib/skeleton-part-pairing.mjs",
+		"find": "const readSlot = lands ? undefined : [ ...slotLooks.keys() ].sort().find(",
+		"replace": "const readSlot = undefined && [ ...slotLooks.keys() ].sort().find(",
+		"why": "a draft sibling whose position the part has no slot at is listed as unpaired instead of read as its group"
+	},
+	{
+		"file": "lib/skeleton-part-pairing.mjs",
+		"find": "pill && ( cands = printed.length ? printed : cands.filter( filledPart ) );",
+		"replace": "",
+		"why": "a pill of words the draft fills keeps the plain words parts beside the painted one"
+	},
+	{
+		"file": "lib/skeleton-part-pairing.mjs",
+		"find": "( FITS[ kindOf.get( e ) ].includes( g.kind ) || ( 'words' === kindOf.get( e ) && filledPart( g ) && 'mark' === g.kind && fills( e ) ) )",
+		"replace": "FITS[ kindOf.get( e ) ].includes( g.kind )",
+		"why": "a painted part with no words recorded is never offered to a filled pill"
+	},
+	{
+		"file": "lib/skeleton-part-pairing.mjs",
+		"find": "} else if ( freeSlots.length ) {",
+		"replace": "} else if ( false ) {",
+		"why": "an element of a part the block draws at other positions than the draft is listed as unpaired instead of read at the part's first free slot"
+	},
+	{
+		"file": "lib/skeleton-part-pairing.mjs",
+		"find": "( null === looks || looksOfEntry( s, model.parts.get( templateOf( readSlot ) )?.tag ?? '' ).some( ( l ) => looks.includes( l ) ) )",
+		"replace": "( true )",
+		"why": "the sibling read names every setting at the read slot, including one that paints a look the draft element does not have"
+	},
+	{
+		"file": "lib/skeleton-part-pairing.mjs",
+		"find": "pill && ( cands = printed.length ? printed : cands.filter( filledPart ) );",
+		"replace": "pill && ( cands = cands.filter( filledPart ) );",
+		"why": "a filled pill is cut to the default-painted parts, so the part that prints its words but is painted only through a setting is lost"
+	}
+]

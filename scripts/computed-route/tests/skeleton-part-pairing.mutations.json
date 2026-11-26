@@ -29,5 +29,6 @@
 	{"file":"lib/skeleton-part-pairing.mjs","find":"ownKept.length && ( cands = ownKept );","replace":"void ownKept;","why":"a control the slot walk gave a part pairs with every part that fits it"},
 	{"file":"lib/skeleton-part-pairing.mjs","find":"cands.length > 1 && ( ( tight ) => ( cands = cands.filter( ( g ) => g.inside.size === tight ) ) )( Math.min( ...cands.map( ( g ) => g.inside.size ) ) );","replace":"void 0;","why":"a wrapper is not placed in the tightest part that holds its contents"},
 	{"file":"lib/skeleton-part-pairing.mjs","find":"'box' === kind && ! ALNUM.test( String( e.words ?? '' ) ) && flatNow.set(","replace":"flatNow.set(","why":"an element with words of its own is drawn flat, hiding a gap"},
-	{"file":"lib/skeleton-part-pairing.mjs","find":"ALNUM.test( own ) && ! glyphy( own ) ? 'words' : own || 'glyph' === k ? 'glyph' : 'blank';","replace":"'words';","why":"a typed arrow is the same sort of element as a row's words"}
+	{"file":"lib/skeleton-part-pairing.mjs","find":"ALNUM.test( own ) && ! glyphy( own ) ? 'words' : own || 'glyph' === k ? 'glyph' : 'blank';","replace":"'words';","why":"a typed arrow is the same sort of element as a row's words"},
+	{"file":"lib/skeleton-part-pairing.mjs","find":"const readSlot = lands ? undefined : [ ...slotLooks.keys() ].sort().find(","replace":"const readSlot = [ ...slotLooks.keys() ].sort().find(","why":"an element whose slot another finder holds is read as its group is instead of being said as unpaired"}
 ]

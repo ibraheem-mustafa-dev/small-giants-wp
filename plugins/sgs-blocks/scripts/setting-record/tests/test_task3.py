@@ -104,6 +104,55 @@ def test_an_empty_default_render_tests_nothing(monkeypatch):
     assert ok['stats']['coverage']['rootPrinted'] is True
 
 
+def test_a_fixture_variant_that_renders_nothing_is_named(monkeypatch):
+    """nav-drawer-menu's variants 1 and 2 named a menu post no stand-in answered, so 726 of 1,088 renders were empty and the
+    parts they were written to draw (the trailing icon) appeared in no render."""
+    root = '<div class="sgs-demo">hi</div>'
+    assert CK.variant_faults([(0, ''), (1, root)], 'demo') == []  # variant 0 is the floor's own
+    assert CK.variant_faults([(0, root), (1, ''), (2, '<style>.a{}</style>  '), (3, root)], 'demo') == [
+        {'variant': 1, 'why': 'renders nothing'}, {'variant': 2, 'why': 'renders nothing'}]
+    assert CK.variant_faults([(0, root), (1, '<p class="notice">no menu</p>')], 'demo') == [
+        {'variant': 1, 'why': 'does not print the block root'}]
+    # a variant the fixture marks expectEmpty prints nothing on purpose: no fault while it does, a fault once it prints markup
+    assert CK.variant_faults([(0, root), (1, '')], 'demo', {'1': 'a picture block with no picture'}) == []
+    assert CK.variant_faults([(0, root), (1, '<style>.a{}</style>')], 'demo', {1: 'why'}) == []
+    assert CK.variant_faults([(0, root), (1, root)], 'demo', {'1': 'why'}) == [
+        {'variant': 1, 'why': 'is marked expectEmpty in its fixture but prints markup'}]
+    assert CK.variant_faults([(0, root), (1, ''), (2, '')], 'demo', {'1': 'why'}) == [{'variant': 2, 'why': 'renders nothing'}]
+    # through the run: a variant whose default renders nothing is in the stats
+    plan = {'fixture': {}, 'unvalued': [], 'instances': [
+        {'key': 'default-v0', 'attr': None, 'attrs': {}, 'isDefault': True, 'isBase': False, 'variant': 0, 'baseKey': None},
+        {'key': 'default-v1', 'attr': None, 'attrs': {'ref': 9101}, 'isDefault': True, 'isBase': False, 'variant': 1, 'baseKey': None}]}
+
+    class Missing(FakeRenderer):
+        def render_many(self, slug, jobs, content, inner):
+            return {k: {'ok': True, 'html': '' if a.get('ref') == 9101 else self.html} for k, a in jobs.items()}
+
+    monkeypatch.setattr(CK, 'load_plan', lambda *a, **k: plan)
+    monkeypatch.setattr(CK.RN, 'Renderer', lambda *a, **k: Missing(root))
+    monkeypatch.setattr(CK.RN, 'with_defaults', lambda plugin, short, a: a)
+    monkeypatch.setattr(CK.RN, 'block_json', lambda plugin, short: {'attributes': {}})
+    monkeypatch.setattr(CK.D, 'static_rules', lambda *a: [])
+    run = CK.run_block('demo', PLUGIN, {}, PLUGIN)
+    assert run['stats']['emptyVariants'] == [{'variant': 1, 'why': 'renders nothing'}]
+
+
+def test_an_empty_variant_fails_the_floor(monkeypatch, tmp_path):
+    run = {'entries': {}, 'unnamed': [], 'defaultHtml': '<div class="sgs-demo"></div>', 'stats': {
+        'block': 'sgs/demo', 'coverage': {'rootPrinted': True, 'defaultEmpty': False, 'defaultRendered': True},
+        'renderFailedOnly': [], 'testedNoPaint': [], 'replacesBlock': [], 'unvalued': [],
+        'emptyVariants': [{'variant': 1, 'why': 'renders nothing'}]}}
+    monkeypatch.setattr(CK, 'run_block', lambda *a, **k: run)
+    monkeypatch.setattr(CK, 'parts_check', lambda *a: {'order': [], 'declaredNotPrinted': [], 'declaredScriptBuilt': [], 'printedNotDeclared': []})
+    args = SimpleNamespace(fixtures=tmp_path / 'none.json', instances=None, instances_dir=None, plugin=PLUGIN, no_proof=True,
+                           record=None, record_dir=None, write=None, write_dir=None, out=tmp_path, strict_parts=False)
+    assert CK.check_block(args, 'demo') == 1
+    report = json.loads((tmp_path / 'demo.check.json').read_text(encoding='utf-8'))
+    assert report['coverageFloor'] == ['fixture variant 1 renders nothing']
+    run['stats']['emptyVariants'] = []
+    assert CK.check_block(args, 'demo') == 0
+
+
 def test_saved_child_markup_reaches_the_render(monkeypatch):
     seen = {}
 

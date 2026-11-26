@@ -1,0 +1,44 @@
+[
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "const iconStyle = I.icons && read.every( ( x ) => x.svg && ! x.boxed ) ? { [ I.icons.setting ]: I.icons.value } : {};",
+		"replace": "const iconStyle = {};",
+		"why": "items that all hold an icon no longer choose the bare-icon style, so the icon is read at no mode part"
+	},
+	{
+		"file": "lib/skeleton-propose.mjs",
+		"find": "const iconSpec = r.iconMode && r.codeItem ? R[ r.rule ]?.items?.icons : null;",
+		"replace": "const iconSpec = null;",
+		"why": "the icon's settings are never read at the code-built item's svg"
+	},
+	{
+		"file": "lib/skeleton-part-slots.mjs",
+		"find": "const chosen = mode.size ? mine.filter( ( p ) => mode.has( p ) ) : mine;",
+		"replace": "const chosen = mine;",
+		"why": "the icon is read at every way of drawing's part, the circle style's svg too"
+	},
+	{
+		"file": "lib/skeleton-part-slots.mjs",
+		"find": "const mine = slotsOf( s ).filter( firstItem );",
+		"replace": "const mine = slotsOf( s );",
+		"why": "the icon is read at the loop's other items' slots too"
+	},
+	{
+		"file": "lib/skeleton-classify.mjs",
+		"find": "...( r.iconMode ? { iconMode: r.iconMode } : {} ),",
+		"replace": "",
+		"why": "the chosen mode never reaches the proposal"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "read.every( ( x ) => x.svg && ! x.boxed ) ? { [ I.icons.setting ]",
+		"replace": "read.every( ( x ) => x.svg ) ? { [ I.icons.setting ]",
+		"why": "icons inside a painted box still choose the bare-icon style"
+	},
+	{
+		"file": "lib/skeleton-facts.mjs",
+		"find": "! facts.enumOf?.( r.marqueeCodeItems.block, x.setting )?.includes( x.value )",
+		"replace": "false",
+		"why": "an icons value the setting does not have passes the decisions check"
+	}
+]

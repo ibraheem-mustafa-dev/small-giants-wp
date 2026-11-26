@@ -1,0 +1,197 @@
+// The part tree the general pairing (lib/skeleton-part-pairing.mjs) works on, when the block's default look is not the whole of
+// the block: a plain row and a row that opens a submenu draw the same link at one level (the draft's menu has only one kind),
+// a part the block never displays is no candidate, and a part only a page that sets a setting draws is offered once the
+// default parts fail. Each test names the mutation that makes it fail (skeleton-part-pairing-conditional.mutations.json).
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
+import { partModel, pairAbsorbed } from '../lib/skeleton-part-pairing.mjs';
+import { calPartsFor } from '../lib/skeleton-context.mjs';
+import { writeRecordFixture } from '../lib/setting-record.mjs';
+
+const at = ( tag, extra = {} ) => ( { 1440: { _tag: tag, _position: 'static', display: 'block', 'background-color': 'rgba(0, 0, 0, 0)', 'border-top-width': '0px', ...extra } } );
+const el = ( key, tag, kids = [], extra = {} ) => ( { key, tag, kids, visible: { 1440: true }, box: { 1440: { w: extra.w ?? 100, h: extra.h ?? 40 } }, position: { 1440: 'static' }, words: extra.words ?? '', attrs: extra.attrs ?? {} } );
+const kids = ( e ) => e.kids;
+const finder = ( e ) => ( { tpl: e.key } );
+
+// A drawer menu's default look as the site look reads it: item 1 a plain row, item 2 a row with a submenu (a wrapper round
+// its link and a disclosure summary).
+const ITEM = ( k ) => `.bar > .item:nth-of-type(${ k })`;
+const MENU = {
+	'': at( 'nav' ), '.bar': at( 'ul' ),
+	[ ITEM( 1 ) ]: at( 'li' ), [ `${ ITEM( 1 ) } > .link` ]: at( 'a' ), [ `${ ITEM( 1 ) } > .link > .text` ]: at( 'span' ),
+	[ ITEM( 2 ) ]: at( 'li' ), [ `${ ITEM( 2 ) } > .row` ]: at( 'div' ), [ `${ ITEM( 2 ) } > .row > .link` ]: at( 'a' ), [ `${ ITEM( 2 ) } > .row > .link > .text` ]: at( 'span' ),
+	[ `${ ITEM( 2 ) } > .row > .acc` ]: at( 'details' ), [ `${ ITEM( 2 ) } > .row > .acc > .summ` ]: at( 'summary' ),
+};
+const MENU_SETTINGS = { linkBg: { slot: `${ ITEM( 1 ) } > .link`, slots: [ `${ ITEM( 1 ) } > .link`, `${ ITEM( 2 ) } > .link` ], property: 'background-color' } };
+// The draft's menu: two plain links in a list, none with a caret.
+const draftMenu = ( caret = false ) => {
+	const links = [ 0, 1 ].map( ( i ) => el( `Root/3#${ i }`, 'a', caret && 0 === i ? [ el( 'Root/4#0', 'span', [], { words: '▾' } ) ] : [], { words: i ? 'Shop' : 'Home' } ) );
+	const items = links.map( ( l, i ) => el( `Root/2#${ i }`, 'li', [ l ] ) );
+	return { links, host: el( 'Root/1#0', 'nav', [ el( 'Root/9#0', 'ul', items ) ] ) };
+};
+
+test( 'a draft menu with no row that opens a submenu is not paired with the link inside the submenu row wrapper (MUST FAIL without the variant filter: the link fits two parts)', () => {
+	const { links, host } = draftMenu();
+	const made = pairAbsorbed( { host, absorbed: [ { element: links[ 0 ], looks: [ 'background' ] } ], kids, calibration: { elements: MENU, settings: MENU_SETTINGS, text: {} }, finder } );
+	assert.deepEqual( made.ambiguous, [] );
+	assert.deepEqual( made.paired.map( ( p ) => p.part ), [ '.bar > .item:nth-of-type(n) > .link' ] );
+	assert.deepEqual( made.slots[ `${ ITEM( 1 ) } > .link` ], { tpl: 'Root/3#0' } );
+} );
+
+test( 'a draft menu that has a summary row keeps both link parts (negative control: the filter is the draft having none)', () => {
+	const { links, host } = draftMenu( true );
+	const made = pairAbsorbed( { host, absorbed: [ { element: links[ 1 ], looks: [ 'background' ] } ], kids, calibration: { elements: MENU, settings: MENU_SETTINGS, text: {} }, finder } );
+	assert.equal( made.ambiguous.length + made.paired.length, 1, 'the second link is still decided as before' );
+	assert.ok( made.ambiguous.length ? made.ambiguous[ 0 ].candidates.includes( '.bar > .item:nth-of-type(n) > .row > .link' ) : true );
+} );
+
+test( 'a draft menu with nested submenu rows keeps the submenu row twin when its caret is CSS only (negative control: the drop is for a menu with no nested structure at all; MUST FAIL when the drop ignores nesting)', () => {
+	const links = [ 0, 1 ].map( ( i ) => el( `Root/3#${ i }`, 'a', [], { words: i ? 'Shop' : 'Home' } ) );
+	const sub = el( 'Root/5#0', 'ul', [ el( 'Root/6#0', 'li', [ el( 'Root/7#0', 'a', [], { words: 'Tea' } ) ] ) ] );
+	const items = links.map( ( l, i ) => el( `Root/2#${ i }`, 'li', i ? [ l, sub ] : [ l ] ) );
+	const host = el( 'Root/1#0', 'nav', [ el( 'Root/9#0', 'ul', items ) ] );
+	const made = pairAbsorbed( { host, absorbed: [ { element: links[ 1 ], looks: [ 'background' ] } ], kids, calibration: { elements: MENU, settings: MENU_SETTINGS, text: {} }, finder } );
+	const heads = [ ...made.ambiguous.flatMap( ( a ) => a.candidates ), ...made.paired.map( ( p ) => p.part ) ];
+	assert.ok( heads.includes( '.bar > .item:nth-of-type(n) > .row > .link' ), `the link inside the submenu row wrapper is still offered: ${ JSON.stringify( heads ) }` );
+	// the same menu with the nested list removed is the plain case again
+	const plain = draftMenu();
+	const only = pairAbsorbed( { host: plain.host, absorbed: [ { element: plain.links[ 0 ], looks: [ 'background' ] } ], kids, calibration: { elements: MENU, settings: MENU_SETTINGS, text: {} }, finder } );
+	assert.deepEqual( only.paired.map( ( p ) => p.part ), [ '.bar > .item:nth-of-type(n) > .link' ] );
+} );
+
+test( 'a part the block never displays is not a candidate while a displayed one fits (MUST FAIL without the display tier: two buttons fit)', () => {
+	const cal = { elements: { '': at( 'div' ), '.go': at( 'button' ), '.stale': at( 'button', { display: 'none' } ) }, settings: { goBg: { slot: '.go', property: 'background-color' }, staleBg: { slot: '.stale', property: 'background-color' } } };
+	const btn = el( 'Root/2#0', 'button', [], { words: 'Go' } );
+	const uncalibrated = { ...cal, settings: { goBg: cal.settings.goBg } };
+	const made = pairAbsorbed( { host: el( 'Root/1#0', 'div', [ btn ] ), absorbed: [ { element: btn, looks: [ 'background' ] } ], kids, calibration: uncalibrated, finder } );
+	assert.deepEqual( [ made.ambiguous, made.paired.map( ( p ) => p.part ) ], [ [], [ '.go' ] ] );
+	// a part inside a part that never displays is never displayed either
+	const m = partModel( { '': at( 'div' ), '.a': at( 'div', { display: 'none' } ), '.a > .b': at( 'span' ), '.c': at( 'div' ) } );
+	assert.deepEqual( [ m.parts.get( '.a > .b' ).never, m.parts.get( '.c' ).never, m.groups.get( '.a > .b' ).never ], [ true, false, true ] );
+	// the only part that fits, even when never displayed, is still the answer (nothing is lost, only narrowed)
+	const only = pairAbsorbed( { host: el( 'Root/1#0', 'div', [ btn ] ), absorbed: [ { element: btn, looks: [ 'background' ] } ], kids, calibration: { ...cal, elements: { '': at( 'div' ), '.stale': at( 'button', { display: 'none' } ) } }, finder } );
+	assert.deepEqual( only.paired.map( ( p ) => p.part ), [ '.stale' ] );
+} );
+
+test( 'a part the block hides by default but a setting calibrates stays a candidate, the lowest tier (negative control: an uncalibrated hidden part is still dropped; MUST FAIL when every hidden part is dropped)', () => {
+	const cal = ( slotted ) => ( {
+		elements: { '': at( 'div' ), '.label': at( 'span' ), '.sale': at( 'span', { display: 'none' } ) },
+		parts: { '.label': { words: 'Basket' }, '.sale': { words: 'Sale' } },
+		settings: { labelPad: { slot: '.label', property: 'padding' }, ...( slotted ? { salePad: { slot: '.sale', property: 'padding' } } : {} ) }, text: {},
+	} );
+	const word = ( w ) => el( 'Root/2#0', 'span', [], { words: w } );
+	const run = ( c, w ) => ( ( x ) => pairAbsorbed( { host: el( 'Root/1#0', 'div', [ x ] ), absorbed: [ { element: x, looks: [ 'padding' ] } ], kids, calibration: c, finder } ) )( word( w ) );
+	assert.deepEqual( run( cal( true ), 'Sale' ).paired.map( ( p ) => p.part ), [ '.sale' ], 'the words the hidden part prints choose it' );
+	assert.deepEqual( run( cal( true ), 'Basket' ).paired.map( ( p ) => p.part ), [ '.label' ] );
+	assert.deepEqual( run( cal( true ), 'Zebra' ).paired.map( ( p ) => p.part ), [ '.label' ], 'when words and place cannot tell, the displayed part is the answer' );
+	assert.deepEqual( run( cal( false ), 'Sale' ).paired.map( ( p ) => p.part ), [ '.label' ], 'a hidden part no setting paints is no candidate' );
+} );
+
+// A block whose default look has no part for the draft's disc, and a page that sets `trailing` draws it.
+const TRAIL = { '.trail': { tag: 'span', classes: [ 'trail' ], parent: '', siblings: [], firstJob: 'b:trailing-on-v0', setting: 'trailing' }, '.trail > svg': { tag: 'svg', classes: [], parent: '.trail', siblings: [], firstJob: 'b:trailing-on-v0', setting: 'trailing' } };
+const DISC = { elements: { '': at( 'div' ), '.label': at( 'span' ) }, settings: { trailBg: { slot: '.trail', property: 'background-color' } }, text: {} };
+const disc = () => {
+	const disc2 = el( 'Root/2#0', 'span', [ el( 'Root/3#0', 'svg', [] ) ] );
+	return { disc2, host: el( 'Root/1#0', 'div', [ disc2 ], { w: 400 } ) };
+};
+
+test( 'a draft element no default part fits is offered the parts a page that sets a setting draws (MUST FAIL without the second chance: nothing fits)', () => {
+	const { disc2, host } = disc();
+	const absorbed = [ { element: disc2, looks: [ 'background' ] } ];
+	const none = pairAbsorbed( { host, absorbed, kids, calibration: DISC, finder } );
+	assert.deepEqual( [ none.slots, none.paired, none.unmatched.map( ( u ) => u.key ) ], [ {}, [], [ 'Root/2#0' ] ], 'with no conditional parts the element is unmatched' );
+	const made = pairAbsorbed( { host, absorbed, kids, calibration: { ...DISC, conditionalParts: TRAIL }, finder } );
+	assert.deepEqual( made.paired.map( ( p ) => [ p.key, p.part ] ), [ [ 'Root/2#0', '.trail' ] ] );
+	assert.deepEqual( made.slots, { '.trail': { tpl: 'Root/2#0' } } );
+	assert.deepEqual( made.unmatched, [] );
+} );
+
+test( 'the conditional parts never change an element the default parts already pair (MUST FAIL if they were merged into the first run)', () => {
+	// The default look draws one box part (.card); the conditional ones add a second box (.trail) that would make it ambiguous.
+	const cal = { elements: { '': at( 'div' ), '.card': at( 'div' ), '.card > svg': at( 'svg' ) }, settings: { cardBg: { slot: '.card', property: 'background-color' }, trailBg: { slot: '.trail', property: 'background-color' } }, text: {} };
+	const box = el( 'Root/2#0', 'div', [ el( 'Root/3#0', 'svg', [] ) ] );
+	const run = ( conditionalParts ) => pairAbsorbed( { host: el( 'Root/1#0', 'div', [ box ], { w: 400 } ), absorbed: [ { element: box, looks: [ 'background' ] } ], kids, calibration: { ...cal, ...( conditionalParts ? { conditionalParts } : {} ) }, finder } );
+	assert.deepEqual( run( null ).paired.map( ( p ) => p.part ), [ '.card' ] );
+	const withCond = run( TRAIL );
+	assert.deepEqual( [ withCond.paired.map( ( p ) => p.part ), withCond.ambiguous ], [ [ '.card' ], [] ] );
+	assert.deepEqual( withCond.slots, run( null ).slots );
+} );
+
+test( 'calPartsFor hands the conditional parts of a look on (MUST FAIL without the pass-through)', () => {
+	const dir = fs.mkdtempSync( path.join( process.env.TEMP || os.tmpdir(), 'sgs-cond-' ) );
+	try {
+		writeRecordFixture( dir, 'sgs/menu', { block: 'sgs/menu', settings: {}, elements: { '': at( 'nav' ) }, conditionalParts: TRAIL }, 'client-a' );
+		writeRecordFixture( dir, 'sgs/menu', { block: 'sgs/menu', settings: {}, elements: { '': at( 'nav' ) } }, 'client-b' );
+		assert.deepEqual( Object.keys( calPartsFor( 'client-a', dir )( 'menu' ).conditionalParts ), [ '.trail', '.trail > svg' ] );
+		assert.equal( 'conditionalParts' in calPartsFor( 'client-b', dir )( 'menu' ), false, 'a look with none passes none' );
+	} finally {
+		fs.rmSync( dir, { recursive: true, force: true } );
+	}
+} );
+
+test( 'a draft sibling whose position the part has no slot at is read as its group is, not listed as unpaired', () => {
+	// The block draws its links at positions 1, 2 and 4 (position 3 is another kind of row); the draft writes three links out.
+	const L = ( k ) => `.l:nth-of-type(${ k })`;
+	const cal = {
+		elements: { '': at( 'nav' ), [ L( 1 ) ]: at( 'a' ), [ L( 2 ) ]: at( 'a' ), [ L( 4 ) ]: at( 'a' ) },
+		settings: { linkPad: { slot: L( 1 ), slots: [ L( 1 ), L( 2 ), L( 4 ) ], property: 'padding' }, linkBg: { slot: L( 1 ), slots: [ L( 1 ), L( 2 ), L( 4 ) ], property: 'background-color' } }, text: {},
+	};
+	const links = [ 0, 1, 2 ].map( ( i ) => el( `Root/${ i + 2 }#0`, 'a', [], { words: `Link ${ i }` } ) );
+	const made = pairAbsorbed( { host: el( 'Root/1#0', 'nav', links, { w: 400 } ), absorbed: links.map( ( x ) => ( { element: x, looks: [ 'padding' ] } ) ), kids, calibration: cal, finder } );
+	assert.deepEqual( made.ambiguous, [] );
+	assert.deepEqual( made.paired.map( ( p ) => p.key ), [ 'Root/2#0', 'Root/3#0', 'Root/4#0' ] );
+	assert.deepEqual( made.slots, { [ L( 1 ) ]: { tpl: 'Root/2#0' }, [ L( 2 ) ]: { tpl: 'Root/3#0' } } );
+	assert.deepEqual( made.siblings.map( ( x ) => [ x.key, x.settings, x.readBy ] ), [ [ 'Root/4#0', [ 'linkPad' ], 'Root/2#0' ] ], 'the sibling read names the settings at the read slot that paint the look the element has (looksOfEntry), not the background setting beside them (MUST FAIL when the named filter ignores the looks)' );
+	// a lone element with no neighbour read is still said, never guessed
+	const lone = el( 'Root/9#0', 'a', [], { words: 'Only' } );
+	const none = pairAbsorbed( { host: el( 'Root/8#0', 'nav', [ lone ], { w: 400 } ), absorbed: [ { element: lone, looks: [ 'padding' ] } ], kids, calibration: { ...cal, settings: { linkPad: { slot: L( 4 ), slots: [ L( 4 ) ], property: 'padding' } } }, finder } );
+	assert.deepEqual( [ none.paired.length, none.siblings.length, none.unmatched.length ], [ 0, 0, 1 ], 'a lone element no part fits is unmatched, never guessed' );
+} );
+
+test( 'a pill of words the draft fills or borders is the part the block paints (a badge with no words recorded), not one of the plain words parts (MUST FAIL without the painted tier: the pill fits two plain parts)', () => {
+	const cal = {
+		elements: { '': at( 'nav' ), '.link': at( 'a' ), '.link > .ornament': at( 'span' ), '.link > .text': at( 'span' ), '.link > .badge': at( 'span', { 'background-color': 'rgb(249, 207, 110)' } ) },
+		settings: { badgeBg: { slot: '.link > .badge', property: 'background-color' }, textPad: { slot: '.link > .text', property: 'padding' }, ornamentBg: { slot: '.link > .ornament', property: 'background-color' } }, text: {},
+	};
+	const label = el( 'Root/3#0', 'span', [], { words: 'Taster Trio' } );
+	const pill = el( 'Root/4#0', 'span', [], { words: '3 for £5' } );
+	const link = el( 'Root/2#0', 'a', [ label, pill ], { w: 360 } );
+	const run = ( looks ) => pairAbsorbed( { host: el( 'Root/1#0', 'nav', [ link ], { w: 400 } ), absorbed: [ { element: pill, looks } ], kids, calibration: cal, finder } );
+	assert.deepEqual( run( [ 'background', 'border' ] ).paired.map( ( p ) => p.part ), [ '.link > .badge' ] );
+	assert.deepEqual( run( [ 'background', 'border' ] ).ambiguous, [] );
+	// negative control: words that paint no box keep the plain words parts, and the painted mark is never offered
+	assert.deepEqual( run( [ 'padding' ] ).ambiguous.map( ( a ) => a.candidates ), [ [ '.link > .ornament', '.link > .text' ] ] );
+} );
+
+test( 'a pill of words a part prints is that part even when the block paints it only through a setting, while a painted part with no words still takes the pill otherwise (negative control; MUST FAIL when painted parts cut the candidates)', () => {
+	const cal = {
+		elements: { '': at( 'nav' ), '.link': at( 'a' ), '.link > .sale': at( 'span' ), '.link > .text': at( 'span' ), '.link > .badge': at( 'span', { 'background-color': 'rgb(249, 207, 110)' } ) },
+		parts: { '.link > .sale': { words: '3 for £5' }, '.link > .text': { words: 'Taster Trio' } },
+		settings: { saleBg: { slot: '.link > .sale', property: 'background-color' }, textPad: { slot: '.link > .text', property: 'padding' }, badgeBg: { slot: '.link > .badge', property: 'background-color' } }, text: {},
+	};
+	const run = ( words ) => ( ( pill ) => pairAbsorbed( { host: el( 'Root/1#0', 'nav', [ el( 'Root/2#0', 'a', [ pill ], { w: 360 } ) ], { w: 400 } ), absorbed: [ { element: pill, looks: [ 'background', 'border' ] } ], kids, calibration: cal, finder } ) )( el( 'Root/4#0', 'span', [], { words } ) );
+	assert.deepEqual( run( '3 for £5' ).paired.map( ( p ) => p.part ), [ '.link > .sale' ], 'the part that prints the words is the pill' );
+	assert.deepEqual( run( 'Brand new' ).paired.map( ( p ) => p.part ), [ '.link > .badge' ], 'words no part prints: the painted part is first' );
+} );
+
+test( 'an element of a part the block draws at other positions than the draft is read at the part\'s first free slot, and a slot another finder holds is still said (MUST FAIL without the free slot: the pills are ambiguous)', () => {
+	// The block draws its badge on rows 2 and 4; the draft's pills sit on rows 3 and 5.
+	const L = ( k ) => `.l:nth-of-type(${ k })`;
+	const cal = {
+		elements: { '': at( 'nav' ), [ L( 1 ) ]: at( 'a' ), [ L( 2 ) ]: at( 'a' ), [ `${ L( 2 ) } > .b` ]: at( 'span', { 'background-color': 'rgb(249, 207, 110)' } ), [ L( 4 ) ]: at( 'a' ), [ `${ L( 4 ) } > .b` ]: at( 'span', { 'background-color': 'rgb(249, 207, 110)' } ) },
+		settings: { badgeBg: { slot: `${ L( 2 ) } > .b`, slots: [ `${ L( 2 ) } > .b`, `${ L( 4 ) } > .b` ], property: 'background-color' } }, text: {},
+	};
+	const pills = [ 2, 4 ].map( ( i ) => el( `Root/${ i * 10 + 1 }#0`, 'span', [], { words: `Deal ${ i }` } ) );
+	const rows = [ 0, 1, 2, 3, 4 ].map( ( i ) => el( `Root/${ i + 2 }#0`, 'a', 2 === i ? [ pills[ 0 ] ] : 4 === i ? [ pills[ 1 ] ] : [], { words: `Row ${ i }` } ) );
+	const run = ( taken = {} ) => pairAbsorbed( { host: el( 'Root/1#0', 'nav', rows, { w: 400 } ), absorbed: pills.map( ( x ) => ( { element: x, looks: [ 'background', 'border' ] } ) ), kids, calibration: cal, finder, taken } );
+	const made = run();
+	assert.deepEqual( made.ambiguous, [] );
+	assert.deepEqual( made.slots, { [ `${ L( 2 ) } > .b` ]: { tpl: 'Root/21#0' }, [ `${ L( 4 ) } > .b` ]: { tpl: 'Root/41#0' } } );
+	assert.deepEqual( made.paired.map( ( p ) => p.slots.length ), [ 1, 1 ] );
+	// every slot of the part held by another finder: the pills are said, not read
+	const held = run( { [ `${ L( 2 ) } > .b` ]: { tpl: 'Root/99#0' }, [ `${ L( 4 ) } > .b` ]: { tpl: 'Root/98#0' } } );
+	assert.deepEqual( [ held.slots, held.ambiguous.length ], [ {}, 2 ] );
+} );

@@ -407,6 +407,53 @@ test( 'NEGATIVE: items that draw an icon keep the block’s icon style, differin
 } );
 
 
+test( 'MUST FAIL: a code-built marquee whose items all hold an icon draws the bare-icon style, and the icon\'s colour is read at the first item\'s svg at the part that style draws (not the circle style\'s)', () => {
+	const STAR = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"></path></svg>';
+	const strip = ( codeItems ) => N( 'section', {}, [ N( 'div', { style: 'overflow-x:hidden', hole: 'trustBar', words: 'A B', codeItems } ) ] );
+	const motion = new Set( [ 'Root/2' ] );
+	const BADGE = ( k ) => `.sgs-trust-bar__badge:nth-of-type(${ k })`;
+	const CIRCLE = ( k ) => `${ BADGE( k ) } > .sgs-trust-bar__circle > svg`;
+	const BARE = ( k ) => `${ BADGE( k ) } > .sgs-trust-bar__icon > svg`;
+	const CAL = {
+		itemGap: { slot: BADGE( 1 ) },
+		iconColour: { slot: CIRCLE( 1 ), slots: [ CIRCLE( 1 ), BARE( 1 ), CIRCLE( 2 ), BARE( 2 ) ] },
+		iconStrokeWidth: { slot: CIRCLE( 1 ), slots: [ CIRCLE( 1 ), BARE( 1 ), CIRCLE( 2 ), BARE( 2 ) ] },
+		iconBareSize: { slot: BARE( 1 ), slots: [ BARE( 1 ), BARE( 2 ) ] },
+		iconCircleSize: { slot: `${ BADGE( 1 ) } > .sgs-trust-bar__circle`, slots: [ `${ BADGE( 1 ) } > .sgs-trust-bar__circle` ] },
+	};
+	const items = ( a, b ) => [ { text: 'A', svg: a, marks: '', at: [ 0, 0 ] }, { text: 'B', svg: b, marks: '', at: [ 0, 1 ] } ];
+	const nodeOf = ( r ) => JSON.parse( JSON.stringify( r.skeleton ) )[ 0 ].innerBlocks[ 0 ];
+	const node = nodeOf( run( strip( items( STAR, STAR ) ), { motion, calSettings: () => CAL } ) );
+	assert.equal( node.attributes.badgeStyle, 'icon-bare', 'every item holds an icon: the bare-icon style, chosen from the draft' );
+	assert.equal( node.decided?.badgeStyle, undefined, 'a proposal, not a decision: Fill may still change it' );
+	assert.deepEqual( Object.keys( node.draftSlots ).sort(), [ BADGE( 1 ), BARE( 1 ) ].sort(), 'the icon is read at the bare style svg, never the circle style one, and at the first item only' );
+	// eslint-disable-next-line no-new-func
+	const walk = new Function( `return (${ node.draftSlots[ BARE( 1 ) ].js })` )();
+	const svg = { localName: 'svg' };
+	const item = { children: [], querySelector: ( q ) => ( 'svg' === q ? svg : null ) };
+	assert.equal( walk( { children: [ { children: [ item, item ] } ] } ), svg );
+	assert.equal( walk( { children: [ { children: [] } ] } ), null, 'no item, no element' );
+	// An icon inside a box the draft paints (the circle style) is not the bare-icon style, though every item holds one.
+	const boxed = nodeOf( run( strip( [ { text: 'A', svg: STAR, boxed: true, marks: '', at: [ 0, 0 ] }, { text: 'B', svg: STAR, boxed: true, marks: '', at: [ 0, 1 ] } ] ), { motion, calSettings: () => CAL } ) );
+	assert.equal( boxed.attributes.badgeStyle, undefined, 'every icon in a painted box: the block keeps its style' );
+	assert.equal( nodeOf( run( strip( [ { text: 'A', svg: STAR, boxed: false, marks: '', at: [ 0, 0 ] }, { text: 'B', svg: STAR, boxed: true, marks: '', at: [ 0, 1 ] } ] ), { motion, calSettings: () => CAL } ) ).attributes.badgeStyle, undefined, 'one boxed icon is enough to keep the block style' );
+	// One item with no icon keeps the block's style and reads no icon.
+	const mixed = nodeOf( run( strip( items( STAR, null ) ), { motion, calSettings: () => CAL } ) );
+	assert.equal( mixed.attributes.badgeStyle, undefined );
+	assert.deepEqual( Object.keys( mixed.draftSlots ), [ BADGE( 1 ) ] );
+	// The decisions entry is checked against the block, and without it the style is not chosen.
+	const bad = facts();
+	bad.decisions.rules.marqueeCodeItems.items = { ...bad.decisions.rules.marqueeCodeItems.items, icons: { ...bad.decisions.rules.marqueeCodeItems.items.icons, slots: [ 'noSuchIcon' ] } };
+	assert.ok( decisionsProblems( bad ).some( ( p ) => /rules\.marqueeCodeItems\.items must name/.test( p ) ) );
+	const badValue = facts();
+	badValue.decisions.rules.marqueeCodeItems.items = { ...badValue.decisions.rules.marqueeCodeItems.items, icons: { ...badValue.decisions.rules.marqueeCodeItems.items.icons, value: 'icon-nude' } };
+	assert.ok( decisionsProblems( badValue ).some( ( p ) => /marqueeCodeItems\.items\.icons must name one of the values.*icon-nude/.test( p ) ), 'a value the setting does not have is a decisions problem' );
+	assert.deepEqual( decisionsProblems( facts() ).filter( ( p ) => /marqueeCodeItems/.test( p ) ), [], 'the shipped values are the settings own' );
+	const noIcons = facts();
+	delete noIcons.decisions.rules.marqueeCodeItems.items.icons;
+	assert.equal( nodeOf( run( strip( items( STAR, STAR ) ), { motion, calSettings: () => CAL, facts: noIcons } ) ).attributes.badgeStyle, undefined );
+} );
+
 test( 'MUST FAIL: a drawer\'s <nav> whose only children are a loop of links is the drawer menu block (the navigation rule), not unwrapped as a bare list wrapper; a bare div and a page\'s nav still are', () => {
 	const links = () => [ N( 'a', { loop: true, words: 'Shop all', attrs: { href: '/shop/' } } ), N( 'a', { loop: true, words: 'Gifts', attrs: { href: '/gifts/' } } ) ];
 	const drawer = { 'S-1': { kind: 'drawer', name: 'Menu' } };

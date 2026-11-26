@@ -1356,9 +1356,13 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 				return v( 'marqueeCodeItems', { block: R.marqueeCodeItems.block, attributes: {}, absorb: true, handover: { owner: 'content-page', kind: 'presence', detail: R.marqueeCodeItems.handover } } );
 			}
 			const plain = I.plain && read.every( ( x ) => ! x.svg ) ? { [ I.plain.setting ]: I.plain.value } : {};
+			// Items that all hold an icon with no painted box round it draw the bare-icon style (the SVG is the item's whole icon): the style is chosen here, from
+			// the draft and before any part is paired, so the icon's settings are read at the part that style draws (`iconMode`,
+			// lib/skeleton-propose.mjs). It is the proposal's value, not a decided one: Fill may still change it.
+			const iconStyle = I.icons && read.every( ( x ) => x.svg && ! x.boxed ) ? { [ I.icons.setting ]: I.icons.value } : {};
 			const marks = [ ...new Set( read.map( ( x ) => x.marks || '' ) ) ];
 			const glyph = I.marksNote && 1 === marks.length && '' !== marks[ 0 ] ? { glyphNote: `${ I.marksNote }: the draft draws "${ marks[ 0 ] }" beside every item's words` } : {};
-			return v( 'marqueeCodeItems', { block: R.marqueeCodeItems.block, attributes: { [ I.setting ]: items, ...Object.fromEntries( ( I.clear || [] ).map( ( a ) => [ a, '' ] ) ), ...plain }, absorb: true, ...( Object.keys( plain ).length ? { decided: plain } : {} ), ...( Array.isArray( read[ 0 ].at ) ? { codeItem: read[ 0 ].at } : {} ), ...glyph } );
+			return v( 'marqueeCodeItems', { block: R.marqueeCodeItems.block, attributes: { [ I.setting ]: items, ...iconStyle, ...Object.fromEntries( ( I.clear || [] ).map( ( a ) => [ a, '' ] ) ), ...plain }, absorb: true, ...( Object.keys( plain ).length ? { decided: plain } : {} ), ...( Object.keys( iconStyle ).length ? { iconMode: iconStyle } : {} ), ...( Array.isArray( read[ 0 ].at ) ? { codeItem: read[ 0 ].at } : {} ), ...glyph } );
 		},
 		( { e, kidsB } ) => {
 			if ( ! loops( e ) || ! kidsB.length ) {

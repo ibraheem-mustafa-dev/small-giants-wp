@@ -57,6 +57,7 @@ const ALNUM = /[\p{L}\p{N}]/u;
 // The largest distance, as a share of the block's width and height, at which a part's place decides, and how much nearer it
 // must be than the next part.
 export const PLACE_NEAR = 0.12;
+const LIST_TAGS = new Set( [ 'ul', 'ol', 'menu' ] );
 const PLACE_MARGIN = 2;
 // The second candidate of an element whose part another element of the same item also claims.
 const SHARED = Object.freeze( { head: '(another element of the same item claims this part)', shared: true, inside: new Set() } );
@@ -68,6 +69,11 @@ const px = ( v ) => {
 	return Number.isFinite( n ) ? n : null;
 };
 const parentOf = ( t ) => ( PSEUDO.test( t ) ? t.replace( PSEUDO, '' ) : t.includes( ' > ' ) ? t.slice( 0, t.lastIndexOf( ' > ' ) ) : '' );
+// Whether a part's reading is `display: none` at every width it was read at (a part the block does not draw in its default look).
+const neverShown = ( byWidth ) => {
+	const reads = Object.values( byWidth || {} ).filter( ( v ) => v && 'object' === typeof v && 'display' in v );
+	return reads.length > 0 && reads.every( ( v ) => 'none' === v.display );
+};
 const atWidth = ( byWidth ) => byWidth?.[ WIDTH ] ?? Object.values( byWidth || {} ).find( ( v ) => v && v._tag ) ?? Object.values( byWidth || {} )[ 0 ] ?? {};
 
 // A short run of characters with no letter or digit, or one character: drawn as a glyph, never read as words.
@@ -101,10 +107,15 @@ export function partModel( elements = {}, textPaths = [], recorded = {} ) {
 		const width = px( v.width );
 		parts.set( t, {
 			template: t, tag: String( v._tag ?? '' ).toLowerCase(), pseudo, oof, level: levelOf( path ), parent: '' === t ? null : parentOf( t ), width,
-			hidden: oof && null !== width && width <= 1.5,
+			hidden: oof && null !== width && width <= 1.5, none: neverShown( byWidth ),
 			words: seen.get( t )?.words ?? null, box: seen.get( t )?.box?.[ WIDTH ] ?? null,
 			painted: ! NO_PAINT.test( String( v[ 'background-color' ] ?? '' ).trim() ) || ( px( v[ 'border-top-width' ] ) ?? 0 ) > 0,
 		} );
+	}
+	// A part inside one the block never displays is never displayed either.
+	const never = ( p ) => p.none || ( null !== p.parent && !! parts.get( p.parent ) && never( parts.get( p.parent ) ) );
+	for ( const p of parts.values() ) {
+		p.never = never( p );
 	}
 	const texts = new Set( ( textPaths || [] ).map( templateOf ) );
 	for ( const p of parts.values() ) {
@@ -138,7 +149,7 @@ export function partModel( elements = {}, textPaths = [], recorded = {} ) {
 		const head = parts.get( g.head );
 		Object.assign( g, {
 			kind: ms.map( ( p ) => p.kind ).sort( ( a, b ) => KINDS.indexOf( a ) - KINDS.indexOf( b ) )[ 0 ],
-			level: head.level, oof: ms.some( ( p ) => p.oof ), hidden: ms.every( ( p ) => p.hidden ), pseudo: head.pseudo, root: g.members.includes( '' ),
+			level: head.level, painted: ms.some( ( p ) => p.painted ), oof: ms.some( ( p ) => p.oof ), hidden: ms.every( ( p ) => p.hidden ), never: ms.every( ( p ) => p.never ), pseudo: head.pseudo, root: g.members.includes( '' ),
 			parentHead: null === head.parent ? null : headOf.get( head.parent ) ?? null,
 			words: ms.map( ( p ) => p.words ).find( Boolean ) ?? null, box: head.box,
 		} );
@@ -328,16 +339,39 @@ export function draftKind( e, kids ) {
 // switch that draws one element's look on another part, so an element paired with the target part whose own settings paint none
 // of its looks is read at the look element's calibrated slots when those settings paint them, and the switch is returned for the
 // node to hold.
-export function pairAbsorbed( { host, absorbed = [], kids, isNode = () => false, calibration = {}, finder, taken = {}, summaryRows = false, switches = [] } ) {
-	const out = { slots: {}, paired: [], ambiguous: [], unpainted: [], pseudo: [], flat: [], switches: [], siblings: [] };
+function pairCore( { host, absorbed = [], kids, isNode = () => false, calibration = {}, finder, taken = {}, summaryRows = false, switches = [] } ) {
+	const out = { slots: {}, paired: [], ambiguous: [], unpainted: [], pseudo: [], flat: [], switches: [], siblings: [], unmatched: [] };
 	const elements = calibration?.elements || {};
 	if ( ! host || ! absorbed.length || ! Object.keys( elements ).length ) {
 		return out;
 	}
 	const model = partModel( elements, Object.values( calibration.text || {} ).map( ( x ) => x?.path ).filter( Boolean ), calibration.parts );
 	const groups = [ ...model.groups.values() ].filter( ( g ) => ! g.root && ! g.hidden );
+	// The parts a calibrated setting paints (its slot or any of its slots): a part the block hides by default is still a candidate
+	// when one does, as a setting can show it.
+	const slotted = new Set( Object.values( calibration.settings || {} ).flatMap( ( s ) => [ s?.slot, ...( s?.slots || [] ) ] ).filter( Boolean ).map( templateOf ) );
+	const calibrated = ( g ) => g.members.some( ( t ) => slotted.has( t ) );
 	// The block's disclosure summary parts: a control part that is a `summary` element, drawn out of flow or not.
 	const summaries = groups.filter( ( g ) => 'control' === g.kind && 'summary' === model.parts.get( g.head )?.tag );
+	// The parts a row draws only when it opens a submenu: a part that has a twin with a wrapper step taken out (the item's link
+	// sits in the item for a plain row and inside the wrapper round its summary for a row with a submenu), where the wrapper is the
+	// part that holds a disclosure summary part.
+	const pathSteps = ( t ) => String( t ).split( ' > ' );
+	const wrapperSteps = ( big, small ) => {
+		const taken = [];
+		let i = 0;
+		big.forEach( ( x, j ) => ( i < small.length && x === small[ i ] ? i++ : taken.push( j ) ) );
+		return i === small.length ? taken : [];
+	};
+	const holdsSummary = ( h ) => !! h && ! h.root && summaries.some( ( sm ) => h.inside.has( sm.head ) );
+	const underSummary = new Set( ! summaries.length ? [] : groups.filter( ( g ) => {
+		const big = pathSteps( g.head );
+		return groups.some( ( g2 ) => {
+			const small = pathSteps( g2.head );
+			return g2 !== g && g2.level === g.level && g2.kind === g.kind && small.length < big.length && small[ small.length - 1 ] === big[ big.length - 1 ]
+				&& wrapperSteps( big, small ).some( ( j ) => j < big.length - 1 && holdsSummary( model.groups.get( model.headOf.get( big.slice( 0, j + 1 ).join( ' > ' ) ) ) ) );
+		} );
+	} ).map( ( g ) => g.head ) );
 	// The host's subtree in document order, stopping at the elements other nodes read.
 	const parent = new Map();
 	const order = [];
@@ -354,6 +388,16 @@ export function pairAbsorbed( { host, absorbed = [], kids, isNode = () => false,
 	// A menu's rows are one repeated element whose copies differ in what they hold (a row with no submenu has no caret), so a
 	// copy that is a summary row makes every copy of its loop a toggle: the summary slots are read at the copy of their position.
 	const rowLoops = new Set( summaries.length ? order.filter( ( e ) => 'control' === kindOf.get( e ) && isSummaryRow( e, ( x ) => kids( x ).filter( ( k ) => ! isNode( k ) ) ) ).map( ( e ) => copylessKey( e.key ) ) : [] );
+	// Whether the draft's menu holds any nested menu structure: a list inside a list item, an element in a hidden panel, a disclosure.
+	const inListItem = ( e ) => {
+		for ( let x = parent.get( e ); x && x !== host; x = parent.get( x ) ) {
+			if ( 'li' === x.tag ) {
+				return true;
+			}
+		}
+		return false;
+	};
+	const nestedMenu = order.some( ( e ) => ! visible( e ) || 'details' === e.tag || ( LIST_TAGS.has( e.tag ) && inListItem( e ) ) );
 	const toggles = new Set( ! summaryRows ? [] : order.filter( ( e ) => 'control' === kindOf.get( e ) && rowLoops.has( copylessKey( e.key ) ) ) );
 	const sameRepeat = ( a, b ) => a === b || copylessKey( a.key ) === copylessKey( b.key ) || ( 'control' === kindOf.get( a ) && 'control' === kindOf.get( b ) && a.tag === b.tag && ( a.attrs?.class ?? '' ) === ( b.attrs?.class ?? '' ) && ( Math.abs( ( boxOf( a ).w ?? -9 ) - ( boxOf( b ).w ?? 9 ) ) <= 2 || Math.abs( ( boxOf( a ).h ?? -9 ) - ( boxOf( b ).h ?? 9 ) ) <= 2 ) );
 	const repGroup = ( e, within = parent.get( e ) ) => kids( within ).filter( ( k ) => visible( k ) && ( kindOf.has( k ) || ! isNode( k ) ) && sameRepeat( e, k ) );
@@ -419,8 +463,13 @@ export function pairAbsorbed( { host, absorbed = [], kids, isNode = () => false,
 		x = c && w > 0 && cw > 0 && Math.abs( w - cw ) <= Math.max( 2, 0.1 * w ) ? c : null;
 		x && rootChain.add( x );
 	}
+	// An element that draws its own filled or bordered box (a pill of words): the parts the block paints with no words of their
+	// own recorded (a badge) can be it, and it prefers them to the plain words parts.
+	const looksOf = new Map( absorbed.map( ( a ) => [ a.element, a.looks ] ) );
+	const filledPart = ( g ) => g.painted && ! g.pseudo;
+	const fills = ( e ) => ( looksOf.get( e ) || [] ).some( ( l ) => [ 'background', 'border' ].includes( l ) );
 	const baseSets = new Map( order.map( ( e ) => {
-		return [ e, rootChain.has( e ) ? [] : groups.filter( ( g ) => g.level === chain.get( e ).length && FITS[ kindOf.get( e ) ].includes( g.kind ) && ( ! flowsOf( e ).every( Boolean ) || g.oof ) ) ];
+		return [ e, rootChain.has( e ) ? [] : groups.filter( ( g ) => g.level === chain.get( e ).length && ( FITS[ kindOf.get( e ) ].includes( g.kind ) || ( 'words' === kindOf.get( e ) && filledPart( g ) && 'mark' === g.kind && fills( e ) ) ) && ( ! flowsOf( e ).every( Boolean ) || g.oof ) ) ];
 	} ) );
 	const below = new Map( order.map( ( e ) => [ e, order.filter( ( d ) => isAbove( e, d ) ) ] ) );
 	let flatNow = new Map();
@@ -477,6 +526,16 @@ export function pairAbsorbed( { host, absorbed = [], kids, isNode = () => false,
 			if ( row.length ) {
 				cands = row;
 			} else {
+				// No element of the draft's menu is a summary row and the draft has no nested menu structure at all (a caret drawn in CSS,
+				// a background image or a pseudo-element is no element, so a submenu row may be there without one), so it draws no row that
+				// opens a submenu, and the parts only such a row draws cannot be what its elements are. A part the block never displays is
+				// not one the draft's elements are either.
+				if ( underSummary.size && ! rowLoops.size && ! nestedMenu ) {
+					const kept = cands.filter( ( g ) => ! underSummary.has( g.head ) );
+					kept.length && ( cands = kept );
+				}
+				const shownParts = cands.filter( ( g ) => ! g.never || calibrated( g ) );
+				shownParts.length && ( cands = shownParts );
 				// A disclosure summary part is a menu row that opens a submenu: a control with no caret and no words beside one
 				// (a plain link, even with a trailing arrow) is never it, whether or not the summary is drawn out of flow.
 				if ( 'control' === kind && summaries.length && ! isSummaryRow( e, ( x ) => kids( x ).filter( ( k ) => ! isNode( k ) ) ) ) {
@@ -498,7 +557,13 @@ export function pairAbsorbed( { host, absorbed = [], kids, isNode = () => false,
 						}
 					}
 				}
-				for ( const tier of [ ( g ) => g.kind === kind, ( g ) => ! up || g.parentHead === up.head, ( g ) => flows.includes( g.oof ) ] ) {
+				// A pill of words the draft fills ranks the parts the block paints (a badge), whichever kind they print as, before the
+				// rest; a part that prints the very words the pill holds is the pill even when the block does not paint it by default
+				// (a setting fills it), so the words decide before the paint does and the tiers below are for the rest.
+				const pill = 'words' === kind && fills( e ) && cands.some( filledPart );
+				const printed = pill ? cands.filter( ( g ) => g.words && sameWords( g.words, e.words ) ) : [];
+				pill && ( cands = printed.length ? printed : cands.filter( filledPart ) );
+				for ( const tier of pill ? [] : [ ( g ) => g.kind === kind, ( g ) => ! up || g.parentHead === up.head, ( g ) => flows.includes( g.oof ) ] ) {
 					const kept = cands.filter( tier );
 					kept.length && ( cands = kept );
 				}
@@ -509,6 +574,10 @@ export function pairAbsorbed( { host, absorbed = [], kids, isNode = () => false,
 				}
 				cands.length > 1 && ( cands = byWords( cands, e ) );
 				cands.length > 1 && ( cands = byPlace( cands, e, host, model.rootBox ) );
+				// A part the block hides by default but a setting calibrates (a count badge at zero) is the lowest tier: it stays a
+				// candidate for the words and the place to choose, and loses only to a displayed part when they cannot.
+				const displayed = cands.length > 1 ? cands.filter( ( g ) => ! g.never ) : [];
+				displayed.length && ( cands = displayed );
 			}
 			result.set( e, banned.has( e ) ? [ banned.get( e ), SHARED ] : cands );
 		}
@@ -598,6 +667,7 @@ export function pairAbsorbed( { host, absorbed = [], kids, isNode = () => false,
 	for ( const { element: e, looks = [] } of absorbed ) {
 		const c = result.get( e );
 		if ( ! c || ! c.length ) {
+			flatNow.has( e ) || rootChain.has( e ) || out.unmatched.push( { key: e.key } );
 			continue;
 		}
 		if ( c.length > 1 ) {
@@ -646,8 +716,65 @@ export function pairAbsorbed( { host, absorbed = [], kids, isNode = () => false,
 			continue;
 		}
 		const placed = placeSlots( e, [ ...slotLooks.keys() ].sort() );
-		placed.length ? out.paired.push( { key: e.key, part: g.head, slots: placed } ) : out.ambiguous.push( { key: e.key, candidates: [ g.head ], why: 'the draft has no element at any of the part\'s calibrated positions, or another finder holds them' } );
+		if ( placed.length ) {
+			out.paired.push( { key: e.key, part: g.head, slots: placed } );
+			continue;
+		}
+		// No slot of the part lies at this element's position (the block draws that position as another kind of row): when an
+		// element of its own repetition group, of the same sort and tag, is read at one of the part's slots, the block draws one
+		// look for the group and that read stands for this element. A slot that does lie at its position and that another finder
+		// holds is no such case: the element stays unpaired, and says so.
+		const group = repGroup( e ).filter( ( x ) => x !== e );
+		const lands = [ ...slotLooks.keys() ].some( ( sl ) => instanceOf( e, [ ...sl.matchAll( NTH ) ].map( ( x ) => Number( x[ 1 ] ) ), { chain: chain.get( e ), parent, kids, host, repGroup } ) === e );
+		const readSlot = lands ? undefined : [ ...slotLooks.keys() ].sort().find( ( sl ) => ( ( r ) => r && group.includes( r ) && sameSort( r, e ) && r.tag === e.tag )( placedAt.get( sl ) ) );
+		const freeSlots = lands || readSlot ? [] : [ ...slotLooks.keys() ].sort().filter( ( sl ) => ! held.has( sl ) );
+		if ( readSlot ) {
+			out.paired.push( { key: e.key, part: g.head, slots: [] } );
+			const named = settings.filter( ( [ , s ] ) => ( ! s.state || 'current' === s.state ) && [ s?.slot, ...( s?.slots || [] ) ].includes( readSlot ) && ( null === looks || looksOfEntry( s, model.parts.get( templateOf( readSlot ) )?.tag ?? '' ).some( ( l ) => looks.includes( l ) ) ) ).map( ( [ name ] ) => name );
+			out.siblings.push( { key: e.key, part: g.head, slot: readSlot, settings: [ ...new Set( named ) ], looks: looks ?? [], readBy: placedAt.get( readSlot ).key } );
+		} else if ( freeSlots.length ) {
+			// The block draws this part at other positions than the draft does (a badge on the second and fourth rows, where the
+			// draft's pills sit on the third and fifth): the element is read at the part's first free slot, as the block draws one
+			// look for the part.
+			out.slots[ freeSlots[ 0 ] ] = finder( e );
+			held.add( freeSlots[ 0 ] );
+			placedAt.set( freeSlots[ 0 ], e );
+			out.paired.push( { key: e.key, part: g.head, slots: [ freeSlots[ 0 ] ] } );
+		} else {
+			out.ambiguous.push( { key: e.key, candidates: [ g.head ], why: 'the draft has no element at any of the part\'s calibrated positions, or another finder holds them' } );
+		}
 	}
+	return out;
+}
+
+// The conditional parts of a block's look as a reading of elements, one tag at the widest width (lib/setting-record.mjs::
+// readRecord `conditionalParts`: the paths pages that set a setting draw and the default look lacks).
+const conditionalElements = ( cond ) => Object.fromEntries( Object.entries( cond || {} ).map( ( [ p, c ] ) => [ p, { [ WIDTH ]: { _tag: c?.tag ?? '' } } ] ) );
+
+// pairCore with a second chance: a draft element no part of the block's default look fits (no candidate at all, not an
+// ambiguous or a flat one) is offered the parts pages that switch a setting on draw (`calibration.conditionalParts`), added to
+// the default parts for that run only, so what the default parts already resolve is never touched. A slot the first run took
+// is kept by it.
+export function pairAbsorbed( args ) {
+	const first = pairCore( args );
+	const cond = conditionalElements( args.calibration?.conditionalParts );
+	const retry = new Set( first.unmatched.map( ( u ) => u.key ) );
+	if ( ! retry.size || ! Object.keys( cond ).length ) {
+		return first;
+	}
+	const merged = { ...args.calibration.elements };
+	Object.keys( cond ).forEach( ( k ) => k in merged || ( merged[ k ] = cond[ k ] ) );
+	const second = pairCore( { ...args, absorbed: args.absorbed.filter( ( a ) => retry.has( a.element.key ) ), calibration: { ...args.calibration, elements: merged } } );
+	const free = ( x ) => ! x.slots || x.slots.every( ( sl ) => ! ( sl in first.slots ) );
+	const out = { ...first };
+	const got = new Set();
+	for ( const k of [ 'paired', 'ambiguous', 'unpainted', 'pseudo', 'flat', 'switches', 'siblings' ] ) {
+		const add = second[ k ].filter( ( x ) => retry.has( x.key ) && free( x ) );
+		add.forEach( ( x ) => got.add( x.key ) );
+		out[ k ] = [ ...first[ k ], ...add ];
+	}
+	out.unmatched = first.unmatched.filter( ( u ) => ! got.has( u.key ) );
+	out.slots = { ...second.slots, ...first.slots };
 	return out;
 }
 

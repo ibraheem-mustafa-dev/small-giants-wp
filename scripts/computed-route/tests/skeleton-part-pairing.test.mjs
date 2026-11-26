@@ -123,6 +123,7 @@ test( 'loop copies: every copy is read through the slot of its position or of an
 	const made = pairAbsorbed( { host, absorbed: chips.map( ( c ) => ( { element: c, looks: [ 'background' ] } ) ), kids, calibration: CAL, finder } );
 	assert.deepEqual( made.slots, { [ TILE( 1 ) ]: { tpl: 'Root/5#0' }, [ TILE( 2 ) ]: { tpl: 'Root/5#1' } } );
 	assert.deepEqual( made.paired.map( ( p ) => p.key ), [ 'Root/5#0', 'Root/5#1', 'Root/5#2' ], 'the third copy is read through its loop' );
+	assert.deepEqual( [ made.paired.map( ( p ) => p.slots.length > 0 ), made.siblings ], [ [ true, true, true ], [] ], 'every copy is read through a slot of the loop, none through the sibling fallback' );
 } );
 
 test( 'negative controls: a non-repeating element never pairs with a repeating part, a worded element never with a glyph part, a mark never with an icon part, an out-of-flow element only with an out-of-flow part', () => {

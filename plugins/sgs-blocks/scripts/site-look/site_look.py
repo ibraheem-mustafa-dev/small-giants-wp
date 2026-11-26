@@ -27,7 +27,11 @@ code, so a file added there would mark every record stale.
 
 Usage:
   python site_look.py --snapshot sites/<client>/theme-snapshot.json --site <site> --out DIR [--blocks sgs/a,sgs/b | --all]
-                      [--woocommerce] [--jobs N]
+                      [--woocommerce] [--jobs N] [--check-parts]
+--check-parts is the completeness check: every part of the block's own the setting record places (`sgs-<block>__<part>`) is drawn
+by at least one render the look read (the default renders and the pages that set a setting: `undrawnParts` names the rest), or
+is listed in unreachable-parts.json with the reason no offline render draws it (`conditionalParts` holds the parts only those
+pages draw).
 """
 from __future__ import annotations
 
@@ -303,6 +307,50 @@ def tested_attrs(texts) -> set:
     return {m.group(1).lower() for t in texts for m in ATTR_SELECTOR.finditer(selectors_only(t))} - {'class', 'style'}
 
 
+def path_structure(page) -> dict:
+    """{path: {tag, classes, parent, siblings}} for every element read_page keys, on one page: the element's tag and
+    classes, the path of the element it sits in (None for a root, a `@controls` panel or a companion) and the paths of the
+    elements beside it in that parent, in document order."""
+    root = page.root
+    out = {}
+    if root is None:
+        return out
+
+    def walk(top, prefix):
+        keys = {}
+        nodes = [top, *top.find_all(True)]
+        for el in nodes:
+            if el.name not in ('style', 'script', 'template'):
+                p = element_path(el, top)
+                keys[id(el)] = (f'{prefix} > {p}' if p else prefix) if prefix else p
+        for el in nodes:
+            key = keys.get(id(el))
+            if key is None or key in out:
+                continue
+            par = el.parent if el is not top and isinstance(el.parent, Tag) else None
+            out[key] = {'tag': el.name, 'classes': list(el.get('class') or []),
+                        'parent': keys.get(id(par)) if par is not None else None,
+                        'siblings': [keys[id(s)] for s in _children(par) if s is not el and id(s) in keys] if par is not None else []}
+    walk(root, '')
+    for n, t in enumerate(controlled(page, root), 1):
+        walk(t, '@controls' if n == 1 else f'@controls:{n}')
+    return out
+
+
+def conditional_parts(seen: dict, elements: dict, setting_of: dict) -> dict:
+    """The element paths the pages read beside the default ones draw that the default look lacks, with where each sits:
+    {path: {tag, classes, parent, siblings, firstJob, setting}}. seen: {job: path_structure of that page}; setting_of:
+    {job: the setting its marker changed}. A part a setting switches on (a trailing icon, a badge, a drawer's open panel)
+    is drawn only by the page that sets it, so the default look cannot place a draft element there, but a reader that
+    finds the default parts fail can offer these (`firstJob` is the first such page, in job order)."""
+    out = {}
+    for job in sorted(seen):
+        for path, st in seen[job].items():
+            if path not in elements and path not in out:
+                out[path] = {**st, 'firstJob': job, 'setting': setting_of.get(job)}
+    return out
+
+
 def path_attrs(page, out: dict, names: set) -> None:
     """{path: {attribute: value}} for every element read_page keys that carries an attribute in `names` (a path keeps
     the first variant's element; an element with none is left out)."""
@@ -485,13 +533,27 @@ def build_block(short: str, snapshot_file: Path, woocommerce: bool) -> dict:
         paint_states[st['name']] = {'when': st.get('when') or {}, 'elements': state_paint(resting(els, props), st.get('props'))}
     facts = setting_facts(bridge, reader)
     record = record_facts(short, bridge, reader, elements, classes)
+    conditional = {} if 'conditional-parts' in MUTATE else conditional_parts(reader.seen, elements, marker_settings(bridge))
+    undrawn = undrawn_parts(record_of(short), short, classes, conditional)
     return {'block': f'sgs/{short}', 'format': FORMAT, 'codeHash': rn.hash, 'elements': resting(elements, props),
             'pathClasses': classes, 'pathAttrs': {k: v for k, v in attrs.items() if v}, **({'settingFacts': record} if record else {}),
-            **({'paintStates': paint_states} if paint_states else {}), **facts,
+            **({'paintStates': paint_states} if paint_states else {}), **({'conditionalParts': conditional} if conditional else {}), **({'undrawnParts': undrawn} if undrawn else {}), **facts,
             **({'renderErrors': errors} if errors else {}), 'themeLoaded': pages.theme}
 
 
 # ---------------------------------------------------------------- per-setting facts
+
+
+def marker_settings(bridge: dict) -> dict:
+    """{job: the setting its marker page changes}, for every page of the bridge's plan that names one (a discovery
+    instance's `discover.attr`, a content instance's `content.attr`, a form or state marker's `setting`)."""
+    out = {}
+    for group in ('discover', 'content', 'forms', 'states'):
+        for i in bridge.get(group, []):
+            name = i.get('setting') or (i.get('discover') or {}).get('attr') or (i.get('content') or {}).get('attr')
+            if name:
+                out.setdefault(f'b:{i["key"]}', name)
+    return out
 
 
 BRIDGE = ROUTE / 'tools' / 'site-look-bridge.mjs'
@@ -523,6 +585,7 @@ class Reader:
     def __init__(self, pages, results, props):
         self.pages, self.results, self.props = pages, results, props
         self.memo, self.style_memo, self.content_memo = {}, {}, {}
+        self.seen = {}  # {job: path_structure of that page}: every page the look reads, kept for conditional_parts
 
     def page(self, job: str, held=()):
         key = (job, tuple(held))
@@ -532,6 +595,8 @@ class Reader:
             pg = self.pages.get(job, held=held)
             settle(pg, self.results[job])
             self.memo[key] = pg
+            if job not in self.seen:
+                self.seen[job] = path_structure(pg)
             if 'keep-pages' not in MUTATE:
                 for k in [k for k, v in self.pages.memo.items() if v is pg]:
                     del self.pages.memo[k]
@@ -762,6 +827,33 @@ def part_paths(part: str, elements: dict, classes: dict) -> list:
         elif base in hosts:
             out.append(base + pseudo)
     return sorted(set(out), key=lambda p: (_depth(p), p))
+
+
+UNREACHABLE = HERE / 'unreachable-parts.json'
+
+
+def undrawn_parts(record, short: str, classes: dict, conditional: dict) -> dict:
+    """{part class: [settings]} for each of the block's own parts (`sgs-<block>__<part>`) the setting record places that no page
+    the look read draws: its class is on no element of the default look and none of the conditional parts. Shared extension
+    classes (`sgs-bg-media`, `sgs-info-toggle`) and the root are not the block's own parts."""
+    prefix = f'sgs-{short}__'
+    drawn = {c for cl in [*classes.values(), *((v or {}).get('classes') or [] for v in conditional.values())] for c in cl}
+    placed = {}
+    for e in (record or {}).get('entries', []):
+        head = (e.get('part') or '').partition('::')[0].strip().split(' ')[0]
+        if head.startswith(prefix):
+            placed.setdefault(head, set()).add(e['setting'])
+    return {h: sorted(ss) for h, ss in sorted(placed.items()) if h not in drawn}
+
+
+def completeness(look: dict, short: str, listed: dict) -> list:
+    """The faults of one look's part completeness: a part the record places that no render draws and `unreachable-parts.json`
+    does not list (with the reason it cannot be drawn offline), and a part listed there that a render now draws."""
+    undrawn = look.get('undrawnParts') or {}
+    out = [f'{short}: the record places {part} ({", ".join(ss[:4])}{" ..." if len(ss) > 4 else ""}) but no render draws it, and '
+           f'{UNREACHABLE.name} does not list it: give the fixture a variant that draws it, or list it with the reason' for part, ss in undrawn.items() if part not in listed]
+    out += [f'{short}: {part} is listed in {UNREACHABLE.name} but a render draws it now: remove it from the list' for part in listed if part not in undrawn]
+    return out
 
 
 def track_count(value):
@@ -1200,6 +1292,7 @@ def main(argv=None) -> int:
     ap.add_argument('--all', action='store_true')
     ap.add_argument('--woocommerce', action='store_true')
     ap.add_argument('--jobs', type=int, default=4)
+    ap.add_argument('--check-parts', action='store_true', help='fail when a part the record places is drawn by no render and not listed in unreachable-parts.json')
     a = ap.parse_args(argv)
     blocks = all_blocks() if a.all else [b.split('/', 1)[-1] for b in (a.blocks or '').split(',') if b]
     if not blocks:
@@ -1226,6 +1319,14 @@ def main(argv=None) -> int:
             except Exception as exc:  # noqa: BLE001 - one block's failure is reported, the rest still build
                 failed += 1
                 print(f'{j[0]}: FAILED {type(exc).__name__}: {exc}', flush=True)
+    if a.check_parts:
+        listed_all = json.loads(UNREACHABLE.read_text(encoding='utf-8')) if UNREACHABLE.is_file() else {}
+        for b in blocks:
+            f = a.out / a.site / f'{b}.json'
+            if f.is_file():
+                for line in completeness(json.loads(f.read_text(encoding='utf-8')), b, listed_all.get(f'sgs/{b}') or {}):
+                    failed += 1
+                    print(line)
     return 1 if failed else 0
 
 

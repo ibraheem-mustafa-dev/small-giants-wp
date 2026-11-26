@@ -227,6 +227,71 @@ def test_look_key_follows_the_fixture_entry(tmp_path, monkeypatch):
     assert SL.look_key('icon', SNAPSHOT, True) != before
 
 
+class FakePage:
+    """What path_structure reads of a page: its root element and its soup."""
+
+    def __init__(self, html: str, root_class: str):
+        from bs4 import BeautifulSoup
+        self.soup = BeautifulSoup(html, 'html.parser')
+        self.root = self.soup.find(class_=root_class)
+
+
+def test_a_part_only_a_marker_page_draws_is_kept_with_its_place():
+    """MUST FAIL with SITE_LOOK_MUTATE=conditional-parts (build_block drops the key) and before the key existed: the default
+    look held one render's parts, so a part a setting switches on (a trailing icon, a badge) had no path to be paired with."""
+    default = FakePage('<ul class="sgs-m"><li class="sgs-m__item"><a class="sgs-m__link"><span class="sgs-m__text">A</span></a></li></ul>', 'sgs-m')
+    marked = FakePage('<ul class="sgs-m"><li class="sgs-m__item"><a class="sgs-m__link"><span class="sgs-m__text">A</span>'
+                      '<i class="sgs-m__trailing"></i><b class="sgs-m__badge"></b></a></li></ul>', 'sgs-m')
+    elements = {p: {} for p in SL.path_structure(default)}
+    got = SL.conditional_parts({'default-v0': SL.path_structure(default), 'b:itemTrailing-on-v0': SL.path_structure(marked)}, elements,
+                               {'b:itemTrailing-on-v0': 'itemTrailing'})
+    assert sorted(got) == ['.sgs-m__item > .sgs-m__link > .sgs-m__badge', '.sgs-m__item > .sgs-m__link > .sgs-m__trailing']
+    trailing = got['.sgs-m__item > .sgs-m__link > .sgs-m__trailing']
+    assert trailing['tag'] == 'i'
+    assert trailing['classes'] == ['sgs-m__trailing']
+    assert trailing['parent'] == '.sgs-m__item > .sgs-m__link'
+    assert trailing['siblings'] == ['.sgs-m__item > .sgs-m__link > .sgs-m__text', '.sgs-m__item > .sgs-m__link > .sgs-m__badge']
+    assert trailing['firstJob'] == 'b:itemTrailing-on-v0'
+    assert trailing['setting'] == 'itemTrailing'
+    # a path the default look draws is never listed, and the root has no parent
+    assert '' not in got
+    assert SL.path_structure(default)['']['parent'] is None
+
+
+def test_conditional_parts_are_in_the_look_of_a_block_with_marker_pages(tmp_path):
+    """MUST FAIL with SITE_LOOK_MUTATE=conditional-parts: the pages the look reads for per-setting facts hold parts the
+    default render lacks (the badge of a nav-drawer-menu row is drawn only when an item carries a description)."""
+    look = build(tmp_path, 'nav-drawer-menu')
+    cp = look.get('conditionalParts') or {}
+    assert cp
+    assert not set(cp) & set(look['elements'])
+    one = next(iter(cp.values()))
+    assert {'tag', 'classes', 'parent', 'siblings', 'firstJob', 'setting'} <= set(one)
+
+
+def test_a_part_the_record_places_that_no_render_draws_must_be_listed():
+    """MUST FAIL before the check existed: a placed part drawn by no render (nav-drawer-menu's trailing icon, while the fixture
+    variants that draw it rendered nothing) was silent, so the look lacked it and pairing had nothing to pair with."""
+    record = {'entries': [{'setting': 'a', 'part': 'sgs-m__link'}, {'setting': 'b', 'part': 'sgs-m__trailing svg'}, {'setting': 'c', 'part': 'sgs-m__trailing'},
+                          {'setting': 'd', 'part': 'sgs-m__badge::after'}, {'setting': 'e', 'part': 'sgs-bg-media'}, {'setting': 'f', 'part': 'ROOT'}]}
+    classes = {'': ['sgs-m'], '.sgs-m__link': ['sgs-m__link']}
+    # the trailing icon and the badge are drawn by no render; the shared class and the root are not the block's own parts
+    got = SL.undrawn_parts(record, 'm', classes, {})
+    assert got == {'sgs-m__badge': ['d'], 'sgs-m__trailing': ['b', 'c']}
+    # a page that sets a setting draws the badge: it is drawn somewhere
+    cond = {'.sgs-m__link > .sgs-m__badge': {'tag': 'span', 'classes': ['sgs-m__badge']}}
+    assert SL.undrawn_parts(record, 'm', classes, cond) == {'sgs-m__trailing': ['b', 'c']}
+    faults = SL.completeness({'undrawnParts': got}, 'm', {'sgs-m__badge': 'view.js draws it after load'})
+    assert len(faults) == 1
+    assert 'sgs-m__trailing' in faults[0]
+    assert 'does not list it' in faults[0]
+    # listed and now drawn: stale entry
+    stale = SL.completeness({}, 'm', {'sgs-m__badge': 'old reason'})
+    assert len(stale) == 1
+    assert 'remove it from the list' in stale[0]
+    assert SL.completeness({'undrawnParts': got}, 'm', {'sgs-m__badge': 'x', 'sgs-m__trailing': 'y'}) == []
+
+
 def test_tested_attrs_reads_attribute_selectors():
     names = SL.tested_attrs(['.a[open] > b, .c[aria-current="page"], :not([hidden]) .x[class*=y] {color:red}',
                              '@media (min-width:1px){.d{grid-template-columns:[full-start] 1fr [full-end]}} .e[data-x]{content:"[nope]"}'])
@@ -234,7 +299,7 @@ def test_tested_attrs_reads_attribute_selectors():
     assert not names & {'class', 'full-start', 'full-end', 'nope'}
 
 
-@pytest.mark.parametrize('name', ['snapshot', 'custom-css', 'section', 'footer-move', 'wrapper-root', 'fold-depth', 'path-attrs', 'plain-fixture', 'fixture-key'])
+@pytest.mark.parametrize('name', ['snapshot', 'custom-css', 'section', 'footer-move', 'wrapper-root', 'fold-depth', 'path-attrs', 'plain-fixture', 'fixture-key', 'conditional-parts'])
 def test_every_switch_is_named_in_the_builder(name):
     """Each switch a must-fail test names is one the builder reads."""
     assert f"'{name}'" in (LOOK / 'site_look.py').read_text(encoding='utf-8')

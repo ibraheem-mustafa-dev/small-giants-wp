@@ -9,6 +9,9 @@
 //                         proved entries or unproved ones Bean's certainty rule accepted (`accepted`); an unproved entry
 //                         that is not accepted never enters `settings` and is listed in `untestedStates` with its cause
 //   discovered, text, link, presence, elements, paintStates  from the site look
+//   conditionalParts    { path: { tag, classes, parent, siblings, firstJob, setting } } the parts that pages setting a setting draw
+//                       and the default look lacks (a reader offers them only after the default parts fail:
+//                       lib/skeleton-part-pairing.mjs::pairAbsorbed)
 //   unplaced            { setting: why } for a setting the record places whose element the default look does not draw
 //   dead                settings the record tested that paint nothing and whose block_attributes row names no
 //                       property (a setting whose row names its property and element paints once its partner draws
@@ -649,6 +652,7 @@ function readRecord( block, client, { db = null, dir = SITE_LOOK_DIR, repo = REP
 		...( look?.presence ? { presence: look.presence } : {} ),
 		elements: look?.elements || {},
 		...( look?.pathAttrs ? { pathAttrs: look.pathAttrs } : {} ),
+		...( look?.conditionalParts ? { conditionalParts: look.conditionalParts } : {} ),
 		...( look?.paintStates ? { paintStates: look.paintStates } : {} ),
 		dead: dead.sort(),
 		unplaced,

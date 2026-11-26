@@ -204,6 +204,29 @@ export function codeItemSlots( { at, settings = [], calibrated = {} } ) {
 	return itemSlots( { finder, settings, calibrated, what: 'the code-built items’ look' } );
 }
 
+// The draftSlots that read a code-built item's icon (the inline SVG inside the item's element, at its child-index path `at`)
+// at the calibrated slots of the icon's own settings, in the way of drawing the rule chose (`modeSettings`: the settings only
+// that way of drawing has, whose slots are the parts it draws). A setting both ways of drawing share (an icon's colour, painted
+// on the circle style's svg and on the bare style's svg) has a slot at each way's part; only the slots a mode setting is
+// calibrated at are the chosen mode's, and only the first item's (a loop's other items are read through it). With no mode
+// setting calibrated, every slot of the setting. Returns { slots: { <path>: finder }, notes }.
+export function codeIconSlots( { at, settings = [], calibrated = {}, modeSettings = [] } ) {
+	const out = { slots: {}, notes: [] };
+	if ( ! Array.isArray( at ) || ! at.length || at.some( ( i ) => ! Number.isInteger( i ) || i < 0 ) ) {
+		return out;
+	}
+	const finder = { js: `( root ) => { const item = [ ${ at.join( ', ' ) } ].reduce( ( x, i ) => ( x ? x.children[ i ] : null ), root ); return ( item && item.querySelector( 'svg' ) ) || null; }` };
+	const slotsOf = ( s ) => [ ...new Set( [ calibrated[ s ]?.slot, ...( calibrated[ s ]?.slots || [] ) ].filter( ( p ) => 'string' === typeof p && '' !== p && ! p.includes( '::' ) ) ) ];
+	const firstItem = ( p ) => ( p.match( /:nth-of-type\((\d+)\)/g ) || [] ).every( ( n ) => '1' === n.match( /\d+/ )[ 0 ] );
+	const mode = new Set( modeSettings.flatMap( slotsOf ) );
+	for ( const s of settings ) {
+		const mine = slotsOf( s ).filter( firstItem );
+		const chosen = mode.size ? mine.filter( ( p ) => mode.has( p ) ) : mine;
+		chosen.length ? chosen.forEach( ( p ) => ( out.slots[ p ] = finder ) ) : out.notes.push( `the calibration has no slot of ${ s } at the part the chosen style draws, so the code-built items’ icon is not read for it` );
+	}
+	return out;
+}
+
 // The draftSlots that read a block's item look at one draft element: each setting in `settings` gives its calibrated
 // element slot (never the root, never a pseudo-element) the `finder`. Returns { slots: { <path>: finder }, notes }.
 export function itemSlots( { finder, settings = [], calibrated = {}, what = 'the items’ look' } ) {

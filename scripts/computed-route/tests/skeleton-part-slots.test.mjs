@@ -8,7 +8,7 @@ import { fileURLToPath } from 'url';
 import { openDb } from '../lib/db.mjs';
 import { loadFacts } from '../lib/skeleton-facts.mjs';
 import { proposeSkeleton } from '../lib/skeleton-propose.mjs';
-import { mediaSelfSlot, drawnSvgParts, codeItemSlots, ABSENT_PART } from '../lib/skeleton-part-slots.mjs';
+import { mediaSelfSlot, drawnSvgParts, codeItemSlots, codeIconSlots, ABSENT_PART } from '../lib/skeleton-part-slots.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
 const db = openDb();
@@ -153,4 +153,18 @@ test( 'codeItemSlots: each named setting\'s calibrated element is read at the fi
 	assert.deepEqual( Object.keys( r.slots ), [ '.a > .b' ] );
 	assert.equal( r.notes.length, 2 );
 	assert.deepEqual( codeItemSlots( { at: [ -1 ], settings: [ 'itemGap' ], calibrated: { itemGap: { slot: '.a' } } } ).slots, {}, 'a path that is no index list gives no slot' );
+} );
+
+test( 'codeIconSlots: a setting two ways of drawing share is read at the first item svg only at the slots the chosen way own settings are calibrated at; with no such setting, every first-item slot (MUST FAIL without the mode filter)', () => {
+	const A = ( k ) => `.t > .b:nth-of-type(${ k }) > .circle > svg`;
+	const B = ( k ) => `.t > .b:nth-of-type(${ k }) > .bare > svg`;
+	const calibrated = { colour: { slot: A( 1 ), slots: [ A( 1 ), B( 1 ), A( 2 ), B( 2 ) ] }, bareSize: { slot: B( 1 ), slots: [ B( 1 ), B( 2 ) ] }, pseudo: { slot: '.t::before' } };
+	const bare = codeIconSlots( { at: [ 0, 3 ], settings: [ 'colour' ], calibrated, modeSettings: [ 'bareSize' ] } );
+	assert.deepEqual( Object.keys( bare.slots ), [ B( 1 ) ] );
+	assert.match( bare.slots[ B( 1 ) ].js, /\[ 0, 3 \]/ );
+	assert.match( bare.slots[ B( 1 ) ].js, /querySelector\( 'svg' \)/ );
+	assert.deepEqual( Object.keys( codeIconSlots( { at: [ 0, 3 ], settings: [ 'colour' ], calibrated, modeSettings: [] } ).slots ), [ A( 1 ), B( 1 ) ], 'no mode setting calibrated: both ways, first item' );
+	const none = codeIconSlots( { at: [ 0 ], settings: [ 'colour', 'pseudo', 'missing' ], calibrated: { ...calibrated, colour: { slot: A( 1 ) } }, modeSettings: [ 'bareSize' ] } );
+	assert.deepEqual( [ none.slots, none.notes.length ], [ {}, 3 ], 'a setting with no slot at the chosen part, a pseudo-element slot and an unknown setting are notes' );
+	assert.deepEqual( codeIconSlots( { at: [ -1 ], settings: [ 'colour' ], calibrated } ).slots, {}, 'a path that is no index list gives no slot' );
 } );
