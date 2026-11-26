@@ -1,5 +1,5 @@
 {
-	"_comment": "The roles a list item's key or a draft item field can play, read from the words of its name (camelCase split, lower case), in priority order: a key's primary role is the first role any of its words names, a field may take each role its words name, in this order. A word may sit under several roles (`name` is an author or a title, `text` a quote or a description): lib/fill-list-content.mjs::matchFields gives a field a key whose primary role it plays first, and only when the block's item has none does a key that names the role later in this list take it (a team member's `name` takes a draft `title` when the item has no title key). An item key the block declares technical (block.json role `technical`) whose primary role is identity is the item's own name the block keys it by (an option picker skips an item with no `key`): lib/fill-list-content.mjs::identityKeys writes it from the item's words when the draft gives none. Read by lib/fill-list-content.mjs; data/item-roles.schema.json is its shape.",
+	"_comment": "The roles a list item's key or a draft item field can play, read from the words of its name (camelCase split, lower case), in priority order: a key's primary role is the first role any of its words names, a field may take each role its words name, in this order. A word may sit under several roles (`name` is an author or a title, `text` a quote or a description): lib/fill-list-content.mjs::matchFields gives a field a key whose primary role it plays first, and only when the block's item has none does a key that names the role later in this list take it (a team member's `name` takes a draft `title` when the item has no title key). An item key the block declares technical (block.json role `technical`) whose primary role is identity is the item's own name the block keys it by (an option picker skips an item with no `key`): lib/fill-list-content.mjs::identityKeys writes it from the item's words when the draft gives none. Read by lib/fill-list-content.mjs; data/item-roles.schema.json is its shape. A role with `takesUnmatched` is also the home of a draft field no other key matched by name or role: after both passes, an open string key of that role (a card's `subtitle`) takes the first such field (a count, a price note, a tag) whose own roles are none of `skipRoles` (a picture, a glyph, an address, an identity, a title and a call to action (cta, button) are never a subtitle); it never takes a field another key matches. Only one role may carry it.",
 	"roles": [
 		{ "role": "image", "words": [ "image", "img", "photo", "picture", "avatar", "logo", "thumbnail", "thumb", "media", "portrait" ] },
 		{ "role": "icon", "words": [ "icon", "glyph", "emoji" ] },
@@ -11,7 +11,9 @@
 		{ "role": "author", "words": [ "name", "author", "reviewer", "person", "who", "customer" ] },
 		{ "role": "title", "words": [ "title", "heading", "headline", "label", "name" ] },
 		{ "role": "description", "words": [ "description", "desc", "body", "text", "summary", "copy", "content", "detail", "details", "blurb", "excerpt", "bio", "biography" ] },
+		{ "role": "subtitle", "words": [ "subtitle", "subhead", "strapline", "caption" ], "takesUnmatched": { "skipRoles": [ "image", "icon", "link", "identity", "title", "action" ] } },
 		{ "role": "link", "words": [ "href", "url", "link" ] },
-		{ "role": "identity", "words": [ "key", "value", "code", "slug" ] }
+		{ "role": "identity", "words": [ "key", "value", "code", "slug" ] },
+		{ "role": "action", "words": [ "cta", "button", "btn", "action" ] }
 	]
 }

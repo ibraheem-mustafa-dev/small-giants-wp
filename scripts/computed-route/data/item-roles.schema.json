@@ -15,6 +15,14 @@
         "additionalProperties": false,
         "properties": {
           "role": { "type": "string", "pattern": "^[a-z]+$" },
+          "takesUnmatched": {
+            "type": "object",
+            "required": ["skipRoles"],
+            "additionalProperties": false,
+            "properties": {
+              "skipRoles": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^[a-z]+$" } }
+            }
+          },
           "words": {
             "type": "array",
             "minItems": 1,

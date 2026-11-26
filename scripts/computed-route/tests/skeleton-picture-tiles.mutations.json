@@ -17,7 +17,21 @@
 	{"file": "lib/skeleton-picture-tiles.mjs", "find": "if ( addressOf( actions[ i ] ) ) {", "replace": "if ( false ) {", "why": "a link with an address needs no handover"},
 	{"file": "lib/skeleton-picture-tiles.mjs", "find": "if ( addressOf( actions[ i ] ) ) {", "replace": "if ( true ) {", "why": "a script link is a handover"},
 	{"file": "lib/skeleton-picture-tiles.mjs", "find": "inside.some( ( els ) => els.some( ( d ) => 'svg' === d.tag ) ) && rule.glyphHandover", "replace": "false && rule.glyphHandover", "why": "an inline glyph is named"},
-	{"file": "lib/skeleton-picture-tiles.mjs", "find": "const t = els.findLast( ( d ) => m.words( d ) );", "replace": "const t = els.find( ( d ) => m.words( d ) );", "why": "the title is the tile's last words"},
+	{"file": "lib/skeleton-picture-tiles.mjs", "find": "text ? els.find( ( d ) => m.words( d ) ) : els.findLast( ( d ) => m.words( d ) )", "replace": "els.find( ( d ) => m.words( d ) )", "why": "the title is the tile's last words"},
 	{"file": "lib/skeleton-rules.mjs", "find": "...( g.handovers.length ? { handover: g.handovers[ 0 ], handovers: g.handovers } : {} ) } ) : null;", "replace": "} ) : null;", "why": "the handovers travel with the verdict"},
-	{"file": "lib/skeleton-propose.mjs", "find": "{ pictureTileGrids: { grids: Object.fromEntries( [ ...cls.pictureTileGrids.grids ].map( ( [ k, x ] ) => [ k, x.tiles.length ] ) ), notes: cls.pictureTileGrids.notes } }", "replace": "{}", "why": "the proposal lists the grids"}
+	{"file": "lib/skeleton-propose.mjs", "find": "{ pictureTileGrids: { grids: Object.fromEntries( [ ...cls.pictureTileGrids.grids ].map( ( [ k, x ] ) => [ k, x.tiles.length ] ) ), notes: cls.pictureTileGrids.notes } }", "replace": "{}", "why": "the proposal lists the grids"},
+	{"file": "data/skeleton-decisions.json", "find": "\"textTileGrid\": {", "replace": "\"textTileGridOff\": {", "why": "the text tile rule is switched on by its entry"},
+	{"file": "data/skeleton-decisions.json", "find": "\"minTiles\": 3,", "replace": "\"minTiles\": 2,", "why": "two tiles are no text grid"},
+	{"file": "lib/skeleton-picture-tiles.mjs", "find": "n < ( rule.minTileLines ?? 2 ) || n > ( rule.maxTileLines ?? 2 )", "replace": "n > ( rule.maxTileLines ?? 2 )", "why": "a run of one-line links is a link list"},
+	{"file": "lib/skeleton-picture-tiles.mjs", "find": "n < ( rule.minTileLines ?? 2 ) || n > ( rule.maxTileLines ?? 2 )", "replace": "n < ( rule.minTileLines ?? 2 )", "why": "a tile of three lines is a container"},
+	{"file": "lib/skeleton-picture-tiles.mjs", "find": "|| pictures.some( Boolean ) ||", "replace": "|| false ||", "why": "a text tile has no picture"},
+	{"file": "lib/skeleton-picture-tiles.mjs", "find": "PICTURE_TAGS.has( d.tag ) || ( d !== els[ 0 ] && control( d ) )", "replace": "d !== els[ 0 ] && control( d )", "why": "a text tile draws no glyph"},
+	{"file": "lib/skeleton-picture-tiles.mjs", "find": "PICTURE_TAGS.has( d.tag ) || ( d !== els[ 0 ] && control( d ) )", "replace": "PICTURE_TAGS.has( d.tag )", "why": "a text tile holds no second control"},
+	{"file": "lib/skeleton-rules.mjs", "find": "const ruleName = g?.text ? 'textTileGrid' : 'pictureTileGrid';", "replace": "const ruleName = 'pictureTileGrid';", "why": "the verdict names the text rule"},
+	{"file": "lib/skeleton-rules.mjs", "find": "pictureGrids.notes.push( ...textGrids.notes );", "replace": "", "why": "a shared parent is a note for text tiles too"},
+	{"file": "lib/skeleton-picture-tiles.mjs", "find": "control( it ) && ( ! text || 'a' === it.tag ) ? it", "replace": "control( it ) ? it", "why": "a button tile is a step tab, not a link tile"},
+	{"file": "lib/skeleton-picture-tiles.mjs", "find": "'iframe', 'image-slot' ]", "replace": "'iframe' ]", "why": "a picture slot still to be filled is a picture"},
+	{"file": "lib/skeleton-picture-tiles.mjs", "find": "text ? els.find( ( d ) => m.words( d ) ) : els.findLast", "replace": "els.findLast", "why": "a text tile is named by its title, not its subtitle"},
+	{"file": "lib/skeleton-picture-tiles.mjs", "find": "boundAddress( actions[ i ] ) && rule.boundLinkHandover", "replace": "false && rule.boundLinkHandover", "why": "a bound address has its own handover wording"},
+	{"file": "lib/skeleton-picture-tiles.mjs", "find": "n > ( rule.maxTileLines ?? 2 )", "replace": "n > ( rule.maxTileLines ?? 99 )", "why": "a text tile of three lines is a container when the rule names no maximum"}
 ]

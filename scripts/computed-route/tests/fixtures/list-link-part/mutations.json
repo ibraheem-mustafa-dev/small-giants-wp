@@ -1,4 +1,7 @@
 [
-	{ "file": "lib/skeleton-write-units.mjs", "find": "Object.keys( linkSlots ).length && ( node.draftSlots = { ...node.draftSlots, ...linkSlots } );", "replace": "", "why": "a link list's underline would be read at the list root's default paint" },
-	{ "file": "lib/skeleton-write-units.mjs", "find": "itemSlots( { finder: finder( first ), settings: facts.decisions.structural?.linkList?.itemSlots,", "replace": "itemSlots( { finder: finder( first ), settings: [],", "why": "the decisions entry's link settings would not be paired" }
+	{"file": "lib/skeleton-write-units.mjs", "find": "Object.keys( linkSlots ).length && ( node.draftSlots = { ...node.draftSlots, ...linkSlots } );", "replace": "", "why": "a link list's underline would be read at the list root's default paint"},
+	{"file": "lib/skeleton-write-units.mjs", "find": "settings: [ ...( LL?.itemSlots || [] ), ...uniform ], calibrated", "replace": "settings: [], calibrated", "why": "the decisions entry's link settings would not be paired"},
+	{"file": "data/skeleton-decisions.json", "find": "\"itemSlotsUniform\": { \"itemPaddingBlock\": [ \"padding-top\", \"padding-bottom\" ] }", "replace": "\"itemSlotsUniform\": {}", "why": "the padding each link of a list carries would be kept unnamed (paint conservation)"},
+	{"file": "lib/skeleton-write-units.mjs", "find": "return widths.every( ( w ) => els.every( ( l ) => at( l, w ).join() === at( els[ 0 ], w ).join() ) ) && widths.some(", "replace": "return widths.some(", "why": "links padded differently are read as one value"},
+	{"file": "lib/skeleton-write-units.mjs", "find": "widths.some( ( w ) => at( els[ 0 ], w ).some( ( v ) => ! /^0(?:px|%|r?em)?$/.test( v ) ) )", "replace": "true", "why": "links with no padding above or below (sideways only) are read as padded"}
 ]

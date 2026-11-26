@@ -1,0 +1,16 @@
+[
+	{"file": "lib/fill-list-content.mjs", "find": "if ( UNMATCHED_ROLE ) {", "replace": "if ( false ) {", "why": "an unmatched count is lost without the unmatched role"},
+	{"file": "lib/fill-list-content.mjs", "find": "! fieldRoles( x.name ).some( ( r ) => UNMATCHED_ROLE.skip.has( r ) )", "replace": "true", "why": "an address or an identity is never a subtitle"},
+	{"file": "lib/fill-list-content.mjs", "find": "! x.style && ! x.image && true === x.text && ! fieldRoles", "replace": "! x.style && true === x.text && ! fieldRoles", "why": "a picture field is never a subtitle"},
+	{"file": "lib/fill-list-content.mjs", "find": "&& ! x.style && ! x.image && true === x.text", "replace": "&& ! x.image && true === x.text", "why": "a colour field is never a subtitle"},
+	{"file": "lib/fill-list-content.mjs", "find": "( null == x.type || 'string' === x.type )", "replace": "true", "why": "only a string key takes a subtitle"},
+	{"file": "lib/fill-list-content.mjs", "find": "keyRoles( x )[ 0 ] === UNMATCHED_ROLE.role", "replace": "true", "why": "a block with no subtitle key leaves the field unmatched"},
+	{"file": "lib/fill-list-content.mjs", "find": "! used.has( x.key ) && ( null == x.type", "replace": "( null == x.type", "why": "a key another field already took is never taken again"},
+	{"file": "lib/fill-list-content.mjs", "find": "data.roles?.filter( ( r ) => r.takesUnmatched ).length > 1", "replace": "data.roles?.filter( ( r ) => r.takesUnmatched ).length > 9", "why": "two roles taking unmatched fields are refused"},
+	{"file": "lib/fill-list-content.mjs", "find": "! x.image && true === x.text && ! fieldRoles", "replace": "! x.image && ! fieldRoles", "why": "a field only an attribute carries (a path, an alt text, a video) is a subtitle"},
+	{"file": "lib/fill-list-content.mjs", "find": "UNMATCHED_ROLE.skip.has( r ) ) ) ) {", "replace": "UNMATCHED_ROLE.skip.has( r ) ) ).reverse() ) {", "why": "the first leftover in draft order wins the key"},
+	{"file": "lib/fill-list-items.mjs", "find": "text: !! ( fields.get( f.name )?.text || f.text )", "replace": "text: true", "why": "a loop field is words only when the draft prints it as text"},
+	{"file": "lib/fill-list-items.mjs", "find": "text: !! ( list.get( f.name )?.text || f.text )", "replace": "text: true", "why": "a current-item field is words only when the draft prints it as text"},
+	{"file": "data/item-roles.json", "find": "\"identity\", \"title\", \"action\" ]", "replace": "\"identity\" ]", "why": "a title or a cta becomes a subtitle"},
+	{"file": "data/item-roles.json", "find": "\"identity\", \"title\", \"action\" ]", "replace": "\"identity\", \"title\" ]", "why": "a cta becomes a subtitle"}
+]

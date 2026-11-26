@@ -34,17 +34,26 @@ export const COVERAGE_WRITES = [
 // The roles an item key or draft field can play (data/item-roles.json, shape data/item-roles.schema.json): [[ role, words ]]
 // in priority order. Throws on a file that breaks the schema or names one role twice.
 export const ITEM_ROLES_FILE = path.join( path.dirname( fileURLToPath( import.meta.url ) ), '..', 'data', 'item-roles.json' );
-export function loadItemRoles( file = ITEM_ROLES_FILE ) {
+function readItemRoles( file ) {
 	const data = JSON.parse( fs.readFileSync( file, 'utf8' ) );
 	const problems = schemaProblems( loadAjv(), file.replace( /\.json$/, '.schema.json' ), data );
 	const names = data.roles?.map( ( r ) => r.role ) ?? [];
 	names.filter( ( r, i ) => names.indexOf( r ) !== i ).forEach( ( r ) => problems.push( `/roles names "${ r }" twice` ) );
+	data.roles?.filter( ( r ) => r.takesUnmatched ).length > 1 && problems.push( '/roles: more than one role has takesUnmatched' );
 	if ( problems.length ) {
 		throw new Error( `${ file } does not match item-roles.schema.json:\n${ problems.join( '\n' ) }` );
 	}
-	return data.roles.map( ( r ) => [ r.role, new Set( r.words ) ] );
+	return data;
+}
+export const loadItemRoles = ( file = ITEM_ROLES_FILE ) => readItemRoles( file ).roles.map( ( r ) => [ r.role, new Set( r.words ) ] );
+// The role that also takes a draft field no other key matched (`takesUnmatched` in the roles data): { role, skip: Set of the roles a
+// field must not play } or null.
+export function loadUnmatchedRole( file = ITEM_ROLES_FILE ) {
+	const r = readItemRoles( file ).roles.find( ( x ) => x.takesUnmatched );
+	return r ? { role: r.role, skip: new Set( r.takesUnmatched.skipRoles ) } : null;
 }
 export const ITEM_ROLES = loadItemRoles();
+const UNMATCHED_ROLE = loadUnmatchedRole();
 
 export const wordsOf = ( name ) => String( name ).split( '.' ).pop().replace( /([a-z0-9])([A-Z])/g, '$1 $2' ).split( /[\s_-]+/ ).map( ( w ) => w.toLowerCase() ).filter( Boolean );
 // Every role a name's words name, in priority order: a field may take each; a key's first is its primary role.
@@ -64,7 +73,11 @@ const COLOUR_KEY_ROLES = new Set( Object.values( STYLE_FIELD_KEY_ROLE ) );
 // A field takes the key of its own name first. Otherwise, for each role the field plays in order, it takes an open key whose
 // primary role that is; only when the block's item has no such key does a key that names the role as a later one take it
 // (a team member's `name`, primary role author, takes a draft `title` when the item has no title key). Within either
-// tier a tie goes to the key sharing a word with the field.
+// tier a tie goes to the key sharing a word with the field. Last, a field still unmatched that the draft prints as visible words
+// (`text`: a field only an attribute carries, a path or an alt text, is never words), not a picture or a colour, and whose roles
+// include none of the unmatched role's `skipRoles` (a picture, a glyph, an address, an identity, a title or button label) takes an
+// open string key whose primary role is the unmatched role (a card's `subtitle`, data/item-roles.json `takesUnmatched`): a count, a
+// price, a tag. A field matched above is never moved; when several leftovers compete for one key the first in draft order wins.
 export function matchFields( fields, keys ) {
 	const map = {};
 	const used = new Set();
@@ -90,6 +103,12 @@ export function matchFields( fields, keys ) {
 				take( f, pick( f, open ) );
 				break;
 			}
+		}
+	}
+	if ( UNMATCHED_ROLE ) {
+		for ( const f of fields.filter( ( x ) => ! ( x.name in map ) && ! x.style && ! x.image && true === x.text && ! fieldRoles( x.name ).some( ( r ) => UNMATCHED_ROLE.skip.has( r ) ) ) ) {
+			const k = keys.find( ( x ) => ! used.has( x.key ) && ( null == x.type || 'string' === x.type ) && keyRoles( x )[ 0 ] === UNMATCHED_ROLE.role );
+			k && take( f, k );
 		}
 	}
 	return { map, unmatched: fields.filter( ( f ) => ! ( f.name in map ) ).map( ( f ) => f.name ) };

@@ -12,6 +12,13 @@
 // tile's own background) is the overlay style; a picture in flow beside the title is the default card style.
 // A card whose action has no address in the draft (a "#" link or a control whose click navigates by script) gets a named
 // handover for its link, never a guessed address; a tile drawing an inline SVG glyph names the glyph as a handover too.
+//
+// A grid of text tiles (`rules.textTileGrid`, the same function in its text mode) is one card grid too: a loop of `minTiles`
+// or more whole-link tiles (the tile is itself the link or control, not a box holding one), each showing between
+// `minTileLines` and `maxTileLines` lines of text (a title over a subtitle, at most two lines: the card's title and subtitle),
+// no picture, glyph, price or second control inside, whose parent holds only the tiles. A run of one-line links is a link
+// list (structural.linkList), never a card grid, and a tile of three lines or more (a kicker, a price and a description) is a
+// container of its own. The card style is the default; no picture is written.
 // Pure: the inventory model, the rule and the currency pattern in, the grids out.
 import { templateKey } from './fact-key.mjs';
 
@@ -23,12 +30,19 @@ export const handlerNamed = ( e ) => /sc-camel-on-click="\{\{\s*([^}\s]+)\s*\}\}
 const control = ( e ) => ( 'a' === e.tag && null != e.attrs?.href ) || 'button' === e.tag || !! handlerNamed( e );
 // A destination the draft writes as an address (not "#", not a template binding).
 const addressOf = ( e ) => ( 'a' === e.tag && e.attrs?.href && '#' !== e.attrs.href && ! /\{\{/.test( e.attrs.href ) ? e.attrs.href : null );
+// A link whose address is a template binding (`href="{{ s.url }}"`): the loop's own data carries each tile's address.
+const boundAddress = ( e ) => 'a' === e.tag && /\{\{/.test( e.attrs?.href || '' );
 const paintsPicture = ( e ) => 'img' === e.tag || /background(?:-image)?\s*:[^;]*url\(/i.test( String( e.attrs?.style ?? '' ) );
+// The elements that draw a picture or stand for one still to come (an <image-slot> the client fills later): no text tile holds one.
+const PICTURE_TAGS = new Set( [ 'img', 'picture', 'svg', 'video', 'canvas', 'iframe', 'image-slot' ] );
 const onlyOne = ( list ) => ( 1 === list.length ? list[ 0 ] : null );
 const outOfFlow = ( e ) => Object.entries( e.visible || {} ).filter( ( [ , v ] ) => v ).every( ( [ w ] ) => [ 'absolute', 'fixed' ].includes( e.position?.[ w ] ) );
 
 // { grids: Map( parent key -> { block, attributes, tiles, handovers, reason } ), notes: [ text ] }.
-export function pictureTileGrids( { m, rule, money } ) {
+export const pictureTileGrids = ( o ) => tileGrids( { ...o, text: false } );
+export const textTileGrids = ( o ) => tileGrids( { ...o, text: true } );
+
+function tileGrids( { m, rule, money, text } ) {
 	const grids = new Map();
 	const notes = [];
 	if ( ! rule?.block ) {
@@ -62,7 +76,7 @@ export function pictureTileGrids( { m, rule, money } ) {
 		}
 		const inside = items.map( ( it ) => [ it, ...below( it ) ].filter( shown ) );
 		// One action per tile: the tile itself, or the one link or control it holds.
-		const actions = items.map( ( it, i ) => ( control( it ) ? it : onlyOne( inside[ i ].slice( 1 ).filter( control ) ) ) );
+		const actions = items.map( ( it, i ) => ( control( it ) && ( ! text || 'a' === it.tag ) ? it : onlyOne( inside[ i ].slice( 1 ).filter( control ) ) ) );
 		if ( actions.some( ( a ) => ! a ) ) {
 			continue;
 		}
@@ -74,22 +88,34 @@ export function pictureTileGrids( { m, rule, money } ) {
 			continue;
 		}
 		const pictures = inside.map( ( els ) => els.find( paintsPicture ) ?? null );
-		if ( pictures.filter( Boolean ).length < items.length * ( rule.pictureShare ?? 0.5 ) ) {
+		if ( text ) {
+			// Lines of text: the shown elements of the tile with words of their own. Nothing else is drawn in a text tile.
+			const lines = inside.map( ( els ) => els.filter( ( d ) => m.words( d ) ).length );
+			if ( lines.some( ( n ) => n < ( rule.minTileLines ?? 2 ) || n > ( rule.maxTileLines ?? 2 ) ) || pictures.some( Boolean ) || inside.some( ( els ) => els.some( ( d ) => PICTURE_TAGS.has( d.tag ) || ( d !== els[ 0 ] && control( d ) ) ) ) ) {
+				continue;
+			}
+		} else if ( pictures.filter( Boolean ).length < items.length * ( rule.pictureShare ?? 0.5 ) ) {
 			continue;
 		}
 		if ( ! m.blockKids( holder ).every( ( k ) => items.includes( k ) ) ) {
-			notes.push( `the picture tiles of loop ${ loop } share their parent ${ holder.key } with other blocks, so they are not taken as one card grid` );
+			notes.push( `the ${ text ? 'text' : 'picture' } tiles of loop ${ loop } share their parent ${ holder.key } with other blocks, so they are not taken as one card grid` );
 			continue;
 		}
 		const V = rule.variant;
 		const over = pictures.filter( Boolean ).every( ( p ) => items.includes( p ) || outOfFlow( p ) );
+		// The card's title: the last leaf of words of a picture tile (the caption under its picture), the first of a text tile (its
+		// title above the subtitle).
 		const titleOf = ( els ) => {
-			const t = els.findLast( ( d ) => m.words( d ) );
+			const t = text ? els.find( ( d ) => m.words( d ) ) : els.findLast( ( d ) => m.words( d ) );
 			return t ? m.words( t ) : '';
 		};
 		const handovers = [];
 		items.forEach( ( it, i ) => {
 			if ( addressOf( actions[ i ] ) ) {
+				return;
+			}
+			if ( boundAddress( actions[ i ] ) && rule.boundLinkHandover ) {
+				handovers.push( { owner: 'behaviour', kind: 'link', detail: `card ${ i + 1 } "${ titleOf( inside[ i ] ) }": ${ rule.boundLinkHandover }` } );
 				return;
 			}
 			const by = handlerNamed( actions[ i ] );
@@ -101,7 +127,9 @@ export function pictureTileGrids( { m, rule, money } ) {
 			attributes: V ? { [ V.setting ]: over ? V.over : V.beside } : {},
 			tiles: items.map( ( it ) => it.key ),
 			handovers,
-			reason: `${ items.length } titled tiles (loop ${ loop }), ${ pictures.filter( Boolean ).length } with a picture ${ over ? 'under the title' : 'beside the title' }, each one ${ actions.every( addressOf ) ? 'link' : 'link or control' }`,
+			reason: text
+				? `${ items.length } whole-link text tiles (loop ${ loop }), no picture, each one ${ actions.every( addressOf ) ? 'link' : 'link or control' }`
+				: `${ items.length } titled tiles (loop ${ loop }), ${ pictures.filter( Boolean ).length } with a picture ${ over ? 'under the title' : 'beside the title' }, each one ${ actions.every( addressOf ) ? 'link' : 'link or control' }`,
 		} );
 	}
 	return { grids, notes };

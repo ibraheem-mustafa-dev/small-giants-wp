@@ -20,7 +20,7 @@ import { makePanelRules } from './skeleton-panel-rules.mjs';
 import { commerceRegion, ownerBlockOf } from './skeleton-commerce-region.mjs';
 import { productTiles } from './skeleton-product-tile.mjs';
 import { reviewPlatformRegions } from './skeleton-review-platform.mjs';
-import { pictureTileGrids } from './skeleton-picture-tiles.mjs';
+import { pictureTileGrids, textTileGrids } from './skeleton-picture-tiles.mjs';
 import { numberedSteps } from './skeleton-numbered-steps.mjs';
 import { messagingLink } from './skeleton-messaging-link.mjs';
 import { handlerScrollsTop } from './skeleton-scroll-top.mjs';
@@ -1135,7 +1135,12 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	// The grids of titled picture tiles, each one link or control (lib/skeleton-picture-tiles.mjs), each a card grid.
 	// The parents whose children are numbered steps (rules.numberedSteps, lib/skeleton-numbered-steps.mjs).
 	const stepRuns = R.numberedSteps ? numberedSteps( { m, rule: R.numberedSteps, headingLevels: facts.enumOf?.( R.numberedSteps.block, R.numberedSteps.settings.level ) || [] } ) : new Map();
+	// The card grids of picture tiles (rules.pictureTileGrid) and of text tiles (rules.textTileGrid) by their parent's key; no
+	// parent is in both (a picture grid needs pictures, a text grid none).
 	const pictureGrids = R.pictureTileGrid ? pictureTileGrids( { m, rule: R.pictureTileGrid, money: R.commerceRegion?.money } ) : { grids: new Map(), notes: [] };
+	const textGrids = R.textTileGrid ? textTileGrids( { m, rule: R.textTileGrid, money: R.commerceRegion?.money } ) : { grids: new Map(), notes: [] };
+	textGrids.grids.forEach( ( g, k ) => pictureGrids.grids.has( k ) || pictureGrids.grids.set( k, { ...g, text: true } ) );
+	pictureGrids.notes.push( ...textGrids.notes );
 	// A surface the page map holds as an sgs_choice_flow row: what the flow holds, read from the fact record.
 	const role = surface.role ?? null;
 	const flow = R.choiceFlow && 'choiceFlow' === role?.role ? choiceFlowModel( { view, rootKey: view.entry( m.root )?.template.key ?? null, R: R.choiceFlow, formControl: R.formControl, brands: facts.brands || [], surfaceKind: surface.kind, parts: scope?.surfaceParts ?? [], folder: handoffOf( facts ) } ) : null;
@@ -1472,7 +1477,8 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		// block draws the cards, so the tiles are absorbed; each card's link the draft gives no address for is a handover.
 		( { e } ) => {
 			const g = pictureGrids.grids.get( e.key );
-			return g ? v( 'pictureTileGrid', { block: g.block, absorb: true, attributes: g.attributes, reason: `${ R.pictureTileGrid.reason }; ${ g.reason }`, ...( g.handovers.length ? { handover: g.handovers[ 0 ], handovers: g.handovers } : {} ) } ) : null;
+			const ruleName = g?.text ? 'textTileGrid' : 'pictureTileGrid';
+			return g ? v( ruleName, { block: g.block, absorb: true, attributes: g.attributes, reason: `${ R[ ruleName ].reason }; ${ g.reason }`, ...( g.handovers.length ? { handover: g.handovers[ 0 ], handovers: g.handovers } : {} ) } ) : null;
 		},
 		// The parent of numbered steps (each typing its number beside its words, counting up from 1) is one process-steps block
 		// (rules.numberedSteps): the block draws the steps, so the steps' elements are absorbed.

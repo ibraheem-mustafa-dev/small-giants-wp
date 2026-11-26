@@ -327,7 +327,16 @@ export function makeUnits( ctx ) {
 		}
 		// The node's draft element is its first link, which is also the block's link part: the settings calibrated on that part
 		// are read at the same link (decisions structural.linkList.itemSlots, lib/skeleton-part-slots.mjs::itemSlots).
-		const linkSlots = 'a' === first?.tag && node.draftRef && ctx.calSettings ? itemSlots( { finder: finder( first ), settings: facts.decisions.structural?.linkList?.itemSlots, calibrated: ctx.calSettings( slug ) } ).slots : {};
+		// A setting in `itemSlotsUniform` ({ setting: [ the declared properties it holds ] }) is read at the first link only when every
+		// link of the run declares the same value of those properties and one is not zero: one link read for all is true only then, and
+		// a run of links padded differently, or only sideways, leaves the setting unread (a gap row, never a wrong value).
+		const LL = facts.decisions.structural?.linkList;
+		const uniform = Object.entries( LL?.itemSlotsUniform || {} ).filter( ( [ , props ] ) => {
+			const at = ( l, w ) => props.map( ( p ) => String( l.resolved?.[ w ]?.[ p ] ?? ( l.resolved ? '0px' : view?.declared?.( l )?.[ p ] ?? '0' ) ).trim() );
+			const widths = [ ...new Set( els.flatMap( ( l ) => Object.keys( l.resolved || { 1440: 1 } ) ) ) ];
+			return widths.every( ( w ) => els.every( ( l ) => at( l, w ).join() === at( els[ 0 ], w ).join() ) ) && widths.some( ( w ) => at( els[ 0 ], w ).some( ( v ) => ! /^0(?:px|%|r?em)?$/.test( v ) ) );
+		} ).map( ( [ setting ] ) => setting );
+		const linkSlots = 'a' === first?.tag && node.draftRef && ctx.calSettings ? itemSlots( { finder: finder( first ), settings: [ ...( LL?.itemSlots || [] ), ...uniform ], calibrated: ctx.calSettings( slug ) } ).slots : {};
 		Object.keys( linkSlots ).length && ( node.draftSlots = { ...node.draftSlots, ...linkSlots } );
 		// Each item's own marker is read at the draft element that draws it, at that copy's marker part (lib/fill-list-marker.mjs).
 		const markers = markerSlotsOf( slug, els.filter( ( l ) => ! removedBy( l ) ) );

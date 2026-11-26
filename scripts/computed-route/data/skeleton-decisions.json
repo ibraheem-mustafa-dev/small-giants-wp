@@ -24,7 +24,8 @@
 			"arrangement": "stacked",
 			"reason": "a run of two or more bare text links, one above the next, is one list block; the same links side by side are separate links in a row",
 			"itemSlots": [ "linkUnderline" ],
-			"itemSlotsReason": "the list block's draft element is its first link, which is also the block's own link part: the settings calibrated on that part (its underline) are read at the same link, never at the list root's default paint"
+			"itemSlotsUniform": { "itemPaddingBlock": [ "padding-top", "padding-bottom" ] },
+			"itemSlotsReason": "(`itemSlotsUniform`: a setting read at the first link only when every link of the run declares the same value of its properties and one is not zero.) the list block's draft element is its first link, which is also the block's own link part: the settings calibrated on that part (its underline) are read at the same link, never at the list root's default paint"
 		}
 	},
 	"briefOnlyLines": [
@@ -205,7 +206,18 @@
 			"pictureShare": 0.5,
 			"variant": { "setting": "variant", "over": "overlay", "beside": "card" },
 			"linkHandover": "its link: the draft's click goes somewhere by script and names no address, so the card's link is left empty; set it to the page or the shop filter the card opens",
+			"boundLinkHandover": "its link: the draft binds each card's address to the loop's own data (a script value), so Fill writes it where the data names a page of the site and leaves the card's link empty where it does not; check where each card opens",
 			"glyphHandover": "the cards draw an inline SVG glyph: upload each card's glyph as its glyph image (glyphImage)"
+		},
+		"textTileGrid": {
+			"block": "sgs/card-grid",
+			"reason": "a loop of three or more whole-link tiles, each showing two lines of text (a title over a subtitle) and no picture, glyph, price or second control, whose parent holds only the tiles, is one card grid whose cards are the tiles, as the framework's brands panel holds its brand tiles and as the hand-built reference site's first brands menu did (one sgs/card-grid of twelve cards, text only): twelve cards are one items list instead of thirty-six blocks, each tile's look written once; found by structure (lib/skeleton-picture-tiles.mjs, text mode), never by a draft's words; a run of one-line links is a link list (structural.linkList) and a tile of three lines or more is a container of its own; a card whose link the draft gives no address for is a named handover (Bean, 2026-11-25)",
+			"minTiles": 3,
+			"minTileLines": 2,
+			"maxTileLines": 2,
+			"maxTileWords": 12,
+			"linkHandover": "its link: the draft's click goes somewhere by script and names no address, so the card's link is left empty; set it to the page or the shop filter the card opens",
+			"boundLinkHandover": "its link: the draft binds each card's address to the loop's own data (a script value), so Fill writes it where the data names a page of the site and leaves the card's link empty where it does not; check where each card opens"
 		},
 		"messagingLink": {
 			"reason": "a link to a messaging app is that app's button block when it holds the app's mark and its words, a text link reading the app's Site Info address when it holds words alone (the hand-built reference sites: their WhatsApp buttons in a home page and in two footers are sgs/whatsapp-cta, inline in the page and floating where fixed to the corner; a help menu's WhatsApp text link is sgs/button with linkSource whatsapp; a WhatsApp icon alone in a social row stays the social icon); one rule over this app table, so another app is another row; found by the link's address and what it holds (lib/skeleton-messaging-link.mjs), never by its words: fixed to the viewport at every width it shows is the floating style (a label shown only from some width up hidden below it), a title over a line the card style, otherwise the inline style; the number is the site's Site Info address, which the block falls back to, named as a handover; a message the address carries is the block's message, and an address with none opens an empty chat (2026-11-21)",
@@ -904,7 +916,7 @@
 		"megaGroup": {
 			"id": "megaGroup",
 			"block": "sgs/mega-group",
-			"headedRun": { "maxWrappers": 1 },
+			"headedRun": { "maxWrappers": 1, "maxLeadLines": 1 },
 			"textColumn": { "minLeaves": 2 },
 			"taughtBy": { "client": "indus-foods", "key": "Indus Foods Website v2/68#0", "runtime_sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6" },
 			"scope": "a direct child of the root of a surface of kind menu or panel whose parent surface is a header and that something opens (its surfaces.json opened_by, or an aria-expanded control in the header); the panel's declared display is flex or grid; the child shares the free space (a declared flex-grow, or a fractional or minmax(0, ...) grid track) and holds a run of sibling links directly (a loop of links, or two or more static links with one declared style), or (`headedRun`) a heading or label (a leaf of words that is not a link) followed, at most one plain wrapper down (no words, no paint of its own, the only block child), by an element holding such a run whose links each carry words and no block of their own; a gallery of picture links, a grid of cards and a promo are not a headed run; or (`textColumn`) a stack of text alone in the panel's row: two or more block children, each a leaf of words that is not a link and holds no block, as a static column or as a loop's repeated item (a loop's item holding a picture or a link inside is not one; an inline icon is a part of the item)",
