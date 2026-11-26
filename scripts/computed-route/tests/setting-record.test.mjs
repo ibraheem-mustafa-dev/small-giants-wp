@@ -9,7 +9,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
-import { loadRecord, partPaths, tierHolds, reachedAtOf, symbolicTiers, withNodeValues, runsShop, rowPaths, compounds, prepareLooks, lookJobs, LOOK_JOBS } from '../lib/setting-record.mjs';
+import { loadRecord, partPaths, tierHolds, reachedAtOf, symbolicTiers, withNodeValues, runsShop, rowPaths, compounds, prepareLooks, siteLook, lookJobs, LOOK_JOBS } from '../lib/setting-record.mjs';
 import { calibrationForNode } from '../lib/paint-state.mjs';
 
 const BLOCK = 'sgs/demo';
@@ -201,31 +201,29 @@ test( 'compounds reads a selector at its top level, through a :where() that wrap
 	assert.equal( compounds( '.a:not(.b' ), null );
 } );
 
-test( 'MUST FAIL: the missing looks of a run are built in one call of the builder; a built block is not asked again, a failed one is returned', () => {
+test( 'MUST FAIL: the missing looks of a run are built in one call of the builder; a built block is not asked again, a block that failed for its own reason is returned and not tried again', () => {
 	const repo = fs.mkdtempSync( path.join( os.tmpdir(), 'cr-setting-record-prep-' ) );
 	fs.mkdirSync( path.join( repo, 'sites', 'acme' ), { recursive: true } );
 	fs.writeFileSync( path.join( repo, 'sites', 'acme', 'theme-snapshot.json' ), '{}' );
 	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'cr-setting-record-prep-looks-' ) );
 	const calls = [];
-	const log = () => {};
 	const run = ( cmd, args ) => ( calls.push( args ), { status: 1, stdout: [ 'heading: built', 'button: current', 'text: FAILED ValueError: no fixture' ].join( '\r\n' ) } );
-	assert.deepEqual( prepareLooks( [ 'sgs/heading', 'sgs/button', 'sgs/text', 'core/paragraph', 'sgs/heading' ], 'acme', { dir, repo, build: true, run, log } ), [ 'sgs/text' ] );
-	assert.equal( calls.length, 2, 'one builder call for the whole run, one more for the block it missed' );
+	assert.deepEqual( prepareLooks( [ 'sgs/heading', 'sgs/button', 'sgs/text', 'core/paragraph', 'sgs/heading' ], 'acme', { dir, repo, build: true, run } ), [ 'sgs/text' ] );
+	assert.equal( calls.length, 1, 'one builder call for the whole run; a failure that is the block\'s own is not tried again' );
 	assert.equal( calls[ 0 ][ calls[ 0 ].indexOf( '--blocks' ) + 1 ], 'sgs/heading,sgs/button,sgs/text', 'each SGS block once; a core block has no look' );
-	prepareLooks( [ 'sgs/heading', 'sgs/button' ], 'acme', { dir, repo, build: true, run, log } );
-	assert.equal( calls.length, 2, 'built and current blocks are not asked again' );
-	prepareLooks( [ 'sgs/text' ], 'acme', { dir, repo, build: true, run, log } );
-	assert.equal( calls.length, 4, 'a failed block is asked again' );
+	prepareLooks( [ 'sgs/heading', 'sgs/button' ], 'acme', { dir, repo, build: true, run } );
+	assert.equal( calls.length, 1, 'built and current blocks are not asked again' );
+	assert.deepEqual( prepareLooks( [ 'sgs/text' ], 'acme', { dir, repo, build: true, run } ), [ 'sgs/text' ], 'a block that failed is still missing' );
+	assert.equal( calls.length, 1, 'and is not built again in this process' );
+	assert.match( siteLook( 'sgs/text', 'acme', { dir, repo, build: true } ).missing, /no default look of sgs\/text for acme \(text: FAILED ValueError: no fixture\)/, 'siteLook reports the builder\'s reason without building' );
+	assert.equal( calls.length, 1 );
 	// negative controls: nothing is built with building off (SGS_NO_SITE) or for a client with no theme snapshot
-	assert.deepEqual( prepareLooks( [ 'sgs/icon' ], 'acme', { dir, repo, build: false, run, log } ), [] );
-	assert.deepEqual( prepareLooks( [ 'sgs/icon' ], 'nobody', { dir, repo, build: true, run, log } ), [] );
-	assert.equal( calls.length, 4 );
+	assert.deepEqual( prepareLooks( [ 'sgs/icon' ], 'acme', { dir, repo, build: false, run } ), [] );
+	assert.deepEqual( prepareLooks( [ 'sgs/icon' ], 'nobody', { dir, repo, build: true, run } ), [] );
+	assert.equal( calls.length, 1 );
 } );
 
-// On 2026-11-26 a sweep's builder died or stopped beside two others on a PC short of memory, and sgs/nav-bar-menu (about 1,200
-// pages, 12 minutes alone) and three more blocks got no look: every Fill on a header then stopped, and the sweep's log said only
-// "no default look built", with no reason and no second try.
-test( 'MUST FAIL: a block the first builder run missed is built once more alone with one worker, and a block still missing is reported with the builder\'s own words', () => {
+test( 'MUST FAIL: a block the builder ran out of room for is built again in its own call with one worker; any other failure is final, and the reasons are told to `log`', () => {
 	const repo = fs.mkdtempSync( path.join( os.tmpdir(), 'cr-setting-record-retry-' ) );
 	fs.mkdirSync( path.join( repo, 'sites', 'acme' ), { recursive: true } );
 	fs.writeFileSync( path.join( repo, 'sites', 'acme', 'theme-snapshot.json' ), '{}' );
@@ -234,28 +232,38 @@ test( 'MUST FAIL: a block the first builder run missed is built once more alone 
 	const told = [];
 	const jobsOf = ( args ) => args[ args.indexOf( '--jobs' ) + 1 ];
 	const blocksOf = ( args ) => args[ args.indexOf( '--blocks' ) + 1 ];
-	// the first call loses nav-bar-menu (the pool died); the second builds it and fails post-grid, which the first call lost too
+	// the first call: nav-bar-menu's worker pool died, post-grid ran out of memory, pricing-table has no fixture, heading built;
+	// the retries: nav-bar-menu builds, post-grid fails again
+	const answers = {
+		'sgs/nav-bar-menu': 'nav-bar-menu: built', 'sgs/post-grid': 'post-grid: FAILED MemoryError: ',
+	};
 	const run = ( cmd, args ) => {
 		calls.push( args );
-		return 1 === calls.length ? { status: 1, stdout: 'heading: built\nnav-bar-menu: FAILED BrokenProcessPool: a process in the process pool was terminated abruptly\n' }
-			: { status: 1, stdout: 'nav-bar-menu: built\npost-grid: FAILED MemoryError: \n', stderr: '' };
+		const list = blocksOf( args ).split( ',' );
+		return 1 === calls.length
+			? { status: 1, stdout: 'heading: built\nnav-bar-menu: FAILED BrokenProcessPool: a process in the process pool was terminated abruptly\npost-grid: FAILED MemoryError: \npricing-table: FAILED ValueError: no fixture\n' }
+			: { status: 0, stdout: `${ answers[ list[ 0 ] ] }\n` };
 	};
-	const left = prepareLooks( [ 'sgs/heading', 'sgs/nav-bar-menu', 'sgs/post-grid' ], 'acme', { dir, repo, build: true, run, log: ( m ) => told.push( m ) } );
-	assert.deepEqual( left, [ 'sgs/post-grid' ], 'the retry built nav-bar-menu; post-grid is still missing' );
-	assert.equal( calls.length, 2 );
-	assert.equal( jobsOf( calls[ 0 ] ), '2' );
-	assert.equal( blocksOf( calls[ 1 ] ), 'sgs/nav-bar-menu,sgs/post-grid', 'only the blocks the first run missed' );
-	assert.equal( jobsOf( calls[ 1 ] ), '1', 'the retry runs one worker' );
-	assert.equal( told.length, 1, 'only the block still missing is reported' );
+	const left = prepareLooks( [ 'sgs/heading', 'sgs/nav-bar-menu', 'sgs/post-grid', 'sgs/pricing-table' ], 'acme', { dir, repo, build: true, run, log: ( m ) => told.push( m ) } );
+	assert.deepEqual( left, [ 'sgs/post-grid', 'sgs/pricing-table' ], 'nav-bar-menu built on the retry; the others are missing' );
+	assert.equal( calls.length, 3, 'one batch and one call for each of the two blocks that ran out of room; pricing-table\'s own failure is final' );
+	assert.equal( jobsOf( calls[ 0 ] ), String( Math.min( 4, lookJobs() ) ) );
+	assert.deepEqual( [ blocksOf( calls[ 1 ] ), blocksOf( calls[ 2 ] ) ], [ 'sgs/nav-bar-menu', 'sgs/post-grid' ], 'each missed block in its own call' );
+	assert.deepEqual( [ jobsOf( calls[ 1 ] ), jobsOf( calls[ 2 ] ) ], [ '1', '1' ], 'the retries run one worker' );
+	assert.equal( told.length, 2, 'only the blocks still missing are told' );
 	assert.match( told[ 0 ], /sgs\/post-grid for acme .*MemoryError/ );
-	// a builder that printed nothing for a block says so, with its exit status and the last line of its error text
-	const mute = () => ( { status: 3, stdout: '', stderr: 'Traceback\nOSError: no space left' } );
+	assert.match( told[ 1 ], /sgs\/pricing-table for acme .*no fixture/ );
+	// a block whose retry failed is not built again by a later call
+	assert.deepEqual( prepareLooks( [ 'sgs/post-grid' ], 'acme', { dir, repo, build: true, run } ), [ 'sgs/post-grid' ] );
+	assert.equal( calls.length, 3 );
+	// a builder that printed nothing for a block says so, with its exit status, spawn error and the last line of its error text
+	const mute = () => ( { status: null, signal: 'SIGKILL', error: new Error( 'spawnSync python ENOBUFS' ), stdout: '', stderr: 'Traceback\nOSError: no space left' } );
 	const quiet = [];
 	assert.deepEqual( prepareLooks( [ 'sgs/button' ], 'acme', { dir, repo, build: true, run: mute, log: ( m ) => quiet.push( m ) } ), [ 'sgs/button' ] );
-	assert.match( quiet[ 0 ], /printed nothing for it \(exit 3: OSError: no space left\)/ );
+	assert.match( quiet[ 0 ], /printed nothing for it \(exit SIGKILL: spawnSync python ENOBUFS; OSError: no space left\)/ );
 	// negative control: a block built first time is not asked for again
 	const ok = [];
-	prepareLooks( [ 'sgs/text' ], 'acme', { dir, repo, build: true, run: ( c, a ) => ( ok.push( a ), { stdout: 'text: built' } ), log: () => {} } );
+	prepareLooks( [ 'sgs/text' ], 'acme', { dir, repo, build: true, run: ( c, a ) => ( ok.push( a ), { stdout: 'text: built' } ) } );
 	assert.equal( ok.length, 1 );
 } );
 
@@ -300,7 +308,7 @@ test( 'MUST FAIL: the look builder runs two workers by default, never one per co
 		calls.push( args );
 		return { stdout: '' };
 	};
-	prepareLooks( [ 'sgs/a', 'sgs/b', 'sgs/c', 'sgs/d' ], 'mamas-munches-redesign', { dir: 'E:/sgs-tmp/look-jobs-test', build: true, run, log: () => {} } );
+	prepareLooks( [ 'sgs/a', 'sgs/b', 'sgs/c', 'sgs/d' ], 'mamas-munches-redesign', { dir: 'E:/sgs-tmp/look-jobs-test', build: true, run } );
 	const args = calls[ 0 ];
 	assert.equal( args[ args.indexOf( '--jobs' ) + 1 ], '2' );
 	assert.equal( lookJobs( { SGS_LOOK_JOBS: '3' } ), 3 );

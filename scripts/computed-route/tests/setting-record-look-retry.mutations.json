@@ -1,7 +1,11 @@
 [
-	{"file": "lib/setting-record.mjs", "find": "\tif ( missed.length ) {\n\t\tmissed = attempt( missed.map( ( [ b ] ) => b ), 1 );\n\t}\n", "replace": "", "why": "a block the first run missed is never tried again"},
-	{"file": "lib/setting-record.mjs", "find": "attempt( missed.map( ( [ b ] ) => b ), 1 );", "replace": "attempt( missed.map( ( [ b ] ) => b ), lookJobs() );", "why": "the second try runs as many workers as the first"},
-	{"file": "lib/setting-record.mjs", "find": "attempt( missed.map( ( [ b ] ) => b ), 1 );", "replace": "attempt( due, 1 );", "why": "the second try rebuilds every block, not only the missed ones"},
-	{"file": "lib/setting-record.mjs", "find": "\tmissed.forEach( ( [ b, why ] ) => log(", "replace": "\t[].forEach( ( [ b, why ] ) => log(", "why": "a block still missing is reported to nobody"},
-	{"file": "lib/setting-record.mjs", "find": "|| `the builder printed nothing for it (exit", "replace": "|| `(exit", "why": "a block the builder printed nothing for is reported without saying so"}
+	{"file": "lib/setting-record.mjs", "find": "RESOURCE_FAILURE.test( why ) ? attempt( [ b ], 1 )[ 0 ] ?? null : [ b, why ]", "replace": "attempt( [ b ], 1 )[ 0 ] ?? null", "why": "every failed block is built a second time, whatever the failure"},
+	{"file": "lib/setting-record.mjs", "find": "RESOURCE_FAILURE.test( why ) ? attempt( [ b ], 1 )[ 0 ] ?? null : [ b, why ]", "replace": "[ b, why ]", "why": "a block that ran out of room is never tried again"},
+	{"file": "lib/setting-record.mjs", "find": "attempt( [ b ], 1 )[ 0 ] ?? null", "replace": "attempt( [ b ], lookJobs() )[ 0 ] ?? null", "why": "the retry runs as many workers as the first call"},
+	{"file": "lib/setting-record.mjs", "find": "\tconst due = sgs.filter( ( b ) => ! failures.has( keyOf( b ) ) );", "replace": "\tconst due = sgs;", "why": "a block that failed is built again by every later call"},
+	{"file": "lib/setting-record.mjs", "find": "\tif ( build && failures.has( key ) ) {\n\t\treturn { missing: failures.get( key ) };\n\t}\n", "replace": "", "why": "siteLook builds a block the batch already failed, and loses the reason"},
+	{"file": "lib/setting-record.mjs", "find": "\t\tlog( `look builder: ${ failures.get( keyOf( b ) ) }` );", "replace": "", "why": "a block still missing is told to nobody"},
+	{"file": "lib/setting-record.mjs", "find": "|| `the builder printed nothing for it (exit", "replace": "|| `(exit", "why": "a block the builder printed nothing for is reported without saying so"},
+	{"file": "lib/setting-record.mjs", "find": "[ r.error?.message, String( r.stderr || '' )", "replace": "[ String( r.stderr || '' )", "why": "a spawn failure's message is left out of the reason"},
+	{"file": "lib/setting-record.mjs", "find": "|MemoryError|TimeoutExpired|terminated abruptly|printed nothing for it/;", "replace": "|TimeoutExpired|terminated abruptly|printed nothing for it/;", "why": "a MemoryError is not treated as running out of room"}
 ]

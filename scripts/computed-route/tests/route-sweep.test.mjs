@@ -364,6 +364,13 @@ test( 'MUST FAIL: prepareSweepLooks builds every client\'s looks before the prop
 	assert.deepEqual( failed, { b: [ 'sgs/x' ] } );
 } );
 
+test( 'MUST FAIL: prepareSweepLooks hands its `log` to every prepare call, so the sweep prints why a block has no look', () => {
+	const seen = [];
+	const log = ( m ) => m;
+	prepareSweepLooks( { clients: [ 'a' ], blocks: [ 'sgs/x', 'sgs/y' ], prepare: ( blocks, client, opts ) => ( seen.push( opts.log ), [] ), log } );
+	assert.deepEqual( seen, [ log, log ] );
+} );
+
 test( 'MUST FAIL: a look builder that builds nothing stops the sweep at its first block, never after building every look', () => {
 	const calls = [];
 	const none = ( blocks ) => {

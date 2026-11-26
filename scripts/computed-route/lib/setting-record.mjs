@@ -82,35 +82,41 @@ const checked = new Set();
 // set, for a client with no theme snapshot, or for blocks already checked. Returns the blocks the builder could not build.
 // `run` stands in for spawnSync (tests).
 // The builder's worker processes per run: LOOK_JOBS (SGS_LOOK_JOBS overrides). Each worker renders whole pages and can hold
-// several GB, and other sessions build looks at the same time, so a run never takes one worker per core: on 2026-11-26 three
-// runs at 8 workers each held 18 GB and left the PC with under 1 GB.
+// several GB, and other sessions build looks at the same time, so a run never takes one worker per core.
 export const LOOK_JOBS = 2;
 export const lookJobs = ( env = process.env ) => Math.max( 1, Number( env.SGS_LOOK_JOBS ) || LOOK_JOBS );
-export function prepareLooks( blocks, client, { dir = SITE_LOOK_DIR, repo = REPO, build = ! process.env.SGS_NO_SITE, run = spawnSync, log = ( m ) => console.error( m ) } = {} ) {
+// A block the builder could not build keeps its reason for this process: it is never built again, and siteLook reports the reason.
+const failures = new Map();
+// What a builder that ran out of room prints for a block (a worker killed, memory, a render that did not finish), or prints
+// nothing: only these are worth a second try; a missing fixture or module fails the same way again.
+const RESOURCE_FAILURE = /BrokenProcessPool|MemoryError|TimeoutExpired|terminated abruptly|printed nothing for it/;
+export function prepareLooks( blocks, client, { dir = SITE_LOOK_DIR, repo = REPO, build = ! process.env.SGS_NO_SITE, run = spawnSync, log = () => {} } = {} ) {
 	const snapshot = path.join( repo, 'sites', String( client ), 'theme-snapshot.json' );
-	const due = [ ...new Set( blocks ) ].filter( ( b ) => /^sgs\//.test( b ) && ! checked.has( `${ dir }|${ client }|${ b }` ) );
-	if ( ! build || ! client || ! due.length || ! fs.existsSync( snapshot ) ) {
+	const keyOf = ( b ) => `${ dir }|${ client }|${ b }`;
+	const sgs = [ ...new Set( blocks ) ].filter( ( b ) => /^sgs\//.test( b ) && ! checked.has( keyOf( b ) ) );
+	if ( ! build || ! client || ! sgs.length || ! fs.existsSync( snapshot ) ) {
 		return [];
 	}
+	const due = sgs.filter( ( b ) => ! failures.has( keyOf( b ) ) );
 	const shop = runsShop( client, repo ) ? [ '--woocommerce' ] : [];
-	// One builder call for `list`; a block the builder reports built or current is checked, any other is left for siteLook, which
-	// says why when it is read. Returns the blocks it did not build and the builder's own words about each.
+	// One builder call for `list`; a block the builder reports built or current is checked. Returns the blocks it did not build,
+	// each with the builder's own words about it.
 	const attempt = ( list, jobs ) => {
 		const r = run( 'python', [ BUILDER, '--snapshot', snapshot, '--site', client, '--out', dir, '--blocks', list.join( ',' ), '--jobs', String( jobs ), ...shop ], { encoding: 'utf8', cwd: REPO } );
 		const reported = String( r.stdout || '' ).split( /\r?\n/ );
 		const done = ( b ) => reported.some( ( line ) => [ 'built', 'current' ].some( ( how ) => line.startsWith( `${ slugOf( b ) }: ${ how }` ) ) );
-		list.filter( done ).forEach( ( b ) => checked.add( `${ dir }|${ client }|${ b }` ) );
-		const why = ( b ) => reported.find( ( line ) => line.startsWith( `${ slugOf( b ) }: ` ) ) || `the builder printed nothing for it (exit ${ r.status ?? r.signal ?? 'unknown' }: ${ String( r.stderr || '' ).trim().split( /\r?\n/ ).slice( -1 )[ 0 ] || 'no error text' })`;
+		list.filter( done ).forEach( ( b ) => checked.add( keyOf( b ) ) );
+		const text = ( [ r.error?.message, String( r.stderr || '' ).trim().split( /\r?\n/ ).slice( -1 )[ 0 ] ].filter( Boolean ).join( '; ' ) ) || 'no error text';
+		const why = ( b ) => reported.find( ( line ) => line.startsWith( `${ slugOf( b ) }: ` ) ) || `the builder printed nothing for it (exit ${ r.status ?? r.signal ?? 'unknown' }: ${ text })`;
 		return list.filter( ( b ) => ! done( b ) ).map( ( b ) => [ b, why( b ) ] );
 	};
-	// A block the first run missed is built once more on its own, one worker: a heavy block (sgs/nav-bar-menu reads about 1,200
-	// pages) that died beside other builders on a machine short of memory has the whole machine to itself then.
-	let missed = attempt( due, Math.max( 1, Math.min( due.length, lookJobs() ) ) );
-	if ( missed.length ) {
-		missed = attempt( missed.map( ( [ b ] ) => b ), 1 );
-	}
-	missed.forEach( ( [ b, why ] ) => log( `look builder: no default look of ${ b } for ${ client } (${ why })` ) );
-	return missed.map( ( [ b ] ) => b );
+	// A block the builder ran out of room for is built once more on its own with one worker, each block in its own call.
+	const missed = due.length ? attempt( due, Math.max( 1, Math.min( due.length, lookJobs() ) ) ).map( ( [ b, why ] ) => ( RESOURCE_FAILURE.test( why ) ? attempt( [ b ], 1 )[ 0 ] ?? null : [ b, why ] ) ).filter( Boolean ) : [];
+	missed.forEach( ( [ b, why ] ) => {
+		failures.set( keyOf( b ), `no default look of ${ b } for ${ client } (${ why })` );
+		log( `look builder: ${ failures.get( keyOf( b ) ) }` );
+	} );
+	return sgs.filter( ( b ) => failures.has( keyOf( b ) ) );
 }
 
 // The block's site look for the client (sites/<client>/theme-snapshot.json), built (or confirmed current) by the builder
@@ -118,6 +124,9 @@ export function prepareLooks( blocks, client, { dir = SITE_LOOK_DIR, repo = REPO
 export function siteLook( block, client, { dir = SITE_LOOK_DIR, repo = REPO, build = ! process.env.SGS_NO_SITE } = {} ) {
 	const file = lookFile( dir, client, block );
 	const key = `${ dir }|${ client }|${ block }`;
+	if ( build && failures.has( key ) ) {
+		return { missing: failures.get( key ) };
+	}
 	if ( build && ! checked.has( key ) ) {
 		checked.add( key );
 		const snapshot = path.join( repo, 'sites', client, 'theme-snapshot.json' );

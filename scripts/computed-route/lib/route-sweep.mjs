@@ -216,15 +216,15 @@ export function summariseSurface( { client, surface, proposal, problems, realPro
 // Each client's first block is built alone first: when that fails, or when no block builds at all, the builder itself is
 // broken (no postcss: the checkout lacks plugins/sgs-blocks/node_modules and SGS_NODE_PATH is unset), so it throws at once
 // instead of running a sweep whose every Fill fails and whose comparison then proves nothing.
-// Returns { client: [ blocks the builder could not build ] } for the clients with any.
-export function prepareSweepLooks( { clients, blocks, prepare } ) {
+// Each block it could not build is told to `log` with the builder's own words. Returns { client: [ blocks the builder could not build ] } for the clients with any.
+export function prepareSweepLooks( { clients, blocks, prepare, log = () => {} } ) {
 	const failed = {};
 	const broken = ( c ) => new Error( `no default look could be built for ${ c }: the look builder itself fails (site_look.py; a checkout without plugins/sgs-blocks/node_modules needs SGS_NODE_PATH set to one that has it)` );
 	for ( const c of clients ) {
-		if ( blocks.length > 1 && prepare( blocks.slice( 0, 1 ), c, { build: true } ).length ) {
+		if ( blocks.length > 1 && prepare( blocks.slice( 0, 1 ), c, { build: true, log } ).length ) {
 			throw broken( c );
 		}
-		const missed = prepare( blocks, c, { build: true } );
+		const missed = prepare( blocks, c, { build: true, log } );
 		if ( blocks.length && missed.length === blocks.length ) {
 			throw broken( c );
 		}

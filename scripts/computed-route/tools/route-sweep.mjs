@@ -246,7 +246,7 @@ async function sweep( o ) {
 		db.close();
 		const tLooks = Date.now();
 		console.log( `building the default looks of ${ blocks.length } blocks for ${ wanted.size } client(s)` );
-		const lookFailed = prepareSweepLooks( { clients: [ ...wanted ], blocks, prepare: prepareLooks } );
+		const lookFailed = prepareSweepLooks( { clients: [ ...wanted ], blocks, prepare: prepareLooks, log: ( m ) => console.log( m ) } );
 		Object.entries( lookFailed ).forEach( ( [ c, b ] ) => console.log( `${ c }: no default look built for ${ b.join( ', ' ) }` ) );
 		console.log( `looks ${ Math.round( ( Date.now() - tLooks ) / 1000 ) }s` );
 		// The re-read records, kept as frozen records of their own (`<out>/records`): a baseline made with --reread can be

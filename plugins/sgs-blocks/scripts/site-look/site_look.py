@@ -511,9 +511,9 @@ PAGE_KEEP = 8  # settled pages a Reader keeps built at once (Reader.page)
 
 class Reader:
     """Pages built on demand, settled (footer moved, overlay scroll run) and read. A built page (its parsed HTML and every
-    rule it matched) holds about 3 MB, and a block with 1,000 renders to read (sgs/nav-bar-menu) held them all: 3.3 GB in one
-    worker, on a PC where other builders ran beside it. A reading is kept (style, content), a page is kept only
-    while it is being read: the last PAGE_KEEP stay, the rest are dropped here and from the Pages' own memo."""
+    rule it matched) is large and a block can read over a thousand of them (sgs/nav-bar-menu), so only the readings (style,
+    content) are kept for good: the PAGE_KEEP most recently used pages stay, and a page let go is dropped from this memo and
+    from the Pages' own, then built again if asked for."""
 
     def __init__(self, pages, results, props):
         self.pages, self.results, self.props = pages, results, props
@@ -521,6 +521,8 @@ class Reader:
 
     def page(self, job: str, held=()):
         key = (job, tuple(held))
+        if key in self.memo and not (MUTATE & {'keep-pages', 'lru'}):
+            self.memo[key] = self.memo.pop(key)  # most recently used last
         if key not in self.memo:
             pg = self.pages.get(job, held=held)
             settle(pg, self.results[job])

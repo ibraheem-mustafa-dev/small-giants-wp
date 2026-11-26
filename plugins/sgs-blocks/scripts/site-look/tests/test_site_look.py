@@ -96,9 +96,9 @@ def test_button_text_link_and_presence(tmp_path):
 
 
 def test_reader_holds_a_few_pages_not_every_page_it_read(monkeypatch):
-    """MUST FAIL with SITE_LOOK_MUTATE=keep-pages: sgs/nav-bar-menu reads about 1,200 pages and each held about 3 MB, so one
-    build held 3.3 GB. The Reader keeps the last SL.PAGE_KEEP pages and
-    drops the rest from its own memo and from the Pages' memo (a page it dropped is rebuilt if asked for again)."""
+    """MUST FAIL with SITE_LOOK_MUTATE=keep-pages: the Reader keeps the SL.PAGE_KEEP most recently used pages and drops the
+    rest from its own memo and from the Pages' memo (a page it dropped is built again if asked for), so a block that reads
+    over a thousand pages holds a few."""
     class Pages:
         def __init__(self):
             self.memo, self.built = {}, 0
@@ -118,6 +118,32 @@ def test_reader_holds_a_few_pages_not_every_page_it_read(monkeypatch):
     assert reader.page('j199') is reader.page('j199') and pages.built == 200, 'a page still held is not built again'
     reader.page('j0')
     assert pages.built == 201, 'a dropped page is built again when asked for'
+
+
+def test_reader_drops_the_least_recently_used_page(monkeypatch):
+    """MUST FAIL with SITE_LOOK_MUTATE=lru (and keep-pages): a page read again stays; the page unused longest goes (LRU, not first in)."""
+    class Pages:
+        def __init__(self):
+            self.memo, self.built = {}, 0
+
+        def get(self, job, held=()):
+            self.built += 1
+            self.memo[(job,)] = page = object()
+            return page
+
+    monkeypatch.setattr(SL, 'settle', lambda page, res: None)
+    pages = Pages()
+    n = SL.PAGE_KEEP
+    reader = SL.Reader(pages, {f'j{i}': {} for i in range(n + 1)}, {})
+    for i in range(n):
+        reader.page(f'j{i}')
+    reader.page('j0')                 # j0 is now the most recently used; j1 the least
+    reader.page(f'j{n}')              # one over the limit
+    built = pages.built
+    reader.page('j0')
+    assert pages.built == built, 'the page read again was kept'
+    reader.page('j1')
+    assert pages.built == built + 1, 'the page unused longest was dropped'
 
 
 def test_fold_matches_the_route(tmp_path):
