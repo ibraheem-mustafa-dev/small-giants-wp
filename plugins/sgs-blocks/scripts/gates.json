@@ -2215,6 +2215,24 @@
     "order": 249
   },
   {
+    "id": "check-background-panel-mount",
+    "cmd": "node scripts/check-background-panel-mount.js --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 2000,
+    "order": 249
+  },
+  {
+    "id": "check-background-panel-mount-selftest",
+    "cmd": "node scripts/check-background-panel-mount.js --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1000,
+    "order": 249
+  },
+  {
     "id": "check-shadow-clip-selftest",
     "cmd": "python scripts/check-shadow-clip.py --self-test",
     "tier": "fast",

@@ -172,8 +172,13 @@ const KIND_PANELS = {
 		//    above): the panel was never reachable, wrote a storage shape D580
 		//    retired, and the capability is already delivered elsewhere.
 		( props ) => <GridItemDefaultsPanel { ...props } />,
-		// 6. Background.
-		( props ) => <BackgroundPanel { ...props } />,
+		// 6. Background: the panel renders in place inside a Styles slot, so the entry brings its own (a registry
+		//    entry sits in the default group, and Background belongs in the Styles tab).
+		( props ) => (
+			<InspectorControls group="styles">
+				<BackgroundPanel { ...props } />
+			</InspectorControls>
+		),
 		// 7. Shadow.
 		( props ) => (
 			<PanelBody

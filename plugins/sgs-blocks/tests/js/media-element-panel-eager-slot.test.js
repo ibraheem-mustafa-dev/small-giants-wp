@@ -46,6 +46,14 @@ describe( 'MediaElementPanel inspector slots', () => {
 		expect( slots( render( { context: 'background', kinds: [ 'image', 'video', 'svg' ] } ) ) ).toEqual( [ 'styles' ] );
 	} );
 
+	it( 'inGroup renders that group in place, with no slot of its own, and still mounts the other group', () => {
+		const styles = render( { context: 'element', inGroup: 'styles' } );
+		expect( slots( styles ) ).toEqual( [ 'settings' ] );
+		// A background that sits in a Styles slot already mounts no slot at all.
+		const bg = render( { context: 'background', kinds: [ 'image', 'video', 'svg' ], inGroup: 'styles' } );
+		expect( slots( bg ) ).toEqual( [] );
+	} );
+
 	it( 'a slot with no kinds renders nothing', () => {
 		expect( render( { kinds: [] } ) ).toBe( '' );
 	} );

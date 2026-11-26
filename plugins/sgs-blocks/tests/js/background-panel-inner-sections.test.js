@@ -43,8 +43,8 @@ jest.mock( '../../src/components/primitives', () => {
 jest.mock( '../../src/components', () => {
 	const R = require( 'react' );
 	return {
-		MediaElementPanel: ( { panelContent } ) =>
-			R.createElement( 'div', { 'data-testid': 'media-panel' }, panelContent && panelContent.background ),
+		MediaElementPanel: ( { panelContent, inGroup } ) =>
+			R.createElement( 'div', { 'data-testid': 'media-panel', 'data-in-group': inGroup }, panelContent && panelContent.background ),
 		SgsInnerSection: ( { title, hasValue, children } ) =>
 			R.createElement(
 				'section',
@@ -78,6 +78,12 @@ describe( 'BackgroundMediaPanel inner sections', () => {
 		const { container, unmount } = render( 'sgs/container', {} );
 		const panel = container.querySelector( '[data-testid="media-panel"]' );
 		expect( inner( panel ) ).toEqual( [ 'Background surface', 'Extra SVG layer' ] );
+		unmount();
+	} );
+
+	it( 'renders in place inside the Styles slot of its block, with no slot of its own', () => {
+		const { container, unmount } = render( 'sgs/container', {} );
+		expect( container.querySelector( '[data-testid="media-panel"]' ).getAttribute( 'data-in-group' ) ).toBe( 'styles' );
 		unmount();
 	} );
 

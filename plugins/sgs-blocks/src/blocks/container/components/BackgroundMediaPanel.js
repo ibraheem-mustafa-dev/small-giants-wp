@@ -6,7 +6,8 @@
  * `background` slot. What the media system does not own stays with the wrapper: the surface tone, the Surface blur and
  * saturate, and the extra SVG layer (`bgSvg*`) that can sit over a photo or video, because kinds are exclusive per
  * device. Each is a collapsed inner section inside the Background panel (`panelContent.background`), so the panel is one
- * place and it keeps its position in the tab (`MediaElementPanel` mounts the slot at once).
+ * place. Every block mounts this inside its own `<InspectorControls group="styles">`, so the panel renders in place there
+ * (`inGroup`) and keeps the position the block's JSX gives it on first select.
  *
  * @package SGS\Blocks
  */
@@ -269,6 +270,7 @@ export function BackgroundMediaPanel( { attributes, setAttributes, name } ) {
 			blockName={ name }
 			context="background"
 			kinds={ BACKGROUND_KINDS }
+			inGroup="styles"
 			panelContent={ {
 				background: (
 					<>
