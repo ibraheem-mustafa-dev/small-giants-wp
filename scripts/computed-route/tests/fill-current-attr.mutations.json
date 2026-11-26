@@ -25,14 +25,14 @@
 	},
 	{
 		"file": "lib/fill-current-attr.mjs",
-		"find": "p.tagName === item.tagName && shown( p )",
-		"replace": "shown( p )",
+		"find": ".filter( ( p ) => p.tagName === anc.tagName ).map(",
+		"replace": ".filter( ( p ) => true ).map(",
 		"why": "a peer of another tag is compared"
 	},
 	{
 		"file": "lib/fill-current-attr.mjs",
-		"find": "p.tagName === item.tagName && shown( p )",
-		"replace": "p.tagName === item.tagName",
+		"find": ".filter( ( p ) => p && shown( p ) )",
+		"replace": ".filter( ( p ) => p )",
 		"why": "a hidden peer is compared"
 	},
 	{
@@ -61,14 +61,20 @@
 	},
 	{
 		"file": "lib/fill-current-attr.mjs",
-		"find": "open = left;",
+		"find": "open = open.filter( ( j ) => j !== job );",
 		"replace": "",
-		"why": "a job answered by one page is read again on the next"
+		"why": "a job answered by one page is never removed, so the next page answers it again"
 	},
 	{
 		"file": "lib/fill-current-attr.mjs",
 		"find": "for ( const job of open ) {\n\t\tout.gaps.push",
 		"replace": "for ( const job of [] ) {\n\t\tout.gaps.push",
 		"why": "an unanswered item raises no row"
+	},
+	{
+		"file": "lib/fill-current-attr.mjs",
+		"find": "path.unshift( [ ...anc.parentElement.children ].indexOf( anc ) );\n\t\t\tanc = anc.parentElement;",
+		"replace": "break;",
+		"why": "peers are looked for among the siblings of the link only, so a link wrapped in its own li has none"
 	}
 ]

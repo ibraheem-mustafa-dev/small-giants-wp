@@ -102,3 +102,37 @@ test( 'a hidden peer that carries the current value is skipped for the visible o
 	const { looks } = await read( currentAttrJobs( currentAttrKeys( FACTS ), [ JOB( 6 ) ], 'Home' ), [ '/shop' ], withHidden );
 	assert.equal( looks[ '0:6' ][ 0 ].declared[ 'background-color' ], 'rgb(249, 213, 211)' );
 } );
+
+// RF1 review: peers are found through the nearest repeated ancestor, so a link wrapped in its own `li` has peers.
+test( 'MUST FAIL: links each wrapped in an li read their current look against the other items', async () => {
+	const li = ( current ) => page( current ).replace( /<nav>/, '<ul>' ).replace( '</nav>', '</ul>' ).replace( /(<a [^]*?<\/a>)/g, '<li>$1</li>' );
+	const jobs = currentAttrJobs( currentAttrKeys( FACTS ), [ JOB( 5 ), JOB( 6 ) ], 'Home' );
+	const { looks, gaps } = await read( jobs, [ '/shop' ], { '/shop': li( 'shop' ) } );
+	assert.deepEqual( gaps, [], JSON.stringify( gaps ) );
+	assert.equal( looks[ '0:6' ][ 0 ].declared[ 'background-color' ], 'rgb(249, 213, 211)' );
+	assert.equal( looks[ '0:5' ][ 0 ].declared[ 'background-color' ], 'rgb(249, 213, 211)', 'the current item reads against a non-current li' );
+} );
+
+test( 'negative control: an item with no repeated ancestor below the host has no peers and ends as a gap', async () => {
+	const lone = { '/shop': '<!doctype html><div class="sc-host" data-sc-name="Root"><div class="sc-host" data-sc-name="Bar"><a data-dc-tpl="5" href="#" aria-current="page" style="display:block;background:rgb(249, 213, 211)">Shop</a></div></div>' };
+	const { looks, gaps } = await read( currentAttrJobs( currentAttrKeys( FACTS ), [ JOB( 5 ) ], 'Home' ), [ '/shop' ], lone );
+	assert.deepEqual( looks, {} );
+	assert.equal( gaps.length, 1 );
+} );
+
+// RF1 review: a job leaves the open list the moment it is answered, so a failure on a later job never makes the next page answer it twice.
+test( 'MUST FAIL: a job answered on one page is not answered again when a later job on that page throws', async () => {
+	const wrapped = ( pages, failing ) => async ( url ) => {
+		const s = await openSibling( pages )( url );
+		const evaluate = s.page.evaluate.bind( s.page );
+		s.page.evaluate = ( fn, args ) => ( 'markPeers' === fn.name && url.endsWith( '/gifts' ) && failing === args?.[ 1 ] ? Promise.reject( new Error( 'page closed' ) ) : evaluate( fn, args ) );
+		return s;
+	};
+	const jobs = currentAttrJobs( currentAttrKeys( FACTS ), [ JOB( 5 ), JOB( 6 ) ], 'Home' );
+	const logged = [];
+	const { looks, gaps } = await readCurrentAttr( { jobs, pages: [ 'http://draft.test/gifts', 'http://draft.test/shop' ], openSibling: wrapped( PAGES, '6' ), resolveSrc: RESOLVE, log: ( m ) => logged.push( m ) } );
+	assert.equal( looks[ '0:5' ].length, 1, 'Shop is answered once, not on both pages' );
+	assert.equal( looks[ '0:6' ].length, 1, 'Gifts is answered by the next page' );
+	assert.deepEqual( gaps, [] );
+	assert.equal( logged.length, 1 );
+} );

@@ -38,8 +38,10 @@ export function currentAttrJobs( keys, jobs, rootComponent = null ) {
 	return out;
 }
 
-// In the page: marks one peer that carries a current value and one that does not, among the siblings of the same tag as the
-// element `tpl` of the component's host. Returns whether both were found.
+// In the page: marks one peer that carries a current value and one that does not, among the peers of the element `tpl` of the
+// component's host. The peers are the shown siblings of the same tag of the nearest ancestor-or-self of the element that has
+// any (the link itself in a flat bar, the `li` that wraps each link in a list), each taken at the element's own child path
+// within that ancestor. Returns whether both were found.
 export function markPeers( [ component, tpl, mark ] ) {
 	const set = ( el ) => {
 		const v = el.getAttribute( 'aria-current' );
@@ -52,7 +54,16 @@ export function markPeers( [ component, tpl, mark ] ) {
 		if ( ! item ) {
 			continue;
 		}
-		const peers = [ ...item.parentElement.children ].filter( ( p ) => p.tagName === item.tagName && shown( p ) );
+		let anc = item;
+		const path = [];
+		while ( anc !== host && anc.parentElement && ! [ ...anc.parentElement.children ].some( ( p ) => p !== anc && p.tagName === anc.tagName && shown( p ) ) ) {
+			path.unshift( [ ...anc.parentElement.children ].indexOf( anc ) );
+			anc = anc.parentElement;
+		}
+		if ( anc === host || ! anc.parentElement ) {
+			continue;
+		}
+		const peers = [ ...anc.parentElement.children ].filter( ( p ) => p.tagName === anc.tagName ).map( ( p ) => path.reduce( ( el, i ) => el?.children[ i ], p ) ).filter( ( p ) => p && shown( p ) );
 		const cur = peers.find( set );
 		const oth = ! set( item ) ? item : peers.find( ( p ) => ! set( p ) );
 		if ( cur && oth ) {
@@ -78,28 +89,33 @@ export async function readCurrentAttr( { jobs, pages, openSibling, resolveSrc, l
 		let sib = null;
 		try {
 			sib = await openSibling( url );
-			const left = [];
-			for ( const job of open ) {
-				if ( ! await sib.page.evaluate( markPeers, [ job.component, job.tpl, MARK ] ) ) {
-					left.push( job );
-					continue;
-				}
-				const sel = { cur: `[${ MARK }="cur"]`, oth: `[${ MARK }="oth"]` };
-				const cur = await declaredValues( sib.cdp, sel.cur, resolveSrc, null ).catch( () => null );
-				const oth = await declaredValues( sib.cdp, sel.oth, resolveSrc, null ).catch( () => null );
-				const changed = cur && oth ? declaredDiff( oth, cur ) : {};
-				if ( ! Object.keys( changed ).length ) {
-					left.push( job );
-					continue;
-				}
-				const rendered = await sib.page.evaluate( renderedOf, [ sel.cur, resolveSrc, Object.keys( changed ) ] );
-				( out.looks[ job.id ] ??= [] ).push( { states: [ 'current' ], family: 'aria', selector: `[aria-current] on ${ new URL( url ).pathname.replace( /^\//, '' ) }`, tokens: [ '[aria-current]' ], declared: changed, rendered, read: 'entered' } );
-			}
-			open = left;
 		} catch ( e ) {
 			log( `current-attribute read of ${ url } failed: ${ e.message }` );
+			continue;
+		}
+		// A job leaves `open` the moment it is answered, so a later failure on this page or a next page never answers it twice.
+		try {
+			for ( const job of open.slice() ) {
+				try {
+					if ( ! await sib.page.evaluate( markPeers, [ job.component, job.tpl, MARK ] ) ) {
+						continue;
+					}
+					const sel = { cur: `[${ MARK }="cur"]`, oth: `[${ MARK }="oth"]` };
+					const cur = await declaredValues( sib.cdp, sel.cur, resolveSrc, null ).catch( () => null );
+					const oth = await declaredValues( sib.cdp, sel.oth, resolveSrc, null ).catch( () => null );
+					const changed = cur && oth ? declaredDiff( oth, cur ) : {};
+					if ( ! Object.keys( changed ).length ) {
+						continue;
+					}
+					const rendered = await sib.page.evaluate( renderedOf, [ sel.cur, resolveSrc, Object.keys( changed ) ] );
+					( out.looks[ job.id ] ??= [] ).push( { states: [ 'current' ], family: 'aria', selector: `[aria-current] on ${ new URL( url ).pathname.replace( /^\//, '' ) }`, tokens: [ '[aria-current]' ], declared: changed, rendered, read: 'entered' } );
+					open = open.filter( ( j ) => j !== job );
+				} catch ( e ) {
+					log( `current-attribute read of ${ job.id } on ${ url } failed: ${ e.message }` );
+				}
+			}
 		} finally {
-			await sib?.close();
+			await sib.close();
 		}
 	}
 	for ( const job of open ) {
