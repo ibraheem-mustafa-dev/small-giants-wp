@@ -95,9 +95,9 @@ The ONE place a `:hover` rule is built — see the file's own docblock for the t
 |---|---|---|
 | `sgs_hover_state_rules()` | `( string $selector, string $decls, string $focus = ':focus-visible', string $suffix = '' ): string` | The default — you have a base selector and want the hover + focus pair built correctly. |
 | `sgs_hover_guarded_rule()` | `( string $hover_selector, string $decls ): string` | You already hold `:hover` selectors and want just the guarded rule (emit focus separately, unguarded). |
-| `sgs_hover_media_wrap()` | `( string $rule ): string` | You have a complete rule and need only layer 1 wrapped around it. |
+| `sgs_hover_media_wrap()` | `( string $rule ): string` | You have a complete rule (an `@supports` companion) whose hover selector you prefixed with `SGS_HOVER_NOT_TOUCH`; it adds each rule's `.sgs-pressed` touch half. |
 
-Static `style.css` is a second surface these PHP helpers cannot reach: `scripts/hover-guard/run-transform.js` wraps motion-only `:hover` rules in both guards on compiled CSS at build time, and `check.js` fails on any `:hover` rule it cannot classify (it scans PHP emitters and block CSS). Source `src/**/style.css` reads unguarded by design; trust `check.js`.
+Every hover look follows the hover-on-touch contract (Spec 38A FR-38A-17): a mouse half behind `SGS_HOVER_NOT_TOUCH` and a touch half under `.sgs-pressed`; a press look keyed on `:active` gets a `.sgs-pressed` twin. The helpers above write it for PHP; `helpers-hover-state.php::sgs_touch_hover_css` applies it to finished CSS, and the per-instance collector runs it over the page's collected CSS. Static `style.css` is the other surface: `scripts/hover-guard/run-transform.js` applies the same contract to compiled block CSS at build time, `run-transform.js --sources` to the hand-written plugin and theme stylesheets (which carry it in source), and `check.js` fails on any member that breaks it (it also scans PHP emitters). Source `src/**/style.css` reads unguarded by design; trust `check.js`.
 
 ## Shadows — automatic, do not hand-roll
 
