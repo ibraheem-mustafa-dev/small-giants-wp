@@ -127,7 +127,7 @@ test( 'MUST FAIL: the row shrinks with the draft\'s own duration and easing (row
 	assert.deepEqual( [ bezier.rowShrinkDuration, bezier.rowShrinkEasing, bezier.rowShrinkEasingCustom ], [ 400, 'custom', 'cubic-bezier(0.4, 0, 0.2, 1)' ] );
 	// Negative controls: a record with no duration writes none; an easing with no name and no bezier is noted, not guessed.
 	assert.deepEqual( timed( { duration_ms: null } ), { rowShrink: { desktop: 'on' }, rowShrinkPadding: { desktop: BOX } }, 'a record with no duration' );
-	assert.equal( timed( { easing: 'ease-in' } ).rowShrinkEasing, undefined );
+	assert.equal( timed( { easing: 'steps(4)' } ).rowShrinkEasing, undefined );
 } );
 
 test( 'MUST FAIL: a draft 200ms ease shrink writes its duration (the row prints a padding transition only for a set duration or easing)', () => {
@@ -141,7 +141,25 @@ test( 'MUST FAIL: a 0ms shrink turns the row\'s animation off (rowShrinkDuration
 	assert.ok( out.notes.some( ( n ) => /rowAnimate off/.test( n.text ) ), 'the jump is noted' );
 } );
 
+test( 'MUST FAIL: a shrink under 0.5ms is written as 1ms (rounding must not turn it into the switch-off); only an exact 0ms is rowAnimate off', () => {
+	assert.deepEqual( run( [ { ...ROW, duration_ms: 0.3 } ] ).attrs( 1 ), { rowShrink: { desktop: 'on' }, rowShrinkPadding: { desktop: BOX }, rowShrinkDuration: 1 } );
+	assert.equal( run( [ { ...ROW, duration_ms: 0 } ] ).attrs( 1 ).rowAnimate, false, 'an exact 0ms still jumps' );
+} );
+
+test( 'MUST FAIL: a 0ms shrink on a row that also collapses on a timed transition writes neither rowAnimate off nor a timing, and says so', () => {
+	const slide = { ...rec( 'TR-009', '14', 'transform' ), duration_ms: 300 };
+	const { out, attrs } = run( [ { ...ROW, duration_ms: 0 }, slide ] );
+	assert.deepEqual( attrs( 1 ), { rowShrink: { desktop: 'on' }, rowShrinkPadding: { desktop: BOX } } );
+	assert.ok( out.notes.some( ( n ) => /0ms but the same row hides or collapses/.test( n.text ) ), 'the unmapped 0ms is named' );
+	const still = run( [ { ...ROW, duration_ms: 0 }, { ...slide, duration_ms: 0 } ] ).attrs( 1 );
+	assert.equal( still.rowAnimate, false, 'a collapse the draft does not time leaves the jump' );
+	const other = run( [ { ...ROW, duration_ms: 0 }, { ...slide, element: { ...slide.element, template_tpl_id: '29' } } ] ).attrs( 1 );
+	assert.equal( other.rowAnimate, false, 'a transform on another element is not the collapse of this row' );
+} );
+
 test( 'MUST FAIL: an ease-out shrink is written as its cubic-bezier, never as the name the block reads as the client easing token', () => {
 	const a = run( [ { ...ROW, easing: 'ease-out' } ] ).attrs( 1 );
 	assert.deepEqual( [ a.rowShrinkEasing, a.rowShrinkEasingCustom ], [ 'custom', 'cubic-bezier(0, 0, 0.58, 1)' ] );
+	const i = run( [ { ...ROW, easing: 'ease-in' } ] ).attrs( 1 );
+	assert.deepEqual( [ i.rowShrinkEasing, i.rowShrinkEasingCustom ], [ 'custom', 'cubic-bezier(0.42, 0, 1, 1)' ], 'ease-in too' );
 } );

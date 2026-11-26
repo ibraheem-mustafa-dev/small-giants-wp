@@ -37,7 +37,7 @@
 	},
 	{
 		"file": "lib/motion-behaviour-settings.mjs",
-		"find": "|| ! /\\bcard\\b|testimonial|slide/i.test( named ) ) {",
+		"find": "|| ! SLIDER_PART.test( named ) || /\\bwords?\\b/i.test( named ) ) {",
 		"replace": ") {",
 		"why": "a timer-replayed entrance on any element (a hero word cycler) is the slider's autoplay"
 	},
@@ -46,5 +46,17 @@
 		"find": ".replace( /([a-z\\d])([A-Z])/g, '$1 $2' ).replace( /([A-Z])([A-Z][a-z])/g, '$1 $2' );",
 		"replace": ";",
 		"why": "a code name such as setTCard is not split into words, so it is not read as a card"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "|| /\\bwords?\\b/i.test( named ) ) {",
+		"replace": ") {",
+		"why": "a hero word rotator is read as the slider because 'rotator' is a slider word"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "|testimonial|slide|carousel|quote|review|rotator/i;",
+		"replace": "|testimonial|slide/i;",
+		"why": "a carousel, quote, review or rotator element loses the slider's autoplay"
 	}
 ]

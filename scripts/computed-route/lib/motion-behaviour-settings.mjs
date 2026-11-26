@@ -214,15 +214,23 @@ const LOOK_PROPERTY = { 'style:padding': 'padding', 'attr:width': 'width' };
 // a named curve the block knows (a cubic-bezier() is `custom` with `rowShrinkEasingCustom`). The row prints a padding
 // transition only when `rowShrinkDuration` is above 0 or `rowShrinkEasing` is set
 // (plugins/sgs-blocks/includes/helpers-row-behaviour.php::sgs_row_shrink_settings_css), so a duration the draft states is
-// always written, its 200ms default included; a 0ms shrink (which `rowShrinkDuration` 0 would read as 200ms) is
-// `rowAnimate` off. `ease-out` is written as its cubic-bezier(): the block reads the name `ease-out` as the client's
-// easing token, not the CSS keyword. An easing the block has no name or custom field for is noted.
+// always written, its 200ms default included; a duration above 0 and under 1ms is written as 1ms (rounding must not turn it
+// into the switch-off below). A 0ms shrink (which `rowShrinkDuration` 0 would read as 200ms) is `rowAnimate` off, except on a
+// row that also hides or collapses on a timed transition: `rowAnimate` off removes that transition too and the block times
+// the collapse with `rowShrinkDuration`, so such a row writes no timing and the 0ms is named instead. `ease-out` and
+// `ease-in` are written as their cubic-bezier(): the block reads those names as the client's easing tokens, not the CSS
+// keywords. An easing the block has no name or custom field for is noted.
 const SHRINK_EASING_NAMES = [ 'ease', 'ease-in-out', 'linear' ];
-const SHRINK_EASING_CURVES = { 'ease-out': 'cubic-bezier(0, 0, 0.58, 1)' };
-function shrinkTiming( r, notes ) {
+const SHRINK_EASING_CURVES = { 'ease-out': 'cubic-bezier(0, 0, 0.58, 1)', 'ease-in': 'cubic-bezier(0.42, 0, 1, 1)' };
+const COLLAPSE_PROPERTIES = /^(?:transform|translate|block-size|height|max-height)$/;
+function shrinkTiming( r, notes, timedCollapse = false ) {
 	const ms = durationOf( r );
-	const whole = null === ms ? null : Math.round( ms );
+	const whole = null === ms ? null : ( 0 === ms ? 0 : Math.max( 1, Math.round( ms ) ) );
 	if ( 0 === whole ) {
+		if ( timedCollapse ) {
+			notes.push( 'the draft shrinks the row in 0ms but the same row hides or collapses on a timed transition; the block times both with rowShrinkDuration, so no timing is written and the 0ms shrink is not mapped' );
+			return [];
+		}
 		notes.push( 'the draft shrinks the row in 0ms, so it jumps: rowAnimate off' );
 		return [ { attr: 'rowAnimate', value: false } ];
 	}
@@ -239,6 +247,9 @@ function shrinkTiming( r, notes ) {
 	}
 	return out;
 }
+
+// Whether another record on the same template element moves it by a timed transition of a hide or collapse property.
+const timedCollapseOf = ( r, ctx, key ) => ( ctx.records || [] ).some( ( x ) => x !== r && x.id !== r.id && templateOfRecord( x, ctx )?.key === key && ( durationOf( x ) ?? 0 ) > 0 && props( x ).some( ( q ) => COLLAPSE_PROPERTIES.test( nameOf( q ) ) ) );
 
 // A transition of a property the draft's scrolled state changes on that element (`ctx.template.scrolled`, scrolledLooksOf): a
 // row whose padding changes with it shrinks on scroll (`rowShrink` and `rowShrinkPadding` on the `sgs/site-header-row`, and
@@ -267,7 +278,7 @@ export function scrollShrinkOf( r, ctx ) {
 		( placements[ key ] ??= {} )[ 'sgs/site-header-row' ] = [
 			{ attr: 'rowShrink', value: on },
 			...( held ? [ { attr: 'rowShrinkPadding', value: tiersOf( Object.fromEntries( TIER_WIDTHS.map( ( [ , w ] ) => [ w, boxes[ w ] ] ) ) ) } ] : [] ),
-			...shrinkTiming( r, notes ),
+			...shrinkTiming( r, notes, timedCollapseOf( r, ctx, key ) ),
 		];
 		held || notes.push( `the shrunk padding is not in pixels at every width, so the row's own default (half the resting top and bottom) stands` );
 		if ( null !== offset && offset !== SCROLLED_OFFSET_DEFAULT ) {
@@ -320,18 +331,21 @@ export function accordionScrollOf( r ) {
 	};
 }
 
+// The words that name an element as a card or another part of a slider.
+const SLIDER_PART = /\bcards?\b|testimonial|slide|carousel|quote|review|rotator/i;
+
 // A state-driven entrance whose interval timer is in the record's own code (lib/intake-inventory-trigger.mjs::schedulingTimer,
 // the delay read from the syntax tree) or else named in its trigger: the testimonial slider's autoplay (one card, the
 // interval, the change duration).
 export function autoplayOf( r ) {
 	const every = new RegExp( `${ NUMBER }\\s*s\\s+setInterval|setInterval[^.]*?${ NUMBER }\\s*s\\b`, 'i' ).exec( words( r.trigger?.detail ) );
 	const secs = number( every?.[ 1 ] ?? every?.[ 2 ] );
-	// The element must read as a card or slide (a timer also drives a hero word cycler or a ticker), its code names split at
-	// each capital (`setTCard` is "set T Card"); the timer in the record's own code gives the interval, else the one the
-	// trigger's words name.
+	// The element must read as a card, a slide or another part of a slider (a timer also drives a hero word cycler or a
+	// ticker, so a name with `word` never does), its code names split at each capital (`setTCard` is "set T Card"); the
+	// timer in the record's own code gives the interval, else the one the trigger's words name.
 	const ms = timerMs( r ) ?? ( null === secs ? null : secs * 1000 );
 	const named = words( r.element?.description, r.name ).replace( /([a-z\d])([A-Z])/g, '$1 $2' ).replace( /([A-Z])([A-Z][a-z])/g, '$1 $2' );
-	if ( null === ms || ! /^(?:waapi|css-animation)$/.test( r.mechanism ) || 'state' !== triggerOf( r ) || ! /\bcard\b|testimonial|slide/i.test( named ) ) {
+	if ( null === ms || ! /^(?:waapi|css-animation)$/.test( r.mechanism ) || 'state' !== triggerOf( r ) || ! SLIDER_PART.test( named ) || /\bwords?\b/i.test( named ) ) {
 		return null;
 	}
 	return {

@@ -16,5 +16,29 @@
 		"find": "const SHRINK_EASING_NAMES = [ 'ease', 'ease-in-out', 'linear' ];",
 		"replace": "const SHRINK_EASING_NAMES = [ 'ease', 'ease-out', 'ease-in-out', 'linear' ];",
 		"why": "ease-out is written as the name the block reads as the client's easing token"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "Math.max( 1, Math.round( ms ) )",
+		"replace": "Math.round( ms )",
+		"why": "a shrink under 0.5ms rounds to 0 and switches the row's animation off"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "if ( timedCollapse ) {",
+		"replace": "if ( false ) {",
+		"why": "a 0ms shrink switches off the transition of a collapse the draft times"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": ", 'ease-in': 'cubic-bezier(0.42, 0, 1, 1)'",
+		"replace": "",
+		"why": "an ease-in shrink is left at the ease default with a note"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "x !== r && x.id !== r.id && templateOfRecord( x, ctx )?.key === key",
+		"replace": "x !== r && x.id !== r.id",
+		"why": "a transform on another element counts as this row's collapse"
 	}
 ]
