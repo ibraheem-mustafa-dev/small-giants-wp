@@ -42,7 +42,7 @@ jobs:
         run: |
           (cd scripts/computed-route && npm ci --ignore-scripts)
           (cd plugins/sgs-blocks && npm ci --ignore-scripts)
-      - name: Build the framework database from the repo (stage 1 only: no upstream scrape, no server contact)
+      - name: Build the framework database from the repo (stage 1 only, no upstream scrape, no server contact)
         run: python plugins/sgs-blocks/scripts/sgs-update-v2.py --rebuild --stage 1 --db "$RUNNER_TEMP/db/sgs-framework.db"
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
