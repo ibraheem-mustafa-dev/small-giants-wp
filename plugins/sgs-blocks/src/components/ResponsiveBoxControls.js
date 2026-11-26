@@ -20,8 +20,6 @@
  * Per-side inheritance is handled by the PHP emitter (`sgs_responsive_normalise_object` + per-side null-coalesce): a
  * blank side on tablet or mobile inherits the tier above. The editor writes only the tier the operator touched;
  * `ResponsiveOverride` supplies the inherited-value indicator and the keyboard reset (WCAG 2.2).
- *
- * @package SGS\Blocks
  */
 import { __ } from '@wordpress/i18n';
 import { useBlockEditContext } from '@wordpress/block-editor';
