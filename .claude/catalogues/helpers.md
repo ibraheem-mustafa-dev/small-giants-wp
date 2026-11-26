@@ -1075,7 +1075,17 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_font_size_value` | `function sgs_font_size_value( ?string $slug_or_value ): string` | Resolve a font-size attribute value to a CSS font-size string. | no markup |
 | `sgs_transition_vars` | `function sgs_transition_vars( array $attributes ): array` | Build CSS custom properties for transition duration and easing. | no markup |
 
-#### `includes/helpers-trust-bar-item.php` — 12 function(s)
+#### `includes/helpers-trust-bar-grid.php` — 5 function(s)
+
+| Function | Signature | Purpose | Prints |
+|---|---|---|---|
+| `sgs_trust_bar_template_count` | `function sgs_trust_bar_template_count( string $template ): ?int` | The column count a `grid-template-columns` value states, when it is a plain `repeat(N, ...)`. | no markup |
+| `sgs_trust_bar_tier_columns` | `function sgs_trust_bar_tier_columns( array $attributes, array $authored_columns = array() ): array` | The column count the grid draws at each device. | no markup |
+| `sgs_trust_bar_column_gap` | `function sgs_trust_bar_column_gap( string $gap ): string` | The column part of a gap value: the second length of a "row column" pair, else the value itself. | no markup |
+| `sgs_trust_bar_nth` | `function sgs_trust_bar_nth( int $columns, int $first ): string` | An `an+b` expression that picks the badges at the end of each row (or the one after it). | no markup |
+| `sgs_trust_bar_grid_css` | `function sgs_trust_bar_grid_css( array $attributes, string $uid_scope, array $tier_columns, int $offset…` | Scoped CSS for a grid bar's separators and its centred last row. | no markup |
+
+#### `includes/helpers-trust-bar-item.php` — 13 function(s)
 
 | Function | Signature | Purpose | Prints |
 |---|---|---|---|
@@ -1088,9 +1098,10 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_trust_bar_scrub_spacing` | `function sgs_trust_bar_scrub_spacing( $value, int $depth )` | Drop everything from a spacing value that cannot become a CSS length. | no markup |
 | `sgs_trust_bar_library_icon_svg` | `function sgs_trust_bar_library_icon_svg( string $slug ): string` | SVG for an icon slug (Lucide, WordPress or SGS library), sanitised for output. | tags circle, ellipse, line, path, polygon, polyline, rect, svg; aria aria-hidden, aria-label |
 | `sgs_trust_bar_item_css` | `function sgs_trust_bar_item_css( array $attributes, string $root_sel ): string` | Scoped CSS for the badge item's own spacing: `itemGap` (icon to label) and `itemPadding`, both responsive tier objects. | no markup |
-| `sgs_trust_bar_separator_glyph` | `function sgs_trust_bar_separator_glyph( array $attributes, string $badge_style ): string` | The separator glyph the bar prints between its badges. | no markup |
-| `sgs_trust_bar_separator_html` | `function sgs_trust_bar_separator_html( string $glyph ): string` | The separator element printed after a badge. | tags span; aria aria-hidden |
-| `sgs_trust_bar_text_badge_css` | `function sgs_trust_bar_text_badge_css( array $attributes, string $badge_style, string $root_sel, string…` | Scoped CSS for the text-only badge's own look (fill, border colour and width, corner radius) and the separator's colour. Every value is… | no markup |
+| `sgs_trust_bar_separator_glyph` | `function sgs_trust_bar_separator_glyph( array $attributes ): string` | The separator glyph the bar prints between its badges, in every badge style. | no markup |
+| `sgs_trust_bar_separator_html` | `function sgs_trust_bar_separator_html( string $glyph, bool $in_cell = false ): string` | The separator element for one badge. | tags span; aria aria-hidden |
+| `sgs_trust_bar_separator_css` | `function sgs_trust_bar_separator_css( array $attributes, string $uid_scope ): string` | Scoped CSS for the separator's colour. Unset takes the bar's text colour (the separator inherits it). | no markup |
+| `sgs_trust_bar_text_badge_css` | `function sgs_trust_bar_text_badge_css( array $attributes, string $badge_style, string $root_sel ): string` | Scoped CSS for the text-only badge's own look (fill, border colour and width, corner radius). Every value is unset by default: an unset one… | no markup |
 
 #### `includes/helpers-typography.php` — 8 function(s)
 
@@ -1113,7 +1124,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_value_ladder` | `function sgs_value_ladder( array $combos, ?int $base_pence, string $framing_mode, bool $decoy_enabled, string…` | Build a sorted, deduplicated comparative value ladder for a product's combos (Spec 27 Part 2 P1). | calls wc_price |
 | `sgs_value_ladder_markup` | `function sgs_value_ladder_markup( string $wrapper_class, array $rows, int $default_pack, bool $decoy_enabled…` | Markup for the comparative value ladder: one <ul> of pack rows (Spec 27 Part 2 P1). | tags li, span, ul; aria aria-current, aria-label |
 
-**111 files, 543 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
+**112 files, 549 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
 
 ### JS shared editor components — `src/components/*.js`
 
