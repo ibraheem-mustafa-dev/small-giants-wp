@@ -9,9 +9,9 @@ The reason is the environment variable SGS_TESTS_REMOVED_OK, set for the one com
 
     SGS_TESTS_REMOVED_OK="the check moved to tests/new.test.mjs" git commit -m "..." -- <paths>
 
-A rename is not a deletion (git reports it as R). Run from the repository root; wired in .githooks/sgs-gates.sh.
+A file moved out of the tests folder counts as a deletion (the listing is made with --no-renames); a file moved within it is a delete and an add, and states its reason too. Run from the repository root; wired in .githooks/sgs-gates.sh.
 
-    python scripts/check-route-test-deletions.py --check        the gate (exit 1 when a deletion has no reason)
+    python scripts/check-route-test-deletions.py --check        the gate (exit 1 when a deletion has no reason, 2 when git cannot list the staged changes)
     python scripts/check-route-test-deletions.py --self-test    proves the gate refuses and allows what it should
 """
 import os
@@ -54,12 +54,12 @@ def decide(name_status, reason):
 
 def check():
     listing = subprocess.run(
-        ["git", "diff", "--cached", "--name-status", "--no-color", "--diff-filter=D"],
+        ["git", "diff", "--cached", "--name-status", "--no-color", "--no-renames", "--diff-filter=D"],
         capture_output=True, text=True, encoding="utf-8", errors="replace",
     )
     if listing.returncode != 0:
-        print("check-route-test-deletions: git diff failed, gate skipped", file=sys.stderr)
-        return 0
+        print(f"check-route-test-deletions: git diff failed, so the gate cannot tell whether a test is deleted: {listing.stderr.strip()}", file=sys.stderr)
+        return 2
     code, message = decide(listing.stdout, os.environ.get(REASON_VARIABLE, ""))
     if message:
         print(message, file=sys.stderr)

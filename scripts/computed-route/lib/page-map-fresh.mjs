@@ -8,6 +8,9 @@ import path from 'node:path';
 import { proposePageMap } from './intake-pagemap.mjs';
 import { applyMarks, carryIds, mapChanges, pageMapMarks } from './intake-pagemap-regen.mjs';
 
+// The stages that read the page map (its rows and openers): a run that takes none of them never reads it, so a stale map does not stop it.
+export const PAGE_MAP_STAGES = [ 'inventory', 'propose', 'fill', 'build' ];
+
 export const pageMapCommand = ( client ) => `node scripts/computed-route/intake.mjs --page-map ${ client }`;
 
 const readJson = ( f ) => JSON.parse( fs.readFileSync( f, 'utf8' ) );
@@ -30,8 +33,14 @@ export function pageMapFreshness( { repo, client } ) {
 }
 
 // The sentence a run stops with when the committed page map is older than its reader; '' when it is current or nothing is to compare.
+// A draft the reader cannot propose a map from is its own sentence, not a stack trace from inside the reader.
 export function pageMapStaleProblem( { repo, client } ) {
-	const f = pageMapFreshness( { repo, client } );
+	let f;
+	try {
+		f = pageMapFreshness( { repo, client } );
+	} catch ( e ) {
+		return `${ client }'s page map could not be compared with its draft: the reader failed with "${ e.message }". Fix the draft export in sites/${ client }/handoff, then check the map with \`${ pageMapCommand( client ) }\``;
+	}
 	if ( ! f?.stale ) {
 		return '';
 	}

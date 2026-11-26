@@ -7,7 +7,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { pageMapFreshness, pageMapStaleProblem } from '../lib/page-map-fresh.mjs';
+import { pageMapFreshness, pageMapStaleProblem, PAGE_MAP_STAGES } from '../lib/page-map-fresh.mjs';
 import { runPageMap } from '../lib/intake-pagemap-regen.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..', '..', '..' );
@@ -50,6 +50,27 @@ test( 'a client with no draft export or no page map has nothing to compare', () 
 
 test( 'site-run stops on a stale page map before any stage', () => {
 	const source = fs.readFileSync( path.join( REPO, 'scripts', 'computed-route', 'site-run.mjs' ), 'utf8' );
-	assert.match( source, /const staleMap = pageMapStaleProblem\( \{ repo: REPO, client \} \);\r?\n\s*if \( staleMap \) \{\r?\n\s*throw new Error\( staleMap \);/ );
+	assert.match( source, /const staleMap = stages\.some\( \( s \) => PAGE_MAP_STAGES\.includes\( s \) \) \? pageMapStaleProblem\( \{ repo: REPO, client \} \) : '';\r?\n\s*if \( staleMap \) \{\r?\n\s*throw new Error\( staleMap \);/ );
 	assert.ok( source.indexOf( 'pageMapStaleProblem( {' ) < source.indexOf( 'const missingInputs = intakeInputsMissing(' ), 'it runs ahead of the other input checks' );
+} );
+
+test( 'only the stages that read the page map check it', () => {
+	assert.deepEqual( PAGE_MAP_STAGES, [ 'inventory', 'propose', 'fill', 'build' ] );
+	const source = fs.readFileSync( path.join( REPO, 'scripts', 'computed-route', 'site-run.mjs' ), 'utf8' );
+	assert.match( source, /stages\.some\( \( s \) => PAGE_MAP_STAGES\.includes\( s \) \) \? pageMapStaleProblem/ );
+} );
+
+test( 'a draft the reader cannot read gives its own sentence, not the stale-map sentence', () => {
+	const repo = fs.mkdtempSync( path.join( os.tmpdir(), 'pagemap-fresh-bad-' ) );
+	try {
+		const client = 'any-client';
+		fs.mkdirSync( path.join( repo, 'sites', client, 'handoff' ), { recursive: true } );
+		fs.mkdirSync( path.join( repo, 'sites', client, 'build' ), { recursive: true } );
+		fs.writeFileSync( path.join( repo, 'sites', client, 'build', 'page-map.json' ), '[]' );
+		const problem = pageMapStaleProblem( { repo, client } );
+		assert.match( problem, /could not be compared with its draft/ );
+		assert.doesNotMatch( problem, /older than the reader/ );
+	} finally {
+		fs.rmSync( repo, { recursive: true, force: true } );
+	}
 } );
