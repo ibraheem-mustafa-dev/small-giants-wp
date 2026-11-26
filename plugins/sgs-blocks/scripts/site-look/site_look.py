@@ -461,7 +461,7 @@ def build_block(short: str, snapshot_file: Path, woocommerce: bool, parts=None, 
     children = sorted(set(re.findall(r'"name": "sgs/([a-z0-9-]+)"', json.dumps(fixture.get('inner') or []))))
     insts = [i for i in pl['instances'] if i['isDefault'] or i.get('paintState')]
     bridge = bridge_plan(f'sgs/{short}', snapshot_file)
-    marked = bridge.get('discover', []) + bridge.get('content', []) + bridge.get('forms', []) + bridge.get('states', [])
+    marked = bridge.get('discover', []) + bridge.get('content', []) + bridge.get('forms', []) + bridge.get('states', []) + bridge.get('enums', [])
     jobs = {i['key']: RN.with_defaults(PLUGIN, short, RN.fill(i['attrs'])) for i in insts}
     jobs.update({f'b:{i["key"]}': RN.with_defaults(PLUGIN, short, RN.fill(i['attrs'])) for i in marked})
     results = rn.render_many(f'sgs/{short}', jobs, content, inner)
@@ -860,7 +860,7 @@ def record_facts(short: str, bridge: dict, reader: Reader, elements: dict, class
     forms: the value forms a marker of that form took on (a form is claimed only on this positive evidence: a claimed
     clamp() the block cannot hold would have Fill write a broken value). look: a state setting's look in its state."""
     paths = record_paths(record_of(short), elements, classes)
-    plan = bridge.get('discover', []) + bridge.get('forms', []) + bridge.get('states', [])
+    plan = bridge.get('discover', []) + bridge.get('forms', []) + bridge.get('states', []) + bridge.get('enums', [])
     out = {}
     for i in bridge.get('forms', []):
         state = i.get('state')
@@ -885,6 +885,63 @@ def record_facts(short: str, bridge: dict, reader: Reader, elements: dict, class
         look = state_look(reader.style(job, held), ps, i['props'], bridge.get('stateLookProps') or [])
         if look:
             out.setdefault(i['setting'], {})['look'] = look
+    for setting, facts in enum_reads(bridge, reader, paths, plan).items():
+        out.setdefault(setting, {}).update(facts)
+    return out
+
+
+# The states each choice value's paint is read in: rest, then the two a link or button changes its look in. A state the
+# setting's placements never name is skipped, so a setting with no hover rule records no hover reading.
+ENUM_STATES = ('', 'hover', 'focus')
+
+
+def enum_value_of(i, attrs):
+    """The value an enum instance's own baseline holds for the setting: what the baseline render has set, else the setting's
+    default (a per-device setting holds its value in the desktop tier)."""
+    v = attrs.get(i['setting'], i.get('enumDefault') or '')
+    return v.get('desktop', '') if isinstance(v, dict) else v
+
+
+def read_longhands(reading: dict, ps: list, props: list) -> dict:
+    """{longhand: {width: value}} of the setting's own properties, read on the shallowest of its placement paths that
+    carries each one."""
+    out = {}
+    for q in props:
+        for p in ps:
+            got = {str(w): v for w in WIDTHS if (v := ((reading.get(str(w)) or {}).get(p) or {}).get(q)) not in (None, '')}
+            if got:
+                out[q] = got
+                break
+    return out
+
+
+def enum_reads(bridge: dict, reader: Reader, paths: dict, plan: list) -> dict:
+    """{setting: {enumReads, enumStateReads}}: what each value of a choice paints, as lib/resolve-enum.mjs reads it.
+    enumReads[value][longhand][width] is the setting's own longhand on its placement elements with the value set, at rest
+    (the default value's reading comes from the baseline render, which holds it); enumStateReads[state][value] is the
+    same read with the state held (hover, focus), so a hover underline maps to the value that draws it on hover."""
+    out = {}
+    for i in [] if 'enum-reads' in MUTATE else bridge.get('enums', []):
+        base, job = _baseline(i, plan), f'b:{i["key"]}'
+        if not base or not (reader.ok(base) and reader.ok(job)):
+            continue
+        base_attrs = next((x['attrs'] for x in plan if f'b:{x["key"]}' == base), {})
+        held_value = enum_value_of(i, base_attrs)
+        by_state = paths.get(i['setting'], {})
+        for state in ENUM_STATES:
+            held = HELD.get(state, ()) if state else ()
+            ps = by_state.get(state, [])
+            if not ps:
+                continue
+            for value, render in ((i['enumValue'], job), (held_value, base)):
+                if value in (None, ''):
+                    continue
+                got = read_longhands(reader.style(render, held), ps, i['props'])
+                if not got:
+                    continue
+                fact = out.setdefault(i['setting'], {})
+                bucket = fact.setdefault('enumReads', {}) if not state else fact.setdefault('enumStateReads', {}).setdefault(state, {})
+                bucket.setdefault(str(value), got)
     return out
 
 

@@ -507,6 +507,7 @@ function settingEntry( block, name, rows, row, look, facts ) {
 		...( main.every( ( r ) => r.unproved ) ? { accepted: true } : {} ),
 		...( variantOnlyOf( main, row?.css_element, compounds ) ? { variantOnly: row.css_element } : {} ),
 		...( facts?.look ? { look: facts.look } : {} ),
+		...enumReadsOf( facts ),
 		...( main.some( ( r ) => /^@container/.test( r.tiers.join( ' ' ) ) ) ? { containerTier: true } : {} ),
 	};
 	// An inherited property reaches every descendant that does not paint it itself; the shallowest that does is where
@@ -522,6 +523,16 @@ function settingEntry( block, name, rows, row, look, facts ) {
 		}
 	}
 	return entry;
+}
+
+// What each value of a choice setting paints, from the site look's per-value renders (plugins/sgs-blocks/scripts/site-look/
+// site_look.py::enum_reads): `enumReads` { value: { longhand: { width: computed } } } at rest, and `enumStateReads` the same per held
+// state (hover, focus). lib/resolve-enum.mjs and lib/resolve.mjs read them.
+function enumReadsOf( facts ) {
+	return {
+		...( facts?.enumReads ? { enumReads: facts.enumReads } : {} ),
+		...( facts?.enumStateReads ? { enumStateReads: facts.enumStateReads } : {} ),
+	};
 }
 
 // A setting's entry without a site look (a reader that names no site asks only which settings a block has and what they
@@ -627,7 +638,7 @@ function readRecord( block, client, { db = null, dir = SITE_LOOK_DIR, repo = REP
 		const props = longhands( row?.css_property || '' );
 		const slots = look && row?.css_element ? elementPaths( block, row.css_element, look, elementsOf ) : [];
 		if ( props.length && slots.length && ! settings[ name ] ) {
-			settings[ name ] = { slot: slots[ 0 ], slots, property: splitProperty( props[ 0 ] ).short, ...manyProperties( props, props[ 0 ] ), state: row.css_state || null, forms: facts[ name ]?.forms || [], transform: null, reachedAt: [ ...WIDTHS ], effects: [], tiers: [ [] ], fromAttributes: true };
+			settings[ name ] = { slot: slots[ 0 ], slots, property: splitProperty( props[ 0 ] ).short, ...manyProperties( props, props[ 0 ] ), state: row.css_state || null, forms: facts[ name ]?.forms || [], transform: null, reachedAt: [ ...WIDTHS ], effects: [], tiers: [ [] ], fromAttributes: true, ...enumReadsOf( facts[ name ] ) };
 		} else if ( ! props.length ) {
 			dead.push( name );
 		} else if ( ! settings[ name ] && look ) {
