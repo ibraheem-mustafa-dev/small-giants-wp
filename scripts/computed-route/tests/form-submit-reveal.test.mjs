@@ -4,7 +4,7 @@
 import test, { before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { loadChromium } from '../lib/fill-read.mjs';
-import { submitForm, revealInPage } from '../lib/form-submit-page.mjs';
+import { fillVisible, submitForm, revealInPage } from '../lib/form-submit-page.mjs';
 
 let browser;
 before( async () => {
@@ -13,12 +13,12 @@ before( async () => {
 } );
 after( async () => browser?.close() );
 
-const page = async ( inner, reveal = true ) => {
+const page = async ( inner, reveal = true, reverse = false ) => {
 	const p = await browser.newPage( { viewport: { width: 375, height: 700 } } );
 	await p.setContent( `<!doctype html><html><head><style>
 		body{margin:0}.gap{height:1800px}.rev{transform:scale(0);opacity:0;transition:transform .9s,opacity .9s}.rev.in{transform:none;opacity:1}
 	</style></head><body><div class="gap"></div><form class="sgs-form__inner" onsubmit="event.preventDefault();window.sent=true">${ inner }</form><div class="gap"></div>
-	<script>${ reveal ? "const io=new IntersectionObserver((es)=>es.forEach((e)=>e.isIntersecting&&e.target.classList.add('in')));document.querySelectorAll('.rev').forEach((e)=>io.observe(e));" : '' }</script></body></html>` );
+	<script>${ reveal ? `const io=new IntersectionObserver((es)=>es.forEach((e)=>${ reverse ? "e.target.classList.toggle('in',e.isIntersecting)" : "e.isIntersecting&&e.target.classList.add('in')" }));document.querySelectorAll('.rev').forEach((e)=>io.observe(e));` : '' }</script></body></html>` );
 	return p;
 };
 
@@ -83,4 +83,27 @@ test( 'MUST FAIL: the scroll through a form runs once for a step, not once per p
 	const total = await scrolls( stuck );
 	await stuck.close();
 	assert.equal( total, single );
+} );
+
+test( 'MUST FAIL: a control whose reveal reverses when it leaves the viewport is filled, the page stays at the form during the fill, and goes back after it', async () => {
+	const p = await page( '<input type="text" name="n" required class="rev"><button type="submit">Send</button>', true, true );
+	await p.evaluate( () => scrollTo( 0, 40 ) );
+	const empty = await fillVisible( p, 0, { marker: 'SGS test' } );
+	const value = await p.evaluate( () => document.querySelector( 'input' ).value );
+	const y = await p.evaluate( () => scrollY );
+	await p.close();
+	assert.deepEqual( empty, [] );
+	assert.notEqual( value, '', 'the field was visible while it was filled' );
+	assert.equal( y, 40, 'the scroll is restored after the fill' );
+} );
+
+test( 'MUST FAIL: a submit button whose reveal reverses is found and clicked, and the page is back where it started afterwards', async () => {
+	const p = await page( '<input type="text" name="n" required><button type="submit" class="rev">Send</button>', true, true );
+	await p.evaluate( () => scrollTo( 0, 40 ) );
+	const out = await submitForm( p, 0, { marker: 'SGS test' } );
+	const [ sent, y ] = await p.evaluate( () => [ window.sent === true, scrollY ] );
+	await p.close();
+	assert.equal( out.steps, 1 );
+	assert.equal( sent, true );
+	assert.equal( y, 40 );
 } );

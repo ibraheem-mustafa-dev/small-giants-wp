@@ -53,8 +53,27 @@ const controlInfo = ( el ) => {
 // does not show itself but whose label shows (a tile or chip) is ticked through its label. `reveal: false` skips the scroll through the form
 // (submitForm reveals once per step). Returns the reachable
 // required controls left empty: [{ tag, type, name }] (a file field, or a control testValueFor has no value for).
-export async function fillVisible( page, skip = 0, { marker = null, form = FORM_SELECTOR, revealMs = 3000, reveal = true } = {} ) {
-	reveal && await page.evaluate( revealInPage, [ form, revealMs ] );
+export async function fillVisible( page, skip = 0, { marker = null, form = FORM_SELECTOR, revealMs = 3000, reveal = true, restore = true } = {} ) {
+	// The page stays at the form while it is filled (a control whose reveal reverses when it leaves the viewport would hide again), and goes
+	// back to where it was after the fill; `restore: false` leaves that to the caller (submitForm, which still has the buttons to find).
+	const from = reveal ? await page.evaluate( revealInPage, [ form, revealMs, false ] ) : null;
+	try {
+		return await fill( page, skip, { marker, form } );
+	} finally {
+		restore && await scrollBack( page, from );
+	}
+}
+
+// Puts the page back at the scroll position `at` ({ x, y }, as revealInPage returns it); nothing when there is none or the page is gone.
+const scrollBack = async ( page, at ) => {
+	try {
+		at && await page.evaluate( ( [ x, y ] ) => scrollTo( x, y ), [ at.x, at.y ] );
+	} catch {
+		// A submit that left the page: there is nothing to scroll back.
+	}
+};
+
+async function fill( page, skip, { marker, form } ) {
 	const controls = page.locator( requiredIn( form ) );
 	const empty = [];
 	let left = skip;
@@ -121,14 +140,15 @@ export function stepInPage( form ) {
 
 // In-page: brings the form `form` through the viewport the way a visitor scrolls to it, so scroll-driven reveals (a
 // control that fades or scales in once it enters view) fire, then waits until the form's running animations and
-// transitions finish, capped at `capMs`, and puts the page back where it was scrolled to. Nothing is forced visible: a control that never
+// transitions finish, capped at `capMs`. Returns where the page was scrolled to ({ x, y }), and puts it back there unless the third
+// argument is false (the caller restores it after it has read what the reveal showed). Nothing is forced visible: a control that never
 // reveals stays unseen.
-export async function revealInPage( [ form, capMs ] ) {
+export async function revealInPage( [ form, capMs, restore = true ] ) {
 	const root = document.querySelector( form );
-	if ( ! root ) {
-		return;
-	}
 	const [ x, y0 ] = [ scrollX, scrollY ];
+	if ( ! root ) {
+		return { x, y: y0 };
+	}
 	const frame = () => new Promise( ( r ) => requestAnimationFrame( () => setTimeout( r, 120 ) ) );
 	const top = root.getBoundingClientRect().top + scrollY;
 	const bottom = top + root.getBoundingClientRect().height;
@@ -147,8 +167,11 @@ export async function revealInPage( [ form, capMs ] ) {
 		}
 		await frame();
 	}
-	scrollTo( x, y0 );
-	await frame();
+	if ( restore ) {
+		scrollTo( x, y0 );
+		await frame();
+	}
+	return { x, y: y0 };
 }
 
 const stepName = ( s ) => `step ${ s.at + 1 } of ${ s.of }${ s.label ? ` ("${ s.label }")` : '' }`;
@@ -158,13 +181,23 @@ const stepName = ( s ) => `step ${ s.at + 1 } of ${ s.of }${ s.label ? ` ("${ s.
 // does not leave (the shown step is the same after the click) stops the walk as stuck, naming the step and the required
 // controls left empty. Returns { steps, decoys }: the steps walked and the visible Next/Continue buttons that are not
 // the form's own controls.
-export async function submitForm( page, skip = 0, { marker = null, form = FORM_SELECTOR, settleMs = 2000 } = {} ) {
+export async function submitForm( page, skip = 0, opts = {} ) {
+	// The page stays scrolled to the form while its steps are filled and walked (the buttons are read from it), and goes back after.
+	const from = await page.evaluate( () => ( { x: scrollX, y: scrollY } ) );
+	try {
+		return await walkSteps( page, skip, opts );
+	} finally {
+		await scrollBack( page, from );
+	}
+}
+
+async function walkSteps( page, skip, { marker = null, form = FORM_SELECTOR, settleMs = 2000 } ) {
 	const decoys = new Set();
 	let revealed;
 	for ( let step = 0; step < MAX_STEPS; step++ ) {
 		// The scroll that reveals a step's controls runs once per step shown, not once per pass over the same step.
 		const shown = ( await page.evaluate( stepInPage, form ) ).at;
-		const empty = await fillVisible( page, skip, { marker, form, reveal: shown !== revealed } );
+		const empty = await fillVisible( page, skip, { marker, form, reveal: shown !== revealed, restore: false } );
 		revealed = shown;
 		const before = await page.evaluate( stepInPage, form );
 		before.decoys.forEach( ( d ) => decoys.add( d ) );

@@ -1,4 +1,8 @@
 [
-	{"file": "lib/form-submit-page.mjs", "find": "scrollTo( x, y0 );", "replace": "", "why": "the reveal leaves the page scrolled to the form"},
-	{"file": "lib/form-submit-page.mjs", "find": "reveal: shown !== revealed }", "replace": "reveal: true }", "why": "the form is scrolled through again on every pass over the same step"}
+	{"file": "lib/form-submit-page.mjs", "find": "if ( restore ) {\n\t\tscrollTo( x, y0 );", "replace": "if ( false ) {\n\t\tscrollTo( x, y0 );", "why": "the reveal leaves the page scrolled to the form"},
+	{"file": "lib/form-submit-page.mjs", "find": "reveal: shown !== revealed,", "replace": "reveal: true,", "why": "the form is scrolled through again on every pass over the same step"},
+	{"file": "lib/form-submit-page.mjs", "find": "[ form, revealMs, false ]", "replace": "[ form, revealMs ]", "why": "the page goes back before the fill reads what the reveal showed, so a reversing reveal hides the control again"},
+	{"file": "lib/form-submit-page.mjs", "find": "restore && await scrollBack( page, from );", "replace": "", "why": "fillVisible leaves the page scrolled to the form"},
+	{"file": "lib/form-submit-page.mjs", "find": "restore: false }", "replace": "restore: true }", "why": "the page goes back after the fill and before the submit button is looked for"},
+	{"file": "lib/form-submit-page.mjs", "find": "\t\treturn await walkSteps( page, skip, opts );\n\t} finally {\n\t\tawait scrollBack( page, from );", "replace": "\t\treturn await walkSteps( page, skip, opts );\n\t} finally {", "why": "submitForm leaves the page scrolled to the form"}
 ]
