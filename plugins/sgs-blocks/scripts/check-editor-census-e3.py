@@ -10,12 +10,13 @@ colour rule is `check-colour-count.py --stage whole-block`, and the first-panel 
 Rules (each a subcommand; `all` runs every one, and `open-panels` and `colour-panel` from check-editor-census.py with them):
   lone-panels     A panel that holds one control, on an owner's block, outside the register's `stays` rows (group leads, repeaters,
                   Kept) and outside the shared-extension panels the owner does not own (`shared`). A ToolsPanel counts too.
-  repeated-titles No two panels in one tab share a title (settled). A title shared across the two tabs is a note, never a finding.
+  repeated-titles No two panels in one tab share a title (settled), except the register's `repeated_ok` rows (a kit's per-button Colour panel,
+                  parked until the per-part colour panels of plan Task 30). A title shared across the two tabs is a note, never a finding.
   tab-order       The panels of a tab hold the same order on first select, settled and revisit (the order that changes after a tab switch).
   register-moves  Every register row of verdict Moves or Style: the control sits in the panel `to` (its final title) and is gone from
                   the panel it came from (unless that panel is renamed to `to`).
   panels-expect   Every `expect` row: the panel exists in that tab and holds the listed controls; every `gone` row: no panel has that title.
-  colour-main     On each block over 12 base colours (from check-colour-count.py), the main Colour panel (the first panel titled
+  colour-main     (Skips the register's `colour_deferred` blocks: Task 30 places their colours.) On each block over 12 base colours (from check-colour-count.py), the main Colour panel (the first panel titled
                   Colour or Color in Styles) holds only whole-block colours (patterns in scripts/data/colour-whole-block.json: background,
                   text, heading, link, each with its hover or active version); a block with no whole-block colour has no main Colour panel.
   register-source The REGISTER ITSELF against a census taken BEFORE any change (`--before`): every Moves, Style and Stays row's control
@@ -108,11 +109,16 @@ def rule_lone_panels(res, reg, ctx):
 
 def rule_repeated_titles(res, reg, ctx):
     found, info = [], []
+    allowed = {(r["block"], r["tab"], norm(r["title"])) for r in reg.get("repeated_ok", [])}
     for name, rec in block_recs(res, reg):
         seen = {}
+        slug = name.removeprefix("sgs/")
         for tab in ("settings", "styles"):
             titles = [norm(p["title"]) for p in tab_panels(rec, tab)]  # case-insensitive: "Add to cart button" and "Add to Cart button" are one title
             for t in sorted({t for t in titles if titles.count(t) > 1}):
+                if (slug, tab, t) in allowed:
+                    info.append(f"{name} {tab} has {titles.count(t)} panels titled \"{t}\" and the register allows it")
+                    continue
                 found.append(f"{name} {tab} has {titles.count(t)} panels titled \"{t}\"")
             for t in titles:
                 seen.setdefault(norm(t), set()).add(tab)
@@ -199,6 +205,9 @@ def rule_colour_main(res, reg, ctx):
     for name, rec in block_recs(res, reg):
         slug = name.removeprefix("sgs/")
         if slug not in ctx["over12"]:
+            continue
+        if slug in reg.get("colour_deferred", []):
+            info.append(f"{name} is over 12 base colours and its Colour panel is left as it is until plan Task 30 (register `colour_deferred`)")
             continue
         mains = [p for p in deep_panels(rec, "styles") if p["title"] in COLOUR_TITLES and p["kind"] == "body"]
         if not mains:
@@ -342,6 +351,12 @@ def self_test():
     f, i = rule_repeated_titles(both, reg, {})
     ok("one title in each tab is a note, not a finding", not f and i)
     ok("accepts distinct titles", not rule_repeated_titles(good, reg, {})[0])
+    allow = dict(reg, repeated_ok=[{"block": "x", "tab": "styles", "title": "Colour"}])
+    ok("a repeated title the register allows is a note, not a finding", not rule_repeated_titles(dup, allow, {})[0] and rule_repeated_titles(dup, allow, {})[1])
+    other_tab = dict(reg, repeated_ok=[{"block": "x", "tab": "settings", "title": "Colour"}])
+    ok("CATCHES a repeated title allowed only for the other tab", len(rule_repeated_titles(dup, other_tab, {})[0]) == 1)
+    other_title = dict(reg, repeated_ok=[{"block": "x", "tab": "styles", "title": "Label"}])
+    ok("CATCHES a repeated title the register does not name", len(rule_repeated_titles(dup, other_title, {})[0]) == 1)
     case = {"sgs/x": rec(styles=[panel("Add to cart button", "a", "b"), panel("Add to Cart button", "c", "d")])}
     ok("CATCHES two titles that differ only by case", len(rule_repeated_titles(case, reg, {})[0]) == 1)
     swapped = {"sgs/x": rec(settings=[panel("A", "a", "b"), panel("B", "c", "d")], first={"settings": [{"title": "B", "kind": "body", "opened": False}, {"title": "A", "kind": "body", "opened": False}]})}
@@ -357,6 +372,10 @@ def self_test():
     part = {"sgs/x": rec(styles=[panel("Colour", "Background", "Badge background", "Icon colour")])}
     ok("CATCHES a part colour in the main Colour panel of a block over 12", len(rule_colour_main(part, reg, ctx)[0]) == 1)
     ok("a block 12 or under is left to the kit rule", not rule_colour_main(part, reg, {"over12": {}})[0])
+    deferred = dict(reg, colour_deferred=["x"])
+    f, i = rule_colour_main(part, deferred, ctx)
+    ok("a colour_deferred block is a note, not a finding", not f and i)
+    ok("CATCHES the same block when it is not deferred", len(rule_colour_main(part, dict(reg, colour_deferred=["y"]), ctx)[0]) == 1)
     none_main = {"sgs/x": rec(styles=[panel("Badge colour", "Badge background", "Badge text")])}
     ok("a block over 12 with no main Colour panel is a note", not rule_colour_main(none_main, reg, ctx)[0] and rule_colour_main(none_main, reg, ctx)[1])
     before = {"sgs/x": rec(settings=[panel("Footer", "Sticky footer"), panel("Lead", "Switch")])}

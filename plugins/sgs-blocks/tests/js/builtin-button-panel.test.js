@@ -11,6 +11,7 @@
  *   3 the typography seed `{}` is removed              -> "typography writes the size as a tier object"
  *   4 an unknown prefix still mounts the panel         -> "an unknown prefix renders nothing"
  *   5 a control writes a name the registry lacks       -> "every attribute the panel writes is in the registry"
+ *   6 `children` is not passed on to the panel body    -> "rows the block hands in as children sit inside the one button panel"
  */
 
 'use strict';
@@ -251,6 +252,22 @@ describe( 'BuiltinButtonPanel: which groups show', () => {
 		declare( [ { ...FLOW_OPENER, groups: [ 'preset' ] } ] );
 		const m = await mount();
 		expect( m.q( '[data-panel="Flow opener button"]' ) ).not.toBeNull();
+		m.unmount();
+	} );
+
+	test( 'rows the block hands in as children sit inside the one button panel, not in a second panel of the same name', async () => {
+		declare( [ { ...FLOW_OPENER, groups: [ 'preset' ] } ] );
+		const m = await mount( { children: h( 'p', { 'data-block-row': 'price-switch' }, 'Show the price' ) } );
+		const panels = m.all( '[data-panel="Flow opener button"]' );
+		expect( panels ).toHaveLength( 1 );
+		expect( panels[ 0 ].querySelector( '[data-block-row="price-switch"]' ) ).not.toBeNull();
+		m.unmount();
+	} );
+
+	test( 'no children means no extra row', async () => {
+		declare( [ { ...FLOW_OPENER, groups: [ 'preset' ] } ] );
+		const m = await mount();
+		expect( m.q( '[data-block-row]' ) ).toBeNull();
 		m.unmount();
 	} );
 } );
