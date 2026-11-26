@@ -1,7 +1,7 @@
 {
   "_comment": "The rename map for merging sgs/account's duplicate empty orders button settings into the built-in button kit's. `ordersEmptyButtonPadding` and `ordersEmptyButtonMinHeight` painted the same element and property as `emptyStatePadding` and `emptyStateMinHeight` (`.sgs-account__orders-empty-actions .sgs-button`; the kit's rule weighs more, so the kit's value won where both were set). Saved content still carries the old names, which the block no longer reads: scripts/sweep-builtin-button-attrs.php map=account-empty-button-renames.json folds each into the kit's setting per device and per side (the kit's own values win), then drops the old key. No deprecated.js (FP-14).",
   "renames": [
-    { "block": "sgs/account", "old": "ordersEmptyButtonPadding", "new": "emptyStatePadding", "value": { "kind": "merge-tier-object" }, "evidence": "block_attributes: sgs/account padding, css_element ordersEmptyButton; helpers-account-signed-out.php prints the emptyState kit on the same selector" },
+    { "block": "sgs/account", "old": "ordersEmptyButtonPadding", "new": "emptyStatePadding", "value": { "kind": "merge-tier-padding" }, "evidence": "block_attributes: sgs/account padding, css_element ordersEmptyButton; helpers-account-signed-out.php prints the emptyState kit on the same selector" },
     { "block": "sgs/account", "old": "ordersEmptyButtonMinHeight", "new": "emptyStateMinHeight", "value": { "kind": "merge-tier-object" }, "evidence": "block_attributes: sgs/account min-height, css_element ordersEmptyButton; helpers-account-signed-out.php prints the emptyState kit on the same selector" }
   ]
 }

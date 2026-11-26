@@ -13,6 +13,9 @@
  *   true-to-full               true becomes "full"; false is unset.
  *   fit-to-unset               "fit" is unset (the key is dropped); "full" stays. The CTA width choice's default was "fit", which printed
  *                              no width, and the kit prints "fit" as width:fit-content, so a saved "fit" would otherwise change the look.
+ *   merge-tier-padding         The same fold for a padding. The old padding row printed a bare number with no unit (`padding-top:16`, which
+ *                              paints nothing) where the kit prints it in px, so a numeric non-zero leaf with no unit is dropped before the
+ *                              fold and what paints stays the same (a unit string such as "16px" and a bare 0 paint, so they stay).
  *   merge-tier-object          Two settings that painted one property on one element become one: the old value is folded into the new
  *                              setting per device and per side, the new setting's own values winning, and the old key is dropped
  *                              (scripts/data/account-empty-button-renames.json: sgs/account's empty orders button).
@@ -42,6 +45,35 @@ if ( ! function_exists( 'sgs_builtin_button_sweep_map' ) ) {
 			$by[ (string) $row['block'] ][] = $row;
 		}
 		return $by;
+	}
+}
+
+if ( ! function_exists( 'sgs_builtin_button_sweep_drop_bare_numbers' ) ) {
+
+	/**
+	 * A per-device padding with the leaves that painted nothing removed: a number (or numeric string) with no unit that is not zero.
+	 *
+	 * @param array $value { desktop, tablet, mobile } of side maps.
+	 * @return array The same shape without those leaves; an emptied side map or device is left out.
+	 */
+	function sgs_builtin_button_sweep_drop_bare_numbers( array $value ): array {
+		$out = array();
+		foreach ( $value as $tier => $at ) {
+			if ( ! is_array( $at ) ) {
+				$bare = is_numeric( $at ) && 0.0 !== (float) $at;
+				if ( ! $bare && null !== $at && '' !== $at ) {
+					$out[ $tier ] = $at;
+				}
+				continue;
+			}
+			foreach ( $at as $side => $v ) {
+				if ( is_numeric( $v ) && 0.0 !== (float) $v ) {
+					continue;
+				}
+				$out[ $tier ][ $side ] = $v;
+			}
+		}
+		return $out;
 	}
 }
 
@@ -83,6 +115,12 @@ if ( ! function_exists( 'sgs_builtin_button_sweep_value' ) ) {
 					true,
 					array( 'desktop' => $value ),
 				);
+			case 'merge-tier-padding':
+				if ( ! is_array( $value ) ) {
+					return array( true, $value );
+				}
+				$kept = sgs_builtin_button_sweep_drop_bare_numbers( $value );
+				return array() === $kept ? array( false, null ) : array( true, $kept );
 			case 'fit-to-unset':
 				return 'fit' === $value || '' === $value || null === $value ? array( false, null ) : array( true, $value );
 			case 'true-to-full':
@@ -223,7 +261,7 @@ if ( ! function_exists( 'sgs_builtin_button_sweep_attrs' ) ) {
 			}
 			if ( $old !== $new ) {
 				unset( $out[ $old ] );
-				if ( 'merge-tier-object' === $kind && array_key_exists( $new, $out ) && is_array( $out[ $new ] ) && is_array( $value ) ) {
+				if ( in_array( $kind, array( 'merge-tier-object', 'merge-tier-padding' ), true ) && array_key_exists( $new, $out ) && is_array( $out[ $new ] ) && is_array( $value ) ) {
 					// Both settings were saved: the merged value paints what the pair painted (the kit wins wherever it prints a value).
 					$out[ $new ] = sgs_builtin_button_sweep_merge_tiers( $value, $out[ $new ] );
 					continue;
