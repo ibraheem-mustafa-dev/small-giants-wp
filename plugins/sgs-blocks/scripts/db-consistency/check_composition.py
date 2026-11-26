@@ -14,7 +14,8 @@ There is no cached has_inner_blocks column to compare. G-A and G-B are purely
 source-derived (block.json + save.js + render.php) and depend only on a
 block_composition ROW existing for the slug.
 
-FIX command for all violations: "run python plugins/sgs-blocks/scripts/sgs-update-v2.py --stage 1"
+FIX command for the violations: "run python plugins/sgs-blocks/scripts/sgs-update-v2.py --stage 1"; a block with no block_composition row also
+needs its row added to scripts/data/block-composition.json first (the seeder, not this stage, writes the table)
 """
 from __future__ import annotations
 
@@ -239,7 +240,7 @@ def run(conn: sqlite3.Connection) -> list[Violation]:
                     f"{slug}: present in src/blocks/ but has NO row in block_composition — "
                     "fail-CLOSED (was silently skipped in the old guard)."
                 ),
-                fix=f"Add {slug} to block_composition by running {_FIX_CMD}",
+                fix=f"Add a row for {slug} to plugins/sgs-blocks/scripts/data/block-composition.json (its composition_role is seed data; dbschema/seed_reference_data.py seeds the table from that file). Then {_FIX_CMD}",
                 key=composition_key(slug),
             ))
             continue

@@ -46,7 +46,7 @@ GENERATED = (
 # commit and change the tree, and the gate cache (keyed on the tree) never hit.
 RESEED_TRIGGERS = (
     "plugins/sgs-blocks/src/blocks/",
-    "plugins/sgs-blocks/scripts/seed-composition-roles.py",
+    "plugins/sgs-blocks/scripts/data/block-composition.json",
     "plugins/sgs-blocks/scripts/sgs-update-v2.py",
     "plugins/sgs-blocks/scripts/dbschema/",
     "plugins/sgs-blocks/scripts/data/setting-records/",

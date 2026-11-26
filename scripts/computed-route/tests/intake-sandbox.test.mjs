@@ -242,6 +242,23 @@ test( 'MUST FAIL (d2): every INTAKE_* variable the intake code reads is in ENV_A
 	assert.deepEqual( [ ...read ].filter( ( n ) => ! ENV_ALLOW.includes( n ) ), [] );
 } );
 
+// The worker's libraries open the framework database through SGS_FRAMEWORK_DB and refuse every site call under SGS_NO_SITE; a worker
+// that never sees them reads the shared database and loses the kill switch whatever the caller set.
+test( 'MUST FAIL (g): an isolated worker sees SGS_FRAMEWORK_DB and SGS_NO_SITE', async () => {
+	const dir = tempDir( 'intake-worker-env-' );
+	const worker = path.join( dir, 'env.mjs' );
+	fs.writeFileSync( worker, 'console.log( JSON.stringify( [ process.env.SGS_FRAMEWORK_DB, process.env.SGS_NO_SITE ] ) );' );
+	const was = [ process.env.SGS_FRAMEWORK_DB, process.env.SGS_NO_SITE ];
+	process.env.SGS_FRAMEWORK_DB = path.join( dir, 'private.db' );
+	process.env.SGS_NO_SITE = '1';
+	try {
+		const out = await runIsolated( worker );
+		assert.deepEqual( JSON.parse( out.stdout ), [ path.join( dir, 'private.db' ), '1' ] );
+	} finally {
+		[ 'SGS_FRAMEWORK_DB', 'SGS_NO_SITE' ].forEach( ( k, i ) => ( undefined === was[ i ] ? delete process.env[ k ] : ( process.env[ k ] = was[ i ] ) ) );
+	}
+} );
+
 test( 'a worker with the clean environment can still launch Chromium', async () => {
 	const dir = tempDir( 'intake-worker-' );
 	const worker = path.join( dir, 'launch.mjs' );

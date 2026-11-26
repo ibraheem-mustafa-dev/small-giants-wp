@@ -731,7 +731,7 @@ These blocks follow the Block Customisation Standard (below) plus:
 
 ### DB registration
 
-`/sgs-update` registers `blocks` + `block_supports` + `block_attributes` for the header/footer/nav block.json files automatically; `block_composition.wraps_block='sgs/container'` + `container_kind` via `sync-container-wrapping-blocks.py`; `composition_role` via `seed-composition-roles.py`. Re-verify the rows via `/sgs-db`.
+`/sgs-update` registers `blocks` + `block_supports` + `block_attributes` for the header/footer/nav block.json files automatically; `block_composition.wraps_block='sgs/container'` + `container_kind` via `sync-container-wrapping-blocks.py`; `composition_role` via `scripts/data/block-composition.json`, which `dbschema/seed_reference_data.py` seeds (a block's row is added there). Re-verify the rows via `/sgs-db`.
 
 ---
 

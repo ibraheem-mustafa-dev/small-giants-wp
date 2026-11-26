@@ -12,6 +12,9 @@ the source of truth; the DB tables are the runtime query target, FP-1):
   html_tag_to_core_block <- atomic-tag-map.json      (bare HTML tag -> SGS block slug; the file
                             is the single source of the key set, so keys it lacks are deleted)
   property_equivalents   <- property-equivalents.json (rows the file drops are deleted)
+  block_composition      <- block-composition.json   (block_slug, wraps_block, composition_role, container_kind;
+                            accepts_allowed_blocks is left to Stage 1's allowedBlocks scrape; rows the file
+                            drops are deleted)
   states                 <- states.json              (the state vocabulary, in file order; rows the file
                             drops are deleted)
   motion_presets        <- motion-presets.json      (validated against the motion schema first; a bad
@@ -60,6 +63,9 @@ _STATES_FILE = _DATA_DIR / "states.json"
 _SETTING_RECORDS_DIR = _DATA_DIR / "setting-records"
 _STATES_COLUMNS = ("state", "family", "kind", "token", "reach", "call", "note")
 
+
+_BLOCK_COMPOSITION_FILE = _DATA_DIR / "block-composition.json"
+_BLOCK_COMPOSITION_COLUMNS = ("block_slug", "wraps_block", "composition_role", "container_kind")
 
 # table -> (data file, ordered columns)
 _SEEDED_TABLES: dict[str, tuple[str, tuple[str, ...]]] = {
@@ -291,6 +297,90 @@ def _seed_property_suffixes_kind_override(conn: sqlite3.Connection) -> None:
             (kind, suffix),
         )
     conn.commit()
+
+
+# --- block_composition ---
+
+def _load_block_composition_seed() -> list[tuple]:
+    """The ``(block_slug, wraps_block, composition_role, container_kind)`` rows from block-composition.json.
+
+    ``[]`` (leaving the table alone) when the file is missing, unreadable, its ``__columns`` header disagrees with the
+    column order read here, or ANY row is malformed (not a four-item list, a blank block_slug or composition_role, or a
+    wraps_block / container_kind that is neither text nor null). A bad row is never skipped on its own: the seeder deletes every
+    row the file does not list, so skipping one would delete that block's row from the database.
+    """
+    try:
+        raw = json.loads(_BLOCK_COMPOSITION_FILE.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return []
+    if tuple(raw.get("__columns") or ()) != _BLOCK_COMPOSITION_COLUMNS:
+        _warn(
+            "block-composition.json __columns does not match the expected column order for `block_composition` - "
+            "refusing to seed positionally. Re-run dbschema/capture_seed_data.py --write."
+        )
+        return []
+    rows = raw.get("rows") or []
+    for index, row in enumerate(rows):
+        if not (
+            isinstance(row, list)
+            and len(row) == len(_BLOCK_COMPOSITION_COLUMNS)
+            and all(isinstance(row[i], str) and row[i].strip() for i in (0, 2))
+            and all(row[i] is None or isinstance(row[i], str) for i in (1, 3))
+        ):
+            _warn(
+                f"block-composition.json row {index} ({row!r}) is malformed - seeding nothing, so no `block_composition` row "
+                f"is added, changed or deleted. Fix the row (four items: block_slug, wraps_block, composition_role, container_kind)."
+            )
+            return []
+    return [tuple(r) for r in rows]
+
+
+def _seed_block_composition(conn: sqlite3.Connection) -> None:
+    """Upsert every block-composition.json row, then delete the rows the file no longer lists.
+
+    The upsert writes only the four seeded columns, so ``accepts_allowed_blocks`` (derived from edit.js by Stage 1's
+    allowedBlocks scrape, which runs after this on every run) and ``created_at`` survive. A row the file drops is deleted,
+    announced with its count, as for ``roles``.
+
+    Foreign keys are switched off for the write: a core block's row names a block whose ``blocks`` row exists only after a
+    stage 2 scrape, so a stage-1-only rebuild (CI's) seeds those rows first and the scrape adds the block later. The
+    pragma is a no-op inside a transaction, hence the commit before it. The connection's own setting is read first and put
+    back afterwards, whatever happens.
+    """
+    seed = _load_block_composition_seed()
+    if not seed:
+        return
+    conn.commit()
+    foreign_keys = conn.execute("PRAGMA foreign_keys").fetchone()[0]
+    conn.execute("PRAGMA foreign_keys = OFF")
+    try:
+        conn.executemany(
+            "INSERT INTO block_composition (block_slug, wraps_block, composition_role, container_kind) VALUES (?, ?, ?, ?) "
+            "ON CONFLICT(block_slug) DO UPDATE SET wraps_block = excluded.wraps_block, "
+            "composition_role = excluded.composition_role, container_kind = excluded.container_kind",
+            seed,
+        )
+        placeholders = ",".join("?" for _ in seed)
+        slugs = [r[0] for r in seed]
+        orphans = conn.execute(
+            f"SELECT COUNT(*) FROM block_composition WHERE block_slug NOT IN ({placeholders})",  # noqa: S608 - placeholders only
+            slugs,
+        ).fetchone()[0]
+        if orphans:
+            _warn(
+                f"block-composition.json no longer lists {orphans} block_composition row(s) - deleting them. "
+                f"If that was not intended, restore the rows in scripts/data/block-composition.json."
+            )
+            conn.execute(
+                f"DELETE FROM block_composition WHERE block_slug NOT IN ({placeholders})",  # noqa: S608 - placeholders only
+                slugs,
+            )
+        conn.commit()
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.execute(f"PRAGMA foreign_keys = {1 if foreign_keys else 0}")
 
 
 # --- html_tag_to_core_block ---
@@ -588,6 +678,7 @@ def seed_all(db_path: Path | str | None = None, records_dir: Path | str | None =
             ("slots", lambda c: _seed_table_ordered(c, "slots")),
             ("property_suffixes.kind_override", _seed_property_suffixes_kind_override),
             ("html_tag_to_core_block", _seed_html_tag_to_core_block),
+            ("block_composition", _seed_block_composition),
             ("property_equivalents", _seed_property_equivalents),
             ("states", _seed_states),
             ("motion_presets", seed_motion_presets),

@@ -2,7 +2,7 @@
 """seed-motion-fx-registry.py — idempotent editorial seeder for the Spec 38 motion system.
 
 Spec ref: .claude/specs/38-SGS-MOTION-SYSTEM.md §6 (DB seeding plan) — item A6 of the
-Motion Wave A build. Modelled directly on seed-composition-roles.py: [ok]/[skip]/[set]
+Motion Wave A build. Modelled on the [ok]/[skip]/[set]
 reporting per row, a docstring changelog explaining WHY each row exists, safe to re-run
 (idempotent), run after any DB rebuild that could have dropped/recreated its tables.
 
@@ -67,7 +67,7 @@ from pathlib import Path
 
 sys.stdout.reconfigure(encoding="utf-8")
 
-# Canonical SGS DB (~/.claude/skills/sgs-wp-engine, same derivation as seed-composition-roles.py). $SGS_FRAMEWORK_DB points a run at a copy.
+# Canonical SGS DB (~/.claude/skills/sgs-wp-engine, same derivation as dbschema/seed_reference_data.py). $SGS_FRAMEWORK_DB points a run at a copy.
 sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
 from framework_db import framework_db_path  # noqa: E402
 DB_PATH = framework_db_path()
