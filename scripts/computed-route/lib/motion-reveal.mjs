@@ -75,6 +75,8 @@ export function normaliseReveals( records ) {
 			iterations: 1,
 			direction: 'normal',
 			mergedFrom: members.map( ( x ) => x.r.id ),
+			// Every function a member's trigger runs through: a set-up write in one of them hides this reveal's elements.
+			callers: [ ...new Set( members.flatMap( ( x ) => [ ...callersOf( x.r ), x.r.source?.function ].filter( Boolean ) ) ) ],
 			reveal: rise ? { axis: rise.axis, px: rise.px } : { axis: null, px: 0 },
 		} );
 		members.filter( ( x ) => x.r !== first ).forEach( ( x ) => drop.add( x.r ) );
@@ -82,14 +84,21 @@ export function normaliseReveals( records ) {
 	return list.filter( ( r ) => ! drop.has( r ) ).map( ( r ) => merged.get( r ) ?? r );
 }
 
+// The `[data-*]` hook a selector finds its elements by, or null.
+const hookOf = ( selector ) => /\[(data-[\w-]+)/.exec( String( selector ?? '' ) )?.[ 1 ] ?? null;
+// The functions a record's trigger runs through on the way to its writer, from intake's trigger detail (`componentDidMount via
+// reveals via show`, lib/intake-inventory-trigger.mjs writes each step as ` via <name>`).
+const callersOf = ( r ) => [ ...String( r.trigger?.detail ?? '' ).matchAll( / via ([A-Za-z_$][\w$.]*)/g ) ].map( ( m ) => m[ 1 ] );
+
 // The template ids a record names (its own and the nearest ones), as strings.
 const idsOf = ( r ) => [ r.element?.template_tpl_id, r.element?.nearest_tpl_id ].flat().filter( ( v ) => null !== v && undefined !== v ).map( String );
 
 // The id of the reveal a write that only hides the element belongs to, or null: a style write of opacity 0 and/or the
 // reveal's rise distance on a template element (`el.style.opacity = '0'`), made when the page sets up (a mount or load
 // trigger, never a press or a state change: a menu's close that fades it out is its own behaviour), in a draft that has a
-// reveal of that pose on the same element (when the reveal names its elements; a reveal whose code reaches them at run
-// time names none, and then the pose and the set-up trigger decide).
+// reveal of that pose on the same element. A reveal whose code reaches its elements at run time names none; then the write
+// must find its element by the reveal's own `[data-*]` hook, or be made in one of the functions the reveal's triggers run
+// through (`callers`), so a back-to-top button or a toast faded in on mount is not taken for it.
 const SETUP = new Set( [ 'mount', 'load' ] );
 export function hiddenStartOf( r, records ) {
 	const list = props( r );
@@ -97,7 +106,8 @@ export function hiddenStartOf( r, records ) {
 		return null;
 	}
 	const own = new Set( idsOf( r ) );
-	const reveals = ( records || [] ).filter( ( x ) => x.reveal && x.element?.dc === r.element.dc && ( ! idsOf( x ).length || idsOf( x ).some( ( id ) => own.has( id ) ) ) );
+	const hook = hookOf( r.element?.selector );
+	const reveals = ( records || [] ).filter( ( x ) => x.reveal && x.element?.dc === r.element.dc && ( idsOf( x ).length ? idsOf( x ).some( ( id ) => own.has( id ) ) : ( !! hook && hook === hookOf( x.element?.selector ) ) || ( x.callers || [] ).includes( r.source?.function ) ) );
 	const poseOf = ( p ) => {
 		const to = String( p.to ?? '' ).replace( /\s+/g, '' );
 		if ( 'opacity' === nameOf( p ) && /^0(?:\.0+)?$/.test( to ) ) {

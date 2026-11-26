@@ -42,7 +42,7 @@ import { layerTargets } from './lib/apply-layer-targets.mjs';
 import { hostedFacts } from './lib/apply-group-read.mjs';
 import { partsOf, partStyles } from './lib/apply-part-hover.mjs';
 import { factsFile } from './lib/fact-record.mjs';
-import { templateOf } from './lib/fill-behaviour.mjs';
+import { factTemplate } from './lib/intake-review.mjs';
 import { DECISIONS_FILE } from './lib/skeleton-facts.mjs';
 import { loadClientData } from './lib/apply-chrome-data.mjs';
 import { positionTargets } from './lib/apply-position.mjs';
@@ -359,9 +359,10 @@ async function main() {
 	// (printed), or the run stops here, before any read or write (lib/paint-gate.mjs).
 	assertPaints( { blocks: surfaces.flatMap( ( s ) => Object.values( blocks[ s.postId ]?.blocks ?? {} ).map( ( b ) => b?.block ) ).filter( Boolean ), calFor, client, what: `apply ${ client }`, allow: allowMissingPaintArg( process.argv ) } );
 	const clientData = { ...loadClientData( REPO, client ), draftSource: loadDraftSource( REPO, client ) };
-	// The fact record's template: the settings behaviours read their element from it (lib/motion-behaviour-settings.mjs);
-	// without facts.json the motion family names what it cannot recognise (lib/apply-motion-behaviours.mjs::NO_TEMPLATE).
-	const template = fs.existsSync( factsFile( REPO, client ) ) ? templateOf( JSON.parse( fs.readFileSync( factsFile( REPO, client ), 'utf8' ) ) ) : null;
+	// The fact record's template: the settings behaviours read their element from it (lib/motion-behaviour-settings.mjs). facts.json
+	// is gitignored, so without it the committed cut build/intake/effect-template.json is read (lib/intake-review.mjs::factTemplate);
+	// with neither the motion family names what it cannot recognise (lib/apply-motion-behaviours.mjs::NO_TEMPLATE).
+	const template = factTemplate( factsFile( REPO, client ) );
 	const skeleton = loadSkeleton( REPO, client );
 	const tools = motionTools( db, rawSnapshot );
 	for ( const surface of surfaces ) {

@@ -121,7 +121,7 @@ test( 'MUST FAIL (C5 fill 8): two identical entrances the code plays on differen
 const TWEEN = { duration_ms: 460, easing: 'easeOutCubic', stagger: { ms: 70, cap_ms: 490, base_ms: 0, basis: 'item index (i), capped at 7' } };
 const jrec = ( id, trigger, property, formula, code ) => ( {
 	id, name: id, mechanism: 'js-style-write', status: 'active', element: { dc: 'Site', template_tpl_id: null, selector: 'el' }, source: { file: 'App.dc.html', function: 'show', code },
-	trigger: { type: trigger, detail: `via show (${ trigger })` }, properties: [ { property, from: null, to: null, formula } ], delay_ms: 0, iterations: 1, ...TWEEN,
+	trigger: { type: trigger, detail: `${ trigger } via reveals via show` }, properties: [ { property, from: null, to: null, formula } ], delay_ms: 0, iterations: 1, ...TWEEN,
 } );
 const REVEALS = [ 'scroll-into-view', 'mount', 'press', 'state' ].flatMap( ( t, i ) => [
 	jrec( `J-0${ i + 1 }`, t, 'opacity', 'String(e)', 'el.style.opacity = String(e)' ),
@@ -167,4 +167,14 @@ test( 'MUST FAIL (C5 fill 6): an endless animation of an element the code builds
 	assert.equal( flat[ 0 ].attributes.sgsMotion, undefined, 'the section block does not spin' );
 	assert.ok( out.unmapped.some( ( u ) => 'K-1' === u.value ), JSON.stringify( out.unmapped ) );
 	assert.deepEqual( [ ...recordsByElement( [ { ...loop, element: { dc: 'Site', template_tpl_id: '7', nearest_tpl_id: '42' } } ] ).keys() ], [ 'Site/7' ], 'an own element is the key' );
+} );
+
+test( 'MUST FAIL (C5 fill 6): a marquee track the code builds (a ticker strip the trust bar renders) is keyed under the element that holds it', () => {
+	// Shaped as a real client's code-built ticker (K-01: animation mmMarquee 24s linear infinite, translateX(0) to translateX(-50%)).
+	const ticker = rec( 'K-01', { mechanism: 'css-animation', iterations: 'infinite', easing: 'linear', duration_ms: 24000, element: { dc: 'Site', template_tpl_id: null, nearest_tpl_id: '42' }, properties: [ { property: 'animation-name', from: null, to: 'mmMarquee' }, { property: 'transform', from: 'translateX(0px)', to: 'translateX(-50%)' } ] } );
+	assert.deepEqual( [ ...recordsByElement( [ ticker ] ).keys() ], [ 'Site/42' ] );
+	assert.equal( recordsByElement( [ { ...ticker, easing: 'ease-in-out' } ] ).size, 0, 'an eased loop is not a marquee track' );
+	assert.equal( recordsByElement( [ { ...ticker, properties: [ { property: 'transform', from: 'translateX(0px)', to: 'translateY(-50%)' } ] } ] ).size, 0, 'a move across axes is not a track' );
+	assert.equal( recordsByElement( [ { ...ticker, iterations: 1 } ] ).size, 0, 'a finite slide is not a track' );
+	assert.equal( recordsByElement( [ { ...ticker, properties: [ { property: 'transform', from: 'translateX(-10px)', to: 'translateX(-50%)' } ] } ] ).size, 0, 'a slide that does not start at rest is not a track' );
 } );

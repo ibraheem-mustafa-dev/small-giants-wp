@@ -82,14 +82,27 @@ export function elementKey( finder, rootComponent = null ) {
 
 // Inventory records by element key (`<dc>/<tpl id>`); a record naming several template elements (a ref bound in each)
 // is keyed under each, and a record with no template element is not keyed.
+// An endless linear loop that slides its element along one axis from rest (`translateX(0)` to `translateX(-50%)`): the
+// track a marquee moves, the strip a code-built ticker repeats.
+const TRAVEL = /^translate([XY])\(\s*(-?\d*\.?\d+)(?:px|%)?\s*\)$/;
+export function marqueeTrack( r ) {
+	if ( ! /^(?:css-animation|waapi)$/.test( r.mechanism ) || ! [ 'infinite', Infinity ].includes( r.iterations ) || 'linear' !== String( r.easing ?? '' ).trim() ) {
+		return false;
+	}
+	const moves = ( r.properties || [] ).filter( ( p ) => /^(?:transform|translate)$/.test( String( p.property ) ) );
+	return 1 === moves.length && ( ( from, to ) => !! from && !! to && from[ 1 ] === to[ 1 ] && 0 === Number( from[ 2 ] ) && 0 !== Number( to[ 2 ] ) )( TRAVEL.exec( String( moves[ 0 ].from ?? '' ).trim() ), TRAVEL.exec( String( moves[ 0 ].to ?? '' ).trim() ) );
+}
+
 export function recordsByElement( records ) {
 	const out = new Map();
 	for ( const r of records || [] ) {
 		const tpl = r.element?.template_tpl_id;
-		// A record keyed only by its own template element: an animation of an element the code builds (a spinner, a strip)
-		// is never moved onto the template element that holds it, which would animate that whole block; the accounting names
+		// An animation of an element the code builds is keyed under the template element that holds it only when it is a
+		// marquee track (marqueeTrack): the block there renders that track itself (a trust bar's ticker) and its marquee moves
+		// it. Any other loop (a spinner) would animate the whole holding block, so it stays unkeyed and the accounting names
 		// it as a row at its nearest target (lib/fill-motion-account.mjs::makeHomeOf).
-		for ( const id of null === tpl || undefined === tpl ? [] : [ tpl ].flat() ) {
+		const near = ( null === tpl || undefined === tpl ) && marqueeTrack( r ) ? r.element?.nearest_tpl_id : null;
+		for ( const id of null !== near && undefined !== near ? [ near ].flat() : null === tpl || undefined === tpl ? [] : [ tpl ].flat() ) {
 			const key = templateKey( { dc: r.element.dc, tpl: id } );
 			if ( ! out.has( key ) ) {
 				out.set( key, [] );
@@ -285,7 +298,7 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 	const runtime = unplaced.filter( ( r ) => 'entrance' === classify( r, cls ).kind );
 	const runtimeLoops = unplaced.filter( ( r ) => 'effect' === classify( r, cls ).kind );
 	const used = [];
-	const ctx = { types: tokenTypes( schema ), tokens: clientTokens( rawSnapshot ), palette: clientPalette( rawSnapshot ), css: draftCss, records };
+	const ctx = { types: tokenTypes( schema ), tokens: clientTokens( rawSnapshot ), palette: clientPalette( rawSnapshot ), css: draftCss, records, template };
 	// The draft's computed position per template element and width, so a header pinned only at some widths is sticky only there.
 	const idx = behaviourIndex( { records, template, css: draftCss, positions: reads ? positionsByTemplate( { reads, nodes, rootComponent } ) : undefined } );
 	const targetKeys = new Set( nodes.flatMap( ( n ) => n.targets.map( ( t ) => elementKey( t.finder, rootComponent ) ) ).filter( Boolean ) );

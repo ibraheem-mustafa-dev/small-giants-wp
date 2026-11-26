@@ -181,7 +181,7 @@ export function elementMotion( records, { mdb, ctx, sampled, runtime = [], offer
 		if ( s ) {
 			named.set( r.id, s );
 		}
-		return { r, c: s ? { kind: 'entrance' } : classify( r, { css: ctx.css, records: ctx.records } ) };
+		return { r, c: s ? { kind: 'entrance' } : classify( r, { css: ctx.css, records: ctx.records, template: ctx.template } ) };
 	} );
 	const unmapped = kinds.filter( ( x ) => 'skip' === x.c.kind ).map( ( x ) => ( { record: x.r.id, reason: x.c.reason } ) );
 	const pick = pickEntrance( kinds.filter( ( x ) => 'entrance' === x.c.kind ).map( ( x ) => x.r ), sampled?.[ 1440 ] || null, runtime, kinds.filter( ( x ) => 'skip' === x.c.kind ).map( ( x ) => x.r ) );

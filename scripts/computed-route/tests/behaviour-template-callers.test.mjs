@@ -16,6 +16,10 @@ import { descendantRows } from '../lib/apply-owned.mjs';
 import { draftEffectNames, foreignEffects } from '../lib/apply-stray.mjs';
 import { recordIndex } from '../lib/apply-records.mjs';
 import { reviewRows, renderReview, missingFacts, NO_FACTS_NOTICE } from '../lib/intake-review.mjs';
+import { motionDb } from '../lib/motion-db.mjs';
+import { loadMotionSchema } from '../lib/motion-schema.mjs';
+import { motionWrites } from '../lib/fill-motion.mjs';
+import { motionFixtureDb } from './fixtures/motion-fixture-db.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const FIX = JSON.parse( fs.readFileSync( path.join( HERE, 'fixtures', 'behaviour-shape', 'draft-records.json' ), 'utf8' ) );
@@ -76,4 +80,18 @@ test( 'negative control: a review read without the template prints a warning nam
 	assert.ok( renderReview( { ...intake, client: 'x', takenOn: 'd' } ).includes( NO_FACTS_NOTICE ) );
 	assert.ok( ! renderReview( { ...intake, client: 'x', takenOn: 'd' }, { template: TEMPLATE } ).includes( NO_FACTS_NOTICE ) );
 	assert.ok( ! missingFacts( { inventory: { animations: { records: [] } } }, null ) );
+} );
+
+test( 'MUST FAIL: Fill writes the pin’s progress bar (J-06) from the template and raises no false unmapped row beside it', () => {
+	const mdb = motionDb( openDb( motionFixtureDb( { 'sgs/container': [] } ) ) );
+	const nodes = [ { index: 0, name: 'sgs/container', targets: [ { id: '0:', slot: '', finder: { tpl: `${ DC }/${ tplOf( 'J-06' ) }#0` } } ] } ];
+	const run = ( template ) => {
+		const flat = [ { name: 'sgs/container', attributes: {}, ref: 'r0' } ];
+		const out = motionWrites( { nodes, flat, refOf: ( x ) => x.ref, records: RECORDS, mdb, schema: loadMotionSchema(), rawSnapshot: { settings: { custom: {} } }, template, hasAttr: () => true, rootComponent: DC } );
+		return { out, attrs: flat[ 0 ].attributes };
+	};
+	const { out, attrs } = run( TEMPLATE );
+	assert.equal( attrs.sgsMotion?.elements?.root?.effects?.[ 0 ]?.effect, 'scroll-progress' );
+	assert.deepEqual( out.unmapped.filter( ( u ) => 'J-06' === u.value ), [], JSON.stringify( out.unmapped.filter( ( u ) => 'J-06' === u.value ) ) );
+	assert.ok( run( null ).out.unmapped.some( ( u ) => 'J-06' === u.value ), 'without the template the record is a row, never silent' );
 } );

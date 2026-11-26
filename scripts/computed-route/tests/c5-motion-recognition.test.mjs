@@ -49,8 +49,8 @@ test( 'MUST FAIL (C5 recognition 10): the pinned horizontal timeline writes its 
 
 // ---- a script reveal is one scroll entrance (item 3) ----
 const TWEEN = { duration_ms: 460, easing: 'easeOutCubic', stagger: { ms: 70, cap_ms: 490, base_ms: 0, basis: 'item index (i), capped at 7' } };
-const opacity = ( id, trigger, over = {} ) => J( id, { source: { file: 'App.dc.html', function: 'show', code: 'el.style.opacity = String(e)' }, trigger: { type: trigger, detail: `via show (${ trigger })` }, properties: [ { property: 'opacity', from: null, to: null, formula: 'String(e)' } ], ...TWEEN, ...over } );
-const rise = ( id, trigger, over = {} ) => J( id, { source: { file: 'App.dc.html', function: 'show', code: "el.style.transform = 'translateY(' + (26 * (1 - e)).toFixed(2) + 'px)'" }, trigger: { type: trigger, detail: `via show (${ trigger })` }, properties: [ { property: 'transform', from: null, to: null, formula: "'translateY(' + (26 * (1 - e)).toFixed(2) + 'px)'" } ], ...TWEEN, ...over } );
+const opacity = ( id, trigger, over = {} ) => J( id, { source: { file: 'App.dc.html', function: 'show', code: 'el.style.opacity = String(e)' }, trigger: { type: trigger, detail: `${ trigger } via reveals via show` }, properties: [ { property: 'opacity', from: null, to: null, formula: 'String(e)' } ], ...TWEEN, ...over } );
+const rise = ( id, trigger, over = {} ) => J( id, { source: { file: 'App.dc.html', function: 'show', code: "el.style.transform = 'translateY(' + (26 * (1 - e)).toFixed(2) + 'px)'" }, trigger: { type: trigger, detail: `${ trigger } via reveals via show` }, properties: [ { property: 'transform', from: null, to: null, formula: "'translateY(' + (26 * (1 - e)).toFixed(2) + 'px)'" } ], ...TWEEN, ...over } );
 const FOUR = [ 'scroll-into-view', 'mount', 'press', 'state' ];
 const REVEAL_RECORDS = [ ...FOUR.map( ( t, i ) => opacity( `J-0${ i + 1 }`, t ) ), ...FOUR.map( ( t, i ) => rise( `J-0${ i + 5 }`, t ) ) ];
 
@@ -131,4 +131,15 @@ test( 'negative control (C5 recognition 3): a fade-out on a press, or a hide on 
 	assert.equal( hiddenStartOf( write( '40', 'mount' ), [ reveal ] ), null, 'an element the reveal does not target' );
 	assert.equal( hiddenStartOf( write( '5', 'mount' ), [ reveal ] ), reveal.id, 'the element the reveal targets, hidden at set-up' );
 	assert.notEqual( recogniseBehaviour( write( '40', 'press' ), { records: [ reveal ] } )?.kind, 'covered' );
+} );
+
+test( 'negative control (C5 recognition 3): a reveal that names no elements holds only a set-up hide made in its own callers or found by its hook', () => {
+	const reveal = normaliseReveals( REVEAL_RECORDS )[ 0 ];
+	assert.equal( reveal.element.template_tpl_id, null, 'the tween reaches its element as a parameter' );
+	const write = ( fn, selector ) => J( 'J-50', { element: { dc: 'App', template_tpl_id: '77', selector }, source: { file: 'App.dc.html', function: fn, code: '' }, trigger: { type: 'mount', detail: 'componentDidMount' }, properties: [ { property: 'opacity', from: null, to: '0' } ] } );
+	assert.equal( hiddenStartOf( write( 'initTop', 'this.topBtn' ), [ reveal ] ), null, 'a back-to-top button hidden on mount is not part of the reveal' );
+	assert.equal( hiddenStartOf( write( 'reveals', 'el' ), [ reveal ] ), reveal.id, 'a hide made in a function the reveal runs through' );
+	const hooked = { ...reveal, callers: [], element: { ...reveal.element, selector: '[data-reveal]' } };
+	assert.equal( hiddenStartOf( write( 'initTop', '[data-reveal]:not([data-rv])' ), [ hooked ] ), hooked.id, 'a hide that finds its element by the hook of the reveal' );
+	assert.equal( hiddenStartOf( write( 'initTop', '[data-toast]' ), [ hooked ] ), null, 'another hook is another element' );
 } );

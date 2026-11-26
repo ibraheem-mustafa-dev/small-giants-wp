@@ -58,5 +58,17 @@
 		"find": "export const missingFacts = ( intake, template ) => ( intake?.inventory?.animations?.records || [] ).length > 0 && ! template?.elements;",
 		"replace": "export const missingFacts = ( intake, template ) => ! template?.elements;",
 		"why": "a review with no script effects warns of a missing fact record"
+	},
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "css: draftCss, records, template };",
+		"replace": "css: draftCss, records };",
+		"why": "the element pass classifies with no template"
+	},
+	{
+		"file": "lib/fill-motion-element.mjs",
+		"find": "classify( r, { css: ctx.css, records: ctx.records, template: ctx.template } )",
+		"replace": "classify( r, { css: ctx.css, records: ctx.records } )",
+		"why": "a template-only behaviour is a skipped row beside its write"
 	}
 ]

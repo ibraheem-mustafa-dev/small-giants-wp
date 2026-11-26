@@ -67,8 +67,8 @@
 	},
 	{
 		"file": "lib/fill-motion-element.mjs",
-		"find": "classify( r, { css: ctx.css, records: ctx.records } )",
-		"replace": "classify( r, { css: ctx.css } )",
+		"find": "classify( r, { css: ctx.css, records: ctx.records, template: ctx.template } ) };",
+		"replace": "classify( r, { css: ctx.css, template: ctx.template } ) };",
 		"why": "the hiding writes are not seen beside their reveal"
 	},
 	{
@@ -121,8 +121,8 @@
 	},
 	{
 		"file": "lib/fill-motion.mjs",
-		"find": "palette: clientPalette( rawSnapshot ), css: draftCss, records };",
-		"replace": "palette: clientPalette( rawSnapshot ), css: draftCss };",
+		"find": "palette: clientPalette( rawSnapshot ), css: draftCss, records, template };",
+		"replace": "palette: clientPalette( rawSnapshot ), css: draftCss, template };",
 		"why": "the writer context has no records"
 	},
 	{
@@ -133,8 +133,26 @@
 	},
 	{
 		"file": "lib/fill-motion.mjs",
-		"find": "for ( const id of null === tpl || undefined === tpl ? [] : [ tpl ].flat() ) {",
-		"replace": "for ( const id of null === tpl || undefined === tpl ? [ r.element?.nearest_tpl_id ].flat().filter( Boolean ) : [ tpl ].flat() ) {",
-		"why": "a built element's loop animates the block around it"
+		"find": "const near = ( null === tpl || undefined === tpl ) && marqueeTrack( r ) ? r.element?.nearest_tpl_id : null;",
+		"replace": "const near = null;",
+		"why": "a code-built marquee track is not keyed under the block that renders it"
+	},
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "const near = ( null === tpl || undefined === tpl ) && marqueeTrack( r ) ? r.element?.nearest_tpl_id : null;",
+		"replace": "const near = ( null === tpl || undefined === tpl ) ? r.element?.nearest_tpl_id : null;",
+		"why": "a code-built spinner animates the block around it"
+	},
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "|| 'linear' !== String( r.easing ?? '' ).trim() ) {",
+		"replace": ") {",
+		"why": "an eased loop counts as a marquee track"
+	},
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "from[ 1 ] === to[ 1 ] && 0 === Number( from[ 2 ] ) && 0 !== Number( to[ 2 ] )",
+		"replace": "0 !== Number( to[ 2 ] )",
+		"why": "a slide across axes or from off rest counts as a track"
 	}
 ]

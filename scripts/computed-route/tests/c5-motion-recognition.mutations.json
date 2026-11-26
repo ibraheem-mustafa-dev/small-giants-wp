@@ -187,8 +187,26 @@
 	},
 	{
 		"file": "lib/motion-reveal.mjs",
-		"find": "&& ( ! idsOf( x ).length || idsOf( x ).some( ( id ) => own.has( id ) ) ) );",
-		"replace": ");",
+		"find": "( idsOf( x ).length ? idsOf( x ).some( ( id ) => own.has( id ) ) : ",
+		"replace": "( idsOf( x ).length ? true : ",
 		"why": "a hide on an element no reveal targets is held by one"
+	},
+	{
+		"file": "lib/motion-reveal.mjs",
+		"find": "( !! hook && hook === hookOf( x.element?.selector ) ) || ( x.callers || [] ).includes( r.source?.function )",
+		"replace": "true",
+		"why": "a reveal that names no elements holds any set-up hide in its component"
+	},
+	{
+		"file": "lib/motion-reveal.mjs",
+		"find": "( !! hook && hook === hookOf( x.element?.selector ) ) || ",
+		"replace": "",
+		"why": "a hide found by the reveal's hook is not held"
+	},
+	{
+		"file": "lib/motion-reveal.mjs",
+		"find": "callers: [ ...new Set( members.flatMap( ( x ) => [ ...callersOf( x.r ), x.r.source?.function ].filter( Boolean ) ) ) ],",
+		"replace": "callers: [],",
+		"why": "the reveal forgets the functions its triggers run through"
 	}
 ]

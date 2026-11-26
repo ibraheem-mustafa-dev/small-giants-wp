@@ -85,7 +85,7 @@ export function writePartMotion( { n, list, doc, pending, out, where, holder, md
 	list.forEach( ( r ) => String( r.element.selector ).split( /\s*,\s*/ ).forEach( ( piece ) => bySelector.set( piece, [ ...( bySelector.get( piece ) || [] ), r ] ) ) );
 	for ( const [ selector, group ] of bySelector ) {
 		const gap = ( r, what ) => out.unmapped.push( { ...where, property: 'motion', value: r.id, reason: `framework gap: ${ what } on the part ${ selector } of the content the draft's code puts into this element` } );
-		const loops = group.filter( ( r ) => 'effect' === classify( r, { css: ctx.css, records: ctx.records } ).kind );
+		const loops = group.filter( ( r ) => 'effect' === classify( r, { css: ctx.css, records: ctx.records, template: ctx.template } ).kind );
 		for ( const r of loops ) {
 			const box = loopKeyframesCss( asLoop( r ), loopName( r ) );
 			if ( box.css ) {
