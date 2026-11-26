@@ -317,8 +317,9 @@ function sgs_shadow_bleed_render( string $block_content, array $block ): string 
 		$css            .= $read[ $path ];
 	}
 	preg_match_all( '#<style\b[^>]*>(.*?)</style>#is', $block_content, $styles );
-	// Rules already in the collector for a scope class this markup carries (the motion renderer collects its own).
-	preg_match_all( '/(?<![\w-])sgs-[a-z0-9-]*?-[0-9a-f]{8,10}(?![\w-])/', $block_content, $uids );
+	// Rules already in the collector for a scope class the block's own root carries (the motion renderer collects its
+	// own). Only the root's: an ancestor must not take a nested row's band for its own.
+	preg_match_all( '/(?<![\w-])sgs-[a-z0-9-]*?-[0-9a-f]{8,10}(?![\w-])/', $root, $uids );
 	foreach ( (array) ( $GLOBALS['sgs_collected_css'] ?? array() ) as $chunk ) {
 		foreach ( array_unique( $uids[0] ) as $uid ) {
 			if ( false !== strpos( (string) $chunk, '.' . $uid ) ) {
@@ -332,7 +333,10 @@ function sgs_shadow_bleed_render( string $block_content, array $block ): string 
 		return $block_content;
 	}
 	$decls = sgs_bleed_declarations( $band );
-	return sgs_inject_scoped_rules( $block_content, 'sgs-bleed', static fn( string $scope ): string => '.' . $scope . '{' . implode( ';', $decls ) . '}' );
+	$css   = static fn( string $scope ): string => '.' . $scope . '{' . implode( ';', $decls ) . '}';
+	$scope = sgs_scope_class_for_root( $root, 'sgs-bleed', $css );
+	// The block's own scope class takes the rule as it stands (its markup unchanged); a block without one gets a minted class.
+	return false !== strpos( $root, $scope ) ? sgs_append_scoped_var_style( $block_content, $scope, $decls ) : sgs_inject_scoped_rules( $block_content, 'sgs-bleed', $css );
 }
 add_filter( 'render_block', __NAMESPACE__ . '\sgs_shadow_bleed_render', 90, 2 );
 
