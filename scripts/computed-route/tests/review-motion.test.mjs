@@ -128,7 +128,7 @@ test( 'MUST FAIL: an empty draft CSS list is no CSS given, and the same classifi
 } );
 
 test( 'MUST FAIL: every settings write is checked against the framework DB\'s attributes: an attribute the DB does not hold is refused by name, one it holds is written', () => {
-	const scrolled = rec( 'H-1', { mechanism: 'js-style-write', element: { dc: 'Site', template_tpl_id: '5', selector: 'header', description: 'the site header' }, trigger: { type: 'scroll-position', detail: 'window scroll' }, source: { code: 'if (scrollY > 40) h.style.boxShadow = ...' },
+	const scrolled = rec( 'H-1', { mechanism: 'js-style-write', element: { dc: 'Site', template_tpl_id: '5', selector: 'header', description: 'the site header' }, trigger: { type: 'scroll-position', detail: 'window scroll' }, source: { code: "if (scrollY > 40) h.style.boxShadow = '0 2px 8px rgba(0,0,0,.2)'" },
 		properties: [ { property: 'box-shadow', from: 'none', to: '0 4px 12px rgba(0,0,0,0.15)' } ] } );
 	const row = ( attr ) => ( { block_slug: 'sgs/site-header', attr_name: attr, attr_type: 'string' } );
 	const base = { blocks: [ { slug: 'sgs/site-header', title: 'Header', category: 'sgs', type: 'dynamic' } ] };

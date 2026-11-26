@@ -49,7 +49,7 @@ test( 'negative control: an endless ring is not the dot pulse on an element that
 } );
 
 const TIMELINE = {
-	'J-05': { 'sgs/timeline': [ { attr: 'scrollEffect', value: 'pinned-horizontal' } ] },
+	'J-05': { 'sgs/timeline': [ { attr: 'scrollEffect', value: 'pinned-horizontal' }, { attr: 'mobileLayout', value: 'carousel' } ] },
 	'J-07': { 'sgs/timeline': [ { attr: 'panelProximityFocus', value: true }, { attr: 'panelEdgeOpacity', value: 0.55 }, { attr: 'panelFocusOpacity', value: 1 } ] },
 	'J-08': { 'sgs/timeline': [ { attr: 'panelProximityFocus', value: true }, { attr: 'panelEdgeScale', value: 0.94 }, { attr: 'panelFocusScale', value: 1 } ] },
 	'J-09': { 'sgs/timeline': [ { attr: 'dateActiveColour', value: '#D8CA50', colour: true } ] },
@@ -135,4 +135,42 @@ test( 'negative control: a scrollTo with only a left offset, words that only spe
 	const track = byId( 'J-05' );
 	const twice = { ...track, properties: [ { property: 'transform', from: null, to: null, formula: "'translate3d(' + (-p * -dist) + 'px,0,0)'" } ] };
 	assert.equal( settingsOf( recogniseBehaviour( twice, ctx( RECORDS.map( ( r ) => ( r.id === track.id ? twice : r ) ) ) ) ), null, 'two negative factors move the track right' );
+} );
+
+// The touch strip, the header's threshold, the slider's steps and the progress bar are read from the fact record and the
+// code's syntax tree, never from words.
+test( 'MUST FAIL: the real pinned track (J-05) writes the carousel layout because its section declares a horizontal snap track beside the stage', () => {
+	const blocks = settingsOf( recogniseBehaviour( byId( 'J-05' ), ctx() ) )[ 'sgs/timeline' ];
+	assert.deepEqual( blocks.find( ( s ) => 'mobileLayout' === s.attr ), { attr: 'mobileLayout', value: 'carousel' } );
+} );
+
+test( 'negative control: with no snapping track beside the stage, or one that only clips, no carousel layout is written', () => {
+	const flatten = ( keep ) => ( { elements: Object.fromEntries( Object.entries( TEMPLATE.elements ).map( ( [ k, e ] ) => [ k, { ...e, style: { ...e.style, static: e.style.static.filter( keep ) } } ] ) ) } );
+	const noSnap = flatten( ( [ n ] ) => 'scroll-snap-type' !== n );
+	const clipped = flatten( ( [ n, v ] ) => ! ( 'overflow-x' === n && /auto|scroll/.test( v ) ) );
+	for ( const template of [ noSnap, clipped ] ) {
+		const blocks = settingsOf( recogniseBehaviour( byId( 'J-05' ), ctx( RECORDS, template ) ) )[ 'sgs/timeline' ];
+		assert.equal( blocks.find( ( s ) => 'mobileLayout' === s.attr ), undefined );
+	}
+} );
+
+const header = ( code, over = {} ) => ( { id: 'H-1', mechanism: 'js-style-write', status: 'active', element: { dc: 'Site', template_tpl_id: '1', selector: 'ref bar' }, trigger: { type: 'scroll-position', detail: 'scroll listener on window' }, source: { code }, properties: [ { property: 'box-shadow', from: 'none', to: '0 4px 8px rgba(0,0,0,.2)' } ], ...over } );
+test( 'MUST FAIL: the header\'s scroll threshold is the number a scrollY comparison tests in the code', () => {
+	const offset = ( code ) => settingsOf( recogniseBehaviour( header( code ), {} ) )?.[ 'sgs/site-header' ]?.[ 0 ]?.value ?? null;
+	assert.equal( offset( "bar.style.boxShadow = window.scrollY >= 24 ? '0 4px 8px rgba(0,0,0,.2)' : 'none'" ), 24 );
+	assert.equal( offset( "if (pageYOffset > 3) bar.style.boxShadow = '0 4px 8px rgba(0,0,0,.2)'" ), 3 );
+} );
+
+test( 'negative control: a threshold only spelled in words or a string, or a comparison of another value, is no threshold', () => {
+	assert.equal( recogniseBehaviour( header( "bar.style.boxShadow = 'scrollY > 8'" ), {} ), null );
+	assert.equal( recogniseBehaviour( header( "bar.style.boxShadow = 'x'", { trigger: { type: 'scroll-position', detail: 'window scroll: scrollY > 8' } } ), {} ), null, 'the trigger detail is not read' );
+	assert.equal( recogniseBehaviour( header( "bar.style.boxShadow = innerWidth > 8 ? 'a' : 'none'" ), {} ), null );
+} );
+
+test( 'MUST FAIL: a page progress bar is a scale written from the scroll as a fraction; a scale of anything else is not', () => {
+	const bar = ( formula ) => recogniseBehaviour( { id: 'J-13', mechanism: 'js-style-write', status: 'active', element: { dc: 'Site', template_tpl_id: '38', selector: 'ref prog' }, source: { file: 'Site.dc.html', function: 'onScroll' }, trigger: { type: 'scroll-position', detail: 'scroll listener on window' }, properties: [ { property: 'transform', from: null, to: null, formula } ] }, {} );
+	assert.deepEqual( bar( "'scaleX(' + (max > 0 ? Math.min(1, window.scrollY / max) : 0) + ')'" )?.effects?.[ 0 ]?.values, { source: 'page', output: 'bar-x' }, 'the real page bar: the scroll over the scrollable distance' );
+	assert.deepEqual( bar( "'scaleY(' + scrollY / (document.body.scrollHeight - innerHeight) + ')'" )?.effects?.[ 0 ]?.values, { source: 'page', output: 'bar-y' } );
+	assert.equal( bar( "'scaleX(' + hovered + ')'" ), null, 'a scale not read from the scroll' );
+	assert.equal( bar( "'translateX(' + window.scrollY / max + ')'" )?.effects?.[ 0 ]?.effect === 'scroll-progress', false, 'a move is not a bar' );
 } );
