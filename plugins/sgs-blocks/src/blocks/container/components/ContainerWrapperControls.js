@@ -198,7 +198,7 @@ const KIND_PANELS = {
 		( props ) => (
 			<PanelBody
 				title={ __( 'Container / Wrapper', 'sgs-blocks' ) }
-				initialOpen={ props.initialOpen }
+				initialOpen={ props.containerOpen }
 			>
 				<LayoutPanel { ...props } />
 				<hr style={ { margin: '16px 0' } } />
@@ -227,7 +227,7 @@ const KIND_PANELS = {
 		( props ) => (
 			<PanelBody
 				title={ __( 'Container / Wrapper', 'sgs-blocks' ) }
-				initialOpen={ props.initialOpen }
+				initialOpen={ props.containerOpen }
 			>
 				<WidthPanel { ...props } />
 			</PanelBody>
@@ -308,7 +308,9 @@ export default function ContainerWrapperControls( {
 						showLayout,
 						showContentBand,
 						resolvedLayout,
-						initialOpen,
+						// Named apart from `initialOpen`: the panels below spread these props, and only the
+						// "Container / Wrapper" panel may take the flag.
+						containerOpen: initialOpen,
 					} ) }
 				</Fragment>
 			) ) }

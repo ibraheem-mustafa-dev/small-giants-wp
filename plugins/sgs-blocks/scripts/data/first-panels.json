@@ -1,6 +1,6 @@
 {
 	"_comment": "First panel of each inspector tab per block, read from an editor census by `check-panel-initial-open.js --from-census`. `opened` is the state at the census. `source`: block = a PanelBody in the block's own files; colour = SgsColourPanel; media = a media panel; shared = a PanelBody in shared code; tools = a non-collapsing ToolsPanel; unresolved = a core panel or a title the scan cannot read.",
-	"census": "census2.json",
+	"census": "census3.json",
 	"blocks": {
 		"accordion": {
 			"settings": {
@@ -157,7 +157,7 @@
 			"settings": {
 				"title": "Button action",
 				"kind": "body",
-				"opened": false,
+				"opened": true,
 				"source": "block",
 				"note": "src/blocks/buybox/ButtonActionPanel.js::ButtonActionPanel",
 				"count": 1
@@ -270,7 +270,7 @@
 			"styles": {
 				"title": "Note text",
 				"kind": "body",
-				"opened": false,
+				"opened": true,
 				"source": "block",
 				"note": "src/blocks/commerce-note/edit.js::Edit",
 				"count": 1
@@ -578,12 +578,11 @@
 				"count": 1
 			},
 			"styles": {
-				"title": "Gift panel look",
+				"title": "Colour",
 				"kind": "body",
 				"opened": false,
-				"source": "block",
-				"note": "src/blocks/gift-order/LookPanels.js::LookPanels",
-				"count": 1
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
 			}
 		},
 		"google-rating-badge": {
@@ -725,7 +724,7 @@
 			"settings": {
 				"title": "Box",
 				"kind": "body",
-				"opened": false,
+				"opened": true,
 				"source": "block",
 				"note": "src/blocks/label/edit.js::Edit",
 				"count": 1
@@ -825,7 +824,7 @@
 			"settings": {
 				"title": "Group link",
 				"kind": "body",
-				"opened": false,
+				"opened": true,
 				"source": "block",
 				"note": "src/blocks/mega-group/edit.js::Edit",
 				"count": 1
@@ -944,7 +943,7 @@
 			"settings": {
 				"title": "Drawer",
 				"kind": "body",
-				"opened": true,
+				"opened": false,
 				"source": "unresolved",
 				"note": "title not found as a literal PanelBody title (core panel, dynamic title or SGS wrapper)"
 			},
@@ -1010,7 +1009,7 @@
 			"settings": {
 				"title": "Label",
 				"kind": "body",
-				"opened": false,
+				"opened": true,
 				"source": "block",
 				"note": "src/blocks/option-picker/edit.js::Edit",
 				"count": 2
@@ -1224,7 +1223,7 @@
 			"settings": {
 				"title": "Size & alignment",
 				"kind": "body",
-				"opened": false,
+				"opened": true,
 				"source": "block",
 				"note": "src/blocks/separator/edit.js::Edit",
 				"count": 1
@@ -1512,7 +1511,7 @@
 			"settings": {
 				"title": "Style",
 				"kind": "body",
-				"opened": false,
+				"opened": true,
 				"source": "block",
 				"note": "src/blocks/trust-bar/edit.js::Edit",
 				"count": 1

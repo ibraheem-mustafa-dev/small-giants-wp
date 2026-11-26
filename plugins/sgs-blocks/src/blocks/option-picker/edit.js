@@ -976,7 +976,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				   label is actually shown (showLabel lives in the Settings tab). */ }
 				<PanelBody
 					title={ __( 'Label', 'sgs-blocks' ) }
-					initialOpen
+					initialOpen={ false }
 				>
 					{ showLabel && (
 						<>

@@ -85,6 +85,7 @@ function scanText( text, file ) {
 			symbol: scan.enclosingSymbol( ancestors ),
 			title: 'PanelBody' === name ? titleText( node ) : 'Colour',
 			initialOpen: io.kind,
+			tab: tabOf( ancestors ),
 			block: scan.blockOf( path.join( scan.PLUGIN, file ) ),
 		} );
 	} );
@@ -114,7 +115,21 @@ function loadData() {
 }
 
 /** Titles the data names first for a block, across both tabs. */
-const firstTitles = ( data, block ) => new Set( Object.values( ( data.blocks[ block ] || {} ) ).map( ( f ) => f.title ) );
+/**
+ * Titles the data names first for a block in `tab` ('settings', 'styles'; null when the panel's tab is not known from its
+ * own file, so either tab counts).
+ */
+const firstTitles = ( data, block, tab = null ) =>
+	new Set( Object.entries( data.blocks[ block ] || {} ).filter( ( [ t ] ) => ! tab || t === tab ).map( ( [ , f ] ) => f.title ) );
+
+/** The inspector tab a panel sits in, from its closest `InspectorControls` in the same file; null when there is none. */
+function tabOf( ancestors ) {
+	const ic = scan.closestJsx( ancestors, ( e ) => 'InspectorControls' === scan.jsxName( e ) );
+	if ( ! ic ) {
+		return null;
+	}
+	return 'styles' === scan.prop( ic, 'group' ).value ? 'styles' : 'settings';
+}
 
 /**
  * Static findings for the scanned rows.
@@ -134,7 +149,7 @@ function findingsFor( rows, data, panelModelText ) {
 			} else if ( 'true' === r.initialOpen ) {
 				if ( ! r.block ) {
 					out.push( { file: r.file, line: r.line, rule: 'shared-literal-true', message: `${ where } a shared <PanelBody${ r.title ? ` title="${ r.title }"` : '' }> opens by a literal true: take an initialOpen prop that defaults to false.` } );
-				} else if ( ! r.title || ! firstTitles( data, r.block ).has( r.title ) ) {
+				} else if ( ! r.title || ! firstTitles( data, r.block, r.tab ).has( r.title ) ) {
 					out.push( { file: r.file, line: r.line, rule: 'not-first', message: `${ where } <PanelBody title="${ r.title }"> opens, but first-panels.json does not name it first in a tab of ${ r.block }.` } );
 				}
 			}

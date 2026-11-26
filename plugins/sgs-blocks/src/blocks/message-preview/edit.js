@@ -189,7 +189,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 				<PanelBody
 					title={ __( 'Boxes', 'sgs-blocks' ) }
-					initialOpen
+					initialOpen={ false }
 				>
 					<ResponsiveOverride
 						label={ __( 'Box height', 'sgs-blocks' ) }

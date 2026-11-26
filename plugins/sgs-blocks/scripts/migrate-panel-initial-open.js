@@ -41,14 +41,23 @@ function titleText( el ) {
 }
 
 /** Titles `data` names as `block`'s first panel in a tab (block-owned panels only). */
-function firstTitles( data, block ) {
+function firstTitles( data, block, tab = null ) {
 	const out = new Set();
-	for ( const f of Object.values( ( data.blocks && data.blocks[ block ] ) || {} ) ) {
-		if ( 'block' === f.source ) {
+	for ( const [ t, f ] of Object.entries( ( data.blocks && data.blocks[ block ] ) || {} ) ) {
+		if ( 'block' === f.source && ( ! tab || t === tab ) ) {
 			out.add( f.title );
 		}
 	}
 	return out;
+}
+
+/** The inspector tab a panel sits in, from its closest `InspectorControls` in the same file; null when there is none. */
+function tabOf( ancestors ) {
+	const ic = scan.closestJsx( ancestors, ( e ) => 'InspectorControls' === scan.jsxName( e ) );
+	if ( ! ic ) {
+		return null;
+	}
+	return 'styles' === scan.prop( ic, 'group' ).value ? 'styles' : 'settings';
 }
 
 /**
@@ -61,8 +70,7 @@ function firstTitles( data, block ) {
  */
 function planText( text, block, data ) {
 	const edits = [];
-	const firsts = block ? firstTitles( data, block ) : new Set();
-	scan.walkJsx( scan.parse( text ), ( node ) => {
+	scan.walkJsx( scan.parse( text ), ( node, ancestors ) => {
 		if ( 'PanelBody' !== scan.jsxName( node ) ) {
 			return;
 		}
@@ -71,7 +79,7 @@ function planText( text, block, data ) {
 			return;
 		}
 		const title = titleText( node );
-		const open = Boolean( block && title && firsts.has( title ) );
+		const open = Boolean( block && title && firstTitles( data, block, tabOf( ancestors ) ).has( title ) );
 		if ( open ? 'true' === io.kind : 'false' === io.kind ) {
 			return;
 		}
