@@ -14,11 +14,16 @@ test( 'MUST FAIL: a dcLogic(\'<component>\').setState(...) call is a reach call 
 	assert.deepEqual( reachCalls( 'dcLogic( "SiteHeader" ) . setState({ nav: true })' ), [ { ident: 'dcLogic', args: '{ nav: true }', component: 'SiteHeader' } ] );
 	assert.deepEqual( reachCalls( 'MM.cart.clear(); dcLogic(\'SiteHeader\').setState({ basket: true })' ), [ { ident: 'dcLogic', args: '{ basket: true }', component: 'SiteHeader' } ], 'the second call of a compound way' );
 	assert.equal( describeWay( { via: 'reach', state: 'confirming', calls: reachCalls( 'dcLogic("Account").setState({x:1})' ) } ), 'reach "confirming" dcLogic(\'Account\').setState({x:1})' );
+	assert.deepEqual( reachCalls( 'dcLogic(`Basket`).setState({ open: true })' ), [ { ident: 'dcLogic', args: '{ open: true }', component: 'Basket' } ], 'a name in backticks' );
+	assert.deepEqual( reachCalls( 'dcLogic(\'Basket\')?.setState({ open: true })' ), [ { ident: 'dcLogic', args: '{ open: true }', component: 'Basket' } ], 'an optional call' );
+	assert.deepEqual( reachCalls( 'L?.setState({a:1})' ), [ { ident: 'L', args: '{a:1}' } ] );
 } );
 
 test( 'negative controls: a lookup assigned to a name first is the name\'s call; mismatched quotes, another object\'s dcLogic and a lookup with no setState are no call', () => {
 	assert.deepEqual( reachCalls( 'L = dcLogic(\'X\'); L.setState({a:1})' ), [ { ident: 'L', args: '{a:1}' } ] );
 	assert.deepEqual( reachCalls( 'dcLogic(\'A").setState({x:1})' ), [] );
+	assert.deepEqual( reachCalls( 'dcLogic(`${ name }`).setState({x:1})' ), [], 'a template literal with a hole names no component' );
+	assert.deepEqual( reachCalls( 'dcLogic(`A\').setState({x:1})' ), [], 'a backtick closed by a quote' );
 	assert.deepEqual( reachCalls( 'window.dcLogic(\'X\').setState({a:1})' ), [] );
 	assert.deepEqual( reachCalls( 'dcLogic(\'X\').state.open' ), [] );
 	assert.deepEqual( reachCalls( 'dcLogic(\'X\').setState({open:true' ), [], 'unbalanced arguments' );
