@@ -19,8 +19,8 @@ export const INVENTORY_WIDTHS = [ 1440, 375, 768 ];
 // (the fingerprint Fill's origin map keeps).
 // The computed values recorded per width (`resolved`, read by lib/element-facts.mjs): the inherited text properties, and the
 // sizes, corner radii and padding a rule compares with a number, whatever expression the draft wrote them with (a clamp(),
-// a var(), a calc()) and whatever the element inherits.
-export const RESOLVED = [ 'font-size', 'font-weight', 'letter-spacing', 'text-transform', 'line-height', 'width', 'height', 'border-top-left-radius', 'border-top-right-radius', 'border-bottom-right-radius', 'border-bottom-left-radius', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left', 'text-align' ];
+// a var(), a calc()) and whatever the element inherits; `vertical-align` is how an inline piece (a count pill) sits on its line.
+export const RESOLVED = [ 'font-size', 'font-weight', 'letter-spacing', 'text-transform', 'line-height', 'width', 'height', 'border-top-left-radius', 'border-top-right-radius', 'border-bottom-right-radius', 'border-bottom-left-radius', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left', 'text-align', 'vertical-align' ];
 // The paint a box shows, recorded in `resolved` beside those only where it differs from the value named here (the property's
 // initial value, which paints nothing): a background, a border side's width and style, a shadow, a width cap. An absent paint
 // property in a `resolved` read that holds `text-align` therefore means the box does not paint it

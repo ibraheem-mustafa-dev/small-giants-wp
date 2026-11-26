@@ -97,7 +97,8 @@ test( 'MUST FAIL: no writer in lib/ types a string handover, the kind layout or 
 				[ /\bkind:\s*'layout'/, 'the handover kind layout' ],
 				[ /\blevel:\s*\d/, 'a numeric heading level' ],
 			].find( ( [ re ] ) => re.test( code ) );
-			hit && 'setting-record.mjs' !== file && found.push( `lib/${ file }:${ i + 1 } ${ hit[ 1 ] }` );
+			// The one numeric `level:` outside a skeleton is the gzip level lib/setting-record.mjs writes its record with.
+			hit && ! ( 'setting-record.mjs' === file && /zlib\.gzipSync/.test( code ) ) && found.push( `lib/${ file }:${ i + 1 } ${ hit[ 1 ] }` );
 		} );
 	}
 	assert.deepEqual( found, [] );

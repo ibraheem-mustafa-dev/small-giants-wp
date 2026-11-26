@@ -169,7 +169,7 @@
 			"reason": "the draft's commerce region on a WooCommerce page is WooCommerce's working piece, placed as an ordinary block that draws the region itself (Bean, 2026-10-26: these are SGS pages with the WooCommerce piece in them); the region is found by structure (lib/skeleton-commerce-region.mjs), never by words, and everything around it stays the draft's own blocks",
 			"basketCount": {
 				"wordSpaceEm": 0.25,
-				"reason": "the basket count the draft sets inside a heading's line (a pill after the words) is a row of the heading and the count; the draft's line carried a word space between them, so the row's gap is that space at the heading's font size, in em of that size (a typical word space is a quarter em), and its items are centred when the count is `vertical-align: middle` (2026-11-25, lib/template-piece-woo-layout.mjs::countRowDecided)"
+				"reason": "the basket count the draft sets inside a heading's line (a pill after the words) is a row of the heading and the count; the draft's line carried a word space between them, so the row's gap is that space at the heading's font size at each device's read width, in em of that size (a typical word space is a quarter em), and its items are centred when the count is `vertical-align: middle`; what the draft's elements do not give is handed over by name (2026-11-25, lib/template-piece-woo-layout.mjs::countRowDecided)"
 			},
 			"money": "(£|\\$|€|¥|₹)\\s?\\d|\\d[\\d.,]*\\s?(€|zł|kr)(?![a-z])",
 			"checkoutEntry": {

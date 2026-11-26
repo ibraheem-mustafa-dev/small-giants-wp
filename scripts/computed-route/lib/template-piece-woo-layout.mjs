@@ -194,31 +194,49 @@ export function basketCounts( v, regionKey, L ) {
 	} );
 }
 
-// A px length of an element at the desktop width: the browser's computed value from the inventory's read (`resolved`, so a
-// heading sized by a class or a variable counts as much as one sized inline), else the one its served inline style declares
-// ("font-size: 68px" -> 68), else null.
-const pxOf = ( el, property ) => {
-	const computed = /^(-?[\d.]+)px$/.exec( String( el?.resolved?.[ 1440 ]?.[ property ] ?? '' ).trim() );
+// The widths the row's gap is read at, widest first (the device a value is written for: desktop, tablet, mobile).
+const DEVICES = [ [ 1440, 'desktop' ], [ 768, 'tablet' ], [ 375, 'mobile' ] ];
+
+// A CSS property of an element at one width: the browser's computed value from the inventory's read (`resolved`, so a heading sized
+// by a class or a variable counts as much as one sized inline), else the one its served inline style declares, else null.
+const readAt = ( el, property, width ) => {
+	const computed = String( el?.resolved?.[ width ]?.[ property ] ?? '' ).trim();
 	if ( computed ) {
-		return Number( computed[ 1 ] );
+		return computed;
 	}
-	const hit = String( el?.attrs?.style ?? '' ).match( new RegExp( `(?:^|;)\\s*${ property }\\s*:\\s*(-?[\\d.]+)px\\s*(?:;|$)`, 'i' ) );
+	const hit = String( el?.attrs?.style ?? '' ).match( new RegExp( `(?:^|;)\\s*${ property }\\s*:\\s*([^;]+?)\\s*(?:;|$)`, 'i' ) );
+	return hit ? hit[ 1 ] : null;
+};
+const pxOf = ( el, property, width ) => {
+	const hit = /^(-?[\d.]+)px$/.exec( readAt( el, property, width ) ?? '' );
 	return hit ? Number( hit[ 1 ] ) : null;
 };
 
-// The row's own settings, read from the draft: its gap is one word space at the host heading's font size (computed at the desktop width, else its inline style; the space the
-// draft's line carried between the words and the count; rules.commerceRegion.basketCount.wordSpaceEm is that space in em),
-// and its items sit centred on the line when the draft's count is `vertical-align: middle`. They travel as the row's
-// `decided` (R-47-10: a setting that paints a CSS property is never a skeleton attribute), which Fill writes. The row has
-// no draft element of its own, so no reader would find them.
+// The row's own settings, read from the draft: its gap is one word space at the host heading's font size at each device's read
+// width (the space the draft's line carried between the words and the count; rules.commerceRegion.basketCount.wordSpaceEm is that
+// space in em; a device whose size is the one it inherits is not written again), and its items sit centred on the line when the
+// draft's count is `vertical-align: middle` (the browser's computed value, else the inline style). They travel as the row's
+// `decided` (R-47-10: a setting that paints a CSS property is never a skeleton attribute), which Fill writes. The row has no
+// draft element of its own, so no reader would find them. `missing` names what could not be read, for the row's handover.
 function countRowDecided( { hostEl, chipEl, rule } ) {
-	const size = pxOf( hostEl, 'font-size' );
 	const em = rule?.basketCount?.wordSpaceEm;
-	const middle = /(?:^|;)\s*vertical-align\s*:\s*middle\s*(?:;|$)/i.test( String( chipEl?.attrs?.style ?? '' ) );
-	return {
-		...( size && em ? { gap: { desktop: `${ Math.round( size * em * 100 ) / 100 }px` } } : {} ),
-		...( middle ? { alignItems: { desktop: 'center' } } : {} ),
-	};
+	const gap = {};
+	let last = null;
+	for ( const [ width, device ] of DEVICES ) {
+		const size = em ? pxOf( hostEl, 'font-size', width ) : null;
+		const px = size ? `${ Math.round( size * em * 100 ) / 100 }px` : null;
+		if ( px && px !== last ) {
+			gap[ device ] = px;
+		}
+		last = px ?? last;
+	}
+	const align = readAt( chipEl, 'vertical-align', 1440 );
+	const middle = 'middle' === String( align ?? '' ).toLowerCase();
+	const missing = [
+		...( gap.desktop ? [] : [ `its gap (the heading ${ hostEl?.key }'s font size was not read at the desktop width)` ] ),
+		...( middle ? [] : [ `its items' alignment (the count ${ chipEl?.key } is "vertical-align: ${ align ?? 'unread' }", not middle)` ] ),
+	];
+	return { decided: { ...( gap.desktop ? { gap } : {} ), ...( middle ? { alignItems: { desktop: 'center' } } : {} ) }, missing };
 }
 
 // The row standing for a node whose element holds a basket count: its own words, then the count (or the count first when the
@@ -232,8 +250,10 @@ function countRow( n, { hostEl, chipEl, expr, m, rule } ) {
 	const chip = { name: 'sgs/text', attributes: { text: '<span class="sgs-basket-count">0</span>' }, draftRef: { tpl: chipEl.key }, draftFingerprint: fingerprintOf( chipEl, m.byKey ), innerBlocks: [] };
 	const snippet = String( hostEl.snippet || '' ).replace( /^<[^>]*>/, '' );
 	const first = ! ws( snippet.slice( 0, Math.max( 0, snippet.indexOf( '<' ) ) ) );
-	const decided = countRowDecided( { hostEl, chipEl, rule } );
-	return { name: 'sgs/container', attributes: { tagName: 'div', layout: 'flex' }, ...( Object.keys( decided ).length ? { decided } : {} ), innerBlocks: first ? [ chip, own ] : [ own, chip ] };
+	const { decided, missing } = countRowDecided( { hostEl, chipEl, rule } );
+	// What the draft's elements did not give is handed over by name, never dropped: the row still has no draft element of its own.
+	const line = missing.length ? [ { owner: 'content-page', kind: 'presence', detail: `the basket count ${ chipEl.key } sits in the line of ${ hostEl.key }'s words (a word space ${ first ? 'after' : 'before' } it): set this row's ${ missing.join( ' and ' ) } to match` } ] : [];
+	return { name: 'sgs/container', attributes: { tagName: 'div', layout: 'flex' }, ...( Object.keys( decided ).length ? { decided } : {} ), ...( line.length ? { handover: line } : {} ), innerBlocks: first ? [ chip, own ] : [ own, chip ] };
 }
 
 export function place( ctx, piece ) {

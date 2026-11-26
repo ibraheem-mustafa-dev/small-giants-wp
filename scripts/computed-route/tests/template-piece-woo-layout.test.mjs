@@ -14,6 +14,9 @@ import { basketCounts, otherBranches, place, templateView } from '../lib/templat
 import { logicOf } from '../lib/shop-parts-logic.mjs';
 import { BUILDERS, piecesPass, placedLint } from '../lib/template-pieces-context.mjs';
 import { openDb } from '../lib/db.mjs';
+import { fillTree } from '../lib/fill-resolve.mjs';
+import { skeletonNodes, cleanTree } from '../lib/fill-skeleton.mjs';
+import { addRefs } from '../lib/tree.mjs';
 import { checkPieces, countBlocks, loadPieces, placePieces } from '../lib/template-pieces.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
@@ -316,7 +319,7 @@ test( 'MUST FAIL: a piece counting the basket\'s lines beside the heading become
 	assert.deepEqual( row.attributes, { tagName: 'div', layout: 'flex' } );
 	assert.equal( row.draftRef, undefined );
 	assert.equal( row.handover, undefined );
-	assert.deepEqual( row.decided, { gap: { desktop: '17px' }, alignItems: { desktop: 'center' } } );
+	assert.deepEqual( row.decided, { gap: { desktop: '17px', tablet: '13.5px', mobile: '11px' }, alignItems: { desktop: 'center' } }, 'a word space per device: the heading is 68px, 54px and 44px' );
 	const [ heading, chip ] = row.innerBlocks;
 	assert.equal( heading.attributes.content, 'Your basket' );
 	assert.equal( heading.draftFingerprint.tag, 'h1' );
@@ -339,10 +342,61 @@ test( 'MUST FAIL: the basket count row gap is one word space at the heading comp
 		const got = placePieces( { key: 'cart', tree: input.tree, data: DATA, ctx: basketCtx( input ), builders: BUILDERS } );
 		return got.tree[ 0 ].innerBlocks[ 0 ].innerBlocks[ 1 ].decided?.gap;
 	};
-	assert.deepEqual( gapOf( ( h ) => ( h.attrs.style = '' ) ), { desktop: '17px' }, 'a heading sized by a class: its computed 68px at 1440 gives the space' );
-	assert.deepEqual( gapOf( ( h ) => { h.attrs.style = ''; h.resolved[ 1440 ][ 'font-size' ] = '40px'; } ), { desktop: '10px' }, 'the computed size wins over a fixed one' );
-	assert.deepEqual( gapOf( ( h ) => { delete h.resolved; h.attrs.style = 'font-size: 68px'; } ), { desktop: '17px' }, 'no browser read: the inline style is still read' );
+	assert.deepEqual( gapOf( ( h ) => ( h.attrs.style = '' ) ), { desktop: '17px', tablet: '13.5px', mobile: '11px' }, 'a heading sized by a class: its computed 68px at 1440 gives the space' );
+	assert.deepEqual( gapOf( ( h ) => { h.attrs.style = ''; h.resolved[ 1440 ][ 'font-size' ] = '40px'; } ), { desktop: '10px', tablet: '13.5px', mobile: '11px' }, 'the computed size wins over a fixed one' );
+	assert.deepEqual( gapOf( ( h ) => { delete h.resolved; h.attrs.style = 'font-size: 68px'; } ), { desktop: '17px' }, 'no browser read: the inline style is still read, and one size gives one gap for every device' );
 	assert.equal( gapOf( ( h ) => { delete h.resolved; h.attrs.style = ''; } ), undefined, 'a heading with no readable size gets no gap, not a guessed one' );
+} );
+
+test( 'MUST FAIL: the basket count row gap follows the heading to the tablet and mobile sizes, and the centring reads the computed vertical-align first', () => {
+	const rowOf = ( edit ) => {
+		const input = BASKET();
+		edit( Object.fromEntries( input.inventory.elements.map( ( e ) => [ e.key, e ] ) ) );
+		const got = placePieces( { key: 'cart', tree: input.tree, data: DATA, ctx: basketCtx( input ), builders: BUILDERS } );
+		return got.tree[ 0 ].innerBlocks[ 0 ].innerBlocks[ 1 ];
+	};
+	const base = rowOf( () => {} );
+	assert.deepEqual( base.decided.gap, { desktop: '17px', tablet: '13.5px', mobile: '11px' }, 'the smaller heading gets the smaller space, not the desktop one inherited' );
+	assert.equal( base.handover, undefined, 'a row whose gap and centring were read hands nothing over' );
+	// The browser's computed value wins over the inline style; a count with no inline style but a computed `middle` is centred.
+	const byClass = rowOf( ( e ) => { e[ 'Root/12#0' ].attrs.style = ''; e[ 'Root/12#0' ].resolved[ 1440 ][ 'vertical-align' ] = 'middle'; } );
+	assert.deepEqual( byClass.decided.alignItems, { desktop: 'center' } );
+	const overridden = rowOf( ( e ) => { e[ 'Root/12#0' ].resolved[ 1440 ][ 'vertical-align' ] = 'top'; } );
+	assert.equal( overridden.decided.alignItems, undefined, 'the computed top overrides the inline middle' );
+} );
+
+test( 'MUST FAIL: a basket count row whose gap or centring could not be read hands that over by name, never drops it', () => {
+	const rowOf = ( edit ) => {
+		const input = BASKET();
+		edit( Object.fromEntries( input.inventory.elements.map( ( e ) => [ e.key, e ] ) ) );
+		const got = placePieces( { key: 'cart', tree: input.tree, data: DATA, ctx: basketCtx( input ), builders: BUILDERS } );
+		assert.deepEqual( got.problems, [], 'the handover is one the skeleton check accepts' );
+		return got.tree[ 0 ].innerBlocks[ 0 ].innerBlocks[ 1 ];
+	};
+	const noSize = rowOf( ( e ) => { delete e[ 'Root/11#0' ].resolved; e[ 'Root/11#0' ].attrs.style = ''; } );
+	assert.equal( noSize.decided.gap, undefined );
+	assert.deepEqual( noSize.decided.alignItems, { desktop: 'center' } );
+	assert.equal( noSize.handover.length, 1 );
+	assert.match( noSize.handover[ 0 ].detail, /its gap \(the heading Root\/11#0's font size was not read/ );
+	assert.doesNotMatch( noSize.handover[ 0 ].detail, /alignment/ );
+	const top = rowOf( ( e ) => { e[ 'Root/12#0' ].attrs.style = 'vertical-align: top'; } );
+	assert.deepEqual( top.decided, { gap: { desktop: '17px', tablet: '13.5px', mobile: '11px' } } );
+	assert.match( top.handover[ 0 ].detail, /its items' alignment \(the count Root\/12#0 is "vertical-align: top", not middle\)/ );
+	assert.equal( top.handover[ 0 ].owner, 'content-page' );
+	assert.equal( top.handover[ 0 ].kind, 'presence' );
+} );
+
+test( 'MUST FAIL: Fill writes the basket count row gap onto the filled tree, though the row has no draft element to read', () => {
+	const input = BASKET();
+	const got = placePieces( { key: 'cart', tree: input.tree, data: DATA, ctx: basketCtx( input ), builders: BUILDERS } );
+	const tree = cleanTree( got.tree );
+	addRefs( tree, 'fx' );
+	const out = fillTree( { tree, nodes: skeletonNodes( got.tree ), reads: { widths: {}, declared: {}, sweep: {}, origin: 'http://127.0.0.1:1' }, db: openDb(), snapshot: { palette: [], spacing: [], fontSizes: [] }, calFor: () => null, ledger: [], ledgerStates: [], origin: 'http://127.0.0.1:1' } );
+	const row = nodes( tree ).find( ( n ) => 'sgs/container' === n.name && ! n.draftRef && n.innerBlocks?.some( ( k ) => 'sgs/text' === k.name && /sgs-basket-count/.test( k.attributes?.text ?? '' ) ) );
+	assert.ok( row, 'the row is in the filled tree' );
+	assert.deepEqual( row.attributes.gap, { desktop: '17px', tablet: '13.5px', mobile: '11px' } );
+	assert.deepEqual( row.attributes.alignItems, { desktop: 'center' } );
+	assert.ok( out.writes.some( ( w ) => 'decided' === w.how && 'gap' === w.attr ) );
 } );
 
 test( 'basketCounts: only a text hole counting a list the region loops over, held by an element with words of its own outside the region', () => {
