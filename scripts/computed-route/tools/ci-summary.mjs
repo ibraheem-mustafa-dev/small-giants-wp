@@ -40,6 +40,8 @@ export function summarise( rows, known = {} ) {
 			lines.push( '', `### ${ r.file } (${ r.shard })`, '```', r.log.split( '\n' ).filter( ( l ) => /not ok|✖|Error|expected|actual|\+ |- /.test( l ) ).slice( 0, 40 ).join( '\n' ), '```' );
 		}
 	}
+	const flaky = rows.filter( ( r ) => r.flaky );
+	flaky.length && lines.push( '', `Passed on a second attempt (flaky, first output kept as <file>.first-attempt.log): ${ flaky.map( ( r ) => r.file ).join( ', ' ) }` );
 	return { text: lines.join( '\n' ), fresh };
 }
 

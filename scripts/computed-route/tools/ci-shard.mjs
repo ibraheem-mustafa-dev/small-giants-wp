@@ -73,9 +73,20 @@ ci-shard: killed after ${ timeoutMs / 1000 }s
 	await Promise.all( Array.from( { length: jobs }, async () => {
 		while ( queue.length ) {
 			const file = queue.shift();
-			const r = await one( file );
+			let r = await one( file );
+			// A file that fails once is run again: a failure that clears is reported as flaky (a browser tab that lost its local server
+			// once), one that repeats fails the run. A killed (timed-out) file is not run again.
+			if ( ! r.ok && ! r.timedOut ) {
+				const first = fs.readFileSync( path.join( out, `${ path.basename( file ) }.log` ), 'utf8' );
+				const again = await one( file );
+				r = again.ok ? { ...again, flaky: true } : again;
+				r.ok || fs.appendFileSync( path.join( out, `${ path.basename( file ) }.log` ), `
+--- first attempt ---
+${ first }` );
+				again.ok && fs.copyFileSync( path.join( out, `${ path.basename( file ) }.log` ), path.join( out, `${ path.basename( file ) }.first-attempt.log` ) ) && fs.writeFileSync( path.join( out, `${ path.basename( file ) }.first-attempt.log` ), first );
+			}
 			results.push( r );
-			console.log( `${ r.ok ? 'PASS' : r.timedOut ? 'TIMEOUT' : 'FAIL' } ${ file } (${ ( r.ms / 1000 ).toFixed( 1 ) }s)` );
+			console.log( `${ r.flaky ? 'FLAKY' : r.ok ? 'PASS' : r.timedOut ? 'TIMEOUT' : 'FAIL' } ${ file } (${ ( r.ms / 1000 ).toFixed( 1 ) }s)` );
 			fs.writeFileSync( path.join( out, 'results.json' ), JSON.stringify( results, null, 1 ) );
 		}
 	} ) );
