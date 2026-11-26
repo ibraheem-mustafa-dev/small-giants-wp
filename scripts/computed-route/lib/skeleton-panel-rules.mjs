@@ -168,23 +168,32 @@ export function makePanelRules( { m, view, scope, R, facts, surface = {}, declar
 		const style = view.declared( c );
 		const capOf = ( v ) => ( UNSET.has( v ?? '' ) ? null : v );
 		const declaredBand = { cap: capOf( style[ 'max-width' ] ), pad: Object.fromEntries( SIDES.map( ( k ) => [ k, UNSET.has( style[ `padding-${ k }` ] ?? '' ) ? '0' : style[ `padding-${ k }` ] ] ) ) };
+		// A browser read holds px; the declared style holds whatever the draft wrote (2rem, clamp(), var()). The two are never
+		// compared: a device is written only where its read differs from the read before it, and a device with no read before it
+		// to compare with (no read at 1440) is not written, since its value could equal the declared desktop one.
 		const readAt = ( w ) => {
 			const rs = c.resolved?.[ w ];
-			return rs ? { cap: capOf( rs[ 'max-width' ] ), pad: Object.fromEntries( SIDES.map( ( k ) => [ k, rs[ `padding-${ k }` ] ?? declaredBand.pad[ k ] ] ) ) } : null;
+			return rs ? { cap: capOf( rs[ 'max-width' ] ), pad: Object.fromEntries( SIDES.map( ( k ) => [ k, rs[ `padding-${ k }` ] ?? null ] ) ) } : null;
 		};
-		const desktop = readAt( 1440 ) ?? declaredBand;
+		const first = readAt( 1440 );
+		const desktop = first ? { cap: first.cap, pad: Object.fromEntries( SIDES.map( ( k ) => [ k, first.pad[ k ] ?? declaredBand.pad[ k ] ] ) ) } : declaredBand;
 		const cap = { desktop: desktop.cap ?? declaredBand.cap };
 		const pad = { desktop: desktop.pad };
-		let [ capNow, padNow ] = [ desktop.cap, desktop.pad ];
+		let [ capNow, padNow ] = [ first?.cap ?? null, first?.pad ?? null ];
 		for ( const [ w, device ] of [ [ 768, 'tablet' ], [ 375, 'mobile' ] ] ) {
 			const at = readAt( w );
 			if ( ! at ) {
 				continue;
 			}
-			at.cap && at.cap !== capNow && ( cap[ device ] = at.cap );
-			SIDES.some( ( k ) => at.pad[ k ] !== padNow[ k ] ) && ( pad[ device ] = at.pad );
+			if ( padNow ) {
+				at.cap && at.cap !== capNow && ( cap[ device ] = at.cap );
+				const sides = Object.fromEntries( SIDES.map( ( k ) => [ k, at.pad[ k ] ?? padNow[ k ] ?? desktop.pad[ k ] ] ) );
+				SIDES.some( ( k ) => at.pad[ k ] !== null && at.pad[ k ] !== padNow[ k ] ) && ( pad[ device ] = sides );
+				padNow = { ...padNow, ...Object.fromEntries( SIDES.filter( ( k ) => null !== at.pad[ k ] ).map( ( k ) => [ k, at.pad[ k ] ] ) ) };
+			} else {
+				padNow = at.pad;
+			}
 			capNow = at.cap ?? capNow;
-			padNow = at.pad;
 		}
 		return Object.fromEntries( settings.map( ( setting ) => [ setting, setting === band.padding ? pad : cap ] ) );
 	};

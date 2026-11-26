@@ -540,6 +540,36 @@ test( 'MUST FAIL: the cap wrapper\'s width and padding are written per device as
 	assert.deepEqual( vars.maxWidth, { desktop: '1440px' } );
 } );
 
+test( 'MUST FAIL: a cap wrapper whose style is declared in rem, clamp() or a variable is compared with the browser reads only, never with the declared words', () => {
+	const side = ( top, right ) => ( { 'padding-top': top, 'padding-right': right, 'padding-bottom': top, 'padding-left': right } );
+	const declared = ( resolved ) => N( 'div', { style: 'background-color:rgb(1, 2, 3)' }, [
+		N( 'div', { style: 'max-width:clamp(900px, 90vw, 1440px);margin-left:auto;margin-right:auto;padding-top:2.75rem;padding-right:var(--band);padding-bottom:2.75rem;padding-left:var(--band)', resolved }, [
+			N( 'div', { style: 'display:grid;grid-template-columns:minmax(0, 1fr) 300px' }, [
+				N( 'div', {}, [ card( 'One', '/one' ), card( 'Two', '/two' ) ] ),
+				N( 'div', { style: 'aspect-ratio:4 / 3;box-shadow:0 1px 2px #000' }, [ N( 'p', { words: 'Feature' } ) ] ),
+			] ),
+		] ),
+	] );
+	const px = { 'max-width': '1296px', ...side( '44px', '52px' ) };
+	// Every width reads the same px: no device differs, so none is written, whatever the declared words are.
+	const same = behindRun( declared( { 1440: px, 768: px, 375: px } ) ).skeleton[ 0 ].decided;
+	assert.deepEqual( Object.keys( same.panelPadding ), [ 'desktop' ] );
+	assert.deepEqual( Object.keys( same.maxWidth ), [ 'desktop' ] );
+	assert.equal( same.maxWidth.desktop, '1296px' );
+	// A read that holds no padding says nothing about it: the declared words stand in for no device.
+	const noPad = behindRun( declared( { 1440: px, 768: { 'max-width': '1296px' } } ) ).skeleton[ 0 ].decided;
+	assert.deepEqual( Object.keys( noPad.panelPadding ), [ 'desktop' ] );
+	// No read at 1440: the declared desktop value cannot be compared with a px read, so the first read device is not written, and the next
+	// is compared with it.
+	const noDesktop = behindRun( declared( { 768: px, 375: px } ) ).skeleton[ 0 ].decided;
+	assert.deepEqual( Object.keys( noDesktop.panelPadding ), [ 'desktop' ], 'two equal reads at the narrower widths write no device' );
+	assert.deepEqual( Object.keys( noDesktop.maxWidth ), [ 'desktop' ] );
+	// A real difference between two reads is still written.
+	const narrower = behindRun( declared( { 768: px, 375: { 'max-width': '100%', ...side( '20px', '16px' ) } } ) ).skeleton[ 0 ].decided;
+	assert.deepEqual( Object.keys( narrower.panelPadding ), [ 'desktop', 'mobile' ], 'the phone differs from the tablet read' );
+	assert.deepEqual( narrower.maxWidth, { desktop: 'clamp(900px, 90vw, 1440px)', mobile: '100%' } );
+} );
+
 test( 'NEGATIVE megaPanelRow: a root that lays its columns out itself keeps the direct rule; a wrapper over a loop\'s cards, over a row with no column, or more than three levels up is left alone', () => {
 	assert.ok( rows( behindRun( panel() ) ).every( ( x ) => 'megaPanelRow' !== x.rule ), 'the panel root is the row: nothing to unwrap' );
 	const cards = behind( { inner: [ N( 'div', { style: 'display:grid;grid-template-columns:repeat(4, 1fr)' }, [ N( 'a', { loop: true, style: 'background-color:rgb(1, 2, 3)', words: 'Card', attrs: { href: '/c' } } ) ] ) ] } );
