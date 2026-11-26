@@ -251,6 +251,24 @@ test( 'negative control: no sizing is written for a slot with no Ratio or Height
 	assert.equal( own.element.declared, undefined, 'a picture the node does not draw itself carries no sizing' );
 } );
 
+test( 'MUST FAIL: withSizing takes the parent facts the read found beside the picture over the root target of the skeleton parent', () => {
+	const e = withSizing( {
+		entry: { ...img( 'assets/hero.png' ), parent: { display: 'flex', alignItems: 'center', definiteHeight: false } }, snap: { rect: { x: 0, y: 0, w: 205, h: 110 } }, declared: { height: '100%' },
+		parentSnap: { styles: { display: 'grid', 'align-items': 'stretch' } }, parentDeclared: { height: '110px' },
+	} );
+	assert.deepEqual( e.element.parent, { display: 'flex', alignItems: 'center', definiteHeight: false }, 'the wrapper above the picture is not its parent' );
+} );
+
+test( 'MUST FAIL: what the draft states for a picture and the slot has no setting for is a note, not dropped', () => {
+	// A declared height and no width on a picture whose box keeps its proportions states `width: auto`, which the media slot has no setting for.
+	const r = mediaDecisions( { slots: [ SIZED ], reads: at( sized( { height: '150px' }, { box: { w: 200, h: 150 }, natural: { w: 400, h: 300 } } ) ), media } );
+	assert.match( r.notes.join( ' ' ), /the draft media "assets\/hero\.png" states width \{"desktop":"auto"\}, which the media slot of source has no setting for: not written/ );
+	assert.deepEqual( val( r, 'height' ), { desktop: '150px' }, 'the setting the slot has is still written' );
+	// Negative control: a slot that takes the sizing it states says nothing.
+	const quiet = mediaDecisions( { slots: [ SIZED ], reads: at( sized( { 'aspect-ratio': '4 / 3' } ) ), media } );
+	assert.ok( ! quiet.notes.some( ( n ) => /has no setting for: not written/.test( n ) ) );
+} );
+
 test( 'withSizing reads the declared sizes, the drawn box, the natural size and the parent', () => {
 	const e = withSizing( {
 		entry: img( 'assets/hero.png' ), snap: { rect: { x: 0, y: 0, w: 205, h: 110 } }, declared: { height: '100%', color: 'red', 'aspect-ratio': '4 / 3' },

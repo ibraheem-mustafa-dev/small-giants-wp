@@ -185,6 +185,37 @@ export function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, ps
 				}
 				return wrap;
 			};
+			// Whether an element's height is declared as a length (its inline style, else the last matching rule of the page's own
+			// sheets whose media applies): a percentage or `auto` gives its child no definite height to fill.
+			const lengthHeight = ( v ) => /^-?\d*\.?\d+(px|rem|em|vh|vw)$/i.test( String( v ?? '' ).trim() );
+			const declaresHeight = ( p ) => {
+				let last = p.style.height || '';
+				if ( ! last ) {
+					const walk = ( rules ) => {
+						for ( const r of rules ) {
+							// A style rule has `cssRules` too (CSS nesting), so the rule's own selector is read first.
+							if ( r.selectorText && r.style ) {
+								try {
+									'' !== r.style.getPropertyValue( 'height' ) && p.matches( r.selectorText ) && ( last = r.style.getPropertyValue( 'height' ) );
+								} catch ( e ) {
+									// a selector this browser cannot match names no element
+								}
+							}
+							if ( r.cssRules && ( ! r.media || matchMedia( r.media.mediaText ).matches ) ) {
+								walk( r.cssRules );
+							}
+						}
+					};
+					for ( const sheet of document.styleSheets ) {
+						try {
+							walk( sheet.cssRules );
+						} catch ( e ) {
+							// a sheet from another origin cannot be read
+						}
+					}
+				}
+				return lengthHeight( last );
+			};
 			const readOne = ( n ) => {
 				const c = getComputedStyle( n );
 				const par = n.parentElement;
@@ -196,7 +227,13 @@ export function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, ps
 				const attr = ( k ) => n.getAttribute( k );
 				const src = 'img' === tag ? ( n.closest( 'picture' ) && n.currentSrc ? n.currentSrc : null ) ?? attr( 'src' ) ?? attr( 'data-src' ) ?? '' : 'video' === tag ? ( attr( 'src' ) ?? n.querySelector( 'source' )?.getAttribute( 'src' ) ?? '' ) : 'iframe' === tag ? attr( 'src' ) ?? '' : '';
 								const ni = 'img' === tag ? { w: n.naturalWidth, h: n.naturalHeight } : 'video' === tag ? { w: n.videoWidth, h: n.videoHeight } : null;
+				// The element this picture's sizes size is this element (it, or the picture its own shadow root draws); the facts of the
+				// real parent it sits in, whatever skeleton nodes the draft's wrappers became.
+				const sized = n === el || ( !! el.shadowRoot && n.getRootNode() === el.shadowRoot ) ? el : n;
+				const sp = sized.parentElement;
+				const parent = sp ? { display: getComputedStyle( sp ).display, alignItems: getComputedStyle( sp ).alignItems, definiteHeight: declaresHeight( sp ) } : null;
 				return {
+					parent,
 					tag, src, poster: 'video' === tag ? attr( 'poster' ) : null, alt: 'img' === tag ? attr( 'alt' ) : null,
 					natural: ni && ni.w > 0 && ni.h > 0 ? ni : null, markup: 'svg' === tag ? new XMLSerializer().serializeToString( n ) : null, own: n === el,
 					element: {

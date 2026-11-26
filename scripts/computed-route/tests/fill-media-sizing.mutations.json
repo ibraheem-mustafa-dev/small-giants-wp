@@ -46,5 +46,17 @@
 		"find": "if ( ! ( entry?.own || entry?.hostOwn ) ||",
 		"replace": "if ( ! entry?.own ||",
 		"why": "the picture an image placeholder draws in its shadow root would carry none of its host's sizing"
+	},
+	{
+		"file": "lib/fill-media.mjs",
+		"find": "parent: entry.parent ?? {",
+		"replace": "parent: {",
+		"why": "the parent facts come from the skeleton parent's root target, a wrapper further up than the picture's real parent"
+	},
+	{
+		"file": "lib/media/write.mjs",
+		"find": "unwritten.length && out.notes.push(",
+		"replace": "unwritten.length && void (",
+		"why": "a state of the picture no media setting takes is dropped without a word"
 	}
 ]

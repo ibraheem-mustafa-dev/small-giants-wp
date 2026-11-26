@@ -121,7 +121,8 @@ export function withSizing( { entry, snap, declared, parentSnap = null, parentDe
 			...entry.element,
 			declared: Object.fromEntries( SIZES.filter( ( p ) => undefined !== declared[ p ] && '' !== declared[ p ] ).map( ( p ) => [ p, declared[ p ] ] ) ),
 			box, natural: entry.natural ?? null,
-			parent: { display: parentSnap?.styles?.display, alignItems: parentSnap?.styles?.[ 'align-items' ], definiteHeight: LENGTH.test( String( parentDeclared?.height ?? '' ).trim() ) },
+			// The real DOM parent the read found beside the picture; a read without it falls back to the skeleton parent's root target.
+			parent: entry.parent ?? { display: parentSnap?.styles?.display, alignItems: parentSnap?.styles?.[ 'align-items' ], definiteHeight: LENGTH.test( String( parentDeclared?.height ?? '' ).trim() ) },
 		},
 	};
 }
