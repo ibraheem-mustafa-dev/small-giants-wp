@@ -24,6 +24,8 @@ test( 'negative controls: a lookup assigned to a name first is the name\'s call;
 	assert.deepEqual( reachCalls( 'dcLogic(\'A").setState({x:1})' ), [] );
 	assert.deepEqual( reachCalls( 'dcLogic(`${ name }`).setState({x:1})' ), [], 'a template literal with a hole names no component' );
 	assert.deepEqual( reachCalls( 'dcLogic(`A\').setState({x:1})' ), [], 'a backtick closed by a quote' );
+	assert.deepEqual( reachCalls( 'dcLogic(\'A$B\').setState({x:1})' ), [ { ident: 'dcLogic', args: '{x:1}', component: 'A$B' } ], 'a $ in a quoted name is part of it' );
+	assert.deepEqual( reachCalls( 'dcLogic(`A$B`).setState({x:1})' ), [ { ident: 'dcLogic', args: '{x:1}', component: 'A$B' } ], 'a $ with no brace in a backtick name too' );
 	assert.deepEqual( reachCalls( 'window.dcLogic(\'X\').setState({a:1})' ), [] );
 	assert.deepEqual( reachCalls( 'dcLogic(\'X\').state.open' ), [] );
 	assert.deepEqual( reachCalls( 'dcLogic(\'X\').setState({open:true' ), [], 'unbalanced arguments' );

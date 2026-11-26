@@ -1,21 +1,51 @@
 [
 	{
 		"file": "lib/intake-reach-calls.mjs",
-		"find": "(?:(dcLogic)\\s*\\(\\s*(['\"`])([^'\"`$]+)\\2\\s*\\)|([A-Za-z_$][\\w$]*))",
-		"replace": "([A-Za-z_$][\\w$]*)",
+		"find": "(?:(dcLogic)\\s*\\(\\s*(?:(['\"])([^'\"]+)\\2|`((?:[^`$]|\\$(?!\\{))+)`)\\s*\\)|([A-Za-z_$][\\w$]*))",
+		"replace": "(?:(dcLogic)x|([A-Za-z_$][\\w$]*))",
 		"why": "a dcLogic('<component>') call gives no way to open"
 	},
 	{
 		"file": "lib/intake-reach-calls.mjs",
-		"find": "...( m[ 1 ] ? { component: m[ 3 ] } : {} )",
+		"find": "...( m[ 1 ] ? { component: m[ 3 ] ?? m[ 4 ] } : {} )",
 		"replace": "",
 		"why": "the call runs on every component's logic"
 	},
 	{
 		"file": "lib/intake-reach-calls.mjs",
-		"find": "([^'\"`$]+)\\2\\s*\\)",
-		"replace": "([^'\"`$]+)['\"`]\\s*\\)",
+		"find": "([^'\"]+)\\2|",
+		"replace": "([^'\"]+)['\"]|",
 		"why": "a name in mismatched quotes is read as a component"
+	},
+	{
+		"file": "lib/intake-reach-calls.mjs",
+		"find": "|`((?:[^`$]|\\$(?!\\{))+)`)",
+		"replace": ")",
+		"why": "a name in backticks gives no way to open"
+	},
+	{
+		"file": "lib/intake-reach-calls.mjs",
+		"find": "\\s*\\??\\.\\s*setState",
+		"replace": "\\s*\\.\\s*setState",
+		"why": "an optional ?.setState call gives no way to open"
+	},
+	{
+		"file": "lib/intake-reach-calls.mjs",
+		"find": "|\\$(?!\\{)",
+		"replace": "|\\$",
+		"why": "a template literal with a hole is read as a component name"
+	},
+	{
+		"file": "lib/intake-reach-calls.mjs",
+		"find": "(['\"])([^'\"]+)\\2",
+		"replace": "(['\"])([^'\"$]+)\\2",
+		"why": "a $ in a quoted name is refused"
+	},
+	{
+		"file": "lib/intake-reach-calls.mjs",
+		"find": "m[ 3 ] ?? m[ 4 ]",
+		"replace": "m[ 3 ]",
+		"why": "a backtick name is lost from the call"
 	},
 	{
 		"file": "lib/intake-state.mjs",
@@ -28,23 +58,5 @@
 		"find": "c.component ? `${ c.ident }('${ c.component }')` : c.ident",
 		"replace": "c.ident",
 		"why": "the way's text names a call the record never wrote"
-	},
-	{
-		"file": "lib/intake-reach-calls.mjs",
-		"find": "(['\"`])([^'\"`$]+)",
-		"replace": "(['\"])([^'\"`$]+)",
-		"why": "a name in backticks gives no way to open"
-	},
-	{
-		"file": "lib/intake-reach-calls.mjs",
-		"find": "\\s*\\??\\.\\s*setState",
-		"replace": "\\s*\\.\\s*setState",
-		"why": "an optional ?.setState call gives no way to open"
-	},
-	{
-		"file": "lib/intake-reach-calls.mjs",
-		"find": "([^'\"`$]+)",
-		"replace": "([^'\"`]+)",
-		"why": "a template literal with a hole is read as a component name"
 	}
 ]
