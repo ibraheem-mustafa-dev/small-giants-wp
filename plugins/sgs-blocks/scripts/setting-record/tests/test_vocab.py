@@ -105,3 +105,14 @@ def test_same_element_ignores_modifiers_and_non_parts():
     assert V.same_element(['sgs-x', 'sgs-x__y--on', 'sgs-x__y']) == 'sgs-x__y'
     assert V.same_element([]) == ''
     assert V.same_element(['sgs-x__b', 'sgs-x__a']) == 'sgs-x__a'
+
+
+def test_must_fail_the_item_selector_does_not_depend_on_render_order():
+    # MUST FAIL if items() keeps the first placement's selector: two renders of one rule that return in another order would
+    # name another selector, and a record rewritten from the same code would churn.
+    a = {**placement('sgs-x__a', ['color']), 'selector': '.sgs-x.sgs-x .sgs-x__a:hover'}
+    b = {**placement('sgs-x__a', ['color']), 'selector': '.sgs-x .sgs-x__a:hover'}
+    c = {**placement('sgs-x__a', ['color']), 'selector': '.sgs-x.sgs-x.sgs-x .sgs-x__a:hover'}
+    for order in ([a, b, c], [c, b, a], [b, a, c]):
+        got = V.items(order, 'sgs-x')
+        assert len(got) == 1 and got[0]['selector'] == b['selector'], order

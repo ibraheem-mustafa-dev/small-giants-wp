@@ -63,8 +63,10 @@ def norm_state(state, selector=None):
 
 def items(placements: list, root_tok: str, aliases=()) -> list:
     """score.scan_items, with this module's canon_props and with no-preference tiers dropped (so two placements that
-    differ only by that tier are one item). One item per (part, declared property) of every placement that paints."""
-    out, seen = [], set()
+    differ only by that tier are one item). One item per (part, declared property) of every placement that paints. Placements
+    that make one item show one selector: the smallest by `(len, text)`, so a record rewritten from the same code names the same
+    selector whatever order the renders came back in."""
+    out, seen = [], {}
     for p in placements:
         if not p.get('props'):
             continue
@@ -77,10 +79,15 @@ def items(placements: list, root_tok: str, aliases=()) -> list:
                 continue
             sig = (key, cps, norm_state(p.get('state'), p.get('selector')), tiers, ev)
             if sig in seen:
+                held = seen[sig]
+                sel = p.get('selector')
+                if sel and (not held.get('selector') or (len(sel), sel) < (len(held['selector']), held['selector'])):
+                    held['selector'] = sel
                 continue
-            seen.add(sig)
-            out.append({'part': key, 'prop': '|'.join(cps), 'props': list(cps), 'state': sig[2], 'tiers': list(tiers), 'evidence': ev,
-                        'mechanism': p['mechanism'], **({'selector': p['selector']} if p.get('selector') else {})})
+            item = {'part': key, 'prop': '|'.join(cps), 'props': list(cps), 'state': sig[2], 'tiers': list(tiers), 'evidence': ev,
+                    'mechanism': p['mechanism'], **({'selector': p['selector']} if p.get('selector') else {})}
+            seen[sig] = item
+            out.append(item)
     return out
 
 
