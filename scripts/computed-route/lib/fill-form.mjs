@@ -256,9 +256,19 @@ export function formWrites( { nodes, flat, refOf, reads, facts, flags = [], db, 
 		}
 	} );
 	const schema = formSchemaOf( facts, component );
-	// `params`: the query names a link of the draft hands to a form, and the fields a control of this form's page that scrolls to the
-	// form sets (lib/skeleton-form-prefill.mjs::prefillParams: only the openers of `component`, the draft that holds the form).
-	const params = new Set( [ ...linkParams( facts ), ...( folder ? prefillParams( { folder, record: facts, component } ) : [] ) ] );
+	// `paramsOf( target )`: the query names a link of the draft hands to a form, and the fields a control of the form's own page that
+	// scrolls to the form sets (lib/skeleton-form-prefill.mjs::prefillParams: only the openers of the draft component that holds the
+	// field). That component is the innermost draft component in the field's finder chain (a form imported from its own `.dc.html`
+	// is that file's), else `component`, the served page's: Fill names the page's component, which is not the form's when the form
+	// is a child the page imports.
+	const fromLinks = linkParams( facts );
+	const drafts = Object.keys( facts?.sources?.files || {} ).filter( ( f ) => f.endsWith( '.dc.html' ) ).map( ( f ) => f.slice( 0, -'.dc.html'.length ) );
+	const paramsBy = new Map();
+	const paramsOf = ( target ) => {
+		const own = componentOf( target, drafts ) || component;
+		paramsBy.has( own ) || paramsBy.set( own, new Set( [ ...fromLinks, ...( folder ? prefillParams( { folder, record: facts, component: own } ) : [] ) ] ) );
+		return paramsBy.get( own );
+	};
 	const conditions = schema ? conditionsFromSource( sources[ schema.component ] ) : {};
 	const copies = Object.fromEntries( Object.entries( sources ).map( ( [ c, src ] ) => [ c, requiredCopyOf( src ) ] ) );
 	const steps = schema ? schema.steps : [];
@@ -288,7 +298,7 @@ export function formWrites( { nodes, flat, refOf, reads, facts, flags = [], db, 
 		if ( isFormFieldBlock( rec.name ) && control ) {
 			const hit = built || ( el.chips ? schemaChipsOf( schema, el.chips ) : schemaFieldOf( schema, el ) );
 			const copy = copyFor( copies[ componentOf( target, Object.keys( copies ) ) || schema?.component ], [ control.name, control.id, hit?.field?.name ], hit?.field || null );
-			const made = formFieldWrites( { db, block: rec.name, attributes: node.attributes || {}, el: control, field: hit, params, condition: hit ? conditions[ hit.field.name ] || null : null, copy } );
+			const made = formFieldWrites( { db, block: rec.name, attributes: node.attributes || {}, el: control, field: hit, params: paramsOf( target ), condition: hit ? conditions[ hit.field.name ] || null : null, copy } );
 			take( made );
 			take( requiredFromCopy( { block: rec.name, attributes: node.attributes || {}, copy, has } ) );
 			// The read-back: every value written must be the draft fact it came from; a disagreement is a named problem in the report.

@@ -313,18 +313,31 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		if ( ! anchor ) {
 			return null;
 		}
-		// The control's loop copy: its outermost ancestor (itself included) stamped by the same loop of the same component. A value
-		// is read only inside that copy, never by copy number (copy numbers count stampings per host: every mounted card's elements
-		// end `#0`, and a copy whose title an `sc-if` drops shifts the numbers of the copies after it).
+		// The control's loop copy, read only inside that copy, never by copy number (copy numbers count stampings per host: every
+		// mounted card's elements end `#0`, and a copy whose title an `sc-if` drops shifts the numbers of the copies after it). The
+		// copy's root holding the control is its outermost ancestor (itself included) stamped by the same loop of the same component.
+		// A loop body of one element (a card) is that root's subtree. A body of several top-level elements (a title, a team and a
+		// button, no wrapper) stamps them as siblings under the loop's host, so the copy is the run of those siblings around the
+		// control's root: the body elements that come before it in the first copy (read before the root's first occurrence) belong
+		// with the next occurrence of the root, every other one with the occurrence before it.
 		const loop = ( e.membership || [] ).filter( ( x ) => 'sc-for' === x.kind ).at( -1 );
 		const inLoop = ( x ) => !! x && !! loop && x.template === e.template && ( x.membership || [] ).some( ( y ) => 'sc-for' === y.kind && y.tpl === loop.tpl );
 		let item = inLoop( e ) ? e : null;
 		while ( item && inLoop( m.byKey[ item.parentKey ] ) ) {
 			item = m.byKey[ item.parentKey ];
 		}
+		let roots = item ? [ item ] : [];
+		const run = item ? m.els.filter( ( x ) => x.parentKey === item.parentKey && inLoop( x ) ) : [];
+		if ( run.some( ( x ) => x.tpl !== item.tpl ) ) {
+			const at = run.flatMap( ( x, i ) => ( x.tpl === item.tpl ? [ i ] : [] ) );
+			const before = new Set( run.slice( 0, at[ 0 ] ).map( ( x ) => x.tpl ) );
+			const k = at.indexOf( run.indexOf( item ) );
+			const [ from, to ] = [ at[ k - 1 ] ?? -1, at[ k + 1 ] ?? run.length ];
+			roots = run.filter( ( x, i ) => x === item || ( i > from && i < at[ k ] && before.has( x.tpl ) ) || ( i > at[ k ] && i < to && ! before.has( x.tpl ) ) );
+		}
 		const within = ( x ) => {
 			for ( let y = x; y; y = m.byKey[ y.parentKey ] ) {
-				if ( y === item ) {
+				if ( roots.includes( y ) ) {
 					return true;
 				}
 			}

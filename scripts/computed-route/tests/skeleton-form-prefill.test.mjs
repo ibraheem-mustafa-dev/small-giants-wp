@@ -208,6 +208,37 @@ test( 'MUST FAIL: a copy whose title an sc-if drops leaves its role out, and the
 	assert.deepEqual( [ 0, 1, 2 ].map( ( i ) => buttonOf( r, 24, i ).attributes.url ), [ EXPECTED[ 0 ], '?team=Warehouse%20%26%20logistics#careers', EXPECTED[ 2 ] ] );
 } );
 
+// A loop body of several top-level elements and no wrapper: each copy's title, team and button are siblings under the page.
+const unwrapped = ( order = [ 22, 23, 24 ] ) => {
+	const inv = inventory();
+	const copies = inv.elements.filter( ( x ) => /^Root\/2[234]#/.test( x.key ) );
+	copies.forEach( ( x ) => Object.assign( x, { parentKey: 'Root/1#0', depth: 1 } ) );
+	const at = inv.elements.findIndex( ( x ) => x.key === 'Root/21#0' );
+	const sorted = [ 0, 1, 2 ].flatMap( ( i ) => order.map( ( n ) => copies.find( ( x ) => x.key === `Root/${ n }#${ i }` ) ) );
+	inv.elements = [ ...inv.elements.slice( 0, at ).filter( ( x ) => ! copies.includes( x ) ), ...sorted, ...inv.elements.slice( at ).filter( ( x ) => ! /^Root\/2[1-4]#/.test( x.key ) ) ];
+	return inv;
+};
+
+test( 'MUST FAIL: a loop body of several top-level elements (no wrapper) links each button with the title and team of its own copy, whether the button comes last or first', () => {
+	const urls = ( inv ) => {
+		const r = proposeWith( inv );
+		return [ 0, 1, 2 ].map( ( i ) => buttonOf( r, 24, i ).attributes.url );
+	};
+	assert.deepEqual( urls( unwrapped() ), EXPECTED, 'the button last: the title and team before it are its copy\'s' );
+	assert.deepEqual( urls( unwrapped( [ 24, 22, 23 ] ) ), EXPECTED, 'the button first: the title and team after it are its copy\'s' );
+	const dropped = unwrapped();
+	dropped.elements = dropped.elements.filter( ( x ) => x.key !== 'Root/22#1' );
+	assert.deepEqual( urls( dropped ), [ EXPECTED[ 0 ], '?team=Warehouse%20%26%20logistics#careers', EXPECTED[ 2 ] ], 'NEGATIVE: a copy whose title an sc-if drops takes no title from its neighbours' );
+	// The card wraps its button in a footer: the copy is the whole card (the control's outermost ancestor in the loop), not the footer.
+	const footed = inventory();
+	[ 0, 1, 2 ].forEach( ( i ) => {
+		const button = footed.elements.find( ( x ) => x.key === `Root/24#${ i }` );
+		footed.elements.splice( footed.elements.indexOf( button ), 0, el( 30, i, [ 21, i ], 'div', '', { loop: true, depth: 2 } ) );
+		Object.assign( button, { parentKey: `Root/30#${ i }`, depth: 3 } );
+	} );
+	assert.deepEqual( urls( footed ), EXPECTED, 'a button in the card\'s footer' );
+} );
+
 test( 'NEGATIVE: inside the copy, an attribute printing the item path is no value, and a copy stops at the control\'s own loop (cards grouped by an outer loop)', () => {
 	const inv = inventory();
 	const OUTER = { kind: 'sc-for', list: '{{ groups }}', as: 'g', tpl: '98' };
@@ -261,6 +292,25 @@ test( 'MUST FAIL: a form in another component of the draft takes no valueFromPar
 	const param = ( out ) => out.writes.find( ( w ) => 'role' === w.node && 'valueFromParam' === w.attr )?.after;
 	assert.equal( param( run( 'Apply' ) ), undefined, 'the Apply form is not on the page whose opener sets role' );
 	assert.equal( param( run( 'Site' ) ), 'role', 'negative control: the form on the page of the opener takes it' );
+} );
+
+test( 'MUST FAIL: through Fill\'s own arguments (the served page\'s component), a form imported from its own draft file takes no valueFromParam from the page\'s opener; the page\'s inline form does', () => {
+	const d = draft();
+	const text = '<x-dc name="Apply"><form><select name="role"></select></form></x-dc>\n';
+	fs.writeFileSync( path.join( d.folder, 'Apply.dc.html' ), text );
+	const sources = { files: { ...d.record.sources.files, 'Apply.dc.html': crypto.createHash( 'sha256' ).update( text ).digest( 'hex' ) } };
+	const sel = { form: { tag: 'select', name: 'role', options: [ { value: '', label: 'Choose' }, { value: 'a', label: 'A' } ] } };
+	// The field's finder chain is the inventory key's: `Root>Apply@…` inside the imported child, `Root/…` on the page itself.
+	const run = ( tpl ) => {
+		const flat = [ { name: 'sgs/form-field-select', attributes: { label: 'Role' }, innerBlocks: [], ref: 'role' } ];
+		const nodesList = [ { index: 0, name: flat[ 0 ].name, targets: [ { id: '0:', slot: '', finder: { tpl } } ] } ];
+		// fill.mjs passes `component: intakeParts.rootComponent`, the served page's component (here Site), never the form's.
+		const out = formWrites( { nodes: nodesList, flat, refOf: ( n ) => n.ref, reads: { widths: { 1440: { '0:': sel } } }, facts: { elements: {}, sources }, db, folder: d.folder, component: 'Site' } );
+		return out.writes.find( ( w ) => 'role' === w.node && 'valueFromParam' === w.attr )?.after;
+	};
+	assert.equal( run( 'Root>Apply@466#0/30#0' ), undefined, 'the imported Apply form is not where the page\'s opener scrolls' );
+	assert.equal( run( 'Root/30#0' ), 'role', 'negative control: the page\'s inline form takes it' );
+	assert.ok( fs.readFileSync( path.join( REPO, 'scripts/computed-route/fill.mjs' ), 'utf8' ).includes( 'component: intakeParts.rootComponent, sources: formSources(' ), 'Fill passes the served page\'s component' );
 } );
 
 test( 'NEGATIVE: the standing decisions stay valid with the rule', () => {
