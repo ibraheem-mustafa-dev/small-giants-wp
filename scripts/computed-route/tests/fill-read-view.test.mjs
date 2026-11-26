@@ -22,17 +22,24 @@ body { margin: 0 }
 .shaped { width: 640px; clip-path: inset(0) }
 .wide { display: flex; width: 1000px }
 .ghost { opacity: 0 }
+.host { display: contents; overflow: hidden }
+.bleed { width: 640px; clip-path: inset(0 -100vw) }
+.hidden-cv { width: 640px; content-visibility: auto }
 </style></head><body>
 <section class="outer"><div class="mid"><div class="track t1"><div class="card a1"></div><div class="card a2"></div><div class="card a3"></div></div></div></section>
 <div class="boxed"><div class="wide t2"><div class="card b1"></div><div class="card b2"></div><div class="card b3"></div></div></div>
 <div class="shaped"><div class="wide t3"><div class="card c1"></div><div class="card c2"></div><div class="card c3"></div></div></div>
 <div class="wide t4"><div class="card d1"></div><div class="ghost"><div class="card d2"></div></div><div class="card d3"></div></div>
+<div class="host"><div class="wide t5"><div class="card e1"></div><div class="card e2"></div><div class="card e3"></div></div></div>
+<div class="bleed"><div class="wide t6"><div class="card f1"></div><div class="card f2"></div><div class="card f3"></div></div></div>
+<div class="hidden-cv"><div class="wide t7"><div class="card g1"></div><div class="card g2"></div><div class="card g3"></div></div></div>
 </body></html>`;
 
 const slider = ( t, cards ) => ( { name: 'sgs/container', draftRef: t, attributes: {}, innerBlocks: cards.map( ( c ) => ( { name: 'sgs/container', draftRef: c, attributes: {} } ) ) } );
 const TREE = [
 	slider( '.t1', [ '.a1', '.a2', '.a3' ] ), slider( '.t2', [ '.b1', '.b2', '.b3' ] ),
 	slider( '.t3', [ '.c1', '.c2', '.c3' ] ), slider( '.t4', [ '.d1', '.d2', '.d3' ] ),
+	slider( '.t5', [ '.e1', '.e2', '.e3' ] ), slider( '.t6', [ '.f1', '.f2', '.f3' ] ), slider( '.t7', [ '.g1', '.g2', '.g3' ] ),
 ];
 
 let served;
@@ -63,4 +70,11 @@ test( 'MUST FAIL: an ancestor at opacity 0 hides the card inside it; a page with
 	assert.equal( count( 12 ), 2 );
 	assert.equal( read.widths[ 1440 ][ '12:' ].view.clip, null, 'negative control: nothing clips the plain track' );
 	assert.equal( read.widths[ 1440 ][ '12:' ].view.page, 1440 );
+} );
+
+test( 'MUST FAIL: a display: contents host clips nothing, a negative inset() clip-path widens the span, and content-visibility clips like paint containment', () => {
+	assert.equal( read.widths[ 1440 ][ '16:' ].view.clip, null, 'the host has no box' );
+	assert.equal( count( 16 ), 3 );
+	assert.equal( count( 20 ), 3, 'inset(0 -100vw) on a 640px box around a 1000px track shows all three cards' );
+	assert.equal( count( 24 ), 2, 'content-visibility: auto, 640px wide' );
 } );

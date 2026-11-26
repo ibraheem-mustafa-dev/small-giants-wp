@@ -7,8 +7,8 @@
 	},
 	{
 		"file": "lib/fill-read-collect.mjs",
-		"find": ": [ b.x, b.x + b.width ];\n\t\t\t}",
-		"replace": ": [ b.x, b.x + b.width ];\n\t\t\t\tbreak;\n\t\t\t}",
+		"find": "[ Math.max( span[ 0 ], own[ 0 ] ), Math.min( span[ 1 ], own[ 1 ] ) ] : own;\n",
+		"replace": "[ Math.max( span[ 0 ], own[ 0 ] ), Math.min( span[ 1 ], own[ 1 ] ) ] : own;\n\t\t\t\tbreak;\n",
 		"why": "only the nearest clipping ancestor cuts the span"
 	},
 	{
@@ -22,5 +22,23 @@
 		"find": "'none' !== s.clipPath",
 		"replace": "false",
 		"why": "a clip-path does not clip"
+	},
+	{
+		"file": "lib/fill-read-collect.mjs",
+		"find": "if ( 'contents' === s.display ) {",
+		"replace": "if ( false ) {",
+		"why": "a display: contents host with overflow hidden clips to its empty box"
+	},
+	{
+		"file": "lib/fill-read-collect.mjs",
+		"find": "if ( null !== left && null !== right ) {",
+		"replace": "if ( false ) {",
+		"why": "an inset() clip-path stands as the box, so a full-bleed inset hides cards"
+	},
+	{
+		"file": "lib/fill-read-collect.mjs",
+		"find": " || /^(?:auto|hidden)$/.test( s.contentVisibility || '' )",
+		"replace": "",
+		"why": "content-visibility does not clip"
 	}
 ]

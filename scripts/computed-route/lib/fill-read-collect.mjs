@@ -63,10 +63,26 @@ export function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, ps
 		let span = null;
 		for ( let a = el.parentElement; a && a !== document.documentElement; a = a.parentElement ) {
 			const s = getComputedStyle( a );
+			// An ancestor drawn as display: contents has no box (a Claude Design host is one), so it neither clips nor fades.
+			if ( 'contents' === s.display ) {
+				continue;
+			}
 			opacity *= Number( s.opacity );
-			if ( 'visible' !== s.overflowX || /\b(?:paint|strict|content)\b/.test( s.contain ) || 'none' !== s.clipPath ) {
+			const boxClips = 'visible' !== s.overflowX || /\b(?:paint|strict|content)\b/.test( s.contain ) || /^(?:auto|hidden)$/.test( s.contentVisibility || '' );
+			if ( boxClips || 'none' !== s.clipPath ) {
 				const b = a.getBoundingClientRect();
-				span = span ? [ Math.max( span[ 0 ], b.x ), Math.min( span[ 1 ], b.x + b.width ) ] : [ b.x, b.x + b.width ];
+				let own = [ b.x, b.x + b.width ];
+				// An inset() clip-path moves the box's left and right edges by its insets (a negative inset widens it, as the
+				// full-bleed `inset(0 -100vw)` does), within the box when the ancestor also clips to it; any other shape stands
+				// as the box.
+				const inset = 'none' === s.clipPath ? null : /^inset\(([^)]*)\)/.exec( s.clipPath )?.[ 1 ].split( /\s+round\s+/ )[ 0 ].trim().split( /\s+/ );
+				const len = ( v ) => ( /^-?[\d.]+px$/.test( v ) ? parseFloat( v ) : /^-?[\d.]+%$/.test( v ) ? ( parseFloat( v ) / 100 ) * b.width : null );
+				const [ right, left ] = inset ? [ len( inset[ 1 ] ?? inset[ 0 ] ), len( inset[ 3 ] ?? inset[ 1 ] ?? inset[ 0 ] ) ] : [ null, null ];
+				if ( null !== left && null !== right ) {
+					const cut = [ b.x + left, b.x + b.width - right ];
+					own = boxClips ? [ Math.max( own[ 0 ], cut[ 0 ] ), Math.min( own[ 1 ], cut[ 1 ] ) ] : cut;
+				}
+				span = span ? [ Math.max( span[ 0 ], own[ 0 ] ), Math.min( span[ 1 ], own[ 1 ] ) ] : own;
 			}
 		}
 		const clip = span ? { x: Math.round( span[ 0 ] * 1000 ) / 1000, w: Math.round( Math.max( 0, span[ 1 ] - span[ 0 ] ) * 1000 ) / 1000 } : null;

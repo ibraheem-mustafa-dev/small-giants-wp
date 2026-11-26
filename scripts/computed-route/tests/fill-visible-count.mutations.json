@@ -79,8 +79,8 @@
 	},
 	{
 		"file": "lib/fill-visible-count.mjs",
-		"find": "[ t, c.view?.clip ? [ c.view.clip.x, c.view.clip.x + c.view.clip.w ] : null ]",
-		"replace": "[ t ]",
+		"find": "c.view?.clip ? [ c.view.clip.x, c.view.clip.x + c.view.clip.w ] : null, c.view?.page",
+		"replace": "null, c.view?.page",
 		"why": "a card's own clipping ancestor is ignored"
 	},
 	{
@@ -103,8 +103,20 @@
 	},
 	{
 		"file": "lib/fill-visible-count.mjs",
-		"find": "return counted.length || ( row.some(",
-		"replace": "return counted.length || 0 || ( false && row.some(",
+		"find": "return counted.length || ( row.some( ( c ) => partly( c ) &&",
+		"replace": "return counted.length || 0 || ( false && row.some( ( c ) => partly( c ) &&",
 		"why": "a card wider than the track counts 0, so the tier inherits desktop's count"
+	},
+	{
+		"file": "lib/fill-visible-count.mjs",
+		"find": ", c.view?.page > 0 ? [ 0, c.view.page ] : null ]",
+		"replace": " ]",
+		"why": "a zero-width track never applies the page edge"
+	},
+	{
+		"file": "lib/fill-visible-count.mjs",
+		"find": "row.some( ( c ) => partly( c ) && spans( c )",
+		"replace": "row.some( ( c ) => spans( c )",
+		"why": "wide cards wholly off the span count one"
 	}
 ]

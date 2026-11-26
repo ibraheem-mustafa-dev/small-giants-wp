@@ -38,7 +38,7 @@ const spanOf = ( r ) => {
 
 // How many of `cards` (reads: { rect, inFlow, view }) a visitor sees side by side: the drawn, seen cards on the first card's
 // row (boxes overlapping by more than half its height) whose box lies, up to a tolerance, inside the span `track` shows
-// through and inside the card's own clipping ancestor (a swipe track's cards past its edge, or peeking in at it, are not
+// through, inside the card's own clipping ancestors and inside the page (a swipe track's cards past its edge, or peeking in at it, are not
 // visible); a card overlapping one already counted by more than half its width is the same place (a stacked fade slider's
 // cards). With no track box (or one with no width), the track span is not applied. 0 when no card is drawn or none lies
 // inside; 1 when none fits because a card is wider than the span it shows through.
@@ -50,15 +50,17 @@ export function visibleCount( track, cards ) {
 	const first = drawn[ 0 ].rect;
 	const row = drawn.filter( ( c ) => Math.min( first.y + first.h, c.rect.y + c.rect.h ) - Math.max( first.y, c.rect.y ) > first.h / 2 );
 	const t = spanOf( track );
-	const spans = ( c ) => [ t, c.view?.clip ? [ c.view.clip.x, c.view.clip.x + c.view.clip.w ] : null ].filter( Boolean );
+	const spans = ( c ) => [ t, c.view?.clip ? [ c.view.clip.x, c.view.clip.x + c.view.clip.w ] : null, c.view?.page > 0 ? [ 0, c.view.page ] : null ].filter( Boolean );
 	const fits = ( c ) => spans( c ).every( ( s ) => c.rect.x >= s[ 0 ] - TOL && c.rect.x + c.rect.w <= s[ 1 ] + TOL );
 	const counted = [];
 	for ( const c of row.filter( fits ) ) {
 		const over = ( k ) => Math.min( k.rect.x + k.rect.w, c.rect.x + c.rect.w ) - Math.max( k.rect.x, c.rect.x );
 		! counted.some( ( k ) => over( k ) > Math.min( k.rect.w, c.rect.w ) / 2 ) && counted.push( c );
 	}
-	// A card wider than the span it shows through still shows one card; cards that are only off the span show none.
-	return counted.length || ( row.some( ( c ) => spans( c ).some( ( s ) => c.rect.w > s[ 1 ] - s[ 0 ] + TOL ) ) ? 1 : 0 );
+	// A card wider than the span it shows through, and partly inside every span, still shows one card; cards that are only off
+	// a span (or behind one with no width) show none.
+	const partly = ( c ) => spans( c ).every( ( s ) => Math.min( c.rect.x + c.rect.w, s[ 1 ] ) - Math.max( c.rect.x, s[ 0 ] ) > 0 );
+	return counted.length || ( row.some( ( c ) => partly( c ) && spans( c ).some( ( s ) => c.rect.w > s[ 1 ] - s[ 0 ] + TOL ) ) ? 1 : 0 );
 }
 
 // Fill's pass for one node: decides and writes the node's count setting from the draft's render. Returns { attr } when a

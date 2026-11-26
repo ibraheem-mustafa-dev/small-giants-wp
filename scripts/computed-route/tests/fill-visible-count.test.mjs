@@ -130,3 +130,11 @@ test( 'MUST FAIL: a track box with no width (display: contents) is no span, and 
 	assert.equal( visibleCount( rect( 0, 0, 900, 100 ), [ rect( 1000, 0, 300 ), rect( 1300, 0, 300 ) ] ), 0, 'every card past the edge: nothing to write' );
 	assert.equal( visibleCount( rect( 0, 0, 300, 100 ), [ rect( 0, 0, 340 ) ] ), 1, 'negative control: a card wider than the track is one card' );
 } );
+
+test( 'MUST FAIL: a zero-width track still has the page edge, and a wide card shows one only when it is partly inside every span', () => {
+	const pageCards = [ 0, 1, 2 ].map( ( i ) => ( { ...rect( 20 + i * 320, 0, 300 ), view: { page: 768 } } ) );
+	assert.equal( visibleCount( rect( 0, 0, 0, 0 ), pageCards ), 2, 'display: contents track on a 768 page: the third card is off the page' );
+	const off = [ 400, 800 ].map( ( x ) => ( { ...rect( x, 0, 400 ), view: { page: 375 } } ) );
+	assert.equal( visibleCount( rect( 0, 0, 375, 100 ), off ), 0, 'two 400px cards wholly off a 375px span: nothing shows' );
+	assert.equal( visibleCount( rect( 0, 0, 375, 100 ), [ { ...rect( -10, 0, 400 ), view: { page: 375 } } ] ), 1, 'negative control: a 400px card over the 375px span is one' );
+} );
