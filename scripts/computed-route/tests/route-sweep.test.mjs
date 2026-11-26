@@ -7,7 +7,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {
 	HELD_OUT, freezeFiles, heldOutFile, surfaceList, recordClients, buildWork, freezeClient, problemKind, summariseSurface, failedSummary, fingerprintNodes, diffNodes,
-	compareSweeps, formatComparison, formatSweep, prepareSweepLooks, clientTotals, splitProblems, instrumentCarried, realFaultLines, writeSweep, readSweep, acquireSlots, releaseSlots, shardItems, summariseFill,
+	compareSweeps, formatComparison, formatSweep, prepareSweepLooks, clientTotals, splitProblems, instrumentCarried, realFaultLines, writeSweep, readSweep, shardItems, summariseFill,
 } from '../lib/route-sweep.mjs';
 import { parseArgs, defaultFills } from '../tools/route-sweep.mjs';
 
@@ -192,23 +192,6 @@ test( 'writeSweep and readSweep round-trip the summaries and the node fingerprin
 	assert.deepEqual( clientTotals( surfaces ), { a: { surfaces: 2, proposed: 2, failed: 0, nodes: 6, problems: 1, handovers: 0 }, b: { surfaces: 1, proposed: 0, failed: 1, nodes: 0, problems: 0, handovers: 0 } } );
 	assert.match( fs.readFileSync( path.join( out, 'SUMMARY.txt' ), 'utf8' ), /b\/home \| CANNOT PROPOSE: x/ );
 	assert.throws( () => readSweep( tmp() ), /not a route-sweep output folder/ );
-} );
-
-test( 'heavy slots: takes the free ones up to the wanted count, waits when none is free, and releases only the folders it made', async () => {
-	const dir = tmp();
-	fs.mkdirSync( path.join( dir, 'slot-1' ) );
-	const held = await acquireSlots( { dir, names: [ 'slot-1', 'slot-2', 'slot-3' ], want: 3 } );
-	assert.deepEqual( held.map( ( p ) => path.basename( p ) ), [ 'slot-2', 'slot-3' ] );
-	releaseSlots( held );
-	assert.equal( fs.existsSync( path.join( dir, 'slot-1' ) ), true, 'another session\'s slot is left alone' );
-	assert.equal( fs.existsSync( path.join( dir, 'slot-2' ) ), false );
-	let waits = 0;
-	const got = await acquireSlots( { dir, names: [ 'slot-1' ], want: 1, wait: async () => { waits++; fs.rmdirSync( path.join( dir, 'slot-1' ) ); } } );
-	assert.equal( waits, 1 );
-	assert.deepEqual( got.map( ( p ) => path.basename( p ) ), [ 'slot-1' ] );
-	releaseSlots( got );
-	fs.mkdirSync( path.join( dir, 'slot-1' ) );
-	await assert.rejects( acquireSlots( { dir, names: [ 'slot-1' ], want: 1, wait: async () => {}, maxPolls: 2 } ), /no heavy slot/ );
 } );
 
 test( 'shardItems spreads the items round robin over at most n shards', () => {

@@ -24,7 +24,7 @@
 // the sweep builds every client's default looks from it (lib/route-sweep.mjs::prepareSweepLooks: site_look.py, offline, into
 // its scripts/computed-route/site-look); a block proposed with no look is counted per surface and fails a comparison.
 // Runs with SGS_NO_SITE=1 whatever the environment. Exit 0 pass, 1 a surface got worse or a stage failed, 2 usage.
-import { NORMAL_SLOTS, OVERFLOW_SLOT, keepAlive } from '../lib/heavy-slot.mjs';
+import { acquire, keepAlive, releasePath } from '../lib/heavy-slot.mjs';
 import { assertTempOffC } from '../lib/temp-guard.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -33,7 +33,7 @@ import { spawn, spawnSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import {
 	HELD_OUT, instrumentCarried, realFaultLines, freezeClient, recordClients, surfaceList, buildWork, summariseSurface, failedSummary, fingerprintNodes, writeSweep, readSweep, compareSweeps,
-	formatComparison, formatSweep, prepareSweepLooks, acquireSlots, releaseSlots, shardItems, summariseFill, failedFill, filesUnder,
+	formatComparison, formatSweep, prepareSweepLooks, shardItems, summariseFill, failedFill, filesUnder,
 } from '../lib/route-sweep.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
@@ -227,8 +227,9 @@ async function sweep( o ) {
 	fs.mkdirSync( o.out, { recursive: true } );
 	let items = clients.flatMap( ( c ) => surfaceList( o.records, c, o.heldOut ).map( ( s ) => `${ c }/${ s }` ) );
 	o.only && ( items = items.filter( ( i ) => o.only.includes( i ) ) );
-	const held = o.slotDir ? await acquireSlots( { dir: o.slotDir, names: NORMAL_SLOTS, overflow: OVERFLOW_SLOT, want: 1 } ) : [];
-	const stopBeat = keepAlive( held, { label: 'route-sweep', pid: process.pid } );
+	const owner = { label: `sweep:${ path.basename( o.out ) }`, pid: process.pid };
+	const held = o.slotDir ? [ ( await acquire( { dir: o.slotDir, owner: { ...owner, beat: Date.now() }, log: ( m ) => console.log( m ) } ) ).path ] : [];
+	const stopBeat = keepAlive( held, owner );
 	const jobs = o.jobs;
 	try {
 		const wanted = new Set( items.map( ( i ) => i.split( '/' )[ 0 ] ) );
@@ -286,7 +287,7 @@ async function sweep( o ) {
 		console.log( `propose ${ proposeSecs }s, whole sweep ${ Math.round( ( Date.now() - t0 ) / 1000 ) }s` );
 	} finally {
 		stopBeat();
-		releaseSlots( held );
+		held.forEach( releasePath );
 		! o.keepWork && fs.rmSync( o.work, { recursive: true, force: true } );
 	}
 	let exit = 0;

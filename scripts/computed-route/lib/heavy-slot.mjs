@@ -9,9 +9,13 @@
 // `heavy-slot.mjs acquire`, freed by `release` or when the lease runs out (a lease is never renewed). A slot folder with no
 // owner.json older than ten minutes is a lock left by a crashed run and is freed too. Freeing a stale slot happens under a
 // short exclusive reclaim lock, so two processes that both find it stale cannot both take it.
+//
+// Waiting is first come, first served across every session: `acquire` queues the job in the shared `.claude/queue.md`
+// (lib/heavy-queue.mjs) and takes a slot only in its turn.
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { QUEUE_FILE, queuePlace, leaveQueue } from './heavy-queue.mjs';
 
 export const SLOT_DIR = 'E:/sgs-tmp/general-cloning/heavy';
 export const NORMAL_SLOTS = [ 'slot-1', 'slot-2' ];
@@ -161,33 +165,60 @@ export function hasRoom( load, room = ROOM ) {
 	return load.cpuBusy < room.cpuBusy && load.freeMem >= room.freeMemBytes && load.freeC >= room.freeCBytes;
 }
 
-// Waits for a slot: a normal one whenever free, the overflow one once `overflowAfterMs` has passed and the machine has room.
-// Returns { path, overflow }. Throws after `maxWaitMs`.
-export async function acquire( { dir = SLOT_DIR, owner, pollMs = 30000, maxWaitMs = 4 * 60 * 60 * 1000, overflowAfterMs = OVERFLOW_AFTER_MS,
-	wait = ( ms ) => new Promise( ( r ) => setTimeout( r, ms ) ), load = machineLoad, log = () => {} } ) {
+// Whether slot `name` in `dir` can be taken now: no folder, or one whose owner is gone.
+function slotFree( dir, name, now, alive ) {
+	const p = path.join( dir, name );
+	return ! fs.existsSync( p ) || isStale( p, now, alive );
+}
+
+// Waits for a slot in its turn: the job joins the shared queue (`queueFile`: .claude/queue.md for the real slot folder, a
+// queue.md inside any other `dir`, so a test never touches the real one) and takes a normal slot only while its place is
+// below the number of free normal slots, so an earlier waiter always goes first; the overflow slot only from the top of the
+// queue, once `overflowAfterMs` has passed and the machine has room. Leaves the queue on return, on a throw and when the
+// process exits. Returns { path, overflow }. Throws after `maxWaitMs`.
+export async function acquire( { dir = SLOT_DIR, owner, pollMs = 15000, maxWaitMs = 4 * 60 * 60 * 1000, overflowAfterMs = OVERFLOW_AFTER_MS,
+	wait = ( ms ) => new Promise( ( r ) => setTimeout( r, ms ) ), load = machineLoad, log = () => {}, queueFile = SLOT_DIR === dir ? QUEUE_FILE : path.join( dir, 'queue.md' ), alive = pidAlive } ) {
 	const start = Date.now();
-	for ( ;; ) {
-		for ( const name of NORMAL_SLOTS ) {
-			const p = tryTake( dir, name, owner );
-			if ( p ) {
-				return { path: p, overflow: false };
+	const me = { label: String( owner.label ).replace( /\s+/g, '-' ), pid: owner.pid ?? process.pid };
+	const q = { file: queueFile, lockDir: dir, me };
+	const leave = () => leaveQueue( q );
+	process.once( 'exit', leave );
+	try {
+		for ( let told = -1; ; ) {
+			const now = Date.now();
+			const place = queuePlace( { ...q, alive, now } );
+			if ( place !== told ) {
+				place > 0 && log( `${ me.label } is number ${ place + 1 } in the queue (${ queueFile })` );
+				told = place;
 			}
-		}
-		const waited = Date.now() - start;
-		if ( waited >= overflowAfterMs ) {
-			const l = await load();
-			if ( hasRoom( l ) ) {
-				const p = tryTake( dir, OVERFLOW_SLOT, owner );
-				if ( p ) {
-					return { path: p, overflow: true };
+			const free = NORMAL_SLOTS.filter( ( n ) => slotFree( dir, n, now, alive ) );
+			if ( place < free.length ) {
+				for ( const name of free ) {
+					const p = tryTake( dir, name, owner, { now, alive } );
+					if ( p ) {
+						return { path: p, overflow: false };
+					}
 				}
-			} else {
-				log( `overflow slot refused: CPU ${ Math.round( l.cpuBusy * 100 ) }% busy, ${ ( l.freeMem / 1024 ** 3 ).toFixed( 1 ) } GB memory free, ${ ( l.freeC / 1024 ** 3 ).toFixed( 1 ) } GB free on C:` );
 			}
+			const waited = now - start;
+			if ( 0 === place && waited >= overflowAfterMs ) {
+				const l = await load();
+				if ( hasRoom( l ) ) {
+					const p = tryTake( dir, OVERFLOW_SLOT, owner, { now, alive } );
+					if ( p ) {
+						return { path: p, overflow: true };
+					}
+				} else {
+					log( `overflow slot refused: CPU ${ Math.round( l.cpuBusy * 100 ) }% busy, ${ ( l.freeMem / 1024 ** 3 ).toFixed( 1 ) } GB memory free, ${ ( l.freeC / 1024 ** 3 ).toFixed( 1 ) } GB free on C:` );
+				}
+			}
+			if ( waited >= maxWaitMs ) {
+				throw new Error( `no heavy slot in ${ dir } after ${ Math.round( waited / 60000 ) } minutes` );
+			}
+			await wait( pollMs );
 		}
-		if ( waited >= maxWaitMs ) {
-			throw new Error( `no heavy slot in ${ dir } after ${ Math.round( waited / 60000 ) } minutes` );
-		}
-		await wait( pollMs );
+	} finally {
+		process.off( 'exit', leave );
+		leave();
 	}
 }

@@ -6,7 +6,7 @@ import path from 'node:path';
 import { tryTake, isStale, releaseLabel, acquire, hasRoom, ROOM, readOwner } from '../lib/heavy-slot.mjs';
 import { parseArgv, runCommand } from '../tools/heavy-slot.mjs';
 import { tempOnC, assertTempOffC } from '../lib/temp-guard.mjs';
-import { acquireSlots } from '../lib/route-sweep.mjs';
+import { readQueue, queuePlace } from '../lib/heavy-queue.mjs';
 
 const tmp = () => fs.mkdtempSync( path.join( os.tmpdir(), 'heavy-slot-' ) );
 const room = { cpuBusy: 0.1, freeMem: ROOM.freeMemBytes * 2, freeC: ROOM.freeCBytes * 2 };
@@ -49,13 +49,50 @@ test( 'acquire takes the overflow slot only after the wait and only when the mac
 	await assert.rejects( acquire( { dir, owner: { label: 'late', pid: process.pid }, overflowAfterMs: 0, maxWaitMs: 0, wait: async () => {}, load: async () => room } ), /no heavy slot/ );
 } );
 
-test( 'the sweep takes the overflow slot only after its wait, with room', async ( t ) => {
+test( 'MUST FAIL: the queue is first come, first served: a later waiter cannot take the free slot while an earlier one waits', async ( t ) => {
 	const dir = tmp();
 	t.after( () => fs.rmSync( dir, { recursive: true, force: true } ) );
-	tryTake( dir, 'slot-1', { label: 'x', pid: process.pid } );
-	const held = await acquireSlots( { dir, names: [ 'slot-1' ], overflow: 'slot-3', overflowAfterMs: 0, want: 2, wait: async () => {}, load: async () => room } );
-	assert.deepEqual( held.map( ( p ) => path.basename( p ) ), [ 'slot-3' ] );
-	assert.equal( hasRoom( busy ), false );
+	const file = path.join( dir, 'queue.md' );
+	fs.writeFileSync( file, 'A note about the queue.' );
+	tryTake( dir, 'slot-1', { label: 'busy', pid: process.pid } );
+	const alive = ( pid ) => pid === process.pid || 4242 === pid;
+	queuePlace( { file, lockDir: dir, me: { label: 'first', pid: 4242 }, alive } );
+	let polls = 0;
+	const got = await acquire( { dir, owner: { label: 'second', pid: process.pid }, alive, queueFile: file, overflowAfterMs: 1e9, load: async () => room, wait: async () => {
+		polls++;
+		assert.equal( fs.existsSync( path.join( dir, 'slot-2' ) ), false, 'the free slot is left for the earlier waiter' );
+		assert.deepEqual( readQueue( file ).entries.map( ( e ) => e.label ), [ 'first', 'second' ] );
+		const q = fs.readFileSync( file, 'utf8' ).split( /\r?\n/ ).filter( ( l ) => ! l.includes( 'first' ) ).join( '\n' );
+		fs.writeFileSync( file, q );
+	} } );
+	assert.equal( polls, 1 );
+	assert.equal( path.basename( got.path ), 'slot-2' );
+	assert.deepEqual( readQueue( file ).entries, [], 'the job leaves the queue once it holds a slot' );
+	assert.match( fs.readFileSync( file, 'utf8' ), /^A note about the queue./, 'the text above the list is kept' );
+} );
+
+test( 'MUST FAIL: with two free slots the second waiter starts at once; a waiter whose process is gone or whose beat is old is dropped', async ( t ) => {
+	const dir = tmp();
+	t.after( () => fs.rmSync( dir, { recursive: true, force: true } ) );
+	const file = path.join( dir, 'queue.md' );
+	const alive = ( pid ) => pid === process.pid || 4242 === pid;
+	queuePlace( { file, lockDir: dir, me: { label: 'first', pid: 4242 }, alive } );
+	const got = await acquire( { dir, owner: { label: 'second', pid: process.pid }, alive, queueFile: file, wait: async () => assert.fail( 'two free slots: no wait' ) } );
+	assert.ok( got.path );
+	assert.deepEqual( readQueue( file ).entries.map( ( e ) => e.label ), [ 'first' ] );
+	fs.rmSync( got.path, { recursive: true, force: true } );
+	queuePlace( { file, lockDir: dir, me: { label: 'gone', pid: 999999 }, alive: () => true } );
+	assert.equal( queuePlace( { file, lockDir: dir, me: { label: 'late', pid: process.pid }, alive } ), 1, 'the dead waiter is dropped; first stays ahead' );
+	const old = fs.readFileSync( file, 'utf8' ).replace( /beat (\d+)/, () => `beat ${ Date.now() - 10 * 60 * 1000 }` );
+	fs.writeFileSync( file, old );
+	assert.equal( queuePlace( { file, lockDir: dir, me: { label: 'late', pid: process.pid }, alive } ), 0, 'a waiter silent for ten minutes is dropped' );
+} );
+
+test( 'acquire run outside the real slot folder never touches the shared queue', async ( t ) => {
+	const dir = tmp();
+	t.after( () => fs.rmSync( dir, { recursive: true, force: true } ) );
+	await acquire( { dir, owner: { label: 'me', pid: process.pid } } );
+	assert.equal( fs.existsSync( path.join( dir, 'queue.md' ) ), true );
 } );
 
 test( 'the temp guard refuses a temp folder on C: and allows one on E:', () => {

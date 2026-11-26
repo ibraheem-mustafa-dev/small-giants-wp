@@ -223,3 +223,6 @@ sites/*/build/qa/flows/
 .claude/backups/2026-10-08/
 .claude/backups/2026-10-09/
 sites/*/build/intake/intake.prev.json
+
+# The heavy-run queue, rewritten by scripts/computed-route/tools/heavy-slot.mjs on every poll
+.claude/queue.md

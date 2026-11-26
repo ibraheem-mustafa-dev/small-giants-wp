@@ -7,12 +7,14 @@
 //                                                                          job that may run longer uses `run`); prints its path
 //   node tools/heavy-slot.mjs [--dir <folder>] release <label>              free every slot <label> holds
 //   node tools/heavy-slot.mjs [--dir <folder>] status                       who holds each slot, and the machine's load
-// Waits for one of two slots; after ten minutes it takes a third only when the machine has room. Options are read only before
+// Waits its turn in the shared queue (.claude/queue.md, lib/heavy-queue.mjs) for one of two slots; from the top of the queue,
+// after ten minutes, it takes a third only when the machine has room. Options are read only before
 // `--`; --dir overrides the slot folder (default E:/sgs-tmp/general-cloning/heavy).
 import { spawn } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { SLOT_DIR, NORMAL_SLOTS, OVERFLOW_SLOT, LEASE_MS, acquire, releaseLabel, releasePath, readOwner, isStale, machineLoad, hasRoom, keepAlive } from '../lib/heavy-slot.mjs';
+import { QUEUE_FILE, readQueue } from '../lib/heavy-queue.mjs';
 
 const log = ( m ) => process.stderr.write( `heavy-slot: ${ m }\n` );
 
@@ -57,6 +59,9 @@ export async function main( argv ) {
 			const owner = readOwner( p );
 			process.stdout.write( `${ name }: ${ owner ? `${ owner.label }${ isStale( p ) ? ' (stale, will be freed)' : '' }` : 'free' }\n` );
 		}
+		const waiting = readQueue( QUEUE_FILE ).entries;
+		process.stdout.write( `queue (${ QUEUE_FILE }): ${ waiting.length ? waiting.map( ( e, i ) => `${ i + 1 }. ${ e.label } (waited ${ e.joined ? Math.round( ( Date.now() - e.joined ) / 60000 ) : '?' } min)` ).join( ', ' ) : 'none waiting' }
+` );
 		const l = await machineLoad();
 		process.stdout.write( `CPU ${ Math.round( l.cpuBusy * 100 ) }% busy, ${ ( l.freeMem / 1024 ** 3 ).toFixed( 1 ) } GB memory free, ${ ( l.freeC / 1024 ** 3 ).toFixed( 1 ) } GB free on C: (room for overflow: ${ hasRoom( l ) ? 'yes' : 'no' })\n` );
 		return 0;

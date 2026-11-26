@@ -1,0 +1,32 @@
+[
+	{
+		"file": "lib/heavy-slot.mjs",
+		"find": "if ( place < free.length ) {",
+		"replace": "if ( free.length ) {",
+		"why": "a later waiter takes the free slot ahead of an earlier one"
+	},
+	{
+		"file": "lib/heavy-queue.mjs",
+		"find": "( alive( e.pid ) && now - e.beat <= WAIT_STALE_MS )",
+		"replace": "alive( e.pid )",
+		"why": "a silent waiter whose process id was reused is never dropped"
+	},
+	{
+		"file": "lib/heavy-queue.mjs",
+		"find": "( alive( e.pid ) && now - e.beat <= WAIT_STALE_MS )",
+		"replace": "true",
+		"why": "a dead waiter blocks the queue forever"
+	},
+	{
+		"file": "lib/heavy-slot.mjs",
+		"find": "\t\tprocess.off( 'exit', leave );\n\t\tleave();",
+		"replace": "\t\tprocess.off( 'exit', leave );",
+		"why": "a job that holds a slot stays in the queue"
+	},
+	{
+		"file": "lib/heavy-queue.mjs",
+		"find": "const head = ( -1 === at ? text : text.slice( 0, at ) ).replace( /\\s+$/, '' );",
+		"replace": "const head = '';",
+		"why": "the text above the list is lost"
+	}
+]
