@@ -20,7 +20,6 @@
 import fs from 'fs';
 import path from 'path';
 import { spawnSync } from 'child_process';
-import os from 'os';
 import zlib from 'zlib';
 import { fileURLToPath } from 'url';
 import { openDb, attrRow } from './db.mjs';
@@ -81,13 +80,18 @@ const checked = new Set();
 // block is then checked for this process, so siteLook does not ask the builder again. Nothing is built with SGS_NO_SITE
 // set, for a client with no theme snapshot, or for blocks already checked. Returns the blocks the builder could not build.
 // `run` stands in for spawnSync (tests).
+// The builder's worker processes per run: LOOK_JOBS (SGS_LOOK_JOBS overrides). Each worker renders whole pages and can hold
+// several GB, and other sessions build looks at the same time, so a run never takes one worker per core: on 2026-11-26 three
+// runs at 8 workers each held 18 GB and left the PC with under 1 GB.
+export const LOOK_JOBS = 2;
+export const lookJobs = ( env = process.env ) => Math.max( 1, Number( env.SGS_LOOK_JOBS ) || LOOK_JOBS );
 export function prepareLooks( blocks, client, { dir = SITE_LOOK_DIR, repo = REPO, build = ! process.env.SGS_NO_SITE, run = spawnSync } = {} ) {
 	const snapshot = path.join( repo, 'sites', String( client ), 'theme-snapshot.json' );
 	const due = [ ...new Set( blocks ) ].filter( ( b ) => /^sgs\//.test( b ) && ! checked.has( `${ dir }|${ client }|${ b }` ) );
 	if ( ! build || ! client || ! due.length || ! fs.existsSync( snapshot ) ) {
 		return [];
 	}
-	const jobs = String( Math.max( 1, Math.min( due.length, Math.floor( os.cpus().length / 2 ) || 1 ) ) );
+	const jobs = String( Math.max( 1, Math.min( due.length, lookJobs() ) ) );
 	const args = [ BUILDER, '--snapshot', snapshot, '--site', client, '--out', dir, '--blocks', due.join( ',' ), '--jobs', jobs, ...( runsShop( client, repo ) ? [ '--woocommerce' ] : [] ) ];
 	const r = run( 'python', args, { encoding: 'utf8', cwd: REPO } );
 	// A block the builder reports built or current is checked; any other is left for siteLook, which says why when it is read.

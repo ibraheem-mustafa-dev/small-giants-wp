@@ -9,7 +9,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
-import { loadRecord, partPaths, tierHolds, reachedAtOf, symbolicTiers, withNodeValues, runsShop, rowPaths, compounds, prepareLooks } from '../lib/setting-record.mjs';
+import { loadRecord, partPaths, tierHolds, reachedAtOf, symbolicTiers, withNodeValues, runsShop, rowPaths, compounds, prepareLooks, lookJobs, LOOK_JOBS } from '../lib/setting-record.mjs';
 import { calibrationForNode } from '../lib/paint-state.mjs';
 
 const BLOCK = 'sgs/demo';
@@ -254,4 +254,17 @@ test( 'MUST FAIL: the record names the block\'s content band, the slot its conte
 	assert.equal( loadRecord( BLOCK, CLIENT, { db, dir: lookDir( look ), build: false } ).contentBand, '.sgs-demo__inner' );
 	const none = fixtureDb( [ { setting: 'contentWidth', part: 'sgs-demo__inner', props: [ 'max-width' ] } ], { attrs: [ { ...band, slot: null } ] } );
 	assert.equal( loadRecord( BLOCK, CLIENT, { db: none, dir: lookDir( look ), build: false } ).contentBand, undefined, 'a max-width setting off the content slot names no band' );
+} );
+
+test( 'MUST FAIL: the look builder runs two workers by default, never one per core, and SGS_LOOK_JOBS overrides it', () => {
+	const calls = [];
+	const run = ( cmd, args ) => {
+		calls.push( args );
+		return { stdout: '' };
+	};
+	prepareLooks( [ 'sgs/a', 'sgs/b', 'sgs/c', 'sgs/d' ], 'mamas-munches-redesign', { dir: 'E:/sgs-tmp/look-jobs-test', build: true, run } );
+	const args = calls[ 0 ];
+	assert.equal( args[ args.indexOf( '--jobs' ) + 1 ], '2' );
+	assert.equal( lookJobs( { SGS_LOOK_JOBS: '3' } ), 3 );
+	assert.equal( lookJobs( {} ), LOOK_JOBS );
 } );

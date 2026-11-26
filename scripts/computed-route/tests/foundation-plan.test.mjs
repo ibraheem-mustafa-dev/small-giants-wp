@@ -123,7 +123,7 @@ test( 'MUST FAIL: a new client\'s chain runs every step in order, builds the sit
 	const surfaces = w.launches.at( -1 );
 	assert.deepEqual( surfaces.slice( 0, 4 ), [ 'acme', '--site', SITE, '--only' ] );
 	assert.equal( surfaces[ surfaces.indexOf( '--stages' ) + 1 ], 'inventory,propose,fill,build,apply,walk' );
-	assert.ok( surfaces.includes( '--strict' ) );
+	assert.equal( surfaces.includes( '--strict' ), false, 'a clone run is not strict: strict is for tests only (Bean, S1)' );
 	assert.equal( fs.existsSync( path.join( w.repo, 'sites', 'acme', 'theme-snapshot.json' ) ), true, 'a client with no snapshot gets the extraction as its snapshot' );
 	assert.equal( 'committed', readState( w.file ).steps.tokens.to );
 } );

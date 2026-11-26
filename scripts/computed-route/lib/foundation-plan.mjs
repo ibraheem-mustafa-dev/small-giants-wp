@@ -34,13 +34,13 @@ import { applyPicksFile, cloneSurfaces } from './clone-surface.mjs';
 import { distroOf, runPreflight } from './foundation-preflight.mjs';
 import { heldByState } from './foundation-run.mjs';
 import { intakeCurrent, layoutSurfaces, pageMapBuilt, snapshotDiff, tokenOutput, wslPath } from './foundation-parts.mjs';
-import { runsShop } from './setting-record.mjs';
+import { runsShop, LOOK_JOBS } from './setting-record.mjs';
 import { mediaAssets } from './media-upload.mjs';
 
 export const STEP_IDS = [ 'preflight', 'handoff-check', 'intake-files', 'intake', 'apply-review', 'tokens', 'plugin-build', 'sync', 'snapshot-push', 'site-info', 'media', 'site-build', 'manifest', 'looks', 'skeletons', 'surfaces' ];
 const ROUTE = 'scripts/computed-route';
 // The site look builder's worker processes (each renders a block's instances offline).
-export const LOOK_JOBS = 8;
+export { LOOK_JOBS };
 
 export const sha = ( data ) => crypto.createHash( 'sha256' ).update( data ).digest( 'hex' );
 const fileSha = ( file ) => ( fs.existsSync( file ) && fs.statSync( file ).isFile() ? sha( fs.readFileSync( file ) ) : null );

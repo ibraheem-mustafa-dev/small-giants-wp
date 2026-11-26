@@ -1,0 +1,8 @@
+[
+	{
+		"file": "lib/setting-record.mjs",
+		"find": "Math.min( due.length, lookJobs() )",
+		"replace": "Math.min( due.length, 8 )",
+		"why": "the look builder takes one worker per core again"
+	}
+]
