@@ -122,6 +122,79 @@ if ( ! function_exists( 'sgs_builtin_button_sweep_same_attrs' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_builtin_button_sweep_merge_tiers' ) ) {
+
+	/**
+	 * Two per-device settings that painted one property on one element, folded into one that paints exactly what the pair painted.
+	 *
+	 * Each setting prints its desktop value as a base rule and its tablet (max-width 1023.98px) and mobile (767.98px) values inside media
+	 * queries, so a tier it leaves unset shows the next wider one. The kit's rule weighs the same as the old setting's and prints after it,
+	 * so wherever the kit prints any value (its own tier or one it inherits from a wider tier) the kit paints; the old setting paints only
+	 * where the kit prints nothing. A value is a scalar (min-height) or a map of sides (padding); each side is judged alone. An empty
+	 * string or null prints nothing, so it counts as unset. The merged setting holds a tier only where its value differs from what the
+	 * wider tier already gives, so every width paints as before.
+	 *
+	 * @param array $old The old setting's value: { desktop, tablet, mobile }.
+	 * @param array $kit The kit setting's value, the same shape.
+	 * @return array The merged value.
+	 */
+	function sgs_builtin_button_sweep_merge_tiers( array $old, array $kit ): array {
+		$tiers = array( 'desktop', 'tablet', 'mobile' );
+		$flat  = static function ( array $value ) use ( $tiers ): array {
+			$out = array();
+			foreach ( $tiers as $tier ) {
+				$at = $value[ $tier ] ?? null;
+				if ( is_array( $at ) ) {
+					foreach ( $at as $side => $v ) {
+						if ( is_scalar( $v ) && '' !== (string) $v ) {
+							$out[ $tier ][ (string) $side ] = $v;
+						}
+					}
+				} elseif ( is_scalar( $at ) && '' !== (string) $at ) {
+					$out[ $tier ][''] = $at;
+				}
+			}
+			return $out;
+		};
+		$sides = static function ( array $value ) use ( $tiers ): array {
+			$names = array();
+			foreach ( $tiers as $tier ) {
+				$at = $value[ $tier ] ?? null;
+				$names = array_merge( $names, is_array( $at ) ? array_map( 'strval', array_keys( $at ) ) : array( '' ) );
+			}
+			return array_values( array_unique( $names ) );
+		};
+		$o     = $flat( $old );
+		$k     = $flat( $kit );
+		$boxed = array() !== array_filter( array_merge( $old, $kit ), 'is_array' );
+		// What the setting shows at a tier: its own value there, else the next wider tier's.
+		$shown = static function ( array $f, string $tier, string $side ) {
+			foreach ( array_slice( array( 'mobile', 'tablet', 'desktop' ), array_search( $tier, array( 'mobile', 'tablet', 'desktop' ), true ) ) as $t ) {
+				if ( isset( $f[ $t ][ $side ] ) ) {
+					return $f[ $t ][ $side ];
+				}
+			}
+			return null;
+		};
+		$out = array();
+		foreach ( array_unique( array_merge( $sides( $old ), $sides( $kit ) ) ) as $side ) {
+			$wider = null;
+			foreach ( $tiers as $tier ) {
+				$paints = $shown( $k, $tier, $side ) ?? $shown( $o, $tier, $side );
+				if ( null !== $paints && (string) $paints !== (string) $wider ) {
+					if ( $boxed ) {
+						$out[ $tier ][ $side ] = $paints;
+					} else {
+						$out[ $tier ] = $paints;
+					}
+				}
+				$wider = $paints ?? $wider;
+			}
+		}
+		return $out;
+	}
+}
+
 if ( ! function_exists( 'sgs_builtin_button_sweep_attrs' ) ) {
 
 	/**
@@ -151,8 +224,8 @@ if ( ! function_exists( 'sgs_builtin_button_sweep_attrs' ) ) {
 			if ( $old !== $new ) {
 				unset( $out[ $old ] );
 				if ( 'merge-tier-object' === $kind && array_key_exists( $new, $out ) && is_array( $out[ $new ] ) && is_array( $value ) ) {
-					// Both settings were saved: each device and side the new one leaves unset keeps the old one's value, as the cascade painted it.
-					$out[ $new ] = array_replace_recursive( $value, $out[ $new ] );
+					// Both settings were saved: the merged value paints what the pair painted (the kit wins wherever it prints a value).
+					$out[ $new ] = sgs_builtin_button_sweep_merge_tiers( $value, $out[ $new ] );
 					continue;
 				}
 				if ( array_key_exists( $new, $out ) ) {

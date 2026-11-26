@@ -107,8 +107,14 @@ function sgs_builtin_button_sweep_run( array $words ): void {
 			$map_file = dirname( __DIR__ ) . '/scripts/data/' . basename( substr( (string) $word, 4 ) );
 		}
 	}
+	if ( '' !== $map_file && ! is_readable( $map_file ) ) {
+		WP_CLI::error( 'map file not found in scripts/data: ' . basename( $map_file ) );
+	}
 	$map = sgs_builtin_button_sweep_map( $map_file );
 	if ( '' !== $map_file ) {
+		if ( array() === $map ) {
+			WP_CLI::error( 'map file holds no rename rows: ' . basename( $map_file ) );
+		}
 		$blocks = array_keys( $map );
 	}
 	foreach ( $words as $word ) {
