@@ -129,6 +129,7 @@ const GUARD_FUNCTIONS = array(
 	'sgs_hover_guarded_rule',
 	'sgs_hover_state_rules',
 	'sgs_hover_media_wrap',
+	'sgs_touch_hover_css',
 );
 
 /** Token types treated as insignificant whitespace/comments when reducing a span to its meaningful tokens. */
