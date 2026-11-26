@@ -15,8 +15,8 @@
  * DropdownSettingsPanel.js and SplitPanel.js live in this directory; the
  * panels shared with the bar block (utils, useNavMenuSource,
  * useItemHoverContrast, TypographyPanel, ItemsPanel, SubmenuItemsPanel,
- * DropdownStylePanel, EffectsPanel, FeaturedPanel, MegaDrawerPanel,
- * ColourRowExtras, ColourTreatment, ListLayoutPanel) live in
+ * DropdownStylePanel, FeaturedPanel, MegaDrawerPanel, ItemEffectsPanel,
+ * LinkExtrasRows, ColourRowExtras, ColourTreatment) live in
  * `src/shared/nav-menu-panels/`.
  *
  * `colourRows` STAYS HERE — as a single literal
@@ -42,6 +42,8 @@ import {
 	fillRow,
 	textRow,
 	SeparatorsPanel,
+	ResponsiveBoxControls,
+	ResponsiveLengthControl,
 } from '../../components';
 import {
 	ItemTextTreatment,
@@ -56,20 +58,17 @@ import NavMenuNotices from './NavMenuNotices';
 import MenuSettingsPanel from './MenuSettingsPanel';
 import SplitPanel from './SplitPanel';
 import DropdownSettingsPanel from './DropdownSettingsPanel';
-import ListLayoutPanel from '../../shared/nav-menu-panels/ListLayoutPanel';
 import TypographyPanel from '../../shared/nav-menu-panels/TypographyPanel';
 import ItemsPanel from '../../shared/nav-menu-panels/ItemsPanel';
 import SubmenuItemsPanel from '../../shared/nav-menu-panels/SubmenuItemsPanel';
 import DropdownStylePanel from '../../shared/nav-menu-panels/DropdownStylePanel';
-import EffectsPanel from '../../shared/nav-menu-panels/EffectsPanel';
 import FeaturedPanel from '../../shared/nav-menu-panels/FeaturedPanel';
 import MegaDrawerPanel from '../../shared/nav-menu-panels/MegaDrawerPanel';
 import ItemEffectsPanel from '../../shared/nav-menu-panels/ItemEffectsPanel';
+import { LinkSpacingRows } from '../../shared/nav-menu-panels/LinkExtrasRows';
 import RowExtrasPanel from './RowExtrasPanel';
 import DisabledItemsPanel from './DisabledItemsPanel';
 import OrnamentHiddenItemsPanel from './OrnamentHiddenItemsPanel';
-import SubmenuLinkPaddingPanel from './SubmenuLinkPaddingPanel';
-import MegaBodyPaddingPanel from './MegaBodyPaddingPanel';
 import SectionMotionPanel from './SectionMotionPanel';
 // The bar's own treatment node (none / swap / sweep + angle) for its separator
 // colour row, reused as-is: it names nothing bar-specific.
@@ -595,6 +594,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						attributes.accordionScrollIntoView
 					}
 					parentRowAction={ attributes.parentRowAction }
+					megaDrawerMode={ megaDrawerMode }
 					setAttributes={ setAttributes }
 				/>
 
@@ -606,10 +606,18 @@ export default function Edit( { attributes, setAttributes, name } ) {
 
 				<SplitPanel
 					justifyContent={ justifyContent }
+					listColumns={ listColumns }
 					itemHoverScope={ itemHoverScope }
 					splitAfterItemId={ splitAfterItemId }
 					splitSide={ splitSide }
 					resolvedItems={ resolvedItems }
+					setAttributes={ setAttributes }
+				/>
+
+				{ /* How an accordion section opens and closes: a behaviour setting, so
+				   it lives in Settings (Spec 35 Part O placement rule). */ }
+				<SectionMotionPanel
+					attributes={ attributes }
 					setAttributes={ setAttributes }
 				/>
 
@@ -638,34 +646,24 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			   wrapper component — see the bar block's own note on why an extra
 			   hop makes a detector's control corpus blind. ─────────────────── */ }
 			<InspectorControls group="styles">
-				<ListLayoutPanel
-					gap={ gap }
-					showColumnsControl
-					listColumns={ listColumns }
-					padding={ attributes.padding }
-					showMargin
-					margin={ attributes.margin }
-					showItemPadding
-					itemPadding={ attributes.itemPadding }
-					itemMinHeight={ attributes.itemMinHeight }
-					itemBadgePadding={ attributes.itemBadgePadding }
-					itemBadgeBorderRadius={ attributes.itemBadgeBorderRadius }
-					itemBadgeGap={ attributes.itemBadgeGap }
-					showItemGap
-					itemGap={ attributes.itemGap }
+				{ /* The shared Spacing panel (Padding, Margin) plus the space between
+				   menu items, which is spacing too. No Max width: this block is
+				   ALWAYS a child (of a site-header-row or of sgs/nav-drawer) and
+				   the parent owns width (D540). */ }
+				<ResponsiveBoxControls
+					attributes={ attributes }
 					setAttributes={ setAttributes }
-				/>
-
-				<SubmenuLinkPaddingPanel
-					submenuLinkPadding={ attributes.submenuLinkPadding }
-					setAttributes={ setAttributes }
-				/>
-
-				<MegaBodyPaddingPanel
-					name={ name }
-					megaBodyPadding={ attributes.megaBodyPadding }
-					setAttributes={ setAttributes }
-				/>
+				>
+					<ResponsiveLengthControl
+						label={ __( 'Space between items', 'sgs-blocks' ) }
+						help={ __(
+							'Space between menu items at this device. Tablet and mobile follow desktop until set.',
+							'sgs-blocks'
+						) }
+						value={ gap }
+						onChange={ ( obj ) => setAttributes( { gap: obj } ) }
+					/>
+				</ResponsiveBoxControls>
 
 				<TypographyPanel
 					itemFontWeightCurrent={ itemFontWeightCurrent }
@@ -763,7 +761,15 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					submenuOpacity={ submenuOpacity }
 					submenuOpacityHover={ submenuOpacityHover }
 					setAttributes={ setAttributes }
-				/>
+				>
+					<LinkSpacingRows
+						itemPadding={ attributes.itemPadding }
+						itemMinHeight={ attributes.itemMinHeight }
+						showItemGap
+						itemGap={ attributes.itemGap }
+						setAttributes={ setAttributes }
+					/>
+				</ItemsPanel>
 
 				{ /* The lines between stacked top-level rows (the drawer's counterpart of the
 				   bar's between-item separator): the shared Separators setting. */ }
@@ -775,6 +781,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 
 				<SubmenuItemsPanel
 					sublinkMarkerIcon={ sublinkMarkerIcon }
+					submenuLinkPadding={ attributes.submenuLinkPadding }
 					setAttributes={ setAttributes }
 				/>
 
@@ -796,20 +803,6 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					attribute="submenuSeparators"
 					attributes={ attributes }
 					setAttributes={ setAttributes }
-				/>
-
-				<SectionMotionPanel
-					attributes={ attributes }
-					setAttributes={ setAttributes }
-				/>
-
-				<EffectsPanel
-					itemMagnetEnabled={ itemMagnetEnabled }
-					setAttributes={ setAttributes }
-					magnetStrength={ itemMagnetStrength }
-					onMagnetStrengthChange={ ( val ) =>
-						setAttributes( { itemMagnetStrength: val } )
-					}
 				/>
 
 				<FeaturedPanel
@@ -840,6 +833,8 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					menuRef={ ref }
 					resolvedItems={ resolvedItems }
 					megaDrawerMode={ megaDrawerMode }
+					megaBodyPadding={ attributes.megaBodyPadding }
+					blockName={ name }
 					megaDrawerFallbackIds={ megaDrawerFallbackIds }
 					setAttributes={ setAttributes }
 				/>
@@ -850,6 +845,12 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					itemMotionDuration={ itemMotionDuration }
 					itemMotionEasing={ itemMotionEasing }
 					itemMotionEasingCustom={ itemMotionEasingCustom }
+					showMagnet
+					itemMagnetEnabled={ itemMagnetEnabled }
+					magnetStrength={ itemMagnetStrength }
+					onMagnetStrengthChange={ ( val ) =>
+						setAttributes( { itemMagnetStrength: val } )
+					}
 					setAttributes={ setAttributes }
 				/>
 

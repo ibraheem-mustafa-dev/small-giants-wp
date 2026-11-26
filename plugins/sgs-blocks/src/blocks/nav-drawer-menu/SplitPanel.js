@@ -11,12 +11,17 @@
  * @package SGS\Blocks
  */
 import { __ } from '@wordpress/i18n';
-import { PanelBody, SelectControl, Notice } from '@wordpress/components';
+import {
+	PanelBody,
+	RangeControl,
+	SelectControl,
+	Notice,
+} from '@wordpress/components';
 import {
 	ToggleGroupControl,
 	ToggleGroupControlOption,
 } from '../../components/primitives';
-import { TierSelectControl } from '../../components';
+import { ResponsiveControl, TierSelectControl } from '../../components';
 
 const JUSTIFY_CONTENT_OPTIONS = [
 	{ label: __( 'Start', 'sgs-blocks' ), value: 'flex-start' },
@@ -29,6 +34,7 @@ const JUSTIFY_CONTENT_OPTIONS = [
 /**
  * @param {Object}   root0
  * @param {Object}   root0.justifyContent   Block attribute: `{desktop,tablet,mobile}`.
+ * @param {Object}   [root0.listColumns]    Block attribute `listColumns`: how many columns the list uses inside the menu panel, per device.
  * @param {string}   root0.itemHoverScope   Block attribute — 'all' | 'with-submenu'.
  * @param {string}   root0.splitAfterItemId Block attribute — an item identifier
  *                                          from `resolvedItems`, or ''.
@@ -38,6 +44,7 @@ const JUSTIFY_CONTENT_OPTIONS = [
  */
 export default function SplitPanel( {
 	justifyContent,
+	listColumns,
 	itemHoverScope,
 	splitAfterItemId,
 	splitSide,
@@ -78,6 +85,32 @@ export default function SplitPanel( {
 					'sgs-blocks'
 				) }
 			/>
+
+			<ResponsiveControl label={ __( 'Columns', 'sgs-blocks' ) }>
+				{ ( breakpoint ) => (
+					<RangeControl
+						label={ __( 'Columns', 'sgs-blocks' ) }
+						hideLabelFromVision
+						help={ __(
+							'How many columns this list uses inside the menu panel. 1 is the default.',
+							'sgs-blocks'
+						) }
+						min={ 1 }
+						max={ 4 }
+						value={ listColumns?.[ breakpoint ] || 1 }
+						onChange={ ( value ) =>
+							setAttributes( {
+								listColumns: {
+									...listColumns,
+									[ breakpoint ]: value || undefined,
+								},
+							} )
+						}
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+				) }
+			</ResponsiveControl>
 
 			<SelectControl
 				label={ __( 'Hover colour applies to', 'sgs-blocks' ) }

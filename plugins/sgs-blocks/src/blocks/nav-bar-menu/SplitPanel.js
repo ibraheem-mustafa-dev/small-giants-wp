@@ -46,6 +46,7 @@ const JUSTIFY_CONTENT_OPTIONS = [
 /**
  * @param {Object}   root0
  * @param {Object}   root0.justifyContent   Block attribute: `{desktop,tablet,mobile}`.
+ * @param {string}   [root0.flexWrap]       Block attribute `flexWrap` ('' | 'nowrap' | 'wrap'): whether links that overrun the bar drop onto a further row.
  * @param {string}   root0.splitAfterItemId Block attribute — an item identifier
  *                                          from `resolvedItems`, or ''.
  * @param {string}   root0.splitSide        Block attribute — '' | 'before' | 'after'.
@@ -57,6 +58,7 @@ const JUSTIFY_CONTENT_OPTIONS = [
  */
 export default function SplitPanel( {
 	justifyContent,
+	flexWrap,
 	splitAfterItemId,
 	splitSide,
 	showBurger,
@@ -131,6 +133,32 @@ export default function SplitPanel( {
 					/>
 				) }
 			</ResponsiveControl>
+
+			<SelectControl
+				label={ __( 'Wrap items', 'sgs-blocks' ) }
+				help={ __(
+					'Default keeps every link on one row. Choose Wrap to let links that overrun the bar drop onto a further row.',
+					'sgs-blocks'
+				) }
+				value={ flexWrap || '' }
+				options={ [
+					{
+						value: '',
+						label: __( 'One row (default)', 'sgs-blocks' ),
+					},
+					{
+						value: 'nowrap',
+						label: __( 'One row', 'sgs-blocks' ),
+					},
+					{
+						value: 'wrap',
+						label: __( 'Wrap onto more rows', 'sgs-blocks' ),
+					},
+				] }
+				onChange={ ( value ) => setAttributes( { flexWrap: value } ) }
+				__nextHasNoMarginBottom
+				__next40pxDefaultSize
+			/>
 
 			<ToggleGroupControl
 				label={ __( 'Split this menu', 'sgs-blocks' ) }

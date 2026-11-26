@@ -1,17 +1,24 @@
 import { __ } from '@wordpress/i18n';
 import { PanelBody, CheckboxControl } from '@wordpress/components';
 import {
-	ToggleGroupControl,
-	ToggleGroupControlOption,
-} from '../../components/primitives';
+	BOX_UNITS,
+	ResponsiveOverride,
+	SgsBoxControl,
+	normaliseResponsiveBox,
+} from '../../components';
+import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 
 /**
- * SGS Nav Drawer Menu — Settings tab: "Mega menu (drawer)" PanelBody.
+ * SGS Nav Drawer Menu — Styles tab: "Mega menu" PanelBody.
  *
  * `megaDrawerMode` (Spec 36 FR-36-6, Wave 3C U-7): `panel` (default) shows a
  * mega item's own mega panel post inside its accordion in the drawer (no
  * floating shell, text in the drawer's colours); `link` makes it a plain
- * link. Bean 2026-09-13: not everyone wants mega panels in the drawer.
+ * link. Bean 2026-09-13: not everyone wants mega panels in the drawer. The
+ * Panel or Link toggle itself sits in the Settings "Menu" panel
+ * (`MenuSettingsPanel.js`); this panel reads the mode and shows the mega panel
+ * padding (`megaBodyPadding`, the padding around a mega item's panel inside its
+ * accordion; empty keeps style.css's 0 12px 12px) only while the mode is Panel.
  *
  * The checklist below takes precedence for one item: a mega item authored
  * WITH real nested child links (a core/navigation-submenu), ticked here,
@@ -23,7 +30,9 @@ import {
  * @param {number}   root0.menuRef               The block's `ref` attribute (menu id).
  * @param {Array}    root0.resolvedItems         From useNavMenuSource() — each item
  *                                               also carries `isMega`/`hasChildren`.
- * @param {string}   root0.megaDrawerMode        The block's `megaDrawerMode` attribute.
+ * @param {string}   root0.megaDrawerMode        The block's `megaDrawerMode` attribute (read only here).
+ * @param {Object}   root0.megaBodyPadding       The block's `megaBodyPadding` attribute, a tier object of {top,right,bottom,left} boxes.
+ * @param {string}   root0.blockName             The block's registered name, for the padding's default sides.
  * @param {string[]} root0.megaDrawerFallbackIds The block's `megaDrawerFallbackIds` attribute.
  * @param {Function} root0.setAttributes         The block's attribute setter.
  */
@@ -31,6 +40,8 @@ export default function MegaDrawerPanel( {
 	menuRef,
 	resolvedItems,
 	megaDrawerMode,
+	megaBodyPadding,
+	blockName,
 	megaDrawerFallbackIds,
 	setAttributes,
 } ) {
@@ -47,34 +58,42 @@ export default function MegaDrawerPanel( {
 
 	return (
 		<PanelBody
-			title={ __( 'Mega menu (drawer)', 'sgs-blocks' ) }
+			title={ __( 'Mega menu', 'sgs-blocks' ) }
 			initialOpen={ false }
 		>
-			<ToggleGroupControl
-				label={ __( 'Mega items in the drawer', 'sgs-blocks' ) }
-				help={ __(
-					'Panel shows each mega item’s own panel inside its drawer accordion. Link makes it a plain link.',
-					'sgs-blocks'
-				) }
-				value={ 'link' === megaDrawerMode ? 'link' : 'panel' }
-				onChange={ ( val ) =>
-					setAttributes( {
-						megaDrawerMode: 'link' === val ? 'link' : 'panel',
-					} )
-				}
-				isBlock
-				__nextHasNoMarginBottom
-				__next40pxDefaultSize
-			>
-				<ToggleGroupControlOption
-					value="panel"
-					label={ __( 'Panel', 'sgs-blocks' ) }
-				/>
-				<ToggleGroupControlOption
-					value="link"
-					label={ __( 'Link', 'sgs-blocks' ) }
-				/>
-			</ToggleGroupControl>
+			{ 'link' !== megaDrawerMode && (
+				<ResponsiveOverride
+					label={ __( 'Mega panel padding', 'sgs-blocks' ) }
+					value={ megaBodyPadding }
+					onChange={ ( obj ) =>
+						setAttributes( { megaBodyPadding: obj } )
+					}
+				>
+					{ ( { ownValue, setOwnValue } ) => (
+						<SgsBoxControl
+							label={ __( 'Mega panel padding', 'sgs-blocks' ) }
+							help={ __(
+								'Space around a mega item’s panel when it opens in the drawer. Empty keeps the default 0 12px 12px.',
+								'sgs-blocks'
+							) }
+							values={
+								ownValue && typeof ownValue === 'object'
+									? ownValue
+									: {}
+							}
+							units={ BOX_UNITS }
+							presets
+							defaults={ spacingDefaultsFor(
+								blockName,
+								'megaBodyPadding'
+							) }
+							onChange={ ( next ) =>
+								setOwnValue( normaliseResponsiveBox( next ) )
+							}
+						/>
+					) }
+				</ResponsiveOverride>
+			) }
 			{ 0 === menuRef && (
 				<p>
 					{ __(

@@ -26,6 +26,8 @@ import {
 import { resolveTier } from '../../utils';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
+import BurgerScopeRows from './BurgerScopeRows';
+import BurgerDrawerRows from './BurgerDrawerRows';
 /**
  * Wave 3C U-9 (§4.4) — burger morph pose options.
  *
@@ -87,6 +89,8 @@ const BURGER_MORPH_OPTIONS = [
  * @param {number}   root0.triggerMagnetStrength `triggerMagnetStrength`.
  * @param {number}   root0.burgerBarCount        `burgerBarCount` — 3 | 2.
  * @param {string}   root0.burgerMorph           `burgerMorph` — x | x-rotate | line | none.
+ * @param {number}   root0.collapsePoint         `collapsePoint` — the width below which the links collapse into the burger.
+ * @param {number}   root0.drawerRef             `drawerRef` — the menu panel (a `sgs_drawer` post id, or 0) the burger opens.
  * @param {Function} root0.setAttributes         The block's attribute setter.
  */
 export default function BurgerPanel( {
@@ -102,6 +106,8 @@ export default function BurgerPanel( {
 	triggerMagnetStrength,
 	burgerBarCount,
 	burgerMorph,
+	collapsePoint,
+	drawerRef,
 	setAttributes,
 } ) {
 	// FR-U18-G1: this panel's `edit.js` caller does not pass `burgerWidth`
@@ -195,6 +201,16 @@ export default function BurgerPanel( {
 					'sgs-blocks'
 				) }
 			</p>
+
+			<BurgerScopeRows
+				collapsePoint={ collapsePoint }
+				setAttributes={ setAttributes }
+			/>
+
+			<BurgerDrawerRows
+				drawerRef={ drawerRef }
+				setAttributes={ setAttributes }
+			/>
 
 			{ /* ⛔ OMIT, never disable — a text-only button has no
 			   icon to pick, so the picker is absent rather than greyed out. */ }

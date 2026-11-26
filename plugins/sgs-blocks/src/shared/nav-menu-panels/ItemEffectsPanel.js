@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { PanelBody, RangeControl } from '@wordpress/components';
+import { PanelBody, RangeControl, ToggleControl } from '@wordpress/components';
 import EasingAtom from '../../components/motion/EasingAtom';
 import {
 	ToggleGroupControl,
@@ -22,17 +22,26 @@ const LABEL_ROLL_OPTIONS = [
  *   the opacity lives here. Not on the bar (no reference dims bar items).
  * - Label roll (M-25): the label rolls to a copy of itself on hover.
  * - One motion time and curve for every item effect of the block.
+ * - Magnetic hover pull (`showMagnet`, the two menus): `itemMagnetEnabled` nudges each item label toward the cursor on
+ *   hover; `itemMagnetStrength` (optional) sets how far. This is the ITEM magnet. The MENU BUTTON has its own, separate
+ *   pull with its own radius and strength (FR-41-31) in the bar's "Menu Button" panel: two different elements, two
+ *   controls, deliberately not merged. The strength control shows only while the pull is on, and can return to unset
+ *   (`allowReset` with `resetFallbackValue={ undefined }`; `initialPosition` is the slider's starting thumb only).
  *
- * @param {Object}   root0                        Props.
- * @param {boolean}  root0.showDim                Show the sibling-dim opacity control.
- * @param {boolean}  root0.showTextShift          Show the text-shift-on-hover control (sgs/icon-list).
- * @param {number}   root0.itemTextShiftHover     `itemTextShiftHover`.
- * @param {number}   root0.siblingDimOpacity      `siblingDimOpacity`.
- * @param {string}   root0.labelRoll              `labelRoll`.
- * @param {number}   root0.itemMotionDuration     `itemMotionDuration`.
- * @param {string}   root0.itemMotionEasing       `itemMotionEasing`.
- * @param {string}   root0.itemMotionEasingCustom `itemMotionEasingCustom`.
- * @param {Function} root0.setAttributes          The block's attribute setter.
+ * @param {Object}   root0                          Props.
+ * @param {boolean}  root0.showDim                  Show the sibling-dim opacity control.
+ * @param {boolean}  root0.showTextShift            Show the text-shift-on-hover control (sgs/icon-list).
+ * @param {number}   root0.itemTextShiftHover       `itemTextShiftHover`.
+ * @param {number}   root0.siblingDimOpacity        `siblingDimOpacity`.
+ * @param {string}   root0.labelRoll                `labelRoll`.
+ * @param {number}   root0.itemMotionDuration       `itemMotionDuration`.
+ * @param {string}   root0.itemMotionEasing         `itemMotionEasing`.
+ * @param {string}   root0.itemMotionEasingCustom   `itemMotionEasingCustom`.
+ * @param {boolean}  [root0.showMagnet]             Show the Magnetic hover pull toggle.
+ * @param {boolean}  [root0.itemMagnetEnabled]      `itemMagnetEnabled`.
+ * @param {number}   [root0.magnetStrength]         `itemMagnetStrength`; `undefined` means unset (the caller's shipped default applies).
+ * @param {Function} [root0.onMagnetStrengthChange] When supplied, the "Pull strength" control is drawn (while the pull is on).
+ * @param {Function} root0.setAttributes            The block's attribute setter.
  */
 export default function ItemEffectsPanel( {
 	showDim = true,
@@ -43,8 +52,13 @@ export default function ItemEffectsPanel( {
 	itemMotionDuration,
 	itemMotionEasing,
 	itemMotionEasingCustom,
+	showMagnet = false,
+	itemMagnetEnabled,
+	magnetStrength,
+	onMagnetStrengthChange,
 	setAttributes,
 } ) {
+	const hasStrengthControl = typeof onMagnetStrengthChange === 'function';
 	return (
 		<PanelBody
 			title={ __( 'Item effects', 'sgs-blocks' ) }
@@ -99,6 +113,44 @@ export default function ItemEffectsPanel( {
 						} )
 					}
 					allowReset
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				/>
+			) }
+
+			{ showMagnet && (
+				<ToggleControl
+					label={ __( 'Magnetic hover pull', 'sgs-blocks' ) }
+					checked={ !! itemMagnetEnabled }
+					onChange={ ( val ) =>
+						setAttributes( { itemMagnetEnabled: val } )
+					}
+					help={ __(
+						'Nudges each item label a few pixels toward the cursor on hover. Off automatically when the visitor is using touch, and when reduced motion is requested.',
+						'sgs-blocks'
+					) }
+					__nextHasNoMarginBottom
+				/>
+			) }
+			{ showMagnet && hasStrengthControl && itemMagnetEnabled && (
+				<RangeControl
+					label={ __( 'Pull strength', 'sgs-blocks' ) }
+					help={ __(
+						'How strongly each item leans toward the cursor. Leave unset for the original strength.',
+						'sgs-blocks'
+					) }
+					value={ magnetStrength }
+					initialPosition={ 0.15 }
+					min={ 0.02 }
+					max={ 0.5 }
+					step={ 0.01 }
+					onChange={ ( val ) =>
+						onMagnetStrengthChange(
+							typeof val === 'number' ? val : undefined
+						)
+					}
+					allowReset
+					resetFallbackValue={ undefined }
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 				/>

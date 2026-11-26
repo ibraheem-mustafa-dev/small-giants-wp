@@ -39,6 +39,7 @@ import { SgsBorderControl, SgsLengthControl } from '../../components';
  * @param {number}   [root0.submenuOpacity]        `submenuOpacity` — the SUBLINK's own resting opacity, 0 to 1, no default. Genuinely separate from itemOpacity (fantasy needs opposite directions on the two elements).
  * @param {number}   [root0.submenuOpacityHover]   `submenuOpacityHover` — the sublink's own hover/focus-visible opacity, 0 to 1, no default.
  * @param {Function} root0.setAttributes           The block's attribute setter.
+ * @param {Node}     [root0.children]              Extra rows, drawn under the last row (the link spacing rows, `LinkExtrasRows.js`).
  */
 export default function ItemsPanel( {
 	itemBorderWidth,
@@ -52,6 +53,7 @@ export default function ItemsPanel( {
 	submenuOpacity,
 	submenuOpacityHover,
 	setAttributes,
+	children = null,
 } ) {
 	return (
 		<PanelBody
@@ -178,6 +180,7 @@ export default function ItemsPanel( {
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>
+			{ children }
 		</PanelBody>
 	);
 }

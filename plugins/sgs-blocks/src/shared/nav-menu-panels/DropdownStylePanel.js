@@ -7,6 +7,7 @@ import {
 	shadowAttrKeys,
 } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import SubmenuLinkPaddingRow from './SubmenuLinkPaddingRow';
 
 /**
  * SGS Nav Bar/Drawer Menu (shared, sgs/nav-bar-menu + sgs/nav-drawer-menu) —
@@ -52,25 +53,27 @@ import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
  * The lines BETWEEN submenu rows are not here: they are the shared Separators setting
  * (`submenuSeparators`), mounted beside this panel by each block's edit.js.
  *
- * @param {Object}   root0                       Props.
- * @param {boolean}  root0.showSizingControls    True on `sgs/nav-bar-menu`, false on
- *                                               `sgs/nav-drawer-menu` (see docblock above).
- * @param {boolean}  [root0.showBoxControls]     True on `sgs/nav-drawer-menu`: shows the section's
- *                                               corner radius and box shadow without the bar-only sizing controls.
- * @param {string}   [root0.submenuTopOffset]    `submenuTopOffset` — bar only.
- * @param {string}   [root0.submenuMinWidth]     `submenuMinWidth` — bar only.
- * @param {Object}   root0.submenuPadding        `submenuPadding` — responsive tier object, BOTH.
- * @param {Object}   root0.submenuBorderWidth    `submenuBorderWidth`, BOTH.
- * @param {string}   root0.submenuBorderStyle    `submenuBorderStyle`, BOTH.
- * @param {Object}   [root0.submenuBorderRadius] `submenuBorderRadius` — with `showSizingControls` or `showBoxControls`.
- * @param {string}   [root0.submenuShadow]       `submenuShadow` — with `showSizingControls` or `showBoxControls`. Named explicitly,
- *                                               not read off `attributes`, so the attribute
- *                                               name appears in `edit.js` where
- *                                               inspector-scan rule 21's corpus can see it.
- * @param {string}   [root0.submenuShadowColour] `submenuShadowColour` — with `showSizingControls` or `showBoxControls`.
- * @param {Object}   [root0.attributes]          Full attributes — `ShadowControl` reads and
- *                                               writes its own key pair (bar, and the drawer with `showBoxControls`).
- * @param {Function} root0.setAttributes         The block's attribute setter.
+ * @param {Object}   root0                          Props.
+ * @param {boolean}  root0.showSizingControls       True on `sgs/nav-bar-menu`, false on
+ *                                                  `sgs/nav-drawer-menu` (see docblock above).
+ * @param {boolean}  [root0.showBoxControls]        True on `sgs/nav-drawer-menu`: shows the section's
+ *                                                  corner radius and box shadow without the bar-only sizing controls.
+ * @param {string}   [root0.submenuTopOffset]       `submenuTopOffset` — bar only.
+ * @param {string}   [root0.submenuMinWidth]        `submenuMinWidth` — bar only.
+ * @param {Object}   root0.submenuPadding           `submenuPadding` — responsive tier object, BOTH.
+ * @param {boolean}  [root0.showSubmenuLinkPadding] True on `sgs/nav-bar-menu`: shows "Dropdown link padding" (`submenuLinkPadding`), the padding inside each dropdown or mega link. The drawer draws the same attribute in "Submenu — Items".
+ * @param {Object}   [root0.submenuLinkPadding]     `submenuLinkPadding` — a tier object of {top,right,bottom,left} boxes.
+ * @param {Object}   root0.submenuBorderWidth       `submenuBorderWidth`, BOTH.
+ * @param {string}   root0.submenuBorderStyle       `submenuBorderStyle`, BOTH.
+ * @param {Object}   [root0.submenuBorderRadius]    `submenuBorderRadius` — with `showSizingControls` or `showBoxControls`.
+ * @param {string}   [root0.submenuShadow]          `submenuShadow` — with `showSizingControls` or `showBoxControls`. Named explicitly,
+ *                                                  not read off `attributes`, so the attribute
+ *                                                  name appears in `edit.js` where
+ *                                                  inspector-scan rule 21's corpus can see it.
+ * @param {string}   [root0.submenuShadowColour]    `submenuShadowColour` — with `showSizingControls` or `showBoxControls`.
+ * @param {Object}   [root0.attributes]             Full attributes — `ShadowControl` reads and
+ *                                                  writes its own key pair (bar, and the drawer with `showBoxControls`).
+ * @param {Function} root0.setAttributes            The block's attribute setter.
  */
 export default function DropdownStylePanel( {
 	showSizingControls,
@@ -78,6 +81,8 @@ export default function DropdownStylePanel( {
 	submenuTopOffset,
 	submenuMinWidth,
 	submenuPadding,
+	showSubmenuLinkPadding = false,
+	submenuLinkPadding,
 	submenuBorderWidth,
 	submenuBorderStyle,
 	submenuBorderRadius,
@@ -100,6 +105,9 @@ export default function DropdownStylePanel( {
 						: {} ),
 					...( showBox ? { submenuBorderRadius: {} } : {} ),
 					submenuPadding: {},
+					...( showSubmenuLinkPadding
+						? { submenuLinkPadding: {} }
+						: {} ),
 					submenuBorderWidth: {},
 					submenuBorderStyle: '',
 				} )
@@ -181,6 +189,24 @@ export default function DropdownStylePanel( {
 					} }
 				/>
 			</ToolsPanelItem>
+
+			{ showSubmenuLinkPadding && (
+				<ToolsPanelItem
+					hasValue={ () =>
+						Object.keys( submenuLinkPadding ?? {} ).length > 0
+					}
+					label={ __( 'Dropdown link padding', 'sgs-blocks' ) }
+					onDeselect={ () =>
+						setAttributes( { submenuLinkPadding: {} } )
+					}
+				>
+					<SubmenuLinkPaddingRow
+						label={ __( 'Dropdown link padding', 'sgs-blocks' ) }
+						value={ submenuLinkPadding }
+						setAttributes={ setAttributes }
+					/>
+				</ToolsPanelItem>
+			) }
 
 			<ToolsPanelItem
 				hasValue={ () =>

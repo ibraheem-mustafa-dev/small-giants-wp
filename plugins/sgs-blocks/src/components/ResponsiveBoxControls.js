@@ -15,7 +15,8 @@
  * - The paired Vertical / Horizontal mode (`block.json::supports.sgs.spacingAxes`, `utils/spacing-axes.js`).
  *
  * Max width and Content width are off unless the mount passes `showMaxWidth` or `showContentWidth` (gallery passes
- * both). `title` defaults to "Spacing".
+ * both). `title` defaults to "Spacing". `children` (empty by default) draws extra rows under the last row, for a block
+ * whose spacing includes a control this panel does not own (a menu's space between items).
  *
  * Per-side inheritance is handled by the PHP emitter (`sgs_responsive_normalise_object` + per-side null-coalesce): a
  * blank side on tablet or mobile inherits the tier above. The editor writes only the tier the operator touched;
@@ -94,6 +95,7 @@ function BoxRow( { attr, label, blockName, attributes, setAttributes } ) {
  * @param {string}   [props.blockName]              Registered block name; defaults to the block being edited.
  * @param {boolean}  [props.showMaxWidth=false]     Show the Max width row (the block owns `maxWidth`).
  * @param {boolean}  [props.showContentWidth=false] Show the Content width row (the block owns `contentWidth`).
+ * @param {Node}     [props.children]               Extra rows, drawn under the last row.
  * @return {JSX.Element} The inspector panel.
  */
 export default function ResponsiveBoxControls( {
@@ -104,6 +106,7 @@ export default function ResponsiveBoxControls( {
 	blockName: blockNameProp = '',
 	showMaxWidth = false,
 	showContentWidth = false,
+	children = null,
 } ) {
 	const context = useBlockEditContext();
 	const blockName = blockNameProp || context?.name || '';
@@ -196,6 +199,8 @@ export default function ResponsiveBoxControls( {
 					) }
 				</ResponsiveOverride>
 			) }
+
+			{ children }
 		</PanelBody>
 	);
 }
