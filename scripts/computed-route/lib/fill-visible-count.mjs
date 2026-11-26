@@ -21,17 +21,42 @@ export function countSettings( db, block, cal ) {
 		.map( ( attr ) => ( { attr, slot: cal.settings[ attr ].slot } ) );
 }
 
-// The cards of `cards` ({ rect }) on the first card's row (their boxes overlap by more than half its height) that lie
-// inside `track` ({ rect }) up to a tolerance; with no track box, the cards on the row. 0 when no card is drawn.
+// A card the visitor cannot see though it has a box: at opacity 0 (a fade slider's resting cards) or visibility hidden.
+const unseen = ( c ) => 0 === c.view?.opacity || [ 'hidden', 'collapse' ].includes( c.view?.visibility );
+
+// The horizontal span [ left, right ] a read element shows through: its box cut to its nearest clipping ancestor's box and
+// to the page (each when the read carries it). null for no box.
+const spanOf = ( r ) => {
+	if ( ! r?.rect ) {
+		return null;
+	}
+	let [ l, rt ] = [ r.rect.x, r.rect.x + r.rect.w ];
+	r.view?.clip && ( [ l, rt ] = [ Math.max( l, r.view.clip.x ), Math.min( rt, r.view.clip.x + r.view.clip.w ) ] );
+	r.view?.page > 0 && ( [ l, rt ] = [ Math.max( l, 0 ), Math.min( rt, r.view.page ) ] );
+	return [ l, rt ];
+};
+
+// How many of `cards` (reads: { rect, inFlow, view }) a visitor sees side by side: the drawn, seen cards on the first card's
+// row (boxes overlapping by more than half its height) whose box lies, up to a tolerance, inside the span `track` shows
+// through and inside the card's own clipping ancestor (a swipe track's cards past its edge, or peeking in at it, are not
+// visible); a card overlapping one already counted by more than half its width is the same place (a stacked fade slider's
+// cards). With no track box, the track span is not applied. 0 when no card is drawn; 1 when cards are drawn but none fits
+// (a card wider than the track still shows one card).
 export function visibleCount( track, cards ) {
-	const drawn = cards.filter( ( c ) => c?.rect && c.rect.w > 0 && false !== c.inFlow );
+	const drawn = cards.filter( ( c ) => c?.rect && c.rect.w > 0 && false !== c.inFlow && ! unseen( c ) );
 	if ( ! drawn.length ) {
 		return 0;
 	}
 	const first = drawn[ 0 ].rect;
 	const row = drawn.filter( ( c ) => Math.min( first.y + first.h, c.rect.y + c.rect.h ) - Math.max( first.y, c.rect.y ) > first.h / 2 );
-	const t = track?.rect;
-	return t ? row.filter( ( c ) => c.rect.x >= t.x - TOL && c.rect.x + c.rect.w <= t.x + t.w + TOL ).length : row.length;
+	const t = spanOf( track );
+	const fits = ( c ) => [ t, c.view?.clip ? [ c.view.clip.x, c.view.clip.x + c.view.clip.w ] : null ].every( ( s ) => ! s || ( c.rect.x >= s[ 0 ] - TOL && c.rect.x + c.rect.w <= s[ 1 ] + TOL ) );
+	const counted = [];
+	for ( const c of row.filter( fits ) ) {
+		const over = ( k ) => Math.min( k.rect.x + k.rect.w, c.rect.x + c.rect.w ) - Math.max( k.rect.x, c.rect.x );
+		! counted.some( ( k ) => over( k ) > Math.min( k.rect.w, c.rect.w ) / 2 ) && counted.push( c );
+	}
+	return counted.length || 1;
 }
 
 // Fill's pass for one node: decides and writes the node's count setting from the draft's render. Returns { attr } when a

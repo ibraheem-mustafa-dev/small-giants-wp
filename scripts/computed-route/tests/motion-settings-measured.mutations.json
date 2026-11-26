@@ -1,0 +1,20 @@
+[
+	{
+		"file": "lib/fill-behaviour.mjs",
+		"find": "if ( measured.some( ( m ) => m.node === where.node && m.attr === s.attr ) ) {",
+		"replace": "if ( false ) {",
+		"why": "the autoplay's one card overwrites the visible-card count Fill measured"
+	},
+	{
+		"file": "lib/fill-behaviour.mjs",
+		"find": "m.node === where.node && m.attr === s.attr",
+		"replace": "m.attr === s.attr",
+		"why": "a count measured on another slider holds this one"
+	},
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "palette: ctx.palette, measured } );",
+		"replace": "palette: ctx.palette } );",
+		"why": "the measured writes never reach the settings writer"
+	}
+]

@@ -1,13 +1,13 @@
 [
 	{
 		"file": "lib/fill-resolve.mjs",
-		"find": "\t\tfillVisibleCount( st, rec, ref, cal );\n",
-		"replace": "",
+		"find": "\t\tconst counted = fillVisibleCount( st, rec, ref, cal );\n",
+		"replace": "\t\tconst counted = null;\n",
 		"why": "Fill never reads the visible-card count, so a rail keeps the block's three cards at every width"
 	},
 	{
 		"file": "lib/fill-visible-count.mjs",
-		"find": "c.rect.x >= t.x - TOL && c.rect.x + c.rect.w <= t.x + t.w + TOL",
+		"find": "c.rect.x >= s[ 0 ] - TOL && c.rect.x + c.rect.w <= s[ 1 ] + TOL",
 		"replace": "true",
 		"why": "a swiped rail's cards past the track's edge count as visible"
 	},
@@ -46,5 +46,53 @@
 		"find": "&& 'string' === typeof cal?.settings?.[ attr ]?.slot )",
 		"replace": ")",
 		"why": "a setting calibration never measured is written"
+	},
+	{
+		"file": "lib/fill-visible-count.mjs",
+		"find": "c.rect.w > 0 && false !== c.inFlow && ! unseen( c )",
+		"replace": "c.rect.w > 0 && false !== c.inFlow",
+		"why": "a fade slider's cards at opacity 0 or hidden count as shown"
+	},
+	{
+		"file": "lib/fill-visible-count.mjs",
+		"find": "! counted.some( ( k ) => over( k ) > Math.min( k.rect.w, c.rect.w ) / 2 ) && counted.push( c );",
+		"replace": "counted.push( c );",
+		"why": "cards stacked in one place each count"
+	},
+	{
+		"file": "lib/fill-visible-count.mjs",
+		"find": "> Math.min( k.rect.w, c.rect.w ) / 2 )",
+		"replace": "> 0 )",
+		"why": "a fanned deck's cards overlapping by a quarter count as one"
+	},
+	{
+		"file": "lib/fill-visible-count.mjs",
+		"find": "return counted.length || 1;",
+		"replace": "return counted.length;",
+		"why": "a card wider than the track counts 0, so the tier inherits desktop's count"
+	},
+	{
+		"file": "lib/fill-visible-count.mjs",
+		"find": "r.view?.clip && ( [ l, rt ] =",
+		"replace": "false && ( [ l, rt ] =",
+		"why": "the track's clipping ancestor does not cut what shows"
+	},
+	{
+		"file": "lib/fill-visible-count.mjs",
+		"find": "r.view?.page > 0 && ( [ l, rt ] =",
+		"replace": "false && ( [ l, rt ] =",
+		"why": "the page edge does not cut what shows"
+	},
+	{
+		"file": "lib/fill-visible-count.mjs",
+		"find": "[ t, c.view?.clip ? [ c.view.clip.x, c.view.clip.x + c.view.clip.w ] : null ]",
+		"replace": "[ t ]",
+		"why": "a card's own clipping ancestor is ignored"
+	},
+	{
+		"file": "lib/fill-resolve.mjs",
+		"find": ", ...( counted ? [ counted.attr ] : [] ) ] );",
+		"replace": " ] );",
+		"why": "a count gap is listed again as an unread setting"
 	}
 ]
