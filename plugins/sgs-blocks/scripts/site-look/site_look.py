@@ -1036,19 +1036,51 @@ def file_md5(f, text: bool = True) -> str:
         return 'missing'
 
 
-@functools.lru_cache(maxsize=4)
+@functools.lru_cache(maxsize=8)
 def db_md5(path: str) -> str:
     return file_md5(path, text=False)
 
 
+def tool_out(cmd: list) -> str:
+    """What a tool prints for its version flag; 'absent' when it is not installed or does not answer."""
+    import subprocess
+    try:
+        r = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=60)
+    except (OSError, subprocess.SubprocessError):
+        return 'absent'
+    return (r.stdout + r.stderr).strip() if r.returncode == 0 else 'absent'
+
+
+@functools.lru_cache(maxsize=1)
+def tool_versions() -> str:
+    """The versions of the tools a build runs (php renders, node reads and rewrites, sass compiles) and the $SGS_SASS in force."""
+    import diff as DF
+    try:
+        sass = [*DF.sass_command(PLUGIN), '--version']
+    except RuntimeError:
+        sass = None
+    return '|'.join([f'php:{tool_out(["php", "-v"])}', f'node:{tool_out(["node", "-v"])}',
+                      f'sass:{tool_out(sass) if sass else "absent"}', f'SGS_SASS:{_os.environ.get("SGS_SASS", "")}'])
+
+
+def framework_db_md5() -> str:
+    """The database's content as a reader sees it: the file and, when SQLite's write-ahead log holds a reseed not yet
+    checkpointed into it, that log too."""
+    db = str(framework_db())
+    wal = Path(db + '-wal')
+    log = db_md5(str(wal)) if wal.is_file() and wal.stat().st_size > 0 else 'no-wal'
+    return db_md5(db) + log
+
+
 @functools.lru_cache(maxsize=1)
 def reach_hash() -> str:
-    """The hash of reach_files() and of the framework database, worked out once a process."""
+    """The hash of reach_files(), the framework database and the tool versions, worked out once a process."""
     h = hashlib.sha256()
     for f in reach_files():
         h.update(f.name.encode())
         h.update(file_md5(f).encode())
-    h.update(db_md5(str(framework_db())).encode())
+    h.update(framework_db_md5().encode())
+    h.update(tool_versions().encode())
     return h.hexdigest()[:16]
 
 

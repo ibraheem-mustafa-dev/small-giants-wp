@@ -295,3 +295,64 @@ def test_two_checkouts_differing_only_in_line_endings_share_a_key(tmp_path):
     assert SL.file_md5(a, text=False) != SL.file_md5(b, text=False)
     b.write_bytes(b'.x {\n  color: blue;\n}\n')
     assert SL.file_md5(a) != SL.file_md5(b)
+
+
+def fresh(monkeypatch):
+    SL.reach_hash.cache_clear()
+    SL.tool_versions.cache_clear()
+    SL.db_md5.cache_clear()
+    return SL.look_key('icon', SNAP, False)
+
+
+def test_a_reseed_still_in_the_write_ahead_log_moves_the_key(tmp_path, monkeypatch):
+    db = tmp_path / 'f.db'
+    db.write_bytes(b'db')
+    monkeypatch.setenv('SGS_FRAMEWORK_DB', str(db))
+    try:
+        base = fresh(monkeypatch)
+        (tmp_path / 'f.db-wal').write_bytes(b'')
+        assert fresh(monkeypatch) == base, 'an empty log is no change'
+        (tmp_path / 'f.db-wal').write_bytes(b'reseed')
+        with_wal = fresh(monkeypatch)
+        assert with_wal != base
+        (tmp_path / 'f.db-wal').write_bytes(b'reseed two')
+        assert fresh(monkeypatch) != with_wal
+    finally:
+        monkeypatch.undo()
+        fresh(monkeypatch)
+
+
+@pytest.mark.parametrize('tool', ['php', 'node', 'sass'])
+def test_a_tool_version_moves_the_key_and_a_missing_tool_is_absent(tool, monkeypatch):
+    real = SL.tool_out
+    first = {'php': ['php', '-v'], 'node': ['node', '-v']}
+
+    def fake(cmd):
+        hit = cmd == first.get(tool) or (tool == 'sass' and cmd[-1] == '--version')
+        return 'other version' if hit else real(cmd)
+
+    monkeypatch.setenv('SGS_SASS', 'fake-sass')  # a resolvable compiler even where none is installed
+    try:
+        base = fresh(monkeypatch)
+        monkeypatch.setattr(SL, 'tool_out', fake)
+        changed = fresh(monkeypatch)
+        assert changed != base
+        monkeypatch.setattr(SL, 'tool_out', lambda cmd: 'absent' if (cmd == first.get(tool) or (tool == 'sass' and cmd[-1] == '--version')) else real(cmd))
+        assert fresh(monkeypatch) != changed  # a tool that went missing is a change of its own
+    finally:
+        monkeypatch.undo()
+        fresh(monkeypatch)
+
+
+def test_tool_out_says_absent_for_a_tool_that_is_not_there():
+    assert SL.tool_out(['no-such-tool-sgs', '-v']) == 'absent'
+
+
+def test_the_sass_override_is_in_the_key(monkeypatch):
+    try:
+        base = fresh(monkeypatch)
+        monkeypatch.setenv('SGS_SASS', 'no-such-sass-sgs')
+        assert fresh(monkeypatch) != base
+    finally:
+        monkeypatch.undo()
+        fresh(monkeypatch)
