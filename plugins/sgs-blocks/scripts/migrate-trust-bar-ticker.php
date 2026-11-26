@@ -18,9 +18,10 @@
  *
  * Skipped by default, and named in the dry run: every post whose title starts with "[probe]" (a probe page, such as
  * eye-care-test page 46 "[probe] trust-bar controls", whose bars are test fixtures, not site content), and the bars in
- * SGS_TRUST_BAR_TICKER_EXCLUDE: the canary's motion-QA fixture page 5305, bar `m515-control`, the marquee probe's
- * negative control that must never run (`scripts/motion-qa/probe-marquee.mjs`, `.claude/rules/motion-qa.md`).
- * `include-excluded` as an extra argument sweeps them too.
+ * SGS_TRUST_BAR_TICKER_EXCLUDE, matched by a unique class on any post: `m515-control`, the marquee probe's negative
+ * control on the canary's motion-QA fixture page 5305 that must never run (`scripts/motion-qa/probe-marquee.mjs`,
+ * `.claude/rules/motion-qa.md`). An entry that matches no bar is printed as a warning. `include-excluded` as an extra
+ * argument sweeps them too.
  *
  * It covers `post_content` of every post type that can hold blocks (posts, pages, custom post types, wp_block,
  * wp_template, wp_template_part, wp_navigation, sgs_header, sgs_footer, sgs_drawer) in every status except auto-draft,
@@ -29,16 +30,19 @@
  *
  *   wp db export before-trust-bar-ticker.sql
  *   wp eval-file wp-content/plugins/sgs-blocks/scripts/migrate-trust-bar-ticker.php            (dry run, the default)
- *   wp eval-file wp-content/plugins/sgs-blocks/scripts/migrate-trust-bar-ticker.php apply undo.json
- *   wp eval-file wp-content/plugins/sgs-blocks/scripts/migrate-trust-bar-ticker.php undo undo.json
+ *   wp eval-file wp-content/plugins/sgs-blocks/scripts/migrate-trust-bar-ticker.php apply ~/trust-bar-undo-<site>.json
+ *   wp eval-file wp-content/plugins/sgs-blocks/scripts/migrate-trust-bar-ticker.php undo ~/trust-bar-undo-<site>.json
  *
  * The dry run lists each bar that would change and writes nothing. `apply` parses each post with `parse_blocks()`, adds
  * the layer, re-serialises with `serialize_blocks()`, writes the undo file first (`{ "<id>": { "before": <old content>,
  * "after": <written content> } }`, read back and decoded to the same posts, or nothing is written), writes with
  * `$wpdb->update()` (no kses, revision or save hook), clears the post cache, then re-counts: the number of bars left to
- * convert must be 0 or the run errors. `undo` writes each post's old content back, and refuses, naming each post, when a
- * post no longer holds what `apply` wrote (an editor save since), so a later edit is never overwritten. A failed posts
- * query is an error, never "nothing to do".
+ * convert must be 0 or the run errors. The undo file holds drafts and template parts, so `apply` refuses a path inside
+ * the site's folder (ABSPATH, where the web server could serve it) and a file that already exists (it is never
+ * overwritten). `undo` writes each post's old content back; a post that already holds its old content (a write that
+ * failed part-way, or an undo run before) is skipped, and `undo` refuses, naming each post, when a post holds neither what
+ * `apply` wrote nor its old content (an editor save since), so a later edit is never overwritten. A failed posts query is
+ * an error, never "nothing to do".
  *
  * Never run `apply` against a page open in the block editor: an editor save would overwrite the write.
  *
@@ -46,11 +50,11 @@
  */
 
 /**
- * Bars the sweep skips unless run with `include-excluded`: post id and a class the bar's `className` carries, with why.
+ * Bars the sweep skips unless run with `include-excluded`: a unique class the bar's `className` carries, on any post,
+ * with why.
  */
 const SGS_TRUST_BAR_TICKER_EXCLUDE = array(
 	array(
-		'post'  => 5305,
 		'class' => 'm515-control',
 		'why'   => 'the marquee probe\'s negative control on motion-QA fixture page 5305 must never run',
 	),
@@ -148,14 +152,54 @@ if ( ! function_exists( 'sgs_trust_bar_ticker_layer' ) ) {
 	}
 
 	/**
-	 * The classes to skip in one post.
+	 * The classes whose bars the sweep skips.
 	 *
-	 * @param int                            $post_id The post.
 	 * @param array<int,array<string,mixed>> $exclude The exclude list.
 	 * @return array<int,string>
 	 */
-	function sgs_trust_bar_ticker_skip_for( int $post_id, array $exclude ): array {
-		return array_values( array_map( static fn( $e ) => (string) $e['class'], array_filter( $exclude, static fn( $e ) => (int) $e['post'] === $post_id ) ) );
+	function sgs_trust_bar_ticker_skip_classes( array $exclude ): array {
+		return array_values( array_map( static fn( $e ) => (string) $e['class'], $exclude ) );
+	}
+
+	/**
+	 * The exclude entries no bar matched in a run (each is a warning: the list names a bar that is gone or renamed).
+	 *
+	 * @param array<int,array<string,mixed>> $exclude The exclude list.
+	 * @param array<int,string>              $notes   Every note the run's migrate calls gave.
+	 * @return array<int,string> The unmatched classes.
+	 */
+	function sgs_trust_bar_ticker_unmatched_excludes( array $exclude, array $notes ): array {
+		$hit = array();
+		foreach ( $notes as $note ) {
+			if ( preg_match( '/^skipped \(excluded: (.+)\)$/', (string) $note, $m ) ) {
+				$hit = array_merge( $hit, array_map( 'trim', explode( ',', $m[1] ) ) );
+			}
+		}
+		return array_values( array_diff( sgs_trust_bar_ticker_skip_classes( $exclude ), $hit ) );
+	}
+
+	/**
+	 * Why an undo file path may not be written, or null when it may: the file already exists, its folder does not, or it
+	 * resolves inside the site's folder (where the web server could serve it).
+	 *
+	 * @param string $path    The undo file path as given (relative paths resolve against the working folder).
+	 * @param string $abspath The site's folder (ABSPATH).
+	 * @return string|null
+	 */
+	function sgs_trust_bar_ticker_undo_path_problem( string $path, string $abspath ): ?string {
+		if ( file_exists( $path ) ) {
+			return sprintf( '%s already exists; the sweep never overwrites an undo file', $path );
+		}
+		$dir = realpath( dirname( $path ) );
+		if ( false === $dir ) {
+			return sprintf( 'the folder of %s does not exist', $path );
+		}
+		$site = realpath( $abspath );
+		$norm = static fn( string $p ): string => rtrim( str_replace( '\\', '/', strtolower( $p ) ), '/' ) . '/';
+		if ( false !== $site && 0 === strpos( $norm( $dir ), $norm( $site ) ) ) {
+			return sprintf( '%s is inside the site folder %s, where the web server could serve it; use a path outside it, such as ~/trust-bar-undo-<site>.json', $path, $site );
+		}
+		return null;
 	}
 
 	/**
@@ -187,8 +231,8 @@ if ( ! function_exists( 'sgs_trust_bar_ticker_layer' ) ) {
 	}
 
 	/**
-	 * The posts an undo must not restore: each one whose current content is not what `apply` wrote, or whose saved entry
-	 * is malformed. Empty when every post can be restored.
+	 * The posts an undo must not restore: each one whose current content is neither what `apply` wrote nor its old content,
+	 * or whose saved entry is malformed. Empty when every post can be restored or already holds its old content.
 	 *
 	 * @param array<mixed>  $saved   The decoded undo file.
 	 * @param callable      $current Returns a post's current content, or null when the post is gone.
@@ -204,8 +248,26 @@ if ( ! function_exists( 'sgs_trust_bar_ticker_layer' ) ) {
 			$now = $current( (int) $post_id );
 			if ( null === $now ) {
 				$out[] = sprintf( 'post %s: no longer exists', $post_id );
-			} elseif ( $now !== $entry['after'] ) {
+			} elseif ( $now !== $entry['after'] && $now !== $entry['before'] ) {
 				$out[] = sprintf( 'post %s: changed since the sweep wrote it', $post_id );
+			}
+		}
+		return $out;
+	}
+
+	/**
+	 * The posts an undo writes back: each one that still holds what `apply` wrote (a post already holding its old
+	 * content is skipped). Run only after sgs_trust_bar_ticker_undo_conflicts() found none.
+	 *
+	 * @param array<mixed> $saved   The decoded undo file.
+	 * @param callable     $current Returns a post's current content, or null when the post is gone.
+	 * @return array<int,int> Post ids.
+	 */
+	function sgs_trust_bar_ticker_undo_restore( array $saved, callable $current ): array {
+		$out = array();
+		foreach ( $saved as $post_id => $entry ) {
+			if ( is_array( $entry ) && $current( (int) $post_id ) === ( $entry['after'] ?? null ) ) {
+				$out[] = (int) $post_id;
 			}
 		}
 		return $out;
@@ -247,7 +309,13 @@ if ( ! in_array( $mode, array( 'dry-run', 'apply', 'undo' ), true ) ) {
 $undo_file        = 'dry-run' !== $mode && isset( $args[1] ) ? (string) $args[1] : '';
 $include_excluded = in_array( 'include-excluded', array_map( 'strval', (array) $args ), true );
 if ( 'apply' === $mode && ( '' === $undo_file || 'include-excluded' === $undo_file ) ) {
-	WP_CLI::error( 'apply needs an undo file path: apply <undo.json>.' );
+	WP_CLI::error( 'apply needs an undo file path outside the site: apply ~/trust-bar-undo-<site>.json.' );
+}
+if ( 'apply' === $mode ) {
+	$sgs_path_problem = sgs_trust_bar_ticker_undo_path_problem( $undo_file, ABSPATH );
+	if ( null !== $sgs_path_problem ) {
+		WP_CLI::error( $sgs_path_problem . '; nothing was changed.' );
+	}
 }
 
 // A post's current content, or null when it is gone.
@@ -271,14 +339,15 @@ if ( 'undo' === $mode ) {
 		}
 		WP_CLI::error( count( $conflicts ) . ' post(s) no longer hold what the sweep wrote; nothing was restored. Restore them by hand from the undo file or the database backup.' );
 	}
-	foreach ( $saved as $post_id => $entry ) {
-		$ok = $wpdb->update( $wpdb->posts, array( 'post_content' => (string) $entry['before'] ), array( 'ID' => (int) $post_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- see the file header.
+	$restore = sgs_trust_bar_ticker_undo_restore( $saved, $sgs_current );
+	foreach ( $restore as $post_id ) {
+		$ok = $wpdb->update( $wpdb->posts, array( 'post_content' => (string) $saved[ $post_id ]['before'] ), array( 'ID' => $post_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- see the file header.
 		if ( false === $ok ) {
-			WP_CLI::error( sprintf( 'Restoring post %d failed.', (int) $post_id ) );
+			WP_CLI::error( sprintf( 'Restoring post %d failed; run undo again to finish (restored posts are skipped).', $post_id ) );
 		}
-		clean_post_cache( (int) $post_id );
+		clean_post_cache( $post_id );
 	}
-	WP_CLI::success( 'Restored ' . count( $saved ) . ' post(s).' );
+	WP_CLI::success( 'Restored ' . count( $restore ) . ' post(s); ' . ( count( $saved ) - count( $restore ) ) . ' already held their old content.' );
 	return;
 }
 
@@ -287,6 +356,8 @@ if ( null === $sgs_ticker_layer ) {
 	WP_CLI::error( 'includes/motion/data/trust-bar-default-ticker.json is missing or holds no marquee layer; nothing was changed.' );
 }
 $sgs_exclude = $include_excluded ? array() : SGS_TRUST_BAR_TICKER_EXCLUDE;
+$sgs_skip    = sgs_trust_bar_ticker_skip_classes( $sgs_exclude );
+$sgs_notes   = array();
 
 $types = array_values( array_unique( array_merge( get_post_types(), array( 'wp_block', 'wp_template', 'wp_template_part', 'wp_navigation', 'sgs_header', 'sgs_footer', 'sgs_drawer' ) ) ) );
 $types = array_values( array_diff( $types, array( 'attachment', 'revision', 'nav_menu_item' ) ) );
@@ -313,7 +384,8 @@ foreach ( $rows as $row ) {
 		continue;
 	}
 	$found = array();
-	$new   = serialize_blocks( sgs_trust_bar_ticker_migrate( parse_blocks( (string) $row->post_content ), $sgs_ticker_layer, $found, sgs_trust_bar_ticker_skip_for( (int) $row->ID, $sgs_exclude ) ) );
+	$new   = serialize_blocks( sgs_trust_bar_ticker_migrate( parse_blocks( (string) $row->post_content ), $sgs_ticker_layer, $found, $sgs_skip ) );
+	$sgs_notes = array_merge( $sgs_notes, $found );
 	foreach ( $found as $note ) {
 		WP_CLI::log( sprintf( '  #%d (%s, %s, "%s"): %s', $row->ID, $row->post_type, $row->post_status, $row->post_title ?? '', $note ) );
 	}
@@ -331,6 +403,9 @@ foreach ( $rows as $row ) {
 
 WP_CLI::log( ( 'apply' === $mode ? 'Storing ' : 'Would store ' ) . 'the overflow ticker on ' . $total . ' trust bar(s) in ' . $changed . ' post(s). Each renders differently only where its badges do not fit one line.' );
 WP_CLI::log( 'TOTAL_BARS=' . $total . ' POSTS=' . $changed );
+foreach ( sgs_trust_bar_ticker_unmatched_excludes( $sgs_exclude, $sgs_notes ) as $sgs_class ) {
+	WP_CLI::warning( sprintf( 'The exclude entry %s matched no bar that would take the ticker on this site.', $sgs_class ) );
+}
 
 if ( 'apply' !== $mode ) {
 	WP_CLI::success( 'Dry run: nothing written.' );
@@ -371,7 +446,7 @@ foreach ( $after as $row ) {
 		continue;
 	}
 	$left = array();
-	sgs_trust_bar_ticker_migrate( parse_blocks( (string) $row->post_content ), $sgs_ticker_layer, $left, sgs_trust_bar_ticker_skip_for( (int) $row->ID, $sgs_exclude ) );
+	sgs_trust_bar_ticker_migrate( parse_blocks( (string) $row->post_content ), $sgs_ticker_layer, $left, $sgs_skip );
 	$remaining += count( $sgs_converted( $left ) );
 }
 if ( 0 !== $remaining ) {

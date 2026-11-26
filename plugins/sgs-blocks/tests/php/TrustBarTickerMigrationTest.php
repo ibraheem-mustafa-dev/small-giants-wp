@@ -101,9 +101,8 @@ final class TrustBarTickerMigrationTest extends TestCase {
 		$layer   = self::layer();
 		$control = self::bar( array( 'className' => 'm515-control' ) );
 		$other   = self::bar( array( 'className' => 'm515-other' ) );
-		$skip    = sgs_trust_bar_ticker_skip_for( 5305, SGS_TRUST_BAR_TICKER_EXCLUDE );
-		$this->assertSame( array( 'm515-control' ), $skip );
-		$this->assertSame( array(), sgs_trust_bar_ticker_skip_for( 2742, SGS_TRUST_BAR_TICKER_EXCLUDE ), 'the list names one post only' );
+		$skip    = sgs_trust_bar_ticker_skip_classes( SGS_TRUST_BAR_TICKER_EXCLUDE );
+		$this->assertSame( array( 'm515-control' ), $skip, 'the unique class alone, on any post' );
 		$found = array();
 		$out   = sgs_trust_bar_ticker_migrate( array( $control, $other ), $layer, $found, $skip );
 		$this->assertSame( $control, $out[0], 'the control bar stays as saved' );
@@ -112,6 +111,16 @@ final class TrustBarTickerMigrationTest extends TestCase {
 		$none = array();
 		$all  = sgs_trust_bar_ticker_migrate( array( $control ), $layer, $none, array() );
 		$this->assertSame( array( $layer ), $all[0]['attrs']['sgsMotion']['elements']['root']['effects'], 'with include-excluded it is converted' );
+	}
+
+	public function test_an_exclude_entry_that_matches_no_bar_is_named(): void {
+		$exclude = array(
+			array( 'class' => 'm515-control', 'why' => 'a' ),
+			array( 'class' => 'gone-bar', 'why' => 'b' ),
+		);
+		$notes   = array( 'overflowMode null; root effects now marquee', 'skipped (excluded: m515-control)' );
+		$this->assertSame( array( 'gone-bar' ), sgs_trust_bar_ticker_unmatched_excludes( $exclude, $notes ) );
+		$this->assertSame( array( 'm515-control', 'gone-bar' ), sgs_trust_bar_ticker_unmatched_excludes( $exclude, array() ) );
 	}
 
 	public function test_a_probe_page_is_skipped_by_default(): void {
@@ -144,6 +153,35 @@ final class TrustBarTickerMigrationTest extends TestCase {
 			sgs_trust_bar_ticker_undo_conflicts( $saved, $current )
 		);
 		$this->assertSame( array(), sgs_trust_bar_ticker_undo_conflicts( array( '10' => $saved['10'] ), $current ), 'control: an untouched post may be restored' );
+	}
+
+	public function test_a_post_already_holding_its_old_content_is_skipped_not_refused(): void {
+		// A write that failed at post 11 leaves 11 and 12 holding their old content; a re-run undo meets posts it restored.
+		$saved   = array(
+			'10' => array( 'before' => 'old10', 'after' => 'new10' ),
+			'11' => array( 'before' => 'old11', 'after' => 'new11' ),
+			'12' => array( 'before' => 'old12', 'after' => 'new12' ),
+		);
+		$current = static fn( int $id ): ?string => array( 10 => 'new10', 11 => 'old11', 12 => 'old12' )[ $id ] ?? null;
+		$this->assertSame( array(), sgs_trust_bar_ticker_undo_conflicts( $saved, $current ) );
+		$this->assertSame( array( 10 ), sgs_trust_bar_ticker_undo_restore( $saved, $current ), 'only the post still holding what the sweep wrote is written back' );
+	}
+
+	public function test_the_undo_file_must_not_exist_or_sit_under_the_site(): void {
+		$root = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'tb-root-' . uniqid();
+		$home = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'tb-home-' . uniqid();
+		mkdir( $root . DIRECTORY_SEPARATOR . 'wp-content', 0777, true );
+		mkdir( $home );
+		$this->assertNull( sgs_trust_bar_ticker_undo_path_problem( $home . DIRECTORY_SEPARATOR . 'undo.json', $root ), 'control: a new file outside the site' );
+		$this->assertMatchesRegularExpression( '/inside the site/', (string) sgs_trust_bar_ticker_undo_path_problem( $root . DIRECTORY_SEPARATOR . 'undo.json', $root ) );
+		$this->assertMatchesRegularExpression( '/inside the site/', (string) sgs_trust_bar_ticker_undo_path_problem( $root . DIRECTORY_SEPARATOR . 'wp-content' . DIRECTORY_SEPARATOR . 'undo.json', $root . DIRECTORY_SEPARATOR ) );
+		$this->assertMatchesRegularExpression( '/inside the site/', (string) sgs_trust_bar_ticker_undo_path_problem( $root . DIRECTORY_SEPARATOR . 'wp-content' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'undo.json', $root ), 'a path that climbs back into the site' );
+		file_put_contents( $home . DIRECTORY_SEPARATOR . 'old.json', '{}' );
+		$this->assertMatchesRegularExpression( '/already exists/', (string) sgs_trust_bar_ticker_undo_path_problem( $home . DIRECTORY_SEPARATOR . 'old.json', $root ) );
+		$this->assertMatchesRegularExpression( '/folder/', (string) sgs_trust_bar_ticker_undo_path_problem( $home . DIRECTORY_SEPARATOR . 'nope' . DIRECTORY_SEPARATOR . 'undo.json', $root ) );
+		mkdir( $root . '-sibling' );
+		$this->assertNull( sgs_trust_bar_ticker_undo_path_problem( $root . '-sibling' . DIRECTORY_SEPARATOR . 'x.json', $root ), 'a sibling folder whose name starts with the site folder is outside it' );
+		unlink( $home . DIRECTORY_SEPARATOR . 'old.json' );
 	}
 
 	public function test_a_failed_posts_query_is_an_error_not_nothing_to_do(): void {
