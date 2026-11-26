@@ -18,7 +18,9 @@ import {
 } from '../../components';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import ServerSideRender from '../../components/ServerSideRender';
-import CarouselControls from '../../components/CarouselControls';
+import CarouselControls, {
+	carouselControlsColourRows,
+} from '../../components/CarouselControls';
 import ScrollbarStyleControl from '../../components/ScrollbarStyleControl';
 import {
 	PanelBody,
@@ -248,6 +250,11 @@ export default function Edit( { attributes, setAttributes } ) {
 						},
 						attributes,
 						setAttributes,
+					} ),
+					...carouselControlsColourRows( {
+						attributes,
+						setAttributes,
+						blockName: 'sgs/trustpilot-reviews',
 					} ),
 				] }
 			/>
@@ -1115,6 +1122,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 					blockName="sgs/trustpilot-reviews"
+					colourInMainPanel
 				/>
 			) }
 			<div { ...blockProps }>
