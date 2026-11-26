@@ -54,6 +54,10 @@ describe( 'MediaElementPanel inspector slots', () => {
 		expect( slots( bg ) ).toEqual( [] );
 	} );
 
+	it( 'the lazy body keeps a placement anchor until its content has mounted (PlacedSuspense)', () => {
+		expect( render( { context: 'element' } ) ).toContain( 'sgs-placed-suspense__anchor' );
+	} );
+
 	it( 'a slot with no kinds renders nothing', () => {
 		expect( render( { kinds: [] } ) ).toBe( '' );
 	} );
