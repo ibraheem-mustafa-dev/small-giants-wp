@@ -16,9 +16,9 @@ describe( 'MediaElementPanel mounts render in place', () => {
 		expect( result.status ).toBe( 0 );
 	} );
 
-	it( 'the survey finds 30 mounts and none that needs a change', () => {
+	it( 'the survey finds 29 mounts and none that needs a change', () => {
 		const result = run( '--survey' );
-		expect( result.stdout ).toMatch( /30 MediaElementPanel mounts in 26 files; \d+ sit inside a parent InspectorControls \(0 need a change\)/ );
+		expect( result.stdout ).toMatch( /29 MediaElementPanel mounts in 26 files; \d+ sit inside a parent InspectorControls \(0 need a change\)/ );
 	} );
 
 	it( 'passes its own self-test, so the check can fail', () => {
