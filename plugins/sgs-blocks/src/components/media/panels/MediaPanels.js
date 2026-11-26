@@ -8,12 +8,13 @@
  * panels this module has no atom for (typography, hover, effects, the motion
  * line under Background).
  *
+ * This module is the lazy chunk's body: it draws the panels of ONE tab (`group`) and no `InspectorControls` of its own.
+ * `MediaElementPanel` mounts the inspector slot for each tab at once and loads this body inside it, so the panels keep
+ * their place in the tab instead of arriving after every other panel.
+ *
  * @package SGS\Blocks
  */
-import {
-	InspectorControls,
-	useBlockEditContext,
-} from '@wordpress/block-editor';
+import { useBlockEditContext } from '@wordpress/block-editor';
 import {
 	DropdownMenu,
 	MenuGroup,
@@ -61,6 +62,7 @@ function useActiveDevice() {
  * @param {Function} props.setAttributes  Block `setAttributes`.
  * @param {string}   [props.prefix]       Surface prefix.
  * @param {string}   [props.blockSlug]    Block slug.
+ * @param {string}   props.group          'settings' | 'styles': the tab whose panels this draws.
  * @param {string[]} props.atomIds        The slot's atoms.
  * @param {string[]} props.kinds          The slot's allowed kinds.
  * @param {string}   [props.context]      'element' | 'background'.
@@ -69,7 +71,8 @@ function useActiveDevice() {
  * @param {string}   [props.device]       Overrides the editor's active device.
  * @param {string}   [props.label]        Names the slot in each panel title ("Before: Media") when a block mounts more than one.
  * @param {string[]} [props.blockOwns]    Bases the block edits with its own control; their rows are left out.
- * @return {JSX.Element} The panels.
+ * @param {Function} [props.slotActions]  Extra actions for an image slot (`MediaSlotField`'s `extraActions`).
+ * @return {JSX.Element} The panels of the one tab.
  */
 export default function MediaPanels( {
 	attributes,
@@ -84,6 +87,8 @@ export default function MediaPanels( {
 	device: deviceOverride,
 	label = '',
 	blockOwns = [],
+	group,
+	slotActions,
 } ) {
 	const activeDevice = useActiveDevice();
 	const device = deviceOverride || activeDevice;
@@ -151,7 +156,7 @@ export default function MediaPanels( {
 		extraPanelIds: Object.keys( content ),
 		adopted: true,
 	} );
-	const slot = { prefix, kinds, context };
+	const slot = { prefix, kinds, context, extraActions: slotActions };
 
 	const resetLabel =
 		'desktop' === device
@@ -245,14 +250,5 @@ export default function MediaPanels( {
 				</PanelBody>
 			) );
 
-	return (
-		<>
-			<InspectorControls group="settings">
-				{ mount( 'settings' ) }
-			</InspectorControls>
-			<InspectorControls group="styles">
-				{ mount( 'styles' ) }
-			</InspectorControls>
-		</>
-	);
+	return <>{ mount( group ) }</>;
 }

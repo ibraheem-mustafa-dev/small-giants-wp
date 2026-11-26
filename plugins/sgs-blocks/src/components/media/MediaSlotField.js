@@ -8,6 +8,11 @@
  * device with its own file has its own Alt (empty means it uses the wider device's). Every action is one
  * `setAttributes` call, so one undo step.
  *
+ * `extraActions` (or `slot.extraActions`, which `MediaElementPanel`'s `slotActions` fills) adds a block's own buttons
+ * beside Replace and Remove once the device holds a file: `( { kind, own, device, prefix, attributes, setAttributes,
+ * access } ) => node`, where `own` is the device's stored file and `access.read` / `access.write` reach the slot's
+ * attributes (one `access.write` call is one undo step).
+ *
  * @package
  */
 import { __ } from '@wordpress/i18n';
@@ -83,8 +88,10 @@ export default function MediaSlotField( {
 	prefix,
 	slot,
 	label,
+	extraActions,
 } ) {
 	const access = slotAccess( attributes, setAttributes, prefix );
+	const renderExtraActions = extraActions || slot?.extraActions;
 	const device = useActiveDevice();
 	const kinds = slot?.kinds?.length ? slot.kinds : [ 'image' ];
 	const [ keepFocal, setKeepFocal ] = useState( false );
@@ -210,6 +217,18 @@ export default function MediaSlotField( {
 										{ __( 'Remove', 'sgs-blocks' ) }
 									</button>
 								) }
+								{ renderExtraActions &&
+									own &&
+									hasFile( own ) &&
+									renderExtraActions( {
+										kind,
+										own,
+										device,
+										prefix,
+										attributes,
+										setAttributes,
+										access,
+									} ) }
 							</div>
 						) }
 

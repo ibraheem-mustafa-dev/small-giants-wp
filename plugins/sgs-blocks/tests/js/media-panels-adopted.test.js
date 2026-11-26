@@ -73,7 +73,18 @@ function mount( props ) {
 	const container = document.createElement( 'div' );
 	document.body.appendChild( container );
 	const root = createRoot( container );
-	act( () => root.render( React.createElement( MediaPanels, { setAttributes: jest.fn(), atomIds: ATOMS, ...props } ) ) );
+	// `MediaElementPanel` mounts one body per tab; the two together draw every panel.
+	act( () =>
+		root.render(
+			React.createElement(
+				React.Fragment,
+				null,
+				[ 'settings', 'styles' ].map( ( group ) =>
+					React.createElement( MediaPanels, { key: group, group, setAttributes: jest.fn(), atomIds: ATOMS, ...props } )
+				)
+			)
+		)
+	);
 	return { container, unmount: () => act( () => root.unmount() ) };
 }
 

@@ -74,14 +74,22 @@ function mount( attributes, device ) {
 	const root = createRoot( container );
 	act( () =>
 		root.render(
-			React.createElement( MediaPanels, {
-				attributes: { [ key( 'Source' ) ]: SOURCE, ...attributes },
-				setAttributes,
-				atomIds: ATOMS,
-				kinds: [ 'image' ],
-				context: 'element',
-				prefix: slot.prefix,
-			} )
+			React.createElement(
+				React.Fragment,
+				null,
+				[ 'settings', 'styles' ].map( ( group ) =>
+					React.createElement( MediaPanels, {
+						key: group,
+						group,
+						attributes: { [ key( 'Source' ) ]: SOURCE, ...attributes },
+						setAttributes,
+						atomIds: ATOMS,
+						kinds: [ 'image' ],
+						context: 'element',
+						prefix: slot.prefix,
+					} )
+				)
+			)
 		)
 	);
 	return { container, setAttributes, unmount: () => act( () => root.unmount() ) };
