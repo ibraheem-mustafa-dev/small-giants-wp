@@ -185,36 +185,31 @@ export function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, ps
 				}
 				return wrap;
 			};
-			// Whether an element's height is declared as a length (its inline style, else the last matching rule of the page's own
-			// sheets whose media applies): a percentage or `auto` gives its child no definite height to fill.
-			const lengthHeight = ( v ) => /^-?\d*\.?\d+(px|rem|em|vh|vw)$/i.test( String( v ?? '' ).trim() );
-			const declaresHeight = ( p ) => {
-				let last = p.style.height || '';
-				if ( ! last ) {
-					const walk = ( rules ) => {
-						for ( const r of rules ) {
-							// A style rule has `cssRules` too (CSS nesting), so the rule's own selector is read first.
-							if ( r.selectorText && r.style ) {
-								try {
-									'' !== r.style.getPropertyValue( 'height' ) && p.matches( r.selectorText ) && ( last = r.style.getPropertyValue( 'height' ) );
-								} catch ( e ) {
-									// a selector this browser cannot match names no element
-								}
-							}
-							if ( r.cssRules && ( ! r.media || matchMedia( r.media.mediaText ).matches ) ) {
-								walk( r.cssRules );
-							}
-						}
-					};
-					for ( const sheet of document.styleSheets ) {
-						try {
-							walk( sheet.cssRules );
-						} catch ( e ) {
-							// a sheet from another origin cannot be read
-						}
-					}
+			// The box a picture's percentage height and align-self resolve against: its nearest ancestor that makes a box (a `<picture>`
+			// or inline wrapper draws none, a `display: contents` one gives its children to its parent).
+			const boxParent = ( x ) => {
+				let p = x.parentElement;
+				while ( p && /^(contents|inline)$/.test( getComputedStyle( p ).display ) ) {
+					p = p.parentElement;
 				}
-				return lengthHeight( last );
+				return p;
+			};
+			// Whether a percentage height on the element resolves against its parent (the parent's height is definite), asked of the browser: at
+			// 100% and at 50% the element is twice as tall in the first as in the second only where the percentage resolves, whatever
+			// way the parent got its height (a length, calc(), min(), dvh, a stretched grid or flex item, a rule of any sheet).
+			const percentResolves = ( x ) => {
+				const had = [ x.style.getPropertyValue( 'height' ), x.style.getPropertyPriority( 'height' ) ];
+				const heightAt = ( v ) => {
+					x.style.setProperty( 'height', v, 'important' );
+					return x.getBoundingClientRect().height;
+				};
+				try {
+					const full = heightAt( '100%' );
+					const half = heightAt( '50%' );
+					return full > 0 && Math.abs( full - 2 * half ) <= 1;
+				} finally {
+					had[ 0 ] ? x.style.setProperty( 'height', had[ 0 ], had[ 1 ] ) : x.style.removeProperty( 'height' );
+				}
 			};
 			const readOne = ( n ) => {
 				const c = getComputedStyle( n );
@@ -226,12 +221,14 @@ export function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, ps
 				const tag = n.localName;
 				const attr = ( k ) => n.getAttribute( k );
 				const src = 'img' === tag ? ( n.closest( 'picture' ) && n.currentSrc ? n.currentSrc : null ) ?? attr( 'src' ) ?? attr( 'data-src' ) ?? '' : 'video' === tag ? ( attr( 'src' ) ?? n.querySelector( 'source' )?.getAttribute( 'src' ) ?? '' ) : 'iframe' === tag ? attr( 'src' ) ?? '' : '';
-								const ni = 'img' === tag ? { w: n.naturalWidth, h: n.naturalHeight } : 'video' === tag ? { w: n.videoWidth, h: n.videoHeight } : null;
+								// An svg file drawn by an img has an intrinsic size only if it states one, which the element cannot tell from the browser's default: no natural size.
+				const svgFile = 'img' === tag && /^data:image\/svg|\.svg([?#]|$)/i.test( src );
+				const ni = svgFile ? null : 'img' === tag ? { w: n.naturalWidth, h: n.naturalHeight } : 'video' === tag ? { w: n.videoWidth, h: n.videoHeight } : null;
 				// The element this picture's sizes size is this element (it, or the picture its own shadow root draws); the facts of the
 				// real parent it sits in, whatever skeleton nodes the draft's wrappers became.
 				const sized = n === el || ( !! el.shadowRoot && n.getRootNode() === el.shadowRoot ) ? el : n;
-				const sp = sized.parentElement;
-				const parent = sp ? { display: getComputedStyle( sp ).display, alignItems: getComputedStyle( sp ).alignItems, definiteHeight: declaresHeight( sp ) } : null;
+				const sp = sized === el ? boxParent( sized ) : null;
+				const parent = sp ? { display: getComputedStyle( sp ).display, alignItems: getComputedStyle( sp ).alignItems, definiteHeight: percentResolves( sized ) } : null;
 				return {
 					parent,
 					tag, src, poster: 'video' === tag ? attr( 'poster' ) : null, alt: 'img' === tag ? attr( 'alt' ) : null,
