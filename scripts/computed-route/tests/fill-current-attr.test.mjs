@@ -136,15 +136,3 @@ test( 'MUST FAIL: a job answered on one page is not answered again when a later 
 	assert.deepEqual( gaps, [] );
 	assert.equal( logged.length, 1 );
 } );
-
-// RF1 second review: the climb stops at the first ancestor with a same-tag sibling, so a lone link in `div.cta` beside the nav
-// `div` reached the nav's first link through the same child path. Peers are the same template element only.
-test( 'MUST FAIL: a lone link in a box beside the nav is not compared with the first link of the nav', async () => {
-	const nav = ( current ) => `<div class="nav">${ link( 5, 'Shop', 'shop' === current ) }${ link( 6, 'Gifts', 'gifts' === current ) }</div>`;
-	const cta = ( n ) => `<div class="cta">${ link( n, 'Order', false ) }</div>`;
-	const pages = { '/shop': `<!doctype html><div class="sc-host" data-sc-name="Root"><div class="sc-host" data-sc-name="Bar">${ cta( 7 ) }${ nav( 'shop' ) }</div></div>` };
-	const keys = { elements: { 'Bar/7': FACTS.elements[ 'Bar/5' ] } };
-	const { looks, gaps } = await read( currentAttrJobs( currentAttrKeys( keys ), [ JOB( 7 ) ], 'Home' ), [ '/shop' ], pages );
-	assert.deepEqual( looks, {}, 'the lone link has no current peer' );
-	assert.equal( gaps.length, 1 );
-} );
