@@ -9,6 +9,9 @@
  * body loads lazily inside it. Mounting the slot inside the lazy chunk would register it after every other panel.
  * A background has Styles panels only, so it mounts no Settings slot.
  *
+ * The lazy body sits in a `PlacedSuspense`: content that resolves after the first render is otherwise appended after every
+ * other fill's panels (see that file), which is why Settings media panels landed late on first select.
+ *
  * `inGroup` names the inspector group the caller already sits inside (`<InspectorControls group="styles">` around the
  * mount). A fill nested inside another fill registers only when the outer fill's content reaches its tab, after every
  * top-level fill, so it lands last on first select whatever its place in the JSX; that group's panels render in place
@@ -18,9 +21,10 @@
  */
 import { InspectorControls } from '@wordpress/block-editor';
 import { getBlockType } from '@wordpress/blocks';
-import { Suspense, lazy } from '@wordpress/element';
+import { lazy } from '@wordpress/element';
 
 import { ADOPTED_ATOM_IDS } from './media/emit/adopted-settings.js';
+import PlacedSuspense from './PlacedSuspense.js';
 
 // The adopted panels load on first use as one shared chunk, so the 30-odd block bundles that import this
 // component do not each carry a copy (about 80 KB apiece).
@@ -103,7 +107,7 @@ export default function MediaElementPanel( {
 			Array.isArray( atoms ) && atoms.length ? atoms : ADOPTED_ATOM_IDS;
 		const tab = ( group ) => {
 			const body = (
-				<Suspense fallback={ null }>
+				<PlacedSuspense>
 					<MediaPanels
 						group={ group }
 						attributes={ attributes }
@@ -119,7 +123,7 @@ export default function MediaElementPanel( {
 						blockOwns={ Array.isArray( owns ) ? owns : [] }
 						slotActions={ slotActions }
 					/>
-				</Suspense>
+				</PlacedSuspense>
 			);
 			return group === inGroup ? (
 				body
