@@ -3055,7 +3055,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 
 ### `lib/fill-current-attr.mjs`
 - `currentAttrKeys( facts )`: the template keys of the elements whose `aria-current` the draft binds to a value (a header component writing `aria-current="{{ cur.shop }}"` on each nav link, with no sc-if and no selector).
-- `currentAttrJobs( keys, jobs, rootComponent )`: the read jobs that are one of those elements, each with its component and tpl; a job inside the page's own root component is dropped.
+- `currentAttrJobs( keys, jobs, rootComponent )`: the read jobs that are one of those elements, each with its component, its tpl and `bound` (the tpls of every element of that component whose `aria-current` the draft binds: the only elements it may pair with, so loop copies and the bar's other bound links are peers and a lone link in a box beside the nav is not); a job inside the page's own root component is dropped.
 - `readCurrentAttr( { jobs, pages, openSibling, resolveSrc, log } )`: opens the draft's other pages at the read width, and where a peer of the item carries `aria-current` the peer's declared values against a non-current peer's are the item's `current` look (`states: ['current']`, written by `fillStates`); a job no page answers is one gap row. Spec 48 FR-48-81.
 
 ### `lib/fill-state-parts.mjs`
