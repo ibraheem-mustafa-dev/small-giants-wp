@@ -56,3 +56,27 @@ test( 'enumValues, holdsValue and mapTiers read the list and the readings', () =
 	assert.deepEqual( mapTiers( row, undefined, calibration.settings.linkUnderline, 'text-decoration-line', { desktop: 'underline', mobile: 'none' } ).tiers, { desktop: 'always', mobile: 'none' } );
 	assert.ok( mapTiers( row, undefined, calibration.settings.linkUnderline, 'text-decoration-line', { desktop: 'dotted' } ).error );
 } );
+
+// A reading must pick one value to map to. Real cases from the 2026-11-26 Fill of Mama's footer and Eye Care's header, found by
+// comparing the sweep with and without the site look's readings.
+const paints = ( prop, v ) => ( { [ prop ]: { 375: v, 768: v, 1440: v } } );
+
+test( 'MUST FAIL: a keyword several values paint is not given to the first of them (a cart border style with no width paints none whatever its style)', () => {
+	const row = { attr_name: 'pillBorderStyle', enum_values: '["","solid","dashed","dotted"]' };
+	const s = { enumReads: { solid: paints( 'border-top-style', 'none' ), dashed: paints( 'border-top-style', 'none' ), dotted: paints( 'border-top-style', 'none' ) } };
+	const r = mapTiers( row, undefined, s, 'border-top-style', { desktop: 'none' } );
+	assert.deepEqual( r, { tiers: { desktop: 'none' } }, 'left as it was: the writer judges it (none is not one of the list)' );
+} );
+
+test( 'MUST FAIL: a keyword no value paints, in a list of the property\'s own CSS words, is left to the writer\'s keyword rules (align-items flex-end is the list\'s end)', () => {
+	const row = { attr_name: 'alignItems', enum_values: '["start","center","end","stretch"]' };
+	const s = { enumReads: { start: paints( 'align-items', 'start' ), end: paints( 'align-items', 'end' ) } };
+	assert.deepEqual( mapTiers( row, undefined, s, 'align-items', { desktop: 'flex-end' } ), { tiers: { desktop: 'flex-end' } } );
+} );
+
+test( 'NEGATIVE CONTROL: where the list holds a word that is no CSS value, several or no painting values stay a shape gap', () => {
+	const row = { attr_name: 'linkUnderline', enum_values: '["","none","always","hover","sweep"]' };
+	const s = { enumReads: { hover: paints( 'text-decoration-line', 'dotted' ), sweep: paints( 'text-decoration-line', 'dotted' ), always: paints( 'text-decoration-line', 'underline' ) } };
+	assert.match( mapTiers( row, undefined, s, 'text-decoration-line', { desktop: 'dotted' } ).error, /more than one paints/ );
+	assert.match( mapTiers( row, undefined, s, 'text-decoration-line', { desktop: 'wavy' } ).error, /none paints/ );
+} );

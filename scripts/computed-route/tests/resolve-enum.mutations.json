@@ -19,7 +19,7 @@
 	},
 	{
 		"file": "lib/resolve-enum.mjs",
-		"find": "list.includes( String( raw ) ) || undefined !== valueFor( reads, prop, Number( w ), raw )",
+		"find": "list.includes( String( raw ) ) || valuesFor( reads, prop, Number( w ), raw ).length > 0",
 		"replace": "true",
 		"why": "every setting holds every value"
 	},
@@ -31,14 +31,32 @@
 	},
 	{
 		"file": "lib/resolve-enum.mjs",
-		"find": "\tif ( undefined === v ) {\n\t\t\treturn { error:",
-		"replace": "\tif ( undefined === v ) {\n\t\t\tout[ t ] = raw;\n\t\t\tcontinue;\n\t\t\treturn { error:",
+		"find": "\t\t} else {\n\t\t\treturn { error: `${ row.attr_name } holds",
+		"replace": "\t\t} else {\n\t\t\tout[ t ] = raw;\n\t\t\tcontinue;\n\t\t\treturn { error: `${ row.attr_name } holds",
 		"why": "a keyword no value paints is written as it stands"
 	},
 	{
 		"file": "lib/resolve-enum.mjs",
-		"find": "list.includes( String( raw ) ) || undefined !== valueFor( reads, prop, Number( w ), raw ) : true );\n}",
-		"replace": "undefined !== valueFor( reads, prop, Number( w ), raw ) : true );\n}",
+		"find": "list.includes( String( raw ) ) || valuesFor( reads, prop, Number( w ), raw ).length > 0 : true );\n}",
+		"replace": "valuesFor( reads, prop, Number( w ), raw ).length > 0 : true );\n}",
 		"why": "a keyword the list names is held only if a reading says so"
+	},
+	{
+		"file": "lib/resolve-enum.mjs",
+		"find": "if ( 1 === painting.length ) {",
+		"replace": "if ( painting.length >= 1 ) {",
+		"why": "a keyword several values paint goes to the first of them"
+	},
+	{
+		"file": "lib/resolve-enum.mjs",
+		"find": "} else if ( list.every( ( v ) => acceptsValue( prop, v ) ) ) {",
+		"replace": "} else if ( false ) {",
+		"why": "a list of CSS words with no painting value is refused instead of left to the writer"
+	},
+	{
+		"file": "lib/resolve-enum.mjs",
+		"find": "return { error: `${ row.attr_name } holds ${ list.join( ', ' ) }; ${ painting.length ? 'more than one paints' : 'none paints' }",
+		"replace": "return { tiers }; const x = { error: `${ row.attr_name } holds ${ list.join( ', ' ) }; ${ painting.length ? 'more than one paints' : 'none paints' }",
+		"why": "a list with a non-CSS word never refuses"
 	}
 ]

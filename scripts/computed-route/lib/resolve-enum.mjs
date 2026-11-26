@@ -6,7 +6,10 @@
 //                candidate while another tied setting can (`textDecoration` lists overline and line-through only, so it never
 //                competes with `linkUnderline` for an underline);
 //   mapTiers     a tier's computed keyword the list does not hold becomes the list's value that paints it at that tier's
-//                width; a keyword no value paints is a shape gap. A setting with no `enumReads` is left as it was.
+//                width (one value only: where several paint it, or none, a list of the property's own CSS words keeps the keyword and any
+//                other list is a shape gap). A setting with no `enumReads` is left as it was.
+import { acceptsValue } from './enum-read-plan.mjs';
+
 const WIDTH_OF = { desktop: 1440, tablet: 768, mobile: 375 };
 const same = ( a, b ) => String( a ).replace( /\s+/g, '' ) === String( b ).replace( /\s+/g, '' );
 
@@ -24,9 +27,9 @@ export function enumValues( row, def ) {
 	return list.filter( ( v ) => 'string' === typeof v && '' !== v );
 }
 
-// The list value whose recorded paint of `prop` at `width` is `raw`, or undefined.
-function valueFor( enumReads, prop, width, raw ) {
-	return Object.keys( enumReads ).find( ( v ) => undefined !== enumReads[ v ]?.[ prop ]?.[ width ] && same( enumReads[ v ][ prop ][ width ], raw ) );
+// The list values whose recorded paint of `prop` at `width` is `raw`.
+function valuesFor( enumReads, prop, width, raw ) {
+	return Object.keys( enumReads ).filter( ( v ) => undefined !== enumReads[ v ]?.[ prop ]?.[ width ] && same( enumReads[ v ][ prop ][ width ], raw ) );
 }
 
 // Whether the setting can give `perWidth` (the draft's computed `prop` per read width): a setting with no list holds it; one
@@ -38,7 +41,7 @@ export function holdsValue( row, def, calibrationSetting, prop, perWidth ) {
 	if ( ! list.length ) {
 		return true;
 	}
-	return Object.entries( perWidth ).every( ( [ w, raw ] ) => [ 375, 768, 1440 ].includes( Number( w ) ) ? list.includes( String( raw ) ) || undefined !== valueFor( reads, prop, Number( w ), raw ) : true );
+	return Object.entries( perWidth ).every( ( [ w, raw ] ) => [ 375, 768, 1440 ].includes( Number( w ) ) ? list.includes( String( raw ) ) || valuesFor( reads, prop, Number( w ), raw ).length > 0 : true );
 }
 
 // The tiers with each computed keyword the list does not hold replaced by the value that paints it: { tiers } or { error }.
@@ -54,11 +57,17 @@ export function mapTiers( row, def, calibrationSetting, prop, tiers ) {
 			out[ t ] = raw;
 			continue;
 		}
-		const v = valueFor( reads, prop, WIDTH_OF[ t ], raw );
-		if ( undefined === v ) {
-			return { error: `${ row.attr_name } holds ${ list.join( ', ' ) }; none paints ${ prop } ${ raw } at ${ WIDTH_OF[ t ] }px` };
+		// One value that paints the keyword is the answer. Several paint it (a border style with no width paints none whatever its
+		// value) or none does: a list of the property's own CSS words is left as it was, for the writer's own keyword rules
+		// (align-items flex-end is the list's `end`), and a list with a word that is no CSS value of the property has no answer.
+		const painting = valuesFor( reads, prop, WIDTH_OF[ t ], raw );
+		if ( 1 === painting.length ) {
+			out[ t ] = painting[ 0 ];
+		} else if ( list.every( ( v ) => acceptsValue( prop, v ) ) ) {
+			out[ t ] = raw;
+		} else {
+			return { error: `${ row.attr_name } holds ${ list.join( ', ' ) }; ${ painting.length ? 'more than one paints' : 'none paints' } ${ prop } ${ raw } at ${ WIDTH_OF[ t ] }px` };
 		}
-		out[ t ] = v;
 	}
 	return { tiers: out };
 }
