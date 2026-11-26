@@ -118,7 +118,7 @@ test( 'MUST FAIL WITHOUT THE LAYER RULE: the line a sweep grows on a painted ::a
 } );
 
 test( 'MUST FAIL WITHOUT THE STATE LOOKS RULE: the hover look of the property a sweep grows is held by the setting, not raised as a gap', () => {
-	const r = statePass( 'none', 'none', { declared: { 'background-size': '100% 2px' }, restStyles: SWEEP_REST } );
+	const r = statePass( 'none', 'none', { declared: { 'background-size': '100% 2px' }, restStyles: SWEEP_REST, attributes: { linkUnderline: 'sweep' } } );
 	assert.ok( r.ledger.some( ( l ) => 'background-size' === l.property && 'judged-equal' === l.kind && /^held-by-setting/.test( l.reason ) ), JSON.stringify( r.ledger ) );
 	assert.ok( ! r.unmapped.some( ( u ) => 'background-size' === u.property ), 'no gap row for it' );
 	const none = statePass( 'none', 'none', { declared: { 'background-size': '100% 2px' }, restStyles: { ...SWEEP_REST, 'transition-property': 'color' } } );
@@ -140,4 +140,19 @@ test( 'the conflict rule also names a value an earlier state look or another ele
 	assert.match( choiceConflict( { ...base, owner: { from: ' .elsewhere', value: 'sweep' } } ), /was written "sweep"/ );
 	assert.equal( choiceConflict( { ...base, owner: { from: ' .elsewhere', value: 'hover' }, taken: 'hover', current: 'hover' } ), null, 'the same value is no conflict' );
 	assert.equal( choiceConflict( base ), null );
+} );
+
+test( 'MUST FAIL WITHOUT THE KEPT-WRITE RULE: a sweep whose write the owner check refused holds no look (nothing was written for the setting to hold)', () => {
+	const seed = ( tree ) => {
+		tree[ 0 ].attributes.linkUnderline = 'always';
+		recordOwner( { flat: [ tree[ 0 ] ] }, { index: 0 }, { slot: ' .elsewhere' }, 'text-decoration-line', 'linkUnderline', true );
+	};
+	const refused = restPass( LAYER_REST, layerLooks, { pseudo: { '::after': layerPaint }, cal: CAL_LAYER, seed } );
+	assert.ok( ! ( refused.out.settled || [] ).some( ( s ) => 'held-by-setting' === s.reason ), 'no layer look is settled as held' );
+	const bg = restPass( SWEEP_REST, growing, { seed } );
+	assert.ok( ! ( bg.out.settled || [] ).some( ( s ) => 'held-by-setting' === s.reason ), 'nor the resting gradient' );
+	const state = statePass( 'none', 'none', { declared: { 'background-size': '100% 2px' }, restStyles: SWEEP_REST, attributes: { linkUnderline: 'always' } } );
+	assert.ok( ! state.ledger.some( ( l ) => /^held-by-setting/.test( l.reason ) ), 'nor the hover look: the node does not hold the sweep' );
+	const held = statePass( 'none', 'none', { declared: { 'background-size': '100% 2px' }, restStyles: SWEEP_REST, attributes: { linkUnderline: 'sweep' } } );
+	assert.ok( held.ledger.some( ( l ) => /^held-by-setting/.test( l.reason ) ), 'NEGATIVE CONTROL: where the node holds the sweep the hover look is held' );
 } );

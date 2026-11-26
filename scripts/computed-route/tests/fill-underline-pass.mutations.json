@@ -1,8 +1,8 @@
 [
 	{
 		"file": "lib/fill-resolve-element.mjs",
-		"find": "const sweep = layer ? null : sweepResult(",
-		"replace": "const sweep = true ? null : sweepResult(",
+		"find": "const found = layer ? null : sweepResult(",
+		"replace": "const found = true ? null : sweepResult(",
 		"why": "a growing underline is not told from a static gradient"
 	},
 	{
@@ -13,8 +13,8 @@
 	},
 	{
 		"file": "lib/fill-resolve-element.mjs",
-		"find": "const kept = sweep.writes.filter( ( w ) => ownerKeeps( st, rec, ref, target, 'text-decoration-line', w, sweep.slot ) );",
-		"replace": "const kept = sweep.writes;",
+		"find": "const kept = found ? found.writes.filter( ( w ) => ownerKeeps( st, rec, ref, target, 'text-decoration-line', w, found.slot ) ) : [];",
+		"replace": "const kept = found ? found.writes : [];",
 		"why": "a sweep replaces what another element of the block wrote"
 	},
 	{
@@ -34,5 +34,17 @@
 		"find": "const res = choice ? { status: 'gap', gap: 'conflict', detail: choice } : chosen ?? (",
 		"replace": "const res = chosen ?? (",
 		"why": "the state choice replaces another look's value"
+	},
+	{
+		"file": "lib/fill-resolve-element.mjs",
+		"find": "const sweep = kept.length ? { ...found, writes: kept } : null;",
+		"replace": "const sweep = found;",
+		"why": "a refused sweep still holds the looks it would have grown"
+	},
+	{
+		"file": "lib/fill-state.mjs",
+		"find": "const sweep = found && found.writes.every( ( w ) => same( node.attributes?.[ w.attr ], w.value ) ) ? found : null;",
+		"replace": "const sweep = found;",
+		"why": "the state pass holds hover looks for a sweep the node never got"
 	}
 ]

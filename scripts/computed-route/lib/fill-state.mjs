@@ -340,7 +340,9 @@ export function fillStates( { tree, nodes, reads, calFor, db, snapshot, rawSnaps
 			// A link whose underline is the block's `sweep` (lib/fill-underline-sweep.mjs): the looks its hover grows are the setting's own,
 			// so they are settled as held by it, never written to another setting or raised as a gap.
 			const snaps = Object.fromEntries( READ_WIDTHS.map( ( w ) => [ w, reads.widths?.[ w ]?.[ target.id ] ] ).filter( ( [ , s ] ) => s && ! s.missing ) );
-			const sweep = Object.keys( snaps ).length && ! hidden ? sweepResult( { db, cal, block: rec.name, slot: target.slot, snaps, reads, id: target.id } ) : null;
+			const found = Object.keys( snaps ).length && ! hidden ? sweepResult( { db, cal, block: rec.name, slot: target.slot, snaps, reads, id: target.id } ) : null;
+			// Only where the node holds the sweep: a write the owner check refused leaves nothing for the setting to hold.
+			const sweep = found && found.writes.every( ( w ) => same( node.attributes?.[ w.attr ], w.value ) ) ? found : null;
 			for ( const { state, prop, pseudo, perWidth, read, draftDefect, script } of drafts.values() ) {
 				if ( sweep && 'hover' === state && ( pseudo ? sweep.kinds.includes( 'layer' ) : sweep.kinds.includes( 'background' ) && [ 'background-size', 'background-image', 'background-position' ].includes( prop ) ) ) {
 					out.ledger.push( { node: ref, block: rec.name, slot: `${ target.slot }${ pseudo }`, property: prop, state, value: JSON.stringify( perWidth ), kind: 'judged-equal', reason: `held-by-setting: ${ sweep.writes[ 0 ].attr } sweep draws this look (its line grows on hover)` } );
