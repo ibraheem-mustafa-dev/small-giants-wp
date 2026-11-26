@@ -178,7 +178,7 @@ function slotFree( dir, name, now, alive ) {
 // queue, once `overflowAfterMs` has passed and the machine has room. Leaves the queue on return, on a throw and when the
 // process exits. Returns { path, overflow }. Throws after `maxWaitMs`.
 export async function acquire( { dir = SLOT_DIR, owner, pollMs = 15000, maxWaitMs = 4 * 60 * 60 * 1000, overflowAfterMs = OVERFLOW_AFTER_MS,
-	wait = ( ms ) => new Promise( ( r ) => setTimeout( r, ms ) ), load = machineLoad, log = () => {}, queueFile = SLOT_DIR === dir ? QUEUE_FILE : path.join( dir, 'queue.md' ), alive = pidAlive } ) {
+	wait = ( ms ) => new Promise( ( r ) => setTimeout( r, ms ) ), load = machineLoad, log = () => {}, queueFile = SLOT_DIR === dir ? QUEUE_FILE : path.join( dir, 'queue.md' ), alive = pidAlive, front = false } ) {
 	const start = Date.now();
 	const me = { label: String( owner.label ).replace( /\s+/g, '-' ), pid: owner.pid ?? process.pid };
 	const q = { file: queueFile, lockDir: dir, me };
@@ -197,7 +197,7 @@ export async function acquire( { dir = SLOT_DIR, owner, pollMs = 15000, maxWaitM
 			const now = Date.now();
 			let place;
 			try {
-				place = queuePlace( { ...q, alive, now } );
+				place = queuePlace( { ...q, alive, now, front } );
 			} catch ( e ) {
 				// The queue could not be read this poll (its lock stayed taken): wait and try again rather than give up the turn.
 				log( e.message );

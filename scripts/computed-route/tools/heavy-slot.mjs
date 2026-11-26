@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Heavy-run slots for every session and worker on this machine (lib/heavy-slot.mjs says what a heavy run is and how slots work).
-//   node tools/heavy-slot.mjs [--dir <folder>] run <label> -- "<command>"   hold a slot while the command runs, free it when it
+//   node tools/heavy-slot.mjs [--dir <folder>] [--front] run <label> -- "<command>"   hold a slot while the command runs, free it when it
 //                                                                          ends (preferred; the command as one quoted string,
 //                                                                          or as separate words run without a shell)
 //   node tools/heavy-slot.mjs [--dir <folder>] acquire <label>              take a slot on a 90-minute lease (never renewed: a
@@ -9,7 +9,8 @@
 //   node tools/heavy-slot.mjs [--dir <folder>] status                       who holds each slot, and the machine's load
 // Waits its turn in the shared queue (.claude/queue.md, lib/heavy-queue.mjs) for one of two slots; from the top of the queue,
 // after ten minutes, it takes a third only when the machine has room. Options are read only before
-// `--`; --dir overrides the slot folder (default E:/sgs-tmp/general-cloning/heavy).
+// `--`; --dir overrides the slot folder (default E:/sgs-tmp/general-cloning/heavy); --front joins the queue at the top, for a
+// run Bean has put ahead of the others (a live-site deploy he asked to jump the queue), never for routine work.
 import { spawn } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -28,8 +29,8 @@ export function parseArgv( argv ) {
 		return { error: '--dir needs a folder' };
 	}
 	const dir = -1 === at ? SLOT_DIR : head[ at + 1 ];
-	const words = -1 === at ? head : [ ...head.slice( 0, at ), ...head.slice( at + 2 ) ];
-	return { dir, cmd: words[ 0 ], label: words[ 1 ], command };
+	const words = ( -1 === at ? head : [ ...head.slice( 0, at ), ...head.slice( at + 2 ) ] ).filter( ( w ) => '--front' !== w );
+	return { dir, cmd: words[ 0 ], label: words[ 1 ], command, front: head.includes( '--front' ) };
 }
 
 // Runs the command: one word through the shell as written (a whole command line in one quoted string), several words directly
@@ -48,7 +49,7 @@ export function runCommand( command ) {
 }
 
 export async function main( argv ) {
-	const { dir, cmd, label, command, error } = parseArgv( argv );
+	const { dir, cmd, label, command, error, front } = parseArgv( argv );
 	if ( error ) {
 		log( error );
 		return 2;
@@ -75,7 +76,7 @@ export async function main( argv ) {
 		return 0;
 	}
 	if ( 'acquire' === cmd ) {
-		const got = await acquire( { dir, owner: { label, expires: Date.now() + LEASE_MS }, log } );
+		const got = await acquire( { dir, owner: { label, expires: Date.now() + LEASE_MS }, log, front } );
 		process.stdout.write( `${ got.path }${ got.overflow ? ' (overflow)' : '' }\n` );
 		return 0;
 	}
@@ -84,7 +85,7 @@ export async function main( argv ) {
 		return 2;
 	}
 	const owner = { label, pid: process.pid };
-	const got = await acquire( { dir, owner: { ...owner, beat: Date.now() }, log } );
+	const got = await acquire( { dir, owner: { ...owner, beat: Date.now() }, log, front } );
 	log( `${ label } holds ${ path.basename( got.path ) }${ got.overflow ? ' (overflow)' : '' }` );
 	const stop = keepAlive( [ got.path ], owner );
 	try {
