@@ -14,25 +14,35 @@ export function literalArgs( src ) {
 	if ( ! text ) {
 		return [];
 	}
-	let json = '';
+	// Strings first: each is decoded once into its JSON form, so a bare-key rewrite never reaches inside one and an escape is read once.
+	const bare = new RegExp( `([{,]\\s*)(${ IDENT })(\\s*:)`, 'g' );
+	let quoted = '';
+	let loose = '';
 	for ( let i = 0; i < text.length; i++ ) {
 		const c = text[ i ];
-		if ( '"' === c || '\'' === c ) {
-			let j = i + 1;
-			let body = '';
-			for ( ; j < text.length && text[ j ] !== c; j++ ) {
-				body += '\\' === text[ j ] ? text[ j ] + ( text[ ++j ] ?? '' ) : text[ j ];
-			}
-			if ( j >= text.length ) {
-				return null;
-			}
-			json += JSON.stringify( '\'' === c ? body.replace( /\\'/g, '\'' ) : body );
-			i = j;
-		} else {
-			json += c;
+		if ( '"' !== c && '\'' !== c ) {
+			loose += c;
+			continue;
 		}
+		let j = i + 1;
+		let body = '';
+		for ( ; j < text.length && text[ j ] !== c; j++ ) {
+			body += '\\' === text[ j ] ? text[ j ] + ( text[ ++j ] ?? '' ) : text[ j ];
+		}
+		if ( j >= text.length ) {
+			return null;
+		}
+		// A single-quoted body becomes a double-quoted one: an escaped single quote is a plain quote, an unescaped double quote is escaped.
+		const inner = '\'' === c ? body.replace( /\\'|\\.|"/g, ( m ) => ( '\\\'' === m ? '\'' : '"' === m ? '\\"' : m ) ) : body;
+		try {
+			quoted += loose.replace( bare, '$1"$2"$3' ) + JSON.stringify( JSON.parse( `"${ inner }"` ) );
+		} catch {
+			return null;
+		}
+		loose = '';
+		i = j;
 	}
-	const quoted = json.replace( new RegExp( `([{,]\\s*)(${ IDENT })(\\s*:)`, 'g' ), '$1"$2"$3' );
+	quoted += loose.replace( bare, '$1"$2"$3' );
 	try {
 		const out = JSON.parse( `[${ quoted }]` );
 		return Array.isArray( out ) ? out : null;
@@ -42,7 +52,7 @@ export function literalArgs( src ) {
 }
 
 // The store calls in a how_to_reach text, in order: [{ ident, store: true, path: ['account', 'signIn'], args: [ ...literals ] }].
-// A `setState` call (the logic's own, lib/intake-reach-calls.mjs) and the `dcLogic` lookup are not store calls.
+// A `setState` call (the logic's own, lib/intake-reach-calls.mjs), the `dcLogic` lookup and a call on `this` are not store calls.
 export function storeCalls( text ) {
 	const out = [];
 	const re = new RegExp( `(?<![\\w$.'"])(${ IDENT })((?:\\s*\\.\\s*${ IDENT })+)\\s*\\(`, 'g' );
@@ -68,7 +78,7 @@ export function storeCalls( text ) {
 		}
 		const args = literalArgs( src.slice( re.lastIndex, i - 1 ) );
 		re.lastIndex = i;
-		if ( 'dcLogic' !== m[ 1 ] && 'setState' !== path.at( -1 ) && args ) {
+		if ( 'dcLogic' !== m[ 1 ] && 'this' !== m[ 1 ] && 'setState' !== path.at( -1 ) && args ) {
 			out.push( { ident: m[ 1 ], store: true, path, args } );
 		}
 	}

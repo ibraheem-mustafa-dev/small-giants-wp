@@ -21,36 +21,98 @@ export function logicState( { comp, op, patch, slot } ) {
 	const values = [];
 	let count = 0;
 	// A store call (`MM.cart.setGift({ on: true })`, lib/intake-store-calls.mjs) runs once, before any logic call, on a global the
-	// draft itself defines (a plain object, never a built-in such as Math, JSON, console or document), by plain property names only; the page's storage is kept first so
-	// `restore` puts it back. A call that cannot run reaches nothing.
+	// draft itself defines (a plain object, never a built-in such as Math, JSON, console or document), by plain property names only. The page's
+	// storage and the in-memory data of each store the calls name are kept first, under the snapshot's `slot`, so a `restore` of that
+	// slot puts both back and no other slot's restore does. A call whose root the draft does not define (prose such as `e.preventDefault()`) is
+	// skipped; a call that throws, or the calls all skipped with no logic call beside them, reaches nothing.
+	const storeSnaps = ( window.__sgsStoreSnaps ||= {} );
+	const storeKey = slot || '';
+	const plainRoot = ( name ) => {
+		const found = Object.getOwnPropertyDescriptor( window, name )?.value;
+		return found && '[object Object]' === Object.prototype.toString.call( found ) && Object.getPrototypeOf( found ) === Object.prototype ? found : null;
+	};
+	// A copy of a store's plain objects and arrays (each keeps its own identity, so a closure holding it still sees the restore); anything else is kept by reference.
+	const copyStore = ( v, depth, seen ) => {
+		const container = v && 'object' === typeof v && ( Array.isArray( v ) || Object.getPrototypeOf( v ) === Object.prototype );
+		if ( ! container || depth > 8 ) {
+			return { leaf: v };
+		}
+		if ( seen.has( v ) ) {
+			return seen.get( v );
+		}
+		const rep = { obj: v, len: Array.isArray( v ) ? v.length : 0, items: {} };
+		seen.set( v, rep );
+		for ( const k of Object.keys( v ) ) {
+			if ( 'value' in Object.getOwnPropertyDescriptor( v, k ) ) {
+				rep.items[ k ] = copyStore( v[ k ], depth + 1, seen );
+			}
+		}
+		return rep;
+	};
+	const put = ( rep, done ) => {
+		if ( done.has( rep ) ) {
+			return;
+		}
+		done.add( rep );
+		const obj = rep.obj;
+		Object.keys( obj ).filter( ( k ) => ! ( k in rep.items ) ).forEach( ( k ) => {
+			try {
+				delete obj[ k ];
+			} catch {
+				// A frozen store has nothing to put back.
+			}
+		} );
+		Array.isArray( obj ) && ( obj.length = rep.len );
+		for ( const [ k, r ] of Object.entries( rep.items ) ) {
+			r.items && put( r, done );
+			try {
+				obj[ k ] = r.items ? r.obj : r.leaf;
+			} catch {
+				// A read-only property keeps its value.
+			}
+		}
+	};
 	if ( 'reach' === op && patch.calls.some( ( c ) => c.store ) ) {
-		window.__sgsStoreSnap ||= Object.fromEntries( Object.entries( localStorage ) );
-		for ( const c of patch.calls.filter( ( x ) => x.store ) ) {
-			const found = Object.getOwnPropertyDescriptor( window, c.ident )?.value;
-			const root = found && '[object Object]' === Object.prototype.toString.call( found ) && Object.getPrototypeOf( found ) === Object.prototype ? found : null;
+		const calls = patch.calls.filter( ( c ) => c.store );
+		const ss = ( storeSnaps[ storeKey ] ||= { ls: Object.fromEntries( Object.entries( localStorage ) ), roots: {}, once: [] } );
+		if ( patch.once && ss.once.includes( patch.once ) ) {
+			return 1;
+		}
+		for ( const c of calls ) {
+			const root = plainRoot( c.ident );
+			root && ! ss.roots[ c.ident ] && ( ss.roots[ c.ident ] = copyStore( root, 0, new Map() ) );
+		}
+		let ran = 0;
+		for ( const c of calls ) {
+			const root = plainRoot( c.ident );
 			let obj = root;
 			for ( const seg of c.path.slice( 0, -1 ) ) {
 				obj = obj && 'object' === typeof obj ? obj[ seg ] : null;
 			}
 			const fn = obj ? obj[ c.path.at( -1 ) ] : null;
-			if ( ! root || 'object' !== typeof root || 'function' !== typeof fn ) {
-				return 0;
+			if ( ! root || 'function' !== typeof fn ) {
+				continue;
 			}
 			try {
 				fn.apply( obj, c.args );
+				ran++;
 			} catch {
 				return 0;
 			}
 		}
+		ran && patch.once && ss.once.push( patch.once );
 		if ( ! patch.calls.some( ( c ) => ! c.store ) ) {
-			return 1;
+			return ran ? 1 : 0;
 		}
 	}
-	if ( 'restore' === op && window.__sgsStoreSnap ) {
+	if ( 'restore' === op && storeSnaps[ storeKey ] ) {
+		const ss = storeSnaps[ storeKey ];
 		localStorage.clear();
-		Object.entries( window.__sgsStoreSnap ).forEach( ( [ k, v ] ) => localStorage.setItem( k, v ) );
+		Object.entries( ss.ls ).forEach( ( [ k, v ] ) => localStorage.setItem( k, v ) );
+		const done = new Set();
+		Object.values( ss.roots ).forEach( ( rep ) => put( rep, done ) );
 		window.dispatchEvent( new Event( 'storage' ) );
-		delete window.__sgsStoreSnap;
+		delete storeSnaps[ storeKey ];
 	}
 	for ( const host of document.querySelectorAll( '.sc-host' ) ) {
 		const name = host.dataset.scName;
@@ -73,7 +135,7 @@ export function logicState( { comp, op, patch, slot } ) {
 			const keep = patch.keep || [];
 			const was = Object.fromEntries( keep.map( ( k ) => [ k, logic.state[ k ] ] ) );
 			try {
-				patch.calls.filter( ( c ) => ! c.store && ( ! c.component || c.component === name ) ).forEach( ( c ) => new Function( c.ident, `${ c.ident }.setState(${ c.args });` )( logic ) );
+				patch.calls.filter( ( c ) => ! c.store && ( ! c.component || c.component === name ) ).forEach( ( c ) => ( 'this' === c.ident ? new Function( `this.setState(${ c.args });` ).call( logic ) : new Function( c.ident, `${ c.ident }.setState(${ c.args });` )( logic ) ) );
 				keep.length && logic.setState( was );
 				count++;
 			} catch {
@@ -185,8 +247,9 @@ export const setDraftState = ( page, { component, keys } ) => page.evaluate( log
 
 // Runs `calls` ([{ ident, args }], a surfaces.json how_to_reach's setState calls) on every mounted instance of
 // `component` through its own logic.setState, then puts back each key `keep` names to its value before the calls;
-// returns how many instances ran them all (0: not mounted or a call threw).
-export const reachDraftState = ( page, { component, calls, keep = [] } ) => page.evaluate( logicState, { comp: component, op: 'reach', patch: { calls, keep } } );
+// returns how many instances ran them all (0: not mounted or a call threw). `once` (a text naming the calls) runs the store calls
+// of that name once until the next restore of the same slot, so a precondition applied at every width is applied once.
+export const reachDraftState = ( page, { component, calls, keep = [], once = null } ) => page.evaluate( logicState, { comp: component, op: 'reach', patch: { calls, keep, once } } );
 
 // The value of state key `key` on each mounted instance of `component` (an empty list: not mounted).
 export const readDraftState = ( page, { component, key } ) => page.evaluate( logicState, { comp: component, op: 'get', patch: key } );

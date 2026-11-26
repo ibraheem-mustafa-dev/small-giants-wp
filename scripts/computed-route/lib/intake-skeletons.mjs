@@ -282,8 +282,9 @@ async function markAt( page, s, settle, opener = null, width = null ) {
 	if ( ( ! m.error && ! bounded ) || ! opener ) {
 		return m;
 	}
-	// The draft's store calls the way needs first (a signed-in account behind the surface's condition, preconditionWays).
-	opener.before && await reachDraftState( page, { component: s.component, calls: opener.before.calls } );
+	// The draft's store calls the way needs first (a signed-in account behind the surface's condition, preconditionWays), run once per
+	// open (`once`: every width and every re-open after a settle finds them done, so a call that adds an item adds it once).
+	opener.before && await reachDraftState( page, { component: s.component, calls: opener.before.calls, once: describeWay( opener.before ) } );
 	const reached = 'state' === opener.via ? await setDraftState( page, { component: s.component, keys: opener.keys } )
 		: 'reach' === opener.via ? await reachDraftState( page, { component: s.component, calls: opener.calls } )
 			: await fireTrigger( page, { component: s.component, draftId: opener.draftId }, opener.event );
