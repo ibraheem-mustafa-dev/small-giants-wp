@@ -218,6 +218,9 @@ test( 'a block whose items hold no picture setting still takes the links, with o
 	const rows = r.handover.filter( ( h ) => /picture in each of its 2 items/.test( h.reason ) );
 	assert.equal( rows.length, 1 );
 	assert.match( rows[ 0 ].reason, /sgs\/linklist's links hold no picture setting/ );
+	// With the pictures read the field has values: its one row is the "no place" row, never a second row for the same field.
+	const seen = pass( [ [ 'sgs/linklist', 'Root/40#0' ] ], { facts, inventory, picturesOf: () => [ 'assets/a.png', 'assets/b.png' ] } );
+	assert.equal( seen.r.handover.filter( ( h ) => 'id' === h.evidence.key ).length, 1, JSON.stringify( seen.r.handover.map( ( h ) => h.evidence.key ) ) );
 	// Negative control: the same loop with no link either holds nothing the block shows, so the list is one row and no write.
 	const bare = { elements: inventory.elements.map( ( e ) => ( { ...e, attrs: {} } ) ) };
 	const none = pass( [ [ 'sgs/linklist', 'Root/40#0' ] ], { facts, inventory: bare } );

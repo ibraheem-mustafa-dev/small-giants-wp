@@ -283,7 +283,8 @@ export function listDecisions( { block, target, node, list, media = {}, pages = 
 		out.rows.push( { field: f, value: list.items.map( ( it ) => it[ f ] ).filter( ( v ) => null != v ).join( ' | ' ), reason: `the draft's item field "${ f }" has no place in ${ block }'s ${ where } (no item key of its name or role)` } );
 	}
 	// A list is never dropped (Bean 2026-10-28, register ruling S7; FR-48-97): items carrying a link are written as they are, and a
-	// picture field the block's items hold no setting for is one row naming the pictures to choose. Items holding nothing but their
+	// picture field the block's items hold no setting for is one row naming the pictures to choose (one row a field, so a field
+	// whose pictures were read keeps its "no place" row alone). Items holding nothing but their
 	// identity keys (a slug Fill made itself) would replace the block's items with empty ones: one row names the list, never a
 	// row per item the block does not take.
 	const named = new Set( identityKeys( target.keys ).map( ( k ) => k.key ) );
@@ -291,7 +292,7 @@ export function listDecisions( { block, target, node, list, media = {}, pages = 
 		out.rows.push( { field: '(items)', value: String( built.length ), reason: `the draft's ${ built.length } items carry no words, link or uploaded picture ${ block } can show, so its ${ where } are not written` } );
 		return out;
 	}
-	for ( const f of list.fields.filter( ( x ) => unmatched.includes( x.name ) && ( x.image || 'image' === keyRole( x.name ) ) ) ) {
+	for ( const f of list.fields.filter( ( x ) => unmatched.includes( x.name ) && ( x.image || 'image' === keyRole( x.name ) ) && ! out.rows.some( ( r ) => r.field === x.name ) ) ) {
 		out.rows.push( { field: f.name, value: '', reason: `the draft draws a picture in each of its ${ built.length } items (${ f.name }: an image the draft fills at run time, or a placeholder) and ${ block }'s ${ where } hold no picture setting Fill can write: choose each picture in the editor` } );
 	}
 	built.forEach( ( b ) => out.rows.push( ...b.rows ) );

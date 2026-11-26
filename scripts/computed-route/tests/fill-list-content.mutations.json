@@ -7,8 +7,8 @@
 	},
 	{
 		"file": "lib/fill-list-content.mjs",
-		"find": "( x.image || 'image' === keyRole( x.name ) ) ) ) {",
-		"replace": "false ) ) {",
+		"find": "( x.image || 'image' === keyRole( x.name ) ) && !",
+		"replace": "false && !",
 		"why": "a picture field the block's items hold no setting for is no row"
 	},
 	{
@@ -16,5 +16,11 @@
 		"find": "unmatched.includes( x.name ) && ( x.image",
 		"replace": "( x.image",
 		"why": "a picture field a key already takes is named as unplaceable too"
+	},
+	{
+		"file": "lib/fill-list-content.mjs",
+		"find": "&& ! out.rows.some( ( r ) => r.field === x.name ) ) ) {",
+		"replace": ") ) {",
+		"why": "a picture field whose pictures were read is named twice"
 	}
 ]
