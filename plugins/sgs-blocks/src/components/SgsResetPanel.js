@@ -68,6 +68,7 @@ const ItemRegistry = createContext( null );
  * @param {Object}   props
  * @param {Function} props.hasValue   Returns true while the control holds a value.
  * @param {Function} props.onDeselect Clears the control.
+ * @param {string}   [props.label]  Names the control for tests and readers of the source; nothing is drawn from it.
  * @param {Element}  props.children   The control.
  * @return {Element} The control.
  */
