@@ -143,6 +143,10 @@ const warnMissing = ( what ) => () => {
  * @param {string}   [props.liftPrefix]          Attribute prefix for the lift switch ('' = the block root; see ShadowLiftControls).
  * @param {boolean}  [props.hoverOnly]           Show only the hover shadow builder, for a block with no resting shadow attributes.
  * @param {string[]} [props.hide]                Inputs to remove: `spread`, `inset`, `raw` (the Raw CSS tab). Empty by default.
+ * @param {boolean}  [props.followShape]         The surface draws the shadow as `filter: drop-shadow()` on the outline of a
+ *                                               masked shape (`utils/shadow-output.js`, `sgs_shadow_decl_map()`): Spread, Inset
+ *                                               and Raw CSS are hidden, because a drop-shadow has none of them, and the panel
+ *                                               says the shadow follows the shape. Off by default.
  */
 export default function ShadowControl( {
 	label,
@@ -159,8 +163,12 @@ export default function ShadowControl( {
 	attrNames,
 	liftPrefix = '',
 	hoverOnly = false,
-	hide = [],
+	hide: hideProp = [],
+	followShape = false,
 } ) {
+	const hide = followShape
+		? [ ...new Set( [ ...hideProp, 'spread', 'inset', 'raw' ] ) ]
+		: hideProp;
 	// Explicit props win over the map, and a pair is written in ONE call only when the map
 	// (not the caller) supplies both halves.
 	const explicitBase =
@@ -307,6 +315,11 @@ export default function ShadowControl( {
 	if ( hoverOnly && hasHoverState ) {
 		return (
 			<BaseControl label={ label } __nextHasNoMarginBottom>
+				{ followShape && (
+					<p className="sgs-shadow-control__note">
+						{ __( 'Shadows follow the shape', 'sgs-blocks' ) }
+					</p>
+				) }
 				<ShadowStateBuilder
 					{ ...shared }
 					isHover
@@ -323,6 +336,11 @@ export default function ShadowControl( {
 
 	return (
 		<BaseControl label={ label } __nextHasNoMarginBottom>
+			{ followShape && (
+				<p className="sgs-shadow-control__note">
+					{ __( 'Shadows follow the shape', 'sgs-blocks' ) }
+				</p>
+			) }
 			{ /* ONE state axis, at the top: Normal / Hover own the WHOLE panel (Bean's ruling).
 			   The tabs inside are the layers model, not a second state axis. */ }
 			{ showHoverTab ? (
