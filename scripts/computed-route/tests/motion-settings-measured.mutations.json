@@ -16,5 +16,29 @@
 		"find": "palette: ctx.palette, measured } );",
 		"replace": "palette: ctx.palette } );",
 		"why": "the measured writes never reach the settings writer"
+	},
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "fillWrites.filter( ( w ) => 'visible-count' === w.how );",
+		"replace": "fillWrites;",
+		"why": "any write Fill made holds the behaviour's setting, not only a measured count"
+	},
+	{
+		"file": "fill.mjs",
+		"find": "fillWrites: result.writes } );",
+		"replace": "} );",
+		"why": "fillSurface never hands Fill's writes to the motion pass, so autoplay's one card overwrites the measured count"
+	},
+	{
+		"file": "lib/fill-behaviour.mjs",
+		"find": "wrote.length === mine.length ?",
+		"replace": "true ?",
+		"why": "the behaviour's one-card note lists settings it kept, not wrote"
+	},
+	{
+		"file": "lib/fill-behaviour.mjs",
+		"find": "`${ r.id }: written as ${ wrote.join( ', ' ) || 'no setting' }`",
+		"replace": "`${ r.id }: written as ${ mine.map( ( x ) => x.attr ).join( ', ' ) }`",
+		"why": "the note names a kept setting as written"
 	}
 ]

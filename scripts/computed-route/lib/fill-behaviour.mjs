@@ -80,7 +80,8 @@ export function stripKeysOf( found, template ) {
 // framework DB query); `colour` values equal to a palette colour are written by their slug. A behaviour no settings of
 // this node's block belong to is reported. A setting Fill measured from the draft's render on this node (`measured`: Fill's
 // writes, { node, attr }, such as the slider's visible-card count, lib/fill-visible-count.mjs) keeps the measured value and
-// is noted. Returns the items it wrote or reported.
+// is noted; the behaviour's own note (which describes every setting it sets) is then replaced by the list of settings it
+// wrote. Returns the items it wrote or reported.
 export function applySettings( { items, n, out, where, flat, hasAttr = declaredAttr, palette = null, measured = [] } ) {
 	const seen = ( out.settingsDone ||= new Set() );
 	for ( const { r, b } of items ) {
@@ -98,6 +99,7 @@ export function applySettings( { items, n, out, where, flat, hasAttr = declaredA
 			out.unmapped.push( { ...where, property: 'motion', value: r.id, reason: `${ n.name } declares no ${ missing.map( ( s ) => s.attr ).join( ', ' ) } setting` } );
 			continue;
 		}
+		const wrote = [];
 		for ( const s of mine ) {
 			if ( measured.some( ( m ) => m.node === where.node && m.attr === s.attr ) ) {
 				out.notes.push( { ...where, text: `${ r.id }: ${ s.attr } keeps the value Fill measured from the draft's render, not the behaviour's ${ JSON.stringify( s.value ) }` } );
@@ -106,8 +108,9 @@ export function applySettings( { items, n, out, where, flat, hasAttr = declaredA
 			const value = s.colour && 'string' === typeof s.value ? ( palette?.get( s.value.toLowerCase() ) ?? s.value ) : s.value;
 			const { before, after } = setAttr( flat[ n.index ], { attr: s.attr, value } );
 			out.writes.push( { node: where.node, block: n.name, slot: where.slot, prop: `${ r.id } ${ s.attr }`, attr: s.attr, before, after, widths: [], how: 'motion' } );
+			wrote.push( s.attr );
 		}
-		out.notes.push( { ...where, text: `${ r.id }: ${ b.notes.join( '; ' ) } (${ mine.map( ( s ) => s.attr ).join( ', ' ) })` } );
+		out.notes.push( { ...where, text: wrote.length === mine.length ? `${ r.id }: ${ b.notes.join( '; ' ) } (${ wrote.join( ', ' ) })` : `${ r.id }: written as ${ wrote.join( ', ' ) || 'no setting' }` } );
 		if ( b.accepted ) {
 			out.notes.push( { ...where, text: `${ r.id }: accepted difference: ${ b.accepted }` } );
 		}
