@@ -191,3 +191,25 @@ test( 'MUST FAIL: a record that states its values only in its formula (intake\'s
 	assert.deepEqual( out.blocks[ 'sgs/site-header' ].map( ( x ) => [ x.attr, x.value ] ).slice( 0, 2 ), [ [ 'scrolledOffset', 8 ], [ 'shadowScrolled', '0px 10px 30px -18px' ] ] );
 	assert.deepEqual( withEnds( { properties: [ { property: 'x', to: 'a', from: 'b', formula: "c ? 'y' : 'z'" } ] } ).properties[ 0 ], { property: 'x', to: 'a', from: 'b', formula: "c ? 'y' : 'z'" }, 'stated ends are kept' );
 } );
+
+test( 'MUST FAIL: the autoplay behaviour keeps the visible-card count Fill measured from the draft\'s render (lib/fill-visible-count.mjs), and writes its one card where nothing was measured', () => {
+	const CARD = rec( 'S-4', { trigger: { type: 'state', detail: 'state.tIdx changes: prev/next, dots, or the 6.5s setInterval in componentDidMount', state_keys: [ 'tIdx' ] }, duration_ms: 520, easing: EASE, element: { dc: 'Site', template_tpl_id: '10', selector: 'ref setTCard', description: 'Gold testimonial card' },
+		properties: [ { property: 'opacity', from: 0, to: 1 }, { property: 'transform', from: 'translateX(26px)', to: 'none' } ] } );
+	const counted = { desktop: 3, tablet: 2, mobile: 1 };
+	const nodes = [ { index: 0, name: 'sgs/testimonial-slider', targets: [ { id: '0:', slot: '', finder: { tpl: 'Site/10#0' } } ] } ];
+	const flat = [ { name: 'sgs/testimonial-slider', attributes: { slidesVisible: counted }, ref: 'r0' } ];
+	const out = motionWrites( { nodes, flat, refOf: ( x ) => x.ref, records: [ CARD ], mdb, schema, rawSnapshot: { settings: { custom: {}, color: { palette: [] } } }, stateVocab: VOCAB, hasAttr: declared, fillWrites: [ { node: 'r0', attr: 'autoplaySpeed', how: 'motion' }, { node: 'r0', attr: 'slidesVisible', how: 'visible-count' } ] } );
+	assert.deepEqual( flat[ 0 ].attributes.slidesVisible, counted );
+	assert.equal( flat[ 0 ].attributes.autoplaySpeed, 6500, 'the rest of the behaviour is still written' );
+	const notes = out.notes.map( ( n ) => n.text ).join( '\n' );
+	assert.match( notes, /slidesVisible keeps the value Fill measured/ );
+	assert.match( notes, /S-4: written as autoplay, autoplaySpeed, transitionDuration/ );
+	assert.doesNotMatch( notes, /one card is visible/, 'the behaviour\'s one-card note is not given where the count was kept' );
+	// Negative control: a measured count on another node does not hold this one.
+	const other = { name: 'sgs/testimonial-slider', attributes: {}, ref: 'r0' };
+	const plain = motionWrites( { nodes, flat: [ other ], refOf: ( x ) => x.ref, records: [ CARD ], mdb, schema, rawSnapshot: { settings: { custom: {}, color: { palette: [] } } }, stateVocab: VOCAB, hasAttr: declared, fillWrites: [ { node: 'r9', attr: 'slidesVisible', how: 'visible-count' }, { node: 'r0', attr: 'slidesVisible', how: 'content' } ] } );
+	assert.equal( other.attributes.slidesVisible, 1, 'a count on another node, or a write Fill did not measure, holds nothing' );
+	assert.match( plain.notes.map( ( n ) => n.text ).join( '\n' ), /one card is visible and the slider advances on the draft's interval \(autoplay, autoplaySpeed, slidesVisible, transitionDuration\)/ );
+	// fill.mjs::fillSurface hands Fill's writes to the motion pass, so the count it measured reaches the behaviour.
+	assert.match( fs.readFileSync( path.join( HERE, '..', 'fill.mjs' ), 'utf8' ), /motionWrites\( \{[^\n]*fillWrites: result\.writes[^\n]*\} \);/ );
+} );

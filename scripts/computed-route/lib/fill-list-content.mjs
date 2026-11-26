@@ -175,7 +175,8 @@ export function itemPicture( value, media = {} ) {
 	return 1 === new Set( hits.map( ( h ) => h.id ) ).size ? hits[ 0 ] : null;
 }
 
-// One item's settings from the draft item: { attrs, rows } where rows are [{ field, value, reason }] the item cannot hold.
+// One item's settings from the draft item: { attrs, rows } where rows are [{ field, value, reason }] the item cannot hold (a picture
+// to choose carries `picture: true`).
 export function itemAttrs( item, { map, keys, media, pages = null, label, snapshot = null } ) {
 	const attrs = {};
 	const rows = [];
@@ -185,7 +186,7 @@ export function itemAttrs( item, { map, keys, media, pages = null, label, snapsh
 		if ( 'image' === keyRoles( k )[ 0 ] || 'image' === keyRole( field ) ) {
 			const hit = null === v || undefined === v ? null : itemPicture( v, media );
 			if ( ! hit ) {
-				rows.push( { field, value: v ?? '', reason: `${ label }'s picture (${ field }${ v ? ` "${ v }"` : '' }) is chosen by the draft at run time or is no uploaded file: choose it in the item's ${ key } setting` } );
+				rows.push( { field, value: v ?? '', picture: true, reason: `${ label }'s picture (${ field }${ v ? ` "${ v }"` : '' }) is chosen by the draft at run time or is no uploaded file: choose it in the item's ${ key } setting` } );
 			} else {
 				attrs[ key ] = 'object' === k.type ? itemSource( hit ) : 'string' === k.type ? hit.url : hit.id;
 			}
@@ -228,6 +229,7 @@ export const identityKeys = ( keys ) => keys.filter( ( k ) => 'technical' === k.
 
 // Each built item's identity keys the draft left empty, written from the item's own words as a slug unique in the list
 // (`Ordering & delivery` -> `ordering-delivery`, a repeat -> `-2`), else `item-<n>`. A key the draft filled is kept.
+// Each item names the keys made up for it (`madeUp`), which are nothing the block shows.
 export function withIdentity( built, keys ) {
 	const ids = identityKeys( keys );
 	if ( ! ids.length ) {
@@ -238,6 +240,7 @@ export function withIdentity( built, keys ) {
 	const out = [];
 	for ( const [ i, b ] of built.entries() ) {
 		const attrs = { ...b.attrs };
+		const madeUp = [];
 		for ( const k of ids.filter( ( x ) => undefined === attrs[ x.key ] || '' === attrs[ x.key ] ) ) {
 			const base = slug( wordsOfItem( attrs ) ) || `item-${ i + 1 }`;
 			const taken = new Set( [ ...out, ...built.slice( i + 1 ) ].map( ( x ) => x.attrs[ k.key ] ).filter( Boolean ) );
@@ -246,8 +249,9 @@ export function withIdentity( built, keys ) {
 				id = `${ base }-${ n }`;
 			}
 			attrs[ k.key ] = id;
+			madeUp.push( k.key );
 		}
-		out.push( { ...b, attrs } );
+		out.push( { ...b, attrs, madeUp } );
 	}
 	return out;
 }
@@ -277,7 +281,7 @@ export function listDecisions( { block, target, node, list, media = {}, pages = 
 		return out;
 	}
 	const { map, unmatched } = matchFields( list.fields, target.keys );
-	const built = withIdentity( list.items.map( ( item, i ) => itemAttrs( item, { map, keys: target.keys, media, pages, label: `item ${ i + 1 }`, snapshot } ) ), target.keys );
+	const built = withIdentity( list.items.map( ( item, i ) => itemAttrs( item, { map, keys: target.keys, media, pages, label: `draft item ${ i + 1 }`, snapshot } ) ), target.keys );
 	const fields = Object.entries( map ).map( ( [ f, k ] ) => `${ f } -> ${ k }` ).join( ', ' ) || 'none matched';
 	if ( kids.length ) {
 		if ( kids.length !== built.length ) {
@@ -301,19 +305,28 @@ export function listDecisions( { block, target, node, list, media = {}, pages = 
 	for ( const f of unmatched.filter( ( name ) => ! styled.has( name ) && list.items.some( ( it ) => null != it[ name ] && '' !== it[ name ] ) ) ) {
 		out.rows.push( { field: f, value: list.items.map( ( it ) => it[ f ] ).filter( ( v ) => null != v ).join( ' | ' ), reason: `the draft's item field "${ f }" has no place in ${ block }'s ${ where } (no item key of its name or role)` } );
 	}
-	// Items holding nothing the block shows (only a link, or nothing) would replace the block's items with empty ones: one
-	// row names the list, never a row per item the block does not take.
+	// A list is never dropped (Bean 2026-10-28, register ruling S7; FR-48-97): items carrying a link are written as they are, and a
+	// picture field the block's items hold no setting for is one row naming the pictures to choose (one row a field, so a field
+	// whose pictures were read keeps its "no place" row alone). Items holding nothing but their
+	// identity keys (a slug Fill made itself) would replace the block's items with empty ones: one row names the list, never a
+	// row per item the block does not take.
 	const named = new Set( identityKeys( target.keys ).map( ( k ) => k.key ) );
-	if ( ! built.some( ( b ) => Object.keys( b.attrs ).some( ( k ) => 'link' !== keyRole( k ) && ! named.has( k ) ) ) ) {
-		out.rows.push( { field: '(items)', value: String( built.length ), reason: `the draft's ${ built.length } items carry no words or uploaded picture ${ block } can show, so its ${ where } are not written` } );
+	if ( ! built.some( ( b ) => Object.keys( b.attrs ).some( ( k ) => ! named.has( k ) ) ) ) {
+		out.rows.push( { field: '(items)', value: String( built.length ), reason: `the draft's ${ built.length } items carry no words, link or uploaded picture ${ block } can show, so its ${ where } are not written` } );
 		return out;
 	}
+	for ( const f of list.fields.filter( ( x ) => unmatched.includes( x.name ) && ( x.image || 'image' === keyRole( x.name ) ) && ! out.rows.some( ( r ) => r.field === x.name ) ) ) {
+		out.rows.push( { field: f.name, value: '', reason: `the draft draws a picture in each of its ${ built.length } items (${ f.name }: an image the draft fills at run time, or a placeholder) and ${ block }'s ${ where } hold no picture setting Fill can write: choose each picture in the editor` } );
+	}
 	built.forEach( ( b ) => out.rows.push( ...b.rows ) );
-	out.notes.push( `${ list.items.length } items from the draft's ${ list.source }, fields ${ fields }` );
+	// An item holding nothing the block shows (no setting but an identity key Fill made up) and no picture to choose is left out, never written
+	// as a blank item; a link of it that goes to no page keeps its row (above).
+	const kept = built.filter( ( b ) => Object.keys( b.attrs ).some( ( k ) => ! b.madeUp?.includes( k ) ) || b.rows.some( ( r ) => r.picture ) );
+	out.notes.push( `${ list.items.length } items from the draft's ${ list.source }, fields ${ fields }${ kept.length < built.length ? `; ${ built.length - kept.length } item(s) holding nothing to show and no picture to choose left out` : '' }` );
 	if ( 'attr' === target.kind ) {
-		out.writes.push( { attr: target.attr, value: built.map( ( b ) => b.attrs ) } );
+		out.writes.push( { attr: target.attr, value: kept.map( ( b ) => b.attrs ) } );
 	} else {
-		out.children = built.map( ( b ) => ( { name: target.child, attributes: b.attrs, innerBlocks: [] } ) );
+		out.children = kept.map( ( b ) => ( { name: target.child, attributes: b.attrs, innerBlocks: [] } ) );
 	}
 	return out;
 }

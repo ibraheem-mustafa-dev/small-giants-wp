@@ -23,6 +23,7 @@ const SCHEMAS = {
 	'sgs/milestones': { entries: { type: 'array', default: [ { date: '2020-01-01', title: 'First', description: '<p>Text.</p>', image: 0 } ] } },
 	'sgs/steps': { steps: { type: 'array', default: [ { number: '1', title: 'First Step' } ], items: { type: 'object', properties: { icon: { type: 'string' }, number: { type: 'string' }, title: { type: 'string' }, description: { type: 'string' } } } } },
 	'sgs/logos': { logos: { type: 'array', default: [] , items: { type: 'object', properties: { media: { type: 'object' }, linkUrl: { type: 'string' } } } } },
+	'sgs/linklist': { links: { type: 'array', default: [], items: { type: 'object', properties: { linkUrl: { type: 'string' } } } } },
 	'sgs/quotes': {},
 	'sgs/quote': { quote: { type: 'string' }, reviewerName: { type: 'string' }, orgName: { type: 'string' }, avatarMedia: { type: 'object' } },
 	'sgs/split': { splitMediaImageUrl: { type: 'string' }, splitMediaImageId: { type: 'integer' }, splitMediaImageAlt: { type: 'string' }, splitMediaVideoUrl: { type: 'string' }, splitMediaVideoId: { type: 'integer' }, ctaUrl: { type: 'string' } },
@@ -36,7 +37,7 @@ function makeDb() {
 	db.exec( `INSERT INTO block_attributes VALUES
 		( 'sgs/milestones', 'entries', 'array', 'content', NULL, NULL ), ( 'sgs/milestones', 'titleColour', 'string', 'color', 'color', NULL ),
 		( 'sgs/steps', 'steps', 'array', 'content', NULL, NULL ),
-		( 'sgs/logos', 'logos', 'array', 'content', NULL, NULL ),
+		( 'sgs/logos', 'logos', 'array', 'content', NULL, NULL ), ( 'sgs/linklist', 'links', 'array', 'content', NULL, NULL ),
 		( 'sgs/process', 'steps', 'array', 'content', 'left,right', NULL ), ( 'sgs/offsets', 'offsets', 'array', 'content', 'left,right', NULL ),
 		( 'sgs/quote', 'quote', 'string', 'text-content', NULL, NULL ), ( 'sgs/quote', 'reviewerName', 'string', 'content', NULL, NULL ),
 		( 'sgs/quote', 'orgName', 'string', 'text-content', NULL, NULL ), ( 'sgs/quote', 'avatarMedia', 'object', 'image-object', NULL, NULL ),
@@ -214,19 +215,61 @@ test( 'skeleton children that are the list take only the item values they lack; 
 	assert.match( one.r.handover[ 0 ].reason, /draws 2 items and the skeleton holds 1/ );
 } );
 
-test( 'items holding only links are not written; a hash route goes through the page map (MUST FAIL)', () => {
+test( 'items holding only links are written, each link as its page address, and the unplaceable picture field is one row (FR-48-97, MUST FAIL)', () => {
 	const facts = { elements: Object.fromEntries( [ fact( 40, 'div' ), fact( 41, 'sc-for', [], [ 40 ] ), fact( 42, 'a', [ [ 'attr:href', 'l.href' ] ], [ 41, 40 ] ), fact( 43, 'image-slot', [ [ 'attr:id', 'l.id' ] ], [ 42, 41, 40 ] ) ] ) };
 	const inventory = { elements: [ inv( 'Root/40#0', null, 'div' ), ...[ 0, 1 ].flatMap( ( i ) => [ inv( `Root/42#${ i }`, 'Root/40#0', 'a', '', [ [ 41, 'l' ] ], { href: `#/brand-${ i }` } ), inv( `Root/43#${ i }`, `Root/42#${ i }`, 'image-slot', '', [ [ 41, 'l' ] ] ) ] ) ] };
 	const pages = [ { route: 'brand-0', slug: 'brand-0', postType: 'page' } ];
 	const bare = pass( [ [ 'sgs/logos', 'Root/40#0' ] ], { facts, inventory, pages } );
-	assert.equal( bare.r.writes.length, 0 );
-	assert.equal( bare.r.handover.length, 1 );
-	assert.match( bare.r.handover[ 0 ].reason, /carry no words or uploaded picture/ );
+	assert.equal( bare.r.writes.length, 1 );
+	assert.equal( bare.r.writes[ 0 ].attr, 'logos' );
+	assert.deepEqual( bare.flat[ 0 ].attributes.logos.map( ( l ) => l.linkUrl ), [ '/brand-0/', undefined ], 'the second tile keeps its place: its picture is one to choose' );
+	assert.ok( ! bare.r.handover.some( ( h ) => /carry no words/.test( h.reason ) ) );
+	assert.match( bare.r.handover.find( ( h ) => 'href' === h.evidence.key ).reason, /item 2's link "#\/brand-1" goes to no page/ );
 	// With a drawn picture per item the pictures are written, each link as its page's permalink.
 	const drawn = pass( [ [ 'sgs/logos', 'Root/40#0' ] ], { facts, inventory, pages, picturesOf: () => [ 'https://images.unsplash.com/photo-1700000000-abcdef12?w=600', 'assets/chef.png' ] } );
 	assert.deepEqual( drawn.flat[ 0 ].attributes.logos.map( ( l ) => l.media ), [ { desktop: { kind: 'image', id: 502, url: 'https://acme.test/p1.jpg', mime: 'image/jpeg' } }, { desktop: { kind: 'image', id: 501, url: 'https://acme.test/chef.png', mime: 'image/png' } } ] );
-	assert.deepEqual( drawn.flat[ 0 ].attributes.logos.map( ( l ) => l.linkUrl ), [ '/brand-0/', undefined ] );
+	assert.deepEqual( drawn.flat[ 0 ].attributes.logos.map( ( l ) => l.linkUrl ), [ '/brand-0/', undefined ], 'negative control: an item with a picture keeps its place though its link goes nowhere' );
 	assert.match( drawn.r.handover.find( ( h ) => 'href' === h.evidence.key ).reason, /item 2's link "#\/brand-1" goes to no page/ );
+} );
+
+test( 'a block whose items hold no picture setting still takes the links, with one row naming the pictures to choose; items holding no link at all are not written (FR-48-97, MUST FAIL)', () => {
+	const facts = { elements: Object.fromEntries( [ fact( 40, 'div' ), fact( 41, 'sc-for', [], [ 40 ] ), fact( 42, 'a', [ [ 'attr:href', 'l.href' ] ], [ 41, 40 ] ), fact( 43, 'image-slot', [ [ 'attr:id', 'l.id' ] ], [ 42, 41, 40 ] ) ] ) };
+	const inventory = { elements: [ inv( 'Root/40#0', null, 'div' ), ...[ 0, 1 ].flatMap( ( i ) => [ inv( `Root/42#${ i }`, 'Root/40#0', 'a', '', [ [ 41, 'l' ] ], { href: `/brand-${ i }/` } ), inv( `Root/43#${ i }`, `Root/42#${ i }`, 'image-slot', '', [ [ 41, 'l' ] ] ) ] ) ] };
+	const { r, flat } = pass( [ [ 'sgs/linklist', 'Root/40#0' ] ], { facts, inventory } );
+	assert.deepEqual( flat[ 0 ].attributes.links, [ { linkUrl: '/brand-0/' }, { linkUrl: '/brand-1/' } ] );
+	const rows = r.handover.filter( ( h ) => /picture in each of its 2 items/.test( h.reason ) );
+	assert.equal( rows.length, 1 );
+	assert.match( rows[ 0 ].reason, /sgs\/linklist's links hold no picture setting/ );
+	// With the pictures read the field has values: its one row is the "no place" row, never a second row for the same field.
+	const seen = pass( [ [ 'sgs/linklist', 'Root/40#0' ] ], { facts, inventory, picturesOf: () => [ 'assets/a.png', 'assets/b.png' ] } );
+	assert.equal( seen.r.handover.filter( ( h ) => 'id' === h.evidence.key ).length, 1, JSON.stringify( seen.r.handover.map( ( h ) => h.evidence.key ) ) );
+	// Negative control: the same loop with no link either holds nothing the block shows, so the list is one row and no write.
+	const bare = { elements: inventory.elements.map( ( e ) => ( { ...e, attrs: {} } ) ) };
+	const none = pass( [ [ 'sgs/linklist', 'Root/40#0' ] ], { facts, inventory: bare } );
+	assert.equal( none.r.writes.length, 0 );
+	assert.deepEqual( none.r.handover.filter( ( h ) => /carry no words, link or uploaded picture/.test( h.reason ) ).length, 1 );
+} );
+
+test( 'MUST FAIL: an item holding nothing to show and no picture to choose is left out, whatever its link field is named; an item with a picture to choose keeps its place', () => {
+	const keys = [ { key: 'media', role: 'image-object', type: 'object' }, { key: 'linkUrl', role: 'content', type: 'string' }, { key: 'alt', role: 'content', type: 'string' } ];
+	const decide = ( fields, items ) => listDecisions( { block: 'sgs/logos', target: { kind: 'attr', attr: 'logos', keys }, node: {}, list: { source: 'x', fields, items }, pages: [ { route: 'a', slug: 'a', postType: 'page' } ] } );
+	const value = ( d ) => d.writes[ 0 ]?.value;
+	// A link field named by another role (brandUrl reads as an organisation) still matched to the link key.
+	const brand = decide( [ { name: 'brandUrl' } ], [ { brandUrl: '/a/' }, { brandUrl: '#' } ] );
+	assert.deepEqual( value( brand ), [ { linkUrl: '/a/' } ] );
+	assert.ok( brand.rows.some( ( r ) => /draft item 2's link "#" goes to no page/.test( r.reason ) ), 'the dead link keeps its row, numbered as the draft numbers it (the written list has no item 2)' );
+	assert.match( brand.notes.join( ';' ), /1 item\(s\) holding nothing to show and no picture to choose left out/ );
+	// An item with no link at all is no blank tile either.
+	assert.deepEqual( value( decide( [ { name: 'href' } ], [ { href: '/a/' }, {} ] ) ), [ { linkUrl: '/a/' } ] );
+	// The identity key Fill makes for an item is nothing to show: an item holding only it is left out too.
+	const idKeys = [ { key: 'key', role: 'technical', type: 'string' }, { key: 'linkUrl', role: 'content', type: 'string' }, { key: 'label', role: 'content', type: 'string' } ];
+	const ided = listDecisions( { block: 'sgs/chips', target: { kind: 'attr', attr: 'chips', keys: idKeys }, node: {}, list: { source: 'x', fields: [ { name: 'href' }, { name: 'label' } ], items: [ { href: '/a/', label: 'A' }, { href: '#' } ] }, pages: [ { route: 'a', slug: 'a', postType: 'page' } ] } );
+	assert.deepEqual( value( ided ).map( ( c ) => c.label ), [ 'A' ], JSON.stringify( value( ided ) ) );
+	// Negative control: a picture the editor must choose keeps its item, so the row's "choose it in the item" has an item.
+	const pic = decide( [ { name: 'logo', image: true }, { name: 'href' } ], [ { logo: 'assets/x.png', href: '/a/' }, { logo: 'assets/y.png', href: '#' } ] );
+	assert.deepEqual( value( pic ), [ { linkUrl: '/a/' }, {} ] );
+	assert.ok( pic.rows.some( ( r ) => /item 2's picture/.test( r.reason ) ) );
+	assert.doesNotMatch( pic.notes.join( ';' ), /left out/ );
 } );
 
 test( 'a pictures list of another length leaves the placeholder rows', () => {

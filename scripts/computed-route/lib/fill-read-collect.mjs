@@ -54,6 +54,39 @@ export function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, ps
 		snap.rect = { x: Math.round( r.x * 1000 ) / 1000, y: Math.round( ( r.y + window.scrollY ) * 1000 ) / 1000, w: Math.round( r.width * 1000 ) / 1000, h: Math.round( r.height * 1000 ) / 1000 };
 		snap.position = getComputedStyle( el ).position;
 		snap.inFlow = ! [ 'absolute', 'fixed' ].includes( snap.position );
+		// What a visitor can see of the element across the page: its opacity with every ancestor's multiplied in, its visibility,
+		// the horizontal span every ancestor that clips it leaves (overflow other than visible, paint containment, or a clip-path,
+		// whose ancestor's box stands for its shape; null when none clips), and the page width (lib/fill-visible-count.mjs::visibleCount
+		// reads it: a stacked card at opacity 0 or a card past a clipping edge is not shown).
+		const seenCs = getComputedStyle( el );
+		let opacity = Number( seenCs.opacity );
+		let span = null;
+		for ( let a = el.parentElement; a && a !== document.documentElement; a = a.parentElement ) {
+			const s = getComputedStyle( a );
+			// An ancestor drawn as display: contents has no box (a Claude Design host is one), so it neither clips nor fades.
+			if ( 'contents' === s.display ) {
+				continue;
+			}
+			opacity *= Number( s.opacity );
+			const boxClips = 'visible' !== s.overflowX || /\b(?:paint|strict|content)\b/.test( s.contain ) || /^(?:auto|hidden)$/.test( s.contentVisibility || '' );
+			if ( boxClips || 'none' !== s.clipPath ) {
+				const b = a.getBoundingClientRect();
+				let own = [ b.x, b.x + b.width ];
+				// An inset() clip-path moves the box's left and right edges by its insets (a negative inset widens it, as the
+				// full-bleed `inset(0 -100vw)` does), within the box when the ancestor also clips to it; any other shape stands
+				// as the box.
+				const inset = 'none' === s.clipPath ? null : /^inset\(([^)]*)\)/.exec( s.clipPath )?.[ 1 ].split( /\s+round\s+/ )[ 0 ].trim().split( /\s+/ );
+				const len = ( v ) => ( /^-?[\d.]+px$/.test( v ) ? parseFloat( v ) : /^-?[\d.]+%$/.test( v ) ? ( parseFloat( v ) / 100 ) * b.width : null );
+				const [ right, left ] = inset ? [ len( inset[ 1 ] ?? inset[ 0 ] ), len( inset[ 3 ] ?? inset[ 1 ] ?? inset[ 0 ] ) ] : [ null, null ];
+				if ( null !== left && null !== right ) {
+					const cut = [ b.x + left, b.x + b.width - right ];
+					own = boxClips ? [ Math.max( own[ 0 ], cut[ 0 ] ), Math.min( own[ 1 ], cut[ 1 ] ) ] : cut;
+				}
+				span = span ? [ Math.max( span[ 0 ], own[ 0 ] ), Math.min( span[ 1 ], own[ 1 ] ) ] : own;
+			}
+		}
+		const clip = span ? { x: Math.round( span[ 0 ] * 1000 ) / 1000, w: Math.round( Math.max( 0, span[ 1 ] - span[ 0 ] ) * 1000 ) / 1000 } : null;
+		snap.view = { opacity: Math.round( opacity * 1000 ) / 1000, visibility: seenCs.visibility, clip, page: document.documentElement.clientWidth };
 		// Where line-height computes to normal, the px height of one line box of the element's font at normal (the value
 		// lib/fill-normal-keywords.mjs writes in place of a keyword the setting cannot hold).
 		const lineCs = getComputedStyle( el );

@@ -1,0 +1,122 @@
+[
+	{
+		"file": "lib/fill-resolve.mjs",
+		"find": "\t\tconst counted = fillVisibleCount( st, rec, ref, cal );\n",
+		"replace": "\t\tconst counted = null;\n",
+		"why": "Fill never reads the visible-card count, so a rail keeps the block's three cards at every width"
+	},
+	{
+		"file": "lib/fill-visible-count.mjs",
+		"find": "c.rect.x >= s[ 0 ] - TOL && c.rect.x + c.rect.w <= s[ 1 ] + TOL",
+		"replace": "true",
+		"why": "a swiped rail's cards past the track's edge count as visible"
+	},
+	{
+		"file": "lib/fill-visible-count.mjs",
+		"find": "value: perDevice ? tiers : counts[ 0 ]",
+		"replace": "value: tiers.desktop",
+		"why": "one number for every device: the tablet shows the desktop's three cards"
+	},
+	{
+		"file": "lib/fill-visible-count.mjs",
+		"find": "if ( undefined === tiers.desktop ) {",
+		"replace": "if ( ! Object.keys( tiers ).length ) {",
+		"why": "a count with no desktop reading is written"
+	},
+	{
+		"file": "lib/fill-visible-count.mjs",
+		"find": "n > 0 && ( tiers[ tier ] = n );",
+		"replace": "tiers[ tier ] = n || 1;",
+		"why": "a tier the draft does not draw is written as one card"
+	},
+	{
+		"file": "lib/fill-visible-count.mjs",
+		"find": "> first.h / 2 );",
+		"replace": "> -Infinity );",
+		"why": "a wrapped grid's second row counts as side by side"
+	},
+	{
+		"file": "lib/fill-visible-count.mjs",
+		"find": "c.rect.w > 0 && false !== c.inFlow",
+		"replace": "c.rect.w >= 0",
+		"why": "a hidden or out-of-flow card counts as a slide"
+	},
+	{
+		"file": "lib/fill-visible-count.mjs",
+		"find": "&& 'string' === typeof cal?.settings?.[ attr ]?.slot )",
+		"replace": ")",
+		"why": "a setting calibration never measured is written"
+	},
+	{
+		"file": "lib/fill-visible-count.mjs",
+		"find": "c.rect.w > 0 && false !== c.inFlow && ! unseen( c )",
+		"replace": "c.rect.w > 0 && false !== c.inFlow",
+		"why": "a fade slider's cards at opacity 0 or hidden count as shown"
+	},
+	{
+		"file": "lib/fill-visible-count.mjs",
+		"find": "! counted.some( ( k ) => over( k ) > Math.min( k.rect.w, c.rect.w ) / 2 ) && counted.push( c );",
+		"replace": "counted.push( c );",
+		"why": "cards stacked in one place each count"
+	},
+	{
+		"file": "lib/fill-visible-count.mjs",
+		"find": "> Math.min( k.rect.w, c.rect.w ) / 2 )",
+		"replace": "> 0 )",
+		"why": "a fanned deck's cards overlapping by a quarter count as one"
+	},
+	{
+		"file": "lib/fill-visible-count.mjs",
+		"find": "r.view?.clip && ( [ l, rt ] =",
+		"replace": "false && ( [ l, rt ] =",
+		"why": "the track's clipping ancestor does not cut what shows"
+	},
+	{
+		"file": "lib/fill-visible-count.mjs",
+		"find": "r.view?.page > 0 && ( [ l, rt ] =",
+		"replace": "false && ( [ l, rt ] =",
+		"why": "the page edge does not cut what shows"
+	},
+	{
+		"file": "lib/fill-visible-count.mjs",
+		"find": "c.view?.clip ? [ c.view.clip.x, c.view.clip.x + c.view.clip.w ] : null, c.view?.page",
+		"replace": "null, c.view?.page",
+		"why": "a card's own clipping ancestor is ignored"
+	},
+	{
+		"file": "lib/fill-resolve.mjs",
+		"find": ", ...( counted ? [ counted.attr ] : [] ) ] );",
+		"replace": " ] );",
+		"why": "a count gap is listed again as an unread setting"
+	},
+	{
+		"file": "lib/fill-visible-count.mjs",
+		"find": "if ( ! r?.rect || ! ( r.rect.w > 0 ) ) {",
+		"replace": "if ( ! r?.rect ) {",
+		"why": "a track drawn as display: contents hides every card"
+	},
+	{
+		"file": "lib/fill-visible-count.mjs",
+		"find": "? 1 : 0 );",
+		"replace": "? 1 : 1 );",
+		"why": "cards only off the span count one"
+	},
+	{
+		"file": "lib/fill-visible-count.mjs",
+		"find": "return counted.length || ( row.some( ( c ) => partly( c ) &&",
+		"replace": "return counted.length || 0 || ( false && row.some( ( c ) => partly( c ) &&",
+		"why": "a card wider than the track counts 0, so the tier inherits desktop's count"
+	},
+	{
+		"file": "lib/fill-visible-count.mjs",
+		"find": ", c.view?.page > 0 ? [ 0, c.view.page ] : null ]",
+		"replace": " ]",
+		"why": "a zero-width track never applies the page edge"
+	},
+	{
+		"file": "lib/fill-visible-count.mjs",
+		"find": "row.some( ( c ) => partly( c ) && spans( c )",
+		"replace": "row.some( ( c ) => spans( c )",
+		"why": "wide cards wholly off the span count one"
+	}
+]

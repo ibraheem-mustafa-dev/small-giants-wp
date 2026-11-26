@@ -1,6 +1,6 @@
 [
 	{ "file": "lib/fill-resolve.mjs", "find": "const band = fillBand( st, rec, ref, cal );", "replace": "const band = null;", "why": "Fill never judges the band: every container keeps the theme content size" },
-	{ "file": "lib/fill-resolve.mjs", "find": "...( band ? [ band.attr ] : [] ) ] );", "replace": "] );", "why": "a held band setting is still listed as unread" },
+	{ "file": "lib/fill-resolve.mjs", "find": "...( band ? [ band.attr ] : [] ), ...( counted", "replace": "...( counted", "why": "a held band setting is still listed as unread" },
 	{ "file": "lib/fill-band.mjs", "find": "AND canonical_slot = 'content' AND", "replace": "AND", "why": "any max-width setting on another element is taken for the band" },
 	{ "file": "lib/fill-band.mjs", "find": "if ( 'string' === typeof slot && '' !== slot ) {", "replace": "if ( 'string' === typeof slot ) {", "why": "a band setting on the root is taken for the band" },
 	{ "file": "lib/fill-band.mjs", "find": "if ( ! db || ! cal?.settings ) {", "replace": "if ( ! cal?.settings ) {", "why": "no database still looks the band up" },

@@ -31,8 +31,8 @@
  },
  {
   "file": "lib/fill-list-content.mjs",
-  "find": "'link' !== keyRole( k ) && ! named.has( k )",
-  "replace": "'link' !== keyRole( k )",
+  "find": "if ( ! built.some( ( b ) => Object.keys( b.attrs ).some( ( k ) => ! named.has( k ) ) ) ) {",
+  "replace": "if ( ! built.some( ( b ) => Object.keys( b.attrs ).length ) ) {",
   "why": "a wordless list is written for its made-up keys"
  },
  {
@@ -40,5 +40,17 @@
   "find": "const base = slug( wordsOfItem( attrs ) ) || `item-${ i + 1 }`;",
   "replace": "const base = `item-${ i + 1 }`;",
   "why": "the key is not read from the item's words"
+ },
+ {
+  "file": "lib/fill-list-content.mjs",
+  "find": "Object.keys( b.attrs ).some( ( k ) => ! b.madeUp?.includes( k ) )",
+  "replace": "Object.keys( b.attrs ).some( ( k ) => ! named.has( k ) )",
+  "why": "an item holding only the key the draft gave it is left out"
+ },
+ {
+  "file": "lib/fill-list-content.mjs",
+  "find": "\t\t\tmadeUp.push( k.key );\n",
+  "replace": "",
+  "why": "a made-up key counts as something to show"
  }
 ]

@@ -263,8 +263,11 @@ export function sameTriggerResolved( records ) {
 // the entry draft's component (lib/fill-motion.mjs::elementKey); loops: sampleMotion()'s loops by target id; offers:
 // lib/motion-effects.mjs::loadEffectOffers; stateVocab: the `states` table rows that give the words meaning "open"
 // (default: the framework DB's). Returns { writes, unmapped, notes } in the shapes fill-resolve.mjs uses.
-export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}, loops = {}, mdb, schema, rawSnapshot, rootComponent = null, offers = loadEffectOffers(), stateVocab = null, template = null, draftCss = [], hasAttr: givenHasAttr = undefined, db = null, reads = null, calFor = null } ) {
+export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}, loops = {}, mdb, schema, rawSnapshot, rootComponent = null, offers = loadEffectOffers(), stateVocab = null, template = null, draftCss = [], hasAttr: givenHasAttr = undefined, db = null, reads = null, calFor = null, fillWrites = [] } ) {
 	const out = { writes: [], unmapped: [], notes: [], site: [], handover: [] };
+	// The settings Fill measured from the draft's render (`fillWrites`: Fill's writes so far), which a settings behaviour keeps
+	// (lib/fill-behaviour.mjs::applySettings): the slider's visible-card count (lib/fill-visible-count.mjs).
+	const measured = fillWrites.filter( ( w ) => 'visible-count' === w.how );
 	// Every settings write is checked against the framework DB's attributes: the handle given, else the framework DB itself.
 	const hasAttr = givenHasAttr ?? ( db ? hasAttrOf( db ) : undefined );
 	const all = sameTriggerResolved( given );
@@ -332,7 +335,7 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 			// A behaviour with `placements` is written at the elements it names (idx.placedFor), not at its record's own element.
 			const settings = [ ...behaviourSettings.filter( ( x ) => ! x.b.placements ), ...idx.placedFor( key ) ];
 			if ( settings.length ) {
-				applySettings( { items: settings, n, out, where, flat, hasAttr, palette: ctx.palette } );
+				applySettings( { items: settings, n, out, where, flat, hasAttr, palette: ctx.palette, measured } );
 			}
 			own = own.filter( ( r ) => ! behaviourSettings.some( ( x ) => x.r === r ) );
 			// A behaviour the block expresses as its own settings (a nav label's magnet as the nav's item magnet) needs no declared

@@ -15,6 +15,7 @@ import { listMarkerDecisions } from './fill-list-marker.mjs';
 import { handoverEntry } from './fill-handover.mjs';
 import { unreadOf } from './fill-unread.mjs';
 import { fillBand } from './fill-band.mjs';
+import { fillVisibleCount } from './fill-visible-count.mjs';
 import { absentByDefault, withoutOmittedAbsences } from './fill-fixture.mjs';
 import { hasRow } from './fill-skeleton.mjs';
 import { liftRow } from './fill-row-lift.mjs';
@@ -289,11 +290,13 @@ export function fillTree( opts ) {
 		if ( hasRow( st.nodes[ rec.index ].node ) ) {
 			liftRow( st, rec, ref, cal, { fillElement, snapsOf } );
 		}
+		// A track's visible-item count (a slider's cards side by side), read from the draft's render (lib/fill-visible-count.mjs).
+		const counted = fillVisibleCount( st, rec, ref, cal );
 		// The content band no finder reads: its width from the draft's render (lib/fill-band.mjs).
 		const band = fillBand( st, rec, ref, cal );
 		// What this node's calibration knows and nothing read or judged, so no setting is skipped silently.
 		const read = rec.targets.filter( ( t ) => Object.keys( snapsOf( st, t.id ) ).length ).map( ( t ) => t.slot );
-		const judged = new Set( [ ...st.out.writes.filter( ( w ) => w.index === rec.index ).map( ( w ) => w.attr ), ...( band ? [ band.attr ] : [] ) ] );
+		const judged = new Set( [ ...st.out.writes.filter( ( w ) => w.index === rec.index ).map( ( w ) => w.attr ), ...( band ? [ band.attr ] : [] ), ...( counted ? [ counted.attr ] : [] ) ] );
 		st.out.unread.push( ...unreadOf( { db: st.db, block: rec.name, cal, attributes: st.nodes[ rec.index ].node.attributes || {}, slots: read, written: judged } ).map( ( u ) => ( { node: ref, block: rec.name, ...u } ) ) );
 	}
 	// A host block's setting that paints the same part on every instance of a child block is written once (FR-48-14b).
