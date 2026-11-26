@@ -449,14 +449,20 @@ export function recordRows( db, block ) {
 // `property` stays the first. Empty for a one-property setting, so its entry keeps its old shape (lib/css-families.mjs::paintedProps
 // reads either).
 function manyProperties( props, first ) {
-	const shorts = [ ...new Set( [ first, ...props ].map( ( p ) => splitProperty( p ).short ) ) ];
+	const shorts = [ ...new Set( [ first, ...props ].map( ( p ) => splitProperty( physicalSize( p ) ).short ) ) ];
 	return shorts.length > 1 ? { properties: shorts } : {};
 }
+
+// A size the record spells logically (`inline-size`, `min-block-size`, what the cascade reader reports) is the physical size the
+// block_attributes row and the draft state (width, min-height): a setting painting `width` and `height` is found on rows painting
+// `inline-size` and `block-size`, not on the unrelated rows of the same block (the tap-target minimum on an icon's link).
+const PHYSICAL_SIZE = { 'inline-size': 'width', 'block-size': 'height', 'min-inline-size': 'min-width', 'min-block-size': 'min-height', 'max-inline-size': 'max-width', 'max-block-size': 'max-height' };
+const physicalSize = ( p ) => PHYSICAL_SIZE[ p ] ?? p;
 
 // One setting's entry from its usable rows: the rows on its own property (the block_attributes row's, else the first
 // row's) give its slots and widths; its other rows are its effects.
 function settingEntry( block, name, rows, row, look, facts ) {
-	const long = ( props ) => [ ...new Set( props.flatMap( ( p ) => [ p, ...longhands( p ) ] ) ) ];
+	const long = ( props ) => [ ...new Set( props.flatMap( ( p ) => [ physicalSize( p ), ...longhands( physicalSize( p ) ) ] ) ) ];
 	const own = longhands( row?.css_property || '' );
 	const primaryProps = own.length ? long( own ) : long( rows[ 0 ].props );
 	const onProp = rows.filter( ( r ) => long( r.props ).some( ( p ) => primaryProps.includes( p ) ) );
@@ -476,7 +482,7 @@ function settingEntry( block, name, rows, row, look, facts ) {
 	const entry = {
 		slot: slots[ 0 ],
 		slots,
-		property: splitProperty( prop ).short,
+		property: splitProperty( physicalSize( prop ) ).short,
 		...manyProperties( main.flatMap( ( r ) => r.props ).filter( ( p ) => long( [ p ] ).some( ( q ) => primaryProps.includes( q ) ) ), prop ),
 		state: row?.css_state || main[ 0 ].state || null,
 		forms: facts?.forms || [],

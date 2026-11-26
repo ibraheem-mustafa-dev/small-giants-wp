@@ -330,3 +330,18 @@ test( 'MUST FAIL: a setting that paints height and width keeps both properties, 
 	const fromRow = load( fixtureDb( [ { setting: 'single', part: 'ROOT', props: [ 'color' ] } ], { testedNoPaint: [ 'badge' ], attrs: [ { attr: 'single', property: 'color' }, { attr: 'badge', property: 'height,width', element: 'label' } ] } ), { elementsOf: () => ( { label: '.sgs-demo__label' } ) } );
 	assert.deepEqual( fromRow.settings.badge?.properties, [ 'height', 'width' ] );
 } );
+
+test( 'MUST FAIL: a size setting whose block_attributes row paints width and height is placed on the rows that paint inline-size and block-size, not on the side effect of the same block', () => {
+	// The icon's shape size: the record also lists a tap-target minimum on the link (min-block-size) before the shape's own rows.
+	const db = fixtureDb( [
+		{ setting: 'shapeSize', part: 'sgs-demo__panel', props: [ 'min-block-size' ] },
+		{ setting: 'shapeSize', part: 'sgs-demo__label', props: [ 'block-size' ] },
+		{ setting: 'shapeSize', part: 'sgs-demo__label', props: [ 'inline-size' ] },
+	], { attrs: [ { attr: 'shapeSize', property: 'height,width', element: 'shape' } ] } );
+	const r = load( db );
+	assert.deepEqual( [ r.settings.shapeSize.slot, r.settings.shapeSize.property ], [ '.sgs-demo__label', 'height' ], 'the setting paints its label, as height and width, not the minimum of the panel' );
+	assert.deepEqual( r.settings.shapeSize.slots, [ '.sgs-demo__label' ] );
+	// Negative control: a setting whose row names a different property keeps the rows that name it, logical spelling and all.
+	const minimum = fixtureDb( [ { setting: 'tapMin', part: 'sgs-demo__panel', props: [ 'min-block-size' ] }, { setting: 'tapMin', part: 'sgs-demo__label', props: [ 'block-size' ] } ], { attrs: [ { attr: 'tapMin', property: 'min-height', element: 'shape' } ] } );
+	assert.deepEqual( [ load( minimum ).settings.tapMin.slot, load( minimum ).settings.tapMin.property ], [ '.sgs-demo__panel', 'min-height' ] );
+} );
