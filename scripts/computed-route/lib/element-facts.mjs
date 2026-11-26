@@ -30,3 +30,7 @@ export function someWidth( e, test, declared ) {
 	const widths = resolvedWidths( e );
 	return widths.length ? widths.some( ( w ) => test( e.resolved[ w ], w ) ) : !! declared();
 }
+
+// The content the draft's code injected into the element at one width (lib/skeleton-inventory.mjs::injectedContent:
+// { tag, viewBox, source }), or null.
+export const injectedAt = ( e, w ) => e?.injected?.[ w ] ?? null;

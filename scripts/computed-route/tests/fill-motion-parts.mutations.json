@@ -100,5 +100,17 @@
 		"find": "if ( partList.length && ! targets.length ) {",
 		"replace": "if ( false ) {",
 		"why": "a part is written as a custom target into a block with no motion support"
+	},
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "\trehomeParts( split.parts, { targetKeys, template } );\n",
+		"replace": "",
+		"why": "a holder no block draws loses its parts' motion"
+	},
+	{
+		"file": "lib/fill-motion-parts.mjs",
+		"find": "for ( let guard = 0; at && ! targetKeys.has( at ) && guard < 100; guard++ ) {",
+		"replace": "for ( let guard = 0; false; guard++ ) {",
+		"why": "only the holder's parent is tried"
 	}
 ]
