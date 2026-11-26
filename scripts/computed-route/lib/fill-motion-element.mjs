@@ -218,9 +218,13 @@ export function elementEffects( records, { mdb, loops = null, runtimeLoops = [],
 	const out = { effects: [], css: [], unmapped: [], notes: [] };
 	const wide = loops?.[ 1440 ] || null;
 	let own = records.filter( ( r ) => 'effect' === classify( r, cls ).kind );
-	if ( ! own.length && wide?.loops?.length ) {
-		own = wide.loops.flatMap( ( l ) => runtimeLoopsFor( runtimeLoops, { ...wide, loops: [ l ] } ).slice( 0, 1 ) );
-		out.notes.push( ...own.map( ( r ) => `${ r.id }: the code picks this element at run time, and the endless animation on it matched` ) );
+	// The run-time loop records are matched at the widest width the render shows an endless animation on this element at,
+	// so a strip the code moves only on narrower screens (a static row on desktop) is found and limited below.
+	const shownAt = [ 1440, 768, 375 ].find( ( w ) => loops?.[ w ]?.loops?.length );
+	if ( ! own.length && shownAt ) {
+		const shown = loops[ shownAt ];
+		own = shown.loops.flatMap( ( l ) => runtimeLoopsFor( runtimeLoops, { ...shown, loops: [ l ] } ).slice( 0, 1 ) );
+		out.notes.push( ...own.map( ( r ) => `${ r.id }: the code picks this element at run time, and the endless animation on it matched${ 1440 === shownAt ? '' : ` at ${ shownAt }px` }` ) );
 	}
 	const keep = ( record, e ) => ( e.unmapped ? out.unmapped.push( { record, reason: e.unmapped } ) : out.effects.push( { record, ...e } ) );
 	for ( const r of own ) {
@@ -256,7 +260,7 @@ export function elementEffects( records, { mdb, loops = null, runtimeLoops = [],
 			keep( `<${ a.tag } ${ a.attributeName || a.type || '' }>`, chooseEffect( loop, { tablet: at( 768 ), mobile: at( 375 ) }, { mdb } ) );
 		}
 	} );
-	if ( wide?.loops?.length && ! own.length ) {
+	if ( shownAt && ! own.length ) {
 		out.notes.push( `the render shows an endless animation on this element that no code record explains, so nothing is written (R-47-4)` );
 	}
 	return out;

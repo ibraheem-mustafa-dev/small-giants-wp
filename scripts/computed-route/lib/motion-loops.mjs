@@ -52,6 +52,29 @@ export function measuredLoopOf( record, measured ) {
 	return loops.find( ( l ) => ! l.css && props.every( ( p ) => l.frames.some( ( f ) => p in f ) ) ) || null;
 }
 
+// A CSS animation record whose animation is a template value (`animation:{{ tickerAnim }}`: the record names the value,
+// not a keyframes rule, and holds no time) as the endless animation the render shows on its element: when the measured
+// widths show exactly one CSS animation name running there, the record is that loop, its name, keyframes, time and easing
+// read from the render (lib/motion-loops.mjs::resolvedLoop) and the widths it runs at deciding its range
+// (lib/fill-motion-element.mjs::elementEffects). Any other record, a value the render never shows running, or two
+// different animations measured on the element, is returned unchanged. byWidth: sampleMotion()'s { 375, 768, 1440 }.
+export function templateValueLoop( record, byWidth ) {
+	if ( 'css-animation' !== record?.mechanism || 'infinite' === record.iterations || Infinity === record.iterations ) {
+		return record;
+	}
+	const named = ( record.properties || [] ).find( ( p ) => 'animation-name' === p.property )?.to;
+	const holes = [ ...String( record.source?.code || '' ).matchAll( /\banimation(?:-name)?\s*:\s*\{\{\s*([\w.$]+)\s*\}\}/g ) ].map( ( m ) => m[ 1 ] );
+	if ( ! named || ! holes.includes( named ) || ( record.properties || [] ).length !== 1 ) {
+		return record;
+	}
+	const names = new Set( Object.values( byWidth || {} ).flatMap( ( m ) => ( m?.loops || [] ).filter( ( l ) => l.css && l.name ).map( ( l ) => l.name ) ) );
+	if ( 1 !== names.size ) {
+		return record;
+	}
+	const [ name ] = names;
+	return { ...record, iterations: 'infinite', duration_ms: null, delay_ms: null, easing: null, direction: null, properties: [ { property: 'animation-name', from: null, to: name } ], templateValue: named };
+}
+
 // Whether the code states the record's values: no property is a formula, and a CSS animation names a rule whose
 // keyframes the record also lists (an `animation-name` row with no other property means the keyframes were not read).
 function statesValues( record ) {

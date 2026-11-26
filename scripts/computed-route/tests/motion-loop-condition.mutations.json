@@ -1,0 +1,38 @@
+[
+	{
+		"file": "lib/fill-motion-element.mjs",
+		"find": "const shownAt = [ 1440, 768, 375 ].find(",
+		"replace": "const shownAt = [ 1440 ].find(",
+		"why": "a run-time strip the draft moves only on narrower screens would be missed, as on Mama's home"
+	},
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "own = own.map( ( r ) => templateValueLoop( r, loops[ t.id ] ) );",
+		"replace": "own = own.map( ( r ) => r );",
+		"why": "a ticker set through a template value would stay a refuted entrance, as on Eye Care's header"
+	},
+	{
+		"file": "lib/motion-loops.mjs",
+		"find": "\tif ( 1 !== names.size ) {",
+		"replace": "\tif ( 0 === names.size ) {",
+		"why": "two different animations on the element would be taken as the record's"
+	},
+	{
+		"file": "lib/motion-loops.mjs",
+		"find": "if ( ! named || ! holes.includes( named ) || ( record.properties || [] ).length !== 1 ) {",
+		"replace": "if ( ! named || ( record.properties || [] ).length !== 1 ) {",
+		"why": "a literal animation name would be replaced by whatever the render shows"
+	},
+	{
+		"file": "lib/motion-loops.mjs",
+		"find": "if ( ! named || ! holes.includes( named ) || ( record.properties || [] ).length !== 1 ) {",
+		"replace": "if ( ! named || ! holes.includes( named ) ) {",
+		"why": "a record holding keyframes of its own would lose them"
+	},
+	{
+		"file": "lib/motion-loops.mjs",
+		"find": "if ( 'css-animation' !== record?.mechanism || 'infinite' === record.iterations",
+		"replace": "if ( 'infinite' === record.iterations",
+		"why": "a script animation would be read as a CSS animation's template value"
+	}
+]
