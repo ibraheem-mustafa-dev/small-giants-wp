@@ -341,11 +341,11 @@ class Renderer:
         cf = self.cache / f'{key}.json'
         if cf.is_file():
             res = json.loads(cf.read_text(encoding='utf-8'))
-            # a render cached before renders reported their files, or one a file outside the code hash it read has changed
-            # under, is rendered again
-            if 'included' in res and self._outside_current(res):
+            # a render cached before renders reported their files, before the cache held PHP's own html (`raw`), or one a
+            # file outside the code hash it read has changed under, is rendered again
+            if 'included' in res and (res.get('raw') or 'processed-html' in MUTATE) and self._outside_current(res):
                 self.included.update(res['included'])
-                return res
+                return self._processed(res) if res.get('raw') else res
         af = self.cache / f'{key}.attrs.json'
         af.write_text(json.dumps(attrs), encoding='utf-8')
         inc = self.cache / f'{key}.included.json'
@@ -389,13 +389,32 @@ class Renderer:
             taken = {rel: md5 for path, md5 in (taken.items() if isinstance(taken, dict) else []) for rel in included_paths([path], self.plugin)}
             res['outside'] = {rel: (file_md5(self.plugin / rel) if 'php-md5' in MUTATE else taken.get(rel, 'unread'))
                               for rel in sorted({*res['included'], *taken}) if outside_block(rel, self.related)}
-        if res.get('ok'):
-            res['html'] = apply_directives(res.get('html', ''), res.get('interactivityState') or {})
-        if res.get('ok') and self.post:
-            res['html'] = apply_post(res.get('html', ''), self.post)
-        if res.get('ok'):
-            write_whole(cf, json.dumps(res))  # a failed render is retried next run, never cached
-        return res
+        # The cache holds the html PHP printed: render.py is in no key, so the offline steps run on every use and an edit to
+        # apply_directives or apply_post reaches every cached render. A failed render is retried next run, never cached;
+        # nor is one that names no file it loaded: a render always loads its own render.php, so an empty list means the
+        # plugin's path did not match what PHP reported (a substituted drive) and neither `outside` nor the stylesheet-reader
+        # guard saw anything.
+        if not (res.get('ok') and (res['included'] or 'cache-empty-included' in MUTATE)):
+            return self._processed(res)
+        if 'processed-html' in MUTATE:
+            res = self._processed(res)
+            write_whole(cf, json.dumps(res))
+            return res
+        res['raw'] = True
+        write_whole(cf, json.dumps(res))
+        return self._processed(res)
+
+    def _processed(self, res: dict) -> dict:
+        """A render as the check reads it: the Interactivity directives applied to PHP's html, then the fixture's post-render
+        steps (a front-end script's attributes); a copy, so the cached result keeps PHP's own html."""
+        if not res.get('ok'):
+            return res
+        out = dict(res)
+        out.pop('raw', None)
+        out['html'] = apply_directives(out.get('html', ''), out.get('interactivityState') or {})
+        if self.post:
+            out['html'] = apply_post(out['html'], self.post)
+        return out
 
     def _outside_current(self, res: dict) -> bool:
         """Whether every file outside the code hash that a cached render loaded or read (`outside`: a block type its PHP looked
