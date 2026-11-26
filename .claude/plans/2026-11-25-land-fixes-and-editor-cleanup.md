@@ -30,7 +30,7 @@ created: 2026-11-25
 
 | Branch / job | Worktree under `E:\sgs-tmp` | State |
 |---|---|---|
-| `fix/pagemap-draft-routes` | `wt-pagemap-routes` | building Bean's decision (2026-11-26): a cloned page's parent follows the draft's own page addresses, never the menu's shape, replacing rf8's menu-based section parenting (Indus's seven parented rows, `323281f71`); then review, whole suite, merge, and the per-client parent changes reported to Bean |
+| `fix/pagemap-draft-routes` | `wt-pagemap-routes` | built (Indus's page map regenerated: 16 rows become top-level; Mama's and Eye Care unchanged, their drafts' routes are flat); merges after its code review |
 | `fix/rf7-shop-forms` | `wt-rf7-shop-forms` | ready since Track A3 (6 stale markers re-aimed, `u9-planted-draft` assertion added, 68/68 changed tests); next: rebase onto `main` (147 commits behind), code review, whole non-browser suite, merge (S, Task 15, waits on it) |
 | `fix/f-mega` | `wt-f-mega` | fixing the 40 kept-unnamed tile paints and adding a `subtitle` role for the mega-menu card subtitle; then the Fill proof with `--records E:/sgs-tmp/general-cloning/records-fmega`, review, merge |
 | `fix/d-readings` | `wt-d-readings` | fixing 6 review faults (the account migration must not change tablet height on live sites, sweep owner check, `mapTiers` raw keyword, sweep pseudo layers, account record regenerate, `stateChoice` conflict); report `E:/sgs-tmp/general-cloning/build/d-readings/REPORT.md` |
@@ -42,8 +42,8 @@ created: 2026-11-25
 
 **Decisions this session:**
 - A parent-page change to an already built, published page is reported and never applied on a site-build rerun; new pages and rows take the page map's parent (main session, rf8 second review).
+- A cloned page's parent, and so its web address, follows the draft's own page routes, never its menu (Bean, 2026-11-26): a page row nests under the page row whose own route is the nearest ancestor path of its route, and a flat-routed draft keeps every page top-level. This replaces RF8's section parenting (a menu item linking to its first child) and the older menu-item parenting; Indus's 16 parented pages become top-level (branch `fix/pagemap-draft-routes`, Spec 48 FR-48-30). The rf8 safeguard stands: a parent change to a built, published page is reported, never applied, unless the site build nested it itself.
 - Featured nav items stay unwritten until a reader of featured items exists; the variant gate stays (rf1).
-- A cloned page sits under another page only when the draft's own page addresses nest it; menu shape never sets a parent (Bean, 2026-11-26).
 - Before each site's next deploy, run render-scope and render-check for G1 (Task 10).
 - Follow-up, not blocking: 82 old `content-setting:` gap rows in `scripts/computed-route/data/clone-coverage.json` name settings the DB no longer holds as content; `content-coverage.mjs` (run by hand only) flags them.
 
