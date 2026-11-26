@@ -19,8 +19,8 @@
 	},
 	{
 		"file": "lib/skeleton-inventory.mjs",
-		"find": "'padding-bottom', 'padding-left', 'text-align' ];",
-		"replace": "'padding-bottom', 'padding-left' ];",
+		"find": "'padding-left', 'text-align', 'vertical-align' ];",
+		"replace": "'padding-left', 'vertical-align' ];",
 		"why": "text alignment is not recorded"
 	},
 	{
@@ -94,5 +94,11 @@
 		"find": "\treturn { uaPadding: inventory.uaPadding, els, byKey, kids, isPart,",
 		"replace": "\treturn { els, byKey, kids, isPart,",
 		"why": "the skeleton rules get no measurement"
+	},
+	{
+		"file": "lib/skeleton-inventory.mjs",
+		"find": "'text-align', 'vertical-align' ];",
+		"replace": "'text-align' ];",
+		"why": "vertical-align is not recorded, so a count centred by a class reads as baseline"
 	}
 ]

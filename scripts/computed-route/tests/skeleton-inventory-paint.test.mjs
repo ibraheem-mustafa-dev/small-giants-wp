@@ -15,6 +15,7 @@ body { margin: 0 }
 .plain { color: rgb(1, 2, 3) }
 @media ( max-width: 480px ) { .phone { background-image: linear-gradient( red, blue ) } }
 .centre { text-align: center }
+.mid { vertical-align: middle }
 .row { display: flex; gap: 8px }
 .ghost { border: 2px solid transparent }
 .dash { border-top: 3px dashed rgb(9, 9, 9) }
@@ -36,6 +37,7 @@ dl { padding: 2px }
 		<ul data-dc-tpl="14"><li data-dc-tpl="15">Plain list</li></ul>
 		<ul data-dc-tpl="16" class="padded"><li data-dc-tpl="17">Padded list</li></ul>
 		<button data-dc-tpl="18">Plain button</button>
+		<p data-dc-tpl="22">Words <span data-dc-tpl="23" class="mid">pill</span></p>
 		<dl data-dc-tpl="20"><dt data-dc-tpl="21">Term</dt></dl>
 		<button data-dc-tpl="19" class="btn">Padded button</button>
 		<div data-dc-tpl="7" class="row"><span data-dc-tpl="8">One</span><span data-dc-tpl="10">Two</span></div>
@@ -145,4 +147,12 @@ test( 'the browser\'s own padding of a tag is measured once per read, and comput
 	assert.deepEqual( looks( 16, null ), [] );
 	// Negative control: a caller that passes no measurement keeps reading any computed padding (the skeleton rules on a saved inventory).
 	assert.deepEqual( looks( 14 ), [ 'padding' ] );
+} );
+
+test( 'MUST FAIL: vertical-align is recorded per width, so a count centred by a class reads as middle on the element that sets it', () => {
+	assert.ok( RESOLVED.includes( 'vertical-align' ) );
+	for ( const w of [ 375, 768, 1440 ] ) {
+		assert.equal( el( 23 ).resolved[ w ][ 'vertical-align' ], 'middle' );
+		assert.equal( el( 22 ).resolved[ w ][ 'vertical-align' ], 'baseline' );
+	}
 } );
