@@ -1,6 +1,6 @@
 # Intake review: indus-foods
 
-Taken by default: 36 rows had no mark from Bean and took their proposal (intake.mjs --apply-review --go-through; the Mark cell of such a row stays blank, and a mark Bean writes there overrides the default); rows with no proposal to take are listed in go-through-open.json.
+Taken by default: 42 rows had no mark from Bean and took their proposal (intake.mjs --apply-review --go-through; the Mark cell of such a row stays blank, and a mark Bean writes there overrides the default); rows with no proposal to take are listed in go-through-open.json.
 
 Taken on 2026-11-19T06:19:28.565Z; manifest 1.0, files hash f2d909d8605ef2cb.
 
@@ -30,29 +30,29 @@ Accept all: [ ]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `page:page:catalogue` | **changed** catalogue → Request Catalogue (page, static, page) | apply/catalogue |  |  |
-| `page:page:delivery` | **changed** delivery → Delivery & Logistics (page, static, page) | apply/delivery | footer #4 |  |
-| `page:page:faqs` | **changed** faqs → FAQs (page, static, page) | apply/faqs |  |  |
-| `page:page:manufacturing` | **changed** manufacturing → Manufacturing (page, static, page) | food-service/manufacturing |  |  |
-| `page:page:retail` | **changed** retail → Retail (page, static, page) | food-service/retail |  |  |
-| `page:page:terms` | **changed** terms → Terms & Conditions (page, static, page) | apply/terms | footer #5 |  |
-| `page:page:wholesale` | **changed** wholesale → Wholesale (page, static, page) | food-service/wholesale |  |  |
+| `page:page:blog` | **changed** blog → Blog (page, live, home) | blog | footer #6 |  |
+| `page:page:brand-green-leaf` | **changed** brand-green-leaf → Green Leaf (page, static, page) | brand-green-leaf |  | edit:slug=green-leaf |
+| `page:page:brand-lemon-tree` | **changed** brand-lemon-tree → The Lemon Tree (page, static, page) | brand-lemon-tree |  | edit:slug=lemon-tree |
+| `page:page:brand-sanam` | **changed** brand-sanam → Sanam (page, static, page) | brand-sanam |  | edit:slug=sanam |
+| `page:page:brand-shan` | **changed** brand-shan → Shan (page, static, page) | brand-shan |  | edit:slug=shan |
+| `page:page:careers` | **changed** careers → Careers (page, static, page) | careers |  |  |
+| `page:page:catalogue` | **changed** catalogue → Request Catalogue (page, static, page) | catalogue |  |  |
+| `page:page:certifications` | **changed** certifications → Certifications (page, static, page) | certifications | footer #1 |  |
+| `page:page:community` | **changed** community → Community & Charity (page, static, page) | community |  |  |
+| `page:page:delivery` | **changed** delivery → Delivery & Logistics (page, static, page) | delivery | footer #4 |  |
+| `page:page:faqs` | **changed** faqs → FAQs (page, static, page) | faqs |  |  |
+| `page:page:manufacturing` | **changed** manufacturing → Manufacturing (page, static, page) | manufacturing |  |  |
+| `page:page:our-story` | **changed** our-story → Our Story (page, static, page) | our-story |  |  |
+| `page:page:retail` | **changed** retail → Retail (page, static, page) | retail |  |  |
+| `page:page:sustainability` | **changed** sustainability → Sustainability (page, static, page) | sustainability |  |  |
+| `page:page:terms` | **changed** terms → Terms & Conditions (page, static, page) | terms | footer #5 |  |
+| `page:page:wholesale` | **changed** wholesale → Wholesale (page, static, page) | wholesale |  |  |
 | `page:page:about` | about → About Us (page, static, page) | about | header #2 | accept |
 | `page:page:apply` | apply → Apply for Trade Account (page, static, page) | apply | header #5, footer #2 | accept |
-| `page:page:blog` | blog → Blog (page, live, home) | about/blog | footer #6 | edit:parent=null |
-| `page:page:brand-green-leaf` | brand-green-leaf → Green Leaf (page, static, page) | brands/brand-green-leaf |  | edit:slug=green-leaf |
-| `page:page:brand-lemon-tree` | brand-lemon-tree → The Lemon Tree (page, static, page) | brands/brand-lemon-tree |  | edit:slug=lemon-tree |
-| `page:page:brand-sanam` | brand-sanam → Sanam (page, static, page) | brands/brand-sanam |  | edit:slug=sanam |
-| `page:page:brand-shan` | brand-shan → Shan (page, static, page) | brands/brand-shan |  | edit:slug=shan |
 | `page:page:brands` | brands → All Brands (page, static, page) | brands | header #4, footer #3 | accept |
-| `page:page:careers` | careers → Careers (page, static, page) | about/careers |  | accept |
-| `page:page:certifications` | certifications → Certifications (page, static, page) | about/certifications | footer #1 | accept |
-| `page:page:community` | community → Community & Charity (page, static, page) | about/community |  | accept |
 | `page:page:contact` | contact → Contact Us (page, static, page) | contact | header #6 | accept |
 | `page:page:food-service` | food-service → Food Service (page, static, page) | food-service | header #3 |  |
 | `page:page:home` | home → Home (page, static, front-page) | home | header #1 | accept |
-| `page:page:our-story` | our-story → Our Story (page, static, page) | about/our-story |  | accept |
-| `page:page:sustainability` | sustainability → Sustainability (page, static, page) | about/sustainability |  | accept |
 | `page:post:falak-rice-exclusive-uk-distribution` | post-post-2 → Falak rice: exclusive UK distribution (post, live, single) | falak-rice-exclusive-uk-distribution |  | accept |
 | `page:post:inside-our-birmingham-packing-line` | post-post-3 → Inside our Birmingham packing line (post, live, single) | inside-our-birmingham-packing-line |  | accept |
 | `page:post:ordering-ahead-for-eid` | post-post-5 → Ordering ahead for Eid (post, live, single) | ordering-ahead-for-eid |  | accept |
