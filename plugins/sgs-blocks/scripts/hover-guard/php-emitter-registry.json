@@ -72,6 +72,7 @@
 	},
 	"__selector_builders__": {
 		"_comment": "Functions that only BUILD a list of hover selectors and return it; the caller wraps the finished rule in the guard. name => the reason it is exempt from the within-function check (a row without a reason is ignored).",
-		"sgs_separators_hover_selectors": "Returns selector strings only; its one caller, sgs_separators_swap_hover_css (includes/helpers-separators-hover-css.php), emits the :hover list through sgs_hover_guarded_rule() and the focus list unguarded."
+		"sgs_separators_hover_selectors": "Returns selector strings only; its one caller, sgs_separators_swap_hover_css (includes/helpers-separators-hover-css.php), emits the :hover list through sgs_hover_guarded_rule() and the focus list unguarded.",
+		"sgs_carousel_controls_css": "Builds the dot_hover and active_hover selectors only; sgs_carousel_dots_css (includes/helpers-carousel-dots.php) prints them through sgs_hover_guarded_rule() (tests/php/CarouselDotsCssTest.php pins the guarded rule)."
 	}
 }

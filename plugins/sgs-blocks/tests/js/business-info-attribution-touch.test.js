@@ -1,8 +1,8 @@
 /**
- * The footer credit ("Website by ...", displayType "attribution") must show its hover look while a finger is
- * pressed on it, on a site set to "Desktop only" for hover on touch screens. That setting makes the build's
- * hover guard wrap every `:hover` member in `:where(:root:not(.sgs-touch-input))`, so the `:hover` look is off
- * while the page is touched; the press look is the unguarded `:active` member of the same rules.
+ * The footer credit ("Website by ...", displayType "attribution") shows its hover look while a finger is pressed on
+ * it. By default the build's hover guard gives the `:hover` member a `.sgs-pressed` touch half; on a site set to "Off on
+ * touch screens" the guarded `:hover` member is off while the page is touched, and the unguarded `:active` member (and
+ * its pressed twin) is the press look (Spec 38A FR-38A-17).
  */
 const fs = require( 'fs' );
 const path = require( 'path' );
@@ -45,11 +45,12 @@ describe.each( [
 		expect( active[ 0 ] ).toBe( target );
 	} );
 
-	it( 'keeps :hover inside the Desktop-only guard and :focus-visible outside it', () => {
+	it( 'keeps :hover inside the touch guard with its pressed half, and :focus-visible outside it', () => {
 		const members = guardedMembers( prop, value );
 		const hover = members.filter( ( m ) => m.includes( ':hover' ) );
 		expect( hover ).toHaveLength( 1 );
 		expect( hover[ 0 ].startsWith( SGS_HOVER_NOT_TOUCH ) ).toBe( true );
+		expect( members ).toContain( target.replace( ':active', '.sgs-pressed' ) );
 		const focus = members.filter( ( m ) => m.includes( ':focus-visible' ) );
 		expect( focus ).toHaveLength( 1 );
 		expect( focus[ 0 ].startsWith( SGS_HOVER_NOT_TOUCH ) ).toBe( false );
