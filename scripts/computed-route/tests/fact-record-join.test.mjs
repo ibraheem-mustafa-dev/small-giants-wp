@@ -4,7 +4,7 @@
 // (tests/fixtures/fact-record-join/mutations.json holds the mutations, tools/mutate.mjs runs them).
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { joinFacts, FACTS_SCHEMA_VERSION, factsProblems } from '../lib/fact-record.mjs';
+import { joinFacts, FACTS_SCHEMA_VERSION, factsProblems, countsOf } from '../lib/fact-record.mjs';
 
 const template = { order: [], elements: {}, gaps: [] };
 const empty = { gaps: [], byElement: {}, surfaces: {}, byTemplate: new Map(), conditions: {}, holes: {}, mounted: {}, records: 0, unjoined: [] };
@@ -20,6 +20,13 @@ test( 'MUST FAIL (determinism): two joins of the same inputs, made at different 
 	assert.equal( a.schema, FACTS_SCHEMA_VERSION );
 	assert.equal( '6', FACTS_SCHEMA_VERSION );
 	assert.deepEqual( factsProblems( a ), [], 'the record validates without a generated field' );
+} );
+
+test( 'MUST FAIL (width conditions count): the display gate of an element counts beside its sc-if gate, and an element with neither counts none', () => {
+	const el = ( logic ) => ( { surfaces: [], instances: [], effects: [], assets: [], logic: { holes: {}, ...logic } } );
+	const gate = { w: '>=', n: 1060 };
+	const counts = countsOf( { a: el( { width: gate } ), b: el( { displayWidth: gate } ), c: el( { width: gate, displayWidth: gate } ), d: el( {} ) }, [ 375 ], [] );
+	assert.equal( counts.widthConditions, 4 );
 } );
 
 test( 'MUST FAIL (readme gaps): the README reader\'s gap rows are gap rows of the record, and are counted', () => {

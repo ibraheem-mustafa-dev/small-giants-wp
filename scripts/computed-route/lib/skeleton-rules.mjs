@@ -273,6 +273,9 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	// every worded piece inside it is such a line.
 	const clock = makeClock( { facts, view, read: { textHoles: ( e ) => ( view.entry( e )?.template?.holes ?? [] ).filter( ( h ) => 'text' === h.where ) } } );
 	const openLine = ( x ) => {
+		if ( ! R.openStatus ) {
+			return false;
+		}
 		if ( clock( x )?.openStatus ) {
 			return true;
 		}

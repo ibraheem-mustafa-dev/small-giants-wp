@@ -5,5 +5,6 @@
  { "file": "lib/fact-record.mjs", "find": "...( logic.staticsTruncated ? { truncated: true } : {} ) }", "replace": "}", "why": "a spent statics budget is not recorded" },
  { "file": "lib/fact-record.mjs", "find": "logic: { statics: logic.statics || {}, ", "replace": "logic: { ", "why": "statics dropped before the record" },
  { "file": "lib/fact-record.mjs", "find": "assets: { files: 0, unused: [], missing: [], logicRefs: [] }", "replace": "assets: { files: 0, unused: [], missing: [] }", "why": "a record with no assets reader run has no logicRefs list" },
+ { "file": "lib/fact-record.mjs", "find": "conditions += ( e.logic.width ? 1 : 0 ) + ( e.logic.displayWidth ? 1 : 0 );", "replace": "conditions += e.logic.width ? 1 : 0;", "why": "an element's own display gate is not counted among the width conditions" },
  { "file": "data/facts.schema.json", "find": "\"schema\": { \"const\": \"6\" },", "replace": "\"schema\": { \"const\": \"5\" },", "why": "the schema version is not the record's" }
 ]

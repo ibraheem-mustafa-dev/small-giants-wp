@@ -23,5 +23,7 @@
 	{ "file": "lib/skeleton-write-content.mjs", "find": "...( c.zone && T.zoneAttribute", "replace": "...( false && T.zoneAttribute", "why": "the zone the code names is written" },
 	{ "file": "lib/skeleton-propose.mjs", "find": "m.words( e ), ...timeTextAttrs( R.wrappedWords.block, e ) }, innerBlocks: [] };", "replace": "m.words( e ) }, innerBlocks: [] };", "why": "a container's own clock-picked words take the option on their text child" },
 	{ "file": "lib/skeleton-write-content.mjs", "find": "textAttr && t && Object.assign( a, timeTextAttrs( block, e ) );", "replace": "", "why": "a text element's clock-picked words take the option on its own block" },
+	{ "file": "lib/skeleton-write-content.mjs", "find": "inlineHtml.split( ownHtml ).length", "replace": "inlineHtml.split( own ).length", "why": "the words are searched for in the form the rich text holds them (angle brackets escaped), not as the page showed them" },
+	{ "file": "lib/skeleton-write-content.mjs", "find": ".join( escText( x ) )", "replace": ".join( x )", "why": "each range's words go into the rich text escaped" },
 	{ "file": "lib/skeleton-write-content.mjs", "find": "textAttr && Object.assign( a, timeTextAttrs( block, e, r.html ) );", "replace": "", "why": "an element whose own words sit beside inline children (a glyph before the greeting) takes the option with the children kept in every range" }
 ]

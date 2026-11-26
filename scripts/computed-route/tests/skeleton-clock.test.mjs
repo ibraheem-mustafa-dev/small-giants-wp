@@ -140,6 +140,14 @@ test( 'MUST FAIL: Mama\'s hero greeting is the text block\'s time-based text wit
 	assert.equal( 'sgsTimeText' in old.attributes, Boolean( plainDb.prepare( "SELECT 1 FROM block_attributes WHERE block_slug = 'sgs/text' AND attr_name = 'sgsTimeText'" ).get() ), 'a block the framework DB gives no such setting takes none' );
 } );
 
+test( 'MUST FAIL: a greeting with an angle bracket beside a glyph keeps the time-based option, each range\'s words written as the rich text holds them (escaped)', () => {
+	const repo = draftRepo( LOGIC( 'cheer: hr < 12 ? \'Hi <3 & you\' : \'Bye <b>\'' ) );
+	const list = [ [ 11, null, 'div', '', { display: 'flex', allText: '✦ Hi <3 & you' } ], [ 12, 11, 'div', 'Hi <3 & you', { display: 'flex', hole: 'cheer', allText: '✦ Hi <3 & you' } ], [ 13, 12, 'span', '✦' ] ];
+	const text = flat( propose( repo, FIXTURE, list, extDb ).skeleton ).find( ( n ) => n.attributes?.text?.endsWith( 'Hi &lt;3 & you' ) );
+	assert.ok( text, 'the greeting is a text block holding its words escaped' );
+	assert.deepEqual( text.attributes.sgsTimeText.map( ( x ) => x.text ), [ '✦ Hi &lt;3 & you', '✦ Bye &lt;b&gt;' ], 'the glyph stays and no range holds a raw angle bracket' );
+} );
+
 test( 'a clock read that is no greeting and no open status: a year stamp, a fixed date and a static greeting take neither reading (negative controls)', () => {
 	const repo = draftRepo( VALS );
 	const d = logicOf( repo, FIXTURE );

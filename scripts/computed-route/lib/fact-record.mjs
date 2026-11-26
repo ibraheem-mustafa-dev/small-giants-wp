@@ -72,7 +72,7 @@ export function instancesOf( { inventoriesDir, folder, current = null } ) {
 
 // `effects` are the animations.json records that target the element (reach `self`) or a descendant (lib/read-animations.mjs).
 // The counts of a record: elements, holes, hole answers per width (resolved to a value, absent: the live state holds no value
-// for it, unresolved: the expression or the instance failed), width conditions, elements in a surface, instances, gaps.
+// for it, unresolved: the expression or the instance failed), width conditions (an element's own display gate counts beside its sc-if gate), elements in a surface, instances, gaps.
 export function countsOf( elements, widths, gaps, animations = { records: 0, unjoined: [] }, assets = emptyAssets ) {
 	const per = Object.fromEntries( widths.map( ( w ) => [ w, { resolved: 0, absent: 0, unresolved: 0 } ] ) );
 	let holes = 0;
@@ -82,7 +82,7 @@ export function countsOf( elements, widths, gaps, animations = { records: 0, unj
 	for ( const e of Object.values( elements ) ) {
 		joined += e.surfaces.length ? 1 : 0;
 		instances += e.instances.length;
-		conditions += e.logic.width ? 1 : 0;
+		conditions += ( e.logic.width ? 1 : 0 ) + ( e.logic.displayWidth ? 1 : 0 );
 		for ( const answers of Object.values( e.logic.holes ) ) {
 			holes++;
 			for ( const w of widths ) {

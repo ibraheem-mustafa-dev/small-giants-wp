@@ -92,7 +92,9 @@ export function makeContent( ctx ) {
 		const T = facts.decisions.rules?.timeText;
 		const c = T?.attribute && attrExists( block, T.attribute ) ? clock( e ) : null;
 		const own = String( m.words( e ) ).trim();
-		const around = ( x ) => ( inlineHtml && own && 2 === inlineHtml.split( own ).length ? inlineHtml.split( own ).join( x ) : null );
+		// inlineHtml holds the words as a text setting does (angle brackets escaped), so both the words searched for and each range's words are put in that form.
+		const ownHtml = escText( own );
+		const around = ( x ) => ( inlineHtml && own && 2 === inlineHtml.split( ownHtml ).length ? inlineHtml.split( ownHtml ).join( escText( x ) ) : null );
 		const bare = c && ! c.openStatus ? timeTextRanges( c ) : null;
 		const ranges = inlineHtml ? ( bare?.every( ( r ) => null !== around( r.text ) ) ? bare.map( ( r ) => ( { ...r, text: around( r.text ) } ) ) : null ) : bare;
 		return ranges ? { [ T.attribute ]: ranges, ...( c.zone && T.zoneAttribute && attrExists( block, T.zoneAttribute ) ? { [ T.zoneAttribute ]: c.zone } : {} ) } : {};
