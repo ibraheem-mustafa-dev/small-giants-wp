@@ -51,6 +51,7 @@ import ContentPanel from './components/ContentPanel';
 import CardStylePanel from './components/CardStylePanel';
 import PaginationFiltersPanel from './components/PaginationFiltersPanel';
 import CarouselPanel from './components/CarouselPanel';
+import CarouselControls from '../../components/CarouselControls';
 import PostGridTypographyPanel from './components/PostGridTypographyPanel';
 import BorderPanel from './components/BorderPanel';
 import MotionPausePreview from '../../components/MotionPausePreview';
@@ -702,6 +703,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				) }
 			</InspectorControls>
 
+			{ /* The carousel's arrows, pause button and dots: the shared kits (button kit `arrow`, carousel dots kit `dot`). */ }
+			{ 'carousel' === layout && (
+				<CarouselControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					blockName="sgs/post-grid"
+				/>
+			) }
 			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
 			{ /* The settings every card's featured image shares (Spec 49 §10.4: Fit, Ratio, Height, Radius, Shape):
 			   the adopted panels on the image slot, without a Source row, because each card shows its own post's image. */ }

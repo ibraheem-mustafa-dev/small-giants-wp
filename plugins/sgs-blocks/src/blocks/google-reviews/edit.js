@@ -39,6 +39,7 @@ import ReviewerPanel from './components/ReviewerPanel';
 import ReviewTextPanel from './components/ReviewTextPanel';
 import ButtonsPanel from './components/ButtonsPanel';
 import NavigationPanel from './components/NavigationPanel';
+import BuiltinButtonPanel from '../../components/BuiltinButtonPanel';
 
 export default function Edit( { attributes, setAttributes, name } ) {
 	const {
@@ -75,14 +76,6 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		writeReviewColourTextHover,
 		writeReviewColourTextGradient,
 		writeReviewColourTextHoverGradient,
-		arrowColourBackground,
-		arrowColourBackgroundHover,
-		arrowColourBackgroundGradient,
-		arrowColourBackgroundHoverGradient,
-		arrowColourText,
-		arrowColourTextHover,
-		arrowColourTextGradient,
-		arrowColourTextHoverGradient,
 	} = attributes;
 
 	// The block shows written reviews when told to, or on Automatic when it holds any.
@@ -110,7 +103,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 
 			{ /* Spec 35 THE PLACEMENT RULE (D537) — the single mixed "Colour"
 			   panel is split per declared element: star fill -> "Star icon";
-			   arrow text/fill/border+hover -> "Slider arrow"; write-review
+			   arrow -> the shared button kit panel (CarouselControls); write-review
 			   text/fill+hover -> "Write-review button". Built directly with
 			   DesignTokenPicker (mirrors what SgsColourPanel does internally)
 			   since SgsColourPanel has no per-caller title override and each
@@ -138,56 +131,6 @@ export default function Edit( { attributes, setAttributes, name } ) {
 								value: starColourHover,
 								onChange: ( val ) => setAttributes( { starColourHover: val ?? '' } ),
 								linked: true,
-							},
-						] }
-					/>
-				</PanelBody>
-			</InspectorControls>
-
-			<InspectorControls group="styles">
-				<PanelBody title={ __( 'Slider arrow', 'sgs-blocks' ) } className="sgs-colour-panel">
-					<DesignTokenPicker
-						label={ __( 'Slider arrow background', 'sgs-blocks' ) }
-						states={ [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: arrowColourBackground,
-								onChange: ( val ) => setAttributes( { arrowColourBackground: val ?? '' } ),
-								gradientValue: arrowColourBackgroundGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { arrowColourBackgroundGradient: val ?? '' } ),
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: arrowColourBackgroundHover,
-								onChange: ( val ) => setAttributes( { arrowColourBackgroundHover: val ?? '' } ),
-								gradientValue: arrowColourBackgroundHoverGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { arrowColourBackgroundHoverGradient: val ?? '' } ),
-							},
-						] }
-					/>
-					<DesignTokenPicker
-						label={ __( 'Slider arrow icon colour', 'sgs-blocks' ) }
-						states={ [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: arrowColourText,
-								onChange: ( val ) => setAttributes( { arrowColourText: val ?? '' } ),
-								gradientValue: arrowColourTextGradient,
-								onGradientChange: ( val ) => setAttributes( { arrowColourTextGradient: val ?? '' } ),
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: arrowColourTextHover,
-								onChange: ( val ) => setAttributes( { arrowColourTextHover: val ?? '' } ),
-								gradientValue: arrowColourTextHoverGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { arrowColourTextHoverGradient: val ?? '' } ),
 							},
 						] }
 					/>
@@ -254,6 +197,8 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			<ReviewTextPanel attributes={ attributes } setAttributes={ setAttributes } />
 			<ButtonsPanel attributes={ attributes } setAttributes={ setAttributes } />
 			{ 'slider' === variant && <NavigationPanel name={ name } attributes={ attributes } setAttributes={ setAttributes } /> }
+			{ /* The arrows and the pause button wear the shared button kit (prefix `arrow`): colours with hover and gradients, border, radius and size. */ }
+			{ 'slider' === variant && <BuiltinButtonPanel attributes={ attributes } setAttributes={ setAttributes } blockName="sgs/google-reviews" prefix="arrow" /> }
 
 			<InspectorControls>
 				<ContainerWrapperControls attributes={ attributes } setAttributes={ setAttributes } kind="layout" />

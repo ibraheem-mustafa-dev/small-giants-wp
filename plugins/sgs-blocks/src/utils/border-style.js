@@ -85,3 +85,40 @@ export function borderBoxPreview( widthBox, style, tier = 'desktop' ) {
 	}
 	return { borderStyle, borderWidth };
 }
+
+/**
+ * Does a stored border width paint anything? True when any side of the flat box, or of any device's box in a tier object,
+ * holds a width other than zero. A theme token or a length with a unit counts; `0`, `0px` and empty do not. The PHP twin
+ * of the rule is `sgs_border_box_decls()`, which prints no border without a width.
+ *
+ * @param {Object|undefined} width Stored width: a flat `{ top, right, bottom, left }` box or a `{ desktop, tablet, mobile }` tier object.
+ * @return {boolean} True when some side has a non-zero width.
+ */
+export function borderWidthIsSet( width ) {
+	if ( ! width || 'object' !== typeof width ) {
+		return false;
+	}
+	const sideSet = ( value ) => {
+		if ( undefined === value || null === value ) {
+			return false;
+		}
+		const text = String( value ).trim();
+		if ( '' === text ) {
+			return false;
+		}
+		const number = parseFloat( text );
+		return ! ( Number.isFinite( number ) && 0 === number );
+	};
+	const boxSet = ( box ) =>
+		!! box &&
+		'object' === typeof box &&
+		[ 'top', 'right', 'bottom', 'left' ].some( ( side ) =>
+			sideSet( box[ side ] )
+		);
+	const tiered = [ 'desktop', 'tablet', 'mobile' ].some(
+		( key ) => key in width
+	);
+	return tiered
+		? [ width.desktop, width.tablet, width.mobile ].some( boxSet )
+		: boxSet( width );
+}

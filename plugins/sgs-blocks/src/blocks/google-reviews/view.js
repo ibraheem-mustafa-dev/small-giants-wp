@@ -1,95 +1,52 @@
 /**
  * Google Reviews — Frontend Interactivity
  *
- * Handles slider autoplay and discrete navigation (arrows + dots) for the
- * slider variant. The arrows and dots are drawn by the shared slider
- * navigation (includes/helpers-slider-nav.php); the dots exist only when the
- * block's `pagination` is `dots`, and with `scrollbar` or `none` no dot sync
- * runs at all (render.php wires the scroll listener only for dots, and
- * init() skips the measurement when there are no dots). Mirrors sgs/trustpilot-reviews's carousel mechanics
- * (scroll-position wrap, rAF-throttled active-dot sync) but implemented as
- * imperative DOM helpers called FROM WP Interactivity API actions, rather
- * than a second plain-DOM `DOMContentLoaded` listener — this block already
- * carries `data-wp-interactive`/`data-wp-context`/`data-wp-init` on its root
- * (set in render.php for the existing autoplay callback), so extending that
- * one store keeps a single init/wiring path instead of two competing
- * paradigms on the same markup.
+ * Slider autoplay and discrete navigation (arrows + dots) for the slider variant. The arrows and dots are drawn by the
+ * shared slider navigation (includes/helpers-slider-nav.php) and the movement is the shared carousel runtime
+ * (`src/shared/carousel`): this file only names the block's own classes, reads its cards-per-click setting and binds the
+ * runtime to the block's Interactivity actions, because the root already carries `data-wp-interactive`,
+ * `data-wp-context` and `data-wp-init` for autoplay. The dots exist only when the block's `pagination` is `dots`; with
+ * `scrollbar` or `none` no dot sync runs at all.
  *
- * The active-dot / arrow-enabled state is NOT driven through reactive
- * `data-wp-bind--*` directives: syncing "which card is centred" needs a
- * scroll-position read (`getBoundingClientRect`), which has no reactive
- * state to bind to — it has to be measured on scroll, same as the existing
- * autoplay callback measures `offsetLeft` imperatively. Dot/class updates
- * are therefore applied directly to the DOM inside the action, exactly as
- * the pre-existing `init()` callback already does for autoplay.
+ * The active-dot state is applied straight to the DOM (a scroll-position read has no reactive state to bind to).
  *
  * @package SGS\Blocks
  */
 
 import { store, getContext, getElement } from '@wordpress/interactivity';
-import { initMotionPause } from '../../shared/motion-pause/index.js';
+import {
+	SCROLL_EPSILON,
+	activeIndexByMidpoint,
+	atEnd,
+	createAutoplay,
+	prefersReducedMotion,
+	realItems,
+	scrollToItem,
+	syncDots,
+	targetIndex,
+} from '../../shared/carousel/index.js';
 
-const SCROLL_EPSILON = 4; // px tolerance when comparing scroll positions.
+const ITEM = '.sgs-google-reviews__review';
+const DOT = '.sgs-google-reviews__dot';
 
-/**
- * Whether the visitor has asked for reduced motion, read FRESH on every call.
- *
- * @return {boolean} True when `prefers-reduced-motion: reduce` is active.
- */
-function prefersReducedMotion() {
-	return (
-		typeof window !== 'undefined' &&
-		typeof window.matchMedia === 'function' &&
-		window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches
-	);
-}
-
-// rAF handles keyed per scroller element, so rapid scroll events collapse to
-// one active-dot recompute per frame (mirrors trustpilot-reviews/view.js).
+// rAF handles keyed per scroller element, so rapid scroll events collapse to one active-dot recompute per frame.
 const scrollRafByList = new WeakMap();
 
 /**
- * Read the slider's scroll list + its review "slides" for a given block root.
+ * The slider's scroll list and its real review slides (loop clones left out) for a block root.
  *
  * @param {Element} root `.sgs-google-reviews` root element.
- * @return {{list: Element|null, items: Element[]}} The list element + its items.
+ * @return {{list: Element|null, items: Element[]}} The list element and its items.
  */
 function getSliderEls( root ) {
 	const list = root.querySelector( '.sgs-google-reviews__list' );
-	/*
-	 * `:not([data-sgs-loop-clone])` — the a11y contract `fx-carousel-loop.js`
-	 * (Spec 38 §11 loop FR) documents in its own docblock: when looping is on
-	 * that module clones every item to both ends of the track and marks each
-	 * clone `data-sgs-loop-clone="true"`. Without this filter every index/
-	 * offset/scroll calculation below would count the clones too, and the
-	 * active dot could light against a clone rather than the real card it
-	 * doubles. No-op when looping is off — there are no clones to exclude.
-	 */
-	const items = list
-		? Array.from(
-				list.querySelectorAll(
-					'.sgs-google-reviews__review:not([data-sgs-loop-clone])'
-				)
-		  )
-		: [];
-	return { list, items };
+	return { list, items: realItems( list, ITEM ) };
 }
 
 /**
- * Maximum scrollLeft value for a horizontally-scrolling list.
- *
- * @param {Element} list The scrolling list element.
- * @return {number} Maximum scrollLeft.
- */
-function maxScrollLeft( list ) {
-	return Math.max( 0, list.scrollWidth - list.clientWidth );
-}
-
-/**
- * Cards per arrow click for the current viewport (the block's arrowStep setting).
- * render.php resolves each device tier (inheriting down) and passes the framework's
- * breakpoints alongside, so the choice matches the CSS tiers exactly. Read at click
- * time: a resize or rotation between clicks takes effect on the next one.
+ * Cards per arrow click for the current viewport (the block's arrowStep setting). render.php resolves each device tier
+ * (inheriting down) and passes the framework's breakpoints alongside, so the choice matches the CSS tiers exactly. Read at
+ * click time: a resize or rotation between clicks takes effect on the next one.
  *
  * @param {Object} ctx The block's interactivity context.
  * @return {number} Whole cards to move, at least 1.
@@ -110,61 +67,20 @@ function arrowStep( ctx ) {
 }
 
 /**
- * Smooth-scroll a slider's list so the item at `index` is at its start.
- *
- * @param {Element} root  `.sgs-google-reviews` root element.
- * @param {number}  index Target item index (clamped to the valid range).
- */
-function scrollToItem( root, index ) {
-	const { list, items } = getSliderEls( root );
-	if ( ! list || ! items.length ) {
-		return;
-	}
-	const clamped = Math.max( 0, Math.min( index, items.length - 1 ) );
-	list.scrollTo( {
-		left: items[ clamped ].offsetLeft - list.offsetLeft,
-		// Read at call time, never cached at module load: the OS setting can be
-		// toggled while the page is open, and a cached value would keep animating
-		// for the rest of the visit. Note the key is `behavior` — the DOM API's
-		// own spelling. UK English is the house rule for everything EXCEPT API
-		// names; `behaviour` is silently DISCARDED by the browser, which is
-		// exactly how sgs/post-grid ignored reduced motion in both directions.
-		behavior: prefersReducedMotion() ? 'auto' : 'smooth',
-	} );
-}
-
-/**
- * Recompute + apply the active dot for a slider based on current scroll
- * position, and reflect it to assistive tech via `aria-current` (never by
- * colour alone).
+ * Apply the active dot for the slider's current scroll position, and reflect it to assistive tech through `aria-current`
+ * as well as the class (never by colour alone).
  *
  * @param {Element} root `.sgs-google-reviews` root element.
  */
 function updateActiveDot( root ) {
 	const { list, items } = getSliderEls( root );
-	const dots = root.querySelectorAll( '.sgs-google-reviews__dot' );
+	const dots = root.querySelectorAll( DOT );
 	if ( ! list || ! dots.length ) {
 		return;
 	}
-
-	const listRect = list.getBoundingClientRect();
-	let activeIndex = 0;
-	items.forEach( ( item, idx ) => {
-		const itemRect = item.getBoundingClientRect();
-		if ( itemRect.left - listRect.left < listRect.width / 2 ) {
-			activeIndex = idx;
-		}
-	} );
-
-	dots.forEach( ( dot, idx ) => {
-		const isActive = idx === activeIndex;
-		dot.classList.toggle( 'is-active', isActive );
-		dot.setAttribute( 'aria-selected', isActive ? 'true' : 'false' );
-		if ( isActive ) {
-			dot.setAttribute( 'aria-current', 'true' );
-		} else {
-			dot.removeAttribute( 'aria-current' );
-		}
+	syncDots( dots, activeIndexByMidpoint( list, items ), {
+		activeClass: 'is-active',
+		ariaCurrent: true,
 	} );
 }
 
@@ -178,6 +94,37 @@ function findRoot( el ) {
 	return el ? el.closest( '.sgs-google-reviews' ) : null;
 }
 
+/**
+ * Step the slider one press in a direction, wrapping from the last card to the first and back. The first item past the
+ * scroll position, not a remembered index, is the target; with looping on the loop module's clones are not items, so
+ * reaching the end of the real items is the wrap point (WCAG 2.5.7: the arrow never dead-ends).
+ *
+ * @param {Element} root `.sgs-google-reviews` root element.
+ * @param {number}  dir  1 for next, -1 for previous.
+ */
+function step( root, dir ) {
+	const { list, items } = getSliderEls( root );
+	if ( ! list || items.length < 2 ) {
+		return;
+	}
+	const first = items[ 0 ];
+	const last = items[ items.length - 1 ];
+	if ( dir > 0 && atEnd( list ) ) {
+		scrollToItem( list, first );
+		return;
+	}
+	if ( dir < 0 && list.scrollLeft <= SCROLL_EPSILON ) {
+		scrollToItem( list, last );
+		return;
+	}
+	const index = targetIndex( list, items, dir, arrowStep( getContext() ) );
+	if ( index === -1 ) {
+		scrollToItem( list, dir > 0 ? first : last );
+		return;
+	}
+	scrollToItem( list, items[ index ] );
+}
+
 store( 'sgs/google-reviews', {
 	actions: {
 		/**
@@ -186,39 +133,10 @@ store( 'sgs/google-reviews', {
 		 * the framework, e.g. sgs/trustpilot-reviews).
 		 */
 		prevSlide() {
-			const { ref } = getElement();
-			const root = findRoot( ref );
-			if ( ! root ) {
-				return;
+			const root = findRoot( getElement().ref );
+			if ( root ) {
+				step( root, -1 );
 			}
-			const { list, items } = getSliderEls( root );
-			if ( ! list || items.length < 2 ) {
-				return;
-			}
-			if ( list.scrollLeft <= SCROLL_EPSILON ) {
-				scrollToItem( root, items.length - 1 );
-				return;
-			}
-			// The LAST real item strictly before the current position. When
-			// looping is on, `items` excludes clones (see getSliderEls), so once
-			// scrollLeft sits before the first real item — i.e. inside the
-			// LEADING clone region — no real item qualifies. That is the wrap
-			// point, not a reason to stand still: the old code defaulted
-			// `target` to 0 and re-scrolled to where it already was, so the
-			// keyboard user could never step back past the first card.
-			let target = -1;
-			items.forEach( ( item, idx ) => {
-				if ( item.offsetLeft < list.scrollLeft - SCROLL_EPSILON ) {
-					target = idx;
-				}
-			} );
-			// Further back by the cards-per-click setting, never past the first card.
-			scrollToItem(
-				root,
-				target === -1
-					? items.length - 1
-					: Math.max( 0, target - ( arrowStep( getContext() ) - 1 ) )
-			);
 		},
 
 		/**
@@ -226,39 +144,10 @@ store( 'sgs/google-reviews', {
 		 * first.
 		 */
 		nextSlide() {
-			const { ref } = getElement();
-			const root = findRoot( ref );
-			if ( ! root ) {
-				return;
+			const root = findRoot( getElement().ref );
+			if ( root ) {
+				step( root, 1 );
 			}
-			const { list, items } = getSliderEls( root );
-			if ( ! list || items.length < 2 ) {
-				return;
-			}
-			if ( list.scrollLeft >= maxScrollLeft( list ) - SCROLL_EPSILON ) {
-				scrollToItem( root, 0 );
-				return;
-			}
-			// The FIRST real item strictly after the current position. This is
-			// the WCAG 2.5.7 bug (found 2026-08-02, register Step Y-1): with
-			// looping on, `items` excludes clones, so once scrollLeft enters the
-			// TRAILING clone region there is no real item ahead. The old code
-			// defaulted `target` to the last real index and scrolled there —
-			// leaving the arrow permanently parked on the last real card. It
-			// never disabled, so it satisfied the letter of "arrows must never
-			// disable" while a keyboard user simply could not get past. Reaching
-			// the end of the real items IS the wrap point.
-			let target = -1;
-			items.forEach( ( item, idx ) => {
-				if ( item.offsetLeft > list.scrollLeft + SCROLL_EPSILON ) {
-					target = target === -1 ? idx : Math.min( target, idx );
-				}
-			} );
-			// On by the cards-per-click setting; scrollToItem clamps at the last card.
-			scrollToItem(
-				root,
-				target === -1 ? 0 : target + ( arrowStep( getContext() ) - 1 )
-			);
 		},
 
 		/**
@@ -272,7 +161,13 @@ store( 'sgs/google-reviews', {
 			if ( ! root || Number.isNaN( index ) ) {
 				return;
 			}
-			scrollToItem( root, index );
+			const { list, items } = getSliderEls( root );
+			if ( list && items.length ) {
+				scrollToItem(
+					list,
+					items[ Math.max( 0, Math.min( index, items.length - 1 ) ) ]
+				);
+			}
 		},
 
 		/**
@@ -328,58 +223,29 @@ store( 'sgs/google-reviews', {
 				return;
 			}
 
-			// `:not([data-sgs-loop-clone])` — see getSliderEls() above; the
-			// same clone-exclusion contract applies to autoplay's own item
-			// count and offsetLeft targets.
-			const reviews = slider.querySelectorAll(
-				'.sgs-google-reviews__review:not([data-sgs-loop-clone])'
-			);
-			if ( reviews.length <= 1 ) {
-				return; // Nothing to slide.
+			const reviews = realItems( slider, ITEM );
+			if ( reviews.length <= 1 || prefersReducedMotion() ) {
+				return; // Nothing to slide, or the visitor asked for no motion (WCAG 2.3.3).
 			}
 
-			// WCAG 2.3.3 — auto-advancing content must respect a stated
-			// preference for reduced motion.
-			const reduceMotion = window.matchMedia(
-				'(prefers-reduced-motion: reduce)'
-			).matches;
-			if ( reduceMotion ) {
-				return;
-			}
-
-			let currentSlide = 0;
-			const speed = parseInt( ctx.autoplaySpeed, 10 );
-
-			const slideNext = () => {
-				currentSlide = ( currentSlide + 1 ) % reviews.length;
-				slider.scrollTo( {
-					left: reviews[ currentSlide ].offsetLeft,
-					behavior: 'smooth',
-				} );
-				if ( hasDots ) {
-					updateActiveDot( root );
-				}
-			};
-
-			// WCAG 2.2.2 through the shared runtime: the server-rendered pause /
-			// play button holds a pause until pressed again; hover, a finger
-			// press and keyboard focus (on the arrows and dots too) pause it
-			// while they last, each independently. One interval at a time,
-			// resuming from where it stopped after a pause.
-			let timer = null;
-			const stop = () => {
-				clearInterval( timer );
-				timer = null;
-			};
-			const play = () => {
-				stop();
-				timer = setInterval( slideNext, speed );
-			};
-			const pauser = initMotionPause( root, {
-				onChange: ( paused ) => ( paused ? stop() : play() ),
-			} );
-			pauser.setRunning( true );
-			play();
+			// WCAG 2.2.2 through the shared runtime: the server-rendered pause / play button holds a pause until pressed
+			// again; hover, a finger press and keyboard focus (on the arrows and dots too) pause it while they last, each
+			// independently. One interval at a time, resuming from where it stopped after a pause.
+			createAutoplay( root, {
+				speed: parseInt( ctx.autoplaySpeed, 10 ),
+				tick: () => {
+					// Step on from where the slider is now, not from a count of our own, so a visitor who scrolled by hand
+					// is not sent back; wrap to the first review at the end of the track.
+					const next = atEnd( slider )
+						? 0
+						: ( activeIndexByMidpoint( slider, reviews ) + 1 ) %
+						  reviews.length;
+					scrollToItem( slider, reviews[ next ] );
+					if ( hasDots ) {
+						updateActiveDot( root );
+					}
+				},
+			} ).start();
 		},
 	},
 } );

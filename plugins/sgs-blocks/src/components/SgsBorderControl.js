@@ -45,6 +45,11 @@ import ResponsiveBoxControl, {
 } from './ResponsiveBoxControl';
 import GradientCapableColourControl from './GradientCapableColourControl';
 import BorderStyleControl from './BorderStyleControl';
+import DisabledRow from './DisabledRow';
+import { borderWidthIsSet } from '../utils/border-style';
+
+/** Why Style and Colour are off until the border has a width (the PHP prints no border without one). */
+const WIDTH_FIRST = __( 'Set a border width first.', 'sgs-blocks' );
 
 /**
  * @param {Object}                        props
@@ -84,6 +89,17 @@ import BorderStyleControl from './BorderStyleControl';
  *                                                                       `contrastAgainst` use). Omit for no behaviour
  *                                                                       change (the default).
  * @param {string}                        [props.contrastLabel]          Forwarded to `GradientCapableColourControl`.
+ * @param {string[]}                      [props.styleOptions]           The border styles to offer (`BorderStyleControl`'s
+ *                                                                       `styles`). Omit for the three icon buttons; pass
+ *                                                                       `ALL_BORDER_STYLES` for the nine the PHP accepts, only
+ *                                                                       on a block whose style attribute allows all nine.
+ * @param {boolean}                       [props.requireWidth=false]     Grey Style and Colour out, with "Set a border width
+ *                                                                       first.", while no side has a width. Off by default: a
+ *                                                                       block whose stylesheet draws a border with no stored
+ *                                                                       width keeps both rows live.
+ * @param {Object}                        [props.disabledRows]           `{ width, style, colour, radius }`: a plain reason
+ *                                                                       greys that row out. A reason given here wins over the
+ *                                                                       one `requireWidth` supplies.
  * @param {boolean}                       [props.contrastLargeText=true] Forwarded to `GradientCapableColourControl`.
  *                                                                       Defaults to `true` HERE (unlike that
  *                                                                       component's own default of `false`) because a
@@ -146,6 +162,9 @@ export default function SgsBorderControl( {
 	radiusLabel,
 	showRadiusResponsive = true,
 	showColour = true,
+	styleOptions,
+	requireWidth = false,
+	disabledRows = {},
 	colourLabel = __( 'Colour', 'sgs-blocks' ),
 	clearable = true,
 	enableAlpha = true,
@@ -164,6 +183,21 @@ export default function SgsBorderControl( {
 		tablet: ( isTiered ? widthAttr.tablet : undefined ) || {},
 		mobile: ( isTiered ? widthAttr.mobile : undefined ) || {},
 	};
+	const waitingForWidth = requireWidth && ! borderWidthIsSet( widthValues );
+	const reasons = {
+		style: waitingForWidth ? WIDTH_FIRST : '',
+		colour: waitingForWidth ? WIDTH_FIRST : '',
+		...disabledRows,
+	};
+	// A reason a caller leaves undefined or null is no reason.
+	for ( const row of [ 'width', 'style', 'colour', 'radius' ] ) {
+		reasons[ row ] = reasons[ row ] || '';
+	}
+	const styleProps = styleOptions ? { styles: styleOptions } : {};
+	// Style normally lives in the colour popover, so a greyed Colour row would lock it too, with no reason beside it. When
+	// Colour is off and Style is not, Style is drawn beside it instead, as it is when the colour row is left out.
+	const styleBesideColour =
+		! showColour || ( '' !== reasons.colour && '' === reasons.style );
 	const writeWidth = ( tier, next ) => {
 		const merged = { ...widthTiers, [ tier ]: next || {} };
 		const filled = ( box ) =>
@@ -191,48 +225,61 @@ export default function SgsBorderControl( {
 					className="sgs-border-control__width"
 					style={ { flexGrow: 1, minWidth: 220 } }
 				>
-					<ResponsiveBoxControl
-						label={ label || __( 'Width', 'sgs-blocks' ) }
-						values={ widthTiers }
-						onChange={ writeWidth }
-						presets={ widthPresets }
-					/>
+					<DisabledRow reason={ reasons.width }>
+						<ResponsiveBoxControl
+							label={ label || __( 'Width', 'sgs-blocks' ) }
+							values={ widthTiers }
+							onChange={ writeWidth }
+							presets={ widthPresets }
+						/>
+					</DisabledRow>
 				</FlexItem>
 				{ showColour && (
 					<FlexItem
 						className="sgs-border-control__colour"
 						style={ { minWidth: 180 } }
 					>
-						<GradientCapableColourControl
-							label={ colourLabel }
-							states={ colourStates }
-							value={ colourValue }
-							onChange={ onColourChange }
-							gradientValue={ colourGradientValue }
-							onGradientChange={ onColourGradientChange }
-							linked={ colourLinked }
-							borderStyle={ styleValue }
-							onBorderStyleChange={ onStyleChange }
-							clearable={ clearable }
-							enableAlpha={ enableAlpha }
-							contrastAgainst={ contrastAgainst }
-							contrastLabel={ contrastLabel }
-							contrastLargeText={ contrastLargeText }
-						/>
+						<DisabledRow reason={ reasons.colour }>
+							<GradientCapableColourControl
+								label={ colourLabel }
+								states={ colourStates }
+								value={ colourValue }
+								onChange={ onColourChange }
+								gradientValue={ colourGradientValue }
+								onGradientChange={ onColourGradientChange }
+								linked={ colourLinked }
+								borderStyle={ styleValue }
+								onBorderStyleChange={
+									styleBesideColour
+										? undefined
+										: onStyleChange
+								}
+								borderStyles={ styleOptions }
+								borderStyleReason={ reasons.style }
+								clearable={ clearable }
+								enableAlpha={ enableAlpha }
+								contrastAgainst={ contrastAgainst }
+								contrastLabel={ contrastLabel }
+								contrastLargeText={ contrastLargeText }
+							/>
+						</DisabledRow>
 					</FlexItem>
 				) }
 				{ /* Colour suppressed (Spec 36 §14 FR-41-33/FR-41-2b): border style re-parents here
 				     as SgsBorderControl's own sibling, matching GradientCapableColourControl's
 				     own gate so a caller that never wired border style gets no orphan control. */ }
-				{ ! showColour && typeof onStyleChange === 'function' && (
+				{ styleBesideColour && typeof onStyleChange === 'function' && (
 					<FlexItem
 						className="sgs-border-control__style"
 						style={ { minWidth: 180 } }
 					>
-						<BorderStyleControl
-							value={ styleValue }
-							onChange={ onStyleChange }
-						/>
+						<DisabledRow reason={ reasons.style }>
+							<BorderStyleControl
+								value={ styleValue }
+								onChange={ onStyleChange }
+								{ ...styleProps }
+							/>
+						</DisabledRow>
 					</FlexItem>
 				) }
 			</Flex>
@@ -242,12 +289,14 @@ export default function SgsBorderControl( {
 			     has not migrated its radius yet shows no empty control. */ }
 			{ typeof onRadiusChange === 'function' && (
 				<div className="sgs-border-control__radius">
-					<ResponsiveBorderRadiusControl
-						label={ radiusLabel }
-						values={ radiusValues || {} }
-						showResponsive={ showRadiusResponsive }
-						onChange={ onRadiusChange }
-					/>
+					<DisabledRow reason={ reasons.radius }>
+						<ResponsiveBorderRadiusControl
+							label={ radiusLabel }
+							values={ radiusValues || {} }
+							showResponsive={ showRadiusResponsive }
+							onChange={ onRadiusChange }
+						/>
+					</DisabledRow>
 				</div>
 			) }
 		</div>

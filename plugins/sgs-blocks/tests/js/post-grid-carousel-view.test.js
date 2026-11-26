@@ -28,7 +28,11 @@ function buildGrid() {
 		</div>
 		<a class="outside" href="/out">Out</a>`;
 	const grid = document.querySelector( '.sgs-post-grid' );
-	return { grid, button: grid.querySelector( '[data-sgs-motion-pause]' ) };
+	// jsdom has no layout: the track is three one-card windows wide, so it scrolls to 600 at most.
+	const track = grid.querySelector( '.sgs-post-grid__inner' );
+	Object.defineProperty( track, 'scrollWidth', { get: () => 900 } );
+	Object.defineProperty( track, 'clientWidth', { get: () => 300 } );
+	return { grid, track, button: grid.querySelector( '[data-sgs-motion-pause]' ) };
 }
 
 function stubMatchMedia( matching ) {
@@ -83,6 +87,14 @@ describe( 'post-grid carousel autoplay: pause (WCAG 2.2.2)', () => {
 		expect( lastCard() ).toBe( '1' );
 	} );
 
+	it( 'goes back to the first card when it reaches the end of the track', () => {
+		const { grid, track } = buildGrid();
+		start( grid );
+		track.scrollLeft = 600; // the end: the most this track scrolls
+		jest.advanceTimersByTime( SPEED );
+		expect( lastCard() ).toBe( '0' );
+	} );
+
 	it( 'a pointer leaving does not resume a focused carousel', () => {
 		const { grid } = buildGrid();
 		start( grid );
@@ -90,7 +102,7 @@ describe( 'post-grid carousel autoplay: pause (WCAG 2.2.2)', () => {
 		grid.querySelector( 'a' ).dispatchEvent( focusEvent( 'focusin' ) );
 		hover( grid, false );
 		jest.advanceTimersByTime( SPEED * 2 );
-		expect( lastCard() ).toBe( '0' );
+		expect( lastCard() ).toBeNull(); // nothing scrolled: the carousel does not move itself on load or while paused
 	} );
 
 	it( 'hover and focus both ending start one timer, not two', () => {
@@ -114,7 +126,7 @@ describe( 'post-grid carousel autoplay: pause (WCAG 2.2.2)', () => {
 		expect( button.getAttribute( 'aria-pressed' ) ).toBe( 'true' );
 		button.dispatchEvent( focusEvent( 'focusout', document.querySelector( '.outside' ) ) );
 		jest.advanceTimersByTime( SPEED * 2 );
-		expect( lastCard() ).toBe( '0' );
+		expect( lastCard() ).toBeNull(); // nothing scrolled: the carousel does not move itself on load or while paused
 		button.click();
 		jest.advanceTimersByTime( SPEED );
 		expect( lastCard() ).toBe( '1' );
@@ -125,7 +137,7 @@ describe( 'post-grid carousel autoplay: pause (WCAG 2.2.2)', () => {
 		const { grid, button } = buildGrid();
 		start( grid );
 		jest.advanceTimersByTime( SPEED * 2 );
-		expect( lastCard() ).toBe( '0' );
+		expect( lastCard() ).toBeNull(); // nothing scrolled: the carousel does not move itself on load or while paused
 		expect( button.hidden ).toBe( true );
 	} );
 } );
