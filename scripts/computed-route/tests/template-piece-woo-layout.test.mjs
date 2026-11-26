@@ -10,7 +10,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { basketCounts, otherBranches, place, templateView } from '../lib/template-piece-woo-layout.mjs';
+import { basketCounts, otherBranches, place, regionRule, templateView } from '../lib/template-piece-woo-layout.mjs';
 import { logicOf } from '../lib/shop-parts-logic.mjs';
 import { BUILDERS, piecesPass, placedLint } from '../lib/template-pieces-context.mjs';
 import { openDb } from '../lib/db.mjs';
@@ -319,6 +319,7 @@ test( 'MUST FAIL: a piece counting the basket\'s lines beside the heading become
 	assert.deepEqual( row.attributes, { tagName: 'div', layout: 'flex' } );
 	assert.equal( row.draftRef, undefined );
 	assert.equal( row.handover, undefined );
+	assert.equal( row.unmapped, undefined );
 	assert.deepEqual( row.decided, { gap: { desktop: '17px', tablet: '13.5px', mobile: '11px' }, alignItems: { desktop: 'center' } }, 'a word space per device: the heading is 68px, 54px and 44px' );
 	const [ heading, chip ] = row.innerBlocks;
 	assert.equal( heading.attributes.content, 'Your basket' );
@@ -357,33 +358,98 @@ test( 'MUST FAIL: the basket count row gap follows the heading to the tablet and
 	};
 	const base = rowOf( () => {} );
 	assert.deepEqual( base.decided.gap, { desktop: '17px', tablet: '13.5px', mobile: '11px' }, 'the smaller heading gets the smaller space, not the desktop one inherited' );
-	assert.equal( base.handover, undefined, 'a row whose gap and centring were read hands nothing over' );
+	assert.equal( base.unmapped, undefined, 'a row whose gap and centring were read lists nothing unmapped' );
 	// The browser's computed value wins over the inline style; a count with no inline style but a computed `middle` is centred.
 	const byClass = rowOf( ( e ) => { e[ 'Root/12#0' ].attrs.style = ''; e[ 'Root/12#0' ].resolved[ 1440 ][ 'vertical-align' ] = 'middle'; } );
 	assert.deepEqual( byClass.decided.alignItems, { desktop: 'center' } );
-	const overridden = rowOf( ( e ) => { e[ 'Root/12#0' ].resolved[ 1440 ][ 'vertical-align' ] = 'top'; } );
-	assert.equal( overridden.decided.alignItems, undefined, 'the computed top overrides the inline middle' );
+	const overridden = rowOf( ( e ) => { for ( const w of [ 375, 768, 1440 ] ) { e[ 'Root/12#0' ].resolved[ w ][ 'vertical-align' ] = 'top'; } } );
+	assert.deepEqual( overridden.decided.alignItems, { desktop: 'flex-start' }, 'the computed top overrides the inline middle' );
 } );
 
-test( 'MUST FAIL: a basket count row whose gap or centring could not be read hands that over by name, never drops it', () => {
-	const rowOf = ( edit ) => {
-		const input = BASKET();
-		edit( Object.fromEntries( input.inventory.elements.map( ( e ) => [ e.key, e ] ) ) );
-		const got = placePieces( { key: 'cart', tree: input.tree, data: DATA, ctx: basketCtx( input ), builders: BUILDERS } );
-		assert.deepEqual( got.problems, [], 'the handover is one the skeleton check accepts' );
-		return got.tree[ 0 ].innerBlocks[ 0 ].innerBlocks[ 1 ];
-	};
-	const noSize = rowOf( ( e ) => { delete e[ 'Root/11#0' ].resolved; e[ 'Root/11#0' ].attrs.style = ''; } );
+// The basket count row as the piece builds it, with `edit` applied to the inventory elements (by key) and `extra` to the context.
+function countRowOf( edit, extra = {} ) {
+	const input = BASKET();
+	edit( Object.fromEntries( input.inventory.elements.map( ( e ) => [ e.key, e ] ) ) );
+	const got = placePieces( { key: 'cart', tree: input.tree, data: DATA, ctx: basketCtx( input, extra ), builders: BUILDERS } );
+	assert.deepEqual( got.problems, [], 'the row passes the skeleton check' );
+	return got.tree[ 0 ].innerBlocks[ 0 ].innerBlocks[ 1 ];
+}
+const countAlign = ( e, per ) => Object.entries( per ).forEach( ( [ w, v ] ) => ( e[ 'Root/12#0' ].resolved[ w ][ 'vertical-align' ] = v ) );
+
+test( 'MUST FAIL: a count at baseline, top or bottom is aligned (baseline, flex-start, flex-end), never handed over as unreadable', () => {
+	for ( const [ draft, items ] of [ [ 'baseline', 'baseline' ], [ 'top', 'flex-start' ], [ 'bottom', 'flex-end' ], [ 'middle', 'center' ] ] ) {
+		const row = countRowOf( ( e ) => { e[ 'Root/12#0' ].attrs.style = ''; countAlign( e, { 375: draft, 768: draft, 1440: draft } ); } );
+		assert.deepEqual( row.decided.alignItems, { desktop: items }, `vertical-align: ${ draft }` );
+		assert.equal( row.unmapped, undefined, `vertical-align: ${ draft } is read, so nothing is listed unmapped` );
+	}
+	const inline = countRowOf( ( e ) => { e[ 'Root/12#0' ].attrs.style = 'vertical-align: Top'; } );
+	assert.deepEqual( inline.decided.alignItems, { desktop: 'flex-start' }, 'the inline style is mapped too, whatever its case' );
+} );
+
+test( 'MUST FAIL: the count alignment is read per device, and a device equal to the one it inherits is not written again', () => {
+	const row = countRowOf( ( e ) => { countAlign( e, { 1440: 'middle', 768: 'top', 375: 'top' } ); } );
+	assert.deepEqual( row.decided.alignItems, { desktop: 'center', tablet: 'flex-start' }, 'the phone sits as the tablet does' );
+	const back = countRowOf( ( e ) => { countAlign( e, { 1440: 'middle', 768: 'top', 375: 'middle' } ); } );
+	assert.deepEqual( back.decided.alignItems, { desktop: 'center', tablet: 'flex-start', mobile: 'center' } );
+} );
+
+test( 'MUST FAIL: a count alignment no items alignment draws, or none read at all, is listed unmapped by name with its device, and the rest is still written', () => {
+	const odd = countRowOf( ( e ) => { countAlign( e, { 1440: 'middle', 768: 'text-top', 375: 'middle' } ); } );
+	assert.deepEqual( odd.decided.alignItems, { desktop: 'center' } );
+	assert.equal( odd.unmapped.length, 1 );
+	assert.equal( odd.unmapped[ 0 ].property, 'align-items' );
+	assert.match( odd.unmapped[ 0 ].reason, /vertical-align: text-top at tablet, which no items alignment matches/ );
+	const none = countRowOf( ( e ) => { e[ 'Root/12#0' ].attrs.style = ''; } );
+	assert.equal( none.decided.alignItems, undefined );
+	assert.match( none.unmapped.find( ( u ) => 'align-items' === u.property ).reason, /vertical-align was not read at the desktop and tablet and mobile widths/ );
+	assert.equal( none.handover, undefined, 'a layout setting is no handover (Spec 48 section 3.3: a handover is content that lives outside the tree)' );
+} );
+
+test( 'MUST FAIL: a gap read at tablet and mobile is kept when the desktop size was not read, and the unread device is named', () => {
+	const row = countRowOf( ( e ) => { delete e[ 'Root/11#0' ].resolved[ 1440 ]; e[ 'Root/11#0' ].attrs.style = ''; } );
+	assert.deepEqual( row.decided.gap, { tablet: '13.5px', mobile: '11px' } );
+	assert.deepEqual( row.decided.alignItems, { desktop: 'center' } );
+	const gap = row.unmapped.filter( ( u ) => 'gap' === u.property );
+	assert.equal( gap.length, 1 );
+	assert.match( gap[ 0 ].reason, /font size was not read at the desktop width\)/ );
+	assert.equal( row.unmapped.length, 1, 'only the gap is unmapped' );
+	// A tablet size not read, with the desktop's read, inherits the desktop gap: nothing is unmapped.
+	const inherits = countRowOf( ( e ) => { delete e[ 'Root/11#0' ].resolved[ 768 ]; e[ 'Root/11#0' ].attrs.style = ''; } );
+	assert.deepEqual( inherits.decided.gap, { desktop: '17px', mobile: '11px' } );
+	assert.equal( inherits.unmapped, undefined );
+} );
+
+test( 'MUST FAIL: a basket count row whose gap could not be read at any device is listed unmapped by name, never dropped', () => {
+	const noSize = countRowOf( ( e ) => { delete e[ 'Root/11#0' ].resolved; e[ 'Root/11#0' ].attrs.style = ''; } );
 	assert.equal( noSize.decided.gap, undefined );
 	assert.deepEqual( noSize.decided.alignItems, { desktop: 'center' } );
-	assert.equal( noSize.handover.length, 1 );
-	assert.match( noSize.handover[ 0 ].detail, /its gap \(the heading Root\/11#0's font size was not read/ );
-	assert.doesNotMatch( noSize.handover[ 0 ].detail, /alignment/ );
-	const top = rowOf( ( e ) => { e[ 'Root/12#0' ].attrs.style = 'vertical-align: top'; } );
-	assert.deepEqual( top.decided, { gap: { desktop: '17px', tablet: '13.5px', mobile: '11px' } } );
-	assert.match( top.handover[ 0 ].detail, /its items' alignment \(the count Root\/12#0 is "vertical-align: top", not middle\)/ );
-	assert.equal( top.handover[ 0 ].owner, 'content-page' );
-	assert.equal( top.handover[ 0 ].kind, 'presence' );
+	assert.equal( noSize.unmapped.length, 1 );
+	assert.equal( noSize.unmapped[ 0 ].property, 'gap' );
+	assert.match( noSize.unmapped[ 0 ].reason, /the heading Root\/11#0's font size was not read at the desktop and tablet and mobile widths/ );
+	assert.doesNotMatch( noSize.unmapped[ 0 ].reason, /alignment/ );
+} );
+
+test( 'MUST FAIL: a missing wordSpaceEm names that rule setting, not the heading font-size read', () => {
+	const row = countRowOf( () => {}, { rule: { ...regionRule(), basketCount: {} } } );
+	assert.equal( row.decided.gap, undefined );
+	const gap = row.unmapped.find( ( u ) => 'gap' === u.property );
+	assert.match( gap.reason, /rules\.commerceRegion\.basketCount\.wordSpaceEm is not set/ );
+	assert.doesNotMatch( gap.reason, /font size was not read/ );
+} );
+
+test( 'MUST FAIL: Fill lists the row\'s unmapped settings as UNMAPPED rows on the row, though it has no draft element to read', () => {
+	const input = BASKET();
+	const el = input.inventory.elements.find( ( e ) => 'Root/11#0' === e.key );
+	delete el.resolved;
+	el.attrs.style = '';
+	const got = placePieces( { key: 'cart', tree: input.tree, data: DATA, ctx: basketCtx( input ), builders: BUILDERS } );
+	const tree = cleanTree( got.tree );
+	addRefs( tree, 'fx' );
+	const out = fillTree( { tree, nodes: skeletonNodes( got.tree ), reads: { widths: {}, declared: {}, sweep: {}, origin: 'http://127.0.0.1:1' }, db: openDb(), snapshot: { palette: [], spacing: [], fontSizes: [] }, calFor: () => null, ledger: [], ledgerStates: [], origin: 'http://127.0.0.1:1' } );
+	const rows = out.unmapped.filter( ( u ) => 'gap' === u.property && 'sgs/container' === u.block );
+	assert.equal( rows.length, 1 );
+	assert.match( rows[ 0 ].reason, /font size was not read/ );
+	assert.equal( out.handover.length, 0, 'a layout setting is no handover' );
 } );
 
 test( 'MUST FAIL: Fill writes the basket count row gap onto the filled tree, though the row has no draft element to read', () => {

@@ -212,31 +212,63 @@ const pxOf = ( el, property, width ) => {
 	return hit ? Number( hit[ 1 ] ) : null;
 };
 
-// The row's own settings, read from the draft: its gap is one word space at the host heading's font size at each device's read
-// width (the space the draft's line carried between the words and the count; rules.commerceRegion.basketCount.wordSpaceEm is that
-// space in em; a device whose size is the one it inherits is not written again), and its items sit centred on the line when the
-// draft's count is `vertical-align: middle` (the browser's computed value, else the inline style). They travel as the row's
-// `decided` (R-47-10: a setting that paints a CSS property is never a skeleton attribute), which Fill writes. The row has no
-// draft element of its own, so no reader would find them. `missing` names what could not be read, for the row's handover.
-function countRowDecided( { hostEl, chipEl, rule } ) {
-	const em = rule?.basketCount?.wordSpaceEm;
-	const gap = {};
+// What `vertical-align` the count states, as the flex row's `align-items` (the count's own words sit on the line the way the row
+// lines its items up: top at the start, bottom at the end, middle centred, baseline on the text baseline). Any other value (a
+// length, a percentage, sub, super, text-top, text-bottom) is a position no items alignment draws.
+const ALIGN_ITEMS = { top: 'flex-start', bottom: 'flex-end', baseline: 'baseline', middle: 'center' };
+
+// One value per device from a reader `read( width )` -> `{ value, raw }` (`value`: what the setting is written as, null when not
+// read or not mappable; `raw`: the unmappable thing the draft states, else null). A device whose value equals the one it inherits
+// is not written again. `unread` names the devices with nothing read and no wider device to inherit from; `odd` the devices whose
+// stated value no setting holds.
+function perDevice( read ) {
+	const value = {};
+	const unread = [];
+	const odd = [];
 	let last = null;
 	for ( const [ width, device ] of DEVICES ) {
-		const size = em ? pxOf( hostEl, 'font-size', width ) : null;
-		const px = size ? `${ Math.round( size * em * 100 ) / 100 }px` : null;
-		if ( px && px !== last ) {
-			gap[ device ] = px;
+		const r = read( width );
+		if ( r.value ) {
+			r.value !== last && ( value[ device ] = r.value );
+			last = r.value;
+		} else if ( r.raw ) {
+			odd.push( { device, raw: r.raw } );
+		} else if ( null === last ) {
+			unread.push( device );
 		}
-		last = px ?? last;
 	}
-	const align = readAt( chipEl, 'vertical-align', 1440 );
-	const middle = 'middle' === String( align ?? '' ).toLowerCase();
-	const missing = [
-		...( gap.desktop ? [] : [ `its gap (the heading ${ hostEl?.key }'s font size was not read at the desktop width)` ] ),
-		...( middle ? [] : [ `its items' alignment (the count ${ chipEl?.key } is "vertical-align: ${ align ?? 'unread' }", not middle)` ] ),
-	];
-	return { decided: { ...( gap.desktop ? { gap } : {} ), ...( middle ? { alignItems: { desktop: 'center' } } : {} ) }, missing };
+	return { value, unread, odd };
+}
+const widths = ( devices ) => `${ devices.join( ' and ' ) } width${ devices.length > 1 ? 's' : '' }`;
+
+// The row's own settings, read from the draft: its gap is one word space at the host heading's font size at each device's read
+// width (the space the draft's line carried between the words and the count; rules.commerceRegion.basketCount.wordSpaceEm is that
+// space in em; a device whose size is the one it inherits is not written again), and its items sit where the draft's count sits on
+// its line (`vertical-align`, the browser's computed value, else the inline style, read at each device and written as align-items).
+// They travel as the row's `decided` (R-47-10: a setting that paints a CSS property is never a skeleton attribute), which Fill
+// writes. The row has no draft element of its own, so no reader would find them. `unmapped` names the settings that could not be
+// read, as the rows Fill lists for the surface (the block has the settings; the draft did not give their values).
+function countRowDecided( { hostEl, chipEl, rule } ) {
+	const em = rule?.basketCount?.wordSpaceEm;
+	const gap = perDevice( ( width ) => {
+		const size = em ? pxOf( hostEl, 'font-size', width ) : null;
+		return { value: size ? `${ Math.round( size * em * 100 ) / 100 }px` : null, raw: null };
+	} );
+	const align = perDevice( ( width ) => {
+		const raw = String( readAt( chipEl, 'vertical-align', width ) ?? '' ).trim().toLowerCase();
+		return ALIGN_ITEMS[ raw ] ? { value: ALIGN_ITEMS[ raw ], raw: null } : { value: null, raw: raw || null };
+	} );
+	const missing = {
+		gap: ! em ? 'rules.commerceRegion.basketCount.wordSpaceEm is not set, so the word space cannot be measured' : ( gap.unread.length ? `the heading ${ hostEl?.key }'s font size was not read at the ${ widths( gap.unread ) }` : null ),
+		'align-items': [
+			...( align.unread.length ? [ `the count ${ chipEl?.key }'s vertical-align was not read at the ${ widths( align.unread ) }` ] : [] ),
+			...( align.odd.length ? [ `the count ${ chipEl?.key } is ${ align.odd.map( ( o ) => `vertical-align: ${ o.raw } at ${ o.device }` ).join( ' and ' ) }, which no items alignment matches` ] : [] ),
+		].join( '; ' ) || null,
+	};
+	return {
+		decided: { ...( Object.keys( gap.value ).length ? { gap: gap.value } : {} ), ...( Object.keys( align.value ).length ? { alignItems: align.value } : {} ) },
+		missing: Object.entries( missing ).filter( ( [ , why ] ) => why ).map( ( [ property, why ] ) => ( { property, why } ) ),
+	};
 }
 
 // The row standing for a node whose element holds a basket count: its own words, then the count (or the count first when the
@@ -251,9 +283,10 @@ function countRow( n, { hostEl, chipEl, expr, m, rule } ) {
 	const snippet = String( hostEl.snippet || '' ).replace( /^<[^>]*>/, '' );
 	const first = ! ws( snippet.slice( 0, Math.max( 0, snippet.indexOf( '<' ) ) ) );
 	const { decided, missing } = countRowDecided( { hostEl, chipEl, rule } );
-	// What the draft's elements did not give is handed over by name, never dropped: the row still has no draft element of its own.
-	const line = missing.length ? [ { owner: 'content-page', kind: 'presence', detail: `the basket count ${ chipEl.key } sits in the line of ${ hostEl.key }'s words (a word space ${ first ? 'after' : 'before' } it): set this row's ${ missing.join( ' and ' ) } to match` } ] : [];
-	return { name: 'sgs/container', attributes: { tagName: 'div', layout: 'flex' }, ...( Object.keys( decided ).length ? { decided } : {} ), ...( line.length ? { handover: line } : {} ), innerBlocks: first ? [ chip, own ] : [ own, chip ] };
+	// What the draft's elements did not give is listed by name as an unmapped row, never dropped: the row still has no draft element
+	// of its own, so Fill cannot read it (the block has the settings; their values are what the draft did not say).
+	const unmapped = missing.map( ( u ) => ( { property: u.property, reason: `the basket count ${ chipEl.key } sits in the line of ${ hostEl.key }'s words (a word space ${ first ? 'after' : 'before' } it): the row's ${ 'gap' === u.property ? 'gap' : 'items alignment' } is not set (${ u.why }); set it to match` } ) );
+	return { name: 'sgs/container', attributes: { tagName: 'div', layout: 'flex' }, ...( Object.keys( decided ).length ? { decided } : {} ), ...( unmapped.length ? { unmapped } : {} ), innerBlocks: first ? [ chip, own ] : [ own, chip ] };
 }
 
 export function place( ctx, piece ) {
