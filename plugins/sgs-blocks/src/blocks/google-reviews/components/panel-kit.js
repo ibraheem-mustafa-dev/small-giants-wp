@@ -19,6 +19,7 @@ import { PanelBody } from '@wordpress/components';
 import { ToolsPanel, ToolsPanelItem } from '../../../components/primitives';
 import { typographyAttrKeys } from '../../../components';
 import metadata from '../block.json';
+import SgsResetPanel, { SgsResetItem } from '../../../components/SgsResetPanel';
 
 const SCHEMA = metadata.attributes;
 
@@ -111,16 +112,17 @@ export function Section( { title, attrs, setAttributes, children } ) {
 	return (
 		<InspectorControls group="styles">
 			<PanelBody title={ title } initialOpen={ false }>
-				<ToolsPanel
-					/* translators: %s: section name, e.g. "Card". The PanelBody above already carries the bare name. */
-					label={ sprintf(
+				<SgsResetPanel
+					title={ sprintf(
 						__( '%s settings', 'sgs-blocks' ),
 						title
 					) }
+					items={ [] }
 					resetAll={ () => setAttributes( resetPatch( attrs ) ) }
+					bare
 				>
 					{ children }
-				</ToolsPanel>
+				</SgsResetPanel>
 			</PanelBody>
 		</InspectorControls>
 	);
@@ -133,15 +135,14 @@ export function Section( { title, attrs, setAttributes, children } ) {
  */
 export function Row( { label, attrs, attributes, setAttributes, children } ) {
 	return (
-		<ToolsPanelItem
+		<SgsResetItem
 			label={ label }
 			hasValue={ () =>
 				attrs.some( ( attr ) => isSet( attributes, attr ) )
 			}
 			onDeselect={ () => setAttributes( resetPatch( attrs ) ) }
-			isShownByDefault
 		>
 			{ children }
-		</ToolsPanelItem>
+		</SgsResetItem>
 	);
 }

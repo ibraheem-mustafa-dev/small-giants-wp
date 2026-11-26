@@ -8,7 +8,6 @@ import {
 } from '@wordpress/components';
 import {
 	ToolsPanel,
-	ToolsPanelItem,
 	ToggleGroupControl,
 	ToggleGroupControlOption,
 } from '../../components/primitives';
@@ -18,6 +17,7 @@ import {
 	SgsLengthControl,
 	ShadowControl,
 } from '../../components';
+import SgsResetPanel, { SgsResetItem } from '../../components/SgsResetPanel';
 
 const WEIGHT_OPTIONS = [
 	{ value: '', label: __( 'Default', 'sgs-blocks' ) },
@@ -49,8 +49,7 @@ function Item( {
 	children,
 } ) {
 	return (
-		<ToolsPanelItem
-			label={ label }
+		<SgsResetItem
 			hasValue={ () =>
 				names.some(
 					( name ) =>
@@ -65,10 +64,9 @@ function Item( {
 					)
 				)
 			}
-			isShownByDefault
 		>
 			{ children }
-		</ToolsPanelItem>
+		</SgsResetItem>
 	);
 }
 
@@ -192,8 +190,9 @@ export default function ConfiguratorLookPanel( {
 				title={ __( 'Pick area spacing', 'sgs-blocks' ) }
 				initialOpen={ false }
 			>
-				<ToolsPanel
-					label={ __( 'Settings', 'sgs-blocks' ) }
+				<SgsResetPanel
+					title={ __( 'Settings', 'sgs-blocks' ) }
+					items={ [] }
 					resetAll={ () =>
 						setAttributes( {
 							pickerBoxPadding: {},
@@ -201,6 +200,7 @@ export default function ConfiguratorLookPanel( {
 							pickTileColumns: {},
 						} )
 					}
+					nested
 				>
 					<BoxItem
 						label={ __( 'Box inner spacing', 'sgs-blocks' ) }
@@ -286,14 +286,15 @@ export default function ConfiguratorLookPanel( {
 							/>
 						) ) }
 					</Item>
-				</ToolsPanel>
+				</SgsResetPanel>
 			</PanelBody>
 			<PanelBody
 				title={ __( 'Pick area headings', 'sgs-blocks' ) }
 				initialOpen={ false }
 			>
-				<ToolsPanel
-					label={ __( 'Settings', 'sgs-blocks' ) }
+				<SgsResetPanel
+					title={ __( 'Settings', 'sgs-blocks' ) }
+					items={ [] }
 					resetAll={ () =>
 						setAttributes( {
 							pickGroupHeadings: {},
@@ -304,6 +305,7 @@ export default function ConfiguratorLookPanel( {
 							pickTilePriceWeight: '',
 						} )
 					}
+					nested
 				>
 					<Item
 						label={ __( 'Number the headings', 'sgs-blocks' ) }
@@ -424,14 +426,26 @@ export default function ConfiguratorLookPanel( {
 						name="pickTilePriceWeight"
 						{ ...common }
 					/>
-				</ToolsPanel>
+				</SgsResetPanel>
 			</PanelBody>
 			<PanelBody
 				title={ __( 'Pick area option look', 'sgs-blocks' ) }
 				initialOpen={ false }
 			>
-				<ToolsPanel
-					label={ __( 'Settings', 'sgs-blocks' ) }
+				<SgsResetPanel
+					title={ __( 'Settings', 'sgs-blocks' ) }
+					items={ [
+						{
+							hasValue: () =>
+								!! attributes.pickerPillSelectedShadow ||
+								!! attributes.pickerPillSelectedShadowColour,
+							onDeselect: () =>
+								setAttributes( {
+									pickerPillSelectedShadow: '',
+									pickerPillSelectedShadowColour: '',
+								} ),
+						},
+					] }
 					resetAll={ () =>
 						setAttributes( {
 							pickerPillFontWeight: '',
@@ -449,39 +463,24 @@ export default function ConfiguratorLookPanel( {
 							pickerDotTickInside: false,
 						} )
 					}
+					nested
 				>
 					<WeightItem
 						label={ __( 'Option text weight', 'sgs-blocks' ) }
 						name="pickerPillFontWeight"
 						{ ...common }
 					/>
-					<ToolsPanelItem
+
+					<ShadowControl
 						label={ __( 'Selected option shadow', 'sgs-blocks' ) }
-						hasValue={ () =>
-							!! attributes.pickerPillSelectedShadow ||
-							!! attributes.pickerPillSelectedShadowColour
-						}
-						onDeselect={ () =>
-							setAttributes( {
-								pickerPillSelectedShadow: '',
-								pickerPillSelectedShadowColour: '',
-							} )
-						}
-						isShownByDefault
-					>
-						<ShadowControl
-							label={ __(
-								'Selected option shadow',
-								'sgs-blocks'
-							) }
-							attributes={ attributes }
-							setAttributes={ setAttributes }
-							attrNames={ {
-								base: 'pickerPillSelectedShadow',
-								colour: 'pickerPillSelectedShadowColour',
-							} }
-						/>
-					</ToolsPanelItem>
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						attrNames={ {
+							base: 'pickerPillSelectedShadow',
+							colour: 'pickerPillSelectedShadowColour',
+						} }
+					/>
+
 					<Item
 						label={ __(
 							'Selected option shift (across)',
@@ -719,7 +718,7 @@ export default function ConfiguratorLookPanel( {
 							__nextHasNoMarginBottom
 						/>
 					</Item>
-				</ToolsPanel>
+				</SgsResetPanel>
 			</PanelBody>
 		</InspectorControls>
 	);

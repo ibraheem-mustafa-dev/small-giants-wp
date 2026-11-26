@@ -12,8 +12,16 @@
 import { __ } from '@wordpress/i18n';
 import { RangeControl } from '@wordpress/components';
 import { DesignTokenPicker } from '../../components';
-import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import EasingAtom from '../../components/motion/EasingAtom';
+import SgsResetPanel from '../../components/SgsResetPanel';
+
+/** The four 0-is-off range rows. */
+const RANGE_KEYS = [
+	'drawerLinkTextShiftHover',
+	'drawerCardHoverLift',
+	'drawerCardHoverRotate',
+	'drawerCardLinkShiftHover',
+];
 
 const RESET = {
 	drawerLinkTextShiftHover: 0,
@@ -34,12 +42,7 @@ const RESET = {
  */
 export default function DrawerHoverControls( { attributes, setAttributes } ) {
 	const range = ( key, label, help, min, max, step = 1 ) => (
-		<ToolsPanelItem
-			label={ label }
-			isShownByDefault
-			hasValue={ () => 0 !== ( attributes[ key ] ?? 0 ) }
-			onDeselect={ () => setAttributes( { [ key ]: 0 } ) }
-		>
+		<div>
 			<RangeControl
 				label={ label }
 				help={ help }
@@ -57,13 +60,36 @@ export default function DrawerHoverControls( { attributes, setAttributes } ) {
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>
-		</ToolsPanelItem>
+		</div>
 	);
 
 	return (
-		<ToolsPanel
-			label={ __( 'Drawer hover effects', 'sgs-blocks' ) }
+		<SgsResetPanel
+			title={ __( 'Drawer hover effects', 'sgs-blocks' ) }
+			items={ [
+				...RANGE_KEYS.map( ( key ) => ( {
+					hasValue: () => 0 !== ( attributes[ key ] ?? 0 ),
+					onDeselect: () => setAttributes( { [ key ]: 0 } ),
+				} ) ),
+				{
+					hasValue: () => !! attributes.drawerLinkTrailingColourHover,
+					onDeselect: () =>
+						setAttributes( { drawerLinkTrailingColourHover: '' } ),
+				},
+				{
+					hasValue: () =>
+						300 !== ( attributes.drawerHoverDuration ?? 300 ) ||
+						'ease' !== ( attributes.drawerHoverEasing || 'ease' ),
+					onDeselect: () =>
+						setAttributes( {
+							drawerHoverDuration: 300,
+							drawerHoverEasing: 'ease',
+							drawerHoverEasingCustom: '',
+						} ),
+				},
+			] }
 			resetAll={ () => setAttributes( RESET ) }
+			nested
 		>
 			{ range(
 				'drawerLinkTextShiftHover',
@@ -75,28 +101,18 @@ export default function DrawerHoverControls( { attributes, setAttributes } ) {
 				0,
 				60
 			) }
-			<ToolsPanelItem
+
+			<DesignTokenPicker
 				label={ __( 'Link row arrow colour on hover', 'sgs-blocks' ) }
-				isShownByDefault
-				hasValue={ () => !! attributes.drawerLinkTrailingColourHover }
-				onDeselect={ () =>
-					setAttributes( { drawerLinkTrailingColourHover: '' } )
+				value={ attributes.drawerLinkTrailingColourHover }
+				onChange={ ( value ) =>
+					setAttributes( {
+						drawerLinkTrailingColourHover: value ?? '',
+					} )
 				}
-			>
-				<DesignTokenPicker
-					label={ __(
-						'Link row arrow colour on hover',
-						'sgs-blocks'
-					) }
-					value={ attributes.drawerLinkTrailingColourHover }
-					onChange={ ( value ) =>
-						setAttributes( {
-							drawerLinkTrailingColourHover: value ?? '',
-						} )
-					}
-					linked
-				/>
-			</ToolsPanelItem>
+				linked
+			/>
+
 			{ range(
 				'drawerCardHoverLift',
 				__( 'Side card lift (px)', 'sgs-blocks' ),
@@ -128,51 +144,36 @@ export default function DrawerHoverControls( { attributes, setAttributes } ) {
 				0,
 				40
 			) }
-			<ToolsPanelItem
-				label={ __( 'Hover speed and curve', 'sgs-blocks' ) }
-				isShownByDefault
-				hasValue={ () =>
-					300 !== ( attributes.drawerHoverDuration ?? 300 ) ||
-					'ease' !== ( attributes.drawerHoverEasing || 'ease' )
-				}
-				onDeselect={ () =>
+
+			<RangeControl
+				label={ __( 'Hover speed (milliseconds)', 'sgs-blocks' ) }
+				value={ attributes.drawerHoverDuration ?? 300 }
+				min={ 0 }
+				max={ 3000 }
+				step={ 10 }
+				onChange={ ( value ) =>
 					setAttributes( {
-						drawerHoverDuration: 300,
-						drawerHoverEasing: 'ease',
-						drawerHoverEasingCustom: '',
+						drawerHoverDuration:
+							typeof value === 'number' ? value : 300,
 					} )
 				}
-			>
-				<RangeControl
-					label={ __( 'Hover speed (milliseconds)', 'sgs-blocks' ) }
-					value={ attributes.drawerHoverDuration ?? 300 }
-					min={ 0 }
-					max={ 3000 }
-					step={ 10 }
-					onChange={ ( value ) =>
-						setAttributes( {
-							drawerHoverDuration:
-								typeof value === 'number' ? value : 300,
-						} )
-					}
-					allowReset
-					resetFallbackValue={ 300 }
-					__nextHasNoMarginBottom
-					__next40pxDefaultSize
-				/>
-				<EasingAtom
-					vocab="nav"
-					label={ __( 'Hover curve', 'sgs-blocks' ) }
-					value={ attributes.drawerHoverEasing }
-					custom={ attributes.drawerHoverEasingCustom }
-					onChange={ ( value ) =>
-						setAttributes( { drawerHoverEasing: value } )
-					}
-					onCustomChange={ ( value ) =>
-						setAttributes( { drawerHoverEasingCustom: value } )
-					}
-				/>
-			</ToolsPanelItem>
-		</ToolsPanel>
+				allowReset
+				resetFallbackValue={ 300 }
+				__nextHasNoMarginBottom
+				__next40pxDefaultSize
+			/>
+			<EasingAtom
+				vocab="nav"
+				label={ __( 'Hover curve', 'sgs-blocks' ) }
+				value={ attributes.drawerHoverEasing }
+				custom={ attributes.drawerHoverEasingCustom }
+				onChange={ ( value ) =>
+					setAttributes( { drawerHoverEasing: value } )
+				}
+				onCustomChange={ ( value ) =>
+					setAttributes( { drawerHoverEasingCustom: value } )
+				}
+			/>
+		</SgsResetPanel>
 	);
 }
