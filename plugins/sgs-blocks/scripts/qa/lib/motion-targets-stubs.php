@@ -54,6 +54,8 @@ if ( ! class_exists( 'WP_Block_Type_Registry' ) ) {
 					$raw                                 = (string) file_get_contents( $file );
 					$GLOBALS['sgs_qa_read_md5'][ $file ] = md5( $raw );
 					$json                                = json_decode( $raw, true );
+				} else {
+					$GLOBALS['sgs_qa_read_md5'][ $file ] = 'missing';
 				}
 				$this->types[ $name ] = is_array( $json )
 					? (object) array(
