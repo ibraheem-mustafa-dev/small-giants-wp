@@ -205,13 +205,15 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 	const parentBox = ! layer && parentDrawsBox( st, rec, target );
 	// A link drawn with no line whose underline grows on hover is the block's `sweep` underline (lib/fill-underline-sweep.mjs): the
 	// one write answers its text-decoration-line, and the gradient it grows from is the setting's own, so it is left out below.
-	const sweep = layer ? null : sweepResult( { db: st.db, cal, block: rec.name, slot, snaps, reads: st.reads, id: target.id } );
+	const found = layer ? null : sweepResult( { db: st.db, cal, block: rec.name, slot, snaps, reads: st.reads, id: target.id } );
+	// The write goes through the same owner check as every other write: a setting another element of the block already wrote
+	// with another value is a conflict row, not replaced. Only a sweep whose write is kept holds the looks below: a setting never
+	// written holds nothing.
+	const kept = found ? found.writes.filter( ( w ) => ownerKeeps( st, rec, ref, target, 'text-decoration-line', w, found.slot ) ) : [];
+	const sweep = kept.length ? { ...found, writes: kept } : null;
 	if ( sweep ) {
 		( st.sweeps ??= new Map() ).set( target.id, sweep );
-		// The write goes through the same owner check as every other write: a setting another element of the block already wrote
-		// with another value is a conflict row, not replaced.
-		const kept = sweep.writes.filter( ( w ) => ownerKeeps( st, rec, ref, target, 'text-decoration-line', w, sweep.slot ) );
-		kept.length && apply( st, rec, ref, target, 'text-decoration-line', { ...sweep, writes: kept, readSlot: slot, answers: Object.keys( sweep.included ).map( Number ) }, sweep.slot );
+		apply( st, rec, ref, target, 'text-decoration-line', { ...sweep, readSlot: slot, answers: Object.keys( sweep.included ).map( Number ) }, sweep.slot );
 		kept.forEach( ( w ) => recordOwner( st, rec, target, 'text-decoration-line', w.attr, target.slot === sweep.slot ) );
 	}
 	// The line a sweep grows on a painted ::before or ::after is the setting's own: its looks are settled, not written by another setting.
