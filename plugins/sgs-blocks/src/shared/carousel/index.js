@@ -121,6 +121,25 @@ export function cardStep( track, items ) {
 }
 
 /**
+ * Where an item starts, measured from the start of the track's scrollable content (the `scrollLeft` that would put the item at
+ * the track's left edge). Every position in this module is measured this one way, from bounding rectangles, so a track that is
+ * inset in a positioned wrapper (arrows beside the list) reads the same as one that is its own offset parent; `offsetLeft` would
+ * be relative to whichever ancestor is positioned.
+ *
+ * @param {Element} track The scrolling track.
+ * @param {Element} item  An item in the track.
+ * @return {number} The item's offset in scroll coordinates.
+ */
+export function itemOffset( track, item ) {
+	return (
+		item.getBoundingClientRect().left -
+		track.getBoundingClientRect().left -
+		( track.clientLeft || 0 ) +
+		track.scrollLeft
+	);
+}
+
+/**
  * The item an arrow press should land on, from where the track is scrolled now (not from a remembered index, so a drag,
  * a swipe or a native scroll never leaves the arrows stale).
  *
@@ -136,7 +155,7 @@ export function targetIndex( track, items, dir, cards = 1 ) {
 	if ( dir > 0 ) {
 		items.forEach( ( item, i ) => {
 			if (
-				item.offsetLeft > track.scrollLeft + SCROLL_EPSILON &&
+				itemOffset( track, item ) > track.scrollLeft + SCROLL_EPSILON &&
 				( found === -1 || i < found )
 			) {
 				found = i;
@@ -145,7 +164,7 @@ export function targetIndex( track, items, dir, cards = 1 ) {
 		return found === -1 ? -1 : Math.min( items.length - 1, found + extra );
 	}
 	items.forEach( ( item, i ) => {
-		if ( item.offsetLeft < track.scrollLeft - SCROLL_EPSILON ) {
+		if ( itemOffset( track, item ) < track.scrollLeft - SCROLL_EPSILON ) {
 			found = i;
 		}
 	} );
@@ -166,7 +185,7 @@ export function scrollToItem( track, item, mode = 'track' ) {
 		item.scrollIntoView( { behavior, block: 'nearest', inline: 'start' } );
 		return;
 	}
-	track.scrollTo( { left: item.offsetLeft - track.offsetLeft, behavior } );
+	track.scrollTo( { left: itemOffset( track, item ), behavior } );
 }
 
 /**
@@ -201,7 +220,9 @@ export function nearestIndex( track, items ) {
 	let nearest = 0;
 	let min = Infinity;
 	items.forEach( ( item, i ) => {
-		const distance = Math.abs( item.offsetLeft - track.scrollLeft );
+		const distance = Math.abs(
+			itemOffset( track, item ) - track.scrollLeft
+		);
 		if ( distance < min ) {
 			min = distance;
 			nearest = i;
@@ -298,7 +319,7 @@ export function createAutoplay( root, { speed, tick, enabled = () => true } ) {
  * @param {boolean}     [options.disableAtEnds]          Disable an arrow at its end of a track that does not loop.
  * @param {Function}    [options.cards]                  `() => n`: cards per arrow press (default 1), read at press time.
  * @param {boolean}     [options.keyboard]               Left and right arrow keys on the track move it.
- * @param {Object|null} [options.autoplay]               `{ speed, wrap }`: advance every `speed` ms; `wrap` returns to the first item after the last. Omit for none.
+ * @param {Object|null} [options.autoplay]               `{ speed, wrap }`: advance every `speed` ms; `wrap` steps by item index and returns to the first item after the last, and a track that does not loop returns to the first item at its end either way. Omit for none.
  * @param {boolean}     [options.restartAutoplayOnInput] Restart the autoplay clock after an arrow, dot or key press.
  * @return {{items: Function, move: Function, goTo: Function, sync: Function}|null} The controller, or null when there is nothing to move.
  */
@@ -405,7 +426,11 @@ export function createCarousel( options ) {
 		? createAutoplay( root, {
 				speed: autoplay.speed,
 				tick: () => {
-					if ( autoplay.wrap ) {
+					// A track that does not loop and sits at its end goes back to the first item: a clock that
+					// stopped at the end would still read as playing while nothing moved.
+					if ( ! isLooping( track ) && atEnd( track ) ) {
+						goTo( 0 );
+					} else if ( autoplay.wrap ) {
 						const list = items();
 						const i = currentIndex();
 						goTo( i + 1 >= list.length ? 0 : i + 1 );

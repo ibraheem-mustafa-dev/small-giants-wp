@@ -5,14 +5,27 @@
  */
 import {
 	createCarousel,
+	nearestIndex,
 	realItems,
+	scrollToItem,
 	syncDots,
 	targetIndex,
 } from '../../src/shared/carousel/index.js';
 
 const OFFSETS = [ 0, 300, 600, 900 ];
 
-function build( { loop = false, dots = true } = {} ) {
+/**
+ * @param {Object}  [config]
+ * @param {boolean} [config.trackIsOffsetParent] The track itself is positioned, so each item's `offsetLeft` is relative to the track.
+ * @param {number}  [config.inset] How far the track sits from its positioned wrapper (arrows beside the list): every item's
+ *                                `offsetLeft` is then relative to the wrapper, not to the track, as in a real layout.
+ */
+function build( {
+	loop = false,
+	dots = true,
+	inset = 0,
+	trackIsOffsetParent = false,
+} = {} ) {
 	const clone = loop
 		? '<div class="item" data-sgs-loop-clone="true"></div>'
 		: '';
@@ -39,17 +52,17 @@ function build( { loop = false, dots = true } = {} ) {
 	const items = realItems( track, '.item' );
 	items.forEach( ( item, i ) => {
 		Object.defineProperty( item, 'offsetLeft', {
-			get: () => OFFSETS[ i ],
+			get: () => ( trackIsOffsetParent ? 0 : inset ) + OFFSETS[ i ],
 		} );
 		item.getBoundingClientRect = () => ( {
-			left: OFFSETS[ i ] - track.scrollLeft,
+			left: inset + OFFSETS[ i ] - track.scrollLeft,
 			width: 300,
 		} );
 	} );
 	Object.defineProperty( track, 'scrollWidth', { get: () => 1200 } );
 	Object.defineProperty( track, 'clientWidth', { get: () => 600 } );
-	Object.defineProperty( track, 'offsetLeft', { get: () => 0 } );
-	track.getBoundingClientRect = () => ( { left: 0, width: 600 } );
+	Object.defineProperty( track, 'offsetLeft', { get: () => inset } );
+	track.getBoundingClientRect = () => ( { left: inset, width: 600 } );
 	track.scrollLeft = 0;
 	track.scrollTo = jest.fn( ( { left } ) => {
 		track.scrollLeft = left;
@@ -86,6 +99,32 @@ describe( 'primitives', () => {
 		expect( targetIndex( track, items, -1 ) ).toBe( 0 );
 		track.scrollLeft = 900;
 		expect( targetIndex( track, items, 1 ) ).toBe( -1 );
+	} );
+
+	it( 'a track inset in a positioned wrapper reads the same as one that is not', () => {
+		const { track, items } = build( { inset: 40 } );
+		// First Next press from the start lands on the second card, not on the first.
+		expect( targetIndex( track, items, 1 ) ).toBe( 1 );
+		track.scrollLeft = 300;
+		expect( targetIndex( track, items, 1 ) ).toBe( 2 );
+		expect( targetIndex( track, items, -1 ) ).toBe( 0 );
+		expect( nearestIndex( track, items ) ).toBe( 1 );
+		scrollToItem( track, items[ 3 ] );
+		expect( track.scrollTo ).toHaveBeenLastCalledWith(
+			expect.objectContaining( { left: 900 } )
+		);
+	} );
+
+	it( 'a track that is its own offset parent, inset in the page, scrolls to the same place', () => {
+		const { track, items } = build( {
+			inset: 40,
+			trackIsOffsetParent: true,
+		} );
+		expect( targetIndex( track, items, 1 ) ).toBe( 1 );
+		scrollToItem( track, items[ 3 ] );
+		expect( track.scrollTo ).toHaveBeenLastCalledWith(
+			expect.objectContaining( { left: 900 } )
+		);
 	} );
 
 	it( 'syncDots marks one dot for sight and for assistive technology', () => {
@@ -173,6 +212,29 @@ describe( 'createCarousel', () => {
 		parts.track.scrollLeft = 600;
 		parts.root.querySelector( '.next' ).click();
 		expect( parts.track.scrollBy ).toHaveBeenCalledTimes( 1 );
+	} );
+
+	it( 'autoplay on a track that does not loop returns to the first item at the end, in card mode too', () => {
+		jest.useFakeTimers();
+		try {
+			const parts = build();
+			createCarousel( {
+				...options( parts ),
+				moveBy: 'card',
+				autoplay: { speed: 1000, wrap: false },
+			} );
+			jest.advanceTimersByTime( 1000 );
+			expect( parts.track.scrollBy ).toHaveBeenCalledTimes( 1 );
+			parts.track.scrollLeft = 600; // the most a 1200px track in a 600px window scrolls
+			jest.advanceTimersByTime( 1000 );
+			expect( parts.track.scrollBy ).toHaveBeenCalledTimes( 1 );
+			expect( parts.track.scrollTo ).toHaveBeenLastCalledWith(
+				expect.objectContaining( { left: 0 } )
+			);
+		} finally {
+			jest.clearAllTimers();
+			jest.useRealTimers();
+		}
 	} );
 
 	it( 'keeps the dots in step with a scroll it did not drive', () => {
