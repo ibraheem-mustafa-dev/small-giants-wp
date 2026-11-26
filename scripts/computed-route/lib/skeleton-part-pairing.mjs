@@ -347,6 +347,10 @@ function pairCore( { host, absorbed = [], kids, isNode = () => false, calibratio
 	}
 	const model = partModel( elements, Object.values( calibration.text || {} ).map( ( x ) => x?.path ).filter( Boolean ), calibration.parts );
 	const groups = [ ...model.groups.values() ].filter( ( g ) => ! g.root && ! g.hidden );
+	// The parts a calibrated setting paints (its slot or any of its slots): a part the block hides by default is still a candidate
+	// when one does, as a setting can show it.
+	const slotted = new Set( Object.values( calibration.settings || {} ).flatMap( ( s ) => [ s?.slot, ...( s?.slots || [] ) ] ).filter( Boolean ).map( templateOf ) );
+	const calibrated = ( g ) => g.members.some( ( t ) => slotted.has( t ) );
 	// The block's disclosure summary parts: a control part that is a `summary` element, drawn out of flow or not.
 	const summaries = groups.filter( ( g ) => 'control' === g.kind && 'summary' === model.parts.get( g.head )?.tag );
 	// The parts a row draws only when it opens a submenu: a part that has a twin with a wrapper step taken out (the item's link
@@ -530,7 +534,7 @@ function pairCore( { host, absorbed = [], kids, isNode = () => false, calibratio
 					const kept = cands.filter( ( g ) => ! underSummary.has( g.head ) );
 					kept.length && ( cands = kept );
 				}
-				const shownParts = cands.filter( ( g ) => ! g.never );
+				const shownParts = cands.filter( ( g ) => ! g.never || calibrated( g ) );
 				shownParts.length && ( cands = shownParts );
 				// A disclosure summary part is a menu row that opens a submenu: a control with no caret and no words beside one
 				// (a plain link, even with a trailing arrow) is never it, whether or not the summary is drawn out of flow.
@@ -553,10 +557,12 @@ function pairCore( { host, absorbed = [], kids, isNode = () => false, calibratio
 						}
 					}
 				}
-				// A pill of words the draft fills keeps the parts the block paints (a badge), whichever kind they print as; the tiers
-				// below are for the rest.
+				// A pill of words the draft fills ranks the parts the block paints (a badge), whichever kind they print as, before the
+				// rest; a part that prints the very words the pill holds is the pill even when the block does not paint it by default
+				// (a setting fills it), so the words decide before the paint does and the tiers below are for the rest.
 				const pill = 'words' === kind && fills( e ) && cands.some( filledPart );
-				pill && ( cands = cands.filter( filledPart ) );
+				const printed = pill ? cands.filter( ( g ) => g.words && sameWords( g.words, e.words ) ) : [];
+				pill && ( cands = printed.length ? printed : cands.filter( filledPart ) );
 				for ( const tier of pill ? [] : [ ( g ) => g.kind === kind, ( g ) => ! up || g.parentHead === up.head, ( g ) => flows.includes( g.oof ) ] ) {
 					const kept = cands.filter( tier );
 					kept.length && ( cands = kept );
@@ -568,6 +574,10 @@ function pairCore( { host, absorbed = [], kids, isNode = () => false, calibratio
 				}
 				cands.length > 1 && ( cands = byWords( cands, e ) );
 				cands.length > 1 && ( cands = byPlace( cands, e, host, model.rootBox ) );
+				// A part the block hides by default but a setting calibrates (a count badge at zero) is the lowest tier: it stays a
+				// candidate for the words and the place to choose, and loses only to a displayed part when they cannot.
+				const displayed = cands.length > 1 ? cands.filter( ( g ) => ! g.never ) : [];
+				displayed.length && ( cands = displayed );
 			}
 			result.set( e, banned.has( e ) ? [ banned.get( e ), SHARED ] : cands );
 		}

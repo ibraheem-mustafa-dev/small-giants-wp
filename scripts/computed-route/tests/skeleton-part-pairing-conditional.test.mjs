@@ -65,7 +65,8 @@ test( 'a draft menu with nested submenu rows keeps the submenu row twin when its
 test( 'a part the block never displays is not a candidate while a displayed one fits (MUST FAIL without the display tier: two buttons fit)', () => {
 	const cal = { elements: { '': at( 'div' ), '.go': at( 'button' ), '.stale': at( 'button', { display: 'none' } ) }, settings: { goBg: { slot: '.go', property: 'background-color' }, staleBg: { slot: '.stale', property: 'background-color' } } };
 	const btn = el( 'Root/2#0', 'button', [], { words: 'Go' } );
-	const made = pairAbsorbed( { host: el( 'Root/1#0', 'div', [ btn ] ), absorbed: [ { element: btn, looks: [ 'background' ] } ], kids, calibration: cal, finder } );
+	const uncalibrated = { ...cal, settings: { goBg: cal.settings.goBg } };
+	const made = pairAbsorbed( { host: el( 'Root/1#0', 'div', [ btn ] ), absorbed: [ { element: btn, looks: [ 'background' ] } ], kids, calibration: uncalibrated, finder } );
 	assert.deepEqual( [ made.ambiguous, made.paired.map( ( p ) => p.part ) ], [ [], [ '.go' ] ] );
 	// a part inside a part that never displays is never displayed either
 	const m = partModel( { '': at( 'div' ), '.a': at( 'div', { display: 'none' } ), '.a > .b': at( 'span' ), '.c': at( 'div' ) } );
@@ -73,6 +74,20 @@ test( 'a part the block never displays is not a candidate while a displayed one 
 	// the only part that fits, even when never displayed, is still the answer (nothing is lost, only narrowed)
 	const only = pairAbsorbed( { host: el( 'Root/1#0', 'div', [ btn ] ), absorbed: [ { element: btn, looks: [ 'background' ] } ], kids, calibration: { ...cal, elements: { '': at( 'div' ), '.stale': at( 'button', { display: 'none' } ) } }, finder } );
 	assert.deepEqual( only.paired.map( ( p ) => p.part ), [ '.stale' ] );
+} );
+
+test( 'a part the block hides by default but a setting calibrates stays a candidate, the lowest tier (negative control: an uncalibrated hidden part is still dropped; MUST FAIL when every hidden part is dropped)', () => {
+	const cal = ( slotted ) => ( {
+		elements: { '': at( 'div' ), '.label': at( 'span' ), '.sale': at( 'span', { display: 'none' } ) },
+		parts: { '.label': { words: 'Basket' }, '.sale': { words: 'Sale' } },
+		settings: { labelPad: { slot: '.label', property: 'padding' }, ...( slotted ? { salePad: { slot: '.sale', property: 'padding' } } : {} ) }, text: {},
+	} );
+	const word = ( w ) => el( 'Root/2#0', 'span', [], { words: w } );
+	const run = ( c, w ) => ( ( x ) => pairAbsorbed( { host: el( 'Root/1#0', 'div', [ x ] ), absorbed: [ { element: x, looks: [ 'padding' ] } ], kids, calibration: c, finder } ) )( word( w ) );
+	assert.deepEqual( run( cal( true ), 'Sale' ).paired.map( ( p ) => p.part ), [ '.sale' ], 'the words the hidden part prints choose it' );
+	assert.deepEqual( run( cal( true ), 'Basket' ).paired.map( ( p ) => p.part ), [ '.label' ] );
+	assert.deepEqual( run( cal( true ), 'Zebra' ).paired.map( ( p ) => p.part ), [ '.label' ], 'when words and place cannot tell, the displayed part is the answer' );
+	assert.deepEqual( run( cal( false ), 'Sale' ).paired.map( ( p ) => p.part ), [ '.label' ], 'a hidden part no setting paints is no candidate' );
 } );
 
 // A block whose default look has no part for the draft's disc, and a page that sets `trailing` draws it.
@@ -149,6 +164,17 @@ test( 'a pill of words the draft fills or borders is the part the block paints (
 	assert.deepEqual( run( [ 'background', 'border' ] ).ambiguous, [] );
 	// negative control: words that paint no box keep the plain words parts, and the painted mark is never offered
 	assert.deepEqual( run( [ 'padding' ] ).ambiguous.map( ( a ) => a.candidates ), [ [ '.link > .ornament', '.link > .text' ] ] );
+} );
+
+test( 'a pill of words a part prints is that part even when the block paints it only through a setting, while a painted part with no words still takes the pill otherwise (negative control; MUST FAIL when painted parts cut the candidates)', () => {
+	const cal = {
+		elements: { '': at( 'nav' ), '.link': at( 'a' ), '.link > .sale': at( 'span' ), '.link > .text': at( 'span' ), '.link > .badge': at( 'span', { 'background-color': 'rgb(249, 207, 110)' } ) },
+		parts: { '.link > .sale': { words: '3 for £5' }, '.link > .text': { words: 'Taster Trio' } },
+		settings: { saleBg: { slot: '.link > .sale', property: 'background-color' }, textPad: { slot: '.link > .text', property: 'padding' }, badgeBg: { slot: '.link > .badge', property: 'background-color' } }, text: {},
+	};
+	const run = ( words ) => ( ( pill ) => pairAbsorbed( { host: el( 'Root/1#0', 'nav', [ el( 'Root/2#0', 'a', [ pill ], { w: 360 } ) ], { w: 400 } ), absorbed: [ { element: pill, looks: [ 'background', 'border' ] } ], kids, calibration: cal, finder } ) )( el( 'Root/4#0', 'span', [], { words } ) );
+	assert.deepEqual( run( '3 for £5' ).paired.map( ( p ) => p.part ), [ '.link > .sale' ], 'the part that prints the words is the pill' );
+	assert.deepEqual( run( 'Brand new' ).paired.map( ( p ) => p.part ), [ '.link > .badge' ], 'words no part prints: the painted part is first' );
 } );
 
 test( 'an element of a part the block draws at other positions than the draft is read at the part\'s first free slot, and a slot another finder holds is still said (MUST FAIL without the free slot: the pills are ambiguous)', () => {
