@@ -1,8 +1,9 @@
 [
 	{ "file": "lib/skeleton-form-element.mjs", "find": "&& kids.length > 1 && beside ? holders[ 0 ] : root;", "replace": "&& kids.length > 1 && one ? holders[ 0 ] : root;", "why": "a title and intro stacked above the fields are taken for what the page draws beside the form" },
-	{ "file": "lib/skeleton-form-element.mjs", "find": "|| false === a.visible?.[ w ] ||", "replace": "||", "why": "a child hidden at a width is taken as beside the form there" },
+	{ "file": "lib/skeleton-form-element.mjs", "find": "return !! b && false !== e.visible?.[ w ] && b.w > 0 && b.h > 0;", "replace": "return !! b && b.w > 0 && b.h > 0;", "why": "a child hidden at a width is taken as beside the form there" },
 	{ "file": "lib/skeleton-form-element.mjs", "find": "( p.x + p.w <= q.x || q.x + q.w <= p.x )", "replace": "true", "why": "a child in the same column is taken as beside the form" },
 	{ "file": "lib/skeleton-form-element.mjs", "find": "return p.y < q.y + q.h && q.y < p.y + p.h &&", "replace": "return", "why": "a child in another row is taken as beside the form" },
 	{ "file": "lib/skeleton-form-element.mjs", "find": "Object.keys( holders[ 0 ].box || {} ).some(", "replace": "[ '375' ].some(", "why": "an aside beside the form at one width only (1440) is missed" },
-	{ "file": "lib/skeleton-form-element.mjs", "find": "const beside = one && kids.some(", "replace": "const beside = kids.some(", "why": "the grid is the layout only when one child holds every control" }
+	{ "file": "lib/skeleton-form-element.mjs", "find": "const beside = one && ( ! measurable ||", "replace": "const beside = ( ! measurable ||", "why": "the grid is the layout only when one child holds every control" },
+	{ "file": "lib/skeleton-form-element.mjs", "find": "const beside = one && ( ! measurable || others.some(", "replace": "const beside = one && ( others.some(", "why": "a form captured where no width has a box (a closed modal or drawer) puts the aside back into the saved form" }
 ]

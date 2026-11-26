@@ -186,6 +186,20 @@ test( 'MUST FAIL: on the page, the card in a grid beside an aside is the linked 
 	assert.ok( /Call us/.test( JSON.stringify( r.skeleton ) ), 'the aside is drawn on the page' );
 } );
 
+test( 'NEGATIVE: on the page, an aside stacked below the card (never beside it) is the form\'s own: the grid is the linked form, the aside goes with it', () => {
+	const inv = gridInventory();
+	inv.elements = inv.elements.map( ( e ) => ( 'Root/12#0' === e.key ? { ...e, box: Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, { x: 0, y: 420, w: 600, h: 200 } ] ) ) } : e ) );
+	const r = propose( { inventory: inv, factRecord: gridRecord() } );
+	const row = ( key ) => r.proposal.rows.find( ( x ) => x.key === key );
+	const forms = nodes( r.skeleton ).filter( ( n ) => 'sgs/form' === n.name );
+	assert.equal( forms.length, 1 );
+	assert.deepEqual( forms[ 0 ].attributes, { formIsLinked: true, formId: 'enquiry' } );
+	assert.equal( row( 'Root/6#0' ).block, 'sgs/form', 'the grid is the linked form' );
+	assert.equal( row( 'Root/11#0' ).action, 'absorbed' );
+	assert.deepEqual( [ row( 'Root/12#0' ).action, row( 'Root/12#0' ).into ], [ 'absorbed', 'Root/6#0' ], 'the aside goes into the saved form' );
+	assert.equal( /Call us/.test( JSON.stringify( r.skeleton ) ), false, 'the page draws no aside of its own' );
+} );
+
 test( 'MUST FAIL: on the form surface, the grid is unwrapped and the aside removed, so the saved form\'s root is the card', () => {
 	const inv = gridInventory();
 	inv.elements = inv.elements.slice( 3 ).map( ( e, i ) => ( 0 === i ? { ...e, depth: 0, parentKey: null } : { ...e, depth: e.depth - 2 } ) );

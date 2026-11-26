@@ -51,3 +51,19 @@ test( 'negative controls: a control straight in the root, or controls spread ove
 	const pair = model( spread.els.map( ( e ) => ( 'Root/3#0' === e.key ? at( e, 640, 0 ) : 'Root/2#0' === e.key ? at( e, 0, 0 ) : e ) ) );
 	assert.equal( formElement( pair, pair.byKey[ 'Root/1#0' ] ).key, 'Root/1#0' );
 } );
+
+// A form captured inside a closed modal or drawer: every box is empty or zero-sized at every width, so nothing says whether the
+// aside sits beside the card or the title stacks above it; the one child holding every control is the form, as before boxes were read.
+test( 'MUST FAIL: a form whose draft boxes are empty or zero-sized at every width keeps the card as the form, so the aside stays out of the saved form', () => {
+	const els = [
+		el( 'Root/1#0', null, 'div' ), el( 'Root/2#0', 'Root/1#0', 'div' ), el( 'Root/3#0', 'Root/1#0', 'aside', 'Call us on 0121 000 0000' ),
+		el( 'Root/4#0', 'Root/2#0', 'input', '', { type: 'text' } ), el( 'Root/5#0', 'Root/2#0', 'button', 'Apply', { type: 'submit' } ),
+	];
+	const zero = model( els.map( ( e ) => at( e, 0, 0, 0, 0 ) ) );
+	assert.equal( formElement( zero, zero.byKey[ 'Root/1#0' ] ).key, 'Root/2#0', 'zero-sized boxes' );
+	const none = model( els.map( ( e ) => ( { ...e, box: {} } ) ) );
+	assert.equal( formElement( none, none.byKey[ 'Root/1#0' ] ).key, 'Root/2#0', 'no boxes' );
+	// Negative control: measurable boxes with the aside stacked below the card keep the root as the form.
+	const stacked = model( [ els[ 0 ], at( els[ 1 ], 0, 0, 600, 400 ), at( els[ 2 ], 0, 420, 600, 200 ), els[ 3 ], els[ 4 ] ] );
+	assert.equal( formElement( stacked, stacked.byKey[ 'Root/1#0' ] ).key, 'Root/1#0', 'a measured aside below the card is the form\'s own' );
+} );
