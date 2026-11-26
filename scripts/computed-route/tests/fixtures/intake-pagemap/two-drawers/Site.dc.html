@@ -1,0 +1,36 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Shop</title></head><body>
+<script type="application/json" data-sgs-manifest>
+{ "pages": [
+  { "id": "home", "label": "Home", "kind": "front page", "wp": { "slug": "home", "parent": null, "type": "page" } },
+  { "id": "about", "label": "About", "kind": "content page", "wp": { "slug": "about", "parent": null, "type": "page" } },
+  { "id": "contact", "label": "Contact", "kind": "content page", "wp": { "slug": "contact", "parent": null, "type": "page" } }
+] }
+</script>
+<x-dc>
+<header><nav><a href="#" onClick="{{ toAbout }}">About</a><a href="#" onClick="{{ toContact }}">Contact</a></nav></header>
+<div role="dialog" aria-label="Site menu" style="position:fixed;top:0;right:0;bottom:0;width:320px;">
+  <nav aria-label="Shop"><a href="#" onClick="{{ toAbout }}">Shop all</a></nav>
+  <nav aria-label="Categories"><a href="#" onClick="{{ toContact }}">Gifts</a></nav>
+</div>
+<div role="dialog" aria-label="Account menu" style="position:fixed;top:0;left:0;bottom:0;width:320px;">
+  <nav><a href="#" onClick="{{ toAbout }}">Orders</a></nav>
+</div>
+<sc-if value="{{ isHome }}"><main><h1>Welcome</h1></main></sc-if>
+<sc-if value="{{ isAbout }}"><main><h1>About</h1></main></sc-if>
+<sc-if value="{{ isContact }}"><main><h1>Contact</h1></main></sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { page: 'home' };
+  go(p) { this.setState({ page: p }); }
+  renderVals() {
+    const S = this.state;
+    return {
+      isHome: S.page === 'home', isAbout: S.page === 'about', isContact: S.page === 'contact',
+      toAbout: () => this.go('about'), toContact: () => this.go('contact'),
+    };
+  }
+}
+</script>
+</body></html>

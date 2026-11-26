@@ -536,7 +536,7 @@ export function codeSurfaces( exp, routeOf = () => null, routeKeys = new Set(), 
 				const many = scopes.length > 1 || named( r.kind ).length > 1;
 				const name = many ? `${ r.kind }-${ kebab( attrOf( s, 'aria-label' ) || '' ) || i + 1 }` : r.kind;
 				if ( items.length ) {
-					menus.push( { menu: menus.some( ( m ) => m.menu === name ) ? `${ name }-${ i + 1 }` : name, region: r.kind, draftId: tagId( d, s ), items } );
+					menus.push( { menu: menus.some( ( m ) => m.menu === name ) ? `${ name }-${ i + 1 }` : name, region: r.kind, draftId: tagId( d, s ), surface: tagId( d, r.node ), items } );
 					SCOPE.set( menus[ menus.length - 1 ], s );
 				}
 			} );

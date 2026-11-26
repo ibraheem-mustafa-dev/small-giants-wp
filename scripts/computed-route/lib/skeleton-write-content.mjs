@@ -13,7 +13,7 @@ import { decodeEntities, loadDraft } from './intake-ast.mjs';
 import { declared as declaredRaw } from './skeleton-rules.mjs';
 import { draftTokenLookup, handoffOf } from './draft-tokens.mjs';
 import { ALL_TEXT_CAP } from './skeleton-model.mjs';
-import { disabledLabels } from './site-build-menus.mjs';
+import { disabledLabels, surfaceMenus } from './site-build-menus.mjs';
 
 // The words a draft's copyright line prints before its © mark (sgs/business-info prints `{copyrightPrefix} © {year} {line}`):
 // "Copyright © 2026 Acme" gives "Copyright", "© 2026 Acme" gives "" (the block then omits the word). A line with no mark
@@ -76,7 +76,7 @@ export function skeletonSettings( facts, block ) {
 }
 
 export function makeContent( ctx ) {
-	const { m, facts, view, carried, draftLinks, surfaceKind, siteLink } = ctx;
+	const { m, facts, view, carried, draftLinks, surfaceKind, surfaceId, siteLink } = ctx;
 	const { composition, enumOf } = facts;
 	const tokens = draftTokenLookup( handoffOf( facts ) );
 	const declared = ( e ) => declaredRaw( e, tokens );
@@ -378,16 +378,26 @@ export function makeContent( ctx ) {
 	}
 
 	// Which navigation group of the surface an element is (0 for the first): a drawer binds the menu the page map made for the
-	// same group, in document order (lib/site-build-map.mjs::boundMenu). Navigation inside another navigation is no group.
-	const navAbove = ( n ) => {
+	// same group, in document order (lib/site-build-map.mjs::boundMenu). Navigation inside another navigation is no group (null),
+	// and so is a drawer's navigation that holds no link or word: the page map makes a menu only for a navigation scope with items
+	// (lib/intake-pagemap-surfaces.mjs), so an empty one is not counted and the later groups keep their own menus.
+	const ancestorsOf = ( n ) => {
+		const up = [];
 		for ( let p = m.byKey[ n.parentKey ]; p; p = m.byKey[ p.parentKey ] ) {
-			if ( 'nav' === p.tag ) {
-				return true;
-			}
+			up.push( p );
 		}
-		return false;
+		return up;
 	};
-	const navOrdinal = ( e ) => Math.max( 0, m.els.filter( ( n ) => 'nav' === n.tag && ! navAbove( n ) ).indexOf( e ) );
+	const navAbove = ( n ) => ancestorsOf( n ).some( ( p ) => 'nav' === p.tag );
+	const hasItems = ( n ) => '' !== String( n.allText ?? '' ).trim() || m.els.some( ( x ) => 'a' === x.tag && x.attrs?.href && ancestorsOf( x ).includes( n ) );
+	let groups = null;
+	const navOrdinal = ( e ) => {
+		groups ||= m.els.filter( ( n ) => 'nav' === n.tag && ! navAbove( n ) && ( 'drawer' !== surfaceKind || hasItems( n ) ) );
+		const at = groups.indexOf( e );
+		return at < 0 ? null : at;
+	};
+	// The drawer's own menus in the draft's document order, for navOrdinal to index (lib/site-build-menus.mjs::surfaceMenus).
+	const ownMenus = surfaceMenus( draftLinks?.menuItems, surfaceKind, surfaceId );
 
 	// The ids the build holds for this element's block: a logo block's Source (the attachment of the file the element
 	// draws) and a menu block's `ref` (the menu site-build made for this surface). { attrs, said: { attr: where from } }.
@@ -399,9 +409,10 @@ export function makeContent( ctx ) {
 		// The menu's link-less labels (a nav item drawn as plain words) are the block's disabled items: the site build made
 		// each a custom item, whose identifier the site recorded in menu-map.json (lib/site-build-map.mjs::itemIdentifier). A
 		// label the site holds no item for writes nothing and is reported.
-		const labels = 'nav' === e.tag && attrExists( block, 'disabledItemIds' ) && surfaceKind && draftLinks?.menuItems ? disabledLabels( draftLinks.menuItems, surfaceKind ) : [];
+		const group = 'nav' === e.tag ? navOrdinal( e ) : null;
+		const labels = null !== group && attrExists( block, 'disabledItemIds' ) && surfaceKind && draftLinks?.menuItems ? disabledLabels( draftLinks.menuItems, surfaceKind, group, surfaceId ) : [];
 		if ( labels.length ) {
-			const known = carried.items?.( surfaceKind ) || {};
+			const known = carried.items?.( surfaceKind, group, ownMenus ) || {};
 			const ids = labels.filter( ( l ) => known[ l ] ).map( ( l ) => known[ l ] );
 			ids.length && Object.assign( out.attrs, { disabledItemIds: ids } ) && ( out.said.disabledItemIds = `the draft's ${ surfaceKind } nav draws ${ ids.length } item(s) as plain words; menu-map.json: their item identifiers` );
 			labels.filter( ( l ) => ! known[ l ] ).forEach( ( l ) => out.missing.push( `${ e.key }: no item identifier is carried for "${ l }": menu-map.json records no such item of the ${ surfaceKind } menu for this site (run site-build.mjs --menus --apply)` ) );
@@ -412,9 +423,9 @@ export function makeContent( ctx ) {
 			hit?.id && hit.url && Object.assign( out.attrs, { [ logoAttr ]: itemSource( hit ) } ) && ( out.said[ logoAttr ] = `media-map.json: ${ hit.asset }` );
 			hit?.reason && out.missing.push( `${ e.key }: no ${ logoAttr } is carried: ${ hit.reason }` );
 		}
-		if ( 'nav' === e.tag && attrExists( block, 'ref' ) && surfaceKind ) {
-			const id = carried.menu( surfaceKind, navOrdinal( e ) );
-			id && Object.assign( out.attrs, { ref: id } ) && ( out.said.ref = `menu-map.json: the ${ surfaceKind } menu` );
+		if ( null !== group && attrExists( block, 'ref' ) && surfaceKind ) {
+			const id = carried.menu( surfaceKind, group, ownMenus );
+			id ? Object.assign( out.attrs, { ref: id } ) && ( out.said.ref = `menu-map.json: the ${ surfaceKind } menu` ) : 'drawer' === surfaceKind && out.missing.push( `${ e.key }: no menu ref is carried for navigation group ${ group + 1 } of the drawer: menu-map.json holds no menu for it on this site (run site-build.mjs --menus --apply)` );
 		}
 		// A header control that opens a mega panel is a menu bar bound to the second header menu its page-map item sits in
 		// (rules.megaOpenerMenu), and the far side's links of a split header menu a bar bound to the header menu
@@ -434,7 +445,7 @@ export function makeContent( ctx ) {
 		// (lib/site-build-map.mjs::itemIdentifier). Without it the block draws every item in both halves, so a missing one is
 		// reported, never left out in silence.
 		if ( top?.split?.after && attrExists( block, 'splitAfterItemId' ) && surfaceKind ) {
-			const id = ( carried.items?.( surfaceKind ) || {} )[ top.split.after ];
+			const id = ( carried.items?.( surfaceKind, group ?? 0, ownMenus ) || {} )[ top.split.after ];
 			id ? Object.assign( out.attrs, { splitAfterItemId: id } ) && ( out.said.splitAfterItemId = `menu-map.json: the ${ surfaceKind } menu's item "${ top.split.after }"` ) : out.missing.push( `${ e.key }: no splitAfterItemId is carried: menu-map.json records no item "${ top.split.after }" of the ${ surfaceKind } menu for this site (run site-build.mjs --menus --apply)` );
 		}
 		return out;

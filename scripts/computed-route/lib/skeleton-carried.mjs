@@ -78,8 +78,8 @@ export function mediaEntry( { map, site, repo, folder, file } ) {
 	return { reason: ids.size ? `${ file } matches different attachments (${ [ ...ids ].join( ', ' ) })` : `${ file } (sha256 ${ want.slice( 0, 8 ) }) is not in the media map for ${ recordSite( site ) }` };
 }
 
-// What the skeleton carries for one client and site: { logo( e, view ) -> { id, asset, url } | { reason } | null, menu( kind ) -> id | null,
-// items( kind ) -> { label: identifier }, attribute( slug ) -> { id } | { reason } | null, product( draftId ) -> { id } |
+// What the skeleton carries for one client and site: { logo( e, view ) -> { id, asset, url } | { reason } | null, menu( kind, index, own ) -> id | null,
+// items( kind, index, own ) -> { label: identifier }, attribute( slug ) -> { id } | { reason } | null, product( draftId ) -> { id } |
 // { reason } | null (null when no site is named) }.
 export function carriedIds( { repo, client, site, rootComponent = null } ) {
 	const build = path.join( repo, 'sites', client, 'build' );
@@ -103,13 +103,14 @@ export function carriedIds( { repo, client, site, rootComponent = null } ) {
 			const file = logoFile( { e, maps, view, rootComponent } );
 			return file ? mediaEntry( { map, site, repo, folder, file } ) : null;
 		},
-		menu: ( kind, index = 0 ) => {
-			const id = menus[ boundMenu( kind, Object.keys( menus ), index ) ];
+		menu: ( kind, index = 0, own = null ) => {
+			const id = menus[ boundMenu( kind, Object.keys( menus ), index, own ) ];
 			return Number.isInteger( id ) && id > 0 ? id : null;
 		},
 		// The identifier the menu blocks read for each top-level item of the menu a surface of `kind` binds, by the label it
-		// shows ({} when the site recorded none).
-		items: ( kind ) => ( { ...items[ boundMenu( kind, Object.keys( menus ) ) ] } ),
+		// shows ({} when the site recorded none): the `index`-th navigation group's menu of a drawer, `own` being the drawer
+		// surface's menus in document order (lib/site-build-menus.mjs::surfaceMenus).
+		items: ( kind, index = 0, own = null ) => ( { ...items[ boundMenu( kind, Object.keys( menus ), index, own ) ] } ),
 		attribute: ( slug ) => {
 			if ( ! site ) {
 				return null;

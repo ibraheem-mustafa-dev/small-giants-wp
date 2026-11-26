@@ -11,7 +11,7 @@
 // run saved before marking it) is marked and rebuilt. A rebuild never overwrites content a person changed since the build saved it.
 import fs from 'fs';
 import path from 'path';
-import { LAYOUT_TYPES, SHOP_TYPES, boundMenu, hasPost, isAccountRow, orderRows, pageTreeFor, parentRow, rowKey, treeFor, treeHash, wpType } from './site-build-map.mjs';
+import { LAYOUT_TYPES, SHOP_TYPES, boundMenu, drawerMenuNames, hasPost, isAccountRow, orderRows, pageTreeFor, parentRow, rowKey, treeFor, treeHash, wpType } from './site-build-map.mjs';
 import { commonChain, copyFile, copySource, copyTree, pageTemplateOf, readShell, rowsOf, servedTemplates, splitShell } from './template-copies.mjs';
 import { addressOf, desiredMenus, menuLocation } from './site-build-menus.mjs';
 import { readSurfaces } from './site-build-labels.mjs';
@@ -209,8 +209,12 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 		}
 		const tree = withFlowProduct( built, row, flowProducts );
 		const hash = treeHash( tree );
-		const binds = LAYOUT_TYPES[ row.postType ] && boundMenu( LAYOUT_TYPES[ row.postType ], Object.keys( menuIds ) );
-		const unbound = 'placeholder' === source && [ 'header', 'drawer' ].includes( LAYOUT_TYPES[ row.postType ] ) && wanted.menus[ binds ] && ! menuIds[ binds ];
+		// The menus the row's placeholder binds: a header its own, a drawer one block per menu it owns (placeholderTree), or the
+		// header menu when it owns none (boundMenu). It waits for the menus when any of them is wanted and not made yet.
+		const layoutKind = LAYOUT_TYPES[ row.postType ];
+		const drawerOwn = 'drawer' === layoutKind ? drawerMenuNames( Object.keys( menuIds ) ) : [];
+		const binds = layoutKind ? ( 'drawer' === layoutKind ? ( drawerOwn.length ? drawerOwn : [ boundMenu( 'drawer', Object.keys( menuIds ) ) ] ) : [ boundMenu( layoutKind, Object.keys( menuIds ) ) ] ) : [];
+		const unbound = 'placeholder' === source && [ 'header', 'drawer' ].includes( LAYOUT_TYPES[ row.postType ] ) && binds.some( ( name ) => wanted.menus[ name ] && ! menuIds[ name ] );
 		// The shop page takes no page template field at all: under a block theme WooCommerce reports `archive-product` as
 		// its page template on every read whatever is stored (ProductCatalogTemplate::handle_get_post_metadata), so a
 		// planned '' would be rewritten on every pass and never settle.

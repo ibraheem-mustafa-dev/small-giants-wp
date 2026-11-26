@@ -372,7 +372,10 @@ export function proposePageMap( { folder, routing = null, census = null, surface
 	}
 	rows.forEach( ( r ) => delete r.shopTitled );
 	genericTemplates( rows, home, gaps );
-	const menuItems = code.menus.map( ( m ) => ( { menu: m.menu, region: m.region, file: m.draftId.split( ':' )[ 0 ], items: m.items, ...( splitPoint( m.items ) ? { splitAfter: splitPoint( m.items ) } : {} ) } ) );
+	// `surface` is the surfaces.json id of the surface the menu sits in (the code surface whose draftId the menu names, matched to its
+	// record by crossCheck); a menu whose surface has no record carries none.
+	const recordOf = new Map( checked.surfaces.filter( ( x ) => x.hint ).map( ( x ) => [ x.draftId, x.hint ] ) );
+	const menuItems = code.menus.map( ( m ) => ( { menu: m.menu, region: m.region, file: m.draftId.split( ':' )[ 0 ], ...( recordOf.has( m.surface ) ? { surface: recordOf.get( m.surface ) } : {} ), items: m.items, ...( splitPoint( m.items ) ? { splitAfter: splitPoint( m.items ) } : {} ) } ) );
 	return { rows, linkMap: linkMap( exp, route, routeSlug, home, gaps ), gaps, routeSlug: Object.fromEntries( routeSlug ), menuItems };
 }
 

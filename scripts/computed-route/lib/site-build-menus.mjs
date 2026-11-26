@@ -138,11 +138,28 @@ export function labelsOf( menuItems ) {
 		.map( ( it ) => ( { menu: m.menu, position: it.position, parentItem: it.parentItem || null, text: it.label, badge: it.badge || '' } ) ) );
 }
 
-// The top-level labels of the menu a surface of `kind` binds (lib/site-build-map.mjs::boundMenu): the items its nav block
-// disables. Their `disabledItemIds` identifiers are each site's own (lib/site-build-map.mjs::itemIdentifier, carried from
-// menu-map.json by lib/skeleton-carried.mjs::carriedIds `items`).
-export function disabledLabels( menuItems, kind ) {
-	const bound = boundMenu( kind, [ ...new Set( ( menuItems || [] ).map( ( m ) => m.menu ) ) ] );
+// The menus one surface's own navigation groups made, by name in the draft's document order (the order `menuItems` lists
+// them, lib/intake-pagemap.mjs::proposePageMap): a drawer's groups bind these by index (lib/site-build-map.mjs::boundMenu), so
+// a second drawer's menus never join the first's and a labelled group keeps the place the draft gives it. `surfaceId` is the
+// surfaces.json id the page map recorded on each menu (`surface`); a draft whose menus name no such surface (or a surface
+// that owns none) falls back to every menu of the kind. null for a surface that is not a drawer or that has no menu of its
+// own, so the header menu binds as before.
+export function surfaceMenus( menuItems, kind, surfaceId = null ) {
+	if ( 'drawer' !== kind ) {
+		return null;
+	}
+	const ofKind = ( menuItems || [] ).filter( ( m ) => 'drawer' === m.region );
+	const mine = surfaceId ? ofKind.filter( ( m ) => m.surface === surfaceId ) : [];
+	const names = [ ...new Set( ( mine.length ? mine : ofKind ).map( ( m ) => m.menu ) ) ];
+	return names.length ? names : null;
+}
+
+// The top-level labels of the menu a surface of `kind` binds (lib/site-build-map.mjs::boundMenu), for its `index`-th
+// navigation group of the surface `surfaceId`: the items its nav block disables. Their `disabledItemIds` identifiers are each
+// site's own (lib/site-build-map.mjs::itemIdentifier, carried from menu-map.json by lib/skeleton-carried.mjs::carriedIds `items`).
+export function disabledLabels( menuItems, kind, index = 0, surfaceId = null ) {
+	const own = surfaceMenus( menuItems, kind, surfaceId );
+	const bound = boundMenu( kind, own || [ ...new Set( ( menuItems || [] ).map( ( m ) => m.menu ) ) ], index, own );
 	return labelsOf( ( menuItems || [] ).filter( ( m ) => m.menu === bound ) ).filter( ( l ) => ! l.parentItem ).map( ( l ) => l.text );
 }
 

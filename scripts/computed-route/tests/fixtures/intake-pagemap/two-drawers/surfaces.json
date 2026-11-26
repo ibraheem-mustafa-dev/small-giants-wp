@@ -1,0 +1,5 @@
+{ "schema_version": "1.0", "records": [
+  { "id": "S-01", "kind": "header", "name": "Site header", "dc": "Site", "route": "*" },
+  { "id": "S-02", "kind": "drawer", "name": "Site menu", "dc": "Site", "route": "*" },
+  { "id": "S-03", "kind": "drawer", "name": "Account menu", "dc": "Site", "route": "*" }
+] }

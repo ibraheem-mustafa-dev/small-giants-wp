@@ -147,7 +147,8 @@ test( 'MUST FAIL: the draft\'s labels reach the menu the page map names, as cust
 
 test( 'MUST FAIL: the labels the skeleton disables are the bound menu\'s top-level labels', () => {
 	assert.deepEqual( siteMenus.disabledLabels( MENUS, 'header' ), [ 'Glasses' ] );
-	assert.deepEqual( siteMenus.disabledLabels( MENUS, 'drawer' ), [ 'Glasses' ], 'a drawer with no menu of its own binds the header menu, labels included' );
+	assert.deepEqual( siteMenus.disabledLabels( MENUS.filter( ( x ) => 'drawer' !== x.region ), 'drawer' ), [ 'Glasses' ], 'a drawer with no menu of its own binds the header menu, labels included' );
+	assert.deepEqual( siteMenus.disabledLabels( MENUS, 'drawer' ), [ 'Soon' ], 'a drawer with a menu of its own reads that menu' );
 	assert.deepEqual( siteMenus.disabledLabels( [], 'header' ), [] );
 	assert.deepEqual( siteMenus.disabledLabels( [ { menu: 'header', items: [ { label: 'A', targets: [ 'a' ], children: [ { label: 'Kid', disabled: true, children: [], parentItem: 'A', position: 1 } ], position: 1, parentItem: null } ] } ], 'header' ), [], 'a label under a parent is no top-level id' );
 } );
@@ -221,10 +222,10 @@ test( 'MUST FAIL: the skeleton writes the nav block disabledItemIds from the dra
 		block_composition: [ { block_slug: 'sgs/navlike', composition_role: 'leaf' }, { block_slug: 'sgs/plainnav', composition_role: 'leaf' } ],
 	} ) );
 	const facts = loadFacts( { db, client: '' } );
-	const m = { words: () => '', textWithBreaks: () => '', blockKids: () => [] };
+	const nav = { key: 'k', tag: 'nav', allText: 'Home Glasses' };
+	const m = { words: () => '', textWithBreaks: () => '', blockKids: () => [], els: [ nav ], byKey: {} };
 	const CARRIED = { menu: () => 9, items: ( kind ) => ( 'header' === kind ? { Home: 'id:10', Glasses: 'id:695' } : {} ) };
 	const carriedAttrs = ( draftLinks, surfaceKind = 'header', carried = CARRIED ) => makeContent( { m, facts, view: 1440, carried, draftLinks, surfaceKind, siteLink: () => ( { kind: 'none' } ) } ).carriedAttrs;
-	const nav = { key: 'k', tag: 'nav' };
 	const ctx = { menuItems: MENUS };
 	assert.deepEqual( carriedAttrs( ctx )( 'sgs/navlike', nav ), { attrs: { ref: 9, disabledItemIds: [ 'id:695' ] }, said: { ref: 'menu-map.json: the header menu', disabledItemIds: 'the draft\'s header nav draws 1 item(s) as plain words; menu-map.json: their item identifiers' }, missing: [] } );
 	const unrecorded = carriedAttrs( ctx, 'header', { menu: () => 9, items: () => ( { Home: 'id:10' } ) } )( 'sgs/navlike', nav );
@@ -232,7 +233,8 @@ test( 'MUST FAIL: the skeleton writes the nav block disabledItemIds from the dra
 	assert.match( unrecorded.missing.join( '\n' ), /k: no item identifier is carried for "Glasses": menu-map\.json records no such item of the header menu/ );
 	assert.deepEqual( carriedAttrs( ctx, 'header', null )( 'sgs/navlike', nav ).attrs, {}, 'with no site there is no identifier to write' );
 	const drawerSite = { menu: () => 9, items: ( kind ) => ( 'drawer' === kind ? { Glasses: 'id:77' } : { Glasses: 'id:695' } ) };
-	assert.deepEqual( carriedAttrs( ctx, 'drawer', drawerSite )( 'sgs/navlike', nav ).attrs.disabledItemIds, [ 'id:77' ], 'a drawer nav reads the identifiers of the menu the drawer binds' );
+	assert.deepEqual( carriedAttrs( { menuItems: MENUS.filter( ( x ) => 'drawer' !== x.region ) }, 'drawer', drawerSite )( 'sgs/navlike', nav ).attrs.disabledItemIds, [ 'id:77' ], 'a drawer with no menu of its own reads the identifiers of the header menu it binds' );
+	assert.deepEqual( carriedAttrs( ctx, 'drawer', { menu: () => 9, items: () => ( { Soon: 'id:78' } ) } )( 'sgs/navlike', nav ).attrs.disabledItemIds, [ 'id:78' ], 'a drawer with a menu of its own reads the labels of that menu' );
 	assert.deepEqual( carriedAttrs( ctx )( 'sgs/plainnav', nav ).attrs, { ref: 9 }, 'a block with no such setting is not written one' );
 	assert.deepEqual( carriedAttrs( ctx )( 'sgs/navlike', { key: 'k', tag: 'div' } ).attrs, {}, 'only a nav element' );
 	assert.deepEqual( carriedAttrs( { menuItems: [] } )( 'sgs/navlike', nav ), { attrs: { ref: 9 }, said: { ref: 'menu-map.json: the header menu' }, missing: [] }, 'no label, no setting and nothing missing' );

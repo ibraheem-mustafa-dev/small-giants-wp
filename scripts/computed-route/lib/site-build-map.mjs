@@ -100,20 +100,28 @@ export function orderRows( rows ) {
 	return out;
 }
 
-// The page-map menus a drawer owns, in order: `drawer` first, then `drawer-<n>` in numeric order (the page map names a
-// drawer's navigation groups `drawer-1`, `drawer-2`, lib/intake-pagemap-surfaces.mjs).
+// The page-map menus a drawer owns among the names a caller holds, as a stable order for a caller that has no page map in hand:
+// `drawer` first, then the rest by name with numbers in numeric order. The draft's own order (a labelled group is named
+// `drawer-<aria-label>`, so the names do not sort the way the groups sit) comes from lib/site-build-menus.mjs::surfaceMenus.
 export const drawerMenuNames = ( menuNames ) => menuNames.filter( ( n ) => 'drawer' === n || n.startsWith( 'drawer-' ) )
 	.sort( ( a, b ) => ( 'drawer' === a ? -1 : 'drawer' === b ? 1 : a.localeCompare( b, 'en', { numeric: true } ) ) );
 
 // The page-map menu a layout surface binds: its own. A drawer binds the menu the page map made for its `index`-th
 // navigation group (null when it has fewer menus than groups), except a drawer with no menu of its own, which binds the header
-// menu (the bar and the drawer then share one menu and its mega panels, Spec 36 FR-36-6).
-export function boundMenu( kind, menuNames, index = 0 ) {
+// menu (the bar and the drawer then share one menu and its mega panels, Spec 36 FR-36-6). `own`, when given, is the drawer
+// surface's own menus in the draft's document order (lib/site-build-menus.mjs::surfaceMenus): the group binds `own[ index ]`
+// when `menuNames` holds it, so a group whose menu is not made yet binds none instead of the next group's, and menus of
+// another drawer never count. Without `own` (a caller that knows only the recorded names) the names are taken in
+// drawerMenuNames' order.
+export function boundMenu( kind, menuNames, index = 0, own = null ) {
 	if ( 'drawer' !== kind ) {
 		return kind;
 	}
-	const own = drawerMenuNames( menuNames );
-	return own.length ? own[ index ] ?? null : 'header';
+	if ( own?.length ) {
+		return menuNames.includes( own[ index ] ) ? own[ index ] : null;
+	}
+	const named = drawerMenuNames( menuNames );
+	return named.length ? named[ index ] ?? null : 'header';
 }
 
 // The layout surface kind a page-map menu feeds: the menu named like a kind, else the build manifest's surface of that
