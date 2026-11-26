@@ -363,8 +363,9 @@ export async function fillSurface( o ) {
 		result.unmapped.push( ...shop.unmapped );
 		result.notes.push( ...shop.notes, ...shopTargets.notes );
 		// RF7: the part-look mode rules of the shop blocks this tree holds (what a card or the buy box draws: a wishlist heart, a brand
-		// overlay, a saving badge, the button's words), from part-look's own offline read of the draft (lib/fill-part-look-modes.mjs).
-		const partModes = await partLookModeWrites( { client: o.client, repo, entry, nodes, flat, refOf, attrExists: ( b, a ) => Object.hasOwn( blockSchema( b ) || {}, a ), out: path.join( outDir, 'part-look' ), log } );
+		// overlay, a saving badge, the button's words; the header's basket drawer; the account page and its signed-in views), from
+		// part-look's own offline read of the draft, opened from the draft's own facts (lib/fill-part-look-modes.mjs).
+		const partModes = await partLookModeWrites( { client: o.client, repo, entry, surfaceKey: o.surface, nodes, flat, refOf, attrExists: ( b, a ) => Object.hasOwn( blockSchema( b ) || {}, a ), out: path.join( outDir, 'part-look' ), log } );
 		partModes.surfaces.length && log( `part-look modes: ${ partModes.surfaces.join( ', ' ) }: ${ partModes.writes.length } written, ${ partModes.unmapped.length } rows` );
 		result.writes.push( ...partModes.writes );
 		result.unmapped.push( ...partModes.unmapped );

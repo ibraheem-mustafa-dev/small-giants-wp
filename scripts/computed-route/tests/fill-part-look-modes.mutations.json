@@ -1,9 +1,9 @@
 [
 	{
 		"file": "lib/fill-part-look-modes.mjs",
-		"find": "if ( ! loc.template || loc.signedIn || ! loc.block ) {",
-		"replace": "if ( ! loc.block ) {",
-		"why": "a surface read signed in or with no page template is read in Fill"
+		"find": "\t\tif ( ! loc.template ) {",
+		"replace": "\t\tif ( false ) {",
+		"why": "a surface with no page template (the header's drawer) is read for a loop card on a product page"
 	},
 	{
 		"file": "lib/fill-part-look-modes.mjs",

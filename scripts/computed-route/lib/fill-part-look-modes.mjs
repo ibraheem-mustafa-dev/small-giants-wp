@@ -6,8 +6,10 @@
 // - A part-look surface applies when its page template (data/part-locators.json `template`) is this surface's target template.
 // - A card standing for every item of a loop (`itemTemplate`, the related products' cards on a product page) takes its block's rules
 //   from any part-look surface of that block, read on this surface's own draft page: the related cards are read where they are drawn.
-// - Surfaces read signed in (the account's views) or with no page template (the header's basket drawer) stay part-look's own
-//   command (`node scripts/computed-route/part-look.mjs`), as does its live `--verify` against a scratch copy.
+// - A part-look surface with no page template (the header's basket drawer, the account page and its signed-in views) applies to the
+//   surface part-look reads it on (its `entryOf`, else its own name: `header`, `my-account`), and part-look opens it from the draft's
+//   own facts (`derive`, lib/part-look-opening.mjs), so no client file is needed. Its live `--verify` against a scratch copy stays the
+//   standalone command (`node scripts/computed-route/part-look.mjs`).
 // A setting the block lacks, a value the node already holds differently, a rule part-look leaves as a gap and a surface it refuses
 // are rows or notes, never written silently.
 import fs from 'node:fs';
@@ -23,15 +25,17 @@ export const readLocators = () => readData( 'part-locators.json' );
 export const ruleSettingsOf = ( modes, block ) => new Set( ( modes?.blocks?.[ block ]?.rules || [] ).map( ( r ) => r.setting ) );
 
 // The part-look surfaces a Fill surface reads: [ { surface, block, cross } ] (`cross`: read for the loop cards of a block whose own
-// page is another template). nodes: lib/fill-skeleton.mjs::skeletonNodes; template: the surface's target template.
-export function partLookSurfacesFor( { locators, template, nodes } ) {
+// page is another template). nodes: lib/fill-skeleton.mjs::skeletonNodes; template: the surface's target template; surfaceKey:
+// its surfaces.json key.
+export function partLookSurfacesFor( { locators, template, nodes, surfaceKey = null } ) {
 	const out = [];
 	for ( const [ surface, loc ] of Object.entries( locators?.surfaces || {} ) ) {
-		if ( ! loc.template || loc.signedIn || ! loc.block ) {
+		const of = loc.block ? nodes.filter( ( r ) => r.name === loc.block ) : [];
+		if ( ! of.length ) {
 			continue;
 		}
-		const of = nodes.filter( ( r ) => r.name === loc.block );
-		if ( ! of.length ) {
+		if ( ! loc.template ) {
+			surfaceKey && ( loc.entryOf || surface ) === surfaceKey && out.push( { surface, block: loc.block, cross: false } );
 			continue;
 		}
 		if ( template && loc.template === template ) {
@@ -88,7 +92,7 @@ export function modeWrites( { results, wanted, nodes, flat, refOf, attrExists, m
 // (runPartLook; a stand-in in tests), locators }. A read that throws, a refusal and a verify failure are notes, and nothing of that
 // surface is written.
 export async function partLookModeWrites( o ) {
-	const wanted = partLookSurfacesFor( { locators: o.locators ?? readLocators(), template: o.entry?.target?.template ?? null, nodes: o.nodes } );
+	const wanted = partLookSurfacesFor( { locators: o.locators ?? readLocators(), template: o.entry?.target?.template ?? null, nodes: o.nodes, surfaceKey: o.surfaceKey ?? null } );
 	const empty = { writes: [], unmapped: [], notes: [], surfaces: wanted.map( ( w ) => w.surface ) };
 	if ( ! wanted.length || o.entry?.noDraft ) {
 		return empty;
@@ -98,7 +102,7 @@ export async function partLookModeWrites( o ) {
 	let report;
 	try {
 		const run = o.run ?? ( await import( '../part-look.mjs' ) ).runPartLook;
-		( { report } = await run( { client: o.client, repo: o.repo, entries: Object.fromEntries( keys.map( ( k ) => [ k, o.entry ] ) ), surfaces: wanted.map( ( w ) => w.surface ), out: o.out, shots: false, log: o.log ?? ( () => {} ) } ) );
+		( { report } = await run( { client: o.client, repo: o.repo, derive: true, entries: Object.fromEntries( keys.map( ( k ) => [ k, o.entry ] ) ), surfaces: wanted.map( ( w ) => w.surface ), out: o.out, shots: false, log: o.log ?? ( () => {} ) } ) );
 	} catch ( e ) {
 		return { ...empty, notes: [ `part-look (${ wanted.map( ( w ) => w.surface ).join( ', ' ) }): the draft read failed, so no mode setting is written: ${ String( e.message || e ).split( '\n' )[ 0 ] }` ] };
 	}
