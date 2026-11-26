@@ -18,6 +18,7 @@ import ResponsiveOverride from '../ResponsiveOverride.js';
 import Chips from './Chips.js';
 import MediaSlotPreview from './MediaSlotPreview.js';
 import MediaSlotAlt from './MediaSlotAlt.js';
+import TrimEdgesButton from './TrimEdgesButton.js'; // W4: Trim empty edges (own component)
 import { slotAccess } from './fieldBase.js';
 import {
 	resolveTierSource,
@@ -209,6 +210,15 @@ export default function MediaSlotField( {
 									>
 										{ __( 'Remove', 'sgs-blocks' ) }
 									</button>
+								) }
+								{ /* W4 (Trim empty edges): the one mount of TrimEdgesButton. It draws nothing unless the host has Imagick and the file is a trimmable picture. */ }
+								{ own && hasFile( own ) && (
+									<TrimEdgesButton
+										kind={ kind }
+										own={ own }
+										device={ device }
+										access={ access }
+									/>
 								) }
 							</div>
 						) }
