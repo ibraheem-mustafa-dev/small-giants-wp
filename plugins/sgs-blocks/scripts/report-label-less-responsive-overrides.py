@@ -98,18 +98,28 @@ def top_level_props(tag: str) -> tuple[bool, bool]:
 INNER_LABEL = re.compile(r"""\blabel\s*=\s*(?:\{\s*(?:__\(\s*)?)?(['"])(.+?)\1""")
 
 
+INNER_LABEL_EXPR = re.compile(r"""\blabel\s*=\s*\{\s*([A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*)\s*\}""")
+
+
 def inner_label(text: str, start: int) -> str:
-    """The first `label=` text the mount's children carry (up to its closing tag), or ''."""
+    """The first `label=` the mount's children carry (up to its closing tag): the literal text, or `{ name }` for a plain variable; '' when none."""
     end = text.find("</ResponsiveOverride>", start)
     body = text[start : end if end != -1 else start + 1500]
-    m = INNER_LABEL.search(body)
-    return m.group(2) if m else ""
+    text_hit = INNER_LABEL.search(body)
+    expr_hit = INNER_LABEL_EXPR.search(body)
+    if text_hit and (not expr_hit or text_hit.start() < expr_hit.start()):
+        return text_hit.group(2)
+    return "{ " + expr_hit.group(1) + " }" if expr_hit else ""
 
 
 def scan_text(text: str) -> list[dict]:
     """One record per mount: line, enclosing symbol, `labelled` ('yes', 'no' or 'unknown'), `inner` label text."""
     records = []
     for m in TAG.finditer(text):
+        line_start = text.rfind("\n", 0, m.start()) + 1
+        before = text[line_start : m.start()]
+        if re.match(r"\s*(//|/\*|\*|\{\s*/\*)", before) or "//" in before:
+            continue  # the tag is only named in a comment
         tag = text[m.start() : tag_end(text, m.start())]
         has_label, has_spread = top_level_props(tag)
         symbols = [s for s in SYMBOL.finditer(text, 0, m.start())]
@@ -120,12 +130,43 @@ def scan_text(text: str) -> list[dict]:
         records.append(
             {
                 "line": text.count("\n", 0, m.start()) + 1,
+                "offset": m.start(),
+                "tag_len": len(tag),
                 "symbol": symbol,
                 "labelled": "yes" if has_label else ("unknown" if has_spread else "no"),
                 "inner": inner_label(text, m.start() + len(tag)),
             }
         )
     return records
+
+
+def label_attr(inner: str, has_i18n: bool) -> str:
+    """The `label` prop text for an inner label: `{ name }` stays an expression, literal text is translated."""
+    if inner.startswith("{ "):
+        return "label=" + inner
+    quoted = inner.replace("\\", "\\\\").replace("'", "\\'")
+    return f"label={{ __( '{quoted}', 'sgs-blocks' ) }}" if has_i18n else f'label="{inner}"'
+
+
+def fix_text(text: str) -> tuple[str, int, int]:
+    """Give each label-less mount the label its inner control already draws. Returns (new text, fixed, left for hand)."""
+    has_i18n = bool(re.search(r"import\s*\{[^}]*\b__\b[^}]*\}\s*from\s*'@wordpress/i18n'", text))
+    fixed = 0
+    left = 0
+    for rec in sorted(scan_text(text), key=lambda r: -r["offset"]):
+        if "no" != rec["labelled"]:
+            continue
+        if not rec["inner"]:
+            left += 1
+            continue
+        start = rec["offset"] + len("<ResponsiveOverride")
+        tag = text[rec["offset"] : rec["offset"] + rec["tag_len"]]
+        attr = label_attr(rec["inner"], has_i18n)
+        m = re.match(r"<ResponsiveOverride[ \t]*\r?\n([ \t]*)\S", tag)
+        insertion = f"\n{m.group(1)}{attr}" if m else f" {attr}"
+        text = text[:start] + insertion + text[start:]
+        fixed += 1
+    return text, fixed, left
 
 
 def scan() -> list[dict]:
@@ -165,7 +206,16 @@ function Sublabel() {
     gated = [r for r in scan_text("const A = () => <ResponsiveOverride value={ x } />;") if r["labelled"] != "yes"]
     ok_gate = 1 == len(gated) and 0 == len([r for r in scan_text("const A = () => <ResponsiveOverride label=\"L\" value={ x } />;") if r["labelled"] != "yes"])
     print("[report-label-less-responsive-overrides] self-test gate", "PASS" if ok_gate else "FAIL")
-    return 0 if ok and ok_inner and ok_gate else 1
+    fixed, n, left = fix_text(sample)
+    ok_fix = 1 == n and 1 == left and '<ResponsiveOverride label="inner" value={ x }' in fixed.replace("label={ __( 'inner', 'sgs-blocks' ) }", 'label="inner"')
+    nl = chr(10)
+    mount = nl.join(["import { __ } from '@wordpress/i18n';", "const A = ( { label } ) => (", "\t<ResponsiveOverride", "\t\tvalue={ v }", "\t>{ () => <Box label={ label } /> }</ResponsiveOverride>", ");"])
+    expr, n2, _ = fix_text(mount)
+    ok_expr = 1 == n2 and ("\t\tlabel={ label }" + nl + "\t\tvalue={ v }") in expr
+    print("[report-label-less-responsive-overrides] self-test fix", "PASS" if ok_fix and ok_expr else f"FAIL {fixed!r} {expr!r}")
+    ok_idem = fix_text(expr)[1] == 0
+    print("[report-label-less-responsive-overrides] self-test fix is idempotent", "PASS" if ok_idem else "FAIL")
+    return 0 if ok and ok_inner and ok_gate and ok_fix and ok_expr and ok_idem else 1
 
 
 def main() -> int:
@@ -173,10 +223,27 @@ def main() -> int:
     ap.add_argument("--json", metavar="FILE")
     ap.add_argument("--survey", action="store_true", help="list each mount with the label its inner control draws")
     ap.add_argument("--check", action="store_true", help="gate: exit 1 while a mount has no label")
+    ap.add_argument("--fix", action="store_true", help="dry run: count the mounts the codemod would label")
+    ap.add_argument("--apply", action="store_true", help="with --fix: write the labels")
     ap.add_argument("--self-test", action="store_true")
     a = ap.parse_args()
     if a.self_test:
         return self_test()
+    if a.fix:
+        total_fixed = total_left = 0
+        for f in sorted(SRC.rglob("*.js")):
+            if f.name.endswith(".test.js"):
+                continue
+            old = f.read_text(encoding="utf-8")
+            new, fixed, left = fix_text(old)
+            total_fixed += fixed
+            total_left += left
+            if fixed and a.apply:
+                f.write_text(new, encoding="utf-8", newline="")
+            if fixed or left:
+                print(f"{f.relative_to(PLUGIN).as_posix()}: {fixed} labelled{', ' + str(left) + ' left for hand' if left else ''}")
+        print(f"[report-label-less-responsive-overrides --fix] {total_fixed} mounts {'labelled' if a.apply else 'would be labelled'}; {total_left} left for hand")
+        return 0
     records = scan()
     counts = Counter(r["labelled"] for r in records)
     less = [r for r in records if "yes" != r["labelled"]]
