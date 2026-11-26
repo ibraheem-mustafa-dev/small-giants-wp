@@ -64,5 +64,11 @@
 		"find": "} else if ( freeSlots.length ) {",
 		"replace": "} else if ( false ) {",
 		"why": "an element of a part the block draws at other positions than the draft is listed as unpaired instead of read at the part's first free slot"
+	},
+	{
+		"file": "lib/skeleton-part-pairing.mjs",
+		"find": "( null === looks || looksOfEntry( s, model.parts.get( templateOf( readSlot ) )?.tag ?? '' ).some( ( l ) => looks.includes( l ) ) )",
+		"replace": "( true )",
+		"why": "the sibling read names every setting at the read slot, including one that paints a look the draft element does not have"
 	}
 ]

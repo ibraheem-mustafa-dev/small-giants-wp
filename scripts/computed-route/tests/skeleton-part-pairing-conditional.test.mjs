@@ -108,14 +108,14 @@ test( 'a draft sibling whose position the part has no slot at is read as its gro
 	const L = ( k ) => `.l:nth-of-type(${ k })`;
 	const cal = {
 		elements: { '': at( 'nav' ), [ L( 1 ) ]: at( 'a' ), [ L( 2 ) ]: at( 'a' ), [ L( 4 ) ]: at( 'a' ) },
-		settings: { linkPad: { slot: L( 1 ), slots: [ L( 1 ), L( 2 ), L( 4 ) ], property: 'padding' } }, text: {},
+		settings: { linkPad: { slot: L( 1 ), slots: [ L( 1 ), L( 2 ), L( 4 ) ], property: 'padding' }, linkBg: { slot: L( 1 ), slots: [ L( 1 ), L( 2 ), L( 4 ) ], property: 'background-color' } }, text: {},
 	};
 	const links = [ 0, 1, 2 ].map( ( i ) => el( `Root/${ i + 2 }#0`, 'a', [], { words: `Link ${ i }` } ) );
 	const made = pairAbsorbed( { host: el( 'Root/1#0', 'nav', links, { w: 400 } ), absorbed: links.map( ( x ) => ( { element: x, looks: [ 'padding' ] } ) ), kids, calibration: cal, finder } );
 	assert.deepEqual( made.ambiguous, [] );
 	assert.deepEqual( made.paired.map( ( p ) => p.key ), [ 'Root/2#0', 'Root/3#0', 'Root/4#0' ] );
 	assert.deepEqual( made.slots, { [ L( 1 ) ]: { tpl: 'Root/2#0' }, [ L( 2 ) ]: { tpl: 'Root/3#0' } } );
-	assert.deepEqual( made.siblings.map( ( x ) => [ x.key, x.settings, x.readBy ] ), [ [ 'Root/4#0', [ 'linkPad' ], 'Root/2#0' ] ] );
+	assert.deepEqual( made.siblings.map( ( x ) => [ x.key, x.settings, x.readBy ] ), [ [ 'Root/4#0', [ 'linkPad' ], 'Root/2#0' ] ], 'the sibling read names the settings at the read slot that paint the look the element has (looksOfEntry), not the background setting beside them (MUST FAIL when the named filter ignores the looks)' );
 	// a lone element with no neighbour read is still said, never guessed
 	const lone = el( 'Root/9#0', 'a', [], { words: 'Only' } );
 	const none = pairAbsorbed( { host: el( 'Root/8#0', 'nav', [ lone ], { w: 400 } ), absorbed: [ { element: lone, looks: [ 'padding' ] } ], kids, calibration: { ...cal, settings: { linkPad: { slot: L( 4 ), slots: [ L( 4 ) ], property: 'padding' } } }, finder } );

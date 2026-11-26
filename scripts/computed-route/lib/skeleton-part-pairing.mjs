@@ -707,7 +707,7 @@ function pairCore( { host, absorbed = [], kids, isNode = () => false, calibratio
 		const freeSlots = lands || readSlot ? [] : [ ...slotLooks.keys() ].sort().filter( ( sl ) => ! held.has( sl ) );
 		if ( readSlot ) {
 			out.paired.push( { key: e.key, part: g.head, slots: [] } );
-			const named = settings.filter( ( [ , s ] ) => ( ! s.state || 'current' === s.state ) && [ s?.slot, ...( s?.slots || [] ) ].includes( readSlot ) && ( null === looks || looks.includes( lookOfProperty( s.property, model.parts.get( templateOf( readSlot ) )?.tag ?? '' ) ) ) ).map( ( [ name ] ) => name );
+			const named = settings.filter( ( [ , s ] ) => ( ! s.state || 'current' === s.state ) && [ s?.slot, ...( s?.slots || [] ) ].includes( readSlot ) && ( null === looks || looksOfEntry( s, model.parts.get( templateOf( readSlot ) )?.tag ?? '' ).some( ( l ) => looks.includes( l ) ) ) ).map( ( [ name ] ) => name );
 			out.siblings.push( { key: e.key, part: g.head, slot: readSlot, settings: [ ...new Set( named ) ], looks: looks ?? [], readBy: placedAt.get( readSlot ).key } );
 		} else if ( freeSlots.length ) {
 			// The block draws this part at other positions than the draft does (a badge on the second and fourth rows, where the
