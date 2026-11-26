@@ -12,6 +12,13 @@
   "accepted": [
     {
       "check": "editor-canvas-desync",
+      "block": "sgs/buybox",
+      "attr": "pickerSubLabelMetaKey",
+      "disposition": "by-design",
+      "reason": "Stage E3 W6 (2026-11-26): the control moved from inspector-extra-2.js into edit.js's \"Buybox labels\" panel (register move), so the detector now reads it. The key names a WooCommerce attribute term-meta field whose value render.php prints as each option's second line; the editor canvas draws no real terms, so there is nothing for the canvas to show. The control's help text already says the values appear only on the front end. Same by-design reading as sgs/option-picker's own sub-label key."
+    },
+    {
+      "check": "editor-canvas-desync",
       "block": "sgs/button",
       "attr": "boxShadowColourHover",
       "disposition": "accepted-debt",
