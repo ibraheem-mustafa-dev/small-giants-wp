@@ -1,7 +1,6 @@
 {
 	"_comment": "Padding and margin controls that are NOT a block's own Spacing panel, or that wait for a later stage. check-spacing-panel.js reads this. Keys: files (a whole file), attributes (file::attribute written), blocks (a block that owns padding/margin object attributes but is edited elsewhere). Every entry carries its reason.",
 	"files": {
-		"src/shared/nav-menu-panels/ListLayoutPanel.js": "Variant D: the shared nav 'List layout' ToolsPanel (nav-bar-menu, nav-drawer-menu). Stage E3 owns it (brief item 3).",
 		"src/components/button-kit/BuiltinButtonPanelBody.js": "The button kit's own Padding (the printed button's padding, prefix-keyed), not a block's spacing.",
 		"src/blocks/extensions/commerce-look/controls.js": "Commerce-look extension panels: per-part look padding (prefix + 'Padding'), not a block's spacing.",
 		"src/blocks/extensions/commerce-look/panels.js": "Commerce-look extension panels: per-part look padding, not a block's spacing."

@@ -1204,12 +1204,11 @@
 		},
 		"responsive-logo": {
 			"settings": {
-				"title": "Logo switch",
+				"title": "Logo",
 				"kind": "body",
 				"opened": true,
-				"source": "block",
-				"note": "src/blocks/responsive-logo/edit.js::Edit",
-				"count": 1
+				"source": "media",
+				"note": "media panel \"Media\", titled Logo by titleOverride: the slot opens it by the openPanel prop, not by panel-model default"
 			},
 			"styles": {
 				"title": "Colour",
@@ -1263,12 +1262,11 @@
 				"count": 2
 			},
 			"styles": {
-				"title": "Text",
+				"title": "Colour",
 				"kind": "body",
 				"opened": true,
-				"source": "block",
-				"note": "src/blocks/site-footer-row/edit.js::Edit",
-				"count": 1
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
 			}
 		},
 		"site-header": {
@@ -1298,12 +1296,11 @@
 				"count": 1
 			},
 			"styles": {
-				"title": "Text",
+				"title": "Colour",
 				"kind": "body",
 				"opened": true,
-				"source": "block",
-				"note": "src/blocks/site-header-row/edit.js::Edit",
-				"count": 1
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
 			}
 		},
 		"social-icons": {

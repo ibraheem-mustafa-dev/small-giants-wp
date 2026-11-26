@@ -25,8 +25,7 @@ import {
 	fillRow,
 	textRow,
 	SgsBorderControl,
-	DesignTokenPicker,
-	GradientCapableColourControl,
+	SgsColourPanel,
 	SgsGapControl,
 	SgsLengthControl,
 	TierSelectControl,
@@ -53,8 +52,8 @@ import RowMinHeightControl from '../site-header-row/RowMinHeightControl';
 // blocks (gallery/trust-bar/hero/container/physics-canvas) and
 // editing it would change their inspector layout as a side effect of this
 // fix, which is out of scope. Padding/margin/max-width move into `row`'s own
-// Layout panel here; `contentWidth` moves into `content-band`'s own TIER 1
-// panel below — both inline, not through the shared component.
+// Layout panel here, and so does `contentWidth` (the content band's width, a
+// separate element from the row) — all inline, not through the shared component.
 const LENGTH_UNITS = [
 	{ value: 'px', label: 'px', default: 0 },
 	{ value: 'rem', label: 'rem', default: 0 },
@@ -512,39 +511,36 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		? ''
 		: parentFooterBackgroundColour;
 
-	// TIER 2 property-family rows for `row` (isWrapper) — Text / Fill, each in
-	// its own panel (THE PLACEMENT RULE, Spec 35 Part O). Built via the same
-	// row-descriptor helpers SgsColourPanel itself consumes, so the row SHAPE
-	// (swatch + popover + in-popover state tabs) is identical — only the
-	// panel TITLE differs (Text / Fill, not a shared "Colour" catch-all).
-	const textRowDescriptor = textRow( {
-		key: 'text',
-		label: __( 'Row text colour', 'sgs-blocks' ),
-		attrs: {
-			base: 'textColour',
-			hover: 'textColourHover',
-			gradient: 'textColourGradient',
-			hoverGradient: 'textColourHoverGradient',
-		},
-		attributes,
-		setAttributes,
-	} );
-	const TextRowControl = textRowDescriptor.gradientCapable
-		? GradientCapableColourControl
-		: DesignTokenPicker;
-
-	const fillRowDescriptor = fillRow( {
-		key: 'background',
-		label: __( 'Row background', 'sgs-blocks' ),
-		attrs: {
-			base: 'backgroundColour',
-			hover: 'backgroundColourHover',
-			gradient: 'backgroundColourGradient',
-			hoverGradient: 'backgroundColourHoverGradient',
-		},
-		attributes,
-		setAttributes,
-	} );
+	// The row's two colours, in the block's main Colour panel (`SgsColourPanel`, Bean 2026-11-26). A single literal
+	// array of `textRow()` / `fillRow()` calls, so `scripts/inspector-scan/rules/31-golden-colour-control.js` can resolve
+	// every row's state count from this file.
+	const colourRows = [
+		textRow( {
+			key: 'text',
+			label: __( 'Row text colour', 'sgs-blocks' ),
+			attrs: {
+				base: 'textColour',
+				hover: 'textColourHover',
+				gradient: 'textColourGradient',
+				hoverGradient: 'textColourHoverGradient',
+			},
+			attributes,
+			setAttributes,
+			contrastAgainst: textContrastAgainst,
+		} ),
+		fillRow( {
+			key: 'background',
+			label: __( 'Row background', 'sgs-blocks' ),
+			attrs: {
+				base: 'backgroundColour',
+				hover: 'backgroundColourHover',
+				gradient: 'backgroundColourGradient',
+				hoverGradient: 'backgroundColourHoverGradient',
+			},
+			attributes,
+			setAttributes,
+		} ),
+	];
 
 	// Contrast check for border colour — warn if border fails WCAG 3:1 contrast
 	// against the block's own background. When the background is a gradient,
@@ -556,36 +552,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	return (
 		<>
+			{ /* FIRST among same-group Fills: WordPress concatenates them in mount order. */ }
+			<SgsColourPanel initialOpen rows={ colourRows } />
+
 			<InspectorControls group="styles">
-				<PanelBody
-					title={ __( 'Text', 'sgs-blocks' ) }
-					initialOpen
-					className="sgs-colour-panel"
-				>
-					<TextRowControl
-						label={ textRowDescriptor.label }
-						states={ textRowDescriptor.states }
-						{ ...( TextRowControl === GradientCapableColourControl
-							? { contrastAgainst: textContrastAgainst }
-							: {} ) }
-					/>
-				</PanelBody>
-
-				<PanelBody
-					title={ __( 'Fill', 'sgs-blocks' ) }
-					initialOpen={ false }
-					className="sgs-colour-panel"
-				>
-					<DesignTokenPicker
-						label={ fillRowDescriptor.label }
-						states={ fillRowDescriptor.states }
-					/>
-				</PanelBody>
-
 				{ /* Layout — ONE `row` Layout panel holding the "Alignment & grid"
 				   ToolsPanel, the ResponsiveBoxControls mount (padding/margin/
-				   max-width — `row`'s OWN box attrs; `contentWidth` belongs to
-				   `content-band` and sits in that element's own panel below), and
+				   max-width — `row`'s OWN box attrs), the Content width
+				   control (the content band, a separate element from the row) and
 				   the "Border" PanelBody (Spec 35 Part O). */ }
 				<PanelBody
 					title={ __( 'Layout', 'sgs-blocks' ) }
@@ -924,21 +898,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							} );
 						} }
 					/>
-				</PanelBody>
-				<ResponsiveBoxControls
-					attributes={ attributes }
-					setAttributes={ setAttributes }
-				/>
-
-				{ /* TIER 1 — the `content-band` element's own panel (Spec 35 Part
-				   O). `contentWidth` used to live inside the shared
-				   ResponsiveBoxControls mount alongside `row`'s own padding/
-				   margin/max-width, which put a content-band control inside a
-				   row-scoped panel. It gets its own small panel here instead. */ }
-				<PanelBody
-					title={ __( 'Content band', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
 					<ResponsiveOverride
 						label={ __( 'Content width', 'sgs-blocks' ) }
 						value={ contentWidth }
@@ -972,6 +931,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						) }
 					</ResponsiveOverride>
 				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 			</InspectorControls>
 
 			<InspectorControls>
@@ -989,7 +952,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					showLayout={ false }
 					enableColumnShapePicker
 				/>
-				<PanelBody initialOpen={ false } title={ __( 'Footer row', 'sgs-blocks' ) }>
+				<PanelBody
+					initialOpen={ false }
+					title={ __( 'Footer row', 'sgs-blocks' ) }
+				>
 					{ rowSlot && (
 						<p className="components-base-control__help">
 							{ ROW_LABELS[ rowSlot ] || rowSlot }
