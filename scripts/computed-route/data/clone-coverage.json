@@ -2385,14 +2385,6 @@
 			"reason": "copy shown only in a state the default render does not print (empty, open, success, closed states): calibration reads the default render, so Fill has no slot to write it into",
 			"owner": "Track S"
 		},
-		"content-setting:sgs/cart.iconName": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"reason": "an icon chosen by name, emoji, dashicon or per item: the icon writer picks Lucide or brand names only for blocks with iconSvg",
-			"owner": "Track S"
-		},
 		"content-setting:sgs/cart.itemRemoveLabel": {
 			"recognise": null,
 			"write": null,
@@ -2535,14 +2527,6 @@
 			"check": null,
 			"wave": "content, media and icons",
 			"reason": "a block with several image settings (per-device, before/after, frames): the media writer fills only a block with exactly one image slot",
-			"owner": "Track S"
-		},
-		"content-setting:sgs/diagram-dimension.caption": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"reason": "an item setting the list writer maps only from a draft item field of the same name (no word of the key names a role in data/item-roles.json), so a re-clone leaves the block's default unless the draft names its field identically: add the role words, or a draft field of this name, to fill it",
 			"owner": "Track S"
 		},
 		"content-setting:sgs/filter-search.placeholder": {
@@ -3017,28 +3001,12 @@
 			"reason": "copy shown only in a state the default render does not print (empty, open, success, closed states): calibration reads the default render, so Fill has no slot to write it into",
 			"owner": "Track S"
 		},
-		"content-setting:sgs/product-card.brandName": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"reason": "a product card's live-data fallback text (productName, trialTag, featuredTag, priceLarge, priceNote, ctaText, brandName): printed from WooCommerce data when the setting is empty",
-			"owner": "Track S"
-		},
 		"content-setting:sgs/product-card.cta2Url": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
 			"reason": "a block's second or later link address: calibration reads one link per element and the skeleton takes the first link-href setting only",
-			"owner": "Track S"
-		},
-		"content-setting:sgs/product-card.ctaText": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"reason": "a product card's live-data fallback text (productName, trialTag, featuredTag, priceLarge, priceNote, ctaText, brandName): printed from WooCommerce data when the setting is empty",
 			"owner": "Track S"
 		},
 		"content-setting:sgs/product-card.featuredTag": {
@@ -3058,14 +3026,6 @@
 			"owner": "Track S"
 		},
 		"content-setting:sgs/product-card.priceNote": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"reason": "a product card's live-data fallback text (productName, trialTag, featuredTag, priceLarge, priceNote, ctaText, brandName): printed from WooCommerce data when the setting is empty",
-			"owner": "Track S"
-		},
-		"content-setting:sgs/product-card.productName": {
 			"recognise": null,
 			"write": null,
 			"check": null,
@@ -3095,14 +3055,6 @@
 			"check": null,
 			"wave": "content, media and icons",
 			"reason": "a product card's live-data fallback text (productName, trialTag, featuredTag, priceLarge, priceNote, ctaText, brandName): printed from WooCommerce data when the setting is empty",
-			"owner": "Track S"
-		},
-		"content-setting:sgs/product-faq-item.question": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"reason": "an item setting the list writer maps only from a draft item field of the same name (no word of the key names a role in data/item-roles.json), so a re-clone leaves the block's default unless the draft names its field identically: add the role words, or a draft field of this name, to fill it",
 			"owner": "Track S"
 		},
 		"content-setting:sgs/product-search.placeholder": {
@@ -3338,14 +3290,6 @@
 			"owner": "Track S"
 		},
 		"content-setting:sgs/testimonial.sourcePlatform": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"reason": "an item setting the list writer maps only from a draft item field of the same name (no word of the key names a role in data/item-roles.json), so a re-clone leaves the block's default unless the draft names its field identically: add the role words, or a draft field of this name, to fill it",
-			"owner": "Track S"
-		},
-		"content-setting:sgs/testimonial.workSource": {
 			"recognise": null,
 			"write": null,
 			"check": null,
