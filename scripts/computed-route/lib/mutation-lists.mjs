@@ -61,8 +61,8 @@ export function listProblems( list, routeDir, read = ( f ) => readFileSync( join
 }
 
 // Every mutation list under testsDir checked against routeDir: { lists, problems: [{ list, index, file, why, count }] },
-// `list` relative to routeDir.
-export function checkMutationLists( routeDir, testsDir = join( routeDir, 'tests' ) ) {
+// `list` relative to routeDir, behind `prefix` when one is given.
+export function checkMutationLists( routeDir, testsDir = join( routeDir, 'tests' ), prefix = '' ) {
 	const lists = [];
 	const problems = [];
 	for ( const p of jsonFiles( testsDir ) ) {
@@ -75,7 +75,7 @@ export function checkMutationLists( routeDir, testsDir = join( routeDir, 'tests'
 		if ( ! isMutationList( data ) ) {
 			continue;
 		}
-		const list = relative( routeDir, p ).replace( /\\/g, '/' );
+		const list = prefix + relative( routeDir, p ).replace( /\\/g, '/' );
 		lists.push( list );
 		problems.push( ...listProblems( data, routeDir, ( f ) => {
 			const target = join( routeDir, f );
@@ -86,6 +86,15 @@ export function checkMutationLists( routeDir, testsDir = join( routeDir, 'tests'
 		} ).map( ( x ) => ( { list, ...x } ) ) );
 	}
 	return { lists, problems };
+}
+
+// The lists of the route (`tests/`) and of the parity walkers beside it (`scripts/parity/tests/`, named `parity/tests/...`,
+// each entry's `file` relative to `scripts/parity`; run with `tools/mutate.mjs ../parity <list> <test>`).
+export function checkAllMutationLists( routeDir ) {
+	const parity = join( routeDir, '..', 'parity' );
+	const route = checkMutationLists( routeDir );
+	const beside = existsSync( join( parity, 'tests' ) ) ? checkMutationLists( parity, join( parity, 'tests' ), 'parity/' ) : { lists: [], problems: [] };
+	return { lists: [ ...route.lists, ...beside.lists ], problems: [ ...route.problems, ...beside.problems ] };
 }
 
 // The stale entries known when the guard was built (data/mutation-list-stale-baseline.json): { "<list>": [ find, ... ] },
