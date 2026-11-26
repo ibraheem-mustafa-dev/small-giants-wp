@@ -115,9 +115,8 @@ if ( $tb_marquee_track ) {
 }
 
 // --- Overflow mode ('ticker' default / 'wrap' / 'drop') -----------------------
-// 'ticker' (the default) is the overflow-only marquee: a bar that stores no marquee layer of its own is given one
-// before this file runs (`includes/motion/class-sgs-motion-ticker-default.php`), so by the time it reaches here a
-// ticker bar already holds the layer above and takes the marquee path. 'wrap' lets the badges flow onto further lines.
+// The ticker is the stored marquee layer above (the Overflow control's Ticker writes it with `belowBreakpoint:
+// overflow`); a bar with no layer does not scroll, and 'ticker' and 'wrap' let the badges flow onto further lines.
 // 'drop' keeps a single row and lets view.js hide whichever trailing badges do
 // not fit (see overflow-drop.js). It coexists with the marquee when the layer is
 // limited to a width range: the marquee runs inside the range (every badge in the
