@@ -335,12 +335,11 @@ describe( 'Card', () => {
 		m.unmount();
 	} );
 
-	test( 'padding controls write a tier object keyed desktop', () => {
+	test( 'the review card padding writes a tier object keyed desktop; the panel padding is the shared Spacing panel, not this section', () => {
 		const m = mount( CardPanel.default );
-		m.click( '[data-box="Panel padding"]' );
+		expect( m.q( '[data-box="Panel padding"]' ) ).toBeNull();
 		m.click( '[data-box="Review card padding"]' );
 		expect( lastPatch( m ) ).toEqual( {
-			padding: { desktop: { top: '4px', right: '4px', bottom: '4px', left: '4px' } },
 			cardPadding: { desktop: { top: '4px', right: '4px', bottom: '4px', left: '4px' } },
 		} );
 		m.unmount();
