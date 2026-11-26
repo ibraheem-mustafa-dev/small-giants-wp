@@ -86,14 +86,24 @@ function stylesheetPaint( block, prop ) {
 
 // The size the block paints for a replaced image at each width, in px, for the ceiling rule (2b). Where the element paints no
 // length of its own, an `auto` size under a `none` ceiling (what the site look keeps from the cascade: nothing bounds the
-// picture), it is as large as the picture is, so it is larger than any size the draft declares: Infinity.
-function pictureRoom( { block, slot, prop, cal } ) {
+// picture), it is as large as the picture itself: `natural`, the picture's own size along the axis read from the draft's media
+// (a file 16px tall is 16px, never more). A picture whose natural size is unknown (an svg with no intrinsic size) claims nothing.
+function pictureRoom( { block, slot, prop, cal, natural = {} } ) {
 	const paint = blockPaint( { block, slot, prop, cal } );
 	const same = ( a, b ) => LOOSE( a ) === LOOSE( b );
 	const size = defaultPaint( cal, slot, prop, same );
 	const ceiling = defaultPaint( cal, slot, `max-${ prop }`, same );
 	const unbounded = ( w ) => 'auto' === String( size[ w ] ?? '' ).trim() && 'none' === String( ceiling[ w ] ?? '' ).trim();
-	return Object.fromEntries( WIDTHS.map( ( w ) => [ w, paint[ w ] ?? ( unbounded( w ) ? Infinity : undefined ) ] ).filter( ( [ , v ] ) => undefined !== v ) );
+	return Object.fromEntries( WIDTHS.map( ( w ) => [ w, paint[ w ] ?? ( unbounded( w ) ? natural[ w ] : undefined ) ] ).filter( ( [ , v ] ) => Number.isFinite( v ) ) );
+}
+
+// The natural size, in px along an axis, of the one picture the target holds at each width where the read knows it.
+function naturalSize( reads, target, prop, widths ) {
+	const key = /height/.test( prop ) ? 'h' : 'w';
+	return Object.fromEntries( widths.map( ( w ) => {
+		const media = reads.widths?.[ w ]?.[ target.id ]?.media || [];
+		return [ w, 1 === media.length ? media[ 0 ].natural?.[ key ] : undefined ];
+	} ).filter( ( [ , v ] ) => Number.isFinite( v ) && v > 0 ) );
 }
 
 // A ceiling the block paints as something other than a length or `none` (100%, a calc()): its size is the page's.
@@ -284,8 +294,8 @@ function handle( { row, size, hit, nodes, flat, ctx, out, scope, entries, date, 
 			return pxOf( v ) ?? ( FLUID.test( String( v ?? '' ).trim() ) ? rendered[ w ] : null );
 		};
 		const declared = Object.fromEntries( widths.map( ( w ) => [ w, sizeAt( w ) ] ).filter( ( [ , v ] ) => null !== v && undefined !== v ) );
-		const paint = pictureRoom( { block: rec.name, slot: ceilingSlot, prop, cal } );
-		const shown = ( w ) => ( Number.isFinite( paint[ w ] ) ? `${ Math.round( paint[ w ] * 100 ) / 100 }px` : 'with no limit' );
+		const paint = pictureRoom( { block: rec.name, slot: ceilingSlot, prop, cal, natural: naturalSize( reads, target, prop, widths ) } );
+		const shown = ( w ) => `${ Math.round( paint[ w ] * 100 ) / 100 }px`;
 		if ( Object.keys( declared ).length === widths.length && widths.every( ( w ) => undefined !== paint[ w ] && paint[ w ] > declared[ w ] + PX_TOL ) ) {
 			return settle( `max-${ prop }`, declared, `the draft declares ${ prop } ${ widths.map( ( w ) => `${ Math.round( declared[ w ] * 100 ) / 100 }px` ).join( ' / ' ) }${ widths.some( ( w ) => null === pxOf( declaredAt( w ) ?? given[ w ] ) ) ? ' (a fluid size as its rendered value)' : '' } on ${ custom ? 'a picture a custom element draws' : 'a replaced image' } that keeps its proportions (${ other } not declared), and the block paints it ${ widths.map( shown ).join( ' / ' ) }, so the block's max-${ prop }${ ceilingSlot === slot ? '' : ` on its inner image (${ ceilingSlot })` } clamps it to the declared size`, null, true, ceilingSlot );
 		}
