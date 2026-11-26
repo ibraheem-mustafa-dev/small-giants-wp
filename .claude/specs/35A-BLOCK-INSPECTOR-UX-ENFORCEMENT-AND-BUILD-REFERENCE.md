@@ -162,7 +162,7 @@ Numeric+unit → `UnitControl` · bounded numeric → `RangeControl` (+input+res
 | 7 | Whole-card clickable-link pattern for card-grid/team/product/testimonial | BUILT (stretched-link overlay) |
 | 8 | `ToolsPanel` progressive disclosure on control-dense panels | BUILT |
 | 9 | Every animation `prefers-reduced-motion`-gated (WCAG) | BUILT (framework-wide gate) |
-| 10 | Adopt native: Block Bindings for dynamic content, native duotone/aspect-ratio | BUILT (Part G verdict table). Section Styles (block style variations with inner-element styles, WP 6.6) — deliberately not adopted (Spec 32 rejects WordPress block style variations; `variant_slots` covers it); pattern categories/blockTypes audit and Interactivity API for hand-rolled view.js remain considerations |
+| 10 | Adopt native: Block Bindings for dynamic content, native duotone/aspect-ratio | BUILT (Part G verdict table). Section Styles (block style variations with inner-element styles, WP 6.6) — deliberately not adopted (Spec 32 rejects WordPress block style variations; `variant_slots` covers it); `sgs/text` registers no block styles (its Quote, Caption and Lead were retired 2026-11-26: nothing saved used them on the four mirrors or in the repo; `tests/php/TextBlockStylesRetiredTest.php`), and the heading's and quote's are still registered, pending the same retirement; pattern categories/blockTypes audit and Interactivity API for hand-rolled view.js remain considerations |
 
 ## PART K — Rollout mechanism
 

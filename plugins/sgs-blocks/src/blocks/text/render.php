@@ -15,8 +15,7 @@
  * using the block anchor id (or a generated unique id) so multiple instances
  * on the same page never collide.
  *
- * Variant styling uses WordPress block styles (is-style-quote /
- * is-style-caption / is-style-lead), not a variantStyle attribute.
+ * The block registers no WordPress block styles (Spec 32 and Spec 35A Part G reject them); look and feel come from its own inspector controls.
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content (unused — block is leaf-level).
