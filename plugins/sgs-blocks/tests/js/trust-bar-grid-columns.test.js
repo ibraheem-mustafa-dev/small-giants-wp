@@ -75,6 +75,23 @@ describe( 'gridBadgeRules', () => {
 	} );
 } );
 
+describe( 'gridBadgeRules with a title', () => {
+	it( 'counts the title as the first cell: four columns, a title and seven badges end row one on the third badge', () => {
+		const cells = [ 0, 1, 2, 3, 4, 5, 6 ].map( ( i ) => gridBadgeRules( i, 7, 4, false, true ).cell );
+		// Cells: title 1, b1 2, b2 3, b3 4 (row end), b4 5, b5 6, b6 7, b7 8 (last).
+		expect( cells ).toEqual( [ true, true, false, true, true, true, false ] );
+	} );
+
+	it( 'a lone last badge is the one alone in its row once the title is counted', () => {
+		// Four columns, a title and five badges: the title and b1 to b3 fill row one, b4 and b5 share row two: not alone.
+		expect( gridBadgeRules( 4, 5, 4, true, true ).centre ).toBe( false );
+		// A title and four badges: b4 is the first cell of row two, alone.
+		expect( gridBadgeRules( 3, 4, 4, true, true ).centre ).toBe( true );
+		// The same four badges with no title fill row one: nothing is alone.
+		expect( gridBadgeRules( 3, 4, 4, true, false ).centre ).toBe( false );
+	} );
+} );
+
 describe( 'columnGapPreview', () => {
 	it( 'is the column part of the gap at the previewed device', () => {
 		expect( columnGapPreview( { desktop: '20px 40px', mobile: '8px' }, 'desktop' ) ).toBe( '40px' );
