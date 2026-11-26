@@ -147,14 +147,14 @@ export function animationRecords( census, { notDefects = [] } = {} ) {
 		for ( const trg of triggersOf( tr ) ) {
 		const notes = [ chain.length ? `called from ${ chain.join( '; from ' ) }` : null, null != trg.delay ? `started after setTimeout ${ trg.delay }` : null ].filter( Boolean ).join( '; ' );
 		add( p.file ? 'L' : 'A', {
-			name: `Web Animation in ${ fn }${ calls.length ? ` from ${ functionName( p, outer ) }` : '' } on ${ t.selector }`, mechanism: 'waapi',
+			name: `Web Animation in ${ fn }${ calls.length ? ` from ${ functionName( p, outer ) }` : '' } on ${ t.selector }${ part?.byComp.length > 1 ? ` in ${ t.comp }` : '' }`, mechanism: 'waapi',
 			element: element( comp, part ? t.comp : owner, p.file && ! part ? { ...t, near: owners } : t, `animated element: ${ t.selector }` ),
 			source: { file, function: fn, ref: /^ref /.test( t.selector ) ? t.selector.slice( 4 ) : null, line: lineOf( call ), code: textOf( p, call ), ...timerField( p, trg ) },
 			trigger: triggerField( trg ), properties: fx.properties, duration_ms: fx.timing.duration, delay_ms: fx.timing.delay ?? 0, stagger: null,
 			easing: fx.timing.easing, iterations: fx.timing.iterations, direction: fx.timing.direction, fill: fx.timing.fill,
 			reduced_motion: rm.find( ( x ) => 'skip' === x.behaviour ) ?? rm[ 0 ], status: statusOf( trg ), trace: traceOf( [ r ] ),
 			...( notes ? { notes } : {} ),
-		}, [ r ], { comp, tpl: t.tpl.map( ( n ) => `${ t.comp }:${ n }` ), via: trg.via.map( ( o ) => `${ comp }@${ o }` ), members: trg.members.map( ( m ) => `${ comp }:${ m }` ), trigger: trg } );
+		}, [ r ], { comp: part ? t.comp : comp, tpl: t.tpl.map( ( n ) => `${ t.comp }:${ n }` ), via: trg.via.map( ( o ) => `${ comp }@${ o }` ), members: trg.members.map( ( m ) => `${ comp }:${ m }` ), trigger: trg } );
 		}
 		}
 		}

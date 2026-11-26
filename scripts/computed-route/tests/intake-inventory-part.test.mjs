@@ -69,14 +69,15 @@ const MARK = `(() => {
 
 // A census of one component (its logic, its stamped elements and their template rows) and an optional helmet script,
 // with a waapi row at every `.animate(` call.
-function censusOf( { logic = 'class Component extends DCComponent {}', script = null, rows: extra = [], stamped = [] } ) {
+function censusOf( { logic = 'class Component extends DCComponent {}', script = null, rows: extra = [], stamped = [], other = [] } ) {
 	const source = { component: 'App', file: 'App.dc.html', via: 'entry', logic, logicLine: 1, logicColumn: 0, scripts: script ? [ { file: 'mark.js', text: script } ] : [], stamped: { elements: stamped } };
 	const m = codeModel( { sources: [ source ], rows: [] } );
 	const rows = [ ...extra ];
 	for ( const [ comp, p ] of m.progs ) {
 		p.nodes.filter( ( n ) => 'CallExpression' === n.type && 'animate' === n.callee?.property?.name ).forEach( ( c, i ) => rows.push( { id: `waapi@${ comp }:${ i }`, kind: 'waapi', component: p.file ? 'App' : comp, draftId: `${ comp }:js:${ c.loc.start.line }:${ c.loc.start.column }`, detail: {} } ) );
 	}
-	return { sources: [ source ], rows };
+	const unrelated = other.length ? [ { component: 'Other', file: 'Other.dc.html', via: 'entry', logic: 'class Component extends DCComponent {}', logicLine: 1, logicColumn: 0, scripts: [], stamped: { elements: other } } ] : [];
+	return { sources: [ source, ...unrelated ], rows };
 }
 const waapi = ( c ) => animationRecords( c ).records.filter( ( r ) => 'waapi' === r.mechanism );
 const HOLDER = { id: 'ref@App:321', kind: 'ref', component: 'App', draftId: 'App:321', detail: { expression: 'setHeroSvgEl' } };
@@ -143,12 +144,25 @@ test( 'MUST FAIL: an element the template stamps with its own id is that element
 	assert.deepEqual( [ ray.template_tpl_id, ray.selector ], [ '321', '#ray' ], 'a part the template does not stamp stays a part' );
 } );
 
+test( 'MUST FAIL: an element another component stamps with the same id does not make a real part of this holder a template element', () => {
+	const recs = waapi( censusOf( { logic: TITLED, rows: [ HOLDER ], stamped: [ { n: '400', tag: 'h1', attrs: [ [ 'id', 'hero-title' ] ] } ], other: [ { n: '9', tag: 'i', attrs: [ [ 'id', 'ray' ] ] } ] } ) );
+	const ray = recs.find( ( r ) => r.source.code.startsWith( 'ray.animate' ) ).element;
+	assert.deepEqual( [ ray.template_tpl_id, ray.selector ], [ '321', '#ray' ], 'another component has its own #ray' );
+	const title = recs.find( ( r ) => r.source.code.startsWith( 'title.animate' ) ).element;
+	assert.equal( title.template_tpl_id, '400', 'the holder own component still decides' );
+} );
+
 test( 'MUST FAIL: a custom element stamped in several components gets its part motion in each component', () => {
 	const footer = { id: 'template-element@Footer:12', kind: 'template-element', component: 'Footer', draftId: 'Footer:12', detail: { tag: 'brand-mark' } };
 	const recs = waapi( censusOf( { script: MARK, rows: [ ...MARKS, footer ] } ) );
 	assert.equal( recs.length, 6 );
 	const spin = recs.filter( ( r ) => '#sunrays_spin' === r.element.selector ).map( ( r ) => [ r.element.dc, r.element.template_tpl_id ] );
 	assert.deepEqual( spin, [ [ 'App', [ '49', '976' ] ], [ 'Footer', '12' ] ] );
+	const inv = animationRecords( censusOf( { script: MARK, rows: [ ...MARKS, footer ] } ) );
+	const spun = inv.records.filter( ( r ) => '#sunrays_spin' === r.element.selector );
+	assert.deepEqual( spun.map( ( r ) => inv.meta.get( r.id ).comp ), [ 'App', 'Footer' ], 'each record is the component the part is stamped in' );
+	assert.ok( spun[ 1 ].name.endsWith( ' in Footer' ) && spun[ 0 ].name.endsWith( ' in App' ), spun.map( ( r ) => r.name ).join( ' | ' ) );
+	assert.equal( waapi( censusOf( { script: MARK, rows: MARKS } ) )[ 0 ].name.endsWith( ' in App' ), false, 'a part held in one component keeps its name' );
 } );
 
 test( 'idOfSelector reads only a plain id query', () => {

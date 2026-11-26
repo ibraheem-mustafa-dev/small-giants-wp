@@ -10,6 +10,9 @@ import { codeModel } from '../lib/intake-inventory-code.mjs';
 import { animationRecords } from '../lib/intake-inventory-anim.mjs';
 import { recogniseBehaviour } from '../lib/motion-behaviours.mjs';
 import { blob } from '../lib/motion-record-text.mjs';
+import { loadAjv, MASTER_SCHEMAS } from '../lib/handoff.mjs';
+import fs from 'fs';
+import path from 'path';
 
 const DRAFT = ( timer ) => `class Component extends DCComponent {
   state = { page: 'home', tIdx: 0, now: 0 };
@@ -52,6 +55,16 @@ test( 'MUST FAIL: a timer-replayed entrance on an element that reads as no card 
 	assert.equal( speed( r ), null );
 } );
 
+test( 'MUST FAIL: a carousel, quote, review or rotator element is the slider autoplay too; a hero word rotator is still not', () => {
+	for ( const part of [ 'Carousel', 'Quote', 'Review', 'Rotator' ] ) {
+		const r = card( DRAFT( ROTATE ).replaceAll( '_tCard', `_${ part }` ).replaceAll( 'setTCard', `set${ part }` ), `set${ part }` );
+		assert.equal( speed( r ), 6500, part );
+	}
+	const word = card( DRAFT( ROTATE ).replaceAll( '_tCard', '_wordRotator' ).replaceAll( 'setTCard', 'setWordRotator' ), 'setWordRotator' );
+	assert.match( word.source.timer, /6500/ );
+	assert.equal( speed( word ), null );
+} );
+
 test( 'negative control: a timer that changes another key, or a key only a control changes, schedules nothing', () => {
 	const clock = card( DRAFT( 'this._c = setInterval(() => this.setState({ now: Date.now() }), 1000);' ) );
 	assert.equal( clock.source.timer, undefined );
@@ -59,4 +72,13 @@ test( 'negative control: a timer that changes another key, or a key only a contr
 	const none = card( DRAFT( '' ) );
 	assert.equal( none.source.timer, undefined );
 	assert.equal( recogniseBehaviour( none, { records: [ none ] } )?.kind === 'settings', false );
+} );
+
+test( 'MUST FAIL: a record that carries source.timer validates against the master animations schema (a timer-driven slider is not an inventory problem)', () => {
+	const r = card( DRAFT( ROTATE ) );
+	assert.ok( r.source.timer );
+	const schema = JSON.parse( fs.readFileSync( path.join( MASTER_SCHEMAS, 'animations.schema.json' ), 'utf8' ) );
+	const validate = loadAjv().compile( { $schema: schema.$schema, $defs: schema.$defs, $ref: '#/$defs/record' } );
+	assert.ok( validate( r ), JSON.stringify( validate.errors ) );
+	assert.equal( validate( { ...r, source: { ...r.source, timer: 6500 } } ), false, 'the timer is a string' );
 } );

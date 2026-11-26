@@ -168,7 +168,10 @@ export function partTarget( model, comp, expr ) {
 	}
 	const ids = [ ...new Set( parts.map( ( x ) => x.id ) ) ];
 	// An id a stamped template element carries itself (a `#hero-title` in the template) is that element, not injected content.
-	if ( ids.some( ( id ) => model.census.sources.some( ( src ) => matchSelector( src.stamped?.elements || [], `[id="${ id }"]` ).tpl.length ) ) ) {
+	// Only the components that stamp the holder (and the code's own) can hold it: another component's element with the
+	// same id is another page's element.
+	const stampers = new Set( [ comp, ...holders[ 0 ].map( ( h ) => h.comp ) ] );
+	if ( ids.some( ( id ) => model.census.sources.some( ( src ) => stampers.has( src.component ) && matchSelector( src.stamped?.elements || [], `[id="${ id }"]` ).tpl.length ) ) ) {
 		return null;
 	}
 	const one = ( x ) => `${ /^[A-Za-z_][\w-]*$/.test( x.id ) ? `#${ x.id }` : `[id="${ x.id }"]` }${ x.children ? ' > *' : '' }`;

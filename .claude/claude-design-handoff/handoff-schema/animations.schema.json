@@ -89,7 +89,8 @@
             "function": { "type": "string", "description": "Logic-class method, ref setter or external function. 'template' for transitions and pseudo rules." },
             "ref": { "type": ["string", "null"] },
             "line": { "type": ["integer", "null"], "description": "1-based line in source.file (the .dc.html or .js file as shipped). null for template records, which are identified by template_tpl_id." },
-            "code": { "type": "string" }
+            "code": { "type": "string" },
+            "timer": { "type": "string", "description": "The interval timer call that schedules the record when its trigger is a state a timer changes (setInterval(...), delay included), kept apart from code so the recognisers that read the effect's code never read the timer." }
           }
         },
         "trigger": {

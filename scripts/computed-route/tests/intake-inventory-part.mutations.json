@@ -73,7 +73,7 @@
 	},
 	{
 		"file": "lib/intake-inventory-part.mjs",
-		"find": "if ( ids.some( ( id ) => model.census.sources.some( ( src ) => matchSelector( src.stamped?.elements || [], `[id=\"${ id }\"]` ).tpl.length ) ) ) {",
+		"find": "if ( ids.some( ( id ) => model.census.sources.some( ( src ) => stampers.has( src.component ) && matchSelector( src.stamped?.elements || [], `[id=\"${ id }\"]` ).tpl.length ) ) ) {",
 		"replace": "if ( false ) {",
 		"why": "an element the template stamps with its own id becomes an injected part of its holder"
 	},
@@ -94,5 +94,23 @@
 		"find": "element( comp, part ? t.comp : owner,",
 		"replace": "element( comp, owner,",
 		"why": "a part held in another component is recorded under the script's owner"
+	},
+	{
+		"file": "lib/intake-inventory-part.mjs",
+		"find": "stampers.has( src.component ) && ",
+		"replace": "",
+		"why": "an element another component stamps with the same id rejects a real part of this holder"
+	},
+	{
+		"file": "lib/intake-inventory-anim.mjs",
+		"find": "{ comp: part ? t.comp : comp, tpl:",
+		"replace": "{ comp, tpl:",
+		"why": "a part's record names the code's component, not the component it is stamped in"
+	},
+	{
+		"file": "lib/intake-inventory-anim.mjs",
+		"find": "${ part?.byComp.length > 1 ? ` in ${ t.comp }` : '' }",
+		"replace": "",
+		"why": "the per-component records of one part carry one name"
 	}
 ]
