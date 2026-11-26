@@ -107,6 +107,8 @@ Changes:
 - Run render-scope from each test site's deployed commit to the tag.
 - Run the saved-content migrations each test site needs (cart trigger, account merge, marquee bars), in order with backups.
 - Deploy `sandybrown`, `indus-test` and `eye-care-clone-test` (`build-deploy.py --target a,b,c`).
+- Before eye-care-test's next deploy, cover its own pages: `local-eye-care` is a copy of eye-care-clone-test, not of eye-care-test, so no other mirror holds its pages (its home's `sgs/google-reviews` slider, and the card-grid, product-card, brand-strip and media changes G1 made). Its read-only scratch mirror is `local-mediatest-eyecaretest` (port 8130, registered in the gitignored `calibration-targets.local.json`); if it is gone, rebuild it through `heavy-slot.mjs run`: `scratch-mirror.sh create local-eye-care local-mediatest-eyecaretest 8130`, then `refresh-from-remote.sh local-mediatest-eyecaretest eye-care-test` (reads the site only), then `scratch-mirror.sh target local-mediatest-eyecaretest eye-care-test`. Include it in render-scope `--mirrors` and run render-check from it.
+- Before each site's next deploy, run render-scope and render-check for G1 (merged `dfa7e821b`: card-grid, product-card, brand-strip and the shared media emitters reach every site; Mama's shop templates and Eye Care's mega menus hold them).
 - Reclone Mama's, Eye Care and Indus offline in parallel, one per mirror, then `site-run.mjs --only` on the named surfaces.
 - Run a timed fresh-site rehearsal: one foundation and one page on a stripped scratch copy, to show how long SGS and MIC take.
 
