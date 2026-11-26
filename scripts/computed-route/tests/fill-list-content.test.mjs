@@ -12,7 +12,7 @@ import path from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 import { parseLogic } from '../lib/intake-ast.mjs';
 import { listItems, loopItems, currentItems, holeField } from '../lib/fill-list-items.mjs';
-import { listContentWrites, listTarget, matchFields, listDecisions, withPictures, applyChildren, keyRole, itemAttrs, loadItemRoles, ITEM_ROLES, ITEM_ROLES_FILE } from '../lib/fill-list-content.mjs';
+import { listContentWrites, listTarget, matchFields, listDecisions, withPictures, applyChildren, keyRole, itemAttrs, loadItemRoles, loadUnmatchedRole, ITEM_ROLES, ITEM_ROLES_FILE } from '../lib/fill-list-content.mjs';
 import { pictureSettles } from '../lib/fill-media.mjs';
 import { blockMediaSlots } from '../lib/media/slots.mjs';
 
@@ -263,6 +263,32 @@ test( 'the item-role vocabulary is data: a file breaking its schema or naming a 
 	assert.throws( () => loadItemRoles( write( { roles: [ { role: 'title', words: /title/.source } ] } ) ), /does not match/ );
 	fs.rmSync( dir, { recursive: true, force: true } );
 	assert.ok( ITEM_ROLES.length > 0 && ITEM_ROLES.every( ( [ r, w ] ) => 'string' === typeof r && w.size > 0 ), 'the committed vocabulary loads' );
+} );
+
+test( 'MUST FAIL: a draft field no other key matched (a count) lands in an open string subtitle key; a field another key matches is never moved, and a picture, a colour, an address or a block with no subtitle key is untouched', () => {
+	// sgs/card-grid's item keys as block.json lists them: title, subtitle, a picture, a badge, a link.
+	const card = [ { key: 'title', type: 'string' }, { key: 'subtitle', type: 'string' }, { key: 'source', type: 'object', role: 'image-object' }, { key: 'badge', type: 'string' }, { key: 'link', type: 'string' } ];
+	assert.equal( keyRole( 'subtitle' ), 'subtitle' );
+	assert.deepEqual( matchFields( [ { name: 'name' }, { name: 'count' } ], card ).map, { name: 'title', count: 'subtitle' }, 'the brand name is the title and the count the subtitle' );
+	assert.deepEqual( matchFields( [ { name: 'name' }, { name: 'count' } ], card ).unmatched, [] );
+	// Nothing another key matches moves: a field named subtitle, or one that plays the subtitle role, still takes the key first, so the count is left over.
+	const named = matchFields( [ { name: 'count' }, { name: 'subtitle' }, { name: 'title' } ], card );
+	assert.deepEqual( named.map, { subtitle: 'subtitle', title: 'title' } );
+	assert.deepEqual( named.unmatched, [ 'count' ] );
+	assert.deepEqual( matchFields( [ { name: 'count' }, { name: 'strapline' } ], card ).map, { strapline: 'subtitle' }, 'a field naming the role takes the key before a leftover' );
+	// A key another field matches by role stays with that field.
+	assert.deepEqual( matchFields( [ { name: 'description' }, { name: 'count' } ], [ { key: 'title', type: 'string' }, { key: 'description', type: 'string' }, { key: 'subtitle', type: 'string' } ] ).map, { description: 'description', count: 'subtitle' } );
+	// Never a picture, a colour, an address, or an identity; never a key that is not a string; no subtitle key, no move.
+	assert.deepEqual( matchFields( [ { name: 'photo', image: true }, { name: 'pic', image: true }, { name: 'bg', style: 'background' }, { name: 'href' }, { name: 'slug' } ], [ { key: 'subtitle', type: 'string' } ] ).map, {} );
+	assert.deepEqual( matchFields( [ { name: 'count' } ], [ { key: 'subtitle', type: 'object' } ] ).map, {}, 'a subtitle key that is not a string takes no text' );
+	assert.deepEqual( matchFields( [ { name: 'count' } ], [ { key: 'photo' }, { key: 'name' }, { key: 'role' }, { key: 'bio' } ] ).map, {}, 'a block with no subtitle key leaves the field unmatched' );
+	// The role is data: only one role may take unmatched fields, and the committed one is the subtitle.
+	assert.equal( loadUnmatchedRole().role, 'subtitle' );
+	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'item-roles-' ) );
+	fs.copyFileSync( ITEM_ROLES_FILE.replace( /\.json$/, '.schema.json' ), path.join( dir, 'item-roles.schema.json' ) );
+	fs.writeFileSync( path.join( dir, 'item-roles.json' ), JSON.stringify( { roles: [ { role: 'a', words: [ 'a' ], takesUnmatched: { skipRoles: [] } }, { role: 'b', words: [ 'b' ], takesUnmatched: { skipRoles: [] } } ] } ) );
+	assert.throws( () => loadUnmatchedRole( path.join( dir, 'item-roles.json' ) ), /more than one role has takesUnmatched/ );
+	fs.rmSync( dir, { recursive: true, force: true } );
 } );
 
 test( 'list targets come from the DB: one content array, else one child block', () => {
