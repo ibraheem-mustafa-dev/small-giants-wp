@@ -313,11 +313,26 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		if ( ! anchor ) {
 			return null;
 		}
+		// The control's loop copy: its outermost ancestor (itself included) stamped by the same loop of the same component. A value
+		// is read only inside that copy, never by copy number (copy numbers count stampings per host: every mounted card's elements
+		// end `#0`, and a copy whose title an `sc-if` drops shifts the numbers of the copies after it).
 		const loop = ( e.membership || [] ).filter( ( x ) => 'sc-for' === x.kind ).at( -1 );
-		const copy = /#(\d+)$/.exec( e.key )?.[ 1 ];
+		const inLoop = ( x ) => !! x && !! loop && x.template === e.template && ( x.membership || [] ).some( ( y ) => 'sc-for' === y.kind && y.tpl === loop.tpl );
+		let item = inLoop( e ) ? e : null;
+		while ( item && inLoop( m.byKey[ item.parentKey ] ) ) {
+			item = m.byKey[ item.parentKey ];
+		}
+		const within = ( x ) => {
+			for ( let y = x; y; y = m.byKey[ y.parentKey ] ) {
+				if ( y === item ) {
+					return true;
+				}
+			}
+			return false;
+		};
 		const valueOf = ( rest ) => {
-			const field = loop && undefined !== copy ? `${ loop.as }.${ rest }` : null;
-			const from = field ? m.els.find( ( x ) => x.key.endsWith( `#${ copy }` ) && ( x.membership || [] ).some( ( y ) => 'sc-for' === y.kind && y.tpl === loop.tpl ) && ( view.entry( x )?.template.holes || [] ).some( ( h ) => 'text' === h.where && field === h.path ) ) : null;
+			const field = item ? `${ loop.as }.${ rest }` : null;
+			const from = field ? m.els.find( ( x ) => within( x ) && inLoop( x ) && ( view.entry( x )?.template.holes || [] ).some( ( h ) => 'text' === h.where && field === h.path ) ) : null;
 			return from ? m.words( from ) : null;
 		};
 		return { href: prefillHref( { fields: open.fields, anchor, valueOf } ), form: anchor };

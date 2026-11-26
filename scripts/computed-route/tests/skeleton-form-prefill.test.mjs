@@ -180,6 +180,44 @@ test( 'NEGATIVE: a handler that scrolls elsewhere, a page with no linked form, a
 	assert.equal( buttonOf( partial, 24, 0 ).attributes.url, '?role=Warehouse%20Operative&team=Warehouse%20%26%20logistics#careers' );
 } );
 
+// The role values are read inside the control's own loop copy, never by copy number: a mounted card's elements all end `#0` (copy
+// numbers count stampings per host), and a copy whose title an `sc-if` drops shifts the numbers of the copies after it.
+const proposeWith = ( inv ) => {
+	const d = draft();
+	const f = loadFacts( { db, client: 'eye-care-ward-end', repo: REPO, siteName: 'Planted' } );
+	return proposeSkeleton( { inventory: inv, facts: { ...f, repo: d.repo }, surface: 'careers', surfaceKind: 'page', surfaceName: 'Careers', db, rootComponent: 'Site', factRecord: { ...RECORD(), sources: d.record.sources }, formLinks: LINKS, refs: REFS, openers: {} } );
+};
+const EXPECTED = [ '?role=Warehouse%20Operative&team=Warehouse%20%26%20logistics#careers', '?role=Driver&team=Warehouse%20%26%20logistics#careers', '?role=Sales%20Executive&team=Sales#careers' ];
+
+test( 'MUST FAIL: mounted cards whose element keys all end #0 each link their own role', () => {
+	const inv = inventory();
+	const rekey = ( k ) => k?.replace( /^Root\/(2[1-4])#(\d)$/, ( all, n, i ) => ( '21' === n ? `Root>Card@21#${ i }` : `Root>Card@21#${ i }/${ n }#0` ) );
+	inv.elements.forEach( ( x ) => Object.assign( x, { key: rekey( x.key ), parentKey: rekey( x.parentKey ) } ) );
+	const r = proposeWith( inv );
+	const url = ( i ) => nodes( r.skeleton ).find( ( x ) => x.draftRef?.tpl === `Root>Card@21#${ i }/24#0` )?.attributes.url;
+	assert.deepEqual( [ 0, 1, 2 ].map( url ), EXPECTED );
+} );
+
+test( 'MUST FAIL: a copy whose title an sc-if drops leaves its role out, and the copies after it keep their own', () => {
+	const inv = inventory();
+	inv.elements = inv.elements.filter( ( x ) => x.key !== 'Root/22#1' );
+	Object.assign( inv.elements.find( ( x ) => x.key === 'Root/22#2' ), { key: 'Root/22#1' } );
+	const r = proposeWith( inv );
+	assert.deepEqual( [ 0, 1, 2 ].map( ( i ) => buttonOf( r, 24, i ).attributes.url ), [ EXPECTED[ 0 ], '?team=Warehouse%20%26%20logistics#careers', EXPECTED[ 2 ] ] );
+} );
+
+test( 'NEGATIVE: inside the copy, an attribute printing the item path is no value, and a copy stops at the control\'s own loop (cards grouped by an outer loop)', () => {
+	const inv = inventory();
+	const OUTER = { kind: 'sc-for', list: '{{ groups }}', as: 'g', tpl: '98' };
+	const at = inv.elements.findIndex( ( x ) => x.key === 'Root/21#0' );
+	inv.elements.splice( at, 0, el( 20, 0, [ 1, 0 ], 'div', '', { membership: [ OUTER ] } ) );
+	inv.elements.filter( ( x ) => /^Root\/2[1-4]#/.test( x.key ) ).forEach( ( x ) => Object.assign( x, { membership: [ OUTER, ...FOR ] }, x.key.startsWith( 'Root/21#' ) ? { parentKey: 'Root/20#0' } : {} ) );
+	[ 0, 1, 2 ].forEach( ( i ) => inv.elements.splice( inv.elements.findIndex( ( x ) => x.key === `Root/22#${ i }` ), 0, el( 29, i, [ 21, i ], 'a', 'WRONG attribute', { loop: true, depth: 2 } ) ) );
+	inv.elements = inv.elements.filter( ( x ) => x.key !== 'Root/29#0' || x.parentKey === 'Root/21#0' );
+	const r = proposeWith( inv );
+	assert.deepEqual( [ 0, 1, 2 ].map( ( i ) => buttonOf( r, 24, i ).attributes.url ), EXPECTED );
+} );
+
 test( 'MUST FAIL: the saved form\'s root carries the anchor its page links to, from the slug the page\'s linked block references', () => {
 	const formInventory = { generated: 'x', source: 'planted', root: 'form', keyFormat: 'x', checks: { duplicateKeys: 0 }, elements: [ el( 6, 0, null, 'form', '', { depth: 0 } ), el( 7, 0, [ 6, 0 ], 'input', '', { attrs: { type: 'text' } } ) ] };
 	const d = draft();
