@@ -30,12 +30,11 @@ Accept all: [ ]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `page:page:about` | **changed** about → About (page, static, page) | about | header #4, drawer-2 #1 |  |
-| `page:page:help` | **changed** help → Help (page, static, page) | help | header #5, drawer-2 #2 |  |
-| `page:sgs_mega_menu:mega-menu-help` | **changed** (no route) → Help mega menu (sgs_mega_menu, static) | mega-menu-help | header #5 |  |
+| `page:page:about` | about → About (page, static, page) | about | header #4, drawer-2 #1 |  |
 | `page:page:cart` | (no route) → Your bag (page, static, cart) | cart |  | accept |
 | `page:page:checkout` | checkout → Checkout (page, static, checkout) | checkout |  | accept |
 | `page:page:contact` | contact → Contact (page, static, page) | contact | drawer-2 #3 | accept |
+| `page:page:help` | help → Help (page, static, page) | help | header #5, drawer-2 #2 |  |
 | `page:page:home` | home → Home (page, static, front-page) | home |  | accept |
 | `page:page:my-account` | signin → Sign in / register (page, static, page) | my-account |  | accept |
 | `page:page:prescription-lenses` | lenses → Lenses (page, static, page) | prescription-lenses | header #3, drawer-1 #3 | accept |
@@ -46,6 +45,7 @@ Accept all: [ ]
 | `page:sgs_form:form-submit-contact` | (no route) → submitContact (sgs_form, static) | form-submit-contact |  | accept |
 | `page:sgs_header:header` | (no route) → Header (sgs_header, static) | header |  | accept |
 | `page:sgs_mega_menu:mega-menu-brands` | (no route) → Brands mega menu (sgs_mega_menu, static) | mega-menu-brands | header #2 | accept |
+| `page:sgs_mega_menu:mega-menu-help` | (no route) → Help mega menu (sgs_mega_menu, static) | mega-menu-help | header #5 |  |
 | `page:sgs_mega_menu:mega-menu-lenses` | (no route) → Lenses mega menu (sgs_mega_menu, static) | mega-menu-lenses | header #3 | accept |
 | `page:sgs_mega_menu:mega-menu-sunglasses` | (no route) → Sunglasses mega menu (sgs_mega_menu, static) | mega-menu-sunglasses | header #1 | accept |
 | `page:sgs_modal:modal-size-guide` | (no route) → Size guide (sgs_modal, static) | modal-size-guide |  | accept |

@@ -143445,8 +143445,7 @@
    "contentHash": "2bfb831eb3c7fe0b6b6b0f7827ee7655738e42ded1ae2fcc3321dae72977c940",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "page:page:help",
@@ -143454,8 +143453,7 @@
    "contentHash": "f555d66c6ea0557370358a0cac36f7729fa4b8d75fd1197ea991625ae469f043",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "page:page:contact",
@@ -143575,8 +143573,7 @@
    "contentHash": "12ac9004bfbdee880f8bcf1a972152fb59033e45628e322c9981512547c541cb",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "catalogue:1",
