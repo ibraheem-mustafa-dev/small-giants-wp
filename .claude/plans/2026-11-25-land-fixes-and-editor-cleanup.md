@@ -167,7 +167,7 @@ Briefs:
 - `w3-editor-switcher.md`: element switcher, border and shadow upgrades, carousels.
 - `w4-trustbar-editor.md`: the trim list (one owner), the trust bar's lean layout and editor fixes, brand strip "Even visual size", "Trim empty edges".
 
-Status: in progress in the second session; branches `fix/w1-shared`, `fix/w2-packages`, `fix/w3-switcher` and `fix/w4-trustbar` exist and none is merged (the second session records each one's state).
+Status: done, not merged (2026-11-26). The four branches are reviewed, fixed and combined on `fix/w-stage1`, plus W1's media-place fix (`PlacedSuspense`, 617b90234) and W4's trust-bar editor crash fix (45ad3cb2d), both proven in a browser on a scratch copy. Render-check on Mama's (home, menu, basket drawer) shows only the trust bar band's inert `grid-template-columns` dropping, with identical pixels (accept at merge); Bean's eye check of Indus and eye-care-test before and after found no difference. Merges after Task 10's tag.
 
 ### Task 12: Stage E2, codemods across blocks (1 worker, after Task 11)
 Brief: `w5-editor-codemods.md` (base `fix/w-stage1`, Stage E1 combined; Pass 1 writes every list and stops for Bean).
@@ -180,7 +180,7 @@ Brief: `w5-editor-codemods.md` (base `fix/w-stage1`, Stage E1 combined; Pass 1 w
 - `sgsFocusRests` and the button's `focusStyle` stay as they are (Bean, 2026-11-25): retiring them would change focus behaviour on all three clients, Mama's live shop included, for more work than it saves.
 - The "Keyboard focus" switch moves out of its own panel on 85 blocks into a block-wide row at the top of the shared Hover panel; the 4 blocks with hover colours but no Hover panel show it in Colour, and the 3 with no hover value hide it (Bean, 2026-11-25). Only the control moves: the attribute, its behaviour and saved content are unchanged, so no site renders differently.
 
-Status: not started.
+Status: done, not merged (2026-11-26). `fix/w5-codemods` (on `fix/w-stage1`) applies all seven items with Bean's six answers; every detector's check exits 0, the editor census over every block is clean, and render-check on Mama's (36 states, the Dimensions sweep as `--step`) renders the same. After Bean's eye check the Keyboard focus switch is the last row of Hover and sits in WordPress's Advanced section on the 6 blocks with no Hover panel, and the text-shadow fields no longer sit three across. Combined with Stage E1 as `fix/w-stage2`. At merge: reseed, regenerate the setting records, `attr-role-map.json` and `css-property-classifications.json`, and the `configurator-schema-compat` snapshot.
 
 ### Task 13: Stage E3, per-block owners (up to 4 workers, after Task 12)
 Briefs: `w-e3-shared.md` (rules every owner follows; base `fix/w-stage2`, Stages E1 and E2 combined), `w6-editor-commerce.md` (shop and choice-flow blocks, product card), `w7-editor-nav.md` (menus, header, footer, responsive logo), `w8-editor-content.md` (cards, reviews, media, gallery), `w9-editor-text.md` (text, structure and form blocks, the shared target switchers, retired styles, the three document corrections). Every block folder has one owner; each owner's Pass 1 writes its lists and stops for Bean.
@@ -200,7 +200,7 @@ Named owners:
 
 Done when (Tasks 11 to 13): the browser panel census (`i8`) shows 0 single-control panels outside the register's kept cases, 0 duplicate titles, 0 order changes after a tab switch, and only first panels open; render-check shows no front-end change except the listed fixes.
 
-Status: not started.
+Status: in progress (2026-11-26). Pass 1 (lists for Bean) running for W6 (shop) and W7 (menus, header, logo) on `fix/w-stage2`; W8 and W9 start when those two report (machine memory).
 
 ### Task 29: Deferred: stored conditions and "show when"
 The setting record stores each setting's conditions in the DB (it computes them in `instances.py::preconditions` and discards them, `i17`). One shared rule hides controls with nothing to affect. The hand-built-panel and dead-control detectors (`i17`) and the panel census become gates, with an allowlist for the 10 intentionally different panels.
