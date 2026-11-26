@@ -350,6 +350,8 @@ if ( is_file( $block_json ) ) {
 	if ( is_array( $block_meta ) ) {
 		$block_type = (object) array( 'attributes' => is_array( $block_meta['attributes'] ?? null ) ? $block_meta['attributes'] : array() );
 	}
+} else {
+	$GLOBALS['sgs_qa_read_md5'][ $block_json ] = 'missing';
 }
 
 // --motion-targets: the registered block type, WordPress's attribute defaults and a WP_Block-shaped block, so the real
@@ -488,6 +490,8 @@ if ( isset( $args['render-children'] ) ) {
 			$child_raw                                 = (string) file_get_contents( $child_json );
 			$GLOBALS['sgs_qa_read_md5'][ $child_json ] = md5( $child_raw );
 			$child_meta                                = json_decode( $child_raw, true );
+		} else {
+			$GLOBALS['sgs_qa_read_md5'][ $child_json ] = 'missing';
 		}
 		$child_type = (object) array( 'attributes' => is_array( $child_meta['attributes'] ?? null ) ? $child_meta['attributes'] : array() );
 		$render     = static function ( array $attributes, string $content, object $block, string $render_path ): string {

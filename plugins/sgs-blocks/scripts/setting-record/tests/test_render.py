@@ -249,3 +249,18 @@ def test_must_fail_a_block_json_looked_for_and_missing_is_tracked(tmp_path):
     assert got.get('src/blocks/no-such-block/block.json') == 'missing'
     assert RN.outside_block('src/blocks/no-such-block/block.json', {'button'})
     assert RN.file_md5(RN.DEFAULT_PLUGIN / 'src/blocks/no-such-block/block.json') == 'missing'
+
+
+def test_a_block_json_missing_when_read_stays_missing_if_made_before_exit(tmp_path):
+    """A block type looked up while its block.json does not exist is recorded as 'missing' at the lookup, so a file made
+    before PHP exits (an edit during the render) does not pass for what the render saw (it rendered with no type)."""
+    made = RN.DEFAULT_PLUGIN / 'src/blocks/zz-made-during-render'
+    target = (made / 'block.json').as_posix()
+    try:
+        got = run_hook(tmp_path, "$r = WP_Block_Type_Registry::get_instance(); $r->get_registered('sgs/zz-made-during-render'); "
+                                 f"@mkdir('{made.as_posix()}'); file_put_contents('{target}', '{{}}'); ")
+        assert got.get('src/blocks/zz-made-during-render/block.json') == 'missing'
+    finally:
+        (made / 'block.json').unlink(missing_ok=True)
+        if made.exists():
+            made.rmdir()
