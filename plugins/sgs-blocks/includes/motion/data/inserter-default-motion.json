@@ -401,6 +401,27 @@
             }
         }
     },
+    "sgs/trust-bar": {
+        "sgsMotion": {
+            "v": 1,
+            "elements": {
+                "root": {
+                    "effects": [
+                        {
+                            "id": "marquee",
+                            "effect": "marquee",
+                            "values": {
+                                "speed": 40,
+                                "hoverRate": 0,
+                                "touchPause": "hold",
+                                "belowBreakpoint": "overflow"
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    },
     "sgs/trustpilot-reviews": {
         "sgsMotion": {
             "v": 1,
