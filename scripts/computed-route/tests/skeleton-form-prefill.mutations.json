@@ -31,5 +31,6 @@
 	{"file": "lib/fill-form.mjs", "find": "const owner = formOwner( rec );", "replace": "const owner = null;", "why": "a field built from the schema (no target) reads the served page's openers, not its enclosing form's"},
 	{"file": "lib/skeleton-rules.mjs", "find": "while ( first > 0 && rises( first - 1, first ) ) {", "replace": "while ( false ) {", "why": "a loop body of several top-level elements: the title and team before the button are left out of its copy"},
 	{"file": "lib/skeleton-rules.mjs", "find": "while ( last >= 0 && last < run.length - 1 && rises( last, last + 1 ) ) {", "replace": "while ( false ) {", "why": "the button first: the title and team after it are left out of its copy"},
-	{"file": "lib/skeleton-rules.mjs", "find": "const rises = ( a, b ) => Number( run[ a ]?.tpl ) < Number( run[ b ]?.tpl );", "replace": "const rises = ( a, b ) => undefined !== run[ a ] && undefined !== run[ b ];", "why": "a copy is not bounded by source order, so it runs into its neighbours"}
+	{"file": "lib/skeleton-rules.mjs", "find": "const rises = ( a, b ) => Number( run[ a ]?.tpl ) < Number( run[ b ]?.tpl );", "replace": "const rises = ( a, b ) => undefined !== run[ a ] && undefined !== run[ b ];", "why": "a copy is not bounded by source order, so it runs into its neighbours"},
+	{"file": "lib/skeleton-rules.mjs", "find": "m.els.find( ( x ) => within( x, [ item ] ) && prints( x ) ) || ", "replace": "", "why": "a copy drawn by a higher-numbered sc-if alternative reads the lower-numbered card before it"}
 ]

@@ -253,6 +253,27 @@ test( 'MUST FAIL: a loop body of several top-level elements (no wrapper) links e
 	assert.deepEqual( urls( footed ), EXPECTED, 'a button in the card\'s footer' );
 } );
 
+// A loop body whose top-level elements are sc-if alternatives: each copy draws one card, and the second copy's variant has its own,
+// higher template ids (41 to 44). Ids rise from the first copy's card to the second's, so the run around the second card takes in the
+// first; the second button still reads its own card's title and team.
+test( 'MUST FAIL: a copy drawn by an sc-if alternative with higher template ids reads its own card, not the lower-numbered card before it', () => {
+	const inv = inventory();
+	const variant = { 21: 41, 22: 42, 23: 43, 24: 44 };
+	inv.elements.filter( ( x ) => /^Root\/2[1-4]#1$/.test( x.key ) ).forEach( ( x ) => {
+		const n = variant[ x.tpl ];
+		Object.assign( x, { key: `Root/${ n }#1`, tpl: n, parentKey: 'Root/21#1' === x.parentKey ? 'Root/41#1' : x.parentKey, snippet: x.snippet.replace( /data-dc-tpl="\d+"/, `data-dc-tpl="${ n }"` ) } );
+	} );
+	const hole = ( path ) => [ { id: 'text#0', where: 'text', expr: path, path, whole: false } ];
+	const entries = {
+		'Site/41': entry( 'div', 'Site/1', [ 'Site/1' ] ),
+		'Site/42': entry( 'h3', 'Site/41', [ 'Site/41', 'Site/1' ], hole( 'ro.title' ) ),
+		'Site/43': entry( 'span', 'Site/41', [ 'Site/41', 'Site/1' ], hole( 'ro.team' ) ),
+		'Site/44': entry( 'button', 'Site/41', [ 'Site/41', 'Site/1' ] ),
+	};
+	const r = proposeWith( inv, entries );
+	assert.deepEqual( [ buttonOf( r, 24, 0 ), buttonOf( r, 44, 1 ), buttonOf( r, 24, 2 ) ].map( ( b ) => b?.attributes.url ), EXPECTED );
+} );
+
 test( 'NEGATIVE: inside the copy, an attribute printing the item path is no value, and a copy stops at the control\'s own loop (cards grouped by an outer loop)', () => {
 	const inv = inventory();
 	const OUTER = { kind: 'sc-for', list: '{{ groups }}', as: 'g', tpl: '98' };

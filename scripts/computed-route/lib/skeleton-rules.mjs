@@ -336,17 +336,21 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			last++;
 		}
 		const roots = item ? run.slice( first, last + 1 ) : [];
-		const within = ( x ) => {
+		const within = ( x, set ) => {
 			for ( let y = x; y; y = m.byKey[ y.parentKey ] ) {
-				if ( roots.includes( y ) ) {
+				if ( set.includes( y ) ) {
 					return true;
 				}
 			}
 			return false;
 		};
+		// A value is read in the control's own root first, and in the wider run only when that root prints none: a body whose
+		// top-level elements are sc-if alternatives (one card per copy, each variant its own template id) can put a lower-numbered
+		// neighbouring copy in the run, whose title is not this copy's.
 		const valueOf = ( rest ) => {
 			const field = item ? `${ loop.as }.${ rest }` : null;
-			const from = field ? m.els.find( ( x ) => within( x ) && inLoop( x ) && ( view.entry( x )?.template.holes || [] ).some( ( h ) => 'text' === h.where && field === h.path ) ) : null;
+			const prints = ( x ) => inLoop( x ) && ( view.entry( x )?.template.holes || [] ).some( ( h ) => 'text' === h.where && field === h.path );
+			const from = field ? m.els.find( ( x ) => within( x, [ item ] ) && prints( x ) ) || m.els.find( ( x ) => within( x, roots ) && prints( x ) ) : null;
 			return from ? m.words( from ) : null;
 		};
 		return { href: prefillHref( { fields: open.fields, anchor, valueOf } ), form: anchor };
