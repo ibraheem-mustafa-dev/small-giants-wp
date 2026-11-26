@@ -28,5 +28,29 @@
 		"find": "\treturn root?.key ?? key;",
 		"replace": "\treturn key;",
 		"why": "the card is read at the loop cell"
+	},
+	{
+		"file": "lib/template-piece-draft.mjs",
+		"find": "return fills || ( shownEl( d ) && siblings.filter( shownEl ).length === 1 );",
+		"replace": "return true;",
+		"why": "a small component beside the card is read as the card"
+	},
+	{
+		"file": "lib/template-piece-draft.mjs",
+		"find": "return fills || ( shownEl( d ) && siblings.filter( shownEl ).length === 1 );",
+		"replace": "return fills;",
+		"why": "a card the copy pads is not read as the card"
+	},
+	{
+		"file": "lib/template-piece-draft.mjs",
+		"find": "&& index.byKey.get( d.parentKey )?.template === copy.template && index.within( d.key, key ) && isMountedCard(",
+		"replace": "&& index.within( d.key, key ) && isMountedCard(",
+		"why": "a component nested in a rejected one is taken as the card"
+	},
+	{
+		"file": "lib/template-piece-draft.mjs",
+		"find": "Math.abs( a.x + a.w - b.x - b.w ) <= 2 && Math.abs( a.y + a.h - b.y - b.h ) <= 2",
+		"replace": "true",
+		"why": "a box sharing the copy's corner only is taken as filling it"
 	}
 ]

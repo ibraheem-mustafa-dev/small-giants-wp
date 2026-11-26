@@ -22,6 +22,7 @@
 
 import { templateKey } from './fact-key.mjs';
 import { isAccountRow } from './site-build-map.mjs';
+import { isMountedCard } from './template-piece-draft.mjs';
 
 // The commerce role of a surface, by the template it builds (surfaces.json `target.template`) or, for the account page
 // (an ordinary page holding WooCommerce's account piece), the page row its post is; the checkout page's route (a cart's
@@ -151,7 +152,8 @@ export function commerceRegion( { m, commerce, rule } ) {
 	};
 	// The card a loop item mounts: the root element of the draft's card component, the box its border, radius, shadow and parts are
 	// read from. The item is the loop's cell, which only places the card in the listing (its columns, its place), never a card's look.
-	const cardOf = ( item ) => m.els.find( ( d ) => d.template !== item.template && m.byKey[ d.parentKey ]?.template === item.template && ancestors( d ).includes( item ) ) ?? null;
+	// A small component mounted beside the card (a star rating, an icon) is not the card (lib/template-piece-draft.mjs::isMountedCard).
+	const cardOf = ( item ) => m.els.find( ( d ) => d.template !== item.template && m.byKey[ d.parentKey ]?.template === item.template && ancestors( d ).includes( item ) && isMountedCard( d, item, m.els.filter( ( e ) => e.parentKey === d.parentKey ) ) ) ?? null;
 	const found = [];
 	if ( 'cart' === commerce.role ) {
 		for ( const [ , list ] of moneyLoops ) {

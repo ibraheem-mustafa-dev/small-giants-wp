@@ -4,5 +4,11 @@
 		"find": "...( r.item ? { itemTemplate: true, eachRecord: true } : {} )",
 		"replace": "...( {} )",
 		"why": "the shop's card is not marked as standing for every product"
+	},
+	{
+		"file": "lib/skeleton-commerce-region.mjs",
+		"find": " && isMountedCard( d, item, m.els.filter( ( e ) => e.parentKey === d.parentKey ) )",
+		"replace": "",
+		"why": "a star rating mounted before the card is read as the card"
 	}
 ]

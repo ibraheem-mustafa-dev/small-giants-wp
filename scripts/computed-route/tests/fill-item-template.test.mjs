@@ -72,11 +72,12 @@ test( 'a loop card already holding a variant keeps it; a block with no variant s
 	assert.deepEqual( holdItemVariants( { nodes: [ { index: 0, name: 'sgs/text', node: { itemTemplate: true, eachRecord: true } } ], flat, db, schemaOf: blockSchema, refOf: () => 'x' } ), [] );
 } );
 
-test( 'MUST FAIL: the card a loop copy mounts is read at the mounted component\'s root, never the loop cell', () => {
-	const el = ( key, parentKey, template ) => ( { key, parentKey, template, tag: 'div' } );
+test( 'MUST FAIL: the card a loop copy mounts is read at the root of the mounted component, never the loop cell', () => {
+	const box = ( x, y, w, h ) => ( { 1440: { x, y, w, h } } );
+	const el = ( key, parentKey, template, extra = {} ) => ( { key, parentKey, template, tag: 'div', visible: { 1440: true }, ...extra } );
 	const index = inventoryIndex( { elements: [
-		el( 'Root/1#0', 'Root/0#0', 'Root' ), el( 'Root/2#0', 'Root/1#0', 'Root' ), el( 'Root/3#0', 'Root/2#0', 'Root' ),
-		el( 'Root>ProductCard@3#0/0#0', 'Root/3#0', 'ProductCard' ), el( 'Root>ProductCard@3#0/1#0', 'Root>ProductCard@3#0/0#0', 'ProductCard' ),
+		el( 'Root/1#0', 'Root/0#0', 'Root', { box: box( 0, 0, 300, 420 ) } ), el( 'Root/2#0', 'Root/1#0', 'Root', { box: box( 0, 0, 300, 420 ) } ), el( 'Root/3#0', 'Root/2#0', 'Root', { box: box( 0, 0, 300, 420 ) } ),
+		el( 'Root>ProductCard@3#0/0#0', 'Root/3#0', 'ProductCard', { box: box( 0, 0, 300, 420 ) } ), el( 'Root>ProductCard@3#0/1#0', 'Root>ProductCard@3#0/0#0', 'ProductCard' ),
 		el( 'Root>ProductCard@3#0/1#0>Badge@1#0/0#0', 'Root>ProductCard@3#0/1#0', 'Badge' ),
 	] } );
 	assert.equal( mountedRoot( index, 'Root/2#0' ), 'Root>ProductCard@3#0/0#0', 'through a wrapper of its own component, before the badge nested in the card' );
@@ -84,4 +85,16 @@ test( 'MUST FAIL: the card a loop copy mounts is read at the mounted component\'
 	const bare = inventoryIndex( { elements: [ el( 'Root/1#0', 'Root/0#0', 'Root' ), el( 'Root/2#0', 'Root/1#0', 'Root' ) ] } );
 	assert.equal( mountedRoot( bare, 'Root/1#0' ), 'Root/1#0', 'a copy mounting no card is read itself' );
 	assert.equal( mountedRoot( bare, 'Root/99#0' ), 'Root/99#0' );
+	// A small component mounted in the copy before the card (a star rating beside the title) is not the card.
+	const rated = inventoryIndex( { elements: [
+		el( 'Root/1#0', 'Root/0#0', 'Root', { box: box( 0, 0, 300, 420 ) } ), el( 'Root/2#0', 'Root/1#0', 'Root', { box: box( 0, 0, 300, 20 ) } ),
+		el( 'Root>Stars@2#0/0#0', 'Root/2#0', 'Stars', { box: box( 0, 0, 80, 16 ) } ),
+		el( 'Root>Stars@2#0/0#0>Icon@0#0/0#0', 'Root>Stars@2#0/0#0', 'Icon', { box: box( 0, 0, 300, 420 ) } ),
+		el( 'Root/4#0', 'Root/2#0', 'Root', { box: box( 90, 0, 40, 16 ) } ),
+		el( 'Root>ProductCard@1#0/0#0', 'Root/1#0', 'ProductCard', { box: box( 0, 0, 300, 420 ) } ),
+	] } );
+	assert.equal( mountedRoot( rated, 'Root/1#0' ), 'Root>ProductCard@1#0/0#0', 'the rating neither fills the copy nor stands alone; a component inside it is never a mount of the copy' );
+	// The only shown element of its parent counts as the card though its box is inset (the copy pads it).
+	const inset = inventoryIndex( { elements: [ el( 'Root/1#0', 'Root/0#0', 'Root', { box: box( 0, 0, 300, 420 ) } ), el( 'Root>Card@1#0/0#0', 'Root/1#0', 'Card', { box: box( 10, 10, 280, 400 ) } ), el( 'Root/9#0', 'Root/1#0', 'Root', { visible: { 1440: false } } ) ] } );
+	assert.equal( mountedRoot( inset, 'Root/1#0' ), 'Root>Card@1#0/0#0' );
 } );

@@ -34,12 +34,23 @@ export function inventoryIndex( inventory ) {
 	return { elements, byKey, order: ( k ) => rank.get( k ) ?? -1, children: ( k ) => kids.get( k ) || [], chain, within: ( k, anc ) => chain( k ).includes( anc ) };
 }
 
-// The root of the card a loop copy mounts (`key`, an element of the loop): the first element inside it, in stamp order, drawn by
-// another component (the draft's card, mounted by dc-import; a component nested in the card comes after the card's root). Its box
+// Whether `d`, an element of another component mounted inside a loop copy, is the copy's card and not a small component beside it
+// (a star rating, an icon): it fills the copy's box at 1440 (each edge within 2px), or it is the only shown element of its parent.
+// siblings: the elements sharing d's parent.
+export function isMountedCard( d, copy, siblings ) {
+	const a = d?.box?.[ 1440 ];
+	const b = copy?.box?.[ 1440 ];
+	const fills = !! a && !! b && Math.abs( a.x - b.x ) <= 2 && Math.abs( a.y - b.y ) <= 2 && Math.abs( a.x + a.w - b.x - b.w ) <= 2 && Math.abs( a.y + a.h - b.y - b.h ) <= 2;
+	const shownEl = ( e ) => Object.values( e?.visible || {} ).some( Boolean );
+	return fills || ( shownEl( d ) && siblings.filter( shownEl ).length === 1 );
+}
+
+// The root of the card a loop copy mounts (`key`, an element of the loop): the first element inside it drawn by another component,
+// mounted on an element of the copy's own component (the draft's card, by dc-import), that is the card (isMountedCard). Its box
 // carries the card's border, radius, shadow and parts; the copy only places it in the listing. The copy's own key when it mounts none.
 export function mountedRoot( index, key ) {
 	const copy = index.byKey.get( key );
-	const root = copy ? index.elements.find( ( d ) => d.template !== copy.template && index.within( d.key, key ) ) : null;
+	const root = copy ? index.elements.find( ( d ) => d.template !== copy.template && index.byKey.get( d.parentKey )?.template === copy.template && index.within( d.key, key ) && isMountedCard( d, copy, index.children( d.parentKey ).map( ( k ) => index.byKey.get( k ) ) ) ) : null;
 	return root?.key ?? key;
 }
 

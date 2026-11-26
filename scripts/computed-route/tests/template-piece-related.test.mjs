@@ -45,7 +45,7 @@ test( 'MUST FAIL: the draft\'s other products sharing the shown product\'s brand
 
 test( 'MUST FAIL: a related card each copy mounts (the draft\'s card component) is read at that card\'s root, not the loop cell', () => {
 	// Each copy Root/4#c mounts a ProductCard whose root holds the card's border, radius, shadow and parts.
-	const mounted = [ 0, 1, 2, 3 ].map( ( c ) => ( { key: `Root>ProductCard@4#${ c }/0#0`, parentKey: `Root/4#${ c }`, tag: 'article', template: 'ProductCard', tpl: 0, srcOwnText: '', words: '', snippet: '<article>', visible: { 1440: true }, membership: [], position: { 1440: 'static' } } ) );
+	const mounted = [ 0, 1, 2, 3 ].map( ( c ) => ( { key: `Root>ProductCard@4#${ c }/0#0`, parentKey: `Root/4#${ c }`, tag: 'article', template: 'ProductCard', tpl: 0, srcOwnText: '', words: '', snippet: '<article>', visible: { 1440: true }, membership: [], position: { 1440: 'static' }, box: box( 100 + 310 * c, 900 ) } ) );
 	const got = place( ctx( { inventory: { elements: [ ...ELEMENTS(), ...mounted ] } } ), PIECE );
 	const cardNode = got.tree[ 0 ].innerBlocks[ 1 ].innerBlocks[ 0 ].innerBlocks[ 0 ];
 	assert.deepEqual( cardNode.draftRef, { tpl: 'Root>ProductCard@4#0/0#0' } );
