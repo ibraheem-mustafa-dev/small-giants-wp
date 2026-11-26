@@ -506,8 +506,14 @@ def bridge_plan(block: str, snapshot_file: Path) -> dict:
     return out
 
 
+PAGE_KEEP = 8  # settled pages a Reader keeps built at once (Reader.page)
+
+
 class Reader:
-    """Pages built once each, settled (footer moved, overlay scroll run) and read on demand."""
+    """Pages built on demand, settled (footer moved, overlay scroll run) and read. A built page (its parsed HTML and every
+    rule it matched) holds about 3 MB, and a block with 1,000 renders to read (sgs/nav-bar-menu) held them all: 3.3 GB in one
+    worker, so a build died when the machine ran short of memory. A reading is kept (style, content), a page is kept only
+    while it is being read: the last PAGE_KEEP stay, the rest are dropped here and from the Pages' own memo."""
 
     def __init__(self, pages, results, props):
         self.pages, self.results, self.props = pages, results, props
@@ -519,6 +525,11 @@ class Reader:
             pg = self.pages.get(job, held=held)
             settle(pg, self.results[job])
             self.memo[key] = pg
+            if 'keep-pages' not in MUTATE:
+                for k in [k for k, v in self.pages.memo.items() if v is pg]:
+                    del self.pages.memo[k]
+                while len(self.memo) > PAGE_KEEP:
+                    del self.memo[next(iter(self.memo))]
         return self.memo[key]
 
     def ok(self, job: str) -> bool:
@@ -977,10 +988,10 @@ def main(argv=None) -> int:
         for j in jobs:
             try:
                 b, how = write_block(j)
-                print(f'{b}: {how}')
+                print(f'{b}: {how}', flush=True)
             except Exception as exc:  # noqa: BLE001 - one block's failure is reported, the rest still build
                 failed += 1
-                print(f'{j[0]}: FAILED {type(exc).__name__}: {exc}')
+                print(f'{j[0]}: FAILED {type(exc).__name__}: {exc}', flush=True)
     return 1 if failed else 0
 
 

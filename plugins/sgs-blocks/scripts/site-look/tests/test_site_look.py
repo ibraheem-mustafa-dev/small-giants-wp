@@ -95,6 +95,31 @@ def test_button_text_link_and_presence(tmp_path):
     assert look['presence']['iconPosition=only']['hides'] == ['.sgs-button__label']
 
 
+def test_reader_holds_a_few_pages_not_every_page_it_read(monkeypatch):
+    """MUST FAIL with SITE_LOOK_MUTATE=keep-pages: sgs/nav-bar-menu reads about 1,200 pages and each held about 3 MB, so one
+    build held 3.3 GB and died when the machine ran short of memory. The Reader keeps the last SL.PAGE_KEEP pages and
+    drops the rest from its own memo and from the Pages' memo (a page it dropped is rebuilt if asked for again)."""
+    class Pages:
+        def __init__(self):
+            self.memo, self.built = {}, 0
+
+        def get(self, job, held=()):
+            self.built += 1
+            self.memo[(job, frozenset(held), frozenset(), None, ())] = page = object()
+            return page
+
+    monkeypatch.setattr(SL, 'settle', lambda page, res: None)
+    pages = Pages()
+    reader = SL.Reader(pages, {f'j{i}': {} for i in range(200)}, {})
+    for i in range(200):
+        reader.page(f'j{i}')
+    assert len(reader.memo) <= SL.PAGE_KEEP
+    assert len(pages.memo) == 0, 'the Pages kept no page the Reader let go'
+    assert reader.page('j199') is reader.page('j199') and pages.built == 200, 'a page still held is not built again'
+    reader.page('j0')
+    assert pages.built == 201, 'a dropped page is built again when asked for'
+
+
 def test_fold_matches_the_route(tmp_path):
     """MUST FAIL with SITE_LOOK_MUTATE=fold-depth: the Python fold gives what the route's own fold
     (tools/site-look-bridge.mjs fold, calibration's functions) gives on the same readings."""
