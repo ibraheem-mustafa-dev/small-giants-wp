@@ -58,5 +58,17 @@
 		"find": "templateValueLoop( r, loops[ t.id ], all )",
 		"replace": "templateValueLoop( r, loops[ t.id ] )",
 		"why": "the writer would not pass the element's other records, so a loop they own would be taken"
+	},
+	{
+		"file": "lib/motion-loops.mjs",
+		"find": "return !! l && l.css && l.name === name;",
+		"replace": "return !! l;",
+		"why": "a script animation beside the CSS loop would claim it, so a template-value ticker would be dropped"
+	},
+	{
+		"file": "lib/motion-loops.mjs",
+		"find": "const namesIt = ( o ) => 'css-animation' === o.mechanism && ",
+		"replace": "const namesIt = ( o ) => ",
+		"why": "a non-CSS record naming the loop would claim it"
 	}
 ]

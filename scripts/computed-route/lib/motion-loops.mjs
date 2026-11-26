@@ -74,9 +74,14 @@ export function templateValueLoop( record, byWidth, others = [] ) {
 		return record;
 	}
 	const [ name ] = names;
-	// The loop belongs to another record of the element (its own stylesheet animation by that name, or one the measured
-	// loop matches): the template value is not it.
-	const claimed = ( others || [] ).some( ( o ) => o !== record && o.id !== record.id && ( ( o.properties || [] ).some( ( p ) => 'animation-name' === p.property && p.to === name ) || Object.values( byWidth ).some( ( m ) => measuredLoopOf( o, m ) ) ) );
+	// The loop belongs to another record of the element: its own stylesheet animation by that name, or a record whose
+	// measured loop is that CSS loop. A record matching some other measured loop (a script loop beside it) claims nothing.
+	const namesIt = ( o ) => 'css-animation' === o.mechanism && ( o.properties || [] ).some( ( p ) => 'animation-name' === p.property && p.to === name );
+	const matches = ( o ) => Object.values( byWidth ).some( ( m ) => {
+		const l = measuredLoopOf( o, m );
+		return !! l && l.css && l.name === name;
+	} );
+	const claimed = ( others || [] ).some( ( o ) => o !== record && o.id !== record.id && ( namesIt( o ) || matches( o ) ) );
 	if ( claimed ) {
 		return record;
 	}

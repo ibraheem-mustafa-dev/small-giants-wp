@@ -222,6 +222,14 @@ test( 'MUST FAIL: a CSS animation set through a template value is the loop the r
 	const pulsing = { 1440: timedLoop( 'pulse', 2000, { width: 300, height: 300 } ), 768: timedLoop( 'pulse', 2000, { width: 300, height: 300 } ), 375: timedLoop( 'pulse', 2000, { width: 300, height: 300 } ) };
 	assert.equal( templateValueLoop( heroIn, pulsing, [ heroIn, pulse ] ), heroIn, "the measured loop is the other record's" );
 	assert.equal( templateValueLoop( heroIn, pulsing, [ heroIn ] ).iterations, 'infinite', "control: with no other record naming it, the loop is the template value's" );
+	// A sibling script animation with no properties matches a script-driven loop measured beside the CSS loop; it never
+	// claims the CSS loop, so the template value still reads as it (and the Eye Care header's K-01 stays infinite).
+	const scripted = rec( 'W-01', { mechanism: 'waapi', element: HOLE.element, properties: [] } );
+	const withScript = { ...PHONE_ONLY, 375: { ...PHONE_ONLY[ 375 ], loops: [ ...PHONE_ONLY[ 375 ].loops, { css: false, name: null, duration: 1200, delay: 0, direction: 'normal', easing: 'linear', frames: [ { offset: 0, opacity: 1 }, { offset: 1, opacity: 0.5 } ] } ] } };
+	assert.equal( templateValueLoop( HOLE, withScript, [ HOLE, scripted ] ).iterations, 'infinite', 'a script loop beside the CSS loop does not claim it' );
+	assert.equal( templateValueLoop( HOLE, PHONE_ONLY, [ HOLE ] ).iterations, 'infinite' );
+	const namingScript = rec( 'W-02', { mechanism: 'waapi', element: HOLE.element, properties: [ { property: 'animation-name', from: null, to: 'marquee' } ] } );
+	assert.equal( templateValueLoop( HOLE, PHONE_ONLY, [ HOLE, namingScript ] ).iterations, 'infinite', 'only a CSS animation names a stylesheet loop' );
 	const script = { ...HOLE, mechanism: 'waapi' };
 	assert.equal( templateValueLoop( script, PHONE_ONLY ), script );
 } );
