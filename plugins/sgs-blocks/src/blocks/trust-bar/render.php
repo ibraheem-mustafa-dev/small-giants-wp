@@ -596,6 +596,7 @@ foreach ( $items as $tb_item_index => $item ) {
 		$icon_slug = isset( $item['icon'] ) ? sanitize_key( (string) $item['icon'] ) : '';
 		$raw_svg   = isset( $item['iconSvg'] ) ? (string) $item['iconSvg'] : '';
 
+		$tb_custom_svg = false;
 		if ( '' !== $icon_slug ) {
 			// IconPicker stores the slug directly — resolved, sanitised through the same
 			// wp_kses allowlist as the raw-SVG branch, `check` for an unknown slug.
@@ -622,6 +623,7 @@ foreach ( $items as $tb_item_index => $item ) {
 			// intact so a deliberately `fill="none"` outline icon keeps its shape.
 			$raw_svg = (string) preg_replace( '/\sstyle\s*=\s*(["\']).*?\1/is', '', $raw_svg );
 			$svg     = wp_kses( $raw_svg, sgs_svg_kses_allowed_tags() );
+			$tb_custom_svg = true;
 		} else {
 			// No icon set — show the generic check tick so the badge is never blank.
 			$svg = sgs_get_lucide_icon( 'check' );
@@ -661,10 +663,12 @@ foreach ( $items as $tb_item_index => $item ) {
 			}
 		}
 
+		// A custom SVG's wrapper says so (`--custom`): the filled rule reaches its own currentColor shapes only there, so a
+		// two-tone library icon (a contrasting dot drawn in currentColor) keeps its second colour (style.css).
 		$items_html .= sprintf(
 			'<div class="sgs-trust-bar__badge"%s><span class="%s" aria-hidden="true">%s</span><span class="sgs-trust-bar__label">%s</span></div>',
 			$item_attrs,
-			esc_attr( $circle_class ),
+			esc_attr( $circle_class . ( $tb_custom_svg ? ' ' . $icon_base_class . '--custom' : '' ) ),
 			$svg,
 			esc_html( $item_label )
 		);
