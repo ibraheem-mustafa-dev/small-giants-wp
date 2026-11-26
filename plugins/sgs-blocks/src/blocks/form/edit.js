@@ -1902,6 +1902,7 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 						} }
 					/>
 					<ResponsiveOverride
+						label={ __( 'Field padding', 'sgs-blocks' ) }
 						value={ fieldPadding }
 						onChange={ ( obj ) =>
 							setAttributes( { fieldPadding: obj } )

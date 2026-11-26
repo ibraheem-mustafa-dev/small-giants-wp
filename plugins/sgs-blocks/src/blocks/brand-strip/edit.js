@@ -535,7 +535,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{ /* columns is a TIER OBJECT {desktop,tablet,mobile} (D777/S2 fix,
 					   2026-09-04) — was 3 flat scalar attrs. Kept on the existing
 					   <ResponsiveControl> (global-tier switcher, not
-					   <ResponsiveOverride>'s inherit model) because each tier
+					   <ResponsiveOverride label={ __( 'Columns', 'sgs-blocks' ) }>'s inherit model) because each tier
 					   always carries its own concrete baked-in default (8/4/6)
 					   and a DIFFERENT max per tier — the shape here never had
 					   inheritance semantics, so introducing them would be new

@@ -375,6 +375,7 @@ export default function RowScrollBehaviourControls( {
 					{ shrinkIsOn && (
 						<>
 							<ResponsiveOverride
+								label={ __( 'Padding when shrunk', 'sgs-blocks' ) }
 								value={ rowShrinkPadding }
 								onChange={ ( obj ) =>
 									setAttributes( { rowShrinkPadding: obj } )

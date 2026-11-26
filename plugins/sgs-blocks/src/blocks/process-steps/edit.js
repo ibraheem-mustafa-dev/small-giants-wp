@@ -86,6 +86,7 @@ function PartMarginBox( {
 } ) {
 	return (
 		<ResponsiveOverride
+			label={ label }
 			value={ attributes[ attrName ] }
 			onChange={ ( obj ) => setAttributes( { [ attrName ]: obj } ) }
 		>

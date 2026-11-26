@@ -1066,7 +1066,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 						    Empty = inherit the variant's own alignment. textAlign is a
 						    TIER OBJECT {desktop,tablet,mobile} (D777/S2 fix,
 						    2026-09-04) — ONE attr, bound directly via
-						    <ResponsiveOverride> (mirrors minHeight/gridTemplateColumns
+						    <ResponsiveOverride label={ __( 'Content text align', 'sgs-blocks' ) }> (mirrors minHeight/gridTemplateColumns
 						    above), replacing the old three-flat-attr attrMap. */ }
 						<ToolsPanelItem
 							label={ __( 'Content text align', 'sgs-blocks' ) }
@@ -1116,7 +1116,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 						>
 							{ /* minHeight is a TIER OBJECT {desktop,tablet,mobile}
 							     (Spec 35 pass 3b) — ONE attr, bound directly via
-							     <ResponsiveOverride> (mirrors gridTemplateColumns
+							     <ResponsiveOverride label={ __( 'Min height', 'sgs-blocks' ) }> (mirrors gridTemplateColumns
 							     above). Blank on tablet inherits the desktop rule
 							     (render.php emits no @media override); blank on
 							     mobile falls back to render.php's own "360px"
@@ -1717,7 +1717,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 								     bespoke splitGap* "Column gap" control was a duplicate. */ }
 								{ /* splitContentOrder is a TIER OBJECT {desktop,tablet,mobile}
 								     (Spec 35 pass 3b) — ONE attr, bound via
-								     <ResponsiveOverride> (mirrors gridTemplateColumns above).
+								     <ResponsiveOverride label={ __( 'Column / stacking order', 'sgs-blocks' ) }> (mirrors gridTemplateColumns above).
 								     Per-tier option lists/labels/help still vary, so the
 								     render-prop's `tier` selects them exactly as the old
 								     breakpoint-keyed maps did. */ }

@@ -641,6 +641,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					initialOpen={ false }
 				>
 					<ResponsiveOverride
+						label={ __( 'Header padding', 'sgs-blocks' ) }
 						value={ attributes.headerPadding }
 						onChange={ ( obj ) =>
 							setAttributes( { headerPadding: obj } )
@@ -666,6 +667,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					</ResponsiveOverride>
 					<hr style={ { margin: '16px 0' } } />
 					<ResponsiveOverride
+						label={ __( 'Answer padding', 'sgs-blocks' ) }
 						value={ attributes.contentPadding }
 						onChange={ ( obj ) =>
 							setAttributes( { contentPadding: obj } )
@@ -691,6 +693,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					</ResponsiveOverride>
 					<hr style={ { margin: '16px 0' } } />
 					<ResponsiveOverride
+						label={ __( 'Header gap', 'sgs-blocks' ) }
 						value={ attributes.headerGap }
 						onChange={ ( obj ) =>
 							setAttributes( { headerGap: obj } )
@@ -708,6 +711,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						) }
 					</ResponsiveOverride>
 					<ResponsiveOverride
+						label={ __( 'Header minimum height (px)', 'sgs-blocks' ) }
 						value={ attributes.headerMinHeight }
 						onChange={ ( obj ) =>
 							setAttributes( { headerMinHeight: obj } )
@@ -740,6 +744,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					</ResponsiveOverride>
 					<hr style={ { margin: '16px 0' } } />
 					<ResponsiveOverride
+						label={ __( 'Icon size (px)', 'sgs-blocks' ) }
 						value={ attributes.iconSize }
 						onChange={ ( obj ) =>
 							setAttributes( { iconSize: obj } )
@@ -781,6 +786,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__next40pxDefaultSize
 					/>
 					<ResponsiveOverride
+						label={ __( 'Icon ring size (px)', 'sgs-blocks' ) }
 						value={ attributes.iconCircleSize }
 						onChange={ ( obj ) =>
 							setAttributes( { iconCircleSize: obj } )

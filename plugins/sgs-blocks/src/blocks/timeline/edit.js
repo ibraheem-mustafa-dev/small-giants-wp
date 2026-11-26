@@ -1712,6 +1712,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				>
 					{ ENTRY_PART_BOXES.map( ( [ attrName, label ] ) => (
 						<ResponsiveOverride
+							label={ label }
 							key={ attrName }
 							value={ attributes[ attrName ] }
 							onChange={ ( obj ) =>

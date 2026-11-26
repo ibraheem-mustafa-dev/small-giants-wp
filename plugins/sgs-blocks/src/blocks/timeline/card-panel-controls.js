@@ -81,7 +81,7 @@ export function cardColourRows( attributes, setAttributes ) {
  */
 export function TierBox( { label, value, onChange } ) {
 	return (
-		<ResponsiveOverride value={ value } onChange={ onChange }>
+		<ResponsiveOverride label={ label } value={ value } onChange={ onChange }>
 			{ ( { ownValue, setOwnValue } ) => (
 				<SgsBoxControl
 					label={ label }

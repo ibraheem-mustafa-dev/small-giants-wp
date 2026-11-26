@@ -879,6 +879,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					/>
 					<hr style={ { margin: '16px 0' } } />
 					<ResponsiveOverride
+						label={ __( 'Min height', 'sgs-blocks' ) }
 						value={ attributes.minHeight }
 						onChange={ ( obj ) =>
 							setAttributes( { minHeight: obj } )
@@ -941,6 +942,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						onDeselect={ () => setAttributes( { zIndex: {} } ) }
 					>
 						<ResponsiveOverride
+							label={ __( 'Stacking order (z-index)', 'sgs-blocks' ) }
 							value={ attributes.zIndex }
 							onChange={ ( obj ) =>
 								setAttributes( { zIndex: obj } )
@@ -1290,7 +1292,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							     desktop hero, nothing on phone" — the common
 							     case — is expressible.
 
-							     It uses <ResponsiveOverride> and NOT the
+							     It uses <ResponsiveOverride label={ __( 'Contrast safety over hero', 'sgs-blocks' ) }> and NOT the
 							     <ResponsiveTriStateControl> its four siblings use,
 							     because those are on/off booleans and this is a
 							     FOUR-value enum. The tri-state control renders an
@@ -1300,6 +1302,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							     control primitive to the STORAGE shape is the rule
 							     here, not matching the neighbouring control. */ }
 							<ResponsiveOverride
+								label={ __( 'Contrast safety over hero', 'sgs-blocks' ) }
 								value={ contrastSafe }
 								onChange={ ( obj ) =>
 									setAttributes( { contrastSafe: obj } )

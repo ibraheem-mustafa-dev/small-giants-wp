@@ -49,6 +49,7 @@ export default function RowsAlignControl( { attributes, setAttributes } ) {
 			onDeselect={ () => setAttributes( { rowsAlign: {} } ) }
 		>
 			<ResponsiveOverride
+				label={ __( 'Rows vertical alignment', 'sgs-blocks' ) }
 				value={ rowsAlign }
 				onChange={ ( obj ) => setAttributes( { rowsAlign: obj } ) }
 			>

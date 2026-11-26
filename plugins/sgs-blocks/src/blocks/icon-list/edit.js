@@ -1262,6 +1262,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						</>
 					) }
 					<ResponsiveOverride
+						label={ __( 'List columns', 'sgs-blocks' ) }
 						value={ listColumns }
 						onChange={ ( obj ) =>
 							setAttributes( { listColumns: obj } )
@@ -1349,6 +1350,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						onChange={ ( val ) => setAttributes( { gap: val } ) }
 					/>
 					<ResponsiveOverride
+						label={ __( 'Icon to text gap', 'sgs-blocks' ) }
 						value={ itemGap }
 						onChange={ ( obj ) =>
 							setAttributes( { itemGap: obj } )

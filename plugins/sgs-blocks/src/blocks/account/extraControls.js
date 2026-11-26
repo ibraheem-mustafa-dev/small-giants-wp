@@ -110,6 +110,7 @@ export function Choice( {
 export function TierBox( { name, label, attributes, setAttributes } ) {
 	return (
 		<ResponsiveOverride
+			label={ label }
 			value={ attributes[ name ] }
 			onChange={ ( obj ) => setAttributes( { [ name ]: obj } ) }
 		>

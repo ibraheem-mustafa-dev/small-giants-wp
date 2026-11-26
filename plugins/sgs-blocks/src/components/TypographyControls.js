@@ -820,9 +820,11 @@ function TypographyControlsFields( {
 	if ( showSize && showResponsive && fontSizeIsTiered ) {
 		fontSizeField = (
 			<ResponsiveOverride
-				// No `label` here: FontSizePicker (rendered inside, via
-				// renderFontSizeRow()) already brings its own "FONT SIZE"
-				// header — a label here would just duplicate it.
+				// The label carries the Tablet and Mobile markers on its row;
+				// FontSizePicker (rendered inside, via renderFontSizeRow())
+				// draws its own "Font size" header, which ResponsiveOverride
+				// hides because the text is equal (`hideDuplicateLabels`).
+				label={ __( 'Font size', 'sgs-blocks' ) }
 				value={ fontSizeRaw }
 				onChange={ ( obj ) => setAttributes( { [ k.fontSize ]: obj } ) }
 			>
@@ -958,7 +960,7 @@ function TypographyControlsFields( {
 
 							   TIER-AWARE, exactly like font size above: when the
 							   stored value is a {desktop,tablet,mobile} OBJECT it
-							   is wrapped in <ResponsiveOverride>, so ONE control
+							   is wrapped in <ResponsiveOverride label={ __( 'Line height', 'sgs-blocks' ) }>, so ONE control
 							   edits whichever tier the global device toggle has
 							   selected. There are no separate tablet/mobile
 							   siblings — those were the bolted-on shape this

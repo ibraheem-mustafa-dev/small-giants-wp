@@ -42,6 +42,7 @@ export default function SubmenuLinkPaddingPanel( {
 			initialOpen={ false }
 		>
 			<ResponsiveOverride
+				label={ __( 'Submenu link padding', 'sgs-blocks' ) }
 				value={ submenuLinkPadding }
 				onChange={ ( obj ) =>
 					setAttributes( { submenuLinkPadding: obj } )

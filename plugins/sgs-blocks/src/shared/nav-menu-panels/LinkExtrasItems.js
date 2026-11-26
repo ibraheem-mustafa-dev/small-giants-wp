@@ -41,6 +41,7 @@ export default function LinkExtrasItems( {
 				onDeselect={ () => setAttributes( { itemMinHeight: {} } ) }
 			>
 				<ResponsiveOverride
+					label={ __( 'Link minimum height', 'sgs-blocks' ) }
 					value={ itemMinHeight }
 					onChange={ ( obj ) =>
 						setAttributes( { itemMinHeight: obj } )
@@ -75,6 +76,7 @@ export default function LinkExtrasItems( {
 				onDeselect={ () => setAttributes( { itemBadgePadding: {} } ) }
 			>
 				<ResponsiveOverride
+					label={ __( 'Badge padding', 'sgs-blocks' ) }
 					value={ itemBadgePadding }
 					onChange={ ( obj ) =>
 						setAttributes( { itemBadgePadding: obj } )
@@ -141,6 +143,7 @@ export default function LinkExtrasItems( {
 					onDeselect={ () => setAttributes( { itemGap: undefined } ) }
 				>
 					<ResponsiveOverride
+						label={ __( 'Row gap', 'sgs-blocks' ) }
 						value={ itemGap }
 						onChange={ ( obj ) =>
 							setAttributes( { itemGap: obj } )

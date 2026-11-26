@@ -117,6 +117,7 @@ function BoxItem( { label, attribute, attributes, setAttributes } ) {
 			setAttributes={ setAttributes }
 		>
 			<ResponsiveOverride
+				label={ label }
 				value={ attributes[ attribute ] }
 				onChange={ ( obj ) => setAttributes( { [ attribute ]: obj } ) }
 			>

@@ -102,6 +102,7 @@ export default function FloatControls( { attributes, setAttributes } ) {
 					}
 				>
 					<ResponsiveOverride
+						label={ __( 'Gap around the pill', 'sgs-blocks' ) }
 						value={ headerFloatInset }
 						onChange={ ( obj ) =>
 							setAttributes( { headerFloatInset: obj } )

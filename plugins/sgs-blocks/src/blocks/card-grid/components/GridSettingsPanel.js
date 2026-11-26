@@ -32,6 +32,7 @@ export default function GridSettingsPanel( { attributes, setAttributes } ) {
 					     ContainerWrapperControls LayoutPanel above when layout=grid.
 					     Duplicate direct controls removed (Rule 3, Step 7b). */ }
 			<ResponsiveOverride
+				label={ __( 'Image padding', 'sgs-blocks' ) }
 				value={ attributes.imagePadding }
 				onChange={ ( obj ) => setAttributes( { imagePadding: obj } ) }
 			>

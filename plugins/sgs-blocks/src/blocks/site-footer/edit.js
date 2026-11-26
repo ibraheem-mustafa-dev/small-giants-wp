@@ -583,6 +583,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					/>
 					<hr style={ { margin: '16px 0' } } />
 					<ResponsiveOverride
+						label={ __( 'Min height', 'sgs-blocks' ) }
 						value={ attributes.minHeight }
 						onChange={ ( obj ) =>
 							setAttributes( { minHeight: obj } )

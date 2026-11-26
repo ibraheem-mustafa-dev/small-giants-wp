@@ -40,6 +40,7 @@ export default function MegaBodyPaddingPanel( {
 			initialOpen={ false }
 		>
 			<ResponsiveOverride
+				label={ __( 'Mega panel padding', 'sgs-blocks' ) }
 				value={ megaBodyPadding }
 				onChange={ ( obj ) =>
 					setAttributes( { megaBodyPadding: obj } )

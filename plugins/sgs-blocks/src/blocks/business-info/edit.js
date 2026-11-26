@@ -848,6 +848,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								__next40pxDefaultSize
 							/>
 							<ResponsiveOverride
+								label={ __( 'Hours row padding', 'sgs-blocks' ) }
 								value={ attributes.hoursRowPadding }
 								onChange={ ( obj ) =>
 									setAttributes( { hoursRowPadding: obj } )

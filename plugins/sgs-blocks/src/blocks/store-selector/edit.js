@@ -381,6 +381,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					initialOpen={ false }
 				>
 					<ResponsiveOverride
+						label={ __( 'Panel padding', 'sgs-blocks' ) }
 						value={ attributes.panelPadding }
 						onChange={ ( obj ) =>
 							setAttributes( { panelPadding: obj } )

@@ -131,6 +131,7 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 			     associates it with the inputs). Full reasoning at
 			     components/ResponsiveBoxControls.js. */ }
 			<ResponsiveOverride
+				label={ __( 'Padding', 'sgs-blocks' ) }
 				value={ gridItemPadding }
 				onChange={ ( obj ) =>
 					setAttributes( { gridItemPadding: obj } )

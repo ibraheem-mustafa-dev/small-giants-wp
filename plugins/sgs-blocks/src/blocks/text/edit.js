@@ -696,7 +696,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					   above it, for the same kind of property.
 
 					   TypographyControls' line height is now TIER-AWARE in its own
-					   right: one control, wrapped in <ResponsiveOverride>, editing
+					   right: one control, wrapped in <ResponsiveOverride label={ __( 'Enable drop cap', 'sgs-blocks' ) }>, editing
 					   whichever tier the global device toggle
 					   (src/blocks/extensions/responsive-device-toggle.js) has
 					   selected — identical to how font size has always behaved.

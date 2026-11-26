@@ -468,6 +468,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								}
 							>
 								<ResponsiveOverride
+									label={ __( 'Row padding', 'sgs-blocks' ) }
 									value={ attributes.rowPadding }
 									onChange={ ( obj ) =>
 										setAttributes( { rowPadding: obj } )

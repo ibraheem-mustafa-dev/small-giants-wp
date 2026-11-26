@@ -198,6 +198,7 @@ export function TrustBarItemSpacingPanel( { attributes, setAttributes } ) {
 			</ResponsiveOverride>
 			<hr style={ { margin: '16px 0' } } />
 			<ResponsiveOverride
+				label={ __( 'Badge padding', 'sgs-blocks' ) }
 				value={ attributes.itemPadding }
 				onChange={ ( obj ) => setAttributes( { itemPadding: obj } ) }
 			>

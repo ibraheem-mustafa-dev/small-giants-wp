@@ -1252,7 +1252,7 @@ export default function Edit( {
 						   TypographyControls' showLineHeight (that prop still
 						   assumes the old flat lineHeight/lineHeightTablet/
 						   lineHeightMobile trio). Wired by hand here with the
-						   same UnitControl UX, driven by <ResponsiveOverride>.
+						   same UnitControl UX, driven by <ResponsiveOverride label={ __( 'Line height', 'sgs-blocks' ) }>.
 						   lineHeightUnit is unchanged — a single flat string
 						   shared across tiers ('' = unitless). */ }
 					<ResponsiveOverride
@@ -1387,7 +1387,7 @@ export default function Edit( {
 					) }
 					{ /* Letter spacing is now a TIER OBJECT (Spec 35 migration,
 						   2026-08-11) — same RangeControl UX as before, wrapped in
-						   <ResponsiveOverride> so tablet/mobile become editable
+						   <ResponsiveOverride label={ __( 'Letter spacing (px)', 'sgs-blocks' ) }> so tablet/mobile become editable
 						   (render.php already reads all three tiers). */ }
 					<ResponsiveOverride
 						label={ __( 'Letter spacing (px)', 'sgs-blocks' ) }

@@ -20,7 +20,7 @@ import { ResponsiveOverride } from '../../components';
  */
 export function TierShow( { label, value, onChange } ) {
 	return (
-		<ResponsiveOverride value={ value || {} } onChange={ onChange }>
+		<ResponsiveOverride label={ label } value={ value || {} } onChange={ onChange }>
 			{ ( { ownValue, effectiveValue, setOwnValue } ) => (
 				<ToggleControl
 					label={ label }

@@ -441,7 +441,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{ /*
 					  `thickness` is a TIER OBJECT (Spec 35 pass 2) — ONE attr
 					  holding {desktop,tablet,mobile}, so it uses
-					  <ResponsiveOverride>. Each tier holds a CSS length string carrying its
+					  <ResponsiveOverride label={ __( 'Thickness', 'sgs-blocks' ) }>. Each tier holds a CSS length string carrying its
 					  own unit.
 					*/ }
 					<ToolsPanelItem

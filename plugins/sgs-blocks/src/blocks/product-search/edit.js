@@ -410,7 +410,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{ /*
 					  `maxResults` is a TIER OBJECT — ONE attr
 					  holding {desktop,tablet,mobile}, so it uses
-					  <ResponsiveOverride>. FR-36-20's caps are per-tier (Baymard: max 10
+					  <ResponsiveOverride label={ __( 'Max suggestions', 'sgs-blocks' ) }>. FR-36-20's caps are per-tier (Baymard: max 10
 					  desktop, 4–8 mobile) with NO distinct tablet design
 					  finding — render.php inherits the desktop value/cap for
 					  tablet, so the tablet tier here shows

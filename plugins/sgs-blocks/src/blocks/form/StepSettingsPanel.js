@@ -602,6 +602,7 @@ export default function StepSettingsPanel( { attributes, setAttributes } ) {
 						) }
 					</ResponsiveOverride>
 					<ResponsiveOverride
+						label={ __( 'Sticky row padding', 'sgs-blocks' ) }
 						value={ actionsStickyPadding }
 						onChange={ ( obj ) =>
 							setAttributes( { actionsStickyPadding: obj } )

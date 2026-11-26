@@ -204,6 +204,7 @@ export default function ListLayoutPanel( {
 				isShownByDefault
 			>
 				<ResponsiveOverride
+					label={ __( 'Padding', 'sgs-blocks' ) }
 					value={ padding }
 					onChange={ ( obj ) => setAttributes( { padding: obj } ) }
 				>
@@ -233,6 +234,7 @@ export default function ListLayoutPanel( {
 					isShownByDefault
 				>
 					<ResponsiveOverride
+						label={ __( 'Margin', 'sgs-blocks' ) }
 						value={ margin }
 						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
 					>
@@ -267,6 +269,7 @@ export default function ListLayoutPanel( {
 					isShownByDefault
 				>
 					<ResponsiveOverride
+						label={ __( 'Link padding', 'sgs-blocks' ) }
 						value={ itemPadding }
 						onChange={ ( obj ) =>
 							setAttributes( { itemPadding: obj } )
@@ -317,6 +320,7 @@ export default function ListLayoutPanel( {
 					isShownByDefault
 				>
 					<ResponsiveOverride
+						label={ __( 'Dropdown link padding', 'sgs-blocks' ) }
 						value={ submenuLinkPadding }
 						onChange={ ( obj ) =>
 							setAttributes( { submenuLinkPadding: obj } )

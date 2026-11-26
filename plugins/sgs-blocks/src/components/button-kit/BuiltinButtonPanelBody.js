@@ -382,6 +382,7 @@ export default function BuiltinButtonPanelBody( {
 						) ) }
 					{ has( 'padding' ) && (
 						<ResponsiveOverride
+							label={ __( 'Padding', 'sgs-blocks' ) }
 							value={ attributes[ attr( 'Padding' ) ] }
 							onChange={ ( obj ) =>
 								setAttributes( { [ attr( 'Padding' ) ]: obj } )
