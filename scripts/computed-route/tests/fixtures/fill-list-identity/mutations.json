@@ -31,8 +31,8 @@
  },
  {
   "file": "lib/fill-list-content.mjs",
-  "find": "Object.keys( b.attrs ).some( ( k ) => ! named.has( k ) )",
-  "replace": "Object.keys( b.attrs ).length",
+  "find": "if ( ! built.some( ( b ) => Object.keys( b.attrs ).some( ( k ) => ! named.has( k ) ) ) ) {",
+  "replace": "if ( ! built.some( ( b ) => Object.keys( b.attrs ).length ) ) {",
   "why": "a wordless list is written for its made-up keys"
  },
  {

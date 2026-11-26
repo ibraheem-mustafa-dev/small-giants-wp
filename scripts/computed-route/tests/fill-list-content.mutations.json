@@ -22,5 +22,17 @@
 		"find": "&& ! out.rows.some( ( r ) => r.field === x.name ) ) ) {",
 		"replace": ") ) {",
 		"why": "a picture field whose pictures were read is named twice"
+	},
+	{
+		"file": "lib/fill-list-content.mjs",
+		"find": "|| ! b.rows.some( ( r ) => 'link' === keyRole( r.field ) ) );",
+		"replace": "|| true );",
+		"why": "an item whose only link goes to no page is written as a blank item"
+	},
+	{
+		"file": "lib/fill-list-content.mjs",
+		"find": "const kept = built.filter( ( b ) => Object.keys( b.attrs ).some( ( k ) => ! named.has( k ) ) ||",
+		"replace": "const kept = built.filter( ( b ) => false ||",
+		"why": "an item with a picture is dropped when its link goes nowhere"
 	}
 ]

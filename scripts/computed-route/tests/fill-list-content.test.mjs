@@ -200,13 +200,14 @@ test( 'items holding only links are written, each link as its page address, and 
 	const bare = pass( [ [ 'sgs/logos', 'Root/40#0' ] ], { facts, inventory, pages } );
 	assert.equal( bare.r.writes.length, 1 );
 	assert.equal( bare.r.writes[ 0 ].attr, 'logos' );
-	assert.deepEqual( bare.flat[ 0 ].attributes.logos.map( ( l ) => l.linkUrl ), [ '/brand-0/', undefined ] );
+	assert.deepEqual( bare.flat[ 0 ].attributes.logos.map( ( l ) => l.linkUrl ), [ '/brand-0/' ], 'the item whose only link goes to no page is left out, never a blank tile' );
+	assert.ok( bare.r.notes.some( ( n ) => /1 item\(s\) whose only link goes to no page left out/.test( n ) ) );
 	assert.ok( ! bare.r.handover.some( ( h ) => /carry no words/.test( h.reason ) ) );
 	assert.match( bare.r.handover.find( ( h ) => 'href' === h.evidence.key ).reason, /item 2's link "#\/brand-1" goes to no page/ );
 	// With a drawn picture per item the pictures are written, each link as its page's permalink.
 	const drawn = pass( [ [ 'sgs/logos', 'Root/40#0' ] ], { facts, inventory, pages, picturesOf: () => [ 'https://images.unsplash.com/photo-1700000000-abcdef12?w=600', 'assets/chef.png' ] } );
 	assert.deepEqual( drawn.flat[ 0 ].attributes.logos.map( ( l ) => l.media ), [ { desktop: { kind: 'image', id: 502, url: 'https://acme.test/p1.jpg', mime: 'image/jpeg' } }, { desktop: { kind: 'image', id: 501, url: 'https://acme.test/chef.png', mime: 'image/png' } } ] );
-	assert.deepEqual( drawn.flat[ 0 ].attributes.logos.map( ( l ) => l.linkUrl ), [ '/brand-0/', undefined ] );
+	assert.deepEqual( drawn.flat[ 0 ].attributes.logos.map( ( l ) => l.linkUrl ), [ '/brand-0/', undefined ], 'negative control: an item with a picture keeps its place though its link goes nowhere' );
 	assert.match( drawn.r.handover.find( ( h ) => 'href' === h.evidence.key ).reason, /item 2's link "#\/brand-1" goes to no page/ );
 } );
 

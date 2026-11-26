@@ -296,11 +296,14 @@ export function listDecisions( { block, target, node, list, media = {}, pages = 
 		out.rows.push( { field: f.name, value: '', reason: `the draft draws a picture in each of its ${ built.length } items (${ f.name }: an image the draft fills at run time, or a placeholder) and ${ block }'s ${ where } hold no picture setting Fill can write: choose each picture in the editor` } );
 	}
 	built.forEach( ( b ) => out.rows.push( ...b.rows ) );
-	out.notes.push( `${ list.items.length } items from the draft's ${ list.source }, fields ${ fields }` );
+	// An item whose only content was a link that goes to no page holds nothing the block shows: it is left out, never written
+	// as a blank item, and its link's row (above) names it.
+	const kept = built.filter( ( b ) => Object.keys( b.attrs ).some( ( k ) => ! named.has( k ) ) || ! b.rows.some( ( r ) => 'link' === keyRole( r.field ) ) );
+	out.notes.push( `${ list.items.length } items from the draft's ${ list.source }, fields ${ fields }${ kept.length < built.length ? `; ${ built.length - kept.length } item(s) whose only link goes to no page left out` : '' }` );
 	if ( 'attr' === target.kind ) {
-		out.writes.push( { attr: target.attr, value: built.map( ( b ) => b.attrs ) } );
+		out.writes.push( { attr: target.attr, value: kept.map( ( b ) => b.attrs ) } );
 	} else {
-		out.children = built.map( ( b ) => ( { name: target.child, attributes: b.attrs, innerBlocks: [] } ) );
+		out.children = kept.map( ( b ) => ( { name: target.child, attributes: b.attrs, innerBlocks: [] } ) );
 	}
 	return out;
 }
