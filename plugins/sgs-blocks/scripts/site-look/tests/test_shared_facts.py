@@ -5,6 +5,8 @@ theme's own theme.json and each client's look is assembled from them. The full p
     python -m pytest plugins/sgs-blocks/scripts/site-look/tests/test_shared_facts.py
     SITE_LOOK_MUTATE=shared-guard python -m pytest ... -k guard        (must fail)
     SITE_LOOK_MUTATE=share-retry python -m pytest ... -k parallel     (must fail)
+    SITE_LOOK_MUTATE=same-text python -m pytest ... -k same_text      (must fail)
+    SITE_LOOK_MUTATE=node-oom python -m pytest ... -k out_of_memory   (must fail)
 """
 import json
 import sys
@@ -174,3 +176,42 @@ def test_parallel_writers_and_readers_of_one_shared_key_never_see_a_partial_file
     assert not any('PARTIAL' in o or 'LOST' in o for o, _ in outs), [o for o, _ in outs]
     assert SL.read_shared(local, 'heading', 'K') is not None
     assert [f.name for f in (store / SL.SHARED_SITE).iterdir()] == ['heading.K.json'], 'no temp file left behind'
+    assert [f.name for f in local.parent.iterdir()] == ['heading.json'], 'no temp file left in the local folder'
+
+
+def test_a_refused_rename_onto_the_same_text_is_done(tmp_path, monkeypatch):
+    """MUST FAIL with SITE_LOOK_MUTATE=same-text: a rename Windows refuses (a reader holds the file open) is done when the
+    file already holds the text being written; with other text it is refused after its tries."""
+    import os
+    import pytest
+    if os.name != 'nt':
+        pytest.skip('only Windows refuses a rename onto an open file')
+    monkeypatch.setattr(SL, 'SHARE_TRIES', 2)
+    f = tmp_path / 'heading.json'
+    SL.atomic_write(f, 'same')
+    with open(f, encoding='utf-8'):
+        SL.atomic_write(f, 'same')
+        with pytest.raises(PermissionError):
+            SL.atomic_write(f, 'other')
+    assert f.read_text(encoding='utf-8') == 'same'
+    assert [x.name for x in tmp_path.iterdir()] == ['heading.json'], 'no temp file left behind'
+
+
+OOM_JS = """const keep = []; for (;;) { keep.push(new Array(1e6).fill(Math.random())); }"""
+
+
+def test_a_bridge_out_of_memory_is_a_memory_error_on_the_failed_line(tmp_path, monkeypatch, capsys):
+    """MUST FAIL with SITE_LOOK_MUTATE=node-oom: Node's real out-of-memory output (a FATAL line, then ~1,000 characters of
+    stack) is read whole, so the block's FAILED line names MemoryError and the route's prepareLooks builds it again alone
+    (lib/setting-record.mjs::RESOURCE_FAILURE); any other bridge failure stays a RuntimeError."""
+    bridge = tmp_path / 'oom.mjs'
+    bridge.write_text(OOM_JS, encoding='utf-8')
+    monkeypatch.setattr(SL, 'BRIDGE', bridge)
+    monkeypatch.setenv('NODE_OPTIONS', '--max-old-space-size=16')
+    monkeypatch.setattr(SL, 'write_block', lambda job: (job[0], SL.bridge_plan(f'sgs/{job[0]}', tmp_path / 'snap.json')))
+    (tmp_path / 'snap.json').write_text('{}', encoding='utf-8')
+    assert SL.main(['--snapshot', str(tmp_path / 'snap.json'), '--site', 't', '--out', str(tmp_path), '--blocks', 'sgs/google-reviews', '--jobs', '1']) == 1
+    line = capsys.readouterr().out.strip().splitlines()[0]
+    assert line.startswith('google-reviews: FAILED MemoryError: site-look-bridge plan sgs/google-reviews: Node ran out of memory'), line
+    assert SL.node_out_of_memory(1, 'Error: Cannot find module x') == '', 'negative control: another failure is not memory'
+    assert SL.node_out_of_memory(134, '') == 'exit 134'

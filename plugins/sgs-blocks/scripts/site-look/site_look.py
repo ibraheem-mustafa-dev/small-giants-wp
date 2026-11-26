@@ -512,11 +512,29 @@ def bridge_plan(block: str, snapshot_file: Path) -> dict:
     import subprocess
     p = subprocess.run(['node', str(BRIDGE), 'plan', block, str(snapshot_file)], capture_output=True, text=True, encoding='utf-8', cwd=str(ROUTE))
     if p.returncode:
+        oom = node_out_of_memory(p.returncode, p.stderr or '')
+        if oom:
+            # MemoryError, named on the FAILED line the route reads, so prepareLooks builds the block again alone
+            raise MemoryError(f'site-look-bridge plan {block}: Node ran out of memory (exit {p.returncode}): {oom}')
         raise RuntimeError(f'site-look-bridge plan {block}: {p.stderr[-600:]}')
     out = json.loads(p.stdout)
     if out.get('error'):
         raise RuntimeError(out['error'])
     return out
+
+
+# What Node prints when V8 cannot get memory: "FATAL ERROR: ... Allocation failed - JavaScript heap out of memory" followed
+# by a stack of about 1,000 characters, or GC trace lines ending "allocation failure"; on POSIX it exits 134 (SIGABRT).
+NODE_OOM = re.compile(r'heap out of memory|Allocation failed|allocation failure', re.I)
+
+
+def node_out_of_memory(code: int, stderr: str) -> str:
+    """The line of a failed Node's whole error output that says it ran out of memory ('exit 134' when only the exit code
+    says so), or '' when it failed for another reason."""
+    if 'node-oom' in MUTATE:
+        return ''
+    line = next((x.strip() for x in stderr.splitlines() if NODE_OOM.search(x)), '')
+    return line[:300] or ('exit 134' if code == 134 else '')
 
 
 PAGE_KEEP = 8  # settled pages a Reader keeps built at once (Reader.page)
@@ -1172,7 +1190,7 @@ def atomic_write(f: Path, text: str) -> None:
                 _os.replace(tmp, f)
                 return
             except PermissionError:
-                if read_held(f) == text:
+                if 'same-text' not in MUTATE and read_held(f) == text:
                     return
                 if attempt == tries - 1:
                     raise
