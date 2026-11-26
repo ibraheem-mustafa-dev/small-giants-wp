@@ -25,8 +25,8 @@
 	},
 	{
 		"file": "lib/fill-media.mjs",
-		"find": "if ( ! entry?.own || ! snap || snap.missing || ! declared ) {",
-		"replace": "if ( ! snap || snap.missing || ! declared ) {",
+		"find": "if ( ! ( entry?.own || entry?.hostOwn ) || ! snap ||",
+		"replace": "if ( ! snap ||",
 		"why": "a picture a descendant draws would take the node's own declared sizes"
 	},
 	{
@@ -40,5 +40,11 @@
 		"find": "declared: Object.fromEntries( SIZES.filter(",
 		"replace": "declared: Object.fromEntries( Object.keys( declared ).filter(",
 		"why": "every declared longhand (a colour) would reach the style rows"
+	},
+	{
+		"file": "lib/fill-media.mjs",
+		"find": "if ( ! ( entry?.own || entry?.hostOwn ) ||",
+		"replace": "if ( ! entry?.own ||",
+		"why": "the picture an image placeholder draws in its shadow root would carry none of its host's sizing"
 	}
 ]

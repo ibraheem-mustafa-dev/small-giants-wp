@@ -264,3 +264,16 @@ test( 'withSizing reads the declared sizes, the drawn box, the natural size and 
 	assert.deepEqual( [ indefinite( 'auto' ), indefinite( '50%' ), indefinite( undefined ), indefinite( '8rem' ) ], [ false, false, false, true ], 'only a length makes the parent height definite' );
 	assert.deepEqual( [ 'ratio', 'height' ].map( ( k ) => blockMediaSlots( 'sgs/media' ).find( ( x ) => 'content' === x.context )?.[ k ] ), [ 'ratio', 'height' ], 'the content slot of the media block names its Ratio and Height settings' );
 } );
+
+test( 'MUST FAIL: the picture an image placeholder draws in its shadow root takes the sizing its host element declares (Indus mega cards)', () => {
+	const shadow = ( declared, parentHeight = '110px' ) => withSizing( {
+		entry: img( 'assets/hero.png', 'x', { own: false, hostOwn: true } ), snap: { rect: { w: 205, h: 110 } }, declared,
+		parentSnap: { styles: { display: 'block' } }, parentDeclared: { height: parentHeight },
+	} );
+	const r = mediaDecisions( { slots: [ SIZED ], reads: at( shadow( { height: '100%', 'aspect-ratio': '3 / 2' } ) ), media } );
+	assert.deepEqual( val( r, 'height' ), { desktop: 'fill' }, 'height 100% of the card box that is 110px tall: Match its space' );
+	assert.equal( val( r, 'ratio' ), undefined, 'a filled height leaves no ratio' );
+	const free = mediaDecisions( { slots: [ SIZED ], reads: at( shadow( { height: '100%', 'aspect-ratio': '3 / 2' }, 'auto' ) ), media } );
+	assert.deepEqual( [ val( free, 'ratio' ), val( free, 'height' ) ], [ { desktop: '3 / 2' }, undefined ], 'height 100% of an auto-height parent is inert: the declared ratio stands' );
+	assert.equal( withSizing( { entry: img( 'assets/hero.png', 'x', { own: false } ), snap: { rect: { w: 1, h: 1 } }, declared: { height: '9px' } } ).element.declared, undefined, 'a picture of a descendant is still left alone' );
+} );

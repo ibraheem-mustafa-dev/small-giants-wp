@@ -146,7 +146,7 @@ export function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, ps
 		const cap = el.matches( 'figure' ) ? el.querySelector( 'figcaption' ) : null;
 		snap.img = 1 === imgs.length ? { tag: el.localName, src: imgSrc( imgs[ 0 ] ), alt: imgs[ 0 ].getAttribute( 'alt' ), caption: cap ? ( cap.textContent || '' ).replace( /\s+/g, ' ' ).trim() : null } : null;
 		// The media this element is or holds that shows at this width, in document order (Spec 49 section 11: the kind per
-		// width is read from the visible element): { tag, src, poster, alt, natural, markup, own, element } each, where `element`
+		// width is read from the visible element): { tag, src, poster, alt, natural, markup, own, hostOwn, element } each (`hostOwn`: a picture this element draws in its own shadow root), where `element`
 		// is what lib/media/absorb.mjs::placement reads. A hidden sibling (display:none) is not drawn, so it is not listed. An
 		// inline svg counts only when it is this element or the only media it holds (an icon beside a photo is no media here).
 		{
@@ -227,7 +227,7 @@ export function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, ps
 			const light = painted ? ( ( one ) => [ { ...one, tag: 'img', src: painted, alt: '', element: { ...one.element, ownBackground: true } } ] )( read( el ) ) : nodes.map( read );
 			// A custom element draws its picture in its open shadow root: those images, one per address, when no light-DOM media shows.
 			const seen = new Set();
-			const shadow = light.length ? [] : drawn.filter( ( i ) => shown( i ) && ! seen.has( imgSrc( i ) ) && seen.add( imgSrc( i ) ) ).map( read );
+			const shadow = light.length ? [] : drawn.filter( ( i ) => shown( i ) && ! seen.has( imgSrc( i ) ) && seen.add( imgSrc( i ) ) ).map( ( i ) => ( { ...read( i ), hostOwn: i.getRootNode() === el.shadowRoot } ) );
 			snap.media = [ ...light, ...shadow ];
 		}
 		// Every picture the element draws when it draws two or more, in document order (one image placeholder's copies of one

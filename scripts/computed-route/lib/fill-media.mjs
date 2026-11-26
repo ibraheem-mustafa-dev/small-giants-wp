@@ -107,11 +107,11 @@ export function mediaAt( snaps ) {
 // The media entry of a node's own element with the sizing its slot holds read onto it (lib/media/style-rows.mjs, fill-height.mjs: the
 // ratio and the height): the element's declared sizes (declared: lib/fill-read.mjs's author-declared longhands of the node's
 // root), its drawn box, the file's natural size, and its parent's display, alignment and whether the parent's height is a
-// length. An entry the node does not draw itself (a descendant's picture), a read that missed or no declared read comes back as it was.
+// length. `hostOwn` marks a picture the node's own custom element draws in its shadow root (an image placeholder), which the element's sizes size. An entry the node does not draw itself (a descendant's picture), a read that missed or no declared read comes back as it was.
 const LENGTH = /^-?\d*\.?\d+(px|rem|em|vh|vw)$/i;
 const SIZES = [ 'height', 'width', 'aspect-ratio', 'min-height', 'max-height', 'min-width', 'max-width' ];
 export function withSizing( { entry, snap, declared, parentSnap = null, parentDeclared = null } ) {
-	if ( ! entry?.own || ! snap || snap.missing || ! declared ) {
+	if ( ! ( entry?.own || entry?.hostOwn ) || ! snap || snap.missing || ! declared ) {
 		return entry;
 	}
 	const box = snap.rect && snap.rect.w > 0 && snap.rect.h > 0 ? { w: snap.rect.w, h: snap.rect.h } : null;
