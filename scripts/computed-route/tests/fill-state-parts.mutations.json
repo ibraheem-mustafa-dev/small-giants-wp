@@ -37,7 +37,7 @@
 	},
 	{
 		"file": "lib/fill-state-parts.mjs",
-		"find": "s.property === prop || longhands( s.property ).includes( prop )",
+		"find": "paintedProps( s ).includes( prop ) || longhands( paintedProps( s ).join( ',' ) ).includes( prop )",
 		"replace": "true",
 		"why": "every property's settings are the look's"
 	},
