@@ -34,7 +34,20 @@ const fill = ( map ) =>
 		] )
 	);
 
-beforeEach( () => registerShadowPresets( table.presets ) );
+// The block editor's settings, as `getSettings().__experimentalFeatures` serves them: presets by origin.
+const serveEditorPresets = ( presets ) => {
+	globalThis.wp = {
+		data: {
+			select: () => ( {
+				getSettings: () => ( {
+					__experimentalFeatures: { shadow: { presets } },
+				} ),
+			} ),
+		},
+	};
+};
+
+beforeEach( () => serveEditorPresets( table.presets ) );
 afterEach( () => {
 	registerShadowPresets( [] );
 	delete globalThis.wp;
@@ -73,7 +86,7 @@ describe( 'theme presets on a surface that follows its shape', () => {
 	} );
 
 	test( 'without the preset list the preset draws nothing, as before', () => {
-		registerShadowPresets( [] );
+		delete globalThis.wp;
 		expect( dropShadow( 'var(--wp--preset--shadow--soft)' ) ).toBe( '' );
 	} );
 
@@ -84,26 +97,22 @@ describe( 'theme presets on a surface that follows its shape', () => {
 	} );
 
 	test( "reads the theme presets from the editor's settings when none is registered", () => {
-		registerShadowPresets( [] );
-		globalThis.wp = {
-			data: {
-				select: () => ( {
-					getSettings: () => ( {
-						__experimentalFeatures: {
-							shadow: {
-								presets: {
-									default: [ { slug: 'soft', shadow: '0 9px 9px #000000' } ],
-									theme: [ { slug: 'soft', shadow: '0 1px 2px #000000' } ],
-								},
-							},
-						},
-					} ),
-				} ),
-			},
-		};
+		serveEditorPresets( {
+			default: [ { slug: 'soft', shadow: '0 9px 9px #000000' } ],
+			theme: [ { slug: 'soft', shadow: '0 1px 2px #000000' } ],
+		} );
 		// The theme origin wins over the default, as `flattenSettingList` orders them.
 		expect( dropShadow( 'var(--wp--preset--shadow--soft)' ) ).toBe(
 			'drop-shadow(0px 1px 2px #000000)'
+		);
+		// Custom wins over both: a shadow edited in Global Styles.
+		serveEditorPresets( {
+			default: [ { slug: 'soft', shadow: '0 9px 9px #000000' } ],
+			theme: [ { slug: 'soft', shadow: '0 1px 2px #000000' } ],
+			custom: [ { slug: 'soft', shadow: '0 2px 3px #000000' } ],
+		} );
+		expect( dropShadow( 'var(--wp--preset--shadow--soft)' ) ).toBe(
+			'drop-shadow(0px 2px 3px #000000)'
 		);
 	} );
 } );

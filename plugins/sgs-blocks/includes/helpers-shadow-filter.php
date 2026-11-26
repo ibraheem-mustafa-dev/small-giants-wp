@@ -32,7 +32,20 @@ function sgs_shadow_preset_literal( string $slug ): string {
 		return '';
 	}
 	$presets = wp_get_global_settings( array( 'shadow', 'presets' ) );
-	foreach ( is_array( $presets ) ? $presets : array() as $origin ) {
+	$presets = is_array( $presets ) ? $presets : array();
+	// WordPress returns the origins as default, theme, custom, but the CSS variable follows custom, then theme, then
+	// default, and so does the editor (`src/utils/shadow-presets.js`), so a shadow edited in Global Styles wins here too.
+	$origins = array();
+	foreach ( array( 'custom', 'theme', 'default' ) as $origin_name ) {
+		if ( isset( $presets[ $origin_name ] ) ) {
+			$origins[] = $presets[ $origin_name ];
+		}
+	}
+	// A flat list (no origin keys) is one origin.
+	if ( array() === $origins && array() !== $presets && isset( $presets[0] ) ) {
+		$origins[] = $presets;
+	}
+	foreach ( $origins as $origin ) {
 		foreach ( is_array( $origin ) ? $origin : array() as $preset ) {
 			if ( is_array( $preset ) && ( $preset['slug'] ?? '' ) === $slug && is_string( $preset['shadow'] ?? null ) ) {
 				return $preset['shadow'];

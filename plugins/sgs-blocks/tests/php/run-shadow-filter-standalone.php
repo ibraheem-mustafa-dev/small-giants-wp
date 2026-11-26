@@ -26,22 +26,9 @@ if ( ! function_exists( 'esc_attr' ) ) {
 // The theme's own settings, as wp_get_global_settings( array( 'shadow', 'presets' ) ) returns them.
 if ( ! function_exists( 'wp_get_global_settings' ) ) {
 	function wp_get_global_settings( array $path ) {
-		return array(
-			'theme' => array(
-				array(
-					'slug'   => 'soft',
-					'shadow' => '0 1px 2px rgba(0,0,0,0.12), 0 4px 8px rgba(0,0,0,0.08)',
-				),
-				array(
-					'slug'   => 'whisper',
-					'shadow' => '0px 1px 2px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent), 0px 0px 0px 1px color-mix(in srgb, var(--wp--custom--shadow-colour) 5%, transparent)',
-				),
-				array(
-					'slug'   => 'pressed',
-					'shadow' => 'inset 0 2px 4px rgba(0,0,0,0.2)',
-				),
-			),
-		);
+		// The shared table's presets by origin, in the order WordPress returns them (default, theme, custom).
+		$table = json_decode( (string) file_get_contents( dirname( __DIR__ ) . '/shared/shadow-output-cases.json' ), true );
+		return $table['presets'];
 	}
 }
 require_once dirname( __DIR__, 2 ) . '/includes/helpers-tokens.php';
