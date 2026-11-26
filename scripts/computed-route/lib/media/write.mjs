@@ -112,6 +112,11 @@ export function mediaWrites( { slots, attributes = {}, reads, resolve, fact = nu
 		}
 		put( slot.source, source );
 		SIZING.forEach( ( key ) => slot[ key ] && undefined !== composed.slot[ key ] && put( slot[ key ], composed.slot[ key ] ) );
+		// What the draft states for the picture and no setting of this slot takes (a `width: auto` beside a declared height, an object-fit,
+		// a clip-path with no media setting) is said, never dropped.
+		const unwritten = Object.keys( composed.slot ).filter( ( key ) => ! [ 'source', 'alt', 'decorative' ].includes( key ) && ! ( SIZING.includes( key ) && slot[ key ] ) );
+		unwritten.length && out.notes.push( `the draft media "${ label }" states ${ unwritten.map( ( key ) => `${ key } ${ JSON.stringify( composed.slot[ key ] ) }` ).join( ', ' ) }, which the media slot of ${ slot.source } has no setting for: not written` );
+		out.notes.push( ...( composed.reported || [] ).map( ( r ) => `the draft media "${ label }" ${ r.property } ${ r.value } at ${ r.width }px is not written: ${ r.reason }` ) );
 		const alt = composed.slot.alt ?? fact?.alt ?? null;
 		if ( composed.slot.decorative && slot.decorative ) {
 			put( slot.decorative, true );
