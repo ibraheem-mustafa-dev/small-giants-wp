@@ -141,7 +141,7 @@ export function releasePath( p ) {
 }
 
 // The machine's load: CPU busy share over `sampleMs`, free memory and free space on C:, in bytes.
-export async function machineLoad( sampleMs = 1000 ) {
+export async function machineLoad( sampleMs = 5000 ) {
 	const total = () => os.cpus().reduce( ( a, c ) => {
 		const t = c.times;
 		a.idle += t.idle;
