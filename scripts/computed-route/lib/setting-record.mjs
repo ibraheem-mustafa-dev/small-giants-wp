@@ -458,10 +458,11 @@ function manyProperties( props, first ) {
 // `inline-size` and `block-size`, not on the unrelated rows of the same block (the tap-target minimum on an icon's link).
 const PHYSICAL_SIZE = { 'inline-size': 'width', 'block-size': 'height', 'min-inline-size': 'min-width', 'min-block-size': 'min-height', 'max-inline-size': 'max-width', 'max-block-size': 'max-height' };
 const physicalSize = ( p ) => PHYSICAL_SIZE[ p ] ?? p;
+const SIZE_PROPS = [ 'width', 'height', 'min-width', 'min-height', 'max-width', 'max-height' ];
 
 // One setting's entry from its usable rows: the rows on its own property (the block_attributes row's, else the first
 // row's) give its slots and widths; its other rows are its effects.
-function settingEntry( block, name, rows, row, look, facts ) {
+function settingEntry( block, name, rows, row, look, facts, elementsOf = blockElements ) {
 	const long = ( props ) => [ ...new Set( props.flatMap( ( p ) => [ physicalSize( p ), ...longhands( physicalSize( p ) ) ] ) ) ];
 	const own = longhands( row?.css_property || '' );
 	const primaryProps = own.length ? long( own ) : long( rows[ 0 ].props );
@@ -472,7 +473,14 @@ function settingEntry( block, name, rows, row, look, facts ) {
 	const inState = onProp.filter( ( r ) => ( r.state || null ) === wantState );
 	const main = inState.length ? inState : onProp.length ? onProp : rows;
 	const pathsOf = ( r ) => rowPaths( r, look, block );
-	const slots = [ ...new Set( main.flatMap( pathsOf ) ) ].sort( byDepth );
+	let slots = [ ...new Set( main.flatMap( pathsOf ) ) ].sort( byDepth );
+	// A size setting is placed on the element its block_attributes row names (an icon's size on its glyph, its shape size on its
+	// shape), not on every element the size also reaches: the glyph size sizes the shape too while the shape has no size of its own.
+	if ( row?.css_element && primaryProps.length && primaryProps.every( ( p ) => SIZE_PROPS.includes( p ) ) ) {
+		const named = elementPaths( block, row.css_element, look, elementsOf );
+		const onElement = slots.filter( ( p ) => named.includes( p ) );
+		onElement.length && ( slots = onElement );
+	}
 	if ( ! slots.length ) {
 		return null;
 	}
@@ -599,7 +607,7 @@ function readRecord( block, client, { db = null, dir = SITE_LOOK_DIR, repo = REP
 	const unplaced = {};
 	for ( const [ name, rows ] of usable ) {
 		const row = attrRow( handle, block, name );
-		const e = look ? settingEntry( block, name, rows, row, look, facts[ name ] ) : bareEntry( rows, row );
+		const e = look ? settingEntry( block, name, rows, row, look, facts[ name ], elementsOf ) : bareEntry( rows, row );
 		if ( e ) {
 			settings[ name ] = e;
 		} else {

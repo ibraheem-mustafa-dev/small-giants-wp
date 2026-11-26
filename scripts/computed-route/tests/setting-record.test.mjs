@@ -341,6 +341,15 @@ test( 'MUST FAIL: a size setting whose block_attributes row paints width and hei
 	const r = load( db );
 	assert.deepEqual( [ r.settings.shapeSize.slot, r.settings.shapeSize.property ], [ '.sgs-demo__label', 'height' ], 'the setting paints its label, as height and width, not the minimum of the panel' );
 	assert.deepEqual( r.settings.shapeSize.slots, [ '.sgs-demo__label' ] );
+	// A size that also reaches the shape (the glyph's size sizes the shape while it has none) is placed on the element its row names.
+	const both = fixtureDb( [
+		{ setting: 'glyphSize', part: 'sgs-demo__label', props: [ 'inline-size' ] },
+		{ setting: 'glyphSize', part: 'sgs-demo__panel', props: [ 'inline-size' ] },
+	], { attrs: [ { attr: 'glyphSize', property: 'width', element: 'glyph' } ] } );
+	const named = load( both, { elementsOf: () => ( { glyph: '.sgs-demo__panel', shape: '.sgs-demo__label' } ) } );
+	assert.deepEqual( [ named.settings.glyphSize.slot, named.settings.glyphSize.property ], [ '.sgs-demo__panel', 'width' ], 'the glyph row names the panel, which the depth ordering alone would not pick' );
+	const unnamed = load( both, { elementsOf: () => ( {} ) } );
+	assert.equal( unnamed.settings.glyphSize.slot, '.sgs-demo__label', 'an element the block does not name leaves the rows as they were' );
 	// Negative control: a setting whose row names a different property keeps the rows that name it, logical spelling and all.
 	const minimum = fixtureDb( [ { setting: 'tapMin', part: 'sgs-demo__panel', props: [ 'min-block-size' ] }, { setting: 'tapMin', part: 'sgs-demo__label', props: [ 'block-size' ] } ], { attrs: [ { attr: 'tapMin', property: 'min-height', element: 'shape' } ] } );
 	assert.deepEqual( [ load( minimum ).settings.tapMin.slot, load( minimum ).settings.tapMin.property ], [ '.sgs-demo__panel', 'min-height' ] );
