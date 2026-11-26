@@ -4,6 +4,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'fs';
+import os from 'os';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { proposePageMap } from '../lib/intake-pagemap.mjs';
@@ -44,4 +45,27 @@ test( 'real Indus export: the sector pages sit under Food service and the trade 
 	assert.deepEqual( [ 'catalogue', 'delivery', 'faqs', 'terms' ].map( ( s ) => parentOf( indus, s ) ), [ 'apply', 'apply', 'apply', 'apply' ] );
 	assert.deepEqual( [ 'food-service', 'apply', 'brands', 'about' ].map( ( s ) => parentOf( indus, s ) ), [ null, null, null, null ] );
 	assert.equal( parentOf( indus, 'our-story' ), 'about' );
+} );
+
+// A menu item whose own row is not a page (an article is a `post` row; the shop and templates are no page either) never becomes the parent of
+// the pages listed under it: site-build looks a parent up among the rows of the child's own post type, so such a parent stops the run.
+function withArticleMenu() {
+	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'pagemap-article-' ) );
+	fs.cpSync( FIX, dir, { recursive: true } );
+	const file = path.join( dir, 'Site.dc.html' );
+	fs.writeFileSync( file, fs.readFileSync( file, 'utf8' )
+		.replace( "{ label: 'Services', href: '#/cleaning'", "{ label: 'Stories', href: '#/post-first', links: [ { label: 'First article', href: '#/post-first' }, { label: 'Gift cards', href: '#/gift' } ] }, { label: 'Services', href: '#/cleaning'" )
+		.replace( "about: { crumb: 'About us'", "gift: { crumb: 'Gift cards', blocks: [] }, about: { crumb: 'About us'" ) );
+	return dir;
+}
+
+test( 'MUST FAIL: a menu item whose row is an article, not a page, does not become the parent of the pages under it', () => {
+	const folder = withArticleMenu();
+	const m = proposePageMap( { folder, routing: readRouting( { folder } ) } );
+	fs.rmSync( folder, { recursive: true, force: true } );
+	assert.equal( m.rows.find( ( r ) => 'first-article' === r.slug )?.postType, 'post', 'the fixture really holds the article row' );
+	assert.ok( m.rows.find( ( r ) => 'gift' === r.slug ), 'and the page listed under it' );
+	assert.equal( parentOf( m, 'gift' ), null, 'an article row is no page to nest under' );
+	assert.ok( m.rows.every( ( r ) => ! r.parent || m.rows.some( ( p ) => p.slug === r.parent && p.postType === r.postType ) ), 'every parent names a row of its own post type' );
+	assert.equal( parentOf( m, 'repairs' ), 'cleaning', 'negative control: a section with a page keeps its nesting' );
 } );

@@ -82,3 +82,15 @@ test( 'MUST FAIL: Solve\'s build takes the secrets file from SGS_SECRETS_ROOT, a
 		before === undefined ? delete process.env.SGS_SECRETS_ROOT : ( process.env.SGS_SECRETS_ROOT = before );
 	}
 } );
+
+test( 'MUST FAIL: a draft that cannot be served resolves a non-zero code with the reason in the Solve log, and Solve never starts', async () => {
+	const repo = repoWith( ENTRY );
+	let started = false;
+	const r = await launchSolve( { repo, client: 'acme', site: 's', key: 'about', start: async () => ( started = true, 0 ), serve: async () => { throw new Error( 'port 61000 is in use' ); } } );
+	assert.notEqual( r.code, 0 );
+	assert.equal( started, false, 'Solve did not run against no draft' );
+	assert.match( r.tail, /could not serve the draft.*port 61000 is in use/ );
+	assert.match( fs.readFileSync( r.logFile, 'utf8' ), /port 61000 is in use/, 'the log the run points at holds the reason' );
+	assert.equal( r.logFile, path.join( repo, 'sites', 'acme', 'build', 'qa', 'solve', 'about.stage.log' ) );
+	fs.rmSync( repo, { recursive: true, force: true } );
+} );

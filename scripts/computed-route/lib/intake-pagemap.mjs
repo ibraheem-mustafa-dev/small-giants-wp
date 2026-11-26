@@ -347,9 +347,10 @@ export function proposePageMap( { folder, routing = null, census = null, surface
 	// Parents: a menu item with a page is the parent of its children's pages, then the manifest's parent, then the route
 	// hierarchy (a/b under a). An item that only links to its first child (Sectors -> Food service) names that child the section's
 	// landing page: the landing page stays at the top and the section's other pages sit under it, the nesting the draft's own
-	// breadcrumb shows (Home / section / page, the section linking to its landing page).
+	// breadcrumb shows (Home / section / page, the section linking to its landing page). Only a page row is a parent: site-build
+	// looks a parent up among the rows of the child's own post type, so a shop, article or template row named as one stops the run.
 	for ( const { target, children } of groups.values() ) {
-		if ( target && children.length ) {
+		if ( target && 'page' === target.postType && children.length ) {
 			children.filter( ( c ) => c && c !== target && ! c.parent && 'page' === c.postType ).forEach( ( c ) => { c.parent = target.slug; } );
 		}
 	}

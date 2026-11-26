@@ -42,7 +42,16 @@ export const solveArgs = ( { client, site, key, allowMissingPaint = [] } ) => [ 
 export async function launchSolve( { repo = REPO, client, site, key, allowMissingPaint = [], start = startSolve, serve = serveSurfaceDraft } ) {
 	const logFile = path.join( repo, 'sites', client, 'build', 'qa', 'solve', `${ key }.stage.log` );
 	fs.mkdirSync( path.dirname( logFile ), { recursive: true } );
-	const draft = await serve( { repo, client, key } );
+	// A draft that cannot be served (a port in use, a folder gone) is a failed Solve with its reason in the log, as a Solve that ran and failed is,
+	// so the stage reports it and the run goes on; it is never a rejection that loses the log.
+	let draft;
+	try {
+		draft = await serve( { repo, client, key } );
+	} catch ( e ) {
+		const said = `could not serve the draft: ${ e.message }`;
+		fs.writeFileSync( logFile, `${ said }\n` );
+		return { code: 1, tail: said.slice( 0, 600 ), logFile };
+	}
 	let code;
 	try {
 		code = await start( solveArgs( { client, site, key, allowMissingPaint } ), logFile, repo, draft ? { SGS_DRAFT_URL: draft.url } : {} );
