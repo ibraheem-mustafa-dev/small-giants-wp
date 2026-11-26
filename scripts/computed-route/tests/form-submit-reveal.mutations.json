@@ -1,0 +1,4 @@
+[
+	{"file": "lib/form-submit-page.mjs", "find": "scrollTo( x, y0 );", "replace": "", "why": "the reveal leaves the page scrolled to the form"},
+	{"file": "lib/form-submit-page.mjs", "find": "reveal: shown !== revealed }", "replace": "reveal: true }", "why": "the form is scrolled through again on every pass over the same step"}
+]
