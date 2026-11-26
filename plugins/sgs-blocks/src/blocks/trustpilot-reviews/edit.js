@@ -39,6 +39,7 @@ import {
 } from '../../components/primitives';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
+import SgsResetPanel from '../../components/SgsResetPanel';
 // D649 — no JSON `enum` reliance in the UI list order; mirrors sgs/icon-list's
 // allow-list exactly (render.php validates the same set independently).
 const HEADING_LEVEL_OPTIONS = [
@@ -909,9 +910,16 @@ export default function Edit( { attributes, setAttributes } ) {
 				) }
 
 				{ dataSource === 'inline' && (
-					<ToolsPanel
-						label={ __( 'Reviews (inline)', 'sgs-blocks' ) }
-						resetAll={ () => setAttributes( { reviews: [] } ) }
+					<SgsResetPanel
+						title={ __( 'Reviews (inline)', 'sgs-blocks' ) }
+						items={ [
+							{
+								hasValue: () => ( reviews || [] ).length > 0,
+								onDeselect: () =>
+									setAttributes( { reviews: [] } ),
+							},
+						] }
+						initialOpen={ false }
 					>
 						{ ( reviews || [] ).map( ( r, idx ) => (
 							<div
@@ -1021,7 +1029,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								{ __( 'Import reviews', 'sgs-blocks' ) }
 							</Button>
 						</div>
-					</ToolsPanel>
+					</SgsResetPanel>
 				) }
 			</InspectorControls>
 

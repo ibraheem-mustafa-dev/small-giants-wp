@@ -77,6 +77,7 @@ import FluidScaleControls, {
 // "Header behaviour" ToolsPanel below (sectionInk is its own feature).
 import SectionInkPanel, { sectionInkColourRows } from './section-ink-panel';
 import ScrollChangePanel from './scroll-change-panel';
+import SgsResetPanel from '../../components/SgsResetPanel';
 
 /**
  * Does a tri-state {desktop,tablet,mobile} behaviour object resolve 'on' at
@@ -1454,8 +1455,25 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 			</InspectorControls>
 
 			<InspectorControls group="styles">
-				<ToolsPanel
-					label={ __( 'Layout', 'sgs-blocks' ) }
+				<SgsResetPanel
+					title={ __( 'Layout', 'sgs-blocks' ) }
+					items={ [
+						{
+							hasValue: () =>
+								getActiveLayoutPreset(
+									attributes,
+									middleRowJustify
+								) !== 'split',
+							onDeselect: () =>
+								applyLayoutPreset(
+									'split',
+									attributes,
+									setAttributes,
+									middleRowClientId,
+									updateBlockAttributes
+								),
+						},
+					] }
 					resetAll={ () =>
 						applyLayoutPreset(
 							'split',
@@ -1465,64 +1483,45 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							updateBlockAttributes
 						)
 					}
+					initialOpen={ false }
 				>
-					<ToolsPanelItem
+					<ToggleGroupControl
 						label={ __( 'Layout preset', 'sgs-blocks' ) }
-						hasValue={ () =>
-							getActiveLayoutPreset(
-								attributes,
-								middleRowJustify
-							) !== 'split'
-						}
-						onDeselect={ () =>
+						value={ getActiveLayoutPreset(
+							attributes,
+							middleRowJustify
+						) }
+						onChange={ ( value ) =>
 							applyLayoutPreset(
-								'split',
+								value,
 								attributes,
 								setAttributes,
 								middleRowClientId,
 								updateBlockAttributes
 							)
 						}
-						isShownByDefault
+						help={ __(
+							'Sets the header content-band width, padding and logo/nav alignment in one step. Selecting a preset overwrites those values — fine-tune afterwards in the panels above (or the middle row for alignment).',
+							'sgs-blocks'
+						) }
+						isBlock
+						__next40pxDefaultSize
+						__nextHasNoMarginBottom
 					>
-						<ToggleGroupControl
-							label={ __( 'Layout preset', 'sgs-blocks' ) }
-							value={ getActiveLayoutPreset(
-								attributes,
-								middleRowJustify
-							) }
-							onChange={ ( value ) =>
-								applyLayoutPreset(
-									value,
-									attributes,
-									setAttributes,
-									middleRowClientId,
-									updateBlockAttributes
-								)
-							}
-							help={ __(
-								'Sets the header content-band width, padding and logo/nav alignment in one step. Selecting a preset overwrites those values — fine-tune afterwards in the panels above (or the middle row for alignment).',
-								'sgs-blocks'
-							) }
-							isBlock
-							__next40pxDefaultSize
-							__nextHasNoMarginBottom
-						>
-							<ToggleGroupControlOption
-								value="centred"
-								label={ __( 'Centred', 'sgs-blocks' ) }
-							/>
-							<ToggleGroupControlOption
-								value="split"
-								label={ __( 'Split', 'sgs-blocks' ) }
-							/>
-							<ToggleGroupControlOption
-								value="minimal"
-								label={ __( 'Minimal', 'sgs-blocks' ) }
-							/>
-						</ToggleGroupControl>
-					</ToolsPanelItem>
-				</ToolsPanel>
+						<ToggleGroupControlOption
+							value="centred"
+							label={ __( 'Centred', 'sgs-blocks' ) }
+						/>
+						<ToggleGroupControlOption
+							value="split"
+							label={ __( 'Split', 'sgs-blocks' ) }
+						/>
+						<ToggleGroupControlOption
+							value="minimal"
+							label={ __( 'Minimal', 'sgs-blocks' ) }
+						/>
+					</ToggleGroupControl>
+				</SgsResetPanel>
 			</InspectorControls>
 
 			{ /* Editor canvas renders as <header> to match the frontend banner

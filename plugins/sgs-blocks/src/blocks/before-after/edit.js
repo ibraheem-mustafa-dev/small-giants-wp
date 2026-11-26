@@ -42,9 +42,9 @@ import {
 	IconPicker,
 } from '../../components';
 import { hasFile } from '../../components/media/mediaSlotWrites.js';
-import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
+import SgsResetPanel from '../../components/SgsResetPanel';
 const HEIGHT_UNITS = [
 	{ value: 'px', label: 'px' },
 	{ value: 'vh', label: 'vh' },
@@ -171,7 +171,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			   labelColour gained a hover pair 2026-09-07 (Task 1,
 			   colour-conformance); labelBackground below still has none.
 			   boxShadow's colour row (D621/D622) lives here too — the shape
-			   stays with ShadowControl in the Frame styling ToolsPanel below,
+			   stays with ShadowControl in the Frame styling panel below,
 			   colour is externally managed per the shared colour-architecture. */ }
 			<SgsColourPanel
 				rows={ [
@@ -598,34 +598,33 @@ export default function Edit( { attributes, setAttributes } ) {
 			  redirecting it to the same attrs a second control already owns.
 			*/ }
 			<InspectorControls group="styles">
-				<ToolsPanel
-					label={ __( 'Frame styling', 'sgs-blocks' ) }
+				<SgsResetPanel
+					title={ __( 'Frame styling', 'sgs-blocks' ) }
+					items={ [
+						{
+							hasValue: () => !! boxShadow,
+							onDeselect: () =>
+								setAttributes( {
+									boxShadow: '',
+									boxShadowColour: '',
+								} ),
+						},
+					] }
 					resetAll={ () =>
 						setAttributes( { boxShadow: '', boxShadowColour: '' } )
 					}
+					initialOpen={ false }
 				>
-					<ToolsPanelItem
+					<ShadowControl
 						label={ __( 'Shadow', 'sgs-blocks' ) }
-						hasValue={ () => !! boxShadow }
-						onDeselect={ () =>
-							setAttributes( {
-								boxShadow: '',
-								boxShadowColour: '',
-							} )
-						}
-						isShownByDefault
-					>
-						<ShadowControl
-							label={ __( 'Shadow', 'sgs-blocks' ) }
-							attributes={ attributes }
-							setAttributes={ setAttributes }
-							attrNames={ shadowAttrKeys( 'boxShadow', {
-								hover: true,
-								hoverColour: true,
-							} ) }
-						/>
-					</ToolsPanelItem>
-				</ToolsPanel>
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						attrNames={ shadowAttrKeys( 'boxShadow', {
+							hover: true,
+							hoverColour: true,
+						} ) }
+					/>
+				</SgsResetPanel>
 			</InspectorControls>
 
 			<div { ...blockProps }>

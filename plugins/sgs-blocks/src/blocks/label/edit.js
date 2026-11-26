@@ -32,8 +32,6 @@ import {
 	sgsBorderPreview,
 } from '../../utils';
 import {
-	ToolsPanel,
-	ToolsPanelItem,
 	ToggleGroupControl,
 	ToggleGroupControlOption,
 } from '../../components/primitives';
@@ -44,6 +42,7 @@ import {
 	labelEndShapePreviewCss,
 } from './end-shape-preview';
 import { RICH_TEXT_LINK_ONLY } from '../../utils/rich-text-formats';
+import SgsResetPanel from '../../components/SgsResetPanel';
 
 /**
  * The typography attributes the shared panel owns, at their block.json defaults.
@@ -353,48 +352,48 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					title={ __( 'Typography', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<ToolsPanel
-						className="sgs-nested-tools-panel"
-						label={ __( 'Typography', 'sgs-blocks' ) }
+					<SgsResetPanel
+						title={ __( 'Typography', 'sgs-blocks' ) }
+						items={ [
+							{
+								hasValue: () =>
+									hasTypographyValue( attributes ),
+								onDeselect: () =>
+									setAttributes( { ...TYPOGRAPHY_DEFAULTS } ),
+							},
+						] }
 						resetAll={ () =>
 							setAttributes( { ...TYPOGRAPHY_DEFAULTS } )
 						}
+						bare
 					>
 						{ /* One item for the whole shared panel: font family, size (all devices),
 						   weight, style, line height, letter spacing, transform, decoration,
 						   alignment, wrapping, columns and writing mode. */ }
-						<ToolsPanelItem
-							label={ __( 'Typography', 'sgs-blocks' ) }
-							hasValue={ () => hasTypographyValue( attributes ) }
-							onDeselect={ () =>
-								setAttributes( { ...TYPOGRAPHY_DEFAULTS } )
-							}
-							isShownByDefault
-						>
-							<TypographyControls
-								attributes={ attributes }
-								setAttributes={ setAttributes }
-								prefix=""
-								showSize
-								showResponsive
-								fontSizePresets
-								showFontFamily
-								showWeight
-								showStyle
-								showLineHeight
-								showLetterSpacing
-								showTransform
-								showDecoration
-								showTextAlign
-								showTextWrap
-								showTextStroke
-								showNumberStyle
-								showTextShadow
-								showTextColumns
-								showWritingMode
-							/>
-						</ToolsPanelItem>
-					</ToolsPanel>
+
+						<TypographyControls
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							prefix=""
+							showSize
+							showResponsive
+							fontSizePresets
+							showFontFamily
+							showWeight
+							showStyle
+							showLineHeight
+							showLetterSpacing
+							showTransform
+							showDecoration
+							showTextAlign
+							showTextWrap
+							showTextStroke
+							showNumberStyle
+							showTextShadow
+							showTextColumns
+							showWritingMode
+						/>
+					</SgsResetPanel>
 				</PanelBody>
 				<EndShapePanel
 					attributes={ attributes }

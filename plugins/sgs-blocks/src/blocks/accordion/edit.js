@@ -31,9 +31,10 @@ import { usePreviewTier } from '../../utils';
 import { accordionWrapperPreview } from './preview-style';
 import { partHasEntranceLayer } from '../extensions/motion/part-layer';
 import FilterPanel from './FilterPanel';
-import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+
 import EasingAtom from '../../components/motion/EasingAtom';
 import FilterCanvasBar from './FilterCanvasBar';
+import SgsResetPanel from '../../components/SgsResetPanel';
 
 const STYLE_OPTIONS = [
 	{ label: __( 'Bordered', 'sgs-blocks' ), value: 'bordered' },
@@ -444,8 +445,25 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					title={ __( 'Open and close motion', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<ToolsPanel
-						label={ __( 'Answer slide', 'sgs-blocks' ) }
+					<SgsResetPanel
+						title={ __( 'Answer slide', 'sgs-blocks' ) }
+						items={ [
+							{
+								hasValue: () =>
+									0 !== ( attributes.panelDuration ?? 0 ),
+								onDeselect: () =>
+									setAttributes( { panelDuration: 0 } ),
+							},
+							{
+								hasValue: () =>
+									'' !== ( attributes.panelEasing ?? '' ),
+								onDeselect: () =>
+									setAttributes( {
+										panelEasing: '',
+										panelEasingCustom: '',
+									} ),
+							},
+						] }
 						resetAll={ () =>
 							setAttributes( {
 								panelDuration: 0,
@@ -453,76 +471,48 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								panelEasingCustom: '',
 							} )
 						}
+						nested
 					>
-						<ToolsPanelItem
+						<RangeControl
 							label={ __(
 								'Slide speed (milliseconds)',
 								'sgs-blocks'
 							) }
-							isShownByDefault
-							hasValue={ () =>
-								0 !== ( attributes.panelDuration ?? 0 )
-							}
-							onDeselect={ () =>
-								setAttributes( { panelDuration: 0 } )
-							}
-						>
-							<RangeControl
-								label={ __(
-									'Slide speed (milliseconds)',
-									'sgs-blocks'
-								) }
-								help={ __(
-									'How long an answer takes to open and close. 0 keeps the theme speed.',
-									'sgs-blocks'
-								) }
-								value={ attributes.panelDuration ?? 0 }
-								min={ 0 }
-								max={ 3000 }
-								step={ 10 }
-								onChange={ ( value ) =>
-									setAttributes( {
-										panelDuration:
-											'number' === typeof value
-												? value
-												: 0,
-									} )
-								}
-								allowReset
-								resetFallbackValue={ 0 }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Slide curve', 'sgs-blocks' ) }
-							isShownByDefault
-							hasValue={ () =>
-								'' !== ( attributes.panelEasing ?? '' )
-							}
-							onDeselect={ () =>
+							help={ __(
+								'How long an answer takes to open and close. 0 keeps the theme speed.',
+								'sgs-blocks'
+							) }
+							value={ attributes.panelDuration ?? 0 }
+							min={ 0 }
+							max={ 3000 }
+							step={ 10 }
+							onChange={ ( value ) =>
 								setAttributes( {
-									panelEasing: '',
-									panelEasingCustom: '',
+									panelDuration:
+										'number' === typeof value ? value : 0,
 								} )
 							}
-						>
-							<EasingAtom
-								vocab="nav"
-								label={ __( 'Slide curve', 'sgs-blocks' ) }
-								value={ attributes.panelEasing }
-								custom={ attributes.panelEasingCustom }
-								onChange={ ( value ) =>
-									setAttributes( { panelEasing: value } )
-								}
-								onCustomChange={ ( value ) =>
-									setAttributes( {
-										panelEasingCustom: value,
-									} )
-								}
-							/>
-						</ToolsPanelItem>
-					</ToolsPanel>
+							allowReset
+							resetFallbackValue={ 0 }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+
+						<EasingAtom
+							vocab="nav"
+							label={ __( 'Slide curve', 'sgs-blocks' ) }
+							value={ attributes.panelEasing }
+							custom={ attributes.panelEasingCustom }
+							onChange={ ( value ) =>
+								setAttributes( { panelEasing: value } )
+							}
+							onCustomChange={ ( value ) =>
+								setAttributes( {
+									panelEasingCustom: value,
+								} )
+							}
+						/>
+					</SgsResetPanel>
 				</PanelBody>
 
 				<FilterPanel

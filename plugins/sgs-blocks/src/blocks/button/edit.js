@@ -79,6 +79,7 @@ import { presetNames } from './preset-names';
 
 import AuthoredText from '../../components/AuthoredText';
 import SgsFreeTextField from '../../components/SgsFreeTextField';
+import SgsResetPanel from '../../components/SgsResetPanel';
 const ICON_POSITION_OPTIONS = [
 	{ label: __( 'Before label', 'sgs-blocks' ), value: 'before' },
 	{ label: __( 'After label', 'sgs-blocks' ), value: 'after' },
@@ -1420,34 +1421,33 @@ export default function Edit( {
 				   SgsColourPanel (Normal/Hover tabs per swatch). This
 				   ToolsPanel now holds only the one hover behaviour with no
 				   colour of its own. */ }
-				<ToolsPanel
-					label={ __( 'Hover effects', 'sgs-blocks' ) }
+				<SgsResetPanel
+					title={ __( 'Hover effects', 'sgs-blocks' ) }
+					items={ [
+						{
+							hasValue: () => !! fontWeightHover,
+							onDeselect: () =>
+								setAttributes( { fontWeightHover: '' } ),
+						},
+					] }
 					resetAll={ () =>
 						setAttributes( {
 							fontWeightHover: '',
 						} )
 					}
+					initialOpen={ false }
 				>
-					<ToolsPanelItem
+					<SelectControl
 						label={ __( 'Weight on hover', 'sgs-blocks' ) }
-						hasValue={ () => !! fontWeightHover }
-						onDeselect={ () =>
-							setAttributes( { fontWeightHover: '' } )
+						value={ fontWeightHover || '' }
+						options={ SGS_FONT_WEIGHT_OPTIONS }
+						onChange={ ( val ) =>
+							setAttributes( { fontWeightHover: val } )
 						}
-						isShownByDefault
-					>
-						<SelectControl
-							label={ __( 'Weight on hover', 'sgs-blocks' ) }
-							value={ fontWeightHover || '' }
-							options={ SGS_FONT_WEIGHT_OPTIONS }
-							onChange={ ( val ) =>
-								setAttributes( { fontWeightHover: val } )
-							}
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					</ToolsPanelItem>
-				</ToolsPanel>
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+				</SgsResetPanel>
 
 				{ /* Border — always editable (preset-as-seed). Box-object interface
 				   contract §1/§5: borderWidth is an SGS custom object attr (a flat box = desktop,

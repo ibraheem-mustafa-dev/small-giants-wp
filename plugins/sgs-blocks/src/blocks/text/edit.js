@@ -47,7 +47,6 @@ import {
 	LinkUnderlineControl,
 	SGS_FONT_WEIGHT_OPTIONS,
 } from '../../components';
-import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import {
 	colourVar,
 	resolveTextColourPreviewStyle,
@@ -63,6 +62,7 @@ import { composeShadow } from '../../utils/shadow-layers';
 import { cssLengthValue } from '../../utils/css-length';
 import { resolveTier } from '../../utils/responsive';
 import { RICH_TEXT_BODY } from '../../utils/rich-text-formats';
+import SgsResetPanel from '../../components/SgsResetPanel';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -588,8 +588,48 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				   Text colour is NOT here any more (moved to the shared
 				   SgsColourPanel above, D970) — do not re-add a colour row
 				   to this panel. */ }
-				<ToolsPanel
-					label={ __( 'Typography', 'sgs-blocks' ) }
+				<SgsResetPanel
+					title={ __( 'Typography', 'sgs-blocks' ) }
+					items={ [
+						{
+							hasValue: () =>
+								( fontSize &&
+									'object' === typeof fontSize &&
+									Object.keys( fontSize ).length > 0 ) ||
+								'px' !== ( fontSizeUnit || 'px' ) ||
+								!! fontWeight ||
+								!! fontStyle ||
+								( lineHeight &&
+									'object' === typeof lineHeight &&
+									Object.keys( lineHeight ).length > 0 ) ||
+								'em' !== ( lineHeightUnit || 'em' ) ||
+								( letterSpacing &&
+									'object' === typeof letterSpacing &&
+									Object.keys( letterSpacing ).length > 0 ) ||
+								!! fontFamily ||
+								!! textDecoration ||
+								!! textTransform ||
+								( textAlign &&
+									'object' === typeof textAlign &&
+									Object.keys( textAlign ).length > 0 ) ||
+								!! textWrap,
+							onDeselect: () =>
+								setAttributes( {
+									fontSize: {},
+									fontSizeUnit: 'px',
+									fontWeight: '',
+									fontStyle: '',
+									lineHeight: {},
+									lineHeightUnit: 'em',
+									letterSpacing: {},
+									fontFamily: '',
+									textDecoration: '',
+									textTransform: '',
+									textAlign: {},
+									textWrap: '',
+								} ),
+						},
+					] }
 					resetAll={ () =>
 						setAttributes( {
 							textDecoration: '',
@@ -599,96 +639,55 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							textWrap: '',
 						} )
 					}
+					initialOpen={ false }
 				>
-					<ToolsPanelItem
-						label={ __( 'Font', 'sgs-blocks' ) }
-						hasValue={ () =>
-							( fontSize &&
-								'object' === typeof fontSize &&
-								Object.keys( fontSize ).length > 0 ) ||
-							'px' !== ( fontSizeUnit || 'px' ) ||
-							!! fontWeight ||
-							!! fontStyle ||
-							( lineHeight &&
-								'object' === typeof lineHeight &&
-								Object.keys( lineHeight ).length > 0 ) ||
-							'em' !== ( lineHeightUnit || 'em' ) ||
-							( letterSpacing &&
-								'object' === typeof letterSpacing &&
-								Object.keys( letterSpacing ).length > 0 ) ||
-							!! fontFamily ||
-							!! textDecoration ||
-							!! textTransform ||
-							( textAlign &&
-								'object' === typeof textAlign &&
-								Object.keys( textAlign ).length > 0 ) ||
-							!! textWrap
-						}
-						onDeselect={ () =>
-							setAttributes( {
-								fontSize: {},
-								fontSizeUnit: 'px',
-								fontWeight: '',
-								fontStyle: '',
-								lineHeight: {},
-								lineHeightUnit: 'em',
-								letterSpacing: {},
-								fontFamily: '',
-								textDecoration: '',
-								textTransform: '',
-								textAlign: {},
-								textWrap: '',
-							} )
-						}
-						isShownByDefault
-					>
-						{ /*
-						 * THE WHOLE typography field set is the shared
-						 * TypographyControls component, which since the 2026-09-06
-						 * rebuild renders WordPress's OWN native controls
-						 * (FontSizePicker / FontFamilyControl / FontAppearanceControl /
-						 * LineHeightControl / LetterSpacingControl /
-						 * TextDecorationControl / TextTransformControl, plus a faithful
-						 * reimplementation of core's private TextAlignmentControl).
-						 *
-						 * Four ToolsPanelItems that used to sit below this one —
-						 * "Text decoration & transform", "Font family" and "Text align" —
-						 * are GONE, not moved alongside. Each hand-rolled a control the
-						 * shared component already renders; "Text decoration & transform"
-						 * in particular was a genuine DUPLICATE WRITER, since this block
-						 * already passed showDecoration/showTransform.
-						 *
-						 * fontSize / lineHeight / letterSpacing are TIER OBJECTS here
-						 * ({desktop,tablet,mobile}), so the responsive values live inside
-						 * them. The legacy flat fontSizeTablet/fontSizeMobile pair does
-						 * NOT apply to this block and must not be re-added;
-						 * TypographyControls' tiered branch never writes them.
-						 */ }
-						<TypographyControls
-							attributes={ attributes }
-							setAttributes={ setAttributes }
-							prefix=""
-							showSize={ true }
-							fontSizePresets={ true }
-							showWeight={ true }
-							showStyle={ true }
-							showLineHeight={ true }
-							showResponsive={ true }
-							showLetterSpacing={ true }
-							showDecoration={ true }
-							showTransform={ true }
-							showFontFamily={ true }
-							showTextAlign={ true }
-							showTextWrap={ true }
-							showTextStroke
-							showNumberStyle
-							showTextShadow
-							showTextColumns={ true }
-							showTextIndent={ true }
-							showWritingMode={ true }
-						/>
+					{ /*
+					 * THE WHOLE typography field set is the shared
+					 * TypographyControls component, which since the 2026-09-06
+					 * rebuild renders WordPress's OWN native controls
+					 * (FontSizePicker / FontFamilyControl / FontAppearanceControl /
+					 * LineHeightControl / LetterSpacingControl /
+					 * TextDecorationControl / TextTransformControl, plus a faithful
+					 * reimplementation of core's private TextAlignmentControl).
+					 *
+					 * Four ToolsPanelItems that used to sit below this one —
+					 * "Text decoration & transform", "Font family" and "Text align" —
+					 * are GONE, not moved alongside. Each hand-rolled a control the
+					 * shared component already renders; "Text decoration & transform"
+					 * in particular was a genuine DUPLICATE WRITER, since this block
+					 * already passed showDecoration/showTransform.
+					 *
+					 * fontSize / lineHeight / letterSpacing are TIER OBJECTS here
+					 * ({desktop,tablet,mobile}), so the responsive values live inside
+					 * them. The legacy flat fontSizeTablet/fontSizeMobile pair does
+					 * NOT apply to this block and must not be re-added;
+					 * TypographyControls' tiered branch never writes them.
+					 */ }
+					<TypographyControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix=""
+						showSize={ true }
+						fontSizePresets={ true }
+						showWeight={ true }
+						showStyle={ true }
+						showLineHeight={ true }
+						showResponsive={ true }
+						showLetterSpacing={ true }
+						showDecoration={ true }
+						showTransform={ true }
+						showFontFamily={ true }
+						showTextAlign={ true }
+						showTextWrap={ true }
+						showTextStroke
+						showNumberStyle
+						showTextShadow
+						showTextColumns={ true }
+						showTextIndent={ true }
+						showWritingMode={ true }
+					/>
 
-						{ /* ⛔ The separate "Line height (tablet / mobile)" ResponsiveControl
+					{ /* ⛔ The separate "Line height (tablet / mobile)" ResponsiveControl
 					   that used to sit here is DELETED (2026-09-06).
 
 					   It existed because the shared TypographyControls' line-height
@@ -710,7 +709,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					   `setAttributes({ lineHeight: {...obj, [tier]: v} })` of the
 					   kind that lived here is exactly the write WordPress applies
 					   no schema validation to. */ }
-					</ToolsPanelItem>
 
 					{ /* ⛔ THREE ToolsPanelItems were DELETED here on 2026-09-06,
 					     not moved: "Text decoration & transform", "Font family"
@@ -744,7 +742,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					   the contrast check wired into that row via the
 					   colourVar/resolveTextColourPreviewStyle helpers used
 					   elsewhere in this file. */ }
-				</ToolsPanel>
+				</SgsResetPanel>
 
 				{ /* ============================================================
 				     Settings tab — Drop cap (TIER-1, its own already-exempt

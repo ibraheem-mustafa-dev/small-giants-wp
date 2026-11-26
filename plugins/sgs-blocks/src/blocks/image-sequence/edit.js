@@ -17,7 +17,8 @@ import { AspectRatioField } from '../../components/media/SizingFields';
 import { useActiveDevice } from '../../components/media/deviceValues';
 import metadata from './block.json';
 import FrameSummary from './frame-summary';
-import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import { ToolsPanel } from '../../components/primitives';
+import SgsResetPanel from '../../components/SgsResetPanel';
 
 /**
  * Hard cap on frames per tier (Step 16, Motion Wave D, Route B). Must stay
@@ -330,9 +331,26 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							'sgs-blocks'
 						) }
 					</p>
-					<ToolsPanel
-						className="sgs-nested-tools-panel"
-						label={ __( 'Responsive frame sources', 'sgs-blocks' ) }
+					<SgsResetPanel
+						title={ __( 'Responsive frame sources', 'sgs-blocks' ) }
+						items={ [
+							{
+								hasValue: () => Boolean( tabletFramesUrl ),
+								onDeselect: () =>
+									setAttributes( {
+										tabletFramesUrl: '',
+										tabletFrameCount: 0,
+									} ),
+							},
+							{
+								hasValue: () => Boolean( mobileFramesUrl ),
+								onDeselect: () =>
+									setAttributes( {
+										mobileFramesUrl: '',
+										mobileFrameCount: 0,
+									} ),
+							},
+						] }
 						resetAll={ () =>
 							setAttributes( {
 								tabletFramesUrl: '',
@@ -345,92 +363,70 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								mobileFrameExt: 'webp',
 							} )
 						}
+						nested
 					>
-						<ToolsPanelItem
-							label={ __( 'Tablet frames', 'sgs-blocks' ) }
-							hasValue={ () => Boolean( tabletFramesUrl ) }
-							onDeselect={ () =>
-								setAttributes( {
-									tabletFramesUrl: '',
-									tabletFrameCount: 0,
-								} )
-							}
-							isShownByDefault
-						>
-							<FrameSourceFields
-								label={ __(
-									'Tablet frames folder URL',
-									'sgs-blocks'
-								) }
-								help={ __(
-									'Optional — falls back to desktop when empty.',
-									'sgs-blocks'
-								) }
-								url={ tabletFramesUrl }
-								count={ tabletFrameCount }
-								pad={ tabletFramePad }
-								ext={ tabletFrameExt }
-								onChange={ ( changed ) => {
-									const next = {};
-									if ( undefined !== changed.url ) {
-										next.tabletFramesUrl = changed.url;
-									}
-									if ( undefined !== changed.count ) {
-										next.tabletFrameCount = changed.count;
-									}
-									if ( undefined !== changed.ext ) {
-										next.tabletFrameExt = changed.ext;
-									}
-									if ( undefined !== changed.pad ) {
-										next.tabletFramePad = changed.pad;
-									}
-									setAttributes( next );
-								} }
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Mobile frames', 'sgs-blocks' ) }
-							hasValue={ () => Boolean( mobileFramesUrl ) }
-							onDeselect={ () =>
-								setAttributes( {
-									mobileFramesUrl: '',
-									mobileFrameCount: 0,
-								} )
-							}
-							isShownByDefault
-						>
-							<FrameSourceFields
-								label={ __(
-									'Mobile frames folder URL',
-									'sgs-blocks'
-								) }
-								help={ __(
-									'Optional — falls back to tablet, then desktop, when empty.',
-									'sgs-blocks'
-								) }
-								url={ mobileFramesUrl }
-								count={ mobileFrameCount }
-								pad={ mobileFramePad }
-								ext={ mobileFrameExt }
-								onChange={ ( changed ) => {
-									const next = {};
-									if ( undefined !== changed.url ) {
-										next.mobileFramesUrl = changed.url;
-									}
-									if ( undefined !== changed.count ) {
-										next.mobileFrameCount = changed.count;
-									}
-									if ( undefined !== changed.ext ) {
-										next.mobileFrameExt = changed.ext;
-									}
-									if ( undefined !== changed.pad ) {
-										next.mobileFramePad = changed.pad;
-									}
-									setAttributes( next );
-								} }
-							/>
-						</ToolsPanelItem>
-					</ToolsPanel>
+						<FrameSourceFields
+							label={ __(
+								'Tablet frames folder URL',
+								'sgs-blocks'
+							) }
+							help={ __(
+								'Optional — falls back to desktop when empty.',
+								'sgs-blocks'
+							) }
+							url={ tabletFramesUrl }
+							count={ tabletFrameCount }
+							pad={ tabletFramePad }
+							ext={ tabletFrameExt }
+							onChange={ ( changed ) => {
+								const next = {};
+								if ( undefined !== changed.url ) {
+									next.tabletFramesUrl = changed.url;
+								}
+								if ( undefined !== changed.count ) {
+									next.tabletFrameCount = changed.count;
+								}
+								if ( undefined !== changed.ext ) {
+									next.tabletFrameExt = changed.ext;
+								}
+								if ( undefined !== changed.pad ) {
+									next.tabletFramePad = changed.pad;
+								}
+								setAttributes( next );
+							} }
+						/>
+
+						<FrameSourceFields
+							label={ __(
+								'Mobile frames folder URL',
+								'sgs-blocks'
+							) }
+							help={ __(
+								'Optional — falls back to tablet, then desktop, when empty.',
+								'sgs-blocks'
+							) }
+							url={ mobileFramesUrl }
+							count={ mobileFrameCount }
+							pad={ mobileFramePad }
+							ext={ mobileFrameExt }
+							onChange={ ( changed ) => {
+								const next = {};
+								if ( undefined !== changed.url ) {
+									next.mobileFramesUrl = changed.url;
+								}
+								if ( undefined !== changed.count ) {
+									next.mobileFrameCount = changed.count;
+								}
+								if ( undefined !== changed.ext ) {
+									next.mobileFrameExt = changed.ext;
+								}
+								if ( undefined !== changed.pad ) {
+									next.mobileFramePad = changed.pad;
+								}
+								setAttributes( next );
+							} }
+						/>
+					</SgsResetPanel>
 				</PanelBody>
 			</InspectorControls>
 

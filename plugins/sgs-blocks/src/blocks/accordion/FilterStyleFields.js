@@ -31,6 +31,7 @@ import {
 	fontFamilyStoredValue,
 	flattenPresetSetting,
 } from '../../utils';
+import { SgsResetItem } from '../../components/SgsResetPanel';
 
 const OFFSET_UNITS = [
 	{ value: 'px', label: 'px', default: 0 },
@@ -80,26 +81,22 @@ const hasTier = ( value ) =>
 
 function TierItem( { label, attribute, attributes, setAttributes, children } ) {
 	return (
-		<ToolsPanelItem
-			label={ label }
+		<SgsResetItem
 			hasValue={ () => hasTier( attributes[ attribute ] ) }
 			onDeselect={ () => setAttributes( { [ attribute ]: {} } ) }
-			isShownByDefault
 		>
 			{ children }
-		</ToolsPanelItem>
+		</SgsResetItem>
 	);
 }
 
 function ShadowItem( { label, base, colour, attributes, setAttributes } ) {
 	return (
-		<ToolsPanelItem
-			label={ label }
+		<SgsResetItem
 			hasValue={ () => !! attributes[ base ] || !! attributes[ colour ] }
 			onDeselect={ () =>
 				setAttributes( { [ base ]: '', [ colour ]: '' } )
 			}
-			isShownByDefault
 		>
 			<ShadowControl
 				label={ label }
@@ -107,7 +104,7 @@ function ShadowItem( { label, base, colour, attributes, setAttributes } ) {
 				setAttributes={ setAttributes }
 				attrNames={ { base, colour } }
 			/>
-		</ToolsPanelItem>
+		</SgsResetItem>
 	);
 }
 
@@ -148,11 +145,9 @@ function FontFamilyItem( { label, attribute, attributes, setAttributes } ) {
 	const [ familiesRaw ] = useSettings( 'typography.fontFamilies' );
 	const families = flattenPresetSetting( familiesRaw );
 	return (
-		<ToolsPanelItem
-			label={ label }
+		<SgsResetItem
 			hasValue={ () => !! attributes[ attribute ] }
 			onDeselect={ () => setAttributes( { [ attribute ]: '' } ) }
-			isShownByDefault
 		>
 			<FontFamilyControl
 				fontFamilies={ families }
@@ -171,7 +166,7 @@ function FontFamilyItem( { label, attribute, attributes, setAttributes } ) {
 					} )
 				}
 			/>
-		</ToolsPanelItem>
+		</SgsResetItem>
 	);
 }
 
@@ -256,13 +251,11 @@ export function ChipLookFields( { attributes, setAttributes } ) {
 				colour="filterChipSelectedShadowColour"
 				{ ...shared }
 			/>
-			<ToolsPanelItem
-				label={ __( 'Selected chip shift (across)', 'sgs-blocks' ) }
+			<SgsResetItem
 				hasValue={ () => !! attributes.filterChipSelectedOffsetX }
 				onDeselect={ () =>
 					setAttributes( { filterChipSelectedOffsetX: '' } )
 				}
-				isShownByDefault
 			>
 				<SgsLengthControl
 					scale="spacing"
@@ -280,14 +273,12 @@ export function ChipLookFields( { attributes, setAttributes } ) {
 						} )
 					}
 				/>
-			</ToolsPanelItem>
-			<ToolsPanelItem
-				label={ __( 'Selected chip shift (down)', 'sgs-blocks' ) }
+			</SgsResetItem>
+			<SgsResetItem
 				hasValue={ () => !! attributes.filterChipSelectedOffsetY }
 				onDeselect={ () =>
 					setAttributes( { filterChipSelectedOffsetY: '' } )
 				}
-				isShownByDefault
 			>
 				<SgsLengthControl
 					scale="spacing"
@@ -305,7 +296,7 @@ export function ChipLookFields( { attributes, setAttributes } ) {
 						} )
 					}
 				/>
-			</ToolsPanelItem>
+			</SgsResetItem>
 		</>
 	);
 }
@@ -387,11 +378,9 @@ export function SearchLookFields( { attributes, setAttributes } ) {
 				colour="filterSearchShadowColour"
 				{ ...shared }
 			/>
-			<ToolsPanelItem
-				label={ __( 'Search icon', 'sgs-blocks' ) }
+			<SgsResetItem
 				hasValue={ () => !! attributes.filterSearchIcon }
 				onDeselect={ () => setAttributes( { filterSearchIcon: '' } ) }
-				isShownByDefault
 			>
 				<IconPicker
 					label={ __( 'Search icon', 'sgs-blocks' ) }
@@ -404,15 +393,13 @@ export function SearchLookFields( { attributes, setAttributes } ) {
 						setAttributes( { filterSearchIcon: name || '' } )
 					}
 				/>
-			</ToolsPanelItem>
+			</SgsResetItem>
 			{ !! attributes.filterSearchIcon && (
-				<ToolsPanelItem
-					label={ __( 'Search icon size', 'sgs-blocks' ) }
+				<SgsResetItem
 					hasValue={ () => !! attributes.filterSearchIconSize }
 					onDeselect={ () =>
 						setAttributes( { filterSearchIconSize: '' } )
 					}
-					isShownByDefault
 				>
 					<SgsLengthControl
 						scale="spacing"
@@ -423,16 +410,14 @@ export function SearchLookFields( { attributes, setAttributes } ) {
 							setAttributes( { filterSearchIconSize: val || '' } )
 						}
 					/>
-				</ToolsPanelItem>
+				</SgsResetItem>
 			) }
 			{ !! attributes.filterSearchIcon && (
-				<ToolsPanelItem
-					label={ __( 'Search icon offset', 'sgs-blocks' ) }
+				<SgsResetItem
 					hasValue={ () => !! attributes.filterSearchIconOffset }
 					onDeselect={ () =>
 						setAttributes( { filterSearchIconOffset: '' } )
 					}
-					isShownByDefault
 				>
 					<SgsLengthControl
 						scale="spacing"
@@ -449,7 +434,7 @@ export function SearchLookFields( { attributes, setAttributes } ) {
 							} )
 						}
 					/>
-				</ToolsPanelItem>
+				</SgsResetItem>
 			) }
 		</>
 	);
@@ -470,8 +455,7 @@ export function BandFields( { attributes, setAttributes } ) {
 				attribute="filterBandPadding"
 				{ ...shared }
 			/>
-			<ToolsPanelItem
-				label={ __( 'Band bottom line', 'sgs-blocks' ) }
+			<SgsResetItem
 				hasValue={ () =>
 					Object.keys( width ).length > 0 ||
 					!! attributes.filterBandBorderColour ||
@@ -484,7 +468,6 @@ export function BandFields( { attributes, setAttributes } ) {
 						filterBandBorderColour: '',
 					} )
 				}
-				isShownByDefault
 			>
 				<SgsBorderControl
 					label={ __( 'Band bottom line', 'sgs-blocks' ) }
@@ -503,14 +486,12 @@ export function BandFields( { attributes, setAttributes } ) {
 					}
 					colourLinked
 				/>
-			</ToolsPanelItem>
-			<ToolsPanelItem
-				label={ __( 'Band full width', 'sgs-blocks' ) }
+			</SgsResetItem>
+			<SgsResetItem
 				hasValue={ () => !! attributes.filterBandFullWidth }
 				onDeselect={ () =>
 					setAttributes( { filterBandFullWidth: false } )
 				}
-				isShownByDefault
 			>
 				<ToggleControl
 					label={ __( 'Band full width', 'sgs-blocks' ) }
@@ -524,7 +505,7 @@ export function BandFields( { attributes, setAttributes } ) {
 					}
 					__nextHasNoMarginBottom
 				/>
-			</ToolsPanelItem>
+			</SgsResetItem>
 		</>
 	);
 }

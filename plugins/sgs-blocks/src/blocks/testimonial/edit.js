@@ -67,6 +67,7 @@ import { resolveTier } from '../../utils/responsive';
 import { composeShadow } from '../../utils/shadow-layers';
 import AuthoredText from '../../components/AuthoredText';
 import SgsFreeTextField from '../../components/SgsFreeTextField';
+import SgsResetPanel from '../../components/SgsResetPanel';
 // Variants whose stylesheet already paints a border: a chosen colour, style or
 // width overrides it part by part, as render.php emits each alone.
 /** The three media slots (Spec 49 §10.4), by prefix, with the label each panel title carries. */
@@ -1035,57 +1036,50 @@ export default function Edit( {
 				</PanelBody>
 
 				{ effectiveVariant === 'review-card' && (
-					<ToolsPanel
-						label={ __( 'Review line', 'sgs-blocks' ) }
+					<SgsResetPanel
+						title={ __( 'Review line', 'sgs-blocks' ) }
+						items={ [
+							{
+								hasValue: () => reviewDate !== '',
+								onDeselect: () =>
+									setAttributes( { reviewDate: '' } ),
+							},
+							{
+								hasValue: () =>
+									!! reviewFooterBorder &&
+									Object.keys( reviewFooterBorder ).length >
+										0,
+								onDeselect: () =>
+									setAttributes( { reviewFooterBorder: {} } ),
+							},
+						] }
 						resetAll={ () =>
 							setAttributes( {
 								reviewDate: '',
 								reviewFooterBorder: {},
 							} )
 						}
+						initialOpen={ false }
 					>
-						<ToolsPanelItem
+						<SgsFreeTextField
+							type="rich"
+							noLink
 							label={ __( 'Review date', 'sgs-blocks' ) }
-							hasValue={ () => reviewDate !== '' }
-							onDeselect={ () =>
-								setAttributes( { reviewDate: '' } )
+							value={ reviewDate }
+							onChange={ ( val ) =>
+								setAttributes( { reviewDate: val } )
 							}
-							isShownByDefault
-						>
-							<SgsFreeTextField
-								type="rich"
-								noLink
-								label={ __( 'Review date', 'sgs-blocks' ) }
-								value={ reviewDate }
-								onChange={ ( val ) =>
-									setAttributes( { reviewDate: val } )
-								}
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __(
-								'Rule above the name line',
-								'sgs-blocks'
-							) }
-							hasValue={ () =>
-								!! reviewFooterBorder &&
-								Object.keys( reviewFooterBorder ).length > 0
+						/>
+
+						<ReviewLineBorder
+							value={ reviewFooterBorder }
+							onChange={ ( next ) =>
+								setAttributes( {
+									reviewFooterBorder: next,
+								} )
 							}
-							onDeselect={ () =>
-								setAttributes( { reviewFooterBorder: {} } )
-							}
-							isShownByDefault
-						>
-							<ReviewLineBorder
-								value={ reviewFooterBorder }
-								onChange={ ( next ) =>
-									setAttributes( {
-										reviewFooterBorder: next,
-									} )
-								}
-							/>
-						</ToolsPanelItem>
-					</ToolsPanel>
+						/>
+					</SgsResetPanel>
 				) }
 
 				{ /* ── Rating — visibility + content (behaviour). Appearance
