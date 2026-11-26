@@ -7,6 +7,7 @@
 // absorbed into. Pure functions over the saved inventory, proposal and skeleton: no browser, no site, no database.
 import { resolvedWidths, renderedWidths, pxOf } from './element-facts.mjs';
 import { paintedProps } from './css-families.mjs';
+import { PX_TOL } from './css-equivalence/tolerance.mjs';
 import { copylessKey, templateKey } from './fact-key.mjs';
 import { revealId } from './reveal-merge.mjs';
 
@@ -332,7 +333,8 @@ export const INHERITED_LOOKS = [ 'text-centre' ];
 //   inherited     `looks` are inherited (INHERITED_LOOKS) and a node inside the element reads them from its own computed values.
 //   host-layout   the block at `node` lays the element's children out itself (a hero's split columns): `looks` is layout only.
 //   host-band     the block at `node` draws its columns within its own content width, so the width cap and auto side margins of
-//                 the wrapper that held those columns (`looks`: BAND_LOOKS only) are that width (rules.heroInner.hostBand).
+//                 the wrapper that held those columns (`looks`: BAND_LOOKS only) are that width (rules.heroInner.hostBand). Verified when
+//                 that node is in the skeleton and a content-width setting it already holds is the wrapper's cap (`width`, px).
 //   absorbed      the parent block at `node` absorbed the element (lib/skeleton-absorb-wrapper.mjs): it is that node's draft
 //                 element at the part `slot`, whose `settings` carry `looks`. Verified when that node is in the skeleton and its
 //                 draftSlots names a finder at `slot`.
@@ -394,6 +396,27 @@ export function nodesByRef( tree ) {
 	return out;
 }
 
+// Why a host-band record cannot stand, or null: the width the host node already holds in a content-width setting (a max-width setting
+// that paints a part other than its root, or the record's own `setting`) is not the cap the record names (`width`, px). A node that holds
+// none is not judged here: its band is the one Fill writes (lib/fill-band.mjs), and a block whose record places no such setting has no
+// reader for it at all (the proposal's own `unread` list).
+function bandProblem( rec, node, settings ) {
+	const cap = Number( rec.width );
+	if ( ! Number.isFinite( cap ) ) {
+		return null;
+	}
+	const attrs = [ ...Object.entries( settings || {} ).filter( ( [ , e ] ) => ! e?.state && paintedProps( e ).includes( 'max-width' ) && 'string' === typeof e?.slot && '' !== e.slot ).map( ( [ name ] ) => name ), ...( rec.setting ? [ rec.setting ] : [] ) ];
+	for ( const attr of attrs ) {
+		const held = node.attributes?.[ attr ] ?? node.decided?.[ attr ];
+		const values = held && 'object' === typeof held ? Object.values( held ) : [ held ];
+		const off = values.map( ( v ) => pxOf( v ) ).find( ( px ) => null !== px && undefined !== px && Math.abs( px - cap ) > PX_TOL );
+		if ( undefined !== off ) {
+			return `host-band ${ rec.node }: ${ node.name } holds ${ attr } ${ off }px but the wrapper it replaces caps at ${ cap }px`;
+		}
+	}
+	return null;
+}
+
 // What a row's records do for the looks left unread: { delivered: [ looks ], listed: record | null, bad: [ text ] }.
 // `nodes`: nodesByRef of the skeleton; `below`: whether a node reads an element inside this one.
 // `calibration( block )`: the block's calibrated settings, or null where it has none (a no-part record is refused without it).
@@ -422,6 +445,11 @@ export function checkRecords( records, { looks, nodes, below = false, calibratio
 		}
 		const named = [].concat( rec.looks ).filter( ( l ) => looks.includes( l ) );
 		const node = rec.node ? nodes.get( rec.node ) : null;
+		const bandWhy = 'host-band' === rec.kind && node ? bandProblem( rec, node, calibration( node.name ) ) : null;
+		if ( bandWhy ) {
+			out.bad.push( bandWhy );
+			continue;
+		}
 		const ok = 'setting' === rec.kind ? !! node && ( undefined !== node.attributes?.[ rec.setting ] || undefined !== node.decided?.[ rec.setting ] ) : 'absorbed' === rec.kind || 'link-slot' === rec.kind ? !! node?.draftSlots?.[ rec.slot ] : 'overlay' === rec.kind ? rec.slot === node?.draftOverlay?.slot && !! node.draftSlots?.[ rec.slot ] && ( node.draftOverlay.layers || [] ).some( ( f ) => rec.layer === f?.tpl ) : 'format' === rec.kind ? !! node && Object.values( node.attributes || {} ).some( ( v ) => 'string' === typeof v && v.includes( `<${ rec.format }>` ) ) : 'inherited' === rec.kind ? below && named.every( ( l ) => INHERITED_LOOKS.includes( l ) ) : 'host-band' === rec.kind ? !! node && named.every( ( l ) => BAND_LOOKS.includes( l ) ) : !! node && named.every( ( l ) => 'layout' === l );
 		ok ? out.delivered.push( ...named ) : out.bad.push( `${ rec.kind } ${ rec.node ?? '' } ${ rec.setting ?? '' } cannot be verified` );
 	}

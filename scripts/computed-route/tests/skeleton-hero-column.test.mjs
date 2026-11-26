@@ -75,7 +75,7 @@ test( 'MUST FAIL: the capped, centred wrapper holding the hero\'s columns is unw
 	assert.ok( ! all( r.skeleton ).some( ( n ) => 'sgs/container' === n.name && 'Root/3#0' === n.draftRef?.tpl ), 'the wrapper is no node' );
 	const row = r.proposal.rows.find( ( x ) => 'Root/3#0' === x.key );
 	assert.equal( row.action, 'unwrap' );
-	assert.deepEqual( row.conserve.filter( ( c ) => 'host-band' === c.kind ).map( ( c ) => [ c.node, c.looks ] ), [ [ 'Root/2#0', [ 'max-width', 'margin-auto' ] ] ], 'the cap and the auto margins are recorded as the own band of the hero' );
+	assert.deepEqual( row.conserve.filter( ( c ) => 'host-band' === c.kind ).map( ( c ) => [ c.node, c.looks, c.width ] ), [ [ 'Root/2#0', [ 'max-width', 'margin-auto' ], 1120 ] ], 'the cap and the auto margins are recorded as the own band of the hero, with the cap in px' );
 	assert.deepEqual( r.problems.filter( ( p ) => /paint conservation/.test( p ) ), [], 'the cap is recorded, so no painted element is left unread' );
 } );
 

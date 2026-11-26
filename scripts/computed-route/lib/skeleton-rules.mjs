@@ -1642,7 +1642,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		}
 		inherited.length && records.push( { kind: 'inherited', looks: inherited } );
 		laid.length && records.push( { kind: 'host-layout', node: out.hostLays, looks: laid } );
-		banded.length && records.push( { kind: 'host-band', node: out.hostLays, looks: banded } );
+		banded.length && records.push( { kind: 'host-band', node: out.hostLays, looks: banded, ...( Number.isFinite( pxOf( x.st?.[ 'max-width' ] ) ) ? { width: pxOf( x.st[ 'max-width' ] ) } : {} ) } );
 		linked.length && records.push( { kind: 'link-slot', node: dest.sizing.node, slot: dest.sizing.slot, looks: linked } );
 		return { kept: ! left.length, left, conserve: records };
 	};

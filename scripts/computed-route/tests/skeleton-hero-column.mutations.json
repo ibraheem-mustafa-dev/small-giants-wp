@@ -34,5 +34,11 @@
 		"find": "const banded = out.hostLays ? painted.filter(",
 		"replace": "const banded = true ? painted.filter(",
 		"why": "a wrapper the host does not lay out (a form control's) would have its width cap treated as the host's band"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "looks: banded, ...( Number.isFinite( pxOf( x.st?.[ 'max-width' ] ) ) ? { width: pxOf( x.st[ 'max-width' ] ) } : {} ) } );",
+		"replace": "looks: banded } );",
+		"why": "the host-band record names no cap, so the width the host holds is never compared with it"
 	}
 ]
