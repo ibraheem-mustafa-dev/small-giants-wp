@@ -48,7 +48,7 @@ export function rowShadowCanvasStyle( attributes, hoverMap = {} ) {
 }
 
 /**
- * The Icon hover colours and Icon shadow panels of the row inspector.
+ * The Icon shadow panels of the row inspector (the brand-colours-on-hover control sits in the Icons panel in `edit.js`).
  *
  * @param {Object}   props
  * @param {Object}   props.attributes    Row attributes.

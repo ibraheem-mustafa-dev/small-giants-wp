@@ -12,8 +12,8 @@ Two halves.
     open-panels       A panel past the first of its tab is open (a ToolsPanel cannot close, so it is a note, not a finding).
     plan              Each `gone` title is absent, each `must` title is present, each `controls` pair sits in the named panel.
   Source half (reads the repo, no census):
-    source            A block no longer imports the panels the dissolve removed, the logo mounts one MediaElementPanel, and
-                      the files the plan names exist.
+    source            A block no longer imports the panels the dissolve removed, the logo mounts one MediaElementPanel, the
+                      files the plan names exist, and the dissolved panels' own files are gone.
 
 The plan lives in scripts/data/nav-panel-plan.json: one entry per line of the track's LISTS.md. Colour rows are not checked here:
 nav-bar-menu and nav-drawer-menu keep theirs this pass (Bean, 2026-11-26), and scripts/check-colour-count.py owns the colour rule.
@@ -63,6 +63,18 @@ def deep(rec, tab):
 
 def ctrl_labels(panel):
     return [c.get("label", "") for c in (panel.get("read") or {}).get("controls", [])]
+
+
+def holds(panel, label):
+    """True when the panel's visible controls include `label`, or its text opens with it.
+
+    The census reads a control's label from the wrapper around it. A box control whose sides are unlinked draws its group
+    label outside any wrapper the census reads (the four side selects carry Top, Right, Bottom and Left instead), so a panel
+    whose first row is such a box opens its text with the label.
+    """
+    if label in ctrl_labels(panel):
+        return True
+    return (panel.get("read") or {}).get("bodyText", "").startswith(label)
 
 
 def mine(res, plan):
@@ -150,7 +162,7 @@ def rule_plan(res, plan):
                 p = panels.get(panel)
                 if p is None:
                     found.append(f"{slug} {tab} has no panel \"{panel}\" to hold \"{label}\"")
-                elif label not in ctrl_labels(p):
+                elif not holds(p, label):
                     found.append(f"{slug} {tab} \"{panel}\" does not hold \"{label}\"")
     return found, []
 
@@ -173,6 +185,9 @@ def rule_source(plan, root=PLUGIN):
     for f in src.get("files_exist", []):
         if not (root / f).exists():
             found.append(f"{f} does not exist yet")
+    for f in src.get("files_gone", []):
+        if (root / f).exists():
+            found.append(f"{f} still exists")
     return found, []
 
 
@@ -206,8 +221,8 @@ def run(census, mode, plan=None, root=PLUGIN, out=print):
     return 1 if (mode == "check" and total) else 0
 
 
-def panel(title, kind="body", opened=False, labels=()):
-    return {"title": title, "kind": kind, "opened": opened, "read": {"controls": [{"label": l} for l in labels]}}
+def panel(title, kind="body", opened=False, labels=(), text=""):
+    return {"title": title, "kind": kind, "opened": opened, "read": {"controls": [{"label": l} for l in labels], "bodyText": text}}
 
 
 def rec(settings, styles, first_styles=None):
@@ -238,6 +253,7 @@ def self_test():
             "no_import": {"ListLayoutPanel": ["edit.js"]},
             "mount_count": {"edit.js": {"<MediaElementPanel": 1}},
             "files_exist": ["Dark.js"],
+            "files_gone": ["Gone.js"],
         },
     }
     good = {
@@ -274,11 +290,25 @@ def self_test():
                     failures.append(f"plan rule missed: {needle}")
         elif want is None or len(b) < want:
             failures.append(f"defective census: {name} found {len(b)}, wanted at least {want}")
+    # An unlinked box control shows Top, Right, Bottom, Left as its labels: the group label is found at the head of the panel text.
+    unlinked = {"sgs/nav-bar-menu": rec(
+        [panel("Menu", opened=True, labels=["Menu"]), panel("Menu Button", labels=["Show the burger on", "Icon"])],
+        [panel("Spacing", opened=True, labels=["Top", "Right"], text="Padding Padding Top Right"), panel("Typography", labels=["Font", "Weight"])],
+    )}
+    f, _ = rule_plan(unlinked, plan)
+    if f:
+        failures.append(f"plan rule refused a box control whose group label heads the panel text: {f}")
+    unlinked["sgs/nav-bar-menu"]["deep"]["styles"][0] = panel("Spacing", opened=True, labels=["Top", "Right"], text="Margin Top Right Padding")
+    f, _ = rule_plan(unlinked, plan)
+    if not any("\"Spacing\" does not hold \"Padding\"" in x for x in f):
+        failures.append("plan rule accepted a panel whose text only mentions the label further in")
     tmp = Path(tempfile.mkdtemp(prefix="nav-panels-"))
     (tmp / "edit.js").write_text("import ListLayoutPanel from 'x';\n<MediaElementPanel a/>\n<MediaElementPanel b/>\n", encoding="utf-8")
+    (tmp / "Gone.js").write_text("", encoding="utf-8")
     f, _ = rule_source(plan, tmp)
-    if len(f) != 3:
-        failures.append(f"source rule on a defective tree: wanted 3 findings, got {f}")
+    if len(f) != 4:
+        failures.append(f"source rule on a defective tree: wanted 4 findings, got {f}")
+    (tmp / "Gone.js").unlink()
     (tmp / "edit.js").write_text("import Other from 'x';\n<MediaElementPanel a/>\n", encoding="utf-8")
     (tmp / "Dark.js").write_text("", encoding="utf-8")
     f, _ = rule_source(plan, tmp)

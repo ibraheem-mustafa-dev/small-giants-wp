@@ -1,131 +1,379 @@
 {
-	"_comment": "Stage E3 track W7 (menus, header, footer, logo): the inspector panel layout the 17 blocks must reach. Read by scripts/check-nav-panels.py. Every entry is a line of E:/sgs-tmp/general-cloning/build/w7-nav/LISTS.md; Bean strikes a line there and the matching entry here goes with it. `gone`: a panel title that must no longer exist in that tab. `must`: a panel title that must exist. `controls`: a control label that must sit in the named panel (the census reads a panel's visible controls in its default state). `single_ok`: panel titles allowed to hold one control (the register's Stays and Kept rows, and the panels a switch grows). Colour rows of nav-bar-menu and nav-drawer-menu do not move in this pass (Bean, 2026-11-26), so no colour rule is here.",
-	"universal_single_ok": ["Size in row", "Advanced", "Visibility conditions", "Colour"],
+	"_comment": "Stage E3 track W7 (menus, header, footer, logo): the inspector panel layout the 17 blocks must reach, as Bean ruled it on 2026-11-26 (D1 to D7 in E:/sgs-tmp/general-cloning/build/w7-nav/LISTS.md, last section). Read by scripts/check-nav-panels.py. `gone`: a panel title that must no longer exist in that tab. `must`: a panel title that must exist exactly once. `controls`: a control label that must sit in the named panel (the census reads a panel's visible controls in its default state). `single_ok`: panel titles allowed to hold one control (the register's Stays and Kept rows, the rulings that keep a lone panel, and the panels a switch grows). Colour panels of the four menu blocks over 12 colours stay as they are (deferred to Task 30), so no colour rule is here.",
+	"universal_single_ok": [
+		"Size in row",
+		"Advanced",
+		"Visibility conditions",
+		"Colour"
+	],
 	"blocks": {
 		"nav-bar-menu": {
-			"single_ok": ["Menu", "Submenu \u2014 Container"],
+			"single_ok": [
+				"Menu",
+				"Submenu \u2014 Container"
+			],
 			"settings": {
-				"gone": ["Burger Menu", "Menu panel"],
+				"gone": [
+					"Burger Menu",
+					"Menu panel"
+				],
 				"controls": [
-					["Show the burger on", "Menu Button"],
-					["Panel this burger opens", "Menu Button"],
-					["Wrap items", "Layout"]
+					[
+						"Show the burger on",
+						"Menu Button"
+					],
+					[
+						"Panel this burger opens",
+						"Menu Button"
+					],
+					[
+						"Wrap items",
+						"Layout"
+					]
 				]
 			},
 			"styles": {
-				"gone": ["List layout"],
-				"must": ["Spacing"],
+				"gone": [
+					"List layout"
+				],
+				"must": [
+					"Spacing"
+				],
 				"controls": [
-					["Padding", "Spacing"],
-					["Margin", "Spacing"],
-					["Space between items", "Spacing"],
-					["Link padding", "Menu item"],
-					["Link minimum height", "Menu item"],
-					["Magnetic hover pull", "Item effects"],
-					["Dropdown link padding", "Submenu \u2014 Container"]
+					[
+						"Padding",
+						"Spacing"
+					],
+					[
+						"Margin",
+						"Spacing"
+					],
+					[
+						"Space between items",
+						"Spacing"
+					],
+					[
+						"Link padding",
+						"Menu item"
+					],
+					[
+						"Link minimum height",
+						"Menu item"
+					],
+					[
+						"Magnetic hover pull",
+						"Item effects"
+					],
+					[
+						"Dropdown link padding",
+						"Submenu \u2014 Container"
+					],
+					[
+						"Badge padding",
+						"Menu item"
+					],
+					[
+						"Badge corner radius",
+						"Menu item"
+					],
+					[
+						"Space before badge",
+						"Menu item"
+					]
 				]
 			}
 		},
 		"nav-drawer-menu": {
-			"single_ok": ["Submenu \u2014 Items", "Accordion open and close"],
+			"single_ok": [
+				"Submenu \u2014 Items",
+				"Accordion open and close"
+			],
 			"settings": {
-				"must": ["Accordion open and close"],
+				"must": [
+					"Accordion open and close"
+				],
 				"controls": [
-					["Columns", "Layout"],
-					["Mega items in the drawer", "Menu"],
-					["Open and close animation", "Accordion open and close"]
+					[
+						"Columns",
+						"Layout"
+					],
+					[
+						"Mega items in the drawer",
+						"Menu"
+					],
+					[
+						"Open and close animation",
+						"Accordion open and close"
+					]
 				]
 			},
 			"styles": {
-				"gone": ["List layout", "Submenu link padding", "Mega panel padding", "Section motion", "Mega menu (drawer)"],
-				"must": ["Spacing", "Mega menu"],
+				"gone": [
+					"List layout",
+					"Submenu link padding",
+					"Mega panel padding",
+					"Section motion",
+					"Mega menu (drawer)"
+				],
+				"must": [
+					"Spacing",
+					"Mega menu"
+				],
 				"controls": [
-					["Padding", "Spacing"],
-					["Margin", "Spacing"],
-					["Space between items", "Spacing"],
-					["Link padding", "Menu item"],
-					["Magnetic hover pull", "Item effects"],
-					["Submenu link padding", "Submenu \u2014 Items"],
-					["Marker icon", "Submenu \u2014 Items"],
-					["Mega panel padding", "Mega menu"]
+					[
+						"Padding",
+						"Spacing"
+					],
+					[
+						"Margin",
+						"Spacing"
+					],
+					[
+						"Space between items",
+						"Spacing"
+					],
+					[
+						"Link padding",
+						"Menu item"
+					],
+					[
+						"Link minimum height",
+						"Menu item"
+					],
+					[
+						"Space between a link\u2019s parts",
+						"Menu item"
+					],
+					[
+						"Magnetic hover pull",
+						"Item effects"
+					],
+					[
+						"Submenu link padding",
+						"Submenu \u2014 Items"
+					],
+					[
+						"Marker icon",
+						"Submenu \u2014 Items"
+					],
+					[
+						"Mega panel padding",
+						"Mega menu"
+					],
+					[
+						"Badge padding",
+						"Badge"
+					],
+					[
+						"Badge corner radius",
+						"Badge"
+					],
+					[
+						"Space before badge",
+						"Badge"
+					]
 				]
 			}
 		},
 		"nav-drawer": {
-			"settings": {
-				"gone": ["Drawer"],
-				"controls": [["Preview drawer open", "Drawer Settings"]]
-			}
+			"single_ok": [
+				"Drawer"
+			]
 		},
 		"mega-panel": {
 			"settings": {
-				"gone": ["Motion"],
-				"controls": [["\"View all\" link", "Style"]]
+				"gone": [
+					"Motion"
+				],
+				"controls": [
+					[
+						"\"View all\" link",
+						"Style"
+					]
+				]
 			}
 		},
-		"mega-group": {"single_ok": ["Group link"]},
-		"mega-aside": {"single_ok": ["Shadow", "Block Link"]},
+		"mega-group": {
+			"single_ok": [
+				"Group link"
+			]
+		},
+		"mega-aside": {
+			"single_ok": [
+				"Shadow",
+				"Block Link"
+			]
+		},
 		"site-footer": {},
-		"site-header": {"single_ok": ["Colour over sections", "Layout"]},
+		"site-header": {
+			"single_ok": [
+				"Colour over sections",
+				"Layout"
+			]
+		},
 		"site-header-row": {
 			"styles": {
-				"gone": ["Text", "Fill", "Content band"],
-				"must": ["Colour"],
+				"gone": [
+					"Text",
+					"Fill",
+					"Content band"
+				],
+				"must": [
+					"Colour"
+				],
 				"controls": [
-					["Row text colour", "Colour"],
-					["Row background", "Colour"],
-					["Content width", "Layout"]
+					[
+						"Row text colour",
+						"Colour"
+					],
+					[
+						"Row background",
+						"Colour"
+					],
+					[
+						"Content width",
+						"Layout"
+					]
 				]
 			}
 		},
 		"site-footer-row": {
 			"styles": {
-				"gone": ["Text", "Fill", "Content band"],
-				"must": ["Colour"],
+				"gone": [
+					"Text",
+					"Fill",
+					"Content band"
+				],
+				"must": [
+					"Colour"
+				],
 				"controls": [
-					["Row text colour", "Colour"],
-					["Row background", "Colour"],
-					["Content width", "Layout"]
+					[
+						"Row text colour",
+						"Colour"
+					],
+					[
+						"Row background",
+						"Colour"
+					],
+					[
+						"Content width",
+						"Layout"
+					]
 				]
 			}
 		},
 		"responsive-logo": {
 			"settings": {
-				"gone": ["Logo switch", "Media"],
-				"must": ["Logo"],
+				"gone": [
+					"Logo switch",
+					"Media"
+				],
+				"must": [
+					"Logo"
+				],
 				"controls": [
-					["Switch to compact logo", "Sizing + behaviour"],
-					["Use a different logo on dark backgrounds", "Logo"]
+					[
+						"Switch to compact logo",
+						"Sizing + behaviour"
+					],
+					[
+						"Use a different logo on dark backgrounds",
+						"Logo"
+					]
 				]
 			}
 		},
-		"language-switch": {"single_ok": ["Languages"]},
+		"language-switch": {
+			"single_ok": [
+				"Languages"
+			]
+		},
 		"theme-toggle": {
 			"settings": {
-				"gone": ["Icon-only"],
-				"controls": [["Icon only (hide the label visually)", "Theme Toggle Settings"]]
+				"gone": [
+					"Icon-only"
+				],
+				"controls": [
+					[
+						"Icon only (hide the label visually)",
+						"Theme Toggle Settings"
+					]
+				]
 			}
 		},
 		"social-icons": {
-			"single_ok": ["Accessibility", "Shadow"],
+			"single_ok": [
+				"Accessibility",
+				"Shadow"
+			],
 			"settings": {
-				"gone": ["Icon hover"],
-				"controls": [["Brand colours on hover", "Icons"]]
+				"gone": [
+					"Icon hover"
+				],
+				"controls": [
+					[
+						"Brand colours on hover",
+						"Icons"
+					]
+				]
 			}
 		},
-		"icon": {"single_ok": ["Link", "Label", "Signed-in dot", "Accessibility", "Shadow"]},
+		"icon": {
+			"single_ok": [
+				"Link",
+				"Label",
+				"Signed-in dot",
+				"Accessibility",
+				"Shadow"
+			]
+		},
 		"breadcrumbs": {},
-		"whatsapp-cta": {"single_ok": ["Shadow"]}
+		"whatsapp-cta": {
+			"single_ok": [
+				"Shadow"
+			]
+		}
 	},
 	"source": {
 		"no_import": {
-			"ListLayoutPanel": ["src/blocks/nav-bar-menu/edit.js", "src/blocks/nav-drawer-menu/edit.js"],
-			"SubmenuLinkPaddingPanel": ["src/blocks/nav-drawer-menu/edit.js"],
-			"MegaBodyPaddingPanel": ["src/blocks/nav-drawer-menu/edit.js"]
+			"ListLayoutPanel": [
+				"src/blocks/nav-bar-menu/edit.js",
+				"src/blocks/nav-drawer-menu/edit.js"
+			],
+			"SubmenuLinkPaddingPanel": [
+				"src/blocks/nav-drawer-menu/edit.js"
+			],
+			"MegaBodyPaddingPanel": [
+				"src/blocks/nav-drawer-menu/edit.js"
+			],
+			"EffectsPanel": [
+				"src/blocks/nav-bar-menu/edit.js",
+				"src/blocks/nav-drawer-menu/edit.js"
+			],
+			"LinkExtrasItems": [
+				"src/blocks/nav-bar-menu/edit.js",
+				"src/blocks/nav-drawer-menu/edit.js"
+			]
 		},
 		"mount_count": {
-			"src/blocks/responsive-logo/edit.js": {"<MediaElementPanel": 1}
+			"src/blocks/responsive-logo/edit.js": {
+				"<MediaElementPanel": 1
+			}
 		},
-		"files_exist": ["src/blocks/responsive-logo/DarkLogoRows.js"]
+		"files_exist": [
+			"src/blocks/responsive-logo/DarkLogoRows.js",
+			"src/shared/nav-menu-panels/LinkExtrasRows.js",
+			"src/shared/nav-menu-panels/SubmenuLinkPaddingRow.js",
+			"src/blocks/nav-bar-menu/BurgerScopeRows.js",
+			"src/blocks/nav-bar-menu/BurgerDrawerRows.js"
+		],
+		"files_gone": [
+			"src/shared/nav-menu-panels/ListLayoutPanel.js",
+			"src/shared/nav-menu-panels/LinkExtrasItems.js",
+			"src/shared/nav-menu-panels/EffectsPanel.js",
+			"src/blocks/nav-drawer-menu/SubmenuLinkPaddingPanel.js",
+			"src/blocks/nav-drawer-menu/MegaBodyPaddingPanel.js"
+		]
 	}
 }

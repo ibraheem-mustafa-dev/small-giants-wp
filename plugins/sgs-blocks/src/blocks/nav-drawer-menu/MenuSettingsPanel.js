@@ -12,10 +12,10 @@ import {
  * the mega panel padding sit in the Styles "Mega menu" panel).
  *
  * Only the "Menu" panel (the `ref` source picker — every menu-rendering block
- * needs it). The bar block's "Burger Menu" panel (`collapsePoint`) is BAR-only:
- * this block never has a burger and never declares that attribute, and a
- * "Burger Menu" panel here would write to an undeclared attribute — a dead
- * control, exactly what `check-dead-controls.js` bans.
+ * needs it). The bar block's "Show the burger on" control (`collapsePoint`, in its
+ * "Menu Button" panel) is BAR-only: this block never has a burger and never
+ * declares that attribute, and a burger control here would write to an
+ * undeclared attribute — a dead control, exactly what `check-dead-controls.js` bans.
  *
  * @param {Object}   root0                         Props.
  * @param {number}   root0.menuRef                 The block's `ref` attribute (menu id).

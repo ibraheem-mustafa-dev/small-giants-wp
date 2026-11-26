@@ -19,7 +19,7 @@
 import { __ } from '@wordpress/i18n';
 
 /**
- * Burger Menu scope presets (Bean 2026-07-28 — no bare px values in the UI).
+ * Burger scope presets, the "Show the burger on" choices (Bean 2026-07-28 — no bare px values in the UI).
  * The stored attribute stays the numeric `collapsePoint` (render.php and the
  * emitted @media rules are unchanged); these are the operator-facing names:
  *

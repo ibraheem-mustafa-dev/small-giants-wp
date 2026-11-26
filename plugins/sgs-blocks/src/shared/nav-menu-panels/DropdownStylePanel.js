@@ -199,6 +199,7 @@ export default function DropdownStylePanel( {
 					onDeselect={ () =>
 						setAttributes( { submenuLinkPadding: {} } )
 					}
+					isShownByDefault
 				>
 					<SubmenuLinkPaddingRow
 						label={ __( 'Dropdown link padding', 'sgs-blocks' ) }
