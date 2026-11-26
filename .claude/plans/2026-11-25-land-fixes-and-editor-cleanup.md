@@ -38,10 +38,10 @@ created: 2026-11-25
 | `fix/c-parts` | `wt-c-parts` | review fixes done and rebased; its variant-floor survey (`c-parts-survey`) queued; then batch 1 |
 | `fix/l-layout` | `wt-l-layout` | done (tip `6a09a2a87`): first and second review fixes, the hero's `contentWidth` taken from the capped wrapper; proof is the batch sweep (indus-foods/home); Bean eyeballs the Indus hero |
 | `fix/d-readings` | `wt-d-readings` | second-review fixes and look-read speed cuts done; the account merge proven on a scratch mirror (written, read back, idempotent, 0 old names left); look-build timing running (`d-readings-looktime`); merges before the deadline clones only if it adds under 15 minutes per site |
-| `fix/rf7-shop-forms` | `wt-rf7-shop-forms` | rebased (936/936 related tests); code review found 1 confirmed fault (wizard forms lose field widths) and 3 plausible ones; its worker is fixing them |
+| `fix/rf7-shop-forms` | `wt-rf7-shop-forms` | rebased; first-review faults fixed (head `85cff1029`: wizard form widths, prefill per loop copy and per form, the form-element "beside" rule, proposal-level tests; 945/945 related tests); next: second review of the fix commits, then batch |
 | `fix/s-shop` | `wt-s-shop` | Track S (Task 15) building on top of rf7 |
 | `fix/g2-trustbar` | `wt-g2-trustbar` | Track G2 (Task 6) building, including the trust bar's `edit.js` change for the stored marquee value and a ticker migration |
-| `fix/e1-restores` | `wt-e1-restores` | restore track R1 done (link-only lists, slider visible-card count `lib/fill-visible-count.mjs`, `dcLogic` reach calls); in code review; proof is the batch sweep <!-- dangling-ok: files that exist only on their branch --> |
+| `fix/e1-restores` | `wt-e1-restores` | restore track R1 built (link-only lists, slider visible-card count `lib/fill-visible-count.mjs` <!-- dangling-ok: on its branch -->, `dcLogic` reach calls); code review found 2 confirmed faults in the card count (stacked fade cards all counted; a card wider than the track drops that width) and 5 plausible; its worker is fixing them; proof is the batch sweep |
 | `fix/e2-restores` | `wt-e2-restores` | restore track R2 building |
 | `fix/look-fast` | `wt-look-fast` | Task 31 parts 1 and 2 building; byte-identity proof queued |
 | `fix/verdicts-refresh` | `wt-verdicts` | browser re-measure of the 17 blocks' verdicts running (priority, outside the queue with 3 tabs); unblocks every deploy |

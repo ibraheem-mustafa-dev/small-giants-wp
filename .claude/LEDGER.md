@@ -16,7 +16,7 @@ last_updated: 2026-11-26
 
 ## Blockers
 
-- None open.
+- Every deploy (all targets) fails the full-tier gate `setting-record-changed-proof`: 17 blocks' browser verdicts are stale. Fix running on `fix/verdicts-refresh` (Front H); blocks Mama's live-shop update and Task 10's test-site deploys.
 
 ## Front H: general cloning
 
