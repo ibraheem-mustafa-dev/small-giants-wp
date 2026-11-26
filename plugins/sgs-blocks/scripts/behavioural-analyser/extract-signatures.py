@@ -4771,7 +4771,7 @@ if __name__ == "__main__":
 
     # --task-b-only: run ONLY the inspector_control_type seeder (2026-07-21) — this
     # is what sgs-update-v2.py's Stage 1 tail step calls, mirroring
-    # _run_canonical_assignment/_run_composition_role_seed's subprocess pattern. Kept
+    # _run_canonical_assignment's subprocess pattern. Kept
     # separate from the full run (Task A signature extraction + css_property/layer)
     # so wiring this into every /sgs-update doesn't also re-run the heavier,
     # already-Stage-1C-driven css_property classifier on every reseed.

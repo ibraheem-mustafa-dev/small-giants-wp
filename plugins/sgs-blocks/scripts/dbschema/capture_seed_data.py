@@ -73,6 +73,13 @@ TABLES: dict[str, tuple[str, list[str], str]] = {
          "standalone_block_default_attrs", "resolves_whole_instance"],
         "rows",
     ),
+    # accepts_allowed_blocks is NOT captured: Stage 1's allowedBlocks scrape derives it from each block's edit.js, so a frozen
+    # copy here would overwrite fresh values.
+    "block_composition": (
+        "block-composition.json",
+        ["block_slug", "wraps_block", "composition_role", "container_kind"],
+        "rows",
+    ),
 }
 
 DOCS: dict[str, dict[str, str]] = {
@@ -108,6 +115,18 @@ DOCS: dict[str, dict[str, str]] = {
                         "redundant and was DELETED 2026-08-02. Extend THIS file to add an alias; "
                         "there is no script to re-run.",
         "__aliases_format": "JSON array stored as TEXT, verbatim from live.",
+    },
+    "block_composition": {
+        "__doc": "Each block's composition role (section-root | wrapper-shell | content-block | leaf), the block it wraps and its "
+                 "container kind. THE source of truth for the seeded columns of the `block_composition` table. "
+                 "dbschema/seed_reference_data.py seeds it from this file (rows the file lacks are deleted).",
+        "__why": "composition_role has no derive-from-code populator, and a rebuild-from-empty produced only 39 of these 226 rows "
+                 "(the other 187 lived only in the shared database), which broke every skeleton proposal that reads a block's "
+                 "role. This file also carries what seed-composition-roles.py used to apply (its role corrections and the rows it "
+                 "added for later blocks); that script is deleted. Edit THIS file to change a role or add a block.",
+        "__not_captured": "accepts_allowed_blocks: sgs-update-v2.py derives it from edit.js (the Stage 1 allowedBlocks scrape); the "
+                          "seeder never writes it. A core block's row names a block whose `blocks` row exists only after a stage 2 "
+                          "scrape: the seeder writes it anyway (foreign keys are off for the seed).",
     },
 }
 
@@ -213,10 +232,14 @@ SELF_TEST_DDL = {
         "standalone_block TEXT, notes TEXT, created_at TEXT, "
         "standalone_block_default_attrs TEXT, resolves_whole_instance TEXT, "
         "PRIMARY KEY (slot_name, scope))",
+    "block_composition":
+        "CREATE TABLE block_composition (block_slug TEXT PRIMARY KEY, wraps_block TEXT, composition_role TEXT NOT NULL, "
+        "accepts_allowed_blocks TEXT, created_at TEXT, container_kind TEXT)",
 }
 SELF_TEST_ROWS = {
     "property_suffixes": ("zzzTest", "color", "zzz-prop", 1, "palette", None, None),
     "slots": ("zzz-slot", "element", '["zzz"]', "sgs/text", "n", None, None),
+    "block_composition": ("sgs/zzz", None, "leaf", None),
 }
 
 

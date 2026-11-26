@@ -1920,42 +1920,6 @@ def _run_canonical_assignment(conn: sqlite3.Connection) -> None:
     print(f"Stage 1 tail (canonical assignment): {tail[-1] if tail else 'completed'}")
 
 
-def _run_composition_role_seed(conn: sqlite3.Connection) -> None:
-    """Run seed-composition-roles.py as a Stage 1 tail step (2026-07-03).
-
-    ``composition_role`` has NO derive-from-code populator — it is seed data whose
-    canonical home is ``seed-composition-roles.py`` (CORRECTIONS/RENAMES/INSERTS).
-    Previously it was NOT wired into /sgs-update, so a full reseed that rebuilds
-    ``block_composition`` without a follow-up seeder run would silently revert the
-    corrections (e.g. the 5 typed-array blocks back to 'leaf', reintroducing the
-    convert.py is_leaf text-fallback bug fixed at 64b831c1). Wiring it here as an
-    explicit tail step makes the corrections durable across every reseed. Idempotent
-    (the seeder no-ops when the DB already matches). Failure prints a loud WARN — a
-    silent revert is the exact regression this exists to prevent.
-    """
-    try:
-        seed_script = REPO_ROOT / "plugins/sgs-blocks/scripts/seed-composition-roles.py"
-        if not seed_script.exists():
-            print("Stage 1 tail (composition-role seed): WARN script missing — corrections NOT applied")
-            return
-        conn.commit()  # release the write lock for the subprocess's own connection
-        result = subprocess.run(
-            ["python", str(seed_script)],
-            capture_output=True, text=True, timeout=60,
-            encoding="utf-8", errors="replace",
-        )
-        if result.returncode == 0:
-            tail = [ln for ln in (result.stdout or "").splitlines() if "done:" in ln.lower()]
-            print(f"Stage 1 tail (composition-role seed): {tail[-1] if tail else 'completed'}")
-        else:
-            print(
-                f"Stage 1 tail (composition-role seed): WARN exit={result.returncode}; "
-                f"stderr={result.stderr[:200]}"
-            )
-    except Exception as exc:  # noqa: BLE001
-        print(f"Stage 1 tail (composition-role seed): WARN {exc}")
-
-
 def _run_inspector_control_type_seed(conn: sqlite3.Connection) -> None:
     """Run extract-signatures.py --task-b-only as a Stage 1 tail step (2026-07-21).
 
@@ -1968,8 +1932,7 @@ def _run_inspector_control_type_seed(conn: sqlite3.Connection) -> None:
     SOLE writer, and its policy now overwrites on disagreement (see
     extract_inspector_control_types's own docstring — audit-justified: 88/93
     DERIVED_CORRECT, 0 STORED_CORRECT). Wiring it here makes the corrected values
-    durable across every reseed, mirroring `_run_canonical_assignment` /
-    `_run_composition_role_seed` exactly — same subprocess pattern, same
+    durable across every reseed, mirroring `_run_canonical_assignment` exactly — same subprocess pattern, same
     swallow-as-warning failure handling.
     """
     try:
@@ -2006,7 +1969,7 @@ def _run_css_property_classifier_seed(conn: sqlite3.Connection) -> None:
     had to be run by hand, so the JSON was a frozen snapshot — stale for
     blocks whose block.json/style.css had since changed, absent for blocks
     added after the last manual run. Wiring it here mirrors
-    `_run_inspector_control_type_seed`/`_run_composition_role_seed` exactly —
+    `_run_inspector_control_type_seed` exactly —
     same subprocess pattern, same swallow-as-warning failure handling, same
     "never block the rest of /sgs-update on this step" contract.
 
@@ -2246,7 +2209,7 @@ def _run_motion_fx_registry_seed(conn: sqlite3.Connection) -> None:
     not otherwise touch. It never writes block_attributes.css_property.
     Running the seeder script itself (rather than importing its module-level
     side effects) keeps this a pure subprocess call, matching
-    `_run_composition_role_seed` / `_run_inspector_control_type_seed` exactly
+    `_run_inspector_control_type_seed` exactly
     — same swallow-as-warning failure handling, same "never block the rest of
     /sgs-update on this step" contract. Idempotent: a clean run reports zero
     row changes on every subsequent call.
@@ -3865,10 +3828,6 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
             f"seeded={oc_counts['owns_css_seeded']}, no_row={len(oc_counts['owns_css_no_row'])}, "
             f"invalid={len(oc_counts['owns_css_invalid'])}."
         )
-
-        # --- Stage 1 tail: apply composition_role corrections (seed data, no
-        #     code populator) so a full reseed never silently reverts them. ---
-        _timed(timings, "composition-role seed", _run_composition_role_seed, conn)
 
         # --- Stage 1 tail: regenerate inspector_control_type from edit.js (2026-07-21)
         #     — the SOLE writer; overwrite-

@@ -47,17 +47,10 @@ jobs:
         run: |
           (cd scripts/computed-route && npm ci --ignore-scripts)
           (cd plugins/sgs-blocks && npm ci --ignore-scripts)
-      - name: Build the framework database from the repo (stage 1 only, no upstream scrape, no server contact)
+      - name: Build the framework database from the repo (stage 1 only, no upstream scrape, no server contact; it seeds block_composition from scripts/data/block-composition.json)
         env:
           PYTHONUNBUFFERED: '1'
         run: python plugins/sgs-blocks/scripts/sgs-update-v2.py --rebuild --stage 1 --db "$RUNNER_TEMP/db/sgs-framework.db"
-      - name: Add the block_composition seed (the rebuild derives only 39 of its 226 rows)
-        run: |
-          if [ -f plugins/sgs-blocks/scripts/data/block-composition-seed.json ]; then
-            node scripts/computed-route/tools/ci-seed-db.mjs "$RUNNER_TEMP/db/sgs-framework.db"
-          else
-            echo "::warning::no block-composition-seed.json: about 91 skeleton tests will fail on the missing rows"
-          fi
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: framework-db

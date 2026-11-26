@@ -30,10 +30,10 @@ hits = ship.needs_reseed([
     "plugins/sgs-blocks/src/blocks/account/style.css",
     "plugins/sgs-blocks/src/blocks/cart/render.php",
     "theme/sgs-theme/assets/css/woocommerce.css",
-    "plugins/sgs-blocks/scripts/seed-composition-roles.py",
+    "plugins/sgs-blocks/scripts/data/block-composition.json",
 ])
 check("a block.json and a seeder trigger a reseed; css, php and theme files do not",
-      hits == ["plugins/sgs-blocks/src/blocks/account/block.json", "plugins/sgs-blocks/scripts/seed-composition-roles.py"], hits)
+      hits == ["plugins/sgs-blocks/src/blocks/account/block.json", "plugins/sgs-blocks/scripts/data/block-composition.json"], hits)
 check("no trigger, no reseed", ship.needs_reseed(["plugins/sgs-blocks/src/blocks/cart/style.css", "README.md"]) == [])
 SETTING_RECORD = "plugins/sgs-blocks/scripts/data/setting-records/button.json"
 check("a setting record data file triggers a reseed; a file beside the folder does not",
