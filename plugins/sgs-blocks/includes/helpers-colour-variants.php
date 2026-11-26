@@ -668,6 +668,10 @@ function sgs_shadow_attr_map( string $base, bool $with_hover_shape = false, bool
  *                          An optional 'lift_prefix' (e.g. 'submit') makes the automatic-lift
  *                          switch read `submitShadowLiftOnHover` (sgs_shadow_lift_attr_names()).
  *                          Omitted = the block-root name.
+ *                          An optional 'follow_shape' => true prints `filter:drop-shadow()`
+ *                          instead of `box-shadow` (no forced-colours fallback), for a surface a
+ *                          mask or clip cuts into a shape; the caller applies the declarations to
+ *                          a node outside the clipped one (sgs_shadow_decl_map()).
  * @param string $block_name Registered block name (e.g. 'sgs/button'), for the
  *                          `supports.sgs.shadowLift` gate on the automatic lift. '' skips
  *                          that gate (the attribute-level switch still applies).
@@ -697,7 +701,19 @@ function sgs_shadow_decls( array $attributes, array $map, string $block_name = '
 
 	// The resting declaration carries the forced-colours outline fallback (it applies in every
 	// state, so the hover array does not repeat it).
-	$out['normal'] = sgs_shadow_box_decls( $base_shape, $read( $map['colour'] ?? null ) );
+	$follow = ! empty( $map['follow_shape'] );
+	$decl   = static function ( string $value ) use ( $follow ): string {
+		if ( ! $follow ) {
+			return 'box-shadow:' . $value;
+		}
+		$props = sgs_shadow_decl_map( $value, true );
+		return isset( $props['filter'] ) ? 'filter:' . $props['filter'] : '';
+	};
+	if ( $follow ) {
+		$out['normal'] = array_values( array_filter( array( $decl( sgs_shadow_layers( $base_shape, $read( $map['colour'] ?? null ) ) ) ) ) );
+	} else {
+		$out['normal'] = sgs_shadow_box_decls( $base_shape, $read( $map['colour'] ?? null ) );
+	}
 
 	// Fall back to the resting SHAPE when only a hover colour is wired — see the
 	// note above. Without this a caller that has not yet adopted the hover shape
@@ -709,17 +725,17 @@ function sgs_shadow_decls( array $attributes, array $map, string $block_name = '
 			'' !== $hover_shape ? $hover_shape : $base_shape,
 			'' !== $hover_colour ? $hover_colour : $read( $map['colour'] ?? null )
 		);
-		if ( '' !== $hover ) {
+		if ( '' !== $hover && '' !== $decl( $hover ) ) {
 			// sgs-shadow-fallback: hover state only; the resting rule carries the forced-colours fallback.
-			$out['hover'][] = 'box-shadow:' . $hover;
+			$out['hover'][] = $decl( $hover );
 		}
 	} elseif ( '' !== $base_shape && sgs_shadow_lift_enabled( $attributes, $block_name, $lift_prefix ) ) {
 		// Automatic lift (design H4) — only when NOTHING explicit is wired at all; an explicit
 		// hover shape or colour above always wins and this branch is never reached for it.
 		$lift = sgs_shadow_hover_value( $base_shape, $read( $map['colour'] ?? null ) );
-		if ( '' !== $lift ) {
+		if ( '' !== $lift && '' !== $decl( $lift ) ) {
 			// sgs-shadow-fallback: hover state only; the resting rule carries the forced-colours fallback.
-			$out['hover'][] = 'box-shadow:' . $lift;
+			$out['hover'][] = $decl( $lift );
 		}
 	}
 

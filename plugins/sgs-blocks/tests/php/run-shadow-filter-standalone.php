@@ -45,6 +45,7 @@ if ( ! function_exists( 'wp_get_global_settings' ) ) {
 	}
 }
 require_once dirname( __DIR__, 2 ) . '/includes/helpers-tokens.php';
+require_once dirname( __DIR__, 2 ) . '/includes/helpers-colour-variants.php';
 
 $fail = 0;
 function t_eq( $expected, $actual, string $label ): void {
@@ -96,6 +97,39 @@ t_eq( '', sgs_shadow_value_to_drop_shadow( 'var(--wp--preset--shadow--missing)' 
 $hostile = sgs_shadow_value_to_drop_shadow( sgs_shadow_layers( '0px 0px 0px red) blur(9999px', null ) );
 t_eq( '', $hostile, 'filter smuggle is dropped before it reaches the converter' );
 t_eq( 0, preg_match( '/[;{}<>"\'`@!]/', sgs_shadow_value_to_drop_shadow( sgs_shadow_layers( '0 0 0 red;}body{x:y', null ) ) ), 'no breakout characters survive' );
+
+// The shared output table both twins read (`src/utils/shadow-output.js` is checked against it by tests/js/shadow-output.test.js).
+$table  = json_decode( (string) file_get_contents( dirname( __DIR__ ) . '/shared/shadow-output-cases.json' ), true );
+$expand = static function ( array $map ) use ( $table ): array {
+	foreach ( $map as $key => $value ) {
+		if ( '@FORCED@' === $value ) {
+			$map[ $key ] = $table['forcedColours'];
+		}
+	}
+	return $map;
+};
+t_eq( $table['forcedColours'], sgs_shadow_forced_colours_decl(), 'the table carries the forced-colours fallback verbatim' );
+foreach ( $table['cases'] as $case ) {
+	t_eq(
+		$expand( $case['expected'] ),
+		sgs_shadow_decl_map( sgs_shadow_layers( $case['shape'], $case['colour'] ), (bool) $case['followShape'] ),
+		'shared table: ' . $case['name']
+	);
+}
+
+// sgs_shadow_decls() in follow-the-shape mode: a filter on both states, the automatic lift converted, no fallback.
+$attrs = array( 'boxShadow' => '0 4px 12px 0', 'boxShadowColour' => '#000000' );
+$map   = array( 'base' => 'boxShadow', 'colour' => 'boxShadowColour' );
+$box   = sgs_shadow_decls( $attrs, $map );
+t_eq( true, 'box-shadow:0px 4px 12px 0px #000000' === $box['normal'][0], 'box mode still prints box-shadow first' );
+$follow = sgs_shadow_decls( $attrs, $map + array( 'follow_shape' => true ) );
+t_eq( array( 'filter:drop-shadow(0px 4px 12px #000000)' ), $follow['normal'], 'follow mode prints one filter and no fallback' );
+t_eq( true, array() === $follow['hover'] || 0 === count( array_filter( $follow['hover'], static fn( $d ) => 0 === strpos( $d, 'box-shadow' ) ) ), 'follow mode never prints a box-shadow on hover' );
+$hovered = sgs_shadow_decls(
+	$attrs + array( 'boxShadowColourHover' => '#FF0000' ),
+	$map + array( 'hover_colour' => 'boxShadowColourHover', 'follow_shape' => true )
+);
+t_eq( array( 'filter:drop-shadow(0px 4px 12px #FF0000)' ), $hovered['hover'], 'follow mode hover colour is a filter too' );
 
 echo $fail ? "Shadow filter: {$fail} failed\n" : "Shadow filter: all passed\n";
 exit( $fail > 0 ? 1 : 0 );
