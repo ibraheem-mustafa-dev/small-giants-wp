@@ -142,7 +142,7 @@ const KIND_PANELS = {
 		// with NO build error — lint:js is not in prebuild and webpack does not
 		// fail on a missing named export.
 		( props ) => (
-			<PanelBody title={ __( 'Section (outer)', 'sgs-blocks' ) }>
+			<PanelBody initialOpen={ false } title={ __( 'Section (outer)', 'sgs-blocks' ) }>
 				<WidthPanel { ...props } />
 			</PanelBody>
 		),
@@ -164,7 +164,7 @@ const KIND_PANELS = {
 		( props ) => (
 			<PanelBody
 				title={ __( 'Layout', 'sgs-blocks' ) }
-				initialOpen={ false }
+				initialOpen
 			>
 				<LayoutPanel { ...props } />
 			</PanelBody>
@@ -196,7 +196,10 @@ const KIND_PANELS = {
 
 	layout: [
 		( props ) => (
-			<PanelBody title={ __( 'Container / Wrapper', 'sgs-blocks' ) }>
+			<PanelBody
+				title={ __( 'Container / Wrapper', 'sgs-blocks' ) }
+				initialOpen={ props.initialOpen }
+			>
 				<LayoutPanel { ...props } />
 				<hr style={ { margin: '16px 0' } } />
 				<WidthPanel { ...props } />
@@ -222,7 +225,10 @@ const KIND_PANELS = {
 
 	content: [
 		( props ) => (
-			<PanelBody title={ __( 'Container / Wrapper', 'sgs-blocks' ) }>
+			<PanelBody
+				title={ __( 'Container / Wrapper', 'sgs-blocks' ) }
+				initialOpen={ props.initialOpen }
+			>
 				<WidthPanel { ...props } />
 			</PanelBody>
 		),
@@ -268,6 +274,8 @@ const KIND_PANELS = {
  * @param {string}   [props.resolvedLayout] The layout the block renders with when it differs from `attributes.layout`
  *                                           (multi-button's render.php forces 'flex' while none is stored); the Separators panel's
  *                                           grid / flex / stack gate reads it.
+ * @param {boolean}  [props.initialOpen]   Opens the "Container / Wrapper" panel (default closed): a block passes true only where that panel is
+ *                                           the first of its Settings tab (Spec 49 section 9.1).
  * @param {boolean}  [props.showContentBand] Forwarded to WidthPanel. Pass false for a block that cannot
  *                                           render a content band (see WidthPanel's docblock).
  */
@@ -278,6 +286,7 @@ export default function ContainerWrapperControls( {
 	showLayout,
 	showContentBand,
 	resolvedLayout,
+	initialOpen = false,
 } ) {
 	// Guard: fall back gracefully for unknown kind values.
 	const panels = KIND_PANELS[ kind ] ?? KIND_PANELS.section;
@@ -299,6 +308,7 @@ export default function ContainerWrapperControls( {
 						showLayout,
 						showContentBand,
 						resolvedLayout,
+						initialOpen,
 					} ) }
 				</Fragment>
 			) ) }

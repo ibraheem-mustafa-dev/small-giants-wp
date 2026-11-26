@@ -57,14 +57,14 @@ export const ATOM_DISCLOSURE = {
 };
 
 /**
- * §9.4's panels in display order. `open` panels start expanded (§9.1).
+ * §9.4's panels in display order. Every panel starts closed; a slot opens its first panel with the `openPanel` prop (§9.1).
  * `title` is a function so the strings translate at call time.
  */
 export const PANELS = [
 	{
 		id: 'media',
 		group: 'settings',
-		open: true,
+		open: false,
 		title: () => __( 'Media', 'sgs-blocks' ),
 	},
 	{
@@ -82,7 +82,7 @@ export const PANELS = [
 	{
 		id: 'size-and-crop',
 		group: 'styles',
-		open: true,
+		open: false,
 		title: () => __( 'Size and crop', 'sgs-blocks' ),
 	},
 	{
@@ -145,7 +145,7 @@ export const PANELS = [
 export const BACKGROUND_PANEL = {
 	id: 'background',
 	group: 'styles',
-	open: true,
+	open: false,
 	title: () => __( 'Background', 'sgs-blocks' ),
 };
 

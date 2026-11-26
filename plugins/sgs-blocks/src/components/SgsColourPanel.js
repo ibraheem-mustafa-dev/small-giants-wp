@@ -152,7 +152,9 @@ import DesignTokenPicker from './DesignTokenPicker';
 import GradientCapableColourControl from './GradientCapableColourControl';
 import { SgsBlockWideRowsSlot } from './SgsBlockWideRows';
 
-export default function SgsColourPanel( { rows } ) {
+// `initialOpen` (default closed): a block passes true only where Colour is the first panel of its Styles tab, because
+// only the first panel of each tab starts open (Spec 49 section 9.1; `scripts/data/first-panels.json`).
+export default function SgsColourPanel( { rows, initialOpen = false } ) {
 	const visible = ( rows || [] ).filter( Boolean );
 
 	if ( ! visible.length ) {
@@ -163,7 +165,7 @@ export default function SgsColourPanel( { rows } ) {
 		<InspectorControls group="styles">
 			<PanelBody
 				title={ __( 'Colour', 'sgs-blocks' ) }
-				initialOpen
+				initialOpen={ initialOpen }
 				className="sgs-colour-panel"
 			>
 				<SgsBlockWideRowsSlot home="colour" />

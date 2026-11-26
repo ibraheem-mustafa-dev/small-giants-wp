@@ -77,6 +77,7 @@ function declaredEntry( blockName, prefix ) {
  * @param {boolean}  [props.parallax]     Parallax is on for this background (panel path).
  * @param {Object}   [props.panelContent] Panel id to caller content (panel path).
  * @param {string}   [props.label]        Names the slot in each panel title when a block mounts more than one (panel path).
+ * @param {string|string[]} [props.openPanel] Id (or ids, one per tab) of the panel that starts open (each tab's first panel): 'media', 'size-and-crop', 'background'; every other starts closed (panel path).
  * @param {string}   [props.inGroup]     'settings' | 'styles': the inspector group the caller is already inside; that group's panels render in place, with no slot of their own (panel path).
  * @param {Function} [props.slotActions]  Extra actions for an image slot's picker: `( { kind, own, device, prefix, attributes, setAttributes, access } ) => node`, drawn beside Replace and Remove (panel path).
  * @return {Object|null} The mounted panels, or null.
@@ -95,6 +96,7 @@ export default function MediaElementPanel( {
 	label = '',
 	slotActions,
 	inGroup = '',
+	openPanel = '',
 } ) {
 	const slotKinds =
 		Array.isArray( kinds ) && kinds.length
@@ -122,6 +124,7 @@ export default function MediaElementPanel( {
 						label={ label }
 						blockOwns={ Array.isArray( owns ) ? owns : [] }
 						slotActions={ slotActions }
+						openPanel={ openPanel }
 					/>
 				</PlacedSuspense>
 			);

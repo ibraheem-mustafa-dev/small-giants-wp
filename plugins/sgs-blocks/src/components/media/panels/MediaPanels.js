@@ -67,6 +67,7 @@ function useActiveDevice() {
  * @param {string}   [props.label]        Names the slot in each panel title ("Before: Media") when a block mounts more than one.
  * @param {string[]} [props.blockOwns]    Bases the block edits with its own control; their rows are left out.
  * @param {Function} [props.slotActions]  Extra actions for an image slot (`MediaSlotField`'s `extraActions`).
+ * @param {string|string[]} [props.openPanel] Id (or ids, one per tab) of the panel that starts open (each tab's first panel); every other starts closed.
  * @return {JSX.Element} The panels of the one tab.
  */
 export default function MediaPanels( {
@@ -84,6 +85,7 @@ export default function MediaPanels( {
 	blockOwns = [],
 	group,
 	slotActions,
+	openPanel = '',
 } ) {
 	const activeDevice = useActiveDevice();
 	const device = deviceOverride || activeDevice;
@@ -191,7 +193,7 @@ export default function MediaPanels( {
 							) }
 						/>
 					}
-					initialOpen={ panel.open }
+					initialOpen={ [ openPanel ].flat().includes( panel.id ) }
 					className={ `sgs-media-panel sgs-media-panel--${ panel.id }` }
 				>
 					{ 'size-and-crop' === panel.id &&
