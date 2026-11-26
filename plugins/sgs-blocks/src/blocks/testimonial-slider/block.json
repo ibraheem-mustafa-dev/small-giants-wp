@@ -22,9 +22,9 @@
 			"collection": true,
 			"iconPicker": true,
 			"builtinButtons": [
-				{ "prefix": "arrow", "part": "arrow", "label": "Carousel arrows and pause button", "groups": [ "colour", "border", "size", "float", "shadow" ], "elements": [ "pause" ] }
+				{ "prefix": "arrow", "showWhen": [ { "any": [ { "attr": "showArrows", "op": "on", "default": true }, { "all": [ { "attr": "autoplay", "op": "on", "default": true }, { "attr": "pauseButton", "op": "on" } ] } ] } ], "part": "arrow", "label": "Carousel arrows and pause button", "groups": [ "colour", "border", "size", "float", "shadow" ], "elements": [ "pause" ] }
 			],
-			"carouselDots": { "prefix": "dot", "part": "dot", "label": "Carousel dots" },
+			"carouselDots": { "prefix": "dot", "showWhen": [ { "attr": "showDots", "op": "on", "default": true } ], "part": "dot", "label": "Carousel dots" },
 			"containerKind": "layout",
 			"elements": {
 				"slider": {

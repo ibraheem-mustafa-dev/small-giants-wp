@@ -37,9 +37,9 @@
 		"sgs": {
 			"enabledExtensions": [ "childSizing" ],
 			"builtinButtons": [
-				{ "prefix": "arrow", "part": "arrow", "label": "Carousel arrows and pause button", "groups": [ "colour", "border", "size", "shadow" ], "elements": [ "carousel-prev", "carousel-next", "pause" ] }
+				{ "prefix": "arrow", "showWhen": [ { "attr": "layout", "op": "tierAll", "value": "carousel", "default": "grid" }, { "any": [ { "attr": "carouselShowArrows", "op": "on", "default": true }, { "all": [ { "attr": "carouselAutoplay", "op": "on", "default": false }, { "attr": "carouselPauseButton", "op": "on" } ] } ] } ], "part": "arrow", "label": "Carousel arrows and pause button", "groups": [ "colour", "border", "size", "shadow" ], "elements": [ "carousel-prev", "carousel-next", "pause" ] }
 			],
-			"carouselDots": { "prefix": "dot", "part": "dot", "label": "Carousel dots" },
+			"carouselDots": { "prefix": "dot", "showWhen": [ { "attr": "layout", "op": "tierAll", "value": "carousel", "default": "grid" }, { "attr": "carouselShowDots", "op": "on", "default": true } ], "part": "dot", "label": "Carousel dots" },
 			"motionItems": "item",
 			"motion": true,
 			"separators": {

@@ -19,6 +19,7 @@
 
 import fs from 'fs';
 
+import { checkShowWhen } from './kit-show-when.mjs';
 import {
 	GENERATORS,
 	findBlockJsons,
@@ -112,6 +113,7 @@ export function declaredDots( block ) {
 	if ( ! declared.label || 'string' !== typeof declared.label ) {
 		problems.push( `${ where }: carouselDots needs a "label"` );
 	}
+	checkShowWhen( declared, `${ where }: carouselDots`, block?.attributes, problems );
 	if ( problems.length ) {
 		throw new Error( problems.join( '; ' ) );
 	}

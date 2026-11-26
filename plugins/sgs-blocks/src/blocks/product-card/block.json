@@ -22,12 +22,14 @@
 			"builtinButtons": [
 				{
 					"prefix": "cta",
+					"showWhen": [ { "attr": "showCta", "op": "on", "default": true } ],
 					"part": "cta",
 					"label": "Call to action button",
 					"groups": [ "preset", "colour", "gradient", "border", "padding", "width", "minHeight", "contentAlign", "shadow", "hoverLift", "typography" ]
 				},
 				{
 					"prefix": "cta2",
+					"showWhen": [ { "attr": "cta2Text", "op": "notEmpty" } ],
 					"part": "cta2",
 					"label": "Secondary call to action button",
 					"groups": [ "preset", "colour", "gradient", "border", "padding", "width", "minHeight", "contentAlign", "shadow", "hoverLift", "typography" ]

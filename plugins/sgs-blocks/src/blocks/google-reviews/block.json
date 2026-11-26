@@ -18,7 +18,7 @@
 	"supports": {
 		"sgs": {
 			"enabledExtensions": [ "childSizing" ],
-			"builtinButtons": [ { "prefix": "arrow", "part": "arrow", "label": "Slider arrows and pause button", "groups": [ "colour", "gradient", "border", "size" ], "elements": [ "pause" ] } ],
+			"builtinButtons": [ { "prefix": "arrow", "showWhen": [ { "attr": "variant", "op": "equals", "value": "slider", "default": "slider" }, { "any": [ { "attr": "showArrows", "op": "on", "default": true }, { "all": [ { "attr": "autoplay", "op": "on", "default": false }, { "attr": "pauseButton", "op": "on" } ] } ] } ], "part": "arrow", "label": "Slider arrows and pause button", "groups": [ "colour", "gradient", "border", "size" ], "elements": [ "pause" ] } ],
 			"motion": true,
 			"collection": true,
 			"arrayContentLift": true,

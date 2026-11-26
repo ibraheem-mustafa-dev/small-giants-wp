@@ -204,6 +204,15 @@ function selfTest() {
 	noPrefix.supports.sgs.carouselDots = [ { prefix: 'dot' } ];
 	ck( 'declaration: a list instead of an object fails', throws( () => declaredDots( noPrefix ) ).includes( 'must be an object' ) );
 
+	const withWhen = JSON.parse( FIXTURE_BLOCK );
+	withWhen.attributes = { ...( withWhen.attributes || {} ), showDots: { type: 'boolean' } };
+	withWhen.supports.sgs.carouselDots = { prefix: 'dot', part: 'dot', label: 'Dots', showWhen: [ { attr: 'showDots', op: 'on', default: true } ] };
+	ck( 'declaration: a valid showWhen is accepted', declaredDots( withWhen ).prefix === 'dot' );
+	withWhen.supports.sgs.carouselDots.showWhen = [ { attr: 'noSuchAttr', op: 'on' } ];
+	ck( 'declaration: a showWhen naming an undeclared attribute fails', throws( () => declaredDots( withWhen ) ).includes( 'does not declare' ) );
+	withWhen.supports.sgs.carouselDots.showWhen = [ { attr: 'showDots', op: 'sometimes' } ];
+	ck( 'declaration: a showWhen with an unknown op fails', throws( () => declaredDots( withWhen ) ).includes( 'op "sometimes"' ) );
+
 	// 4. Idempotence and drift.
 	const overridden = applyOverrideEntries( FIXTURE_OVERRIDES, done.entries );
 	ck( 'idempotence: a second block.json run changes nothing', planBlock( done.next, registry, new Set() ).next === done.next );

@@ -32,8 +32,8 @@
 		},
 		"sgs": {
 			"enabledExtensions": [ "childSizing" ],
-			"builtinButtons": [ { "prefix": "arrow", "part": "arrow", "label": "Carousel arrows and pause button", "groups": [ "colour", "border", "size", "shadow" ], "elements": [ "pause" ] } ],
-			"carouselDots": { "prefix": "dot", "part": "dot", "label": "Carousel dots" },
+			"builtinButtons": [ { "prefix": "arrow", "showWhen": [ { "any": [ { "attr": "variant", "op": "equals", "value": "carousel", "default": "carousel" }, { "attr": "variant", "op": "equals", "value": "mini-carousel", "default": "carousel" } ] }, { "any": [ { "attr": "showArrows", "op": "on", "default": true }, { "all": [ { "attr": "autoplay", "op": "on", "default": false }, { "attr": "pauseButton", "op": "on" } ] } ] } ], "part": "arrow", "label": "Carousel arrows and pause button", "groups": [ "colour", "border", "size", "shadow" ], "elements": [ "pause" ] } ],
+			"carouselDots": { "prefix": "dot", "showWhen": [ { "any": [ { "attr": "variant", "op": "equals", "value": "carousel", "default": "carousel" }, { "attr": "variant", "op": "equals", "value": "mini-carousel", "default": "carousel" } ] }, { "attr": "showDots", "op": "on", "default": false } ], "part": "dot", "label": "Carousel dots" },
 			"motion": true,
 			"collection": true,
 			"elements": {
