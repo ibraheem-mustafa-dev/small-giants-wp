@@ -16,5 +16,41 @@
 		"find": "m.words( k ) && ! isHeroMedia( k ) && ! underMedia( k ) ).every(",
 		"replace": "m.words( k ) ).every(",
 		"why": "words under the media count, so no column holds them all"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "&& ! banded.includes( l ) &&",
+		"replace": "&&",
+		"why": "a hero's capped, centred column wrapper would be kept as a container, squeezing the hero's words into a grid track"
+	},
+	{
+		"file": "data/skeleton-decisions.json",
+		"find": "\"hostBand\": [ \"max-width\", \"margin-auto\" ],",
+		"replace": "\"hostBand\": [],",
+		"why": "the hero would read no band look from the wrapper holding its columns"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "const banded = out.hostLays ? painted.filter(",
+		"replace": "const banded = true ? painted.filter(",
+		"why": "a wrapper the host does not lay out (a form control's) would have its width cap treated as the host's band"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "{ kind: 'setting', node: out.hostLays, setting: hostSetting, looks: banded, width: capPx }",
+		"replace": "{ kind: 'setting', node: out.hostLays, setting: hostSetting, looks: banded }",
+		"why": "the setting record names no cap, so the width the host holds is never compared with it"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "...lays, ...bandCap } )",
+		"replace": "...lays } )",
+		"why": "the hero is never given the wrapper's cap as its content width, so the clone draws the hero at the theme width"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "null !== capPx && /\\bauto\\b/.test(",
+		"replace": "null !== capPx && /\\bnever\\b/.test(",
+		"why": "a capped wrapper that is not centred is taken for the hero's band"
 	}
 ]

@@ -60,3 +60,35 @@ test( 'negative control: the column holding the heading and every worded element
 	const caption = run( [ [ 3, 2, 'div', '', 'display:grid;grid-template-columns:1fr 1fr' ], [ 4, 3, 'div', '', COL ], [ 5, 4, 'h1', 'Say hello' ], [ 6, 4, 'p', 'Questions about an order?' ], [ 7, 3, 'image-slot' ], [ 8, 7, 'span', 'Photo to come' ] ] );
 	assert.deepEqual( heroOf( caption ).draftSlots?.[ CONTENT ], { tpl: 'Root/4#0' }, 'words inside the hero\'s media (a placeholder\'s caption) belong to the media, not the content' );
 } );
+
+// The wrapper that holds the hero's two columns, with a width cap and centring (Indus's home hero: max-width 1120px, margin 0 auto,
+// a two-track grid), is the row the hero lays out itself. Its look went unread (the hero has no calibrated content-band setting),
+// so the paint guard (822b6b400) kept it as a container: the hero's words then sat in a two-track grid with the picture gone, and
+// the hero's content was squeezed into half its width.
+const BAND = 'position:relative;max-width:1120px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr';
+const all = ( list ) => list.flatMap( ( n ) => [ n, ...all( n.innerBlocks || [] ) ] );
+
+test( 'MUST FAIL: the capped, centred wrapper holding the hero\'s columns is unwrapped (the hero lays them out), recording the cap as the hero\'s own width', () => {
+	const r = run( [ [ 3, 2, 'div', '', BAND ], [ 4, 3, 'div', '', 'min-width:0' ], [ 5, 4, 'h1', 'Say hello' ], [ 6, 4, 'p', 'Questions about an order?' ], [ 7, 3, 'div', '', 'position:relative;min-width:0' ], [ 8, 7, 'img' ] ] );
+	const hero = heroOf( r );
+	assert.deepEqual( hero.innerBlocks.map( ( n ) => n.name ), [ 'sgs/heading', 'sgs/text' ], 'the hero holds its words directly, no container between' );
+	assert.ok( ! all( r.skeleton ).some( ( n ) => 'sgs/container' === n.name && 'Root/3#0' === n.draftRef?.tpl ), 'the wrapper is no node' );
+	const row = r.proposal.rows.find( ( x ) => 'Root/3#0' === x.key );
+	assert.equal( row.action, 'unwrap' );
+	assert.deepEqual( row.conserve.filter( ( c ) => 'setting' === c.kind ).map( ( c ) => [ c.node, c.setting, c.looks, c.width ] ), [ [ 'Root/2#0', 'contentWidth', [ 'max-width', 'margin-auto' ], 1120 ] ], 'the cap and the auto margins are the contentWidth setting of the hero, with the cap in px' );
+	assert.deepEqual( hero.decided, { contentWidth: { desktop: '1120px' } }, 'the hero holds the cap as its own content width, written by Fill' );
+	assert.deepEqual( r.problems.filter( ( p ) => /paint conservation/.test( p ) ), [], 'the cap is recorded, so no painted element is left unread' );
+} );
+
+test( 'negative control: a wrapper whose cap is not a px length decides no content width, so it stays', () => {
+	const rel = run( [ [ 3, 2, 'div', '', 'position:relative;max-width:80%;margin:0 auto;display:grid;grid-template-columns:1fr 1fr' ], [ 4, 3, 'div', '', 'min-width:0' ], [ 5, 4, 'h1', 'Say hello' ], [ 6, 4, 'p', 'Questions about an order?' ], [ 7, 3, 'div', '', 'position:relative;min-width:0' ], [ 8, 7, 'img' ] ] );
+	assert.equal( heroOf( rel ).decided?.contentWidth, undefined );
+} );
+
+test( 'negative control: a wrapper that paints a background or border as well keeps it as a container', () => {
+	const painted = run( [ [ 3, 2, 'div', '', `${ BAND };background:#fafafa;border:1px solid #ddd;padding:24px` ], [ 4, 3, 'div', '', 'min-width:0' ], [ 5, 4, 'h1', 'Say hello' ], [ 6, 4, 'p', 'Questions about an order?' ], [ 7, 3, 'div', '', 'min-width:0' ], [ 8, 7, 'img' ] ] );
+	assert.ok( all( painted.skeleton ).some( ( n ) => 'sgs/container' === n.name && 'Root/3#0' === n.draftRef?.tpl ), 'a painted wrapper stays a node' );
+	// A capped, centred wrapper of one heading that holds no picture is not the row the hero lays out: its cap is read by nothing, so it stays.
+	const column = run( [ [ 3, 2, 'div', '', 'max-width:620px;margin:0 auto' ], [ 4, 3, 'h1', 'Say hello' ], [ 5, 2, 'p', 'Questions about an order?' ], [ 6, 2, 'img' ] ] );
+	assert.ok( all( column.skeleton ).some( ( n ) => 'sgs/container' === n.name && 'Root/3#0' === n.draftRef?.tpl ), 'a capped wrapper with no picture inside stays a node' );
+} );

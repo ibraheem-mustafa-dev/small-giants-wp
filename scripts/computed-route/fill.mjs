@@ -42,6 +42,8 @@ import { widthLadderWrites } from './lib/fill-width-ladder.mjs';
 import { residualCssWrites, PASS as PASS_RESIDUAL } from './lib/fill-residual-css.mjs';
 import { stepRungWrites } from './lib/fill-step-rungs.mjs';
 import { dimensionWrites } from './lib/fill-dimensions.mjs';
+import { gridTrackWrites, confirmable } from './lib/fill-grid-tracks.mjs';
+import { inventoryModel } from './lib/skeleton-model.mjs';
 import { partMarginWrites } from './lib/fill-part-margin.mjs';
 import { layerRotationWrites } from './lib/fill-layer-rotation.mjs';
 import { stickyHeaderWrites } from './lib/fill-header-sticky.mjs';
@@ -436,13 +438,16 @@ export async function fillSurface( o ) {
 		result.notes.push( ...residual.notes );
 		result.customCssGaps = [ ...( result.customCssGaps || [] ), ...residual.gaps ];
 		result.residualCss = { rules: residual.rules, refused: residual.refused, classes: residual.classes, causes: residual.causes, bytes: residual.bytes, gaps: residual.backlog };
+		// A grid node's explicit tracks follow what the clone puts in them once cells were dissolved (lib/fill-grid-tracks.mjs).
+		const grids = inventory ? gridTrackWrites( { nodes, flat, refOf, m: inventoryModel( inventory ), writes: result.writes } ) : null;
+		grids && ( result.writes.push( ...grids.writes ), result.unmapped.push( ...grids.unmapped ), result.notes.push( ...grids.notes ) );
 		// R7: a declared read that failed is an UNMAPPED row with its reason, never only a log line.
 		result.unmapped.push( ...readFailureRows( { reads, nodes, flat, refOf } ) );
 		// Image placeholders the draft shows empty: listed, never given a picture.
 		result.emptyPictures = emptyPictureRows( { reads, nodes, flat, refOf } );
 		// FR-48-8: every written style value against what the draft's code declares, at each read width.
 		// A state write is judged by the state check (lib/state-check.mjs), never against the resting read.
-		result.confirm = confirmRecords( { writes: result.writes.filter( ( w ) => ! [ 'motion', 'width-gate', 'preset', 'width-ladder', 'dimension', 'part-margin', 'layer-rotation', PASS_RESIDUAL ].includes( w.how ) && ! w.state ), nodes, reads, defects: defectIndex( intakeParts.draftDefects ), rootComponent: intakeParts.rootComponent, calFor } );
+		result.confirm = confirmRecords( { writes: confirmable( result.writes ).filter( ( w ) => ! [ 'motion', 'width-gate', 'preset', 'width-ladder', 'dimension', 'part-margin', 'layer-rotation', 'grid-tracks', PASS_RESIDUAL ].includes( w.how ) && ! w.state ), nodes, reads, defects: defectIndex( intakeParts.draftDefects ), rootComponent: intakeParts.rootComponent, calFor } );
 		// FR-48-8: a declaration that asks the device safe-area inset is named once per element and property.
 		result.notes.push( ...[ ...new Set( result.confirm.filter( ( r ) => r.safeArea ).map( ( r ) => `${ r.node } ${ r.block } ${ r.property }: ${ r.safeArea.note }` ) ) ] );
 		result.confirm.push( ...imageRecords( { images: result.images } ) );

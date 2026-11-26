@@ -7,7 +7,7 @@ import { setAttr, refOf } from './tree.mjs';
 import { knownPaths, OWNED } from './fill-prop.mjs';
 import { presenceDecisions, textDecisions, linkDecisions } from './fill-presence.mjs';
 import { linkAttrDecisions, blockSupportsAnchor } from './fill-link-attrs.mjs';
-import { mediaDecisions, mediaAt, captionOf, factImage, pictureSlotOf, pictureSettles } from './fill-media.mjs';
+import { mediaDecisions, mediaAt, captionOf, factImage, pictureSlotOf, pictureSettles, withSizing } from './fill-media.mjs';
 import { blockMediaSlots } from './media/slots.mjs';
 import { mapDecisions } from './fill-map.mjs';
 import { iconDecisions } from './fill-icon.mjs';
@@ -164,7 +164,10 @@ function fillContent( st, rec, ref, cal ) {
 	take( linkDecisions( { calibration: cal, attributes: node.attributes || {}, slots: hrefs, origin: st.origin, pages: st.pages, draftLink: st.draftLink ?? null } ) );
 	take( linkAttrDecisions( { calibration: cal, schema: blockSchema( rec.name ) || {}, anchor: blockSupportsAnchor( rec.name ), attributes: node.attributes || {}, slots: linkFacts, imageAlts: blockMediaSlots( rec.name ).filter( ( s ) => 'content' === s.context && s.alt ).map( ( s ) => s.alt ), pictureSlot: pictureSlotOf( atDesktop ) } ) );
 	// The fact record speaks for the element the image is drawn by: the target whose slot is the image's own (a nested image names its slot).
-	const reads = Object.fromEntries( CONTENT_WIDTHS.map( ( w ) => [ w, mediaAt( Object.fromEntries( rec.targets.map( ( t ) => [ t.slot, st.reads.widths[ w ]?.[ t.id ] ] ) ) ) ] ) );
+	// The node's own picture also carries the sizing its slot holds (the ratio and the height, lib/media/write.mjs).
+	const rootId = rec.targets.find( ( t ) => '' === t.slot )?.id;
+	const parentId = null === rec.parent ? null : st.nodes?.[ rec.parent ]?.targets.find( ( t ) => '' === t.slot )?.id;
+	const reads = Object.fromEntries( CONTENT_WIDTHS.map( ( w ) => [ w, mediaAt( Object.fromEntries( rec.targets.map( ( t ) => [ t.slot, st.reads.widths[ w ]?.[ t.id ] ] ) ) ).map( ( entry ) => ( rootId ? withSizing( { entry, snap: st.reads.widths[ w ]?.[ rootId ], declared: st.reads.declared?.[ w ]?.[ rootId ], parentSnap: parentId ? st.reads.widths[ w ]?.[ parentId ] : null, parentDeclared: parentId ? st.reads.declared?.[ w ]?.[ parentId ] : null } ) : entry ) ) ] ) );
 	const imageSlot = Object.entries( atDesktop ).find( ( [ , s ] ) => s && ! s.missing && s.img )?.[ 0 ] ?? '';
 	const imageTarget = rec.targets.find( ( t ) => t.slot === imageSlot && t.finder?.tpl ) ?? rec.targets.find( ( t ) => t.finder?.tpl );
 	const media = mediaDecisions( { slots: blockMediaSlots( rec.name ), attributes: node.attributes || {}, reads, caption: captionOf( atDesktop ), media: { ...st.media, origin: st.origin }, fact: factImage( st.facts, imageTarget?.finder.tpl, st.rootComponent ) } );

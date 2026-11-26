@@ -4,7 +4,7 @@
 // matching slot is untouched for wrapped media and named for the element's own; the painted-asset check names the attachment.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mediaDecisions, resolveMedia, draftPath, paintedImageCheck, factImage, captionOf, mediaAt } from '../lib/fill-media.mjs';
+import { mediaDecisions, resolveMedia, draftPath, paintedImageCheck, factImage, captionOf, mediaAt, withSizing } from '../lib/fill-media.mjs';
 import { blockMediaSlots, mediaSettings } from '../lib/media/slots.mjs';
 
 const MAP = { sites: { 'acme-test': { files: [
@@ -221,4 +221,81 @@ test( 'MUST FAIL: a stock address the map lacks, or holds only as a non-stock en
 	assert.match( elsewhere.unmapped[ 0 ].reason, /not a file of the draft/ );
 	const noMap = run( img( 'https://images.unsplash.com/photo-1501-abc?w=800' ), { media: { ...media, map: null } } );
 	assert.match( noMap.unmapped[ 0 ].reason, /no media map: .*"https:\/\/images\.unsplash\.com\/photo-1501-abc"/ );
+} );
+
+// The sizing a node's own picture states (Spec 49 section 11 rows 2 and 3, lib/media/style-rows.mjs and fill-height.mjs) reaches the
+// slot's Ratio and Height beside its Source: Indus's mega-menu cards draw their photo in an image placeholder that fills a fixed
+// box, and the clone's sgs/media wrote neither (the modules were built and never read an element).
+const SIZED = { ...SLOT, ratio: 'ratio', height: 'height' };
+const sized = ( declared, over = {} ) => img( 'assets/hero.png', 'x', { element: { computed: { position: 'static' }, hasText: false, declared, box: { w: 200, h: 150 }, natural: NATURAL, parent: { display: 'block', alignItems: '', definiteHeight: true }, ...over } } );
+
+test( 'MUST FAIL: a picture that declares a ratio writes the Ratio of the slot; height 100% of a definite parent writes Height fill', () => {
+	const r = mediaDecisions( { slots: [ SIZED ], reads: at( sized( { 'aspect-ratio': '4 / 3' } ) ), media } );
+	assert.deepEqual( val( r, 'ratio' ), { desktop: '4 / 3' }, 'one value at every width is one desktop tier' );
+	const fill = mediaDecisions( { slots: [ SIZED ], reads: at( sized( { height: '100%' } ) ), media } );
+	assert.deepEqual( val( fill, 'height' ), { desktop: 'fill' } );
+	assert.equal( val( fill, 'ratio' ), undefined );
+	const tiers = mediaDecisions( { slots: [ SIZED ], media, reads: { 1440: [ sized( { 'aspect-ratio': '4 / 3' } ) ], 768: [ sized( { 'aspect-ratio': '4 / 3' } ) ], 375: [ sized( { 'aspect-ratio': '1 / 1' } ) ] } } );
+	assert.deepEqual( val( tiers, 'ratio' ), { desktop: '4 / 3', mobile: '1 / 1' }, 'a narrower device is written only where it differs from what it inherits' );
+} );
+
+test( 'negative control: no sizing is written for a slot with no Ratio or Height setting, an undeclared size, an indefinite parent, a held setting or a picture a descendant draws', () => {
+	assert.equal( val( mediaDecisions( { slots: SLOTS, reads: at( sized( { 'aspect-ratio': '4 / 3' } ) ), media } ), 'ratio' ), undefined, 'the slot names no Ratio setting' );
+	assert.equal( val( mediaDecisions( { slots: [ SIZED ], reads: at( sized( {} ) ), media } ), 'ratio' ), undefined, 'nothing declared' );
+	const inert = mediaDecisions( { slots: [ SIZED ], reads: at( sized( { height: '100%' }, { parent: { display: 'block', definiteHeight: false } } ) ), media } );
+	assert.equal( val( inert, 'height' ), undefined, 'height 100% of an indefinite parent computes to auto: no Height' );
+	const held = mediaDecisions( { slots: [ SIZED ], reads: at( sized( { 'aspect-ratio': '4 / 3' } ) ), attributes: { ratio: { desktop: '16 / 9' } }, media } );
+	assert.equal( val( held, 'ratio' ), undefined, 'a setting that holds a value is kept' );
+	assert.match( held.notes.join( ' ' ), /ratio holds/ );
+	const own = withSizing( { entry: { own: false, element: {} }, snap: { rect: { w: 1, h: 1 } }, declared: { height: '9px' } } );
+	assert.equal( own.element.declared, undefined, 'a picture the node does not draw itself carries no sizing' );
+} );
+
+test( 'MUST FAIL: withSizing takes the parent facts the read found beside the picture over the root target of the skeleton parent', () => {
+	const e = withSizing( {
+		entry: { ...img( 'assets/hero.png' ), parent: { display: 'flex', alignItems: 'center', definiteHeight: false } }, snap: { rect: { x: 0, y: 0, w: 205, h: 110 } }, declared: { height: '100%' },
+		parentSnap: { styles: { display: 'grid', 'align-items': 'stretch' } }, parentDeclared: { height: '110px' },
+	} );
+	assert.deepEqual( e.element.parent, { display: 'flex', alignItems: 'center', definiteHeight: false }, 'the wrapper above the picture is not its parent' );
+} );
+
+test( 'MUST FAIL: what the draft states for a picture and the slot has no setting for is a note, not dropped', () => {
+	// A declared height and no width on a picture whose box keeps its proportions states `width: auto`, which the media slot has no setting for.
+	const r = mediaDecisions( { slots: [ SIZED ], reads: at( sized( { height: '150px' }, { box: { w: 200, h: 150 }, natural: { w: 400, h: 300 } } ) ), media } );
+	assert.match( r.notes.join( ' ' ), /the draft media "assets\/hero\.png" states width \{"desktop":"auto"\}, which the media slot of source has no setting for: not written/ );
+	assert.deepEqual( val( r, 'height' ), { desktop: '150px' }, 'the setting the slot has is still written' );
+	// A look the property route writes (a crop's object-fit), and a sizing the slot holds, are no gap of this writer.
+	const fit = mediaDecisions( { slots: [ SIZED ], reads: at( sized( { height: '100px' }, { box: { w: 200, h: 100 }, natural: { w: 400, h: 300 }, computed: { position: 'static', objectFit: 'cover', objectPosition: '50% 50%' } } ) ), media } );
+	assert.ok( ! /fit/.test( fit.notes.join( ' ' ) ), 'object-fit belongs to the property route' );
+	assert.ok( ! /undefined/.test( fit.notes.join( ' ' ) ) );
+	// Negative control: a slot that takes the sizing it states says nothing.
+	const quiet = mediaDecisions( { slots: [ SIZED ], reads: at( sized( { 'aspect-ratio': '4 / 3' } ) ), media } );
+	assert.ok( ! quiet.notes.some( ( n ) => /has no setting for: not written/.test( n ) ) );
+} );
+
+test( 'withSizing reads the declared sizes, the drawn box, the natural size and the parent', () => {
+	const e = withSizing( {
+		entry: img( 'assets/hero.png' ), snap: { rect: { x: 0, y: 0, w: 205, h: 110 } }, declared: { height: '100%', color: 'red', 'aspect-ratio': '4 / 3' },
+		parentSnap: { styles: { display: 'flex', 'align-items': 'stretch' } }, parentDeclared: { height: '110px' },
+	} );
+	assert.deepEqual( e.element.declared, { height: '100%', 'aspect-ratio': '4 / 3' }, 'only the sizing longhands' );
+	assert.deepEqual( [ e.element.box, e.element.natural ], [ { w: 205, h: 110 }, NATURAL ] );
+	assert.deepEqual( e.element.parent, { display: 'flex', alignItems: 'stretch', definiteHeight: true } );
+	assert.equal( withSizing( { entry: img( 'assets/hero.png' ), snap: { missing: true }, declared: { height: '1px' } } ).element.declared, undefined, 'a read that missed' );
+	const indefinite = ( height ) => withSizing( { entry: img( 'assets/hero.png' ), snap: { rect: { w: 5, h: 5 } }, declared: { height: '100%' }, parentSnap: { styles: {} }, parentDeclared: { height } } ).element.parent.definiteHeight;
+	assert.deepEqual( [ indefinite( 'auto' ), indefinite( '50%' ), indefinite( undefined ), indefinite( '8rem' ) ], [ false, false, false, true ], 'only a length makes the parent height definite' );
+	assert.deepEqual( [ 'ratio', 'height' ].map( ( k ) => blockMediaSlots( 'sgs/media' ).find( ( x ) => 'content' === x.context )?.[ k ] ), [ 'ratio', 'height' ], 'the content slot of the media block names its Ratio and Height settings' );
+} );
+
+test( 'MUST FAIL: the picture an image placeholder draws in its shadow root takes the sizing its host element declares (Indus mega cards)', () => {
+	const shadow = ( declared, parentHeight = '110px' ) => withSizing( {
+		entry: img( 'assets/hero.png', 'x', { own: false, hostOwn: true } ), snap: { rect: { w: 205, h: 110 } }, declared,
+		parentSnap: { styles: { display: 'block' } }, parentDeclared: { height: parentHeight },
+	} );
+	const r = mediaDecisions( { slots: [ SIZED ], reads: at( shadow( { height: '100%', 'aspect-ratio': '3 / 2' } ) ), media } );
+	assert.deepEqual( val( r, 'height' ), { desktop: 'fill' }, 'height 100% of the card box that is 110px tall: Match its space' );
+	assert.equal( val( r, 'ratio' ), undefined, 'a filled height leaves no ratio' );
+	const free = mediaDecisions( { slots: [ SIZED ], reads: at( shadow( { height: '100%', 'aspect-ratio': '3 / 2' }, 'auto' ) ), media } );
+	assert.deepEqual( [ val( free, 'ratio' ), val( free, 'height' ) ], [ { desktop: '3 / 2' }, undefined ], 'height 100% of an auto-height parent is inert: the declared ratio stands' );
+	assert.equal( withSizing( { entry: img( 'assets/hero.png', 'x', { own: false } ), snap: { rect: { w: 1, h: 1 } }, declared: { height: '9px' } } ).element.declared, undefined, 'a picture of a descendant is still left alone' );
 } );

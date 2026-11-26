@@ -37,6 +37,7 @@ import { makeSlotRows } from './skeleton-write-slots.mjs';
 import { siteLinkResolver } from './draft-link.mjs';
 import { noRegionProblem } from './skeleton-commerce-refusal.mjs';
 import { doubleClaims } from './skeleton-double-claims.mjs';
+import { readingOrderProblems } from './skeleton-reading-order.mjs';
 import { DISSOLVED_LOOKS } from './skeleton-rules.mjs';
 import { conservationRows, nodesByRef, paintProblems, unreadList, STRICT_DEFAULT } from './skeleton-paint-conservation.mjs';
 import { absorbedSlots } from './skeleton-conserve-slots.mjs';
@@ -636,7 +637,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	}
 	const unclaimedLines = listUnclaimed( { unclaimed: widgets?.unclaimed ?? [], rows, byKey: m.byKey, drawsDisclosure: ( key ) => { const node = refNodes.get( key ); return !! node && drawsSummaryPart( calParts( node.name ) ); } } );
 	// A problem both checks find (skeletonProblems and lintSkeleton each check a node's handover) is listed once.
-	const problems = [ ...new Set( [ ...skeletonProblems( skeleton ), ...unclaimedLines, ...doubleClaims( skeleton, { sanctioned: ( host, child ) => !! R.wrappedWords?.block && child.name === R.wrappedWords.block && !! composition[ host.name ]?.wraps_block } ), ...carryProblems, ...slotProblems, ...wordProblems, ...( widgets?.problems ?? [] ), ...pairProblems, ...( db ? lintSkeleton( skeleton, db ) : [] ), ...[ noRegionProblem( { surface, commerce, region: cls.commerceRegion } ) ].filter( Boolean ), ...paintProblems( { inventory, proposal: { rows }, skeleton, view, calibration, strict: strictPaint } ) ] ) ];
+	const problems = [ ...new Set( [ ...skeletonProblems( skeleton ), ...unclaimedLines, ...doubleClaims( skeleton, { sanctioned: ( host, child ) => !! R.wrappedWords?.block && child.name === R.wrappedWords.block && !! composition[ host.name ]?.wraps_block } ), ...carryProblems, ...slotProblems, ...wordProblems, ...( widgets?.problems ?? [] ), ...pairProblems, ...( db ? lintSkeleton( skeleton, db ) : [] ), ...[ noRegionProblem( { surface, commerce, region: cls.commerceRegion } ) ].filter( Boolean ), ...paintProblems( { inventory, proposal: { rows }, skeleton, view, calibration, strict: strictPaint } ), ...readingOrderProblems( { skeleton, m, rows: R.headerSlots?.rowBlock ? [ R.headerSlots.rowBlock ] : [] } ) ] ) ];
 	// The painted elements a record lists and no block reads (RECORDED-UNREAD): looks the clone does not show, named for the run's report.
 	const paintUnread = unreadList( { inventory, proposal: { rows }, skeleton, view, calibration } );
 	const proposal = {

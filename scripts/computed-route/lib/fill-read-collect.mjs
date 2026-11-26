@@ -146,7 +146,7 @@ export function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, ps
 		const cap = el.matches( 'figure' ) ? el.querySelector( 'figcaption' ) : null;
 		snap.img = 1 === imgs.length ? { tag: el.localName, src: imgSrc( imgs[ 0 ] ), alt: imgs[ 0 ].getAttribute( 'alt' ), caption: cap ? ( cap.textContent || '' ).replace( /\s+/g, ' ' ).trim() : null } : null;
 		// The media this element is or holds that shows at this width, in document order (Spec 49 section 11: the kind per
-		// width is read from the visible element): { tag, src, poster, alt, natural, markup, own, element } each, where `element`
+		// width is read from the visible element): { tag, src, poster, alt, natural, markup, own, hostOwn, element } each (`hostOwn`: a picture this element draws in its own shadow root), where `element`
 		// is what lib/media/absorb.mjs::placement reads. A hidden sibling (display:none) is not drawn, so it is not listed. An
 		// inline svg counts only when it is this element or the only media it holds (an icon beside a photo is no media here).
 		{
@@ -185,6 +185,32 @@ export function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, ps
 				}
 				return wrap;
 			};
+			// The box a picture's percentage height and align-self resolve against: its nearest ancestor that makes a box (a `<picture>`
+			// or inline wrapper draws none, a `display: contents` one gives its children to its parent).
+			const boxParent = ( x ) => {
+				let p = x.parentElement;
+				while ( p && /^(contents|inline)$/.test( getComputedStyle( p ).display ) ) {
+					p = p.parentElement;
+				}
+				return p;
+			};
+			// Whether a percentage height on the element resolves against its parent (the parent's height is definite), asked of the browser: at
+			// 100% and at 50% the element is twice as tall in the first as in the second only where the percentage resolves, whatever
+			// way the parent got its height (a length, calc(), min(), dvh, a stretched grid or flex item, a rule of any sheet).
+			const percentResolves = ( x ) => {
+				const had = [ x.style.getPropertyValue( 'height' ), x.style.getPropertyPriority( 'height' ) ];
+				const heightAt = ( v ) => {
+					x.style.setProperty( 'height', v, 'important' );
+					return x.getBoundingClientRect().height;
+				};
+				try {
+					const full = heightAt( '100%' );
+					const half = heightAt( '50%' );
+					return full > 0 && Math.abs( full - 2 * half ) <= 1;
+				} finally {
+					had[ 0 ] ? x.style.setProperty( 'height', had[ 0 ], had[ 1 ] ) : x.style.removeProperty( 'height' );
+				}
+			};
 			const readOne = ( n ) => {
 				const c = getComputedStyle( n );
 				const par = n.parentElement;
@@ -195,8 +221,16 @@ export function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, ps
 				const tag = n.localName;
 				const attr = ( k ) => n.getAttribute( k );
 				const src = 'img' === tag ? ( n.closest( 'picture' ) && n.currentSrc ? n.currentSrc : null ) ?? attr( 'src' ) ?? attr( 'data-src' ) ?? '' : 'video' === tag ? ( attr( 'src' ) ?? n.querySelector( 'source' )?.getAttribute( 'src' ) ?? '' ) : 'iframe' === tag ? attr( 'src' ) ?? '' : '';
-								const ni = 'img' === tag ? { w: n.naturalWidth, h: n.naturalHeight } : 'video' === tag ? { w: n.videoWidth, h: n.videoHeight } : null;
+								// An svg file drawn by an img has an intrinsic size only if it states one, which the element cannot tell from the browser's default: no natural size.
+				const svgFile = 'img' === tag && /^data:image\/svg|\.svg([?#]|$)/i.test( src );
+				const ni = svgFile ? null : 'img' === tag ? { w: n.naturalWidth, h: n.naturalHeight } : 'video' === tag ? { w: n.videoWidth, h: n.videoHeight } : null;
+				// The element this picture's sizes size is this element (it, or the picture its own shadow root draws); the facts of the
+				// real parent it sits in, whatever skeleton nodes the draft's wrappers became.
+				const sized = n === el || ( !! el.shadowRoot && n.getRootNode() === el.shadowRoot ) ? el : n;
+				const sp = sized === el ? boxParent( sized ) : null;
+				const parent = sp ? { display: getComputedStyle( sp ).display, alignItems: getComputedStyle( sp ).alignItems, definiteHeight: percentResolves( sized ) } : null;
 				return {
+					parent,
 					tag, src, poster: 'video' === tag ? attr( 'poster' ) : null, alt: 'img' === tag ? attr( 'alt' ) : null,
 					natural: ni && ni.w > 0 && ni.h > 0 ? ni : null, markup: 'svg' === tag ? new XMLSerializer().serializeToString( n ) : null, own: n === el,
 					element: {
@@ -227,7 +261,7 @@ export function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, ps
 			const light = painted ? ( ( one ) => [ { ...one, tag: 'img', src: painted, alt: '', element: { ...one.element, ownBackground: true } } ] )( read( el ) ) : nodes.map( read );
 			// A custom element draws its picture in its open shadow root: those images, one per address, when no light-DOM media shows.
 			const seen = new Set();
-			const shadow = light.length ? [] : drawn.filter( ( i ) => shown( i ) && ! seen.has( imgSrc( i ) ) && seen.add( imgSrc( i ) ) ).map( read );
+			const shadow = light.length ? [] : drawn.filter( ( i ) => shown( i ) && ! seen.has( imgSrc( i ) ) && seen.add( imgSrc( i ) ) ).map( ( i ) => ( { ...read( i ), hostOwn: i.getRootNode() === el.shadowRoot } ) );
 			snap.media = [ ...light, ...shadow ];
 		}
 		// Every picture the element draws when it draws two or more, in document order (one image placeholder's copies of one

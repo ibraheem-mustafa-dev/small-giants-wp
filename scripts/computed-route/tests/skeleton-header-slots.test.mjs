@@ -314,16 +314,25 @@ test( 'MUST FAIL: a main bar drawn as width alternatives is the widest alternati
 	assert.deepEqual( [ at2( 1440 ), at2( 375 ) ], [ [ 'menu', 'logoD', 'iconsD' ], [ 'logoM', 'menu', 'iconsM' ] ] );
 } );
 
-test( 'MUST FAIL: a block a later step moves into another pooled node (the menu placed at the burger wrapper) takes no place of its own; the wrapper stands where both bars put the menu', () => {
+test( 'MUST FAIL: a block a later step places at another pooled node (the menu placed at the burger wrapper) keeps its slot right after the wrapper, so it is still in each width order when the wrapper is dropped', () => {
 	const { els, nodes, M, D, opts } = altBars();
 	// Before the part placement: the menu still sits in the desktop row, and the compact bar's burger wrapper holds only the burger.
 	const wrap = { name: 'wrap', draws: [ els.b, els.nav ], attributes: {}, innerBlocks: [] };
 	M.innerBlocks = [ wrap, nodes.logoM, nodes.iconsM ];
 	D.innerBlocks = [ nodes.logoD, nodes.menu, nodes.iconsD ];
 	nodes.menu.draws = [ els.nav ];
-	// The desktop bar first in the pool, so the menu node itself is found for the nav unless it is skipped as moved.
-	const r = mergeWidthAlternatives( [ D, M ], { ...opts, moves: ( n ) => n === nodes.menu } );
-	assert.deepEqual( r.innerBlocks.map( ( n ) => n.name ), [ 'logoD', 'wrap', 'iconsD', 'logoM', 'iconsM', 'menu' ], 'the wrapper is the place of the menu in both orders; the menu goes last until it is moved in' );
+	const r = mergeWidthAlternatives( [ D, M ], { ...opts, hostOf: ( n ) => ( n === nodes.menu ? wrap : null ) } );
+	assert.deepEqual( r.innerBlocks.map( ( n ) => n.name ), [ 'logoD', 'wrap', 'menu', 'iconsD', 'logoM', 'iconsM' ], 'the wrapper is the place of the menu in both orders, and the menu stands right after it' );
+	// The placement drops the wrapper (it held only the burger part): the menu is left where the wrapper stood, never at the tail.
+	const left = r.innerBlocks.filter( ( n ) => n !== wrap );
+	const at = ( shown ) => left.filter( ( n ) => n === nodes.menu || n.draws.some( ( e ) => e.shown.includes( shown ) ) ).map( ( n ) => n.name );
+	assert.deepEqual( at( 1440 ), [ 'logoD', 'menu', 'iconsD', 'logoM', 'iconsM' ].filter( ( n ) => [ 'logoD', 'menu', 'iconsD' ].includes( n ) ), 'desktop: logo, nav, icons' );
+	assert.deepEqual( at( 375 ), [ 'menu', 'logoM', 'iconsM' ], 'mobile: burger, logo, icons' );
+	// Negative control: a block that no node hosts goes where its own element is found, and one a wrapper hosts that no order
+	// lists falls to the tail with the other unplaced nodes.
+	const stray = { name: 'stray', draws: [], attributes: {}, innerBlocks: [] };
+	D.innerBlocks.push( stray );
+	assert.equal( mergeWidthAlternatives( [ D, M ], { ...opts, hostOf: ( n ) => ( n === nodes.menu ? wrap : null ) } ).innerBlocks.at( -1 ), stray );
 } );
 
 test( 'two bars that are not width alternatives (one drawn at every width, or both at one width) are not merged', () => {

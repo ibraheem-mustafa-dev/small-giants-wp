@@ -34,5 +34,29 @@
 		"find": "( null !== inner && calibratedAt( cal, inner, `max-${ prop }` ) ? inner : null )",
 		"replace": "inner",
 		"why": "an inner image with no calibrated ceiling is written to"
+	},
+	{
+		"file": "lib/fill-dimensions.mjs",
+		"find": "const paint = pictureRoom( { block: rec.name, slot: ceilingSlot, prop, cal, natural: naturalSize( reads, target, prop, widths ) } );",
+		"replace": "const paint = blockPaint( { block: rec.name, slot: ceilingSlot, prop, cal } );",
+		"why": "an image the site look leaves unbounded (auto height under a none ceiling) reads as paint nothing, so its ceiling is never written"
+	},
+	{
+		"file": "lib/fill-dimensions.mjs",
+		"find": "const unbounded = ( w ) => 'auto' === String( size[ w ] ?? '' ).trim() && 'none' === String( ceiling[ w ] ?? '' ).trim();",
+		"replace": "const unbounded = ( w ) => 'auto' === String( size[ w ] ?? '' ).trim();",
+		"why": "an image the block caps itself would count as unbounded and take a second ceiling"
+	},
+	{
+		"file": "lib/fill-dimensions.mjs",
+		"find": "unbounded( w ) ? natural[ w ] : undefined",
+		"replace": "unbounded( w ) ? 1e9 : undefined",
+		"why": "an unbounded picture counts as larger than any declared size, whatever its file is"
+	},
+	{
+		"file": "lib/fill-dimensions.mjs",
+		"find": "1 === media.length ? media[ 0 ].natural?.[ key ] : undefined",
+		"replace": "1e9",
+		"why": "the picture's natural size is not read from the draft's media"
 	}
 ]

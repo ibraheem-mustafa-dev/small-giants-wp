@@ -449,14 +449,21 @@ export function recordRows( db, block ) {
 // `property` stays the first. Empty for a one-property setting, so its entry keeps its old shape (lib/css-families.mjs::paintedProps
 // reads either).
 function manyProperties( props, first ) {
-	const shorts = [ ...new Set( [ first, ...props ].map( ( p ) => splitProperty( p ).short ) ) ];
+	const shorts = [ ...new Set( [ first, ...props ].map( ( p ) => splitProperty( physicalSize( p ) ).short ) ) ];
 	return shorts.length > 1 ? { properties: shorts } : {};
 }
 
+// A size the record spells logically (`inline-size`, `min-block-size`, what the cascade reader reports) is the physical size the
+// block_attributes row and the draft state (width, min-height): a setting painting `width` and `height` is found on rows painting
+// `inline-size` and `block-size`, not on the unrelated rows of the same block (the tap-target minimum on an icon's link).
+const PHYSICAL_SIZE = { 'inline-size': 'width', 'block-size': 'height', 'min-inline-size': 'min-width', 'min-block-size': 'min-height', 'max-inline-size': 'max-width', 'max-block-size': 'max-height' };
+const physicalSize = ( p ) => PHYSICAL_SIZE[ p ] ?? p;
+const SIZE_PROPS = [ 'width', 'height', 'min-width', 'min-height', 'max-width', 'max-height' ];
+
 // One setting's entry from its usable rows: the rows on its own property (the block_attributes row's, else the first
 // row's) give its slots and widths; its other rows are its effects.
-function settingEntry( block, name, rows, row, look, facts ) {
-	const long = ( props ) => [ ...new Set( props.flatMap( ( p ) => [ p, ...longhands( p ) ] ) ) ];
+function settingEntry( block, name, rows, row, look, facts, elementsOf = blockElements, rivals = [] ) {
+	const long = ( props ) => [ ...new Set( props.flatMap( ( p ) => [ physicalSize( p ), ...longhands( physicalSize( p ) ) ] ) ) ];
 	const own = longhands( row?.css_property || '' );
 	const primaryProps = own.length ? long( own ) : long( rows[ 0 ].props );
 	const onProp = rows.filter( ( r ) => long( r.props ).some( ( p ) => primaryProps.includes( p ) ) );
@@ -466,7 +473,17 @@ function settingEntry( block, name, rows, row, look, facts ) {
 	const inState = onProp.filter( ( r ) => ( r.state || null ) === wantState );
 	const main = inState.length ? inState : onProp.length ? onProp : rows;
 	const pathsOf = ( r ) => rowPaths( r, look, block );
-	const slots = [ ...new Set( main.flatMap( pathsOf ) ) ].sort( byDepth );
+	let slots = [ ...new Set( main.flatMap( pathsOf ) ) ].sort( byDepth );
+	// A size setting is placed on the element its block_attributes row names (an icon's size on its glyph, its shape size on its
+	// shape), not on every element the size also reaches: the glyph size sizes the shape too while the shape has no size of its own.
+	// The element's part is the selector the block's manifest names, else every part another element owns for the same property
+	// is left out (the shape's own size setting owns the shape; BEM names a part `sgs-<block>__<element>`).
+	if ( row?.css_element && primaryProps.length && primaryProps.every( ( p ) => SIZE_PROPS.includes( p ) ) ) {
+		const named = elementPaths( block, row.css_element, look, elementsOf );
+		const owned = new Set( ( rivals || [] ).filter( ( r ) => r.css_element !== row.css_element && 'root' !== r.css_element && long( longhands( r.css_property || '' ) ).some( ( q ) => primaryProps.includes( q ) ) ).flatMap( ( r ) => partPaths( `sgs-${ slugOf( block ) }__${ r.css_element }`, look ) ) );
+		const onElement = named.length ? slots.filter( ( p ) => named.includes( p ) ) : slots.filter( ( p ) => ! owned.has( p ) );
+		onElement.length && ( slots = onElement );
+	}
 	if ( ! slots.length ) {
 		return null;
 	}
@@ -476,7 +493,7 @@ function settingEntry( block, name, rows, row, look, facts ) {
 	const entry = {
 		slot: slots[ 0 ],
 		slots,
-		property: splitProperty( prop ).short,
+		property: splitProperty( physicalSize( prop ) ).short,
 		...manyProperties( main.flatMap( ( r ) => r.props ).filter( ( p ) => long( [ p ] ).some( ( q ) => primaryProps.includes( q ) ) ), prop ),
 		state: row?.css_state || main[ 0 ].state || null,
 		forms: facts?.forms || [],
@@ -591,9 +608,10 @@ function readRecord( block, client, { db = null, dir = SITE_LOOK_DIR, repo = REP
 	// A setting the record places whose rule picks no element of the default look (a part drawn only beside a partner
 	// setting, a sibling the fixture lacks): kept with why, so a reader can say the record holds it.
 	const unplaced = {};
+	const rivals = handle.prepare( 'SELECT css_property, css_element FROM block_attributes WHERE block_slug = ? AND css_element IS NOT NULL' ).all( block );
 	for ( const [ name, rows ] of usable ) {
 		const row = attrRow( handle, block, name );
-		const e = look ? settingEntry( block, name, rows, row, look, facts[ name ] ) : bareEntry( rows, row );
+		const e = look ? settingEntry( block, name, rows, row, look, facts[ name ], elementsOf, rivals ) : bareEntry( rows, row );
 		if ( e ) {
 			settings[ name ] = e;
 		} else {

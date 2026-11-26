@@ -32,10 +32,10 @@ const CAL = ( { imgs = [ IMG ] } = {} ) => ( {
 		...Object.fromEntries( imgs.map( ( k ) => [ k, Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, { _tag: 'img', height: '704px' } ] ) ) ] ) ),
 	},
 } );
-function world( { tag = 'indus-logo', declared = ( w ) => ( { height: FLUID[ w ], 'aspect-ratio': '3741 / 848' } ) } = {} ) {
+function world( { tag = 'indus-logo', declared = ( w ) => ( { height: FLUID[ w ], 'aspect-ratio': '3741 / 848' } ), media } = {} ) {
 	const flat = [ { name: 'sgs/responsive-logo', attributes: {}, ref: 'n0' } ];
 	const nodes = [ { index: 0, name: 'sgs/responsive-logo', parent: null, node: flat[ 0 ], children: [], targets: [ { id: '0:', index: 0, slot: '', finder: 'x' } ] } ];
-	const widths = Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, { '0:': { rect: { x: 0, y: 0, w: HEIGHT[ w ] * 4.41, h: HEIGHT[ w ] }, tag, styles: {} } } ] ) );
+	const widths = Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, { '0:': { rect: { x: 0, y: 0, w: HEIGHT[ w ] * 4.41, h: HEIGHT[ w ] }, tag, styles: {}, ...( media ? { media } : {} ) } } ] ) );
 	return { flat, nodes, reads: { widths, declared: Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, { '0:': declared( w ) } ] ) ) }, refOf: ( n ) => n.ref };
 }
 const rows = () => [
@@ -78,4 +78,49 @@ test( 'negative control: a picture with both sides declared, or a block with no 
 	const noCeiling = world();
 	run( noCeiling, { ...CAL(), settings: {} } );
 	assert.equal( noCeiling.flat[ 0 ].attributes.maxHeight, undefined, 'an inner image with no calibrated max-height holds no ceiling' );
+} );
+
+// The site look keeps the cascade's own values for the logo's inner image: height `auto` under `max-height: none`, no length. The
+// block bounds the picture nowhere, so a declared 60px is smaller than what it paints and the ceiling is written (Mama's header
+// logo lost its maxHeight when the site look replaced calibration's measured 704px box, 2026-11-23).
+const UNBOUNDED = ( { height = 'auto', maxHeight = 'none' } = {} ) => ( {
+	settings: { maxHeight: { slot: IMG, slots: [ IMG ], property: 'max-height' } },
+	elements: {
+		'': Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, { _tag: 'div' } ] ) ),
+		[ IMG ]: Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, { _tag: 'img', height, 'max-height': maxHeight } ] ) ),
+	},
+} );
+const SIXTY = { 375: '48px', 768: '56px', 1440: '60px' };
+
+test( 'MUST FAIL: an inner image the site look leaves unbounded (height auto, max-height none) takes the declared height as its ceiling', () => {
+	calls.length = 0;
+	const w = world( { tag: 'img', declared: ( x ) => ( { height: SIXTY[ x ] } ), media: [ { natural: { w: 1200, h: 400 } } ] } );
+	const list = [ { node: 'n0', block: 'sgs/responsive-logo', slot: '', property: 'height', value: '60px', reason: 'no-setting: sgs/responsive-logo has no setting for height' } ];
+	const r = run( w, UNBOUNDED(), list );
+	assert.deepEqual( w.flat[ 0 ].attributes.maxHeight, { desktop: '60px', tablet: '56px', mobile: '48px' } );
+	assert.deepEqual( r.unmapped, [] );
+	assert.match( r.notes[ 0 ], /the block paints it 400px \/ 400px \/ 400px/ );
+} );
+
+test( 'MUST FAIL: an unbounded picture whose own file is smaller than the declared size is given no ceiling (it renders at its file size)', () => {
+	calls.length = 0;
+	const w = world( { tag: 'img', declared: ( x ) => ( { height: '48px' } ), media: [ { natural: { w: 16, h: 16 } } ] } );
+	const list = [ { node: 'n0', block: 'sgs/responsive-logo', slot: '', property: 'height', value: '48px', reason: 'no-setting: sgs/responsive-logo has no setting for height' } ];
+	run( w, UNBOUNDED(), list );
+	assert.equal( w.flat[ 0 ].attributes.maxHeight, undefined, 'a ceiling above the file size would write max-height beside a 16px picture' );
+	assert.ok( ! calls.some( ( c ) => 'max-height' === c.prop ) );
+} );
+
+test( 'a picture with no known natural size (an svg with no intrinsic size) claims no ceiling room either', () => {
+	const w = world( { tag: 'img', declared: ( x ) => ( { height: SIXTY[ x ] } ), media: [ { natural: null } ] } );
+	const list = [ { node: 'n0', block: 'sgs/responsive-logo', slot: '', property: 'height', value: '60px', reason: 'no-setting: sgs/responsive-logo has no setting for height' } ];
+	run( w, UNBOUNDED(), list );
+	assert.equal( w.flat[ 0 ].attributes.maxHeight, undefined );
+} );
+
+test( 'negative control: an inner image the block itself caps (max-height 40px) is not given a second ceiling by this rule', () => {
+	const w = world( { tag: 'img', declared: ( x ) => ( { height: SIXTY[ x ] } ), media: [ { natural: { w: 1200, h: 400 } } ] } );
+	const list = [ { node: 'n0', block: 'sgs/responsive-logo', slot: '', property: 'height', value: '60px', reason: 'no-setting: sgs/responsive-logo has no setting for height' } ];
+	run( w, UNBOUNDED( { maxHeight: '40px' } ), list );
+	assert.equal( w.flat[ 0 ].attributes.maxHeight, undefined );
 } );

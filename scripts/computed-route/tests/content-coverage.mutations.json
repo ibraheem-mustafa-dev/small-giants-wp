@@ -103,14 +103,14 @@
 	},
 	{
 		"file": "lib/media/slots.mjs",
-		"find": "[ s.source, s.alt, s.decorative, s.caption ].filter( Boolean )",
-		"replace": "[ s.alt, s.decorative, s.caption ].filter( Boolean )",
+		"find": "[ s.source, s.alt, s.decorative, s.caption, s.ratio, s.height ].filter( Boolean )",
+		"replace": "[ s.alt, s.decorative, s.caption, s.ratio, s.height ].filter( Boolean )",
 		"why": "the Source is not claimed"
 	},
 	{
 		"file": "lib/media/slots.mjs",
-		"find": "[ s.source, s.alt, s.decorative, s.caption ].filter( Boolean )",
-		"replace": "[ s.source, s.alt, s.decorative ].filter( Boolean )",
+		"find": "[ s.source, s.alt, s.decorative, s.caption, s.ratio, s.height ].filter( Boolean )",
+		"replace": "[ s.source, s.alt, s.decorative, s.ratio, s.height ].filter( Boolean )",
 		"why": "the caption is not claimed or written"
 	},
 	{

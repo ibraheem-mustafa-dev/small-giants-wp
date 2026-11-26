@@ -682,3 +682,25 @@ test( 'conservationRows counts computed padding against the inventory\'s measure
 	assert.equal( uaKeyOf( { tag: 'input', attrs: {} } ), 'input' );
 	assert.equal( uaKeyOf( { tag: 'td' } ), 'td' );
 } );
+
+test( 'MUST FAIL: a host-band record is refused when the host already holds a content width that is not the wrapper cap it replaces', () => {
+	const band = { contentWidth: { slot: '.sgs-hero__inner', slots: [ '.sgs-hero__inner' ], property: 'max-width' } };
+	const record = [ { kind: 'host-band', node: 'Root/2#0', looks: [ 'max-width', 'margin-auto' ], width: 1120 } ];
+	const at = ( attributes, decided ) => new Map( [ [ 'Root/2#0', { name: 'sgs/hero', draftRef: { tpl: 'Root/2#0' }, attributes, decided } ] ] );
+	const check = ( nodes ) => checkRecords( record, { looks: [ 'max-width', 'margin-auto' ], nodes, calibration: () => band } );
+	assert.deepEqual( check( at( { contentWidth: { desktop: '1240px' } } ) ).bad, [ 'host-band Root/2#0: sgs/hero holds contentWidth 1240px but the wrapper it replaces caps at 1120px' ] );
+	assert.deepEqual( check( at( {}, { contentWidth: { desktop: '900px' } } ) ).bad, [ 'host-band Root/2#0: sgs/hero holds contentWidth 900px but the wrapper it replaces caps at 1120px' ], 'a decided setting counts too' );
+	assert.deepEqual( check( at( { contentWidth: { desktop: '1120px', tablet: '1120.3px' } } ) ), { delivered: [ 'max-width', 'margin-auto' ], listed: null, bad: [] }, 'the cap, within the tolerance' );
+	assert.deepEqual( check( at( { contentWidth: { desktop: '1120px', mobile: '335px' } } ) ).bad, [], 'a narrower tier may hold less: only the tier the cap was read at is compared' );
+	assert.deepEqual( check( at( {} ) ).bad, [], 'a host that holds no width yet is left to the band Fill writes' );
+	assert.deepEqual( checkRecords( [ { ...record[ 0 ], width: undefined } ], { looks: [ 'max-width', 'margin-auto' ], nodes: at( { contentWidth: { desktop: '1240px' } } ), calibration: () => band } ).bad, [], 'a record that names no width states nothing to compare' );
+} );
+
+test( 'MUST FAIL: a host-band record delivers a width cap and auto margins when its node is in the skeleton, and nothing else', () => {
+	const nodes = new Map( [ [ 'Root/2#0', { draftRef: { tpl: 'Root/2#0' } } ] ] );
+	const rec = [ { kind: 'host-band', node: 'Root/2#0', looks: [ 'max-width', 'margin-auto' ] } ];
+	assert.deepEqual( checkRecords( rec, { looks: [ 'max-width', 'margin-auto' ], nodes } ), { delivered: [ 'max-width', 'margin-auto' ], listed: null, bad: [] } );
+	assert.deepEqual( checkRecords( rec, { looks: [ 'max-width', 'margin-auto' ], nodes: new Map() } ).bad, [ 'host-band Root/2#0  cannot be verified' ], 'no such node in the skeleton' );
+	assert.deepEqual( checkRecords( [ { kind: 'host-band', node: 'Root/2#0', looks: [ 'background' ] } ], { looks: [ 'background' ], nodes } ).bad, [ 'host-band Root/2#0  cannot be verified' ], 'a background is no band look' );
+	assert.deepEqual( checkRecords( [ { kind: 'host-band', looks: [ 'max-width' ] } ], { looks: [ 'max-width' ], nodes } ).bad, [ 'host-band names no node' ] );
+} );

@@ -104,6 +104,29 @@ export function mediaAt( snaps ) {
 	return Object.values( snaps ).flatMap( ( s ) => ( s && ! s.missing ? s.media || [] : [] ) );
 }
 
+// The media entry of a node's own element with the sizing its slot holds read onto it (lib/media/style-rows.mjs, fill-height.mjs: the
+// ratio and the height): the element's declared sizes (declared: lib/fill-read.mjs's author-declared longhands of the node's
+// root), its drawn box, the file's natural size, and its parent's display, alignment and whether the parent's height is a
+// length. `hostOwn` marks a picture the node's own custom element draws in its shadow root (an image placeholder), which the element's sizes size. An entry the node does not draw itself (a descendant's picture), a read that missed or no declared read comes back as it was.
+const LENGTH = /^-?\d*\.?\d+(px|rem|em|vh|vw)$/i;
+const SIZES = [ 'height', 'width', 'aspect-ratio', 'min-height', 'max-height', 'min-width', 'max-width' ];
+export function withSizing( { entry, snap, declared, parentSnap = null, parentDeclared = null } ) {
+	if ( ! ( entry?.own || entry?.hostOwn ) || ! snap || snap.missing || ! declared ) {
+		return entry;
+	}
+	const box = snap.rect && snap.rect.w > 0 && snap.rect.h > 0 ? { w: snap.rect.w, h: snap.rect.h } : null;
+	return {
+		...entry,
+		element: {
+			...entry.element,
+			declared: Object.fromEntries( SIZES.filter( ( p ) => undefined !== declared[ p ] && '' !== declared[ p ] ).map( ( p ) => [ p, declared[ p ] ] ) ),
+			box, natural: entry.natural ?? null,
+			// The real DOM parent the read found beside the picture; a read without it falls back to the skeleton parent's root target.
+			parent: entry.parent ?? { display: parentSnap?.styles?.display, alignItems: parentSnap?.styles?.[ 'align-items' ], definiteHeight: LENGTH.test( String( parentDeclared?.height ?? '' ).trim() ) },
+		},
+	};
+}
+
 // The slot of the one picture a node holds, the image its image settings describe: the node's own element when it is a
 // picture (an image read, or a picture's own name), else the single descendant slot that is one. snaps: { slot: the
 // element's desktop read }. null when none or when two slots each are one.

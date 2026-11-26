@@ -748,5 +748,29 @@
 		"find": "'link-slot': { needs: [ 'node', 'slot', 'looks' ], delivers: true },",
 		"replace": "'link-slot': { needs: [ 'node', 'looks' ], delivers: true },",
 		"why": "a link-slot record naming no part passes"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "'host-band' === rec.kind ? !! node && named.every( ( l ) => BAND_LOOKS.includes( l ) ) :",
+		"replace": "'host-band' === rec.kind ? !! node :",
+		"why": "a host-band record would deliver any look, a background included"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "Math.abs( px - cap ) > PX_TOL )",
+		"replace": "false )",
+		"why": "a host that holds a content width other than the wrapper cap still delivers the band"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "const held = node.attributes?.[ attr ] ?? node.decided?.[ attr ];",
+		"replace": "const held = node.attributes?.[ attr ];",
+		"why": "a decided content width is never compared with the cap"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "const values = [ held && 'object' === typeof held ? held.desktop : held ];",
+		"replace": "const values = held && 'object' === typeof held ? Object.values( held ) : [ held ];",
+		"why": "a narrower tier of the held width is compared with the desktop cap"
 	}
 ]

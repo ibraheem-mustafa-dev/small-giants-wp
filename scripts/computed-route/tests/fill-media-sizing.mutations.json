@@ -1,0 +1,68 @@
+[
+	{
+		"file": "lib/media/write.mjs",
+		"find": "SIZING.forEach( ( key ) => slot[ key ] && undefined !== composed.slot[ key ] && put( slot[ key ], composed.slot[ key ] ) );",
+		"replace": "void SIZING;",
+		"why": "the slot's Ratio and Height would never be written: the style rows stay unread"
+	},
+	{
+		"file": "lib/media/write.mjs",
+		"find": "element: visible[ w ]?.element?.declared ? visible[ w ].element : undefined",
+		"replace": "element: undefined",
+		"why": "the element read never reaches slotFromReads, so no ratio or height is composed"
+	},
+	{
+		"file": "lib/media/write.mjs",
+		"find": "schema: slotSchema() } );",
+		"replace": "schema: null } );",
+		"why": "a per-device Ratio would be written as one bare string, not the per-device object the setting holds"
+	},
+	{
+		"file": "lib/media/slots.mjs",
+		"find": "ratio: has( 'Ratio', 'object' ), height: has( 'Height', 'object' ) };",
+		"replace": "ratio: null, height: null };",
+		"why": "the slot names no Ratio or Height setting"
+	},
+	{
+		"file": "lib/fill-media.mjs",
+		"find": "if ( ! ( entry?.own || entry?.hostOwn ) || ! snap ||",
+		"replace": "if ( ! snap ||",
+		"why": "a picture a descendant draws would take the node's own declared sizes"
+	},
+	{
+		"file": "lib/fill-media.mjs",
+		"find": "definiteHeight: LENGTH.test( String( parentDeclared?.height ?? '' ).trim() )",
+		"replace": "definiteHeight: true",
+		"why": "height 100% of an indefinite parent would be written as Height fill"
+	},
+	{
+		"file": "lib/fill-media.mjs",
+		"find": "declared: Object.fromEntries( SIZES.filter(",
+		"replace": "declared: Object.fromEntries( Object.keys( declared ).filter(",
+		"why": "every declared longhand (a colour) would reach the style rows"
+	},
+	{
+		"file": "lib/fill-media.mjs",
+		"find": "if ( ! ( entry?.own || entry?.hostOwn ) ||",
+		"replace": "if ( ! entry?.own ||",
+		"why": "the picture an image placeholder draws in its shadow root would carry none of its host's sizing"
+	},
+	{
+		"file": "lib/fill-media.mjs",
+		"find": "parent: entry.parent ?? {",
+		"replace": "parent: {",
+		"why": "the parent facts come from the skeleton parent's root target, a wrapper further up than the picture's real parent"
+	},
+	{
+		"file": "lib/media/write.mjs",
+		"find": "unwritten.length && out.notes.push(",
+		"replace": "unwritten.length && void (",
+		"why": "a state of the picture no media setting takes is dropped without a word"
+	},
+	{
+		"file": "lib/media/write.mjs",
+		"find": "'decorative', ...PROPERTY_ROUTE ]",
+		"replace": "'decorative' ]",
+		"why": "a look the property route writes (object-fit) is noted as not written"
+	}
+]

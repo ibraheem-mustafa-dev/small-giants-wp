@@ -1617,7 +1617,15 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			const column = kidsB.length > 1 && ! desc( e ).some( isHeroMedia ) && holdsContent && R.heroInner?.contentSetting ? { hostSetting: R.heroInner.contentSetting } : {};
 			// A wrapper holding the hero's picture is the split's media side, which the hero lays out itself (`hostLays`).
 			const lays = desc( e ).some( isHeroMedia ) ? { hostLays: hero.key } : {};
-			return ! m.words( e ) && kidsB.length && ! row ? v( 'heroInner', { action: 'unwrap', ...column, ...lays } ) : null;
+			// The width cap and auto side margins on the wrapper that holds the hero's columns (rules.heroInner.hostBandSetting): the hero
+			// draws its columns inside its own content width, so the cap is that setting's value for the hero, decided here and written
+			// by Fill (lib/skeleton-write-slots.mjs::hostSlot hands it to the hero). Nested capped wrappers each decide it; the inner,
+			// narrower one is the width the columns get.
+			const band = R.heroInner?.hostBandSetting;
+			const capPx = band && lays.hostLays ? pxOf( declared( e, tokens )[ 'max-width' ] ) : null;
+			const d = declared( e, tokens );
+			const bandCap = null !== capPx && /\bauto\b/.test( `${ d.margin || '' } ${ d[ 'margin-inline' ] || '' } ${ d[ 'margin-left' ] || '' }` ) ? { decided: { [ band ]: { desktop: `${ capPx }px` } } } : {};
+			return ! m.words( e ) && kidsB.length && ! row ? v( 'heroInner', { action: 'unwrap', ...column, ...lays, ...bandCap } ) : null;
 		},
 	];
 
@@ -1637,14 +1645,22 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		const setting = records.flatMap( ( r ) => ( 'setting' === r.kind ? r.looks : [] ) );
 		const inherited = x.kidsB.length ? painted.filter( ( l ) => INHERITED_LOOKS.includes( l ) ) : [];
 		const laid = out.hostLays && painted.includes( 'layout' ) ? [ 'layout' ] : [];
+		// The width cap and auto side margins on the wrapper that holds the host's own columns (rules.<rule>.hostBand): the host
+		// draws its columns within its own content width, so that width is the band the host draws.
+		const banded = out.hostLays ? painted.filter( ( l ) => ( R[ out.rule ]?.hostBand || [] ).includes( l ) && ! setting.includes( l ) ) : [];
 		// The looks the link part of the block inside reads (dest.sizing.looks): only those, never every band look.
 		const linked = painted.filter( ( l ) => ( dest.sizing?.looks || [] ).includes( l ) && ! setting.includes( l ) );
-		const left = painted.filter( ( l ) => ! setting.includes( l ) && ! inherited.includes( l ) && ! laid.includes( l ) && ! ( dest.band && BAND_LOOKS.includes( l ) ) && ! linked.includes( l ) );
+		const left = painted.filter( ( l ) => ! setting.includes( l ) && ! inherited.includes( l ) && ! laid.includes( l ) && ! banded.includes( l ) && ! ( dest.band && BAND_LOOKS.includes( l ) ) && ! linked.includes( l ) );
 		if ( ! painted.length || dest.all ) {
 			return { kept: true, left, conserve: out.conserve ?? [] };
 		}
 		inherited.length && records.push( { kind: 'inherited', looks: inherited } );
 		laid.length && records.push( { kind: 'host-layout', node: out.hostLays, looks: laid } );
+		const capPx = pxOf( x.st?.[ 'max-width' ] );
+		const hostSetting = R[ out.rule ]?.hostBandSetting;
+		// A host that holds the cap in a setting of its own (the hero's contentWidth, decided from this wrapper) is a `setting` record the check
+		// verifies; one that only draws its columns within its own width is a `host-band` record.
+		banded.length && records.push( hostSetting && null !== capPx ? { kind: 'setting', node: out.hostLays, setting: hostSetting, looks: banded, width: capPx } : { kind: 'host-band', node: out.hostLays, looks: banded, ...( null !== capPx ? { width: capPx } : {} ) } );
 		linked.length && records.push( { kind: 'link-slot', node: dest.sizing.node, slot: dest.sizing.slot, looks: linked } );
 		return { kept: ! left.length, left, conserve: records };
 	};

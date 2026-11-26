@@ -352,3 +352,55 @@ test( 'MUST FAIL: a setting that paints height and width keeps both properties, 
 	const fromRow = load( fixtureDb( [ { setting: 'single', part: 'ROOT', props: [ 'color' ] } ], { testedNoPaint: [ 'badge' ], attrs: [ { attr: 'single', property: 'color' }, { attr: 'badge', property: 'height,width', element: 'label' } ] } ), { elementsOf: () => ( { label: '.sgs-demo__label' } ) } );
 	assert.deepEqual( fromRow.settings.badge?.properties, [ 'height', 'width' ] );
 } );
+
+test( 'MUST FAIL: a size setting whose block_attributes row paints width and height is placed on the rows that paint inline-size and block-size, not on the side effect of the same block', () => {
+	// The icon's shape size: the record also lists a tap-target minimum on the link (min-block-size) before the shape's own rows.
+	const db = fixtureDb( [
+		{ setting: 'shapeSize', part: 'sgs-demo__panel', props: [ 'min-block-size' ] },
+		{ setting: 'shapeSize', part: 'sgs-demo__label', props: [ 'block-size' ] },
+		{ setting: 'shapeSize', part: 'sgs-demo__label', props: [ 'inline-size' ] },
+	], { attrs: [ { attr: 'shapeSize', property: 'height,width', element: 'shape' } ] } );
+	const r = load( db );
+	assert.deepEqual( [ r.settings.shapeSize.slot, r.settings.shapeSize.property ], [ '.sgs-demo__label', 'height' ], 'the setting paints its label, as height and width, not the minimum of the panel' );
+	assert.deepEqual( r.settings.shapeSize.slots, [ '.sgs-demo__label' ] );
+	// A size that also reaches the shape (the glyph's size sizes the shape while it has none) is placed on the element its row names.
+	const both = fixtureDb( [
+		{ setting: 'glyphSize', part: 'sgs-demo__label', props: [ 'inline-size' ] },
+		{ setting: 'glyphSize', part: 'sgs-demo__panel', props: [ 'inline-size' ] },
+	], { attrs: [ { attr: 'glyphSize', property: 'width', element: 'glyph' } ] } );
+	const named = load( both, { elementsOf: () => ( { glyph: '.sgs-demo__panel', shape: '.sgs-demo__label' } ) } );
+	assert.deepEqual( [ named.settings.glyphSize.slot, named.settings.glyphSize.property ], [ '.sgs-demo__panel', 'width' ], 'the glyph row names the panel, which the depth ordering alone would not pick' );
+	const unnamed = load( both, { elementsOf: () => ( {} ) } );
+	assert.equal( unnamed.settings.glyphSize.slot, '.sgs-demo__label', 'an element the block does not name leaves the rows as they were' );
+	// Negative control: a setting whose row names a different property keeps the rows that name it, logical spelling and all.
+	const minimum = fixtureDb( [ { setting: 'tapMin', part: 'sgs-demo__panel', props: [ 'min-block-size' ] }, { setting: 'tapMin', part: 'sgs-demo__label', props: [ 'block-size' ] } ], { attrs: [ { attr: 'tapMin', property: 'min-height', element: 'shape' } ] } );
+	assert.deepEqual( [ load( minimum ).settings.tapMin.slot, load( minimum ).settings.tapMin.property ], [ '.sgs-demo__panel', 'min-height' ] );
+} );
+
+test( 'MUST FAIL: a size setting is not placed on a part another element owns for the same property, and a setting that paints width and height lists both', () => {
+	// sgs/icon: the glyph size also sizes the shape while the shape has no size of its own, and the shape size owns the shape.
+	const look = {
+		key: 'k2',
+		elements: {
+			'': at( { _tag: 'div', display: 'flex' } ),
+			'.sgs-demo__shape': at( { _tag: 'span', display: 'inline-flex' } ),
+			'.sgs-demo__shape > .sgs-demo__glyph': at( { _tag: 'svg', display: 'block' } ),
+		},
+		pathClasses: { '': [ 'sgs-demo' ], '.sgs-demo__shape': [ 'sgs-demo__shape' ], '.sgs-demo__shape > .sgs-demo__glyph': [ 'sgs-demo__svg' ] },
+	};
+	const rows = [
+		{ setting: 'glyphSize', part: 'sgs-demo__shape', props: [ 'inline-size' ] },
+		{ setting: 'glyphSize', part: 'sgs-demo__svg', props: [ 'inline-size' ] },
+		{ setting: 'shapeSize', part: 'sgs-demo__shape', props: [ 'inline-size' ] },
+		{ setting: 'shapeSize', part: 'sgs-demo__shape', props: [ 'block-size' ] },
+	];
+	const attrs = [ { attr: 'glyphSize', property: 'width', element: 'glyph' }, { attr: 'shapeSize', property: 'height,width', element: 'shape' } ];
+	const r = loadRecord( BLOCK, CLIENT, { db: fixtureDb( rows, { attrs } ), dir: lookDir( look ), build: false, elementsOf: () => ( {} ) } );
+	assert.deepEqual( r.settings.glyphSize.slots, [ '.sgs-demo__shape > .sgs-demo__glyph' ], 'the glyph size is on the glyph, not on the shape that owns a size of its own' );
+	assert.deepEqual( r.settings.shapeSize.slots, [ '.sgs-demo__shape' ] );
+	assert.deepEqual( [ ...r.settings.shapeSize.properties ].sort(), [ 'height', 'width' ], 'the shape size paints width as well as height, spelled physically though the record spells them logically' );
+	assert.equal( r.settings.glyphSize.properties, undefined, 'a one-property setting lists no second property' );
+	// Negative control: with no setting owning the shape for the same property, the glyph size keeps the shape (the rows as they were).
+	const alone = loadRecord( BLOCK, CLIENT, { db: fixtureDb( rows.slice( 0, 2 ), { attrs: attrs.slice( 0, 1 ) } ), dir: lookDir( look ), build: false, elementsOf: () => ( {} ) } );
+	assert.deepEqual( alone.settings.glyphSize.slots, [ '.sgs-demo__shape', '.sgs-demo__shape > .sgs-demo__glyph' ] );
+} );
