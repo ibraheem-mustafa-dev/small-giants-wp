@@ -2293,7 +2293,8 @@ def _metadata_allowed_blocks(block_dir: Path, text: str):
 
     Returns:
         None            — edit.js does not read block.json's list (nothing to add).
-        list[str]       — block.json's `allowedBlocks` (empty when block.json declares none: `undefined`, accepts any block).
+        list[str]       — block.json's `allowedBlocks`; an empty list means the block declares `[]`: it accepts no block.
+        _NO_LIST        — edit.js reads block.json's list but block.json declares none (`undefined`: accepts any block).
         _DYNAMIC_SKIP   — the list is read from block.json but block.json cannot be read or its list is not plain strings.
     """
     imported = {m.group(1) for m in _BLOCK_JSON_IMPORT_RE.finditer(text)}
@@ -2304,7 +2305,7 @@ def _metadata_allowed_blocks(block_dir: Path, text: str):
     except (OSError, ValueError):
         return _DYNAMIC_SKIP
     if declared is None:
-        return []
+        return _NO_LIST
     if not isinstance(declared, list) or not all(isinstance(x, str) for x in declared):
         return _DYNAMIC_SKIP
     return list(declared)
@@ -2378,8 +2379,12 @@ def scrape_allowed_blocks(edit_js_path: Path) -> list[str] | None:
     from_metadata = _metadata_allowed_blocks(edit_js_path.parent, text)
     if from_metadata is _DYNAMIC_SKIP:
         return _DYNAMIC_SKIP  # type: ignore[return-value]
+    if not matches and from_metadata is _NO_LIST:
+        return None
     if not matches and from_metadata is not None:
-        return from_metadata or None
+        return from_metadata
+    if from_metadata is _NO_LIST:
+        from_metadata = []
     if not matches:
         # Keyword present but not in a recognisable pattern — unknown, not "none".
         return _DYNAMIC_SKIP  # type: ignore[return-value]
@@ -2427,6 +2432,8 @@ def scrape_allowed_blocks(edit_js_path: Path) -> list[str] | None:
 
 # Sentinel — distinct from None — returned when a dynamic expression is found.
 _DYNAMIC_SKIP = object()
+# Sentinel: edit.js passes block.json's allowedBlocks and block.json declares none (the block accepts any block).
+_NO_LIST = object()
 
 
 # ---------------------------------------------------------------------------

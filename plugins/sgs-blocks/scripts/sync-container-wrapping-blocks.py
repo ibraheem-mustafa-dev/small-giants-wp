@@ -74,7 +74,6 @@ _sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), 
 from framework_db import framework_db_path  # noqa: E402
 import argparse
 import json
-import json
 import os
 import re
 import sqlite3

@@ -140,6 +140,41 @@ def test_block_composition_seed_keeps_scraped_column_and_deletes_dropped_rows(tm
     assert rows == [("core/b", "sgs/a", "leaf", None, None), ("sgs/a", None, "section-root", '["x"]', "section")]
 
 
+def test_block_composition_seed_with_one_malformed_row_seeds_nothing(tmp_path, monkeypatch):
+    # A five-item row for sgs/hero used to be skipped, and the delete of unlisted rows then removed sgs/hero from the table.
+    conn = _block_composition_conn(
+        tmp_path, monkeypatch, [["sgs/a", None, "leaf", None], ["sgs/hero", None, "section-root", "section", "extra"]]
+    )
+    conn.execute("INSERT INTO blocks VALUES ('sgs/hero')")
+    conn.execute("INSERT INTO block_composition (block_slug, composition_role) VALUES ('sgs/hero', 'section-root')")
+    seed_reference_data._seed_block_composition(conn)
+    assert conn.execute("SELECT block_slug FROM block_composition").fetchall() == [("sgs/hero",)]
+    for bad in ([["sgs/a", None, "", None]], [["sgs/a", 1, "leaf", None]], ["sgs/a"]):
+        conn = _block_composition_conn(tmp_path, monkeypatch, bad)
+        conn.execute("INSERT INTO blocks VALUES ('sgs/keep')")
+        conn.execute("INSERT INTO block_composition (block_slug, composition_role) VALUES ('sgs/keep', 'leaf')")
+        seed_reference_data._seed_block_composition(conn)
+        assert conn.execute("SELECT block_slug FROM block_composition").fetchall() == [("sgs/keep",)], bad
+
+
+def test_block_composition_seed_restores_the_foreign_key_setting(tmp_path, monkeypatch):
+    for before in (1, 0):
+        conn = _block_composition_conn(tmp_path, monkeypatch, [["core/b", None, "leaf", None]])
+        conn.execute(f"PRAGMA foreign_keys = {before}")
+        seed_reference_data._seed_block_composition(conn)
+        assert conn.execute("PRAGMA foreign_keys").fetchone()[0] == before
+    # ... and when the write itself fails
+    conn = _block_composition_conn(tmp_path, monkeypatch, [["core/b", None, "leaf", None]])
+    conn.execute("DROP TABLE block_composition")
+    conn.execute("CREATE TABLE block_composition (block_slug TEXT PRIMARY KEY)")
+    conn.execute("PRAGMA foreign_keys = ON")
+    try:
+        seed_reference_data._seed_block_composition(conn)
+    except sqlite3.OperationalError:
+        pass
+    assert conn.execute("PRAGMA foreign_keys").fetchone()[0] == 1
+
+
 def test_block_composition_seed_refuses_a_file_with_other_columns(tmp_path, monkeypatch):
     data = tmp_path / "block-composition.json"
     data.write_text(json.dumps({"__columns": ["block_slug"], "rows": [["sgs/a"]]}), encoding="utf-8")

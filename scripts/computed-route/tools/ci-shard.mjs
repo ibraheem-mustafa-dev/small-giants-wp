@@ -1,12 +1,14 @@
 #!/usr/bin/env node
-// Runs a slice of the route's non-browser tests on a GitHub Actions runner (.github/workflows/route-tests.yml).
+// Runs a slice of the route's test suite on a GitHub Actions runner (.github/workflows/route-tests.yml).
 //   node tools/ci-shard.mjs --list [--index I --count N] [--browser]    print the files of shard I of N (every file when none given)
 //   node tools/ci-shard.mjs --run --index I --count N --out DIR [--browser]   run shard I of N, one `node --test` process per file
-// --browser also selects the browser tests (the runner then has Chromium installed).
-// File selection reuses tools/run-tests.mjs (`hasBrowserTest` decides what a browser test is; `testCommand` builds each command, so
-// SGS_NO_SITE=1 is set exactly as for a local run) and drops the files listed in data/ci-excluded-tests.json. Each file's pass/fail,
-// time and output go to DIR (results.json plus one .log per file) for tools/ci-summary.mjs. Exits 1 when any file failed.
-import { spawn } from 'node:child_process';
+// Without --browser the browser tests (the files `hasBrowserTest` in tools/run-tests.mjs names) are left out; the workflow passes
+// --browser, because its runners have Chromium installed, so CI runs every test file.
+// File selection reuses tools/run-tests.mjs (`testCommand` builds each command, so SGS_NO_SITE=1 is set exactly as for a local run)
+// and drops the files listed in data/ci-excluded-tests.json. Each file's pass or fail, time, test and skip counts and output go to
+// DIR (results.json plus one .log per file) for tools/ci-summary.mjs. A file passes only when node exits 0, prints a test count above
+// zero and finishes inside the time limit. Exits 1 when any file failed.
+import { spawn, spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -17,7 +19,8 @@ import { hasBrowserTest, testCommand } from './run-tests.mjs';
 const ROUTE = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..' );
 const EXCLUDED = path.join( ROUTE, 'data', 'ci-excluded-tests.json' );
 const TIMINGS = path.join( ROUTE, 'data', 'ci-test-timings.json' );
-// A test file that runs longer than this is killed and counted as failed (a hung file would otherwise hold its shard until the job times out).
+// A test file that runs longer than this is killed (with its child processes) and counted as failed: a hung file would otherwise
+// hold its shard until the job times out.
 const FILE_TIMEOUT_MS = 5 * 60 * 1000;
 
 // The route's own test files (paths from the route folder, forward slashes), sorted.
@@ -26,7 +29,7 @@ export function allTestFiles( route = ROUTE ) {
 }
 
 // The files CI runs: none listed in data/ci-excluded-tests.json ({ "tests/x.test.mjs": "reason" }), and, unless `withBrowser`, no
-// browser test (`hasBrowserTest` in run-tests.mjs).
+// browser test.
 export function ciTestFiles( route = ROUTE, excluded = JSON.parse( fs.readFileSync( EXCLUDED, 'utf8' ) ), withBrowser = false ) {
 	return allTestFiles( route ).filter( ( f ) => ! ( f in excluded ) && ( withBrowser || ! hasBrowserTest( [ f ], route ) ) );
 }
@@ -44,54 +47,96 @@ export function shards( files, count, route = ROUTE, timings = fs.existsSync( TI
 	return out.map( ( s ) => s.files.sort() );
 }
 
+// What node's test runner (Node 24's default reporter) printed: `tests` and `skipped` are the numbers from its `ℹ tests N` and
+// `ℹ skipped N` lines (null when the line is missing), `skippedNames` the skipped tests (`﹣ name (1.2ms) # reason`).
+export function readCounts( output ) {
+	const n = ( key ) => {
+		const m = new RegExp( `^ℹ ${ key } (\\d+)`, 'm' ).exec( output );
+		return m ? Number( m[ 1 ] ) : null;
+	};
+	const skippedNames = [ ...output.matchAll( /^\s*﹣ (.+?) \([\d.]+ms\)(?: # (.*))?$/gm ) ].map( ( m ) => ( m[ 2 ] && 'SKIP' !== m[ 2 ] ? `${ m[ 1 ] } (${ m[ 2 ] })` : m[ 1 ] ) );
+	return { tests: n( 'tests' ), skipped: n( 'skipped' ), skippedNames };
+}
+
+// Ends a process and everything it started: on Windows `child.kill` ends node only and leaves the test's own children (a browser, a
+// server) holding the pipes, so the whole tree goes with taskkill; elsewhere the process group.
+export function killTree( child ) {
+	if ( 'win32' === process.platform ) {
+		spawnSync( 'taskkill', [ '/T', '/F', '/PID', String( child.pid ) ], { stdio: 'ignore' } );
+	} else {
+		try { process.kill( -child.pid, 'SIGKILL' ); } catch { child.kill( 'SIGKILL' ); }
+	}
+}
+
+// Runs one test file in its own `node --test` process: { file, ok, status, ms, tests, skipped, skippedNames, timedOut, output }.
+// When the time limit passes the tree is killed and the result is returned without waiting for the pipes to close.
+export function runOne( file, route = ROUTE, timeoutMs = FILE_TIMEOUT_MS ) {
+	return new Promise( ( resolve ) => {
+		const { args, env } = testCommand( [ file ] );
+		// A parent test runner's marker would make this `node --test` refuse to run ("called recursively"); only a test of this tool is run that way.
+		delete env.NODE_TEST_CONTEXT;
+		const started = Date.now();
+		const chunks = [];
+		const child = spawn( process.execPath, args, { cwd: route, env, stdio: [ 'ignore', 'pipe', 'pipe' ], detached: 'win32' !== process.platform } );
+		child.stdout.on( 'data', ( d ) => chunks.push( d ) );
+		child.stderr.on( 'data', ( d ) => chunks.push( d ) );
+		let done = false;
+		const finish = ( status, timedOut ) => {
+			if ( done ) return;
+			done = true;
+			clearTimeout( timer );
+			let output = Buffer.concat( chunks ).toString( 'utf8' );
+			timedOut && ( output += `\nci-shard: killed after ${ timeoutMs / 1000 }s\n` );
+			const counts = readCounts( output );
+			// A file with no test in it is reported by node as one passing test named after the file (`✔ tests\x.test.mjs (3ms)`).
+			const fileAsTest = /^✔ tests[\\/]\S+\.test\.mjs \(/m.test( output );
+			const noTests = ! timedOut && 0 === status && ( ! ( counts.tests > 0 ) || fileAsTest );
+			noTests && ( output += `\nci-shard: the file ran no tests (${ fileAsTest ? 'node counted the file itself as the one test' : null === counts.tests ? 'the runner printed no test count' : 'a test count of 0' })\n` );
+			resolve( { file, ok: 0 === status && ! timedOut && ! noTests, status, ms: Date.now() - started, ...counts, timedOut, noTests, output } );
+		};
+		const timer = setTimeout( () => {
+			killTree( child );
+			child.stdout.destroy();
+			child.stderr.destroy();
+			finish( null, true );
+		}, timeoutMs );
+		child.on( 'close', ( status ) => finish( status, false ) );
+		child.on( 'error', () => finish( 1, false ) );
+	} );
+}
+
 // Runs `files` one `node --test` process each, `jobs` at a time (what `node --test` itself does across files), writes DIR/results.json
-// and DIR/<file>.log, returns the results.
+// and DIR/<file>.log, returns the results. A file that fails is run once more: a pass the second time is reported as flaky and its
+// first output kept as DIR/<file>.first-attempt.log; a repeat failure fails the run with both outputs in the .log. A file that timed
+// out is not run again.
 export async function runFiles( files, out, jobs = Math.max( 1, os.availableParallelism() - 1 ), route = ROUTE, timeoutMs = FILE_TIMEOUT_MS ) {
 	fs.mkdirSync( out, { recursive: true } );
 	const results = [];
 	const queue = [ ...files ];
-	const one = ( file ) => new Promise( ( resolve ) => {
-		const { args, env } = testCommand( [ file ] );
-		const started = Date.now();
-		const chunks = [];
-		const child = spawn( process.execPath, args, { cwd: route, env, stdio: [ 'ignore', 'pipe', 'pipe' ] } );
-		child.stdout.on( 'data', ( d ) => chunks.push( d ) );
-		child.stderr.on( 'data', ( d ) => chunks.push( d ) );
-		const timer = setTimeout( () => child.kill( 'SIGKILL' ), timeoutMs );
-		child.on( 'close', ( status ) => {
-			clearTimeout( timer );
-			const output = Buffer.concat( chunks ).toString( 'utf8' );
-			fs.writeFileSync( path.join( out, `${ path.basename( file ) }.log` ), output );
-			const tests = ( output.match( /^# tests (\d+)/m ) || [] )[ 1 ];
-			const timedOut = Date.now() - started >= timeoutMs;
-			timedOut && fs.appendFileSync( path.join( out, `${ path.basename( file ) }.log` ), `
-ci-shard: killed after ${ timeoutMs / 1000 }s
-` );
-			resolve( { file, ok: 0 === status && ! timedOut, status, ms: Date.now() - started, tests: tests ? Number( tests ) : null, timedOut } );
-		} );
-	} );
+	const logOf = ( file, suffix = '.log' ) => path.join( out, `${ path.basename( file ) }${ suffix }` );
+	const save = () => fs.writeFileSync( path.join( out, 'results.json' ), JSON.stringify( results.map( ( { output, ...r } ) => r ), null, 1 ) );
 	await Promise.all( Array.from( { length: jobs }, async () => {
 		while ( queue.length ) {
 			const file = queue.shift();
-			let r = await one( file );
-			// A file that fails once is run again: a failure that clears is reported as flaky (a browser tab that lost its local server
-			// once), one that repeats fails the run. A killed (timed-out) file is not run again.
+			let r = await runOne( file, route, timeoutMs );
 			if ( ! r.ok && ! r.timedOut ) {
-				const first = fs.readFileSync( path.join( out, `${ path.basename( file ) }.log` ), 'utf8' );
-				const again = await one( file );
-				r = again.ok ? { ...again, flaky: true } : again;
-				r.ok || fs.appendFileSync( path.join( out, `${ path.basename( file ) }.log` ), `
---- first attempt ---
-${ first }` );
-				again.ok && fs.copyFileSync( path.join( out, `${ path.basename( file ) }.log` ), path.join( out, `${ path.basename( file ) }.first-attempt.log` ) ) && fs.writeFileSync( path.join( out, `${ path.basename( file ) }.first-attempt.log` ), first );
+				const first = r;
+				r = await runOne( file, route, timeoutMs );
+				if ( r.ok ) {
+					fs.writeFileSync( logOf( file, '.first-attempt.log' ), first.output );
+					r = { ...r, flaky: true };
+				} else {
+					r.output += `\n--- first attempt ---\n${ first.output }`;
+				}
 			}
+			fs.writeFileSync( logOf( file ), r.output );
 			results.push( r );
 			console.log( `${ r.flaky ? 'FLAKY' : r.ok ? 'PASS' : r.timedOut ? 'TIMEOUT' : 'FAIL' } ${ file } (${ ( r.ms / 1000 ).toFixed( 1 ) }s)` );
-			fs.writeFileSync( path.join( out, 'results.json' ), JSON.stringify( results, null, 1 ) );
+			save();
 		}
 	} ) );
 	results.sort( ( a, b ) => a.file.localeCompare( b.file ) );
-	fs.writeFileSync( path.join( out, 'results.json' ), JSON.stringify( results, null, 1 ) );
+	save();
 	return results;
 }
 
@@ -113,7 +158,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 		console.log( `ci-shard: ${ results.length - failed.length } passed, ${ failed.length } failed` );
 		process.exitCode = failed.length ? 1 : 0;
 	} else {
-		console.error( 'usage: ci-shard.mjs --list [--index I --count N] | --run --index I --count N --out DIR' );
+		console.error( 'usage: ci-shard.mjs --list [--index I --count N] [--browser] | --run --index I --count N --out DIR [--browser]' );
 		process.exit( 2 );
 	}
 }

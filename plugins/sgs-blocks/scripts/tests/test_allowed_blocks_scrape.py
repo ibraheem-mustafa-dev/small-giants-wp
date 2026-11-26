@@ -279,6 +279,9 @@ const innerBlocksProps = useInnerBlocksProps( {}, { allowedBlocks: metadata.allo
         # block.json declares no list: edit.js passes undefined, so the block accepts any block.
         (tmp_path / "block.json").write_text(json.dumps({"name": "sgs/demo"}), encoding="utf-8")
         assert scrape_allowed_blocks(edit) is None
+        # block.json declares an empty list: the block accepts no block, which is stored as [] and never as "accepts any" (None).
+        (tmp_path / "block.json").write_text(json.dumps({"name": "sgs/demo", "allowedBlocks": []}), encoding="utf-8")
+        assert scrape_allowed_blocks(edit) == []
         # An unreadable block.json is unknown, never "accepts any".
         (tmp_path / "block.json").write_text("{not json", encoding="utf-8")
         assert scrape_allowed_blocks(edit) is _DYNAMIC_SKIP
