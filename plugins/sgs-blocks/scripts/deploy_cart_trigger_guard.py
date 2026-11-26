@@ -208,11 +208,20 @@ $wpdb = new class {
 			$this->last_error = 'Table is marked as crashed';
 			return null;
 		}
+		$old = '<!-- wp:sgs/cart {"pillPadding":{"desktop":{"top":"1px"}}} /-->';
+		$new = '<!-- wp:sgs/cart {"triggerPadding":{"desktop":{"top":"1px"}}} /-->';
 		if ( false !== strpos( $q, 'wp_options' ) ) {
-			return 'outside' === SCENARIO ? array( (object) array( 'label' => 'option theme_mods_x', 'content' => '<!-- wp:sgs/cart {"pillPadding":{"desktop":{"top":"1px"}}} /-->' ) ) : array();
+			// The three stored forms: plain, JSON-escaped (wp:sgs\/cart) and PHP-serialised; the last two rows hold the new key only.
+			return 'outside' === SCENARIO ? array(
+				(object) array( 'label' => 'option plain', 'content' => $old ),
+				(object) array( 'label' => 'option json', 'content' => json_encode( array( 'markup' => $old ) ) ),
+				(object) array( 'label' => 'option serialised', 'content' => serialize( array( 'a' => array( 'markup' => $old ) ) ) ),
+				(object) array( 'label' => 'option json clean', 'content' => json_encode( array( 'markup' => $new ) ) ),
+				(object) array( 'label' => 'option serialised clean', 'content' => serialize( array( $new ) ) ),
+			) : array();
 		}
 		if ( false !== strpos( $q, 'wp_postmeta' ) ) {
-			return array();
+			return 'outside' === SCENARIO ? array( (object) array( 'label' => 'post 5 meta blob', 'content' => serialize( array( 'blob' => json_encode( array( 'markup' => $old ) ) ) ) ) ) : array();
 		}
 		return array(
 			(object) array( 'ID' => 1, 'post_type' => 'page', 'post_name' => 'old', 'post_content' => '<!-- wp:sgs/cart {"pillMinHeight":{"desktop":"20px"},"triggerStyle":"pill"} /-->' ),
@@ -249,8 +258,8 @@ def _self_test_php() -> list[str]:
         hit = parse_result(_run_php("outside").stdout)["outside"]
     except ValueError:
         hit = []
-    if [h["label"] for h in hit] != ["option theme_mods_x"]:
-        failures.append("cart trigger guard NEGATIVE CONTROL: an old key in an options row was not listed")
+    if [h["label"] for h in hit] != ["option plain", "option json", "option serialised", "post 5 meta blob"]:
+        failures.append(f"cart trigger guard NEGATIVE CONTROL: an old key stored plain, JSON-escaped or serialised was not listed, or a clean row was: {hit}")
     for scenario in ("dberror", "multisite"):
         res = _run_php(scenario)
         if res.returncode == 0 or MARKER in res.stdout:

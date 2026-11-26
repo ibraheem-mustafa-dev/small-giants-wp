@@ -332,6 +332,7 @@ final class CartTriggerSharedSettingsTest extends TestCase {
 			public $options  = 'wp_options';
 			public $postmeta = 'wp_postmeta';
 			public $last_error = '';
+			public array $queries = array();
 			private array $by_table;
 			private string $error;
 			public function __construct( array $by_table, string $error ) {
@@ -339,6 +340,7 @@ final class CartTriggerSharedSettingsTest extends TestCase {
 				$this->error    = $error;
 			}
 			public function get_results( string $query ) {
+				$this->queries[] = $query;
 				if ( '' !== $this->error ) {
 					$this->last_error = $this->error;
 					return null;
@@ -372,6 +374,79 @@ final class CartTriggerSharedSettingsTest extends TestCase {
 		);
 		$this->assertSame( array( 'option a', 'post 9 meta _x' ), array_column( $hits, 'label' ) );
 		$this->assertSame( array( 'pillPadding' ), $hits[0]['keys'] );
+	}
+
+	private const OLD_MARKUP = '<!-- wp:sgs/cart {"pillPadding":{"desktop":{"top":"1px"}},"triggerStyle":"pill"} /-->';
+	private const NEW_MARKUP = '<!-- wp:sgs/cart {"triggerPadding":{"desktop":{"top":"1px"}}} /-->';
+
+	/** @return array<string, array{0: callable(string): string, 1: bool}> How a stored value can hold a basket (a function from the markup to the stored text) and whether the markup holds an old key. */
+	public static function stored_forms(): array {
+		$plain      = static fn( string $m ): string => $m;
+		$json_str   = static fn( string $m ): string => (string) json_encode( $m );
+		$json_obj   = static fn( string $m ): string => (string) json_encode( array( 'content' => $m, 'n' => 3 ) );
+		$serialised = static fn( string $m ): string => serialize( array( 'a' => 1, 'b' => array( 'markup' => $m ) ) );
+		$ser_json   = static fn( string $m ): string => serialize( array( 'blob' => json_encode( array( 'markup' => $m ) ) ) );
+		return array(
+			'plain'                          => array( $plain, true ),
+			'json string (wp:sgs\\/cart)'    => array( $json_str, true ),
+			'json object'                    => array( $json_obj, true ),
+			'serialised array'               => array( $serialised, true ),
+			'json inside a serialised array' => array( $ser_json, true ),
+			'plain, no old key'              => array( $plain, false ),
+			'json string, no old key'        => array( $json_str, false ),
+			'serialised array, no old key'   => array( $serialised, false ),
+			'json inside serialised, no old key' => array( $ser_json, false ),
+		);
+	}
+
+	/**
+	 * @dataProvider stored_forms
+	 * @param callable(string): string $store The stored form.
+	 * @param bool                     $old   Whether the markup holds an old key.
+	 */
+	public function test_a_basket_in_an_option_or_post_meta_row_is_found_in_every_stored_form( callable $store, bool $old ): void {
+		$stored = $store( $old ? self::OLD_MARKUP : self::NEW_MARKUP );
+		$db     = $this->wpdb(
+			array(
+				'wp_options'  => array( (object) array( 'label' => 'option a', 'content' => $stored ) ),
+				'wp_postmeta' => array( (object) array( 'label' => 'post 9 meta _x', 'content' => $stored ) ),
+			)
+		);
+		$hits = sgs_cart_trigger_sweep_outside_rows( $db );
+		$this->assertSame( $old ? array( 'option a', 'post 9 meta _x' ) : array(), array_column( $hits, 'label' ) );
+		if ( $old ) {
+			$this->assertSame( array( 'pillPadding' ), $hits[0]['keys'] );
+			// The SQL pre-filter must also match the stored text, or the row is never read: LIKE `%a%b%` as a regular expression.
+			$pattern = '';
+			foreach ( $db->queries as $query ) {
+				$this->assertSame( 1, preg_match( "/LIKE '([^']+)'/", $query, $m ) );
+				$pattern = '/^' . str_replace( '%', '.*', preg_quote( $m[1], '/' ) ) . '$/s';
+				$this->assertSame( 1, preg_match( $pattern, $stored ), 'the query pattern ' . $m[1] . ' misses ' . $stored );
+			}
+		}
+	}
+
+	public function test_an_unrelated_or_unreadable_stored_value_is_not_a_hit_and_does_not_stop_the_scan(): void {
+		$rows = array(
+			(object) array( 'label' => 'option text', 'content' => 'the sgs cart page, wp:sgs and cart apart' ),
+			(object) array( 'label' => 'option broken', 'content' => 'a:2:{s:1:"a";s:5:"short";' ),
+			(object) array( 'label' => 'option json', 'content' => '{"broken":' ),
+			(object) array( 'label' => 'option object', 'content' => 'O:8:"stdClass":1:{s:1:"m";s:' . strlen( self::OLD_MARKUP ) . ':"' . self::OLD_MARKUP . '";}' ),
+		);
+		$hits = sgs_cart_trigger_sweep_outside_rows( $this->wpdb( array( 'wp_options' => $rows ) ) );
+		$this->assertSame( array( 'option object' ), array_column( $hits, 'label' ) );
+	}
+
+	public function test_a_value_that_mentions_a_basket_but_cannot_be_decoded_is_refused_not_passed(): void {
+		$cut  = substr( (string) json_encode( array( 'markup' => self::OLD_MARKUP ) ), 0, -6 ); // Cut off mid-value: not valid JSON.
+		$rows = array(
+			(object) array( 'label' => 'option cut json', 'content' => $cut ),
+			(object) array( 'label' => 'option cut serialised', 'content' => substr( serialize( array( 'm' => self::OLD_MARKUP ) ), 0, -9 ) ),
+			(object) array( 'label' => 'option cut, no basket', 'content' => substr( (string) json_encode( array( 'markup' => 'hello' ) ), 0, -3 ) ),
+		);
+		$hits = sgs_cart_trigger_sweep_outside_rows( $this->wpdb( array( 'wp_options' => $rows ) ) );
+		$this->assertSame( array( 'option cut json', 'option cut serialised' ), array_column( $hits, 'label' ) );
+		$this->assertSame( array( 'unreadable' ), $hits[0]['keys'] );
 	}
 
 	public function test_the_multisite_refusal_says_what_to_do(): void {

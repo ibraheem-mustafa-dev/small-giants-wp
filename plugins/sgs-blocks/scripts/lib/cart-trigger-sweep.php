@@ -364,16 +364,72 @@ if ( ! function_exists( 'sgs_cart_trigger_sweep_old_keys' ) ) {
 	}
 
 	/**
-	 * The places outside the posts table that hold a basket with an old trigger setting: `options` and `postmeta` rows. The sweep does
-	 * not rewrite them; it names them so nobody deploys over them.
+	 * Every string a stored value holds as readable text: the value itself, and, one level at a time down to four, the strings inside a
+	 * PHP-serialised array or object and inside JSON. A basket saved as JSON-escaped markup (`wp:sgs\/cart {\"pillPadding\":...}`), or
+	 * as markup inside a JSON string inside a serialised array, comes out as plain markup the rewrite can read. Nothing is written and
+	 * no class is loaded: an object in a serialised value is read as an array of properties.
+	 *
+	 * @param string $value The stored value.
+	 * @param int    $depth How many levels down this call is.
+	 * @param bool   $unreadable Set to true when a value that looks serialised or JSON cannot be decoded (the caller decides what that means).
+	 * @return string[] The value and every string found inside it that mentions a basket.
+	 */
+	function sgs_cart_trigger_sweep_strings( string $value, int $depth = 0, bool &$unreadable = false ): array {
+		$out = array( $value );
+		if ( $depth >= 4 || '' === $value ) {
+			return $out;
+		}
+		$inner = null;
+		$trim  = ltrim( $value );
+		if ( 1 === preg_match( '/^(?:[aOCsidb]:|N;)/', $trim ) ) {
+			$un = @unserialize( $value, array( 'allowed_classes' => false ) ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged,WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize -- a read of a stored value that may not be serialised; no class is instantiated.
+			if ( false !== $un || 'b:0;' === $trim ) {
+				$inner = $un;
+			} else {
+				$unreadable = true;
+			}
+		} elseif ( '{' === substr( $trim, 0, 1 ) || '[' === substr( $trim, 0, 1 ) || '"' === substr( $trim, 0, 1 ) ) {
+			$inner = json_decode( $value, true );
+			if ( JSON_ERROR_NONE !== json_last_error() ) {
+				$unreadable = true;
+			}
+		}
+		if ( is_object( $inner ) ) {
+			$inner = (array) $inner;
+		}
+		if ( is_string( $inner ) ) {
+			$inner = array( $inner );
+		}
+		if ( is_array( $inner ) ) {
+			$stack = array( $inner );
+			while ( $stack ) {
+				foreach ( array_pop( $stack ) as $item ) {
+					if ( is_object( $item ) ) {
+						$item = (array) $item;
+					}
+					if ( is_array( $item ) ) {
+						$stack[] = $item;
+					} elseif ( is_string( $item ) && '' !== $item ) {
+						$out = array_merge( $out, sgs_cart_trigger_sweep_strings( $item, $depth + 1, $unreadable ) );
+					}
+				}
+			}
+		}
+		return $out;
+	}
+
+	/**
+	 * The places outside the posts table that hold a basket with an old trigger setting: `options` and `postmeta` rows, whether the
+	 * markup is stored plain, JSON-escaped (`wp:sgs\/cart`, also doubly) or inside a PHP-serialised value. The sweep does not rewrite them; it
+	 * names them so nobody deploys over them.
 	 *
 	 * @param object $wpdb The global `$wpdb`.
 	 * @return array<int, array{label: string, blocks: int, keys: string[]}>|null The hits, or null when a query failed.
 	 */
 	function sgs_cart_trigger_sweep_outside_rows( $wpdb ): ?array {
 		$queries = array(
-			"SELECT CONCAT('option ', option_name) AS label, option_value AS content FROM " . $wpdb->options . " WHERE option_value LIKE '%wp:sgs/cart%'",
-			"SELECT CONCAT('post ', post_id, ' meta ', meta_key) AS label, meta_value AS content FROM " . $wpdb->postmeta . " WHERE meta_value LIKE '%wp:sgs/cart%'",
+			"SELECT CONCAT('option ', option_name) AS label, option_value AS content FROM " . $wpdb->options . " WHERE option_value LIKE '%wp:sgs%cart%'",
+			"SELECT CONCAT('post ', post_id, ' meta ', meta_key) AS label, meta_value AS content FROM " . $wpdb->postmeta . " WHERE meta_value LIKE '%wp:sgs%cart%'",
 		);
 		$hits    = array();
 		foreach ( $queries as $query ) {
@@ -382,12 +438,24 @@ if ( ! function_exists( 'sgs_cart_trigger_sweep_old_keys' ) ) {
 				return null;
 			}
 			foreach ( $rows as $row ) {
-				$result = sgs_cart_trigger_sweep_content( (string) $row->content, static fn( array $a ): string => '' );
-				if ( $result['changed'] > 0 ) {
+				$blocks = 0;
+				$keys   = array();
+				$unreadable = false;
+				foreach ( sgs_cart_trigger_sweep_strings( (string) $row->content, 0, $unreadable ) as $text ) {
+					$result  = sgs_cart_trigger_sweep_content( $text, static fn( array $a ): string => '' );
+					$blocks += $result['changed'];
+					$keys    = array_merge( $keys, array_keys( $result['keys'] ) );
+				}
+				// A value that mentions a basket but cannot be decoded is refused, not passed: an unreadable result must never read as clean.
+				if ( 0 === $blocks && $unreadable && 1 === preg_match( '/wp:sgs.{0,8}cart/', (string) $row->content ) ) {
+					$blocks = 1;
+					$keys   = array( 'unreadable' );
+				}
+				if ( $blocks > 0 ) {
 					$hits[] = array(
 						'label'  => (string) $row->label,
-						'blocks' => $result['changed'],
-						'keys'   => array_keys( $result['keys'] ),
+						'blocks' => $blocks,
+						'keys'   => array_values( array_unique( $keys ) ),
 					);
 				}
 			}
