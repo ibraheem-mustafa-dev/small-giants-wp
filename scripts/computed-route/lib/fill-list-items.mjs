@@ -204,9 +204,14 @@ export function loopItems( o ) {
 
 // What the draft's renderVals returns (the template's root data), for a parsed logic index.
 export function rootData( idx ) {
+	return rootDataByReturn( idx ).flat();
+}
+
+// The same refs, one list per return statement of renderVals, in source order (a return's own list holds what its one expression resolves to).
+export function rootDataByReturn( idx ) {
 	const m = idx && classMethod( idx, 'renderVals' );
 	const fn = m && ( isFn( m ) ? m : m.value );
-	return fn ? returnsOf( idx, fn ).flatMap( ( e ) => resolveRefs( idx, ref( e ) ) ) : [];
+	return fn ? returnsOf( idx, fn ).map( ( e ) => resolveRefs( idx, ref( e ) ) ) : [];
 }
 
 // The items of a current-item display inside `rootKey`: the template elements under it (the fact record's parent chain)

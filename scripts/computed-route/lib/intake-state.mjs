@@ -24,28 +24,37 @@ export function logicState( { comp, op, patch, slot } ) {
 	// draft itself defines (a plain object, never a built-in such as Math, JSON, console or document), by plain property names only. The page's
 	// storage and the in-memory data of each store the calls name are kept first, under the snapshot's `slot`, so a `restore` of that
 	// slot puts both back and no other slot's restore does. A call whose root the draft does not define (prose such as `e.preventDefault()`) is
-	// skipped; a call that throws, or the calls all skipped with no logic call beside them, reaches nothing.
+	// skipped; a call on a defined root whose method is missing (a renamed `MM.account.login`), a call that throws, or the calls all skipped
+// with no logic call beside them, reaches nothing. A store's Map and Set contents are put back too (cleared, then re-added).
 	const storeSnaps = ( window.__sgsStoreSnaps ||= {} );
 	const storeKey = slot || '';
 	const plainRoot = ( name ) => {
 		const found = Object.getOwnPropertyDescriptor( window, name )?.value;
 		return found && '[object Object]' === Object.prototype.toString.call( found ) && Object.getPrototypeOf( found ) === Object.prototype ? found : null;
 	};
-	// A copy of a store's plain objects and arrays (each keeps its own identity, so a closure holding it still sees the restore); anything else is kept by reference.
+	// A copy of a store's plain objects, arrays, Maps and Sets (each keeps its own identity, so a closure holding it still sees the restore); anything
+	// else is kept by reference. `keys` lists every own enumerable key at snapshot time, accessors included (a getter is no data to put back, and no key
+	// the store had is ever deleted); `items` holds the data properties; `entries` the contents of a Map or Set.
 	const copyStore = ( v, depth, seen ) => {
-		const container = v && 'object' === typeof v && ( Array.isArray( v ) || Object.getPrototypeOf( v ) === Object.prototype );
+		const proto = v && 'object' === typeof v ? Object.getPrototypeOf( v ) : null;
+		const container = proto && ( Array.isArray( v ) || proto === Object.prototype || proto === Map.prototype || proto === Set.prototype );
 		if ( ! container || depth > 8 ) {
 			return { leaf: v };
 		}
 		if ( seen.has( v ) ) {
 			return seen.get( v );
 		}
-		const rep = { obj: v, len: Array.isArray( v ) ? v.length : 0, items: {} };
+		const rep = { obj: v, len: Array.isArray( v ) ? v.length : 0, keys: new Set( Object.keys( v ) ), items: {}, entries: null };
 		seen.set( v, rep );
 		for ( const k of Object.keys( v ) ) {
 			if ( 'value' in Object.getOwnPropertyDescriptor( v, k ) ) {
 				rep.items[ k ] = copyStore( v[ k ], depth + 1, seen );
 			}
+		}
+		if ( proto === Map.prototype ) {
+			rep.entries = [ ...v ].map( ( [ k, x ] ) => [ k, copyStore( x, depth + 1, seen ) ] );
+		} else if ( proto === Set.prototype ) {
+			rep.entries = [ ...v ].map( ( x ) => [ x, { leaf: x } ] );
 		}
 		return rep;
 	};
@@ -55,7 +64,7 @@ export function logicState( { comp, op, patch, slot } ) {
 		}
 		done.add( rep );
 		const obj = rep.obj;
-		Object.keys( obj ).filter( ( k ) => ! ( k in rep.items ) ).forEach( ( k ) => {
+		Object.keys( obj ).filter( ( k ) => ! rep.keys.has( k ) ).forEach( ( k ) => {
 			try {
 				delete obj[ k ];
 			} catch {
@@ -63,6 +72,17 @@ export function logicState( { comp, op, patch, slot } ) {
 			}
 		} );
 		Array.isArray( obj ) && ( obj.length = rep.len );
+		if ( rep.entries ) {
+			try {
+				obj.clear();
+				for ( const [ k, r ] of rep.entries ) {
+					r.items && put( r, done );
+					obj instanceof Map ? obj.set( k, r.items ? r.obj : r.leaf ) : obj.add( k );
+				}
+			} catch {
+				// A store whose Map or Set refuses clear or add keeps what it holds.
+			}
+		}
 		for ( const [ k, r ] of Object.entries( rep.items ) ) {
 			r.items && put( r, done );
 			try {
@@ -75,23 +95,26 @@ export function logicState( { comp, op, patch, slot } ) {
 	if ( 'reach' === op && patch.calls.some( ( c ) => c.store ) ) {
 		const calls = patch.calls.filter( ( c ) => c.store );
 		const ss = ( storeSnaps[ storeKey ] ||= { ls: Object.fromEntries( Object.entries( localStorage ) ), roots: {}, once: [] } );
-		if ( patch.once && ss.once.includes( patch.once ) ) {
-			return 1;
-		}
-		for ( const c of calls ) {
+		// A `once` key already done skips only the store calls: the component calls still run at this width.
+		const onceDone = patch.once && ss.once.includes( patch.once );
+		const todo = onceDone ? [] : calls;
+		let ran = onceDone ? 1 : 0;
+		for ( const c of todo ) {
 			const root = plainRoot( c.ident );
 			root && ! ss.roots[ c.ident ] && ( ss.roots[ c.ident ] = copyStore( root, 0, new Map() ) );
 		}
-		let ran = 0;
-		for ( const c of calls ) {
+		for ( const c of todo ) {
 			const root = plainRoot( c.ident );
+			if ( ! root ) {
+				continue;
+			}
 			let obj = root;
 			for ( const seg of c.path.slice( 0, -1 ) ) {
 				obj = obj && 'object' === typeof obj ? obj[ seg ] : null;
 			}
 			const fn = obj ? obj[ c.path.at( -1 ) ] : null;
-			if ( ! root || 'function' !== typeof fn ) {
-				continue;
+			if ( 'function' !== typeof fn ) {
+				return 0;
 			}
 			try {
 				fn.apply( obj, c.args );
@@ -100,7 +123,7 @@ export function logicState( { comp, op, patch, slot } ) {
 				return 0;
 			}
 		}
-		ran && patch.once && ss.once.push( patch.once );
+		! onceDone && ran && patch.once && ss.once.push( patch.once );
 		if ( ! patch.calls.some( ( c ) => ! c.store ) ) {
 			return ran ? 1 : 0;
 		}

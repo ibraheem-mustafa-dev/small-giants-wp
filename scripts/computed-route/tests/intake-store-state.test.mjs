@@ -12,6 +12,7 @@ import { reachDraftState, restoreDraftState, snapshotDraftState } from '../lib/i
 const HOSTED = `<script>
 window.APP = { cart: { items: [], add(x) { this.items.push(x); }, gift: { on: false }, setGift(p) { Object.assign(this.gift, p); localStorage.setItem('gift', JSON.stringify(this.gift)); } } };
 window.__gift = window.APP.cart.gift;
+window.SHOP = { _n: 0, get count() { return this.list.length; }, list: [], tags: new Set( [ 'a' ] ), byId: new Map( [ [ 'x', { n: 1 } ] ] ), put(x) { this._n++; this.list.push(x); this.tags.add(x); this.byId.set(x, { n: 2 }); this.byId.get('x').n++; this.late = 1; } };
 document.addEventListener('DOMContentLoaded', () => {
 	const host = document.createElement('div');
 	host.className = 'sc-host';
@@ -116,6 +117,57 @@ test( 'MUST FAIL: a precondition named `once` runs once however often it is appl
 		// Negative control: with no `once`, each application runs the call.
 		await reachDraftState( page, { component: 'Fake', calls: [ add ] } );
 		assert.equal( await items(), 2 );
+	} finally {
+		await browser.close();
+	}
+} );
+
+const put = { ident: 'SHOP', store: true, path: [ 'put' ], args: [ 'cup' ] };
+
+test( 'MUST FAIL: a restore keeps a store\'s getters (it deletes only keys the store did not have), puts back Map and Set contents, and still removes a key the call added', async () => {
+	const browser = await chromium.launch( { headless: true } );
+	try {
+		const page = await hostedPage( browser );
+		const shop = () => page.evaluate( () => ( { keys: Object.keys( window.SHOP ).sort(), count: window.SHOP.count, tags: [ ...window.SHOP.tags ], byId: [ ...window.SHOP.byId ], late: window.SHOP.late } ) );
+		const before = await shop();
+		assert.equal( before.count, 0 );
+		await snapshotDraftState( page );
+		assert.equal( await reachDraftState( page, { component: 'Fake', calls: [ put ] } ), 1 );
+		const during = await shop();
+		assert.deepEqual( [ during.count, during.tags, during.byId.map( ( e ) => e[ 0 ] ), during.late ], [ 1, [ 'a', 'cup' ], [ 'x', 'cup' ], 1 ], 'the call changed the store' );
+		await restoreDraftState( page );
+		assert.deepEqual( await shop(), before, 'the getter, the Set, the Map and its nested object are as they were, and the added key is gone' );
+	} finally {
+		await browser.close();
+	}
+} );
+
+test( 'MUST FAIL: a store call whose root is defined but whose method is missing reaches nothing, even with a setState way beside it', async () => {
+	const browser = await chromium.launch( { headless: true } );
+	try {
+		const page = await hostedPage( browser );
+		const login = { ident: 'APP', store: true, path: [ 'account', 'login' ], args: [] };
+		const renamed = { ident: 'APP', store: true, path: [ 'cart', 'addd' ], args: [ 'cup' ] };
+		for ( const missing of [ login, renamed ] ) {
+			assert.equal( await reachDraftState( page, { component: 'Fake', calls: [ missing, { ident: 'this', args: '{ a: 9 }' } ] } ), 0, `${ missing.path.join( '.' ) } is not a function` );
+			assert.equal( await page.evaluate( () => window.__logic.state.a ), 1, 'the setState way behind it did not run' );
+		}
+		assert.equal( await reachDraftState( page, { component: 'Fake', calls: [ gift, { ident: 'this', args: '{ a: 9 }' } ] } ), 1, 'negative control: a defined method runs' );
+		assert.equal( await page.evaluate( () => window.__logic.state.a ), 9 );
+	} finally {
+		await browser.close();
+	}
+} );
+
+test( 'MUST FAIL: a `once` key already done skips only the store calls: the component calls still run at the next width', async () => {
+	const browser = await chromium.launch( { headless: true } );
+	try {
+		const page = await hostedPage( browser );
+		const items = () => page.evaluate( () => window.APP.cart.items.length );
+		assert.equal( await reachDraftState( page, { component: 'Fake', calls: [ add, { ident: 'this', args: '{ a: 7 }' } ], once: 'k' } ), 1 );
+		assert.equal( await reachDraftState( page, { component: 'Fake', calls: [ add, { ident: 'this', args: '{ a: 8 }' } ], once: 'k' } ), 1 );
+		assert.equal( await page.evaluate( () => window.__logic.state.a ), 8, 'the second width\'s component call ran' );
+		assert.equal( await items(), 1, 'the store call ran once' );
 	} finally {
 		await browser.close();
 	}

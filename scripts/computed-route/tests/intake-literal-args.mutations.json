@@ -1,0 +1,8 @@
+[
+	{ "file": "lib/intake-store-calls.mjs", "find": "} else if ( 'x' === e && /^[0-9a-fA-F]{2}$/", "replace": "} else if ( false && 'x' === e && /^[0-9a-fA-F]{2}$/", "why": "a \\xHH escape is decoded" },
+	{ "file": "lib/intake-store-calls.mjs", "find": "} else if ( '0' === e && ! /\\d/.test( body[ i + 1 ] ?? '' ) ) {", "replace": "} else if ( false ) {", "why": "a \\0 escape is decoded" },
+	{ "file": "lib/intake-store-calls.mjs", "find": "const simple = { n: '\\n', t: '\\t', r: '\\r', b: '\\b', f: '\\f', v: '\\v' }[ e ];", "replace": "const simple = { n: '\\n', t: '\\t', r: '\\r', b: '\\b', f: '\\f' }[ e ];", "why": "a \\v escape is decoded" },
+	{ "file": "lib/intake-store-calls.mjs", "find": "} else if ( 'u' === e && /^\\{[0-9a-fA-F]{1,6}\\}/.test( body.slice( i + 1 ) ) ) {", "replace": "} else if ( false ) {", "why": "a \\u{...} escape is decoded" },
+	{ "file": "lib/intake-store-calls.mjs", "find": "} else if ( undefined === e || /[0-9xu]/.test( e ) ) {", "replace": "} else if ( undefined === e ) {", "why": "a malformed or legacy octal escape is no literal" },
+	{ "file": "lib/intake-store-calls.mjs", "find": "} else if ( ! /^[\\n\\r]$/.test( e ) && ! [ 0x2028, 0x2029 ].includes( e.charCodeAt( 0 ) ) ) {", "replace": "} else if ( true ) {", "why": "an escaped line break is a continuation, not a character" }
+]

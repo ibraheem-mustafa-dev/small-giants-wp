@@ -8,6 +8,46 @@
 import { structuredReach } from './intake-reach-calls.mjs';
 const IDENT = '[A-Za-z_$][\\w$]*';
 
+// The value of a JS string literal's body (the text between its quotes, escapes still raw): \n \t \v \0 \xHH \uHHHH \u{H...}, an escaped
+// quote, backslash or line break, any other escaped character as itself; null for a malformed escape or a legacy octal one.
+function jsString( body ) {
+	let out = '';
+	for ( let i = 0; i < body.length; i++ ) {
+		if ( '\\' !== body[ i ] ) {
+			out += body[ i ];
+			continue;
+		}
+		const e = body[ ++i ];
+		const simple = { n: '\n', t: '\t', r: '\r', b: '\b', f: '\f', v: '\v' }[ e ];
+		if ( undefined !== simple ) {
+			out += simple;
+		} else if ( '0' === e && ! /\d/.test( body[ i + 1 ] ?? '' ) ) {
+			out += '\0';
+		} else if ( 'x' === e && /^[0-9a-fA-F]{2}$/.test( body.slice( i + 1, i + 3 ) ) ) {
+			out += String.fromCharCode( parseInt( body.slice( i + 1, i + 3 ), 16 ) );
+			i += 2;
+		} else if ( 'u' === e && /^[0-9a-fA-F]{4}$/.test( body.slice( i + 1, i + 5 ) ) ) {
+			out += String.fromCharCode( parseInt( body.slice( i + 1, i + 5 ), 16 ) );
+			i += 4;
+		} else if ( 'u' === e && /^\{[0-9a-fA-F]{1,6}\}/.test( body.slice( i + 1 ) ) ) {
+			const end = body.indexOf( '}', i );
+			const code = parseInt( body.slice( i + 2, end ), 16 );
+			if ( code > 0x10FFFF ) {
+				return null;
+			}
+			out += String.fromCodePoint( code );
+			i = end;
+		} else if ( undefined === e || /[0-9xu]/.test( e ) ) {
+			return null;
+		} else if ( '\r' === e && '\n' === body[ i + 1 ] ) {
+			i++;
+		} else if ( ! /^[\n\r]$/.test( e ) && ! [ 0x2028, 0x2029 ].includes( e.charCodeAt( 0 ) ) ) {
+			out += e;
+		}
+	}
+	return out;
+}
+
 // A JS-literal subset as an array of arguments, or null when the text is anything else.
 export function literalArgs( src ) {
 	const text = String( src ?? '' ).trim();
@@ -32,13 +72,11 @@ export function literalArgs( src ) {
 		if ( j >= text.length ) {
 			return null;
 		}
-		// A single-quoted body becomes a double-quoted one: an escaped single quote is a plain quote, an unescaped double quote is escaped.
-		const inner = '\'' === c ? body.replace( /\\'|\\.|"/g, ( m ) => ( '\\\'' === m ? '\'' : '"' === m ? '\\"' : m ) ) : body;
-		try {
-			quoted += loose.replace( bare, '$1"$2"$3' ) + JSON.stringify( JSON.parse( `"${ inner }"` ) );
-		} catch {
+		const value = jsString( body );
+		if ( null === value ) {
 			return null;
 		}
+		quoted += loose.replace( bare, '$1"$2"$3' ) + JSON.stringify( value );
 		loose = '';
 		i = j;
 	}

@@ -1,4 +1,5 @@
 [
-	{ "file": "lib/intake-render-vals.mjs", "find": "for ( const t of assigned ? [ ...terms ].reverse() : terms ) {", "replace": "for ( const t of [ ...terms ].reverse() ) {", "why": "the first return that holds a key decides it (an early return is read before a later one)" },
-	{ "file": "lib/intake-render-vals.mjs", "find": "const hit = find( idx, t.merge, key, depth + 1, true );", "replace": "const hit = find( idx, t.merge, key, depth + 1, false );", "why": "inside one Object.assign merge the last writer wins" }
+	{ "file": "lib/intake-render-vals.mjs", "find": "for ( const terms of rootDataByReturn( idx ) ) {", "replace": "for ( const terms of [ rootDataByReturn( idx ).flat() ] ) {", "why": "the first return statement that holds a key decides it (an early return is read before a later one)" },
+	{ "file": "lib/intake-render-vals.mjs", "find": "for ( const t of [ ...terms ].reverse() ) {", "replace": "for ( const t of terms ) {", "why": "inside one return expression (a field reassigned in update(), a merge's arguments) the last writer wins" },
+	{ "file": "lib/intake-render-vals.mjs", "find": "const hit = find( idx, t.merge, key, depth + 1 );", "replace": "const hit = find( idx, [ ...t.merge ].reverse(), key, depth + 1 );", "why": "inside one Object.assign merge the last writer wins" }
 ]

@@ -1,13 +1,17 @@
 [
-	{ "file": "lib/intake-state.mjs", "find": "'this' === c.ident ? new Function( `this.setState(${ c.args });` ).call( logic ) : ", "replace": "", "why": "`this` is a reserved word: a setState call on `this` is bound with call, not named as a parameter" },
-	{ "file": "lib/intake-state.mjs", "find": "if ( ! root || 'function' !== typeof fn ) {\n\t\t\t\tcontinue;", "replace": "if ( ! root || 'function' !== typeof fn ) {\n\t\t\t\treturn 0;", "why": "a store call whose root the draft does not define is skipped, so the setState way behind it still runs" },
-	{ "file": "lib/intake-state.mjs", "find": "return ran ? 1 : 0;", "replace": "return 1;", "why": "store calls that all failed to run reach nothing" },
-	{ "file": "lib/intake-store-calls.mjs", "find": "'this' !== m[ 1 ] && 'setState'", "replace": "'setState'", "why": "a call on this is no store call" },
-	{ "file": "lib/intake-store-calls.mjs", "find": "const inner = ", "replace": "const inner = body; const unused = ", "why": "a single-quoted string is decoded (an escaped quote, an unescaped double quote)" },
-	{ "file": "lib/intake-store-calls.mjs", "find": "loose = '';\n\t\ti = j;", "replace": "i = j;", "why": "the text before a string is rewritten once, outside the string" },
-	{ "file": "lib/intake-state.mjs", "find": "const storeKey = slot || '';", "replace": "const storeKey = '';", "why": "the store snapshot belongs to its slot: a restore of another slot rolls nothing back" },
-	{ "file": "lib/intake-state.mjs", "find": "Object.values( ss.roots ).forEach( ( rep ) => put( rep, done ) );", "replace": "", "why": "a restore puts back the store's in-memory data, not only the storage" },
-	{ "file": "lib/intake-state.mjs", "find": "obj[ k ] = r.items ? r.obj : r.leaf;", "replace": "obj[ k ] = r.leaf;", "why": "a nested object of the store is put back as the same object the page's closures hold" },
-	{ "file": "lib/intake-state.mjs", "find": "if ( patch.once && ss.once.includes( patch.once ) ) {", "replace": "if ( false ) {", "why": "a precondition named once runs once however often it is applied" },
-	{ "file": "lib/intake-state.mjs", "find": "delete storeSnaps[ storeKey ];", "replace": "", "why": "a restore ends the open: the precondition runs again at the next one" }
+	{"file": "lib/intake-state.mjs", "find": "'this' === c.ident ? new Function( `this.setState(${ c.args });` ).call( logic ) : ", "replace": "", "why": "`this` is a reserved word: a setState call on `this` is bound with call, not named as a parameter"},
+	{"file": "lib/intake-state.mjs", "find": "if ( ! root ) {\n\t\t\t\tcontinue;", "replace": "if ( ! root ) {\n\t\t\t\treturn 0;", "why": "a store call whose root the draft does not define is skipped, so the setState way behind it still runs"},
+	{"file": "lib/intake-state.mjs", "find": "return ran ? 1 : 0;", "replace": "return 1;", "why": "store calls that all failed to run reach nothing"},
+	{"file": "lib/intake-store-calls.mjs", "find": "'this' !== m[ 1 ] && 'setState'", "replace": "'setState'", "why": "a call on this is no store call"},
+	{"file": "lib/intake-store-calls.mjs", "find": "const value = jsString( body );", "replace": "const value = body;", "why": "a single-quoted string is decoded (an escaped quote, an unescaped double quote)"},
+	{"file": "lib/intake-store-calls.mjs", "find": "loose = '';\n\t\ti = j;", "replace": "i = j;", "why": "the text before a string is rewritten once, outside the string"},
+	{"file": "lib/intake-state.mjs", "find": "const storeKey = slot || '';", "replace": "const storeKey = '';", "why": "the store snapshot belongs to its slot: a restore of another slot rolls nothing back"},
+	{"file": "lib/intake-state.mjs", "find": "Object.values( ss.roots ).forEach( ( rep ) => put( rep, done ) );", "replace": "", "why": "a restore puts back the store's in-memory data, not only the storage"},
+	{"file": "lib/intake-state.mjs", "find": "obj[ k ] = r.items ? r.obj : r.leaf;", "replace": "obj[ k ] = r.leaf;", "why": "a nested object of the store is put back as the same object the page's closures hold"},
+	{"file": "lib/intake-state.mjs", "find": "const onceDone = patch.once && ss.once.includes( patch.once );", "replace": "const onceDone = false;", "why": "a precondition named once runs once however often it is applied"},
+	{"file": "lib/intake-state.mjs", "find": "delete storeSnaps[ storeKey ];", "replace": "", "why": "a restore ends the open: the precondition runs again at the next one"},
+	{"file": "lib/intake-state.mjs", "find": "if ( 'function' !== typeof fn ) {\n\t\t\t\treturn 0;", "replace": "if ( 'function' !== typeof fn ) {\n\t\t\t\tcontinue;", "why": "a store call whose root is defined but whose method is missing reaches nothing"},
+	{"file": "lib/intake-state.mjs", "find": "filter( ( k ) => ! rep.keys.has( k ) )", "replace": "filter( ( k ) => ! ( k in rep.items ) )", "why": "a restore deletes only keys the store did not have at snapshot time, so a getter survives"},
+	{"file": "lib/intake-state.mjs", "find": "obj.clear();", "replace": "", "why": "a restore puts back the contents of a Map or Set"},
+	{"file": "lib/intake-state.mjs", "find": "const onceDone = patch.once && ss.once.includes( patch.once );", "replace": "const onceDone = patch.once && ss.once.includes( patch.once );\n\t\tif ( onceDone ) {\n\t\t\treturn 1;\n\t\t}", "why": "a once key already done skips only the store calls, not the component calls"}
 ]

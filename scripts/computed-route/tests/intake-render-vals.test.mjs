@@ -31,6 +31,15 @@ test( 'MUST FAIL (return order): the first return that holds a key decides it, a
 	assert.equal( renderValNode( two, 'absent' ), null );
 } );
 
+test( 'MUST FAIL (reassigned field): a field set in the constructor and again in update() reads its latest object, so the width ternary beats the stale initial value; separate returns stay first first', () => {
+	const logic = 'class Component {\n  constructor() { this.vals = { show: \'none\', old: 1 }; }\n  update() { this.vals = { show: this.state.w >= 100 ? \'flex\' : \'none\' }; }\n  renderVals() {\n    if ( this.state.compact ) {\n      return { gate: \'first\' };\n    }\n    return this.vals;\n  }\n}';
+	const two = parseLogic( logic, 1 );
+	assert.equal( renderValNode( two, 'show' ).type, 'ConditionalExpression', 'the latest assignment wins inside one return expression' );
+	assert.equal( renderValNode( two, 'old' ).value, 1, 'a key only the earlier assignment holds is still found' );
+	const split = parseLogic( 'class Component {\n  constructor() { this.vals = { show: \'none\' }; }\n  update() { this.vals = { show: this.state.w >= 100 ? \'flex\' : \'none\' }; }\n  renderVals() {\n    if ( this.state.compact ) {\n      return this.vals;\n    }\n    return { show: \'later\' };\n  }\n}', 1 );
+	assert.equal( renderValNode( split, 'show' ).type, 'ConditionalExpression', 'the first return that holds the key decides, across separate returns' );
+} );
+
 test( 'MUST FAIL (ternary test): the node keeps the ternary, not its branches', () => {
 	assert.equal( renderValNode( idx, 'phoneDisplay' ).type, 'ConditionalExpression' );
 } );
