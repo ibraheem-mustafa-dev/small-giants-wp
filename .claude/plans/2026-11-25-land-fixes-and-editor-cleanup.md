@@ -12,8 +12,8 @@ created: 2026-11-25
 
 **How it runs:**
 - Up to 8 workers per session (Claude Code's limit); the editor lane can run in a second session with its own 8 (Bean, 2026-11-25). Launch order, deadline first: A1, A2, A3, A4, B, C, D, F, L. As slots free: G1, then R1, R2, G2 and S when their branches have merged, then the editor lane W1 to W4. Agent-tool subagents (worker API credits are exhausted).
-- Heavy runs (sweeps, browsers, render-check, plugin builds, multi-block record checks) go through `scripts/computed-route/tools/heavy-slot.mjs run`: a first-come-first-served queue kept in the main checkout's `.claude/queue.md` (both sessions and every worker; nobody edits it by hand), two slots, and a third only after a ten-minute wait from the top of the queue when CPU is under 70% busy and 8 GB of memory and 10 GB on C: are free (Bean, 2026-11-25). One heavy job never takes two slots (Bean): a sweep runs inside `run` without `--slot-dir`. A look build runs 2 workers (`SGS_LOOK_JOBS`). A build only to look at or render-check is `npx wp-scripts build --experimental-modules --webpack-copy-php` (two minutes); `npm run build` runs every gate (26 minutes) and is for proving the gates. The full suite runs only in the main session, alone.
-- Workers commit on `fix/<label>` in `E:\sgs-tmp\wt-<label>`; temp, the record cache and scratch are on E:. Each branch is proven by its own targeted tests and mutations (no slot) and, only where its evidence is a Fill output, one sweep of the surfaces it changes on the branch alone, compared with the shared main baseline (never a base run of its own). The main session code-reviews each branch, and every first review found 4 to 10 real faults per branch and every second review of the fix commits found 2 to 5 more, so both reviews run before merging. Branches are then merged and proven in batches (Bean, 2026-11-26: per-branch whole suites and base sweeps filled the heavy queue): the reviewed branches merge onto `fix/land-batch-<n>` from `main`; one whole non-browser route suite and one sweep of every surface of all three clients run on it, compared with the shared baseline sweep of the `main` it was cut from; a regression is traced to its branch by the files it touches; then the batch fast-forwards `main`, and its sweep becomes the next baseline. Anything that writes to Mama's live shop (its saved-content migrations) keeps its own scratch-mirror proof.
+- Heavy runs (sweeps, browsers, render-check, plugin builds, multi-block record checks) go through `scripts/computed-route/tools/heavy-slot.mjs run`: a first-come-first-served queue kept in the main checkout's `.claude/queue.md` (both sessions and every worker; nobody edits it by hand), two slots, and a third only after a ten-minute wait from the top of the queue when CPU is under 70% busy over a five-second average and 8 GB of memory and 10 GB on C: are free (Bean, 2026-11-25). One heavy job never takes two slots (Bean): a sweep runs inside `run` without `--slot-dir`. A look build runs 2 workers (`SGS_LOOK_JOBS`). A build only to look at or render-check is `npx wp-scripts build --experimental-modules --webpack-copy-php` (two minutes); `npm run build` runs every gate (26 minutes) and is for proving the gates. The full suite runs only in the main session, alone.
+- Workers commit on `fix/<label>` in `E:\sgs-tmp\wt-<label>`; temp, the record cache and scratch are on E:. Each branch is proven by its own targeted tests and mutations (no slot) and, only where its evidence is a Fill output on a surface the batch sweep does not fill, one sweep of that surface on the branch alone, compared with the shared main baseline (never a base run of its own); a surface the batch sweep fills is proven there, never by a per-branch sweep. The main session code-reviews each branch, and every first review found 4 to 10 real faults per branch and every second review of the fix commits found 2 to 5 more, so both reviews run before merging. Branches are then merged and proven in batches (Bean, 2026-11-26: per-branch whole suites and base sweeps filled the heavy queue): the reviewed branches merge onto `fix/land-batch-<n>` from `main`; one whole non-browser route suite and one sweep of every surface of all three clients run on it, compared with the shared baseline sweep of the `main` it was cut from; a regression is traced to its branch by the files it touches; then the batch fast-forwards `main`, and its sweep becomes the next baseline. Anything that writes to Mama's live shop (its saved-content migrations) keeps its own scratch-mirror proof.
 - After each merge group the main session reseeds the shared DB, regenerates the setting records (`check.py --changed --write`), applies the README text workers report, and runs the merged branches' tests.
 - Merge order for the three conflicts: rf9 keeps both sides of `tools/run-tests.mjs`; rf5 before rf6 (`fill-prop.mjs`, `fill-resolve-element.mjs`); rf3 before rf7 (`skeleton-classify.mjs`).
 - Deploys (Bean, 2026-11-25): Mama's live shop is brought up to date with `main` once now (backup, render-scope from its deployed commit, render-check on the states that lists, basket/checkout/account checks before and after), then paused until this plan is complete. `eye-care-test` is a test site and deploys with the others.
@@ -22,22 +22,31 @@ created: 2026-11-25
 
 **Risks:** C: has about 12 GB free; temp, the record cache and scratch are all on E: now. Tracks B, C and D each edit a different part of `lib/setting-record.mjs`, and C and D different functions of `site_look.py`.
 
-## Where it stands (2026-11-26)
+## Where it stands (2026-11-26, afternoon)
 
-`main` carries the merged branches below; each was code-reviewed, its review faults fixed and its tests and mutations proven. The baseline sweep of `main` (at `58b2b773c`) is `E:\sgs-tmp\general-cloning\baseline-main`, and every track compares against it: 10 of 15 Fills usable; the headers and Indus home failed for want of the nav-bar-menu look (fixed on `main` by `fix/nav-look`), and Eye Care's mega-menu-help and mega-menu-brands need `--allow-external`.
+`main` carries the merged branches below; each was code-reviewed twice, its review faults fixed and its tests and mutations proven. The next batch, `fix/land-batch-1`, is proven against the baseline sweep of `main` at `ea46d5b3b` (`E:\sgs-tmp\general-cloning\baseline-ea46d5b3b`, queued; its worktree `wt-baseline-ea46d5b3b` was moved to `main` `747193830` before it started). The earlier baseline `E:\sgs-tmp\general-cloning\baseline-main` (at `58b2b773c`) is superseded by it.
 
 **Merged on `main`:** rf10, rf5, rf3, rf2, rf4, rf9, rf1, rf6, rf8, `fix/pagemap-draft-routes` (`161c5a8b9`: a page's parent follows the draft's own routes; Indus's 16 menu-parented pages are top-level, and on `indus-test` they move to top-level addresses with no redirect at the next site build), B (`fix/b-runstop`, so `properties` plus `lib/css-families.mjs::paintedProps` is the one multi-property mechanism and L rebases onto it), G1 (`dfa7e821b`), `fix/main-regressions` (the guard `tests/intake-committed-current.test.mjs` fails when a committed intake record is out of date), `fix/form-pairing-test`, `fix/nav-look` (the site-look Reader keeps 8 pages least-recently-used, so the `sgs/nav-bar-menu` look builds in about 0.64 GB; `prepareLooks` retries only a failure that looks like running out of room), the fill-diagram fix (`d270e7a49`: the in-page measurer takes `PX_TOL` as an argument), the shared site-look store (`747193830`: looks are reused across checkouts from `E:/sgs-tmp/look-store` by a content key that now also covers the cascade reader, the bridge and its imports, the framework DB with its WAL, and the php, node and sass versions), and the second-review fixes of rf2, rf3, rf4, rf5 and rf6. The shared framework DB was reseeded for rf5 (`block_attributes.owns_css`). The full suite on `main` (browser tests included, `E:\sgs-tmp\tmp-fullsuite\suite.log`) had 7 failures; each failing file passes on `main` at `d270e7a49`, so the only known failure left is the timing-sensitive font-wait test (`MUST FAIL (b): the font wait reads a late font loaded`).
 
+**Deploys are blocked on every target** until `fix/verdicts-refresh` lands: the full-tier gate `setting-record-changed-proof` fails because 17 blocks' browser verdicts (`plugins/sgs-blocks/scripts/setting-record/browser/verdicts/*.json` `scriptHash`) are stale on `main` too. Nothing was deployed on 2026-11-26; Mama's live shop still runs the build at `ed5effd01` (`wt-mamas-deployed`).
+
 | Branch / job | Worktree under `E:\sgs-tmp` | State |
 |---|---|---|
-| `fix/rf7-shop-forms` | `wt-rf7-shop-forms` | ready since Track A3 (6 stale markers re-aimed, `u9-planted-draft` assertion added, 68/68 changed tests); next: rebase onto `main` (147 commits behind), code review, whole non-browser suite, merge (S, Task 15, waits on it) |
-| `fix/f-mega` | `wt-f-mega` | fixing the 40 kept-unnamed tile paints and adding a `subtitle` role for the mega-menu card subtitle; then the Fill proof with `--records E:/sgs-tmp/general-cloning/records-fmega`, review, merge |
-| `fix/d-readings` | `wt-d-readings` | review faults fixed; second review confirmed the account merge keeps every width's look and the record lost nothing; fixing its findings (bare-number padding, a refused sweep still settling looks, unstable record samples) and cutting the per-value look reads; proofs queued (`heavy-chain5.sh` same-main base, `heavy-chain6.sh` account merge on a scratch mirror). Merge gate: one full site look build (`site_look.py --all`, one client) timed on `main` and on the branch on a quiet machine; merge before the deadline clones only if the branch adds under 15 minutes per site, otherwise after them; report `E:/sgs-tmp/general-cloning/build/d-readings/REPORT.md` |
-| `fix/c-parts` | `wt-c-parts` | done and proven (Mama's drawer pairing lines 8 to 0, Eye Care 2 to 0); not yet code reviewed; report `E:/sgs-tmp/general-cloning/build/c-parts/REPORT.md` |
-| `fix/l-layout` | `wt-l-layout` | fixing 6 first-review faults (`pictureRoom`, `withSizing` own and parent facts, retrack width-only cells, columns write, host-band check) on B's `properties` mechanism; then second review, whole suite, merge, regenerate setting records, render-scope, render-check the Indus hero unwrap |
-| `fix/cart-trigger` (A4) | `wt-cart-trigger` | full build with gates passed; the render-check of Mama's header has not run; not code reviewed since the gate fixes |
-| Second reviews | | rf9 walker fixes, rf1 menu-hover fixes and rf10 coverage fixes are under review (read-only) |
-| Mama's live-shop update | frozen target `wt-mamas-target` at `9c35674e9` | render-check passed (one hover-timing difference on the order-received badge; cart code unchanged); DB backup `mamasmunches.com-20261126-111022-pre-deploy-20261126.sql.gz` and basket, checkout and account records (`E:\sgs-tmp\tmp-mamas-update\shop-before`) taken; `build-deploy.py --target mamas-test` queued as `mamas-deploy` (Bean's go, 2026-11-26); then the same checks into `shop-after`, then Mama's deploys pause until this plan is done |
+| `fix/review2-rf1910` | `wt-review2-rf1910` | second-review fixes of rf1, rf9 and rf10 built; three mutation runs running (logs `E:/sgs-tmp/general-cloning/build/review2-rf1910/b2-*.log`); then batch 1 |
+| `fix/f-mega` | `wt-f-mega` | done: two reviews and their fixes; batch 1; Bean eyeballs Eye Care's brands cards |
+| `fix/cart-trigger` (A4) | `wt-cart-trigger` | done: two reviews and their fixes, plus a temporary read-only deploy guard (`deploy_cart_trigger_guard.py`) that refuses a deploy while saved content still holds the old trigger keys (options and postmeta included, JSON-escaped and serialised forms); batch 1. Live order: backup, copy the sweep to the server, dry run, apply, deploy |
+| `fix/c-parts` | `wt-c-parts` | review fixes done and rebased; its variant-floor survey (`c-parts-survey`) queued; then batch 1 |
+| `fix/l-layout` | `wt-l-layout` | done (tip `6a09a2a87`): first and second review fixes, the hero's `contentWidth` taken from the capped wrapper; proof is the batch sweep (indus-foods/home); Bean eyeballs the Indus hero |
+| `fix/d-readings` | `wt-d-readings` | second-review fixes and look-read speed cuts done; the account merge proven on a scratch mirror (written, read back, idempotent, 0 old names left); look-build timing running (`d-readings-looktime`); merges before the deadline clones only if it adds under 15 minutes per site |
+| `fix/rf7-shop-forms` | `wt-rf7-shop-forms` | rebased (936/936 related tests); code review found 1 confirmed fault (wizard forms lose field widths) and 3 plausible ones; its worker is fixing them |
+| `fix/s-shop` | `wt-s-shop` | Track S (Task 15) building on top of rf7 |
+| `fix/g2-trustbar` | `wt-g2-trustbar` | Track G2 (Task 6) building, including the trust bar's `edit.js` change for the stored marquee value and a ticker migration |
+| `fix/e1-restores` | `wt-e1-restores` | restore track R1 done (link-only lists, slider visible-card count `lib/fill-visible-count.mjs`, `dcLogic` reach calls); in code review; proof is the batch sweep <!-- dangling-ok: files that exist only on their branch --> |
+| `fix/e2-restores` | `wt-e2-restores` | restore track R2 building |
+| `fix/look-fast` | `wt-look-fast` | Task 31 parts 1 and 2 building; byte-identity proof queued |
+| `fix/verdicts-refresh` | `wt-verdicts` | browser re-measure of the 17 blocks' verdicts running (priority, outside the queue with 3 tabs); unblocks every deploy |
+| `fix/ci-route-tests` | `wt-ci` | GitHub Actions route suite (the repo is public, so runners are free), iterating; failures so far: the DB-build step killed with exit 143 (likely its own `concurrency: cancel-in-progress` while it pushed often) and a SyntaxError in `scripts/computed-route/tools/ci-summary.mjs`; not merged <!-- dangling-ok: files that exist only on their branch --> |
+| Mama's live-shop update | frozen target `wt-mamas-target` at `9c35674e9` | render-check passed; DB backup `/home/u945238940/backups/db/mamasmunches.com-20261126-111022-pre-deploy-20261126.sql.gz` and basket, checkout and account records (`E:\sgs-tmp\tmp-mamas-update\shop-before`) taken. Two deploy attempts stopped before upload, so the shop is untouched: the first because the frozen copy had no `scripts/computed-route/node_modules` (now copied in), the second on the stale verdicts above. After `fix/verdicts-refresh` lands: cherry-pick its verdict and record files onto the frozen copy (the 17 blocks' `src/blocks/<b>` and `src/shared` do not differ between `9c35674e9` and `main`), rerun `build-deploy.py --target mamas-test`, run `NODE_PATH=scripts/computed-route/node_modules node sites/mamas-munches-redesign/build/content/shop-check.cjs https://mamasmunches.com E:/sgs-tmp/tmp-mamas-update/shop-after`, compare with `shop-before`, then pause Mama's deploys until this plan is done |
 
 **Decisions this session:**
 - A parent-page change to an already built, published page is reported and never applied on a site-build rerun; new pages and rows take the page map's parent (main session, rf8 second review).
@@ -46,6 +55,7 @@ created: 2026-11-25
 - Before each site's next deploy, run render-scope and render-check for G1 (Task 10).
 - Merge note (editor lane, 2026-11-26): Stage E2 item 3 (W5) moves 8 blocks (card-grid, feature-grid, post-grid, pricing-table, tabs, testimonial-slider, product-card margin, form-step padding) from `style.spacing` to block-owned `padding`/`margin` and changes any route writer in `scripts/computed-route/lib` that writes `style.spacing` for them; it lands after the deadline tag, so the clone writers it touches are re-proven in that batch.
 - Follow-up, not blocking: `setting-record/diff.py::compiled_scss` caches compiled Sass by file name and its own source only, so editing a partial can reuse stale CSS in a look (now spread by the look store); fix it together with a setting-record regeneration, since `stamp.py` hashes that module.
+- Follow-up, not blocking: `plugins/sgs-blocks/scripts/deploy_ship.py`'s isolation step silently skips a `node_modules` link source that is missing (a deploy from a worktree without `scripts/computed-route/node_modules` then fails later with an unclear error, as Mama's first update attempt did on 2026-11-26); fix it to fall back to the main checkout's folder through the git common dir, or to stop with a clear message.
 - Follow-up, not blocking: 82 old `content-setting:` gap rows in `scripts/computed-route/data/clone-coverage.json` name settings the DB no longer holds as content; `content-coverage.mjs` (run by hand only) flags them.
 
 ## Deadline lane
@@ -64,21 +74,21 @@ Changes: A1 (rf1, rf6), A2 (rf2, rf3, rf4, rf5, rf8), A3 (rf7, rf9, rf10), A4 (c
 
 Done when: all 11 branches are merged, the full suite passes, `check-mutation-lists.mjs` shows 0 new, and A4's render-check shows Mama's header unchanged.
 
-Depends on: none. Status: 9 of the 11 groups are merged (rf1 to rf6, rf8, rf9, rf10) with every second-review fix but rf1, rf9 and rf10's (`fix/review2-rf1910`, proof batch running); rf7 is being rebased onto main (`fix/rf7-shop-forms`); A4 (`fix/cart-trigger`) passed both reviews and joins batch 1.
+Depends on: none. Status: 9 of the 11 groups are merged (rf1 to rf6, rf8, rf9, rf10) with every second-review fix but rf1, rf9 and rf10's (`fix/review2-rf1910`, mutation runs running, then batch 1); rf7 is rebased onto `main` and its worker is fixing what its code review found (1 confirmed fault, 3 plausible); A4 (`fix/cart-trigger`) passed both reviews and joins batch 1.
 
 ### Task 3: Track C, every block part findable
 Brief `c-parts.md` (`i15`, `i5`).
 
 Done when: 0 `paint pairing` lines on Mama's and Eye Care's drawers, and Mama's trust-strip icon colour is written.
 
-Depends on: none. Status: built and proven (Mama's drawer 8 to 0, Eye Care 2 to 0); code review pending.
+Depends on: none. Status: built and proven (Mama's drawer 8 to 0, Eye Care 2 to 0); review fixes done and rebased; its variant-floor survey is queued, then batch 1.
 
 ### Task 4: Track D, choice readings, underlines, the account merge
 Brief `d-readings.md` (`i10`, `i7`).
 
 Done when: Mama's 7 underline ties and Eye Care's 2 trust-bar ties resolve.
 
-Depends on: none. Status: built; its worker is fixing 6 faults from the first review.
+Depends on: none. Status: both reviews' fixes and the look-read speed cuts done; the account merge proven on a scratch mirror; the look-build timing decides whether it merges before the deadline clones (see "Where it stands").
 
 ### Task 5: Track G1, render fixes on every site
 Brief `g1-render.md` (`i9`, `i13`): card grid logos, product card placeholder, brand strip `sizes`. "Even visual size" and "Trim empty edges" moved to Task 11 (W4).
@@ -88,32 +98,32 @@ Depends on: none. Status: merged (`dfa7e821b`: the card grid's frame owns paddin
 ### Task 6: Track G2, the trust bar's clone-relevant fixes
 Brief `g2-trustbar.md` (`i12`, `i3`): one stored marquee value, Fill writing the draft's marquee condition, icon fill colours reaching path fills (also `sgs/icon`, `sgs/button`, `sgs/cart`). The editor features moved to Task 11 (W4).
 
-Depends on: rf1, rf5, rf6 merged (all three are). Status: building (`fix/g2-trustbar`, started 2026-11-26).
+Depends on: rf1, rf5, rf6 merged (all three are). Status: building (`fix/g2-trustbar`, started 2026-11-26), including the trust bar's `edit.js` change for the stored marquee value (the editor lane rebases onto it) and a ticker migration of saved content (run in Task 10).
 
 ### Task 7: Track B, a look the clone cannot place never stops the run
 Brief `b-runstop.md` (`i2`).
 
-Depends on: none (the account shadows wait for Task 4). Status: built; review fixes done, Indus form sweeps queued.
+Depends on: none (the account shadows wait for Task 4). Status: merged (`fix/b-runstop`).
 
 ### Task 8: Restore tracks R1 and R2 (briefs `e1-restores.md`, `e2-restores.md`; not the editor lane's Stages E1 and E2)
 Briefs `e1-restores.md`, `e2-restores.md` (`i6`). Commits already ported on the branches are skipped.
 
-Depends on: R1 needs rf4 and rf10 merged (both are); R2 needs rf4 and rf6 (both are). Status: building (`fix/e1-restores`, `fix/e2-restores`, started 2026-11-26).
+Depends on: R1 needs rf4 and rf10 merged (both are); R2 needs rf4 and rf6 (both are). Status: R1 built and in code review (`fix/e1-restores`; its proof is the batch sweep); R2 building (`fix/e2-restores`).
 
 ### Task 9: Track F, the mega menu
 Brief `f-mega.md` (`i4`; Bean approved both rules, 2026-11-25).
 
-Depends on: none. Status: built; review fixes done, the Fill proof of `mega-menu-brands` is running.
+Depends on: none. Status: done (two reviews and their fixes); joins batch 1; Bean eyeballs Eye Care's brands cards.
 
 ### Task 14: Track L, the layout items
 Brief `l-layout.md`: the Indus hero unwrap and grid tracks, Mama's header order, the logo `maxHeight`, social icon sizes, and `sgs/media` ratio and height. These are the five items of the never-started `layout` branch.
 
-Depends on: none. Status: items 1 to 3 and 5 proven; item 4 (social icons) is being fixed; code review pending.
+Depends on: none. Status: done (`fix/l-layout` at `6a09a2a87`, two reviews and their fixes); its proof is the batch sweep (indus-foods/home); Bean eyeballs the Indus hero.
 
 ### Task 15: Track S, the shop pieces MIC needs
 Brief `s-shop.md`: `part-look.mjs` as a run stage, a template card's `variantStyle` and related cards, the buy-box layout write (FR-48-60).
 
-Depends on: rf7 and rf8 merged (rf8 is; rf7 is being rebased). Status: not started; starts when rf7 merges.
+Depends on: rf7 and rf8 merged (rf8 is; rf7 is fixing its review faults). Status: building on top of rf7 (`fix/s-shop`).
 
 ### Task 16: SGS and MIC sites (main session, with Bean)
 Why: no draft, deploy target, route target, secrets file or local mirror exists for SGS or MIC. The LEDGER names their hosting entries (`lightgreen-whale-237337`, `palegreen-goose-450620`); nothing is created on the hosting account until Bean says so.
@@ -129,7 +139,8 @@ Changes:
 - Tag the deadline lane's head `deadline-proof-2026-11-27` (the editor lane merges only after it).
 - Run the full suite alone, one sweep against `baseline-main`, render-scope, then render-check on the states the tracks named.
 - Run render-scope from each test site's deployed commit to the tag.
-- Run the saved-content migrations each test site needs (cart trigger, account merge, marquee bars), in order with backups.
+- Run the saved-content migrations each site needs, in this order, each after a DB backup: the cart trigger (A4: backup, copy the sweep to the server, dry run, apply, then deploy; its temporary guard `deploy_cart_trigger_guard.py` refuses a deploy while old trigger keys remain), the account merge (D), the ticker and marquee bars (G2).
+- Refresh `eye-care-test`'s read-only mirror before its render check: its content changed on 2026-11-26 (posts 199 and 11, the trust bar's `pauseOnTouch:true` became `touchPause:"hold"`, the editor lane's change at Bean's request; backup `/home/u945238940/backups/db/darkcyan-grouse-898606.hostingersite.com-20261126-125857-before-touch-hold.sql.gz`).
 - Deploy `sandybrown`, `indus-test` and `eye-care-clone-test` (`build-deploy.py --target a,b,c`).
 - Before eye-care-test's next deploy, cover its own pages: `local-eye-care` is a copy of eye-care-clone-test, not of eye-care-test, so no other mirror holds its pages (its home's `sgs/google-reviews` slider, and the card-grid, product-card, brand-strip and media changes G1 made). Its read-only scratch mirror is `local-mediatest-eyecaretest` (port 8130, registered in the gitignored `calibration-targets.local.json`); if it is gone, rebuild it through `heavy-slot.mjs run`: `scratch-mirror.sh create local-eye-care local-mediatest-eyecaretest 8130`, then `refresh-from-remote.sh local-mediatest-eyecaretest eye-care-test` (reads the site only), then `scratch-mirror.sh target local-mediatest-eyecaretest eye-care-test`. Include it in render-scope `--mirrors` and run render-check from it.
 - Before each site's next deploy, run render-scope and render-check for G1 (merged `dfa7e821b`: card-grid, product-card, brand-strip and the shared media emitters reach every site; Mama's shop templates and Eye Care's mega menus hold them).
@@ -138,7 +149,7 @@ Changes:
 
 Done when: every named surface improves and none gets worse, the rehearsal passes within the time left, and Bean's eye check passes. Then clone SGS and MIC.
 
-Depends on: 2 to 9, 14 to 16. Status: started with Mama's live-shop update and the baseline sweep (see "Where it stands"); the rest waits on Tasks 2 to 9 and 14 to 16.
+Depends on: 2 to 9, 14 to 16. Status: started with Mama's live-shop update (blocked with every deploy on the stale verdicts) and the batch baseline sweep (see "Where it stands"); the rest waits on Tasks 2 to 9 and 14 to 16.
 
 ## Editor lane (builds now, merges after Task 10's tag)
 
