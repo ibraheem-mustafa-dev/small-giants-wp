@@ -13,7 +13,7 @@ the mechanism is ONE shared implementation:
 The visible button is an OPTION, off by default on every block (Bean, 2026-10-13): sites that
 must meet 2.2.2 (public-sector clients) switch it on. Keyboard-focus pause is always on. So a
 block that runs automatic motion must: call initMotionPause() in its view (focus, hover and
-touch pause; a view that runs through shared/carousel's createCarousel() or createAutoplay() has made the call), call sgs_motion_pause_button() in its render (gated by the option), declare the
+touch pause; a view that runs through shared/carousel's createAutoplay(), or through createCarousel() with an `autoplay` option, has made the call), call sgs_motion_pause_button() in its render (gated by the option), declare the
 option as a boolean block.json attribute named `pauseButton` or `<prefix>PauseButton` with
 default false, and give it an inspector control (the attribute is named in its edit source). A
 block that draws its own pause button (a second design, a second set of semantics) is flagged
@@ -96,9 +96,12 @@ PENDING: frozenset[str] = frozenset()
 
 OPTION_NAME = re.compile(r"^(?:pauseButton|[a-z][A-Za-z0-9]*PauseButton)$")
 RENDER_CALL = re.compile(r"\bsgs_motion_pause_button\s*\(")
-# `createAutoplay` and `createCarousel` (src/shared/carousel/index.js) call initMotionPause themselves, so a view that
-# runs its autoplay through the shared carousel runtime has made the call.
-VIEW_CALL = re.compile(r"\b(?:initMotionPause|createAutoplay|createCarousel)\s*\(")
+# `createAutoplay` (src/shared/carousel/index.js) calls initMotionPause itself, so a view that runs its autoplay through it
+# has made the call. `createCarousel` does so only when its options carry `autoplay` (it starts no clock otherwise), so a
+# view that calls it counts only when it names that option, or has no timer of its own that the pause would have to hold.
+VIEW_CALL = re.compile(r"\b(?:initMotionPause|createAutoplay)\s*\(")
+CAROUSEL_CALL = re.compile(r"\bcreateCarousel\s*\(")
+CAROUSEL_AUTOPLAY = re.compile(r"\bautoplay\s*:")
 RENDER_HANDROLLED = re.compile(r"class=\\?[\"'][^\"']*__pause\b")
 # A button the view module builds itself and names or classes as a pause control.
 VIEW_BUTTON = re.compile(
@@ -144,7 +147,11 @@ def scan_block(block_dir: Path) -> dict:
         "option_default": option_default,
         "option_control": bool(option and re.search(r"(?<![A-Za-z0-9_])" + re.escape(option) + r"(?![A-Za-z0-9_])", edit)),
         "render_call": bool(RENDER_CALL.search(render)),
-        "view_call": bool(VIEW_CALL.search(view)),
+        "view_call": bool(VIEW_CALL.search(view))
+        or bool(
+            CAROUSEL_CALL.search(view)
+            and (CAROUSEL_AUTOPLAY.search(view) or "js-timer" not in signals)
+        ),
         "handrolled_render": bool(RENDER_HANDROLLED.search(render)),
         "handrolled_view": bool(VIEW_BUTTON.search(view)),
     }
@@ -282,6 +289,12 @@ def self_test() -> int:
         # Negative: a view that runs its autoplay through the shared carousel runtime.
         _write(blocks, "shared-carousel/render.php", good_render)
         _write(blocks, "shared-carousel/view.js", "import { createCarousel } from '../../shared/carousel/index.js';\ncreateCarousel( { root } );")
+        # Positive: createCarousel called with no autoplay option beside a timer of the view's own: nothing holds that timer.
+        _write(blocks, "carousel-own-timer/render.php", good_render)
+        _write(blocks, "carousel-own-timer/view.js", "import { createCarousel } from '../../shared/carousel/index.js';\ncreateCarousel( { root } );\nsetInterval( tick, 5000 );")
+        # Negative: createCarousel with an autoplay option runs its clock through the pause.
+        _write(blocks, "carousel-autoplay/render.php", good_render)
+        _write(blocks, "carousel-autoplay/view.js", "import { createCarousel } from '../../shared/carousel/index.js';\ncreateCarousel( { root, autoplay: { speed: 5000 } } );\nsetInterval( tick, 5000 );")
         # Negative: a media player's own play/pause button, no automatic motion.
         _write(blocks, "player/view.js", "const b = document.createElement( 'button' ); b.ariaLabel = 'Pause track';")
         # Positive: a '/*' inside a string must not hide the timer after it.
@@ -289,7 +302,7 @@ def self_test() -> int:
         # Exemption applied, plus one stale exemption.
         _write(blocks, "shimmer/style.css", ".s { animation: shimmer 1.5s infinite; }")
         exempt = {("shimmer", "css-loop"): ("loading", "fixture"), ("gone", "css-loop"): ("deferred", "fixture")}
-        for wired_block in ("handrolled", "timer-good", "handrolled-view", "dots", "shared-carousel"):
+        for wired_block in ("handrolled", "timer-good", "handrolled-view", "dots", "shared-carousel", "carousel-own-timer", "carousel-autoplay"):
             option(wired_block)
         # Positive: the option defaults to on.
         _write(blocks, "default-on/render.php", good_render)
@@ -313,12 +326,14 @@ def self_test() -> int:
             ("view-built dot buttons are not", by["dots"]["verdict"] == "COMPLIANT"),
             ("timer-good is compliant", by["timer-good"]["verdict"] == "COMPLIANT"),
             ("a view on the shared carousel runtime counts as calling the pause helper", by["shared-carousel"]["verdict"] == "COMPLIANT"),
+            ("createCarousel with an autoplay option counts", by["carousel-autoplay"]["verdict"] == "COMPLIANT"),
+            ("createCarousel with no autoplay option beside a timer of its own does not count", [f["kind"] for f in by["carousel-own-timer"]["findings"]] == ["missing-runtime"]),
             ("quiet has no signal (absent from survey)", "quiet" not in by),
             ("player is not flagged (absent from survey)", "player" not in by),
             ("a '/*' in a string does not hide a timer", by.get("glob", {}).get("signals") == ["js-timer"]),
             ("shimmer exemption applied", by["shimmer"]["verdict"] == "EXEMPT"),
             ("stale exemption reported", [s["block"] for s in result["stale_exemptions"]] == ["gone"]),
-            ("failures counted", failures(result) == 9),
+            ("failures counted", failures(result) == 10),
         ]
         # The adoption ratchet: a pending block does not fail; a pending block that is already
         # compliant (or gone) does.
