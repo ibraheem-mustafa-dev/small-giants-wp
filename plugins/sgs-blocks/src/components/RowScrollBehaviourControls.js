@@ -38,11 +38,12 @@ import { store as blockEditorStore } from '@wordpress/block-editor';
 import { store as blocksStore } from '@wordpress/blocks';
 import ResponsiveTriStateControl from './ResponsiveTriStateControl';
 import { resolveTier, resolveOnTiers } from '../utils/responsive';
-import { ToolsPanel, ToolsPanelItem } from './primitives';
+import { ToolsPanel } from './primitives';
 import ResponsiveOverride from './ResponsiveOverride';
 import SgsBoxControl from './SgsBoxControl';
 import { BOX_UNITS, normaliseResponsiveBox } from './ResponsiveBoxControl';
 import EasingAtom from './motion/EasingAtom';
+import SgsResetPanel, { SgsResetItem } from './SgsResetPanel';
 
 /**
  * Derive a stable, DOM-safe anchor id for a child that has none yet.
@@ -229,8 +230,9 @@ export default function RowScrollBehaviourControls( {
 					) }
 				</Notice>
 			) }
-			<ToolsPanel
-				label={ __( 'Row scroll behaviour', 'sgs-blocks' ) }
+			<SgsResetPanel
+				title={ __( 'Row scroll behaviour', 'sgs-blocks' ) }
+				items={ [] }
 				resetAll={ () =>
 					setAttributes( {
 						rowTransparent: {},
@@ -245,15 +247,14 @@ export default function RowScrollBehaviourControls( {
 						rowShrinkEasingCustom: '',
 					} )
 				}
+				nested
 			>
-				<ToolsPanelItem
-					label={ __( 'Row background transparent', 'sgs-blocks' ) }
+				<SgsResetItem
 					hasValue={ () =>
 						!! rowTransparent &&
 						Object.keys( rowTransparent ).length > 0
 					}
 					onDeselect={ () => setAttributes( { rowTransparent: {} } ) }
-					isShownByDefault
 				>
 					<ResponsiveTriStateControl
 						label={ __(
@@ -270,10 +271,9 @@ export default function RowScrollBehaviourControls( {
 						}
 						defaultValue="off"
 					/>
-				</ToolsPanelItem>
+				</SgsResetItem>
 
-				<ToolsPanelItem
-					label={ __( 'Collapse this row on scroll', 'sgs-blocks' ) }
+				<SgsResetItem
 					hasValue={ () =>
 						!! rowHideOnScroll &&
 						Object.keys( rowHideOnScroll ).length > 0
@@ -281,7 +281,6 @@ export default function RowScrollBehaviourControls( {
 					onDeselect={ () =>
 						setAttributes( { rowHideOnScroll: {} } )
 					}
-					isShownByDefault
 				>
 					<ResponsiveTriStateControl
 						label={ __(
@@ -298,19 +297,14 @@ export default function RowScrollBehaviourControls( {
 						}
 						defaultValue="off"
 					/>
-				</ToolsPanelItem>
+				</SgsResetItem>
 
 				{ undefined !== scrollAway && (
-					<ToolsPanelItem
-						label={ __(
-							'Scroll this row away with the page',
-							'sgs-blocks'
-						) }
+					<SgsResetItem
 						hasValue={ () => Object.keys( scrollAway ).length > 0 }
 						onDeselect={ () =>
 							setAttributes( { rowScrollAway: {} } )
 						}
-						isShownByDefault
 					>
 						<ResponsiveTriStateControl
 							label={ __(
@@ -327,14 +321,10 @@ export default function RowScrollBehaviourControls( {
 							}
 							defaultValue="off"
 						/>
-					</ToolsPanelItem>
+					</SgsResetItem>
 				) }
 
-				<ToolsPanelItem
-					label={ __(
-						'Reduce this row’s padding on scroll',
-						'sgs-blocks'
-					) }
+				<SgsResetItem
 					hasValue={ () =>
 						( !! rowShrink &&
 							Object.keys( rowShrink ).length > 0 ) ||
@@ -347,7 +337,6 @@ export default function RowScrollBehaviourControls( {
 							rowShrinkPadding: {},
 						} )
 					}
-					isShownByDefault
 				>
 					<ResponsiveTriStateControl
 						label={ __(
@@ -472,10 +461,9 @@ export default function RowScrollBehaviourControls( {
 					>
 						{ __( 'Reset shrink target', 'sgs-blocks' ) }
 					</Button>
-				</ToolsPanelItem>
+				</SgsResetItem>
 
-				<ToolsPanelItem
-					label={ __( 'Row animation', 'sgs-blocks' ) }
+				<SgsResetItem
 					hasValue={ () =>
 						false === rowAnimate ||
 						rowShrinkDuration > 0 ||
@@ -489,7 +477,6 @@ export default function RowScrollBehaviourControls( {
 							rowShrinkEasingCustom: '',
 						} )
 					}
-					isShownByDefault
 				>
 					<ToggleControl
 						label={ __(
@@ -543,8 +530,8 @@ export default function RowScrollBehaviourControls( {
 							/>
 						</>
 					) }
-				</ToolsPanelItem>
-			</ToolsPanel>
+				</SgsResetItem>
+			</SgsResetPanel>
 		</PanelBody>
 	);
 }

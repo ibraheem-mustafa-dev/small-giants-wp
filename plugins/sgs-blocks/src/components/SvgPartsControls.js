@@ -2,7 +2,7 @@
  * Editor controls for SVG part animation (the `svgParts`, trigger and hover-cooldown attributes of a block that
  * prints an inline SVG, read on the front end by src/shared/svg-parts/svg-parts.js).
  *
- * One ToolsPanel item holds the list: per part an element id (or CSS selector), the entrance (opacity, scale, offset,
+ * One reset panel holds the list: per part an element id (or CSS selector), the entrance (opacity, scale, offset,
  * rotation, stroke draw, timing), a continuous rotation and the hover. The attribute names are passed in, so the
  * responsive logo (`svgParts`) and the nav drawer logo (`chromeLogoSvgParts`) share this one component.
  *
@@ -16,8 +16,9 @@ import {
 	TextControl,
 	ToggleControl,
 } from '@wordpress/components';
-import { ToolsPanel, ToolsPanelItem, NumberControl } from './primitives';
+import { NumberControl } from './primitives';
 import { NAV_EASING_OPTIONS } from './motion/easing-master-list';
+import SgsResetPanel from './SgsResetPanel';
 
 const EASING_OPTIONS = NAV_EASING_OPTIONS;
 const CLIP_OPTIONS = [
@@ -198,7 +199,7 @@ const NUMBER_FIELDS = [
  * @param {Object}   props.attributes     The block attributes.
  * @param {Function} props.setAttributes  The block's setAttributes.
  * @param {Object}   props.names          Attribute names: `parts`, `trigger`, `cooldown`.
- * @param {string}   props.label          The ToolsPanel label (unique within the block).
+ * @param {string}   props.label          The panel title (unique within the block).
  * @param {string}   props.defaultTrigger The trigger the block's attribute defaults to.
  * @param {boolean}  props.hover          Whether the hover controls show (a layer that cannot be hovered hides them).
  */
@@ -229,258 +230,250 @@ export default function SvgPartsControls( {
 		);
 
 	return (
-		<ToolsPanel
-			label={ label }
+		<SgsResetPanel
+			title={ label }
+			items={ [
+				{
+					hasValue: () => parts.length > 0,
+					onDeselect: () => setAttributes( resetValues ),
+				},
+			] }
 			resetAll={ () => setAttributes( resetValues ) }
+			nested
 		>
-			<ToolsPanelItem
-				label={ label }
-				hasValue={ () => parts.length > 0 }
-				onDeselect={ () => setAttributes( resetValues ) }
-				isShownByDefault
-			>
-				<p>
-					{ __(
-						'Animate named parts of the SVG. Name each part by its element id in the SVG file, or by a CSS selector starting with a dot, a square bracket or a colon.',
-						'sgs-blocks'
-					) }
-				</p>
-				{ parts.map( ( part, index ) => (
-					<div key={ index }>
+			<p>
+				{ __(
+					'Animate named parts of the SVG. Name each part by its element id in the SVG file, or by a CSS selector starting with a dot, a square bracket or a colon.',
+					'sgs-blocks'
+				) }
+			</p>
+			{ parts.map( ( part, index ) => (
+				<div key={ index }>
+					<TextControl
+						label={ __(
+							'Part (element id or selector)',
+							'sgs-blocks'
+						) }
+						value={ part.target || '' }
+						onChange={ ( value ) =>
+							setPart( index, { target: value } )
+						}
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<ToggleControl
+						label={ __(
+							'Animate each child separately',
+							'sgs-blocks'
+						) }
+						checked={ !! part.eachChild }
+						onChange={ ( value ) =>
+							setPart( index, { eachChild: value } )
+						}
+						__nextHasNoMarginBottom
+					/>
+					<ToggleControl
+						label={ __( 'Draw the outline in', 'sgs-blocks' ) }
+						checked={ !! part.draw }
+						onChange={ ( value ) =>
+							setPart( index, { draw: value } )
+						}
+						__nextHasNoMarginBottom
+					/>
+					<SelectControl
+						label={ __( 'Wipe in from', 'sgs-blocks' ) }
+						value={ part.fromClip || '' }
+						options={ CLIP_OPTIONS }
+						onChange={ ( value ) =>
+							setPart( index, {
+								fromClip: value || undefined,
+							} )
+						}
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					{ TEXT_FIELDS.map( ( [ key, text ] ) => (
 						<TextControl
-							label={ __(
-								'Part (element id or selector)',
-								'sgs-blocks'
-							) }
-							value={ part.target || '' }
-							onChange={ ( value ) =>
-								setPart( index, { target: value } )
-							}
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-						<ToggleControl
-							label={ __(
-								'Animate each child separately',
-								'sgs-blocks'
-							) }
-							checked={ !! part.eachChild }
-							onChange={ ( value ) =>
-								setPart( index, { eachChild: value } )
-							}
-							__nextHasNoMarginBottom
-						/>
-						<ToggleControl
-							label={ __( 'Draw the outline in', 'sgs-blocks' ) }
-							checked={ !! part.draw }
-							onChange={ ( value ) =>
-								setPart( index, { draw: value } )
-							}
-							__nextHasNoMarginBottom
-						/>
-						<SelectControl
-							label={ __( 'Wipe in from', 'sgs-blocks' ) }
-							value={ part.fromClip || '' }
-							options={ CLIP_OPTIONS }
+							key={ key }
+							label={ text }
+							value={ part[ key ] || '' }
 							onChange={ ( value ) =>
 								setPart( index, {
-									fromClip: value || undefined,
+									[ key ]: value || undefined,
 								} )
 							}
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
-						{ TEXT_FIELDS.map( ( [ key, text ] ) => (
-							<TextControl
-								key={ key }
-								label={ text }
-								value={ part[ key ] || '' }
-								onChange={ ( value ) =>
-									setPart( index, {
-										[ key ]: value || undefined,
-									} )
-								}
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						) ) }
-						{ NUMBER_FIELDS.filter(
-							( [ key ] ) => hover || ! key.startsWith( 'hover' )
-						).map( ( [ key, text, min, max, step ] ) => (
-							<NumberControl
-								key={ key }
-								label={ text }
-								value={ part[ key ] ?? '' }
-								min={ min }
-								max={ max }
-								step={ step }
-								onChange={ ( value ) =>
-									setPart( index, {
-										[ key ]:
-											'' === value || undefined === value
-												? undefined
-												: Number( value ),
-									} )
-								}
-								__next40pxDefaultSize
-							/>
-						) ) }
-						<SelectControl
-							label={ __( 'Entrance easing', 'sgs-blocks' ) }
-							value={ part.easing || 'ease-out' }
-							options={ EASING_OPTIONS }
+					) ) }
+					{ NUMBER_FIELDS.filter(
+						( [ key ] ) => hover || ! key.startsWith( 'hover' )
+					).map( ( [ key, text, min, max, step ] ) => (
+						<NumberControl
+							key={ key }
+							label={ text }
+							value={ part[ key ] ?? '' }
+							min={ min }
+							max={ max }
+							step={ step }
 							onChange={ ( value ) =>
-								setPart( index, { easing: value } )
+								setPart( index, {
+									[ key ]:
+										'' === value || undefined === value
+											? undefined
+											: Number( value ),
+								} )
 							}
-							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
-						{ 'custom' === part.easing && (
-							<TextControl
-								label={ __(
-									'Custom curve, cubic-bezier(x1, y1, x2, y2)',
-									'sgs-blocks'
-								) }
-								value={ part.easingCustom || '' }
-								onChange={ ( value ) =>
-									setPart( index, {
-										easingCustom: value || undefined,
-									} )
-								}
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						) }
-						<SelectControl
+					) ) }
+					<SelectControl
+						label={ __( 'Entrance easing', 'sgs-blocks' ) }
+						value={ part.easing || 'ease-out' }
+						options={ EASING_OPTIONS }
+						onChange={ ( value ) =>
+							setPart( index, { easing: value } )
+						}
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					{ 'custom' === part.easing && (
+						<TextControl
 							label={ __(
-								'Scale and rotate from',
+								'Custom curve, cubic-bezier(x1, y1, x2, y2)',
 								'sgs-blocks'
 							) }
-							value={ part.origin || 'center' }
-							options={ ORIGIN_OPTIONS }
+							value={ part.easingCustom || '' }
 							onChange={ ( value ) =>
-								setPart( index, { origin: value } )
+								setPart( index, {
+									easingCustom: value || undefined,
+								} )
 							}
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
-						{ hover && (
-							<>
-								<ToggleControl
+					) }
+					<SelectControl
+						label={ __( 'Scale and rotate from', 'sgs-blocks' ) }
+						value={ part.origin || 'center' }
+						options={ ORIGIN_OPTIONS }
+						onChange={ ( value ) =>
+							setPart( index, { origin: value } )
+						}
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					{ hover && (
+						<>
+							<ToggleControl
+								label={ __(
+									'Replay the entrance on hover',
+									'sgs-blocks'
+								) }
+								checked={ !! part.hoverReplay }
+								onChange={ ( value ) =>
+									setPart( index, {
+										hoverReplay: value,
+									} )
+								}
+								__nextHasNoMarginBottom
+							/>
+							{ HOVER_FIELDS.map(
+								( [ key, text, min, max, step ] ) => (
+									<NumberControl
+										key={ key }
+										label={ text }
+										value={ part[ key ] ?? '' }
+										min={ min }
+										max={ max }
+										step={ step }
+										onChange={ ( value ) =>
+											setPart( index, {
+												[ key ]:
+													'' === value ||
+													undefined === value
+														? undefined
+														: Number( value ),
+											} )
+										}
+										__next40pxDefaultSize
+									/>
+								)
+							) }
+							<SelectControl
+								label={ __( 'Hover bob easing', 'sgs-blocks' ) }
+								value={ part.hoverEasing || 'ease-out' }
+								options={ EASING_OPTIONS }
+								onChange={ ( value ) =>
+									setPart( index, { hoverEasing: value } )
+								}
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+							{ 'custom' === part.hoverEasing && (
+								<TextControl
 									label={ __(
-										'Replay the entrance on hover',
+										'Hover custom curve, cubic-bezier(x1, y1, x2, y2)',
 										'sgs-blocks'
 									) }
-									checked={ !! part.hoverReplay }
+									value={ part.hoverEasingCustom || '' }
 									onChange={ ( value ) =>
 										setPart( index, {
-											hoverReplay: value,
+											hoverEasingCustom:
+												value || undefined,
 										} )
-									}
-									__nextHasNoMarginBottom
-								/>
-								{ HOVER_FIELDS.map(
-									( [ key, text, min, max, step ] ) => (
-										<NumberControl
-											key={ key }
-											label={ text }
-											value={ part[ key ] ?? '' }
-											min={ min }
-											max={ max }
-											step={ step }
-											onChange={ ( value ) =>
-												setPart( index, {
-													[ key ]:
-														'' === value ||
-														undefined === value
-															? undefined
-															: Number( value ),
-												} )
-											}
-											__next40pxDefaultSize
-										/>
-									)
-								) }
-								<SelectControl
-									label={ __(
-										'Hover bob easing',
-										'sgs-blocks'
-									) }
-									value={ part.hoverEasing || 'ease-out' }
-									options={ EASING_OPTIONS }
-									onChange={ ( value ) =>
-										setPart( index, { hoverEasing: value } )
 									}
 									__nextHasNoMarginBottom
 									__next40pxDefaultSize
 								/>
-								{ 'custom' === part.hoverEasing && (
-									<TextControl
-										label={ __(
-											'Hover custom curve, cubic-bezier(x1, y1, x2, y2)',
-											'sgs-blocks'
-										) }
-										value={ part.hoverEasingCustom || '' }
-										onChange={ ( value ) =>
-											setPart( index, {
-												hoverEasingCustom:
-													value || undefined,
-											} )
-										}
-										__nextHasNoMarginBottom
-										__next40pxDefaultSize
-									/>
-								) }
-							</>
-						) }
-						<Button
-							variant="tertiary"
-							isDestructive
-							onClick={ () =>
-								setParts(
-									parts.filter( ( p, i ) => i !== index )
-								)
-							}
-						>
-							{ __( 'Remove this part', 'sgs-blocks' ) }
-						</Button>
-					</div>
-				) ) }
-				<Button
-					variant="secondary"
-					onClick={ () => setParts( [ ...parts, { target: '' } ] ) }
-				>
-					{ __( 'Add a part', 'sgs-blocks' ) }
-				</Button>
-				<SelectControl
-					label={ __( 'Entrance plays', 'sgs-blocks' ) }
-					value={ trigger }
-					options={ TRIGGER_OPTIONS }
+							) }
+						</>
+					) }
+					<Button
+						variant="tertiary"
+						isDestructive
+						onClick={ () =>
+							setParts( parts.filter( ( p, i ) => i !== index ) )
+						}
+					>
+						{ __( 'Remove this part', 'sgs-blocks' ) }
+					</Button>
+				</div>
+			) ) }
+			<Button
+				variant="secondary"
+				onClick={ () => setParts( [ ...parts, { target: '' } ] ) }
+			>
+				{ __( 'Add a part', 'sgs-blocks' ) }
+			</Button>
+			<SelectControl
+				label={ __( 'Entrance plays', 'sgs-blocks' ) }
+				value={ trigger }
+				options={ TRIGGER_OPTIONS }
+				onChange={ ( value ) =>
+					setAttributes( { [ names.trigger ]: value } )
+				}
+				__nextHasNoMarginBottom
+				__next40pxDefaultSize
+			/>
+			{ hover && names.cooldown && (
+				<NumberControl
+					label={ __(
+						'Least time between hover replays (ms)',
+						'sgs-blocks'
+					) }
+					value={ cooldown }
+					min={ 0 }
+					max={ 60000 }
+					step={ 100 }
 					onChange={ ( value ) =>
-						setAttributes( { [ names.trigger ]: value } )
+						setAttributes( {
+							[ names.cooldown ]: Number( value ) || 0,
+						} )
 					}
-					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 				/>
-				{ hover && names.cooldown && (
-					<NumberControl
-						label={ __(
-							'Least time between hover replays (ms)',
-							'sgs-blocks'
-						) }
-						value={ cooldown }
-						min={ 0 }
-						max={ 60000 }
-						step={ 100 }
-						onChange={ ( value ) =>
-							setAttributes( {
-								[ names.cooldown ]: Number( value ) || 0,
-							} )
-						}
-						__next40pxDefaultSize
-					/>
-				) }
-			</ToolsPanelItem>
-		</ToolsPanel>
+			) }
+		</SgsResetPanel>
 	);
 }
