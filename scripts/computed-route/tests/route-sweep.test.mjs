@@ -9,7 +9,7 @@ import {
 	HELD_OUT, freezeFiles, heldOutFile, surfaceList, recordClients, buildWork, freezeClient, problemKind, summariseSurface, failedSummary, fingerprintNodes, diffNodes,
 	compareSweeps, formatComparison, formatSweep, prepareSweepLooks, clientTotals, splitProblems, instrumentCarried, realFaultLines, writeSweep, readSweep, shardItems, summariseFill,
 } from '../lib/route-sweep.mjs';
-import { parseArgs, defaultFills } from '../tools/route-sweep.mjs';
+import { parseArgs, defaultFills, fillReach } from '../tools/route-sweep.mjs';
 
 const tmp = () => fs.mkdtempSync( path.join( process.env.TMP || os.tmpdir(), 'route-sweep-test-' ) );
 const put = ( file, text = '{}' ) => {
@@ -391,4 +391,17 @@ test( 'MUST FAIL: a baseline written before the look count was kept is no eviden
 	const cmp = compareSweeps( before, after );
 	assert.equal( cmp.ok, false );
 	assert.equal( cmp.rows[ 0 ].status, 'WORSE', 'one fault fewer does not hide a lost look' );
+} );
+
+test( 'MUST FAIL: the sweep reads the route of a surface and serves its draft with the code of the checkout under test, not its own', async () => {
+	const repo = tmp();
+	put( path.join( repo, 'scripts', 'computed-route', 'site-run.mjs' ), 'export const surfaceReach = () => ( { hash: "#/from-repo" } );' );
+	put( path.join( repo, 'scripts', 'computed-route', 'lib', 'draft.mjs' ), [ 'export const assertDraftPage = ( f ) => f;', 'export const serveDraft = async () => ( { url: "http://served-by-repo/", close: async () => { globalThis.__served = "closed"; } } );' ].join( String.fromCharCode( 10 ) ) );
+	const site = path.join( repo, 'sites', 'x' );
+	const routed = await fillReach( { repo, site, surface: 's', entry: { draftRoute: '/contact', draftIndex: 'i.html' } } );
+	assert.deepEqual( routed.read, { draftUrl: 'http://served-by-repo/#/from-repo' } );
+	await routed.close();
+	assert.equal( globalThis.__served, 'closed' );
+	const plain = await fillReach( { repo, site, surface: 's', entry: {} } );
+	assert.deepEqual( plain.read, { draftDir: path.join( site, 'handoff' ) } );
 } );

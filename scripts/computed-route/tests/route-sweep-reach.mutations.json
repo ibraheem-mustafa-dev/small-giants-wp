@@ -1,0 +1,14 @@
+[
+	{
+		"file": "tools/route-sweep.mjs",
+		"find": "( await fromRepo( repo, 'site-run.mjs' ) ).surfaceReach(",
+		"replace": "( await import( '../site-run.mjs' ) ).surfaceReach(",
+		"why": "the sweep reads a surface's route with its own checkout's site run, not the checkout under test"
+	},
+	{
+		"file": "tools/route-sweep.mjs",
+		"find": "await fromRepo( repo, 'lib/draft.mjs' );",
+		"replace": "await import( '../lib/draft.mjs' );",
+		"why": "the sweep serves the draft with its own checkout's server, not the checkout under test"
+	}
+]

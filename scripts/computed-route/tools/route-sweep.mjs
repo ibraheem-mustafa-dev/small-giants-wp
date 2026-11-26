@@ -149,6 +149,20 @@ async function proposeWorker( o ) {
 	}
 }
 
+// What Fill reads for one surface, from the checkout under test (`repo`, like fill.mjs itself): a surface the manifest reaches at a
+// route of its own (a form's page: `draftRoute`) is served and read there, as the site run reads it (site-run.mjs::surfaceReach);
+// one with no route is read at the draft's entry page from the folder. Returns { read: { draftUrl } | { draftDir }, close }.
+const fromRepo = ( repo, file ) => import( pathToFileURL( path.join( repo, 'scripts', 'computed-route', file ) ).href );
+export async function fillReach( { repo, site, surface, entry } ) {
+	const reach = entry.draftRoute ? ( await fromRepo( repo, 'site-run.mjs' ) ).surfaceReach( { key: surface, entry, skel: null, rows: [], routing: readJson( path.join( site, 'build', 'intake', 'intake.json' ) )?.routing ?? null } ) : null;
+	if ( ! reach?.hash ) {
+		return { read: { draftDir: path.join( site, 'handoff' ) }, close: async () => {} };
+	}
+	const { assertDraftPage, serveDraft } = await fromRepo( repo, 'lib/draft.mjs' );
+	const served = await serveDraft( assertDraftPage( path.join( site, 'handoff' ), entry.draftIndex ), { index: entry.draftIndex } );
+	return { read: { draftUrl: `${ served.url }${ reach.hash }` }, close: () => served.close() };
+}
+
 async function fillWorker( o ) {
 	const { fillSurface } = await import( pathToFileURL( path.join( o.repo, 'scripts', 'computed-route', 'fill.mjs' ) ).href );
 	for ( const item of o.items ) {
@@ -158,22 +172,18 @@ async function fillWorker( o ) {
 		const site = path.join( o.work, 'sites', client );
 		const entry = readJson( path.join( site, 'build', 'surfaces.json' ) )?.[ surface ] ?? {};
 		let summary;
-		let served = null;
+		let reach = null;
 		try {
-			// A surface the manifest reaches at a route of its own (a form's page: `draftRoute`) is read there, as the site run reads it
-			// (site-run.mjs::surfaceReach); one with no route is read at the draft's entry page, as before.
-			const reach = entry.draftRoute ? ( await import( '../site-run.mjs' ) ).surfaceReach( { key: surface, entry, skel: null, rows: [], routing: readJson( path.join( site, 'build', 'intake', 'intake.json' ) )?.routing ?? null } ) : null;
-			const { assertDraftPage, serveDraft } = reach?.hash ? await import( '../lib/draft.mjs' ) : {};
-			served = reach?.hash ? await serveDraft( assertDraftPage( path.join( site, 'handoff' ), entry.draftIndex ), { index: entry.draftIndex } ) : null;
+			reach = await fillReach( { repo: o.repo, site, surface, entry } );
 			const report = await fillSurface( {
-				client, surface, skeleton: path.join( site, 'build', 'skeleton', `${ surface }.skeleton.json` ), ...( served ? { draftUrl: `${ served.url }${ reach.hash }` } : { draftDir: path.join( site, 'handoff' ) } ), draftIndex: entry.draftIndex, liveUrl: 'http://127.0.0.1/', external: true,
+				client, surface, skeleton: path.join( site, 'build', 'skeleton', `${ surface }.skeleton.json` ), ...reach.read, draftIndex: entry.draftIndex, liveUrl: 'http://127.0.0.1/', external: true,
 				out: dir, repo: o.work, allowMissingPaint: [ 'sgs/whatsapp-cta', 'sgs/product-card' ], log: () => {},
 			} );
 			summary = summariseFill( { client, surface, report, opener: readJson( path.join( dir, 'opener.json' ) ) } );
 		} catch ( e ) {
 			summary = failedFill( { client, surface, error: e.message || e } );
 		} finally {
-			await served?.close?.();
+			await reach?.close();
 		}
 		fs.mkdirSync( dir, { recursive: true } );
 		fs.writeFileSync( path.join( dir, 'summary.json' ), JSON.stringify( summary ) );
