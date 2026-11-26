@@ -1171,7 +1171,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	};
 	// The modal, flow or form row of the page map a button or link opens (lib/skeleton-openers.mjs), or null.
 	const openTargets = R.surfaceOpener ? openerTargets( { pageMap: surface.pageMap || [], folder: handoffOf( facts ) } ) : [];
-	const opensSurface = ( e ) => ( openTargets.length && [ 'a', 'button' ].includes( e.tag ) && handlerOf( e ) ? openedBy( controlWrites( { folder: handoffOf( facts ), component: view.entry( e )?.template.component, handler: handlerOf( e ) } ), openTargets, scope?.id ?? null ) : null );
+	const opensSurface = ( e ) => ( openTargets.length && [ 'a', 'button' ].includes( e.tag ) && handlerOf( e ) ? openedBy( controlWrites( { folder: handoffOf( facts ), component: view.entry( e )?.template.component, handler: handlerOf( e ) } ), openTargets, scope?.id ?? null, view.entry( e )?.template.component ?? null ) : null );
 	// The owning block's trigger settings drawn from the control (the entry's `trigger` names the block's settings): words
 	// beside a count make a pill with that label, no words an icon; the tablet and phone styles follow the label's own widths
 	// (a label shown from tablet up and hidden on a phone is a pill whose phone style, the entry's `styleMobile`, is the icon; a

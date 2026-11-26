@@ -36,6 +36,7 @@ const writes = ( handler ) => controlWrites( { folder: FOLDER, component: 'Shop'
 
 test( 'MUST FAIL: a control opening a modal or a flow is a button linking the target\'s anchor; any other control opens nothing', () => {
 	assert.deepEqual( targets().map( ( t ) => [ t.kind, t.slug, t.recordId, t.writes ] ), [ [ 'modal', MODAL, 'S-25', [ 'modal="size"' ] ], [ 'flow', FLOW, 'S-27', [ 'lens.open=true' ] ] ] );
+	assert.deepEqual( targets().map( ( t ) => t.components ), [ null, null ], 'the opening calls of the fixture name no component' );
 	assert.equal( openedBy( writes( 'openSize' ), targets() )?.slug, MODAL );
 	assert.equal( openedBy( writes( '{{ openLens }}' ), targets() )?.slug, FLOW );
 	assert.equal( openedBy( writes( 'o.openSize' ), targets() )?.slug, MODAL, 'a loop item\'s handler is read by its own name' );
@@ -194,6 +195,9 @@ test( 'MUST FAIL: a surface is its page-map row by record, by route or by slug; 
 	assert.deepEqual( tree[ 0 ].attributes.items, [ { text: 'Help' }, { text: 'Size  guide', url: '#modal-size-guide' }, { text: 'Size guide', url: '/sizes/' } ], 'an item already linked keeps its link' );
 	assert.deepEqual( openerListItems( tree, controls, null ), [] );
 	assert.deepEqual( surfaceOpenerControls( { factRecord: FACTS, surfaceId: 'S-25', targets: targets(), folder: FOLDER } ), [], 'the modal\'s own controls open nothing' );
+	const named = ( component ) => targets().map( ( t ) => ( { ...t, components: new Set( [ component ] ) } ) );
+	assert.deepEqual( surfaceOpenerControls( { factRecord: FACTS, surfaceId: 'S-06', targets: named( 'Shop' ), folder: FOLDER } ), controls, 'a target run on the component of the control (Shop) is opened by it' );
+	assert.deepEqual( surfaceOpenerControls( { factRecord: FACTS, surfaceId: 'S-06', targets: named( 'Home' ), folder: FOLDER } ), [], 'a target run on another component is opened by no Shop control' );
 } );
 
 test( 'MUST FAIL: the rule\'s settings are settings the blocks hold, and the skeleton calls the rule and its last pass', () => {
@@ -210,6 +214,12 @@ test( 'MUST FAIL: the rule\'s settings are settings the blocks hold, and the ske
 
 test( 'MUST FAIL: the frame parts are told apart by role, fill and handler, and a form target has no frame', () => {
 	assert.equal( openedBy( new Set( [ 'a=1' ] ), [ { kind: 'modal', slug: 'x', recordId: 'S-1', writes: [ 'a=1', 'b=2' ] } ] ), null, 'part of the opening writes opens nothing' );
+	// A target whose opening calls name their component (dcLogic('Home').setState) is opened only by a control of that component.
+	const homeOnly = [ { kind: 'flow', slug: 'x', recordId: 'S-1', writes: [ 'sub=true' ], components: new Set( [ 'Home' ] ) } ];
+	assert.equal( openedBy( new Set( [ 'sub=true' ] ), homeOnly, null, 'Product' ), null, 'a control of another component opens nothing' );
+	assert.equal( openedBy( new Set( [ 'sub=true' ] ), homeOnly, null, null ), null, 'a control of no known component opens nothing' );
+	assert.equal( openedBy( new Set( [ 'sub=true' ] ), homeOnly, null, 'Home' )?.slug, 'x', 'negative control: a control of the named component opens it' );
+	assert.equal( openedBy( new Set( [ 'sub=true' ] ), [ { ...homeOnly[ 0 ], components: null } ], null, 'Product' )?.slug, 'x', 'negative control: a target naming no component is opened from any draft' );
 	// A childless element that does not fill the root, a dialog with fewer elements than a sibling, and a button in the panel that
 	// opens the modal again, each placed before the part it could be mistaken for.
 	const el = ( key, tag, chain, attrs = {}, stat = [] ) => [ key, { template: { key, component: 'Shop', n: key.split( '/' )[ 1 ], tag, attrs, words: '', parentChain: chain, style: { static: stat, holes: [] } } } ];

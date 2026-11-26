@@ -11,7 +11,7 @@ import os from 'os';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { proposePageMap, pageMapProblems } from '../lib/intake-pagemap.mjs';
-import { openingWrites, flowOpeners, fnWrites } from '../lib/intake-pagemap-flow-openers.mjs';
+import { openingWrites, openingComponents, flowOpeners, fnWrites } from '../lib/intake-pagemap-flow-openers.mjs';
 import { mapChanges } from '../lib/intake-pagemap-regen.mjs';
 import { loadExport, readRouting } from '../lib/intake-routing.mjs';
 import { codeSurfaces } from '../lib/intake-pagemap-surfaces.mjs';
@@ -109,4 +109,31 @@ test( 'MUST FAIL: the schema refuses an opensFlow that is no slug, and a page-ma
 	assert.ok( pageMapProblems( bad ).some( ( p ) => /opensFlow/.test( p ) ), 'a bad opensFlow is refused' );
 	const before = map.rows.map( ( r ) => { const { opensFlow, ...rest } = r; void opensFlow; return rest; } );
 	assert.deepEqual( mapChanges( before, map.rows ), [ 'product:product: opensFlow (none) -> "choice-flow-add-lenses"' ] );
+} );
+
+// A how_to_reach call that names its component (`dcLogic('Home').setState(…)`, lib/intake-reach-calls.mjs) runs on that
+// component only, so only a handler in that component's draft makes its writes. Before, the names were dropped: on Mama's,
+// the Home build form's `dcLogic('Home').setState({ sub: true })` matched the product page's own subscribe button
+// (Product.dc.html's pickSub), so the product row named the Home form as the flow its buy box opens.
+function hintVariant( reach ) {
+	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'flow-opener-' ) );
+	fs.copyFileSync( path.join( FIX, 'Store.dc.html' ), path.join( dir, 'Store.dc.html' ) );
+	const hint = structuredClone( HINT );
+	hint.records.find( ( r ) => 'S-04' === r.id ).states.filter( ( st ) => /^open/.test( st.name ) ).forEach( ( st ) => ( st.how_to_reach = reach ) );
+	fs.writeFileSync( path.join( dir, 'surfaces.json' ), JSON.stringify( hint ) );
+	return dir;
+}
+
+test( 'MUST FAIL: a flow whose open states run on another component (dcLogic(\'Home\')) is opened by no button of the product page\'s draft', () => {
+	assert.equal( product( proposePageMap( { folder: hintVariant( "dcLogic('Home').setState({lens:{open:true}})" ) } ) ).opensFlow, undefined );
+	assert.deepEqual( [ ...openingComponents( { states: [ { name: 'open', how_to_reach: "dcLogic('Home').setState({ sub: true })" } ] } ) ], [ 'Home' ] );
+} );
+
+test( 'negative controls: the same call naming the product page\'s own component, or a call naming none, still names the flow', () => {
+	assert.equal( product( proposePageMap( { folder: hintVariant( "dcLogic('Store').setState({lens:{open:true}})" ) } ) ).opensFlow, 'choice-flow-add-lenses' );
+	assert.equal( product( proposePageMap( { folder: hintVariant( "dcLogic(`Store`)?.setState({lens:{open:true}})" ) } ) ).opensFlow, 'choice-flow-add-lenses', 'a backtick name and ?.setState name the component too' );
+	assert.equal( product( proposePageMap( { folder: hintVariant( 'L.setState({lens:{open:true}})' ) } ) ).opensFlow, 'choice-flow-add-lenses' );
+	assert.equal( openingComponents( HINT.records.find( ( r ) => 'S-04' === r.id ) ), null, 'a plain ident call names no component: every draft' );
+	assert.equal( openingComponents( { states: [ { name: 'open', how_to_reach: "dcLogic('Home').setState({a:1}); L.setState({b:2})" } ] } ), null, 'one call naming none: every draft' );
+	assert.equal( openingComponents( { states: [ { name: 'Default', how_to_reach: "dcLogic('Home').setState({a:1})" } ] } ), null, 'a default state is no open state' );
 } );

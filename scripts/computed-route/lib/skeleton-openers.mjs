@@ -19,7 +19,7 @@ import path from 'path';
 import { createRequire } from 'module';
 import { loadDraft, readBinding, propName } from './intake-ast.mjs';
 import { fnsNamed } from './intake-census-map.mjs';
-import { openingWrites, fnWrites } from './intake-pagemap-flow-openers.mjs';
+import { openingWrites, openingComponents, fnWrites } from './intake-pagemap-flow-openers.mjs';
 import { OPENABLE } from './intake-pagemap-openers.mjs';
 import { colourHex } from './tokens.mjs';
 import { rowRefusal } from './site-build-flow-scope.mjs';
@@ -61,22 +61,24 @@ export function controlWrites( { folder, component, handler } ) {
 	return new Set( [ 'member', 'local', 'key' ].flatMap( ( how ) => fnsNamed( { nodes: idx.all }, name, how ) ).flatMap( ( fn ) => [ ...fnWrites( idx, fn ) ] ) );
 }
 
-// The page map's openable targets with their opening writes: [{ kind, slug, recordId, writes, postId? }], `postId` the
-// row's post id where the page map holds one (the ids of the site page-map.site names). pageMap: the page-map rows; folder:
+// The page map's openable targets with their opening writes: [{ kind, slug, recordId, writes, components, postId? }],
+// `components` the components the opening calls run on (lib/intake-pagemap-flow-openers.mjs::openingComponents; null: any),
+// `postId` the row's post id where the page map holds one (the ids of the site page-map.site names). pageMap: the page-map rows; folder:
 // the handoff folder (its surfaces.json).
 export function openerTargets( { pageMap = [], folder } ) {
 	const file = folder ? path.join( folder, 'surfaces.json' ) : null;
 	const records = new Map( ( file && fs.existsSync( file ) ? JSON.parse( fs.readFileSync( file, 'utf8' ) ).records : [] ).map( ( r ) => [ r.id, r ] ) );
 	return pageMap.filter( ( r ) => OPENABLE[ r.postType ] && /^surfaces\.json /.test( r.draftId || '' ) ).map( ( r ) => {
 		const recordId = r.draftId.replace( /^surfaces\.json /, '' );
-		return { kind: OPENABLE[ r.postType ], slug: r.slug, recordId, writes: openingWrites( records.get( recordId ) ), ...( Number.isInteger( r.id ) && r.id > 0 ? { postId: r.id } : {} ) };
+		return { kind: OPENABLE[ r.postType ], slug: r.slug, recordId, writes: openingWrites( records.get( recordId ) ), components: openingComponents( records.get( recordId ) ), ...( Number.isInteger( r.id ) && r.id > 0 ? { postId: r.id } : {} ) };
 	} ).filter( ( t ) => t.writes.length );
 }
 
-// The target a control opens, or null: the first target whose opening writes the control's writes all hold. A control on the
-// target's own surface opens nothing.
-export function openedBy( writes, targets, surfaceId = null ) {
-	return targets.find( ( t ) => t.recordId !== surfaceId && t.writes.every( ( w ) => writes.has( w ) ) ) ?? null;
+// The target a control opens, or null: the first target whose opening writes the control's writes all hold, made in a
+// component the target's opening calls run on (`component`: the control's own; a target whose calls name components is
+// opened by no control of another or unknown component). A control on the target's own surface opens nothing.
+export function openedBy( writes, targets, surfaceId = null, component = null ) {
+	return targets.find( ( t ) => t.recordId !== surfaceId && ( ! t.components || t.components.has( component ) ) && t.writes.every( ( w ) => writes.has( w ) ) ) ?? null;
 }
 
 // The button's settings: { [label]: words, [url]: '#<slug>' }. S: rules.surfaceOpener.
@@ -262,7 +264,7 @@ export function surfaceOpenerControls( { factRecord, surfaceId, targets, folder 
 	const rec = factRecord?.surfaces?.[ surfaceId ];
 	const roots = new Set( rec?.roots || [] );
 	return Object.values( factRecord?.elements || {} ).map( ( e ) => e.template ).filter( ( t ) => t && [ 'a', 'button' ].includes( t.tag ) && t.attrs?.onClick && ( roots.has( t.key ) || ( t.parentChain || [] ).some( ( k ) => roots.has( k ) ) ) )
-		.map( ( t ) => ( { key: t.key, words: squash( t.words ), target: openedBy( controlWrites( { folder, component: t.component, handler: t.attrs.onClick } ), targets, surfaceId ) } ) )
+		.map( ( t ) => ( { key: t.key, words: squash( t.words ), target: openedBy( controlWrites( { folder, component: t.component, handler: t.attrs.onClick } ), targets, surfaceId, t.component ) } ) )
 		.filter( ( c ) => c.target && c.words ).map( ( c ) => ( { key: c.key, words: c.words, slug: c.target.slug } ) );
 }
 
