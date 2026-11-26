@@ -28,29 +28,29 @@ class DetectorTest(unittest.TestCase):
         self.assertEqual([h['status'] for h in det.scan_css('t.css', css)], ['FIXED'])
 
     def test_a_bleed_band_needs_the_click_hand_off(self):
-        band = '.sgs-x__grid{overflow-x:auto;padding-block:var(--sgs-shadow-bleed,80px);margin-block:calc(-1 * var(--sgs-shadow-bleed,80px));--sgs-bleed-band:1;-webkit-tap-highlight-color:transparent}' + RESTORE
+        band = '.sgs-x__grid{overflow-x:auto;padding-block:var(--sgs-shadow-bleed-top,var(--sgs-shadow-bleed,80px));margin-block:calc(-1 * var(--sgs-shadow-bleed-top,var(--sgs-shadow-bleed,80px)));--sgs-bleed-band:1;-webkit-tap-highlight-color:transparent}' + RESTORE
         self.assertEqual([h['status'] for h in det.scan_bleed_css('t.css', band, True)], ['FIXED'])
         self.assertEqual([h['status'] for h in det.scan_bleed_css('t.css', band, False)], ['HIT'])
 
     def test_a_bleed_band_needs_a_transparent_tap_highlight_and_a_restore_for_its_links(self):
-        band = '.sgs-x__grid{overflow-x:auto;padding-block:var(--sgs-shadow-bleed,80px);margin-block:calc(-1 * var(--sgs-shadow-bleed,80px));--sgs-bleed-band:1'
+        band = '.sgs-x__grid{overflow-x:auto;padding-block:var(--sgs-shadow-bleed-top,var(--sgs-shadow-bleed,80px));margin-block:calc(-1 * var(--sgs-shadow-bleed-top,var(--sgs-shadow-bleed,80px)));--sgs-bleed-band:1'
         self.assertEqual([h['status'] for h in det.scan_bleed_css('t.css', band + '}' + RESTORE, True)], ['HIT'])
         self.assertEqual([h['status'] for h in det.scan_bleed_css('t.css', band + ';-webkit-tap-highlight-color:transparent}', True)], ['HIT'])
-        php = "return 'padding-block:var(--sgs-shadow-bleed,80px);margin-block:calc(-1 * var(--sgs-shadow-bleed,80px));--sgs-bleed-band:1;';"
+        php = "return 'padding-block:var(--sgs-shadow-bleed-top,var(--sgs-shadow-bleed,80px));margin-block:calc(-1 * var(--sgs-shadow-bleed-top,var(--sgs-shadow-bleed,80px)));--sgs-bleed-band:1;';"
         self.assertEqual([h['status'] for h in det.scan_bleed_php('t.php', php, True)], ['HIT'])
 
     def test_a_scrolling_bleed_band_never_drops_the_pointer(self):
-        band = '.sgs-x__grid{overflow-x:auto;padding-block:var(--sgs-shadow-bleed,80px);margin-block:calc(-1 * var(--sgs-shadow-bleed,80px));--sgs-bleed-band:1;-webkit-tap-highlight-color:transparent;pointer-events:none}' + RESTORE
+        band = '.sgs-x__grid{overflow-x:auto;padding-block:var(--sgs-shadow-bleed-top,var(--sgs-shadow-bleed,80px));margin-block:calc(-1 * var(--sgs-shadow-bleed-top,var(--sgs-shadow-bleed,80px)));--sgs-bleed-band:1;-webkit-tap-highlight-color:transparent;pointer-events:none}' + RESTORE
         self.assertEqual([h['status'] for h in det.scan_bleed_css('t.css', band, True)], ['HIT'])
 
     def test_a_bleed_band_without_the_marker_is_refused(self):
-        band = '.sgs-x__grid{overflow-x:auto;padding-block:var(--sgs-shadow-bleed,80px);margin-block:calc(-1 * var(--sgs-shadow-bleed,80px))}'
+        band = '.sgs-x__grid{overflow-x:auto;padding-block:var(--sgs-shadow-bleed-top,var(--sgs-shadow-bleed,80px));margin-block:calc(-1 * var(--sgs-shadow-bleed-top,var(--sgs-shadow-bleed,80px)))}'
         self.assertEqual([h['status'] for h in det.scan_bleed_css('t.css', band, True)], ['HIT'])
-        php = "return 'padding-block:var(--sgs-shadow-bleed,80px);margin-block:calc(-1 * var(--sgs-shadow-bleed,80px));';"
+        php = "return 'padding-block:var(--sgs-shadow-bleed-top,var(--sgs-shadow-bleed,80px));margin-block:calc(-1 * var(--sgs-shadow-bleed-top,var(--sgs-shadow-bleed,80px)));';"
         self.assertEqual([h['status'] for h in det.scan_bleed_php('t.php', php, True)], ['HIT'])
 
     def test_each_band_needs_a_restore_naming_it_and_every_control(self):
-        band = '.sgs-x__grid{overflow-x:auto;padding-block:var(--sgs-shadow-bleed,80px);margin-block:calc(-1 * var(--sgs-shadow-bleed,80px));--sgs-bleed-band:1;-webkit-tap-highlight-color:transparent}'
+        band = '.sgs-x__grid{overflow-x:auto;padding-block:var(--sgs-shadow-bleed-top,var(--sgs-shadow-bleed,80px));margin-block:calc(-1 * var(--sgs-shadow-bleed-top,var(--sgs-shadow-bleed,80px)));--sgs-bleed-band:1;-webkit-tap-highlight-color:transparent}'
         self.assertEqual([h['status'] for h in det.scan_bleed_css('t.css', band + RESTORE, True)], ['FIXED'])
         unrelated = RESTORE.replace('.sgs-x__grid', '.sgs-y__grid')
         self.assertEqual([h['status'] for h in det.scan_bleed_css('t.css', band + unrelated, True)], ['HIT'])
@@ -61,8 +61,8 @@ class DetectorTest(unittest.TestCase):
         self.assertEqual([h['status'] for h in det.scan_bleed_css('t.css', scoped + RESTORE, True)], ['FIXED'])
 
     def test_each_php_band_is_checked_on_its_own(self):
-        band = ("$css .= $u . ' .' . $b . '__panel-wrap{overflow-y:auto;' . 'padding-bottom:var(--sgs-shadow-bleed, 80px);"
-                "margin-bottom:calc(-1 * var(--sgs-shadow-bleed, 80px));--sgs-bleed-band:1;-webkit-tap-highlight-color:transparent;}';")
+        band = ("$css .= $u . ' .' . $b . '__panel-wrap{overflow-y:auto;' . 'padding-bottom:var(--sgs-shadow-bleed-bottom, var(--sgs-shadow-bleed, 80px));"
+                "margin-bottom:calc(-1 * var(--sgs-shadow-bleed-bottom, var(--sgs-shadow-bleed, 80px)));--sgs-bleed-band:1;-webkit-tap-highlight-color:transparent;}';")
         restore = ("$css .= ':where(' . $u . ' .' . $b . '__panel-wrap) :where(a,button,[role=\"button\"],input,select,textarea,label,summary)"
                    "{-webkit-tap-highlight-color:initial;}';")
         self.assertEqual([h['status'] for h in det.scan_bleed_php('t.php', band + "\n" + restore, True)], ['FIXED'])
@@ -116,6 +116,14 @@ class FrameworkFixTest(unittest.TestCase):
         css = (PLUGIN.parents[1] / 'theme' / 'sgs-theme' / 'assets' / 'css' / 'utilities.css').read_text(encoding='utf-8')
         self.assertIn('--sgs-shadow-bleed: 80px;', css)
 
+
+    def test_a_band_must_read_its_computed_side(self):
+        sized = '.sgs-x__grid{overflow-x:auto;padding-block:var(--sgs-shadow-bleed-top,var(--sgs-shadow-bleed,80px));margin-block:calc(-1 * var(--sgs-shadow-bleed-top,var(--sgs-shadow-bleed,80px)));--sgs-bleed-band:1;-webkit-tap-highlight-color:transparent}' + RESTORE
+        fixed = sized.replace('var(--sgs-shadow-bleed-top,var(--sgs-shadow-bleed,80px))', 'var(--sgs-shadow-bleed,80px)')
+        self.assertEqual([h['status'] for h in det.scan_bleed_css('t.css', sized, True)], ['FIXED'])
+        self.assertEqual([h['status'] for h in det.scan_bleed_css('t.css', fixed, True)], ['HIT'])
+        self.assertEqual([h['status'] for h in det.scan_bleed_css('t.css', sized, True, False)], ['HIT'])
+        self.assertTrue(det.sizer_wired(det.ROOT))
 
 if __name__ == '__main__':
     unittest.main()
