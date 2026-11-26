@@ -397,7 +397,7 @@ export function panelRootStyle( attributes, tier, palette ) {
 
 /**
  * The trigger's width and height at a device, each as a CSS length (a preset slug becomes its spacing variable), inheriting the
- * device above and never below 24px, as render-scoped-css.php prints them.
+ * device above, as render-scoped-css.php prints them.
  *
  * @param {Object} size `{desktop:{width,height},…}`.
  * @param {string} tier The previewed device.
@@ -412,11 +412,7 @@ function resolveTriggerSize( size, tier ) {
 	order.forEach( ( device ) => {
 		[ 'width', 'height' ].forEach( ( side ) => {
 			const raw = size?.[ device ]?.[ side ];
-			let value = sgsLengthPreview( raw );
-			if ( value && /^\d+(\.\d+)?px$/.test( value ) ) {
-				value = `${ Math.max( 24, parseFloat( value ) ) }px`;
-			}
-			out[ side ] = value || out[ side ];
+			out[ side ] = sgsLengthPreview( raw ) || out[ side ];
 		} );
 	} );
 	return out;

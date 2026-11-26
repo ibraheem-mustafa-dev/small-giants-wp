@@ -1128,7 +1128,7 @@
 		"triggerSize": {
 			"type": "object",
 			"default": {},
-			"description": "Trigger size per device {desktop:{width,height},…}: CSS lengths or theme spacing presets, printed as min-width and min-height on the trigger. A text pill takes the height only (its width follows its label). A set value replaces the 44px tap floor at that device and never goes below 24px; unset keeps the floor."
+			"description": "Trigger size per device {desktop:{width,height},…}: CSS lengths or theme spacing presets, printed as min-width and min-height on the trigger. A text pill takes the height only (its width follows its label). A set value replaces the 44px tap floor at that device and prints as saved; unset keeps the floor."
 		},
 		"triggerPadding": {
 			"type": "object",

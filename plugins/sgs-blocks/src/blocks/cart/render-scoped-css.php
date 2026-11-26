@@ -270,17 +270,15 @@ foreach ( $sgs_cart_tier_keys as $sgs_cart_pad_tier ) {
 	$scoped_css[]         = '' === $sgs_cart_tier_media[ $sgs_cart_pad_tier ] ? $trigger_padding_rule : $sgs_cart_tier_media[ $sgs_cart_pad_tier ] . '{' . $trigger_padding_rule . '}';
 }
 
-// Size per breakpoint, in lengths or spacing presets, never below the 24px target size. An icon device takes the width and the
-// height; a text pill's width follows its label, so a pill device takes the height only.
+// Size per breakpoint, in lengths or spacing presets, printed as saved (no floor: a swept pill height of 20px or 0 must render as it
+// did before the sweep, and a control's size fits its own shape). An icon device takes the width and the height; a text pill's width
+// follows its label, so a pill device takes the height only.
 $trigger_size_tiers = sgs_responsive_normalise_object( $attributes['triggerSize'] ?? null );
 $trigger_size_own   = array();
 foreach ( $sgs_cart_tier_keys as $sgs_cart_tier_key ) {
 	$trigger_size_box = is_array( $trigger_size_tiers[ $sgs_cart_tier_key ] ?? null ) ? $trigger_size_tiers[ $sgs_cart_tier_key ] : array();
 	foreach ( array( 'width', 'height' ) as $trigger_size_side ) {
 		$trigger_size_len = sgs_icon_length_value( $trigger_size_box[ $trigger_size_side ] ?? '', 640 );
-		if ( '' !== $trigger_size_len && preg_match( '/^(\d+(?:\.\d+)?)px$/', $trigger_size_len, $trigger_size_px ) && (float) $trigger_size_px[1] < 24 ) {
-			$trigger_size_len = '24px';
-		}
 		if ( '' !== $trigger_size_len ) {
 			$trigger_size_own[ $sgs_cart_tier_key ][ $trigger_size_side ] = $trigger_size_len;
 		}

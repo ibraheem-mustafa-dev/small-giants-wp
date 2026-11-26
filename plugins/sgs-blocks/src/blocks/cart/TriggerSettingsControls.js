@@ -225,7 +225,7 @@ export default function TriggerSettingsControls( {
 					heightLabel={ __( 'Height', 'sgs-blocks' ) }
 					showWidth={ hasIconTier }
 					widthHelp={ __(
-						'Icon button only: a text pill is as wide as its label. A size set here replaces the 44px tap area at that device; it never goes below 24px.',
+						'Icon button only: a text pill is as wide as its label. A size set here replaces the 44px tap area at that device.',
 						'sgs-blocks'
 					) }
 					heightHelp={ __(

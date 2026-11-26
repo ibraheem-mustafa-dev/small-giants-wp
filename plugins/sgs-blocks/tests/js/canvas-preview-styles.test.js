@@ -158,13 +158,13 @@ describe( 'cart panel preview', () => {
 		const scrim = scrimPreviewStyle( { scrimColour: 'brand', scrimOpacity: { desktop: 0.4 }, scrimBlur: { desktop: '6px' } }, 'desktop', PALETTE );
 		expect( scrim ).toEqual( { '--sgs-scrim-fill': '#112233', '--sgs-scrim-opacity': 0.4, '--sgs-scrim-blur': '6px' } );
 	} );
-	it( 'sizes the trigger per device: a pill takes the height only, an icon button both, never below 24px', () => {
+	it( 'sizes the trigger per device: a pill takes the height only, an icon button both, as saved', () => {
 		const triggerSize = { desktop: { height: '48px' }, tablet: { width: '48px', height: '10px' } };
 		expect( triggerStyles( { triggerSize }, 'desktop', PALETTE, true ).trigger ).toMatchObject( { minHeight: '48px' } );
 		const tabletIcon = triggerStyles( { triggerSize }, 'tablet', PALETTE, false ).trigger;
-		expect( tabletIcon ).toMatchObject( { minWidth: '48px', minHeight: '24px' } );
+		expect( tabletIcon ).toMatchObject( { minWidth: '48px', minHeight: '10px' } );
 		expect( triggerStyles( { triggerSize }, 'tablet', PALETTE, true ).trigger.minWidth ).toBeUndefined();
 		// The mobile device inherits the tablet's size.
-		expect( triggerStyles( { triggerSize }, 'mobile', PALETTE, false ).trigger ).toMatchObject( { minWidth: '48px', minHeight: '24px' } );
+		expect( triggerStyles( { triggerSize }, 'mobile', PALETTE, false ).trigger ).toMatchObject( { minWidth: '48px', minHeight: '10px' } );
 	} );
 } );
