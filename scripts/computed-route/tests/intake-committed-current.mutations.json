@@ -1,0 +1,14 @@
+[
+	{
+		"file": "lib/motion-behaviours.mjs",
+		"find": "if ( ! b || [ 'native', 'covered' ].includes( b.kind ) ) {",
+		"replace": "if ( ! b ) {",
+		"why": "a native or covered behaviour becomes a review row the committed records lack"
+	},
+	{
+		"file": "lib/motion-behaviours.mjs",
+		"find": "rowId: `effect:${ r.id }`, draftId: r.id, record: r.id, effect: what, kind: b.kind,",
+		"replace": "rowId: `effect:${ r.id }:x`, draftId: r.id, record: r.id, effect: what, kind: b.kind,",
+		"why": "a row id the committed records do not hold"
+	}
+]
