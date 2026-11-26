@@ -1,4 +1,5 @@
 [
 	{ "file": "lib/skeleton-write-units.mjs", "find": "Object.keys( linkSlots ).length && ( node.draftSlots = { ...node.draftSlots, ...linkSlots } );", "replace": "", "why": "a link list's underline would be read at the list root's default paint" },
-	{ "file": "lib/skeleton-write-units.mjs", "find": "itemSlots( { finder: finder( first ), settings: facts.decisions.structural?.linkList?.itemSlots,", "replace": "itemSlots( { finder: finder( first ), settings: [],", "why": "the decisions entry's link settings would not be paired" }
+	{ "file": "lib/skeleton-write-units.mjs", "find": "itemSlots( { finder: finder( first ), settings: facts.decisions.structural?.linkList?.itemSlots,", "replace": "itemSlots( { finder: finder( first ), settings: [],", "why": "the decisions entry's link settings would not be paired" },
+	{ "file": "data/skeleton-decisions.json", "find": "\"itemSlots\": [ \"linkUnderline\", \"itemPaddingBlock\" ],", "replace": "\"itemSlots\": [ \"linkUnderline\" ],", "why": "the padding each link of a list carries would be kept unnamed (paint conservation)" }
 ]

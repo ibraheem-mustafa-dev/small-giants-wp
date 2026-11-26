@@ -23,7 +23,7 @@
 			"minLinks": 2,
 			"arrangement": "stacked",
 			"reason": "a run of two or more bare text links, one above the next, is one list block; the same links side by side are separate links in a row",
-			"itemSlots": [ "linkUnderline" ],
+			"itemSlots": [ "linkUnderline", "itemPaddingBlock" ],
 			"itemSlotsReason": "the list block's draft element is its first link, which is also the block's own link part: the settings calibrated on that part (its underline) are read at the same link, never at the list root's default paint"
 		}
 	},

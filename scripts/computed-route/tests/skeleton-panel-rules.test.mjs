@@ -447,6 +447,15 @@ test( 'MUST FAIL: a list block made from a run of links reads its link part (the
 	assert.equal( listOf( {} ).draftSlots, undefined, 'negative control: no calibrated link part, no slot' );
 } );
 
+test( 'MUST FAIL: a list block made from a run of links reads its item padding at the first link too, so the padding each link carries is read by the list and never kept unnamed', () => {
+	const ITEM = '.sgs-icon-list > .sgs-icon-list__item:nth-of-type(1)';
+	const link = ( words, href ) => N( 'a', { words, attrs: { href }, style: 'padding:5px 0' } );
+	const col = N( 'section', {}, [ N( 'nav', { attrs: { 'aria-label': 'Shop' } }, [ N( 'div', { words: 'shop' } ), link( 'All Zookies', '/shop/' ), link( 'Gifts', '/gifts/' ), link( 'Taster Trio', '/trio/' ) ] ) ] );
+	const find = ( list ) => list.flatMap( ( n ) => ( 'sgs/icon-list' === n.name ? [ n ] : find( n.innerBlocks || [] ) ) );
+	const list = find( JSON.parse( JSON.stringify( run( col, { calSettings: ( b ) => ( 'sgs/icon-list' === b ? { itemPaddingBlock: { slot: ITEM } } : {} ) } ).skeleton ) ) )[ 0 ];
+	assert.deepEqual( list.draftSlots, { [ ITEM ]: list.draftRef }, 'the item padding is read at the first link' );
+} );
+
 test( 'MUST FAIL: a code-built marquee whose items hold no icon marks its word-only style as decided, and one with an icon marks nothing', () => {
 	const strip = ( codeItems ) => N( 'section', {}, [ N( 'div', { style: 'overflow-x:hidden', hole: 'trustBar', words: 'Baked fresh Handmade', codeItems } ) ] );
 	const motion = new Set( [ 'Root/2' ] );
