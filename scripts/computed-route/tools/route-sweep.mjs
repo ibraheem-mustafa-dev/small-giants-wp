@@ -20,10 +20,12 @@
 // or the overflow slot after a long wait when the machine has room, lib/heavy-slot.mjs): one job never takes two slots (Bean,
 // 2026-11-25), so the other sessions' heavy runs are never starved. It refuses to start with
 // the system temp folder on C: (lib/temp-guard.mjs).
-// --repo: the checkout under test (default this one): its code is run and its committed drafts are read. Before proposing,
-// the sweep builds every client's default looks from it (lib/route-sweep.mjs::prepareSweepLooks: site_look.py, offline, into
-// its scripts/computed-route/site-look); a block proposed with no look is counted per surface and fails a comparison.
-// Runs with SGS_NO_SITE=1 whatever the environment. Exit 0 pass, 1 a surface got worse or a stage failed, 2 usage.
+// --repo: the checkout under test (default this one): its code is run and its committed drafts are read. Each block's
+// default look is built from it (site_look.py, offline, into its scripts/computed-route/site-look) the first time a propose or
+// Fill worker reads it (lib/route-sweep.mjs::sweepWorkerEnv, lib/setting-record.mjs::siteLook), after one probe block per
+// client proves the builder works (lib/route-sweep.mjs::probeSweepLooks); a checkout whose route cannot build on demand
+// (no lib/setting-record.mjs::lookBuildOn) has every block's look built first, as before. A block proposed with no look is
+// counted per surface and fails a comparison. Runs with SGS_NO_SITE=1 whatever the environment. Exit 0 pass, 1 a surface got worse or a stage failed, 2 usage.
 import { acquire, keepAlive, releasePath } from '../lib/heavy-slot.mjs';
 import { assertTempOffC } from '../lib/temp-guard.mjs';
 import fs from 'node:fs';
@@ -33,7 +35,7 @@ import { spawn, spawnSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import {
 	HELD_OUT, instrumentCarried, realFaultLines, freezeClient, recordClients, surfaceList, buildWork, summariseSurface, failedSummary, fingerprintNodes, writeSweep, readSweep, compareSweeps,
-	formatComparison, formatSweep, prepareSweepLooks, shardItems, summariseFill, failedFill, filesUnder,
+	formatComparison, formatSweep, probeSweepLooks, sweepWorkerEnv, shardItems, summariseFill, failedFill, filesUnder,
 } from '../lib/route-sweep.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
@@ -195,7 +197,7 @@ async function fillWorker( o ) {
 function runShards( mode, shards, o, extra = [] ) {
 	return Promise.all( shards.map( ( items ) => new Promise( ( resolve ) => {
 		const args = [ fileURLToPath( import.meta.url ), '--worker', mode, '--records', o.records, '--out', o.out, '--work', o.work, '--repo', o.repo, '--items', items.join( ',' ), ...extra ];
-		const child = spawn( process.execPath, args, { env: { ...process.env, SGS_NO_SITE: '1', TMP: process.env.TMP ?? os.tmpdir(), TEMP: process.env.TEMP ?? os.tmpdir() }, stdio: [ 'ignore', 'pipe', 'inherit' ] } );
+		const child = spawn( process.execPath, args, { env: sweepWorkerEnv( process.env, os.tmpdir() ), stdio: [ 'ignore', 'pipe', 'inherit' ] } );
 		child.stdout.on( 'data', ( d ) => String( d ).split( '\n' ).filter( ( l ) => l && ! l.startsWith( 'facts:' ) ).forEach( ( l ) => console.log( l ) ) );
 		child.on( 'exit', ( code ) => resolve( code ) );
 	} ) ) );
@@ -255,17 +257,24 @@ async function sweep( o ) {
 			buildWork( { records: o.records, client: c, repo: o.repo, work: o.work } );
 		}
 		const notes = o.reread ? await reread( o, clients.filter( ( x ) => wanted.has( x ) ) ) : [];
-		// Every client's default looks, built from the checkout under test before the propose (its workers run with SGS_NO_SITE
-		// and build none): the propose reads them from that checkout's site-look folder.
+		// The default looks come from the checkout under test: its workers build each block's look the first time they read it
+		// (sweepWorkerEnv), after one probe block per client shows the builder works. A checkout whose route has no on-demand
+		// build (no lookBuildOn) has every block's look built here first, as its workers would build none.
 		const lib = ( f ) => import( pathToFileURL( path.join( o.repo, 'scripts', 'computed-route', 'lib', f ) ).href );
-		const [ { prepareLooks }, { openDb } ] = await Promise.all( [ lib( 'setting-record.mjs' ), lib( 'db.mjs' ) ] );
-		const db = openDb();
-		const blocks = db.prepare( "SELECT slug FROM blocks WHERE slug LIKE 'sgs/%' ORDER BY slug" ).all().map( ( r ) => r.slug );
-		db.close();
+		const [ { prepareLooks, lookBuildOn }, { openDb } ] = await Promise.all( [ lib( 'setting-record.mjs' ), lib( 'db.mjs' ) ] );
 		const tLooks = Date.now();
-		console.log( `building the default looks of ${ blocks.length } blocks for ${ wanted.size } client(s)` );
-		const lookFailed = prepareSweepLooks( { clients: [ ...wanted ], blocks, prepare: prepareLooks, log: ( m ) => console.log( m ) } );
-		Object.entries( lookFailed ).forEach( ( [ c, b ] ) => console.log( `${ c }: no default look built for ${ b.join( ', ' ) }` ) );
+		const log = ( m ) => console.log( m );
+		probeSweepLooks( { clients: [ ...wanted ], prepare: prepareLooks, log } );
+		if ( ! lookBuildOn ) {
+			const db = openDb();
+			const blocks = db.prepare( "SELECT slug FROM blocks WHERE slug LIKE 'sgs/%' ORDER BY slug" ).all().map( ( r ) => r.slug );
+			db.close();
+			console.log( `building the default looks of ${ blocks.length } blocks for ${ wanted.size } client(s): ${ o.repo } builds none on demand` );
+			for ( const c of wanted ) {
+				const missed = prepareLooks( blocks, c, { build: true, log } );
+				missed.length && console.log( `${ c }: no default look built for ${ missed.join( ', ' ) }` );
+			}
+		}
 		console.log( `looks ${ Math.round( ( Date.now() - tLooks ) / 1000 ) }s` );
 		// The re-read records, kept as frozen records of their own (`<out>/records`): a baseline made with --reread can be
 		// re-run later without reading the drafts again.

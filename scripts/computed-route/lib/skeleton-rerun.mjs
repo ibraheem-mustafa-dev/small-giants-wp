@@ -11,7 +11,7 @@ import { readDecisions, skeletonDir } from './skeleton-finalise.mjs';
 import { rowsOf, summaryOf } from './intake-skeletons.mjs';
 import { collapseSkeletons } from './intake-run-collapse.mjs';
 import { templateKey } from './fact-key.mjs';
-import { proposalContext, assertSkeletonPaints, prepareProposalLooks } from './skeleton-context.mjs';
+import { proposalContext, assertSkeletonPaints } from './skeleton-context.mjs';
 import { assertCurrent, sourcesOf } from './freshness.mjs';
 import { fingerprintsOf } from './identity.mjs';
 
@@ -45,8 +45,7 @@ const savedPageMap = ( repo, client ) => {
 // A surface whose proposed skeleton uses a block with no default look for the client stops the run (lib/skeleton-context.mjs::assertSkeletonPaints).
 // Returns { surfaces: { <slug>: { kind, name, built, rows, counts, problems, skeleton } }, missing: [slug], absorbed: { <slug>: { into (the header surface's slug), root (the strip's root key) } } }; throws when
 // the decisions data is not sound (lib/skeleton-facts.mjs::decisionsProblems), as the intake run refuses it.
-export function rerunSkeletons( { client, db, repo = REPO, skeletons, motion = new Set(), picks = {}, useBuilt = true, breakpoints = savedBreakpoints( repo, client ), pageMap = savedPageMap( repo, client ), propose = proposeSkeleton, cache = undefined, allowMissingPaint = [], prepare = undefined } ) {
-	prepareProposalLooks( { db, client, cache, ...( prepare ? { prepare } : {} ) } );
+export function rerunSkeletons( { client, db, repo = REPO, skeletons, motion = new Set(), picks = {}, useBuilt = true, breakpoints = savedBreakpoints( repo, client ), pageMap = savedPageMap( repo, client ), propose = proposeSkeleton, cache = undefined, allowMissingPaint = [] } ) {
 	const dir = path.join( repo, 'sites', client, 'build', 'intake', 'inventories' );
 	const builtFile = path.join( repo, 'sites', client, 'build', 'skeleton', 'built-surfaces.json' );
 	const built = useBuilt && fs.existsSync( builtFile ) ? JSON.parse( fs.readFileSync( builtFile, 'utf8' ) ).surfaces || {} : {};

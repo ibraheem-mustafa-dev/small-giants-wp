@@ -1,3 +1,3 @@
 [
-	{"file": "lib/route-sweep.mjs", "find": "prepare( blocks, c, { build: true, log } )", "replace": "prepare( blocks, c, { build: true } )", "why": "the sweep's log never reaches the look builder's reasons"}
+	{"file": "lib/route-sweep.mjs", "find": "prepare( [ probe ], c, { build: true, log } )", "replace": "prepare( [ probe ], c, { build: true } )", "why": "the sweep's log never reaches the look builder's reasons"}
 ]

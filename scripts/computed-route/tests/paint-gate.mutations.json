@@ -15,5 +15,5 @@
 	{"file": "solve.mjs", "find": "assertPaints( { blocks: treeBlocks( tree ), calFor, client, what: `solve ${ surface }`, allow: allowMissingPaintArg( argv ) } );", "replace": "", "why": "Solve runs on with no default look"},
 	{"file": "apply.mjs", "find": "assertPaints( { blocks: surfaces.flatMap( ( s ) => Object.values( blocks[ s.postId ]?.blocks ?? {} ).map( ( b ) => b?.block ) ).filter( Boolean ), calFor, client, what: `apply ${ client }`, allow: allowMissingPaintArg( process.argv ) } );", "replace": "", "why": "the applier runs on with no default look"},
 	{"file": "lib/paint-gate.mjs", "find": "\tcalFor.prepare?.( blocks );\n", "replace": "", "why": "the gate reads each look one at a time, never building them in a batch"},
-	{"file": "lib/skeleton-rerun.mjs", "find": "\tprepareProposalLooks( { db, client, cache, ...( prepare ? { prepare } : {} ) } );\n", "replace": "", "why": "the skeleton re-run builds each look one at a time"}
+	{"file": "lib/setting-record.mjs", "find": "export const lookBuildOn = ( env = process.env ) => '1' === env[ LOOK_BUILD_ENV ] || ! env.SGS_NO_SITE;", "replace": "export const lookBuildOn = ( env = process.env ) => ! env.SGS_NO_SITE;", "why": "SGS_LOOK_BUILD is ignored: the tree's blocks are never built on demand"}
 ]

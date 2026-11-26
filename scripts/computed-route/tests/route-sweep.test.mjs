@@ -7,9 +7,10 @@ import os from 'node:os';
 import path from 'node:path';
 import {
 	HELD_OUT, freezeFiles, heldOutFile, surfaceList, recordClients, buildWork, freezeClient, problemKind, summariseSurface, failedSummary, fingerprintNodes, diffNodes,
-	compareSweeps, formatComparison, formatSweep, prepareSweepLooks, clientTotals, splitProblems, instrumentCarried, realFaultLines, writeSweep, readSweep, shardItems, summariseFill,
+	compareSweeps, formatComparison, formatSweep, probeSweepLooks, sweepWorkerEnv, PROBE_BLOCK, clientTotals, splitProblems, instrumentCarried, realFaultLines, writeSweep, readSweep, shardItems, summariseFill,
 } from '../lib/route-sweep.mjs';
 import { parseArgs, defaultFills, fillReach } from '../tools/route-sweep.mjs';
+import { lookBuildOn } from '../lib/setting-record.mjs';
 
 const tmp = () => fs.mkdtempSync( path.join( process.env.TMP || os.tmpdir(), 'route-sweep-test-' ) );
 const put = ( file, text = '{}' ) => {
@@ -353,34 +354,30 @@ test( 'MUST FAIL: summariseSurface keeps the blocks proposed without a default l
 	assert.match( text, /a\/header \| 0 \| 0 \| 0 \| - \| 2/ );
 } );
 
-test( 'MUST FAIL: prepareSweepLooks builds every client\'s looks before the propose, with the build on, and names the blocks it could not build', () => {
+test( 'MUST FAIL: the sweep builds one probe block per client before the propose, with the build on, never every block', () => {
 	const calls = [];
-	const prepare = ( blocks, client, opts ) => {
-		calls.push( { blocks, client, build: opts.build } );
-		return 'b' === client ? [ 'sgs/x' ] : [];
-	};
-	const failed = prepareSweepLooks( { clients: [ 'a', 'b' ], blocks: [ 'sgs/x', 'sgs/y' ], prepare: ( blocks, client, opts ) => 1 === blocks.length ? [] : prepare( blocks, client, opts ) } );
-	assert.deepEqual( calls.map( ( c ) => [ c.client, c.build, c.blocks.length ] ), [ [ 'a', true, 2 ], [ 'b', true, 2 ] ] );
-	assert.deepEqual( failed, { b: [ 'sgs/x' ] } );
-} );
-
-test( 'MUST FAIL: prepareSweepLooks hands its `log` to every prepare call, so the sweep prints why a block has no look', () => {
-	const seen = [];
+	const prepare = ( blocks, client, opts ) => ( calls.push( { blocks, client, build: opts.build, log: opts.log } ), [] );
 	const log = ( m ) => m;
-	prepareSweepLooks( { clients: [ 'a' ], blocks: [ 'sgs/x', 'sgs/y' ], prepare: ( blocks, client, opts ) => ( seen.push( opts.log ), [] ), log } );
-	assert.deepEqual( seen, [ log, log ] );
+	probeSweepLooks( { clients: [ 'a', 'b' ], prepare, log } );
+	assert.deepEqual( calls.map( ( c ) => [ c.client, c.build, c.blocks ] ), [ [ 'a', true, [ PROBE_BLOCK ] ], [ 'b', true, [ PROBE_BLOCK ] ] ] );
+	assert.ok( calls.every( ( c ) => c.log === log ), 'the words of the builder reach the log of the sweep' );
 } );
 
-test( 'MUST FAIL: a look builder that builds nothing stops the sweep at its first block, never after building every look', () => {
+test( 'MUST FAIL: a look builder that cannot build the probe stops the sweep before any propose', () => {
 	const calls = [];
-	const none = ( blocks ) => {
-		calls.push( blocks.length );
-		return blocks;
-	};
-	assert.throws( () => prepareSweepLooks( { clients: [ 'a' ], blocks: [ 'sgs/x', 'sgs/y', 'sgs/z' ], prepare: none } ), /no default look could be built for a/ );
-	assert.deepEqual( calls, [ 1 ], 'only the probe block is built' );
-	const probeOk = ( blocks ) => ( 1 === blocks.length ? [] : blocks );
-	assert.throws( () => prepareSweepLooks( { clients: [ 'a' ], blocks: [ 'sgs/x', 'sgs/y' ], prepare: probeOk } ), /look builder itself fails/, 'every block failing is a broken builder too' );
+	const none = ( blocks, client ) => ( calls.push( client ), blocks );
+	assert.throws( () => probeSweepLooks( { clients: [ 'a', 'b' ], prepare: none } ), /no default look could be built for a: the look builder itself fails/ );
+	assert.deepEqual( calls, [ 'a' ], 'it stops at the first client' );
+} );
+
+test( 'MUST FAIL: the workers of a sweep build each look the first time a stage reads it, with no site', () => {
+	const env = sweepWorkerEnv( { PATH: 'p', TMP: 'E:/t' }, 'C:/fallback' );
+	assert.equal( env.SGS_LOOK_BUILD, '1' );
+	assert.equal( env.SGS_NO_SITE, '1' );
+	assert.equal( lookBuildOn( env ), true, 'on, though SGS_NO_SITE is set' );
+	assert.equal( lookBuildOn( { SGS_NO_SITE: '1' } ), false, 'negative control: the route tests build nothing' );
+	assert.equal( lookBuildOn( {} ), true );
+	assert.deepEqual( [ env.PATH, env.TMP, env.TEMP ], [ 'p', 'E:/t', 'C:/fallback' ] );
 } );
 
 test( 'MUST FAIL: a baseline written before the look count was kept is no evidence of a lost look, and a lost look fails a surface that is otherwise better', () => {

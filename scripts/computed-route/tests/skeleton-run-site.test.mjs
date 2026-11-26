@@ -10,7 +10,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { writeRecordFixture } from '../lib/setting-record.mjs';
+import { writeRecordFixture, useLookRunner, siteLookFile } from '../lib/setting-record.mjs';
 import { proposeSurface } from '../skeleton.mjs';
 import { openDb } from '../lib/db.mjs';
 import { loadFacts } from '../lib/skeleton-facts.mjs';
@@ -66,16 +66,33 @@ test( 'MUST FAIL: a run aimed at another site reads that site\'s menu items, men
 	assert.deepEqual( a.calTags( 'sgs/text' ), { '': null } );
 } );
 
-test( 'MUST FAIL: propose has the client\'s looks of every SGS block built in one batch before it proposes; never for fixture records', () => {
+test( 'MUST FAIL: a proposal that reads a helper block gets its look, built then, and no other block is built', () => {
 	const f = fixture();
-	const order = [];
-	const prepare = ( blocks, client ) => ( order.push( [ 'prepare', client, blocks.length, blocks.includes( 'sgs/container' ), blocks.every( ( b ) => b.startsWith( 'sgs/' ) ) ] ), [] );
-	proposeSurface( { client: CLIENT, surface: 'header', db, repo: f.repo, prepare, propose: () => ( order.push( [ 'propose' ] ), { skeleton: [], proposal: { counts: {}, rows: [] }, problems: [] } ) } );
-	assert.deepEqual( order.map( ( o ) => o[ 0 ] ), [ 'prepare', 'propose' ] );
-	assert.deepEqual( order[ 0 ].slice( 1 ), [ CLIENT, db.prepare( "SELECT COUNT(*) n FROM blocks WHERE slug LIKE 'sgs/%'" ).get().n, true, true ] );
-	order.length = 0;
-	proposeSurface( { client: CLIENT, surface: 'header', db, repo: f.repo, cache: f.cache, prepare, propose: () => ( order.push( [ 'propose' ] ), { skeleton: [], proposal: { counts: {}, rows: [] }, problems: [] } ) } );
-	assert.deepEqual( order.map( ( o ) => o[ 0 ] ), [ 'propose' ], 'negative control: a test\'s fixture records need no look' );
+	const asked = [];
+	const file = siteLookFile( CLIENT, 'sgs/heading' );
+	const had = fs.existsSync( file );
+	// the builder stand-in writes the asked block's look, as site_look.py does
+	const was = useLookRunner( ( cmd, args ) => {
+		const block = args[ args.indexOf( '--blocks' ) + 1 ];
+		asked.push( block );
+		if ( 'sgs/heading' === block && ! had ) {
+			fs.mkdirSync( path.dirname( file ), { recursive: true } );
+			fs.writeFileSync( file, JSON.stringify( { block, elements: { '': { 1440: { _tag: 'h2' } }, '.sgs-heading__text': { 1440: { _tag: 'span' } } }, pathClasses: { '': [ 'sgs-heading' ] } } ) );
+		}
+		return { status: 0, stdout: `${ block.split( '/' )[ 1 ] }: built` };
+	} );
+	const before = process.env.SGS_LOOK_BUILD;
+	process.env.SGS_LOOK_BUILD = '1';
+	let keys = null;
+	try {
+		proposeSurface( { client: CLIENT, surface: 'header', db, repo: f.repo, propose: ( a ) => ( keys = a.calKeys( 'sgs/heading' ), { skeleton: [], proposal: { counts: {}, rows: [] }, problems: [] } ) } );
+	} finally {
+		useLookRunner( was );
+		undefined === before ? delete process.env.SGS_LOOK_BUILD : ( process.env.SGS_LOOK_BUILD = before );
+		had || fs.rmSync( file, { force: true } );
+	}
+	assert.deepEqual( asked, [ 'sgs/heading' ], 'the helper alone, when propose first reads it; no batch of every block' );
+	had || assert.deepEqual( keys, [ '', '.sgs-heading__text' ], 'propose reads the look the builder made' );
 } );
 
 test( 'negative control: a run naming no site reads the surface entry\'s records', () => {

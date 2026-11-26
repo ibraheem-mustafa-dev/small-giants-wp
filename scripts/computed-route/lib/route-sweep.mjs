@@ -6,7 +6,7 @@
 // inputs: surfaces.json, the page map, the media and menu maps, the catalogue, `intake/` (intake.json, facts.json,
 // inventories/, replay/ ...) and `skeleton/` (each surface's inventory, decisions.json)), with a MANIFEST.json beside it
 // naming each file's source and date. Each block's default look is not frozen: the sweep builds it from the checkout under
-// test before proposing (prepareSweepLooks), so a landing that changes a block's look is swept with that look. A sweep never reads the live `sites/<client>/build/`: `buildWork` lays the records
+// test the first time a worker reads it (probeSweepLooks, sweepWorkerEnv), so a landing that changes a block's look is swept with that look. A sweep never reads the live `sites/<client>/build/`: `buildWork` lays the records
 // and the committed draft (`sites/<client>/handoff/`) out as a scratch repository, which is what the propose and Fill read.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -211,27 +211,27 @@ export function summariseSurface( { client, surface, proposal, problems, realPro
 	return { client, surface, ok: true, nodes: fingerprintNodes( skeleton, proposal ).length, rows: c.rows ?? null, low: c.low ?? null, unresolved: c.unresolved ?? null, problemCount: real.length, byKind, problems: real, handoverCount: handovers.length, handovers, withoutLook: [ ...new Set( withoutLook ) ].sort(), ...( classifiedBy ? { classifiedBy } : {} ) };
 }
 
-// Builds every client's default looks (lib/setting-record.mjs::prepareLooks, passed as `prepare`) for `blocks` before the
-// propose, with the build on whatever SGS_NO_SITE says (the builder is offline: it renders from the checkout, not a site).
-// Each client's first block is built alone first: when that fails, or when no block builds at all, the builder itself is
-// broken (no postcss: the checkout lacks plugins/sgs-blocks/node_modules and SGS_NODE_PATH is unset), so it throws at once
-// instead of running a sweep whose every Fill fails and whose comparison then proves nothing.
-// Each block it could not build is told to `log` with the builder's own words. Returns { client: [ blocks the builder could not build ] } for the clients with any.
-export function prepareSweepLooks( { clients, blocks, prepare, log = () => {} } ) {
-	const failed = {};
-	const broken = ( c ) => new Error( `no default look could be built for ${ c }: the look builder itself fails (site_look.py; a checkout without plugins/sgs-blocks/node_modules needs SGS_NODE_PATH set to one that has it)` );
+// The block every surface's tree holds, built for each client before the propose as the probe of the look builder.
+export const PROBE_BLOCK = 'sgs/container';
+
+// Builds one block's default look (`probe`) for each client (lib/setting-record.mjs::prepareLooks, passed as `prepare`) before
+// the propose, with the build on. Every other look is built the first time a stage reads it (lib/setting-record.mjs::siteLook,
+// on in the workers by sweepWorkerEnv), so a sweep builds only the blocks its surfaces read. When the probe fails the
+// builder itself is broken (no postcss: the checkout lacks plugins/sgs-blocks/node_modules and SGS_NODE_PATH is unset), so it
+// throws at once instead of running a sweep whose every Fill fails and whose comparison then proves nothing. The builder's
+// words about the probe are told to `log`.
+export function probeSweepLooks( { clients, prepare, probe = PROBE_BLOCK, log = () => {} } ) {
 	for ( const c of clients ) {
-		if ( blocks.length > 1 && prepare( blocks.slice( 0, 1 ), c, { build: true, log } ).length ) {
-			throw broken( c );
+		if ( prepare( [ probe ], c, { build: true, log } ).length ) {
+			throw new Error( `no default look could be built for ${ c }: the look builder itself fails (site_look.py; a checkout without plugins/sgs-blocks/node_modules needs SGS_NODE_PATH set to one that has it)` );
 		}
-		const missed = prepare( blocks, c, { build: true, log } );
-		if ( blocks.length && missed.length === blocks.length ) {
-			throw broken( c );
-		}
-		missed.length && ( failed[ c ] = missed );
 	}
-	return failed;
 }
+
+// The environment of a sweep's propose and Fill workers: no site (SGS_NO_SITE), and each look built offline the first time
+// a stage reads it (SGS_LOOK_BUILD, lib/setting-record.mjs::lookBuildOn), so a block with no look is built, not judged
+// against nothing; one that cannot be built stops its surface at the paint gate (lib/paint-gate.mjs::assertPaints).
+export const sweepWorkerEnv = ( env = process.env, tmp = env.TMP ) => ( { ...env, SGS_NO_SITE: '1', SGS_LOOK_BUILD: '1', TMP: env.TMP ?? tmp, TEMP: env.TEMP ?? tmp } );
 
 // A surface that could not be proposed: it counts as a failure when the baseline proposed it.
 export const failedSummary = ( { client, surface, error } ) => ( { client, surface, ok: false, error: String( error ).split( '\n' )[ 0 ].slice( 0, 240 ), nodes: 0, problemCount: 0, byKind: {}, problems: [], handoverCount: 0, handovers: [] } );

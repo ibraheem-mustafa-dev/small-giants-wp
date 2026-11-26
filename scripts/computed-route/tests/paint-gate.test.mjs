@@ -11,7 +11,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { assertPaints, paintGaps, treeBlocks } from '../lib/paint-gate.mjs';
-import { writeRecordFixture } from '../lib/setting-record.mjs';
+import { writeRecordFixture, useLookRunner } from '../lib/setting-record.mjs';
 import { fillSurface, calibrationLoader } from '../fill.mjs';
 import { proposeSurface } from '../skeleton.mjs';
 import { rerunSkeletons } from '../lib/skeleton-rerun.mjs';
@@ -103,14 +103,24 @@ test( 'the skeleton writer writes no skeleton that uses a block with no look for
 	assert.equal( fs.existsSync( f.file ), true, 'the fixture records, not the framework database, are the ones read' );
 } );
 
-test( 'a skeleton re-run has the client\'s looks built in one batch first, and not for fixture records', () => {
+test( 'MUST FAIL: a skeleton re-run builds no batch of looks; a block its tree uses whose look cannot be built stops it, named with the reason', () => {
 	const f = skeletonRepo();
 	const asked = [];
-	const prepare = ( blocks, client ) => ( asked.push( [ client, blocks.length > 50 ] ), [] );
-	rerunSkeletons( { client: CLIENT, db, repo: f.repo, skeletons: f.skeletons, prepare, propose: proposing( [] ) } );
-	assert.deepEqual( asked, [ [ CLIENT, true ] ] );
-	rerunSkeletons( { client: CLIENT, db, repo: f.repo, skeletons: f.skeletons, cache: fixtureCache(), prepare, propose: proposing( [] ) } );
-	assert.equal( asked.length, 1, 'negative control: fixture records' );
+	const was = useLookRunner( ( cmd, args ) => {
+		const list = args[ args.indexOf( '--blocks' ) + 1 ];
+		asked.push( list );
+		return { status: 1, stdout: list.split( ',' ).map( ( b ) => `${ b.split( '/' )[ 1 ] }: FAILED RuntimeError: no fixture for ${ b }` ).join( '\n' ) };
+	} );
+	const before = process.env.SGS_LOOK_BUILD;
+	process.env.SGS_LOOK_BUILD = '1';
+	try {
+		assert.throws( () => rerunSkeletons( { client: CLIENT, db, repo: f.repo, skeletons: f.skeletons, propose: proposing( [ { name: 'sgs/pricing-table' } ] ) } ),
+			/stops before writing: 1 block in its tree has no default look for eye-care-ward-end \(sgs\/pricing-table\)[\s\S]*no fixture for sgs\/pricing-table/ );
+	} finally {
+		useLookRunner( was );
+		undefined === before ? delete process.env.SGS_LOOK_BUILD : ( process.env.SGS_LOOK_BUILD = before );
+	}
+	assert.ok( asked.length && asked.every( ( l ) => 'sgs/pricing-table' === l ), `only the tree's block is built, never every block (asked: ${ asked.join( ' | ' ) })` );
 } );
 
 test( 'a skeleton re-run stops on a surface whose skeleton uses a block with no look, and passes one that does not', () => {
