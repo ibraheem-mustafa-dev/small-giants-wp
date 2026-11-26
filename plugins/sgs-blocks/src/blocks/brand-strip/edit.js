@@ -259,6 +259,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			   tileBorderColour⇆itemBorderColourHover,
 			   nameColour⇆nameColourHover. */ }
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					{
 						key: 'rootBackground',
@@ -498,7 +499,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				{ 'manual' === ( source || 'manual' ) && (
 					<PanelBody
 						title={ __( 'Logos', 'sgs-blocks' ) }
-						initialOpen={ true }
+						initialOpen={ false }
 					>
 						{ logos.map( ( logo, index ) => (
 							<LogoEditor

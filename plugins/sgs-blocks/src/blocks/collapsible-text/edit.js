@@ -111,6 +111,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		<>
 			{ scopedPreviewCss && <style>{ scopedPreviewCss }</style> }
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					fillRow( {
 						key: 'background',
@@ -207,6 +208,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			/>
 			<InspectorControls>
 				<PanelBody
+					initialOpen
 					title={ __( 'Collapsible Text Settings', 'sgs-blocks' ) }
 				>
 					<ToggleControl

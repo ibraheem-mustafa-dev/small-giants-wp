@@ -78,7 +78,7 @@ export default function WrittenReviewsPanel( { attributes, setAttributes } ) {
 
 	return (
 		<>
-			<PanelBody title={ __( 'Business summary', 'sgs-blocks' ) }>
+			<PanelBody initialOpen={ false } title={ __( 'Business summary', 'sgs-blocks' ) }>
 				<TextControl
 					label={ __( 'Business name', 'sgs-blocks' ) }
 					value={ businessName || '' }
@@ -123,6 +123,7 @@ export default function WrittenReviewsPanel( { attributes, setAttributes } ) {
 			</PanelBody>
 
 			<PanelBody
+				initialOpen={ false }
 				title={ sprintf(
 					/* translators: %d: number of reviews. */ __(
 						'Written reviews (%d)',

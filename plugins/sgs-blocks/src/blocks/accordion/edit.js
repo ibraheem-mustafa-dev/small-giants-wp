@@ -286,11 +286,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					/>
 				</PanelBody>
 				<ContainerWrapperControls
+					initialOpen
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 					kind="layout"
 				/>
-				<PanelBody title={ __( 'Accordion Settings', 'sgs-blocks' ) }>
+				<PanelBody initialOpen={ false } title={ __( 'Accordion Settings', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'Style', 'sgs-blocks' ) }
 						value={ accordionStyle }

@@ -251,6 +251,7 @@ export default function Edit( {
 	return (
 		<>
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					fillRow( {
 						key: 'background',
@@ -281,6 +282,7 @@ export default function Edit( {
 			<InspectorControls group="settings">
 				{ /* WS-4: mirrored sgs/container wrapper controls (content kind). */ }
 				<ContainerWrapperControls
+					initialOpen
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 					kind="content"
@@ -301,7 +303,7 @@ export default function Edit( {
 				{ categoryOn && (
 					<PanelBody
 						title={ __( 'Category', 'sgs-blocks' ) }
-						initialOpen
+						initialOpen={ false }
 					>
 						<TextControl
 							label={ __( 'Category', 'sgs-blocks' ) }

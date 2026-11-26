@@ -201,7 +201,7 @@ export default function LookPanels( { attributes, setAttributes } ) {
 		<>
 			<PanelBody
 				title={ __( 'Gift panel look', 'sgs-blocks' ) }
-				initialOpen={ false }
+				initialOpen
 			>
 				<SgsColourPanel
 					rows={ [

@@ -164,6 +164,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			   WordPress generates no native colour UI to overlap with this
 			   panel. */ }
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					textRow( {
 						key: 'link',
@@ -204,7 +205,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				] }
 			/>
 			<InspectorControls>
-				<PanelBody title={ __( 'Breadcrumbs Settings', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'Breadcrumbs Settings', 'sgs-blocks' ) }>
 					<FlexWrapControl
 						label={ __( 'Wrap crumbs', 'sgs-blocks' ) }
 						value={ flexWrap }

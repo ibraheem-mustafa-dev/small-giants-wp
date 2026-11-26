@@ -255,6 +255,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			   strength/blur siblings, which are not colours, live in their
 			   own "Backdrop" ToolsPanel instead (ScrimControls.js). */ }
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					scrimColourRow( { attributes, setAttributes } ),
 					{
@@ -359,7 +360,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			   also fixes a pre-existing gap (a converter-written slug would
 			   previously have shown as "unset"). */ }
 			<InspectorControls>
-				<PanelBody title={ __( 'Modal Settings', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'Modal Settings', 'sgs-blocks' ) }>
 					{ /* modalRef (Task 1, 2026-09-14) — placed first: it decides
 					   whether the "Modal content" section further down the canvas
 					   is this instance's own InnerBlocks or a read-only summary of

@@ -518,7 +518,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			/>
 			<InspectorControls>
 				{ /* ---- Style ---- */ }
-				<PanelBody title={ __( 'Style', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'Style', 'sgs-blocks' ) }>
 					<ToggleControl
 						label={ __(
 							'Inherit parent styles (suppress wrapper styles)',

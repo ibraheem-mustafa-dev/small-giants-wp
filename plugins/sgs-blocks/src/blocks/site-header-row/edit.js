@@ -598,7 +598,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 				<PanelBody
 					title={ __( 'Fill', 'sgs-blocks' ) }
-					initialOpen
+					initialOpen={ false }
 					className="sgs-colour-panel"
 				>
 					<DesignTokenPicker
@@ -1023,7 +1023,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			</InspectorControls>
 
 			<InspectorControls>
-				<PanelBody title={ __( 'Header row', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'Header row', 'sgs-blocks' ) }>
 					{ rowSlot && (
 						<p className="components-base-control__help">
 							{ ROW_LABELS[ rowSlot ] || rowSlot }

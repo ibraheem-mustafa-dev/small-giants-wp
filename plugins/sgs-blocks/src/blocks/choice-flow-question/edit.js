@@ -196,7 +196,7 @@ export default function Edit( {
 			<InspectorControls group="settings">
 				<PanelBody
 					title={ __( 'Layout', 'sgs-blocks' ) }
-					initialOpen={ true }
+					initialOpen
 				>
 					<SelectControl
 						label={ __( 'Options layout', 'sgs-blocks' ) }
@@ -255,7 +255,7 @@ export default function Edit( {
 				/>
 				<PanelBody
 					title={ __( 'Options', 'sgs-blocks' ) }
-					initialOpen={ true }
+					initialOpen={ false }
 				>
 					<VStack spacing={ 4 }>
 						{ options.map( ( option, index ) => (

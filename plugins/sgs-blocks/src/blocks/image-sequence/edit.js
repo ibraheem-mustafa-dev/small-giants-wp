@@ -254,6 +254,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				blockName="sgs/image-sequence"
 				blockSlug="sgs/image-sequence"
 				prefix="thumbnail"
+				openPanel={ [ 'media', 'size-and-crop' ] }
 				atoms={ THUMBNAIL_ENTRY.atoms }
 				kinds={ THUMBNAIL_ENTRY.kinds }
 				context={ THUMBNAIL_ENTRY.context }

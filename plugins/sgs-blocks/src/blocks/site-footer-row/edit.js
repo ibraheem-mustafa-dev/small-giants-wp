@@ -573,7 +573,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 				<PanelBody
 					title={ __( 'Fill', 'sgs-blocks' ) }
-					initialOpen
+					initialOpen={ false }
 					className="sgs-colour-panel"
 				>
 					<DesignTokenPicker
@@ -982,13 +982,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				   sees a control that does nothing. Same approach as post-grid and
 				   testimonial-slider. */ }
 				<ContainerWrapperControls
+					initialOpen
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 					kind="layout"
 					showLayout={ false }
 					enableColumnShapePicker
 				/>
-				<PanelBody title={ __( 'Footer row', 'sgs-blocks' ) }>
+				<PanelBody initialOpen={ false } title={ __( 'Footer row', 'sgs-blocks' ) }>
 					{ rowSlot && (
 						<p className="components-base-control__help">
 							{ ROW_LABELS[ rowSlot ] || rowSlot }

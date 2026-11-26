@@ -324,6 +324,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	return (
 		<>
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					textRow( {
 						key: 'icon',
@@ -368,7 +369,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				] }
 			/>
 			<InspectorControls>
-				<PanelBody title={ __( 'Links', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'Links', 'sgs-blocks' ) }>
 					<p className="components-base-control__help">
 						{ __(
 							'Each icon links to its Site Info field and hides while that field is empty. Untick to hide an icon; drag icons in List View to reorder them.',
@@ -399,7 +400,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						</div>
 					) ) }
 				</PanelBody>
-				<PanelBody title={ __( 'Icons', 'sgs-blocks' ) }>
+				<PanelBody initialOpen={ false } title={ __( 'Icons', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'Colours', 'sgs-blocks' ) }
 						help={

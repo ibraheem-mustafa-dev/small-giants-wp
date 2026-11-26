@@ -246,7 +246,7 @@ export default function ConfiguratorPanel( { attributes, setAttributes } ) {
 
 	return (
 		<InspectorControls>
-			<PanelBody title={ __( 'Pick a set', 'sgs-blocks' ) } initialOpen>
+			<PanelBody title={ __( 'Pick a set', 'sgs-blocks' ) } initialOpen={ false }>
 				<Checklist
 					productId={ productId }
 					list={ state.list }

@@ -171,6 +171,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					textRow( {
 						key: 'label',
@@ -199,7 +200,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				] }
 			/>
 			<InspectorControls>
-				<PanelBody title={ __( 'Local Time Settings', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'Local Time Settings', 'sgs-blocks' ) }>
 					<ComboboxControl
 						label={ __( 'Time zone', 'sgs-blocks' ) }
 						help={ __(

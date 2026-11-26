@@ -21,7 +21,7 @@ import { PanelBody, ToggleControl } from '@wordpress/components';
 export default function useDrawerPreviewToggle( { title, help } = {} ) {
 	const [ previewOpen, setPreviewOpen ] = useState( false );
 	const control = (
-		<PanelBody title={ title || __( 'Drawer', 'sgs-blocks' ) }>
+		<PanelBody initialOpen={ false } title={ title || __( 'Drawer', 'sgs-blocks' ) }>
 			<ToggleControl
 				label={ __( 'Preview drawer open', 'sgs-blocks' ) }
 				help={

@@ -655,6 +655,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
             Mirrors sgs/site-header's SgsColourPanel pattern (D294/D684):
             its own panel, not nested inside BackgroundPanel's PanelBody. */ }
 				<SgsColourPanel
+					initialOpen
 					rows={ [
 						{
 							key: 'background',
@@ -801,7 +802,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 				{ /* Layout panel — shared LayoutPanel + WidthPanel + container-specific controls
             (HTML tag, min-height ×3). Kept as a single "Layout" PanelBody to preserve
             the pre-refactor inspector order and label for container users. */ }
-				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'Layout', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'HTML tag', 'sgs-blocks' ) }
 						value={ attributes.tagName || 'section' }

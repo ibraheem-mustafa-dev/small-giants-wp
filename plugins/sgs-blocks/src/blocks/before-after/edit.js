@@ -174,6 +174,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			   stays with ShadowControl in the Frame styling panel below,
 			   colour is externally managed per the shared colour-architecture. */ }
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					textRow( {
 						key: 'labelText',
@@ -226,6 +227,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						blockName="sgs/before-after"
 						blockSlug="sgs/before-after"
+						openPanel={ 'before' === side ? 'media' : '' }
 						atoms={ entry.atoms }
 						kinds={ entry.kinds }
 						context={ entry.context }

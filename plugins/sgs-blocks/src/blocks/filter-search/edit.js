@@ -99,6 +99,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	return (
 		<>
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					{
 						key: 'inputBorder',

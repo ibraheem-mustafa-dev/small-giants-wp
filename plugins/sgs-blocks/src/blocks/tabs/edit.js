@@ -411,6 +411,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 			<InspectorControls>
 				{ /* WS-4: mirrored sgs/container wrapper controls (layout kind). */ }
 				<ContainerWrapperControls
+					initialOpen
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 					kind="layout"

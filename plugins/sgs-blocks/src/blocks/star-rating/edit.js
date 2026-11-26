@@ -343,7 +343,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				/>
 			) }
 			<InspectorControls>
-				<PanelBody title={ __( 'Rating', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'Rating', 'sgs-blocks' ) }>
 					<RangeControl
 						label={ __( 'Rating', 'sgs-blocks' ) }
 						value={ rating }

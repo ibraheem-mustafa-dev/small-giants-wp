@@ -79,6 +79,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					textRow( {
 						key: 'label',
@@ -117,6 +118,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			/>
 			<InspectorControls>
 				<PanelBody
+					initialOpen
 					title={ __( 'Theme Toggle Settings', 'sgs-blocks' ) }
 				>
 					<SelectControl

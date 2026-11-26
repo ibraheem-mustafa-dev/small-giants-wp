@@ -43,7 +43,7 @@ export default function MenuSettingsPanel( {
 
 	return (
 		<>
-			<PanelBody title={ __( 'Menu', 'sgs-blocks' ) }>
+			<PanelBody initialOpen title={ __( 'Menu', 'sgs-blocks' ) }>
 				<SelectControl
 					label={ __( 'Menu', 'sgs-blocks' ) }
 					value={ menuRef || 0 }
@@ -61,7 +61,7 @@ export default function MenuSettingsPanel( {
 				/>
 			</PanelBody>
 
-			<PanelBody title={ __( 'Burger Menu', 'sgs-blocks' ) }>
+			<PanelBody initialOpen={ false } title={ __( 'Burger Menu', 'sgs-blocks' ) }>
 				<ToggleGroupControl
 					label={ __( 'Show the burger on', 'sgs-blocks' ) }
 					help={ __(

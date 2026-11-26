@@ -153,7 +153,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					</ToolsPanelItem>
 				</ToolsPanel>
 
-				<PanelBody title={ __( 'Options', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'Options', 'sgs-blocks' ) }>
 					{ options.map( ( option, index ) => (
 						<div
 							key={ index }

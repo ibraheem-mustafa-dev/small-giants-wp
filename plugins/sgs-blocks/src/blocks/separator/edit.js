@@ -241,6 +241,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			   the popover writes `colour` (solid) or `lineGradient` (one complete
 			   CSS gradient string; non-empty wins, as render.php reads it). */ }
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					{
 						key: 'colour',
@@ -280,7 +281,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				{ /* ---- Size & alignment ---- */ }
 				<PanelBody
 					title={ __( 'Size & alignment', 'sgs-blocks' ) }
-					initialOpen={ false }
+					initialOpen
 				>
 					{ /*
 					  `width` is a TIER OBJECT (Spec 35 pass 2) — same pattern as

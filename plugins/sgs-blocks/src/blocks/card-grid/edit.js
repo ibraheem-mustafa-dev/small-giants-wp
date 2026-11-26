@@ -332,7 +332,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 				{ ! isQueryMode &&
 					! isWcProductMode &&
 					! isCptCollectionMode && (
-						<PanelBody title={ __( 'Items', 'sgs-blocks' ) }>
+						<PanelBody initialOpen={ false } title={ __( 'Items', 'sgs-blocks' ) }>
 							{ items.map( ( item, index ) => (
 								<ItemEditor
 									key={ index }

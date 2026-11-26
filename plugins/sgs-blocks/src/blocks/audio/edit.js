@@ -131,6 +131,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			   FILL closeout, scoped to the play button's own :hover rule);
 			   spectrum below still has no hover sibling. */ }
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					{
 						key: 'accent',
@@ -238,7 +239,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 
 				{ 'toggle' === playerStyle && (
-					<PanelBody title={ __( 'Sound toggle', 'sgs-blocks' ) } initialOpen={ true }>
+					<PanelBody title={ __( 'Sound toggle', 'sgs-blocks' ) } initialOpen={ false }>
 						<TextControl
 							label={ __( 'Label', 'sgs-blocks' ) }
 							help={ __( 'Always the accessible name (aria-label), even when hidden from view below.', 'sgs-blocks' ) }
@@ -270,7 +271,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					</PanelBody>
 				) }
 
-				<PanelBody title={ __( 'Audio source', 'sgs-blocks' ) } initialOpen={ true }>
+				<PanelBody title={ __( 'Audio source', 'sgs-blocks' ) } initialOpen={ false }>
 					<SelectControl
 						label={ __( 'Source', 'sgs-blocks' ) }
 						value={ audioSource || 'external' }

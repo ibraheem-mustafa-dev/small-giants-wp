@@ -306,6 +306,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			   was single-state until this fix, despite the flat colour
 			   already being two-state. */ }
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					textRow( {
 						key: 'text',

@@ -482,6 +482,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		<>
 			{ /* Every colour row of the block, first so it heads the Styles tab. */ }
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					...choiceFlowColourRows( { attributes, setAttributes } ),
 					...bandsColourRows( { attributes, setAttributes } ),
@@ -493,7 +494,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					flowIsLinked={ flowIsLinked }
 					setAttributes={ setAttributes }
 				/>
-				<PanelBody title={ __( 'Choice Flow Settings', 'sgs-blocks' ) }>
+				<PanelBody initialOpen={ false } title={ __( 'Choice Flow Settings', 'sgs-blocks' ) }>
 					<TextControl
 						label={ __( 'Flow title', 'sgs-blocks' ) }
 						value={ title }

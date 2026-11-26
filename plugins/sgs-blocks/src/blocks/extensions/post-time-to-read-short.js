@@ -48,7 +48,7 @@ if ( ! window.__sgsPostTimeToReadShortRegistered ) {
 					<InspectorControls>
 						<PanelBody
 							title={ __( 'Reading time format', 'sgs-blocks' ) }
-							initialOpen
+							initialOpen={ false }
 						>
 							<ToggleControl
 								label={ __(

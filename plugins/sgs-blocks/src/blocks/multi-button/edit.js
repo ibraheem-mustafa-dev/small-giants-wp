@@ -331,6 +331,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 			    plugins/sgs-blocks/CLAUDE.md's colour-control standard is mandatory: never
 			    hand-roll a bespoke colour PanelBody, mount this instead. */ }
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					fillRow( {
 						key: 'background',
@@ -412,6 +413,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 			    contentWidth for the `group` element's layout cluster, so that
 			    control is NOT duplicated in the Layout panel below. */ }
 			<ContainerWrapperControls
+				initialOpen
 				attributes={ attributes }
 				setAttributes={ setAttributes }
 				kind="content"

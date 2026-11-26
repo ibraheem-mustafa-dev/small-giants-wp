@@ -168,12 +168,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				blockName="sgs/measured-diagram"
 				blockSlug="sgs/measured-diagram"
 				prefix="drawing"
+				openPanel="media"
 				atoms={ DRAWING_ENTRY.atoms }
 				kinds={ DRAWING_ENTRY.kinds }
 				context={ DRAWING_ENTRY.context }
 			/>
 			<InspectorControls>
-				<PanelBody title={ __( 'Settings', 'sgs-blocks' ) }>
+				<PanelBody initialOpen={ false } title={ __( 'Settings', 'sgs-blocks' ) }>
 					<ResponsiveOverride
 						label={ __( 'Label layout', 'sgs-blocks' ) }
 						value={ labelMode }
@@ -212,7 +213,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						) }
 					</ResponsiveOverride>
 				</PanelBody>
-				<PanelBody title={ __( 'Drawing', 'sgs-blocks' ) }>
+				<PanelBody initialOpen={ false } title={ __( 'Drawing', 'sgs-blocks' ) }>
 					<ResponsiveLengthControl
 						label={ __( 'Maximum width', 'sgs-blocks' ) }
 						value={ maxWidth }
@@ -225,6 +226,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			</InspectorControls>
 
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					fillRow( {
 						key: 'line',

@@ -112,7 +112,7 @@ export function OpenStatusPanel( { attributes, setAttributes } ) {
 		/>
 	);
 	return (
-		<PanelBody title={ __( 'Open Status', 'sgs-blocks' ) } initialOpen>
+		<PanelBody title={ __( 'Open Status', 'sgs-blocks' ) } initialOpen={ false }>
 			<ToggleControl
 				label={ __( 'Show closing or opening time', 'sgs-blocks' ) }
 				help={ __(
@@ -292,7 +292,7 @@ export function TodayRowPanel( { attributes, setAttributes } ) {
 /** Source control for displayType `map`. */
 export function MapSourcePanel( { attributes, setAttributes } ) {
 	return (
-		<PanelBody title={ __( 'Map', 'sgs-blocks' ) } initialOpen>
+		<PanelBody title={ __( 'Map', 'sgs-blocks' ) } initialOpen={ false }>
 			<SelectControl
 				label={ __( 'Show the map by', 'sgs-blocks' ) }
 				help={ __(

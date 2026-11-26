@@ -847,7 +847,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 				<PanelBody
 					title={ __( 'Tiles', 'sgs-blocks' ) }
-					initialOpen={ true }
+					initialOpen
 				>
 					{ tiles.map( ( tile, index ) => (
 						<div

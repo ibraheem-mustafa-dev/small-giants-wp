@@ -237,6 +237,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					fillRow( {
 						key: 'background',
@@ -276,12 +277,13 @@ export default function Edit( { attributes, setAttributes } ) {
 				     the same kind="layout" pattern, never exposes this dropdown
 				     conflict because it has no competing bespoke selector. */ }
 				<ContainerWrapperControls
+					initialOpen
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 					kind="layout"
 					showLayout={ false }
 				/>
-				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) }>
+				<PanelBody initialOpen={ false } title={ __( 'Layout', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'Layout mode', 'sgs-blocks' ) }
 						value={ layoutMode }

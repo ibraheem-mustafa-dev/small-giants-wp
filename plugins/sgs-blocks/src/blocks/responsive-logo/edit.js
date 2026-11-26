@@ -458,6 +458,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				   logo's own background tile independent control whether it sits in
 				   the site header or inside sgs/nav-drawer. ── */ }
 				<SgsColourPanel
+					initialOpen
 					rows={ [
 						{
 							key: 'background',

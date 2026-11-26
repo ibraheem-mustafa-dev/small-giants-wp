@@ -170,7 +170,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				<SgsColourPanel rows={ colourRows } />
 			</InspectorControls>
 			<InspectorControls>
-				<PanelBody title={ __( 'Style', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'Style', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'Badge style', 'sgs-blocks' ) }
 						value={ badgeStyle }

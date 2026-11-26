@@ -110,7 +110,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				] }
 			/>
 			<InspectorControls>
-				<PanelBody title={ __( 'Step Settings', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'Step Settings', 'sgs-blocks' ) }>
 					<SgsFreeTextField
 						type="rich"
 						noLink

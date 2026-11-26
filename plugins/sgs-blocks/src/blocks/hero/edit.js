@@ -708,6 +708,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 			   `gradientValue`/`onGradientChange`) since text-colour gradients
 			   paint via `background-clip: text`, matching sgs/heading. */ }
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					{
 						key: 'background',
@@ -797,7 +798,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 			   media selection/data-source, content. ── */ }
 			<InspectorControls>
 				{ /* ── 1. Hero Settings (variant only) ── */ }
-				<PanelBody title={ __( 'Hero Settings', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'Hero Settings', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'Variant', 'sgs-blocks' ) }
 						value={ variant }
@@ -985,6 +986,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 				     splitContentOrderMobile='media-first'. Text/vertical alignment are
 				     isShownByDefault (touched on nearly every hero instance); the rest are opt-in via the "+" menu. */ }
 				<PanelBody
+					initialOpen={ false }
 					title={ __( 'Container / Entire Block', 'sgs-blocks' ) }
 				>
 					{ /* The ToolsPanel label deliberately does NOT repeat the

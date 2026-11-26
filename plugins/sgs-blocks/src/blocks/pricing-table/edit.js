@@ -402,7 +402,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				] }
 			/>
 			<InspectorControls>
-				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) }>
+				<PanelBody initialOpen={ false } title={ __( 'Layout', 'sgs-blocks' ) }>
 					<RangeControl
 						label={ __( 'Columns', 'sgs-blocks' ) }
 						value={ columnsDesktop }
@@ -528,6 +528,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 				{ /* Container wrapper (WS-4 mirror) */ }
 				<ContainerWrapperControls
+					initialOpen
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 					kind="layout"
@@ -594,7 +595,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
 			<InspectorControls group="styles">
-				<PanelBody title={ __( 'Pricing Table Settings', 'sgs-blocks' ) }>
+				<PanelBody initialOpen={ false } title={ __( 'Pricing Table Settings', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'Heading level', 'sgs-blocks' ) }
 						value={ headingLevel || 'h3' }

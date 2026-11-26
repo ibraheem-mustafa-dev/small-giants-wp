@@ -27,7 +27,7 @@ export default function QueryPanel( {
 		attributes;
 
 	return (
-		<PanelBody title={ __( 'Query', 'sgs-blocks' ) } initialOpen={ true }>
+		<PanelBody title={ __( 'Query', 'sgs-blocks' ) } initialOpen={ false }>
 			<SelectControl
 				label={ __( 'Post type', 'sgs-blocks' ) }
 				value={ postType }

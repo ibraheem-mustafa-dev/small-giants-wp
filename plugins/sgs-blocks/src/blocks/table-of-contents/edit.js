@@ -220,6 +220,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			   "Title colour" stays a separate single-state row, also now
 			   gradient-capable. */ }
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					{
 						key: 'linkColour',
@@ -271,7 +272,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				] }
 			/>
 			<InspectorControls>
-				<PanelBody title={ __( 'Table of Contents', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'Table of Contents', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'Visual style', 'sgs-blocks' ) }
 						value={ tocStyle }

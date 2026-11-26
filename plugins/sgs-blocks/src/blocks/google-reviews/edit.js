@@ -112,7 +112,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			   colours (`dotColour*`) live in the Navigation section beside the
 			   progress-indicator choice, shown only while dots are chosen. */ }
 			<InspectorControls group="styles">
-				<PanelBody title={ __( 'Star icon', 'sgs-blocks' ) } className="sgs-colour-panel">
+				<PanelBody initialOpen={ false } title={ __( 'Star icon', 'sgs-blocks' ) } className="sgs-colour-panel">
 					<DesignTokenPicker
 						label={ __( 'Star colour', 'sgs-blocks' ) }
 						states={ [
@@ -139,7 +139,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			</InspectorControls>
 
 			<InspectorControls group="styles">
-				<PanelBody title={ __( 'Write-review button', 'sgs-blocks' ) } className="sgs-colour-panel">
+				<PanelBody initialOpen={ false } title={ __( 'Write-review button', 'sgs-blocks' ) } className="sgs-colour-panel">
 					<DesignTokenPicker
 						label={ __( 'Write-review button background', 'sgs-blocks' ) }
 						states={ [
@@ -205,8 +205,8 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			{ 'slider' === variant && <BuiltinButtonPanel attributes={ attributes } setAttributes={ setAttributes } blockName="sgs/google-reviews" prefix="arrow" /> }
 
 			<InspectorControls>
-				<ContainerWrapperControls attributes={ attributes } setAttributes={ setAttributes } kind="layout" />
-				<PanelBody title={ __( 'Variant', 'sgs-blocks' ) }>
+				<ContainerWrapperControls initialOpen attributes={ attributes } setAttributes={ setAttributes } kind="layout" />
+				<PanelBody initialOpen={ false } title={ __( 'Variant', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'Display Type', 'sgs-blocks' ) }
 						value={ variant }
@@ -221,7 +221,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					/>
 				</PanelBody>
 
-				<PanelBody title={ __( 'Reviews source', 'sgs-blocks' ) }>
+				<PanelBody initialOpen={ false } title={ __( 'Reviews source', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'Where the reviews come from', 'sgs-blocks' ) }
 						value={ dataSource }
@@ -269,7 +269,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				{ /* The slider's cards are sized by the Card width control (340px by default, the Google
 				   baseline), so `columns` sets the grid and wall only. */ }
 				{ [ 'grid', 'wall' ].includes( variant ) && (
-					<PanelBody title={ __( 'Inner', 'sgs-blocks' ) }>
+					<PanelBody initialOpen={ false } title={ __( 'Inner', 'sgs-blocks' ) }>
 						{ /*
 							  columns is a TIER OBJECT — ONE attr holding
 							  {desktop,tablet,mobile} (Spec 35 pass 4). It must
@@ -313,7 +313,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					</PanelBody>
 				) }
 
-				<PanelBody title={ __( 'Filters', 'sgs-blocks' ) }>
+				<PanelBody initialOpen={ false } title={ __( 'Filters', 'sgs-blocks' ) }>
 					<RangeControl
 						label={ __( 'Maximum Reviews', 'sgs-blocks' ) }
 						value={ maxReviews }

@@ -253,7 +253,7 @@ export default function StarterLookPresetControl( {
 	return (
 		<PanelBody
 			title={ __( 'Starter look', 'sgs-blocks' ) }
-			initialOpen={ true }
+			initialOpen={ false }
 		>
 			<p className="sgs-starter-look__help">
 				{ __(

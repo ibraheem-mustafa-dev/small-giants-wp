@@ -197,6 +197,7 @@ export default function IconInspector( { attributes, setAttributes, state } ) {
 	return (
 		<>
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					textRow( {
 						key: 'icon',
@@ -262,7 +263,7 @@ export default function IconInspector( { attributes, setAttributes, state } ) {
 				] }
 			/>
 			<InspectorControls>
-				<PanelBody title={ __( 'Icon', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'Icon', 'sgs-blocks' ) }>
 					<IconPicker
 						label={ __( 'Icon', 'sgs-blocks' ) }
 						value={ {

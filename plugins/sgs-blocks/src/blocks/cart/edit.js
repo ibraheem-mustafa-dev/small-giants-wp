@@ -208,6 +208,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 				<InspectorControls>{ drawerPreviewControl }</InspectorControls>
 			) }
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					...buildCartColourRows( {
 						attributes,

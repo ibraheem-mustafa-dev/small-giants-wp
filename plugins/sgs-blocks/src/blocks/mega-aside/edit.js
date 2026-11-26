@@ -241,6 +241,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			   asideBorderColour -> border-color, falling back to
 			   --sgs-mm-panel-border when unset). `linked: true`. */ }
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					{
 						key: 'background',
@@ -316,7 +317,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				] }
 			/>
 			<InspectorControls>
-				<PanelBody title={ __( 'Aside', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'Aside', 'sgs-blocks' ) }>
 					<ToggleGroupControl
 						label={ __( 'Format', 'sgs-blocks' ) }
 						help={ __(

@@ -27,7 +27,7 @@ export default function ButtonActionPanel( { attributes, setAttributes } ) {
 		<InspectorControls>
 			<PanelBody
 				title={ __( 'Button action', 'sgs-blocks' ) }
-				initialOpen={ false }
+				initialOpen
 			>
 				<ToggleGroupControl
 					label={ __( 'Button action', 'sgs-blocks' ) }

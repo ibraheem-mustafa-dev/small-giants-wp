@@ -157,7 +157,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	return (
 		<>
-			<SgsColourPanel rows={ colourRows } />
+			<SgsColourPanel initialOpen rows={ colourRows } />
 			<ButtonActionPanel
 				attributes={ attributes }
 				setAttributes={ setAttributes }
@@ -227,7 +227,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			</InspectorControls>
 
 			<InspectorControls>
-				<PanelBody title={ __( 'Buybox labels', 'sgs-blocks' ) }>
+				<PanelBody initialOpen={ false } title={ __( 'Buybox labels', 'sgs-blocks' ) }>
 					<SgsFreeTextField
 						type="rich"
 						noLink

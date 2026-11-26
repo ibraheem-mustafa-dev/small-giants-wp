@@ -31,7 +31,7 @@ export default function AlertsSharingPanel( { attributes, setAttributes } ) {
 	);
 
 	return (
-		<PanelBody title={ __( 'Alerts and sharing', 'sgs-blocks' ) }>
+		<PanelBody initialOpen={ false } title={ __( 'Alerts and sharing', 'sgs-blocks' ) }>
 			{ 'strip' !== layout && (
 				<>
 					<ToggleControl

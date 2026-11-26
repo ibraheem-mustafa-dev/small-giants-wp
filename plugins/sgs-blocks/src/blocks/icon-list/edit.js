@@ -846,6 +846,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
          OMITTED (not disabled) when they don't apply. Every state links to
          the theme palette. */ }
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					fillRow( {
 						key: 'background',
@@ -1379,7 +1380,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
 			<InspectorControls group="styles">
 				{ 'typed' === resolvedSource && (
-					<PanelBody title={ __( 'Items', 'sgs-blocks' ) }>
+					<PanelBody initialOpen={ false } title={ __( 'Items', 'sgs-blocks' ) }>
 						{ items.map( ( item, index ) => (
 							<ItemEditor
 								key={ index }

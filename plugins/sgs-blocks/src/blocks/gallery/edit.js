@@ -455,7 +455,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			<InspectorControls group="styles">
 				<PanelBody
 					title={ __( 'Layout', 'sgs-blocks' ) }
-					initialOpen={ true }
+					initialOpen={ false }
 				>
 					{ /* showLayout={false}: this block owns its own Layout and Columns
 					     controls below — see the import comment. Gap is still wanted. */ }

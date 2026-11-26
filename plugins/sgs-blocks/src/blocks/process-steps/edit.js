@@ -641,6 +641,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 
 			<InspectorControls group="styles">
 				<PanelBody
+					initialOpen={ false }
 					title={ __( 'Step number badge', 'sgs-blocks' ) }
 					className="sgs-colour-panel"
 				>
@@ -766,6 +767,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 
 			<InspectorControls group="styles">
 				<PanelBody
+					initialOpen={ false }
 					title={ __( 'Step title', 'sgs-blocks' ) }
 					className="sgs-colour-panel"
 				>
@@ -826,6 +828,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 
 			<InspectorControls group="styles">
 				<PanelBody
+					initialOpen={ false }
 					title={ __( 'Step description', 'sgs-blocks' ) }
 					className="sgs-colour-panel"
 				>
@@ -987,6 +990,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			   below, merged into ONE "Layout" panel per THE PLACEMENT RULE. */ }
 			<InspectorControls group="styles">
 				<PanelBody
+					initialOpen={ false }
 					title={ __( 'Text & fill', 'sgs-blocks' ) }
 					className="sgs-colour-panel"
 				>
@@ -1066,7 +1070,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			</InspectorControls>
 
 			<InspectorControls>
-				<PanelBody title={ __( 'Steps', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'Steps', 'sgs-blocks' ) }>
 					{ steps.map( ( step, index ) => (
 						<StepEditor
 							key={ index }

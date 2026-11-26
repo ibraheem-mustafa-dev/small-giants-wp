@@ -1569,7 +1569,7 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 				] }
 			/>
 			<InspectorControls>
-				<PanelBody title={ __( 'Form Settings', 'sgs-blocks' ) }>
+				<PanelBody initialOpen={ false } title={ __( 'Form Settings', 'sgs-blocks' ) }>
 					{ /* Inside a saved form the Form ID is the form's slug (Spec 42 §2);
 					   render.php stamps it onto the form when a page embeds it. */ }
 					<p className="sgs-form__identity">

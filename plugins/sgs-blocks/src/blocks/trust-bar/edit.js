@@ -1037,6 +1037,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				the duplicate picker is deleted, this panel's row is now the
 				only writer. */ }
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					{
 						key: 'root-background',
@@ -1264,7 +1265,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				{ /* ── Variant (behaviour: which badge mode renders) ─────────── */ }
 				<PanelBody
 					title={ __( 'Style', 'sgs-blocks' ) }
-					initialOpen={ false }
+					initialOpen
 				>
 					<SelectControl
 						label={ __( 'Badge style', 'sgs-blocks' ) }
@@ -1345,7 +1346,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				</PanelBody>
 
 				{ /* ── Badge items repeater (content) ─────────────────────────── */ }
-				<PanelBody title={ __( 'Badges', 'sgs-blocks' ) }>
+				<PanelBody initialOpen={ false } title={ __( 'Badges', 'sgs-blocks' ) }>
 					{ items.map( ( item, index ) =>
 						isIconStyle ? (
 							<IconCircleItemEditor
@@ -1463,7 +1464,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				/>
 
 				{ /* ── Section (outer): width + min-height ──────────────────── */ }
-				<PanelBody title={ __( 'Section (outer)', 'sgs-blocks' ) }>
+				<PanelBody initialOpen={ false } title={ __( 'Section (outer)', 'sgs-blocks' ) }>
 					<WidthPanel
 						attributes={ attributes }
 						setAttributes={ setAttributes }

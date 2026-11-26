@@ -287,6 +287,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			   `supports.color` sub-flags are now false so WordPress generates
 			   no native colour UI to overlap with this panel. */ }
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					textRow( {
 						key: 'wrapperText',
@@ -362,7 +363,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				] }
 			/>
 			<InspectorControls>
-				<PanelBody title={ __( 'Timer Settings', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'Timer Settings', 'sgs-blocks' ) }>
 					<ToggleControl
 						label={ __( 'Evergreen mode', 'sgs-blocks' ) }
 						help={ __(

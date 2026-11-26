@@ -122,6 +122,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		<>
 			{ hideLabelCss && <style>{ hideLabelCss }</style> }
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					textRow( {
 						key: 'label',
@@ -179,7 +180,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				] }
 			/>
 			<InspectorControls>
-				<PanelBody title={ __( 'WhatsApp Settings', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'WhatsApp Settings', 'sgs-blocks' ) }>
 					<TextControl
 						label={ __( 'Phone number', 'sgs-blocks' ) }
 						help={ __(

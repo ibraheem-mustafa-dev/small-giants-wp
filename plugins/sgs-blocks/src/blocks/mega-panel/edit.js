@@ -688,6 +688,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			   border-color, --sgs-mm-group-border-resting -> the cards tile's
 			   resting border-color). All single-state, `linked: true`. */ }
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					{
 						key: 'background',

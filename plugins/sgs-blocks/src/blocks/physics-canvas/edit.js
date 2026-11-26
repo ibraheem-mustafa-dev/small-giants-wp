@@ -230,6 +230,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			    Hover,Gradient,HoverGradient} attrs, so capability is moved rather
 			    than lost. */ }
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					fillRow( {
 						key: 'background',

@@ -248,7 +248,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				] }
 			/>
 			<InspectorControls>
-				<PanelBody title={ __( 'Display Type', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'Display Type', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'What to display', 'sgs-blocks' ) }
 						value={ displayType }

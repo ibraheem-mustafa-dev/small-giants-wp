@@ -176,6 +176,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			    to the existing theme-token defaults in style.css when unset
 			    (var(--sgs-ps-*, token) — see render.php). */ }
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					{
 						key: 'input-border',
@@ -342,7 +343,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				] }
 			/>
 			<InspectorControls>
-				<PanelBody title={ __( 'Search settings', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'Search settings', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'Display', 'sgs-blocks' ) }
 						value={ displayMode || 'inline-bar' }

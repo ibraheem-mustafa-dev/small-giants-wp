@@ -178,6 +178,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			    onto block-private backgroundColour{Hover,Gradient,HoverGradient}
 			    attrs, so capability is moved rather than lost. */ }
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					fillRow( {
 						key: 'background',
@@ -206,7 +207,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				] }
 			/>
 			<InspectorControls>
-				<PanelBody title={ __( 'FAQ Settings', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'FAQ Settings', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'Heading level', 'sgs-blocks' ) }
 						value={ headingLevel }

@@ -662,6 +662,7 @@ export default function Edit( {
 			kinds={ MEDIA_SLOTS[ prefix ].kinds }
 			context={ MEDIA_SLOTS[ prefix ].context }
 			label={ label }
+			openPanel={ 'avatar' === prefix ? 'media' : '' }
 		/>
 	);
 
@@ -958,7 +959,7 @@ export default function Edit( {
 			{ /* ── Settings tab (behaviour, content, structural choices) ── */ }
 			<InspectorControls>
 				{ /* ── Variant picker (visual thumbnail grid) ── */ }
-				<PanelBody title={ __( 'Layout variant', 'sgs-blocks' ) }>
+				<PanelBody initialOpen={ false } title={ __( 'Layout variant', 'sgs-blocks' ) }>
 					<BaseControl
 						__nextHasNoMarginBottom
 						help={ __(

@@ -146,7 +146,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				<SgsColourPanel rows={ colourRows } />
 			</InspectorControls>
 			<InspectorControls>
-				<PanelBody title={ __( 'Item lines to show', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'Item lines to show', 'sgs-blocks' ) }>
 					<ToggleControl
 						label={ __( 'Item pictures', 'sgs-blocks' ) }
 						checked={ false !== attributes.showThumbnail }

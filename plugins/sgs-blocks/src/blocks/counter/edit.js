@@ -121,7 +121,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				] }
 			/>
 			<InspectorControls>
-				<PanelBody title={ __( 'Counter Settings', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'Counter Settings', 'sgs-blocks' ) }>
 					<TextControl
 						label={ __( 'Target number', 'sgs-blocks' ) }
 						value={ String( number ) }

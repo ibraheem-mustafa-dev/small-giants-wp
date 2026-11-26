@@ -401,7 +401,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			<InspectorControls>
 				<PanelBody
 					title={ __( 'Box', 'sgs-blocks' ) }
-					initialOpen={ false }
+					initialOpen
 				>
 					<ToggleControl
 						label={ __( 'Stretch to full width', 'sgs-blocks' ) }

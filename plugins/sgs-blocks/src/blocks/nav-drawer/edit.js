@@ -557,6 +557,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 			   chrome-colour-rows.js) so none is scattered across the panels
 			   below. */ }
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					fillRow( {
 						key: 'drawerBg',
@@ -1097,7 +1098,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 
 			{ /* ── Styles tab ──────────────────────────────────────────── */ }
 			<InspectorControls group="styles">
-				<PanelBody title={ __( 'Drawer container', 'sgs-blocks' ) }>
+				<PanelBody initialOpen={ false } title={ __( 'Drawer container', 'sgs-blocks' ) }>
 					{ /* Drawer text colour moved to the top-level SgsColourPanel above,
 					   alongside Background/Close icon colour. */ }
 					{ /* Background lives in the top-level SgsColourPanel.

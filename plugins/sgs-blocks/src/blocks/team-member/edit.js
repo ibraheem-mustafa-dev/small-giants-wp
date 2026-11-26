@@ -426,6 +426,7 @@ export default function Edit( {
 				blockName="sgs/team-member"
 				blockSlug="sgs/team-member"
 				prefix="photo"
+				openPanel="media"
 				atoms={ PHOTO_ENTRY.atoms }
 				kinds={ PHOTO_ENTRY.kinds }
 				context={ PHOTO_ENTRY.context }

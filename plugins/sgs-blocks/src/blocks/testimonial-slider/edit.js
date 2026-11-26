@@ -192,6 +192,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					fillRow( {
 						key: 'background',

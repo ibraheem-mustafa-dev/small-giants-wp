@@ -41,7 +41,7 @@ export default function FilterSearchSettings( { attributes, setAttributes } ) {
 	const isTermsMode = 'taxonomy-terms' === searchMode;
 
 	return (
-		<PanelBody title={ __( 'Filter Search Settings', 'sgs-blocks' ) }>
+		<PanelBody initialOpen title={ __( 'Filter Search Settings', 'sgs-blocks' ) }>
 			<SelectControl
 				label={ __( 'Search in', 'sgs-blocks' ) }
 				help={ __(

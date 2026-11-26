@@ -40,6 +40,7 @@ export default function SiteFeaturesPanel() {
 
 	return (
 		<PanelBody
+			initialOpen={ false }
 			title={ __( 'Site-wide saved-item features', 'sgs-blocks' ) }
 		>
 			<p>

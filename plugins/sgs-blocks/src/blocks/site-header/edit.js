@@ -675,6 +675,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 			     levels read as different scopes rather than duplicates: this
 			     colours the whole bar, a row colours one band inside it. */ }
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					{
 						key: 'background',
@@ -872,7 +873,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 				     and Background (image/video/SVG/overlay — a rich, situational
 				     panel) sit behind a ToolsPanel "+ Add" disclosure — one click
 				     away, not shown until asked for. */ }
-				<PanelBody title={ __( 'Header width', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'Header width', 'sgs-blocks' ) }>
 					<WidthPanel
 						attributes={ attributes }
 						setAttributes={ setAttributes }

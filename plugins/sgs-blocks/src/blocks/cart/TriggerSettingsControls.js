@@ -70,7 +70,7 @@ export default function TriggerSettingsControls( {
 
 	return (
 		<>
-			<PanelBody title={ __( 'Trigger style', 'sgs-blocks' ) }>
+			<PanelBody initialOpen={ false } title={ __( 'Trigger style', 'sgs-blocks' ) }>
 				<ResponsiveControl
 					label={ __( 'Trigger shows', 'sgs-blocks' ) }
 				>

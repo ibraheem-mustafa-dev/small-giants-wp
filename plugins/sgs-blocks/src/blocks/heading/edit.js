@@ -551,7 +551,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			/>
 			<InspectorControls>
 				{ /* ── Role panel ── */ }
-				<PanelBody title={ __( 'Role', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'Role', 'sgs-blocks' ) }>
 					<RadioControl
 						label={ __( 'Heading role', 'sgs-blocks' ) }
 						selected={ headingRole }

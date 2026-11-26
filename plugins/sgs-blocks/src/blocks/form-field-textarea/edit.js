@@ -367,7 +367,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					false !== attributes.showCounter && (
 						<PanelBody
 							title={ __( 'Character counter', 'sgs-blocks' ) }
-							initialOpen={ false }
+							initialOpen
 						>
 							<SelectControl
 								label={ __( 'Counter position', 'sgs-blocks' ) }

@@ -666,7 +666,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			{ /* ⛔ FIRST among same-group Fills — WordPress concatenates
 			   same-group Fills in MOUNT order, so this must render before
 			   `<InspectorControls>` below to sit at the top of the Styles tab. */ }
-			<SgsColourPanel rows={ colourRows } />
+			<SgsColourPanel initialOpen rows={ colourRows } />
 
 			{ /* ── General tab (default InspectorControls group) ───────────── */ }
 			<InspectorControls>

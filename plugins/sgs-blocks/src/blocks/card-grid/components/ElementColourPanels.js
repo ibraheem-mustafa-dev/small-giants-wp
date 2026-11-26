@@ -169,7 +169,7 @@ export default function ElementColourPanels( {
 			   (out of scope for this move — a separate, already-approved batch owns
 			   the headingLevel panel placement). */ }
 			<InspectorControls>
-				<PanelBody title={ __( 'Title', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'Title', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'Heading level', 'sgs-blocks' ) }
 						value={ headingLevel || 'h3' }
@@ -192,6 +192,7 @@ export default function ElementColourPanels( {
 			   block-level setting). */ }
 			<InspectorControls group="styles">
 				<PanelBody
+					initialOpen={ false }
 					title={ __( 'Subtitle', 'sgs-blocks' ) }
 					className="sgs-colour-panel"
 				>

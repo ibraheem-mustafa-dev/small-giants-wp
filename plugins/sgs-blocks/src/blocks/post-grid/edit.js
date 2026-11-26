@@ -687,6 +687,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				     handing attributes to the wrapper for the same collision —
 				     this closes the editor half. Same fix as sgs/gallery. */ }
 				<ContainerWrapperControls
+					initialOpen
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 					kind="layout"

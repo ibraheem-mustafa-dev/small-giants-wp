@@ -144,7 +144,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<InspectorControls>
-				<PanelBody title={ __( 'Review Settings', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'Review Settings', 'sgs-blocks' ) }>
 					<SgsFreeTextField
 						type="rich"
 						label={ __( 'Heading', 'sgs-blocks' ) }

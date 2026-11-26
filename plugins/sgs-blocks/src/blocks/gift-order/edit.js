@@ -116,7 +116,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				/>
 			</SsrPreviewGuard>
 			<InspectorControls group="settings">
-				<PanelBody title={ __( 'Basket switch', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'Basket switch', 'sgs-blocks' ) }>
 					<TextRows fields={ BASKET_FIELDS } { ...rows } />
 				</PanelBody>
 				<PanelBody

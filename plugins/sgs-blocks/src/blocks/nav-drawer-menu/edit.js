@@ -581,7 +581,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	return (
 		<>
 			{ /* ⛔ FIRST among same-group Fills — see the bar block's identical note. */ }
-			<SgsColourPanel rows={ colourRows } />
+			<SgsColourPanel initialOpen rows={ colourRows } />
 
 			{ /* ── General tab (default InspectorControls group) ───────────── */ }
 			<InspectorControls>

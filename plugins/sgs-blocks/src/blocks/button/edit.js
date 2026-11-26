@@ -383,6 +383,7 @@ export default function Edit( {
 			   `supports.color` sub-flags are now false so WordPress generates
 			   no native colour UI to overlap with this panel. */ }
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					{
 						key: 'text',

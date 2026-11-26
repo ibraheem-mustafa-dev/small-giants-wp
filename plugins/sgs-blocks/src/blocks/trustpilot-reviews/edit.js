@@ -227,6 +227,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					fillRow( {
 						key: 'background',
@@ -261,11 +262,12 @@ export default function Edit( { attributes, setAttributes } ) {
 			/>
 			<InspectorControls>
 				<ContainerWrapperControls
+					initialOpen
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 					kind="layout"
 				/>
-				<PanelBody title={ __( 'Source', 'sgs-blocks' ) }>
+				<PanelBody initialOpen={ false } title={ __( 'Source', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'Data source', 'sgs-blocks' ) }
 						value={ dataSource }
@@ -561,7 +563,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					</ToolsPanelItem>
 				</ToolsPanel>
 
-				<PanelBody title={ __( 'Card display', 'sgs-blocks' ) }>
+				<PanelBody initialOpen={ false } title={ __( 'Card display', 'sgs-blocks' ) }>
 					<ToggleControl
 						label={ __( 'Show Verified badge', 'sgs-blocks' ) }
 						checked={ showVerifiedBadge }
@@ -1043,6 +1045,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
 			<InspectorControls group="styles">
 				<PanelBody
+					initialOpen={ false }
 					title={ __( 'Trustpilot Reviews Settings', 'sgs-blocks' ) }
 				>
 					<SelectControl

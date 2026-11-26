@@ -29,7 +29,7 @@ export default function LabelsPanel( { attributes, setAttributes } ) {
 	);
 
 	return (
-		<PanelBody title={ __( 'Labels', 'sgs-blocks' ) }>
+		<PanelBody initialOpen={ false } title={ __( 'Labels', 'sgs-blocks' ) }>
 			{ field( 'moveLabel', __( 'Move to basket label', 'sgs-blocks' ) ) }
 			{ field( 'removeLabel', __( 'Remove label', 'sgs-blocks' ) ) }
 			{ field( 'notifyLabel', __( 'Notify me label', 'sgs-blocks' ) ) }

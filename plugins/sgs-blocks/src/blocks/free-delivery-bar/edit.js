@@ -106,7 +106,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				<SgsColourPanel rows={ colourRows } />
 			</InspectorControls>
 			<InspectorControls>
-				<PanelBody title={ __( 'Free delivery', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'Free delivery', 'sgs-blocks' ) }>
 					<TextControl
 						label={ __(
 							'Threshold override (optional)',

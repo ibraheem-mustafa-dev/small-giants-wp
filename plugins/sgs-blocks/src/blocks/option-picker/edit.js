@@ -570,6 +570,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			   Normal/Hover/Current triples per pill property, all
 			   `linked: true`. */ }
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					textRow( {
 						key: 'label',
@@ -753,7 +754,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				   typography/margin/colour looks live in the Styles tab below. */ }
 				<PanelBody
 					title={ __( 'Label', 'sgs-blocks' ) }
-					initialOpen={ false }
+					initialOpen
 				>
 					<SgsFreeTextField
 						type="rich"
@@ -775,7 +776,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				{ /* Options repeater */ }
 				<PanelBody
 					title={ __( 'Options', 'sgs-blocks' ) }
-					initialOpen={ true }
+					initialOpen={ false }
 				>
 					{ duplicateKeysExist && (
 						<Notice status="warning" isDismissible={ false }>
@@ -975,7 +976,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				   label is actually shown (showLabel lives in the Settings tab). */ }
 				<PanelBody
 					title={ __( 'Label', 'sgs-blocks' ) }
-					initialOpen={ false }
+					initialOpen
 				>
 					{ showLabel && (
 						<>
@@ -1044,7 +1045,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				{ /* Appearance */ }
 				<PanelBody
 					title={ __( 'Appearance', 'sgs-blocks' ) }
-					initialOpen={ true }
+					initialOpen={ false }
 				>
 					<SelectControl
 						label={ __( 'Pill style', 'sgs-blocks' ) }

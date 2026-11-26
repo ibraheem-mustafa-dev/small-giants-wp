@@ -423,6 +423,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 			     at the top of the Styles tab. The native supports.color UI is
 			     disabled — supports.color sub-flags are false. */ }
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					{
 						key: 'text',
@@ -576,7 +577,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						{ contrastNotice }
 					</Notice>
 				) }
-				<PanelBody title={ __( 'Footer width', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'Footer width', 'sgs-blocks' ) }>
 					<WidthPanel
 						attributes={ attributes }
 						setAttributes={ setAttributes }
