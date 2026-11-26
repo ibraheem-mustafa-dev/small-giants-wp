@@ -52,7 +52,7 @@ import { loadDraft } from './lib/intake-ast.mjs';
 import { ACCOUNT_PARTS_FILE, phpListKeys } from './lib/template-piece-account.mjs';
 import { readTargets, siteUrl, targetOf } from './lib/site-targets.mjs';
 import { readLiveSignedIn, readSignedInParts, shootLiveSignedIn, signedInSeedOf } from './lib/part-look-signed-in.mjs';
-import { chooseEmptied, chooseOpenings, documentedOpenings, handoffRecords, pinsOf, probeOpenings, visitorOpening } from './lib/part-look-opening.mjs';
+import { chooseEmptied, chooseOpenings, documentedOpenings, handoffRecords, pinsOf, probeOpenings, visitorAtEveryWidth, visitorOpening } from './lib/part-look-opening.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const SURFACES = [ 'cart', 'checkout', 'my-account', 'header', 'product', 'shop', 'shop-chips', 'shop-sort', 'my-account-in', 'confirmation' ];
@@ -72,6 +72,22 @@ export function pagesOf( { rows, surfaces } ) {
 // The draft route a surface opens by when the draft is one file whose pages are its logic's own state (`shop`, `checkout`), or
 // null: a page file (`Shop.dc.html`), a route every page shares (`*`) or none.
 export const logicRouteOf = ( route ) => ( route && '*' !== route && ! /\.html\b/i.test( String( route ) ) ? String( route ) : null );
+
+// A surface's draft read, guarded: with derive (Fill's read of several surfaces at once) a read that throws refuses its own surface
+// (a refusal line, and null) and the run goes on to the others; without it the error stops the run as before.
+export function guardRead( { derive, surface, refusals } ) {
+	return async ( fn ) => {
+		try {
+			return await fn();
+		} catch ( e ) {
+			if ( ! derive ) {
+				throw e;
+			}
+			refusals.push( `${ surface }: the draft read failed, so none of its settings is decided: ${ String( e.message || e ).split( '\n' )[ 0 ] }` );
+			return null;
+		}
+	};
+}
 
 // A surface's opening steps: the client's own (`given`, its part-look.json entry), and with `derive` a one-file draft's surface opens
 // on the route intake read for it (`draftRoute`), as a client file would name it. A route the client names, and a surface with no
@@ -222,6 +238,7 @@ export async function runPartLook( { client, repo = REPO, entries = {}, derive =
 		log( `${ surface }: ${ noDraft ? `no draft page (${ noDraft })` : `reading ${ mainFile }${ also.length ? ` and ${ also.join( ', ' ) }` : '' }` }` );
 		let reads = {};
 		let signedTabs = null;
+		const guarded = guardRead( { derive, surface, refusals } );
 		if ( noDraft ) {
 			reads = {};
 		} else if ( loc.signedIn && ! pages.signin && ! logicRouteOf( cfg.route ) ) {
@@ -229,7 +246,10 @@ export async function runPartLook( { client, repo = REPO, entries = {}, derive =
 		} else if ( loc.signedIn ) {
 			// A one-file draft signs in on its own sign-in route (the entry's route) and lands where its sign-in takes the visitor.
 			const signinRoute = pages.signin ? null : logicRouteOf( cfg.route );
-			const signed = await readSignedInParts( { draftDir: path.resolve( repo, entry.draftDir ), mainFile, signinFile: pages.signin ?? null, signinRoute, spec, parts: group.parts, pages, headed, log } );
+			const signed = await guarded( () => readSignedInParts( { draftDir: path.resolve( repo, entry.draftDir ), mainFile, signinFile: pages.signin ?? null, signinRoute, spec, parts: group.parts, pages, headed, log } ) );
+			if ( ! signed ) {
+				continue;
+			}
 			reads = signed.reads;
 			signedTabs = signed.tabs;
 			notes.push( ...signed.notes.map( ( n ) => `${ surface }: ${ n }` ) );
@@ -243,7 +263,15 @@ export async function runPartLook( { client, repo = REPO, entries = {}, derive =
 				// The visitor's way in: add on the product page, then the basket button the page shows at load.
 				const productEntry = Object.values( manifest ).find( ( e ) => e.target?.template === locators.surfaces.product?.template && e.draftIndex );
 				const visitor = visitorOpening( { adds: shopParts[ 'buybox-add-to-basket' ], load: probes[ 0 ], product: productEntry ? { file: productEntry.draftIndex, route: logicRouteOf( draftRouteOf( productEntry ) ) } : null } );
-				visitor && probes.push( ...await probeOpenings( { ...tryOn, openings: [ visitor ], withLoad: false } ) );
+				// The clicks are replayed at every width the read takes, so the visitor's way in counts only when it opens at each of them.
+				if ( visitor ) {
+					const tries = [];
+					for ( const width of [ 1440, 768, 375 ] ) {
+						tries.push( ...await probeOpenings( { ...tryOn, openings: [ visitor ], withLoad: false, width } ) );
+					}
+					const atAll = visitorAtEveryWidth( tries );
+					atAll.why ? notes.push( `${ surface }: ${ atAll.why }` ) : probes.push( atAll.probe );
+				}
 				const chosen = chooseOpenings( probes, group.mustLocate, group.filledShows || [] );
 				if ( chosen.why ) {
 					notes.push( `${ surface }: ${ chosen.why }` );
@@ -256,7 +284,11 @@ export async function runPartLook( { client, repo = REPO, entries = {}, derive =
 					cfg = { ...cfg, ...way, ...( chosen.init ? { init: chosen.init } : {} ), ...( emptied ? { empty: emptied.empty } : {} ) };
 				}
 			}
-			( { reads } = await readParts( { draftDir: path.resolve( repo, entry.draftDir ), files: [ cfg.file ?? mainFile, ...also ], spec, names: Object.keys( group.parts ), pages, config: cfg.route || cfg.init || cfg.empty || cfg.clicks ? cfg : null, hover: builtin.map( ( b ) => b.part ), headed, log } ) );
+			const got = await guarded( () => readParts( { draftDir: path.resolve( repo, entry.draftDir ), files: [ cfg.file ?? mainFile, ...also ], spec, names: Object.keys( group.parts ), pages, config: cfg.route || cfg.init || cfg.empty || cfg.clicks ? cfg : null, hover: builtin.map( ( b ) => b.part ), headed, log } ) );
+			if ( ! got ) {
+				continue;
+			}
+			( { reads } = got );
 			// A part every other part of the group is read from (the basket drawer's panel) that the draft read did not locate makes the
 			// surface's whole read empty: a refusal, never a quiet report of unpaired parts.
 			refusals.push( ...unlocatedParts( group, reads ).map( ( part ) => `${ surface }: the draft's ${ part } was not located at any width, so no part read from it is paired and none of its settings is decided` ) );

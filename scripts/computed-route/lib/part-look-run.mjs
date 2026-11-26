@@ -72,16 +72,18 @@ export async function openPage( browser, { url, width, config } ) {
 		await page.waitForTimeout( 900 );
 	}
 	// A visitor's clicks after the opening steps (lib/part-look-opening.mjs: add to the basket, then the basket button), each on the
-	// shown element the draft stamps with that template number in that component; one that finds none fails the open.
+	// shown element the draft stamps with that template number in one of the components named (`hosts`: the served page's own markup
+	// is stamped `Root` or its component's name; `host` names one); one that finds none fails the open.
 	for ( const click of config?.clicks || [] ) {
-		const done = await page.evaluate( ( { tpl, host } ) => {
-			const el = [ ...document.querySelectorAll( `[data-dc-tpl="${ CSS.escape( String( tpl ) ) }"]` ) ].find( ( e ) => ( e.closest( '[data-sc-name]' )?.getAttribute( 'data-sc-name' ) ?? null ) === ( host ?? null ) && e.getClientRects().length > 0 );
+		const hosts = click.hosts ?? [ click.host ?? null ];
+		const done = await page.evaluate( ( { tpl, names } ) => {
+			const el = [ ...document.querySelectorAll( `[data-dc-tpl="${ CSS.escape( String( tpl ) ) }"]` ) ].find( ( e ) => names.includes( e.closest( '[data-sc-name]' )?.getAttribute( 'data-sc-name' ) ?? null ) && e.getClientRects().length > 0 );
 			el?.click();
 			return !! el;
-		}, click );
+		}, { tpl: click.tpl, names: hosts } );
 		if ( ! done ) {
 			await ctx.close();
-			throw new Error( `no shown element stamped ${ click.host }/${ click.tpl } to click` );
+			throw new Error( `no shown element stamped ${ hosts.join( ' or ' ) }/${ click.tpl } to click` );
 		}
 		await page.waitForTimeout( 700 );
 	}

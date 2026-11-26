@@ -4,9 +4,14 @@
 // they name. Planted records and probes; no browser.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { chooseEmptied, chooseOpenings, documentedOpenings, isScript, pinsOf, visitorOpening } from '../lib/part-look-opening.mjs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { chooseEmptied, chooseOpenings, documentedOpenings, isScript, pinsOf, visitorAtEveryWidth, visitorOpening } from '../lib/part-look-opening.mjs';
+import { openPage } from '../lib/part-look-run.mjs';
+import { serveDraft } from '../lib/draft.mjs';
+import { loadChromium } from '../lib/fill-read.mjs';
 import { partLookSurfacesFor, readLocators } from '../lib/fill-part-look-modes.mjs';
-import { derivedConfig, refusalOf } from '../part-look.mjs';
+import { derivedConfig, guardRead, refusalOf } from '../part-look.mjs';
 
 const BAG = { id: 'S-24', kind: 'drawer', route: '*', states: [
 	{ name: 'closed', how_to_reach: 'L.setState({bagOpen:false})' },
@@ -90,7 +95,7 @@ test( 'MUST FAIL: the visitor\'s way in adds on the product page, then presses t
 	const adds = [ { dc: 'Shop Root', tpl: '396' } ];
 	assert.deepEqual( visitorOpening( { adds, load, product: { file: 'Shop.dc.html', route: 'product' } } ), {
 		label: 'add to the basket on the product page, then the basket button', script: null, file: 'Shop.dc.html', route: 'product',
-		clicks: [ { tpl: '396', host: 'Shop Root' }, { tpl: '396', host: 'Shop Root' }, { tpl: '88', host: 'Shop Root' } ],
+		clicks: [ { tpl: '396', hosts: [ 'Shop Root' ] }, { tpl: '396', hosts: [ 'Shop Root' ] }, { tpl: '88', host: 'Shop Root' } ],
 	} );
 	assert.equal( visitorOpening( { adds, load, product: { file: 'Product.dc.html' } } ).route, null, 'a product page file needs no route' );
 	// Negative controls: no located add control, no basket button at load, no product page.
@@ -104,4 +109,42 @@ test( 'MUST FAIL: a read showing item lines is the filled drawer, even when a re
 	assert.equal( chooseOpenings( probes, [ 'panel' ], [ 'item' ] ).filled.label, 'visitor' );
 	assert.equal( chooseOpenings( [ probes[ 0 ] ], [ 'panel' ], [ 'item' ] ).filled.label, 'documented with items', 'with no read showing items, the panel with the most parts' );
 	assert.equal( chooseOpenings( probes, [ 'panel' ] ).filled.label, 'documented with items', 'a group naming no filled part counts parts only' );
+} );
+
+test( 'MUST FAIL: the visitor\'s clicks reach a control stamped Root on the served page, and fail where the control is hidden', async () => {
+	const fixtures = path.join( path.dirname( fileURLToPath( import.meta.url ) ), 'fixtures', 'part-look' );
+	// The shop parts record locates the add control in the product page's own component ("Product/108"); the page stamps it Root.
+	const way = visitorOpening( { adds: [ { dc: 'Product', tpl: '108' } ], load: { stamps: { trigger: { tpl: '44', host: 'Root' } } }, product: { file: 'Product.dc.html' } } );
+	assert.deepEqual( way.clicks[ 0 ], { tpl: '108', hosts: [ 'Root', 'Product' ] } );
+	assert.deepEqual( visitorOpening( { adds: [ { dc: 'ProductCard', tpl: '7' } ], load: { stamps: { trigger: { tpl: '44', host: 'Root' } } }, product: { file: 'Product.dc.html' } } ).clicks[ 0 ].hosts, [ 'ProductCard' ], 'a control of another component keeps its own name' );
+	const { chromium } = await loadChromium();
+	const served = await serveDraft( fixtures, { index: 'visitor-click.html' } );
+	const browser = await chromium.launch( { headless: true } );
+	try {
+		const url = `${ served.url }visitor-click.html`;
+		const wide = await openPage( browser, { url, width: 1440, config: { clicks: way.clicks } } );
+		assert.deepEqual( await wide.page.evaluate( () => [ document.body.dataset.adds, document.body.dataset.opened ] ), [ '2', 'yes' ], 'added twice, then the basket opened' );
+		await wide.ctx.close();
+		// The basket button is hidden on a phone: the open fails there, and the visitor's way in is not taken.
+		await assert.rejects( openPage( browser, { url, width: 375, config: { clicks: way.clicks } } ), /no shown element stamped Root\/44 to click/ );
+	} finally {
+		await browser.close();
+		await served.close();
+	}
+} );
+
+test( 'MUST FAIL: the visitor\'s way in counts only when it opens at every width, and a failed read refuses only its own surface', async () => {
+	assert.deepEqual( visitorAtEveryWidth( [ { label: '1440', located: [ 'panel' ] }, { label: '768' }, { label: '375' } ] ), { probe: { label: '1440', located: [ 'panel' ] } } );
+	assert.match( visitorAtEveryWidth( [ { label: '1440' }, { label: '768' }, { label: '375', error: 'no shown element stamped Root/44 to click' } ] ).why, /does not open at every width: no shown element stamped Root\/44/ );
+	assert.match( visitorAtEveryWidth( [] ).why, /it was not tried/ );
+	const refusals = [];
+	const guarded = guardRead( { derive: true, surface: 'header', refusals } );
+	assert.equal( await guarded( async () => {
+		throw new Error( 'no shown element stamped Root/44 to click\nstack' );
+	} ), null );
+	assert.deepEqual( refusals, [ 'header: the draft read failed, so none of its settings is decided: no shown element stamped Root/44 to click' ] );
+	assert.deepEqual( await guarded( async () => ( { reads: {} } ) ), { reads: {} } );
+	await assert.rejects( guardRead( { derive: false, surface: 'header', refusals } )( async () => {
+		throw new Error( 'boom' );
+	} ), /boom/, 'the standalone command still stops on a failed read' );
 } );
