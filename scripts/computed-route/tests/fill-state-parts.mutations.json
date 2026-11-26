@@ -19,8 +19,8 @@
 	},
 	{
 		"file": "lib/fill-state-parts.mjs",
-		"find": "row?.css_element && `element:${ row.css_element }` ].filter( Boolean );",
-		"replace": "row?.css_element && `element:${ row.css_element }` ];",
+		"find": ".filter( Boolean );",
+		"replace": ";",
 		"why": "a setting tied to no part is a part of its own"
 	},
 	{
@@ -43,14 +43,26 @@
 	},
 	{
 		"file": "lib/fill-state.mjs",
-		"find": ".concat( atRest ? [] : partStateSlots( { db, cal, block: rec.name, prop, slot, state } ) )",
+		"find": ".concat( atRest ? [] : partStateSlots( { db, cal, block: rec.name, prop, slot, state: writeState } ) )",
 		"replace": "",
 		"why": "fillStates never tries the part's other slots"
 	},
 	{
 		"file": "lib/fill-state-parts.mjs",
-		"find": "row?.css_element && `element:${ row.css_element }` ].filter( Boolean )",
-		"replace": "].filter( Boolean )",
+		"find": "[ slot ? `slot:${ slot }` : element ] )",
+		"replace": "[ slot ? `slot:${ slot }` : null ] )",
 		"why": "a state setting without a canonical slot is tied to no part"
+	},
+	{
+		"file": "lib/fill-state.mjs",
+		"find": "partStateSlots( { db, cal, block: rec.name, prop, slot, state: writeState } )",
+		"replace": "partStateSlots( { db, cal, block: rec.name, prop, slot, state } )",
+		"why": "an open look written through the hover setting asks the part for its open setting, finds none, and never reaches the plain item"
+	},
+	{
+		"file": "lib/fill-state-parts.mjs",
+		"find": "( resting ? [ slot && `slot:${ slot }`, element ] : [ slot ? `slot:${ slot }` : element ] )",
+		"replace": "[ slot && `slot:${ slot }`, element ]",
+		"why": "a shared css_element ties a state setting with a slot of its own to another part"
 	}
 ]

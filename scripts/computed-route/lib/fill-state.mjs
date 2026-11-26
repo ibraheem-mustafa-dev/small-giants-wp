@@ -352,7 +352,7 @@ export function fillStates( { tree, nodes, reads, calFor, db, snapshot } ) {
 				const asHover = ! atRest && ! pseudo && openAsHover( { script, state, held, hasHover: candidates( db, rec.name, prop, 'hover' ).length > 0, hasOpen: candidates( db, rec.name, prop, 'open' ).length > 0, hoverLook: drafts.has( `hover|${ pseudo }|${ prop }` ) } );
 				const writeState = asHover ? 'hover' : state;
 				const gap = atRest ? null : stateGap( writeState, held );
-				const res = gap ? { status: 'gap', gap } : resolveProperty( { node, block: rec.name, prop, draft: perWidth, baseline: () => undefined, slots: [ slot, ...( atRest || asHover ? [] : openSlots( cal, prop, slot, state ) ) ].concat( atRest ? [] : partStateSlots( { db, cal, block: rec.name, prop, slot, state } ) ), calibration: cal, db, snapshot, log: [], state: atRest ? null : writeState, siblings: ctx.siblings, rest: pseudo ? undefined : restValue( reads, target.id, prop ) } );
+				const res = gap ? { status: 'gap', gap } : resolveProperty( { node, block: rec.name, prop, draft: perWidth, baseline: () => undefined, slots: [ slot, ...( atRest || asHover ? [] : openSlots( cal, prop, slot, state ) ) ].concat( atRest ? [] : partStateSlots( { db, cal, block: rec.name, prop, slot, state: writeState } ) ), calibration: cal, db, snapshot, log: [], state: atRest ? null : writeState, siblings: ctx.siblings, rest: pseudo ? undefined : restValue( reads, target.id, prop ) } );
 				if ( 'written' === res.status ) {
 					for ( const w of res.writes ) {
 						const { before, after } = setAttr( node, w );

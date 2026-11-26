@@ -6,6 +6,7 @@
 // on a visible fill, plugins/sgs-blocks/includes/nav-menu-css.php).
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { DatabaseSync } from 'node:sqlite';
 import { openDb } from '../lib/db.mjs';
 import { fillStates } from '../lib/fill-state.mjs';
 import { partStateSlots } from '../lib/fill-state-parts.mjs';
@@ -81,4 +82,46 @@ test( 'negative control: when the state setting was measured on the element itse
 	const own = cal();
 	own.settings.itemBgHover = setting( 'background-color', 'hover', [ `${ LINK( 3 ) }::before`, `${ FIRST }::before` ] );
 	assert.deepEqual( partStateSlots( { db, cal: own, block: BLOCK, prop: 'background-color', slot: LINK( 3 ), state: 'hover' } ), [ `${ FIRST }::before` ] );
+} );
+
+// RF1 review: an open-panel look written through the hover setting (lib/fill-state.mjs, `asHover`) asks the part's other
+// instances for the HOVER setting, not the open one: the block holds no open border colour, so asking with `open` finds nothing.
+const openAsHoverRead = ( slot ) => {
+	const c = cal();
+	c.settings.itemBorderColour = setting( 'border-color', null, [ LINK( 3 ), LINK( 4 ) ] );
+	c.settings.itemBorderColourHover = setting( 'border-color', 'hover', [ FIRST ] );
+	c.elements[ FIRST ] = {};
+	const declared = { 'border-bottom-color': 'rgb(20, 20, 20)' };
+	const l = { states: [ 'open' ], family: 'script', selector: 'script hover (Page/90)', tokens: [], declared, rendered: declared, read: 'script', script: { kind: 'open-panel', events: [ 'hover' ], element: 'Page/90', items: [ { copy: 0, label: 'Late', look: true } ] } };
+	return fillStates( {
+		tree: [ { name: BLOCK, attributes: { className: 'cr-ref-n-0' }, innerBlocks: [] } ],
+		nodes: [ { index: 0, name: BLOCK, targets: [ { id: 't', slot } ] } ],
+		reads: { widths: Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, { t: { styles: { 'border-bottom-color': 'rgb(0, 0, 0)' } } } ] ) ), states: Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, { looks: { t: [ l ] } } ] ) ) },
+		calFor: () => c, db, snapshot: { palette: [], spacing: [], fontSizes: [] },
+	} );
+};
+
+test( 'MUST FAIL: an open-panel look written as a hover look reaches a plain item through the part\'s hover setting', () => {
+	const r = openAsHoverRead( LINK( 3 ) );
+	assert.deepEqual( r.writes.map( ( w ) => [ w.attr, w.state ] ), [ [ 'itemBorderColourHover', 'hover' ] ], JSON.stringify( r.unmapped ) );
+} );
+
+// A `css_element` is shared by unrelated parts of one block (`wrapper`, `item`); the framework DB's own table shape, two rows.
+test( 'MUST FAIL: a state setting with a canonical slot of its own is not tied to another part by a shared css_element', () => {
+	const mem = new DatabaseSync( ':memory:' );
+	mem.exec( 'CREATE TABLE block_attributes (block_slug TEXT, attr_name TEXT, css_element TEXT, canonical_slot TEXT)' );
+	const add = mem.prepare( 'INSERT INTO block_attributes VALUES (?, ?, ?, ?)' );
+	add.run( 'x/y', 'wrapBg', 'wrapper', 'card' );
+	add.run( 'x/y', 'panelBgHover', 'wrapper', 'panel' );
+	add.run( 'x/y', 'wrapBgHover', 'wrapper', 'card' );
+	add.run( 'x/y', 'wrapBgCurrent', 'wrapper', null );
+	const c = { settings: {
+		wrapBg: setting( 'background-color', null, [ '.a' ] ),
+		panelBgHover: setting( 'background-color', 'hover', [ '.p' ] ),
+		wrapBgHover: setting( 'background-color', 'hover', [ '.h' ] ),
+		wrapBgCurrent: setting( 'background-color', 'current', [ '.c' ] ),
+	} };
+	const args = { db: mem, cal: c, block: 'x/y', prop: 'background-color', slot: '.a', state: 'hover' };
+	assert.deepEqual( partStateSlots( args ), [ '.h' ], 'the panel\'s hover setting shares the element name but is another part' );
+	assert.deepEqual( partStateSlots( { ...args, state: 'current' } ), [ '.c' ], 'a state setting with no slot still ties through its element' );
 } );
