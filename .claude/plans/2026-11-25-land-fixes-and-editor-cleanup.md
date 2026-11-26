@@ -32,7 +32,7 @@ created: 2026-11-25
 |---|---|---|
 | `fix/rf3-review2` | `wt-rf3-review2` | 5 second-review faults fixed; browser test `intake-command` queued; merges after it passes |
 | `fix/rf4-review2` | `wt-rf4-review2` | fixing 4 faults (store getters deleted on restore, a renamed store method silently skipped, JavaScript string escapes dropped, reassigned refs) |
-| `fix/rf6-review2` | `wt-rf6-review2` | fixing 4 faults (animations schema lacks `source.timer`, part id check too wide, carousel autoplay lost, a 0ms shrink turns off the row's other transitions) |
+| `fix/rf6-review2` | merged (`61749dacc`) | 4 second-review faults fixed: `source.timer` added to the master animations schema (the client draft copies under `sites/*/handoff/` stay unchanged), part id check limited to the holder's components, carousel/quote/review/rotator autoplay with a word-cycler guard, a 0ms shrink beside a timed collapse writes no timing and is noted; ease-in curve added |
 | `fix/rf8-plumbing` | `wt-rf8-plumbing` | first and second review faults fixed (FIELDS_META settling, tree hash for every built post, provisional ids, a parent change to a published page is reported and not applied, form scroll); browser tests and the form-submit mutation run queued, then merge |
 | `fix/rf7-shop-forms` | `E:/sgs-tmp/wt-rf7-shop-forms` | ready since Track A3 (6 stale markers re-aimed, `u9-planted-draft` assertion added, 68/68 changed tests); its partner rf3 is merged, so next: rebase onto `main`, code review, whole non-browser suite, merge (S, Task 15, waits on it and rf8) |
 | `fix/f-mega` | `wt-f-mega` | review fixes done; the Fill proof of `mega-menu-brands` is running and needs the `--allow-external` question answered |
@@ -67,7 +67,7 @@ Changes: A1 (rf1, rf6), A2 (rf2, rf3, rf4, rf5, rf8), A3 (rf7, rf9, rf10), A4 (c
 
 Done when: all 11 branches are merged, the full suite passes, `check-mutation-lists.mjs` shows 0 new, and A4's render-check shows Mama's header unchanged.
 
-Depends on: none. Status: 8 of the 11 branches are merged (rf1, rf2, rf3, rf4, rf5, rf6, rf9, rf10); the rf3, rf4 and rf6 second-review fixes are in flight, and rf7, rf8 and A4 are not merged (see "Where it stands").
+Depends on: none. Status: 8 of the 11 branches are merged (rf1, rf2, rf3, rf4, rf5, rf6, rf9, rf10); the rf6 second-review fixes are merged; the rf3 and rf4 second-review fixes are in flight, and rf7, rf8 and A4 are not merged (see "Where it stands").
 
 ### Task 3: Track C, every block part findable
 Brief `c-parts.md` (`i15`, `i5`).
