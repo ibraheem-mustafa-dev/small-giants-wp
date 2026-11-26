@@ -1,0 +1,14 @@
+[
+	{
+		"file": "lib/intake-review-carry.mjs",
+		"find": "\t\tif ( null === old.mark ) {\n\t\t\treturn base;\n\t\t}",
+		"replace": "\t\tif ( null === old.mark || 'effect' === r.rowType ) {\n\t\t\treturn base;\n\t\t}",
+		"why": "the carry drops every effect mark"
+	},
+	{
+		"file": "lib/intake-review-carry.mjs",
+		"find": "\t\tif ( null === old.mark ) {\n\t\t\treturn base;\n\t\t}",
+		"replace": "\t\tif ( null === old.mark || [ 'effect', 'skeleton-block', 'palette-role' ].includes( r.rowType ) ) {\n\t\t\treturn base;\n\t\t}",
+		"why": "the carry drops every effect, skeleton and palette-role mark"
+	}
+]

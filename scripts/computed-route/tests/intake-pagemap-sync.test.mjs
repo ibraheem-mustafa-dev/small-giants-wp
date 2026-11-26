@@ -35,16 +35,19 @@ function scratch() {
 	// The stale proposal: the export's map less its last row, as an earlier intake proposed it.
 	const stale = proposal.slice( 0, -1 );
 	const committed = withUnappliedMarks( JSON.parse( fs.readFileSync( src.intake, 'utf8' ) ), fs.readFileSync( src.review, 'utf8' ) ).intake;
+	// The rows the committed source leaves unmarked (Bean has not decided them yet): only these are marked by hand below, so a
+	// mark the carry loses is a failure, never filled back in.
+	const marked = new Set( ( committed.review || [] ).filter( ( r ) => null !== r.mark ).map( ( r ) => r.rowId ) );
 	const record = { ...committed, pageMap: stale };
 	record.review = carryOver( committed, record, { template } ).review.map( ( r ) => ( 'page-map' === r.rowType ? { ...r, mark: 'accept', markedOn: '2026-10-25' } : r ) );
 	fs.writeFileSync( at.intake, `${ JSON.stringify( record, null, 1 ) }\n` );
 	fs.writeFileSync( at.review, renderReview( record, { template } ) );
 	fs.writeFileSync( at.pageMap, `${ JSON.stringify( stale, null, 2 ) }\n` );
-	return { repo, at, proposal, template };
+	return { repo, at, proposal, template, marked };
 }
 
 test( 'MUST FAIL: --apply-review after --page-map confirms the regenerated map, never the stale proposal', () => {
-	const { repo, at, proposal, template } = scratch();
+	const { repo, at, proposal, template, marked } = scratch();
 	try {
 		const said = [];
 		assert.equal( runPageMap( { client: CLIENT, repo }, { log: ( l ) => said.push( l ) } ), 0, said.join( '\n' ) );
@@ -54,8 +57,9 @@ test( 'MUST FAIL: --apply-review after --page-map confirms the regenerated map, 
 		assert.deepEqual( intake.pageMap.map( rowKey ), proposal.map( rowKey ), 'intake.json holds the regenerated proposal' );
 		assert.match( fs.readFileSync( at.review, 'utf8' ), new RegExp( proposal.at( -1 ).slug ), 'review.md lists the regenerated rows' );
 		assert.ok( intake.review.filter( ( r ) => 'page-map' === r.rowType && r.mark ).length >= proposal.length - 1, 'the unchanged rows keep their marks' );
-		// Bean accepts the new row in the review, and marks every other row still waiting for a mark with its section's first mark.
-		intake.review = intake.review.map( ( r ) => ( ! r.mark ? { ...r, mark: 'page-map' === r.rowType ? 'accept' : MARKS[ r.rowType ][ 0 ].value, markedOn: '2026-10-26' } : r ) );
+		// Bean accepts the new page-map row, and marks the rows the committed source left undecided; a row the source had marked
+		// keeps the carried mark or the apply refuses.
+		intake.review = intake.review.map( ( r ) => ( ! r.mark && ( 'page-map' === r.rowType || ! marked.has( r.rowId ) ) ? { ...r, mark: 'page-map' === r.rowType ? 'accept' : MARKS[ r.rowType ][ 0 ].value, markedOn: '2026-10-26' } : r ) );
 		fs.writeFileSync( at.intake, `${ JSON.stringify( intake, null, 1 ) }\n` );
 		fs.writeFileSync( at.review, renderReview( intake, { template } ) );
 		const lines = [];
