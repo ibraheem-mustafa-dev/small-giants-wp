@@ -442,7 +442,11 @@ def _inside(el, anc) -> bool:
 # ---------------------------------------------------------------- one block
 
 
-def build_block(short: str, snapshot_file: Path, woocommerce: bool) -> dict:
+def build_block(short: str, snapshot_file: Path, woocommerce: bool, parts=None, shared=None) -> dict:
+    """The block's look under the snapshot. `parts` (default ALL_PARTS) names what is read here: CLIENT_PARTS reads all but
+    the value forms and the content facts, which come from `shared` (shared_facts, assembled by with_forms and
+    with_content); SHARED_PARTS reads only those two and returns the shared document (shared_doc)."""
+    parts = ALL_PARTS if parts is None else parts
     snapshot = json.loads(snapshot_file.read_text(encoding='utf-8'))
     props = load_props()
     fixtures = json.loads(FIXTURES.read_text(encoding='utf-8'))
@@ -476,15 +480,19 @@ def build_block(short: str, snapshot_file: Path, woocommerce: bool) -> dict:
             path_classes(reader.page(i['key']), classes)
             path_attrs(reader.page(i['key']), attrs, names)
     paint_states = {}
-    for st in fixture.get('paintStates') or []:
+    for st in (fixture.get('paintStates') or []) if 'client' in parts else []:
         i = next((x for x in insts if x.get('paintState') == st['name']), None)
         if i is None or not results[i['key']].get('ok'):
             continue
         els = {}
         read_page(reader.page(i['key']), els, props, True)
         paint_states[st['name']] = {'when': st.get('when') or {}, 'elements': state_paint(resting(els, props), st.get('props'))}
-    facts = setting_facts(bridge, reader)
-    record = record_facts(short, bridge, reader, elements, classes)
+    facts = setting_facts(bridge, reader, parts)
+    record = record_facts(short, facts_view(bridge, parts), reader, elements, classes)
+    if 'client' not in parts:
+        return shared_doc(short, record, facts, reader, errors)
+    if shared is not None:
+        record, facts = with_forms(shared['forms'], record), with_content(facts, shared['content'])
     return {'block': f'sgs/{short}', 'format': FORMAT, 'codeHash': rn.hash, 'elements': resting(elements, props),
             'pathClasses': classes, 'pathAttrs': {k: v for k, v in attrs.items() if v}, **({'settingFacts': record} if record else {}),
             **({'paintStates': paint_states} if paint_states else {}), **facts,
@@ -523,6 +531,7 @@ class Reader:
     def __init__(self, pages, results, props):
         self.pages, self.results, self.props = pages, results, props
         self.memo, self.style_memo, self.content_memo = {}, {}, {}
+        self.seen = set()  # every class on a page this reader built (shared_doc keeps it for custom_css_reaches)
 
     def page(self, job: str, held=()):
         key = (job, tuple(held))
@@ -531,6 +540,7 @@ class Reader:
         if key not in self.memo:
             pg = self.pages.get(job, held=held)
             settle(pg, self.results[job])
+            self.seen.update(c for el in pg.soup.find_all(True) for c in (el.get('class') or []))
             self.memo[key] = pg
             if 'keep-pages' not in MUTATE:
                 for k in [k for k, v in self.pages.memo.items() if v is pg]:
@@ -886,10 +896,12 @@ def _baseline(i, plan):
     return f'b:{b["key"]}' if b else None
 
 
-def setting_facts(bridge: dict, reader: Reader) -> dict:
+def setting_facts(bridge: dict, reader: Reader, parts=None) -> dict:
     """The per-setting facts the route reads beside the setting record: `discovered` (what each value of a setting whose
     values are not CSS keywords paints) and `text`, `link`, `presence` (where a setting's text and link land, and which
-    parts a value shows or hides), each read against the instance's own baseline (its base, else its variant's default)."""
+    parts a value shows or hides), each read against the instance's own baseline (its base, else its variant's default).
+    `parts` (default ALL_PARTS): `discovered` and `noMarker` are read with 'client', the content facts with 'content'."""
+    parts = ALL_PARTS if parts is None else parts
     def baseline(i, plan):
         if i.get('baseKey'):
             b = next((x for x in plan if x.get('isBase') and x.get('baseKey') == i['baseKey']), None)
@@ -898,7 +910,7 @@ def setting_facts(bridge: dict, reader: Reader) -> dict:
         return f'b:{b["key"]}' if b else None
     style_plan, content_plan = bridge.get('discover', []), bridge.get('content', [])
     discover = []
-    for i in style_plan:
+    for i in style_plan if 'client' in parts else []:
         if not i.get('discover'):
             continue
         base, job = baseline(i, style_plan), f'b:{i["key"]}'
@@ -907,19 +919,29 @@ def setting_facts(bridge: dict, reader: Reader) -> dict:
     needles = tuple(sorted({i['content']['needle'] for i in content_plan if i.get('content', {}).get('needle')}))
     every = style_plan + content_plan
     content = []
-    for i in content_plan:
+    for i in content_plan if 'content' in parts else []:
         if not i.get('content'):
             continue
         base, job = baseline(i, content_plan) or baseline(i, every), f'b:{i["key"]}'
         if base and reader.ok(base) and reader.ok(job):
             content.append({'content': i['content'], 'contentDef': reader.content(base, needles), 'contentRead': reader.content(job, needles)})
     out = fold(discover, content)
-    if bridge.get('noMarker'):
+    if bridge.get('noMarker') and 'client' in parts:
         out['noMarker'] = sorted(set(bridge['noMarker']))
     return out
 
 
 def look_key(short: str, snapshot_file: Path, woocommerce: bool) -> str:
+    return _key(short, woocommerce, file_md5(snapshot_file))
+
+
+def shared_key(short: str, woocommerce: bool) -> str:
+    """The key of a block's shared facts (shared_facts): the look's key with the snapshot left out, since they are read
+    under the theme's own theme.json, which the key holds among the theme files."""
+    return _key(short, woocommerce, 'shared-facts')
+
+
+def _key(short: str, woocommerce: bool, client: str) -> str:
     fixtures = json.loads(FIXTURES.read_text(encoding='utf-8'))
     fixture = (fixtures.get(f'sgs/{short}') or {})
     rn_hash = RN.code_hash(PLUGIN, RN.fixture_files(fixture, FIXTURES_DIR), None)
@@ -928,7 +950,7 @@ def look_key(short: str, snapshot_file: Path, woocommerce: bool) -> str:
     rec = RECORDS / f'{short}.json'
     # the fixture entry as written: a look is drawn from it, so an edit to it alone builds the look again
     entry = '' if 'fixture-key' in MUTATE else hashlib.md5(json.dumps(fixture, sort_keys=True).encode()).hexdigest()
-    for part in (builder_hash(), rn_hash, entry, file_md5(snapshot_file), str(woocommerce), ','.join(sorted(MUTATE)),
+    for part in (builder_hash(), rn_hash, entry, client, str(woocommerce), ','.join(sorted(MUTATE)),
                  file_md5(rec) if rec.is_file() else 'no-record',
                  *(file_md5(f) for f in sheet_inputs(short) + theme_files if f.is_file()),
                  reach_hash()):
@@ -1140,20 +1162,145 @@ def shareable(text: str) -> bool:
     return not any(x in low for x in forms)
 
 
-def store_look(store: Path, site: str, short: str, key: str, text: str) -> None:
-    """Keep a built look for every checkout, and drop this block's files no checkout has used for STORE_KEEP_DAYS."""
+def store_look(store: Path, site: str, short: str, key: str, text: str, check=None) -> None:
+    """Keep a built look for every checkout, and drop this block's files no checkout has used for STORE_KEEP_DAYS. `check`
+    (default read_look) tells a whole stored file from a partial one."""
     if not shareable(text):
         return
     f = store_file(store, site, short, key)
-    if read_look(f, short, key) is None:
+    if (check or read_look)(f, short, key) is None:
         atomic_write(f, text)
     for other in f.parent.glob(f'{short}.*.json'):
         if other != f and time.time() - other.stat().st_mtime > STORE_KEEP_DAYS * 86400:
             other.unlink(missing_ok=True)
 
 
+# ---------------------------------------------------------------- the facts every client shares
+
+# What build_block reads: 'client' the default paint, paint states, discovered values and state looks (the client's
+# snapshot changes them); 'forms' the value forms a setting takes; 'content' where a text or link setting lands and what a
+# value shows or hides. The forms and content facts come out the same for every client (measured 2026-11-26 on three
+# clients: 100% of entries), so they are read once a code version under the theme's own theme.json (shared_facts) and
+# each client's look is assembled from them (with_forms, with_content).
+ALL_PARTS = frozenset({'client', 'forms', 'content'})
+CLIENT_PARTS = frozenset({'client'})
+SHARED_PARTS = frozenset({'forms', 'content'})
+SHARED_SITE = '_shared'  # the folder the shared facts are kept in, beside the clients' (a client folder never starts with _)
+SHARED_FORMAT = 1
+CONTENT_KEYS = ('text', 'presence', 'link')
+
+
+def neutral_snapshot() -> Path:
+    """The snapshot the shared facts are read under: the theme's own theme.json, which merges over itself unchanged, has
+    no custom CSS, and gives the value-form plan a palette for its slug marker."""
+    return REPO / TH.THEME_REL / 'theme.json'
+
+
+def facts_view(bridge: dict, parts) -> dict:
+    """The bridge plan as record_facts reads it for `parts`: the value-form instances only with 'forms', the state (and any
+    other per-client) instances only with 'client'. A baseline is never one of these instances (the plan keeps every
+    baseline in `discover`), so leaving them out changes no other reading."""
+    view = dict(bridge)
+    if 'forms' not in parts:
+        view['forms'] = []
+    if 'client' not in parts:
+        view.update({k: [] for k, v in bridge.items() if isinstance(v, list) and k not in ('discover', 'content', 'forms', 'noMarker', 'stateLookProps')})
+    return view
+
+
+def shared_doc(short: str, record: dict, facts: dict, reader, errors: dict) -> dict:
+    """The facts every client shares, as shared_facts keeps them: `forms` {setting: [form]} in the order record_facts found
+    them, `content` the text, presence and link facts, and `classes` every class on a page they were read from."""
+    return {'block': f'sgs/{short}', 'format': SHARED_FORMAT,
+            'forms': {k: v['forms'] for k, v in record.items() if v.get('forms')},
+            'content': {k: facts[k] for k in CONTENT_KEYS if k in facts},
+            'classes': sorted(reader.seen), **({'renderErrors': errors} if errors else {})}
+
+
+def with_forms(forms: dict, record: dict) -> dict:
+    """settingFacts as one build gives it: every setting with a value form first, in the order the forms were found, each
+    `forms` before what the client's own reading adds (a state look)."""
+    out = {k: {'forms': list(v)} for k, v in forms.items()}
+    for k, v in record.items():
+        out.setdefault(k, {}).update(v)
+    return out
+
+
+def with_content(facts: dict, content: dict) -> dict:
+    """The per-setting facts as one build gives them: `discovered`, then text, presence and link, then `noMarker`."""
+    return {'discovered': facts.get('discovered', {}), **{k: content[k] for k in CONTENT_KEYS if k in content},
+            **({'noMarker': facts['noMarker']} if 'noMarker' in facts else {})}
+
+
+def custom_css_reaches(snapshot: dict, classes) -> bool:
+    """Whether a rule of the snapshot's own CSS (`styles.css`) could match an element of a page the shared facts were read
+    from, so that client's facts are read under its own CSS instead: a rule matches only an element (or ancestors) carrying
+    every class it requires (cascade.py::required_classes, the pre-filter the cascade itself applies). A rule that requires
+    no class, a palette class (`has-…`, named by the client's own slugs), or CSS that does not parse counts as reaching."""
+    import cascade as C
+    css = (snapshot.get('styles') or {}).get('css')
+    if not css or MUTATE & {'custom-css', 'shared-guard'}:
+        return False
+    try:
+        rules = C.flatten(css, 1, 0)
+    except Exception:  # noqa: BLE001 - CSS the reader cannot parse could match anything
+        return True
+    seen = set(classes)
+    return any({c for c in C.required_classes(r.selector) if not c.startswith('has-')} <= seen for r in rules)
+
+
+def read_shared(f: Path, short: str, key: str):
+    """The text of a shared-facts file when it parses and holds this block's facts under `key`; None otherwise."""
+    try:
+        text = f.read_text(encoding='utf-8')
+        doc = json.loads(text)
+    except (OSError, ValueError):
+        return None
+    ok = (isinstance(doc, dict) and doc.get('key') == key and doc.get('block') == f'sgs/{short}' and doc.get('format') == SHARED_FORMAT
+          and isinstance(doc.get('forms'), dict) and isinstance(doc.get('content'), dict) and isinstance(doc.get('classes'), list))
+    return text if ok else None
+
+
+def shared_facts(short: str, woocommerce: bool, out_root: Path) -> dict:
+    """The block's shared facts: from `<out_root>/_shared/` when current, else from the shared store (copied there), else
+    read under neutral_snapshot() and kept in both. Keyed by shared_key, so every client and checkout at the same code
+    takes the same file."""
+    key = shared_key(short, woocommerce)
+    local = out_root / SHARED_SITE / f'{short}{".woocommerce" if woocommerce else ""}.json'
+    text = read_shared(local, short, key)
+    store = look_store()
+    if text is None and store is not None and 'store' not in MUTATE:
+        text = read_shared(store_file(store, SHARED_SITE, short, key), short, key)
+        if text is not None:
+            atomic_write(local, text)
+    if text is not None:
+        return json.loads(text)
+    doc = build_block(short, neutral_snapshot(), woocommerce, parts=SHARED_PARTS)
+    doc['key'] = key
+    text = json.dumps(doc, indent=1)
+    atomic_write(local, text)
+    if store is not None:
+        try:
+            store_look(store, SHARED_SITE, short, key, text, check=read_shared)
+        except OSError:
+            pass  # the store is a convenience: a full or unwritable folder never fails a build
+    return doc
+
+
+def build_look(short: str, snapshot_file: Path, woocommerce: bool, out_root: Path, per_client: bool = False) -> dict:
+    """The block's look for one client: its own reading plus the shared facts. Read whole for the client (build_block
+    alone) with `per_client`, or when the client's custom CSS could reach a page the shared facts were read from."""
+    if per_client or 'shared-facts' in MUTATE:
+        return build_block(short, snapshot_file, woocommerce)
+    shared = shared_facts(short, woocommerce, out_root)
+    if custom_css_reaches(json.loads(snapshot_file.read_text(encoding='utf-8')), shared['classes']):
+        return build_block(short, snapshot_file, woocommerce)
+    return build_block(short, snapshot_file, woocommerce, parts=CLIENT_PARTS, shared=shared)
+
+
 def write_block(args_tuple) -> tuple:
-    short, snapshot_file, woocommerce, out_dir, site = args_tuple
+    short, snapshot_file, woocommerce, out_dir, site, *rest = args_tuple
+    per_client = bool(rest and rest[0])
     out = Path(out_dir) / f'{short}.json'
     key = look_key(short, snapshot_file, woocommerce)
     if out.is_file():
@@ -1173,7 +1320,7 @@ def write_block(args_tuple) -> tuple:
                 pass
             atomic_write(out, text)
             return short, 'current (store)'
-    doc = build_block(short, snapshot_file, woocommerce)
+    doc = build_look(short, snapshot_file, woocommerce, Path(out_dir).parent, per_client)
     doc.update(site=site, key=key, snapshot=hashlib.md5(snapshot_file.read_bytes()).hexdigest())
     text = json.dumps(doc, indent=1)
     atomic_write(out, text)
@@ -1200,12 +1347,14 @@ def main(argv=None) -> int:
     ap.add_argument('--all', action='store_true')
     ap.add_argument('--woocommerce', action='store_true')
     ap.add_argument('--jobs', type=int, default=4)
+    ap.add_argument('--per-client-facts', action='store_true',
+                    help="read the value forms and content facts under this client's CSS instead of taking the shared ones")
     a = ap.parse_args(argv)
     blocks = all_blocks() if a.all else [b.split('/', 1)[-1] for b in (a.blocks or '').split(',') if b]
     if not blocks:
         ap.error('name --blocks or --all')
     snap = a.snapshot.resolve()
-    jobs = [(b, snap, a.woocommerce, str(a.out / a.site), a.site) for b in blocks]
+    jobs = [(b, snap, a.woocommerce, str(a.out / a.site), a.site, a.per_client_facts) for b in blocks]
     failed = 0
     if a.jobs > 1 and len(jobs) > 1:
         # one block's failure is reported and the rest still build, as in the one-at-a-time path below
