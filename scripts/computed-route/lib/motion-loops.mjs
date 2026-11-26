@@ -57,9 +57,10 @@ export function measuredLoopOf( record, measured ) {
 // widths show exactly one CSS animation name running there, the record is that loop, its name, keyframes, time and easing
 // read from the render (lib/motion-loops.mjs::resolvedLoop) and the widths it runs at deciding its range
 // (lib/fill-motion-element.mjs::elementEffects). Any other record, a value the render never shows running, or two
-// different animations measured on the element, is returned unchanged, as is any record when 1440 was not sampled (the
+// different animations measured on the element, or a loop another of the element's records (`others`) already names, is
+// returned unchanged, as is any record when 1440 was not sampled (the
 // widths it does not run at are then unknown). byWidth: sampleMotion()'s { 375, 768, 1440 }.
-export function templateValueLoop( record, byWidth ) {
+export function templateValueLoop( record, byWidth, others = [] ) {
 	if ( 'css-animation' !== record?.mechanism || 'infinite' === record.iterations || Infinity === record.iterations || ! byWidth?.[ 1440 ] ) {
 		return record;
 	}
@@ -73,6 +74,12 @@ export function templateValueLoop( record, byWidth ) {
 		return record;
 	}
 	const [ name ] = names;
+	// The loop belongs to another record of the element (its own stylesheet animation by that name, or one the measured
+	// loop matches): the template value is not it.
+	const claimed = ( others || [] ).some( ( o ) => o !== record && o.id !== record.id && ( ( o.properties || [] ).some( ( p ) => 'animation-name' === p.property && p.to === name ) || Object.values( byWidth ).some( ( m ) => measuredLoopOf( o, m ) ) ) );
+	if ( claimed ) {
+		return record;
+	}
 	return { ...record, iterations: 'infinite', duration_ms: null, delay_ms: null, easing: null, direction: null, properties: [ { property: 'animation-name', from: null, to: name } ], templateValue: named };
 }
 

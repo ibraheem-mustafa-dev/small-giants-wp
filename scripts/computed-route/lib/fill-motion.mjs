@@ -378,7 +378,7 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 			}
 			// A CSS animation the draft sets through a template value (`animation:{{ tickerAnim }}`) is the endless animation the
 			// render shows on the element, where it shows one (lib/motion-loops.mjs::templateValueLoop), not a one-shot entrance.
-			own = own.map( ( r ) => templateValueLoop( r, loops[ t.id ] ) );
+			own = own.map( ( r, _i, all ) => templateValueLoop( r, loops[ t.id ], all ) );
 			const m = elementMotion( own, { mdb, ctx, sampled: sampled[ t.id ], runtime, offers: stateOffers, target, itemHost: itemHost( db, n.name ) } );
 			m.unmapped.push( ...sets.filter( ( s ) => s.reason ).map( ( s ) => ( { record: '<set>', reason: s.reason } ) ) );
 			used.push( ...m.used );

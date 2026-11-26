@@ -215,6 +215,13 @@ test( 'MUST FAIL: a CSS animation set through a template value is the loop the r
 	assert.equal( templateValueLoop( keyed, PHONE_ONLY ), keyed );
 	const { 1440: _wide, ...unsampled } = PHONE_ONLY;
 	assert.equal( templateValueLoop( HOLE, unsampled ), HOLE, 'with no 1440 sample the range is unknown' );
+	// An entrance set through a template value on an element that also runs its own stylesheet loop: the loop the render
+	// shows is that other record's, so the entrance is not rewritten as it.
+	const heroIn = { ...HOLE, id: 'K-09', source: { code: 'animation:{{ heroIn }}' }, properties: [ { property: 'animation-name', from: null, to: 'heroIn' } ] };
+	const pulse = rec( 'CA-02', { mechanism: 'css-animation', element: HOLE.element, trigger: { type: 'load' }, duration_ms: 2000, easing: 'ease-in-out', direction: 'alternate', properties: [ { property: 'animation-name', from: null, to: 'pulse' }, { property: 'opacity', from: '1', to: '0.6' } ] } );
+	const pulsing = { 1440: timedLoop( 'pulse', 2000, { width: 300, height: 300 } ), 768: timedLoop( 'pulse', 2000, { width: 300, height: 300 } ), 375: timedLoop( 'pulse', 2000, { width: 300, height: 300 } ) };
+	assert.equal( templateValueLoop( heroIn, pulsing, [ heroIn, pulse ] ), heroIn, "the measured loop is the other record's" );
+	assert.equal( templateValueLoop( heroIn, pulsing, [ heroIn ] ).iterations, 'infinite', "control: with no other record naming it, the loop is the template value's" );
 	const script = { ...HOLE, mechanism: 'waapi' };
 	assert.equal( templateValueLoop( script, PHONE_ONLY ), script );
 } );
@@ -228,6 +235,11 @@ test( 'MUST FAIL: the writer stores a template-value ticker as the marquee of it
 	assert.equal( layers[ 0 ].effect, 'marquee' );
 	assert.equal( layers[ 0 ].values.belowBreakpoint, 'mobile' );
 	assert.equal( out.unmapped.filter( ( u ) => 'K-01' === u.value ).length, 0, 'the record is written, not reported as a refuted entrance' );
+	// Negative control: the element's own stylesheet loop is that record's, so the template-value entrance is not rewritten.
+	const flat2 = nodes.map( ( n ) => ( { name: n.name, attributes: {}, ref: `r${ n.index }` } ) );
+	const own = rec( 'CA-02', { mechanism: 'css-animation', element: HOLE.element, trigger: { type: 'load' }, duration_ms: 30000, easing: 'linear', direction: 'normal', properties: [ { property: 'animation-name', from: null, to: 'marquee' }, { property: 'transform', from: 'translateX(0px)', to: 'translateX(-50%)' } ] } );
+	const out2 = motionWrites( { nodes, flat: flat2, refOf: ( x ) => x.ref, records: [ HOLE, own ], sampled: { '0:': { 1440: null, 768: null, 375: null } }, loops: { '0:': PHONE_ONLY }, mdb, schema, rawSnapshot: SNAPSHOT, offers } );
+	assert.equal( out2.unmapped.filter( ( u ) => 'K-01' === u.value ).length, 1, JSON.stringify( out2.unmapped ) );
 } );
 
 test( 'MUST FAIL: a <marquee> and an SVG animation element are loops of the draft\'s markup', () => {

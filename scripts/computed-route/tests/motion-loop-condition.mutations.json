@@ -7,7 +7,7 @@
 	},
 	{
 		"file": "lib/fill-motion.mjs",
-		"find": "own = own.map( ( r ) => templateValueLoop( r, loops[ t.id ] ) );",
+		"find": "own = own.map( ( r, _i, all ) => templateValueLoop( r, loops[ t.id ], all ) );",
 		"replace": "own = own.map( ( r ) => r );",
 		"why": "a ticker set through a template value would stay a refuted entrance, as on Eye Care's header"
 	},
@@ -46,5 +46,17 @@
 		"find": " || ! byWidth?.[ 1440 ] ) {",
 		"replace": " ) {",
 		"why": "a template value sampled only at narrow widths would be read as running at every width"
+	},
+	{
+		"file": "lib/motion-loops.mjs",
+		"find": "\tif ( claimed ) {",
+		"replace": "\tif ( false ) {",
+		"why": "an entrance set through a template value would be rewritten as the element's own stylesheet loop"
+	},
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "templateValueLoop( r, loops[ t.id ], all )",
+		"replace": "templateValueLoop( r, loops[ t.id ] )",
+		"why": "the writer would not pass the element's other records, so a loop they own would be taken"
 	}
 ]
