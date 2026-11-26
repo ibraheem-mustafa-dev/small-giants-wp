@@ -59,7 +59,7 @@ def test_a_block_rendered_inside_changes_the_hash_and_so_do_new_or_gone_blocks(t
         assert RN.code_hash(plugin, (), {'button'}) != before
 
 
-def fake_runner(monkeypatch, reads, calls, seen=None):
+def fake_runner(monkeypatch, reads, calls, seen=None, loads=True, html=None):
     """subprocess.run standing in for the PHP runner: it reports `reads` as the files the render read, each with the md5 it
     took at shutdown (included-files.php): the file's content then, or `seen[file]` when given (an edit made after the read)."""
     import hashlib
@@ -67,10 +67,11 @@ def fake_runner(monkeypatch, reads, calls, seen=None):
 
     def run(cmd, **k):
         calls.append(cmd)
-        Path(k['env']['SGS_SETTING_RECORD_INCLUDED']).write_text(json.dumps([]), encoding='utf-8')
+        # a render always loads its own render.php (an empty list is never cached)
+        Path(k['env']['SGS_SETTING_RECORD_INCLUDED']).write_text(json.dumps([str(Path(k['cwd']) / 'src/blocks/button/render.php')] if loads else []), encoding='utf-8')
         taken = {str(r): (seen or {}).get(r) or hashlib.md5(Path(r).read_bytes()).hexdigest() for r in reads}
         Path(k['env']['SGS_SETTING_RECORD_READS']).write_text(json.dumps(taken), encoding='utf-8')
-        return SimpleNamespace(stdout=json.dumps({'ok': True, 'html': f'<p>{len(calls)}</p>'}), stderr='')
+        return SimpleNamespace(stdout=json.dumps({'ok': True, 'html': html or f'<p>{len(calls)}</p>'}), stderr='')
     monkeypatch.setattr(subprocess, 'run', run)
 
 
@@ -174,3 +175,77 @@ def test_must_fail_the_hash_kept_is_the_one_php_took_before_it_exited(tmp_path, 
     assert rn.render('sgs/button', {'a': 1})['outside'] == {'src/blocks/cart/block.json': 'what-the-render-read'}
     rn.render('sgs/button', {'a': 1})
     assert len(calls) == 2, 'the file no longer holds what the render read: rendered again'
+
+
+def test_must_fail_an_edit_to_the_offline_steps_reaches_every_cached_render(tmp_path, monkeypatch):
+    """MUST FAIL with SGS_RENDER_MUTATE=processed-html: the cache holds the html PHP printed, and the directives and post steps
+    (render.py is in no key) run on every use, so an edit to either reaches a cached render; the cached copy is PHP's own."""
+    plugin = make_plugin(tmp_path / 'p')
+    monkeypatch.setattr(RN, 'CACHE_ROOT', tmp_path / 'cache')
+    calls = []
+    fake_runner(monkeypatch, [], calls, html='<p>php</p>')
+    monkeypatch.setattr(RN, 'apply_directives', lambda html, state: html + '<i>v1</i>')
+    rn = RN.Renderer(plugin, {}, plugin, 'button')
+    assert rn.render('sgs/button', {'a': 1})['html'] == '<p>php</p><i>v1</i>'
+    cached = next(f for f in rn.cache.glob('*.json') if f.name.count('.') == 1)
+    assert json.loads(cached.read_text(encoding='utf-8'))['html'] == '<p>php</p>', 'the cache keeps what PHP printed'
+    monkeypatch.setattr(RN, 'apply_directives', lambda html, state: html + '<i>v2</i>')
+    assert rn.render('sgs/button', {'a': 1})['html'] == '<p>php</p><i>v2</i>' and len(calls) == 1, 'cached, and processed again'
+
+
+def test_must_fail_a_render_that_names_no_file_it_loaded_is_not_cached(tmp_path, monkeypatch):
+    """MUST FAIL with SGS_RENDER_MUTATE=cache-empty-included: a render always loads its own render.php, so an empty list
+    means the plugin's path did not match PHP's (a substituted drive): `outside` and the stylesheet-reader guard saw
+    nothing, and the render is not cached. NEGATIVE CONTROL: one that names its render.php is cached."""
+    plugin = make_plugin(tmp_path / 'p')
+    monkeypatch.setattr(RN, 'CACHE_ROOT', tmp_path / 'cache')
+    calls = []
+    fake_runner(monkeypatch, [], calls, loads=False)
+    rn = RN.Renderer(plugin, {}, plugin, 'button')
+    rn.render('sgs/button', {'a': 1})
+    rn.render('sgs/button', {'a': 1})
+    assert len(calls) == 2
+    fake_runner(monkeypatch, [], calls)
+    rn.render('sgs/button', {'b': 1})
+    rn.render('sgs/button', {'b': 1})
+    assert len(calls) == 3
+
+
+def run_hook(tmp_path, php, mutate=''):
+    """What included-files.php writes to SGS_SETTING_RECORD_READS after `php` runs with the runner's registry stand-in loaded
+    (SGS_RENDER_MUTATE from the environment reaches it, so the hook's switches fail these tests)."""
+    import os
+    import subprocess
+    reads = tmp_path / 'reads.json'
+    stubs = (RN.DEFAULT_PLUGIN / 'scripts' / 'qa' / 'lib' / 'motion-targets-stubs.php').as_posix()
+    env = {**os.environ, 'SGS_SETTING_RECORD_READS': str(reads)}
+    env.pop('SGS_SETTING_RECORD_INCLUDED', None)
+    script = tmp_path / 'run.php'  # a script file: PHP applies auto_prepend_file to a file it runs, never to -r code
+    script.write_text(f"<?php require '{stubs}'; {php}", encoding='utf-8')
+    p = subprocess.run(['php', '-d', f'auto_prepend_file={RN.INCLUDED_HOOK}', str(script)], capture_output=True, text=True, env=env)
+    assert p.returncode == 0, p.stdout + p.stderr
+    return {RN.included_paths([k], RN.DEFAULT_PLUGIN)[0]: v for k, v in json.loads(reads.read_text(encoding='utf-8')).items()}
+
+
+LOOKUP = "$r = WP_Block_Type_Registry::get_instance(); $r->get_registered('sgs/button'); $r->get_registered('sgs/no-such-block'); "
+
+
+def test_must_fail_a_block_json_is_hashed_as_the_render_read_it(tmp_path):
+    """MUST FAIL with SGS_RENDER_MUTATE=read-md5: the registry stand-in keeps the md5 of the bytes it read, and the hook
+    writes that, not the file's md5 at shutdown (an edit during the render would pass for what it read). Here the read
+    hash is set apart from the file's to stand in for that edit."""
+    import hashlib
+    button = RN.DEFAULT_PLUGIN / 'src/blocks/button/block.json'
+    plain = run_hook(tmp_path, LOOKUP)
+    assert plain['src/blocks/button/block.json'] == hashlib.md5(button.read_bytes()).hexdigest()
+    edited = run_hook(tmp_path, LOOKUP + "foreach (array_keys($GLOBALS['sgs_qa_read_md5']) as $f) { $GLOBALS['sgs_qa_read_md5'][$f] = 'as-read'; }")
+    assert edited['src/blocks/button/block.json'] == 'as-read'
+
+
+def test_must_fail_a_block_json_looked_for_and_missing_is_tracked(tmp_path):
+    """MUST FAIL with SGS_RENDER_MUTATE=missing-read: a block type looked up whose block.json does not exist is recorded as
+    'missing', so adding that block later renders again (outside_block names it; file_md5 reads 'missing' until it exists)."""
+    got = run_hook(tmp_path, LOOKUP)
+    assert got.get('src/blocks/no-such-block/block.json') == 'missing'
+    assert RN.outside_block('src/blocks/no-such-block/block.json', {'button'})
+    assert RN.file_md5(RN.DEFAULT_PLUGIN / 'src/blocks/no-such-block/block.json') == 'missing'
