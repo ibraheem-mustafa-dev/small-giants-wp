@@ -81,7 +81,7 @@ describe( 'trust bar overflow choice', () => {
 	} );
 
 	test( 'a mobile-only layer keeps its range: Wrap and Hide extras set only what happens outside it', () => {
-		// Eye Care's header: a phone-only marquee and Hide extras above it.
+		// A marquee limited to the phone with Hide extras above it (what Fill writes for a draft whose ticker runs below 768).
 		const motion = withMarquee( {
 			touchPause: 'hold',
 			belowBreakpoint: 'mobile',

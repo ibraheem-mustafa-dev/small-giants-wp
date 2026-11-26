@@ -1,4 +1,4 @@
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import BackgroundLayers from '../../components/media/BackgroundLayers';
 import {
 	useBlockProps,
@@ -14,7 +14,7 @@ import {
 	overflowChoices,
 	withOverflowChoice,
 } from './overflow-choice';
-import { Fragment, useEffect, useMemo } from '@wordpress/element';
+import { Fragment, useEffect, useMemo, useState } from '@wordpress/element';
 import {
 	PanelBody,
 	SelectControl,
@@ -580,6 +580,8 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	// The ticker is the stored marquee layer itself (overflow-choice.js): the canvas previews exactly what is stored.
 	const marqueeLayer = marqueeLayerOf( attributes.sgsMotion );
 	const overflowOptions = overflowChoices( attributes.sgsMotion );
+	// Why the Overflow control could not store a choice (the motion schema refused the layer), shown under it.
+	const [ overflowRefusal, setOverflowRefusal ] = useState( null );
 	const marqueeAlways =
 		!! marqueeLayer &&
 		! [ 'mobile', 'tablet' ].includes(
@@ -1322,6 +1324,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 									attributes.sgsMotion,
 									val
 								);
+								setOverflowRefusal( next.refused || null );
 								if ( ! next.refused ) {
 									setAttributes( next );
 								}
@@ -1345,6 +1348,22 @@ export default function Edit( { attributes, setAttributes, name } ) {
 								label={ __( 'Hide extras', 'sgs-blocks' ) }
 							/>
 						</ToggleGroupControl>
+					) }
+
+					{ overflowRefusal && (
+						<Notice
+							status="warning"
+							onRemove={ () => setOverflowRefusal( null ) }
+						>
+							{ sprintf(
+								/* translators: %s: why the motion settings refused the ticker. */
+								__(
+									'The ticker could not be stored: %s.',
+									'sgs-blocks'
+								),
+								overflowRefusal
+							) }
+						</Notice>
 					) }
 				</PanelBody>
 
