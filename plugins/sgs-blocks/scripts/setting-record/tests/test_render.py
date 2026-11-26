@@ -59,14 +59,17 @@ def test_a_block_rendered_inside_changes_the_hash_and_so_do_new_or_gone_blocks(t
         assert RN.code_hash(plugin, (), {'button'}) != before
 
 
-def fake_runner(monkeypatch, reads, calls):
-    """subprocess.run standing in for the PHP runner: it reports `reads` as the files the render read."""
+def fake_runner(monkeypatch, reads, calls, seen=None):
+    """subprocess.run standing in for the PHP runner: it reports `reads` as the files the render read, each with the md5 it
+    took at shutdown (included-files.php): the file's content then, or `seen[file]` when given (an edit made after the read)."""
+    import hashlib
     import subprocess
 
     def run(cmd, **k):
         calls.append(cmd)
         Path(k['env']['SGS_SETTING_RECORD_INCLUDED']).write_text(json.dumps([]), encoding='utf-8')
-        Path(k['env']['SGS_SETTING_RECORD_READS']).write_text(json.dumps([str(r) for r in reads]), encoding='utf-8')
+        taken = {str(r): (seen or {}).get(r) or hashlib.md5(Path(r).read_bytes()).hexdigest() for r in reads}
+        Path(k['env']['SGS_SETTING_RECORD_READS']).write_text(json.dumps(taken), encoding='utf-8')
         return SimpleNamespace(stdout=json.dumps({'ok': True, 'html': f'<p>{len(calls)}</p>'}), stderr='')
     monkeypatch.setattr(subprocess, 'run', run)
 
@@ -125,3 +128,49 @@ def test_must_fail_the_blocks_a_fixture_renders_inside_are_in_its_renderers_hash
     (plugin / 'src/blocks/cart/block.json').write_text('{"name": "sgs/cart", "x": 1}', encoding='utf-8')
     assert RN.Renderer(plugin, fixture, plugin, 'button').hash != rn.hash
     assert RN.Renderer(plugin, {}, plugin, 'button').hash == RN.Renderer(plugin, {}, plugin, 'button').hash
+
+
+def nested_plugin(root: Path) -> Path:
+    """A checkout's layout: the plugin at plugins/sgs-blocks with the theme beside it at theme/sgs-theme."""
+    plugin = make_plugin(root / 'plugins' / 'sgs-blocks')
+    (root / 'theme' / 'sgs-theme').mkdir(parents=True)
+    (root / 'theme' / 'sgs-theme' / 'theme.json').write_text('{"styles": {}}', encoding='utf-8')
+    return plugin
+
+
+def test_must_fail_the_themes_theme_json_is_in_the_hash(tmp_path):
+    """MUST FAIL with SGS_RENDER_MUTATE=theme-json: the runner's wp_get_global_styles reads the theme's theme.json styles when
+    a fixture gives no globalSettings (includes/class-heading-look.php prints from them), so an edit to it re-keys renders."""
+    plugin = nested_plugin(tmp_path)
+    before = RN.code_hash(plugin, (), {'button'})
+    (tmp_path / 'theme' / 'sgs-theme' / 'theme.json').write_text('{"styles": {"elements": {"h1": {"color": {"text": "red"}}}}}', encoding='utf-8')
+    assert RN.code_hash(plugin, (), {'button'}) != before
+
+
+def test_must_fail_a_render_block_filter_anywhere_is_in_the_hash(tmp_path):
+    """MUST FAIL with SGS_RENDER_MUTATE=filter-scan: the runner loads every PHP file under includes/ and src/ that registers a
+    render_block filter, so a file in a block folder the key leaves out that gains (or changes) one re-keys every render.
+    NEGATIVE CONTROL: the same folder's PHP without a filter stays out (test_must_fail_another_blocks_files_leave_the_hash_alone)."""
+    plugin = make_plugin(tmp_path)
+    before = RN.code_hash(plugin, (), {'button'})
+    (plugin / 'src/blocks/cart/filters.php').write_text("<?php add_filter( 'render_block_sgs/button', 'f' );", encoding='utf-8')
+    with_filter = RN.code_hash(plugin, (), {'button'})
+    assert with_filter != before
+    (plugin / 'src/blocks/cart/filters.php').write_text("<?php add_filter( 'render_block_sgs/button', 'g' );", encoding='utf-8')
+    assert RN.code_hash(plugin, (), {'button'}) != with_filter
+    assert [f.name for f in RN.render_block_filter_files(plugin)] == ['filters.php']
+
+
+def test_must_fail_the_hash_kept_is_the_one_php_took_before_it_exited(tmp_path, monkeypatch):
+    """MUST FAIL with SGS_RENDER_MUTATE=php-md5: a file edited between the render reading it and the renderer storing the
+    render keeps the hash of what the render read (included-files.php takes it at shutdown), so the next use renders again;
+    hashing after PHP exits would file the old output under the new content."""
+    plugin = make_plugin(tmp_path / 'p')
+    monkeypatch.setattr(RN, 'CACHE_ROOT', tmp_path / 'cache')
+    calls = []
+    cart = plugin / 'src/blocks/cart/block.json'
+    fake_runner(monkeypatch, [cart], calls, seen={cart: 'what-the-render-read'})
+    rn = RN.Renderer(plugin, {}, plugin, 'button')
+    assert rn.render('sgs/button', {'a': 1})['outside'] == {'src/blocks/cart/block.json': 'what-the-render-read'}
+    rn.render('sgs/button', {'a': 1})
+    assert len(calls) == 2, 'the file no longer holds what the render read: rendered again'
