@@ -54,19 +54,23 @@ export function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, ps
 		snap.rect = { x: Math.round( r.x * 1000 ) / 1000, y: Math.round( ( r.y + window.scrollY ) * 1000 ) / 1000, w: Math.round( r.width * 1000 ) / 1000, h: Math.round( r.height * 1000 ) / 1000 };
 		snap.position = getComputedStyle( el ).position;
 		snap.inFlow = ! [ 'absolute', 'fixed' ].includes( snap.position );
-		// What a visitor can see of the element across the page: its own opacity and visibility, the horizontal box of its
-		// nearest ancestor that clips or scrolls its overflow (null when none does), and the page width
-		// (lib/fill-visible-count.mjs::visibleCount reads it: a stacked card at opacity 0 or a card past a clipping edge is not shown).
+		// What a visitor can see of the element across the page: its opacity with every ancestor's multiplied in, its visibility,
+		// the horizontal span every ancestor that clips it leaves (overflow other than visible, paint containment, or a clip-path,
+		// whose ancestor's box stands for its shape; null when none clips), and the page width (lib/fill-visible-count.mjs::visibleCount
+		// reads it: a stacked card at opacity 0 or a card past a clipping edge is not shown).
 		const seenCs = getComputedStyle( el );
-		let clip = null;
+		let opacity = Number( seenCs.opacity );
+		let span = null;
 		for ( let a = el.parentElement; a && a !== document.documentElement; a = a.parentElement ) {
-			if ( 'visible' !== getComputedStyle( a ).overflowX ) {
+			const s = getComputedStyle( a );
+			opacity *= Number( s.opacity );
+			if ( 'visible' !== s.overflowX || /\b(?:paint|strict|content)\b/.test( s.contain ) || 'none' !== s.clipPath ) {
 				const b = a.getBoundingClientRect();
-				clip = { x: Math.round( b.x * 1000 ) / 1000, w: Math.round( b.width * 1000 ) / 1000 };
-				break;
+				span = span ? [ Math.max( span[ 0 ], b.x ), Math.min( span[ 1 ], b.x + b.width ) ] : [ b.x, b.x + b.width ];
 			}
 		}
-		snap.view = { opacity: Number( seenCs.opacity ), visibility: seenCs.visibility, clip, page: document.documentElement.clientWidth };
+		const clip = span ? { x: Math.round( span[ 0 ] * 1000 ) / 1000, w: Math.round( Math.max( 0, span[ 1 ] - span[ 0 ] ) * 1000 ) / 1000 } : null;
+		snap.view = { opacity: Math.round( opacity * 1000 ) / 1000, visibility: seenCs.visibility, clip, page: document.documentElement.clientWidth };
 		// Where line-height computes to normal, the px height of one line box of the element's font at normal (the value
 		// lib/fill-normal-keywords.mjs writes in place of a keyword the setting cannot hold).
 		const lineCs = getComputedStyle( el );

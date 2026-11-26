@@ -67,12 +67,6 @@
 	},
 	{
 		"file": "lib/fill-visible-count.mjs",
-		"find": "return counted.length || 1;",
-		"replace": "return counted.length;",
-		"why": "a card wider than the track counts 0, so the tier inherits desktop's count"
-	},
-	{
-		"file": "lib/fill-visible-count.mjs",
 		"find": "r.view?.clip && ( [ l, rt ] =",
 		"replace": "false && ( [ l, rt ] =",
 		"why": "the track's clipping ancestor does not cut what shows"
@@ -94,5 +88,23 @@
 		"find": ", ...( counted ? [ counted.attr ] : [] ) ] );",
 		"replace": " ] );",
 		"why": "a count gap is listed again as an unread setting"
+	},
+	{
+		"file": "lib/fill-visible-count.mjs",
+		"find": "if ( ! r?.rect || ! ( r.rect.w > 0 ) ) {",
+		"replace": "if ( ! r?.rect ) {",
+		"why": "a track drawn as display: contents hides every card"
+	},
+	{
+		"file": "lib/fill-visible-count.mjs",
+		"find": "? 1 : 0 );",
+		"replace": "? 1 : 1 );",
+		"why": "cards only off the span count one"
+	},
+	{
+		"file": "lib/fill-visible-count.mjs",
+		"find": "return counted.length || ( row.some(",
+		"replace": "return counted.length || 0 || ( false && row.some(",
+		"why": "a card wider than the track counts 0, so the tier inherits desktop's count"
 	}
 ]

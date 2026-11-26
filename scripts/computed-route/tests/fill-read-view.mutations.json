@@ -1,0 +1,26 @@
+[
+	{
+		"file": "lib/fill-read-collect.mjs",
+		"find": "\t\t\topacity *= Number( s.opacity );\n",
+		"replace": "",
+		"why": "an ancestor's opacity 0 leaves the card inside it shown"
+	},
+	{
+		"file": "lib/fill-read-collect.mjs",
+		"find": ": [ b.x, b.x + b.width ];\n\t\t\t}",
+		"replace": ": [ b.x, b.x + b.width ];\n\t\t\t\tbreak;\n\t\t\t}",
+		"why": "only the nearest clipping ancestor cuts the span"
+	},
+	{
+		"file": "lib/fill-read-collect.mjs",
+		"find": "/\\b(?:paint|strict|content)\\b/.test( s.contain )",
+		"replace": "false",
+		"why": "paint containment does not clip"
+	},
+	{
+		"file": "lib/fill-read-collect.mjs",
+		"find": "'none' !== s.clipPath",
+		"replace": "false",
+		"why": "a clip-path does not clip"
+	}
+]

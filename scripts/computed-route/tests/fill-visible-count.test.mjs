@@ -123,3 +123,10 @@ test( 'a setting holding one number refuses counts that differ by width, and the
 	const same = run( () => 2, { calFor, withDb: fake } );
 	assert.equal( same.tree[ 0 ].attributes.autoplaySpeed, 2, 'negative control: equal counts are the one number' );
 } );
+
+test( 'MUST FAIL: a track box with no width (display: contents) is no span, and cards that only lie off the span show none', () => {
+	const three = [ rect( 0, 0, 300 ), rect( 300, 0, 300 ), rect( 600, 0, 300 ) ];
+	assert.equal( visibleCount( rect( 0, 0, 0, 0 ), three ), 3, 'display: contents: the cards themselves' );
+	assert.equal( visibleCount( rect( 0, 0, 900, 100 ), [ rect( 1000, 0, 300 ), rect( 1300, 0, 300 ) ] ), 0, 'every card past the edge: nothing to write' );
+	assert.equal( visibleCount( rect( 0, 0, 300, 100 ), [ rect( 0, 0, 340 ) ] ), 1, 'negative control: a card wider than the track is one card' );
+} );
