@@ -43,9 +43,9 @@
  * look of a nested PanelBody (no border box, no side padding, a smaller title) so it does not take 32px of a 280px
  * sidebar. One level deep only (scripts/check-inner-section-depth.js).
  */
-.sgs-inner-section.components-panel__body,
-.sgs-inner-section.components-panel__body.is-opened {
+.sgs-inner-section.components-panel__body {
 	padding: 0;
+	padding-bottom: 0;
 	border: 0;
 	border-top: 1px solid #f0f0f0;
 }
@@ -66,6 +66,7 @@
 }
 
 .sgs-inner-section.components-panel__body.is-opened {
+	padding: 0;
 	padding-bottom: 12px;
 }
 
