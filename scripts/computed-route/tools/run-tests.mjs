@@ -4,8 +4,10 @@
 // run wp-cli on, build on or call a WordPress site whatever a test does (scripts/lib/no-site.js, lib/site-contact.mjs). Exits with
 // node --test's status. Run one suite at a time: the timing tests fail when two overlap. It refuses to start with the system temp
 // folder on C: (lib/temp-guard.mjs). Before any test starts it checks the browser driver that the browser tests and the walker
-// load (`driverProblems`) and exits 2 naming what is missing: a checkout without the driver would otherwise fail one test at a
-// time, each with a "Cannot find module" that no test owns.
+// load (`driverProblems`) and exits 2 naming what is missing when the selected files include a browser test (`hasBrowserTest`: a
+// file that names Playwright, Chromium or the walker; every test when none is named): a checkout without the driver would otherwise
+// fail one test at a time, each with a "Cannot find module" that no test owns. A run of non-browser tests only prints the same
+// problems as a warning and goes on.
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -43,6 +45,16 @@ export function driverMessage( problems ) {
 	return `run-tests: the browser driver is not whole, so no test was started:\n${ problems.map( ( m ) => `  - ${ m }` ).join( '\n' ) }`;
 }
 
+// Whether any of `files` (paths from the route folder or the working folder, as given on the command line) is a browser test: its
+// text names Playwright, Chromium or the walker. No file named is every test, which includes browser tests; a file that cannot be
+// read (a glob, a typo) counts as one, so the check errs towards stopping.
+export function hasBrowserTest( files = [], route = ROUTE ) {
+	return ! files.length || files.some( ( f ) => {
+		const file = [ path.resolve( route, f ), path.resolve( f ) ].find( ( c ) => fs.existsSync( c ) && fs.statSync( c ).isFile() );
+		return ! file || /playwright|chromium|draft-live-walk/i.test( fs.readFileSync( file, 'utf8' ) );
+	} );
+}
+
 // The command that runs `files` (every test when none): the node arguments and the environment.
 export function testCommand( files = [], env = process.env ) {
 	return { args: [ '--test', ...( files.length ? files : [ 'tests/*.test.mjs' ] ) ], env: { ...env, SGS_NO_SITE: '1' } };
@@ -50,11 +62,13 @@ export function testCommand( files = [], env = process.env ) {
 
 if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( import.meta.url ) ) {
 	assertTempOffC( 'run-tests' );
+	const files = process.argv.slice( 2 );
 	const missing = await driverProblems();
-	if ( missing.length ) {
+	if ( missing.length && hasBrowserTest( files ) ) {
 		console.error( driverMessage( missing ) );
 		process.exit( 2 );
 	}
-	const { args, env } = testCommand( process.argv.slice( 2 ) );
+	missing.length && console.error( `run-tests: warning: the browser driver is not whole, and no selected test uses a browser:\n${ missing.map( ( m ) => `  - ${ m }` ).join( '\n' ) }` );
+	const { args, env } = testCommand( files );
 	process.exitCode = spawnSync( process.execPath, args, { cwd: ROUTE, env, stdio: 'inherit' } ).status ?? 1;
 }

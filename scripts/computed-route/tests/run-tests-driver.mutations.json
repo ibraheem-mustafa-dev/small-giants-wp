@@ -1,0 +1,7 @@
+[
+	{"file":"tools/run-tests.mjs","find":"if ( missing.length && hasBrowserTest( files ) ) {","replace":"if ( missing.length ) {","why":"a broken driver stops a run of tests that use no browser"},
+	{"file":"tools/run-tests.mjs","find":"if ( missing.length && hasBrowserTest( files ) ) {","replace":"if ( false ) {","why":"a broken driver no longer stops a run that includes a browser test"},
+	{"file":"tools/run-tests.mjs","find":"return ! files.length || files.some(","replace":"return files.some(","why":"no file named is not counted as every test"},
+	{"file":"tools/run-tests.mjs","find":"return ! file || /playwright|chromium|draft-live-walk/i.test( fs.readFileSync( file, 'utf8' ) );","replace":"return false;","why":"a browser test among the selected files is missed"},
+	{"file":"tools/run-tests.mjs","find":"return ! file || /playwright","replace":"return /playwright","why":"a file that cannot be read (a glob) is not counted as a browser test"}
+]
