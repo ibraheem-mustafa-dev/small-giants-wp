@@ -60,9 +60,10 @@ jest.mock( '../../src/components/ResponsiveBoxControl', () => ( {
 
 jest.mock( '../../src/components/GradientCapableColourControl', () => ( {
 	__esModule: true,
-	default: ( { borderStyles, borderStyleReason } ) =>
+	default: ( { borderStyles, borderStyleReason, onBorderStyleChange } ) =>
 		require( 'react' ).createElement( 'div', {
 			'data-row': 'colour',
+			'data-style-inside': 'function' === typeof onBorderStyleChange ? 'true' : 'false',
 			'data-border-styles': ( borderStyles || [] ).join( ',' ),
 			'data-style-reason': borderStyleReason,
 		} ),
@@ -202,6 +203,27 @@ describe( 'SgsBorderControl rows', () => {
 		const radius = out.querySelector( '[data-row="radius"]' ).closest( 'fieldset' );
 		expect( radius.disabled ).toBe( true );
 		expect( radius.textContent ).toContain( 'Corners are not used with this shape.' );
+	} );
+
+	test( 'a greyed Colour row does not lock Style: Style is drawn beside it, live', () => {
+		const out = mount(
+			<SgsBorderControl
+				{ ...base }
+				widthValues={ { top: '1px' } }
+				disabledRows={ { colour: 'Colour comes from the theme.' } }
+			/>
+		);
+		const colour = out.querySelector( '[data-row="colour"]' );
+		expect( colour.closest( 'fieldset' ).disabled ).toBe( true );
+		expect( colour.dataset.styleInside ).toBe( 'false' );
+		const style = out.querySelector( '[data-icons]' );
+		expect( style ).not.toBeNull();
+		expect( style.closest( 'fieldset' ) ).toBeNull();
+		expect( out.textContent ).toContain( 'Colour comes from the theme.' );
+		// With nothing greyed the style stays inside the colour popover, as before.
+		act( () => root.render( <SgsBorderControl { ...base } widthValues={ { top: '1px' } } /> ) );
+		expect( out.querySelector( '[data-row="colour"]' ).dataset.styleInside ).toBe( 'true' );
+		expect( out.querySelector( '[data-icons]' ) ).toBeNull();
 	} );
 
 	test( 'the styles a block asks for reach the style control', () => {

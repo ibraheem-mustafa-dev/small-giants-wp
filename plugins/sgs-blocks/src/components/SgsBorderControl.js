@@ -189,7 +189,15 @@ export default function SgsBorderControl( {
 		colour: waitingForWidth ? WIDTH_FIRST : '',
 		...disabledRows,
 	};
+	// A reason a caller leaves undefined or null is no reason.
+	for ( const row of [ 'width', 'style', 'colour', 'radius' ] ) {
+		reasons[ row ] = reasons[ row ] || '';
+	}
 	const styleProps = styleOptions ? { styles: styleOptions } : {};
+	// Style normally lives in the colour popover, so a greyed Colour row would lock it too, with no reason beside it. When
+	// Colour is off and Style is not, Style is drawn beside it instead, as it is when the colour row is left out.
+	const styleBesideColour =
+		! showColour || ( '' !== reasons.colour && '' === reasons.style );
 	const writeWidth = ( tier, next ) => {
 		const merged = { ...widthTiers, [ tier ]: next || {} };
 		const filled = ( box ) =>
@@ -241,7 +249,11 @@ export default function SgsBorderControl( {
 								onGradientChange={ onColourGradientChange }
 								linked={ colourLinked }
 								borderStyle={ styleValue }
-								onBorderStyleChange={ onStyleChange }
+								onBorderStyleChange={
+									styleBesideColour
+										? undefined
+										: onStyleChange
+								}
 								borderStyles={ styleOptions }
 								borderStyleReason={ reasons.style }
 								clearable={ clearable }
@@ -256,7 +268,7 @@ export default function SgsBorderControl( {
 				{ /* Colour suppressed (Spec 36 §14 FR-41-33/FR-41-2b): border style re-parents here
 				     as SgsBorderControl's own sibling, matching GradientCapableColourControl's
 				     own gate so a caller that never wired border style gets no orphan control. */ }
-				{ ! showColour && typeof onStyleChange === 'function' && (
+				{ styleBesideColour && typeof onStyleChange === 'function' && (
 					<FlexItem
 						className="sgs-border-control__style"
 						style={ { minWidth: 180 } }
