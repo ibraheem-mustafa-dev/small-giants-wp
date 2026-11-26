@@ -15,13 +15,16 @@
  *      "Keyboard focus";
  *   2. `HoverPanel.js` has no `<SgsBlockWideRowsSlot>` as a child of its PanelBody before `<TargetRow>`;
  *   3. a block whose destination is hover does not declare motion, a colour block never reaches `SgsColourPanel`
- *      through its `edit.js` imports, or a hidden block holds a hover value.
+ *      through its `edit.js` imports, or a hidden block holds a hover value;
+ *   4. `components/SgsColourPanel.js` does not render `<SgsBlockWideRowsSlot home="colour">`, or
+ *      `src/blocks/extensions/focus-switch-home.json` (what the editor reads) is not the survey's answer: run `--write`.
  *
  * Who receives the setting: the roster rule (`extension-roster.json`, extension `focusRests`, mode denylist): every
  * `sgs/*` block whose `supports.sgs.hideExtensions` does not list the rule's `hideSlug`.
  *
  * USAGE (from plugins/sgs-blocks)
  *   node scripts/check-focus-switch-home.js --survey [--json out.json]
+ *   node scripts/check-focus-switch-home.js --write      # writes src/blocks/extensions/focus-switch-home.json from the survey
  *   node scripts/check-focus-switch-home.js --check
  *   node scripts/check-focus-switch-home.js --self-test
  *
@@ -40,6 +43,8 @@ const SLOT = 'SgsBlockWideRowsSlot';
 const FOCUS_FILE = 'src/blocks/extensions/focus-rests.js';
 const HOVER_FILE = 'src/blocks/extensions/motion/HoverPanel.js';
 const ROSTER_FILE = 'src/blocks/extensions/extension-roster.json';
+const COLOUR_FILE = 'src/components/SgsColourPanel.js';
+const HOMES_FILE = 'src/blocks/extensions/focus-switch-home.json';
 const HOVER_ATTR = /hover/i;
 
 const readJson = ( file ) => JSON.parse( fs.readFileSync( file, 'utf8' ) );
@@ -198,6 +203,29 @@ function hoverRendersSlot( plugin = scan.PLUGIN ) {
 	return ok;
 }
 
+/** True when SgsColourPanel renders the slot with home="colour". */
+function colourRendersSlot( plugin = scan.PLUGIN ) {
+	const file = path.join( plugin, COLOUR_FILE );
+	const ast = fs.existsSync( file ) ? scan.astOf( file ) : null;
+	let ok = false;
+	if ( ast ) {
+		scan.walkJsx( ast, ( el ) => {
+			if ( SLOT === scan.jsxName( el ) && 'colour' === scan.prop( el, 'home' ).value ) {
+				ok = true;
+			}
+		} );
+	}
+	return ok;
+}
+
+/** The data the editor reads: block name to 'hover', 'colour' or '' (not drawn). */
+function homesData( rows ) {
+	return {
+		_comment: 'Where the "Keyboard focus" row of each block sits. Written by scripts/check-focus-switch-home.js --write from block.json; do not edit by hand. hover = top of the motion Hover panel, colour = the shared Colour panel, empty = not drawn.',
+		blocks: Object.fromEntries( rows.map( ( r ) => [ r.name, 'hidden' === r.destination ? '' : r.destination ] ) ),
+	};
+}
+
 /** Problems for a plugin root. */
 function problemsFor( plugin = scan.PLUGIN ) {
 	const problems = [];
@@ -211,6 +239,15 @@ function problemsFor( plugin = scan.PLUGIN ) {
 	if ( ! hoverRendersSlot( plugin ) ) {
 		problems.push( `${ HOVER_FILE }: the Hover PanelBody does not render <${ SLOT }> before <TargetRow>.` );
 	}
+	if ( ! colourRendersSlot( plugin ) ) {
+		problems.push( `${ COLOUR_FILE }: SgsColourPanel does not render <${ SLOT } home="colour">.` );
+	}
+	const homesFile = path.join( plugin, HOMES_FILE );
+	const want = JSON.stringify( homesData( survey( plugin ) ).blocks );
+	const have = fs.existsSync( homesFile ) ? JSON.stringify( readJson( homesFile ).blocks ) : '';
+	if ( want !== have ) {
+		problems.push( `${ HOMES_FILE } is missing or stale: run node scripts/check-focus-switch-home.js --write.` );
+	}
 	for ( const row of survey( plugin ) ) {
 		if ( 'colour' === row.destination && ! row.colourPanelReached ) {
 			problems.push( `${ row.name }: destination is the Colour panel but its edit.js never reaches SgsColourPanel.` );
@@ -220,6 +257,12 @@ function problemsFor( plugin = scan.PLUGIN ) {
 		}
 	}
 	return problems;
+}
+
+function writeHomes( plugin = scan.PLUGIN ) {
+	const file = path.join( plugin, HOMES_FILE );
+	fs.writeFileSync( file, JSON.stringify( homesData( survey( plugin ) ), null, '\t' ) + '\n', 'utf8' );
+	process.stdout.write( `wrote ${ HOMES_FILE }\n` );
 }
 
 function printSurvey( rows, facts, jsonPath ) {
@@ -250,7 +293,7 @@ function selfTest() {
 	process.stdout.write( '[check-focus-switch-home --self-test]\n\n' );
 	// Each scenario gets its own tree: jsx-scan caches a parsed file by path.
 	const roots = [];
-	const tree = ( { focus, hover, colourEdit } ) => {
+	const tree = ( { focus, hover, colourEdit, colourPanel, homes } ) => {
 		const root = fs.mkdtempSync( path.join( os.tmpdir(), 'fsh-' ) );
 		roots.push( root );
 		const put = ( rel, body ) => {
@@ -266,6 +309,8 @@ function selfTest() {
 		block( 'opted-out', { hideExtensions: [ 'focusRests' ] }, {} );
 		put( 'src/blocks/colourblock/edit.js', colourEdit );
 		put( 'src/components/x.js', 'export const SgsColourPanel = () => (<div />);' );
+		put( COLOUR_FILE, colourPanel === undefined ? `export default () => (<PanelBody><${ SLOT } home="colour" /></PanelBody>);` : colourPanel );
+		put( HOMES_FILE, homes === undefined ? JSON.stringify( homesData( survey( root ) ) ) : homes );
 		put( FOCUS_FILE, focus );
 		put( HOVER_FILE, hover );
 		return root;
@@ -288,6 +333,10 @@ function selfTest() {
 	ok( 'CATCHES a PanelBody titled Keyboard focus', has( drawn, 'titled "Keyboard focus"' ) );
 	ok( 'CATCHES a Hover panel with no slot', has( tree( { ...GOOD, hover: 'export default () => (<PanelBody title="Hover"><TargetRow /></PanelBody>);' } ), 'does not render' ) );
 	ok( 'CATCHES the slot placed after the target picker', has( tree( { ...GOOD, hover: `export default () => (<PanelBody title="Hover"><TargetRow /><${ SLOT } /></PanelBody>);` } ), 'does not render' ) );
+	ok( 'CATCHES a Colour panel that renders no slot', has( tree( { ...GOOD, colourPanel: 'export default () => (<PanelBody />);' } ), 'does not render <' + SLOT + ' home="colour">' ) );
+	ok( 'CATCHES a Colour panel whose slot is the Hover home', has( tree( { ...GOOD, colourPanel: `export default () => (<${ SLOT } home="hover" />);` } ), 'does not render <' + SLOT + ' home="colour">' ) );
+	ok( 'CATCHES a stale homes file', has( tree( { ...GOOD, homes: JSON.stringify( { blocks: { 'sgs/plain': 'hover' } } ) } ), 'stale' ) );
+	ok( 'the homes file records hover, colour and not drawn', JSON.stringify( homesData( rows ).blocks ) === JSON.stringify( { 'sgs/colourblock': 'colour', 'sgs/plain': '', 'sgs/withmotion': 'hover' } ) );
 	ok( 'CATCHES a Colour destination that never mounts SgsColourPanel', has( tree( { ...GOOD, colourEdit: 'export default () => (<div />);' } ), 'never reaches SgsColourPanel' ) );
 	roots.forEach( ( r ) => fs.rmSync( r, { recursive: true, force: true } ) );
 	process.stdout.write( 0 === failures.length ? '\n[check-focus-switch-home --self-test] ALL ASSERTIONS PASS.\n' : `\n[check-focus-switch-home --self-test] ${ failures.length } FAILURE(S).\n` );
@@ -300,12 +349,14 @@ if ( argv.includes( '--self-test' ) ) {
 } else if ( argv.includes( '--survey' ) ) {
 	const i = argv.indexOf( '--json' );
 	printSurvey( survey(), panelFacts(), i >= 0 ? argv[ i + 1 ] : null );
+} else if ( argv.includes( '--write' ) ) {
+	writeHomes();
 } else if ( argv.includes( '--check' ) ) {
 	const problems = problemsFor();
 	problems.forEach( ( x ) => process.stdout.write( `${ x }\n` ) );
 	process.stdout.write( problems.length ? `[check-focus-switch-home] ${ problems.length } problem(s)\n` : '[check-focus-switch-home] OK\n' );
 	process.exit( problems.length ? 1 : 0 );
 } else {
-	process.stdout.write( 'usage: node scripts/check-focus-switch-home.js --survey [--json out] | --check | --self-test\n' );
+	process.stdout.write( 'usage: node scripts/check-focus-switch-home.js --survey [--json out] | --write | --check | --self-test\n' );
 	process.exit( 2 );
 }
