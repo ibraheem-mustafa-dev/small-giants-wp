@@ -657,6 +657,20 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		previewTier
 	);
 
+	// The separator glyph, in every badge style. A row draws it as a sibling after each badge; a grid gives every direct
+	// child a cell, so it draws it inside each badge, as render.php does (style.css centres it on the column gap).
+	const separatorGlyph = String( textBadgeSeparator || '' )
+		.trim()
+		.slice( 0, 8 );
+	const separatorInCell = 'grid' === layout;
+	// The canvas always draws the title field for these two styles, and a grid gives it the first cell.
+	const titleCell =
+		'text-only' === badgeStyle || 'image-badge' === badgeStyle;
+	const separatorStyle = textBadgeSeparatorColour
+		? { color: colourVar( textBadgeSeparatorColour ) }
+		: undefined;
+	const gridColumns = tierColumns( attributes, previewTier );
+
 	const blockProps = useBlockProps( {
 		ref: rootRef,
 		className: [
@@ -780,20 +794,6 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						cssLengthValue( textBadgeRadius ) || undefined,
 			  }
 			: undefined;
-	// The separator glyph, in every badge style. A row draws it as a sibling after each badge; a grid gives every direct
-	// child a cell, so it draws it inside each badge, as render.php does (style.css centres it on the column gap).
-	const separatorGlyph = String( textBadgeSeparator || '' )
-		.trim()
-		.slice( 0, 8 );
-	const separatorInCell = 'grid' === layout;
-	// The canvas always draws the title field for these two styles, and a grid gives it the first cell.
-	const titleCell =
-		'text-only' === badgeStyle || 'image-badge' === badgeStyle;
-	const separatorStyle = textBadgeSeparatorColour
-		? { color: colourVar( textBadgeSeparatorColour ) }
-		: undefined;
-	const gridColumns = tierColumns( attributes, previewTier );
-
 	const updateItem = ( index, updated ) => {
 		const next = [ ...items ];
 		next[ index ] = updated;
