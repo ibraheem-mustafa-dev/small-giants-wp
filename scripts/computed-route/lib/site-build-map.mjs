@@ -67,13 +67,14 @@ export function writePageMap( file, original, ids ) {
 	return rows;
 }
 
-// The page row a row's `parent` names: by route, else by slug.
+// The row of the child's own post type that a row's `parent` names: a parent is a slug (the page map's and a review mark's form), so a slug
+// match wins; a route match is the fallback for a hand-written map, so a page whose route equals another page's slug never takes the wrong one.
 export function parentRow( rows, row ) {
 	if ( ! row.parent ) {
 		return null;
 	}
 	const pages = rows.filter( ( r ) => r.postType === row.postType );
-	return pages.find( ( r ) => r.route === row.parent ) || pages.find( ( r ) => r.slug === row.parent ) || null;
+	return pages.find( ( r ) => r.slug === row.parent ) || pages.find( ( r ) => r.route === row.parent ) || null;
 }
 
 // The build order: every content row with its parent before it (map order otherwise), then the layout rows. Throws

@@ -348,10 +348,14 @@ export function proposePageMap( { folder, routing = null, census = null, surface
 			continue;
 		}
 		if ( r.draftParent ) {
-			if ( bySlug.has( r.draftParent ) ) {
-				r.parent = r.draftParent;
+			const named = rows.find( ( p ) => p.slug === r.draftParent && 'page' === p.postType );
+			if ( named && 'page' === r.postType ) {
+				r.parent = named.slug;
 			} else {
-				gaps.push( gap( 'page-map', `data-sgs-manifest ${ r.route }`, `parent "${ r.draftParent }" names no page-map row` ) );
+				gaps.push( gap( 'page-map', `data-sgs-manifest ${ r.route }`, bySlug.has( r.draftParent ) && ! named
+					? `parent "${ r.draftParent }" is no page row: only a page row parents or is parented`
+					: 'page' !== r.postType ? `a ${ r.postType } row takes no parent: only a page row parents or is parented`
+						: `parent "${ r.draftParent }" names no page-map row` ) );
 			}
 		}
 		delete r.draftParent;
@@ -368,11 +372,15 @@ export function proposePageMap( { folder, routing = null, census = null, surface
 	return { rows, linkMap: linkMap( exp, route, routeSlug, home, gaps ), gaps, routeSlug: Object.fromEntries( routeSlug ), menuItems };
 }
 
-// The route's path segments: a leading `#`, `/` or `./`, a `.dc.html` / `.html` extension and a trailing `index` segment dropped, so
-// a hash key (`food-service/manufacturing`), a hash path (`#/food-service/manufacturing`) and a file route (`food-service/manufacturing.dc.html`)
-// read the same. A route with no path (the home route) has no segments.
-function routePath( route ) {
-	return String( route ?? '' ).replace( /^#?(\.?\/)?/, '' ).split( /[?#]/ )[ 0 ].replace( /\.(dc\.)?html$/i, '' ).split( '/' ).filter( Boolean ).filter( ( seg, i, all ) => ! ( 'index' === seg && i === all.length - 1 && all.length > 1 ) );
+// The path segments a route's address nests by, lower-cased like a WordPress slug. A hash route (`#/a/b`) and a file route with a hash
+// path (`Site.dc.html#/a/b`) read the hash path; a file route reads its folders (`a/b.dc.html` -> a, b). A leading `#`, `/` or `./`, a
+// `.dc.html` / `.html` extension, a query and a trailing `index` segment (so `index.html` is the home route) are dropped, so `a/b`, `#/a/b` and `a/b.dc.html` read the same. The
+// home route has no segments. (lib/skeleton-surface-role.mjs::routePath is a different thing: a draft route's name for a surface.)
+export function ancestorSegments( route ) {
+	const text = String( route ?? '' );
+	const hash = text.includes( '#' ) ? text.slice( text.indexOf( '#' ) + 1 ).replace( /^\/?/, '' ).split( '?' )[ 0 ] : '';
+	const own = hash && ! hash.startsWith( '@state/' ) ? hash : text.split( /[?#]/ )[ 0 ].replace( /^\.?\//, '' );
+	return own.replace( /\.(dc\.)?html$/i, '' ).toLowerCase().split( '/' ).filter( Boolean ).filter( ( seg, i, all ) => ! ( 'index' === seg && i === all.length - 1 ) );
 }
 
 // The page row a page row nests under (Bean, 2026-11-26): the page row whose own draft route is the nearest ancestor path of this row's
@@ -383,9 +391,9 @@ export function ancestorPage( row, rows ) {
 	if ( 'page' !== row.postType ) {
 		return null;
 	}
-	const mine = routePath( row.route );
+	const mine = ancestorSegments( row.route );
 	for ( let n = mine.length - 1; n > 0; n-- ) {
-		const hit = rows.find( ( r ) => r !== row && 'page' === r.postType && routePath( r.route ).join( '/' ) === mine.slice( 0, n ).join( '/' ) );
+		const hit = rows.find( ( r ) => 'page' === r.postType && ancestorSegments( r.route ).join( '/' ) === mine.slice( 0, n ).join( '/' ) );
 		if ( hit ) {
 			return hit;
 		}

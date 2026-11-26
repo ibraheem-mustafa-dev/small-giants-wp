@@ -1,8 +1,13 @@
 [
 	{"file": "lib/intake-pagemap.mjs", "find": "if ( 'page' !== row.postType ) {", "replace": "if ( false ) {", "why": "an article, shop or template route nests under a page"},
-	{"file": "lib/intake-pagemap.mjs", "find": "r !== row && 'page' === r.postType && routePath", "replace": "r !== row && routePath", "why": "an article, shop or template row becomes the parent of the pages below its route"},
+	{"file": "lib/intake-pagemap.mjs", "find": "'page' === r.postType && ancestorSegments", "replace": "ancestorSegments", "why": "an article, shop or template row becomes the parent of the pages below its route"},
 	{"file": "lib/intake-pagemap.mjs", "find": "for ( let n = mine.length - 1; n > 0; n-- ) {", "replace": "for ( let n = 1; n < mine.length; n++ ) {", "why": "the furthest ancestor wins over the nearest"},
-	{"file": "lib/intake-pagemap.mjs", "find": "routePath( r.route ).join( '/' ) === mine.slice( 0, n ).join( '/' )", "replace": "String( r.route ).startsWith( mine.slice( 0, n ).join( '/' ) ) && r.route !== row.route", "why": "a route sharing only leading letters (team-up, team) counts as below it"},
+	{"file": "lib/intake-pagemap.mjs", "find": "ancestorSegments( r.route ).join( '/' ) === mine.slice( 0, n ).join( '/' )", "replace": "String( r.route ).startsWith( mine.slice( 0, n ).join( '/' ) )", "why": "a route sharing only leading letters (team-up, team) counts as below it"},
 	{"file": "lib/intake-pagemap.mjs", "find": "n > 0; n-- ) {", "replace": "n >= 0; n-- ) {", "why": "the empty path (the home route) is an ancestor of every route, so every flat page nests under home"},
-	{"file": "lib/intake-pagemap.mjs", "find": "r.parent = ancestorPage( r, rows )?.slug ?? null;", "replace": "r.parent = ancestorPage( r, rows )?.slug ?? ( 'page' === r.postType && 'home' !== r.slug && r.menus.length ? 'about' : null );", "why": "a flat page that sits in a menu takes a parent from the menu"}
+	{"file": "lib/intake-pagemap.mjs", "find": "r.parent = ancestorPage( r, rows )?.slug ?? null;", "replace": "r.parent = ancestorPage( r, rows )?.slug ?? ( 'page' === r.postType && 'home' !== r.slug && r.menus.length ? 'about' : null );", "why": "a flat page that sits in a menu takes a parent from the menu"},
+	{"file": "lib/intake-pagemap.mjs", "find": "p.slug === r.draftParent && 'page' === p.postType", "replace": "p.slug === r.draftParent", "why": "a manifest parent naming a shop, article or template row is taken"},
+	{"file": "lib/intake-pagemap.mjs", "find": "if ( named && 'page' === r.postType ) {", "replace": "if ( named ) {", "why": "a manifest parent is given to a shop, article or template row"},
+	{"file": "lib/intake-pagemap.mjs", "find": "const own = hash && ! hash.startsWith( '@state/' ) ? hash :", "replace": "const own = false ? hash :", "why": "a file route with a hash path reads only its file, so the page never nests"},
+	{"file": "lib/intake-pagemap.mjs", "find": ".toLowerCase().split( '/' )", "replace": ".split( '/' )", "why": "case differences hide an ancestor"},
+	{"file": "lib/site-build-map.mjs", "find": "return pages.find( ( r ) => r.slug === row.parent ) || pages.find( ( r ) => r.route === row.parent ) || null;", "replace": "return pages.find( ( r ) => r.route === row.parent ) || pages.find( ( r ) => r.slug === row.parent ) || null;", "why": "a parent slug that equals another page's route picks that page"}
 ]

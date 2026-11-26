@@ -11,6 +11,7 @@ import { fileURLToPath } from 'url';
 import { proposePageMap, ancestorPage } from '../lib/intake-pagemap.mjs';
 import { readRouting } from '../lib/intake-routing.mjs';
 import { applyMarks } from '../lib/intake-pagemap-regen.mjs';
+import { parentRow } from '../lib/site-build-map.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const FIX = path.join( HERE, 'fixtures', 'intake-pagemap', 'hash' );
@@ -87,7 +88,10 @@ test( 'a route reads the same as a hash key, a hash path or a file route, and an
 	assert.equal( up( [ row( 'sectors.dc.html', 'sectors' ), row( 'sectors/retail.dc.html', 'retail' ) ], 'sectors/retail.dc.html' ), 'sectors', 'file routes' );
 	assert.equal( up( [ row( 'sectors/index.html', 'sectors' ), row( 'sectors/retail/index.html', 'retail' ) ], 'sectors/retail/index.html' ), 'sectors', 'index files' );
 	assert.equal( up( [ row( '', 'home' ), row( 'about', 'about' ) ], 'about' ), null, 'the home route is the root of every address, not the parent of every page' );
-	assert.equal( up( [ row( 'about', 'about' ), row( 'about', 'about-2' ) ], 'about' ), null, 'a row is never its own parent' );
+	assert.equal( up( [ row( 'Site.dc.html#/sectors', 'sectors' ), row( 'Site.dc.html#/sectors/retail', 'retail' ) ], 'Site.dc.html#/sectors/retail' ), 'sectors', 'a file route with a hash path reads the hash path' );
+	assert.equal( up( [ row( 'Site.dc.html', 'home' ), row( 'Site.dc.html#/about', 'about' ) ], 'Site.dc.html#/about' ), null, 'the file alone is the home route, no ancestor' );
+	assert.equal( up( [ row( 'Sectors', 'sectors' ), row( 'sectors/Retail', 'retail' ) ], 'sectors/Retail' ), 'sectors', 'case is ignored, as a slug is lower-case' );
+	assert.equal( up( [ row( 'index.html', 'home' ), row( 'about', 'about' ) ], 'about' ), null, 'index.html is the home route' );
 } );
 
 test( 'in the page map: a page route under an article, or an article route under a page, nests nothing', () => {
@@ -97,6 +101,43 @@ test( 'in the page map: a page route under an article, or an article route under
 	assert.equal( parentOfRoute( m, 'about/team-notes' ), 'about' );
 	assert.equal( parentOfRoute( m, 'news/archive' ), 'news' );
 	assert.ok( parentsAreRows( m ) );
+} );
+
+// A draft manifest's `wp.parent` is accepted only when it names a page row and the row is a page row too (the manifest fixture: shop is a shop row, home a page row).
+function withManifestParents( parents ) {
+	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'pagemap-manifest-' ) );
+	try {
+		const src = path.join( HERE, 'fixtures', 'intake-pagemap', 'manifest' );
+		fs.cpSync( src, dir, { recursive: true } );
+		const file = path.join( dir, 'Shop.dc.html' );
+		fs.writeFileSync( file, fs.readFileSync( file, 'utf8' ).replace( '"parent": "help"', `"parent": ${ JSON.stringify( parents.faq ) }` ).replace( '"slug": "glasses", "parent": null', `"slug": "glasses", "parent": ${ JSON.stringify( parents.shop ?? null ) }` ) );
+		return propose( dir );
+	} finally {
+		fs.rmSync( dir, { recursive: true, force: true } );
+	}
+}
+
+test( 'MUST FAIL: a manifest parent is taken only when it names a page row; a shop row named as the parent is a gap row, not a parent', () => {
+	const shop = withManifestParents( { faq: 'shop' } );
+	assert.equal( rowOf( shop, 'shop' )?.postType, 'shop', 'the fixture holds a shop row' );
+	assert.equal( parentOfRoute( shop, 'faq' ), null, 'a shop row is no page to nest under' );
+	assert.ok( shop.gaps.some( ( g ) => 'page-map' === g.construct && g.error.includes( '"shop"' ) && g.error.includes( 'no page row' ) ), 'and it is reported' );
+	const page = withManifestParents( { faq: 'home' } );
+	assert.equal( parentOfRoute( page, 'faq' ), 'home', 'negative control: a page row named as the parent is taken' );
+	assert.ok( ! page.gaps.some( ( g ) => 'page-map' === g.construct && g.error.includes( 'parent' ) ) );
+	const child = withManifestParents( { faq: null, shop: 'home' } );
+	assert.equal( parentOfRoute( child, 'shop' ), null, 'a shop row takes no parent, even a page one' );
+	assert.ok( child.gaps.some( ( g ) => 'page-map' === g.construct && g.error.includes( 'takes no parent' ) ), 'and it is reported' );
+} );
+
+test( 'MUST FAIL: site-build finds a parent by slug before route, so a page whose route equals another page slug is never taken for the parent', () => {
+	const row = ( o ) => ( { postType: 'page', parent: null, ...o } );
+	// Page "guides" (route "docs") and page "docs" (route "guides"): a child whose parent slug is "docs" is under the page with SLUG docs.
+	const rows = [ row( { slug: 'guides', route: 'docs' } ), row( { slug: 'docs', route: 'guides' } ), row( { slug: 'child', route: 'guides/child', parent: 'docs' } ) ];
+	assert.equal( parentRow( rows, rows[ 2 ] ).slug, 'docs' );
+	assert.equal( parentRow( rows, row( { slug: 'x', route: 'x', parent: 'guides' } ) ).slug, 'guides', 'a parent slug that is also another page route still names the slug' );
+	const byRoute = [ row( { slug: 'about-us', route: 'about' } ), row( { slug: 'team', route: 'about/team', parent: 'about' } ) ];
+	assert.equal( parentRow( byRoute, byRoute[ 1 ] ).slug, 'about-us', 'a hand-written map naming the route still resolves' );
 } );
 
 test( 'Bean saved marks win over the proposed parent: edit:parent= clears it, edit:parent=<slug> sets another', () => {
