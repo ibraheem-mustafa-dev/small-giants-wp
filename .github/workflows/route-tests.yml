@@ -1,7 +1,7 @@
-# The cloning route's non-browser test suite (scripts/computed-route/tests), split across parallel runners so merge batches are
-# proven without local CPU. No secrets: the default read-only GITHUB_TOKEN only; nothing from .claude/secrets or any credential is
-# in the checkout (gitignored) and the tests use fixture secrets in temp folders. File selection and sharding: tools/ci-shard.mjs
-# (reuses tools/run-tests.mjs). Run a branch: node scripts/computed-route/tools/ci-route-tests.mjs <branch>.
+# The cloning route's test suite (scripts/computed-route/tests), split across parallel runners so merge batches are proven without
+# local CPU. No secrets: the default read-only GITHUB_TOKEN only; nothing from .claude/secrets or any credential is in the checkout
+# (gitignored), and the tests use fixture secrets in temp folders. SGS_NO_SITE=1 (set by tools/run-tests.mjs::testCommand) keeps every
+# test off any WordPress site. File selection and sharding: tools/ci-shard.mjs. Run a branch: tools/ci-route-tests.mjs <branch>.
 name: route-tests
 
 on:
@@ -16,16 +16,49 @@ concurrency:
   group: route-tests-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  SHARDS: 16
+
 jobs:
+  framework-db:
+    name: framework database
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            scripts/computed-route/package-lock.json
+            plugins/sgs-blocks/package-lock.json
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.13'
+      - name: Install packages (the seeder reads block.json files through them)
+        run: |
+          (cd scripts/computed-route && npm ci --ignore-scripts)
+          (cd plugins/sgs-blocks && npm ci --ignore-scripts)
+      - name: Build the framework database from the repo (stage 1 only: no upstream scrape, no server contact)
+        run: python plugins/sgs-blocks/scripts/sgs-update-v2.py --rebuild --stage 1 --db "$RUNNER_TEMP/db/sgs-framework.db"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: framework-db
+          path: ${{ runner.temp }}/db/sgs-framework.db
+          retention-days: 1
+
   shard:
-    name: shard ${{ matrix.shard }} (${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
+    name: shard ${{ matrix.shard }}
+    needs: framework-db
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, windows-latest ]
-        shard: [ 0, 1, 2, 3, 4, 5 ]
+        shard: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 ]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -43,24 +76,38 @@ jobs:
       - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
         with:
           php-version: '8.3'
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: framework-db
+          path: ${{ runner.temp }}/db
       - name: Install route packages
         working-directory: scripts/computed-route
         run: npm ci --ignore-scripts
       - name: Install plugin packages (scripts/wp-build-page.js loads Playwright from here)
         working-directory: plugins/sgs-blocks
         run: npm ci --ignore-scripts
+      - name: Cache Chromium
+        id: chromium
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: chromium-${{ hashFiles('scripts/computed-route/package-lock.json') }}
+      - name: Install Chromium (the browser tests run offline against fixtures)
+        working-directory: scripts/computed-route
+        run: npx playwright install --with-deps chromium
       - name: Run shard
         working-directory: scripts/computed-route
         env:
+          SGS_FRAMEWORK_DB: ${{ runner.temp }}/db/sgs-framework.db
           TEMP: ${{ runner.temp }}
           TMP: ${{ runner.temp }}
           TMPDIR: ${{ runner.temp }}
-        run: node tools/ci-shard.mjs --run --index ${{ matrix.shard }} --count 6 --out "${{ runner.temp }}/out/${{ matrix.os }}-${{ matrix.shard }}"
+        run: node tools/ci-shard.mjs --run --browser --index ${{ matrix.shard }} --count "$SHARDS" --out "$RUNNER_TEMP/out/shard-${{ matrix.shard }}"
       - name: Upload shard output
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: route-tests-${{ matrix.os }}-${{ matrix.shard }}
+          name: route-tests-shard-${{ matrix.shard }}
           path: ${{ runner.temp }}/out
           retention-days: 7
 
@@ -79,6 +126,14 @@ jobs:
           node-version: 24
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
+          pattern: route-tests-shard-*
           path: ${{ runner.temp }}/all
       - name: Per-file pass and fail
-        run: node scripts/computed-route/tools/ci-summary.mjs "${{ runner.temp }}/all"
+        run: node scripts/computed-route/tools/ci-summary.mjs "$RUNNER_TEMP/all" --timings "$RUNNER_TEMP/all/timings.json"
+      - name: Per-file times (copy to data/ci-test-timings.json to balance the shards)
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: timings
+          path: ${{ runner.temp }}/all/timings.json
+          retention-days: 7

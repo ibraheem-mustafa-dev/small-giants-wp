@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Summarises a CI run of the route tests: `node tools/ci-summary.mjs DIR` reads every results.json under DIR (one per shard, as
 // tools/ci-shard.mjs writes them, each in a folder named for its runner and shard), prints pass/fail per file, then the output tail
-// of each failing file, and appends the same to $GITHUB_STEP_SUMMARY when set. A failure listed in data/ci-known-failures.json
+// of each failing file, and appends the same to $GITHUB_STEP_SUMMARY when set. `--timings FILE` also writes each file's time in
+// ms ({ "tests/x.test.mjs": ms }): copy it to data/ci-test-timings.json and ci-shard.mjs balances the shards by it. A failure listed in data/ci-known-failures.json
 // ({ "tests/x.test.mjs": "reason" }) is shown as known and does not fail the run. Exits 1 on any other failure.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -49,6 +50,9 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const known = fs.existsSync( knownFile ) ? JSON.parse( fs.readFileSync( knownFile, 'utf8' ) ) : {};
 	const rows = collect( dir );
 	if ( ! rows.length ) { console.error( `ci-summary: no results.json under ${ dir }` ); process.exit( 1 ); }
+	const at = process.argv.indexOf( '--timings' );
+	at > 0 && fs.writeFileSync( process.argv[ at + 1 ], JSON.stringify( Object.fromEntries( rows.map( ( r ) => [ r.file, r.ms ] ).sort() ), null, 1 ) + '
+' );
 	const { text, fresh } = summarise( rows, known );
 	console.log( text );
 	process.env.GITHUB_STEP_SUMMARY && fs.appendFileSync( process.env.GITHUB_STEP_SUMMARY, text + '\n' );
