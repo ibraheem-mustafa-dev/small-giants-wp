@@ -61,8 +61,10 @@ test( 'MUST FAIL: ec-steps (Eye Care Birmingham/222#0), numbers typed beside sen
 	const [ steps ] = flat( r.skeleton ).filter( ( n ) => 'sgs/process-steps' === n.name );
 	assert.ok( steps, 'the steps are one process-steps block' );
 	assert.equal( rowOf( r, `${ EC }/222#0` ).rule, 'numberedSteps' );
-	assert.deepEqual( steps.attributes.steps.map( ( s ) => s.number ), [ '1', '2', '3' ] );
-	assert.ok( steps.attributes.steps[ 0 ].title.startsWith( 'Pick a frame, then' ) );
+	// The steps are style-valued: they travel as the node's `decided` (which Fill writes), never among its attributes (RF2, R-47-10).
+	assert.equal( steps.attributes.steps, undefined, 'the steps are not among the skeleton attributes' );
+	assert.deepEqual( steps.decided.steps.map( ( s ) => s.number ), [ '1', '2', '3' ] );
+	assert.ok( steps.decided.steps[ 0 ].title.startsWith( 'Pick a frame, then' ) );
 	assert.equal( steps.attributes.layout, 'list' );
 } );
 
