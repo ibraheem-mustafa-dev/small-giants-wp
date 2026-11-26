@@ -57,6 +57,7 @@ const ALNUM = /[\p{L}\p{N}]/u;
 // The largest distance, as a share of the block's width and height, at which a part's place decides, and how much nearer it
 // must be than the next part.
 export const PLACE_NEAR = 0.12;
+const LIST_TAGS = new Set( [ 'ul', 'ol', 'menu' ] );
 const PLACE_MARGIN = 2;
 // The second candidate of an element whose part another element of the same item also claims.
 const SHARED = Object.freeze( { head: '(another element of the same item claims this part)', shared: true, inside: new Set() } );
@@ -383,6 +384,16 @@ function pairCore( { host, absorbed = [], kids, isNode = () => false, calibratio
 	// A menu's rows are one repeated element whose copies differ in what they hold (a row with no submenu has no caret), so a
 	// copy that is a summary row makes every copy of its loop a toggle: the summary slots are read at the copy of their position.
 	const rowLoops = new Set( summaries.length ? order.filter( ( e ) => 'control' === kindOf.get( e ) && isSummaryRow( e, ( x ) => kids( x ).filter( ( k ) => ! isNode( k ) ) ) ).map( ( e ) => copylessKey( e.key ) ) : [] );
+	// Whether the draft's menu holds any nested menu structure: a list inside a list item, an element in a hidden panel, a disclosure.
+	const inListItem = ( e ) => {
+		for ( let x = parent.get( e ); x && x !== host; x = parent.get( x ) ) {
+			if ( 'li' === x.tag ) {
+				return true;
+			}
+		}
+		return false;
+	};
+	const nestedMenu = order.some( ( e ) => ! visible( e ) || 'details' === e.tag || ( LIST_TAGS.has( e.tag ) && inListItem( e ) ) );
 	const toggles = new Set( ! summaryRows ? [] : order.filter( ( e ) => 'control' === kindOf.get( e ) && rowLoops.has( copylessKey( e.key ) ) ) );
 	const sameRepeat = ( a, b ) => a === b || copylessKey( a.key ) === copylessKey( b.key ) || ( 'control' === kindOf.get( a ) && 'control' === kindOf.get( b ) && a.tag === b.tag && ( a.attrs?.class ?? '' ) === ( b.attrs?.class ?? '' ) && ( Math.abs( ( boxOf( a ).w ?? -9 ) - ( boxOf( b ).w ?? 9 ) ) <= 2 || Math.abs( ( boxOf( a ).h ?? -9 ) - ( boxOf( b ).h ?? 9 ) ) <= 2 ) );
 	const repGroup = ( e, within = parent.get( e ) ) => kids( within ).filter( ( k ) => visible( k ) && ( kindOf.has( k ) || ! isNode( k ) ) && sameRepeat( e, k ) );
@@ -511,9 +522,11 @@ function pairCore( { host, absorbed = [], kids, isNode = () => false, calibratio
 			if ( row.length ) {
 				cands = row;
 			} else {
-				// No element of the draft's menu is a summary row, so it draws no row that opens a submenu, and the parts only such a row
-				// draws cannot be what its elements are. A part the block never displays is not one the draft's elements are either.
-				if ( underSummary.size && ! rowLoops.size ) {
+				// No element of the draft's menu is a summary row and the draft has no nested menu structure at all (a caret drawn in CSS,
+				// a background image or a pseudo-element is no element, so a submenu row may be there without one), so it draws no row that
+				// opens a submenu, and the parts only such a row draws cannot be what its elements are. A part the block never displays is
+				// not one the draft's elements are either.
+				if ( underSummary.size && ! rowLoops.size && ! nestedMenu ) {
 					const kept = cands.filter( ( g ) => ! underSummary.has( g.head ) );
 					kept.length && ( cands = kept );
 				}

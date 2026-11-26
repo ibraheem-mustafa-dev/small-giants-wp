@@ -48,6 +48,20 @@ test( 'a draft menu that has a summary row keeps both link parts (negative contr
 	assert.ok( made.ambiguous.length ? made.ambiguous[ 0 ].candidates.includes( '.bar > .item:nth-of-type(n) > .row > .link' ) : true );
 } );
 
+test( 'a draft menu with nested submenu rows keeps the submenu row twin when its caret is CSS only (negative control: the drop is for a menu with no nested structure at all; MUST FAIL when the drop ignores nesting)', () => {
+	const links = [ 0, 1 ].map( ( i ) => el( `Root/3#${ i }`, 'a', [], { words: i ? 'Shop' : 'Home' } ) );
+	const sub = el( 'Root/5#0', 'ul', [ el( 'Root/6#0', 'li', [ el( 'Root/7#0', 'a', [], { words: 'Tea' } ) ] ) ] );
+	const items = links.map( ( l, i ) => el( `Root/2#${ i }`, 'li', i ? [ l, sub ] : [ l ] ) );
+	const host = el( 'Root/1#0', 'nav', [ el( 'Root/9#0', 'ul', items ) ] );
+	const made = pairAbsorbed( { host, absorbed: [ { element: links[ 1 ], looks: [ 'background' ] } ], kids, calibration: { elements: MENU, settings: MENU_SETTINGS, text: {} }, finder } );
+	const heads = [ ...made.ambiguous.flatMap( ( a ) => a.candidates ), ...made.paired.map( ( p ) => p.part ) ];
+	assert.ok( heads.includes( '.bar > .item:nth-of-type(n) > .row > .link' ), `the link inside the submenu row wrapper is still offered: ${ JSON.stringify( heads ) }` );
+	// the same menu with the nested list removed is the plain case again
+	const plain = draftMenu();
+	const only = pairAbsorbed( { host: plain.host, absorbed: [ { element: plain.links[ 0 ], looks: [ 'background' ] } ], kids, calibration: { elements: MENU, settings: MENU_SETTINGS, text: {} }, finder } );
+	assert.deepEqual( only.paired.map( ( p ) => p.part ), [ '.bar > .item:nth-of-type(n) > .link' ] );
+} );
+
 test( 'a part the block never displays is not a candidate while a displayed one fits (MUST FAIL without the display tier: two buttons fit)', () => {
 	const cal = { elements: { '': at( 'div' ), '.go': at( 'button' ), '.stale': at( 'button', { display: 'none' } ) }, settings: { goBg: { slot: '.go', property: 'background-color' }, staleBg: { slot: '.stale', property: 'background-color' } } };
 	const btn = el( 'Root/2#0', 'button', [], { words: 'Go' } );

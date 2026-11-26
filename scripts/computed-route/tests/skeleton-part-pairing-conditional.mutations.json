@@ -1,9 +1,15 @@
 [
 	{
 		"file": "lib/skeleton-part-pairing.mjs",
-		"find": "if ( underSummary.size && ! rowLoops.size ) {",
+		"find": "if ( underSummary.size && ! rowLoops.size && ! nestedMenu ) {",
 		"replace": "if ( false ) {",
 		"why": "a draft menu with no summary row is still offered the link inside the submenu row wrapper, so the link fits two parts"
+	},
+	{
+		"file": "lib/skeleton-part-pairing.mjs",
+		"find": "if ( underSummary.size && ! rowLoops.size && ! nestedMenu ) {",
+		"replace": "if ( underSummary.size && ! rowLoops.size ) {",
+		"why": "a draft menu with nested submenu rows and a CSS-only caret loses the submenu row twin"
 	},
 	{
 		"file": "lib/skeleton-part-pairing.mjs",
