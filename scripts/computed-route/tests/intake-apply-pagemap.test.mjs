@@ -7,6 +7,7 @@ import os from 'os';
 import path from 'path';
 import { applyIntakeReview, pathsFor, REPO } from '../lib/intake-run.mjs';
 import { rowKey } from '../lib/site-build-map.mjs';
+import { EFFECT_TEMPLATE } from '../lib/motion-behaviour-settings.mjs';
 
 const CLIENT = 'indus-foods';
 
@@ -16,15 +17,22 @@ function scratch() {
 	const at = pathsFor( repo, CLIENT );
 	fs.mkdirSync( at.dir, { recursive: true } );
 	[ 'intake', 'review', 'pageMap' ].forEach( ( k ) => fs.copyFileSync( src[ k ], at[ k ] ) );
+	// The committed cut of the template the review's effect rows are read with (facts.json is gitignored): part of the record.
+	fs.copyFileSync( path.join( src.dir, EFFECT_TEMPLATE ), path.join( at.dir, EFFECT_TEMPLATE ) );
 	return { repo, at, committed: JSON.parse( fs.readFileSync( src.pageMap, 'utf8' ) ) };
 }
+// The page-map section only: the committed record may hold rows of other sections Bean has not decided yet (a new effect row
+// waits for his mark), and they are not what this test is about.
 const quiet = { log: () => {}, today: '2026-10-24', knownBlock: () => true };
+// As the clone runs it (lib/foundation-plan.mjs::commands.applyReview): the committed record may hold rows Bean has not decided
+// yet (a new effect row waits for his mark), which take their proposal; page-map rows already marked keep their ids.
+const HOW = { goThrough: true };
 
 test( 'MUST FAIL: --apply-review keeps every row\'s WordPress id when no page-map mark changed', () => {
 	const { repo, at, committed } = scratch();
 	try {
 		assert.ok( committed.length && committed.every( ( r ) => Number.isInteger( r.id ) ), 'fixture: every committed row holds an id' );
-		assert.equal( applyIntakeReview( { repo, client: CLIENT }, quiet ), 0 );
+		assert.equal( applyIntakeReview( { repo, client: CLIENT, ...HOW }, quiet ), 0 );
 		const after = JSON.parse( fs.readFileSync( at.pageMap, 'utf8' ) );
 		assert.deepEqual( new Map( after.map( ( r ) => [ rowKey( r ), r.id ] ) ), new Map( committed.map( ( r ) => [ rowKey( r ), r.id ] ) ) );
 		assert.deepEqual( after, committed, 'nothing else in the confirmed rows changed either' );
@@ -40,7 +48,7 @@ test( 'MUST FAIL: a confirmed map that would lose a row holding an id is refused
 		fs.writeFileSync( at.pageMap, JSON.stringify( [ ...committed, extra ], null, 2 ) );
 		const before = fs.readFileSync( at.pageMap, 'utf8' );
 		const lines = [];
-		assert.equal( applyIntakeReview( { repo, client: CLIENT }, { ...quiet, log: ( l ) => lines.push( l ) } ), 1 );
+		assert.equal( applyIntakeReview( { repo, client: CLIENT, ...HOW }, { ...quiet, log: ( l ) => lines.push( l ) } ), 1 );
 		assert.match( lines.join( '\n' ), /loses the WordPress id of .*built-only.*\(id 99999\)/ );
 		assert.equal( fs.readFileSync( at.pageMap, 'utf8' ), before );
 	} finally {

@@ -6,18 +6,6 @@
 		"why": "the apply stage's behaviour writes read no template"
 	},
 	{
-		"file": "lib/apply-motion-behaviours.mjs",
-		"find": "out.items.push( { status: 'no-setting', prop: 'motion behaviours', why: NO_TEMPLATE } );",
-		"replace": "",
-		"why": "a run with no fact record skips the behaviours silently"
-	},
-	{
-		"file": "lib/apply-motion-behaviours.mjs",
-		"find": "if ( mine.length && ! template?.elements ) {",
-		"replace": "if ( ! template?.elements ) {",
-		"why": "a block with no records is told the fact record is missing"
-	},
-	{
 		"file": "lib/apply-owned.mjs",
 		"find": "recogniseBehaviour( r, { records: allRecords, template } );",
 		"replace": "recogniseBehaviour( r, { records: allRecords } );",
@@ -70,5 +58,17 @@
 		"find": "classify( r, { css: ctx.css, records: ctx.records, template: ctx.template } )",
 		"replace": "classify( r, { css: ctx.css, records: ctx.records } )",
 		"why": "a template-only behaviour is a skipped row beside its write"
+	},
+	{
+		"file": "lib/apply-motion-behaviours.mjs",
+		"find": "export const templateNotice = ( template ) => ( template?.elements ? null : NO_TEMPLATE );",
+		"replace": "export const templateNotice = () => null;",
+		"why": "a run with no template says nothing"
+	},
+	{
+		"file": "lib/apply-motion-behaviours.mjs",
+		"find": "export const templateNotice = ( template ) => ( template?.elements ? null : NO_TEMPLATE );",
+		"replace": "export const templateNotice = () => NO_TEMPLATE;",
+		"why": "a run with a template is told it has none"
 	}
 ]

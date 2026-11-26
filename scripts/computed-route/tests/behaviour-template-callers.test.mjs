@@ -11,7 +11,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { openDb } from '../lib/db.mjs';
 import { fixtureDb } from './fixtures/framework-db.mjs';
-import { behaviourWrites, NO_TEMPLATE } from '../lib/apply-motion-behaviours.mjs';
+import { behaviourWrites, NO_TEMPLATE, templateNotice } from '../lib/apply-motion-behaviours.mjs';
 import { descendantRows } from '../lib/apply-owned.mjs';
 import { draftEffectNames, foreignEffects } from '../lib/apply-stray.mjs';
 import { recordIndex } from '../lib/apply-records.mjs';
@@ -37,14 +37,15 @@ test( 'MUST FAIL: the apply stage writes the pinned timeline\'s settings from th
 	const attrs = out.settings.map( ( s ) => s.attr );
 	assert.ok( [ 'scrollEffect', 'dateActiveColour', 'panelCounter', 'panelCounterFormat' ].every( ( a ) => attrs.includes( a ) ), JSON.stringify( out.settings ) );
 	assert.deepEqual( out.ids.sort(), [ 'J-05', 'J-09', 'J-11' ] );
-	assert.ok( ! out.items.some( ( i ) => NO_TEMPLATE === i.why ) );
 } );
 
-test( 'negative control: with no fact record template the apply stage names it in a row, never skips the records silently', () => {
+test( 'negative control: with no fact record template the apply stage writes nothing from those records and says so once per run, never as a row per block', () => {
 	const out = writes( [ 'J-05', 'J-09', 'J-11' ], null );
 	assert.deepEqual( out.settings, [] );
-	assert.equal( out.items.filter( ( i ) => NO_TEMPLATE === i.why ).length, 1 );
-	assert.deepEqual( writes( [], null ).items, [], 'no records, nothing to name' );
+	assert.ok( ! out.items.some( ( i ) => NO_TEMPLATE === i.why ), 'a block\'s rows are what its records give' );
+	assert.equal( templateNotice( null ), NO_TEMPLATE );
+	assert.equal( templateNotice( { elements: {} } ), null );
+	assert.equal( templateNotice( TEMPLATE ), null );
 } );
 
 const tplOf = ( id ) => Number( [ byId( id ).element.template_tpl_id ].flat()[ 0 ] );

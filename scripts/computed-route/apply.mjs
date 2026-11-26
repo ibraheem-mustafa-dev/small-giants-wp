@@ -43,6 +43,7 @@ import { hostedFacts } from './lib/apply-group-read.mjs';
 import { partsOf, partStyles } from './lib/apply-part-hover.mjs';
 import { factsFile } from './lib/fact-record.mjs';
 import { factTemplate } from './lib/intake-review.mjs';
+import { templateNotice } from './lib/apply-motion-behaviours.mjs';
 import { DECISIONS_FILE } from './lib/skeleton-facts.mjs';
 import { loadClientData } from './lib/apply-chrome-data.mjs';
 import { positionTargets } from './lib/apply-position.mjs';
@@ -361,8 +362,10 @@ async function main() {
 	const clientData = { ...loadClientData( REPO, client ), draftSource: loadDraftSource( REPO, client ) };
 	// The fact record's template: the settings behaviours read their element from it (lib/motion-behaviour-settings.mjs). facts.json
 	// is gitignored, so without it the committed cut build/intake/effect-template.json is read (lib/intake-review.mjs::factTemplate);
-	// with neither the motion family names what it cannot recognise (lib/apply-motion-behaviours.mjs::NO_TEMPLATE).
+	// with neither the run says so once before it decides anything (lib/apply-motion-behaviours.mjs::templateNotice).
 	const template = factTemplate( factsFile( REPO, client ) );
+	const missing = templateNotice( template );
+	missing && console.log( `${ client }: ${ missing }` );
 	const skeleton = loadSkeleton( REPO, client );
 	const tools = motionTools( db, rawSnapshot );
 	for ( const surface of surfaces ) {
