@@ -11,7 +11,9 @@
 	{"file": "lib/skeleton-form-prefill.mjs", "find": "encodeURIComponent( String( v ).trim() )", "replace": "String( v ).trim()", "why": "a field value is encoded"},
 	{"file": "lib/skeleton-form-prefill.mjs", "find": "null != v && '' !== String( v ).trim()", "replace": "true", "why": "a field with no value is left out"},
 	{"file": "lib/skeleton-form-prefill.mjs", "find": "return `${ query ? `?${ query }` : '' }#${ anchor }`;", "replace": "return `#${ anchor }${ query ? `?${ query }` : '' }`;", "why": "the query comes before the hash"},
-	{"file": "lib/skeleton-form-prefill.mjs", "find": "filter( ( f ) => f.endsWith( '.dc.html' ) )", "replace": "filter( ( f ) => false )", "why": "every component of the draft is read"},
+	{"file": "lib/skeleton-form-prefill.mjs", "find": "filter( ( f ) => component && `${ component }.dc.html` === f )", "replace": "filter( ( f ) => f.endsWith( '.dc.html' ) )", "why": "an opener of another component names fields of this form"},
+	{"file": "lib/skeleton-form-prefill.mjs", "find": "filter( ( f ) => component && `${ component }.dc.html` === f )", "replace": "filter( ( f ) => false )", "why": "the openers of the form's own component are read"},
+	{"file": "lib/fill-form.mjs", "find": "prefillParams( { folder, record: facts, component } )", "replace": "prefillParams( { folder, record: facts } )", "why": "Fill names the form's component to the opener reader"},
 	{"file": "lib/skeleton-form-prefill.mjs", "find": "[ ...openers ].some( ( [ name, sets ] ) => sets && isThisMember( n.callee, name ) )", "replace": "[ ...openers ].some( ( [ name, sets ] ) => isThisMember( n.callee, name ) )", "why": "only an opener that sets fields names a field"},
 	{"file": "lib/skeleton-rules.mjs", "find": "! R.formPrefillOpener || ! handler ||", "replace": "! handler ||", "why": "the decisions entry turns the rule on"},
 	{"file": "lib/skeleton-rules.mjs", "find": "! [ 'a', 'button' ].includes( e.tag ) || ! facts.repo", "replace": "! facts.repo", "why": "only a button or link is a control"},
@@ -24,5 +26,5 @@
 	{"file": "lib/skeleton-rules.mjs", "find": "( surface.formLinks || [] ).find( ( l ) => l.recordId === scope.id )", "replace": "( surface.formLinks || [] ).find( ( l ) => true )", "why": "a form is anchored by its own link"},
 	{"file": "lib/skeleton-rules.mjs", "find": "attributes: formAnchor ? { anchor: formAnchor } : {} }", "replace": "attributes: {} }", "why": "the form that roots a saved form post carries the anchor"},
 	{"file": "lib/skeleton-propose.mjs", "find": "pageMap, formLinks, megaOpeners", "replace": "pageMap, megaOpeners", "why": "the rules know the page's links to saved forms"},
-	{"file": "lib/fill-form.mjs", "find": "( folder ? prefillParams( { folder, record: facts } ) : [] )", "replace": "[]", "why": "a field a form opener sets reads the query"}
+	{"file": "lib/fill-form.mjs", "find": "( folder ? prefillParams( { folder, record: facts, component } ) : [] )", "replace": "[]", "why": "a field a form opener sets reads the query"}
 ]

@@ -76,8 +76,10 @@ test( 'NEGATIVE: a method that scrolls but looks up no form, one that looks a fo
 
 test( 'prefillParams names the fields every form opener sets; prefillHref puts the query before the hash and leaves out a field a copy shows no value for', () => {
 	const d = draft();
-	assert.deepEqual( [ ...prefillParams( { folder: d.folder, record: d.record } ) ].sort(), [ 'role', 'team' ] );
-	assert.deepEqual( [ ...prefillParams( { folder: d.folder, record: { sources: { files: {} } } } ) ], [], 'no component, no field' );
+	assert.deepEqual( [ ...prefillParams( { folder: d.folder, record: d.record, component: 'Site' } ) ].sort(), [ 'role', 'team' ] );
+	assert.deepEqual( [ ...prefillParams( { folder: d.folder, record: { sources: { files: {} } }, component: 'Site' } ) ], [], 'no component file, no field' );
+	assert.deepEqual( [ ...prefillParams( { folder: d.folder, record: d.record } ) ], [], 'no component named, no field' );
+	assert.deepEqual( [ ...prefillParams( { folder: d.folder, record: d.record, component: 'Other' } ) ], [], 'the openers of another component reach the form of another page' );
 	const href = prefillHref( { fields: [ { name: 'role', rest: 'title' }, { name: 'team', rest: 'team' }, { name: 'x', value: 'a b' } ], anchor: 'careers', valueOf: ( r ) => ( 'title' === r ? 'Warehouse & logistics' : null ) } );
 	assert.equal( href, '?role=Warehouse%20%26%20logistics&x=a%20b#careers' );
 	assert.equal( prefillHref( { fields: [], anchor: 'careers', valueOf: () => null } ), '#careers' );
@@ -240,11 +242,25 @@ test( 'MUST FAIL: a select whose name a form opener sets carries valueFromParam;
 	const reads = { widths: { 1440: { '0:': sel( 'role' ), '1:': sel( 'size' ) } } };
 	const facts = { elements: {}, sources: d.record.sources };
 	const written = ( out, ref ) => Object.fromEntries( out.writes.filter( ( w ) => w.node === ref ).map( ( w ) => [ w.attr, w.after ] ) );
-	const out = formWrites( { nodes: nodesList, flat, refOf: ( n ) => n.ref, reads, facts, db, folder: d.folder } );
+	const out = formWrites( { nodes: nodesList, flat, refOf: ( n ) => n.ref, reads, facts, db, folder: d.folder, component: 'Site' } );
 	assert.equal( written( out, 'role' ).valueFromParam, 'role' );
 	assert.equal( written( out, 'size' ).valueFromParam, undefined );
-	const bare = formWrites( { nodes: nodesList, flat, refOf: ( n ) => n.ref, reads, facts, db } );
+	const bare = formWrites( { nodes: nodesList, flat, refOf: ( n ) => n.ref, reads, facts, db, component: 'Site' } );
 	assert.equal( written( bare, 'role' ).valueFromParam, undefined, 'no draft folder to read the opener from' );
+} );
+
+test( 'MUST FAIL: a form in another component of the draft takes no valueFromParam from the opener of this page', () => {
+	const d = draft();
+	const text = '<x-dc name="Apply"><form><select name="role"></select></form></x-dc>\n';
+	fs.writeFileSync( path.join( d.folder, 'Apply.dc.html' ), text );
+	const sources = { files: { ...d.record.sources.files, 'Apply.dc.html': crypto.createHash( 'sha256' ).update( text ).digest( 'hex' ) } };
+	const flat = [ { name: 'sgs/form-field-select', attributes: { label: 'Role' }, innerBlocks: [], ref: 'role' } ];
+	const nodesList = [ { index: 0, name: flat[ 0 ].name, targets: [ { id: '0:', slot: '', finder: { tpl: 'Root/30#0' } } ] } ];
+	const reads = { widths: { 1440: { '0:': { form: { tag: 'select', name: 'role', options: [ { value: '', label: 'Choose' }, { value: 'a', label: 'A' } ] } } } } };
+	const run = ( component ) => formWrites( { nodes: nodesList, flat, refOf: ( n ) => n.ref, reads, facts: { elements: {}, sources }, db, folder: d.folder, component } );
+	const param = ( out ) => out.writes.find( ( w ) => 'role' === w.node && 'valueFromParam' === w.attr )?.after;
+	assert.equal( param( run( 'Apply' ) ), undefined, 'the Apply form is not on the page whose opener sets role' );
+	assert.equal( param( run( 'Site' ) ), 'role', 'negative control: the form on the page of the opener takes it' );
 } );
 
 test( 'NEGATIVE: the standing decisions stay valid with the rule', () => {

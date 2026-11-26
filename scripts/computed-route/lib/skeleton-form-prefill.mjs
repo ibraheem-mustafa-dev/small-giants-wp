@@ -106,10 +106,12 @@ export function formOpenerOf( { folder, record, component, handler } ) {
 	return { fields: openers.get( call.callee.property.name ) ? fieldsOf( call, spreadItem( d.idx, d.idx.parent.get( hits[ 0 ] ) ) ) : [], loop: true };
 }
 
-// The query-string names the draft's form openers hand to a form (`role`, `team`), across every component of the fact record.
-export function prefillParams( { folder, record } ) {
+// The query-string names the form openers of `component` hand to a form (`role`, `team`): the component whose page holds the form
+// (Fill's root component for the run). An opener finds the form inside its own component's page (`this._main.querySelector('form')`),
+// so an opener of another component reaches another page's form and names nothing here; with no component, nothing is named.
+export function prefillParams( { folder, record, component } ) {
 	const names = new Set();
-	for ( const file of Object.keys( record?.sources?.files || {} ).filter( ( f ) => f.endsWith( '.dc.html' ) ) ) {
+	for ( const file of Object.keys( record?.sources?.files || {} ).filter( ( f ) => component && `${ component }.dc.html` === f ) ) {
 		const d = draftLogicOf( { folder, record, component: file.slice( 0, -'.dc.html'.length ) } );
 		const openers = d ? formOpeners( d.idx ) : new Map();
 		for ( const n of d ? d.idx.all : [] ) {
