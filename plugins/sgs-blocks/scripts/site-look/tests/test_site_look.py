@@ -97,7 +97,7 @@ def test_button_text_link_and_presence(tmp_path):
 
 def test_reader_holds_a_few_pages_not_every_page_it_read(monkeypatch):
     """MUST FAIL with SITE_LOOK_MUTATE=keep-pages: sgs/nav-bar-menu reads about 1,200 pages and each held about 3 MB, so one
-    build held 3.3 GB and died when the machine ran short of memory. The Reader keeps the last SL.PAGE_KEEP pages and
+    build held 3.3 GB. The Reader keeps the last SL.PAGE_KEEP pages and
     drops the rest from its own memo and from the Pages' memo (a page it dropped is rebuilt if asked for again)."""
     class Pages:
         def __init__(self):

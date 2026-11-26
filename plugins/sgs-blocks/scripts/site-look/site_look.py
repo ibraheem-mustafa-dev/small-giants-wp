@@ -512,7 +512,7 @@ PAGE_KEEP = 8  # settled pages a Reader keeps built at once (Reader.page)
 class Reader:
     """Pages built on demand, settled (footer moved, overlay scroll run) and read. A built page (its parsed HTML and every
     rule it matched) holds about 3 MB, and a block with 1,000 renders to read (sgs/nav-bar-menu) held them all: 3.3 GB in one
-    worker, so a build died when the machine ran short of memory. A reading is kept (style, content), a page is kept only
+    worker, on a PC where other builders ran beside it. A reading is kept (style, content), a page is kept only
     while it is being read: the last PAGE_KEEP stay, the rest are dropped here and from the Pages' own memo."""
 
     def __init__(self, pages, results, props):
