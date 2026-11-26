@@ -691,6 +691,7 @@ test( 'MUST FAIL: a host-band record is refused when the host already holds a co
 	assert.deepEqual( check( at( { contentWidth: { desktop: '1240px' } } ) ).bad, [ 'host-band Root/2#0: sgs/hero holds contentWidth 1240px but the wrapper it replaces caps at 1120px' ] );
 	assert.deepEqual( check( at( {}, { contentWidth: { desktop: '900px' } } ) ).bad, [ 'host-band Root/2#0: sgs/hero holds contentWidth 900px but the wrapper it replaces caps at 1120px' ], 'a decided setting counts too' );
 	assert.deepEqual( check( at( { contentWidth: { desktop: '1120px', tablet: '1120.3px' } } ) ), { delivered: [ 'max-width', 'margin-auto' ], listed: null, bad: [] }, 'the cap, within the tolerance' );
+	assert.deepEqual( check( at( { contentWidth: { desktop: '1120px', mobile: '335px' } } ) ).bad, [], 'a narrower tier may hold less: only the tier the cap was read at is compared' );
 	assert.deepEqual( check( at( {} ) ).bad, [], 'a host that holds no width yet is left to the band Fill writes' );
 	assert.deepEqual( checkRecords( [ { ...record[ 0 ], width: undefined } ], { looks: [ 'max-width', 'margin-auto' ], nodes: at( { contentWidth: { desktop: '1240px' } } ), calibration: () => band } ).bad, [], 'a record that names no width states nothing to compare' );
 } );

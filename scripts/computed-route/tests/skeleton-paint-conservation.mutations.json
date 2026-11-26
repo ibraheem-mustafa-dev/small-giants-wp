@@ -766,5 +766,11 @@
 		"find": "const held = node.attributes?.[ attr ] ?? node.decided?.[ attr ];",
 		"replace": "const held = node.attributes?.[ attr ];",
 		"why": "a decided content width is never compared with the cap"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "const values = [ held && 'object' === typeof held ? held.desktop : held ];",
+		"replace": "const values = held && 'object' === typeof held ? Object.values( held ) : [ held ];",
+		"why": "a narrower tier of the held width is compared with the desktop cap"
 	}
 ]

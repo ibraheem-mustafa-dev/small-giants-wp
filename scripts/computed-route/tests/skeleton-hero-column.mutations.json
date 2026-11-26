@@ -37,8 +37,20 @@
 	},
 	{
 		"file": "lib/skeleton-rules.mjs",
-		"find": "looks: banded, ...( Number.isFinite( pxOf( x.st?.[ 'max-width' ] ) ) ? { width: pxOf( x.st[ 'max-width' ] ) } : {} ) } );",
-		"replace": "looks: banded } );",
-		"why": "the host-band record names no cap, so the width the host holds is never compared with it"
+		"find": "{ kind: 'setting', node: out.hostLays, setting: hostSetting, looks: banded, width: capPx }",
+		"replace": "{ kind: 'setting', node: out.hostLays, setting: hostSetting, looks: banded }",
+		"why": "the setting record names no cap, so the width the host holds is never compared with it"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "...lays, ...bandCap } )",
+		"replace": "...lays } )",
+		"why": "the hero is never given the wrapper's cap as its content width, so the clone draws the hero at the theme width"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "null !== capPx && /\\bauto\\b/.test(",
+		"replace": "null !== capPx && /\\bnever\\b/.test(",
+		"why": "a capped wrapper that is not centred is taken for the hero's band"
 	}
 ]

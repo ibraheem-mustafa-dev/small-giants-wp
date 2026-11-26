@@ -329,7 +329,8 @@ export const INHERITED_LOOKS = [ 'text-centre' ];
 // once the check can verify it; the others keep the element listed in a class of its own, counted apart and never failing
 // tools/paint-conservation.mjs --check. Any other painted element no node reads is a proposal problem.
 //   setting       a setting of the node at `node` (an element key) carries `looks` (a label's cap is the field's maxWidth):
-//                 verified when that node is in the skeleton and holds `setting` among its attributes or its decided settings.
+//                 verified when that node is in the skeleton and holds `setting` among its attributes or its decided settings (with
+//                 `width`, a px cap, the value it holds must be that cap).
 //   inherited     `looks` are inherited (INHERITED_LOOKS) and a node inside the element reads them from its own computed values.
 //   host-layout   the block at `node` lays the element's children out itself (a hero's split columns): `looks` is layout only.
 //   host-band     the block at `node` draws its columns within its own content width, so the width cap and auto side margins of
@@ -408,7 +409,8 @@ function bandProblem( rec, node, settings ) {
 	const attrs = [ ...Object.entries( settings || {} ).filter( ( [ , e ] ) => ! e?.state && paintedProps( e ).includes( 'max-width' ) && 'string' === typeof e?.slot && '' !== e.slot ).map( ( [ name ] ) => name ), ...( rec.setting ? [ rec.setting ] : [] ) ];
 	for ( const attr of attrs ) {
 		const held = node.attributes?.[ attr ] ?? node.decided?.[ attr ];
-		const values = held && 'object' === typeof held ? Object.values( held ) : [ held ];
+		// The cap was read from the draft's own declaration, which the hero decides for the desktop tier: a narrower tier may hold less.
+		const values = [ held && 'object' === typeof held ? held.desktop : held ];
 		const off = values.map( ( v ) => pxOf( v ) ).find( ( px ) => null !== px && undefined !== px && Math.abs( px - cap ) > PX_TOL );
 		if ( undefined !== off ) {
 			return `host-band ${ rec.node }: ${ node.name } holds ${ attr } ${ off }px but the wrapper it replaces caps at ${ cap }px`;
@@ -445,7 +447,7 @@ export function checkRecords( records, { looks, nodes, below = false, calibratio
 		}
 		const named = [].concat( rec.looks ).filter( ( l ) => looks.includes( l ) );
 		const node = rec.node ? nodes.get( rec.node ) : null;
-		const bandWhy = 'host-band' === rec.kind && node ? bandProblem( rec, node, calibration( node.name ) ) : null;
+		const bandWhy = ( 'host-band' === rec.kind || ( 'setting' === rec.kind && null != rec.width ) ) && node ? bandProblem( rec, node, calibration( node.name ) ) : null;
 		if ( bandWhy ) {
 			out.bad.push( bandWhy );
 			continue;

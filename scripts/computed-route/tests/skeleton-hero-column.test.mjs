@@ -75,8 +75,14 @@ test( 'MUST FAIL: the capped, centred wrapper holding the hero\'s columns is unw
 	assert.ok( ! all( r.skeleton ).some( ( n ) => 'sgs/container' === n.name && 'Root/3#0' === n.draftRef?.tpl ), 'the wrapper is no node' );
 	const row = r.proposal.rows.find( ( x ) => 'Root/3#0' === x.key );
 	assert.equal( row.action, 'unwrap' );
-	assert.deepEqual( row.conserve.filter( ( c ) => 'host-band' === c.kind ).map( ( c ) => [ c.node, c.looks, c.width ] ), [ [ 'Root/2#0', [ 'max-width', 'margin-auto' ], 1120 ] ], 'the cap and the auto margins are recorded as the own band of the hero, with the cap in px' );
+	assert.deepEqual( row.conserve.filter( ( c ) => 'setting' === c.kind ).map( ( c ) => [ c.node, c.setting, c.looks, c.width ] ), [ [ 'Root/2#0', 'contentWidth', [ 'max-width', 'margin-auto' ], 1120 ] ], 'the cap and the auto margins are the contentWidth setting of the hero, with the cap in px' );
+	assert.deepEqual( hero.decided, { contentWidth: { desktop: '1120px' } }, 'the hero holds the cap as its own content width, written by Fill' );
 	assert.deepEqual( r.problems.filter( ( p ) => /paint conservation/.test( p ) ), [], 'the cap is recorded, so no painted element is left unread' );
+} );
+
+test( 'negative control: a wrapper whose cap is not a px length decides no content width, so it stays', () => {
+	const rel = run( [ [ 3, 2, 'div', '', 'position:relative;max-width:80%;margin:0 auto;display:grid;grid-template-columns:1fr 1fr' ], [ 4, 3, 'div', '', 'min-width:0' ], [ 5, 4, 'h1', 'Say hello' ], [ 6, 4, 'p', 'Questions about an order?' ], [ 7, 3, 'div', '', 'position:relative;min-width:0' ], [ 8, 7, 'img' ] ] );
+	assert.equal( heroOf( rel ).decided?.contentWidth, undefined );
 } );
 
 test( 'negative control: a wrapper that paints a background or border as well keeps it as a container', () => {

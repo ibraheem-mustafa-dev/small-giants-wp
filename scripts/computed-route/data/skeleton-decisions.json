@@ -706,6 +706,7 @@
 			"part": "split-media",
 			"contentSetting": "contentGap",
 			"hostBand": [ "max-width", "margin-auto" ],
+			"hostBandSetting": "contentWidth",
 			"frame": {
 				"properties": [ "border", "border-width", "border-style", "border-color", "border-radius", "box-shadow", "background", "background-color", "background-image", "overflow", "aspect-ratio" ],
 				"reason": "the wrapper that frames the hero's picture (a border, rounded corners, a shadow, a clip or a set ratio around an image placeholder) is the draft element of the split-media part's calibrated slot, so its look is read there; the picture inside it is the media itself, which draws no frame of its own"
