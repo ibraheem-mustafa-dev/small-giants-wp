@@ -1,0 +1,44 @@
+[
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "effectCssItems( { marked: cssEffects, records: all, items: boxes } )",
+		"replace": "effectCssItems( { marked: cssEffects, records, items: boxes } )",
+		"why": "the loop a hover speeds up is looked for among the records left after the parts are split off"
+	},
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "if ( hover.items.length ) {",
+		"replace": "if ( false ) {",
+		"why": "a marked record writes no hover rule"
+	},
+	{
+		"file": "lib/effect-css-equivalent.mjs",
+		"find": "! Number.isFinite( rate ) || rate <= 1 ) {",
+		"replace": "! Number.isFinite( rate ) ) {",
+		"why": "a slowing rate is given a CSS equivalent"
+	},
+	{
+		"file": "lib/effect-css-equivalent.mjs",
+		"find": "return 1 === loops.length ?",
+		"replace": "return loops.length ?",
+		"why": "a hover beside two endless animations picks one"
+	},
+	{
+		"file": "lib/effect-css-equivalent.mjs",
+		"find": "filter( ( r ) => 'effect' === r.rowType && 'custom-css' === r.mark )",
+		"replace": "filter( ( r ) => 'effect' === r.rowType )",
+		"why": "every effect row counts as marked custom-css"
+	},
+	{
+		"file": "lib/intake-review.mjs",
+		"find": "r.unmapped ? ( r.cssEquivalent ? 'custom-css' : 'difference' ) : 'accept', r.unmapped ? 'a Spec 38 gap: '",
+		"replace": "r.unmapped ? 'difference' : 'accept', r.unmapped ? 'a Spec 38 gap: '",
+		"why": "an effect with a CSS equivalent is proposed as a difference"
+	},
+	{
+		"file": "lib/motion-behaviours.mjs",
+		"find": "css: cssEquivalentOf( r, ctx.records ) ?? undefined,",
+		"replace": "",
+		"why": "the recogniser does not carry the CSS equivalent to the review"
+	}
+]

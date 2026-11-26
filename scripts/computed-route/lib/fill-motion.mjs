@@ -23,6 +23,7 @@ import { templateKey, templateKeyOf } from './fact-key.mjs';
 import { staggerPlans, applyStagger } from './fill-motion-stagger.mjs';
 import { positionsByTemplate } from './motion-behaviour-settings.mjs';
 import { exactHome } from './fill-part-pairing.mjs';
+import { effectCssItems } from './effect-css-equivalent.mjs';
 import { splitPartRecords, writePartMotion } from './fill-motion-parts.mjs';
 
 export { elementMotion, elementEffects, renderRefutes } from './fill-motion-element.mjs';
@@ -225,7 +226,7 @@ function writeLoopCss( n, items, { flat, ref, out } ) {
 		return;
 	}
 	const css = [ had( 'sgsCustomCss' ), ...fresh.map( ( i ) => i.css ) ].filter( Boolean ).join( ' ' );
-	const note = [ had( 'sgsCustomCssNote' ), ...fresh.map( ( i ) => `Loop ${ i.record.id }: ${ i.record.name }` ) ].filter( Boolean ).join( '; ' );
+	const note = [ had( 'sgsCustomCssNote' ), ...fresh.map( ( i ) => i.label ?? `Loop ${ i.record.id }: ${ i.record.name }` ) ].filter( Boolean ).join( '; ' );
 	// The scope key includes/custom-css.php::sgs_custom_css_uid accepts: 4 to 16 lowercase letters and digits.
 	// From the node's own ref, so two boxes holding the same record, or two surfaces on one page, never share a key.
 	const id = scopeKeyOf( node, `loop${ String( fresh[ 0 ].record.id ).toLowerCase().replace( /[^a-z0-9]/g, '' ) }` );
@@ -262,7 +263,7 @@ export function sameTriggerResolved( records ) {
 // the entry draft's component (lib/fill-motion.mjs::elementKey); loops: sampleMotion()'s loops by target id; offers:
 // lib/motion-effects.mjs::loadEffectOffers; stateVocab: the `states` table rows that give the words meaning "open"
 // (default: the framework DB's). Returns { writes, unmapped, notes } in the shapes fill-resolve.mjs uses.
-export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}, loops = {}, mdb, schema, rawSnapshot, rootComponent = null, offers = loadEffectOffers(), stateVocab = null, template = null, draftCss = [], hasAttr: givenHasAttr = undefined, db = null, reads = null, calFor = null } ) {
+export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}, loops = {}, mdb, schema, rawSnapshot, rootComponent = null, offers = loadEffectOffers(), stateVocab = null, template = null, draftCss = [], hasAttr: givenHasAttr = undefined, db = null, reads = null, calFor = null, cssEffects = new Set() } ) {
 	const out = { writes: [], unmapped: [], notes: [], site: [], handover: [] };
 	// Every settings write is checked against the framework DB's attributes: the handle given, else the framework DB itself.
 	const hasAttr = givenHasAttr ?? ( db ? hasAttrOf( db ) : undefined );
@@ -432,6 +433,13 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 		}
 		flush();
 		at = null;
+		// Effect rows Bean marked custom-css (Spec 48 FR-48-17): the hover rule goes in the box that holds the loop's rule. The
+		// whole inventory (`all`) is read: the loop a hover speeds up is often a part record of injected content.
+		const hover = effectCssItems( { marked: cssEffects, records: all, items: boxes } );
+		if ( hover.items.length ) {
+			boxes.push( ...hover.items );
+			used.push( ...hover.used );
+		}
 		if ( boxes.length ) {
 			writeLoopCss( n, boxes, { flat, ref, out } );
 		}

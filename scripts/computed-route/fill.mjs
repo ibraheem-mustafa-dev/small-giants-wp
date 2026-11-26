@@ -47,6 +47,7 @@ import { layerRotationWrites } from './lib/fill-layer-rotation.mjs';
 import { stickyHeaderWrites } from './lib/fill-header-sticky.mjs';
 import { scrollbarPatch, mergePatch } from './lib/fill-scrollbar.mjs';
 import { motionWrites } from './lib/fill-motion.mjs';
+import { customCssEffectIds } from './lib/effect-css-equivalent.mjs';
 import { draftCssOf, templateOf } from './lib/fill-behaviour.mjs';
 import { groupBindings, noFactsWarning } from './lib/fill-binding-group.mjs';
 import { factsFile, loadFacts } from './lib/fact-record.mjs';
@@ -378,7 +379,7 @@ export async function fillSurface( o ) {
 		result.unmapped.push( ...refusalRows( { opener: { ...opener, refused: motionRefused }, nodes, flat, refOf } ) );
 		const refused = [ ...readRefused, ...motionRefused ];
 		const entrances = nodes.filter( ( x ) => x.targets.length ).map( ( n ) => ( { node: refOf( flat[ n.index ] ), block: n.name, measured: sampled[ n.targets[ 0 ].id ]?.[ 1440 ] ?? null } ) );
-		const motion = motionWrites( { nodes, flat, refOf, records: intakeParts.records, rootComponent: intakeParts.rootComponent, sampled, loops, mdb: motionDb( db ), db, schema: loadMotionSchema(), rawSnapshot, template: templateOf( facts ), draftCss: draftCssOf( o.draftDir, o.draftIndex ), reads, calFor } );
+		const motion = motionWrites( { nodes, flat, refOf, records: intakeParts.records, rootComponent: intakeParts.rootComponent, sampled, loops, mdb: motionDb( db ), db, schema: loadMotionSchema(), rawSnapshot, template: templateOf( facts ), draftCss: draftCssOf( o.draftDir, o.draftIndex ), reads, calFor, cssEffects: customCssEffectIds( intakeData ) } );
 		result.writes.push( ...motion.writes );
 		result.unmapped.push( ...motion.unmapped );
 		// A draft element carrying a scroll-reveal mark takes the token entrance where no record gave it one (lib/fill-reveal-marks.mjs).
