@@ -83,6 +83,7 @@ import { restWidthWrites } from './lib/fill-rest-width.mjs';
 import { stateMap } from './lib/state-map.mjs';
 import { readMediaMap } from './lib/fill-media.mjs';
 import { injectedSvgWrites } from './lib/fill-injected-svg.mjs';
+import { LOGO_PARTS } from './lib/apply-chrome-data.mjs';
 import { assertCurrent } from './lib/freshness.mjs';
 import { rootDraftOf } from './lib/key-space.mjs';
 import { resolveDraftLink, draftLinksFor } from './lib/draft-link.mjs';
@@ -348,7 +349,7 @@ export async function fillSurface( o ) {
 		result.notes.push( ...listed.notes );
 		// RC12: the SVG the draft's code injects into an element (the skeleton inventory's per-width read), through the
 		// block's SVG content or inline SVG setting (lib/fill-injected-svg.mjs).
-		const injected = injectedSvgWrites( { nodes, flat, refOf, inventory, db, draftFolder, rootComponent: intakeParts.rootComponent } );
+		const injected = injectedSvgWrites( { nodes, flat, refOf, inventory, db, draftFolder, rootComponent: intakeParts.rootComponent, logoOwned: fs.existsSync( path.join( buildDir, LOGO_PARTS ) ) } );
 		result.writes.push( ...injected.writes );
 		result.unmapped.push( ...injected.unmapped );
 		result.notes.push( ...injected.notes );
@@ -386,7 +387,7 @@ export async function fillSurface( o ) {
 		result.unmapped.push( ...refusalRows( { opener: { ...opener, refused: motionRefused }, nodes, flat, refOf } ) );
 		const refused = [ ...readRefused, ...motionRefused ];
 		const entrances = nodes.filter( ( x ) => x.targets.length ).map( ( n ) => ( { node: refOf( flat[ n.index ] ), block: n.name, measured: sampled[ n.targets[ 0 ].id ]?.[ 1440 ] ?? null } ) );
-		const motion = motionWrites( { nodes, flat, refOf, records: intakeParts.records, rootComponent: intakeParts.rootComponent, sampled, loops, mdb: motionDb( db ), db, schema: loadMotionSchema(), rawSnapshot, template: templateOf( facts ), draftCss: draftCssOf( o.draftDir, o.draftIndex ), reads, calFor, cssEffects: customCssEffectIds( intakeData ) } );
+		const motion = motionWrites( { nodes, flat, refOf, records: intakeParts.records, rootComponent: intakeParts.rootComponent, sampled, loops, mdb: motionDb( db ), db, schema: loadMotionSchema(), rawSnapshot, template: templateOf( facts ), draftCss: draftCssOf( o.draftDir, o.draftIndex ), reads, calFor, cssEffects: customCssEffectIds( intakeData ), logoOwned: fs.existsSync( path.join( buildDir, LOGO_PARTS ) ) } );
 		result.writes.push( ...motion.writes );
 		result.unmapped.push( ...motion.unmapped );
 		// A draft element carrying a scroll-reveal mark takes the token entrance where no record gave it one (lib/fill-reveal-marks.mjs).

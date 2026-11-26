@@ -28,5 +28,11 @@
 		"find": "source: decodeURI( hit.url.startsWith( base ) ? hit.url.slice( base.length ) : hit.url ) } );",
 		"replace": "source: hit.url } );",
 		"why": "the source is not relative to the page"
+	},
+	{
+		"file": "lib/skeleton-inventory.mjs",
+		"find": ".filter( ( r ) => [ 'fetch', 'xmlhttprequest' ].includes( r.initiatorType ) );",
+		"replace": ";",
+		"why": "a file the page shows only as an <img> makes template markup count as injected"
 	}
 ]

@@ -160,11 +160,11 @@ const homesFor = ( records ) => makeHomeOf( { records, nodes: [ { name: 'sgs/car
 const loose = ( id, over = {} ) => ( { id, mechanism: 'js-style-write', status: 'active', trigger: { type: 'scroll-position' }, element: { dc: 'Site', template_tpl_id: null, selector: 'this.heroRef.current' }, ...over } );
 const rows = ( records, accounted = [] ) => silentRows( { records, accounted: new Set( accounted ), refOf: () => 'r0', homeOf: homesFor( records ) } );
 
-test( 'MUST FAIL (C5 fill 6): an endless animation of an element the code builds is placed on the template element that holds it; a finite one is not', () => {
-	const loop = ( id, over ) => rec( id, { mechanism: 'css-animation', iterations: 'infinite', element: { dc: 'Site', template_tpl_id: null, nearest_tpl_id: '42' }, ...over } );
-	assert.deepEqual( [ ...recordsByElement( [ loop( 'K-1' ) ] ).keys() ], [ 'Site/42' ] );
-	assert.deepEqual( [ ...recordsByElement( [ loop( 'K-2', { element: { dc: 'Site', template_tpl_id: null, nearest_tpl_id: [ '42', '43' ] } } ) ] ).keys() ], [ 'Site/42', 'Site/43' ] );
-	assert.equal( recordsByElement( [ loop( 'K-3', { iterations: 1 } ) ] ).size, 0, 'a finite animation is not placed by its nearest element' );
-	assert.equal( recordsByElement( [ loop( 'K-4', { mechanism: 'css-transition' } ) ] ).size, 0 );
-	assert.deepEqual( [ ...recordsByElement( [ loop( 'K-5', { element: { dc: 'Site', template_tpl_id: '7', nearest_tpl_id: '42' } } ) ] ).keys() ], [ 'Site/7' ], 'an own element wins over a nearest one' );
+test( 'MUST FAIL (C5 fill 6): an endless animation of an element the code builds never animates the block that holds it; it is a named row there', () => {
+	const loop = rec( 'K-1', { mechanism: 'css-animation', iterations: 'infinite', element: { dc: 'Site', template_tpl_id: null, nearest_tpl_id: '42' }, properties: [ { property: 'rotate', from: '0deg', to: '360deg' } ], duration_ms: 900, easing: 'linear' } );
+	assert.equal( recordsByElement( [ loop ] ).size, 0, 'a built element is not keyed under the template element around it' );
+	const { out, flat } = run( [ node( 0, 'sgs/container', '42' ) ], [ loop ] );
+	assert.equal( flat[ 0 ].attributes.sgsMotion, undefined, 'the section block does not spin' );
+	assert.ok( out.unmapped.some( ( u ) => 'K-1' === u.value ), JSON.stringify( out.unmapped ) );
+	assert.deepEqual( [ ...recordsByElement( [ { ...loop, element: { dc: 'Site', template_tpl_id: '7', nearest_tpl_id: '42' } } ] ).keys() ], [ 'Site/7' ], 'an own element is the key' );
 } );

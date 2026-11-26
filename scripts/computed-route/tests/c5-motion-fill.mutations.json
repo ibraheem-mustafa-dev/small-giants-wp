@@ -127,32 +127,14 @@
 	},
 	{
 		"file": "lib/fill-motion.mjs",
-		"find": "const near = ( null === tpl || undefined === tpl ) && 'infinite' === r.iterations && /^(?:css-animation|waapi)$/.test( r.mechanism ) ? r.element?.nearest_tpl_id : null;",
-		"replace": "const near = null;",
-		"why": "a built loop is not placed by its nearest element"
-	},
-	{
-		"file": "lib/fill-motion.mjs",
-		"find": "const near = ( null === tpl || undefined === tpl ) && 'infinite' === r.iterations && /^(?:css-animation|waapi)$/.test( r.mechanism ) ? r.element?.nearest_tpl_id : null;",
-		"replace": "const near = ( null === tpl || undefined === tpl ) && /^(?:css-animation|waapi)$/.test( r.mechanism ) ? r.element?.nearest_tpl_id : null;",
-		"why": "a finite animation is placed by its nearest element"
-	},
-	{
-		"file": "lib/fill-motion.mjs",
-		"find": "const near = ( null === tpl || undefined === tpl ) && 'infinite' === r.iterations && /^(?:css-animation|waapi)$/.test( r.mechanism ) ? r.element?.nearest_tpl_id : null;",
-		"replace": "const near = ( null === tpl || undefined === tpl ) && 'infinite' === r.iterations ? r.element?.nearest_tpl_id : null;",
-		"why": "a transition is placed by its nearest element"
-	},
-	{
-		"file": "lib/fill-motion.mjs",
-		"find": "const near = ( null === tpl || undefined === tpl ) && 'infinite'",
-		"replace": "const near = 'infinite'",
-		"why": "an own element loses to a nearest one"
-	},
-	{
-		"file": "lib/fill-motion.mjs",
 		"find": "const all = normaliseReveals( sameTriggerResolved( given ) );",
 		"replace": "const all = sameTriggerResolved( given );",
 		"why": "a script reveal is not read as an entrance"
+	},
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "for ( const id of null === tpl || undefined === tpl ? [] : [ tpl ].flat() ) {",
+		"replace": "for ( const id of null === tpl || undefined === tpl ? [ r.element?.nearest_tpl_id ].flat().filter( Boolean ) : [ tpl ].flat() ) {",
+		"why": "a built element's loop animates the block around it"
 	}
 ]

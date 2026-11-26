@@ -25,6 +25,7 @@ import { positionsByTemplate } from './motion-behaviour-settings.mjs';
 import { normaliseReveals } from './motion-reveal.mjs';
 import { exactHome } from './fill-part-pairing.mjs';
 import { effectCssItems } from './effect-css-equivalent.mjs';
+import { LOGO_INLINE } from './apply-chrome-logo.mjs';
 import { splitPartRecords, writePartMotion, rehomeParts } from './fill-motion-parts.mjs';
 
 export { elementMotion, elementEffects, renderRefutes } from './fill-motion-element.mjs';
@@ -85,10 +86,10 @@ export function recordsByElement( records ) {
 	const out = new Map();
 	for ( const r of records || [] ) {
 		const tpl = r.element?.template_tpl_id;
-		// An endless animation of an element the code builds (a marquee strip inserted into a template element) is placed on the
-		// template element that holds it: the nearest one is the element a block can carry the loop on.
-		const near = ( null === tpl || undefined === tpl ) && 'infinite' === r.iterations && /^(?:css-animation|waapi)$/.test( r.mechanism ) ? r.element?.nearest_tpl_id : null;
-		for ( const id of null !== near && undefined !== near ? [ near ].flat() : null === tpl || undefined === tpl ? [] : [ tpl ].flat() ) {
+		// A record keyed only by its own template element: an animation of an element the code builds (a spinner, a strip)
+		// is never moved onto the template element that holds it, which would animate that whole block; the accounting names
+		// it as a row at its nearest target (lib/fill-motion-account.mjs::makeHomeOf).
+		for ( const id of null === tpl || undefined === tpl ? [] : [ tpl ].flat() ) {
 			const key = templateKey( { dc: r.element.dc, tpl: id } );
 			if ( ! out.has( key ) ) {
 				out.set( key, [] );
@@ -267,7 +268,7 @@ export function sameTriggerResolved( records ) {
 // the entry draft's component (lib/fill-motion.mjs::elementKey); loops: sampleMotion()'s loops by target id; offers:
 // lib/motion-effects.mjs::loadEffectOffers; stateVocab: the `states` table rows that give the words meaning "open"
 // (default: the framework DB's). Returns { writes, unmapped, notes } in the shapes fill-resolve.mjs uses.
-export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}, loops = {}, mdb, schema, rawSnapshot, rootComponent = null, offers = loadEffectOffers(), stateVocab = null, template = null, draftCss = [], hasAttr: givenHasAttr = undefined, db = null, reads = null, calFor = null, cssEffects = new Set() } ) {
+export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}, loops = {}, mdb, schema, rawSnapshot, rootComponent = null, offers = loadEffectOffers(), stateVocab = null, template = null, draftCss = [], hasAttr: givenHasAttr = undefined, db = null, reads = null, calFor = null, cssEffects = new Set(), logoOwned = false } ) {
 	const out = { writes: [], unmapped: [], notes: [], site: [], handover: [] };
 	// Every settings write is checked against the framework DB's attributes: the handle given, else the framework DB itself.
 	const hasAttr = givenHasAttr ?? ( db ? hasAttrOf( db ) : undefined );
@@ -440,9 +441,14 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 		flush();
 		at = null;
 		// Effect rows Bean marked custom-css (Spec 48 FR-48-17): the hover rule goes in the box that holds the loop's rule. The
-		// whole inventory (`all`) is read: the loop a hover speeds up is often a part record of injected content.
+		// whole inventory (`all`) is read: the loop a hover speeds up is often a part record of injected content. A logo whose
+		// parts the apply stage animates from build/logo-svgparts.json (`logoOwned`) takes its hover rate there
+		// (lib/apply-chrome-logo.mjs::logoRule, svgParts), so Fill writes no second hover rule on it.
 		const hover = effectCssItems( { marked: cssEffects, records: all, items: boxes } );
-		if ( hover.items.length ) {
+		if ( hover.items.length && logoOwned && LOGO_INLINE[ n.name ] ) {
+			out.notes.push( ...hover.used.map( ( id ) => ( { node: ref, block: n.name, slot: '', text: `${ id }: the logo's hover rate is written by the apply stage with its parts (build/logo-svgparts.json, lib/apply-chrome-logo.mjs::logoRule)` } ) ) );
+			used.push( ...hover.used );
+		} else if ( hover.items.length ) {
 			boxes.push( ...hover.items );
 			used.push( ...hover.used );
 		}

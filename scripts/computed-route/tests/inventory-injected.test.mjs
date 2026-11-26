@@ -17,6 +17,8 @@ const PAGE = `<!doctype html><html><body>
 <brand-mark data-inv-i="1"></brand-mark>
 <span data-inv-i="2"><svg viewBox="0 0 16 16"><path d="M0 0h16v16z"/></svg></span>
 <div data-inv-i="3"></div>
+<img src="art/badge.svg" alt="">
+<span data-inv-i="5"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 100"><g id="rays"><path d="M0 0h10v10z"/></g><path id="ground" d="M0 50h500v50H0z"/></svg></span>
 <script>
 class BrandMark extends HTMLElement { async connectedCallback() { const t = await ( await fetch( 'art/wide.svg' ) ).text(); this.innerHTML = t.replace( /id="([^"]+)"/g, 'id="m1_$1"' ); } }
 customElements.define( 'brand-mark', BrandMark );
@@ -31,6 +33,7 @@ async function read( width ) {
 	fs.writeFileSync( path.join( dir, 'index.html' ), PAGE );
 	fs.writeFileSync( path.join( dir, 'art', 'wide.svg' ), SVG( 2100 ) );
 	fs.writeFileSync( path.join( dir, 'art', 'narrow.svg' ), SVG( 1000 ) );
+	fs.writeFileSync( path.join( dir, 'art', 'badge.svg' ), SVG( 500 ) );
 	const served = await serveDraft( dir, { index: 'index.html' } );
 	const { chromium } = await loadChromium();
 	const browser = await chromium.launch( { headless: true } );
@@ -58,4 +61,5 @@ test( 'negative control: an inline icon the page never fetched, and an SVG whose
 	const wide = await read( 1440 );
 	assert.equal( wide[ '2' ], undefined );
 	assert.equal( wide[ '3' ], undefined );
+	assert.equal( wide[ '5' ], undefined, 'markup the template binds, whose file the page shows only as an <img>, is not injected' );
 } );

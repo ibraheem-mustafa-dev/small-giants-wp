@@ -20,10 +20,10 @@ const FAST = hoverControl( 'J-1', 14 );
 const TEMPLATE = { elements: { 'Site/43': { tag: 'brand-mark', attrs: {} }, 'Site/684': { tag: 'brand-mark', attrs: {} } } };
 const intakeOf = ( records, review = [] ) => ( { inventory: { animations: { records } }, review } );
 
-const run = ( records, cssEffects ) => {
+const run = ( records, cssEffects, logoOwned = false ) => {
 	const nodes = [ { index: 0, name: 'sgs/responsive-logo', targets: [ { id: '0:', slot: '', finder: { tpl: 'Site/43#0' } } ] } ];
 	const flat = [ { name: 'sgs/responsive-logo', attributes: {}, ref: 'r0' } ];
-	const out = motionWrites( { nodes, flat, refOf: ( x ) => x.ref, records, mdb, schema, rawSnapshot: { settings: { custom: {} } }, template: TEMPLATE, hasAttr: () => true, keyScope: 'site|header', cssEffects } );
+	const out = motionWrites( { nodes, flat, refOf: ( x ) => x.ref, records, mdb, schema, rawSnapshot: { settings: { custom: {} } }, template: TEMPLATE, hasAttr: () => true, keyScope: 'site|header', cssEffects, logoOwned } );
 	return { out, attrs: flat[ 0 ].attributes };
 };
 const effectRow = ( records ) => reviewRows( intakeOf( records ) ).find( ( r ) => 'effect' === r.rowType );
@@ -64,4 +64,12 @@ test( 'negative control: an unmarked record, or a difference mark, writes no hov
 	assert.doesNotMatch( run( [ SPIN, FAST ], new Set() ).attrs.sgsCustomCss, /:hover/ );
 	assert.doesNotMatch( run( [ SPIN, FAST ] ).attrs.sgsCustomCss, /:hover/ );
 	assert.doesNotMatch( run( [ FAST ], new Set( [ 'J-1' ] ) ).attrs.sgsCustomCss ?? '', /:hover/, 'no loop rule on the block, nothing to speed up' );
+} );
+
+test( 'MUST FAIL: a logo whose parts the apply stage animates from build/logo-svgparts.json gets no second hover rule from Fill, only a note', () => {
+	const marked = new Set( [ 'J-1' ] );
+	const { out, attrs } = run( [ SPIN, FAST ], marked, true );
+	assert.doesNotMatch( attrs.sgsCustomCss ?? '', /:hover/ );
+	assert.ok( out.notes.some( ( n ) => /^J-1: the logo's hover rate is written by the apply stage/.test( n.text ?? '' ) ), JSON.stringify( out.notes ) );
+	assert.match( run( [ SPIN, FAST ], marked, false ).attrs.sgsCustomCss, /&:hover #spin/, 'without the file Fill writes it' );
 } );

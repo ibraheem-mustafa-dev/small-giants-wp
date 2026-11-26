@@ -278,8 +278,9 @@ function collect( [ rootSelector, keySrc, attrNames, lineSrc, strips, holdsSrc, 
 // <svg> child the element holds with no data-dc-tpl stamp of its own (a fetched SVG written into a holder, or a custom
 // element's own content) whose source is an SVG file the page fetched, as { <data-inv-i>: { tag: 'svg', viewBox, source } }.
 // `source` is the fetched file whose element structure (every element's tag in order, metadata left out) and viewBox equal
-// the injected one (the code may rename ids or drop attributes, not elements), as a path relative to the page. An <svg> no
-// fetched file matches (an icon the template binds as markup) is not injected content.
+// the injected one (the code may rename ids or drop attributes, not elements), as a path relative to the page. Only files the
+// page's script fetched count (a fetch or XHR request: code can write only markup it fetched), so an <svg> the template binds as
+// markup is not injected content even when the page also shows the same file as an <img>; nor is one no fetched file matches.
 export async function injectedContent() {
 	const shape = ( svg ) => [ ...svg.querySelectorAll( '*' ) ].filter( ( x ) => ! x.closest( 'metadata' ) ).map( ( x ) => x.localName ).join( ',' );
 	const holders = [ ...document.querySelectorAll( '[data-inv-i]' ) ].map( ( e ) => [ e, [ ...e.children ].find( ( c ) => 'svg' === c.localName && ! c.hasAttribute( 'data-dc-tpl' ) ) ] ).filter( ( [ , svg ] ) => svg );
@@ -288,7 +289,8 @@ export async function injectedContent() {
 	}
 	const base = location.href.replace( /[#?].*$/, '' ).replace( /[^/]*$/, '' );
 	const files = [];
-	for ( const url of [ ...new Set( performance.getEntriesByType( 'resource' ).map( ( r ) => r.name ).filter( ( u ) => /\.svg(?:[?#]|$)/i.test( u ) ) ) ] ) {
+	const fetched = performance.getEntriesByType( 'resource' ).filter( ( r ) => [ 'fetch', 'xmlhttprequest' ].includes( r.initiatorType ) );
+	for ( const url of [ ...new Set( fetched.map( ( r ) => r.name ).filter( ( u ) => /\.svg(?:[?#]|$)/i.test( u ) ) ) ] ) {
 		try {
 			const root = new DOMParser().parseFromString( await ( await fetch( url ) ).text(), 'image/svg+xml' ).documentElement;
 			'svg' === root?.localName && files.push( { url, shape: shape( root ), viewBox: root.getAttribute( 'viewBox' ) } );

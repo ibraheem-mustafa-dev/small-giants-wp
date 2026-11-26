@@ -40,5 +40,11 @@
 		"find": "css: cssEquivalentOf( r, ctx.records ) ?? undefined,",
 		"replace": "",
 		"why": "the recogniser does not carry the CSS equivalent to the review"
+	},
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "if ( hover.items.length && logoOwned && LOGO_INLINE[ n.name ] ) {",
+		"replace": "if ( false ) {",
+		"why": "Fill writes a second hover rule on a logo the apply stage animates"
 	}
 ]
