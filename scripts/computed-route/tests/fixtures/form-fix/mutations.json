@@ -1,5 +1,9 @@
 [
- { "file": "lib/fill-form.mjs", "find": "formSchemaOf( facts, component );\n\t// `paramsOf( target )`", "replace": "formSchemaOf( facts );\n\t// `paramsOf( target )`", "why": "a form surface reads the first schema in the record again" },
+ { "file": "lib/fill-form.mjs", "find": "formSchemaOf( facts, formComponentOf( nodes, facts, component, ( r ) => linked.has( flat[ r.index ] ) ) );", "replace": "formSchemaOf( facts );", "why": "a form surface reads the first schema in the record again" },
+ { "file": "lib/fill-form.mjs", "find": "formSchemaOf( facts, formComponentOf( nodes, facts, component, ( r ) => linked.has( flat[ r.index ] ) ) );", "replace": "formSchemaOf( facts, component );", "why": "a form imported from its own draft file takes the served page's schema (none)" },
+ { "file": "lib/fill-form.mjs", "find": "formComponentOf( nodes, facts, component, ( r ) => linked.has( flat[ r.index ] ) )", "replace": "formComponentOf( nodes, facts, component )", "why": "a linked embed on the page names the schema of the page's own inline form" },
+ { "file": "lib/fill-form.mjs", "find": "const form = ( nodes || [] ).find( ( r ) => 'sgs/form' === r.name && ! skip( r ) );", "replace": "const form = null;", "why": "the form's component is read from its sgs/form node's finder chain" },
+ { "file": "fill.mjs", "find": "sources: formSources( draftFolder, facts, formComponentOf( nodes, facts, intakeParts.rootComponent ) )", "replace": "sources: formSources( draftFolder, facts, intakeParts.rootComponent )", "why": "Fill reads the served page's scripts, not the imported form's" },
  { "file": "lib/fill-form.mjs", "find": "formSchemaOf( facts, component );\n\tconst out = {};", "replace": "formSchemaOf( facts );\n\tconst out = {};", "why": "the sources of the first schema's script are read for every form" },
  { "file": "lib/fill-form.mjs", "find": "if ( linked.has( node ) ) {", "replace": "if ( false ) {", "why": "a linked embed is written" },
  { "file": "lib/fill-form.mjs", "find": "walk( [ node ], ( n ) => linked.add( n ) );", "replace": "linked.add( node );", "why": "a block inside a linked embed is written" },

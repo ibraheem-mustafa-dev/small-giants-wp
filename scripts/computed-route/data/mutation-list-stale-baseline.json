@@ -143,9 +143,6 @@
 		"const keyword = sizeKeyword( { prop, raw, def, unit } );\n\tif ( keyword ) {",
 		"if ( undefined !== unit ) {\n\t\treturn { error: `${ raw } cannot be held (the setting stores a number beside a unit"
 	],
-	"tests/fixtures/skeleton-form-link/mutations.json": [
-		"if ( 'formLink' === r.rule ) {"
-	],
 	"tests/fixtures/skeleton-width-only/mutations-propose.json": [
 		"m.widthKids( e ).forEach( ( k ) => {\n\t\t\tconst at",
 		".split( /[^\\w$]+/ ).includes( h ) );"

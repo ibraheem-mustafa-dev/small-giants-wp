@@ -237,6 +237,21 @@ export function componentOf( target, candidates ) {
 	return [ ...chain ].reverse().find( ( c ) => candidates.includes( c ) ) || null;
 }
 
+// The draft component that holds a node: the innermost component in its finder chain that has its own `.dc.html` in the fact
+// record (a form imported from TradeApplication.dc.html is TradeApplication's), else `fallback`, the served page's component. Fill
+// names the page's component for the run, which is not the form's when the page imports the form from its own draft file.
+export function draftComponentOf( target, facts, fallback = null ) {
+	const drafts = Object.keys( facts?.sources?.files || {} ).filter( ( f ) => f.endsWith( '.dc.html' ) ).map( ( f ) => f.slice( 0, -'.dc.html'.length ) );
+	return componentOf( target, drafts ) || fallback;
+}
+
+// The draft component that holds a skeleton's form: draftComponentOf of the first `sgs/form` node that `skip` does not pass over
+// (formWrites skips a linked embed, whose fields are the saved form's own), else `fallback`.
+export function formComponentOf( nodes, facts, fallback = null, skip = () => false ) {
+	const form = ( nodes || [] ).find( ( r ) => 'sgs/form' === r.name && ! skip( r ) );
+	return draftComponentOf( form?.targets?.find( ( t ) => '' === t.slot ), facts, fallback );
+}
+
 // Fill's form pass. nodes/flat/refOf: the skeleton nodes, their tree nodes and the ref function; reads: readDraft's result;
 // facts: the fact record (or null); flags: intake's flags; db: the framework DB; source: { component: script text } for the
 // draft's conditions ({ component: script text }, see formSources); component: the surface's own component (its handoff
@@ -255,17 +270,15 @@ export function formWrites( { nodes, flat, refOf, reads, facts, flags = [], db, 
 			walk( [ node ], ( n ) => linked.set( n, ref.value ) );
 		}
 	} );
-	const schema = formSchemaOf( facts, component );
+	// The schema is the one of the draft component that holds the form (formComponentOf), not the served page's.
+	const schema = formSchemaOf( facts, formComponentOf( nodes, facts, component, ( r ) => linked.has( flat[ r.index ] ) ) );
 	// `paramsOf( target )`: the query names a link of the draft hands to a form, and the fields a control of the form's own page that
 	// scrolls to the form sets (lib/skeleton-form-prefill.mjs::prefillParams: only the openers of the draft component that holds the
-	// field). That component is the innermost draft component in the field's finder chain (a form imported from its own `.dc.html`
-	// is that file's), else `component`, the served page's: Fill names the page's component, which is not the form's when the form
-	// is a child the page imports.
+	// field, draftComponentOf).
 	const fromLinks = linkParams( facts );
-	const drafts = Object.keys( facts?.sources?.files || {} ).filter( ( f ) => f.endsWith( '.dc.html' ) ).map( ( f ) => f.slice( 0, -'.dc.html'.length ) );
 	const paramsBy = new Map();
 	const paramsOf = ( target ) => {
-		const own = componentOf( target, drafts ) || component;
+		const own = draftComponentOf( target, facts, component );
 		paramsBy.has( own ) || paramsBy.set( own, new Set( [ ...fromLinks, ...( folder ? prefillParams( { folder, record: facts, component: own } ) : [] ) ] ) );
 		return paramsBy.get( own );
 	};

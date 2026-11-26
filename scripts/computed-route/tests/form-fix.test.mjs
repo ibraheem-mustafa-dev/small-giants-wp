@@ -11,7 +11,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { openDb } from '../lib/db.mjs';
 import { fixtureDb } from './fixtures/framework-db.mjs';
-import { formWrites, formSources } from '../lib/fill-form.mjs';
+import { formWrites, formSources, formComponentOf } from '../lib/fill-form.mjs';
 import { unmappedList } from '../lib/fill-report.mjs';
 import { checksRan } from '../lib/fill-resolve-element.mjs';
 import { mapResolverGap } from '../lib/gap-classes.mjs';
@@ -52,6 +52,29 @@ test( 'MUST FAIL: a form surface is given its own component\'s schema, not the f
 	const trade = run( { flat: [ form(), { name: 'sgs/form-step', attributes: {}, innerBlocks: [], ref: 's0' } ], component: 'Trade' } );
 	assert.deepEqual( trade.writes.map( ( w ) => [ w.node, w.attr, w.after ] ), [ [ 'form', 'savedProgress', true ], [ 's0', 'label', 'Business' ] ] );
 	assert.deepEqual( run( { flat: [ form() ], component: 'Nothing' } ).writes, [], 'a component that holds no schema writes no form settings' );
+} );
+
+// Fill's own arguments: `component` is the served page's (Site, which holds no schema), and the form surface's form is imported from
+// its own draft file (Trade), whose schema the form takes; the page's inline form keeps the page's (none).
+test( 'MUST FAIL: through Fill\'s own arguments, a form imported from its own draft file takes that file\'s schema and sources; the page\'s inline form does not', () => {
+	const facts = { ...FACTS, logic: { statics: { ...FACTS.logic.statics, Site: { entries: [] } } }, sources: { files: { 'Site.dc.html': 'a', 'Trade.dc.html': 'b' } } };
+	const tree = () => [ form(), { name: 'sgs/form-step', attributes: {}, innerBlocks: [], ref: 's0' } ];
+	const at = ( tpl, flat ) => flat.map( ( n, i ) => ( { index: i, name: n.name, targets: [ { id: `${ i }:`, slot: '', finder: { tpl: 0 === i ? tpl : `${ tpl.replace( /\/\d+#0$/, '' ) }/${ 10 + i }#0` } } ] } ) );
+	// fill.mjs passes `component: intakeParts.rootComponent`, the served page's component (Site), never the form's.
+	const fill = ( tpl, flat = tree(), nodes = at( tpl, flat ) ) => formWrites( { nodes, flat, refOf: ( n ) => n.ref, reads: { widths: { 1440: {} } }, facts, flags: FLAGS, db, component: 'Site' } ).writes.map( ( w ) => [ w.node, w.attr, w.after ] );
+	assert.deepEqual( fill( 'Root>Trade@466#0/6#0' ), [ [ 'form', 'savedProgress', true ], [ 's0', 'label', 'Business' ] ], 'the imported Trade form takes Trade\'s schema' );
+	assert.deepEqual( fill( 'Root/6#0' ), [], 'negative control: the page\'s inline form takes the page\'s schema, which it has none of' );
+	// A linked Trade embed on the page is passed over: the inline form after it keeps the page's schema.
+	const linked = [ form( { formIsLinked: true, formId: 'trade' } ), form(), { name: 'sgs/form-step', attributes: {}, innerBlocks: [], ref: 's0' } ];
+	const nodes = [ ...at( 'Root>Trade@466#0/6#0', linked.slice( 0, 1 ) ), ...at( 'Root/7#0', linked.slice( 1 ) ).map( ( r ) => ( { ...r, index: r.index + 1 } ) ) ];
+	assert.deepEqual( fill( null, linked, nodes ), [], 'a linked embed names no schema for the page' );
+	// The sources Fill reads for the form (fill.mjs: formSources( draftFolder, facts, formComponentOf( nodes, facts, rootComponent ) )).
+	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'form-sources-' ) );
+	fs.writeFileSync( path.join( dir, 'Site.dc.html' ), '<script>x</script>' );
+	fs.writeFileSync( path.join( dir, 'Trade.dc.html' ), '<script>y</script>' );
+	assert.deepEqual( Object.keys( formSources( dir, facts, formComponentOf( at( 'Root>Trade@466#0/6#0', tree() ), facts, 'Site' ) ) ), [ 'Trade' ] );
+	assert.deepEqual( Object.keys( formSources( dir, facts, formComponentOf( at( 'Root/6#0', tree() ), facts, 'Site' ) ) ), [], 'the page\'s inline form reads no schema script' );
+	assert.ok( fs.readFileSync( path.join( HERE, '..', 'fill.mjs' ), 'utf8' ).includes( 'component: intakeParts.rootComponent, sources: formSources( draftFolder, facts, formComponentOf( nodes, facts, intakeParts.rootComponent ) )' ) );
 } );
 
 test( 'MUST FAIL: Fill writes nothing on a linked sgs/form embed, nor on a block inside one', () => {
