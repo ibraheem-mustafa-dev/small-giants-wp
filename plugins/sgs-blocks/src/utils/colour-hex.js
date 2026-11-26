@@ -1,7 +1,8 @@
 /**
- * A functional colour as hex. Twin of `sgs_functional_colour_to_hex()` (PHP rounds half away from zero, as `Math.round` does for
- * the non-negative values here). Moved out of the media emitters so every shadow output prints a preset's colours the way
- * the server does; `components/media/emit/values.js` re-exports it.
+ * Functional colours as hex: `functionalColourToHex()` turns one `rgb()`, `rgba()`, `hsl()` or `hsla()` colour into `#RRGGBB`
+ * (`#RRGGBBAA` when the alpha is below 1) and leaves anything else unchanged; `functionalColoursToHex()` does the same for every
+ * such colour inside a longer value, such as a composed shadow. Twin of `sgs_functional_colour_to_hex()`, so the editor prints a
+ * colour the way the server does; channel maths rounds half up, as PHP's `round()` does for the non-negative values here.
  *
  * @package SGS\Blocks
  */
