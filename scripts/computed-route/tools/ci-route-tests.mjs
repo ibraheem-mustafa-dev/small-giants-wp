@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Runs the route's non-browser test suite on GitHub Actions for a pushed branch and prints the result:
-//   node scripts/computed-route/tools/ci-route-tests.mjs <branch> [--no-wait] [--os ubuntu-latest|windows-latest]
+//   node scripts/computed-route/tools/ci-route-tests.mjs <branch> [--no-wait]
 // The branch must be on origin and contain .github/workflows/route-tests.yml (a branch cut from main after that file landed does).
 // A branch named fix/** or main starts a run by itself when pushed; this tool then finds that run for the branch's head commit,
 // and starts one with `gh workflow run` only when none exists (any other branch name). It then waits (`gh run watch`), prints the
@@ -25,9 +25,8 @@ const gh = ( ...args ) => {
 const sleep = ( ms ) => new Promise( ( r ) => setTimeout( r, ms ) );
 
 const argv = process.argv.slice( 2 );
-const branch = argv.find( ( a ) => ! a.startsWith( '--' ) && argv[ argv.indexOf( a ) - 1 ] !== '--os' );
-if ( ! branch ) { console.error( 'usage: ci-route-tests.mjs <branch> [--no-wait] [--os ubuntu-latest|windows-latest]' ); process.exit( 2 ); }
-const only = argv.includes( '--os' ) ? argv[ argv.indexOf( '--os' ) + 1 ] : null;
+const branch = argv.find( ( a ) => ! a.startsWith( '--' ) );
+if ( ! branch ) { console.error( 'usage: ci-route-tests.mjs <branch> [--no-wait]' ); process.exit( 2 ); }
 
 const remote = sh( 'git', [ 'ls-remote', 'origin', `refs/heads/${ branch }` ] ).stdout.split( /\s/ )[ 0 ];
 if ( ! remote ) { console.error( `ci-route-tests: origin has no branch ${ branch }. Push it first: git push origin ${ branch }` ); process.exit( 2 ); }
@@ -49,7 +48,7 @@ if ( argv.includes( '--no-wait' ) ) process.exit( 0 );
 sh( 'gh', [ 'run', 'watch', id, '--interval', '20' ], { stdio: [ 'ignore', 'ignore', 'inherit' ] } );
 const out = path.join( RUNS, id );
 fs.mkdirSync( out, { recursive: true } );
-const pattern = only ? `route-tests-${ only }-*` : 'route-tests-*';
+const pattern = 'route-tests-shard-*';
 const dl = sh( 'gh', [ 'run', 'download', id, '--pattern', pattern, '--dir', out ] );
 if ( 0 !== dl.status ) console.error( `ci-route-tests: no shard output downloaded:\n${ dl.stderr }` );
 const sum = sh( process.execPath, [ path.join( ROUTE, 'tools', 'ci-summary.mjs' ), out ] );
