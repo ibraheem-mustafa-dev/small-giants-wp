@@ -268,6 +268,7 @@ export default function ConfiguratorPanel( { attributes, setAttributes } ) {
 				attributes={ attributes }
 				setAttributes={ setAttributes }
 				prefix="preview"
+				inGroup="settings"
 				blockSlug="sgs/buybox"
 				blockName="sgs/buybox"
 				context="content"

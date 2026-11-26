@@ -59,6 +59,7 @@ export default function ChromePanel( {
 				blockName="sgs/nav-drawer"
 				blockSlug="sgs/nav-drawer"
 				prefix="chromeLogo"
+				inGroup="settings"
 				atoms={ LOGO_SLOT.atoms }
 				kinds={ LOGO_SLOT.kinds }
 				context={ LOGO_SLOT.context }

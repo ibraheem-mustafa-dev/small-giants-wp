@@ -101,6 +101,7 @@ export default function ChromePanel( { attributes, setAttributes } ) {
 					blockName="sgs/choice-flow"
 					blockSlug="sgs/choice-flow"
 					prefix="headerLogo"
+					inGroup="settings"
 					atoms={ LOGO_SLOT.atoms }
 					kinds={ LOGO_SLOT.kinds }
 					context={ LOGO_SLOT.context }
