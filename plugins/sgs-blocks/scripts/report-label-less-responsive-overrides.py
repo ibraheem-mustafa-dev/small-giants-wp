@@ -8,8 +8,14 @@ REPORT, not a gate: it exits 0 whatever it finds, until Stage E2 turns the count
 A mount counts as label-less when its opening tag has no `label=` prop and no `{...spread}`. A mount with a spread is
 listed apart as "unknown" because the spread may carry the label.
 
+Stage E2 turned the report into a gate: `--check` exits 1 while any mount is label-less. `--survey` adds, per mount, the
+label its inner control already draws (the text the codemod passes, which `hideDuplicateLabels` then hides on the inner
+control), or "none" when the inner control has no label of its own.
+
 Run from plugins/sgs-blocks:
-    python scripts/report-label-less-responsive-overrides.py            # summary, then one line per mount
+    python scripts/report-label-less-responsive-overrides.py            # summary, then one line per mount (exit 0)
+    python scripts/report-label-less-responsive-overrides.py --survey   # the same, with each mount's suggested label
+    python scripts/report-label-less-responsive-overrides.py --check    # gate: exit 1 on a label-less mount
     python scripts/report-label-less-responsive-overrides.py --json out.json
     python scripts/report-label-less-responsive-overrides.py --self-test
 """
@@ -89,8 +95,19 @@ def top_level_props(tag: str) -> tuple[bool, bool]:
     return has_label, has_spread
 
 
+INNER_LABEL = re.compile(r"""\blabel\s*=\s*(?:\{\s*(?:__\(\s*)?)?(['"])(.+?)\1""")
+
+
+def inner_label(text: str, start: int) -> str:
+    """The first `label=` text the mount's children carry (up to its closing tag), or ''."""
+    end = text.find("</ResponsiveOverride>", start)
+    body = text[start : end if end != -1 else start + 1500]
+    m = INNER_LABEL.search(body)
+    return m.group(2) if m else ""
+
+
 def scan_text(text: str) -> list[dict]:
-    """One record per mount: line, enclosing symbol, `labelled` ('yes', 'no' or 'unknown')."""
+    """One record per mount: line, enclosing symbol, `labelled` ('yes', 'no' or 'unknown'), `inner` label text."""
     records = []
     for m in TAG.finditer(text):
         tag = text[m.start() : tag_end(text, m.start())]
@@ -105,6 +122,7 @@ def scan_text(text: str) -> list[dict]:
                 "line": text.count("\n", 0, m.start()) + 1,
                 "symbol": symbol,
                 "labelled": "yes" if has_label else ("unknown" if has_spread else "no"),
+                "inner": inner_label(text, m.start() + len(tag)),
             }
         )
     return records
@@ -141,12 +159,20 @@ function Sublabel() {
     want = [("Panel", "yes"), ("Row", "no"), ("Spread", "unknown"), ("Sublabel", "no")]
     ok = got == want
     print("[report-label-less-responsive-overrides] self-test", "PASS" if ok else f"FAIL got {got}")
-    return 0 if ok else 1
+    inner = [r["inner"] for r in scan_text(sample)]
+    ok_inner = inner == ["", "inner", "", ""]
+    print("[report-label-less-responsive-overrides] self-test inner label", "PASS" if ok_inner else f"FAIL got {inner}")
+    gated = [r for r in scan_text("const A = () => <ResponsiveOverride value={ x } />;") if r["labelled"] != "yes"]
+    ok_gate = 1 == len(gated) and 0 == len([r for r in scan_text("const A = () => <ResponsiveOverride label=\"L\" value={ x } />;") if r["labelled"] != "yes"])
+    print("[report-label-less-responsive-overrides] self-test gate", "PASS" if ok_gate else "FAIL")
+    return 0 if ok and ok_inner and ok_gate else 1
 
 
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--json", metavar="FILE")
+    ap.add_argument("--survey", action="store_true", help="list each mount with the label its inner control draws")
+    ap.add_argument("--check", action="store_true", help="gate: exit 1 while a mount has no label")
     ap.add_argument("--self-test", action="store_true")
     a = ap.parse_args()
     if a.self_test:
@@ -160,12 +186,13 @@ def main() -> int:
         f"{counts['no']} label-less, {counts['unknown']} unknown (spread props); label-less or unknown in {len(files)} files"
     )
     for r in less:
-        print(f"{r['labelled']:8} {r['file']}::{r['symbol'] or '(module)'} (line {r['line']})")
+        suffix = f" -> label {r['inner']!r}" if a.survey and r["inner"] else (" -> inner control has no label: write one" if a.survey else "")
+        print(f"{r['labelled']:8} {r['file']}::{r['symbol'] or '(module)'} (line {r['line']}){suffix}")
     if a.json:
         Path(a.json).write_text(
             json.dumps({"total": len(records), "counts": counts, "mounts": less}, indent=1), encoding="utf-8"
         )
-    return 0
+    return 1 if a.check and less else 0
 
 
 if __name__ == "__main__":
