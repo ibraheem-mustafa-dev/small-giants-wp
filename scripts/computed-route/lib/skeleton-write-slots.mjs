@@ -140,7 +140,12 @@ export function makeSlotRows( ctx ) {
 		const host = hosts.at( -1 );
 		// A setting the wrapper's style stands for that the host decides (a mega panel's width cap and padding, per device; the verdict names the host in `hostLays`): the
 		// host node's `decided`, which Fill writes (lib/fill-resolve.mjs::fillContent).
-		r.decided && host?.node && ( host.node.decided = { ...host.node.decided, ...structuredClone( r.decided ) } );
+		// The verdict names the block it decides for (`hostLays`): the innermost host when that is it, else the node built for that
+		// element; a verdict naming a block that was never built is reported, never merged into another block's settings.
+		if ( r.decided ) {
+			const target = r.hostLays && host?.e?.key !== r.hostLays ? ctx.nodeOfKey[ r.hostLays ] : host?.node;
+			target ? ( target.decided = { ...target.decided, ...structuredClone( r.decided ) } ) : slotProblems.push( `${ e.key }: its decided settings belong to ${ r.hostLays ?? 'the block that hosts it' }, which has no block in the proposal` );
+		}
 		// A layer the host takes in as its overlay (`overlay`, lib/skeleton-overlay-layer.mjs): every layer joins the host's
 		// draftOverlay in drawing order, and the last one drawn (the top of the stack) is the overlay slot's draft element.
 		if ( r.overlay ) {
