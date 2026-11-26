@@ -73,9 +73,11 @@ const COLOUR_KEY_ROLES = new Set( Object.values( STYLE_FIELD_KEY_ROLE ) );
 // A field takes the key of its own name first. Otherwise, for each role the field plays in order, it takes an open key whose
 // primary role that is; only when the block's item has no such key does a key that names the role as a later one take it
 // (a team member's `name`, primary role author, takes a draft `title` when the item has no title key). Within either
-// tier a tie goes to the key sharing a word with the field. Last, a field still unmatched (not a picture, not a colour) whose roles
-// include none of the unmatched role's `skipRoles` takes an open string key whose primary role is the unmatched role (a card's
-// `subtitle`, data/item-roles.json `takesUnmatched`): a field matched above is never moved.
+// tier a tie goes to the key sharing a word with the field. Last, a field still unmatched that the draft prints as visible words
+// (`text`: a field only an attribute carries, a path or an alt text, is never words), not a picture or a colour, and whose roles
+// include none of the unmatched role's `skipRoles` (a picture, a glyph, an address, an identity, a title or button label) takes an
+// open string key whose primary role is the unmatched role (a card's `subtitle`, data/item-roles.json `takesUnmatched`): a count, a
+// price, a tag. A field matched above is never moved; when several leftovers compete for one key the first in draft order wins.
 export function matchFields( fields, keys ) {
 	const map = {};
 	const used = new Set();
@@ -104,7 +106,7 @@ export function matchFields( fields, keys ) {
 		}
 	}
 	if ( UNMATCHED_ROLE ) {
-		for ( const f of fields.filter( ( x ) => ! ( x.name in map ) && ! x.style && ! x.image && ! fieldRoles( x.name ).some( ( r ) => UNMATCHED_ROLE.skip.has( r ) ) ) ) {
+		for ( const f of fields.filter( ( x ) => ! ( x.name in map ) && ! x.style && ! x.image && true === x.text && ! fieldRoles( x.name ).some( ( r ) => UNMATCHED_ROLE.skip.has( r ) ) ) ) {
 			const k = keys.find( ( x ) => ! used.has( x.key ) && ( null == x.type || 'string' === x.type ) && keyRoles( x )[ 0 ] === UNMATCHED_ROLE.role );
 			k && take( f, k );
 		}

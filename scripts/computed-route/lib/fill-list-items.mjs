@@ -11,7 +11,7 @@
 // A field is named by its path after the loop variable (`ms.year` gives `year`); a field held by an <img> or an image
 // placeholder (`id`, `src` or `data-src`) is an image field. A hole in an element's style, an event, a placeholder text or
 // a list binding is no field, except a whole-value hole in `background`, `background-color` or `color` (`background:{{ st.bg }}`):
-// that is an item's own colour (a style field, `style` naming the property), its value the colour the copy's element paints. Returns { items: [{ field: value }], fields: [{ name, image }], source, reason, current }, `current` true
+// that is an item's own colour (a style field, `style` naming the property), its value the colour the copy's element paints. Returns { items: [{ field: value }], fields: [{ name, image, text }] (text: the draft prints the field as visible words, not only in an attribute), source, reason, current }, `current` true
 // for a current-item display (the draft shows one item at a time).
 import { templateKeyOf } from './fact-key.mjs';
 import { classMethod, isFn } from './intake-ast.mjs';
@@ -179,7 +179,7 @@ export function loopItems( o ) {
 			const own = l.holes( e );
 			const texts = own.filter( ( f ) => f.text );
 			for ( const f of own ) {
-				fields.set( f.name, { name: f.name, image: f.image } );
+				fields.set( f.name, { name: f.name, image: f.image, text: !! ( fields.get( f.name )?.text || f.text ) } );
 				if ( f.image ) {
 					// The rendered inventory keeps no image address: the item names its field, its value unread.
 					item[ f.name ] ??= null;
@@ -227,7 +227,7 @@ export function currentItems( { facts, rootKey, rootComponent = null, idx } ) {
 			const f = holeField( h, t.realTag || t.tag );
 			if ( f && ! loopVars.has( f.head ) ) {
 				const list = heads.get( f.head ) ?? new Map();
-				list.set( f.name, { name: f.name, image: f.image } );
+				list.set( f.name, { name: f.name, image: f.image, text: !! ( list.get( f.name )?.text || f.text ) } );
 				heads.set( f.head, list );
 			}
 		}
@@ -271,7 +271,7 @@ export function currentFieldElements( { inventory, facts, rootKey, rootComponent
 			const f = holeField( h, t.realTag || t.tag, ! String( e.words ?? '' ).trim() );
 			if ( f && ! loopVars.has( f.head ) && ( f.text || f.image ) ) {
 				const list = heads.get( f.head ) ?? new Map();
-				list.has( f.name ) || list.set( f.name, { name: f.name, image: f.image, element: e } );
+				list.has( f.name ) || list.set( f.name, { name: f.name, image: f.image, text: f.text, element: e } );
 				heads.set( f.head, list );
 			}
 		}
