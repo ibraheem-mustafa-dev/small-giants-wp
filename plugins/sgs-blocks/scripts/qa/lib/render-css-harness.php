@@ -341,11 +341,17 @@ if ( ! is_array( $context ) ) {
 // render.php (what WP_Block::$block_type->attributes holds at runtime).
 $block_type = null;
 $block_json = dirname( $render_path ) . '/block.json';
+// every block.json a render reads or looks for, with the md5 of the bytes read (setting-record/included-files.php)
+$GLOBALS['sgs_qa_read_files'][] = $block_json;
 if ( is_file( $block_json ) ) {
-	$block_meta = json_decode( (string) file_get_contents( $block_json ), true );
+	$block_raw = (string) file_get_contents( $block_json );
+	$GLOBALS['sgs_qa_read_md5'][ $block_json ] = md5( $block_raw );
+	$block_meta = json_decode( $block_raw, true );
 	if ( is_array( $block_meta ) ) {
 		$block_type = (object) array( 'attributes' => is_array( $block_meta['attributes'] ?? null ) ? $block_meta['attributes'] : array() );
 	}
+} else {
+	$GLOBALS['sgs_qa_read_md5'][ $block_json ] = 'missing';
 }
 
 // --motion-targets: the registered block type, WordPress's attribute defaults and a WP_Block-shaped block, so the real
@@ -477,7 +483,16 @@ if ( isset( $args['render-children'] ) ) {
 				$GLOBALS['sgs_qa_post'] = $catalogue_post;
 			}
 		}
-		$child_meta = is_file( dirname( $child_path ) . '/block.json' ) ? json_decode( (string) file_get_contents( dirname( $child_path ) . '/block.json' ), true ) : array();
+		$child_json                     = dirname( $child_path ) . '/block.json';
+		$GLOBALS['sgs_qa_read_files'][] = $child_json;
+		$child_meta                     = array();
+		if ( is_file( $child_json ) ) {
+			$child_raw                                 = (string) file_get_contents( $child_json );
+			$GLOBALS['sgs_qa_read_md5'][ $child_json ] = md5( $child_raw );
+			$child_meta                                = json_decode( $child_raw, true );
+		} else {
+			$GLOBALS['sgs_qa_read_md5'][ $child_json ] = 'missing';
+		}
 		$child_type = (object) array( 'attributes' => is_array( $child_meta['attributes'] ?? null ) ? $child_meta['attributes'] : array() );
 		$render     = static function ( array $attributes, string $content, object $block, string $render_path ): string {
 			ob_start();

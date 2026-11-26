@@ -1,0 +1,14 @@
+[
+	{
+		"file": "lib/fill-underline-sweep.mjs",
+		"find": "&& transitions( rest, [ 'background-size', 'background-position' ] ) ) {",
+		"replace": ") {",
+		"why": "a gradient that grows with no transition is taken for a sweep"
+	},
+	{
+		"file": "lib/fill-underline-sweep.mjs",
+		"find": "return widths.length && kinds.every( Boolean ) ?",
+		"replace": "return widths.length && kinds.some( Boolean ) ?",
+		"why": "a sweep at one width alone counts"
+	}
+]

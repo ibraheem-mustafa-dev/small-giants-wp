@@ -6,7 +6,7 @@
 // mean what they meant when calibration measured them; only the reading moves offline (site_look.py renders the
 // instances through the setting record's runner and reads them with its cascade reader).
 //
-//   node tools/site-look-bridge.mjs plan <block> <snapshot.json>   -> JSON { discover, content } on stdout
+//   node tools/site-look-bridge.mjs plan <block> <snapshot.json>   -> JSON { discover, content, forms, states, enums } on stdout
 //   node tools/site-look-bridge.mjs fold < readings.json            -> JSON { discovered, text?, presence?, link? }
 //
 // plan: the instances to render, each { key, attrs, variant, isDefault?, isBase?, baseKey?, discover?, content? }, the
@@ -22,14 +22,23 @@ import { blockSchema } from '../lib/resolve.mjs';
 import { loadSnapshot } from '../lib/normalise.mjs';
 import { planInstances, instanceCtx, longhands, discoverEffects } from '../lib/calibrate.mjs';
 import { STATE_LOOK_PROPS } from '../lib/calibrate-instances.mjs';
+import { defOf } from '../lib/calibrate-markers.mjs';
 import { contentRowsFor, planContentInstances, collectContent } from '../lib/calibrate-content.mjs';
-import { RECORD_FIXTURES } from '../lib/setting-record.mjs';
+import { RECORD_FIXTURES, recordRows } from '../lib/setting-record.mjs';
+import { enumReadInstances } from '../lib/enum-read-plan.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../../..' );
 export { RECORD_FIXTURES };
 // setting-record/render.py::PLACEHOLDERS: the runner's stand-in image, named so the runner fills in its id and URL.
 export const STAND_IN_IMAGE = { id: '{{image}}', url: '{{image.url}}' };
+
+// The value an enum setting holds by default ('' when it holds none): a per-device setting's desktop tier.
+export function enumDefaultOf( row, schema ) {
+	const def = defOf( row, schema );
+	const d = def.default && 'object' === typeof def.default ? def.default.desktop : def.default;
+	return 'string' === typeof d ? d : '';
+}
 
 // The renders a block's per-setting facts are read from: each variant's default, every baseline a marked instance is
 // read against, the discovery instances (one per value of a setting whose values are not CSS keywords) and the content
@@ -55,9 +64,12 @@ export function planFor( block, { db, fixtures, snapshot } ) {
 	const marked = ( i ) => ( { ...keep( i ), setting: i.row.attr_name, props: longhands( i.row.css_property ), ...( i.row.css_state ? { state: i.row.css_state } : {} ), marker: { label: i.marker?.label, form: i.marker?.form ?? null, probe: !! i.marker?.probe, expect: i.marker?.expect ?? null, tracks: i.marker?.tracks ?? null, tolerance: i.marker?.tolerance ?? null } } );
 	const forms = plan.instances.filter( ( i ) => i.row && i.marker?.form );
 	const states = plan.instances.filter( ( i ) => i.row && i.row.css_state && i.marker && ! i.marker.probe );
-	const needBases = new Set( [ ...forms, ...states ].map( ( i ) => i.baseKey ).filter( Boolean ) );
+	// The per-value instances of the enum settings whose readings the resolver can need (lib/enum-read-plan.mjs), each carrying
+	// the default value of its setting: the default render holds that value's reading, so no instance is planned for it.
+	const enums = enumReadInstances( plan.instances, recordRows( db, block ).rows ).map( ( i ) => ( { ...marked( i ), enumValue: i.marker.enumValue, enumDefault: enumDefaultOf( i.row, schema ) } ) );
+	const needBases = new Set( [ ...forms, ...states, ...enums ].map( ( i ) => i.baseKey ).filter( Boolean ) );
 	const extraBases = plan.instances.filter( ( i ) => i.isBase && needBases.has( i.baseKey ) && ! bases.has( i.baseKey ) );
-	return { discover: [ ...styleSide, ...extraBases ].map( keep ), content: content.instances.map( keep ), forms: forms.map( marked ), states: states.map( marked ), stateLookProps: STATE_LOOK_PROPS, noMarker: [ ...plan.noMarker, ...content.noMarker ] };
+	return { discover: [ ...styleSide, ...extraBases ].map( keep ), content: content.instances.map( keep ), forms: forms.map( marked ), states: states.map( marked ), enums, stateLookProps: STATE_LOOK_PROPS, noMarker: [ ...plan.noMarker, ...content.noMarker ] };
 }
 
 // The readings folded into the keys the route reads, exactly as calibration folded them (lib/calibrate-content.mjs::

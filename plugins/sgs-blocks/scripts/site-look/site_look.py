@@ -79,6 +79,94 @@ UID_CLASS = re.compile(r'^sgs-[a-z0-9-]+-[0-9a-f]{8}$')
 EXTRA_INHERITED = {'font-style': 'normal', 'text-shadow': 'none'}
 
 
+# ---------------------------------------------------------------- the cascade's selections, shared by pages of one markup
+
+import cascade as C  # noqa: E402
+
+SELECT_KEEP = 24  # markups whose selections SelectMemo keeps at once (least recently used dropped first)
+
+
+class SelectMemo:
+    """Which elements each selector selects in a page's markup, kept per markup. The pages a block is read from share their
+    markup far more often than not: a value in a held state (hover, focus, active, an attribute condition) is the same render
+    as at rest, parsed again, and only the rules that test the state select anything different. soupsieve's answer depends
+    on the markup alone, so an answer is reused for a page whose markup serialises byte for byte the same, as the element at
+    the same place in document order. A markup is named by the md5 of its serialisation."""
+
+    def __init__(self, keep: int = SELECT_KEEP):
+        self.keep, self.docs = keep, {}
+        self.selects = self.reused = 0  # selections run, and selections answered from the memo
+
+    def picks(self, soup) -> dict:
+        """{selector: tuple of element indices in soup.find_all(True) order, or None when the selector raised}."""
+        key = hashlib.md5(str(soup).encode('utf-8', 'surrogatepass')).hexdigest()
+        got = self.docs.pop(key, None)
+        self.docs[key] = got = {} if got is None else got  # most recently used last
+        while len(self.docs) > self.keep:
+            del self.docs[next(iter(self.docs))]
+        return got
+
+
+class MemoCascade(C.Cascade):
+    """cascade.py::Cascade with each selection taken from MemoCascade.memo when the same markup has answered it (SelectMemo):
+    the same rules matched to the same elements, in the same order, with the same error count. The cascade module builds
+    every page's Cascade through this class while the site look runs (installed below); with no memo it is Cascade itself."""
+
+    memo = None  # the SelectMemo of the block being built (build_block sets a fresh one)
+
+    def __init__(self, soup, rules: list, held=()):
+        memo = MemoCascade.memo
+        if memo is None:
+            super().__init__(soup, rules, held)
+            return
+        self.soup, self.rules, self.held, self.errors, self.match = soup, rules, frozenset(held), 0, {}
+        els = soup.find_all(True)
+        present = {c for el in els for c in (el.get('class') or [])}
+        picks, index = memo.picks(soup), None
+        for r in rules:
+            sel = _resting(r.selector, self.held)
+            if not C.required_classes(sel) <= present:
+                continue  # a class the selector needs is on no element: the rule cannot match
+            got = picks.get(sel, _UNSEEN)
+            if got is _UNSEEN:
+                memo.selects += 1
+                try:
+                    hits = C.sv.select(sel, soup)
+                except Exception:  # noqa: BLE001 - as Cascade: an unreadable selector is an error and matches nothing
+                    picks[sel] = None
+                    self.errors += 1
+                    continue
+                if index is None:
+                    index = {id(e): n for n, e in enumerate(els)}
+                got = tuple(index[id(e)] for e in hits) if all(id(e) in index for e in hits) else None
+                if got is None:  # an element outside the document order (never seen): matched, not kept
+                    for el in hits:
+                        self.match.setdefault(id(el), []).append(r)
+                    continue
+                picks[sel] = got
+            elif got is None:
+                memo.reused += 1
+                self.errors += 1
+                continue
+            else:
+                memo.reused += 1
+            for n in got:
+                self.match.setdefault(id(els[n]), []).append(r)
+
+
+_UNSEEN = object()
+
+
+@functools.lru_cache(maxsize=1 << 16)
+def _resting(sel: str, held: frozenset) -> str:
+    """cascade.py::resting, kept per selector and held set (the same rules are rested for every page)."""
+    return C.resting(sel, held)
+
+
+if 'select-memo' not in MUTATE:
+    C.Cascade = MemoCascade
+
+
 def builder_hash(files=None) -> str:
     """The hash of this builder and the record modules it reads (`files`, default those), so a change to the code of either
     rebuilds every site look; an edit to a comment or a docstring does not (setting-record/stamp.py::code_hash)."""
@@ -241,27 +329,35 @@ def read_element(page, el, width: int, props: list, own_props: list, with_own: b
     return out
 
 
-def collect(page, top, prefix: str, els: dict, props: dict, with_own: bool) -> None:
+def collect(page, top, prefix: str, els: dict, props: dict, with_own: bool, only=None) -> None:
     """Every element of `top` (itself included) at every width, keyed as the route keys it, with its drawn pseudo-elements;
-    a key already read (by an earlier variant) is kept."""
+    a key already read (by an earlier variant) is kept. `only`: ({paths}, [longhands]) reads just those paths and those of the
+    longhands the full read would have taken (a choice setting's own placements), the values exactly as the full read gives them."""
     nodes = [top, *top.find_all(True)]
     for el in nodes:
         p = element_path(el, top)
         key = (f'{prefix} > {p}' if p else prefix) if prefix else p
         if key in els or el.name in ('style', 'script', 'template'):
             continue
-        byw = {}
-        for w in WIDTHS:
-            parent_vals = None
-            if isinstance(el.parent, Tag) and el.parent.name != '[document]':
-                parent_vals = {q: _value(page, el.parent, None, q, w, None) for q in EXTRA_INHERITED}
-            byw[str(w)] = read_element(page, el, w, props['read'], props['own'], with_own, parent_vals)
-        els[key] = byw
+        if only is not None and key not in only[0] and f'{key}::before' not in only[0] and f'{key}::after' not in only[0]:
+            continue
+        read_props = props['read'] if only is None else [q for q in only[1] if q in props['read']]
+        pseudo_props = props['pseudo'] if only is None else [q for q in only[1] if q in props['pseudo']]
+        if only is None or key in only[0]:
+            byw = {}
+            for w in WIDTHS:
+                parent_vals = None
+                if isinstance(el.parent, Tag) and el.parent.name != '[document]' and (only is None or any(q in EXTRA_INHERITED for q in read_props)):
+                    parent_vals = {q: _value(page, el.parent, None, q, w, None) for q in EXTRA_INHERITED}
+                byw[str(w)] = read_element(page, el, w, read_props, props['own'], with_own, parent_vals)
+            els[key] = byw
         for ps in ('before', 'after'):
+            if only is not None and f'{key}::{ps}' not in only[0]:
+                continue
             if all(page.computed(el, ps, w).get('_absent') for w in WIDTHS):
                 continue
-            els[f'{key}::{ps}'] = {str(w): {q: v for q in props['pseudo'] if (v := _value(page, el, ps, q, w, None)) is not None} for w in WIDTHS}
-        if el.name in ('input', 'textarea'):
+            els[f'{key}::{ps}'] = {str(w): {q: v for q in pseudo_props if (v := _value(page, el, ps, q, w, None)) is not None} for w in WIDTHS}
+        if only is None and el.name in ('input', 'textarea'):
             els[f'{key}::placeholder'] = {str(w): {q: v for q in props['text'] if (v := _value(page, el, 'placeholder', q, w, None)) is not None} for w in WIDTHS}
 
 
@@ -371,13 +467,13 @@ def path_attrs(page, out: dict, names: set) -> None:
         walk(t, '@controls' if n == 1 else f'@controls:{n}')
 
 
-def read_page(page, els: dict, props: dict, with_own: bool) -> None:
+def read_page(page, els: dict, props: dict, with_own: bool, only=None) -> None:
     root = page.root
     if root is None:
         return
-    collect(page, root, '', els, props, with_own)
+    collect(page, root, '', els, props, with_own, only)
     for n, t in enumerate(controlled(page, root), 1):
-        collect(page, t, '@controls' if n == 1 else f'@controls:{n}', els, props, with_own)
+        collect(page, t, '@controls' if n == 1 else f'@controls:{n}', els, props, with_own, only)
     uid = next((c for c in (root.get('class') or []) if UID_CLASS.match(c)), None)
     if uid:
         k = 0
@@ -385,10 +481,10 @@ def read_page(page, els: dict, props: dict, with_own: bool) -> None:
             if c is root or _inside(c, root) or _inside(root, c):
                 continue
             k += 1
-            collect(page, c, '@companion' if k == 1 else f'@companion:{k}', els, props, with_own)
+            collect(page, c, '@companion' if k == 1 else f'@companion:{k}', els, props, with_own, only)
         scrim = page.soup.select_one(f'.{uid}-scrim')
         if scrim is not None and not _inside(scrim, root):
-            collect(page, scrim, '@scrim', els, props, with_own)
+            collect(page, scrim, '@scrim', els, props, with_own, only)
 
 
 SECTION_MARK = '<!--sgs-site-look-block-->'
@@ -495,6 +591,7 @@ def build_block(short: str, snapshot_file: Path, woocommerce: bool, parts=None, 
     the value forms and the content facts, which come from `shared` (shared_facts, assembled by with_forms and
     with_content); SHARED_PARTS reads only those two and returns the shared document (shared_doc)."""
     parts = ALL_PARTS if parts is None else parts
+    MemoCascade.memo = SelectMemo()  # selections are shared between this block's pages only
     snapshot = json.loads(snapshot_file.read_text(encoding='utf-8'))
     props = load_props()
     fixtures = json.loads(FIXTURES.read_text(encoding='utf-8'))
@@ -509,7 +606,7 @@ def build_block(short: str, snapshot_file: Path, woocommerce: bool, parts=None, 
     children = sorted(set(re.findall(r'"name": "sgs/([a-z0-9-]+)"', json.dumps(fixture.get('inner') or []))))
     insts = [i for i in pl['instances'] if i['isDefault'] or i.get('paintState')]
     bridge = bridge_plan(f'sgs/{short}', snapshot_file)
-    marked = bridge.get('discover', []) + bridge.get('content', []) + bridge.get('forms', []) + bridge.get('states', [])
+    marked = bridge.get('discover', []) + bridge.get('content', []) + bridge.get('forms', []) + bridge.get('states', []) + bridge.get('enums', [])
     jobs = {i['key']: RN.with_defaults(PLUGIN, short, RN.fill(i['attrs'])) for i in insts}
     jobs.update({f'b:{i["key"]}': RN.with_defaults(PLUGIN, short, RN.fill(i['attrs'])) for i in marked})
     results = rn.render_many(f'sgs/{short}', jobs, content, inner)
@@ -637,12 +734,13 @@ class Reader:
     def ok(self, job: str) -> bool:
         return bool(self.results.get(job, {}).get('ok'))
 
-    def style(self, job: str, held=()) -> dict:
-        """{width: {path: {property: value}}}, as calibration's style reader returned a reading; `held` the states held."""
-        key = (job, tuple(held))
+    def style(self, job: str, held=(), only=None) -> dict:
+        """{width: {path: {property: value}}}, as calibration's style reader returned a reading; `held` the states held.
+        `only`: ({paths}, [longhands]) reads just those (see collect)."""
+        key = (job, tuple(held), None if only is None else (tuple(sorted(only[0])), tuple(only[1])))
         if key not in self.style_memo:
             els = {}
-            read_page(self.page(job, held), els, self.props, False)
+            read_page(self.page(job, held), els, self.props, False, only)
             self.style_memo[key] = transpose(els)
         return self.style_memo[key]
 
@@ -972,7 +1070,7 @@ def record_facts(short: str, bridge: dict, reader: Reader, elements: dict, class
     forms: the value forms a marker of that form took on (a form is claimed only on this positive evidence: a claimed
     clamp() the block cannot hold would have Fill write a broken value). look: a state setting's look in its state."""
     paths = record_paths(record_of(short), elements, classes)
-    plan = bridge.get('discover', []) + bridge.get('forms', []) + bridge.get('states', [])
+    plan = bridge.get('discover', []) + bridge.get('forms', []) + bridge.get('states', []) + bridge.get('enums', [])
     out = {}
     for i in bridge.get('forms', []):
         state = i.get('state')
@@ -997,6 +1095,81 @@ def record_facts(short: str, bridge: dict, reader: Reader, elements: dict, class
         look = state_look(reader.style(job, held), ps, i['props'], bridge.get('stateLookProps') or [])
         if look:
             out.setdefault(i['setting'], {})['look'] = look
+    for setting, facts in enum_reads(bridge, reader, paths, plan).items():
+        out.setdefault(setting, {}).update(facts)
+    return out
+
+
+# The states each choice value's paint is read in first: rest, then the two a link or button changes its look in. Every other
+# state the setting's placements name follows (enum_states): pressed (active) and the conditions an attribute or class holds
+# (current, open, checked, disabled, an .is- class). A state the setting's placements never name is skipped, so a setting
+# with no hover rule records no hover reading.
+ENUM_STATES = ('', 'hover', 'focus')
+
+
+def enum_states(by_state: dict) -> tuple:
+    """The states a choice setting's values are read in: ENUM_STATES, then every other state its placements name, sorted."""
+    extra = [] if 'enum-extra-states' in MUTATE else sorted(s for s in by_state if s and s not in ENUM_STATES)
+    return (*ENUM_STATES, *extra)
+
+
+def held_for(state: str) -> tuple:
+    """The states held to read a placement's state: an interaction state as the reader holds it (HELD: focus with
+    focus-visible), any other the state word itself, as the setting record proves the placement (proof.py holds {state})."""
+    return HELD.get(state) or (state,)
+
+
+def enum_value_of(i, attrs):
+    """The value an enum instance's own baseline holds for the setting: what the baseline render has set, else the setting's
+    default (a per-device setting holds its value in the desktop tier)."""
+    v = attrs.get(i['setting'], i.get('enumDefault') or '')
+    return v.get('desktop', '') if isinstance(v, dict) else v
+
+
+def read_longhands(reading: dict, ps: list, props: list) -> dict:
+    """{longhand: {width: value}} of the setting's own properties, read on the shallowest of its placement paths that
+    carries each one."""
+    out = {}
+    for q in props:
+        for p in ps:
+            got = {str(w): v for w in WIDTHS if (v := ((reading.get(str(w)) or {}).get(p) or {}).get(q)) not in (None, '')}
+            if got:
+                out[q] = got
+                break
+    return out
+
+
+def enum_reads(bridge: dict, reader: Reader, paths: dict, plan: list) -> dict:
+    """{setting: {enumReads, enumStateReads}}: what each value of a choice paints, as lib/resolve-enum.mjs reads it.
+    enumReads[value][longhand][width] is the setting's own longhand on its placement elements with the value set, at rest
+    (the default value's reading comes from the baseline render, which holds it); enumStateReads[state][value] is the
+    same read with the state held (hover, focus, active, or a condition such as current or open: enum_states), so a hover
+    underline maps to the value that draws it on hover."""
+    out = {}
+    for i in [] if 'enum-reads' in MUTATE else bridge.get('enums', []):
+        base, job = _baseline(i, plan), f'b:{i["key"]}'
+        if not base or not (reader.ok(base) and reader.ok(job)):
+            continue
+        base_attrs = next((x['attrs'] for x in plan if f'b:{x["key"]}' == base), {})
+        held_value = enum_value_of(i, base_attrs)
+        by_state = paths.get(i['setting'], {})
+        for state in enum_states(by_state):
+            held = held_for(state) if state else ()
+            ps = by_state.get(state, [])
+            # a state is read only for the longhands the route compares in a state (stateLookProps): only the state choice reads it
+            props = i['props'] if not state else [q for q in i['props'] if q in (bridge.get('stateLookProps') or [])]
+            if not ps or not props:
+                continue
+            for value, render in ((i['enumValue'], job), (held_value, base)):
+                if value in (None, ''):
+                    continue
+                fact = out.setdefault(i['setting'], {})
+                bucket = fact.setdefault('enumReads', {}) if not state else fact.setdefault('enumStateReads', {}).setdefault(state, {})
+                if str(value) in bucket:
+                    continue  # an earlier instance (another fixture variant) already holds this value's reading
+                got = read_longhands(reader.style(render, held, (frozenset(ps), tuple(props))), ps, props)
+                if got:
+                    bucket[str(value)] = got
     return out
 
 

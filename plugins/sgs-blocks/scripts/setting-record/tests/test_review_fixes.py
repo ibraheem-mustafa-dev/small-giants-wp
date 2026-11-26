@@ -130,7 +130,11 @@ def test_must_fail_failed_render_is_not_cached(tmp_path, monkeypatch):
     r = _renderer(tmp_path, monkeypatch)
     outs = iter([types.SimpleNamespace(stdout='PHP Fatal error: x', stderr='Fatal', returncode=255),
                  types.SimpleNamespace(stdout='{"ok": true, "html": "<p></p>", "css": ""}', stderr='', returncode=0)])
-    monkeypatch.setattr(RN.subprocess, 'run', lambda *a, **k: next(outs))
+
+    def run(*a, **k):  # the runner's hook reports the render.php the render loaded (a render naming none is never cached)
+        Path(k['env']['SGS_SETTING_RECORD_INCLUDED']).write_text(json.dumps([str(r.plugin / 'src/blocks/demo/render.php')]), encoding='utf-8')
+        return next(outs)
+    monkeypatch.setattr(RN.subprocess, 'run', run)
     assert r.render('sgs/demo', {})['ok'] is False
     assert r.render('sgs/demo', {})['ok'] is True
     monkeypatch.setattr(RN.subprocess, 'run', lambda *a, **k: (_ for _ in ()).throw(AssertionError('not cached')))

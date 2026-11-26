@@ -1,0 +1,56 @@
+[
+	{
+		"file": "lib/fill-resolve-element.mjs",
+		"find": "const found = layer ? null : sweepResult(",
+		"replace": "const found = true ? null : sweepResult(",
+		"why": "a growing underline is not told from a static gradient"
+	},
+	{
+		"file": "lib/fill-state.mjs",
+		"find": "pseudo || atRest || asHover ? null : stateChoice(",
+		"replace": "true ? null : stateChoice(",
+		"why": "the resting setting that underlines on hover is never asked"
+	},
+	{
+		"file": "lib/fill-state.mjs",
+		"find": "pseudo || atRest || asHover ? null : stateChoice(",
+		"replace": "pseudo || atRest || asHover || ! [ 'hover', 'focus' ].includes( state ) ? null : stateChoice(",
+		"why": "a resting choice is asked only in hover and focus, never in a condition such as current it was read in"
+	},
+	{
+		"file": "lib/fill-resolve-element.mjs",
+		"find": "const kept = found ? found.writes.filter( ( w ) => ownerKeeps( st, rec, ref, target, 'text-decoration-line', w, found.slot ) ) : [];",
+		"replace": "const kept = found ? found.writes : [];",
+		"why": "a sweep replaces what another element of the block wrote"
+	},
+	{
+		"file": "lib/fill-resolve-element.mjs",
+		"find": "if ( swept?.kinds?.includes( 'layer' ) ) {",
+		"replace": "if ( false ) {",
+		"why": "the line a sweep grows on a layer is written to another setting"
+	},
+	{
+		"file": "lib/fill-state.mjs",
+		"find": "if ( sweep && 'hover' === state && ( pseudo",
+		"replace": "if ( false && sweep && 'hover' === state && ( pseudo",
+		"why": "the hover look of the grown property is raised as a gap"
+	},
+	{
+		"file": "lib/fill-state.mjs",
+		"find": "const res = choice ? { status: 'gap', gap: 'conflict', detail: choice } : chosen ?? (",
+		"replace": "const res = chosen ?? (",
+		"why": "the state choice replaces another look's value"
+	},
+	{
+		"file": "lib/fill-resolve-element.mjs",
+		"find": "const sweep = kept.length ? { ...found, writes: kept } : null;",
+		"replace": "const sweep = found;",
+		"why": "a refused sweep still holds the looks it would have grown"
+	},
+	{
+		"file": "lib/fill-state.mjs",
+		"find": "const sweep = found && found.writes.every( ( w ) => same( node.attributes?.[ w.attr ], w.value ) ) ? found : null;",
+		"replace": "const sweep = found;",
+		"why": "the state pass holds hover looks for a sweep the node never got"
+	}
+]

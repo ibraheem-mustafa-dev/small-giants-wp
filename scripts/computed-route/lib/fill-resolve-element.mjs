@@ -19,6 +19,7 @@ import { fillLayerBox } from './fill-layer-box.mjs';
 import { tokenWrites } from './fill-token-ref.mjs';
 import { normalKeywords } from './fill-normal-keywords.mjs';
 import { gutterBaseline } from './fill-gutter.mjs';
+import { sweepResult } from './fill-underline-sweep.mjs';
 import { BOX_LOOK, parentDrawsBox } from './fill-shared-element.mjs';
 import { notInForce } from './fill-device-mode.mjs';
 import { GAP_PROPS, RADIUS_CORNERS, mergedRadius, valueText, json, alternateSlots, baselineFn, baselineSourceFn, equalBaseline, ledgerView, gapTarget, draftOf, recordDisplay } from './fill-resolve-state.mjs';
@@ -115,6 +116,9 @@ const owners = ( st, rec ) => {
 	return OWNERS.get( node );
 };
 
+// The element that wrote a setting of the node this run: { from, prop, direct, value }, or undefined.
+export const ownerOf = ( node, attr ) => OWNERS.get( node )?.get( attr );
+
 // Records the element that wrote a setting; a write that left the value as it was keeps the earlier writer.
 export function recordOwner( st, rec, target, prop, attr, direct ) {
 	const value = st.flat[ rec.index ].attributes?.[ attr ];
@@ -199,8 +203,34 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 	const boxed = layer ? new Set() : fillLayerBox( { st, rec, ref, target, snaps, apply } );
 	// A block reading the element its parent reads leaves the box look to the parent (lib/fill-shared-element.mjs).
 	const parentBox = ! layer && parentDrawsBox( st, rec, target );
+	// A link drawn with no line whose underline grows on hover is the block's `sweep` underline (lib/fill-underline-sweep.mjs): the
+	// one write answers its text-decoration-line, and the gradient it grows from is the setting's own, so it is left out below.
+	const found = layer ? null : sweepResult( { db: st.db, cal, block: rec.name, slot, snaps, reads: st.reads, id: target.id } );
+	// The write goes through the same owner check as every other write: a setting another element of the block already wrote
+	// with another value is a conflict row, not replaced. Only a sweep whose write is kept holds the looks below: a setting never
+	// written holds nothing.
+	const kept = found ? found.writes.filter( ( w ) => ownerKeeps( st, rec, ref, target, 'text-decoration-line', w, found.slot ) ) : [];
+	const sweep = kept.length ? { ...found, writes: kept } : null;
+	if ( sweep ) {
+		( st.sweeps ??= new Map() ).set( target.id, sweep );
+		apply( st, rec, ref, target, 'text-decoration-line', { ...sweep, readSlot: slot, answers: Object.keys( sweep.included ).map( Number ) }, sweep.slot );
+		kept.forEach( ( w ) => recordOwner( st, rec, target, 'text-decoration-line', w.attr, target.slot === sweep.slot ) );
+	}
+	// The line a sweep grows on a painted ::before or ::after is the setting's own: its looks are settled, not written by another setting.
+	const swept = layer ? st.sweeps?.get( target.id ) : null;
+	if ( swept?.kinds?.includes( 'layer' ) ) {
+		for ( const p of PSEUDO_PROPS.filter( ( x ) => 'content' !== x ) ) {
+			const perWidth = draftOf( snaps, ( s ) => s.pseudo?.[ layer ]?.[ p ] );
+			Object.keys( perWidth ).length && settled( st, rec, ref, { slot, property: p, value: valueText( perWidth ), widths: Object.keys( perWidth ).map( Number ), reason: 'held-by-setting', detail: `${ swept.writes[ 0 ].attr } sweep draws this line (its ${ layer } grows on hover)` } );
+		}
+		return;
+	}
 	for ( const prop of merged ? [ ...ids.filter( ( p ) => ! RADIUS_CORNERS.includes( p ) ), 'border-radius' ] : ids ) {
 		if ( boxed.has( prop ) ) {
+			continue;
+		}
+		if ( sweep && ( 'text-decoration-line' === prop || 'background-image' === prop ) ) {
+			settled( st, rec, ref, { slot, property: prop, value: valueText( allDrafts[ prop ] || {} ), widths: Object.keys( allDrafts[ prop ] || {} ).map( Number ), reason: 'held-by-setting', detail: `${ sweep.writes[ 0 ].attr } sweep draws this underline (its line and the gradient it grows from)` } );
 			continue;
 		}
 		if ( parentBox && BOX_LOOK.test( prop ) && allDrafts[ prop ] && Object.keys( allDrafts[ prop ] ).length ) {

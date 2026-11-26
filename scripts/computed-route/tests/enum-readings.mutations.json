@@ -1,0 +1,62 @@
+[
+	{
+		"file": "tools/site-look-bridge.mjs",
+		"find": "forms: forms.map( marked ), states: states.map( marked ), enums, stateLookProps",
+		"replace": "forms: forms.map( marked ), states: states.map( marked ), enums: [], stateLookProps",
+		"why": "the bridge plans no per-value render"
+	},
+	{
+		"file": "lib/enum-read-plan.mjs",
+		"find": "needs.set( row.attr_name, foreign || shared );",
+		"replace": "needs.set( row.attr_name, shared );",
+		"why": "a setting whose value is no CSS word of its property is left unread"
+	},
+	{
+		"file": "lib/enum-read-plan.mjs",
+		"find": "needs.set( row.attr_name, foreign || shared );",
+		"replace": "needs.set( row.attr_name, foreign );",
+		"why": "a setting that ties with another on the same part is left unread"
+	},
+	{
+		"file": "lib/setting-record.mjs",
+		"find": "...( facts?.enumReads ? { enumReads: facts.enumReads } : {} ),",
+		"replace": "",
+		"why": "the record drops the readings the look holds"
+	},
+	{
+		"file": "lib/setting-record.mjs",
+		"find": "...( facts?.enumStateReads ? { enumStateReads: facts.enumStateReads } : {} ),",
+		"replace": "",
+		"why": "the record drops the state readings"
+	},
+	{
+		"file": "lib/resolve-enum.mjs",
+		"find": "return Object.keys( inState ).filter( ( v ) => fits( atRest[ v ], rest ) && fits( inState[ v ], draft ) );",
+		"replace": "return Object.keys( inState ).filter( ( v ) => fits( inState[ v ], draft ) );",
+		"why": "the resting look is not compared"
+	},
+	{
+		"file": "lib/fill-choice-state.mjs",
+		"find": "return 1 === hits.length ?",
+		"replace": "return hits.length >= 1 ?",
+		"why": "two settings that both fit are guessed between"
+	},
+	{
+		"file": "lib/enum-read-plan.mjs",
+		"find": "if ( r.unproved && ! r.accepted ) {",
+		"replace": "if ( false ) {",
+		"why": "an unproved placement counts as a tie"
+	},
+	{
+		"file": "lib/enum-read-plan.mjs",
+		"find": "`${ r.part ?? '' }|${ r.state ?? '' }|${ q }`",
+		"replace": "`${ r.part ?? '' }||${ q }`",
+		"why": "the same property in another state counts as a tie"
+	},
+	{
+		"file": "lib/enum-read-plan.mjs",
+		"find": "const id = `${ i.row.attr_name }|${ i.marker.label }`;",
+		"replace": "const id = `${ i.row.attr_name }|${ i.marker.label }|${ i.variant ?? 0 }`;",
+		"why": "a second variant's instance of a value already planned is rendered and read again"
+	}
+]

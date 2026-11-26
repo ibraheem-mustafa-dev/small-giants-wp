@@ -153,6 +153,27 @@ def test_reader_drops_the_least_recently_used_page(monkeypatch):
     assert pages.built == built + 1, 'the page unused longest was dropped'
 
 
+def test_button_choice_readings(tmp_path):
+    """MUST FAIL with SITE_LOOK_MUTATE=enum-reads: what each linkUnderline value paints, at rest and with hover held, read from
+    the per-value renders (the route's lib/resolve-enum.mjs reads them): `always` underlines, `hover` rests plain and underlines on
+    hover, and the setting's default (unset, a value the plan has no instance for) is not a value at all."""
+    facts = build(tmp_path, 'button')['settingFacts']['linkUnderline']
+    for w in ('375', '768', '1440'):
+        assert facts['enumReads']['always']['text-decoration-line'][w] == 'underline'
+        assert facts['enumReads']['hover']['text-decoration-line'][w] == 'none'
+        assert facts['enumReads']['none']['text-decoration-line'][w] == 'none'
+        assert facts['enumStateReads']['hover']['hover']['text-decoration-line'][w] == 'underline'
+        assert facts['enumStateReads']['hover']['always']['text-decoration-line'][w] == 'underline'
+    assert '' not in facts['enumReads']
+
+
+def test_read_longhands_takes_the_shallowest_placement_that_carries_the_property():
+    reading = {'375': {'': {'flex-wrap': 'wrap'}, ' > a': {'flex-wrap': 'nowrap', 'gap': '4px'}}, '1440': {' > a': {'flex-wrap': 'nowrap'}}}
+    assert SL.read_longhands(reading, [' > a', ''], ['flex-wrap']) == {'flex-wrap': {'375': 'nowrap', '1440': 'nowrap'}}
+    assert SL.read_longhands(reading, ['', ' > a'], ['flex-wrap']) == {'flex-wrap': {'375': 'wrap'}}
+    assert SL.read_longhands(reading, [''], ['gap']) == {}
+
+
 def test_fold_matches_the_route(tmp_path):
     """MUST FAIL with SITE_LOOK_MUTATE=fold-depth: the Python fold gives what the route's own fold
     (tools/site-look-bridge.mjs fold, calibration's functions) gives on the same readings."""
@@ -299,6 +320,49 @@ def test_a_part_the_record_places_that_no_render_draws_must_be_listed():
     assert SL.completeness({'undrawnParts': got}, 'm', {'sgs-m__badge': 'x', 'sgs-m__trailing': 'y'}) == []
 
 
+def test_look_key_follows_the_route_plan_of_per_value_renders():
+    """The route decides which per-value instances a look reads (tools/site-look-bridge.mjs, lib/enum-read-plan.mjs), so both are
+    among the files a look's key hashes; a look built before a change to either would keep the earlier choice of settings."""
+    names = {f.name for f in SL.reach_files()}
+    assert {'site-look-bridge.mjs', 'enum-read-plan.mjs'} <= names
+
+
+class _SpyReader:
+    """A reader that answers every read with one value and records what it was asked for."""
+
+    def __init__(self):
+        self.calls = []
+
+    def ok(self, job):
+        return True
+
+    def style(self, job, held=(), only=None):
+        self.calls.append((job, tuple(held), only))
+        paths, props = only
+        return {str(w): {p: {q: 'underline' for q in props} for p in paths} for w in SL.WIDTHS}
+
+
+def test_enum_reads_read_only_the_paths_and_longhands_they_keep_and_skip_a_value_already_read():
+    """MUST FAIL with the reads unrestricted or repeated: a choice setting's reading asks for its own placement paths and
+    longhands only, a state only for the longhands the route compares in a state (stateLookProps), and a second fixture
+    variant's instance of a value already read costs no read."""
+    def inst(key, variant):
+        return {'key': key, 'variant': variant, 'setting': 's', 'props': ['text-decoration-line', 'background-size'], 'enumValue': 'always', 'enumDefault': '', 'attrs': {'s': 'always'}}
+    base = {'key': 'default-v0', 'isDefault': True, 'variant': 0, 'attrs': {}}
+    plan = [base, inst('s-enum-always-v0', 0), inst('s-enum-always-v1', 1)]
+    bridge = {'enums': [plan[1], plan[2]], 'stateLookProps': ['text-decoration-line']}
+    paths = {'s': {'': ['', ' > a'], 'hover': ['']}}
+    spy = _SpyReader()
+    got = SL.enum_reads(bridge, spy, paths, plan)
+    rest = [c for c in spy.calls if c[0] == 'b:s-enum-always-v0' and c[1] == ()]
+    assert rest and rest[0][2] == (frozenset(['', ' > a']), ('text-decoration-line', 'background-size')), 'a rest read takes its placement paths and its own longhands'
+    hover = [c for c in spy.calls if c[1] == ('hover',)]
+    assert hover and all(c[2][1] == ('text-decoration-line',) for c in hover), 'a hover read takes only the stateLookProps longhands'
+    assert not [c for c in spy.calls if c[0] == 'b:s-enum-always-v1'], 'the second variant of a value already read is not read'
+    assert got['s']['enumReads']['always']['text-decoration-line']['375'] == 'underline'
+    assert 'background-size' not in got['s']['enumStateReads']['hover']['always']
+
+
 def test_tested_attrs_reads_attribute_selectors():
     names = SL.tested_attrs(['.a[open] > b, .c[aria-current="page"], :not([hidden]) .x[class*=y] {color:red}',
                              '@media (min-width:1px){.d{grid-template-columns:[full-start] 1fr [full-end]}} .e[data-x]{content:"[nope]"}'])
@@ -306,7 +370,7 @@ def test_tested_attrs_reads_attribute_selectors():
     assert not names & {'class', 'full-start', 'full-end', 'nope'}
 
 
-@pytest.mark.parametrize('name', ['snapshot', 'custom-css', 'section', 'footer-move', 'wrapper-root', 'fold-depth', 'path-attrs', 'plain-fixture', 'fixture-key', 'conditional-parts'])
+@pytest.mark.parametrize('name', ['snapshot', 'custom-css', 'section', 'footer-move', 'wrapper-root', 'fold-depth', 'path-attrs', 'plain-fixture', 'fixture-key', 'conditional-parts', 'enum-reads'])
 def test_every_switch_is_named_in_the_builder(name):
     """Each switch a must-fail test names is one the builder reads."""
     assert f"'{name}'" in (LOOK / 'site_look.py').read_text(encoding='utf-8')

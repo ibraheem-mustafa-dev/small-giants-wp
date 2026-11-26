@@ -6,7 +6,10 @@
 //                candidate while another tied setting can (`textDecoration` lists overline and line-through only, so it never
 //                competes with `linkUnderline` for an underline);
 //   mapTiers     a tier's computed keyword the list does not hold becomes the list's value that paints it at that tier's
-//                width; a keyword no value paints is a shape gap. A setting with no `enumReads` is left as it was.
+//                width (one value only: where several paint it the keyword goes on for the writer to judge; where none does it stays only if
+//                the writer's alignment rule maps it to a list member, else it is a shape gap). A setting with no `enumReads` is left as it was.
+import { sameAlignment } from './css-equivalence/keywords.mjs';
+
 const WIDTH_OF = { desktop: 1440, tablet: 768, mobile: 375 };
 const same = ( a, b ) => String( a ).replace( /\s+/g, '' ) === String( b ).replace( /\s+/g, '' );
 
@@ -24,9 +27,9 @@ export function enumValues( row, def ) {
 	return list.filter( ( v ) => 'string' === typeof v && '' !== v );
 }
 
-// The list value whose recorded paint of `prop` at `width` is `raw`, or undefined.
-function valueFor( enumReads, prop, width, raw ) {
-	return Object.keys( enumReads ).find( ( v ) => undefined !== enumReads[ v ]?.[ prop ]?.[ width ] && same( enumReads[ v ][ prop ][ width ], raw ) );
+// The list values whose recorded paint of `prop` at `width` is `raw`.
+function valuesFor( enumReads, prop, width, raw ) {
+	return Object.keys( enumReads ).filter( ( v ) => undefined !== enumReads[ v ]?.[ prop ]?.[ width ] && same( enumReads[ v ][ prop ][ width ], raw ) );
 }
 
 // Whether the setting can give `perWidth` (the draft's computed `prop` per read width): a setting with no list holds it; one
@@ -38,11 +41,11 @@ export function holdsValue( row, def, calibrationSetting, prop, perWidth ) {
 	if ( ! list.length ) {
 		return true;
 	}
-	return Object.entries( perWidth ).every( ( [ w, raw ] ) => [ 375, 768, 1440 ].includes( Number( w ) ) ? list.includes( String( raw ) ) || undefined !== valueFor( reads, prop, Number( w ), raw ) : true );
+	return Object.entries( perWidth ).every( ( [ w, raw ] ) => [ 375, 768, 1440 ].includes( Number( w ) ) ? list.includes( String( raw ) ) || valuesFor( reads, prop, Number( w ), raw ).length > 0 : true );
 }
 
 // The tiers with each computed keyword the list does not hold replaced by the value that paints it: { tiers } or { error }.
-export function mapTiers( row, def, calibrationSetting, prop, tiers ) {
+export function mapTiers( row, def, calibrationSetting, prop, tiers, layoutAt = () => ( {} ) ) {
 	const list = enumValues( row, def );
 	const reads = calibrationSetting?.enumReads;
 	if ( ! list.length || ! reads ) {
@@ -54,13 +57,36 @@ export function mapTiers( row, def, calibrationSetting, prop, tiers ) {
 			out[ t ] = raw;
 			continue;
 		}
-		const v = valueFor( reads, prop, WIDTH_OF[ t ], raw );
-		if ( undefined === v ) {
+		// One value that paints the keyword is the answer. Several paint it (a border style with no width paints none whatever its
+		// value): the keyword goes on as it is and the writer judges it against the list. None paints it: the keyword stays only
+		// where the writer's own alignment rule gives it a list member (align-items flex-end is the list's `end` in a flex or grid
+		// container, lib/resolve.mjs::formatValue); otherwise the setting has no answer.
+		const painting = valuesFor( reads, prop, WIDTH_OF[ t ], raw );
+		if ( 1 === painting.length ) {
+			out[ t ] = painting[ 0 ];
+		} else if ( painting.length > 1 || list.some( ( v ) => sameAlignment( prop, v, raw, layoutAt( t ) ) ) ) {
+			out[ t ] = raw;
+		} else {
 			return { error: `${ row.attr_name } holds ${ list.join( ', ' ) }; none paints ${ prop } ${ raw } at ${ WIDTH_OF[ t ] }px` };
 		}
-		out[ t ] = v;
 	}
 	return { tiers: out };
+}
+
+// The values of a setting that paint the draft's resting look at rest and its state look in `state` (hover, focus): `enumReads`
+// holds what each value paints at rest and `enumStateReads[state]` what it paints with the state held (site_look.py::enum_reads).
+// A link the draft draws plain and underlines on hover is `linkUnderline: hover`, which paints `none` at rest and `underline` on
+// hover; `always` rests at `underline`. Both readings must fit at every width the draft was read at. Returns the matching values,
+// [] when the setting has no state reading or no value fits (a rest underline that hover removes: no setting holds it).
+export function valuesForState( calibrationSetting, prop, rest, draft, state ) {
+	const atRest = calibrationSetting?.enumReads ?? {};
+	const inState = calibrationSetting?.enumStateReads?.[ state ] || {};
+	const widths = Object.keys( draft || {} ).map( Number ).filter( ( w ) => [ 375, 768, 1440 ].includes( w ) );
+	if ( ! widths.length || widths.some( ( w ) => undefined === rest?.[ w ] ) ) {
+		return [];
+	}
+	const fits = ( reads, want ) => widths.every( ( w ) => undefined !== reads?.[ prop ]?.[ w ] && same( reads[ prop ][ w ], want[ w ] ) );
+	return Object.keys( inState ).filter( ( v ) => fits( atRest[ v ], rest ) && fits( inState[ v ], draft ) );
 }
 
 // A pin setting whose list names the edge a sticky element sticks to (top, bottom) and no `sticky`: the draft's `position: sticky` is

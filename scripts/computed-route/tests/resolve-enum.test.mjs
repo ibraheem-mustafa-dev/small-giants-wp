@@ -56,3 +56,35 @@ test( 'enumValues, holdsValue and mapTiers read the list and the readings', () =
 	assert.deepEqual( mapTiers( row, undefined, calibration.settings.linkUnderline, 'text-decoration-line', { desktop: 'underline', mobile: 'none' } ).tiers, { desktop: 'always', mobile: 'none' } );
 	assert.ok( mapTiers( row, undefined, calibration.settings.linkUnderline, 'text-decoration-line', { desktop: 'dotted' } ).error );
 } );
+
+// A reading must pick one value to map to. Real cases from the 2026-11-26 Fill of Mama's footer and Eye Care's header, found by
+// comparing the sweep with and without the site look's readings.
+const paints = ( prop, v ) => ( { [ prop ]: { 375: v, 768: v, 1440: v } } );
+
+test( 'MUST FAIL: a keyword several values paint is not given to the first of them (a cart border style with no width paints none whatever its style)', () => {
+	const row = { attr_name: 'pillBorderStyle', enum_values: '["","solid","dashed","dotted"]' };
+	const s = { enumReads: { solid: paints( 'border-top-style', 'none' ), dashed: paints( 'border-top-style', 'none' ), dotted: paints( 'border-top-style', 'none' ) } };
+	assert.deepEqual( mapTiers( row, undefined, s, 'border-top-style', { desktop: 'none' } ), { tiers: { desktop: 'none' } }, 'it goes on as it is and the writer judges it (none is not one of the list)' );
+} );
+
+test( 'MUST FAIL: a keyword no value paints stays where the alignment rule of the writer gives it a list member (align-items flex-end is the list value end in a flex container)', () => {
+	const row = { attr_name: 'alignItems', enum_values: '["start","center","end","stretch"]' };
+	const s = { enumReads: { start: paints( 'align-items', 'start' ), end: paints( 'align-items', 'end' ) } };
+	const flex = () => ( { display: 'flex', 'flex-wrap': 'nowrap' } );
+	assert.deepEqual( mapTiers( row, undefined, s, 'align-items', { desktop: 'flex-end' }, flex ), { tiers: { desktop: 'flex-end' } } );
+	assert.match( mapTiers( row, undefined, s, 'align-items', { desktop: 'flex-end' } ).error, /none paints/, 'with the container unread the two stay different, as the writer treats them' );
+} );
+
+test( 'MUST FAIL: a keyword no value paints and no alignment rule maps is a shape gap, never an out-of-list write (a draft baseline against start, center, end)', () => {
+	const row = { attr_name: 'alignItems', enum_values: '["start","center","end"]' };
+	const s = { enumReads: { start: paints( 'align-items', 'start' ), end: paints( 'align-items', 'end' ) } };
+	const flex = () => ( { display: 'flex', 'flex-wrap': 'nowrap' } );
+	assert.match( mapTiers( row, undefined, s, 'align-items', { desktop: 'baseline' }, flex ).error, /none paints/ );
+} );
+
+test( 'NEGATIVE CONTROL: where the list holds a word that is no CSS value, several or no painting values stay a shape gap', () => {
+	const row = { attr_name: 'linkUnderline', enum_values: '["","none","always","hover","sweep"]' };
+	const s = { enumReads: { hover: paints( 'text-decoration-line', 'dotted' ), sweep: paints( 'text-decoration-line', 'dotted' ), always: paints( 'text-decoration-line', 'underline' ) } };
+	assert.deepEqual( mapTiers( row, undefined, s, 'text-decoration-line', { desktop: 'dotted' } ), { tiers: { desktop: 'dotted' } }, 'several paint dotted: it goes on and the writer judges it' );
+	assert.match( mapTiers( row, undefined, s, 'text-decoration-line', { desktop: 'wavy' } ).error, /none paints/ );
+} );

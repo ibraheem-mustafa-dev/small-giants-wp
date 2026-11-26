@@ -1412,8 +1412,6 @@
     "sgs/account::ordersEmptyBackground": "color",
     "sgs/account::ordersEmptyBorderColour": "color",
     "sgs/account::ordersEmptyButtonLabel": "text-content",
-    "sgs/account::ordersEmptyButtonMinHeight": "layout",
-    "sgs/account::ordersEmptyButtonPadding": "layout",
     "sgs/account::ordersEmptyButtonUrl": "content",
     "sgs/account::ordersEmptyHeading": "text-content",
     "sgs/account::ordersEmptyPadding": "layout",
