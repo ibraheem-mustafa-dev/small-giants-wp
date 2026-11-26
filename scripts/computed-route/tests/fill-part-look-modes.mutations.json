@@ -82,5 +82,17 @@
 		"find": "const top = dot < 0 ? w.attr : w.attr.slice( 0, dot );",
 		"replace": "const top = w.attr;",
 		"why": "a key write is looked up as a setting of its own"
+	},
+	{
+		"file": "lib/fill-part-look-modes.mjs",
+		"find": "attrExists: o.attrExists ?? settingDeclared( o.db ) } );",
+		"replace": "attrExists: o.attrExists ?? ( ( b ) => b.startsWith( 'sgs/' ) ) } );",
+		"why": "settings are checked in block.json, which lists no WooCommerce block's extension settings"
+	},
+	{
+		"file": "lib/fill-part-look-modes.mjs",
+		"find": "!! db.prepare( 'SELECT 1 FROM block_attributes WHERE block_slug = ? AND attr_name = ?' ).get( block, attr );",
+		"replace": "!! db.prepare( 'SELECT 1 FROM block_attributes WHERE block_slug = ?' ).get( block );",
+		"why": "any setting of a known block counts as held"
 	}
 ]

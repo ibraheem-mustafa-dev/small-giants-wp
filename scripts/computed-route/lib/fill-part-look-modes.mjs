@@ -97,8 +97,12 @@ export function modeWrites( { results, wanted, nodes, flat, refOf, attrExists, m
 	return out;
 }
 
+// Whether the framework database holds a setting of a block (block_attributes, FP-1): WooCommerce's own blocks carry the framework's
+// extension settings (the chips' sgsChipCountPill, the cart's sgsFieldLabelPosition) that no SGS block.json lists.
+export const settingDeclared = ( db ) => ( block, attr ) => !! db.prepare( 'SELECT 1 FROM block_attributes WHERE block_slug = ? AND attr_name = ?' ).get( block, attr );
+
 // Runs part-look's draft read for the surfaces this Fill surface reads and writes their mode rules (modeWrites). o: { client, repo,
-// entry (the surface's surfaces.json entry), nodes, flat, refOf, attrExists, out (part-look's report folder), log, run
+// entry (the surface's surfaces.json entry), nodes, flat, refOf, db (settings are checked in it; attrExists overrides), out (part-look's report folder), log, run
 // (runPartLook; a stand-in in tests), locators }. A read that throws, a refusal and a verify failure are notes, and nothing of that
 // surface is written.
 export async function partLookModeWrites( o ) {
@@ -119,6 +123,6 @@ export async function partLookModeWrites( o ) {
 	const refused = [ ...( report.refusals || [] ), ...( report.failures || [] ) ];
 	// A refused surface's read is not evidence: its rules are not written.
 	const ok = wanted.filter( ( w ) => ! refused.some( ( f ) => f.startsWith( `${ w.surface }:` ) ) );
-	const got = modeWrites( { results: report.surfaces, wanted: ok, nodes: o.nodes, flat: o.flat, refOf: o.refOf, attrExists: o.attrExists } );
+	const got = modeWrites( { results: report.surfaces, wanted: ok, nodes: o.nodes, flat: o.flat, refOf: o.refOf, attrExists: o.attrExists ?? settingDeclared( o.db ) } );
 	return { ...got, notes: [ ...refused.map( ( f ) => `part-look refused ${ f }` ), ...( report.notes || [] ).map( ( n ) => `part-look ${ n }` ), ...got.notes ], surfaces: empty.surfaces };
 }

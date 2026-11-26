@@ -4,7 +4,8 @@
 // on that page. Tests marked MUST FAIL fail without the code they name. A stand-in for part-look's read; no browser, no site.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { modeWrites, partLookModeWrites, partLookSurfacesFor, readLocators } from '../lib/fill-part-look-modes.mjs';
+import { modeWrites, partLookModeWrites, partLookSurfacesFor, readLocators, settingDeclared } from '../lib/fill-part-look-modes.mjs';
+import { openDb } from '../lib/db.mjs';
 
 const LOCATORS = readLocators();
 const rec = ( index, name, node = {} ) => ( { index, name, node } );
@@ -100,4 +101,16 @@ test( 'MUST FAIL: a write to one key of an object setting (the account’s tab w
 	assert.match( modeWrites( { results, wanted, nodes, flat: flatText, refOf: refOf( flatText ), attrExists: () => true } ).unmapped[ 0 ].reason, /not an object to set addresses in/ );
 	const none = flatOf( nodes );
 	assert.match( modeWrites( { results, wanted, nodes, flat: none, refOf: refOf( none ), attrExists: () => false } ).unmapped[ 0 ].reason, /has no strings setting/ );
+} );
+
+test( 'MUST FAIL: a setting is checked in the framework database, so WooCommerce blocks’ extension settings are written', async () => {
+	const db = openDb();
+	const has = settingDeclared( db );
+	assert.deepEqual( [ has( 'woocommerce/product-filter-chips', 'sgsChipCountPill' ), has( 'woocommerce/cart', 'sgsFieldLabelPosition' ), has( 'sgs/account', 'strings' ), has( 'woocommerce/product-filter-chips', 'noSuchSetting' ) ], [ true, true, true, false ] );
+	const nodes = [ { index: 0, name: 'woocommerce/product-filter-chips', node: {} } ];
+	const flat = flatOf( nodes );
+	const report = { surfaces: { 'shop-chips': { block: 'woocommerce/product-filter-chips', build: { writes: [ mode( 'sgsChipCountPill', true ), mode( 'sgsChipSingle', true ), mode( 'noSuchSetting', 1 ) ], gaps: [] } } }, refusals: [], failures: [], notes: [] };
+	const out = await partLookModeWrites( { client: 'x', repo: 'R', entry: { target: { template: 'archive-product' } }, nodes, flat, refOf: refOf( flat ), db, out: 'O', run: async () => ( { report } ) } );
+	assert.deepEqual( out.writes.map( ( w ) => w.attr ), [ 'sgsChipCountPill', 'sgsChipSingle' ] );
+	assert.match( out.unmapped[ 0 ].reason, /has no noSuchSetting setting/ );
 } );
