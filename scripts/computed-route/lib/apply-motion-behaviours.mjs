@@ -12,6 +12,9 @@ const canon = ( v ) => JSON.stringify( v, ( k, x ) => ( x && 'object' === typeof
 const differs = ( have, want ) => Object.entries( want ).filter( ( [ k, v ] ) => canon( have?.[ k ] ) !== canon( v ) ).map( ( [ k ] ) => k );
 let offered = null;
 
+// The row a run without the fact record's template raises: the behaviours read from the draft's template are not recognised.
+export const NO_TEMPLATE = `no fact record template (build/intake/facts.json is missing): the behaviours recognised from the draft's template (the open-status dot pulse, the pinned timeline, a pin's progress bar) cannot be read; run intake --facts for this client`;
+
 // Draws one effect onto doc.elements[at]: true when the document changed, false when the saved layer already gives it.
 function overlay( doc, at, w ) {
 	const el = ( doc.elements[ at ] ||= {} );
@@ -52,12 +55,18 @@ function addSettings( { out, r, mine, saved, block, db, row } ) {
 
 // { whys, items, settings, ids, fx }: the document is changed in place; `settings` are block attributes to write beside it and
 // `fx` the effect names written (the live marker data-sgs-fx names each) and `wanted` every effect name the records give, written or held.
-export function behaviourWrites( { recs, allRecords, block, part, doc, saved, mdb, schema, ctx, db, facts = null } ) {
+// `template`: the fact record's template (lib/fill-behaviour.mjs::templateOf), which the settings behaviours read their element
+// from; without it (no facts.json) those behaviours cannot be recognised, so the run names that in a row instead of skipping them.
+export function behaviourWrites( { recs, allRecords, block, part, doc, saved, mdb, schema, ctx, db, facts = null, template = null } ) {
 	offered ??= loadEffectOffers();
 	const out = { whys: [], items: [], settings: [], ids: [], fx: [], wanted: new Set() };
 	const done = new Set();
-	for ( const r of recs.filter( ( x ) => carriesHook( x, facts ) ) ) {
-		const b = done.has( r.id ) ? null : recogniseBehaviour( r, { records: allRecords } );
+	const mine = recs.filter( ( x ) => carriesHook( x, facts ) );
+	if ( mine.length && ! template?.elements ) {
+		out.items.push( { status: 'no-setting', prop: 'motion behaviours', why: NO_TEMPLATE } );
+	}
+	for ( const r of mine ) {
+		const b = done.has( r.id ) ? null : recogniseBehaviour( r, { records: allRecords, template } );
 		if ( ! b ) {
 			continue;
 		}

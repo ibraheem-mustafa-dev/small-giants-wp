@@ -36,12 +36,6 @@
 		"why": "a name with a dollar sign is mis-read"
 	},
 	{
-		"file": "lib/motion-behaviour-settings.mjs",
-		"find": "{ attr: 'orientation', value: 'horizontal', companion: true }, ",
-		"replace": "",
-		"why": "the pinned timeline is written without its orientation"
-	},
-	{
 		"file": "lib/motion-reveal.mjs",
 		"find": "if ( 'js-style-write' !== r.mechanism || 1 !== list.length || ! ( r.duration_ms > 0 ) || ! Object.hasOwn( EASING_CSS, r.easing ?? '' ) ) {",
 		"replace": "if ( 'js-style-write' !== r.mechanism || 1 !== list.length || ! Object.hasOwn( EASING_CSS, r.easing ?? '' ) ) {",
@@ -85,14 +79,14 @@
 	},
 	{
 		"file": "lib/motion-reveal.mjs",
-		"find": "if ( 'js-style-write' !== r.mechanism || ! list.length || null == r.element?.template_tpl_id ) {",
-		"replace": "if ( 'js-style-write' !== r.mechanism || ! list.length ) {",
+		"find": "if ( 'js-style-write' !== r.mechanism || ! list.length || null == r.element?.template_tpl_id || ! SETUP.has( r.trigger?.type ) ) {",
+		"replace": "if ( 'js-style-write' !== r.mechanism || ! list.length || ! SETUP.has( r.trigger?.type ) ) {",
 		"why": "a write with no template element is a hide"
 	},
 	{
 		"file": "lib/motion-reveal.mjs",
-		"find": "const reveals = ( records || [] ).filter( ( x ) => x.reveal && x.element?.dc === r.element.dc );",
-		"replace": "const reveals = ( records || [] ).filter( ( x ) => x.reveal );",
+		"find": "const reveals = ( records || [] ).filter( ( x ) => x.reveal && x.element?.dc === r.element.dc && ",
+		"replace": "const reveals = ( records || [] ).filter( ( x ) => x.reveal && ",
 		"why": "another component's reveal holds the hide"
 	},
 	{
@@ -186,9 +180,15 @@
 		"why": "a rotating transform is read as a travel"
 	},
 	{
-		"file": "lib/motion-behaviours.mjs",
-		"find": "s.filter( ( x ) => ! x.companion ).map( ( x ) => x.attr ).join( ', ' )",
-		"replace": "s.map( ( x ) => x.attr ).join( ', ' )",
-		"why": "a companion setting is a row of the review"
+		"file": "lib/motion-reveal.mjs",
+		"find": "|| ! SETUP.has( r.trigger?.type ) ) {",
+		"replace": ") {",
+		"why": "a press that fades an element out is held by a reveal"
+	},
+	{
+		"file": "lib/motion-reveal.mjs",
+		"find": "&& ( ! idsOf( x ).length || idsOf( x ).some( ( id ) => own.has( id ) ) ) );",
+		"replace": ");",
+		"why": "a hide on an element no reveal targets is held by one"
 	}
 ]

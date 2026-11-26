@@ -22,7 +22,7 @@ const ids = ( r ) => [].concat( r.element?.template_tpl_id ?? [] ).map( Number )
 // [ { status: 'no-setting', prop: record id, why } ].
 // `parts`: the block's declared motion targets; a block that declares a part besides the root draws its descendants itself (the hero's
 // photo frame is its split-media part), so those are its parts, not strays.
-export function descendantRows( { target, block, recordsIndex, surface, allRecords, parts = null } ) {
+export function descendantRows( { target, block, recordsIndex, surface, allRecords, parts = null, template = null } ) {
 	if ( [ ...( parts || [] ) ].some( ( p ) => 'root' !== p ) ) {
 		return [];
 	}
@@ -31,7 +31,7 @@ export function descendantRows( { target, block, recordsIndex, surface, allRecor
 	const rows = new Map();
 	for ( const id of ( target.reach || [] ).filter( ( x ) => ! own.has( x ) && ! held.has( x ) ) ) {
 		for ( const r of recordsFor( recordsIndex, `Root/${ id }#0` ) ) {
-			const b = rows.has( r.id ) || ids( r ).some( ( x ) => own.has( x ) ) ? null : recogniseBehaviour( r, { records: allRecords } );
+			const b = rows.has( r.id ) || ids( r ).some( ( x ) => own.has( x ) ) ? null : recogniseBehaviour( r, { records: allRecords, template } );
 			if ( b && ! [ 'native', 'covered' ].includes( b.kind ) ) {
 				rows.set( r.id, { status: 'no-setting', prop: r.id, why: `${ r.id } targets a descendant (draft element ${ id }), no part of ${ block } holds it` } );
 			}

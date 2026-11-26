@@ -2,8 +2,7 @@
 // motion layers (the header's scrolled shadow and sticky bar, the open-status dot pulse, scrolling to an opened accordion
 // row, the testimonial slider's autoplay, the pinned timeline's track, counter, focus and active year). Each recogniser
 // takes one animation record (and `ctx`, lib/motion-behaviours.mjs::recogniseBehaviour's) and returns
-// { blocks: { '<block>': [ { attr, value, colour?, companion? } ] }, accepted?, sticky?, notes } or null. A `companion` setting is
-// one the effect depends on (the pinned timeline's orientation): it is written with the others and is not a row of the review.
+// { blocks: { '<block>': [ { attr, value, colour? } ] }, accepted?, sticky?, notes } or null.
 
 import { colourHex } from './tokens.mjs';
 import { shadowParts } from './motion-shadow.mjs';
@@ -91,6 +90,34 @@ export function scrollThreshold( r ) {
 		}
 	}
 	return null;
+}
+
+// The fact record's template as the recognisers read it (`ctx.template`): each template element's `template` entry, and
+// the looks and threshold of the draft's scrolled state (scrolledLooksOf, scrolledThresholdOf); null with no fact record.
+// lib/fill-behaviour.mjs re-exports it; the apply stage and the intake review read it from here.
+export const templateOf = ( facts ) => ( facts ? { elements: Object.fromEntries( Object.entries( facts.elements || {} ).map( ( [ key, e ] ) => [ key, e.template || {} ] ) ), scrolled: scrolledLooksOf( facts ), scrolledAt: scrolledThresholdOf( facts ) } : null );
+
+// The template fields the recognisers read (this file, lib/motion-behaviours.mjs, lib/motion-tilt.mjs): an element's tag, its
+// parents, its component and helmet place, its attributes and words, the places of its holes and its declared styles.
+const EFFECT_FIELDS = [ 'tag', 'realTag', 'parent', 'realParent', 'parentChain', 'component', 'inHelmet', 'attrs', 'words' ];
+
+// The committed stand-in for the fact record's template (`build/intake/effect-template.json`, written with facts.json by
+// lib/fact-record.mjs::writeFacts): templateOf with each element cut to EFFECT_FIELDS, its holes to their places and its
+// declared styles without the `initial` longhands. facts.json is gitignored, so a checkout without it (CI, a fresh clone)
+// reads this file instead and the intake review stays a function of committed files
+// (lib/intake-review.mjs::factTemplate). tests/effect-template.test.mjs holds the cut to the recognisers' reads.
+export const EFFECT_TEMPLATE = 'effect-template.json';
+export function effectTemplateOf( facts ) {
+	if ( ! facts ) {
+		return null;
+	}
+	const cut = ( t ) => {
+		const o = Object.fromEntries( EFFECT_FIELDS.filter( ( f ) => null !== ( t[ f ] ?? null ) && ! ( Array.isArray( t[ f ] ) && ! t[ f ].length ) ).map( ( f ) => [ f, t[ f ] ] ) );
+		const holes = ( t.holes || [] ).map( ( h ) => ( { where: h.where } ) );
+		const declared = ( t.style?.static || [] ).filter( ( [ , v ] ) => 'initial' !== String( v ).trim() );
+		return { ...o, ...( holes.length ? { holes } : {} ), ...( declared.length ? { style: { static: declared } } : {} ) };
+	};
+	return { elements: Object.fromEntries( Object.entries( facts.elements || {} ).map( ( [ key, e ] ) => [ key, cut( e.template || {} ) ] ) ), scrolled: scrolledLooksOf( facts ), scrolledAt: scrolledThresholdOf( facts ) };
 }
 
 // A script that writes a box-shadow once the page has scrolled past a distance: the site header's scrolled shadow and
@@ -501,7 +528,7 @@ export function pinnedTimelineOf( r, ctx = {} ) {
 	if ( move && movesSideways( move ) ) {
 		const strip = touchStripBeside( pinnedSectionOf( r, ctx ), ctx );
 		return {
-			blocks: { 'sgs/timeline': [ { attr: 'scrollEffect', value: 'pinned-horizontal' }, { attr: 'orientation', value: 'horizontal', companion: true }, ...( strip ? [ { attr: 'mobileLayout', value: 'carousel' } ] : [] ) ] },
+			blocks: { 'sgs/timeline': [ { attr: 'scrollEffect', value: 'pinned-horizontal' }, ...( strip ? [ { attr: 'mobileLayout', value: 'carousel' } ] : [] ) ] },
 			accepted: 'the draft switches to its touch-only strip at 1024px; SGS pins from 768px and swipes below (Ruling 9)',
 			notes: [ 'the track moves sideways with the scroll while pinned' ],
 		};

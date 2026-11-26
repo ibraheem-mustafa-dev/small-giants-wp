@@ -1,7 +1,6 @@
 // Spec 48 FR-48-77, register row C5 (recognition): the effect recogniser (lib/motion-behaviours.mjs::recogniseBehaviour)
-// reads a scroll value the handler passes in as a parameter as a parallax; a scroll track a timer steps, with pointer drag
-// and arrow controls, as the testimonial slider's settings; the pinned timeline's settings carry the orientation they depend
-// on; and a script reveal (an opacity and a rise written by one tween) is one scroll entrance whose hiding writes are held
+// reads a scroll value the handler passes in as a parameter as a parallax; the pinned timeline's settings leave its
+// orientation to the skeleton rule; and a script reveal (an opacity and a rise written by one tween) is one scroll entrance whose hiding writes are held
 // by it (lib/motion-reveal.mjs). Records are shaped like the re-derived inventory's (intake.json inventory.animations).
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -39,16 +38,13 @@ test( 'negative control (C5 recognition 4): the same formula on a trigger that i
 	assert.equal( named.effects[ 0 ].values.speedRatio, -0.25, 'a name with a $ is read whole' );
 } );
 
-// ---- the pinned timeline carries its orientation (item 10) ----
-test( 'MUST FAIL (C5 recognition 10): the pinned horizontal timeline is written with the horizontal orientation it depends on, which the review does not list', async () => {
+// ---- the pinned timeline's orientation has one owner: the skeleton's list arrangement (item 10) ----
+test( 'MUST FAIL (C5 recognition 10): the pinned horizontal timeline writes its scroll effect and leaves the orientation to the skeleton rule', () => {
 	const PIN = 'window scroll (rAF-throttled) -> move(). p = clamp((stickyTop - stage.top) / (stage.offsetHeight - sticky.offsetHeight), 0, 1)';
 	const track = J( 'S-5', { trigger: { type: 'scroll-position', detail: PIN }, element: { dc: 'Site', template_tpl_id: '10', selector: '[data-x]' }, properties: [ { property: 'transform', formula: "'translate3d(' + (-p * dist).toFixed(1) + 'px,0,0)'" } ] } );
 	const template = { elements: { 'Site/9': { style: { static: [ [ 'position', 'sticky' ] ] }, parentChain: [] }, 'Site/10': { style: { static: [] }, realParent: 'Site/9', parentChain: [ 'Site/9' ] } } };
 	const b = recogniseBehaviour( track, { template } );
-	const { effectRows } = await import( '../lib/motion-behaviours.mjs' );
-	assert.match( effectRows( [ track ], { template } )[ 0 ].text, /written as the block settings sgs\/timeline scrollEffect$/, 'the review row names the setting, not its companion' );
-	assert.ok( ! effectRows( [ track ], { template } )[ 0 ].effect.includes( 'orientation' ), 'a companion setting is not a row of the review' );
-	assert.deepEqual( b.blocks[ 'sgs/timeline' ].slice( 0, 2 ), [ { attr: 'scrollEffect', value: 'pinned-horizontal' }, { attr: 'orientation', value: 'horizontal', companion: true } ] );
+	assert.deepEqual( b.blocks[ 'sgs/timeline' ], [ { attr: 'scrollEffect', value: 'pinned-horizontal' } ], 'data/skeleton-decisions.json listArrangement writes orientation when the units sit in one row' );
 } );
 
 // ---- a script reveal is one scroll entrance (item 3) ----
@@ -125,4 +121,14 @@ test( 'MUST FAIL (C5 recognition 3): the writes that hide an element until its r
 	assert.equal( hiddenStartOf( { ...hide( 'J-09', 'opacity', '0' ), element: { dc: 'App', template_tpl_id: null } }, reveals ), null, 'a write with no template element is not a hide of one' );
 	assert.equal( hiddenStartOf( { ...hide( 'J-09', 'opacity', '0' ), mechanism: 'waapi' }, reveals ), null );
 	assert.equal( hiddenStartOf( { ...hide( 'J-09', 'opacity', '0' ), properties: [] }, reveals ), null );
+} );
+
+test( 'negative control (C5 recognition 3): a fade-out on a press, or a hide on an element no reveal targets, is not held by a reveal', () => {
+	const reveal = { ...normaliseReveals( REVEAL_RECORDS )[ 0 ], element: { dc: 'App', template_tpl_id: '5', selector: '[data-reveal]' } };
+	const write = ( tpl, trigger ) => J( 'J-40', { element: { dc: 'App', template_tpl_id: tpl, selector: 'this.menu' }, source: { file: 'App.dc.html', function: 'closeMenu', code: '' }, trigger: { type: trigger, detail: '' }, properties: [ { property: 'opacity', from: null, to: '0' } ] } );
+	assert.equal( hiddenStartOf( write( '40', 'press' ), [ reveal ] ), null, 'the menu close is its own behaviour' );
+	assert.equal( hiddenStartOf( write( '5', 'press' ), [ reveal ] ), null, 'a press never sets up a reveal' );
+	assert.equal( hiddenStartOf( write( '40', 'mount' ), [ reveal ] ), null, 'an element the reveal does not target' );
+	assert.equal( hiddenStartOf( write( '5', 'mount' ), [ reveal ] ), reveal.id, 'the element the reveal targets, hidden at set-up' );
+	assert.notEqual( recogniseBehaviour( write( '40', 'press' ), { records: [ reveal ] } )?.kind, 'covered' );
 } );

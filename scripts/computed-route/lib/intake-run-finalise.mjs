@@ -15,7 +15,7 @@ import fs from 'fs';
 import path from 'path';
 import { openDb } from './db.mjs';
 import { finaliseRequest, readPicks, recordDecision, skeletonDir } from './skeleton-finalise.mjs';
-import { reviewRows, renderReview, readingCounts } from './intake-review.mjs';
+import { reviewRows, renderReview, readingCounts, factTemplate } from './intake-review.mjs';
 import { refreshIntakeSkeletons } from './skeleton-rerun.mjs';
 
 export const FINALISER_PROMPT = 'scripts/computed-route/prompts/skeleton-finaliser.md';
@@ -107,7 +107,7 @@ export function picksProblems( picks, request, intake, knownBlock ) {
 
 // intake with the (valid) picks applied, and the review rebuilt: a row whose content hash is unchanged keeps its entry;
 // a picked row is unmarked (Bean has not seen the pick). Returns { intake, applied, missing }.
-export function applyIntakePicks( intake, picks ) {
+export function applyIntakePicks( intake, picks, { template = null } = {} ) {
 	const next = structuredClone( intake );
 	const picked = [];
 	for ( const [ surface, list ] of Object.entries( picks ) ) {
@@ -136,7 +136,7 @@ export function applyIntakePicks( intake, picks ) {
 	}
 	const prior = new Map( ( intake.review || [] ).map( ( r ) => [ r.rowId, r ] ) );
 	const pickedIds = new Set( picked.map( ( x ) => x.row.rowId ) );
-	next.review = reviewRows( next ).map( ( r ) => {
+	next.review = reviewRows( next, { template } ).map( ( r ) => {
 		const old = prior.get( r.rowId );
 		if ( old && old.contentHash === r.contentHash && ! pickedIds.has( r.rowId ) ) {
 			return old;
@@ -195,8 +195,8 @@ export function recordReviewDecisions( decisions, file ) {
 	return decisions.length;
 }
 
-const countLine = ( intake ) => {
-	const c = readingCounts( intake );
+const countLine = ( intake, template = null ) => {
+	const c = readingCounts( intake, undefined, { template } );
 	return `${ c.total } rows: ${ c.read } need reading, ${ c.confident } confident proposals Accept all covers (skeleton ${ c.skeleton }, missing features ${ c.missing })`;
 };
 
@@ -245,16 +245,17 @@ export function runApplyPicks( at, o, { log, recordProblems, knownBlock = null }
 		say( `invalid picks, nothing written:\n${ problems.map( ( p ) => `  - ${ p }` ).join( '\n' ) }` );
 		return 1;
 	}
-	const res = applyIntakePicks( intake, picks );
+	const template = factTemplate( at.facts );
+	const res = applyIntakePicks( intake, picks, { template } );
 	const bad = recordProblems( res.intake );
 	if ( bad.length ) {
 		say( `the record with the picks applied does not validate, nothing written:\n${ bad.map( ( p ) => `  - ${ p }` ).join( '\n' ) }` );
 		return 1;
 	}
 	writeJson( at.intake, res.intake );
-	fs.writeFileSync( at.review, renderReview( res.intake ) );
+	fs.writeFileSync( at.review, renderReview( res.intake, { template } ) );
 	const asked = Object.values( readJson( files.request ).surfaces ).reduce( ( n, r ) => n + r.rows.length, 0 );
-	say( `${ o.client }: ${ res.applied } picks applied (${ asked - res.applied } request rows left as proposed), ${ res.missing } missing-feature rows carry the pick (a picked block becomes their proposal); review.md rewritten, ${ countLine( res.intake ) }` );
+	say( `${ o.client }: ${ res.applied } picks applied (${ asked - res.applied } request rows left as proposed), ${ res.missing } missing-feature rows carry the pick (a picked block becomes their proposal); review.md rewritten, ${ countLine( res.intake, template ) }` );
 	return 0;
 }
 
@@ -265,8 +266,9 @@ export function runRender( at, o, { log } ) {
 		return 1;
 	}
 	const intake = readJson( at.intake );
-	fs.writeFileSync( at.review, renderReview( intake ) );
-	log( `[intake --render] ${ o.client }: review.md rewritten from intake.json; ${ countLine( intake ) }` );
+	const template = factTemplate( at.facts );
+	fs.writeFileSync( at.review, renderReview( intake, { template } ) );
+	log( `[intake --render] ${ o.client }: review.md rewritten from intake.json; ${ countLine( intake, template ) }` );
 	return 0;
 }
 
@@ -310,7 +312,7 @@ export function runRerunSkeletons( at, o, { log, recordProblems } ) {
 		if ( problems.length ) {
 			say( `the earlier picks were not carried over:\n${ problems.map( ( p ) => `  - ${ p }` ).join( '\n' ) }` );
 		} else {
-			next = applyIntakePicks( next, keep ).intake;
+			next = applyIntakePicks( next, keep, { template: factTemplate( at.facts ) } ).intake;
 			carried = Object.values( keep ).reduce( ( n, l ) => n + l.length, 0 );
 		}
 	}
@@ -322,7 +324,7 @@ export function runRerunSkeletons( at, o, { log, recordProblems } ) {
 	fs.copyFileSync( at.intake, at.prev );
 	writeJson( at.intake, next );
 	writeJson( files.request, request, '\t' );
-	fs.writeFileSync( at.review, renderReview( next ) );
-	say( `${ o.client }: ${ res.before } rows, ${ res.after } after collapsing; ${ request.counts.rows } still await the finaliser, ${ carried } earlier picks carried over; review.md rewritten, ${ countLine( next ) }` );
+	fs.writeFileSync( at.review, renderReview( next, { template: factTemplate( at.facts ) } ) );
+	say( `${ o.client }: ${ res.before } rows, ${ res.after } after collapsing; ${ request.counts.rows } still await the finaliser, ${ carried } earlier picks carried over; review.md rewritten, ${ countLine( next, factTemplate( at.facts ) ) }` );
 	return 0;
 }

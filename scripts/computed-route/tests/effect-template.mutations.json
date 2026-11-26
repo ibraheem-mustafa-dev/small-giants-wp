@@ -1,0 +1,44 @@
+[
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "const EFFECT_FIELDS = [ 'tag', 'realTag', 'parent', 'realParent', 'parentChain', 'component', 'inHelmet', 'attrs', 'words' ];",
+		"replace": "const EFFECT_FIELDS = [ 'tag', 'realTag', 'parent', 'realParent', 'component', 'inHelmet', 'attrs', 'words' ];",
+		"why": "the cut loses the parent chain, so the pinned stage is not found"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "const EFFECT_FIELDS = [ 'tag', 'realTag', 'parent', 'realParent', 'parentChain', 'component', 'inHelmet', 'attrs', 'words' ];",
+		"replace": "const EFFECT_FIELDS = [ 'tag', 'realTag', 'parentChain', 'component', 'inHelmet', 'attrs', 'words' ];",
+		"why": "the cut loses the parent, so the status dot's parent text is not read"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "const holes = ( t.holes || [] ).map( ( h ) => ( { where: h.where } ) );",
+		"replace": "const holes = [];",
+		"why": "the cut loses the hole places"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "const holes = ( t.holes || [] ).map( ( h ) => ( { where: h.where } ) );",
+		"replace": "const holes = t.holes || [];",
+		"why": "the cut keeps every hole field"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "const declared = ( t.style?.static || [] ).filter( ( [ , v ] ) => 'initial' !== String( v ).trim() );",
+		"replace": "const declared = [];",
+		"why": "the cut loses the declared styles"
+	},
+	{
+		"file": "lib/intake-review.mjs",
+		"find": "return fs.existsSync( cut ) ? JSON.parse( fs.readFileSync( cut, 'utf8' ) ) : null;",
+		"replace": "return null;",
+		"why": "a checkout without facts.json reads no template"
+	},
+	{
+		"file": "lib/intake-review.mjs",
+		"find": "\tif ( fs.existsSync( file ) ) {\n\t\treturn templateOf( JSON.parse( fs.readFileSync( file, 'utf8' ) ) );\n\t}",
+		"replace": "",
+		"why": "the cut wins over facts.json"
+	}
+]

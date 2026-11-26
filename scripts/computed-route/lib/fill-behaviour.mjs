@@ -9,7 +9,7 @@ import path from 'path';
 import { openDb } from './db.mjs';
 import { setAttr } from './tree.mjs';
 import { recogniseBehaviour, hostsFromTemplate } from './motion-behaviours.mjs';
-import { scrolledLooksOf, scrolledThresholdOf } from './motion-behaviour-settings.mjs';
+import { templateOf } from './motion-behaviour-settings.mjs';
 import { validateMotionWrite, verdictProblems } from './motion-validate.mjs';
 import { READ_WIDTHS } from './fill-read.mjs';
 import { timeToMs } from './resolve.mjs';
@@ -286,7 +286,7 @@ export function draftCssOf( draftDir, draftIndex = null ) {
 
 // A fact record's template in the shape behaviourIndex reads: { elements: { <key>: { attrs } }, scrolled: { <key>: [ look ] } },
 // `scrolled` the looks the draft's scrolled state gives each element (lib/motion-behaviour-settings.mjs::scrolledLooksOf).
-export const templateOf = ( facts ) => ( facts ? { elements: Object.fromEntries( Object.entries( facts.elements || {} ).map( ( [ key, e ] ) => [ key, e.template || {} ] ) ), scrolled: scrolledLooksOf( facts ), scrolledAt: scrolledThresholdOf( facts ) } : null );
+export { templateOf };
 
 // The second pass: each control sets values on the layer of the record it controls (the marquee's hover rate). The merged
 // layer is validated on its own before it is kept, so a control value the schema refuses names the control instead of

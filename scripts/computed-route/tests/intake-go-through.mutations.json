@@ -97,8 +97,8 @@
 	},
 	{
 		"file": "lib/intake-run.mjs",
-		"find": "{ today, sections: o.sections, goThrough: o.goThrough }",
-		"replace": "{ today, sections: o.sections }",
+		"find": "{ today, sections: o.sections, goThrough: o.goThrough, template: factTemplate( at.facts ) }",
+		"replace": "{ today, sections: o.sections, template: factTemplate( at.facts ) }",
 		"why": "--go-through would be parsed and ignored"
 	},
 	{
@@ -127,7 +127,7 @@
 	},
 	{
 		"file": "lib/intake-run.mjs",
-		"find": "fs.writeFileSync( at.review, withDefaultsLine( fs.readFileSync( at.review, 'utf8' ), res.intake ) );",
+		"find": "fs.writeFileSync( at.review, withDefaultsLine( fs.readFileSync( at.review, 'utf8' ), res.intake, { template: factTemplate( at.facts ) } ) );",
 		"replace": "",
 		"why": "review.md would not gain its line"
 	},

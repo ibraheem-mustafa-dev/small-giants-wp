@@ -200,12 +200,12 @@ export const motion = {
 					ids.push( recs.find( ( r ) => 'infinite' === r.iterations )?.id );
 				}
 			}
-			const b = behaviourWrites( { recs, allRecords: records, block, part: name, doc, saved, mdb, schema, ctx, db, facts: Object.values( draft ).find( Boolean ) } );
+			const b = behaviourWrites( { recs, allRecords: records, block, part: name, doc, saved, mdb, schema, ctx, db, facts: Object.values( draft ).find( Boolean ), template: input.template ?? null } );
 			items.push( ...b.items );
 			// An effect whose draft record is found and belongs to another element is removed; one with no record found is reported.
 			if ( draft[ 1440 ] ) {
 				const facts = Object.values( draft ).find( Boolean );
-				const stray = strayRemovals( { doc, part: name, wanted: b.wanted, recs: recs.filter( ( r ) => carriesHook( r, facts ) ), records, foreign: foreignEffects( { target, surface: input.surface, recordsIndex, records, facts } ) } );
+				const stray = strayRemovals( { doc, part: name, wanted: b.wanted, recs: recs.filter( ( r ) => carriesHook( r, facts ) ), records, template: input.template ?? null, foreign: foreignEffects( { target, surface: input.surface, recordsIndex, records, facts, template: input.template ?? null } ) } );
 				whys.push( ...stray.whys );
 				items.push( ...stray.unchecked );
 			}
@@ -220,7 +220,7 @@ export const motion = {
 		if ( ! ownCalls && ! reached && ! heroParts && left.length ) {
 			items.push( { status: 'no-setting', prop: 'motion', why: `the draft animates descendants of ${ target.tpl } (${ left.map( ( g ) => g.tpl ).join( ', ' ) }), which ${ block } draws with no motion part of its own to hold them` } );
 		}
-		items.push( ...descendantRows( { target, block, recordsIndex, surface: input.surface, allRecords: records, parts: names } ) );
+		items.push( ...descendantRows( { target, block, recordsIndex, surface: input.surface, allRecords: records, parts: names, template: input.template ?? null } ) );
 		marqueeFade( { doc, draft, recs: own, mdb, items, whys, ids } );
 		for ( const [ k, v ] of Object.entries( doc.elements ) ) {
 			Object.keys( v ).length || delete doc.elements[ k ];

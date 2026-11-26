@@ -11,7 +11,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadAjv, schemaProblems } from './handoff.mjs';
 import { catalogueFile, productAddress, readCatalogue } from './catalogue-read.mjs';
-import { carryOver, renderReview } from './intake-review.mjs';
+import { carryOver, renderReview, factTemplate } from './intake-review.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 export const CATALOGUE_SCHEMA = path.join( HERE, '..', 'data', 'catalogue.schema.json' );
@@ -73,14 +73,15 @@ export function runCatalogue( o, { log = ( l ) => process.stderr.write( `${ l }\
 	r.record.gaps.forEach( ( g ) => say( `gap ${ g.draftId } ${ g.kind }: ${ g.detail }` ) );
 	if ( intake ) {
 		const next = { ...intake, catalogue: r.summary };
-		next.review = carryOver( intake, next ).review;
+		const template = factTemplate( path.join( build, 'intake', 'facts.json' ) );
+		next.review = carryOver( intake, next, { template } ).review;
 		const problems = schemaProblems( loadAjv(), INTAKE_SCHEMA, next );
 		if ( problems.length ) {
 			say( `intake.json with the catalogue does not validate, left as it is:\n${ problems.map( ( p ) => `  - ${ p }` ).join( '\n' ) }` );
 			return 1;
 		}
 		fs.writeFileSync( intakeFile, `${ JSON.stringify( next, null, 1 ) }\n` );
-		fs.writeFileSync( path.join( build, 'intake', 'review.md' ), renderReview( next ) );
+		fs.writeFileSync( path.join( build, 'intake', 'review.md' ), renderReview( next, { template } ) );
 		say( `${ path.relative( o.repo, intakeFile ) } takes the catalogue summary and review.md is rendered again` );
 	}
 	return 0;

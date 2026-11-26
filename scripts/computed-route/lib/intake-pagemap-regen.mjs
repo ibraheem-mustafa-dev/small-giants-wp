@@ -10,7 +10,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { proposePageMap, pageMapProblems } from './intake-pagemap.mjs';
-import { safeRowId, renderReview } from './intake-review.mjs';
+import { safeRowId, renderReview, factTemplate } from './intake-review.mjs';
 import { carryOver, withUnappliedMarks } from './intake-review-carry.mjs';
 import { rowKey } from './site-build-map.mjs';
 import { loadAjv, schemaProblems } from './handoff.mjs';
@@ -96,13 +96,13 @@ export function mapChanges( before, after ) {
 // carried over as a re-run carries them (lib/intake-review-carry.mjs): review.md's marks not yet applied first, then every
 // mark whose row is unchanged. Returns { record, problems, refused } (problems: what stops it validating; refused: the
 // marks that reach no row). A palette-only record, or none, is { record: null }: it holds no page map.
-export function syncIntake( intake, proposal, { reviewText = null, day } = {} ) {
+export function syncIntake( intake, proposal, { reviewText = null, day, template = null } = {} ) {
 	if ( ! intake || intake.paletteOnly || ! Array.isArray( intake.pageMap ) ) {
 		return { record: null, problems: [], refused: [] };
 	}
 	const previous = null === reviewText ? intake : withUnappliedMarks( intake, reviewText, day ? { day } : {} ).intake;
 	const record = { ...intake, pageMap: proposal };
-	const carried = carryOver( previous, record );
+	const carried = carryOver( previous, record, { template } );
 	record.review = carried.review;
 	const ajv = loadAjv();
 	const problems = [ ...schemaProblems( ajv, SCHEMA, record ).map( ( p ) => `intake.json ${ p }` ), ...pageMapProblems( record.pageMap, ajv ).map( ( p ) => `page map ${ p }` ) ];
@@ -137,8 +137,9 @@ export function runPageMap( o, { log = ( l ) => process.stderr.write( `${ l }\n`
 		return 1;
 	}
 	const reviewFile = path.join( path.dirname( intakeFile ), 'review.md' );
+	const template = factTemplate( path.join( path.dirname( intakeFile ), 'facts.json' ) );
 	const hasReview = fs.existsSync( reviewFile );
-	const synced = syncIntake( intake, proposal.rows, { reviewText: hasReview ? fs.readFileSync( reviewFile, 'utf8' ) : null, day: hasReview ? fs.statSync( reviewFile ).mtime.toISOString().slice( 0, 10 ) : undefined } );
+	const synced = syncIntake( intake, proposal.rows, { reviewText: hasReview ? fs.readFileSync( reviewFile, 'utf8' ) : null, day: hasReview ? fs.statSync( reviewFile ).mtime.toISOString().slice( 0, 10 ) : undefined, template } );
 	if ( synced.problems.length ) {
 		say( `intake.json with the regenerated page map does not validate, nothing written:\n${ synced.problems.map( ( p ) => `  - ${ p }` ).join( '\n' ) }` );
 		return 1;
@@ -148,7 +149,7 @@ export function runPageMap( o, { log = ( l ) => process.stderr.write( `${ l }\n`
 	fs.writeFileSync( file, `${ JSON.stringify( rows, null, 2 ) }\n` );
 	if ( synced.record ) {
 		fs.writeFileSync( intakeFile, `${ JSON.stringify( synced.record, null, 1 ) }\n` );
-		fs.writeFileSync( reviewFile, renderReview( synced.record ) );
+		fs.writeFileSync( reviewFile, renderReview( synced.record, { template } ) );
 		say( `${ path.relative( o.repo, intakeFile ) } takes the regenerated page map (${ proposal.rows.length } proposed rows) and review.md is rendered again from it` );
 		synced.refused.forEach( ( r ) => say( `review: mark NOT carried: ${ r }` ) );
 	}

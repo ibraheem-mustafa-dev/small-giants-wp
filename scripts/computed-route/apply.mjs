@@ -41,6 +41,8 @@ import { staleRecordProblems, targetsOffOrigin } from './lib/apply-origin-gate.m
 import { layerTargets } from './lib/apply-layer-targets.mjs';
 import { hostedFacts } from './lib/apply-group-read.mjs';
 import { partsOf, partStyles } from './lib/apply-part-hover.mjs';
+import { factsFile } from './lib/fact-record.mjs';
+import { templateOf } from './lib/fill-behaviour.mjs';
 import { DECISIONS_FILE } from './lib/skeleton-facts.mjs';
 import { loadClientData } from './lib/apply-chrome-data.mjs';
 import { positionTargets } from './lib/apply-position.mjs';
@@ -162,7 +164,7 @@ function slotLive( db, calFor, block, target ) {
 const TEXT_PROP = /^(color|font|letter-spacing|line-height|text|-webkit-text|word-spacing|white-space)|(Colour|Font|LetterSpacing|LineHeight|TextTransform|TextDecoration)/;
 
 // Each target's outcome per family: the ops to write and the rows to report.
-export function decideSurface( { surface, drafts, lives, blocks, families, ledger, db, records, recordsIndex, calFor, clientData = {}, closed = null, skeleton = [], snapshot = null, links = null, rawSnapshot = null } ) {
+export function decideSurface( { surface, drafts, lives, blocks, families, ledger, db, records, recordsIndex, calFor, clientData = {}, closed = null, skeleton = [], snapshot = null, links = null, rawSnapshot = null, template = null } ) {
 	const rows = [];
 	const ops = [];
 	const widths = Object.keys( drafts );
@@ -190,11 +192,11 @@ export function decideSurface( { surface, drafts, lives, blocks, families, ledge
 		// A skeleton slot is a part of its owner, read for the families that ask for slots; no other family writes from it.
 		// A layer target (lib/apply-layer-targets.mjs) goes to the layers family alone, and no other target does.
 		for ( const family of families.filter( ( f ) => ( target.layer ? f.layers : ! f.layers ) && ( ! target.slot || f.slots ) ) ) {
-			const items = family.decide( { target, surface, block: block?.block ?? null, saved: rule.attrs, draft, live, aux, clientData, closed, skeleton, headers, animate, records, recordsIndex, calFor, db, snapshot, links, rawSnapshot, all: { blocks: saved, drafts, lives } } ) || [];
+			const items = family.decide( { target, surface, block: block?.block ?? null, saved: rule.attrs, draft, live, aux, clientData, closed, skeleton, headers, animate, records, recordsIndex, calFor, db, snapshot, links, rawSnapshot, template, all: { blocks: saved, drafts, lives } } ) || [];
 			// A text block sharing its wrapper's draft element (part 'text', lib/pair-wrappers.mjs) is held to the element's text
 			// properties only: its box belongs to the wrapper's own pair.
 			for ( const item of items.filter( ( i ) => 'text' !== target.part || TEXT_PROP.test( String( i.prop ?? '' ).trim().split( /\s+/ ).pop() ) ) ) {
-				const hit = ledgerMatch( ledger, { ref: target.ref, surface: surface.name, block: block?.block ?? null, state: item.state, prop: item.prop, part: target.slot ?? null } );
+				const hit = ledgerMatch( ledger, { ref: target.ref, surface: surface.name, block: block?.block ?? null, state: item.state, prop: item.prop, part: target.slot ?? null, template } );
 				if ( hit ) {
 					row( { family: family.name, status: 'ledger', prop: item.prop, why: hit } );
 				} else if ( 'op' === item.status ) {
@@ -357,6 +359,9 @@ async function main() {
 	// (printed), or the run stops here, before any read or write (lib/paint-gate.mjs).
 	assertPaints( { blocks: surfaces.flatMap( ( s ) => Object.values( blocks[ s.postId ]?.blocks ?? {} ).map( ( b ) => b?.block ) ).filter( Boolean ), calFor, client, what: `apply ${ client }`, allow: allowMissingPaintArg( process.argv ) } );
 	const clientData = { ...loadClientData( REPO, client ), draftSource: loadDraftSource( REPO, client ) };
+	// The fact record's template: the settings behaviours read their element from it (lib/motion-behaviour-settings.mjs);
+	// without facts.json the motion family names what it cannot recognise (lib/apply-motion-behaviours.mjs::NO_TEMPLATE).
+	const template = fs.existsSync( factsFile( REPO, client ) ) ? templateOf( JSON.parse( fs.readFileSync( factsFile( REPO, client ), 'utf8' ) ) ) : null;
 	const skeleton = loadSkeleton( REPO, client );
 	const tools = motionTools( db, rawSnapshot );
 	for ( const surface of surfaces ) {
@@ -406,7 +411,7 @@ async function main() {
 			const drafts = await draftReads( { browser, surface, widths, props, extras, cache: tmp, fresh: has( '--fresh' ) } );
 			const lives = await liveReads( { browser, surface, widths, props, extras } );
 			const closed = await closedReads( { browser, surface, props, wanted: families.some( ( f ) => f.closedClock?.( { saved: blocks[ surface.postId ]?.blocks ?? {} } ) ) } );
-			const { rows, ops: decided } = decideSurface( { surface, drafts, lives, blocks, families, ledger, db, records, recordsIndex, calFor, clientData, closed, skeleton, snapshot, links, rawSnapshot } );
+			const { rows, ops: decided } = decideSurface( { surface, drafts, lives, blocks, families, ledger, db, records, recordsIndex, calFor, clientData, closed, skeleton, snapshot, links, rawSnapshot, template } );
 			const saved = blocks[ surface.postId ]?.blocks ?? {};
 			// Position matching (lib/apply-position.mjs): draft elements no pair reaches, matched to live blocks by where they sit,
 			// then read and decided like any pair. --no-position leaves it out.
@@ -417,7 +422,7 @@ async function main() {
 				const second = { ...surface, pairs: added, coverage: false };
 				const d2 = await draftReads( { browser, surface: second, widths, props, extras: extrasOf( { surface: second, saved, recordsIndex, db } ), cache: tmp, fresh: has( '--fresh' ) } );
 				const l2 = await liveReads( { browser, surface: second, widths, props, extras: extrasOf( { surface: second, saved, recordsIndex, db } ) } );
-				const again = decideSurface( { surface: second, drafts: d2, lives: l2, blocks, families, ledger, db, records, recordsIndex, calFor, clientData, closed, skeleton, snapshot, links, rawSnapshot } );
+				const again = decideSurface( { surface: second, drafts: d2, lives: l2, blocks, families, ledger, db, records, recordsIndex, calFor, clientData, closed, skeleton, snapshot, links, rawSnapshot, template } );
 				rows.push( ...again.rows );
 				decided.push( ...again.ops );
 			}

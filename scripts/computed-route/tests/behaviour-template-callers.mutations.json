@@ -1,0 +1,62 @@
+[
+	{
+		"file": "lib/apply-motion-behaviours.mjs",
+		"find": "recogniseBehaviour( r, { records: allRecords, template } );",
+		"replace": "recogniseBehaviour( r, { records: allRecords } );",
+		"why": "the apply stage's behaviour writes read no template"
+	},
+	{
+		"file": "lib/apply-motion-behaviours.mjs",
+		"find": "out.items.push( { status: 'no-setting', prop: 'motion behaviours', why: NO_TEMPLATE } );",
+		"replace": "",
+		"why": "a run with no fact record skips the behaviours silently"
+	},
+	{
+		"file": "lib/apply-motion-behaviours.mjs",
+		"find": "if ( mine.length && ! template?.elements ) {",
+		"replace": "if ( ! template?.elements ) {",
+		"why": "a block with no records is told the fact record is missing"
+	},
+	{
+		"file": "lib/apply-owned.mjs",
+		"find": "recogniseBehaviour( r, { records: allRecords, template } );",
+		"replace": "recogniseBehaviour( r, { records: allRecords } );",
+		"why": "the descendant rows read no template"
+	},
+	{
+		"file": "lib/apply-stray.mjs",
+		"find": "const b = recogniseBehaviour( r, { records, template } );\n\t\t\t'effect' === b?.kind && b.effects.forEach( ( e ) => out.add( e.effect ) );",
+		"replace": "const b = recogniseBehaviour( r, { records } );\n\t\t\t'effect' === b?.kind && b.effects.forEach( ( e ) => out.add( e.effect ) );",
+		"why": "the draft's effect names are read with no template"
+	},
+	{
+		"file": "lib/apply-stray.mjs",
+		"find": "const b = recogniseBehaviour( r, { records, template } );\n\t\t\t'effect' === b?.kind && b.effects.forEach( ( e ) => ( out.effects",
+		"replace": "const b = recogniseBehaviour( r, { records } );\n\t\t\t'effect' === b?.kind && b.effects.forEach( ( e ) => ( out.effects",
+		"why": "another element's effects are read with no template"
+	},
+	{
+		"file": "lib/apply-stray.mjs",
+		"find": "if ( ! byTemplate.has( template ) ) {",
+		"replace": "if ( ! byTemplate.size ) {",
+		"why": "the effect names read without the template are cached for every template"
+	},
+	{
+		"file": "lib/intake-review.mjs",
+		"find": "effectRows( intake.inventory?.animations?.records, { template } ).forEach(",
+		"replace": "effectRows( intake.inventory?.animations?.records ).forEach(",
+		"why": "the review's effect rows read no template"
+	},
+	{
+		"file": "lib/intake-review.mjs",
+		"find": "export const missingFacts = ( intake, template ) => ( intake?.inventory?.animations?.records || [] ).length > 0 && ! template?.elements;",
+		"replace": "export const missingFacts = () => false;",
+		"why": "a review read without the fact record says nothing"
+	},
+	{
+		"file": "lib/intake-review.mjs",
+		"find": "export const missingFacts = ( intake, template ) => ( intake?.inventory?.animations?.records || [] ).length > 0 && ! template?.elements;",
+		"replace": "export const missingFacts = ( intake, template ) => ! template?.elements;",
+		"why": "a review with no script effects warns of a missing fact record"
+	}
+]

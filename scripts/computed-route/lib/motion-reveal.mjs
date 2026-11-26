@@ -82,14 +82,22 @@ export function normaliseReveals( records ) {
 	return list.filter( ( r ) => ! drop.has( r ) ).map( ( r ) => merged.get( r ) ?? r );
 }
 
+// The template ids a record names (its own and the nearest ones), as strings.
+const idsOf = ( r ) => [ r.element?.template_tpl_id, r.element?.nearest_tpl_id ].flat().filter( ( v ) => null !== v && undefined !== v ).map( String );
+
 // The id of the reveal a write that only hides the element belongs to, or null: a style write of opacity 0 and/or the
-// reveal's rise distance on a template element (`el.style.opacity = '0'`), in a draft that has a reveal of that pose.
+// reveal's rise distance on a template element (`el.style.opacity = '0'`), made when the page sets up (a mount or load
+// trigger, never a press or a state change: a menu's close that fades it out is its own behaviour), in a draft that has a
+// reveal of that pose on the same element (when the reveal names its elements; a reveal whose code reaches them at run
+// time names none, and then the pose and the set-up trigger decide).
+const SETUP = new Set( [ 'mount', 'load' ] );
 export function hiddenStartOf( r, records ) {
 	const list = props( r );
-	if ( 'js-style-write' !== r.mechanism || ! list.length || null == r.element?.template_tpl_id ) {
+	if ( 'js-style-write' !== r.mechanism || ! list.length || null == r.element?.template_tpl_id || ! SETUP.has( r.trigger?.type ) ) {
 		return null;
 	}
-	const reveals = ( records || [] ).filter( ( x ) => x.reveal && x.element?.dc === r.element.dc );
+	const own = new Set( idsOf( r ) );
+	const reveals = ( records || [] ).filter( ( x ) => x.reveal && x.element?.dc === r.element.dc && ( ! idsOf( x ).length || idsOf( x ).some( ( id ) => own.has( id ) ) ) );
 	const poseOf = ( p ) => {
 		const to = String( p.to ?? '' ).replace( /\s+/g, '' );
 		if ( 'opacity' === nameOf( p ) && /^0(?:\.0+)?$/.test( to ) ) {

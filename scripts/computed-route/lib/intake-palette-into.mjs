@@ -46,7 +46,7 @@ function sectionAt( lines ) {
 
 // { intake, reviewMd, created, kept: [rowId], dropped: [{ rowId, mark, named, proposed }] } from the current intake
 // record (or null), the current review.md text (or null) and the new palette block.
-export function intoIntake( { intake = null, reviewMd = null, palette, client, takenOn } ) {
+export function intoIntake( { intake = null, reviewMd = null, palette, client, takenOn, template = null } ) {
 	const created = ! intake;
 	const parsed = reviewMd ? parseReview( reviewMd ) : null;
 	const ticked = !! parsed?.sections[ 'palette-role' ]?.acceptAll;
@@ -80,7 +80,7 @@ export function intoIntake( { intake = null, reviewMd = null, palette, client, t
 		shown.push( entry );
 	} );
 	next.review = review;
-	const fresh = renderReview( { ...next, review: shown }, { changed: [] } );
+	const fresh = renderReview( { ...next, review: shown }, { changed: [], template } );
 	let md;
 	if ( ! reviewMd ) {
 		md = fresh;
