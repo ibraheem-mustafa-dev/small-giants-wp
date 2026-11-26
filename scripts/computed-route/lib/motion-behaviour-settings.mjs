@@ -500,7 +500,7 @@ export function pinnedTimelineOf( r, ctx = {} ) {
 	if ( move && movesSideways( move ) ) {
 		const strip = touchStripBeside( pinnedSectionOf( r, ctx ), ctx );
 		return {
-			blocks: { 'sgs/timeline': [ { attr: 'scrollEffect', value: 'pinned-horizontal' }, ...( strip ? [ { attr: 'mobileLayout', value: 'carousel' } ] : [] ) ] },
+			blocks: { 'sgs/timeline': [ { attr: 'scrollEffect', value: 'pinned-horizontal' }, { attr: 'orientation', value: 'horizontal' }, ...( strip ? [ { attr: 'mobileLayout', value: 'carousel' } ] : [] ) ] },
 			accepted: 'the draft switches to its touch-only strip at 1024px; SGS pins from 768px and swipes below (Ruling 9)',
 			notes: [ 'the track moves sideways with the scroll while pinned' ],
 		};

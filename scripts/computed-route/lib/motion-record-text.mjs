@@ -137,3 +137,17 @@ export function cssCallOf( q ) {
 	const args = fn[ 2 ].split( ',' ).map( ( a ) => a.trim() ).map( ( text ) => ( { text, nodes: [ ...text.matchAll( /\u0001(\d+)\u0001/g ) ].map( ( m ) => exprs[ Number( m[ 1 ] ) ] ) } ) );
 	return { name: fn[ 1 ].toLowerCase(), args };
 }
+
+// The name of the scroll position a scroll-driven transform of record `r` is written from, or null: `scrollY` when the
+// formula reads it, else (a scroll handler that passes the position in as a parameter: `parallax( y )`) the identifier a
+// number multiplies inside a translate, in a record whose trigger detail names the scroll.
+export function scrollValueName( q, r ) {
+	const f = words( q.formula );
+	if ( /scrollY/i.test( f ) ) {
+		return 'scrollY';
+	}
+	if ( ! /scroll/i.test( words( r.trigger?.detail ) ) || ! /translate/i.test( f ) ) {
+		return null;
+	}
+	return new RegExp( `(?:^|[^\\w$.])((?!px\\b|em\\b|deg\\b|innerHeight\\b|innerWidth\\b|Math\\b)[A-Za-z_$][\\w$]*)\\s*${ TIMES }\\s*${ MINUS }?\\d*\\.?\\d+`, 'i' ).exec( f )?.[ 1 ] ?? null;
+}

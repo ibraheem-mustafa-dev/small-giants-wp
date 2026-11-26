@@ -49,7 +49,7 @@ test( 'negative control: an endless ring is not the dot pulse on an element that
 } );
 
 const TIMELINE = {
-	'J-05': { 'sgs/timeline': [ { attr: 'scrollEffect', value: 'pinned-horizontal' }, { attr: 'mobileLayout', value: 'carousel' } ] },
+	'J-05': { 'sgs/timeline': [ { attr: 'scrollEffect', value: 'pinned-horizontal' }, { attr: 'orientation', value: 'horizontal' }, { attr: 'mobileLayout', value: 'carousel' } ] },
 	'J-07': { 'sgs/timeline': [ { attr: 'panelProximityFocus', value: true }, { attr: 'panelEdgeOpacity', value: 0.55 }, { attr: 'panelFocusOpacity', value: 1 } ] },
 	'J-08': { 'sgs/timeline': [ { attr: 'panelProximityFocus', value: true }, { attr: 'panelEdgeScale', value: 0.94 }, { attr: 'panelFocusScale', value: 1 } ] },
 	'J-09': { 'sgs/timeline': [ { attr: 'dateActiveColour', value: '#D8CA50', colour: true } ] },
