@@ -21,6 +21,7 @@ import {
 	ResponsiveOverride,
 	SgsBorderControl,
 	SgsBoxControl,
+	ResponsiveBoxControls,
 	SgsColourPanel,
 	SgsLengthControl,
 	SsrPreviewGuard,
@@ -76,10 +77,9 @@ const TEXT_TARGETS = [
 	},
 ];
 
-// Per-device boxes: [attribute, label].
+// Per-device boxes edited in the row-spacing panel: [attribute, label]. The block's own padding and margin are the
+// shared Spacing panel.
 const BOXES = [
-	[ 'padding', __( 'Padding', 'sgs-blocks' ) ],
-	[ 'margin', __( 'Margin', 'sgs-blocks' ) ],
 	[ 'rowPadding', __( 'Item row padding', 'sgs-blocks' ) ],
 	[ 'totalsPadding', __( 'Totals padding', 'sgs-blocks' ) ],
 ];
@@ -364,7 +364,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 
 				<PanelBody
-					title={ __( 'Spacing', 'sgs-blocks' ) }
+					title={ __( 'Row spacing', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
 					<ResponsiveOverride
@@ -428,6 +428,10 @@ export default function Edit( { attributes, setAttributes } ) {
 						</ResponsiveOverride>
 					) ) }
 				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 			</InspectorControls>
 
 			<div { ...blockProps }>

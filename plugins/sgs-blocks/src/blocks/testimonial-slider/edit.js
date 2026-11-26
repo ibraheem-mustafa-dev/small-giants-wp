@@ -30,6 +30,7 @@ import {
 	SgsBorderControl,
 	TypographyControls,
 	resolveColourToken,
+	ResponsiveBoxControls,
 } from '../../components';
 import { resolveResponsiveTier } from '../../utils/responsive';
 import {
@@ -874,6 +875,10 @@ export default function Edit( { attributes, setAttributes } ) {
 						prefix=""
 					/>
 				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 			</InspectorControls>
 			<BuiltinButtonPanel
 				attributes={ attributes }

@@ -1,41 +1,38 @@
 /**
- * ResponsiveBoxControls — Spec 37 FR-37-16 per-device spacing + width panel.
+ * ResponsiveBoxControls: the one shared "Spacing" inspector panel (Spec 37 FR-37-16, Spec 49 §9.5).
  *
- * The shared inspector panel for blocks that mount the ONE box object model
- * (e.g. sgs/gallery; sgs/site-header-row and sgs/site-footer-row keep local
- * copies of the same controls inside their own Layout panels). Edits
- * padding, margin, max-width and content-width on the ONE
- * `{desktop,tablet,mobile}` object model (Spec 37 FR-37-16) via the SGS-owned
- * `ResponsiveOverride` device switcher — padding/margin through WP's native
- * `BoxControl` (4 sides), max-width through `UnitControl`, content-width
- * through a token `SelectControl`.
+ * Every block that owns `padding` and `margin` tier objects mounts this panel instead of building its own Padding and
+ * Margin pair. It edits the ONE `{desktop,tablet,mobile}` object model through the SGS-owned `ResponsiveOverride`
+ * device switcher, with `SgsBoxControl` (four sides, linked or unlinked, a preset select plus value and unit per side,
+ * the `BOX_UNITS` units) inside each row. Attribute names and shapes are the block's own: `padding` and `margin`.
  *
- * ONE system, no flat `paddingTopTablet…` attrs and no WP-native
- * `style.spacing` base: these blocks declare NO `supports.spacing`, so all
- * box CSS flows through the object model here → emitted by `SGS_Container_Wrapper` (padding/margin/max-width to the outer,
- * content-width band to the inner) under `responsive_model=object`.
+ * What the panel reads from the block, so no mount passes it:
+ * - Which rows to show: a Padding row when the block declares `padding`, a Margin row when it declares `margin`
+ *   (`getBlockType( name ).attributes`). A block that owns only one shows only that one. With no registered block (a
+ *   test) both show.
+ * - The side defaults a block's stylesheet paints on an untouched side (`utils/spacing-defaults.js::spacingDefaultsFor`,
+ *   resolved for the device being edited and the block's settings).
+ * - The paired Vertical / Horizontal mode (`block.json::supports.sgs.spacingAxes`, `utils/spacing-axes.js`).
  *
- * Per-side inheritance is handled by the PHP emitter (`sgs_responsive_normalise_object`
- * + per-side null-coalesce): a blank side on tablet/mobile inherits the tier above.
- * The editor writes only the tier the operator touched; `ResponsiveOverride`
- * supplies the inherited-value indicator + keyboard reset (WCAG 2.2, Spec 37 FR-37-16).
+ * Max width and Content width are off unless the mount passes `showMaxWidth` or `showContentWidth` (gallery passes
+ * both). `title` defaults to "Spacing".
+ *
+ * Per-side inheritance is handled by the PHP emitter (`sgs_responsive_normalise_object` + per-side null-coalesce): a
+ * blank side on tablet or mobile inherits the tier above. The editor writes only the tier the operator touched;
+ * `ResponsiveOverride` supplies the inherited-value indicator and the keyboard reset (WCAG 2.2).
  */
 import { __ } from '@wordpress/i18n';
+import { useBlockEditContext } from '@wordpress/block-editor';
+import { getBlockType } from '@wordpress/blocks';
 import { PanelBody, SelectControl } from '@wordpress/components';
 import SgsBoxControl from './SgsBoxControl';
 import ResponsiveOverride from './ResponsiveOverride';
 import SgsLengthControl from './SgsLengthControl';
+import { normaliseResponsiveBox, BOX_UNITS } from './ResponsiveBoxControl';
+import { spacingDefaultsFor } from '../utils/spacing-defaults';
+import { spacingAxesFor } from '../utils/spacing-axes';
 
-/** Units offered in the BoxControl / UnitControl inputs. */
-const LENGTH_UNITS = [
-	{ value: 'px', label: 'px', default: 0 },
-	{ value: 'rem', label: 'rem', default: 0 },
-	{ value: 'em', label: 'em', default: 0 },
-	{ value: '%', label: '%', default: 0 },
-	{ value: 'vw', label: 'vw', default: 0 },
-];
-
-/** contentWidth tokens — mirror the PHP resolver (normal→content-size, wide→wide-size, full→no cap). */
+/** contentWidth tokens: mirror the PHP resolver (normal gives content-size, wide gives wide-size, full is no cap). */
 const CONTENT_WIDTH_OPTIONS = [
 	{ label: __( 'Full width', 'sgs-blocks' ), value: 'full' },
 	{ label: __( 'Normal (content width)', 'sgs-blocks' ), value: 'normal' },
@@ -43,139 +40,159 @@ const CONTENT_WIDTH_OPTIONS = [
 ];
 
 /**
- * Collapse an all-empty BoxControl object to '' so the tier is cleared (→ inherit),
- * rather than storing an empty `{}` that would still count as an override.
+ * One tier-object box row (Padding or Margin).
  *
- * @param {Object|undefined} box BoxControl value.
- * @return {Object|string} The box object, or '' when every side is empty.
+ * @param {Object}   props
+ * @param {string}   props.attr          'padding' or 'margin'.
+ * @param {string}   props.label         Visible label.
+ * @param {string}   props.blockName     Registered block name, for defaults and axes.
+ * @param {Object}   props.attributes    Block attributes.
+ * @param {Function} props.setAttributes Block setAttributes.
+ * @return {JSX.Element} The row.
  */
-const normaliseBox = ( box ) => {
-	if ( ! box || typeof box !== 'object' ) {
-		return '';
-	}
-	const hasAny = Object.values( box ).some(
-		( v ) => v !== undefined && v !== null && v !== ''
+function BoxRow( { attr, label, blockName, attributes, setAttributes } ) {
+	return (
+		<ResponsiveOverride
+			label={ label }
+			value={ attributes[ attr ] }
+			onChange={ ( obj ) => setAttributes( { [ attr ]: obj } ) }
+		>
+			{ ( { tier, ownValue, setOwnValue } ) => (
+				<SgsBoxControl
+					label={ label }
+					values={
+						ownValue && typeof ownValue === 'object' ? ownValue : {}
+					}
+					units={ BOX_UNITS }
+					presets
+					defaults={
+						blockName
+							? spacingDefaultsFor( blockName, attr, {
+									attributes,
+									tier,
+							  } )
+							: undefined
+					}
+					splitOnAxis={
+						blockName ? spacingAxesFor( blockName, attr ) : false
+					}
+					onChange={ ( next ) =>
+						setOwnValue( normaliseResponsiveBox( next ) )
+					}
+				/>
+			) }
+		</ResponsiveOverride>
 	);
-	return hasAny ? box : '';
-};
+}
 
 /**
  * @param {Object}   props
- * @param {Object}   props.attributes          Block attributes ({ padding, margin, maxWidth, contentWidth }).
- * @param {Function} props.setAttributes       Block setAttributes.
- * @param {boolean}  [props.initialOpen=false] PanelBody initial state.
+ * @param {Object}   props.attributes               Block attributes ({ padding, margin, maxWidth, contentWidth }).
+ * @param {Function} props.setAttributes            Block setAttributes.
+ * @param {string}   [props.title='Spacing']        Panel title.
+ * @param {boolean}  [props.initialOpen=false]      PanelBody initial state.
+ * @param {string}   [props.blockName]              Registered block name; defaults to the block being edited.
+ * @param {boolean}  [props.showMaxWidth=false]     Show the Max width row (the block owns `maxWidth`).
+ * @param {boolean}  [props.showContentWidth=false] Show the Content width row (the block owns `contentWidth`).
  * @return {JSX.Element} The inspector panel.
  */
 export default function ResponsiveBoxControls( {
 	attributes,
 	setAttributes,
+	title = __( 'Spacing', 'sgs-blocks' ),
 	initialOpen = false,
+	blockName: blockNameProp = '',
+	showMaxWidth = false,
+	showContentWidth = false,
 } ) {
-	const { padding, margin, maxWidth, contentWidth } = attributes;
+	const context = useBlockEditContext();
+	const blockName = blockNameProp || context?.name || '';
+	const declared = blockName ? getBlockType( blockName )?.attributes : null;
+	const owns = ( attr ) => ! declared || attr in declared;
+	const { maxWidth, contentWidth } = attributes;
 
 	return (
-		<PanelBody
-			title={ __( 'Spacing & width', 'sgs-blocks' ) }
-			initialOpen={ initialOpen }
-		>
-			{ /* ⛔ NO `label` on the wrapper, and NO `hideLabelFromVision` on the
-			     BoxControl. Core's BoxControl renders its label UNCONDITIONALLY via
-			     <BaseControl.VisualLabel> and has no hideLabelFromVision handling at
-			     all — verified in core source at the SHA WP 7.0.4 pins
-			     (packages/components/src/box-control/index.tsx). So the prop is a
-			     no-op and BOTH labels would paint: the wrapper's plain <span> in
-			     sentence case, and BoxControl's own in WP's uppercase styling. Keep
-			     BoxControl's — it is the one BaseControl associates with the inputs. */ }
-			<ResponsiveOverride
-				value={ padding }
-				onChange={ ( obj ) => setAttributes( { padding: obj } ) }
-			>
-				{ ( { ownValue, setOwnValue } ) => (
-					<SgsBoxControl
-						label={ __( 'Padding', 'sgs-blocks' ) }
-						values={
-							ownValue && typeof ownValue === 'object'
-								? ownValue
-								: {}
-						}
-						units={ LENGTH_UNITS }
-						presets
-						onChange={ ( next ) =>
-							setOwnValue( normaliseBox( next ) )
-						}
-					/>
-				) }
-			</ResponsiveOverride>
+		<PanelBody title={ title } initialOpen={ initialOpen }>
+			{ /* No wrapper label on the BoxControl: core's BoxControl paints its own label unconditionally and has no
+			     hideLabelFromVision handling, so `ResponsiveOverride` draws the visible label with the Tablet and
+			     Mobile markers and hides the control's duplicate (hideDuplicateLabels). */ }
+			{ owns( 'padding' ) && (
+				<BoxRow
+					attr="padding"
+					label={ __( 'Padding', 'sgs-blocks' ) }
+					blockName={ blockName }
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+			) }
+			{ owns( 'margin' ) && (
+				<BoxRow
+					attr="margin"
+					label={ __( 'Margin', 'sgs-blocks' ) }
+					blockName={ blockName }
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+			) }
 
-			{ /* Same rule as the Padding block above — see that comment. */ }
-			<ResponsiveOverride
-				value={ margin }
-				onChange={ ( obj ) => setAttributes( { margin: obj } ) }
-			>
-				{ ( { ownValue, setOwnValue } ) => (
-					<SgsBoxControl
-						label={ __( 'Margin', 'sgs-blocks' ) }
-						values={
-							ownValue && typeof ownValue === 'object'
-								? ownValue
-								: {}
-						}
-						units={ LENGTH_UNITS }
-						presets
-						onChange={ ( next ) =>
-							setOwnValue( normaliseBox( next ) )
-						}
-					/>
-				) }
-			</ResponsiveOverride>
+			{ showMaxWidth && (
+				<ResponsiveOverride
+					label={ __( 'Max width', 'sgs-blocks' ) }
+					value={ maxWidth }
+					onChange={ ( obj ) => setAttributes( { maxWidth: obj } ) }
+				>
+					{ ( {
+						ownValue,
+						effectiveValue,
+						inherited,
+						setOwnValue,
+					} ) => (
+						<SgsLengthControl
+							label={ __( 'Max width', 'sgs-blocks' ) }
+							hideLabelFromVision
+							units={ BOX_UNITS }
+							value={ ownValue || '' }
+							placeholder={ inherited ? effectiveValue : '' }
+							onChange={ ( v ) => setOwnValue( v || '' ) }
+						/>
+					) }
+				</ResponsiveOverride>
+			) }
 
-			<ResponsiveOverride
-				label={ __( 'Max width', 'sgs-blocks' ) }
-				value={ maxWidth }
-				onChange={ ( obj ) => setAttributes( { maxWidth: obj } ) }
-			>
-				{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-					<SgsLengthControl
-						label={ __( 'Max width', 'sgs-blocks' ) }
-						hideLabelFromVision
-						units={ LENGTH_UNITS }
-						value={ ownValue || '' }
-						placeholder={ inherited ? effectiveValue : '' }
-						onChange={ ( v ) => setOwnValue( v || '' ) }
-					/>
-				) }
-			</ResponsiveOverride>
-
-			<ResponsiveOverride
-				label={ __( 'Content width', 'sgs-blocks' ) }
-				value={ contentWidth }
-				onChange={ ( obj ) => setAttributes( { contentWidth: obj } ) }
-			>
-				{ ( { tier, ownValue, setOwnValue } ) => (
-					<SelectControl
-						label={ __( 'Content width', 'sgs-blocks' ) }
-						hideLabelFromVision
-						value={ ownValue || '' }
-						options={
-							tier === 'desktop'
-								? CONTENT_WIDTH_OPTIONS
-								: [
-										{
-											label: __(
-												'— inherit —',
-												'sgs-blocks'
-											),
-											value: '',
-										},
-										...CONTENT_WIDTH_OPTIONS,
-								  ]
-						}
-						onChange={ ( v ) => setOwnValue( v ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-				) }
-			</ResponsiveOverride>
+			{ showContentWidth && (
+				<ResponsiveOverride
+					label={ __( 'Content width', 'sgs-blocks' ) }
+					value={ contentWidth }
+					onChange={ ( obj ) =>
+						setAttributes( { contentWidth: obj } )
+					}
+				>
+					{ ( { tier, ownValue, setOwnValue } ) => (
+						<SelectControl
+							label={ __( 'Content width', 'sgs-blocks' ) }
+							hideLabelFromVision
+							value={ ownValue || '' }
+							options={
+								tier === 'desktop'
+									? CONTENT_WIDTH_OPTIONS
+									: [
+											{
+												label: __(
+													'— inherit —',
+													'sgs-blocks'
+												),
+												value: '',
+											},
+											...CONTENT_WIDTH_OPTIONS,
+									  ]
+							}
+							onChange={ ( v ) => setOwnValue( v ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					) }
+				</ResponsiveOverride>
+			) }
 		</PanelBody>
 	);
 }

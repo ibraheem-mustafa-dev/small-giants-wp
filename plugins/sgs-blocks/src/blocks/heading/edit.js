@@ -19,10 +19,8 @@ import {
 	ShadowControl,
 	shadowAttrKeys,
 	ResponsiveOverride,
-	BOX_UNITS,
-	normaliseResponsiveBox,
-	SgsBoxControl,
 	LinkUnderlineControl,
+	ResponsiveBoxControls,
 } from '../../components';
 import { fontFamilyCssValue } from '../../utils/typography-preview';
 import {
@@ -39,7 +37,6 @@ import {
 	borderRadiusLonghands,
 	sgsBorderPreview,
 } from '../../utils';
-import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 import { cssLengthValue } from '../../utils/css-length';
 import { resolveTier } from '../../utils/responsive';
 import { RICH_TEXT_BODY } from '../../utils/rich-text-formats';
@@ -300,7 +297,7 @@ function buildWrapperStyle( attributes, previewTier = 'desktop' ) {
 
 // ─── Main edit component ──────────────────────────────────────────────────────
 
-export default function Edit( { attributes, setAttributes, clientId, name } ) {
+export default function Edit( { attributes, setAttributes, clientId } ) {
 	const previewTier = usePreviewTier();
 	const {
 		headingRole,
@@ -856,65 +853,10 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					/>
 				</PanelBody>
 
-				{ /* ── Spacing panel ── padding/margin are each a single block-owned
-				   tier-object attr { desktop, tablet, mobile }, written via
-				   ResponsiveOverride + SgsBoxControl; read directly by this
-				   block's render.php. */ }
-				<PanelBody
-					title={ __( 'Spacing', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<ResponsiveOverride
-						value={ attributes.padding }
-						onChange={ ( obj ) =>
-							setAttributes( { padding: obj } )
-						}
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-					<ResponsiveOverride
-						value={ attributes.margin }
-						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								defaults={ spacingDefaultsFor(
-									name,
-									'margin'
-								) }
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 			</InspectorControls>
 
 			{ /* S1 fix (2026-09-02, uniformity sweep, inspector-scan rule 35): moved

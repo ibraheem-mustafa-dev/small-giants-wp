@@ -21,14 +21,12 @@ import {
 	shadowAttrKeys,
 	GradientOverlayControl,
 	gradientOverlayAttrKeys,
-	BOX_UNITS,
-	normaliseResponsiveBox,
 	SgsColourPanel,
 	SgsBorderControl,
 	resolveColourToken,
 	TypographyControls,
-	SgsBoxControl,
 	SgsLengthControl,
+	ResponsiveBoxControls,
 } from '../../components';
 
 const CONTENT_GAP_UNITS = [
@@ -1822,62 +1820,10 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 					/>
 				</PanelBody>
 
-				{ /* Root padding & margin — box-object interface contract (mirrors
-					sgs/container). `padding` and `margin` are each
-					ONE tier-of-boxes object attr {desktop,tablet,mobile}, each tier a
-					{top,right,bottom,left} box; the shared wrapper reads the tiers at
-					@media breakpoints. */ }
-				<PanelBody
-					title={ __( 'Padding & margin', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<ResponsiveOverride
-						value={ attributes.padding }
-						onChange={ ( obj ) =>
-							setAttributes( { padding: obj } )
-						}
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-					<ResponsiveOverride
-						value={ attributes.margin }
-						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 
 				<BackgroundPanel
 					attributes={ attributes }

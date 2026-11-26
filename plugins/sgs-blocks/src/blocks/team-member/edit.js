@@ -52,10 +52,7 @@ import {
 	SgsBorderControl,
 	resolveColourToken,
 	TypographyControls,
-	ResponsiveOverride,
-	BOX_UNITS,
-	normaliseResponsiveBox,
-	SgsBoxControl,
+	ResponsiveBoxControls,
 } from '../../components';
 import MediaElementPanel from '../../components/MediaElementPanel';
 import SlotPicture from '../../components/media/SlotPicture';
@@ -76,7 +73,6 @@ import {
 } from '../../components/primitives';
 import { usePreviewTier, typographyPreviewStyle } from '../../utils';
 import { buildWrapperStyle, textSurfaceStyle } from './preview-style';
-import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 import { CSS_EASING_OPTIONS_IN_OUT_FIRST as EASING_OPTIONS } from '../../components/motion/easing-master-list';
 import { RICH_TEXT_BODY } from '../../utils/rich-text-formats';
 
@@ -221,7 +217,6 @@ function SocialLinkItemEditor( { item, index, onChange, onRemove } ) {
 export default function Edit( {
 	attributes,
 	setAttributes,
-	name: blockName,
 	clientId,
 } ) {
 	const previewTier = usePreviewTier();
@@ -787,67 +782,10 @@ export default function Edit( {
 					/>
 				</PanelBody>
 
-				{ /* padding/margin are each a single block-owned tier-object attr
-				   { desktop, tablet, mobile }, written via ResponsiveOverride +
-				   SgsBoxControl; read by SGS_Container_Wrapper's tier-object
-				   emission path. Border width/colour/style/radius are
-				   block-private (borderWidth/borderStyle/borderColour/
-				   borderRadius via the SgsBorderControl panel below). */ }
-				<PanelBody
-					title={ __( 'Spacing', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<ResponsiveOverride
-						value={ attributes.padding }
-						onChange={ ( obj ) =>
-							setAttributes( { padding: obj } )
-						}
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								defaults={ spacingDefaultsFor(
-									blockName,
-									'padding'
-								) }
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-					<ResponsiveOverride
-						value={ attributes.margin }
-						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 
 				{ /* Width — outer maxWidth (kept-scalar, base only — matches the
 				   pre-existing contract for this block). */ }

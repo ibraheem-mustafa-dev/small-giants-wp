@@ -19,11 +19,9 @@ import {
 	ShadowControl,
 	SgsColourPanel,
 	fillRow,
-	BOX_UNITS,
-	normaliseResponsiveBox,
 	SgsBorderControl,
 	resolveColourToken,
-	SgsBoxControl,
+	ResponsiveBoxControls,
 } from '../../components';
 import {
 	backgroundMediaPreview,
@@ -424,62 +422,10 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					</ResponsiveOverride>
 				</PanelBody>
 
-				{ /* ── Padding & margin (box-object tiers) — base tier writes to the
-				     block-OWNED `padding`/`margin` tier-of-boxes attrs (desktop, tablet and
-				     mobile in one object, read by the wrapper's @media tiers). Mirrors sgs/container's
-				     and sgs/trust-bar's own edit.js exactly. ────────────────── */ }
-				<PanelBody
-					title={ __( 'Padding & margin', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<ResponsiveOverride
-						value={ attributes.padding }
-						onChange={ ( obj ) =>
-							setAttributes( { padding: obj } )
-						}
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-					<hr style={ { margin: '16px 0' } } />
-					<ResponsiveOverride
-						value={ attributes.margin }
-						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 
 				{ /* Background (image/video/overlay/SVG/animation) — same shared
 				     component + attrs as sgs/container, sgs/hero, sgs/site-footer

@@ -25,15 +25,13 @@ import ServerSideRender from '../../components/ServerSideRender';
 import {
 	SgsColourPanel,
 	SgsBorderControl,
-	SgsBoxControl,
-	ResponsiveOverride,
+	ResponsiveBoxControls,
 	ResponsiveLengthControl,
 	ShadowControl,
 	TypographyControls,
 	LogicalAlignControl,
 	SsrPreviewGuard,
 	BOX_UNITS,
-	normaliseResponsiveBox,
 	fillRow,
 	textRow,
 	LinkPopoverField,
@@ -508,31 +506,9 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 
 				<PanelBody
-					title={ __( 'Spacing', 'sgs-blocks' ) }
+					title={ __( 'Gap', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<ResponsiveOverride
-						value={ attributes.padding }
-						onChange={ set( 'padding' ) }
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={
-									ownValue && 'object' === typeof ownValue
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
 					<TierLength
 						label={ __( 'Gap between the pieces', 'sgs-blocks' ) }
 						attr="gap"
@@ -540,6 +516,11 @@ export default function Edit( { attributes, setAttributes } ) {
 						setAttributes={ setAttributes }
 					/>
 				</PanelBody>
+
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 
 				<PanelBody
 					title={ __( 'Border', 'sgs-blocks' ) }

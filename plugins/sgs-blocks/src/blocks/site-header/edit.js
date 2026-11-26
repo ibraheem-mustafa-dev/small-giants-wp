@@ -30,13 +30,11 @@ import {
 	ResponsiveBoxControl,
 	ResponsiveOverride,
 	SgsColourPanel,
-	BOX_UNITS,
-	normaliseResponsiveBox,
 	SgsBorderControl,
 	ShadowControl,
 	resolveColourToken,
-	SgsBoxControl,
 	StarterLookPresetControl,
+	ResponsiveBoxControls,
 } from '../../components';
 import {
 	NumberControl,
@@ -931,74 +929,6 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						} );
 					} }
 				>
-					{ /* Responsive spacing (padding + margin) — box-object interface
-					     contract. Base tier writes the block's OWN padding/margin object attrs
-					     (this block declares no supports.spacing, so there is no
-					     duplicate Styles > Dimensions panel); each attr holds
-					     desktop, tablet and mobile, read by the wrapper's @media tiers. */ }
-					<ToolsPanelItem
-						label={ __( 'Padding & margin', 'sgs-blocks' ) }
-						hasValue={ () =>
-							! isTierBoxEmpty( attributes.padding ) ||
-							! isTierBoxEmpty( attributes.margin )
-						}
-						onDeselect={ () =>
-							setAttributes( {
-								padding: {},
-								margin: {},
-							} )
-						}
-					>
-						<ResponsiveOverride
-							value={ attributes.padding }
-							onChange={ ( obj ) =>
-								setAttributes( { padding: obj } )
-							}
-						>
-							{ ( { ownValue, setOwnValue } ) => (
-								<SgsBoxControl
-									label={ __( 'Padding', 'sgs-blocks' ) }
-									values={
-										ownValue && typeof ownValue === 'object'
-											? ownValue
-											: {}
-									}
-									units={ BOX_UNITS }
-									presets
-									onChange={ ( next ) =>
-										setOwnValue(
-											normaliseResponsiveBox( next )
-										)
-									}
-								/>
-							) }
-						</ResponsiveOverride>
-						<hr style={ { margin: '16px 0' } } />
-						<ResponsiveOverride
-							value={ attributes.margin }
-							onChange={ ( obj ) =>
-								setAttributes( { margin: obj } )
-							}
-						>
-							{ ( { ownValue, setOwnValue } ) => (
-								<SgsBoxControl
-									label={ __( 'Margin', 'sgs-blocks' ) }
-									values={
-										ownValue && typeof ownValue === 'object'
-											? ownValue
-											: {}
-									}
-									units={ BOX_UNITS }
-									presets
-									onChange={ ( next ) =>
-										setOwnValue(
-											normaliseResponsiveBox( next )
-										)
-									}
-								/>
-							) }
-						</ResponsiveOverride>
-					</ToolsPanelItem>
 
 					{ /* zIndex is a TIER OBJECT written by includes/sgs-header-z-index.php
 					     (the header's single z-index writer). Empty = inherit the wider
@@ -1067,6 +997,10 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						setAttributes={ setAttributes }
 					/>
 				</ToolsPanel>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 			</InspectorControls>
 
 			<InspectorControls group="settings">

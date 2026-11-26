@@ -43,7 +43,7 @@ import {
 	orderFilterTerms,
 } from './preview-style';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
-import { resolveColourToken } from '../../components';
+import { resolveColourToken, ResponsiveBoxControls } from '../../components';
 import PreviewCard from './components/PreviewCard';
 import QueryPanel from './components/QueryPanel';
 import PostGridLayoutPanel from './components/PostGridLayoutPanel';
@@ -743,6 +743,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					setAttributes={ setAttributes }
 				/>
 				<BorderPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+				<ResponsiveBoxControls
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 				/>

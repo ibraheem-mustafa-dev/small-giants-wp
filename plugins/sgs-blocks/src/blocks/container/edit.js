@@ -20,12 +20,10 @@ import {
 	ShadowControl,
 	shadowAttrKeys,
 	SgsColourPanel,
-	BOX_UNITS,
-	normaliseResponsiveBox,
 	SgsBorderControl,
 	TypographyControls,
-	SgsBoxControl,
 	SeparatorsPanel,
+	ResponsiveBoxControls,
 } from '../../components';
 import BuiltinButtonPanel from '../../components/BuiltinButtonPanel';
 import CarouselDotsPanel from '../../components/CarouselDotsPanel';
@@ -35,10 +33,7 @@ import HoverAsCardPanel from './components/HoverAsCardPanel';
 import OverflowControl from './components/OverflowControl';
 import { resolveColourToken } from '../../components/DesignTokenPicker';
 import { pinEdgeTopPreview } from './pin-edge-preview';
-import {
-	hasContentBand,
-	sectionPaddingDefaults,
-} from '../../utils/section-padding';
+import { hasContentBand } from '../../utils/section-padding';
 import { resolveOnTiers } from '../../utils/responsive';
 import {
 	resolveShadowPreviewComposed,
@@ -963,87 +958,10 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 					lined
 				/>
 
-				{ /* Responsive spacing (padding + margin) — Spec 35 / D555 gutter-default
-            migration. `padding`/`margin` are now block-OWNED object attrs (no
-            `supports.spacing` — a WP-native support cannot carry a framework
-            default, which is exactly why `sgs/container` had no horizontal
-            gutter and rendered flush to the viewport edge; see D555). Every tier
-            writes into the owned `padding`/`margin` attr directly — one system,
-            not a native+SGS split. Mirrors the `sgs/gallery` precedent (its own
-            base tier is likewise owned, not native). */ }
-				<PanelBody
-					title={ __( 'Padding & margin', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					{ /* padding/margin are now TIER-of-BOXES object attrs — ONE attribute
-              holding {desktop,tablet,mobile}, each tier a {top,right,bottom,left}
-              box (Phase 2 tier-object migration, 2026-09-06) — matching the
-              shape already shipped on sgs/site-header-row / sgs/site-footer-row /
-              sgs/gallery (Spec 37 FR-37-16). Uses ResponsiveOverride, which reads
-              and writes the object directly, NOT the flat-sibling
-              ResponsiveBoxControl. WordPress SILENTLY DISCARDS an attribute a
-              block does not declare (D338), so never write a per-tier sibling
-              attr such as `paddingTablet`.
-              presets — C16 pilot (2026-08-27). sgs/container is the ONE block
-              piloting spacing presets on the shared SgsBoxControl before the
-              other mounts see them (default stays OFF everywhere else).
-              See .claude/scratch/2026-08-27-c16-spacing-presets-design.md §7. */ }
-					<ResponsiveOverride
-						value={ attributes.padding }
-						onChange={ ( obj ) =>
-							setAttributes( { padding: obj } )
-						}
-					>
-						{ ( { tier, ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								defaults={
-									sectionPad
-										? sectionPaddingDefaults(
-												customSettings,
-												tier
-										  )
-										: undefined
-								}
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-					<hr style={ { margin: '16px 0' } } />
-					<ResponsiveOverride
-						value={ attributes.margin }
-						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 
 				{ /* Content band (Layer 2 __inner) width + padding — per-area object attrs
             (contract §2), not WP-native attrs since the band is an SGS-only inner

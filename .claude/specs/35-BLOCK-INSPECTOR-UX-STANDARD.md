@@ -415,14 +415,15 @@ Every link field also offers the shared link source (built 2026-10-13): a typed 
 
 ### 5. 4-VALUE BOX
 
-1. **Canonical** — `SgsBoxControl` is the one 4-side editor: mounted through `ResponsiveBoxControl` for the flat-sibling convention, or directly inside `ResponsiveOverride` for a tier object (as `ResponsiveBoxControls` and every header, footer, container and card band do); `ResponsiveBorderRadiusControl` for 4 corners.
+1. **Canonical** — `SgsBoxControl` is the one 4-side editor: mounted through `ResponsiveBoxControl` for the flat-sibling convention, or directly inside `ResponsiveOverride` for a tier object (as the shared Spacing panel `ResponsiveBoxControls` does); `ResponsiveBorderRadiusControl` for 4 corners.
 2. **Required props** — `values` per tier, `onChange(tier, next)`, real `units`.
 3. **Banned lookalikes** — core `BoxControl` in any form (gate `scripts/check-raw-box-control.py`); per-side scalars (none remain); regex side-token grouping (gated in the cloning tooling only — nothing guards editor code).
 4. **Tab** — `dimensions` (padding/margin) / `border` (width, radius). Styles. *(Subordinate to THE PLACEMENT RULE: this Tab field only governs a control that STYLES NOTHING and lands in the pinned `Settings` panel. A control that has a real property family resolves to its TIER 2 family panel via `cluster-member-sets.json` instead. An element-scoped control goes in its element's panel (TIER 1) regardless of this field.)*
 5. **Scope** — DB-classified `box_family` blocks ∪ grep-matched `BoxControl` blocks; run both, the two sets differ: `before-after`/`media` use `ResponsiveBorderRadiusControl` (no "BoxControl" substring), and some blocks have live box controls with `box_family` NULL.
 6. **Conformance** — the failure to look for: a block that declares responsive box attrs, passes them to `SGS_Container_Wrapper` (which renders them), and whose `edit.js` exposes no control for them. `inspector-scan` rule 21 (`render-without-control`) finds it.
 7. **Detection** — must NOT rely on `box_family` alone (it under-populates); add a code-derived cross-check on the attr's object shape.
-8. **Open** — renaming the singular/plural pair (`ResponsiveBoxControl`/`ResponsiveBoxControls`) severs `check-dead-controls`' prop-name bindings; a gate is needed first.
+8. **Shared Spacing panel** — every block that owns `padding` or `margin` tier objects mounts `ResponsiveBoxControls` (title "Spacing"; Max width and Content width only where the mount passes them) instead of a hand-built Padding and Margin pair; the panel reads the block's declared side defaults and paired axes itself. Status: built (Stage E2 item 3): `scripts/check-spacing-panel.js --check` fails on a hand-built pair, a block that owns the attributes with no shared panel, and any `supports.spacing` (exemptions with reasons in `scripts/data/spacing-panel-exemptions.json`; the nav `ListLayoutPanel` is Stage E3's).
+9. **Open** — renaming the singular/plural pair (`ResponsiveBoxControl`/`ResponsiveBoxControls`) severs `check-dead-controls`' prop-name bindings; a gate is needed first.
 
 ### 6. STATE / HOVER
 

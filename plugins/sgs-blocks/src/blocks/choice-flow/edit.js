@@ -15,11 +15,8 @@ import {
 } from '@wordpress/components';
 import {
 	SgsLengthControl,
-	SgsBoxControl,
 	SgsColourPanel,
-	ResponsiveOverride,
-	BOX_UNITS,
-	normaliseResponsiveBox,
+	ResponsiveBoxControls,
 } from '../../components';
 import { usePreviewTier } from '../../utils';
 import {
@@ -370,7 +367,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
 		title,
 		maxWidth,
-		padding,
 		progressStyle,
 		showPricePanel,
 		pricePanelTitle,
@@ -536,31 +532,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							'sgs-blocks'
 						) }
 					/>
-					<ResponsiveOverride
-						value={ padding }
-						onChange={ ( obj ) =>
-							setAttributes( { padding: obj } )
-						}
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
 				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 				{ /* User-directed (2026-09-15) — operator choice across the 3 real
 				   reference patterns found live: see progressStyle's own
 				   block.json description for the evidence. */ }

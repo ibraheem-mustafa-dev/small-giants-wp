@@ -13,13 +13,10 @@ import {
 } from '@wordpress/block-editor';
 import { PanelBody, SelectControl, TextControl } from '@wordpress/components';
 import {
-	BOX_UNITS,
-	ResponsiveOverride,
-	SgsBoxControl,
 	SgsColourPanel,
 	TypographyControls,
-	normaliseResponsiveBox,
 	textRow,
+	ResponsiveBoxControls,
 } from '../../components';
 import {
 	colourVar,
@@ -109,35 +106,10 @@ export default function Edit( { attributes, setAttributes } ) {
 						showTextAlign
 					/>
 				</PanelBody>
-				<PanelBody
-					title={ __( 'Spacing', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<ResponsiveOverride
-						value={ attributes.padding }
-						onChange={ ( obj ) =>
-							setAttributes( { padding: obj } )
-						}
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 			</InspectorControls>
 			<InspectorControls>
 				<PanelBody title={ __( 'What this line shows', 'sgs-blocks' ) }>

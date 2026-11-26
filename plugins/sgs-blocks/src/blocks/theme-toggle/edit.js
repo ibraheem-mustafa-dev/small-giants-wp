@@ -14,12 +14,10 @@ import {
 	ResponsiveOverride,
 	ResponsiveBorderRadiusControl,
 	SgsBorderControl,
-	SgsBoxControl,
-	BOX_UNITS,
-	normaliseResponsiveBox,
 	IconPicker,
 	SgsLengthControl,
 	BooleanResponsiveControl,
+	ResponsiveBoxControls,
 } from '../../components';
 import { usePreviewTier } from '../../utils';
 import { themeTogglePreview } from './preview-style';
@@ -54,7 +52,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		borderWidth,
 		borderStyle,
 		borderRadius,
-		padding,
 	} = attributes;
 
 	// Site-level dark palette check (D.5): render.php emits nothing on the frontend
@@ -258,35 +255,10 @@ export default function Edit( { attributes, setAttributes } ) {
 					</ResponsiveOverride>
 				</PanelBody>
 
-				<PanelBody
-					title={ __( 'Spacing', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<ResponsiveOverride
-						value={ padding }
-						onChange={ ( obj ) =>
-							setAttributes( { padding: obj } )
-						}
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 
 				<PanelBody
 					title={ __( 'Border', 'sgs-blocks' ) }

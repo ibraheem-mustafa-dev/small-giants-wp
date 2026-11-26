@@ -120,14 +120,12 @@ final class ContainerWrapperTest extends TestCase {
 			'maxWidth'     => '1200px',
 			'contentWidth' => 'normal',
 			'gap'          => '24px',
-			'style'        => array(
-				'spacing' => array(
-					'padding' => array(
-						'top'    => '40px',
-						'right'  => '20px',
-						'bottom' => '40px',
-						'left'   => '20px',
-					),
+			'padding'      => array(
+				'desktop' => array(
+					'top'    => '40px',
+					'right'  => '20px',
+					'bottom' => '40px',
+					'left'   => '20px',
 				),
 			),
 		);
@@ -145,12 +143,10 @@ final class ContainerWrapperTest extends TestCase {
 			'maxWidth'     => '960px',
 			'contentWidth' => 'wide',
 			'gap'          => '16px',
-			'style'        => array(
-				'spacing' => array(
-					'padding' => array(
-						'top'    => '32px',
-						'bottom' => '32px',
-					),
+			'padding'      => array(
+				'desktop' => array(
+					'top'    => '32px',
+					'bottom' => '32px',
 				),
 			),
 		);
@@ -165,12 +161,10 @@ final class ContainerWrapperTest extends TestCase {
 		return array(
 			'maxWidth'     => '800px',
 			'contentWidth' => 'normal',
-			'style'        => array(
-				'spacing' => array(
-					'padding' => array(
-						'top'    => '16px',
-						'bottom' => '16px',
-					),
+			'padding'      => array(
+				'desktop' => array(
+					'top'    => '16px',
+					'bottom' => '16px',
 				),
 			),
 		);
@@ -196,16 +190,45 @@ final class ContainerWrapperTest extends TestCase {
 	 * core's `margin-block: 0` rule for full-width blocks cannot cancel it; padding stays plain.
 	 */
 	public function test_base_margin_is_important_and_base_padding_is_not(): void {
-		$attrs                      = $this->section_attrs();
-		$attrs['style']['spacing']['margin'] = array(
-			'top'  => '40px',
-			'left' => '8px',
+		$attrs           = $this->section_attrs();
+		$attrs['margin'] = array(
+			'desktop' => array(
+				'top'  => '40px',
+				'left' => '8px',
+			),
 		);
 		$html = SGS_Container_Wrapper::render( $attrs, null, '<p>x</p>', 'section' );
 
 		$this->assertStringContainsString( 'margin-top:40px !important;margin-left:8px !important;', $html, 'base margin declarations carry !important' );
 		$this->assertStringContainsString( '>.sgs-container__inner{padding-top:40px;padding-right:20px;padding-bottom:40px;padding-left:20px;}', $html, 'base padding paints the content band and is not !important' );
 		$this->assertStringNotContainsString( 'padding-top:40px !important', $html, 'base padding never takes !important' );
+	}
+
+	// ── No native spacing fallback (FP-14) ───────────────────────────────────
+
+	/**
+	 * Only the block's own `padding` / `margin` tier objects paint. A flat native `style.spacing` box (what a block
+	 * with `supports.spacing` used to store) is not read: the saved-content sweep moved every such value into the
+	 * desktop tier, and the wrapper carries no fallback for one that was missed.
+	 */
+	public function test_native_style_spacing_is_not_read(): void {
+		$attrs            = $this->section_attrs();
+		$attrs['padding'] = array();
+		$attrs['style']   = array(
+			'spacing' => array(
+				'padding' => array(
+					'top'    => '40px',
+					'bottom' => '40px',
+				),
+				'margin'  => array(
+					'top' => '12px',
+				),
+			),
+		);
+		$html = SGS_Container_Wrapper::render( $attrs, null, '<p>x</p>', 'section' );
+
+		$this->assertStringNotContainsString( 'padding-top:40px', $html, 'native style.spacing.padding does not paint' );
+		$this->assertStringNotContainsString( 'margin-top:12px', $html, 'native style.spacing.margin does not paint' );
 	}
 
 	// ── (a) Structural + golden-rule assertions per KIND ─────────────────────

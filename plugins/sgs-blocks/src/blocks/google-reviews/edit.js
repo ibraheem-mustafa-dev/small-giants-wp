@@ -25,7 +25,8 @@ import ServerSideRender from '../../components/ServerSideRender';
 import SsrPreviewGuard from '../../components/SsrPreviewGuard';
 import { SampleNotice, EmptyState, LoadingState, ErrorState } from './editor-preview';
 import { omitNullish, showsSampleNotice } from './preview-plan';
-import { ResponsiveOverride,
+import { ResponsiveBoxControls,
+	ResponsiveOverride,
 	SgsBorderControl,
 	resolveColourToken,
 	DesignTokenPicker,
@@ -191,6 +192,9 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			{ /* Six collapsed styling sections (Styles tab). Each is one component in ./components: a PanelBody
 			   holding a ToolsPanel, every row built from a shared SGS control. Navigation exists only for the
 			   Slider display type, the one variant that has a rail and arrows. */ }
+			<InspectorControls group="styles">
+				<ResponsiveBoxControls attributes={ attributes } setAttributes={ setAttributes } />
+			</InspectorControls>
 			<CardPanel name={ name } attributes={ attributes } setAttributes={ setAttributes } />
 			<HeaderPanel attributes={ attributes } setAttributes={ setAttributes } />
 			<ReviewerPanel attributes={ attributes } setAttributes={ setAttributes } />

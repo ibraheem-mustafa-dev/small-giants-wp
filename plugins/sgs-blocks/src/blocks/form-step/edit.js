@@ -15,6 +15,7 @@ import {
 	textRow,
 	SgsBorderControl,
 	resolveColourToken,
+	ResponsiveBoxControls,
 } from '../../components';
 import {
 	backgroundPaintPreview,
@@ -171,6 +172,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						} }
 					/>
 				</PanelBody>
+			</InspectorControls>
+
+			<InspectorControls group="styles">
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 			</InspectorControls>
 
 			<div { ...blockProps }>

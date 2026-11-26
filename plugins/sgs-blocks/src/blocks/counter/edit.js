@@ -20,10 +20,7 @@ import {
 	textRow,
 	SgsBorderControl,
 	resolveColourToken,
-	ResponsiveOverride,
-	BOX_UNITS,
-	normaliseResponsiveBox,
-	SgsBoxControl,
+	ResponsiveBoxControls,
 } from '../../components';
 import {
 	colourVar,
@@ -32,7 +29,6 @@ import {
 	usePreviewTier,
 	boxPreview,
 } from '../../utils';
-import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 import { RICH_TEXT_BODY } from '../../utils/rich-text-formats';
 
 function formatNumber( num, separator ) {
@@ -42,7 +38,7 @@ function formatNumber( num, separator ) {
 	return String( num );
 }
 
-export default function Edit( { attributes, setAttributes, name } ) {
+export default function Edit( { attributes, setAttributes } ) {
 	const {
 		number,
 		prefix,
@@ -231,64 +227,10 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					/>
 				</PanelBody>
 
-				{ /* Spacing — padding/margin are each a single block-owned tier-object
-            attr { desktop, tablet, mobile }, written via ResponsiveOverride +
-            SgsBoxControl; read directly by this block's render.php. */ }
-				<PanelBody
-					title={ __( 'Spacing', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<ResponsiveOverride
-						value={ attributes.padding }
-						onChange={ ( obj ) =>
-							setAttributes( { padding: obj } )
-						}
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								defaults={ spacingDefaultsFor(
-									name,
-									'padding'
-								) }
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-					<ResponsiveOverride
-						value={ attributes.margin }
-						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 
 				<PanelBody
 					title={ __( 'Border', 'sgs-blocks' ) }

@@ -28,11 +28,6 @@
 			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
 			"enabledExtensions": [ "childSizing" ],
 			"motion": true,
@@ -214,6 +209,18 @@
 		"root": ".wp-block-sgs-tabs"
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"blockLabel": {
 			"type": "string",
 			"default": ""
