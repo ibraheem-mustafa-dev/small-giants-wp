@@ -19,9 +19,19 @@
  *   - A `:hover` or `:active` after a pseudo-element (`::-webkit-scrollbar-thumb:hover`) gets no touch half: a class
  *     cannot follow a pseudo-element. Members without `:hover` or `:active` stay exactly as they are.
  *   - A hover rule inside `@media (hover: hover)` is mouse-only by its author: its touch half is added just before the
- *     outermost such media query, in the other at-rules around it.
+ *     outermost such media query, in the other at-rules around it. A query that adds other conditions
+ *     (`(hover: hover) and (min-width: 1024px)`) keeps them around the half, so the half applies only where the
+ *     author's rule would on a mouse. A press look (`:active`) inside a mouse-only query gets no twin.
+ *   - A member that asks for a press and for no press at once (`.a:active:not(:hover)`) gets no touch half: both states
+ *     are the one pressed class, so the half could never match.
+ *   - A guarded `:active` member's twin is unguarded (the guard would keep it from ever matching on touch).
  *
- * Idempotent: a guarded member, or a touch half already in the stylesheet, is never added twice.
+ * Idempotent: a guarded member, or a touch half already in the stylesheet, is never added twice. "Already in the
+ * stylesheet" means the identical rule: the same selector member, the same declarations and the same at-rules around it,
+ * so a second rule for one selector with other declarations still gets its own half.
+ *
+ * Input the contract cannot rewrite is reported, never skipped: a stylesheet postcss cannot parse (unbalanced braces) and
+ * CSS nesting under a rule that carries `:hover` or `:active` are findings, which fail the postbuild.
  *
  * @package SGS\Blocks
  */
@@ -121,15 +131,27 @@ function unguarded( member ) {
 	return member;
 }
 
+const TRANSPARENT_PSEUDOS = new Set( [ ':not', ':is', ':where' ] );
+
 /**
  * The touch half of one member: each `:hover` and `:active` becomes `.sgs-pressed`.
  *
  * @param {string} member A selector member (without the mouse guard).
- * @returns {{selector: string, negated: boolean}|null} Null when a state follows a pseudo-element.
+ * @returns {{selector: string, negated: boolean}|null} Null when a state follows a pseudo-element, or when one compound
+ *   both requires and negates the state (`.a:active:not(:hover)`): both are the one class, so the half could never match.
  */
 function touchMember( member ) {
 	let negated = false;
 	let impossible = false;
+	// For each selector list, the compounds (by index) that hold a positive state and a negated one.
+	const positive = new Map();
+	const negative = new Map();
+	const mark = ( map, selector, index ) => {
+		if ( ! map.has( selector ) ) {
+			map.set( selector, new Set() );
+		}
+		map.get( selector ).add( index );
+	};
 	const out = selectorParser( ( root ) => {
 		root.walkPseudos( ( pseudo ) => {
 			const name = pseudo.value.toLowerCase();
@@ -146,9 +168,26 @@ function touchMember( member ) {
 					negated = true;
 				}
 			}
+			// The compound the state belongs to, climbing out of :not(), :is() and :where().
+			let node = pseudo;
+			let isNegated = false;
+			while ( node.parent && node.parent.parent && 'pseudo' === node.parent.parent.type && TRANSPARENT_PSEUDOS.has( node.parent.parent.value.toLowerCase() ) ) {
+				isNegated = isNegated || ':not' === node.parent.parent.value.toLowerCase();
+				node = node.parent.parent;
+			}
+			const selector = node.parent;
+			if ( selector ) {
+				const index = selector.nodes.slice( 0, selector.nodes.indexOf( node ) ).filter( ( n ) => 'combinator' === n.type ).length;
+				mark( isNegated ? negative : positive, selector, index );
+			}
 			pseudo.replaceWith( selectorParser.className( { value: PRESSED_CLASS } ) );
 		} );
 	} ).processSync( member );
+	for ( const [ selector, indexes ] of positive ) {
+		if ( negative.has( selector ) && [ ...indexes ].some( ( i ) => negative.get( selector ).has( i ) ) ) {
+			impossible = true;
+		}
+	}
 	return impossible ? null : { selector: out.trim(), negated };
 }
 
@@ -182,9 +221,10 @@ function contractMembers( members, inMouse ) {
 				}
 				out.push( withGuard( plain, SGS_HOVER_NOT_TOUCH ) );
 			}
-		} else if ( hasActive( m ) ) {
+		} else if ( hasActive( plain ) ) {
 			out.push( m );
-			const t = touchMember( m );
+			// A press look inside a mouse-only query is mouse-only, and the halves of that query are hoisted out of it: no twin.
+			const t = inMouse ? null : touchMember( plain );
 			if ( t && ! t.negated ) {
 				out.push( t.selector );
 			}
@@ -195,24 +235,41 @@ function contractMembers( members, inMouse ) {
 	return { members: out, touch, guarded };
 }
 
-/** The outermost `@media (hover: hover)` ancestor of a node, or null. */
+/**
+ * What a media query leaves once its `(hover: hover)` condition is taken out, or null when the query is not mouse-only.
+ * Mouse-only means `(hover: hover)` is one of the conditions joined by `and`: a query list (`,`), a `not` or an `or` is
+ * not. Must match helpers-hover-state.php::sgs_touch_hover_mouse_remainder.
+ *
+ * @param {string} params A media query (the text after `@media`).
+ * @returns {string|null} '' for exactly `(hover: hover)`, else the remaining conditions joined by ` and `.
+ */
+function mouseRemainder( params ) {
+	const text = params.trim().replace( /\s+/g, ' ' );
+	if ( text.includes( ',' ) || /(^|\s)(not|or)(\s|\()/i.test( text ) ) {
+		return null;
+	}
+	const parts = text.split( /\s+and\s+/i );
+	const isHover = ( p ) => '(hover:hover)' === p.replace( /\s+/g, '' ).toLowerCase();
+	if ( ! parts.some( isHover ) ) {
+		return null;
+	}
+	return parts.filter( ( p ) => ! isHover( p ) && 'all' !== p.toLowerCase() ).join( ' and ' );
+}
+
+/** The mouse-only remainder of an at-rule node, or null when it is not a mouse-only media query. */
+function nodeRemainder( node ) {
+	return 'atrule' === node.type && 'media' === node.name.toLowerCase() ? mouseRemainder( node.params ) : null;
+}
+
+/** The outermost mouse-only media ancestor of a node, or null. */
 function outermostMouseMedia( node ) {
 	let found = null;
 	for ( let cursor = node.parent; cursor; cursor = cursor.parent ) {
-		if ( isMouseMedia( cursor ) ) {
+		if ( null !== nodeRemainder( cursor ) ) {
 			found = cursor;
 		}
 	}
 	return found;
-}
-
-/** Whether an at-rule is a mouse-only media query (`(hover: hover)` without `not`). */
-function isMouseMedia( node ) {
-	if ( ! node || 'atrule' !== node.type || 'media' !== node.name.toLowerCase() ) {
-		return false;
-	}
-	const params = node.params.toLowerCase().replace( /\s+/g, '' );
-	return params.includes( '(hover:hover)' ) && ! params.includes( 'not' );
 }
 
 /** Whether a node sits inside `@keyframes`. */
@@ -225,44 +282,146 @@ function inKeyframes( node ) {
 	return false;
 }
 
-/** Clone the at-rules between `node` and `stop` (exclusive) around `inner`. */
+/** Whether a node has a rule among its ancestors (CSS nesting). */
+function hasAncestorRule( node ) {
+	for ( let cursor = node.parent; cursor; cursor = cursor.parent ) {
+		if ( 'rule' === cursor.type ) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/** One at-rule as a context segment, whitespace-free and lower-case. Must match helpers-hover-state.php::sgs_touch_hover_ctx. */
+const segment = ( name, params ) => `/@${ name }${ params }`.toLowerCase().replace( /\s+/g, '' );
+
+/**
+ * The at-rules around a rule as one string. With `halves`, the mouse-only conditions are taken out, as they are for the
+ * touch half hoisted out of them.
+ */
+function contextOf( rule, halves ) {
+	const parts = [];
+	for ( let cursor = rule.parent; cursor; cursor = cursor.parent ) {
+		if ( 'atrule' !== cursor.type ) {
+			continue;
+		}
+		const rest = halves ? nodeRemainder( cursor ) : null;
+		parts.unshift( null === rest ? segment( cursor.name, cursor.params ) : ( rest ? segment( 'media', rest ) : '' ) );
+	}
+	return parts.join( '' );
+}
+
+/** A rule's declarations as text, whitespace-insensitive. Must match helpers-hover-state.php::sgs_touch_hover_body_key. */
+function bodyKey( rule ) {
+	const text = ( rule.nodes || [] )
+		.filter( ( n ) => 'comment' !== n.type )
+		.map( ( n ) => ( 'decl' === n.type ? `${ n.prop }:${ n.value }${ n.important ? '!important' : '' }` : n.toString() ) )
+		.join( ';' );
+	return text.replace( /\s+/g, ' ' ).replace( /\s*([:;,{}!])\s*/g, '$1' ).trim().replace( /;+$/, '' );
+}
+
+/** The identity of one member of one rule: the at-rules around it, the member and the declarations. */
+const ruleKey = ( context, member, body ) => `${ context }|${ normalise( member ) }|${ body }`;
+
+/** Clone the at-rules from `node` up to and including `stop` around `inner`, without their mouse-only conditions. */
 function nestBetween( node, stop, inner ) {
 	let content = inner;
-	for ( let cursor = node.parent; cursor && cursor !== stop; cursor = cursor.parent ) {
+	for ( let cursor = node.parent; cursor; cursor = cursor.parent ) {
 		if ( 'atrule' === cursor.type ) {
-			const shell = cursor.clone();
-			shell.removeAll();
-			shell.append( content );
-			content = shell;
+			const rest = nodeRemainder( cursor );
+			if ( '' !== rest ) {
+				const shell = cursor.clone();
+				shell.removeAll();
+				if ( null !== rest ) {
+					shell.params = rest;
+				}
+				shell.append( content );
+				content = shell;
+			}
+		}
+		if ( cursor === stop ) {
+			break;
 		}
 	}
 	return content;
 }
 
-/** Every selector member in a stylesheet, normalised. */
-function memberSet( root ) {
+/** Every rule of a stylesheet as `ruleKey`s, one per selector member (keyframes and unparsable selectors left out). */
+function ruleKeySet( root ) {
 	const set = new Set();
 	root.walkRules( ( rule ) => {
-		if ( ! inKeyframes( rule ) ) {
-			for ( const m of splitMembers( rule.selector ) ) {
-				set.add( normalise( m ) );
-			}
+		if ( inKeyframes( rule ) ) {
+			return;
+		}
+		let members;
+		try {
+			members = splitMembers( rule.selector );
+		} catch ( e ) {
+			return;
+		}
+		const context = contextOf( rule, false );
+		const body = bodyKey( rule );
+		for ( const m of members ) {
+			set.add( ruleKey( context, m, body ) );
 		}
 	} );
 	return set;
 }
 
-/** Order-preserving de-duplication of members, also against members already elsewhere when given. */
-function dedupe( members, elsewhere ) {
+/** Order-preserving de-duplication of members. */
+function dedupe( members ) {
 	const seen = new Set();
 	return members.filter( ( m ) => {
 		const k = normalise( m );
-		if ( seen.has( k ) || ( elsewhere && elsewhere.has( k ) ) ) {
+		if ( seen.has( k ) ) {
 			return false;
 		}
 		seen.add( k );
 		return true;
 	} );
+}
+
+/** Whether a rule, or a rule around it, carries `:hover` or `:active`. */
+function carriesState( rule ) {
+	for ( let cursor = rule; cursor; cursor = cursor.parent ) {
+		if ( 'rule' === cursor.type && ( hasHover( cursor.selector || '' ) || hasActive( cursor.selector || '' ) ) ) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/**
+ * CSS nesting the contract cannot rewrite: a rule or an at-rule inside a rule, when that rule or one around it carries
+ * `:hover` or `:active`. The PHP twin copies such a body verbatim, so it would ship without its guard and touch half.
+ */
+function nestingFindings( root ) {
+	const findings = [];
+	const note = ( node, selector ) => {
+		findings.push( { kind: 'nested-rule', selector, line: node.source && node.source.start ? node.source.start.line : 0 } );
+	};
+	root.walkRules( ( rule ) => {
+		if ( hasAncestorRule( rule ) && carriesState( rule ) ) {
+			note( rule, rule.selector );
+		}
+	} );
+	root.walkAtRules( ( atrule ) => {
+		if ( atrule.parent && 'rule' === atrule.parent.type && carriesState( atrule.parent ) ) {
+			note( atrule, `@${ atrule.name } ${ atrule.params }` );
+		}
+	} );
+	return findings;
+}
+
+/** The indentation a rule's own line starts with, so a selector list keeps one member per line at that depth. */
+function indentOf( rule ) {
+	const before = ( rule.raws && rule.raws.before ) || '';
+	return before.slice( before.lastIndexOf( '\n' ) + 1 ).replace( /[^ \t]/g, '' );
+}
+
+/** postcss's parse error (unbalanced braces, for one) as a finding. */
+function parseFinding( e ) {
+	return { kind: 'unparsable-stylesheet', selector: e && e.reason ? e.reason : String( e ), line: e && e.line ? e.line : 0 };
 }
 
 /**
@@ -273,16 +432,21 @@ function dedupe( members, elsewhere ) {
  * @returns {{css: string, guardedCount: number, touchCount: number, findings: Array<{kind: string, selector: string, line: number}>}}
  */
 function transformCss( css, filename ) {
-	const root = postcss.parse( css, { from: filename } );
-	const findings = [];
+	let root;
+	try {
+		root = postcss.parse( css, { from: filename } );
+	} catch ( e ) {
+		return { css, guardedCount: 0, touchCount: 0, findings: [ parseFinding( e ) ] };
+	}
+	const findings = nestingFindings( root );
 	let guardedCount = 0;
 	let touchCount = 0;
-	const existing = memberSet( root );
+	const existing = ruleKeySet( root );
 
 	const rules = [];
 	root.walkRules( ( rule ) => {
 		const sel = rule.selector || '';
-		if ( ( hasHover( sel ) || hasActive( sel ) ) && ! inKeyframes( rule ) ) {
+		if ( ( hasHover( sel ) || hasActive( sel ) ) && ! inKeyframes( rule ) && ! hasAncestorRule( rule ) ) {
 			rules.push( rule );
 		}
 	} );
@@ -303,16 +467,18 @@ function transformCss( css, filename ) {
 		const fresh = finalMembers.filter( ( m ) => ! before.has( normalise( m ) ) && ! hasHover( m ) );
 		touchCount += fresh.length;
 		if ( finalMembers.map( normalise ).join( ',' ) !== members.map( normalise ).join( ',' ) ) {
-			rule.selector = finalMembers.join( ',\n' );
+			rule.selector = finalMembers.join( ',\n' + indentOf( rule ) );
 		}
+		const body = bodyKey( rule );
 		for ( const m of fresh ) {
-			existing.add( normalise( m ) );
+			existing.add( ruleKey( contextOf( rule, false ), m, body ) );
 		}
 		if ( mouse ) {
-			const missing = dedupe( next.touch, existing );
+			const halfContext = contextOf( rule, true );
+			const missing = dedupe( next.touch ).filter( ( m ) => ! existing.has( ruleKey( halfContext, m, body ) ) );
 			if ( missing.length ) {
-				mouse.before( nestBetween( rule, mouse, rule.clone( { selector: missing.join( ',\n' ) } ) ) );
-				missing.forEach( ( m ) => existing.add( normalise( m ) ) );
+				mouse.before( nestBetween( rule, mouse, rule.clone( { selector: missing.join( ',\n' + indentOf( rule ) ) } ) ) );
+				missing.forEach( ( m ) => existing.add( ruleKey( halfContext, m, body ) ) );
 				touchCount += missing.length;
 			}
 		}
@@ -323,21 +489,27 @@ function transformCss( css, filename ) {
 
 /**
  * Every member that breaks the contract: an unguarded `:hover` outside `@media (hover: hover)`, or a `:hover` or
- * `:active` member whose touch half is in no rule of the stylesheet.
+ * `:active` member whose touch half is not in the stylesheet as an identical rule (same declarations, same at-rules);
+ * and input the contract cannot read (unbalanced braces) or rewrite (nesting under a rule that carries a state).
  *
  * @param {string} css
  * @param {string} filename
  * @returns {{hoverMembers: number, activeMembers: number, findings: Array<{kind: string, selector: string, line: number}>}}
  */
 function auditCss( css, filename ) {
-	const root = postcss.parse( css, { from: filename } );
-	const findings = [];
+	let root;
+	try {
+		root = postcss.parse( css, { from: filename } );
+	} catch ( e ) {
+		return { hoverMembers: 0, activeMembers: 0, findings: [ parseFinding( e ) ] };
+	}
+	const findings = nestingFindings( root );
 	let hoverMembers = 0;
 	let activeMembers = 0;
-	const existing = memberSet( root );
+	const existing = ruleKeySet( root );
 	root.walkRules( ( rule ) => {
 		const sel = rule.selector || '';
-		if ( ( ! hasHover( sel ) && ! hasActive( sel ) ) || inKeyframes( rule ) ) {
+		if ( ( ! hasHover( sel ) && ! hasActive( sel ) ) || inKeyframes( rule ) || hasAncestorRule( rule ) ) {
 			return;
 		}
 		const line = rule.source && rule.source.start ? rule.source.start.line : 0;
@@ -349,6 +521,9 @@ function auditCss( css, filename ) {
 			return;
 		}
 		const inMouse = !! outermostMouseMedia( rule );
+		const context = contextOf( rule, true );
+		const body = bodyKey( rule );
+		const has = ( half ) => existing.has( ruleKey( context, half, body ) );
 		for ( const m of members ) {
 			const plain = unguarded( m );
 			if ( hasHover( plain ) && unguardable( plain ) ) {
@@ -362,13 +537,13 @@ function auditCss( css, filename ) {
 				}
 				const t = touchMember( plain );
 				const half = t && ( t.negated ? withGuard( t.selector, SGS_HOVER_TOUCH_ONLY ) : t.selector );
-				if ( half && ! existing.has( normalise( half ) ) ) {
+				if ( half && ! has( half ) ) {
 					findings.push( { kind: 'missing-touch-half', selector: m, line } );
 				}
-			} else if ( hasActive( m ) ) {
+			} else if ( hasActive( plain ) ) {
 				activeMembers++;
-				const t = touchMember( m );
-				if ( t && ! t.negated && ! existing.has( normalise( t.selector ) ) ) {
+				const t = inMouse ? null : touchMember( plain );
+				if ( t && ! t.negated && ! has( t.selector ) ) {
 					findings.push( { kind: 'missing-press-half', selector: m, line } );
 				}
 			}
@@ -377,4 +552,4 @@ function auditCss( css, filename ) {
 	return { hoverMembers, activeMembers, findings };
 }
 
-module.exports = { transformCss, auditCss, touchMember, SGS_HOVER_NOT_TOUCH, SGS_HOVER_TOUCH_ONLY, PRESSED_CLASS };
+module.exports = { transformCss, auditCss, touchMember, mouseRemainder, SGS_HOVER_NOT_TOUCH, SGS_HOVER_TOUCH_ONLY, PRESSED_CLASS };

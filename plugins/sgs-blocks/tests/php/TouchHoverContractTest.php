@@ -79,4 +79,69 @@ final class TouchHoverContractTest extends TestCase {
 		$this->assertSame( '.a:hover{color:red}}.b{color:blue}', sgs_touch_hover_css( '.a:hover{color:red}}.b{color:blue}' ) );
 		$this->assertSame( '.a:hover{color:red', sgs_touch_hover_css( '.a:hover{color:red' ) );
 	}
+
+	/**
+	 * Unreadable input, as [name => [in]] from the fixture's `unreadable` list.
+	 *
+	 * @return array<string,array{0:string}>
+	 */
+	public static function unreadable(): array {
+		$doc = json_decode( (string) file_get_contents( dirname( __DIR__ ) . '/fixtures/touch-hover/cases.json' ), true );
+		$out = array();
+		foreach ( $doc['unreadable'] as $case ) {
+			$out[ $case['name'] ] = array( $case['in'] );
+		}
+		return $out;
+	}
+
+	/**
+	 * Input the contract cannot rewrite (unbalanced braces, CSS nesting under a hover) is printed as it came.
+	 *
+	 * @dataProvider unreadable
+	 * @param string $in Input CSS.
+	 */
+	public function test_unreadable_input_is_printed_as_it_came( string $in ): void {
+		$this->assertSame( $in, sgs_touch_hover_css( $in ) );
+	}
+
+	/**
+	 * The silent fallbacks name their reason in the error log under WP_DEBUG, and stay silent without it. Run in a child
+	 * process, because WP_DEBUG is a constant and cannot be switched back.
+	 *
+	 * @dataProvider unreadable
+	 * @param string $in Input CSS.
+	 */
+	public function test_unreadable_input_is_logged_under_wp_debug( string $in ): void {
+		$this->assertStringContainsString( 'sgs_touch_hover_css: ', $this->run_with_debug( $in, true ) );
+		$this->assertSame( '', $this->run_with_debug( $in, false ) );
+	}
+
+	/**
+	 * Run the transform on CSS in a fresh PHP process and return what it wrote to the error log.
+	 *
+	 * @param string $css   Input CSS.
+	 * @param bool   $debug Whether WP_DEBUG is defined true.
+	 * @return string The error log text.
+	 */
+	private function run_with_debug( string $css, bool $debug ): string {
+		$log  = tempnam( sys_get_temp_dir(), 'sgs-hover-log' );
+		$code = ( $debug ? "define( 'WP_DEBUG', true );" : '' )
+			. "require '" . dirname( __DIR__, 2 ) . "/includes/helpers-hover-state.php';"
+			. 'sgs_touch_hover_css( base64_decode( $argv[1] ) );';
+		$proc = proc_open(
+			array( PHP_BINARY, '-d', 'error_log=' . $log, '-d', 'log_errors=1', '-r', $code, base64_encode( $css ) ),
+			array(
+				1 => array( 'pipe', 'w' ),
+				2 => array( 'pipe', 'w' ),
+			),
+			$pipes
+		);
+		$this->assertIsResource( $proc );
+		stream_get_contents( $pipes[1] );
+		stream_get_contents( $pipes[2] );
+		proc_close( $proc );
+		$text = (string) file_get_contents( $log );
+		unlink( $log );
+		return $text;
+	}
 }

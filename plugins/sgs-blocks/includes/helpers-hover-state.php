@@ -138,49 +138,122 @@ if ( ! function_exists( 'sgs_touch_hover_normalise' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_touch_hover_state_compound' ) ) {
+	/**
+	 * Where a state sits: the compound it belongs to (climbing out of `:not()`, `:is()` and `:where()`), and whether
+	 * it is negated. Reads the member text before the state, so a quoted or bracketed `:hover` is never counted.
+	 *
+	 * @param string $before The member text up to the state.
+	 * @return array{key:string,negated:bool,any_not:bool,start:int} `key` names the compound, `negated` says it sits in a
+	 *         `:not()` of that compound, `any_not` that any open parenthesis is a `:not(`, and `start` is where the state's
+	 *         own compound begins in `$before`.
+	 */
+	function sgs_touch_hover_state_compound( string $before ): array {
+		// One frame per open parenthesis: where it opens, where its current compound starts, and what it belongs to.
+		$frames  = array(
+			array(
+				'open'  => -1,
+				'start' => 0,
+				'kind'  => '',
+			),
+		);
+		$quote   = '';
+		$bracket = 0;
+		$len     = strlen( $before );
+		for ( $i = 0; $i < $len; $i++ ) {
+			$c = $before[ $i ];
+			if ( '' !== $quote ) {
+				if ( '\\' === $c ) {
+					++$i;
+				} elseif ( $c === $quote ) {
+					$quote = '';
+				}
+				continue;
+			}
+			if ( '\\' === $c ) {
+				++$i;
+			} elseif ( '"' === $c || "'" === $c ) {
+				$quote = $c;
+			} elseif ( '[' === $c ) {
+				++$bracket;
+			} elseif ( ']' === $c ) {
+				--$bracket;
+			} elseif ( $bracket > 0 ) {
+				continue;
+			} elseif ( '(' === $c ) {
+				$kind     = 1 === preg_match( '/:(not|is|where)$/i', substr( $before, 0, $i ), $k ) ? strtolower( $k[1] ) : '';
+				$frames[] = array(
+					'open'  => $i,
+					'start' => $i + 1,
+					'kind'  => $kind,
+				);
+			} elseif ( ')' === $c ) {
+				if ( count( $frames ) > 1 ) {
+					array_pop( $frames );
+				}
+			} elseif ( ' ' === $c || "\t" === $c || "\n" === $c || '>' === $c || '+' === $c || '~' === $c || ',' === $c ) {
+				$frames[ count( $frames ) - 1 ]['start'] = $i + 1;
+			}
+		}
+		$own     = (int) end( $frames )['start'];
+		$any_not = in_array( 'not', array_column( $frames, 'kind' ), true );
+		$top     = count( $frames ) - 1;
+		$negated = false;
+		while ( $top > 0 && '' !== $frames[ $top ]['kind'] ) {
+			$negated = $negated || 'not' === $frames[ $top ]['kind'];
+			--$top;
+		}
+		return array(
+			'key'     => $frames[ $top ]['open'] . ':' . $frames[ $top ]['start'],
+			'negated' => $negated,
+			'any_not' => $any_not,
+			'start'   => $own,
+		);
+	}
+}
+
 if ( ! function_exists( 'sgs_touch_hover_member' ) ) {
 	/**
 	 * The touch half of one member: every `:hover` and `:active` becomes `.sgs-pressed`.
 	 *
 	 * @param string $member A selector member, without the mouse guard.
-	 * @return array{selector:string,negated:bool}|null Null when a state follows a pseudo-element.
+	 * @return array{selector:string,negated:bool}|null Null when a state follows a pseudo-element, or when one compound
+	 *                                                  both requires and negates the state (`.a:active:not(:hover)`):
+	 *                                                  both are the one class, so the half could never match.
 	 */
 	function sgs_touch_hover_member( string $member ): ?array {
-		$negated = false;
-		$offset  = 0;
+		$negated  = false;
+		$offset   = 0;
+		$states   = array();
+		$positive = array();
+		$negative = array();
 		while ( preg_match( '/:(?:hover|active)(?![\w-])/i', $member, $m, PREG_OFFSET_CAPTURE, $offset ) ) {
 			$at     = (int) $m[0][1];
 			$before = substr( $member, 0, $at );
-			// A match inside a quoted attribute value (`[title=":hover"]`) is text, not a state.
-			if ( 1 === substr_count( (string) preg_replace( '/\\./', '', $before ), '"' ) % 2 || 1 === substr_count( (string) preg_replace( '/\\./', '', $before ), "'" ) % 2 ) {
-				$offset = $at + 1;
+			$offset = $at + 1;
+			// A match inside a quoted attribute value (`[title=":hover"]`) is text, not a state. An escape pair (`\"`) is no quote.
+			$plain = (string) preg_replace( '/\\\\./s', '', $before );
+			if ( 1 === substr_count( $plain, '"' ) % 2 || 1 === substr_count( $plain, "'" ) % 2 ) {
 				continue;
 			}
-			// The open parentheses around this state, and where its compound starts (after the last combinator).
-			$opens = array();
-			$start = 0;
-			for ( $i = 0, $n = strlen( $before ); $i < $n; $i++ ) {
-				$c = $before[ $i ];
-				if ( '(' === $c ) {
-					$opens[] = $i;
-				} elseif ( ')' === $c ) {
-					array_pop( $opens );
-				} elseif ( ' ' === $c || '>' === $c || '+' === $c || '~' === $c ) {
-					$start = $i + 1;
-				}
-			}
-			$floor    = $opens ? (int) end( $opens ) + 1 : 0;
-			$compound = substr( $before, max( $start, $floor ) );
+			$where    = sgs_touch_hover_state_compound( $before );
+			$compound = substr( $before, $where['start'] );
 			if ( 1 === preg_match( '/::|:(?:before|after|first-line|first-letter)(?![\w-])/i', $compound ) ) {
 				return null;
 			}
-			foreach ( $opens as $open ) {
-				if ( 1 === preg_match( '/:not$/i', substr( $before, 0, $open ) ) ) {
-					$negated = true;
-				}
+			$negated = $negated || $where['any_not'];
+			if ( $where['negated'] ) {
+				$negative[ $where['key'] ] = true;
+			} else {
+				$positive[ $where['key'] ] = true;
 			}
-			$member = $before . '.' . SGS_PRESSED_CLASS . substr( $member, $at + strlen( $m[0][0] ) );
-			$offset = $at;
+			$states[] = array( $at, strlen( $m[0][0] ) );
+		}
+		if ( array_intersect_key( $positive, $negative ) ) {
+			return null;
+		}
+		foreach ( array_reverse( $states ) as $state ) {
+			$member = substr( $member, 0, $state[0] ) . '.' . SGS_PRESSED_CLASS . substr( $member, $state[0] + $state[1] );
 		}
 		return array(
 			'selector' => $member,
@@ -282,8 +355,9 @@ if ( ! function_exists( 'sgs_touch_hover_contract_members' ) ) {
 				continue;
 			}
 			$out[] = $m;
-			if ( ! sgs_touch_hover_has_hover( $m ) && sgs_touch_hover_has_active( $m ) ) {
-				$t = sgs_touch_hover_member( $m );
+			// A press look inside a mouse-only query is mouse-only, and the halves of that query are hoisted out of it: no twin.
+			if ( ! $in_mouse && ! sgs_touch_hover_has_hover( $plain ) && sgs_touch_hover_has_active( $plain ) ) {
+				$t = sgs_touch_hover_member( $plain );
 				if ( null !== $t && ! $t['negated'] ) {
 					$out[] = $t['selector'];
 				}
@@ -307,6 +381,21 @@ if ( ! function_exists( 'sgs_touch_hover_contract_members' ) ) {
 			'members' => $out,
 			'touch'   => $touch,
 		);
+	}
+}
+
+if ( ! function_exists( 'sgs_touch_hover_log' ) ) {
+	/**
+	 * Say why a stylesheet was left as it came: the safe fallbacks of this file are silent in production, and under
+	 * WP_DEBUG they name their reason in the error log.
+	 *
+	 * @param string $reason Short reason.
+	 * @return void
+	 */
+	function sgs_touch_hover_log( string $reason ): void {
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			error_log( 'sgs_touch_hover_css: ' . $reason ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+		}
 	}
 }
 
@@ -379,6 +468,9 @@ if ( ! function_exists( 'sgs_touch_hover_parse' ) ) {
 			}
 			$body = substr( $css, $stop + 1, max( 0, $j - $stop - 2 ) );
 			if ( '@' === ( $text[0] ?? '' ) || false !== strpos( $body, '{' ) ) {
+				if ( '@' !== ( $text[0] ?? '' ) && ( sgs_touch_hover_has_hover( $text . ' ' . $body ) || sgs_touch_hover_has_active( $text . ' ' . $body ) ) ) {
+					sgs_touch_hover_log( 'nested CSS under a rule that carries :hover or :active was copied as it came: ' . substr( $text, 0, 80 ) );
+				}
 				$nodes[] = array(
 					'type' => 'raw',
 					'text' => $text . '{' . $body . '}',
@@ -396,35 +488,108 @@ if ( ! function_exists( 'sgs_touch_hover_parse' ) ) {
 	}
 }
 
-if ( ! function_exists( 'sgs_touch_hover_is_mouse_media' ) ) {
+if ( ! function_exists( 'sgs_touch_hover_mouse_remainder' ) ) {
 	/**
-	 * Whether an at-rule prelude is a mouse-only media query (`(hover:hover)` without `not`).
+	 * What an at-rule prelude leaves once its `(hover:hover)` condition is taken out, or null when it is not a mouse-only
+	 * media query. Mouse-only means `(hover:hover)` is one of the conditions joined by `and`: a query list (`,`), a
+	 * `not` or an `or` is not. Must match scripts/hover-guard/transform.js::mouseRemainder.
+	 *
+	 * @param string $prelude At-rule prelude (`@media (hover:hover) and (min-width:1024px)`).
+	 * @return string|null '' for exactly `(hover:hover)`, else the remaining conditions joined by ` and `.
+	 */
+	function sgs_touch_hover_mouse_remainder( string $prelude ): ?string {
+		if ( 1 !== preg_match( '/^@media\b\s*(.*)$/is', trim( $prelude ), $m ) ) {
+			return null;
+		}
+		$text = trim( (string) preg_replace( '/\s+/', ' ', $m[1] ) );
+		if ( false !== strpos( $text, ',' ) || 1 === preg_match( '/(^|\s)(not|or)(\s|\()/i', $text ) ) {
+			return null;
+		}
+		$parts = (array) preg_split( '/\s+and\s+/i', $text );
+		$hover = false;
+		$rest  = array();
+		foreach ( $parts as $p ) {
+			if ( '(hover:hover)' === strtolower( (string) preg_replace( '/\s+/', '', $p ) ) ) {
+				$hover = true;
+			} elseif ( 'all' !== strtolower( $p ) ) {
+				$rest[] = $p;
+			}
+		}
+		return $hover ? implode( ' and ', $rest ) : null;
+	}
+}
+
+if ( ! function_exists( 'sgs_touch_hover_ctx' ) ) {
+	/**
+	 * One at-rule as a context segment, whitespace-free and lower-case. Must match transform.js::segment.
 	 *
 	 * @param string $prelude At-rule prelude.
-	 * @return bool
+	 * @return string
 	 */
-	function sgs_touch_hover_is_mouse_media( string $prelude ): bool {
-		$p = strtolower( (string) preg_replace( '/\s+/', '', $prelude ) );
-		return 0 === strpos( $p, '@media' ) && false !== strpos( $p, '(hover:hover)' ) && false === strpos( $p, 'not' );
+	function sgs_touch_hover_ctx( string $prelude ): string {
+		return '/' . strtolower( (string) preg_replace( '/\s+/', '', $prelude ) );
+	}
+}
+
+if ( ! function_exists( 'sgs_touch_hover_remainder_ctx' ) ) {
+	/**
+	 * The context segment a mouse-only media block leaves for the touch half hoisted out of it.
+	 *
+	 * @param string $remainder What `sgs_touch_hover_mouse_remainder` returned.
+	 * @return string '' when nothing remains.
+	 */
+	function sgs_touch_hover_remainder_ctx( string $remainder ): string {
+		return '' === $remainder ? '' : sgs_touch_hover_ctx( '@media ' . $remainder );
+	}
+}
+
+if ( ! function_exists( 'sgs_touch_hover_body_key' ) ) {
+	/**
+	 * A rule body, whitespace-insensitive. Must match transform.js::bodyKey.
+	 *
+	 * @param string $body Declarations, no braces.
+	 * @return string
+	 */
+	function sgs_touch_hover_body_key( string $body ): string {
+		$body = (string) preg_replace( '/\s+/', ' ', $body );
+		$body = (string) preg_replace( '/\s*([:;,{}!])\s*/', '$1', $body );
+		return rtrim( trim( $body ), ';' );
+	}
+}
+
+if ( ! function_exists( 'sgs_touch_hover_rule_key' ) ) {
+	/**
+	 * The identity of one member of one rule: the at-rules around it, the member and the declarations. A touch half is
+	 * "already there" only as an identical rule, so a second rule for one selector with other declarations still gets
+	 * its own half.
+	 *
+	 * @param string $ctx    At-rules around the rule, as built by `sgs_touch_hover_ctx`.
+	 * @param string $member Selector member.
+	 * @param string $body   Declarations, no braces.
+	 * @return string
+	 */
+	function sgs_touch_hover_rule_key( string $ctx, string $member, string $body ): string {
+		return $ctx . '|' . sgs_touch_hover_normalise( $member ) . '|' . sgs_touch_hover_body_key( $body );
 	}
 }
 
 if ( ! function_exists( 'sgs_touch_hover_members_in' ) ) {
 	/**
-	 * Every selector member in a parsed tree, whitespace-normalised, as lookup keys.
+	 * Every rule member in a parsed tree as lookup keys (`sgs_touch_hover_rule_key`).
 	 *
 	 * @param array<int,array<string,mixed>> $nodes Parsed nodes.
-	 * @param array<string,bool>             $set   Collected members.
+	 * @param array<string,bool>             $set   Collected keys.
+	 * @param string                         $ctx   At-rules around these nodes.
 	 * @return void
 	 */
-	function sgs_touch_hover_members_in( array $nodes, array &$set ): void {
+	function sgs_touch_hover_members_in( array $nodes, array &$set, string $ctx = '' ): void {
 		foreach ( $nodes as $node ) {
 			if ( 'rule' === $node['type'] ) {
 				foreach ( sgs_touch_hover_split_members( $node['prelude'] ) as $m ) {
-					$set[ sgs_touch_hover_normalise( $m ) ] = true;
+					$set[ sgs_touch_hover_rule_key( $ctx, $m, $node['body'] ) ] = true;
 				}
 			} elseif ( 'block' === $node['type'] ) {
-				sgs_touch_hover_members_in( $node['children'], $set );
+				sgs_touch_hover_members_in( $node['children'], $set, $ctx . sgs_touch_hover_ctx( $node['prelude'] ) );
 			}
 		}
 	}
@@ -432,19 +597,30 @@ if ( ! function_exists( 'sgs_touch_hover_members_in' ) ) {
 
 if ( ! function_exists( 'sgs_touch_hover_missing_touch' ) ) {
 	/**
-	 * The touch halves a mouse media block's hover rules lack anywhere in the CSS, as rules to print before it.
+	 * The touch halves a mouse media block's hover rules lack as identical rules, to print before the block.
 	 *
 	 * @param array<int,array<string,mixed>> $nodes    The mouse block's children.
-	 * @param array<string,bool>             $existing Every member in the CSS; extended with what is added.
+	 * @param array<string,bool>             $existing Every rule key in the CSS; extended with what is added.
+	 * @param string                         $ctx      The at-rules the halves will sit in (mouse-only conditions taken out).
 	 * @return string
 	 */
-	function sgs_touch_hover_missing_touch( array $nodes, array &$existing ): string {
+	function sgs_touch_hover_missing_touch( array $nodes, array &$existing, string $ctx ): string {
 		$out = '';
 		foreach ( $nodes as $node ) {
 			if ( 'block' === $node['type'] ) {
-				$inner = sgs_touch_hover_missing_touch( $node['children'], $existing );
-				if ( '' !== $inner ) {
-					$out .= sgs_touch_hover_is_mouse_media( $node['prelude'] ) ? $inner : $node['prelude'] . '{' . $inner . '}';
+				$rest  = sgs_touch_hover_mouse_remainder( $node['prelude'] );
+				$inner = sgs_touch_hover_missing_touch(
+					$node['children'],
+					$existing,
+					$ctx . ( null === $rest ? sgs_touch_hover_ctx( $node['prelude'] ) : sgs_touch_hover_remainder_ctx( $rest ) )
+				);
+				if ( '' === $inner ) {
+					continue;
+				}
+				if ( null === $rest ) {
+					$out .= $node['prelude'] . '{' . $inner . '}';
+				} else {
+					$out .= '' === $rest ? $inner : '@media ' . $rest . '{' . $inner . '}';
 				}
 				continue;
 			}
@@ -453,14 +629,14 @@ if ( ! function_exists( 'sgs_touch_hover_missing_touch' ) ) {
 			}
 			$missing = array();
 			foreach ( sgs_touch_hover_contract_members( sgs_touch_hover_split_members( $node['prelude'] ), true )['touch'] as $half ) {
-				$key = sgs_touch_hover_normalise( $half );
+				$key = sgs_touch_hover_rule_key( $ctx, $half, $node['body'] );
 				if ( ! isset( $existing[ $key ] ) ) {
 					$existing[ $key ] = true;
 					$missing[]        = $half;
 				}
 			}
 			if ( $missing ) {
-				$out .= implode( ',', $missing ) . '{' . $node['body'] . '}';
+				$out .= implode( ',', array_unique( $missing ) ) . '{' . $node['body'] . '}';
 			}
 		}
 		return $out;
@@ -473,11 +649,11 @@ if ( ! function_exists( 'sgs_touch_hover_emit' ) ) {
 	 *
 	 * @param array<int,array<string,mixed>> $nodes    Parsed nodes.
 	 * @param bool                           $in_mouse Whether an ancestor is a mouse media query.
-	 * @param array<string,bool>|null        $existing Every member in the CSS, built on first need.
-	 * @param array<int,array<string,mixed>> $all      The whole tree, for $existing.
+	 * @param array<string,bool>             $existing Every rule key in the CSS (`sgs_touch_hover_rule_key`).
+	 * @param string                         $ctx      The at-rules around these nodes.
 	 * @return string
 	 */
-	function sgs_touch_hover_emit( array $nodes, bool $in_mouse, ?array &$existing, array $all ): string {
+	function sgs_touch_hover_emit( array $nodes, bool $in_mouse, array &$existing, string $ctx ): string {
 		$out = '';
 		foreach ( $nodes as $node ) {
 			if ( 'raw' === $node['type'] ) {
@@ -485,17 +661,15 @@ if ( ! function_exists( 'sgs_touch_hover_emit' ) ) {
 				continue;
 			}
 			if ( 'block' === $node['type'] ) {
-				$mouse = sgs_touch_hover_is_mouse_media( $node['prelude'] );
+				$rest  = sgs_touch_hover_mouse_remainder( $node['prelude'] );
 				$touch = '';
-				if ( $mouse && ! $in_mouse ) {
-					// The touch halves a mouse block is missing print just before it, inside the other at-rules it sits in.
-					if ( null === $existing ) {
-						$existing = array();
-						sgs_touch_hover_members_in( $all, $existing );
-					}
-					$touch = sgs_touch_hover_missing_touch( $node['children'], $existing );
+				if ( null !== $rest && ! $in_mouse ) {
+					// The touch halves a mouse block is missing print just before it, inside the other at-rules it sits in and
+					// with the conditions it adds to `(hover:hover)`.
+					$inner = sgs_touch_hover_missing_touch( $node['children'], $existing, $ctx . sgs_touch_hover_remainder_ctx( $rest ) );
+					$touch = ( '' === $inner || '' === $rest ) ? $inner : '@media ' . $rest . '{' . $inner . '}';
 				}
-				$out .= $touch . $node['prelude'] . '{' . sgs_touch_hover_emit( $node['children'], $in_mouse || $mouse, $existing, $all ) . '}';
+				$out .= $touch . $node['prelude'] . '{' . sgs_touch_hover_emit( $node['children'], $in_mouse || null !== $rest, $existing, $ctx . sgs_touch_hover_ctx( $node['prelude'] ) ) . '}';
 				continue;
 			}
 			$prelude = $node['prelude'];
@@ -504,10 +678,8 @@ if ( ! function_exists( 'sgs_touch_hover_emit' ) ) {
 				$next    = sgs_touch_hover_contract_members( $members, false )['members'];
 				if ( array_map( 'sgs_touch_hover_normalise', $next ) !== array_map( 'sgs_touch_hover_normalise', $members ) ) {
 					$prelude = implode( ',', $next );
-					if ( null !== $existing ) {
-						foreach ( $next as $m ) {
-							$existing[ sgs_touch_hover_normalise( $m ) ] = true;
-						}
+					foreach ( $next as $m ) {
+						$existing[ sgs_touch_hover_rule_key( $ctx, $m, $node['body'] ) ] = true;
 					}
 				}
 			}
@@ -522,7 +694,8 @@ if ( ! function_exists( 'sgs_touch_hover_css' ) ) {
 	 * Apply the hover-on-touch contract to finished CSS text (see this file's header).
 	 *
 	 * @param string $css CSS text.
-	 * @return string The CSS, returned untouched when it carries no `:hover` or `:active`.
+	 * @return string The CSS, returned untouched when it carries no `:hover` or `:active`, or when its braces do not balance
+	 *                (logged under WP_DEBUG).
 	 */
 	function sgs_touch_hover_css( string $css ): string {
 		if ( ! sgs_touch_hover_has_hover( $css ) && ! sgs_touch_hover_has_active( $css ) ) {
@@ -530,7 +703,9 @@ if ( ! function_exists( 'sgs_touch_hover_css' ) ) {
 		}
 		$css = (string) preg_replace( '#/\*.*?\*/#s', '', $css );
 		if ( substr_count( $css, '{' ) !== substr_count( $css, '}' ) ) {
-			return $css; // Unbalanced text is printed as it came rather than re-cut by a parser that cannot trust it.
+			// Unbalanced text is printed as it came rather than re-cut by a parser that cannot trust it.
+			sgs_touch_hover_log( 'braces do not balance, so the CSS was printed as it came: ' . substr( trim( $css ), 0, 80 ) );
+			return $css;
 		}
 		$len  = strlen( $css );
 		$i    = 0;
@@ -546,8 +721,11 @@ if ( ! function_exists( 'sgs_touch_hover_css' ) ) {
 				);
 			}
 		}
-		$existing = null;
-		return sgs_touch_hover_emit( $tree, false, $existing, $tree );
+		$existing = array();
+		if ( 1 === preg_match( '/\(\s*hover\s*:\s*hover\s*\)/i', $css ) ) {
+			sgs_touch_hover_members_in( $tree, $existing );
+		}
+		return sgs_touch_hover_emit( $tree, false, $existing, '' );
 	}
 }
 
