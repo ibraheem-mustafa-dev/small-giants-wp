@@ -13,7 +13,7 @@
 	},
 	{
 		"file": "lib/fill-buybox-columns.mjs",
-		"find": "\t\t\tif ( undefined !== held && json( held ) !== json( value ) ) {",
+		"find": "\t\t\tif ( undefined !== held && json( held ) !== json( value ) && ! replaces ) {",
 		"replace": "\t\t\tif ( false ) {",
 		"why": "a value another writer put on the node is overwritten"
 	},
@@ -34,5 +34,47 @@
 		"find": "\tif ( ! column || 1 !== sides.length ) {",
 		"replace": "\tif ( ! column ) {",
 		"why": "a grid of more than two children is read as two columns"
+	},
+	{
+		"file": "lib/fill-buybox-columns.mjs",
+		"find": "earlier.length > 0 && earlier.every( lookWrite );",
+		"replace": "false;",
+		"why": "a one-width look read of the gap stays and the draft's columns are a conflict row"
+	},
+	{
+		"file": "lib/fill-buybox-columns.mjs",
+		"find": "\t\t\t\tout.dropped.push( ...earlier );",
+		"replace": "",
+		"why": "the replaced look write stays in the run beside the new one"
+	},
+	{
+		"file": "lib/fill-buybox-columns.mjs",
+		"find": "const lookWrite = ( w ) => !! w && ! String( w.prop ?? '' ).startsWith( '(' ) && 'buybox-columns' !== w.how;",
+		"replace": "const lookWrite = ( w ) => !! w && 'buybox-columns' !== w.how;",
+		"why": "a skeleton's decided value is overwritten"
+	},
+	{
+		"file": "lib/fill-buybox-columns.mjs",
+		"find": "const oneRatio = Object.values( layout.ratios || {} ).every( ( r ) => Math.abs( r - ratio ) <= RATIO_TOL * ratio );",
+		"replace": "const oneRatio = true;",
+		"why": "a tablet share far from the ratio is taken as held"
+	},
+	{
+		"file": "lib/fill-buybox-columns.mjs",
+		"find": "const stacksAsDrawn = ! ( layout.sideBySide || [] ).includes( 375 );",
+		"replace": "const stacksAsDrawn = true;",
+		"why": "columns the draft keeps side by side on a phone are taken as held"
+	},
+	{
+		"file": "lib/fill-buybox-columns.mjs",
+		"find": "const mine = ( u.node === ref || ( u.nodes || [] ).includes( ref ) ) && ",
+		"replace": "const mine = ",
+		"why": "another node's rows are settled"
+	},
+	{
+		"file": "lib/fill-buybox-columns.mjs",
+		"find": "const settles = ( prop ) => holds[ HELD[ prop ] ] && ",
+		"replace": "const settles = ( prop ) => ",
+		"why": "a row is settled by a setting that was not written"
 	}
 ]
