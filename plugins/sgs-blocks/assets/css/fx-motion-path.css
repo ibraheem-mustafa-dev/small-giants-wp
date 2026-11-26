@@ -319,7 +319,7 @@
  * measured live at 1200x7934px against a traveller's real ~1200x42px box.
  *
  * FIXED via CSS Anchor Positioning: `includes/fx-path-routes.php` mints an
- * `anchor-name` on the travelling block's own root (via a scoped `<style>`
+ * `anchor-name` on the travelling block's own root (via a scoped `\3c style>`
  * tag, Spec 32 FR-32-11 — never inline) and a matching `position-anchor` on
  * this SVG. `anchor()`/`anchor-size()` then resolve this element's box
  * directly against THAT anchor, with no DOM-ancestry requirement — the SVG

@@ -165,7 +165,8 @@
 	cursor: pointer;
 }
 
-.sgs-generative-background__toggle:hover {
+.sgs-generative-background__toggle.sgs-pressed,
+:where(:root:not(.sgs-touch-input)) .sgs-generative-background__toggle:hover {
 	background: rgb( 15 23 42 / 95% );
 }
 

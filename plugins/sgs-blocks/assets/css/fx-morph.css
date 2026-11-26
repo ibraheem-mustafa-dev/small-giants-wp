@@ -47,7 +47,7 @@
  * both SVGs against their DOM PARENT — never against the decorated block's
  * own box. Same defect, same fix, as `fx-motion-path.css`'s route box: CSS
  * Anchor Positioning, minted per-instance by `includes/fx-shape-routes.php`
- * via a scoped `<style>` tag (Spec 32 FR-32-11 — never inline). `anchor-name`
+ * via a scoped `\3c style>` tag (Spec 32 FR-32-11 — never inline). `anchor-name`
  * / `position-anchor` are harmless no-ops on browsers that don't understand
  * them; the properties that actually size the box are gated behind
  * `@supports`, with a hide-cleanly fallback below.

@@ -159,8 +159,14 @@ function contractErrors( css ) {
 		}
 		const d = decls( rule );
 		if ( rule.selector.includes( ':hover' ) ) {
-			if ( ! rule.selector.startsWith( TOUCH_GUARD ) ) {
-				errors.push( `unguarded :hover rule: ${ rule.selector }` );
+			// The hover-on-touch contract (Spec 38A FR-38A-17): each :hover member is guarded and its pressed twin is in
+			// the same rule.
+			for ( const member of rule.selectors.filter( ( m ) => m.includes( ':hover' ) ) ) {
+				if ( ! member.startsWith( TOUCH_GUARD ) ) {
+					errors.push( `unguarded :hover rule: ${ rule.selector }` );
+				} else if ( ! rule.selectors.includes( member.slice( TOUCH_GUARD.length ).trim().replace( ':hover', '.sgs-pressed' ) ) ) {
+					errors.push( `:hover rule without its pressed twin: ${ rule.selector }` );
+				}
 			}
 			if ( Object.keys( d ).some( ( prop ) => ! ENGAGEMENT_FLAG.test( prop ) ) ) {
 				errors.push( `:hover rule sets more than an engagement flag: ${ rule.selector }` );
@@ -315,8 +321,9 @@ describe( 'negative controls: each planted fault is caught', () => {
 		'an unguarded hover that moves': [ /\[data-sgs-mh\] \{ --sgs-mh-on: 0; \}/, '[data-sgs-mh] { --sgs-mh-on: 0; }\n[data-sgs-mh]:hover { translate: 0 -4px; }' ],
 		'a hidden start without the ready class': [ /\.sgs-motion-ready \[data-sgs-me~="scroll"\]:not\(\[data-sgs-in\]\)\[data-sgs-me~="opacity"\]/, '[data-sgs-me~="scroll"][data-sgs-me~="opacity"]' ],
 		'a keyframe with a plain opacity': [ /(--sgs-me-op: var\(--sgs-me-from-op, 1\);\s*)opacity: [^;]*;/, '$1opacity: 0;' ],
-		'a missing item hover selector': [ /:where\(:root:not\(\.sgs-touch-input\)\) \[data-sgs-mitem\]:hover \{[^}]*\}/, '' ],
-		'a missing hover-group selector': [ /:where\(:root:not\(\.sgs-touch-input\)\) \[data-sgs-hover-group\]:hover \{[^}]*\}/, '' ],
+		'a missing item hover selector': [ /\[data-sgs-mitem\]\.sgs-pressed,\s*:where\(:root:not\(\.sgs-touch-input\)\) \[data-sgs-mitem\]:hover \{[^}]*\}/, '' ],
+		'a missing hover-group selector': [ /\[data-sgs-hover-group\]\.sgs-pressed,\s*:where\(:root:not\(\.sgs-touch-input\)\) \[data-sgs-hover-group\]:hover \{[^}]*\}/, '' ],
+		'a hover switch without its pressed twin': [ /\[data-sgs-mroot\]\.sgs-pressed,\s*/, '' ],
 		'reduced motion that keeps hover movement': [ /--sgs-mh-s: 1;\n\t\}\n\t:is/, '}\n\t:is' ],
 		'a persistent channel off its formula': [ /\[data-sgs-mc~="scale"\] \{\n\tscale: [^;]*;/, '[data-sgs-mc~="scale"] {\n\tscale: var(--sgs-mh-s);' ],
 		'a clip edge owner without its @property': [ /@property --sgs-me-clip-b \{[^}]*\}/, '' ],

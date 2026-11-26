@@ -575,6 +575,7 @@
 	--sgs-cursor-field-mask-size: 100% 100%;
 }
 
+[data-sgs-cursor-field="image-reveal"].sgs-pressed::before,
 :where(:root:not(.sgs-touch-input)) [data-sgs-cursor-field="image-reveal"]:hover::before {
 	--sgs-cursor-field-radius: 90px;
 	--sgs-cursor-field-wash: 0.3;
@@ -594,7 +595,8 @@
 }
 
 @media (hover: none) {
-	[data-sgs-cursor-field="image-reveal"][data-sgs-cursor-field-touch="circle"]:not([data-sgs-reveal-tap]):hover::before {
+	[data-sgs-cursor-field="image-reveal"][data-sgs-cursor-field-touch="circle"]:not([data-sgs-reveal-tap]).sgs-pressed::before,
+:where(:root:not(.sgs-touch-input)) [data-sgs-cursor-field="image-reveal"][data-sgs-cursor-field-touch="circle"]:not([data-sgs-reveal-tap]):hover::before {
 		--sgs-cursor-field-radius: 0px;
 	}
 }
@@ -640,7 +642,8 @@
 	pointer-events: none;
 }
 
-[data-sgs-cursor-field]:hover > .sgs-motion-layer[data-sgs-layer="cursor-field-ring"] {
+[data-sgs-cursor-field].sgs-pressed > .sgs-motion-layer[data-sgs-layer="cursor-field-ring"],
+:where(:root:not(.sgs-touch-input)) [data-sgs-cursor-field]:hover > .sgs-motion-layer[data-sgs-layer="cursor-field-ring"] {
 	--sgs-ring-s: 1;
 }
 
