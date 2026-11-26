@@ -3,7 +3,7 @@
  * Tests: the saved-content sweep that stores the trust bar's default ticker (`scripts/migrate-trust-bar-ticker.php`).
  *
  * Every fixture's expected block is the one the render-time filter produced (`Sgs_Motion_Ticker_Default::apply`,
- * retired by this sweep; each expectation was asserted against the filter itself before it was deleted, commit 2c6686426), so a migrated page renders exactly as it did: a bar that took the default stores the same
+ * retired by this sweep; each expectation was asserted against the filter itself in the commit that added this sweep, before the filter was deleted), so a migrated page renders exactly as it did: a bar that took the default stores the same
  * layer in the same place, and every bar that did not take it (a stored marquee under any id with `touchPause` or the
  * older `pauseOnTouch`, `wrap`, `drop`, a motion value or root effects that are not a list) is left as saved.
  *
