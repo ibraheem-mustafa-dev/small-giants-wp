@@ -70,5 +70,29 @@
 		"find": "const one = ( x ) => `${ /^[A-Za-z_][\\w-]*$/.test( x.id ) ? `#${ x.id }` : `[id=\"${ x.id }\"]` }${ x.children ? ' > *' : '' }`;",
 		"replace": "const one = ( x ) => `#${ x.id }`;",
 		"why": "an id with a space is written as a broken id selector, and children are lost"
+	},
+	{
+		"file": "lib/intake-inventory-part.mjs",
+		"find": "if ( ids.some( ( id ) => model.census.sources.some( ( src ) => matchSelector( src.stamped?.elements || [], `[id=\"${ id }\"]` ).tpl.length ) ) ) {",
+		"replace": "if ( false ) {",
+		"why": "an element the template stamps with its own id becomes an injected part of its holder"
+	},
+	{
+		"file": "lib/intake-inventory-part.mjs",
+		"find": "const comps = [ ...new Set( rows.map( ( r ) => r.component ) ) ].sort(",
+		"replace": "const comps = [ ...new Set( rows.map( ( r ) => r.component ) ) ].slice( 0, 1 ).sort(",
+		"why": "a custom element stamped in several components keeps one component's stamps"
+	},
+	{
+		"file": "lib/intake-inventory-anim.mjs",
+		"find": "const targets = part ? part.byComp.map( ( h ) => ( { ...part, tpl: h.tpl, comp: h.comp } ) )",
+		"replace": "const targets = part ? [ part ]",
+		"why": "a part held in several components is recorded for the first only"
+	},
+	{
+		"file": "lib/intake-inventory-anim.mjs",
+		"find": "element( comp, part ? t.comp : owner,",
+		"replace": "element( comp, owner,",
+		"why": "a part held in another component is recorded under the script's owner"
 	}
 ]

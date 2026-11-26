@@ -1,0 +1,20 @@
+[
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "if ( 0 === whole ) {",
+		"replace": "if ( false ) {",
+		"why": "a 0ms shrink writes rowShrinkDuration 0, which the row reads as 200ms"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "const out = null === whole ? [] : [ { attr: 'rowShrinkDuration', value: whole } ];",
+		"replace": "const out = null === whole || 200 === whole ? [] : [ { attr: 'rowShrinkDuration', value: whole } ];",
+		"why": "a draft shrink at the block's own 200ms writes no duration, so the row prints no padding transition and snaps"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "const SHRINK_EASING_NAMES = [ 'ease', 'ease-in-out', 'linear' ];",
+		"replace": "const SHRINK_EASING_NAMES = [ 'ease', 'ease-out', 'ease-in-out', 'linear' ];",
+		"why": "ease-out is written as the name the block reads as the client's easing token"
+	}
+]

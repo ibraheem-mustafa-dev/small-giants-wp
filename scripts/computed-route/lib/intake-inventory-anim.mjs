@@ -16,9 +16,10 @@ const holeHosts = ( rows, names ) => [ ...new Set( rows.filter( ( x ) => 'bindin
 
 const isCode = ( r ) => r.draftId.includes( ':js:' );
 
-// A record's code: its own call, after the whole interval timer call that schedules it when its trigger names one (a state
-// a timer changes, lib/intake-inventory-trigger.mjs::schedulingTimer), so the record holds the timer's delay as code.
-const codeWithTimer = ( p, call, trg ) => [ ...( trg.timer ? [ `${ p.text.slice( trg.timer.start, trg.timer.end ) };` ] : [] ), textOf( p, call ) ].join( ' ' );
+// The interval timer call that schedules a record, when its trigger names one (a state a timer changes,
+// lib/intake-inventory-trigger.mjs::schedulingTimer), as `source.timer`: the record holds the timer's delay as code
+// (lib/motion-record-text.mjs::timerMs) apart from its own `source.code`, which the recognisers read as the effect's.
+const timerField = ( p, trg ) => ( trg.timer ? { timer: `${ p.text.slice( trg.timer.start, trg.timer.end ) };` } : {} );
 const compOf = ( r ) => ( isCode( r ) ? r.draftId.split( ':js:' )[ 0 ] : r.component );
 const pad = ( prefix, i ) => `${ prefix }-${ String( i ).padStart( /^(TR|PS)$/.test( prefix ) ? 3 : 2, '0' ) }`;
 
@@ -135,23 +136,26 @@ export function animationRecords( census, { notDefects = [] } = {} ) {
 		const outer = calls[ calls.length - 1 ] ?? call;
 		const tr = triggerOf( model, comp, outer );
 		// A part of content the code injects (an id inside a fetched SVG or a custom element's own content) is the stamped
-		// holder plus the part's id (lib/intake-inventory-part.mjs::partTarget).
+		// holder plus the part's id (lib/intake-inventory-part.mjs::partTarget): one record per component that stamps the holder.
 		const part = partTarget( model, comp, call.callee.object );
-		const t = part ?? ( p.file ? { tpl: [], selector: textOf( p, call.callee.object ), rule: `inside ${ comp }: ${ textOf( p, call.callee.object ) }` } : animatedTarget( model, comp, call, path ) );
+		const targets = part ? part.byComp.map( ( h ) => ( { ...part, tpl: h.tpl, comp: h.comp } ) )
+			: [ p.file ? { tpl: [], selector: textOf( p, call.callee.object ), rule: `inside ${ comp }: ${ textOf( p, call.callee.object ) }` } : animatedTarget( model, comp, call, path ) ];
 		const chain = calls.map( ( c ) => `${ functionName( p, c ) } (line ${ lineOf( c ) }): ${ textOf( p, c ) }` );
 		// The guard nearest the path's own trigger names it: the outermost call first, the effect's own call last.
 		const rm = [ ...calls.slice().reverse(), call ].map( ( c ) => reducedMotionOf( p, c ) );
+		for ( const t of targets ) {
 		for ( const trg of triggersOf( tr ) ) {
 		const notes = [ chain.length ? `called from ${ chain.join( '; from ' ) }` : null, null != trg.delay ? `started after setTimeout ${ trg.delay }` : null ].filter( Boolean ).join( '; ' );
 		add( p.file ? 'L' : 'A', {
 			name: `Web Animation in ${ fn }${ calls.length ? ` from ${ functionName( p, outer ) }` : '' } on ${ t.selector }`, mechanism: 'waapi',
-			element: element( comp, owner, p.file && ! part ? { ...t, near: owners } : t, `animated element: ${ t.selector }` ),
-			source: { file, function: fn, ref: /^ref /.test( t.selector ) ? t.selector.slice( 4 ) : null, line: lineOf( call ), code: codeWithTimer( p, call, trg ) },
+			element: element( comp, part ? t.comp : owner, p.file && ! part ? { ...t, near: owners } : t, `animated element: ${ t.selector }` ),
+			source: { file, function: fn, ref: /^ref /.test( t.selector ) ? t.selector.slice( 4 ) : null, line: lineOf( call ), code: textOf( p, call ), ...timerField( p, trg ) },
 			trigger: triggerField( trg ), properties: fx.properties, duration_ms: fx.timing.duration, delay_ms: fx.timing.delay ?? 0, stagger: null,
 			easing: fx.timing.easing, iterations: fx.timing.iterations, direction: fx.timing.direction, fill: fx.timing.fill,
 			reduced_motion: rm.find( ( x ) => 'skip' === x.behaviour ) ?? rm[ 0 ], status: statusOf( trg ), trace: traceOf( [ r ] ),
 			...( notes ? { notes } : {} ),
 		}, [ r ], { comp, tpl: t.tpl.map( ( n ) => `${ t.comp }:${ n }` ), via: trg.via.map( ( o ) => `${ comp }@${ o }` ), members: trg.members.map( ( m ) => `${ comp }:${ m }` ), trigger: trg } );
+		}
 		}
 		}
 	}

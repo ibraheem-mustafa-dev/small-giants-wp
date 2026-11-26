@@ -120,13 +120,28 @@ test( 'paddingBox reads one to four pixel lengths as the four sides, else null',
 	assert.equal( paddingBox( '1px 2px 3px 4px 5px' ), null );
 } );
 
-test( 'MUST FAIL: the row shrinks with the draft\'s own duration and easing (rowShrinkDuration, rowShrinkEasing), a default or an unnamed curve writes none', () => {
+test( 'MUST FAIL: the row shrinks with the draft\'s own duration and easing (rowShrinkDuration, rowShrinkEasing); an unnamed curve writes none', () => {
 	const timed = ( over ) => run( [ { ...ROW, ...over } ] ).attrs( 1 );
 	assert.deepEqual( timed( { duration_ms: 350, easing: 'ease-in-out' } ), { rowShrink: { desktop: 'on' }, rowShrinkPadding: { desktop: BOX }, rowShrinkDuration: 350, rowShrinkEasing: 'ease-in-out' } );
 	const bezier = timed( { duration_ms: 400, easing: 'cubic-bezier(0.4, 0, 0.2, 1)' } );
 	assert.deepEqual( [ bezier.rowShrinkDuration, bezier.rowShrinkEasing, bezier.rowShrinkEasingCustom ], [ 400, 'custom', 'cubic-bezier(0.4, 0, 0.2, 1)' ] );
-	// Negative controls: the block's own 200ms and ease are not written; an easing with no name and no bezier is noted, not guessed.
-	assert.deepEqual( timed( { duration_ms: 200, easing: 'ease' } ), { rowShrink: { desktop: 'on' }, rowShrinkPadding: { desktop: BOX } } );
+	// Negative controls: a record with no duration writes none; an easing with no name and no bezier is noted, not guessed.
 	assert.deepEqual( timed( { duration_ms: null } ), { rowShrink: { desktop: 'on' }, rowShrinkPadding: { desktop: BOX } }, 'a record with no duration' );
 	assert.equal( timed( { easing: 'ease-in' } ).rowShrinkEasing, undefined );
+} );
+
+test( 'MUST FAIL: a draft 200ms ease shrink writes its duration (the row prints a padding transition only for a set duration or easing)', () => {
+	const a = run( [ { ...ROW, duration_ms: 200, easing: 'ease' } ] ).attrs( 1 );
+	assert.deepEqual( a, { rowShrink: { desktop: 'on' }, rowShrinkPadding: { desktop: BOX }, rowShrinkDuration: 200 } );
+} );
+
+test( 'MUST FAIL: a 0ms shrink turns the row\'s animation off (rowShrinkDuration 0 would read as 200ms)', () => {
+	const { out, attrs } = run( [ { ...ROW, duration_ms: 0 } ] );
+	assert.deepEqual( attrs( 1 ), { rowShrink: { desktop: 'on' }, rowShrinkPadding: { desktop: BOX }, rowAnimate: false } );
+	assert.ok( out.notes.some( ( n ) => /rowAnimate off/.test( n.text ) ), 'the jump is noted' );
+} );
+
+test( 'MUST FAIL: an ease-out shrink is written as its cubic-bezier, never as the name the block reads as the client easing token', () => {
+	const a = run( [ { ...ROW, easing: 'ease-out' } ] ).attrs( 1 );
+	assert.deepEqual( [ a.rowShrinkEasing, a.rowShrinkEasingCustom ], [ 'custom', 'cubic-bezier(0, 0, 0.58, 1)' ] );
 } );

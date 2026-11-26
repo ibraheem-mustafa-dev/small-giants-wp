@@ -13,26 +13,38 @@
 	},
 	{
 		"file": "lib/intake-inventory-anim.mjs",
-		"find": "...( trg.timer ? [ `${ p.text.slice( trg.timer.start, trg.timer.end ) };` ] : [] ),",
-		"replace": "",
+		"find": "code: textOf( p, call ), ...timerField( p, trg ) },",
+		"replace": "code: textOf( p, call ) },",
 		"why": "the record does not carry its timer"
 	},
 	{
+		"file": "lib/intake-inventory-anim.mjs",
+		"find": "code: textOf( p, call ), ...timerField( p, trg ) },",
+		"replace": "code: [ timerField( p, trg ).timer, textOf( p, call ) ].filter( Boolean ).join( ' ' ), ...timerField( p, trg ) },",
+		"why": "the timer call is read as part of the record's own code"
+	},
+	{
 		"file": "lib/motion-record-text.mjs",
-		"find": "for ( let at = String( text ?? '' ).lastIndexOf( ';' ); ! tree && at > 0;",
-		"replace": "for ( let at = String( text ?? '' ).lastIndexOf( ';' ); false;",
-		"why": "a clipped code's leading statements are not read"
+		"find": "for ( const text of [ r?.source?.timer, r?.source?.code ] ) {",
+		"replace": "for ( const text of [ r?.source?.code ] ) {",
+		"why": "the timer kept apart from the code is never read"
 	},
 	{
 		"file": "lib/motion-behaviour-settings.mjs",
-		"find": "const coded = timerMs( r );",
-		"replace": "const coded = null;",
-		"why": "the slider's autoplay never reads the delay from the record's own code"
+		"find": "const ms = timerMs( r ) ?? ( null === secs ? null : secs * 1000 );",
+		"replace": "const ms = null === secs ? null : secs * 1000;",
+		"why": "the slider's autoplay never reads the delay from the record's timer"
 	},
 	{
 		"file": "lib/motion-behaviour-settings.mjs",
-		"find": "( null === coded && ! /",
-		"replace": "( ! /",
-		"why": "a timer in the record's own code still needs the element to read as a card or slide"
+		"find": "|| ! /\\bcard\\b|testimonial|slide/i.test( named ) ) {",
+		"replace": ") {",
+		"why": "a timer-replayed entrance on any element (a hero word cycler) is the slider's autoplay"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": ".replace( /([a-z\\d])([A-Z])/g, '$1 $2' ).replace( /([A-Z])([A-Z][a-z])/g, '$1 $2' );",
+		"replace": ";",
+		"why": "a code name such as setTCard is not split into words, so it is not read as a card"
 	}
 ]

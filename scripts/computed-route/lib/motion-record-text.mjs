@@ -37,16 +37,6 @@ export function codeTree( text ) {
 	return trees.get( text );
 }
 
-// The tree of a code text's longest leading run of whole statements that parses: a snippet clipped with `…` after the
-// statements it opens with (the timer call a record carries before its own clipped call) still gives those statements.
-export function leadingTree( text ) {
-	let tree = codeTree( text );
-	for ( let at = String( text ?? '' ).lastIndexOf( ';' ); ! tree && at > 0; at = text.lastIndexOf( ';', at - 1 ) ) {
-		tree = codeTree( text.slice( 0, at + 1 ) );
-	}
-	return tree;
-}
-
 // The nodes of a tree that pass a test, depth first.
 export function nodesOf( tree, test ) {
 	const out = [];
@@ -58,10 +48,19 @@ const calleeName = ( n ) => ( 'MemberExpression' === n.callee?.type && ! n.calle
 // The calls of a function or method by name in a tree.
 export const callsOf = ( tree, name ) => ( tree ? nodesOf( tree, ( n ) => 'CallExpression' === n.type && name === calleeName( n ) ) : [] );
 
-// The delay of a timer call in a record's own code: the second argument of a `setInterval` (or each name given) call, a
-// number literal or a constant the same code declares, read from the syntax tree; null when the code holds no such call.
+// The delay of the timer that schedules a record: the second argument of a `setInterval` (or each name given) call in the
+// record's `source.timer` (lib/intake-inventory-anim.mjs), else in its own code, a number literal or a constant the same code
+// declares, read from the syntax tree; null when neither holds such a call.
 export function timerMs( r, names = [ 'setInterval' ] ) {
-	const tree = leadingTree( r?.source?.code );
+	for ( const text of [ r?.source?.timer, r?.source?.code ] ) {
+		const ms = timerIn( codeTree( text ), names );
+		if ( null !== ms ) {
+			return ms;
+		}
+	}
+	return null;
+}
+function timerIn( tree, names ) {
 	const constant = ( id ) => nodesOf( tree, ( n ) => 'VariableDeclarator' === n.type && id === n.id?.name && 'NumericLiteral' === n.init?.type )[ 0 ]?.init.value ?? null;
 	for ( const c of names.flatMap( ( name ) => callsOf( tree, name ) ) ) {
 		const v = c.arguments[ 1 ];

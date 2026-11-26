@@ -210,24 +210,29 @@ const SCROLLED_OFFSET_DEFAULT = 50;
 // The property a scrolled look is a look of, as an animation record names it.
 const LOOK_PROPERTY = { 'style:padding': 'padding', 'attr:width': 'width' };
 
-// The row block's own shrink timing (`rowShrinkDuration` 0 keeps 200ms; `rowShrinkEasing` empty keeps ease), in the units
-// the block's settings hold: the record's duration in ms and its easing as a named curve the block knows (a cubic-bezier()
-// is `custom` with `rowShrinkEasingCustom`). A timing equal to the block's own default is not written; an easing the
-// block has no name or custom field for is noted.
-const SHRINK_EASING_NAMES = [ 'ease', 'ease-out', 'ease-in-out', 'linear' ];
-const SHRINK_DURATION_DEFAULT = 200;
+// The row block's own shrink timing, in the units the block's settings hold: the record's duration in ms and its easing as
+// a named curve the block knows (a cubic-bezier() is `custom` with `rowShrinkEasingCustom`). The row prints a padding
+// transition only when `rowShrinkDuration` is above 0 or `rowShrinkEasing` is set
+// (plugins/sgs-blocks/includes/helpers-row-behaviour.php::sgs_row_shrink_settings_css), so a duration the draft states is
+// always written, its 200ms default included; a 0ms shrink (which `rowShrinkDuration` 0 would read as 200ms) is
+// `rowAnimate` off. `ease-out` is written as its cubic-bezier(): the block reads the name `ease-out` as the client's
+// easing token, not the CSS keyword. An easing the block has no name or custom field for is noted.
+const SHRINK_EASING_NAMES = [ 'ease', 'ease-in-out', 'linear' ];
+const SHRINK_EASING_CURVES = { 'ease-out': 'cubic-bezier(0, 0, 0.58, 1)' };
 function shrinkTiming( r, notes ) {
 	const ms = durationOf( r );
-	const curve = easingOf( r )?.trim().toLowerCase() ?? null;
-	const out = [];
-	if ( null !== ms && ms !== SHRINK_DURATION_DEFAULT ) {
-		out.push( { attr: 'rowShrinkDuration', value: Math.round( ms ) } );
+	const whole = null === ms ? null : Math.round( ms );
+	if ( 0 === whole ) {
+		notes.push( 'the draft shrinks the row in 0ms, so it jumps: rowAnimate off' );
+		return [ { attr: 'rowAnimate', value: false } ];
 	}
+	const curve = easingOf( r )?.trim().toLowerCase() ?? null;
+	const out = null === whole ? [] : [ { attr: 'rowShrinkDuration', value: whole } ];
 	if ( null !== curve && 'ease' !== curve ) {
 		if ( SHRINK_EASING_NAMES.includes( curve ) ) {
 			out.push( { attr: 'rowShrinkEasing', value: curve } );
-		} else if ( /^cubic-bezier\(/.test( curve ) ) {
-			out.push( { attr: 'rowShrinkEasing', value: 'custom' }, { attr: 'rowShrinkEasingCustom', value: curve } );
+		} else if ( SHRINK_EASING_CURVES[ curve ] || /^cubic-bezier\(/.test( curve ) ) {
+			out.push( { attr: 'rowShrinkEasing', value: 'custom' }, { attr: 'rowShrinkEasingCustom', value: SHRINK_EASING_CURVES[ curve ] ?? curve } );
 		} else {
 			notes.push( `the row shrinks with the easing "${ curve }", which rowShrinkEasing has no name for` );
 		}
@@ -321,11 +326,12 @@ export function accordionScrollOf( r ) {
 export function autoplayOf( r ) {
 	const every = new RegExp( `${ NUMBER }\\s*s\\s+setInterval|setInterval[^.]*?${ NUMBER }\\s*s\\b`, 'i' ).exec( words( r.trigger?.detail ) );
 	const secs = number( every?.[ 1 ] ?? every?.[ 2 ] );
-	// A timer in the record's own code is proof enough (the code ties the timer to the state the record runs on); a timer only the
-	// trigger's words name also needs the element to read as a card or slide.
-	const coded = timerMs( r );
-	const ms = coded ?? ( null === secs ? null : secs * 1000 );
-	if ( null === ms || ! /^(?:waapi|css-animation)$/.test( r.mechanism ) || 'state' !== triggerOf( r ) || ( null === coded && ! /\bcard\b|testimonial|slide/i.test( words( r.element?.description, r.name ) ) ) ) {
+	// The element must read as a card or slide (a timer also drives a hero word cycler or a ticker), its code names split at
+	// each capital (`setTCard` is "set T Card"); the timer in the record's own code gives the interval, else the one the
+	// trigger's words name.
+	const ms = timerMs( r ) ?? ( null === secs ? null : secs * 1000 );
+	const named = words( r.element?.description, r.name ).replace( /([a-z\d])([A-Z])/g, '$1 $2' ).replace( /([A-Z])([A-Z][a-z])/g, '$1 $2' );
+	if ( null === ms || ! /^(?:waapi|css-animation)$/.test( r.mechanism ) || 'state' !== triggerOf( r ) || ! /\bcard\b|testimonial|slide/i.test( named ) ) {
 		return null;
 	}
 	return {

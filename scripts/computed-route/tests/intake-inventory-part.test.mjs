@@ -69,8 +69,8 @@ const MARK = `(() => {
 
 // A census of one component (its logic, its stamped elements and their template rows) and an optional helmet script,
 // with a waapi row at every `.animate(` call.
-function censusOf( { logic = 'class Component extends DCComponent {}', script = null, rows: extra = [] } ) {
-	const source = { component: 'App', file: 'App.dc.html', via: 'entry', logic, logicLine: 1, logicColumn: 0, scripts: script ? [ { file: 'mark.js', text: script } ] : [], stamped: { elements: [] } };
+function censusOf( { logic = 'class Component extends DCComponent {}', script = null, rows: extra = [], stamped = [] } ) {
+	const source = { component: 'App', file: 'App.dc.html', via: 'entry', logic, logicLine: 1, logicColumn: 0, scripts: script ? [ { file: 'mark.js', text: script } ] : [], stamped: { elements: stamped } };
 	const m = codeModel( { sources: [ source ], rows: [] } );
 	const rows = [ ...extra ];
 	for ( const [ comp, p ] of m.progs ) {
@@ -118,6 +118,37 @@ test( 'negative control: an element the code finds in the page, not in content i
 	unregistered.forEach( ( r ) => assert.equal( r.element.template_tpl_id, null, r.source.code ) );
 	const noHolder = waapi( censusOf( { logic: HERO, rows: [] } ) );
 	noHolder.forEach( ( r ) => assert.equal( r.element.template_tpl_id, null, `${ r.source.code }: with no ref row there is no stamped holder` ) );
+} );
+
+// A ref callback that fills its holder and animates an element the template stamps with its own id, beside a part it injected.
+const TITLED = `class Component extends DCComponent {
+  setHeroSvgEl = (el) => {
+    if (!el) return;
+    fetch('./hero.svg').then((r) => r.text()).then((txt) => {
+      el.innerHTML = txt;
+      const title = el.querySelector('#hero-title');
+      if (title) title.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 300 });
+      const ray = el.querySelector('#ray');
+      if (ray) ray.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 400 });
+    });
+  };
+}`;
+
+test( 'MUST FAIL: an element the template stamps with its own id is that element, never an injected part of its holder', () => {
+	const recs = waapi( censusOf( { logic: TITLED, rows: [ HOLDER ], stamped: [ { n: '400', tag: 'h1', attrs: [ [ 'id', 'hero-title' ] ] } ] } ) );
+	const title = recs.find( ( r ) => r.source.code.startsWith( 'title.animate' ) ).element;
+	assert.equal( title.template_tpl_id, '400' );
+	assert.doesNotMatch( title.selection_rule ?? '', /the part/ );
+	const ray = recs.find( ( r ) => r.source.code.startsWith( 'ray.animate' ) ).element;
+	assert.deepEqual( [ ray.template_tpl_id, ray.selector ], [ '321', '#ray' ], 'a part the template does not stamp stays a part' );
+} );
+
+test( 'MUST FAIL: a custom element stamped in several components gets its part motion in each component', () => {
+	const footer = { id: 'template-element@Footer:12', kind: 'template-element', component: 'Footer', draftId: 'Footer:12', detail: { tag: 'brand-mark' } };
+	const recs = waapi( censusOf( { script: MARK, rows: [ ...MARKS, footer ] } ) );
+	assert.equal( recs.length, 6 );
+	const spin = recs.filter( ( r ) => '#sunrays_spin' === r.element.selector ).map( ( r ) => [ r.element.dc, r.element.template_tpl_id ] );
+	assert.deepEqual( spin, [ [ 'App', [ '49', '976' ] ], [ 'Footer', '12' ] ] );
 } );
 
 test( 'idOfSelector reads only a plain id query', () => {

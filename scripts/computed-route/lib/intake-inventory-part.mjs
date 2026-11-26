@@ -12,6 +12,7 @@
 import { walkAst } from './intake-census-logic.mjs';
 import { isFn, isThis, prop, ancestors, literalOf, declaratorsOf } from './intake-inventory-code.mjs';
 import { targetOf } from './intake-inventory-target.mjs';
+import { matchSelector } from './intake-inventory-css.mjs';
 
 const QUERY = /^(querySelector|querySelectorAll|getElementById)$/;
 const isScope = ( x ) => isFn( x ) || 'BlockStatement' === x.type || 'Program' === x.type || 'StaticBlock' === x.type;
@@ -127,7 +128,8 @@ function definedTagOf( p, n ) {
 	return call ? literalOf( call.arguments[ 0 ] ) : null;
 }
 
-// The stamped element(s) a query base is: { tpl: [n], comp, selector } or null.
+// The stamped element(s) a query base is, one entry per component that stamps them: [ { tpl: [n], comp, selector } ] (a
+// custom element's own component first), or null.
 function holderOf( model, comp, p, base, depth = 0 ) {
 	if ( ! base || depth > 8 ) {
 		return null;
@@ -140,19 +142,20 @@ function holderOf( model, comp, p, base, depth = 0 ) {
 		const tag = definedTagOf( p, n );
 		const rows = tag ? model.census.rows.filter( ( r ) => 'template-element' === r.kind && tag === String( r.detail?.tag ?? '' ).toLowerCase() ) : [];
 		const owner = p.file ? model.scriptOwner.get( comp ) : comp;
-		const mine = rows.filter( ( r ) => r.component === owner );
-		const use = mine.length ? mine : rows.filter( ( r ) => r.component === rows[ 0 ]?.component );
-		return use.length ? { tpl: use.map( ( r ) => r.draftId.slice( r.draftId.lastIndexOf( ':' ) + 1 ) ), comp: use[ 0 ].component, selector: `<${ tag }>` } : null;
+		const comps = [ ...new Set( rows.map( ( r ) => r.component ) ) ].sort( ( a, b ) => Number( b === owner ) - Number( a === owner ) );
+		return comps.length ? comps.map( ( c ) => ( { tpl: rows.filter( ( r ) => r.component === c ).map( ( r ) => r.draftId.slice( r.draftId.lastIndexOf( ':' ) + 1 ) ), comp: c, selector: `<${ tag }>` } ) ) : null;
 	}
 	if ( 'Identifier' === n.type && ! p.file ) {
 		const t = targetOf( model, comp, n );
-		return t.tpl.length ? { tpl: t.tpl, comp: t.comp, selector: t.selector } : null;
+		return t.tpl.length ? [ { tpl: t.tpl, comp: t.comp, selector: t.selector } ] : null;
 	}
 	return null;
 }
 
-// The target of a Web Animations call on a part of code-injected content: { tpl: [n], comp, selector, rule, parts } or
-// null. `selector` names the parts by id (`#x`, `[id="x y"]`; `> *` for each child of one), `parts` lists their ids.
+// The target of a Web Animations call on a part of code-injected content: { tpl: [n], comp, selector, rule, parts, byComp }
+// or null. `selector` names the parts by id (`#x`, `[id="x y"]`; `> *` for each child of one), `parts` lists their ids;
+// `byComp` is the holder's stamps in every component that stamps it ([ { tpl, comp } ], `tpl` and `comp` its first), so a
+// custom element stamped in several components gets its part motion in each.
 export function partTarget( model, comp, expr ) {
 	const p = model.progs.get( comp );
 	const parts = p ? partsOf( p, expr ) : null;
@@ -160,11 +163,16 @@ export function partTarget( model, comp, expr ) {
 		return null;
 	}
 	const holders = parts.map( ( x ) => holderOf( model, comp, p, x.base ) );
-	if ( ! holders.every( Boolean ) || new Set( holders.map( ( h ) => `${ h.comp }|${ h.tpl.join( ',' ) }` ) ).size !== 1 ) {
+	if ( ! holders.every( Boolean ) || new Set( holders.map( ( h ) => h.map( ( x ) => `${ x.comp }|${ x.tpl.join( ',' ) }` ).join( ';' ) ) ).size !== 1 ) {
 		return null;
 	}
 	const ids = [ ...new Set( parts.map( ( x ) => x.id ) ) ];
+	// An id a stamped template element carries itself (a `#hero-title` in the template) is that element, not injected content.
+	if ( ids.some( ( id ) => model.census.sources.some( ( src ) => matchSelector( src.stamped?.elements || [], `[id="${ id }"]` ).tpl.length ) ) ) {
+		return null;
+	}
 	const one = ( x ) => `${ /^[A-Za-z_][\w-]*$/.test( x.id ) ? `#${ x.id }` : `[id="${ x.id }"]` }${ x.children ? ' > *' : '' }`;
 	const selector = [ ...new Set( parts.map( one ) ) ].join( ', ' );
-	return { tpl: holders[ 0 ].tpl, comp: holders[ 0 ].comp, selector, parts: ids, rule: `${ parts.some( ( x ) => x.children ) ? 'each child of ' : '' }the part${ ids.length > 1 ? 's' : '' } ${ ids.map( ( x ) => `"${ x }"` ).join( ', ' ) } of the content the code puts into ${ holders[ 0 ].selector }` };
+	const [ first ] = holders[ 0 ];
+	return { tpl: first.tpl, comp: first.comp, byComp: holders[ 0 ].map( ( h ) => ( { tpl: h.tpl, comp: h.comp } ) ), selector, parts: ids, rule: `${ parts.some( ( x ) => x.children ) ? 'each child of ' : '' }the part${ ids.length > 1 ? 's' : '' } ${ ids.map( ( x ) => `"${ x }"` ).join( ', ' ) } of the content the code puts into ${ first.selector }` };
 }
