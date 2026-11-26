@@ -32,6 +32,8 @@
 			"builtinButtons": [
 				{
 					"prefix": "flowOpener",
+					"showWhen": [],
+					"showWhenNote": "Prints where a product links a choice flow: product data the editor cannot read, so it is offered.",
 					"part": "flow-opener",
 					"follows": "addToCart",
 					"label": "Flow opener button",
@@ -39,6 +41,8 @@
 				},
 				{
 					"prefix": "addToCart",
+					"showWhen": [],
+					"showWhenNote": "Add to Cart always prints.",
 					"part": "add-to-cart",
 					"label": "Add to Cart button",
 					"groups": [ "preset", "colour", "border", "padding", "width", "minHeight", "contentAlign", "shadow", "hoverLift", "typography" ]

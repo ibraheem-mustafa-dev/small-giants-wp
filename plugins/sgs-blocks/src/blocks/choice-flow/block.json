@@ -22,35 +22,45 @@
 			"builtinButtons": [
 				{
 					"prefix": "back",
+					"showWhen": [],
+					"showWhenNote": "Back always prints in the footer (the script shows it from step two).",
 					"part": "back",
 					"label": "Back button",
 					"groups": [ "preset", "colour", "border", "padding", "width", "minHeight", "shadow", "hoverLift" ]
 				},
 				{
 					"prefix": "skip",
+					"showWhen": [ { "attr": "skipLabel", "op": "notEmpty" } ],
 					"part": "skip",
 					"label": "Skip link"
 				},
 				{
 					"prefix": "continue",
+					"showWhen": [],
+					"showWhenNote": "Continue always prints in the footer.",
 					"part": "continue",
 					"label": "Continue button",
 					"groups": [ "preset", "colour", "border", "padding", "width", "minHeight", "contentAlign", "shadow", "hoverLift", "typography" ]
 				},
 				{
 					"prefix": "addToBasket",
+					"showWhen": [],
+					"showWhenNote": "Add to basket always prints in the footer (the script shows it on a result step).",
 					"part": "add-to-basket",
 					"label": "Add to basket button",
 					"groups": [ "preset", "colour", "border", "padding", "width", "minHeight", "contentAlign", "shadow", "hoverLift", "typography" ]
 				},
 				{
 					"prefix": "buyNow",
+					"showWhen": [],
+					"showWhenNote": "Buy now always prints in the footer (the script shows it on a result step).",
 					"part": "buy-now",
 					"label": "Buy now button",
 					"groups": [ "preset", "colour", "border", "padding", "width", "minHeight", "contentAlign", "shadow", "hoverLift", "typography" ]
 				},
 				{
 					"prefix": "closeButton",
+					"showWhen": [ { "attr": "showHeader", "op": "on", "default": false } ],
 					"part": "close",
 					"label": "Close button"
 				}
