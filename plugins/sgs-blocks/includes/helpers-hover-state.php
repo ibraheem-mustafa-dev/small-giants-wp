@@ -189,6 +189,71 @@ if ( ! function_exists( 'sgs_touch_hover_member' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_touch_hover_root_compound' ) ) {
+	/**
+	 * The length of a member's first compound when it is the root (`:root`, `html`), else 0.
+	 *
+	 * @param string $member Selector member.
+	 * @return int
+	 */
+	function sgs_touch_hover_root_compound( string $member ): int {
+		if ( 1 !== preg_match( '/^(?::root|html)(?![\w-])/i', $member ) ) {
+			return 0;
+		}
+		$depth = 0;
+		for ( $i = 0, $n = strlen( $member ); $i < $n; $i++ ) {
+			$c = $member[ $i ];
+			if ( '(' === $c || '[' === $c ) {
+				++$depth;
+			} elseif ( ')' === $c || ']' === $c ) {
+				--$depth;
+			} elseif ( 0 === $depth && false !== strpos( " \t\n>+~", $c ) ) {
+				return $i;
+			}
+		}
+		return strlen( $member );
+	}
+}
+
+if ( ! function_exists( 'sgs_touch_hover_guarded' ) ) {
+	/**
+	 * A member behind a root guard. A member that starts at the root (`:root :where(a:hover)`, WordPress's global
+	 * styles) takes the guard on that compound (`:root:where(:not(.sgs-touch-input))`), since the root is no descendant
+	 * of itself; any other member takes it as a descendant prefix. Both forms add no specificity.
+	 *
+	 * @param string $member Selector member.
+	 * @param string $guard  SGS_HOVER_NOT_TOUCH or SGS_HOVER_TOUCH_ONLY.
+	 * @return string
+	 */
+	function sgs_touch_hover_guarded( string $member, string $guard ): string {
+		$at = sgs_touch_hover_root_compound( $member );
+		if ( $at > 0 ) {
+			return substr( $member, 0, $at ) . ':where(' . substr( $guard, strlen( ':where(:root' ), -1 ) . ')' . substr( $member, $at );
+		}
+		return $guard . ' ' . $member;
+	}
+}
+
+if ( ! function_exists( 'sgs_touch_hover_unguarded' ) ) {
+	/**
+	 * A member without the mouse guard (either form).
+	 *
+	 * @param string $member Selector member.
+	 * @return string
+	 */
+	function sgs_touch_hover_unguarded( string $member ): string {
+		if ( 0 === strpos( $member, SGS_HOVER_NOT_TOUCH ) ) {
+			return trim( substr( $member, strlen( SGS_HOVER_NOT_TOUCH ) ) );
+		}
+		$at   = sgs_touch_hover_root_compound( $member );
+		$tail = ':where(:not(.sgs-touch-input))';
+		if ( $at > strlen( $tail ) && substr( $member, $at - strlen( $tail ), strlen( $tail ) ) === $tail ) {
+			return substr( $member, 0, $at - strlen( $tail ) ) . substr( $member, $at );
+		}
+		return $member;
+	}
+}
+
 if ( ! function_exists( 'sgs_touch_hover_contract_members' ) ) {
 	/**
 	 * The members a rule carries under the contract (see this file's header).
@@ -202,18 +267,18 @@ if ( ! function_exists( 'sgs_touch_hover_contract_members' ) ) {
 		$out   = array();
 		$touch = array();
 		foreach ( $members as $m ) {
-			$plain = 0 === strpos( $m, SGS_HOVER_NOT_TOUCH ) ? trim( substr( $m, strlen( SGS_HOVER_NOT_TOUCH ) ) ) : $m;
-			if ( sgs_touch_hover_has_hover( $plain ) && 1 !== preg_match( '/^(?:::|:root\b|html\b)/i', $plain ) ) {
+			$plain = sgs_touch_hover_unguarded( $m );
+			if ( sgs_touch_hover_has_hover( $plain ) && 0 !== strpos( $plain, '::' ) ) {
 				$t = sgs_touch_hover_member( $plain );
 				if ( null !== $t ) {
-					$half = $t['negated'] ? SGS_HOVER_TOUCH_ONLY . ' ' . $t['selector'] : $t['selector'];
+					$half = $t['negated'] ? sgs_touch_hover_guarded( $t['selector'], SGS_HOVER_TOUCH_ONLY ) : $t['selector'];
 					if ( $in_mouse ) {
 						$touch[] = $half;
 					} else {
 						$out[] = $half;
 					}
 				}
-				$out[] = $in_mouse ? $m : SGS_HOVER_NOT_TOUCH . ' ' . $plain;
+				$out[] = $in_mouse ? $m : sgs_touch_hover_guarded( $plain, SGS_HOVER_NOT_TOUCH );
 				continue;
 			}
 			$out[] = $m;

@@ -62,6 +62,11 @@
 			"out": ".sgs-info-box.sgs-has-hover.sgs-pressed{box-shadow:var(--s)}@media (hover:hover){.sgs-info-box.sgs-has-hover:hover{box-shadow:var(--s)}}"
 		},
 		{
+			"name": "a member that starts at the root (WordPress's global styles) takes the guard on the root itself",
+			"in": ":root :where(a:where(:not(.wp-element-button)):hover){color:var(--x)}",
+			"out": ":root :where(a:where(:not(.wp-element-button)).sgs-pressed),:root:where(:not(.sgs-touch-input)) :where(a:where(:not(.wp-element-button)):hover){color:var(--x)}"
+		},
+		{
 			"name": "a :hover inside a quoted attribute value is text, not a state",
 			"in": "a[title=\":hover\"]:hover{color:red}",
 			"out": "a[title=\":hover\"].sgs-pressed,:where(:root:not(.sgs-touch-input)) a[title=\":hover\"]:hover{color:red}"

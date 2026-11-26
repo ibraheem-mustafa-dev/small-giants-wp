@@ -64,17 +64,61 @@ function normalise( member ) {
 }
 
 /**
- * Whether a hover member cannot take the guard as a descendant prefix: it starts at a pseudo-element (a viewport
- * scrollbar, `::-webkit-scrollbar-thumb:hover`) or at the root itself. Such a member is mouse-only in practice and stays
- * as written.
+ * Whether a hover member cannot take the guard: it starts at a pseudo-element (a viewport scrollbar,
+ * `::-webkit-scrollbar-thumb:hover`). Such a member is mouse-only in practice and stays as written.
  */
 function unguardable( member ) {
-	return /^(::|:root|html)/i.test( member );
+	return /^::/.test( member );
 }
 
-/** A member without the mouse guard. */
+/** The length of a member's first compound when it is the root (`:root`, `html`), else 0. */
+function rootCompound( member ) {
+	const m = /^(?::root|html)(?![\w-])/i.exec( member );
+	if ( ! m ) {
+		return 0;
+	}
+	let depth = 0;
+	for ( let i = 0; i < member.length; i++ ) {
+		const c = member[ i ];
+		if ( '(' === c || '[' === c ) {
+			depth++;
+		} else if ( ')' === c || ']' === c ) {
+			depth--;
+		} else if ( 0 === depth && /[\s>+~]/.test( c ) ) {
+			return i;
+		}
+	}
+	return member.length;
+}
+
+/**
+ * A member behind a root guard. A member that starts at the root (`:root :where(a:hover)`, WordPress's global styles)
+ * takes the guard on that compound (`:root:where(:not(.sgs-touch-input))`), since the root is no descendant of itself;
+ * any other member takes it as a descendant prefix. Both forms add no specificity.
+ *
+ * @param {string} member
+ * @param {string} guard  SGS_HOVER_NOT_TOUCH or SGS_HOVER_TOUCH_ONLY.
+ */
+function withGuard( member, guard ) {
+	const at = rootCompound( member );
+	if ( at ) {
+		const inner = guard.slice( ':where(:root'.length, -1 );
+		return `${ member.slice( 0, at ) }:where(${ inner })${ member.slice( at ) }`;
+	}
+	return `${ guard } ${ member }`;
+}
+
+/** A member without the mouse guard (either form). */
 function unguarded( member ) {
-	return member.startsWith( SGS_HOVER_NOT_TOUCH ) ? member.slice( SGS_HOVER_NOT_TOUCH.length ).trim() : member;
+	if ( member.startsWith( SGS_HOVER_NOT_TOUCH ) ) {
+		return member.slice( SGS_HOVER_NOT_TOUCH.length ).trim();
+	}
+	const at = rootCompound( member );
+	const tail = ':where(:not(.sgs-touch-input))';
+	if ( at && member.slice( 0, at ).endsWith( tail ) ) {
+		return member.slice( 0, at - tail.length ) + member.slice( at );
+	}
+	return member;
 }
 
 /**
@@ -127,7 +171,7 @@ function contractMembers( members, inMouse ) {
 		} else if ( hasHover( plain ) ) {
 			const t = touchMember( plain );
 			if ( t ) {
-				const half = t.negated ? `${ SGS_HOVER_TOUCH_ONLY } ${ t.selector }` : t.selector;
+				const half = t.negated ? withGuard( t.selector, SGS_HOVER_TOUCH_ONLY ) : t.selector;
 				( inMouse ? touch : out ).push( half );
 			}
 			if ( inMouse ) {
@@ -136,7 +180,7 @@ function contractMembers( members, inMouse ) {
 				if ( plain === m ) {
 					guarded++;
 				}
-				out.push( `${ SGS_HOVER_NOT_TOUCH } ${ plain }` );
+				out.push( withGuard( plain, SGS_HOVER_NOT_TOUCH ) );
 			}
 		} else if ( hasActive( m ) ) {
 			out.push( m );
@@ -317,7 +361,7 @@ function auditCss( css, filename ) {
 					continue;
 				}
 				const t = touchMember( plain );
-				const half = t && ( t.negated ? `${ SGS_HOVER_TOUCH_ONLY } ${ t.selector }` : t.selector );
+				const half = t && ( t.negated ? withGuard( t.selector, SGS_HOVER_TOUCH_ONLY ) : t.selector );
 				if ( half && ! existing.has( normalise( half ) ) ) {
 					findings.push( { kind: 'missing-touch-half', selector: m, line } );
 				}
