@@ -11,19 +11,21 @@ const COLUMN_SHARE = 0.9;
 export const inColumn = ( layout ) => Boolean( layout && layout.cols >= 2 && layout.cellW < layout.gridW * COLUMN_SHARE );
 
 // The pairs of draft and live field. The draft side is the fields the draft shows (each wizard step's as read at that step,
-// lib/apply-probes.mjs::formProbe; a conditional field hidden at rest takes no place). The live side is read at rest: it is the
-// fields the live form shows, and those hidden only because their wizard step is not the current one (`laterStep`, read by
+// lib/apply-probes.mjs::formProbe; a conditional field hidden at rest takes no place). The live side is read at rest. Where every
+// draft field has a name and the live form holds a field of that name, shown or not, each pairs with its namesake (a live field
+// the draft shows may be hidden at rest by its own condition). Otherwise they pair by position against the fields the live form
+// shows and those hidden only because their wizard step is not the current one (`laterStep`, read by
 // lib/apply-probes.mjs::fieldsOf: inside a `.sgs-form-step--hidden` step and not hidden by a condition), so a wizard's later steps
-// pair while a live field a condition hides takes no place. Where every draft field has a name and the live form holds a field of
-// that name, each pairs with its namesake; otherwise they pair by position, which needs equal counts (`pairs` is empty when the
-// counts differ).
+// keep their place while a live field a condition hides takes none; position pairing needs equal counts (`pairs` is empty when
+// the counts differ).
 export function pairedFields( d, l ) {
 	const ds = d.filter( ( f ) => ! f.honeypot && false !== f.shown );
-	const ls = l.filter( ( f ) => ! f.honeypot && ( false !== f.shown || f.laterStep ) );
-	const named = ds.length > 0 && ds.every( ( f ) => f.name && ls.some( ( x ) => x.name === f.name ) );
+	const all = l.filter( ( f ) => ! f.honeypot );
+	const named = ds.length > 0 && ds.every( ( f ) => f.name && all.some( ( x ) => x.name === f.name ) );
 	if ( named ) {
-		return { drafts: ds, lives: ds.map( ( f ) => ls.find( ( x ) => x.name === f.name ) ), pairs: ds.map( ( f ) => [ f, ls.find( ( x ) => x.name === f.name ) ] ) };
+		return { drafts: ds, lives: ds.map( ( f ) => all.find( ( x ) => x.name === f.name ) ), pairs: ds.map( ( f ) => [ f, all.find( ( x ) => x.name === f.name ) ] ) };
 	}
+	const ls = all.filter( ( f ) => false !== f.shown || f.laterStep );
 	return { drafts: ds, lives: ls, pairs: ds.length === ls.length ? ds.map( ( f, i ) => [ f, ls[ i ] ] ) : [] };
 }
 

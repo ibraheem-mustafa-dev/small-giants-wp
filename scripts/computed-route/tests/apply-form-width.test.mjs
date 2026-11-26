@@ -68,6 +68,17 @@ test( 'MUST FAIL: unnamed fields pair by position when the live form hides a con
 	assert.deepEqual( pairedFields( draftSide, liveSide ).pairs.map( ( [ , l ] ) => l.layout.ref ), [ 'cr-ref-a', 'cr-ref-c' ] );
 	const items = fieldWidths( { draft: { 1440: { probes: { fields: draftSide } } }, live: { 1440: { probes: { fields: liveSide } } }, block: 'sgs/form', all, db } );
 	assert.deepEqual( items.map( ( i ) => [ i.ref, i.status ] ), [ [ 'cr-ref-a', 'op' ], [ 'cr-ref-c', 'op' ] ] );
+	// An unnamed wizard: the live form's later-step fields keep their place in the position pairing.
+	const wizardLive = [ bare( live( 'x', 'cr-ref-a' ) ), bare( live( 'z', 'cr-ref-c', { shown: false, laterStep: true } ) ) ];
+	assert.deepEqual( pairedFields( draftSide, wizardLive ).pairs.map( ( [ , l ] ) => l.layout.ref ), [ 'cr-ref-a', 'cr-ref-c' ] );
+} );
+
+// The draft shows every field; the live form hides one at rest by its own condition (not a later step). By name the field is still
+// there, so all three pair by name.
+test( 'MUST FAIL: named fields pair by name with a live field hidden at rest by a condition', () => {
+	const draftSide = [ field( 'a', column ), field( 'b', column ), field( 'c', column ) ];
+	const liveSide = [ live( 'a', 'cr-ref-a' ), live( 'b', 'cr-ref-b', { shown: false, laterStep: false } ), live( 'c', 'cr-ref-c' ) ];
+	assert.deepEqual( pairedFields( draftSide, liveSide ).pairs.map( ( [ d, l ] ) => [ d.name, l.layout.ref ] ), [ [ 'a', 'cr-ref-a' ], [ 'b', 'cr-ref-b' ], [ 'c', 'cr-ref-c' ] ] );
 } );
 
 // The live probe says why a field is hidden at rest: only by its wizard step (laterStep), or by a condition (in a shown step or a
