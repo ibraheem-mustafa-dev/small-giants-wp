@@ -36,7 +36,11 @@ export default function useOverflowRuns( enabled, rootRef, signature ) {
 
 	useEffect( () => {
 		const root = rootRef.current;
-		if ( ! enabled || ! root || 'function' !== typeof window.ResizeObserver ) {
+		if (
+			! enabled ||
+			! root ||
+			'function' !== typeof window.ResizeObserver
+		) {
 			return undefined;
 		}
 		const observer = new window.ResizeObserver( () =>
@@ -63,7 +67,8 @@ export default function useOverflowRuns( enabled, rootRef, signature ) {
 		if ( ! track || ! lane ) {
 			return;
 		}
-		const gap = parseFloat( window.getComputedStyle( track ).columnGap ) || 0;
+		const gap =
+			parseFloat( window.getComputedStyle( track ).columnGap ) || 0;
 		const fits = setFitsLane(
 			track.getBoundingClientRect().width,
 			gap,
