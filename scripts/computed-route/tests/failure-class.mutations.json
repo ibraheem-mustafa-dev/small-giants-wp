@@ -1,0 +1,7 @@
+[
+	{"file": "lib/failure-class.mjs", "find": "/is stale: the export changed since it was written|the saved inventory is stale|; run intake again|", "replace": "/stale.*intake|", "why": "a StaleRecordError, stale saved inventory or does-not-parse message falls into other"},
+	{"file": "lib/failure-class.mjs", "find": "|intake\\.json hashes differ from MANIFEST\\.json|in MANIFEST\\.json and \\S+ in intake\\.json/", "replace": "|intake\\.json hashes differ from MANIFEST\\.json|in MANIFEST\\.json and \\S+ in intake\\.json|stale|intake/", "why": "any message that names intake or staleness is classed stale-intake"},
+	{"file": "lib/failure-class.mjs", "find": "/handover (owner \"|kind \"|#\\d+ (kind \"|needs a detail)|must be a list)|a handover entry carries its evidence row/", "replace": "/handover/", "why": "any message naming a handover is classed handover-shape"},
+	{"file": "lib/failure-class.mjs", "find": "/handover (owner \"|kind \"|#\\d+ (kind \"|needs a detail)|must be a list)|a handover entry carries its evidence row/", "replace": "/handover kind \"/", "why": "a handover owner or detail message falls into other"},
+	{"file": "lib/failure-class.mjs", "find": "/not at rest after a fresh load/", "replace": "/not at rest after a fresh load|was refused, not measured/", "why": "the refusal wording alone is classed not-at-rest"}
+]

@@ -4,15 +4,17 @@
 // matches. A message no row matches is `other`: a new class is a new row, and a failure that keeps landing in `other` is a row
 // to add. The classes are the ones the 2026-11 proof runs produced.
 export const FAILURE_CLASSES = [
-	[ 'not-at-rest', /not at rest after a fresh load|was refused, not measured/ ],
+	[ 'not-at-rest', /not at rest after a fresh load/ ],
 	[ 'live-element-absent', /has no element for the surface's root|the live page has no element/ ],
 	[ 'no-setting-row', /no-setting rows?\b.*(name|names) (something|a setting)/s ],
-	[ 'stale-intake', /intake\.json.*(stale|older)|stale.*intake|(stale|invalid) one is the record/s ],
+	// The messages lib/freshness.mjs::StaleRecordError, lib/fact-record.mjs (a record that does not parse or validate, a stale saved inventory) and lib/gate-chain.mjs (intake against MANIFEST.json) throw.
+	[ 'stale-intake', /is stale: the export changed since it was written|the saved inventory is stale|; run intake again|intake\.json hashes differ from MANIFEST\.json|in MANIFEST\.json and \S+ in intake\.json/ ],
 	[ 'paint-conservation', /paint conservation/ ],
 	[ 'paint-pairing', /paint pairing/ ],
 	[ 'no-default-paint', /no default paint/ ],
 	[ 'skeleton-lint', /skeleton lint|the skeleton is not valid/ ],
-	[ 'handover-shape', /handover/ ],
+	// The messages lib/fill-handover.mjs throws or returns for a handover entry.
+	[ 'handover-shape', /handover (owner "|kind "|#\d+ (kind "|needs a detail)|must be a list)|a handover entry carries its evidence row/ ],
 	[ 'unknown-rule', /unknown rule/ ],
 	[ 'fill-wrote-no-tree', /Fill wrote no tree|none of its pages has a Filled tree/ ],
 	[ 'tree-rejected', /setting "[^"]+" must be|tree rejected/ ],

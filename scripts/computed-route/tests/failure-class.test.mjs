@@ -15,6 +15,11 @@ const REAL = [
 	[ 'paint-pairing', '2 proposal problems: paint pairing: Root/1168#0 fits several measured parts of sgs/nav-drawer-menu' ],
 	[ 'skeleton-lint', 'exit 2: the skeleton is not valid (R-47-10): | - node 12 (sgs/heading) carries `headingLevel`' ],
 	[ 'handover-shape', 'exit 2: - node 62 (sgs/google-reviews) handover #0 kind "undefined" is not one of text, presence, link, behaviour' ],
+	[ 'stale-intake', 'handoff/home is stale: the export changed since it was written (support.js changed; x.dc.html added); run intake again' ],
+	[ 'stale-intake', 'exit 1: the saved inventory is stale and its instance keys are not used (a.dc.html changed); run intake again' ],
+	[ 'stale-intake', 'intake.json hashes differ from MANIFEST.json: x.dc.html, support.js' ],
+	[ 'handover-shape', 'exit 2: - node 4 (sgs/hero) handover owner "nobody" is not one of fill, walker, framework' ],
+	[ 'handover-shape', 'exit 2: - node 4 (sgs/hero) handover #1 needs a detail saying what lives outside the tree' ],
 	[ 'no-intake-surface', 'no intake surface: no handoff record matched' ],
 	[ 'missing-input', 'exit 1: [FAIL] cannot read tree: ENOENT: no such file or directory, open \'sites\indus-foods\build\qa\fill\footer\filled.tree.json\'' ],
 	[ 'browser-timeout', 'page.evaluate: Execution context was destroyed, most likely because of a navigation' ],
@@ -25,6 +30,12 @@ test( 'MUST FAIL: each real failure message is classed, and an unknown one is `o
 	for ( const [ cls, message ] of REAL ) {
 		assert.equal( failureClass( message ), cls, message );
 	}
+} );
+
+test( 'MUST FAIL: a message that only mentions intake, staleness or a handover in passing is not that class', () => {
+	assert.equal( failureClass( 'the stale cache of the intake folder was cleared' ), OTHER_FAILURE );
+	assert.equal( failureClass( 'exit 1: no handover notes were written for the hero' ), OTHER_FAILURE );
+	assert.equal( failureClass( 'walk failed: run "auto" at 768 was refused, not measured' ), OTHER_FAILURE, 'the refusal wording alone is not a class; the reason it carries is' );
 } );
 
 test( 'an error\'s own class wins over the message', () => {
