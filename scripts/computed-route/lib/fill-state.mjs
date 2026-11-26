@@ -379,8 +379,9 @@ export function fillStates( { tree, nodes, reads, calFor, db, snapshot, rawSnaps
 				const asHover = ! atRest && ! pseudo && openAsHover( { script, state, held, hasHover: candidates( db, rec.name, prop, 'hover' ).length > 0, hasOpen: candidates( db, rec.name, prop, 'open' ).length > 0, hoverLook: drafts.has( `hover|${ pseudo }|${ prop }` ) } );
 				const writeState = asHover ? 'hover' : state;
 				const gap = atRest ? null : stateGap( writeState, held );
-				// A resting setting whose value paints this look in this state (linkUnderline: hover) answers before the state settings do.
-				const chosen = pseudo || atRest || asHover || ! [ 'hover', 'focus' ].includes( state ) ? null : stateChoice( { cal, slot, prop, rest: restValue( reads, target.id, prop ), draft: perWidth, state } );
+				// A resting setting whose value paints this look in this state (linkUnderline: hover) answers before the state settings do,
+				// in any state the site look read its values in (hover, focus, active, or a condition such as current or open: enumStateReads).
+				const chosen = pseudo || atRest || asHover ? null : stateChoice( { cal, slot, prop, rest: restValue( reads, target.id, prop ), draft: perWidth, state } );
 								const choice = chosen && chosen.writes.map( ( w ) => choiceConflict( { setting: cal.settings?.[ w.attr ], attr: w.attr, prop, rest: restValue( reads, target.id, prop ), value: w.value, current: node.attributes?.[ w.attr ], owner: ownerOf( node, w.attr ), taken: taken.get( w.attr ), slot: target.slot } ) ).find( Boolean );
 				const res = choice ? { status: 'gap', gap: 'conflict', detail: choice } : chosen ?? ( gap ? { status: 'gap', gap } : resolveProperty( { node, block: rec.name, prop, draft: perWidth, baseline: () => undefined, slots: [ slot, ...( atRest || asHover ? [] : openSlots( cal, prop, slot, state ) ) ].concat( atRest ? [] : partStateSlots( { db, cal, block: rec.name, prop, slot, state: writeState } ) ), calibration: cal, db, snapshot, log: [], state: atRest ? null : writeState, siblings: ctx.siblings, rest: pseudo ? undefined : restValue( reads, target.id, prop ) } ) );
 				if ( 'written' === res.status ) {
