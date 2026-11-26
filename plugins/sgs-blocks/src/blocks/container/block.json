@@ -25,9 +25,9 @@
 		"color": false,
 		"sgs": {
 			"builtinButtons": [
-				{ "prefix": "arrow", "part": "arrow", "label": "Scroll row arrows", "groups": [ "colour", "border", "size", "float", "shadow" ] }
+				{ "prefix": "arrow", "showWhen": [ { "attr": "scrollSideways", "op": "tierAny", "value": "on", "default": "off" }, { "attr": "sgsMotion.elements.root.effects", "op": "lacksItem", "key": "effect", "value": "horizontal-panel" }, { "attr": "scrollArrows", "op": "on", "default": false } ], "part": "arrow", "label": "Scroll row arrows", "groups": [ "colour", "border", "size", "float", "shadow" ] }
 			],
-			"carouselDots": { "prefix": "dot", "part": "dot", "label": "Scroll row dots" },
+			"carouselDots": { "prefix": "dot", "showWhen": [ { "attr": "scrollSideways", "op": "tierAny", "value": "on", "default": "off" }, { "attr": "sgsMotion.elements.root.effects", "op": "lacksItem", "key": "effect", "value": "horizontal-panel" }, { "attr": "scrollDots", "op": "on", "default": false } ], "part": "dot", "label": "Scroll row dots" },
 			"mediaElements": [
 				{
 					"prefix": "background",

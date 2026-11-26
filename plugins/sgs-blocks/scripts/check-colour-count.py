@@ -44,7 +44,7 @@ KIT_BODIES = (
     "src/components/button-kit/BuiltinButtonPanelBody.js",
     "src/components/carousel-dots/CarouselDotsPanelBody.js",
 )
-HELPERS = ("builtinButtonColourRows", "carouselDotsColourRows")
+HELPERS = ("builtinButtonColourRows", "carouselDotsColourRows", "carouselControlsColourRows")
 
 
 def block_dirs(src: Path):
@@ -205,7 +205,7 @@ def findings(s: dict, stage: str = "all"):
                 out.append({"block": "(kit)", "kind": "kit mounts its own Colour panel", "detail": f"{f} mounts SgsColourPanel {info['colourPanelMounts']} time(s): export the rows and let the block pass them to its main Colour panel"})
         for slug, b in s["blocks"].items():
             for e in b["kits"]:
-                if not e["showWhen"]:
+                if e["showWhen"] is None:
                     out.append({"block": slug, "kind": "kit has no showWhen", "detail": f"{e['kit']} '{e['prefix']}' declares no showWhen (the PHP gate mirrored once in block.json)"})
             if b["kits"] and not b["over"] and any(e["mounted"] for e in b["kits"]) and not b["usesKitHelpers"]:
                 out.append({"block": slug, "kind": "kit rows not in the main Colour panel", "detail": f"{b['count']} base colours (12 or fewer) but no file in the block uses {' / '.join(HELPERS)}"})

@@ -34,7 +34,9 @@ import {
 
 import { authoredTextPlain } from '../../utils/authored-text';
 import SgsFreeTextField from '../../components/SgsFreeTextField';
-import BuiltinButtonPanel from '../../components/BuiltinButtonPanel';
+import BuiltinButtonPanel, {
+	builtinButtonColourRows,
+} from '../../components/BuiltinButtonPanel';
 import buttonKitStyle from '../../components/button-kit/button-kit-style';
 import { presetNames } from '../button/preset-names';
 // NumberControl is experimental — fall back gracefully to TextControl if absent.
@@ -333,6 +335,12 @@ export default function Edit( { attributes, setAttributes } ) {
 					},
 					( isOverlay || isPalette ) &&
 						scrimColourRow( { attributes, setAttributes } ),
+					...builtinButtonColourRows( {
+						attributes,
+						setAttributes,
+						blockName: 'sgs/product-search',
+						prefix: 'submit',
+					} ),
 				] }
 			/>
 			<InspectorControls>
@@ -638,6 +646,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				setAttributes={ setAttributes }
 				blockName="sgs/product-search"
 				prefix="submit"
+				colourInMainPanel
 			/>
 
 			<div { ...blockProps }>

@@ -30,26 +30,35 @@
 			"builtinButtons": [
 				{
 					"prefix": "signedOutSignIn",
+					"showWhen": [],
+					"showWhenNote": "The signed-out card always prints its sign-in button.",
 					"part": "signed-out-sign-in",
 					"label": "Sign in button (signed-out card)"
 				},
 				{
 					"prefix": "signedOutRegister",
+					"showWhen": [],
+					"showWhenNote": "Prints only where WooCommerce registration is on: a site setting the editor cannot read, so it is offered.",
 					"part": "signed-out-register",
 					"label": "Create account button (signed-out card)"
 				},
 				{
 					"prefix": "emptyState",
+					"showWhen": [ { "any": [ { "attr": "ordersEmptyButtonLabel", "op": "notEmpty" }, { "attr": "wishlistEmptyButtonLabel", "op": "notEmpty" } ] } ],
 					"part": "empty-state",
 					"label": "Empty-state button (orders and saved items)"
 				},
 				{
 					"prefix": "loginButton",
+					"showWhen": [],
+					"showWhenNote": "The sign-in form always prints its submit button.",
 					"part": "loginButton",
 					"label": "Sign in button (and the other form buttons with the all-forms scope)"
 				},
 				{
 					"prefix": "registerButton",
+					"showWhen": [],
+					"showWhenNote": "Prints only where WooCommerce registration is on: a site setting the editor cannot read, so it is offered.",
 					"part": "registerButton",
 					"label": "Create account button (account form)"
 				}

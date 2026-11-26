@@ -23,6 +23,7 @@
 
 import fs from 'fs';
 
+import { checkShowWhen } from './kit-show-when.mjs';
 import {
 	GENERATORS,
 	findBlockJsons,
@@ -160,6 +161,7 @@ export function declaredButtons( block, registry ) {
 		if ( unknown.length || ! groups.length ) {
 			problems.push( `${ at } names unknown or no groups: ${ unknown.join( ', ' ) || 'empty list' }; known: ${ Object.keys( registry.groups ).join( ', ' ) }` );
 		}
+		checkShowWhen( entry, at, block?.attributes, problems );
 		return { prefix: entry?.prefix, part: entry?.part, label: entry?.label, groups, elements: entry?.elements || [] };
 	} );
 	if ( problems.length ) {

@@ -40,8 +40,12 @@ import {
 	usePreviewTier,
 	BandWrap,
 } from '../../utils';
-import BuiltinButtonPanel from '../../components/BuiltinButtonPanel';
-import CarouselDotsPanel from '../../components/CarouselDotsPanel';
+import BuiltinButtonPanel, {
+	builtinButtonColourRows,
+} from '../../components/BuiltinButtonPanel';
+import CarouselDotsPanel, {
+	carouselDotsColourRows,
+} from '../../components/CarouselDotsPanel';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import {
@@ -233,6 +237,18 @@ export default function Edit( { attributes, setAttributes } ) {
 							},
 						],
 					},
+					...builtinButtonColourRows( {
+						attributes,
+						setAttributes,
+						blockName: 'sgs/testimonial-slider',
+						prefix: 'arrow',
+					} ),
+					...carouselDotsColourRows( {
+						attributes,
+						setAttributes,
+						blockName: 'sgs/testimonial-slider',
+						prefix: 'dot',
+					} ),
 				] }
 			/>
 			<InspectorControls>
@@ -864,12 +880,14 @@ export default function Edit( { attributes, setAttributes } ) {
 				setAttributes={ setAttributes }
 				blockName="sgs/testimonial-slider"
 				prefix="arrow"
+				colourInMainPanel
 			/>
 			<CarouselDotsPanel
 				attributes={ attributes }
 				setAttributes={ setAttributes }
 				blockName="sgs/testimonial-slider"
 				prefix="dot"
+				colourInMainPanel
 			/>
 			{ /* showLayout={false}: the block owns its own slide structure (__stage > __track,
 			     --sgs-slides-visible) and declares no container layout attributes. */ }

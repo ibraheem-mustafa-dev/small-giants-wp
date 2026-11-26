@@ -259,6 +259,23 @@ function selfTest() {
 		} )()
 	);
 	ck(
+		'declaration: showWhen takes known ops and declared attributes, an empty list is allowed, and each fault is named',
+		( () => {
+			const withWhen = ( when ) => {
+				const b = JSON.parse( fixText );
+				b.attributes.showArrows = { type: 'boolean' };
+				b.supports.sgs.builtinButtons = [ { prefix: 'arrow', part: 'arrow', label: 'Arrow', showWhen: when } ];
+				return b;
+			};
+			const good = declaredButtons( withWhen( [ { attr: 'showArrows', op: 'on', default: true }, { any: [ { attr: 'showArrows', op: 'equals', value: true } ] } ] ), registry ).length === 1 && declaredButtons( withWhen( [] ), registry ).length === 1;
+			const badOp = throws( () => declaredButtons( withWhen( [ { attr: 'showArrows', op: 'sometimes' } ] ), registry ) ).includes( 'op "sometimes"' );
+			const badAttr = throws( () => declaredButtons( withWhen( [ { attr: 'noSuchAttr', op: 'on' } ] ), registry ) ).includes( 'does not declare' );
+			const noValue = throws( () => declaredButtons( withWhen( [ { attr: 'showArrows', op: 'equals' } ] ), registry ) ).includes( 'needs "value"' );
+			const notList = throws( () => declaredButtons( withWhen( { attr: 'showArrows', op: 'on' } ), registry ) ).includes( 'must be a list' );
+			return good && badOp && badAttr && noValue && notList;
+		} )()
+	);
+	ck(
 		'declaration: a repeated prefix fails',
 		( () => {
 			const bad = JSON.parse( fixText );
