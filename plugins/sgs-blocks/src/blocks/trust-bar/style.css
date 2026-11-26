@@ -110,10 +110,19 @@
 /* Filled-icon exemption (per-badge fillStyle="filled"). A solid glyph — e.g. a
    filled star — must paint its area, so a filled badge overrides the outline
    default above. Fill colour follows the icon colour by default; an operator can
-   override it per badge via --sgs-trust-badge-icon-fill (set inline in render.php
-   from item.fillColour). */
-.sgs-trust-bar__circle--filled svg {
+   override it per badge via --sgs-trust-badge-icon-fill (a scoped rule render.php
+   builds from item.fillColour). A custom SVG's own shapes (`--custom`, the
+   raw-SVG branch of render.php) that say fill="currentColor" take the same
+   colour (an attribute on a shape beats the value it would inherit from the
+   root); a shape with fill="none" or its own literal colour keeps it, and a
+   library icon's currentColor shapes are its second colour (a dot in Lucide's
+   tag or key-round), so the rule never reaches them. */
+.sgs-trust-bar__circle--filled svg,
+.sgs-trust-bar__circle--filled.sgs-trust-bar__circle--custom svg [fill="currentColor" i] {
 	fill: var(--sgs-trust-badge-icon-fill, currentColor);
+}
+
+.sgs-trust-bar__circle--filled svg {
 	stroke: none;
 }
 
@@ -144,8 +153,12 @@
 	display: block;
 }
 
-.sgs-trust-bar__icon--filled svg {
+.sgs-trust-bar__icon--filled svg,
+.sgs-trust-bar__icon--filled.sgs-trust-bar__icon--custom svg [fill="currentColor" i] {
 	fill: var(--sgs-trust-badge-icon-fill, currentColor);
+}
+
+.sgs-trust-bar__icon--filled svg {
 	stroke: none;
 }
 

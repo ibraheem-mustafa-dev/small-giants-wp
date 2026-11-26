@@ -1033,7 +1033,7 @@
 				"wrap",
 				"drop"
 			],
-			"description": "What happens when the badges do not all fit on one line. 'ticker' (default) scrolls them as a ticker, only while they do not fit: a bar with no marquee layer of its own is given the overflow-only marquee at render time (`includes/motion/class-sgs-motion-ticker-default.php`), and a bar that stores its own marquee layer keeps it. 'wrap' lets them flow onto a second line. 'drop' keeps a single row and hides whichever trailing badges do not fit (measured live on the frontend by view.js; hidden badges use the native `hidden` attribute so they are never focusable or read by a screen reader). Ignored while a marquee runs at every width: it already keeps a single row."
+			"description": "What happens when the badges do not all fit on one line, where no marquee runs. The ticker itself is the root's stored marquee layer (`sgsMotion`, effect `marquee`; the Overflow control's Ticker writes it with `belowBreakpoint: overflow`, and a newly inserted bar starts with it): 'ticker' (default) and 'wrap' let the badges flow onto further lines wherever no marquee runs. 'drop' keeps a single row and hides whichever trailing badges do not fit (measured live on the frontend by view.js; hidden badges use the native `hidden` attribute so they are never focusable or read by a screen reader), outside a tablet or mobile marquee's range. Ignored while a marquee runs at every width or on overflow: it already keeps a single row."
 		},
 		"contentWidth": {
 			"type": "object",

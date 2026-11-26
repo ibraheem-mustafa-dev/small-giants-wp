@@ -52,6 +52,42 @@ export function measuredLoopOf( record, measured ) {
 	return loops.find( ( l ) => ! l.css && props.every( ( p ) => l.frames.some( ( f ) => p in f ) ) ) || null;
 }
 
+// A CSS animation record whose animation is a template value (`animation:{{ tickerAnim }}`: the record names the value,
+// not a keyframes rule, and holds no time) as the endless animation the render shows on its element: when the measured
+// widths show exactly one CSS animation name running there, the record is that loop, its name, keyframes, time and easing
+// read from the render (lib/motion-loops.mjs::resolvedLoop) and the widths it runs at deciding its range
+// (lib/fill-motion-element.mjs::elementEffects). Any other record, a value the render never shows running, or two
+// different animations measured on the element, or a loop another of the element's records (`others`) already names, is
+// returned unchanged, as is any record when 1440 was not sampled (the
+// widths it does not run at are then unknown). byWidth: sampleMotion()'s { 375, 768, 1440 }.
+export function templateValueLoop( record, byWidth, others = [] ) {
+	if ( 'css-animation' !== record?.mechanism || 'infinite' === record.iterations || Infinity === record.iterations || ! byWidth?.[ 1440 ] ) {
+		return record;
+	}
+	const named = ( record.properties || [] ).find( ( p ) => 'animation-name' === p.property )?.to;
+	const holes = [ ...String( record.source?.code || '' ).matchAll( /\banimation(?:-name)?\s*:\s*\{\{\s*([\w.$]+)\s*\}\}/g ) ].map( ( m ) => m[ 1 ] );
+	if ( ! named || ! holes.includes( named ) || ( record.properties || [] ).length !== 1 ) {
+		return record;
+	}
+	const names = new Set( Object.values( byWidth || {} ).flatMap( ( m ) => ( m?.loops || [] ).filter( ( l ) => l.css && l.name ).map( ( l ) => l.name ) ) );
+	if ( 1 !== names.size ) {
+		return record;
+	}
+	const [ name ] = names;
+	// The loop belongs to another record of the element: its own stylesheet animation by that name, or a record whose
+	// measured loop is that CSS loop. A record matching some other measured loop (a script loop beside it) claims nothing.
+	const namesIt = ( o ) => 'css-animation' === o.mechanism && ( o.properties || [] ).some( ( p ) => 'animation-name' === p.property && p.to === name );
+	const matches = ( o ) => Object.values( byWidth ).some( ( m ) => {
+		const l = measuredLoopOf( o, m );
+		return !! l && l.css && l.name === name;
+	} );
+	const claimed = ( others || [] ).some( ( o ) => o !== record && o.id !== record.id && ( namesIt( o ) || matches( o ) ) );
+	if ( claimed ) {
+		return record;
+	}
+	return { ...record, iterations: 'infinite', duration_ms: null, delay_ms: null, easing: null, direction: null, properties: [ { property: 'animation-name', from: null, to: name } ], templateValue: named };
+}
+
 // Whether the code states the record's values: no property is a formula, and a CSS animation names a rule whose
 // keyframes the record also lists (an `animation-name` row with no other property means the keyframes were not read).
 function statesValues( record ) {

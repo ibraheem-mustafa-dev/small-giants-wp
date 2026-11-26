@@ -13,6 +13,7 @@ import { writeEffect, loadEffectOffers, PANEL_LISTS } from './motion-effects.mjs
 import { applyBehaviours, applyControls, applyGlobals, applySettings, applyStrip, behaviourIndex, hasAttrOf, place, sharedLayerRow } from './fill-behaviour.mjs';
 import { accountedIds, accountedAt, targetKey, silentRows, makeHomeOf, readingProgressHandover, motionWidths, styleSourceIds } from './fill-motion-account.mjs';
 import { elementMotion, elementEffects, snapLayer, paintLayer, paintOnlyLayer } from './fill-motion-element.mjs';
+import { templateValueLoop } from './motion-loops.mjs';
 import { paintHoverTimings, paintTimings } from './fill-timing.mjs';
 import { openWords } from './motion-states.mjs';
 import { setRecord } from './motion-set.mjs';
@@ -375,6 +376,9 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 				}
 				continue;
 			}
+			// A CSS animation the draft sets through a template value (`animation:{{ tickerAnim }}`) is the endless animation the
+			// render shows on the element, where it shows one (lib/motion-loops.mjs::templateValueLoop), not a one-shot entrance.
+			own = own.map( ( r, _i, all ) => templateValueLoop( r, loops[ t.id ], all ) );
 			const m = elementMotion( own, { mdb, ctx, sampled: sampled[ t.id ], runtime, offers: stateOffers, target, itemHost: itemHost( db, n.name ) } );
 			m.unmapped.push( ...sets.filter( ( s ) => s.reason ).map( ( s ) => ( { record: '<set>', reason: s.reason } ) ) );
 			used.push( ...m.used );

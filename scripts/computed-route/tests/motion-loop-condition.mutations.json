@@ -1,0 +1,74 @@
+[
+	{
+		"file": "lib/fill-motion-element.mjs",
+		"find": "const shownAt = [ 1440, 768, 375 ].find(",
+		"replace": "const shownAt = [ 1440 ].find(",
+		"why": "a run-time strip the draft moves only on narrower screens would be missed, as on Mama's home"
+	},
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "own = own.map( ( r, _i, all ) => templateValueLoop( r, loops[ t.id ], all ) );",
+		"replace": "own = own.map( ( r ) => r );",
+		"why": "a ticker set through a template value would stay a refuted entrance, as on Eye Care's header"
+	},
+	{
+		"file": "lib/motion-loops.mjs",
+		"find": "\tif ( 1 !== names.size ) {",
+		"replace": "\tif ( 0 === names.size ) {",
+		"why": "two different animations on the element would be taken as the record's"
+	},
+	{
+		"file": "lib/motion-loops.mjs",
+		"find": "if ( ! named || ! holes.includes( named ) || ( record.properties || [] ).length !== 1 ) {",
+		"replace": "if ( ! named || ( record.properties || [] ).length !== 1 ) {",
+		"why": "a literal animation name would be replaced by whatever the render shows"
+	},
+	{
+		"file": "lib/motion-loops.mjs",
+		"find": "if ( ! named || ! holes.includes( named ) || ( record.properties || [] ).length !== 1 ) {",
+		"replace": "if ( ! named || ! holes.includes( named ) ) {",
+		"why": "a record holding keyframes of its own would lose them"
+	},
+	{
+		"file": "lib/motion-loops.mjs",
+		"find": "if ( 'css-animation' !== record?.mechanism || 'infinite' === record.iterations",
+		"replace": "if ( 'infinite' === record.iterations",
+		"why": "a script animation would be read as a CSS animation's template value"
+	},
+	{
+		"file": "lib/fill-motion-element.mjs",
+		"find": "if ( ! own.length && wide && shownAt ) {",
+		"replace": "if ( ! own.length && shownAt ) {",
+		"why": "a strip sampled only at narrow widths would be written for every width"
+	},
+	{
+		"file": "lib/motion-loops.mjs",
+		"find": " || ! byWidth?.[ 1440 ] ) {",
+		"replace": " ) {",
+		"why": "a template value sampled only at narrow widths would be read as running at every width"
+	},
+	{
+		"file": "lib/motion-loops.mjs",
+		"find": "\tif ( claimed ) {",
+		"replace": "\tif ( false ) {",
+		"why": "an entrance set through a template value would be rewritten as the element's own stylesheet loop"
+	},
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "templateValueLoop( r, loops[ t.id ], all )",
+		"replace": "templateValueLoop( r, loops[ t.id ] )",
+		"why": "the writer would not pass the element's other records, so a loop they own would be taken"
+	},
+	{
+		"file": "lib/motion-loops.mjs",
+		"find": "return !! l && l.css && l.name === name;",
+		"replace": "return !! l;",
+		"why": "a script animation beside the CSS loop would claim it, so a template-value ticker would be dropped"
+	},
+	{
+		"file": "lib/motion-loops.mjs",
+		"find": "const namesIt = ( o ) => 'css-animation' === o.mechanism && ",
+		"replace": "const namesIt = ( o ) => ",
+		"why": "a non-CSS record naming the loop would claim it"
+	}
+]

@@ -185,13 +185,22 @@
  * mouse-only (WCAG 2.1.1), and a keyboard user needs the same affordance.
  * The hover-guard splits these selectors and wraps only the `:hover` member,
  * so a touch device cannot strand the sweep half-finished while the keyboard
- * path stays reachable. */
+ * path stays reachable.
+ *
+ * :active is the touch press. On a site set to "Desktop only" for hover on
+ * touch screens the guard switches the `:hover` member off while the page is
+ * touched, so a finger on the credit would show nothing. `:active` stays
+ * outside the guard: the look shows while the finger is down and clears when
+ * it lifts, so nothing is left stranded (the same press feedback sgs/button's
+ * `active-transform` gives, see assets/js/touch-input.js). */
 .sgs-business-attribution .sgs-business-info__link:hover,
+.sgs-business-attribution .sgs-business-info__link:active,
 .sgs-business-attribution .sgs-business-info__link:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) {
 	background-position: 0 0;
 }
 
 .sgs-business-attribution .sgs-business-info__link:hover::after,
+.sgs-business-attribution .sgs-business-info__link:active::after,
 .sgs-business-attribution .sgs-business-info__link:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))::after {
 	transform: scaleX(1);
 }

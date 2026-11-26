@@ -73,9 +73,9 @@ namespace {
 		return is_array( $out ) ? $out : array();
 	};
 
-	$blocks = array( 'card-grid', 'gallery', 'google-reviews', 'icon', 'info-box', 'post-grid', 'pricing-table', 'process-steps', 'product-card', 'responsive-logo', 'team-member', 'testimonial', 'timeline', 'trustpilot-reviews' );
+	$blocks = array( 'card-grid', 'gallery', 'google-reviews', 'icon', 'info-box', 'post-grid', 'pricing-table', 'process-steps', 'product-card', 'responsive-logo', 'team-member', 'testimonial', 'timeline', 'trust-bar', 'trustpilot-reviews' );
 	$shipped = SGS\Blocks\Shipped_Block_Defaults::all();
-	$check( 'data file names exactly the fourteen blocks', array_keys( $shipped ) === array_map( static fn( $b ) => 'sgs/' . $b, $blocks ) );
+	$check( 'data file names exactly the fifteen blocks', array_keys( $shipped ) === array_map( static fn( $b ) => 'sgs/' . $b, $blocks ) );
 
 	// (a) no saved defaults.
 	$GLOBALS['t_option'] = array();
@@ -86,6 +86,8 @@ namespace {
 	$check( '(a) team-member carries the 1.02 scale and the image zoom', 1.02 === ( $out['sgs/team-member']['sgsMotion']['elements']['root']['hover']['state']['values']['scale'] ?? null ) && 1.1 === ( $out['sgs/team-member']['sgsMotion']['elements']['image']['hover']['state']['values']['scale'] ?? null ) );
 	$check( '(a) pricing-table carries the 1.02 scale beside its entrance', 1.02 === ( $out['sgs/pricing-table']['sgsMotion']['elements']['root']['hover']['state']['values']['scale'] ?? null ) && isset( $out['sgs/pricing-table']['sgsMotion']['elements']['root']['entrance'] ) );
 	$check( '(a) product-card lifts 4px', -4 === ( $out['sgs/product-card']['sgsMotion']['elements']['root']['hover']['state']['values']['translateY'] ?? null ) );
+	$ticker = json_decode( (string) file_get_contents( dirname( __DIR__, 2 ) . '/includes/motion/data/trust-bar-default-ticker.json' ), true );
+	$check( '(a) a new trust bar starts with the stored overflow ticker, the layer in trust-bar-default-ticker.json', array( $ticker ) === ( $out['sgs/trust-bar']['sgsMotion']['elements']['root']['effects'] ?? null ) && 'overflow' === ( $ticker['values']['belowBreakpoint'] ?? null ) );
 	$check( '(a) every shipped block is injected', count( array_intersect_key( $out, $shipped ) ) === count( $shipped ) );
 
 	// (b) a saved sgsMotion wins.
