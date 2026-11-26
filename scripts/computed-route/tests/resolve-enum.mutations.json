@@ -49,14 +49,14 @@
 	},
 	{
 		"file": "lib/resolve-enum.mjs",
-		"find": "} else if ( list.every( ( v ) => acceptsValue( prop, v ) ) ) {",
-		"replace": "} else if ( false ) {",
-		"why": "a list of CSS words with no painting value is refused instead of left to the writer"
+		"find": "} else if ( painting.length > 1 || list.some( ( v ) => sameAlignment( prop, v, raw, layoutAt( t ) ) ) ) {",
+		"replace": "} else if ( painting.length > 1 ) {",
+		"why": "the writer's alignment rule is not consulted, so flex-end in a flex container is refused"
 	},
 	{
 		"file": "lib/resolve-enum.mjs",
-		"find": "return { error: `${ row.attr_name } holds ${ list.join( ', ' ) }; ${ painting.length ? 'more than one paints' : 'none paints' }",
-		"replace": "return { tiers }; const x = { error: `${ row.attr_name } holds ${ list.join( ', ' ) }; ${ painting.length ? 'more than one paints' : 'none paints' }",
-		"why": "a list with a non-CSS word never refuses"
+		"find": "return { error: `${ row.attr_name } holds",
+		"replace": "return { tiers }; const x = { error: `${ row.attr_name } holds",
+		"why": "a keyword no value paints is written out of the list instead of refused"
 	}
 ]
