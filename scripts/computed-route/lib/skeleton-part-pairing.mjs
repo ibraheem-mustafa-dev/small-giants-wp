@@ -38,7 +38,7 @@
 // items are read at the element in the same place only when it is the same sort of element (words, glyph, control, picture or
 // blank). Nothing here names a block, a part or a class.
 import { copylessKey } from './fact-key.mjs';
-import { lookOfProperty } from './skeleton-paint-conservation.mjs';
+import { looksOfEntry } from './skeleton-paint-conservation.mjs';
 
 const NTH = /:nth-of-type\((\d+)\)/g;
 const PSEUDO = /::(before|after)$/;
@@ -583,9 +583,8 @@ export function pairAbsorbed( { host, absorbed = [], kids, isNode = () => false,
 			for ( const [ name, s ] of settings ) {
 				for ( const slot of [ ...new Set( [ s?.slot, ...( s?.slots || [] ) ] ) ] ) {
 					if ( 'string' === typeof slot && ! slot.includes( '::' ) && lastStep( slot ) === sw.lookSelector ) {
-						const look = lookOfProperty( s.property, model.parts.get( templateOf( slot ) )?.tag ?? '' );
 						const set = at.get( slot ) ?? at.set( slot, new Set() ).get( slot );
-						look && ( ! s.state || 'current' === s.state ) && set.add( look ) && looks.includes( look ) && ( named.get( slot ) ?? named.set( slot, [] ).get( slot ) ).push( name );
+						( ! s.state || 'current' === s.state ) && looksOfEntry( s, model.parts.get( templateOf( slot ) )?.tag ?? '' ).forEach( ( look ) => set.add( look ) && looks.includes( look ) && ! ( named.get( slot ) ?? [] ).includes( name ) && ( named.get( slot ) ?? named.set( slot, [] ).get( slot ) ).push( name ) );
 					}
 				}
 			}
@@ -618,9 +617,8 @@ export function pairAbsorbed( { host, absorbed = [], kids, isNode = () => false,
 		for ( const [ , s ] of settings ) {
 			for ( const slot of [ ...new Set( [ s?.slot, ...( s?.slots || [] ) ] ) ] ) {
 				if ( 'string' === typeof slot && ! slot.includes( '::' ) && members.includes( templateOf( slot ) ) ) {
-					const look = lookOfProperty( s.property, model.parts.get( templateOf( slot ) )?.tag ?? '' );
 					const set = slotLooks.get( slot ) ?? slotLooks.set( slot, new Set() ).get( slot );
-					look && ( ! s.state || 'current' === s.state ) && set.add( look );
+					( ! s.state || 'current' === s.state ) && looksOfEntry( s, model.parts.get( templateOf( slot ) )?.tag ?? '' ).forEach( ( look ) => set.add( look ) );
 				}
 			}
 		}

@@ -16,7 +16,7 @@
 	{"file":"lib/fill-state.mjs","find":" && landed( from, state, 'color', 'color' ) )","replace":" )","why":"a background at the colour would follow when the colour is the child's own rule"},
 	{"file":"lib/fill-state-reach.mjs","find":"return ! own.length && settings.some(","replace":"return settings.some(","why":"a child's own state rule would be ignored"},
 	{"file":"lib/fill-state-reach.mjs","find":" && paints( s, ancestor.slot ) && taken.has( attr ) );","replace":" && paints( s, ancestor.slot ) );","why":"an ancestor's unwritten state look would hold the child"},
-	{"file":"lib/fill-state-reach.mjs","find":"longhands( s.property ).includes( aprop ) && paints( s, ancestor.slot )","replace":"paints( s, ancestor.slot )","why":"the ancestor's ground write would hold its colour"},
+	{"file":"lib/fill-state-reach.mjs","find":"longhands( paintedProps( s ).join( ',' ) ).includes( aprop ) && paints( s, ancestor.slot )","replace":"paints( s, ancestor.slot )","why":"the ancestor's ground write would hold its colour"},
 	{"file":"lib/fill-state-reach.mjs","find":"|| sideEffect( s ) ) && ! through( s ) );","replace":") && ! through( s ) );","why":"another element's rule changing the child as a side effect would be ignored"},
 	{"file":"lib/fill-state-reach.mjs","find":"( [ , s ] ) => state === s.state );","replace":"( [ , s ] ) => s.state );","why":"another state's rule would decide this state's follow"},
 	{"file":"lib/fill-state-reach.mjs","find":") && ! through( s ) );","replace":") );","why":"the ancestor's own rule reaching the child would count as the child's own"},

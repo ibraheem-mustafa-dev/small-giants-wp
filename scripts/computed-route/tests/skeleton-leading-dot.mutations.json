@@ -73,7 +73,7 @@
 	},
 	{
 		"file": "lib/skeleton-conserve-slots.mjs",
-		"find": "\tif ( ! at.some( ( s ) => SIZE.test( String( s.property ) ) ) ) {\n\t\treturn new Set();\n\t}\n",
+		"find": "\tif ( ! at.some( ( s ) => paintedProps( s ).some( ( q ) => SIZE.test( q ) ) ) ) {\n\t\treturn new Set();\n\t}\n",
 		"replace": "",
 		"why": "the gradient border every block paints on its ::before takes a leading child as its part"
 	},

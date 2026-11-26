@@ -7,6 +7,7 @@
 // files, tree nodes, the resolver) is passed in, so the logic runs on in-memory fixtures.
 import { splitProperty, resolve, resolveViaAncestor } from './resolve.mjs';
 import { listedProperties, modifierOf } from './db.mjs';
+import { paintedProps } from './css-families.mjs';
 import { draftValues, plainLength, cssProp, settingState, effectiveState, openRows, writableGroups } from './solve-rows.mjs';
 import { entranceStart, groupRects } from './entrance.mjs';
 import { referenceOf } from './references.mjs';
@@ -397,7 +398,7 @@ export function fittingSettings( issue, ctx ) {
 		const cal = on ? ctx.calFor( on.name ) : null;
 		for ( const [ attr, s ] of Object.entries( cal?.settings || {} ) ) {
 			const via = ( s.slots || [ s.slot ] ).map( loose ).includes( loose( o.path ) ) ? 'slot' : ( ( s.reaches || [] ).map( loose ).includes( loose( o.path ) ) ? 'reaches' : null );
-			if ( via && ( s.property === prop || s.property === short || ( ! s.property && nameFits( prop, attr ) ) ) && ( s.state || null ) === ( state || null ) ) {
+			if ( via && ( paintedProps( s ).some( ( q ) => q === prop || q === short ) || ( ! s.property && nameFits( prop, attr ) ) ) && ( s.state || null ) === ( state || null ) ) {
 				out.push( { check: 'enclosing', ref: o.ref, block: on.name, setting: attr, via, path: o.path } );
 			}
 		}

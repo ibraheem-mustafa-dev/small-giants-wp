@@ -1,0 +1,26 @@
+[
+	{
+		"file": "lib/fill-picture-box.mjs",
+		"find": "paintedProps( s ).includes( 'object-fit' ) &&",
+		"replace": "'object-fit' === s.property &&",
+		"why": "a reader that matches the first property of a setting entry only"
+	},
+	{
+		"file": "lib/css-equivalence/effect.mjs",
+		"find": "paintsAny( paintedProps( c ).join( ',' ), [ n ] )",
+		"replace": "paintsAny( c.property, [ n ] )",
+		"why": "a reader that matches the first property of a setting entry only"
+	},
+	{
+		"file": "lib/fill-state-reach.mjs",
+		"find": "longhands( paintedProps( s ).join( ',' ) ).includes( prop ) &&",
+		"replace": "longhands( s.property ).includes( prop ) &&",
+		"why": "a reader that matches the first property of a setting entry only"
+	},
+	{
+		"file": "tools/check-painted-props.mjs",
+		"find": "( 'Identifier' === obj?.type && tainted.has( obj.name ) ) || isEntry( obj )",
+		"replace": "false",
+		"why": "the detector sees no read of an entry's property"
+	}
+]

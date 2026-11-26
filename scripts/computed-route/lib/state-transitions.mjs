@@ -5,6 +5,7 @@
 // above it), and what the node's block can hold for that state change: a setting Fill wrote, a setting calibration knows
 // for that state and property, a motion channel, or nothing. Reads saved files only (tools/state-transitions.mjs).
 import { templateKey, templateKeyOf } from './fact-key.mjs';
+import { paintedProps } from './css-families.mjs';
 
 // The never-silent row of a record nothing placed: `<id> (<mechanism>, <trigger>) belongs to this surface ... nothing
 // recognised it ...`.
@@ -99,7 +100,7 @@ export function holderOf( { trigger, property, writes, settings, slot = '' } ) {
 	if ( written.length ) {
 		return { family, verdict: 'written-at-home', attrs: [ ...new Set( written ) ] };
 	}
-	const known = Object.entries( settings || {} ).filter( ( [ , s ] ) => s && stateMatches( trigger, s.state ) && familyOf( s.property ) === family ).map( ( [ a ] ) => a );
+	const known = Object.entries( settings || {} ).filter( ( [ , s ] ) => s && stateMatches( trigger, s.state ) && paintedProps( s ).some( ( q ) => familyOf( q ) === family ) ).map( ( [ a ] ) => a );
 	if ( known.length ) {
 		return { family, verdict: 'setting', attrs: known };
 	}

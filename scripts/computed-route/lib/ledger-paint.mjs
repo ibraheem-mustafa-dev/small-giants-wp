@@ -17,7 +17,7 @@
 // The properties the walker reads from the paint carrying most of the text (lib/ledger-diff.mjs::TEXT_READ: colour and
 // typography) are never moved: they are already read where the words paint, on both sides. Box keys (x, y, w, h) are the
 // target's own box. Pure functions.
-import { longhandsOf } from './css-families.mjs';
+import { longhandsOf, paintedProps } from './css-families.mjs';
 import { TEXT_READ } from './ledger-diff.mjs';
 
 // A property and its longhands ('padding' covers 'padding-top'; a comma list covers each piece's).
@@ -48,7 +48,7 @@ export function paintSlots( target, writes, slotMap, { paint = null, targetSlots
 		}
 		const at = w.slot ?? '';
 		const part = rest( rec ) && ! slotsOf( rec ).includes( at ) ? rec.slot : at;
-		const cover = rest( rec ) ? covered( rec.property ) : null;
+		const cover = rest( rec ) ? covered( paintedProps( rec ).join( ',' ) ) : null;
 		for ( const p of writeProps( w ).flatMap( ( x ) => [ ...covered( x ) ] ) ) {
 			if ( ( cover && ! cover.has( p ) ) || TEXT_READ.has( p ) || decided.has( p ) ) {
 				continue;
@@ -67,7 +67,7 @@ export function paintSlots( target, writes, slotMap, { paint = null, targetSlots
 		if ( ! rest( rec ) ) {
 			continue;
 		}
-		for ( const p of covered( rec.property ) ) {
+		for ( const p of covered( paintedProps( rec ).join( ',' ) ) ) {
 			if ( ! decided.has( p ) && ! TEXT_READ.has( p ) ) {
 				( cands.get( p ) || cands.set( p, [] ).get( p ) ).push( { attr, rec } );
 			}

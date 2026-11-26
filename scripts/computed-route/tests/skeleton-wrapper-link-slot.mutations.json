@@ -55,8 +55,8 @@
 	},
 	{
 		"file": "lib/skeleton-wrapper-link-slot.mjs",
-		"find": ".filter( ( x ) => [ x?.slot, ...( x?.slots || [] ) ].includes( slot ) ).map( ( x ) => lookOfProperty( x?.property ) )",
-		"replace": ".map( ( x ) => lookOfProperty( x?.property ) )",
+		"find": ".filter( ( x ) => [ x?.slot, ...( x?.slots || [] ) ].includes( slot ) ).flatMap( ( x ) => looksOfEntry( x ) )",
+		"replace": ".flatMap( ( x ) => looksOfEntry( x ) )",
 		"why": "every calibrated setting's look is taken as read at the link part"
 	},
 	{

@@ -9,7 +9,7 @@
 //   positioned    whether the wrapper places itself (a position other than static).
 //   clash         the looks the parent's own element paints that the wrapper's values would overwrite.
 // Pure functions over the inventory model and the calibration's slot map: no browser, no site, no database.
-import { lookOfProperty } from './skeleton-paint-conservation.mjs';
+import { looksOfEntry } from './skeleton-paint-conservation.mjs';
 
 // The looks the parent's own element and the wrapper both paint that add up: the wrapper's padding sits inside the parent's,
 // so the part's padding is the two summed per side (lib/fill-absorbed.mjs::sumAbsorbedPadding).
@@ -30,8 +30,8 @@ export function absorbSlot( { looks, settings } ) {
 	}
 	const at = new Map();
 	for ( const [ name, c ] of Object.entries( settings ) ) {
-		const look = c && ! c.state ? lookOfProperty( c.property ) : null;
-		if ( ! look || ! looks.includes( look ) ) {
+		const mine = c && ! c.state ? looksOfEntry( c ).filter( ( l ) => looks.includes( l ) ) : [];
+		if ( ! mine.length ) {
 			continue;
 		}
 		for ( const slot of [ ...new Set( c.slots || ( undefined !== c.slot ? [ c.slot ] : [] ) ) ] ) {
@@ -39,7 +39,7 @@ export function absorbSlot( { looks, settings } ) {
 				continue;
 			}
 			const row = at.get( slot ) ?? { looks: new Set(), settings: [] };
-			row.looks.add( look );
+			mine.forEach( ( l ) => row.looks.add( l ) );
 			row.settings.push( name );
 			at.set( slot, row );
 		}

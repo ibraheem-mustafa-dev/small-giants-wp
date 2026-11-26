@@ -6,6 +6,7 @@ import { refOf, walk } from './tree.mjs';
 import { READ_WIDTHS } from './fill-read.mjs';
 import { INHERITED, CARRIED, FLEX_ONLY, TIER_WIDTHS, defaultPaint } from './fill-prop.mjs';
 import { candidates } from './db.mjs';
+import { paintedProps } from './css-families.mjs';
 import { calSameBox } from './fill-same-box.mjs';
 import { pageBaseline } from './fill-page.mjs';
 import { spacingOwnership } from './fill-spacing.mjs';
@@ -69,7 +70,7 @@ export function alternateSlots( cal, prop, draft = {}, apart = null, own = '' ) 
 	// A slot another target reads, or one inside such a target's element: that element's own business.
 	const others = [ ...taken ].filter( ( t ) => t !== String( own ?? '' ) );
 	const othersRead = ( p ) => others.some( ( t ) => String( p ?? '' ) === t || String( p ?? '' ).startsWith( `${ t } > ` ) );
-	return Object.values( cal?.settings || {} ).filter( ( s ) => names.has( s.property ) && ! s.state && ( carried || ! ( s.slots || [ s.slot ] ).some( othersRead ) ) ).flatMap( ( s ) => [ ...( s.slots || [ s.slot ] ), ...( s.reaches || [] ) ] ).filter( ( p ) => ! reachesChildBlock( p ) && ( carried || ( ! taken.has( String( p ?? '' ) ) && ! othersRead( p ) && ownBox( cal, own, String( p ?? '' ) ) ) ) );
+	return Object.values( cal?.settings || {} ).filter( ( s ) => paintedProps( s ).some( ( q ) => names.has( q ) ) && ! s.state && ( carried || ! ( s.slots || [ s.slot ] ).some( othersRead ) ) ).flatMap( ( s ) => [ ...( s.slots || [ s.slot ] ), ...( s.reaches || [] ) ] ).filter( ( p ) => ! reachesChildBlock( p ) && ( carried || ( ! taken.has( String( p ?? '' ) ) && ! othersRead( p ) && ownBox( cal, own, String( p ?? '' ) ) ) ) );
 }
 
 export const RADIUS_CORNERS = [ 'border-top-left-radius', 'border-top-right-radius', 'border-bottom-right-radius', 'border-bottom-left-radius' ];

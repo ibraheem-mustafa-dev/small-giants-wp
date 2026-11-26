@@ -9,7 +9,8 @@
 // proposal names those elements (lib/skeleton-paint-conservation.mjs::unreadList). A block whose settings size and paint its
 // root's `::before` (the leading layer: a label's dot) draws there the mark the draft sets before its words, so the host's
 // leading mark is read at that layer (leadingLooks, leadingMark).
-import { lookOfProperty, calibratedLooks } from './skeleton-paint-conservation.mjs';
+import { looksOfEntry, calibratedLooks } from './skeleton-paint-conservation.mjs';
+import { paintedProps } from './css-families.mjs';
 
 const NTH = /:nth-of-type\((\d+)\)\s*$/;
 
@@ -22,8 +23,7 @@ export function partLooks( settings = {}, tags = {} ) {
 		if ( 'string' !== typeof slot || '' === slot || slot.includes( '::' ) || ( s.state && 'current' !== s.state ) ) {
 			continue;
 		}
-		const look = lookOfProperty( s.property, tags[ slot ] ?? '' );
-		look && ( out.get( slot ) ?? out.set( slot, new Set() ).get( slot ) ).add( look );
+		looksOfEntry( s, tags[ slot ] ?? '' ).forEach( ( look ) => ( out.get( slot ) ?? out.set( slot, new Set() ).get( slot ) ).add( look ) );
 	}
 	return out;
 }
@@ -37,10 +37,10 @@ export const LEADING_LAYER = '::before';
 const SIZE = /^(?:min-|max-)?(?:width|height)$/;
 export function leadingLooks( settings = {} ) {
 	const at = Object.values( settings || {} ).filter( ( s ) => s && ! ( s.state && 'current' !== s.state ) && ( s.slots || [ s.slot ] ).includes( LEADING_LAYER ) );
-	if ( ! at.some( ( s ) => SIZE.test( String( s.property ) ) ) ) {
+	if ( ! at.some( ( s ) => paintedProps( s ).some( ( q ) => SIZE.test( q ) ) ) ) {
 		return new Set();
 	}
-	return new Set( at.map( ( s ) => lookOfProperty( s.property, '' ) ).filter( Boolean ) );
+	return new Set( at.flatMap( ( s ) => looksOfEntry( s ) ) );
 }
 
 // The host's leading mark, or null: its first child, holding nothing (no words, no children), in the flow and drawn smaller

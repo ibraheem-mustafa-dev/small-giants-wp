@@ -10,6 +10,7 @@
 //     already there at rest is the rest row's).
 // Page views only: the mouse moves, nothing is clicked, typed or written.
 import { covered } from './ledger-paint.mjs';
+import { paintedProps } from './css-families.mjs';
 
 const PSEUDO = /(::(?:before|after))$/;
 
@@ -28,7 +29,7 @@ export function hoverPlan( targets, slotMapOf ) {
 			if ( 'hover' !== rec?.state ) {
 				continue;
 			}
-			const list = [ ...covered( rec.property ) ];
+			const list = [ ...covered( paintedProps( rec ).join( ',' ) ) ];
 			for ( const s of ( Array.isArray( rec.slots ) && rec.slots.length ? rec.slots : [ rec.slot ] ) ) {
 				const m = String( s ).match( PSEUDO );
 				const part = m ? String( s ).slice( 0, -m[ 1 ].length ) : String( s );

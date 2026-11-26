@@ -23,7 +23,7 @@
 
 import { setAttr, refOf, walk } from './tree.mjs';
 import { resolveProperty, knownPaths, notPainted, canon, PX_TOL, INHERITED } from './fill-prop.mjs';
-import { initialOf } from './css-families.mjs';
+import { initialOf, paintedProps } from './css-families.mjs';
 import { sameValue } from '../../parity/lib/compare.mjs';
 import { LOOSE } from './resolve.mjs';
 import { settingStates, statesVocabulary, candidates } from './db.mjs';
@@ -133,7 +133,7 @@ export function defaultStateLook( cal, state, rest = {}, ctxAt = () => ( {} ) ) 
 			if ( effects.includes( 'display' ) ) {
 				continue;
 			}
-			( readings[ LOOSE( path ) ] ??= [] ).push( { own: longhands( s.property ), effects } );
+			( readings[ LOOSE( path ) ] ??= [] ).push( { own: longhands( paintedProps( s ).join( ',' ) ), effects } );
 		}
 	}
 	const out = {};
@@ -142,7 +142,7 @@ export function defaultStateLook( cal, state, rest = {}, ctxAt = () => ( {} ) ) 
 		props.length && ( out[ path ] = new Set( props ) );
 	}
 	const settings = Object.values( cal?.settings || {} ).filter( ( x ) => state === x.state );
-	const governs = ( path, prop ) => settings.some( ( x ) => longhands( x.property ).includes( prop ) && ( x.slots || [ x.slot ] ).some( ( p ) => LOOSE( p ) === path ) );
+	const governs = ( path, prop ) => settings.some( ( x ) => longhands( paintedProps( x ).join( ',' ) ).includes( prop ) && ( x.slots || [ x.slot ] ).some( ( p ) => LOOSE( p ) === path ) );
 	for ( const x of settings ) {
 		for ( const [ raw, props ] of Object.entries( x.look || {} ) ) {
 			const path = LOOSE( raw );
@@ -207,7 +207,7 @@ export function stateContext( reads, id ) {
 // property (lib/fill-resolve-state.mjs::alternateSlots), and the slots of each resting setting of that property the node
 // carries (an icon's ground colour sits on its shape).
 function holdSlots( cal, node, slot, prop, rest ) {
-	const carried = Object.entries( cal?.settings || {} ).filter( ( [ attr, s ] ) => ! s.state && longhands( s.property ).includes( prop ) && ! [ undefined, null, '' ].includes( node.attributes?.[ attr ] ) ).flatMap( ( [ , s ] ) => s.slots || [ s.slot ] );
+	const carried = Object.entries( cal?.settings || {} ).filter( ( [ attr, s ] ) => ! s.state && longhands( paintedProps( s ).join( ',' ) ).includes( prop ) && ! [ undefined, null, '' ].includes( node.attributes?.[ attr ] ) ).flatMap( ( [ , s ] ) => s.slots || [ s.slot ] );
 	return [ ...new Set( [ slot, ...alternateSlots( cal, prop, rest ), ...carried ] ) ];
 }
 

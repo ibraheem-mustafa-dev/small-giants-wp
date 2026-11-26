@@ -385,8 +385,8 @@
 	},
 	{
 		"file": "lib/skeleton-paint-conservation.mjs",
-		"find": "new Set( Object.values( settings || {} ).map( ( x ) => lookOfProperty( x?.property ) ).filter( Boolean ) );",
-		"replace": "new Set( Object.values( settings || {} ).filter( ( x ) => ! x?.state ).map( ( x ) => lookOfProperty( x?.property ) ).filter( Boolean ) );",
+		"find": "new Set( Object.values( settings || {} ).flatMap( ( x ) => looksOfEntry( x ) ) );",
+		"replace": "new Set( Object.values( settings || {} ).filter( ( x ) => ! x?.state ).flatMap( ( x ) => looksOfEntry( x ) ) );",
 		"why": "a setting in a state is not counted as painting the look"
 	},
 	{

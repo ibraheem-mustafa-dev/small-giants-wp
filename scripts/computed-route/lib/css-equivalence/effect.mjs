@@ -7,7 +7,7 @@
 // sticky): they are calibrated like any other setting. A value is written only where calibration measured it (a
 // discovered value equal to the draft at every width the draft and the measurement share); a setting whose effect reaches
 // the longhand but whose emitted value nothing predicts (FR-48-76) is named as the home, never written.
-import { canonicalName, shorthandsOf, longhandsOf, physicalOf, expand } from '../css-families.mjs';
+import { canonicalName, shorthandsOf, longhandsOf, physicalOf, expand, paintedProps } from '../css-families.mjs';
 import { attrsFor, listedProperties } from '../db.mjs';
 import { projectLonghand, sameCanonical } from './values.mjs';
 import { mayAnswer } from '../discovered-layout.mjs';
@@ -83,7 +83,7 @@ export function measuredHomes( calibration, { slot, prop, state = null, anyIndex
 		}
 		const own = ( c.slots || [ c.slot ] ).map( key ).includes( key( slot ) );
 		const reached = ( c.reaches || [] ).map( key ).includes( key( slot ) );
-		const name = names.find( ( n ) => paintsAny( c.property, [ n ] ) );
+		const name = names.find( ( n ) => paintsAny( paintedProps( c ).join( ',' ), [ n ] ) );
 		if ( name && ( own || reached ) ) {
 			out.push( { attr, via: own ? 'property' : 'reaches', name } );
 			continue;

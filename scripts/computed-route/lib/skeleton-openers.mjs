@@ -131,8 +131,9 @@ export function frameLook( { S, parts, factRecord, settings = () => [] } ) {
 	const out = [];
 	for ( const [ part, key ] of [ [ F.parts.backdrop, parts.backdrop ], [ F.parts.dialog, parts.panel ], [ F.parts.close, parts.close ] ] ) {
 		for ( const s of key ? settings( part ) : [] ) {
+			// painted-props-exempt: `s` is a framework-database row ({ attr, property, type }), not a calibration entry
 			const value = declared( tpl( key ), s.property );
-			null !== value && out.push( { part, attr: s.attr, property: s.property, value, element: key } );
+			null !== value && out.push( { part, attr: s.attr, property: s.property, value, element: key } ); // painted-props-exempt: a framework-database row
 		}
 	}
 	return out;

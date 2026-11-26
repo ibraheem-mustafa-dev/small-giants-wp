@@ -55,7 +55,7 @@
 	},
 	{
 		"file": "lib/skeleton-overlay-layer.mjs",
-		"find": "if ( ! at.some( ( [ , c ] ) => 'opacity' === c.property ) ) {",
+		"find": "if ( ! at.some( ( [ , c ] ) => paintedProps( c ).includes( 'opacity' ) ) ) {",
 		"replace": "if ( false ) {",
 		"why": "a host with no overlay opacity setting shows the gradient at its default strength"
 	},

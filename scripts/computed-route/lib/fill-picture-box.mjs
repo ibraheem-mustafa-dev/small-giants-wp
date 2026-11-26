@@ -18,6 +18,7 @@
 // Never a block name or a slot name: the part comes from the calibration. Mutates reads.widths, reads.declared and the nodes'
 // targets in place; returns one entry per node changed ({ index, slot, fits: { width: object-fit } }).
 import { READ_WIDTHS } from './fill-read.mjs';
+import { paintedProps } from './css-families.mjs';
 
 const SINGLE_URL = /^url\(\s*(["']?)([^"')]+)\1\s*\)$/;
 const PICTURE_TAGS = new Set( [ 'img' ] );
@@ -38,7 +39,7 @@ export function fitOfBackgroundSize( size ) {
 // The block's one replaced-picture part that a calibrated resting setting paints object-fit on, or null.
 export function picturePart( cal ) {
 	const tagOf = ( slot ) => Object.values( cal?.elements?.[ slot ] || {} ).find( ( v ) => v?._tag )?._tag ?? null;
-	const fitSlots = new Set( Object.values( cal?.settings || {} ).filter( ( s ) => 'object-fit' === s.property && ! s.state ).flatMap( ( s ) => s.slots || [ s.slot ] ) );
+	const fitSlots = new Set( Object.values( cal?.settings || {} ).filter( ( s ) => paintedProps( s ).includes( 'object-fit' ) && ! s.state ).flatMap( ( s ) => s.slots || [ s.slot ] ) );
 	const parts = [ ...fitSlots ].filter( ( slot ) => '' !== slot && PICTURE_TAGS.has( tagOf( slot ) ) );
 	return 1 === parts.length ? parts[ 0 ] : null;
 }

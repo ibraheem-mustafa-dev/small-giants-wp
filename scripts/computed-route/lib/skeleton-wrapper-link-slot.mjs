@@ -4,7 +4,7 @@
 // The draft sizes the logo by its link (`<a style="width:240px; max-width:100%">` round an image of `width:100%`); with the link
 // dissolved and no slot, Fill read the image's `100%` (which no setting holds) and the logo filled its column.
 // The slot path is one of the setting's own calibrated slots, never a path the calibration did not measure.
-import { lookOfProperty } from './skeleton-paint-conservation.mjs';
+import { lookOfProperty, looksOfEntry } from './skeleton-paint-conservation.mjs';
 
 const low = ( v ) => String( v ?? '' ).trim().toLowerCase();
 // The one longhand a shorthand declared as a lone keyword sets (`text-decoration: none` draws no line), so such a shorthand is
@@ -17,7 +17,7 @@ const KEYWORD_LONGHAND = { 'text-decoration': 'text-decoration-line' };
 // the block's default paint, { slot: { width: { property: value } } }, lib/skeleton-context.mjs::calPartsFor; `widths`). A
 // look the default paint records no value for, or declares a value the part does not paint, is not read.
 export function linkSlotLooks( { slot, settings = {}, paint = null, declared = {}, widths = [] } ) {
-	const looks = new Set( Object.values( settings || {} ).filter( ( x ) => [ x?.slot, ...( x?.slots || [] ) ].includes( slot ) ).map( ( x ) => lookOfProperty( x?.property ) ).filter( Boolean ) );
+	const looks = new Set( Object.values( settings || {} ).filter( ( x ) => [ x?.slot, ...( x?.slots || [] ) ].includes( slot ) ).flatMap( ( x ) => looksOfEntry( x ) ) );
 	const at = paint?.[ slot ];
 	if ( ! at || ! widths.length ) {
 		return [ ...looks ];

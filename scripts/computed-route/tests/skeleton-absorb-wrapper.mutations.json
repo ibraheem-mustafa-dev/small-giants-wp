@@ -85,8 +85,8 @@
 	},
 	{
 		"file": "lib/skeleton-absorb-wrapper.mjs",
-		"find": "const look = c && ! c.state ? lookOfProperty( c.property ) : null;",
-		"replace": "const look = c ? lookOfProperty( c.property ) : null;",
+		"find": "const mine = c && ! c.state ? looksOfEntry( c )",
+		"replace": "const mine = c ? looksOfEntry( c )",
 		"why": "a hover setting is taken as holding the wrapper's resting look"
 	},
 	{

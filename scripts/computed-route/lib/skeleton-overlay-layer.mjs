@@ -23,6 +23,8 @@
 // Pure functions over the inventory model, the declared styles, the calibration's slot map and a role lookup: no browser, no
 // site; the database is read only through `roleOf`.
 
+import { paintedProps } from './css-families.mjs';
+
 const ws = ( s ) => String( s ?? '' ).replace( /\s+/g, ' ' ).trim();
 const ZERO = /^(?:0|0px|0%|-0px)$/;
 const off = ( v ) => [ '', 'auto', '0', 'none', 'normal', 'initial', 'unset' ].includes( ws( v ).toLowerCase() );
@@ -96,7 +98,7 @@ const drawsBox = ( m, k ) => [ 375, 768, 1440 ].some( ( w ) => k.visible?.[ w ] 
 // their block, `roles` { gradient, colour } the role a setting of each kind carries.
 export function overlaySetting( { settings = {}, kind, coverSlots = [], roleOf = () => null, roles = {} } ) {
 	const property = 'gradient' === kind ? 'background-image' : 'background-color';
-	const hits = Object.entries( settings || {} ).filter( ( [ name, c ] ) => c && ! c.state && property === c.property && roles[ kind ] === roleOf( name ) )
+	const hits = Object.entries( settings || {} ).filter( ( [ name, c ] ) => c && ! c.state && paintedProps( c ).includes( property ) && roles[ kind ] === roleOf( name ) )
 		.map( ( [ name, c ] ) => ( { name, slot: [ c.slot, ...( c.slots || [] ) ].find( ( s ) => coverSlots.includes( s ) ) } ) )
 		.filter( ( h ) => undefined !== h.slot )
 		.sort( ( a, b ) => a.name.localeCompare( b.name ) );
@@ -147,11 +149,11 @@ export function overlayOf( { host, candidates, m, declaredOf, settings, roleOf, 
 	// would not show at its own alpha; a blend mode the draft's layers declare needs the overlay's blend setting.
 	const at = Object.entries( settings ).filter( ( [ name, c ] ) => c && ! c.state && name !== s.setting && [ c.slot, ...( c.slots || [] ) ].includes( s.slot ) );
 	const others = at.map( ( [ name ] ) => name ).sort();
-	if ( ! at.some( ( [ , c ] ) => 'opacity' === c.property ) ) {
+	if ( ! at.some( ( [ , c ] ) => paintedProps( c ).includes( 'opacity' ) ) ) {
 		return refuseAll( 'the host block has no calibrated opacity setting at its overlay, so the overlay would not show at the layers\' own strength' );
 	}
 	const [ blend ] = blends;
-	if ( 'normal' !== blend && ! at.some( ( [ , c ] ) => 'mix-blend-mode' === c.property ) ) {
+	if ( 'normal' !== blend && ! at.some( ( [ , c ] ) => paintedProps( c ).includes( 'mix-blend-mode' ) ) ) {
 		return refuseAll( `the layers blend ${ blend } and the host block has no calibrated blend setting at its overlay` );
 	}
 	const stackAt = ( w ) => fit.map( ( l ) => ws( l.resolved?.[ w ]?.[ s.property ] ) ).reverse().join( ', ' );

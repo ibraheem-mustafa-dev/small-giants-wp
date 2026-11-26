@@ -6,6 +6,7 @@ import { TIMING_PROPS } from './fill-timing.mjs';
 import { INHERITED } from './fill-prop.mjs';
 import { LOOSE } from './resolve.mjs';
 import { longhands } from './calibrate-props.mjs';
+import { paintedProps } from './css-families.mjs';
 
 // One target's state looks grouped by state, pseudo-element and property across the read widths: Map
 // `${state}|${pseudo-element or ''}|${prop}` →
@@ -73,8 +74,8 @@ export function ancestorHolds( { cal, state, slot, prop, ancestor, aprop, taken 
 	const sideEffect = ( s ) => ( s.effects || [] ).some( ( e ) => e.slice( e.lastIndexOf( '|' ) + 1 ) === prop && LOOSE( e.slice( 0, e.lastIndexOf( '|' ) ) ) === LOOSE( slot ) );
 	const anc = LOOSE( ancestor.slot );
 	const through = ( s ) => ( s.slots || [ s.slot ] ).some( ( x ) => LOOSE( x ) === anc || ( '' === LOOSE( x ) ? '' !== anc : anc.startsWith( `${ LOOSE( x ) } ` ) ) );
-	const own = settings.filter( ( [ , s ] ) => ( ( longhands( s.property ).includes( prop ) && paints( s, slot ) ) || sideEffect( s ) ) && ! through( s ) );
-	return ! own.length && settings.some( ( [ attr, s ] ) => longhands( s.property ).includes( aprop ) && paints( s, ancestor.slot ) && taken.has( attr ) );
+	const own = settings.filter( ( [ , s ] ) => ( ( longhands( paintedProps( s ).join( ',' ) ).includes( prop ) && paints( s, slot ) ) || sideEffect( s ) ) && ! through( s ) );
+	return ! own.length && settings.some( ( [ attr, s ] ) => longhands( paintedProps( s ).join( ',' ) ).includes( aprop ) && paints( s, ancestor.slot ) && taken.has( attr ) );
 }
 
 // Whether the block's motion support holds this target's hover transform: lib/fill-motion.mjs::motionHolds, the one decision

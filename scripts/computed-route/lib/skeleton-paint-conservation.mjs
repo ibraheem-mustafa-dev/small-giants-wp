@@ -6,6 +6,7 @@
 // row that dropped it (unwrap, absorbed, remove), the rule or the per-site decision that did so, and the host it was
 // absorbed into. Pure functions over the saved inventory, proposal and skeleton: no browser, no site, no database.
 import { resolvedWidths, renderedWidths, pxOf } from './element-facts.mjs';
+import { paintedProps } from './css-families.mjs';
 import { copylessKey, templateKey } from './fact-key.mjs';
 import { revealId } from './reveal-merge.mjs';
 
@@ -284,6 +285,9 @@ export function namedIdentities( { inventory, skeleton, component } ) {
 	return out;
 }
 
+// The looks a calibrated setting's entry paints: one per property it paints (lib/css-families.mjs::paintedProps), `height,width` sizing two.
+export const looksOfEntry = ( entry, tag = '' ) => [ ...new Set( paintedProps( entry ).map( ( p ) => lookOfProperty( p, tag ) ).filter( Boolean ) ) ];
+
 // The CSS property a calibrated setting paints, as the look it is (null for a property that paints none of LOOKS).
 export function lookOfProperty( property, tag = '' ) {
 	const p = low( property );
@@ -371,7 +375,7 @@ export const RECORD_KINDS = {
 export const STRICT_DEFAULT = false;
 
 // The looks the settings of a calibration paint at any slot and in any state (lookOfProperty).
-export const calibratedLooks = ( settings = {} ) => new Set( Object.values( settings || {} ).map( ( x ) => lookOfProperty( x?.property ) ).filter( Boolean ) );
+export const calibratedLooks = ( settings = {} ) => new Set( Object.values( settings || {} ).flatMap( ( x ) => looksOfEntry( x ) ) );
 
 // The classes of a row that carries a valid record which delivers nothing (RECORDED-UNREAD): listed apart, failing only in strict mode.
 export const RECORDED_CLASSES = Object.keys( RECORD_KINDS ).filter( ( k ) => ! RECORD_KINDS[ k ].delivers );
