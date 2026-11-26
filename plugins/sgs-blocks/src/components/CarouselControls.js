@@ -8,8 +8,24 @@
  *
  * @package
  */
-import BuiltinButtonPanel from './BuiltinButtonPanel';
-import CarouselDotsPanel from './CarouselDotsPanel';
+import BuiltinButtonPanel, {
+	builtinButtonAttrKeys,
+} from './BuiltinButtonPanel';
+import CarouselDotsPanel, { carouselDotsAttrKeys } from './CarouselDotsPanel';
+
+/**
+ * Every attribute the arrow and dot kits generate for a carousel block, so a caller derives the names instead of typing
+ * them (the same pair `typographyAttrKeys` is for typography).
+ *
+ * @param {string[]} [groups] The arrow button's declared groups (`builtinButtonAttrKeys`); all groups when omitted.
+ * @return {string[]} The attribute names.
+ */
+export function carouselControlsAttrKeys( groups ) {
+	return [
+		...builtinButtonAttrKeys( 'arrow', groups ),
+		...carouselDotsAttrKeys( 'dot' ),
+	];
+}
 
 /**
  * @param {Object}   props

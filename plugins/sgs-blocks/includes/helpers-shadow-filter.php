@@ -110,3 +110,14 @@ function sgs_shadow_decl_map( string $composed, bool $follow_shape = false ): ar
 	return $out;
 }
 
+/**
+ * The follow-the-shape declarations of one composed shadow as a list ready to implode with ';', the shape
+ * `sgs_shadow_box_decls()` returns for box mode.
+ *
+ * @param string $composed Value from sgs_shadow_layers().
+ * @return string[] `filter:drop-shadow(...)`, or none when a filter can draw nothing.
+ */
+function sgs_shadow_follow_decls( string $composed ): array {
+	$props = sgs_shadow_decl_map( $composed, true );
+	return isset( $props['filter'] ) ? array( 'filter:' . $props['filter'] ) : array();
+}
