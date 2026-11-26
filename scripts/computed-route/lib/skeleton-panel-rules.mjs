@@ -17,7 +17,7 @@ const grows = ( v ) => /^[\d.]+$/.test( String( v ?? '' ).trim() ) && Number( v 
 // are not (their links hold pictures or blocks). The classifier's column-title check (lib/skeleton-classify.mjs) reads the
 // same function, so a title the panel rule takes as the head of a column is also a heading, never a label. Returns
 // ( column ) => boolean; false throughout without a record view or without the rule's entry.
-export function headedRunOf( { m, view, cfg } ) {
+export function headedRunOf( { m, view, cfg, minLinks = 2 } ) {
 	const label = ( k ) => view.has( k ) && 'a' !== k.tag && !! m.words( k ) && ! m.blockKids( k ).length;
 	const textRun = ( k ) => view.has( k ) && ! view.repeated( k ) && ( view.linkRun( k ) || m.blockKids( k ).length >= 2 ) && m.blockKids( k ).every( ( l ) => m.isTextLink( l ) );
 	const headed = ( e ) => {
@@ -34,15 +34,32 @@ export function headedRunOf( { m, view, cfg } ) {
 		};
 		return parts( e, 0 );
 	};
-	// Whether a leaf of words sits directly above a run of text links (its next block sibling is the run): the title of that
-	// run, wherever it stands in its column (a second title further down the column heads its own run).
+	// The block siblings of a column's leaf, and the leaf's place among them.
+	const around = ( e ) => {
+		const sibs = m.blockKids( m.byKey[ e.parentKey ] || { key: null } );
+		return { sibs, at: sibs.indexOf( e ) };
+	};
+	// Whether a leaf of words sits directly above a run of text links: its next block sibling is the run's container, or the
+	// next `minLinks` block siblings are text links themselves (a second title followed by bare links). It titles that run
+	// wherever it stands in its column.
 	headed.titlesRun = ( e ) => {
-		if ( ! cfg || ! view ) {
+		if ( ! cfg || ! view || ! label( e ) ) {
 			return false;
 		}
-		const sibs = m.blockKids( m.byKey[ e.parentKey ] || { key: null } );
-		const next = sibs[ sibs.indexOf( e ) + 1 ];
-		return label( e ) && !! next && textRun( next );
+		const { sibs, at } = around( e );
+		const next = sibs.slice( at + 1, at + 1 + minLinks );
+		return !! next.length && ( textRun( next[ 0 ] ) || ( next.length >= minLinks && next.every( ( l ) => m.isTextLink( l ) ) ) );
+	};
+	// Whether a leaf of words heads the first run of its column: a run's container comes below it, with at most
+	// `cfg.maxLeadLines` (default 1) other leaves of words between the two (a line of text under the title). A kicker with more
+	// leaves before a later title's run is not the head of that run: the later title is.
+	headed.headsRun = ( e ) => {
+		if ( ! cfg || ! view || ! label( e ) ) {
+			return false;
+		}
+		const { sibs, at } = around( e );
+		const run = sibs.findIndex( ( k, i ) => i > at && textRun( k ) );
+		return run > at && sibs.slice( at + 1, run ).filter( label ).length <= ( cfg.maxLeadLines ?? 1 );
 	};
 	return headed;
 }

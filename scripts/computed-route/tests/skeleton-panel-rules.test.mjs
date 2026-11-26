@@ -663,6 +663,18 @@ test( 'column title: a caps title over one wrapper holding a run of text links i
 	assert.equal( blockOf( second, 'All brands' ), 'sgs/heading', 'a second title directly above its own run heads that run' );
 } );
 
+test( 'column title: the first leaf is the head of a run only when no later title sits between it and the run; a second title followed by bare links is a heading; MUST FAIL when the first leaf takes any later run', () => {
+	const kicker = headedCol( [ capsTitle( 'NEW' ), N( 'p', { words: 'Our latest frames' } ), capsTitle( 'All brands' ), linkLoop() ] );
+	assert.equal( blockOf( kicker, 'NEW' ), 'sgs/label', 'a kicker over text with a titled run further down is still a kicker' );
+	assert.equal( blockOf( kicker, 'All brands' ), 'sgs/heading', 'the title directly above the run heads it' );
+	const bare = ( words, href ) => N( 'a', { words, attrs: { href } } );
+	const links = headedCol( [ capsTitle( 'Most asked' ), bare( 'One', '/one' ), bare( 'Two', '/two' ), capsTitle( 'All brands' ), bare( 'Three', '/three' ), bare( 'Four', '/four' ) ] );
+	assert.equal( blockOf( links, 'Most asked' ), 'sgs/heading' );
+	assert.equal( blockOf( links, 'All brands' ), 'sgs/heading', 'a second title directly above bare text links heads them' );
+	const one = headedCol( [ capsTitle( 'Most asked' ), bare( 'One', '/one' ), bare( 'Two', '/two' ), capsTitle( 'Note' ), bare( 'Three', '/three' ) ] );
+	assert.equal( blockOf( one, 'Note' ), 'sgs/label', 'a title above one bare link is no run' );
+} );
+
 test( 'column title: outside a header panel only the direct-sibling-links reading applies (a hero line above its button loop, a title above one wrapper of links on a page stay as they were); MUST FAIL when the panel readings run everywhere', () => {
 	const asPage = ( col ) => byWords( run( headedPanel( col ), { kind: 'page', name: 'Home' } ), 'Sunglasses' )?.block;
 	const wrapped = headedCol( [ capsTitle( 'Sunglasses' ), linkLoop() ] );

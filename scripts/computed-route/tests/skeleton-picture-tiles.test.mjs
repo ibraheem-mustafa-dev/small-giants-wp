@@ -154,9 +154,24 @@ test( 'MUST FAIL: a loop of whole-link tiles of two text lines and no picture is
 	assert.equal( ( all( scripted.skeleton, 'sgs/card-grid' )[ 0 ]?.handover || [] ).filter( ( h ) => 'link' === h.kind ).length, 4, 'a script click is a named link handover' );
 } );
 
+test( 'MUST FAIL: a text tile is named by its title in its link handover, not by its subtitle; a bound address has its own wording', () => {
+	const scripted = run( page( four( ( i ) => textTile( i, { script: true } ) ) ) );
+	const card = all( scripted.skeleton, 'sgs/card-grid' )[ 0 ];
+	const link = ( card.handover || [] ).filter( ( h ) => 'link' === h.kind );
+	assert.match( link[ 0 ].detail, /^card 1 "Pilot": /, 'named by the first line of the tile' );
+	assert.doesNotMatch( link[ 0 ].detail, /48 frames/ );
+	const bound = textGrids( page( four( textTile ).map( ( e ) => ( 'Root/10' === e.key.split( '#' )[ 0 ] ? { ...e, attrs: { href: '{{ s.url }}' } } : e ) ) ) ).grids.get( 'Root/4#0' );
+	assert.equal( bound.handovers.length, 4 );
+	assert.match( bound.handovers[ 0 ].detail, /binds each card's address to the loop's own data/, 'a bound address is not "goes somewhere by script"' );
+	assert.doesNotMatch( bound.handovers[ 0 ].detail, /goes somewhere by script/ );
+	const picture = pictureTileGrids( { m: inventoryModel( inv( page( four( buttonTile ) ) ) ), rule: facts().decisions.rules.pictureTileGrid, money: facts().decisions.rules.commerceRegion.money } ).grids.get( 'Root/4#0' );
+	assert.match( picture.handovers[ 0 ].detail, /^card 1 "Pilot": / );
+} );
+
 test( 'negative controls for text tiles: one-line links (a link list), three lines, a picture, a glyph, a price, two controls, two tiles, a plain box, a shared parent, no entry', () => {
 	assert.equal( textGrids( page( four( ( i ) => textTile( i, { lines: 1 } ) ) ) ).grids.size, 0, 'a run of one-line links is a link list' );
 	assert.equal( textGrids( page( four( ( i ) => textTile( i, { lines: 3 } ) ) ) ).grids.size, 0, 'three lines is a container of its own' );
+	assert.equal( textGrids( page( four( ( i ) => textTile( i, { lines: 3 } ) ) ), { ...facts().decisions.rules.textTileGrid, maxTileLines: undefined } ).grids.size, 0, 'a rule naming no maximum still caps a tile at two lines' );
 	const withPicture = [ ...four( textTile ), ...[ 0, 1, 2, 3 ].map( ( i ) => el( `Root/14#${ i }`, `Root/10#${ i }`, 'img', '', { depth: 4, loop: 9, attrs: { src: 'x.jpg' } } ) ) ];
 	assert.equal( textGrids( page( withPicture ) ).grids.size, 0, 'a tile with a picture is a picture tile' );
 	const slot = [ ...four( textTile ), ...[ 0, 1, 2, 3 ].map( ( i ) => el( `Root/17#${ i }`, `Root/10#${ i }`, 'image-slot', '', { depth: 4, loop: 9 } ) ) ];

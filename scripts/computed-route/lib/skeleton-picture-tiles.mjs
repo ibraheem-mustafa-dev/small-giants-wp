@@ -30,6 +30,8 @@ export const handlerNamed = ( e ) => /sc-camel-on-click="\{\{\s*([^}\s]+)\s*\}\}
 const control = ( e ) => ( 'a' === e.tag && null != e.attrs?.href ) || 'button' === e.tag || !! handlerNamed( e );
 // A destination the draft writes as an address (not "#", not a template binding).
 const addressOf = ( e ) => ( 'a' === e.tag && e.attrs?.href && '#' !== e.attrs.href && ! /\{\{/.test( e.attrs.href ) ? e.attrs.href : null );
+// A link whose address is a template binding (`href="{{ s.url }}"`): the loop's own data carries each tile's address.
+const boundAddress = ( e ) => 'a' === e.tag && /\{\{/.test( e.attrs?.href || '' );
 const paintsPicture = ( e ) => 'img' === e.tag || /background(?:-image)?\s*:[^;]*url\(/i.test( String( e.attrs?.style ?? '' ) );
 // The elements that draw a picture or stand for one still to come (an <image-slot> the client fills later): no text tile holds one.
 const PICTURE_TAGS = new Set( [ 'img', 'picture', 'svg', 'video', 'canvas', 'iframe', 'image-slot' ] );
@@ -89,7 +91,7 @@ function tileGrids( { m, rule, money, text } ) {
 		if ( text ) {
 			// Lines of text: the shown elements of the tile with words of their own. Nothing else is drawn in a text tile.
 			const lines = inside.map( ( els ) => els.filter( ( d ) => m.words( d ) ).length );
-			if ( lines.some( ( n ) => n < ( rule.minTileLines ?? 2 ) || n > rule.maxTileLines ) || pictures.some( Boolean ) || inside.some( ( els ) => els.some( ( d ) => PICTURE_TAGS.has( d.tag ) || ( d !== els[ 0 ] && control( d ) ) ) ) ) {
+			if ( lines.some( ( n ) => n < ( rule.minTileLines ?? 2 ) || n > ( rule.maxTileLines ?? 2 ) ) || pictures.some( Boolean ) || inside.some( ( els ) => els.some( ( d ) => PICTURE_TAGS.has( d.tag ) || ( d !== els[ 0 ] && control( d ) ) ) ) ) {
 				continue;
 			}
 		} else if ( pictures.filter( Boolean ).length < items.length * ( rule.pictureShare ?? 0.5 ) ) {
@@ -101,13 +103,19 @@ function tileGrids( { m, rule, money, text } ) {
 		}
 		const V = rule.variant;
 		const over = pictures.filter( Boolean ).every( ( p ) => items.includes( p ) || outOfFlow( p ) );
+		// The card's title: the last leaf of words of a picture tile (the caption under its picture), the first of a text tile (its
+		// title above the subtitle).
 		const titleOf = ( els ) => {
-			const t = els.findLast( ( d ) => m.words( d ) );
+			const t = text ? els.find( ( d ) => m.words( d ) ) : els.findLast( ( d ) => m.words( d ) );
 			return t ? m.words( t ) : '';
 		};
 		const handovers = [];
 		items.forEach( ( it, i ) => {
 			if ( addressOf( actions[ i ] ) ) {
+				return;
+			}
+			if ( boundAddress( actions[ i ] ) && rule.boundLinkHandover ) {
+				handovers.push( { owner: 'behaviour', kind: 'link', detail: `card ${ i + 1 } "${ titleOf( inside[ i ] ) }": ${ rule.boundLinkHandover }` } );
 				return;
 			}
 			const by = handlerNamed( actions[ i ] );
