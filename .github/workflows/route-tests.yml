@@ -90,6 +90,8 @@ jobs:
         with:
           name: framework-db
           path: ${{ runner.temp }}/db
+      - name: Install Python packages (the plugin scripts the tests run import them)
+        run: python -m pip install -r scripts/computed-route/requirements-ci.txt
       - name: Install route packages
         working-directory: scripts/computed-route
         run: npm ci --ignore-scripts
