@@ -126,7 +126,14 @@ export function fnWrites( idx, fn, env = new Map() ) {
 	for ( const call of subtree( idx, fn.body ).filter( ( n ) => 'CallExpression' === n.type ) ) {
 		if ( 'setState' === propName( call.callee ) ) {
 			const arg = call.arguments[ 0 ];
-			( isFn( arg ) ? returned( arg ) : [ arg ] ).forEach( ( v ) => valueWrites( ctx, v, [], out ) );
+			const other = dcLogicName( call.callee.object );
+			if ( '' === other ) {
+				// A lookup of a component no literal names: its writes are on a component unknown here, so they count nowhere.
+				continue;
+			}
+			const made = other ? new Set() : out;
+			( isFn( arg ) ? returned( arg ) : [ arg ] ).forEach( ( v ) => valueWrites( ctx, v, [], made ) );
+			other && made.forEach( ( w ) => out.add( `${ other }${ SCOPE }${ w }` ) );
 			continue;
 		}
 		for ( const target of calleesOf( idx, call ).filter( ( f ) => f !== fn ) ) {
@@ -161,13 +168,53 @@ export function openingWrites( record ) {
 	return per.length ? [ ...per[ 0 ] ].filter( ( w ) => per.every( ( s ) => s.has( w ) ) ) : [];
 }
 
-// The components a record's opening writes run on: each open state's how_to_reach call that names its component
-// (`dcLogic('Home').setState(…)`, lib/intake-reach-calls.mjs) runs on that component only, so only a handler in that
-// component's draft (`<name>.dc.html`, the runtime's file for component <name>) makes those writes. Null when a call names
-// no component (a plain `<ident>.setState`, a structured setState): its writes are matched in every draft, as before.
+// The components a record's opening writes run on: an open state's call that names its component
+// (`dcLogic('Home').setState(…)`, lib/intake-reach-calls.mjs) runs on that component, and a call naming none (a plain
+// `<ident>.setState`, a structured `how_to_reach_structured.setState`) on the record's own component (`dc`, as intake runs
+// them, lib/intake-skeletons.mjs on `s.component`). Only a handler writing on one of them opens the target (::opensTarget).
+// Null when a call has neither (a record with no `dc`): its writes are matched on every component.
+const named = ( v ) => 'string' === typeof v && '' !== v;
 export function openingComponents( record ) {
-	const calls = openStates( record ).flatMap( stateCalls );
-	return calls.length && calls.every( ( c ) => 'string' === typeof c.component && '' !== c.component ) ? new Set( calls.map( ( c ) => c.component ) ) : null;
+	const on = openStates( record ).flatMap( stateCalls ).map( ( c ) => ( named( c.component ) ? c.component : record?.dc ) );
+	return on.length && on.every( named ) ? new Set( on ) : null;
+}
+
+// fnWrites tags a write made through `dcLogic('<X>').setState(…)` with X (`X` + SCOPE + `path=value`); a write with no tag is
+// made on the handler's own component. A literal value is JSON text, so a raw SCOPE character never occurs in one.
+const SCOPE = '\u0000';
+// The component a `dcLogic(<name>)` lookup names: a string, or a template literal with no `${}` hole; '' for any other
+// argument (a variable, a hole: the component is unknown); null when `obj` is no dcLogic lookup.
+function dcLogicName( obj ) {
+	if ( 'CallExpression' !== obj?.type || 'Identifier' !== obj.callee?.type || 'dcLogic' !== obj.callee.name ) {
+		return null;
+	}
+	const a = obj.arguments?.[ 0 ];
+	const v = 'StringLiteral' === a?.type ? a.value : 'TemplateLiteral' === a?.type && ! a.expressions.length ? a.quasis[ 0 ]?.value?.cooked : null;
+	return named( v ) ? v : '';
+}
+
+// A handler's writes by the component each is made on: Map( component -> Set( 'path=value' ) ); `own` is the handler's
+// own component (null when unknown).
+export function writesOn( writes, own ) {
+	const out = new Map();
+	for ( const w of writes ) {
+		const at = w.indexOf( SCOPE );
+		const [ comp, plain ] = at > 0 ? [ w.slice( 0, at ), w.slice( at + 1 ) ] : [ own, w ];
+		( out.get( comp ) ?? out.set( comp, new Set() ).get( comp ) ).add( plain );
+	}
+	return out;
+}
+
+// The writes a handler of component `own` makes on its own component: its untagged writes and those it tags with `own`
+// (`dcLogic('<own>').setState(…)`), as plain 'path=value' strings. Every reader comparing a handler's writes with plain
+// strings reads them through here.
+export const ownWrites = ( writes, own ) => writesOn( writes, own ).get( own ) ?? new Set();
+
+// Whether a handler of component `own` whose writes are `writes` opens `target` ({ writes, components }): on one component
+// the target's opening calls run on (any, when `components` is null), it makes every opening write.
+export function opensTarget( writes, own, target ) {
+	const on = writesOn( writes, own );
+	return [ ...( target.components ?? on.keys() ) ].some( ( c ) => target.writes.every( ( w ) => on.get( c )?.has( w ) ) );
 }
 
 // The component a draft file holds: `<name>.dc.html` holds component <name>.
@@ -202,7 +249,7 @@ export function flowOpeners( { exp, rows, hint, pageOfTag } ) {
 			const fns = handlerFns( d.idx, attrOf( t, 'onClick' ) );
 			const sets = fns.map( ( fn ) => fnWrites( d.idx, fn ) );
 			const page = pageOfTag( `${ d.file }:${ t.line }:${ t.col }` );
-			for ( const f of flows.filter( ( x ) => ( ! x.components || x.components.has( componentOf( d.file ) ) ) && sets.some( ( s ) => x.writes.every( ( w ) => s.has( w ) ) ) ) ) {
+			for ( const f of flows.filter( ( x ) => sets.some( ( s ) => opensTarget( s, componentOf( d.file ), x ) ) ) ) {
 				opened.set( page, new Set( [ ...( opened.get( page ) || [] ), f.row.slug ] ) );
 			}
 		}

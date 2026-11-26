@@ -1,20 +1,20 @@
 [
 	{
 		"file": "lib/intake-reach-calls.mjs",
-		"find": "(?:(dcLogic)\\s*\\(\\s*(?:(['\"])([^'\"]+)\\2|`((?:[^`$]|\\$(?!\\{))+)`)\\s*\\)|([A-Za-z_$][\\w$]*))",
+		"find": "(?:(dcLogic)\\s*(?:\\?\\.\\s*)?\\(\\s*(?:'([^']+)'|\"([^\"]+)\"|`((?:[^`$]|\\$(?!\\{))+)`)\\s*\\)|([A-Za-z_$][\\w$]*))",
 		"replace": "(?:(dcLogic)x|([A-Za-z_$][\\w$]*))",
 		"why": "a dcLogic('<component>') call gives no way to open"
 	},
 	{
 		"file": "lib/intake-reach-calls.mjs",
-		"find": "...( m[ 1 ] ? { component: m[ 3 ] ?? m[ 4 ] } : {} )",
+		"find": "...( m[ 1 ] ? { component: m[ 2 ] ?? m[ 3 ] ?? m[ 4 ] } : {} )",
 		"replace": "",
 		"why": "the call runs on every component's logic"
 	},
 	{
 		"file": "lib/intake-reach-calls.mjs",
-		"find": "([^'\"]+)\\2|",
-		"replace": "([^'\"]+)['\"]|",
+		"find": "'([^']+)'|\"([^\"]+)\"|",
+		"replace": "['\"]([^'\"]+)['\"]|()|",
 		"why": "a name in mismatched quotes is read as a component"
 	},
 	{
@@ -37,14 +37,14 @@
 	},
 	{
 		"file": "lib/intake-reach-calls.mjs",
-		"find": "(['\"])([^'\"]+)\\2",
-		"replace": "(['\"])([^'\"$]+)\\2",
+		"find": "'([^']+)'",
+		"replace": "'([^'$]+)'",
 		"why": "a $ in a quoted name is refused"
 	},
 	{
 		"file": "lib/intake-reach-calls.mjs",
-		"find": "m[ 3 ] ?? m[ 4 ]",
-		"replace": "m[ 3 ]",
+		"find": "m[ 2 ] ?? m[ 3 ] ?? m[ 4 ]",
+		"replace": "m[ 2 ] ?? m[ 3 ]",
 		"why": "a backtick name is lost from the call"
 	},
 	{
@@ -55,8 +55,32 @@
 	},
 	{
 		"file": "lib/state-openers.mjs",
-		"find": "c.component ? `${ c.ident }('${ c.component }')` : c.ident",
-		"replace": "c.ident",
+		"find": "${ c.component ? `",
+		"replace": "${ false ? `",
 		"why": "the way's text names a call the record never wrote"
+	},
+	{
+		"file": "lib/intake-reach-calls.mjs",
+		"find": "'([^']+)'|\"([^\"]+)\"|",
+		"replace": "'([^'\"]+)'|\"([^\"']+)\"|",
+		"why": "a name holding the other quote character (Shop's Home) gives no way to open (234d86da0's reading)"
+	},
+	{
+		"file": "lib/intake-reach-calls.mjs",
+		"find": "(dcLogic)\\s*(?:\\?\\.\\s*)?\\(",
+		"replace": "(dcLogic)\\s*\\(",
+		"why": "dcLogic?.('X') gives no way to open"
+	},
+	{
+		"file": "lib/state-openers.mjs",
+		"find": "! c.component.includes( \"'\" ) ? ",
+		"replace": "true ? ",
+		"why": "a name holding an apostrophe is written in single quotes the reader cannot read back"
+	},
+	{
+		"file": "lib/state-openers.mjs",
+		"find": ": ! c.component.includes( '\"' ) ? ",
+		"replace": ": true ? ",
+		"why": "a name holding both quote kinds is written in double quotes the reader cannot read back"
 	}
 ]

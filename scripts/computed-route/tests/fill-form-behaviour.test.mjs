@@ -137,3 +137,19 @@ test( 'negative control: no copy, an already required field, or a block with no 
 	assert.deepEqual( none.writes, [] );
 	assert.match( none.unmapped[ 0 ].reason, /holds no required setting/ );
 } );
+
+// A submit handler writing its sent state through dcLogic('<the form's own component>') shows that state; one writing another
+// component's state does not (lib/intake-pagemap-flow-openers.mjs::ownWrites with the record's dc).
+test( 'MUST FAIL: a sent state written through dcLogic on the form\'s own component is read', () => {
+	const facts = read( 'mamas', 'facts.json' );
+	const via = ( name ) => {
+		const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'form-behaviour-' ) );
+		const text = fs.readFileSync( path.join( FIX, 'mamas', 'Contact.dc.html' ), 'utf8' );
+		const out = text.replace( 'e.preventDefault(); this.setState({ sent: true });', `e.preventDefault(); dcLogic('${ name }').setState({ sent: true });` );
+		assert.notEqual( out, text );
+		fs.writeFileSync( path.join( dir, 'Contact.dc.html' ), out );
+		return successMessageOf( { factRecord: facts, record: facts.surfaces[ 'S-34' ], folder: dir } );
+	};
+	assert.equal( via( 'Contact' ).message, SENT );
+	assert.equal( via( 'Home' ).message, null, 'negative control: a write on another component shows no sent state of this form' );
+} );

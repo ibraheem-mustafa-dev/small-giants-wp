@@ -20,7 +20,7 @@ import { fileURLToPath } from 'url';
 import { attrOf, readBinding, propName } from './intake-ast.mjs';
 import { fnsNamed } from './intake-census-map.mjs';
 import { elementTree, descendants, innerText, KIND_POST_TYPE } from './intake-pagemap-surfaces.mjs';
-import { openingWrites, openingComponents, componentOf, fnWrites } from './intake-pagemap-flow-openers.mjs';
+import { openingWrites, openingComponents, componentOf, opensTarget, fnWrites } from './intake-pagemap-flow-openers.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 export const OPENABLE = JSON.parse( fs.readFileSync( path.join( HERE, '..', 'data', 'surface-openers.json' ), 'utf8' ) ).kinds;
@@ -94,7 +94,7 @@ export function surfaceOpeners( { exp, rows, hint, pageOfTag, surfaces = [] } ) 
 		const key = ( n ) => `${ d.file }:${ n.line }:${ n.col }`;
 		for ( const node of tree.nodes.filter( ( n ) => attrOf( n, 'onClick' ) ) ) {
 			const writes = new Set( handlerFns( d.idx, attrOf( node, 'onClick' ) ).flatMap( ( fn ) => [ ...fnWrites( d.idx, fn ) ] ) );
-			const hits = targets.filter( ( t ) => ( ! t.components || t.components.has( componentOf( d.file ) ) ) && t.writes.every( ( w ) => writes.has( w ) ) );
+			const hits = targets.filter( ( t ) => opensTarget( writes, componentOf( d.file ), t ) );
 			if ( ! hits.length ) {
 				continue;
 			}

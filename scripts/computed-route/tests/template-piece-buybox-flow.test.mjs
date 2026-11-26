@@ -205,3 +205,24 @@ test( 'MUST FAIL: a wrapper holding both controls, add first, is set aside for t
 	assert.equal( keep.openerFirst, false, 'the opener itself follows the add control' );
 } );
 
+
+// fnWrites tags a write made through dcLogic('<X>').setState(…) with X; the buy box reads the draft page's own writes
+// (lib/intake-pagemap-flow-openers.mjs::ownWrites with the draft file's component, Page here), so an opener written through
+// dcLogic('Page') is still the flow's opener, and one written on another component is not.
+const LENS = 'openLens: () => setL({ open: true, step: 0, use: null }),';
+const lookup = ( name ) => DRAFT.replace( LENS, `openLens: () => dcLogic('${ name }').setState({ lens: { open: true, step: 0 } }),` );
+
+test( 'MUST FAIL: a buy-box opener written through dcLogic on the page\'s own component opens the flow, so Add to Cart is kept', () => {
+	assert.notEqual( lookup( 'Page' ), DRAFT );
+	const c = ctx( { draftSource: lookup( 'Page' ) } );
+	const keep = keepsAddToCart( c, locateRun( c, 'buybox', 'sgs/buybox' ) );
+	assert.equal( keep.keep, true, keep.why );
+	assert.deepEqual( keep.openers, [ 'Root/5#0' ] );
+} );
+
+test( 'negative control: the same opener written on another component opens no flow of this page', () => {
+	const c = ctx( { draftSource: lookup( 'Home' ) } );
+	const keep = keepsAddToCart( c, locateRun( c, 'buybox', 'sgs/buybox' ) );
+	assert.equal( keep.keep, false );
+	assert.match( keep.why, /no control in the buy box opens the flow/ );
+} );

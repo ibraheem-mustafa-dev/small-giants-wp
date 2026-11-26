@@ -22,7 +22,7 @@
 // controls give no role and the buy box keeps nothing.
 import fs from 'node:fs';
 import path from 'node:path';
-import { handlerFns, fnWrites, openingWrites } from './intake-pagemap-flow-openers.mjs';
+import { handlerFns, fnWrites, openingWrites, ownWrites, componentOf } from './intake-pagemap-flow-openers.mjs';
 import { draftLogic, underFixed } from './template-piece-draft.mjs';
 import { elementHandler } from './draft-link.mjs';
 import { effectOf } from './shop-parts-logic.mjs';
@@ -51,11 +51,14 @@ export function productFlow( rows, handoffDir ) {
 
 // What one control does: { opens, adds }, both false when it has no handler or the logic names none. `value`: its click
 // binding (`{{ openLens }}`, lib/draft-link.mjs::elementHandler).
-export function controlRole( L, value, writes ) {
+export function controlRole( L, value, writes, own = null ) {
 	if ( ! value ) {
 		return { opens: false, adds: false };
 	}
-	const opens = handlerFns( L, value ).some( ( fn ) => writes.every( ( w ) => fnWrites( L, fn ).has( w ) ) );
+	const opens = handlerFns( L, value ).some( ( fn ) => {
+		const made = ownWrites( fnWrites( L, fn ), own );
+		return writes.every( ( w ) => made.has( w ) );
+	} );
 	const adds = !! effectOf( L, value.replace( /^\{\{\s*|\s*\}\}$/g, '' ).trim() ).appends;
 	return { opens, adds };
 }
@@ -72,7 +75,7 @@ export function keepsAddToCart( ctx, found ) {
 	if ( ! L ) {
 		return { keep: false, why: 'the draft has no readable logic to say what its buttons do' };
 	}
-	const roles = found.index.elements.filter( ( e ) => found.inRun( e.key ) && ! underFixed( found.index, e.key ) ).map( ( e ) => ( { key: e.key, ...controlRole( L, elementHandler( e ), flow.writes ) } ) );
+	const roles = found.index.elements.filter( ( e ) => found.inRun( e.key ) && ! underFixed( found.index, e.key ) ).map( ( e ) => ( { key: e.key, ...controlRole( L, elementHandler( e ), flow.writes, ctx.draftFile ? componentOf( ctx.draftFile ) : null ) } ) );
 	const openers = roles.filter( ( r ) => r.opens ).map( ( r ) => r.key );
 	const adds = roles.filter( ( r ) => r.adds && ! r.opens ).map( ( r ) => r.key );
 	if ( ! openers.length ) {

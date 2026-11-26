@@ -11,7 +11,7 @@ import os from 'os';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { proposePageMap, pageMapProblems } from '../lib/intake-pagemap.mjs';
-import { openingWrites, openingComponents, flowOpeners, fnWrites } from '../lib/intake-pagemap-flow-openers.mjs';
+import { openingWrites, openingComponents, flowOpeners, fnWrites, writesOn, opensTarget, ownWrites } from '../lib/intake-pagemap-flow-openers.mjs';
 import { mapChanges } from '../lib/intake-pagemap-regen.mjs';
 import { loadExport, readRouting } from '../lib/intake-routing.mjs';
 import { codeSurfaces } from '../lib/intake-pagemap-surfaces.mjs';
@@ -133,7 +133,83 @@ test( 'negative controls: the same call naming the product page\'s own component
 	assert.equal( product( proposePageMap( { folder: hintVariant( "dcLogic('Store').setState({lens:{open:true}})" ) } ) ).opensFlow, 'choice-flow-add-lenses' );
 	assert.equal( product( proposePageMap( { folder: hintVariant( "dcLogic(`Store`)?.setState({lens:{open:true}})" ) } ) ).opensFlow, 'choice-flow-add-lenses', 'a backtick name and ?.setState name the component too' );
 	assert.equal( product( proposePageMap( { folder: hintVariant( 'L.setState({lens:{open:true}})' ) } ) ).opensFlow, 'choice-flow-add-lenses' );
-	assert.equal( openingComponents( HINT.records.find( ( r ) => 'S-04' === r.id ) ), null, 'a plain ident call names no component: every draft' );
-	assert.equal( openingComponents( { states: [ { name: 'open', how_to_reach: "dcLogic('Home').setState({a:1}); L.setState({b:2})" } ] } ), null, 'one call naming none: every draft' );
-	assert.equal( openingComponents( { states: [ { name: 'Default', how_to_reach: "dcLogic('Home').setState({a:1})" } ] } ), null, 'a default state is no open state' );
+	assert.deepEqual( [ ...openingComponents( HINT.records.find( ( r ) => 'S-04' === r.id ) ) ], [ 'Store' ], 'a plain ident call runs on the record\'s own component' );
+	assert.equal( openingComponents( { states: [ { name: 'open', how_to_reach: "dcLogic('Home').setState({a:1}); L.setState({b:2})" } ] } ), null, 'a call naming none in a record with no dc: every component' );
+	assert.equal( openingComponents( { dc: 'Home', states: [ { name: 'Default', how_to_reach: "dcLogic('Home').setState({a:1})" } ] } ), null, 'a default state is no open state' );
+} );
+
+// A call naming no component runs on the record's own component (`dc`): a Claude Design export that fills
+// `how_to_reach_structured` (whose setState names no component) must not bring the product-row fault back.
+function recordVariant( edit ) {
+	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'flow-opener-' ) );
+	fs.copyFileSync( path.join( FIX, 'Store.dc.html' ), path.join( dir, 'Store.dc.html' ) );
+	const hint = structuredClone( HINT );
+	edit( hint.records.find( ( r ) => 'S-04' === r.id ) );
+	fs.writeFileSync( path.join( dir, 'surfaces.json' ), JSON.stringify( hint ) );
+	return dir;
+}
+const structured = ( dc ) => ( r ) => {
+	r.dc = dc;
+	r.states.filter( ( st ) => /^open/.test( st.name ) ).forEach( ( st ) => {
+		st.how_to_reach = 'Open the configurator';
+		st.how_to_reach_structured = { setState: { lens: { open: true } } };
+	} );
+};
+
+test( 'MUST FAIL: a flow on another component whose open state is structured (no component named) is opened by no button of the product page\'s draft', () => {
+	assert.equal( product( proposePageMap( { folder: recordVariant( structured( 'Home' ) ) } ) ).opensFlow, undefined );
+	assert.equal( product( proposePageMap( { folder: recordVariant( ( r ) => ( r.dc = 'Home' ) ) } ) ).opensFlow, undefined, 'a plain ident call on a record of another component too' );
+	assert.deepEqual( [ ...openingComponents( { dc: 'Home', states: [ { name: 'open', how_to_reach_structured: { setState: { sub: true } } } ] } ) ], [ 'Home' ] );
+} );
+
+test( 'negative control: the same structured open state on the product page\'s own component names the flow', () => {
+	assert.equal( product( proposePageMap( { folder: recordVariant( structured( 'Store' ) ) } ) ).opensFlow, 'choice-flow-add-lenses' );
+	assert.deepEqual( [ ...openingComponents( { dc: 'Home', states: [ { name: 'open', how_to_reach: "dcLogic('Basket').setState({a:1})" } ] } ) ], [ 'Basket' ], 'a named component wins over the record\'s' );
+} );
+
+// A handler's `dcLogic('<X>').setState(…)` writes on component X, never on the handler's own: fnWrites tags those writes with X.
+test( 'MUST FAIL: a handler writing another component\'s state through dcLogic opens that component\'s target, never its own', () => {
+	const toHome = variant( 'openLens: () => setL({ open: true, step: 0, use: null }),', "openLens: () => dcLogic('Home').setState({ lens: { open: true } }),\n      openLensHere: () => setL({ open: true, step: 0, use: null })," );
+	assert.equal( product( proposePageMap( { folder: toHome } ) ).opensFlow, undefined, 'the Store button writes Home\'s lens, not Store\'s' );
+	const exp = loadExport( toHome );
+	const d = exp.drafts[ 0 ];
+	const fn = d.idx.all.find( ( n ) => 'ObjectProperty' === n.type && 'openLens' === n.key.name ).value;
+	const writes = fnWrites( d.idx, fn );
+	assert.deepEqual( [ ...writesOn( writes, 'Store' ).entries() ].map( ( [ c, s ] ) => [ c, [ ...s ] ] ), [ [ 'Home', [ 'lens.open=true' ] ] ] );
+	assert.equal( opensTarget( writes, 'Store', { writes: [ 'lens.open=true' ], components: new Set( [ 'Home' ] ) } ), true, 'it opens the Home target' );
+	assert.equal( opensTarget( writes, 'Store', { writes: [ 'lens.open=true' ], components: new Set( [ 'Store' ] ) } ), false );
+} );
+
+test( 'negative controls: dcLogic naming the handler\'s own component, and an untagged write, keep their component; part of the opening writes opens nothing', () => {
+	const own = variant( 'openLens: () => setL({ open: true, step: 0, use: null }),', "openLens: () => dcLogic('Store').setState({ lens: { open: true } })," );
+	assert.equal( product( proposePageMap( { folder: own } ) ).opensFlow, 'choice-flow-add-lenses' );
+	assert.equal( opensTarget( new Set( [ 'a=1' ] ), 'Store', { writes: [ 'a=1', 'b=2' ], components: new Set( [ 'Store' ] ) } ), false, 'part of the opening writes' );
+	assert.equal( opensTarget( new Set( [ `Home${ String.fromCharCode( 0 ) }a=1`, 'b=2' ] ), 'Store', { writes: [ 'a=1', 'b=2' ], components: new Set( [ 'Store', 'Home' ] ) } ), false, 'the writes split over two components make neither whole' );
+	assert.deepEqual( [ ...writesOn( new Set( [ 'a=1' ] ), 'Store' ).keys() ], [ 'Store' ] );
+	assert.equal( opensTarget( new Set( [ 'a=1' ] ), null, { writes: [ 'a=1' ], components: new Set( [ 'Store' ] ) } ), false, 'a handler of no known component opens no named component\'s target' );
+	assert.equal( opensTarget( new Set( [ 'a=1' ] ), 'Shop', { writes: [ 'a=1' ], components: null } ), true, 'a target with no component is opened from any' );
+} );
+
+// The lookup's name may be a template literal with no hole (`dcLogic(`Home`)`); a lookup of a name no literal gives (a variable,
+// a hole) writes on a component unknown here, so its writes count on none, never on the handler's own.
+const LOOKUP = 'openLens: () => setL({ open: true, step: 0, use: null }),';
+const lookupWrites = ( arg ) => {
+	const d = loadExport( variant( LOOKUP, `openLens: () => dcLogic(${ arg }).setState({ lens: { open: true } }),` ) ).drafts[ 0 ];
+	const fn = d.idx.all.find( ( n ) => 'ObjectProperty' === n.type && 'openLens' === n.key.name ).value;
+	return [ ...writesOn( fnWrites( d.idx, fn ), 'Store' ).entries() ].map( ( [ c, s ] ) => [ c, [ ...s ] ] );
+};
+
+test( 'MUST FAIL: dcLogic(`Home`) writes on Home, and dcLogic(name) or dcLogic(`${ x }`) on no component, never on the handler\'s own', () => {
+	assert.deepEqual( lookupWrites( '`Home`' ), [ [ 'Home', [ 'lens.open=true' ] ] ] );
+	assert.equal( product( proposePageMap( { folder: variant( LOOKUP, 'openLens: () => dcLogic(`Home`).setState({ lens: { open: true } }),' ) } ) ).opensFlow, undefined, 'a Store button writing Home\'s lens opens no Store flow' );
+	assert.deepEqual( lookupWrites( 'name' ), [], 'a variable names no component' );
+	assert.deepEqual( lookupWrites( '`H${ "ome" }`' ), [], 'a template literal with a hole names no component' );
+	assert.equal( product( proposePageMap( { folder: variant( LOOKUP, 'openLens: () => dcLogic(which).setState({ lens: { open: true } }),' ) } ) ).opensFlow, undefined );
+} );
+
+test( 'negative controls: dcLogic(`Store`) and dcLogic(\'Store\') write on the handler\'s own component and open its flow', () => {
+	assert.deepEqual( lookupWrites( '`Store`' ), [ [ 'Store', [ 'lens.open=true' ] ] ] );
+	assert.equal( product( proposePageMap( { folder: variant( LOOKUP, 'openLens: () => dcLogic(`Store`).setState({ lens: { open: true } }),' ) } ) ).opensFlow, 'choice-flow-add-lenses' );
+	assert.deepEqual( [ ...ownWrites( new Set( [ `Store${ String.fromCharCode( 0 ) }a=1`, 'b=2', `Home${ String.fromCharCode( 0 ) }c=3` ] ), 'Store' ) ], [ 'a=1', 'b=2' ], 'ownWrites: the own tag and the untagged, never another component\'s' );
+	assert.deepEqual( [ ...ownWrites( new Set( [ 'b=2' ] ), null ) ], [ 'b=2' ], 'an unknown own component keeps the untagged writes' );
 } );

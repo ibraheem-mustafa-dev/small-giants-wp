@@ -1,6 +1,9 @@
 [
- {"file":"lib/intake-pagemap-flow-openers.mjs","find":"( ! x.components || x.components.has( componentOf( d.file ) ) ) && sets.some(","replace":"sets.some(","why":"a flow whose open state runs on another component (dcLogic('Home')) is opened by a product button of this draft"},
- {"file":"lib/intake-pagemap-flow-openers.mjs","find":"calls.every( ( c ) => 'string' === typeof c.component && '' !== c.component )","replace":"calls.some( ( c ) => 'string' === typeof c.component && '' !== c.component )","why":"one call naming a component scopes a call naming none to it"},
+ {"file":"lib/intake-pagemap-flow-openers.mjs","find":"return named( v ) ? v : '';","replace":"return null;","why":"every dcLogic('Home').setState write counts as the handler's own component's"},
+ {"file":"lib/intake-pagemap-flow-openers.mjs","find":"const [ comp, plain ] = at > 0 ? [ w.slice( 0, at ), w.slice( at + 1 ) ] : [ own, w ];","replace":"const [ comp, plain ] = [ own, w ];","why":"a tagged write is read as the handler's own, its tag kept"},
+ {"file":"lib/intake-pagemap-flow-openers.mjs","find":"return on.length && on.every( named ) ? new Set( on ) : null;","replace":"return on.length ? new Set( on ) : null;","why":"a record with no dc scopes its targets to no component, so nothing opens them"},
+ {"file":"lib/intake-pagemap-flow-openers.mjs","find":"return [ ...( target.components ?? on.keys() ) ].some(","replace":"return [ ...on.keys() ].some(","why":"a target is opened on any component the handler writes on, whatever component its record runs on"},
+ {"file":"lib/intake-pagemap-flow-openers.mjs","find":".map( ( c ) => ( named( c.component ) ? c.component : record?.dc ) );","replace":".map( ( c ) => c.component );","why":"a call naming no component (a structured setState) is matched on every component, not the record's own"},
  {"file":"lib/intake-pagemap.mjs","find":"\tgaps.push( ...flowOpeners( { exp, rows, hint, pageOfTag: code.pageOfTag } ) );\n","replace":"","why":"the proposer never asks which flow a product page opens (the code before this rule)"},
  {"file":"lib/intake-pagemap-flow-openers.mjs","find":"return String( n.value );","replace":"return 'x';","why":"booleans and numbers lose their value"},
  {"file":"lib/intake-pagemap-flow-openers.mjs","find":"return JSON.stringify( n.value );","replace":"return n.value;","why":"a string value is not quoted, so it reads like a number"},
@@ -18,7 +21,7 @@
  {"file":"lib/intake-pagemap-flow-openers.mjs","find":"! skip.has( w.split( /[.=]/ )[ 0 ] )","replace":"true","why":"a width condition key must be written by the handler"},
  {"file":"lib/intake-pagemap-flow-openers.mjs","find":"per.every( ( s ) => s.has( w ) )","replace":"true","why":"a value only one open state sets counts as an opening write"},
  {"file":"lib/intake-pagemap-flow-openers.mjs","find":"\t\t.filter( ( f ) => f.writes.length );","replace":"\t\t.filter( () => true );","why":"a flow with no opening writes matches every handler"},
- {"file":"lib/intake-pagemap-flow-openers.mjs","find":"sets.some( ( s ) => x.writes.every( ( w ) => s.has( w ) ) )","replace":"sets.some( ( s ) => x.writes.some( ( w ) => s.has( w ) ) || s.size > 0 )","why":"any handler that writes state opens the flow"},
+ {"file":"lib/intake-pagemap-flow-openers.mjs","find":"target.writes.every( ( w ) => on.get( c )?.has( w ) )","replace":"target.writes.some( ( w ) => on.get( c )?.has( w ) )","why":"a handler making part of the opening writes opens the target"},
  {"file":"lib/intake-pagemap-flow-openers.mjs","find":"'product' === r.postType && r.route && opened.has( r.route )","replace":"r.route && opened.has( r.route )","why":"a non-product row could name a flow"},
  {"file":"lib/intake-pagemap-flow-openers.mjs","find":"if ( 1 === slugs.length ) {","replace":"if ( slugs.length ) {","why":"two flows on one product page record the first"},
  {"file":"lib/intake-pagemap-flow-openers.mjs","find":"'sgs_choice_flow' === r.postType && r.draftId","replace":"r.draftId","why":"a modal row counts as a flow"},
@@ -27,5 +30,9 @@
  {"file":"lib/intake-pagemap-flow-openers.mjs","find":"if ( 'var' === decl?.kind && ! decl.key ) {","replace":"if ( false ) {","why":"a const object a handler passes is not followed to its declaration"},
  {"file":"lib/intake-pagemap-flow-openers.mjs","find":"[ 'member', 'local', 'key' ]","replace":"[ 'local' ]","why":"class members and object keys holding a function are not found by name"},
  {"file":"lib/intake-census-map.mjs","find":"} else if ( 'AssignmentExpression' === x.type && thisName( x.left ) === name ) {","replace":"} else if ( false ) {","why":"a member assigned in the constructor (this.x = …) is not found"},
- {"file":"lib/intake-census-map.mjs","find":"'bind' === keyOf( v.callee.property ) ? v.callee.object : v","replace":"v","why":"this.y.bind(this) is not followed to y"}
+ {"file":"lib/intake-census-map.mjs","find":"'bind' === keyOf( v.callee.property ) ? v.callee.object : v","replace":"v","why":"this.y.bind(this) is not followed to y"},
+ {"file":"lib/intake-pagemap-flow-openers.mjs","find":": 'TemplateLiteral' === a?.type && ! a.expressions.length ? a.quasis[ 0 ]?.value?.cooked : null;","replace":": null;","why":"dcLogic(`Home`) is no named lookup, so its write counts on the handler's own component"},
+ {"file":"lib/intake-pagemap-flow-openers.mjs","find":"if ( '' === other ) {","replace":"if ( false ) {","why":"a lookup of a component no literal names (dcLogic(name)) counts on the handler's own component"},
+ {"file":"lib/intake-pagemap-flow-openers.mjs","find":"! a.expressions.length ? a.quasis","replace":"true ? a.quasis","why":"a template literal with a hole names its first piece as the component"},
+ {"file":"lib/intake-pagemap-flow-openers.mjs","find":"export const ownWrites = ( writes, own ) => writesOn( writes, own ).get( own ) ?? new Set();","replace":"export const ownWrites = ( writes ) => new Set( writes );","why":"a reader of plain writes takes the tagged strings as they are, so a write through dcLogic on its own component is missed"}
 ]
