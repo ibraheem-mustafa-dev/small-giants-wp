@@ -119,27 +119,40 @@ export async function touchAndFocusChecks( ctx ) {
 	const { rep, markers } = ctx;
 	if ( ! markers[ '.m29-hover-card' ] ) {
 		rep.check( 'hover-none-tap', { pass: null, why: 'no .m29-hover-card page' } );
+		rep.check( 'touch-press-shows', { pass: null, why: 'no .m29-hover-card page' } );
 		rep.check( 'focus-visible-parity', { pass: null, why: 'no .m29-hover-card page' } );
 		return;
 	}
+	// Hover on touch screens (FR-38A-17, the default "Show while pressed"): assets/js/touch-input.js keys on the pointer
+	// type, not on `(hover: none)`, so every engine runs these for real. A touch press shows the hover state at once,
+	// and after the finger lifts (a tap) the card is back at rest: never sticky.
 	const touch = await ctx.newPage( markers[ '.m29-hover-card' ], ctx.engine === 'firefox' ? { hasTouch: true } : { hasTouch: true, isMobile: true } );
 	try {
-		const canHover = await touch.page.evaluate( () => matchMedia( '(hover: hover)' ).matches );
-		if ( canHover ) {
-			rep.check( 'hover-none-tap', { pass: null, why: `${ ctx.engine } does not emulate hover: none with hasTouch` } );
-		} else {
-			await touch.page.$eval( CARD, ( el ) => el.scrollIntoView( { block: 'center' } ) );
-			await touch.page.tap( CARD );
-			await touch.page.waitForTimeout( 500 );
-			const r = await touch.page.evaluate( READ, CARD );
-			rep.check( 'hover-none-tap', { selector: CARD, property: 'translate', measured: r.translate, expected: 'none after a tap under hover: none', pass: isRest( r.translate ) } );
-			const desk = await ctx.newPage( markers[ '.m29-hover-card' ] );
-			try {
-				const d = await hoverRead( desk.page, CARD );
-				rep.control( 'hover-none-tap', { selector: CARD, property: 'translate', measured: d.after.translate, expected: 'a hover-capable pointer lifts (so "none" above is not vacuous)', red: ! isRest( d.after.translate ) } );
-			} finally {
-				await desk.close();
-			}
+		await touch.page.$eval( CARD, ( el ) => el.scrollIntoView( { block: 'center' } ) );
+		const press = ( type ) =>
+			touch.page.$eval(
+				CARD,
+				( el, t ) => el.dispatchEvent( new PointerEvent( t, { bubbles: true, composed: true, pointerType: 'touch', pointerId: 7, isPrimary: true } ) ),
+				type
+			);
+		await press( 'pointerdown' );
+		await touch.page.waitForTimeout( 500 );
+		const held = await touch.page.evaluate( READ, CARD );
+		rep.check( 'touch-press-shows', { selector: CARD, property: 'translate', measured: held.translate, expected: 'the hover lift while a finger is on the card', pass: ! isRest( held.translate ) } );
+		await press( 'pointerup' );
+		await touch.page.waitForTimeout( 500 );
+		const lifted = await touch.page.evaluate( READ, CARD );
+		rep.control( 'touch-press-shows', { selector: CARD, property: 'translate', measured: lifted.translate, expected: 'at rest once the finger lifts (so the lift above is the press, not a resting value)', red: isRest( lifted.translate ) } );
+		await touch.page.tap( CARD );
+		await touch.page.waitForTimeout( 500 );
+		const r = await touch.page.evaluate( READ, CARD );
+		rep.check( 'hover-none-tap', { selector: CARD, property: 'translate', measured: r.translate, expected: 'none after a tap (no sticky hover)', pass: isRest( r.translate ) } );
+		const desk = await ctx.newPage( markers[ '.m29-hover-card' ] );
+		try {
+			const d = await hoverRead( desk.page, CARD );
+			rep.control( 'hover-none-tap', { selector: CARD, property: 'translate', measured: d.after.translate, expected: 'a mouse hover lifts (so "none" above is not vacuous)', red: ! isRest( d.after.translate ) } );
+		} finally {
+			await desk.close();
 		}
 	} finally {
 		await touch.close();

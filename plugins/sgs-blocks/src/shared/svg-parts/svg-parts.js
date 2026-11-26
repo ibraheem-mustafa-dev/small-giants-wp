@@ -255,19 +255,21 @@ function boot( root ) {
 		? cfg.hoverCooldown
 		: 1400;
 	let lastHover = -Infinity;
-	// "Desktop only" (`data-sgs-touch-hover="desktop"` on <html>) turns hover effects off while the last pointer was
-	// a touch, so a tap's emulated mouseenter does not replay; reduced motion is read live.
+	// Hover on touch screens follows the site setting (`data-sgs-touch-hover` on <html>, Spec 38A FR-38A-17): by default
+	// ("Show while pressed") a touch plays the hover at once on the press, and the tap's emulated mouseenter that follows
+	// does not replay it; "Off on touch screens" (`desktop`) plays nothing on touch; "Show on tap" (`tap`) plays on the
+	// emulated mouseenter as a browser's sticky hover does. Reduced motion is read live.
+	const touchMode = () => {
+		const value = document.documentElement.getAttribute(
+			'data-sgs-touch-hover'
+		);
+		return 'tap' === value || 'desktop' === value ? value : 'press';
+	};
+	// The loop speed-up below follows the finger (pointerenter on the press, pointerleave on lift or scroll) in every
+	// mode but "Off on touch screens".
 	const hoverOff = ( touch ) =>
-		prefersReducedMotion() ||
-		( touch &&
-			'desktop' ===
-				document.documentElement.getAttribute(
-					'data-sgs-touch-hover'
-				) );
-	root.addEventListener( 'mouseenter', () => {
-		if ( hoverOff( isTouchInput() ) ) {
-			return;
-		}
+		prefersReducedMotion() || ( touch && 'desktop' === touchMode() );
+	const playOnce = () => {
 		const now = window.performance.now();
 		if ( now - lastHover < cooldown ) {
 			return;
@@ -275,7 +277,30 @@ function boot( root ) {
 		lastHover = now;
 		playEntrance( true );
 		playHover();
+	};
+	root.addEventListener( 'mouseenter', () => {
+		if (
+			prefersReducedMotion() ||
+			( isTouchInput() && 'tap' !== touchMode() )
+		) {
+			return;
+		}
+		playOnce();
 	} );
+	root.addEventListener(
+		'pointerdown',
+		( event ) => {
+			if (
+				( 'touch' === event.pointerType ||
+					'pen' === event.pointerType ) &&
+				'press' === touchMode() &&
+				! prefersReducedMotion()
+			) {
+				playOnce();
+			}
+		},
+		{ passive: true }
+	);
 
 	// The loop speed-up: `hoverRateDuration` above 0 is a burst of that many ms; 0 or unset holds the speed for as
 	// long as the pointer is over the element or a finger is held on it (a touch fires pointerleave on release, and
