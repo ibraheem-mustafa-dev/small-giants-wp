@@ -917,14 +917,15 @@
 			"gradients": false,
 			"text": false,
 			"__experimentalSkipSerialization": true
-		},
-		"spacing": {
-			"margin": true,
-			"padding": false,
-			"__experimentalSkipSerialization": true
 		}
 	},
 	"attributes": {
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"thumbsFlexWrap": {
 			"type": "string",
 			"default": "",

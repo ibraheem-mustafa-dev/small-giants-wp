@@ -735,8 +735,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// sgs_responsive_normalise_object() already disambiguates a flat box
 			// (returns it as the DESKTOP tier, tablet/mobile null) from a real
 			// tier-object (returns all three as stored) from an absent attribute
-			// (native `supports.spacing` blocks — all three null, correctly falling
-			// through to the style.spacing.* fallback at ~:1949 below) — by DATA
+			// (a block that declares no padding or margin: all three null) — by DATA
 			// SHAPE, not by the container_queries flag, so it replaces the old
 			// per-flag branching entirely rather than adding a second branch to it.
 			// Computed once here and reused at ~:1931 for the base/desktop tier.
@@ -749,9 +748,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// max-width, so the cap and the padding sit on one `box-sizing:border-box`
 			// element. The outer element keeps no padding; the full-bleed ground paints
 			// edge to edge behind the band. The padding is emitted with the tier-of-boxes
-			// emitter among the band properties (`$obj_band_props`); a block with native
-			// `supports.spacing` padding and no `padding` attribute puts its flat native
-			// box on the band the same way.
+			// emitter among the band properties (`$obj_band_props`).
 			$padding_on_band = false !== $opt_wrap_inner && (
 				( $block instanceof \WP_Block && isset( $block->block_type->attributes['contentWidth'] ) )
 				|| array_key_exists( 'contentWidth', $attributes )
@@ -761,9 +758,6 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			$band_padding_has_horizontal = false;
 			if ( $padding_on_band ) {
 				$band_padding_boxes = array_values( array_filter( $sgs_wrap_padding_tiers, 'is_array' ) );
-				if ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) ) {
-					$band_padding_boxes[] = $attributes['style']['spacing']['padding'];
-				}
 				foreach ( $band_padding_boxes as $band_padding_box ) {
 					foreach ( $band_padding_box as $band_padding_side => $band_padding_value ) {
 						if ( is_string( $band_padding_value ) && '' !== $band_padding_value ) {
@@ -1819,36 +1813,13 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			}
 
 			// ----------------------------------------------------------------
-			// Base spacing (padding/margin) — read WP-native style.spacing directly.
-			// container/block.json declares __experimentalSkipSerialization on
-			// supports.spacing, so WP does NOT auto-inline these into
-			// get_block_wrapper_attributes() any more; $attributes['style']['spacing']
-			// is still populated (skip-serialization only suppresses the AUTO-INLINE
-			// output), so we read it here and emit it as a scoped rule instead. This
-			// keeps base padding/margin OUT of the inline style attribute entirely —
-			// no !important needed, source order alone lets the existing @media tier
-			// rules (below) win at narrower viewports.
+			// Base spacing (padding/margin): the block's own `padding` / `margin` tier
+			// objects, desktop tier. No block declares `supports.spacing` any more, so
+			// there is no native `style.spacing` to read: the editor's shared Spacing panel
+			// (components/ResponsiveBoxControls.js) writes these attributes and nothing
+			// else. The base rule is emitted as a scoped rule, never inline (Spec 32), so
+			// source order alone lets the @media tier rules below win at narrower widths.
 			// ----------------------------------------------------------------
-			// D555 (2026-08-10) — sgs/container migrated its BASE padding/margin off
-			// WP-native `supports.spacing` onto block-owned box-object attrs
-			// (`padding`/`margin`, shape { top, right, bottom, left } — same shape as
-			// the pre-existing `paddingTablet`/`paddingMobile` legacy siblings read
-			// below), because a WP-native support cannot carry a framework default and
-			// the block needed one (no horizontal gutter → flush-to-viewport-edge bug).
-			// ⛔ ADDITIVE ONLY — 37 other blocks still declare `supports.spacing` and
-			// rely on the native `style.spacing.padding`/`margin` read; that path is
-			// untouched below. Prefer the owned attr when the block actually declares
-			// it (non-empty), else fall back to native.
-			// FIXED 2026-09-06 (D976 follow-up): `$attributes['padding']` used to be
-			// misread here as a flat box on every block except the three flagged
-			// container_queries (which store it as a TIER object). Once sgs/container
-			// itself migrated `padding`/`margin` to the tier-object shape (Phase 2,
-			// 2026-09-06) that stopped being true, and the flat-box foreach loop below
-			// silently produced nothing for it (an array value fails is_string(),
-			// so every 'side' was dropped) — proven live via render_block(). Reuses
-			// $sgs_wrap_padding_tiers/$sgs_wrap_margin_tiers computed at ~:603 above,
-			// which already disambiguates flat-box vs tier-object vs absent BY DATA
-			// SHAPE — the container_queries flag is no longer needed as a gate here.
 			$owned_spacing_padding = array();
 			foreach ( ( is_array( $sgs_wrap_padding_tiers['desktop'] ) ? $sgs_wrap_padding_tiers['desktop'] : array() ) as $spacing_side => $spacing_value ) {
 				if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
@@ -1863,21 +1834,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			}
 
 			$base_spacing_padding = $owned_spacing_padding;
-			if ( empty( $base_spacing_padding ) && isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) ) {
-				foreach ( $attributes['style']['spacing']['padding'] as $spacing_side => $spacing_value ) {
-					if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
-						$base_spacing_padding[ $spacing_side ] = $spacing_value;
-					}
-				}
-			}
-			$base_spacing_margin = $owned_spacing_margin;
-			if ( empty( $base_spacing_margin ) && isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
-				foreach ( $attributes['style']['spacing']['margin'] as $spacing_side => $spacing_value ) {
-					if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
-						$base_spacing_margin[ $spacing_side ] = $spacing_value;
-					}
-				}
-			}
+			$base_spacing_margin  = $owned_spacing_margin;
 			$has_base_spacing = ! empty( $base_spacing_padding ) || ! empty( $base_spacing_margin );
 
 			// Base content-band (Layer 2: __inner) — no-inline deferral (Spec 32, D293).
@@ -1973,10 +1930,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// tier-object CSS emitted further down (which only runs
 				// `if ($uid)`) silently never fired. `$owned_spacing_padding`/
 				// `$owned_spacing_margin` above does NOT cover this case either
-				// for such a block — it expects `{top,right,bottom,left}` keys
-				// and gets `{desktop,tablet,mobile}` instead, so it silently
-				// computes empty (it's still load-bearing for blocks that
-				// haven't migrated off native `style.spacing`, so it stays).
+				// for such a block — it holds only the desktop tier's sides.
 				// See decisions.md for the D-number.
 				|| $sgs_needs_uid_object_tier( $attributes['padding'] ?? null )
 				|| $sgs_needs_uid_object_tier( $attributes['margin'] ?? null );

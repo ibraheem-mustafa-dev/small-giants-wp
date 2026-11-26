@@ -83,39 +83,23 @@ export function containerWrapperPreview(
 		Object.assign( style, separatorsFlowPreview( attrs.separators, tier ) );
 	}
 
-	// `padding` paints the band, as the wrapper's `$padding_on_band` does: the block's tier-of-boxes
-	// `padding`, or the flat native `style.spacing.padding` box of a block without that attribute.
-	const nativePadding = attrs.style?.spacing?.padding;
+	// `padding` paints the band, as the wrapper's `$padding_on_band` does: the block's tier-of-boxes `padding`.
 	const band =
 		attrs.padding &&
 		'object' === typeof attrs.padding &&
 		! Array.isArray( attrs.padding )
 			? attrs.padding
 			: {};
-	const hasTiers = [ 'desktop', 'tablet', 'mobile' ].some(
-		( key ) =>
-			band[ key ] &&
-			'object' === typeof band[ key ] &&
-			Object.keys( band[ key ] ).length
-	);
 	const { hasBandProps, bandStyle } = contentBandPreview( {
 		contentWidth: resolveContentWidthPreview(
 			tierValueOf( attrs.contentWidth, tier ) || ''
 		),
-		bandPadding:
-			hasTiers || ! nativePadding || 'object' !== typeof nativePadding
-				? resolveBoxTierPreview(
-						band.desktop,
-						band.tablet,
-						band.mobile,
-						tier
-				  )
-				: resolveBoxTierPreview(
-						nativePadding,
-						undefined,
-						undefined,
-						tier
-				  ),
+		bandPadding: resolveBoxTierPreview(
+			band.desktop,
+			band.tablet,
+			band.mobile,
+			tier
+		),
 		style,
 		layout,
 	} );

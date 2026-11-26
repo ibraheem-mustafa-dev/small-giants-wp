@@ -10,6 +10,7 @@ import { createBlock } from '@wordpress/blocks';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { PanelBody, Button, SelectControl } from '@wordpress/components';
 import MediaElementPanel from '../../components/MediaElementPanel';
+import ResponsiveBoxControls from '../../components/ResponsiveBoxControls';
 import CollectionPanel from './components/collection-panel';
 import ItemEditor from './components/ItemEditor';
 import ElementColourPanels from './components/ElementColourPanels';
@@ -396,6 +397,13 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					/>
 				) }
 				<LayoutBorderPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+			</InspectorControls>
+
+			<InspectorControls group="styles">
+				<ResponsiveBoxControls
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 				/>

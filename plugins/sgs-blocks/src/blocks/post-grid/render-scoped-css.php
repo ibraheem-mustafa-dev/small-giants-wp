@@ -20,8 +20,8 @@ defined( 'ABSPATH' ) || exit;
 // $attributes['style'] here and emit them into POST-GRID'S OWN scoped <style>
 // (composite caveat: do NOT pass these as wrapper `extra_styles` — that path
 // inlines). Base spacing (padding/margin) is a SEPARATE mechanism the wrapper
-// already handles scoped internally (reads $attributes['style']['spacing']
-// directly) — not duplicated here.
+// already handles scoped internally (reads the block's own `padding` / `margin`
+// tier objects) — not duplicated here.
 // -------------------------------------------------------------------------
 // $uid is computed earlier (before $card_params) — see the comment there.
 $root_sel = '.' . $uid . '.wp-block-sgs-post-grid';

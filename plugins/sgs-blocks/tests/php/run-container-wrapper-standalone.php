@@ -185,14 +185,12 @@ $section_attrs = array(
 	'maxWidth'     => '1200px',
 	'contentWidth' => 'normal',
 	'gap'          => '24px',
-	'style'        => array(
-		'spacing' => array(
-			'padding' => array(
-				'top'    => '40px',
-				'right'  => '20px',
-				'bottom' => '40px',
-				'left'   => '20px',
-			),
+	'padding'      => array(
+		'desktop' => array(
+			'top'    => '40px',
+			'right'  => '20px',
+			'bottom' => '40px',
+			'left'   => '20px',
 		),
 	),
 );
@@ -203,12 +201,10 @@ $layout_attrs = array(
 	'maxWidth'     => '960px',
 	'contentWidth' => 'wide',
 	'gap'          => '16px',
-	'style'        => array(
-		'spacing' => array(
-			'padding' => array(
-				'top'    => '32px',
-				'bottom' => '32px',
-			),
+	'padding'      => array(
+		'desktop' => array(
+			'top'    => '32px',
+			'bottom' => '32px',
 		),
 	),
 );
@@ -216,12 +212,10 @@ $layout_attrs = array(
 $content_attrs = array(
 	'maxWidth'     => '800px',
 	'contentWidth' => 'normal',
-	'style'        => array(
-		'spacing' => array(
-			'padding' => array(
-				'top'    => '16px',
-				'bottom' => '16px',
-			),
+	'padding'      => array(
+		'desktop' => array(
+			'top'    => '16px',
+			'bottom' => '16px',
 		),
 	),
 );

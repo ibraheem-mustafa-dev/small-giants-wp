@@ -16,6 +16,7 @@ import {
 	SgsLengthControl,
 	SgsBorderControl,
 	resolveColourToken,
+	ResponsiveBoxControls,
 } from '../../components';
 import {
 	backgroundPaintPreview,
@@ -485,6 +486,10 @@ export default function Edit( { attributes, setAttributes } ) {
 						} }
 					/>
 				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 			</InspectorControls>
 
 			{ hasBandProps ? (

@@ -605,8 +605,8 @@ if ( in_array( 'product-card--image-sized', $classes, true ) ) {
 // alone remains native — a corner-shape control, not a colour/paint
 // decision — and is still read from the skip-serialised style.border.radius
 // object further below. Base spacing (margin) is a SEPARATE mechanism the
-// shared wrapper already handles scoped internally (it reads
-// $attributes['style']['spacing'] directly) — NOT duplicated here.
+// shared wrapper already handles scoped internally (it reads the block's own
+// `margin` tier object) — NOT duplicated here.
 
 $sgs_pc_root_sel = '.' . $sgs_card_uid . '.wp-block-sgs-product-card';
 

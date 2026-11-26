@@ -21,6 +21,7 @@ import { DesignTokenPicker, IconPicker, LinkPopoverField, SgsColourPanel, resolv
 	SeparatorsPanel,
 	TypographyControls,
 	fillRow,
+	ResponsiveBoxControls,
 } from '../../components';
 import { LINK_SOURCES_ALL } from '../../shared/link-source-options';
 import {
@@ -714,6 +715,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						} }
 					/>
 				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 			</InspectorControls>
 
 			<div { ...blockProps }>

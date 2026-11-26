@@ -21,6 +21,7 @@ import {
 	SgsBoxControl,
 	LinkUnderlineControl,
 	ShadowControl,
+	ResponsiveBoxControls,
 } from '../../components';
 import { BUTTON_PRESETS } from '../button/presets';
 import { presetNames } from '../button/preset-names';
@@ -3732,6 +3733,10 @@ export default function Edit( {
 						</ToolsPanelItem>
 					</ToolsPanel>
 				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 			</InspectorControls>
 
 			{ /* The two built-in buttons' look (the built-in button kit: preset, colours, border, radius, padding, width, minimum height,
