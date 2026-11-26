@@ -77,7 +77,6 @@ const OUT_OF_FLOW = /^(absolute|sticky)$/;
 const PLACED_BY_POSITION = /^(top|right|bottom|left|inset(-.+)?|transform|translate|z-index)$/;
 
 const holdsAttr = ( db, block, attr ) => !! db?.prepare( 'SELECT 1 FROM block_attributes WHERE block_slug = ? AND attr_name = ?' ).get( block, attr );
-const widthsOf = ( v ) => JSON.stringify( v );
 const LOOSE = ( p ) => String( p ?? '' ).replace( /:nth-of-type\(\d+\)/g, '' );
 
 // The offsets (top, right, bottom, left) the draft declares on an element at any of `widths` that no kept row of the block's pass
@@ -386,16 +385,12 @@ export function residualCssWrites( { nodes, flat, refOf, reads, db, unmapped, ca
 			// lib/fill-loop-copy.mjs::copyClassSlot gives the part's class where the copies are one `sc-for` loop body the draft draws
 			// alike at each width and the block draws the part at every copy; any other copy keeps the refusal.
 			const cssSlot = /:nth-of-type\(/.test( target.slot ) ? copyClassSlot( { slot: target.slot, target, prop, state, rec, cal, db, facts, rootComponent, paint: 'part' } ) : target.slot;
-			// A fixed set of parts (the burger's three bars) is no loop: where the draft draws this copy's value at a width unlike every
-			// other copy's, the draft styles this copy alone and a rule on it is right. A copy that shares its value with another copy
-			// stays the loop's to write, and so does any body of a `sc-for` loop (the draft's facts), whatever its copies' values, and a
-			// state's value (the copies' states are not read apart).
+			// A fixed set of parts (the burger's three bars) is no loop: the draft styles each copy on its own element, so every copy that
+			// has a row (a copy at the block's default has none) is written, copies sharing a value included (bars of 24, 16 and 24px
+			// write 24 on the first and third and 16 on the second). Only a body of a `sc-for` loop (the draft's facts), whatever its
+			// copies' values, and a state's value (the copies' states are not read apart) keep the one-copy refusal.
 			const loopBody = !! ( facts && target.finder && loopKeyOf( facts, tplKey( target.finder, rootComponent ) ) );
-			const drawnValue = ( t ) => widthsOf( WIDTHS.map( ( w ) => reads.widths?.[ w ]?.[ t.id ]?.styles?.[ row.property ] ) );
-			const staticSet = /:nth-of-type\(/.test( cssSlot ) && ! loopBody && ! state && ( () => {
-				const others = rec.targets.filter( ( t ) => t.id !== target.id && LOOSE( t.slot ) === LOOSE( target.slot ) && t.slot !== target.slot );
-				return others.length > 0 && others.every( ( t ) => drawnValue( t ) !== drawnValue( target ) );
-			} )();
+			const staticSet = /:nth-of-type\(/.test( cssSlot ) && ! loopBody && ! state && rec.targets.some( ( t ) => t.id !== target.id && LOOSE( t.slot ) === LOOSE( target.slot ) && t.slot !== target.slot );
 			if ( /:nth-of-type\(/.test( cssSlot ) && ! staticSet ) {
 				refuse( r, `${ target.slot } names one copy of a repeated part; a rule there would style that copy alone` );
 				continue;

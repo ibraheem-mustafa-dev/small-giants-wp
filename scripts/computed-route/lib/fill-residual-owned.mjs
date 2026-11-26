@@ -31,12 +31,14 @@ export function ownedProperties( db, block ) {
 
 // The attribute of `attributes` (the node's settings) that owns `prop` and holds a value, or null. A setting the node does
 // not save holds its default, which the block's own stylesheet draws (the icon list's `markerType` defaults to `icon` and its
-// style.css draws `list-style: none` for it), so a rule would cancel that default too. A shorthand a setting owns owns its
+// style.css draws `list-style: none` for it), so a rule would cancel that default too; a default of false, 0 or '' (an option
+// switched off) draws nothing, so it holds nothing. A shorthand a setting owns owns its
 // longhands.
 export function ownedBySetting( db, block, prop, attributes ) {
 	for ( const { attr, props, fallback } of ownedProperties( db, block ) ) {
 		const saved = attributes?.[ attr ];
-		if ( filled( null === saved || undefined === saved ? fallback : saved ) && props.some( ( p ) => p === prop || longhandsOf( p ).includes( prop ) ) ) {
+		const unsaved = null === saved || undefined === saved;
+		if ( ( unsaved ? filled( fallback ) && ! [ false, 0, '' ].includes( fallback ) : filled( saved ) ) && props.some( ( p ) => p === prop || longhandsOf( p ).includes( prop ) ) ) {
 			return attr;
 		}
 	}

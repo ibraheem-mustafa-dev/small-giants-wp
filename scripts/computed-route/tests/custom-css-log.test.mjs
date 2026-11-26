@@ -123,3 +123,17 @@ test( 'MUST FAIL: Custom CSS the step ladder, the width ladder and the width gat
 	assert.equal( buildCustomCssLog( { client: 'demo', buildDir: residual } ).rules.length, 1 );
 	[ dir, bare, none, residual ].forEach( ( d ) => fs.rmSync( d, { recursive: true, force: true } ) );
 } );
+
+test( 'MUST FAIL: the logged part is the element the write read, and a write that rewrote the box is flagged rather than passed off as the appended text', () => {
+	const moved = put( 'width ladder (padding-left): scoped @media rule', '@media (max-width: 599px) { & .x { padding-left: 4px; } }', { slot: '', readSlot: '.x', covers: 'padding-left' } );
+	const rewrite = put( 'width gate (a and b): scoped @media rule', '@media (max-width: 767px) { & { display: none; } }', { before: '& { color: red; }', node: 'n2' } );
+	const append = put( 'width gate (a and b): scoped @media rule', '& { color: red; }\n@media (max-width: 767px) { & { display: none; } }', { before: '& { color: red; }', node: 'n4' } );
+	const dir = fixture( [ [ 'header', 'r1', { rules: [], gaps: [], refused: [] }, [], [ moved, rewrite, append ] ] ] );
+	const log = buildCustomCssLog( { client: 'demo', buildDir: dir } );
+	assert.equal( log.rules.find( ( r ) => 'n1' === r.node ).part, '.x', 'the part is the read element, as the census names it' );
+	assert.equal( log.rules.find( ( r ) => 'n2' === r.node ).rewritten, true );
+	const added = log.rules.find( ( r ) => 'n4' === r.node );
+	assert.equal( added.rewritten, undefined );
+	assert.equal( added.css, '@media (max-width: 767px) { & { display: none; } }', 'only the appended text' );
+	fs.rmSync( dir, { recursive: true, force: true } );
+} );

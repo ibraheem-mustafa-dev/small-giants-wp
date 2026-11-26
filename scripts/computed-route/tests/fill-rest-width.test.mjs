@@ -57,13 +57,29 @@ test( 'MUST FAIL: a row covering some read widths writes the one resting width o
 	assert.equal( wide.motion, undefined );
 	assert.equal( wide.out.writes.length, 0 );
 	assert.equal( wide.out.unmapped.length, 1 );
-	assert.match( wide.out.unmapped[ 0 ].reason, /states 16px at 375, 768 only and the part's draft width at the other read widths is not 16px/ );
+	assert.match( wide.out.unmapped[ 0 ].reason, /states 16px at 375, 768 only and the part's draft width at the other read widths is not 16px, or was not read/ );
 	// The bar is 16px at 1440 too: the row's value is the part's one resting width.
 	const same = run( [ row( 'width', part ) ], {}, readsOf( { 375: '16px', 768: '16px', 1440: '16px' } ) );
 	assert.equal( same.motion?.elements?.[ 'burger-bar-3' ]?.hover?.state?.values?.restWidth, '16px' );
 	assert.deepEqual( same.out.answered.map( ( a ) => a.widths ), [ [ 375, 768 ] ] );
 	// No read of the part at the missing width proves nothing.
-	assert.equal( run( [ row( 'width', part ) ] ).out.unmapped.length, 1 );
+	const noRead = run( [ row( 'width', part ) ] ).out.unmapped;
+	assert.equal( noRead.length, 1 );
+	assert.match( noRead[ 0 ].reason, /no draft read of the part was given/, 'a missing read says so' );
+} );
+
+test( 'MUST FAIL: a width the part is not drawn at is skipped, and a width within the route PX_TOL of the row px holds', () => {
+	const part = '{"375":"16px","768":"16px"}';
+	const at = ( w1440 ) => ( { widths: { 375: { '0:bar3': { styles: { width: '16px' } } }, 768: { '0:bar3': { styles: { width: '16px' } } }, 1440: { '0:bar3': w1440 } } } );
+	const hidden = run( [ row( 'width', part ) ], {}, at( { styles: { display: 'none', width: 'auto' } } ) );
+	assert.equal( hidden.motion?.elements?.[ 'burger-bar-3' ]?.hover?.state?.values?.restWidth, '16px', 'display none at 1440: nothing to hold there' );
+	const absent = run( [ row( 'width', part ) ], {}, at( { missing: true } ) );
+	assert.equal( absent.out.writes.length, 1, 'not drawn at 1440: nothing to hold there' );
+	const close = run( [ row( 'width', part ) ], {}, at( { styles: { width: '16.3px' } } ) );
+	assert.equal( close.out.writes.length, 1, '0.3px is within the route tolerance (0.5px)' );
+	const far = run( [ row( 'width', part ) ], {}, at( { styles: { width: '16.8px' } } ) );
+	assert.equal( far.out.writes.length, 0, '0.8px is not' );
+	assert.match( far.out.unmapped[ 0 ].reason, /is not 16px, or was not read/ );
 } );
 
 test( 'a row with no reason still gives a refusal text without "undefined"', () => {

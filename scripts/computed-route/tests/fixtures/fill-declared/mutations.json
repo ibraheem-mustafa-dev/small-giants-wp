@@ -1,7 +1,7 @@
 [
 	{ "file": "lib/fill-confirm.mjs", "find": "const runtimeValue = ( v ) => RUNTIME.test( v ) || v.replace( COLOUR_FN, '' ).includes( '%' );", "replace": "const runtimeValue = ( v ) => RUNTIME.test( v ) || v.includes( '%' );", "why": "any percentage, even a colour channel, would mark a value run-time and confirm red against blue" },
 	{ "file": "lib/fill-confirm.mjs", "find": "const runtimeValue = ( v ) => RUNTIME.test( v ) || v.replace( COLOUR_FN, '' ).includes( '%' );", "replace": "const runtimeValue = ( v ) => RUNTIME.test( v );", "why": "a percentage length would no longer be run-time" },
-	{ "file": "lib/fill-resolve-element.mjs", "find": "value: valueText( stated ?? draft ), reason:", "replace": "value: valueText( draft ), reason:", "why": "the row would state the plain width alone, which reads as every width" },
+	{ "file": "lib/fill-resolve-element.mjs", "find": "value: valueText( live( stated ?? draft ) ), reason:", "replace": "value: valueText( live( draft ) ), reason:", "why": "the row would state the plain width alone, which reads as every width" },
 	{ "file": "lib/fill-resolve-element.mjs", "find": "( stated ? [] : notPlain ).forEach(", "replace": "notPlain.forEach(", "why": "the not-plain widths would also stay separate rows" },
 	{ "file": "lib/fill-resolve-element.mjs", "find": "'no-setting' === res.gap && ( ! eq || 'gap' === eq.status ) && Object.keys( notPlainDeclared ).length ?", "replace": "'no-setting' === res.gap && ( ! eq || 'gap' === eq.status ) && false ?", "why": "no row would state the declared expressions" },
 	{ "file": "lib/fill-resolve-element.mjs", "find": "{ ...draft, ...notPlainDeclared } : null;", "replace": "{ ...draft } : null;", "why": "the not-plain widths would be dropped from the stated row" }

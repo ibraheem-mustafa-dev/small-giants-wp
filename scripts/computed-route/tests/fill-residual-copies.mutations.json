@@ -1,4 +1,4 @@
 [
-	{"file": "lib/fill-residual-css.mjs", "find": "! loopBody && ! state && ( () => {", "replace": "! state && ( () => {", "why": "a body of a sc-for loop is taken for a fixed set of parts"},
-	{"file": "lib/fill-residual-css.mjs", "find": "return others.length > 0 && others.every( ( t ) => drawnValue( t ) !== drawnValue( target ) );", "replace": "return others.length > 0 && others.some( ( t ) => drawnValue( t ) !== drawnValue( target ) );", "why": "a copy sharing its value with another copy is written"}
+	{"file": "lib/fill-residual-css.mjs", "find": "! loopBody && ! state && rec.targets.some(", "replace": "! state && rec.targets.some(", "why": "a body of a sc-for loop is taken for a fixed set of parts"},
+	{"file": "lib/fill-residual-css.mjs", "find": "&& ! state && rec.targets.some( ( t ) => t.id !== target.id", "replace": "&& ! state && rec.targets.every( ( t ) => t.id === target.id || JSON.stringify( reads.widths?.[ 1440 ]?.[ t.id ]?.styles?.[ row.property ] ) !== JSON.stringify( reads.widths?.[ 1440 ]?.[ target.id ]?.styles?.[ row.property ] ) ) && rec.targets.some( ( t ) => t.id !== target.id", "why": "a copy sharing its value with another copy is written"}
 ]

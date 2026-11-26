@@ -329,9 +329,11 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 		if ( 'gap' === res.status && ( ! eq || 'gap' === eq.status ) ) {
 			const ran = 'no-setting' === res.gap ? checksRan( { layer, alternates, res, eq } ) : {};
 			const why = Object.entries( ran.skipped || {} ).map( ( [ check, reason ] ) => `${ check }: not asked: ${ reason }` );
-			unmapped( st, rec, ref, { slot, property: prop, value: valueText( stated ?? draft ), reason: `${ res.gap }: ${ res.detail }${ eq ? `; ${ eq.detail }` : '' }${ why.map( ( w ) => `; ${ w }` ).join( '' ) }`, ...( res.code ? { code: res.code } : {} ), ...ran } );
+			// The widths settled above as not painted are no part of the gap: the row and the part-wide pass state only the widths it applies at.
+			const live = ( o ) => Object.fromEntries( Object.entries( o ).filter( ( [ w ] ) => ! inapplicable.some( ( g ) => g.width === Number( w ) ) ) );
+			unmapped( st, rec, ref, { slot, property: prop, value: valueText( live( stated ?? draft ) ), reason: `${ res.gap }: ${ res.detail }${ eq ? `; ${ eq.detail }` : '' }${ why.map( ( w ) => `; ${ w }` ).join( '' ) }`, ...( res.code ? { code: res.code } : {} ), ...ran } );
 			// A no-setting row on an element's own box goes to the part-wide pass (lib/fill-ancestor.mjs::partWideWrites), which asks the enclosing blocks.
-			'no-setting' === res.gap && ! layer && ( st.hopRows ??= [] ).push( { row: st.out.unmapped.at( -1 ), rec, target, prop, draft: { ...draft }, siblings: allDrafts } );
+			'no-setting' === res.gap && ! layer && ( st.hopRows ??= [] ).push( { row: st.out.unmapped.at( -1 ), rec, target, prop, draft: live( draft ), siblings: allDrafts } );
 		} else if ( 'written' === res.status ) {
 			// The widths of a mode no setting answers (lib/fill-prop.mjs::byMode) are a row of their own, naming those widths only
 			// (`modeWidths`) and the settings not in force there (`notInForce`), so the passes after the walk write those widths'

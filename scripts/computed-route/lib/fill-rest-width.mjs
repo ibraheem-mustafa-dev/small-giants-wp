@@ -9,6 +9,7 @@ import { setAttr } from './tree.mjs';
 import { targetName } from './fill-motion.mjs';
 import { exactHome } from './fill-part-pairing.mjs';
 import { READ_WIDTHS } from './fill-read.mjs';
+import { PX_TOL } from './css-equivalence/tolerance.mjs';
 
 const PX = /^-?(?:\d+(?:\.\d+)?|\.\d+)px$/;
 
@@ -23,13 +24,17 @@ function perWidth( row ) {
 	return Object.fromEntries( READ_WIDTHS.map( ( w ) => [ w, row.value ] ) );
 }
 
-// The part's own draft width at each read width the row leaves out, when all of them are the row's `px` length: the one resting
-// width then holds at those widths too. `reads` is the draft read (lib/fill-read.mjs); no read of the element at a width the row
-// leaves out proves nothing, so that width is not covered.
+// The part's own draft width at each read width the row leaves out, when all of them are the row's `px` length (within the
+// route's PX_TOL): the one resting width then holds at those widths too. A width the part is not drawn at (display none, or the
+// element absent from the draft there) has no width to hold and is skipped. `reads` is the draft read (lib/fill-read.mjs); no
+// read of the element at a width the row leaves out proves nothing, so that width is not covered.
 function leftOutHold( reads, target, widths, px ) {
 	return READ_WIDTHS.filter( ( w ) => ! widths.includes( w ) ).every( ( w ) => {
 		const at = reads?.widths?.[ w ]?.[ target.id ];
-		return at && ! at.missing && Math.abs( parseFloat( at.styles?.width ) - parseFloat( px ) ) < 1e-9;
+		if ( at && ( at.missing || 'none' === at.styles?.display ) ) {
+			return true;
+		}
+		return !! at && Math.abs( parseFloat( at.styles?.width ) - parseFloat( px ) ) <= PX_TOL;
 	} );
 }
 
@@ -53,7 +58,8 @@ export function restWidthWrites( { unmapped, nodes, flat, refOf, mdb, db, calFor
 		// The one resting width is written for every screen: a row covering only some read widths states the others nothing, so the
 		// width is written only where the part's own draft width at the widths the row leaves out is that same value.
 		if ( ! leftOutHold( reads, t, Object.keys( at ).map( Number ), lengths[ 0 ] ) ) {
-			out.unmapped.push( { ...row, reason: `${ row.reason ?? 'no reason recorded' }; the row states ${ lengths[ 0 ] } at ${ Object.keys( at ).join( ', ' ) } only and the part's draft width at the other read widths is not ${ lengths[ 0 ] }, so one resting width would be wrong there` } );
+			const other = reads?.widths ? `the part's draft width at the other read widths is not ${ lengths[ 0 ] }, or was not read` : 'no draft read of the part was given';
+			out.unmapped.push( { ...row, reason: `${ row.reason ?? 'no reason recorded' }; the row states ${ lengths[ 0 ] } at ${ Object.keys( at ).join( ', ' ) } only and ${ other }, so one resting width would be wrong there` } );
 			continue;
 		}
 		const node = flat[ n.index ];

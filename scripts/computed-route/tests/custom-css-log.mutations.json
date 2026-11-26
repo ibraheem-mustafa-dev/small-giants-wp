@@ -3,5 +3,7 @@
 	{"file": "lib/custom-css-log.mjs", "find": "g.css === r.css && ", "replace": "", "why": "a rule is justified by the gap row of another range of the same property"},
 	{"file": "lib/custom-css-log.mjs", "find": "log.rules.push( ...customCssWrites( { surface, writes, gaps } ) );", "replace": "", "why": "Custom CSS written by the step ladder, the width ladder and the width gate is never logged or checked"},
 	{"file": "lib/custom-css-log.mjs", "find": "'sgsCustomCss' === w.attr && 'width-gate' === w.how && undefined === w.supersededBy", "replace": "'sgsCustomCss' === w.attr && 'width-gate' === w.how", "why": "a rule a later write replaced is logged"},
-	{"file": "lib/custom-css-log.mjs", "find": "const control = row ? row.control : writer.control( w );", "replace": "const control = writer.control( w );", "why": "a step ladder rule's own gap row is ignored"}
+	{"file": "lib/custom-css-log.mjs", "find": "const control = row ? row.control : writer.control( w );", "replace": "const control = writer.control( w );", "why": "a step ladder rule's own gap row is ignored"},
+	{"file": "lib/custom-css-log.mjs", "find": "part: w.readSlot ?? w.slot ?? ''", "replace": "part: w.slot ?? ''", "why": "the logged part is the element written on, not the one read"},
+{"file": "lib/custom-css-log.mjs", "find": "...( extended ? {} : { rewritten: true } ),", "replace": "", "why": "a write that rewrote the box is logged as plain appended text"}
 ]

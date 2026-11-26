@@ -91,6 +91,16 @@ test( 'a property of a setting the node holds is owned, read from the DB: list-s
 	assert.deepEqual( ownedProperties( db, 'sgs/text' ), [] );
 } );
 
+test( 'MUST FAIL: an unsaved owning setting whose default is false, 0 or empty holds nothing; a truthy default holds', () => {
+	const stub = ( cell ) => ( { prepare: ( sql ) => ( { all: () => ( /PRAGMA/.test( sql ) ? [ { name: 'owns_css' } ] : [ { attr_name: 'flag', owns_css: '["list-style"]', default_value: cell } ] ) } ) } );
+	for ( const off of [ 'false', '0', '""' ] ) {
+		assert.equal( ownedBySetting( stub( off ), 'sgs/x', 'list-style', {} ), null, `a default of ${ off } draws nothing` );
+	}
+	assert.equal( ownedBySetting( stub( '"icon"' ), 'sgs/x', 'list-style', {} ), 'flag' );
+	assert.equal( ownedBySetting( stub( 'true' ), 'sgs/x', 'list-style', {} ), 'flag' );
+	assert.equal( ownedBySetting( stub( 'false' ), 'sgs/x', 'list-style', { flag: true } ), 'flag', 'a saved value still holds' );
+} );
+
 test( 'a DB with no owns_css column is refused, not read as owning nothing', () => {
 	const old = { prepare: ( sql ) => ( { all: () => ( /PRAGMA/.test( sql ) ? [ { name: 'attr_name' } ] : [] ) } ) };
 	assert.throws( () => ownedBySetting( old, 'sgs/icon-list', 'list-style', { markerType: 'check' } ), /no block_attributes\.owns_css column: reseed it/ );
@@ -99,8 +109,10 @@ test( 'a DB with no owns_css column is refused, not read as owning nothing', () 
 test( 'MUST FAIL: an unstated initial value is left alone only where the block\'s own default look paints that initial value', () => {
 	assert.equal( undeclaredInitial( 'flex-grow', '0', {}, '0' ), true, 'the block paints the initial value: the draft states nothing more' );
 	assert.equal( undeclaredInitial( 'flex-grow', '0', {}, '1' ), false, 'the block paints flex-grow 1 by default: the draft\'s 0 is a value to judge' );
-	assert.equal( undeclaredInitial( 'flex-grow', '0', {}, undefined ), false, 'an unmeasured default judges nothing' );
-	assert.equal( undeclaredInitial( 'flex-grow', '0', {} ), false );
+	assert.equal( undeclaredInitial( 'flex-grow', '0', {}, undefined ), true, 'an unmeasured paint (the look never reads this property) is no evidence against leaving it alone' );
+	assert.equal( undeclaredInitial( 'align-self', 'auto', {} ), true, 'align-self is never read by the look: its draft initial value is left alone' );
+	assert.equal( undeclaredInitial( 'grid-column-start', 'auto', {} ), true );
+	assert.equal( undeclaredInitial( 'flex-grow', '0', { 'flex-grow': '0' }, undefined ), false, 'a declared one is still written' );
 } );
 
 test( 'MUST FAIL: a settled report row named rest-width is a known reason, so census conservation does not refuse it', () => {
@@ -133,6 +145,8 @@ test( 'MUST FAIL: flex-grow 0 the draft never declares is settled as the block\'
 	const styles = () => ( { 'flex-grow': '0' } );
 	const painted = fill( styles, { paint: { 'flex-grow': '0' } } );
 	assert.equal( rowsOf( painted, 'flex-grow', 'not-painted' ).filter( ( s ) => /initial value/.test( s.detail ) ).length, THREE.length, 'a block painting 0: the initial value is left to the block' );
+	const unread = fill( styles );
+	assert.equal( rowsOf( unread, 'flex-grow', 'not-painted' ).filter( ( s ) => /initial value/.test( s.detail ) ).length, THREE.length, 'a property the look never reads has no measured paint: the initial value is still left alone' );
 	const other = fill( styles, { paint: { 'flex-grow': '1' } } );
 	assert.deepEqual( rowsOf( other, 'flex-grow', 'not-painted' ).filter( ( s ) => /initial value/.test( s.detail ) ), [], 'a block painting 1: the draft\'s 0 is not settled as the initial value' );
 } );
@@ -149,6 +163,11 @@ test( 'MUST FAIL: a width where the property applies to no box the element is ge
 	const held = fill( styles, { paint: { 'justify-content': 'center' } } );
 	assert.deepEqual( rowsOf( held, 'justify-content', 'equal' ).map( ( s ) => s.widths ), [ [ 1440 ] ] );
 	assert.deepEqual( rowsOf( held, 'justify-content', 'not-painted' ).map( ( s ) => s.widths[ 0 ] ).sort( ( x, y ) => x - y ), [ 375, 768 ] );
+	// No setting holds it: the gap row names only the widths it applies at, never the widths already settled as not painted.
+	const own = ( w ) => ( { ...styles( w ), 'justify-content': 1440 === w || 1920 === w ? 'center' : 'flex-end' } );
+	const gap = fill( own ).unmapped.filter( ( u ) => 'justify-content' === u.property );
+	assert.equal( gap.length, 1 );
+	assert.equal( gap[ 0 ].value, 'center', 'the widths the property applies at, and no other (the block widths state flex-end, which paints nothing)' );
 	// Every width inapplicable: not-painted rows, no equal row, no write.
 	const all = fill( () => ( { 'justify-content': 'center', 'column-count': 'auto', 'column-width': 'auto', display: 'block' } ) );
 	assert.deepEqual( rowsOf( all, 'justify-content', 'not-painted' ).map( ( s ) => s.widths[ 0 ] ).sort( ( a, b ) => a - b ), THREE );

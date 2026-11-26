@@ -28,14 +28,17 @@ export function customCssWrites( { surface, writes = [], gaps = [] } ) {
 	return writes.filter( ( w ) => 'sgsCustomCss' === w.attr && 'width-gate' === w.how && undefined === w.supersededBy ).flatMap( ( w ) => {
 		const before = String( w.before ?? '' );
 		const after = String( w.after ?? '' );
-		const css = ( after.startsWith( before ) ? after.slice( before.length ) : after ).trim();
+		// A write that does not extend the text before it rewrote the box: the whole box is logged, flagged `rewritten` so the log
+		// does not pass the earlier rules off as this write's.
+		const extended = after.startsWith( before );
+		const css = ( extended ? after.slice( before.length ) : after ).trim();
 		const writer = WRITERS.find( ( x ) => x.label.test( String( w.prop ?? '' ) ) );
 		if ( ! css || ! writer ) {
 			return [];
 		}
 		const row = gaps.find( ( g ) => g.node === w.node && g.css && css.includes( g.css ) );
 		const control = row ? row.control : writer.control( w );
-		return [ { surface, node: w.node, block: w.block, part: w.slot ?? '', state: w.state ?? null, range: '', declarations: [ css ], css, reason: row ? row.reason : writer.reason, gap: control ? { control, reason: row ? row.reason : writer.reason } : null, source: String( w.prop ?? '' ) } ];
+		return [ { surface, node: w.node, block: w.block, part: w.readSlot ?? w.slot ?? '', state: w.state ?? null, range: '', declarations: [ css ], css, ...( extended ? {} : { rewritten: true } ), reason: row ? row.reason : writer.reason, gap: control ? { control, reason: row ? row.reason : writer.reason } : null, source: String( w.prop ?? '' ) } ];
 	} );
 }
 

@@ -84,16 +84,19 @@ function copyWorld( prop, values ) {
 	return { w, rows: values.map( ( v, i ) => ( { ...listRow( prop, v ), slot: copySlot( i + 1 ) } ) ) };
 }
 
-test( 'MUST FAIL: a fixed set of parts is written one rule per copy where every copy differs; a copy sharing its value with another stays with the loop, not written', () => {
+test( 'MUST FAIL: a fixed set of parts is written one rule per copy, copies sharing a value included (burger bars of 24, 16 and 24px)', () => {
 	const all = copyWorld( 'outline-style', [ 'solid', 'dashed', 'dotted' ] );
 	const a = runList( all.w, all.rows, { facts: null } );
 	assert.deepEqual( a.refused, [] );
 	assert.deepEqual( a.rules.map( ( r ) => r.part ), [ 1, 2, 3 ].map( copySlot ) );
-	const shared = copyWorld( 'outline-style', [ 'solid', 'solid', 'dashed' ] );
+	const shared = copyWorld( 'outline-style', [ 'solid', 'dashed', 'solid' ] );
 	const b = runList( shared.w, shared.rows, { facts: null } );
-	assert.deepEqual( b.rules.map( ( r ) => r.part ), [ copySlot( 3 ) ], 'only the copy with a value of its own is written' );
-	assert.equal( b.refused.length, 2 );
-	assert.match( b.refused[ 0 ].reason, /names one copy of a repeated part/ );
+	assert.deepEqual( b.refused, [] );
+	assert.deepEqual( b.rules.map( ( r ) => r.part ), [ 1, 2, 3 ].map( copySlot ), 'a copy sharing its value with another is written too' );
+	const text = css( shared.w );
+	assert.match( text, /nth-of-type\(1\) \{ outline-style: solid; \}/ );
+	assert.match( text, /nth-of-type\(2\) \{ outline-style: dashed; \}/ );
+	assert.match( text, /nth-of-type\(3\) \{ outline-style: solid; \}/ );
 } );
 
 test( 'MUST FAIL: a body of a sc-for loop is never a fixed set, whatever its copies read', () => {

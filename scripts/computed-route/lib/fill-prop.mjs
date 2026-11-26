@@ -210,14 +210,15 @@ export const INITIAL_UNSTATED = new Set( propertiesApplyingTo( LAYOUT_ROLE ) );
 // Whether a read value is the property's initial value with no declaration behind it, and the block's own default look paints
 // that same initial value (`paint`, its calibrated default paint of the property at the width). A block that paints another
 // value by default (a flex-grow of 1 in its stylesheet) is not left alone by an unstated initial value: the draft's `0` is what
-// the element computes there, so the resolver judges it. A paint that was not measured judges nothing. declared: the element's
+// the element computes there, so the resolver judges it. A paint that was not measured (the look never reads align-self, grid-column
+// and the like, so `paint` is undefined) is no evidence against leaving the value alone. declared: the element's
 // declared longhands at the width ({ prop: value }), or null where the declared read failed (then nothing is judged).
 export function undeclaredInitial( prop, value, declared, paint ) {
 	if ( ! declared || ! INITIAL_UNSTATED.has( prop ) || Object.keys( declared ).some( ( k ) => k === prop || longhandsOf( k ).includes( prop ) ) ) {
 		return false;
 	}
 	const initial = initialOf( prop );
-	return null !== initial && sameCanonical( prop, value, initial ) && sameCanonical( prop, paint, initial );
+	return null !== initial && sameCanonical( prop, value, initial ) && ( undefined === paint || sameCanonical( prop, paint, initial ) );
 }
 
 // Whether a transition-duration list holds a duration above 0 (a block's own transition); an unmeasured one does not.
