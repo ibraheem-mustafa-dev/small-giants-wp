@@ -17,11 +17,22 @@ export async function waitOutHostCheck( page ) {
 	await page.waitForTimeout( 500 );
 }
 
+// An address without its fragment, parsed so that `http://h:5000` and `http://h:5000/` are one address (page.url() always
+// carries the slash a config's raw address may lack); an address that does not parse is compared as written.
+const withoutFragment = ( u ) => {
+	try {
+		const x = new URL( String( u ) );
+		x.hash = '';
+		return x.href;
+	} catch {
+		return String( u ).split( '#' )[ 0 ];
+	}
+};
+
 // Whether navigating from `from` to `to` stays in the same document: the same address up to a fragment that `to` carries
 // (the HTML standard's navigate-to-a-fragment, which loads nothing).
 export function sameDocument( from, to ) {
-	const [ target, fragment ] = String( to ).split( /#(.*)/s );
-	return undefined !== fragment && String( from ).split( '#' )[ 0 ] === target;
+	return String( to ).includes( '#' ) && withoutFragment( from ) === withoutFragment( to );
 }
 
 export function makeHelpers( page, side, { cb, RESOLVE, onAction } ) {

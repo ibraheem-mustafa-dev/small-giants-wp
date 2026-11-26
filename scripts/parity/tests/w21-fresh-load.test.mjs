@@ -91,6 +91,12 @@ test( 'sameDocument: only an address that stays the same up to a fragment the ta
 	assert.equal( sameDocument( 'http://x/index.html#a', 'http://x/index.html' ), false, 'no fragment in the target loads the page' );
 	assert.equal( sameDocument( 'http://x/index.html?cb=1#a', 'http://x/index.html?cb=2#a' ), false, 'another query is a new document' );
 	assert.equal( sameDocument( 'about:blank', 'http://x/index.html#a' ), false );
+	// RF9 second review: page.url() carries the root slash and the lower-case host a config's raw address may lack.
+	assert.equal( sameDocument( 'http://127.0.0.1:5000#x', 'http://127.0.0.1:5000/#y' ), true );
+	assert.equal( sameDocument( 'http://127.0.0.1:5000/#y', 'http://127.0.0.1:5000#x' ), true );
+	assert.equal( sameDocument( 'http://EXAMPLE.test/a#x', 'http://example.test/a#y' ), true );
+	assert.equal( sameDocument( 'not a url#a', 'not a url#b' ), true, 'an address that does not parse is compared as written' );
+	assert.equal( sameDocument( 'not a url#a', 'another#b' ), false );
 } );
 
 let browser;

@@ -71,6 +71,11 @@ const LABELS = { scroll: 'scroll', lock: 'scroll lock (html, body overflow-y; bo
 // a second fresh load instead of refused. Scroll is placement. A layer or focus the first read did not have is something the load
 // opened (a drawer with no ARIA, a control a dialog focuses): never placement, whatever the scroll. A layer or focus the first read
 // had and the fresh load lacks (it scrolled out of view, the focus went with the offset) is placement.
+// A layer that appears only because the fresh load's scroll differs from the first read's (a sticky bar that was out of view
+// at the first read's offset) is refused all the same, by decision: the load cannot tell it from a drawer the load itself opens, and
+// letting a second fresh load decide would adopt that drawer as rest (two loads agree on it) and measure every later state with it
+// open. A refusal is a named row in the report; an adopted drawer is silent. Cost: a page whose first read caught an offset that
+// hid a layer is refused.
 export function placementOnly( rest, now ) {
 	const names = ( v ) => String( v || '' ).split( ' ' ).filter( Boolean );
 	const placed = {
