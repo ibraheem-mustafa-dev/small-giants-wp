@@ -16,5 +16,23 @@
 		"find": "\tif ( gate.unresolved ) {\n\t\tconsole.log( `${ gate.unresolved } no-setting row(s)",
 		"replace": "\tif ( gate.unresolved ) {\n\t\tprocess.exitCode = 1;\n\t\tconsole.log( `${ gate.unresolved } no-setting row(s)",
 		"why": "an unresolved row fails the applier's exit code"
+	},
+	{
+		"file": "lib/apply-summary.mjs",
+		"find": "'unpaired', 'structural', 'no-effect' ]",
+		"replace": "'unpaired', 'no-effect' ]",
+		"why": "the status list drops a column the applier prints"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "${ total( 'no-effect' ) } no-effect",
+		"replace": "${ total( 'equal' ) } no-effect",
+		"why": "the stage result reads the wrong column for no-effect"
+	},
+	{
+		"file": "lib/apply-summary.mjs",
+		"find": "cells.length === APPLY_STATUSES.length + 3",
+		"replace": "cells.length === APPLY_STATUSES.length + 2",
+		"why": "the reader expects one column fewer than the table prints, so every count reads 0"
 	}
 ]

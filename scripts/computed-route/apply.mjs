@@ -25,6 +25,7 @@ import { retargetLive } from '../parity/lib/helpers.mjs';
 import { FAMILIES, familyProps } from './lib/apply-families.mjs';
 import { ledgerIndex, ledgerMatch, surfaceNames } from './lib/apply-ledger.mjs';
 import { gateRows, gateSettingsOf } from './lib/apply-gate.mjs';
+import { summaryTable } from './lib/apply-summary.mjs';
 import { finish, noopWhy, rulingFor, same } from './lib/apply-rulings.mjs';
 import { changesPost, matches, patchesFor, restoreOf } from './lib/apply-ops.mjs';
 import { applyOptions } from './apply-options.mjs';
@@ -278,20 +279,6 @@ export function judge( ops, reads ) {
 	} );
 }
 
-function summary( rows ) {
-	const table = {};
-	for ( const r of rows ) {
-		table[ r.family ] = table[ r.family ] || {};
-		table[ r.family ][ r.status ] = ( table[ r.family ][ r.status ] || 0 ) + 1;
-	}
-	const statuses = [ 'written', 'unchecked', 'equal', 'ledger', 'no-setting', 'unpaired', 'structural', 'no-effect' ];
-	const lines = [ `| Family | ${ statuses.join( ' | ' ) } |`, `|---|${ statuses.map( () => '---' ).join( '|' ) }|` ];
-	for ( const [ f, c ] of Object.entries( table ) ) {
-		lines.push( `| ${ f } | ${ statuses.map( ( s ) => c[ s ] || 0 ).join( ' | ' ) } |` );
-	}
-	return lines.join( '\n' );
-}
-
 // The site an apply run reads and writes, and its surfaces on it. `named` is --site (another copy of the surfaces' site that shares
 // their post ids: surfaceOnSite refuses any other), else the first surface's own. It must be a local mirror or scratch copy and not
 // protected; a --write run on a scratch copy needs a worktree. With `named`, each walker config's live address moves to that site's
@@ -507,7 +494,7 @@ async function main() {
 	}
 	// The site options the draft states (the reading progress bar's gradient, colour and height) go with a whole run.
 	const optionRows = only || wanted || has( '--no-options' ) ? [] : await applyOptions( { repo: REPO, client, site, origin: draftOrigin, write } );
-	const text = `# Applier ${ write ? 'write' : 'dry run' }: ${ client }\n\n${ summary( allRows ) }\n${ optionRows.map( ( o ) => `option ${ o.status } ${ o.name }` ).join( '\n' ) }\n`;
+	const text = `# Applier ${ write ? 'write' : 'dry run' }: ${ client }\n\n${ summaryTable( allRows ) }\n${ optionRows.map( ( o ) => `option ${ o.status } ${ o.name }` ).join( '\n' ) }\n`;
 	fs.writeFileSync( path.join( outDir, 'summary.md' ), text );
 	console.log( text );
 	fs.writeFileSync( path.join( outDir, 'no-setting-review.json' ), JSON.stringify( gate.judged, null, 1 ) );

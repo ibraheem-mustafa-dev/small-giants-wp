@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { applyDetail } from '../site-run.mjs';
+import { summaryTable, summaryRows, APPLY_STATUSES } from '../lib/apply-summary.mjs';
 
 const source = fs.readFileSync( new URL( '../site-run.mjs', import.meta.url ), 'utf8' );
 const log = ( text ) => {
@@ -20,7 +21,9 @@ test( 'apply sits after build and before walk in the stage list, and stops the s
 	assert.match( source, /if \( ! await applyStage\( [^)]*\) \) \{\s*return;\s*\}/ );
 } );
 
-const table = [ '| Family | written | unchecked | equal | ledger | no-setting | unpaired | no-effect |', '|---|---|---|---|---|---|---|---|', '| motion | 19 | 2 | 5 | 0 | 0 | 0 | 1 |', '| link | 1 | 0 | 2 | 0 | 0 | 0 | 0 |' ].join( '\n' );
+// The table the applier prints (lib/apply-summary.mjs::summaryTable): 8 status columns, `structural` before `no-effect`.
+const rowsOf = ( family, counts ) => Object.entries( counts ).flatMap( ( [ status, n ] ) => Array.from( { length: n }, () => ( { family, status } ) ) );
+const table = summaryTable( [ ...rowsOf( 'motion', { written: 19, unchecked: 2, equal: 5, 'no-effect': 1 } ), ...rowsOf( 'link', { written: 1, equal: 2, structural: 3 } ) ] );
 
 test( 'the stage result names ops, no-setting, no-effect and unchecked counts, for a dotted surface name too', () => {
 	const clean = applyDetail( log( `form.v2: 19 ops, 57 rows\n${ table }\n\nno-setting rows: 2 confirmed, 1 unjudged, 0 unresolved (no-setting-review.json)\n` ), 'x' );
@@ -49,4 +52,11 @@ test( 'MUST FAIL: the applier does not fail its exit code on an unresolved row, 
 	assert.ok( after.length < applySource.length, 'the applier has an unresolved block' );
 	assert.doesNotMatch( after, /process\.exitCode = 1/ );
 	assert.match( after, /console\.log\( `unresolved: / );
+} );
+
+test( 'MUST FAIL: the stage result reads no-effect and unchecked from the printed table, whatever its column count, with structural rows beside them', () => {
+	assert.equal( APPLY_STATUSES.length, 8 );
+	assert.deepEqual( summaryRows( table ).map( ( r ) => [ r.written, r.structural, r[ 'no-effect' ] ] ), [ [ 19, 0, 1 ], [ 1, 3, 0 ] ] );
+	assert.equal( applyDetail( log( `home: 3 ops, 9 rows\n${ table }\n\nno-setting rows: 0 confirmed, 0 unjudged, 0 unresolved\n` ), 'x' ), '3 ops, 0 no-setting, 0 unresolved, 1 no-effect, 2 unchecked' );
+	assert.deepEqual( summaryRows( '| a | 1 | 2 | 3 | 4 | 5 | 6 | 7 |' ), [], 'a seven-column row is no longer the applier\'s table' );
 } );

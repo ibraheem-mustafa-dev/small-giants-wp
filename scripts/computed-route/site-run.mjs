@@ -81,6 +81,7 @@ import { openRunLedger, runLedgerFileOfFill } from './lib/run-ledger.mjs';
 import { applyRunRows, buildRunRows } from './lib/run-ledger-build.mjs';
 import { ledgerTargets } from './lib/ledger-pairs.mjs';
 import { blockSchema } from './lib/resolve.mjs';
+import { summaryRows } from './lib/apply-summary.mjs';
 import { pageMapStaleProblem, PAGE_MAP_STAGES } from './lib/page-map-fresh.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..', '..' );
@@ -121,11 +122,10 @@ export function applyDetail( logFile, fallback ) {
 	if ( ! ops && ! gate ) {
 		return fallback;
 	}
-	// `| family | written | unchecked | equal | ledger | no-setting | unpaired | no-effect |`
-	const rows = log.split( /\r?\n/ ).filter( ( l ) => /^\| [^|]+ (\| \d+ ){7}\|$/.test( l ) ).map( ( l ) => l.split( '|' ).slice( 2, 9 ).map( Number ) );
-	const total = ( n ) => rows.reduce( ( a, r ) => a + r[ n ], 0 );
+	const rows = summaryRows( log );
+	const total = ( status ) => rows.reduce( ( a, r ) => a + r[ status ], 0 );
 	const unresolved = Number( gate?.[ 3 ] ?? 0 );
-	const detail = `${ ops ? `${ ops[ 1 ] } ops` : 'no ops' }${ gate ? `, ${ gate[ 1 ] } no-setting, ${ unresolved } unresolved` : '' }, ${ total( 6 ) } no-effect, ${ total( 1 ) } unchecked`;
+	const detail = `${ ops ? `${ ops[ 1 ] } ops` : 'no ops' }${ gate ? `, ${ gate[ 1 ] } no-setting, ${ unresolved } unresolved` : '' }, ${ total( 'no-effect' ) } no-effect, ${ total( 'unchecked' ) } unchecked`;
 	// The applier's own listing (`unresolved: <surface> <block> <prop>: <why>`), so the run report names each look without the
 	// review file, which the next surface's apply overwrites.
 	const listed = [ ...log.matchAll( /^unresolved: (.+)$/gm ) ].map( ( m ) => m[ 1 ].trim() );
