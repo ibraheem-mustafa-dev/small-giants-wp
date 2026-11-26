@@ -570,6 +570,33 @@ test( 'MUST FAIL: a cap wrapper whose style is declared in rem, clamp() or a var
 	assert.deepEqual( narrower.maxWidth, { desktop: 'clamp(900px, 90vw, 1440px)', mobile: '100%' } );
 } );
 
+test( 'MUST FAIL: a 1440 read that lacks a padding side or the max-width is no value to compare the narrower reads with, and a missing 1440 read is reported', () => {
+	const side = ( top, right ) => ( { 'padding-top': top, 'padding-right': right, 'padding-bottom': top, 'padding-left': right } );
+	const declared = ( resolved ) => N( 'div', { style: 'background-color:rgb(1, 2, 3)' }, [
+		N( 'div', { style: 'max-width:clamp(900px, 90vw, 1440px);margin-left:auto;margin-right:auto;padding-top:2.75rem;padding-right:var(--band);padding-bottom:2.75rem;padding-left:var(--band)', resolved }, [
+			N( 'div', { style: 'display:grid;grid-template-columns:minmax(0, 1fr) 300px' }, [
+				N( 'div', {}, [ card( 'One', '/one' ), card( 'Two', '/two' ) ] ),
+				N( 'div', { style: 'aspect-ratio:4 / 3;box-shadow:0 1px 2px #000' }, [ N( 'p', { words: 'Feature' } ) ] ),
+			] ),
+		] ),
+	] );
+	const full = { 'max-width': '1296px', ...side( '44px', '52px' ) };
+	// The 1440 read holds the vertical sides only and no max-width: the tablet read's horizontal sides and width have nothing to differ from.
+	const partial = { 'padding-top': '44px', 'padding-bottom': '44px' };
+	const same = behindRun( declared( { 1440: partial, 768: full, 375: full } ) );
+	assert.deepEqual( Object.keys( same.skeleton[ 0 ].decided.panelPadding ), [ 'desktop' ], 'tablet and phone read the same as each other and as the vertical sides at 1440: nothing is written' );
+	assert.deepEqual( Object.keys( same.skeleton[ 0 ].decided.maxWidth ), [ 'desktop' ] );
+	// A side the 1440 read does hold still compares: the phone differs from the tablet read it follows.
+	const real = behindRun( declared( { 1440: partial, 768: full, 375: { ...full, 'max-width': '100%', 'padding-top': '20px', 'padding-bottom': '20px' } } ) ).skeleton[ 0 ].decided;
+	assert.deepEqual( Object.keys( real.panelPadding ), [ 'desktop', 'mobile' ], 'a real difference between two reads is still written' );
+	assert.deepEqual( real.maxWidth, { desktop: 'clamp(900px, 90vw, 1440px)', mobile: '100%' } );
+	// A draft with no 1440 read has its first read device skipped: that is reported, and a draft with the 1440 read reports nothing.
+	const note = ( resolved ) => behindRun( declared( resolved ) ).problems.filter( ( p ) => /not read at 1440/.test( p ) );
+	assert.equal( note( { 768: full, 375: full } ).length, 1, 'no 1440 read: one problem line' );
+	assert.deepEqual( note( { 1440: full, 768: full, 375: full } ), [], 'negative control: read at 1440' );
+	assert.deepEqual( note( {} ), [], 'negative control: no read at any width says nothing about a skipped device' );
+} );
+
 test( 'NEGATIVE megaPanelRow: a root that lays its columns out itself keeps the direct rule; a wrapper over a loop\'s cards, over a row with no column, or more than three levels up is left alone', () => {
 	assert.ok( rows( behindRun( panel() ) ).every( ( x ) => 'megaPanelRow' !== x.rule ), 'the panel root is the row: nothing to unwrap' );
 	const cards = behind( { inner: [ N( 'div', { style: 'display:grid;grid-template-columns:repeat(4, 1fr)' }, [ N( 'a', { loop: true, style: 'background-color:rgb(1, 2, 3)', words: 'Card', attrs: { href: '/c' } } ) ] ) ] } );

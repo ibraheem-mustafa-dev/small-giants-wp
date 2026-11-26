@@ -31,7 +31,7 @@
 	},
 	{
 		"file": "lib/skeleton-panel-rules.mjs",
-		"find": "SIDES.some( ( k ) => at.pad[ k ] !== null && at.pad[ k ] !== padNow[ k ] ) && ( pad[ device ] = sides );",
+		"find": "SIDES.some( ( k ) => null !== padNow[ k ] && null !== at.pad[ k ] && at.pad[ k ] !== padNow[ k ] ) && ( pad[ device ] = sides );",
 		"replace": "pad[ device ] = sides;",
 		"why": "a device whose padding equals the one it inherits gets its own"
 	},
@@ -61,7 +61,7 @@
 	},
 	{
 		"file": "lib/skeleton-panel-rules.mjs",
-		"find": "let [ capNow, padNow ] = [ first?.cap ?? null, first?.pad ?? null ];",
+		"find": "let [ capNow, padNow ] = [ first?.cap ?? null, first?.pad ?? Object.fromEntries( SIDES.map( ( k ) => [ k, null ] ) ) ];",
 		"replace": "let [ capNow, padNow ] = [ desktop.cap, desktop.pad ];",
 		"why": "a device is compared with the browser reads only: a declared desktop value (2rem, clamp(), var()) is never the baseline"
 	},
@@ -70,5 +70,41 @@
 		"find": "[ k, rs[ `padding-${ k }` ] ?? null ] ) ) } : null;",
 		"replace": "[ k, rs[ `padding-${ k }` ] ?? declaredBand.pad[ k ] ] ) ) } : null;",
 		"why": "a read that holds no padding is compared as no padding, never as the declared words"
+	},
+	{
+		"file": "lib/skeleton-panel-rules.mjs",
+		"find": "null !== capNow && at.cap && at.cap !== capNow",
+		"replace": "at.cap && at.cap !== capNow",
+		"why": "a width the 1440 read lacks is compared as a difference"
+	},
+	{
+		"file": "lib/skeleton-panel-rules.mjs",
+		"find": "null !== padNow[ k ] && null !== at.pad[ k ] && at.pad[ k ] !== padNow[ k ]",
+		"replace": "null !== at.pad[ k ] && at.pad[ k ] !== padNow[ k ]",
+		"why": "a side the 1440 read lacks is compared as a difference"
+	},
+	{
+		"file": "lib/skeleton-panel-rules.mjs",
+		"find": "const note = ! first && firstRead ?",
+		"replace": "const note = null && firstRead ?",
+		"why": "a missing 1440 read is not reported"
+	},
+	{
+		"file": "lib/skeleton-panel-rules.mjs",
+		"find": "...( read?.note ? { decidedNote: read.note } : {} )",
+		"replace": "",
+		"why": "the verdict drops the missing-read note"
+	},
+	{
+		"file": "lib/skeleton-classify.mjs",
+		"find": "...( r.decidedNote ? { decidedNote: r.decidedNote } : {} ), ",
+		"replace": "",
+		"why": "the classifier drops the missing-read note"
+	},
+	{
+		"file": "lib/skeleton-write-slots.mjs",
+		"find": "r.decidedNote && slotProblems.push(",
+		"replace": "0 && slotProblems.push(",
+		"why": "the note never reaches the problems list"
 	}
 ]

@@ -142,6 +142,7 @@ export function makeSlotRows( ctx ) {
 		// host node's `decided`, which Fill writes (lib/fill-resolve.mjs::fillContent).
 		// The verdict names the block it decides for (`hostLays`): the innermost host when that is it, else the node built for that
 		// element; a verdict naming a block that was never built is reported, never merged into another block's settings.
+		r.decidedNote && slotProblems.push( `${ e.key }: ${ r.decidedNote }` );
 		if ( r.decided ) {
 			const target = r.hostLays && host?.e?.key !== r.hostLays ? ctx.nodeOfKey[ r.hostLays ] : host?.node;
 			target ? ( target.decided = { ...target.decided, ...structuredClone( r.decided ) } ) : slotProblems.push( `${ e.key }: its decided settings belong to ${ r.hostLays ?? 'the block that hosts it' }, which has no block in the proposal` );

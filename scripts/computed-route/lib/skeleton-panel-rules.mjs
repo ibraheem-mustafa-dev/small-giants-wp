@@ -179,23 +179,23 @@ export function makePanelRules( { m, view, scope, R, facts, surface = {}, declar
 		const desktop = first ? { cap: first.cap, pad: Object.fromEntries( SIDES.map( ( k ) => [ k, first.pad[ k ] ?? declaredBand.pad[ k ] ] ) ) } : declaredBand;
 		const cap = { desktop: desktop.cap ?? declaredBand.cap };
 		const pad = { desktop: desktop.pad };
-		let [ capNow, padNow ] = [ first?.cap ?? null, first?.pad ?? null ];
+		// A side or a cap the earlier read does not hold (null: the read lacks the property) is no value to compare with: the next
+		// read carries it forward and writes nothing for that side, since its equality with the desktop value is unknown.
+		let [ capNow, padNow ] = [ first?.cap ?? null, first?.pad ?? Object.fromEntries( SIDES.map( ( k ) => [ k, null ] ) ) ];
 		for ( const [ w, device ] of [ [ 768, 'tablet' ], [ 375, 'mobile' ] ] ) {
 			const at = readAt( w );
 			if ( ! at ) {
 				continue;
 			}
-			if ( padNow ) {
-				at.cap && at.cap !== capNow && ( cap[ device ] = at.cap );
-				const sides = Object.fromEntries( SIDES.map( ( k ) => [ k, at.pad[ k ] ?? padNow[ k ] ?? desktop.pad[ k ] ] ) );
-				SIDES.some( ( k ) => at.pad[ k ] !== null && at.pad[ k ] !== padNow[ k ] ) && ( pad[ device ] = sides );
-				padNow = { ...padNow, ...Object.fromEntries( SIDES.filter( ( k ) => null !== at.pad[ k ] ).map( ( k ) => [ k, at.pad[ k ] ] ) ) };
-			} else {
-				padNow = at.pad;
-			}
+			null !== capNow && at.cap && at.cap !== capNow && ( cap[ device ] = at.cap );
+			const sides = Object.fromEntries( SIDES.map( ( k ) => [ k, at.pad[ k ] ?? padNow[ k ] ?? desktop.pad[ k ] ] ) );
+			SIDES.some( ( k ) => null !== padNow[ k ] && null !== at.pad[ k ] && at.pad[ k ] !== padNow[ k ] ) && ( pad[ device ] = sides );
+			padNow = { ...padNow, ...Object.fromEntries( SIDES.filter( ( k ) => null !== at.pad[ k ] ).map( ( k ) => [ k, at.pad[ k ] ] ) ) };
 			capNow = at.cap ?? capNow;
 		}
-		return Object.fromEntries( settings.map( ( setting ) => [ setting, setting === band.padding ? pad : cap ] ) );
+		const firstRead = [ 768, 375 ].find( ( w ) => readAt( w ) );
+		const note = ! first && firstRead ? `the draft was not read at 1440 (first read at ${ firstRead }): the panel's first device is written from the declared style and the narrower devices only where a read differs from the read before it` : null;
+		return { decided: Object.fromEntries( settings.map( ( setting ) => [ setting, setting === band.padding ? pad : cap ] ) ), note };
 	};
 
 	// The verdict for an element of a header disclosure panel, or null. A direct child of the panel's root that lays its own
@@ -221,7 +221,8 @@ export function makePanelRules( { m, view, scope, R, facts, surface = {}, declar
 			const rowPaint = wrapped.row === e && R.megaPanelRow.rowPaint && view.ownPaint( e ) ? [ { kind: 'setting', node: root.key, setting: R.megaPanelRow.rowPaint, looks: [ 'background', 'border' ] } ] : [];
 			const conserve = rowPaint.length ? rowPaint : first === e ? bandOf( e ).map( ( setting ) => ( { kind: 'setting', node: root.key, setting, looks: setting === R.megaPanelRow.band.padding ? [ 'padding' ] : [ 'max-width', 'margin-auto' ] } ) ) : [];
 			const band = first === e && ! rowPaint.length ? bandOf( e ) : [];
-			return { rule: 'megaPanelRow', action: 'unwrap', hostLays: root.key, ...( conserve.length ? { conserve } : {} ), ...( band.length ? { decided: bandDecided( e, band ) } : {} ) };
+			const read = band.length ? bandDecided( e, band ) : null;
+			return { rule: 'megaPanelRow', action: 'unwrap', hostLays: root.key, ...( conserve.length ? { conserve } : {} ), ...( read ? { decided: read.decided } : {} ), ...( read?.note ? { decidedNote: read.note } : {} ) };
 		}
 		const row = wrapped ? wrapped.row : root;
 		return m.byKey[ e.parentKey ] === row ? rowChild( e, row ) : null;
