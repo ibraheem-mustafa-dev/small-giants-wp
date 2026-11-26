@@ -4,9 +4,11 @@ Every render is cached under <cache root>/<code hash>/<render key>.json. The cod
 block's own folder and those of the blocks its fixture renders with it, which block folders exist and which hold a
 render.php (the runner resolves a name to its folder, and its registry stand-in answers is_registered by it),
 src/blocks/extensions, src/shared, includes/, assets/, schemas/ (a helper reads schemas/motion.schema.json), templates/,
-the runner (scripts/qa/lib/) and sgs-blocks.php, plus the fixture files. Another block's files are not in it: a render
+the runner (scripts/qa/lib/) and sgs-blocks.php, every PHP file under includes/ or src/ that registers a render_block
+filter (the runner loads them all), the theme's theme.json (the runner's wp_get_global_styles reads it), plus the fixture
+files. Another block's files are not in it: a render
 that reads one anyway (a block type its PHP looks up in the registry, a block its content renders) records the file and
-its content hash (`outside`), and the cached render is used only while every such file is unchanged
+the content hash PHP took of it before exiting (`outside`, from included-files.php), and the cached render is used only while every such file is unchanged
 (Renderer._outside_current), so one block's block.json edit re-renders only the renders that read it. A render's cache
 holds only its PHP output, and the stylesheets are read fresh on every check. The cache root is SGS_SETTING_RECORD_CACHE,
 else .cache/ beside this file (gitignored).
@@ -90,12 +92,47 @@ def code_hash(plugin: Path, fixture_files=(), blocks=None) -> str:
     for f in files:
         h.update(f.relative_to(plugin).as_posix().encode())
         h.update(f.read_bytes())
+    # the theme's theme.json: the runner's wp_get_global_styles reads its styles when a fixture gives no globalSettings
+    # (scripts/qa/lib/wp-stubs.php; includes/class-heading-look.php reads them)
+    theme = theme_json(plugin)
+    if theme.is_file() and 'theme-json' not in MUTATE:
+        h.update(b'theme.json')
+        h.update(theme.read_bytes())
+    # every file the runner loads for its render_block filters, wherever it sits (a block folder the key leaves out included)
+    for f in [] if 'filter-scan' in MUTATE else render_block_filter_files(plugin):
+        h.update(f.relative_to(plugin).as_posix().encode())
+        h.update(f.read_bytes())
     for f in sorted(str(x) for x in fixture_files):
         p = Path(f)
         if p.is_file():
             h.update(p.name.encode())
             h.update(p.read_bytes())
     return h.hexdigest()[:16]
+
+
+def theme_json(plugin: Path) -> Path:
+    """The theme's theme.json beside the plugin in the checkout (scripts/qa/lib/wp-stubs.php::wp_get_global_styles reads it)."""
+    return Path(plugin).resolve().parents[1] / 'theme' / 'sgs-theme' / 'theme.json'
+
+
+# scripts/qa/lib/render-css-harness.php::sgs_qa_render_block_filter_files' test: a PHP file that registers a render_block filter
+RENDER_BLOCK_FILTER = re.compile(r"""\badd_filter\(\s*['"]render_block(?:_data|_[A-Za-z0-9_/-]+)?['"]""")
+
+
+def render_block_filter_files(plugin: Path) -> list:
+    """The PHP files under includes/ and src/ that register a render_block filter, which the runner loads for every render
+    (render-css-harness.php::sgs_qa_render_block_filter_files, the same scan; the runner's own skip list is not applied,
+    so the key may cover a file the runner leaves out, never the reverse)."""
+    out = []
+    for root in ('includes', 'src'):
+        base = Path(plugin) / root
+        for f in sorted(base.rglob('*.php')) if base.is_dir() else []:
+            rel = f.relative_to(plugin).as_posix()
+            if '/tests/' in rel or '/vendor/' in rel:
+                continue
+            if RENDER_BLOCK_FILTER.search(f.read_text(encoding='utf-8', errors='ignore')):
+                out.append(f)
+    return out
 
 
 def outside_block(rel: str, related) -> bool:
@@ -346,8 +383,12 @@ class Renderer:
                                    'cache key leaves them out (render.py::NOT_RENDER_INPUTS), so it must take them in first')
             self.included.update(res['included'])
             # every file outside the code hash the render loaded or read, with its content hash (_outside_current)
-            read = included_paths(json.loads(reads.read_text(encoding='utf-8')), self.plugin) if reads.is_file() else []
-            res['outside'] = {rel: file_md5(self.plugin / rel) for rel in sorted({*res['included'], *read}) if outside_block(rel, self.related)}
+            # the md5 included-files.php took of every block-folder file the render loaded or read, before PHP exited: a file
+            # edited after the render keeps the hash of what the render saw, so the next use renders again
+            taken = json.loads(reads.read_text(encoding='utf-8')) if reads.is_file() else {}
+            taken = {rel: md5 for path, md5 in (taken.items() if isinstance(taken, dict) else []) for rel in included_paths([path], self.plugin)}
+            res['outside'] = {rel: (file_md5(self.plugin / rel) if 'php-md5' in MUTATE else taken.get(rel, 'unread'))
+                              for rel in sorted({*res['included'], *taken}) if outside_block(rel, self.related)}
         if res.get('ok'):
             res['html'] = apply_directives(res.get('html', ''), res.get('interactivityState') or {})
         if res.get('ok') and self.post:
