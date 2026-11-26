@@ -1,15 +1,14 @@
 import { __ } from '@wordpress/i18n';
 import {
 	PanelBody,
-	SelectControl,
 	TextControl,
 	ToggleControl,
 } from '@wordpress/components';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
 /**
- * SGS Cart — FR-36-19 inspector controls: display mode + the
- * mini-cart panel's own settings. Split out of edit.js to keep the file
+ * SGS Cart — FR-36-19 inspector controls: the mini-cart panel's own
+ * settings (the display-mode select is in TriggerSettingsControls.js). Split out of edit.js to keep the file
  * under the project's 250-line JS budget.
  *
  * @param {Object}   root0                               Props.
@@ -45,36 +44,6 @@ export default function PanelSettingsControls( {
 } ) {
 	return (
 		<>
-			<PanelBody initialOpen title={ __( 'Display mode', 'sgs-blocks' ) }>
-				<SelectControl
-					label={ __( 'Cart trigger opens', 'sgs-blocks' ) }
-					help={ __(
-						'Link: goes straight to the cart page. Flyout: a dropdown panel (page stays usable). Drawer: a full off-canvas panel.',
-						'sgs-blocks'
-					) }
-					value={ displayMode || 'link' }
-					options={ [
-						{
-							label: __( 'Link only', 'sgs-blocks' ),
-							value: 'link',
-						},
-						{
-							label: __( 'Flyout (dropdown)', 'sgs-blocks' ),
-							value: 'flyout',
-						},
-						{
-							label: __( 'Drawer (off-canvas)', 'sgs-blocks' ),
-							value: 'drawer',
-						},
-					] }
-					onChange={ ( val ) =>
-						setAttributes( { displayMode: val } )
-					}
-					__nextHasNoMarginBottom
-					__next40pxDefaultSize
-				/>
-			</PanelBody>
-
 			{ hasPanel && (
 				<PanelBody
 					title={ __( 'Mini-cart panel', 'sgs-blocks' ) }

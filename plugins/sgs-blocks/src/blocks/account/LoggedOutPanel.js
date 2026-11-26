@@ -1,7 +1,8 @@
 /**
  * sgs/account — "Logged out" inspector panel.
  *
- * Auth-card layout (side-by-side vs stacked), the optional Track-an-order
+ * What a signed-out visitor sees (log-in form or card) and the card's words
+ * and links, then the auth-card layout (side-by-side vs stacked), the optional Track-an-order
  * card, and the guest checkout line.
  */
 import { __ } from '@wordpress/i18n';
@@ -14,6 +15,7 @@ import {
 import SgsFreeTextField from '../../components/SgsFreeTextField';
 import { LinkPopoverField } from '../../components';
 import { LINK_SOURCES_PAGES } from '../../shared/link-source-options';
+import { SignedOutContentControls } from './SignedOutPanel';
 /**
  * @param {Object}   props
  * @param {Object}   props.attributes
@@ -34,6 +36,10 @@ export default function LoggedOutPanel( { attributes, setAttributes } ) {
 			title={ __( 'Logged out', 'sgs-blocks' ) }
 			initialOpen={ false }
 		>
+			<SignedOutContentControls
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+			/>
 			<ToggleGroupControl
 				__next40pxDefaultSize
 				__nextHasNoMarginBottom

@@ -5,7 +5,7 @@
  * Kept as its OWN component (never inlined into edit.js) — edit.js is at its
  * size cap and the build contract forbids adding logic to it; the main
  * thread wires this in with one import + one render line, matching the
- * `ChromePanel`/`PricingSettingsPanel`/`LinkedFlowPanel` precedent already
+ * `ChromePanel`/`PricingSettingsPanel`/`LinkedFlowControls` precedent already
  * set in this directory.
  *
  * @package SGS\Blocks
@@ -13,7 +13,12 @@
 
 import { __ } from '@wordpress/i18n';
 import { InspectorControls } from '@wordpress/block-editor';
-import { PanelBody, SelectControl, TextControl } from '@wordpress/components';
+import {
+	PanelBody,
+	SelectControl,
+	TextControl,
+	ToggleControl,
+} from '@wordpress/components';
 import { FlexWrapControl } from '../../components';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
@@ -24,7 +29,7 @@ import SgsFreeTextField from '../../components/SgsFreeTextField';
  * @return {JSX.Element} The panel, mounted inside its own InspectorControls.
  */
 export default function FlowNavigationPanel( { attributes, setAttributes } ) {
-	const { advanceMode, continueLabel, openerLabel, openerNote, flexWrap } =
+	const { advanceMode, continueLabel, openerLabel, openerNote, flexWrap, stickyFooter } =
 		attributes;
 
 	return (
@@ -102,6 +107,18 @@ export default function FlowNavigationPanel( { attributes, setAttributes } ) {
 					label={ __( 'Wrap footer buttons', 'sgs-blocks' ) }
 					value={ flexWrap }
 					onChange={ ( val ) => setAttributes( { flexWrap: val } ) }
+				/>
+				<ToggleControl
+					label={ __( 'Sticky footer', 'sgs-blocks' ) }
+					checked={ !! stickyFooter }
+					onChange={ ( val ) =>
+						setAttributes( { stickyFooter: val } )
+					}
+					help={ __(
+						'Pins the Back button (and the result step’s primary action) to the bottom of the screen while a step is in view.',
+						'sgs-blocks'
+					) }
+					__nextHasNoMarginBottom
 				/>
 			</PanelBody>
 		</InspectorControls>

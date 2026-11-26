@@ -1,5 +1,10 @@
 import { __, sprintf } from '@wordpress/i18n';
-import { PanelBody, RangeControl, ToggleControl } from '@wordpress/components';
+import {
+	PanelBody,
+	RangeControl,
+	SelectControl,
+	ToggleControl,
+} from '@wordpress/components';
 import {
 	IconPicker,
 	ResponsiveControl,
@@ -13,10 +18,11 @@ import {
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
 /**
- * SGS Cart — Trigger style + Icon + Badge inspector controls. Split out of
+ * SGS Cart — Cart trigger (what it opens, how it looks) + Icon + Badge inspector controls. Split out of
  * edit.js to keep the file under the project's 250-line JS budget.
  *
  * @param {Object}   root0                    Props.
+ * @param {string}   root0.displayMode           Current `displayMode` attribute: link, flyout or drawer.
  * @param {string}   root0.iconName           Current icon name.
  * @param {string}   root0.iconSource         'lucide' or 'custom' (a pasted SVG).
  * @param {string}   root0.iconSvg            The pasted SVG markup when iconSource is 'custom'.
@@ -35,6 +41,7 @@ import SgsFreeTextField from '../../components/SgsFreeTextField';
  * @param {Function} root0.setAttributes      The block's attribute setter.
  */
 export default function TriggerSettingsControls( {
+	displayMode,
 	iconName,
 	iconSource,
 	iconSvg,
@@ -70,7 +77,34 @@ export default function TriggerSettingsControls( {
 
 	return (
 		<>
-			<PanelBody initialOpen={ false } title={ __( 'Trigger style', 'sgs-blocks' ) }>
+			<PanelBody initialOpen title={ __( 'Cart trigger', 'sgs-blocks' ) }>
+				<SelectControl
+					label={ __( 'Cart trigger opens', 'sgs-blocks' ) }
+					help={ __(
+						'Link: goes straight to the cart page. Flyout: a dropdown panel (page stays usable). Drawer: a full off-canvas panel.',
+						'sgs-blocks'
+					) }
+					value={ displayMode || 'link' }
+					options={ [
+						{
+							label: __( 'Link only', 'sgs-blocks' ),
+							value: 'link',
+						},
+						{
+							label: __( 'Flyout (dropdown)', 'sgs-blocks' ),
+							value: 'flyout',
+						},
+						{
+							label: __( 'Drawer (off-canvas)', 'sgs-blocks' ),
+							value: 'drawer',
+						},
+					] }
+					onChange={ ( val ) =>
+						setAttributes( { displayMode: val } )
+					}
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				/>
 				<ResponsiveControl
 					label={ __( 'Trigger shows', 'sgs-blocks' ) }
 				>
