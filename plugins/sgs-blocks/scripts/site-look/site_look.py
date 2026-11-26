@@ -1031,9 +1031,7 @@ def file_md5(f, text: bool = True) -> str:
                 for chunk in iter(lambda: fh.read(1 << 20), b''):
                     h.update(chunk)
             return h.hexdigest()
-        return hashlib.md5(Path(f).read_bytes().replace(b'
-', b'
-')).hexdigest()
+        return hashlib.md5(Path(f).read_bytes().replace(bytes((13, 10)), b'\n')).hexdigest()
     except OSError:
         return 'missing'
 
