@@ -8,8 +8,10 @@ import { spawn } from 'child_process';
 // start Chromium and find its install, plus the four speed switches: INTAKE_POOL (the browser-unit pool size,
 // lib/intake-pool.mjs), INTAKE_SKIP_QUIET (the harness's quiet-step skipping, lib/intake-harness.mjs),
 // INTAKE_PARALLEL_WIDTHS and INTAKE_PARALLEL_VISITS (test 2's widths and visits side by side,
-// lib/intake-defects.mjs::unreachedDefects). NODE_OPTIONS is not passed: it can --require or --import arbitrary code.
-export const ENV_ALLOW = [ 'PATH', 'SYSTEMROOT', 'SYSTEMDRIVE', 'WINDIR', 'TEMP', 'TMP', 'HOME', 'USERPROFILE', 'LOCALAPPDATA', 'APPDATA', 'PLAYWRIGHT_BROWSERS_PATH', 'INTAKE_POOL', 'INTAKE_SKIP_QUIET', 'INTAKE_PARALLEL_WIDTHS', 'INTAKE_PARALLEL_VISITS' ];
+// lib/intake-defects.mjs::unreachedDefects), and two framework switches: SGS_FRAMEWORK_DB (the framework database the worker's
+// libraries open: scripts/lib/framework-db.js; without it a worker reads the shared database whatever copy the caller named) and
+// SGS_NO_SITE (the site kill switch, scripts/lib/no-site.js; it only ever refuses, so passing it is safe). NODE_OPTIONS is not passed: it can --require or --import arbitrary code.
+export const ENV_ALLOW = [ 'PATH', 'SYSTEMROOT', 'SYSTEMDRIVE', 'WINDIR', 'TEMP', 'TMP', 'HOME', 'USERPROFILE', 'LOCALAPPDATA', 'APPDATA', 'PLAYWRIGHT_BROWSERS_PATH', 'INTAKE_POOL', 'INTAKE_SKIP_QUIET', 'INTAKE_PARALLEL_WIDTHS', 'INTAKE_PARALLEL_VISITS', 'SGS_FRAMEWORK_DB', 'SGS_NO_SITE' ];
 const SECRET_NAME = /PWD|PASSWORD|TOKEN|SECRET|API_KEY|_KEY$/i;
 // The shell's working-directory variables match /PWD/ but hold a path, not a secret.
 const NOT_SECRET = new Set( [ 'PWD', 'OLDPWD' ] );

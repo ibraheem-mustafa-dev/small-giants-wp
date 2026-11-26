@@ -90,10 +90,6 @@ jobs:
         with:
           name: framework-db
           path: ${{ runner.temp }}/db
-      - name: Put the database where the intake worker looks (its allowlisted environment drops SGS_FRAMEWORK_DB)
-        run: |
-          mkdir -p ~/.claude/skills/sgs-wp-engine
-          cp "$RUNNER_TEMP/db/sgs-framework.db" ~/.claude/skills/sgs-wp-engine/sgs-framework.db
       - name: Install Python packages (the plugin scripts the tests run import them)
         run: python -m pip install -r scripts/computed-route/requirements-ci.txt
       - name: Install route packages

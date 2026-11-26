@@ -6,7 +6,8 @@ sync-container-wrapping-blocks.py
 Detects every SGS block that is container-bearing (wraps children via InnerBlocks,
 layout orchestration, or structural parent), prints the roster with each block's KIND,
 validates it against the expected roster, and with --apply writes
-`block_composition.wraps_block` + `container_kind` to the framework database.
+`wraps_block` + `container_kind` for those blocks into scripts/data/block-composition.json (the one source of
+those columns) and then seeds the framework database from that file.
 It never edits block.json files. Container capabilities are opt-in per block at
 panel level: a block mounts the sgs/container editor panels it needs and declares the
 matching attributes.
@@ -61,7 +62,7 @@ block.json source files. Attribute lists come from each block's block.json.
 
 Usage:
   python sync-container-wrapping-blocks.py                           # dry-run (prints roster and validation, no DB writes)
-  python sync-container-wrapping-blocks.py --apply                   # write wraps_block + container_kind to DB
+  python sync-container-wrapping-blocks.py --apply                   # write wraps_block + container_kind into block-composition.json, then seed the DB from it
   python sync-container-wrapping-blocks.py --target-block sgs/hero   # limit detection to one block
 """
 from __future__ import annotations
@@ -72,6 +73,7 @@ import sys as _sys
 _sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), *([_os.pardir] * 0), "lib"))
 from framework_db import framework_db_path  # noqa: E402
 import argparse
+import json
 import json
 import os
 import re
@@ -106,6 +108,29 @@ def find_db() -> Path:
         if p.exists() and p.stat().st_size > 0:
             return p
     raise SystemExit(f"No populated sgs-framework.db found. Tried: {DB_CANDIDATES}")
+
+
+BLOCK_COMPOSITION_FILE = SCRIPT_DIR / "data" / "block-composition.json"
+
+
+def apply_to_seed_file(container_bearing, seed_file: Path = BLOCK_COMPOSITION_FILE):
+    """Set wraps_block='sgs/container' and the detected container_kind for each roster block in block-composition.json.
+
+    `container_bearing` is the roster, (slug, kind, ...) tuples. Returns (new file text, slugs with no row in the file); the
+    file is not written here. Rows of other blocks and the file's header keys are kept as they are.
+    """
+    payload = json.loads(seed_file.read_text(encoding="utf-8"))
+    cols = payload["__columns"]
+    wraps, kind_at, slug_at = cols.index("wraps_block"), cols.index("container_kind"), cols.index("block_slug")
+    by_slug = {row[slug_at]: row for row in payload["rows"]}
+    missing: List[str] = []
+    for slug, kind, *_ in container_bearing:
+        row = by_slug.get(slug)
+        if row is None:
+            missing.append(slug)
+            continue
+        row[wraps], row[kind_at] = "sgs/container", kind
+    return json.dumps(payload, indent=2, ensure_ascii=False) + "\n", missing
 
 
 # ---------------------------------------------------------------------------
@@ -579,39 +604,29 @@ def main() -> int:
             conn.close()
             return 1
 
-        # Fix 1(a): ensure container_kind column exists before writing
-        ensure_container_kind_column(conn)
-
-        # Fix 1(b): per-block rowcount tracking — fail-loud on missing rows
-        missing_rows: List[str] = []
-        for slug, kind, _ in container_bearing:
-            cur.execute(
-                "UPDATE block_composition SET wraps_block = 'sgs/container', container_kind = ? "
-                "WHERE block_slug = ?",
-                (kind, slug),
-            )
-            if cur.rowcount == 0:
-                missing_rows.append(slug)
-
+        # The file is the one source of these columns (dbschema/seed_reference_data.py seeds the table from it, and a
+        # seed would overwrite a DB-only write): write the file, then seed the DB from it.
+        text, missing_rows = apply_to_seed_file(container_bearing)
         if missing_rows:
             print(
-                f"\n[APPLY ERROR] {len(missing_rows)} roster block(s) have NO row in block_composition "
+                f"\n[APPLY ERROR] {len(missing_rows)} roster block(s) have NO row in block-composition.json "
                 f"and were NOT written:\n  " + "\n  ".join(missing_rows),
                 file=sys.stderr,
             )
             print(
-                "These roster blocks have NO row in block_composition. "
-                "Run the canonical /sgs-update "
-                "to reconcile block_composition rows first, "
+                "Add each block's row to scripts/data/block-composition.json (composition_role is seed data), "
                 "then re-run --apply.",
                 file=sys.stderr,
             )
-            conn.rollback()
             conn.close()
             return 1
-
+        BLOCK_COMPOSITION_FILE.write_text(text, encoding="utf-8")
+        ensure_container_kind_column(conn)
         conn.commit()
-        print(f"DB: wrote wraps_block + container_kind for {len(container_bearing)} rows")
+        sys.path.insert(0, str(SCRIPT_DIR / "dbschema"))
+        import seed_reference_data  # noqa: PLC0415
+        seed_reference_data._seed_block_composition(conn)
+        print(f"File: wrote wraps_block + container_kind for {len(container_bearing)} rows to {BLOCK_COMPOSITION_FILE.name}; DB seeded from it")
     else:
         print(f"DRY-RUN: {len(container_bearing)} rows would be written (wraps_block + container_kind) — re-run with --apply to write")
 

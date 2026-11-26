@@ -136,9 +136,9 @@ Three 0-byte `sgs-framework.db` stubs exist on disk (repo root, `plugins/sgs-blo
 
 **`block_composition`**
 
-- `container_kind`: The D294 pattern selector, read by the db-consistency tier-composition checks. NULL means never-written, NOT not-container-bearing — the writer (sync-container-wrapping-blocks.py::main) only ever SETS and has no statement clearing back to NULL, so a block that stops qualifying keeps its old value permanently. An earlier version of this cell claimed it disagrees with render.php in 14 of 58 blocks — that used the predicate content-kind-must-not-call-the-wrapper, but D294 says content-kind MAY render block-private. A permission read as an obligation; the figure was wrong.
+- `container_kind`: The D294 pattern selector, read by the db-consistency tier-composition checks. NULL means never-written, NOT not-container-bearing — the writer (sync-container-wrapping-blocks.py --apply, which sets the value in `scripts/data/block-composition.json` and seeds the table from it) only ever SETS and has no statement clearing back to NULL, so a block that stops qualifying keeps its old value permanently. An earlier version of this cell claimed it disagrees with render.php in 14 of 58 blocks — that used the predicate content-kind-must-not-call-the-wrapper, but D294 says content-kind MAY render block-private. A permission read as an obligation; the figure was wrong.
 - `composition_role`: The block's structural shape. See the container_kind warning — the two columns disagree.
-- `wraps_block`: NOT A MEASUREMENT. The value sgs/container is a hardcoded string literal inside the writer SQL (sync-container-wrapping-blocks.py::main), asserted for every roster member regardless of truth — 14 of the 38 make no real SGS_Container_Wrapper call, so the column is false for ~37% of its rows. Any query that counts or ranks `wraps_block` values asks a self-fulfilling question about a constant. Same trap shape as blocks.status and derived_selector. Verified 2026-08-24 (D762).
+- `wraps_block`: NOT A MEASUREMENT. The value sgs/container is a hardcoded string literal in the writer (sync-container-wrapping-blocks.py::apply_to_seed_file), asserted for every roster member regardless of truth — 14 of the 38 make no real SGS_Container_Wrapper call, so the column is false for ~37% of its rows. Any query that counts or ranks `wraps_block` values asks a self-fulfilling question about a constant. Same trap shape as blocks.status and derived_selector. Verified 2026-08-24 (D762).
 
 **`property_suffixes`**
 
@@ -490,11 +490,11 @@ python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client eye-care-ward-
 
 ### Container roster — container-wrapping blocks
 
-`plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py` detects which blocks wrap children via InnerBlocks (the "wraps children" model, a validated structural signal) and, with `--apply`, writes `wraps_block` + `container_kind` into `block_composition`. A dry run prints the roster and `[VALIDATION PASS]`/`[VALIDATION FAIL]`.
+`plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py` detects which blocks wrap children via InnerBlocks (the "wraps children" model, a validated structural signal) and, with `--apply`, writes `wraps_block` + `container_kind` for those blocks into `scripts/data/block-composition.json` (the one source of those columns) and then seeds `block_composition` from it, so the next reseed keeps them. A dry run prints the roster and `[VALIDATION PASS]`/`[VALIDATION FAIL]`.
 
 ```bash
 python plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py
-# --apply to write detected wraps_block + container_kind values into block_composition
+# --apply to write detected wraps_block + container_kind values into scripts/data/block-composition.json and seed block_composition from it
 ```
 
 **Roster size is DB-authoritative — query `/sgs-db`, do not cache a count.** Re-run via `/sgs-update` Stage (auto) or manually whenever block.json `supports.sgs.containerKind` changes.
