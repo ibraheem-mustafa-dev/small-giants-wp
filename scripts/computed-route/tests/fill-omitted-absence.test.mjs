@@ -52,5 +52,5 @@ test( 'negative control: an absence outside the omitted parts, and a drawn part 
 test( 'MUST FAIL: Fill gives the presence decisions the evidence without the omitted parts\' absences', () => {
 	const src = fs.readFileSync( new URL( '../lib/fill-resolve.mjs', import.meta.url ), 'utf8' );
 	assert.match( src, /const evidence = st\.db \? withoutOmittedAbsences\( drawn, absentByDefault\( st, rec\.name, cal, blockSchema\( rec\.name \) \|\| \{\}, node\.attributes \|\| \{\} \) \) : drawn;/ );
-	assert.match( src, /take\( presenceDecisions\( \{ calibration: cal, schema: blockSchema\( rec\.name \), attributes: node\.attributes \|\| \{\}, evidence/ );
+	assert.match( src, /take\( presenceDecisions\( \{ calibration: cal, schema: blockSchema\( rec\.name \), attributes: \{ \.\.\.owned, \.\.\.\( node\.attributes \|\| \{\} \) \}, evidence \} \) \)/ );
 } );
