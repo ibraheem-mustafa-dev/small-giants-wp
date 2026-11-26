@@ -66,7 +66,8 @@
 	transition: background-color var(--wp--custom--transition--fast, 0.15s ease);
 }
 
-.sgs-dark-mode-toggle:hover {
+.sgs-dark-mode-toggle.sgs-pressed,
+:where(:root:not(.sgs-touch-input)) .sgs-dark-mode-toggle:hover {
 	background-color: var(--wp--preset--color--surface-alt);
 }
 

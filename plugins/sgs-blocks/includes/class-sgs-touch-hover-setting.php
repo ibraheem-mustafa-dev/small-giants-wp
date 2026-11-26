@@ -1,15 +1,17 @@
 <?php
 /**
- * SGS Touch Hover — the site-wide "Hover effects on touch screens" setting.
+ * SGS Touch Hover — the site-wide "Hover effects on touch screens" setting (Spec 38A FR-38A-17).
  *
  * Appearance → Customise → SGS Interaction → "Hover effects on touch screens":
- *   - "Show on tap" (default): a tap on a touch screen shows the hover look (colours and motion) and tapping
- *     elsewhere clears it, the browser's own sticky-hover behaviour.
- *   - "Desktop only": hover looks stay off while the page is being touched.
+ *   - "Show while pressed" (`press`, the default, nothing stored): a touch shows the hover look at once, it stays while
+ *     the finger is on the element and ends when the finger lifts, slides off or starts a scroll.
+ *   - "Show on tap" (`tap`): the browser's own sticky hover; a tap shows the look until the visitor taps elsewhere.
+ *   - "Off on touch screens" (`desktop`): no hover look while the page is touched.
  *
- * The choice is printed as `data-sgs-touch-hover="desktop"` on `<html>` (nothing is printed for the default).
- * `assets/js/touch-input.js` reads it and sets `.sgs-touch-input` on `<html>` only for "Desktop only"; every hover rule
- * is guarded by `:where(:root:not(.sgs-touch-input))` (includes/helpers-hover-state.php).
+ * The choice is printed as `data-sgs-touch-hover="<mode>"` on `<html>` for the two overrides (nothing for the default).
+ * `assets/js/touch-input.js` reads it: the default sets `.sgs-touch-input` on `<html>` and `.sgs-pressed` on the pressed
+ * chain, "Off on touch screens" sets only `.sgs-touch-input`, "Show on tap" sets neither. Every hover rule carries a
+ * guarded mouse half and a pressed touch half (includes/helpers-hover-state.php, scripts/hover-guard/transform.js).
  *
  * @package SGS\Blocks
  */
@@ -25,9 +27,10 @@ defined( 'ABSPATH' ) || exit;
  */
 final class Sgs_Touch_Hover_Setting {
 
-	const OPTION_KEY   = 'sgs_touch_hover';
-	const SHOW_ON_TAP  = 'tap';
-	const DESKTOP_ONLY = 'desktop';
+	const OPTION_KEY         = 'sgs_touch_hover';
+	const SHOW_WHILE_PRESSED = 'press';
+	const SHOW_ON_TAP        = 'tap';
+	const DESKTOP_ONLY       = 'desktop';
 
 	/**
 	 * Wire the Customiser registration and the `<html>` attribute.
@@ -57,7 +60,7 @@ final class Sgs_Touch_Hover_Setting {
 			self::OPTION_KEY,
 			array(
 				'type'              => 'option',
-				'default'           => self::SHOW_ON_TAP,
+				'default'           => self::SHOW_WHILE_PRESSED,
 				'capability'        => 'edit_theme_options',
 				'sanitize_callback' => array( __CLASS__, 'sanitise_mode' ),
 				'transport'         => 'refresh',
@@ -67,38 +70,40 @@ final class Sgs_Touch_Hover_Setting {
 			self::OPTION_KEY,
 			array(
 				'label'       => \__( 'Hover effects on touch screens', 'sgs-blocks' ),
-				'description' => \__( 'Show on tap: tapping an item shows its hover colours and motion until the visitor taps elsewhere. Desktop only: hover effects never show on touch.', 'sgs-blocks' ),
+				'description' => \__( 'Show while pressed: touching an item shows its hover look until the finger lifts, slides off or scrolls. Show on tap: the look stays until the visitor taps elsewhere. Off on touch screens: hover looks never show on touch.', 'sgs-blocks' ),
 				'section'     => 'sgs_interaction',
 				'type'        => 'select',
 				'choices'     => array(
-					self::SHOW_ON_TAP  => \__( 'Show on tap', 'sgs-blocks' ),
-					self::DESKTOP_ONLY => \__( 'Desktop only', 'sgs-blocks' ),
+					self::SHOW_WHILE_PRESSED => \__( 'Show while pressed', 'sgs-blocks' ),
+					self::SHOW_ON_TAP        => \__( 'Show on tap', 'sgs-blocks' ),
+					self::DESKTOP_ONLY       => \__( 'Off on touch screens', 'sgs-blocks' ),
 				),
 			)
 		);
 	}
 
 	/**
-	 * Only the two known modes are valid; anything else falls back to the default.
+	 * Only the three known modes are valid; anything else falls back to the default.
 	 *
 	 * @param mixed $value Submitted value.
 	 * @return string
 	 */
 	public static function sanitise_mode( $value ): string {
-		return self::DESKTOP_ONLY === $value ? self::DESKTOP_ONLY : self::SHOW_ON_TAP;
+		return \in_array( $value, array( self::SHOW_ON_TAP, self::DESKTOP_ONLY ), true ) ? (string) $value : self::SHOW_WHILE_PRESSED;
 	}
 
 	/**
-	 * Print `data-sgs-touch-hover="desktop"` on `<html>` when the site chose "Desktop only".
+	 * Print `data-sgs-touch-hover="<mode>"` on `<html>` when the site chose an override.
 	 *
 	 * @param string $output The `<html>` attributes built so far.
 	 * @return string
 	 */
 	public static function filter_html_attributes( $output ): string {
 		$output = (string) $output;
-		if ( self::DESKTOP_ONLY !== self::sanitise_mode( \get_option( self::OPTION_KEY, self::SHOW_ON_TAP ) ) ) {
+		$mode   = self::sanitise_mode( \get_option( self::OPTION_KEY, self::SHOW_WHILE_PRESSED ) );
+		if ( self::SHOW_WHILE_PRESSED === $mode ) {
 			return $output;
 		}
-		return $output . ' data-sgs-touch-hover="' . \esc_attr( self::DESKTOP_ONLY ) . '"';
+		return $output . ' data-sgs-touch-hover="' . \esc_attr( $mode ) . '"';
 	}
 }

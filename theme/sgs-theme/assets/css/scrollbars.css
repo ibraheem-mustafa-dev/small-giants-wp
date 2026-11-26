@@ -131,7 +131,8 @@
 	pointer-events: auto;
 }
 
-:where(.sgs-overlay-scroll__thumb:hover, .sgs-overlay-scroll__thumb.is-dragging)::before {
+:where(.sgs-overlay-scroll__thumb.sgs-pressed, .sgs-overlay-scroll__thumb.is-dragging)::before,
+:where(:root:not(.sgs-touch-input)) :where(.sgs-overlay-scroll__thumb:hover, .sgs-overlay-scroll__thumb.is-dragging)::before {
 	width: calc(var(--sgs-overlay-scroll-width, 4px) + 2px);
 }
 

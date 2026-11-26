@@ -663,9 +663,13 @@ require_once SGS_BLOCKS_PATH . 'includes/class-sgs-floating-ui-renderer.php';
 Sgs_Floating_UI_Customiser::register();
 Sgs_Floating_UI_Renderer::register();
 
-// SGS Touch Hover — the site-wide "Hover effects on touch screens" setting (Show on tap / Desktop only).
+// SGS Touch Hover — the site-wide "Hover effects on touch screens" setting (Show while pressed, the default / Show on
+// tap / Off on touch screens), and the pass that puts WordPress's inline CSS (global styles, SGS handles' inline
+// additions) under the same hover-on-touch contract.
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-touch-hover-setting.php';
 Sgs_Touch_Hover_Setting::register();
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-touch-hover-styles.php';
+Touch_Hover_Styles::register();
 
 // SGS AI Connector — wrapper around WP 7.0 native AI Connectors API.
 // Infrastructure-only: no AI calls. Safe-fail when no provider plugin is active.

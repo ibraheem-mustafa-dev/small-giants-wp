@@ -187,12 +187,12 @@
  * so a touch device cannot strand the sweep half-finished while the keyboard
  * path stays reachable.
  *
- * :active is the touch press. On a site set to "Desktop only" for hover on
- * touch screens the guard switches the `:hover` member off while the page is
- * touched, so a finger on the credit would show nothing. `:active` stays
- * outside the guard: the look shows while the finger is down and clears when
- * it lifts, so nothing is left stranded (the same press feedback sgs/button's
- * `active-transform` gives, see assets/js/touch-input.js). */
+ * :active is the press. By default the build gives the `:hover` member a
+ * `.sgs-pressed` touch half (Spec 38A FR-38A-17), so a finger shows the look
+ * already; on a site set to "Off on touch screens" no hover look shows on
+ * touch, and `:active` (with its own pressed twin) keeps this credit's press
+ * feedback: the look shows while the finger is down and clears when it lifts,
+ * as sgs/button's `active-transform` does (assets/js/touch-input.js). */
 .sgs-business-attribution .sgs-business-info__link:hover,
 .sgs-business-attribution .sgs-business-info__link:active,
 .sgs-business-attribution .sgs-business-info__link:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) {

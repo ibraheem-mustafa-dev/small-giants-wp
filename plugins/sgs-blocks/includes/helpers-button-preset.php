@@ -154,9 +154,10 @@ if ( ! function_exists( 'sgs_button_preset_css' ) ) {
 				. ( sgs_button_preset_has_role( $preset, 'hover-shadow' ) ? 'box-shadow:var(' . $v . 'hover-shadow);' : '' )
 			: '';
 		if ( '' !== $hover_colours ) {
-			$css .= $hover . '{' . $hover_colours . '}';
+			$css .= sgs_hover_guarded_rule( $hover, $hover_colours );
 		}
-		// The lift is motion: the touch guard keeps it off touch screens when the site chose "Desktop only".
+		// The colours and the lift follow the hover-on-touch contract (Spec 38A FR-38A-17): a mouse hover, or a finger on
+		// the button.
 		$lift = 'transform:var(' . $v . 'hover-lift,translateY(-3px));scale:var(' . $v . 'hover-scale,none);rotate:var(' . $v . 'hover-rotate,none);';
 		$css .= function_exists( 'sgs_hover_guarded_rule' ) ? sgs_hover_guarded_rule( $hover, $lift ) : $hover . '{' . $lift . '}';
 		$css .= '@media (prefers-reduced-motion: reduce){' . $selector . '{transition:none;}' . $hover . '{transform:none;scale:none;rotate:none;}}';

@@ -136,9 +136,9 @@ if ( ! function_exists( 'sgs_header_ink_not_hover_rule' ) ) {
 	/**
 	 * A rule that applies to each selector except while it is hovered or keyboard-focused.
 	 *
-	 * The hover exclusion sits behind the shared hover guard (`sgs_hover_media_wrap()` plus
-	 * `SGS_HOVER_NOT_TOUCH`); while the site's "Desktop only" touch setting has `.sgs-touch-input` on the root,
-	 * the focus-only exclusion applies instead, so the rule never goes missing.
+	 * The hover exclusion goes through the hover-on-touch contract (`sgs_hover_media_wrap()` plus
+	 * `SGS_HOVER_NOT_TOUCH`): under a mouse it is `:not(:hover)`, and while the page is touched
+	 * (`.sgs-touch-input`) it is `:not(.sgs-pressed)`, so a pressed item leaves the rule and the rule never goes missing.
 	 *
 	 * @param string $selectors Comma-separated base selectors.
 	 * @param string $block     Declaration block including braces.
@@ -147,13 +147,10 @@ if ( ! function_exists( 'sgs_header_ink_not_hover_rule' ) ) {
 	function sgs_header_ink_not_hover_rule( string $selectors, string $block ): string {
 		$parts = array_map( 'trim', explode( ',', $selectors ) );
 		$hover = array();
-		$touch = array();
 		foreach ( $parts as $part ) {
 			$hover[] = SGS_HOVER_NOT_TOUCH . ' ' . $part . ':not(:hover):not(:focus-visible)';
-			$touch[] = ':where(:root.sgs-touch-input) ' . $part . ':not(:focus-visible)';
 		}
-		return sgs_hover_media_wrap( implode( ',', $hover ) . $block )
-			. implode( ',', $touch ) . $block;
+		return sgs_hover_media_wrap( implode( ',', $hover ) . $block );
 	}
 }
 

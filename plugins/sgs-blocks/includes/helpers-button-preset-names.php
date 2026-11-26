@@ -23,6 +23,7 @@ defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/helpers-global-settings.php';
 require_once __DIR__ . '/helpers-shadow-hover.php';
+require_once __DIR__ . '/helpers-hover-state.php';
 
 /** The framework's starter preset names: the rules `src/blocks/button/style.css` ships. The one list of them in PHP. */
 const SGS_BUTTON_STARTER_PRESETS = array( 'primary', 'secondary', 'outline' );
@@ -198,7 +199,7 @@ if ( ! function_exists( 'sgs_button_named_preset_css' ) ) {
 				$fallback = sgs_button_preset_has_role( $slug, 'shadow' ) ? 'var(' . $v . 'shadow)' : 'none';
 				// sgs-shadow-fallback: the hover token is only read where the snapshot sets it; the resting shadow is its fallback.
 				$hover = sgs_focus_under_decls( array( 'box-shadow:var(' . $v . 'hover-shadow,' . $fallback . ')' ) );
-				$css  .= '.sgs-button.sgs-button--' . $slug . ':hover{' . implode( ';', $hover ) . ';}';
+				$css  .= sgs_hover_guarded_rule( '.sgs-button.sgs-button--' . $slug . ':hover', implode( ';', $hover ) . ';' );
 			}
 		}
 		return $css;
@@ -231,11 +232,12 @@ if ( ! function_exists( 'sgs_buybox_named_preset_css' ) ) {
 				. 'background:var(' . $v . 'background,var(--wp--preset--color--primary));'
 				. 'color:var(' . $v . 'text,var(--wp--preset--color--text-inverse,#fff));'
 				. '}'
-				. $sel . ':hover:not([disabled]){'
-				. 'background:var(' . $v . 'hover-background,var(--wp--preset--color--text));'
-				. 'border-color:var(' . $v . 'hover-border,var(--wp--preset--color--text));'
-				. 'color:var(' . $v . 'hover-text,var(--wp--preset--color--text-inverse,#fff));'
-				. '}';
+				. sgs_hover_guarded_rule(
+					$sel . ':hover:not([disabled])',
+					'background:var(' . $v . 'hover-background,var(--wp--preset--color--text));'
+					. 'border-color:var(' . $v . 'hover-border,var(--wp--preset--color--text));'
+					. 'color:var(' . $v . 'hover-text,var(--wp--preset--color--text-inverse,#fff));'
+				);
 		}
 		return $css;
 	}

@@ -1,7 +1,7 @@
 /**
  * The CSS a block's stylesheet ships as: the source text with the build's own postbuild rewrites applied, in the order
  * package.json's `postbuild` runs them over build/blocks: shadow-lift (scripts/shadow-lift: adds the hover lift of a
- * resting shadow), hover-guard (scripts/hover-guard: wraps motion-only :hover rules in a hover-capable media query)
+ * resting shadow), hover-guard (scripts/hover-guard: guards every :hover member against touch and adds its pressed twin)
  * and shadow-fallback (scripts/shadow-fallback: adds the forced-colours fallback of a shadow). The setting check reads
  * this, not the source, so its record holds what a visitor's page holds (diff.py::shipped_css).
  *

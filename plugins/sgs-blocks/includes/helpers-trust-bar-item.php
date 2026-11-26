@@ -20,6 +20,7 @@
  */
 
 defined( 'ABSPATH' ) || exit;
+require_once __DIR__ . '/helpers-hover-state.php';
 
 if ( ! defined( 'SGS_TRUST_BAR_DEFAULT_STROKE_WIDTH' ) ) {
 	// Today's hard-coded stroke width in style.css (`.sgs-trust-bar__circle svg`).
@@ -388,7 +389,7 @@ if ( ! function_exists( 'sgs_trust_bar_text_badge_css' ) ) {
 			$css .= $sel . '{' . implode( ';', $rest ) . ';}';
 		}
 		if ( $paint ) {
-			$css .= $sel . ':hover{' . implode( ';', $paint ) . ';}';
+			$css .= sgs_hover_guarded_rule( $sel . ':hover', implode( ';', $paint ) . ';' );
 		}
 
 		return $css;

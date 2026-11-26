@@ -1,0 +1,80 @@
+{
+	"_comment": "The hover-on-touch contract (Spec 38A FR-38A-17), one case per kind of rule. Both implementations must turn `in` into `out` (whitespace after commas and around newlines ignored): scripts/hover-guard/transform.js::transformCss (tests/js/touch-hover-transform.test.js) and includes/helpers-hover-state.php::sgs_touch_hover_css (tests/php/TouchHoverContractTest.php). Running either on `out` changes nothing.",
+	"cases": [
+		{
+			"name": "a block motion rule already guarded gains its pressed half",
+			"in": ":where(:root:not(.sgs-touch-input)) .sgs-card:hover{transform:translateY(-4px)}",
+			"out": ".sgs-card.sgs-pressed,:where(:root:not(.sgs-touch-input)) .sgs-card:hover{transform:translateY(-4px)}"
+		},
+		{
+			"name": "a block colour rule is guarded and gains its pressed half; its focus member stays put",
+			"in": ".sgs-modal__trigger--primary:hover,.sgs-modal__trigger--primary:focus-visible{background:var(--x)}",
+			"out": ".sgs-modal__trigger--primary.sgs-pressed,:where(:root:not(.sgs-touch-input)) .sgs-modal__trigger--primary:hover,.sgs-modal__trigger--primary:focus-visible{background:var(--x)}"
+		},
+		{
+			"name": "a theme link rule",
+			"in": ".sgs-link-list__items a:hover{color:var(--sgs-hover-accent)}",
+			"out": ".sgs-link-list__items a.sgs-pressed,:where(:root:not(.sgs-touch-input)) .sgs-link-list__items a:hover{color:var(--sgs-hover-accent)}"
+		},
+		{
+			"name": "a generated per-instance rule inside a width query",
+			"in": "@media (max-width:767px){.sgs-btn-ab12.sgs-button:hover{background-color:#112233}}",
+			"out": "@media (max-width:767px){.sgs-btn-ab12.sgs-button.sgs-pressed,:where(:root:not(.sgs-touch-input)) .sgs-btn-ab12.sgs-button:hover{background-color:#112233}}"
+		},
+		{
+			"name": "an ::after underline sweep",
+			"in": ".wp-block-navigation-item__content:hover::after{transform:scaleX(1)}",
+			"out": ".wp-block-navigation-item__content.sgs-pressed::after,:where(:root:not(.sgs-touch-input)) .wp-block-navigation-item__content:hover::after{transform:scaleX(1)}"
+		},
+		{
+			"name": "a motion Hover layer switch",
+			"in": "[data-sgs-mh=\"self\"]:hover{--sgs-mh-on:1}[data-sgs-hover-group]:hover{--sgs-mh-group-on:1}",
+			"out": "[data-sgs-mh=\"self\"].sgs-pressed,:where(:root:not(.sgs-touch-input)) [data-sgs-mh=\"self\"]:hover{--sgs-mh-on:1}[data-sgs-hover-group].sgs-pressed,:where(:root:not(.sgs-touch-input)) [data-sgs-hover-group]:hover{--sgs-mh-group-on:1}"
+		},
+		{
+			"name": "a card hover reaching a child, and a :has() hover",
+			"in": ".card:hover .title{color:red}.list:has(.item:hover) .item{opacity:.6}",
+			"out": ".card.sgs-pressed .title,:where(:root:not(.sgs-touch-input)) .card:hover .title{color:red}.list:has(.item.sgs-pressed) .item,:where(:root:not(.sgs-touch-input)) .list:has(.item:hover) .item{opacity:.6}"
+		},
+		{
+			"name": "a not-hovered rule keeps its touch half to touch input",
+			"in": ".h a:not(:hover):not(:focus-visible){color:#fff}",
+			"out": ":where(:root.sgs-touch-input) .h a:not(.sgs-pressed):not(:focus-visible),:where(:root:not(.sgs-touch-input)) .h a:not(:hover):not(:focus-visible){color:#fff}"
+		},
+		{
+			"name": "hover and focus in one compound keep the focus alternative in the touch half",
+			"in": ":is(a,button).sgs-hover-underline-slide:is(:hover,:focus-visible){background-size:100% 1px}",
+			"out": ":is(a,button).sgs-hover-underline-slide:is(.sgs-pressed,:focus-visible),:where(:root:not(.sgs-touch-input)) :is(a,button).sgs-hover-underline-slide:is(:hover,:focus-visible){background-size:100% 1px}"
+		},
+		{
+			"name": "a press look gains its pressed twin; a not-pressed rule does not",
+			"in": ".wp-block-button__link:active{transform:scale(.97)}.q:not(:active){opacity:1}",
+			"out": ".wp-block-button__link:active,.wp-block-button__link.sgs-pressed{transform:scale(.97)}.q:not(:active){opacity:1}"
+		},
+		{
+			"name": "a scrollbar pseudo-element hover stays as written",
+			"in": "::-webkit-scrollbar-thumb:hover{background:red}",
+			"out": "::-webkit-scrollbar-thumb:hover{background:red}"
+		},
+		{
+			"name": "an author's mouse-only media query gets its pressed half before it",
+			"in": "@media (hover:hover){.sgs-info-box.sgs-has-hover:hover{box-shadow:var(--s)}}",
+			"out": ".sgs-info-box.sgs-has-hover.sgs-pressed{box-shadow:var(--s)}@media (hover:hover){.sgs-info-box.sgs-has-hover:hover{box-shadow:var(--s)}}"
+		},
+		{
+			"name": "a member that starts at the root (WordPress's global styles) takes the guard on the root itself",
+			"in": ":root :where(a:where(:not(.wp-element-button)):hover){color:var(--x)}",
+			"out": ":root :where(a:where(:not(.wp-element-button)).sgs-pressed),:root:where(:not(.sgs-touch-input)) :where(a:where(:not(.wp-element-button)):hover){color:var(--x)}"
+		},
+		{
+			"name": "a :hover inside a quoted attribute value is text, not a state",
+			"in": "a[title=\":hover\"]:hover{color:red}",
+			"out": "a[title=\":hover\"].sgs-pressed,:where(:root:not(.sgs-touch-input)) a[title=\":hover\"]:hover{color:red}"
+		},
+		{
+			"name": "rules without :hover or :active, and keyframes, are untouched",
+			"in": ".p{color:green}@keyframes k{from{opacity:0}to{opacity:1}}",
+			"out": ".p{color:green}@keyframes k{from{opacity:0}to{opacity:1}}"
+		}
+	]
+}

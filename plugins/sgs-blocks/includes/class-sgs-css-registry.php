@@ -44,6 +44,7 @@ namespace SGS\Blocks;
 defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/media/lead-image-preload.php';
+require_once __DIR__ . '/helpers-hover-state.php';
 
 /**
  * Per-request buffer of consolidated scoped CSS, keyed by a content hash so
@@ -245,8 +246,9 @@ function sgs_css_place( string $html ): string {
 	if ( empty( $GLOBALS['sgs_collected_css'] ) ) {
 		return $html;
 	}
-	// Insertion order = document order (D303 residual-last per block). Do NOT sort.
-	$css = \wp_strip_all_tags( \implode( '', $GLOBALS['sgs_collected_css'] ) );
+	// Insertion order = document order (D303 residual-last per block). Do NOT sort. Every hover rule leaves under the
+	// hover-on-touch contract (helpers-hover-state.php::sgs_touch_hover_css), whichever emitter printed it.
+	$css = \sgs_touch_hover_css( \wp_strip_all_tags( \implode( '', $GLOBALS['sgs_collected_css'] ) ) );
 	if ( '' === \trim( $css ) ) {
 		return $html;
 	}

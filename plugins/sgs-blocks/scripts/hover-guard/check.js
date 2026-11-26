@@ -2,28 +2,22 @@
 'use strict';
 
 /**
- * Build-failing checker. Three jobs (per the brief):
+ * Hover on touch screens: the detector (Spec 38A FR-38A-17). Four jobs:
  *
- *   (a) Fail if any `:hover` rule in the scanned CSS is left unguarded and
- *       motion-only, OR could not be classified with confidence
- *       (ambiguous hover/focus selector mix, or undecidable declarations).
- *   (b) Fail if any PHP emission helper under `includes/` builds a
- *       `:hover` selector without ever calling a guard function in the
- *       same function body — see php-hover-scan.php's own docblock for the
- *       exact method and its documented limitation.
- *   (c) Fail if a hover-carrying selector, built in one function, flows
- *       (traced ONE hop) into a registered shared CSS-emitting helper
- *       (`php-emitter-registry.json`) on a call path where that helper's
- *       own guarded branch is proven skipped — the cross-file case job (a)
- *       cannot see because the emitting function's own body carries no
- *       `:hover` literal at all. Also fails on an UNRESOLVED cross-file
- *       case (can't prove clean, can't prove broken) rather than silently
- *       passing it — see php-hover-scan.php's docblock for exactly what
- *       this can and cannot resolve.
+ *   (a) CSS: every `:hover` selector member in the built block stylesheets and the hand-written stylesheets
+ *       (sources.js) sits inside `@media (hover: hover)` and has its `.sgs-pressed` touch half in the same file
+ *       (transform.js::auditCss).
+ *   (b) PHP within-function: an emitter under `includes/` or a block's `render.php` that builds `:hover` calls a guard
+ *       function (php-hover-scan.php).
+ *   (c) PHP cross-file: a hover selector passed into a registered shared emitter on a path that skips its guard
+ *       (php-hover-scan.php, php-emitter-registry.json).
+ *   (d) Hand-rolled touch rules: no source outside the contract writes a `:where(:root.sgs-touch-input)` selector
+ *       (the contract writes the touch half itself).
  *
- * Never fabricates a PASS. If a target directory/file is missing, or the
- * PHP scan cannot run, this exits non-zero and prints NOT RUN rather than
- * silently reporting 0 findings.
+ *   node scripts/hover-guard/check.js [builtBlocksDir]   check; exits 1 on any finding or when a job cannot run
+ *   node scripts/hover-guard/check.js --survey [--repo <root>] [--built <dir>]   counts by owner, always exits 0
+ *
+ * Never fabricates a PASS: a missing directory, or a PHP scan that cannot run, exits non-zero and prints NOT RUN.
  *
  * @package SGS\Blocks
  */
@@ -31,24 +25,15 @@
 const fs = require( 'fs' );
 const path = require( 'path' );
 const { execFileSync } = require( 'child_process' );
-const { auditCss } = require( './audit.js' );
+const { auditCss } = require( './transform.js' );
+const { builtStylesheets, handWrittenStylesheets, PLUGIN_ROOT, REPO_ROOT } = require( './sources.js' );
 
-/** The block stylesheets the build ships and `run-transform.js` guards: `style-index.css` (the file block.json names, so the one WordPress serves) and the `style.css` copy postbuild writes from it; their RTL twins mirror them. */
-function findStyleCssFiles( baseDir ) {
-	const found = [];
-	if ( ! fs.existsSync( baseDir ) ) {
-		return found;
-	}
-	for ( const entry of fs.readdirSync( baseDir, { withFileTypes: true } ) ) {
-		const full = path.join( baseDir, entry.name );
-		if ( entry.isDirectory() ) {
-			found.push( ...findStyleCssFiles( full ) );
-		} else if ( 'style.css' === entry.name || 'style-index.css' === entry.name ) {
-			found.push( full );
-		}
-	}
-	return found;
-}
+/**
+ * Hand-rolled touch rules the contract now writes itself: a rule keyed on the touch class written by hand next to a
+ * guarded hover rule duplicates (and outranks) the generated touch half. Only transform.js and helpers-hover-state.php
+ * build `:where(:root.sgs-touch-input)` selectors.
+ */
+const HAND_ROLLED_TOKENS = [ ':where(:root.sgs-touch-input)' ];
 
 /** Default PHP files scanned for job (b). helpers-hover-state.php excluded — it is the definer. */
 function defaultPhpTargets( includesDir ) {
@@ -61,14 +46,7 @@ function defaultPhpTargets( includesDir ) {
 		.map( ( f ) => path.join( includesDir, f ) );
 }
 
-/**
- * Every block's own render.php — a SECOND PHP surface for job (b), added
- * 2026-09-03 (D934/D937 handoff). `defaultPhpTargets()` above only ever read
- * `includes/`, non-recursively, and never looked at `src/blocks/*\/render.php`
- * at all — measured, 20 of 31 block render.php files build a raw, unguarded
- * `:hover` rule. Same shape as `defaultPhpTargets()`: one directory read, one
- * filter, no recursion (each block owns exactly one render.php).
- */
+/** Every block's own render.php: the second PHP surface for job (b). */
 function defaultBlockRenderTargets( blocksDir ) {
 	if ( ! fs.existsSync( blocksDir ) ) {
 		return [];
@@ -86,50 +64,153 @@ function defaultBlockRenderTargets( blocksDir ) {
 	return targets;
 }
 
-function runCssCheck( cssDir ) {
-	if ( ! fs.existsSync( cssDir ) ) {
-		return { ranOk: false, reason: `directory does not exist: ${ cssDir }`, findings: [] };
-	}
-	const files = findStyleCssFiles( cssDir );
+/** Job (a) over a list of files. */
+function runCssCheck( files ) {
 	if ( 0 === files.length ) {
-		return { ranOk: false, reason: `no style.css files found under ${ cssDir } (run the postbuild steps: copy-built-styles.js, shadow-lift/run.js --build, hover-guard/run-transform.js)`, findings: [] };
+		return { ranOk: false, reason: 'no stylesheets found (build the plugin first: the postbuild writes build/blocks)', findings: [] };
 	}
-
 	const findings = [];
-	let totalHover = 0;
-	let colourSkipped = 0;
-	let textDecorationSkipped = 0;
-	let alreadyGuarded = 0;
-
+	let hoverMembers = 0;
 	for ( const file of files ) {
-		const css = fs.readFileSync( file, 'utf8' );
-		const result = auditCss( css, file );
+		const result = auditCss( fs.readFileSync( file, 'utf8' ), file );
+		hoverMembers += result.hoverMembers;
+		findings.push( ...result.findings.map( ( f ) => ( { file, ...f } ) ) );
+	}
+	return { ranOk: true, filesScanned: files.length, hoverMembers, findings };
+}
 
-		totalHover += result.totalHoverMembers;
-		colourSkipped += result.colourSkippedCount;
-		textDecorationSkipped += result.textDecorationSkippedCount;
-		alreadyGuarded += result.alreadyGuardedCount;
+/** Every source file job (d) reads: the plugin's includes, src, assets and bootstrap, and the theme. */
+function handRolledTargets( repoRoot ) {
+	const roots = [
+		path.join( repoRoot, 'plugins', 'sgs-blocks', 'includes' ),
+		path.join( repoRoot, 'plugins', 'sgs-blocks', 'src' ),
+		path.join( repoRoot, 'plugins', 'sgs-blocks', 'assets' ),
+		path.join( repoRoot, 'plugins', 'sgs-blocks', 'sgs-blocks.php' ),
+		path.join( repoRoot, 'theme', 'sgs-theme' ),
+	];
+	const out = [];
+	const walk = ( p ) => {
+		if ( ! fs.existsSync( p ) ) {
+			return;
+		}
+		if ( fs.statSync( p ).isFile() ) {
+			if ( /\.(php|js|css|json)$/.test( p ) ) {
+				out.push( p );
+			}
+			return;
+		}
+		for ( const e of fs.readdirSync( p ) ) {
+			if ( 'node_modules' !== e && 'vendor' !== e && 'build' !== e ) {
+				walk( path.join( p, e ) );
+			}
+		}
+	};
+	roots.forEach( walk );
+	return out;
+}
 
-		for ( const f of result.unguardedMotion ) {
-			findings.push( { file, ...f } );
+/** Job (d): every hand-rolled touch rule outside the contract. */
+function runHandRolledCheck( repoRoot ) {
+	const findings = [];
+	for ( const file of handRolledTargets( repoRoot ) ) {
+		if ( 'helpers-hover-state.php' === path.basename( file ) ) {
+			continue; // The contract's definer writes the touch-only guard.
 		}
-		for ( const f of result.ambiguous ) {
-			findings.push( { file, ...f } );
-		}
-		for ( const f of result.unclassified ) {
-			findings.push( { file, ...f } );
+		fs.readFileSync( file, 'utf8' ).split( '\n' ).forEach( ( line, i ) => {
+			for ( const token of HAND_ROLLED_TOKENS ) {
+				if ( line.includes( token ) ) {
+					findings.push( { file, line: i + 1, token } );
+				}
+			}
+		} );
+	}
+	return findings;
+}
+
+/** Every .php file under a directory. */
+function walkPhp( dir ) {
+	const out = [];
+	if ( ! fs.existsSync( dir ) ) {
+		return out;
+	}
+	for ( const e of fs.readdirSync( dir, { withFileTypes: true } ) ) {
+		const full = path.join( dir, e.name );
+		if ( e.isDirectory() && 'vendor' !== e.name && 'node_modules' !== e.name ) {
+			out.push( ...walkPhp( full ) );
+		} else if ( e.isFile() && e.name.endsWith( '.php' ) ) {
+			out.push( full );
 		}
 	}
+	return out;
+}
 
-	return {
-		ranOk: true,
-		filesScanned: files.length,
-		totalHover,
-		colourSkipped,
-		textDecorationSkipped,
-		alreadyGuarded,
-		findings,
+/**
+ * Survey: hover selector members by owner, and how many follow the contract.
+ *
+ * @param {string} repoRoot
+ * @param {string} builtDir
+ */
+function survey( repoRoot, builtDir ) {
+	const rows = [];
+	const addCss = ( owner, files ) => {
+		let members = 0;
+		let following = 0;
+		let active = 0;
+		let activeFollowing = 0;
+		for ( const file of files ) {
+			const audit = auditCss( fs.readFileSync( file, 'utf8' ), file );
+			members += audit.hoverMembers;
+			active += audit.activeMembers;
+			const pressFindings = audit.findings.filter( ( f ) => 'missing-press-half' === f.kind ).length;
+			following += audit.hoverMembers - ( audit.findings.length - pressFindings );
+			activeFollowing += audit.activeMembers - pressFindings;
+		}
+		rows.push( { owner, files: files.filter( ( f ) => /:(hover|active)/.test( fs.readFileSync( f, 'utf8' ) ) ).length, members, following } );
+		rows.push( { owner: `${ owner }, :active members`, files: '', members: active, following: activeFollowing } );
 	};
+	addCss( 'plugin block stylesheets (build/blocks/*/style-index.css)', builtStylesheets( builtDir ).filter( ( f ) => /style-index\.css$/.test( f ) ) );
+	const hand = handWrittenStylesheets( repoRoot );
+	addCss( 'plugin hand-written stylesheets (assets/css)', hand.filter( ( f ) => f.includes( 'sgs-blocks' ) ) );
+	addCss( 'theme hand-written stylesheets (assets/css, style.css)', hand.filter( ( f ) => f.includes( 'sgs-theme' ) ) );
+
+	// Generated CSS: `:hover` literals in PHP and the editor's JS emitters, by owner.
+	const plugin = path.join( repoRoot, 'plugins', 'sgs-blocks' );
+	const groups = {
+		'plugin includes/ (generated per-block and per-instance CSS)': walkPhp( path.join( plugin, 'includes' ) ).filter( ( f ) => ! f.includes( `${ path.sep }motion${ path.sep }` ) && ! f.endsWith( 'helpers-hover-state.php' ) ),
+		'plugin includes/motion/ (motion Hover layers)': walkPhp( path.join( plugin, 'includes', 'motion' ) ),
+		'block render.php (per-instance CSS)': defaultBlockRenderTargets( path.join( plugin, 'src', 'blocks' ) ),
+		'theme PHP (inline CSS)': walkPhp( path.join( repoRoot, 'theme', 'sgs-theme' ) ),
+	};
+	for ( const [ owner, files ] of Object.entries( groups ) ) {
+		let literals = 0;
+		let filesWith = 0;
+		for ( const f of files ) {
+			const n = ( fs.readFileSync( f, 'utf8' ).match( /:hover(?![\w-])/g ) || [] ).length;
+			literals += n;
+			filesWith += n ? 1 : 0;
+		}
+		rows.push( { owner: `${ owner }: :hover literals`, files: filesWith, members: literals, following: null } );
+	}
+	const json = [ path.join( repoRoot, 'theme', 'sgs-theme', 'theme.json' ) ];
+	const sitesDir = path.join( repoRoot, 'sites' );
+	if ( fs.existsSync( sitesDir ) ) {
+		json.push( ...fs.readdirSync( sitesDir ).map( ( s ) => path.join( sitesDir, s, 'theme-snapshot.json' ) ) );
+	}
+	let jsonHover = 0;
+	let jsonFiles = 0;
+	for ( const f of json.filter( ( p ) => fs.existsSync( p ) ) ) {
+		const n = ( fs.readFileSync( f, 'utf8' ).match( /":hover"/g ) || [] ).length;
+		jsonHover += n;
+		jsonFiles += n ? 1 : 0;
+	}
+	rows.push( { owner: 'theme.json and site snapshots (":hover" keys, printed by WordPress as global-styles)', files: jsonFiles, members: jsonHover, following: null } );
+	const retired = runHandRolledCheck( repoRoot );
+	rows.push( { owner: 'hand-rolled touch rules in sources', files: new Set( retired.map( ( r ) => r.file ) ).size, members: retired.length, following: null } );
+
+	console.log( 'owner | files with :hover | :hover members (or literals) | following the contract' );
+	for ( const r of rows ) {
+		console.log( `${ r.owner } | ${ r.files } | ${ r.members } | ${ null === r.following ? 'n/a' : r.following }` );
+	}
 }
 
 function runPhpCheck( includesDir, blocksDir ) {
@@ -178,34 +259,51 @@ function runPhpCheck( includesDir, blocksDir ) {
 }
 
 function main() {
-	const cssDirArg = process.argv[ 2 ];
-	const cssDir = cssDirArg
-		? path.resolve( cssDirArg )
-		: path.resolve( __dirname, '..', '..', 'build', 'blocks' );
-	const includesDir = path.resolve( __dirname, '..', '..', 'includes' );
-	const blocksDir = path.resolve( __dirname, '..', '..', 'src', 'blocks' );
+	const args = process.argv.slice( 2 );
+	const flag = ( name ) => {
+		const i = args.indexOf( name );
+		return -1 === i ? null : args[ i + 1 ];
+	};
+	if ( args.includes( '--survey' ) ) {
+		const repo = path.resolve( flag( '--repo' ) || REPO_ROOT );
+		const built = path.resolve( flag( '--built' ) || path.join( repo, 'plugins', 'sgs-blocks', 'build', 'blocks' ) );
+		survey( repo, built );
+		process.exit( 0 );
+	}
 
-	console.log( '[hover-guard check] CSS surface:', cssDir );
+	const cssDir = args[ 0 ] ? path.resolve( args[ 0 ] ) : path.join( PLUGIN_ROOT, 'build', 'blocks' );
+	const includesDir = path.join( PLUGIN_ROOT, 'includes' );
+	const blocksDir = path.join( PLUGIN_ROOT, 'src', 'blocks' );
+
+	console.log( '[hover-guard check] CSS surface:', cssDir, 'and the hand-written stylesheets' );
 	console.log( '[hover-guard check] PHP surface:', includesDir, 'and', blocksDir );
 
-	const cssResult = runCssCheck( cssDir );
+	const built = builtStylesheets( cssDir );
+	const cssResult = runCssCheck( [ ...built, ...handWrittenStylesheets() ] );
 	const phpResult = runPhpCheck( includesDir, blocksDir );
+	const retired = runHandRolledCheck( REPO_ROOT );
 
 	let exitCode = 0;
 
-	if ( ! cssResult.ranOk ) {
-		console.error( `[hover-guard check] CSS check NOT RUN — ${ cssResult.reason }` );
+	if ( ! cssResult.ranOk || 0 === built.length ) {
+		console.error( `[hover-guard check] CSS check NOT RUN — ${ cssResult.reason || 'no built block stylesheets under ' + cssDir }` );
 		exitCode = 1;
 	} else {
-		console.log(
-			`[hover-guard check] CSS: scanned ${ cssResult.filesScanned } files, ${ cssResult.totalHover } hover members total, ${ cssResult.alreadyGuarded } already guarded, ${ cssResult.colourSkipped } colour (out of scope), ${ cssResult.textDecorationSkipped } text-decoration-only (out of scope), ${ cssResult.findings.length } findings.`
-		);
+		console.log( `[hover-guard check] CSS: scanned ${ cssResult.filesScanned } files, ${ cssResult.hoverMembers } hover members, ${ cssResult.findings.length } findings.` );
 		for ( const f of cssResult.findings ) {
 			console.error( `  [css] ${ f.file }:${ f.line } [${ f.kind }] ${ f.selector }` );
 		}
 		if ( cssResult.findings.length > 0 ) {
 			exitCode = 1;
 		}
+	}
+
+	console.log( `[hover-guard check] hand-rolled touch rules: ${ retired.length } findings.` );
+	for ( const f of retired ) {
+		console.error( `  [hand-rolled] ${ f.file }:${ f.line } writes ${ f.token }` );
+	}
+	if ( retired.length > 0 ) {
+		exitCode = 1;
 	}
 
 	if ( ! phpResult.ranOk ) {
@@ -247,7 +345,7 @@ function main() {
 
 	if ( 0 === exitCode ) {
 		console.log(
-			'[hover-guard check] PASS — 0 unguarded motion hover rules, 0 unclassified rules, 0 unguarded PHP hover emitters (within-function or cross-file), 0 unresolved cross-file cases.'
+			'[hover-guard check] PASS — every hover member follows the touch contract, 0 unguarded PHP hover emitters (within-function or cross-file), 0 unresolved cross-file cases, 0 hand-rolled touch rules.'
 		);
 	} else {
 		console.error( '[hover-guard check] FAIL' );
@@ -256,4 +354,8 @@ function main() {
 	process.exit( exitCode );
 }
 
-main();
+if ( require.main === module ) {
+	main();
+}
+
+module.exports = { runCssCheck, runHandRolledCheck, HAND_ROLLED_TOKENS };

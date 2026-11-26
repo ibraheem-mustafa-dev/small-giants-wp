@@ -13,7 +13,8 @@
 		"forcePseudoState": "Measured on the route's Chromium (145.0.7632.6, 2026-10-20) on a link, a checkbox and a details element, one custom property per candidate: forced = hover, active, focus, focus-visible, focus-within, target, target-current, checked, disabled, enabled, open, invalid, valid, user-invalid, user-valid, required, optional, placeholder-shown, indeterminate, autofill, read-write, in-range, out-of-range; never forced = visited (privacy), popover-open and modal (need showPopover() and showModal()), default, target-within, local-link, blank, the media states and the caption-cue states; at rest = link, any-link, read-only, empty (on an empty element)."
 	},
 	"states": [
-		{ "state": "hover", "family": "pointer-keyboard", "kind": "pseudo-class", "token": ":hover", "reach": "force-pseudo", "note": "SGS paints every hover setting on :hover and :focus-visible together (includes/helpers-hover-state.php::sgs_hover_state_rules), guarded by :root:not(.sgs-touch-input)" },
+		{ "state": "hover", "family": "pointer-keyboard", "kind": "pseudo-class", "token": ":hover", "reach": "force-pseudo", "note": "SGS paints every hover setting on :hover and :focus-visible together (includes/helpers-hover-state.php::sgs_hover_state_rules), the :hover half guarded by :root:not(.sgs-touch-input)" },
+		{ "state": "hover", "family": "pointer-keyboard", "kind": "class", "token": "sgs-pressed", "reach": "toggle-class", "note": "the hover (and :active press) look on touch: assets/js/touch-input.js puts it on the touched element and its ancestors while a finger is down; every :hover and :active member has a .sgs-pressed twin (Spec 38A FR-38A-17)" },
 		{ "state": "hover", "family": "pointer-keyboard", "kind": "data-attribute", "token": "[data-sgs-hover-group]:hover", "reach": "force-pseudo", "note": "group hover: an item's look changes while its group is pointed at (includes/helpers-item-effects.php)" },
 		{ "state": "focus", "family": "pointer-keyboard", "kind": "pseudo-class", "token": ":focus-visible", "reach": "force-pseudo", "note": "keyboard focus; SGS paints it with the hover look" },
 		{ "state": "focus", "family": "pointer-keyboard", "kind": "pseudo-class", "token": ":focus", "reach": "force-pseudo", "note": "any focus; the theme focus ring is the site token settings.custom.focus" },
@@ -126,9 +127,9 @@
 		{ "state": "environment", "family": "environment", "kind": "media", "token": "(prefers-reduced-motion: reduce)", "reach": "emulate-media", "note": "motion stops; the motion model shows final values at once" },
 		{ "state": "environment", "family": "environment", "kind": "media", "token": "(prefers-color-scheme: dark)", "reach": "emulate-media", "note": "the visitor's dark scheme" },
 		{ "state": "environment", "family": "environment", "kind": "media", "token": "(prefers-contrast: more)", "reach": "emulate-media", "note": "the visitor's higher-contrast preference" },
-		{ "state": "environment", "family": "environment", "kind": "media", "token": "(hover: none)", "reach": "emulate-media", "note": "a device with no hover; SGS hover rules are touch-guarded too" },
+		{ "state": "environment", "family": "environment", "kind": "media", "token": "(hover: none)", "reach": "emulate-media", "note": "a device with no hover; SGS hover rules key on the pointer type instead (sgs-touch-input, sgs-pressed)" },
 		{ "state": "environment", "family": "environment", "kind": "media", "token": "(pointer: fine)", "reach": "emulate-media", "note": "a precise pointer; sheen and pointer effects run only here" },
-		{ "state": "environment", "family": "environment", "kind": "class", "token": "sgs-touch-input", "reach": "toggle-class", "note": "the last pointer was touch (assets/js/touch-input.js); hover rules do not apply" },
+		{ "state": "environment", "family": "environment", "kind": "class", "token": "sgs-touch-input", "reach": "toggle-class", "note": "the last pointer was touch (assets/js/touch-input.js), unless the site chose Show on tap; the :hover halves of hover rules do not apply, their .sgs-pressed halves do" },
 		{ "state": "environment", "family": "environment", "kind": "data-attribute", "token": "[data-theme=\"dark\"]", "reach": "set-attribute", "note": "the site's dark theme chosen with sgs/theme-toggle" }
 	],
 	"notStates": [

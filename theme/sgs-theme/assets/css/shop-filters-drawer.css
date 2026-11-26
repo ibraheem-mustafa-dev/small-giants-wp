@@ -65,7 +65,8 @@
 		transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 	}
 
-	body.is-enhanced .sgs-shop-filters__toggle:hover {
+	body.is-enhanced .sgs-shop-filters__toggle.sgs-pressed,
+:where(:root:not(.sgs-touch-input)) body.is-enhanced .sgs-shop-filters__toggle:hover {
 		background: var(--sgs-product-card-btn-hover-bg, var(--wp--preset--color--primary-dark, #C56A7A));
 		border-color: var(--sgs-product-card-btn-hover-bg, var(--wp--preset--color--primary-dark, #C56A7A));
 		color: var(--sgs-product-card-btn-hover-text, #ffffff);
@@ -205,7 +206,8 @@
 /* Filter button: outlined text in capitals, and its place in the toolbar. */
 @media ( max-width: 781.98px ) {
 	body.is-enhanced.sgs-shop-toggle-outlined .sgs-shop-filters__toggle,
-	body.is-enhanced.sgs-shop-toggle-outlined .sgs-shop-filters__toggle:hover {
+body.is-enhanced.sgs-shop-toggle-outlined .sgs-shop-filters__toggle.sgs-pressed,
+:where(:root:not(.sgs-touch-input)) body.is-enhanced.sgs-shop-toggle-outlined .sgs-shop-filters__toggle:hover {
 		gap: 0;
 		min-height: 44px;
 		padding: 0 16px;

@@ -41,7 +41,7 @@ $has = static function ( string $haystack, string $needle ): bool {
 
 // 1. sgs_hover_state_rules().
 Sgs_Focus_Rests::reset();
-$guard   = ':where(:root:not(.sgs-touch-input)) .x:hover{color:red}';
+$guard   = '.x.sgs-pressed,:where(:root:not(.sgs-touch-input)) .x:hover{color:red}'; // The touch half, then the guarded mouse half (Spec 38A FR-38A-17).
 $focus   = '.x:focus-visible{color:red}';
 $flag_off = sgs_hover_state_rules( '.x', 'color:red' );
 $check( $guard . $focus === $flag_off, '1. flag off: the hover rule then the focus rule, byte for byte: ' . $flag_off );

@@ -234,8 +234,9 @@ img[data-sgs-mc~="background-position"][data-sgs-mc~="translate"] {
 }
 
 /* ── Hover state (§9, FR-38A-17): the hover values are the to-values times an engagement flag. The flag is set by
-   the source's :hover (behind the touch-input guard of includes/helpers-hover-state.php, which only matches when the
-   site chose "Desktop only"), and by :focus-visible / :has(:focus-visible) outside it, so keyboard users get the same result. Root, group and item flags
+   the source's :hover under a mouse (behind the touch guard of includes/helpers-hover-state.php), by the source's
+   `.sgs-pressed` while a finger is on it (assets/js/touch-input.js, the hover-on-touch contract), and by
+   :focus-visible / :has(:focus-visible) outside both, so keyboard users get the same result. Root, group and item flags
    inherit, and every root, group and item resets its own to 0, so a target follows its NEAREST root, group or item.
    A block with `sgsFocusRests` stamps `data-sgs-focus-rests` on its marked elements, and the focus arm skips them:
    its hover state plays on pointer hover only. ── */
@@ -255,9 +256,13 @@ img[data-sgs-mc~="background-position"][data-sgs-mc~="translate"] {
 [data-sgs-mitem]:focus-visible:not([data-sgs-focus-rests]),
 [data-sgs-mitem]:has(:focus-visible):not([data-sgs-focus-rests]) { --sgs-mh-item-on: 1; }
 
+[data-sgs-mh="self"].sgs-pressed,
 :where(:root:not(.sgs-touch-input)) [data-sgs-mh="self"]:hover { --sgs-mh-on: 1; }
+[data-sgs-mroot].sgs-pressed,
 :where(:root:not(.sgs-touch-input)) [data-sgs-mroot]:hover { --sgs-mh-root-on: 1; }
+[data-sgs-hover-group].sgs-pressed,
 :where(:root:not(.sgs-touch-input)) [data-sgs-hover-group]:hover { --sgs-mh-group-on: 1; }
+[data-sgs-mitem].sgs-pressed,
 :where(:root:not(.sgs-touch-input)) [data-sgs-mitem]:hover { --sgs-mh-item-on: 1; }
 
 [data-sgs-mh] {

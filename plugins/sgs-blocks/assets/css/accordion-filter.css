@@ -89,7 +89,8 @@
 	transition: background-color var(--wp--custom--duration--fast, 250ms) var(--wp--custom--easing--ease, ease), color var(--wp--custom--duration--fast, 250ms) var(--wp--custom--easing--ease, ease), transform var(--wp--custom--duration--fast, 250ms) var(--wp--custom--easing--ease, ease);
 }
 
-.sgs-accordion__chip:hover {
+.sgs-accordion__chip.sgs-pressed,
+:where(:root:not(.sgs-touch-input)) .sgs-accordion__chip:hover {
 	transform: translateY(-2px);
 }
 
@@ -115,7 +116,8 @@
 		transition: none;
 	}
 
-	.sgs-accordion__chip:hover {
+	.sgs-accordion__chip.sgs-pressed,
+:where(:root:not(.sgs-touch-input)) .sgs-accordion__chip:hover {
 		transform: none;
 	}
 }

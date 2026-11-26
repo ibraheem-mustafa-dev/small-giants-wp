@@ -151,7 +151,7 @@ html:has(:is(input, textarea, select):focus) {
  *
  * ⚠ Consolidated here 2026-08-26 (T1 fix pass): the alignfull/hero arms used
  * to ALSO be declared with `!important` in functions.php's
- * `enqueue_global_layout_fixes()`, as a duplicate inline `<style>` block.
+ * `enqueue_global_layout_fixes()`, as a duplicate inline `\3c style>` block.
  * That second declaration is what actually won on the frontend — a
  * `!important` duplicate isn't a specificity fight this file's fix could
  * beat. It has been deleted from functions.php; this file is now the ONLY
@@ -310,7 +310,8 @@ html:has(:is(input, textarea, select):focus) {
 	            box-shadow var(--wp--custom--button-presets--primary--hover-transition, 200ms) var(--wp--custom--button-presets--primary--hover-easing, cubic-bezier(0.16, 1, 0.3, 1));
 }
 
-.wp-block-button__link:hover {
+.wp-block-button__link.sgs-pressed,
+:where(:root:not(.sgs-touch-input)) .wp-block-button__link:hover {
 	transform: var(--wp--custom--button-presets--primary--hover-lift, translateY(-2px));
 	box-shadow: var(--wp--preset--shadow--soft);
 }
@@ -320,12 +321,14 @@ html:has(:is(input, textarea, select):focus) {
 		transition: none;
 	}
 
-	.wp-block-button__link:hover {
+	.wp-block-button__link.sgs-pressed,
+:where(:root:not(.sgs-touch-input)) .wp-block-button__link:hover {
 		transform: none;
 	}
 }
 
-.wp-block-button__link:active {
+.wp-block-button__link:active,
+.wp-block-button__link.sgs-pressed {
 	transform: translateY(0) scale(0.97);
 }
 
@@ -399,7 +402,7 @@ html:has(:is(input, textarea, select):focus) {
 /*
  * Base header layering. Sticky / transparent / shrink BEHAVIOURS are owned by
  * the sgs-blocks plugin (Spec 37 FR-37-13, D330) — driven by the sgs/site-header
- * block inspector. Since FR-37-15 these emit scoped per-tier `<style>` rules,
+ * block inspector. Since FR-37-15 these emit scoped per-tier `\3c style>` rules,
  * not body classes. As of 2026-08-19 that covers ALL FIVE behaviours —
  * `contrastSafe` was the last body-class holdout and moved to scoped per-tier
  * CSS too (FR-37-44), so no `body.sgs-header-behaviour-*` rule remains.

@@ -40,7 +40,8 @@
 		z-index: -1;
 	}
 
-	.sgs-button-fill:hover::before {
+	.sgs-button-fill.sgs-pressed::before,
+:where(:root:not(.sgs-touch-input)) .sgs-button-fill:hover::before {
 		transform: scaleX(1);
 	}
 }
@@ -82,10 +83,14 @@
 		transition: transform var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--ease, ease);
 	}
 
-	.wp-block-navigation-item__content:hover::after,
-	.sgs-text-link:hover::after,
-	.entry-content p a:not([class*="sgs-"]):hover::after,
-	.entry-content li a:not(.wp-block-button__link):not([class*="sgs-"]):hover::after {
+	.wp-block-navigation-item__content.sgs-pressed::after,
+:where(:root:not(.sgs-touch-input)) .wp-block-navigation-item__content:hover::after,
+.sgs-text-link.sgs-pressed::after,
+:where(:root:not(.sgs-touch-input)) .sgs-text-link:hover::after,
+.entry-content p a:not([class*="sgs-"]).sgs-pressed::after,
+:where(:root:not(.sgs-touch-input)) .entry-content p a:not([class*="sgs-"]):hover::after,
+.entry-content li a:not(.wp-block-button__link):not([class*="sgs-"]).sgs-pressed::after,
+:where(:root:not(.sgs-touch-input)) .entry-content li a:not(.wp-block-button__link):not([class*="sgs-"]):hover::after {
 		transform: scaleX(1);
 		transform-origin: bottom left;
 	}
@@ -114,13 +119,17 @@
 		transition: transform var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--ease, ease);
 	}
 
-	.wp-block-button__link:hover::before,
-	.sgs-cta-button:hover::before {
+	.wp-block-button__link.sgs-pressed::before,
+:where(:root:not(.sgs-touch-input)) .wp-block-button__link:hover::before,
+.sgs-cta-button.sgs-pressed::before,
+:where(:root:not(.sgs-touch-input)) .sgs-cta-button:hover::before {
 		transform: scaleX(1);
 	}
 
-	.wp-block-button__link:hover,
-	.sgs-cta-button:hover {
+	.wp-block-button__link.sgs-pressed,
+:where(:root:not(.sgs-touch-input)) .wp-block-button__link:hover,
+.sgs-cta-button.sgs-pressed,
+:where(:root:not(.sgs-touch-input)) .sgs-cta-button:hover {
 		color: var(--wp--preset--color--background, #ffffff) !important;
 	}
 
@@ -135,12 +144,18 @@
 		transition: transform var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--ease, ease);
 	}
 
-	.wp-block-button__link:hover svg,
-	.sgs-cta-button:hover svg,
-	.wp-block-button__link:hover i,
-	.sgs-cta-button:hover i,
-	.wp-block-button__link:hover .sgs-icon,
-	.sgs-cta-button:hover .sgs-icon {
+	.wp-block-button__link.sgs-pressed svg,
+:where(:root:not(.sgs-touch-input)) .wp-block-button__link:hover svg,
+.sgs-cta-button.sgs-pressed svg,
+:where(:root:not(.sgs-touch-input)) .sgs-cta-button:hover svg,
+.wp-block-button__link.sgs-pressed i,
+:where(:root:not(.sgs-touch-input)) .wp-block-button__link:hover i,
+.sgs-cta-button.sgs-pressed i,
+:where(:root:not(.sgs-touch-input)) .sgs-cta-button:hover i,
+.wp-block-button__link.sgs-pressed .sgs-icon,
+:where(:root:not(.sgs-touch-input)) .wp-block-button__link:hover .sgs-icon,
+.sgs-cta-button.sgs-pressed .sgs-icon,
+:where(:root:not(.sgs-touch-input)) .sgs-cta-button:hover .sgs-icon {
 		transform: translateX(4px);
 	}
 }
@@ -343,6 +358,7 @@ a.sgs-field-fallback:focus {
 	text-decoration: none;
 }
 
+a.sgs-field-fallback.sgs-pressed,
 :where(:root:not(.sgs-touch-input)) a.sgs-field-fallback:hover {
 	background-color: color-mix(in srgb, var(--sgs-ff-bg) 78%, white);
 	border-color: color-mix(in srgb, var(--sgs-ff-border) 78%, white);

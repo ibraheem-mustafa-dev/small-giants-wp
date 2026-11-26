@@ -74,7 +74,7 @@
  *
  * ⛔ Do NOT move that rule into this shared stylesheet keyed on a float class.
  * render.php's per-tier rule is `.{uid}.sgs-site-header.is-header-scrolling-down`
- * at (0,3,0) and is emitted in an inline <style> AFTER this file loads, so a
+ * at (0,3,0) and is emitted in an inline \3c style> AFTER this file loads, so a
  * same-specificity rule here would lose on source order and silently do
  * nothing — the "a rule that loses is indistinguishable from one that is
  * absent" failure. The travel is also per-tier, which a shared static rule
@@ -241,7 +241,7 @@
  *
  * The chosen "hide on shrink" child is likewise handled per-instance:
  * render.php emits `.{uid}.is-row-shrunk #{anchor}{display:none}` into the
- * row's own scoped <style>, after re-validating the target server-side. */
+ * row's own scoped \3c style>, after re-validating the target server-side. */
 .sgs-row-behaviour.is-row-shrink-active {
 	transition: background-color 200ms var(--wp--custom--easing--ease, ease), transform 200ms var(--wp--custom--easing--ease, ease),
 		padding-top 200ms var(--wp--custom--easing--ease, ease), padding-bottom 200ms var(--wp--custom--easing--ease, ease); /* sgs-motion: exact */

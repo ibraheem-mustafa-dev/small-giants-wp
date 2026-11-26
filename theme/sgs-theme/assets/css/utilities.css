@@ -260,13 +260,18 @@ body.admin-bar html {
 	text-decoration: none;
 }
 /* Outranks .sgs-button:hover, which clears background-image; a button's own hover gradient still wins. */
-:is(a, button).sgs-hover-underline-slide:is(:hover, :focus-visible) {
+:is(a, button).sgs-hover-underline-slide:is(.sgs-pressed, :focus-visible),
+:where(:root:not(.sgs-touch-input)) :is(a, button).sgs-hover-underline-slide:is(:hover, :focus-visible) {
 	background-image: var(--sgs-btn-bg-hover-image, linear-gradient(var(--sgs-link-hover-color, currentColor), var(--sgs-link-hover-color, currentColor)));
 }
-:is(a, button).sgs-hover-underline-slide:is(:hover, :focus-visible),
-.sgs-hover-underline-slide:not(a, button) a:is(:hover, :focus-visible),
-:where(.sgs-icon-list__item-link:is(:hover, :focus-visible)),
-:where(.sgs-button--link:is(:hover, :focus-visible) .sgs-button__label) {
+:is(a, button).sgs-hover-underline-slide:is(.sgs-pressed, :focus-visible),
+:where(:root:not(.sgs-touch-input)) :is(a, button).sgs-hover-underline-slide:is(:hover, :focus-visible),
+.sgs-hover-underline-slide:not(a, button) a:is(.sgs-pressed, :focus-visible),
+:where(:root:not(.sgs-touch-input)) .sgs-hover-underline-slide:not(a, button) a:is(:hover, :focus-visible),
+:where(.sgs-icon-list__item-link:is(.sgs-pressed, :focus-visible)),
+:where(:root:not(.sgs-touch-input)) :where(.sgs-icon-list__item-link:is(:hover, :focus-visible)),
+:where(.sgs-button--link:is(.sgs-pressed, :focus-visible) .sgs-button__label),
+:where(:root:not(.sgs-touch-input)) :where(.sgs-button--link:is(:hover, :focus-visible) .sgs-button__label) {
 	background-size: 100% var(--sgs-sweep-thickness);
 }
 @media (prefers-reduced-motion: reduce) {
@@ -282,6 +287,7 @@ body.admin-bar html {
 	border-bottom: 2px solid transparent;
 	transition: border-color 0.25s ease-in-out;
 }
+.sgs-hover-underline-fade.sgs-pressed,
 :where(:root:not(.sgs-touch-input)) .sgs-hover-underline-fade:hover,
 .sgs-hover-underline-fade:focus-visible {
 	border-color: var(--sgs-link-hover-color, currentColor);
@@ -290,6 +296,7 @@ body.admin-bar html {
 .sgs-hover-highlight-fill {
 	transition: background-color 0.25s ease-in-out, color 0.25s ease-in-out;
 }
+.sgs-hover-highlight-fill.sgs-pressed,
 :where(:root:not(.sgs-touch-input)) .sgs-hover-highlight-fill:hover,
 .sgs-hover-highlight-fill:focus-visible {
 	background-color: var(--sgs-link-hover-bg, var(--wp--preset--color--primary));
@@ -316,6 +323,7 @@ body.admin-bar html {
 .has-shadow-sm {
 	box-shadow: 0 1px 2px color-mix(in srgb, var(--wp--custom--shadow-colour) 6%, transparent), 0 2px 6px color-mix(in srgb, var(--wp--custom--shadow-colour) 6%, transparent);
 }
+.has-shadow-sm.sgs-pressed,
 :where(:root:not(.sgs-touch-input)) .has-shadow-sm:hover{box-shadow:0 1px 3px color-mix(in srgb, var(--wp--custom--shadow-colour) 6%, transparent), 0 3px 8px color-mix(in srgb, var(--wp--custom--shadow-colour) 6%, transparent)}
 
 @media (forced-colors:active){.has-shadow-sm:not(:focus-visible){outline:1px solid CanvasText;outline-offset:-1px}}
@@ -324,6 +332,7 @@ body.admin-bar html {
 .has-shadow-md {
 	box-shadow: 0 2px 4px color-mix(in srgb, var(--wp--custom--shadow-colour) 7%, transparent), 0 6px 16px color-mix(in srgb, var(--wp--custom--shadow-colour) 8%, transparent);
 }
+.has-shadow-md.sgs-pressed,
 :where(:root:not(.sgs-touch-input)) .has-shadow-md:hover{box-shadow:0 3px 5px color-mix(in srgb, var(--wp--custom--shadow-colour) 7%, transparent), 0 8px 20px color-mix(in srgb, var(--wp--custom--shadow-colour) 8%, transparent)}
 
 @media (forced-colors:active){.has-shadow-md:not(:focus-visible){outline:1px solid CanvasText;outline-offset:-1px}}
@@ -332,6 +341,7 @@ body.admin-bar html {
 .has-shadow-lg {
 	box-shadow: 0 4px 8px color-mix(in srgb, var(--wp--custom--shadow-colour) 8%, transparent), 0 12px 32px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent);
 }
+.has-shadow-lg.sgs-pressed,
 :where(:root:not(.sgs-touch-input)) .has-shadow-lg:hover{box-shadow:0 5px 10px color-mix(in srgb, var(--wp--custom--shadow-colour) 8%, transparent), 0 15px 40px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)}
 
 @media (forced-colors:active){.has-shadow-lg:not(:focus-visible){outline:1px solid CanvasText;outline-offset:-1px}}

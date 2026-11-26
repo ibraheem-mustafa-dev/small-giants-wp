@@ -1,250 +1,380 @@
 'use strict';
 
 /**
- * Build-time transform: guards motion-only `:hover` rules in compiled block
- * CSS with the touch-class selector prefix (see includes/helpers-hover-state.php
- * for the authoritative contract this mirrors on the static-CSS side). The
- * prefix only matches when the site chose "Desktop only" for hover effects on
- * touch screens; with the default "Show on tap" the rules apply on every device.
+ * Hover and press looks on touch screens, for stylesheets (Spec 38A FR-38A-17). The PHP twin for generated CSS is
+ * `includes/helpers-hover-state.php::sgs_touch_hover_css`; both follow one contract, rule by rule, inside the rule:
  *
- * Runs over `build/blocks/*​/style.css` as a postbuild step — see the
- * repo report for the exact package.json line to add (this script does
- * not edit package.json itself, by design/scope).
+ *   - Mouse: every `:hover` selector member is guarded by `:where(:root:not(.sgs-touch-input))`.
+ *     `assets/js/touch-input.js` puts `.sgs-touch-input` on <html> while the last pointer was a touch (unless the site
+ *     chose "Show on tap"), so a phone can no longer leave a tapped element in its hover look ("sticky hover"). The
+ *     guard is `:where()`, so it adds no specificity.
+ *   - Touch: the same member with `:hover` replaced by the pressed class `.sgs-pressed` joins the rule. touch-input.js
+ *     sets that class on the element under a touching finger and on its ancestors (the chain `:hover` covers) the
+ *     moment the finger lands, and removes it when the finger lifts, slides off or starts a scroll; only under the
+ *     default "Show while pressed". A class and a pseudo-class weigh the same, so specificity is unchanged.
+ *   - A member that hovers only through `:not(:hover)` gets its touch half under `:where(:root.sgs-touch-input)`:
+ *     unguarded it would also apply while a mouse hovers.
+ *   - Press looks: a member keyed on `:active` gains the same member with `.sgs-pressed`, so a press look shows at
+ *     once and clears on slide-off and scroll on every engine (WebKit's `:active` on touch is unreliable).
+ *   - A `:hover` or `:active` after a pseudo-element (`::-webkit-scrollbar-thumb:hover`) gets no touch half: a class
+ *     cannot follow a pseudo-element. Members without `:hover` or `:active` stay exactly as they are.
+ *   - A hover rule inside `@media (hover: hover)` is mouse-only by its author: its touch half is added just before the
+ *     outermost such media query, in the other at-rules around it.
  *
- * SCOPE (deliberate, matches the brief):
- *   - Only `:hover` rules whose declarations are motion-only (transform,
- *     opacity, filter, translate, scale, rotate, box-shadow, or a proven
- *     colour-free subset of border/outline/background shorthands) are
- *     auto-guarded.
- *   - A `:hover` rule carrying any colour-family declaration is left
- *     completely untouched — colour hovers are out of scope for this
- *     transform (see the report's "deliberately not touched" section).
- *   - A `:hover` rule this module cannot classify with confidence is left
- *     completely untouched AND recorded, so the companion checker
- *     (check.js) can fail the build on it rather than the transform
- *     silently mangling an edge case.
- *   - A selector member combining `:hover` with `:focus-visible` /
- *     `:focus-within` in the SAME compound chain is split: only the hover
- *     half is guarded, the focus half is left outside both guards,
- *     unmoved, per helpers-hover-state.php's binding rule.
- *
- * IDEMPOTENCE. A hover-member selector already carrying the exact guard
- * prefix `:where(:root:not(.sgs-touch-input))` is left completely alone —
- * this makes re-running the transform over already-guarded output a no-op.
+ * Idempotent: a guarded member, or a touch half already in the stylesheet, is never added twice.
  *
  * @package SGS\Blocks
  */
 
 const postcss = require( 'postcss' );
-const { splitSelectorList } = require( './selector-split.js' );
-const { classifyDeclarations } = require( './classify.js' );
+const selectorParser = require( 'postcss-selector-parser' );
 
-/** Must stay byte-identical to includes/helpers-hover-state.php's constant. */
+/** The mouse guard. Must match includes/helpers-hover-state.php::SGS_HOVER_NOT_TOUCH. */
 const SGS_HOVER_NOT_TOUCH = ':where(:root:not(.sgs-touch-input))';
+/** The guard of a `:not(:hover)` member's touch half. Must match helpers-hover-state.php::SGS_HOVER_TOUCH_ONLY. */
+const SGS_HOVER_TOUCH_ONLY = ':where(:root.sgs-touch-input)';
+/** The class touch-input.js sets on the pressed chain. Must match helpers-hover-state.php::SGS_PRESSED_CLASS. */
+const PRESSED_CLASS = 'sgs-pressed';
 
-/**
- * @typedef {Object} TransformFinding
- * @property {string} kind      'ambiguous-selector' | 'unclassified-declarations'
- * @property {string} selector  The offending selector text.
- * @property {number} line      1-based source line in the input CSS.
- * @property {string} rule      The full rule text (selector + declarations) for the report.
- */
+const LEGACY_PSEUDO_ELEMENTS = new Set( [ ':before', ':after', ':first-line', ':first-letter' ] );
 
-/**
- * Read declarations off a postcss Rule into {prop, value} pairs, ignoring
- * comments.
- *
- * @param {import('postcss').Rule} rule
- * @returns {{prop: string, value: string}[]}
- */
-function ruleDeclarations( rule ) {
-	const decls = [];
-	rule.walkDecls( ( decl ) => {
-		// only DIRECT children — a plain rule has no nested rules, but guard
-		// against the (currently impossible pre-nesting-spec) case anyway.
-		if ( decl.parent === rule ) {
-			decls.push( { prop: decl.prop, value: decl.value } );
-		}
-	} );
-	return decls;
+/** A selector with each quoted string emptied, so text in an attribute value is never read as a state. */
+function unquoted( selector ) {
+	return selector.replace( /"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'/g, '""' );
+}
+
+/** Whether a selector carries `:hover` as a pseudo-class. */
+function hasHover( selector ) {
+	return /:hover(?![\w-])/i.test( unquoted( selector ) );
+}
+
+/** Whether a selector carries `:active` as a pseudo-class. */
+function hasActive( selector ) {
+	return /:active(?![\w-])/i.test( unquoted( selector ) );
+}
+
+/** Split a selector list into trimmed top-level members. */
+function splitMembers( selector ) {
+	return selectorParser().astSync( selector ).nodes.map( ( n ) => n.toString().trim() );
+}
+
+/** Whitespace-insensitive form of a selector member. */
+function normalise( member ) {
+	return member.replace( /\s+/g, ' ' ).replace( /\s*([>+~,()])\s*/g, '$1' ).trim();
 }
 
 /**
- * Clone the chain of at-rule ancestors of `node` (root excluded), OUTERMOST
- * first, as empty shells (no children) ready to be nested around new content.
- *
- * @param {import('postcss').Node} node
- * @returns {import('postcss').AtRule[]} Empty at-rule clones, outermost first.
+ * Whether a hover member cannot take the guard: it starts at a pseudo-element (a viewport scrollbar,
+ * `::-webkit-scrollbar-thumb:hover`). Such a member is mouse-only in practice and stays as written.
  */
-function ancestorAtRuleChain( node ) {
-	const chain = [];
-	let cursor = node.parent;
-	while ( cursor && 'root' !== cursor.type ) {
+function unguardable( member ) {
+	return /^::/.test( member );
+}
+
+/** The length of a member's first compound when it is the root (`:root`, `html`), else 0. */
+function rootCompound( member ) {
+	const m = /^(?::root|html)(?![\w-])/i.exec( member );
+	if ( ! m ) {
+		return 0;
+	}
+	let depth = 0;
+	for ( let i = 0; i < member.length; i++ ) {
+		const c = member[ i ];
+		if ( '(' === c || '[' === c ) {
+			depth++;
+		} else if ( ')' === c || ']' === c ) {
+			depth--;
+		} else if ( 0 === depth && /[\s>+~]/.test( c ) ) {
+			return i;
+		}
+	}
+	return member.length;
+}
+
+/**
+ * A member behind a root guard. A member that starts at the root (`:root :where(a:hover)`, WordPress's global styles)
+ * takes the guard on that compound (`:root:where(:not(.sgs-touch-input))`), since the root is no descendant of itself;
+ * any other member takes it as a descendant prefix. Both forms add no specificity.
+ *
+ * @param {string} member
+ * @param {string} guard  SGS_HOVER_NOT_TOUCH or SGS_HOVER_TOUCH_ONLY.
+ */
+function withGuard( member, guard ) {
+	const at = rootCompound( member );
+	if ( at ) {
+		const inner = guard.slice( ':where(:root'.length, -1 );
+		return `${ member.slice( 0, at ) }:where(${ inner })${ member.slice( at ) }`;
+	}
+	return `${ guard } ${ member }`;
+}
+
+/** A member without the mouse guard (either form). */
+function unguarded( member ) {
+	if ( member.startsWith( SGS_HOVER_NOT_TOUCH ) ) {
+		return member.slice( SGS_HOVER_NOT_TOUCH.length ).trim();
+	}
+	const at = rootCompound( member );
+	const tail = ':where(:not(.sgs-touch-input))';
+	if ( at && member.slice( 0, at ).endsWith( tail ) ) {
+		return member.slice( 0, at - tail.length ) + member.slice( at );
+	}
+	return member;
+}
+
+/**
+ * The touch half of one member: each `:hover` and `:active` becomes `.sgs-pressed`.
+ *
+ * @param {string} member A selector member (without the mouse guard).
+ * @returns {{selector: string, negated: boolean}|null} Null when a state follows a pseudo-element.
+ */
+function touchMember( member ) {
+	let negated = false;
+	let impossible = false;
+	const out = selectorParser( ( root ) => {
+		root.walkPseudos( ( pseudo ) => {
+			const name = pseudo.value.toLowerCase();
+			if ( ':hover' !== name && ':active' !== name ) {
+				return;
+			}
+			for ( let prev = pseudo.prev(); prev && 'combinator' !== prev.type; prev = prev.prev() ) {
+				if ( 'pseudo' === prev.type && ( prev.value.startsWith( '::' ) || LEGACY_PSEUDO_ELEMENTS.has( prev.value.toLowerCase() ) ) ) {
+					impossible = true;
+				}
+			}
+			for ( let up = pseudo.parent; up; up = up.parent ) {
+				if ( 'pseudo' === up.type && ':not' === up.value.toLowerCase() ) {
+					negated = true;
+				}
+			}
+			pseudo.replaceWith( selectorParser.className( { value: PRESSED_CLASS } ) );
+		} );
+	} ).processSync( member );
+	return impossible ? null : { selector: out.trim(), negated };
+}
+
+/**
+ * The members a rule should carry under the contract.
+ *
+ * @param {string[]} members  The rule's members.
+ * @param {boolean}  inMouse  Whether the rule sits in `@media (hover: hover)` (its touch halves go elsewhere).
+ * @returns {{members: string[], touch: string[], guarded: number}} The rule's new members, the touch halves a mouse
+ *   media rule needs outside its media query, and the hover members newly guarded.
+ */
+function contractMembers( members, inMouse ) {
+	const out = [];
+	const touch = [];
+	let guarded = 0;
+	for ( const m of members ) {
+		const plain = unguarded( m );
+		if ( hasHover( plain ) && unguardable( plain ) ) {
+			out.push( m );
+		} else if ( hasHover( plain ) ) {
+			const t = touchMember( plain );
+			if ( t ) {
+				const half = t.negated ? withGuard( t.selector, SGS_HOVER_TOUCH_ONLY ) : t.selector;
+				( inMouse ? touch : out ).push( half );
+			}
+			if ( inMouse ) {
+				out.push( m );
+			} else {
+				if ( plain === m ) {
+					guarded++;
+				}
+				out.push( withGuard( plain, SGS_HOVER_NOT_TOUCH ) );
+			}
+		} else if ( hasActive( m ) ) {
+			out.push( m );
+			const t = touchMember( m );
+			if ( t && ! t.negated ) {
+				out.push( t.selector );
+			}
+		} else {
+			out.push( m );
+		}
+	}
+	return { members: out, touch, guarded };
+}
+
+/** The outermost `@media (hover: hover)` ancestor of a node, or null. */
+function outermostMouseMedia( node ) {
+	let found = null;
+	for ( let cursor = node.parent; cursor; cursor = cursor.parent ) {
+		if ( isMouseMedia( cursor ) ) {
+			found = cursor;
+		}
+	}
+	return found;
+}
+
+/** Whether an at-rule is a mouse-only media query (`(hover: hover)` without `not`). */
+function isMouseMedia( node ) {
+	if ( ! node || 'atrule' !== node.type || 'media' !== node.name.toLowerCase() ) {
+		return false;
+	}
+	const params = node.params.toLowerCase().replace( /\s+/g, '' );
+	return params.includes( '(hover:hover)' ) && ! params.includes( 'not' );
+}
+
+/** Whether a node sits inside `@keyframes`. */
+function inKeyframes( node ) {
+	for ( let cursor = node.parent; cursor; cursor = cursor.parent ) {
+		if ( 'atrule' === cursor.type && /keyframes$/i.test( cursor.name ) ) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/** Clone the at-rules between `node` and `stop` (exclusive) around `inner`. */
+function nestBetween( node, stop, inner ) {
+	let content = inner;
+	for ( let cursor = node.parent; cursor && cursor !== stop; cursor = cursor.parent ) {
 		if ( 'atrule' === cursor.type ) {
 			const shell = cursor.clone();
 			shell.removeAll();
-			chain.unshift( shell );
+			shell.append( content );
+			content = shell;
 		}
-		cursor = cursor.parent;
-	}
-	return chain;
-}
-
-/**
- * Nest `innerNode` inside a clone of each at-rule in `chain` (outermost
- * first) and return the finished top-level node ready to insert (the rule
- * itself when it has no at-rule ancestors).
- *
- * @param {import('postcss').Rule} innerNode
- * @param {import('postcss').AtRule[]} chain Outermost-first ancestor shells.
- * @returns {import('postcss').Node} The outermost node.
- */
-function wrapForInsertion( innerNode, chain ) {
-	let content = innerNode;
-	// Nest existing ancestors innermost-first around content, so the final
-	// order (outside-in) is: chain[0] -> chain[1] -> ... -> rule.
-	for ( let i = chain.length - 1; i >= 0; i-- ) {
-		const shell = chain[ i ];
-		shell.append( content );
-		content = shell;
 	}
 	return content;
 }
 
+/** Every selector member in a stylesheet, normalised. */
+function memberSet( root ) {
+	const set = new Set();
+	root.walkRules( ( rule ) => {
+		if ( ! inKeyframes( rule ) ) {
+			for ( const m of splitMembers( rule.selector ) ) {
+				set.add( normalise( m ) );
+			}
+		}
+	} );
+	return set;
+}
+
+/** Order-preserving de-duplication of members, also against members already elsewhere when given. */
+function dedupe( members, elsewhere ) {
+	const seen = new Set();
+	return members.filter( ( m ) => {
+		const k = normalise( m );
+		if ( seen.has( k ) || ( elsewhere && elsewhere.has( k ) ) ) {
+			return false;
+		}
+		seen.add( k );
+		return true;
+	} );
+}
+
 /**
- * Run the transform over a CSS source string.
+ * Run the transform over a stylesheet.
  *
- * @param {string} css      Input CSS text.
- * @param {string} filename For error/finding messages only.
- * @returns {{css: string, findings: TransformFinding[], guardedCount: number, skippedAlreadyGuarded: number}}
+ * @param {string} css      Input CSS.
+ * @param {string} filename For messages only.
+ * @returns {{css: string, guardedCount: number, touchCount: number, findings: Array<{kind: string, selector: string, line: number}>}}
  */
 function transformCss( css, filename ) {
 	const root = postcss.parse( css, { from: filename } );
 	const findings = [];
 	let guardedCount = 0;
-	let skippedAlreadyGuarded = 0;
+	let touchCount = 0;
+	const existing = memberSet( root );
 
-	/** @type {{atRule: import('postcss').AtRule, after: import('postcss').Node}[]} */
-	const pendingInsertions = [];
-	/** @type {import('postcss').Rule[]} */
-	const pendingRemovals = [];
-
+	const rules = [];
 	root.walkRules( ( rule ) => {
-		const selectorText = rule.selector || '';
-		if ( ! selectorText.includes( ':hover' ) ) {
-			return;
-		}
-
-		const { hover, focus, other, ambiguous } = splitSelectorList( selectorText );
-
-		if ( ambiguous.length > 0 ) {
-			findings.push( {
-				kind: 'ambiguous-selector',
-				selector: ambiguous.join( ', ' ),
-				line: rule.source && rule.source.start ? rule.source.start.line : 0,
-				rule: rule.toString(),
-			} );
-			return; // leave this rule untouched entirely
-		}
-
-		// Split off members already guarded from a prior run (idempotence).
-		const alreadyGuarded = hover.filter( ( s ) => s.startsWith( SGS_HOVER_NOT_TOUCH ) );
-		const freshHover = hover.filter( ( s ) => ! s.startsWith( SGS_HOVER_NOT_TOUCH ) );
-		skippedAlreadyGuarded += alreadyGuarded.length;
-
-		if ( 0 === freshHover.length ) {
-			return; // nothing new to guard in this rule
-		}
-
-		const decls = ruleDeclarations( rule );
-		const verdict = classifyDeclarations( decls );
-
-		if ( 'colour' === verdict || 'text-decoration-only' === verdict ) {
-			return; // out of scope by design — see classify.js module docblock
-		}
-
-		if ( 'unknown' === verdict ) {
-			findings.push( {
-				kind: 'unclassified-declarations',
-				selector: freshHover.join( ', ' ),
-				line: rule.source && rule.source.start ? rule.source.start.line : 0,
-				rule: rule.toString(),
-			} );
-			return; // leave untouched — checker will fail the build on this
-		}
-
-		// verdict === 'motion' — build the guarded sibling rule.
-		const guardedSelector = freshHover
-			.map( ( s ) => SGS_HOVER_NOT_TOUCH + ' ' + s )
-			.join( ',\n' );
-
-		const guardedRule = postcss.rule( { selector: guardedSelector } );
-		for ( const { prop, value } of decls ) {
-			guardedRule.append( postcss.decl( { prop, value } ) );
-		}
-
-		const chain = ancestorAtRuleChain( rule );
-		const wrapper = wrapForInsertion( guardedRule, chain );
-
-		// Insert near the outermost ancestor (or the rule itself if none),
-		// so guarded output stays close to its source for readability.
-		const insertAfterNode = chain.length > 0 ? topOf( rule ) : rule;
-		pendingInsertions.push( { atRule: wrapper, after: insertAfterNode } );
-
-		guardedCount += freshHover.length;
-
-		// Strip the freshly-guarded members out of the original selector,
-		// leaving focus/other/already-guarded members exactly as they were.
-		const remaining = [ ...other, ...focus, ...alreadyGuarded ];
-		if ( 0 === remaining.length ) {
-			pendingRemovals.push( rule );
-		} else {
-			rule.selector = remaining.join( ',\n' );
+		const sel = rule.selector || '';
+		if ( ( hasHover( sel ) || hasActive( sel ) ) && ! inKeyframes( rule ) ) {
+			rules.push( rule );
 		}
 	} );
 
-	// Apply removals first (cheap, no interaction with insertion targets
-	// since we insert AFTER the outermost ancestor of the original rule,
-	// never after the rule's own now-possibly-removed self in a way that
-	// would leave a dangling reference — postcss Node.after() only needs
-	// the node's current parent, which removal doesn't invalidate for a
-	// node whose parent is still in the tree).
-	for ( const rule of pendingRemovals ) {
-		if ( rule.parent ) {
-			rule.remove();
+	for ( const rule of rules ) {
+		let members;
+		try {
+			members = splitMembers( rule.selector );
+		} catch ( e ) {
+			findings.push( { kind: 'unparsable-selector', selector: rule.selector, line: rule.source && rule.source.start ? rule.source.start.line : 0 } );
+			continue;
+		}
+		const mouse = outermostMouseMedia( rule );
+		const next = contractMembers( members, !! mouse );
+		guardedCount += next.guarded;
+		const before = new Set( members.map( normalise ) );
+		const finalMembers = dedupe( next.members );
+		const fresh = finalMembers.filter( ( m ) => ! before.has( normalise( m ) ) && ! hasHover( m ) );
+		touchCount += fresh.length;
+		if ( finalMembers.map( normalise ).join( ',' ) !== members.map( normalise ).join( ',' ) ) {
+			rule.selector = finalMembers.join( ',\n' );
+		}
+		for ( const m of fresh ) {
+			existing.add( normalise( m ) );
+		}
+		if ( mouse ) {
+			const missing = dedupe( next.touch, existing );
+			if ( missing.length ) {
+				mouse.before( nestBetween( rule, mouse, rule.clone( { selector: missing.join( ',\n' ) } ) ) );
+				missing.forEach( ( m ) => existing.add( normalise( m ) ) );
+				touchCount += missing.length;
+			}
 		}
 	}
 
-	for ( const { atRule, after } of pendingInsertions ) {
-		if ( after.parent ) {
-			after.after( atRule );
-		} else {
-			root.append( atRule );
-		}
-	}
-
-	return {
-		css: root.toString(),
-		findings,
-		guardedCount,
-		skippedAlreadyGuarded,
-	};
+	return { css: root.toString(), guardedCount, touchCount, findings };
 }
 
 /**
- * Walk up to the highest ancestor that is still a direct child of the
- * postcss Root (i.e. the outermost at-rule containing `node`, or `node`
- * itself if it has no at-rule ancestors).
+ * Every member that breaks the contract: an unguarded `:hover` outside `@media (hover: hover)`, or a `:hover` or
+ * `:active` member whose touch half is in no rule of the stylesheet.
  *
- * @param {import('postcss').Node} node
- * @returns {import('postcss').Node}
+ * @param {string} css
+ * @param {string} filename
+ * @returns {{hoverMembers: number, activeMembers: number, findings: Array<{kind: string, selector: string, line: number}>}}
  */
-function topOf( node ) {
-	let cursor = node;
-	while ( cursor.parent && 'root' !== cursor.parent.type ) {
-		cursor = cursor.parent;
-	}
-	return cursor;
+function auditCss( css, filename ) {
+	const root = postcss.parse( css, { from: filename } );
+	const findings = [];
+	let hoverMembers = 0;
+	let activeMembers = 0;
+	const existing = memberSet( root );
+	root.walkRules( ( rule ) => {
+		const sel = rule.selector || '';
+		if ( ( ! hasHover( sel ) && ! hasActive( sel ) ) || inKeyframes( rule ) ) {
+			return;
+		}
+		const line = rule.source && rule.source.start ? rule.source.start.line : 0;
+		let members;
+		try {
+			members = splitMembers( sel );
+		} catch ( e ) {
+			findings.push( { kind: 'unparsable-selector', selector: sel, line } );
+			return;
+		}
+		const inMouse = !! outermostMouseMedia( rule );
+		for ( const m of members ) {
+			const plain = unguarded( m );
+			if ( hasHover( plain ) && unguardable( plain ) ) {
+				continue;
+			}
+			if ( hasHover( plain ) ) {
+				hoverMembers++;
+				if ( plain === m && ! inMouse ) {
+					findings.push( { kind: 'unguarded-hover', selector: m, line } );
+					continue;
+				}
+				const t = touchMember( plain );
+				const half = t && ( t.negated ? withGuard( t.selector, SGS_HOVER_TOUCH_ONLY ) : t.selector );
+				if ( half && ! existing.has( normalise( half ) ) ) {
+					findings.push( { kind: 'missing-touch-half', selector: m, line } );
+				}
+			} else if ( hasActive( m ) ) {
+				activeMembers++;
+				const t = touchMember( m );
+				if ( t && ! t.negated && ! existing.has( normalise( t.selector ) ) ) {
+					findings.push( { kind: 'missing-press-half', selector: m, line } );
+				}
+			}
+		}
+	} );
+	return { hoverMembers, activeMembers, findings };
 }
 
-module.exports = { transformCss, SGS_HOVER_NOT_TOUCH };
+module.exports = { transformCss, auditCss, touchMember, SGS_HOVER_NOT_TOUCH, SGS_HOVER_TOUCH_ONLY, PRESSED_CLASS };
