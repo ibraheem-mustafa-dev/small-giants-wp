@@ -19,9 +19,9 @@
 	},
 	{
 		"file": "lib/fill-grid-tracks.mjs",
-		"find": "|| cells.length > tracks.length ) {",
+		"find": "|| cells.length !== tracks.length ) {",
 		"replace": ") {",
-		"why": "a grid that wraps (more cells than tracks) would be re-derived"
+		"why": "a grid that wraps, or leaves a track empty, would be re-derived"
 	},
 	{
 		"file": "lib/fill-grid-tracks.mjs",
@@ -31,20 +31,20 @@
 	},
 	{
 		"file": "lib/fill-grid-tracks.mjs",
-		"find": "counts && 'object' === typeof counts && gridTracks( value ).length === Number( counts[ tier ] ) && ( counts[ tier ] = r.count );",
-		"replace": "void counts;",
+		"find": "if ( counts && 'object' === typeof counts && gridTracks( value ).length === Number( counts[ tier ] ) ) {",
+		"replace": "if ( false ) {",
 		"why": "the container's column count would still say two while its tracks say one"
 	},
 	{
 		"file": "lib/fill-grid-tracks.mjs",
-		"find": "prior.forEach( ( x ) => Object.assign( x, { after: w.after, how: 'grid-tracks' } ) );",
-		"replace": "prior.forEach( ( x ) => Object.assign( x, { after: w.after } ) );",
-		"why": "the rewritten write would be judged against the draft's resting tracks and reported as a divergence"
+		"find": "retracked: [ ...new Set( [ ...( x.retracked || [] ), w.width ] ) ]",
+		"replace": "retracked: []",
+		"why": "the rewritten write would be judged against the draft's resting tracks at every width and reported as a divergence"
 	},
 	{
 		"file": "lib/fill-grid-tracks.mjs",
-		"find": "return ! prior.length;",
-		"replace": "return true;",
+		"find": "if ( ! prior.length ) {",
+		"replace": "if ( true ) {",
 		"why": "a rewrite would be listed as a second write beside the one it replaced"
 	},
 	{
@@ -52,5 +52,23 @@
 		"find": "( parts.some( ( key ) => within( m, key, cell ) ) ? 1 :",
 		"replace": "( false ? 1 :",
 		"why": "a split hero's two parts would be counted by the items inside them, collapsing its two columns to one track"
+	},
+	{
+		"file": "lib/fill-grid-tracks.mjs",
+		"find": "[ ...m.blockKids( element ), ...m.widthKids( element ) ]",
+		"replace": "m.blockKids( element )",
+		"why": "a cell the draft shows only at some widths is left out, so the items inside it are orphans at those widths"
+	},
+	{
+		"file": "lib/fill-grid-tracks.mjs",
+		"find": "rewritten.push( { node, rec, attr: 'columns', width, before: structuredClone( counts ) } );",
+		"replace": "void counts;",
+		"why": "the count setting is rewritten with no write, so the report and the confirm still show the draft's count"
+	},
+	{
+		"file": "lib/fill-grid-tracks.mjs",
+		"find": "w.retracked ? { ...w, widths: ( w.widths || [] ).filter( ( x ) => ! w.retracked.includes( x ) ) } : w",
+		"replace": "w",
+		"why": "a rewritten write is judged against the draft at the widths the rewrite reached"
 	}
 ]

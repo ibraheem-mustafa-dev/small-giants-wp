@@ -3,7 +3,7 @@
 // second cell's picture belongs to the hero), so the words sat in half the width. Mutation list: tests/fill-grid-tracks.mutations.json.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { retrack, gridTrackWrites } from '../lib/fill-grid-tracks.mjs';
+import { retrack, gridTrackWrites, confirmable } from '../lib/fill-grid-tracks.mjs';
 import { inventoryModel } from '../lib/skeleton-model.mjs';
 
 const el = ( key, parentKey, shown = [ 375, 768, 1440 ] ) => ( { key, parentKey, depth: parentKey ? 1 : 0, tag: 'div', words: '', visible: { 375: shown.includes( 375 ), 768: shown.includes( 768 ), 1440: shown.includes( 1440 ) }, box: {} } );
@@ -48,17 +48,36 @@ const tree = ( attrs, kids ) => {
 	return { nodes, flat, refOf: ( n ) => `n${ flat.indexOf( n ) }` };
 };
 
-test( 'MUST FAIL: the node tiers, its count setting and the write Fill made take the re-derived tracks, and the write is no longer judged against the draft', () => {
+test( 'MUST FAIL: the node tiers, its count setting and the write Fill made take the re-derived tracks, and the write is judged against the draft only where no rewrite reached', () => {
 	const attrs = { gridTemplateColumns: { desktop: '1fr 1fr', tablet: '1fr 1fr', mobile: '1fr' }, columns: { desktop: 2, tablet: 2, mobile: 1 } };
 	const t = tree( attrs, [ 'a1', 'a2', 'a3', 'a4' ] );
-	const prior = { node: 'n0', attr: 'gridTemplateColumns', after: structuredClone( attrs.gridTemplateColumns ), how: 'declared' };
+	const prior = { node: 'n0', attr: 'gridTemplateColumns', after: structuredClone( attrs.gridTemplateColumns ), widths: [ 375, 768, 1440 ], how: 'declared' };
 	const r = gridTrackWrites( { ...t, m: two(), writes: [ prior ] } );
 	assert.deepEqual( attrs.gridTemplateColumns, { desktop: '1fr', tablet: '1fr', mobile: '1fr' } );
 	assert.deepEqual( attrs.columns, { desktop: 1, tablet: 1, mobile: 1 } );
-	assert.deepEqual( [ prior.how, prior.after ], [ 'grid-tracks', attrs.gridTemplateColumns ] );
-	assert.deepEqual( [ r.writes.length, r.unmapped.length, r.notes.length ], [ 0, 0, 2 ], 'the replaced write is not added twice; desktop and tablet are noted' );
+	assert.deepEqual( [ prior.how, prior.after, prior.retracked ], [ 'declared', attrs.gridTemplateColumns, [ 1440, 768 ] ], 'the write keeps its own how and names the widths the rewrite reached' );
+	assert.deepEqual( confirmable( [ prior ] ).map( ( w ) => w.widths ), [ [ 375 ] ], 'only the width no rewrite reached is judged against the draft' );
+	assert.deepEqual( [ r.unmapped.length, r.notes.length ], [ 0, 2 ], 'desktop and tablet are noted' );
+	assert.deepEqual( r.writes.map( ( w ) => [ w.attr, w.how, w.widths, w.before, w.after ] ), [ [ 'columns', 'grid-tracks', [ 1440, 768 ], { desktop: 2, tablet: 2, mobile: 1 }, attrs.columns ] ], 'the count setting is a write of its own: the report shows the new count, not the draft count' );
+	// A count write Fill already made is rewritten in place, the same way.
+	const attrs2 = { gridTemplateColumns: { desktop: '1fr 1fr' }, columns: { desktop: 2 } };
+	const priorCount = { node: 'n0', attr: 'columns', after: { desktop: 2 }, widths: [ 1440 ], how: 'declared' };
+	const r2 = gridTrackWrites( { ...tree( attrs2, [ 'a1', 'a2' ] ), m: two(), writes: [ priorCount ] } );
+	assert.deepEqual( [ priorCount.after, priorCount.retracked, r2.writes.map( ( w ) => w.attr ) ], [ { desktop: 1 }, [ 1440 ], [ 'gridTemplateColumns' ] ] );
+	assert.deepEqual( confirmable( [ priorCount ] ), [], 'a write every width of which was rewritten is not judged' );
 	const bare = tree( { gridTemplateColumns: { desktop: '1fr 1fr' } }, [ 'a1', 'a2' ] );
 	assert.equal( gridTrackWrites( { ...bare, m: two(), writes: [] } ).writes.length, 1, 'with no write to replace, the rewrite is a write of its own' );
+} );
+
+test( 'MUST FAIL: a cell the draft shows only at some widths holds its items at those widths, so they are no orphans there', () => {
+	const m = inventoryModel( { elements: [ el( 'grid', null ), ...A, el( 'cellM', 'grid', [ 375 ] ), el( 'm1', 'cellM', [ 375 ] ) ] } );
+	assert.deepEqual( retrack( { width: 375, m, value: '1fr 1fr', element: m.byKey.grid, children: [ 'a1', 'a2', 'a3', 'a4', 'm1' ] } ).ok, false, 'the phone-only cell is a cell: cellA holds four items beside it, so no track list holds them' );
+	assert.deepEqual( retrack( { width: 375, m, value: '1fr 1fr', element: m.byKey.grid, children: [ 'a1', 'm1' ] } ), { ok: true }, 'one item in each of the two cells shown at 375: the draft tracks hold them' );
+} );
+
+test( 'negative control: a track left empty (fewer cells shown than tracks) is not re-derived, as which track a cell sits in is not known', () => {
+	const m = two();
+	assert.deepEqual( retrack( { ...base, m, value: '1fr 1fr 1fr', element: m.byKey.grid, children: [ 'a1', 'a2', 'a3', 'a4' ] } ), { ok: true } );
 } );
 
 test( 'MUST FAIL: tracks no list holds are an UNMAPPED row naming the node, the width and why; the node is left as Fill wrote it', () => {

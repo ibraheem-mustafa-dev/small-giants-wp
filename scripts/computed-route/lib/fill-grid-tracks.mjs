@@ -9,7 +9,8 @@
 //   - a cell that kept one item keeps its track, a cell that kept none (absorbed by its host) loses it;
 //   - items promoted from one cell, when it is the only cell left with items, stack in that cell's one track;
 //   - anything else (two cells left, one of them promoting several items) no track list holds: a row says so.
-// Only a single-row grid is re-derived (the draft draws no more cells than tracks); a grid that wraps keeps its tracks. Pure
+// Only a single-row grid is re-derived (the draft shows as many cells as it has tracks at that width, each cell the track at its
+// place in the row); a grid that wraps or leaves a track empty keeps its tracks. Pure
 // over the node's skeleton children and the draft inventory model: no browser, no site.
 import { gridTracks } from './skeleton-record.mjs';
 
@@ -36,8 +37,11 @@ const within = ( m, key, ancestor ) => {
  */
 export function retrack( { value, element, children, parts = [], width, m } ) {
 	const tracks = gridTracks( value );
-	const cells = m.blockKids( element ).filter( ( k ) => k.visible?.[ width ] );
-	if ( tracks.length < 2 || ! cells.length || cells.length > tracks.length ) {
+	// Every cell the draft draws at this width, one that shows only at some widths (a phone-only cell) included: such a cell is
+	// an alternative of the grid for the reference width, but it holds items at its own.
+	const cells = [ ...m.blockKids( element ), ...m.widthKids( element ) ].filter( ( k ) => k.visible?.[ width ] );
+	// The track a cell sits in is read from its place in the row, which only holds while each track has one cell.
+	if ( tracks.length < 2 || ! cells.length || cells.length !== tracks.length ) {
 		return { ok: true };
 	}
 	const held = cells.map( ( cell ) => ( parts.some( ( key ) => within( m, key, cell ) ) ? 1 : children.filter( ( key ) => within( m, key, cell ) ).length ) );
@@ -72,6 +76,7 @@ export function retrack( { value, element, children, parts = [], width, m } ) {
  */
 export function gridTrackWrites( { nodes, flat, refOf, m, writes } ) {
 	const out = { writes: [], unmapped: [], notes: [] };
+	const rewritten = [];
 	for ( const rec of nodes ) {
 		const node = flat[ rec.index ];
 		const tracks = node?.attributes?.gridTemplateColumns;
@@ -90,21 +95,41 @@ export function gridTrackWrites( { nodes, flat, refOf, m, writes } ) {
 			if ( ! r.ok ) {
 				out.unmapped.push( { node: refOf( node ), block: rec.name, slot: '', property: 'grid-template-columns', value, widths: [ width ], reason: `tracks: ${ r.why }` } );
 			} else if ( undefined !== r.value && r.value !== value ) {
-				const before = structuredClone( tracks );
+				rewritten.push( { node, rec, attr: 'gridTemplateColumns', width, before: structuredClone( tracks ) } );
 				tracks[ tier ] = r.value;
+				// The count setting that held the draft's track count holds the new one.
 				const counts = node.attributes.columns;
-				counts && 'object' === typeof counts && gridTracks( value ).length === Number( counts[ tier ] ) && ( counts[ tier ] = r.count );
-				out.writes.push( { node: refOf( node ), index: rec.index, block: rec.name, slot: '', prop: 'grid-template-columns', attr: 'gridTemplateColumns', before, after: structuredClone( tracks ), widths: [ width ], how: 'grid-tracks' } );
+				if ( counts && 'object' === typeof counts && gridTracks( value ).length === Number( counts[ tier ] ) ) {
+					rewritten.push( { node, rec, attr: 'columns', width, before: structuredClone( counts ) } );
+					counts[ tier ] = r.count;
+				}
 				out.notes.push( `${ refOf( node ) } ${ rec.name } grid-template-columns at ${ width }px: ${ r.why }` );
 			}
 		}
 	}
-	// A write the rewrite replaced is the same write with its new value, no longer judged against the draft's resting tracks (the
-	// draft's own are the cells' tracks); a rewrite no write names is a write of its own.
-	out.writes = out.writes.filter( ( w ) => {
-		const prior = writes.filter( ( x ) => x.node === w.node && 'gridTemplateColumns' === x.attr );
-		prior.forEach( ( x ) => Object.assign( x, { after: w.after, how: 'grid-tracks' } ) );
-		return ! prior.length;
-	} );
+	// A rewritten setting is the write Fill already made with its new value, kept under its own `how` and judged against the draft
+	// only at the widths no rewrite reached (`retracked`: the draft's own tracks are the cells' tracks); a setting no write names
+	// is a write of its own.
+	for ( const w of rewritten ) {
+		const ref = refOf( w.node );
+		const now = structuredClone( w.node.attributes[ w.attr ] );
+		const prior = writes.filter( ( x ) => x.node === ref && w.attr === x.attr );
+		prior.forEach( ( x ) => Object.assign( x, { after: now, retracked: [ ...new Set( [ ...( x.retracked || [] ), w.width ] ) ] } ) );
+		if ( ! prior.length ) {
+			const mine = out.writes.find( ( x ) => x.node === ref && w.attr === x.attr );
+			mine ? Object.assign( mine, { after: now, widths: [ ...mine.widths, w.width ] } )
+				: out.writes.push( { node: ref, index: w.rec.index, block: w.rec.name, slot: '', prop: 'grid-template-columns', attr: w.attr, before: w.before, after: now, widths: [ w.width ], how: 'grid-tracks' } );
+		}
+	}
 	return out;
+}
+
+/**
+ * Fill's writes as the confirm check reads them: a write a rewrite reached is judged only at the widths it did not reach.
+ *
+ * @param {Object[]} writes Fill's writes.
+ * @return {Object[]} The writes to judge against the draft.
+ */
+export function confirmable( writes ) {
+	return writes.map( ( w ) => ( w.retracked ? { ...w, widths: ( w.widths || [] ).filter( ( x ) => ! w.retracked.includes( x ) ) } : w ) ).filter( ( w ) => ! w.retracked || w.widths.length );
 }

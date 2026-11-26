@@ -42,7 +42,7 @@ import { widthLadderWrites } from './lib/fill-width-ladder.mjs';
 import { residualCssWrites, PASS as PASS_RESIDUAL } from './lib/fill-residual-css.mjs';
 import { stepRungWrites } from './lib/fill-step-rungs.mjs';
 import { dimensionWrites } from './lib/fill-dimensions.mjs';
-import { gridTrackWrites } from './lib/fill-grid-tracks.mjs';
+import { gridTrackWrites, confirmable } from './lib/fill-grid-tracks.mjs';
 import { inventoryModel } from './lib/skeleton-model.mjs';
 import { partMarginWrites } from './lib/fill-part-margin.mjs';
 import { layerRotationWrites } from './lib/fill-layer-rotation.mjs';
@@ -447,7 +447,7 @@ export async function fillSurface( o ) {
 		result.emptyPictures = emptyPictureRows( { reads, nodes, flat, refOf } );
 		// FR-48-8: every written style value against what the draft's code declares, at each read width.
 		// A state write is judged by the state check (lib/state-check.mjs), never against the resting read.
-		result.confirm = confirmRecords( { writes: result.writes.filter( ( w ) => ! [ 'motion', 'width-gate', 'preset', 'width-ladder', 'dimension', 'part-margin', 'layer-rotation', 'grid-tracks', PASS_RESIDUAL ].includes( w.how ) && ! w.state ), nodes, reads, defects: defectIndex( intakeParts.draftDefects ), rootComponent: intakeParts.rootComponent, calFor } );
+		result.confirm = confirmRecords( { writes: confirmable( result.writes ).filter( ( w ) => ! [ 'motion', 'width-gate', 'preset', 'width-ladder', 'dimension', 'part-margin', 'layer-rotation', 'grid-tracks', PASS_RESIDUAL ].includes( w.how ) && ! w.state ), nodes, reads, defects: defectIndex( intakeParts.draftDefects ), rootComponent: intakeParts.rootComponent, calFor } );
 		// FR-48-8: a declaration that asks the device safe-area inset is named once per element and property.
 		result.notes.push( ...[ ...new Set( result.confirm.filter( ( r ) => r.safeArea ).map( ( r ) => `${ r.node } ${ r.block } ${ r.property }: ${ r.safeArea.note }` ) ) ] );
 		result.confirm.push( ...imageRecords( { images: result.images } ) );
