@@ -44,7 +44,9 @@ import { scriptGapReason, openSlots, openAsHover } from './fill-state-script.mjs
 import { partStateSlots } from './fill-state-parts.mjs';
 import { createPatch, tokenRoute, pickValue, pressVariant, ownedBySetting, applyTokenLooks, conflictRow, ringLook, restShadow } from './fill-state-tokens.mjs';
 import { focusSharesHover, settleFocusRests } from './fill-state-focus.mjs';
-import { stateChoice } from './fill-choice-state.mjs';
+import { stateChoice, choiceConflict } from './fill-choice-state.mjs';
+import { sweepResult } from './fill-underline-sweep.mjs';
+import { ownerOf } from './fill-resolve-element.mjs';
 
 export { focusSharesHover };
 
@@ -335,7 +337,15 @@ export function fillStates( { tree, nodes, reads, calFor, db, snapshot, rawSnaps
 			const ctx = stateContext( reads, target.id );
 			const hidden = SURFACE_BLOCKS.includes( rec.name ) && hiddenAtRest( reads, target.id );
 			const tokenLooks = {};
+			// A link whose underline is the block's `sweep` (lib/fill-underline-sweep.mjs): the looks its hover grows are the setting's own,
+			// so they are settled as held by it, never written to another setting or raised as a gap.
+			const snaps = Object.fromEntries( READ_WIDTHS.map( ( w ) => [ w, reads.widths?.[ w ]?.[ target.id ] ] ).filter( ( [ , s ] ) => s && ! s.missing ) );
+			const sweep = Object.keys( snaps ).length && ! hidden ? sweepResult( { db, cal, block: rec.name, slot: target.slot, snaps, reads, id: target.id } ) : null;
 			for ( const { state, prop, pseudo, perWidth, read, draftDefect, script } of drafts.values() ) {
+				if ( sweep && 'hover' === state && ( pseudo ? sweep.kinds.includes( 'layer' ) : sweep.kinds.includes( 'background' ) && [ 'background-size', 'background-image', 'background-position' ].includes( prop ) ) ) {
+					out.ledger.push( { node: ref, block: rec.name, slot: `${ target.slot }${ pseudo }`, property: prop, state, value: JSON.stringify( perWidth ), kind: 'judged-equal', reason: `held-by-setting: ${ sweep.writes[ 0 ].attr } sweep draws this look (its line grows on hover)` } );
+					continue;
+				}
 				// A pseudo-element look goes to that layer's calibrated path, as the resting writer sends it
 				// (lib/fill-resolve.mjs), and never to a theme token: the site ring and press tokens paint the element.
 				const slot = `${ target.slot }${ pseudo }`;
@@ -369,7 +379,8 @@ export function fillStates( { tree, nodes, reads, calFor, db, snapshot, rawSnaps
 				const gap = atRest ? null : stateGap( writeState, held );
 				// A resting setting whose value paints this look in this state (linkUnderline: hover) answers before the state settings do.
 				const chosen = pseudo || atRest || asHover || ! [ 'hover', 'focus' ].includes( state ) ? null : stateChoice( { cal, slot, prop, rest: restValue( reads, target.id, prop ), draft: perWidth, state } );
-								const res = chosen ?? ( gap ? { status: 'gap', gap } : resolveProperty( { node, block: rec.name, prop, draft: perWidth, baseline: () => undefined, slots: [ slot, ...( atRest || asHover ? [] : openSlots( cal, prop, slot, state ) ) ].concat( atRest ? [] : partStateSlots( { db, cal, block: rec.name, prop, slot, state: writeState } ) ), calibration: cal, db, snapshot, log: [], state: atRest ? null : writeState, siblings: ctx.siblings, rest: pseudo ? undefined : restValue( reads, target.id, prop ) } ) );
+								const choice = chosen && chosen.writes.map( ( w ) => choiceConflict( { setting: cal.settings?.[ w.attr ], attr: w.attr, prop, rest: restValue( reads, target.id, prop ), value: w.value, current: node.attributes?.[ w.attr ], owner: ownerOf( node, w.attr ), taken: taken.get( w.attr ), slot: target.slot } ) ).find( Boolean );
+				const res = choice ? { status: 'gap', gap: 'conflict', detail: choice } : chosen ?? ( gap ? { status: 'gap', gap } : resolveProperty( { node, block: rec.name, prop, draft: perWidth, baseline: () => undefined, slots: [ slot, ...( atRest || asHover ? [] : openSlots( cal, prop, slot, state ) ) ].concat( atRest ? [] : partStateSlots( { db, cal, block: rec.name, prop, slot, state: writeState } ) ), calibration: cal, db, snapshot, log: [], state: atRest ? null : writeState, siblings: ctx.siblings, rest: pseudo ? undefined : restValue( reads, target.id, prop ) } ) );
 				if ( 'written' === res.status ) {
 					for ( const w of res.writes ) {
 						const { before, after } = setAttr( node, w );

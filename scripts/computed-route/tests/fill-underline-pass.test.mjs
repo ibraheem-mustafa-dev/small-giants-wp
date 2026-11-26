@@ -10,6 +10,8 @@ import { skeletonNodes, cleanTree } from '../lib/fill-skeleton.mjs';
 import { addRefs } from '../lib/tree.mjs';
 import { fillTree } from '../lib/fill-resolve.mjs';
 import { fillStates } from '../lib/fill-state.mjs';
+import { recordOwner } from '../lib/fill-resolve-element.mjs';
+import { choiceConflict } from '../lib/fill-choice-state.mjs';
 import { recordFixtures } from '../lib/setting-record.mjs';
 
 const db = openDb();
@@ -26,24 +28,25 @@ const CAL = { ...BASE, settings: { ...BASE.settings,
 		enumStateReads: { hover: { always: line( 'underline' ), hover: line( 'underline' ), none: line( 'none' ), sweep: line( 'none' ) } },
 	} ) } };
 const snapshot = { palette: [], spacing: [], fontSizes: [] };
-const snap = ( styles ) => ( { styles, pseudo: {}, rect: { x: 0, y: 0, w: 120, h: 40 }, inFlow: true, words: '', href: '/x', tag: 'a' } );
+const snap = ( styles, pseudo = {} ) => ( { styles, pseudo, rect: { x: 0, y: 0, w: 120, h: 40 }, inFlow: true, words: '', href: '/x', tag: 'a' } );
 const hoverLook = ( declared ) => [ { states: [ 'hover' ], declared, rendered: declared, read: 'entered' } ];
 
-function restPass( styles, looks = {} ) {
+function restPass( styles, looks = {}, { pseudo = {}, seed = null, cal = CAL } = {} ) {
 	const skeleton = [ { name: 'sgs/button', attributes: {}, draftRef: '.lnk', draftSlots: {} } ];
 	const nodes = skeletonNodes( skeleton );
 	const tree = cleanTree( skeleton );
 	addRefs( tree, 'home' );
+	seed?.( tree );
 	const root = nodes[ 0 ].targets.find( ( t ) => '' === t.slot );
 	const full = { ...BASE.elements[ '' ][ 1440 ], ...styles };
 	const reads = {
-		widths: Object.fromEntries( [ ...WIDTHS, 1024, 1920 ].map( ( w ) => [ w, { [ root.id ]: snap( full ) } ] ) ),
+		widths: Object.fromEntries( [ ...WIDTHS, 1024, 1920 ].map( ( w ) => [ w, { [ root.id ]: snap( full, pseudo ) } ] ) ),
 		declared: {},
 		sweep: {},
 		origin: 'http://127.0.0.1:1',
 		states: Object.fromEntries( WIDTHS.map( ( w ) => [ w, { looks: { [ root.id ]: looks[ w ] || [] } } ] ) ),
 	};
-	const out = fillTree( { tree, nodes, reads, db, snapshot, rawSnapshot: {}, calFor: () => CAL, fixtures: recordFixtures(), ledger: [], ledgerStates: [], origin: 'http://127.0.0.1:1' } );
+	const out = fillTree( { tree, nodes, reads, db, snapshot, rawSnapshot: {}, calFor: () => cal, fixtures: recordFixtures(), ledger: [], ledgerStates: [], origin: 'http://127.0.0.1:1' } );
 	return { attrs: tree[ 0 ].attributes, out };
 }
 
@@ -68,11 +71,11 @@ test( 'NEGATIVE CONTROL: the same button without the hover growth is no sweep', 
 	assert.notEqual( restPass( SWEEP_REST ).attrs.linkUnderline, 'sweep' );
 } );
 
-const statePass = ( rest, hover ) => {
-	const tree = [ { name: 'sgs/button', attributes: { className: 'cr-ref-x-0' }, innerBlocks: [] } ];
+const statePass = ( rest, hover, { attributes = {}, restStyles = {}, declared = null } = {} ) => {
+	const tree = [ { name: 'sgs/button', attributes: { className: 'cr-ref-x-0', ...attributes }, innerBlocks: [] } ];
 	const reads = {
-		states: Object.fromEntries( WIDTHS.map( ( w ) => [ w, { looks: { t: hoverLook( { 'text-decoration-line': hover } ) } } ] ) ),
-		widths: Object.fromEntries( WIDTHS.map( ( w ) => [ w, { t: { tag: 'a', href: '/x', styles: { 'text-decoration-line': rest } } } ] ) ),
+		states: Object.fromEntries( WIDTHS.map( ( w ) => [ w, { looks: { t: hoverLook( declared ?? { 'text-decoration-line': hover } ) } } ] ) ),
+		widths: Object.fromEntries( WIDTHS.map( ( w ) => [ w, { t: { tag: 'a', href: '/x', styles: { 'text-decoration-line': rest, ...restStyles } } } ] ) ),
 	};
 	return fillStates( { tree, nodes: [ { index: 0, name: 'sgs/button', targets: [ { id: 't', slot: '' } ] } ], reads, calFor: () => CAL, db, snapshot } );
 };
@@ -86,4 +89,55 @@ test( 'MUST FAIL WITHOUT THE STATE CHOICE: a button link plain at rest and under
 test( 'NEGATIVE CONTROL: a link underlined at rest and plain on hover has no setting, so nothing is written for it', () => {
 	const r = statePass( 'underline', 'none' );
 	assert.ok( ! r.writes.some( ( w ) => 'linkUnderline' === w.attr ), JSON.stringify( r.writes.map( ( w ) => [ w.attr, w.after ] ) ) );
+} );
+
+// ---- review fixes: owner check, layers and hover looks of a sweep, conflicts of the state choice
+
+test( 'MUST FAIL WITHOUT THE OWNER CHECK: a sweep does not replace what another element of the block already wrote to the setting', () => {
+	const seed = ( tree ) => {
+		tree[ 0 ].attributes.linkUnderline = 'always';
+		recordOwner( { flat: [ tree[ 0 ] ] }, { index: 0 }, { slot: ' .elsewhere' }, 'text-decoration-line', 'linkUnderline', true );
+	};
+	const seeded = restPass( SWEEP_REST, growing, { seed } );
+	assert.equal( seeded.attrs.linkUnderline, 'always', 'the earlier writer keeps the setting' );
+	assert.ok( seeded.out.unmapped.some( ( u ) => /conflict: linkUnderline/.test( u.reason ) ), JSON.stringify( seeded.out.unmapped.filter( ( u ) => /linkUnderline/.test( u.reason ) ) ) );
+	assert.equal( restPass( SWEEP_REST, growing ).attrs.linkUnderline, 'sweep', 'with no earlier writer it is written' );
+} );
+
+const CAL_LAYER = { ...CAL, elements: { ...CAL.elements, '::after': CAL.elements[ '' ] } };
+const LAYER_REST = { 'text-decoration-line': 'none', 'transition-property': 'width', 'transition-duration': '0.2s' };
+const layerLooks = Object.fromEntries( WIDTHS.map( ( w ) => [ w, [ { states: [ 'hover' ], declared: { width: '80px' }, rendered: { width: '80px' }, read: 'entered', pseudo: '::after' } ] ] ) );
+const layerPaint = { content: '""', width: '0px', 'background-color': 'rgb(1, 2, 3)' };
+
+test( 'MUST FAIL WITHOUT THE LAYER RULE: the line a sweep grows on a painted ::after is settled, never written to another setting', () => {
+	const { out } = restPass( LAYER_REST, layerLooks, { pseudo: { '::after': layerPaint }, cal: CAL_LAYER } );
+	assert.ok( ( out.settled || [] ).some( ( s ) => 'held-by-setting' === s.reason && /::after/.test( s.slot ) && 'background-color' === s.property ), 'the colour of the layer is held by the sweep setting' );
+	assert.ok( ! out.writes.some( ( w ) => /::after/.test( w.slot ) ), JSON.stringify( out.writes.filter( ( w ) => /::after/.test( w.slot ) ) ) );
+	const plain = restPass( { ...LAYER_REST, 'transition-property': 'color' }, layerLooks, { pseudo: { '::after': layerPaint }, cal: CAL_LAYER } );
+	assert.ok( ! ( plain.out.settled || [] ).some( ( s ) => 'held-by-setting' === s.reason ), 'NEGATIVE CONTROL: with no growth under a transition it is no sweep' );
+} );
+
+test( 'MUST FAIL WITHOUT THE STATE LOOKS RULE: the hover look of the property a sweep grows is held by the setting, not raised as a gap', () => {
+	const r = statePass( 'none', 'none', { declared: { 'background-size': '100% 2px' }, restStyles: SWEEP_REST } );
+	assert.ok( r.ledger.some( ( l ) => 'background-size' === l.property && 'judged-equal' === l.kind && /^held-by-setting/.test( l.reason ) ), JSON.stringify( r.ledger ) );
+	assert.ok( ! r.unmapped.some( ( u ) => 'background-size' === u.property ), 'no gap row for it' );
+	const none = statePass( 'none', 'none', { declared: { 'background-size': '100% 2px' }, restStyles: { ...SWEEP_REST, 'transition-property': 'color' } } );
+	assert.ok( ! none.ledger.some( ( l ) => /^held-by-setting/.test( l.reason ) ), 'NEGATIVE CONTROL: not a sweep, so not held' );
+} );
+
+test( 'MUST FAIL WITHOUT THE CONFLICT CHECK: the state choice refines the value of the rest pass but never replaces another look', () => {
+	const written = ( r ) => r.writes.filter( ( w ) => 'linkUnderline' === w.attr ).map( ( w ) => w.after );
+	assert.deepEqual( written( statePass( 'none', 'underline', { attributes: { linkUnderline: 'none' } } ) ), [ 'hover' ], 'none is the value of the rest pass for a plain link: refined' );
+	const clash = statePass( 'none', 'underline', { attributes: { linkUnderline: 'always' } } );
+	assert.deepEqual( written( clash ), [], 'always paints an underline at rest, so it is another look' );
+	assert.ok( clash.unmapped.some( ( u ) => /conflict: linkUnderline already holds "always"/.test( u.reason ) ), JSON.stringify( clash.unmapped.map( ( u ) => u.reason ) ) );
+} );
+
+test( 'the conflict rule also names a value an earlier state look or another element wrote', () => {
+	const setting = CAL.settings.linkUnderline;
+	const base = { setting, attr: 'linkUnderline', prop: 'text-decoration-line', rest: every( 'none' ), value: 'hover', slot: '' };
+	assert.match( choiceConflict( { ...base, taken: 'always' } ), /another state look/ );
+	assert.match( choiceConflict( { ...base, owner: { from: ' .elsewhere', value: 'sweep' } } ), /was written "sweep"/ );
+	assert.equal( choiceConflict( { ...base, owner: { from: ' .elsewhere', value: 'hover' }, taken: 'hover', current: 'hover' } ), null, 'the same value is no conflict' );
+	assert.equal( choiceConflict( base ), null );
 } );

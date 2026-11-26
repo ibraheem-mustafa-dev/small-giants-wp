@@ -78,5 +78,5 @@ export function sweepSetting( { db, cal, block, slot } ) {
 export function sweepResult( { db, cal, block, slot, snaps, reads, id } ) {
 	const look = sweepLook( snaps, stateDrafts( reads, id ) );
 	const setting = look ? sweepSetting( { db, cal, block, slot } ) : null;
-	return setting ? { status: 'written', writes: [ { attr: setting.attr, value: 'sweep', merge: 'replace' } ], included: Object.fromEntries( look.widths.map( ( w ) => [ w, 'sweep' ] ) ), how: 'underline-sweep', slot: setting.slot } : null;
+	return setting ? { status: 'written', writes: [ { attr: setting.attr, value: 'sweep', merge: 'replace' } ], included: Object.fromEntries( look.widths.map( ( w ) => [ w, 'sweep' ] ) ), how: 'underline-sweep', slot: setting.slot, kinds: look.kinds } : null;
 }
