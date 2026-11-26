@@ -63,7 +63,7 @@ Changes: A1 (rf1, rf6), A2 (rf2, rf3, rf4, rf5, rf8), A3 (rf7, rf9, rf10), A4 (c
 
 Done when: all 11 branches are merged, the full suite passes, `check-mutation-lists.mjs` shows 0 new, and A4's render-check shows Mama's header unchanged.
 
-Depends on: none. Status: 8 of the 11 branches are merged (rf1, rf2, rf3, rf4, rf5, rf6, rf9, rf10); the rf6 second-review fixes are merged; the rf3 and rf4 second-review fixes are in flight, and rf7, rf8 and A4 are not merged (see "Where it stands").
+Depends on: none. Status: 9 of the 11 groups are merged (rf1 to rf6, rf8, rf9, rf10) with every second-review fix but rf1, rf9 and rf10's (`fix/review2-rf1910`, proof batch running); rf7 is being rebased onto main (`fix/rf7-shop-forms`); A4 (`fix/cart-trigger`) passed both reviews and joins batch 1.
 
 ### Task 3: Track C, every block part findable
 Brief `c-parts.md` (`i15`, `i5`).
@@ -87,7 +87,7 @@ Depends on: none. Status: merged (`dfa7e821b`: the card grid's frame owns paddin
 ### Task 6: Track G2, the trust bar's clone-relevant fixes
 Brief `g2-trustbar.md` (`i12`, `i3`): one stored marquee value, Fill writing the draft's marquee condition, icon fill colours reaching path fills (also `sgs/icon`, `sgs/button`, `sgs/cart`). The editor features moved to Task 11 (W4).
 
-Depends on: rf1, rf5, rf6 merged (all three are). Status: not started.
+Depends on: rf1, rf5, rf6 merged (all three are). Status: building (`fix/g2-trustbar`, started 2026-11-26).
 
 ### Task 7: Track B, a look the clone cannot place never stops the run
 Brief `b-runstop.md` (`i2`).
@@ -97,7 +97,7 @@ Depends on: none (the account shadows wait for Task 4). Status: built; review fi
 ### Task 8: Tracks E1 and E2, restores
 Briefs `e1-restores.md`, `e2-restores.md` (`i6`). Commits already ported on the branches are skipped.
 
-Depends on: E1 needs rf4 and rf10 merged (both are); E2 needs rf4 and rf6 (both are). Status: not started.
+Depends on: E1 needs rf4 and rf10 merged (both are); E2 needs rf4 and rf6 (both are). Status: building (`fix/e1-restores`, `fix/e2-restores`, started 2026-11-26).
 
 ### Task 9: Track F, the mega menu
 Brief `f-mega.md` (`i4`; Bean approved both rules, 2026-11-25).
@@ -112,7 +112,7 @@ Depends on: none. Status: items 1 to 3 and 5 proven; item 4 (social icons) is be
 ### Task 15: Track S, the shop pieces MIC needs
 Brief `s-shop.md`: `part-look.mjs` as a run stage, a template card's `variantStyle` and related cards, the buy-box layout write (FR-48-60).
 
-Depends on: rf7 and rf8 merged. Status: not started.
+Depends on: rf7 and rf8 merged (rf8 is; rf7 is being rebased). Status: not started; starts when rf7 merges.
 
 ### Task 16: SGS and MIC sites (main session, with Bean)
 Why: no draft, deploy target, route target, secrets file or local mirror exists for SGS or MIC. The LEDGER names their hosting entries (`lightgreen-whale-237337`, `palegreen-goose-450620`); nothing is created on the hosting account until Bean says so.
