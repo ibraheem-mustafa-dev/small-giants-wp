@@ -118,7 +118,7 @@ Depends on: 2 to 9, 14 to 16. Status: not started.
 
 ### Task 11: Stage E1, shared components and packages
 Briefs:
-- `w1-editor-shared.md`: markers, inner section, Background sections, reset component.
+- `w1-editor-shared.md`: markers, inner section, Background sections, reset component. Bean approved the inner section's look as built (2026-11-26, screenshots `E:\sgs-tmp\general-cloning\build\w1-shared\shots\`), so Stages E2 and E3 may adopt it.
 - `w2-editor-packages.md`: separators package, shape dividers.
 - `w3-editor-switcher.md`: element switcher, border and shadow upgrades, carousels.
 - `w4-trustbar-editor.md`: the trim list (one owner), the trust bar's lean layout and editor fixes, brand strip "Even visual size", "Trim empty edges".
