@@ -173,6 +173,30 @@ export function resetPatch( rows, attrs, device, prefix, blockSlug ) {
 }
 
 /**
+ * Whether Reset would change anything: some attribute the panel's reset clears holds a value that is not the block's
+ * default. A panel with nothing to reset shows no Reset button.
+ *
+ * @param {Object[]} rows      The panel's rows.
+ * @param {Object}   attrs     Block attributes.
+ * @param {string}   device    Active device.
+ * @param {string}   prefix    Surface prefix.
+ * @param {string}   blockSlug Block slug.
+ * @param {Object}   [defaults] The block's attribute defaults by name (an attribute holding its default is not a value).
+ * @return {boolean} True when Reset has something to clear.
+ */
+export function resetHasValue( rows, attrs, device, prefix, blockSlug, defaults = {} ) {
+	const patch = resetPatch( rows, attrs, device, prefix, blockSlug );
+	return Object.keys( patch ).some( ( key ) => {
+		const held = attrs ? attrs[ key ] : undefined;
+		if ( ! isSet( held ) ) {
+			return false;
+		}
+		const same = ( a, b ) => JSON.stringify( a ) === JSON.stringify( b );
+		return ! same( held, patch[ key ] ) && ! same( held, defaults[ key ] );
+	} );
+}
+
+/**
  * Which of Tablet and Mobile hold their own value for a row inside a panel (the closed-panel dot, Spec 49 §9.2).
  *
  * @param {Object[]} rows      The panel's rows.

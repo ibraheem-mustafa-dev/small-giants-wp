@@ -15,15 +15,9 @@
  * @package SGS\Blocks
  */
 import { useBlockEditContext } from '@wordpress/block-editor';
-import {
-	DropdownMenu,
-	MenuGroup,
-	MenuItem,
-	PanelBody,
-} from '@wordpress/components';
+import { PanelBody } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { __, sprintf } from '@wordpress/i18n';
-import { moreVertical } from '@wordpress/icons';
 
 import { getBlockType } from '@wordpress/blocks';
 import { blockHasMotion } from '../../../blocks/extensions/motion/support-cache.js';
@@ -35,7 +29,8 @@ import { buildPanelModel } from './panel-model.js';
 import PanelTitle from './PanelTitle.js';
 import { translateReason } from './reasons.js';
 import { pinnedBlockers } from './pinned-blockers.js';
-import { panelOwnDevices, resetPatch } from './row-io.js';
+import SgsPanelReset from '../../SgsPanelReset.js';
+import { panelOwnDevices, resetHasValue, resetPatch } from './row-io.js';
 
 const DEVICE_TO_KEY = {
 	Desktop: 'desktop',
@@ -158,14 +153,18 @@ export default function MediaPanels( {
 	} );
 	const slot = { prefix, kinds, context, extraActions: slotActions };
 
+	// The visible text: "Reset" on Desktop, "Reset Tablet" or "Reset Mobile" off it (the reset then clears only that device).
 	const resetLabel =
 		'desktop' === device
-			? __( 'Reset this panel', 'sgs-blocks' )
+			? __( 'Reset', 'sgs-blocks' )
 			: /* translators: %s: Tablet or Mobile. */
-			  sprintf(
-					__( 'Reset %s in this panel', 'sgs-blocks' ),
-					DEVICE_NAMES[ device ]
-			  );
+			  sprintf( __( 'Reset %s', 'sgs-blocks' ), DEVICE_NAMES[ device ] );
+	// An attribute that holds the block's default is not a value, so a fresh block shows no Reset.
+	const blockDefaults = Object.fromEntries(
+		Object.entries( getBlockType( name )?.attributes || {} )
+			.filter( ( [ , def ] ) => undefined !== def.default )
+			.map( ( [ key, def ] ) => [ key, def.default ] )
+	);
 
 	const mount = ( group ) =>
 		model
@@ -204,34 +203,29 @@ export default function MediaPanels( {
 							/>
 						) }
 					{ rows.length > 0 && (
-						<div className="sgs-media-panel__menu">
-							<DropdownMenu
-								icon={ moreVertical }
-								label={ __( 'Panel options', 'sgs-blocks' ) }
-								toggleProps={ { size: 'compact' } }
-							>
-								{ ( { onClose } ) => (
-									<MenuGroup>
-										<MenuItem
-											onClick={ () => {
-												setAttributes(
-													resetPatch(
-														rows,
-														attributes,
-														device,
-														prefix,
-														blockSlug
-													)
-												);
-												onClose();
-											} }
-										>
-											{ resetLabel }
-										</MenuItem>
-									</MenuGroup>
-								) }
-							</DropdownMenu>
-						</div>
+						<SgsPanelReset
+							hasValue={ resetHasValue(
+								rows,
+								attributes,
+								device,
+								prefix,
+								blockSlug,
+								blockDefaults
+							) }
+							onReset={ () =>
+								setAttributes(
+									resetPatch(
+										rows,
+										attributes,
+										device,
+										prefix,
+										blockSlug
+									)
+								)
+							}
+							label={ resetLabel }
+							panelTitle={ panel.title() }
+						/>
 					) }
 					{ rows.map( ( row ) => (
 						<PanelRow
