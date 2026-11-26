@@ -254,9 +254,10 @@
 	gap: var(--sgs-wishlist-panel-gap);
 	overflow-x: auto;
 	scroll-snap-type: x mandatory;
-	/* Room for the tiles' shadows above and below the scrolling row, cancelled by the negative margin so layout does not move. */
-	padding-block: var( --sgs-shadow-bleed, 80px );
-	margin-block: calc( -1 * var( --sgs-shadow-bleed, 80px ) );
+	/* Room for the tiles' shadows above and below the scrolling row, cancelled by the negative margin so layout does not move.
+	   Each side is sized per instance from the shadows and motion the tiles use (includes/helpers-shadow-bleed.php). */
+	padding-block: var( --sgs-shadow-bleed-top, var( --sgs-shadow-bleed, 80px ) ) var( --sgs-shadow-bleed-bottom, var( --sgs-shadow-bleed, 80px ) );
+	margin-block: calc( -1 * var( --sgs-shadow-bleed-top, var( --sgs-shadow-bleed, 80px ) ) ) calc( -1 * var( --sgs-shadow-bleed-bottom, var( --sgs-shadow-bleed, 80px ) ) );
 	/* Marks the band for the click hand-off (assets/js/bleed-band-taps.js), so a tap on it reaches what it covers. */
 	--sgs-bleed-band: 1;
 	/* The band carries a click listener for iOS (bleed-band-taps.js), so it must not flash iOS's tap highlight. */

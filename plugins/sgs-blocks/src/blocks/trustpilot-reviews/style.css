@@ -178,8 +178,9 @@
 	scroll-snap-type: x mandatory;
 	scroll-behavior: smooth;
 	gap: var(--sgs-tp-card-gap);
-	padding-block: var( --sgs-shadow-bleed, 80px ) calc( var( --sgs-shadow-bleed, 80px ) + 0.5rem );
-	margin-block: calc( -1 * var( --sgs-shadow-bleed, 80px ) ) calc( -1 * var( --sgs-shadow-bleed, 80px ) );
+	/* Room for the cards' shadows, sized per instance (includes/helpers-shadow-bleed.php), cancelled by the negative margin. */
+	padding-block: var( --sgs-shadow-bleed-top, var( --sgs-shadow-bleed, 80px ) ) calc( var( --sgs-shadow-bleed-bottom, var( --sgs-shadow-bleed, 80px ) ) + 0.5rem );
+	margin-block: calc( -1 * var( --sgs-shadow-bleed-top, var( --sgs-shadow-bleed, 80px ) ) ) calc( -1 * var( --sgs-shadow-bleed-bottom, var( --sgs-shadow-bleed, 80px ) ) );
 	align-items: flex-start;
 	/* Marks the band for the click hand-off (assets/js/bleed-band-taps.js), so a tap on it reaches what it covers. */
 	--sgs-bleed-band: 1;
