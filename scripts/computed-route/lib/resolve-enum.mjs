@@ -6,9 +6,9 @@
 //                candidate while another tied setting can (`textDecoration` lists overline and line-through only, so it never
 //                competes with `linkUnderline` for an underline);
 //   mapTiers     a tier's computed keyword the list does not hold becomes the list's value that paints it at that tier's
-//                width (one value only: where several paint it, or none, a list of the property's own CSS words keeps the keyword and any
-//                other list is a shape gap). A setting with no `enumReads` is left as it was.
-import { acceptsValue } from './enum-read-plan.mjs';
+//                width (one value only: where several paint it the keyword goes on for the writer to judge; where none does it stays only if
+//                the writer's alignment rule maps it to a list member, else it is a shape gap). A setting with no `enumReads` is left as it was.
+import { sameAlignment } from './css-equivalence/keywords.mjs';
 
 const WIDTH_OF = { desktop: 1440, tablet: 768, mobile: 375 };
 const same = ( a, b ) => String( a ).replace( /\s+/g, '' ) === String( b ).replace( /\s+/g, '' );
@@ -45,7 +45,7 @@ export function holdsValue( row, def, calibrationSetting, prop, perWidth ) {
 }
 
 // The tiers with each computed keyword the list does not hold replaced by the value that paints it: { tiers } or { error }.
-export function mapTiers( row, def, calibrationSetting, prop, tiers ) {
+export function mapTiers( row, def, calibrationSetting, prop, tiers, layoutAt = () => ( {} ) ) {
 	const list = enumValues( row, def );
 	const reads = calibrationSetting?.enumReads;
 	if ( ! list.length || ! reads ) {
@@ -58,15 +58,16 @@ export function mapTiers( row, def, calibrationSetting, prop, tiers ) {
 			continue;
 		}
 		// One value that paints the keyword is the answer. Several paint it (a border style with no width paints none whatever its
-		// value) or none does: a list of the property's own CSS words is left as it was, for the writer's own keyword rules
-		// (align-items flex-end is the list's `end`), and a list with a word that is no CSS value of the property has no answer.
+		// value): the keyword goes on as it is and the writer judges it against the list. None paints it: the keyword stays only
+		// where the writer's own alignment rule gives it a list member (align-items flex-end is the list's `end` in a flex or grid
+		// container, lib/resolve.mjs::formatValue); otherwise the setting has no answer.
 		const painting = valuesFor( reads, prop, WIDTH_OF[ t ], raw );
 		if ( 1 === painting.length ) {
 			out[ t ] = painting[ 0 ];
-		} else if ( list.every( ( v ) => acceptsValue( prop, v ) ) ) {
+		} else if ( painting.length > 1 || list.some( ( v ) => sameAlignment( prop, v, raw, layoutAt( t ) ) ) ) {
 			out[ t ] = raw;
 		} else {
-			return { error: `${ row.attr_name } holds ${ list.join( ', ' ) }; ${ painting.length ? 'more than one paints' : 'none paints' } ${ prop } ${ raw } at ${ WIDTH_OF[ t ] }px` };
+			return { error: `${ row.attr_name } holds ${ list.join( ', ' ) }; none paints ${ prop } ${ raw } at ${ WIDTH_OF[ t ] }px` };
 		}
 	}
 	return { tiers: out };

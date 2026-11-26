@@ -753,7 +753,7 @@ export function resolve( input, ctx ) {
 	}
 	tiers = folded.tiers;
 	// A computed keyword the setting's value list does not hold is written as the value that paints it (lib/resolve-enum.mjs).
-	const listed = pinEdges( row, schema[ attr ], prop, tiers, input.siblings ) ?? mapTiers( row, schema[ attr ], ctx.calibration.settings?.[ row.attr_name ], prop, tiers );
+	const listed = pinEdges( row, schema[ attr ], prop, tiers, input.siblings ) ?? mapTiers( row, schema[ attr ], ctx.calibration.settings?.[ row.attr_name ], prop, tiers, layoutAt );
 	if ( listed.error ) {
 		return { gap: 'shape', detail: listed.error };
 	}
