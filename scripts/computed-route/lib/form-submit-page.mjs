@@ -50,10 +50,11 @@ const controlInfo = ( el ) => {
 
 // Fills each required control of the form `form` (a selector) a visitor can reach on its current step, leaving the
 // first `skip` empty; with a `marker`, also fills its reachable, still empty free-text controls with it. A control that
-// does not show itself but whose label shows (a tile or chip) is ticked through its label. Returns the reachable
+// does not show itself but whose label shows (a tile or chip) is ticked through its label. `reveal: false` skips the scroll through the form
+// (submitForm reveals once per step). Returns the reachable
 // required controls left empty: [{ tag, type, name }] (a file field, or a control testValueFor has no value for).
-export async function fillVisible( page, skip = 0, { marker = null, form = FORM_SELECTOR, revealMs = 3000 } = {} ) {
-	await page.evaluate( revealInPage, [ form, revealMs ] );
+export async function fillVisible( page, skip = 0, { marker = null, form = FORM_SELECTOR, revealMs = 3000, reveal = true } = {} ) {
+	reveal && await page.evaluate( revealInPage, [ form, revealMs ] );
 	const controls = page.locator( requiredIn( form ) );
 	const empty = [];
 	let left = skip;
@@ -120,12 +121,14 @@ export function stepInPage( form ) {
 
 // In-page: brings the form `form` through the viewport the way a visitor scrolls to it, so scroll-driven reveals (a
 // control that fades or scales in once it enters view) fire, then waits until the form's running animations and
-// transitions finish, capped at `capMs`. Nothing is forced visible: a control that never reveals stays unseen.
+// transitions finish, capped at `capMs`, and puts the page back where it was scrolled to. Nothing is forced visible: a control that never
+// reveals stays unseen.
 export async function revealInPage( [ form, capMs ] ) {
 	const root = document.querySelector( form );
 	if ( ! root ) {
 		return;
 	}
+	const [ x, y0 ] = [ scrollX, scrollY ];
 	const frame = () => new Promise( ( r ) => requestAnimationFrame( () => setTimeout( r, 120 ) ) );
 	const top = root.getBoundingClientRect().top + scrollY;
 	const bottom = top + root.getBoundingClientRect().height;
@@ -144,6 +147,8 @@ export async function revealInPage( [ form, capMs ] ) {
 		}
 		await frame();
 	}
+	scrollTo( x, y0 );
+	await frame();
 }
 
 const stepName = ( s ) => `step ${ s.at + 1 } of ${ s.of }${ s.label ? ` ("${ s.label }")` : '' }`;
@@ -155,8 +160,12 @@ const stepName = ( s ) => `step ${ s.at + 1 } of ${ s.of }${ s.label ? ` ("${ s.
 // the form's own controls.
 export async function submitForm( page, skip = 0, { marker = null, form = FORM_SELECTOR, settleMs = 2000 } = {} ) {
 	const decoys = new Set();
+	let revealed;
 	for ( let step = 0; step < MAX_STEPS; step++ ) {
-		const empty = await fillVisible( page, skip, { marker, form } );
+		// The scroll that reveals a step's controls runs once per step shown, not once per pass over the same step.
+		const shown = ( await page.evaluate( stepInPage, form ) ).at;
+		const empty = await fillVisible( page, skip, { marker, form, reveal: shown !== revealed } );
+		revealed = shown;
 		const before = await page.evaluate( stepInPage, form );
 		before.decoys.forEach( ( d ) => decoys.add( d ) );
 		const submit = page.locator( `${ form } button[type="submit"]:visible` ).first();

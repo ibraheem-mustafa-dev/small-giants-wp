@@ -48,3 +48,39 @@ test( 'revealInPage returns when the form is absent', async () => {
 	await p.evaluate( revealInPage, [ '#none', 500 ] );
 	await p.close();
 } );
+
+// A page whose window.scrollTo calls are counted (the reveal's scroll through the form is the only caller).
+const countingPage = async ( inner ) => {
+	const p = await page( inner, false );
+	await p.evaluate( () => {
+		window.__scrolls = 0;
+		const orig = window.scrollTo.bind( window );
+		window.scrollTo = ( ...a ) => ( window.__scrolls++, orig( ...a ) );
+	} );
+	return p;
+};
+const scrolls = ( p ) => p.evaluate( () => window.__scrolls );
+
+test( 'MUST FAIL: the reveal puts the page back at the scroll position it found', async () => {
+	const p = await page( '<input type="text" name="n" required><button type="submit" class="rev">Send</button>' );
+	await p.evaluate( () => scrollTo( 0, 40 ) );
+	await p.evaluate( revealInPage, [ 'form.sgs-form__inner', 1500 ] );
+	const y = await p.evaluate( () => scrollY );
+	await p.close();
+	assert.equal( y, 40 );
+} );
+
+test( 'MUST FAIL: the scroll through a form runs once for a step, not once per pass over the same step', async () => {
+	const inner = '<input type="text" name="n" required><button type="button" class="sgs-form__button--next">Next</button>';
+	const one = await countingPage( inner );
+	await one.evaluate( revealInPage, [ 'form.sgs-form__inner', 500 ] );
+	const single = await scrolls( one );
+	await one.close();
+	assert.ok( single > 1, 'a reveal scrolls more than once' );
+	// A next button that never moves a stepless form on: every pass is the same step, so the form is revealed once.
+	const stuck = await countingPage( inner );
+	await assert.rejects( submitForm( stuck, 0, { settleMs: 200 } ), /more than 14 steps/ );
+	const total = await scrolls( stuck );
+	await stuck.close();
+	assert.equal( total, single );
+} );
