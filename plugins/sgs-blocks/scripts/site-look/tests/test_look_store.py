@@ -27,14 +27,14 @@ def look_text(short: str, key: str, **extra) -> str:
 
 
 class Fake:
-    """Stands in for look_key and build_block: counts builds, so a store hit is seen to skip one."""
+    """Stands in for look_key and build_look (the build write_block asks for): counts builds, so a store hit is seen to skip one."""
 
     def __init__(self, monkeypatch, key='k1'):
         self.key, self.builds, self.body = key, 0, {}
         monkeypatch.setattr(SL, 'look_key', lambda short, snap, wc: self.key)
-        monkeypatch.setattr(SL, 'build_block', self.build)
+        monkeypatch.setattr(SL, 'build_look', self.build)
 
-    def build(self, short, snap, wc):
+    def build(self, short, snap, wc, out_root=None, per_client=False):
         self.builds += 1
         return doc_for(short, **self.body)
 

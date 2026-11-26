@@ -1,0 +1,6 @@
+[
+	{"file": "lib/route-sweep.mjs", "find": "( { ...env, SGS_NO_SITE: '1', SGS_LOOK_BUILD: '1',", "replace": "( { ...env, SGS_NO_SITE: '1',", "why": "the sweep's workers build no look, so every block proposed reads none"},
+	{"file": "lib/route-sweep.mjs", "find": "\t\tif ( prepare( [ probe ], c, { build: true, log } ).length ) {", "replace": "\t\tif ( prepare( [ probe ], c, { build: true, log } ).length && false ) {", "why": "a broken builder runs a sweep whose every Fill fails"},
+	{"file": "lib/route-sweep.mjs", "find": "prepare( [ probe ], c, { build: true, log } )", "replace": "prepare( [ probe ], c, { build: false, log } )", "why": "the probe is asked with the build off"},
+	{"file": "lib/setting-record.mjs", "find": "export const lookBuildOn = ( env = process.env ) => '1' === env[ LOOK_BUILD_ENV ] || ! env.SGS_NO_SITE;", "replace": "export const lookBuildOn = ( env = process.env ) => '1' === env[ LOOK_BUILD_ENV ];", "why": "a run with no SGS_NO_SITE stops building looks"}
+]

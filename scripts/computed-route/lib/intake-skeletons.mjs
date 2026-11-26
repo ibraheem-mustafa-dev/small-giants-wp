@@ -38,7 +38,7 @@ import { templateOf } from './intake-run-collapse.mjs';
 import { sourcesOf } from './freshness.mjs';
 import { fingerprintsOf } from './identity.mjs';
 import { carriedIds } from './skeleton-carried.mjs';
-import { siteOf, calKeysFor, assertSkeletonPaints, prepareProposalLooks } from './skeleton-context.mjs';
+import { siteOf, calKeysFor, assertSkeletonPaints } from './skeleton-context.mjs';
 import { recordForIntakeRun } from './skeleton-record.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
@@ -423,7 +423,6 @@ export async function proposeSkeletons( { folder, harPath, surfaces, client, db 
 	const factRecord = () => ( undefined === runRecord ? ( runRecord = recordForIntakeRun( f.facts, { log } ) ) : runRecord );
 	// The client's look is read, and the paint gate run, only when the caller asks (`readLook`): intake proposes before
 	// the client's theme snapshot, which the look is built from, need exist, so its own run (intake-run-stages) does not.
-	readLook && prepareProposalLooks( { db: theDb ?? openDb(), client } );
 	const calKeys = calKeysFor( readLook ? client : null );
 	const sources = inventoriesDir ? sourcesOf( folder ) : null;
 	// The state keys each component writes from the viewport width: a state bounding one opens only at the widths inside it.

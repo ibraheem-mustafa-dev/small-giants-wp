@@ -2,6 +2,6 @@
 	{"file": "skeleton.mjs", "find": "const site = runSite ?? readSurface( repo, client, surface ).site;", "replace": "const site = readSurface( repo, client, surface ).site;", "why": "propose reads the surface entry's records, not the run's site"},
 	{"file": "skeleton.mjs", "find": "carried: carriedIds( { repo, client, site, rootComponent", "replace": "carried: carriedIds( { repo, client, site: readSurface( repo, client, surface ).site, rootComponent", "why": "the carried menu items come from the surface entry's site"},
 	{"file": "skeleton.mjs", "find": "calKeys: calKeysFor( client, cache )", "replace": "calKeys: calKeysFor( site, cache )", "why": "the blocks' keys come from the run's site, not the client's look"},
-	{"file": "skeleton.mjs", "find": "\tprepareProposalLooks( { db, client, cache, ...( prepare ? { prepare } : {} ) } );\n\tconst bad = decisionsProblems( facts );", "replace": "\tconst bad = decisionsProblems( facts );", "why": "propose builds each look one at a time while it proposes"},
-	{"file": "lib/skeleton-context.mjs", "find": "\tif ( ! client || ( undefined !== cache && CACHE !== cache ) ) {", "replace": "\tif ( ! client ) {", "why": "fixture records still trigger a look build"}
+	{"file": "lib/setting-record.mjs", "find": "build = lookBuildOn(), run = lookRunner } = {} ) {", "replace": "build = ! process.env.SGS_NO_SITE, run = lookRunner } = {} ) {", "why": "a reader ignores SGS_LOOK_BUILD, so a sweep's propose reads a helper block with no look"},
+	{"file": "lib/setting-record.mjs", "find": "\tif ( build && ! checked.has( key ) ) {\n\t\tchecked.add( key );", "replace": "\tif ( false ) {\n\t\tchecked.add( key );", "why": "a reader never builds the look it reads"}
 ]

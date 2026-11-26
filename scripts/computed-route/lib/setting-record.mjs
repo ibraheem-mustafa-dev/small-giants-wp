@@ -72,6 +72,21 @@ export function runsShop( client, repo = REPO ) {
 	return Array.isArray( rows ) && rows.some( ( r ) => [ 'shop', 'product' ].includes( r?.postType ) );
 }
 
+// Whether a stage builds a look it reads and lacks: on unless SGS_NO_SITE is set (the route's tests read fixture looks),
+// and on whatever SGS_NO_SITE says when SGS_LOOK_BUILD=1 (the builder is offline: a sweep's workers run with SGS_NO_SITE
+// and build each look the first time a stage reads it, tools/route-sweep.mjs).
+export const LOOK_BUILD_ENV = 'SGS_LOOK_BUILD';
+export const lookBuildOn = ( env = process.env ) => '1' === env[ LOOK_BUILD_ENV ] || ! env.SGS_NO_SITE;
+
+// What starts the look builder (spawnSync's signature). useLookRunner swaps it for a test and returns the one it replaced,
+// so a test can see which blocks a stage has built without running the builder.
+let lookRunner = spawnSync;
+export function useLookRunner( run ) {
+	const was = lookRunner;
+	lookRunner = run || spawnSync;
+	return was;
+}
+
 const lookFile = ( dir, client, block ) => path.join( dir, client, `${ slugOf( block ) }.json` );
 
 // The file a block's site look for a client is kept in.
@@ -90,10 +105,11 @@ export const LOOK_JOBS = 2;
 export const lookJobs = ( env = process.env ) => Math.max( 1, Number( env.SGS_LOOK_JOBS ) || LOOK_JOBS );
 // A block the builder could not build keeps its reason for this process: it is never built again, and siteLook reports the reason.
 const failures = new Map();
-// What a builder that ran out of room prints for a block (a worker killed, memory, a render that did not finish), or prints
-// nothing: only these are worth a second try; a missing fixture or module fails the same way again.
-const RESOURCE_FAILURE = /BrokenProcessPool|MemoryError|TimeoutExpired|terminated abruptly|printed nothing for it/;
-export function prepareLooks( blocks, client, { dir = SITE_LOOK_DIR, repo = REPO, build = ! process.env.SGS_NO_SITE, run = spawnSync, log = () => {} } = {} ) {
+// What a builder that ran out of room prints for a block (a worker killed, memory, a render that did not finish, the bridge's
+// Node refused memory: V8's `allocation failure`, 2026-11-26 on a loaded machine), or prints nothing: only these are worth a
+// second try; a missing fixture or module fails the same way again.
+const RESOURCE_FAILURE = /BrokenProcessPool|MemoryError|TimeoutExpired|terminated abruptly|allocation failure|heap out of memory|printed nothing for it/;
+export function prepareLooks( blocks, client, { dir = SITE_LOOK_DIR, repo = REPO, build = lookBuildOn(), run = lookRunner, log = () => {} } = {} ) {
 	const snapshot = path.join( repo, 'sites', String( client ), 'theme-snapshot.json' );
 	const keyOf = ( b ) => `${ dir }|${ client }|${ b }`;
 	const sgs = [ ...new Set( blocks ) ].filter( ( b ) => /^sgs\//.test( b ) && ! checked.has( keyOf( b ) ) );
@@ -123,8 +139,11 @@ export function prepareLooks( blocks, client, { dir = SITE_LOOK_DIR, repo = REPO
 }
 
 // The block's site look for the client (sites/<client>/theme-snapshot.json), built (or confirmed current) by the builder
-// once per process. With SGS_NO_SITE set (the route's tests) nothing is built: a missing look reads as missing.
-export function siteLook( block, client, { dir = SITE_LOOK_DIR, repo = REPO, build = ! process.env.SGS_NO_SITE } = {} ) {
+// once per process, the first time a stage reads it: a proposal gets the look of every block it reads (a chosen block, a
+// helper a rule names) and builds no other. With the build off (lookBuildOn) nothing is built: a missing look reads as
+// missing, and the paint gate stops a run whose tree uses it (lib/paint-gate.mjs::assertPaints). A build that fails keeps
+// its reason. `run` stands in for spawnSync (tests).
+export function siteLook( block, client, { dir = SITE_LOOK_DIR, repo = REPO, build = lookBuildOn(), run = lookRunner } = {} ) {
 	const file = lookFile( dir, client, block );
 	const key = `${ dir }|${ client }|${ block }`;
 	if ( build && failures.has( key ) ) {
@@ -137,9 +156,10 @@ export function siteLook( block, client, { dir = SITE_LOOK_DIR, repo = REPO, bui
 			return { missing: `${ client } has no theme snapshot (sites/${ client }/theme-snapshot.json), so its look cannot be built` };
 		}
 		const args = [ BUILDER, '--snapshot', snapshot, '--site', client, '--out', dir, '--blocks', block, '--jobs', '1', ...( runsShop( client, repo ) ? [ '--woocommerce' ] : [] ) ];
-		const r = spawnSync( 'python', args, { encoding: 'utf8', cwd: REPO } );
-		if ( r.status ) {
-			return { missing: `the site look of ${ block } for ${ client } did not build: ${ ( r.stderr || r.stdout || '' ).slice( -400 ) }` };
+		const r = run( 'python', args, { encoding: 'utf8', cwd: REPO } );
+		if ( r.status || r.error ) {
+			failures.set( key, `the site look of ${ block } for ${ client } did not build: ${ ( r.stderr || r.stdout || r.error?.message || '' ).slice( -400 ) }` );
+			return { missing: failures.get( key ) };
 		}
 	}
 	if ( ! fs.existsSync( file ) ) {
