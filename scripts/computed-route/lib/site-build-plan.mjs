@@ -13,7 +13,8 @@ import fs from 'fs';
 import path from 'path';
 import { LAYOUT_TYPES, SHOP_TYPES, boundMenu, drawerMenuNames, hasPost, isAccountRow, orderRows, pageTreeFor, parentRow, rowKey, treeFor, treeHash, wpType } from './site-build-map.mjs';
 import { commonChain, copyFile, copySource, copyTree, pageTemplateOf, readShell, rowsOf, servedTemplates, splitShell } from './template-copies.mjs';
-import { addressOf, desiredMenus, menuLocation } from './site-build-menus.mjs';
+import { addressOf, desiredMenus, menuLocation, surfaceIdOf, surfaceMenus } from './site-build-menus.mjs';
+import { draftLinksFor } from './draft-link.mjs';
 import { readSurfaces } from './site-build-labels.mjs';
 import { comingSoonAction, COMING_SOON_OPTION } from './site-build-store-visible.mjs';
 import { withFlowProduct } from './site-build-flow-product.mjs';
@@ -94,7 +95,7 @@ function wooRoles( rows ) {
 	];
 }
 
-export function planBuild( { rows, state, repo, client, frontRoute = 'home', linkText = {}, menuLinks, flowProducts = {}, provisionalIds = false } ) {
+export function planBuild( { rows, state, repo, client, frontRoute = 'home', linkText = {}, menuLinks, flowProducts = {}, provisionalIds = false, menuItems = draftLinksFor( { repo, client } )?.menuItems } ) {
 	const problems = [];
 	// Each problem sorted by the step it stops: `map` (a row's post or the rows' order, which every step reads), `menus`,
 	// `posts` (a post, layout surface or template copy) and `site` (the site options and active pointers).
@@ -223,7 +224,9 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 			continue;
 		}
 		// A choice flow's tree holds the catalogue product it adds (lib/site-build-flow-product.mjs).
-		const { tree: built, source } = pageTreeFor( repo, client, row, menuIds );
+		// A drawer row's placeholder binds the menus its own navigation groups made, in the draft's order (surfaceMenus).
+		const own = 'drawer' === LAYOUT_TYPES[ row.postType ] ? surfaceMenus( menuItems, 'drawer', surfaceIdOf( row ) ) : null;
+		const { tree: built, source } = pageTreeFor( repo, client, row, menuIds, own );
 		// The account page's tree holds WooCommerce's account piece, never a static imitation of its forms (FR-48-87).
 		const noRegion = 'placeholder' !== source && commerceRefusal( { role: rowCommerceRole( row ), tree: built, roles: commerceRoles(), what: key } );
 		if ( noRegion ) {
@@ -235,7 +238,7 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 		// The menus the row's placeholder binds: a header its own, a drawer one block per menu it owns (placeholderTree), or the
 		// header menu when it owns none (boundMenu). It waits for the menus when any of them is wanted and not made yet.
 		const layoutKind = LAYOUT_TYPES[ row.postType ];
-		const drawerOwn = 'drawer' === layoutKind ? drawerMenuNames( Object.keys( menuIds ) ) : [];
+		const drawerOwn = 'drawer' === layoutKind ? own || drawerMenuNames( Object.keys( menuIds ) ) : [];
 		const binds = layoutKind ? ( 'drawer' === layoutKind ? ( drawerOwn.length ? drawerOwn : [ boundMenu( 'drawer', Object.keys( menuIds ) ) ] ) : [ boundMenu( layoutKind, Object.keys( menuIds ) ) ] ) : [];
 		const unbound = 'placeholder' === source && [ 'header', 'drawer' ].includes( LAYOUT_TYPES[ row.postType ] ) && binds.some( ( name ) => wanted.menus[ name ] && ! menuIds[ name ] );
 		// The shop page takes no page template field at all: under a block theme WooCommerce reports `archive-product` as

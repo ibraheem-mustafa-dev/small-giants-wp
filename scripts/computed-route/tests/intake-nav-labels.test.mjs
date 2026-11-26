@@ -223,7 +223,9 @@ test( 'MUST FAIL: the skeleton writes the nav block disabledItemIds from the dra
 	} ) );
 	const facts = loadFacts( { db, client: '' } );
 	const nav = { key: 'k', tag: 'nav', allText: 'Home Glasses' };
-	const m = { words: () => '', textWithBreaks: () => '', blockKids: () => [], els: [ nav ], byKey: {} };
+	// A rendered navigation holds its links: a drawer navigation with none draws no item, so it is no group of the page map's menus.
+	const link = { key: 'k/a', tag: 'a', parentKey: 'k', allText: 'Home', words: 'Home', attrs: { href: '#/' } };
+	const m = { words: () => '', textWithBreaks: () => '', blockKids: () => [], els: [ nav, link ], byKey: { k: nav, 'k/a': link } };
 	const CARRIED = { menu: () => 9, items: ( kind ) => ( 'header' === kind ? { Home: 'id:10', Glasses: 'id:695' } : {} ) };
 	const carriedAttrs = ( draftLinks, surfaceKind = 'header', carried = CARRIED ) => makeContent( { m, facts, view: 1440, carried, draftLinks, surfaceKind, siteLink: () => ( { kind: 'none' } ) } ).carriedAttrs;
 	const ctx = { menuItems: MENUS };

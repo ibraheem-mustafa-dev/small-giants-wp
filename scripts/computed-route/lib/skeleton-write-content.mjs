@@ -397,10 +397,14 @@ export function makeContent( ctx ) {
 		return { a: { ...a, ...Object.fromEntries( Object.entries( top.attributes || {} ) ) }, handover };
 	}
 
-	// Which navigation group of the surface an element is (0 for the first): a drawer binds the menu the page map made for the
-	// same group, in document order (lib/site-build-map.mjs::boundMenu). Navigation inside another navigation is no group (null),
-	// and so is a drawer's navigation that holds no link or word: the page map makes a menu only for a navigation scope with items
-	// (lib/intake-pagemap-surfaces.mjs), so an empty one is not counted and the later groups keep their own menus.
+	// Which navigation group of the surface an element is (0 for the first). Only a drawer has groups: it binds the menu the page
+	// map made for the same group, in document order (lib/site-build-map.mjs::boundMenu), so every other surface is group 0.
+	// A drawer's navigation inside another navigation is no group (null), and the page map makes a menu only for a navigation
+	// scope whose items it reads, and none at all for a drawer that holds no link (lib/intake-pagemap-surfaces.mjs, readItems):
+	// a navigation that draws no link and no plain label, or any navigation of a drawer with no link, is no group, so the later
+	// groups keep their own menus (a drawer the page map made no menu for shares the header menu: every navigation is a group
+	// there). The inventory carries a template-relative line and no column, so the page map's per-menu
+	// draft id cannot be matched to an element; the page map's own rule is read from the elements instead (`drawsItems`).
 	const ancestorsOf = ( n ) => {
 		const up = [];
 		for ( let p = m.byKey[ n.parentKey ]; p; p = m.byKey[ p.parentKey ] ) {
@@ -409,10 +413,30 @@ export function makeContent( ctx ) {
 		return up;
 	};
 	const navAbove = ( n ) => ancestorsOf( n ).some( ( p ) => 'nav' === p.tag );
-	const hasItems = ( n ) => '' !== String( n.allText ?? '' ).trim() || m.els.some( ( x ) => 'a' === x.tag && x.attrs?.href && ancestorsOf( x ).includes( n ) );
+	// What readItems reads inside a navigation: a link, or (a drawer reads labels) an element that is no link and no control and
+	// holds words of its own, with none of the elements it sits in a link, a control or a heading.
+	const NOT_A_LABEL = new Set( [ 'a', 'button', 'input', 'select', 'textarea', 'img', 'svg', 'picture', 'video', 'audio', 'canvas', 'nav', 'ul', 'ol', 'dl', 'form', 'label', 'script', 'style', 'template', 'iframe', 'br', 'hr' ] );
+	const isLabel = ( x ) => ! NOT_A_LABEL.has( x.tag ) && ! /^h[1-6]$/.test( x.tag ) && '' !== String( x.words ?? '' ).trim();
+	const between = ( x, n ) => {
+		const up = [];
+		let p = m.byKey[ x.parentKey ];
+		for ( ; p && p !== n; p = m.byKey[ p.parentKey ] ) {
+			up.push( p );
+		}
+		return p === n ? up : null;
+	};
+	const drawsItems = ( n ) => m.els.some( ( x ) => {
+		const up = x === n ? null : between( x, n );
+		return !! up && ( 'a' === x.tag || ( isLabel( x ) && ! up.some( ( p ) => NOT_A_LABEL.has( p.tag ) || /^h[1-6]$/.test( p.tag ) ) ) );
+	} );
 	let groups = null;
 	const navOrdinal = ( e ) => {
-		groups ||= m.els.filter( ( n ) => 'nav' === n.tag && ! navAbove( n ) && ( 'drawer' !== surfaceKind || hasItems( n ) ) );
+		if ( 'drawer' !== surfaceKind ) {
+			return 0;
+		}
+		// Membership matters where the page map made menus for this drawer; a drawer it made none for shares the header menu.
+		const anyLink = m.els.some( ( n ) => 'a' === n.tag );
+		groups ||= m.els.filter( ( n ) => 'nav' === n.tag && ! navAbove( n ) && ( ! ownMenus || ( anyLink && drawsItems( n ) ) ) );
 		const at = groups.indexOf( e );
 		return at < 0 ? null : at;
 	};
@@ -445,7 +469,7 @@ export function makeContent( ctx ) {
 		}
 		if ( null !== group && attrExists( block, 'ref' ) && surfaceKind ) {
 			const id = carried.menu( surfaceKind, group, ownMenus );
-			id ? Object.assign( out.attrs, { ref: id } ) && ( out.said.ref = `menu-map.json: the ${ surfaceKind } menu` ) : 'drawer' === surfaceKind && out.missing.push( `${ e.key }: no menu ref is carried for navigation group ${ group + 1 } of the drawer: menu-map.json holds no menu for it on this site (run site-build.mjs --menus --apply)` );
+			id ? Object.assign( out.attrs, { ref: id } ) && ( out.said.ref = `menu-map.json: the ${ surfaceKind } menu` ) : 'drawer' === surfaceKind && false !== carried.menuRecord && out.missing.push( `${ e.key }: no menu ref is carried for navigation group ${ group + 1 } of the drawer: menu-map.json holds no menu for it on this site (run site-build.mjs --menus --apply)` );
 		}
 		// A header control that opens a mega panel is a menu bar bound to the second header menu its page-map item sits in
 		// (rules.megaOpenerMenu), and the far side's links of a split header menu a bar bound to the header menu

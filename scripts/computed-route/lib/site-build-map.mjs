@@ -145,7 +145,8 @@ export function menuSurfaceKind( name, surfaces = {} ) {
 // A header or footer post's template locks one slotted root (`sgs/site-header`, `sgs/site-footer`) holding its rows
 // (scripts/lib/surface-tree-shape.js, read from each container's edit.js TEMPLATE), so its placeholder is that root with
 // its rows; the header's menu bar sits in its middle row.
-export function placeholderTree( row, menuIds = {} ) {
+// `own`, when given, is the drawer's own menu names in the draft's order (lib/site-build-menus.mjs::surfaceMenus).
+export function placeholderTree( row, menuIds = {}, own = null ) {
 	const kind = LAYOUT_TYPES[ row.postType ];
 	const root = `sgs/site-${ kind }`;
 	const rows = ( 'header' === kind || 'footer' === kind ) ? slottedContainers().get( root ) : null;
@@ -157,8 +158,8 @@ export function placeholderTree( row, menuIds = {} ) {
 		return [ { name: 'sgs/nav-bar-menu', attributes: { ref: menuIds.header || 0 } } ];
 	}
 	if ( 'drawer' === kind ) {
-		const own = drawerMenuNames( Object.keys( menuIds ) );
-		return [ { name: 'sgs/nav-drawer', innerBlocks: ( own.length ? own : [ 'header' ] ).map( ( name ) => ( { name: 'sgs/nav-drawer-menu', attributes: { ref: menuIds[ name ] || 0 } } ) ) } ];
+		const names = own?.length ? own : drawerMenuNames( Object.keys( menuIds ) );
+		return [ { name: 'sgs/nav-drawer', innerBlocks: ( names.length ? names : [ 'header' ] ).map( ( name ) => ( { name: 'sgs/nav-drawer-menu', attributes: { ref: menuIds[ name ] || 0 } } ) ) } ];
 	}
 	// The account page always holds WooCommerce's working account piece, so it is never a placeholder heading.
 	if ( isAccountRow( row ) ) {
@@ -173,15 +174,15 @@ export function placeholderTree( row, menuIds = {} ) {
 }
 
 // A row's stage 3 tree (sites/<client>/build/trees/<postType>/<slug>.json) when one exists, else its placeholder.
-export function treeFor( repo, client, row, menuIds ) {
+export function treeFor( repo, client, row, menuIds, own = null ) {
 	const file = path.join( repo, 'sites', client, 'build', 'trees', row.postType, `${ row.slug }.json` );
-	return fs.existsSync( file ) ? { tree: JSON.parse( fs.readFileSync( file, 'utf8' ) ), source: path.relative( repo, file ).split( path.sep ).join( '/' ) } : { tree: placeholderTree( row, menuIds ), source: 'placeholder' };
+	return fs.existsSync( file ) ? { tree: JSON.parse( fs.readFileSync( file, 'utf8' ) ), source: path.relative( repo, file ).split( path.sep ).join( '/' ) } : { tree: placeholderTree( row, menuIds, own ), source: 'placeholder' };
 }
 
 // The tree a shop row's template is built from: its stage 3 tree, else the same placeholder a page row gets (FR-48-55 part 1).
 // A `shop` row's own page always takes the placeholder; its tree file is the template's.
 export const templateTreeFor = ( repo, client, row ) => treeFor( repo, client, row, {} );
-export const pageTreeFor = ( repo, client, row, menuIds ) => ( 'shop' === row.postType ? { tree: placeholderTree( row, menuIds ), source: 'placeholder' } : treeFor( repo, client, row, menuIds ) );
+export const pageTreeFor = ( repo, client, row, menuIds, own = null ) => ( 'shop' === row.postType ? { tree: placeholderTree( row, menuIds, own ), source: 'placeholder' } : treeFor( repo, client, row, menuIds, own ) );
 
 // The site a page map's ids were written for, recorded beside the map (`page-map.site`) because the map's own layout
 // carries nothing but the ids; null before any run recorded one.

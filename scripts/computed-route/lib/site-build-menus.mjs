@@ -141,18 +141,23 @@ export function labelsOf( menuItems ) {
 // The menus one surface's own navigation groups made, by name in the draft's document order (the order `menuItems` lists
 // them, lib/intake-pagemap.mjs::proposePageMap): a drawer's groups bind these by index (lib/site-build-map.mjs::boundMenu), so
 // a second drawer's menus never join the first's and a labelled group keeps the place the draft gives it. `surfaceId` is the
-// surfaces.json id the page map recorded on each menu (`surface`); a draft whose menus name no such surface (or a surface
-// that owns none) falls back to every menu of the kind. null for a surface that is not a drawer or that has no menu of its
-// own, so the header menu binds as before.
+// surfaces.json id the page map recorded on each menu (`surface`). A surface that owns none takes the drawer menus no surface
+// claims; only when no drawer menu names a surface at all (a draft with no surfaces.json) does it take every drawer menu, so
+// one drawer never binds another drawer's menus. null for a surface that is not a drawer or that has no menu of its own, so the
+// header menu binds as before.
 export function surfaceMenus( menuItems, kind, surfaceId = null ) {
 	if ( 'drawer' !== kind ) {
 		return null;
 	}
 	const ofKind = ( menuItems || [] ).filter( ( m ) => 'drawer' === m.region );
 	const mine = surfaceId ? ofKind.filter( ( m ) => m.surface === surfaceId ) : [];
-	const names = [ ...new Set( ( mine.length ? mine : ofKind ).map( ( m ) => m.menu ) ) ];
+	const claimed = ofKind.some( ( m ) => m.surface );
+	const names = [ ...new Set( ( mine.length ? mine : claimed ? ofKind.filter( ( m ) => ! m.surface ) : ofKind ).map( ( m ) => m.menu ) ) ];
 	return names.length ? names : null;
 }
+
+// The surfaces.json id a layout row stands for (`draftId: 'surfaces.json S-02'`, lib/intake-pagemap.mjs), or null.
+export const surfaceIdOf = ( row ) => /^surfaces\.json (\S+)$/.exec( row?.draftId ?? '' )?.[ 1 ] ?? null;
 
 // The top-level labels of the menu a surface of `kind` binds (lib/site-build-map.mjs::boundMenu), for its `index`-th
 // navigation group of the surface `surfaceId`: the items its nav block disables. Their `disabledItemIds` identifiers are each

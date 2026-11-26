@@ -95,6 +95,9 @@ export function carriedIds( { repo, client, site, rootComponent = null } ) {
 	const records = site ? [ ...new Set( [ site, recordSite( site ) ] ) ].map( ( x ) => sites[ x ]?.attributes ).filter( Boolean ) : [];
 	let maps = null;
 	return {
+		// Whether a site is named, so the menus record was read for it: a run with no site (what route-sweep compares) holds no
+		// menus, which is no gap to report.
+		menuRecord: !! site,
 		logo: ( e, view = null ) => {
 			if ( ! site || ! map || ! fs.existsSync( folder ) ) {
 				return null;
