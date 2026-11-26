@@ -12,6 +12,18 @@ python -m pytest tests                     each mechanism has a test that fails 
 
 A block's file is rebuilt only when its key changes: the code of this builder and the setting-record modules it reads (`builder_hash`, through `stamp.py::code_hash`, so a comment or docstring edit rebuilds nothing), the block's render code (the record renderer's code hash), the block's fixture entry as written, the snapshot, every plugin and theme stylesheet, and the switches in force. A warm build takes seconds a block; a cold one renders through the record's runner (renders cached under `SGS_SETTING_RECORD_CACHE`).
 
+The key also holds `reach_hash()`: every Python module the builder imports (found by reading the `import` statements and the `.py` names it loads, `py_modules`), the route files its bridge runs and the data they read (`js_modules` follows `import`, `require` and `new URL(..., import.meta.url)` from `scripts/computed-route/tools/site-look-bridge.mjs`), the build's stylesheet rewriters (`setting-record/shipped-css.js`, `shadow-lift`, `hover-guard`, `shadow-fallback`), the theme's overlay script, and the framework database (`$SGS_FRAMEWORK_DB`, else the shared one). A new import is picked up on its own; `tests/test_look_store.py` fails if a module the builder loads is left out.
+
+## The shared look store
+
+| Setting | Effect |
+|---|---|
+| `SGS_LOOK_STORE` unset | looks are kept in and read from `E:/sgs-tmp/look-store/<site>/<block>.<key>.json`, shared by every checkout on the machine |
+| `SGS_LOOK_STORE=<folder>` | the same, in that folder |
+| `SGS_LOOK_STORE=` (empty) | no store: every look is built in the checkout, as before |
+
+`write_block` looks in the checkout's own file first (`current`), then in the store (`current (store)`: the file is copied to the checkout, no build), then builds and writes the store copy by a temp name and a rename, so two processes building one key at once leave one whole file. A store file that does not parse, or names another block or key, is ignored and replaced. A look whose text names the checkout's folder (a PHP error message can) is not stored. A block's store files unused for 14 days are removed when its next look is stored. The route needs no change: `lib/setting-record.mjs::prepareLooks` and `siteLook` start the builder with the caller's environment, and `current (store)` counts as done.
+
 A block with many settings reads many pages (a page is one render under one held state): `sgs/nav-bar-menu` has 873 marked renders (the lengths of the `discover`, `content`, `forms` and `states` lists printed by `node scripts/computed-route/tools/site-look-bridge.mjs plan sgs/nav-bar-menu sites/<client>/theme-snapshot.json`) and builds in about ten minutes warm and under 1 GB (`python site_look.py --snapshot sites/mamas-munches-redesign/theme-snapshot.json --site mamas-munches-redesign --out DIR --blocks sgs/nav-bar-menu --jobs 1 --woocommerce`, run time and the peak resident memory of the process tree sampled with psutil). The Reader (`site_look.py::Reader.page`) keeps the `PAGE_KEEP` most recently used pages and every reading, so memory does not grow with the page count. The route's `lib/setting-record.mjs::prepareLooks` builds a block again, alone with one worker, only when the builder's failure looks like running out of room (a killed worker, `MemoryError`, nothing printed for the block); any other failure is final, and a block that failed stays failed for the process, with the builder's own words as its reason.
 
 ## How a block's look is read

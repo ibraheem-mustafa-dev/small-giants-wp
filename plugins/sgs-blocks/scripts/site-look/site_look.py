@@ -32,11 +32,15 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import ast
 import copy
+import functools
 import hashlib
 import json
 import re
 import sys
+import time
+import uuid
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 
@@ -491,6 +495,7 @@ def build_block(short: str, snapshot_file: Path, woocommerce: bool) -> dict:
 
 
 BRIDGE = ROUTE / 'tools' / 'site-look-bridge.mjs'
+THEME_OVERLAY_JS = REPO / TH.THEME_REL / 'assets' / 'js' / 'sgs-overlay-scroll.js'
 LINK_ATTRS = ('href', 'src', 'target', 'action', 'formaction', 'data-href', 'data-url')  # lib/calibrate-content.mjs::LINK_ATTRS
 
 
@@ -925,15 +930,191 @@ def look_key(short: str, snapshot_file: Path, woocommerce: bool) -> str:
     entry = '' if 'fixture-key' in MUTATE else hashlib.md5(json.dumps(fixture, sort_keys=True).encode()).hexdigest()
     for part in (builder_hash(), rn_hash, entry, hashlib.md5(snapshot_file.read_bytes()).hexdigest(), str(woocommerce), ','.join(sorted(MUTATE)),
                  hashlib.md5(rec.read_bytes()).hexdigest() if rec.is_file() else 'no-record',
-                 *(hashlib.md5(f.read_bytes()).hexdigest() for f in sheet_inputs(short) + theme_files if f.is_file())):
+                 *(hashlib.md5(f.read_bytes()).hexdigest() for f in sheet_inputs(short) + theme_files if f.is_file()),
+                 reach_hash()):
         h.update(part.encode())
     return h.hexdigest()[:20]
 
 
 def sheet_inputs(short: str) -> list:
     """Every stylesheet a block's page can read: the plugin's front-end CSS (the record reader picks the block's own and its
-    parents' from these)."""
-    return sorted(f for f in (PLUGIN / 'src').rglob('*.css') if 'editor' not in f.name) + sorted((PLUGIN / 'assets' / 'css').glob('*.css'))
+    parents' from these) and the Sass sources a block with no compiled sheet is read from (setting-record/diff.py::compiled_scss)."""
+    return (sorted(f for f in (PLUGIN / 'src').rglob('*.css') if 'editor' not in f.name)
+            + sorted(f for f in (PLUGIN / 'src').rglob('*.scss') if 'editor' not in f.name)
+            + sorted((PLUGIN / 'assets' / 'css').glob('*.css')))
+
+
+# ---------------------------------------------------------------- everything else a look is built from
+
+SCRIPTS = PLUGIN / 'scripts'
+# the folders whose modules the builder reaches by `import` (setting-record puts block-source-scan, behavioural-analyser and
+# lib on sys.path); a module of another folder is not reachable
+PY_DIRS = tuple(SCRIPTS / d for d in ('site-look', 'setting-record', 'block-source-scan', 'behavioural-analyser', 'lib'))
+# data files those modules read beside themselves (fixtures.json is hashed per block, as the block's entry)
+PY_DATA = (SETREC / 'included-files.php', SETREC / 'shipped-css.js', SETREC / 'record.schema.json',
+           SCRIPTS / 'block-source-scan' / 'reference-faults.json')
+# the build rewrites a shipped block stylesheet with these (setting-record/diff.py::shipped_css)
+SHIPPED_DIRS = tuple(SCRIPTS / d for d in ('shadow-lift', 'hover-guard', 'shadow-fallback'))
+JS_IMPORT = re.compile(r"""(?:\bfrom|\bimport|\brequire)\s*\(?\s*['"](\.[^'"]+)['"]""")
+JS_URL = re.compile(r"""new URL\(\s*['"](\.[^'"]+)['"]\s*,\s*import\.meta\.url""")
+
+
+def py_modules() -> list:
+    """Every module of PY_DIRS the builder can run, found as the builder's own `import` statements and the `.py` file names
+    it loads by path (block-source-scan/common.py loads extract-signatures.py), transitively, lazy imports included."""
+    index = {}
+    for d in PY_DIRS:
+        for f in d.glob('*.py'):
+            index.setdefault(f.stem, []).append(f)
+            index.setdefault(f.name, []).append(f)
+    seen, stack = set(), [Path(__file__).resolve()]
+    while stack:
+        f = stack.pop()
+        if f in seen or not f.is_file():
+            continue
+        seen.add(f)
+        try:
+            tree = ast.parse(f.read_text(encoding='utf-8'))
+        except (OSError, SyntaxError, UnicodeDecodeError):
+            continue
+        for n in ast.walk(tree):
+            names = ([a.name.split('.')[0] for a in n.names] if isinstance(n, ast.Import)
+                     else [n.module.split('.')[0], *(a.name for a in n.names)] if isinstance(n, ast.ImportFrom) and n.module
+                     else [n.value] if isinstance(n, ast.Constant) and isinstance(n.value, str) and n.value.endswith('.py') else [])
+            for nm in names:
+                stack += index.get(nm, [])
+    return sorted(seen)
+
+
+def js_modules(entry: Path) -> list:
+    """The route files the bridge runs: `entry` and every relative `import`, `require` and `new URL(..., import.meta.url)` it
+    reaches, transitively (the route's planners and readers, scripts/parity/lib, the data files they read)."""
+    seen, stack = set(), [entry.resolve()]
+    while stack:
+        f = stack.pop()
+        if f in seen or not f.is_file():
+            continue
+        seen.add(f)
+        if f.suffix in ('.mjs', '.js', '.cjs'):
+            text = f.read_text(encoding='utf-8', errors='replace')
+            stack += [(f.parent / m).resolve() for m in [*JS_IMPORT.findall(text), *JS_URL.findall(text)]]
+    return sorted(seen)
+
+
+@functools.lru_cache(maxsize=1)
+def reach_files() -> tuple:
+    """The files, besides the block's own code, fixture, stylesheets and the snapshot, that a look is built from: the Python
+    modules of the builder, the route code and data its bridge runs, the build's stylesheet rewriters, and the overlay script."""
+    files = [*py_modules(), *PY_DATA, *js_modules(BRIDGE), THEME_OVERLAY_JS]
+    for d in SHIPPED_DIRS:
+        files += sorted(f for f in d.glob('*.js') if 'test' not in f.name)
+    return tuple(sorted({f.resolve() for f in files}))
+
+
+def framework_db() -> Path:
+    """The database the bridge's plan reads: $SGS_FRAMEWORK_DB, else the shared one (scripts/lib/framework_db.py)."""
+    sys.path.insert(0, str(SCRIPTS / 'lib'))
+    try:
+        from framework_db import framework_db_path
+    finally:
+        sys.path.remove(str(SCRIPTS / 'lib'))
+    return Path(framework_db_path())
+
+
+def file_md5(f) -> str:
+    """The md5 of a file read in pieces (the framework database is large); 'missing' for a file that cannot be read."""
+    try:
+        h = hashlib.md5()
+        with open(f, 'rb') as fh:
+            for chunk in iter(lambda: fh.read(1 << 20), b''):
+                h.update(chunk)
+        return h.hexdigest()
+    except OSError:
+        return 'missing'
+
+
+@functools.lru_cache(maxsize=4)
+def db_md5(path: str) -> str:
+    return file_md5(path)
+
+
+@functools.lru_cache(maxsize=1)
+def reach_hash() -> str:
+    """The hash of reach_files() and of the framework database, worked out once a process."""
+    h = hashlib.sha256()
+    for f in reach_files():
+        h.update(f.name.encode())
+        h.update(file_md5(f).encode())
+    h.update(db_md5(str(framework_db())).encode())
+    return h.hexdigest()[:16]
+
+
+# ---------------------------------------------------------------- the shared store
+
+STORE_ENV = 'SGS_LOOK_STORE'
+DEFAULT_STORE = 'E:/sgs-tmp/look-store'
+STORE_KEEP_DAYS = 14  # a store file no checkout has used for this long is removed when the block's next look is stored
+
+
+def look_store():
+    """The folder every checkout shares, holding `<site>/<block>.<key>.json`: $SGS_LOOK_STORE, else DEFAULT_STORE; an empty
+    value turns the store off. A look is content-keyed (look_key), so a file found there is the look this checkout would build."""
+    value = _os.environ.get(STORE_ENV)
+    value = DEFAULT_STORE if value is None else value.strip()
+    return Path(value) if value else None
+
+
+def store_file(store: Path, site: str, short: str, key: str) -> Path:
+    return store / site / f'{short}.{key}.json'
+
+
+def read_look(f: Path, short: str, key: str):
+    """The text of a look file when it parses and is this block's look under `key`; None for a missing, partial or other file."""
+    try:
+        text = f.read_text(encoding='utf-8')
+        doc = json.loads(text)
+    except (OSError, ValueError):
+        return None
+    ok = isinstance(doc, dict) and doc.get('key') == key and doc.get('block') == f'sgs/{short}' and isinstance(doc.get('elements'), dict)
+    return text if ok else None
+
+
+def atomic_write(f: Path, text: str) -> None:
+    """Write beside `f` under a name no other process uses, then rename onto `f`: a reader sees the old file or the whole new one."""
+    f.parent.mkdir(parents=True, exist_ok=True)
+    tmp = f.with_name(f'{f.name}.{_os.getpid()}.{uuid.uuid4().hex[:8]}.tmp')
+    try:
+        tmp.write_text(text, encoding='utf-8')
+        for attempt in range(5):  # Windows refuses a rename onto a file another process has open for a moment
+            try:
+                _os.replace(tmp, f)
+                return
+            except PermissionError:
+                if attempt == 4:
+                    raise
+                time.sleep(0.1 * (attempt + 1))
+    finally:
+        tmp.unlink(missing_ok=True)
+
+
+def shareable(text: str) -> bool:
+    """False for a look that names this checkout's folder (a PHP error message can): it belongs to this checkout alone."""
+    root = str(REPO)
+    forms = {root.lower(), root.replace('\\', '/').lower(), root.replace('\\', '\\\\').lower()}
+    low = text.lower()
+    return not any(x in low for x in forms)
+
+
+def store_look(store: Path, site: str, short: str, key: str, text: str) -> None:
+    """Keep a built look for every checkout, and drop this block's files no checkout has used for STORE_KEEP_DAYS."""
+    if not shareable(text):
+        return
+    f = store_file(store, site, short, key)
+    if read_look(f, short, key) is None:
+        atomic_write(f, text)
+    for other in f.parent.glob(f'{short}.*.json'):
+        if other != f and time.time() - other.stat().st_mtime > STORE_KEEP_DAYS * 86400:
+            other.unlink(missing_ok=True)
 
 
 def write_block(args_tuple) -> tuple:
@@ -946,10 +1127,26 @@ def write_block(args_tuple) -> tuple:
                 return short, 'current'
         except (OSError, ValueError):
             pass
+    store = look_store()
+    if store is not None and 'store' not in MUTATE:
+        kept = store_file(store, site, short, key)
+        text = read_look(kept, short, key)
+        if text is not None:
+            try:
+                _os.utime(kept)
+            except OSError:
+                pass
+            atomic_write(out, text)
+            return short, 'current (store)'
     doc = build_block(short, snapshot_file, woocommerce)
     doc.update(site=site, key=key, snapshot=hashlib.md5(snapshot_file.read_bytes()).hexdigest())
-    out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(doc, indent=1), encoding='utf-8')
+    text = json.dumps(doc, indent=1)
+    atomic_write(out, text)
+    if store is not None:
+        try:
+            store_look(store, site, short, key, text)
+        except OSError:
+            pass  # the store is a convenience: a full or unwritable folder never fails a build
     return short, 'built'
 
 

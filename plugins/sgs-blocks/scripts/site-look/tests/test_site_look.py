@@ -25,7 +25,7 @@ def build(tmp: Path, short: str, snapshot: dict | None = None, woocommerce: bool
     snap = tmp / f'snap-{short}.json'
     snap.write_text(json.dumps(snapshot if snapshot is not None else json.loads(SNAPSHOT.read_text(encoding='utf-8'))), encoding='utf-8')
     cmd = [sys.executable, str(LOOK / 'site_look.py'), '--snapshot', str(snap), '--site', 't', '--out', str(tmp), '--blocks', f'sgs/{short}', '--jobs', '1']
-    p = subprocess.run(cmd + (['--woocommerce'] if woocommerce else []), capture_output=True, text=True, env=os.environ.copy())
+    p = subprocess.run(cmd + (['--woocommerce'] if woocommerce else []), capture_output=True, text=True, env={**os.environ, 'SGS_LOOK_STORE': ''})
     assert p.returncode == 0, p.stdout + p.stderr
     return json.loads((tmp / 't' / f'{short}.json').read_text(encoding='utf-8'))
 
