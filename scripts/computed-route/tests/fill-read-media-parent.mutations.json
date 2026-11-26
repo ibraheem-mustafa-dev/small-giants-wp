@@ -1,0 +1,26 @@
+[
+	{
+		"file": "lib/fill-read-collect.mjs",
+		"find": "/^(contents|inline)$/.test( getComputedStyle( p ).display )",
+		"replace": "/^(never)$/.test( getComputedStyle( p ).display )",
+		"why": "a <picture> or display: contents wrapper is taken for the picture's parent"
+	},
+	{
+		"file": "lib/fill-read-collect.mjs",
+		"find": "return full > 0 && Math.abs( full - 2 * half ) <= 1;",
+		"replace": "return true;",
+		"why": "every parent is taken to give its child a definite height"
+	},
+	{
+		"file": "lib/fill-read-collect.mjs",
+		"find": "const ni = svgFile ? null : 'img' === tag",
+		"replace": "const ni = 'img' === tag",
+		"why": "an svg file an img draws is given the browser's default natural size"
+	},
+	{
+		"file": "lib/fill-read-collect.mjs",
+		"find": "const sp = sized === el ? boxParent( sized ) : null;",
+		"replace": "const sp = sized === el ? sized.parentElement : null;",
+		"why": "the literal parent element is read, an inline <picture> included"
+	}
+]
