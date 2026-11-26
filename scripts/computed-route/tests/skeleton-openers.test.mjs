@@ -13,6 +13,9 @@ import { fileURLToPath } from 'url';
 import { openerTargets, controlWrites, openedBy, openerAttributes, frameParts, frameNode, frameLook, frameHosts, surfaceFrames, modalPostTree, surfaceRow, surfaceOpenerControls, openerListItems, frameSettings } from '../lib/skeleton-openers.mjs';
 import { openDb } from '../lib/db.mjs';
 import { skeletonNodes } from '../lib/fill-skeleton.mjs';
+import os from 'os';
+import { E, R0, build, facts as fixtureFacts } from './fixtures/choice-flow-fixture.mjs';
+import { proposeSkeleton } from '../lib/skeleton-propose.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const FOLDER = path.join( HERE, 'fixtures', 'surface-frames' );
@@ -36,14 +39,14 @@ const writes = ( handler ) => controlWrites( { folder: FOLDER, component: 'Shop'
 
 test( 'MUST FAIL: a control opening a modal or a flow is a button linking the target\'s anchor; any other control opens nothing', () => {
 	assert.deepEqual( targets().map( ( t ) => [ t.kind, t.slug, t.recordId, t.writes ] ), [ [ 'modal', MODAL, 'S-25', [ 'modal="size"' ] ], [ 'flow', FLOW, 'S-27', [ 'lens.open=true' ] ] ] );
-	assert.deepEqual( targets().map( ( t ) => t.components ), [ null, null ], 'the opening calls of the fixture name no component' );
-	assert.equal( openedBy( writes( 'openSize' ), targets() )?.slug, MODAL );
-	assert.equal( openedBy( writes( '{{ openLens }}' ), targets() )?.slug, FLOW );
-	assert.equal( openedBy( writes( 'o.openSize' ), targets() )?.slug, MODAL, 'a loop item\'s handler is read by its own name' );
+	assert.deepEqual( targets().map( ( t ) => [ ...t.components ] ), [ [ 'Shop' ], [ 'Shop' ] ], 'a call naming no component runs on the record\'s own (dc)' );
+	assert.equal( openedBy( writes( 'openSize' ), targets(), null, 'Shop' )?.slug, MODAL );
+	assert.equal( openedBy( writes( '{{ openLens }}' ), targets(), null, 'Shop' )?.slug, FLOW );
+	assert.equal( openedBy( writes( 'o.openSize' ), targets(), null, 'Shop' )?.slug, MODAL, 'a loop item\'s handler is read by its own name' );
 	for ( const h of [ 'toHelp', 'closeSize', 'closeLens', 'nothing', '' ] ) {
-		assert.equal( openedBy( writes( h ), targets() ), null, h );
+		assert.equal( openedBy( writes( h ), targets(), null, 'Shop' ), null, h );
 	}
-	assert.equal( openedBy( writes( 'openSize' ), targets(), 'S-25' ), null, 'a control on the modal\'s own surface opens nothing' );
+	assert.equal( openedBy( writes( 'openSize' ), targets(), 'S-25', 'Shop' ), null, 'a control on the modal\'s own surface opens nothing' );
 	assert.deepEqual( openerAttributes( targets()[ 0 ], 'Which size am I?', S ), { label: 'Which size am I?', url: '#modal-size-guide' } );
 	assert.deepEqual( openerAttributes( targets()[ 0 ], '', S ), { url: '#modal-size-guide' } );
 } );
@@ -235,4 +238,34 @@ test( 'MUST FAIL: the frame parts are told apart by role, fill and handler, and 
 	const tree = [];
 	surfaceFrames( { tree, targets: [ ...targets(), { kind: 'form', slug: 'form-contact', recordId: 'S-25', writes: [ 'modal="size"' ] } ], row: rows[ 2 ], pageMap: rows, R, factRecord: FACTS, folder: FOLDER, settings, has } );
 	assert.deepEqual( tree.map( ( n ) => n.attributes.anchor ), [ MODAL ], 'a form is opened by its own anchor, never a frame' );
+} );
+
+// The skeleton writer's own opener rule (lib/skeleton-rules.mjs::makeRules, opensSurface) passes the control's component to
+// openedBy: a modal whose surfaces.json record runs on the page's own component is opened by the page's button, and one whose
+// record runs on another component is not. A temp repo holds the draft (Root.dc.html) and the record (surfaces.json).
+function scopeRepo( dc ) {
+	const repo = fs.mkdtempSync( path.join( os.tmpdir(), 'opener-scope-' ) );
+	const dir = path.join( repo, 'sites', 'fixture-client', 'handoff' );
+	fs.mkdirSync( dir, { recursive: true } );
+	const logic = [ 'class Component {', '\tstate = { modal: null };', '\trenderVals() {', "\t\treturn { openSize: () => this.setState( { modal: 'size' } ) };", '\t}', '}' ].join( '\n' );
+	fs.writeFileSync( path.join( dir, 'Root.dc.html' ), `<x-dc name="Root"><div></div></x-dc>\n<script data-dc-script>\n${ logic }\n</script>\n` );
+	fs.writeFileSync( path.join( dir, 'surfaces.json' ), JSON.stringify( { records: [ { id: 'S-50', kind: 'modal', name: 'Size guide', dc, states: [ { name: 'open', how_to_reach_structured: { setState: { modal: 'size' } } } ] } ] } ) );
+	return repo;
+}
+const scopeRun = ( dc ) => {
+	const b = build( [ E( 1, 'div', null, { rendered: R0 } ), E( 2, 'button', 1, { words: 'Size guide', click: 'openSize', rendered: R0 } ) ], { ids: { 'S-01': { kind: 'page', name: 'Page', root: 1 } } } );
+	const button = b.inventory.elements.find( ( x ) => 'Root/2#0' === x.key );
+	button.snippet = '<button data-dc-tpl="2" sc-camel-on-click="{{ openSize }}">Size guide</button>';
+	const r = proposeSkeleton( { inventory: b.inventory, facts: { ...fixtureFacts(), repo: scopeRepo( dc ) }, surface: 'page', surfaceKind: 'page', surfaceName: 'Page', db, factRecord: b.record, openers: {}, pageMap: [ { slug: 'modal-size-guide', postType: 'sgs_modal', draftId: 'surfaces.json S-50' } ], surfaceId: 'S-01' } );
+	return r.proposal.rows.find( ( x ) => 'Root/2#0' === x.key );
+};
+
+test( 'MUST FAIL: the skeleton writer turns a button into an opener only for a target whose record runs on the button\'s own component', () => {
+	const own = scopeRun( 'Root' );
+	assert.equal( own?.rule, 'surfaceOpener', 'the record runs on Root, the button\'s component' );
+	assert.equal( own.attributes?.[ S.button.url ], '#modal-size-guide' );
+} );
+
+test( 'negative control: a target whose record runs on another component is opened by no button of this draft', () => {
+	assert.notEqual( scopeRun( 'Home' )?.rule, 'surfaceOpener' );
 } );

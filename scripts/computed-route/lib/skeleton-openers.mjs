@@ -19,7 +19,7 @@ import path from 'path';
 import { createRequire } from 'module';
 import { loadDraft, readBinding, propName } from './intake-ast.mjs';
 import { fnsNamed } from './intake-census-map.mjs';
-import { openingWrites, openingComponents, fnWrites } from './intake-pagemap-flow-openers.mjs';
+import { openingWrites, openingComponents, opensTarget, fnWrites } from './intake-pagemap-flow-openers.mjs';
 import { OPENABLE } from './intake-pagemap-openers.mjs';
 import { colourHex } from './tokens.mjs';
 import { rowRefusal } from './site-build-flow-scope.mjs';
@@ -74,11 +74,12 @@ export function openerTargets( { pageMap = [], folder } ) {
 	} ).filter( ( t ) => t.writes.length );
 }
 
-// The target a control opens, or null: the first target whose opening writes the control's writes all hold, made in a
-// component the target's opening calls run on (`component`: the control's own; a target whose calls name components is
-// opened by no control of another or unknown component). A control on the target's own surface opens nothing.
+// The target a control opens, or null: the first target whose opening writes the control's writes all hold, made on a
+// component the target's opening calls run on (lib/intake-pagemap-flow-openers.mjs::opensTarget; `component`: the control's
+// own, null when unknown, so its untagged writes open no target whose calls run on a named component). A control on the
+// target's own surface opens nothing.
 export function openedBy( writes, targets, surfaceId = null, component = null ) {
-	return targets.find( ( t ) => t.recordId !== surfaceId && ( ! t.components || t.components.has( component ) ) && t.writes.every( ( w ) => writes.has( w ) ) ) ?? null;
+	return targets.find( ( t ) => t.recordId !== surfaceId && opensTarget( writes, component, t ) ) ?? null;
 }
 
 // The button's settings: { [label]: words, [url]: '#<slug>' }. S: rules.surfaceOpener.
