@@ -1,0 +1,26 @@
+[
+	{
+		"file": "lib/fill-resolve.mjs",
+		"find": "\t\twriteDecided( st, rec, ref );\n\t\tif ( ! rec.targets.length ) {",
+		"replace": "\t\tif ( ! rec.targets.length ) {",
+		"why": "a node with no read target (the basket count row) or an unreadable one is never written its decided settings"
+	},
+	{
+		"file": "lib/fill-resolve.mjs",
+		"find": "\tfor ( const rec of st.nodes.filter( ( r ) => ! readable.has( r.index ) ) ) {\n\t\tcarryHandover( st, rec, refOf( st.flat[ rec.index ] ) );\n\t}\n",
+		"replace": "",
+		"why": "the handover an unread node's skeleton declares is dropped"
+	},
+	{
+		"file": "lib/fill-resolve.mjs",
+		"find": "\tfor ( const rec of st.nodes.filter( ( r ) => ! readable.has( r.index ) ) ) {",
+		"replace": "\tfor ( const rec of st.nodes ) {",
+		"why": "a read node's declared handover is carried twice"
+	},
+	{
+		"file": "lib/fill-resolve.mjs",
+		"find": "\townedSettings( node, skeletonNode );\n\tfor ( const [ attr, value ] of Object.entries( skeletonNode?.decided || {} ) ) {\n\t\tif ( json( value ) !== json( node.attributes?.[ attr ] ) ) {",
+		"replace": "\townedSettings( node, skeletonNode );\n\tfor ( const [ attr, value ] of Object.entries( skeletonNode?.decided || {} ) ) {\n\t\tif ( true ) {",
+		"why": "a decided value the node already holds is written again"
+	}
+]

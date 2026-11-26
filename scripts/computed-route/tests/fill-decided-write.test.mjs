@@ -35,3 +35,47 @@ test( 'negative controls: no decided setting writes nothing, and a value the nod
 	const held = run( { attributes: { verticalAlignment: 'bottom' }, decided: { verticalAlignment: 'bottom' } } );
 	assert.deepEqual( verticalWrites( held ).filter( ( w ) => 'decided' === w.how ), [] );
 } );
+
+// A node Fill cannot read still carries what its skeleton rule decided, and hands over what its skeleton declared (2026-11-26): the
+// basket count row has no draft element, so no read targets it, and a numbered-steps block the draft hides at every width or has no
+// calibration is never read; fillTree used to write `decided` and the handover only in fillContent, which a node with no read never reaches.
+function runTree( skeleton, widths = {} ) {
+	const tree = cleanTree( skeleton );
+	addRefs( tree, 'fx' );
+	const out = fillTree( { tree, nodes: skeletonNodes( skeleton ), reads: { widths, declared: {}, sweep: {}, origin: 'http://127.0.0.1:1' }, db, snapshot: { palette: [], spacing: [], fontSizes: [] }, calFor: ( b ) => CAL[ b ] ?? null, ledger: [], ledgerStates: [], origin: 'http://127.0.0.1:1' } );
+	return { out, tree };
+}
+const flatTree = ( t ) => ( t || [] ).flatMap( ( n ) => [ n, ...flatTree( n.innerBlocks ) ] );
+const READ = Object.fromEntries( THREE.map( ( w ) => [ w, { '0:': { styles: { ...DEFAULT }, layoutDisplay: 'flex', pseudo: {}, rect: { x: 0, y: 0, w: 300, h: 40 }, inFlow: true, words: 'A', href: null } } ] ) );
+
+test( 'MUST FAIL: a node with no draft element of its own (the basket count row) is written its decided gap and alignment', () => {
+	const row = { name: 'sgs/container', attributes: { tagName: 'div', layout: 'flex' }, decided: { gap: { desktop: '17px', tablet: '13.5px' }, alignItems: { desktop: 'center' } }, innerBlocks: [ { name: 'sgs/hero', draftRef: '.a', attributes: {} } ] };
+	const r = runTree( [ row ], READ );
+	const filled = flatTree( r.tree ).find( ( n ) => 'sgs/container' === n.name );
+	assert.deepEqual( filled.attributes.gap, { desktop: '17px', tablet: '13.5px' } );
+	assert.deepEqual( filled.attributes.alignItems, { desktop: 'center' } );
+	assert.deepEqual( r.out.writes.filter( ( w ) => 'decided' === w.how ).map( ( w ) => w.attr ).sort(), [ 'alignItems', 'gap' ] );
+} );
+
+test( 'MUST FAIL: a numbered-steps node Fill cannot read (hidden at every width) keeps the steps and heading level its rule decided', () => {
+	const steps = [ { number: '01', title: 'Order', description: 'Pick it' } ];
+	const node = { name: 'sgs/process-steps', draftRef: '.gone', attributes: { layout: 'list' }, decided: { steps, headingLevel: 'h3' }, innerBlocks: [] };
+	const r = runTree( [ node ], {} );
+	const filled = r.tree[ 0 ];
+	assert.deepEqual( filled.attributes.steps, steps );
+	assert.equal( filled.attributes.headingLevel, 'h3' );
+	assert.ok( r.out.unmapped.some( ( u ) => /no visible element|no calibration/.test( u.reason ) ), 'the unread node is still reported as unread' );
+} );
+
+test( 'MUST FAIL: the handover an unread node declares is carried, with its detail as the reason', () => {
+	const row = { name: 'sgs/container', attributes: {}, handover: [ { owner: 'content-page', kind: 'presence', detail: 'the count sits in the heading line: set the row gap' } ], innerBlocks: [] };
+	const r = runTree( [ row ], {} );
+	assert.equal( r.out.handover.length, 1 );
+	assert.equal( r.out.handover[ 0 ].owner, 'content-page' );
+	assert.equal( r.out.handover[ 0 ].reason, 'the count sits in the heading line: set the row gap' );
+} );
+
+test( 'negative control: a read node\'s declared handover is carried once, not twice', () => {
+	const node = { name: 'sgs/hero', draftRef: '.a', attributes: {}, handover: [ { owner: 'content-page', kind: 'presence', detail: 'x' } ] };
+	assert.equal( runTree( [ node ], READ ).out.handover.length, 1 );
+} );

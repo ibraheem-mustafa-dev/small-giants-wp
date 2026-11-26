@@ -9,6 +9,12 @@ import { fileURLToPath } from 'node:url';
 import { openDb } from '../lib/db.mjs';
 import { loadFacts } from '../lib/skeleton-facts.mjs';
 import { proposeSkeleton } from '../lib/skeleton-propose.mjs';
+import { lintSkeleton } from '../lint.mjs';
+import { handoverProblems } from '../lib/fill-handover.mjs';
+import { skeletonProblems } from '../lib/fill-skeleton.mjs';
+import { fillTree } from '../lib/fill-resolve.mjs';
+import { skeletonNodes, cleanTree } from '../lib/fill-skeleton.mjs';
+import { addRefs } from '../lib/tree.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
 const db = openDb();
@@ -116,4 +122,19 @@ test( 'negative control: numbered cards that paint their own box are containers,
 
 test( 'negative control: a form surface keeps its own steps', () => {
 	assert.equal( steps( run( page(), 'form' ).skeleton ).length, 0 );
+} );
+
+test( 'MUST FAIL: through Fill, a steps node the draft read cannot reach (no visible element at any width) keeps the steps and heading level the rule decided', () => {
+	const { skeleton } = run( page( { titleTag: 'h3', descriptions: true } ) );
+	const proposed = steps( skeleton )[ 0 ];
+	assert.ok( proposed.decided.steps.length, 'the rule decided the steps' );
+	assert.equal( proposed.attributes.steps, undefined, 'they are not among the skeleton attributes' );
+	assert.deepEqual( [ ...lintSkeleton( skeleton, db ), ...skeletonProblems( skeleton ), ...handoverProblems( proposed.handover, 'steps' ) ], [], 'the real output of the writer passes the validators its consumers use' );
+	const tree = cleanTree( skeleton );
+	addRefs( tree, 'fx' );
+	const out = fillTree( { tree, nodes: skeletonNodes( skeleton ), reads: { widths: {}, declared: {}, sweep: {}, origin: 'http://127.0.0.1:1' }, db, snapshot: { palette: [], spacing: [], fontSizes: [] }, calFor: () => null, ledger: [], ledgerStates: [], origin: 'http://127.0.0.1:1' } );
+	const filled = all( tree, 'sgs/process-steps' )[ 0 ];
+	assert.deepEqual( filled.attributes.steps, proposed.decided.steps );
+	assert.equal( filled.attributes.headingLevel, proposed.decided.headingLevel );
+	assert.ok( out.writes.some( ( w ) => 'decided' === w.how && 'steps' === w.attr ) );
 } );

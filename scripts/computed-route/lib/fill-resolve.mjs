@@ -81,6 +81,30 @@ export function ownedSettings( node, skeletonNode ) {
 	return owned;
 }
 
+// A setting the skeleton's rule decided that paints a CSS property cannot sit among the skeleton's attributes (R-47-10,
+// lint.mjs::lintSkeleton), so Fill writes it onto the node. It is written for every node the skeleton carries one on, read or not:
+// a node with no draft element of its own (the basket count row), one the draft hides at every width and one with no calibration
+// still hold the rule's decision, which no reader could supply.
+function writeDecided( st, rec, ref ) {
+	const node = st.flat[ rec.index ];
+	const skeletonNode = st.nodes[ rec.index ].node;
+	ownedSettings( node, skeletonNode );
+	for ( const [ attr, value ] of Object.entries( skeletonNode?.decided || {} ) ) {
+		if ( json( value ) !== json( node.attributes?.[ attr ] ) ) {
+			const { before, after } = setAttr( node, { attr, value, merge: 'replace' } );
+			st.out.writes.push( { node: ref, index: rec.index, block: rec.name, slot: '', prop: '(decided)', attr, before, after, widths: [], how: 'decided' } );
+		}
+	}
+}
+
+// A node Fill does not read (no draft element of its own, hidden at every width, uncalibrated) still hands over what its skeleton
+// declared lives outside the tree: the draft has nothing to show for it, so the entry carries the declared detail as its evidence.
+function carryHandover( st, rec, ref ) {
+	for ( const h of st.nodes[ rec.index ].node?.handover || [] ) {
+		st.out.handover.push( handoverEntry( { owner: h.owner, kind: h.kind, node: ref, block: rec.name, slot: h.slot ?? '', evidence: { key: h.kind, draft: h.detail, width: 1440 }, reason: h.detail } ) );
+	}
+}
+
 // Presence, words and links for one node's elements, and its declared handover (step 5).
 function fillContent( st, rec, ref, cal ) {
 	const node = st.flat[ rec.index ];
@@ -104,14 +128,6 @@ function fillContent( st, rec, ref, cal ) {
 	// The settings a content writer decided from the draft (an icon's source from its mark) are this node's own: no styling
 	// answer of the resolver may change them (lib/fill-prop.mjs::OWNED).
 	const owned = ownedSettings( node, skeletonNode );
-	// A setting the skeleton's rule decided that paints a CSS property cannot sit among the skeleton's attributes (R-47-10,
-	// lint.mjs::lintSkeleton), so it is written here, as the content settings are.
-	for ( const [ attr, value ] of Object.entries( skeletonNode?.decided || {} ) ) {
-		if ( json( value ) !== json( node.attributes?.[ attr ] ) ) {
-			const { before, after } = setAttr( node, { attr, value, merge: 'replace' } );
-			st.out.writes.push( { node: ref, index: rec.index, block: rec.name, slot: '', prop: '(decided)', attr, before, after, widths: [], how: 'decided' } );
-		}
-	}
 	const take = ( r ) => {
 		Object.assign( owned, r.decided || {} );
 		Object.keys( owned ).length && OWNED.set( node, owned );
@@ -205,6 +221,7 @@ export function fillTree( opts ) {
 	const readable = new Set();
 	for ( const rec of st.nodes ) {
 		const ref = refOf( st.flat[ rec.index ] );
+		writeDecided( st, rec, ref );
 		if ( ! rec.targets.length ) {
 			continue;
 		}
@@ -223,6 +240,9 @@ export function fillTree( opts ) {
 		// Every node's content (presence, words, links, icon, image) is decided before any node's look, so a look written
 		// from a parent (a Site Info row lifting its icons) meets the content the draft settles, never a skeleton default.
 		fillContent( st, rec, ref, cal );
+	}
+	for ( const rec of st.nodes.filter( ( r ) => ! readable.has( r.index ) ) ) {
+		carryHandover( st, rec, refOf( st.flat[ rec.index ] ) );
 	}
 	for ( const rec of st.nodes ) {
 		const ref = refOf( st.flat[ rec.index ] );
