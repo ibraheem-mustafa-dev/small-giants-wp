@@ -220,8 +220,9 @@ export function elementEffects( records, { mdb, loops = null, runtimeLoops = [],
 	let own = records.filter( ( r ) => 'effect' === classify( r, cls ).kind );
 	// The run-time loop records are matched at the widest width the render shows an endless animation on this element at,
 	// so a strip the code moves only on narrower screens (a static row on desktop) is found and limited below.
+	// Without a 1440 sample the widths it does not run at are unknown, so nothing is matched.
 	const shownAt = [ 1440, 768, 375 ].find( ( w ) => loops?.[ w ]?.loops?.length );
-	if ( ! own.length && shownAt ) {
+	if ( ! own.length && wide && shownAt ) {
 		const shown = loops[ shownAt ];
 		own = shown.loops.flatMap( ( l ) => runtimeLoopsFor( runtimeLoops, { ...shown, loops: [ l ] } ).slice( 0, 1 ) );
 		out.notes.push( ...own.map( ( r ) => `${ r.id }: the code picks this element at run time, and the endless animation on it matched${ 1440 === shownAt ? '' : ` at ${ shownAt }px` }` ) );

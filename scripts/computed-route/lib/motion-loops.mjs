@@ -57,9 +57,10 @@ export function measuredLoopOf( record, measured ) {
 // widths show exactly one CSS animation name running there, the record is that loop, its name, keyframes, time and easing
 // read from the render (lib/motion-loops.mjs::resolvedLoop) and the widths it runs at deciding its range
 // (lib/fill-motion-element.mjs::elementEffects). Any other record, a value the render never shows running, or two
-// different animations measured on the element, is returned unchanged. byWidth: sampleMotion()'s { 375, 768, 1440 }.
+// different animations measured on the element, is returned unchanged, as is any record when 1440 was not sampled (the
+// widths it does not run at are then unknown). byWidth: sampleMotion()'s { 375, 768, 1440 }.
 export function templateValueLoop( record, byWidth ) {
-	if ( 'css-animation' !== record?.mechanism || 'infinite' === record.iterations || Infinity === record.iterations ) {
+	if ( 'css-animation' !== record?.mechanism || 'infinite' === record.iterations || Infinity === record.iterations || ! byWidth?.[ 1440 ] ) {
 		return record;
 	}
 	const named = ( record.properties || [] ).find( ( p ) => 'animation-name' === p.property )?.to;

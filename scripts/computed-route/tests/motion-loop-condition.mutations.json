@@ -34,5 +34,17 @@
 		"find": "if ( 'css-animation' !== record?.mechanism || 'infinite' === record.iterations",
 		"replace": "if ( 'infinite' === record.iterations",
 		"why": "a script animation would be read as a CSS animation's template value"
+	},
+	{
+		"file": "lib/fill-motion-element.mjs",
+		"find": "if ( ! own.length && wide && shownAt ) {",
+		"replace": "if ( ! own.length && shownAt ) {",
+		"why": "a strip sampled only at narrow widths would be written for every width"
+	},
+	{
+		"file": "lib/motion-loops.mjs",
+		"find": " || ! byWidth?.[ 1440 ] ) {",
+		"replace": " ) {",
+		"why": "a template value sampled only at narrow widths would be read as running at every width"
 	}
 ]

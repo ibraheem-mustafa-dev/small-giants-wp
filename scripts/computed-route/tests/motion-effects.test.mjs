@@ -189,6 +189,8 @@ test( 'MUST FAIL: a run-time loop the render shows only on narrower screens is m
 	assert.match( orphan.notes.join( ' ' ), /no code record explains/ );
 	const everywhere = elementEffects( [], { mdb, loops: { ...loops, 1440: timedLoop( 'mmMarquee', 24000, { width: 2400, height: 60 } ) }, runtimeLoops: [ CODE_STRIP ] } );
 	assert.equal( everywhere.effects[ 0 ].values.belowBreakpoint, undefined );
+	const { 1440: _w, ...narrowOnly } = loops;
+	assert.deepEqual( elementEffects( [], { mdb, loops: narrowOnly, runtimeLoops: [ CODE_STRIP ] } ).effects, [], 'with no 1440 sample the widths it does not run at are unknown' );
 	const nowhere = elementEffects( [], { mdb, loops: { 1440: still( { width: 1240, height: 60 } ), 768: still( { width: 768, height: 60 } ), 375: still( { width: 375, height: 60 } ) }, runtimeLoops: [ CODE_STRIP ] } );
 	assert.deepEqual( nowhere.effects, [] );
 } );
@@ -211,6 +213,8 @@ test( 'MUST FAIL: a CSS animation set through a template value is the loop the r
 	assert.equal( templateValueLoop( HOLE, { ...PHONE_ONLY, 768: timedLoop( 'spin', 2000, { width: 20, height: 20 } ) } ), HOLE );
 	const keyed = { ...HOLE, properties: [ ...HOLE.properties, { property: 'opacity', from: '0', to: '1' } ] };
 	assert.equal( templateValueLoop( keyed, PHONE_ONLY ), keyed );
+	const { 1440: _wide, ...unsampled } = PHONE_ONLY;
+	assert.equal( templateValueLoop( HOLE, unsampled ), HOLE, 'with no 1440 sample the range is unknown' );
 	const script = { ...HOLE, mechanism: 'waapi' };
 	assert.equal( templateValueLoop( script, PHONE_ONLY ), script );
 } );
