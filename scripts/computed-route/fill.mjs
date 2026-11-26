@@ -67,6 +67,7 @@ import { listContentWrites, logicReader, applyChildren, markItemChildren } from 
 import { loadShopParts, shopPartWrites } from './lib/fill-shop-parts.mjs';
 import { buyboxColumnWrites } from './lib/fill-buybox-columns.mjs';
 import { holdItemVariants } from './lib/fill-item-template.mjs';
+import { partLookModeWrites } from './lib/fill-part-look-modes.mjs';
 import { shopPartTargets } from './lib/fill-shop-targets.mjs';
 import { blockSchema } from './lib/resolve.mjs';
 import { motionDb } from './lib/motion-db.mjs';
@@ -361,6 +362,13 @@ export async function fillSurface( o ) {
 		result.writes.push( ...shop.writes );
 		result.unmapped.push( ...shop.unmapped );
 		result.notes.push( ...shop.notes, ...shopTargets.notes );
+		// RF7: the part-look mode rules of the shop blocks this tree holds (what a card or the buy box draws: a wishlist heart, a brand
+		// overlay, a saving badge, the button's words), from part-look's own offline read of the draft (lib/fill-part-look-modes.mjs).
+		const partModes = await partLookModeWrites( { client: o.client, repo, entry, nodes, flat, refOf, attrExists: ( b, a ) => Object.hasOwn( blockSchema( b ) || {}, a ), out: path.join( outDir, 'part-look' ), log } );
+		partModes.surfaces.length && log( `part-look modes: ${ partModes.surfaces.join( ', ' ) }: ${ partModes.writes.length } written, ${ partModes.unmapped.length } rows` );
+		result.writes.push( ...partModes.writes );
+		result.unmapped.push( ...partModes.unmapped );
+		result.notes.push( ...partModes.notes );
 		// FR-48-8: the draft's backdrop beside its drawers, written to the scrim settings of the drawers and the basket panel (lib/fill-scrim.mjs).
 		const scrimBlocks = drawerScrimBlocks( db );
 		const scrim = scrimWrites( { nodes, flat, refOf, facts, scrimBlocks, declares: ( b, a ) => !! db.prepare( 'SELECT 1 FROM block_attributes WHERE block_slug = ? AND attr_name = ?' ).get( b, a ), defaultOf: ( b, a ) => JSON.parse( db.prepare( 'SELECT default_value FROM block_attributes WHERE block_slug = ? AND attr_name = ?' ).get( b, a )?.default_value ?? 'null' ) } );

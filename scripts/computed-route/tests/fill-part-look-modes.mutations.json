@@ -1,0 +1,62 @@
+[
+	{
+		"file": "lib/fill-part-look-modes.mjs",
+		"find": "if ( ! loc.template || loc.signedIn || ! loc.block ) {",
+		"replace": "if ( ! loc.block ) {",
+		"why": "a surface read signed in or with no page template is read in Fill"
+	},
+	{
+		"file": "lib/fill-part-look-modes.mjs",
+		"find": "} else if ( of.some( ( r ) => r.node?.itemTemplate ) && ",
+		"replace": "} else if ( ",
+		"why": "a single card on another template takes the loop card's rules"
+	},
+	{
+		"file": "lib/fill-part-look-modes.mjs",
+		"find": "const recs = nodes.filter( ( n ) => n.name === block && ( ! cross || n.node?.itemTemplate ) );",
+		"replace": "const recs = nodes.filter( ( n ) => n.name === block );",
+		"why": "a single card takes the rules read on the page's loop cards"
+	},
+	{
+		"file": "lib/fill-part-look-modes.mjs",
+		"find": "filter( ( w ) => w.mode && ! w.preset );",
+		"replace": "filter( ( w ) => w.mode );",
+		"why": "a built-in button preset is written as a mode rule"
+	},
+	{
+		"file": "lib/fill-part-look-modes.mjs",
+		"find": "if ( undefined !== held && json( held ) !== json( w.value ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a value another writer put on the node is overwritten"
+	},
+	{
+		"file": "lib/fill-part-look-modes.mjs",
+		"find": "if ( ! attrExists( block, w.attr ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a setting the block lacks is written"
+	},
+	{
+		"file": "lib/fill-part-look-modes.mjs",
+		"find": ".filter( ( x ) => ruleSettingsOf( modes, block ).has( x.setting ) )",
+		"replace": "",
+		"why": "a look gap is listed as a mode row"
+	},
+	{
+		"file": "lib/fill-part-look-modes.mjs",
+		"find": "entries: Object.fromEntries( keys.map( ( k ) => [ k, o.entry ] ) ),",
+		"replace": "entries: {},",
+		"why": "part-look reads the client's own shop page, not this surface's draft"
+	},
+	{
+		"file": "lib/fill-part-look-modes.mjs",
+		"find": "const ok = wanted.filter( ( w ) => ! refused.some( ( f ) => f.startsWith( `${ w.surface }:` ) ) );",
+		"replace": "const ok = wanted;",
+		"why": "a refused surface's rules are written"
+	},
+	{
+		"file": "lib/fill-part-look-modes.mjs",
+		"find": "if ( ! wanted.length || o.entry?.noDraft ) {",
+		"replace": "if ( ! wanted.length ) {",
+		"why": "a surface with no draft page is read"
+	}
+]

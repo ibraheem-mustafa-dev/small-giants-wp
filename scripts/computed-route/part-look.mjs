@@ -119,12 +119,15 @@ export function routeHandlersOf( { roleRoutes, goRoutes = new Map() } ) {
 	return out;
 }
 
-export async function runPartLook( { client, surfaces: wanted = SURFACES, site = null, compare = false, write = false, verify = false, seed = null, login = null, shots = true, only = null, dryRun = false, out = null, headed = false, log = ( m ) => console.log( m ) } ) {
+// repo: the checkout whose `sites/<client>` is read (a sweep's work folder); entries: { <surfaces.json key>: entry } read in place of
+// the client's own entries, so a run reads a part-look surface on another surface's draft page (Fill reads the shop card's rules
+// on the product page's related cards, lib/fill-part-look-modes.mjs).
+export async function runPartLook( { client, repo = REPO, entries = {}, surfaces: wanted = SURFACES, site = null, compare = false, write = false, verify = false, seed = null, login = null, shots = true, only = null, dryRun = false, out = null, headed = false, log = ( m ) => console.log( m ) } ) {
 	if ( ( compare || write || verify ) && ! site ) {
 		throw new Error( `${ verify ? '--verify' : ( write ? '--write' : '--compare' ) } needs --site <scratch copy>` );
 	}
 	( write || verify ) && assertMayWrite( site );
-	const buildDir = path.join( REPO, 'sites', client, 'build' );
+	const buildDir = path.join( repo, 'sites', client, 'build' );
 	const manifest = readJson( path.join( buildDir, 'surfaces.json' ) );
 	const rows = fs.existsSync( path.join( buildDir, 'page-map.json' ) ) ? readJson( path.join( buildDir, 'page-map.json' ) ) : [];
 	const config = fs.existsSync( path.join( buildDir, 'part-look.json' ) ) ? readJson( path.join( buildDir, 'part-look.json' ) ) : { surfaces: {} };
@@ -136,7 +139,7 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 	const shopRecord = fs.existsSync( path.join( buildDir, 'shop-parts.json' ) ) ? readJson( path.join( buildDir, 'shop-parts.json' ) ) : null;
 	const table = readJson( SELECTOR_TABLE );
 	// A role names a file only where the draft has one (a draft whose pages are its logic's own state has none).
-	const draftDirOf = ( entry ) => path.resolve( REPO, entry.draftDir );
+	const draftDirOf = ( entry ) => path.resolve( repo, entry.draftDir );
 	const anyEntry = Object.values( manifest ).find( ( e ) => e.draftDir );
 	const pages = Object.fromEntries( Object.entries( pagesOf( { rows, surfaces: manifest } ) ).filter( ( [ , f ] ) => anyEntry && fs.existsSync( path.join( draftDirOf( anyEntry ), f ) ) ) );
 	// The draft route of a surface (`Product.dc.html?id=zookies` names the product the draft shows), from the intake.
@@ -144,15 +147,15 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 	let intake = null;
 	const draftRouteOf = ( entry ) => ( intake ??= fs.existsSync( intakeFile ) ? readJson( intakeFile ) : {} ).skeletons?.[ entry?.intakeSurface ]?.route ?? null;
 	// A control whose click handler routes to a role's page counts as a link to it (a one-file draft's Checkout is a button calling go).
-	const links = rows.length ? draftLinksFor( { repo: REPO, client } ) : null;
+	const links = rows.length ? draftLinksFor( { repo, client } ) : null;
 	const roleRoutes = roleRoutesOf( { rows, routeRow: links?.routeRow, files: pagesOf( { rows, surfaces: manifest } ), accountRoute: logicRouteOf( draftRouteOf( manifest[ 'my-account' ] ) ) } );
 	const routeHandlers = routeHandlersOf( { roleRoutes, goRoutes: links?.goRoutes } );
 	let snapshot = null;
 	let snapshotNote = null;
 	let buttonPresets = {};
 	try {
-		snapshot = loadSnapshot( path.join( REPO, 'sites', client, 'theme-snapshot.json' ) );
-		buttonPresets = readJson( path.join( REPO, 'sites', client, 'theme-snapshot.json' ) ).settings?.custom?.buttonPresets || {};
+		snapshot = loadSnapshot( path.join( repo, 'sites', client, 'theme-snapshot.json' ) );
+		buttonPresets = readJson( path.join( repo, 'sites', client, 'theme-snapshot.json' ) ).settings?.custom?.buttonPresets || {};
 	} catch ( e ) {
 		snapshotNote = `no theme snapshot read (${ e.message.split( '\n' )[ 0 ] }): colours and font families are written as literals`;
 	}
@@ -169,7 +172,7 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 	for ( const surface of wanted ) {
 		const loc = locators.surfaces[ surface ];
 		// A surface may read another's manifest entry (the signed-in account views live on the account's post and draft).
-		const entry = manifest[ loc?.entryOf || surface ];
+		const entry = entries[ loc?.entryOf || surface ] ?? manifest[ loc?.entryOf || surface ];
 		if ( ! loc || ! entry ) {
 			notes.push( `${ surface }: the client's surfaces.json has no such surface; skipped` );
 			continue;
@@ -194,7 +197,7 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 		const opensFlow = Object.values( group.parts ).some( ( p ) => [].concat( p.match?.shopPart ?? [] ).includes( OPENER_PART ) );
 		let controls = null;
 		if ( opensFlow && ! entry.noDraft ) {
-			controls = flowControls( { repo: REPO, client, entry, surface: loc.entryOf || surface, template: loc.template } );
+			controls = flowControls( { repo, client, entry, surface: loc.entryOf || surface, template: loc.template } );
 			Object.assign( shopParts, openerShopParts( controls ) );
 			controls.why && notes.push( `${ surface }: the flow opener is not located: ${ controls.why }` );
 		}
@@ -215,12 +218,12 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 		} else if ( loc.signedIn ) {
 			// A one-file draft signs in on its own sign-in route (the entry's route) and lands where its sign-in takes the visitor.
 			const signinRoute = pages.signin ? null : logicRouteOf( cfg.route );
-			const signed = await readSignedInParts( { draftDir: path.resolve( REPO, entry.draftDir ), mainFile, signinFile: pages.signin ?? null, signinRoute, spec, parts: group.parts, pages, headed, log } );
+			const signed = await readSignedInParts( { draftDir: path.resolve( repo, entry.draftDir ), mainFile, signinFile: pages.signin ?? null, signinRoute, spec, parts: group.parts, pages, headed, log } );
 			reads = signed.reads;
 			signedTabs = signed.tabs;
 			notes.push( ...signed.notes.map( ( n ) => `${ surface }: ${ n }` ) );
 		} else {
-			( { reads } = await readParts( { draftDir: path.resolve( REPO, entry.draftDir ), files: [ mainFile, ...also ], spec, names: Object.keys( group.parts ), pages, config: cfg.route || cfg.init || cfg.empty ? cfg : null, hover: builtin.map( ( b ) => b.part ), headed, log } ) );
+			( { reads } = await readParts( { draftDir: path.resolve( repo, entry.draftDir ), files: [ mainFile, ...also ], spec, names: Object.keys( group.parts ), pages, config: cfg.route || cfg.init || cfg.empty ? cfg : null, hover: builtin.map( ( b ) => b.part ), headed, log } ) );
 			// A part every other part of the group is read from (the basket drawer's panel) that the draft read did not locate makes the
 			// surface's whole read empty: a refusal, never a quiet report of unpaired parts.
 			refusals.push( ...unlocatedParts( group, reads ).map( ( part ) => `${ surface }: the draft's ${ part } was not located at any width, so no part read from it is paired and none of its settings is decided` ) );
@@ -240,7 +243,7 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 		const menuData = modesData.blocks?.[ loc.block ]?.menu;
 		if ( signedTabs && menuData ) {
 			// The menu from each tab's own view, and the order status words from the draft's own status table (Bean's D-7).
-			const account = accountViewModes( { block: loc.block, tabs: signedTabs, menu: menuData, idx: loadDraft( path.resolve( REPO, entry.draftDir ), mainFile ).idx, reads, rows: blockRowsOf, stringKeys: accountStringKeys() } );
+			const account = accountViewModes( { block: loc.block, tabs: signedTabs, menu: menuData, idx: loadDraft( path.resolve( repo, entry.draftDir ), mainFile ).idx, reads, rows: blockRowsOf, stringKeys: accountStringKeys() } );
 			modes.writes.push( ...account.writes );
 			modes.gaps.push( ...account.gaps );
 			Object.assign( modes.settings, account.settings );
