@@ -457,7 +457,7 @@ export function triggerStyles( attributes, tier, palette, hasPill ) {
 	}
 	// The trigger's own look, shared by the icon button and the pill. Each style keeps its own background (pillBgColour or iconBg),
 	// painted on the trigger's ::after layer (render-scoped-css.php); a size set at this device replaces the 44px tap floor and
-	// never goes below 24px, and a pill takes the height only.
+	// prints as saved (no minimum), and a pill takes the height only.
 	const trigger = hasPill ? typographyPreviewStyle( attributes, 'pill', tier ) : {};
 	const fill = hasPill
 		? backgroundPaintPreview(

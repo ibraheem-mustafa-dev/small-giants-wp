@@ -989,6 +989,6 @@ def self_test() -> int:
           "*.min.* untouched; licence comments, strings, globals, function names and exports kept; modules and classic scripts "
           "both parse); a script that does not parse, a failing minifier, a dropped file or an emptied file is refused")
     print(" 29. cart trigger guard: a build that still reads the old trigger settings skips, a swept target passes, a target holding an old key is "
-          "refused with the backup and sweep commands named (negative control), an unreadable result fails closed, and the PHP the target runs names "
-          "only the post with an old key")
+          "refused with the backup and sweep commands named (negative control), an old key in an options or post meta row is refused, an unreadable "
+          "result fails closed, and the PHP the target runs names only the post with an old key and stops on a database error or a multisite network")
     return 0
