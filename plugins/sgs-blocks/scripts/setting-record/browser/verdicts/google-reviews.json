@@ -1,7 +1,7 @@
 {
  "block": "sgs/google-reviews",
- "scriptHash": "99ea0d1edad55d5f",
- "measured": "2026-11-24, on the local scratch site local-mediatest-rec1 running the plugin build of 37f4b13fe, Chromium via Playwright, 1440/768/375 (browser/README.md)",
+ "scriptHash": "ba58b00910d3eb48",
+ "measured": "2026-11-26, on the local scratch site local-mediatest-verdicts running the plugin build of ea46d5b3b, Chromium via Playwright, 1440/768/375 (browser/README.md)",
  "entries": [
   {
    "setting": "accentColour",
