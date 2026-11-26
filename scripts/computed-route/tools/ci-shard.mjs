@@ -7,7 +7,7 @@
 // File selection reuses tools/run-tests.mjs (`testCommand` builds each command, so SGS_NO_SITE=1 is set exactly as for a local run)
 // and drops the files listed in data/ci-excluded-tests.json. Each file's pass or fail, time, test and skip counts and output go to
 // DIR (results.json plus one .log per file) for tools/ci-summary.mjs. A file passes only when node exits 0, prints a test count above
-// zero and finishes inside the time limit. Exits 1 when any file failed.
+// zero and finishes inside the time limit. Exits 1 when any file failed that data/ci-known-failures.json does not list.
 import { spawn, spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -18,6 +18,7 @@ import { hasBrowserTest, testCommand } from './run-tests.mjs';
 
 const ROUTE = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..' );
 const EXCLUDED = path.join( ROUTE, 'data', 'ci-excluded-tests.json' );
+const KNOWN = path.join( ROUTE, 'data', 'ci-known-failures.json' );
 const TIMINGS = path.join( ROUTE, 'data', 'ci-test-timings.json' );
 // A test file that runs longer than this is killed (with its child processes) and counted as failed: a hung file would otherwise
 // hold its shard until the job times out.
@@ -58,8 +59,16 @@ export function readCounts( output ) {
 	return { tests: n( 'tests' ), skipped: n( 'skipped' ), skippedNames };
 }
 
+// The failed results that are not listed in data/ci-known-failures.json ({ "tests/x.test.mjs": "reason" }): the ones that fail the shard.
+// A known failure stays in results.json (the summary shows it as known) but does not change the shard's exit code.
+export function unknownFailures( results, known = fs.existsSync( KNOWN ) ? JSON.parse( fs.readFileSync( KNOWN, 'utf8' ) ) : {} ) {
+	return results.filter( ( r ) => ! r.ok && ! ( r.file in known ) );
+}
+
 // Ends a process and everything it started: on Windows `child.kill` ends node only and leaves the test's own children (a browser, a
-// server) holding the pipes, so the whole tree goes with taskkill; elsewhere the process group.
+// server) holding the pipes, so the whole tree goes with taskkill; elsewhere the process group. Known gap, accepted: taskkill /T walks
+// only live parents, so a descendant whose own parent has already exited survives the kill (a full fix needs a Windows Job Object, which
+// Node does not expose). That is harmless on a throwaway CI runner, which is discarded after the job.
 export function killTree( child ) {
 	if ( 'win32' === process.platform ) {
 		spawnSync( 'taskkill', [ '/T', '/F', '/PID', String( child.pid ) ], { stdio: 'ignore' } );
@@ -155,8 +164,9 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 		console.log( `ci-shard: shard ${ index } of ${ count }: ${ mine.length } of ${ files.length } files` );
 		const results = await runFiles( mine, arg( '--out' ) || 'ci-out' );
 		const failed = results.filter( ( r ) => ! r.ok );
-		console.log( `ci-shard: ${ results.length - failed.length } passed, ${ failed.length } failed` );
-		process.exitCode = failed.length ? 1 : 0;
+		const unknown = unknownFailures( results );
+		console.log( `ci-shard: ${ results.length - failed.length } passed, ${ failed.length } failed (${ failed.length - unknown.length } known)` );
+		process.exitCode = unknown.length ? 1 : 0;
 	} else {
 		console.error( 'usage: ci-shard.mjs --list [--index I --count N] [--browser] | --run --index I --count N --out DIR [--browser]' );
 		process.exit( 2 );

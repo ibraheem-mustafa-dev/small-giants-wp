@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { readCounts, runOne, runFiles } from '../tools/ci-shard.mjs';
+import { readCounts, runOne, runFiles, unknownFailures } from '../tools/ci-shard.mjs';
 import { missingFiles, summarise } from '../tools/ci-summary.mjs';
 
 const route = ( files ) => {
@@ -69,4 +69,11 @@ test( 'MUST FAIL: the summary fails on an expected file with no result, and list
 	const partial = summarise( rows, {}, [ 'tests/a.test.mjs', 'tests/b.test.mjs', 'tests/c.test.mjs' ] );
 	assert.deepEqual( partial.missing, [ 'tests/c.test.mjs' ] );
 	assert.match( partial.text, /1 with no result: tests\/c\.test\.mjs/ );
+} );
+
+test( 'MUST FAIL: a known failure does not fail the shard, an unknown one does', () => {
+	const results = [ { file: 'tests/a.test.mjs', ok: true }, { file: 'tests/b.test.mjs', ok: false }, { file: 'tests/c.test.mjs', ok: false } ];
+	assert.deepEqual( unknownFailures( results, { 'tests/b.test.mjs': 'needs the replay folder' } ).map( ( r ) => r.file ), [ 'tests/c.test.mjs' ] );
+	assert.deepEqual( unknownFailures( results.slice( 0, 2 ), { 'tests/b.test.mjs': 'known' } ), [] );
+	assert.deepEqual( unknownFailures( results.slice( 0, 2 ), {} ).map( ( r ) => r.file ), [ 'tests/b.test.mjs' ] );
 } );
