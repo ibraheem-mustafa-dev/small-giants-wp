@@ -136,14 +136,11 @@ if ( $has_panel ) {
 	}
 }
 
-// Trigger pill (Wave B, U-1): background via the same HAND-BUILT ::after
-// reasoning as badge/panel above (`.sgs-cart__trigger` is already
-// `position:relative` in style.css, so the ::after has a positioning context
-// without this code adding one). pillTextColour styles the LABEL only — the
-// count beside it keeps reading badgeTextColour/badgeTextColourGradient
-// (same badge element, restyled for the pill by style.css). Border-colour is
-// flat-only (no gradient sibling); border-radius always emits so an operator
-// starts from the draft's fully-rounded default without a manual set.
+// Trigger pill (Wave B, U-1): the pill's own background, text, border and shadow. The background is the HAND-BUILT ::after layer
+// of the badge and panel above (`.sgs-cart__trigger` is already `position:relative` in style.css). pillTextColour styles the LABEL
+// only — the count beside it keeps reading badgeTextColour/badgeTextColourGradient (same badge element, restyled for the pill by
+// style.css). Border-colour is flat-only (no gradient sibling). The trigger's radius, size and padding are shared with the icon
+// button and print below; the icon button keeps its own background (iconBg*), because a colour is not per device.
 if ( $trigger_has_pill ) {
 	// Every pill rule below is collected, then wrapped in the pill tiers' media ranges when the styles are mixed.
 	$pill_rules_start = count( $scoped_css );
@@ -151,7 +148,7 @@ if ( $trigger_has_pill ) {
 	$pill_label_sel = $sel . ' .sgs-cart__pill-label';
 
 	$pill_bg_gradient = (string) ( $attributes['pillBgColourGradient'] ?? '' );
-	$pill_bg_paint    = sgs_background_paint_decl( $pill_bg_colour, $pill_bg_gradient );
+	$pill_bg_paint    = sgs_background_paint_decl( (string) ( $attributes['pillBgColour'] ?? '' ), $pill_bg_gradient );
 	if ( '' !== $pill_bg_paint ) {
 		$scoped_css[] = $pill_sel . '::after{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;' . $pill_bg_paint . ';}';
 	}
@@ -167,7 +164,8 @@ if ( $trigger_has_pill ) {
 	}
 
 	// Border (width, style, colour, radius at three tiers) through the shared
-	// assembler. Printed before the typography and min-height rules below.
+	// assembler. Printed before the typography rule below.
+	// The corner radius is the trigger's own, shared with the icon button (below), so the pill's border call leaves it out.
 	$pill_border = sgs_border_element_decls(
 		$attributes,
 		'pill',
@@ -176,6 +174,7 @@ if ( $trigger_has_pill ) {
 			'colour' => array(
 				'base' => 'pillBorderColour',
 			),
+			'radius' => false,
 		)
 	);
 	if ( $pill_border['base'] ) {
@@ -189,9 +188,6 @@ if ( $trigger_has_pill ) {
 	}
 	$scoped_css = array_merge( $scoped_css, $pill_border['rules'] );
 
-	// Scalar length (Spec 32 S7): sgs_css_length_value() sanitises and passes
-	// the value through with its own unit; empty leaves style.css's own
-	// border-radius:999px default in place (no override emitted).
 	// Pill text (size, weight, letter spacing, capitals) through the shared
 	// typography helper; unset keeps style.css's defaults.
 	$pill_typo_css = sgs_typography_css_rule( $attributes, 'pill', $pill_sel, '', false, false, sgs_object_attr_keys( $block ) );
@@ -199,27 +195,8 @@ if ( $trigger_has_pill ) {
 		$scoped_css[] = $pill_typo_css;
 	}
 
-	// Height floor per device (pillMinHeight). Unset keeps the 44px
-	// touch-target default in style.css; a design may set a slimmer pill.
-	if ( is_array( $attributes['pillMinHeight'] ?? null ) && ! empty( $attributes['pillMinHeight'] ) ) {
-		$pill_min_height_css = sgs_emit_responsive_css(
-			$pill_sel,
-			array(
-				array(
-					'value'        => $attributes['pillMinHeight'],
-					'css'          => 'min-height',
-					'unit_default' => 'px',
-				),
-			)
-		);
-		if ( '' !== $pill_min_height_css ) {
-			$scoped_css[] = $pill_min_height_css;
-		}
-	}
-
-	// Hover and keyboard focus: the fill on the same ::after layer as the
-	// resting fill (created here when only a hover fill is set), and the label
-	// colour. Touch-safe through sgs_hover_state_rules().
+	// Hover and keyboard focus: the fill on the same ::after layer as the resting fill (created here when only a hover fill is
+	// set), and the label colour. Touch-safe through sgs_hover_state_rules().
 	$pill_bg_hover_paint = sgs_background_paint_decl(
 		(string) ( $attributes['pillBgColourHover'] ?? '' ),
 		(string) ( $attributes['pillBgColourHoverGradient'] ?? '' )
@@ -264,17 +241,6 @@ if ( $trigger_has_pill ) {
 		$scoped_css[] = sgs_hover_state_rules( $pill_sel, implode( ';', $pill_shadow_hover ) );
 	}
 
-	// Pill padding per breakpoint (box with presets); unset keeps style.css's 0 14px.
-	$pill_padding_tiers = sgs_responsive_normalise_object( $attributes['pillPadding'] ?? null, true );
-	foreach ( $sgs_cart_tier_keys as $sgs_cart_pad_tier ) {
-		$pill_padding_decls = sgs_box_object_longhands( $pill_padding_tiers[ $sgs_cart_pad_tier ] ?? null, 'padding' );
-		if ( null === $pill_padding_decls ) {
-			continue;
-		}
-		$pill_padding_rule = $pill_sel . '{' . $pill_padding_decls . ';}';
-		$scoped_css[]      = '' === $sgs_cart_tier_media[ $sgs_cart_pad_tier ] ? $pill_padding_rule : $sgs_cart_tier_media[ $sgs_cart_pad_tier ] . '{' . $pill_padding_rule . '}';
-	}
-
 	if ( $trigger_mixed ) {
 		$pill_rules = array_splice( $scoped_css, $pill_rules_start );
 		foreach ( $trigger_ranges['pill'] as $pill_range ) {
@@ -283,11 +249,81 @@ if ( $trigger_has_pill ) {
 	}
 }
 
-// Icon trigger background (normal and hover) on the trigger's own ::after layer, the pill's and badge's pattern, so a stroke
-// gradient on the glyph never meets background-clip:text. Printed bare in a block with one icon trigger style, and inside each
-// icon media range in a mixed block. The trigger is its own stacking context so the layer sits behind the glyph, not the page.
+// The trigger's shared look: corner radius, padding and size. The icon button and the text pill are one element and each device
+// shows one of them, so these print once for whichever style a device shows. The backgrounds stay separate: the pill's prints in
+// the pill block above, the icon button's below, each only in its own style's devices.
+$trigger_sel = $sel . ' .sgs-cart__trigger';
+
+$trigger_radius = sgs_css_length_value( (string) ( $attributes['triggerBorderRadius'] ?? '' ) );
+if ( '' !== $trigger_radius ) {
+	$scoped_css[] = $trigger_sel . '{border-radius:' . $trigger_radius . ';}';
+}
+
+// Padding per breakpoint (box with presets); unset keeps style.css's own padding for the style the device shows.
+$trigger_padding_tiers = sgs_responsive_normalise_object( $attributes['triggerPadding'] ?? null, true );
+foreach ( $sgs_cart_tier_keys as $sgs_cart_pad_tier ) {
+	$trigger_padding_decls = sgs_box_object_longhands( $trigger_padding_tiers[ $sgs_cart_pad_tier ] ?? null, 'padding' );
+	if ( null === $trigger_padding_decls ) {
+		continue;
+	}
+	$trigger_padding_rule = $trigger_sel . '{' . $trigger_padding_decls . ';}';
+	$scoped_css[]         = '' === $sgs_cart_tier_media[ $sgs_cart_pad_tier ] ? $trigger_padding_rule : $sgs_cart_tier_media[ $sgs_cart_pad_tier ] . '{' . $trigger_padding_rule . '}';
+}
+
+// Size per breakpoint, in lengths or spacing presets, printed as saved (no floor: a swept pill height of 20px or 0 must render as it
+// did before the sweep, and a control's size fits its own shape). An icon device takes the width and the height; a text pill's width
+// follows its label, so a pill device takes the height only.
+$trigger_size_tiers = sgs_responsive_normalise_object( $attributes['triggerSize'] ?? null );
+$trigger_size_own   = array();
+foreach ( $sgs_cart_tier_keys as $sgs_cart_tier_key ) {
+	$trigger_size_box = is_array( $trigger_size_tiers[ $sgs_cart_tier_key ] ?? null ) ? $trigger_size_tiers[ $sgs_cart_tier_key ] : array();
+	foreach ( array( 'width', 'height' ) as $trigger_size_side ) {
+		$trigger_size_len = sgs_icon_length_value( $trigger_size_box[ $trigger_size_side ] ?? '', 640 );
+		if ( '' !== $trigger_size_len ) {
+			$trigger_size_own[ $sgs_cart_tier_key ][ $trigger_size_side ] = $trigger_size_len;
+		}
+	}
+}
+$trigger_size_decls = static function ( array $size, string $style ): string {
+	$decls = '';
+	if ( 'pill' !== $style && isset( $size['width'] ) ) {
+		$decls .= 'min-width:' . $size['width'] . ';';
+	}
+	if ( isset( $size['height'] ) ) {
+		$decls .= 'min-height:' . $size['height'] . ';';
+	}
+	return $decls;
+};
+if ( $trigger_mixed ) {
+	// Each breakpoint takes its own size, or the one inherited from the breakpoint above, in the style it shows.
+	$trigger_size_seen = array();
+	foreach ( array(
+		'desktop' => 'lg',
+		'tablet'  => 'md',
+		'mobile'  => 'sm',
+	) as $sgs_cart_tier_key => $sgs_cart_tier_lg ) {
+		$trigger_size_seen = array_merge( $trigger_size_seen, $trigger_size_own[ $sgs_cart_tier_key ] ?? array() );
+		$trigger_size_css  = $trigger_size_decls( $trigger_size_seen, $trigger_tiers[ $sgs_cart_tier_lg ] );
+		if ( '' !== $trigger_size_css ) {
+			$scoped_css[] = '@media ' . $sgs_cart_tier_ranges[ $sgs_cart_tier_key ] . '{' . $trigger_sel . '{' . $trigger_size_css . '}}';
+		}
+	}
+} else {
+	foreach ( $trigger_size_own as $sgs_cart_tier_key => $trigger_size_box ) {
+		$trigger_size_css = $trigger_size_decls( $trigger_size_box, $trigger_style );
+		if ( '' === $trigger_size_css ) {
+			continue;
+		}
+		$trigger_size_rule = $trigger_sel . '{' . $trigger_size_css . '}';
+		$scoped_css[]      = '' === $sgs_cart_tier_media[ $sgs_cart_tier_key ] ? $trigger_size_rule : $sgs_cart_tier_media[ $sgs_cart_tier_key ] . '{' . $trigger_size_rule . '}';
+	}
+}
+
+// Icon button background (normal and hover) on the trigger's own ::after layer, the pill's and badge's pattern, so a stroke gradient
+// on the glyph never meets background-clip:text. Printed bare in a block with one icon trigger style, and inside each icon media
+// range in a mixed block, so a device showing the pill never paints it (the pill's fill is pillBgColour). The trigger is its own
+// stacking context so the layer sits behind the glyph, not the page.
 if ( in_array( 'icon', $trigger_tiers, true ) ) {
-	$icon_bg_sel  = $sel . ' .sgs-cart__trigger';
 	$icon_bg_fill = sgs_fill_decls(
 		$attributes,
 		array(
@@ -297,55 +333,13 @@ if ( in_array( 'icon', $trigger_tiers, true ) ) {
 			'hover_gradient' => 'iconBgHoverGradient',
 		)
 	);
-	// Icon button corner radius (scalar) and square size (per breakpoint, never below the 24px target size), icon tiers only.
-	$icon_trigger_rules  = array();
-	$icon_trigger_radius = sgs_css_length_value( (string) ( $attributes['iconTriggerRadius'] ?? '' ) );
-	if ( '' !== $icon_trigger_radius ) {
-		$icon_trigger_rules[] = $icon_bg_sel . '{border-radius:' . $icon_trigger_radius . ';}';
-	}
-	$icon_trigger_size_obj = is_array( $attributes['iconTriggerSize'] ?? null ) ? $attributes['iconTriggerSize'] : array();
-	$icon_trigger_size_own = array();
-	foreach ( $sgs_cart_tier_keys as $sgs_cart_tier_key ) {
-		$icon_trigger_size_raw = $icon_trigger_size_obj[ $sgs_cart_tier_key ] ?? null;
-		if ( is_numeric( $icon_trigger_size_raw ) && (float) $icon_trigger_size_raw > 0 ) {
-			$icon_trigger_size_own[ $sgs_cart_tier_key ] = max( 24, absint( $icon_trigger_size_raw ) );
-		}
-	}
-	if ( $trigger_mixed ) {
-		// Each icon breakpoint takes its own size, or the one inherited from the breakpoint above.
-		$icon_trigger_size_seen = null;
-		foreach ( array(
-			'desktop' => 'lg',
-			'tablet'  => 'md',
-			'mobile'  => 'sm',
-		) as $sgs_cart_tier_key => $sgs_cart_tier_lg ) {
-			$icon_trigger_size_seen = $icon_trigger_size_own[ $sgs_cart_tier_key ] ?? $icon_trigger_size_seen;
-			if ( null !== $icon_trigger_size_seen && 'icon' === $trigger_tiers[ $sgs_cart_tier_lg ] ) {
-				$scoped_css[] = '@media ' . $sgs_cart_tier_ranges[ $sgs_cart_tier_key ] . '{' . $icon_bg_sel . '{min-width:' . $icon_trigger_size_seen . 'px;min-height:' . $icon_trigger_size_seen . 'px;}}';
-			}
-		}
-	} else {
-		foreach ( $icon_trigger_size_own as $sgs_cart_tier_key => $icon_trigger_size_px ) {
-			$icon_trigger_size_rule = $icon_bg_sel . '{min-width:' . $icon_trigger_size_px . 'px;min-height:' . $icon_trigger_size_px . 'px;}';
-			$scoped_css[]           = '' === $sgs_cart_tier_media[ $sgs_cart_tier_key ] ? $icon_trigger_size_rule : $sgs_cart_tier_media[ $sgs_cart_tier_key ] . '{' . $icon_trigger_size_rule . '}';
-		}
-	}
-	if ( $icon_trigger_rules ) {
-		if ( $trigger_mixed ) {
-			foreach ( $trigger_ranges['icon'] as $icon_trigger_range ) {
-				$scoped_css[] = '@media ' . $icon_trigger_range . '{' . implode( '', $icon_trigger_rules ) . '}';
-			}
-		} else {
-			$scoped_css = array_merge( $scoped_css, $icon_trigger_rules );
-		}
-	}
 	if ( $icon_bg_fill['normal'] || $icon_bg_fill['hover'] ) {
 		$icon_bg_rules   = array();
-		$icon_bg_rules[] = $icon_bg_sel . '{isolation:isolate;}';
-		$icon_bg_rules[] = $icon_bg_sel . '::after{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;' . implode( ';', $icon_bg_fill['normal'] ) . ';}';
+		$icon_bg_rules[] = $trigger_sel . '{isolation:isolate;}';
+		$icon_bg_rules[] = $trigger_sel . '::after{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;' . implode( ';', $icon_bg_fill['normal'] ) . ';}';
 		if ( $icon_bg_fill['hover'] ) {
-			$icon_bg_rules[] = $icon_bg_sel . '::after{transition:background-color var(--wp--custom--duration--fast, .25s) var(--wp--custom--easing--ease, ease);}';
-			$icon_bg_rules[] = sgs_hover_state_rules( $icon_bg_sel, implode( ';', $icon_bg_fill['hover'] ), ':focus-visible', '::after' );
+			$icon_bg_rules[] = $trigger_sel . '::after{transition:background-color var(--wp--custom--duration--fast, .25s) var(--wp--custom--easing--ease, ease);}';
+			$icon_bg_rules[] = sgs_hover_state_rules( $trigger_sel, implode( ';', $icon_bg_fill['hover'] ), ':focus-visible', '::after' );
 		}
 		if ( $trigger_mixed ) {
 			foreach ( $trigger_ranges['icon'] as $icon_bg_range ) {

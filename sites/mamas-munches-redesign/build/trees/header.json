@@ -586,16 +586,12 @@
                                     "pillTextColour": "primary-text",
                                     "pillBorderStyle": "solid",
                                     "pillBorderColour": "primary-text",
-                                    "pillBorderRadius": "999px",
                                     "pillFontSize": {
                                         "desktop": 15
                                     },
                                     "pillFontSizeUnit": "px",
                                     "pillFontWeight": "700",
                                     "pillTextTransform": "none",
-                                    "pillMinHeight": {
-                                        "desktop": "48px"
-                                    },
                                     "badgeColour": "mm-pink",
                                     "triggerStyleTablet": "icon",
                                     "pillShowIcon": true,
@@ -609,23 +605,35 @@
                                     "iconSource": "custom",
                                     "iconSvg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 8Z\"/><path d=\"M9 10V7a3 3 0 0 1 6 0v3\"/></svg>",
                                     "iconBgHover": "mm-pink-soft",
-                                    "iconTriggerRadius": "999px",
-                                    "iconTriggerSize": {
-                                        "tablet": 48
-                                    },
                                     "pillShadow": "3px 3px 0 #3A2A22",
                                     "pillShadowHover": "5px 5px 0 #3A2A22",
-                                    "pillPadding": {
+                                    "pillBadgeSize": {
+                                        "desktop": 22
+                                    },
+                                    "triggerPadding": {
                                         "desktop": {
                                             "top": "0px",
                                             "right": "18px",
                                             "bottom": "0px",
                                             "left": "14px"
+                                        },
+                                        "tablet": {
+                                            "top": "0px",
+                                            "right": "0px",
+                                            "bottom": "0px",
+                                            "left": "0px"
                                         }
                                     },
-                                    "pillBadgeSize": {
-                                        "desktop": 22
-                                    }
+                                    "triggerSize": {
+                                        "desktop": {
+                                            "height": "48px"
+                                        },
+                                        "tablet": {
+                                            "width": "48px",
+                                            "height": "48px"
+                                        }
+                                    },
+                                    "triggerBorderRadius": "999px"
                                 }
                             }
                         ]

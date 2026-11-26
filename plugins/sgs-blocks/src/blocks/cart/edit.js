@@ -19,8 +19,6 @@ import {
 	SgsColourPanel,
 	ScrimControls,
 	TypographyControls,
-	ResponsiveOverride,
-	SgsLengthControl,
 	RowWrapPanel,
 } from '../../components';
 import { ToolsPanel } from '../../components/primitives';
@@ -33,7 +31,6 @@ import {
 import PanelSettingsControls from './PanelSettingsControls';
 import TriggerSettingsControls from './TriggerSettingsControls';
 import PillBorderControl from './PillBorderControl';
-import IconTriggerControl from './IconTriggerControl';
 import buildCartColourRows from './colourPanelRows';
 import buildPanelColourRows from './panelColourRows';
 import PanelContentControls from './PanelContentControls';
@@ -109,7 +106,6 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		pillBorderColour,
 		pillBorderWidth,
 		pillBorderStyle,
-		pillBorderRadius,
 		freeDeliveryThresholdOverride,
 		freeDeliveryMessage,
 		freeDeliverySuccessMessage,
@@ -303,7 +299,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 					showZero={ showZero }
 					badgeSize={ attributes.badgeSize }
 					pillBadgeSize={ attributes.pillBadgeSize }
-					pillPadding={ attributes.pillPadding }
+					attributes={ attributes }
 					hideWhenEmpty={ hideWhenEmpty }
 					triggerStyle={ triggerStyle }
 					triggerStyleTablet={ triggerStyleTablet }
@@ -370,7 +366,6 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 					pillBorderColour={ pillBorderColour }
 					pillBorderWidth={ pillBorderWidth }
 					pillBorderStyle={ pillBorderStyle }
-					pillBorderRadius={ pillBorderRadius }
 					contrastAgainst={
 						attributes.pillBgColour &&
 						! attributes.pillBgColourGradient
@@ -380,16 +375,9 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 					setAttributes={ setAttributes }
 				/>
 
-				<IconTriggerControl
-					hasIconTier={ ! allPill }
-					iconTriggerRadius={ attributes.iconTriggerRadius }
-					iconTriggerSize={ attributes.iconTriggerSize }
-					setAttributes={ setAttributes }
-				/>
-
 				{ anyPill && (
 					<PanelBody
-						title={ __( 'Pill text and size', 'sgs-blocks' ) }
+						title={ __( 'Pill text', 'sgs-blocks' ) }
 						initialOpen={ false }
 					>
 						<TypographyControls
@@ -402,40 +390,6 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 							showLetterSpacing
 							showTransform
 						/>
-						<ResponsiveOverride
-							label={ __( 'Minimum height', 'sgs-blocks' ) }
-							value={ attributes.pillMinHeight }
-							onChange={ ( obj ) =>
-								setAttributes( { pillMinHeight: obj } )
-							}
-						>
-							{ ( {
-								ownValue,
-								effectiveValue,
-								inherited,
-								setOwnValue,
-							} ) => (
-								<SgsLengthControl
-									presets={ false }
-									label={ __(
-										'Minimum height',
-										'sgs-blocks'
-									) }
-									hideLabelFromVision
-									help={ __(
-										'Empty keeps the 44px touch-target height.',
-										'sgs-blocks'
-									) }
-									value={ ownValue || '' }
-									placeholder={
-										inherited ? effectiveValue : '44px'
-									}
-									onChange={ ( val ) =>
-										setOwnValue( val || '' )
-									}
-								/>
-							) }
-						</ResponsiveOverride>
 					</PanelBody>
 				) }
 

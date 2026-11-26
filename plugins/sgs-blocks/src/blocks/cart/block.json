@@ -93,7 +93,7 @@
 				"margin": [
 					"margin"
 				],
-				"pillPadding": [ "pillPadding" ],
+				"triggerPadding": [ "triggerPadding" ],
 				"panelHeadPadding": [ "panelHeadPadding" ],
 				"panelBodyPadding": [ "panelBodyPadding" ],
 				"panelFooterPadding": [ "panelFooterPadding" ],
@@ -176,10 +176,7 @@
 						"css:color": "iconColour",
 						"css:stroke": "iconColourGradient",
 						"css:background-color": "iconBg",
-						"css:background-image": "iconBgGradient",
-						"css:border-radius": "iconTriggerRadius",
-						"css:min-width": "iconTriggerSize",
-						"css:min-height": "iconTriggerSize"
+						"css:background-image": "iconBgGradient"
 					},
 					"states": {
 						"hover": {
@@ -191,7 +188,36 @@
 							}
 						}
 					},
-					"_note": "iconSize is a per-breakpoint object that prints --sgs-cart-icon-size (sets width/height, not text size) — no cluster member exists, so it is an honest ORPHAN (FR-35-4). iconBg/iconBgGradient and their hover siblings paint the icon button's own background on the trigger's ::after layer, in icon tiers only. `css:stroke` (icon/SVG gradient mechanism) is explicit-mapped to iconColourGradient — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php). iconColourHover/iconColourHoverGradient mirror sgs/icon's own hover states shape exactly — resolved via sgs_icon_gradient_css() on .sgs-cart__trigger:hover.",
+					"_note": "The cart icon's own colour, and the icon button's background (iconBg and its gradient and hover siblings, painted on the trigger's ::after layer in icon devices only, because the pill keeps its own background in pillBgColour). iconSize (the glyph size) is mapped on the iconGlyph element. `css:stroke` (icon/SVG gradient mechanism) is explicit-mapped to iconColourGradient: non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php). iconColourHover/iconColourHoverGradient mirror sgs/icon's own hover states shape exactly, resolved via sgs_icon_gradient_css() on .sgs-cart__trigger:hover.",
+					"absentIn": [ "pill-link" ],
+					"absentWhy": "The pill trigger shows its label and count in place of the icon."
+				},
+				"trigger": {
+					"selector": ".sgs-cart__trigger",
+					"label": "Trigger button",
+					"order": 3,
+					"clusters": [ "layout" ],
+					"prefix": "trigger",
+					"attrMap": {
+						"css:border-radius": "triggerBorderRadius",
+						"css:min-width": "triggerSize",
+						"css:min-height": "triggerSize",
+						"css:padding": "triggerPadding"
+					},
+					"_note": "The icon button and the text pill are one element (.sgs-cart__trigger) and each device shows one of them, so the radius, size and padding are one setting each. triggerSize prints min-width and min-height in an icon device and min-height only in a pill device. The backgrounds stay separate (iconBg* on the icon element, pillBgColour* on the pill element) because a colour is not per device: a block that shows the pill on desktop and the icon button on tablet keeps a different fill for each."
+				},
+				"iconGlyph": {
+					"selector": ".sgs-cart__icon svg",
+					"motion": false,
+					"label": "Cart icon glyph",
+					"order": 38,
+					"clusters": [ "layout" ],
+					"prefix": "iconGlyph",
+					"attrMap": {
+						"css:width": "iconSize",
+						"css:height": "iconSize"
+					},
+					"_note": "The cart glyph: iconSize prints --sgs-cart-icon-size on the block, which sizes the icon box and the svg inside it.",
 					"absentIn": [ "pill-link" ],
 					"absentWhy": "The pill trigger shows its label and count in place of the icon."
 				},
@@ -258,9 +284,6 @@
 						"css:border-color": "pillBorderColour",
 						"css:border-width": "pillBorderWidth",
 						"css:border-style": "pillBorderStyle",
-						"css:border-radius": "pillBorderRadius",
-						"css:min-height": "pillMinHeight",
-						"css:padding": "pillPadding",
 						"css:box-shadow": "pillShadow"
 					},
 					"states": {
@@ -275,7 +298,7 @@
 						}
 					},
 					"contentAttrs": [ "pillLabel" ],
-					"_note": "Wave B — triggerStyle:'pill' swaps the icon+badge trigger for a word (pillLabel) beside the live item count, in a pill (matches a 'Bag'/'Cart' text trigger draft shape). Only rendered/styled when triggerStyle is 'pill' — the icon element above stays the trigger for triggerStyle:'icon' (the default). HAND-BUILT ::after for the background (same reasoning as badge/panel above: .sgs-cart__trigger is already position:relative in style.css, and a text gradient's background-clip:text must not be clipped by the pill's own fill) — pillTextColour styles the LABEL only; the count beside it keeps using the existing badgeTextColour/badgeTextColourGradient attributes (same badge element, restyled inline for the pill via CSS, so one colour control governs the count in both trigger styles). Border (compliance correction, Spec 35 §14/§1 field 9f): pillBorderWidth (box object, base only) + pillBorderStyle (enum) + pillBorderColour (flat, no gradient sibling) mount through `SgsBorderControl`, mirroring sgs/whatsapp-cta's cardBorderWidth/cardBorderStyle/cardBorderColour (card-fields.js CardTypographyPanel) — no ad-hoc second colour mechanism. pillBorderRadius stays the one exception: a plain CSS-length STRING (default '' — CSS default of border-radius:999px in style.css governs), NOT a responsive 4-corner tier object, per Spec 32 §6.1's deliberate-keep for a single uniform pill radius (mirrors sgs/option-picker's pillBorderRadius) — `SgsBorderControl`'s `onRadiusChange` pairing is typed for that 4-corner tier shape, so pairing this scalar there would force the very object migration §6.1 exempts; it is mounted immediately alongside the composite instead (PillBorderControl.js). `layout` cluster added (compliance pass) purely so css:border-color/css:border-width/css:border-style/css:border-radius — all members of that cluster, per scripts/consistency/cluster-member-sets.json — resolve against this element's own attrMap instead of reporting ORPHAN:STYLE-DEFECT; no other `layout` member (padding/margin/gap/etc.) has an attrMap entry here, so none of them are newly claimed."
+					"_note": "triggerStyle:'pill' swaps the icon+badge trigger for a word (pillLabel) beside the live item count, in a pill (matches a 'Bag'/'Cart' text trigger draft shape). The pill's own background, text, border and shadow are mapped here; the trigger's radius, size and padding are shared with the icon button (the trigger element above), and the icon button keeps its own background in iconBg*. pillTextColour styles the LABEL only; the count beside it keeps using badgeTextColour/badgeTextColourGradient (same badge element, restyled for the pill by style.css, so one colour control governs the count in both trigger styles). Border: pillBorderWidth (box object, base only) + pillBorderStyle (enum) + pillBorderColour (flat, no gradient sibling) mount through `SgsBorderControl` (Spec 35 section 14, field 9f). The layout cluster is claimed only so css:border-color, css:border-width and css:border-style resolve against this element's own attrMap instead of reporting ORPHAN:STYLE-DEFECT."
 				},
 				"freeDeliveryTrack": {
 					"selector": ".sgs-cart__free-delivery-track",
@@ -1102,15 +1125,20 @@
 			"default": {},
 			"description": "Icon size in px per breakpoint: {desktop,tablet,mobile}. An empty tier inherits the tier above; unset keeps 24px."
 		},
-		"iconTriggerRadius": {
-			"type": "string",
-			"default": "",
-			"description": "CSS length (e.g. \"999px\" or \"50%\") for the icon button's corners, in icon tiers only. Empty keeps the trigger's 4px radius. The icon background layer inherits it."
-		},
-		"iconTriggerSize": {
+		"triggerSize": {
 			"type": "object",
 			"default": {},
-			"description": "Icon button square size in px per breakpoint, in icon tiers only. A set value replaces the 44px tap floor in that tier but never goes below 24px. Unset keeps the floor."
+			"description": "Trigger size per device {desktop:{width,height},…}: CSS lengths or theme spacing presets, printed as min-width and min-height on the trigger. A text pill takes the height only (its width follows its label). A set value replaces the 44px tap floor at that device and prints as saved; unset keeps the floor."
+		},
+		"triggerPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Trigger padding box per breakpoint: {desktop,tablet,mobile} of {top,right,bottom,left}, for the icon button and the text pill alike. Empty keeps style.css's own padding (0 for the icon button, 0 14px for the pill)."
+		},
+		"triggerBorderRadius": {
+			"type": "string",
+			"default": "",
+			"description": "CSS length (e.g. \"999px\" or \"50%\") for the trigger's corners, icon button and text pill alike. Empty keeps style.css's own radius (4px for the icon button, fully rounded for the pill)."
 		},
 		"iconBg": {
 			"type": "string",
@@ -1395,11 +1423,6 @@
 			"type": "string",
 			"default": ""
 		},
-		"pillMinHeight": {
-			"type": "object",
-			"default": {},
-			"description": "Pill height floor per device (CSS length). Empty keeps the 44px touch-target default."
-		},
 		"pillBgColourHover": {
 			"type": "string",
 			"default": ""
@@ -1469,16 +1492,6 @@
 		"pillShadowColourHover": {
 			"type": "string",
 			"default": ""
-		},
-		"pillPadding": {
-			"type": "object",
-			"default": {},
-			"description": "Pill padding box per breakpoint: {desktop,tablet,mobile} of {top,right,bottom,left}. Empty keeps style.css's 0 14px."
-		},
-		"pillBorderRadius": {
-			"type": "string",
-			"default": "",
-			"description": "CSS length (e.g. \"999px\" or \"50%\"). Empty uses style.css's own border-radius:999px default (fully rounded)."
 		},
 		"freeDeliveryThresholdOverride": {
 			"type": "string",

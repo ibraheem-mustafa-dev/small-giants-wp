@@ -4,7 +4,9 @@ import {
 	IconPicker,
 	ResponsiveControl,
 	ResponsiveBoxControl,
+	SgsLengthControl,
 } from '../../components';
+import { ShapeSizeControl } from '../icon/inspector-shape';
 import { resolveTier, patchTier } from '../../utils';
 import {
 	ToggleGroupControl,
@@ -12,6 +14,13 @@ import {
 } from '../../components/primitives';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
+
+// One CSS length for the whole button, in px or %.
+const RADIUS_UNITS = [
+	{ value: 'px', label: 'px', default: 0 },
+	{ value: '%', label: '%', default: 0 },
+];
+
 /**
  * SGS Cart — Trigger style + Icon + Badge inspector controls. Split out of
  * edit.js to keep the file under the project's 250-line JS budget.
@@ -24,7 +33,7 @@ import SgsFreeTextField from '../../components/SgsFreeTextField';
  * @param {Object}   root0.showZero           Per breakpoint, whether the badge shows on a zero count.
  * @param {Object}   root0.badgeSize          Icon badge size (px) per breakpoint.
  * @param {Object}   root0.pillBadgeSize      Pill count bubble size (px) per breakpoint.
- * @param {Object}   root0.pillPadding        Pill padding box per breakpoint.
+ * @param {Object}   root0.attributes         The block's attributes (the trigger's size, padding and radius).
  * @param {boolean}  root0.hideWhenEmpty      Whether the whole trigger hides until non-empty.
  * @param {string}   root0.triggerStyle       Desktop style: 'icon' (icon+badge) or 'pill' (word+count).
  * @param {string}   root0.triggerStyleTablet Tablet override ('' inherits desktop).
@@ -42,7 +51,7 @@ export default function TriggerSettingsControls( {
 	showZero,
 	badgeSize,
 	pillBadgeSize,
-	pillPadding,
+	attributes,
 	hideWhenEmpty,
 	triggerStyle,
 	triggerStyleTablet,
@@ -63,6 +72,10 @@ export default function TriggerSettingsControls( {
 	const isPill = [ desktopStyle, tabletStyle, mobileStyle ].includes(
 		'pill'
 	);
+	const hasIconTier = [ desktopStyle, tabletStyle, mobileStyle ].includes(
+		'icon'
+	);
+	const triggerPadding = attributes.triggerPadding;
 	const styleName = ( value ) =>
 		'pill' === value
 			? __( 'Text pill', 'sgs-blocks' )
@@ -188,35 +201,69 @@ export default function TriggerSettingsControls( {
 						/>
 					</ToggleGroupControl>
 				) }
-				{ isPill && (
-					<ResponsiveBoxControl
-						label={ __( 'Pill padding', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: pillPadding?.desktop ?? {},
-							tablet: pillPadding?.tablet ?? {},
-							mobile: pillPadding?.mobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							const key = 'base' === tier ? 'desktop' : tier;
-							setAttributes( {
-								pillPadding: {
-									...( pillPadding || {} ),
-									[ key ]: next,
-								},
-							} );
-						} }
-					/>
-				) }
-				{ /* Pill border colour + radius moved to the Styles tab's "Pill
-				   border" panel (edit.js) — Spec 35 §14 / C1: border colour is
-				   excluded from SgsColourPanel; radius sits with it as the pair. */ }
+				{ /* The pill's border colour sits on the Styles tab's "Pill border"
+				   panel (edit.js) — Spec 35 §14 / C1: border colour is excluded
+				   from SgsColourPanel. */ }
 				<p>
 					{ __(
 						'The count animation is set by the Motion panel on the Badge part (Entrance, trigger State).',
 						'sgs-blocks'
 					) }
 				</p>
+			</PanelBody>
+
+			<PanelBody
+				title={ __( 'Button', 'sgs-blocks' ) }
+				initialOpen={ false }
+			>
+				<ShapeSizeControl
+					label={ __( 'Button size', 'sgs-blocks' ) }
+					attr="triggerSize"
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					widthLabel={ __( 'Width', 'sgs-blocks' ) }
+					heightLabel={ __( 'Height', 'sgs-blocks' ) }
+					showWidth={ hasIconTier }
+					widthHelp={ __(
+						'Icon button only: a text pill is as wide as its label. A size set here replaces the 44px tap area at that device.',
+						'sgs-blocks'
+					) }
+					heightHelp={ __(
+						'Leave blank for the 44px tap area.',
+						'sgs-blocks'
+					) }
+				/>
+				<ResponsiveBoxControl
+					label={ __( 'Button padding', 'sgs-blocks' ) }
+					presets
+					values={ {
+						base: triggerPadding?.desktop ?? {},
+						tablet: triggerPadding?.tablet ?? {},
+						mobile: triggerPadding?.mobile ?? {},
+					} }
+					onChange={ ( tier, next ) => {
+						const key = 'base' === tier ? 'desktop' : tier;
+						setAttributes( {
+							triggerPadding: {
+								...( triggerPadding || {} ),
+								[ key ]: next,
+							},
+						} );
+					} }
+				/>
+				<SgsLengthControl
+					label={ __( 'Button radius', 'sgs-blocks' ) }
+					value={ attributes.triggerBorderRadius || '' }
+					units={ RADIUS_UNITS }
+					onChange={ ( val ) =>
+						setAttributes( { triggerBorderRadius: val ?? '' } )
+					}
+					help={ __(
+						'Leave blank for the default corners (square-ish for the icon button, fully rounded for the pill); 999px makes it round.',
+						'sgs-blocks'
+					) }
+					presets={ false }
+				/>
 			</PanelBody>
 
 			<PanelBody

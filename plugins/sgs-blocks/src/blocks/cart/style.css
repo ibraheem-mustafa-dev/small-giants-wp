@@ -37,7 +37,7 @@
 	/* Unset, the trigger takes the surrounding text colour, which the theme pairs
 	   with its surface; iconColour and the pill's scoped text rule override it. */
 	color: var(--sgs-cart-icon-colour, currentColor);
-	border-radius: 4px;
+	border-radius: var(--sgs-cart-trigger-radius, 4px);
 	transition:
 		color var(--wp--custom--transition--fast, 0.15s ease);
 }
@@ -93,8 +93,9 @@
 
 /* ── Trigger — pill style (Wave B, U-1): a word (pillLabel) + the live count,
    in a pill, instead of the icon+badge overlay. Structural shape only —
-   colours/border/radius come from render.php's scoped rule (pillBgColour/
-   pillTextColour/pillBorderColour/pillBorderRadius). ─────────────────────── */
+   text colour and border come from render.php's scoped rule (pillTextColour/
+   pillBorderColour); the radius, size, padding and background are the trigger's
+   own, shared with the icon button (triggerBorderRadius, triggerSize, triggerPadding); the fill is pillBgColour. ─────────────────────── */
 .sgs-cart--trigger-pill .sgs-cart__trigger {
 	min-width: auto;
 	gap: 8px;

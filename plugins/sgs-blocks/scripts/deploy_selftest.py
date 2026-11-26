@@ -15,6 +15,7 @@ import tempfile
 from deploy_scratch import scratch_dir
 from pathlib import Path
 import deploy_cache
+import deploy_cart_trigger_guard
 import deploy_delta
 from deploy_common import posix_bash
 import deploy_media_guard
@@ -926,6 +927,7 @@ def self_test() -> int:
     failures.extend(self_test_vendor_shell())
     failures.extend(deploy_qa_tier.self_test())
     failures.extend(deploy_media_guard.self_test())
+    failures.extend(deploy_cart_trigger_guard.self_test())
 
     if failures:
         print("[SELF-TEST FAIL]")
@@ -986,4 +988,7 @@ def self_test() -> int:
     print(" 28. hand-written CSS and JS are minified in the payload (theme assets/ and plugin assets/ only; style.css, build/ and "
           "*.min.* untouched; licence comments, strings, globals, function names and exports kept; modules and classic scripts "
           "both parse); a script that does not parse, a failing minifier, a dropped file or an emptied file is refused")
+    print(" 29. cart trigger guard: a build that still reads the old trigger settings skips, a swept target passes, a target holding an old key is "
+          "refused with the backup and sweep commands named (negative control), an old key in an options or post meta row is refused, an unreadable "
+          "result fails closed, and the PHP the target runs names only the post with an old key and stops on a database error or a multisite network")
     return 0

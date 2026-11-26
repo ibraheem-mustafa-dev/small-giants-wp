@@ -523,7 +523,7 @@
                     "bottom": "1px",
                     "left": "1px"
                   },
-                  "pillBorderRadius": "999px",
+                  "triggerBorderRadius": "999px",
                   "badgeColour": "accent",
                   "badgeTextColour": "surface-alt",
                   "freeDeliveryMessage": "Add %s more for free UK delivery",
@@ -539,8 +539,10 @@
                   },
                   "pillLetterSpacingUnit": "em",
                   "pillTextTransform": "uppercase",
-                  "pillMinHeight": {
-                    "desktop": "38px"
+                  "triggerSize": {
+                    "desktop": {
+                      "height": "38px"
+                    }
                   },
                   "pillTextColour": "text",
                   "pillBgColourHover": "primary",

@@ -396,9 +396,32 @@ export function panelRootStyle( attributes, tier, palette ) {
 }
 
 /**
+ * The trigger's width and height at a device, each as a CSS length (a preset slug becomes its spacing variable), inheriting the
+ * device above, as render-scoped-css.php prints them.
+ *
+ * @param {Object} size `{desktop:{width,height},…}`.
+ * @param {string} tier The previewed device.
+ * @return {{width: string, height: string}} Empty strings for a side with no value.
+ */
+function resolveTriggerSize( size, tier ) {
+	const order = [ 'desktop', 'tablet', 'mobile' ].slice(
+		0,
+		[ 'desktop', 'tablet', 'mobile' ].indexOf( tier ) + 1
+	);
+	const out = { width: '', height: '' };
+	order.forEach( ( device ) => {
+		[ 'width', 'height' ].forEach( ( side ) => {
+			const raw = size?.[ device ]?.[ side ];
+			out[ side ] = sgsLengthPreview( raw ) || out[ side ];
+		} );
+	} );
+	return out;
+}
+
+/**
  * Trigger, pill label and count badge styles (render.php's pill and badge rules).
  *
- * The badge and the pill each draw their fill on a `::after` layer in
+ * The badge and the trigger each draw their fill on a `::after` layer in
  * editor.css, fed by a custom property, exactly as render.php does.
  *
  * @param {Object}  attributes Block attributes.
@@ -432,44 +455,45 @@ export function triggerStyles( attributes, tier, palette, hasPill ) {
 		badge[ '--sgs-cart-editor-badge-fill' ] =
 			badgeFill.backgroundImage || badgeFill.backgroundColor;
 	}
-	if ( ! hasPill ) {
-		// The icon button's own background paints on the trigger's ::after layer (render-scoped-css.php), as the pill's does.
-		const iconFill = backgroundPaintPreview(
-			attributes.iconBg,
-			attributes.iconBgGradient,
-			palette
-		);
-		const iconTrigger = {};
-		if ( iconFill.backgroundImage || iconFill.backgroundColor ) {
-			iconTrigger[ '--sgs-cart-editor-icon-fill' ] =
-				iconFill.backgroundImage || iconFill.backgroundColor;
-		}
-		const iconRadius = sgsLengthPreview( attributes.iconTriggerRadius );
-		if ( iconRadius ) {
-			iconTrigger.borderRadius = iconRadius;
-		}
-		// A set size replaces the 44px tap floor at this device and never goes below 24px (render-scoped-css.php).
-		const iconSize = resolveTier(
-			attributes.iconTriggerSize,
-			tier,
-			null
-		).value;
-		if ( null !== iconSize && Number( iconSize ) > 0 ) {
-			const px = `${ Math.max( 24, Number( iconSize ) ) }px`;
-			iconTrigger.minWidth = px;
-			iconTrigger.minHeight = px;
-		}
-		return { trigger: iconTrigger, pillLabel: {}, badge };
-	}
-	const trigger = typographyPreviewStyle( attributes, 'pill', tier );
-	const fill = backgroundPaintPreview(
-		attributes.pillBgColour,
-		attributes.pillBgColourGradient,
-		palette
-	);
+	// The trigger's own look, shared by the icon button and the pill. Each style keeps its own background (pillBgColour or iconBg),
+	// painted on the trigger's ::after layer (render-scoped-css.php); a size set at this device replaces the 44px tap floor and
+	// prints as saved (no minimum), and a pill takes the height only.
+	const trigger = hasPill ? typographyPreviewStyle( attributes, 'pill', tier ) : {};
+	const fill = hasPill
+		? backgroundPaintPreview(
+				attributes.pillBgColour,
+				attributes.pillBgColourGradient,
+				palette
+		  )
+		: backgroundPaintPreview(
+				attributes.iconBg,
+				attributes.iconBgGradient,
+				palette
+		  );
 	if ( fill.backgroundImage || fill.backgroundColor ) {
-		trigger[ '--sgs-cart-editor-pill-fill' ] =
-			fill.backgroundImage || fill.backgroundColor;
+		trigger[
+			hasPill
+				? '--sgs-cart-editor-pill-fill'
+				: '--sgs-cart-editor-icon-fill'
+		] = fill.backgroundImage || fill.backgroundColor;
+	}
+	const radius = sgsLengthPreview( attributes.triggerBorderRadius );
+	if ( radius ) {
+		trigger.borderRadius = radius;
+	}
+	const size = resolveTriggerSize( attributes.triggerSize, tier );
+	if ( ! hasPill && size.width ) {
+		trigger.minWidth = size.width;
+	}
+	if ( size.height ) {
+		trigger.minHeight = size.height;
+	}
+	Object.assign(
+		trigger,
+		tierBoxLonghands( attributes.triggerPadding, tier, 'padding' )
+	);
+	if ( ! hasPill ) {
+		return { trigger, pillLabel: {}, badge };
 	}
 	// The pill's stylesheet gives no width, so the border paints only beside a chosen width.
 	Object.assign(
@@ -483,18 +507,6 @@ export function triggerStyles( attributes, tier, palette, hasPill ) {
 			tier,
 			palette
 		)
-	);
-	const radius = sgsLengthPreview( attributes.pillBorderRadius );
-	if ( radius ) {
-		trigger.borderRadius = radius;
-	}
-	const minHeight = tierLengthPreview( attributes.pillMinHeight, tier );
-	if ( minHeight ) {
-		trigger.minHeight = minHeight;
-	}
-	Object.assign(
-		trigger,
-		tierBoxLonghands( attributes.pillPadding, tier, 'padding' )
 	);
 	// The pill's shadow, and the same value as --sgs-focus-under so the focus ring composes over it (render-scoped-css.php).
 	const pillShadow = resolveShadowPreviewComposed(
