@@ -2,6 +2,8 @@
 # local CPU. No secrets: the default read-only GITHUB_TOKEN only; nothing from .claude/secrets or any credential is in the checkout
 # (gitignored), and the tests use fixture secrets in temp folders. SGS_NO_SITE=1 (set by tools/run-tests.mjs::testCommand) keeps every
 # test off any WordPress site. File selection and sharding: tools/ci-shard.mjs. Run a branch: tools/ci-route-tests.mjs <branch>.
+# Windows runners on purpose: the suite is developed on Windows, and on Linux the framework DB build (assign-canonical.py) grows past
+# 15 GB and gets the runner shut down.
 name: route-tests
 
 on:
@@ -22,7 +24,10 @@ env:
 jobs:
   framework-db:
     name: framework database
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -45,14 +50,7 @@ jobs:
       - name: Build the framework database from the repo (stage 1 only, no upstream scrape, no server contact)
         env:
           PYTHONUNBUFFERED: '1'
-        run: |
-          (while true; do echo "mem: $(free -m | sed -n 2p)"; ps -eo pid,ppid,etimes,rss,args --sort=-rss | head -8 | cut -c1-160; sleep 10; done) &
-          set +e
-          python -X faulthandler plugins/sgs-blocks/scripts/sgs-update-v2.py --rebuild --stage 1 --db "$RUNNER_TEMP/db/sgs-framework.db"
-          rc=$?
-          echo "build exit code: $rc"
-          sudo dmesg 2>&1 | tail -15
-          exit $rc
+        run: python plugins/sgs-blocks/scripts/sgs-update-v2.py --rebuild --stage 1 --db "$RUNNER_TEMP/db/sgs-framework.db"
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: framework-db
@@ -62,7 +60,10 @@ jobs:
   shard:
     name: shard ${{ matrix.shard }}
     needs: framework-db
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
     timeout-minutes: 30
     strategy:
       fail-fast: false
@@ -95,15 +96,9 @@ jobs:
       - name: Install plugin packages (scripts/wp-build-page.js loads Playwright from here)
         working-directory: plugins/sgs-blocks
         run: npm ci --ignore-scripts
-      - name: Cache Chromium
-        id: chromium
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.cache/ms-playwright
-          key: chromium-${{ hashFiles('scripts/computed-route/package-lock.json') }}
       - name: Install Chromium (the browser tests run offline against fixtures)
         working-directory: scripts/computed-route
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install chromium
       - name: Run shard
         working-directory: scripts/computed-route
         env:

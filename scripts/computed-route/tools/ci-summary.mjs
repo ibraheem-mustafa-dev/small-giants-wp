@@ -51,8 +51,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const rows = collect( dir );
 	if ( ! rows.length ) { console.error( `ci-summary: no results.json under ${ dir }` ); process.exit( 1 ); }
 	const at = process.argv.indexOf( '--timings' );
-	at > 0 && fs.writeFileSync( process.argv[ at + 1 ], JSON.stringify( Object.fromEntries( rows.map( ( r ) => [ r.file, r.ms ] ).sort() ), null, 1 ) + '
-' );
+	at > 0 && fs.writeFileSync( process.argv[ at + 1 ], JSON.stringify( Object.fromEntries( rows.map( ( r ) => [ r.file, r.ms ] ).sort() ), null, 1 ) + '\n' );
 	const { text, fresh } = summarise( rows, known );
 	console.log( text );
 	process.env.GITHUB_STEP_SUMMARY && fs.appendFileSync( process.env.GITHUB_STEP_SUMMARY, text + '\n' );
