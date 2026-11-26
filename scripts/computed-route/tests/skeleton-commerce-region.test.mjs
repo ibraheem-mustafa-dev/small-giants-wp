@@ -230,6 +230,7 @@ test( 'MUST FAIL: the shop\'s product grid is WooCommerce\'s product collection 
 	assert.equal( cardNode.attributes.sourceMode, 'wc-product' );
 	// RF7: the card's look is read at the mounted component's root, never at the loop cell that only places it in the listing.
 	assert.deepEqual( cardNode.draftRef, { tpl: 'Root>ProductCard@9#0/2#0' }, 'the product card takes the look of the draft first card, at its component root' );
+	assert.deepEqual( [ cardNode.itemTemplate, cardNode.eachRecord ], [ true, true ], 'the card stands for every product the loop lists, so Fill never takes one product\'s variant for it' );
 	const region = commerceRegion( { m: inventoryModel( inv( SHOP ) ), commerce: { role: 'shop', checkout: null }, rule: RULE() } );
 	assert.deepEqual( [ region.item.key, region.card.key ], [ 'Root/9#0', 'Root>ProductCard@9#0/2#0' ], 'the loop cell stays the region item (the listing columns); the card is the mounted component root' );
 	assert.ok( find( skeleton, 'sgs/heading' ) );
@@ -266,4 +267,15 @@ test( 'the role comes from the template the surface builds; a checkout link is m
 	const f = facts();
 	const bad = { ...f, decisions: { ...f.decisions, rules: { ...f.decisions.rules, commerceRegion: { ...f.decisions.rules.commerceRegion, money: '(', roles: { a: { block: 'core/group' }, b: { block: 'sgs/no-such-block' }, c: { block: 'woocommerce/cart' } } } } } };
 	assert.deepEqual( decisionsProblems( bad ).filter( ( p ) => /commerceRegion/.test( p ) ).map( ( p ) => p.split( ' ' ).slice( 0, 3 ).join( ' ' ) ), [ 'rules.commerceRegion.a names core/group,', 'rules.commerceRegion.b names sgs/no-such-block,', 'rules.commerceRegion.money does not' ] );
+} );
+
+test( 'MUST FAIL: a small component mounted in the loop cell before the card (a star rating) is not read as the card', () => {
+	const rated = ( i, y ) => [
+		el( `Root/9#${ i }`, 'Root/8#0', 'div', '', { depth: 3, loop: 9, all: `Box ${ i } £12.00`, box: place( i % 4 * 300, y ) } ),
+		el( `Root>Stars@9#${ i }/1#0`, `Root/9#${ i }`, 'span', '', { depth: 4, template: 'Stars', imported: true, box: { 375: { x: 0, y, w: 60, h: 12 }, 768: { x: 0, y, w: 60, h: 12 }, 1440: { x: i % 4 * 300, y, w: 60, h: 12 } } } ),
+		el( `Root>ProductCard@9#${ i }/2#0`, `Root/9#${ i }`, 'div', `£12.00`, { depth: 4, template: 'ProductCard', imported: true, box: place( i % 4 * 300, y ) } ),
+	];
+	const shop = [ ...SHOP.slice( 0, 3 ), ...rated( 0, 200 ), ...rated( 1, 200 ), ...rated( 2, 200 ), ...rated( 3, 200 ) ];
+	const region = commerceRegion( { m: inventoryModel( inv( shop ) ), commerce: { role: 'shop', checkout: null }, rule: RULE() } );
+	assert.equal( region.card.key, 'Root>ProductCard@9#0/2#0', 'the card fills the cell; the rating neither fills it nor stands alone' );
 } );

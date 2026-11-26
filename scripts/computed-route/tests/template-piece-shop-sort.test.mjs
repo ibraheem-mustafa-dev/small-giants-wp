@@ -152,3 +152,16 @@ test( 'MUST FAIL: when the node that stood for the select was built from the lab
 	assert.deepEqual( got.placed[ 0 ].run, [ 'Root/17#0' ] );
 	assert.match( got.placed[ 0 ].at, /in place of Root\/15#0 \(sgs\/form-field-select\), inside the draft's label Root\/15#0/ );
 } );
+
+test( 'MUST FAIL: a card read at the root of the card its loop cell mounts still names the listing, so the count is placed', () => {
+	const mounted = { ...INVENTORY, elements: [ ...INVENTORY.elements, { key: 'Root>Card@30#0/0#0', parentKey: 'Root/30#0', tag: 'article', template: 'Card', tpl: 0, srcOwnText: '', words: '', snippet: '<article>', visible: { 1440: true }, membership: [], position: { 1440: 'static' } } ] };
+	const tree = TREE();
+	tree[ 0 ].innerBlocks[ 1 ].innerBlocks[ 1 ].innerBlocks[ 0 ].innerBlocks[ 0 ].draftRef = { tpl: 'Root>Card@30#0/0#0' };
+	const got = place( ctx( { tree, inventory: mounted } ), COUNT );
+	assert.deepEqual( got.tree[ 0 ].innerBlocks[ 1 ].innerBlocks.map( ( x ) => x.name ), [ 'woocommerce/product-results-count', 'woocommerce/product-collection' ] );
+	// Negative control: a card read outside any loop names no listing.
+	const loose = { ...INVENTORY, elements: [ ...INVENTORY.elements, { key: 'Root/90#0', parentKey: 'Root/26#0', tag: 'div', template: 'Root', tpl: 90, srcOwnText: '', words: '', snippet: '<div>', visible: { 1440: true }, membership: [], position: { 1440: 'static' } } ] };
+	const tree2 = TREE();
+	tree2[ 0 ].innerBlocks[ 1 ].innerBlocks[ 1 ].innerBlocks[ 0 ].innerBlocks[ 0 ].draftRef = { tpl: 'Root/90#0' };
+	assert.equal( place( ctx( { tree: tree2, inventory: loose } ), COUNT ).tree, undefined );
+} );

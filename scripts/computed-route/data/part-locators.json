@@ -2126,6 +2126,9 @@
 			},
 			"mustLocate": [
 				"panel"
+			],
+			"filledShows": [
+				"item"
 			]
 		},
 		"buybox": {

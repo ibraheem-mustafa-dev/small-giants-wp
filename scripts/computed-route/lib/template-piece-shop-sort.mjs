@@ -33,14 +33,15 @@ const shown = ( e ) => Object.values( e?.visible || {} ).some( Boolean );
 const bare = ( expr ) => String( expr ?? '' ).replace( /^\{\{\s*|\s*\}\}$/g, '' ).trim();
 
 // The one product collection of the tree and the list its listing loop walks (the loop of the draft element its
-// product card was read at): { collection, list } or { why }.
+// product card was read at, or of its nearest ancestor: a card read at the root of the component its loop cell mounts carries
+// the loop on the cell): { collection, list } or { why }.
 function listingOf( tree, index ) {
 	const all = treeNodes( tree ).filter( ( r ) => COLLECTION === r.node.name );
 	if ( 1 !== all.length ) {
 		return { why: `the tree holds ${ all.length } ${ COLLECTION }` };
 	}
 	const card = treeNodes( all[ 0 ].node.innerBlocks ).find( ( r ) => refKey( r.node ) && index.byKey.has( refKey( r.node ) ) );
-	const list = card ? loopListOf( index.byKey.get( refKey( card.node ) ) ) : null;
+	const list = card ? index.chain( refKey( card.node ) ).map( ( k ) => loopListOf( index.byKey.get( k ) ) ).find( Boolean ) ?? null : null;
 	return list ? { collection: all[ 0 ].node, list } : { why: `no block inside the ${ COLLECTION } was read at a draft element inside a loop` };
 }
 

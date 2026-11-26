@@ -1,0 +1,98 @@
+[
+	{
+		"file": "lib/fill-part-look-modes.mjs",
+		"find": "\t\tif ( ! loc.template ) {",
+		"replace": "\t\tif ( false ) {",
+		"why": "a surface with no page template (the header's drawer) is read for a loop card on a product page"
+	},
+	{
+		"file": "lib/fill-part-look-modes.mjs",
+		"find": "} else if ( of.some( ( r ) => r.node?.itemTemplate ) && ",
+		"replace": "} else if ( ",
+		"why": "a single card on another template takes the loop card's rules"
+	},
+	{
+		"file": "lib/fill-part-look-modes.mjs",
+		"find": "const recs = nodes.filter( ( n ) => n.name === block && ( ! cross || n.node?.itemTemplate ) );",
+		"replace": "const recs = nodes.filter( ( n ) => n.name === block );",
+		"why": "a single card takes the rules read on the page's loop cards"
+	},
+	{
+		"file": "lib/fill-part-look-modes.mjs",
+		"find": "filter( ( w ) => w.mode && ! w.preset );",
+		"replace": "filter( ( w ) => w.mode );",
+		"why": "a built-in button preset is written as a mode rule"
+	},
+	{
+		"file": "lib/fill-part-look-modes.mjs",
+		"find": "if ( undefined !== held && json( held ) !== json( w.value ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a value another writer put on the node is overwritten"
+	},
+	{
+		"file": "lib/fill-part-look-modes.mjs",
+		"find": "if ( ! attrExists( block, top ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a setting the block lacks is written"
+	},
+	{
+		"file": "lib/fill-part-look-modes.mjs",
+		"find": ".filter( ( x ) => ruleSettingsOf( modes, block ).has( x.setting ) )",
+		"replace": "",
+		"why": "a look gap is listed as a mode row"
+	},
+	{
+		"file": "lib/fill-part-look-modes.mjs",
+		"find": "entries: Object.fromEntries( keys.map( ( k ) => [ k, o.entry ] ) ),",
+		"replace": "entries: {},",
+		"why": "part-look reads the client's own shop page, not this surface's draft"
+	},
+	{
+		"file": "lib/fill-part-look-modes.mjs",
+		"find": "const ok = wanted.filter( ( w ) => ! refused.some( ( f ) => f.startsWith( `${ w.surface }:` ) ) );",
+		"replace": "const ok = wanted;",
+		"why": "a refused surface's rules are written"
+	},
+	{
+		"file": "lib/fill-part-look-modes.mjs",
+		"find": "if ( ! wanted.length || o.entry?.noDraft ) {",
+		"replace": "if ( ! wanted.length ) {",
+		"why": "a surface with no draft page is read"
+	},
+	{
+		"file": "lib/fill-part-look-modes.mjs",
+		"find": "value: null === key ? w.value : { ...( whole || {} ), [ key ]: w.value }",
+		"replace": "value: null === key ? w.value : { [ key ]: w.value }",
+		"why": "a key write drops the object's other keys"
+	},
+	{
+		"file": "lib/fill-part-look-modes.mjs",
+		"find": "const held = null === key ? whole : whole?.[ key ];",
+		"replace": "const held = whole;",
+		"why": "a key write is judged against the whole object"
+	},
+	{
+		"file": "lib/fill-part-look-modes.mjs",
+		"find": "if ( null !== key && undefined !== whole && ( null === whole || 'object' !== typeof whole || Array.isArray( whole ) ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a key is set into a setting that holds text"
+	},
+	{
+		"file": "lib/fill-part-look-modes.mjs",
+		"find": "const top = dot < 0 ? w.attr : w.attr.slice( 0, dot );",
+		"replace": "const top = w.attr;",
+		"why": "a key write is looked up as a setting of its own"
+	},
+	{
+		"file": "lib/fill-part-look-modes.mjs",
+		"find": "attrExists: o.attrExists ?? settingDeclared( o.db ) } );",
+		"replace": "attrExists: o.attrExists ?? ( ( b ) => b.startsWith( 'sgs/' ) ) } );",
+		"why": "settings are checked in block.json, which lists no WooCommerce block's extension settings"
+	},
+	{
+		"file": "lib/fill-part-look-modes.mjs",
+		"find": "!! db.prepare( 'SELECT 1 FROM block_attributes WHERE block_slug = ? AND attr_name = ?' ).get( block, attr );",
+		"replace": "!! db.prepare( 'SELECT 1 FROM block_attributes WHERE block_slug = ?' ).get( block );",
+		"why": "any setting of a known block counts as held"
+	}
+]

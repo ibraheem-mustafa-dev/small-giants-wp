@@ -8,12 +8,12 @@ import { HELD_REASONS, heldCounts } from './fill-held.mjs';
 // layout result the code does not declare as a length (an auto margin, an undeclared width or height); `not-painted`, the
 // value paints nothing there; `row-held`, a generated icon's value the icon row's shared setting holds
 // (lib/fill-row-lift.mjs::liftChildren); `parent-held`, a block's box look at an element its parent block reads as its own root (lib/fill-shared-element.mjs); `child-held`, a parent's read of an element a block inside it reads as its own
-// root, the property that block met (lib/fill-child-held.mjs::childHeld); `logo-size`, `width-ladder`, `dimension`, `layer-rotation`, `motion`, `rest-width` and `residual-css`, an UNMAPPED row that pass
+// root, the property that block met (lib/fill-child-held.mjs::childHeld); `buybox-columns`, the buy box's grid rows its column settings hold (lib/fill-buybox-columns.mjs); `logo-size`, `width-ladder`, `dimension`, `layer-rotation`, `motion`, `rest-width` and `residual-css`, an UNMAPPED row that pass
 // wrote or settled (passSettled).
-export const SETTLED = [ 'equal', 'already-set', 'used-size', 'not-painted', 'row-held', 'child-held', 'logo-size', 'width-ladder', 'dimension', 'part-margin', 'layer-rotation', 'motion', 'rest-width', 'residual-css', 'parent-held' ];
+export const SETTLED = [ 'equal', 'already-set', 'used-size', 'not-painted', 'row-held', 'child-held', 'logo-size', 'width-ladder', 'dimension', 'part-margin', 'layer-rotation', 'motion', 'rest-width', 'residual-css', 'parent-held', 'buybox-columns' ];
 
 // The file of each pass a settled row names.
-const PASS_FILE = { 'logo-size': 'fill-logo-size.mjs', 'width-ladder': 'fill-width-ladder.mjs', dimension: 'fill-dimensions.mjs', 'layer-rotation': 'fill-layer-rotation.mjs', motion: 'fill-motion-settle.mjs', 'rest-width': 'fill-rest-width.mjs', 'residual-css': 'fill-residual-css.mjs' };
+const PASS_FILE = { 'logo-size': 'fill-logo-size.mjs', 'width-ladder': 'fill-width-ladder.mjs', dimension: 'fill-dimensions.mjs', 'layer-rotation': 'fill-layer-rotation.mjs', motion: 'fill-motion-settle.mjs', 'rest-width': 'fill-rest-width.mjs', 'residual-css': 'fill-residual-css.mjs', 'buybox-columns': 'fill-buybox-columns.mjs' };
 const sameRead = ( u, a ) => ( u.node === a.node || ( u.nodes || [] ).includes( a.node ) ) && ( u.slot ?? '' ) === a.slot && u.property === a.property && String( u.value ) === String( a.value ) && ( u.state ?? null ) === ( a.state ?? null );
 
 // The UNMAPPED rows a later Fill pass (lib/fill-logo-size.mjs, lib/fill-width-ladder.mjs, lib/fill-dimensions.mjs) wrote

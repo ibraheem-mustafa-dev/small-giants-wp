@@ -219,7 +219,7 @@ export function columnSettings( side, column ) {
 }
 
 // The two-column layout a grid element draws: the child holding the page's one shown h1 is the information column, the other
-// shown child the gallery's side, and columnSettings reads them. { attrs, notes, side, column } or { why }. Fill writes the
+// shown child the gallery's side, and columnSettings reads them. { attrs, notes, side, column, sideBySide, ratios } or { why }. Fill writes the
 // ratio and the gap this gives on a buy box read at the grid (lib/fill-buybox-columns.mjs).
 export function columnLayout( index, grid ) {
 	const shown = ( k ) => Object.values( index.byKey.get( k )?.visible || {} ).some( Boolean );
@@ -230,8 +230,12 @@ export function columnLayout( index, grid ) {
 	if ( ! column || 1 !== sides.length ) {
 		return { why: `the grid ${ grid } does not hold the page's h1 in one child beside one other (${ kids.length } shown children)` };
 	}
-	const got = columnSettings( index.byKey.get( sides[ 0 ] ), index.byKey.get( column ) );
-	return got.why ? got : { ...got, side: sides[ 0 ], column };
+	const [ a, b ] = [ index.byKey.get( sides[ 0 ] ), index.byKey.get( column ) ];
+	const got = columnSettings( a, b );
+	// The widths the columns sit side by side at, and the gallery's share of the column at each of them above the phone.
+	const sideBySide = Object.keys( DEVICE ).map( Number ).filter( ( w ) => null !== sideGap( a, b, w ) );
+	const ratios = Object.fromEntries( sideBySide.filter( ( w ) => 375 !== w ).map( ( w ) => [ w, a.box[ w ].w / b.box[ w ].w ] ) );
+	return got.why ? got : { ...got, side: sides[ 0 ], column, sideBySide, ratios };
 }
 
 // The buy box takes the product's information column (F-50). `sgs/buybox` draws the product's gallery beside its own controls,

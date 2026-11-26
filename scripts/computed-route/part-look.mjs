@@ -52,6 +52,7 @@ import { loadDraft } from './lib/intake-ast.mjs';
 import { ACCOUNT_PARTS_FILE, phpListKeys } from './lib/template-piece-account.mjs';
 import { readTargets, siteUrl, targetOf } from './lib/site-targets.mjs';
 import { readLiveSignedIn, readSignedInParts, shootLiveSignedIn, signedInSeedOf } from './lib/part-look-signed-in.mjs';
+import { chooseEmptied, chooseOpenings, documentedOpenings, handoffRecords, pinsOf, probeOpenings, visitorAtEveryWidth, visitorOpening } from './lib/part-look-opening.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const SURFACES = [ 'cart', 'checkout', 'my-account', 'header', 'product', 'shop', 'shop-chips', 'shop-sort', 'my-account-in', 'confirmation' ];
@@ -71,6 +72,30 @@ export function pagesOf( { rows, surfaces } ) {
 // The draft route a surface opens by when the draft is one file whose pages are its logic's own state (`shop`, `checkout`), or
 // null: a page file (`Shop.dc.html`), a route every page shares (`*`) or none.
 export const logicRouteOf = ( route ) => ( route && '*' !== route && ! /\.html\b/i.test( String( route ) ) ? String( route ) : null );
+
+// A surface's draft read, guarded: with derive (Fill's read of several surfaces at once) a read that throws refuses its own surface
+// (a refusal line, and null) and the run goes on to the others; without it the error stops the run as before.
+export function guardRead( { derive, surface, refusals } ) {
+	return async ( fn ) => {
+		try {
+			return await fn();
+		} catch ( e ) {
+			if ( ! derive ) {
+				throw e;
+			}
+			refusals.push( `${ surface }: the draft read failed, so none of its settings is decided: ${ String( e.message || e ).split( '\n' )[ 0 ] }` );
+			return null;
+		}
+	};
+}
+
+// A surface's opening steps: the client's own (`given`, its part-look.json entry), and with `derive` a one-file draft's surface opens
+// on the route intake read for it (`draftRoute`), as a client file would name it. A route the client names, and a surface with no
+// draft page, keep what they have.
+export function derivedConfig( { derive, given = {}, entry = {}, draftRoute = null } ) {
+	const route = derive && ! entry.noDraft && ! given.route ? logicRouteOf( draftRoute ) : null;
+	return route ? { ...given, route } : given;
+}
 
 // Why a surface cannot be read, or null. A one-file draft opens on its first page, so a surface whose draft route is a logic route is
 // read only through a route the client's part-look.json names for it (`cfg.route`); without one, every part would be read from the
@@ -119,12 +144,16 @@ export function routeHandlersOf( { roleRoutes, goRoutes = new Map() } ) {
 	return out;
 }
 
-export async function runPartLook( { client, surfaces: wanted = SURFACES, site = null, compare = false, write = false, verify = false, seed = null, login = null, shots = true, only = null, dryRun = false, out = null, headed = false, log = ( m ) => console.log( m ) } ) {
+// repo: the checkout whose `sites/<client>` is read (a sweep's work folder); entries: { <surfaces.json key>: entry } read in place of
+// the client's own entries, so a run reads a part-look surface on another surface's draft page (Fill reads the shop card's rules
+// on the product page's related cards, lib/fill-part-look-modes.mjs). derive: open a surface the client's part-look.json does not
+// describe from the draft's own facts (lib/part-look-opening.mjs: the route intake read, the documented states of its overlays).
+export async function runPartLook( { client, repo = REPO, entries = {}, derive = false, surfaces: wanted = SURFACES, site = null, compare = false, write = false, verify = false, seed = null, login = null, shots = true, only = null, dryRun = false, out = null, headed = false, log = ( m ) => console.log( m ) } ) {
 	if ( ( compare || write || verify ) && ! site ) {
 		throw new Error( `${ verify ? '--verify' : ( write ? '--write' : '--compare' ) } needs --site <scratch copy>` );
 	}
 	( write || verify ) && assertMayWrite( site );
-	const buildDir = path.join( REPO, 'sites', client, 'build' );
+	const buildDir = path.join( repo, 'sites', client, 'build' );
 	const manifest = readJson( path.join( buildDir, 'surfaces.json' ) );
 	const rows = fs.existsSync( path.join( buildDir, 'page-map.json' ) ) ? readJson( path.join( buildDir, 'page-map.json' ) ) : [];
 	const config = fs.existsSync( path.join( buildDir, 'part-look.json' ) ) ? readJson( path.join( buildDir, 'part-look.json' ) ) : { surfaces: {} };
@@ -136,7 +165,7 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 	const shopRecord = fs.existsSync( path.join( buildDir, 'shop-parts.json' ) ) ? readJson( path.join( buildDir, 'shop-parts.json' ) ) : null;
 	const table = readJson( SELECTOR_TABLE );
 	// A role names a file only where the draft has one (a draft whose pages are its logic's own state has none).
-	const draftDirOf = ( entry ) => path.resolve( REPO, entry.draftDir );
+	const draftDirOf = ( entry ) => path.resolve( repo, entry.draftDir );
 	const anyEntry = Object.values( manifest ).find( ( e ) => e.draftDir );
 	const pages = Object.fromEntries( Object.entries( pagesOf( { rows, surfaces: manifest } ) ).filter( ( [ , f ] ) => anyEntry && fs.existsSync( path.join( draftDirOf( anyEntry ), f ) ) ) );
 	// The draft route of a surface (`Product.dc.html?id=zookies` names the product the draft shows), from the intake.
@@ -144,15 +173,15 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 	let intake = null;
 	const draftRouteOf = ( entry ) => ( intake ??= fs.existsSync( intakeFile ) ? readJson( intakeFile ) : {} ).skeletons?.[ entry?.intakeSurface ]?.route ?? null;
 	// A control whose click handler routes to a role's page counts as a link to it (a one-file draft's Checkout is a button calling go).
-	const links = rows.length ? draftLinksFor( { repo: REPO, client } ) : null;
+	const links = rows.length ? draftLinksFor( { repo, client } ) : null;
 	const roleRoutes = roleRoutesOf( { rows, routeRow: links?.routeRow, files: pagesOf( { rows, surfaces: manifest } ), accountRoute: logicRouteOf( draftRouteOf( manifest[ 'my-account' ] ) ) } );
 	const routeHandlers = routeHandlersOf( { roleRoutes, goRoutes: links?.goRoutes } );
 	let snapshot = null;
 	let snapshotNote = null;
 	let buttonPresets = {};
 	try {
-		snapshot = loadSnapshot( path.join( REPO, 'sites', client, 'theme-snapshot.json' ) );
-		buttonPresets = readJson( path.join( REPO, 'sites', client, 'theme-snapshot.json' ) ).settings?.custom?.buttonPresets || {};
+		snapshot = loadSnapshot( path.join( repo, 'sites', client, 'theme-snapshot.json' ) );
+		buttonPresets = readJson( path.join( repo, 'sites', client, 'theme-snapshot.json' ) ).settings?.custom?.buttonPresets || {};
 	} catch ( e ) {
 		snapshotNote = `no theme snapshot read (${ e.message.split( '\n' )[ 0 ] }): colours and font families are written as literals`;
 	}
@@ -169,13 +198,14 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 	for ( const surface of wanted ) {
 		const loc = locators.surfaces[ surface ];
 		// A surface may read another's manifest entry (the signed-in account views live on the account's post and draft).
-		const entry = manifest[ loc?.entryOf || surface ];
+		const entry = entries[ loc?.entryOf || surface ] ?? manifest[ loc?.entryOf || surface ];
 		if ( ! loc || ! entry ) {
 			notes.push( `${ surface }: the client's surfaces.json has no such surface; skipped` );
 			continue;
 		}
 		// A surface that reads another's entry (the signed-in views) opens the way that surface does.
-		const cfg = config.surfaces?.[ surface ] || ( loc.entryOf ? config.surfaces?.[ loc.entryOf ] : null ) || {};
+		const given = config.surfaces?.[ surface ] || ( loc.entryOf ? config.surfaces?.[ loc.entryOf ] : null ) || {};
+		let cfg = derivedConfig( { derive, given, entry, draftRoute: draftRouteOf( entry ) } );
 		const refused = entry.noDraft ? null : refusalOf( { surface, draftRoute: draftRouteOf( entry ), cfg } );
 		if ( refused ) {
 			refusals.push( refused );
@@ -194,7 +224,7 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 		const opensFlow = Object.values( group.parts ).some( ( p ) => [].concat( p.match?.shopPart ?? [] ).includes( OPENER_PART ) );
 		let controls = null;
 		if ( opensFlow && ! entry.noDraft ) {
-			controls = flowControls( { repo: REPO, client, entry, surface: loc.entryOf || surface, template: loc.template } );
+			controls = flowControls( { repo, client, entry, surface: loc.entryOf || surface, template: loc.template } );
 			Object.assign( shopParts, openerShopParts( controls ) );
 			controls.why && notes.push( `${ surface }: the flow opener is not located: ${ controls.why }` );
 		}
@@ -208,6 +238,7 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 		log( `${ surface }: ${ noDraft ? `no draft page (${ noDraft })` : `reading ${ mainFile }${ also.length ? ` and ${ also.join( ', ' ) }` : '' }` }` );
 		let reads = {};
 		let signedTabs = null;
+		const guarded = guardRead( { derive, surface, refusals } );
 		if ( noDraft ) {
 			reads = {};
 		} else if ( loc.signedIn && ! pages.signin && ! logicRouteOf( cfg.route ) ) {
@@ -215,12 +246,49 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 		} else if ( loc.signedIn ) {
 			// A one-file draft signs in on its own sign-in route (the entry's route) and lands where its sign-in takes the visitor.
 			const signinRoute = pages.signin ? null : logicRouteOf( cfg.route );
-			const signed = await readSignedInParts( { draftDir: path.resolve( REPO, entry.draftDir ), mainFile, signinFile: pages.signin ?? null, signinRoute, spec, parts: group.parts, pages, headed, log } );
+			const signed = await guarded( () => readSignedInParts( { draftDir: path.resolve( repo, entry.draftDir ), mainFile, signinFile: pages.signin ?? null, signinRoute, spec, parts: group.parts, pages, headed, log } ) );
+			if ( ! signed ) {
+				continue;
+			}
 			reads = signed.reads;
 			signedTabs = signed.tabs;
 			notes.push( ...signed.notes.map( ( n ) => `${ surface }: ${ n }` ) );
 		} else {
-			( { reads } = await readParts( { draftDir: path.resolve( REPO, entry.draftDir ), files: [ mainFile, ...also ], spec, names: Object.keys( group.parts ), pages, config: cfg.route || cfg.init || cfg.empty ? cfg : null, hover: builtin.map( ( b ) => b.part ), headed, log } ) );
+			// With derive, a group read from one part (the basket drawer's panel) and no opening steps of the client's opens through the
+			// draft's documented states (lib/part-look-opening.mjs).
+			if ( derive && group.mustLocate?.length && ! cfg.init && ! cfg.empty ) {
+				const openings = documentedOpenings( handoffRecords( repo, client ) );
+				const tryOn = { draftDir: path.resolve( repo, entry.draftDir ), file: mainFile, spec, names: Object.keys( group.parts ), pages, route: cfg.route ?? null };
+				const probes = await probeOpenings( { ...tryOn, openings } );
+				// The visitor's way in: add on the product page, then the basket button the page shows at load.
+				const productEntry = Object.values( manifest ).find( ( e ) => e.target?.template === locators.surfaces.product?.template && e.draftIndex );
+				const visitor = visitorOpening( { adds: shopParts[ 'buybox-add-to-basket' ], load: probes[ 0 ], product: productEntry ? { file: productEntry.draftIndex, route: logicRouteOf( draftRouteOf( productEntry ) ) } : null } );
+				// The clicks are replayed at every width the read takes, so the visitor's way in counts only when it opens at each of them.
+				if ( visitor ) {
+					const tries = [];
+					for ( const width of [ 1440, 768, 375 ] ) {
+						tries.push( ...await probeOpenings( { ...tryOn, openings: [ visitor ], withLoad: false, width } ) );
+					}
+					const atAll = visitorAtEveryWidth( tries );
+					atAll.why ? notes.push( `${ surface }: ${ atAll.why }` ) : probes.push( atAll.probe );
+				}
+				const chosen = chooseOpenings( probes, group.mustLocate, group.filledShows || [] );
+				if ( chosen.why ) {
+					notes.push( `${ surface }: ${ chosen.why }` );
+				} else {
+					const pins = pinsOf( group.emptyPins, chosen.filled );
+					const others = openings.filter( ( o ) => o.script !== chosen.init );
+					const emptied = pins && others.length ? chooseEmptied( await probeOpenings( { ...tryOn, ...( chosen.filled.clicks ? { file: chosen.filled.file, route: chosen.filled.route ?? null } : {} ), spec: { ...spec, pins }, openings: others, withLoad: false } ), chosen.filled, group.filledShows || [] ) : null;
+					notes.push( `${ surface }: opened through the draft's documented states: ${ chosen.evidence }${ emptied ? `; ${ emptied.evidence }` : '' }` );
+					const way = chosen.filled.clicks ? { file: chosen.filled.file, route: chosen.filled.route ?? undefined, clicks: chosen.filled.clicks } : {};
+					cfg = { ...cfg, ...way, ...( chosen.init ? { init: chosen.init } : {} ), ...( emptied ? { empty: emptied.empty } : {} ) };
+				}
+			}
+			const got = await guarded( () => readParts( { draftDir: path.resolve( repo, entry.draftDir ), files: [ cfg.file ?? mainFile, ...also ], spec, names: Object.keys( group.parts ), pages, config: cfg.route || cfg.init || cfg.empty || cfg.clicks ? cfg : null, hover: builtin.map( ( b ) => b.part ), headed, log } ) );
+			if ( ! got ) {
+				continue;
+			}
+			( { reads } = got );
 			// A part every other part of the group is read from (the basket drawer's panel) that the draft read did not locate makes the
 			// surface's whole read empty: a refusal, never a quiet report of unpaired parts.
 			refusals.push( ...unlocatedParts( group, reads ).map( ( part ) => `${ surface }: the draft's ${ part } was not located at any width, so no part read from it is paired and none of its settings is decided` ) );
@@ -240,7 +308,7 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 		const menuData = modesData.blocks?.[ loc.block ]?.menu;
 		if ( signedTabs && menuData ) {
 			// The menu from each tab's own view, and the order status words from the draft's own status table (Bean's D-7).
-			const account = accountViewModes( { block: loc.block, tabs: signedTabs, menu: menuData, idx: loadDraft( path.resolve( REPO, entry.draftDir ), mainFile ).idx, reads, rows: blockRowsOf, stringKeys: accountStringKeys() } );
+			const account = accountViewModes( { block: loc.block, tabs: signedTabs, menu: menuData, idx: loadDraft( path.resolve( repo, entry.draftDir ), mainFile ).idx, reads, rows: blockRowsOf, stringKeys: accountStringKeys() } );
 			modes.writes.push( ...account.writes );
 			modes.gaps.push( ...account.gaps );
 			Object.assign( modes.settings, account.settings );

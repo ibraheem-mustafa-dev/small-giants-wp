@@ -38,3 +38,38 @@ test( 'MUST FAIL: negative controls: another block, a grid holding no h1, a miss
 	assert.deepEqual( held.out.unmapped.map( ( u ) => u.reason.split( ':' )[ 0 ] ), [ 'conflict', 'sgs/buybox has no galleryColumnGap setting' ] );
 	assert.equal( run( { flat: [ { name: 'sgs/buybox', attributes: { galleryColumnRatio: 1.05, galleryColumnGap: { desktop: '64px', tablet: '36px' } } } ] } ).out.writes.length, 0, 'an equal value is not written again' );
 } );
+
+// FR-48-60: the look pass reads the grid's own values at one width (the stacked columns' row gap, pixel columns), so the writer
+// owns the two settings: it replaces such a value and holds the grid's column rows the ladder would otherwise write as Custom CSS.
+const lookGap = { node: 'cr-ref-1', index: 0, block: 'sgs/buybox', slot: '', prop: 'row-gap', attr: 'galleryColumnGap', before: null, after: '0px', widths: [ 375, 768, 1440 ], how: 'single' };
+const rowOf = ( property, value, node = 'cr-ref-1' ) => ( { node, block: 'sgs/buybox', slot: '', property, value, state: null, widths: [ 375, 768, 1440 ], reason: 'shape: holds one value for every width' } );
+const ROWS = () => [ rowOf( 'grid-template-columns', '{"375":"335px","768":"342.8px 325.2px","1440":"602.3px 573.7px"}' ), rowOf( 'column-gap', '{"768":"36px","1440":"64px"}' ), rowOf( 'row-gap', '{"375":"24px"}' ), rowOf( 'column-gap', '{"1440":"10px"}', 'cr-ref-2' ) ];
+const owned = ( over = {} ) => {
+	const flat = [ { name: 'sgs/buybox', attributes: { galleryColumnGap: '0px', ...( over.attributes || {} ) } } ];
+	const writes = over.writes || [ lookGap ];
+	return { flat, out: buyboxColumnWrites( { nodes: [ rec( 0, 'Root/2#0' ) ], flat, refOf: () => 'cr-ref-1', inventory: over.inventory || INVENTORY, attrExists: () => true, writes, unmapped: ROWS() } ) };
+};
+
+test( 'MUST FAIL: a gap the look pass read at one width is replaced by the draft\'s two columns, and the grid\'s column rows are held', () => {
+	const { flat, out } = owned();
+	assert.deepEqual( flat[ 0 ].attributes.galleryColumnGap, { desktop: '64px', tablet: '36px' } );
+	assert.deepEqual( out.dropped, [ lookGap ], 'the look pass\'s one-width write leaves the run' );
+	assert.deepEqual( out.writes.find( ( w ) => 'galleryColumnGap' === w.attr ).before, '0px' );
+	assert.deepEqual( out.unmapped, [] );
+	assert.deepEqual( out.answered.map( ( a ) => a.property ), [ 'grid-template-columns', 'column-gap' ] );
+	assert.match( out.answered[ 0 ].settledDetail, /galleryColumnRatio holds the draft's two columns of the grid Root\/2#0/ );
+	assert.deepEqual( out.remaining.map( ( u ) => `${ u.node } ${ u.property }` ), [ 'cr-ref-1 row-gap', 'cr-ref-2 column-gap' ], 'the stacked row gap and another node\'s rows stay open' );
+} );
+
+test( 'MUST FAIL: negative controls: a skeleton\'s value is a conflict; a tablet share off the ratio or columns kept side by side on a phone leave the column row open', () => {
+	const decided = owned( { writes: [ { ...lookGap, prop: '(decided)', how: 'decided' } ] } );
+	assert.equal( decided.flat[ 0 ].attributes.galleryColumnGap, '0px' );
+	assert.match( decided.out.unmapped[ 0 ].reason, /^conflict: galleryColumnGap already holds "0px"/ );
+	assert.deepEqual( decided.out.answered.map( ( a ) => a.property ), [ 'grid-template-columns' ], 'the gap row is not held by a setting that was not written' );
+	assert.deepEqual( owned( { writes: [] } ).out.dropped, [], 'a held value no write of Fill made is never replaced' );
+	const els = INVENTORY.elements.map( ( e ) => ( 'Root/3#0' === e.key ? { ...e, box: { ...e.box, 768: { x: 32, y: 160, w: 400, h: 400 } } } : e ) );
+	const skew = owned( { inventory: { elements: els.map( ( e ) => ( 'Root/5#0' === e.key ? { ...e, box: { ...e.box, 768: { x: 468, y: 160, w: 268, h: 900 } } } : e ) ) } } );
+	assert.deepEqual( skew.out.answered.map( ( a ) => a.property ), [ 'column-gap' ], 'a tablet share of 1.49 against 1.05 is no one ratio' );
+	const phone = INVENTORY.elements.map( ( e ) => ( 'Root/5#0' === e.key ? { ...e, box: { ...e.box, 375: { x: 200, y: 150, w: 155, h: 900 } } } : 'Root/3#0' === e.key ? { ...e, box: { ...e.box, 375: { x: 20, y: 150, w: 160, h: 335 } } } : e ) );
+	assert.deepEqual( owned( { inventory: { elements: phone } } ).out.answered.map( ( a ) => a.property ), [ 'column-gap' ], 'the block stacks on a phone where the draft does not' );
+} );

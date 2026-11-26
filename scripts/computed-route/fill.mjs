@@ -69,6 +69,8 @@ import { formDraftFolder } from './lib/fill-form-behaviour.mjs';
 import { listContentWrites, logicReader, applyChildren, markItemChildren } from './lib/fill-list-content.mjs';
 import { loadShopParts, shopPartWrites } from './lib/fill-shop-parts.mjs';
 import { buyboxColumnWrites } from './lib/fill-buybox-columns.mjs';
+import { holdItemVariants } from './lib/fill-item-template.mjs';
+import { partLookModeWrites } from './lib/fill-part-look-modes.mjs';
 import { shopPartTargets } from './lib/fill-shop-targets.mjs';
 import { blockSchema } from './lib/resolve.mjs';
 import { motionDb } from './lib/motion-db.mjs';
@@ -256,6 +258,8 @@ export async function fillSurface( o ) {
 		const ledgerFile = path.join( buildDir, 'qa', 'divergences.json' );
 		// The fixtures the site look drew each block from (the plain block, lib/setting-record.mjs::recordFixtures).
 		const fixtures = recordFixtures();
+		// A card drawing every record of its query keeps its block's variant: one copy's look never chooses it (lib/fill-item-template.mjs).
+		const heldVariants = holdItemVariants( { nodes, flat, db, schemaOf: blockSchema, refOf } );
 		const result = fillTree( {
 			tree, nodes, reads, db, calFor, origin: reads.origin,
 			// The skeleton inventory: each draft element's parent, for a part a draft element lays out (lib/fill-part-pairing.mjs::draftParents).
@@ -276,6 +280,7 @@ export async function fillSurface( o ) {
 		// FR-48-81: each target's state looks, through the settings that hold their states.
 		const states = fillStates( { tree, nodes, reads, calFor, db, snapshot, rawSnapshot } );
 		result.writes.push( ...states.writes );
+		result.notes.push( ...heldVariants );
 		result.notes.push( ...defectLooks.listed.map( ( d ) => `draft defect ${ d.draftId } (${ d.state } ${ d.prop }, ${ d.declared }): the draft never paints it; built from the code value ${ JSON.stringify( d.built ) } by width; listed for Bean (intake.json draftDefects, FR-48-69)` ), ...defectLooks.gaps.map( ( g ) => `draft defect ${ g.draftId } (${ g.state } ${ g.prop }${ g.width ? ` at ${ g.width }px` : '' }): not built: ${ g.reason }` ) );
 		// FR-48-69: the client's draft-defects list, rebuilt from intake (when intake has run) with the value each defect was built as.
 		if ( fs.existsSync( path.join( repo, 'sites', o.client, 'build', 'intake', 'intake.json' ) ) ) {
@@ -299,6 +304,14 @@ export async function fillSurface( o ) {
 		( result.settled ??= [] ).push( ...passSettled( result.unmapped, logos.unmapped, 'logo-size', logos.answered ) );
 		result.unmapped = logos.unmapped;
 		result.notes.push( ...logos.notes );
+		// F-50, FR-48-60: the buy box read at the draft's grid takes its gallery ratio and gap from the grid's two columns, replacing a
+		// one-width look read of them and holding the grid's column rows, before the width ladder could turn those into Custom CSS
+		// (lib/fill-buybox-columns.mjs).
+		const columns = buyboxColumnWrites( { nodes, flat, refOf, inventory, attrExists: ( b, a ) => Object.hasOwn( blockSchema( b ) || {}, a ), writes: result.writes, unmapped: result.unmapped } );
+		result.writes = [ ...result.writes.filter( ( w ) => ! columns.dropped.includes( w ) ), ...columns.writes ];
+		result.settled.push( ...passSettled( result.unmapped, columns.remaining, 'buybox-columns', columns.answered ) );
+		result.unmapped = [ ...columns.remaining, ...columns.unmapped ];
+		result.notes.push( ...columns.notes );
 		// A per-width difference no single setting holds, then a block's built-in size against the draft's (lib/fill-width-ladder.mjs, lib/fill-dimensions.mjs); their divergence-ledger entries are added to the client's ledger.
 		// The passes that ask the resolver again judge each node against its own per-width view (lib/fill-resolve.mjs::nodeCalFor), as the main pass does.
 		const nodeCal = nodeCalFor( { raw: calFor, flatOf: () => flat, fixtures } );
@@ -360,11 +373,14 @@ export async function fillSurface( o ) {
 		result.writes.push( ...shop.writes );
 		result.unmapped.push( ...shop.unmapped );
 		result.notes.push( ...shop.notes, ...shopTargets.notes );
-		// F-50: the buy box read at the draft's grid takes its gallery ratio and gap from the grid's two columns (lib/fill-buybox-columns.mjs).
-		const columns = buyboxColumnWrites( { nodes, flat, refOf, inventory, attrExists: ( b, a ) => Object.hasOwn( blockSchema( b ) || {}, a ) } );
-		result.writes.push( ...columns.writes );
-		result.unmapped.push( ...columns.unmapped );
-		result.notes.push( ...columns.notes );
+		// RF7: the part-look mode rules of the shop blocks this tree holds (what a card or the buy box draws: a wishlist heart, a brand
+		// overlay, a saving badge, the button's words; the header's basket drawer; the account page and its signed-in views), from
+		// part-look's own offline read of the draft, opened from the draft's own facts (lib/fill-part-look-modes.mjs).
+		const partModes = await partLookModeWrites( { client: o.client, repo, entry, surfaceKey: o.surface, nodes, flat, refOf, db, out: path.join( outDir, 'part-look' ), log } );
+		partModes.surfaces.length && log( `part-look modes: ${ partModes.surfaces.join( ', ' ) }: ${ partModes.writes.length } written, ${ partModes.unmapped.length } rows` );
+		result.writes.push( ...partModes.writes );
+		result.unmapped.push( ...partModes.unmapped );
+		result.notes.push( ...partModes.notes );
 		// FR-48-8: the draft's backdrop beside its drawers, written to the scrim settings of the drawers and the basket panel (lib/fill-scrim.mjs).
 		const scrimBlocks = drawerScrimBlocks( db );
 		const scrim = scrimWrites( { nodes, flat, refOf, facts, scrimBlocks, declares: ( b, a ) => !! db.prepare( 'SELECT 1 FROM block_attributes WHERE block_slug = ? AND attr_name = ?' ).get( b, a ), defaultOf: ( b, a ) => JSON.parse( db.prepare( 'SELECT default_value FROM block_attributes WHERE block_slug = ? AND attr_name = ?' ).get( b, a )?.default_value ?? 'null' ) } );

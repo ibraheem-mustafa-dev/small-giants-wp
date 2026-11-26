@@ -255,7 +255,9 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		if ( 'commerceRegion' === r.rule && r.inner ) {
 			const item = r.card ? m.byKey[ r.card ] : r.item ? m.byKey[ r.item ] : null;
 			const copy = ( n ) => ( { name: n.name, attributes: { ...( n.attributes || {} ) }, innerBlocks: ( n.innerBlocks || [] ).map( copy ) } );
-			const read = ( n ) => ( 'sgs/' === n.name.slice( 0, 4 ) && item ? { ...n, draftRef: finder( item ), draftFingerprint: m.fingerprint( item ) } : n );
+			// The card stands for every product the loop lists (`itemTemplate`), each drawn with the card's one set of settings
+			// (`eachRecord`): Fill never takes one product's variant for it.
+			const read = ( n ) => ( 'sgs/' === n.name.slice( 0, 4 ) && item ? { ...n, draftRef: finder( item ), draftFingerprint: m.fingerprint( item ), ...( r.item ? { itemTemplate: true, eachRecord: true } : {} ) } : n );
 			const mark = ( n ) => read( { ...n, innerBlocks: n.innerBlocks.map( mark ) } );
 			node.innerBlocks = r.inner.map( copy ).map( mark );
 		}
