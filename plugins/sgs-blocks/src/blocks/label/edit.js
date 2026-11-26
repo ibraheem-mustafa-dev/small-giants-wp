@@ -8,7 +8,7 @@ import { PanelBody, ToggleControl } from '@wordpress/components';
 import { useEffect, useState } from '@wordpress/element';
 import {
 	TypographyControls,
-	ResponsiveBoxControl,
+	ResponsiveBoxControls,
 	SgsColourPanel,
 	textRow,
 	fillRow,
@@ -227,10 +227,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		linkUnderlineOffset,
 		backgroundColour,
 		backgroundColourGradient,
-		// padding is a TIER-OF-BOXES OBJECT {desktop,tablet,mobile} — ONE attr;
-		// each tier is a {top,right,bottom,left} box.
-		padding,
-		margin,
 		borderRadius,
 		fullWidth,
 		dot,
@@ -436,59 +432,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						}
 						presets={ false }
 					/>
-					{ /* padding is a TIER-OF-BOXES OBJECT {desktop,tablet,mobile}
-					     ONE attr; each tier holds the 4-side box. */ }
-					<ResponsiveBoxControl
-						label={ __( 'Padding', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: padding?.desktop ?? {},
-							tablet: padding?.tablet ?? {},
-							mobile: padding?.mobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							const tierKey = {
-								base: 'desktop',
-								tablet: 'tablet',
-								mobile: 'mobile',
-							}[ tier ];
-							setAttributes( {
-								padding: { ...padding, [ tierKey ]: next },
-							} );
-						} }
-					/>
 				</PanelBody>
 			</InspectorControls>
 
 			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
 			<InspectorControls group="styles">
-				<PanelBody
-					title={ __( 'Spacing', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					{ /* margin is a TIER-OF-BOXES OBJECT {desktop,tablet,mobile}
-					     (folded 2026-09-11 from the wrong 3-sibling shape) — ONE
-					     attr, same envelope + fold pattern as padding above. */ }
-					<ResponsiveBoxControl
-						label={ __( 'Margin', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: margin?.desktop ?? {},
-							tablet: margin?.tablet ?? {},
-							mobile: margin?.mobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							const tierKey = {
-								base: 'desktop',
-								tablet: 'tablet',
-								mobile: 'mobile',
-							}[ tier ];
-							setAttributes( {
-								margin: { ...margin, [ tierKey ]: next },
-							} );
-						} }
-					/>
-				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 				<PanelBody
 					title={ __( 'Dot', 'sgs-blocks' ) }
 					initialOpen={ false }

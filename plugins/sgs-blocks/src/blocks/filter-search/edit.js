@@ -14,9 +14,8 @@ import {
 	InspectorControls,
 	useSettings,
 } from '@wordpress/block-editor';
-import { PanelBody } from '@wordpress/components';
 import {
-	ResponsiveBoxControl,
+	ResponsiveBoxControls,
 	SgsColourPanel,
 	resolveColourToken,
 } from '../../components';
@@ -28,9 +27,8 @@ import {
 	isCssGradient,
 } from '../../utils';
 import FilterSearchSettings from './FilterSearchSettings';
-import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 
-export default function Edit( { attributes, setAttributes, clientId, name } ) {
+export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
 		searchMode,
 		taxonomy,
@@ -170,27 +168,10 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					setAttributes={ setAttributes }
 				/>
 
-				<PanelBody
-					title={ __( 'Spacing', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<ResponsiveBoxControl
-						label={ __( 'Margin', 'sgs-blocks' ) }
-						presets
-						defaults={ spacingDefaultsFor( name, 'margin' ) }
-						values={ {
-							base: margin?.desktop ?? {},
-							tablet: margin?.tablet ?? {},
-							mobile: margin?.mobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							const key = 'base' === tier ? 'desktop' : tier;
-							setAttributes( {
-								margin: { ...margin, [ key ]: next },
-							} );
-						} }
-					/>
-				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 			</InspectorControls>
 
 			{ filterSearchHoverPreviewCss && (

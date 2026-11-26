@@ -18,7 +18,7 @@ import {
 	buyboxMockCss,
 } from './canvas-mock';
 import {
-	ResponsiveBoxControl,
+	ResponsiveBoxControls,
 	SgsColourPanel,
 	fillRow,
 	textRow,
@@ -84,7 +84,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		showLadder,
 		framingMode,
 		decoyEnabled,
-		margin,
 		backgroundColour,
 		backgroundColourGradient,
 	} = attributes;
@@ -499,26 +498,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						atoms={ THUMB_ATOMS }
 					/>
 				</PanelBody>
-				<PanelBody
-					title={ __( 'Spacing', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<ResponsiveBoxControl
-						label={ __( 'Margin', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: margin?.desktop ?? {},
-							tablet: margin?.tablet ?? {},
-							mobile: margin?.mobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							const key = 'base' === tier ? 'desktop' : tier;
-							setAttributes( {
-								margin: { ...margin, [ key ]: next },
-							} );
-						} }
-					/>
-				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 				{ /* NOTE (2026-09-03 investigation): this panel currently shows as
 				   EXEMPT from routing in the inspector-scan `01-tab-group` report
 				   because `borderColourGradient`'s DB row (block_attributes) has a
