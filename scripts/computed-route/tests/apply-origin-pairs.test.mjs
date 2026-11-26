@@ -74,6 +74,19 @@ test( 'the applier refuses a surface whose records disagree with its origin, nam
 	assert.equal( problems.length, 1 );
 	assert.match( problems[ 0 ], /^careers: \d+ pairs in careers\.pairs\.json name another draft element than careers\.origin\.json/ );
 	assert.match( problems[ 0 ], /git rm sites\/indus-foods\/build\/careers\.pairs\.json/ );
+	assert.match( problems[ 0 ], /regenerating cannot clear a pair whose origin element is missing from the draft inventory or is only a reveal element: git rm the file then/ );
+} );
+
+// The advice is true: refresh-pairs keeps the origin's element only when the inventory shows it at rest.
+test( 'MUST FAIL: regenerating the pairs cannot keep an origin element the inventory lacks or shows only in a state, so the pairs still disagree', () => {
+	const el = ( n, extra = {} ) => ( { key: `Root/${ n }#0`, parentKey: 'Root/0#0', depth: 1, tag: 'h2', words: 'Title', ...extra } );
+	const blocks = [ { ref: 'cr-ref-s-1', block: 'sgs/heading', attrs: { content: 'Title' } } ];
+	for ( const [ elements, what ] of [ [ [ el( 1 ) ], 'missing from the inventory' ], [ [ el( 1 ), el( 7, { reveal: 'open' } ) ], 'only a reveal element' ] ] ) {
+		const origin = { 'cr-ref-s-1': { tpl: 'Root/7#0' } };
+		const { pairs, unpaired, structural } = refreshPairs( { blocks, elements, origin } );
+		assert.equal( pairs[ 'cr-ref-s-1' ].tpl, 'Root/1#0', what );
+		assert.equal( pairsReport( {}, origin, { pairs, unpaired, structural } ).disagree.length, 1, `${ what }: the regenerated file still disagrees` );
+	}
 } );
 
 test( 'a planned target off the origin is named, a part or reveal target too; a skeleton target is not compared', () => {
