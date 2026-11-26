@@ -105,11 +105,12 @@ const SK = {
 test( 'every setting skeletonSettings claims is written by contentAttrs or carriedAttrs', () => {
 	const db = openDb( fixtureDb( SK ) );
 	const facts = loadFacts( { db, client: '' } );
-	const m = { words: ( e ) => e.words ?? '', textWithBreaks: ( e ) => e.words ?? '', blockKids: () => [] };
+	const e = { key: 'k', tag: 'nav', words: 'Hello', display: 'flex', flexDirection: 'column', attrs: { href: '/x', target: '_blank' } };
+	// The element is the surface's one top-level navigation group, so a menu block's ref is bound to its group.
+	const m = { words: ( x ) => x.words ?? '', textWithBreaks: ( x ) => x.words ?? '', blockKids: () => [], els: [ e ], byKey: { k: e } };
 	const carried = { logo: () => ( { id: 5, asset: 'logo.png', url: 'https://t.test/logo.png' } ), menu: () => 9 };
 	const { contentAttrs, carriedAttrs } = makeContent( { m, facts, view: 1440, carried, surfaceKind: 'header', siteLink: ( href ) => ( { kind: 'url', value: href } ) } );
-	const e = { key: 'k', tag: 'nav', words: 'Hello', display: 'flex', flexDirection: 'column', attrs: { href: '/x', target: '_blank' } };
-	const writes = ( block, top = {} ) => new Set( [ ...Object.keys( contentAttrs( block, e, top ).a ), ...Object.keys( carriedAttrs( block, e ).attrs ) ] );
+		const writes = ( block, top = {} ) => new Set( [ ...Object.keys( contentAttrs( block, e, top ).a ), ...Object.keys( carriedAttrs( block, e ).attrs ) ] );
 	// Each block is driven as a plain element and, for the Site Info block, as a Site Info line too: a claim holds when some input writes it.
 	const cases = [ [ 'sgs/shell', [ {} ] ], [ 'sgs/root', [ {} ] ], [ 'sgs/responsive-logo', [ {} ] ], [ 'sgs/business-info', [ {}, { siteInfoKind: 'copyright' } ] ], [ 'sgs/plain', [ {} ] ], [ 'sgs/navlike', [ {} ] ] ];
 	const claimedAll = [];

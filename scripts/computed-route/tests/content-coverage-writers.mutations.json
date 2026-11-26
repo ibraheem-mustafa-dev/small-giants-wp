@@ -169,8 +169,8 @@
 	},
 	{
 		"file": "lib/skeleton-write-content.mjs",
-		"find": "id && Object.assign( out.attrs, { ref: id } )",
-		"replace": "id && Object.assign( out.attrs, {} )",
+		"find": "id ? Object.assign( out.attrs, { ref: id } ) && ( out.said.ref = `menu-map.json: the ${ surfaceKind } menu` )",
+		"replace": "id ? Object.assign( out.attrs, {} ) && ( out.said.ref = `menu-map.json: the ${ surfaceKind } menu` )",
 		"why": "a menu ref is never written"
 	},
 	{
