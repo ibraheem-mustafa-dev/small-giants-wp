@@ -86,20 +86,31 @@ const checked = new Set();
 // runs at 8 workers each held 18 GB and left the PC with under 1 GB.
 export const LOOK_JOBS = 2;
 export const lookJobs = ( env = process.env ) => Math.max( 1, Number( env.SGS_LOOK_JOBS ) || LOOK_JOBS );
-export function prepareLooks( blocks, client, { dir = SITE_LOOK_DIR, repo = REPO, build = ! process.env.SGS_NO_SITE, run = spawnSync } = {} ) {
+export function prepareLooks( blocks, client, { dir = SITE_LOOK_DIR, repo = REPO, build = ! process.env.SGS_NO_SITE, run = spawnSync, log = ( m ) => console.error( m ) } = {} ) {
 	const snapshot = path.join( repo, 'sites', String( client ), 'theme-snapshot.json' );
 	const due = [ ...new Set( blocks ) ].filter( ( b ) => /^sgs\//.test( b ) && ! checked.has( `${ dir }|${ client }|${ b }` ) );
 	if ( ! build || ! client || ! due.length || ! fs.existsSync( snapshot ) ) {
 		return [];
 	}
-	const jobs = String( Math.max( 1, Math.min( due.length, lookJobs() ) ) );
-	const args = [ BUILDER, '--snapshot', snapshot, '--site', client, '--out', dir, '--blocks', due.join( ',' ), '--jobs', jobs, ...( runsShop( client, repo ) ? [ '--woocommerce' ] : [] ) ];
-	const r = run( 'python', args, { encoding: 'utf8', cwd: REPO } );
-	// A block the builder reports built or current is checked; any other is left for siteLook, which says why when it is read.
-	const reported = String( r.stdout || '' ).split( /\r?\n/ );
-	const done = ( b ) => reported.some( ( line ) => [ 'built', 'current' ].some( ( how ) => line.startsWith( `${ slugOf( b ) }: ${ how }` ) ) );
-	due.filter( done ).forEach( ( b ) => checked.add( `${ dir }|${ client }|${ b }` ) );
-	return due.filter( ( b ) => ! done( b ) );
+	const shop = runsShop( client, repo ) ? [ '--woocommerce' ] : [];
+	// One builder call for `list`; a block the builder reports built or current is checked, any other is left for siteLook, which
+	// says why when it is read. Returns the blocks it did not build and the builder's own words about each.
+	const attempt = ( list, jobs ) => {
+		const r = run( 'python', [ BUILDER, '--snapshot', snapshot, '--site', client, '--out', dir, '--blocks', list.join( ',' ), '--jobs', String( jobs ), ...shop ], { encoding: 'utf8', cwd: REPO } );
+		const reported = String( r.stdout || '' ).split( /\r?\n/ );
+		const done = ( b ) => reported.some( ( line ) => [ 'built', 'current' ].some( ( how ) => line.startsWith( `${ slugOf( b ) }: ${ how }` ) ) );
+		list.filter( done ).forEach( ( b ) => checked.add( `${ dir }|${ client }|${ b }` ) );
+		const why = ( b ) => reported.find( ( line ) => line.startsWith( `${ slugOf( b ) }: ` ) ) || `the builder printed nothing for it (exit ${ r.status ?? r.signal ?? 'unknown' }: ${ String( r.stderr || '' ).trim().split( /\r?\n/ ).slice( -1 )[ 0 ] || 'no error text' })`;
+		return list.filter( ( b ) => ! done( b ) ).map( ( b ) => [ b, why( b ) ] );
+	};
+	// A block the first run missed is built once more on its own, one worker: a heavy block (sgs/nav-bar-menu reads about 1,200
+	// pages) that died beside other builders on a machine short of memory has the whole machine to itself then.
+	let missed = attempt( due, Math.max( 1, Math.min( due.length, lookJobs() ) ) );
+	if ( missed.length ) {
+		missed = attempt( missed.map( ( [ b ] ) => b ), 1 );
+	}
+	missed.forEach( ( [ b, why ] ) => log( `look builder: no default look of ${ b } for ${ client } (${ why })` ) );
+	return missed.map( ( [ b ] ) => b );
 }
 
 // The block's site look for the client (sites/<client>/theme-snapshot.json), built (or confirmed current) by the builder

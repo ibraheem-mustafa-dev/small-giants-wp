@@ -1,0 +1,7 @@
+[
+	{"file": "lib/setting-record.mjs", "find": "\tif ( missed.length ) {\n\t\tmissed = attempt( missed.map( ( [ b ] ) => b ), 1 );\n\t}\n", "replace": "", "why": "a block the first run missed is never tried again"},
+	{"file": "lib/setting-record.mjs", "find": "attempt( missed.map( ( [ b ] ) => b ), 1 );", "replace": "attempt( missed.map( ( [ b ] ) => b ), lookJobs() );", "why": "the second try runs as many workers as the first"},
+	{"file": "lib/setting-record.mjs", "find": "attempt( missed.map( ( [ b ] ) => b ), 1 );", "replace": "attempt( due, 1 );", "why": "the second try rebuilds every block, not only the missed ones"},
+	{"file": "lib/setting-record.mjs", "find": "\tmissed.forEach( ( [ b, why ] ) => log(", "replace": "\t[].forEach( ( [ b, why ] ) => log(", "why": "a block still missing is reported to nobody"},
+	{"file": "lib/setting-record.mjs", "find": "|| `the builder printed nothing for it (exit", "replace": "|| `(exit", "why": "a block the builder printed nothing for is reported without saying so"}
+]
