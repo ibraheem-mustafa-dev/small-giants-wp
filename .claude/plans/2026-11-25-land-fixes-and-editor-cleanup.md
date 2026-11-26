@@ -151,10 +151,12 @@ Briefs:
 Status: in progress in the second session; branches `fix/w1-shared`, `fix/w2-packages`, `fix/w3-switcher` and `fix/w4-trustbar` exist and none is merged (the second session records each one's state).
 
 ### Task 12: Stage E2, codemods across blocks (1 worker, after Task 11)
+Brief: `w5-editor-codemods.md` (base `fix/w-stage1`, Stage E1 combined; Pass 1 writes every list and stops for Bean).
 - Only each tab's first panel opens (19).
 - The 30 reset-only `ToolsPanel`s and the 61 media menus get the small reset; standard menus stay (20).
 - Every block moves onto the shared spacing panel, including the 8 Dimensions blocks (12).
-- Kit colours join the main Colour panel, shown only when the feature is on (13).
+- Kit colours join the main Colour panel, shown only when the feature is on (13), on blocks with 12 or fewer base colours; a colour-count detector lists the blocks over 12 and checks Stage E3's per-part rule, so nothing moves twice.
+- The 30 `MediaElementPanel` mounts inside a parent group (26 block files, W1's report) render in their place on first select.
 - Label-less `ResponsiveOverride` mounts get their labels.
 - `sgsFocusRests` and the button's `focusStyle` stay as they are (Bean, 2026-11-25): retiring them would change focus behaviour on all three clients, Mama's live shop included, for more work than it saves.
 - The "Keyboard focus" switch moves out of its own panel on 85 blocks into a block-wide row at the top of the shared Hover panel; the 4 blocks with hover colours but no Hover panel show it in Colour, and the 3 with no hover value hide it (Bean, 2026-11-25). Only the control moves: the attribute, its behaviour and saved content are unchanged, so no site renders differently.
@@ -162,11 +164,13 @@ Status: in progress in the second session; branches `fix/w1-shared`, `fix/w2-pac
 Status: not started.
 
 ### Task 13: Stage E3, per-block owners (up to 4 workers, after Task 12)
+Briefs: `w-e3-shared.md` (rules every owner follows; base `fix/w-stage2`, Stages E1 and E2 combined), `w6-editor-commerce.md` (shop and choice-flow blocks, product card), `w7-editor-nav.md` (menus, header, footer, responsive logo), `w8-editor-content.md` (cards, reviews, media, gallery), `w9-editor-text.md` (text, structure and form blocks, the shared target switchers, retired styles, the three document corrections). Every block folder has one owner; each owner's Pass 1 writes its lists and stops for Bean.
+
 Each owner applies, for its blocks:
 - The register's moves (`i24`) and the placement rule.
 - Dissolving repeated panels, including gallery Layout into Spacing and Border.
 - Look controls and renames (`i20`, `i23`; Google reviews' "Style" panel; choice flow picture size as a default plus override).
-- More-than-12-colour part panels.
+- More-than-12-colour part panels: on a block with more than 12 base colours, each part's colours sit in that part's panel and the main Colour panel keeps only whole-block colours (Bean, 2026-11-25; triggered by the count, checked by Stage E2's detector).
 - Adopting the switcher, separators, dividers and layout preview.
 - Retiring the heading, quote and text styles, and correcting Spec 32's native-supports rule, Spec 35A Part G and `plugins/sgs-blocks/CLAUDE.md` rule 1.
 
