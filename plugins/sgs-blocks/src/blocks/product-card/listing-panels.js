@@ -15,11 +15,18 @@ import {
 	FlexWrapControl,
 	SgsBoxControl,
 	SgsLengthControl,
+	ShadowControl,
 } from '../../components';
 import { SGS_LENGTH_UNITS, sgsNormaliseLength } from '../../utils';
 import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
+
+/** The card's hover shadow attributes (the resting shadow is the `showShadow` switch). */
+const CARD_HOVER_SHADOW_KEYS = {
+	hover: 'cardShadowHover',
+	hoverColour: 'cardShadowColourHover',
+};
 /**
  * Connected-product panel: which elements a live card shows and where its
  * RRP and colour dots come from.
@@ -391,12 +398,19 @@ export function ListingShapePanel( { name, attributes, setAttributes } ) {
 			<ToggleControl
 				label={ __( 'Resting shadow', 'sgs-blocks' ) }
 				help={ __(
-					'Off = border only at rest. The hover shadow is set in Hover Effects.',
+					'Off = border only at rest. The shadow when the pointer is over the card is set just below.',
 					'sgs-blocks'
 				) }
 				checked={ showShadow !== false }
 				onChange={ ( v ) => setAttributes( { showShadow: v } ) }
 				__nextHasNoMarginBottom
+			/>
+			<ShadowControl
+				label={ __( 'Shadow on hover', 'sgs-blocks' ) }
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				attrNames={ CARD_HOVER_SHADOW_KEYS }
+				hoverOnly
 			/>
 			<SgsFreeTextField
 				type="rich"

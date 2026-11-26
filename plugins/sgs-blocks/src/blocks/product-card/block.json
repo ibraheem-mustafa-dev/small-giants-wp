@@ -1775,7 +1775,7 @@
 		"swatchSize": {
 			"type": "number",
 			"default": 0,
-			"description": "Diameter of a card's colour dots in px. 0 = the card style's default (16px, 17px on Frame Card)."
+			"description": "Diameter of a card's colour dots in px. 0 = the default (16px)."
 		},
 		"swatchHoverGrow": {
 			"type": "number",
@@ -3434,17 +3434,6 @@
 		"cta2LineHeightUnit": {"type":"string","_generated":"button-kit"},
 		"cta2LetterSpacingUnit": {"type":"string","_generated":"button-kit"}
 	},
-	"styles": [
-		{
-			"name": "classic",
-			"label": "Classic",
-			"isDefault": true
-		},
-		{
-			"name": "frame-card",
-			"label": "Frame Card"
-		}
-	],
 	"usesContext": [ "postId", "sgs/cardGridSourceMode" ],
 	"editorScript": "file:./index.js",
 	"style": [ "sgs-button-style", "file:./style-index.css" ],
