@@ -14,7 +14,7 @@
 	{"file": "lib/skeleton-form-prefill.mjs", "find": "filter( ( f ) => component && `${ component }.dc.html` === f )", "replace": "filter( ( f ) => f.endsWith( '.dc.html' ) )", "why": "an opener of another component names fields of this form"},
 	{"file": "lib/skeleton-form-prefill.mjs", "find": "filter( ( f ) => component && `${ component }.dc.html` === f )", "replace": "filter( ( f ) => false )", "why": "the openers of the form's own component are read"},
 	{"file": "lib/fill-form.mjs", "find": "prefillParams( { folder, record: facts, component: own } )", "replace": "prefillParams( { folder, record: facts } )", "why": "Fill names the form's component to the opener reader"},
-	{"file": "lib/fill-form.mjs", "find": "const own = draftComponentOf( target, facts, component );", "replace": "const own = component;", "why": "a form imported from its own draft file reads its own component's openers, not the served page's"},
+	{"file": "lib/fill-form.mjs", "find": "const own = draftComponentOf( slotTarget( owner || rec ), facts, component );", "replace": "const own = component;", "why": "a form imported from its own draft file reads its own component's openers, not the served page's"},
 	{"file": "lib/skeleton-form-prefill.mjs", "find": "[ ...openers ].some( ( [ name, sets ] ) => sets && isThisMember( n.callee, name ) )", "replace": "[ ...openers ].some( ( [ name, sets ] ) => isThisMember( n.callee, name ) )", "why": "only an opener that sets fields names a field"},
 	{"file": "lib/skeleton-rules.mjs", "find": "! R.formPrefillOpener || ! handler ||", "replace": "! handler ||", "why": "the decisions entry turns the rule on"},
 	{"file": "lib/skeleton-rules.mjs", "find": "! [ 'a', 'button' ].includes( e.tag ) || ! facts.repo", "replace": "! facts.repo", "why": "only a button or link is a control"},
@@ -28,7 +28,8 @@
 	{"file": "lib/skeleton-rules.mjs", "find": "attributes: formAnchor ? { anchor: formAnchor } : {} }", "replace": "attributes: {} }", "why": "the form that roots a saved form post carries the anchor"},
 	{"file": "lib/skeleton-propose.mjs", "find": "pageMap, formLinks, megaOpeners", "replace": "pageMap, megaOpeners", "why": "the rules know the page's links to saved forms"},
 	{"file": "lib/fill-form.mjs", "find": "( folder ? prefillParams( { folder, record: facts, component: own } ) : [] )", "replace": "[]", "why": "a field a form opener sets reads the query"},
-	{"file": "lib/skeleton-rules.mjs", "find": "if ( run.some( ( x ) => x.tpl !== item.tpl ) ) {", "replace": "if ( false ) {", "why": "a loop body of several top-level elements reads only the button as the copy"},
-	{"file": "lib/skeleton-rules.mjs", "find": "( i > from && i < at[ k ] && before.has( x.tpl ) )", "replace": "( i > from && i < at[ k ] )", "why": "the button first: the copy before it is taken as its own"},
-	{"file": "lib/skeleton-rules.mjs", "find": "( i > at[ k ] && i < to && ! before.has( x.tpl ) )", "replace": "( i > at[ k ] && i < to )", "why": "the button last: the next copy's title is taken when its own copy's is dropped"}
+	{"file": "lib/fill-form.mjs", "find": "const owner = formOwner( rec );", "replace": "const owner = null;", "why": "a field built from the schema (no target) reads the served page's openers, not its enclosing form's"},
+	{"file": "lib/skeleton-rules.mjs", "find": "while ( first > 0 && rises( first - 1, first ) ) {", "replace": "while ( false ) {", "why": "a loop body of several top-level elements: the title and team before the button are left out of its copy"},
+	{"file": "lib/skeleton-rules.mjs", "find": "while ( last >= 0 && last < run.length - 1 && rises( last, last + 1 ) ) {", "replace": "while ( false ) {", "why": "the button first: the title and team after it are left out of its copy"},
+	{"file": "lib/skeleton-rules.mjs", "find": "const rises = ( a, b ) => Number( run[ a ]?.tpl ) < Number( run[ b ]?.tpl );", "replace": "const rises = ( a, b ) => undefined !== run[ a ] && undefined !== run[ b ];", "why": "a copy is not bounded by source order, so it runs into its neighbours"}
 ]

@@ -318,23 +318,24 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		// copy's root holding the control is its outermost ancestor (itself included) stamped by the same loop of the same component.
 		// A loop body of one element (a card) is that root's subtree. A body of several top-level elements (a title, a team and a
 		// button, no wrapper) stamps them as siblings under the loop's host, so the copy is the run of those siblings around the
-		// control's root: the body elements that come before it in the first copy (read before the root's first occurrence) belong
-		// with the next occurrence of the root, every other one with the occurrence before it.
+		// control's root whose template ids rise: ids follow source order, so one copy's elements ascend and the next copy starts
+		// where the id falls again (a copy whose title an `sc-if` drops, or that has no button, stays bounded on its own).
 		const loop = ( e.membership || [] ).filter( ( x ) => 'sc-for' === x.kind ).at( -1 );
 		const inLoop = ( x ) => !! x && !! loop && x.template === e.template && ( x.membership || [] ).some( ( y ) => 'sc-for' === y.kind && y.tpl === loop.tpl );
 		let item = inLoop( e ) ? e : null;
 		while ( item && inLoop( m.byKey[ item.parentKey ] ) ) {
 			item = m.byKey[ item.parentKey ];
 		}
-		let roots = item ? [ item ] : [];
 		const run = item ? m.els.filter( ( x ) => x.parentKey === item.parentKey && inLoop( x ) ) : [];
-		if ( run.some( ( x ) => x.tpl !== item.tpl ) ) {
-			const at = run.flatMap( ( x, i ) => ( x.tpl === item.tpl ? [ i ] : [] ) );
-			const before = new Set( run.slice( 0, at[ 0 ] ).map( ( x ) => x.tpl ) );
-			const k = at.indexOf( run.indexOf( item ) );
-			const [ from, to ] = [ at[ k - 1 ] ?? -1, at[ k + 1 ] ?? run.length ];
-			roots = run.filter( ( x, i ) => x === item || ( i > from && i < at[ k ] && before.has( x.tpl ) ) || ( i > at[ k ] && i < to && ! before.has( x.tpl ) ) );
+		const rises = ( a, b ) => Number( run[ a ]?.tpl ) < Number( run[ b ]?.tpl );
+		let [ first, last ] = [ run.indexOf( item ), run.indexOf( item ) ];
+		while ( first > 0 && rises( first - 1, first ) ) {
+			first--;
 		}
+		while ( last >= 0 && last < run.length - 1 && rises( last, last + 1 ) ) {
+			last++;
+		}
+		const roots = item ? run.slice( first, last + 1 ) : [];
 		const within = ( x ) => {
 			for ( let y = x; y; y = m.byKey[ y.parentKey ] ) {
 				if ( roots.includes( y ) ) {

@@ -184,10 +184,11 @@ test( 'NEGATIVE: a handler that scrolls elsewhere, a page with no linked form, a
 
 // The role values are read inside the control's own loop copy, never by copy number: a mounted card's elements all end `#0` (copy
 // numbers count stampings per host), and a copy whose title an `sc-if` drops shifts the numbers of the copies after it.
-const proposeWith = ( inv ) => {
+const proposeWith = ( inv, entries = {} ) => {
 	const d = draft();
 	const f = loadFacts( { db, client: 'eye-care-ward-end', repo: REPO, siteName: 'Planted' } );
-	return proposeSkeleton( { inventory: inv, facts: { ...f, repo: d.repo }, surface: 'careers', surfaceKind: 'page', surfaceName: 'Careers', db, rootComponent: 'Site', factRecord: { ...RECORD(), sources: d.record.sources }, formLinks: LINKS, refs: REFS, openers: {} } );
+	const record = RECORD();
+	return proposeSkeleton( { inventory: inv, facts: { ...f, repo: d.repo }, surface: 'careers', surfaceKind: 'page', surfaceName: 'Careers', db, rootComponent: 'Site', factRecord: { ...record, elements: { ...record.elements, ...entries }, sources: d.record.sources }, formLinks: LINKS, refs: REFS, openers: {} } );
 };
 const EXPECTED = [ '?role=Warehouse%20Operative&team=Warehouse%20%26%20logistics#careers', '?role=Driver&team=Warehouse%20%26%20logistics#careers', '?role=Sales%20Executive&team=Sales#careers' ];
 
@@ -208,27 +209,40 @@ test( 'MUST FAIL: a copy whose title an sc-if drops leaves its role out, and the
 	assert.deepEqual( [ 0, 1, 2 ].map( ( i ) => buttonOf( r, 24, i ).attributes.url ), [ EXPECTED[ 0 ], '?team=Warehouse%20%26%20logistics#careers', EXPECTED[ 2 ] ] );
 } );
 
-// A loop body of several top-level elements and no wrapper: each copy's title, team and button are siblings under the page.
-const unwrapped = ( order = [ 22, 23, 24 ] ) => {
+// A loop body of several top-level elements and no wrapper: each copy's title, team and button are siblings under the page, their
+// template ids in source order. `buttonFirst` draws the button before the title and team, which then take the later ids 31 and 32.
+const FIRST = {
+	'Site/31': entry( 'h3', 'Site/1', [ 'Site/1' ], [ { id: 'text#0', where: 'text', expr: 'ro.title', path: 'ro.title', whole: false } ] ),
+	'Site/32': entry( 'span', 'Site/1', [ 'Site/1' ], [ { id: 'text#0', where: 'text', expr: 'ro.team', path: 'ro.team', whole: false } ] ),
+};
+const unwrapped = ( buttonFirst = false ) => {
 	const inv = inventory();
 	const copies = inv.elements.filter( ( x ) => /^Root\/2[234]#/.test( x.key ) );
 	copies.forEach( ( x ) => Object.assign( x, { parentKey: 'Root/1#0', depth: 1 } ) );
+	buttonFirst && copies.filter( ( x ) => /^Root\/2[23]#/.test( x.key ) ).forEach( ( x ) => {
+		const n = 22 === x.tpl ? 31 : 32;
+		Object.assign( x, { key: x.key.replace( /^Root\/2[23]#/, `Root/${ n }#` ), tpl: n, snippet: x.snippet.replace( /data-dc-tpl="2[23]"/, `data-dc-tpl="${ n }"` ) } );
+	} );
+	const order = buttonFirst ? [ 24, 31, 32 ] : [ 22, 23, 24 ];
 	const at = inv.elements.findIndex( ( x ) => x.key === 'Root/21#0' );
 	const sorted = [ 0, 1, 2 ].flatMap( ( i ) => order.map( ( n ) => copies.find( ( x ) => x.key === `Root/${ n }#${ i }` ) ) );
-	inv.elements = [ ...inv.elements.slice( 0, at ).filter( ( x ) => ! copies.includes( x ) ), ...sorted, ...inv.elements.slice( at ).filter( ( x ) => ! /^Root\/2[1-4]#/.test( x.key ) ) ];
+	inv.elements = [ ...inv.elements.slice( 0, at ).filter( ( x ) => ! copies.includes( x ) ), ...sorted, ...inv.elements.slice( at ).filter( ( x ) => ! copies.includes( x ) && ! /^Root\/21#/.test( x.key ) ) ];
 	return inv;
 };
 
 test( 'MUST FAIL: a loop body of several top-level elements (no wrapper) links each button with the title and team of its own copy, whether the button comes last or first', () => {
-	const urls = ( inv ) => {
-		const r = proposeWith( inv );
-		return [ 0, 1, 2 ].map( ( i ) => buttonOf( r, 24, i ).attributes.url );
+	const urls = ( inv, entries ) => {
+		const r = proposeWith( inv, entries );
+		return [ 0, 1, 2 ].map( ( i ) => buttonOf( r, 24, i )?.attributes.url );
 	};
+	const without = ( inv, key ) => Object.assign( inv, { elements: inv.elements.filter( ( x ) => x.key !== key ) } );
+	const team = ( i ) => `?team=${ 2 === i ? 'Sales' : 'Warehouse%20%26%20logistics' }#careers`;
 	assert.deepEqual( urls( unwrapped() ), EXPECTED, 'the button last: the title and team before it are its copy\'s' );
-	assert.deepEqual( urls( unwrapped( [ 24, 22, 23 ] ) ), EXPECTED, 'the button first: the title and team after it are its copy\'s' );
-	const dropped = unwrapped();
-	dropped.elements = dropped.elements.filter( ( x ) => x.key !== 'Root/22#1' );
-	assert.deepEqual( urls( dropped ), [ EXPECTED[ 0 ], '?team=Warehouse%20%26%20logistics#careers', EXPECTED[ 2 ] ], 'NEGATIVE: a copy whose title an sc-if drops takes no title from its neighbours' );
+	assert.deepEqual( urls( unwrapped( true ), FIRST ), EXPECTED, 'the button first: the title and team after it are its copy\'s' );
+	assert.deepEqual( urls( without( unwrapped(), 'Root/22#1' ) ), [ EXPECTED[ 0 ], team( 1 ), EXPECTED[ 2 ] ], 'NEGATIVE: a copy whose title an sc-if drops takes no title from its neighbours' );
+	assert.deepEqual( urls( without( unwrapped(), 'Root/22#0' ) ), [ team( 0 ), EXPECTED[ 1 ], EXPECTED[ 2 ] ], 'the first copy\'s title dropped: the copies after it keep their own' );
+	assert.deepEqual( urls( without( unwrapped(), 'Root/24#0' ) ), [ undefined, EXPECTED[ 1 ], EXPECTED[ 2 ] ], 'the first copy has no button: the second copy takes its own title, not the first\'s' );
+	assert.deepEqual( urls( without( unwrapped( true ), 'Root/31#0' ), FIRST ), [ team( 0 ), EXPECTED[ 1 ], EXPECTED[ 2 ] ], 'the button first and the first copy\'s title dropped' );
 	// The card wraps its button in a footer: the copy is the whole card (the control's outermost ancestor in the loop), not the footer.
 	const footed = inventory();
 	[ 0, 1, 2 ].forEach( ( i ) => {
@@ -310,7 +324,24 @@ test( 'MUST FAIL: through Fill\'s own arguments (the served page\'s component), 
 	};
 	assert.equal( run( 'Root>Apply@466#0/30#0' ), undefined, 'the imported Apply form is not where the page\'s opener scrolls' );
 	assert.equal( run( 'Root/30#0' ), 'role', 'negative control: the page\'s inline form takes it' );
-	assert.ok( fs.readFileSync( path.join( REPO, 'scripts/computed-route/fill.mjs' ), 'utf8' ).includes( 'component: intakeParts.rootComponent, sources: formSources(' ), 'Fill passes the served page\'s component' );
+	assert.ok( fs.readFileSync( path.join( REPO, 'scripts/computed-route/fill.mjs' ), 'utf8' ).includes( 'component: intakeParts.rootComponent, idxFor, folder: draftFolder }' ), 'Fill passes the served page\'s component' );
+} );
+
+test( 'MUST FAIL: a field built from the schema for a step the page never rendered (no target of its own) reads the openers of its enclosing form\'s component', () => {
+	const d = draft();
+	const text = '<x-dc name="Apply"><form><select name="role"></select></form></x-dc>\n';
+	fs.writeFileSync( path.join( d.folder, 'Apply.dc.html' ), text );
+	const sources = { files: { ...d.record.sources.files, 'Apply.dc.html': crypto.createHash( 'sha256' ).update( text ).digest( 'hex' ) } };
+	const schema = [ { label: 'You', fields: [ { name: 'role', label: 'Role', options: [ 'Driver', 'Sales' ] } ] } ];
+	const facts = { elements: {}, sources, logic: { statics: { Apply: { entries: [ { name: 'schema', kind: 'array', value: schema } ] }, Site: { entries: [ { name: 'schema', kind: 'array', value: schema } ] } } } };
+	const run = ( tpl ) => {
+		const flat = [ { name: 'sgs/form', attributes: {}, innerBlocks: [], ref: 'form' }, { name: 'sgs/form-field-select', attributes: { label: 'Role', fieldName: 'role' }, innerBlocks: [], ref: 'role' } ];
+		const nodesList = [ { index: 0, name: 'sgs/form', parent: null, targets: [ { id: '0:', slot: '', finder: { tpl } } ] }, { index: 1, name: 'sgs/form-field-select', parent: 0, targets: [] } ];
+		const out = formWrites( { nodes: nodesList, flat, refOf: ( n ) => n.ref, reads: { widths: { 1440: {} } }, facts, db, folder: d.folder, component: 'Site' } );
+		return out.writes.find( ( w ) => 'role' === w.node && 'valueFromParam' === w.attr )?.after;
+	};
+	assert.equal( run( 'Root>Apply@466#0/6#0' ), undefined, 'the built role field of the imported Apply form is not where the page\'s opener scrolls' );
+	assert.equal( run( 'Root/6#0' ), 'role', 'negative control: the built role field of the page\'s inline form takes it' );
 } );
 
 test( 'NEGATIVE: the standing decisions stay valid with the rule', () => {

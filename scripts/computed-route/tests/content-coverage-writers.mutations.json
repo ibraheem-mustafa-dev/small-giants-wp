@@ -67,8 +67,8 @@
 	},
 	{
 		"file": "lib/fill-form.mjs",
-		"find": "apply( out, node, ref, rec, { attr: 'label', value: steps[ stepNo++ ].label, merge: 'replace' } );",
-		"replace": "stepNo++;",
+		"find": "apply( out, node, ref, rec, { attr: 'label', value: steps[ form.stepNo++ ].label, merge: 'replace' } );",
+		"replace": "form.stepNo++;",
 		"why": "a step's label is never written"
 	},
 	{
