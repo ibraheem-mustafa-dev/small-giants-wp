@@ -275,6 +275,22 @@ final class ButtonMigrationSweepTest extends TestCase {
 		$this->assertStringNotContainsString( '@media', $out['css'], 'no tablet or mobile rule is printed' );
 	}
 
+	public function test_a_bare_number_padding_leaf_that_painted_nothing_is_dropped_so_the_kit_does_not_make_it_paint(): void {
+		// The old padding row printed `padding-top:16` (no unit: invalid, painted nothing); the kit prints 16px. A unit string and a bare 0 paint.
+		$old = array(
+			'desktop' => array( 'top' => '16', 'right' => '8px', 'bottom' => 0, 'left' => 12 ),
+			'tablet'  => array( 'top' => '4' ),
+		);
+		$only = self::merged( array( 'ordersEmptyButtonPadding' => $old ) );
+		$this->assertSame( array( 'desktop' => array( 'right' => '8px', 'bottom' => 0 ) ), $only['emptyStatePadding'], 'rename path: top and left (bare, painted nothing) and the tablet top are dropped; 8px and a bare 0 stay' );
+		$both = self::merged( array( 'ordersEmptyButtonPadding' => $old, 'emptyStatePadding' => array( 'desktop' => array( 'top' => '9px' ) ) ) );
+		ksort( $both['emptyStatePadding']['desktop'] );
+		$this->assertSame( array( 'desktop' => array( 'bottom' => 0, 'right' => '8px', 'top' => '9px' ) ), $both['emptyStatePadding'], 'merge path: the same leaves are dropped before the fold' );
+		$none = self::merged( array( 'ordersEmptyButtonPadding' => array( 'desktop' => array( 'top' => '16' ) ) ) );
+		$this->assertArrayNotHasKey( 'emptyStatePadding', $none, 'a padding that painted nothing at all leaves no setting' );
+		$this->assertArrayNotHasKey( 'ordersEmptyButtonPadding', $none );
+	}
+
 	public function test_the_merge_map_names_the_kit_settings_and_the_block_declares_only_those(): void {
 		$json = json_decode( (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/account/block.json' ), true, 512, JSON_THROW_ON_ERROR );
 		foreach ( self::account_merge_map()['sgs/account'] as $row ) {
