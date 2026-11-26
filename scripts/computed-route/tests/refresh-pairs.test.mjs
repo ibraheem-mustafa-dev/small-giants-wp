@@ -45,7 +45,9 @@ test( 'pairsReport refuses one draft element claimed by blocks of different cont
 	assert.equal( r.refused.length, 3 );
 	// Same content on one element (a wrapper and its inner) is not refused.
 	assert.equal( pairsReport( cfg, { 'cr-ref-x-a': fp( '1' ), 'cr-ref-x-b': fp( '1' ), 'cr-ref-x-c': fp( '1' ) } ).pairs.length, 3 );
-	const refreshed = pairsReport( cfg, origin, { pairs: { 'cr-ref-x-a': { tpl: 'Root/9#0' } }, unpaired: { 'cr-ref-x-b': 'not shown', 'cr-ref-x-c': 'not shown' } } );
+	// The origin holds only -a here: -b and -c are config pairs the refreshed file judges unpaired, so they are dropped with its reason
+	// (a block the origin holds is never dropped by the refreshed file, tests/apply-origin-pairs.test.mjs).
+	const refreshed = pairsReport( cfg, { 'cr-ref-x-a': fp( '1' ) }, { pairs: { 'cr-ref-x-a': { tpl: 'Root/9#0' } }, unpaired: { 'cr-ref-x-b': 'not shown', 'cr-ref-x-c': 'not shown' } } );
 	assert.deepEqual( refreshed.pairs.map( ( p ) => [ p.ref, p.via ] ), [ [ 'cr-ref-x-a', 'refresh' ] ] );
 	assert.deepEqual( refreshed.refused.map( ( x ) => x.why ), [ 'not shown', 'not shown' ] );
 } );

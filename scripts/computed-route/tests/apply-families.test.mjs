@@ -108,10 +108,11 @@ test( 'matches: exact, or a pixel length within half a pixel; never a near colou
 	assert.ok( ! matches( undefined, 'hidden' ) );
 } );
 
-test( 'targets: pairs come from the config first, then the origin file; hand pairs without a ref are left out', () => {
+test( 'targets: the origin file wins for every block it holds, the config pairs the rest; hand pairs without a ref are left out', () => {
 	const cfg = { pairs: [ { live: '.cr-ref-a-1', draft: { tpl: 'Root/1#0' } }, { live: '.hand-pair .x', draft: { tpl: 'Root/9#0' } } ] };
 	const out = pairsOf( cfg, { 'cr-ref-a-1': { tpl: 'Root/2#0' }, 'cr-ref-a-2': { tpl: 'Root/3#0' } } );
-	assert.deepEqual( out.map( ( p ) => [ p.ref, p.tpl, p.via ] ), [ [ 'cr-ref-a-1', 'Root/1#0', 'pair' ], [ 'cr-ref-a-2', 'Root/3#0', 'origin' ] ] );
+	assert.deepEqual( out.map( ( p ) => [ p.ref, p.tpl, p.via ] ), [ [ 'cr-ref-a-1', 'Root/2#0', 'origin' ], [ 'cr-ref-a-2', 'Root/3#0', 'origin' ] ] );
+	assert.deepEqual( pairsOf( cfg, { 'cr-ref-a-2': { tpl: 'Root/3#0' } } ).map( ( p ) => [ p.ref, p.tpl, p.via ] ), [ [ 'cr-ref-a-1', 'Root/1#0', 'pair' ], [ 'cr-ref-a-2', 'Root/3#0', 'origin' ] ], 'a ref the origin does not hold keeps the config pair' );
 	assert.equal( draftUrl( 'http://127.0.0.1:57270/#/about', 'http://127.0.0.1:5181/' ), 'http://127.0.0.1:5181/#/about' );
 } );
 
