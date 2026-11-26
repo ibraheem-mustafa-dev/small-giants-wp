@@ -442,7 +442,7 @@ Item-set blocks declare block-level settings with the item prefix (Ratio, Fit, R
 
 ### 9.1 Global
 
-Labels print once. Each panel is a collapsible `PanelBody`; Media and Size and crop open by default. A panel that holds a value shows a small Reset on its first row (`SgsPanelReset`; an untouched panel shows none, and there is no menu). Multi-write actions (Circle, Replace, Reset) are one undo step.
+Labels print once. Each panel is a collapsible `PanelBody`; only the first panel of each inspector tab starts open, every other starts closed (a slot opens its first panel with the `openPanel` prop; every `PanelBody` says `initialOpen` outright, checked by `scripts/check-panel-initial-open.js`). A panel that holds a value shows a small Reset on its first row (`SgsPanelReset`; an untouched panel shows none, and there is no menu). Multi-write actions (Circle, Replace, Reset) are one undo step.
 
 ### 9.2 Shared components (new ones in `src/components/media/`; reworked ones stay in `src/components/`)
 

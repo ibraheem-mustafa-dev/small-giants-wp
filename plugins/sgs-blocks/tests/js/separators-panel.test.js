@@ -131,7 +131,7 @@ describe( 'SeparatorsPanel', () => {
 		expect( read( 'blocks/multi-button/edit.js' ) ).toMatch( /resolvedLayout=\{ attributes\.layout \|\| 'flex' \}/ );
 		const wrapper = read( 'blocks/container/components/ContainerWrapperControls.js' );
 		expect( wrapper.match( /layout=\{ props\.resolvedLayout \}/g ) ).toHaveLength( 2 );
-		expect( wrapper ).toMatch( /showContentBand,\s*resolvedLayout,\s*\} \) \}/ );
+		expect( wrapper ).toMatch( /showContentBand,\s*resolvedLayout,\s*initialOpen,\s*\} \) \}/ );
 		// render.php resolves it the same way.
 		const php = fs.readFileSync( path.resolve( __dirname, '../../src/blocks/multi-button/render.php' ), 'utf8' );
 		expect( php ).toMatch( /\$mb_wrapper_attributes\['layout'\] = 'flex'/ );

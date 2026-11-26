@@ -169,13 +169,13 @@ function resolveFirst( block, title, kind, bodyIndex, mediaSet ) {
 		return { source: 'colour', note: 'SgsColourPanel: the mount passes initialOpen' };
 	}
 	const bare = title.replace( /^.*:\s+/, '' );
-	if ( mediaSet.has( title ) || mediaSet.has( bare ) ) {
-		return { source: 'media', note: `media panel "${ bare }": the slot opens it by a prop, not by panel-model default` };
-	}
 	const hits = bodyIndex.filter( ( r ) => r.title === title );
 	const inBlock = hits.filter( ( r ) => r.block === block );
 	if ( inBlock.length ) {
 		return { source: 'block', note: `${ inBlock[ 0 ].file }::${ inBlock[ 0 ].symbol }`, count: inBlock.length };
+	}
+	if ( mediaSet.has( title ) || mediaSet.has( bare ) ) {
+		return { source: 'media', note: `media panel "${ bare }": the slot opens it by the openPanel prop, not by panel-model default` };
 	}
 	if ( hits.length ) {
 		return { source: 'shared', note: `${ hits[ 0 ].file }::${ hits[ 0 ].symbol }`, count: hits.length };
@@ -202,6 +202,18 @@ function fromCensus( censusFile ) {
 			const first = list[ 0 ];
 			blocks[ slug ] = blocks[ slug ] || {};
 			blocks[ slug ][ tab ] = { title: first.title, kind: first.kind, opened: first.opened, ...resolveFirst( slug, first.title, first.kind, bodyIndex, mediaSet ) };
+		}
+	}
+	// A block the census could not read (its children mount only inside a started form): the first PanelBody in the
+	// block's own `edit.js`, in JSX order, is its first Settings panel.
+	for ( const [ name, rec ] of Object.entries( census ) ) {
+		const slug = name.replace( /^sgs\//, '' );
+		if ( blocks[ slug ] || ! rec.ok ) {
+			continue;
+		}
+		const own = rows.filter( ( r ) => 'PanelBody' === r.name && r.title && r.file === `src/blocks/${ slug }/edit.js` ).sort( ( a, b ) => a.line - b.line );
+		if ( own.length ) {
+			blocks[ slug ] = { settings: { title: own[ 0 ].title, kind: 'body', opened: false, source: 'block', note: `${ own[ 0 ].file }::${ own[ 0 ].symbol }`, derived: 'source order (the census could not read this block)' } };
 		}
 	}
 	const data = {
