@@ -492,7 +492,7 @@ def build_block(short: str, snapshot_file: Path, woocommerce: bool, parts=None, 
     if 'client' not in parts:
         return shared_doc(short, record, facts, reader, errors)
     if shared is not None:
-        record, facts = with_forms(shared['forms'], record), with_content(facts, shared['content'])
+        record, facts = with_forms(shared['forms'], record, bridge.get('forms', [])), with_content(facts, shared['content'])
     return {'block': f'sgs/{short}', 'format': FORMAT, 'codeHash': rn.hash, 'elements': resting(elements, props),
             'pathClasses': classes, 'pathAttrs': {k: v for k, v in attrs.items() if v}, **({'settingFacts': record} if record else {}),
             **({'paintStates': paint_states} if paint_states else {}), **facts,
@@ -1188,6 +1188,11 @@ SHARED_PARTS = frozenset({'forms', 'content'})
 SHARED_SITE = '_shared'  # the folder the shared facts are kept in, beside the clients' (a client folder never starts with _)
 SHARED_FORMAT = 1
 CONTENT_KEYS = ('text', 'presence', 'link')
+# The value forms whose marker the client's snapshot picks (lib/calibrate-markers.mjs::plainMarkers: the slug marker is the
+# client's own palette colour furthest from black and white), so whether it takes depends on that client's palette and
+# defaults: these are read with the client's own reading, never shared. Under the theme's palette the slug marker's colour
+# equals some blocks' default colour and the form reads as not taken (Indus, 11 blocks, 2026-11-26).
+CLIENT_FORMS = frozenset({'slug'})
 
 
 def neutral_snapshot() -> Path:
@@ -1197,12 +1202,13 @@ def neutral_snapshot() -> Path:
 
 
 def facts_view(bridge: dict, parts) -> dict:
-    """The bridge plan as record_facts reads it for `parts`: the value-form instances only with 'forms', the state (and any
-    other per-client) instances only with 'client'. A baseline is never one of these instances (the plan keeps every
-    baseline in `discover`), so leaving them out changes no other reading."""
+    """The bridge plan as record_facts reads it for `parts`: the value-form instances with 'forms', except those of a
+    CLIENT_FORMS form, which go with 'client'; the state (and any other per-client) instances only with 'client'. A
+    baseline is never one of these instances (the plan keeps every baseline in `discover`), so leaving them out changes
+    no other reading."""
     view = dict(bridge)
-    if 'forms' not in parts:
-        view['forms'] = []
+    own = lambda i: (i.get('marker') or {}).get('form') in CLIENT_FORMS  # noqa: E731
+    view['forms'] = [i for i in bridge.get('forms', []) if ('client' in parts if own(i) else 'forms' in parts)]
     if 'client' not in parts:
         view.update({k: [] for k, v in bridge.items() if isinstance(v, list) and k not in ('discover', 'content', 'forms', 'noMarker', 'stateLookProps')})
     return view
@@ -1217,12 +1223,20 @@ def shared_doc(short: str, record: dict, facts: dict, reader, errors: dict) -> d
             'classes': sorted(reader.seen), **({'renderErrors': errors} if errors else {})}
 
 
-def with_forms(forms: dict, record: dict) -> dict:
-    """settingFacts as one build gives it: every setting with a value form first, in the order the forms were found, each
-    `forms` before what the client's own reading adds (a state look)."""
-    out = {k: {'forms': list(v)} for k, v in forms.items()}
+def with_forms(forms: dict, record: dict, plan: list) -> dict:
+    """settingFacts as one build gives it: the shared forms and the client's own (CLIENT_FORMS, in `record`) merged in the
+    order the client's plan of value-form instances (`plan`, the bridge's `forms`) finds them, so every setting with a form
+    comes first, each `forms` before what the client's own reading adds (a state look)."""
+    own = {k: v['forms'] for k, v in record.items() if v.get('forms')}
+    out = {}
+    for i in plan:
+        name, form = i.get('setting'), (i.get('marker') or {}).get('form')
+        if form in forms.get(name, ()) or form in own.get(name, ()):
+            got = out.setdefault(name, {}).setdefault('forms', [])
+            if form not in got:
+                got.append(form)
     for k, v in record.items():
-        out.setdefault(k, {}).update(v)
+        out.setdefault(k, {}).update({x: y for x, y in v.items() if x != 'forms'})
     return out
 
 

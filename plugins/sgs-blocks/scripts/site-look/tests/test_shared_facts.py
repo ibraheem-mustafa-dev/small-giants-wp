@@ -42,11 +42,15 @@ def test_custom_css_guard_negative_controls():
 
 def test_assembly_keeps_one_build_order():
     # settingFacts: every setting with a form first in the order found, `forms` before a state look; a look-only setting after
-    forms = {'colour': ['hex', 'slug'], 'size': ['clamp']}
-    record = {'size': {'look': {'p': 1}}, 'hover': {'look': {'q': 2}}}
-    got = SL.with_forms(forms, record)
-    assert json.dumps(got) == json.dumps({'colour': {'forms': ['hex', 'slug']}, 'size': {'forms': ['clamp'], 'look': {'p': 1}}, 'hover': {'look': {'q': 2}}})
-    assert SL.with_forms({}, {}) == {}
+    # the shared forms and the client's own slug form, merged in the client's plan order
+    plan = [{'setting': 'colour', 'marker': {'form': 'hex'}}, {'setting': 'colour', 'marker': {'form': 'slug'}},
+            {'setting': 'only', 'marker': {'form': 'slug'}}, {'setting': 'size', 'marker': {'form': 'clamp'}},
+            {'setting': 'size', 'marker': {'form': 'vw'}}]
+    forms = {'colour': ['hex'], 'size': ['clamp']}
+    record = {'colour': {'forms': ['slug']}, 'only': {'forms': ['slug']}, 'size': {'look': {'p': 1}}, 'hover': {'look': {'q': 2}}}
+    got = SL.with_forms(forms, record, plan)
+    assert json.dumps(got) == json.dumps({'colour': {'forms': ['hex', 'slug']}, 'only': {'forms': ['slug']}, 'size': {'forms': ['clamp'], 'look': {'p': 1}}, 'hover': {'look': {'q': 2}}})
+    assert SL.with_forms({}, {}, plan) == {}
     # the per-setting facts: discovered, then text, presence, link, then noMarker
     facts = {'discovered': {'a': 1}, 'noMarker': ['x']}
     content = {'link': {'l': 1}, 'text': {'t': 1}}
@@ -55,11 +59,13 @@ def test_assembly_keeps_one_build_order():
 
 
 def test_facts_view_leaves_out_only_the_parts_not_read():
-    bridge = {'discover': [1], 'content': [2], 'forms': [3], 'states': [4], 'enums': [5], 'noMarker': ['n'], 'stateLookProps': ['p']}
+    hexf, slug, clamp = ({'marker': {'form': f}} for f in ('hex', 'slug', 'clamp'))
+    bridge = {'discover': [1], 'content': [2], 'forms': [hexf, slug, clamp], 'states': [4], 'enums': [5], 'noMarker': ['n'], 'stateLookProps': ['p']}
     client = SL.facts_view(bridge, SL.CLIENT_PARTS)
-    assert client['forms'] == [] and client['states'] == [4] and client['enums'] == [5] and client['discover'] == [1]
+    assert client['forms'] == [slug], 'the slug marker is the client palette: read by the client'
+    assert client['states'] == [4] and client['enums'] == [5] and client['discover'] == [1]
     shared = SL.facts_view(bridge, SL.SHARED_PARTS)
-    assert shared['forms'] == [3] and shared['states'] == [] and shared['enums'] == [] and shared['discover'] == [1]
+    assert shared['forms'] == [hexf, clamp] and shared['states'] == [] and shared['enums'] == [] and shared['discover'] == [1]
     assert shared['noMarker'] == ['n'] and shared['stateLookProps'] == ['p']
     assert SL.facts_view(bridge, SL.ALL_PARTS) == bridge
 
