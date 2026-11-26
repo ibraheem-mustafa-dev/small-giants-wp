@@ -97,6 +97,61 @@ final class TrustBarTickerMigrationTest extends TestCase {
 		$this->assertSame( array(), $again, 'a second run finds nothing' );
 	}
 
+	public function test_the_probe_negative_control_bar_is_skipped_by_default(): void {
+		$layer   = self::layer();
+		$control = self::bar( array( 'className' => 'm515-control' ) );
+		$other   = self::bar( array( 'className' => 'm515-other' ) );
+		$skip    = sgs_trust_bar_ticker_skip_for( 5305, SGS_TRUST_BAR_TICKER_EXCLUDE );
+		$this->assertSame( array( 'm515-control' ), $skip );
+		$this->assertSame( array(), sgs_trust_bar_ticker_skip_for( 2742, SGS_TRUST_BAR_TICKER_EXCLUDE ), 'the list names one post only' );
+		$found = array();
+		$out   = sgs_trust_bar_ticker_migrate( array( $control, $other ), $layer, $found, $skip );
+		$this->assertSame( $control, $out[0], 'the control bar stays as saved' );
+		$this->assertSame( array( $layer ), $out[1]['attrs']['sgsMotion']['elements']['root']['effects'], 'control: another bar on the page is converted' );
+		$this->assertSame( 'skipped (excluded: m515-control)', $found[0] );
+		$none = array();
+		$all  = sgs_trust_bar_ticker_migrate( array( $control ), $layer, $none, array() );
+		$this->assertSame( array( $layer ), $all[0]['attrs']['sgsMotion']['elements']['root']['effects'], 'with include-excluded it is converted' );
+	}
+
+	public function test_a_probe_page_is_skipped_by_default(): void {
+		$this->assertTrue( sgs_trust_bar_ticker_probe_page( '[probe] trust-bar controls' ) );
+		$this->assertTrue( sgs_trust_bar_ticker_probe_page( ' [Probe] x' ) );
+		$this->assertFalse( sgs_trust_bar_ticker_probe_page( 'Home' ), 'control: a site page is swept' );
+		$this->assertFalse( sgs_trust_bar_ticker_probe_page( 'Our [probe] results' ), 'control: the word elsewhere in a title is not a probe page' );
+	}
+
+	public function test_the_undo_file_must_encode_and_decode_back_to_the_same_posts(): void {
+		$undo = array( '12' => array( 'before' => 'a', 'after' => 'b' ) );
+		$this->assertSame( $undo, json_decode( (string) sgs_trust_bar_ticker_undo_json( $undo ), true ) );
+		$this->assertNull( sgs_trust_bar_ticker_undo_json( array( '12' => array( 'before' => "\xB1\x31", 'after' => 'b' ) ) ), 'content that is not UTF-8 cannot be encoded: refuse' );
+		$this->assertNull( sgs_trust_bar_ticker_undo_json( array( '12' => array( 'before' => NAN, 'after' => 'b' ) ) ), 'a value JSON cannot hold: refuse' );
+		$this->assertNull( sgs_trust_bar_ticker_undo_json( $undo, static fn( $v ) => false ), 'an encoder that fails: refuse' );
+		$this->assertNull( sgs_trust_bar_ticker_undo_json( $undo, static fn( $v ) => '' ), 'an empty encoding: refuse' );
+		$this->assertNull( sgs_trust_bar_ticker_undo_json( $undo, static fn( $v ) => json_encode( array( '12' => array( 'before' => 'a?', 'after' => 'b' ) ) ) ), 'an encoder that rewrites content (wp_json_encode on bytes that are not UTF-8): refuse' );
+	}
+
+	public function test_undo_refuses_each_post_that_no_longer_holds_what_the_sweep_wrote(): void {
+		$saved   = array(
+			'10' => array( 'before' => 'old10', 'after' => 'new10' ),
+			'11' => array( 'before' => 'old11', 'after' => 'new11' ),
+			'12' => array( 'before' => 'old12', 'after' => 'new12' ),
+			'13' => 'old13',
+		);
+		$current = static fn( int $id ): ?string => array( 10 => 'new10', 11 => 'edited since', 13 => 'x' )[ $id ] ?? null;
+		$this->assertSame(
+			array( 'post 11: changed since the sweep wrote it', 'post 12: no longer exists', 'post 13: the undo entry holds no before and after content' ),
+			sgs_trust_bar_ticker_undo_conflicts( $saved, $current )
+		);
+		$this->assertSame( array(), sgs_trust_bar_ticker_undo_conflicts( array( '10' => $saved['10'] ), $current ), 'control: an untouched post may be restored' );
+	}
+
+	public function test_a_failed_posts_query_is_an_error_not_nothing_to_do(): void {
+		$this->assertNull( sgs_trust_bar_ticker_rows( null, '' ) );
+		$this->assertNull( sgs_trust_bar_ticker_rows( array(), 'Table wp_posts is marked as crashed' ) );
+		$this->assertSame( array(), sgs_trust_bar_ticker_rows( array(), '' ), 'control: an empty answer with no error is no posts' );
+	}
+
 	public function test_a_missing_or_wrong_data_file_refuses(): void {
 		$this->assertNull( sgs_trust_bar_ticker_layer( __DIR__ . '/no-such-file.json' ) );
 		$tmp = tempnam( sys_get_temp_dir(), 'tb' );
