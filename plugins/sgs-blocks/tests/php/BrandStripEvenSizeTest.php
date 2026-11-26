@@ -166,9 +166,75 @@ final class BrandStripEvenSizeTest extends TestCase {
 		$this->assertStringNotContainsString( 'data-logo-key="wide"] .sgs-media-el{width', $off['css'] );
 
 		$on = $this->render_block( 'sgs/brand-strip', $attrs + array( 'logoEvenSize' => true ), array(), array(), '', true );
-		$this->assertStringContainsString( '.sgs-brand-strip__item[data-logo-key="wide"] .sgs-media-el{width:120px;height:auto;max-width:none;max-height:none;}', $on['css'] );
+		$this->assertStringContainsString( '.sgs-brand-strip__item[data-logo-key="wide"] .sgs-media-el{width:120px;height:auto;max-width:100%;max-height:none;}', $on['css'], 'a logo never outgrows its strip' );
+		$this->assertStringContainsString( '.sgs-brand-strip__item[data-logo-key="wide"]{max-width:100%;}', $on['css'] );
 		$this->assertMatchesRegularExpression( '/\[data-logo-key="squarish"\] \.sgs-media-el\{width:[0-9.]+px;/', $on['css'] );
 		$this->assertStringNotContainsString( ' style="', $on['html'] );
+	}
+
+	/**
+	 * No width cap: the slot is a column wide, so a long wordmark cannot run past a phone's edge.
+	 */
+	public function test_with_no_width_cap_each_width_is_bounded_by_the_column(): void {
+		$logo  = static fn( string $key, int $w, int $h ): array => array(
+			'_key'   => $key,
+			'name'   => $key,
+			'source' => array(
+				'desktop' => array(
+					'kind'   => 'image',
+					'url'    => 'https://example.test/wp-content/uploads/' . $key . '.png',
+					'width'  => $w,
+					'height' => $h,
+				),
+			),
+		);
+		$attrs = array(
+			'logoLayout'   => 'row',
+			'logoEvenSize' => true,
+			'maxHeight'    => 60,
+			'logoMaxWidth' => 0,
+			'columns'      => array(
+				'desktop' => 8,
+				'tablet'  => 4,
+				'mobile'  => 2,
+			),
+			'logos'        => array( $logo( 'wordmark', 1000, 100 ) ),
+		);
+		$css   = $this->render_block( 'sgs/brand-strip', $attrs, array(), array(), '', true )['css'];
+
+		$this->assertMatchesRegularExpression( '/\[data-logo-key="wordmark"\] \.sgs-media-el\{width:min\([0-9.]+px,calc\(\(100cqw - 7 \* var\(--sgs-logo-gap, 10px\)\) \/ 8\)\);/', $css, 'desktop: eight columns' );
+		$this->assertStringContainsString( '/ 2))', $css, 'phone: two columns' );
+		$this->assertStringContainsString( 'max-width:100%', $css );
+	}
+
+	/**
+	 * A key with a character the selector cannot hold is still matched: render and CSS share one key.
+	 */
+	public function test_a_key_with_a_dot_is_matched_by_the_markup_and_the_rule(): void {
+		$attrs = array(
+			'logoLayout'   => 'row',
+			'logoEvenSize' => true,
+			'maxHeight'    => 44,
+			'logoMaxWidth' => 120,
+			'logos'        => array(
+				array(
+					'_key'   => 'brand.1',
+					'name'   => 'brand',
+					'source' => array(
+						'desktop' => array(
+							'kind'   => 'image',
+							'url'    => 'https://example.test/wp-content/uploads/b.png',
+							'width'  => 200,
+							'height' => 50,
+						),
+					),
+				),
+			),
+		);
+		$out   = $this->render_block( 'sgs/brand-strip', $attrs, array(), array(), '', true );
+
+		$this->assertStringContainsString( 'data-logo-key="brand1"', $out['html'] );
+		$this->assertStringContainsString( '[data-logo-key="brand1"] .sgs-media-el{width:', $out['css'] );
 	}
 
 	/**

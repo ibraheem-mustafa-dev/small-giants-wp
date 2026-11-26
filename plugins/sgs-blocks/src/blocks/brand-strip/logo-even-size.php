@@ -115,9 +115,8 @@ if ( ! function_exists( 'sgs_brand_strip_even_size' ) ) {
 		$ratios = array();
 		foreach ( $logos as $index => $logo ) {
 			$logo = (array) $logo;
-			$key  = ! empty( $logo['_key'] ) ? (string) $logo['_key'] : 'idx-' . absint( $index );
-			$key  = (string) preg_replace( '/[^A-Za-z0-9_\-]/', '', $key );
-			$rate = '' !== $key ? sgs_brand_strip_item_ratio( $logo ) : 0.0;
+			$key  = sgs_brand_strip_item_key( $logo, $index );
+			$rate = sgs_brand_strip_item_ratio( $logo );
 			if ( $rate > 0 ) {
 				$ratios[ $key ] = $rate;
 			}
@@ -139,6 +138,14 @@ if ( ! function_exists( 'sgs_brand_strip_even_size' ) ) {
 			$height[ $device ] = $stored > 0 ? $stored : ( 'mobile' === $device ? $height['tablet'] : $height['desktop'] );
 		}
 
+		// With no width cap the slot is as wide as a column: the strip's width less the gaps, over the device's column count.
+		$columns = sgs_responsive_normalise_object( $attributes['columns'] ?? null );
+		$count   = array(
+			'desktop' => max( 1, (int) ( $columns['desktop'] ?? 8 ) ),
+			'tablet'  => max( 1, (int) ( $columns['tablet'] ?? 4 ) ),
+			'mobile'  => max( 1, (int) ( $columns['mobile'] ?? 2 ) ),
+		);
+
 		$css   = '';
 		$cap   = 0.0;
 		$prev  = null;
@@ -149,15 +156,18 @@ if ( ! function_exists( 'sgs_brand_strip_even_size' ) ) {
 		);
 		foreach ( array( 'desktop', 'tablet', 'mobile' ) as $device ) {
 			$widths = sgs_brand_strip_even_widths( $ratios, $slot_w, $height[ $device ] );
-			if ( $widths === $prev ) {
+			$rules  = '';
+			foreach ( $widths as $key => $width ) {
+				$cap  = max( $cap, $width );
+				$px   = rtrim( rtrim( number_format( $width, 1, '.', '' ), '0' ), '.' ) . 'px';
+				$size = $slot_w > 0 ? $px : 'min(' . $px . ',calc((100cqw - ' . ( $count[ $device ] - 1 ) . ' * var(--sgs-logo-gap, 10px)) / ' . $count[ $device ] . '))';
+				$rules .= $root_sel . ' .sgs-brand-strip__item[data-logo-key="' . $key . '"]{max-width:100%;}'
+					. $root_sel . ' .sgs-brand-strip__item[data-logo-key="' . $key . '"] .sgs-media-el{width:' . $size . ';height:auto;max-width:100%;max-height:none;}';
+			}
+			if ( $rules === $prev ) {
 				continue;
 			}
-			$prev  = $widths;
-			$rules = '';
-			foreach ( $widths as $key => $width ) {
-				$cap    = max( $cap, $width );
-				$rules .= $root_sel . ' .sgs-brand-strip__item[data-logo-key="' . $key . '"] .sgs-media-el{width:' . rtrim( rtrim( number_format( $width, 1, '.', '' ), '0' ), '.' ) . 'px;height:auto;max-width:none;max-height:none;}';
-			}
+			$prev = $rules;
 			$css .= '' === $media[ $device ] ? $rules : $media[ $device ] . '{' . $rules . '}';
 		}
 

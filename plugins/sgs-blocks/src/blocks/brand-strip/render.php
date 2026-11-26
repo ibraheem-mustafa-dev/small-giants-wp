@@ -666,7 +666,7 @@ if ( ! empty( $logos ) ) {
 	foreach ( $logos as $bs_index => $logo ) {
 		// Each item's own settings (source, alt, fit, focal point) sit on the item, keyed by its stable `_key`
 		// (src/utils/generateItemKey.js), never by array index or `:nth-child`.
-		$bs_item_key = ! empty( $logo['_key'] ) ? (string) $logo['_key'] : 'idx-' . absint( $bs_index );
+		$bs_item_key = sgs_brand_strip_item_key( (array) $logo, $bs_index );
 		$media       = sgs_brand_strip_item_file( (array) $logo );
 
 		$logo_name = isset( $logo['name'] ) ? sanitize_text_field( (string) $logo['name'] ) : '';
