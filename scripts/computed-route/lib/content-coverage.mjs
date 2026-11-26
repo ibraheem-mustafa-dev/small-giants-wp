@@ -17,7 +17,8 @@
 //   no-element   the DB's emit_shape says the page holds nothing to read the setting from (NO_ELEMENT_SHAPES)
 //   gap          a `content-setting:<block>.<setting>` row in data/clone-coverage.json naming the mechanism, owner and wave
 // A row with none of these fails the check, and so does a gap row that names a setting the DB no longer holds as content, or
-// one whose setting now has a route a to d (a stale gap row must be deleted, never left to hide a later regression).
+// one whose setting now has a client-independent route (list, role-writer or no-element; a stale gap row must be deleted, never left
+// to hide a later regression). A measured reading is the client's own, so it never makes a gap row stale.
 import { loadCalibration } from './cache.mjs';
 import { textSettings, linkSettings, presenceSettings } from './fill-presence.mjs';
 import { listTarget, listClaims } from './fill-list-content.mjs';
@@ -135,8 +136,11 @@ export function contentCoverage( { db, client, cacheDir = null, schemaOf, facts,
 		const all = [ ...( claims.get( k ) || [] ), ...( NO_ELEMENT_SHAPES.includes( row.shape ) ? [ { route: 'no-element', writer: row.shape } ] : [] ) ];
 		const hit = all.sort( ( a, b ) => PRECEDENCE.indexOf( a.route ) - PRECEDENCE.indexOf( b.route ) )[ 0 ] ?? null;
 		const gap = gaps[ k ];
-		if ( gap && hit ) {
-			staleGaps.push( { id: gap.id, route: hit.route, writer: hit.writer } );
+		// A gap row belongs to every client, but the measured route reads the client's own site look: one client's reading says nothing
+		// about another's, so a measured claim never makes a row stale. Every other route comes from the DB and the writers alone.
+		const fixed = all.filter( ( c ) => 'measured' !== c.route ).sort( ( a, b ) => PRECEDENCE.indexOf( a.route ) - PRECEDENCE.indexOf( b.route ) )[ 0 ];
+		if ( gap && fixed ) {
+			staleGaps.push( { id: gap.id, route: fixed.route, writer: fixed.writer } );
 		}
 		const route = hit?.route ?? ( gap ? 'gap' : null );
 		counts[ route ?? 'none' ]++;

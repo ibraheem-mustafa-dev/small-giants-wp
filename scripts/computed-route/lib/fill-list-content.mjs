@@ -130,14 +130,20 @@ export function listTarget( db, block, schemaOf ) {
 	return keys.length ? { kind: 'children', child, keys } : null;
 }
 
+// Whether matchFields can take a draft field into the item key: the key plays a role a draft field names (keyRoles), or is a colour
+// key a style field paints (STYLE_FIELD_KEY_ROLE). A key of neither kind takes a field only by its exact name, which no draft
+// states ahead of the run, so a re-clone does not fill it.
+export const mappableKey = ( k ) => keyRoles( k ).length > 0 || COLOUR_KEY_ROLES.has( k.role );
+
 // The settings a list target takes the draft's items into, as [{ block, attr }]: the one array setting of the host block, or
-// each content setting of the single child block the host allows. Fill's list pass writes exactly these (listDecisions takes
-// `target.attr` and `target.keys`); lib/content-coverage.mjs asks here which settings a re-clone writes.
+// each content setting of the single child block the host allows that matchFields can map (mappableKey). Fill's list pass writes
+// exactly these (listDecisions takes `target.attr` and `target.keys`); lib/content-coverage.mjs asks here which settings a re-clone
+// writes, so a key no draft field can reach stays a gap row, never a claim.
 export function listClaims( block, target ) {
 	if ( ! target ) {
 		return [];
 	}
-	return 'attr' === target.kind ? [ { block, attr: target.attr } ] : target.keys.map( ( k ) => ( { block: target.child, attr: k.key } ) );
+	return 'attr' === target.kind ? [ { block, attr: target.attr } ] : target.keys.filter( mappableKey ).map( ( k ) => ( { block: target.child, attr: k.key } ) );
 }
 
 const escapeText = ( s ) => String( s ).replace( /&/g, '&amp;' ).replace( /</g, '&lt;' ).replace( />/g, '&gt;' );

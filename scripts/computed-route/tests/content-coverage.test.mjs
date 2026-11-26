@@ -17,7 +17,7 @@ import { mediaDecisions } from '../lib/fill-media.mjs';
 import { blockMediaSlots, mediaSettings } from '../lib/media/slots.mjs';
 import { iconDecisions, iconSettings, ICON_SETTINGS } from '../lib/fill-icon.mjs';
 import { formFieldWrites, formSettings, FORM_FIELD_SETTINGS } from '../lib/fill-form.mjs';
-import { listClaims } from '../lib/fill-list-content.mjs';
+import { listClaims, matchFields } from '../lib/fill-list-content.mjs';
 
 const roles = [
 	{ role_name: 'text-content', classification: 'content-bearing' },
@@ -54,7 +54,7 @@ const ROUTED = [
 	attr( 'sgs/form-field-text', 'placeholder', 'content' ),
 	attr( 'sgs/orphan', 'lead', 'text-content' ),
 	attr( 'sgs/wish', 'errorText', 'text-content', 'string', { emit_shape: 'script-rendered' } ),
-	attr( 'sgs/hosty-item', 'caption', 'text-content' ),
+	attr( 'sgs/hosty-item', 'title', 'text-content' ),
 	attr( 'sgs/hosty-item', 'photo', 'image-object' ),
 ];
 const SLOT_MAP = { block: 'sgs/measured', text: { title: { path: '.sgs-measured__title' } }, link: { href: { path: '.sgs-measured__a', attr: 'href' } }, presence: { showBadge: { shows: [ '.sgs-measured__badge' ], hides: [] } } };
@@ -89,7 +89,7 @@ test( 'each route claims its own setting: measured, list, role-writer (skeleton,
 	assert.deepEqual( at( 'sgs/measured', 'href' ), [ 'measured', 'link' ] );
 	assert.deepEqual( at( 'sgs/measured', 'showBadge' ), [ 'measured', 'presence' ] );
 	assert.deepEqual( at( 'sgs/listy', 'entries' ), [ 'list', 'list' ] );
-	assert.deepEqual( at( 'sgs/hosty-item', 'caption' ), [ 'list', 'list' ], 'the single child block of a host takes the items' );
+	assert.deepEqual( at( 'sgs/hosty-item', 'title' ), [ 'list', 'list' ], 'the single child block of a host takes the items' );
 	assert.deepEqual( at( 'sgs/skel', 'heading' ), [ 'role-writer', 'skeleton' ] );
 	assert.deepEqual( at( 'sgs/skel', 'url' ), [ 'role-writer', 'skeleton' ] );
 	assert.deepEqual( at( 'sgs/media', 'source' ), [ 'role-writer', 'media' ] );
@@ -147,12 +147,28 @@ test( 'a gap row for a setting with no route turns the failure into the gap rout
 	assert.equal( r.counts.none, 0 );
 } );
 
-test( 'MUST FAIL: a stale gap row (a writer now fills the setting) fails and names the route', () => {
-	const id = contentSettingId( 'sgs/measured', 'title' );
+test( 'MUST FAIL: a stale gap row (a client-independent writer now fills the setting) fails and names the route', () => {
+	const id = contentSettingId( 'sgs/skel', 'heading' );
 	const r = world( { entries: { [ id ]: gapRow() } } ).run();
 	assert.equal( r.ok, false );
-	assert.deepEqual( r.staleGaps, [ { id, route: 'measured', writer: 'text' } ] );
-	assert.match( reportLines( r ).join( '\n' ), /STALE GAP content-setting:sgs\/measured\.title/ );
+	assert.deepEqual( r.staleGaps, [ { id, route: 'role-writer', writer: 'skeleton' } ] );
+	assert.match( reportLines( r ).join( '\n' ), /STALE GAP content-setting:sgs\/skel\.heading/ );
+} );
+
+test( 'a gap row is not stale for a client whose site look reads the setting: the reading is that client\'s, the row is every client\'s', () => {
+	// `subtitle` is no block's first text setting, so only a site look can read it.
+	const id = contentSettingId( 'sgs/measured', 'subtitle' );
+	const withLook = { measured: { ...SLOT_MAP, text: { ...SLOT_MAP.text, subtitle: { path: '.sgs-measured__sub' } } }, skel: { block: 'sgs/skel' } };
+	const w = world( { extra: [ attr( 'sgs/measured', 'subtitle', 'text-content' ) ], cache: withLook, entries: { [ id ]: gapRow() } } );
+	// acme's look reads the subtitle: routed measured, and the gap row is not stale.
+	const read = w.run();
+	assert.equal( routeOf( read, 'sgs/measured', 'subtitle' ).route, 'measured' );
+	assert.deepEqual( read.staleGaps, [] );
+	assert.equal( read.ok, true );
+	// Another client's look reads nothing: the same row is its route, and still not stale.
+	const none = w.run( { client: 'other' } );
+	assert.equal( routeOf( none, 'sgs/measured', 'subtitle' ).route, 'gap' );
+	assert.deepEqual( none.staleGaps, [] );
 } );
 
 test( 'MUST FAIL: a stale gap row on a no-element setting fails too', () => {
@@ -273,8 +289,22 @@ test( 'the form claims hold everything formFieldWrites writes', () => {
 	assert.deepEqual( formSettings( 'sgs/form' ), [ 'savedProgress', 'nextLabel', 'submitLabel', 'prevLabel' ] );
 } );
 
-test( 'the list claims are the array setting, or the one child block\'s item settings', () => {
+test( 'the list claims are the array setting, or the one child block\'s item settings a draft field can reach', () => {
 	assert.deepEqual( listClaims( 'sgs/a', { kind: 'attr', attr: 'entries', keys: [] } ), [ { block: 'sgs/a', attr: 'entries' } ] );
-	assert.deepEqual( listClaims( 'sgs/a', { kind: 'children', child: 'sgs/b', keys: [ { key: 'x' }, { key: 'y' } ] } ), [ { block: 'sgs/b', attr: 'x' }, { block: 'sgs/b', attr: 'y' } ] );
+	assert.deepEqual( listClaims( 'sgs/a', { kind: 'children', child: 'sgs/b', keys: [ { key: 'title' }, { key: 'photo', role: 'image-object' } ] } ), [ { block: 'sgs/b', attr: 'title' }, { block: 'sgs/b', attr: 'photo' } ] );
 	assert.deepEqual( listClaims( 'sgs/a', null ), [] );
+} );
+
+test( 'MUST FAIL: a child item key matchFields cannot map is no list claim, so it has no route unless a gap row names it', () => {
+	// `zzzq` names no role: only a draft field of exactly that name would reach it, so the list writer does not fill it.
+	const keys = [ { key: 'title', type: 'string' }, { key: 'zzzq', type: 'string' } ];
+	assert.deepEqual( matchFields( [ { name: 'heading' }, { name: 'other' } ], keys ).map, { heading: 'title' } );
+	assert.deepEqual( listClaims( 'sgs/a', { kind: 'children', child: 'sgs/b', keys } ).map( ( c ) => c.attr ), [ 'title' ] );
+	const extra = [ attr( 'sgs/hosty-item', 'zzzq', 'text-content' ) ];
+	const r = world( { extra } ).run();
+	assert.deepEqual( r.failing.map( ( f ) => `${ f.block }.${ f.attr }` ), [ 'sgs/hosty-item.zzzq' ] );
+	const id = contentSettingId( 'sgs/hosty-item', 'zzzq' );
+	const gapped = world( { extra, entries: { [ id ]: gapRow() } } ).run();
+	assert.equal( gapped.ok, true );
+	assert.equal( routeOf( gapped, 'sgs/hosty-item', 'zzzq' ).route, 'gap' );
 } );

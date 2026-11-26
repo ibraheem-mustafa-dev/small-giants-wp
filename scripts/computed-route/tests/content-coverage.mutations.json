@@ -13,7 +13,7 @@
 	},
 	{
 		"file": "lib/content-coverage.mjs",
-		"find": "if ( gap && hit ) {",
+		"find": "if ( gap && fixed ) {",
 		"replace": "if ( false ) {",
 		"why": "a stale gap row is not reported"
 	},
@@ -178,5 +178,23 @@
 		"find": "\t\tconst cal = loadCalibration( cacheDir, block, client );",
 		"replace": "\t\tconst cal = loadCalibration( cacheDir, block, null );",
 		"why": "the claims read no client's look"
+	},
+	{
+		"file": "lib/content-coverage.mjs",
+		"find": "all.filter( ( c ) => 'measured' !== c.route )",
+		"replace": "all.filter( () => true )",
+		"why": "a client's own measured reading makes a gap row stale for every client"
+	},
+	{
+		"file": "lib/fill-list-content.mjs",
+		"find": "target.keys.filter( mappableKey ).map(",
+		"replace": "target.keys.map(",
+		"why": "a list claims an item key no draft field can reach"
+	},
+	{
+		"file": "lib/fill-list-content.mjs",
+		"find": "keyRoles( k ).length > 0 || COLOUR_KEY_ROLES.has( k.role )",
+		"replace": "true",
+		"why": "every item key counts as mappable"
 	}
 ]

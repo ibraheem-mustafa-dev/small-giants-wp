@@ -2153,6 +2153,14 @@
 			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
 			"note": "Web Animations calls: entrances, hovers and loops written as sgsMotion; entrances checked against the render at 375/768/1440, loops by lib/motion-loops.mjs::loopCheck"
 		},
+		"content-setting:sgs/accordion-item.category": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "an item setting the list writer maps only from a draft item field of the same name (no word of the key names a role in data/item-roles.json), so a re-clone leaves the block's default unless the draft names its field identically: add the role words, or a draft field of this name, to fill it",
+			"owner": "Track S"
+		},
 		"content-setting:sgs/account.guestLineText": {
 			"recognise": null,
 			"write": null,
@@ -2287,6 +2295,14 @@
 			"check": null,
 			"wave": "content, media and icons",
 			"reason": "copy shown only in a state the default render does not print (empty, open, success, closed states): calibration reads the default render, so Fill has no slot to write it into",
+			"owner": "Track S"
+		},
+		"content-setting:sgs/button.note": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "an item setting the list writer maps only from a draft item field of the same name (no word of the key names a role in data/item-roles.json), so a re-clone leaves the block's default unless the draft names its field identically: add the role words, or a draft field of this name, to fill it",
 			"owner": "Track S"
 		},
 		"content-setting:sgs/buybox.gallerySavingBadgeFormat": {
@@ -2519,6 +2535,14 @@
 			"check": null,
 			"wave": "content, media and icons",
 			"reason": "a block with several image settings (per-device, before/after, frames): the media writer fills only a block with exactly one image slot",
+			"owner": "Track S"
+		},
+		"content-setting:sgs/diagram-dimension.caption": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "an item setting the list writer maps only from a draft item field of the same name (no word of the key names a role in data/item-roles.json), so a re-clone leaves the block's default unless the draft names its field identically: add the role words, or a draft field of this name, to fill it",
 			"owner": "Track S"
 		},
 		"content-setting:sgs/filter-search.placeholder": {
@@ -3073,6 +3097,14 @@
 			"reason": "a product card's live-data fallback text (productName, trialTag, featuredTag, priceLarge, priceNote, ctaText, brandName): printed from WooCommerce data when the setting is empty",
 			"owner": "Track S"
 		},
+		"content-setting:sgs/product-faq-item.question": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "an item setting the list writer maps only from a draft item field of the same name (no word of the key names a role in data/item-roles.json), so a re-clone leaves the block's default unless the draft names its field identically: add the role words, or a draft field of this name, to fill it",
+			"owner": "Track S"
+		},
 		"content-setting:sgs/product-search.placeholder": {
 			"recognise": null,
 			"write": null,
@@ -3303,6 +3335,22 @@
 			"check": null,
 			"wave": "content, media and icons",
 			"reason": "a number drawn as stars, a score or a counter: no writer reads a rating or count from the draft",
+			"owner": "Track S"
+		},
+		"content-setting:sgs/testimonial.sourcePlatform": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "an item setting the list writer maps only from a draft item field of the same name (no word of the key names a role in data/item-roles.json), so a re-clone leaves the block's default unless the draft names its field identically: add the role words, or a draft field of this name, to fill it",
+			"owner": "Track S"
+		},
+		"content-setting:sgs/testimonial.workSource": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "an item setting the list writer maps only from a draft item field of the same name (no word of the key names a role in data/item-roles.json), so a re-clone leaves the block's default unless the draft names its field identically: add the role words, or a draft field of this name, to fill it",
 			"owner": "Track S"
 		},
 		"content-setting:sgs/trust-bar.backgroundImage": {
