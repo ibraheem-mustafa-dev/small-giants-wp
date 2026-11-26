@@ -28,7 +28,11 @@ function buildGrid() {
 		</div>
 		<a class="outside" href="/out">Out</a>`;
 	const grid = document.querySelector( '.sgs-post-grid' );
-	return { grid, button: grid.querySelector( '[data-sgs-motion-pause]' ) };
+	// jsdom has no layout: the track is three one-card windows wide, so it scrolls to 600 at most.
+	const track = grid.querySelector( '.sgs-post-grid__inner' );
+	Object.defineProperty( track, 'scrollWidth', { get: () => 900 } );
+	Object.defineProperty( track, 'clientWidth', { get: () => 300 } );
+	return { grid, track, button: grid.querySelector( '[data-sgs-motion-pause]' ) };
 }
 
 function stubMatchMedia( matching ) {
@@ -81,6 +85,14 @@ describe( 'post-grid carousel autoplay: pause (WCAG 2.2.2)', () => {
 		start( grid );
 		jest.advanceTimersByTime( SPEED );
 		expect( lastCard() ).toBe( '1' );
+	} );
+
+	it( 'goes back to the first card when it reaches the end of the track', () => {
+		const { grid, track } = buildGrid();
+		start( grid );
+		track.scrollLeft = 600; // the end: the most this track scrolls
+		jest.advanceTimersByTime( SPEED );
+		expect( lastCard() ).toBe( '0' );
 	} );
 
 	it( 'a pointer leaving does not resume a focused carousel', () => {

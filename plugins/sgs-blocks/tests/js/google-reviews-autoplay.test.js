@@ -149,3 +149,39 @@ describe( 'google-reviews slider autoplay: pause (WCAG 2.2.2)', () => {
 		expect( button.hidden ).toBe( true );
 	} );
 } );
+
+describe( 'google-reviews slider autoplay: where it steps from', () => {
+	// jsdom has no layout: give the list scroll metrics and each review an offset (300px cards, a one-card window).
+	function laidOut( scrollLeft ) {
+		const { root } = buildSlider();
+		const list = root.querySelector( '.sgs-google-reviews__list' );
+		const reviews = [ ...list.querySelectorAll( '.sgs-google-reviews__review' ) ];
+		Object.defineProperty( list, 'scrollWidth', { get: () => 900 } );
+		Object.defineProperty( list, 'clientWidth', { get: () => 300 } );
+		list.getBoundingClientRect = () => ( { left: 0, width: 300 } );
+		list.scrollLeft = scrollLeft;
+		reviews.forEach( ( review, i ) => {
+			review.getBoundingClientRect = () => ( { left: i * 300 - list.scrollLeft, width: 300 } );
+		} );
+		const targets = [];
+		list.scrollTo = ( { left } ) => {
+			targets.push( left );
+			list.scrollLeft = left;
+		};
+		return { root, targets };
+	}
+
+	it( 'steps on from where a visitor scrolled it by hand, not from its own count', () => {
+		const { root, targets } = laidOut( 300 ); // the visitor moved to the second review
+		boot( root );
+		jest.advanceTimersByTime( SPEED );
+		expect( targets ).toEqual( [ 600 ] ); // the third review, not back to the second
+	} );
+
+	it( 'wraps to the first review at the end of the track', () => {
+		const { root, targets } = laidOut( 300 ); // the track scrolls to 600 at most (900 wide, 300 window)
+		boot( root );
+		jest.advanceTimersByTime( SPEED * 2 );
+		expect( targets ).toEqual( [ 600, 0 ] );
+	} );
+} );

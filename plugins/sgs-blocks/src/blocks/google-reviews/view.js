@@ -228,15 +228,19 @@ store( 'sgs/google-reviews', {
 				return; // Nothing to slide, or the visitor asked for no motion (WCAG 2.3.3).
 			}
 
-			let currentSlide = 0;
 			// WCAG 2.2.2 through the shared runtime: the server-rendered pause / play button holds a pause until pressed
 			// again; hover, a finger press and keyboard focus (on the arrows and dots too) pause it while they last, each
 			// independently. One interval at a time, resuming from where it stopped after a pause.
 			createAutoplay( root, {
 				speed: parseInt( ctx.autoplaySpeed, 10 ),
 				tick: () => {
-					currentSlide = ( currentSlide + 1 ) % reviews.length;
-					scrollToItem( slider, reviews[ currentSlide ] );
+					// Step on from where the slider is now, not from a count of our own, so a visitor who scrolled by hand
+					// is not sent back; wrap to the first review at the end of the track.
+					const next = atEnd( slider )
+						? 0
+						: ( activeIndexByMidpoint( slider, reviews ) + 1 ) %
+						  reviews.length;
+					scrollToItem( slider, reviews[ next ] );
 					if ( hasDots ) {
 						updateActiveDot( root );
 					}
