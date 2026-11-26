@@ -56,7 +56,7 @@ export async function runOpeningSteps( page, { route = null, init = null } ) {
 	}, { route, init, helper: DC_LOGIC.toString() } );
 }
 
-async function openPage( browser, { url, width, config } ) {
+export async function openPage( browser, { url, width, config } ) {
 	const ctx = await browser.newContext( { viewport: { width, height: 900 } } );
 	const page = await ctx.newPage();
 	await page.goto( url, { waitUntil: 'load', timeout: 60000 } );
@@ -70,6 +70,20 @@ async function openPage( browser, { url, width, config } ) {
 			throw new Error( failure );
 		}
 		await page.waitForTimeout( 900 );
+	}
+	// A visitor's clicks after the opening steps (lib/part-look-opening.mjs: add to the basket, then the basket button), each on the
+	// shown element the draft stamps with that template number in that component; one that finds none fails the open.
+	for ( const click of config?.clicks || [] ) {
+		const done = await page.evaluate( ( { tpl, host } ) => {
+			const el = [ ...document.querySelectorAll( `[data-dc-tpl="${ CSS.escape( String( tpl ) ) }"]` ) ].find( ( e ) => ( e.closest( '[data-sc-name]' )?.getAttribute( 'data-sc-name' ) ?? null ) === ( host ?? null ) && e.getClientRects().length > 0 );
+			el?.click();
+			return !! el;
+		}, click );
+		if ( ! done ) {
+			await ctx.close();
+			throw new Error( `no shown element stamped ${ click.host }/${ click.tpl } to click` );
+		}
+		await page.waitForTimeout( 700 );
 	}
 	return { ctx, page };
 }

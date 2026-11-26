@@ -1,0 +1,134 @@
+[
+	{
+		"file": "lib/part-look-opening.mjs",
+		"find": "if ( ! s || ! /[\\w)\\]]\\s*\\(|[^=!<>]=[^=]/.test( s ) ) {",
+		"replace": "if ( ! s ) {",
+		"why": "a bare word that compiles is taken as a step"
+	},
+	{
+		"file": "lib/part-look-opening.mjs",
+		"find": "\t\treturn true;\n\t} catch {\n\t\treturn false;",
+		"replace": "\t\treturn true;\n\t} catch {\n\t\treturn true;",
+		"why": "prose is taken as a step"
+	},
+	{
+		"file": "lib/part-look-opening.mjs",
+		"find": "! OVERLAY_KINDS.has( r.kind ) || ",
+		"replace": "",
+		"why": "a page's state is tried as an opening"
+	},
+	{
+		"file": "lib/part-look-opening.mjs",
+		"find": "( r.route && '*' !== r.route )",
+		"replace": "false",
+		"why": "one route's drawer is tried as a site-wide opening"
+	},
+	{
+		"file": "lib/part-look-opening.mjs",
+		"find": "! out.some( ( o ) => o.script === st.how_to_reach.trim() ) && ",
+		"replace": "",
+		"why": "a repeated step is tried twice"
+	},
+	{
+		"file": "lib/part-look-opening.mjs",
+		"find": "! p.error && mustLocate.every( ( m ) => p.located.includes( m ) )",
+		"replace": "! p.error",
+		"why": "a read that never shows the panel is taken"
+	},
+	{
+		"file": "lib/part-look-opening.mjs",
+		"find": "const shown = probes.filter( ( p ) => ! p.error && ",
+		"replace": "const shown = probes.filter( ( p ) => ",
+		"why": "a step that failed is taken"
+	},
+	{
+		"file": "lib/fill-part-look-modes.mjs",
+		"find": "surfaceKey && ( loc.entryOf || surface ) === surfaceKey && out.push(",
+		"replace": "out.push(",
+		"why": "the header's drawer is read on every surface holding a basket"
+	},
+	{
+		"file": "part-look.mjs",
+		"find": "const route = derive && ! entry.noDraft && ! given.route ? logicRouteOf( draftRoute ) : null;",
+		"replace": "const route = null;",
+		"why": "a one-file draft's surface without a client file is refused"
+	},
+	{
+		"file": "part-look.mjs",
+		"find": "const route = derive && ! entry.noDraft && ! given.route ? ",
+		"replace": "const route = ! given.route ? ",
+		"why": "the standalone command reads a one-file draft without the client's route"
+	},
+	{
+		"file": "part-look.mjs",
+		"find": "const route = derive && ! entry.noDraft && ! given.route ? logicRouteOf( draftRoute )",
+		"replace": "const route = derive && ! entry.noDraft ? logicRouteOf( draftRoute )",
+		"why": "the intake route overrides the client's own route"
+	},
+	{
+		"file": "lib/part-look-opening.mjs",
+		"find": "filled?.stamps?.[ part ]?.tpl ? [ [ anchor, filled.stamps[ part ] ] ] : []",
+		"replace": "[ [ anchor, filled?.stamps?.[ part ] ] ]",
+		"why": "an unstamped panel is pinned as nothing and another overlay is read as the drawer"
+	},
+	{
+		"file": "lib/part-look-opening.mjs",
+		"find": "return Object.keys( pins ).length ? pins : null;",
+		"replace": "return pins;",
+		"why": "an empty pin set still tries emptied reads"
+	},
+	{
+		"file": "lib/part-look-opening.mjs",
+		"find": "! p.error && p.script !== filled.script && extra( p ) > 0 && ",
+		"replace": "! p.error && p.script !== filled.script && ",
+		"why": "an emptied read adding no part is taken"
+	},
+	{
+		"file": "lib/part-look-opening.mjs",
+		"find": "pinned.filter( ( p ) => ! p.error && ",
+		"replace": "pinned.filter( ( p ) => ",
+		"why": "an emptied step that failed is taken"
+	},
+	{
+		"file": "lib/part-look-opening.mjs",
+		"find": "if ( ! add?.tpl || ! trigger?.tpl || ! product?.file ) {",
+		"replace": "if ( ! add?.tpl || ! product?.file ) {",
+		"why": "a draft with no basket button at load is clicked anyway"
+	},
+	{
+		"file": "lib/part-look-opening.mjs",
+		"find": "clicks: [ { tpl: add.tpl, host: add.dc }, { tpl: add.tpl, host: add.dc }, trigger ]",
+		"replace": "clicks: [ { tpl: add.tpl, host: add.dc }, { tpl: add.tpl, host: add.dc } ]",
+		"why": "the basket is filled but never opened"
+	},
+	{
+		"file": "lib/part-look-opening.mjs",
+		"find": "route: product.route ?? null, clicks",
+		"replace": "route: null, clicks",
+		"why": "a one-file draft's product page is never opened before the add"
+	},
+	{
+		"file": "lib/part-look-opening.mjs",
+		"find": "const ok = withItems.length ? withItems : shown;",
+		"replace": "const ok = shown;",
+		"why": "the empty drawer with more parts is read as the filled one"
+	},
+	{
+		"file": "lib/part-look-opening.mjs",
+		"find": "p.located.length < b.located.length || ",
+		"replace": "p.located.length > b.located.length || ",
+		"why": "the fullest read is taken as the emptied drawer"
+	},
+	{
+		"file": "lib/part-look-opening.mjs",
+		"find": "( p.located.length === b.located.length && extra( p ) > extra( b ) )",
+		"replace": "false",
+		"why": "a tie keeps the first read, not the one adding more"
+	},
+	{
+		"file": "lib/part-look-opening.mjs",
+		"find": " && ! filledShows.some( ( m ) => p.located.includes( m ) )",
+		"replace": "",
+		"why": "a read still drawing an item line is taken as the emptied drawer"
+	}
+]
