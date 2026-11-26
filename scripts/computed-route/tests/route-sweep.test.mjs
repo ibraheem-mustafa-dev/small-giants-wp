@@ -376,9 +376,21 @@ test( 'MUST FAIL: prepareSweepLooks builds every client\'s looks before the prop
 		calls.push( { blocks, client, build: opts.build } );
 		return 'b' === client ? [ 'sgs/x' ] : [];
 	};
-	const failed = prepareSweepLooks( { clients: [ 'a', 'b' ], blocks: [ 'sgs/x', 'sgs/y' ], prepare } );
+	const failed = prepareSweepLooks( { clients: [ 'a', 'b' ], blocks: [ 'sgs/x', 'sgs/y' ], prepare: ( blocks, client, opts ) => 1 === blocks.length ? [] : prepare( blocks, client, opts ) } );
 	assert.deepEqual( calls.map( ( c ) => [ c.client, c.build, c.blocks.length ] ), [ [ 'a', true, 2 ], [ 'b', true, 2 ] ] );
 	assert.deepEqual( failed, { b: [ 'sgs/x' ] } );
+} );
+
+test( 'MUST FAIL: a look builder that builds nothing stops the sweep at its first block, never after building every look', () => {
+	const calls = [];
+	const none = ( blocks ) => {
+		calls.push( blocks.length );
+		return blocks;
+	};
+	assert.throws( () => prepareSweepLooks( { clients: [ 'a' ], blocks: [ 'sgs/x', 'sgs/y', 'sgs/z' ], prepare: none } ), /no default look could be built for a/ );
+	assert.deepEqual( calls, [ 1 ], 'only the probe block is built' );
+	const probeOk = ( blocks ) => ( 1 === blocks.length ? [] : blocks );
+	assert.throws( () => prepareSweepLooks( { clients: [ 'a' ], blocks: [ 'sgs/x', 'sgs/y' ], prepare: probeOk } ), /look builder itself fails/, 'every block failing is a broken builder too' );
 } );
 
 test( 'MUST FAIL: a baseline written before the look count was kept is no evidence of a lost look, and a lost look fails a surface that is otherwise better', () => {
