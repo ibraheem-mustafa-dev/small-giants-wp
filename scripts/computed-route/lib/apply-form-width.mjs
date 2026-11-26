@@ -1,8 +1,8 @@
 // Forms, field width. A field the draft puts in one column of a grid of two or more tracks, where the live field sits in a grid of
 // a nested container (not the form's own six tracks), takes the width `auto`: the parent grid places it (form/style.css
 // `.sgs-form-field--auto`). A field the draft spreads over its whole grid row keeps `full`. Fields pair by `name` where both sides name
-// every field, else by position (lib/apply-probes.mjs: each field's `layout`, `name` and `shown`): a conditional field the draft hides
-// at rest takes no place in the pairing, and every live field (a wizard's later steps included) can be paired.
+// every field, else by position (lib/apply-probes.mjs: each field's `layout`, `name`, `shown` and `laterStep`): a conditional field
+// either form hides at rest takes no place in the pairing, and a wizard's later-step live fields, hidden at rest, do.
 import { attrRow } from './db.mjs';
 
 // A cell narrower than this share of its grid's content width sits in a column.
@@ -11,14 +11,15 @@ const COLUMN_SHARE = 0.9;
 export const inColumn = ( layout ) => Boolean( layout && layout.cols >= 2 && layout.cellW < layout.gridW * COLUMN_SHARE );
 
 // The pairs of draft and live field. The draft side is the fields the draft shows (each wizard step's as read at that step,
-// lib/apply-probes.mjs::formProbe; a conditional field hidden at rest takes no place). The live side is every field the live form
-// holds, shown or not: it is read at rest, where a wizard's later steps are hidden, so a shown-at-rest filter there would drop every
-// field past step one. Where every draft field has a name and the live form holds a field of that name, each pairs with its namesake
-// (a live field the draft hides, a conditional one, pairs with nothing); otherwise they pair by position, which needs equal counts
-// (`pairs` is empty when the counts differ).
+// lib/apply-probes.mjs::formProbe; a conditional field hidden at rest takes no place). The live side is read at rest: it is the
+// fields the live form shows, and those hidden only because their wizard step is not the current one (`laterStep`, read by
+// lib/apply-probes.mjs::fieldsOf: inside a `.sgs-form-step--hidden` step and not hidden by a condition), so a wizard's later steps
+// pair while a live field a condition hides takes no place. Where every draft field has a name and the live form holds a field of
+// that name, each pairs with its namesake; otherwise they pair by position, which needs equal counts (`pairs` is empty when the
+// counts differ).
 export function pairedFields( d, l ) {
 	const ds = d.filter( ( f ) => ! f.honeypot && false !== f.shown );
-	const ls = l.filter( ( f ) => ! f.honeypot );
+	const ls = l.filter( ( f ) => ! f.honeypot && ( false !== f.shown || f.laterStep ) );
 	const named = ds.length > 0 && ds.every( ( f ) => f.name && ls.some( ( x ) => x.name === f.name ) );
 	if ( named ) {
 		return { drafts: ds, lives: ds.map( ( f ) => ls.find( ( x ) => x.name === f.name ) ), pairs: ds.map( ( f ) => [ f, ls.find( ( x ) => x.name === f.name ) ] ) };

@@ -83,7 +83,7 @@ function fieldsOf( [ finder, resolveSrc, restProps, labelProps, selector, textHo
 	};
 	return [ ...root.querySelectorAll( selector ) ].map( ( field ) => {
 		const label = textHolder( ( field.id && root.querySelector( `label[for="${ CSS.escape( field.id ) }"]` ) ) || field.closest( 'label' ) || field.parentElement?.querySelector( 'label' ), field );
-		return { field: read( field, restProps ), label: label ? readLabel( label, labelProps ) : null, type: field.type || field.tagName.toLowerCase(), layout: layoutOf( field ), honeypot: Boolean( field.closest( '.sgs-form__honeypot' ) ), name: field.name || field.id || '', shown: field.getClientRects().length > 0 };
+		return { field: read( field, restProps ), label: label ? readLabel( label, labelProps ) : null, type: field.type || field.tagName.toLowerCase(), layout: layoutOf( field ), honeypot: Boolean( field.closest( '.sgs-form__honeypot' ) ), name: field.name || field.id || '', shown: field.getClientRects().length > 0, laterStep: Boolean( field.closest( '.sgs-form-step--hidden' ) ) && ! field.closest( '.sgs-form-field--hidden' ) };
 	} );
 }
 
