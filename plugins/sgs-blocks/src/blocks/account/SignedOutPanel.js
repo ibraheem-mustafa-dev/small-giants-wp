@@ -1,7 +1,8 @@
 /**
- * sgs/account — "Signed-out card" inspector panels (FR-30-25).
+ * sgs/account — signed-out card inspector panels (FR-30-25).
  *
- * The card's words and links, then its chrome: border and corner radius per
+ * The card's words and links (SignedOutContentControls, rendered inside the
+ * "Logged out" panel by LoggedOutPanel.js), then its chrome: border and corner radius per
  * device, shadow, padding per device, width and gap. The background fill is a
  * colour row in edit.js (SgsColourPanel). Every attribute is absent until set,
  * so an untouched block keeps its uid class.
@@ -32,16 +33,13 @@ import SgsFreeTextField from '../../components/SgsFreeTextField';
  * @param {Object}   props               Panel props.
  * @param {Object}   props.attributes    Block attributes.
  * @param {Function} props.setAttributes Attribute setter.
- * @return {JSX.Element} Words, links and view choice.
+ * @return {JSX.Element} Words, links and view choice (controls only; the host panel is "Logged out").
  */
-export function SignedOutContentPanel( { attributes, setAttributes } ) {
+export function SignedOutContentControls( { attributes, setAttributes } ) {
 	const isCard = 'card' === attributes.signedOutView;
 
 	return (
-		<PanelBody
-			title={ __( 'Signed-out card', 'sgs-blocks' ) }
-			initialOpen={ false }
-		>
+		<>
 			<ToggleGroupControl
 				__next40pxDefaultSize
 				__nextHasNoMarginBottom
@@ -151,7 +149,7 @@ export function SignedOutContentPanel( { attributes, setAttributes } ) {
 					/>
 				</>
 			) }
-		</PanelBody>
+		</>
 	);
 }
 

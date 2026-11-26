@@ -220,6 +220,26 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 				] }
 			/>
 			<InspectorControls>
+				<TriggerSettingsControls
+					displayMode={ displayMode }
+					iconName={ iconName }
+					iconSource={ iconSource }
+					iconSvg={ iconSvg }
+					iconSize={ iconSizeSet }
+					showZero={ showZero }
+					badgeSize={ attributes.badgeSize }
+					pillBadgeSize={ attributes.pillBadgeSize }
+					attributes={ attributes }
+					hideWhenEmpty={ hideWhenEmpty }
+					triggerStyle={ triggerStyle }
+					triggerStyleTablet={ triggerStyleTablet }
+					triggerStyleMobile={ triggerStyleMobile }
+					pillShowIcon={ pillShowIcon }
+					pillLabel={ pillLabel }
+					pillCountStyle={ attributes.pillCountStyle }
+					setAttributes={ setAttributes }
+				/>
+
 				<PanelSettingsControls
 					displayMode={ displayMode }
 					hasPanel={ hasPanel }
@@ -291,25 +311,6 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 						] }
 					/>
 				) }
-
-				<TriggerSettingsControls
-					iconName={ iconName }
-					iconSource={ iconSource }
-					iconSvg={ iconSvg }
-					iconSize={ iconSizeSet }
-					showZero={ showZero }
-					badgeSize={ attributes.badgeSize }
-					pillBadgeSize={ attributes.pillBadgeSize }
-					attributes={ attributes }
-					hideWhenEmpty={ hideWhenEmpty }
-					triggerStyle={ triggerStyle }
-					triggerStyleTablet={ triggerStyleTablet }
-					triggerStyleMobile={ triggerStyleMobile }
-					pillShowIcon={ pillShowIcon }
-					pillLabel={ pillLabel }
-					pillCountStyle={ attributes.pillCountStyle }
-					setAttributes={ setAttributes }
-				/>
 
 				<PanelBody
 					title={ __( 'Accessibility', 'sgs-blocks' ) }

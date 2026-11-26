@@ -7,7 +7,7 @@
  * the block's Styles-tab colour panel (`colour-rows.js`).
  *
  * Its own component: edit.js is over its size cap, so it mounts this with
- * one import and one render line (the ChromePanel/FlowLayoutPanel pattern).
+ * one import and one render line (the ChromePanel pattern).
  *
  * @package SGS\Blocks
  */
@@ -24,6 +24,7 @@ import {
 import OptionCardsPanel from './OptionCardsPanel';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
+import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 /**
  * @param {Object}   o
  * @param {Object}   o.attributes    Block attributes.
@@ -37,6 +38,10 @@ export default function ShowcasePanel( { attributes, setAttributes } ) {
 		summaryPendingLabel,
 		stageNoteIcon,
 		skipAddsToBag,
+		progressStyle,
+		showHeader,
+		closeLabel,
+		closeStyle,
 	} = attributes;
 	const text = ( key, label, help ) => (
 		<TextControl
@@ -133,6 +138,83 @@ export default function ShowcasePanel( { attributes, setAttributes } ) {
 					) }
 					__nextHasNoMarginBottom
 				/>
+				<SelectControl
+					label={ __( 'Style', 'sgs-blocks' ) }
+					value={ progressStyle || 'bar' }
+					options={ [
+						{
+							label: __( 'Plain bar', 'sgs-blocks' ),
+							value: 'bar',
+						},
+						{
+							label: __( 'Numbered circles', 'sgs-blocks' ),
+							value: 'circles',
+						},
+						{
+							label: __( 'Badge on bar', 'sgs-blocks' ),
+							value: 'badge',
+						},
+					] }
+					onChange={ ( val ) =>
+						setAttributes( { progressStyle: val } )
+					}
+					help={ __(
+						'Plain bar matches the real lens-configurator reference; Numbered circles matches a reference quiz; Badge on bar matches another reference quiz.',
+						'sgs-blocks'
+					) }
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				/>
+				<ToggleControl
+					label={ __( 'Show header', 'sgs-blocks' ) }
+					checked={ !! showHeader }
+					onChange={ ( val ) => setAttributes( { showHeader: val } ) }
+					help={ __(
+						'A logo, a "Step N of M" eyebrow and a Close button above the progress bar. Close only shows when this flow is inside a modal.',
+						'sgs-blocks'
+					) }
+					__nextHasNoMarginBottom
+				/>
+				{ showHeader && (
+					<>
+						<SgsFreeTextField
+							type="rich"
+							noLink
+							label={ __( 'Close button label', 'sgs-blocks' ) }
+							value={ closeLabel }
+							onChange={ ( val ) =>
+								setAttributes( { closeLabel: val } )
+							}
+							help={ __(
+								'Shown as visible text next to a decorative ×.',
+								'sgs-blocks'
+							) }
+						/>
+						<ToggleGroupControl
+							label={ __( 'Close button', 'sgs-blocks' ) }
+							value={ closeStyle || 'icon' }
+							onChange={ ( val ) =>
+								setAttributes( { closeStyle: val } )
+							}
+							help={ __(
+								'Icon: a round 44px button. Text: a bordered rectangular button with the label then a decorative ×.',
+								'sgs-blocks'
+							) }
+							isBlock
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						>
+							<ToggleGroupControlOption
+								value="icon"
+								label={ __( 'Icon', 'sgs-blocks' ) }
+							/>
+							<ToggleGroupControlOption
+								value="text"
+								label={ __( 'Text', 'sgs-blocks' ) }
+							/>
+						</ToggleGroupControl>
+					</>
+				) }
 			</PanelBody>
 
 			<PanelBody

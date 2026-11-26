@@ -115,6 +115,7 @@ const TYPOGRAPHY_TARGET = {
  * @param {Function} [props.seedForPreset] Optional: the preset slug just picked in, further attributes out, written in the same step.
  * @param {boolean}  [props.colourInMainPanel=false] True when the block draws this button's colour rows in its own main Colour panel
  *                                         (`builtinButtonColourRows`), so the kit draws none; false keeps them in the kit's own panel.
+ * @param {*}        [props.children] Extra rows the block adds to the end of the button's Styles panel, before its Text style.
  * @return {JSX.Element|null} The panels.
  */
 export default function BuiltinButtonPanelBody( {
@@ -126,6 +127,7 @@ export default function BuiltinButtonPanelBody( {
 	groups,
 	seedForPreset,
 	colourInMainPanel = false,
+	children,
 } ) {
 	const shown =
 		Array.isArray( groups ) && groups.length ? groups : DEFAULT_GROUPS;
@@ -490,6 +492,7 @@ export default function BuiltinButtonPanelBody( {
 							}
 						/>
 					) }
+					{ children }
 					{ has( 'typography' ) && (
 						<PanelBody
 							title={ __( 'Text style', 'sgs-blocks' ) }

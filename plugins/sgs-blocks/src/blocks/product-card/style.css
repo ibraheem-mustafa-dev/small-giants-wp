@@ -1380,9 +1380,7 @@
 /*
  * ── Frame Card component (Task 4, 2026-09-14) ───────────────────────────────
  * Four new elements: rating/reviews, brand overlay, saving badge, colour
- * swatches. Base rules below apply to BOTH style variations (Classic +
- * Frame Card) — see the `.is-style-frame-card` block further down for the
- * design-specific tuning. All four render on every branch's media/body
+ * swatches. All four render on every branch's media/body
  * markup (product-card-builtin-render.php's sgs_product_card_*_markup()
  * helpers, called identically from typed + all 3 bound branches, FP-9).
  */
@@ -1693,7 +1691,7 @@
 
 /*
  * Pointer/touch target, not appearance: the visible dot stays at its declared
- * size (16px, 17px on the Frame Card style) and an invisible — but
+ * size (16px) and an invisible — but
  * still hit-testable — ::after grows the clickable area to at least
  * 24×24px (WCAG 2.2 SC 2.5.8). Same hit-area widener the wishlist heart
  * uses (`.sgs-product-card__wishlist::after`). max() keeps the padding at
@@ -1764,37 +1762,6 @@
 	border-radius: 999px;
 	padding: 2px 6px;
 	white-space: nowrap;
-}
-
-/*
- * ── "Frame Card" style variation (`is-style-frame-card`) ────────────────────
- * Tunes the SAME markup/attributes toward a frame-style
- * Card design — square image with a taupe/cream placeholder tint, square
- * corners throughout (the design is deliberately radius:0 almost
- * everywhere), and a bottom-left saving badge matching the real
- * Frame Card.dc.html markup (README's "top-right" is stale prose — see the
- * block.json `savingBadge` element note). The default "Classic" style
- * (`is-style-classic`, isDefault:true) emits NO extra rules here — it is
- * the card's pre-existing look, unchanged.
- */
-.wp-block-sgs-product-card.is-style-frame-card .sgs-product-card__media-wrap,
-.wp-block-sgs-product-card.is-style-frame-card .product-card__media {
-	aspect-ratio: 1 / 1;
-	background: #f3f0eb;
-}
-
-.wp-block-sgs-product-card.is-style-frame-card .sgs-product-card__brand {
-	border-radius: 0;
-}
-
-.wp-block-sgs-product-card.is-style-frame-card .sgs-product-card__saving-badge {
-	border-radius: 0;
-}
-
-.wp-block-sgs-product-card.is-style-frame-card .sgs-product-card__swatch {
-	border-radius: 50%;
-	width: var( --sgs-pc-swatch-size, 17px );
-	height: var( --sgs-pc-swatch-size, 17px );
 }
 
 /*

@@ -20,7 +20,6 @@ import {
 	ResponsiveOverride,
 	SgsBoxControl,
 	LinkUnderlineControl,
-	ShadowControl,
 	ResponsiveBoxControls,
 } from '../../components';
 import { BUTTON_PRESETS } from '../button/presets';
@@ -35,10 +34,6 @@ import {
 } from './listing-panels';
 import { cardPartColourRows } from './card-part-rows';
 
-const CARD_HOVER_SHADOW_KEYS = {
-	hover: 'cardShadowHover',
-	hoverColour: 'cardShadowColourHover',
-};
 import {
 	PanelBody,
 	SelectControl,
@@ -82,6 +77,7 @@ import {
 	usePreviewTier,
 	isCssGradient,
 	sgsBorderPreview,
+	containerWrapperPreview,
 } from '../../utils';
 import {
 	typedCardPreview,
@@ -1080,8 +1076,16 @@ export default function Edit( {
 	const cardTier = usePreviewTier();
 	const [ pcPalette ] = useSettings( 'color.palette' );
 	const typedParts = typedCardPreview( attributes, cardTier );
-	const typedPreviewStyle = {};
-	const typedPreviewClasses = [];
+	// The Layout and Width panels (ContainerWrapperControls) paint through SGS_Container_Wrapper on the published card: the
+	// shared mirror puts the same layout, gap, columns and max width on the canvas card, so the panel moves it. The card's own
+	// colour, border and radius below win over the wrapper's.
+	const wrapperPreview = containerWrapperPreview(
+		attributes,
+		cardTier,
+		pcPalette
+	);
+	const typedPreviewStyle = { ...wrapperPreview.style };
+	const typedPreviewClasses = [ wrapperPreview.className ].filter( Boolean );
 	if ( ! isBound ) {
 		Object.assign(
 			typedPreviewStyle,
@@ -1924,6 +1928,7 @@ export default function Edit( {
 	return (
 		<>
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					...colourRows,
 					...cardPartColourRows( attributes, setAttributes ),
@@ -2075,19 +2080,6 @@ export default function Edit( {
 								},
 							} );
 						} }
-					/>
-				</PanelBody>
-
-				<PanelBody
-					title={ __( 'Card hover shadow', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<ShadowControl
-						label={ __( 'Shadow on hover', 'sgs-blocks' ) }
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						attrNames={ CARD_HOVER_SHADOW_KEYS }
-						hoverOnly
 					/>
 				</PanelBody>
 

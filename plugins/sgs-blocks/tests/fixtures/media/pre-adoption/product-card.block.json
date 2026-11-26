@@ -3314,17 +3314,6 @@
 			"description": "The card's resting drop shadow. Off = border only; the hover lift keeps its shadow."
 		}
 	},
-	"styles": [
-		{
-			"name": "classic",
-			"label": "Classic",
-			"isDefault": true
-		},
-		{
-			"name": "frame-card",
-			"label": "Frame Card"
-		}
-	],
 	"usesContext": [ "postId", "sgs/cardGridSourceMode" ],
 	"editorScript": "file:./index.js",
 	"style": [ "sgs-button-style", "file:./style-index.css" ],

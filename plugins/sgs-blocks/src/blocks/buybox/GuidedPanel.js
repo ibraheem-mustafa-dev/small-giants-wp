@@ -11,6 +11,7 @@ import {
 	ToggleGroupControlOption,
 } from '../../components/primitives';
 import { fillRow } from '../../components';
+import ProductPinControls from './ProductPinControls';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
 /**
@@ -40,9 +41,13 @@ export default function GuidedPanel( { attributes, setAttributes } ) {
 	return (
 		<InspectorControls>
 			<PanelBody
-				title={ __( 'Buy box type', 'sgs-blocks' ) }
+				title={ __( 'Buy box', 'sgs-blocks' ) }
 				initialOpen={ false }
 			>
+				<ProductPinControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 				<ToggleGroupControl
 					label={ __( 'Buy box type', 'sgs-blocks' ) }
 					value={ buyboxLayout || 'standard' }

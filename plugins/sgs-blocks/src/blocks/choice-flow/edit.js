@@ -27,9 +27,8 @@ import {
 import ChromePreview from './ChromePreview';
 import PricingSettingsPanel from './PricingSettingsPanel';
 import SummaryPanel from './SummaryPanel';
-import FlowLayoutPanel from './FlowLayoutPanel';
 import ShowcasePanel from './ShowcasePanel';
-import LinkedFlowPanel from './LinkedFlowPanel';
+import LinkedFlowControls from './LinkedFlowControls';
 import ChromePanel from './ChromePanel';
 import BandsPanel, { BandsStyle, bandsColourRows } from './BandsPanel';
 import BuiltinButtonPanel from '../../components/BuiltinButtonPanel';
@@ -375,6 +374,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		flowIsLinked,
 		closeStyle,
 		summaryBaseLabel,
+		flowLayout,
 	} = attributes;
 
 	const previewTier = usePreviewTier();
@@ -489,12 +489,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				] }
 			/>
 			<InspectorControls>
-				<LinkedFlowPanel
-					flowId={ flowId }
-					flowIsLinked={ flowIsLinked }
-					setAttributes={ setAttributes }
-				/>
-				<PanelBody initialOpen={ false } title={ __( 'Choice Flow Settings', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'Choice Flow Settings', 'sgs-blocks' ) }>
+					<LinkedFlowControls
+						flowId={ flowId }
+						flowIsLinked={ flowIsLinked }
+						setAttributes={ setAttributes }
+					/>
 					<TextControl
 						label={ __( 'Flow title', 'sgs-blocks' ) }
 						value={ title }
@@ -533,46 +533,32 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							'sgs-blocks'
 						) }
 					/>
-				</PanelBody>
-				<ResponsiveBoxControls
-					attributes={ attributes }
-					setAttributes={ setAttributes }
-				/>
-				{ /* User-directed (2026-09-15) — operator choice across the 3 real
-				   reference patterns found live: see progressStyle's own
-				   block.json description for the evidence. */ }
-				<PanelBody
-					title={ __( 'Progress indicator', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
 					<SelectControl
-						label={ __( 'Style', 'sgs-blocks' ) }
-						value={ progressStyle || 'bar' }
+						label={ __( 'Layout', 'sgs-blocks' ) }
+						value={ flowLayout || 'compact' }
 						options={ [
 							{
-								label: __( 'Plain bar', 'sgs-blocks' ),
-								value: 'bar',
+								label: __( 'Compact', 'sgs-blocks' ),
+								value: 'compact',
 							},
 							{
-								label: __( 'Numbered circles', 'sgs-blocks' ),
-								value: 'circles',
-							},
-							{
-								label: __( 'Badge on bar', 'sgs-blocks' ),
-								value: 'badge',
+								label: __( 'Showcase (full screen)', 'sgs-blocks' ),
+								value: 'showcase',
 							},
 						] }
-						onChange={ ( val ) =>
-							setAttributes( { progressStyle: val } )
-						}
+						onChange={ ( val ) => setAttributes( { flowLayout: val } ) }
 						help={ __(
-							'Plain bar matches the real lens-configurator reference; Numbered circles matches a reference quiz; Badge on bar matches another reference quiz.',
+							'Compact is a single column for a flow inline on a page. Showcase spends a full screen — a header bar, a progress line, a sticky stage beside the steps and large image-led option cards — for a flow opened in a popup.',
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
 				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 				<PricingSettingsPanel
 					showPricePanel={ showPricePanel }
 					pricePanelTitle={ pricePanelTitle }
@@ -623,10 +609,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				setAttributes={ setAttributes }
 			/>
 			<BandsPanel
-				attributes={ attributes }
-				setAttributes={ setAttributes }
-			/>
-			<FlowLayoutPanel
 				attributes={ attributes }
 				setAttributes={ setAttributes }
 			/>

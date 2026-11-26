@@ -62,7 +62,6 @@ import {
 	gapVar,
 } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
-import SubLabelPanel from './sub-label-panel';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
 /* ── Options ─────────────────────────────────────────────────────────────── */
@@ -750,12 +749,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			   behaviour/content: label text, options data, default selection,
 			   converter metadata) ─────────────────────────────────────── */ }
 			<InspectorControls>
-				{ /* Label panel — text content + visibility toggle only; the
-				   typography/margin/colour looks live in the Styles tab below. */ }
-				<PanelBody
-					title={ __( 'Label', 'sgs-blocks' ) }
-					initialOpen
-				>
+				{ /* Options: the label's text and visibility lead it, then the options repeater, the pre-selected option and the sub-label key. */ }
+				<PanelBody title={ __( 'Options', 'sgs-blocks' ) } initialOpen>
 					<SgsFreeTextField
 						type="rich"
 						noLink
@@ -771,13 +766,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						}
 						__nextHasNoMarginBottom
 					/>
-				</PanelBody>
-
-				{ /* Options repeater */ }
-				<PanelBody
-					title={ __( 'Options', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
 					{ duplicateKeysExist && (
 						<Notice status="warning" isDismissible={ false }>
 							{ __(
@@ -889,13 +877,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					>
 						{ __( '+ Add option', 'sgs-blocks' ) }
 					</Button>
-				</PanelBody>
-
-				{ /* Default selection */ }
-				<PanelBody
-					title={ __( 'Default selection', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
 					<SelectControl
 						label={ __( 'Pre-selected option', 'sgs-blocks' ) }
 						help={ __(
@@ -906,6 +887,19 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						options={ defaultOptions }
 						onChange={ ( val ) =>
 							setAttributes( { defaultSelected: val } )
+						}
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<TextControl
+						label={ __( 'Sub-label term-meta key', 'sgs-blocks' ) }
+						help={ __(
+							'Optional. The name of a WooCommerce attribute term-meta field (e.g. a size term’s frame measurements) shown as a second line under each option’s label. Leave blank to show only the label. The values live on the term and are invisible here in the editor — check the frontend after saving.',
+							'sgs-blocks'
+						) }
+						value={ attributes.subLabelMetaKey || '' }
+						onChange={ ( val ) =>
+							setAttributes( { subLabelMetaKey: val } )
 						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
@@ -952,11 +946,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__next40pxDefaultSize
 					/>
 				</PanelBody>
-
-				<SubLabelPanel
-					attributes={ attributes }
-					setAttributes={ setAttributes }
-				/>
 			</InspectorControls>
 
 			{ /* ── Inspector — Styles tab (appearance: label look, pill style,
@@ -975,7 +964,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				{ /* Label style — typography/margin/colour only surface when the
 				   label is actually shown (showLabel lives in the Settings tab). */ }
 				<PanelBody
-					title={ __( 'Label', 'sgs-blocks' ) }
+					title={ __( 'Label typography', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
 					{ showLabel && (

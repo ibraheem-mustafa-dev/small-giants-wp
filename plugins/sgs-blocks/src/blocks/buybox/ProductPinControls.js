@@ -1,10 +1,9 @@
 import { __ } from '@wordpress/i18n';
-import { InspectorControls } from '@wordpress/block-editor';
-import { PanelBody, TextControl, Notice } from '@wordpress/components';
+import { TextControl, Notice } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 
 /**
- * "Show a different product" (buyboxProductId): pin the buy box to one product by ID so it can sit on a page that is
+ * "Show a different product" (buyboxProductId), the first row of the "Buy box" panel (GuidedPanel.js renders it): pin the buy box to one product by ID so it can sit on a page that is
  * not a product page. The title shown comes from the editor's own REST read, so a product the user may not read
  * never shows a title or a price; the notice then says only that it cannot be found.
  *
@@ -12,7 +11,7 @@ import { useSelect } from '@wordpress/data';
  * @param {Object}   props.attributes    Block attributes.
  * @param {Function} props.setAttributes Attribute setter.
  */
-export default function ProductPinPanel( { attributes, setAttributes } ) {
+export default function ProductPinControls( { attributes, setAttributes } ) {
 	const pinnedId = parseInt( attributes.buyboxProductId, 10 ) || 0;
 	const record = useSelect(
 		( select ) => {
@@ -42,11 +41,7 @@ export default function ProductPinPanel( { attributes, setAttributes } ) {
 	);
 
 	return (
-		<InspectorControls>
-			<PanelBody
-				title={ __( 'Product', 'sgs-blocks' ) }
-				initialOpen={ false }
-			>
+		<>
 				<TextControl
 					label={ __(
 						'Show a different product (product ID)',
@@ -82,7 +77,6 @@ export default function ProductPinPanel( { attributes, setAttributes } ) {
 						) }
 					</Notice>
 				) }
-			</PanelBody>
-		</InspectorControls>
+		</>
 	);
 }

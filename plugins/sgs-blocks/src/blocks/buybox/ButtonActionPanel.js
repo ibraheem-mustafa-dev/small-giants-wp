@@ -1,6 +1,11 @@
 import { __ } from '@wordpress/i18n';
 import { InspectorControls } from '@wordpress/block-editor';
-import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
+import {
+	PanelBody,
+	SelectControl,
+	TextControl,
+	ToggleControl,
+} from '@wordpress/components';
 import {
 	ToggleGroupControl,
 	ToggleGroupControlOption,
@@ -96,6 +101,33 @@ export default function ButtonActionPanel( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 					/>
 				) }
+				<SelectControl
+					label={ __(
+						'Load the Apple Pay and Google Pay buttons',
+						'sgs-blocks'
+					) }
+					value={ attributes.expressLoad || 'page' }
+					options={ [
+						{
+							value: 'page',
+							label: __( 'When the page opens', 'sgs-blocks' ),
+						},
+						{
+							value: 'interaction',
+							label: __(
+								'When the shopper first scrolls, taps or types',
+								'sgs-blocks'
+							),
+						},
+					] }
+					onChange={ ( val ) => setAttributes( { expressLoad: val } ) }
+					help={ __(
+						'Waiting for the first scroll, tap or key press keeps the payment provider’s heavy scripts out of the page’s first load, so Google PageSpeed scores the page higher. The trade-off: the wallet buttons appear a moment after the shopper’s first move. Shown only where the payment plugin prints the buttons.',
+						'sgs-blocks'
+					) }
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				/>
 			</PanelBody>
 		</InspectorControls>
 	);

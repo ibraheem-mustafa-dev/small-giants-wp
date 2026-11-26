@@ -189,12 +189,12 @@
 		},
 		"cart": {
 			"settings": {
-				"title": "Display mode",
+				"title": "Cart trigger",
 				"kind": "body",
 				"opened": true,
 				"source": "block",
-				"note": "src/blocks/cart/PanelSettingsControls.js::PanelSettingsControls",
-				"count": 1
+				"note": "src/blocks/cart/TriggerSettingsControls.js::TriggerSettingsControls",
+				"count": 2
 			},
 			"styles": {
 				"title": "Colour",
@@ -206,12 +206,12 @@
 		},
 		"choice-flow": {
 			"settings": {
-				"title": "Linked flow",
+				"title": "Choice Flow Settings",
 				"kind": "body",
 				"opened": true,
 				"source": "block",
-				"note": "src/blocks/choice-flow/LinkedFlowPanel.js::LinkedFlowPanel",
-				"count": 1
+				"note": "src/blocks/choice-flow/edit.js::Edit",
+				"count": 2
 			},
 			"styles": {
 				"title": "Colour",
@@ -1007,12 +1007,12 @@
 		},
 		"option-picker": {
 			"settings": {
-				"title": "Label",
+				"title": "Options",
 				"kind": "body",
 				"opened": true,
 				"source": "block",
 				"note": "src/blocks/option-picker/edit.js::Edit",
-				"count": 2
+				"count": 4
 			},
 			"styles": {
 				"title": "Colour",
@@ -1127,11 +1127,11 @@
 				"count": 1
 			},
 			"styles": {
-				"title": "Styles",
-				"kind": "tools",
+				"title": "Colour",
+				"kind": "body",
 				"opened": true,
-				"source": "tools",
-				"note": "a ToolsPanel has no collapse: always open"
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
 			}
 		},
 		"product-faq": {

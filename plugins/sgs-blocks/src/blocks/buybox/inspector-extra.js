@@ -108,13 +108,13 @@ export function BuyboxExtraPanels( { attributes, setAttributes } ) {
 		stickyBar,
 		rrpMetaKey,
 		rrpSavingFormat,
-		showStockStatus,
 		extrasBeforeCount,
 		thumbsPerRow,
 		thumbGap,
 		galleryThumbSize,
 		thumbStripOffset,
 		thumbSelectedScale,
+		extrasBeforeCartCount,
 	} = attributes;
 
 	return (
@@ -241,26 +241,6 @@ export function BuyboxExtraPanels( { attributes, setAttributes } ) {
 				) }
 			</PanelBody>
 
-			<PanelBody
-				title={ __( 'Stock status', 'sgs-blocks' ) }
-				initialOpen={ false }
-			>
-				<ToggleControl
-					label={ __(
-						'Show in-stock / low-stock indicator',
-						'sgs-blocks'
-					) }
-					checked={ !! showStockStatus }
-					onChange={ ( val ) =>
-						setAttributes( { showStockStatus: val } )
-					}
-					help={ __(
-						'On: always shows a coloured dot + label (in stock, low stock, or out of stock). Off keeps the current behaviour — a line shown only when out of stock. Reflects the default variation only; it does not update if the shopper picks a different option.',
-						'sgs-blocks'
-					) }
-					__nextHasNoMarginBottom
-				/>
-			</PanelBody>
 
 			<PanelBody
 				title={ __( 'Gallery thumbnails', 'sgs-blocks' ) }
@@ -421,6 +401,24 @@ export function BuyboxExtraPanels( { attributes, setAttributes } ) {
 					max={ 10 }
 					onChange={ ( val ) =>
 						setAttributes( { extrasBeforeCount: val ?? 0 } )
+					}
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				/>
+				<RangeControl
+					label={ __(
+						'Blocks above the add-to-cart button',
+						'sgs-blocks'
+					) }
+					help={ __(
+						'After the blocks shown above the price, the next N extra-area blocks show between the pickers and the add-to-cart button; the rest stay below it.',
+						'sgs-blocks'
+					) }
+					value={ extrasBeforeCartCount || 0 }
+					min={ 0 }
+					max={ 10 }
+					onChange={ ( val ) =>
+						setAttributes( { extrasBeforeCartCount: val ?? 0 } )
 					}
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize

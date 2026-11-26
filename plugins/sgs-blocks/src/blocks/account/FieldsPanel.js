@@ -181,9 +181,27 @@ export default function FieldsPanel( { attributes, setAttributes } ) {
 				</ResponsiveOverride>
 			</PanelBody>
 			<PanelBody
-				title={ __( 'Field labels', 'sgs-blocks' ) }
+				title={ __( 'Field and label type', 'sgs-blocks' ) }
 				initialOpen={ false }
 			>
+				<TypographyControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					targets={ [
+						{
+							key: 'field',
+							label: __( 'Field text', 'sgs-blocks' ),
+							prefix: 'field',
+							...TYPE_TARGET,
+						},
+						{
+							key: 'label',
+							label: __( 'Label', 'sgs-blocks' ),
+							prefix: 'label',
+							...TYPE_TARGET,
+						},
+					] }
+				/>
 				<SelectControl
 					__next40pxDefaultSize
 					__nextHasNoMarginBottom
@@ -234,29 +252,6 @@ export default function FieldsPanel( { attributes, setAttributes } ) {
 						) }
 					</ResponsiveControl>
 				) }
-			</PanelBody>
-			<PanelBody
-				title={ __( 'Field and label type', 'sgs-blocks' ) }
-				initialOpen={ false }
-			>
-				<TypographyControls
-					attributes={ attributes }
-					setAttributes={ setAttributes }
-					targets={ [
-						{
-							key: 'field',
-							label: __( 'Field text', 'sgs-blocks' ),
-							prefix: 'field',
-							...TYPE_TARGET,
-						},
-						{
-							key: 'label',
-							label: __( 'Label', 'sgs-blocks' ),
-							prefix: 'label',
-							...TYPE_TARGET,
-						},
-					] }
-				/>
 			</PanelBody>
 		</>
 	);

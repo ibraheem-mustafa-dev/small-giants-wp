@@ -45,7 +45,6 @@ import {
 } from './ExtraPanels';
 import {
 	AuthTabsPanel,
-	SignedOutContentPanel,
 	SignedOutCardPanel,
 } from './SignedOutPanel';
 
@@ -188,10 +187,6 @@ export default function Edit( { attributes, setAttributes } ) {
 					setAttributes={ setAttributes }
 				/>
 				<LoggedOutPanel
-					attributes={ attributes }
-					setAttributes={ setAttributes }
-				/>
-				<SignedOutContentPanel
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 				/>
