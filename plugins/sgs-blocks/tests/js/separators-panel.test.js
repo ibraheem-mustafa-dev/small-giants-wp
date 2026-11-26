@@ -118,6 +118,25 @@ describe( 'SeparatorsPanel', () => {
 		expect( control() ).not.toBeNull();
 	} );
 
+	it( 'multi-button: no stored layout still offers the panel, because render.php forces flex', () => {
+		// The gate reads `attributes.layout`, which is '' by default on multi-button: without the resolved layout the panel would hide.
+		mount( { name: 'sgs/multi-button', lined: true, attributes: { layout: '' } } );
+		expect( container.innerHTML ).toBe( '' );
+		mount( { name: 'sgs/multi-button', lined: true, layout: 'flex', attributes: { layout: '' } } );
+		expect( control() ).not.toBeNull();
+	} );
+
+	it( 'multi-button hands the wrapper controls the layout render.php resolves, and they forward it to the panel', () => {
+		const read = ( file ) => fs.readFileSync( path.resolve( __dirname, '../../src', file ), 'utf8' );
+		expect( read( 'blocks/multi-button/edit.js' ) ).toMatch( /resolvedLayout=\{ attributes\.layout \|\| 'flex' \}/ );
+		const wrapper = read( 'blocks/container/components/ContainerWrapperControls.js' );
+		expect( wrapper.match( /layout=\{ props\.resolvedLayout \}/g ) ).toHaveLength( 2 );
+		expect( wrapper ).toMatch( /showContentBand,\s*resolvedLayout,\s*\} \) \}/ );
+		// render.php resolves it the same way.
+		const php = fs.readFileSync( path.resolve( __dirname, '../../src/blocks/multi-button/render.php' ), 'utf8' );
+		expect( php ).toMatch( /\$mb_wrapper_attributes\['layout'\] = 'flex'/ );
+	} );
+
 	it( 'axes narrows the declared axes and never widens them', () => {
 		mount( { name: 'sgs/brand-strip', axes: [ 'column' ] } );
 		expect( control().dataset.axes ).toBe( 'column' );

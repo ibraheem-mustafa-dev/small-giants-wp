@@ -33,6 +33,7 @@ import {
 	BandWrap,
 	wrapperPreview,
 } from '../../utils';
+import { useSeparatorsCanvas } from '../../shared/separators/useSeparatorsCanvas';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { RICH_TEXT_PLAIN } from '../../utils/rich-text-formats';
 

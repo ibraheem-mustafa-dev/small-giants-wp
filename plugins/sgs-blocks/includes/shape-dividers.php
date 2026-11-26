@@ -218,14 +218,12 @@ function sgs_render_shape_divider( string $shape, bool $flip, bool $invert, stri
 	$fill_attr    = $use_gradient ? 'url(#' . $gradient_id . ')' : 'currentColor';
 	$defs_markup  = $use_gradient ? '<defs>' . $gradient_defs . '</defs>' : '';
 
-	// ── X = 100%: the original single-path markup, byte-for-byte for the
-	// flat-colour default ─────────────────────────────────────────────────
-	// The flat-colour default MUST render exactly as it did before this
-	// control existed — a divider whose look shifts merely because the
-	// mechanism changed underneath it would be a regression on every
-	// existing page. The <pattern> wrapper below is therefore reached ONLY
-	// when the client has actually scaled the X axis away from its neutral
-	// value.
+	// ── X = 100%: the single-path markup ─────────────────────────────────────
+	// The <pattern> wrapper below is reached ONLY when the client has actually
+	// scaled the X axis away from its neutral value, so the X scale never changes
+	// how a divider that does not use it renders. The orientation is separate:
+	// sgs_shape_divider_transform() mirrors a top divider and honours Flip and
+	// Invert (it did not before, so a saved top divider changed look on purpose).
 	if ( SGS_SHAPE_DIVIDER_VIEWBOX_W === (int) round( SGS_SHAPE_DIVIDER_VIEWBOX_W * $scale_x / 100 ) ) {
 		return sprintf(
 			'<div class="sgs-shape-divider %s" aria-hidden="true">' .

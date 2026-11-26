@@ -51,6 +51,7 @@ import {
 	sgsBorderPreview,
 	linkUnderlinePreviewCss,
 } from '../../utils';
+import { useSeparatorsCanvas } from '../../shared/separators/useSeparatorsCanvas';
 import {
 	ToggleGroupControl,
 	ToggleGroupControlOption,

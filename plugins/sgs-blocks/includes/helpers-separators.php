@@ -105,12 +105,49 @@ if ( ! function_exists( 'sgs_separators_normalise_axis' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_separators_declared_supports' ) ) {
+	/**
+	 * `supports.sgs` of a block read from its block.json on disk (the built copy, else the source),
+	 * for a request where the block type is not registered. Cached per block for the request.
+	 *
+	 * @param string $block_name Block name, e.g. 'sgs/gallery'.
+	 * @return array|null The `supports.sgs` object, or null when no block.json is found.
+	 */
+	function sgs_separators_declared_supports( string $block_name ): ?array {
+		static $cache = array();
+		if ( array_key_exists( $block_name, $cache ) ) {
+			return $cache[ $block_name ];
+		}
+		$cache[ $block_name ] = null;
+		if ( 0 !== strpos( $block_name, 'sgs/' ) || ! preg_match( '/^[a-z0-9-]+$/', substr( $block_name, 4 ) ) ) {
+			return null;
+		}
+		$slug = substr( $block_name, 4 );
+		$root = dirname( __DIR__ );
+		foreach ( array( '/build/blocks/', '/src/blocks/' ) as $folder ) {
+			$file = $root . $folder . $slug . '/block.json';
+			if ( ! is_file( $file ) ) {
+				continue;
+			}
+			$data = json_decode( (string) file_get_contents( $file ), true );
+			if ( is_array( $data ) ) {
+				$sgs                  = $data['supports']['sgs'] ?? null;
+				$cache[ $block_name ] = is_array( $sgs ) ? $sgs : null;
+				return $cache[ $block_name ];
+			}
+		}
+		return null;
+	}
+}
+
 if ( ! function_exists( 'sgs_separators_caps' ) ) {
 	/**
 	 * What a block offers for one separators attribute, read from its block.json
 	 * `supports.sgs.separators.<attribute>` (axes, edges, hover, sweep): the same entry
 	 * the editor's SeparatorsPanel reads, so the two cannot disagree. A block that does
-	 * not declare the attribute offers nothing (no axes), so nothing draws.
+	 * not declare the attribute offers nothing (no axes), so nothing draws. Where the
+	 * block type is not registered (the CSS render harness has no registry), the block's
+	 * own block.json is read from the plugin folder instead, so the answer is the same.
 	 *
 	 * `$override` is for a block whose own state narrows what it can draw this render
 	 * (a marquee strip is one row) or that draws an edge itself without offering the
@@ -129,7 +166,7 @@ if ( ! function_exists( 'sgs_separators_caps' ) ) {
 			'sweep' => false,
 		);
 		$type = class_exists( '\\WP_Block_Type_Registry' ) ? \WP_Block_Type_Registry::get_instance()->get_registered( $block_name ) : null;
-		$sgs  = ( null !== $type && is_array( $type->supports ?? null ) ) ? ( $type->supports['sgs'] ?? null ) : null;
+		$sgs  = ( null !== $type && is_array( $type->supports ?? null ) ) ? ( $type->supports['sgs'] ?? null ) : sgs_separators_declared_supports( $block_name );
 		$decl = is_array( $sgs ) && isset( $sgs['separators'][ $attribute ] ) && is_array( $sgs['separators'][ $attribute ] ) ? $sgs['separators'][ $attribute ] : array();
 		if ( isset( $decl['axes'] ) && is_array( $decl['axes'] ) ) {
 			$caps['axes'] = array_values( array_intersect( sgs_separators_axes(), $decl['axes'] ) );

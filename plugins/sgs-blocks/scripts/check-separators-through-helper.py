@@ -129,9 +129,7 @@ def cmd_survey() -> int:
 # Editor preview: a block that declares `supports.sgs.separators` must show the lines in its canvas
 # through a shared preview, or have its canvas rendered by render.php (ServerSideRender).
 PREVIEW_TOKENS = ("useSeparatorsCanvas", "ServerSideRender")
-EDITOR_EXEMPT = {
-    "sgs/cart": "the mini-cart panel is not rendered in the canvas, so there is nothing to draw lines on",
-}
+EDITOR_EXEMPT: dict[str, str] = {}
 
 
 def editor_preview_ok(text: str) -> bool:
@@ -163,6 +161,9 @@ def editor_findings() -> list[str]:
 PHP_CAPS_LITERAL = re.compile(r"'axes'\s*=>\s*array\(\s*'(?:row|column)'")
 JS_CONTROL_MOUNT = re.compile(r"<SgsSeparatorControl\b")
 JS_FALLBACK_CALL = re.compile(r"\binitSeparators\s*\(")
+# A file that calls the canvas hook must import it, or the block throws a ReferenceError the moment its edit component renders.
+JS_HOOK_CALL = re.compile(r"\buseSeparatorsCanvas\s*\(")
+JS_HOOK_IMPORT = re.compile(r"import\s*\{[^}]*\buseSeparatorsCanvas\b[^}]*\}\s*from")
 
 
 def package_text_findings(rel: str, text: str) -> list[str]:
@@ -175,6 +176,8 @@ def package_text_findings(rel: str, text: str) -> list[str]:
         out.append(f"{rel}: mounts SgsSeparatorControl itself; use <SeparatorsPanel> (src/components/SeparatorsPanel.js, with `bare` inside a larger panel)")
     if rel.endswith(".js") and JS_FALLBACK_CALL.search(body) and rel not in ("src/shared/separators/view.js", "src/shared/separators/index.js"):
         out.append(f"{rel}: calls initSeparators(); the shared module @sgs/separators loads the fallback for every flow list")
+    if rel.endswith(".js") and rel != "src/shared/separators/useSeparatorsCanvas.js" and JS_HOOK_CALL.search(body) and not JS_HOOK_IMPORT.search(body):
+        out.append(f"{rel}: calls useSeparatorsCanvas() without importing it (import it from src/shared/separators/useSeparatorsCanvas)")
     return out
 
 
@@ -250,12 +253,15 @@ def cmd_self_test() -> int:
         "a literal caps array": ("src/blocks/x/render.php", "$c = array( 'axes' => array( 'row' ), 'edges' => false );"),
         "a block-mounted control": ("src/blocks/x/edit.js", "<SgsSeparatorControl value={ v } />"),
         "a per-block fallback call": ("src/blocks/x/view.js", "initSeparators();"),
+        "the hook called without an import": ("src/blocks/x/edit.js", "import { a } from '../../utils';\nconst s = useSeparatorsCanvas( { separators } );"),
     }
     package_negatives = {
         "the package panel mounting the control": ("src/components/SeparatorsPanel.js", "<SgsSeparatorControl value={ v } />"),
         "the shared view calling the fallback": ("src/shared/separators/view.js", "initSeparators();"),
         "the default caps (no axes named)": ("includes/x.php", "$c = array( 'axes' => array(), 'edges' => false );"),
         "a commented-out literal": ("src/blocks/x/render.php", "// $c = array( 'axes' => array( 'row' ) );"),
+        "the hook called with its import": ("src/blocks/x/edit.js", "import { useSeparatorsCanvas } from '../../shared/separators/useSeparatorsCanvas';\nconst s = useSeparatorsCanvas( { separators } );"),
+        "the hook called with a multi-name import": ("src/blocks/x/edit.js", "import {\n\tfoo,\n\tuseSeparatorsCanvas,\n} from '../../shared/separators';\nuseSeparatorsCanvas( {} );"),
     }
     for name, (rel, text) in package_positives.items():
         if not package_text_findings(rel, text):
