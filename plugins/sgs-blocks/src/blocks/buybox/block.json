@@ -44,7 +44,7 @@
 					"showWhen": [],
 					"showWhenNote": "Add to Cart always prints.",
 					"part": "add-to-cart",
-					"label": "Add to Cart button",
+					"label": "Add to cart button",
 					"groups": [ "preset", "colour", "border", "padding", "width", "minHeight", "contentAlign", "shadow", "hoverLift", "typography" ]
 				}
 			],

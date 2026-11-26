@@ -116,6 +116,8 @@ export function builtinButtonColourRows( {
  *                                         (the product card seeds its colours and border from the preset).
  * @param {boolean}  [props.colourInMainPanel=false] True when the block draws this button's colour rows in its own main Colour panel
  *                                         through `builtinButtonColourRows()`, so the kit draws none.
+ * @param {*}        [props.children] Extra rows the block adds to the end of the button's Styles panel (before its Text style), so a block's own
+ *                                         switches for this button share the one panel instead of a second panel with the same name.
  * @return {Object|null} The mounted panels, or null.
  */
 export default function BuiltinButtonPanel( {
@@ -125,6 +127,7 @@ export default function BuiltinButtonPanel( {
 	prefix,
 	seedForPreset,
 	colourInMainPanel = false,
+	children,
 } ) {
 	const entry = declaredButton( blockName, prefix );
 	if ( ! entry || ! kitShown( entry, attributes ) ) {
@@ -141,7 +144,9 @@ export default function BuiltinButtonPanel( {
 				groups={ entry.groups }
 				seedForPreset={ seedForPreset }
 				colourInMainPanel={ colourInMainPanel }
-			/>
+			>
+				{ children }
+			</BuiltinButtonPanelBody>
 		</Suspense>
 	);
 }

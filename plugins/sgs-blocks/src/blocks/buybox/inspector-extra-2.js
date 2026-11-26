@@ -3,7 +3,6 @@ import {
 	PanelBody,
 	ToggleControl,
 	TextControl,
-	RangeControl,
 	SelectControl,
 } from '@wordpress/components';
 
@@ -17,12 +16,8 @@ const STOCK_LINE_POSITION_OPTIONS = [
 
 /**
  * Settings-tab (default InspectorControls group) extra panels for
- * sgs/buybox, the picker's second caption line, RRP price
- * display, extras placed above the add-to-cart button, and the in-stock
- * wording override. Split from inspector-extra.js/edit.js — both already at
- * or past this block's 250-line JS budget (option-picker's own
- * sub-label-panel.js is the precedent for this exact move: a new file rather
- * than growing either further).
+ * sgs/buybox: the RRP price display and the in-stock wording override. Split from inspector-extra.js/edit.js — both already at
+ * or past this block's 250-line JS budget (a new file rather than growing either further).
  *
  * @param {Object}   o
  * @param {Object}   o.attributes    The block's attributes.
@@ -31,38 +26,18 @@ const STOCK_LINE_POSITION_OPTIONS = [
  */
 export function BuyboxExtraSettingsPanels2( { attributes, setAttributes } ) {
 	const {
-		pickerSubLabelMetaKey,
 		rrpMetaKey,
 		rrpShowPrice,
 		rrpSavingPrefix,
-		extrasBeforeCartCount,
 		stockInStockLabel,
 		stockLinePosition,
 		stockLineHairline,
 		stockLineHairlineMargin,
+		showStockStatus,
 	} = attributes;
 
 	return (
 		<>
-			<PanelBody
-				title={ __( 'Picker second line', 'sgs-blocks' ) }
-				initialOpen={ false }
-			>
-				<TextControl
-					label={ __( 'Term-meta key', 'sgs-blocks' ) }
-					value={ pickerSubLabelMetaKey || '' }
-					onChange={ ( val ) =>
-						setAttributes( { pickerSubLabelMetaKey: val } )
-					}
-					placeholder="_sgs_size_measure"
-					help={ __(
-						'Shows a second caption line under every option, e.g. "_sgs_size_measure" for a frame size\'s eye/bridge/temple measurement. Empty = no second line. Forwarded to every picker on this box.',
-						'sgs-blocks'
-					) }
-					__nextHasNoMarginBottom
-					__next40pxDefaultSize
-				/>
-			</PanelBody>
 
 			{ '' !== rrpMetaKey && (
 				<PanelBody
@@ -100,32 +75,6 @@ export function BuyboxExtraSettingsPanels2( { attributes, setAttributes } ) {
 				</PanelBody>
 			) }
 
-			<PanelBody
-				title={ __(
-					'Extras above the add-to-cart button',
-					'sgs-blocks'
-				) }
-				initialOpen={ false }
-			>
-				<RangeControl
-					label={ __(
-						'Blocks above the add-to-cart button',
-						'sgs-blocks'
-					) }
-					help={ __(
-						'After the blocks shown above the price, the next N extra-area blocks show between the pickers and the add-to-cart button; the rest stay below it.',
-						'sgs-blocks'
-					) }
-					value={ extrasBeforeCartCount || 0 }
-					min={ 0 }
-					max={ 10 }
-					onChange={ ( val ) =>
-						setAttributes( { extrasBeforeCartCount: val ?? 0 } )
-					}
-					__nextHasNoMarginBottom
-					__next40pxDefaultSize
-				/>
-			</PanelBody>
 
 			<PanelBody
 				title={ __( 'Stock wording', 'sgs-blocks' ) }
@@ -188,6 +137,21 @@ export function BuyboxExtraSettingsPanels2( { attributes, setAttributes } ) {
 							}
 						/>
 					) }
+				<ToggleControl
+					label={ __(
+						'Show in-stock / low-stock indicator',
+						'sgs-blocks'
+					) }
+					checked={ !! showStockStatus }
+					onChange={ ( val ) =>
+						setAttributes( { showStockStatus: val } )
+					}
+					help={ __(
+						'On: always shows a coloured dot + label (in stock, low stock, or out of stock). Off keeps the current behaviour — a line shown only when out of stock. Reflects the default variation only; it does not update if the shopper picks a different option.',
+						'sgs-blocks'
+					) }
+					__nextHasNoMarginBottom
+				/>
 			</PanelBody>
 		</>
 	);

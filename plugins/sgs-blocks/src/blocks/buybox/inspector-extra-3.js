@@ -28,10 +28,6 @@ export function BuyboxExtraStylesPanels( { attributes, setAttributes } ) {
 		pickerStyle,
 		pickerShowSelectedTick,
 		pickerShowSelectedValue,
-		addToCartShowPrice,
-		addToCartPriceSeparator,
-		addToCartShowIcon,
-		addToCartHoverLift,
 	} = attributes;
 
 	return (
@@ -79,12 +75,6 @@ export function BuyboxExtraStylesPanels( { attributes, setAttributes } ) {
 					}
 					__nextHasNoMarginBottom
 				/>
-			</PanelBody>
-
-			<PanelBody
-				title={ __( 'Picker labels', 'sgs-blocks' ) }
-				initialOpen={ false }
-			>
 				{ /* The picker label's and chosen value's type settings live in the
 				     Typography panel below. Font size/letter-spacing/case/colour
 				     forward to sgs/option-picker's OWN labelFontSize/
@@ -110,6 +100,7 @@ export function BuyboxExtraStylesPanels( { attributes, setAttributes } ) {
 					__nextHasNoMarginBottom
 				/>
 			</PanelBody>
+
 
 			<PanelBody
 				title={ __( 'Typography', 'sgs-blocks' ) }
@@ -423,60 +414,77 @@ export function BuyboxExtraStylesPanels( { attributes, setAttributes } ) {
 					] }
 				/>
 			</PanelBody>
+		</>
+	);
+}
 
-			<PanelBody
-				title={ __( 'Add to cart button', 'sgs-blocks' ) }
-				initialOpen={ false }
-			>
-				<ToggleControl
-					label={ __( 'Show the price on the button', 'sgs-blocks' ) }
-					checked={ !! addToCartShowPrice }
-					onChange={ ( val ) =>
-						setAttributes( { addToCartShowPrice: val } )
-					}
-					help={ __(
-						'Adds the current price at the right end of the button, label on the left.',
-						'sgs-blocks'
-					) }
-					__nextHasNoMarginBottom
-				/>
-				{ !! addToCartShowPrice && (
-					<SgsFreeTextField
-						label={ __(
-							'Between the label and the price',
-							'sgs-blocks'
-						) }
-						help={ __(
-							'A joiner such as "·" printed between the label and the price. Empty prints none.',
-							'sgs-blocks'
-						) }
-						value={ addToCartPriceSeparator || '' }
-						onChange={ ( val ) =>
-							setAttributes( { addToCartPriceSeparator: val } )
-						}
-					/>
+/**
+ * The Add to cart button's own switches (price on the button, cart icon, hover lift): the extra rows of the button kit's
+ * "Add to cart button" Styles panel, handed to it as children in edit.js.
+ *
+ * @param {Object}   o
+ * @param {Object}   o.attributes    The block's attributes.
+ * @param {Function} o.setAttributes The block's setAttributes.
+ * @return {JSX.Element} The four rows.
+ */
+export function AddToCartExtraControls( { attributes, setAttributes } ) {
+	const {
+		addToCartShowPrice,
+		addToCartPriceSeparator,
+		addToCartShowIcon,
+		addToCartHoverLift,
+	} = attributes;
+
+	return (
+		<>
+			<ToggleControl
+				label={ __( 'Show the price on the button', 'sgs-blocks' ) }
+				checked={ !! addToCartShowPrice }
+				onChange={ ( val ) =>
+					setAttributes( { addToCartShowPrice: val } )
+				}
+				help={ __(
+					'Adds the current price at the right end of the button, label on the left.',
+					'sgs-blocks'
 				) }
-				<ToggleControl
-					label={ __( 'Show the cart icon', 'sgs-blocks' ) }
-					checked={ addToCartShowIcon !== false }
-					onChange={ ( val ) =>
-						setAttributes( { addToCartShowIcon: val } )
-					}
-					__nextHasNoMarginBottom
-				/>
-				<ToggleControl
-					label={ __( 'Lift on hover', 'sgs-blocks' ) }
-					checked={ !! addToCartHoverLift }
-					onChange={ ( val ) =>
-						setAttributes( { addToCartHoverLift: val } )
-					}
-					help={ __(
-						'Moves the button up 2px on hover, matching the timing of a beside-it CTA button.',
+				__nextHasNoMarginBottom
+			/>
+			{ !! addToCartShowPrice && (
+				<SgsFreeTextField
+					label={ __(
+						'Between the label and the price',
 						'sgs-blocks'
 					) }
-					__nextHasNoMarginBottom
+					help={ __(
+						'A joiner such as "·" printed between the label and the price. Empty prints none.',
+						'sgs-blocks'
+					) }
+					value={ addToCartPriceSeparator || '' }
+					onChange={ ( val ) =>
+						setAttributes( { addToCartPriceSeparator: val } )
+					}
 				/>
-			</PanelBody>
+			) }
+			<ToggleControl
+				label={ __( 'Show the cart icon', 'sgs-blocks' ) }
+				checked={ addToCartShowIcon !== false }
+				onChange={ ( val ) =>
+					setAttributes( { addToCartShowIcon: val } )
+				}
+				__nextHasNoMarginBottom
+			/>
+			<ToggleControl
+				label={ __( 'Lift on hover', 'sgs-blocks' ) }
+				checked={ !! addToCartHoverLift }
+				onChange={ ( val ) =>
+					setAttributes( { addToCartHoverLift: val } )
+				}
+				help={ __(
+					'Moves the button up 2px on hover, matching the timing of a beside-it CTA button.',
+					'sgs-blocks'
+				) }
+				__nextHasNoMarginBottom
+			/>
 		</>
 	);
 }

@@ -29,9 +29,11 @@ import {
 } from '../../components';
 import { BuyboxExtraPanels, getBuyboxExtraColourRows } from './inspector-extra';
 import { BuyboxExtraSettingsPanels2 } from './inspector-extra-2';
-import { BuyboxExtraStylesPanels } from './inspector-extra-3';
+import {
+	AddToCartExtraControls,
+	BuyboxExtraStylesPanels,
+} from './inspector-extra-3';
 import { BuyboxExtraSettingsPanels3 } from './inspector-extra-4';
-import { BuyboxExpressLoadPanel } from './inspector-express';
 import { BuyboxStickerPanels } from './inspector-sticker';
 import {
 	BuyboxInstalmentsPanel,
@@ -39,7 +41,6 @@ import {
 } from './inspector-instalments';
 import ButtonActionPanel from './ButtonActionPanel';
 import GuidedPanel, { guidedColourRows } from './GuidedPanel';
-import ProductPinPanel from './ProductPinPanel';
 import NotePanel from './NotePanel';
 import ConfiguratorPanel, { configuratorColourRows } from './ConfiguratorPanel';
 
@@ -86,6 +87,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		decoyEnabled,
 		backgroundColour,
 		backgroundColourGradient,
+		pickerSubLabelMetaKey,
 	} = attributes;
 
 	const colourRows = [
@@ -167,10 +169,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				setAttributes={ setAttributes }
 			/>
 			<ConfiguratorPanel
-				attributes={ attributes }
-				setAttributes={ setAttributes }
-			/>
-			<ProductPinPanel
 				attributes={ attributes }
 				setAttributes={ setAttributes }
 			/>
@@ -309,6 +307,20 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							'Heading shown above the email form when a variation is out of stock.',
 							'sgs-blocks'
 						) }
+					/>
+					<TextControl
+						label={ __( 'Term-meta key', 'sgs-blocks' ) }
+						value={ pickerSubLabelMetaKey || '' }
+						onChange={ ( val ) =>
+							setAttributes( { pickerSubLabelMetaKey: val } )
+						}
+						placeholder="_sgs_size_measure"
+						help={ __(
+							'Shows a second caption line under every option, e.g. "_sgs_size_measure" for a frame size\'s eye/bridge/temple measurement. Empty = no second line. Forwarded to every picker on this box.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 				<PanelBody
@@ -455,10 +467,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 				/>
-				<BuyboxExpressLoadPanel
-					attributes={ attributes }
-					setAttributes={ setAttributes }
-				/>
 				<BuyboxStickerPanels
 					attributes={ attributes }
 					setAttributes={ setAttributes }
@@ -555,13 +563,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			</InspectorControls>
 
 			{ /* Add to Cart: the built-in button kit's panel for the `addToCart` button (preset, colours, border, padding, width,
-			     minimum height, shadow, type). The show-price, cart-icon and hover-lift switches stay in "Add to cart button". */ }
+			     minimum height, shadow, type). The show-price, cart-icon and hover-lift switches are children of that same panel. */ }
 			<BuiltinButtonPanel
 				attributes={ attributes }
 				setAttributes={ setAttributes }
 				blockName="sgs/buybox"
 				prefix="addToCart"
-			/>
+			>
+				<AddToCartExtraControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+			</BuiltinButtonPanel>
 			{ /* The flow's opener button (Spec 43 FR-43-25): the built-in button kit's one panel, which mounts its own Styles
 			     group. A flow is linked per product, which the editor cannot see, so the panel always shows. */ }
 			<BuiltinButtonPanel
