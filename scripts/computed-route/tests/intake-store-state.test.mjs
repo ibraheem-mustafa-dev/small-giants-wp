@@ -41,7 +41,8 @@ test( 'MUST FAIL: literalArgs reads strings before keys: a bare key inside a str
 	assert.deepEqual( literalArgs( '\'a"b\'' ), [ 'a"b' ] );
 	assert.deepEqual( literalArgs( '{ \'x\': 1, y: \'a\\\'b: c\' }' ), [ { x: 1, y: 'a\'b: c' } ] );
 	assert.equal( literalArgs( '{ a: x }' ), null, 'a bare word as a value is no literal' );
-	assert.equal( literalArgs( '"bad \\q"' ), null, 'an escape JSON does not know is no literal' );
+	assert.equal( literalArgs( '"bad \\x4"' ), null, 'a malformed escape is no literal' );
+	assert.deepEqual( literalArgs( '"a \\q"' ), [ 'a q' ], 'an escape JS reads as the character itself (JSON would refuse it)' );
 } );
 
 test( 'MUST FAIL: a setState call on `this` (a structured way, or prose `this.setState(...)`) reaches the component', async () => {
