@@ -162,15 +162,17 @@ if ( ! function_exists( 'sgs_gallery_scroll_bleed_declarations' ) ) {
 	 * `overflow-x:auto` (which makes the vertical overflow clip too): padding on both block edges, cancelled by a negative
 	 * margin so layout does not move. The same value the static `.sgs-gallery--scroll .sgs-gallery__grid` rule in
 	 * `src/blocks/gallery/style.css` paints for a gallery that is a swipe row on every device: `--sgs-shadow-bleed`, 80px
-	 * when unset.
+	 * when unset. `--sgs-bleed-band` marks the band for the click hand-off (assets/js/bleed-band-taps.js), so a tap on it
+	 * reaches what it covers, with a transparent iOS tap highlight (the band carries a click listener); the reset clears
+	 * both. The links inside keep their own highlight through the gallery stylesheet's restore rule.
 	 *
 	 * @param bool $on True for a swipe row (the bleed), false for a layout that is not (the reset).
 	 * @return string Declarations ending in a semicolon.
 	 */
 	function sgs_gallery_scroll_bleed_declarations( bool $on ): string {
 		return $on
-			? 'padding-block:var(--sgs-shadow-bleed,80px);margin-block:calc(-1 * var(--sgs-shadow-bleed,80px));'
-			: 'padding-block:0;margin-block:0;';
+			? 'padding-block:var(--sgs-shadow-bleed,80px);margin-block:calc(-1 * var(--sgs-shadow-bleed,80px));--sgs-bleed-band:1;-webkit-tap-highlight-color:transparent;'
+			: 'padding-block:0;margin-block:0;--sgs-bleed-band:0;-webkit-tap-highlight-color:inherit;';
 	}
 }
 

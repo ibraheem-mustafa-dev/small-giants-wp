@@ -240,7 +240,8 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 		}
 
 		$css .= $uid_sel . ' .' . $bem_root . '__mega-panel-wrap{position:absolute;top:' . $sgs_nm_panel_top . ';left:var(--sgs-mm-overflow-left, 50%);right:var(--sgs-mm-overflow-right, auto);transform:translateX(var(--sgs-mm-tx, -50%));width:var(--sgs-mm-panel-width, min(1120px, calc(100vw - 56px)));max-height:var(--sgs-mm-panel-max-h, calc(100dvh - var(--sgs-header-height, 80px) - 16px));overflow-y:auto;overscroll-behavior:contain;z-index:100;display:none;'
-			. 'box-sizing:content-box;padding-inline:min(var(--sgs-shadow-bleed, 80px), 24px);padding-bottom:var(--sgs-shadow-bleed, 80px);margin-inline:calc(-1 * min(var(--sgs-shadow-bleed, 80px), 24px));margin-bottom:calc(-1 * var(--sgs-shadow-bleed, 80px));}';
+			. 'box-sizing:content-box;padding-inline:min(var(--sgs-shadow-bleed, 80px), 24px);padding-bottom:var(--sgs-shadow-bleed, 80px);margin-inline:calc(-1 * min(var(--sgs-shadow-bleed, 80px), 24px));margin-bottom:calc(-1 * var(--sgs-shadow-bleed, 80px));--sgs-bleed-band:1;-webkit-tap-highlight-color:transparent;}';
+		$css .= ':where(' . $uid_sel . ' .' . $bem_root . '__mega-panel-wrap) :where(a,button,[role="button"],input,select,textarea,label,summary){-webkit-tap-highlight-color:initial;}';
 		/*
 		 * SHADOW BLEED — the wrap scrolls, so it clips on both axes and would cut the shadows of the cards it holds. It reserves room inside
 		 * the clip as padding (sideways capped under the 28px viewport gutter, so the page never scrolls sideways; none above, so the

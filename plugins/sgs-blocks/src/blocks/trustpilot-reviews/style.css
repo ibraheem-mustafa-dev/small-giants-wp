@@ -181,6 +181,15 @@
 	padding-block: var( --sgs-shadow-bleed, 80px ) calc( var( --sgs-shadow-bleed, 80px ) + 0.5rem );
 	margin-block: calc( -1 * var( --sgs-shadow-bleed, 80px ) ) calc( -1 * var( --sgs-shadow-bleed, 80px ) );
 	align-items: flex-start;
+	/* Marks the band for the click hand-off (assets/js/bleed-band-taps.js), so a tap on it reaches what it covers. */
+	--sgs-bleed-band: 1;
+	/* The band carries a click listener for iOS (bleed-band-taps.js), so it must not flash iOS's tap highlight. */
+	-webkit-tap-highlight-color: transparent;
+}
+
+/* Links and controls inside the band keep the browser's own tap highlight (zero specificity: a block's own rule wins). */
+:where(.sgs-trustpilot-reviews--carousel .sgs-trustpilot-reviews__track, .sgs-trustpilot-reviews--mini-carousel .sgs-trustpilot-reviews__track) :where(a, button, [role="button"], input, select, textarea, label, summary) {
+	-webkit-tap-highlight-color: initial;
 }
 
 .sgs-trustpilot-reviews--carousel .sgs-trustpilot-reviews__card,

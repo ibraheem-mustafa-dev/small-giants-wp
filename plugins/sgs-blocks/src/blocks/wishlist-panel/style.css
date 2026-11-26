@@ -257,6 +257,15 @@
 	/* Room for the tiles' shadows above and below the scrolling row, cancelled by the negative margin so layout does not move. */
 	padding-block: var( --sgs-shadow-bleed, 80px );
 	margin-block: calc( -1 * var( --sgs-shadow-bleed, 80px ) );
+	/* Marks the band for the click hand-off (assets/js/bleed-band-taps.js), so a tap on it reaches what it covers. */
+	--sgs-bleed-band: 1;
+	/* The band carries a click listener for iOS (bleed-band-taps.js), so it must not flash iOS's tap highlight. */
+	-webkit-tap-highlight-color: transparent;
+}
+
+/* Links and controls inside the band keep the browser's own tap highlight (zero specificity: a block's own rule wins). */
+:where(.sgs-wishlist-panel--strip .sgs-wishlist-panel__items) :where(a, button, [role="button"], input, select, textarea, label, summary) {
+	-webkit-tap-highlight-color: initial;
 }
 
 .sgs-wishlist-panel--strip .sgs-wishlist-panel__row {

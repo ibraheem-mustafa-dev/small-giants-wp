@@ -355,3 +355,28 @@ a.sgs-field-fallback:focus {
 		transition: none;
 	}
 }
+
+/* The shadow-bleed band marker (`--sgs-bleed-band: 1`, set by each band rule) belongs to the band alone: a descendant
+   with a negative margin and padding on the same side (a pull-up card body, a full-width section) must not read as a
+   band, so the property does not inherit. This stylesheet loads on every front-end page. */
+@property --sgs-bleed-band {
+	syntax: "*";
+	inherits: false;
+}
+
+/* A band that a touch has armed for iOS (bleed-band-taps.js gives it a click listener; iOS flashes its tap highlight on
+   the element that responds, which may be a wrapper that takes a band's box) shows no highlight; its links and
+   controls keep theirs (zero specificity: a block's own rule wins). */
+.sgs-bleed-band--armed {
+	-webkit-tap-highlight-color: transparent;
+}
+
+:where(.sgs-bleed-band--armed) :where(a, button, [role="button"], input, select, textarea, label, summary) {
+	-webkit-tap-highlight-color: initial;
+}
+
+/* A shadow-bleed band over a link or button shows the pointer cursor; assets/js/bleed-band-taps.js sets the class while
+   a mouse is over the band and a control lies beneath it, and hands the click on. */
+.sgs-bleed-band--pointer {
+	cursor: pointer;
+}

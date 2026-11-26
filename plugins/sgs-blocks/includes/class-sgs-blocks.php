@@ -609,7 +609,8 @@ final class SGS_Blocks {
 	/**
 	 * Enqueue frontend CSS and JS for extensions.
 	 *
-	 * The extension stylesheet and the touch-input script load on every page; the `.sgs-js` flag prints in the head (`print_js_flag`).
+	 * The extension stylesheet, the touch-input script and the bleed-band tap hand-off load on every page; the `.sgs-js`
+	 * flag prints in the head (`print_js_flag`).
 	 */
 	public function enqueue_frontend_assets(): void {
 		$css_file = SGS_BLOCKS_PATH . 'assets/css/extensions.css';
@@ -637,6 +638,23 @@ final class SGS_Blocks {
 					'in_footer' => true,
 					'strategy'  => 'defer',
 				]
+			);
+		}
+
+		// Shadow-bleed bands (a scrolling row's --sgs-shadow-bleed padding, cancelled by a negative margin) hand a click
+		// that lands on them to what lies beneath, so a button above or below a row stays tappable while the row keeps
+		// its own scrollbar, wheel and swipe. Any block can print such a row, so it loads on every page; idle until a click.
+		$bleed_js = SGS_BLOCKS_PATH . 'assets/js/bleed-band-taps.js';
+		if ( file_exists( $bleed_js ) ) {
+			wp_enqueue_script(
+				'sgs-bleed-band-taps',
+				SGS_BLOCKS_URL . 'assets/js/bleed-band-taps.js',
+				array(),
+				SGS_BLOCKS_VERSION,
+				array(
+					'in_footer' => true,
+					'strategy'  => 'defer',
+				)
 			);
 		}
 	}

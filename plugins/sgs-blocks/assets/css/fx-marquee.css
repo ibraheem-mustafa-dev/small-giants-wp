@@ -103,6 +103,10 @@
 	   layout does not move), so a tile's shadow sits inside the mask's box and paints even where no-clip is not honoured. */
 	padding-block: var(--sgs-marquee-bleed, var(--sgs-shadow-bleed, 80px));
 	margin-block: calc(-1 * var(--sgs-marquee-bleed, var(--sgs-shadow-bleed, 80px)));
+	/* Marks the band for the click hand-off (assets/js/bleed-band-taps.js), so a tap on it reaches what it covers. */
+	--sgs-bleed-band: 1;
+	/* The band carries a click listener for iOS (bleed-band-taps.js), so it must not flash iOS's tap highlight. */
+	-webkit-tap-highlight-color: transparent;
 }
 
 /* A held strip may turn out to fit and stand still, so it paints no edge fade; the running strip fades in when it starts. */
@@ -116,6 +120,14 @@
 	margin-block: 0;
 	padding-inline: var(--sgs-marquee-bleed, var(--sgs-shadow-bleed, 80px));
 	margin-inline: calc(-1 * var(--sgs-marquee-bleed, var(--sgs-shadow-bleed, 80px)));
+	--sgs-bleed-band: 1;
+	/* The band carries a click listener for iOS (bleed-band-taps.js), so it must not flash iOS's tap highlight. */
+	-webkit-tap-highlight-color: transparent;
+}
+
+/* Links and controls inside the band keep the browser's own tap highlight (zero specificity: a block's own rule wins). */
+:where([data-sgs-marquee-lane="on"]) :where(a, button, [role="button"], input, select, textarea, label, summary) {
+	-webkit-tap-highlight-color: initial;
 }
 
 /* The pause button floats over the bottom end of the root, above the lane, so on a tall strip of logos it sits in the
