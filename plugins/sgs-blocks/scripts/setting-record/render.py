@@ -1,11 +1,15 @@
 """Render a block offline through the plugin's own runner (scripts/qa/lib/render-css-harness.php), with a cache.
 
 Every render is cached under <cache root>/<code hash>/<render key>.json. The code hash is per block: it covers the
-block's own folder and those of the blocks its fixture renders with it, every block's block.json (the runner registers
-the real block types), src/blocks/extensions, src/shared, includes/, assets/, schemas/ (a helper reads
-schemas/motion.schema.json), templates/, the runner (scripts/qa/lib/) and sgs-blocks.php, plus the fixture files. Another
-block's stylesheet, script or PHP is not in it: a render's cache holds only its PHP output, and the stylesheets are read
-fresh on every check. The cache root is SGS_SETTING_RECORD_CACHE, else .cache/ beside this file (gitignored).
+block's own folder and those of the blocks its fixture renders with it, which block folders exist and which hold a
+render.php (the runner resolves a name to its folder, and its registry stand-in answers is_registered by it),
+src/blocks/extensions, src/shared, includes/, assets/, schemas/ (a helper reads schemas/motion.schema.json), templates/,
+the runner (scripts/qa/lib/) and sgs-blocks.php, plus the fixture files. Another block's files are not in it: a render
+that reads one anyway (a block type its PHP looks up in the registry, a block its content renders) records the file and
+its content hash (`outside`), and the cached render is used only while every such file is unchanged
+(Renderer._outside_current), so one block's block.json edit re-renders only the renders that read it. A render's cache
+holds only its PHP output, and the stylesheets are read fresh on every check. The cache root is SGS_SETTING_RECORD_CACHE,
+else .cache/ beside this file (gitignored).
 """
 from __future__ import annotations
 
@@ -40,6 +44,8 @@ PLACEHOLDERS = {'{{image}}': 9001, '{{image.url}}': 'https://example.test/wp-con
 # says, printing nothing, so the runner and its output are unchanged (stamp.py reads the list).
 INCLUDED_HOOK = HERE / 'included-files.php'
 RUNNER_FIDELITY_FLAGS = ['--render-block-filters', '--print-footer', '--wp-fidelity', '--interactivity-state']
+# SGS_RENDER_MUTATE=<mechanism> switches one mechanism off, so its must-fail test can be seen failing (tests/test_render.py)
+MUTATE = set(filter(None, (os.environ.get('SGS_RENDER_MUTATE') or '').split(',')))
 CODE_ROOTS = ('src', 'includes', 'assets', 'schemas', 'templates', 'scripts/qa/lib', 'sgs-blocks.php')
 
 
@@ -73,8 +79,14 @@ def code_hash(plugin: Path, fixture_files=(), blocks=None) -> str:
             files += _files(plugin / root)
             continue
         files += _files(plugin / 'src' / 'shared') + _files(plugin / 'src' / 'blocks' / 'extensions')
-        for d in sorted(x for x in (plugin / 'src' / 'blocks').iterdir() if x.is_dir() and x.name != 'extensions'):
-            files += _files(d) if d.name in blocks else [f for f in [d / 'block.json'] if f.is_file()]
+        folders = sorted(x for x in (plugin / 'src' / 'blocks').iterdir() if x.is_dir() and x.name != 'extensions')
+        # which blocks exist and which render through PHP: a name resolves to a folder whatever the render reads
+        h.update(('blocks:' + ','.join(d.name + ('+' if (d / 'render.php').is_file() else '') for d in folders)).encode())
+        for d in folders:
+            if d.name in blocks:
+                files += _files(d)
+            elif 'every-block-json' in MUTATE:
+                files += [f for f in [d / 'block.json'] if f.is_file()]
     for f in files:
         h.update(f.relative_to(plugin).as_posix().encode())
         h.update(f.read_bytes())
@@ -84,6 +96,29 @@ def code_hash(plugin: Path, fixture_files=(), blocks=None) -> str:
             h.update(p.name.encode())
             h.update(p.read_bytes())
     return h.hexdigest()[:16]
+
+
+def outside_block(rel: str, related) -> bool:
+    """Whether a plugin file (its path relative to the plugin) is in a block folder the code hash leaves out (`related`:
+    the blocks it covers whole; None covers every block)."""
+    parts = rel.split('/')
+    return related is not None and len(parts) > 3 and parts[:2] == ['src', 'blocks'] and parts[2] != 'extensions' and parts[2] not in related
+
+
+_MD5 = {}  # path -> ((mtime_ns, size), md5): a file asked for again is hashed again only when it changed
+
+
+def file_md5(f: Path) -> str:
+    """The md5 of a file's bytes ('missing' when it is gone)."""
+    try:
+        st = f.stat()
+    except OSError:
+        return 'missing'
+    sig = (st.st_mtime_ns, st.st_size)
+    got = _MD5.get(str(f))
+    if got is None or got[0] != sig:
+        got = _MD5[str(f)] = (sig, hashlib.md5(f.read_bytes()).hexdigest())
+    return got[1]
 
 
 def block_json(plugin: Path, short: str) -> dict:
@@ -236,7 +271,8 @@ class Renderer:
         related = None
         if short:
             names = re.findall(r'"name": "sgs/([a-z0-9-]+)"', json.dumps([fixture.get('inner') or [], fixture.get('parents') or [], fixture.get('paintStates') or []]))
-            related = {short, *names}
+            related = {short} if 'own-folder-only' in MUTATE else {short, *names}
+        self.related = related
         self.hash = code_hash(plugin, fixture_files(fixture, fixtures_dir), related)
         self.cache = CACHE_ROOT / self.hash
         self.cache.mkdir(parents=True, exist_ok=True)
@@ -268,12 +304,15 @@ class Renderer:
         cf = self.cache / f'{key}.json'
         if cf.is_file():
             res = json.loads(cf.read_text(encoding='utf-8'))
-            if 'included' in res:  # cached before renders reported their files: rendered again, so the stamp is whole
+            # a render cached before renders reported their files, or one a file outside the code hash it read has changed
+            # under, is rendered again
+            if 'included' in res and self._outside_current(res):
                 self.included.update(res['included'])
                 return res
         af = self.cache / f'{key}.attrs.json'
         af.write_text(json.dumps(attrs), encoding='utf-8')
         inc = self.cache / f'{key}.included.json'
+        reads = self.cache / f'{key}.reads.json'
         cmd = ['php', '-d', f'auto_prepend_file={INCLUDED_HOOK}', str(self.harness), '--slug', slug, '--attrs-file', str(af),
                '--render-children', *extra]
         if content:
@@ -285,7 +324,7 @@ class Renderer:
             ifile.write_text(json.dumps(inner), encoding='utf-8')
             cmd += ['--inner-blocks-file', str(ifile)]
         t0 = time.time()
-        env = {**(self.env or os.environ), 'SGS_SETTING_RECORD_INCLUDED': str(inc)}
+        env = {**(self.env or os.environ), 'SGS_SETTING_RECORD_INCLUDED': str(inc), 'SGS_SETTING_RECORD_READS': str(reads)}
         for attempt in (1, 2):  # a render the busy machine starved is tried once more before it counts as failed
             try:
                 p = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8', errors='replace', cwd=str(self.plugin), timeout=TIMEOUT, env=env)
@@ -306,6 +345,9 @@ class Renderer:
                 raise RuntimeError(f'a render of {slug} loaded {readers}, which reads stylesheet files or scripts: the render '
                                    'cache key leaves them out (render.py::NOT_RENDER_INPUTS), so it must take them in first')
             self.included.update(res['included'])
+            # every file outside the code hash the render loaded or read, with its content hash (_outside_current)
+            read = included_paths(json.loads(reads.read_text(encoding='utf-8')), self.plugin) if reads.is_file() else []
+            res['outside'] = {rel: file_md5(self.plugin / rel) for rel in sorted({*res['included'], *read}) if outside_block(rel, self.related)}
         if res.get('ok'):
             res['html'] = apply_directives(res.get('html', ''), res.get('interactivityState') or {})
         if res.get('ok') and self.post:
@@ -313,6 +355,15 @@ class Renderer:
         if res.get('ok'):
             write_whole(cf, json.dumps(res))  # a failed render is retried next run, never cached
         return res
+
+    def _outside_current(self, res: dict) -> bool:
+        """Whether every file outside the code hash that a cached render loaded or read (`outside`: a block type its PHP looked
+        up, a block its content rendered) still has the content it had. A scoped renderer's render with no `outside` list
+        was cached before reads were recorded: it is rendered again."""
+        if self.related is None or 'outside-check' in MUTATE:
+            return True
+        outside = res.get('outside')
+        return outside is not None and all(file_md5(self.plugin / rel) == md5 for rel, md5 in outside.items())
 
     def render_inner(self, rows, context=None):
         """Each fixture child rendered through its real render.php with its defaults, its own children first, as WordPress

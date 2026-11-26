@@ -342,6 +342,7 @@ if ( ! is_array( $context ) ) {
 $block_type = null;
 $block_json = dirname( $render_path ) . '/block.json';
 if ( is_file( $block_json ) ) {
+	$GLOBALS['sgs_qa_read_files'][] = $block_json; // every block.json a render reads (setting-record/included-files.php)
 	$block_meta = json_decode( (string) file_get_contents( $block_json ), true );
 	if ( is_array( $block_meta ) ) {
 		$block_type = (object) array( 'attributes' => is_array( $block_meta['attributes'] ?? null ) ? $block_meta['attributes'] : array() );
@@ -476,6 +477,9 @@ if ( isset( $args['render-children'] ) ) {
 			if ( (int) ( $catalogue_post->ID ?? 0 ) === (int) ( $child_attrs['productId'] ?? 0 ) ) {
 				$GLOBALS['sgs_qa_post'] = $catalogue_post;
 			}
+		}
+		if ( is_file( dirname( $child_path ) . '/block.json' ) ) {
+			$GLOBALS['sgs_qa_read_files'][] = dirname( $child_path ) . '/block.json';
 		}
 		$child_meta = is_file( dirname( $child_path ) . '/block.json' ) ? json_decode( (string) file_get_contents( dirname( $child_path ) . '/block.json' ), true ) : array();
 		$child_type = (object) array( 'attributes' => is_array( $child_meta['attributes'] ?? null ) ? $child_meta['attributes'] : array() );
