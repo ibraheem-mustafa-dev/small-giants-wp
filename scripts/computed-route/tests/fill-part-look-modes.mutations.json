@@ -31,7 +31,7 @@
 	},
 	{
 		"file": "lib/fill-part-look-modes.mjs",
-		"find": "if ( ! attrExists( block, w.attr ) ) {",
+		"find": "if ( ! attrExists( block, top ) ) {",
 		"replace": "if ( false ) {",
 		"why": "a setting the block lacks is written"
 	},
@@ -58,5 +58,29 @@
 		"find": "if ( ! wanted.length || o.entry?.noDraft ) {",
 		"replace": "if ( ! wanted.length ) {",
 		"why": "a surface with no draft page is read"
+	},
+	{
+		"file": "lib/fill-part-look-modes.mjs",
+		"find": "value: null === key ? w.value : { ...( whole || {} ), [ key ]: w.value }",
+		"replace": "value: null === key ? w.value : { [ key ]: w.value }",
+		"why": "a key write drops the object's other keys"
+	},
+	{
+		"file": "lib/fill-part-look-modes.mjs",
+		"find": "const held = null === key ? whole : whole?.[ key ];",
+		"replace": "const held = whole;",
+		"why": "a key write is judged against the whole object"
+	},
+	{
+		"file": "lib/fill-part-look-modes.mjs",
+		"find": "if ( null !== key && undefined !== whole && ( null === whole || 'object' !== typeof whole || Array.isArray( whole ) ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a key is set into a setting that holds text"
+	},
+	{
+		"file": "lib/fill-part-look-modes.mjs",
+		"find": "const top = dot < 0 ? w.attr : w.attr.slice( 0, dot );",
+		"replace": "const top = w.attr;",
+		"why": "a key write is looked up as a setting of its own"
 	}
 ]

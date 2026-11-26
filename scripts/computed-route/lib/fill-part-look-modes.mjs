@@ -64,11 +64,21 @@ export function modeWrites( { results, wanted, nodes, flat, refOf, attrExists, m
 			const ref = refOf( node );
 			for ( const w of decided ) {
 				const row = { node: ref, block, slot: '', property: w.property || '(mode)', value: json( w.value ), state: null };
-				if ( ! attrExists( block, w.attr ) ) {
-					out.unmapped.push( { ...row, reason: `part-look ${ surface }: ${ block } has no ${ w.attr } setting (${ w.evidence || 'mode rule' })` } );
+				// A write to one key of an object setting (`strings.orders`, the account's tab words) is that key of the setting, merged
+				// into what the node holds of it (part-look.mjs::mergeKeyWrites does the same for a site write).
+				const dot = w.attr.indexOf( '.' );
+				const top = dot < 0 ? w.attr : w.attr.slice( 0, dot );
+				const key = dot < 0 ? null : w.attr.slice( dot + 1 );
+				if ( ! attrExists( block, top ) ) {
+					out.unmapped.push( { ...row, reason: `part-look ${ surface }: ${ block } has no ${ top } setting (${ w.evidence || 'mode rule' })` } );
 					continue;
 				}
-				const held = node.attributes?.[ w.attr ];
+				const whole = node.attributes?.[ top ];
+				if ( null !== key && undefined !== whole && ( null === whole || 'object' !== typeof whole || Array.isArray( whole ) ) ) {
+					out.unmapped.push( { ...row, reason: `conflict: ${ top } holds ${ json( whole ) }, not an object to set ${ key } in; part-look ${ surface } reads ${ json( w.value ) }` } );
+					continue;
+				}
+				const held = null === key ? whole : whole?.[ key ];
 				if ( undefined !== held && json( held ) !== json( w.value ) ) {
 					out.unmapped.push( { ...row, reason: `conflict: ${ w.attr } already holds ${ json( held ) }; part-look ${ surface } reads ${ json( w.value ) } (${ w.evidence || 'mode rule' })` } );
 					continue;
@@ -76,8 +86,8 @@ export function modeWrites( { results, wanted, nodes, flat, refOf, attrExists, m
 				if ( undefined !== held ) {
 					continue;
 				}
-				const { before, after } = setAttr( node, { attr: w.attr, value: w.value, merge: 'replace' } );
-				out.writes.push( { node: ref, index: rec.index, block, slot: '', prop: row.property, attr: w.attr, before, after, widths: [], how: 'part-look-mode', note: `part-look ${ surface }${ cross ? ' (read on this page\'s loop cards)' : '' }: ${ w.evidence || 'mode rule' }` } );
+				const { before, after } = setAttr( node, { attr: top, value: null === key ? w.value : { ...( whole || {} ), [ key ]: w.value }, merge: 'replace' } );
+				out.writes.push( { node: ref, index: rec.index, block, slot: '', prop: row.property, attr: top, ...( null === key ? {} : { key } ), before, after, widths: [], how: 'part-look-mode', note: `part-look ${ surface }${ cross ? ' (read on this page\'s loop cards)' : '' }: ${ w.evidence || 'mode rule' }` } );
 			}
 			for ( const g of ( r.build.gaps || [] ).filter( ( x ) => ruleSettingsOf( modes, block ).has( x.setting ) ) ) {
 				out.unmapped.push( { node: ref, block, slot: '', property: `(mode) ${ g.setting }`, value: json( g.evidence ?? null ), state: null, reason: `part-look ${ surface }: ${ g.what }` } );

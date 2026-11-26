@@ -83,3 +83,21 @@ test( 'MUST FAIL: part-look reads the Fill surface\'s own draft entry, and a ref
 	assert.deepEqual( ( await run( { surfaces: RESULTS() }, { entry: { ...entry, noDraft: 'woo page' } } ) ).out.writes, [] );
 	assert.equal( asked, null, 'a surface with no draft page is not read' );
 } );
+
+test( 'MUST FAIL: a write to one key of an object setting (the account’s tab words) is merged into that setting', () => {
+	const nodes = [ { index: 0, name: 'sgs/account', node: {} } ];
+	const flat = flatOf( nodes, { 0: { strings: { orders: 'Orders' } } } );
+	const results = { 'my-account-in': { block: 'sgs/account', build: { writes: [ mode( 'strings.addresses', 'Addresses' ), mode( 'strings.orders', 'Orders' ), mode( 'strings.savedItems', 'Wishlist' ) ], gaps: [] } } };
+	const wanted = [ { surface: 'my-account-in', block: 'sgs/account', cross: false } ];
+	const out = modeWrites( { results, wanted, nodes, flat, refOf: refOf( flat ), attrExists: ( b, a ) => 'strings' === a } );
+	assert.deepEqual( flat[ 0 ].attributes.strings, { orders: 'Orders', addresses: 'Addresses', savedItems: 'Wishlist' } );
+	assert.deepEqual( out.writes.map( ( w ) => w.attr ), [ 'strings', 'strings' ], 'the equal key is not written again' );
+	assert.deepEqual( out.unmapped, [] );
+	// Negative controls: a key that differs is a conflict; a setting that is no object, and a block with no such setting, are rows.
+	const held = flatOf( nodes, { 0: { strings: { orders: 'My orders' } } } );
+	assert.match( modeWrites( { results, wanted, nodes, flat: held, refOf: refOf( held ), attrExists: () => true } ).unmapped[ 0 ].reason, /^conflict: strings.orders already holds "My orders"/ );
+	const flatText = flatOf( nodes, { 0: { strings: 'x' } } );
+	assert.match( modeWrites( { results, wanted, nodes, flat: flatText, refOf: refOf( flatText ), attrExists: () => true } ).unmapped[ 0 ].reason, /not an object to set addresses in/ );
+	const none = flatOf( nodes );
+	assert.match( modeWrites( { results, wanted, nodes, flat: none, refOf: refOf( none ), attrExists: () => false } ).unmapped[ 0 ].reason, /has no strings setting/ );
+} );
