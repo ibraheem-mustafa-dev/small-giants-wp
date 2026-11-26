@@ -218,7 +218,7 @@ async function walkSide( browser, side, width, draftStates = null ) {
 		}
 		if ( start.refused ) {
 			if ( ! onlyStates || onlyStates.includes( state.name ) ) {
-				states[ state.name ] = { snap: {}, shot: null, log: [], refused: start.refused, start: start.how };
+				states[ state.name ] = { snap: {}, shot: null, log: [], refused: start.refused, start: start.how, ...( start.moved ? { restMoved: start.moved } : {} ) };
 			}
 			continue;
 		}
@@ -237,7 +237,7 @@ async function walkSide( browser, side, width, draftStates = null ) {
 		const missed = untriggered( log );
 		if ( missed && draftStates?.[ state.name ]?.untriggered ) {
 			if ( ! onlyStates || onlyStates.includes( state.name ) ) {
-				states[ state.name ] = { snap: {}, shot: null, log, untriggered: missed, unread: true, start: start.how };
+				states[ state.name ] = { snap: {}, shot: null, log, untriggered: missed, unread: true, start: start.how, ...( start.moved ? { restMoved: start.moved } : {} ) };
 			}
 			continue;
 		}
@@ -330,7 +330,7 @@ async function walkSide( browser, side, width, draftStates = null ) {
 			await focusPasses( page, pairs, side, snap, RESOLVE, !! phone.isMobile );
 			await activePass( page, pairs, side, snap, RESOLVE, pressCdp, { all: !! cdp, propsFor } );
 		}
-		states[ state.name ] = { start: start.how, ...( missed ? { untriggered: missed } : {} ), snap, shot, log, structure, auto, links, mainY, region: h.region, entrances: state.name === firstState ? entrances : null, ...( settled.settled ? {} : { unsettled: settled } ), ...( findings.length ? { findings } : {} ), ...( inert ? { inert } : {} ) };
+		states[ state.name ] = { start: start.how, ...( start.moved ? { restMoved: start.moved } : {} ), ...( missed ? { untriggered: missed } : {} ), snap, shot, log, structure, auto, links, mainY, region: h.region, entrances: state.name === firstState ? entrances : null, ...( settled.settled ? {} : { unsettled: settled } ), ...( findings.length ? { findings } : {} ), ...( inert ? { inert } : {} ) };
 		if ( state.autoScrolled ) {
 			await page.evaluate( ( attr ) => {
 				document.querySelectorAll( `[${ attr }]` ).forEach( ( el ) => el.remove() );
@@ -388,7 +388,8 @@ for ( const width of widths ) {
 		if ( shot ) {
 			await sideBySide( browser, d.shot, l.shot, shot, width );
 		}
-		const run = { ...bare, shot: shot ? path.basename( shot ) : null };
+		// The rest a fresh load replaced the first read with (state-rest.mjs::toRest `moved`), when either side's did.
+		const run = { ...bare, shot: shot ? path.basename( shot ) : null, ...( d.restMoved || l.restMoved ? { restMoved: { draft: d.restMoved || null, live: l.restMoved || null } } : {} ) };
 		compareState( run, d, l, { state, width, cfg, accept, divergences, tol, header, autoOn, pairsFor, origins, linksSeen, allLiveLinks, unmatched, mispaired, everyState } );
 		results.runs.push( run );
 	}

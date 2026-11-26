@@ -8,9 +8,9 @@
 // the state where it is (a wizard step chosen inside a modal the config's `open` opened is at rest), a page that is not
 // (a drawer, a scroll, a lock the previous state left) is loaded afresh and the config's `open` runs again, and a page
 // still not at rest after that is refused with its reason, never measured. A load that differs from the first read only in where
-// the page is (the scroll, the focused element, the layers in view) is loaded a second time and the two fresh loads compared: two
+// the page is (the scroll, a focus or layer the first read had and the fresh load lacks) is loaded a second time and the two fresh loads compared: two
 // that agree are the page's rest (the first read caught an offset the load entrances' reload left), and only a page whose two fresh
-// loads disagree is refused. A lock, a dialog or any other field differing after a fresh load is always a refusal. A state marked `from: 'previous'` runs on the
+// loads disagree is refused. A lock, a dialog, a layer or focus the fresh load adds (a drawer with no ARIA the load opens) or any other field differing after a fresh load is always a refusal. A state marked `from: 'previous'` runs on the
 // previous state's page as it is (a step that needs the panel the step before opened); `from: 'rest'` loads afresh
 // whatever the signature says.
 // A state whose action finds nothing to trigger on either side (every click, tap or hover it tried found no target: a
@@ -67,8 +67,19 @@ export function restSignature() {
 
 const LABELS = { scroll: 'scroll', lock: 'scroll lock (html, body overflow-y; body, html position)', dialogs: 'open dialogs', modals: 'shown modals', popovers: 'open popovers', disclosures: 'open disclosures (details, aria-expanded)', inert: 'inert elements', hidden: 'page-level aria-hidden', focus: 'focused element', layers: 'fixed or transformed layers in the viewport' };
 
-// The fields that say where the page is, not what it holds open: a fresh load differing in these alone is judged against a second fresh load.
-const PLACEMENT = [ 'scroll', 'focus', 'layers' ];
+// Whether every field a fresh load differs in only says where the page is, never what it holds open, so the load is judged against
+// a second fresh load instead of refused. Scroll is placement. A layer or focus the first read did not have is something the load
+// opened (a drawer with no ARIA, a control a dialog focuses): never placement, whatever the scroll. A layer or focus the first read
+// had and the fresh load lacks (it scrolled out of view, the focus went with the offset) is placement.
+export function placementOnly( rest, now ) {
+	const names = ( v ) => String( v || '' ).split( ' ' ).filter( Boolean );
+	const placed = {
+		scroll: () => true,
+		layers: () => names( now.layers ).every( ( n ) => names( rest.layers ).includes( n ) ),
+		focus: () => '' === String( now.focus || '' ),
+	};
+	return Object.keys( LABELS ).every( ( k ) => String( rest[ k ] ) === String( now[ k ] ) || ( placed[ k ]?.() ?? false ) );
+}
 
 // What differs between the signature at rest and now: one line per field, empty when the page is at rest.
 export function restDiff( rest, now ) {
@@ -98,8 +109,8 @@ export async function readRest( page, floor = 300 ) {
 
 // Brings the page to rest before a state after the first. reload() loads the page afresh and runs the config's `open`; `read` is
 // the rest read (readRest). Returns { how: 'previous' | 'at rest' | 'reloaded', refused?: reason, rest?: the signature a fresh
-// load reached at rest, which the caller keeps as the page's rest from then on, moved?: what that rest has that the first read
-// had not }. A fresh load that differs from the first read only in placement is repeated: two fresh loads that agree are the
+// load reached at rest, which the caller keeps as the page's rest from then on, moved?: how that rest differs from the first read,
+// which the walker records on the run as `restMoved` }. A fresh load that differs from the first read only in placement is repeated: two fresh loads that agree are the
 // page's rest, and a page whose two fresh loads disagree is refused, naming what moved between them.
 export async function toRest( page, state, rest, reload, read = readRest ) {
 	if ( 'previous' === state.from ) {
@@ -115,7 +126,7 @@ export async function toRest( page, state, rest, reload, read = readRest ) {
 		return { how: 'reloaded', rest: now };
 	}
 	const refused = ( lines ) => ( { how: 'reloaded', refused: `not at rest after a fresh load: ${ lines.join( '; ' ) }` } );
-	if ( Object.keys( LABELS ).some( ( k ) => ! PLACEMENT.includes( k ) && String( rest[ k ] ) !== String( now[ k ] ) ) ) {
+	if ( ! placementOnly( rest, now ) ) {
 		return refused( left );
 	}
 	await reload();

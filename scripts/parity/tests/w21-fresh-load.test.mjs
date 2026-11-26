@@ -20,10 +20,10 @@ const { chromium } = await import( pathToFileURL( path.join( HERE, '../../../plu
 
 const SIG = { scroll: '0,0', lock: 'visible visible static static', dialogs: 0, modals: 0, popovers: 0, disclosures: 0, inert: '', hidden: '', focus: '', layers: '' };
 // toRest with the page's reads and loads stubbed: `reads` are the signatures each read returns in turn.
-const run = async ( reads, state = {} ) => {
+const run = async ( reads, state = {}, rest = SIG ) => {
 	let loads = 0;
 	const queue = [ ...reads ];
-	const out = await toRest( null, state, SIG, async () => { loads++; }, async () => queue.shift() );
+	const out = await toRest( null, state, rest, async () => { loads++; }, async () => queue.shift() );
 	return { ...out, loads };
 };
 
@@ -58,6 +58,25 @@ test( 'MUST FAIL: a dialog, lock or other held-open field after a fresh load is 
 	assert.match( r.refused, /^not at rest after a fresh load: open dialogs: 0 at rest, 1 now$/ );
 	assert.equal( r.loads, 1, 'no second load is tried for it' );
 	assert.equal( ( await run( [ { ...SIG, scroll: '0,900' }, { ...SIG, lock: 'hidden visible fixed static' } ] ) ).loads, 1 );
+} );
+
+test( 'MUST FAIL: a layer or focus the fresh load adds is never adopted as rest, though two fresh loads agree (a drawer with no ARIA the load opens)', async () => {
+	const drawer = { ...SIG, layers: 'aside.drawer' };
+	const r = await run( [ { ...SIG, scroll: '0,900' }, drawer, drawer ] );
+	assert.match( r.refused, /^not at rest after a fresh load: fixed or transformed layers in the viewport: none at rest, aside\.drawer now/ );
+	assert.equal( r.rest, undefined );
+	assert.equal( r.loads, 1, 'no second load is tried for it' );
+	const focused = { ...SIG, focus: 'input#first' };
+	const f = await run( [ { ...SIG, scroll: '0,900' }, focused, focused ] );
+	assert.match( f.refused, /focused element: none at rest, input#first now/ );
+	assert.equal( f.loads, 1 );
+	// Negative controls: a layer or focus the first read had and the fresh load lacks is placement, judged against a second load.
+	const held = { ...SIG, layers: 'header.bar nav.sticky', focus: 'a.skip' };
+	const fresh = { ...SIG, layers: 'header.bar' };
+	const placed = await run( [ { ...held, scroll: '0,900' }, fresh, fresh ], {}, held );
+	assert.equal( placed.refused, undefined );
+	assert.equal( placed.loads, 2 );
+	assert.deepEqual( placed.rest, fresh );
 } );
 
 test( 'a fresh load equal to the first read is one load; from: previous never loads', async () => {
