@@ -63,6 +63,11 @@ test( 'negative control: only the box laying out the first text votes, so a butt
 // pair (the header or the whole page) paid a forced layout for each text node, thousands per state and width.
 const costOf = ( page ) => page.evaluate( ( src ) => {
 	const calls = { style: 0, rects: 0 };
+	const box = Element.prototype.getBoundingClientRect;
+	Element.prototype.getBoundingClientRect = function ( ...a ) {
+		calls.rects++;
+		return box.apply( this, a );
+	};
 	const gcs = window.getComputedStyle;
 	window.getComputedStyle = function ( ...a ) {
 		calls.style++;
@@ -76,6 +81,7 @@ const costOf = ( page ) => page.evaluate( ( src ) => {
 	const c = new Function( `return (${ src });` )()( document.querySelector( '#t' ) );
 	window.getComputedStyle = gcs;
 	Range.prototype.getClientRects = rects;
+	Element.prototype.getBoundingClientRect = box;
 	return { ...calls, tag: c ? c.tagName.toLowerCase() : null };
 }, textCarrier.toString() );
 
@@ -84,14 +90,22 @@ test( "MUST FAIL: a page-root pair reads the first text's box only, not a forced
 	const page = await pageWith( `<main id="t">The <b>very first</b> words carry plain text${ rows }</main>` );
 	const cost = await costOf( page );
 	assert.equal( cost.tag, 'main', "the main element's own paint carries most of its own text" );
-	assert.ok( cost.style < 80, `${ cost.style } getComputedStyle calls` );
-	assert.ok( cost.rects < 10, `${ cost.rects } range rect reads` );
+	// The layout reads (a text node's range rects, an ancestor's box) are the cost: about 20000 before the bound, a dozen after. One
+	// getComputedStyle per child of the element (its display) is the bound's own price: about 15000 before, 1500 after.
+	assert.ok( cost.rects < 40, `${ cost.rects } layout reads (range rects and element boxes)` );
+	assert.ok( cost.style < 2500, `${ cost.style } getComputedStyle calls` );
 	await page.close();
 } );
 
 test( "MUST FAIL: a nested block's text never votes beside the element's own text, however much of it there is", async () => {
 	const page = await pageWith( '<div id="t">Own words <section style="font-weight:700">a nested block with far more bold words than the element itself holds</section></div>' );
 	assert.equal( await carrierTag( page ), 'div' );
+	await page.close();
+} );
+
+test( "MUST FAIL: loose inline text beside the first text's block never votes (only the first text's own box does)", async () => {
+	const page = await pageWith( '<div id="t"><p>Short first.</p><b>much much longer loose bold words after the paragraph, outside its box</b></div>' );
+	assert.equal( await carrierTag( page ), 'p' );
 	await page.close();
 } );
 
