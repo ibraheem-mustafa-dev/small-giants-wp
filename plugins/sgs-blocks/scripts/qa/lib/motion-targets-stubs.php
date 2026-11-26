@@ -47,6 +47,9 @@ if ( ! class_exists( 'WP_Block_Type_Registry' ) ) {
 			if ( ! array_key_exists( $name, $this->types ) ) {
 				$slug = substr( (string) $name, strpos( (string) $name, '/' ) + 1 );
 				$file = dirname( __DIR__, 3 ) . '/src/blocks/' . $slug . '/block.json';
+				if ( is_readable( $file ) ) {
+					$GLOBALS['sgs_qa_read_files'][] = $file; // a type looked up is a block.json this render read (setting-record/included-files.php)
+				}
 				$json = is_readable( $file ) ? json_decode( (string) file_get_contents( $file ), true ) : null;
 				$this->types[ $name ] = is_array( $json )
 					? (object) array(
