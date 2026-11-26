@@ -249,6 +249,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					blockName="sgs/responsive-logo"
 					blockSlug="sgs/responsive-logo"
 					prefix="logo"
+					inGroup="settings"
 					atoms={ LOGO_SLOT.atoms }
 					kinds={ LOGO_SLOT.kinds }
 					context={ LOGO_SLOT.context }
@@ -261,6 +262,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					blockName="sgs/responsive-logo"
 					blockSlug="sgs/responsive-logo"
 					prefix="logoDark"
+					inGroup="settings"
 					atoms={ DARK_SLOT.atoms }
 					kinds={ DARK_SLOT.kinds }
 					context={ DARK_SLOT.context }

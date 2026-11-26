@@ -288,20 +288,19 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 
-				<PanelBody
-					title={ __( 'Item pictures', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<MediaElementPanel
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						prefix="thumb"
-						blockSlug="sgs/order-items"
-						blockName="sgs/order-items"
-						context="item"
-						atoms={ THUMB_ATOMS }
-					/>
-				</PanelBody>
+				{ /* The item picture's media slot sits directly in this default group (`inGroup`), so its panels keep their place on
+				     first select; `label` names the slot in each panel title. */ }
+				<MediaElementPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					prefix="thumb"
+					blockSlug="sgs/order-items"
+					blockName="sgs/order-items"
+					context="item"
+					atoms={ THUMB_ATOMS }
+					label={ __( 'Item pictures', 'sgs-blocks' ) }
+					inGroup="settings"
+				/>
 
 				<PanelBody
 					title={ __( 'Item dividers', 'sgs-blocks' ) }

@@ -820,6 +820,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						prefix="split"
+						inGroup="settings"
 						blockSlug={ name }
 						blockName={ name }
 						context={ SPLIT_ENTRY.context }

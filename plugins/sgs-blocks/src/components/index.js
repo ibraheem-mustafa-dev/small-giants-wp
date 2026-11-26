@@ -27,6 +27,10 @@ export {
 	SgsResetItem,
 	panelResetState,
 } from './SgsResetPanel';
+export {
+	SgsBlockWideRowsSlot,
+	SgsBlockWideRowsFill,
+} from './SgsBlockWideRows';
 export { default as MediaGalleryPicker } from './MediaGalleryPicker';
 // `parseLinearGradient` / `buildGradientCss` were deleted by 837f7c97 (D636 storage
 // collapse) but stayed listed here, so the barrel advertised two bindings that resolve
