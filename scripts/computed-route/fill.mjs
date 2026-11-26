@@ -253,7 +253,7 @@ export async function fillSurface( o ) {
 		const ledgerFile = path.join( buildDir, 'qa', 'divergences.json' );
 		// The fixtures the site look drew each block from (the plain block, lib/setting-record.mjs::recordFixtures).
 		const fixtures = recordFixtures();
-		// A card standing for every item of its loop keeps its block's variant: one copy's look never chooses it (lib/fill-item-template.mjs).
+		// A card drawing every record of its query keeps its block's variant: one copy's look never chooses it (lib/fill-item-template.mjs).
 		const heldVariants = holdItemVariants( { nodes, flat, db, schemaOf: blockSchema, refOf } );
 		const result = fillTree( {
 			tree, nodes, reads, db, calFor, origin: reads.origin,
