@@ -153,6 +153,27 @@ def test_reader_drops_the_least_recently_used_page(monkeypatch):
     assert pages.built == built + 1, 'the page unused longest was dropped'
 
 
+def test_button_choice_readings(tmp_path):
+    """MUST FAIL with SITE_LOOK_MUTATE=enum-reads: what each linkUnderline value paints, at rest and with hover held, read from
+    the per-value renders (the route's lib/resolve-enum.mjs reads them): `always` underlines, `hover` rests plain and underlines on
+    hover, and the setting's default (unset, a value the plan has no instance for) is not a value at all."""
+    facts = build(tmp_path, 'button')['settingFacts']['linkUnderline']
+    for w in ('375', '768', '1440'):
+        assert facts['enumReads']['always']['text-decoration-line'][w] == 'underline'
+        assert facts['enumReads']['hover']['text-decoration-line'][w] == 'none'
+        assert facts['enumReads']['none']['text-decoration-line'][w] == 'none'
+        assert facts['enumStateReads']['hover']['hover']['text-decoration-line'][w] == 'underline'
+        assert facts['enumStateReads']['hover']['always']['text-decoration-line'][w] == 'underline'
+    assert '' not in facts['enumReads']
+
+
+def test_read_longhands_takes_the_shallowest_placement_that_carries_the_property():
+    reading = {'375': {'': {'flex-wrap': 'wrap'}, ' > a': {'flex-wrap': 'nowrap', 'gap': '4px'}}, '1440': {' > a': {'flex-wrap': 'nowrap'}}}
+    assert SL.read_longhands(reading, [' > a', ''], ['flex-wrap']) == {'flex-wrap': {'375': 'nowrap', '1440': 'nowrap'}}
+    assert SL.read_longhands(reading, ['', ' > a'], ['flex-wrap']) == {'flex-wrap': {'375': 'wrap'}}
+    assert SL.read_longhands(reading, [''], ['gap']) == {}
+
+
 def test_fold_matches_the_route(tmp_path):
     """MUST FAIL with SITE_LOOK_MUTATE=fold-depth: the Python fold gives what the route's own fold
     (tools/site-look-bridge.mjs fold, calibration's functions) gives on the same readings."""
@@ -241,7 +262,7 @@ def test_tested_attrs_reads_attribute_selectors():
     assert not names & {'class', 'full-start', 'full-end', 'nope'}
 
 
-@pytest.mark.parametrize('name', ['snapshot', 'custom-css', 'section', 'footer-move', 'wrapper-root', 'fold-depth', 'path-attrs', 'plain-fixture', 'fixture-key'])
+@pytest.mark.parametrize('name', ['snapshot', 'custom-css', 'section', 'footer-move', 'wrapper-root', 'fold-depth', 'path-attrs', 'plain-fixture', 'fixture-key', 'enum-reads'])
 def test_every_switch_is_named_in_the_builder(name):
     """Each switch a must-fail test names is one the builder reads."""
     assert f"'{name}'" in (LOOK / 'site_look.py').read_text(encoding='utf-8')
