@@ -6,7 +6,7 @@ Stage E3. Read `_common.md`, then `w-e3-shared.md` (base branch, two passes, wha
 
 **Over 12 base colours (2026-11-25 count; W5's detector list wins):** nav-drawer-menu 32, nav-bar-menu 25. Each part's colours go to that part's panel (menu item, badge, submenu container, submenu items, mega panel, burger button); the main Colour panel keeps only whole-menu colours.
 
-**Shared files you own:** `src/blocks/shared/nav-menu-panels/` (including `ListLayoutPanel.js`, `SubmenuItemsPanel.js`, `SectionMotionPanel.js`), and one additive `titleOverride` prop on `src/components/MediaElementPanel.js` for the logo. Nothing else shared.
+**Shared files you own:** `plugins/sgs-blocks/src/shared/nav-menu-panels/` (including `ListLayoutPanel.js`, `SubmenuItemsPanel.js`, `SectionMotionPanel.js`), and one additive `titleOverride` prop on `src/components/MediaElementPanel.js` for the logo. Nothing else shared.
 
 1. **Nav drawer menu and nav bar menu** (Bean, 2026-11-25):
    - Dissolve "List layout" on both blocks in one change, control by control, per the table in `i19-panels.md` section 2 ("Proposal: dissolve 'List layout'"): Padding, Margin and Item gap ("Space between items") into the shared Spacing panel (Stage E2's `ResponsiveBoxControls` with Max width and Content width off); Columns into the Settings "Layout" panel; Link padding, Link minimum height and Row gap (renamed "Space between a link's parts") into "Menu item"; the badge's three into "Badge"; "Submenu link padding" into "Submenu: Items" beside Marker icon; "Mega panel padding" into the mega menu panel, shown only when an item is in Panel mode. Every attribute keeps its name, so no sweep.
