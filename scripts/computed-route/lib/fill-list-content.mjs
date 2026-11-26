@@ -156,7 +156,8 @@ export function itemPicture( value, media = {} ) {
 	return 1 === new Set( hits.map( ( h ) => h.id ) ).size ? hits[ 0 ] : null;
 }
 
-// One item's settings from the draft item: { attrs, rows } where rows are [{ field, value, reason }] the item cannot hold.
+// One item's settings from the draft item: { attrs, rows } where rows are [{ field, value, reason }] the item cannot hold (a picture
+// to choose carries `picture: true`).
 export function itemAttrs( item, { map, keys, media, pages = null, label, snapshot = null } ) {
 	const attrs = {};
 	const rows = [];
@@ -166,7 +167,7 @@ export function itemAttrs( item, { map, keys, media, pages = null, label, snapsh
 		if ( 'image' === keyRoles( k )[ 0 ] || 'image' === keyRole( field ) ) {
 			const hit = null === v || undefined === v ? null : itemPicture( v, media );
 			if ( ! hit ) {
-				rows.push( { field, value: v ?? '', reason: `${ label }'s picture (${ field }${ v ? ` "${ v }"` : '' }) is chosen by the draft at run time or is no uploaded file: choose it in the item's ${ key } setting` } );
+				rows.push( { field, value: v ?? '', picture: true, reason: `${ label }'s picture (${ field }${ v ? ` "${ v }"` : '' }) is chosen by the draft at run time or is no uploaded file: choose it in the item's ${ key } setting` } );
 			} else {
 				attrs[ key ] = 'object' === k.type ? itemSource( hit ) : 'string' === k.type ? hit.url : hit.id;
 			}
@@ -296,10 +297,10 @@ export function listDecisions( { block, target, node, list, media = {}, pages = 
 		out.rows.push( { field: f.name, value: '', reason: `the draft draws a picture in each of its ${ built.length } items (${ f.name }: an image the draft fills at run time, or a placeholder) and ${ block }'s ${ where } hold no picture setting Fill can write: choose each picture in the editor` } );
 	}
 	built.forEach( ( b ) => out.rows.push( ...b.rows ) );
-	// An item whose only content was a link that goes to no page holds nothing the block shows: it is left out, never written
-	// as a blank item, and its link's row (above) names it.
-	const kept = built.filter( ( b ) => Object.keys( b.attrs ).some( ( k ) => ! named.has( k ) ) || ! b.rows.some( ( r ) => 'link' === keyRole( r.field ) ) );
-	out.notes.push( `${ list.items.length } items from the draft's ${ list.source }, fields ${ fields }${ kept.length < built.length ? `; ${ built.length - kept.length } item(s) whose only link goes to no page left out` : '' }` );
+	// An item holding nothing the block shows (no setting but its identity key) and no picture to choose is left out, never written
+	// as a blank item; a link of it that goes to no page keeps its row (above).
+	const kept = built.filter( ( b ) => Object.keys( b.attrs ).some( ( k ) => ! named.has( k ) ) || b.rows.some( ( r ) => r.picture ) );
+	out.notes.push( `${ list.items.length } items from the draft's ${ list.source }, fields ${ fields }${ kept.length < built.length ? `; ${ built.length - kept.length } item(s) holding nothing to show and no picture to choose left out` : '' }` );
 	if ( 'attr' === target.kind ) {
 		out.writes.push( { attr: target.attr, value: kept.map( ( b ) => b.attrs ) } );
 	} else {

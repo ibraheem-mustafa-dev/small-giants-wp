@@ -25,14 +25,26 @@
 	},
 	{
 		"file": "lib/fill-list-content.mjs",
-		"find": "|| ! b.rows.some( ( r ) => 'link' === keyRole( r.field ) ) );",
+		"find": "|| b.rows.some( ( r ) => r.picture ) );",
 		"replace": "|| true );",
-		"why": "an item whose only link goes to no page is written as a blank item"
+		"why": "an item holding nothing to show is written as a blank item"
+	},
+	{
+		"file": "lib/fill-list-content.mjs",
+		"find": "|| b.rows.some( ( r ) => r.picture ) );",
+		"replace": ");",
+		"why": "an item with a picture to choose is dropped"
+	},
+	{
+		"file": "lib/fill-list-content.mjs",
+		"find": "rows.push( { field, value: v ?? '', picture: true, reason:",
+		"replace": "rows.push( { field, value: v ?? '', reason:",
+		"why": "a picture row is not known as one, so its item is dropped"
 	},
 	{
 		"file": "lib/fill-list-content.mjs",
 		"find": "const kept = built.filter( ( b ) => Object.keys( b.attrs ).some( ( k ) => ! named.has( k ) ) ||",
-		"replace": "const kept = built.filter( ( b ) => false ||",
-		"why": "an item with a picture is dropped when its link goes nowhere"
+		"replace": "const kept = built.filter( ( b ) => Object.keys( b.attrs ).length > 0 ||",
+		"why": "an item holding only its made-up identity key is kept"
 	}
 ]

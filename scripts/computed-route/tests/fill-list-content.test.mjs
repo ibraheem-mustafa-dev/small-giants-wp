@@ -200,8 +200,7 @@ test( 'items holding only links are written, each link as its page address, and 
 	const bare = pass( [ [ 'sgs/logos', 'Root/40#0' ] ], { facts, inventory, pages } );
 	assert.equal( bare.r.writes.length, 1 );
 	assert.equal( bare.r.writes[ 0 ].attr, 'logos' );
-	assert.deepEqual( bare.flat[ 0 ].attributes.logos.map( ( l ) => l.linkUrl ), [ '/brand-0/' ], 'the item whose only link goes to no page is left out, never a blank tile' );
-	assert.ok( bare.r.notes.some( ( n ) => /1 item\(s\) whose only link goes to no page left out/.test( n ) ) );
+	assert.deepEqual( bare.flat[ 0 ].attributes.logos.map( ( l ) => l.linkUrl ), [ '/brand-0/', undefined ], 'the second tile keeps its place: its picture is one to choose' );
 	assert.ok( ! bare.r.handover.some( ( h ) => /carry no words/.test( h.reason ) ) );
 	assert.match( bare.r.handover.find( ( h ) => 'href' === h.evidence.key ).reason, /item 2's link "#\/brand-1" goes to no page/ );
 	// With a drawn picture per item the pictures are written, each link as its page's permalink.
@@ -227,6 +226,28 @@ test( 'a block whose items hold no picture setting still takes the links, with o
 	const none = pass( [ [ 'sgs/linklist', 'Root/40#0' ] ], { facts, inventory: bare } );
 	assert.equal( none.r.writes.length, 0 );
 	assert.deepEqual( none.r.handover.filter( ( h ) => /carry no words, link or uploaded picture/.test( h.reason ) ).length, 1 );
+} );
+
+test( 'MUST FAIL: an item holding nothing to show and no picture to choose is left out, whatever its link field is named; an item with a picture to choose keeps its place', () => {
+	const keys = [ { key: 'media', role: 'image-object', type: 'object' }, { key: 'linkUrl', role: 'content', type: 'string' }, { key: 'alt', role: 'content', type: 'string' } ];
+	const decide = ( fields, items ) => listDecisions( { block: 'sgs/logos', target: { kind: 'attr', attr: 'logos', keys }, node: {}, list: { source: 'x', fields, items }, pages: [ { route: 'a', slug: 'a', postType: 'page' } ] } );
+	const value = ( d ) => d.writes[ 0 ]?.value;
+	// A link field named by another role (brandUrl reads as an organisation) still matched to the link key.
+	const brand = decide( [ { name: 'brandUrl' } ], [ { brandUrl: '/a/' }, { brandUrl: '#' } ] );
+	assert.deepEqual( value( brand ), [ { linkUrl: '/a/' } ] );
+	assert.ok( brand.rows.some( ( r ) => /item 2's link "#" goes to no page/.test( r.reason ) ), 'the dead link keeps its row' );
+	assert.match( brand.notes.join( ';' ), /1 item\(s\) holding nothing to show and no picture to choose left out/ );
+	// An item with no link at all is no blank tile either.
+	assert.deepEqual( value( decide( [ { name: 'href' } ], [ { href: '/a/' }, {} ] ) ), [ { linkUrl: '/a/' } ] );
+	// The identity key Fill makes for an item is nothing to show: an item holding only it is left out too.
+	const idKeys = [ { key: 'key', role: 'technical', type: 'string' }, { key: 'linkUrl', role: 'content', type: 'string' }, { key: 'label', role: 'content', type: 'string' } ];
+	const ided = listDecisions( { block: 'sgs/chips', target: { kind: 'attr', attr: 'chips', keys: idKeys }, node: {}, list: { source: 'x', fields: [ { name: 'href' }, { name: 'label' } ], items: [ { href: '/a/', label: 'A' }, { href: '#' } ] }, pages: [ { route: 'a', slug: 'a', postType: 'page' } ] } );
+	assert.deepEqual( value( ided ).map( ( c ) => c.label ), [ 'A' ], JSON.stringify( value( ided ) ) );
+	// Negative control: a picture the editor must choose keeps its item, so the row's "choose it in the item" has an item.
+	const pic = decide( [ { name: 'logo', image: true }, { name: 'href' } ], [ { logo: 'assets/x.png', href: '/a/' }, { logo: 'assets/y.png', href: '#' } ] );
+	assert.deepEqual( value( pic ), [ { linkUrl: '/a/' }, {} ] );
+	assert.ok( pic.rows.some( ( r ) => /item 2's picture/.test( r.reason ) ) );
+	assert.doesNotMatch( pic.notes.join( ';' ), /left out/ );
 } );
 
 test( 'a pictures list of another length leaves the placeholder rows', () => {

@@ -23,7 +23,8 @@ const written = ( r ) => r.writes[ 0 ]?.value;
 
 test( 'MUST FAIL: a chip row\'s items get a key from their labels, unique in the list', () => {
 	const r = decide( 'sgs/picker', [ { label: 'All' }, { label: 'Ordering & delivery' }, { label: 'Gifting' }, { label: 'Gifting' }, { label: '' } ], [ 'label' ] );
-	assert.deepEqual( written( r ), [ { label: 'All', key: 'all' }, { label: 'Ordering & delivery', key: 'ordering-delivery' }, { label: 'Gifting', key: 'gifting' }, { label: 'Gifting', key: 'gifting-2' }, { key: 'item-5' } ] );
+	assert.deepEqual( written( r ), [ { label: 'All', key: 'all' }, { label: 'Ordering & delivery', key: 'ordering-delivery' }, { label: 'Gifting', key: 'gifting' }, { label: 'Gifting', key: 'gifting-2' } ], 'the fifth chip, with no words, holds only its made-up key and is left out' );
+	assert.match( r.notes.join( ';' ), /1 item\(s\) holding nothing to show/ );
 	assert.equal( keyRole( '_key' ), 'identity' );
 } );
 
