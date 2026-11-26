@@ -4,6 +4,8 @@
 // join the grid as items of their own, so the draft's tracks no longer describe what the grid holds: the hero's words, four
 // items promoted from one cell, sat in the first of two tracks beside a picture the hero draws itself.
 // The tracks are re-derived from what each draft cell became:
+//   - a cell the host block draws itself (a draft element the node reads as one of its own parts: a split hero's content column
+//     and its picture) holds that one part, whatever it holds inside, so the node's tracks are the host's own and stay;
 //   - a cell that kept one item keeps its track, a cell that kept none (absorbed by its host) loses it;
 //   - items promoted from one cell, when it is the only cell left with items, stack in that cell's one track;
 //   - anything else (two cells left, one of them promoting several items) no track list holds: a row says so.
@@ -26,18 +28,19 @@ const within = ( m, key, ancestor ) => {
  * @param {string}   o.value     The written `gridTemplateColumns` at one tier.
  * @param {Object}   o.element   The node's draft element (an inventory element).
  * @param {string[]} o.children  The draft element keys of the node's skeleton children shown at the tier's width.
+ * @param {string[]} [o.parts]   The draft element keys the node reads as parts of its own (its draftSlots finders).
  * @param {number}   o.width     375, 768 or 1440.
  * @param {Object}   o.m         lib/skeleton-model.mjs::inventoryModel.
  * @return {{ok:true}|{ok:true, value:string, count:number, why:string}|{ok:false, why:string}} Nothing to change, the new
  *         tracks, or why no track list holds the children.
  */
-export function retrack( { value, element, children, width, m } ) {
+export function retrack( { value, element, children, parts = [], width, m } ) {
 	const tracks = gridTracks( value );
 	const cells = m.blockKids( element ).filter( ( k ) => k.visible?.[ width ] );
 	if ( tracks.length < 2 || ! cells.length || cells.length > tracks.length ) {
 		return { ok: true };
 	}
-	const held = cells.map( ( cell ) => children.filter( ( key ) => within( m, key, cell ) ).length );
+	const held = cells.map( ( cell ) => ( parts.some( ( key ) => within( m, key, cell ) ) ? 1 : children.filter( ( key ) => within( m, key, cell ) ).length ) );
 	const orphans = children.filter( ( key ) => ! cells.some( ( cell ) => within( m, key, cell ) ) );
 	if ( orphans.length ) {
 		return { ok: false, why: `${ orphans.length } item${ 1 === orphans.length ? '' : 's' } of the node (${ orphans.join( ', ' ) }) sit${ 1 === orphans.length ? 's' : '' } in none of the ${ cells.length } cells the draft's ${ tracks.length } tracks hold` };
@@ -76,13 +79,14 @@ export function gridTrackWrites( { nodes, flat, refOf, m, writes } ) {
 		if ( ! tracks || 'object' !== typeof tracks || ! element ) {
 			continue;
 		}
+		const parts = Object.values( rec.node?.draftSlots || {} ).map( ( f ) => f?.tpl ).filter( ( key ) => m.byKey[ key ] );
 		for ( const [ tier, width ] of Object.entries( TIER_WIDTH ) ) {
 			const value = tracks[ tier ];
 			if ( 'string' !== typeof value ) {
 				continue;
 			}
 			const children = rec.children.map( ( i ) => nodes[ i ].node?.draftRef?.tpl ).filter( ( key ) => m.byKey[ key ]?.visible?.[ width ] );
-			const r = retrack( { value, element, children, width, m } );
+			const r = retrack( { value, element, children, parts, width, m } );
 			if ( ! r.ok ) {
 				out.unmapped.push( { node: refOf( node ), block: rec.name, slot: '', property: 'grid-template-columns', value, widths: [ width ], reason: `tracks: ${ r.why }` } );
 			} else if ( undefined !== r.value && r.value !== value ) {

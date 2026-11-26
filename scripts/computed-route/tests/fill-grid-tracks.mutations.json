@@ -46,5 +46,11 @@
 		"find": "return ! prior.length;",
 		"replace": "return true;",
 		"why": "a rewrite would be listed as a second write beside the one it replaced"
+	},
+	{
+		"file": "lib/fill-grid-tracks.mjs",
+		"find": "( parts.some( ( key ) => within( m, key, cell ) ) ? 1 :",
+		"replace": "( false ? 1 :",
+		"why": "a split hero's two parts would be counted by the items inside them, collapsing its two columns to one track"
 	}
 ]

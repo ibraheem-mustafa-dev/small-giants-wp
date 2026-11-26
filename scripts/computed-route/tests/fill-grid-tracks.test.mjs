@@ -80,3 +80,16 @@ test( 'negative control: a node with no explicit tracks, no draft element or tra
 	unknown.nodes[ 0 ].node.draftRef.tpl = 'missing';
 	assert.deepEqual( gridTrackWrites( { ...unknown, m: two(), writes: [] } ).notes, [] );
 } );
+
+test( 'MUST FAIL: cells the host block draws itself as its own parts (a split hero content column and picture) keep the tracks of the host, however many items sit in them', () => {
+	const m = two();
+	const kept = retrack( { ...base, m, value: 'minmax(0, 1fr) minmax(0, 1.1fr)', element: m.byKey.grid, children: [ 'a1', 'a2', 'a3', 'a4' ], parts: [ 'cellA', 'pic' ] } );
+	assert.deepEqual( kept, { ok: true }, 'content column and picture are the two parts of the hero: two tracks for two columns' );
+	const media = retrack( { ...base, m, value: 'minmax(0, 1fr) minmax(0, 1.1fr)', element: m.byKey.grid, children: [ 'a1', 'a2' ], parts: [ 'pic' ] } );
+	assert.equal( media.ok, false, 'one cell a part, the other promoting two items: no track list holds both' );
+	const attrs = { gridTemplateColumns: { desktop: '1fr 1fr' } };
+	const t = tree( attrs, [ 'a1', 'a2', 'a3', 'a4' ] );
+	t.nodes[ 0 ].node.draftSlots = { '.content': { tpl: 'cellA' }, '.media': { tpl: 'pic' }, '.other': { js: 'x' } };
+	assert.deepEqual( gridTrackWrites( { ...t, m: two(), writes: [] } ), { writes: [], unmapped: [], notes: [] } );
+	assert.deepEqual( attrs.gridTemplateColumns, { desktop: '1fr 1fr' } );
+} );
