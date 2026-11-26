@@ -263,7 +263,7 @@ test( 'the media claims hold everything mediaDecisions writes, and nothing for a
 	const m = { tag: 'img', src: 'a.png', alt: 'An A', natural: { w: 10, h: 10 }, poster: null, markup: null, own: true, element: { computed: { position: 'static' } } };
 	const out = mediaDecisions( { slots, reads: { 1440: [ m ], 768: [ m ], 375: [ m ] }, caption: 'Cap', media: { map, site: 's', origin: '' } } );
 	assert.deepEqual( out.writes.map( ( w ) => w.attr ).sort(), [ 'alt', 'caption', 'source' ] );
-	assert.deepEqual( [ ...mediaSettings( 'sgs/media' ) ].sort(), [ 'alt', 'caption', 'decorative', 'source' ] );
+	assert.deepEqual( [ ...mediaSettings( 'sgs/media' ) ].sort(), [ 'alt', 'caption', 'decorative', 'height', 'ratio', 'source' ] );
 	assert.deepEqual( mediaSettings( 'sgs/card-grid' ), [] );
 } );
 
