@@ -34,7 +34,7 @@ created: 2026-11-25
 | `fix/rf4-review2` | `wt-rf4-review2` | fixing 4 faults (store getters deleted on restore, a renamed store method silently skipped, JavaScript string escapes dropped, reassigned refs) |
 | `fix/rf6-review2` | `wt-rf6-review2` | fixing 4 faults (animations schema lacks `source.timer`, part id check too wide, carousel autoplay lost, a 0ms shrink turns off the row's other transitions) |
 | `fix/rf8-plumbing` | `wt-rf8-plumbing` | first and second review faults fixed (FIELDS_META settling, tree hash for every built post, provisional ids, a parent change to a published page is reported and not applied, form scroll); browser tests and the form-submit mutation run queued, then merge |
-| `fix/rf7-shop-forms` | none | commits not on `main` (form prefill opener, form element counts every answer control); not in this session's merge list, so its state is for the main session to confirm |
+| `fix/rf7-shop-forms` | `E:/sgs-tmp/wt-rf7-shop-forms` | ready since Track A3 (6 stale markers re-aimed, `u9-planted-draft` assertion added, 68/68 changed tests); its partner rf3 is merged, so next: rebase onto `main`, code review, whole non-browser suite, merge (S, Task 15, waits on it and rf8) |
 | `fix/f-mega` | `wt-f-mega` | review fixes done; the Fill proof of `mega-menu-brands` is running and needs the `--allow-external` question answered |
 | `fix/b-runstop` | `wt-b-runstop` | review fixes done, including the `paintedProps` detector; Indus form before and after sweeps queued |
 | `fix/d-readings` | `wt-d-readings` | fixing 6 review faults (the account migration must not change tablet height on live sites, sweep owner check, `mapTiers` raw keyword, sweep pseudo layers, account record regenerate, `stateChoice` conflict) |
