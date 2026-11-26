@@ -157,24 +157,29 @@ export function textCarrier( el, owned = null, detail = false ) {
 		}
 		return true;
 	};
-	const walker = document.createTreeWalker( el, NodeFilter.SHOW_TEXT, {
-		// The text node's own rects: its parent can be display:contents (no box of its own) and still paint it.
-		acceptNode: ( n ) => {
-			if ( ! n.textContent.trim() || srOnly( n.parentElement ) || inner.some( ( o ) => o.contains( n ) ) ) {
-				return NodeFilter.FILTER_SKIP;
-			}
-			const range = document.createRange();
-			range.selectNodeContents( n );
-			return range.getClientRects().length ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
-		},
-	} );
-	const first = walker.nextNode();
+	// A text node that paints: not blank, not visually hidden, not inside another pair's element, with a rect of its own (its
+	// parent can be display:contents, no box of its own, and still paint it).
+	const paintsText = ( n ) => {
+		if ( ! n.textContent.trim() || srOnly( n.parentElement ) || inner.some( ( o ) => o.contains( n ) ) ) {
+			return false;
+		}
+		const range = document.createRange();
+		range.selectNodeContents( n );
+		return range.getClientRects().length > 0;
+	};
+	const first = ( () => {
+		const tw = document.createTreeWalker( el, NodeFilter.SHOW_TEXT, { acceptNode: ( n ) => ( paintsText( n ) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP ) } );
+		return tw.nextNode();
+	} )();
 	// The paint carrying most of the text, by characters across the runs of the box that lays out the first text (the
 	// element's own text and its inline parts): `<p><b>Vegan base:</b> no eggs…</p>` is the paragraph's paint, never the
-	// bold label's, while a <b> holding every word is the bold's. A tie goes to the paint met first.
+	// bold label's, while a <b> holding every word is the bold's. A tie goes to the paint met first. Only that box's inline
+	// chain is walked (a nested block, or an element of `owned`, is passed over whole), so a page-root pair costs the first
+	// text's box, never every text node of the page.
+	const INLINE = [ 'inline', 'contents' ];
 	const boxOf = ( n ) => {
 		let a = n.parentElement;
-		while ( a !== el && [ 'inline', 'contents' ].includes( getComputedStyle( a ).display ) ) {
+		while ( a !== el && INLINE.includes( getComputedStyle( a ).display ) ) {
 			a = a.parentElement;
 		}
 		return a;
@@ -184,14 +189,21 @@ export function textCarrier( el, owned = null, detail = false ) {
 	if ( first ) {
 		const box = boxOf( first );
 		const weights = new Map();
-		for ( let n = first; n; n = walker.nextNode() ) {
-			if ( boxOf( n ) === box ) {
-				const cs = getComputedStyle( n.parentElement );
-				const paint = PAINT.map( ( p ) => cs.getPropertyValue( p ) ).join( '|' );
-				const w = weights.get( paint ) || { el: n.parentElement, chars: 0 };
-				w.chars += n.textContent.replace( /\s+/g, '' ).length;
-				weights.set( paint, w );
-			}
+		const vote = document.createTreeWalker( box, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT, {
+			acceptNode: ( n ) => {
+				if ( 3 === n.nodeType ) {
+					return paintsText( n ) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
+				}
+				return inner.includes( n ) || ! INLINE.includes( getComputedStyle( n ).display ) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_SKIP;
+			},
+		} );
+		vote.currentNode = first;
+		for ( let n = first; n; n = vote.nextNode() ) {
+			const cs = getComputedStyle( n.parentElement );
+			const paint = PAINT.map( ( p ) => cs.getPropertyValue( p ) ).join( '|' );
+			const w = weights.get( paint ) || { el: n.parentElement, chars: 0 };
+			w.chars += n.textContent.replace( /\s+/g, '' ).length;
+			weights.set( paint, w );
 		}
 		carrier = [ ...weights.values() ].reduce( ( a, b ) => ( b.chars > a.chars ? b : a ) ).el;
 	}
