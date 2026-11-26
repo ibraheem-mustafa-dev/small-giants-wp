@@ -1,0 +1,125 @@
+{
+	"_comment": "Hand classification of the ToolsPanel tags whose items sit inside helper components, which the AST reader cannot see through. Key: file + symbol + label + index (nth tag with that file, symbol and label). Read by scripts/check-reset-only-menus.js. A ToolsPanel with direct ToolsPanelItem children is classified from its isShownByDefault flags, never from this file.",
+	"panels": [
+		{
+			"file": "src/blocks/buybox/ConfiguratorLookPanel.js",
+			"symbol": "ConfiguratorLookPanel",
+			"label": "Settings",
+			"index": 0,
+			"cls": "reset-only",
+			"why": "Items sit in helper components, so the class was read by hand (Stage E2 survey from i23 section 1): every item is shown by default, so the menu only resets"
+		},
+		{
+			"file": "src/blocks/buybox/ConfiguratorLookPanel.js",
+			"symbol": "ConfiguratorLookPanel",
+			"label": "Settings",
+			"index": 1,
+			"cls": "reset-only",
+			"why": "Items sit in helper components, so the class was read by hand (Stage E2 survey from i23 section 1): every item is shown by default, so the menu only resets"
+		},
+		{
+			"file": "src/blocks/buybox/ConfiguratorPanel.js",
+			"symbol": "ConfiguratorPanel",
+			"label": "Settings",
+			"index": 0,
+			"cls": "reset-only",
+			"why": "Items sit in helper components, so the class was read by hand (Stage E2 survey from i23 section 1): every item is shown by default, so the menu only resets"
+		},
+		{
+			"file": "src/blocks/buybox/ConfiguratorPanel.js",
+			"symbol": "ConfiguratorPanel",
+			"label": "Settings",
+			"index": 1,
+			"cls": "reset-only",
+			"why": "Items sit in helper components, so the class was read by hand (Stage E2 survey from i23 section 1): every item is shown by default, so the menu only resets"
+		},
+		{
+			"file": "src/blocks/buybox/ConfiguratorPanel.js",
+			"symbol": "ConfiguratorPanel",
+			"label": "Settings",
+			"index": 2,
+			"cls": "reset-only",
+			"why": "Items sit in helper components, so the class was read by hand (Stage E2 survey from i23 section 1): every item is shown by default, so the menu only resets"
+		},
+		{
+			"file": "src/blocks/buybox/ConfiguratorPanel.js",
+			"symbol": "ConfiguratorPanel",
+			"label": "Settings",
+			"index": 3,
+			"cls": "reset-only",
+			"why": "Items sit in helper components, so the class was read by hand (Stage E2 survey from i23 section 1): every item is shown by default, so the menu only resets"
+		},
+		{
+			"file": "src/blocks/buybox/inspector-extra.js",
+			"symbol": "BuyboxExtraPanels",
+			"label": "Settings",
+			"index": 0,
+			"cls": "reset-only",
+			"why": "Items sit in helper components, so the class was read by hand (Stage E2 survey from i23 section 1): every item is shown by default, so the menu only resets"
+		},
+		{
+			"file": "src/blocks/cart/edit.js",
+			"symbol": "Edit",
+			"label": "Backdrop",
+			"index": 0,
+			"cls": "standard",
+			"why": "Items sit in helper components, so the class was read by hand (Stage E2 survey from i23 section 1): at least one item is optional or the helper adds optional items"
+		},
+		{
+			"file": "src/blocks/container/components/BackgroundMediaPanel.js",
+			"symbol": "SurfaceSection",
+			"label": "Surface",
+			"index": 0,
+			"cls": "standard",
+			"why": "Items sit in helper components, so the class was read by hand (Stage E2 survey from i23 section 1): at least one item is optional or the helper adds optional items"
+		},
+		{
+			"file": "src/blocks/form/StepSettingsPanel.js",
+			"symbol": "StepSettingsPanel",
+			"label": "Progress steps",
+			"index": 0,
+			"cls": "standard",
+			"why": "Items sit in helper components, so the class was read by hand (Stage E2 survey from i23 section 1): at least one item is optional or the helper adds optional items"
+		},
+		{
+			"file": "src/blocks/gallery/components/GalleryContentPanel.js",
+			"symbol": "GalleryContentPanel",
+			"label": "Lightbox backdrop",
+			"index": 0,
+			"cls": "standard",
+			"why": "Items sit in helper components, so the class was read by hand (Stage E2 survey from i23 section 1): at least one item is optional or the helper adds optional items"
+		},
+		{
+			"file": "src/blocks/google-reviews/components/panel-kit.js",
+			"symbol": "Section",
+			"label": "<expr>",
+			"index": 0,
+			"cls": "reset-only",
+			"why": "Items sit in helper components, so the class was read by hand (Stage E2 survey from i23 section 1): every item is shown by default, so the menu only resets"
+		},
+		{
+			"file": "src/blocks/modal/edit.js",
+			"symbol": "Edit",
+			"label": "Backdrop",
+			"index": 0,
+			"cls": "standard",
+			"why": "Items sit in helper components, so the class was read by hand (Stage E2 survey from i23 section 1): at least one item is optional or the helper adds optional items"
+		},
+		{
+			"file": "src/blocks/product-search/edit.js",
+			"symbol": "Edit",
+			"label": "Backdrop",
+			"index": 0,
+			"cls": "standard",
+			"why": "Items sit in helper components, so the class was read by hand (Stage E2 survey from i23 section 1): at least one item is optional or the helper adds optional items"
+		},
+		{
+			"file": "src/blocks/trustpilot-reviews/edit.js",
+			"symbol": "Edit",
+			"label": "Reviews (inline)",
+			"index": 0,
+			"cls": "reset-only",
+			"why": "Items sit in helper components, so the class was read by hand (Stage E2 survey from i23 section 1): every item is shown by default, so the menu only resets"
+		}
+	]
+}

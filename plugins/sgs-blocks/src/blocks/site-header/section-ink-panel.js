@@ -216,6 +216,7 @@ export default function SectionInkPanel( {
 			initialOpen={ false }
 		>
 			<ResponsiveOverride
+				label={ __( 'Colour over sections', 'sgs-blocks' ) }
 				value={ sectionInk }
 				onChange={ ( value ) => setAttributes( { sectionInk: value } ) }
 			>

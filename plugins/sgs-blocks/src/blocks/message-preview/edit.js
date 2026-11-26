@@ -126,6 +126,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		<div { ...blockProps }>
 			<InspectorControls group="styles">
 				<SgsColourPanel
+					initialOpen
 					rows={ [
 						textRow( {
 							key: 'label',
@@ -251,7 +252,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 			</InspectorControls>
 			<InspectorControls>
-				<PanelBody title={ __( 'Boxes', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'Boxes', 'sgs-blocks' ) }>
 					<TextControl
 						label={ __( 'Group name', 'sgs-blocks' ) }
 						help={ __(

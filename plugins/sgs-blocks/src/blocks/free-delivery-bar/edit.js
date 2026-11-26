@@ -27,6 +27,7 @@ import {
 	TypographyControls,
 	fillRow,
 	normaliseResponsiveBox,
+	ResponsiveBoxControls,
 	shadowAttrKeys,
 	textRow,
 } from '../../components';
@@ -37,12 +38,8 @@ const LENGTH_UNITS = [
 	{ value: 'em', label: 'em', default: 0 },
 ];
 
-// Per-device boxes: [attribute, label].
-const BOXES = [
-	[ 'padding', __( 'Card padding', 'sgs-blocks' ) ],
-	[ 'margin', __( 'Card margin', 'sgs-blocks' ) ],
-	[ 'freeDeliveryBarMargin', __( 'Bar margin', 'sgs-blocks' ) ],
-];
+// Per-device boxes edited here (the card's own padding and margin are the shared Spacing panel): [attribute, label].
+const BOXES = [ [ 'freeDeliveryBarMargin', __( 'Bar margin', 'sgs-blocks' ) ] ];
 
 const TEXT_TARGETS = [
 	{
@@ -109,7 +106,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				<SgsColourPanel rows={ colourRows } />
 			</InspectorControls>
 			<InspectorControls>
-				<PanelBody title={ __( 'Free delivery', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'Free delivery', 'sgs-blocks' ) }>
 					<TextControl
 						label={ __(
 							'Threshold override (optional)',
@@ -317,6 +314,11 @@ export default function Edit( { attributes, setAttributes } ) {
 						</ResponsiveOverride>
 					) ) }
 				</PanelBody>
+
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 
 				<PanelBody
 					title={ __( 'Card border and shadow', 'sgs-blocks' ) }

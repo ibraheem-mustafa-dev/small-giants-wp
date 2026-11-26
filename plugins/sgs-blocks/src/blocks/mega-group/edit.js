@@ -109,7 +109,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			<InspectorControls>
 				<PanelBody
 					title={ __( 'Group link', 'sgs-blocks' ) }
-					initialOpen={ false }
+					initialOpen
 				>
 					<LinkPopoverField
 						label={ __( 'Link', 'sgs-blocks' ) }

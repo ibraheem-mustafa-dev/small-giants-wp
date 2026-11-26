@@ -54,7 +54,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<InspectorControls>
-				<PanelBody title={ __( 'Terminal action', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'Terminal action', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'Action', 'sgs-blocks' ) }
 						value={ action || 'recommend' }
@@ -211,7 +211,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						</>
 					) }
 				</PanelBody>
-				<PanelBody title={ __( 'Result Matching', 'sgs-blocks' ) }>
+				<PanelBody initialOpen={ false } title={ __( 'Result Matching', 'sgs-blocks' ) }>
 					<TextControl
 						label={ __( 'Match tags', 'sgs-blocks' ) }
 						value={ tagsValue }

@@ -35,6 +35,23 @@ export const TRUST_BAR_LIMITS = {
 };
 
 /**
+ * Which icon an item draws, as render.php picks it: the library icon when the item names one, else its custom SVG, else
+ * the check tick.
+ *
+ * @param {Object} item A badge item (`icon`, `iconSvg`).
+ * @return {{iconSlug: string, svg: string}} The props the icon previews take.
+ */
+export function badgeIcon( item ) {
+	if ( item?.icon ) {
+		return { iconSlug: item.icon, svg: '' };
+	}
+	if ( item?.iconSvg ) {
+		return { iconSlug: '', svg: item.iconSvg };
+	}
+	return { iconSlug: 'check', svg: '' };
+}
+
+/**
  * Bare icon (no circle) for the editor canvas. The CSS custom properties that size
  * and colour it are set on the block root by edit.js, and style.css (loaded in the
  * canvas) does the rest, so the preview matches the frontend.
@@ -42,6 +59,7 @@ export const TRUST_BAR_LIMITS = {
  * @param {Object}  props
  * @param {number}  props.size       Icon size in px.
  * @param {string}  props.iconSlug   Lucide icon slug.
+ * @param {string}  props.svg        The item's custom SVG, drawn when there is no icon slug (`badgeIcon()`).
  * @param {string}  props.gradient   Optional icon gradient.
  * @param {boolean} props.filled     Render as a solid glyph.
  * @param {string}  props.fillColour Custom fill colour (CSS value).
@@ -50,6 +68,7 @@ export const TRUST_BAR_LIMITS = {
 export function EditorIconBare( {
 	size,
 	iconSlug,
+	svg,
 	gradient,
 	filled,
 	fillColour,
@@ -68,8 +87,9 @@ export function EditorIconBare( {
 			style={ style }
 		>
 			<IconPreview
-				source="lucide"
+				source={ svg ? 'custom' : 'lucide' }
 				name={ iconSlug || 'check' }
+				svg={ svg }
 				size={ size }
 				gradient={ gradient }
 			/>
@@ -178,6 +198,7 @@ export function TrustBarItemSpacingPanel( { attributes, setAttributes } ) {
 			</ResponsiveOverride>
 			<hr style={ { margin: '16px 0' } } />
 			<ResponsiveOverride
+				label={ __( 'Badge padding', 'sgs-blocks' ) }
 				value={ attributes.itemPadding }
 				onChange={ ( obj ) => setAttributes( { itemPadding: obj } ) }
 			>

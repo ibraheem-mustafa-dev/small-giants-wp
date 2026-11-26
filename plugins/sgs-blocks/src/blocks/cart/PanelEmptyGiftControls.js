@@ -52,6 +52,7 @@ export default function PanelEmptyGiftControls( {
 				blockName="sgs/cart"
 				blockSlug="sgs/cart"
 				prefix="emptyImage"
+				inGroup="settings"
 				atoms={ IMAGE_SLOT.atoms }
 				kinds={ IMAGE_SLOT.kinds }
 				context={ IMAGE_SLOT.context }

@@ -6,7 +6,7 @@ import fixture from '../fixtures/media/adopted-block.json';
 import { mediaStoredAttrName } from '../../src/components/MediaElementControls.js';
 import { MEDIA_ATOMS } from '../../src/components/media/atoms/registry.js';
 import { COMPONENT_MAP } from '../../src/components/media/panels/component-map.js';
-import { COMPOSITES, PANELS, buildPanelModel, unmappedComponents } from '../../src/components/media/panels/panel-model.js';
+import { BACKGROUND_PANEL, COMPOSITES, PANELS, buildPanelModel, unmappedComponents } from '../../src/components/media/panels/panel-model.js';
 import { resetPatch, rowIO } from '../../src/components/media/panels/row-io.js';
 
 const slot = fixture.supports.sgs.mediaElements[ 0 ];
@@ -62,13 +62,15 @@ describe( 'the adopted fixture slot', () => {
 } );
 
 describe( 'panel definitions', () => {
-	it( 'matches §9.4: three Settings panels, ten Styles panels, Media and Size and crop open', () => {
+	it( 'matches §9.4: three Settings panels, ten Styles panels, none open by default', () => {
 		expect( PANELS.filter( ( p ) => 'settings' === p.group ).map( ( p ) => p.id ) ).toEqual( [ 'media', 'caption-and-link', 'video' ] );
 		expect( PANELS.filter( ( p ) => 'styles' === p.group ).map( ( p ) => p.id ) ).toEqual( [
 			'size-and-crop', 'position-in-layout', 'border-and-shape', 'shadow', 'overlay-and-filters',
 			'typography', 'svg', 'hover', 'entrance-and-reveal', 'effects',
 		] );
-		expect( PANELS.filter( ( p ) => p.open ).map( ( p ) => p.id ) ).toEqual( [ 'media', 'size-and-crop' ] );
+		// Only each tab's first panel opens (Spec 49 section 9.1), and which one is first is the caller's: a slot opens it by `openPanel`.
+		expect( PANELS.filter( ( p ) => p.open ).map( ( p ) => p.id ) ).toEqual( [] );
+		expect( BACKGROUND_PANEL.open ).toBe( false );
 	} );
 
 	it( 'shows a caller-filled panel with no atom rows', () => {

@@ -63,6 +63,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/helpers-motion-effect.php';
 require_once __DIR__ . '/product-brands-source.php';
 require_once __DIR__ . '/brand-display-render.php';
 require_once __DIR__ . '/logo-media.php';
+require_once __DIR__ . '/logo-even-size.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-logo-media.php';
 
 // ---------------------------------------------------------------------------
@@ -603,9 +604,15 @@ if ( $mobile_decls ) {
 // item: the clones copy the lines, and the seam between two sets stays continuous.
 $sgs_bs_sep_raw    = $attributes['separators'] ?? array();
 $sgs_bs_sep_axes   = $is_marquee ? array( 'column' ) : array( 'row', 'column' );
-$sgs_bs_sep_caps   = array(
-	'axes'  => $sgs_bs_sep_axes,
-	'edges' => $is_marquee,
+// What the block offers comes from block.json. A marquee strip is one row, so it narrows the axes, and it
+// draws its trailing edge itself (edges 'end', set below), so it overrides the declared `edges: false`.
+$sgs_bs_sep_declared = sgs_separators_caps( 'sgs/brand-strip' );
+$sgs_bs_sep_caps     = array_merge(
+	$sgs_bs_sep_declared,
+	array(
+		'axes'  => array_values( array_intersect( $sgs_bs_sep_declared['axes'], $sgs_bs_sep_axes ) ),
+		'edges' => $is_marquee,
+	)
 );
 $sgs_bs_sep_active = sgs_separators_active( sgs_separators_normalise( $sgs_bs_sep_raw, $sgs_bs_sep_caps ) );
 $sgs_bs_sep_flow   = $sgs_bs_sep_active && ! $is_marquee;
@@ -648,13 +655,25 @@ $wrapper_attributes = get_block_wrapper_attributes(
  */
 $logos_html  = '';
 $sgs_bs_slot = sgs_media_item_slot_for( $block, 'logo' );
+// Even visual size (row layout, off by default): each logo's px width from its box area (logo-even-size.php). The widest one
+// is the image's `sizes` cap, so the browser picks a file big enough for the largest logo rather than the Max height.
+$sgs_bs_even = array(
+	'css' => '',
+	'cap' => 0,
+);
+if ( $logo_layout_row && ! empty( $attributes['logoEvenSize'] ) && ! empty( $logos ) ) {
+	$sgs_bs_even = sgs_brand_strip_even_size( (array) $logos, $attributes, $root_sel );
+	if ( '' !== $sgs_bs_even['css'] ) {
+		$scoped_css[] = $sgs_bs_even['css'];
+	}
+}
 if ( ! empty( $logos ) ) {
 	$logo_index       = 0;
 	$sgs_bs_media_idx = 0;
 	foreach ( $logos as $bs_index => $logo ) {
 		// Each item's own settings (source, alt, fit, focal point) sit on the item, keyed by its stable `_key`
 		// (src/utils/generateItemKey.js), never by array index or `:nth-child`.
-		$bs_item_key = ! empty( $logo['_key'] ) ? (string) $logo['_key'] : 'idx-' . absint( $bs_index );
+		$bs_item_key = sgs_brand_strip_item_key( (array) $logo, $bs_index );
 		$media       = sgs_brand_strip_item_file( (array) $logo );
 
 		$logo_name = isset( $logo['name'] ) ? sanitize_text_field( (string) $logo['name'] ) : '';
@@ -686,7 +705,7 @@ if ( ! empty( $logos ) ) {
 		} else {
 			// A decorative logo (an editorial choice, WCAG 2.1 AA 1.1.1) or one named by an on-screen caption is hidden from
 			// assistive technology, so the name is announced once.
-			$logo_out  = sgs_brand_strip_render_logo( (array) $logo, $sgs_bs_media_idx, $attributes, $sgs_bs_slot, $uid, $logo_decorative || $has_caption, array( 'desktop' => $columns_desktop, 'tablet' => $columns_tablet, 'mobile' => $columns_mobile ), $sgs_bs_item_cap );
+			$logo_out  = sgs_brand_strip_render_logo( (array) $logo, $sgs_bs_media_idx, $attributes, $sgs_bs_slot, $uid, $logo_decorative || $has_caption, array( 'desktop' => $columns_desktop, 'tablet' => $columns_tablet, 'mobile' => $columns_mobile ), $sgs_bs_even['cap'] > 0 ? $sgs_bs_even['cap'] : $sgs_bs_item_cap );
 			$logo_html = $logo_out['html'];
 			if ( '' === $logo_html ) {
 				// The renderer refused the file (for example a URL with no attachment and no size, FR-49-16): in

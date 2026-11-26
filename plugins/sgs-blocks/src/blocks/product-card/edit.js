@@ -21,6 +21,7 @@ import {
 	SgsBoxControl,
 	LinkUnderlineControl,
 	ShadowControl,
+	ResponsiveBoxControls,
 } from '../../components';
 import { BUTTON_PRESETS } from '../button/presets';
 import { presetNames } from '../button/preset-names';
@@ -3485,38 +3486,6 @@ export default function Edit( {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					{ /* The card's three media slots (Spec 49 10.4), the adopted panels: `image` is the photo on every render branch
-					     (typed, read-only, non-variable, variable: one control, per FP-9), `thumb` the variable card's thumbnail
-					     strip, `logo` the brand logo on the photo. */ }
-					<MediaElementPanel
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						prefix="image"
-						blockSlug="sgs/product-card"
-						blockName="sgs/product-card"
-						context="content"
-						atoms={ IMAGE_ATOMS }
-					/>
-					<MediaElementPanel
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						prefix="thumb"
-						blockSlug="sgs/product-card"
-						blockName="sgs/product-card"
-						context="item"
-						atoms={ THUMB_ATOMS }
-					/>
-					{ showBrandOverlay && brandUseLogo !== false && (
-						<MediaElementPanel
-							attributes={ attributes }
-							setAttributes={ setAttributes }
-							prefix="logo"
-							blockSlug="sgs/product-card"
-							blockName="sgs/product-card"
-							context="content"
-							atoms={ LOGO_ATOMS }
-						/>
-					) }
 					{ /* Typed mode only — a bound/live product photo is genuine
 					     shopping content and must never be hidden from
 					     assistive tech; this control only exists here,
@@ -3539,6 +3508,45 @@ export default function Edit( {
 						/>
 					) }
 				</PanelBody>
+				{ /* The card's three media slots (Spec 49 10.4), the adopted panels: `image` is the photo on every render branch
+				     (typed, read-only, non-variable, variable: one control, per FP-9), `thumb` the variable card's thumbnail
+				     strip, `logo` the brand logo on the photo. They sit directly in this Styles group (`inGroup`), after the
+				     Card layout panel, so their panels keep their place on first select; `label` names the slot in each title. */ }
+				<MediaElementPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					prefix="image"
+					inGroup="styles"
+					label={ __( 'Card image', 'sgs-blocks' ) }
+					blockSlug="sgs/product-card"
+					blockName="sgs/product-card"
+					context="content"
+					atoms={ IMAGE_ATOMS }
+				/>
+				<MediaElementPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					prefix="thumb"
+					inGroup="styles"
+					label={ __( 'Thumbnails', 'sgs-blocks' ) }
+					blockSlug="sgs/product-card"
+					blockName="sgs/product-card"
+					context="item"
+					atoms={ THUMB_ATOMS }
+				/>
+				{ showBrandOverlay && brandUseLogo !== false && (
+					<MediaElementPanel
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix="logo"
+						inGroup="styles"
+						label={ __( 'Brand logo', 'sgs-blocks' ) }
+						blockSlug="sgs/product-card"
+						blockName="sgs/product-card"
+						context="content"
+						atoms={ LOGO_ATOMS }
+					/>
+				) }
 
 				{ /* ── Picker style panel (R4 — pill-style forwarding to every
 				   in-card sgs/option-picker: typed pack-size pills AND
@@ -3732,6 +3740,10 @@ export default function Edit( {
 						</ToolsPanelItem>
 					</ToolsPanel>
 				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 			</InspectorControls>
 
 			{ /* The two built-in buttons' look (the built-in button kit: preset, colours, border, radius, padding, width, minimum height,

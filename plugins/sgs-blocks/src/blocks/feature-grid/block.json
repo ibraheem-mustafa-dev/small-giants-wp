@@ -27,11 +27,6 @@
 			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
 			"enabledExtensions": [ "childSizing" ],
 			"motion": true,
@@ -120,6 +115,18 @@
 		"sgs/info-box"
 	],
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"separators": {
 			"type": "object",
 			"default": {},

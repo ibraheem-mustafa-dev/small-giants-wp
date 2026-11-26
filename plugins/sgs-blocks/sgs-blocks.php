@@ -453,6 +453,11 @@ Sgs_Site_Info_Admin::register();
 // Tier-1 pipeline business-info sync — capability-gated remote write endpoint
 // (POST /sgs/v1/site-info, fill-if-empty).
 Sgs_Site_Info_Rest::register();
+
+// Media panel "Trim empty edges": POST /sgs/v1/media/trim saves an Imagick-trimmed copy as a new attachment
+// (the original stays); window.sgsMediaTrim tells the editor whether this host can.
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-media-trim.php';
+Sgs_Media_Trim::register();
 // FR-S9-10: boot the sgs/site-info block-bindings source so header/footer
 // paragraphs bound to copyright/tagline/socials/contact resolve on the frontend.
 // The class does not self-register; this call is what wires it.

@@ -37,7 +37,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<InspectorControls>
-				<PanelBody title={ __( 'Field Settings', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'Field Settings', 'sgs-blocks' ) }>
 					<TextControl
 						label={ __( 'Field name', 'sgs-blocks' ) }
 						value={ fieldName }

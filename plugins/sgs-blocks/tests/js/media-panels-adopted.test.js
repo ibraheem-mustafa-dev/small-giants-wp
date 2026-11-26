@@ -53,8 +53,12 @@ jest.mock( '../../src/components/GradientCapableColourControl.js', () => ( { __e
 jest.mock( '../../src/components/LinkPopoverControl.js', () => ( { __esModule: true, default: () => null } ) );
 jest.mock( '../../src/components/ShadowControl.js', () => ( {
 	__esModule: true,
-	default: ( { hide } ) =>
-		require( 'react' ).createElement( 'div', { 'data-testid': 'shadow-control', 'data-hide': ( hide || [] ).join( ',' ) } ),
+	default: ( { hide, followShape } ) =>
+		require( 'react' ).createElement( 'div', {
+			'data-testid': 'shadow-control',
+			'data-hide': ( hide || [] ).join( ',' ),
+			'data-follow-shape': followShape ? 'true' : 'false',
+		} ),
 } ) );
 
 const fixture = require( '../fixtures/media/adopted-block.json' );
@@ -73,7 +77,18 @@ function mount( props ) {
 	const container = document.createElement( 'div' );
 	document.body.appendChild( container );
 	const root = createRoot( container );
-	act( () => root.render( React.createElement( MediaPanels, { setAttributes: jest.fn(), atomIds: ATOMS, ...props } ) ) );
+	// `MediaElementPanel` mounts one body per tab; the two together draw every panel.
+	act( () =>
+		root.render(
+			React.createElement(
+				React.Fragment,
+				null,
+				[ 'settings', 'styles' ].map( ( group ) =>
+					React.createElement( MediaPanels, { key: group, group, setAttributes: jest.fn(), atomIds: ATOMS, ...props } )
+				)
+			)
+		)
+	);
 	return { container, unmount: () => act( () => root.unmount() ) };
 }
 
@@ -168,12 +183,13 @@ describe( 'an adopted slot\'s panels', () => {
 			const view = mount( { attributes: attrs, kinds: [ 'image' ], context: 'element', device: 'desktop' } );
 			const node = view.container.querySelector( '[data-testid="shadow-control"]' );
 			const hide = node ? node.getAttribute( 'data-hide' ) : null;
-			const note = view.container.querySelector( '.sgs-media-shadow .sgs-media-panel__hint' );
+			const follow = node ? node.getAttribute( 'data-follow-shape' ) : null;
 			view.unmount();
-			return { hide, note: note ? note.textContent : '' };
+			return { hide, follow };
 		};
-		expect( open( 'hexagon' ) ).toEqual( { hide: 'spread,inset,raw', note: 'Shadows follow the shape' } );
-		expect( open( 'circle' ) ).toEqual( { hide: '', note: '' } );
-		expect( open( '' ) ).toEqual( { hide: '', note: '' } );
+		// The shared control is always mounted (no preset chips of media's own) and told to follow the shape.
+		expect( open( 'hexagon' ) ).toEqual( { hide: 'spread,inset,raw', follow: 'true' } );
+		expect( open( 'circle' ) ).toEqual( { hide: '', follow: 'false' } );
+		expect( open( '' ) ).toEqual( { hide: '', follow: 'false' } );
 	} );
 } );

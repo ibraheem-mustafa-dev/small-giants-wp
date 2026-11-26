@@ -42,7 +42,7 @@ import {
  */
 export function TierPadding( { label, value, onChange } ) {
 	return (
-		<ResponsiveOverride value={ value } onChange={ onChange }>
+		<ResponsiveOverride label={ label } value={ value } onChange={ onChange }>
 			{ ( { ownValue, setOwnValue } ) => (
 				<SgsBoxControl
 					label={ label }

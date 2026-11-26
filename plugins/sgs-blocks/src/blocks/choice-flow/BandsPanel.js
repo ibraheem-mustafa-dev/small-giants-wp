@@ -96,6 +96,7 @@ export default function BandsPanel( { attributes, setAttributes } ) {
 				initialOpen={ false }
 			>
 				<ResponsiveOverride
+					label={ __( 'Help note icon disc size', 'sgs-blocks' ) }
 					value={ attributes.stageNoteIconCircleSize }
 					onChange={ ( obj ) =>
 						setAttributes( { stageNoteIconCircleSize: obj } )

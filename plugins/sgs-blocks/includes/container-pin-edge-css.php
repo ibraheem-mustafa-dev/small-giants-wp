@@ -21,8 +21,7 @@
  * emits nothing.
  *
  * The padding on the pinned edge is the container's own padding for that tier
- * (per-side cascade: mobile, then tablet, then desktop, then the legacy
- * `style.spacing.padding`) plus `env(safe-area-inset-*)`. The wrapper prints
+ * (per-side cascade: mobile, then tablet, then desktop) plus `env(safe-area-inset-*)`. The wrapper prints
  * its tablet and mobile padding `!important` at (0,1,0), so the pinned rule is
  * `!important` at (0,2,0) to carry the inset on top of it.
  *
@@ -49,8 +48,7 @@ if ( ! function_exists( 'sgs_container_pin_edge_values' ) ) {
 if ( ! function_exists( 'sgs_container_pin_edge_padding' ) ) {
 	/**
 	 * The container's padding on one side at one tier, cascading per side from
-	 * the narrower tier up to desktop, then to the legacy flat
-	 * `style.spacing.padding`.
+	 * the narrower tier up to desktop.
 	 *
 	 * @param array  $attributes Block attributes.
 	 * @param string $tier       desktop | tablet | mobile.
@@ -68,8 +66,7 @@ if ( ! function_exists( 'sgs_container_pin_edge_padding' ) ) {
 				return $value;
 			}
 		}
-		$legacy = $attributes['style']['spacing']['padding'][ $side ] ?? '';
-		return sgs_container_scroll_row_length( is_string( $legacy ) ? $legacy : '' );
+		return '';
 	}
 }
 

@@ -8,13 +8,14 @@
 
 import { __ } from '@wordpress/i18n';
 import { PanelBody } from '@wordpress/components';
-import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+
 import {
 	ResponsiveLengthControl,
 	ResponsiveBoxControl,
 	ResponsiveBorderRadiusControl,
 	SgsBorderControl,
 } from '../../components';
+import SgsResetPanel from '../../components/SgsResetPanel';
 
 const hasKeys = ( value ) => Object.keys( value ?? {} ).length > 0;
 
@@ -55,51 +56,70 @@ export default function UploadZonePanel( { attributes, setAttributes } ) {
 				radiusValues={ tiers( attributes.fileLabelBorderRadius ) }
 				onRadiusChange={ writeTier( 'fileLabelBorderRadius' ) }
 			/>
-			<ToolsPanel
-				label={ __( 'Upload zone spacing', 'sgs-blocks' ) }
+			<SgsResetPanel
+				title={ __( 'Upload zone spacing', 'sgs-blocks' ) }
+				items={ [
+					{
+						hasValue: () =>
+							hasKeys( attributes.fileLabelPadding?.desktop ) ||
+							hasKeys( attributes.fileLabelPadding?.tablet ) ||
+							hasKeys( attributes.fileLabelPadding?.mobile ),
+						onDeselect: () =>
+							setAttributes( {
+								fileLabelPadding: { desktop: {} },
+							} ),
+					},
+					{
+						hasValue: () => hasKeys( attributes.fileLabelGap ),
+						onDeselect: () => setAttributes( { fileLabelGap: {} } ),
+					},
+				] }
 				resetAll={ () =>
 					setAttributes( {
 						fileLabelPadding: { desktop: {} },
 						fileLabelGap: {},
 					} )
 				}
+				nested
 			>
-				<ToolsPanelItem
+				<ResponsiveBoxControl
 					label={ __( 'Zone padding', 'sgs-blocks' ) }
-					isShownByDefault
-					hasValue={ () =>
-						hasKeys( attributes.fileLabelPadding?.desktop ) ||
-						hasKeys( attributes.fileLabelPadding?.tablet ) ||
-						hasKeys( attributes.fileLabelPadding?.mobile )
-					}
-					onDeselect={ () =>
-						setAttributes( { fileLabelPadding: { desktop: {} } } )
-					}
-				>
-					<ResponsiveBoxControl
-						label={ __( 'Zone padding', 'sgs-blocks' ) }
-						presets
-						values={ tiers( attributes.fileLabelPadding ) }
-						onChange={ writeTier( 'fileLabelPadding' ) }
-					/>
-				</ToolsPanelItem>
-				<ToolsPanelItem
+					presets
+					values={ tiers( attributes.fileLabelPadding ) }
+					onChange={ writeTier( 'fileLabelPadding' ) }
+				/>
+
+				<ResponsiveLengthControl
 					label={ __( 'Space between parts', 'sgs-blocks' ) }
-					isShownByDefault
-					hasValue={ () => hasKeys( attributes.fileLabelGap ) }
-					onDeselect={ () => setAttributes( { fileLabelGap: {} } ) }
-				>
-					<ResponsiveLengthControl
-						label={ __( 'Space between parts', 'sgs-blocks' ) }
-						value={ attributes.fileLabelGap }
-						onChange={ ( next ) =>
-							setAttributes( { fileLabelGap: next } )
-						}
-					/>
-				</ToolsPanelItem>
-			</ToolsPanel>
-			<ToolsPanel
-				label={ __( 'Upload zone icon holder', 'sgs-blocks' ) }
+					value={ attributes.fileLabelGap }
+					onChange={ ( next ) =>
+						setAttributes( { fileLabelGap: next } )
+					}
+				/>
+			</SgsResetPanel>
+			<SgsResetPanel
+				title={ __( 'Upload zone icon holder', 'sgs-blocks' ) }
+				items={ [
+					{
+						hasValue: () => hasKeys( attributes.fileIconBoxSize ),
+						onDeselect: () =>
+							setAttributes( { fileIconBoxSize: {} } ),
+					},
+					{
+						hasValue: () => hasKeys( attributes.fileIconSize ),
+						onDeselect: () => setAttributes( { fileIconSize: {} } ),
+					},
+					{
+						hasValue: () =>
+							hasKeys( attributes.fileIconRadius?.desktop ) ||
+							hasKeys( attributes.fileIconRadius?.tablet ) ||
+							hasKeys( attributes.fileIconRadius?.mobile ),
+						onDeselect: () =>
+							setAttributes( {
+								fileIconRadius: { desktop: {} },
+							} ),
+					},
+				] }
 				resetAll={ () =>
 					setAttributes( {
 						fileIconBoxSize: {},
@@ -107,56 +127,30 @@ export default function UploadZonePanel( { attributes, setAttributes } ) {
 						fileIconRadius: { desktop: {} },
 					} )
 				}
+				nested
 			>
-				<ToolsPanelItem
+				<ResponsiveLengthControl
 					label={ __( 'Holder size', 'sgs-blocks' ) }
-					isShownByDefault
-					hasValue={ () => hasKeys( attributes.fileIconBoxSize ) }
-					onDeselect={ () =>
-						setAttributes( { fileIconBoxSize: {} } )
+					value={ attributes.fileIconBoxSize }
+					onChange={ ( next ) =>
+						setAttributes( { fileIconBoxSize: next } )
 					}
-				>
-					<ResponsiveLengthControl
-						label={ __( 'Holder size', 'sgs-blocks' ) }
-						value={ attributes.fileIconBoxSize }
-						onChange={ ( next ) =>
-							setAttributes( { fileIconBoxSize: next } )
-						}
-					/>
-				</ToolsPanelItem>
-				<ToolsPanelItem
+				/>
+
+				<ResponsiveLengthControl
 					label={ __( 'Icon size', 'sgs-blocks' ) }
-					isShownByDefault
-					hasValue={ () => hasKeys( attributes.fileIconSize ) }
-					onDeselect={ () => setAttributes( { fileIconSize: {} } ) }
-				>
-					<ResponsiveLengthControl
-						label={ __( 'Icon size', 'sgs-blocks' ) }
-						value={ attributes.fileIconSize }
-						onChange={ ( next ) =>
-							setAttributes( { fileIconSize: next } )
-						}
-					/>
-				</ToolsPanelItem>
-				<ToolsPanelItem
+					value={ attributes.fileIconSize }
+					onChange={ ( next ) =>
+						setAttributes( { fileIconSize: next } )
+					}
+				/>
+
+				<ResponsiveBorderRadiusControl
 					label={ __( 'Holder corners', 'sgs-blocks' ) }
-					isShownByDefault
-					hasValue={ () =>
-						hasKeys( attributes.fileIconRadius?.desktop ) ||
-						hasKeys( attributes.fileIconRadius?.tablet ) ||
-						hasKeys( attributes.fileIconRadius?.mobile )
-					}
-					onDeselect={ () =>
-						setAttributes( { fileIconRadius: { desktop: {} } } )
-					}
-				>
-					<ResponsiveBorderRadiusControl
-						label={ __( 'Holder corners', 'sgs-blocks' ) }
-						values={ tiers( attributes.fileIconRadius ) }
-						onChange={ writeTier( 'fileIconRadius' ) }
-					/>
-				</ToolsPanelItem>
-			</ToolsPanel>
+					values={ tiers( attributes.fileIconRadius ) }
+					onChange={ writeTier( 'fileIconRadius' ) }
+				/>
+			</SgsResetPanel>
 		</PanelBody>
 	);
 }

@@ -161,6 +161,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				blockName="sgs/decorative-image"
 				blockSlug="sgs/decorative-image"
 				prefix="layer"
+				openPanel={ [ 'media', 'size-and-crop' ] }
 				atoms={ ENTRY.atoms }
 				kinds={ ENTRY.kinds }
 				context={ ENTRY.context }

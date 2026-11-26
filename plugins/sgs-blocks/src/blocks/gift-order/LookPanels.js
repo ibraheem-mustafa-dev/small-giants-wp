@@ -204,6 +204,7 @@ export default function LookPanels( { attributes, setAttributes } ) {
 				initialOpen={ false }
 			>
 				<SgsColourPanel
+					initialOpen
 					rows={ [
 						fill(
 							'panel',

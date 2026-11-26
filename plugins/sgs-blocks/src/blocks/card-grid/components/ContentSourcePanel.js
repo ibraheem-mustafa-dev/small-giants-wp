@@ -20,7 +20,7 @@ export default function ContentSourcePanel( {
 		attributes;
 
 	return (
-		<PanelBody title={ __( 'Content Source', 'sgs-blocks' ) }>
+		<PanelBody initialOpen={ false } title={ __( 'Content Source', 'sgs-blocks' ) }>
 			<SelectControl
 				label={ __( 'Source', 'sgs-blocks' ) }
 				value={ source || 'manual' }

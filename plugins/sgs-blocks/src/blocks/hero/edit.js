@@ -21,14 +21,12 @@ import {
 	shadowAttrKeys,
 	GradientOverlayControl,
 	gradientOverlayAttrKeys,
-	BOX_UNITS,
-	normaliseResponsiveBox,
 	SgsColourPanel,
 	SgsBorderControl,
 	resolveColourToken,
 	TypographyControls,
-	SgsBoxControl,
 	SgsLengthControl,
+	ResponsiveBoxControls,
 } from '../../components';
 
 const CONTENT_GAP_UNITS = [
@@ -68,6 +66,10 @@ import {
 	ShapeDividersPanel,
 } from '../container/components/ContainerWrapperControls';
 import { BackgroundPanel } from '../container/components/BackgroundPanel';
+import {
+	ShapeDividerPreviews,
+	shapeDividerClassName,
+} from '../../components/ShapeDividerPreview';
 import {
 	ToggleGroupControl,
 	ToggleGroupControlOption,
@@ -663,6 +665,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 			gradientPresets
 		),
 		heroPreview.layoutClass,
+		shapeDividerClassName( attributes ),
 	]
 		.filter( Boolean )
 		.join( ' ' );
@@ -705,6 +708,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 			   `gradientValue`/`onGradientChange`) since text-colour gradients
 			   paint via `background-clip: text`, matching sgs/heading. */ }
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					{
 						key: 'background',
@@ -794,7 +798,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 			   media selection/data-source, content. ── */ }
 			<InspectorControls>
 				{ /* ── 1. Hero Settings (variant only) ── */ }
-				<PanelBody title={ __( 'Hero Settings', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'Hero Settings', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'Variant', 'sgs-blocks' ) }
 						value={ variant }
@@ -815,6 +819,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						prefix="split"
+						inGroup="settings"
 						blockSlug={ name }
 						blockName={ name }
 						context={ SPLIT_ENTRY.context }
@@ -981,6 +986,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 				     splitContentOrderMobile='media-first'. Text/vertical alignment are
 				     isShownByDefault (touched on nearly every hero instance); the rest are opt-in via the "+" menu. */ }
 				<PanelBody
+					initialOpen={ false }
 					title={ __( 'Container / Entire Block', 'sgs-blocks' ) }
 				>
 					{ /* The ToolsPanel label deliberately does NOT repeat the
@@ -1062,7 +1068,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 						    Empty = inherit the variant's own alignment. textAlign is a
 						    TIER OBJECT {desktop,tablet,mobile} (D777/S2 fix,
 						    2026-09-04) — ONE attr, bound directly via
-						    <ResponsiveOverride> (mirrors minHeight/gridTemplateColumns
+						    <ResponsiveOverride label={ __( 'Content text align', 'sgs-blocks' ) }> (mirrors minHeight/gridTemplateColumns
 						    above), replacing the old three-flat-attr attrMap. */ }
 						<ToolsPanelItem
 							label={ __( 'Content text align', 'sgs-blocks' ) }
@@ -1112,7 +1118,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 						>
 							{ /* minHeight is a TIER OBJECT {desktop,tablet,mobile}
 							     (Spec 35 pass 3b) — ONE attr, bound directly via
-							     <ResponsiveOverride> (mirrors gridTemplateColumns
+							     <ResponsiveOverride label={ __( 'Min height', 'sgs-blocks' ) }> (mirrors gridTemplateColumns
 							     above). Blank on tablet inherits the desktop rule
 							     (render.php emits no @media override); blank on
 							     mobile falls back to render.php's own "360px"
@@ -1713,7 +1719,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 								     bespoke splitGap* "Column gap" control was a duplicate. */ }
 								{ /* splitContentOrder is a TIER OBJECT {desktop,tablet,mobile}
 								     (Spec 35 pass 3b) — ONE attr, bound via
-								     <ResponsiveOverride> (mirrors gridTemplateColumns above).
+								     <ResponsiveOverride label={ __( 'Column / stacking order', 'sgs-blocks' ) }> (mirrors gridTemplateColumns above).
 								     Per-tier option lists/labels/help still vary, so the
 								     render-prop's `tier` selects them exactly as the old
 								     breakpoint-keyed maps did. */ }
@@ -1816,62 +1822,10 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 					/>
 				</PanelBody>
 
-				{ /* Root padding & margin — box-object interface contract (mirrors
-					sgs/container). `padding` and `margin` are each
-					ONE tier-of-boxes object attr {desktop,tablet,mobile}, each tier a
-					{top,right,bottom,left} box; the shared wrapper reads the tiers at
-					@media breakpoints. */ }
-				<PanelBody
-					title={ __( 'Padding & margin', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<ResponsiveOverride
-						value={ attributes.padding }
-						onChange={ ( obj ) =>
-							setAttributes( { padding: obj } )
-						}
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-					<ResponsiveOverride
-						value={ attributes.margin }
-						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 
 				<BackgroundPanel
 					attributes={ attributes }
@@ -1911,6 +1865,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 					overlay={ bgPreview.overlay }
 				/>
 				{ svgLayer }
+				<ShapeDividerPreviews attributes={ attributes } />
 
 				{ /* FR-22-6: content column is the InnerBlocks slot (label + heading + text + buttons).
 				   Standard variant only: wrapped in the content-band preview (mirrors the

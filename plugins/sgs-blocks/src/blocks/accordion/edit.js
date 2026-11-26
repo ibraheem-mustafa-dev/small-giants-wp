@@ -25,15 +25,17 @@ import {
 	SGS_FONT_WEIGHT_OPTIONS,
 	ShadowControl,
 	shadowAttrKeys,
+	ResponsiveBoxControls,
 } from '../../components';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { usePreviewTier } from '../../utils';
 import { accordionWrapperPreview } from './preview-style';
 import { partHasEntranceLayer } from '../extensions/motion/part-layer';
 import FilterPanel from './FilterPanel';
-import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+
 import EasingAtom from '../../components/motion/EasingAtom';
 import FilterCanvasBar from './FilterCanvasBar';
+import SgsResetPanel from '../../components/SgsResetPanel';
 
 const STYLE_OPTIONS = [
 	{ label: __( 'Bordered', 'sgs-blocks' ), value: 'bordered' },
@@ -284,11 +286,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					/>
 				</PanelBody>
 				<ContainerWrapperControls
+					initialOpen
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 					kind="layout"
 				/>
-				<PanelBody title={ __( 'Accordion Settings', 'sgs-blocks' ) }>
+				<PanelBody initialOpen={ false } title={ __( 'Accordion Settings', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'Style', 'sgs-blocks' ) }
 						value={ accordionStyle }
@@ -444,8 +447,25 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					title={ __( 'Open and close motion', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<ToolsPanel
-						label={ __( 'Answer slide', 'sgs-blocks' ) }
+					<SgsResetPanel
+						title={ __( 'Answer slide', 'sgs-blocks' ) }
+						items={ [
+							{
+								hasValue: () =>
+									0 !== ( attributes.panelDuration ?? 0 ),
+								onDeselect: () =>
+									setAttributes( { panelDuration: 0 } ),
+							},
+							{
+								hasValue: () =>
+									'' !== ( attributes.panelEasing ?? '' ),
+								onDeselect: () =>
+									setAttributes( {
+										panelEasing: '',
+										panelEasingCustom: '',
+									} ),
+							},
+						] }
 						resetAll={ () =>
 							setAttributes( {
 								panelDuration: 0,
@@ -453,76 +473,48 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								panelEasingCustom: '',
 							} )
 						}
+						nested
 					>
-						<ToolsPanelItem
+						<RangeControl
 							label={ __(
 								'Slide speed (milliseconds)',
 								'sgs-blocks'
 							) }
-							isShownByDefault
-							hasValue={ () =>
-								0 !== ( attributes.panelDuration ?? 0 )
-							}
-							onDeselect={ () =>
-								setAttributes( { panelDuration: 0 } )
-							}
-						>
-							<RangeControl
-								label={ __(
-									'Slide speed (milliseconds)',
-									'sgs-blocks'
-								) }
-								help={ __(
-									'How long an answer takes to open and close. 0 keeps the theme speed.',
-									'sgs-blocks'
-								) }
-								value={ attributes.panelDuration ?? 0 }
-								min={ 0 }
-								max={ 3000 }
-								step={ 10 }
-								onChange={ ( value ) =>
-									setAttributes( {
-										panelDuration:
-											'number' === typeof value
-												? value
-												: 0,
-									} )
-								}
-								allowReset
-								resetFallbackValue={ 0 }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Slide curve', 'sgs-blocks' ) }
-							isShownByDefault
-							hasValue={ () =>
-								'' !== ( attributes.panelEasing ?? '' )
-							}
-							onDeselect={ () =>
+							help={ __(
+								'How long an answer takes to open and close. 0 keeps the theme speed.',
+								'sgs-blocks'
+							) }
+							value={ attributes.panelDuration ?? 0 }
+							min={ 0 }
+							max={ 3000 }
+							step={ 10 }
+							onChange={ ( value ) =>
 								setAttributes( {
-									panelEasing: '',
-									panelEasingCustom: '',
+									panelDuration:
+										'number' === typeof value ? value : 0,
 								} )
 							}
-						>
-							<EasingAtom
-								vocab="nav"
-								label={ __( 'Slide curve', 'sgs-blocks' ) }
-								value={ attributes.panelEasing }
-								custom={ attributes.panelEasingCustom }
-								onChange={ ( value ) =>
-									setAttributes( { panelEasing: value } )
-								}
-								onCustomChange={ ( value ) =>
-									setAttributes( {
-										panelEasingCustom: value,
-									} )
-								}
-							/>
-						</ToolsPanelItem>
-					</ToolsPanel>
+							allowReset
+							resetFallbackValue={ 0 }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+
+						<EasingAtom
+							vocab="nav"
+							label={ __( 'Slide curve', 'sgs-blocks' ) }
+							value={ attributes.panelEasing }
+							custom={ attributes.panelEasingCustom }
+							onChange={ ( value ) =>
+								setAttributes( { panelEasing: value } )
+							}
+							onCustomChange={ ( value ) =>
+								setAttributes( {
+									panelEasingCustom: value,
+								} )
+							}
+						/>
+					</SgsResetPanel>
 				</PanelBody>
 
 				<FilterPanel
@@ -638,62 +630,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						prefix="categoryEyebrow"
 					/>
 				</PanelBody>
-				{ /* Responsive spacing (padding + margin) — box-object interface contract
-            (.claude/plans/2026-07-09-box-object-interface-contract.md §5). `padding`
-            and `margin` are each ONE tier-of-boxes object attr {desktop,tablet,mobile},
-            each tier a {top,right,bottom,left} box, read by the wrapper's @media tiers. */ }
-				<PanelBody
-					title={ __( 'Padding & margin', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<ResponsiveOverride
-						value={ attributes.padding }
-						onChange={ ( obj ) =>
-							setAttributes( { padding: obj } )
-						}
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-					<hr style={ { margin: '16px 0' } } />
-					<ResponsiveOverride
-						value={ attributes.margin }
-						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 				{ /* Item header, answer and toggle icon — slot settings read by every
             sgs/accordion-item through block context. Empty padding and size keep
             the stylesheet's own values; the header font size follows Typography. */ }
@@ -702,6 +642,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					initialOpen={ false }
 				>
 					<ResponsiveOverride
+						label={ __( 'Header padding', 'sgs-blocks' ) }
 						value={ attributes.headerPadding }
 						onChange={ ( obj ) =>
 							setAttributes( { headerPadding: obj } )
@@ -727,6 +668,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					</ResponsiveOverride>
 					<hr style={ { margin: '16px 0' } } />
 					<ResponsiveOverride
+						label={ __( 'Answer padding', 'sgs-blocks' ) }
 						value={ attributes.contentPadding }
 						onChange={ ( obj ) =>
 							setAttributes( { contentPadding: obj } )
@@ -752,6 +694,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					</ResponsiveOverride>
 					<hr style={ { margin: '16px 0' } } />
 					<ResponsiveOverride
+						label={ __( 'Header gap', 'sgs-blocks' ) }
 						value={ attributes.headerGap }
 						onChange={ ( obj ) =>
 							setAttributes( { headerGap: obj } )
@@ -769,6 +712,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						) }
 					</ResponsiveOverride>
 					<ResponsiveOverride
+						label={ __( 'Header minimum height (px)', 'sgs-blocks' ) }
 						value={ attributes.headerMinHeight }
 						onChange={ ( obj ) =>
 							setAttributes( { headerMinHeight: obj } )
@@ -801,6 +745,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					</ResponsiveOverride>
 					<hr style={ { margin: '16px 0' } } />
 					<ResponsiveOverride
+						label={ __( 'Icon size (px)', 'sgs-blocks' ) }
 						value={ attributes.iconSize }
 						onChange={ ( obj ) =>
 							setAttributes( { iconSize: obj } )
@@ -842,6 +787,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__next40pxDefaultSize
 					/>
 					<ResponsiveOverride
+						label={ __( 'Icon ring size (px)', 'sgs-blocks' ) }
 						value={ attributes.iconCircleSize }
 						onChange={ ( obj ) =>
 							setAttributes( { iconCircleSize: obj } )

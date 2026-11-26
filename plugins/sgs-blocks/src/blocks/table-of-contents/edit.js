@@ -18,11 +18,8 @@ import {
 	SgsBorderControl,
 	TypographyControls,
 	resolveColourToken,
-	ResponsiveOverride,
-	BOX_UNITS,
-	normaliseResponsiveBox,
-	SgsBoxControl,
 	textRow,
+	ResponsiveBoxControls,
 } from '../../components';
 import {
 	colourVar,
@@ -223,6 +220,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			   "Title colour" stays a separate single-state row, also now
 			   gradient-capable. */ }
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					{
 						key: 'linkColour',
@@ -274,7 +272,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				] }
 			/>
 			<InspectorControls>
-				<PanelBody title={ __( 'Table of Contents', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'Table of Contents', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'Visual style', 'sgs-blocks' ) }
 						value={ tocStyle }
@@ -389,65 +387,10 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 
-				{ /*
-				 * Padding / margin / border-radius — WP-native base tiers
-				 * (padding / margin /
-				 * style.border.radius) unified with the SGS Tablet/Mobile
-				 * tier object attrs in ONE responsive control (mirrors
-				 * sgs/label + sgs/media). Border colour/width/style stay on
-				 * WP's own native "Border" panel (base only, no tiers).
-				 */ }
-				<PanelBody
-					title={ __( 'Spacing', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<ResponsiveOverride
-						value={ attributes.padding }
-						onChange={ ( obj ) =>
-							setAttributes( { padding: obj } )
-						}
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-					<ResponsiveOverride
-						value={ attributes.margin }
-						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 
 				<PanelBody
 					title={ __( 'Border', 'sgs-blocks' ) }

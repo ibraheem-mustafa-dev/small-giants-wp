@@ -374,6 +374,16 @@ if ( moduleConfig ) {
 				'shared',
 				'time-text.js'
 			),
+			// The separators runtime fallback (`@sgs/separators`), enqueued by
+			// includes/helpers-separators-css.php::sgs_separators_enqueue_fallback
+			// on a page that prints a flow list.
+			'shared/separators': path.resolve(
+				process.cwd(),
+				'src',
+				'shared',
+				'separators',
+				'view.js'
+			),
 			// The one shared per-device video module (Spec 49 §7.1).
 			'shared/media/device-video': path.resolve(
 				process.cwd(),

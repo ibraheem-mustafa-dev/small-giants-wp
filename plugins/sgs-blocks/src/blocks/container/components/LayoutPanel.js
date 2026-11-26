@@ -11,6 +11,7 @@
  */
 
 import { __ } from '@wordpress/i18n';
+import { useBlockEditContext } from '@wordpress/block-editor';
 import {
 	SelectControl,
 	RangeControl,
@@ -27,6 +28,7 @@ import {
 	ToggleGroupControl,
 	ToggleGroupControlOption,
 } from '../../../components/primitives';
+import { isTrimmed } from '../../extensions/hide-extensions';
 
 /*
  * 'Default' is the EMPTY value, and it is a real choice, not a placeholder for
@@ -61,12 +63,35 @@ function columnsDisplayValue( ownValue, effectiveValue, tier ) {
 	return tier === 'mobile' ? 1 : 2;
 }
 
+// `slug` is the option's name in a block's `supports.sgs.trim` list (see trim-controls.json).
 const LAYOUT_OPTIONS = [
-	{ label: __( 'Default', 'sgs-blocks' ), value: '' },
-	{ label: __( 'Flex', 'sgs-blocks' ), value: 'flex' },
-	{ label: __( 'Stack', 'sgs-blocks' ), value: 'stack' },
-	{ label: __( 'Grid', 'sgs-blocks' ), value: 'grid' },
+	{ label: __( 'Default', 'sgs-blocks' ), value: '', slug: 'layout.default' },
+	{ label: __( 'Flex', 'sgs-blocks' ), value: 'flex', slug: 'layout.flex' },
+	{
+		label: __( 'Stack', 'sgs-blocks' ),
+		value: 'stack',
+		slug: 'layout.stack',
+	},
+	{ label: __( 'Grid', 'sgs-blocks' ), value: 'grid', slug: 'layout.grid' },
 ];
+
+/**
+ * Whether any tier of a tier object holds a value other than the control's neutral one.
+ * A control a block trims still shows while the block stores such a value, so a saved
+ * setting is never hidden from the person who has to change it.
+ *
+ * @param {Object|string|undefined} value   The stored attribute.
+ * @param {string}                  neutral The value the control shows when nothing is stored.
+ * @return {boolean} True when something other than the neutral value is stored.
+ */
+export function storesTierValue( value, neutral = '' ) {
+	const tiers =
+		value && 'object' === typeof value ? Object.values( value ) : [ value ];
+	return tiers.some(
+		( tier ) =>
+			'string' === typeof tier && '' !== tier.trim() && tier !== neutral
+	);
+}
 
 const ALIGN_OPTIONS = [
 	{ label: __( 'Top', 'sgs-blocks' ), value: 'start' },
@@ -142,7 +167,58 @@ export function LayoutPanel( {
 	// OPT-IN: the caller's block.json declares `flexWrap` as `["string","object"]`, so the control
 	// writes a {desktop,tablet,mobile} object. Off keeps the single Wrap / No wrap toggle.
 	enableFlexWrapTier = false,
+	// The block whose `supports.sgs.trim` list this panel reads. Left unset it is the block being edited.
+	blockName,
 } ) {
+	const editContext = useBlockEditContext();
+	const trimName = blockName || editContext?.name;
+	/**
+	 * Whether a control the block trims stays out of the panel: trimmed, and nothing stored for it.
+	 *
+	 * @param {string}  slug   The control's slug in trim-controls.json.
+	 * @param {boolean} stored True when the block stores a value this control shows.
+	 * @return {boolean} True to leave the control out.
+	 */
+	const trimmedOut = ( slug, stored = false ) =>
+		! stored && isTrimmed( trimName, slug );
+	const layoutOptions = LAYOUT_OPTIONS.filter(
+		( opt ) => ! trimmedOut( opt.slug, opt.value === attributes.layout )
+	);
+	const showGridTemplateColumns = ! trimmedOut(
+		'layout.grid-template-columns',
+		storesTierValue( attributes.gridTemplateColumns )
+	);
+	const showGridTemplateRows = ! trimmedOut(
+		'layout.grid-template-rows',
+		storesTierValue( attributes.gridTemplateRows )
+	);
+	const showGridAutoRows = ! trimmedOut(
+		'layout.grid-auto-rows',
+		'' !== String( attributes.gridAutoRows || '' ).trim()
+	);
+	const showJustifyItems = ! trimmedOut(
+		'layout.justify-items',
+		storesTierValue( attributes.justifyItems, 'stretch' )
+	);
+	const showAlignContent = ! trimmedOut(
+		'layout.align-content',
+		storesTierValue( attributes.alignContent, 'stretch' )
+	);
+	const showFlexDirection = ! trimmedOut(
+		'layout.flex-direction',
+		storesTierValue( attributes.flexDirection, 'row' )
+	);
+	const showFlexWrap = ! trimmedOut(
+		'layout.flex-wrap',
+		storesTierValue( attributes.flexWrap, 'wrap' )
+	);
+	const showAdvancedGrid =
+		showGridTemplateColumns ||
+		showGridTemplateRows ||
+		showGridAutoRows ||
+		showJustifyItems ||
+		showAlignContent ||
+		enableIntrinsicColumns;
 	const {
 		// '' (Default / normal flow) — must MATCH the block.json default. A
 		// non-empty fallback here would make the control display a layout the
@@ -172,7 +248,7 @@ export function LayoutPanel( {
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 				>
-					{ LAYOUT_OPTIONS.map( ( opt ) => (
+					{ layoutOptions.map( ( opt ) => (
 						<ToggleGroupControlOption
 							key={ opt.value }
 							value={ opt.value }
@@ -274,84 +350,97 @@ export function LayoutPanel( {
 
 			{ layout === 'flex' && (
 				<>
-					<SelectControl
-						label={ __( 'Flex direction', 'sgs-blocks' ) }
-						value={ attributes.flexDirection || '' }
-						options={ [
-							{ label: __( 'Row', 'sgs-blocks' ), value: '' },
-							{
-								label: __( 'Row reverse', 'sgs-blocks' ),
-								value: 'row-reverse',
-							},
-							{
-								label: __( 'Column', 'sgs-blocks' ),
-								value: 'column',
-							},
-							{
-								label: __( 'Column reverse', 'sgs-blocks' ),
-								value: 'column-reverse',
-							},
-						] }
-						onChange={ ( val ) =>
-							setAttributes( { flexDirection: val } )
-						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					{ enableFlexWrapTier ? (
-						<ResponsiveOverride
-							label={ __( 'Flex wrap', 'sgs-blocks' ) }
-							value={ flexWrapTierValue( attributes.flexWrap ) }
-							onChange={ ( obj ) =>
-								setAttributes( { flexWrap: obj } )
-							}
-						>
-							{ ( { ownValue, setOwnValue } ) => (
-								<ToggleGroupControl
-									label={ __( 'Flex wrap', 'sgs-blocks' ) }
-									hideLabelFromVision
-									value={ ownValue || '' }
-									onChange={ ( val ) => setOwnValue( val ) }
-									isBlock
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								>
-									<ToggleGroupControlOption
-										value=""
-										label={ __( 'Same', 'sgs-blocks' ) }
-									/>
-									<ToggleGroupControlOption
-										value="wrap"
-										label={ __( 'Wrap', 'sgs-blocks' ) }
-									/>
-									<ToggleGroupControlOption
-										value="nowrap"
-										label={ __( 'No wrap', 'sgs-blocks' ) }
-									/>
-								</ToggleGroupControl>
-							) }
-						</ResponsiveOverride>
-					) : (
-						<ToggleGroupControl
-							label={ __( 'Flex wrap', 'sgs-blocks' ) }
-							value={ attributes.flexWrap || 'wrap' }
+					{ showFlexDirection && (
+						<SelectControl
+							label={ __( 'Flex direction', 'sgs-blocks' ) }
+							value={ attributes.flexDirection || '' }
+							options={ [
+								{ label: __( 'Row', 'sgs-blocks' ), value: '' },
+								{
+									label: __( 'Row reverse', 'sgs-blocks' ),
+									value: 'row-reverse',
+								},
+								{
+									label: __( 'Column', 'sgs-blocks' ),
+									value: 'column',
+								},
+								{
+									label: __( 'Column reverse', 'sgs-blocks' ),
+									value: 'column-reverse',
+								},
+							] }
 							onChange={ ( val ) =>
-								setAttributes( { flexWrap: val } )
+								setAttributes( { flexDirection: val } )
 							}
-							isBlock
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
-						>
-							<ToggleGroupControlOption
-								value="wrap"
-								label={ __( 'Wrap', 'sgs-blocks' ) }
-							/>
-							<ToggleGroupControlOption
-								value="nowrap"
-								label={ __( 'No wrap', 'sgs-blocks' ) }
-							/>
-						</ToggleGroupControl>
+						/>
 					) }
+					{ showFlexWrap &&
+						( enableFlexWrapTier ? (
+							<ResponsiveOverride
+								label={ __( 'Flex wrap', 'sgs-blocks' ) }
+								value={ flexWrapTierValue(
+									attributes.flexWrap
+								) }
+								onChange={ ( obj ) =>
+									setAttributes( { flexWrap: obj } )
+								}
+							>
+								{ ( { ownValue, setOwnValue } ) => (
+									<ToggleGroupControl
+										label={ __(
+											'Flex wrap',
+											'sgs-blocks'
+										) }
+										hideLabelFromVision
+										value={ ownValue || '' }
+										onChange={ ( val ) =>
+											setOwnValue( val )
+										}
+										isBlock
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									>
+										<ToggleGroupControlOption
+											value=""
+											label={ __( 'Same', 'sgs-blocks' ) }
+										/>
+										<ToggleGroupControlOption
+											value="wrap"
+											label={ __( 'Wrap', 'sgs-blocks' ) }
+										/>
+										<ToggleGroupControlOption
+											value="nowrap"
+											label={ __(
+												'No wrap',
+												'sgs-blocks'
+											) }
+										/>
+									</ToggleGroupControl>
+								) }
+							</ResponsiveOverride>
+						) : (
+							<ToggleGroupControl
+								label={ __( 'Flex wrap', 'sgs-blocks' ) }
+								value={ attributes.flexWrap || 'wrap' }
+								onChange={ ( val ) =>
+									setAttributes( { flexWrap: val } )
+								}
+								isBlock
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							>
+								<ToggleGroupControlOption
+									value="wrap"
+									label={ __( 'Wrap', 'sgs-blocks' ) }
+								/>
+								<ToggleGroupControlOption
+									value="nowrap"
+									label={ __( 'No wrap', 'sgs-blocks' ) }
+								/>
+							</ToggleGroupControl>
+						) ) }
 				</>
 			) }
 
@@ -366,7 +455,7 @@ export function LayoutPanel( {
 				/>
 			) }
 
-			{ layout === 'grid' && (
+			{ layout === 'grid' && showAdvancedGrid && (
 				<>
 					<hr style={ { margin: '16px 0' } } />
 					<p
@@ -394,69 +483,78 @@ export function LayoutPanel( {
 						  resolved it the same way — the picker replaces the raw
 						  field entirely rather than sitting alongside it.
 						*/ }
-					<ResponsiveOverride
-						label={ __( 'Custom column template', 'sgs-blocks' ) }
-						value={ attributes.gridTemplateColumns }
-						onChange={ ( obj ) =>
-							setAttributes( { gridTemplateColumns: obj } )
-						}
-					>
-						{ ( {
-							ownValue,
-							effectiveValue,
-							inherited,
-							setOwnValue,
-							tier,
-						} ) =>
-							enableColumnShapePicker ? (
-								<ColumnShapePicker
-									// The shape list depends on how many columns THIS
-									// tier actually shows, so read the count for the
-									// SAME tier rather than always the desktop one —
-									// a 4-column desktop and a 2-column tablet offer
-									// different shapes. Falls back to `2`, this
-									// block's own declared `columns.desktop` default
-									// (site-footer-row falls back to `3`, its own
-									// default — the fallback always mirrors the
-									// owning block's default, never a shared literal).
-									count={
-										( attributes.columns &&
-											attributes.columns[ tier ] ) ||
-										( attributes.columns &&
-											attributes.columns.desktop ) ||
-										2
-									}
-									value={
-										( inherited
-											? effectiveValue
-											: ownValue ) || ''
-									}
-									onChange={ ( track ) =>
-										setOwnValue( track || undefined )
-									}
-									// No `label` here on purpose: the wrapping
-									// <ResponsiveOverride> already renders the
-									// visible one, and two copies is a real defect
-									// (inspector-scan rule 29) — same reasoning as
-									// site-footer-row's mount.
-								/>
-							) : (
-								<TextControl
-									value={ ownValue || '' }
-									placeholder={
-										inherited ? effectiveValue || '' : ''
-									}
-									onChange={ ( val ) => setOwnValue( val ) }
-									help={ __(
-										"CSS grid-template-columns e.g. '5fr 3fr' or 'repeat(3,minmax(0,1fr))'. Leave empty to use the column count above — on tablet or mobile, empty inherits the tier above.",
-										'sgs-blocks'
-									) }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
-							)
-						}
-					</ResponsiveOverride>
+					{ showGridTemplateColumns && (
+						<ResponsiveOverride
+							label={ __(
+								'Custom column template',
+								'sgs-blocks'
+							) }
+							value={ attributes.gridTemplateColumns }
+							onChange={ ( obj ) =>
+								setAttributes( { gridTemplateColumns: obj } )
+							}
+						>
+							{ ( {
+								ownValue,
+								effectiveValue,
+								inherited,
+								setOwnValue,
+								tier,
+							} ) =>
+								enableColumnShapePicker ? (
+									<ColumnShapePicker
+										// The shape list depends on how many columns THIS
+										// tier actually shows, so read the count for the
+										// SAME tier rather than always the desktop one —
+										// a 4-column desktop and a 2-column tablet offer
+										// different shapes. Falls back to `2`, this
+										// block's own declared `columns.desktop` default
+										// (site-footer-row falls back to `3`, its own
+										// default — the fallback always mirrors the
+										// owning block's default, never a shared literal).
+										count={
+											( attributes.columns &&
+												attributes.columns[ tier ] ) ||
+											( attributes.columns &&
+												attributes.columns.desktop ) ||
+											2
+										}
+										value={
+											( inherited
+												? effectiveValue
+												: ownValue ) || ''
+										}
+										onChange={ ( track ) =>
+											setOwnValue( track || undefined )
+										}
+										// No `label` here on purpose: the wrapping
+										// <ResponsiveOverride> already renders the
+										// visible one, and two copies is a real defect
+										// (inspector-scan rule 29) — same reasoning as
+										// site-footer-row's mount.
+									/>
+								) : (
+									<TextControl
+										value={ ownValue || '' }
+										placeholder={
+											inherited
+												? effectiveValue || ''
+												: ''
+										}
+										onChange={ ( val ) =>
+											setOwnValue( val )
+										}
+										help={ __(
+											"CSS grid-template-columns e.g. '5fr 3fr' or 'repeat(3,minmax(0,1fr))'. Leave empty to use the column count above — on tablet or mobile, empty inherits the tier above.",
+											'sgs-blocks'
+										) }
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+								)
+							}
+						</ResponsiveOverride>
+					) }
 
 					{ /*
 						  `gridTemplateRows` is a TIER OBJECT (Spec 35 pass 3b) — same
@@ -468,34 +566,36 @@ export function LayoutPanel( {
 						  desktop branch wrote a string into an object-typed attr
 						  and destroyed the setting (same class as D563).
 						*/ }
-					<ResponsiveOverride
-						label={ __( 'Row template', 'sgs-blocks' ) }
-						value={ attributes.gridTemplateRows }
-						onChange={ ( obj ) =>
-							setAttributes( { gridTemplateRows: obj } )
-						}
-					>
-						{ ( {
-							ownValue,
-							effectiveValue,
-							inherited,
-							setOwnValue,
-						} ) => (
-							<TextControl
-								value={ ownValue || '' }
-								placeholder={
-									inherited ? effectiveValue || '' : ''
-								}
-								onChange={ ( val ) => setOwnValue( val ) }
-								help={ __(
-									"CSS grid-template-rows e.g. 'auto 1fr'. Leave empty to inherit the tier above, or for browser default on desktop.",
-									'sgs-blocks'
-								) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						) }
-					</ResponsiveOverride>
+					{ showGridTemplateRows && (
+						<ResponsiveOverride
+							label={ __( 'Row template', 'sgs-blocks' ) }
+							value={ attributes.gridTemplateRows }
+							onChange={ ( obj ) =>
+								setAttributes( { gridTemplateRows: obj } )
+							}
+						>
+							{ ( {
+								ownValue,
+								effectiveValue,
+								inherited,
+								setOwnValue,
+							} ) => (
+								<TextControl
+									value={ ownValue || '' }
+									placeholder={
+										inherited ? effectiveValue || '' : ''
+									}
+									onChange={ ( val ) => setOwnValue( val ) }
+									help={ __(
+										"CSS grid-template-rows e.g. 'auto 1fr'. Leave empty to inherit the tier above, or for browser default on desktop.",
+										'sgs-blocks'
+									) }
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+							) }
+						</ResponsiveOverride>
+					) }
 
 					{ enableIntrinsicColumns && (
 						<>
@@ -568,37 +668,43 @@ export function LayoutPanel( {
 						</>
 					) }
 
-					<TextControl
-						label={ __( 'Auto rows', 'sgs-blocks' ) }
-						value={ gridAutoRows }
-						onChange={ ( val ) =>
-							setAttributes( { gridAutoRows: val } )
-						}
-						help={ __(
-							"Sets grid-auto-rows e.g. '1fr' for equal-height rows or 'minmax(100px,auto)'.",
-							'sgs-blocks'
-						) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
+					{ showGridAutoRows && (
+						<TextControl
+							label={ __( 'Auto rows', 'sgs-blocks' ) }
+							value={ gridAutoRows }
+							onChange={ ( val ) =>
+								setAttributes( { gridAutoRows: val } )
+							}
+							help={ __(
+								"Sets grid-auto-rows e.g. '1fr' for equal-height rows or 'minmax(100px,auto)'.",
+								'sgs-blocks'
+							) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					) }
 
-					<TierSelectControl
-						label={ __( 'Justify items', 'sgs-blocks' ) }
-						value={ justifyItems }
-						options={ JUSTIFY_ITEMS_OPTIONS }
-						onChange={ ( obj ) =>
-							setAttributes( { justifyItems: obj } )
-						}
-					/>
+					{ showJustifyItems && (
+						<TierSelectControl
+							label={ __( 'Justify items', 'sgs-blocks' ) }
+							value={ justifyItems }
+							options={ JUSTIFY_ITEMS_OPTIONS }
+							onChange={ ( obj ) =>
+								setAttributes( { justifyItems: obj } )
+							}
+						/>
+					) }
 
-					<TierSelectControl
-						label={ __( 'Align content', 'sgs-blocks' ) }
-						value={ alignContent }
-						options={ ALIGN_CONTENT_OPTIONS }
-						onChange={ ( obj ) =>
-							setAttributes( { alignContent: obj } )
-						}
-					/>
+					{ showAlignContent && (
+						<TierSelectControl
+							label={ __( 'Align content', 'sgs-blocks' ) }
+							value={ alignContent }
+							options={ ALIGN_CONTENT_OPTIONS }
+							onChange={ ( obj ) =>
+								setAttributes( { alignContent: obj } )
+							}
+						/>
+					) }
 				</>
 			) }
 		</>

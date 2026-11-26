@@ -1,5 +1,5 @@
 /**
- * The fields Spec 49 §9.2 names that an adopted slot's panels need beyond WP-4's: shadow preset chips, one-slider
+ * The fields Spec 49 §9.2 names that an adopted slot's panels need beyond WP-4's: the shadow row, one-slider
  * corners, Colour, Alignment, Order, the surface Background and Playback.
  *
  * Every field takes the panel-row props `{ row, io, attributes, setAttributes, prefix, slot, kind }`. `io` is the row's
@@ -11,7 +11,6 @@
 import { Button, RangeControl, ToggleControl } from '@wordpress/components';
 import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { useShadowPresets } from '../../shadow-control/useShadowPresets.js';
 
 import GradientCapableColourControl from '../../GradientCapableColourControl.js';
 import SgsBoxControl from '../../SgsBoxControl.js';
@@ -46,66 +45,28 @@ export function SurfaceColourField( {
 	);
 }
 
-/** Shadow: preset chips from the theme, then Custom, which opens `ShadowControl`. */
+/**
+ * Shadow: the shared `ShadowControl` (theme styles, builder, layers, raw CSS). On a masked shape the row's disclosure hides
+ * Spread, Inset and Raw CSS and says the shadow follows the shape (`followShape`); the output is the shared
+ * `utils/shadow-output.js`, so the canvas and the page print the same filter.
+ */
 export function ShadowField( { row, attributes, setAttributes, prefix } ) {
-	const presets = useShadowPresets();
 	const name = ( base ) => mediaAttrName( prefix, base );
-	const stored = String( attributes[ name( 'BoxShadow' ) ] || '' );
-	const isPreset = presets.some( ( p ) => p.slug === stored );
-	const [ custom, setCustom ] = useState( false );
-	const customOpen =
-		custom || ( '' !== stored && 'none' !== stored && ! isPreset );
-	let current = '';
-	if ( customOpen ) {
-		current = 'custom';
-	} else if ( 'none' === stored ) {
-		current = 'none';
-	} else if ( isPreset ) {
-		current = stored;
-	}
-	const choose = ( value ) => {
-		if ( 'custom' === value ) {
-			setCustom( true );
-			return;
-		}
-		setCustom( false );
-		setAttributes( {
-			[ name( 'BoxShadow' ) ]: value,
-			[ name( 'BoxShadowColour' ) ]: '',
-		} );
-	};
-	const options = [
-		{ value: 'none', label: __( 'None', 'sgs-blocks' ) },
-		...presets.map( ( p ) => ( { value: p.slug, label: p.name } ) ),
-		{ value: 'custom', label: __( 'Custom', 'sgs-blocks' ) },
-	];
 	return (
 		<div className="sgs-media-shadow">
-			<Chips
+			<ShadowControl
 				label={ labelOf( row ) }
-				options={ options }
-				value={ current }
-				onChange={ choose }
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				attrNames={ {
+					base: name( 'BoxShadow' ),
+					colour: name( 'BoxShadowColour' ),
+					hoverColour: name( 'BoxShadowColourHover' ),
+				} }
+				liftPrefix={ prefix }
+				hide={ row.state.hide || [] }
+				followShape={ !! row.state.note }
 			/>
-			{ row.state.note && (
-				<p className="sgs-media-panel__hint">
-					{ translateReason( row.state.note ) }
-				</p>
-			) }
-			{ customOpen && (
-				<ShadowControl
-					label={ __( 'Custom shadow', 'sgs-blocks' ) }
-					attributes={ attributes }
-					setAttributes={ setAttributes }
-					attrNames={ {
-						base: name( 'BoxShadow' ),
-						colour: name( 'BoxShadowColour' ),
-						hoverColour: name( 'BoxShadowColourHover' ),
-					} }
-					liftPrefix={ prefix }
-					hide={ row.state.hide || [] }
-				/>
-			) }
 		</div>
 	);
 }

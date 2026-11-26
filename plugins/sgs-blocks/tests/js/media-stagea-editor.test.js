@@ -74,14 +74,22 @@ function mount( attributes, device ) {
 	const root = createRoot( container );
 	act( () =>
 		root.render(
-			React.createElement( MediaPanels, {
-				attributes: { [ key( 'Source' ) ]: SOURCE, ...attributes },
-				setAttributes,
-				atomIds: ATOMS,
-				kinds: [ 'image' ],
-				context: 'element',
-				prefix: slot.prefix,
-			} )
+			React.createElement(
+				React.Fragment,
+				null,
+				[ 'settings', 'styles' ].map( ( group ) =>
+					React.createElement( MediaPanels, {
+						key: group,
+						group,
+						attributes: { [ key( 'Source' ) ]: SOURCE, ...attributes },
+						setAttributes,
+						atomIds: ATOMS,
+						kinds: [ 'image' ],
+						context: 'element',
+						prefix: slot.prefix,
+					} )
+				)
+			)
 		)
 	);
 	return { container, setAttributes, unmount: () => act( () => root.unmount() ) };
@@ -171,7 +179,7 @@ describe( 'E7: the Media panel Reset keeps the file and its alt', () => {
 	it( 'writes no patch for Source, Alt or Decorative', () => {
 		const { container, setAttributes, unmount } = mount( { [ key( 'Alt' ) ]: 'A bowl', [ key( 'Decorative' ) ]: false, [ key( 'Loading' ) ]: 'eager' }, 'Desktop' );
 		const media = container.querySelector( '.sgs-media-panel--media' );
-		act( () => media.querySelector( '.test-menu-item' ).dispatchEvent( new MouseEvent( 'click', { bubbles: true } ) ) );
+		act( () => media.querySelector( '.sgs-panel-reset__button' ).dispatchEvent( new MouseEvent( 'click', { bubbles: true } ) ) );
 		const keys = Object.keys( setAttributes.mock.calls[ 0 ][ 0 ] );
 		[ 'Source', 'Alt', 'Decorative' ].forEach( ( base ) => expect( keys ).not.toContain( key( base ) ) );
 		expect( keys ).toContain( key( 'Loading' ) );

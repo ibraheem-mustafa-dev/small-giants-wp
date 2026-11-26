@@ -27,6 +27,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-media-element.php';
 // Bare-icon variant, stroke width and item gap/padding
 // live in their own files (this render.php is already over the file-length cap).
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-trust-bar-item.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-trust-bar-grid.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-motion-effect.php';
 
 // --- Unique ID for scoped typography <style> ----------------------------------
@@ -340,10 +341,10 @@ if ( $tb_overflow_drop ) {
 // Landmark name. A <section> is a region landmark only when it has a name, and a <nav> or <aside> is a landmark whatever
 // its name, so:
 // - the Landmark label setting names the bar on every tag (a <div>, <header> or <footer> gets role="region" so the name
-//   is valid on it);
+// is valid on it);
 // - with no label set, a <nav> or <aside> keeps the default "Trust signals" (a landmark should be told apart from its
-//   siblings), and every other tag stays unnamed, because a page with several trust bars would otherwise carry the same
-//   region name more than once (axe landmark-unique) and a decorative strip does not need a landmark of its own.
+// siblings), and every other tag stays unnamed, because a page with several trust bars would otherwise carry the same
+// region name more than once (axe landmark-unique) and a decorative strip does not need a landmark of its own.
 $tb_tag_name = isset( $attributes['tagName'] ) ? sanitize_key( $attributes['tagName'] ) : 'section';
 $tb_label    = isset( $attributes['ariaLabel'] ) && is_string( $attributes['ariaLabel'] ) ? trim( sanitize_text_field( $attributes['ariaLabel'] ) ) : '';
 if ( '' !== $tb_label ) {
@@ -428,10 +429,15 @@ if ( $tb_stroke_grad['css'] ) {
 $tb_extra_scoped_css .= sgs_trust_bar_item_css( $attributes, $root_sel );
 $tb_extra_scoped_css .= sgs_trust_bar_icon_stroke_force_css( $attributes, $badge_style, $uid_scope );
 
-// Text-only badge look (fill, border, corner radius) and the separator's colour; the separator glyph itself is printed
-// after each badge below.
-$tb_extra_scoped_css .= sgs_trust_bar_text_badge_css( $attributes, $badge_style, $root_sel, $uid_scope );
-$tb_separator_html    = sgs_trust_bar_separator_html( sgs_trust_bar_separator_glyph( $attributes, $badge_style ) );
+// Text-only badge look (fill, border, corner radius). The separator glyph is the same in every badge style: a row prints
+// it as a sibling after each badge, a grid inside each badge (a grid gives every direct child a cell); its colour, and
+// the grid's per-device rules (the end of each row, a centred last row), are scoped CSS.
+$tb_extra_scoped_css .= sgs_trust_bar_text_badge_css( $attributes, $badge_style, $root_sel );
+$tb_sep_glyph         = sgs_trust_bar_separator_glyph( $attributes );
+$tb_sep_cell          = 'grid' === ( $attributes['layout'] ?? '' );
+$tb_separator_html    = $tb_sep_cell ? '' : sgs_trust_bar_separator_html( $tb_sep_glyph );
+$tb_cell_separator    = $tb_sep_cell ? sgs_trust_bar_separator_html( $tb_sep_glyph, true ) : '';
+$tb_extra_scoped_css .= sgs_trust_bar_separator_css( $attributes, $uid_scope );
 
 // --- Optional title -----------------------------------------------------------
 // Guard against whitespace-only or HTML-only values (e.g. an empty <br> saved
@@ -461,17 +467,30 @@ $items = $attributes['items'] ?? array();
 // (labelColourGradient) — no css:background-color exists on this element
 // (that lives on the separate "wrapper" element, a different selector).
 // No real background paint to collide with; sgs_text_states_css() is safe.
-$tb_badge_label_sel   = $uid_scope . ' .sgs-trust-bar__badge-label';
-$tb_extra_scoped_css .= sgs_text_states_css(
-	$tb_badge_label_sel,
-	$attributes,
-	array(
-		'base'           => 'labelColour',
-		'hover'          => 'labelColourHover',
-		'gradient'       => 'labelColourGradient',
-		'hover_gradient' => 'labelColourHoverGradient',
-	)
+// One Label colour paints the label whichever style prints it. A text-only or image-badge bar paints `__badge-label` with it
+// always (the default is the theme text colour), exactly as before. An icon bar's label (`__label`) takes its colour from
+// textColour through --sgs-trust-badge-text-colour, so the Label colour paints it only once the bar STORES a label colour
+// other than the default, or a gradient, or a hover colour (a stored value was dead on an icon bar until now); an icon bar
+// that stores none keeps what it draws today. "Stored" is what the post holds: the value WordPress fills in from the
+// default is not stored.
+$tb_label_map    = array(
+	'base'           => 'labelColour',
+	'hover'          => 'labelColourHover',
+	'gradient'       => 'labelColourGradient',
+	'hover_gradient' => 'labelColourHoverGradient',
 );
+$tb_stored_attrs = ( $block instanceof \WP_Block && is_array( $block->parsed_block['attrs'] ?? null ) ) ? $block->parsed_block['attrs'] : $attributes;
+$tb_label_stored = false;
+foreach ( $tb_label_map as $tb_label_key ) {
+	$tb_label_value = trim( (string) ( $tb_stored_attrs[ $tb_label_key ] ?? '' ) );
+	if ( '' !== $tb_label_value && ! ( 'labelColour' === $tb_label_key && 'text' === $tb_label_value ) ) {
+		$tb_label_stored = true;
+	}
+}
+$tb_extra_scoped_css .= sgs_text_states_css( $uid_scope . ' .sgs-trust-bar__badge-label', $attributes, $tb_label_map );
+if ( $tb_label_stored && ( 'icon-circle' === $badge_style || 'icon-bare' === $badge_style ) ) {
+	$tb_extra_scoped_css .= sgs_text_states_css( $uid_scope . ' .sgs-trust-bar__label', $attributes, $tb_label_map );
+}
 
 // --- image-badge appearance (no-inline contract: scoped rule, not inline style=) -----
 // The badge pictures are the `badge` slot (Spec 49 §8.3): the shared media renderer prints each as a group that IS the
@@ -564,6 +583,12 @@ $items_html = '';
 // cannot silently drift. ⚠ If another element is ever added as a sibling of the
 // badges, extend this expression — do not add the element and leave this alone.
 $tb_badge_offset = ( ! $tb_marquee_track && '' !== $title_html ) ? 1 : 0;
+// A row prints a separator sibling after every badge, so badge N is child 2N-1 there.
+$tb_badge_stride = '' !== $tb_separator_html ? 2 : 1;
+
+// The grid's separators and centred last row need the device's column count and the same sibling offset.
+$tb_columns_authored  = ( $block instanceof \WP_Block && is_array( $block->parsed_block['attrs']['columns'] ?? null ) ) ? $block->parsed_block['attrs']['columns'] : array();
+$tb_extra_scoped_css .= sgs_trust_bar_grid_css( $attributes, $uid_scope, sgs_trust_bar_tier_columns( $attributes, $tb_columns_authored ), $tb_badge_offset, $tb_sep_glyph, '' !== $title_html );
 
 foreach ( $items as $tb_item_index => $item ) {
 	$item       = is_array( $item ) ? $item : array();
@@ -659,24 +684,27 @@ foreach ( $items as $tb_item_index => $item ) {
 			// just above the loop.
 			$fill_colour = sgs_colour_value( (string) $item['fillColour'] );
 			if ( $fill_colour ) {
-				$tb_extra_scoped_css .= $uid_scope . ' .sgs-trust-bar__badge:nth-child(' . ( (int) $tb_item_index + 1 + $tb_badge_offset ) . ') .' . str_replace( ' ', '.', $circle_class ) . '{--sgs-trust-badge-icon-fill:' . esc_attr( $fill_colour ) . ';}';
+				$tb_extra_scoped_css .= $uid_scope . ' .sgs-trust-bar__badge:nth-child(' . ( (int) $tb_item_index * $tb_badge_stride + 1 + $tb_badge_offset ) . ') .' . str_replace( ' ', '.', $circle_class ) . '{--sgs-trust-badge-icon-fill:' . esc_attr( $fill_colour ) . ';}';
 			}
 		}
 
 		// A custom SVG's wrapper says so (`--custom`): the filled rule reaches its own currentColor shapes only there, so a
 		// two-tone library icon (a contrasting dot drawn in currentColor) keeps its second colour (style.css).
 		$items_html .= sprintf(
-			'<div class="sgs-trust-bar__badge"%s><span class="%s" aria-hidden="true">%s</span><span class="sgs-trust-bar__label">%s</span></div>',
+			'<div class="sgs-trust-bar__badge"%s><span class="%s" aria-hidden="true">%s</span><span class="sgs-trust-bar__label">%s</span>%s</div>',
 			$item_attrs,
 			esc_attr( $circle_class . ( $tb_custom_svg ? ' ' . $icon_base_class . '--custom' : '' ) ),
 			$svg,
-			esc_html( $item_label )
+			esc_html( $item_label ),
+			$tb_cell_separator
 		);
+		$items_html .= $tb_separator_html;
 
 	} elseif ( 'text-only' === $badge_style ) {
 		$inner_html = sprintf(
-			'<span class="sgs-trust-bar__badge-label">%s</span>',
-			esc_html( $item_label )
+			'<span class="sgs-trust-bar__badge-label">%s</span>%s',
+			esc_html( $item_label ),
+			$tb_cell_separator
 		);
 
 		if ( $item_url ) {
@@ -689,7 +717,7 @@ foreach ( $items as $tb_item_index => $item ) {
 		} else {
 			$items_html .= sprintf( '<div class="sgs-trust-bar__badge"%s>%s</div>', $item_attrs, $inner_html );
 		}
-		// A separator after every badge; the icon variants' per-badge :nth-child rules above never see it.
+		// A separator after every badge (a row); the per-badge :nth-child rules above count it through $tb_badge_stride.
 		$items_html .= $tb_separator_html;
 	} elseif ( 'image-badge' === $badge_style ) {
 		// The badge's picture: the item's own `source`, `alt`, `decorative` and `fit`, printed by the shared media
@@ -708,6 +736,7 @@ foreach ( $items as $tb_item_index => $item ) {
 				esc_html( $item_label )
 			);
 		}
+		$badge_content .= $tb_cell_separator;
 
 		if ( $item_url ) {
 			$items_html .= sprintf(
@@ -719,6 +748,7 @@ foreach ( $items as $tb_item_index => $item ) {
 		} else {
 			$items_html .= sprintf( '<div class="sgs-trust-bar__badge"%s>%s</div>', $item_attrs, $badge_content );
 		}
+		$items_html .= $tb_separator_html;
 	}
 }
 

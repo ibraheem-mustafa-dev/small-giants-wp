@@ -3,10 +3,11 @@
  *
  * Every attribute name is `prefix + base`, with the bases taken from `registry.json` (the table the generator writes
  * `block.json` attributes from), so a control can never write a name the generator did not create. Only the groups the
- * block declares show. The look controls sit in one Styles panel titled with the button's label; the colour rows go in the
- * shared Colour panel under a heading with the same label.
+ * block declares show. The look controls sit in one Styles panel titled with the button's label. The colour rows go in the
+ * block's one main Colour panel under a heading with the same label (a block with 12 or fewer base colours passes
+ * `colourInMainPanel`), or, in any other block, in the kit's own Colour panel.
  *
- * Controls are the shared ones: `SgsColourPanel` rows, `SgsBorderControl`, `SgsBoxControl` and `SgsLengthControl` inside
+ * Controls are the shared ones: the colour rows (`./colour-rows.js`), `SgsBorderControl`, `SgsBoxControl` and `SgsLengthControl` inside
  * `ResponsiveOverride`, `ShadowControl` and `TypographyControls`.
  *
  * @package
@@ -19,13 +20,12 @@ import registry from './registry.json';
 import ResponsiveOverride from '../ResponsiveOverride';
 import SgsBorderControl from '../SgsBorderControl';
 import SgsBoxControl from '../SgsBoxControl';
-import SgsColourPanel from '../SgsColourPanel';
+import KitColourPanel from '../KitColourPanel';
 import SgsLengthControl from '../SgsLengthControl';
 import ShadowControl from '../ShadowControl';
 import TypographyControls from '../TypographyControls';
-import fillRow from '../colour-variants/fillRow';
+import { buttonKitColourRows } from './colour-rows';
 import { builtinButtonAttrName } from '../BuiltinButtonPanel';
-import textRow from '../colour-variants/textRow';
 import { BOX_UNITS, normaliseResponsiveBox } from '../ResponsiveBoxControl';
 import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 import { presetOptions } from '../../blocks/button/preset-names';
@@ -113,6 +113,8 @@ const TYPOGRAPHY_TARGET = {
  * @param {string}   props.label           Panel title.
  * @param {string[]} [props.groups]        Declared groups; omitted means every group except `gradient`.
  * @param {Function} [props.seedForPreset] Optional: the preset slug just picked in, further attributes out, written in the same step.
+ * @param {boolean}  [props.colourInMainPanel=false] True when the block draws this button's colour rows in its own main Colour panel
+ *                                         (`builtinButtonColourRows`), so the kit draws none; false keeps them in the kit's own panel.
  * @return {JSX.Element|null} The panels.
  */
 export default function BuiltinButtonPanelBody( {
@@ -123,6 +125,7 @@ export default function BuiltinButtonPanelBody( {
 	label,
 	groups,
 	seedForPreset,
+	colourInMainPanel = false,
 } ) {
 	const shown =
 		Array.isArray( groups ) && groups.length ? groups : DEFAULT_GROUPS;
@@ -146,72 +149,12 @@ export default function BuiltinButtonPanelBody( {
 		setAttributes( { [ attr( base ) ]: value || undefined } );
 	const gradient = has( 'gradient' );
 
-	// The colour panel: background and text rows, normal and hover; gradient rows add the Solid/Gradient choice.
-	const colourRows = has( 'colour' )
-		? [
-				fillRow( {
-					key: `${ prefix }-background`,
-					label: __( 'Background', 'sgs-blocks' ),
-					heading: label,
-					attrs: {
-						base: attr( 'ColourBackground' ),
-						hover: attr( 'ColourBackgroundHover' ),
-						...( gradient
-							? {
-									gradient: attr(
-										'ColourBackgroundGradient'
-									),
-									hoverGradient: attr(
-										'ColourBackgroundHoverGradient'
-									),
-							  }
-							: {} ),
-					},
-					attributes,
-					setAttributes,
-				} ),
-				textRow( {
-					key: `${ prefix }-text`,
-					label: __( 'Text', 'sgs-blocks' ),
-					attrs: {
-						base: attr( 'ColourText' ),
-						hover: attr( 'ColourTextHover' ),
-						...( gradient
-							? {
-									gradient: attr( 'ColourTextGradient' ),
-									hoverGradient: attr(
-										'ColourTextHoverGradient'
-									),
-							  }
-							: {} ),
-					},
-					attributes,
-					setAttributes,
-				} ),
-				// Border colour lives in the border control when the button declares one; otherwise it is a row here.
-				! has( 'border' ) &&
-					fillRow( {
-						key: `${ prefix }-border`,
-						label: __( 'Border', 'sgs-blocks' ),
-						attrs: {
-							base: attr( 'ColourBorder' ),
-							hover: attr( 'ColourBorderHover' ),
-							...( gradient
-								? {
-										gradient: attr(
-											'ColourBorderGradient'
-										),
-										hoverGradient: attr(
-											'ColourBorderHoverGradient'
-										),
-								  }
-								: {} ),
-						},
-						attributes,
-						setAttributes,
-					} ),
-		  ]
-		: [];
+	// The colour rows (Background, Text, and Border when no border control is declared) come from `./colour-rows.js`: a block
+	// with 12 or fewer base colours draws them in its one main Colour panel, and any other block gets them in the kit's own
+	// Colour panel below.
+	const colourRows = colourInMainPanel
+		? []
+		: buttonKitColourRows( { attributes, setAttributes, prefix, label, groups } );
 
 	const borderColourState = ( key, stateLabel, base, gradientBase ) => ( {
 		key,
@@ -241,7 +184,7 @@ export default function BuiltinButtonPanelBody( {
 
 	return (
 		<>
-			{ colourRows.length > 0 && <SgsColourPanel rows={ colourRows } /> }
+			<KitColourPanel rows={ colourRows } />
 			<InspectorControls group="styles">
 				<PanelBody title={ label } initialOpen={ false }>
 					{ has( 'preset' ) && (
@@ -439,6 +382,7 @@ export default function BuiltinButtonPanelBody( {
 						) ) }
 					{ has( 'padding' ) && (
 						<ResponsiveOverride
+							label={ __( 'Padding', 'sgs-blocks' ) }
 							value={ attributes[ attr( 'Padding' ) ] }
 							onChange={ ( obj ) =>
 								setAttributes( { [ attr( 'Padding' ) ]: obj } )

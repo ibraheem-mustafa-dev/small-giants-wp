@@ -73,6 +73,7 @@ export function TierBox( {
 } ) {
 	return (
 		<ResponsiveOverride
+			label={ label }
 			value={ attributes[ attr ] }
 			onChange={ ( obj ) => setAttributes( { [ attr ]: obj } ) }
 		>

@@ -31,11 +31,9 @@ import {
 	shadowAttrKeys,
 	SgsLengthControl,
 	SgsBorderControl,
-	BOX_UNITS,
-	normaliseResponsiveBox,
-	SgsBoxControl,
 	LinkPopoverContent,
 	SGS_FONT_WEIGHT_OPTIONS,
+	ResponsiveBoxControls,
 } from '../../components';
 import {
 	ToolsPanel,
@@ -79,6 +77,7 @@ import { presetNames } from './preset-names';
 
 import AuthoredText from '../../components/AuthoredText';
 import SgsFreeTextField from '../../components/SgsFreeTextField';
+import SgsResetPanel from '../../components/SgsResetPanel';
 const ICON_POSITION_OPTIONS = [
 	{ label: __( 'Before label', 'sgs-blocks' ), value: 'before' },
 	{ label: __( 'After label', 'sgs-blocks' ), value: 'after' },
@@ -384,6 +383,7 @@ export default function Edit( {
 			   `supports.color` sub-flags are now false so WordPress generates
 			   no native colour UI to overlap with this panel. */ }
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					{
 						key: 'text',
@@ -1253,7 +1253,7 @@ export default function Edit( {
 						   TypographyControls' showLineHeight (that prop still
 						   assumes the old flat lineHeight/lineHeightTablet/
 						   lineHeightMobile trio). Wired by hand here with the
-						   same UnitControl UX, driven by <ResponsiveOverride>.
+						   same UnitControl UX, driven by <ResponsiveOverride label={ __( 'Line height', 'sgs-blocks' ) }>.
 						   lineHeightUnit is unchanged — a single flat string
 						   shared across tiers ('' = unitless). */ }
 					<ResponsiveOverride
@@ -1388,7 +1388,7 @@ export default function Edit( {
 					) }
 					{ /* Letter spacing is now a TIER OBJECT (Spec 35 migration,
 						   2026-08-11) — same RangeControl UX as before, wrapped in
-						   <ResponsiveOverride> so tablet/mobile become editable
+						   <ResponsiveOverride label={ __( 'Letter spacing (px)', 'sgs-blocks' ) }> so tablet/mobile become editable
 						   (render.php already reads all three tiers). */ }
 					<ResponsiveOverride
 						label={ __( 'Letter spacing (px)', 'sgs-blocks' ) }
@@ -1420,34 +1420,33 @@ export default function Edit( {
 				   SgsColourPanel (Normal/Hover tabs per swatch). This
 				   ToolsPanel now holds only the one hover behaviour with no
 				   colour of its own. */ }
-				<ToolsPanel
-					label={ __( 'Hover effects', 'sgs-blocks' ) }
+				<SgsResetPanel
+					title={ __( 'Hover effects', 'sgs-blocks' ) }
+					items={ [
+						{
+							hasValue: () => !! fontWeightHover,
+							onDeselect: () =>
+								setAttributes( { fontWeightHover: '' } ),
+						},
+					] }
 					resetAll={ () =>
 						setAttributes( {
 							fontWeightHover: '',
 						} )
 					}
+					initialOpen={ false }
 				>
-					<ToolsPanelItem
+					<SelectControl
 						label={ __( 'Weight on hover', 'sgs-blocks' ) }
-						hasValue={ () => !! fontWeightHover }
-						onDeselect={ () =>
-							setAttributes( { fontWeightHover: '' } )
+						value={ fontWeightHover || '' }
+						options={ SGS_FONT_WEIGHT_OPTIONS }
+						onChange={ ( val ) =>
+							setAttributes( { fontWeightHover: val } )
 						}
-						isShownByDefault
-					>
-						<SelectControl
-							label={ __( 'Weight on hover', 'sgs-blocks' ) }
-							value={ fontWeightHover || '' }
-							options={ SGS_FONT_WEIGHT_OPTIONS }
-							onChange={ ( val ) =>
-								setAttributes( { fontWeightHover: val } )
-							}
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					</ToolsPanelItem>
-				</ToolsPanel>
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+				</SgsResetPanel>
 
 				{ /* Border — always editable (preset-as-seed). Box-object interface
 				   contract §1/§5: borderWidth is an SGS custom object attr (a flat box = desktop,
@@ -1519,60 +1518,10 @@ export default function Edit( {
 					/>
 				</PanelBody>
 
-				{ /* Spacing — padding/margin are each a single block-owned tier-object
-				   attr { desktop, tablet, mobile }, written via ResponsiveOverride +
-				   SgsBoxControl; read directly by this block's render.php. */ }
-				<PanelBody
-					title={ __( 'Spacing', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<ResponsiveOverride
-						value={ attributes.padding }
-						onChange={ ( obj ) =>
-							setAttributes( { padding: obj } )
-						}
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-					<ResponsiveOverride
-						value={ attributes.margin }
-						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 
 				{ /* Effects */ }
 				<PanelBody

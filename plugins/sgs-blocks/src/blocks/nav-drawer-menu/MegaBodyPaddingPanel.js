@@ -5,11 +5,11 @@ import {
 	SgsBoxControl,
 	normaliseResponsiveBox,
 } from '../../components';
-import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { spacingDefaultsFor } from '../../utils/spacing-defaults';
+import SgsResetPanel from '../../components/SgsResetPanel';
 
 /**
- * sgs/nav-drawer-menu — Styles tab: "Mega panel padding" ToolsPanel.
+ * sgs/nav-drawer-menu — Styles tab: "Mega panel padding" panel.
  *
  * `megaBodyPadding`: the padding around a mega item's own panel inside its
  * drawer accordion (`.sgs-nav-drawer-menu__mega-body`, megaDrawerMode
@@ -27,50 +27,50 @@ export default function MegaBodyPaddingPanel( {
 	setAttributes,
 } ) {
 	return (
-		<ToolsPanel
-			label={ __( 'Mega panel padding', 'sgs-blocks' ) }
+		<SgsResetPanel
+			title={ __( 'Mega panel padding', 'sgs-blocks' ) }
+			items={ [
+				{
+					hasValue: () =>
+						Object.keys( megaBodyPadding ?? {} ).length > 0,
+					onDeselect: () => setAttributes( { megaBodyPadding: {} } ),
+				},
+			] }
 			resetAll={ () => setAttributes( { megaBodyPadding: {} } ) }
+			initialOpen={ false }
 		>
-			<ToolsPanelItem
-				hasValue={ () =>
-					Object.keys( megaBodyPadding ?? {} ).length > 0
-				}
+			<ResponsiveOverride
 				label={ __( 'Mega panel padding', 'sgs-blocks' ) }
-				onDeselect={ () => setAttributes( { megaBodyPadding: {} } ) }
-				isShownByDefault
+				value={ megaBodyPadding }
+				onChange={ ( obj ) =>
+					setAttributes( { megaBodyPadding: obj } )
+				}
 			>
-				<ResponsiveOverride
-					value={ megaBodyPadding }
-					onChange={ ( obj ) =>
-						setAttributes( { megaBodyPadding: obj } )
-					}
-				>
-					{ ( { ownValue, setOwnValue } ) => (
-						<SgsBoxControl
-							label={ __( 'Mega panel padding', 'sgs-blocks' ) }
-							hideLabelFromVision
-							help={ __(
-								'Space around a mega item’s panel when it opens in the drawer. Empty keeps the default 0 12px 12px.',
-								'sgs-blocks'
-							) }
-							values={
-								ownValue && typeof ownValue === 'object'
-									? ownValue
-									: {}
-							}
-							units={ BOX_UNITS }
-							presets
-							defaults={ spacingDefaultsFor(
-								name,
-								'megaBodyPadding'
-							) }
-							onChange={ ( next ) =>
-								setOwnValue( normaliseResponsiveBox( next ) )
-							}
-						/>
-					) }
-				</ResponsiveOverride>
-			</ToolsPanelItem>
-		</ToolsPanel>
+				{ ( { ownValue, setOwnValue } ) => (
+					<SgsBoxControl
+						label={ __( 'Mega panel padding', 'sgs-blocks' ) }
+						hideLabelFromVision
+						help={ __(
+							'Space around a mega item’s panel when it opens in the drawer. Empty keeps the default 0 12px 12px.',
+							'sgs-blocks'
+						) }
+						values={
+							ownValue && typeof ownValue === 'object'
+								? ownValue
+								: {}
+						}
+						units={ BOX_UNITS }
+						presets
+						defaults={ spacingDefaultsFor(
+							name,
+							'megaBodyPadding'
+						) }
+						onChange={ ( next ) =>
+							setOwnValue( normaliseResponsiveBox( next ) )
+						}
+					/>
+				) }
+			</ResponsiveOverride>
+		</SgsResetPanel>
 	);
 }

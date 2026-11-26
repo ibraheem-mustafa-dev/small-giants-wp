@@ -65,6 +65,7 @@ import {
 	textRow,
 	ScrimControls,
 	scrimColourRow,
+	SeparatorsPanel,
 } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { resolveTier } from '../../utils';
@@ -89,7 +90,6 @@ import SplitPanel from './SplitPanel';
 import ListLayoutPanel from '../../shared/nav-menu-panels/ListLayoutPanel';
 import TypographyPanel from '../../shared/nav-menu-panels/TypographyPanel';
 import ItemsPanel from '../../shared/nav-menu-panels/ItemsPanel';
-import SeparatorsPanel from '../../shared/nav-menu-panels/SeparatorsPanel';
 import DropdownStylePanel from '../../shared/nav-menu-panels/DropdownStylePanel';
 import EffectsPanel from '../../shared/nav-menu-panels/EffectsPanel';
 import FeaturedPanel from '../../shared/nav-menu-panels/FeaturedPanel';
@@ -666,7 +666,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			{ /* ⛔ FIRST among same-group Fills — WordPress concatenates
 			   same-group Fills in MOUNT order, so this must render before
 			   `<InspectorControls>` below to sit at the top of the Styles tab. */ }
-			<SgsColourPanel rows={ colourRows } />
+			<SgsColourPanel initialOpen rows={ colourRows } />
 
 			{ /* ── General tab (default InspectorControls group) ───────────── */ }
 			<InspectorControls>
@@ -863,12 +863,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				   list has no "next item to the right"). The shared Separators setting. */ }
 				<SeparatorsPanel
 					title={ __( 'Item separators', 'sgs-blocks' ) }
-					value={ attributes.separators }
-					onChange={ ( next ) =>
-						setAttributes( { separators: next } )
-					}
-					axes={ [ 'column' ] }
-					sweep
+					attributes={ attributes }
+					setAttributes={ setAttributes }
 				/>
 
 				{ /* SubmenuItemsPanel (sublink marker icon) is NOT mounted —
@@ -890,11 +886,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 				<SeparatorsPanel
 					title={ __( 'Submenu row separators', 'sgs-blocks' ) }
-					value={ attributes.submenuSeparators }
-					onChange={ ( next ) =>
-						setAttributes( { submenuSeparators: next } )
-					}
-					axes={ [ 'row' ] }
+					attribute="submenuSeparators"
+					attributes={ attributes }
+					setAttributes={ setAttributes }
 				/>
 
 				{ /* Panel and item motion live in the Entrance and reveal panel

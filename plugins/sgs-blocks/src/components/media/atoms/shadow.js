@@ -29,7 +29,7 @@ import {
 
 import { add, nodes, rulesCss, scalar } from '../emit/core.js';
 import { mediaShadow } from '../emit/values.js';
-import { dropShadow, shadowForcedColoursDecl } from '../emit/drop-shadow.js';
+import { shadowDeclMap } from '../../../utils/shadow-output.js';
 import { shapeHasMask } from '../emit/mask.js';
 /**
  * @param {string} prefix    Surface prefix.
@@ -163,7 +163,7 @@ export function liftOn( attributes = {}, prefix = '' ) {
 /**
  * C3 emitter: `box-shadow` on the surface (with its forced-colours fallback) and, on hover, the hover colour. A slot that
  * has a mask shape at any device draws the shadow as `filter:drop-shadow()` instead, because a mask clips a box-shadow.
- * PHP twin: `sgs_media_atom_shadow_emit()`.
+ * The mode and the declarations are the shared `utils/shadow-output.js`. PHP twin: `sgs_media_atom_shadow_emit()`.
  *
  * @param {Object}  slot   Slot `{ prefix, kinds, context, wrapper }`.
  * @param {Object}  attrs  Attributes.
@@ -175,21 +175,12 @@ export function emit( slot, attrs, uid, helper ) {
 	const mask = shapeHasMask( attrs, slot );
 	const { surface } = nodes( slot, uid, helper, mask );
 	const shape = scalar( attrs, slot, 'BoxShadow' );
-	const decls = ( shadowColour ) => {
-		const value = mediaShadow( shape, shadowColour );
-		if ( '' === value ) {
-			return {};
-		}
-		if ( mask ) {
-			const filter = 'none' === value ? 'none' : dropShadow( value );
-			return '' === filter ? {} : { filter };
-		}
-		const out = { 'box-shadow': value };
-		if ( 'none' !== value ) {
-			out[ '@forced-colors' ] = shadowForcedColoursDecl();
-		}
-		return out;
-	};
+	// The value, the mode and its declarations are the shared `shadowDeclMap()`; this emitter supplies the node (the
+	// surface, which sits outside the mask) and the hover rule.
+	const decls = ( shadowColour ) =>
+		shadowDeclMap( mediaShadow( shape, shadowColour ), {
+			followShape: mask,
+		} );
 	const rules = {};
 	for ( const [ prop, value ] of Object.entries(
 		decls( scalar( attrs, slot, 'BoxShadowColour' ) )

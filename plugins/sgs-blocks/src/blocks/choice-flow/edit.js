@@ -15,11 +15,8 @@ import {
 } from '@wordpress/components';
 import {
 	SgsLengthControl,
-	SgsBoxControl,
 	SgsColourPanel,
-	ResponsiveOverride,
-	BOX_UNITS,
-	normaliseResponsiveBox,
+	ResponsiveBoxControls,
 } from '../../components';
 import { usePreviewTier } from '../../utils';
 import {
@@ -370,7 +367,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
 		title,
 		maxWidth,
-		padding,
 		progressStyle,
 		showPricePanel,
 		pricePanelTitle,
@@ -486,6 +482,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		<>
 			{ /* Every colour row of the block, first so it heads the Styles tab. */ }
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					...choiceFlowColourRows( { attributes, setAttributes } ),
 					...bandsColourRows( { attributes, setAttributes } ),
@@ -497,7 +494,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					flowIsLinked={ flowIsLinked }
 					setAttributes={ setAttributes }
 				/>
-				<PanelBody title={ __( 'Choice Flow Settings', 'sgs-blocks' ) }>
+				<PanelBody initialOpen={ false } title={ __( 'Choice Flow Settings', 'sgs-blocks' ) }>
 					<TextControl
 						label={ __( 'Flow title', 'sgs-blocks' ) }
 						value={ title }
@@ -536,31 +533,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							'sgs-blocks'
 						) }
 					/>
-					<ResponsiveOverride
-						value={ padding }
-						onChange={ ( obj ) =>
-							setAttributes( { padding: obj } )
-						}
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
 				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 				{ /* User-directed (2026-09-15) — operator choice across the 3 real
 				   reference patterns found live: see progressStyle's own
 				   block.json description for the evidence. */ }

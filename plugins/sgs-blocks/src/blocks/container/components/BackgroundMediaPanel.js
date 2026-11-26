@@ -3,17 +3,17 @@
  *
  * The media (a photo, video or SVG per device, how it fills, Focal, Tile options, Pinned, Overlay, Photo opacity,
  * Load priority, the cover image and Pause button of a video, and the motion line) is the shared media panel for the
- * `background` slot. What the media system does not own stays with the wrapper and sits beside it: the surface tone,
- * the Surface blur and saturate, and the extra SVG layer (`bgSvg*`) that can sit over a photo or video, because kinds
- * are exclusive per device.
+ * `background` slot. What the media system does not own stays with the wrapper: the surface tone, the Surface blur and
+ * saturate, and the extra SVG layer (`bgSvg*`) that can sit over a photo or video, because kinds are exclusive per
+ * device. Each is a collapsed inner section inside the Background panel (`panelContent.background`), so the panel is one
+ * place. Every block mounts this inside its own `<InspectorControls group="styles">`, so the panel renders in place there
+ * (`inGroup`) and keeps the position the block's JSX gives it on first select.
  *
  * @package SGS\Blocks
  */
 import { __ } from '@wordpress/i18n';
-import { InspectorControls } from '@wordpress/block-editor';
 import { getBlockType } from '@wordpress/blocks';
 import {
-	PanelBody,
 	RangeControl,
 	SelectControl,
 	TextareaControl,
@@ -27,6 +27,7 @@ import {
 } from '../../../components/primitives';
 import {
 	MediaElementPanel,
+	SgsInnerSection,
 	SgsLengthControl,
 	SurfaceGroundControls,
 } from '../../../components';
@@ -45,7 +46,7 @@ export function hasBackgroundSlot( name ) {
 }
 
 /**
- * Surface tone, Surface blur and saturate: wrapper-owned, shown beside the media panel.
+ * Surface tone, Surface blur and saturate: wrapper-owned, an inner section of the Background panel.
  */
 function SurfaceSection( { attributes, setAttributes, name } ) {
 	const type = getBlockType( name );
@@ -66,10 +67,19 @@ function SurfaceSection( { attributes, setAttributes, name } ) {
 	);
 	const hasOverlayPaint =
 		!! backgroundOverlayColour || !! backgroundOverlayGradient;
+	const hasValue =
+		( showTone && 'auto' !== surfaceTone ) ||
+		( showSurface &&
+			!! (
+				attributes.surfaceBlur ||
+				'number' === typeof attributes.surfaceSaturate ||
+				( showSurfaceOpacity &&
+					'number' === typeof attributes.surfaceOpacity )
+			) );
 	return (
-		<PanelBody
+		<SgsInnerSection
 			title={ __( 'Background surface', 'sgs-blocks' ) }
-			initialOpen={ false }
+			hasValue={ hasValue }
 		>
 			{ showTone && (
 				<>
@@ -114,6 +124,7 @@ function SurfaceSection( { attributes, setAttributes, name } ) {
 			) }
 			{ showSurface && (
 				<ToolsPanel
+					className="sgs-nested-tools-panel"
 					label={ __( 'Surface', 'sgs-blocks' ) }
 					resetAll={ () =>
 						setAttributes( {
@@ -132,13 +143,13 @@ function SurfaceSection( { attributes, setAttributes, name } ) {
 					/>
 				</ToolsPanel>
 			) }
-		</PanelBody>
+		</SgsInnerSection>
 	);
 }
 
 /**
- * The extra SVG layer (`bgSvg*`): kept beside the slot for a block that shows an SVG over a photo or video. Offered
- * only on a block that declares it.
+ * The extra SVG layer (`bgSvg*`): an inner section of the Background panel for a block that shows an SVG over a photo
+ * or video. Offered only on a block that declares it.
  */
 function SvgLayerSection( { attributes, setAttributes, name } ) {
 	if ( ! getBlockType( name )?.attributes?.bgSvgContent ) {
@@ -152,9 +163,9 @@ function SvgLayerSection( { attributes, setAttributes, name } ) {
 		bgSvgMinHeight = '',
 	} = attributes;
 	return (
-		<PanelBody
+		<SgsInnerSection
 			title={ __( 'Extra SVG layer', 'sgs-blocks' ) }
-			initialOpen={ false }
+			hasValue={ !! bgSvgContent }
 		>
 			<p className="components-base-control__help">
 				{ __(
@@ -238,7 +249,7 @@ function SvgLayerSection( { attributes, setAttributes, name } ) {
 					/>
 				</>
 			) }
-		</PanelBody>
+		</SgsInnerSection>
 	);
 }
 
@@ -251,28 +262,31 @@ function SvgLayerSection( { attributes, setAttributes, name } ) {
  */
 export function BackgroundMediaPanel( { attributes, setAttributes, name } ) {
 	return (
-		<>
-			<MediaElementPanel
-				attributes={ attributes }
-				setAttributes={ setAttributes }
-				prefix="background"
-				blockSlug={ name }
-				blockName={ name }
-				context="background"
-				kinds={ BACKGROUND_KINDS }
-			/>
-			<InspectorControls group="styles">
-				<SurfaceSection
-					attributes={ attributes }
-					setAttributes={ setAttributes }
-					name={ name }
-				/>
-				<SvgLayerSection
-					attributes={ attributes }
-					setAttributes={ setAttributes }
-					name={ name }
-				/>
-			</InspectorControls>
-		</>
+		<MediaElementPanel
+			attributes={ attributes }
+			setAttributes={ setAttributes }
+			prefix="background"
+			blockSlug={ name }
+			blockName={ name }
+			context="background"
+			kinds={ BACKGROUND_KINDS }
+			inGroup="styles"
+			panelContent={ {
+				background: (
+					<>
+						<SurfaceSection
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							name={ name }
+						/>
+						<SvgLayerSection
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							name={ name }
+						/>
+					</>
+				),
+			} }
+		/>
 	);
 }

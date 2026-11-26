@@ -18,14 +18,11 @@ import {
 	ShadowControl,
 	LinkPopoverField,
 	SgsBorderControl,
-	ResponsiveOverride,
-	BOX_UNITS,
-	normaliseResponsiveBox,
-	SgsBoxControl,
-	SgsSeparatorControl,
+	SeparatorsPanel,
 	SgsLengthControl,
 	MediaGalleryPicker,
 	textRow,
+	ResponsiveBoxControls,
 } from '../../components';
 import MediaSlotField from '../../components/media/MediaSlotField.js';
 import FitField from '../../components/media/FitField.js';
@@ -262,6 +259,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			   tileBorderColour⇆itemBorderColourHover,
 			   nameColour⇆nameColourHover. */ }
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					{
 						key: 'rootBackground',
@@ -488,20 +486,11 @@ export default function Edit( { attributes, setAttributes } ) {
 
 				{ /* The lines between brands. A marquee strip is one row, so it offers the
 				   between-columns line only. */ }
-				<PanelBody
-					title={ __( 'Separators', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<SgsSeparatorControl
-						value={ attributes.separators }
-						onChange={ ( next ) =>
-							setAttributes( { separators: next } )
-						}
-						axes={
-							isScrolling ? [ 'column' ] : [ 'row', 'column' ]
-						}
-					/>
-				</PanelBody>
+				<SeparatorsPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					axes={ isScrolling ? [ 'column' ] : undefined }
+				/>
 
 				{ /* Manual-entry UI only makes sense for the manual source —
 				   hidden (not merely disabled) once Product brands is picked
@@ -510,7 +499,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				{ 'manual' === ( source || 'manual' ) && (
 					<PanelBody
 						title={ __( 'Logos', 'sgs-blocks' ) }
-						initialOpen={ true }
+						initialOpen={ false }
 					>
 						{ logos.map( ( logo, index ) => (
 							<LogoEditor
@@ -547,7 +536,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{ /* columns is a TIER OBJECT {desktop,tablet,mobile} (D777/S2 fix,
 					   2026-09-04) — was 3 flat scalar attrs. Kept on the existing
 					   <ResponsiveControl> (global-tier switcher, not
-					   <ResponsiveOverride>'s inherit model) because each tier
+					   <ResponsiveOverride label={ __( 'Columns', 'sgs-blocks' ) }>'s inherit model) because each tier
 					   always carries its own concrete baked-in default (8/4/6)
 					   and a DIFFERENT max per tier — the shape here never had
 					   inheritance semantics, so introducing them would be new
@@ -638,6 +627,18 @@ export default function Edit( { attributes, setAttributes } ) {
 								max={ 400 }
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
+							/>
+							<ToggleControl
+								label={ __( 'Even visual size', 'sgs-blocks' ) }
+								help={ __(
+									'Sizes every logo by the same picture area instead of the same height, so a long thin wordmark looks as big as a squarer logo. The whole set then grows until the biggest logo just fits its slot (the width above by the height cap). Off keeps every logo at the height cap.',
+									'sgs-blocks'
+								) }
+								checked={ !! attributes.logoEvenSize }
+								onChange={ ( val ) =>
+									setAttributes( { logoEvenSize: !! val } )
+								}
+								__nextHasNoMarginBottom
 							/>
 							<RangeControl
 								label={ __(
@@ -992,57 +993,10 @@ export default function Edit( { attributes, setAttributes } ) {
 					setAttributes={ setAttributes }
 				/>
 
-				<PanelBody
-					title={ __( 'Strip spacing', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<ResponsiveOverride
-						value={ attributes.padding }
-						onChange={ ( obj ) =>
-							setAttributes( { padding: obj } )
-						}
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-					<ResponsiveOverride
-						value={ attributes.margin }
-						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 			</InspectorControls>
 
 			<div { ...blockProps }>

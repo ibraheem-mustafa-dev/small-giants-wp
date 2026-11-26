@@ -23,7 +23,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			} ) }
 		>
 			<InspectorControls>
-				<PanelBody title={ __( 'Message', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'Message', 'sgs-blocks' ) }>
 					<SelectControl
 						__next40pxDefaultSize
 						label={ __( 'Payment method', 'sgs-blocks' ) }

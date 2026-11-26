@@ -8,21 +8,16 @@
  * panels this module has no atom for (typography, hover, effects, the motion
  * line under Background).
  *
+ * This module is the lazy chunk's body: it draws the panels of ONE tab (`group`) and no `InspectorControls` of its own.
+ * `MediaElementPanel` mounts the inspector slot for each tab at once and loads this body inside it, so the panels keep
+ * their place in the tab instead of arriving after every other panel.
+ *
  * @package SGS\Blocks
  */
-import {
-	InspectorControls,
-	useBlockEditContext,
-} from '@wordpress/block-editor';
-import {
-	DropdownMenu,
-	MenuGroup,
-	MenuItem,
-	PanelBody,
-} from '@wordpress/components';
+import { useBlockEditContext } from '@wordpress/block-editor';
+import { PanelBody } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { __, sprintf } from '@wordpress/i18n';
-import { moreVertical } from '@wordpress/icons';
 
 import { getBlockType } from '@wordpress/blocks';
 import { blockHasMotion } from '../../../blocks/extensions/motion/support-cache.js';
@@ -34,7 +29,8 @@ import { buildPanelModel } from './panel-model.js';
 import PanelTitle from './PanelTitle.js';
 import { translateReason } from './reasons.js';
 import { pinnedBlockers } from './pinned-blockers.js';
-import { panelOwnDevices, resetPatch } from './row-io.js';
+import SgsPanelReset from '../../SgsPanelReset.js';
+import { panelOwnDevices, resetHasValue, resetPatch } from './row-io.js';
 
 const DEVICE_TO_KEY = {
 	Desktop: 'desktop',
@@ -61,6 +57,7 @@ function useActiveDevice() {
  * @param {Function} props.setAttributes  Block `setAttributes`.
  * @param {string}   [props.prefix]       Surface prefix.
  * @param {string}   [props.blockSlug]    Block slug.
+ * @param {string}   props.group          'settings' | 'styles': the tab whose panels this draws.
  * @param {string[]} props.atomIds        The slot's atoms.
  * @param {string[]} props.kinds          The slot's allowed kinds.
  * @param {string}   [props.context]      'element' | 'background'.
@@ -69,7 +66,9 @@ function useActiveDevice() {
  * @param {string}   [props.device]       Overrides the editor's active device.
  * @param {string}   [props.label]        Names the slot in each panel title ("Before: Media") when a block mounts more than one.
  * @param {string[]} [props.blockOwns]    Bases the block edits with its own control; their rows are left out.
- * @return {JSX.Element} The panels.
+ * @param {Function} [props.slotActions]  Extra actions for an image slot (`MediaSlotField`'s `extraActions`).
+ * @param {string|string[]} [props.openPanel] Id (or ids, one per tab) of the panel that starts open (each tab's first panel); every other starts closed.
+ * @return {JSX.Element} The panels of the one tab.
  */
 export default function MediaPanels( {
 	attributes,
@@ -84,6 +83,9 @@ export default function MediaPanels( {
 	device: deviceOverride,
 	label = '',
 	blockOwns = [],
+	group,
+	slotActions,
+	openPanel = '',
 } ) {
 	const activeDevice = useActiveDevice();
 	const device = deviceOverride || activeDevice;
@@ -151,16 +153,20 @@ export default function MediaPanels( {
 		extraPanelIds: Object.keys( content ),
 		adopted: true,
 	} );
-	const slot = { prefix, kinds, context };
+	const slot = { prefix, kinds, context, extraActions: slotActions };
 
+	// The visible text: "Reset" on Desktop, "Reset Tablet" or "Reset Mobile" off it (the reset then clears only that device).
 	const resetLabel =
 		'desktop' === device
-			? __( 'Reset this panel', 'sgs-blocks' )
+			? __( 'Reset', 'sgs-blocks' )
 			: /* translators: %s: Tablet or Mobile. */
-			  sprintf(
-					__( 'Reset %s in this panel', 'sgs-blocks' ),
-					DEVICE_NAMES[ device ]
-			  );
+			  sprintf( __( 'Reset %s', 'sgs-blocks' ), DEVICE_NAMES[ device ] );
+	// An attribute that holds the block's default is not a value, so a fresh block shows no Reset.
+	const blockDefaults = Object.fromEntries(
+		Object.entries( getBlockType( name )?.attributes || {} )
+			.filter( ( [ , def ] ) => undefined !== def.default )
+			.map( ( [ key, def ] ) => [ key, def.default ] )
+	);
 
 	const mount = ( group ) =>
 		model
@@ -187,7 +193,7 @@ export default function MediaPanels( {
 							) }
 						/>
 					}
-					initialOpen={ panel.open }
+					initialOpen={ [ openPanel ].flat().includes( panel.id ) }
 					className={ `sgs-media-panel sgs-media-panel--${ panel.id }` }
 				>
 					{ 'size-and-crop' === panel.id &&
@@ -199,34 +205,29 @@ export default function MediaPanels( {
 							/>
 						) }
 					{ rows.length > 0 && (
-						<div className="sgs-media-panel__menu">
-							<DropdownMenu
-								icon={ moreVertical }
-								label={ __( 'Panel options', 'sgs-blocks' ) }
-								toggleProps={ { size: 'compact' } }
-							>
-								{ ( { onClose } ) => (
-									<MenuGroup>
-										<MenuItem
-											onClick={ () => {
-												setAttributes(
-													resetPatch(
-														rows,
-														attributes,
-														device,
-														prefix,
-														blockSlug
-													)
-												);
-												onClose();
-											} }
-										>
-											{ resetLabel }
-										</MenuItem>
-									</MenuGroup>
-								) }
-							</DropdownMenu>
-						</div>
+						<SgsPanelReset
+							hasValue={ resetHasValue(
+								rows,
+								attributes,
+								device,
+								prefix,
+								blockSlug,
+								blockDefaults
+							) }
+							onReset={ () =>
+								setAttributes(
+									resetPatch(
+										rows,
+										attributes,
+										device,
+										prefix,
+										blockSlug
+									)
+								)
+							}
+							label={ resetLabel }
+							panelTitle={ panel.title() }
+						/>
 					) }
 					{ rows.map( ( row ) => (
 						<PanelRow
@@ -245,14 +246,5 @@ export default function MediaPanels( {
 				</PanelBody>
 			) );
 
-	return (
-		<>
-			<InspectorControls group="settings">
-				{ mount( 'settings' ) }
-			</InspectorControls>
-			<InspectorControls group="styles">
-				{ mount( 'styles' ) }
-			</InspectorControls>
-		</>
-	);
+	return <>{ mount( group ) }</>;
 }

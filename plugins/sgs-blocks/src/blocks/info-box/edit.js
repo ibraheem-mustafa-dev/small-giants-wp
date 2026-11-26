@@ -24,11 +24,8 @@ import {
 	SgsBorderControl,
 	resolveColourToken,
 	TypographyControls,
-	ResponsiveOverride,
 	TextAlignTierControl,
-	BOX_UNITS,
-	normaliseResponsiveBox,
-	SgsBoxControl,
+	ResponsiveBoxControls,
 } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import {
@@ -41,7 +38,6 @@ import {
 	textIndentPreviewCss,
 	sgsBorderPreview,
 } from '../../utils';
-import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 import { CSS_EASING_OPTIONS_IN_OUT_FIRST as EASING_OPTIONS } from '../../components/motion/easing-master-list';
 
 /**
@@ -309,7 +305,7 @@ const INFO_BOX_TEMPLATE = [
 	],
 ];
 
-export default function Edit( { attributes, setAttributes, clientId, name } ) {
+export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
 		cardStyle,
 		iconPosition,
@@ -673,65 +669,10 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					/>
 				</PanelBody>
 
-				{ /* ===== Spacing — padding/margin are each a single block-owned
-				   tier-object attr { desktop, tablet, mobile }, written via
-				   ResponsiveOverride + SgsBoxControl; read by SGS_Container_Wrapper's
-				   tier-object emission path. ===== */ }
-				<PanelBody
-					title={ __( 'Spacing', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<ResponsiveOverride
-						value={ attributes.padding }
-						onChange={ ( obj ) =>
-							setAttributes( { padding: obj } )
-						}
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								defaults={ spacingDefaultsFor(
-									name,
-									'padding'
-								) }
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-					<ResponsiveOverride
-						value={ attributes.margin }
-						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 
 				{ /* ===== Card Style ===== */ }
 				<ToolsPanel

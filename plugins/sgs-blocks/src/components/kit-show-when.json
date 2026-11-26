@@ -1,0 +1,15 @@
+{
+	"_comment": "The condition kinds a kit declaration's `showWhen` may use. Read by kitShown.js (the editor) and by scripts/lib/kit-show-when.mjs (the generators' validation). `needs` lists the extra keys a leaf of that op carries; `extensionAttributes` are attributes a block gets from a support, not from its block.json (scripts/generate-extension-attributes.js SUPPORT_DRIVEN), so a condition may read them.",
+	"leafOps": {
+		"on": { "needs": [] },
+		"off": { "needs": [] },
+		"equals": { "needs": [ "value" ] },
+		"notEquals": { "needs": [ "value" ] },
+		"notEmpty": { "needs": [] },
+		"tierAny": { "needs": [ "value" ] },
+		"tierAll": { "needs": [ "value" ] },
+		"lacksItem": { "needs": [ "key", "value" ] }
+	},
+	"groupOps": [ "any", "all" ],
+	"extensionAttributes": [ "sgsMotion" ]
+}

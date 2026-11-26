@@ -20,8 +20,8 @@ defined( 'ABSPATH' ) || exit;
 // $attributes['style'] here and emit them into POST-GRID'S OWN scoped <style>
 // (composite caveat: do NOT pass these as wrapper `extra_styles` — that path
 // inlines). Base spacing (padding/margin) is a SEPARATE mechanism the wrapper
-// already handles scoped internally (reads $attributes['style']['spacing']
-// directly) — not duplicated here.
+// already handles scoped internally (reads the block's own `padding` / `margin`
+// tier objects) — not duplicated here.
 // -------------------------------------------------------------------------
 // $uid is computed earlier (before $card_params) — see the comment there.
 $root_sel = '.' . $uid . '.wp-block-sgs-post-grid';
@@ -458,7 +458,7 @@ if ( 'grid' === $layout ) {
 			'layout' => 'flow',
 			'gap'    => is_array( $attributes['gap'] ?? null ) ? $attributes['gap'] : array(),
 		),
-		sgs_container_separators_caps()
+		sgs_separators_caps( 'sgs/post-grid' )
 	);
 	if ( '' !== $sgs_pg_sep_css ) {
 		$responsive_css                    .= $sgs_pg_sep_css;
@@ -466,6 +466,22 @@ if ( 'grid' === $layout ) {
 		$post_grid_classes[]                = $sgs_pg_sep_root['class'];
 		$extra_attrs['data-sgs-sep-list']   = '> .sgs-post-grid__inner';
 	}
+}
+
+// The carousel's arrows and pause button (the button kit, prefix `arrow`) and dots (the carousel dots kit, prefix `dot`), printed
+// by the one shared emitter (includes/helpers-carousel-dots.php): rules only for a look setting that is set, so a carousel with
+// none set prints what it always did.
+if ( 'carousel' === $layout ) {
+	$responsive_css .= sgs_carousel_controls_css(
+		$attributes,
+		$root_sel,
+		array(
+			'arrows' => array( '.sgs-post-grid__carousel-prev', '.sgs-post-grid__carousel-next', '.sgs-post-grid__pause' ),
+			'dots'   => '.sgs-post-grid__carousel-dots',
+			'dot'    => '.sgs-post-grid__dot',
+			'active' => '.sgs-post-grid__dot--active',
+		)
+	);
 }
 
 // Every value reaching $responsive_css is pre-sanitised (sgs_css_length_value() /

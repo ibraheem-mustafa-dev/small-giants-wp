@@ -1,0 +1,1596 @@
+{
+	"_comment": "First panel of each inspector tab per block, read from an editor census by `check-panel-initial-open.js --from-census`. `opened` is the state at the census. `source`: block = a PanelBody in the block's own files; colour = SgsColourPanel; media = a media panel; shared = a PanelBody in shared code; tools = a non-collapsing ToolsPanel; unresolved = a core panel or a title the scan cannot read.",
+	"census": "census3.json",
+	"blocks": {
+		"accordion": {
+			"settings": {
+				"title": "Container / Wrapper",
+				"kind": "body",
+				"opened": true,
+				"source": "shared",
+				"note": "src/blocks/container/components/ContainerWrapperControls.js::KIND_PANELS",
+				"count": 2
+			},
+			"styles": {
+				"title": "Styles",
+				"kind": "tools",
+				"opened": true,
+				"source": "tools",
+				"note": "a ToolsPanel has no collapse: always open"
+			}
+		},
+		"accordion-item": {
+			"settings": {
+				"title": "Container / Wrapper",
+				"kind": "body",
+				"opened": true,
+				"source": "shared",
+				"note": "src/blocks/container/components/ContainerWrapperControls.js::KIND_PANELS",
+				"count": 2
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"account": {
+			"settings": {
+				"title": "Menu",
+				"kind": "tools",
+				"opened": true,
+				"source": "tools",
+				"note": "a ToolsPanel has no collapse: always open"
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "tools",
+				"opened": true,
+				"source": "tools",
+				"note": "a ToolsPanel has no collapse: always open"
+			}
+		},
+		"audio": {
+			"settings": {
+				"title": "Player style",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/audio/edit.js::Edit",
+				"count": 1
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"before-after": {
+			"settings": {
+				"title": "Before: Media",
+				"kind": "body",
+				"opened": true,
+				"source": "media",
+				"note": "media panel \"Media\": the slot opens it by the openPanel prop, not by panel-model default"
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"brand-strip": {
+			"settings": {
+				"title": "Source",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/brand-strip/source-controls.js::SourcePanel",
+				"count": 1
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"breadcrumbs": {
+			"settings": {
+				"title": "Breadcrumbs Settings",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/breadcrumbs/edit.js::Edit",
+				"count": 1
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"business-info": {
+			"settings": {
+				"title": "Display Type",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/business-info/edit.js::Edit",
+				"count": 1
+			},
+			"styles": {
+				"title": "Styles",
+				"kind": "tools",
+				"opened": true,
+				"source": "tools",
+				"note": "a ToolsPanel has no collapse: always open"
+			}
+		},
+		"button": {
+			"settings": {
+				"title": "Content",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/button/edit.js::Edit",
+				"count": 1
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"buybox": {
+			"settings": {
+				"title": "Button action",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/buybox/ButtonActionPanel.js::ButtonActionPanel",
+				"count": 1
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"card-grid": {
+			"settings": {
+				"title": "Title",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/card-grid/components/ElementColourPanels.js::ElementColourPanels",
+				"count": 1
+			},
+			"styles": {
+				"title": "Shadow",
+				"kind": "tools",
+				"opened": true,
+				"source": "tools",
+				"note": "a ToolsPanel has no collapse: always open"
+			}
+		},
+		"cart": {
+			"settings": {
+				"title": "Display mode",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/cart/PanelSettingsControls.js::PanelSettingsControls",
+				"count": 1
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"choice-flow": {
+			"settings": {
+				"title": "Linked flow",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/choice-flow/LinkedFlowPanel.js::LinkedFlowPanel",
+				"count": 1
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"choice-flow-question": {
+			"settings": {
+				"title": "Layout",
+				"kind": "body",
+				"opened": false,
+				"source": "block",
+				"note": "src/blocks/choice-flow-question/edit.js::Edit",
+				"derived": "source order (the census could not read this block)"
+			}
+		},
+		"choice-flow-result": {
+			"settings": {
+				"title": "Terminal action",
+				"kind": "body",
+				"opened": false,
+				"source": "block",
+				"note": "src/blocks/choice-flow-result/edit.js::Edit",
+				"derived": "source order (the census could not read this block)"
+			}
+		},
+		"collapsible-text": {
+			"settings": {
+				"title": "Collapsible Text Settings",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/collapsible-text/edit.js::Edit",
+				"count": 1
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"commerce-note": {
+			"settings": {
+				"title": "Link",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/commerce-note/edit.js::Edit",
+				"count": 1
+			},
+			"styles": {
+				"title": "Note text",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/commerce-note/edit.js::Edit",
+				"count": 1
+			}
+		},
+		"container": {
+			"settings": {
+				"title": "Layout",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/container/components/ContainerWrapperControls.js::KIND_PANELS",
+				"count": 2
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"countdown-timer": {
+			"settings": {
+				"title": "Timer Settings",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/countdown-timer/edit.js::Edit",
+				"count": 1
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"counter": {
+			"settings": {
+				"title": "Counter Settings",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/counter/edit.js::Edit",
+				"count": 1
+			},
+			"styles": {
+				"title": "Typography",
+				"kind": "tools",
+				"opened": true,
+				"source": "tools",
+				"note": "a ToolsPanel has no collapse: always open"
+			}
+		},
+		"decorative-image": {
+			"settings": {
+				"title": "Media",
+				"kind": "body",
+				"opened": true,
+				"source": "media",
+				"note": "media panel \"Media\": the slot opens it by the openPanel prop, not by panel-model default"
+			},
+			"styles": {
+				"title": "Size and crop",
+				"kind": "body",
+				"opened": true,
+				"source": "media",
+				"note": "media panel \"Size and crop\": the slot opens it by the openPanel prop, not by panel-model default"
+			}
+		},
+		"diagram-dimension": {
+			"settings": {
+				"title": "Measurement",
+				"kind": "body",
+				"opened": false,
+				"source": "block",
+				"note": "src/blocks/diagram-dimension/edit.js::Edit",
+				"derived": "source order (the census could not read this block)"
+			}
+		},
+		"feature-grid": {
+			"settings": {
+				"title": "Container / Wrapper",
+				"kind": "body",
+				"opened": true,
+				"source": "shared",
+				"note": "src/blocks/container/components/ContainerWrapperControls.js::KIND_PANELS",
+				"count": 2
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"filter-search": {
+			"settings": {
+				"title": "Filter Search Settings",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/filter-search/FilterSearchSettings.js::FilterSearchSettings",
+				"count": 1
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"form": {
+			"settings": {
+				"title": "Form",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/form/FormEmbedEdit.js::inspector",
+				"count": 1
+			},
+			"styles": {
+				"title": "Styles",
+				"kind": "tools",
+				"opened": true,
+				"source": "tools",
+				"note": "a ToolsPanel has no collapse: always open"
+			}
+		},
+		"form-field-address": {
+			"settings": {
+				"title": "Field Settings",
+				"kind": "body",
+				"opened": false,
+				"source": "block",
+				"note": "src/blocks/form-field-address/edit.js::Edit",
+				"derived": "source order (the census could not read this block)"
+			}
+		},
+		"form-field-checkbox": {
+			"settings": {
+				"title": "Options",
+				"kind": "body",
+				"opened": false,
+				"source": "block",
+				"note": "src/blocks/form-field-checkbox/edit.js::Edit",
+				"derived": "source order (the census could not read this block)"
+			}
+		},
+		"form-field-consent": {
+			"settings": {
+				"title": "Field Settings",
+				"kind": "body",
+				"opened": false,
+				"source": "block",
+				"note": "src/blocks/form-field-consent/edit.js::Edit",
+				"derived": "source order (the census could not read this block)"
+			}
+		},
+		"form-field-email": {
+			"settings": {
+				"title": "Field Settings",
+				"kind": "body",
+				"opened": false,
+				"source": "block",
+				"note": "src/blocks/form-field-email/edit.js::Edit",
+				"derived": "source order (the census could not read this block)"
+			}
+		},
+		"form-field-hidden": {
+			"settings": {
+				"title": "Field Settings",
+				"kind": "body",
+				"opened": false,
+				"source": "block",
+				"note": "src/blocks/form-field-hidden/edit.js::Edit",
+				"derived": "source order (the census could not read this block)"
+			}
+		},
+		"form-field-phone": {
+			"settings": {
+				"title": "Field Settings",
+				"kind": "body",
+				"opened": false,
+				"source": "block",
+				"note": "src/blocks/form-field-phone/edit.js::Edit",
+				"derived": "source order (the census could not read this block)"
+			}
+		},
+		"form-field-radio": {
+			"settings": {
+				"title": "Options",
+				"kind": "body",
+				"opened": false,
+				"source": "block",
+				"note": "src/blocks/form-field-radio/edit.js::Edit",
+				"derived": "source order (the census could not read this block)"
+			}
+		},
+		"form-field-select": {
+			"settings": {
+				"title": "Options",
+				"kind": "body",
+				"opened": false,
+				"source": "block",
+				"note": "src/blocks/form-field-select/edit.js::Edit",
+				"derived": "source order (the census could not read this block)"
+			}
+		},
+		"form-field-text": {
+			"settings": {
+				"title": "Field Settings",
+				"kind": "body",
+				"opened": false,
+				"source": "block",
+				"note": "src/blocks/form-field-text/edit.js::Edit",
+				"derived": "source order (the census could not read this block)"
+			}
+		},
+		"form-field-textarea": {
+			"settings": {
+				"title": "Character counter",
+				"kind": "body",
+				"opened": false,
+				"source": "block",
+				"note": "src/blocks/form-field-textarea/edit.js::Edit",
+				"derived": "source order (the census could not read this block)"
+			}
+		},
+		"form-field-tiles": {
+			"settings": {
+				"title": "Tiles",
+				"kind": "body",
+				"opened": false,
+				"source": "block",
+				"note": "src/blocks/form-field-tiles/edit.js::Edit",
+				"derived": "source order (the census could not read this block)"
+			}
+		},
+		"form-review": {
+			"settings": {
+				"title": "Review Settings",
+				"kind": "body",
+				"opened": false,
+				"source": "block",
+				"note": "src/blocks/form-review/edit.js::Edit",
+				"derived": "source order (the census could not read this block)"
+			}
+		},
+		"form-step": {
+			"settings": {
+				"title": "Step Settings",
+				"kind": "body",
+				"opened": false,
+				"source": "block",
+				"note": "src/blocks/form-step/edit.js::Edit",
+				"derived": "source order (the census could not read this block)"
+			}
+		},
+		"free-delivery-bar": {
+			"settings": {
+				"title": "Free delivery",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/free-delivery-bar/edit.js::Edit",
+				"count": 1
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "tools",
+				"opened": true,
+				"source": "tools",
+				"note": "a ToolsPanel has no collapse: always open"
+			}
+		},
+		"gallery": {
+			"settings": {
+				"title": "Images",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/gallery/components/ImagesPanel.js::ImagesPanel",
+				"count": 1
+			},
+			"styles": {
+				"title": "Styles",
+				"kind": "tools",
+				"opened": true,
+				"source": "tools",
+				"note": "a ToolsPanel has no collapse: always open"
+			}
+		},
+		"gift-order": {
+			"settings": {
+				"title": "Basket switch",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/gift-order/edit.js::Edit",
+				"count": 1
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": false,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"google-rating-badge": {
+			"settings": {
+				"title": "Style",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/google-rating-badge/edit.js::Edit",
+				"count": 1
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "tools",
+				"opened": true,
+				"source": "tools",
+				"note": "a ToolsPanel has no collapse: always open"
+			}
+		},
+		"google-reviews": {
+			"settings": {
+				"title": "Container / Wrapper",
+				"kind": "body",
+				"opened": true,
+				"source": "shared",
+				"note": "src/blocks/container/components/ContainerWrapperControls.js::KIND_PANELS",
+				"count": 2
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"heading": {
+			"settings": {
+				"title": "Role",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/heading/edit.js::Edit",
+				"count": 1
+			},
+			"styles": {
+				"title": "Styles",
+				"kind": "tools",
+				"opened": true,
+				"source": "tools",
+				"note": "a ToolsPanel has no collapse: always open"
+			}
+		},
+		"hero": {
+			"settings": {
+				"title": "Hero Settings",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/hero/edit.js::Edit",
+				"count": 1
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"icon": {
+			"settings": {
+				"title": "Icon",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/icon/inspector.js::IconInspector",
+				"count": 1
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"icon-list": {
+			"settings": {
+				"title": "Source",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/icon-list/edit.js::Edit",
+				"count": 1
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"image-sequence": {
+			"settings": {
+				"title": "Media",
+				"kind": "body",
+				"opened": true,
+				"source": "media",
+				"note": "media panel \"Media\": the slot opens it by the openPanel prop, not by panel-model default"
+			},
+			"styles": {
+				"title": "Size and crop",
+				"kind": "body",
+				"opened": true,
+				"source": "media",
+				"note": "media panel \"Size and crop\": the slot opens it by the openPanel prop, not by panel-model default"
+			}
+		},
+		"info-box": {
+			"settings": {
+				"title": "Media",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/info-box/edit.js::Edit",
+				"count": 1
+			},
+			"styles": {
+				"title": "Styles",
+				"kind": "tools",
+				"opened": true,
+				"source": "tools",
+				"note": "a ToolsPanel has no collapse: always open"
+			}
+		},
+		"label": {
+			"settings": {
+				"title": "Box",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/label/edit.js::Edit",
+				"count": 1
+			},
+			"styles": {
+				"title": "Styles",
+				"kind": "tools",
+				"opened": true,
+				"source": "tools",
+				"note": "a ToolsPanel has no collapse: always open"
+			}
+		},
+		"language-switch": {
+			"settings": {
+				"title": "Language Switch Settings",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/language-switch/edit.js::Edit",
+				"count": 1
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"local-time": {
+			"settings": {
+				"title": "Local Time Settings",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/local-time/edit.js::Edit",
+				"count": 1
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"measured-diagram": {
+			"settings": {
+				"title": "Media",
+				"kind": "body",
+				"opened": true,
+				"source": "media",
+				"note": "media panel \"Media\": the slot opens it by the openPanel prop, not by panel-model default"
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"media": {
+			"settings": {
+				"title": "Media",
+				"kind": "body",
+				"opened": true,
+				"source": "media",
+				"note": "media panel \"Media\": the slot opens it by the openPanel prop, not by panel-model default"
+			},
+			"styles": {
+				"title": "Filters",
+				"kind": "tools",
+				"opened": true,
+				"source": "tools",
+				"note": "a ToolsPanel has no collapse: always open"
+			}
+		},
+		"mega-aside": {
+			"settings": {
+				"title": "Aside",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/mega-aside/edit.js::Edit",
+				"count": 1
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"mega-group": {
+			"settings": {
+				"title": "Group link",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/mega-group/edit.js::Edit",
+				"count": 1
+			},
+			"styles": {
+				"title": "Size in row",
+				"kind": "body",
+				"opened": false,
+				"source": "shared",
+				"note": "src/blocks/extensions/child-sizing.js::ChildSizingPanel",
+				"count": 1
+			}
+		},
+		"mega-panel": {
+			"settings": {
+				"title": "Panel",
+				"kind": "tools",
+				"opened": true,
+				"source": "tools",
+				"note": "a ToolsPanel has no collapse: always open"
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"message-preview": {
+			"settings": {
+				"title": "Boxes",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/message-preview/edit.js::Edit",
+				"count": 2
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"message-preview-line": {
+			"settings": {
+				"title": "What this line shows",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/message-preview-line/edit.js::Edit",
+				"count": 1
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"modal": {
+			"settings": {
+				"title": "Modal Settings",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/modal/edit.js::Edit",
+				"count": 1
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"multi-button": {
+			"settings": {
+				"title": "Container / Wrapper",
+				"kind": "body",
+				"opened": true,
+				"source": "shared",
+				"note": "src/blocks/container/components/ContainerWrapperControls.js::KIND_PANELS",
+				"count": 2
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"nav-bar-menu": {
+			"settings": {
+				"title": "Menu",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/nav-bar-menu/MenuSettingsPanel.js::MenuSettingsPanel",
+				"count": 1
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"nav-drawer": {
+			"settings": {
+				"title": "Drawer",
+				"kind": "body",
+				"opened": false,
+				"source": "unresolved",
+				"note": "title not found as a literal PanelBody title (core panel, dynamic title or SGS wrapper)"
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"nav-drawer-menu": {
+			"settings": {
+				"title": "Menu",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/nav-drawer-menu/MenuSettingsPanel.js::MenuSettingsPanel",
+				"count": 1
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"notice-banner": {
+			"settings": {
+				"title": "Banner settings",
+				"kind": "tools",
+				"opened": true,
+				"source": "tools",
+				"note": "a ToolsPanel has no collapse: always open"
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"notice-message": {
+			"settings": {
+				"title": "Message",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/notice-message/edit.js::Edit",
+				"count": 1
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"option-picker": {
+			"settings": {
+				"title": "Label",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/option-picker/edit.js::Edit",
+				"count": 2
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"order-items": {
+			"settings": {
+				"title": "Item lines to show",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/order-items/edit.js::Edit",
+				"count": 1
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "tools",
+				"opened": true,
+				"source": "tools",
+				"note": "a ToolsPanel has no collapse: always open"
+			}
+		},
+		"pay-later-message": {
+			"settings": {
+				"title": "Message",
+				"kind": "body",
+				"opened": false,
+				"source": "block",
+				"note": "src/blocks/pay-later-message/edit.js::Edit",
+				"derived": "source order (the census could not read this block)"
+			}
+		},
+		"physics-canvas": {
+			"settings": {
+				"title": "Physics",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/physics-canvas/edit.js::Edit",
+				"count": 1
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"post-grid": {
+			"settings": {
+				"title": "Container / Wrapper",
+				"kind": "body",
+				"opened": true,
+				"source": "shared",
+				"note": "src/blocks/container/components/ContainerWrapperControls.js::KIND_PANELS",
+				"count": 2
+			},
+			"styles": {
+				"title": "Styles",
+				"kind": "tools",
+				"opened": true,
+				"source": "tools",
+				"note": "a ToolsPanel has no collapse: always open"
+			}
+		},
+		"pricing-table": {
+			"settings": {
+				"title": "Container / Wrapper",
+				"kind": "body",
+				"opened": true,
+				"source": "shared",
+				"note": "src/blocks/container/components/ContainerWrapperControls.js::KIND_PANELS",
+				"count": 2
+			},
+			"styles": {
+				"title": "Styles",
+				"kind": "tools",
+				"opened": true,
+				"source": "tools",
+				"note": "a ToolsPanel has no collapse: always open"
+			}
+		},
+		"process-steps": {
+			"settings": {
+				"title": "Steps",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/process-steps/edit.js::Edit",
+				"count": 1
+			},
+			"styles": {
+				"title": "Shadow",
+				"kind": "tools",
+				"opened": true,
+				"source": "tools",
+				"note": "a ToolsPanel has no collapse: always open"
+			}
+		},
+		"product-card": {
+			"settings": {
+				"title": "Connected product",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/product-card/edit.js::ProductSourcePanel",
+				"count": 1
+			},
+			"styles": {
+				"title": "Styles",
+				"kind": "tools",
+				"opened": true,
+				"source": "tools",
+				"note": "a ToolsPanel has no collapse: always open"
+			}
+		},
+		"product-faq": {
+			"settings": {
+				"title": "FAQ Settings",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/product-faq/edit.js::Edit",
+				"count": 1
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"product-faq-item": {
+			"settings": {
+				"title": "FAQ Item Settings",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/product-faq-item/edit.js::Edit",
+				"count": 1
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"product-search": {
+			"settings": {
+				"title": "Search settings",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/product-search/edit.js::Edit",
+				"count": 1
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"quote": {
+			"settings": {
+				"title": "Style",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/quote/edit.js::Edit",
+				"count": 1
+			},
+			"styles": {
+				"title": "Styles",
+				"kind": "tools",
+				"opened": true,
+				"source": "tools",
+				"note": "a ToolsPanel has no collapse: always open"
+			}
+		},
+		"responsive-logo": {
+			"settings": {
+				"title": "Logo switch",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/responsive-logo/edit.js::Edit",
+				"count": 1
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"separator": {
+			"settings": {
+				"title": "Size & alignment",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/separator/edit.js::Edit",
+				"count": 1
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"site-footer": {
+			"settings": {
+				"title": "Footer width",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/site-footer/edit.js::Edit",
+				"count": 1
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"site-footer-row": {
+			"settings": {
+				"title": "Container / Wrapper",
+				"kind": "body",
+				"opened": true,
+				"source": "shared",
+				"note": "src/blocks/container/components/ContainerWrapperControls.js::KIND_PANELS",
+				"count": 2
+			},
+			"styles": {
+				"title": "Text",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/site-footer-row/edit.js::Edit",
+				"count": 1
+			}
+		},
+		"site-header": {
+			"settings": {
+				"title": "Header width",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/site-header/edit.js::Edit",
+				"count": 1
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"site-header-row": {
+			"settings": {
+				"title": "Header row",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/site-header-row/edit.js::Edit",
+				"count": 1
+			},
+			"styles": {
+				"title": "Text",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/site-header-row/edit.js::Edit",
+				"count": 1
+			}
+		},
+		"social-icons": {
+			"settings": {
+				"title": "Links",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/social-icons/edit.js::Edit",
+				"count": 1
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"star-rating": {
+			"settings": {
+				"title": "Rating",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/star-rating/edit.js::Edit",
+				"count": 1
+			},
+			"styles": {
+				"title": "Styles",
+				"kind": "tools",
+				"opened": true,
+				"source": "tools",
+				"note": "a ToolsPanel has no collapse: always open"
+			}
+		},
+		"store-selector": {
+			"settings": {
+				"title": "Store Selector Settings",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/store-selector/edit.js::Edit",
+				"count": 1
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"tab": {
+			"settings": {
+				"title": "Container / Wrapper",
+				"kind": "body",
+				"opened": true,
+				"source": "shared",
+				"note": "src/blocks/container/components/ContainerWrapperControls.js::KIND_PANELS",
+				"count": 2
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"table-of-contents": {
+			"settings": {
+				"title": "Table of Contents",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/table-of-contents/edit.js::Edit",
+				"count": 1
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"tabs": {
+			"settings": {
+				"title": "Container / Wrapper",
+				"kind": "body",
+				"opened": true,
+				"source": "shared",
+				"note": "src/blocks/container/components/ContainerWrapperControls.js::KIND_PANELS",
+				"count": 2
+			},
+			"styles": {
+				"title": "Styles",
+				"kind": "tools",
+				"opened": true,
+				"source": "tools",
+				"note": "a ToolsPanel has no collapse: always open"
+			}
+		},
+		"team-member": {
+			"settings": {
+				"title": "Media",
+				"kind": "body",
+				"opened": true,
+				"source": "media",
+				"note": "media panel \"Media\": the slot opens it by the openPanel prop, not by panel-model default"
+			},
+			"styles": {
+				"title": "Styles",
+				"kind": "tools",
+				"opened": true,
+				"source": "tools",
+				"note": "a ToolsPanel has no collapse: always open"
+			}
+		},
+		"testimonial": {
+			"settings": {
+				"title": "Author photo: Media",
+				"kind": "body",
+				"opened": true,
+				"source": "media",
+				"note": "media panel \"Media\": the slot opens it by the openPanel prop, not by panel-model default"
+			},
+			"styles": {
+				"title": "Styles",
+				"kind": "tools",
+				"opened": true,
+				"source": "tools",
+				"note": "a ToolsPanel has no collapse: always open"
+			}
+		},
+		"testimonial-slider": {
+			"settings": {
+				"title": "Slider Settings",
+				"kind": "tools",
+				"opened": true,
+				"source": "tools",
+				"note": "a ToolsPanel has no collapse: always open"
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"text": {
+			"settings": {
+				"title": "Text by time of day",
+				"kind": "body",
+				"opened": false,
+				"source": "shared",
+				"note": "src/blocks/extensions/time-text.js::TimeTextPanel",
+				"count": 1
+			},
+			"styles": {
+				"title": "Styles",
+				"kind": "tools",
+				"opened": true,
+				"source": "tools",
+				"note": "a ToolsPanel has no collapse: always open"
+			}
+		},
+		"theme-toggle": {
+			"settings": {
+				"title": "Theme Toggle Settings",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/theme-toggle/edit.js::Edit",
+				"count": 1
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"timeline": {
+			"settings": {
+				"title": "Entry title",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/timeline/edit.js::Edit",
+				"count": 1
+			},
+			"styles": {
+				"title": "Shadow",
+				"kind": "tools",
+				"opened": true,
+				"source": "tools",
+				"note": "a ToolsPanel has no collapse: always open"
+			}
+		},
+		"trust-bar": {
+			"settings": {
+				"title": "Style",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/trust-bar/edit.js::Edit",
+				"count": 1
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"trustpilot-reviews": {
+			"settings": {
+				"title": "Container / Wrapper",
+				"kind": "body",
+				"opened": true,
+				"source": "shared",
+				"note": "src/blocks/container/components/ContainerWrapperControls.js::KIND_PANELS",
+				"count": 2
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"whatsapp-cta": {
+			"settings": {
+				"title": "WhatsApp Settings",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/whatsapp-cta/edit.js::Edit",
+				"count": 1
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "body",
+				"opened": true,
+				"source": "colour",
+				"note": "SgsColourPanel: the mount passes initialOpen"
+			}
+		},
+		"wishlist-link": {
+			"settings": {
+				"title": "Wishlist link",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/wishlist-link/edit.js::Edit",
+				"count": 1
+			},
+			"styles": {
+				"title": "Colour",
+				"kind": "tools",
+				"opened": true,
+				"source": "tools",
+				"note": "a ToolsPanel has no collapse: always open"
+			}
+		},
+		"wishlist-panel": {
+			"settings": {
+				"title": "Layout",
+				"kind": "body",
+				"opened": true,
+				"source": "block",
+				"note": "src/blocks/wishlist-panel/components/WishlistLayoutPanel.js::WishlistLayoutPanel",
+				"count": 1
+			},
+			"styles": {
+				"title": "Typography",
+				"kind": "tools",
+				"opened": true,
+				"source": "tools",
+				"note": "a ToolsPanel has no collapse: always open"
+			}
+		}
+	}
+}

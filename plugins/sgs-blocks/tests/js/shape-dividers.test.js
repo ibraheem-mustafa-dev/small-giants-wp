@@ -12,6 +12,7 @@ import {
 	shapeDividerTile,
 	shapeDividerHeight,
 	shapeDividerGradient,
+	shapeDividerTransform,
 } from '../../src/utils/shape-dividers';
 
 describe( 'shape-dividers twin', () => {
@@ -47,5 +48,38 @@ describe( 'shape-dividers twin', () => {
 		expect( linear.stops ).toHaveLength( 2 );
 		expect( shapeDividerGradient( 'radial-gradient(#fff,#000)' ).r ).toBe( 75 );
 		expect( shapeDividerGradient( 'not a gradient' ) ).toBeNull();
+	} );
+	it( 'mirrors with translate + scale (never scaleX(-1)), a top divider mirrored by default', () => {
+		expect( shapeDividerTransform( false, false, 'bottom' ) ).toBeUndefined();
+		expect( shapeDividerTransform( true, false, 'bottom' ) ).toBe( 'translate(1200 0) scale(-1 1)' );
+		expect( shapeDividerTransform( false, true, 'bottom' ) ).toBe( 'translate(0 120) scale(1 -1)' );
+		expect( shapeDividerTransform( true, true, 'bottom' ) ).toBe( 'translate(1200 120) scale(-1 -1)' );
+		expect( shapeDividerTransform( false, false, 'top' ) ).toBe( 'translate(0 120) scale(1 -1)' );
+		expect( shapeDividerTransform( false, true, 'top' ) ).toBeUndefined();
+		expect( shapeDividerTransform( true, false, 'top' ) ).toBe( 'translate(1200 120) scale(-1 -1)' );
+	} );
+
+	it( 'writes the same transform strings as sgs_shape_divider_transform()', () => {
+		const php = fs.readFileSync( path.resolve( __dirname, '../../includes/shape-dividers.php' ), 'utf8' );
+		expect( php ).toContain( "' transform=\"translate(' . $tx . ' ' . $ty . ') scale(' . $sx . ' ' . $sy . ')\"'" );
+		expect( php ).toContain( "( 'top' === $position ) !== $invert" );
+	} );
+	it( 'every block that mounts the Shape dividers panel also mounts the canvas preview and the root class', () => {
+		const blocksDir = path.resolve( __dirname, '../../src/blocks' );
+		const panelBlocks = fs
+			.readdirSync( blocksDir )
+			.filter( ( name ) => {
+				const edit = path.join( blocksDir, name, 'edit.js' );
+				return (
+					fs.existsSync( edit ) &&
+					/<ShapeDividersPanel\b/.test( fs.readFileSync( edit, 'utf8' ) )
+				);
+			} );
+		expect( panelBlocks.sort() ).toEqual( [ 'container', 'hero', 'site-footer', 'trust-bar' ] );
+		for ( const name of panelBlocks ) {
+			const source = fs.readFileSync( path.join( blocksDir, name, 'edit.js' ), 'utf8' );
+			expect( source ).toMatch( /<ShapeDividerPreviews?\b/ );
+			expect( 'container' === name || /shapeDividerClassName\(/.test( source ) ).toBe( true );
+		}
 	} );
 } );

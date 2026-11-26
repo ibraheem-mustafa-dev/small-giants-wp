@@ -51,6 +51,7 @@ export default function CardStylesPanel( { name, attributes, setAttributes } ) {
 			   the item's non-colour box styling (border width, radius). */ }
 			<InspectorControls group="styles">
 				<PanelBody
+					initialOpen={ false }
 					title={ __( 'Card', 'sgs-blocks' ) }
 					className="sgs-colour-panel"
 				>

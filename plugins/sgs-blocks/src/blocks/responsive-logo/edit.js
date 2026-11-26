@@ -11,14 +11,12 @@ import {
 	ResponsiveControl,
 	ResponsiveOverride,
 	SgsLengthControl,
-	BOX_UNITS,
-	normaliseResponsiveBox,
-	SgsBoxControl,
 	SgsBorderControl,
 	SgsColourPanel,
 	SsrPreviewGuard,
 	SvgPartsControls,
 	MediaElementPanel,
+	ResponsiveBoxControls,
 } from '../../components';
 import metadata from './block.json';
 
@@ -249,6 +247,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					blockName="sgs/responsive-logo"
 					blockSlug="sgs/responsive-logo"
 					prefix="logo"
+					inGroup="settings"
 					atoms={ LOGO_SLOT.atoms }
 					kinds={ LOGO_SLOT.kinds }
 					context={ LOGO_SLOT.context }
@@ -261,6 +260,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					blockName="sgs/responsive-logo"
 					blockSlug="sgs/responsive-logo"
 					prefix="logoDark"
+					inGroup="settings"
 					atoms={ DARK_SLOT.atoms }
 					kinds={ DARK_SLOT.kinds }
 					context={ DARK_SLOT.context }
@@ -448,64 +448,17 @@ export default function Edit( { attributes, setAttributes } ) {
 					</ResponsiveOverride>
 				</PanelBody>
 
-				{ /* ── Panel 4: Spacing ── */ }
-				<PanelBody
-					title={ __( 'Spacing', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<ResponsiveOverride
-						value={ attributes.padding }
-						onChange={ ( obj ) =>
-							setAttributes( { padding: obj } )
-						}
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-					<ResponsiveOverride
-						value={ attributes.margin }
-						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 
 				{ /* ── Background colour (SgsColourPanel is the
 				   ONLY sanctioned colour control): gives the
 				   logo's own background tile independent control whether it sits in
 				   the site header or inside sgs/nav-drawer. ── */ }
 				<SgsColourPanel
+					initialOpen
 					rows={ [
 						{
 							key: 'background',

@@ -28020,6 +28020,20 @@
     },
     {
       "slug": "sgs/post-grid",
+      "attr": "arrowBorderWidth",
+      "fields": {
+        "css_property": "border-width"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "arrowSize",
+      "fields": {
+        "css_property": "height,width"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
       "attr": "backgroundColourHover",
       "fields": {
         "css_property": "background-color",
@@ -39400,6 +39414,27 @@
         "css_property": "align-items",
         "css_layer": "GRID",
         "css_element": "inner"
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
+      "attr": "arrowBorderRadius",
+      "fields": {
+        "css_property": "border-radius"
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
+      "attr": "arrowBorderWidth",
+      "fields": {
+        "css_property": "border-width"
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
+      "attr": "arrowSize",
+      "fields": {
+        "css_property": "height,width"
       }
     },
     {

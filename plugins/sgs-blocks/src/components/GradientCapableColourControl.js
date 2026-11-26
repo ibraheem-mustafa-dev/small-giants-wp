@@ -64,6 +64,7 @@ import { ColorPalette } from './colour-picker';
 import SgsGradientPicker from './gradient-picker';
 import { resolveColourToken } from './DesignTokenPicker';
 import BorderStyleControl from './BorderStyleControl';
+import DisabledRow from './DisabledRow';
 import {
 	calculateContrastRatio,
 	calculateRelativeLuminance,
@@ -372,6 +373,10 @@ export default function GradientCapableColourControl( {
 	// and hover, unlike the colour, which is per-state.
 	borderStyle,
 	onBorderStyleChange,
+	// The keywords the style control offers (`BorderStyleControl`'s `styles`) and, when the style cannot be set yet, the
+	// plain reason it is greyed out. Both default to the control's earlier behaviour.
+	borderStyles,
+	borderStyleReason = '',
 	clearable = true,
 	enableAlpha = true,
 	contrastAgainst,
@@ -529,10 +534,15 @@ export default function GradientCapableColourControl( {
 							) }
 							{ typeof onBorderStyleChange === 'function' && (
 								<div className="sgs-colour-control__border-style">
-									<BorderStyleControl
-										value={ borderStyle }
-										onChange={ onBorderStyleChange }
-									/>
+									<DisabledRow reason={ borderStyleReason }>
+										<BorderStyleControl
+											value={ borderStyle }
+											onChange={ onBorderStyleChange }
+											{ ...( borderStyles
+												? { styles: borderStyles }
+												: {} ) }
+										/>
+									</DisabledRow>
 								</div>
 							) }
 						</>

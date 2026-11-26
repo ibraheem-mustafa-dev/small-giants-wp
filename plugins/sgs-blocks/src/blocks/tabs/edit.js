@@ -26,6 +26,7 @@ import { LogicalAlignControl,
 	TypographyControls,
 	BOX_UNITS,
 	resolveColourToken,
+	ResponsiveBoxControls,
 } from '../../components';
 import { colourVar, textPaintPreview, borderPaintPreview, containerWrapperPreview, usePreviewTier, tierBoxLonghands, BandWrap } from '../../utils';
 import { spacingDefaultsFor } from '../../utils/spacing-defaults';
@@ -410,6 +411,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 			<InspectorControls>
 				{ /* WS-4: mirrored sgs/container wrapper controls (layout kind). */ }
 				<ContainerWrapperControls
+					initialOpen
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 					kind="layout"
@@ -660,6 +662,10 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						} }
 					/>
 				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 			</InspectorControls>
 
 			{ indicatorCss && <style>{ indicatorCss }</style> }

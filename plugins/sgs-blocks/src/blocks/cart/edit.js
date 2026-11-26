@@ -13,7 +13,7 @@ import {
 import {
 	useDrawerPreviewToggle,
 	IconPreview,
-	ResponsiveBoxControl,
+	ResponsiveBoxControls,
 	ShadowControl,
 	shadowAttrKeys,
 	SgsColourPanel,
@@ -204,6 +204,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 				<InspectorControls>{ drawerPreviewControl }</InspectorControls>
 			) }
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					...buildCartColourRows( {
 						attributes,
@@ -432,26 +433,10 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 					</PanelBody>
 				) }
 
-				<PanelBody
-					title={ __( 'Spacing', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<ResponsiveBoxControl
-						label={ __( 'Margin', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: margin?.desktop ?? {},
-							tablet: margin?.tablet ?? {},
-							mobile: margin?.mobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							const key = 'base' === tier ? 'desktop' : tier;
-							setAttributes( {
-								margin: { ...margin, [ key ]: next },
-							} );
-						} }
-					/>
-				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 
 				{ /* Wave 3C U-2 (family M-14) — the drawer's scrim (the see-through
 				   layer dimming the page behind it). Drawer mode only: a flyout

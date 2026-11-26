@@ -5,10 +5,10 @@ import {
 	SgsBoxControl,
 	normaliseResponsiveBox,
 } from '../../components';
-import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import SgsResetPanel from '../../components/SgsResetPanel';
 
 /**
- * sgs/nav-drawer-menu — Styles tab: "Submenu link padding" ToolsPanel.
+ * sgs/nav-drawer-menu — Styles tab: "Submenu link padding" panel.
  *
  * Spec 36 "Item hover paint" M-21 (2026-09-28): `submenuLinkPadding`, new
  * on both `sgs/nav-bar-menu` and `sgs/nav-drawer-menu` (the two menu blocks
@@ -28,46 +28,47 @@ export default function SubmenuLinkPaddingPanel( {
 	setAttributes,
 } ) {
 	return (
-		<ToolsPanel
-			label={ __( 'Submenu link padding', 'sgs-blocks' ) }
+		<SgsResetPanel
+			title={ __( 'Submenu link padding', 'sgs-blocks' ) }
+			items={ [
+				{
+					hasValue: () =>
+						Object.keys( submenuLinkPadding ?? {} ).length > 0,
+					onDeselect: () =>
+						setAttributes( { submenuLinkPadding: {} } ),
+				},
+			] }
 			resetAll={ () => setAttributes( { submenuLinkPadding: {} } ) }
+			initialOpen={ false }
 		>
-			<ToolsPanelItem
-				hasValue={ () =>
-					Object.keys( submenuLinkPadding ?? {} ).length > 0
-				}
+			<ResponsiveOverride
 				label={ __( 'Submenu link padding', 'sgs-blocks' ) }
-				onDeselect={ () => setAttributes( { submenuLinkPadding: {} } ) }
-				isShownByDefault
+				value={ submenuLinkPadding }
+				onChange={ ( obj ) =>
+					setAttributes( { submenuLinkPadding: obj } )
+				}
 			>
-				<ResponsiveOverride
-					value={ submenuLinkPadding }
-					onChange={ ( obj ) =>
-						setAttributes( { submenuLinkPadding: obj } )
-					}
-				>
-					{ ( { ownValue, setOwnValue } ) => (
-						<SgsBoxControl
-							label={ __( 'Submenu link padding', 'sgs-blocks' ) }
-							hideLabelFromVision
-							help={ __(
-								'Padding inside each accordion sub-item. Empty keeps the default 0 16px.',
-								'sgs-blocks'
-							) }
-							values={
-								ownValue && typeof ownValue === 'object'
-									? ownValue
-									: {}
-							}
-							units={ BOX_UNITS }
-							presets
-							onChange={ ( next ) =>
-								setOwnValue( normaliseResponsiveBox( next ) )
-							}
-						/>
-					) }
-				</ResponsiveOverride>
-			</ToolsPanelItem>
-		</ToolsPanel>
+				{ ( { ownValue, setOwnValue } ) => (
+					<SgsBoxControl
+						label={ __( 'Submenu link padding', 'sgs-blocks' ) }
+						hideLabelFromVision
+						help={ __(
+							'Padding inside each accordion sub-item. Empty keeps the default 0 16px.',
+							'sgs-blocks'
+						) }
+						values={
+							ownValue && typeof ownValue === 'object'
+								? ownValue
+								: {}
+						}
+						units={ BOX_UNITS }
+						presets
+						onChange={ ( next ) =>
+							setOwnValue( normaliseResponsiveBox( next ) )
+						}
+					/>
+				) }
+			</ResponsiveOverride>
+		</SgsResetPanel>
 	);
 }

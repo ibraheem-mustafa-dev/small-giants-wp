@@ -37,3 +37,71 @@
 	white-space: nowrap;
 	border: 0;
 }
+
+/**
+ * SgsInnerSection (src/components/SgsInnerSection.js): a light collapsible section inside a panel. It drops the card
+ * look of a nested PanelBody (no border box, no side padding, a smaller title) so it does not take 32px of a 280px
+ * sidebar. One level deep only (scripts/check-inner-section-depth.js).
+ */
+.sgs-inner-section.components-panel__body {
+	padding: 0;
+	padding-bottom: 0;
+	border: 0;
+	border-top: 1px solid #f0f0f0;
+}
+
+.sgs-inner-section.components-panel__body > .components-panel__body-title,
+.sgs-inner-section.components-panel__body.is-opened > .components-panel__body-title {
+	margin: 0;
+}
+
+.sgs-inner-section.components-panel__body > .components-panel__body-title .components-button {
+	padding: 12px 24px 12px 0;
+	font-size: 12px;
+	font-weight: 500;
+}
+
+.sgs-inner-section.components-panel__body > .components-panel__body-title .components-panel__arrow {
+	right: 0;
+}
+
+.sgs-inner-section.components-panel__body.is-opened {
+	padding: 0;
+	padding-bottom: 12px;
+}
+
+.sgs-inner-section__title {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+}
+
+/* A closed section that holds a value shows a short bar beside its title (a shape, not colour alone). */
+.sgs-inner-section__value-mark {
+	display: inline-block;
+	width: 10px;
+	height: 3px;
+	border-radius: 2px;
+	background: var(--wp-admin-theme-color, #3858e9);
+}
+
+/* SgsPanelReset (src/components/SgsPanelReset.js): a small right-aligned Reset on a panel's first row. */
+.sgs-panel-reset {
+	display: flex;
+	justify-content: flex-end;
+	margin-bottom: 8px;
+}
+
+/* Block-wide rows (`SgsBlockWideRowsSlot`): the whole block's switches close a panel, under a rule that sets them apart from
+   the controls for one target above. An empty slot takes no room. */
+.sgs-block-wide-rows {
+	margin-top: 16px;
+	padding-top: 12px;
+	border-top: 1px solid #e0e0e0;
+}
+
+.sgs-block-wide-rows:empty {
+	margin: 0;
+	padding: 0;
+	border: 0;
+}

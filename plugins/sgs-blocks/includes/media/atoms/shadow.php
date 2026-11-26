@@ -94,6 +94,8 @@ if ( ! function_exists( 'sgs_media_atom_shadow_emit' ) ) {
 	/**
 	 * C3 emitter: `box-shadow` on the surface (with its forced-colours fallback) and, on hover, the hover colour. A slot
 	 * that has a mask shape at any device draws the shadow as `filter:drop-shadow()` instead, because a mask clips a box-shadow.
+	 * The value, the mode and its declarations are the shared `sgs_shadow_decl_map()`; this emitter supplies the node
+	 * (the surface, which sits outside the mask) and the hover rule.
 	 *
 	 * @param array  $slot   Slot `{prefix, kinds, context, wrapper}`.
 	 * @param array  $attrs  Attributes.
@@ -108,19 +110,7 @@ if ( ! function_exists( 'sgs_media_atom_shadow_emit' ) ) {
 		$colour  = sgs_media_scalar( $attrs, $slot, 'BoxShadowColour' );
 		$hover   = sgs_media_scalar( $attrs, $slot, 'BoxShadowColourHover' );
 		$decls   = static function ( $shadow_colour ) use ( $shape, $mask ): array {
-			$value = sgs_media_shadow( $shape, $shadow_colour );
-			if ( '' === $value ) {
-				return array();
-			}
-			if ( $mask ) {
-				$filter = 'none' === $value ? 'none' : sgs_shadow_value_to_drop_shadow( $value );
-				return '' === $filter ? array() : array( 'filter' => $filter );
-			}
-			$out = array( 'box-shadow' => $value );
-			if ( 'none' !== $value ) {
-				$out['@forced-colors'] = sgs_shadow_forced_colours_decl();
-			}
-			return $out;
+			return sgs_shadow_decl_map( sgs_media_shadow( $shape, $shadow_colour ), $mask );
 		};
 		$rules   = array();
 		foreach ( $decls( $colour ) as $prop => $value ) {

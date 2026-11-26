@@ -41,6 +41,7 @@ import {
 	TypographyControls,
 	fillRow,
 	textRow,
+	SeparatorsPanel,
 } from '../../components';
 import {
 	ItemTextTreatment,
@@ -69,7 +70,6 @@ import DisabledItemsPanel from './DisabledItemsPanel';
 import OrnamentHiddenItemsPanel from './OrnamentHiddenItemsPanel';
 import SubmenuLinkPaddingPanel from './SubmenuLinkPaddingPanel';
 import MegaBodyPaddingPanel from './MegaBodyPaddingPanel';
-import SeparatorsPanel from '../../shared/nav-menu-panels/SeparatorsPanel';
 import SectionMotionPanel from './SectionMotionPanel';
 // The bar's own treatment node (none / swap / sweep + angle) for its separator
 // colour row, reused as-is: it names nothing bar-specific.
@@ -581,7 +581,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	return (
 		<>
 			{ /* ⛔ FIRST among same-group Fills — see the bar block's identical note. */ }
-			<SgsColourPanel rows={ colourRows } />
+			<SgsColourPanel initialOpen rows={ colourRows } />
 
 			{ /* ── General tab (default InspectorControls group) ───────────── */ }
 			<InspectorControls>
@@ -769,13 +769,8 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				   bar's between-item separator): the shared Separators setting. */ }
 				<SeparatorsPanel
 					title={ __( 'Row separators', 'sgs-blocks' ) }
-					value={ attributes.separators }
-					onChange={ ( next ) =>
-						setAttributes( { separators: next } )
-					}
-					axes={ [ 'row' ] }
-					edges
-					sweep
+					attributes={ attributes }
+					setAttributes={ setAttributes }
 				/>
 
 				<SubmenuItemsPanel
@@ -798,11 +793,9 @@ export default function Edit( { attributes, setAttributes, name } ) {
 
 				<SeparatorsPanel
 					title={ __( 'Submenu row separators', 'sgs-blocks' ) }
-					value={ attributes.submenuSeparators }
-					onChange={ ( next ) =>
-						setAttributes( { submenuSeparators: next } )
-					}
-					axes={ [ 'row' ] }
+					attribute="submenuSeparators"
+					attributes={ attributes }
+					setAttributes={ setAttributes }
 				/>
 
 				<SectionMotionPanel

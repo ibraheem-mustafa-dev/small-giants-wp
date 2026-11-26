@@ -317,6 +317,7 @@ export default function EffectsPanel( {
 
 	return (
 		<PanelBody
+			initialOpen={ false }
 			title={ __( 'Effects', 'sgs-blocks' ) }
 			className="sgs-motion-panel sgs-motion-panel--effects"
 			opened={ focus.opened }

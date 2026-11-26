@@ -19,13 +19,14 @@ import {
 	LinkPopoverField,
 	SgsLengthControl,
 } from '../../components';
-import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import { ToolsPanel } from '../../components/primitives';
 import { LINK_SOURCES_NO_TOP } from '../../shared/link-source-options';
 import {
 	BandFields,
 	ChipLookFields,
 	SearchLookFields,
 } from './FilterStyleFields';
+import SgsResetPanel, { SgsResetItem } from '../../components/SgsResetPanel';
 
 /** Defaults mirror block.json; the reset of a field writes its default back. */
 export const FILTER_DEFAULTS = {
@@ -44,27 +45,23 @@ export const FILTER_DEFAULTS = {
 function Field( { label, attribute, attributes, setAttributes, children } ) {
 	const fallback = FILTER_DEFAULTS[ attribute ];
 	return (
-		<ToolsPanelItem
-			label={ label }
+		<SgsResetItem
 			hasValue={ () =>
 				JSON.stringify( attributes[ attribute ] ?? fallback ) !==
 				JSON.stringify( fallback )
 			}
 			onDeselect={ () => setAttributes( { [ attribute ]: fallback } ) }
-			isShownByDefault
 		>
 			{ children }
-		</ToolsPanelItem>
+		</SgsResetItem>
 	);
 }
 
 function ColourField( { label, attribute, attributes, setAttributes } ) {
 	return (
-		<ToolsPanelItem
-			label={ label }
+		<SgsResetItem
 			hasValue={ () => '' !== ( attributes[ attribute ] ?? '' ) }
 			onDeselect={ () => setAttributes( { [ attribute ]: '' } ) }
-			isShownByDefault
 		>
 			<DesignTokenPicker
 				label={ label }
@@ -78,7 +75,7 @@ function ColourField( { label, attribute, attributes, setAttributes } ) {
 					},
 				] }
 			/>
-		</ToolsPanelItem>
+		</SgsResetItem>
 	);
 }
 
@@ -148,9 +145,11 @@ export default function FilterPanel( { attributes, setAttributes } ) {
 				__nextHasNoMarginBottom
 			/>
 			{ filterEnabled && (
-				<ToolsPanel
-					label={ __( 'Filter settings', 'sgs-blocks' ) }
+				<SgsResetPanel
+					title={ __( 'Filter settings', 'sgs-blocks' ) }
+					items={ [] }
 					resetAll={ resetAll }
+					nested
 				>
 					<ColourField
 						label={ __( 'Band fill', 'sgs-blocks' ) }
@@ -326,18 +325,13 @@ export default function FilterPanel( { attributes, setAttributes } ) {
 								{ ...shared }
 							/>
 							<ChipLookFields { ...shared } />
-							<ToolsPanelItem
-								label={ __(
-									'Chip corner radius',
-									'sgs-blocks'
-								) }
+							<SgsResetItem
 								hasValue={ () =>
 									'' !== ( attributes.filterChipRadius ?? '' )
 								}
 								onDeselect={ () =>
 									setAttributes( { filterChipRadius: '' } )
 								}
-								isShownByDefault
 							>
 								<SgsLengthControl
 									presets
@@ -352,7 +346,7 @@ export default function FilterPanel( { attributes, setAttributes } ) {
 										} )
 									}
 								/>
-							</ToolsPanelItem>
+							</SgsResetItem>
 						</>
 					) }
 					<Field
@@ -453,7 +447,7 @@ export default function FilterPanel( { attributes, setAttributes } ) {
 							linkSources={ LINK_SOURCES_NO_TOP }
 						/>
 					</Field>
-				</ToolsPanel>
+				</SgsResetPanel>
 			) }
 		</PanelBody>
 	);

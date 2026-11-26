@@ -49,17 +49,14 @@ import {
 	SgsLengthControl,
 	TypographyControls,
 	SgsBorderControl,
-	BOX_UNITS,
-	normaliseResponsiveBox,
-	SgsBoxControl,
 	LinkUnderlineControl,
+	ResponsiveBoxControls,
 } from '../../components';
 import {
 	colourVar,
 	resolveTextColourPreviewStyle,
 	linkColourPreviewCss,
 	linkUnderlinePreviewCss,
-	isTierBoxEmpty,
 	usePreviewTier,
 	typographyPreviewStyle,
 	tierBoxLonghands,
@@ -521,7 +518,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			/>
 			<InspectorControls>
 				{ /* ---- Style ---- */ }
-				<PanelBody title={ __( 'Style', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'Style', 'sgs-blocks' ) }>
 					<ToggleControl
 						label={ __(
 							'Inherit parent styles (suppress wrapper styles)',
@@ -785,91 +782,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								/>
 							</ToolsPanelItem>
 
-							{ /* padding/margin are each a single block-owned tier-object attr
-							   { desktop, tablet, mobile }, written via ResponsiveOverride +
-							   SgsBoxControl; read directly by this block's render.php. */ }
-							<ToolsPanelItem
-								label={ __( 'Padding', 'sgs-blocks' ) }
-								hasValue={ () =>
-									! isTierBoxEmpty( attributes.padding )
-								}
-								onDeselect={ () =>
-									setAttributes( { padding: {} } )
-								}
-								isShownByDefault
-							>
-								<ResponsiveOverride
-									value={ attributes.padding }
-									onChange={ ( obj ) =>
-										setAttributes( { padding: obj } )
-									}
-								>
-									{ ( { ownValue, setOwnValue } ) => (
-										<SgsBoxControl
-											label={ __(
-												'Padding',
-												'sgs-blocks'
-											) }
-											values={
-												ownValue &&
-												typeof ownValue === 'object'
-													? ownValue
-													: {}
-											}
-											units={ BOX_UNITS }
-											presets
-											onChange={ ( next ) =>
-												setOwnValue(
-													normaliseResponsiveBox(
-														next
-													)
-												)
-											}
-										/>
-									) }
-								</ResponsiveOverride>
-							</ToolsPanelItem>
-							<ToolsPanelItem
-								label={ __( 'Margin', 'sgs-blocks' ) }
-								hasValue={ () =>
-									! isTierBoxEmpty( attributes.margin )
-								}
-								onDeselect={ () =>
-									setAttributes( { margin: {} } )
-								}
-							>
-								<ResponsiveOverride
-									value={ attributes.margin }
-									onChange={ ( obj ) =>
-										setAttributes( { margin: obj } )
-									}
-								>
-									{ ( { ownValue, setOwnValue } ) => (
-										<SgsBoxControl
-											label={ __(
-												'Margin',
-												'sgs-blocks'
-											) }
-											values={
-												ownValue &&
-												typeof ownValue === 'object'
-													? ownValue
-													: {}
-											}
-											units={ BOX_UNITS }
-											presets
-											onChange={ ( next ) =>
-												setOwnValue(
-													normaliseResponsiveBox(
-														next
-													)
-												)
-											}
-										/>
-									) }
-								</ResponsiveOverride>
-							</ToolsPanelItem>
-
 							{ /* Width — outer maxWidth (kept-scalar, responsive) + content
 							   band width (kept-scalar). Contract §C. */ }
 							<ToolsPanelItem
@@ -931,6 +843,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								</ResponsiveOverride>
 							</ToolsPanelItem>
 						</ToolsPanel>
+						<ResponsiveBoxControls
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+						/>
 					</PanelBody>
 				) }
 

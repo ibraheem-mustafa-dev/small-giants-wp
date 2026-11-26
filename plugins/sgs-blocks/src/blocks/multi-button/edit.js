@@ -21,14 +21,11 @@ import {
 	textRow,
 	SgsBorderControl,
 	resolveColourToken,
-	BOX_UNITS,
-	normaliseResponsiveBox,
-	SgsBoxControl,
+	ResponsiveBoxControls,
 } from '../../components';
 import {
 	backgroundMediaPreview,
 	spacingPreview,
-	isTierBoxEmpty,
 	svgBackgroundPreview,
 	boxShorthand,
 	resolveBorderStyle,
@@ -334,6 +331,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 			    plugins/sgs-blocks/CLAUDE.md's colour-control standard is mandatory: never
 			    hand-roll a bespoke colour PanelBody, mount this instead. */ }
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					fillRow( {
 						key: 'background',
@@ -415,9 +413,12 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 			    contentWidth for the `group` element's layout cluster, so that
 			    control is NOT duplicated in the Layout panel below. */ }
 			<ContainerWrapperControls
+				initialOpen
 				attributes={ attributes }
 				setAttributes={ setAttributes }
 				kind="content"
+				// render.php hands the wrapper layout 'flex' unless one is stored, which is what turns Separators on.
+				resolvedLayout={ attributes.layout || 'flex' }
 			/>
 
 			{ /* ── Spec 35 Part O THE PLACEMENT RULE — restructured 2026-09-03
@@ -615,81 +616,6 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						} )
 					}
 				>
-					<ToolsPanelItem
-						label={ __( 'Padding', 'sgs-blocks' ) }
-						hasValue={ () =>
-							! isTierBoxEmpty( attributes.padding )
-						}
-						onDeselect={ () => setAttributes( { padding: {} } ) }
-						isShownByDefault
-					>
-						{ /* ── Padding & margin (A1, D638 — sgs/container parity) ──
-					    `padding`/`margin` are each a single block-owned
-					    tier-object attr { desktop, tablet, mobile } — this block
-					    no longer declares supports.spacing, so there is no
-					    duplicate Styles > Dimensions panel for the client to
-					    confuse with this one. Read directly by render.php.
-					    ⚠ The margin half is NEW (2026-08-27). This block previously
-					    had NO margin control at all — margin was reachable only
-					    through WordPress's native Dimensions panel, which the
-					    migration removes. Bean ruled full parity rather than a
-					    padding-only carve-out (Rule 3), so it is built here. */ }
-						<ResponsiveOverride
-							value={ attributes.padding }
-							onChange={ ( obj ) =>
-								setAttributes( { padding: obj } )
-							}
-						>
-							{ ( { ownValue, setOwnValue } ) => (
-								<SgsBoxControl
-									label={ __( 'Padding', 'sgs-blocks' ) }
-									values={
-										ownValue && typeof ownValue === 'object'
-											? ownValue
-											: {}
-									}
-									units={ BOX_UNITS }
-									presets
-									onChange={ ( next ) =>
-										setOwnValue(
-											normaliseResponsiveBox( next )
-										)
-									}
-								/>
-							) }
-						</ResponsiveOverride>
-					</ToolsPanelItem>
-
-					<ToolsPanelItem
-						label={ __( 'Margin', 'sgs-blocks' ) }
-						hasValue={ () => ! isTierBoxEmpty( attributes.margin ) }
-						onDeselect={ () => setAttributes( { margin: {} } ) }
-					>
-						<ResponsiveOverride
-							value={ attributes.margin }
-							onChange={ ( obj ) =>
-								setAttributes( { margin: obj } )
-							}
-						>
-							{ ( { ownValue, setOwnValue } ) => (
-								<SgsBoxControl
-									label={ __( 'Margin', 'sgs-blocks' ) }
-									values={
-										ownValue && typeof ownValue === 'object'
-											? ownValue
-											: {}
-									}
-									units={ BOX_UNITS }
-									presets
-									onChange={ ( next ) =>
-										setOwnValue(
-											normaliseResponsiveBox( next )
-										)
-									}
-								/>
-							) }
-						</ResponsiveOverride>
-					</ToolsPanelItem>
 
 					<ToolsPanelItem
 						label={ __( 'Direction', 'sgs-blocks' ) }
@@ -991,6 +917,10 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						/>
 					</ToolsPanelItem>
 				</ToolsPanel>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 			</InspectorControls>
 
 			{ /* Spread first, then state children explicitly: innerBlocksProps

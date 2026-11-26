@@ -1,0 +1,13 @@
+{
+	"_comment": "What counts as a whole-block colour in the main Colour panel of a block over 12 base colours (check-colour-count.py --stage whole-block): the block's own background, text, heading and link colour. A row matches when its attribute (attrs.base, or the first value it reads) matches an `attributes` pattern, or, when the attribute cannot be read, its key or label matches a `labels` pattern. Everything else is a part's colour and sits in that part's panel.",
+	"attributes": [
+		"^(background|bg)(Colou?r)?$",
+		"^text(Colou?r)?$",
+		"^heading(Colou?r)?$",
+		"^link(Colou?r)?$"
+	],
+	"labels": [
+		"^(background|text|heading|link)([ -]?colou?r)?$",
+		"^(background|text|heading|link)(Colou?r)?$"
+	]
+}

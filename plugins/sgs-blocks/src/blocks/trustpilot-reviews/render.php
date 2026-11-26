@@ -741,6 +741,22 @@ if ( $border['mobile'] ) {
 	$tp_responsive_css .= sgs_emit_tier_decls( $tp_root_sel, array( 'mobile' => $border['mobile'] ) );
 }
 
+// The arrows and the pause button (the button kit, prefix `arrow`) and the dots (the carousel dots kit, prefix `dot`),
+// printed by the one shared emitter (includes/helpers-carousel-dots.php): rules only for a look setting that is set, so a
+// carousel with none set prints what it always did.
+if ( $is_carousel ) {
+	$tp_responsive_css .= sgs_carousel_controls_css(
+		$attributes,
+		$tp_root_sel,
+		array(
+			'arrows' => array( '.sgs-trustpilot-reviews__arrow', '.sgs-trustpilot-reviews__pause' ),
+			'dots'   => '.sgs-trustpilot-reviews__dots',
+			'dot'    => '.sgs-trustpilot-reviews__dot',
+			'active' => '.sgs-trustpilot-reviews__dot.is-active',
+		)
+	);
+}
+
 // $tp_responsive_css is pre-sanitised via sgs_css_length_value() / sgs_css_keyword_sanitise()
 // / wp_style_engine_get_styles), then the outer wrapper via the shared helper.
 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped

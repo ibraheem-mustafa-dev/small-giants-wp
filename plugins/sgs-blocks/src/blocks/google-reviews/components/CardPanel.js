@@ -1,9 +1,9 @@
 /**
  * Google Reviews — "Card" section: the outer panel and each review card.
  *
- * Holds the ready-made "Card look" (the extended `cardStyle` enum), the outer panel's padding and
- * font, and each review card's padding, border, gap and width. Colours (panel and card background)
- * live in the one shared Colour panel (ColourPanel.js), and the outer panel's own border stays in
+ * Holds the ready-made "Card look" (the extended `cardStyle` enum), the outer panel's font, and each review card's
+ * padding, border, gap and width. The outer panel's own padding is the shared Spacing panel (edit.js). Colours (panel
+ * and card background) live in the one shared Colour panel (ColourPanel.js), and the outer panel's own border stays in
  * the "Layout" panel in edit.js.
  *
  * @package SGS\Blocks
@@ -52,7 +52,6 @@ const BORDER_ATTRS = [
 /** Every attribute this section owns (drives "Reset all"). */
 export const CARD_ATTRS = [
 	'cardStyle',
-	'padding',
 	'cardPadding',
 	...BORDER_ATTRS,
 	'cardGap',
@@ -92,17 +91,6 @@ export default function CardPanel( { name, attributes, setAttributes } ) {
 						'sgs-blocks'
 					) }
 					__next40pxDefaultSize
-				/>
-			</Row>
-			<Row
-				label={ __( 'Panel padding', 'sgs-blocks' ) }
-				attrs={ [ 'padding' ] }
-				{ ...shared }
-			>
-				<TierBox
-					label={ __( 'Panel padding', 'sgs-blocks' ) }
-					attr="padding"
-					{ ...shared }
 				/>
 			</Row>
 			<TypographyRow

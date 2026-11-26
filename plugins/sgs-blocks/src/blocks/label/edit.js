@@ -8,7 +8,7 @@ import { PanelBody, ToggleControl } from '@wordpress/components';
 import { useEffect, useState } from '@wordpress/element';
 import {
 	TypographyControls,
-	ResponsiveBoxControl,
+	ResponsiveBoxControls,
 	SgsColourPanel,
 	textRow,
 	fillRow,
@@ -32,8 +32,6 @@ import {
 	sgsBorderPreview,
 } from '../../utils';
 import {
-	ToolsPanel,
-	ToolsPanelItem,
 	ToggleGroupControl,
 	ToggleGroupControlOption,
 } from '../../components/primitives';
@@ -44,6 +42,7 @@ import {
 	labelEndShapePreviewCss,
 } from './end-shape-preview';
 import { RICH_TEXT_LINK_ONLY } from '../../utils/rich-text-formats';
+import SgsResetPanel from '../../components/SgsResetPanel';
 
 /**
  * The typography attributes the shared panel owns, at their block.json defaults.
@@ -227,10 +226,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		linkUnderlineOffset,
 		backgroundColour,
 		backgroundColourGradient,
-		// padding is a TIER-OF-BOXES OBJECT {desktop,tablet,mobile} — ONE attr;
-		// each tier is a {top,right,bottom,left} box.
-		padding,
-		margin,
 		borderRadius,
 		fullWidth,
 		dot,
@@ -353,48 +348,48 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					title={ __( 'Typography', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<ToolsPanel
-						className="sgs-nested-tools-panel"
-						label={ __( 'Typography', 'sgs-blocks' ) }
+					<SgsResetPanel
+						title={ __( 'Typography', 'sgs-blocks' ) }
+						items={ [
+							{
+								hasValue: () =>
+									hasTypographyValue( attributes ),
+								onDeselect: () =>
+									setAttributes( { ...TYPOGRAPHY_DEFAULTS } ),
+							},
+						] }
 						resetAll={ () =>
 							setAttributes( { ...TYPOGRAPHY_DEFAULTS } )
 						}
+						bare
 					>
 						{ /* One item for the whole shared panel: font family, size (all devices),
 						   weight, style, line height, letter spacing, transform, decoration,
 						   alignment, wrapping, columns and writing mode. */ }
-						<ToolsPanelItem
-							label={ __( 'Typography', 'sgs-blocks' ) }
-							hasValue={ () => hasTypographyValue( attributes ) }
-							onDeselect={ () =>
-								setAttributes( { ...TYPOGRAPHY_DEFAULTS } )
-							}
-							isShownByDefault
-						>
-							<TypographyControls
-								attributes={ attributes }
-								setAttributes={ setAttributes }
-								prefix=""
-								showSize
-								showResponsive
-								fontSizePresets
-								showFontFamily
-								showWeight
-								showStyle
-								showLineHeight
-								showLetterSpacing
-								showTransform
-								showDecoration
-								showTextAlign
-								showTextWrap
-								showTextStroke
-								showNumberStyle
-								showTextShadow
-								showTextColumns
-								showWritingMode
-							/>
-						</ToolsPanelItem>
-					</ToolsPanel>
+
+						<TypographyControls
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							prefix=""
+							showSize
+							showResponsive
+							fontSizePresets
+							showFontFamily
+							showWeight
+							showStyle
+							showLineHeight
+							showLetterSpacing
+							showTransform
+							showDecoration
+							showTextAlign
+							showTextWrap
+							showTextStroke
+							showNumberStyle
+							showTextShadow
+							showTextColumns
+							showWritingMode
+						/>
+					</SgsResetPanel>
 				</PanelBody>
 				<EndShapePanel
 					attributes={ attributes }
@@ -406,7 +401,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			<InspectorControls>
 				<PanelBody
 					title={ __( 'Box', 'sgs-blocks' ) }
-					initialOpen={ false }
+					initialOpen
 				>
 					<ToggleControl
 						label={ __( 'Stretch to full width', 'sgs-blocks' ) }
@@ -436,59 +431,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						}
 						presets={ false }
 					/>
-					{ /* padding is a TIER-OF-BOXES OBJECT {desktop,tablet,mobile}
-					     ONE attr; each tier holds the 4-side box. */ }
-					<ResponsiveBoxControl
-						label={ __( 'Padding', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: padding?.desktop ?? {},
-							tablet: padding?.tablet ?? {},
-							mobile: padding?.mobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							const tierKey = {
-								base: 'desktop',
-								tablet: 'tablet',
-								mobile: 'mobile',
-							}[ tier ];
-							setAttributes( {
-								padding: { ...padding, [ tierKey ]: next },
-							} );
-						} }
-					/>
 				</PanelBody>
 			</InspectorControls>
 
 			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
 			<InspectorControls group="styles">
-				<PanelBody
-					title={ __( 'Spacing', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					{ /* margin is a TIER-OF-BOXES OBJECT {desktop,tablet,mobile}
-					     (folded 2026-09-11 from the wrong 3-sibling shape) — ONE
-					     attr, same envelope + fold pattern as padding above. */ }
-					<ResponsiveBoxControl
-						label={ __( 'Margin', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: margin?.desktop ?? {},
-							tablet: margin?.tablet ?? {},
-							mobile: margin?.mobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							const tierKey = {
-								base: 'desktop',
-								tablet: 'tablet',
-								mobile: 'mobile',
-							}[ tier ];
-							setAttributes( {
-								margin: { ...margin, [ tierKey ]: next },
-							} );
-						} }
-					/>
-				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 				<PanelBody
 					title={ __( 'Dot', 'sgs-blocks' ) }
 					initialOpen={ false }

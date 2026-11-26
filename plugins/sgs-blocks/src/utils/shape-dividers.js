@@ -35,6 +35,32 @@ const SCALE_MIN = 10;
 const SCALE_MAX = 400;
 
 /**
+ * The SVG `transform` attribute that mirrors a divider's path (twin of
+ * sgs_shape_divider_transform()), or undefined when it is not mirrored.
+ *
+ * A top divider is mirrored vertically by default (every path keeps its solid
+ * mass on the lower edge, which is right for a bottom divider only), and "Invert
+ * vertically" undoes that. Written as translate + scale, the form browsers
+ * honour in an SVG `transform` attribute; the CSS form `scaleY(-1)` is ignored.
+ *
+ * @param {boolean} flip     Flip horizontally.
+ * @param {boolean} invert   Invert vertically (the user's toggle).
+ * @param {string}  position 'top' | 'bottom'.
+ * @return {string|undefined} The transform value.
+ */
+export function shapeDividerTransform( flip, invert, position ) {
+	const mirrorY = ( 'top' === position ) !== !! invert;
+	if ( ! flip && ! mirrorY ) {
+		return undefined;
+	}
+	const tx = flip ? SHAPE_DIVIDER_VIEWBOX_W : 0;
+	const ty = mirrorY ? SHAPE_DIVIDER_VIEWBOX_H : 0;
+	return `translate(${ tx } ${ ty }) scale(${ flip ? -1 : 1 } ${
+		mirrorY ? -1 : 1
+	})`;
+}
+
+/**
  * One axis of a `{ x, y }` divider scale, clamped to the control's range;
  * 100 (natural size) when unset or non-numeric.
  *

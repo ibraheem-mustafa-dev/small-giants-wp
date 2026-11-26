@@ -33,6 +33,18 @@
 				"shapeDividers",
 				"childSizing"
 			],
+			"_comment_trim": "A trust bar is one row or one grid of badges, so the shared Layout panel leaves out what a one-row strip never uses. Default and Stack stay offered on a bar that already stores one; a custom column template, row template, auto rows, justify items and align content stay shown on a bar that stores one. Columns (Grid) is the one column control.",
+			"trim": [
+				"layout.default",
+				"layout.stack",
+				"layout.flex-direction",
+				"layout.flex-wrap",
+				"layout.grid-template-columns",
+				"layout.grid-template-rows",
+				"layout.grid-auto-rows",
+				"layout.justify-items",
+				"layout.align-content"
+			],
 			"arrayContentLift": true,
 			"scalarStylingLift": true,
 			"_comment_mediaElements": "The `badge` slot: each image badge's own picture (`items[].source`) printed by the shared media renderer, with the block-level Fit (contain when unset), Width (60px when unset), Radius, Shape and Colour. The `background` slot is the bar's own background.",
@@ -81,9 +93,7 @@
 					"textBadgeBackground",
 					"textBadgeBorderColour",
 					"textBadgeBorderWidth",
-					"textBadgeRadius",
-					"textBadgeSeparator",
-					"textBadgeSeparatorColour"
+					"textBadgeRadius"
 				],
 				"image-badge": [
 					"badgeImageShadow",
@@ -200,49 +210,29 @@
 					"_note": "iconColour (the SVG stroke/fill colour, style.css:80 `color: var(--sgs-trust-badge-icon-colour, ...)`) resolves via css:color (text cluster) — mirrors sgs/icon's own icon element + sgs/business-info's icon element, which use the same functional-icon-colour/css:color convention (Spec 35 vocabulary fix). Only applies when badgeStyle='icon-circle' (supports.sgs.variants). `css:stroke` (D636/D644 icon/SVG gradient mechanism) explicit-mapped to iconColourGradient, added 2026-08-16 (Builder 4) — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php). iconColourHover pairs with the resting iconColour above (2026-09-02) — render.php re-points `--sgs-trust-badge-icon-colour` on `.sgs-trust-bar__badge` while that item is hovered or focused, so the icon (plain or circled) changes colour with its item; the element it belongs to is icon-badge, matching check-hover-state-classification.py's resting-twin discriminator."
 				},
 				"label": {
-					"absentIn": ["text-only", "image-badge"],
-					"absentWhy": "The icon styles print their text as sgs-trust-bar__label; the text-only and image-badge styles print it as the badge-label part.",
-					"label": "Badge text only",
+					"absentIn": ["bg-css-layer"],
+					"label": "Badge text",
 					"order": 6,
 					"clusters": [
 						"text"
 					],
 					"prefix": "label",
-					"_note": "Typography only (labelFontSize/labelFontWeight/labelFontStyle, render.php:393) — covers both variants via a compound selector. Colour is NOT claimed here: on icon-circle it's the separate textColour attr (render.php:54,111 -> --sgs-trust-badge-text-colour -> style.css:106 .sgs-trust-bar--icon-circle .sgs-trust-bar__label); on text-only/image-badge it's labelColour, claimed by the sibling badge-label element instead — one attrMap slot can't hold two attributes, and the two variants render different class names for what would otherwise be the same conceptual node.",
+					"_note": "The badge's text in every style: the icon styles print it as .sgs-trust-bar__label, text-only and image-badge as .sgs-trust-bar__badge-label. Typography (labelFontSize and the rest) and the one Label colour (labelColour, with its gradient and hover pair) cover both class names: render.php prints the same rule for each. A text bar always paints `labelColour` (default `text`), as before. An icon bar paints `.sgs-trust-bar__label` only when a label colour other than the default (or a gradient or a hover colour) is stored; until then it keeps the label colour in textColour (render.php: textColour -> --sgs-trust-badge-text-colour -> style.css `.sgs-trust-bar--icon-circle .sgs-trust-bar__label`), so no saved bar changes. `labelColourHover` and its gradient re-colour the text on hover; this element declares no css:background-color of its own (that lives on the `wrapper` element), so no bg-layer precondition applies.",
 					"attrMap": {
+						"css:color": "labelColour",
+						"css:background-image": "labelColourGradient",
 						"css:-webkit-text-stroke-width": "labelTextStrokeWidth",
 						"css:-webkit-text-stroke-color": "labelTextStrokeColour"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
+								"css:color": "labelColourHover",
+								"css:background-image": "labelColourHoverGradient",
 								"css:-webkit-text-stroke-color": "labelTextStrokeColourHover"
 							}
 						}
 					}
-				},
-				"badge-label": {
-					"absentIn": ["icon-circle", "icon-bare", "bg-css-layer"],
-					"absentWhy": "The text-only and image-badge styles print their text as sgs-trust-bar__badge-label; the icon styles print it as the label part.",
-					"label": "Badge text colour (text-only / image-badge variants)",
-					"order": 6,
-					"clusters": [
-						"text"
-					],
-					"prefix": "",
-					"attrMap": {
-						"css:color": "labelColour",
-						"css:background-image": "labelColourGradient"
-					},
-					"states": {
-						"hover": {
-							"attrMap": {
-								"css:color": "labelColourHover",
-								"css:background-image": "labelColourHoverGradient"
-							}
-						}
-					},
-					"_note": "Same conceptual node as `label` above, but a DIFFERENT class name (.sgs-trust-bar__badge-label, render.php:281) rendered only by the text-only/image-badge variants — split into its own element because the DB's css_element column holds one name per attribute and the two variants genuinely use two different class names. `labelColourHover`/`labelColourHoverGradient` (2026-09-07) added the hover pair — this element declares no css:background-color of its own (that lives on the separate `wrapper` element/selector), so no bg-layer precondition applies."
 				},
 				"title": {
 					"text": true,
@@ -303,10 +293,9 @@
 					"_note": "The text-only badge (`.sgs-trust-bar__badge`) draws a pill by default (surface-alt fill, 1px border, 999px radius). These four settings are unset by default (the pill stays); a draft whose strip is plain words sets a transparent fill, a 0 width and a 0 radius. Printed as a scoped rule by includes/helpers-trust-bar-item.php::sgs_trust_bar_text_badge_css, with the fill and border colour repeated on :hover so the stylesheet's hover pill does not return."
 				},
 				"separator": {
-					"absentIn": ["icon-circle", "icon-bare", "image-badge", "bg-css-layer"],
-					"absentWhy": "The separator glyph is printed only between text-only badges.",
+					"absentIn": ["bg-css-layer"],
 					"selector": ".sgs-trust-bar__separator",
-					"label": "Separator glyph only (text-only variant)",
+					"label": "Separator glyph",
 					"order": 6,
 					"clusters": [
 						"text"
@@ -315,7 +304,7 @@
 					"attrMap": {
 						"css:color": "textBadgeSeparatorColour"
 					},
-					"_note": "A decorative mark (aria-hidden) printed after every text-only badge: textBadgeSeparator is the glyph itself (free text, e.g. a star, at most 8 characters) and textBadgeSeparatorColour its colour. It sits after the last badge too, so the marquee's copies join with one; style.css hides the last one while the bar is not scrolling. A grid layout hides it (a grid gives every child a cell)."
+					"_note": "A decorative mark (aria-hidden) between the badges, in every badge style and every layout: textBadgeSeparator is the glyph itself (free text, e.g. a star, at most 8 characters) and textBadgeSeparatorColour its colour. A row (flex, stack, default) prints it as a sibling after every badge, the last included, so the marquee's copies join with one; style.css hides the last one while the bar is not scrolling. A grid prints it inside each badge and centres it on the column gap (includes/helpers-trust-bar-grid.php); the badge at the end of each row has none."
 				},
 				"icon-bare": {
 					"absentIn": ["icon-circle", "text-only", "image-badge", "bg-css-layer"],
@@ -613,7 +602,8 @@
 		},
 		"labelColour": {
 			"type": "string",
-			"default": "text"
+			"default": "text",
+			"description": "The colour of the badge text in every style. A text-only or image-badge bar always paints its label with it (the default is the theme text colour). An icon bar paints its label with it only once a colour other than the default is stored (or a gradient or hover colour); until then the label keeps the colour in textColour."
 		},
 		"labelColourGradient": {
 			"type": "string",
@@ -698,7 +688,7 @@
 		"textBadgeSeparator": {
 			"type": "string",
 			"role": "content",
-			"description": "A glyph printed between the text-only badges (for example a star), at most 8 characters. Decorative: hidden from screen readers. Unset prints none."
+			"description": "A glyph printed between the badges in every badge style and layout (for example a star), at most 8 characters. Decorative: hidden from screen readers. Unset prints none."
 		},
 		"textBadgeSeparatorColour": {
 			"type": "string",
@@ -849,11 +839,8 @@
 		},
 		"gridTemplateColumns": {
 			"type": "object",
-			"default": {
-				"desktop": "repeat(4, 1fr)",
-				"tablet": "repeat(4, 1fr)",
-				"mobile": "1fr 1fr"
-			}
+			"default": {},
+			"description": "A custom grid-template-columns per device. Empty by default: the Columns count drives the grid, and a template set here wins over it."
 		},
 		"surfaceTone": {
 			"type": "string",
@@ -1007,6 +994,11 @@
 		"justifyContent": {
 			"type": "object",
 			"default": {}
+		},
+		"centreLastRow": {
+			"type": "boolean",
+			"default": false,
+			"description": "Grid layout only. When the last row holds a single badge, centre it under the row above instead of leaving it at the start. Off by default."
 		},
 		"flexDirection": {
 			"type": "string",

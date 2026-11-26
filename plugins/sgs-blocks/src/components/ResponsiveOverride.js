@@ -9,7 +9,10 @@
  *  - an inherited tier says "Mobile: using Tablet" (the tier that really holds the value) or "Mobile: default", with a
  *    link icon, never colour alone (WCAG 1.4.1); the render prop passes `placeholder` (the inherited value) and
  *    `sourceTier` so the caller's field can show it as a grey placeholder;
- *  - a dot marks Tablet and Mobile when they hold their own value; each dot is a shape with an accessible name;
+ *  - a dot marks Tablet and Mobile when they hold their own value; each dot is a shape with an accessible name.
+ *    With a `label` the dots sit beside it on the label's row and a label the inner control draws with the same text is
+ *    hidden (`hideDuplicateLabels.js`), so the setting is named once. Without a `label` the dots take a row of their
+ *    own above the control's label: `scripts/report-label-less-responsive-overrides.py` lists those mounts;
  *  - Reset is a keyboard-reachable button of at least 44px that names the tier the field falls back to ("Reset to
  *    Tablet", "Reset to Desktop"); on Desktop, "Reset to default" shows when `desktopReset` is set;
  *  - `global` marks a setting that applies to all devices: off Desktop it says "Applies to all devices" and the
@@ -34,6 +37,7 @@
  *     ) }
  *   </ResponsiveOverride>
  */
+import { useRef } from '@wordpress/element';
 import { link as linkIcon } from '@wordpress/icons';
 import { __, sprintf } from '@wordpress/i18n';
 import { Button } from '@wordpress/components';
@@ -41,6 +45,7 @@ import { makeResponsive, resolveResponsiveTier } from '../utils/responsive';
 import { inheritedBox } from '../utils/inherited-box';
 import { InheritedBoxContext } from './InheritedBoxContext';
 import { ControlLabelContext } from './ControlLabelContext';
+import { useHideDuplicateLabels } from './hideDuplicateLabels';
 import {
 	deviceName,
 	describeInheritance,
@@ -77,10 +82,16 @@ export default function ResponsiveOverride( {
 	global = false,
 } ) {
 	const active = useActiveDevice();
+	const fieldRef = useRef( null );
+	useHideDuplicateLabels( fieldRef, label || '' );
 
 	if ( global ) {
 		return (
-			<div className="sgs-responsive-override sgs-responsive-override--global">
+			<div
+				className={ `sgs-responsive-override sgs-responsive-override--global${
+					label ? ' sgs-responsive-override--labelled' : ''
+				}` }
+			>
 				<div className="sgs-responsive-override__header">
 					{ label && (
 						<span className="sgs-responsive-override__label">
@@ -88,7 +99,7 @@ export default function ResponsiveOverride( {
 						</span>
 					) }
 				</div>
-				<div className="sgs-responsive-override__field">
+				<div className="sgs-responsive-override__field" ref={ fieldRef }>
 					<ControlLabelContext.Provider value={ label || '' }>
 						{ children( {
 							tier: 'desktop',
@@ -140,7 +151,11 @@ export default function ResponsiveOverride( {
 	const visibleReset = resetLabel( active, fallbackTier );
 
 	return (
-		<div className="sgs-responsive-override">
+		<div
+			className={ `sgs-responsive-override${
+				label ? ' sgs-responsive-override--labelled' : ''
+			}` }
+		>
 			<div className="sgs-responsive-override__header">
 				{ label && (
 					<span className="sgs-responsive-override__label">
@@ -184,6 +199,7 @@ export default function ResponsiveOverride( {
 				className={ `sgs-responsive-override__field${
 					inherited ? ' is-inherited' : ''
 				}` }
+				ref={ fieldRef }
 			>
 				<ControlLabelContext.Provider value={ label || '' }>
 					<InheritedBoxContext.Provider

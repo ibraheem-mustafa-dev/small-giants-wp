@@ -316,4 +316,46 @@ final class TrustBarRenderTest extends TestCase {
 			$this->assertStringContainsString( '.sgs-trust-bar__badge{gap:4px;}', $out['css'], $variant );
 		}
 	}
+
+	// ── Columns drive the grid ───────────────────────────────────────────────
+
+	public function test_block_json_declares_no_column_template_so_columns_cannot_go_dead(): void {
+		$block = json_decode( (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/trust-bar/block.json' ), true, 512, JSON_THROW_ON_ERROR );
+
+		$this->assertSame( array(), $block['attributes']['gridTemplateColumns']['default'], 'a non-empty default template beats the Columns count on every bar that stores no template' );
+		$this->assertSame(
+			array(
+				'desktop' => 4,
+				'tablet'  => 4,
+				'mobile'  => 2,
+			),
+			$block['attributes']['columns']['default'],
+			'the Columns count keeps the old 4, 4, 2 shape'
+		);
+	}
+
+	public function test_columns_set_the_grid_when_no_template_is_stored(): void {
+		$attrs                        = $this->circle_attrs();
+		$attrs['layout']              = 'grid';
+		$attrs['gridTemplateColumns'] = array();
+		$attrs['columns']             = array(
+			'desktop' => 3,
+			'tablet'  => 3,
+			'mobile'  => 1,
+		);
+		$out                          = $this->render( $attrs );
+
+		$this->assertStringContainsString( '{grid-template-columns:repeat(3,1fr);}', $out['css'], 'desktop reads the Columns count' );
+		$this->assertStringContainsString( '@media(max-width:767.98px){.sgs-container-', $out['css'] );
+		$this->assertStringContainsString( 'grid-template-columns:repeat(1,1fr);}}', $out['css'], 'phone reads the Columns count' );
+	}
+
+	public function test_a_stored_template_still_beats_the_count(): void {
+		$attrs                        = $this->circle_attrs();
+		$attrs['layout']              = 'grid';
+		$attrs['gridTemplateColumns'] = array( 'desktop' => 'repeat(4, minmax(max-content, 1fr))' );
+		$out                          = $this->render( $attrs );
+
+		$this->assertStringContainsString( 'grid-template-columns:repeat(4, minmax(max-content, 1fr));', $out['css'], 'a bar that stores a template keeps it' );
+	}
 }

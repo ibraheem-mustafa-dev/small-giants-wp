@@ -187,3 +187,11 @@
 	margin: 0 0 8px;
 	color: #757575;
 }
+
+/* The line a shadow that follows a masked shape's outline carries (Spread, Inset and Raw CSS are hidden there). */
+.sgs-shadow-control__note {
+	margin: 0 0 8px;
+	font-size: 12px;
+	line-height: 1.4;
+	color: #757575;
+}

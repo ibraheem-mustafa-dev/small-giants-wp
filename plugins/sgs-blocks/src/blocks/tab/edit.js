@@ -138,6 +138,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	return (
 		<>
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					fillRow( {
 						key: 'background',
@@ -169,7 +170,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			<InspectorControls>
 				<PanelBody
 					title={ __( 'Tab Settings', 'sgs-blocks' ) }
-					initialOpen={ true }
+					initialOpen={ false }
 				>
 					<SgsFreeTextField
 						type="rich"
@@ -184,6 +185,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					/>
 				</PanelBody>
 				<ContainerWrapperControls
+					initialOpen
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 					kind="content"

@@ -25,7 +25,8 @@ import ServerSideRender from '../../components/ServerSideRender';
 import SsrPreviewGuard from '../../components/SsrPreviewGuard';
 import { SampleNotice, EmptyState, LoadingState, ErrorState } from './editor-preview';
 import { omitNullish, showsSampleNotice } from './preview-plan';
-import { ResponsiveOverride,
+import { ResponsiveBoxControls,
+	ResponsiveOverride,
 	SgsBorderControl,
 	resolveColourToken,
 	DesignTokenPicker,
@@ -39,6 +40,7 @@ import ReviewerPanel from './components/ReviewerPanel';
 import ReviewTextPanel from './components/ReviewTextPanel';
 import ButtonsPanel from './components/ButtonsPanel';
 import NavigationPanel from './components/NavigationPanel';
+import BuiltinButtonPanel from '../../components/BuiltinButtonPanel';
 
 export default function Edit( { attributes, setAttributes, name } ) {
 	const {
@@ -75,14 +77,6 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		writeReviewColourTextHover,
 		writeReviewColourTextGradient,
 		writeReviewColourTextHoverGradient,
-		arrowColourBackground,
-		arrowColourBackgroundHover,
-		arrowColourBackgroundGradient,
-		arrowColourBackgroundHoverGradient,
-		arrowColourText,
-		arrowColourTextHover,
-		arrowColourTextGradient,
-		arrowColourTextHoverGradient,
 	} = attributes;
 
 	// The block shows written reviews when told to, or on Automatic when it holds any.
@@ -110,7 +104,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 
 			{ /* Spec 35 THE PLACEMENT RULE (D537) — the single mixed "Colour"
 			   panel is split per declared element: star fill -> "Star icon";
-			   arrow text/fill/border+hover -> "Slider arrow"; write-review
+			   arrow -> the shared button kit panel (CarouselControls); write-review
 			   text/fill+hover -> "Write-review button". Built directly with
 			   DesignTokenPicker (mirrors what SgsColourPanel does internally)
 			   since SgsColourPanel has no per-caller title override and each
@@ -118,7 +112,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			   colours (`dotColour*`) live in the Navigation section beside the
 			   progress-indicator choice, shown only while dots are chosen. */ }
 			<InspectorControls group="styles">
-				<PanelBody title={ __( 'Star icon', 'sgs-blocks' ) } className="sgs-colour-panel">
+				<PanelBody initialOpen={ false } title={ __( 'Star icon', 'sgs-blocks' ) } className="sgs-colour-panel">
 					<DesignTokenPicker
 						label={ __( 'Star colour', 'sgs-blocks' ) }
 						states={ [
@@ -145,57 +139,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			</InspectorControls>
 
 			<InspectorControls group="styles">
-				<PanelBody title={ __( 'Slider arrow', 'sgs-blocks' ) } className="sgs-colour-panel">
-					<DesignTokenPicker
-						label={ __( 'Slider arrow background', 'sgs-blocks' ) }
-						states={ [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: arrowColourBackground,
-								onChange: ( val ) => setAttributes( { arrowColourBackground: val ?? '' } ),
-								gradientValue: arrowColourBackgroundGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { arrowColourBackgroundGradient: val ?? '' } ),
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: arrowColourBackgroundHover,
-								onChange: ( val ) => setAttributes( { arrowColourBackgroundHover: val ?? '' } ),
-								gradientValue: arrowColourBackgroundHoverGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { arrowColourBackgroundHoverGradient: val ?? '' } ),
-							},
-						] }
-					/>
-					<DesignTokenPicker
-						label={ __( 'Slider arrow icon colour', 'sgs-blocks' ) }
-						states={ [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: arrowColourText,
-								onChange: ( val ) => setAttributes( { arrowColourText: val ?? '' } ),
-								gradientValue: arrowColourTextGradient,
-								onGradientChange: ( val ) => setAttributes( { arrowColourTextGradient: val ?? '' } ),
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: arrowColourTextHover,
-								onChange: ( val ) => setAttributes( { arrowColourTextHover: val ?? '' } ),
-								gradientValue: arrowColourTextHoverGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { arrowColourTextHoverGradient: val ?? '' } ),
-							},
-						] }
-					/>
-				</PanelBody>
-			</InspectorControls>
-
-			<InspectorControls group="styles">
-				<PanelBody title={ __( 'Write-review button', 'sgs-blocks' ) } className="sgs-colour-panel">
+				<PanelBody initialOpen={ false } title={ __( 'Write-review button', 'sgs-blocks' ) } className="sgs-colour-panel">
 					<DesignTokenPicker
 						label={ __( 'Write-review button background', 'sgs-blocks' ) }
 						states={ [
@@ -248,16 +192,21 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			{ /* Six collapsed styling sections (Styles tab). Each is one component in ./components: a PanelBody
 			   holding a ToolsPanel, every row built from a shared SGS control. Navigation exists only for the
 			   Slider display type, the one variant that has a rail and arrows. */ }
+			<InspectorControls group="styles">
+				<ResponsiveBoxControls attributes={ attributes } setAttributes={ setAttributes } />
+			</InspectorControls>
 			<CardPanel name={ name } attributes={ attributes } setAttributes={ setAttributes } />
 			<HeaderPanel attributes={ attributes } setAttributes={ setAttributes } />
 			<ReviewerPanel attributes={ attributes } setAttributes={ setAttributes } />
 			<ReviewTextPanel attributes={ attributes } setAttributes={ setAttributes } />
 			<ButtonsPanel attributes={ attributes } setAttributes={ setAttributes } />
 			{ 'slider' === variant && <NavigationPanel name={ name } attributes={ attributes } setAttributes={ setAttributes } /> }
+			{ /* The arrows and the pause button wear the shared button kit (prefix `arrow`): colours with hover and gradients, border, radius and size. */ }
+			{ 'slider' === variant && <BuiltinButtonPanel attributes={ attributes } setAttributes={ setAttributes } blockName="sgs/google-reviews" prefix="arrow" /> }
 
 			<InspectorControls>
-				<ContainerWrapperControls attributes={ attributes } setAttributes={ setAttributes } kind="layout" />
-				<PanelBody title={ __( 'Variant', 'sgs-blocks' ) }>
+				<ContainerWrapperControls initialOpen attributes={ attributes } setAttributes={ setAttributes } kind="layout" />
+				<PanelBody initialOpen={ false } title={ __( 'Variant', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'Display Type', 'sgs-blocks' ) }
 						value={ variant }
@@ -272,7 +221,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					/>
 				</PanelBody>
 
-				<PanelBody title={ __( 'Reviews source', 'sgs-blocks' ) }>
+				<PanelBody initialOpen={ false } title={ __( 'Reviews source', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'Where the reviews come from', 'sgs-blocks' ) }
 						value={ dataSource }
@@ -320,7 +269,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				{ /* The slider's cards are sized by the Card width control (340px by default, the Google
 				   baseline), so `columns` sets the grid and wall only. */ }
 				{ [ 'grid', 'wall' ].includes( variant ) && (
-					<PanelBody title={ __( 'Inner', 'sgs-blocks' ) }>
+					<PanelBody initialOpen={ false } title={ __( 'Inner', 'sgs-blocks' ) }>
 						{ /*
 							  columns is a TIER OBJECT — ONE attr holding
 							  {desktop,tablet,mobile} (Spec 35 pass 4). It must
@@ -364,7 +313,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					</PanelBody>
 				) }
 
-				<PanelBody title={ __( 'Filters', 'sgs-blocks' ) }>
+				<PanelBody initialOpen={ false } title={ __( 'Filters', 'sgs-blocks' ) }>
 					<RangeControl
 						label={ __( 'Maximum Reviews', 'sgs-blocks' ) }
 						value={ maxReviews }

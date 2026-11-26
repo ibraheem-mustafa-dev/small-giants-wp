@@ -32,6 +32,22 @@ if ( ! function_exists( 'sgs_brand_strip_item_file' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_brand_strip_item_key' ) ) {
+	/**
+	 * The key an item's `data-logo-key` carries and a scoped rule selects it by: its stable `_key` reduced to letters, digits,
+	 * hyphen and underscore (so it is safe inside an attribute selector), else `idx-<position>`. Render and CSS call this one
+	 * function, so a key with other characters (`brand.1`) is still matched.
+	 *
+	 * @param array      $logo     One `logos` entry.
+	 * @param int|string $position The item's position among the entries.
+	 * @return string
+	 */
+	function sgs_brand_strip_item_key( array $logo, $position ): string {
+		$key = ! empty( $logo['_key'] ) ? (string) preg_replace( '/[^A-Za-z0-9_\-]/', '', (string) $logo['_key'] ) : '';
+		return '' !== $key ? $key : 'idx-' . absint( $position );
+	}
+}
+
 if ( ! function_exists( 'sgs_brand_strip_item_attrs' ) ) {
 	/**
 	 * The attributes the renderer reads for one item: the block's, with the item's own source, alt, decorative flag, focal

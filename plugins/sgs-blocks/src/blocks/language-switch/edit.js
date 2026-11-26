@@ -246,7 +246,7 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
-			<SgsColourPanel rows={ colourRows } />
+			<SgsColourPanel initialOpen rows={ colourRows } />
 
 			<InspectorControls>
 				<PanelBody
@@ -334,7 +334,7 @@ export default function Edit( { attributes, setAttributes } ) {
 
 				<PanelBody
 					title={ __( 'Languages', 'sgs-blocks' ) }
-					initialOpen={ true }
+					initialOpen={ false }
 				>
 					{ duplicateCodesExist && (
 						<Notice status="warning" isDismissible={ false }>

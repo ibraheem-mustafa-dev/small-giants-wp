@@ -45,7 +45,7 @@ export default function PanelSettingsControls( {
 } ) {
 	return (
 		<>
-			<PanelBody title={ __( 'Display mode', 'sgs-blocks' ) }>
+			<PanelBody initialOpen title={ __( 'Display mode', 'sgs-blocks' ) }>
 				<SelectControl
 					label={ __( 'Cart trigger opens', 'sgs-blocks' ) }
 					help={ __(

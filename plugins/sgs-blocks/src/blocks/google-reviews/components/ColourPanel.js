@@ -138,5 +138,5 @@ export function colourRows( attributes, setAttributes ) {
  * same-group fills in mount order and this panel is meant to lead.
  */
 export default function ColourPanel( { attributes, setAttributes } ) {
-	return <SgsColourPanel rows={ colourRows( attributes, setAttributes ) } />;
+	return <SgsColourPanel initialOpen rows={ colourRows( attributes, setAttributes ) } />;
 }

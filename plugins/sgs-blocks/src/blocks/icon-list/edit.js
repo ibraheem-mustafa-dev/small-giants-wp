@@ -24,14 +24,12 @@ import {
 	textRow,
 	SgsBorderControl,
 	ResponsiveOverride,
-	BOX_UNITS,
-	normaliseResponsiveBox,
-	SgsBoxControl,
 	GradientCapableColourControl,
 	SgsLengthControl,
-	SgsSeparatorControl,
+	SeparatorsPanel,
 	LinkUnderlineControl,
 	LinkPopoverField,
+	ResponsiveBoxControls,
 } from '../../components';
 import { SITE_INFO_ADMIN_URL } from '../icon/icon-state';
 import { LINK_SOURCES_ALL } from '../../shared/link-source-options';
@@ -46,12 +44,12 @@ import ItemEffectsPanel from '../../shared/nav-menu-panels/ItemEffectsPanel';
 import {
 	colourVar,
 	gapVar,
-	separatorsLineCss,
 	usePreviewTier,
 	tierBoxLonghands,
 	sgsBorderPreview,
 	linkUnderlinePreviewCss,
 } from '../../utils';
+import { useSeparatorsCanvas } from '../../shared/separators/useSeparatorsCanvas';
 import {
 	ToggleGroupControl,
 	ToggleGroupControlOption,
@@ -825,16 +823,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	// Lines between items: the canvas mirrors render.php's item-drawn rules for the
 	// previewed device (includes/helpers-separators-line-css.php).
-	const separatorsCss = separatorsLineCss(
+	const separatorsCss = useSeparatorsCanvas( {
 		separators,
-		{
+		device: previewTier,
+		name: 'sgs/icon-list',
+		line: {
 			item: `.sgs-ed-sep-${ clientId } > .sgs-icon-list__item`,
 			direction: 'column',
 			gap: gapVar( gap || '20' ),
 		},
-		previewTier,
-		separators?.edges
-	);
+	} ).css;
 
 	const showIconColourRow = [ 'icon', 'emoji' ].includes(
 		resolvedMarkerType
@@ -848,6 +846,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
          OMITTED (not disabled) when they don't apply. Every state links to
          the theme palette. */ }
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					fillRow( {
 						key: 'background',
@@ -1264,6 +1263,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						</>
 					) }
 					<ResponsiveOverride
+						label={ __( 'List columns', 'sgs-blocks' ) }
 						value={ listColumns }
 						onChange={ ( obj ) =>
 							setAttributes( { listColumns: obj } )
@@ -1351,6 +1351,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						onChange={ ( val ) => setAttributes( { gap: val } ) }
 					/>
 					<ResponsiveOverride
+						label={ __( 'Icon to text gap', 'sgs-blocks' ) }
 						value={ itemGap }
 						onChange={ ( obj ) =>
 							setAttributes( { itemGap: obj } )
@@ -1367,14 +1368,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							/>
 						) }
 					</ResponsiveOverride>
-					<SgsSeparatorControl
+					<SeparatorsPanel
+						bare
 						label={ __( 'Lines between items', 'sgs-blocks' ) }
-						value={ separators }
-						onChange={ ( next ) =>
-							setAttributes( { separators: next } )
-						}
-						axes={ [ 'row' ] }
-						edges
+						attributes={ attributes }
+						setAttributes={ setAttributes }
 					/>
 				</PanelBody>
 			</InspectorControls>
@@ -1382,7 +1380,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
 			<InspectorControls group="styles">
 				{ 'typed' === resolvedSource && (
-					<PanelBody title={ __( 'Items', 'sgs-blocks' ) }>
+					<PanelBody initialOpen={ false } title={ __( 'Items', 'sgs-blocks' ) }>
 						{ items.map( ( item, index ) => (
 							<ItemEditor
 								key={ index }
@@ -1506,55 +1504,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
            { desktop, tablet, mobile }, written via ResponsiveOverride +
            SgsBoxControl; read directly by this block's render.php. */ }
 				<PanelBody
-					title={ __( 'Spacing', 'sgs-blocks' ) }
+					title={ __( 'Item spacing', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<ResponsiveOverride
-						value={ attributes.padding }
-						onChange={ ( obj ) =>
-							setAttributes( { padding: obj } )
-						}
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-					<ResponsiveOverride
-						value={ attributes.margin }
-						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
 					<SgsLengthControl
 						label={ __( 'Item vertical padding', 'sgs-blocks' ) }
 						help={ __(
@@ -1568,6 +1520,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						presets={ false }
 					/>
 				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 
 				{ /* Box-object interface contract §1/§5: borderWidth is an SGS custom
            object attr (base only, no tiers); border-radius routes to WP-native

@@ -1,0 +1,166 @@
+{
+	"_doc": "One table for the shared shadow output, read by BOTH twins: src/utils/shadow-output.js (tests/js/shadow-output.test.js) and includes/helpers-shadow-filter.php::sgs_shadow_decl_map (tests/php/run-shadow-filter-standalone.php). `shape` and `colour` are composed first (sgs_shadow_layers / composeShadow); `followShape` picks box mode or follow-the-shape mode; `expected` is the declaration map. `presets` is the shadow presets by origin, in the order WordPress returns them (default, theme, custom): the PHP test stubs wp_get_global_settings with it and the JS test serves it as the block editor's settings. A slug in several origins takes the custom one, then the theme one, then the default (the order the CSS variable follows).",
+	"forcedColours": "@media (forced-colors:active){&:not(:focus-visible){outline:1px solid CanvasText;outline-offset:-1px}}",
+	"presets": {
+		"default": [
+			{
+				"slug": "soft",
+				"shadow": "0 7px 7px #111111"
+			},
+			{
+				"slug": "layered",
+				"shadow": "0 9px 9px #222222"
+			},
+			{
+				"slug": "pressed",
+				"shadow": "0 5px 5px #444444"
+			}
+		],
+		"theme": [
+			{
+				"slug": "soft",
+				"shadow": "0 6px 6px #555555"
+			},
+			{
+				"slug": "layered",
+				"shadow": "0 4px 6px #333333"
+			}
+		],
+		"custom": [
+			{
+				"slug": "soft",
+				"shadow": "0 1px 2px rgba(0,0,0,0.12), 0 4px 8px rgba(0,0,0,0.08)"
+			},
+			{
+				"slug": "whisper",
+				"shadow": "0px 1px 2px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent), 0px 0px 0px 1px color-mix(in srgb, var(--wp--custom--shadow-colour) 5%, transparent)"
+			},
+			{
+				"slug": "pressed",
+				"shadow": "inset 0 2px 4px rgba(0,0,0,0.2)"
+			}
+		]
+	},
+	"cases": [
+		{
+			"name": "box: one layer prints box-shadow and the forced-colours fallback",
+			"shape": "0 4px 12px 0",
+			"colour": "#000000",
+			"followShape": false,
+			"expected": {
+				"box-shadow": "0px 4px 12px 0px #000000",
+				"@forced-colors": "@FORCED@"
+			}
+		},
+		{
+			"name": "follow: one layer prints a drop-shadow with no spread and no fallback",
+			"shape": "0 4px 12px 0",
+			"colour": "#000000",
+			"followShape": true,
+			"expected": {
+				"filter": "drop-shadow(0px 4px 12px #000000)"
+			}
+		},
+		{
+			"name": "follow: layers chain, each with its own colour",
+			"shape": "0px 1px 2px 0px, 0px 8px 24px -4px",
+			"colour": "#00000033, #FF0000",
+			"followShape": true,
+			"expected": {
+				"filter": "drop-shadow(0px 1px 2px #00000033) drop-shadow(0px 8px 24px #FF0000)"
+			}
+		},
+		{
+			"name": "follow: an inset layer is skipped",
+			"shape": "0 4px 12px 0, inset 0 2px 4px 0",
+			"colour": "#000000",
+			"followShape": true,
+			"expected": {
+				"filter": "drop-shadow(0px 4px 12px #000000)"
+			}
+		},
+		{
+			"name": "follow: an inset-only shadow draws nothing",
+			"shape": "inset 0 2px 4px 0",
+			"colour": "#000000",
+			"followShape": true,
+			"expected": {}
+		},
+		{
+			"name": "box: none prints none with no fallback",
+			"shape": "none",
+			"colour": "",
+			"followShape": false,
+			"expected": {
+				"box-shadow": "none"
+			}
+		},
+		{
+			"name": "follow: none prints filter none",
+			"shape": "none",
+			"colour": "",
+			"followShape": true,
+			"expected": {
+				"filter": "none"
+			}
+		},
+		{
+			"name": "an empty shape draws nothing in either mode",
+			"shape": "",
+			"colour": "#000000",
+			"followShape": true,
+			"expected": {}
+		},
+		{
+			"name": "box: a preset stays a reference",
+			"shape": "soft",
+			"colour": "",
+			"followShape": false,
+			"expected": {
+				"box-shadow": "var(--wp--preset--shadow--soft)",
+				"@forced-colors": "@FORCED@"
+			}
+		},
+		{
+			"name": "follow: a slug in three origins takes the custom one, hex colours, chained",
+			"shape": "soft",
+			"colour": "",
+			"followShape": true,
+			"expected": {
+				"filter": "drop-shadow(0px 1px 2px #0000001F) drop-shadow(0px 4px 8px #00000014)"
+			}
+		},
+		{
+			"name": "follow: a preset written with color-mix keeps it, layer by layer",
+			"shape": "whisper",
+			"colour": "",
+			"followShape": true,
+			"expected": {
+				"filter": "drop-shadow(0px 1px 2px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent)) drop-shadow(0px 0px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 5%, transparent))"
+			}
+		},
+		{
+			"name": "follow: a custom inset-only preset beats a default one that would draw",
+			"shape": "pressed",
+			"colour": "",
+			"followShape": true,
+			"expected": {}
+		},
+		{
+			"name": "follow: an unknown preset draws nothing, not invalid CSS",
+			"shape": "lifted",
+			"colour": "",
+			"followShape": true,
+			"expected": {}
+		},
+		{
+			"name": "follow: a slug in two origins takes the theme one over the default",
+			"shape": "layered",
+			"colour": "",
+			"followShape": true,
+			"expected": {
+				"filter": "drop-shadow(0px 4px 6px #333333)"
+			}
+		}
+	]
+}

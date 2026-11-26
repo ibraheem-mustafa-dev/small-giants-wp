@@ -383,8 +383,8 @@
 }
 
 .sgs-trustpilot-reviews__dot {
-	width: 8px;
-	height: 8px;
+	width: var( --sgs-carousel-dot-size, 8px );
+	height: var( --sgs-carousel-dot-size, 8px );
 	border-radius: 50%;
 	border: none;
 	background: var(--sgs-tp-card-border);

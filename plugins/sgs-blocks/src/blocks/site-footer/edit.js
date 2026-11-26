@@ -22,15 +22,17 @@ import {
 	MIN_HEIGHT_OPTIONS,
 } from '../container/components/ContainerWrapperControls';
 import {
+	ShapeDividerPreviews,
+	shapeDividerClassName,
+} from '../../components/ShapeDividerPreview';
+import {
 	ResponsiveBoxControl,
 	ResponsiveOverride,
-	BOX_UNITS,
-	normaliseResponsiveBox,
 	SgsColourPanel,
 	SgsBorderControl,
 	resolveColourToken,
-	SgsBoxControl,
 	StarterLookPresetControl,
+	ResponsiveBoxControls,
 } from '../../components';
 import {
 	ToggleGroupControl,
@@ -269,6 +271,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 			bgPreview.className,
 			section.className,
 			...svgPreview.className,
+			shapeDividerClassName( attributes ),
 		]
 			.filter( Boolean )
 			.join( ' ' ),
@@ -420,6 +423,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 			     at the top of the Styles tab. The native supports.color UI is
 			     disabled — supports.color sub-flags are false. */ }
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					{
 						key: 'text',
@@ -573,13 +577,14 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						{ contrastNotice }
 					</Notice>
 				) }
-				<PanelBody title={ __( 'Footer width', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'Footer width', 'sgs-blocks' ) }>
 					<WidthPanel
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 					/>
 					<hr style={ { margin: '16px 0' } } />
 					<ResponsiveOverride
+						label={ __( 'Min height', 'sgs-blocks' ) }
 						value={ attributes.minHeight }
 						onChange={ ( obj ) =>
 							setAttributes( { minHeight: obj } )
@@ -684,63 +689,10 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					</ToggleGroupControl>
 				</PanelBody>
 
-				{ /* Responsive spacing (padding + margin) — box-object interface
-				     contract. Base tier writes to the block-OWNED `padding`/`margin` attrs
-				     (this block declares no supports.spacing, so there is NO
-				     duplicate Styles > Dimensions panel); each attr holds
-				     desktop, tablet and mobile, read by the wrapper's @media tiers. */ }
-				<PanelBody
-					title={ __( 'Padding & margin', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<ResponsiveOverride
-						value={ attributes.padding }
-						onChange={ ( obj ) =>
-							setAttributes( { padding: obj } )
-						}
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-					<hr style={ { margin: '16px 0' } } />
-					<ResponsiveOverride
-						value={ attributes.margin }
-						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 			</InspectorControls>
 
 			{ /* Spread first, then state children explicitly: innerBlocksProps
@@ -753,6 +705,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						overlay={ bgPreview.overlay }
 					/>
 					{ svgLayer }
+					<ShapeDividerPreviews attributes={ attributes } />
 					<div { ...innerBlocksProps } />
 				</div>
 			) : (
@@ -762,6 +715,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						overlay={ bgPreview.overlay }
 					/>
 					{ svgLayer }
+					<ShapeDividerPreviews attributes={ attributes } />
 					{ innerBlocksProps.children }
 				</div>
 			) }

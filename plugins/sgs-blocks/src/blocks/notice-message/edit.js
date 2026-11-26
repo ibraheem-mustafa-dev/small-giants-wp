@@ -80,6 +80,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				</ToolbarGroup>
 			</BlockControls>
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					fillRow( {
 						key: 'background',

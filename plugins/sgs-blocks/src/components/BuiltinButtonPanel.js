@@ -9,12 +9,19 @@
  * The panels load on first use as one shared chunk, so the block bundles that import this component do not each carry a
  * copy of the controls.
  *
+ * The entry may carry `showWhen` (the condition under which the PHP prints the button, `kitShown.js`): while it does not
+ * hold, the panel and the colour rows are not offered. The colour rows go in the block's one main Colour panel when the block
+ * passes `colourInMainPanel` and spreads `builtinButtonColourRows()` into that panel's `rows`; otherwise they stay in the
+ * kit's own Colour panel.
+ *
  * @package
  */
 import { getBlockType } from '@wordpress/blocks';
 import { Suspense, lazy } from '@wordpress/element';
 
 import registry from './button-kit/registry.json';
+import { buttonKitColourRows } from './button-kit/colour-rows';
+import { kitShown } from './kitShown';
 
 const BuiltinButtonPanelBody = lazy( () =>
 	import(
@@ -67,6 +74,37 @@ export function declaredButton( blockName, prefix ) {
 }
 
 /**
+ * The kit's colour rows for one declared button, for a block's own main `SgsColourPanel`: headed Background and Text rows
+ * (and Border when the button declares no border control). Empty when the block does not declare the prefix, the button is
+ * not printed (`showWhen`), or the button declares no `colour` group.
+ *
+ * @param {Object}   args
+ * @param {Object}   args.attributes    Block attributes.
+ * @param {Function} args.setAttributes Block `setAttributes`.
+ * @param {string}   args.blockName     Block name.
+ * @param {string}   args.prefix        The button's attribute prefix.
+ * @return {Array} Rows to spread into `SgsColourPanel`'s `rows`.
+ */
+export function builtinButtonColourRows( {
+	attributes,
+	setAttributes,
+	blockName,
+	prefix,
+} ) {
+	const entry = declaredButton( blockName, prefix );
+	if ( ! entry || ! kitShown( entry, attributes ) ) {
+		return [];
+	}
+	return buttonKitColourRows( {
+		attributes,
+		setAttributes,
+		prefix,
+		label: entry.label,
+		groups: entry.groups,
+	} );
+}
+
+/**
  * Mount one built-in button's panels.
  *
  * @param {Object}   props
@@ -76,6 +114,8 @@ export function declaredButton( blockName, prefix ) {
  * @param {string}   props.prefix          The button's attribute prefix.
  * @param {Function} [props.seedForPreset] Optional: given the preset slug just picked, returns further attributes to write with it
  *                                         (the product card seeds its colours and border from the preset).
+ * @param {boolean}  [props.colourInMainPanel=false] True when the block draws this button's colour rows in its own main Colour panel
+ *                                         through `builtinButtonColourRows()`, so the kit draws none.
  * @return {Object|null} The mounted panels, or null.
  */
 export default function BuiltinButtonPanel( {
@@ -84,9 +124,10 @@ export default function BuiltinButtonPanel( {
 	blockName,
 	prefix,
 	seedForPreset,
+	colourInMainPanel = false,
 } ) {
 	const entry = declaredButton( blockName, prefix );
-	if ( ! entry ) {
+	if ( ! entry || ! kitShown( entry, attributes ) ) {
 		return null;
 	}
 	return (
@@ -99,6 +140,7 @@ export default function BuiltinButtonPanel( {
 				label={ entry.label }
 				groups={ entry.groups }
 				seedForPreset={ seedForPreset }
+				colourInMainPanel={ colourInMainPanel }
 			/>
 		</Suspense>
 	);

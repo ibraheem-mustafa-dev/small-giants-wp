@@ -18,6 +18,9 @@ import {
 } from '../../components';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import ServerSideRender from '../../components/ServerSideRender';
+import CarouselControls, {
+	carouselControlsColourRows,
+} from '../../components/CarouselControls';
 import ScrollbarStyleControl from '../../components/ScrollbarStyleControl';
 import {
 	PanelBody,
@@ -38,6 +41,7 @@ import {
 } from '../../components/primitives';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
+import SgsResetPanel from '../../components/SgsResetPanel';
 // D649 — no JSON `enum` reliance in the UI list order; mirrors sgs/icon-list's
 // allow-list exactly (render.php validates the same set independently).
 const HEADING_LEVEL_OPTIONS = [
@@ -223,6 +227,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					fillRow( {
 						key: 'background',
@@ -248,15 +253,21 @@ export default function Edit( { attributes, setAttributes } ) {
 						attributes,
 						setAttributes,
 					} ),
+					...carouselControlsColourRows( {
+						attributes,
+						setAttributes,
+						blockName: 'sgs/trustpilot-reviews',
+					} ),
 				] }
 			/>
 			<InspectorControls>
 				<ContainerWrapperControls
+					initialOpen
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 					kind="layout"
 				/>
-				<PanelBody title={ __( 'Source', 'sgs-blocks' ) }>
+				<PanelBody initialOpen={ false } title={ __( 'Source', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'Data source', 'sgs-blocks' ) }
 						value={ dataSource }
@@ -552,7 +563,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					</ToolsPanelItem>
 				</ToolsPanel>
 
-				<PanelBody title={ __( 'Card display', 'sgs-blocks' ) }>
+				<PanelBody initialOpen={ false } title={ __( 'Card display', 'sgs-blocks' ) }>
 					<ToggleControl
 						label={ __( 'Show Verified badge', 'sgs-blocks' ) }
 						checked={ showVerifiedBadge }
@@ -908,9 +919,16 @@ export default function Edit( { attributes, setAttributes } ) {
 				) }
 
 				{ dataSource === 'inline' && (
-					<ToolsPanel
-						label={ __( 'Reviews (inline)', 'sgs-blocks' ) }
-						resetAll={ () => setAttributes( { reviews: [] } ) }
+					<SgsResetPanel
+						title={ __( 'Reviews (inline)', 'sgs-blocks' ) }
+						items={ [
+							{
+								hasValue: () => ( reviews || [] ).length > 0,
+								onDeselect: () =>
+									setAttributes( { reviews: [] } ),
+							},
+						] }
+						initialOpen={ false }
 					>
 						{ ( reviews || [] ).map( ( r, idx ) => (
 							<div
@@ -1020,13 +1038,14 @@ export default function Edit( { attributes, setAttributes } ) {
 								{ __( 'Import reviews', 'sgs-blocks' ) }
 							</Button>
 						</div>
-					</ToolsPanel>
+					</SgsResetPanel>
 				) }
 			</InspectorControls>
 
 			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
 			<InspectorControls group="styles">
 				<PanelBody
+					initialOpen={ false }
 					title={ __( 'Trustpilot Reviews Settings', 'sgs-blocks' ) }
 				>
 					<SelectControl
@@ -1107,6 +1126,16 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 			</InspectorControls>
 
+			{ /* The carousel's arrows, pause button and dots: the shared kits (button kit `arrow`, carousel dots kit `dot`). */ }
+			{ ( 'carousel' === attributes.variant ||
+				'mini-carousel' === attributes.variant ) && (
+				<CarouselControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					blockName="sgs/trustpilot-reviews"
+					colourInMainPanel
+				/>
+			) }
 			<div { ...blockProps }>
 				<SsrPreviewGuard>
 					<ServerSideRender

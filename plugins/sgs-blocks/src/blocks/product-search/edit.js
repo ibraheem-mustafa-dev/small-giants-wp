@@ -16,12 +16,10 @@ import {
 	ResponsiveBoxControl,
 	ResponsiveOverride,
 	SgsColourPanel,
-	BOX_UNITS,
-	normaliseResponsiveBox,
-	SgsBoxControl,
 	SgsBorderControl,
 	ScrimControls,
 	scrimColourRow,
+	ResponsiveBoxControls,
 } from '../../components';
 import { ToolsPanel } from '../../components/primitives';
 import {
@@ -34,7 +32,9 @@ import {
 
 import { authoredTextPlain } from '../../utils/authored-text';
 import SgsFreeTextField from '../../components/SgsFreeTextField';
-import BuiltinButtonPanel from '../../components/BuiltinButtonPanel';
+import BuiltinButtonPanel, {
+	builtinButtonColourRows,
+} from '../../components/BuiltinButtonPanel';
 import buttonKitStyle from '../../components/button-kit/button-kit-style';
 import { presetNames } from '../button/preset-names';
 // NumberControl is experimental — fall back gracefully to TextControl if absent.
@@ -176,6 +176,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			    to the existing theme-token defaults in style.css when unset
 			    (var(--sgs-ps-*, token) — see render.php). */ }
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					{
 						key: 'input-border',
@@ -333,10 +334,16 @@ export default function Edit( { attributes, setAttributes } ) {
 					},
 					( isOverlay || isPalette ) &&
 						scrimColourRow( { attributes, setAttributes } ),
+					...builtinButtonColourRows( {
+						attributes,
+						setAttributes,
+						blockName: 'sgs/product-search',
+						prefix: 'submit',
+					} ),
 				] }
 			/>
 			<InspectorControls>
-				<PanelBody title={ __( 'Search settings', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'Search settings', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'Display', 'sgs-blocks' ) }
 						value={ displayMode || 'inline-bar' }
@@ -404,7 +411,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{ /*
 					  `maxResults` is a TIER OBJECT — ONE attr
 					  holding {desktop,tablet,mobile}, so it uses
-					  <ResponsiveOverride>. FR-36-20's caps are per-tier (Baymard: max 10
+					  <ResponsiveOverride label={ __( 'Max suggestions', 'sgs-blocks' ) }>. FR-36-20's caps are per-tier (Baymard: max 10
 					  desktop, 4–8 mobile) with NO distinct tablet design
 					  finding — render.php inherits the desktop value/cap for
 					  tablet, so the tablet tier here shows
@@ -494,57 +501,10 @@ export default function Edit( { attributes, setAttributes } ) {
 
 			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
 			<InspectorControls group="styles">
-				<PanelBody
-					title={ __( 'Spacing', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<ResponsiveOverride
-						value={ attributes.padding }
-						onChange={ ( obj ) =>
-							setAttributes( { padding: obj } )
-						}
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-					<ResponsiveOverride
-						value={ attributes.margin }
-						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 
 				<PanelBody
 					title={ __( 'Border', 'sgs-blocks' ) }
@@ -638,6 +598,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				setAttributes={ setAttributes }
 				blockName="sgs/product-search"
 				prefix="submit"
+				colourInMainPanel
 			/>
 
 			<div { ...blockProps }>

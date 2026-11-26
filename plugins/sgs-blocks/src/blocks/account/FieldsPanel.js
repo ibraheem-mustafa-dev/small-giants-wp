@@ -128,6 +128,7 @@ export default function FieldsPanel( { attributes, setAttributes } ) {
 					} }
 				/>
 				<ResponsiveOverride
+					label={ __( 'Field padding', 'sgs-blocks' ) }
 					value={ attributes.fieldPadding }
 					onChange={ ( obj ) =>
 						setAttributes( { fieldPadding: obj } )

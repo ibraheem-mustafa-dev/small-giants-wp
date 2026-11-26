@@ -30,7 +30,7 @@ export default function MenuSettingsPanel( {
 	setAttributes,
 } ) {
 	return (
-		<PanelBody title={ __( 'Menu', 'sgs-blocks' ) }>
+		<PanelBody initialOpen title={ __( 'Menu', 'sgs-blocks' ) }>
 			<SelectControl
 				label={ __( 'Menu', 'sgs-blocks' ) }
 				value={ menuRef || 0 }

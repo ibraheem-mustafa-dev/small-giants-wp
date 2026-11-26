@@ -13,20 +13,17 @@ import {
 	ToggleControl,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
-import { useRef } from '@wordpress/element';
 import { useMergeRefs } from '@wordpress/compose';
-import { useSeparatorOverlay } from '../../shared/separators/useSeparatorOverlay';
+import { useSeparatorsCanvas } from '../../shared/separators/useSeparatorsCanvas';
 import {
 	ResponsiveOverride,
 	ShadowControl,
 	shadowAttrKeys,
 	SgsColourPanel,
-	BOX_UNITS,
-	normaliseResponsiveBox,
 	SgsBorderControl,
 	TypographyControls,
-	SgsBoxControl,
-	SgsSeparatorControl,
+	SeparatorsPanel,
+	ResponsiveBoxControls,
 } from '../../components';
 import BuiltinButtonPanel from '../../components/BuiltinButtonPanel';
 import CarouselDotsPanel from '../../components/CarouselDotsPanel';
@@ -36,10 +33,7 @@ import HoverAsCardPanel from './components/HoverAsCardPanel';
 import OverflowControl from './components/OverflowControl';
 import { resolveColourToken } from '../../components/DesignTokenPicker';
 import { pinEdgeTopPreview } from './pin-edge-preview';
-import {
-	hasContentBand,
-	sectionPaddingDefaults,
-} from '../../utils/section-padding';
+import { hasContentBand } from '../../utils/section-padding';
 import { resolveOnTiers } from '../../utils/responsive';
 import {
 	resolveShadowPreviewComposed,
@@ -575,7 +569,15 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 
 	const blockProps = useBlockProps( { className: editorClassName, style } );
 	// The list the separators' lines run along: the band when one renders, else the root.
-	const gridRef = useRef( null );
+	// Lines between the items, in an editor without CSS gap decorations (a no-op in Chrome / Edge);
+	// the native-decoration style comes from containerWrapperPreview.
+	const separatorsCanvas = useSeparatorsCanvas( {
+		separators: attributes.separators,
+		device: previewTier,
+		active: layout === 'grid' || layout === 'flex' || layout === 'stack',
+		deps: [ layout, attributes.columns, gap, hasBandProps ],
+	} );
+	const gridRef = separatorsCanvas.ref;
 	const rootRef = useMergeRefs( [ blockProps.ref, gridRef ] );
 	// The children belong to the BAND when one renders, and to the root when one does not.
 	// useInnerBlocksProps is called exactly once either way — branching the ARGUMENT, never
@@ -600,24 +602,6 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 			orientation: layout === 'stack' ? 'vertical' : undefined,
 			templateLock: attributes.templateLock || undefined,
 		}
-	);
-
-	// Lines between the items, in an editor without CSS gap decorations (a no-op in Chrome / Edge).
-	useSeparatorOverlay(
-		gridRef,
-		( layout === 'grid' || layout === 'flex' || layout === 'stack' ) &&
-			Object.keys(
-				separatorsFlowPreview( attributes.separators, previewTier )
-			).length
-			? JSON.stringify( [
-					attributes.separators,
-					previewTier,
-					layout,
-					attributes.columns,
-					gap,
-					hasBandProps,
-			  ] )
-			: ''
 	);
 
 	// Mirrors class-sgs-container-wrapper.php:2794-2798. `aria-hidden` matches the
@@ -671,6 +655,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
             Mirrors sgs/site-header's SgsColourPanel pattern (D294/D684):
             its own panel, not nested inside BackgroundPanel's PanelBody. */ }
 				<SgsColourPanel
+					initialOpen
 					rows={ [
 						{
 							key: 'background',
@@ -817,7 +802,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 				{ /* Layout panel — shared LayoutPanel + WidthPanel + container-specific controls
             (HTML tag, min-height ×3). Kept as a single "Layout" PanelBody to preserve
             the pre-refactor inspector order and label for container users. */ }
-				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'Layout', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'HTML tag', 'sgs-blocks' ) }
 						value={ attributes.tagName || 'section' }
@@ -967,103 +952,17 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 				{ /* Separators — the lines between the items of a grid or flex layout
             (includes/helpers-separators.php). Offered only where there are items
             side by side or stacked to separate. */ }
-				{ ( layout === 'grid' ||
-					layout === 'flex' ||
-					layout === 'stack' ) && (
-					<PanelBody
-						title={ __( 'Separators', 'sgs-blocks' ) }
-						initialOpen={ false }
-					>
-						<SgsSeparatorControl
-							value={ attributes.separators }
-							onChange={ ( next ) =>
-								setAttributes( { separators: next } )
-							}
-						/>
-					</PanelBody>
-				) }
+				<SeparatorsPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					layout={ layout }
+					lined
+				/>
 
-				{ /* Responsive spacing (padding + margin) — Spec 35 / D555 gutter-default
-            migration. `padding`/`margin` are now block-OWNED object attrs (no
-            `supports.spacing` — a WP-native support cannot carry a framework
-            default, which is exactly why `sgs/container` had no horizontal
-            gutter and rendered flush to the viewport edge; see D555). Every tier
-            writes into the owned `padding`/`margin` attr directly — one system,
-            not a native+SGS split. Mirrors the `sgs/gallery` precedent (its own
-            base tier is likewise owned, not native). */ }
-				<PanelBody
-					title={ __( 'Padding & margin', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					{ /* padding/margin are now TIER-of-BOXES object attrs — ONE attribute
-              holding {desktop,tablet,mobile}, each tier a {top,right,bottom,left}
-              box (Phase 2 tier-object migration, 2026-09-06) — matching the
-              shape already shipped on sgs/site-header-row / sgs/site-footer-row /
-              sgs/gallery (Spec 37 FR-37-16). Uses ResponsiveOverride, which reads
-              and writes the object directly, NOT the flat-sibling
-              ResponsiveBoxControl. WordPress SILENTLY DISCARDS an attribute a
-              block does not declare (D338), so never write a per-tier sibling
-              attr such as `paddingTablet`.
-              presets — C16 pilot (2026-08-27). sgs/container is the ONE block
-              piloting spacing presets on the shared SgsBoxControl before the
-              other mounts see them (default stays OFF everywhere else).
-              See .claude/scratch/2026-08-27-c16-spacing-presets-design.md §7. */ }
-					<ResponsiveOverride
-						value={ attributes.padding }
-						onChange={ ( obj ) =>
-							setAttributes( { padding: obj } )
-						}
-					>
-						{ ( { tier, ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								defaults={
-									sectionPad
-										? sectionPaddingDefaults(
-												customSettings,
-												tier
-										  )
-										: undefined
-								}
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-					<hr style={ { margin: '16px 0' } } />
-					<ResponsiveOverride
-						value={ attributes.margin }
-						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 
 				{ /* Content band (Layer 2 __inner) width + padding — per-area object attrs
             (contract §2), not WP-native attrs since the band is an SGS-only inner

@@ -196,6 +196,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				setAttributes={ setAttributes }
 				blockName="sgs/media"
 				blockSlug="sgs/media"
+				openPanel="media"
 				context={ ENTRY.context }
 				panelContent={ typography ? { typography } : undefined }
 			/>

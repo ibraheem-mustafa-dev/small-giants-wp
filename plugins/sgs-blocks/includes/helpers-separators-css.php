@@ -138,6 +138,27 @@ if ( ! function_exists( 'sgs_separators_flow_css' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_separators_enqueue_fallback' ) ) {
+	/**
+	 * Load the runtime fallback for a flow list (`build/shared/separators.js`, the module
+	 * `@sgs/separators`): in a browser without native gap decorations it paints the lines
+	 * from measured item positions. Called by sgs_separators_css() for every flow list, so
+	 * a block needs no view script of its own for it; a no-op where the browser has the
+	 * decorations, and once per request.
+	 *
+	 * @return void
+	 */
+	function sgs_separators_enqueue_fallback(): void {
+		if ( ! function_exists( 'wp_enqueue_script_module' ) || ! defined( 'SGS_BLOCKS_PATH' ) || ! defined( 'SGS_BLOCKS_URL' ) ) {
+			return;
+		}
+		$js = 'build/shared/separators.js';
+		if ( is_file( SGS_BLOCKS_PATH . $js ) ) {
+			wp_enqueue_script_module( '@sgs/separators', SGS_BLOCKS_URL . $js, array(), (string) filemtime( SGS_BLOCKS_PATH . $js ) );
+		}
+	}
+}
+
 if ( ! function_exists( 'sgs_separators_css' ) ) {
 	/**
 	 * The scoped CSS for one list's separators.
@@ -159,6 +180,7 @@ if ( ! function_exists( 'sgs_separators_css' ) ) {
 		if ( 'line' === $mode ) {
 			return $css . sgs_separators_line_css( $n, $list );
 		}
+		sgs_separators_enqueue_fallback();
 		return $css . sgs_separators_flow_css( $n, $sel );
 	}
 }

@@ -32,7 +32,20 @@ function sgs_shadow_preset_literal( string $slug ): string {
 		return '';
 	}
 	$presets = wp_get_global_settings( array( 'shadow', 'presets' ) );
-	foreach ( is_array( $presets ) ? $presets : array() as $origin ) {
+	$presets = is_array( $presets ) ? $presets : array();
+	// WordPress returns the origins as default, theme, custom, but the CSS variable follows custom, then theme, then
+	// default, and so does the editor (`src/utils/shadow-presets.js`), so a shadow edited in Global Styles wins here too.
+	$origins = array();
+	foreach ( array( 'custom', 'theme', 'default' ) as $origin_name ) {
+		if ( isset( $presets[ $origin_name ] ) ) {
+			$origins[] = $presets[ $origin_name ];
+		}
+	}
+	// A flat list (no origin keys) is one origin.
+	if ( array() === $origins && array() !== $presets && isset( $presets[0] ) ) {
+		$origins[] = $presets;
+	}
+	foreach ( $origins as $origin ) {
 		foreach ( is_array( $origin ) ? $origin : array() as $preset ) {
 			if ( is_array( $preset ) && ( $preset['slug'] ?? '' ) === $slug && is_string( $preset['shadow'] ?? null ) ) {
 				return $preset['shadow'];
@@ -74,4 +87,50 @@ function sgs_shadow_value_to_drop_shadow( string $composed ): string {
 			. $fields['colour'] . ')';
 	}
 	return implode( ' ', $filters );
+}
+
+/**
+ * The declarations one composed shadow prints, in either of the two modes every SGS shadow can draw in.
+ *
+ * - Box mode (the default): `box-shadow`, plus the nested forced-colours outline fallback under `@forced-colors`
+ *   (no fallback for `none`).
+ * - Follow-the-shape mode (`$follow_shape`): `filter:drop-shadow()`, one per layer, for a surface a mask or clip cuts
+ *   into a shape. A box-shadow would be clipped with the box, so the filter follows the cut-out outline instead. The
+ *   caller prints it on a node OUTSIDE the clipped one (the mask node's parent), because a filter on the clipped node
+ *   is clipped too. A filter has no spread and no inset, and chains its layers one after another, so a layered shadow
+ *   looks a little different from the same layers as a box-shadow; forced colours does not recolour a filter, so no
+ *   outline fallback is printed in this mode.
+ *
+ * JS twin: `src/utils/shadow-output.js::shadowDeclMap()`. Both are pinned to
+ * `tests/shared/shadow-output-cases.json`.
+ *
+ * @param string $composed     Value from sgs_shadow_layers() (a bare preset reference is resolved in follow mode).
+ * @param bool   $follow_shape Print `filter:drop-shadow()` instead of `box-shadow`.
+ * @return array<string,string> Property => value (`box-shadow`, `@forced-colors`, `filter`), empty when nothing draws.
+ */
+function sgs_shadow_decl_map( string $composed, bool $follow_shape = false ): array {
+	if ( '' === $composed ) {
+		return array();
+	}
+	if ( $follow_shape ) {
+		$filter = 'none' === $composed ? 'none' : sgs_shadow_value_to_drop_shadow( $composed );
+		return '' === $filter ? array() : array( 'filter' => $filter );
+	}
+	$out = array( 'box-shadow' => $composed );
+	if ( 'none' !== $composed ) {
+		$out['@forced-colors'] = sgs_shadow_forced_colours_decl();
+	}
+	return $out;
+}
+
+/**
+ * The follow-the-shape declarations of one composed shadow as a list ready to implode with ';', the shape
+ * `sgs_shadow_box_decls()` returns for box mode.
+ *
+ * @param string $composed Value from sgs_shadow_layers().
+ * @return string[] `filter:drop-shadow(...)`, or none when a filter can draw nothing.
+ */
+function sgs_shadow_follow_decls( string $composed ): array {
+	$props = sgs_shadow_decl_map( $composed, true );
+	return isset( $props['filter'] ) ? array( 'filter:' . $props['filter'] ) : array();
 }

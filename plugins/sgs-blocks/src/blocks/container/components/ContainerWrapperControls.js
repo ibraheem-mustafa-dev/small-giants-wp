@@ -70,8 +70,11 @@ import { LayoutPanel } from './LayoutPanel';
 import { BackgroundPanel } from './BackgroundPanel';
 import { ShapeDividersPanel } from './ShapeDividersPanel';
 import { GridItemDefaultsPanel } from './GridItemDefaultsPanel';
-import { SeparatorsPanel } from './SeparatorsPanel';
-import { ShadowControl, shadowAttrKeys } from '../../../components';
+import {
+	ShadowControl,
+	shadowAttrKeys,
+	SeparatorsPanel,
+} from '../../../components';
 
 // Re-exported for the existing call sites (and for `import { X } from './ContainerWrapperControls'`).
 export {
@@ -81,7 +84,6 @@ export {
 	BackgroundPanel,
 	ShapeDividersPanel,
 	GridItemDefaultsPanel,
-	SeparatorsPanel,
 };
 export { LENGTH_UNITS } from './_shared';
 
@@ -140,7 +142,7 @@ const KIND_PANELS = {
 		// with NO build error — lint:js is not in prebuild and webpack does not
 		// fail on a missing named export.
 		( props ) => (
-			<PanelBody title={ __( 'Section (outer)', 'sgs-blocks' ) }>
+			<PanelBody initialOpen={ false } title={ __( 'Section (outer)', 'sgs-blocks' ) }>
 				<WidthPanel { ...props } />
 			</PanelBody>
 		),
@@ -162,7 +164,7 @@ const KIND_PANELS = {
 		( props ) => (
 			<PanelBody
 				title={ __( 'Layout', 'sgs-blocks' ) }
-				initialOpen={ false }
+				initialOpen
 			>
 				<LayoutPanel { ...props } />
 			</PanelBody>
@@ -172,8 +174,13 @@ const KIND_PANELS = {
 		//    above): the panel was never reachable, wrote a storage shape D580
 		//    retired, and the capability is already delivered elsewhere.
 		( props ) => <GridItemDefaultsPanel { ...props } />,
-		// 6. Background.
-		( props ) => <BackgroundPanel { ...props } />,
+		// 6. Background: the panel renders in place inside a Styles slot, so the entry brings its own (a registry
+		//    entry sits in the default group, and Background belongs in the Styles tab).
+		( props ) => (
+			<InspectorControls group="styles">
+				<BackgroundPanel { ...props } />
+			</InspectorControls>
+		),
 		// 7. Shadow.
 		( props ) => (
 			<PanelBody
@@ -189,15 +196,24 @@ const KIND_PANELS = {
 
 	layout: [
 		( props ) => (
-			<PanelBody title={ __( 'Container / Wrapper', 'sgs-blocks' ) }>
+			<PanelBody
+				title={ __( 'Container / Wrapper', 'sgs-blocks' ) }
+				initialOpen={ props.containerOpen }
+			>
 				<LayoutPanel { ...props } />
 				<hr style={ { margin: '16px 0' } } />
 				<WidthPanel { ...props } />
 			</PanelBody>
 		),
 		// Lines between the items: shown only for a block that declares `separators`
-		// and whose layout is grid / flex / stack (SeparatorsPanel decides).
-		( props ) => <SeparatorsPanel { ...props } />,
+		// and whose layout is grid / flex / stack (SeparatorsPanel's `lined` gate decides).
+		( props ) => (
+			<SeparatorsPanel
+				{ ...props }
+				layout={ props.resolvedLayout }
+				lined
+			/>
+		),
 		// ContentBandPanel mount REMOVED 2026-08-12 — this registry entry was
 		// the ONLY route by which the panel reached an inspector, and all 12
 		// blocks reaching it through this `layout` kind (accordion, card-grid,
@@ -209,12 +225,21 @@ const KIND_PANELS = {
 
 	content: [
 		( props ) => (
-			<PanelBody title={ __( 'Container / Wrapper', 'sgs-blocks' ) }>
+			<PanelBody
+				title={ __( 'Container / Wrapper', 'sgs-blocks' ) }
+				initialOpen={ props.containerOpen }
+			>
 				<WidthPanel { ...props } />
 			</PanelBody>
 		),
 		// Lines between the items, for a content-KIND block that declares `separators`.
-		( props ) => <SeparatorsPanel { ...props } />,
+		( props ) => (
+			<SeparatorsPanel
+				{ ...props }
+				layout={ props.resolvedLayout }
+				lined
+			/>
+		),
 		// Base (desktop) padding/margin are handled by WP-native supports.spacing
 		// (the Dimensions panel). The deleted ResponsiveSpacingPanel used to add
 		// tablet/mobile overrides here; its call was removed 2026-08-11 with the
@@ -246,6 +271,11 @@ const KIND_PANELS = {
  *                                           (enum grid|list|masonry|carousel) and sgs/testimonial-slider
  *                                           (enum full|split), both of which own their control and were
  *                                           silently losing writes.
+ * @param {string}   [props.resolvedLayout] The layout the block renders with when it differs from `attributes.layout`
+ *                                           (multi-button's render.php forces 'flex' while none is stored); the Separators panel's
+ *                                           grid / flex / stack gate reads it.
+ * @param {boolean}  [props.initialOpen]   Opens the "Container / Wrapper" panel (default closed): a block passes true only where that panel is
+ *                                           the first of its Settings tab (Spec 49 section 9.1).
  * @param {boolean}  [props.showContentBand] Forwarded to WidthPanel. Pass false for a block that cannot
  *                                           render a content band (see WidthPanel's docblock).
  */
@@ -255,6 +285,8 @@ export default function ContainerWrapperControls( {
 	kind = 'section',
 	showLayout,
 	showContentBand,
+	resolvedLayout,
+	initialOpen = false,
 } ) {
 	// Guard: fall back gracefully for unknown kind values.
 	const panels = KIND_PANELS[ kind ] ?? KIND_PANELS.section;
@@ -275,6 +307,10 @@ export default function ContainerWrapperControls( {
 						// only way to suppress a control.
 						showLayout,
 						showContentBand,
+						resolvedLayout,
+						// Named apart from `initialOpen`: the panels below spread these props, and only the
+						// "Container / Wrapper" panel may take the flag.
+						containerOpen: initialOpen,
 					} ) }
 				</Fragment>
 			) ) }

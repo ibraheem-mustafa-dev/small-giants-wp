@@ -23,16 +23,12 @@
  * Every link is already a real, crawlable server-rendered <a href> — this is
  * progressive enhancement only.
  *
- * Lines between a multi-column list's rows (src/shared/separators/), in a browser
- * without CSS gap decorations.
- *
  * A 4th responsibility: reset the two opt-in motion effects on a
  * back/forward-cache RESTORE (`pageshow` with `event.persisted === true`).
  *
  * @package SGS\Blocks
  */
 
-import { initSeparators } from '../../shared/separators';
 import { DRAWER_PHASE_EVENT } from '../../shared/nav-interactivity/drawer-lifecycle';
 
 /**
@@ -175,9 +171,6 @@ function init() {
 			markCurrentPage( root );
 		} );
 	whenFirstNeeded( startEffects );
-	// A multi-column list with lines between its rows: the fallback overlay for
-	// browsers without CSS gap decorations (a no-op elsewhere).
-	initSeparators();
 }
 
 /**

@@ -789,8 +789,8 @@
 	display: block;
 	min-width: 44px;
 	min-height: 44px;
-	width: 10px;
-	height: 10px;
+	width: var( --sgs-carousel-dot-size, 10px );
+	height: var( --sgs-carousel-dot-size, 10px );
 	min-width: initial;
 	min-height: initial;
 	padding: 0;

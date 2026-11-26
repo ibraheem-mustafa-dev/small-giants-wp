@@ -231,7 +231,7 @@ export default function Edit( {
 	return (
 		<>
 			<InspectorControls>
-				<PanelBody title={ __( 'Measurement', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'Measurement', 'sgs-blocks' ) }>
 					<SgsFreeTextField
 						type="rich"
 						noLink

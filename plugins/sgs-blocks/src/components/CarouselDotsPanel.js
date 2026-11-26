@@ -9,12 +9,19 @@
  * The panel loads on first use as one shared chunk, so the block bundles that import this component do not each carry a
  * copy of the controls.
  *
+ * The declaration may carry `showWhen` (the condition under which the PHP prints the dots, `kitShown.js`): while it does not
+ * hold, the panel and the colour rows are not offered. The colour rows go in the block's one main Colour panel when the block
+ * passes `colourInMainPanel` and spreads `carouselDotsColourRows()` into that panel's `rows`; otherwise they stay in the
+ * kit's own Colour panel.
+ *
  * @package
  */
 import { getBlockType } from '@wordpress/blocks';
 import { Suspense, lazy } from '@wordpress/element';
 
 import registry from './carousel-dots/registry.json';
+import { dotsColourRows } from './carousel-dots/colour-rows';
+import { kitShown } from './kitShown';
 
 const CarouselDotsPanelBody = lazy( () =>
 	import(
@@ -60,6 +67,35 @@ export function declaredDots( blockName, prefix ) {
 }
 
 /**
+ * The kit's colour rows for the declared dots, for a block's own main `SgsColourPanel`: the headed Dot row (Normal, Hover,
+ * Current) and the Dot border row. Empty when the block does not declare the prefix or the dots are not printed (`showWhen`).
+ *
+ * @param {Object}   args
+ * @param {Object}   args.attributes    Block attributes.
+ * @param {Function} args.setAttributes Block `setAttributes`.
+ * @param {string}   args.blockName     Block name.
+ * @param {string}   args.prefix        The dots' attribute prefix.
+ * @return {Array} Rows to spread into `SgsColourPanel`'s `rows`.
+ */
+export function carouselDotsColourRows( {
+	attributes,
+	setAttributes,
+	blockName,
+	prefix,
+} ) {
+	const entry = declaredDots( blockName, prefix );
+	if ( ! entry || ! kitShown( entry, attributes ) ) {
+		return [];
+	}
+	return dotsColourRows( {
+		attributes,
+		setAttributes,
+		prefix,
+		label: entry.label,
+	} );
+}
+
+/**
  * Mount the carousel dots panels.
  *
  * @param {Object}   props
@@ -67,6 +103,8 @@ export function declaredDots( blockName, prefix ) {
  * @param {Function} props.setAttributes Block `setAttributes`.
  * @param {string}   props.blockName     Block name, to read its `supports.sgs.carouselDots` entry.
  * @param {string}   props.prefix        The dots' attribute prefix.
+ * @param {boolean}  [props.colourInMainPanel=false] True when the block draws these colour rows in its own main Colour panel
+ *                                       through `carouselDotsColourRows()`, so the kit draws none.
  * @return {Object|null} The mounted panels, or null.
  */
 export default function CarouselDotsPanel( {
@@ -74,9 +112,10 @@ export default function CarouselDotsPanel( {
 	setAttributes,
 	blockName,
 	prefix,
+	colourInMainPanel = false,
 } ) {
 	const entry = declaredDots( blockName, prefix );
-	if ( ! entry ) {
+	if ( ! entry || ! kitShown( entry, attributes ) ) {
 		return null;
 	}
 	return (
@@ -86,6 +125,7 @@ export default function CarouselDotsPanel( {
 				setAttributes={ setAttributes }
 				prefix={ prefix }
 				label={ entry.label }
+				colourInMainPanel={ colourInMainPanel }
 			/>
 		</Suspense>
 	);

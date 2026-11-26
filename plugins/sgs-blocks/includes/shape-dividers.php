@@ -132,6 +132,37 @@ function sgs_shape_divider_axis( $scale, string $axis ): int {
 }
 
 /**
+ * The SVG `transform` attribute that mirrors a divider's path, or '' when it is not mirrored.
+ *
+ * Every path is drawn with its solid mass on the lower edge of the 1200x120 box
+ * (`... L1200,120 L0,120 Z`), which is how a BOTTOM divider wants it. A TOP divider
+ * wants the mass on the upper edge, so a top divider is mirrored vertically by default
+ * and "Invert vertically" undoes that (invert XOR top). "Flip horizontally" mirrors
+ * left to right.
+ *
+ * The mirror is written as `translate(...) scale(...)`: the one transform-attribute
+ * form every browser honours on an SVG element. The CSS function form `scaleX(-1)`
+ * in a `transform` attribute is ignored, and `transform-origin` is not relied on.
+ * The path's own coordinates run 0..1200 by 0..120, so the translate is the box size.
+ *
+ * @param bool   $flip     Flip horizontally.
+ * @param bool   $invert   Invert vertically (the user's toggle).
+ * @param string $position 'top' or 'bottom'.
+ * @return string ` transform="..."` (leading space) or ''.
+ */
+function sgs_shape_divider_transform( bool $flip, bool $invert, string $position ): string {
+	$mirror_y = ( 'top' === $position ) !== $invert;
+	if ( ! $flip && ! $mirror_y ) {
+		return '';
+	}
+	$tx = $flip ? SGS_SHAPE_DIVIDER_VIEWBOX_W : 0;
+	$ty = $mirror_y ? SGS_SHAPE_DIVIDER_VIEWBOX_H : 0;
+	$sx = $flip ? -1 : 1;
+	$sy = $mirror_y ? -1 : 1;
+	return ' transform="translate(' . $tx . ' ' . $ty . ') scale(' . $sx . ' ' . $sy . ')"';
+}
+
+/**
  * Get a single shape divider SVG.
  *
  * MARKUP ONLY — no `style` attribute (FR-32-1 / FR-32-4, D345). This used to
@@ -156,7 +187,7 @@ function sgs_shape_divider_axis( $scale, string $axis ): int {
  *
  * @param string $shape         Shape key.
  * @param bool   $flip          Flip horizontally.
- * @param bool   $invert        Invert vertically (mirror).
+ * @param bool   $invert        Invert vertically (mirror). A top divider is already mirrored, so this puts it back.
  * @param string $position      'top' or 'bottom'.
  * @param int    $scale_x       X-axis scale percentage.
  * @param string $gradient_defs Pre-built `<linearGradient>`/`<radialGradient>`
@@ -173,15 +204,7 @@ function sgs_render_shape_divider( string $shape, bool $flip, bool $invert, stri
 
 	$path = $shapes[ $shape ]['path'];
 
-	$transform_parts = array();
-	if ( $flip ) {
-		$transform_parts[] = 'scaleX(-1)';
-	}
-	if ( $invert ) {
-		$transform_parts[] = 'scaleY(-1)';
-	}
-
-	$transform = $transform_parts ? ' transform="' . esc_attr( implode( ' ', $transform_parts ) ) . '" transform-origin="center"' : '';
+	$transform = sgs_shape_divider_transform( $flip, $invert, $position );
 
 	$position_class = 'sgs-shape-divider--' . esc_attr( $position );
 
@@ -195,14 +218,12 @@ function sgs_render_shape_divider( string $shape, bool $flip, bool $invert, stri
 	$fill_attr    = $use_gradient ? 'url(#' . $gradient_id . ')' : 'currentColor';
 	$defs_markup  = $use_gradient ? '<defs>' . $gradient_defs . '</defs>' : '';
 
-	// ── X = 100%: the original single-path markup, byte-for-byte for the
-	// flat-colour default ─────────────────────────────────────────────────
-	// The flat-colour default MUST render exactly as it did before this
-	// control existed — a divider whose look shifts merely because the
-	// mechanism changed underneath it would be a regression on every
-	// existing page. The <pattern> wrapper below is therefore reached ONLY
-	// when the client has actually scaled the X axis away from its neutral
-	// value.
+	// ── X = 100%: the single-path markup ─────────────────────────────────────
+	// The <pattern> wrapper below is reached ONLY when the client has actually
+	// scaled the X axis away from its neutral value, so the X scale never changes
+	// how a divider that does not use it renders. The orientation is separate:
+	// sgs_shape_divider_transform() mirrors a top divider and honours Flip and
+	// Invert (it did not before, so a saved top divider changed look on purpose).
 	if ( SGS_SHAPE_DIVIDER_VIEWBOX_W === (int) round( SGS_SHAPE_DIVIDER_VIEWBOX_W * $scale_x / 100 ) ) {
 		return sprintf(
 			'<div class="sgs-shape-divider %s" aria-hidden="true">' .
@@ -248,15 +269,11 @@ function sgs_render_shape_divider( string $shape, bool $flip, bool $invert, stri
 	++$instance;
 	$pattern_id = 'sgs-sd-' . substr( md5( $shape . '|' . $position . '|' . $tile_w ), 0, 8 ) . '-' . $instance;
 
-	// ⛔ The flip/invert transform goes on the PATH INSIDE the pattern tile, NOT
-	// on the <rect>. `transform-origin="center"` resolves against the
-	// transformed element's OWN bounding box: on the rect that is always the
-	// full 1200x120 viewBox (centre 600,60), but several shapes have a narrower
-	// box (`zigzag` spans y 20-120, centre y=70). Putting it on the rect would
-	// therefore flip asymmetric shapes about a different axis than the
-	// X=100% route does, so the same shape would jump when the client nudged
-	// the X slider off 100. On the path, both routes share one origin.
-	// Flipping each tile is equivalent to flipping the tiled result.
+	// ⛔ The mirror goes on the PATH INSIDE the pattern tile, NOT on the <rect>:
+	// the path's own coordinates run 0..1200 by 0..120 whatever the tile width,
+	// so sgs_shape_divider_transform()'s translate mirrors it about the same
+	// axes as the X=100% route does, and the shape does not jump when the client
+	// nudges the X slider off 100. Mirroring each tile mirrors the tiled result.
 	// The gradient def (when present) is nested inside the SAME <defs> block
 	// as the tile <pattern> — both are definitions, order doesn't matter to
 	// the browser, and the path inside the pattern references it exactly the

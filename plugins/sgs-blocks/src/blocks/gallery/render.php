@@ -774,7 +774,7 @@ if ( 'grid' === $layout ) {
 				'column' => 'var(--sgs-gap, 16px)',
 			),
 		),
-		sgs_container_separators_caps()
+		sgs_separators_caps( 'sgs/gallery' )
 	);
 	if ( '' !== $sgs_gal_sep_css ) {
 		$gallery_responsive_css           .= $sgs_gal_sep_css;

@@ -156,7 +156,7 @@ export default function FormEmbedEdit( {
 
 	const inspector = (
 		<InspectorControls>
-			<PanelBody title={ __( 'Form', 'sgs-blocks' ) }>
+			<PanelBody initialOpen title={ __( 'Form', 'sgs-blocks' ) }>
 				{ picker }
 			</PanelBody>
 		</InspectorControls>

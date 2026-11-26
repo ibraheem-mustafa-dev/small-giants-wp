@@ -2197,6 +2197,42 @@
     "order": 249
   },
   {
+    "id": "check-inner-section-depth",
+    "cmd": "node scripts/check-inner-section-depth.js --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 2000,
+    "order": 249
+  },
+  {
+    "id": "check-inner-section-depth-selftest",
+    "cmd": "node scripts/check-inner-section-depth.js --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1000,
+    "order": 249
+  },
+  {
+    "id": "check-background-panel-mount",
+    "cmd": "node scripts/check-background-panel-mount.js --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 2000,
+    "order": 249
+  },
+  {
+    "id": "check-background-panel-mount-selftest",
+    "cmd": "node scripts/check-background-panel-mount.js --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1000,
+    "order": 249
+  },
+  {
     "id": "check-shadow-clip-selftest",
     "cmd": "python scripts/check-shadow-clip.py --self-test",
     "tier": "fast",
@@ -2595,5 +2631,194 @@
     "added_commit": null,
     "budget_ms": 4000,
     "order": 293
+  },
+  {
+    "id": "check-carousel-package-selftest",
+    "cmd": "python scripts/check-carousel-package.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 500,
+    "order": 294
+  },
+  {
+    "id": "check-carousel-package",
+    "cmd": "python scripts/check-carousel-package.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 500,
+    "order": 295
+  },
+  {
+    "id": "check-trim",
+    "cmd": "node scripts/check-trim.js",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 600,
+    "order": 296
+  },
+  {
+    "id": "check-trim-selftest",
+    "cmd": "node scripts/check-trim.js --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 600,
+    "order": 297
+  },
+  {
+    "id": "check-panel-initial-open",
+    "cmd": "node scripts/check-panel-initial-open.js --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 2000,
+    "order": 250
+  },
+  {
+    "id": "check-panel-initial-open-selftest",
+    "cmd": "node scripts/check-panel-initial-open.js --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1000,
+    "order": 250
+  },
+  {
+    "id": "migrate-panel-initial-open-selftest",
+    "cmd": "node scripts/migrate-panel-initial-open.js --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1000,
+    "order": 250
+  },
+  {
+    "id": "check-reset-only-menus",
+    "cmd": "node scripts/check-reset-only-menus.js --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 2000,
+    "order": 250
+  },
+  {
+    "id": "check-reset-only-menus-selftest",
+    "cmd": "node scripts/check-reset-only-menus.js --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1000,
+    "order": 250
+  },
+  {
+    "id": "check-spacing-panel",
+    "cmd": "node scripts/check-spacing-panel.js --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 2000,
+    "order": 250
+  },
+  {
+    "id": "check-spacing-panel-selftest",
+    "cmd": "node scripts/check-spacing-panel.js --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1000,
+    "order": 250
+  },
+  {
+    "id": "migrate-spacing-panel-selftest",
+    "cmd": "node scripts/migrate-spacing-panel.js --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1000,
+    "order": 250
+  },
+  {
+    "id": "check-colour-count-kits",
+    "cmd": "python scripts/check-colour-count.py --check --stage kits",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 2000,
+    "order": 250
+  },
+  {
+    "id": "check-colour-count-selftest",
+    "cmd": "python scripts/check-colour-count.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1500,
+    "order": 250
+  },
+  {
+    "id": "colour-panel-rows-selftest",
+    "cmd": "node scripts/lib/colour-panel-rows.js --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1000,
+    "order": 250
+  },
+  {
+    "id": "check-focus-switch-home",
+    "cmd": "node scripts/check-focus-switch-home.js --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 2000,
+    "order": 250
+  },
+  {
+    "id": "check-focus-switch-home-selftest",
+    "cmd": "node scripts/check-focus-switch-home.js --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1000,
+    "order": 250
+  },
+  {
+    "id": "check-responsive-override-labels",
+    "cmd": "python scripts/report-label-less-responsive-overrides.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1500,
+    "order": 250
+  },
+  {
+    "id": "check-responsive-override-labels-selftest",
+    "cmd": "python scripts/report-label-less-responsive-overrides.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1500,
+    "order": 250
+  },
+  {
+    "id": "jsx-scan-selftest",
+    "cmd": "node scripts/lib/jsx-scan.js --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1000,
+    "order": 250
+  },
+  {
+    "id": "check-editor-census-selftest",
+    "cmd": "python scripts/check-editor-census.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1000,
+    "order": 250
   }
 ]

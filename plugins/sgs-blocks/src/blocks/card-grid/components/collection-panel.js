@@ -67,7 +67,7 @@ export default function CollectionPanel( { attributes, setAttributes } ) {
 		<>
 			<PanelBody
 				title={ __( 'Collection', 'sgs-blocks' ) }
-				initialOpen={ true }
+				initialOpen={ false }
 			>
 				<SelectControl
 					label={ __( 'Content type', 'sgs-blocks' ) }

@@ -222,6 +222,7 @@ export function SignedOutCardPanel( { attributes, setAttributes } ) {
 				initialOpen={ false }
 			>
 				<ResponsiveOverride
+					label={ __( 'Card padding', 'sgs-blocks' ) }
 					value={ attributes.signedOutCardPadding }
 					onChange={ ( obj ) =>
 						setAttributes( { signedOutCardPadding: obj } )

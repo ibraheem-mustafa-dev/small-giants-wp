@@ -21,6 +21,7 @@ import {
 	ResponsiveOverride,
 	SgsBorderControl,
 	SgsBoxControl,
+	ResponsiveBoxControls,
 	SgsColourPanel,
 	SgsLengthControl,
 	SsrPreviewGuard,
@@ -76,10 +77,9 @@ const TEXT_TARGETS = [
 	},
 ];
 
-// Per-device boxes: [attribute, label].
+// Per-device boxes edited in the row-spacing panel: [attribute, label]. The block's own padding and margin are the
+// shared Spacing panel.
 const BOXES = [
-	[ 'padding', __( 'Padding', 'sgs-blocks' ) ],
-	[ 'margin', __( 'Margin', 'sgs-blocks' ) ],
 	[ 'rowPadding', __( 'Item row padding', 'sgs-blocks' ) ],
 	[ 'totalsPadding', __( 'Totals padding', 'sgs-blocks' ) ],
 ];
@@ -146,7 +146,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				<SgsColourPanel rows={ colourRows } />
 			</InspectorControls>
 			<InspectorControls>
-				<PanelBody title={ __( 'Item lines to show', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'Item lines to show', 'sgs-blocks' ) }>
 					<ToggleControl
 						label={ __( 'Item pictures', 'sgs-blocks' ) }
 						checked={ false !== attributes.showThumbnail }
@@ -288,20 +288,19 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 
-				<PanelBody
-					title={ __( 'Item pictures', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<MediaElementPanel
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						prefix="thumb"
-						blockSlug="sgs/order-items"
-						blockName="sgs/order-items"
-						context="item"
-						atoms={ THUMB_ATOMS }
-					/>
-				</PanelBody>
+				{ /* The item picture's media slot sits directly in this default group (`inGroup`), so its panels keep their place on
+				     first select; `label` names the slot in each panel title. */ }
+				<MediaElementPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					prefix="thumb"
+					blockSlug="sgs/order-items"
+					blockName="sgs/order-items"
+					context="item"
+					atoms={ THUMB_ATOMS }
+					label={ __( 'Item pictures', 'sgs-blocks' ) }
+					inGroup="settings"
+				/>
 
 				<PanelBody
 					title={ __( 'Item dividers', 'sgs-blocks' ) }
@@ -365,7 +364,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 
 				<PanelBody
-					title={ __( 'Spacing', 'sgs-blocks' ) }
+					title={ __( 'Row spacing', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
 					<ResponsiveOverride
@@ -429,6 +428,10 @@ export default function Edit( { attributes, setAttributes } ) {
 						</ResponsiveOverride>
 					) ) }
 				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 			</InspectorControls>
 
 			<div { ...blockProps }>

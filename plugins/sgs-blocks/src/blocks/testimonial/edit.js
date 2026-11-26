@@ -32,10 +32,8 @@ import {
 	SgsBorderControl,
 	MediaElementPanel,
 	ResponsiveOverride,
-	BOX_UNITS,
-	normaliseResponsiveBox,
-	SgsBoxControl,
 	LinkUnderlineControl,
+	ResponsiveBoxControls,
 } from '../../components';
 import SlotPicture from '../../components/media/SlotPicture';
 import ReviewLineBorder from './ReviewLineBorder';
@@ -67,6 +65,7 @@ import { resolveTier } from '../../utils/responsive';
 import { composeShadow } from '../../utils/shadow-layers';
 import AuthoredText from '../../components/AuthoredText';
 import SgsFreeTextField from '../../components/SgsFreeTextField';
+import SgsResetPanel from '../../components/SgsResetPanel';
 // Variants whose stylesheet already paints a border: a chosen colour, style or
 // width overrides it part by part, as render.php emits each alone.
 /** The three media slots (Spec 49 §10.4), by prefix, with the label each panel title carries. */
@@ -663,6 +662,7 @@ export default function Edit( {
 			kinds={ MEDIA_SLOTS[ prefix ].kinds }
 			context={ MEDIA_SLOTS[ prefix ].context }
 			label={ label }
+			openPanel={ 'avatar' === prefix ? 'media' : '' }
 		/>
 	);
 
@@ -959,7 +959,7 @@ export default function Edit( {
 			{ /* ── Settings tab (behaviour, content, structural choices) ── */ }
 			<InspectorControls>
 				{ /* ── Variant picker (visual thumbnail grid) ── */ }
-				<PanelBody title={ __( 'Layout variant', 'sgs-blocks' ) }>
+				<PanelBody initialOpen={ false } title={ __( 'Layout variant', 'sgs-blocks' ) }>
 					<BaseControl
 						__nextHasNoMarginBottom
 						help={ __(
@@ -1035,57 +1035,50 @@ export default function Edit( {
 				</PanelBody>
 
 				{ effectiveVariant === 'review-card' && (
-					<ToolsPanel
-						label={ __( 'Review line', 'sgs-blocks' ) }
+					<SgsResetPanel
+						title={ __( 'Review line', 'sgs-blocks' ) }
+						items={ [
+							{
+								hasValue: () => reviewDate !== '',
+								onDeselect: () =>
+									setAttributes( { reviewDate: '' } ),
+							},
+							{
+								hasValue: () =>
+									!! reviewFooterBorder &&
+									Object.keys( reviewFooterBorder ).length >
+										0,
+								onDeselect: () =>
+									setAttributes( { reviewFooterBorder: {} } ),
+							},
+						] }
 						resetAll={ () =>
 							setAttributes( {
 								reviewDate: '',
 								reviewFooterBorder: {},
 							} )
 						}
+						initialOpen={ false }
 					>
-						<ToolsPanelItem
+						<SgsFreeTextField
+							type="rich"
+							noLink
 							label={ __( 'Review date', 'sgs-blocks' ) }
-							hasValue={ () => reviewDate !== '' }
-							onDeselect={ () =>
-								setAttributes( { reviewDate: '' } )
+							value={ reviewDate }
+							onChange={ ( val ) =>
+								setAttributes( { reviewDate: val } )
 							}
-							isShownByDefault
-						>
-							<SgsFreeTextField
-								type="rich"
-								noLink
-								label={ __( 'Review date', 'sgs-blocks' ) }
-								value={ reviewDate }
-								onChange={ ( val ) =>
-									setAttributes( { reviewDate: val } )
-								}
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __(
-								'Rule above the name line',
-								'sgs-blocks'
-							) }
-							hasValue={ () =>
-								!! reviewFooterBorder &&
-								Object.keys( reviewFooterBorder ).length > 0
+						/>
+
+						<ReviewLineBorder
+							value={ reviewFooterBorder }
+							onChange={ ( next ) =>
+								setAttributes( {
+									reviewFooterBorder: next,
+								} )
 							}
-							onDeselect={ () =>
-								setAttributes( { reviewFooterBorder: {} } )
-							}
-							isShownByDefault
-						>
-							<ReviewLineBorder
-								value={ reviewFooterBorder }
-								onChange={ ( next ) =>
-									setAttributes( {
-										reviewFooterBorder: next,
-									} )
-								}
-							/>
-						</ToolsPanelItem>
-					</ToolsPanel>
+						/>
+					</SgsResetPanel>
 				) }
 
 				{ /* ── Rating — visibility + content (behaviour). Appearance
@@ -2103,52 +2096,6 @@ export default function Edit( {
 					title={ __( 'Width & spacing', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<ResponsiveOverride
-						value={ attributes.padding }
-						onChange={ ( obj ) =>
-							setAttributes( { padding: obj } )
-						}
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-					<ResponsiveOverride
-						value={ attributes.margin }
-						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
 					<SgsLengthControl
 						label={ __( 'Outer max-width', 'sgs-blocks' ) }
 						value={ maxWidth || '' }
@@ -2163,6 +2110,10 @@ export default function Edit( {
 						presets={ false }
 					/>
 				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 			</InspectorControls>
 
 			{ /* ── Editor canvas — mirrors the variant layout. Empty fields stay

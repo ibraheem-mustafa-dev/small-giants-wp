@@ -8,8 +8,9 @@
 
 import { __ } from '@wordpress/i18n';
 import { PanelBody, TextControl } from '@wordpress/components';
-import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+
 import { ResponsiveLengthControl } from '../../components';
+import SgsResetPanel from '../../components/SgsResetPanel';
 
 /**
  * @param {Object}   props
@@ -23,52 +24,49 @@ export default function FieldMarksPanel( { attributes, setAttributes } ) {
 			title={ __( 'Required and optional marks', 'sgs-blocks' ) }
 			initialOpen={ false }
 		>
-			<ToolsPanel
-				label={ __( 'Label marks', 'sgs-blocks' ) }
+			<SgsResetPanel
+				title={ __( 'Label marks', 'sgs-blocks' ) }
+				items={ [
+					{
+						hasValue: () =>
+							'' !== ( attributes.optionalText ?? '' ),
+						onDeselect: () => setAttributes( { optionalText: '' } ),
+					},
+					{
+						hasValue: () =>
+							Object.keys( attributes.requiredMarkGap ?? {} )
+								.length > 0,
+						onDeselect: () =>
+							setAttributes( { requiredMarkGap: {} } ),
+					},
+				] }
 				resetAll={ () =>
 					setAttributes( { optionalText: '', requiredMarkGap: {} } )
 				}
+				nested
 			>
-				<ToolsPanelItem
+				<TextControl
 					label={ __( 'Optional tag text', 'sgs-blocks' ) }
-					isShownByDefault
-					hasValue={ () => '' !== ( attributes.optionalText ?? '' ) }
-					onDeselect={ () => setAttributes( { optionalText: '' } ) }
-				>
-					<TextControl
-						label={ __( 'Optional tag text', 'sgs-blocks' ) }
-						value={ attributes.optionalText ?? '' }
-						help={ __(
-							'The words of the Optional tag, shown on each field that switches the tag on (Show the Optional tag in the field settings). Empty uses "Optional".',
-							'sgs-blocks'
-						) }
-						onChange={ ( optionalText ) =>
-							setAttributes( { optionalText } )
-						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-				</ToolsPanelItem>
-				<ToolsPanelItem
+					value={ attributes.optionalText ?? '' }
+					help={ __(
+						'The words of the Optional tag, shown on each field that switches the tag on (Show the Optional tag in the field settings). Empty uses "Optional".',
+						'sgs-blocks'
+					) }
+					onChange={ ( optionalText ) =>
+						setAttributes( { optionalText } )
+					}
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				/>
+
+				<ResponsiveLengthControl
 					label={ __( 'Space before the mark', 'sgs-blocks' ) }
-					isShownByDefault
-					hasValue={ () =>
-						Object.keys( attributes.requiredMarkGap ?? {} ).length >
-						0
+					value={ attributes.requiredMarkGap }
+					onChange={ ( next ) =>
+						setAttributes( { requiredMarkGap: next } )
 					}
-					onDeselect={ () =>
-						setAttributes( { requiredMarkGap: {} } )
-					}
-				>
-					<ResponsiveLengthControl
-						label={ __( 'Space before the mark', 'sgs-blocks' ) }
-						value={ attributes.requiredMarkGap }
-						onChange={ ( next ) =>
-							setAttributes( { requiredMarkGap: next } )
-						}
-					/>
-				</ToolsPanelItem>
-			</ToolsPanel>
+				/>
+			</SgsResetPanel>
 		</PanelBody>
 	);
 }

@@ -24,10 +24,7 @@ import {
 	SgsBorderControl,
 	resolveColourToken,
 	TypographyControls,
-	ResponsiveOverride,
-	BOX_UNITS,
-	normaliseResponsiveBox,
-	SgsBoxControl,
+	ResponsiveBoxControls,
 	ShadowControl,
 } from '../../components';
 import {
@@ -46,7 +43,6 @@ import {
 	ToggleGroupControl,
 	ToggleGroupControlOption,
 } from '../../components/primitives';
-import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 import MotionPausePreview from '../../components/MotionPausePreview';
 
 // U-15 (`.claude/reports/2026-09-26-u15-notice-message-design.md` §3.2).
@@ -148,7 +144,7 @@ const NOTICE_BANNER_TEMPLATE = [
 	],
 ];
 
-export default function Edit( { attributes, setAttributes, clientId, name } ) {
+export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
 		variant,
 		showIcon,
@@ -310,6 +306,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 			   was single-state until this fix, despite the flat colour
 			   already being two-state. */ }
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					textRow( {
 						key: 'text',
@@ -979,12 +976,9 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						prefix=""
 					/>
 				</PanelBody>
-				{ /* NO-INLINE + NO-WRAPPER (2026-07-10): content-KIND, box+width only —
-				     dropped SGS_Container_Wrapper (D294) in favour of block-private
-				     scoped output (matches sgs/quote). padding/margin are each a
-				     single block-owned tier-object attr { desktop, tablet, mobile },
-				     read directly by this block's render.php; only shown in inline
-				     mode — announcement mode is always full-width + fixed. */ }
+				{ /* Content-KIND, box + width only, block-private scoped output (matches
+				     sgs/quote). The Wrapper panel and the shared Spacing panel show only
+				     in inline mode: announcement mode is always full-width + fixed. */ }
 				{ ! isAnnouncement && (
 					<PanelBody
 						title={ __( 'Wrapper', 'sgs-blocks' ) }
@@ -1003,59 +997,13 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 								'sgs-blocks'
 							) }
 						/>
-						<ResponsiveOverride
-							value={ attributes.padding }
-							onChange={ ( obj ) =>
-								setAttributes( { padding: obj } )
-							}
-						>
-							{ ( { ownValue, setOwnValue } ) => (
-								<SgsBoxControl
-									label={ __( 'Padding', 'sgs-blocks' ) }
-									values={
-										ownValue && typeof ownValue === 'object'
-											? ownValue
-											: {}
-									}
-									units={ BOX_UNITS }
-									presets
-									defaults={ spacingDefaultsFor(
-										name,
-										'padding'
-									) }
-									onChange={ ( next ) =>
-										setOwnValue(
-											normaliseResponsiveBox( next )
-										)
-									}
-								/>
-							) }
-						</ResponsiveOverride>
-						<ResponsiveOverride
-							value={ attributes.margin }
-							onChange={ ( obj ) =>
-								setAttributes( { margin: obj } )
-							}
-						>
-							{ ( { ownValue, setOwnValue } ) => (
-								<SgsBoxControl
-									label={ __( 'Margin', 'sgs-blocks' ) }
-									values={
-										ownValue && typeof ownValue === 'object'
-											? ownValue
-											: {}
-									}
-									units={ BOX_UNITS }
-									presets
-									onChange={ ( next ) =>
-										setOwnValue(
-											normaliseResponsiveBox( next )
-										)
-									}
-								/>
-							) }
-						</ResponsiveOverride>
 					</PanelBody>
+				) }
+				{ ! isAnnouncement && (
+					<ResponsiveBoxControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
 				) }
 				<PanelBody
 					title={ __( 'Border', 'sgs-blocks' ) }

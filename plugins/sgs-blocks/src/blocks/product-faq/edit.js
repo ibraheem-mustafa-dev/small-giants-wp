@@ -33,10 +33,7 @@ import {
 	SgsBorderControl,
 	resolveColourToken,
 	TypographyControls,
-	ResponsiveOverride,
-	BOX_UNITS,
-	normaliseResponsiveBox,
-	SgsBoxControl,
+	ResponsiveBoxControls,
 } from '../../components';
 import {
 	backgroundPaintPreview,
@@ -181,6 +178,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			    onto block-private backgroundColour{Hover,Gradient,HoverGradient}
 			    attrs, so capability is moved rather than lost. */ }
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					fillRow( {
 						key: 'background',
@@ -209,7 +207,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				] }
 			/>
 			<InspectorControls>
-				<PanelBody title={ __( 'FAQ Settings', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'FAQ Settings', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'Heading level', 'sgs-blocks' ) }
 						value={ headingLevel }
@@ -311,52 +309,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					title={ __( 'Wrapper', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<ResponsiveOverride
-						value={ attributes.padding }
-						onChange={ ( obj ) =>
-							setAttributes( { padding: obj } )
-						}
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-					<ResponsiveOverride
-						value={ attributes.margin }
-						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
 					<SgsLengthControl
 						presets={ false }
 						label={ __( 'Outer max-width', 'sgs-blocks' ) }
@@ -371,6 +323,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						) }
 					/>
 				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 				<PanelBody
 					title={ __( 'Border', 'sgs-blocks' ) }
 					initialOpen={ false }

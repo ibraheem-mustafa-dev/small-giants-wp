@@ -47,12 +47,9 @@ import {
 	SgsLengthControl,
 	SgsBorderControl,
 	MediaElementPanel,
-	ResponsiveOverride,
-	BOX_UNITS,
-	normaliseResponsiveBox,
-	SgsBoxControl,
 	FlexWrapControl,
 	ShadowControl,
+	ResponsiveBoxControls,
 } from '../../components';
 import {
 	colourVar,
@@ -573,6 +570,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			   Normal/Hover/Current triples per pill property, all
 			   `linked: true`. */ }
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					textRow( {
 						key: 'label',
@@ -756,7 +754,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				   typography/margin/colour looks live in the Styles tab below. */ }
 				<PanelBody
 					title={ __( 'Label', 'sgs-blocks' ) }
-					initialOpen={ false }
+					initialOpen
 				>
 					<SgsFreeTextField
 						type="rich"
@@ -778,7 +776,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				{ /* Options repeater */ }
 				<PanelBody
 					title={ __( 'Options', 'sgs-blocks' ) }
-					initialOpen={ true }
+					initialOpen={ false }
 				>
 					{ duplicateKeysExist && (
 						<Notice status="warning" isDismissible={ false }>
@@ -1047,7 +1045,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				{ /* Appearance */ }
 				<PanelBody
 					title={ __( 'Appearance', 'sgs-blocks' ) }
-					initialOpen={ true }
+					initialOpen={ false }
 				>
 					<SelectControl
 						label={ __( 'Pill style', 'sgs-blocks' ) }
@@ -1590,52 +1588,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					title={ __( 'Width / spacing', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<ResponsiveOverride
-						value={ attributes.padding }
-						onChange={ ( obj ) =>
-							setAttributes( { padding: obj } )
-						}
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-					<ResponsiveOverride
-						value={ attributes.margin }
-						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
 					<SgsLengthControl
 						label={ __( 'Width', 'sgs-blocks' ) }
 						value={ width || '' }
@@ -1660,6 +1612,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						presets={ false }
 					/>
 				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 
 				{ /* Border — box-object interface contract §1/§5: borderWidth is an
 				   SGS custom object attr (base only); border-radius routes to

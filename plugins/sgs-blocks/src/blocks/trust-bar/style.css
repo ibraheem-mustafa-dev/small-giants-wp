@@ -214,26 +214,64 @@
 	}
 }
 
-/* Separator glyph (textBadgeSeparator): a decorative mark printed after every text-only badge.
- * Not a pill: it takes the bar's gap on both sides, so it sits midway between two badges. The last one only shows while
- * the marquee runs, where it is the seam between one copy of the track and the next. A grid bar gives every direct child
- * a cell, so the separators stay out of it; overflow-drop.js hides the ones beside a dropped badge. */
+/* Separator glyph (textBadgeSeparator): a decorative mark between the badges, in every badge style.
+ * A row (flex, stack, default) prints it as a sibling after every badge. It is not a pill: it takes the bar's gap on both
+ * sides, so it sits midway between two badges. The last one only shows while the marquee runs, where it is the seam
+ * between one copy of the track and the next; overflow-drop.js hides the ones beside a dropped badge. */
 .sgs-trust-bar__separator {
 	flex: 0 0 auto;
 	line-height: 1;
 	user-select: none;
 }
 
-.sgs-trust-bar__separator:last-child {
+.sgs-trust-bar__separator:not(.sgs-trust-bar__separator--cell):last-child {
 	display: none;
 }
 
-.sgs-trust-bar[data-sgs-marquee="on"] .sgs-trust-bar__separator:last-child {
+.sgs-trust-bar[data-sgs-marquee="on"] .sgs-trust-bar__separator:not(.sgs-trust-bar__separator--cell):last-child {
 	display: block;
 }
 
-.sgs-container--grid > .sgs-trust-bar__separator {
+/* A grid gives every direct child a cell, so a grid bar prints the glyph inside each badge. It is a zero-width box on the
+ * badge's trailing edge, pushed out by half the bar's column gap (`--sgs-trust-bar-gap-x`, printed per device by
+ * includes/helpers-trust-bar-grid.php), with the glyph centred on it: midway between this badge and the next in the row.
+ * The badge at the end of each row has no neighbour, so a per-device rule hides its glyph; the last badge hides it too,
+ * unless the marquee runs (the seam). */
+.sgs-trust-bar__badge:has(> .sgs-trust-bar__separator--cell) {
+	position: relative;
+}
+
+.sgs-trust-bar__separator--cell {
+	position: absolute;
+	inset-block-start: 50%;
+	inset-inline-start: calc(100% + var(--sgs-trust-bar-gap-x, 0px) / 2);
+	translate: 0 -50%;
+	display: flex;
+	justify-content: center;
+	width: 0;
+	white-space: nowrap;
+	pointer-events: none;
+}
+
+.sgs-trust-bar__badge:last-child > .sgs-trust-bar__separator--cell {
 	display: none;
+}
+
+.sgs-trust-bar[data-sgs-marquee="on"] .sgs-trust-bar__badge:last-child > .sgs-trust-bar__separator--cell {
+	display: flex;
+}
+
+/* A separator overflow-drop.js hid stays hidden whichever rule above would show it. */
+.sgs-trust-bar .sgs-trust-bar__badge > .sgs-trust-bar__separator[hidden],
+.sgs-trust-bar .sgs-trust-bar__separator[hidden] {
+	display: none;
+}
+
+/* Centre a lone last row (centreLastRow, grid only). The front end prints per-device :nth-child rules for this
+ * (includes/helpers-trust-bar-grid.php); the editor canvas has the count in hand and marks the badge with this class. */
+.sgs-trust-bar__badge--centre-last {
+	grid-column: 1 / -1;
+	justify-self: center;
 }
 
 /* ─── image-badge variant ────────────────────────────────────────────────────── */
@@ -420,6 +458,11 @@
  * source of truth for the same property. Zero specificity means this only
  * ever wins by being an editor-canvas-only class no other rule targets, not
  * by out-ranking the operator's own flexWrap choice.) */
+/* A grid that drops a badge keeps its cell (overflow-drop.js sets inert and aria-hidden too), so the badges after it stay where they are. */
+.sgs-trust-bar [data-sgs-overflow-dropped="keep"] {
+	visibility: hidden;
+}
+
 :where(.sgs-trust-bar.is-overflow-drop) {
 	flex-wrap: nowrap;
 	overflow: hidden;

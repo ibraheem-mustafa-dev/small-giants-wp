@@ -26,6 +26,8 @@
 			"builtinButtons": [
 				{
 					"prefix": "submit",
+					"showWhen": [],
+					"showWhenNote": "The search button always prints.",
 					"part": "submit",
 					"label": "Search button"
 				}

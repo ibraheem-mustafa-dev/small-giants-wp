@@ -133,7 +133,7 @@
  *     involved, so they already work once `<Disabled>` is gone (nothing to
  *     add here). The whole-track PAUSE-on-hover is JS-driven
  *     (`mouseenter`/`mouseleave`/`pointerdown` toggling a class in
- *     `brand-strip/view.js`) and that script never runs in this canvas
+ *     `src/shared/effects/fx-marquee.js`) and that script never runs in this canvas
  *     (frontend `viewScriptModule`s are not loaded in the editor, the same
  *     reason nav-bar-menu's own store never hydrates here) — reproduced
  *     below (`handlePointerCapture`/mouse listeners) as a direct class-

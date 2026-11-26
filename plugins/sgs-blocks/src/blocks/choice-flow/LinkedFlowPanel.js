@@ -19,7 +19,7 @@ export default function LinkedFlowPanel( {
 	setAttributes,
 } ) {
 	return (
-		<PanelBody title={ __( 'Linked flow', 'sgs-blocks' ) }>
+		<PanelBody initialOpen title={ __( 'Linked flow', 'sgs-blocks' ) }>
 			<SavedPostPicker
 				postType={ FLOW_CPT }
 				label={ __( 'Linked flow', 'sgs-blocks' ) }

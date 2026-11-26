@@ -105,6 +105,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					textRow( {
 						key: 'trigger',
@@ -134,6 +135,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			/>
 			<InspectorControls>
 				<PanelBody
+					initialOpen
 					title={ __( 'Store Selector Settings', 'sgs-blocks' ) }
 				>
 					<SgsFreeTextField
@@ -170,7 +172,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					</ToggleGroupControl>
 				</PanelBody>
 
-				<PanelBody title={ __( 'Stores', 'sgs-blocks' ) }>
+				<PanelBody initialOpen={ false } title={ __( 'Stores', 'sgs-blocks' ) }>
 					{ stores.map( ( store, index ) => (
 						<div
 							key={ index }
@@ -381,6 +383,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					initialOpen={ false }
 				>
 					<ResponsiveOverride
+						label={ __( 'Panel padding', 'sgs-blocks' ) }
 						value={ attributes.panelPadding }
 						onChange={ ( obj ) =>
 							setAttributes( { panelPadding: obj } )

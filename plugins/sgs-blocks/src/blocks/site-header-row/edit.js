@@ -9,7 +9,6 @@ import {
 	useSettings,
 	store as blockEditorStore,
 } from '@wordpress/block-editor';
-import { SeparatorsPanel } from '../container/components/SeparatorsPanel';
 import {
 	PanelBody,
 	SelectControl,
@@ -27,10 +26,11 @@ import {
 	SgsBorderControl,
 	DesignTokenPicker,
 	GradientCapableColourControl,
-	SgsBoxControl,
 	SgsGapControl,
 	SgsLengthControl,
 	TierSelectControl,
+	SeparatorsPanel,
+	ResponsiveBoxControls,
 } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import {
@@ -69,24 +69,6 @@ const CONTENT_WIDTH_OPTIONS = [
 	{ label: __( 'Normal (content width)', 'sgs-blocks' ), value: 'normal' },
 	{ label: __( 'Wide', 'sgs-blocks' ), value: 'wide' },
 ];
-
-/**
- * Collapse an all-empty BoxControl object to '' so the tier is cleared
- * (-> inherit) rather than storing an empty `{}` that would still count as
- * an override. Mirrors ResponsiveBoxControls.js's own `normaliseBox()`.
- *
- * @param {Object|undefined} box BoxControl value.
- * @return {Object|string} The box object, or '' when every side is empty.
- */
-const normaliseBox = ( box ) => {
-	if ( ! box || typeof box !== 'object' ) {
-		return '';
-	}
-	const hasAny = Object.values( box ).some(
-		( v ) => v !== undefined && v !== null && v !== ''
-	);
-	return hasAny ? box : '';
-};
 
 // Promoted common header elements (Spec 37 §3.5 / FR-37-34). Steering, not
 // gating: the row still accepts ANY block via the normal inserter — this list
@@ -232,7 +214,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		gridTemplateRows,
 		textColour,
 		textColourGradient,
-		padding,
 		margin,
 		maxWidth,
 		contentWidth,
@@ -617,7 +598,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 				<PanelBody
 					title={ __( 'Fill', 'sgs-blocks' ) }
-					initialOpen
+					initialOpen={ false }
 					className="sgs-colour-panel"
 				>
 					<DesignTokenPicker
@@ -924,54 +905,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						setAttributes={ setAttributes }
 					/>
 
-					{ /* Padding/margin/max-width — `row`'s own box attrs (Spec 37
-					   FR-37-16 object model). Inlined here rather than through the
-					   shared `ResponsiveBoxControls` component so this Layout-panel
-					   merge stays scoped to this block only. */ }
-					<ResponsiveOverride
-						value={ padding }
-						onChange={ ( obj ) =>
-							setAttributes( { padding: obj } )
-						}
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ LENGTH_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue( normaliseBox( next ) )
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-
-					<ResponsiveOverride
-						value={ margin }
-						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ LENGTH_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue( normaliseBox( next ) )
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-
 					<ResponsiveOverride
 						label={ __( 'Max width', 'sgs-blocks' ) }
 						value={ maxWidth }
@@ -1033,11 +966,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						} }
 					/>
 				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 
 				{ /* Lines between the row's items (the wrapper draws them for a flex or grid row). */ }
 				<SeparatorsPanel
 					attributes={ attributes }
 					setAttributes={ setAttributes }
+					lined
 				/>
 
 				{ /* TIER 1 — the `content-band` element's own panel (Spec 35 Part
@@ -1085,7 +1023,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			</InspectorControls>
 
 			<InspectorControls>
-				<PanelBody title={ __( 'Header row', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'Header row', 'sgs-blocks' ) }>
 					{ rowSlot && (
 						<p className="components-base-control__help">
 							{ ROW_LABELS[ rowSlot ] || rowSlot }

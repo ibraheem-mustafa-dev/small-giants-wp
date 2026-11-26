@@ -847,7 +847,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 				<PanelBody
 					title={ __( 'Tiles', 'sgs-blocks' ) }
-					initialOpen={ true }
+					initialOpen
 				>
 					{ tiles.map( ( tile, index ) => (
 						<div
@@ -1031,6 +1031,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						} }
 					/>
 					<ResponsiveOverride
+						label={ __( 'Tile padding', 'sgs-blocks' ) }
 						value={ attributes.tilePadding }
 						onChange={ ( obj ) =>
 							setAttributes( { tilePadding: obj } )

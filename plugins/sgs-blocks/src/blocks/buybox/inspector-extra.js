@@ -20,8 +20,8 @@ import {
 	ToggleGroupControl,
 	ToggleGroupControlOption,
 	ToolsPanel,
-	ToolsPanelItem,
 } from '../../components/primitives';
+import SgsResetPanel, { SgsResetItem } from '../../components/SgsResetPanel';
 
 const THUMB_BORDER_UNITS = [
 	{ value: 'px', label: 'px', default: 1 },
@@ -51,8 +51,7 @@ const GALLERY_THUMB_DEFAULTS = {
  */
 function ThumbItem( { label, names, attributes, setAttributes, children } ) {
 	return (
-		<ToolsPanelItem
-			label={ label }
+		<SgsResetItem
 			hasValue={ () =>
 				names.some(
 					( n ) =>
@@ -68,10 +67,9 @@ function ThumbItem( { label, names, attributes, setAttributes, children } ) {
 					)
 				)
 			}
-			isShownByDefault
 		>
 			{ children }
-		</ToolsPanelItem>
+		</SgsResetItem>
 	);
 }
 
@@ -268,11 +266,13 @@ export function BuyboxExtraPanels( { attributes, setAttributes } ) {
 				title={ __( 'Gallery thumbnails', 'sgs-blocks' ) }
 				initialOpen={ false }
 			>
-				<ToolsPanel
-					label={ __( 'Settings', 'sgs-blocks' ) }
+				<SgsResetPanel
+					title={ __( 'Settings', 'sgs-blocks' ) }
+					items={ [] }
 					resetAll={ () =>
 						setAttributes( { ...GALLERY_THUMB_DEFAULTS } )
 					}
+					nested
 				>
 					<ThumbItem
 						label={ __( 'Thumbnails per row', 'sgs-blocks' ) }
@@ -403,7 +403,7 @@ export function BuyboxExtraPanels( { attributes, setAttributes } ) {
 							__next40pxDefaultSize
 						/>
 					</ThumbItem>
-				</ToolsPanel>
+				</SgsResetPanel>
 			</PanelBody>
 
 			<PanelBody

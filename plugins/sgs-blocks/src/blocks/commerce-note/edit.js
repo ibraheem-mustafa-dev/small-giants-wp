@@ -86,7 +86,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			<InspectorControls group="styles">
 				<PanelBody
 					title={ __( 'Note text', 'sgs-blocks' ) }
-					initialOpen={ false }
+					initialOpen
 				>
 					<TypographyControls
 						attributes={ attributes }
@@ -171,7 +171,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				</PanelBody>
 			</InspectorControls>
 			<InspectorControls>
-				<PanelBody title={ __( 'Link', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'Link', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'Link weight', 'sgs-blocks' ) }
 						value={ attributes.commerceNoteLinkFontWeight || '' }

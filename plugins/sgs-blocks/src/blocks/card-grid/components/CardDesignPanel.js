@@ -15,7 +15,7 @@ export default function CardDesignPanel( { onEdit } ) {
 	return (
 		<PanelBody
 			title={ __( 'Card design', 'sgs-blocks' ) }
-			initialOpen={ true }
+			initialOpen={ false }
 		>
 			<p>
 				{ __(

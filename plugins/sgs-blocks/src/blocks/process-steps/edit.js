@@ -42,6 +42,7 @@ import {
 	normaliseResponsiveBox,
 	SgsBoxControl,
 	ShadowLiftControls,
+	ResponsiveBoxControls,
 } from '../../components';
 import {
 	ToggleGroupControl,
@@ -85,6 +86,7 @@ function PartMarginBox( {
 } ) {
 	return (
 		<ResponsiveOverride
+			label={ label }
 			value={ attributes[ attrName ] }
 			onChange={ ( obj ) => setAttributes( { [ attrName ]: obj } ) }
 		>
@@ -639,6 +641,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 
 			<InspectorControls group="styles">
 				<PanelBody
+					initialOpen={ false }
 					title={ __( 'Step number badge', 'sgs-blocks' ) }
 					className="sgs-colour-panel"
 				>
@@ -764,6 +767,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 
 			<InspectorControls group="styles">
 				<PanelBody
+					initialOpen={ false }
 					title={ __( 'Step title', 'sgs-blocks' ) }
 					className="sgs-colour-panel"
 				>
@@ -824,6 +828,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 
 			<InspectorControls group="styles">
 				<PanelBody
+					initialOpen={ false }
 					title={ __( 'Step description', 'sgs-blocks' ) }
 					className="sgs-colour-panel"
 				>
@@ -985,6 +990,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			   below, merged into ONE "Layout" panel per THE PLACEMENT RULE. */ }
 			<InspectorControls group="styles">
 				<PanelBody
+					initialOpen={ false }
 					title={ __( 'Text & fill', 'sgs-blocks' ) }
 					className="sgs-colour-panel"
 				>
@@ -1064,7 +1070,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			</InspectorControls>
 
 			<InspectorControls>
-				<PanelBody title={ __( 'Steps', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'Steps', 'sgs-blocks' ) }>
 					{ steps.map( ( step, index ) => (
 						<StepEditor
 							key={ index }
@@ -1749,62 +1755,11 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						} }
 					/>
 
-					{ /* Padding/margin — same `layout` cluster on the wrapper element,
-				   merged into this panel (was a separate "Spacing" panel). Each is a
-				   single block-owned tier-object attr { desktop, tablet, mobile },
-				   written via ResponsiveOverride + SgsBoxControl; read directly by
-				   this block's render.php. */ }
-					<ResponsiveOverride
-						value={ attributes.padding }
-						onChange={ ( obj ) =>
-							setAttributes( { padding: obj } )
-						}
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								defaults={ spacingDefaultsFor(
-									name,
-									'padding'
-								) }
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-					<ResponsiveOverride
-						value={ attributes.margin }
-						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
 				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 			</InspectorControls>
 
 			<div { ...blockProps }>

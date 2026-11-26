@@ -205,12 +205,7 @@ function sgs_cart_panel_css( array $attributes, string $uid, bool $is_drawer ): 
 			'gap'       => is_array( $attributes['panelBodyGap'] ?? null ) && $attributes['panelBodyGap'] ? $attributes['panelBodyGap'] : array(),
 			'gap_expr'  => is_array( $attributes['panelBodyGap'] ?? null ) && $attributes['panelBodyGap'] ? array() : array( 'row' => '16px' ),
 		),
-		array(
-			'axes'  => array( 'row' ),
-			'edges' => false,
-			'hover' => false,
-			'sweep' => false,
-		)
+		sgs_separators_caps( 'sgs/cart' )
 	);
 	foreach ( array_merge( sgs_cart_qty_stepper_css( $attributes, $p ), sgs_cart_view_cart_css( $attributes, $p ), sgs_cart_footer_band_css( $attributes, $p ), sgs_cart_drawer_extras_css( $attributes, $p ) ) as $options_rule ) {
 		$css[] = $options_rule;

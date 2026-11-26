@@ -17,7 +17,7 @@
  */
 import { __ } from '@wordpress/i18n';
 import { Flex, FlexItem, Notice, SelectControl } from '@wordpress/components';
-import { NumberControl } from './primitives';
+import { NumberControl, VStack } from './primitives';
 
 const DEFAULT_LABEL = __( 'Default', 'sgs-blocks' );
 
@@ -224,11 +224,17 @@ export function TextShadowRow( { attributes, setAttributes, keys } ) {
 			/>
 		</FlexItem>
 	);
+	// X and Y side by side, Blur on its own row: three number fields across leave each too narrow to show its value
+	// at the sidebar's normal width.
 	return (
-		<Flex gap={ 2 } align="flex-start">
-			{ field( 'x', __( 'Shadow X (px)', 'sgs-blocks' ), -100 ) }
-			{ field( 'y', __( 'Shadow Y (px)', 'sgs-blocks' ), -100 ) }
-			{ field( 'blur', __( 'Blur (px)', 'sgs-blocks' ), 0 ) }
-		</Flex>
+		<VStack spacing={ 2 }>
+			<Flex gap={ 2 } align="flex-start">
+				{ field( 'x', __( 'Shadow X (px)', 'sgs-blocks' ), -100 ) }
+				{ field( 'y', __( 'Shadow Y (px)', 'sgs-blocks' ), -100 ) }
+			</Flex>
+			<Flex gap={ 2 } align="flex-start">
+				{ field( 'blur', __( 'Blur (px)', 'sgs-blocks' ), 0 ) }
+			</Flex>
+		</VStack>
 	);
 }

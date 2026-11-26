@@ -32,6 +32,8 @@
 		},
 		"sgs": {
 			"enabledExtensions": [ "childSizing" ],
+			"builtinButtons": [ { "prefix": "arrow", "showWhen": [ { "any": [ { "attr": "variant", "op": "equals", "value": "carousel", "default": "carousel" }, { "attr": "variant", "op": "equals", "value": "mini-carousel", "default": "carousel" } ] }, { "any": [ { "attr": "showArrows", "op": "on", "default": true }, { "all": [ { "attr": "autoplay", "op": "on", "default": false }, { "attr": "pauseButton", "op": "on" } ] } ] } ], "part": "arrow", "label": "Carousel arrows and pause button", "groups": [ "colour", "border", "size", "shadow" ], "elements": [ "pause" ] } ],
+			"carouselDots": { "prefix": "dot", "showWhen": [ { "any": [ { "attr": "variant", "op": "equals", "value": "carousel", "default": "carousel" }, { "attr": "variant", "op": "equals", "value": "mini-carousel", "default": "carousel" } ] }, { "attr": "showDots", "op": "on", "default": false } ], "part": "dot", "label": "Carousel dots" },
 			"motion": true,
 			"collection": true,
 			"elements": {
@@ -462,7 +464,30 @@
 			"default": {
 				"desktop": {}
 			}
-		}
+		},
+		"arrowColourBackground": {"type":"string","_generated":"button-kit"},
+		"arrowColourText": {"type":"string","_generated":"button-kit"},
+		"arrowColourBorder": {"type":"string","_generated":"button-kit"},
+		"arrowColourBackgroundHover": {"type":"string","_generated":"button-kit"},
+		"arrowColourTextHover": {"type":"string","_generated":"button-kit"},
+		"arrowColourBorderHover": {"type":"string","_generated":"button-kit"},
+		"arrowBorderStyle": {"type":"string","_generated":"button-kit"},
+		"arrowBorderWidth": {"type":"object","_generated":"button-kit"},
+		"arrowBorderRadius": {"type":"object","_generated":"button-kit"},
+		"arrowSize": {"type":"object","_generated":"button-kit"},
+		"arrowShadow": {"type":"string","_generated":"button-kit"},
+		"arrowShadowColour": {"type":"string","_generated":"button-kit"},
+		"arrowShadowHover": {"type":"string","_generated":"button-kit"},
+		"arrowShadowColourHover": {"type":"string","_generated":"button-kit"},
+		"dotSize": {"type":"object","_generated":"carousel-dots"},
+		"dotActiveWidth": {"type":"object","_generated":"carousel-dots"},
+		"dotGap": {"type":"object","_generated":"carousel-dots"},
+		"dotColour": {"type":"string","_generated":"carousel-dots"},
+		"dotColourActive": {"type":"string","_generated":"carousel-dots"},
+		"dotColourHover": {"type":"string","_generated":"carousel-dots"},
+		"dotBorderWidth": {"type":"string","_generated":"carousel-dots"},
+		"dotBorderColour": {"type":"string","_generated":"carousel-dots"},
+		"dotRadius": {"type":"string","_generated":"carousel-dots"}
 	},
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",

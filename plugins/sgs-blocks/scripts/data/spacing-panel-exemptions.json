@@ -1,0 +1,21 @@
+{
+	"_comment": "Padding and margin controls that are NOT a block's own Spacing panel, or that wait for a later stage. check-spacing-panel.js reads this. Keys: files (a whole file), attributes (file::attribute written), blocks (a block that owns padding/margin object attributes but is edited elsewhere). Every entry carries its reason.",
+	"files": {
+		"src/shared/nav-menu-panels/ListLayoutPanel.js": "Variant D: the shared nav 'List layout' ToolsPanel (nav-bar-menu, nav-drawer-menu). Stage E3 owns it (brief item 3).",
+		"src/components/button-kit/BuiltinButtonPanelBody.js": "The button kit's own Padding (the printed button's padding, prefix-keyed), not a block's spacing.",
+		"src/blocks/extensions/commerce-look/controls.js": "Commerce-look extension panels: per-part look padding (prefix + 'Padding'), not a block's spacing.",
+		"src/blocks/extensions/commerce-look/panels.js": "Commerce-look extension panels: per-part look padding, not a block's spacing."
+	},
+	"attributes": {
+		"src/blocks/card-grid/components/CardStylesPanel.js::cardPadding": "Card padding inside the 'Card' panel: the card-grid keeps 'Card spacing' (brief item 3). The block's own padding/margin move to the shared panel.",
+		"src/blocks/container/components/GridItemDefaultsPanel.js::gridItemPadding": "Default padding for the container's grid items, not the container's own spacing.",
+		"src/blocks/form-field-textarea/edit.js::inputPadding": "Writes inputPadding (the typed-in box), not padding: the shared panel reads padding/margin. Needs Bean's call (LISTS item 3).",
+		"src/blocks/form-review/edit.js::editButtonPadding": "The review's edit button padding, not the block's spacing.",
+		"src/blocks/mega-aside/edit.js::asidePadding": "The aside column's padding inside the 'Aside' panel, not the block's spacing."
+	},
+	"blocks": {
+		"nav-bar-menu": "Variant D (ListLayoutPanel): Stage E3.",
+		"nav-drawer-menu": "Variant D (ListLayoutPanel): Stage E3.",
+		"media": "Its padding is the media-padding atom of the media panels (components/media/atoms/media-padding.js), not a Spacing pair."
+	}
+}

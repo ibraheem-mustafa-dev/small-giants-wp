@@ -27,10 +27,8 @@ import {
 	TypographyControls,
 	SgsColourPanel,
 	SgsLengthControl,
-	BOX_UNITS,
-	normaliseResponsiveBox,
-	SgsBoxControl,
 	textRow,
+	ResponsiveBoxControls,
 } from '../../components';
 import {
 	colourVar,
@@ -243,6 +241,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			   the popover writes `colour` (solid) or `lineGradient` (one complete
 			   CSS gradient string; non-empty wins, as render.php reads it). */ }
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					{
 						key: 'colour',
@@ -282,7 +281,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				{ /* ---- Size & alignment ---- */ }
 				<PanelBody
 					title={ __( 'Size & alignment', 'sgs-blocks' ) }
-					initialOpen={ false }
+					initialOpen
 				>
 					{ /*
 					  `width` is a TIER OBJECT (Spec 35 pass 2) — same pattern as
@@ -443,7 +442,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{ /*
 					  `thickness` is a TIER OBJECT (Spec 35 pass 2) — ONE attr
 					  holding {desktop,tablet,mobile}, so it uses
-					  <ResponsiveOverride>. Each tier holds a CSS length string carrying its
+					  <ResponsiveOverride label={ __( 'Thickness', 'sgs-blocks' ) }>. Each tier holds a CSS length string carrying its
 					  own unit.
 					*/ }
 					<ToolsPanelItem
@@ -517,61 +516,10 @@ export default function Edit( { attributes, setAttributes } ) {
 					</ToolsPanelItem>
 				</ToolsPanel>
 
-				{ /* ---- Spacing ---- padding/margin are each a single block-owned
-				   tier-object attr { desktop, tablet, mobile }, written via
-				   ResponsiveOverride + SgsBoxControl; read directly by this
-				   block's render.php. */ }
-				<PanelBody
-					title={ __( 'Spacing', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<ResponsiveOverride
-						value={ attributes.padding }
-						onChange={ ( obj ) =>
-							setAttributes( { padding: obj } )
-						}
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-					<ResponsiveOverride
-						value={ attributes.margin }
-						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 			</InspectorControls>
 
 			{ withContent ? (

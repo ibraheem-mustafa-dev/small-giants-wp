@@ -66,6 +66,7 @@ export default function PinEdgeControl( { attributes, setAttributes } ) {
 			</ResponsiveOverride>
 			{ pinnedToTop && (
 				<ResponsiveOverride
+					label={ __( 'Stop below the site header', 'sgs-blocks' ) }
 					value={ pinBelowHeader }
 					onChange={ ( obj ) =>
 						setAttributes( { pinBelowHeader: obj } )

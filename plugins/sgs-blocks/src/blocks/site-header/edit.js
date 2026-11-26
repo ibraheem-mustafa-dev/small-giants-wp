@@ -30,13 +30,11 @@ import {
 	ResponsiveBoxControl,
 	ResponsiveOverride,
 	SgsColourPanel,
-	BOX_UNITS,
-	normaliseResponsiveBox,
 	SgsBorderControl,
 	ShadowControl,
 	resolveColourToken,
-	SgsBoxControl,
 	StarterLookPresetControl,
+	ResponsiveBoxControls,
 } from '../../components';
 import {
 	NumberControl,
@@ -77,6 +75,7 @@ import FluidScaleControls, {
 // "Header behaviour" ToolsPanel below (sectionInk is its own feature).
 import SectionInkPanel, { sectionInkColourRows } from './section-ink-panel';
 import ScrollChangePanel from './scroll-change-panel';
+import SgsResetPanel from '../../components/SgsResetPanel';
 
 /**
  * Does a tri-state {desktop,tablet,mobile} behaviour object resolve 'on' at
@@ -676,6 +675,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 			     levels read as different scopes rather than duplicates: this
 			     colours the whole bar, a row colours one band inside it. */ }
 			<SgsColourPanel
+				initialOpen
 				rows={ [
 					{
 						key: 'background',
@@ -873,13 +873,14 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 				     and Background (image/video/SVG/overlay — a rich, situational
 				     panel) sit behind a ToolsPanel "+ Add" disclosure — one click
 				     away, not shown until asked for. */ }
-				<PanelBody title={ __( 'Header width', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'Header width', 'sgs-blocks' ) }>
 					<WidthPanel
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 					/>
 					<hr style={ { margin: '16px 0' } } />
 					<ResponsiveOverride
+						label={ __( 'Min height', 'sgs-blocks' ) }
 						value={ attributes.minHeight }
 						onChange={ ( obj ) =>
 							setAttributes( { minHeight: obj } )
@@ -930,74 +931,6 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						} );
 					} }
 				>
-					{ /* Responsive spacing (padding + margin) — box-object interface
-					     contract. Base tier writes the block's OWN padding/margin object attrs
-					     (this block declares no supports.spacing, so there is no
-					     duplicate Styles > Dimensions panel); each attr holds
-					     desktop, tablet and mobile, read by the wrapper's @media tiers. */ }
-					<ToolsPanelItem
-						label={ __( 'Padding & margin', 'sgs-blocks' ) }
-						hasValue={ () =>
-							! isTierBoxEmpty( attributes.padding ) ||
-							! isTierBoxEmpty( attributes.margin )
-						}
-						onDeselect={ () =>
-							setAttributes( {
-								padding: {},
-								margin: {},
-							} )
-						}
-					>
-						<ResponsiveOverride
-							value={ attributes.padding }
-							onChange={ ( obj ) =>
-								setAttributes( { padding: obj } )
-							}
-						>
-							{ ( { ownValue, setOwnValue } ) => (
-								<SgsBoxControl
-									label={ __( 'Padding', 'sgs-blocks' ) }
-									values={
-										ownValue && typeof ownValue === 'object'
-											? ownValue
-											: {}
-									}
-									units={ BOX_UNITS }
-									presets
-									onChange={ ( next ) =>
-										setOwnValue(
-											normaliseResponsiveBox( next )
-										)
-									}
-								/>
-							) }
-						</ResponsiveOverride>
-						<hr style={ { margin: '16px 0' } } />
-						<ResponsiveOverride
-							value={ attributes.margin }
-							onChange={ ( obj ) =>
-								setAttributes( { margin: obj } )
-							}
-						>
-							{ ( { ownValue, setOwnValue } ) => (
-								<SgsBoxControl
-									label={ __( 'Margin', 'sgs-blocks' ) }
-									values={
-										ownValue && typeof ownValue === 'object'
-											? ownValue
-											: {}
-									}
-									units={ BOX_UNITS }
-									presets
-									onChange={ ( next ) =>
-										setOwnValue(
-											normaliseResponsiveBox( next )
-										)
-									}
-								/>
-							) }
-						</ResponsiveOverride>
-					</ToolsPanelItem>
 
 					{ /* zIndex is a TIER OBJECT written by includes/sgs-header-z-index.php
 					     (the header's single z-index writer). Empty = inherit the wider
@@ -1010,6 +943,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						onDeselect={ () => setAttributes( { zIndex: {} } ) }
 					>
 						<ResponsiveOverride
+							label={ __( 'Stacking order (z-index)', 'sgs-blocks' ) }
 							value={ attributes.zIndex }
 							onChange={ ( obj ) =>
 								setAttributes( { zIndex: obj } )
@@ -1066,6 +1000,10 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						setAttributes={ setAttributes }
 					/>
 				</ToolsPanel>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 			</InspectorControls>
 
 			<InspectorControls group="settings">
@@ -1355,7 +1293,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							     desktop hero, nothing on phone" — the common
 							     case — is expressible.
 
-							     It uses <ResponsiveOverride> and NOT the
+							     It uses <ResponsiveOverride label={ __( 'Contrast safety over hero', 'sgs-blocks' ) }> and NOT the
 							     <ResponsiveTriStateControl> its four siblings use,
 							     because those are on/off booleans and this is a
 							     FOUR-value enum. The tri-state control renders an
@@ -1365,6 +1303,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							     control primitive to the STORAGE shape is the rule
 							     here, not matching the neighbouring control. */ }
 							<ResponsiveOverride
+								label={ __( 'Contrast safety over hero', 'sgs-blocks' ) }
 								value={ contrastSafe }
 								onChange={ ( obj ) =>
 									setAttributes( { contrastSafe: obj } )
@@ -1454,8 +1393,25 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 			</InspectorControls>
 
 			<InspectorControls group="styles">
-				<ToolsPanel
-					label={ __( 'Layout', 'sgs-blocks' ) }
+				<SgsResetPanel
+					title={ __( 'Layout', 'sgs-blocks' ) }
+					items={ [
+						{
+							hasValue: () =>
+								getActiveLayoutPreset(
+									attributes,
+									middleRowJustify
+								) !== 'split',
+							onDeselect: () =>
+								applyLayoutPreset(
+									'split',
+									attributes,
+									setAttributes,
+									middleRowClientId,
+									updateBlockAttributes
+								),
+						},
+					] }
 					resetAll={ () =>
 						applyLayoutPreset(
 							'split',
@@ -1465,64 +1421,45 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							updateBlockAttributes
 						)
 					}
+					initialOpen={ false }
 				>
-					<ToolsPanelItem
+					<ToggleGroupControl
 						label={ __( 'Layout preset', 'sgs-blocks' ) }
-						hasValue={ () =>
-							getActiveLayoutPreset(
-								attributes,
-								middleRowJustify
-							) !== 'split'
-						}
-						onDeselect={ () =>
+						value={ getActiveLayoutPreset(
+							attributes,
+							middleRowJustify
+						) }
+						onChange={ ( value ) =>
 							applyLayoutPreset(
-								'split',
+								value,
 								attributes,
 								setAttributes,
 								middleRowClientId,
 								updateBlockAttributes
 							)
 						}
-						isShownByDefault
+						help={ __(
+							'Sets the header content-band width, padding and logo/nav alignment in one step. Selecting a preset overwrites those values — fine-tune afterwards in the panels above (or the middle row for alignment).',
+							'sgs-blocks'
+						) }
+						isBlock
+						__next40pxDefaultSize
+						__nextHasNoMarginBottom
 					>
-						<ToggleGroupControl
-							label={ __( 'Layout preset', 'sgs-blocks' ) }
-							value={ getActiveLayoutPreset(
-								attributes,
-								middleRowJustify
-							) }
-							onChange={ ( value ) =>
-								applyLayoutPreset(
-									value,
-									attributes,
-									setAttributes,
-									middleRowClientId,
-									updateBlockAttributes
-								)
-							}
-							help={ __(
-								'Sets the header content-band width, padding and logo/nav alignment in one step. Selecting a preset overwrites those values — fine-tune afterwards in the panels above (or the middle row for alignment).',
-								'sgs-blocks'
-							) }
-							isBlock
-							__next40pxDefaultSize
-							__nextHasNoMarginBottom
-						>
-							<ToggleGroupControlOption
-								value="centred"
-								label={ __( 'Centred', 'sgs-blocks' ) }
-							/>
-							<ToggleGroupControlOption
-								value="split"
-								label={ __( 'Split', 'sgs-blocks' ) }
-							/>
-							<ToggleGroupControlOption
-								value="minimal"
-								label={ __( 'Minimal', 'sgs-blocks' ) }
-							/>
-						</ToggleGroupControl>
-					</ToolsPanelItem>
-				</ToolsPanel>
+						<ToggleGroupControlOption
+							value="centred"
+							label={ __( 'Centred', 'sgs-blocks' ) }
+						/>
+						<ToggleGroupControlOption
+							value="split"
+							label={ __( 'Split', 'sgs-blocks' ) }
+						/>
+						<ToggleGroupControlOption
+							value="minimal"
+							label={ __( 'Minimal', 'sgs-blocks' ) }
+						/>
+					</ToggleGroupControl>
+				</SgsResetPanel>
 			</InspectorControls>
 
 			{ /* Editor canvas renders as <header> to match the frontend banner

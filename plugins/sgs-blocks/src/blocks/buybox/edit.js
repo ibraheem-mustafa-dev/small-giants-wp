@@ -18,7 +18,7 @@ import {
 	buyboxMockCss,
 } from './canvas-mock';
 import {
-	ResponsiveBoxControl,
+	ResponsiveBoxControls,
 	SgsColourPanel,
 	fillRow,
 	textRow,
@@ -84,7 +84,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		showLadder,
 		framingMode,
 		decoyEnabled,
-		margin,
 		backgroundColour,
 		backgroundColourGradient,
 	} = attributes;
@@ -158,7 +157,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	return (
 		<>
-			<SgsColourPanel rows={ colourRows } />
+			<SgsColourPanel initialOpen rows={ colourRows } />
 			<ButtonActionPanel
 				attributes={ attributes }
 				setAttributes={ setAttributes }
@@ -228,7 +227,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			</InspectorControls>
 
 			<InspectorControls>
-				<PanelBody title={ __( 'Buybox labels', 'sgs-blocks' ) }>
+				<PanelBody initialOpen={ false } title={ __( 'Buybox labels', 'sgs-blocks' ) }>
 					<SgsFreeTextField
 						type="rich"
 						noLink
@@ -468,57 +467,35 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
 			<InspectorControls group="styles">
-				<PanelBody
-					title={ __( 'Gallery images', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					{ /* The gallery's two media slots (Spec 49 10.4), the adopted panels: 'main' is the large product photo, 'thumb' the
-					     thumbnail strip's pictures (one set of settings for every thumbnail). */ }
-					<p className="sgs-buybox__media-panel-label">
-						{ __( 'Main image', 'sgs-blocks' ) }
-					</p>
-					<MediaElementPanel
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						prefix="main"
-						blockSlug="sgs/buybox"
-						blockName="sgs/buybox"
-						context="item"
-						atoms={ MAIN_ATOMS }
-					/>
-					<p className="sgs-buybox__media-panel-label">
-						{ __( 'Thumbnail images', 'sgs-blocks' ) }
-					</p>
-					<MediaElementPanel
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						prefix="thumb"
-						blockSlug="sgs/buybox"
-						blockName="sgs/buybox"
-						context="item"
-						atoms={ THUMB_ATOMS }
-					/>
-				</PanelBody>
-				<PanelBody
-					title={ __( 'Spacing', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<ResponsiveBoxControl
-						label={ __( 'Margin', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: margin?.desktop ?? {},
-							tablet: margin?.tablet ?? {},
-							mobile: margin?.mobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							const key = 'base' === tier ? 'desktop' : tier;
-							setAttributes( {
-								margin: { ...margin, [ key ]: next },
-							} );
-						} }
-					/>
-				</PanelBody>
+				{ /* The gallery's two media slots (Spec 49 10.4), the adopted panels: 'main' is the large product photo, 'thumb' the
+				     thumbnail strip's pictures (one set of settings for every thumbnail). Each sits directly in this Styles group
+				     (`inGroup`), so its panels keep their place on first select; `label` names the slot in each panel title. */ }
+				<MediaElementPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					prefix="main"
+					blockSlug="sgs/buybox"
+					blockName="sgs/buybox"
+					context="item"
+					atoms={ MAIN_ATOMS }
+					label={ __( 'Main image', 'sgs-blocks' ) }
+					inGroup="styles"
+				/>
+				<MediaElementPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					prefix="thumb"
+					blockSlug="sgs/buybox"
+					blockName="sgs/buybox"
+					context="item"
+					atoms={ THUMB_ATOMS }
+					label={ __( 'Thumbnail images', 'sgs-blocks' ) }
+					inGroup="styles"
+				/>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 				{ /* NOTE (2026-09-03 investigation): this panel currently shows as
 				   EXEMPT from routing in the inspector-scan `01-tab-group` report
 				   because `borderColourGradient`'s DB row (block_attributes) has a

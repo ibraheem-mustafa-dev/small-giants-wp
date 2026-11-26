@@ -228,6 +228,13 @@
         "plugins/sgs-blocks/src/shared/effects/loop-control.js"
       ],
       "reason": "The motion pause and play control, whose controls are gated by check-motion-pause-control.py and check-motion-item-parts.py."
+    },
+    {
+      "id": "carousel-runtime-dots",
+      "files": [
+        "plugins/sgs-blocks/src/shared/carousel/index.js"
+      ],
+      "reason": "The shared carousel runtime builds the dot buttons for a block that prints an empty dots row (buildDots). The class is the calling block's own dot part, and the dots' look is the carousel dots kit (supports.sgs.carouselDots on that block), so the button carries no look of its own."
     }
   ],
   "width_ok": {

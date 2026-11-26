@@ -308,6 +308,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							) }
 						</ResponsiveOverride>
 						<ResponsiveOverride
+							label={ __( 'Padding', 'sgs-blocks' ) }
 							value={ attributes.inputPadding }
 							onChange={ ( obj ) =>
 								setAttributes( { inputPadding: obj } )
@@ -366,7 +367,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					false !== attributes.showCounter && (
 						<PanelBody
 							title={ __( 'Character counter', 'sgs-blocks' ) }
-							initialOpen={ false }
+							initialOpen
 						>
 							<SelectControl
 								label={ __( 'Counter position', 'sgs-blocks' ) }

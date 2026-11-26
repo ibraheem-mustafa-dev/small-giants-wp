@@ -82,6 +82,12 @@ describe( 'TextShadowRow', () => {
 		expect( setAttributes ).toHaveBeenCalledWith( { textShadow: '7px 2px 3px, 0 0 8px' } );
 	} );
 
+	it( 'never puts three number fields across one row: X and Y share a row, Blur has its own', () => {
+		const host = mount( { textShadow: '1px 2px 3px' }, jest.fn() );
+		const rows = [ ...host.querySelectorAll( '[data-testid="Flex"]' ) ].map( ( row ) => [ ...row.querySelectorAll( '[data-number]' ) ].map( ( n ) => n.getAttribute( 'data-number' ) ) );
+		expect( rows ).toEqual( [ [ 'Shadow X (px)', 'Shadow Y (px)' ], [ 'Blur (px)' ] ] );
+	} );
+
 	it( 'shows a notice and no number fields for a shadow it cannot show, and writes nothing', () => {
 		const setAttributes = jest.fn();
 		const host = mount( { textShadow: '0.1em 0.2em 0.3em' }, setAttributes );

@@ -66,3 +66,26 @@ export function isExtensionEnabled( nameOrSettings, slug ) {
 export function isExtensionFlagged( nameOrSettings, flag ) {
 	return !! resolveSupports( nameOrSettings )?.sgs?.[ flag ];
 }
+
+/**
+ * TRIM list: the controls of a shared panel a block leaves out of its inspector.
+ *
+ *   "supports": { "sgs": { "trim": [ "layout.default", "layout.stack", "layout.flex-direction" ] } }
+ *
+ * The list is empty (absent) on every block unless the block opts in, so a shared panel
+ * shows its full control set to every other block. A slug names one control of one shared panel
+ * as `<panel>.<control>`; the real slugs are listed in `trim-controls.json`, and
+ * `scripts/check-trim.js` fails a block.json entry (or a registry row) that names no real control.
+ *
+ * A panel treats a trimmed control as hidden unless the block already stores a value the control
+ * would show (a saved Default or Stack layout keeps its option, a custom column template keeps its field),
+ * so trimming never strands a saved setting.
+ *
+ * @param {string|Object} nameOrSettings Block name or settings object.
+ * @param {string}        slug           Control slug, `<panel>.<control>`.
+ * @return {boolean} True when the block has trimmed this control.
+ */
+export function isTrimmed( nameOrSettings, slug ) {
+	const list = resolveSupports( nameOrSettings )?.sgs?.trim;
+	return Array.isArray( list ) && list.includes( slug );
+}

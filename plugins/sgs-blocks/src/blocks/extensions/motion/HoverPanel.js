@@ -17,6 +17,7 @@ import { getBlockType } from '@wordpress/blocks';
 import ChoiceAtom from '../../../components/motion/ChoiceAtom';
 import IntensityPicker from '../../../components/motion/IntensityPicker';
 import { ROOT_TARGET } from '../../../components/motion/TargetPicker';
+import { SgsBlockWideRowsSlot } from '../../../components/SgsBlockWideRows';
 import { registerMotionPanel } from './panel-slots';
 import TargetRow from './layers/TargetRow';
 import { RestampConfirm, useRestamp } from './layers/restamp';
@@ -233,6 +234,8 @@ export default function HoverPanel( {
 					<FocusState actions={ actions } />
 				) }
 			</PanelBody>
+			{ /* The block-wide rows ("Keyboard focus keeps the resting look") close the panel, under a rule. */ }
+			<SgsBlockWideRowsSlot home="hover" />
 		</PanelBody>
 	);
 }

@@ -1,12 +1,12 @@
 /**
  * Google Reviews — "Navigation" section: where the slider's arrows sit, how the visitor sees where
- * they are (scrollbar, dots or nothing), and the arrows' own box.
+ * they are (scrollbar, dots or nothing).
  *
  * Shown for the Slider display type only (the rail and arrows exist nowhere else). Placement and the
  * progress indicator are drawn by the shared slider navigation (includes/helpers-slider-nav.php +
- * assets/css/slider-nav.css). The arrow's fill and icon colours stay in edit.js's "Slider arrow"
- * panel; the arrow's border colour (Normal + Hover) lives here, inside the border control, so it is
- * not offered twice. Each indicator's colours show only while that indicator is chosen.
+ * assets/css/slider-nav.css). The arrows' look (colours, border, radius, size) is the shared button
+ * kit's panel, mounted by edit.js beside this one. Each indicator's colours show only while that
+ * indicator is chosen.
  *
  * @package SGS\Blocks
  */
@@ -20,18 +20,8 @@ import {
 } from '../../../components/primitives';
 import ScrollbarStyleControl from '../../../components/ScrollbarStyleControl';
 import { Section, Row } from './panel-kit';
-import { TierBox, TierLength, BorderField } from './panel-fields';
+import { TierBox } from './panel-fields';
 import { spacingDefaultsFor } from '../../../utils/spacing-defaults';
-
-const ARROW_BORDER_ATTRS = [
-	'arrowBorderWidth',
-	'arrowBorderStyle',
-	'arrowColourBorder',
-	'arrowColourBorderGradient',
-	'arrowColourBorderHover',
-	'arrowColourBorderHoverGradient',
-	'arrowBorderRadius',
-];
 
 const SCROLLBAR_ATTRS = [ 'scrollbarStyle', 'scrollbarColour' ];
 
@@ -81,8 +71,6 @@ export const NAVIGATION_ATTRS = [
 	...SCROLLBAR_ATTRS,
 	...DOT_ATTRS,
 	'railPadding',
-	'arrowSize',
-	...ARROW_BORDER_ATTRS,
 ];
 
 export default function NavigationPanel( { name, attributes, setAttributes } ) {
@@ -255,35 +243,6 @@ export default function NavigationPanel( { name, attributes, setAttributes } ) {
 					/>
 				</Row>
 			) }
-			<Row
-				label={ __( 'Arrow size', 'sgs-blocks' ) }
-				attrs={ [ 'arrowSize' ] }
-				{ ...shared }
-			>
-				<TierLength
-					label={ __( 'Arrow button size', 'sgs-blocks' ) }
-					attr="arrowSize"
-					{ ...shared }
-				/>
-			</Row>
-			<Row
-				label={ __( 'Arrow border', 'sgs-blocks' ) }
-				attrs={ ARROW_BORDER_ATTRS }
-				{ ...shared }
-			>
-				<BorderField
-					label={ __( 'Arrow border width', 'sgs-blocks' ) }
-					widthAttr="arrowBorderWidth"
-					styleAttr="arrowBorderStyle"
-					colourAttr="arrowColourBorder"
-					gradientAttr="arrowColourBorderGradient"
-					hoverAttr="arrowColourBorderHover"
-					hoverGradientAttr="arrowColourBorderHoverGradient"
-					radiusAttr="arrowBorderRadius"
-					contrastAgainst={ attributes.arrowColourBackground || '' }
-					{ ...shared }
-				/>
-			</Row>
 			<Row
 				label={ __( 'Rail padding', 'sgs-blocks' ) }
 				attrs={ [ 'railPadding' ] }

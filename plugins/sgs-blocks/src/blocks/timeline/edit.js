@@ -26,6 +26,7 @@ import {
 	ShadowLiftControls,
 	LinkUnderlineControl,
 	MediaElementPanel,
+	ResponsiveBoxControls,
 } from '../../components';
 import MediaSlotField from '../../components/media/MediaSlotField.js';
 import FitField from '../../components/media/FitField.js';
@@ -1321,7 +1322,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				     so this panel holds just that one control. Renamed from
 				     "Timeline Settings", which was a catch-all name for the
 				     single title-tag control it always held. */ }
-				<PanelBody title={ __( 'Entry title', 'sgs-blocks' ) }>
+				<PanelBody initialOpen title={ __( 'Entry title', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'Heading level', 'sgs-blocks' ) }
 						value={ headingLevel || 'h3' }
@@ -1338,7 +1339,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					/>
 				</PanelBody>
 				{ /* ── Entries ── */ }
-				<PanelBody title={ __( 'Timeline entries', 'sgs-blocks' ) }>
+				<PanelBody initialOpen={ false } title={ __( 'Timeline entries', 'sgs-blocks' ) }>
 					{ entries.map( ( entry, index ) => (
 						<EntryEditor
 							key={ index }
@@ -1709,54 +1710,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					title={ __( 'Padding, margin & border', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<ResponsiveOverride
-						value={ attributes.padding }
-						onChange={ ( obj ) =>
-							setAttributes( { padding: obj } )
-						}
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
-					<ResponsiveOverride
-						value={ attributes.margin }
-						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
-					>
-						{ ( { ownValue, setOwnValue } ) => (
-							<SgsBoxControl
-								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={
-									ownValue && typeof ownValue === 'object'
-										? ownValue
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setOwnValue(
-										normaliseResponsiveBox( next )
-									)
-								}
-							/>
-						) }
-					</ResponsiveOverride>
 					{ ENTRY_PART_BOXES.map( ( [ attrName, label ] ) => (
 						<ResponsiveOverride
+							label={ label }
 							key={ attrName }
 							value={ attributes[ attrName ] }
 							onChange={ ( obj ) =>
@@ -1823,6 +1779,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						} }
 					/>
 				</PanelBody>
+				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 			</InspectorControls>
 
 			<InspectorControls>
