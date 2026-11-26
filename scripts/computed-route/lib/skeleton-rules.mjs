@@ -285,6 +285,9 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		return ! m.words( x ) && worded.length > 0 && worded.every( ( y ) => clock( y )?.openStatus );
 	};
 	const handlerOf = ( e ) => /sc-camel-on-click="\{\{\s*([^}\s]+)\s*\}\}"/.exec( e.snippet || '' )?.[ 1 ] || '';
+	// The form element of a form surface's root, found once (lib/skeleton-form-element.mjs).
+	let surfaceForm;
+	const formOfSurface = () => ( undefined === surfaceForm ? ( surfaceForm = 'form' === surface.kind ? formElement( m, m.root ) : null ) : surfaceForm );
 	// The anchor a saved form is reached by (lib/skeleton-form-prefill.mjs): the slug a page's linked form block references it by
 	// (lib/skeleton-form-link.mjs), set on the form block that roots the form's own post, so a link `…#<slug>` on any page lands on it.
 	const formAnchor = 'form' === surface.kind && scope?.id ? ( surface.formLinks || [] ).find( ( l ) => l.recordId === scope.id )?.slug ?? null : null;
@@ -742,14 +745,14 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		// goes, and what it holds beside the form (an aside, a bar) is the page's, never the saved form's. A form block stands only where there
 		// is something to fill in (holdsEntry): a <form> or the form element holding only a button or a link is that control.
 		( { e } ) => {
-			const form = 'form' === surface.kind ? formElement( m, m.root ) : null;
+			const form = formOfSurface();
 			if ( ! form || form === m.root || form === e ) {
 				return null;
 			}
 			const inside = ( a, x ) => x === a || ( !! x && inside( a, m.byKey[ x.parentKey ] ) );
 			return inside( e, form ) ? v( 'formHost', { action: 'unwrap', reason: R.formHost?.layoutReason } ) : inside( form, e ) ? null : v( 'formHost', { action: 'remove', reason: R.formHost?.besideReason } );
 		},
-		( { e } ) => ( R.formHost && ( view.realTag( e ) === R.formHost.tag || ( 'form' === surface.kind && e === formElement( m, m.root ) ) ) && holdsEntry( e ) ? v( 'formHost', { block: R.formHost.block, attributes: formAnchor ? { anchor: formAnchor } : {} } ) : null ),
+		( { e } ) => ( R.formHost && ( view.realTag( e ) === R.formHost.tag || ( 'form' === surface.kind && e === formOfSurface() ) ) && holdsEntry( e ) ? v( 'formHost', { block: R.formHost.block, attributes: formAnchor ? { anchor: formAnchor } : {} } ) : null ),
 		// A form control is the field block for its type; the field's label, required marker and hint are that block's own
 		// settings, and a <label> wrapped around the control goes so the field takes its place. A radio or checkbox group in a
 		// form is one field: its group element is the radio or checkbox field, holding the options, absorbing its controls.
@@ -1318,7 +1321,6 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		// A WooCommerce page's commerce region is WooCommerce's working piece, an ordinary block that draws the region
 		// itself (rules.commerceRegion): the region's children are absorbed into it.
 		( { e } ) => ( region?.key === e.key ? v( 'commerceRegion', { block: region.block, absorb: true, attributes: region.attributes, inner: region.inner, item: region.item?.key ?? null, card: region.card?.key ?? region.item?.key ?? null, reason: region.reason } ) : null ),
-		// The shop's filter rail is the framework's working filter (rules.filterRail): the rail's children are absorbed into it.
 		// A button or link whose click handler scrolls to a form and sets its fields opens that form on the clone (lib/skeleton-form-prefill.mjs):
 		// a button linking the page's form with each field in the query, which the form's fields read through `valueFromParam`.
 		( { e, text } ) => {
@@ -1326,6 +1328,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			const [ link, label ] = hit ? [ facts.firstAttrByRole( R.formPrefillOpener.block, 'link-href' ), facts.firstAttrByRole( R.formPrefillOpener.block, 'text-content' ) ] : [];
 			return hit && link ? v( 'formPrefillOpener', { block: R.formPrefillOpener.block, absorb: true, attributes: { [ link ]: hit.href, ...( label && text ? { [ label ]: text } : {} ) }, reason: `${ R.formPrefillOpener.reason }; it opens the ${ hit.form } form` } ) : null;
 		},
+		// The shop's filter rail is the framework's working filter (rules.filterRail): the rail's children are absorbed into it.
 		( { e } ) => ( rail?.key === e.key ? v( 'filterRail', { block: R.filterRail.block, absorb: true, attributes: rail.attributes, inner: rail.inner, reason: rail.reason, ...( rail.ownAlternativeBelow ? { ownAlternativeBelow: rail.ownAlternativeBelow } : {} ) } ) : null ),
 		// A tile of a priced loop naming a catalogue product, on a page that is not the shop, is the site's product card bound
 		// to that product (rules.productTile): the card draws the tile, so its elements are absorbed.
