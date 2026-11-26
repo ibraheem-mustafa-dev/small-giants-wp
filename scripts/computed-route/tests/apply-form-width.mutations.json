@@ -1,0 +1,5 @@
+[
+	{ "file": "lib/apply-form-width.mjs", "find": "const ls = l.filter( ( f ) => ! f.honeypot );", "replace": "const ls = l.filter( ( f ) => ! f.honeypot && false !== f.shown );", "why": "a wizard's later-step live fields, hidden at rest, are dropped from the pairing" },
+	{ "file": "lib/apply-form-width.mjs", "find": "const ds = d.filter( ( f ) => ! f.honeypot && false !== f.shown );", "replace": "const ds = d.filter( ( f ) => ! f.honeypot );", "why": "a conditional draft field hidden at rest takes a place in the pairing" },
+	{ "file": "lib/apply-form-width.mjs", "find": "const ls = l.filter( ( f ) => ! f.honeypot );", "replace": "const ls = l;", "why": "the live honeypot is paired" }
+]

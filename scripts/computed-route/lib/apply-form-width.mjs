@@ -1,8 +1,8 @@
 // Forms, field width. A field the draft puts in one column of a grid of two or more tracks, where the live field sits in a grid of
 // a nested container (not the form's own six tracks), takes the width `auto`: the parent grid places it (form/style.css
 // `.sgs-form-field--auto`). A field the draft spreads over its whole grid row keeps `full`. Fields pair by `name` where both sides name
-// every field, else by position among the fields each form shows (lib/apply-probes.mjs: each field's `layout`, `name` and `shown`):
-// a conditional field a form hides at rest takes no place in the pairing.
+// every field, else by position (lib/apply-probes.mjs: each field's `layout`, `name` and `shown`): a conditional field the draft hides
+// at rest takes no place in the pairing, and every live field (a wizard's later steps included) can be paired.
 import { attrRow } from './db.mjs';
 
 // A cell narrower than this share of its grid's content width sits in a column.
@@ -10,13 +10,15 @@ const COLUMN_SHARE = 0.9;
 
 export const inColumn = ( layout ) => Boolean( layout && layout.cols >= 2 && layout.cellW < layout.gridW * COLUMN_SHARE );
 
-// The pairs of draft and live field: both forms' fields as each shows them at rest. Where every draft field has a name and the
-// live form holds a field of that name, each pairs with its namesake (a live field the draft hides, a conditional one, pairs with
-// nothing); otherwise they pair by position, which needs equal counts (`pairs` is empty when the counts differ).
+// The pairs of draft and live field. The draft side is the fields the draft shows (each wizard step's as read at that step,
+// lib/apply-probes.mjs::formProbe; a conditional field hidden at rest takes no place). The live side is every field the live form
+// holds, shown or not: it is read at rest, where a wizard's later steps are hidden, so a shown-at-rest filter there would drop every
+// field past step one. Where every draft field has a name and the live form holds a field of that name, each pairs with its namesake
+// (a live field the draft hides, a conditional one, pairs with nothing); otherwise they pair by position, which needs equal counts
+// (`pairs` is empty when the counts differ).
 export function pairedFields( d, l ) {
-	const rest = ( list ) => list.filter( ( f ) => ! f.honeypot && false !== f.shown );
-	const ds = rest( d );
-	const ls = rest( l );
+	const ds = d.filter( ( f ) => ! f.honeypot && false !== f.shown );
+	const ls = l.filter( ( f ) => ! f.honeypot );
 	const named = ds.length > 0 && ds.every( ( f ) => f.name && ls.some( ( x ) => x.name === f.name ) );
 	if ( named ) {
 		return { drafts: ds, lives: ds.map( ( f ) => ls.find( ( x ) => x.name === f.name ) ), pairs: ds.map( ( f ) => [ f, ls.find( ( x ) => x.name === f.name ) ] ) };

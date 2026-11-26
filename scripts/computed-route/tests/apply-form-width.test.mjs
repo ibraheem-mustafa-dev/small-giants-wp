@@ -39,3 +39,18 @@ test( 'negative control: no names on the draft side pairs by position, and unequ
 	const uneven = fieldWidths( { draft: { 1440: { probes: { fields: [ bare( field( 'x', column ) ) ] } } }, live: { 1440: { probes: { fields: [ live( 'x', 'cr-ref-a' ), live( 'y', 'cr-ref-b' ) ] } } }, block: 'sgs/form', all, db } );
 	assert.equal( uneven[ 0 ].status, 'no-setting' );
 } );
+
+// A wizard: the draft probe reads every step's fields at that step (all shown); the live form is read at rest, where the second
+// step's fields are hidden (`.sgs-form-step--hidden`), so the live side must not drop fields it does not show.
+test( 'MUST FAIL: a wizard form pairs the live form\'s later-step fields by name though they are hidden at rest', () => {
+	const wizardDraft = { 1440: { probes: { fields: [ field( 'first', column ), field( 'second', column ), field( 'company', column ) ] } } };
+	const wizardLive = { 1440: { probes: { fields: [ live( 'first', 'cr-ref-a' ), live( 'second', 'cr-ref-b', { shown: false } ), live( 'company', 'cr-ref-c', { shown: false } ) ] } } };
+	const items = fieldWidths( { draft: wizardDraft, live: wizardLive, block: 'sgs/form', all, db } );
+	assert.deepEqual( items.map( ( i ) => [ i.ref, i.status ] ), [ [ 'cr-ref-a', 'op' ], [ 'cr-ref-b', 'op' ], [ 'cr-ref-c', 'op' ] ] );
+} );
+
+test( 'negative control: the live honeypot is never paired, by name or by position', () => {
+	const trap = live( 'first', 'cr-ref-c', { honeypot: true } );
+	const { pairs } = pairedFields( [ field( 'first', column ) ], [ trap, live( 'first', 'cr-ref-a' ) ] );
+	assert.deepEqual( pairs.map( ( [ , l ] ) => l.layout.ref ), [ 'cr-ref-a' ] );
+} );
