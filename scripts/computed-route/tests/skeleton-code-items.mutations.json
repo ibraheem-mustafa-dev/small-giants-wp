@@ -1,0 +1,8 @@
+[
+	{
+		"file": "lib/skeleton-inventory.mjs",
+		"find": "if ( filled || bordered ) {",
+		"replace": "if ( false ) {",
+		"why": "no icon is ever read as sitting in a painted box"
+	}
+]

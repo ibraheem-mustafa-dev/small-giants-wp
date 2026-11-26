@@ -137,6 +137,9 @@ export function decisionsProblems( facts ) {
 	if ( ci && ( ! facts.attr( r.marqueeCodeItems.block, ci.setting ) || [ ...( ci.clear || [] ), ...( ci.slots || [] ), ...( ci.plain ? [ ci.plain.setting ] : [] ), ...( ci.icons ? [ ci.icons.setting, ...( ci.icons.slots || [] ) ] : [] ) ].some( ( a ) => ! facts.attr( r.marqueeCodeItems.block, a ) ) ) ) {
 		problems.push( `rules.marqueeCodeItems.items must name an items setting and cleared settings ${ r.marqueeCodeItems.block } has` );
 	}
+	// The values the code-built items' styles write are values of their settings in the framework database.
+	[ [ 'plain', ci?.plain ], [ 'icons', ci?.icons ] ].filter( ( [ , x ] ) => x ).forEach( ( [ k, x ] ) => ! facts.enumOf?.( r.marqueeCodeItems.block, x.setting )?.includes( x.value )
+		&& problems.push( `rules.marqueeCodeItems.items.${ k } must name one of the values ${ r.marqueeCodeItems.block } has for ${ x.setting } (${ x.value })` ) );
 	// A list arrangement names a setting its block has, and one of that setting's values.
 	( r.listArrangement?.blocks || [] ).forEach( ( x, i ) => {
 		known( x.block, `rules.listArrangement.blocks[${ i }]` );

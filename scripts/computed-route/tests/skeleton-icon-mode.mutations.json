@@ -1,7 +1,7 @@
 [
 	{
 		"file": "lib/skeleton-rules.mjs",
-		"find": "const iconStyle = I.icons && read.every( ( x ) => x.svg ) ? { [ I.icons.setting ]: I.icons.value } : {};",
+		"find": "const iconStyle = I.icons && read.every( ( x ) => x.svg && ! x.boxed ) ? { [ I.icons.setting ]: I.icons.value } : {};",
 		"replace": "const iconStyle = {};",
 		"why": "items that all hold an icon no longer choose the bare-icon style, so the icon is read at no mode part"
 	},
@@ -28,5 +28,17 @@
 		"find": "...( r.iconMode ? { iconMode: r.iconMode } : {} ),",
 		"replace": "",
 		"why": "the chosen mode never reaches the proposal"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "read.every( ( x ) => x.svg && ! x.boxed ) ? { [ I.icons.setting ]",
+		"replace": "read.every( ( x ) => x.svg ) ? { [ I.icons.setting ]",
+		"why": "icons inside a painted box still choose the bare-icon style"
+	},
+	{
+		"file": "lib/skeleton-facts.mjs",
+		"find": "! facts.enumOf?.( r.marqueeCodeItems.block, x.setting )?.includes( x.value )",
+		"replace": "false",
+		"why": "an icons value the setting does not have passes the decisions check"
 	}
 ]
