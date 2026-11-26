@@ -11,7 +11,9 @@
 // input (`skeletonSiteOptions`): a draft element that is a site setting rather than a block (a fixed back-to-top control, a
 // reading progress bar: the Customiser's `sgs_floating_ui_*` options, each its own scalar option) is a row of the client's
 // intake.json carrying `siteOptions`, on any intake surface whether or not a build surface proposes it, and each of those
-// options is planned as one scalar `site-option` action.
+// options is planned as one scalar `site-option` action. The reader and the writer are built and tested, but no proposer emits
+// `siteOptions` on a row yet (the skeleton rules that would, such as the reading progress bar, remove the element and name the setting only in
+// a handover row: lib/fill-motion-account.mjs::readingProgressHandover), so today the rows carry none and this input plans nothing.
 import fs from 'fs';
 import path from 'path';
 
@@ -149,16 +151,23 @@ export function skeletonSiteOptions( repo, client ) {
 		}
 	}
 	clash.forEach( ( n ) => delete out.options[ n ] );
-	Object.entries( out.options ).forEach( ( [ n, o ] ) => checkedScalar( n, o.value ) );
+	for ( const [ n, o ] of Object.entries( out.options ) ) {
+		const bad = scalarProblem( n, o.value );
+		if ( bad ) {
+			out.notes.push( `${ n }: ${ o.records.join( ', ' ) } ${ bad }; it is not applied` );
+			delete out.options[ n ];
+		}
+	}
 	return out;
 }
 
-// Throws on a scalar option the site build must not write: a name that is not a plain option name, or a value that is not a string, number or boolean.
-function checkedScalar( name, value ) {
-	if ( ! NAME.test( name ) || ! [ 'string', 'number', 'boolean' ].includes( typeof value ) ) {
-		throw new Error( `site option ${ JSON.stringify( name ) } is not a plain option name with a string, number or boolean value` );
+// Why a scalar option the site build must not write is refused, else null: a name that is not a plain option name, or a value that is
+// not a string, number or boolean. A bad row is a note and a skip, so one draft element never stops the whole site build.
+function scalarProblem( name, value ) {
+	if ( ! NAME.test( name ) ) {
+		return `names ${ JSON.stringify( name ) }, which is not a plain option name`;
 	}
-	return value;
+	return [ 'string', 'number', 'boolean' ].includes( typeof value ) ? null : `sets ${ name } to ${ shown( value ) }, which is not a string, number or boolean`;
 }
 
 // The plan for the site options: { actions, options, notes }. `desired` is readSiteOptions' result, `stored` is
@@ -193,7 +202,10 @@ export function planSiteOptions( { desired, stored } ) {
 // for the committed site-options.json and the skeleton rows' scalar options alike.
 export function withSiteOptions( plan, { repo, client, runPhp } ) {
 	const skeleton = skeletonSiteOptions( repo, client );
-	const desired = { ...skeleton.options, ...readSiteOptions( repo, client ) };
+	const committed = readSiteOptions( repo, client );
+	// One option named by both inputs takes the committed site-options.json value, and the skeleton row's is dropped: said, not silent.
+	Object.keys( skeleton.options ).filter( ( n ) => Object.hasOwn( committed, n ) ).forEach( ( n ) => skeleton.notes.push( `${ n }: set by ${ skeleton.options[ n ].records.join( ', ' ) } and by site-options.json; the site-options.json value is used` ) );
+	const desired = { ...skeleton.options, ...committed };
 	const mine = planSiteOptions( { desired, stored: readStoredOptions( runPhp, desired ) } );
 	plan.actions.push( ...mine.actions );
 	plan.options.push( ...mine.options );

@@ -36,6 +36,7 @@ import { heldByState } from './foundation-run.mjs';
 import { intakeCurrent, layoutSurfaces, pageMapBuilt, snapshotDiff, tokenOutput, wslPath } from './foundation-parts.mjs';
 import { runsShop, LOOK_JOBS } from './setting-record.mjs';
 import { FIXTURE_SITES } from './shop-fixture-sites.mjs';
+import { fixtureDefs } from './shop-fixtures.mjs';
 import { mediaAssets } from './media-upload.mjs';
 
 export const STEP_IDS = [ 'preflight', 'handoff-check', 'intake-files', 'intake', 'apply-review', 'tokens', 'plugin-build', 'sync', 'snapshot-push', 'site-info', 'media', 'site-build', 'manifest', 'catalogue', 'looks', 'skeletons', 'surfaces' ];
@@ -126,6 +127,7 @@ export function buildSteps( ctx ) {
 		...[ 'theme.json', 'functions.php' ].map( ( n ) => at( 'theme', 'sgs-theme', n ) ),
 		...filesIn( at( 'theme', 'sgs-theme', 'assets', 'css' ), ( n ) => n.endsWith( '.css' ) ),
 	];
+	const catalogueFp = () => joinFp( site, fileSha( p.pageMap ), sha( JSON.stringify( fixtureDefs( client ) ) ), fileSha( path.join( build, 'media-map.json' ) ) );
 	const looksFp = async () => joinFp( client, snapshotSha(), await ports.buildDigest(), ...builderFiles().map( ( f ) => `${ path.relative( repo, f ) }:${ fileSha( f ) }` ), runsShop( client, repo ) );
 	const localOnly = ( what ) => ( local ? null : `${ site } is a hosted site: ${ what }` );
 
@@ -265,12 +267,13 @@ export function buildSteps( ctx ) {
 			run: () => cmd( 'manifest', commands.manifest( { client, site } ), 'it lists each row it could not settle' ),
 		},
 		{
-			// The route's own test products are catalogue-hidden (lib/shop-fixtures.mjs: a fixture found listed is hidden, a missing one is made
-			// hidden), so a client's shop shows only the client's products.
-			id: 'catalogue', deps: [ 'site-build' ], title: 'shop-fixtures.mjs --apply: the test products hidden from the shop',
+			// The route's own test products are made when missing and catalogue-hidden (lib/shop-fixtures.mjs: a fixture found listed is hidden, a
+			// missing one is made hidden), so a client's shop shows only the client's products. What the step makes is the fixture definitions
+			// (their SKUs, prices, sizes) and the image the site's media map names, so a change to either runs it again.
+			id: 'catalogue', deps: [ 'site-build' ], title: 'shop-fixtures.mjs --apply: the test products made if missing and hidden from the shop',
 			applicable: () => ( ! runsShop( client, repo ) ? 'the page map has no shop or product row' : ! FIXTURE_SITES.includes( site ) ? `${ site } is not a fixture site (${ FIXTURE_SITES.join( ', ' ) })` : null ),
-			fingerprint: () => joinFp( site, fileSha( p.pageMap ) ),
-			holds: () => heldBy( 'catalogue', joinFp( site, fileSha( p.pageMap ) ), 'the test products were hidden for this page map' ),
+			fingerprint: () => catalogueFp(),
+			holds: () => heldBy( 'catalogue', catalogueFp(), 'the test products were made and hidden for this page map and these fixture definitions' ),
 			run: () => cmd( 'catalogue', commands.hideFixtures( { client, site } ), 'it names the product it could not hide' ),
 		},
 		{

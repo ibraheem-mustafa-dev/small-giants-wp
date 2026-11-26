@@ -430,3 +430,17 @@ test( 'MUST FAIL: the catalogue step hides the test products on a shop client\'s
 	assert.match( applicable( { site: 'local-mamas', rows: [ { slug: 'home', postType: 'page', id: 1 } ] } ), /no shop or product row/ );
 	assert.match( applicable( { site: 'indus-test', rows: shop } ), /not a fixture site/ );
 } );
+
+test( 'MUST FAIL: the catalogue step says it makes the fixtures as well as hides them, and runs again when the fixture definitions\' image or the page map changes', () => {
+	const w = world();
+	write( path.join( w.build, 'page-map.json' ), JSON.stringify( [ { slug: 'shop', postType: 'shop', id: 3 } ] ) );
+	const step = () => buildSteps( { client: 'acme', site: 'local-mamas', repo: w.repo, targets, ports: w.ports, state: { steps: {} } } ).find( ( s ) => 'catalogue' === s.id );
+	assert.match( step().title, /made if missing and hidden/ );
+	const before = step().fingerprint();
+	assert.equal( step().fingerprint(), before, 'the same inputs give the same fingerprint' );
+	write( path.join( w.build, 'media-map.json' ), JSON.stringify( { 'local-mamas': { 'fixture.jpg': 41 } } ) );
+	const withImage = step().fingerprint();
+	assert.notEqual( withImage, before, 'a new fixture image runs the step again' );
+	write( path.join( w.build, 'page-map.json' ), JSON.stringify( [ { slug: 'shop', postType: 'shop', id: 4 } ] ) );
+	assert.notEqual( step().fingerprint(), withImage, 'a changed page map runs it again' );
+} );

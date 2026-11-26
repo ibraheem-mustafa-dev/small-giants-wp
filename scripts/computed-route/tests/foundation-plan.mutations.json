@@ -196,5 +196,23 @@
 		"find": "( n ) => n.endsWith( '.py' ) || 'fixtures.json' === n, false ),",
 		"replace": "( n ) => 'fixtures.json' === n, false ),",
 		"why": "a changed record module the builder imports leaves the looks as they were"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "sha( JSON.stringify( fixtureDefs( client ) ) ), fileSha( path.join( build, 'media-map.json' ) ) );",
+		"replace": "fileSha( p.pageMap ) );",
+		"why": "a new fixture image or changed fixture definition leaves the catalogue step held"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "title: 'shop-fixtures.mjs --apply: the test products made if missing and hidden from the shop',",
+		"replace": "title: 'shop-fixtures.mjs --apply: the test products hidden from the shop',",
+		"why": "the catalogue step's title says it only hides the fixtures"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "fingerprint: () => catalogueFp(),",
+		"replace": "fingerprint: () => joinFp( site, fileSha( p.pageMap ) ),",
+		"why": "the step's fingerprint ignores the fixture state"
 	}
 ]

@@ -190,10 +190,29 @@ test( 'MUST FAIL: two rows setting one option to different values plan neither a
 	assert.match( s.notes[ 0 ], /sgs_floating_ui_back_to_top_position: r1 set "left" and r2 sets "right"/ );
 	const plan = withSiteOptions( empty(), { repo, client: 'acme', runPhp: fakeSite().runPhp } );
 	assert.deepEqual( [ plan.actions.length, plan.notes ], [ 0, s.notes ], 'the site build plans neither value and its notes say why' );
-	withIntake( repo, { a: { rows: [ { rowId: 'r1', siteOptions: { 'bad name': 1 } } ] } } );
-	assert.throws( () => skeletonSiteOptions( repo, 'acme' ), /not a plain option name/ );
-	withIntake( repo, { a: { rows: [ { rowId: 'r1', siteOptions: { sgs_x: { nested: 1 } } } ] } } );
-	assert.throws( () => skeletonSiteOptions( repo, 'acme' ), /string, number or boolean/ );
+} );
+
+test( 'MUST FAIL: a row with a bad option name or a nested value is a note and a skip, and the rows beside it are still planned', () => {
+	const { repo } = fixture( { fill: null } );
+	withIntake( repo, { a: { rows: [ { rowId: 'r1', siteOptions: { 'bad name': 1, sgs_floating_ui_back_to_top_position: 'left' } }, { rowId: 'r2', siteOptions: { sgs_x: { nested: 1 } } } ] } } );
+	const s = skeletonSiteOptions( repo, 'acme' );
+	assert.deepEqual( Object.keys( s.options ), [ 'sgs_floating_ui_back_to_top_position' ], 'the good option beside the bad name is kept' );
+	assert.equal( s.notes.length, 2 );
+	assert.match( s.notes.join( ' | ' ), /bad name: r1 names "bad name", which is not a plain option name; it is not applied/ );
+	assert.match( s.notes.join( ' | ' ), /sgs_x: r2 sets sgs_x to \{"nested":1\}, which is not a string, number or boolean; it is not applied/ );
+	const plan = withSiteOptions( empty(), { repo, client: 'acme', runPhp: fakeSite().runPhp } );
+	assert.deepEqual( plan.actions.map( ( a ) => a.name ), [ 'sgs_floating_ui_back_to_top_position' ] );
+	assert.deepEqual( plan.notes, s.notes );
+} );
+
+test( 'MUST FAIL: an option named by a skeleton row and by site-options.json takes the committed value and says so', () => {
+	const { repo, run } = fixture( { fill: FADE } );
+	withIntake( repo, { a: { rows: [ { rowId: 'r1', siteOptions: { sgs_motion_settings: 'x', sgs_floating_ui_back_to_top_position: 'left' } } ] } } );
+	promoteSiteOptions( { repo, client: 'acme', from: run } );
+	const plan = withSiteOptions( empty(), { repo, client: 'acme', runPhp: fakeSite().runPhp } );
+	assert.ok( plan.notes.some( ( n ) => /^sgs_motion_settings: set by r1 and by site-options\.json; the site-options\.json value is used/.test( n ) ) );
+	assert.deepEqual( plan.actions.map( ( a ) => a.name ).sort(), [ 'sgs_floating_ui_back_to_top_position', 'sgs_motion_settings' ] );
+	assert.equal( plan.actions.find( ( a ) => 'sgs_motion_settings' === a.name ).value.page_transitions, true, 'the committed object, not the scalar of the row' );
 } );
 
 test( 'negative control: rows with no site options, or no intake record, plan nothing from the skeleton', () => {
