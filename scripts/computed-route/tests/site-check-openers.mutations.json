@@ -1,5 +1,9 @@
 [
 	{"file": "lib/site-check-openers.mjs", "find": "holds( a ) || ( decoded( a ) !== a && holds( decoded( a ) ) )", "replace": "holds( a )", "why": "a link to #caf%C3%A9 is reported dead though the page holds the id café"},
 	{"file": "lib/site-check-openers.mjs", "find": "holds( a ) || ( decoded( a ) !== a && holds( decoded( a ) ) )", "replace": "holds( decoded( a ) )", "why": "an anchor whose id holds a literal percent sign is no longer found as written"},
-	{"file": "lib/site-check-openers.mjs", "find": "\t\t\treturn a;", "replace": "\t\t\tthrow e;", "why": "a malformed percent escape in an anchor throws and stops the page's opener check"}
+	{"file": "lib/site-check-openers.mjs", "find": "\t\t\treturn a;", "replace": "\t\t\tthrow e;", "why": "a malformed percent escape in an anchor throws and stops the page's opener check"},
+	{"file": "lib/site-check-openers.mjs", "find": "runs.length && runs.every( ( run ) => run.refused )", "replace": "false && runs.every( ( run ) => run.refused )", "why": "a walk that refused every run passes as if it measured something"},
+	{"file": "lib/site-check-openers.mjs", "find": "runs.length && runs.every( ( run ) => run.refused )", "replace": "runs.length && runs.some( ( run ) => run.refused )", "why": "one refused run beside measured ones fails the walk"},
+	{"file": "lib/site-check-openers.mjs", "find": "if ( unmeasured ) {\n\t\tthrow", "replace": "if ( false ) {\n\t\tthrow", "why": "walkChecked never fails an all-refused walk"},
+	{"file": "lib/site-check-openers.mjs", "find": "{ failureClass: 'not-at-rest' }", "replace": "{}", "why": "the all-refused failure is classed not-at-rest"}
 ]

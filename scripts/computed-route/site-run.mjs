@@ -470,7 +470,8 @@ export async function main( argv ) {
 		// A modal or flow has no page of its own: it is read at a page that opens it (lib/site-run-opener-row.mjs).
 		const address = liveAddress( openerRow( entry, rows ) ?? row, rows, shown );
 		const liveUrl = `${ base }${ address ?? '/' }`;
-		openersUnrecorded( entry, rows ) && console.log( `${ key }: read at the home page, where it is not placed: the intake page map records no opener on any row (an intake taken before openers were recorded); run intake again` );
+		// A stage not run in the status, so --strict and the clone verdict see it (a console line alone would let the run pass).
+		openersUnrecorded( entry, rows ) && note( key, 'openers', true, 0, null, 'read at the home page, where it is not placed: the intake page map records no opener on any row (an intake taken before openers were recorded); run intake again' );
 		// A checkout walk starts with a product in the basket: WooCommerce sends an empty basket's checkout to the basket.
 		const livePrime = livePrimeFor( entry.target?.template ?? row?.template, liveFacts );
 		const step = stepper( key, wooPage );

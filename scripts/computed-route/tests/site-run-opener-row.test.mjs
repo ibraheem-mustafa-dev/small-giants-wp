@@ -8,7 +8,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { openerRow, openersUnrecorded } from '../lib/site-run-opener-row.mjs';
-import { liveAddress } from '../site-run.mjs';
+import { liveAddress, runExit, stageRecord } from '../site-run.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const ROWS = [
@@ -56,5 +56,8 @@ test( 'MUST FAIL: a modal or flow surface in a page map that records no opener i
 	assert.equal( openersUnrecorded( null, stale ), false );
 	assert.equal( openersUnrecorded( { target: { postId: 120 } }, [] ), false );
 	const siteRun = fs.readFileSync( path.join( HERE, '..', 'site-run.mjs' ), 'utf8' );
-	assert.ok( siteRun.includes( 'openersUnrecorded( entry, rows ) && console.log(' ), 'prepare names it' );
+	assert.ok( siteRun.includes( "openersUnrecorded( entry, rows ) && note( key, 'openers', true, 0, null, 'read at the home page" ), 'prepare records it in the surface status (a skipped stage, which --strict counts), not a console line' );
+	const status = { 'modal-x': { openers: stageRecord( { ok: true, skipped: 'read at the home page, where it is not placed' } ) } };
+	assert.equal( runExit( status, { strict: true } ), 1, '--strict fails a surface read at the home page for want of a recorded opener' );
+	assert.equal( runExit( status ), 0, 'a run without --strict still passes' );
 } );

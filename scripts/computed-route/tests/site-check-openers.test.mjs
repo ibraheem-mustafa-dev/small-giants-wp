@@ -7,7 +7,7 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { missingModalRows, deadOpeners, openersInPage, walkAbsent, walkChecked, refusedRuns } from '../lib/site-check-openers.mjs';
+import { missingModalRows, deadOpeners, openersInPage, walkAbsent, walkChecked, walkUnmeasured, refusedRuns } from '../lib/site-check-openers.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const ROWS = [
@@ -107,6 +107,24 @@ test( 'MUST FAIL: a refused run is an open row, not a failed walk, whichever sid
 	// Negative controls: differences are parity rows, and a run both sides found nothing to trigger in is settled, not refused.
 	assert.equal( walkAbsent( { runs: [ run( { 'gen-x-0': { draft: shown, live: shown, diffs: [ { key: 'color' } ] } } ) ] } ), null );
 	assert.deepEqual( refusedRuns( { runs: [ { state: 'open', width: 375, untriggered: { draft: 'x', live: 'x' }, pairs: { '(state)': { diffs: [ { key: 'nothing-to-trigger' } ] } } } ] } ), [] );
+} );
+
+// A surface that never reaches rest has every run refused: no root was compared, so the walk measured nothing and fails (an open
+// row beside measured runs is still only an open row). `--strict` sees the failure, which a passing walk line would hide.
+test( 'MUST FAIL: a walk whose every run was refused measured nothing and fails; one measured run keeps the refusals as open rows', () => {
+	const refused = ( state, who ) => ( { state, width: 375, refused: who, pairs: { '(state)': { diffs: [ { kind: 'state', key: 'not-at-rest' } ] } } } );
+	const all = { runs: [ refused( 'open', { draft: null, live: 'never settled' } ), refused( 'scrolled', { draft: 'x', live: null } ) ] };
+	assert.match( walkUnmeasured( all ), /^the walker refused all 2 runs and measured nothing.*open @ 375 \(live never settled\); scrolled @ 375 \(draft x\)/ );
+	assert.match( walkUnmeasured( { runs: [ refused( 'open', { draft: 'x', live: null } ) ] } ), /refused all 1 run and/ );
+	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'walk-' ) );
+	const file = path.join( dir, 'report.json' );
+	fs.writeFileSync( file, JSON.stringify( all ) );
+	assert.throws( () => walkChecked( file, 'report written' ), ( e ) => /^walk failed: the walker refused all 2 runs/.test( e.message ) && 'not-at-rest' === e.failureClass );
+	// Negative controls: one measured run, no runs at all, and runs that only found nothing to trigger are not unmeasured.
+	assert.equal( walkUnmeasured( { runs: [ ...all.runs, run( { 'gen-x-0': { draft: shown, live: shown } } ) ] } ), null );
+	assert.equal( walkUnmeasured( { runs: [] } ), null );
+	assert.equal( walkUnmeasured( null ), null );
+	assert.equal( walkUnmeasured( { runs: [ { state: 'open', width: 375, untriggered: { draft: 'x', live: 'x' }, pairs: { '(state)': { diffs: [ { key: 'nothing-to-trigger' } ] } } } ] } ), null );
 } );
 
 test( 'MUST FAIL: the walk step fails on an absent live element and passes its answer on otherwise, and site-run uses it', () => {

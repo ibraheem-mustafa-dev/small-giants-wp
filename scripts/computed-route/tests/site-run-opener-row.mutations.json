@@ -3,5 +3,6 @@
  { "file": "lib/site-run-opener-row.mjs", "find": "ADDRESSED.includes( r.postType ) && ", "replace": "", "why": "a modal only the footer opens is read at the footer post's address" },
  { "file": "lib/site-run-opener-row.mjs", "find": "openers.find( ( r ) => 'product' !== r.postType ) ?? ", "replace": "", "why": "a modal a page and a product open is read at the product" },
  { "file": "lib/site-run-opener-row.mjs", "find": " ?? openers[ 0 ] ?? null;", "replace": " ?? null;", "why": "a flow only a product opens is read at the home page" },
- { "file": "site-run.mjs", "find": "const address = liveAddress( openerRow( entry, rows ) ?? row, rows, shown );", "replace": "const address = liveAddress( row, rows, shown );", "why": "site-run reads a modal or flow at the home page (the 2026-10-28 and 2026-11-01 fault)" }
+ { "file": "site-run.mjs", "find": "const address = liveAddress( openerRow( entry, rows ) ?? row, rows, shown );", "replace": "const address = liveAddress( row, rows, shown );", "why": "site-run reads a modal or flow at the home page (the 2026-10-28 and 2026-11-01 fault)" },
+ { "file": "site-run.mjs", "find": "openersUnrecorded( entry, rows ) && note( key, 'openers', true, 0, null,", "replace": "openersUnrecorded( entry, rows ) && console.log( key,", "why": "the missing opener is a console line only, so --strict and the clone verdict pass" }
 ]
