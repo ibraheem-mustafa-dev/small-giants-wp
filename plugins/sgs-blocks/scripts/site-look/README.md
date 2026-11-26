@@ -31,7 +31,7 @@ The value forms a setting takes (`settingFacts[*].forms`, 57% of a look's render
 | Step | What happens |
 |---|---|
 | Shared reading | `shared_facts` reads them under the theme's own `theme.json` (`neutral_snapshot`: no client tokens, no custom CSS) and keeps them in `<out>/_shared/<block>[.woocommerce].json` and the store's `_shared/<block>.<key>.json`, keyed by `shared_key` (the look's key without the snapshot; the `--woocommerce` flag stays in it) |
-| Client reading | `build_block(..., parts=CLIENT_PARTS, shared=...)` reads everything else (default paint, paint states, `discovered`, state looks) under the client's CSS and puts the shared facts in place (`with_forms`, `with_content`), in the order one whole reading gives |
+| Client reading | `build_block(..., parts=CLIENT_PARTS, shared=...)` reads everything else (default paint, paint states, `discovered`, state looks, and the `slug` value form, whose marker is the client's own palette colour: `CLIENT_FORMS`) under the client's CSS and puts the shared facts in place (`with_forms`, `with_content`), in the order one whole reading gives |
 | Read whole instead | the client's custom CSS has a rule whose required classes are all on a page the shared facts were read from (`custom_css_reaches`; a rule needing no class, or a palette `has-` class, counts as reaching), a render behind the shared facts failed, or `--per-client-facts` is given |
 
 Proof: every block's look for Mama's, Indus and Eye Care, built with and without `--per-client-facts` at the same commit, is identical as canonical JSON (`tests/test_shared_facts.py` holds the assembly order, the key and the guard). Switches: `shared-facts` (read whole always), `shared-guard`, `shared-errors`.
