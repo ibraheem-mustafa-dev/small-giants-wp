@@ -8,6 +8,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { spawnSync } from 'node:child_process';
 import { DatabaseSync } from 'node:sqlite';
 import { loadRecord, partPaths, tierHolds, reachedAtOf, symbolicTiers, withNodeValues, runsShop, rowPaths, compounds, prepareLooks, siteLook, lookJobs, LOOK_JOBS } from '../lib/setting-record.mjs';
 import { calibrationForNode } from '../lib/paint-state.mjs';
@@ -199,6 +200,27 @@ test( 'compounds reads a selector at its top level, through a :where() that wrap
 	assert.deepEqual( compounds( '.a + .b ~ .c' ).map( ( c ) => c.comb ), [ '', '+', '~' ] );
 	assert.equal( compounds( '.a, .b' ), null );
 	assert.equal( compounds( '.a:not(.b' ), null );
+} );
+
+test( 'MUST FAIL: the look builder runs with the calling process environment, so SGS_LOOK_STORE (the shared look store) reaches it', () => {
+	const repo = fs.mkdtempSync( path.join( os.tmpdir(), 'cr-setting-record-env-' ) );
+	fs.mkdirSync( path.join( repo, 'sites', 'acme' ), { recursive: true } );
+	fs.writeFileSync( path.join( repo, 'sites', 'acme', 'theme-snapshot.json' ), '{}' );
+	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'cr-setting-record-env-looks-' ) );
+	const was = process.env.SGS_LOOK_STORE;
+	process.env.SGS_LOOK_STORE = 'probe-store';
+	let seen = null;
+	const run = ( cmd, args, opts ) => {
+		const r = spawnSync( process.execPath, [ '-e', 'console.log( "heading: current (store) " + process.env.SGS_LOOK_STORE )' ], opts );
+		seen = String( r.stdout ).trim();
+		return r;
+	};
+	try {
+		assert.deepEqual( prepareLooks( [ 'sgs/heading' ], 'acme', { dir, repo, build: true, run } ), [] );
+	} finally {
+		undefined === was ? delete process.env.SGS_LOOK_STORE : ( process.env.SGS_LOOK_STORE = was );
+	}
+	assert.equal( seen, 'heading: current (store) probe-store', 'the builder saw the variable, and "current (store)" counts as done' );
 } );
 
 test( 'MUST FAIL: the missing looks of a run are built in one call of the builder; a built block is not asked again, a block that failed for its own reason is returned and not tried again', () => {

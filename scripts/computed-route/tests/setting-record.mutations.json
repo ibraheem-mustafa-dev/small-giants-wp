@@ -34,5 +34,6 @@
 	{ "file": "lib/setting-record.mjs", "find": "\t\t...( band ? { contentBand: band.slot } : {} ),", "replace": "", "why": "the record would name no band, so the declared reading never applies" },
 	{"file": "lib/setting-record.mjs", "find": "\t\t...manyProperties( main.flatMap( ( r ) => r.props ).filter( ( p ) => long( [ p ] ).some( ( q ) => primaryProps.includes( q ) ) ), prop ),\n", "replace": "", "why": "a placed setting that paints height and width keeps only the first property"},
 	{"file": "lib/setting-record.mjs", "find": "...manyProperties( row?.css_property ? longhands( row.css_property ) : rows.flatMap( ( r ) => r.props ), prop ), ", "replace": "", "why": "a bare setting that paints height and width keeps only the first property"},
-	{"file": "lib/setting-record.mjs", "find": "...manyProperties( props, props[ 0 ] ), ", "replace": "", "why": "a setting placed from its row that paints height and width keeps only the first property"}
+	{"file": "lib/setting-record.mjs", "find": "...manyProperties( props, props[ 0 ] ), ", "replace": "", "why": "a setting placed from its row that paints height and width keeps only the first property"},
+	{"file": "lib/setting-record.mjs", "find": "{ encoding: 'utf8', cwd: REPO } );\n\t\tconst reported", "replace": "{ encoding: 'utf8', cwd: REPO, env: { PATH: process.env.PATH, SystemRoot: process.env.SystemRoot } } );\n\t\tconst reported", "why": "the look builder is started with an environment of its own, so SGS_LOOK_STORE never reaches it"}
 ]
