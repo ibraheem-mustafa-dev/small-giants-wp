@@ -19,7 +19,7 @@
 	},
 	{
 		"file": "lib/apply-targets.mjs",
-		"find": "if ( held && held !== tpl.tpl && ! tpl.part && ! tpl.reveal ) {",
+		"find": "if ( held && held !== tpl.tpl ) {",
 		"replace": "if ( false ) {",
 		"why": "a refreshed pair moves the tile fields off the origin's element"
 	},
