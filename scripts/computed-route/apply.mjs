@@ -402,6 +402,12 @@ async function main() {
 	if ( write && fs.existsSync( pendingPath ) ) {
 		throw new Error( `${ pendingPath } exists: a previous write was never judged. Read it, check those blocks on the live page, delete it, then run again.` );
 	}
+	// Every planned target is held against the origin once more, with the skeleton's and the layers' targets joined in, before a browser
+	// opens or anything is read.
+	const offOrigin = surfaces.flatMap( ( surface ) => targetsOffOrigin( surface ).map( ( line ) => `${ surface.name }: ${ line }` ) );
+	if ( offOrigin.length ) {
+		throw new Error( `a target is not the origin's element, nothing planned:\n${ offOrigin.join( '\n' ) }` );
+	}
 	const browser = await chromium.launch();
 	const allRows = skipped.map( ( s ) => ( { surface: s.surface, family: '*', status: 'unpaired', why: s.why } ) );
 	const allOps = [];
@@ -413,10 +419,6 @@ async function main() {
 			const drafts = await draftReads( { browser, surface, widths, props, extras, cache: tmp, fresh: has( '--fresh' ) } );
 			const lives = await liveReads( { browser, surface, widths, props, extras } );
 			const closed = await closedReads( { browser, surface, props, wanted: families.some( ( f ) => f.closedClock?.( { saved: blocks[ surface.postId ]?.blocks ?? {} } ) ) } );
-			const offOrigin = targetsOffOrigin( surface );
-			if ( offOrigin.length ) {
-				throw new Error( `${ surface.name }: a target is not the origin's element, nothing planned:\n${ offOrigin.join( '\n' ) }` );
-			}
 			const { rows, ops: decided } = decideSurface( { surface, drafts, lives, blocks, families, ledger, db, records, recordsIndex, calFor, clientData, closed, skeleton, snapshot, links, rawSnapshot } );
 			const saved = blocks[ surface.postId ]?.blocks ?? {};
 			// Position matching (lib/apply-position.mjs): draft elements no pair reaches, matched to live blocks by where they sit,

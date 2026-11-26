@@ -53,7 +53,7 @@ const inventory = JSON.parse( fs.readFileSync( path.join( build, 'skeleton', `${
 const old = new Map( surface.pairs.map( ( p ) => [ p.ref, p.tpl ] ) );
 const boxesFile = flag( '--boxes' );
 const boxes = boxesFile ? JSON.parse( fs.readFileSync( boxesFile, 'utf8' ) ) : await readLiveBoxes( { cfg: surface.cfg, chromium: ( await loadChromium() ).chromium } );
-const result = refreshPairs( { blocks, elements: withRevealed( inventory ), old: Object.fromEntries( old ), boxes } );
+const result = refreshPairs( { blocks, elements: withRevealed( inventory ), old: Object.fromEntries( old ), boxes, origin: surface.origin } );
 const short = ( tpl ) => String( tpl ?? '' ).split( '/' ).pop();
 console.log( `${ surfaceKey } (post ${ surface.postId }): ${ blocks.length } saved blocks, ${ old.size } old pairs, ${ Object.keys( result.pairs ).length } new pairs (${ Object.values( result.pairs ).filter( ( p ) => p.reveal ).length } read in a reveal state, marked *), ${ Object.keys( result.structural ).length } structural, ${ Object.keys( result.unpaired ).length } unpaired with a reason` );
 for ( const { ref, block } of blocks ) {

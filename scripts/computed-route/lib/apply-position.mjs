@@ -2,6 +2,8 @@
 // looked for among the post's other blocks by where it sits: inside the paired ancestor that holds it on the draft, a live block
 // whose box overlaps it by at least 0.6, with shared words where either side has text (lib/apply-skeleton.mjs::positionMatch).
 // A block a pair already reads is never a match: it has its draft element, and a second one would fight it over the same settings.
+// A block the origin file holds (`held`: a set of refs) has its draft element too, even when no pair reads it now (a refused pair):
+// no other element is attached to it by position.
 // The pass runs after the first read and returns extra targets for a second decide pass; every match is logged.
 import { overlap, positionMatch } from './apply-skeleton.mjs';
 
@@ -17,7 +19,7 @@ export function unreachedIds( { recordsIndex, pairs } ) {
 
 // Pure matching. draftFacts / liveFacts: { key: { box, text } } at one width; ancestors: the surface's targets with a draft box.
 // Returns [ { id, ref, tpl, overlap, ancestor } ].
-export function matchByPosition( { ids, draftFacts, liveFacts, pairs, saved } ) {
+export function matchByPosition( { ids, draftFacts, liveFacts, pairs, saved, held = new Set() } ) {
 	const out = [];
 	for ( const id of ids ) {
 		const d = draftFacts[ `pos~${ id }` ];
@@ -32,7 +34,7 @@ export function matchByPosition( { ids, draftFacts, liveFacts, pairs, saved } ) 
 		let best = null;
 		for ( const ref of Object.keys( saved ) ) {
 			const l = liveFacts[ ref ];
-			if ( pairs.some( ( p ) => p.ref === ref ) || ! l?.box || ! inside( l.box, liveFacts[ ancestor.ref ].box ) ) {
+			if ( held.has( ref ) || pairs.some( ( p ) => p.ref === ref ) || ! l?.box || ! inside( l.box, liveFacts[ ancestor.ref ].box ) ) {
 				continue;
 			}
 			const score = overlap( d.box, l.box );
@@ -53,7 +55,8 @@ export async function positionTargets( { surface, saved, recordsIndex, readFacts
 	}
 	const draftFacts = await readFacts( 'draft', [ ...surface.pairs.map( ( p ) => ( { key: p.key ?? p.ref, tpl: p.tpl } ) ), ...ids.map( ( id ) => ( { key: `pos~${ id }`, tpl: `Root/${ id }#0` } ) ) ] );
 	const liveFacts = await readFacts( 'live', Object.keys( saved ).map( ( ref ) => ( { key: ref, ref } ) ) );
-	return matchByPosition( { ids, draftFacts, liveFacts, pairs: surface.pairs, saved } ).map( ( m ) => ( {
+	const held = new Set( Object.entries( surface.origin ?? {} ).filter( ( [ , row ] ) => row?.tpl ).map( ( [ ref ] ) => ref ) );
+	return matchByPosition( { ids, draftFacts, liveFacts, pairs: surface.pairs, saved, held } ).map( ( m ) => ( {
 		key: `${ m.ref }@${ m.id }`,
 		ref: m.ref,
 		tpl: m.tpl,

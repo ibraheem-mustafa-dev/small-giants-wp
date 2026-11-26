@@ -9,6 +9,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { pairsReport } from '../lib/apply-targets.mjs';
 import { staleRecordProblems, targetsOffOrigin } from '../lib/apply-origin-gate.mjs';
+import { matchByPosition, positionTargets } from '../lib/apply-position.mjs';
+import { refreshPairs } from '../lib/refresh-pairs.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..', '..', '..' );
 const readJson = ( f ) => JSON.parse( fs.readFileSync( f, 'utf8' ) );
@@ -68,6 +70,77 @@ test( 'a planned target off the origin is named; skeleton, part and reveal targe
 		{ ref: 'cr-ref-careers-15', tpl: 'Root/3#0', via: 'skeleton' },
 	];
 	assert.deepEqual( targetsOffOrigin( { pairs: planned, origin } ), [ `${ careers11 }: planned for ${ stale.pairs[ careers11 ].tpl }, the origin records ${ origin[ careers11 ].tpl }` ] );
+} );
+
+test( 'the refusal names the real repo path of each file: the walker config sits in qa/parity and is corrected, never deleted', () => {
+	const both = { name: 'careers', disagree: [ { ref: careers11, source: 'refresh', was: 'Root/1#0', origin: 'Root/2#0' }, { ref: 'cr-ref-careers-12', source: 'pair', was: 'Root/3#0', origin: 'Root/4#0' } ] };
+	const [ line ] = staleRecordProblems( [ both ], 'indus-foods' );
+	assert.match( line, /git rm sites\/indus-foods\/build\/careers\.pairs\.json/ );
+	assert.match( line, /correct the pair of cr-ref-careers-12 in sites\/indus-foods\/build\/qa\/parity\/careers\.fill\.mjs/ );
+	assert.doesNotMatch( line, /git rm [^ ]*fill\.mjs/ );
+	assert.doesNotMatch( line, /build\/careers\.fill\.mjs/, 'the config is not beside the pairs file' );
+	const [ configOnly ] = staleRecordProblems( [ { ...both, disagree: [ both.disagree[ 1 ] ] } ], 'indus-foods' );
+	assert.doesNotMatch( configOnly, /git rm|refresh-pairs/, 'no advice to delete or regenerate a config' );
+} );
+
+test( 'a ref the origin holds is never dropped by the refreshed file: not named, structural or unpaired', () => {
+	const held = { 'cr-ref-s-1': { tpl: 'Root/1#0' }, 'cr-ref-s-2': { tpl: 'Root/2#0' }, 'cr-ref-s-3': { tpl: 'Root/3#0' } };
+	const cfg = { pairs: [ { live: '.cr-ref-s-9', draft: { tpl: 'Root/9#0' } } ] };
+	const refreshed = { pairs: {}, unpaired: { 'cr-ref-s-1': 'no text' }, structural: { 'cr-ref-s-2': 'no element' } };
+	const report = pairsReport( cfg, held, refreshed );
+	assert.deepEqual( report.pairs.map( ( p ) => [ p.ref, p.tpl ] ).sort(), [ [ 'cr-ref-s-1', 'Root/1#0' ], [ 'cr-ref-s-2', 'Root/2#0' ], [ 'cr-ref-s-3', 'Root/3#0' ] ] );
+	assert.deepEqual( report.refused, [] );
+	// Negative control: a ref no origin row holds is still dropped by the same file (the config's pair for -9 is on no saved block).
+	assert.deepEqual( report.stale, [ 'cr-ref-s-9' ] );
+	const unheld = pairsReport( cfg, {}, { pairs: {}, unpaired: { 'cr-ref-s-9': 'no text' } } );
+	assert.deepEqual( unheld.pairs, [] );
+	assert.equal( unheld.refused.length, 1 );
+} );
+
+test( 'a disagreement for a ref no pair is left for does not block the run', () => {
+	// Two refs on one origin element with different text are both refused; the config's wrong pair for the first has nothing left to correct.
+	const o = { 'cr-ref-s-1': { tpl: 'Root/1#0', fingerprint: { textHash: 'a' } }, 'cr-ref-s-2': { tpl: 'Root/1#0', fingerprint: { textHash: 'b' } } };
+	const report = pairsReport( { pairs: [ { live: '.cr-ref-s-1', draft: { tpl: 'Root/9#0' } } ] }, o, null );
+	assert.equal( report.pairs.length, 0 );
+	assert.equal( report.refused.length, 2 );
+	assert.deepEqual( report.disagree, [] );
+} );
+
+test( 'position matching never attaches another draft element to a block the origin holds', () => {
+	const input = {
+		ids: [ 5 ],
+		draftFacts: { 'pos~5': { box: { x: 10, y: 10, w: 100, h: 20 }, text: 'Hello' }, anc: { box: { x: 0, y: 0, w: 300, h: 300 } } },
+		liveFacts: { a: { box: { x: 0, y: 0, w: 300, h: 300 } }, b: { box: { x: 10, y: 10, w: 100, h: 20 }, text: 'Hello' } },
+		pairs: [ { ref: 'a', key: 'anc', tpl: 'Root/1#0' } ],
+		saved: { a: { block: 'sgs/container' }, b: { block: 'sgs/text' } },
+	};
+	assert.deepEqual( matchByPosition( input ).map( ( m ) => [ m.ref, m.tpl ] ), [ [ 'b', 'Root/5#0' ] ], 'the fixture matches without an origin hold' );
+	assert.deepEqual( matchByPosition( { ...input, held: new Set( [ 'b' ] ) } ), [] );
+} );
+
+test( 'the applier\'s position pass reads the surface\'s origin: a block it holds gets no position target', async () => {
+	const box = ( x, y, w, h ) => ( { box: { x, y, w, h } } );
+	const readFacts = async ( side ) => ( 'draft' === side
+		? { a: box( 0, 0, 300, 300 ), 'pos~5': { ...box( 10, 10, 100, 20 ), text: 'Hello' } }
+		: { a: box( 0, 0, 300, 300 ), b: { ...box( 10, 10, 100, 20 ), text: 'Hello' } } );
+	const saved = { a: { block: 'sgs/container' }, b: { block: 'sgs/text' } };
+	const surface = { pairs: [ { ref: 'a', key: 'a', tpl: 'Root/1#0' } ], origin: {} };
+	const recordsIndex = new Map( [ [ 'Root/5', {} ] ] );
+	assert.deepEqual( ( await positionTargets( { surface, saved, recordsIndex, readFacts } ) ).map( ( t ) => t.ref ), [ 'b' ], 'the fixture matches with no origin' );
+	assert.deepEqual( await positionTargets( { surface: { ...surface, origin: { b: { tpl: 'Root/7#0' } } }, saved, recordsIndex, readFacts } ), [] );
+} );
+
+test( 'a refreshed pairs file keeps the origin\'s element for every ref the origin holds, so it never disagrees with it', () => {
+	const el = ( n, tag, words ) => ( { key: `Root/${ n }#0`, parentKey: 'Root/0#0', depth: 1, tag, words } );
+	const elements = [ el( 1, 'h2', 'Same words' ), el( 2, 'h2', 'Same words' ), el( 3, 'p', 'Other' ) ];
+	const blocks = [ { ref: 'cr-ref-s-1', block: 'sgs/heading', attrs: { content: 'Same words' } }, { ref: 'cr-ref-s-2', block: 'sgs/heading', attrs: { content: 'Same words' } } ];
+	// By text and order alone the first block takes Root/1; the run that saved the post drew the first block from Root/2.
+	const origin = { 'cr-ref-s-1': { tpl: 'Root/2#0' }, 'cr-ref-s-2': { tpl: 'Root/1#0' } };
+	assert.equal( refreshPairs( { blocks, elements } ).pairs[ 'cr-ref-s-1' ].tpl, 'Root/1#0', 'the fixture can disagree' );
+	const { pairs, unpaired, structural } = refreshPairs( { blocks, elements, origin } );
+	assert.deepEqual( Object.fromEntries( Object.entries( pairs ).map( ( [ r, p ] ) => [ r, p.tpl ] ) ), { 'cr-ref-s-1': 'Root/2#0', 'cr-ref-s-2': 'Root/1#0' } );
+	const report = pairsReport( {}, origin, { pairs, unpaired, structural } );
+	assert.deepEqual( report.disagree, [] );
 } );
 
 test( 'no committed pairs file disagrees with its origin file (delete it, or regenerate with refresh-pairs.mjs --write)', () => {

@@ -1,0 +1,56 @@
+[
+	{
+		"file": "lib/apply-targets.mjs",
+		"find": "! held( ref ) && ! ( ref in ( refreshed.pairs || {} ) )",
+		"replace": "! ( ref in ( refreshed.pairs || {} ) )",
+		"why": "the refreshed file drops a ref the origin holds because it does not name it"
+	},
+	{
+		"file": "lib/apply-targets.mjs",
+		"find": "Object.entries( refreshed?.structural || {} ).filter( ( [ ref ] ) => ! held( ref ) )",
+		"replace": "Object.entries( refreshed?.structural || {} )",
+		"why": "a structural verdict drops a ref the origin holds"
+	},
+	{
+		"file": "lib/apply-targets.mjs",
+		"find": "Object.entries( refreshed?.unpaired || {} ).filter( ( [ ref ] ) => ! held( ref ) )",
+		"replace": "Object.entries( refreshed?.unpaired || {} )",
+		"why": "an unpaired verdict drops a ref the origin holds"
+	},
+	{
+		"file": "lib/apply-targets.mjs",
+		"find": "disagree: disagree.filter( ( d ) => out.has( d.ref ) )",
+		"replace": "disagree",
+		"why": "a disagreement for a refused ref still blocks the run"
+	},
+	{
+		"file": "lib/apply-position.mjs",
+		"find": "held.has( ref ) || pairs.some(",
+		"replace": "pairs.some(",
+		"why": "position matching attaches an element to a block the origin holds"
+	},
+	{
+		"file": "lib/apply-position.mjs",
+		"find": "Object.entries( surface.origin ?? {} )",
+		"replace": "Object.entries( {} )",
+		"why": "the applier's position pass is not told the origin's refs"
+	},
+	{
+		"file": "lib/refresh-pairs.mjs",
+		"find": "origin[ ref ]?.tpl && elements.find(",
+		"replace": "false && elements.find(",
+		"why": "a refreshed pairs file ignores the origin"
+	},
+	{
+		"file": "lib/apply-origin-gate.mjs",
+		"find": "`sites/${ client }/build/qa/parity/${ surface.name }.fill.mjs`",
+		"replace": "`sites/${ client }/build/${ surface.name }.fill.mjs`",
+		"why": "the refusal names the walker config beside the pairs file"
+	},
+	{
+		"file": "lib/apply-origin-gate.mjs",
+		"find": "correct the pair of",
+		"replace": "delete the file for",
+		"why": "the refusal advises deleting a walker config"
+	}
+]

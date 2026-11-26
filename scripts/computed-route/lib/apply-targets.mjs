@@ -18,7 +18,8 @@ export const pairsOf = ( cfg, origin = {}, refreshed = null ) => pairsReport( cf
 // block's exact draft element, so it wins over every other source for a ref it holds: a config pair or a `<surface>.pairs.json` pair that
 // names another element is a stale record, left out and listed in `disagree` as { ref, source: 'pair' | 'refresh', was, origin } (loadSurfaces
 // carries it to the applier, which refuses to run on it). `refreshed` is `<surface>.pairs.json` (lib/refresh-pairs.mjs): its pairs replace the
-// config's for a ref the origin does not hold, and a ref it names unpaired is dropped with its reason. A part or reveal pair names a different
+// config's for a ref the origin does not hold, and a ref it names unpaired is dropped with its reason. A ref the origin holds is never
+// dropped by the refreshed file (not named, structural or unpaired): its pair stays the origin's element. A part or reveal pair names a different
 // element of the same block by design, so it is never compared with the origin's. A pair with `reveal` is an element the draft shows only
 // in that state, read with the draft put in it (lib/apply-reveal-read.mjs). A draft element that several refs claim with different
 // content (their origin fingerprints' text differs) is refused for all of them: a write for one block would land on the others.
@@ -43,7 +44,8 @@ export function pairsReport( cfg, origin = {}, refreshed = null ) {
 	const refused = [];
 	// The refreshed file names every saved block, paired or with a reason: an old pair whose ref it does not name is on no block of
 	// the post any more, so it is dropped (reported in `stale`), not left to show as a pair without a block.
-	const stale = refreshed ? [ ...out.keys() ].filter( ( ref ) => ! ( ref in ( refreshed.pairs || {} ) ) && ! ( ref in ( refreshed.unpaired || {} ) ) && ! ( ref in ( refreshed.structural || {} ) ) ) : [];
+	const held = ( ref ) => !! origin[ ref ]?.tpl;
+	const stale = refreshed ? [ ...out.keys() ].filter( ( ref ) => ! held( ref ) && ! ( ref in ( refreshed.pairs || {} ) ) && ! ( ref in ( refreshed.unpaired || {} ) ) && ! ( ref in ( refreshed.structural || {} ) ) ) : [];
 	stale.forEach( ( ref ) => out.delete( ref ) );
 	for ( const [ ref, tpl ] of Object.entries( refreshed?.pairs || {} ) ) {
 		const held = origin[ ref ]?.tpl;
@@ -54,11 +56,11 @@ export function pairsReport( cfg, origin = {}, refreshed = null ) {
 		out.set( ref, { key: ref, ref, tpl: tpl.tpl, via: 'refresh', ...( tpl.reveal ? { reveal: tpl.reveal } : {} ), ...( tpl.part ? { part: tpl.part } : {} ) } );
 	}
 	// A structural block is one the draft draws no element for (lib/pair-wrappers.mjs): reported, never paired.
-	for ( const [ ref, why ] of Object.entries( refreshed?.structural || {} ) ) {
+	for ( const [ ref, why ] of Object.entries( refreshed?.structural || {} ).filter( ( [ ref ] ) => ! held( ref ) ) ) {
 		out.delete( ref );
 		refused.push( { ref, why, structural: true } );
 	}
-	for ( const [ ref, why ] of Object.entries( refreshed?.unpaired || {} ) ) {
+	for ( const [ ref, why ] of Object.entries( refreshed?.unpaired || {} ).filter( ( [ ref ] ) => ! held( ref ) ) ) {
 		out.delete( ref );
 		refused.push( { ref, why } );
 	}
@@ -75,7 +77,8 @@ export function pairsReport( cfg, origin = {}, refreshed = null ) {
 			} );
 		}
 	}
-	return { pairs: [ ...out.values() ], refused, stale, disagree };
+	// A disagreement for a ref no pair is left for (the claim check above refused it) has nothing to correct: the refusal reports it.
+	return { pairs: [ ...out.values() ], refused, stale, disagree: disagree.filter( ( d ) => out.has( d.ref ) ) };
 }
 
 // The draft's address for a surface, on the origin the draft is served from now: a config records the port of its own run.
