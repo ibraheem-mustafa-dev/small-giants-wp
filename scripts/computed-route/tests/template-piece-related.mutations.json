@@ -103,14 +103,14 @@
 	},
 	{
 		"file": "lib/template-piece-related.mjs",
-		"find": "draftRef: { tpl: mountedRoot( index, loop.copies[ 0 ] ) }, itemTemplate: true",
-		"replace": "draftRef: { tpl: loop.copies[ 0 ] }, itemTemplate: true",
+		"find": "draftRef: { tpl: mountedRoot( index, loop.copies[ 0 ] ) }, itemTemplate: true, eachRecord: true",
+		"replace": "draftRef: { tpl: loop.copies[ 0 ] }, itemTemplate: true, eachRecord: true",
 		"why": "the related card is read at the loop cell, not the mounted card's root"
 	},
 	{
 		"file": "lib/template-piece-related.mjs",
-		"find": "draftRef: { tpl: mountedRoot( index, loop.copies[ 0 ] ) }, itemTemplate: true",
-		"replace": "draftRef: { tpl: mountedRoot( index, loop.copies[ 0 ] ) }",
+		"find": "draftRef: { tpl: mountedRoot( index, loop.copies[ 0 ] ) }, itemTemplate: true, eachRecord: true",
+		"replace": "draftRef: { tpl: mountedRoot( index, loop.copies[ 0 ] ) }, itemTemplate: true",
 		"why": "the related card is not marked as standing for every product"
 	}
 ]

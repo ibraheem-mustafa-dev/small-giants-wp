@@ -230,7 +230,7 @@ test( 'MUST FAIL: the shop\'s product grid is WooCommerce\'s product collection 
 	assert.equal( cardNode.attributes.sourceMode, 'wc-product' );
 	// RF7: the card's look is read at the mounted component's root, never at the loop cell that only places it in the listing.
 	assert.deepEqual( cardNode.draftRef, { tpl: 'Root>ProductCard@9#0/2#0' }, 'the product card takes the look of the draft first card, at its component root' );
-	assert.equal( cardNode.itemTemplate, true, 'the card stands for every product the loop lists, so Fill never takes one product\'s variant for it' );
+	assert.deepEqual( [ cardNode.itemTemplate, cardNode.eachRecord ], [ true, true ], 'the card stands for every product the loop lists, so Fill never takes one product\'s variant for it' );
 	const region = commerceRegion( { m: inventoryModel( inv( SHOP ) ), commerce: { role: 'shop', checkout: null }, rule: RULE() } );
 	assert.deepEqual( [ region.item.key, region.card.key ], [ 'Root/9#0', 'Root>ProductCard@9#0/2#0' ], 'the loop cell stays the region item (the listing columns); the card is the mounted component root' );
 	assert.ok( find( skeleton, 'sgs/heading' ) );

@@ -1,7 +1,7 @@
 [
 	{
 		"file": "lib/skeleton-propose.mjs",
-		"find": "...( r.item ? { itemTemplate: true } : {} )",
+		"find": "...( r.item ? { itemTemplate: true, eachRecord: true } : {} )",
 		"replace": "...( {} )",
 		"why": "the shop's card is not marked as standing for every product"
 	}

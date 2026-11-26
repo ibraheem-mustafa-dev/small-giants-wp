@@ -1,4 +1,4 @@
-// A card standing for every item of its loop (`itemTemplate`, lib/fill-item-template.mjs): the copy Fill reads never chooses the
+// A card drawing every record of its query (`eachRecord`, lib/fill-item-template.mjs): the copy Fill reads never chooses the
 // block's variant, through the resolver's discovered values or through presence evidence, and the proposers mark the shop's and
 // the related products' cards so (RF7: "no variantStyle on a template card"; related cards read at the mounted card's root).
 // Tests marked MUST FAIL fail without the code they name. Planted reads and calibration, the real framework database.
@@ -45,30 +45,31 @@ const card = ( extra = {} ) => [ { name: 'sgs/product-card', draftRef: '.card', 
 const SPEC = { '0:': snap( { 'background-color': CREAM } ), '0:.sgs-product-card__tag': snap( {}, 'Trial' ) };
 
 test( 'MUST FAIL: a card standing for every product keeps its variant whatever the read copy draws', () => {
-	const held = run( card( { itemTemplate: true } ), SPEC );
+	const held = run( card( { itemTemplate: true, eachRecord: true } ), SPEC );
 	assert.equal( held.tree[ 0 ].attributes.variantStyle, undefined, 'the first product\'s trial tag and cream ground choose no variant' );
 	assert.deepEqual( held.writes.filter( ( w ) => 'variantStyle' === w.attr && 'standard' !== w.after ), [] );
-	assert.match( held.heldNotes[ 0 ], /cr-ref-fx-0 sgs\/product-card: stands for every item of its loop, so its variantStyle stays "standard"/ );
+	assert.match( held.heldNotes[ 0 ], /cr-ref-fx-0 sgs\/product-card: draws every record of its query, so its variantStyle stays "standard"/ );
 } );
 
 test( 'negative control: a card that is one card (no itemTemplate) still takes the variant the draft draws', () => {
 	const one = run( card(), SPEC );
 	assert.equal( one.tree[ 0 ].attributes.variantStyle, 'trial' );
+	assert.equal( run( card( { itemTemplate: true } ), SPEC ).tree[ 0 ].attributes.variantStyle, 'trial', 'a slide standing for every slide keeps the variant its slides share' );
 	assert.deepEqual( one.heldNotes, [] );
 } );
 
 test( 'MUST FAIL: presence evidence alone (no ground to match) never chooses a loop card\'s variant', () => {
 	const spec = { '0:': snap(), '0:.sgs-product-card__tag': snap( {}, 'Trial' ) };
 	assert.equal( run( card(), spec ).tree[ 0 ].attributes.variantStyle, 'trial', 'control: the drawn tag alone chooses trial on one card' );
-	assert.equal( run( card( { itemTemplate: true } ), spec ).tree[ 0 ].attributes.variantStyle, undefined );
+	assert.equal( run( card( { itemTemplate: true, eachRecord: true } ), spec ).tree[ 0 ].attributes.variantStyle, undefined );
 } );
 
 test( 'a loop card already holding a variant keeps it; a block with no variant setting is not held', () => {
-	const held = run( card( { itemTemplate: true, attributes: { sourceMode: 'wc-product', variantStyle: 'featured' } } ), SPEC );
+	const held = run( card( { itemTemplate: true, eachRecord: true, attributes: { sourceMode: 'wc-product', variantStyle: 'featured' } } ), SPEC );
 	assert.equal( held.tree[ 0 ].attributes.variantStyle, 'featured' );
 	assert.match( held.heldNotes[ 0 ], /stays "featured"/ );
 	const flat = [ { name: 'sgs/text', attributes: {} } ];
-	assert.deepEqual( holdItemVariants( { nodes: [ { index: 0, name: 'sgs/text', node: { itemTemplate: true } } ], flat, db, schemaOf: blockSchema, refOf: () => 'x' } ), [] );
+	assert.deepEqual( holdItemVariants( { nodes: [ { index: 0, name: 'sgs/text', node: { itemTemplate: true, eachRecord: true } } ], flat, db, schemaOf: blockSchema, refOf: () => 'x' } ), [] );
 } );
 
 test( 'MUST FAIL: the card a loop copy mounts is read at the mounted component\'s root, never the loop cell', () => {

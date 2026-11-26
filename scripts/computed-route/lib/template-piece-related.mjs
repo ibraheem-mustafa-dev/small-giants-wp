@@ -228,7 +228,8 @@ export function place( ctx, piece ) {
 		const top = first?.box?.[ 1440 ]?.y;
 		const columns = Math.max( 1, loop.copies.filter( ( k ) => undefined !== top && Math.abs( ( index.byKey.get( k )?.box?.[ 1440 ]?.y ?? NaN ) - top ) <= 1 ).length );
 		// The card is read at the root of the card the first copy mounts (lib/template-piece-draft.mjs::mountedRoot), and stands for
-		// every product the collection lists (`itemTemplate`), so Fill never takes one product's variant for it.
+		// every product the collection lists (`itemTemplate`), each drawn with its one set of settings (`eachRecord`), so Fill never
+		// takes one product's variant for it.
 		const node = {
 			name: piece.block,
 			attributes: {
@@ -238,7 +239,7 @@ export function place( ctx, piece ) {
 				displayLayout: { type: 'flex', columns: Math.min( columns, rel.count ), shrinkColumns: true },
 				...( tax ? { sgsSameTermAs: tax } : { collection: RELATED_COLLECTION } ),
 			},
-			innerBlocks: [ { name: 'woocommerce/product-template', attributes: {}, innerBlocks: [ { name: 'sgs/product-card', attributes: { sourceMode: 'wc-product' }, innerBlocks: [], draftRef: { tpl: mountedRoot( index, loop.copies[ 0 ] ) }, itemTemplate: true } ] } ],
+			innerBlocks: [ { name: 'woocommerce/product-template', attributes: {}, innerBlocks: [ { name: 'sgs/product-card', attributes: { sourceMode: 'wc-product' }, innerBlocks: [], draftRef: { tpl: mountedRoot( index, loop.copies[ 0 ] ) }, itemTemplate: true, eachRecord: true } ] } ],
 		};
 		const list = nodes[ 0 ].list;
 		const at = Math.min( ...nodes.map( ( r ) => list.indexOf( r.node ) ) );

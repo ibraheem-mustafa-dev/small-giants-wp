@@ -7,7 +7,7 @@
 	},
 	{
 		"file": "lib/fill-item-template.mjs",
-		"find": "\t\tif ( ! rec.node?.itemTemplate ) {",
+		"find": "\t\tif ( ! rec.node?.eachRecord ) {",
 		"replace": "\t\tif ( false ) {",
 		"why": "every card's variant is held, a single card's too"
 	},

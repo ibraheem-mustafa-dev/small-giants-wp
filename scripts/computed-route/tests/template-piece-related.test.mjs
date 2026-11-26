@@ -39,7 +39,7 @@ test( 'MUST FAIL: the draft\'s other products sharing the shown product\'s brand
 	const section = got.tree[ 0 ].innerBlocks;
 	assert.deepEqual( section.map( ( x ) => x.name ), [ 'sgs/heading', 'woocommerce/product-collection' ] );
 	assert.deepEqual( section[ 1 ].attributes, { queryId: 0, query: { inherit: false, perPage: 4, pages: 1, offset: 0, postType: 'product', isProductCollectionBlock: true }, tagName: 'div', displayLayout: { type: 'flex', columns: 4, shrinkColumns: true }, sgsSameTermAs: 'product_brand' } );
-	assert.deepEqual( section[ 1 ].innerBlocks, [ { name: 'woocommerce/product-template', attributes: {}, innerBlocks: [ { name: 'sgs/product-card', attributes: { sourceMode: 'wc-product' }, innerBlocks: [], draftRef: { tpl: 'Root/4#0' }, itemTemplate: true } ] } ] );
+	assert.deepEqual( section[ 1 ].innerBlocks, [ { name: 'woocommerce/product-template', attributes: {}, innerBlocks: [ { name: 'sgs/product-card', attributes: { sourceMode: 'wc-product' }, innerBlocks: [], draftRef: { tpl: 'Root/4#0' }, itemTemplate: true, eachRecord: true } ] } ] );
 	assert.deepEqual( got.placed[ 0 ], { id: 'related', block: 'woocommerce/product-collection', at: 'Root/3#0, in place of Root/3#0', run: [ 'Root/3#0' ], list: 'related', sameTermAs: 'product_brand', perPage: 4, columns: 4 } );
 } );
 
@@ -49,7 +49,7 @@ test( 'MUST FAIL: a related card each copy mounts (the draft\'s card component) 
 	const got = place( ctx( { inventory: { elements: [ ...ELEMENTS(), ...mounted ] } } ), PIECE );
 	const cardNode = got.tree[ 0 ].innerBlocks[ 1 ].innerBlocks[ 0 ].innerBlocks[ 0 ];
 	assert.deepEqual( cardNode.draftRef, { tpl: 'Root>ProductCard@4#0/0#0' } );
-	assert.equal( cardNode.itemTemplate, true, 'the card stands for every related product' );
+	assert.deepEqual( [ cardNode.itemTemplate, cardNode.eachRecord ], [ true, true ], 'the card stands for every related product' );
 } );
 
 test( 'MUST FAIL: the list\'s filter decides the term: a facet field, none (WooCommerce\'s related products), or refused', () => {
