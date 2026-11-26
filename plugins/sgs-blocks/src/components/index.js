@@ -22,7 +22,11 @@ export { default as textRow } from './colour-variants/textRow';
 export { default as MediaElementPanel } from './MediaElementPanel';
 export { default as SgsInnerSection } from './SgsInnerSection';
 export { default as SgsPanelReset } from './SgsPanelReset';
-export { default as SgsResetPanel, panelResetState } from './SgsResetPanel';
+export {
+	default as SgsResetPanel,
+	SgsResetItem,
+	panelResetState,
+} from './SgsResetPanel';
 export { default as MediaGalleryPicker } from './MediaGalleryPicker';
 // `parseLinearGradient` / `buildGradientCss` were deleted by 837f7c97 (D636 storage
 // collapse) but stayed listed here, so the barrel advertised two bindings that resolve

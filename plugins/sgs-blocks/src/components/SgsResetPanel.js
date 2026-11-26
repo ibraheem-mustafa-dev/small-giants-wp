@@ -6,12 +6,16 @@
  * them. It draws a `PanelBody` at the top level of an inspector tab, or, with `nested`, a light inner section
  * (`SgsInnerSection`) when the panel sits inside another panel (one level deep only).
  *
- * The caller gives the panel what it holds as `items`: `[ { hasValue: () => boolean, onDeselect: () => void } ]`, the
- * same two functions a `ToolsPanelItem` took. The panel holds a value when any item does; Reset calls `resetAll` when the
- * caller passes one, else every item's `onDeselect`.
+ * The caller gives the panel what it holds in one or both of two ways. `items`: `[ { hasValue: () => boolean, onDeselect:
+ * () => void } ]`, the same two functions a `ToolsPanelItem` took; the panel knows its value even while closed. Or a
+ * `SgsResetItem` around each control (for a panel whose controls come from helper components): each registers its two
+ * functions while it is mounted, so the panel knows its value once it is open. The panel holds a value when any item
+ * does; Reset calls `resetAll` when the caller passes one and then every item's `onDeselect`, so whatever made the panel
+ * show a value is cleared.
  *
- * Props: `title`, `items`, optional `resetAll`, `initialOpen` (default false), `nested` (default false), `className`,
- * `children`.
+ * Props: `title`, `items`, optional `resetAll`, `initialOpen` (default false), `nested` (default false; a light inner
+ * section inside another panel), `bare` (default false; no panel at all, only Reset above the controls, for a panel that
+ * repeats its parent's title), `className`, `children`.
  *
  * Usage:
  *   <SgsResetPanel
@@ -24,6 +28,13 @@
  * @package SGS\Blocks
  */
 import { PanelBody } from '@wordpress/components';
+import {
+	createContext,
+	useContext,
+	useLayoutEffect,
+	useReducer,
+	useRef,
+} from '@wordpress/element';
 
 import SgsInnerSection from './SgsInnerSection';
 import SgsPanelReset from './SgsPanelReset';
@@ -32,7 +43,7 @@ import SgsPanelReset from './SgsPanelReset';
  * Whether any item holds a value, and what Reset does.
  *
  * @param {Array<{hasValue: Function, onDeselect: Function}>} items    The panel's items.
- * @param {Function}                                           [resetAll] Overrides the per-item reset.
+ * @param {Function}                                           [resetAll] A caller's own reset, run before the items'.
  * @return {{hasValue: boolean, onReset: Function}} Panel state.
  */
 export function panelResetState( items = [], resetAll ) {
@@ -42,11 +53,47 @@ export function panelResetState( items = [], resetAll ) {
 		onReset: () => {
 			if ( 'function' === typeof resetAll ) {
 				resetAll();
-				return;
 			}
 			list.forEach( ( item ) => item.onDeselect() );
 		},
 	};
+}
+
+const ItemRegistry = createContext( null );
+
+/**
+ * One control of an `SgsResetPanel` whose controls come from a helper: it tells the panel whether it holds a value and how
+ * to clear it. Renders its children unchanged; outside a panel it is a no-op.
+ *
+ * @param {Object}   props
+ * @param {Function} props.hasValue   Returns true while the control holds a value.
+ * @param {Function} props.onDeselect Clears the control.
+ * @param {Element}  props.children   The control.
+ * @return {Element} The control.
+ */
+export function SgsResetItem( { hasValue, onDeselect, children } ) {
+	const registry = useContext( ItemRegistry );
+	const id = useRef( {} ).current;
+	if ( registry ) {
+		registry.entries.set( id, { hasValue, onDeselect } );
+	}
+	// After each commit, tell the panel; on unmount, drop the entry.
+	useLayoutEffect( () => {
+		if ( registry ) {
+			registry.sync();
+		}
+	} );
+	useLayoutEffect(
+		() => () => {
+			if ( registry ) {
+				registry.entries.delete( id );
+				registry.sync();
+			}
+		},
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[]
+	);
+	return <>{ children }</>;
 }
 
 export default function SgsResetPanel( {
@@ -55,10 +102,34 @@ export default function SgsResetPanel( {
 	resetAll,
 	initialOpen = false,
 	nested = false,
+	bare = false,
 	className = '',
 	children,
 } ) {
-	const { hasValue, onReset } = panelResetState( items, resetAll );
+	const [ , rerender ] = useReducer( ( n ) => n + 1, 0 );
+	const shown = useRef( false );
+	const registry = useRef( null );
+	if ( ! registry.current ) {
+		registry.current = {
+			entries: new Map(),
+			// After the controls commit, draw again only when the panel's value differs from what it drew.
+			sync: () => {
+				const now = [
+					...( registry.current.items || [] ),
+					...registry.current.entries.values(),
+				].some( ( item ) => !! item.hasValue() );
+				if ( now !== shown.current && ! registry.current.pending ) {
+					registry.current.pending = true;
+					rerender();
+				}
+			},
+		};
+	}
+	registry.current.pending = false;
+	registry.current.items = items;
+	const all = [ ...( items || [] ), ...registry.current.entries.values() ];
+	const { hasValue, onReset } = panelResetState( all, resetAll );
+	shown.current = hasValue;
 	const body = (
 		<>
 			<SgsPanelReset
@@ -69,6 +140,13 @@ export default function SgsResetPanel( {
 			{ children }
 		</>
 	);
+	if ( bare ) {
+		return (
+			<ItemRegistry.Provider value={ registry.current }>
+				{ body }
+			</ItemRegistry.Provider>
+		);
+	}
 	if ( nested ) {
 		return (
 			<SgsInnerSection
@@ -76,7 +154,9 @@ export default function SgsResetPanel( {
 				hasValue={ hasValue }
 				className={ className }
 			>
-				{ body }
+				<ItemRegistry.Provider value={ registry.current }>
+					{ body }
+				</ItemRegistry.Provider>
 			</SgsInnerSection>
 		);
 	}
@@ -86,7 +166,9 @@ export default function SgsResetPanel( {
 			initialOpen={ initialOpen }
 			className={ `sgs-reset-panel ${ className }`.trim() }
 		>
-			{ body }
+			<ItemRegistry.Provider value={ registry.current }>
+				{ body }
+			</ItemRegistry.Provider>
 		</PanelBody>
 	);
 }
