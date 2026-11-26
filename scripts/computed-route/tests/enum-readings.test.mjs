@@ -63,6 +63,12 @@ test( 'MUST FAIL: a placement the record cannot prove, or one in another state, 
 	assert.equal( enumReadInstances( [ inst( 'wrap' ) ], [ own, { ...tied, state: 'hover' } ] ).length, 0, 'the same property in another state is no tie' );
 } );
 
+test( 'MUST FAIL: a value is planned once, in the first fixture variant that plans it', () => {
+	const r = { attr_name: 'underline', css_property: 'text-decoration-line' };
+	const mk = ( variant ) => ( { row: r, marker: { label: 'enum-always', enumValue: 'always' }, variant, key: `v${ variant }` } );
+	assert.deepEqual( enumReadInstances( [ mk( 0 ), mk( 1 ), mk( 2 ) ], [] ).map( ( i ) => i.key ), [ 'v0' ] );
+} );
+
 test( 'only the first run of each marker is kept (the later runs repeat it under another layout mode)', () => {
 	const r = { attr_name: 'underline', css_property: 'text-decoration-line' };
 	const base = { row: r, marker: { label: 'enum-always', enumValue: 'always' }, variant: 0, key: 'first' };

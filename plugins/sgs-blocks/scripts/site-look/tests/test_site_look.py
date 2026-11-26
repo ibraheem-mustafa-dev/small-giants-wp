@@ -262,6 +262,42 @@ def test_look_key_follows_the_route_plan_of_per_value_renders():
     assert {'site-look-bridge.mjs', 'enum-read-plan.mjs'} <= names
 
 
+class _SpyReader:
+    """A reader that answers every read with one value and records what it was asked for."""
+
+    def __init__(self):
+        self.calls = []
+
+    def ok(self, job):
+        return True
+
+    def style(self, job, held=(), only=None):
+        self.calls.append((job, tuple(held), only))
+        paths, props = only
+        return {str(w): {p: {q: 'underline' for q in props} for p in paths} for w in SL.WIDTHS}
+
+
+def test_enum_reads_read_only_the_paths_and_longhands_they_keep_and_skip_a_value_already_read():
+    """MUST FAIL with the reads unrestricted or repeated: a choice setting's reading asks for its own placement paths and
+    longhands only, a state only for the longhands the route compares in a state (stateLookProps), and a second fixture
+    variant's instance of a value already read costs no read."""
+    def inst(key, variant):
+        return {'key': key, 'variant': variant, 'setting': 's', 'props': ['text-decoration-line', 'background-size'], 'enumValue': 'always', 'enumDefault': '', 'attrs': {'s': 'always'}}
+    base = {'key': 'default-v0', 'isDefault': True, 'variant': 0, 'attrs': {}}
+    plan = [base, inst('s-enum-always-v0', 0), inst('s-enum-always-v1', 1)]
+    bridge = {'enums': [plan[1], plan[2]], 'stateLookProps': ['text-decoration-line']}
+    paths = {'s': {'': ['', ' > a'], 'hover': ['']}}
+    spy = _SpyReader()
+    got = SL.enum_reads(bridge, spy, paths, plan)
+    rest = [c for c in spy.calls if c[0] == 'b:s-enum-always-v0' and c[1] == ()]
+    assert rest and rest[0][2] == (frozenset(['', ' > a']), ('text-decoration-line', 'background-size')), 'a rest read takes its placement paths and its own longhands'
+    hover = [c for c in spy.calls if c[1] == ('hover',)]
+    assert hover and all(c[2][1] == ('text-decoration-line',) for c in hover), 'a hover read takes only the stateLookProps longhands'
+    assert not [c for c in spy.calls if c[0] == 'b:s-enum-always-v1'], 'the second variant of a value already read is not read'
+    assert got['s']['enumReads']['always']['text-decoration-line']['375'] == 'underline'
+    assert 'background-size' not in got['s']['enumStateReads']['hover']['always']
+
+
 def test_tested_attrs_reads_attribute_selectors():
     names = SL.tested_attrs(['.a[open] > b, .c[aria-current="page"], :not([hidden]) .x[class*=y] {color:red}',
                              '@media (min-width:1px){.d{grid-template-columns:[full-start] 1fr [full-end]}} .e[data-x]{content:"[nope]"}'])

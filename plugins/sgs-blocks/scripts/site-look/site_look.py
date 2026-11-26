@@ -237,27 +237,35 @@ def read_element(page, el, width: int, props: list, own_props: list, with_own: b
     return out
 
 
-def collect(page, top, prefix: str, els: dict, props: dict, with_own: bool) -> None:
+def collect(page, top, prefix: str, els: dict, props: dict, with_own: bool, only=None) -> None:
     """Every element of `top` (itself included) at every width, keyed as the route keys it, with its drawn pseudo-elements;
-    a key already read (by an earlier variant) is kept."""
+    a key already read (by an earlier variant) is kept. `only`: ({paths}, [longhands]) reads just those paths and those of the
+    longhands the full read would have taken (a choice setting's own placements), the values exactly as the full read gives them."""
     nodes = [top, *top.find_all(True)]
     for el in nodes:
         p = element_path(el, top)
         key = (f'{prefix} > {p}' if p else prefix) if prefix else p
         if key in els or el.name in ('style', 'script', 'template'):
             continue
-        byw = {}
-        for w in WIDTHS:
-            parent_vals = None
-            if isinstance(el.parent, Tag) and el.parent.name != '[document]':
-                parent_vals = {q: _value(page, el.parent, None, q, w, None) for q in EXTRA_INHERITED}
-            byw[str(w)] = read_element(page, el, w, props['read'], props['own'], with_own, parent_vals)
-        els[key] = byw
+        if only is not None and key not in only[0] and f'{key}::before' not in only[0] and f'{key}::after' not in only[0]:
+            continue
+        read_props = props['read'] if only is None else [q for q in only[1] if q in props['read']]
+        pseudo_props = props['pseudo'] if only is None else [q for q in only[1] if q in props['pseudo']]
+        if only is None or key in only[0]:
+            byw = {}
+            for w in WIDTHS:
+                parent_vals = None
+                if isinstance(el.parent, Tag) and el.parent.name != '[document]' and (only is None or any(q in EXTRA_INHERITED for q in read_props)):
+                    parent_vals = {q: _value(page, el.parent, None, q, w, None) for q in EXTRA_INHERITED}
+                byw[str(w)] = read_element(page, el, w, read_props, props['own'], with_own, parent_vals)
+            els[key] = byw
         for ps in ('before', 'after'):
+            if only is not None and f'{key}::{ps}' not in only[0]:
+                continue
             if all(page.computed(el, ps, w).get('_absent') for w in WIDTHS):
                 continue
-            els[f'{key}::{ps}'] = {str(w): {q: v for q in props['pseudo'] if (v := _value(page, el, ps, q, w, None)) is not None} for w in WIDTHS}
-        if el.name in ('input', 'textarea'):
+            els[f'{key}::{ps}'] = {str(w): {q: v for q in pseudo_props if (v := _value(page, el, ps, q, w, None)) is not None} for w in WIDTHS}
+        if only is None and el.name in ('input', 'textarea'):
             els[f'{key}::placeholder'] = {str(w): {q: v for q in props['text'] if (v := _value(page, el, 'placeholder', q, w, None)) is not None} for w in WIDTHS}
 
 
@@ -323,13 +331,13 @@ def path_attrs(page, out: dict, names: set) -> None:
         walk(t, '@controls' if n == 1 else f'@controls:{n}')
 
 
-def read_page(page, els: dict, props: dict, with_own: bool) -> None:
+def read_page(page, els: dict, props: dict, with_own: bool, only=None) -> None:
     root = page.root
     if root is None:
         return
-    collect(page, root, '', els, props, with_own)
+    collect(page, root, '', els, props, with_own, only)
     for n, t in enumerate(controlled(page, root), 1):
-        collect(page, t, '@controls' if n == 1 else f'@controls:{n}', els, props, with_own)
+        collect(page, t, '@controls' if n == 1 else f'@controls:{n}', els, props, with_own, only)
     uid = next((c for c in (root.get('class') or []) if UID_CLASS.match(c)), None)
     if uid:
         k = 0
@@ -337,10 +345,10 @@ def read_page(page, els: dict, props: dict, with_own: bool) -> None:
             if c is root or _inside(c, root) or _inside(root, c):
                 continue
             k += 1
-            collect(page, c, '@companion' if k == 1 else f'@companion:{k}', els, props, with_own)
+            collect(page, c, '@companion' if k == 1 else f'@companion:{k}', els, props, with_own, only)
         scrim = page.soup.select_one(f'.{uid}-scrim')
         if scrim is not None and not _inside(scrim, root):
-            collect(page, scrim, '@scrim', els, props, with_own)
+            collect(page, scrim, '@scrim', els, props, with_own, only)
 
 
 SECTION_MARK = '<!--sgs-site-look-block-->'
@@ -552,12 +560,13 @@ class Reader:
     def ok(self, job: str) -> bool:
         return bool(self.results.get(job, {}).get('ok'))
 
-    def style(self, job: str, held=()) -> dict:
-        """{width: {path: {property: value}}}, as calibration's style reader returned a reading; `held` the states held."""
-        key = (job, tuple(held))
+    def style(self, job: str, held=(), only=None) -> dict:
+        """{width: {path: {property: value}}}, as calibration's style reader returned a reading; `held` the states held.
+        `only`: ({paths}, [longhands]) reads just those (see collect)."""
+        key = (job, tuple(held), None if only is None else (tuple(sorted(only[0])), tuple(only[1])))
         if key not in self.style_memo:
             els = {}
-            read_page(self.page(job, held), els, self.props, False)
+            read_page(self.page(job, held), els, self.props, False, only)
             self.style_memo[key] = transpose(els)
         return self.style_memo[key]
 
@@ -931,17 +940,20 @@ def enum_reads(bridge: dict, reader: Reader, paths: dict, plan: list) -> dict:
         for state in ENUM_STATES:
             held = HELD.get(state, ()) if state else ()
             ps = by_state.get(state, [])
-            if not ps:
+            # a state is read only for the longhands the route compares in a state (stateLookProps): only the state choice reads it
+            props = i['props'] if not state else [q for q in i['props'] if q in (bridge.get('stateLookProps') or [])]
+            if not ps or not props:
                 continue
             for value, render in ((i['enumValue'], job), (held_value, base)):
                 if value in (None, ''):
                     continue
-                got = read_longhands(reader.style(render, held), ps, i['props'])
-                if not got:
-                    continue
                 fact = out.setdefault(i['setting'], {})
                 bucket = fact.setdefault('enumReads', {}) if not state else fact.setdefault('enumStateReads', {}).setdefault(state, {})
-                bucket.setdefault(str(value), got)
+                if str(value) in bucket:
+                    continue  # an earlier instance (another fixture variant) already holds this value's reading
+                got = read_longhands(reader.style(render, held, (frozenset(ps), tuple(props))), ps, props)
+                if got:
+                    bucket[str(value)] = got
     return out
 
 

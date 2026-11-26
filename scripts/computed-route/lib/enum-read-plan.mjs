@@ -9,8 +9,8 @@
 //     underline; `contentWidth: wide` paints a max-width), so the draft's computed keyword names no value of its list; or
 //   - another setting of the block places the same property on the same part (the record's `setting_placements`): the two
 //     can tie on a draft value, and what each paints is what breaks the tie (trust-bar's `flexWrap` nowrap against its `layout`).
-// Only the first run of each marker is kept, once for each fixture variant: the later runs repeat it under another layout mode of
-// the block. A placement the record cannot prove (`unproved` and not `accepted`) is no evidence that two settings paint one thing.
+// Only the first run of each marker is kept, in the first fixture variant that plans it: the later runs repeat it under another layout
+// mode of the block, and a second variant would be rendered and read for a value the first already holds. A placement the record cannot prove (`unproved` and not `accepted`) is no evidence that two settings paint one thing.
 import { createRequire } from 'module';
 import { longhands } from './calibrate-props.mjs';
 
@@ -61,7 +61,7 @@ export function enumReadInstances( instances, placements ) {
 		if ( ! i.row || undefined === i.marker?.enumValue || ! needed( i.row ) ) {
 			return false;
 		}
-		const id = `${ i.row.attr_name }|${ i.marker.label }|${ i.variant ?? 0 }`;
+		const id = `${ i.row.attr_name }|${ i.marker.label }`;
 		return ! seen.has( id ) && !! seen.add( id );
 	} );
 }

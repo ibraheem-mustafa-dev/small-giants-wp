@@ -52,5 +52,11 @@
 		"find": "`${ r.part ?? '' }|${ r.state ?? '' }|${ q }`",
 		"replace": "`${ r.part ?? '' }||${ q }`",
 		"why": "the same property in another state counts as a tie"
+	},
+	{
+		"file": "lib/enum-read-plan.mjs",
+		"find": "const id = `${ i.row.attr_name }|${ i.marker.label }`;",
+		"replace": "const id = `${ i.row.attr_name }|${ i.marker.label }|${ i.variant ?? 0 }`;",
+		"why": "a second variant's instance of a value already planned is rendered and read again"
 	}
 ]
