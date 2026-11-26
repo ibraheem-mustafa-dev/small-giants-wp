@@ -43,7 +43,7 @@ const read = ( jobs, pages, map = PAGES ) => readCurrentAttr( { jobs, pages: pag
 test( 'the fact record names the elements whose aria-current is bound, and a job is one only inside a mounted component', () => {
 	assert.deepEqual( currentAttrKeys( FACTS ), [ 'Bar/5', 'Bar/6', 'Home/9' ] );
 	const jobs = currentAttrJobs( currentAttrKeys( FACTS ), [ JOB( 5 ), JOB( 7 ), { id: 'r', finder: { tpl: 'Root/9#0' } }, { id: 'u', finder: { tpl: 'Root>Bar@3#0/7#0' } }, { id: 's', finder: '.x' } ], 'Home' );
-	assert.deepEqual( jobs, [ { id: '0:5', component: 'Bar', tpl: '5' } ], 'an unbound element (7), a root-component element and a selector finder are no candidates' );
+	assert.deepEqual( jobs, [ { id: '0:5', component: 'Bar', tpl: '5', bound: [ '5', '6' ] } ], 'an unbound element (7), a root-component element and a selector finder are no candidates; the peers a job may pair with are the bound elements of its own component' );
 } );
 
 test( 'MUST FAIL WITHOUT THE READER: a link marked current on another page is read against a non-current peer and written to the current settings', async () => {
@@ -88,8 +88,8 @@ test( 'negative control: a value that is not current (false, empty), a peer of a
 	const decoys = {
 		'/false': page( 'none' ).replace( 'data-dc-tpl="6" href="#"', `data-dc-tpl="6" aria-current="false" href="#" data-x="${ pink }"` ).replace( /(data-dc-tpl="6"[^>]*style=")([^"]*)/, `$1$2;${ pink }` ),
 		'/empty': page( 'none' ).replace( 'data-dc-tpl="6" href="#"', 'data-dc-tpl="6" aria-current="" href="#"' ).replace( /(data-dc-tpl="6"[^>]*style=")([^"]*)/, `$1$2;${ pink }` ),
-		'/tag': page( 'none' ).replace( '</nav>', `<span aria-current="page" style="display:block;${ pink }">x</span></nav>` ),
-		'/hidden': page( 'none' ).replace( '</nav>', `<a aria-current="page" style="display:none;${ pink }">x</a></nav>` ),
+		'/tag': page( 'none' ).replace( '</nav>', `<span data-dc-tpl="6" aria-current="page" style="display:block;${ pink }">x</span></nav>` ),
+		'/hidden': page( 'none' ).replace( '</nav>', `<a data-dc-tpl="6" aria-current="page" style="display:none;${ pink }">x</a></nav>` ),
 	};
 	const jobs = currentAttrJobs( currentAttrKeys( FACTS ), [ JOB( 5 ) ], 'Home' );
 	for ( const route of Object.keys( decoys ) ) {
@@ -98,7 +98,7 @@ test( 'negative control: a value that is not current (false, empty), a peer of a
 } );
 
 test( 'a hidden peer that carries the current value is skipped for the visible one', async () => {
-	const withHidden = { '/shop': page( 'shop' ).replace( '<nav>', '<nav><a aria-current="page" style="display:none">x</a>' ) };
+	const withHidden = { '/shop': page( 'shop' ).replace( '<nav>', '<nav><a data-dc-tpl="5" aria-current="page" style="display:none">x</a>' ) };
 	const { looks } = await read( currentAttrJobs( currentAttrKeys( FACTS ), [ JOB( 6 ) ], 'Home' ), [ '/shop' ], withHidden );
 	assert.equal( looks[ '0:6' ][ 0 ].declared[ 'background-color' ], 'rgb(249, 213, 211)' );
 } );
@@ -135,4 +135,33 @@ test( 'MUST FAIL: a job answered on one page is not answered again when a later 
 	assert.equal( looks[ '0:6' ].length, 1, 'Gifts is answered by the next page' );
 	assert.deepEqual( gaps, [] );
 	assert.equal( logged.length, 1 );
+} );
+
+// RF1 second review: the climb stops at the first ancestor with a same-tag sibling, so a lone link in `div.cta` beside the nav
+// `div` reached the nav's first link through the same child path. A peer is an element whose aria-current the draft binds.
+test( "MUST FAIL: a lone link in a box beside the nav is not compared with the nav's first link", async () => {
+	const nav = ( current ) => `<div class="nav">${ link( 5, 'Shop', 'shop' === current ) }${ link( 6, 'Gifts', 'gifts' === current ) }</div>`;
+	const cta = ( n ) => `<div class="cta">${ link( n, 'Order', false ) }</div>`;
+	const pages = { '/shop': `<!doctype html><div class="sc-host" data-sc-name="Root"><div class="sc-host" data-sc-name="Bar">${ cta( 7 ) }${ nav( 'shop' ) }</div></div>` };
+	const keys = { elements: { 'Bar/7': FACTS.elements[ 'Bar/5' ] } };
+	const { looks, gaps } = await read( currentAttrJobs( currentAttrKeys( keys ), [ JOB( 7 ) ], 'Home' ), [ '/shop' ], pages );
+	assert.deepEqual( looks, {}, 'the lone link has no current peer' );
+	assert.equal( gaps.length, 1 );
+} );
+
+// Each side of the peer rule. Same template element: loop copies of one bound link are peers of each other although no other
+// element is bound. Another bound element: a link of the same bar whose aria-current the draft does not bind is no peer, even
+// when the page marks it current.
+test( 'loop copies of one bound template element are peers of each other', async () => {
+	const loop = { '/shop': '<!doctype html><div class="sc-host" data-sc-name="Root"><div class="sc-host" data-sc-name="Bar"><nav>' + [ [ 'Shop', true ], [ 'Gifts', false ], [ 'Help', false ] ].map( ( [ label, current ] ) => link( 5, label, current ) ).join( '' ) + '</nav></div></div>' };
+	const keys = { elements: { 'Bar/5': FACTS.elements[ 'Bar/5' ] } };
+	const { looks, gaps } = await read( currentAttrJobs( currentAttrKeys( keys ), [ JOB( 5 ) ], 'Home' ), [ '/shop' ], loop );
+	assert.deepEqual( gaps, [], JSON.stringify( gaps ) );
+	assert.equal( looks[ '0:5' ][ 0 ].declared[ 'background-color' ], 'rgb(249, 213, 211)' );
+} );
+
+test( 'negative control: a link of the bar whose aria-current the draft does not bind is no peer, even when the page marks it current', async () => {
+	const { looks, gaps } = await read( currentAttrJobs( currentAttrKeys( FACTS ), [ JOB( 6 ) ], 'Home' ), [ '/help' ], { '/help': page( 'help' ) } );
+	assert.deepEqual( looks, {}, 'Help (Bar/7) binds no aria-current, so Gifts has no current peer on the help page' );
+	assert.equal( gaps.length, 1 );
 } );
