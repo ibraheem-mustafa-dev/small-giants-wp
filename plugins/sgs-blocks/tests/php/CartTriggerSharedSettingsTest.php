@@ -90,9 +90,63 @@ final class CartTriggerSharedSettingsTest extends TestCase {
 		$this->assertMatchesRegularExpression( '/@media \(max-width:767\.98px\)\{' . preg_quote( self::TRIGGER, '/' ) . '\{min-width:48px;min-height:48px;\}\}/', $css );
 	}
 
-	public function test_a_size_below_24px_is_held_at_24px(): void {
+	public function test_a_saved_size_prints_as_saved_with_no_floor(): void {
 		$css = $this->css( array( 'triggerSize' => array( 'desktop' => array( 'width' => '10px', 'height' => '16px' ) ) ) );
-		$this->assertStringContainsString( self::TRIGGER . '{min-width:24px;min-height:24px;}', $css );
+		$this->assertStringContainsString( self::TRIGGER . '{min-width:10px;min-height:16px;}', $css );
+	}
+
+	/** The css a pill prints for a saved pill height, before the sweep (the old setting) and after it (the swept setting). */
+	private function pill_height_css_after_sweep( $saved_height ): string {
+		$old   = array( 'triggerStyle' => 'pill', 'pillMinHeight' => array( 'desktop' => $saved_height ) );
+		$swept = sgs_cart_trigger_sweep_attrs( $old )['attrs'];
+		$this->assertArrayNotHasKey( 'pillMinHeight', $swept );
+		return $this->css( $swept );
+	}
+
+	public function test_a_swept_pill_height_below_24px_renders_as_it_did(): void {
+		// The old block printed the saved height as it was: no floor on a pill.
+		$this->assertStringContainsString( self::TRIGGER . '{min-height:20px;}', $this->pill_height_css_after_sweep( '20px' ) );
+		$this->assertStringContainsString( self::TRIGGER . '{min-height:20px;}', $this->pill_height_css_after_sweep( 20 ) );
+	}
+
+	public function test_a_swept_pill_height_of_zero_renders_as_it_did(): void {
+		// The old block printed `min-height:0px` for 0, "0" and "0px".
+		foreach ( array( 0, '0', '0px' ) as $zero ) {
+			$this->assertStringContainsString( self::TRIGGER . '{min-height:0px;}', $this->pill_height_css_after_sweep( $zero ), 'saved ' . var_export( $zero, true ) );
+		}
+	}
+
+	public function test_a_swept_icon_size_keeps_the_old_24px_floor(): void {
+		$swept = sgs_cart_trigger_sweep_attrs( array( 'iconTriggerSize' => array( 'desktop' => 20 ) ) )['attrs'];
+		$this->assertSame( array( 'desktop' => array( 'width' => '24px', 'height' => '24px' ) ), $swept['triggerSize'] );
+		$this->assertStringContainsString( self::TRIGGER . '{min-width:24px;min-height:24px;}', $this->css( $swept ) );
+	}
+
+	public function test_a_flat_scalar_size_is_dropped_because_the_old_block_ignored_it(): void {
+		$swept = sgs_cart_trigger_sweep_attrs(
+			array(
+				'triggerStyle'    => 'pill',
+				'pillMinHeight'   => '48px',
+				'iconTriggerSize' => 48,
+			)
+		)['attrs'];
+		$this->assertArrayNotHasKey( 'triggerSize', $swept );
+		$this->assertArrayNotHasKey( 'pillMinHeight', $swept );
+		$this->assertArrayNotHasKey( 'iconTriggerSize', $swept );
+		$this->assertStringNotContainsString( 'min-height', $this->css( $swept ) );
+		$tablet_only = sgs_cart_trigger_sweep_attrs( array( 'pillMinHeight' => 40, 'iconTriggerSize' => array( 'tablet' => 30 ) ) )['attrs'];
+		$this->assertSame( array( 'tablet' => array( 'width' => '30px', 'height' => '30px' ) ), $tablet_only['triggerSize'] ?? null );
+	}
+
+	public function test_apply_holds_back_a_post_with_a_value_that_cannot_be_kept_unless_accepted(): void {
+		$this->assertTrue( sgs_cart_trigger_sweep_blocked( array( 'corner radius: the icon style carried "50%"' ), false ) );
+		$this->assertFalse( sgs_cart_trigger_sweep_blocked( array( 'corner radius: the icon style carried "50%"' ), true ) );
+		$this->assertFalse( sgs_cart_trigger_sweep_blocked( array(), false ) );
+		// The content rewrite hands the script the conflict lines the check reads.
+		$content = '<!-- wp:sgs/cart ' . json_encode( array( 'pillBorderRadius' => '999px', 'iconTriggerRadius' => '50%', 'triggerStyle' => 'pill', 'triggerStyleTablet' => 'icon' ) ) . ' /-->';
+		$result  = sgs_cart_trigger_sweep_content( $content, static fn( array $a ): string => json_encode( $a ) );
+		$this->assertCount( 1, $result['conflicts'] );
+		$this->assertTrue( sgs_cart_trigger_sweep_blocked( $result['conflicts'], false ) );
 	}
 
 	public function test_the_old_settings_print_nothing(): void {

@@ -16,13 +16,20 @@
  * block tree compared with the tree the old content gives after the same rewrite: a mismatch restores the old content and reports the post.
  *
  * Dry run by default: prints each post that would change, the values that cannot be kept (a radius the two styles
- * carried differently, one value per block remains), then the totals. `apply` writes. It is idempotent: a second run finds nothing.
+ * carried differently, one value per block remains), then the totals. `apply` writes, except a post that holds such a value: that post
+ * is left as it is and listed by id, and the run exits with an error, unless `accept-conflicts` is also given (then the block keeps
+ * the radius the line names and the other is lost). It is idempotent: a second run finds nothing.
  *
- * Run (`apply` is a positional word because eval-file passes those to the file):
- *   wp eval-file wp-content/plugins/sgs-blocks/scripts/sweep-cart-trigger-attrs.php --user=1          # dry run
- *   wp eval-file wp-content/plugins/sgs-blocks/scripts/sweep-cart-trigger-attrs.php apply --user=1    # write
- *   ... json                                                                                         # the counts as one JSON line
- * Back the database up first on a site that matters (`wp db export`); the sweep never writes without `apply`.
+ * Run (`apply`, `accept-conflicts` and `json` are positional words because eval-file passes those to the file and rejects other flags).
+ * The scripts folder is not in the deploy payload, so on a site still running the old plugin copy this file to the server home with
+ * its `lib/cart-trigger-sweep.php` beside it (`~/sweep-cart-trigger-attrs.php`, `~/lib/cart-trigger-sweep.php`) and run it from there:
+ *   wp eval-file ~/sweep-cart-trigger-attrs.php --user=1                       # dry run
+ *   wp eval-file ~/sweep-cart-trigger-attrs.php apply --user=1                 # write
+ *   wp eval-file ~/sweep-cart-trigger-attrs.php apply accept-conflicts --user=1  # write the posts with a radius conflict too
+ *   ... json                                                                   # the counts as one JSON line
+ * Back the database up first on a site that matters (`bash scripts/local-wp/backup-remote-db.sh <target> <label>`); the sweep never
+ * writes without `apply`. `build-deploy.py` refuses a deploy while this sweep still has a post to change on the target
+ * (`deploy_cart_trigger_guard.py`).
  *
  * @package SGS\Blocks
  */
@@ -97,18 +104,21 @@ function sgs_cart_trigger_sweep_run( array $words ): void {
 	global $wpdb;
 
 	$apply     = in_array( 'apply', $words, true ) || '1' === getenv( 'SGS_SWEEP_APPLY' );
+	$accept    = in_array( 'accept-conflicts', $words, true ) || '1' === getenv( 'SGS_SWEEP_ACCEPT_CONFLICTS' );
 	$json_only = in_array( 'json', $words, true );
 
 	$rows = $wpdb->get_results( 'SELECT ID, post_type, post_status, post_name, post_content FROM ' . $wpdb->posts . " WHERE post_type NOT IN ('revision','auto-draft') AND post_content LIKE '%wp:sgs/cart%' ORDER BY ID" ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- a literal clause and core's table name.
 
 	$totals  = array(
-		'posts_scanned' => count( $rows ),
-		'posts_changed' => 0,
-		'blocks'        => 0,
-		'keys'          => array(),
-		'conflicts'     => array(),
-		'written'       => 0,
-		'failed'        => 0,
+		'posts_scanned'  => count( $rows ),
+		'posts_changed'  => 0,
+		'blocks'         => 0,
+		'keys'           => array(),
+		'conflicts'      => array(),
+		'written'        => 0,
+		'failed'         => 0,
+		'conflict_posts' => array(),
+		'held_back'      => array(),
 	);
 	$by_type = array();
 	foreach ( $rows as $row ) {
@@ -125,8 +135,14 @@ function sgs_cart_trigger_sweep_run( array $words ): void {
 		foreach ( $result['conflicts'] as $line ) {
 			$totals['conflicts'][] = '#' . $row->ID . ' ' . $row->post_name . ' ' . $line;
 		}
+		if ( array() !== $result['conflicts'] ) {
+			$totals['conflict_posts'][] = (int) $row->ID;
+		}
 		$status = '';
-		if ( $apply ) {
+		if ( $apply && sgs_cart_trigger_sweep_blocked( $result['conflicts'], $accept ) ) {
+			$totals['held_back'][] = (int) $row->ID;
+			$status                = 'NOT WRITTEN (a value cannot be kept: see NOT KEPT below; add accept-conflicts to write it anyway)';
+		} elseif ( $apply ) {
 			// Prove the new content before it is written, then write, read back and prove it again; a failure puts the old content back.
 			$proof = sgs_cart_trigger_sweep_prove( (string) $row->post_content, $result['content'] );
 			if ( '' !== $proof ) {
@@ -172,9 +188,15 @@ function sgs_cart_trigger_sweep_run( array $words ): void {
 		foreach ( $totals['conflicts'] as $line ) {
 			WP_CLI::log( '  NOT KEPT ' . $line );
 		}
+		if ( array() !== $totals['conflict_posts'] ) {
+			WP_CLI::log( '  posts with a value that cannot be kept (apply leaves them unless accept-conflicts is given): ' . implode( ', ', array_map( static fn( int $id ): string => '#' . $id, $totals['conflict_posts'] ) ) );
+		}
 	}
 	if ( $totals['failed'] > 0 ) {
 		WP_CLI::error( $totals['failed'] . ' post(s) failed their proof; see above.' );
+	}
+	if ( array() !== $totals['held_back'] ) {
+		WP_CLI::error( count( $totals['held_back'] ) . ' post(s) were not written because the rewrite cannot keep every value: ' . implode( ', ', array_map( static fn( int $id ): string => '#' . $id, $totals['held_back'] ) ) . '. Pick one radius in the editor, or run again with accept-conflicts.' );
 	}
 }
 

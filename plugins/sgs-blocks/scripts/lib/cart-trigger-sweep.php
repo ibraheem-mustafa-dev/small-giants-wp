@@ -39,7 +39,9 @@ if ( ! function_exists( 'sgs_cart_trigger_sweep_old_keys' ) ) {
 	}
 
 	/**
-	 * A per-device value as `desktop`, `tablet` and `mobile` entries (a missing device is null); a flat value is the desktop's.
+	 * A per-device value as `desktop`, `tablet` and `mobile` entries (a missing device is null); a flat box is the desktop's. A bare
+	 * scalar is nobody's: the old block printed a size only from a tier object, so a scalar `pillMinHeight` or `iconTriggerSize`
+	 * printed nothing and must not start to.
 	 *
 	 * @param mixed $raw    The saved value.
 	 * @param bool  $is_box Whether a flat array is one box (its sides) rather than a tier object.
@@ -60,7 +62,7 @@ if ( ! function_exists( 'sgs_cart_trigger_sweep_old_keys' ) ) {
 			}
 			return $empty;
 		}
-		if ( is_array( $raw ) && ! $is_box ) {
+		if ( ! is_array( $raw ) || ! $is_box ) {
 			return $empty;
 		}
 		$empty['desktop'] = $raw;
@@ -104,14 +106,14 @@ if ( ! function_exists( 'sgs_cart_trigger_sweep_old_keys' ) ) {
 	}
 
 	/**
-	 * A saved length as a CSS length: a bare number is pixels.
+	 * A saved length as a CSS length: a bare number is pixels, and zero is a value (the old block printed `min-height:0px`).
 	 *
 	 * @param mixed $raw The saved value.
 	 * @return string|null Null when there is none.
 	 */
 	function sgs_cart_trigger_sweep_length( $raw ): ?string {
 		if ( is_int( $raw ) || is_float( $raw ) ) {
-			return $raw > 0 ? rtrim( rtrim( number_format( (float) $raw, 3, '.', '' ), '0' ), '.' ) . 'px' : null;
+			return $raw >= 0 ? rtrim( rtrim( number_format( (float) $raw, 3, '.', '' ), '0' ), '.' ) . 'px' : null;
 		}
 		$raw = is_string( $raw ) ? trim( $raw ) : '';
 		if ( '' === $raw ) {
@@ -297,6 +299,17 @@ if ( ! function_exists( 'sgs_cart_trigger_sweep_old_keys' ) ) {
 			'attrs'     => array_merge( array_diff_key( $attrs, array_flip( $old_keys ) ), $new ),
 			'conflicts' => $conflicts,
 		);
+	}
+
+	/**
+	 * Whether `apply` must leave a post alone: it holds a value the rewrite cannot keep and nobody accepted losing it.
+	 *
+	 * @param string[] $conflicts The post's conflict lines.
+	 * @param bool     $accept    Whether `accept-conflicts` was given.
+	 * @return bool
+	 */
+	function sgs_cart_trigger_sweep_blocked( array $conflicts, bool $accept ): bool {
+		return array() !== $conflicts && ! $accept;
 	}
 
 	/**
