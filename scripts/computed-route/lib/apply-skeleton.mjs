@@ -150,8 +150,10 @@ export function positionMatch( { draft, live, block } ) {
 
 // Targets the skeleton adds to a surface's pairs. pairs: [ { ref, tpl } ]; saved: { ref: { block } } of the post; nodes: the
 // skeleton surface's nodes. Returns { targets, notes }: each target { ref, tpl, via: 'skeleton', nearest_tpl, owns, ... }, a slot
-// target { ref: `${ parentRef }~${ slot }`, owner, slot, ... }; notes explain every node left unpaired.
-export function skeletonTargets( { nodes, pairs, saved } ) {
+// target { ref: `${ parentRef }~${ slot }`, owner, slot, ... }; notes explain every node left unpaired. held: the refs the origin file
+// holds (a Set): a block the origin holds has its draft element already, even when no pair reads it now (a refused pair), so no
+// skeleton node is attached to it.
+export function skeletonTargets( { nodes, pairs, saved, held = new Set() } ) {
 	const anchors = anchorsOf( pairs );
 	const paired = new Map( pairs.map( ( p ) => [ idOfTpl( p.tpl ), p.ref ] ) );
 	const used = new Set( pairs.map( ( p ) => p.ref ) );
@@ -185,7 +187,7 @@ export function skeletonTargets( { nodes, pairs, saved } ) {
 		const hi = next ? next.n : Infinity;
 		const gap = blockNodes.filter( ( g ) => g.b === n.b && ! refOf.has( g.index ) && ( ! prev || g.lo > prev.id ) && ( ! next || g.lo < next.id ) );
 		const near = strict ? [] : [ prev?.ref, next?.ref ].filter( Boolean );
-		const cands = Object.keys( saved ).filter( ( r ) => ( near.includes( r ) || ( numOfRef( r ) > lo && numOfRef( r ) < hi ) ) && saved[ r ].block === n.b && ! claimed.has( r ) && ( ! strict || ! used.has( r ) ) ).sort( ( a, b ) => numOfRef( a ) - numOfRef( b ) );
+		const cands = Object.keys( saved ).filter( ( r ) => ( near.includes( r ) || ( numOfRef( r ) > lo && numOfRef( r ) < hi ) ) && saved[ r ].block === n.b && ! claimed.has( r ) && ! held.has( r ) && ( ! strict || ! used.has( r ) ) ).sort( ( a, b ) => numOfRef( a ) - numOfRef( b ) );
 		return { gap, cands, at: gap.findIndex( ( g ) => g.index === n.index ) };
 	};
 	for ( const strict of [ true, false ] ) {

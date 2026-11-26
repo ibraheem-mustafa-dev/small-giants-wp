@@ -95,7 +95,8 @@ export function withSkeleton( surface, saved, skeleton ) {
 	if ( ! sk ) {
 		return { pairs: surface.pairs, notes: [], aliases: {} };
 	}
-	const { targets, owners, notes, aliases } = skeletonTargets( { nodes: sk.nodes, pairs: surface.pairs, saved } );
+	const held = new Set( Object.entries( surface.origin ?? {} ).filter( ( [ , row ] ) => row?.tpl ).map( ( [ ref ] ) => ref ) );
+	const { targets, owners, notes, aliases } = skeletonTargets( { nodes: sk.nodes, pairs: surface.pairs, saved, held } );
 	const all = [ ...surface.pairs, ...targets ];
 	const mine = ( p, span ) => [ ...new Set( owners.get( p.ref )[ span ] ) ];
 	const pairs = surface.pairs.map( ( p ) => ( owners.has( p.ref ) ? { ...p, owns: ownsWithoutPaired( mine( p, 'owns' ), p, all ), reach: mine( p, 'reach' ) } : p ) );

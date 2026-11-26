@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { chrome } from '../lib/apply-family-chrome.mjs';
 import { idsOf, flatten, skeletonTargets, positionMatch, overlap, panelIds } from '../lib/apply-skeleton.mjs';
-import { pairsOf } from '../lib/apply-targets.mjs';
+import { pairsOf, withSkeleton } from '../lib/apply-targets.mjs';
 import { recordIndex } from '../lib/apply-records.mjs';
 
 const at = ( f ) => ( { 1440: f, 768: f, 375: f } );
@@ -246,4 +246,17 @@ test( 'chrome mega tiles: the tile border is read only from a gallery inside the
 	// A scaled, bordered card in the panel that is not the gallery's tile: no write.
 	const card = [ { b: 'sgs/nav-drawer', t: '108', c: [ { b: 'sgs/mega-panel', t: '134', c: [ { b: 'sgs/mega-group', t: '149' }, { b: 'sgs/gallery', t: '171' } ] } ] } ];
 	assert.deepEqual( run( card, 150 ), [] );
+} );
+
+// RF10 second review: an origin-held block whose pair the same-element check refused is in no pair, so the skeleton took it for an
+// unclaimed ref and attached a draft element to it; apply-position skips such blocks the same way.
+test( 'MUST FAIL: a block the origin holds is never given a skeleton node, even when no pair reads it', () => {
+	const pairs = [ { ref: 'cr-ref-x-0', tpl: 'Root/1#0' }, { ref: 'cr-ref-x-2', tpl: 'Root/5#0' }, { ref: 'cr-ref-x-3', tpl: 'Root/6#0' } ];
+	assert.equal( skeletonTargets( { nodes, pairs, saved } ).targets.find( ( t ) => 'Root/2#0' === t.tpl )?.ref, 'cr-ref-x-1', 'the fixture attaches the row without an origin hold' );
+	const out = skeletonTargets( { nodes, pairs, saved, held: new Set( [ 'cr-ref-x-1' ] ) } );
+	assert.equal( out.targets.some( ( t ) => 'cr-ref-x-1' === t.ref ), false );
+	assert.ok( out.notes.some( ( n ) => 'sgs/row' === n.block ), 'the node is reported unpaired' );
+	const joined = withSkeleton( { name: 'x', pairs, origin: { 'cr-ref-x-1': { tpl: 'Root/9#0' } } }, saved, [ { id: 'x', nodes } ] );
+	assert.equal( joined.pairs.some( ( p ) => 'cr-ref-x-1' === p.ref ), false, 'withSkeleton passes the origin refs on' );
+	assert.equal( withSkeleton( { name: 'x', pairs, origin: {} }, saved, [ { id: 'x', nodes } ] ).pairs.some( ( p ) => 'cr-ref-x-1' === p.ref ), true, 'no origin row, no hold' );
 } );
