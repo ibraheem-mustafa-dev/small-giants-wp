@@ -103,8 +103,8 @@
 	},
 	{
 		"file": "lib/skeleton-propose.mjs",
-		"find": "...paintProblems( { inventory, proposal: { rows }, skeleton, view, calibration, strict: strictPaint } ) ] ) ];",
-		"replace": "] ) ];",
+		"find": "...paintProblems( { inventory, proposal: { rows }, skeleton, view, calibration, strict: strictPaint } ), ...readingOrderProblems(",
+		"replace": "...readingOrderProblems(",
 		"why": "the propose-time check is off"
 	},
 	{
