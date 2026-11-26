@@ -447,13 +447,18 @@ test( 'MUST FAIL: a list block made from a run of links reads its link part (the
 	assert.equal( listOf( {} ).draftSlots, undefined, 'negative control: no calibrated link part, no slot' );
 } );
 
-test( 'MUST FAIL: a list block made from a run of links reads its item padding at the first link too, so the padding each link carries is read by the list and never kept unnamed', () => {
+test( 'MUST FAIL: a list block made from a run of links reads its item padding at the first link only when every link pads the same above and below; links padded differently, or only sideways, leave it unread', () => {
 	const ITEM = '.sgs-icon-list > .sgs-icon-list__item:nth-of-type(1)';
-	const link = ( words, href ) => N( 'a', { words, attrs: { href }, style: 'padding:5px 0' } );
-	const col = N( 'section', {}, [ N( 'nav', { attrs: { 'aria-label': 'Shop' } }, [ N( 'div', { words: 'shop' } ), link( 'All Zookies', '/shop/' ), link( 'Gifts', '/gifts/' ), link( 'Taster Trio', '/trio/' ) ] ) ] );
+	const link = ( words, href, style ) => N( 'a', { words, attrs: { href }, style } );
 	const find = ( list ) => list.flatMap( ( n ) => ( 'sgs/icon-list' === n.name ? [ n ] : find( n.innerBlocks || [] ) ) );
-	const list = find( JSON.parse( JSON.stringify( run( col, { calSettings: ( b ) => ( 'sgs/icon-list' === b ? { itemPaddingBlock: { slot: ITEM } } : {} ) } ).skeleton ) ) )[ 0 ];
-	assert.deepEqual( list.draftSlots, { [ ITEM ]: list.draftRef }, 'the item padding is read at the first link' );
+	const slotsOf = ( styles ) => find( JSON.parse( JSON.stringify( run( N( 'section', {}, [ N( 'nav', { attrs: { 'aria-label': 'Shop' } }, [ N( 'div', { words: 'shop' } ), ...[ 'All Zookies', 'Gifts', 'Taster Trio' ].map( ( w, i ) => link( w, `/${ i }/`, styles[ i ] ) ) ] ) ] ), { calSettings: ( b ) => ( 'sgs/icon-list' === b ? { itemPaddingBlock: { slot: ITEM } } : {} ) } ).skeleton ) ) )[ 0 ].draftSlots;
+	const same = 'padding-top:5px;padding-bottom:5px';
+	assert.deepEqual( Object.keys( slotsOf( [ same, same, same ] ) ?? {} ), [ ITEM ], 'every link pads 5px above and below: read at the first link' );
+	assert.equal( slotsOf( [ same, same, 'padding-top:9px;padding-bottom:9px' ] ), undefined, 'one link padded differently: unread' );
+	assert.equal( slotsOf( [ same, 'padding-top:5px', same ] ), undefined, 'a link padded above only: unread' );
+	const side = 'padding-left:8px;padding-right:8px';
+	assert.equal( slotsOf( [ side, side, side ] ), undefined, 'sideways padding only reads zero above and below: unread' );
+	assert.equal( slotsOf( [ '', '', '' ] ), undefined, 'no padding: nothing to read' );
 } );
 
 test( 'MUST FAIL: a code-built marquee whose items hold no icon marks its word-only style as decided, and one with an icon marks nothing', () => {
