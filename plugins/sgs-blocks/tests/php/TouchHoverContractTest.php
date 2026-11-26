@@ -70,11 +70,13 @@ final class TouchHoverContractTest extends TestCase {
 	}
 
 	/**
-	 * CSS without a hover or press state comes back byte for byte, and a stray brace is kept.
+	 * CSS without a hover or press state comes back byte for byte, and unbalanced CSS is left alone.
 	 */
 	public function test_css_without_states_is_untouched(): void {
 		$css = "/* keep */\n.a{color:red}";
 		$this->assertSame( $css, sgs_touch_hover_css( $css ) );
-		$this->assertSame( '.a.sgs-pressed,:where(:root:not(.sgs-touch-input)) .a:hover{color:red}}.b{color:blue}', sgs_touch_hover_css( '.a:hover{color:red}}.b{color:blue}' ) );
+		// Unbalanced braces: printed as they came, never re-cut by a parser that cannot trust them.
+		$this->assertSame( '.a:hover{color:red}}.b{color:blue}', sgs_touch_hover_css( '.a:hover{color:red}}.b{color:blue}' ) );
+		$this->assertSame( '.a:hover{color:red', sgs_touch_hover_css( '.a:hover{color:red' ) );
 	}
 }

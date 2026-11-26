@@ -62,6 +62,11 @@
 			"out": ".sgs-info-box.sgs-has-hover.sgs-pressed{box-shadow:var(--s)}@media (hover:hover){.sgs-info-box.sgs-has-hover:hover{box-shadow:var(--s)}}"
 		},
 		{
+			"name": "a :hover inside a quoted attribute value is text, not a state",
+			"in": "a[title=\":hover\"]:hover{color:red}",
+			"out": "a[title=\":hover\"].sgs-pressed,:where(:root:not(.sgs-touch-input)) a[title=\":hover\"]:hover{color:red}"
+		},
+		{
 			"name": "rules without :hover or :active, and keyframes, are untouched",
 			"in": ".p{color:green}@keyframes k{from{opacity:0}to{opacity:1}}",
 			"out": ".p{color:green}@keyframes k{from{opacity:0}to{opacity:1}}"

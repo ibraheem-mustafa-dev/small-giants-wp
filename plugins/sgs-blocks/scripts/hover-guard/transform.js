@@ -38,14 +38,19 @@ const PRESSED_CLASS = 'sgs-pressed';
 
 const LEGACY_PSEUDO_ELEMENTS = new Set( [ ':before', ':after', ':first-line', ':first-letter' ] );
 
+/** A selector with each quoted string emptied, so text in an attribute value is never read as a state. */
+function unquoted( selector ) {
+	return selector.replace( /"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'/g, '""' );
+}
+
 /** Whether a selector carries `:hover` as a pseudo-class. */
 function hasHover( selector ) {
-	return /:hover(?![\w-])/i.test( selector );
+	return /:hover(?![\w-])/i.test( unquoted( selector ) );
 }
 
 /** Whether a selector carries `:active` as a pseudo-class. */
 function hasActive( selector ) {
-	return /:active(?![\w-])/i.test( selector );
+	return /:active(?![\w-])/i.test( unquoted( selector ) );
 }
 
 /** Split a selector list into trimmed top-level members. */

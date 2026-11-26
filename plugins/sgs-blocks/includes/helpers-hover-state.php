@@ -90,6 +90,18 @@ if ( ! function_exists( 'sgs_touch_hover_split_members' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_touch_hover_unquoted' ) ) {
+	/**
+	 * A selector with each quoted string emptied, so text in an attribute value is never read as a state.
+	 *
+	 * @param string $selector Selector text.
+	 * @return string
+	 */
+	function sgs_touch_hover_unquoted( string $selector ): string {
+		return (string) preg_replace( '/"(?:\\\\.|[^"\\\\])*"|\'(?:\\\\.|[^\'\\\\])*\'/s', '""', $selector );
+	}
+}
+
 if ( ! function_exists( 'sgs_touch_hover_has_hover' ) ) {
 	/**
 	 * Whether a selector carries `:hover` as a pseudo-class.
@@ -98,7 +110,7 @@ if ( ! function_exists( 'sgs_touch_hover_has_hover' ) ) {
 	 * @return bool
 	 */
 	function sgs_touch_hover_has_hover( string $selector ): bool {
-		return 1 === preg_match( '/:hover(?![\w-])/i', $selector );
+		return 1 === preg_match( '/:hover(?![\w-])/i', sgs_touch_hover_unquoted( $selector ) );
 	}
 }
 
@@ -110,7 +122,7 @@ if ( ! function_exists( 'sgs_touch_hover_has_active' ) ) {
 	 * @return bool
 	 */
 	function sgs_touch_hover_has_active( string $selector ): bool {
-		return 1 === preg_match( '/:active(?![\w-])/i', $selector );
+		return 1 === preg_match( '/:active(?![\w-])/i', sgs_touch_hover_unquoted( $selector ) );
 	}
 }
 
@@ -135,9 +147,15 @@ if ( ! function_exists( 'sgs_touch_hover_member' ) ) {
 	 */
 	function sgs_touch_hover_member( string $member ): ?array {
 		$negated = false;
-		while ( preg_match( '/:(?:hover|active)(?![\w-])/i', $member, $m, PREG_OFFSET_CAPTURE ) ) {
+		$offset  = 0;
+		while ( preg_match( '/:(?:hover|active)(?![\w-])/i', $member, $m, PREG_OFFSET_CAPTURE, $offset ) ) {
 			$at     = (int) $m[0][1];
 			$before = substr( $member, 0, $at );
+			// A match inside a quoted attribute value (`[title=":hover"]`) is text, not a state.
+			if ( 1 === substr_count( (string) preg_replace( '/\\./', '', $before ), '"' ) % 2 || 1 === substr_count( (string) preg_replace( '/\\./', '', $before ), "'" ) % 2 ) {
+				$offset = $at + 1;
+				continue;
+			}
 			// The open parentheses around this state, and where its compound starts (after the last combinator).
 			$opens = array();
 			$start = 0;
@@ -162,6 +180,7 @@ if ( ! function_exists( 'sgs_touch_hover_member' ) ) {
 				}
 			}
 			$member = $before . '.' . SGS_PRESSED_CLASS . substr( $member, $at + strlen( $m[0][0] ) );
+			$offset = $at;
 		}
 		return array(
 			'selector' => $member,
@@ -444,7 +463,10 @@ if ( ! function_exists( 'sgs_touch_hover_css' ) ) {
 		if ( ! sgs_touch_hover_has_hover( $css ) && ! sgs_touch_hover_has_active( $css ) ) {
 			return $css;
 		}
-		$css  = (string) preg_replace( '#/\*.*?\*/#s', '', $css );
+		$css = (string) preg_replace( '#/\*.*?\*/#s', '', $css );
+		if ( substr_count( $css, '{' ) !== substr_count( $css, '}' ) ) {
+			return $css; // Unbalanced text is printed as it came rather than re-cut by a parser that cannot trust it.
+		}
 		$len  = strlen( $css );
 		$i    = 0;
 		$tree = array();
