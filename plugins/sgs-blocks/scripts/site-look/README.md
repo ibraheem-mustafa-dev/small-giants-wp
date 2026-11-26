@@ -24,6 +24,18 @@ The key also holds `reach_hash()`: every Python module the builder imports (foun
 
 `write_block` looks in the checkout's own file first (`current`), then in the store (`current (store)`: the file is copied to the checkout, no build), then builds and writes the store copy by a temp name and a rename, so two processes building one key at once leave one whole file. A store file that does not parse, or names another block or key, is ignored and replaced. A look whose text names the checkout's folder (a PHP error message can) is not stored. A block's store files unused for 14 days are removed when its next look is stored. The route needs no change: `lib/setting-record.mjs::prepareLooks` and `siteLook` start the builder with the caller's environment, and `current (store)` counts as done.
 
+## Facts every client shares
+
+The value forms a setting takes (`settingFacts[*].forms`, 57% of a look's renders) and the content facts (`text`, `presence`, `link`) come out the same for every client, so `write_block` reads them once a code version and puts them in each client's look:
+
+| Step | What happens |
+|---|---|
+| Shared reading | `shared_facts` reads them under the theme's own `theme.json` (`neutral_snapshot`: no client tokens, no custom CSS) and keeps them in `<out>/_shared/<block>[.woocommerce].json` and the store's `_shared/<block>.<key>.json`, keyed by `shared_key` (the look's key without the snapshot; the `--woocommerce` flag stays in it) |
+| Client reading | `build_block(..., parts=CLIENT_PARTS, shared=...)` reads everything else (default paint, paint states, `discovered`, state looks) under the client's CSS and puts the shared facts in place (`with_forms`, `with_content`), in the order one whole reading gives |
+| Read whole instead | the client's custom CSS has a rule whose required classes are all on a page the shared facts were read from (`custom_css_reaches`; a rule needing no class, or a palette `has-` class, counts as reaching), a render behind the shared facts failed, or `--per-client-facts` is given |
+
+Proof: every block's look for Mama's, Indus and Eye Care, built with and without `--per-client-facts` at the same commit, is identical as canonical JSON (`tests/test_shared_facts.py` holds the assembly order, the key and the guard). Switches: `shared-facts` (read whole always), `shared-guard`, `shared-errors`.
+
 A block with many settings reads many pages (a page is one render under one held state): `sgs/nav-bar-menu` has 873 marked renders (the lengths of the `discover`, `content`, `forms` and `states` lists printed by `node scripts/computed-route/tools/site-look-bridge.mjs plan sgs/nav-bar-menu sites/<client>/theme-snapshot.json`) and builds in about ten minutes warm and under 1 GB (`python site_look.py --snapshot sites/mamas-munches-redesign/theme-snapshot.json --site mamas-munches-redesign --out DIR --blocks sgs/nav-bar-menu --jobs 1 --woocommerce`, run time and the peak resident memory of the process tree sampled with psutil). The Reader (`site_look.py::Reader.page`) keeps the `PAGE_KEEP` most recently used pages and every reading, so memory does not grow with the page count. The route's `lib/setting-record.mjs::prepareLooks` builds a block again, alone with one worker, only when the builder's failure looks like running out of room (a killed worker, `MemoryError`, nothing printed for the block); any other failure is final, and a block that failed stays failed for the process, with the builder's own words as its reason.
 
 ## How a block's look is read
