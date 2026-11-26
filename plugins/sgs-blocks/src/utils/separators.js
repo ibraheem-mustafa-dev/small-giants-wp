@@ -19,10 +19,37 @@
  * @package SGS\Blocks
  */
 
+import { getBlockType } from '@wordpress/blocks';
 import { colourVar } from './tokens';
 import { resolveTier } from './responsive';
 
 export const SEPARATOR_AXES = [ 'row', 'column' ];
+
+/**
+ * What a block offers for one separators attribute: its block.json
+ * `supports.sgs.separators.<attribute>` (the entry
+ * `includes/helpers-separators.php::sgs_separators_caps` reads on the server).
+ *
+ * @param {string} blockName Block name, e.g. 'sgs/gallery'.
+ * @param {string} attribute The attribute, e.g. 'separators'.
+ * @return {?{axes: string[], edges: boolean, hover: boolean, sweep: boolean}} The caps, or null when the block declares none.
+ */
+export function separatorCaps( blockName, attribute = 'separators' ) {
+	const declared =
+		blockName &&
+		getBlockType( blockName )?.supports?.sgs?.separators?.[ attribute ];
+	if ( ! declared || 'object' !== typeof declared ) {
+		return null;
+	}
+	return {
+		axes: SEPARATOR_AXES.filter( ( axis ) =>
+			( declared.axes || [] ).includes( axis )
+		),
+		edges: !! declared.edges,
+		hover: !! declared.hover,
+		sweep: !! declared.sweep,
+	};
+}
 
 /**
  * One axis of the stored object, always an object.

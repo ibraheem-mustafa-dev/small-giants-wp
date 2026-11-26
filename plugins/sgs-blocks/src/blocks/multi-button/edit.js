@@ -418,6 +418,8 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 				attributes={ attributes }
 				setAttributes={ setAttributes }
 				kind="content"
+				// render.php hands the wrapper layout 'flex' unless one is stored, which is what turns Separators on.
+				resolvedLayout={ attributes.layout || 'flex' }
 			/>
 
 			{ /* ── Spec 35 Part O THE PLACEMENT RULE — restructured 2026-09-03

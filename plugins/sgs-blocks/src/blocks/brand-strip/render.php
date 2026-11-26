@@ -603,9 +603,15 @@ if ( $mobile_decls ) {
 // item: the clones copy the lines, and the seam between two sets stays continuous.
 $sgs_bs_sep_raw    = $attributes['separators'] ?? array();
 $sgs_bs_sep_axes   = $is_marquee ? array( 'column' ) : array( 'row', 'column' );
-$sgs_bs_sep_caps   = array(
-	'axes'  => $sgs_bs_sep_axes,
-	'edges' => $is_marquee,
+// What the block offers comes from block.json. A marquee strip is one row, so it narrows the axes, and it
+// draws its trailing edge itself (edges 'end', set below), so it overrides the declared `edges: false`.
+$sgs_bs_sep_declared = sgs_separators_caps( 'sgs/brand-strip' );
+$sgs_bs_sep_caps     = array_merge(
+	$sgs_bs_sep_declared,
+	array(
+		'axes'  => array_values( array_intersect( $sgs_bs_sep_declared['axes'], $sgs_bs_sep_axes ) ),
+		'edges' => $is_marquee,
+	)
 );
 $sgs_bs_sep_active = sgs_separators_active( sgs_separators_normalise( $sgs_bs_sep_raw, $sgs_bs_sep_caps ) );
 $sgs_bs_sep_flow   = $sgs_bs_sep_active && ! $is_marquee;

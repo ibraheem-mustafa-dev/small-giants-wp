@@ -69,6 +69,10 @@ import {
 } from '../container/components/ContainerWrapperControls';
 import { BackgroundPanel } from '../container/components/BackgroundPanel';
 import {
+	ShapeDividerPreviews,
+	shapeDividerClassName,
+} from '../../components/ShapeDividerPreview';
+import {
 	ToggleGroupControl,
 	ToggleGroupControlOption,
 	ToolsPanel,
@@ -663,6 +667,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 			gradientPresets
 		),
 		heroPreview.layoutClass,
+		shapeDividerClassName( attributes ),
 	]
 		.filter( Boolean )
 		.join( ' ' );
@@ -1911,6 +1916,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 					overlay={ bgPreview.overlay }
 				/>
 				{ svgLayer }
+				<ShapeDividerPreviews attributes={ attributes } />
 
 				{ /* FR-22-6: content column is the InnerBlocks slot (label + heading + text + buttons).
 				   Standard variant only: wrapped in the content-band preview (mirrors the

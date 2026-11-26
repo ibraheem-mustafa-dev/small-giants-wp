@@ -22,7 +22,7 @@ import {
 	BOX_UNITS,
 	normaliseResponsiveBox,
 	SgsBoxControl,
-	SgsSeparatorControl,
+	SeparatorsPanel,
 	SgsLengthControl,
 	MediaGalleryPicker,
 	textRow,
@@ -488,20 +488,11 @@ export default function Edit( { attributes, setAttributes } ) {
 
 				{ /* The lines between brands. A marquee strip is one row, so it offers the
 				   between-columns line only. */ }
-				<PanelBody
-					title={ __( 'Separators', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<SgsSeparatorControl
-						value={ attributes.separators }
-						onChange={ ( next ) =>
-							setAttributes( { separators: next } )
-						}
-						axes={
-							isScrolling ? [ 'column' ] : [ 'row', 'column' ]
-						}
-					/>
-				</PanelBody>
+				<SeparatorsPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					axes={ isScrolling ? [ 'column' ] : undefined }
+				/>
 
 				{ /* Manual-entry UI only makes sense for the manual source —
 				   hidden (not merely disabled) once Product brands is picked

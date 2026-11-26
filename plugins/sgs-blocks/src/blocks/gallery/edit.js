@@ -27,13 +27,14 @@ import {
 // none of which gallery's block.json ever declared, so WordPress silently discarded
 // every value a client entered. Same defect class as the ResponsiveSpacingPanel this
 // file already removed (see the Spec 37 note below).
-import {
-	LayoutPanel,
-	SeparatorsPanel,
-} from '../container/components/ContainerWrapperControls';
+import { LayoutPanel } from '../container/components/ContainerWrapperControls';
 // Spec 37 FR-37-16 object model (Spec 35 Phase 1.4, 2026-08-10). Replaces
 // WidthPanel + ResponsiveSpacingPanel here — see the mount below for why.
-import { ResponsiveBoxControls, scrimColourRow } from '../../components';
+import {
+	ResponsiveBoxControls,
+	scrimColourRow,
+	SeparatorsPanel,
+} from '../../components';
 import { PanelBody } from '@wordpress/components';
 import { useEffect, useMemo } from '@wordpress/element';
 import { useSeparatorsCanvas } from '../../shared/separators/useSeparatorsCanvas';
@@ -490,6 +491,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				<SeparatorsPanel
 					attributes={ attributes }
 					setAttributes={ setAttributes }
+					lined
 				/>
 			</InspectorControls>
 

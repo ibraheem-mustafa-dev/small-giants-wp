@@ -128,10 +128,8 @@ def cmd_survey() -> int:
 
 # Editor preview: a block that declares `supports.sgs.separators` must show the lines in its canvas
 # through a shared preview, or have its canvas rendered by render.php (ServerSideRender).
-PREVIEW_TOKENS = ("useSeparatorsCanvas", "useSeparatorOverlay", "separatorsLineCss", "separatorsFlowPreview", "ServerSideRender")
-EDITOR_EXEMPT = {
-    "sgs/cart": "the mini-cart panel is not rendered in the canvas, so there is nothing to draw lines on",
-}
+PREVIEW_TOKENS = ("useSeparatorsCanvas", "ServerSideRender")
+EDITOR_EXEMPT: dict[str, str] = {}
 
 
 def editor_preview_ok(text: str) -> bool:
@@ -156,17 +154,57 @@ def editor_findings() -> list[str]:
     return out
 
 
+# The package: what a block offers is declared once, in block.json `supports.sgs.separators`.
+# The server reads it through sgs_separators_caps(); the editor through SeparatorsPanel. A
+# second copy (a hand-written caps array in PHP, a SgsSeparatorControl mounted by a block, a
+# per-block initSeparators call) is how the two drifted apart.
+PHP_CAPS_LITERAL = re.compile(r"'axes'\s*=>\s*array\(\s*'(?:row|column)'")
+JS_CONTROL_MOUNT = re.compile(r"<SgsSeparatorControl\b")
+JS_FALLBACK_CALL = re.compile(r"\binitSeparators\s*\(")
+# A file that calls the canvas hook must import it, or the block throws a ReferenceError the moment its edit component renders.
+JS_HOOK_CALL = re.compile(r"\buseSeparatorsCanvas\s*\(")
+JS_HOOK_IMPORT = re.compile(r"import\s*\{[^}]*\buseSeparatorsCanvas\b[^}]*\}\s*from")
+
+
+def package_text_findings(rel: str, text: str) -> list[str]:
+    """Findings in one file's text: a literal caps array, a block-mounted control, a per-block fallback call."""
+    body = _strip_comments(text)
+    out = []
+    if rel.endswith(".php") and PHP_CAPS_LITERAL.search(body):
+        out.append(f"{rel}: a hand-written separators caps array; read it with sgs_separators_caps( '<block>' ) (block.json supports.sgs.separators)")
+    if rel.endswith(".js") and JS_CONTROL_MOUNT.search(body) and rel != "src/components/SeparatorsPanel.js":
+        out.append(f"{rel}: mounts SgsSeparatorControl itself; use <SeparatorsPanel> (src/components/SeparatorsPanel.js, with `bare` inside a larger panel)")
+    if rel.endswith(".js") and JS_FALLBACK_CALL.search(body) and rel not in ("src/shared/separators/view.js", "src/shared/separators/index.js"):
+        out.append(f"{rel}: calls initSeparators(); the shared module @sgs/separators loads the fallback for every flow list")
+    if rel.endswith(".js") and rel != "src/shared/separators/useSeparatorsCanvas.js" and JS_HOOK_CALL.search(body) and not JS_HOOK_IMPORT.search(body):
+        out.append(f"{rel}: calls useSeparatorsCanvas() without importing it (import it from src/shared/separators/useSeparatorsCanvas)")
+    return out
+
+
+def package_findings() -> list[str]:
+    out: list[str] = []
+    for pattern in ("src/**/*.php", "includes/**/*.php", "src/**/*.js"):
+        for path in sorted(PLUGIN.glob(pattern)):
+            rel = path.relative_to(PLUGIN).as_posix()
+            if any(f"/{d}/" in f"/{rel}" for d in ("node_modules", "build", "vendor", "tests")):
+                continue
+            if rel.startswith("includes/helpers-separators"):
+                continue
+            out.extend(package_text_findings(rel, path.read_text(encoding="utf-8", errors="replace")))
+    return out
+
+
 def cmd_check() -> int:
     new, stale = compare(scan(), load_baseline())
-    editor = editor_findings()
+    editor = editor_findings() + package_findings()
     for line in new:
         print(f"FAIL new between-item line outside the helper: {line}")
     for line in stale:
         print(f"FAIL stale baseline: {line}")
     for line in editor:
-        print(f"FAIL editor preview: {line}")
+        print(f"FAIL editor or package: {line}")
     if editor and not (new or stale):
-        print("[separators] FAIL — a block with a separators setting must preview it in its canvas.")
+        print("[separators] FAIL — a block with a separators setting must preview it in its canvas, and take its options from block.json through the package.")
         return 1
     if new or stale:
         print("[separators] FAIL — route a between-item line through includes/helpers-separators*.php "
@@ -211,6 +249,28 @@ def cmd_self_test() -> int:
         if scan_text(css):
             print(f"SELF-TEST FAIL: {name} was wrongly flagged: {css}")
             failures += 1
+    package_positives = {
+        "a literal caps array": ("src/blocks/x/render.php", "$c = array( 'axes' => array( 'row' ), 'edges' => false );"),
+        "a block-mounted control": ("src/blocks/x/edit.js", "<SgsSeparatorControl value={ v } />"),
+        "a per-block fallback call": ("src/blocks/x/view.js", "initSeparators();"),
+        "the hook called without an import": ("src/blocks/x/edit.js", "import { a } from '../../utils';\nconst s = useSeparatorsCanvas( { separators } );"),
+    }
+    package_negatives = {
+        "the package panel mounting the control": ("src/components/SeparatorsPanel.js", "<SgsSeparatorControl value={ v } />"),
+        "the shared view calling the fallback": ("src/shared/separators/view.js", "initSeparators();"),
+        "the default caps (no axes named)": ("includes/x.php", "$c = array( 'axes' => array(), 'edges' => false );"),
+        "a commented-out literal": ("src/blocks/x/render.php", "// $c = array( 'axes' => array( 'row' ) );"),
+        "the hook called with its import": ("src/blocks/x/edit.js", "import { useSeparatorsCanvas } from '../../shared/separators/useSeparatorsCanvas';\nconst s = useSeparatorsCanvas( { separators } );"),
+        "the hook called with a multi-name import": ("src/blocks/x/edit.js", "import {\n\tfoo,\n\tuseSeparatorsCanvas,\n} from '../../shared/separators';\nuseSeparatorsCanvas( {} );"),
+    }
+    for name, (rel, text) in package_positives.items():
+        if not package_text_findings(rel, text):
+            print(f"SELF-TEST FAIL: {name} was not flagged")
+            failures += 1
+    for name, (rel, text) in package_negatives.items():
+        if package_text_findings(rel, text):
+            print(f"SELF-TEST FAIL: {name} was wrongly flagged")
+            failures += 1
     new, stale = compare({"a.css": {"gap-decoration": 2}}, {"a.css": {"gap-decoration": 1}})
     if not new or stale:
         print("SELF-TEST FAIL: a count above the baseline was not reported as new")
@@ -225,7 +285,7 @@ def cmd_self_test() -> int:
     if HELPER_FILES.search("includes/helpers-gap-rule.php") is not None:
         print("SELF-TEST FAIL: the old gap-rule helper must not be exempt")
         failures += 1
-    print(f"[separators] self-test {'FAIL' if failures else 'PASS'} ({len(positives)} positives, {len(negatives)} negatives).")
+    print(f"[separators] self-test {'FAIL' if failures else 'PASS'} ({len(positives) + len(package_positives)} positives, {len(negatives) + len(package_negatives)} negatives).")
     return 1 if failures else 0
 
 

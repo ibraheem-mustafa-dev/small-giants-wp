@@ -706,12 +706,7 @@ $responsive_css .= sgs_separators_css(
 		'pseudo'    => '::after',
 		'gap_expr'  => array( 'row' => '0px' ),
 	),
-	array(
-		'axes'  => array( 'row' ),
-		'edges' => false,
-		'hover' => false,
-		'sweep' => false,
-	)
+	sgs_separators_caps( 'sgs/pricing-table', 'featureSeparators' )
 );
 
 

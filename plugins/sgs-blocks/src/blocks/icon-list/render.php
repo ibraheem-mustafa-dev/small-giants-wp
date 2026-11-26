@@ -681,12 +681,7 @@ $scoped_css[] = sgs_separators_css(
 		'direction' => 'column',
 		'gap_expr'  => array( 'row' => 'var(--sgs-icon-list-gap, var(--wp--preset--spacing--20))' ),
 	),
-	array(
-		'axes'  => array( 'row' ),
-		'edges' => true,
-		'hover' => false,
-		'sweep' => false,
-	)
+	sgs_separators_caps( 'sgs/icon-list' )
 );
 $scoped_css[] = sgs_sibling_dim_css( $sgs_ilist_list_sel, '.sgs-icon-list__item', ' :is(.sgs-icon-list__text, .sgs-icon-list__item-link)', $attributes );
 $scoped_css[] = sgs_label_roll_css( $root_sel, ' .sgs-icon-list__item', '', $attributes );

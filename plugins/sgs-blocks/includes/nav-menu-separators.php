@@ -28,28 +28,14 @@ require_once __DIR__ . '/helpers-separators-css.php';
 
 if ( ! function_exists( 'sgs_nav_menu_separators_caps' ) ) {
 	/**
-	 * What each list offers (mirrors block.json `supports.sgs.separators`).
+	 * What each list offers: the block's own block.json `supports.sgs.separators.<attribute>`.
 	 *
 	 * @param string $bem_root   'sgs-nav-bar-menu' or 'sgs-nav-drawer-menu'.
 	 * @param string $attribute  'separators' or 'submenuSeparators'.
 	 * @return array Capabilities for sgs_separators_normalise().
 	 */
 	function sgs_nav_menu_separators_caps( string $bem_root, string $attribute ): array {
-		if ( 'submenuSeparators' === $attribute ) {
-			return array(
-				'axes'  => array( 'row' ),
-				'edges' => false,
-				'hover' => true,
-				'sweep' => false,
-			);
-		}
-		$is_bar = 'sgs-nav-bar-menu' === $bem_root;
-		return array(
-			'axes'  => $is_bar ? array( 'column' ) : array( 'row' ),
-			'edges' => ! $is_bar,
-			'hover' => true,
-			'sweep' => true,
-		);
+		return sgs_separators_caps( 'sgs/' . substr( $bem_root, strlen( 'sgs-' ) ), $attribute );
 	}
 }
 

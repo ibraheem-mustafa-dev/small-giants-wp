@@ -12,6 +12,10 @@
  * `{prefix}ColourGradient`, `{prefix}Flip`, `{prefix}Invert`, `{prefix}Scale`);
  * it defaults to `shapeDividerTop` / `shapeDividerBottom` for the position.
  *
+ * Every block that offers the Shape dividers panel mounts `ShapeDividerPreviews` (both
+ * positions) in its canvas root and adds `shapeDividerClassName( attributes )` to the
+ * root's classes, so the panel always draws something.
+ *
  * @package SGS\Blocks
  */
 
@@ -23,6 +27,7 @@ import {
 	shapeDividerTile,
 	shapeDividerHeight,
 	shapeDividerGradient,
+	shapeDividerTransform,
 } from '../utils/shape-dividers';
 import { SvgGradientDefs } from '../utils/svg-gradient-preview';
 import { resolveColourToken } from './DesignTokenPicker';
@@ -59,16 +64,12 @@ export default function ShapeDividerPreview( {
 	const patternId = `${ instanceId }-${ position }-tile`;
 	const fill = gradient ? `url(#${ gradientId })` : 'currentColor';
 
-	const transforms = [];
-	if ( attributes[ `${ prefix }Flip` ] ) {
-		transforms.push( 'scaleX(-1)' );
-	}
-	if ( attributes[ `${ prefix }Invert` ] ) {
-		transforms.push( 'scaleY(-1)' );
-	}
-	const pathProps = transforms.length
-		? { transform: transforms.join( ' ' ), transformOrigin: 'center' }
-		: {};
+	const transform = shapeDividerTransform(
+		!! attributes[ `${ prefix }Flip` ],
+		!! attributes[ `${ prefix }Invert` ],
+		position
+	);
+	const pathProps = transform ? { transform } : {};
 
 	const style = {
 		height: `${ shapeDividerHeight( shapeDividerAxis( scale, 'y' ) ) }px`,
@@ -135,5 +136,34 @@ export default function ShapeDividerPreview( {
 				) }
 			</svg>
 		</div>
+	);
+}
+
+/**
+ * The class the root carries while a divider is set (container/style.css gives it
+ * `position: relative; overflow: hidden`, which the absolute dividers need).
+ *
+ * @param {Object} attributes Block attributes.
+ * @return {string} The class, or ''.
+ */
+export function shapeDividerClassName( attributes ) {
+	return attributes.shapeDividerTop || attributes.shapeDividerBottom
+		? 'sgs-container--has-shape-divider'
+		: '';
+}
+
+/**
+ * Both dividers of a block, for its canvas root.
+ *
+ * @param {Object} props
+ * @param {Object} props.attributes Block attributes.
+ * @return {JSX.Element} The top and bottom dividers (each null when unset).
+ */
+export function ShapeDividerPreviews( { attributes } ) {
+	return (
+		<>
+			<ShapeDividerPreview attributes={ attributes } position="top" />
+			<ShapeDividerPreview attributes={ attributes } position="bottom" />
+		</>
 	);
 }

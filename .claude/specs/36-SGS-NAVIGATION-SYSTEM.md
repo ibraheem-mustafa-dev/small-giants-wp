@@ -1251,7 +1251,7 @@ Sweep segments follow FR-41-26 eligibility. Both border-colour rows carry `contr
 
 **14.9.7 Panel "Menu item"**: the labelled **Border** control, `SgsBorderControl` with `showColour={ false }` (FR-41-33): per-side width (base only), style (the shared `BorderStyleControl` sibling, FR-41-2b) and radius (`showRadiusResponsive={ false }`) → `itemBorderWidth` / `itemBorderStyle` / `itemBorderRadius`. Identical in bar and drawer (FR-41-28).
 
-**14.9.7a Panels "Item separators" (bar), "Row separators" (drawer), "Submenu row separators" (both)** (FR-41-37): one `SgsSeparatorControl` each (`plugins/sgs-blocks/src/shared/nav-menu-panels/SeparatorsPanel.js`) → `separators` / `submenuSeparators`: per-device Thickness, one Line colour and style swatch (Normal / Hover tabs, Solid / Dashed / Dotted), **Outer lines** on the drawer's top-level panel, **Line on hover** (None / Swap / Sweep) on the top-level panels.
+**14.9.7a Panels "Item separators" (bar), "Row separators" (drawer), "Submenu row separators" (both)** (FR-41-37): one shared `SeparatorsPanel` each (`plugins/sgs-blocks/src/components/SeparatorsPanel.js`, options read from the block's `supports.sgs.separators.<attribute>`) → `separators` / `submenuSeparators`: per-device Thickness, one Line colour and style swatch (Normal / Hover tabs, Solid / Dashed / Dotted), **Outer lines** on the drawer's top-level panel, **Line on hover** (None / Swap / Sweep) on the top-level panels.
 
 **14.9.8 Panel "Submenu — Items"** (drawer-only): the links inside the drawer's submenu. Marker icon (FR-41-30b) → `sublinkMarkerIcon`; typography is the Typography panel's "Submenu" target; link padding → `submenuLinkPadding` (`submenuPadding` belongs to the panel).
 

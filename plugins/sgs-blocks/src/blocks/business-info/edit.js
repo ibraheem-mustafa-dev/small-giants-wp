@@ -30,7 +30,7 @@ import {
 	SgsBoxControl,
 	SgsBorderControl,
 	SgsLengthControl,
-	SgsSeparatorControl,
+	SeparatorsPanel,
 	LinkUnderlineControl,
 	FlexWrapControl,
 } from '../../components';
@@ -84,7 +84,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		linkUnderlineColour,
 		linkUnderlineColourHover,
 		linkUnderlineOffset,
-		separators,
 		copyrightPrefix,
 		textBefore,
 		textAfter,
@@ -926,16 +925,14 @@ export default function Edit( { attributes, setAttributes } ) {
 									/>
 								) }
 							</ResponsiveOverride>
-							<SgsSeparatorControl
+							<SeparatorsPanel
+								bare
 								label={ __(
 									'Lines between rows',
 									'sgs-blocks'
 								) }
-								value={ separators }
-								onChange={ ( next ) =>
-									setAttributes( { separators: next } )
-								}
-								axes={ [ 'row' ] }
+								attributes={ attributes }
+								setAttributes={ setAttributes }
 							/>
 						</PanelBody>
 					</InspectorControls>

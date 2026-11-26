@@ -9,7 +9,6 @@ import {
 	useSettings,
 	store as blockEditorStore,
 } from '@wordpress/block-editor';
-import { SeparatorsPanel } from '../container/components/SeparatorsPanel';
 import {
 	PanelBody,
 	SelectControl,
@@ -31,6 +30,7 @@ import {
 	SgsGapControl,
 	SgsLengthControl,
 	TierSelectControl,
+	SeparatorsPanel,
 } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import {
@@ -1038,6 +1038,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				<SeparatorsPanel
 					attributes={ attributes }
 					setAttributes={ setAttributes }
+					lined
 				/>
 
 				{ /* TIER 1 — the `content-band` element's own panel (Spec 35 Part

@@ -4,7 +4,7 @@ import {
 	ResponsiveBoxControl,
 	ResponsiveOverride,
 	SgsLengthControl,
-	SgsSeparatorControl,
+	SeparatorsPanel,
 	ShadowControl,
 	shadowAttrKeys,
 	TypographyControls,
@@ -195,13 +195,12 @@ export default function PanelDesignControls( {
 						) }
 					</ResponsiveOverride>
 				) ) }
-				<SgsSeparatorControl
+				<SeparatorsPanel
+					bare
+					name={ name }
 					label={ __( 'Lines between items', 'sgs-blocks' ) }
-					value={ attributes.separators }
-					onChange={ ( next ) =>
-						setAttributes( { separators: next } )
-					}
-					axes={ [ 'row' ] }
+					attributes={ attributes }
+					setAttributes={ setAttributes }
 				/>
 				{ BOXES.map( ( [ attr, label ] ) => (
 					<ResponsiveBoxControl

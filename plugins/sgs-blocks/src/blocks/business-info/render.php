@@ -585,12 +585,7 @@ if ( 'hours' === $display_type && ! ( 'condensed' === ( $attributes['hoursLayout
 			'direction' => 'column',
 			'gap_expr'  => array( 'row' => '0px' ),
 		),
-		array(
-			'axes'  => array( 'row' ),
-			'edges' => false,
-			'hover' => false,
-			'sweep' => false,
-		)
+		sgs_separators_caps( 'sgs/business-info' )
 	);
 }
 
