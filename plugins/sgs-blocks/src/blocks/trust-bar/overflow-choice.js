@@ -16,6 +16,7 @@
  * @package
  */
 
+import { __ } from '@wordpress/i18n';
 import DEFAULT_TICKER_LAYER from '../../../includes/motion/data/trust-bar-default-ticker.json';
 import {
 	addLayer,
@@ -89,11 +90,13 @@ export function overflowChoiceOf( motion, overflowMode ) {
 }
 
 /**
- * The attributes a choice writes: `{ sgsMotion, overflowMode }`, or `{ refused }` when the schema refuses the layer.
+ * The attributes a choice writes: `{ sgsMotion, overflowMode }`, or `{ refused, detail }` when the layer cannot be
+ * stored: `refused` is a reason code (`ranged`, `full`, `refused` or `invalid`) for overflowRefusalText(), `detail` the
+ * motion helpers' own words.
  *
  * @param {Object|undefined} motion The block's `sgsMotion`.
  * @param {string}           choice `ticker`, `wrap` or `drop`.
- * @return {Object} The attributes to set, or `{ refused: string }`.
+ * @return {Object} The attributes to set, or `{ refused: string, detail: string }`.
  */
 export function withOverflowChoice( motion, choice ) {
 	const kind = marqueeRangeKind( motion );
@@ -103,15 +106,21 @@ export function withOverflowChoice( motion, choice ) {
 		}
 		if ( 'none' !== kind ) {
 			return {
-				refused:
-					'the marquee has its own width range in the Effects panel',
+				refused: 'ranged',
+				detail: 'the marquee has its own width range in the Effects panel',
 			};
 		}
 		const added = addLayer( motion, TARGET, LIST, { effect: 'marquee' } );
 		if ( ! added.motion ) {
+			let code = 'invalid';
+			if ( added.full ) {
+				code = 'full';
+			} else if ( added.refusal ) {
+				code = 'refused';
+			}
 			return {
-				refused:
-					added.refusal || added.invalid || 'no marquee can be added',
+				refused: code,
+				detail: added.refusal || added.invalid || '',
 			};
 		}
 		const updated = updateLayer(
@@ -126,7 +135,10 @@ export function withOverflowChoice( motion, choice ) {
 			}
 		);
 		if ( ! updated.motion ) {
-			return { refused: updated.refusal || updated.invalid };
+			return {
+				refused: updated.refusal ? 'refused' : 'invalid',
+				detail: updated.refusal || updated.invalid || '',
+			};
 		}
 		return { sgsMotion: updated.motion, overflowMode: 'ticker' };
 	}
@@ -151,4 +163,29 @@ export function withOverflowChoice( motion, choice ) {
 		return { sgsMotion: removed, overflowMode: mode };
 	}
 	return { sgsMotion: motion, overflowMode: mode };
+}
+
+/**
+ * The translated sentence the Overflow control shows for a refusal code from withOverflowChoice().
+ *
+ * @param {string} code The reason code.
+ * @return {string} The sentence.
+ */
+export function overflowRefusalText( code ) {
+	if ( 'ranged' === code ) {
+		return __(
+			'This marquee has its own width range. Change it in the Effects panel.',
+			'sgs-blocks'
+		);
+	}
+	if ( 'full' === code ) {
+		return __(
+			'This block already holds as many effects as it can. Remove one in the Effects panel, then choose Ticker again.',
+			'sgs-blocks'
+		);
+	}
+	return __(
+		'The ticker could not be added to this block. Check its effects in the Effects panel.',
+		'sgs-blocks'
+	);
 }

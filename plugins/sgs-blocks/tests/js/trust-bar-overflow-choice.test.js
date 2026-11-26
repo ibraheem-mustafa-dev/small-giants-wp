@@ -4,6 +4,7 @@
  * every width hides the control, and the layer is found by its effect, never by its id.
  */
 const {
+	overflowRefusalText,
 	marqueeLayerOf,
 	marqueeRangeKind,
 	overflowChoices,
@@ -90,8 +91,8 @@ describe( 'trust bar overflow choice', () => {
 		const out = withOverflowChoice( motion, 'drop' );
 		expect( out.sgsMotion ).toBe( motion );
 		expect( out.overflowMode ).toBe( 'drop' );
-		expect( withOverflowChoice( motion, 'ticker' ).refused ).toMatch(
-			/own width range/
+		expect( withOverflowChoice( motion, 'ticker' ).refused ).toBe(
+			'ranged'
 		);
 	} );
 
@@ -120,5 +121,16 @@ describe( 'trust bar overflow choice', () => {
 				'wrap'
 			)
 		).toBe( 'wrap' );
+	} );
+
+	test( 'each refusal reads as a translated sentence, with a generic one for any other reason', () => {
+		expect( overflowRefusalText( 'ranged' ) ).toMatch( /own width range/ );
+		expect( overflowRefusalText( 'full' ) ).toMatch( /as many effects/ );
+		expect( overflowRefusalText( 'refused' ) ).toMatch(
+			/could not be added/
+		);
+		expect( overflowRefusalText( 'something new' ) ).toMatch(
+			/could not be added/
+		);
 	} );
 } );

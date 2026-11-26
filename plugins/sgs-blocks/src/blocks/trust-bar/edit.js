@@ -1,4 +1,4 @@
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 import BackgroundLayers from '../../components/media/BackgroundLayers';
 import {
 	useBlockProps,
@@ -12,6 +12,7 @@ import {
 	marqueeLayerOf,
 	overflowChoiceOf,
 	overflowChoices,
+	overflowRefusalText,
 	withOverflowChoice,
 } from './overflow-choice';
 import { Fragment, useEffect, useMemo, useState } from '@wordpress/element';
@@ -582,6 +583,8 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	const overflowOptions = overflowChoices( attributes.sgsMotion );
 	// Why the Overflow control could not store a choice (the motion schema refused the layer), shown under it.
 	const [ overflowRefusal, setOverflowRefusal ] = useState( null );
+	// A change to the motion settings (the Effects panel, undo) makes the last refusal stale.
+	useEffect( () => setOverflowRefusal( null ), [ attributes.sgsMotion ] );
 	const marqueeAlways =
 		!! marqueeLayer &&
 		! [ 'mobile', 'tablet' ].includes(
@@ -1355,14 +1358,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							status="warning"
 							onRemove={ () => setOverflowRefusal( null ) }
 						>
-							{ sprintf(
-								/* translators: %s: why the motion settings refused the ticker. */
-								__(
-									'The ticker could not be stored: %s.',
-									'sgs-blocks'
-								),
-								overflowRefusal
-							) }
+							{ overflowRefusalText( overflowRefusal ) }
 						</Notice>
 					) }
 				</PanelBody>
