@@ -9,7 +9,8 @@
 //     underline; `contentWidth: wide` paints a max-width), so the draft's computed keyword names no value of its list; or
 //   - another setting of the block places the same property on the same part (the record's `setting_placements`): the two
 //     can tie on a draft value, and what each paints is what breaks the tie (trust-bar's `flexWrap` nowrap against its `layout`).
-// Only the first run of each marker is kept: the later runs repeat it under another layout mode of the block.
+// Only the first run of each marker is kept, once for each fixture variant: the later runs repeat it under another layout mode of
+// the block. A placement the record cannot prove (`unproved` and not `accepted`) is no evidence that two settings paint one thing.
 import { createRequire } from 'module';
 import { longhands } from './calibrate-props.mjs';
 
@@ -24,20 +25,23 @@ export function acceptsValue( prop, value ) {
 	return ! csstree.lexer.matchProperty( prop, String( value ) ).error;
 }
 
-// The (part, property) pairs a setting's placements set, as readable longhands: { setting: Set( "part|longhand" ) }.
+// The (part, state, property) triples a setting's placements set, as readable longhands: { setting: Set( "part|state|longhand" ) }.
 export function placedProperties( placements ) {
 	const out = {};
 	for ( const r of placements ) {
+		if ( r.unproved && ! r.accepted ) {
+			continue;
+		}
 		const set = ( out[ r.setting ] ??= new Set() );
 		for ( const p of r.props || [] ) {
-			[ p, ...longhands( p ) ].forEach( ( q ) => set.add( `${ r.part ?? '' }|${ q }` ) );
+			[ p, ...longhands( p ) ].forEach( ( q ) => set.add( `${ r.part ?? '' }|${ r.state ?? '' }|${ q }` ) );
 		}
 	}
 	return out;
 }
 
 // The enum-value instances to read: the plan's instances for settings that need readings (see above), the first run of each
-// marker only. `placements`: the record's rows for the block ({ setting, part, props }).
+// marker only. `placements`: the record's rows for the block ({ setting, part, state, props, unproved, accepted}).
 export function enumReadInstances( instances, placements ) {
 	const placed = placedProperties( placements );
 	const needs = new Map();
@@ -46,7 +50,7 @@ export function enumReadInstances( instances, placements ) {
 			const props = longhands( row.css_property );
 			const values = [ ...new Set( instances.filter( ( i ) => i.row === row && undefined !== i.marker?.enumValue ).map( ( i ) => i.marker.enumValue ) ) ];
 			const foreign = values.some( ( v ) => props.some( ( p ) => ! acceptsValue( p, v ) ) );
-			const own = [ ...( placed[ row.attr_name ] || [] ) ].filter( ( k ) => props.includes( k.slice( k.indexOf( '|' ) + 1 ) ) );
+			const own = [ ...( placed[ row.attr_name ] || [] ) ].filter( ( k ) => props.includes( k.slice( k.lastIndexOf( '|' ) + 1 ) ) );
 			const shared = own.some( ( k ) => Object.entries( placed ).some( ( [ other, set ] ) => other !== row.attr_name && set.has( k ) ) );
 			needs.set( row.attr_name, foreign || shared );
 		}

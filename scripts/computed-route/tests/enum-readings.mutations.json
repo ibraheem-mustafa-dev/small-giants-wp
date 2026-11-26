@@ -40,5 +40,17 @@
 		"find": "return 1 === hits.length ?",
 		"replace": "return hits.length >= 1 ?",
 		"why": "two settings that both fit are guessed between"
+	},
+	{
+		"file": "lib/enum-read-plan.mjs",
+		"find": "if ( r.unproved && ! r.accepted ) {",
+		"replace": "if ( false ) {",
+		"why": "an unproved placement counts as a tie"
+	},
+	{
+		"file": "lib/enum-read-plan.mjs",
+		"find": "`${ r.part ?? '' }|${ r.state ?? '' }|${ q }`",
+		"replace": "`${ r.part ?? '' }||${ q }`",
+		"why": "the same property in another state counts as a tie"
 	}
 ]

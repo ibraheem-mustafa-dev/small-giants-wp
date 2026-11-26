@@ -49,7 +49,18 @@ test( 'a setting needs readings when a value is no CSS value of its property, or
 	assert.deepEqual( picked, [ 'wrapStyle:wrap', 'wrapStyle:nowrap', 'underline:always' ], 'wrapStyle shares flex-wrap with layout; underline has a foreign value; tone has neither' );
 	const sameProp = enumReadInstances( [ inst( b, 'red' ) ], [ ...placements, { setting: 'other', part: 'elsewhere', props: [ 'color' ] } ] );
 	assert.equal( sameProp.length, 0, 'the same property on another part is no tie' );
-	assert.deepEqual( [ ...placedProperties( placements ).tone ], [ 'inner|color' ] );
+	assert.deepEqual( [ ...placedProperties( placements ).tone ], [ 'inner||color' ] );
+} );
+
+test( 'MUST FAIL: a placement the record cannot prove, or one in another state, is no tie', () => {
+	const row = { attr_name: 'wrapStyle', css_property: 'flex-wrap' };
+	const inst = ( v ) => ( { row, marker: { label: `enum-${ v }`, enumValue: v }, variant: 0 } );
+	const own = { setting: 'wrapStyle', part: 'inner', state: null, props: [ 'flex-wrap' ] };
+	const tied = { setting: 'layout', part: 'inner', state: null, props: [ 'flex-wrap' ] };
+	assert.equal( enumReadInstances( [ inst( 'wrap' ) ], [ own, tied ] ).length, 1, 'a proved placement on the same part and state ties' );
+	assert.equal( enumReadInstances( [ inst( 'wrap' ) ], [ own, { ...tied, unproved: 'blind' } ] ).length, 0, 'an unproved placement is no evidence' );
+	assert.equal( enumReadInstances( [ inst( 'wrap' ) ], [ own, { ...tied, unproved: 'blind', accepted: 1 } ] ).length, 1, 'an accepted one is' );
+	assert.equal( enumReadInstances( [ inst( 'wrap' ) ], [ own, { ...tied, state: 'hover' } ] ).length, 0, 'the same property in another state is no tie' );
 } );
 
 test( 'only the first run of each marker is kept (the later runs repeat it under another layout mode)', () => {
