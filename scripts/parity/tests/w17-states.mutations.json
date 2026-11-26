@@ -3,7 +3,6 @@
  {"file": "lib/state-rest.mjs", "find": "if ( 'rest' !== state.from && ! restDiff", "replace": "if ( true && ! restDiff", "why": "from: rest loads afresh even when at rest"},
  {"file": "lib/state-rest.mjs", "find": "&& ! restDiff( rest, await read( page ) ).length ) {", "replace": "&& false ) {", "why": "a page still at rest is not reloaded (a chained step survives)"},
  {"file": "lib/state-rest.mjs", "find": "if ( ! placementOnly( rest, now ) ) {", "replace": "if ( false ) {", "why": "a lock or dialog left after a fresh load is a refusal at once"},
- {"file": "lib/state-rest.mjs", "find": "return apart.length ? refused( apart )", "replace": "return false ? refused( apart )", "why": "a page whose two fresh loads disagree is refused"},
  {"file": "lib/state-rest.mjs", "find": "filter( ( k ) => String( rest[ k ] ) !== String( now[ k ] ) )", "replace": "filter( ( k ) => false )", "why": "restDiff reports what moved"},
  {"file": "lib/state-rest.mjs", "find": "if ( ! rest || ! now ) {", "replace": "if ( ! now ) {", "why": "no rest signature is never at rest"},
  {"file": "lib/state-rest.mjs", "find": "const shown = ( v ) => ( '' === v ? 'none' : v );", "replace": "const shown = ( v ) => v;", "why": "an empty field reads none"},

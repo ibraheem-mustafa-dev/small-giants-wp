@@ -3,5 +3,6 @@
  {"file": "lib/state-rest.mjs", "find": "focus: () => '' === String( now.focus || '' ),", "replace": "focus: () => true,", "why": "a control the fresh load focuses is adopted as rest"},
  {"file": "lib/state-rest.mjs", "find": "scroll: () => true,", "replace": "scroll: () => false,", "why": "a scroll offset the first read caught is refused instead of judged against a second fresh load"},
  {"file": "lib/state-rest.mjs", "find": "( placed[ k ]?.() ?? false ) );", "replace": "( placed[ k ]?.() ?? true ) );", "why": "a lock or dialog left after a fresh load is placement"},
- {"file": "lib/helpers.mjs", "find": "withoutFragment( from ) === withoutFragment( to )", "replace": "String( from ).split( '#' )[ 0 ] === String( to ).split( '#' )[ 0 ]", "why": "an address written without the root slash is another document"}
+ {"file": "lib/helpers.mjs", "find": "withoutFragment( from ) === withoutFragment( to )", "replace": "String( from ).split( '#' )[ 0 ] === String( to ).split( '#' )[ 0 ]", "why": "an address written without the root slash is another document"},
+ {"file": "lib/state-rest.mjs", "find": "return apart.length ? refused( apart )", "replace": "return false ? refused( apart )", "why": "a page whose two fresh loads disagree is refused"}
 ]
