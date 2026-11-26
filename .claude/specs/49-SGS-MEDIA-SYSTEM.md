@@ -442,7 +442,7 @@ Item-set blocks declare block-level settings with the item prefix (Ratio, Fit, R
 
 ### 9.1 Global
 
-Labels print once. Each panel is a collapsible `PanelBody`; Media and Size and crop open by default. Every panel has Reset in a menu on its first row (`PanelBody` has no header slot). Multi-write actions (Circle, Replace, Reset) are one undo step.
+Labels print once. Each panel is a collapsible `PanelBody`; Media and Size and crop open by default. A panel that holds a value shows a small Reset on its first row (`SgsPanelReset`; an untouched panel shows none, and there is no menu). Multi-write actions (Circle, Replace, Reset) are one undo step.
 
 ### 9.2 Shared components (new ones in `src/components/media/`; reworked ones stay in `src/components/`)
 
@@ -459,7 +459,8 @@ Labels print once. Each panel is a collapsible `PanelBody`; Media and Size and c
 - **`Chips`:** the shared contract for ratio, fit and mask grids: `role="radiogroup"`, arrow-key roving focus, 44px targets, selected not by colour alone, visible focus, hover brightens.
 - **`MediaElementPanel` (reworked):** mounts §9.4's panels from the atoms' disclosure rules. The Settings and Styles inspector slots mount at once and only the panels' body loads lazily inside them, so a panel keeps its place in its tab on first select (a background mounts the Styles slot only). A block's own buttons go beside Replace and Remove through `slotActions` (`MediaSlotField`'s `extraActions`).
 - **`SgsInnerSection`:** a light collapsed section inside a panel (a `PanelBody` with `sgs-inner-section`: no card border, a small title, a bar beside the title when a closed section holds a value), one level deep; `scripts/check-inner-section-depth.js` refuses a third collapsible level. The Background panel holds "Background surface" and "Extra SVG layer" as inner sections (`panelContent.background`).
-- **`SgsPanelReset`:** one small Reset for a whole panel, drawn only while the panel holds a value; built, not yet mounted (Stage E2 replaces the permanent Panel options menu with it).
+- **`SgsPanelReset`:** one small Reset for a whole panel, drawn only while the panel holds a value. `components/media/panels/MediaPanels.js::MediaPanels` draws it on every media panel with rows ("Reset" on Desktop, "Reset Tablet" or "Reset Mobile" off it, clearing only that device); `row-io.js::resetHasValue` says whether Reset has anything to clear, leaving out attributes that hold the block's default.
+- **`SgsResetPanel`:** a titled panel (or, nested inside another panel, a light `SgsInnerSection`; or `bare`, only Reset above the controls) with one `SgsPanelReset`; it replaces a core `ToolsPanel` whose items were all shown by default, whose header menu held only a reset. `scripts/check-reset-only-menus.js` refuses a "Panel options" menu and a reset-only `ToolsPanel`.
 
 Lengths use `SgsLengthControl` with `presets={false}` in `ResponsiveOverride`.
 
