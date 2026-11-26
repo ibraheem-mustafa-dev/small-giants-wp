@@ -285,3 +285,13 @@ def test_a_checkout_path_is_recognised_in_every_written_form():
     assert SL.shareable('{}')
     for form in (root, root.replace(BS, '/'), root.replace(BS, BS * 2), root.lower()):
         assert not SL.shareable(f'x {form} y'), form
+
+
+def test_two_checkouts_differing_only_in_line_endings_share_a_key(tmp_path):
+    a, b = tmp_path / 'a.css', tmp_path / 'b.css'
+    a.write_bytes(b'.x {\r\n  color: red;\r\n}\r\n')
+    b.write_bytes(b'.x {\n  color: red;\n}\n')
+    assert SL.file_md5(a) == SL.file_md5(b)
+    assert SL.file_md5(a, text=False) != SL.file_md5(b, text=False)
+    b.write_bytes(b'.x {\n  color: blue;\n}\n')
+    assert SL.file_md5(a) != SL.file_md5(b)

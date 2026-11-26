@@ -928,9 +928,9 @@ def look_key(short: str, snapshot_file: Path, woocommerce: bool) -> str:
     rec = RECORDS / f'{short}.json'
     # the fixture entry as written: a look is drawn from it, so an edit to it alone builds the look again
     entry = '' if 'fixture-key' in MUTATE else hashlib.md5(json.dumps(fixture, sort_keys=True).encode()).hexdigest()
-    for part in (builder_hash(), rn_hash, entry, hashlib.md5(snapshot_file.read_bytes()).hexdigest(), str(woocommerce), ','.join(sorted(MUTATE)),
-                 hashlib.md5(rec.read_bytes()).hexdigest() if rec.is_file() else 'no-record',
-                 *(hashlib.md5(f.read_bytes()).hexdigest() for f in sheet_inputs(short) + theme_files if f.is_file()),
+    for part in (builder_hash(), rn_hash, entry, file_md5(snapshot_file), str(woocommerce), ','.join(sorted(MUTATE)),
+                 file_md5(rec) if rec.is_file() else 'no-record',
+                 *(file_md5(f) for f in sheet_inputs(short) + theme_files if f.is_file()),
                  reach_hash()):
         h.update(part.encode())
     return h.hexdigest()[:20]
@@ -1021,21 +1021,26 @@ def framework_db() -> Path:
     return Path(framework_db_path())
 
 
-def file_md5(f) -> str:
-    """The md5 of a file read in pieces (the framework database is large); 'missing' for a file that cannot be read."""
+def file_md5(f, text: bool = True) -> str:
+    """The md5 of a file ('missing' when it cannot be read). A text file is hashed with its line endings as LF, so two
+    checkouts that differ only in CRLF or LF (git's autocrlf) share a key; the framework database is read whole, as bytes."""
     try:
-        h = hashlib.md5()
-        with open(f, 'rb') as fh:
-            for chunk in iter(lambda: fh.read(1 << 20), b''):
-                h.update(chunk)
-        return h.hexdigest()
+        if not text:
+            h = hashlib.md5()
+            with open(f, 'rb') as fh:
+                for chunk in iter(lambda: fh.read(1 << 20), b''):
+                    h.update(chunk)
+            return h.hexdigest()
+        return hashlib.md5(Path(f).read_bytes().replace(b'
+', b'
+')).hexdigest()
     except OSError:
         return 'missing'
 
 
 @functools.lru_cache(maxsize=4)
 def db_md5(path: str) -> str:
-    return file_md5(path)
+    return file_md5(path, text=False)
 
 
 @functools.lru_cache(maxsize=1)
