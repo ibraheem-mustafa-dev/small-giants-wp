@@ -1,12 +1,12 @@
 # Intake review: indus-foods
 
-Taken by default: 31 rows had no mark from Bean and took their proposal (intake.mjs --apply-review --go-through; the Mark cell of such a row stays blank, and a mark Bean writes there overrides the default); rows with no proposal to take are listed in go-through-open.json.
+Taken by default: 32 rows had no mark from Bean and took their proposal (intake.mjs --apply-review --go-through; the Mark cell of such a row stays blank, and a mark Bean writes there overrides the default); rows with no proposal to take are listed in go-through-open.json.
 
 Taken on 2026-11-19T06:19:28.565Z; manifest 1.0, files hash f2d909d8605ef2cb.
 
 How to mark: put x in a section's `Accept all: [ ]` box to give every row the section's first mark; to mark one row differently, write its mark in that row's Mark cell (a row's own mark always beats Accept all). Flag rows left blank are accepted as flagged and not-a-defect rows left blank stay not defects; every other row needs Accept all or its own mark. Rows marked **changed** differ from the last export, lost their old mark and come first. Then run `node scripts/computed-route/intake.mjs --apply-review indus-foods`.
 
-Rows: 1254; 575 need reading, 679 are confident proposals that Accept all covers (skeleton block choices 645, missing features 34).
+Rows: 1255; 576 need reading, 679 are confident proposals that Accept all covers (skeleton block choices 645, missing features 34).
 
 Not defects counted, not listed: breakpoint 91, dead-code (constant guard) 5, dead-code (data-gated) 7, prop-variant 1, prototype-only 13, reached-when-forced 152, render-wins 552.
 
@@ -254,6 +254,7 @@ Accept all: [ ]
 | `effect:J-12` | J-12 js-style-write in updateHeader on ref setHeaderEl (js-style-write, scroll-position) is written as the block settings sgs/site-header scrolledOffset, shadowScrolled, shadowScrolledColour | accept |  | accept |
 | `effect:J-13` | J-13 js-style-write in updateHeader on ref setProgEl (js-style-write, scroll-position) is not expressed by any SGS effect: a scroll handler moves the element, but the factor in "'scaleX(' + (max > 0 ? Math.min(1, window.scrollY / max) : 0) + ')'" is not a number the parallax effect holds | difference | a Spec 38 gap: a scroll handler moves the element, but the factor in "'scaleX(' + (max > 0 ? Math.min(1, window.scrollY / max) : 0) + ')'" is not a number the parallax effect holds | difference |
 | `effect:J-14` | J-14 js-style-write in updateHeader on this._mainEl && this._mainEl.querySelector('[data-hero-img]') (js-style-write, scroll-position) is the parallax effect | accept |  | accept |
+| `effect:J-218` | J-218 waapi-control in IndusLogo.play on this._spin (waapi-control, hover) is not expressed by any SGS effect: framework gap: a hover that speeds up a running animation 14 times (a playback-rate control); the marquee's hover rate is the only SGS playback-rate field | difference | a Spec 38 gap: framework gap: a hover that speeds up a running animation 14 times (a playback-rate control); the marquee's hover rate is the only SGS playback-rate field |  |
 | `effect:J-43` | J-43 js-style-write in bindMotion on e.target.closest && e.target.closest('[data-peek]') (js-style-write, pointer-move) is the cursor-field effect | accept |  | accept |
 | `effect:J-44` | J-44 js-style-write in bindMotion on e.target.closest && e.target.closest('[data-peek]') (js-style-write, pointer-move) is the cursor-field effect | accept |  | accept |
 | `effect:J-45` | J-45 js-style-write in bindMotion on e.target.closest && e.target.closest('[data-tilt]') (js-style-write, pointer-move) is the glare + follow-pointer effect | accept |  | accept |

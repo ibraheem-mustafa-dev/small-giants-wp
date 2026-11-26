@@ -139964,6 +139964,15 @@
    "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
+   "rowId": "effect:J-218",
+   "rowType": "effect",
+   "contentHash": "af3750f0b5bd1c5ba2d994fc473b5f4e02ff138983804bf92f8a567314c248d3",
+   "mark": "difference",
+   "markedOn": "2026-11-26",
+   "carriedFrom": null,
+   "by": "go-through"
+  },
+  {
    "rowId": "skeleton:scroll-progress-bar:Indus Foods Website v2/38#0",
    "rowType": "skeleton-block",
    "contentHash": "6749beccee61aa79fedce91c9981966a8ea2fa0dea4e568b4171cfc0ac4a443a",
