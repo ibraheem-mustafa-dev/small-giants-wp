@@ -160,6 +160,21 @@ test( 'a refreshed pairs file keeps the origin\'s element for every ref the orig
 	assert.deepEqual( report.disagree, [] );
 } );
 
+// RF10 second review: the origin's claims ran before the box-confirmed ones, so a text block the origin holds took an element first and
+// the wrapper block whose old pair the live box confirms was marked the part. One pass in document order: the wrapper holds it.
+test( 'MUST FAIL: a wrapper block and the text block inside it claim one element in document order, whichever of the two the origin names', () => {
+	const box = { 1440: { x: 100, y: 0, w: 500, h: 80 } };
+	const elements = [ { key: 'Root/1#0', parentKey: null, depth: 0, tag: 'div', words: 'Hello there', box, visible: { 1440: true } } ];
+	const blocks = [ { ref: 'cr-ref-s-1', block: 'sgs/container', attrs: {} }, { ref: 'cr-ref-s-2', block: 'sgs/text', attrs: { text: 'Hello there' }, parent: 'cr-ref-s-1' } ];
+	const boxes = { 'cr-ref-s-1': { 1440: { x: 100, y: 0, w: 500, h: 80 } } };
+	const { pairs } = refreshPairs( { blocks, elements, old: { 'cr-ref-s-1': 'Root/1#0' }, boxes, origin: { 'cr-ref-s-2': { tpl: 'Root/1#0' } } } );
+	assert.equal( pairs[ 'cr-ref-s-1' ].part, undefined, 'the wrapper block holds the element' );
+	assert.equal( pairs[ 'cr-ref-s-2' ].part, 'text', 'the text block inside it shares it' );
+	assert.equal( pairs[ 'cr-ref-s-2' ].tpl, 'Root/1#0', 'the element the origin names is kept' );
+	const both = refreshPairs( { blocks, elements, old: { 'cr-ref-s-1': 'Root/1#0' }, boxes, origin: { 'cr-ref-s-1': { tpl: 'Root/1#0' }, 'cr-ref-s-2': { tpl: 'Root/1#0' } } } ).pairs;
+	assert.deepEqual( [ both[ 'cr-ref-s-1' ].part, both[ 'cr-ref-s-2' ].part ], [ undefined, 'text' ], 'both named by the origin: document order too' );
+} );
+
 test( 'no committed pairs file disagrees with its origin file (delete it, or regenerate with refresh-pairs.mjs --write)', () => {
 	const bad = [];
 	for ( const client of fs.readdirSync( path.join( REPO, 'sites' ) ) ) {
