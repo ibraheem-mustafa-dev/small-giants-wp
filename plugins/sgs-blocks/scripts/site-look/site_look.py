@@ -1289,10 +1289,13 @@ def shared_facts(short: str, woocommerce: bool, out_root: Path) -> dict:
 
 def build_look(short: str, snapshot_file: Path, woocommerce: bool, out_root: Path, per_client: bool = False) -> dict:
     """The block's look for one client: its own reading plus the shared facts. Read whole for the client (build_block
-    alone) with `per_client`, or when the client's custom CSS could reach a page the shared facts were read from."""
+    alone) with `per_client`, when a render behind the shared facts failed (a fact it would have given is missing there), or
+    when the client's custom CSS could reach a page the shared facts were read from."""
     if per_client or 'shared-facts' in MUTATE:
         return build_block(short, snapshot_file, woocommerce)
     shared = shared_facts(short, woocommerce, out_root)
+    if shared.get('renderErrors') and 'shared-errors' not in MUTATE:
+        return build_block(short, snapshot_file, woocommerce)
     if custom_css_reaches(json.loads(snapshot_file.read_text(encoding='utf-8')), shared['classes']):
         return build_block(short, snapshot_file, woocommerce)
     return build_block(short, snapshot_file, woocommerce, parts=CLIENT_PARTS, shared=shared)

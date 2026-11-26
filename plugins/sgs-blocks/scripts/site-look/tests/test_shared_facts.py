@@ -113,3 +113,16 @@ def test_a_client_look_is_assembled_from_the_shared_file(tmp_path, monkeypatch):
     calls.clear()
     SL.build_look('heading', plain, False, tmp_path, per_client=True)
     assert [c[0] for c in calls] == [None]
+
+
+def test_shared_facts_with_a_failed_render_are_not_taken(tmp_path, monkeypatch):
+    """MUST FAIL with SITE_LOOK_MUTATE=shared-errors: a render behind the shared facts that failed leaves a fact out, so the
+    client reads them itself rather than take a shorter list."""
+    calls = []
+    monkeypatch.setattr(SL, 'build_block', lambda short, snap_file, wc, parts=None, shared=None: calls.append(parts) or {'forms': {}, 'content': {}, 'classes': [], 'renderErrors': {'b:x': 'php error'}, 'block': f'sgs/{short}', 'format': SL.SHARED_FORMAT})
+    monkeypatch.setattr(SL, 'shared_key', lambda short, wc: 'K')
+    monkeypatch.setenv('SGS_LOOK_STORE', '')
+    plain = tmp_path / 'plain.json'
+    plain.write_text('{}', encoding='utf-8')
+    SL.build_look('heading', plain, False, tmp_path)
+    assert calls == [SL.SHARED_PARTS, None]
