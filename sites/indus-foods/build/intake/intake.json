@@ -139871,6 +139871,22 @@
    "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
+   "rowId": "effect:A-02",
+   "rowType": "effect",
+   "contentHash": "79dada3a13ad63e401ee2c7c0b81f40fd83d31ca0575b964ce99977b9f0610e8",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "effect:A-12",
+   "rowType": "effect",
+   "contentHash": "12a4dfd9c5721877253ad5b5302efbe8a4e50e159996b1a6c92130c3c093f9db",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
    "rowId": "effect:A-24",
    "rowType": "effect",
    "contentHash": "6536b0daf00a0fb3575b9fc3a110386ced14e7cde9b29cfebba863bd27d213a1",
@@ -139905,10 +139921,34 @@
   {
    "rowId": "effect:J-05",
    "rowType": "effect",
-   "contentHash": "d5b159e102725a6b3653d1544478c46e15d721b93bdfd0c467d2e2a80b924cf9",
+   "contentHash": "1ab76cda172a33a3270c85339a52b2fdf5edfb8c8a011b69b514baa57b7ba92b",
    "mark": "accept",
    "markedOn": "2026-10-24",
    "carriedFrom": "2026-10-23T23:58:47.556Z"
+  },
+  {
+   "rowId": "effect:J-06",
+   "rowType": "effect",
+   "contentHash": "ed96e439305532caa5812421187da8681edc58ffa2f8cd0708f80370a5d49e95",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "effect:J-07",
+   "rowType": "effect",
+   "contentHash": "70b0a15b7c486b523b689540c1a1ce0fbb47a44b1f0d45611627eb6b9448e3b6",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "effect:J-08",
+   "rowType": "effect",
+   "contentHash": "9cb77aeaf2ff1eff05591e6c4cbde67270af66ef78ef2907377654c52e899d68",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
   },
   {
    "rowId": "effect:J-09",
@@ -139917,6 +139957,14 @@
    "mark": "accept",
    "markedOn": "2026-10-24",
    "carriedFrom": "2026-10-23T23:58:47.556Z"
+  },
+  {
+   "rowId": "effect:J-10",
+   "rowType": "effect",
+   "contentHash": "f5f90600cd76a05572bce891e80d9bfcf1ebca1058fea0c196ad151620729745",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
   },
   {
    "rowId": "effect:J-11",
@@ -139929,7 +139977,7 @@
   {
    "rowId": "effect:J-12",
    "rowType": "effect",
-   "contentHash": "04fe3fb852480eb421d3490219da1da5d1c9c397a6e0cd00f5be8432ef746d3e",
+   "contentHash": "504ade525eaf896d3491c3cc326498385aa4a9fec123851cd0f608919e7edbcc",
    "mark": "accept",
    "markedOn": "2026-10-24",
    "carriedFrom": "2026-10-23T23:58:47.556Z"
@@ -139937,7 +139985,7 @@
   {
    "rowId": "effect:J-13",
    "rowType": "effect",
-   "contentHash": "d09c8d732f0f7d70034753b9d6f500d8b3b216f8f337ef721163cd069d09c58d",
+   "contentHash": "239e5c9ce6f5a5bc45c391efbeed852a7e442677ff7c65ed7d3b719708ee7d06",
    "mark": "difference",
    "markedOn": "2026-10-24",
    "carriedFrom": "2026-10-23T23:58:47.556Z"
@@ -139949,6 +139997,14 @@
    "mark": "accept",
    "markedOn": "2026-10-24",
    "carriedFrom": "2026-10-23T23:58:47.556Z"
+  },
+  {
+   "rowId": "effect:J-31",
+   "rowType": "effect",
+   "contentHash": "964190f23530a9022e1b6019fe2603fdd7e6f439964e8eace911f305553bfe9e",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
   },
   {
    "rowId": "effect:J-43",
@@ -139973,6 +140029,14 @@
    "mark": "accept",
    "markedOn": "2026-10-24",
    "carriedFrom": "2026-10-23T23:58:47.556Z"
+  },
+  {
+   "rowId": "effect:J-45:glareOpacity",
+   "rowType": "effect",
+   "contentHash": "1c921c896bc9fadebc14f75569f34bcfa1a70eb787cd98e1952cf2d905076f14",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
   },
   {
    "rowId": "effect:J-50",

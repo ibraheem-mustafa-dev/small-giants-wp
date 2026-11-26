@@ -144624,6 +144624,38 @@
    "carriedFrom": "2026-10-26T21:15:22.158Z"
   },
   {
+   "rowId": "effect:J-15",
+   "rowType": "effect",
+   "contentHash": "319b59905a4367227f6041e5711768341f7f93dc94e77d596325965314af45fe",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "effect:TR-001",
+   "rowType": "effect",
+   "contentHash": "cdc466d1e8b80014850e9a647c08e97ccfe0ef43c18f97d3d78b306667801461",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "effect:TR-005",
+   "rowType": "effect",
+   "contentHash": "efcabaa95de065181689e0113d213528b1e0964990d192f1778af354287bb263",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
+   "rowId": "effect:TR-006",
+   "rowType": "effect",
+   "contentHash": "2e0488d03f454a7fe21f624168f4cd0567a8114d706cfbc56de62a46760e8355",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null
+  },
+  {
    "rowId": "skeleton:header:Eye Care Birmingham/13#0",
    "rowType": "skeleton-block",
    "contentHash": "aca29c18a2ab7ad137e752defdc9c81b37ae1ba0eec670e5e4ae93feda03f3e4",

@@ -6,7 +6,7 @@ Taken on 2026-11-19T07:39:14.866Z; manifest 1.0, files hash bf9020a144d89e0d.
 
 How to mark: put x in a section's `Accept all: [ ]` box to give every row the section's first mark; to mark one row differently, write its mark in that row's Mark cell (a row's own mark always beats Accept all). Flag rows left blank are accepted as flagged and not-a-defect rows left blank stay not defects; every other row needs Accept all or its own mark. Rows marked **changed** differ from the last export, lost their old mark and come first. Then run `node scripts/computed-route/intake.mjs --apply-review eye-care-ward-end`.
 
-Rows: 1560; 816 need reading, 744 are confident proposals that Accept all covers (skeleton block choices 707, missing features 37).
+Rows: 1564; 820 need reading, 744 are confident proposals that Accept all covers (skeleton block choices 707, missing features 37).
 
 Not defects counted, not listed: breakpoint 46, prop-variant 91, reached-when-forced 242, render-wins 1270.
 
@@ -19,7 +19,7 @@ Marks per section (first value = Accept all):
 - Draft defects: `accept`, `render-wins`
 - Not defects: unwired code: `not-a-defect`, `defect`
 - Missing features: `map:<block>`, `difference`, `build`, `gap:<wave>`
-- Script effects: `accept`, `block:<slug>`, `difference`
+- Script effects: `accept`, `block:<slug>`, `custom-css`, `difference`
 - Skeleton block choices: `accept`, `block:<slug>`, `remove`
 - Inventory diffs: `ours`, `theirs`
 - Notices: `noted`
@@ -224,6 +224,17 @@ Accept all: [ ]
 | `missing:coverage:input-type:password` | input-type:password seen 8 times in the draft: seen but unsupported | gap:shop, forms and data | input-type:password has no clone path yet (has nothing; wave shop, forms and data) |  |
 | `missing:coverage:input-type:range` | input-type:range seen 1 time in the draft: seen but unsupported | gap:shop, forms and data | input-type:range has no clone path yet (has nothing; wave shop, forms and data) |  |
 | `missing:coverage:svg:metadata` | svg:metadata seen 6 times in the draft: seen but unsupported | difference | svg:metadata is excluded from cloning (Bean, 2026-10-21: editor metadata inside an SVG paints nothing, and the media upload strips it (FR-48-58)) | difference |
+
+## Script effects (effect)
+
+Accept all: [ ]
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `effect:J-15` | J-15 js-style-write in parallax on this.heroRef.current (js-style-write, scroll-position) is the parallax effect | accept |  |  |
+| `effect:TR-001` | TR-001 Transition on <div> Eye Care Birmingham:14 (css-transition, state) is written as the block settings sgs/site-header-row rowShrink, rowShrinkPadding, rowShrinkDuration, rowShrinkEasing, rowShrinkEasingCustom or sgs/site-header scrolledOffset | accept |  |  |
+| `effect:TR-005` | TR-005 Transition on <img> Eye Care Birmingham:29 (css-transition, state) is written as the block settings sgs/responsive-logo shrinkWidth | accept |  |  |
+| `effect:TR-006` | TR-006 Transition on <img> Eye Care Birmingham:30 (css-transition, state) is written as the block settings sgs/responsive-logo shrinkWidth | accept |  |  |
 
 ## Skeleton block choices (skeleton-block)
 

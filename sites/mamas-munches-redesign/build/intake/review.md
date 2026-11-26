@@ -19,7 +19,7 @@ Marks per section (first value = Accept all):
 - Draft defects: `accept`, `render-wins`
 - Not defects: unwired code: `not-a-defect`, `defect`
 - Missing features: `map:<block>`, `difference`, `build`, `gap:<wave>`
-- Script effects: `accept`, `block:<slug>`, `difference`
+- Script effects: `accept`, `block:<slug>`, `custom-css`, `difference`
 - Skeleton block choices: `accept`, `block:<slug>`, `remove`
 - Inventory diffs: `ours`, `theirs`
 - Notices: `noted`
