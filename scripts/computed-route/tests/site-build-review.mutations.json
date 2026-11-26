@@ -1,5 +1,9 @@
 [
 	{"file": "lib/site-build-plan.mjs", "find": "( null === recorded || ( k in recorded && String( recorded[ k ] ) !== String( have[ k ] ) ) )", "replace": "( null !== recorded && k in recorded && String( recorded[ k ] ) !== String( have[ k ] ) )", "why": "a post with no FIELDS_META has its title, slug and parent overwritten by the page map"},
 	{"file": "lib/site-build-plan.mjs", "find": "record: null === recorded ? null :", "replace": "record: null === recorded ? Object.fromEntries( OWN_FIELDS.map( ( k ) => [ k, have[ k ] ] ) ) :", "why": "a template change on a legacy post records its current title and slug as the build's own"},
-	{"file": "lib/site-build-plan.mjs", "find": "${ null === recorded ? `; this post has no record", "replace": "${ false ? `; this post has no record", "why": "the note names no command that lets the page map win"}
+	{"file": "lib/site-build-plan.mjs", "find": "${ null === recorded ? `; this post has no record", "replace": "${ false ? `; this post has no record", "why": "the note names no command that lets the page map win"},
+	{"file": "lib/site-build-plan.mjs", "find": "const heldBack = ( [ k ] ) => 'post_parent' === k && 'publish' === p.status && ! nestedByBuild;", "replace": "const heldBack = ( [ k ] ) => false;", "why": "a built, published page is moved under a new parent"},
+	{"file": "lib/site-build-plan.mjs", "find": "Number( recorded.post_parent ) > 0 && String( recorded.post_parent )", "replace": "String( recorded.post_parent )", "why": "a recorded parent of 0 counts as the site build having nested the page"},
+	{"file": "lib/site-build-plan.mjs", "find": "'post_parent' === k && 'publish' === p.status && ! nestedByBuild", "replace": "'post_parent' === k && ! nestedByBuild", "why": "a page not yet published is held back from its parent too"},
+	{"file": "lib/site-build-plan.mjs", "find": "asked: { ...asked, ...Object.fromEntries( own ) } }, say:", "replace": "asked }, say:", "why": "an update's record forgets what it asked for"}
 ]

@@ -229,13 +229,37 @@ test( 'MUST FAIL: the site the ids came from is recorded beside the page map and
 } );
 
 // 10b ---------------------------------------------------------------------------------------------------------------
-test( 'MUST FAIL: a parent the site build set itself follows the page map when the map gives the page a new parent (FR-48-55)', () => {
+test( 'MUST FAIL: a parent change on a built, published page is reported and never applied, unless the site build nested the page itself (FR-48-55)', () => {
 	const rows = [ row( { slug: 'trade', title: 'Trade', id: 3 } ), row( { slug: 'faqs', title: 'FAQs', id: 10, parent: 'trade' } ) ];
 	const posts = { 3: post( 3, 'page:trade', { title: 'Trade', slug: 'trade', builtFields: { post_title: 'Trade', post_name: 'trade', post_parent: 0 } } ) };
-	const own = plan( rows, state( { posts: { ...posts, 10: post( 10, 'page:faqs', { title: 'FAQs', slug: 'faqs', parent: 0, builtFields: { post_title: 'FAQs', post_name: 'faqs', post_parent: 0 } } ) } } ) );
-	const up = own.actions.find( ( a ) => 'update' === a.type && 10 === a.id );
-	assert.deepEqual( up?.fields, { post_parent: 3 }, JSON.stringify( own.notes ) );
-	assert.deepEqual( up.record, { post_title: 'FAQs', post_name: 'faqs', post_parent: 3 } );
+	const faqs = ( extra ) => plan( rows, state( { posts: { ...posts, 10: post( 10, 'page:faqs', { title: 'FAQs', slug: 'faqs', parent: 0, builtFields: { post_title: 'FAQs', post_name: 'faqs', post_parent: 0 }, ...extra } ) } } ) );
+	const published = faqs( {} );
+	assert.equal( published.actions.find( ( a ) => 'update' === a.type && 10 === a.id ), undefined, 'moving a published page under a parent changes its address with no redirect' );
+	assert.match( published.notes.join( ' ' ), /page:faqs: post 10 is published, so its parent 0 stays and is not moved to the page map's 3.*public address/ );
+	// a page not yet published takes the map's parent (no address to break)
+	const up = faqs( { status: 'draft' } ).actions.find( ( a ) => 'update' === a.type && 10 === a.id );
+	assert.deepEqual( up?.fields, { post_parent: 3 } );
+	assert.deepEqual( up.record, { post_title: 'FAQs', post_name: 'faqs', post_parent: 0, asked: { post_parent: 3 } } );
+	// a page the site build itself nested (a recorded parent above 0, still in place) follows the map
+	const nested = plan( rows, state( { posts: { ...posts, 10: post( 10, 'page:faqs', { title: 'FAQs', slug: 'faqs', parent: 7, builtFields: { post_title: 'FAQs', post_name: 'faqs', post_parent: 7, asked: { post_parent: 7 } } } ) } } ) );
+	assert.deepEqual( nested.actions.find( ( a ) => 'update' === a.type && 10 === a.id )?.fields, { post_parent: 3 } );
+	// a page made in this run under a page made in this run is created with its parent
+	assert.ok( plan( [ row( { slug: 'trade', title: 'Trade' } ), row( { slug: 'faqs', title: 'FAQs', parent: 'trade' } ) ] ).actions.some( ( a ) => 'create' === a.type && 'page:faqs' === a.key && a.fields.post_parent?.ref ) );
+} );
+
+test( 'MUST FAIL: a field WordPress saved differently from what the site build asked for is settled while the request is unchanged, and planned again when the map changes', () => {
+	const rows = ( o = {} ) => [ row( { slug: 'about', title: 'Fish & Chips', id: 10, ...o } ) ];
+	// what the site build recorded after create: the saved values, and what it asked for
+	const record = { post_title: 'Fish &amp; Chips', post_name: 'about-2', post_parent: 0, asked: { post_title: 'Fish & Chips', post_name: 'about', post_parent: 0 } };
+	const saved = ( o = {} ) => state( { posts: { 10: post( 10, 'page:about', { title: 'Fish &amp; Chips', slug: 'about-2', builtFields: record, ...o } ) } } );
+	const same = plan( rows(), saved() );
+	assert.deepEqual( [ same.actions.filter( ( a ) => 'update' === a.type ), same.notes.filter( ( n ) => /^page:about/.test( n ) ) ], [ [], [] ], 'the saved slug and title are settled: no update every run, no drift note' );
+	const renamed = plan( rows( { title: 'Fish and Chips' } ), saved() ).actions.find( ( a ) => 'update' === a.type );
+	assert.deepEqual( renamed?.fields, { post_title: 'Fish and Chips' }, 'a changed request is planned' );
+	assert.deepEqual( renamed.record.asked, { post_title: 'Fish and Chips', post_name: 'about', post_parent: 0 }, 'and recorded as asked' );
+	const personal = plan( rows(), saved( { slug: 'my-own' } ) );
+	assert.deepEqual( personal.actions.filter( ( a ) => 'update' === a.type ), [], 'a change of a person to the saved slug still stays' );
+	assert.match( personal.notes.join( ' ' ), /post_name "my-own"/ );
 } );
 
 test( 'MUST FAIL: a post built before the record existed keeps its title, slug and parent, reported with the command that lets the map win; an empty record lets it win', () => {
@@ -245,7 +269,7 @@ test( 'MUST FAIL: a post built before the record existed keeps its title, slug a
 	assert.deepEqual( legacy.actions.filter( ( a ) => 'update' === a.type ), [], 'no record: a rename, a new slug (the public address) and a move are never reverted' );
 	assert.match( legacy.notes.join( ' ' ), /page:home: post 10 differs.*post_title "Our home".*post_name "welcome".*post_parent 3.*wp post meta update 10 _sgs_site_build_fields '\{\}'/ );
 	const up = renamed( { builtFields: [] } ).actions.find( ( a ) => 'update' === a.type );
-	assert.deepEqual( up?.fields, { post_title: 'Home', post_name: 'home', post_parent: 0 }, 'an emptied record hands the three fields back to the page map' );
+	assert.deepEqual( up?.fields, { post_title: 'Home', post_name: 'home' }, 'an emptied record hands the title and slug back to the page map, and a published page keeps its parent' );
 	// a legacy post still takes a field the person never owned: its page template
 	const tpl = plan( [ row( { slug: 'home', title: 'Home', id: 10, template: 'cart' } ) ], state( { posts: { 10: post( 10, 'page:home', { title: 'Home', slug: 'home', template: '' } ) } } ) );
 	const t = tpl.actions.find( ( a ) => 'update' === a.type );

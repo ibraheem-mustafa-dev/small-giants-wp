@@ -8,7 +8,8 @@ import os from 'os';
 import path from 'path';
 import { idsProvisional, rowsForSite, treeHash } from '../lib/site-build-map.mjs';
 import { planBuild } from '../lib/site-build-plan.mjs';
-import { applyPhase, markTree, treeMarkPhp } from '../lib/site-build-apply.mjs';
+import { applyPhase, buildThenMarkPost, markPost, markTree, treeMarkPhp } from '../lib/site-build-apply.mjs';
+import { builtTreeHash } from '../lib/site-run-tree-mark.mjs';
 import { FIELDS_META, TREE_META } from '../lib/site-build-state.mjs';
 
 const row = ( o ) => ( { route: o.slug, parent: null, template: null, menus: [], postType: 'page', collection: 'static', flags: [], id: null, ...o } );
@@ -78,6 +79,11 @@ test( 'MUST FAIL: ids shared between a mirror and its test site are only presume
 	assert.match( plan( 10, stranger, false ).problems.join( ' ' ), /did not make for this row \(it carries page:about\)/ );
 	const fellBack = plan( 10, stranger, true );
 	assert.deepEqual( [ fellBack.problems, fellBack.actions.filter( ( a ) => 'adopt' === a.type ).map( ( a ) => a.id ) ], [ [], [ 14 ] ] );
+	// the id names a post with no row key whose slug changed: it may be this row's renamed post, so the id stays and the run stops, never a second page
+	const renamed = holding( { 10: post( 10, 'page:old-name', { rowKey: '', treeHash: '', slug: 'old-name', title: 'Home' } ) }, {} );
+	const kept = plan( 10, renamed, true );
+	assert.equal( kept.actions.filter( ( a ) => 'create' === a.type ).length, 0, 'no duplicate page is created' );
+	assert.match( kept.problems.join( ' ' ), /its stored id 10 is a post the site build did not make for this row \(it carries no row key\)/ );
 	// negative controls: a valid id is kept as it stands, and a post an interrupted run left unmarked is still adopted by id
 	const fine = plan( 14, moved, true );
 	assert.deepEqual( [ fine.problems, fine.notes.filter( ( n ) => /stored id/.test( n ) ) ], [ [], [] ] );
@@ -105,13 +111,17 @@ test( 'MUST FAIL: the title, slug and parent recorded for a created or updated p
 	const create = { phase: 'posts', type: 'create', key: 'page:about', postType: 'page', title: 'Fish & Chips', slug: 'about', tree: [], hash: 'h', fields: { post_parent: 5 }, say: 'c' };
 	const made = fakeWp();
 	applyPhase( [ create ], 'posts', { wp: made.wp, build: () => 77, onId: () => {} } );
-	assert.deepEqual( made.recorded(), { post_title: 'Fish &amp; Chips', post_name: 'about-2', post_parent: 5 } );
+	assert.deepEqual( made.recorded(), { post_title: 'Fish &amp; Chips', post_name: 'about-2', post_parent: 5, asked: { post_title: 'Fish & Chips', post_name: 'about', post_parent: 5 } } );
+	// the next plan reads that record against what WordPress now holds and settles: no update, no drift note, however often it runs
+	const held = state( { posts: { 77: post( 77, 'page:about', { title: 'Fish &amp; Chips', slug: 'about-2', parent: 5, builtFields: made.recorded() } ), 5: post( 5, 'page:shop', { title: 'Shop', slug: 'shop', builtFields: { post_title: 'Shop', post_name: 'shop', post_parent: 0 } } ) } } );
+	const again = planBuild( { rows: [ row( { slug: 'shop', title: 'Shop', id: 5 } ), row( { slug: 'about', title: 'Fish & Chips', id: 77, parent: 'shop' } ) ], state: held, repo: os.tmpdir(), client: 'none' } );
+	assert.deepEqual( [ again.problems, again.actions.filter( ( a ) => 'update' === a.type ), again.notes.filter( ( n ) => /^page:about/.test( n ) ) ], [ [], [], [] ], 'a slug WordPress made unique settles instead of planning the same update forever' );
 	assert.ok( made.calls.some( ( c ) => 'get' === c[ 1 ] && '77' === c[ 2 ] ), 'the saved post is read back by id' );
 
-	const update = { phase: 'posts', type: 'update', key: 'page:about', id: 77, fields: { post_name: 'about' }, record: { post_title: 'Kept title', post_name: 'old', post_parent: 5 }, say: 'u' };
+	const update = { phase: 'posts', type: 'update', key: 'page:about', id: 77, fields: { post_name: 'about' }, record: { post_title: 'Kept title', post_name: 'old', post_parent: 5, asked: { post_title: 'Kept title', post_name: 'old' } }, say: 'u' };
 	const moved = fakeWp( { slug: 'about-3' } );
 	applyPhase( [ update ], 'posts', { wp: moved.wp, build: () => 0, onId: () => {} } );
-	assert.deepEqual( moved.recorded(), { post_title: 'Kept title', post_name: 'about-3', post_parent: 5 }, 'the field the update changed is read back; the fields it left alone keep the planner\'s record' );
+	assert.deepEqual( moved.recorded(), { post_title: 'Kept title', post_name: 'about-3', post_parent: 5, asked: { post_title: 'Kept title', post_name: 'about' } }, 'the field the update changed is read back; the fields it left alone keep the planner\'s record' );
 
 	// a refused or empty read-back records nothing and stops, rather than recording a guess
 	const blind = fakeWp( { answer: '' } );
@@ -124,4 +134,68 @@ test( 'MUST FAIL: the title, slug and parent recorded for a created or updated p
 	const legacy = fakeWp();
 	applyPhase( [ { ...update, record: null } ], 'posts', { wp: legacy.wp, build: () => 0, onId: () => {} } );
 	assert.deepEqual( legacy.calls.map( ( c ) => c.slice( 0, 2 ).join( ' ' ) ), [ 'post update' ] );
+} );
+
+// 2b ----------------------------------------------------------------------------------------------------------------
+const FLOW_BLOCK = JSON.parse( fs.readFileSync( new URL( '../data/skeleton-decisions.json', import.meta.url ), 'utf8' ) ).rules.choiceFlow.block;
+const buildWith = ( trees ) => {
+	const repo = fs.mkdtempSync( path.join( os.tmpdir(), 'rf8-built-' ) );
+	const buildDir = path.join( repo, 'sites', 'c', 'build' );
+	for ( const [ rel, body ] of Object.entries( trees ) ) {
+		fs.mkdirSync( path.dirname( path.join( buildDir, rel ) ), { recursive: true } );
+		fs.writeFileSync( path.join( buildDir, rel ), JSON.stringify( body ) );
+	}
+	return { repo, buildDir };
+};
+
+test( 'MUST FAIL: every post the site run builds gets the hash the site build computes for it: a page, a flow with its product id, and a built file that is the kept file', () => {
+	const FLOW_TREE = [ { name: FLOW_BLOCK, attributes: { title: 'Quote' } } ];
+	const { repo, buildDir } = buildWith( { 'trees/page/home.json': FILLED, 'trees/shop/shop.json': FILLED, 'trees/sgs_choice_flow/quote.json': FLOW_TREE, 'filled.tree.json': FILLED, 'flow.built.json': FLOW_TREE, 'other.built.json': [ { name: 'sgs/heading' } ] } );
+	const rows = [ row( { slug: 'home', title: 'Home', id: 10 } ), row( { slug: 'quote', title: 'Quote', postType: 'sgs_choice_flow', id: 11 } ), row( { slug: 'shop', title: 'Shop', postType: 'shop', id: 12 } ) ];
+	const at = ( f ) => path.join( buildDir, f );
+	const planned = rows.slice( 0, 2 );
+	// a page: the planner finds nothing to rebuild with the hash the site run records
+	const pageHash = builtTreeHash( { buildDir, entry: { tree: 'trees/page/home.json', target: { postId: 10 } }, builtFile: at( 'filled.tree.json' ), rows } );
+	assert.equal( pageHash, treeHash( FILLED ) );
+	const pagePlan = planBuild( { rows: planned, state: state( { posts: { 10: post( 10, 'page:home', { title: 'Home', slug: 'home', treeHash: pageHash } ), 11: post( 11, 'sgs_choice_flow:quote', { title: 'Quote', slug: 'quote', treeHash: 'x' } ) } } ), repo, client: 'c' } );
+	assert.deepEqual( [ pagePlan.problems, pagePlan.actions.filter( ( a ) => 'build' === a.type ).map( ( a ) => a.id ) ], [ [], [ 11 ] ], 'the page is not rebuilt (the flow with a wrong hash is, so the planner did plan)' );
+	// a flow: the hash includes the saved flow's product id, as the planner's does, so the flow is not rebuilt either
+	const flowEntry = { tree: 'trees/sgs_choice_flow/quote.json', target: { postId: 11 } };
+	const flowHash = builtTreeHash( { buildDir, entry: flowEntry, builtFile: at( 'flow.built.json' ), rows, flowIds: () => ( { quote: 55 } ) } );
+	assert.notEqual( flowHash, treeHash( FLOW_TREE ), 'the product id is part of the hash' );
+	const flowPlan = planBuild( { rows: planned, state: state( { posts: { 10: post( 10, 'page:home', { title: 'Home', slug: 'home', treeHash: pageHash } ), 11: post( 11, 'sgs_choice_flow:quote', { title: 'Quote', slug: 'quote', treeHash: flowHash } ) } } ), repo, client: 'c', flowProducts: { quote: 55 } } );
+	assert.deepEqual( [ flowPlan.problems, flowPlan.actions.filter( ( a ) => 'build' === a.type ) ], [ [], [] ] );
+	const flowStale = planBuild( { rows: planned, state: state( { posts: { 10: post( 10, 'page:home', { title: 'Home', slug: 'home', treeHash: pageHash } ), 11: post( 11, 'sgs_choice_flow:quote', { title: 'Quote', slug: 'quote', treeHash: treeHash( FLOW_TREE ) } ) } } ), repo, client: 'c', flowProducts: { quote: 55 } } );
+	assert.deepEqual( flowStale.actions.filter( ( a ) => 'build' === a.type ).map( ( a ) => a.id ), [ 11 ], 'negative control: a hash without the product id is rebuilt' );
+	// the built file is the kept file itself (nothing to copy): still recorded
+	assert.equal( builtTreeHash( { buildDir, entry: { tree: 'trees/page/home.json', target: { postId: 10 } }, builtFile: at( 'trees/page/home.json' ), rows } ), treeHash( FILLED ) );
+	// negative controls: a template copy, a shop row, a surface no row names, and a kept file that is not the built tree record nothing
+	assert.equal( builtTreeHash( { buildDir, entry: { tree: 'trees/template/page.json', target: { template: 'page' } }, builtFile: at( 'filled.tree.json' ), rows } ), null );
+	assert.equal( builtTreeHash( { buildDir, entry: { tree: 'trees/shop/shop.json', target: { postId: 12 } }, builtFile: at( 'filled.tree.json' ), rows } ), null );
+	assert.equal( builtTreeHash( { buildDir, entry: { tree: 'trees/page/nowhere.json', target: { postId: 13 } }, builtFile: at( 'filled.tree.json' ), rows } ), null );
+	assert.equal( builtTreeHash( { buildDir, entry: { tree: 'trees/page/home.json', target: { postId: 10 } }, builtFile: at( 'other.built.json' ), rows } ), null, 'a half-written Fill left the old tree file: the post was not built from it' );
+	fs.rmSync( repo, { recursive: true, force: true } );
+} );
+
+// 2c ----------------------------------------------------------------------------------------------------------------
+test( 'MUST FAIL: a marker write is tried three times, and one that still fails is a note when the run gave a way to say so, never a failure', async () => {
+	const failing = ( times ) => {
+		let left = times;
+		const sent = [];
+		return { sent, runPhp: ( php ) => ( sent.push( php ), left-- > 0 ? ( () => { throw new Error( 'ssh dropped' ); } )() : '' ) };
+	};
+	const flaky = failing( 2 );
+	markPost( { postId: 10, runPhp: flaky.runPhp } );
+	assert.equal( flaky.sent.length, 3, 'two dropped connections are retried' );
+	const hash = treeHash( FILLED );
+	const noted = [];
+	const dead = failing( 99 );
+	markTree( { postId: 10, hash, runPhp: dead.runPhp, note: ( m ) => noted.push( m ) } );
+	assert.equal( dead.sent.length, 3 );
+	assert.match( noted.join( ' ' ), /the built-tree marker was not written \(ssh dropped\); the next site build may stop on this post or rebuild it/ );
+	const post10 = failing( 99 );
+	await buildThenMarkPost( { build: async () => 'built', postId: 10, runPhp: post10.runPhp, note: ( m ) => noted.push( m ) } );
+	assert.match( noted.at( -1 ), /the content marker was not written/, 'the stage that built the post still succeeds' );
+	// without a note the failure is thrown, as before
+	assert.throws( () => markPost( { postId: 10, runPhp: failing( 99 ).runPhp } ), /ssh dropped/ );
 } );

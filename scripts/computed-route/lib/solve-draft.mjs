@@ -34,5 +34,11 @@ export async function serveSurfaceDraft( { repo, client, key, serve = serveDraft
 	const walkerFile = walker ? path.join( build, walker ) : null;
 	const recorded = walkerFile && fs.existsSync( walkerFile ) ? recordedDraftUrl( fs.readFileSync( walkerFile, 'utf8' ) ) : null;
 	const server = await serve( assertPage( path.join( repo, entry.draftDir ), entry.draftIndex ?? null ), { index: entry.draftIndex ?? null } );
-	return { url: rebaseDraftUrl( recorded, new URL( server.url ).origin ), close: () => server.close() };
+	// A server whose address cannot be read is closed before the error goes on: nobody holds its close.
+	try {
+		return { url: rebaseDraftUrl( recorded, new URL( server.url ).origin ), close: () => server.close() };
+	} catch ( e ) {
+		await server.close();
+		throw e;
+	}
 }

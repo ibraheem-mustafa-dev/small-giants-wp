@@ -94,3 +94,11 @@ test( 'MUST FAIL: a draft that cannot be served resolves a non-zero code with th
 	assert.equal( r.logFile, path.join( repo, 'sites', 'acme', 'build', 'qa', 'solve', 'about.stage.log' ) );
 	fs.rmSync( repo, { recursive: true, force: true } );
 } );
+
+test( 'MUST FAIL: a draft server whose address cannot be read is closed before the error goes on', async () => {
+	const repo = repoWith( ENTRY );
+	const closed = [];
+	await assert.rejects( serveSurfaceDraft( { repo, client: 'acme', key: 'about', assertPage: ( folder ) => folder, serve: async () => ( { url: 'not a url', close: () => closed.push( 'closed' ) } ) } ), /Invalid URL/ );
+	assert.deepEqual( closed, [ 'closed' ] );
+	fs.rmSync( repo, { recursive: true, force: true } );
+} );

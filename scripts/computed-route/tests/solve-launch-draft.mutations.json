@@ -1,5 +1,6 @@
 [
 	{"file": "lib/site-run-launch.mjs", "find": "return { code: 1, tail: said.slice( 0, 600 ), logFile };", "replace": "throw e;", "why": "a draft that cannot be served rejects and writes no log"},
 	{"file": "lib/site-run-launch.mjs", "find": "return { code: 1, tail: said.slice( 0, 600 ), logFile };", "replace": "return { code: 0, tail: said.slice( 0, 600 ), logFile };", "why": "a draft that cannot be served reads as a passing Solve"},
-	{"file": "lib/site-run-launch.mjs", "find": "fs.writeFileSync( logFile, `${ said }\\n` );", "replace": "", "why": "the reason is never written to the log"}
+	{"file": "lib/site-run-launch.mjs", "find": "fs.writeFileSync( logFile, `${ said }\\n` );", "replace": "", "why": "the reason is never written to the log"},
+	{"file": "lib/solve-draft.mjs", "find": "await server.close();", "replace": "", "why": "a draft server whose address cannot be read is left running"}
 ]

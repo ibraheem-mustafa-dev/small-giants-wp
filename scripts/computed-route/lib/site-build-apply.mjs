@@ -93,20 +93,38 @@ update_post_meta( ${ id }, '${ CONTENT_META }', hash( 'sha256', get_post_field( 
 `;
 }
 
+// Tries a marker write three times, as `applyPhase`'s bookkeeping writes are (a dropped connection must not leave a built post unmarked).
+// With `note` a marker that still fails is reported through it and the run goes on: the marker is bookkeeping, and a post without a
+// current one only makes the next site build stop or rebuild it, so it never fails the stage that built the post. Without `note` it throws.
+function tried( write, note, what ) {
+	let last;
+	for ( let i = 0; i < 3; i++ ) {
+		try {
+			return write();
+		} catch ( e ) {
+			last = e;
+		}
+	}
+	if ( ! note ) {
+		throw last;
+	}
+	note( `the ${ what } marker was not written (${ last.message }); the next site build may stop on this post or rebuild it` );
+}
+
 // The site run's build of one post: `build` runs first (it throws on a failed build, so a failed build writes no marker),
 // then the post's content marker is stored through `runPhp` (lib/calibration-refs.mjs::wpEvalRunner) so the next site
 // build sees the clone's own build as its own and not as a person's edit. A surface with no post id (a template copy,
 // recorded by templateRecordPhp) is built and left unmarked. Returns what `build` returned.
-export async function buildThenMarkPost( { build, postId, runPhp } ) {
+export async function buildThenMarkPost( { build, postId, runPhp, note } ) {
 	const said = await build();
-	markPost( { postId, runPhp } );
+	markPost( { postId, runPhp, note } );
 	return said;
 }
 
 // Stores the content marker of `postId` over the content the site holds now (a surface with no post id writes none). The site run
 // calls it again after the applier, which patches the same post's content once the build has marked it.
-export function markPost( { postId, runPhp } ) {
-	Number.isInteger( postId ) && runPhp( contentMarkPhp( postId ) );
+export function markPost( { postId, runPhp, note } ) {
+	Number.isInteger( postId ) && tried( () => runPhp( contentMarkPhp( postId ) ), note, 'content' );
 }
 
 // The PHP recording the hash of the tree a post was built from (what the site build's `build` and `create` actions record), so a
@@ -124,9 +142,9 @@ update_post_meta( ${ id }, '${ TREE_META }', '${ hash }' );
 `;
 }
 
-// Stores the tree hash of `postId` through `runPhp` (a surface with no post id, a template copy, records its own hash).
-export function markTree( { postId, hash, runPhp } ) {
-	Number.isInteger( postId ) && runPhp( treeMarkPhp( postId, hash ) );
+// Stores the tree hash of `postId` through `runPhp` (a surface with no post id, a template copy, records its own hash), as `markPost` does.
+export function markTree( { postId, hash, runPhp, note } ) {
+	Number.isInteger( postId ) && tried( () => runPhp( treeMarkPhp( postId, hash ) ), note, 'built-tree' );
 }
 
 // The meta key that marks an order the site run made only to show the order confirmation (FR-48-56).
@@ -199,10 +217,13 @@ export function applyPhase( actions, phase, { wp, build, onId, log = () => {}, r
 		}
 		return id;
 	};
-	// The title, slug and parent the site build set, so a later run tells its own value from a person's change. `fields` is the three
-	// values to record, or `saved(id)` for what WordPress now holds: it can differ from what was asked for (a slug made unique:
-	// 'about-2'; a title it filtered: '&amp;'), and a record of the asked-for value would read as a person's change on every later run.
-	const recordFields = ( id, fields ) => again( () => wp( [ 'post', 'meta', 'update', String( id ), FIELDS_META, JSON.stringify( Object.fromEntries( Object.entries( fields ).map( ( [ k, v ] ) => [ k, 'post_parent' === k ? Number( val( v ) ) || 0 : String( val( v ) ) ] ) ) ) ] ) );
+	// The title, slug and parent the site build saved, with what it asked for (`asked`), so a later run tells its own value from a person's
+	// change, and a field WordPress saved differently (a slug made unique: 'about-2'; a title it filtered: '&amp;') whose request has not
+	// changed is settled instead of planned again on every run. `saved` and `asked` hold the post_title, post_name and post_parent values.
+	const recordFields = ( id, saved, asked ) => {
+		const plain = ( fields ) => Object.fromEntries( Object.entries( fields ).map( ( [ k, v ] ) => [ k, 'post_parent' === k ? Number( val( v ) ) || 0 : String( val( v ) ) ] ) );
+		return again( () => wp( [ 'post', 'meta', 'update', String( id ), FIELDS_META, JSON.stringify( { ...plain( saved ), asked: plain( asked ) } ) ] ) );
+	};
 	const saved = ( id ) => again( () => {
 		const out = String( wp( [ 'post', 'get', String( id ), '--fields=post_title,post_name,post_parent', '--format=json' ] ) );
 		const got = JSON.parse( out.slice( Math.max( 0, out.indexOf( '{' ) ) ) );
@@ -264,7 +285,7 @@ export function applyPhase( actions, phase, { wp, build, onId, log = () => {}, r
 			if ( Object.keys( a.fields ).length ) {
 				wp( [ 'post', 'update', String( id ), ...fieldArgs( a.fields ) ] );
 			}
-			recordFields( id, saved( id ) );
+			recordFields( id, saved( id ), { post_title: a.title, post_name: a.slug, post_parent: a.fields.post_parent ?? 0 } );
 		} else if ( 'build' === a.type ) {
 			try {
 				build( { postId: a.id }, a.tree );
@@ -308,7 +329,11 @@ export function applyPhase( actions, phase, { wp, build, onId, log = () => {}, r
 		} else if ( 'update' === a.type ) {
 			wp( [ 'post', 'update', String( a.id ), ...fieldArgs( a.fields ) ] );
 			// What the update changed is read back; the fields it left alone keep the record the planner carried.
-			a.record && recordFields( a.id, { ...a.record, ...Object.fromEntries( Object.entries( saved( a.id ) ).filter( ( [ k ] ) => k in a.fields ) ) } );
+			if ( a.record ) {
+				const { asked = {}, ...kept } = a.record;
+				const own = Object.entries( a.fields ).filter( ( [ k ] ) => k in kept );
+				recordFields( a.id, { ...kept, ...Object.fromEntries( Object.entries( saved( a.id ) ).filter( ( [ k ] ) => k in a.fields ) ) }, { ...asked, ...Object.fromEntries( own ) } );
+			}
 		} else if ( 'menu' === a.type ) {
 			refs[ `menu:${ a.name }` ] = porcelain( wp( [ 'menu', 'create', a.name, '--porcelain' ] ) );
 			wp( [ 'term', 'meta', 'update', String( refs[ `menu:${ a.name }` ] ), MENU_META, a.name ] );

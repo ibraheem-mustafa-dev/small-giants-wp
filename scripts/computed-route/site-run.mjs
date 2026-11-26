@@ -74,6 +74,8 @@ import { writeFlowTree } from './lib/site-run-flow-tree.mjs';
 import { writeSolveTree } from './lib/site-run-solve-tree.mjs';
 import { TOP_N, writeRanking } from './lib/site-run-rank.mjs';
 import { buildRank } from './lib/site-run-order.mjs';
+import { builtTreeHash } from './lib/site-run-tree-mark.mjs';
+import { flowProductIdsFor } from './lib/site-build-flow-product.mjs';
 import { assertScratchRunPlace, assertUnprotected, readTargets, secretsPath, siteUrl, surfacesOnSite, targetOf } from './lib/site-targets.mjs';
 import { WHOLE_TREE, commonChain, contentUnder, copyFile, copyTree, readShell, splitShell, writeCopy } from './lib/template-copies.mjs';
 import { inventoryRootFor, partsOf, writePart } from './lib/template-frame.mjs';
@@ -431,6 +433,8 @@ export async function main( argv ) {
 		save();
 		console.log( stageLine( key, stage, record ) );
 	};
+	// A marker the run could not write (lib/site-build-apply.mjs::markPost, ::markTree) is a line in the run's output, never a failed stage.
+	const markerNote = ( key ) => ( said ) => console.log( `${ key } note: ${ said }` );
 	// One draft server per draft file, serving that file as its index (a page-file draft has one file per page; a hash or
 	// state-page draft names one entry file for every surface).
 	const servers = new Map();
@@ -598,7 +602,7 @@ export async function main( argv ) {
 			builtFile && fs.mkdirSync( path.dirname( builtFile ), { recursive: true } );
 			builtFile && builder.push( '--save-built', builtFile );
 			// The post gets the site build's content marker (lib/site-build-apply.mjs), so a rebuild stops only for a person's edit.
-			const said = await buildThenMarkPost( { build: () => exec( 'build', 'node', builder ), postId: slug ? null : entry.target.postId, runPhp } );
+			const said = await buildThenMarkPost( { build: () => exec( 'build', 'node', builder ), postId: slug ? null : entry.target.postId, runPhp, note: markerNote( key ) } );
 			builtFile && fs.existsSync( builtFile ) && ctx.ledger.append( buildLedgerRows( { key, ctx, tree: readJson( path.join( REPO, tree ) ), builtFile } ) );
 			// Recorded as the site build records its own copies, so a later site build sees it as built from this tree.
 			slug && recordTemplate( slug, treeHash( readJson( path.join( REPO, tree ) ) ) );
@@ -619,9 +623,11 @@ export async function main( argv ) {
 		// without the build stage (inventory and propose, as the foundation's paint step runs) built nothing and keeps nothing.
 		const solved = tree ? writeSolveTree( { buildDir: build, entry, builtFile: path.join( REPO, tree ) } ) : null;
 		solved && console.log( `${ key } solve tree: ${ path.relative( REPO, solved ) }` );
-		// That file is the tree the site build plans this post from, so its hash is recorded as the post's built tree: a later site build
-		// finds nothing to rebuild and keeps the Filled build and the applier's patches (lib/site-build-apply.mjs::markTree).
-		solved && ! slug && markTree( { postId: entry.target.postId, hash: treeHash( readJson( solved ) ), runPhp } );
+		// The tree the site build plans this post from is that file (a flow's, the one writeFlowTree kept), so its hash, as the site build
+		// computes it, is recorded as the post's built tree: a later site build finds nothing to rebuild and keeps the Filled build and
+		// the applier's patches (lib/site-run-tree-mark.mjs::builtTreeHash, lib/site-build-apply.mjs::markTree).
+		const builtHash = tree && ! slug ? builtTreeHash( { buildDir: build, entry, builtFile: path.join( REPO, tree ), rows, flowIds: () => flowProductIdsFor( { repo: REPO, client, site, rows } ).ids } ) : null;
+		builtHash && markTree( { postId: entry.target.postId, hash: builtHash, runPhp, note: markerNote( key ) } );
 		// The applier: set what Fill and the build cannot, from the draft's runtime. It stops the surface like a failed build.
 		if ( ! await applyStage( { ctx, entry, key, slug, step, exec } ) ) {
 			return;
@@ -659,7 +665,7 @@ export async function main( argv ) {
 			const origin = new URL( ( await serverFor( entry ) ).url ).origin;
 			const said = await exec( 'apply', 'node', [ 'scripts/computed-route/apply.mjs', client, '--surfaces', key, '--draft', origin, '--site', site, '--write', ...allowMissingPaintArgs( allowMissingPaint ) ] );
 			// The applier patches the post's content after the build, so the marker is stored again over the content the run leaves.
-			markPost( { postId: entry.target.postId, runPhp } );
+			markPost( { postId: entry.target.postId, runPhp, note: markerNote( key ) } );
 			// The applier's plan, as the run ledger's apply rows.
 			const planFile = path.join( build, 'qa', 'apply', `${ key }.plan.json` );
 			ctx.ledger && fs.existsSync( planFile ) && ctx.ledger.append( applyRunRows( { plan: readJson( planFile ), planFile: path.relative( build, planFile ).split( path.sep ).join( '/' ) } ) );

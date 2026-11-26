@@ -118,7 +118,9 @@ export function planBuild( { rows, state, repo, client, frontRoute = 'home', lin
 			return row;
 		}
 		const gone = ! p || p.type !== wpType( row ) || 'trash' === p.status;
-		const stranger = ! gone && p.rowKey !== rowKey( row ) && ! ( ! p.rowKey && ! p.treeHash && p.slug === row.slug );
+		// Only a post that carries another row's key is surely another row's; one with no key may be this row's post that someone renamed,
+		// so its id stays and the checks below adopt it or stop with the command that marks it.
+		const stranger = ! gone && !! p.rowKey && p.rowKey !== rowKey( row );
 		if ( LAYOUT_TYPES[ row.postType ] ? ! gone && ! ( provisionalIds && stranger ) : ! ( provisionalIds && ( gone || stranger ) ) ) {
 			return row;
 		}
@@ -257,22 +259,35 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 			}
 		}
 		// Title, slug and parent follow the page map on every run (FR-48-55), except where a person changed them: a value that
-		// differs from the one the site build last set (FIELDS_META) is a person's rename or move, which stays and is
-		// reported. A post with no record (built before the record existed, so nothing says who set its title, slug or parent)
-		// keeps all three and the difference is reported, as every post did before the record: a slug reverted to the map's
-		// would break the public address. A parent made in this run is set when it exists.
+		// differs from what WordPress held when the site build last saved the post (FIELDS_META) is a person's rename or move, which
+		// stays and is reported. A post with no record (built before the record existed, so nothing says who set its title, slug or
+		// parent) keeps all three and the difference is reported, as every post did before the record: a slug reverted to the map's
+		// would break the public address. The record also holds what the site build asked for (`asked`): a field WordPress saved
+		// differently (a slug made unique, a filtered title) whose request is unchanged is settled, not planned again every run. A parent
+		// change on a built, published page changes its public address with no redirect, so it is reported and never applied unless the
+		// site build itself nested the page (a recorded parent above 0 still in place); a new page takes the map's parent when it is
+		// created. A parent made in this run is set when it exists.
 		const want = { post_title: row.title, post_name: row.slug, ...fields };
 		const have = { post_title: p.title, post_name: p.slug, post_parent: p.parent, page_template: p.template };
 		const differs = Object.entries( want ).filter( ( [ k, v ] ) => String( v?.ref ? '' : v ) !== String( have[ k ] ) || v?.ref );
 		const recorded = p.builtFields && 'object' === typeof p.builtFields ? p.builtFields : null;
+		const asked = recorded?.asked && 'object' === typeof recorded.asked ? recorded.asked : {};
 		const ownedByPerson = ( [ k, v ] ) => ! v?.ref && OWN_FIELDS.includes( k ) && ( null === recorded || ( k in recorded && String( recorded[ k ] ) !== String( have[ k ] ) ) );
-		const diff = Object.fromEntries( differs.filter( ( e ) => ! ownedByPerson( e ) ) );
+		const settled = ( [ k, v ] ) => ! v?.ref && OWN_FIELDS.includes( k ) && k in asked && String( asked[ k ] ) === String( v );
+		const nestedByBuild = null !== recorded && Number( recorded.post_parent ) > 0 && String( recorded.post_parent ) === String( have.post_parent );
+		const heldBack = ( [ k ] ) => 'post_parent' === k && 'publish' === p.status && ! nestedByBuild;
 		const drift = differs.filter( ownedByPerson );
+		const held = differs.filter( ( e ) => ! ownedByPerson( e ) && ! settled( e ) && heldBack( e ) );
+		const diff = Object.fromEntries( differs.filter( ( e ) => ! ownedByPerson( e ) && ! settled( e ) && ! heldBack( e ) ) );
 		if ( drift.length ) {
 			notes.push( `${ key }: post ${ p.id } differs from the page map (${ drift.map( ( [ k, v ] ) => `${ k } ${ JSON.stringify( have[ k ] ) } (map ${ JSON.stringify( v ) })` ).join( '; ' ) }); the site build leaves a person's change${ null === recorded ? `; this post has no record of what the site build set, so to let the page map win run "wp post meta update ${ p.id } ${ FIELDS_META } '{}'"` : '' }` );
 		}
+		if ( held.length ) {
+			notes.push( `${ key }: post ${ p.id } is published, so its parent ${ JSON.stringify( have.post_parent ) } stays and is not moved to the page map's ${ shown( held[ 0 ][ 1 ] ) }: that would change its public address with no redirect; move it in the editor and add a redirect if you want it nested` );
+		}
 		if ( Object.keys( diff ).length ) {
-			actions.push( { phase, type: 'update', key, id: p.id, fields: diff, record: null === recorded ? null : { ...Object.fromEntries( OWN_FIELDS.map( ( k ) => [ k, k in recorded ? recorded[ k ] : have[ k ] ] ) ), ...Object.fromEntries( Object.entries( diff ).filter( ( [ k ] ) => OWN_FIELDS.includes( k ) ) ) }, say: `${ key }: post ${ p.id }: ${ Object.entries( diff ).map( ( [ k, v ] ) => `${ k } ${ JSON.stringify( have[ k ] ) } -> ${ shown( v ) }` ).join( '; ' ) }` } );
+			const own = Object.entries( diff ).filter( ( [ k ] ) => OWN_FIELDS.includes( k ) );
+			actions.push( { phase, type: 'update', key, id: p.id, fields: diff, record: null === recorded ? null : { ...Object.fromEntries( OWN_FIELDS.map( ( k ) => [ k, k in recorded ? recorded[ k ] : have[ k ] ] ) ), asked: { ...asked, ...Object.fromEntries( own ) } }, say: `${ key }: post ${ p.id }: ${ Object.entries( diff ).map( ( [ k, v ] ) => `${ k } ${ JSON.stringify( have[ k ] ) } -> ${ shown( v ) }` ).join( '; ' ) }` } );
 		}
 	}
 
