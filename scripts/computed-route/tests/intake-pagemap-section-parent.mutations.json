@@ -1,6 +1,8 @@
 [
-	{"file": "lib/intake-pagemap.mjs", "find": "if ( target && 'page' === target.postType && children.length ) {", "replace": "if ( target && 'page' === target.postType && children.length && children[ 0 ] !== target ) {", "why": "an item linking to its first child parents nothing"},
-	{"file": "lib/intake-pagemap.mjs", "find": "if ( target && 'page' === target.postType && children.length ) {", "replace": "if ( false ) {", "why": "no menu nesting gives a parent"},
-	{"file": "lib/intake-pagemap.mjs", "find": "children.filter( ( c ) => c && c !== target && ! c.parent && 'page' === c.postType )", "replace": "children.filter( ( c ) => c && ! c.parent && 'page' === c.postType )", "why": "the landing page becomes its own child"},
-	{"file": "lib/intake-pagemap.mjs", "find": "if ( target && 'page' === target.postType && children.length ) {", "replace": "if ( target && children.length ) {", "why": "an article, shop or template row becomes the parent of the pages under its menu item"}
+	{"file": "lib/intake-pagemap.mjs", "find": "if ( 'page' !== row.postType ) {", "replace": "if ( false ) {", "why": "an article, shop or template route nests under a page"},
+	{"file": "lib/intake-pagemap.mjs", "find": "r !== row && 'page' === r.postType && routePath", "replace": "r !== row && routePath", "why": "an article, shop or template row becomes the parent of the pages below its route"},
+	{"file": "lib/intake-pagemap.mjs", "find": "for ( let n = mine.length - 1; n > 0; n-- ) {", "replace": "for ( let n = 1; n < mine.length; n++ ) {", "why": "the furthest ancestor wins over the nearest"},
+	{"file": "lib/intake-pagemap.mjs", "find": "routePath( r.route ).join( '/' ) === mine.slice( 0, n ).join( '/' )", "replace": "String( r.route ).startsWith( mine.slice( 0, n ).join( '/' ) ) && r.route !== row.route", "why": "a route sharing only leading letters (team-up, team) counts as below it"},
+	{"file": "lib/intake-pagemap.mjs", "find": "n > 0; n-- ) {", "replace": "n >= 0; n-- ) {", "why": "the empty path (the home route) is an ancestor of every route, so every flat page nests under home"},
+	{"file": "lib/intake-pagemap.mjs", "find": "r.parent = ancestorPage( r, rows )?.slug ?? null;", "replace": "r.parent = ancestorPage( r, rows )?.slug ?? ( 'page' === r.postType && 'home' !== r.slug && r.menus.length ? 'about' : null );", "why": "a flat page that sits in a menu takes a parent from the menu"}
 ]

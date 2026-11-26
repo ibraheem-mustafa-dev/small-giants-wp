@@ -1,71 +1,122 @@
-// Register D7 (PI-14): a draft's nav section whose item links only to its first child (Indus: Sectors -> Food service, Trade ->
-// Apply for Trade Account) names that child the section's landing page, and the section's other pages sit under it, so the
-// page map carries the nesting the draft's breadcrumb shows (Home / section / page). Bean's saved marks still win.
+// Bean, 2026-11-26: a cloned page's parent, and so its web address, follows the draft's own page addresses, never its menu. A page row
+// nests under the page row whose own draft route is the nearest ancestor path of its route (`food-service/manufacturing` under
+// `food-service`); a row with no such ancestor page, and every row of a draft whose routes are all flat, stays top-level. Only a page row
+// parents or is parented. Bean's saved marks still win (the replaced rule, a menu item linking to its first child, is gone).
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { proposePageMap } from '../lib/intake-pagemap.mjs';
+import { proposePageMap, ancestorPage } from '../lib/intake-pagemap.mjs';
 import { readRouting } from '../lib/intake-routing.mjs';
 import { applyMarks } from '../lib/intake-pagemap-regen.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const FIX = path.join( HERE, 'fixtures', 'intake-pagemap', 'hash' );
 const real = ( slug ) => path.resolve( HERE, '../../../sites', slug, 'handoff' );
-const map = proposePageMap( { folder: FIX, routing: readRouting( { folder: FIX } ) } );
-const parentOf = ( m, slug ) => m.rows.find( ( r ) => r.slug === slug )?.parent;
+const propose = ( folder ) => proposePageMap( { folder, routing: readRouting( { folder } ) } );
+const rowOf = ( m, route ) => m.rows.find( ( r ) => r.route === route );
+const parentOfRoute = ( m, route ) => rowOf( m, route )?.parent;
+const parentsAreRows = ( m ) => m.rows.every( ( r ) => ! r.parent || m.rows.some( ( p ) => p.slug === r.parent && p.postType === r.postType ) );
 
-test( 'MUST FAIL: a section whose item links to its first child parents its other pages under that landing page; the landing page stays top-level', () => {
-	assert.equal( parentOf( map, 'repairs' ), 'cleaning', 'Services links to Cleaning, its first child: Repairs sits under it' );
-	assert.equal( parentOf( map, 'cleaning' ), null, 'the landing page is the section\'s top, not its own child' );
-} );
-
-test( 'negative control: a section with its own page keeps parenting its children, and a page in no section keeps no parent', () => {
-	assert.equal( parentOf( map, 'team' ), 'about', 'About links to its own page and holds Our team' );
-	assert.equal( parentOf( map, 'about' ), null );
-	assert.equal( parentOf( map, 'contact' ), null );
-	assert.ok( map.rows.every( ( r ) => ! r.parent || map.rows.some( ( p ) => p.slug === r.parent && p.postType === r.postType ) ), 'every parent names a row of the map' );
-} );
-
-test( 'Bean\'s saved marks win over the proposed parent: edit:parent= clears it, edit:parent=<slug> sets another', () => {
-	const cleared = applyMarks( map.rows, new Map( [ [ 'page:page:repairs', 'edit:parent=' ] ] ) );
-	assert.equal( cleared.rows.find( ( r ) => 'repairs' === r.slug ).parent, null );
-	const moved = applyMarks( map.rows, new Map( [ [ 'page:page:repairs', 'edit:parent=about' ] ] ) );
-	assert.equal( moved.rows.find( ( r ) => 'repairs' === r.slug ).parent, 'about' );
-	const untouched = applyMarks( map.rows, new Map( [ [ 'page:page:team', 'edit:title=The team' ] ] ) );
-	assert.equal( untouched.rows.find( ( r ) => 'repairs' === r.slug ).parent, 'cleaning' );
-} );
-
-test( 'real Indus export: the sector pages sit under Food service and the trade pages under Apply', { skip: ! fs.existsSync( real( 'indus-foods' ) ) && 'no client exports in this checkout' }, () => {
-	const folder = real( 'indus-foods' );
-	const indus = proposePageMap( { folder, routing: readRouting( { folder } ) } );
-	assert.deepEqual( [ 'manufacturing', 'retail', 'wholesale' ].map( ( s ) => parentOf( indus, s ) ), [ 'food-service', 'food-service', 'food-service' ] );
-	assert.deepEqual( [ 'catalogue', 'delivery', 'faqs', 'terms' ].map( ( s ) => parentOf( indus, s ) ), [ 'apply', 'apply', 'apply', 'apply' ] );
-	assert.deepEqual( [ 'food-service', 'apply', 'brands', 'about' ].map( ( s ) => parentOf( indus, s ) ), [ null, null, null, null ] );
-	assert.equal( parentOf( indus, 'our-story' ), 'about' );
-} );
-
-// A menu item whose own row is not a page (an article is a `post` row; the shop and templates are no page either) never becomes the parent of
-// the pages listed under it: site-build looks a parent up among the rows of the child's own post type, so such a parent stops the run.
-function withArticleMenu() {
-	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'pagemap-article-' ) );
-	fs.cpSync( FIX, dir, { recursive: true } );
-	const file = path.join( dir, 'Site.dc.html' );
-	fs.writeFileSync( file, fs.readFileSync( file, 'utf8' )
-		.replace( "{ label: 'Services', href: '#/cleaning'", "{ label: 'Stories', href: '#/post-first', links: [ { label: 'First article', href: '#/post-first' }, { label: 'Gift cards', href: '#/gift' } ] }, { label: 'Services', href: '#/cleaning'" )
-		.replace( "about: { crumb: 'About us'", "gift: { crumb: 'Gift cards', blocks: [] }, about: { crumb: 'About us'" ) );
-	return dir;
+// The fixture draft with the given routes added to its `pages` getter (and an optional edit of its text), proposed once.
+function nested( entries, edit = ( t ) => t ) {
+	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'pagemap-routes-' ) );
+	try {
+		fs.cpSync( FIX, dir, { recursive: true } );
+		const file = path.join( dir, 'Site.dc.html' );
+		const extra = entries.map( ( k ) => `'${ k }': { crumb: '${ k }', blocks: [] }, ` ).join( '' );
+		fs.writeFileSync( file, edit( fs.readFileSync( file, 'utf8' ).replace( "about: { crumb: 'About us'", `${ extra }about: { crumb: 'About us'` ) ) );
+		return propose( dir );
+	} finally {
+		fs.rmSync( dir, { recursive: true, force: true } );
+	}
 }
 
-test( 'MUST FAIL: a menu item whose row is an article, not a page, does not become the parent of the pages under it', () => {
-	const folder = withArticleMenu();
-	const m = proposePageMap( { folder, routing: readRouting( { folder } ) } );
-	fs.rmSync( folder, { recursive: true, force: true } );
-	assert.equal( m.rows.find( ( r ) => 'first-article' === r.slug )?.postType, 'post', 'the fixture really holds the article row' );
-	assert.ok( m.rows.find( ( r ) => 'gift' === r.slug ), 'and the page listed under it' );
-	assert.equal( parentOf( m, 'gift' ), null, 'an article row is no page to nest under' );
-	assert.ok( m.rows.every( ( r ) => ! r.parent || m.rows.some( ( p ) => p.slug === r.parent && p.postType === r.postType ) ), 'every parent names a row of its own post type' );
-	assert.equal( parentOf( m, 'repairs' ), 'cleaning', 'negative control: a section with a page keeps its nesting' );
+const flat = propose( FIX );
+
+test( 'MUST FAIL: nested routes nest: a page takes the page at the nearest ancestor route, skipping a missing level', () => {
+	const m = nested( [ 'products', 'products/widgets', 'products/widgets/blue', 'guides/setup/first-steps', 'guides' ] );
+	const slug = ( route ) => rowOf( m, route ).slug;
+	assert.equal( parentOfRoute( m, 'products/widgets' ), slug( 'products' ), 'products/widgets sits under products' );
+	assert.equal( parentOfRoute( m, 'products/widgets/blue' ), slug( 'products/widgets' ), 'the nearest ancestor wins over a further one' );
+	assert.equal( parentOfRoute( m, 'guides/setup/first-steps' ), slug( 'guides' ), 'no page at guides/setup, so the next ancestor up is the parent' );
+	assert.equal( parentOfRoute( m, 'products' ), null, 'the top of a branch has no parent' );
+	assert.equal( parentOfRoute( m, 'guides' ), null );
+	assert.ok( parentsAreRows( m ), 'every parent names a page row of the map' );
 } );
+
+test( 'MUST FAIL: a route whose ancestor path holds no page has no parent, and a prefix that is not a path ancestor is not one', () => {
+	const m = nested( [ 'solo/deep', 'team-up', 'team/extra' ] );
+	assert.equal( parentOfRoute( m, 'solo/deep' ), null, 'no page at solo' );
+	assert.equal( parentOfRoute( m, 'team-up' ), null, 'team-up shares letters with team but is no path below it' );
+	assert.equal( parentOfRoute( m, 'team/extra' ), rowOf( m, 'team' ).slug, 'a page at team does parent team/extra' );
+} );
+
+test( 'MUST FAIL: flat routes stay flat, whatever the menu looks like: no row of the fixture draft has a parent', () => {
+	// The draft's menu nests Our team and News under About, and Cleaning and Repairs under a Services item that links to its first child.
+	assert.deepEqual( flat.rows.filter( ( r ) => r.parent ).map( ( r ) => r.slug ), [] );
+	assert.ok( flat.rows.filter( ( r ) => 'page' === r.postType ).length >= 6, 'and the fixture does hold the pages' );
+} );
+
+test( 'MUST FAIL: a menu item with children, with or without a page of its own, never nests them', () => {
+	const m = nested( [], ( t ) => t.replace( "{ label: 'Contact', href: '#/contact' }\n    ];", "{ label: 'Contact', href: '#/contact', links: [ { label: 'Our team', href: '#/team' } ] }\n    ];" ) );
+	assert.ok( m.rows.some( ( r ) => 'contact' === r.slug ), 'the edited fixture still builds' );
+	assert.equal( parentOfRoute( m, 'team' ), null, 'About and Contact both list Our team; neither is its parent' );
+	assert.equal( parentOfRoute( m, 'repairs' ), null, 'Services links to Cleaning, its first child: Repairs stays top-level' );
+	assert.equal( parentOfRoute( m, 'cleaning' ), null );
+} );
+
+test( 'MUST FAIL: only a page row parents or is parented: an article, shop or template row is never the ancestor, and a non-page route is never nested', () => {
+	const row = ( route, postType, slug = route ) => ( { route, slug, postType } );
+	const rows = [ row( 'blog', 'post' ), row( 'blog/entry', 'page' ), row( 'shop', 'shop' ), row( 'shop/item', 'page' ), row( 'help', 'page' ), row( 'help/missing', 'template' ), row( 'help/more', 'post' ),
+		row( 'docs', 'page' ), row( 'docs/guide', 'page' ) ];
+	const up = ( route ) => ancestorPage( rows.find( ( r ) => r.route === route ), rows )?.route ?? null;
+	assert.equal( up( 'blog/entry' ), null, 'an article row is no page to nest under' );
+	assert.equal( up( 'shop/item' ), null, 'a shop row is no page to nest under' );
+	assert.equal( up( 'help/missing' ), null, 'a template row makes no post, so it has no parent' );
+	assert.equal( up( 'help/more' ), null, 'an article route under a page nests nothing' );
+	assert.equal( up( 'docs/guide' ), 'docs', 'negative control: a page route under a page row nests' );
+} );
+
+test( 'a route reads the same as a hash key, a hash path or a file route, and an index file is its folder', () => {
+	const row = ( route, slug ) => ( { route, slug, postType: 'page' } );
+	const up = ( rows, route ) => ancestorPage( rows.find( ( r ) => r.route === route ), rows )?.slug ?? null;
+	assert.equal( up( [ row( '#/sectors', 'sectors' ), row( '#/sectors/retail', 'retail' ) ], '#/sectors/retail' ), 'sectors', 'hash paths' );
+	assert.equal( up( [ row( 'sectors.dc.html', 'sectors' ), row( 'sectors/retail.dc.html', 'retail' ) ], 'sectors/retail.dc.html' ), 'sectors', 'file routes' );
+	assert.equal( up( [ row( 'sectors/index.html', 'sectors' ), row( 'sectors/retail/index.html', 'retail' ) ], 'sectors/retail/index.html' ), 'sectors', 'index files' );
+	assert.equal( up( [ row( '', 'home' ), row( 'about', 'about' ) ], 'about' ), null, 'the home route is the root of every address, not the parent of every page' );
+	assert.equal( up( [ row( 'about', 'about' ), row( 'about', 'about-2' ) ], 'about' ), null, 'a row is never its own parent' );
+} );
+
+test( 'in the page map: a page route under an article, or an article route under a page, nests nothing', () => {
+	const m = nested( [ 'about/team-notes', 'news/archive', 'post-first/extra' ] );
+	assert.equal( rowOf( m, 'post-first' )?.postType, 'post', 'the fixture holds the article row' );
+	assert.equal( parentOfRoute( m, 'post-first/extra' ), null );
+	assert.equal( parentOfRoute( m, 'about/team-notes' ), 'about' );
+	assert.equal( parentOfRoute( m, 'news/archive' ), 'news' );
+	assert.ok( parentsAreRows( m ) );
+} );
+
+test( 'Bean saved marks win over the proposed parent: edit:parent= clears it, edit:parent=<slug> sets another', () => {
+	const m = nested( [ 'about/history' ] );
+	const slug = rowOf( m, 'about/history' ).slug;
+	assert.equal( parentOfRoute( m, 'about/history' ), 'about' );
+	const cleared = applyMarks( m.rows, new Map( [ [ `page:page:${ slug }`, 'edit:parent=' ] ] ) );
+	assert.equal( rowOf( cleared, 'about/history' ).parent, null );
+	const moved = applyMarks( m.rows, new Map( [ [ `page:page:${ slug }`, 'edit:parent=team' ] ] ) );
+	assert.equal( rowOf( moved, 'about/history' ).parent, 'team' );
+	const untouched = applyMarks( m.rows, new Map( [ [ 'page:page:team', 'edit:title=The team' ] ] ) );
+	assert.equal( rowOf( untouched, 'about/history' ).parent, 'about' );
+} );
+
+for ( const client of [ 'indus-foods', 'mamas-munches-redesign', 'eye-care-ward-end' ] ) {
+	test( `real ${ client } draft: its routes carry no path hierarchy, so every page is top-level`, { skip: ! fs.existsSync( real( client ) ) && 'no client exports in this checkout' }, () => {
+		const m = propose( real( client ) );
+		const pages = m.rows.filter( ( r ) => 'page' === r.postType );
+		assert.ok( pages.length >= 5, `${ pages.length } page rows` );
+		assert.deepEqual( pages.filter( ( r ) => String( r.route ?? '' ).replace( /^#?\/?/, '' ).includes( '/' ) ).map( ( r ) => r.route ), [], 'the draft states no nested route' );
+		assert.deepEqual( m.rows.filter( ( r ) => r.parent ).map( ( r ) => `${ r.slug } < ${ r.parent }` ), [] );
+	} );
+}

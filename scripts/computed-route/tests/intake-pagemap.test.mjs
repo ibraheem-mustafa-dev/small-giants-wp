@@ -53,13 +53,12 @@ test( 'MUST FAIL: every route and every CPT surface has one row', () => {
 	assert.deepEqual( rowProblems( doubled, hashRouting ), [ 'route team has 2 rows' ] );
 } );
 
-test( 'rows carry the route data: titles, parents from menu grouping, post rows from the getter, live collections, menus', () => {
+test( 'rows carry the route data: titles, no parent from a menu, post rows from the getter, live collections, menus', () => {
 	assert.equal( bySlug( hashMap, 'about' ).title, 'About us', 'crumb is the title' );
 	assert.equal( bySlug( hashMap, 'first-article' ).title, 'First article', 'a crumb shared by every article falls through to hero.title' );
 	assert.deepEqual( [ bySlug( hashMap, 'first-article' ).postType, bySlug( hashMap, 'first-article' ).route ], [ 'post', 'post-first' ] );
-	assert.equal( bySlug( hashMap, 'team' ).parent, 'about', 'About links to its own page and holds Our team' );
-	assert.equal( bySlug( hashMap, 'repairs' ).parent, 'cleaning', 'Services only links to its first child, which is its landing page: Repairs sits under it (register D7)' );
-	assert.equal( bySlug( hashMap, 'cleaning' ).parent, null, 'the landing page itself stays at the top' );
+	assert.equal( bySlug( hashMap, 'team' ).parent, null, 'About holds Our team in the menu, but the draft routes are flat: a menu nests nothing (Bean, 2026-11-26)' );
+	assert.equal( bySlug( hashMap, 'repairs' ).parent, null );
 	assert.equal( bySlug( hashMap, 'news' ).collection, 'live', 'the news page lists the articles that have their own routes' );
 	assert.equal( bySlug( hashMap, 'about' ).collection, 'static' );
 	assert.deepEqual( bySlug( hashMap, 'contact' ).menus, [ { menu: 'header', position: 4, parentItem: null }, { menu: 'footer', position: 1, parentItem: null } ] );
@@ -194,7 +193,7 @@ test( 'real exports: Indus, Eye Care and Mama\'s page maps', { skip: ! fs.exists
 	assert.equal( a.linkMap.filter( ( l ) => 'gap' === l.kind ).length, 0, 'after: zero unresolved links' );
 	assert.deepEqual( linkProblems( a ), [] );
 	assert.deepEqual( rowProblems( a, routing ), [] );
-	assert.equal( a.rows.find( ( r ) => 'our-story' === r.route ).parent, 'about' );
+	assert.equal( a.rows.find( ( r ) => 'our-story' === r.route ).parent, null, 'Indus routes are flat (#/our-story), so no page nests under About' );
 	assert.equal( a.rows.find( ( r ) => 'blog' === r.route ).collection, 'live' );
 	const menuNames = ( r ) => [ ...new Set( r.rows.flatMap( ( x ) => x.menus.map( ( m ) => m.menu ) ) ) ].sort();
 	assert.deepEqual( menuNames( a ), [ 'footer', 'header' ], 'Indus\'s drawer repeats its four mega sections: no drawer menu' );

@@ -322,9 +322,8 @@ export function proposePageMap( { folder, routing = null, census = null, surface
 	};
 	// Menus: each item's first target that reaches a row puts that row in the menu. A drawer menu whose top-level items
 	// are each a header mega item is those sections again: the drawer binds the header menu and shows its mega panels
-	// (Spec 36 FR-36-6), so it adds no menu entries (its items still inform parents below).
+	// (Spec 36 FR-36-6), so it adds no menu entries.
 	const megaLabels = new Set( checked.surfaces.filter( ( s ) => 'menu' === s.kind && s.menuItem ).map( ( s ) => s.label ) );
-	const groups = new Map();
 	for ( const m of code.menus ) {
 		const file = m.draftId.split( ':' )[ 0 ];
 		const listed = ! drawerRepeatsHeader( m, megaLabels );
@@ -336,24 +335,12 @@ export function proposePageMap( { folder, routing = null, census = null, surface
 			} else if ( ! row && it.targets.some( ( t ) => /^#.|\.dc\.html|^\//.test( t ) ) ) {
 				gaps.push( gap( 'menu', m.draftId, `${ m.menu } item "${ it.label }" links to ${ it.targets.join( ', ' ) }, which no page-map row holds` ) );
 			}
-			if ( 'footer' !== m.region && ( row || it.children.length ) ) {
-				const g = groups.get( it.label ) || { target: null, children: [] };
-				groups.set( it.label, { target: g.target || row, children: [ ...g.children, ...it.children.map( ( c ) => c.targets.map( ( t ) => rowOf( t, file ) ).find( Boolean ) || null ) ] } );
-			}
 			walk( it.children );
 		} );
 		walk( m.items );
 	}
-	// Parents: a menu item with a page is the parent of its children's pages, then the manifest's parent, then the route
-	// hierarchy (a/b under a). An item that only links to its first child (Sectors -> Food service) names that child the section's
-	// landing page: the landing page stays at the top and the section's other pages sit under it, the nesting the draft's own
-	// breadcrumb shows (Home / section / page, the section linking to its landing page). Only a page row is a parent: site-build
-	// looks a parent up among the rows of the child's own post type, so a shop, article or template row named as one stops the run.
-	for ( const { target, children } of groups.values() ) {
-		if ( target && 'page' === target.postType && children.length ) {
-			children.filter( ( c ) => c && c !== target && ! c.parent && 'page' === c.postType ).forEach( ( c ) => { c.parent = target.slug; } );
-		}
-	}
+	// Parents: the manifest's parent when the draft states one, else the page row whose own draft route is the nearest ancestor path of this
+	// row's route (`ancestorPage`). A menu's shape never nests a page (Bean, 2026-11-26): a draft whose routes are all flat has no parents.
 	// A template row (postType `template`) makes no post, so it has no parent.
 	for ( const r of rows ) {
 		if ( 'template' === r.postType ) {
@@ -368,9 +355,8 @@ export function proposePageMap( { folder, routing = null, census = null, surface
 			}
 		}
 		delete r.draftParent;
-		const up = r.route?.includes( '/' ) && routeSlug.get( r.route.slice( 0, r.route.lastIndexOf( '/' ) ) );
-		if ( ! r.parent && up ) {
-			r.parent = up;
+		if ( ! r.parent ) {
+			r.parent = ancestorPage( r, rows )?.slug ?? null;
 		}
 	}
 	rows.forEach( ( r ) => delete r.shopTitled );
@@ -380,6 +366,31 @@ export function proposePageMap( { folder, routing = null, census = null, surface
 	const recordOf = new Map( checked.surfaces.filter( ( x ) => x.hint ).map( ( x ) => [ x.draftId, x.hint ] ) );
 	const menuItems = code.menus.map( ( m ) => ( { menu: m.menu, region: m.region, file: m.draftId.split( ':' )[ 0 ], ...( recordOf.has( m.surface ) ? { surface: recordOf.get( m.surface ) } : {} ), items: m.items, ...( splitPoint( m.items ) ? { splitAfter: splitPoint( m.items ) } : {} ) } ) );
 	return { rows, linkMap: linkMap( exp, route, routeSlug, home, gaps ), gaps, routeSlug: Object.fromEntries( routeSlug ), menuItems };
+}
+
+// The route's path segments: a leading `#`, `/` or `./`, a `.dc.html` / `.html` extension and a trailing `index` segment dropped, so
+// a hash key (`food-service/manufacturing`), a hash path (`#/food-service/manufacturing`) and a file route (`food-service/manufacturing.dc.html`)
+// read the same. A route with no path (the home route) has no segments.
+function routePath( route ) {
+	return String( route ?? '' ).replace( /^#?(\.?\/)?/, '' ).split( /[?#]/ )[ 0 ].replace( /\.(dc\.)?html$/i, '' ).split( '/' ).filter( Boolean ).filter( ( seg, i, all ) => ! ( 'index' === seg && i === all.length - 1 && all.length > 1 ) );
+}
+
+// The page row a page row nests under (Bean, 2026-11-26): the page row whose own draft route is the nearest ancestor path of this row's
+// route (a row at `/food-service/manufacturing` takes the row at `/food-service`). A draft whose routes are flat has no ancestor, so no
+// parent; a menu's nesting never makes one. Only a page row is a parent or a child: site-build looks a parent up among the rows of the
+// child's own post type, so a shop, article or template row named as one stops the run.
+export function ancestorPage( row, rows ) {
+	if ( 'page' !== row.postType ) {
+		return null;
+	}
+	const mine = routePath( row.route );
+	for ( let n = mine.length - 1; n > 0; n-- ) {
+		const hit = rows.find( ( r ) => r !== row && 'page' === r.postType && routePath( r.route ).join( '/' ) === mine.slice( 0, n ).join( '/' ) );
+		if ( hit ) {
+			return hit;
+		}
+	}
+	return null;
 }
 
 // Problems with a page map: schema violations (data/page-map.schema.json), a slug used twice within one post type
