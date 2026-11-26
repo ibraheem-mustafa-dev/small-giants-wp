@@ -15,10 +15,10 @@ const gap = ( over = {} ) => ( { node: 'n1', block: 'sgs/icon-list', slot: 'item
 // One client's build folder with two surfaces; the first has two runs, of which only the latest counts.
 function fixture( reports ) {
 	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'ccl-' ) );
-	for ( const [ surface, run, residualCss, customCssGaps = [] ] of reports ) {
+	for ( const [ surface, run, residualCss, customCssGaps = [], writes = [] ] of reports ) {
 		const d = path.join( dir, 'qa', 'fill', surface, run );
 		fs.mkdirSync( d, { recursive: true } );
-		fs.writeFileSync( path.join( d, 'fill-report.json' ), JSON.stringify( { residualCss, customCssGaps } ) );
+		fs.writeFileSync( path.join( d, 'fill-report.json' ), JSON.stringify( { residualCss, customCssGaps, writes } ) );
 	}
 	return dir;
 }
@@ -93,4 +93,33 @@ test( 'MUST FAIL: a real rule with no gap row of its own is refused, and the row
 	assert.equal( unjustifiedRules( buildCustomCssLog( { client: 'demo', buildDir: wrongRange } ) ).length, 1 );
 	fs.rmSync( without, { recursive: true, force: true } );
 	fs.rmSync( wrongRange, { recursive: true, force: true } );
+} );
+
+// A write into sgsCustomCss as the width gate, the width ladder and the step ladder record it.
+const put = ( prop, after, over = {} ) => ( { node: 'n1', block: 'sgs/nav-bar-menu', slot: '', prop, attr: 'sgsCustomCss', before: '', after, widths: [], how: 'width-gate', ...over } );
+const STEP = '@media (min-width: 900px) { & .item { gap: 4px; } }';
+
+test( 'MUST FAIL: Custom CSS the step ladder, the width ladder and the width gate wrote into sgsCustomCss is logged and checked, beyond residualCss.rules', () => {
+	const gate = put( 'width gate (a and b): scoped @media rule', '@media (max-width: 767px) { & { display: none; } }', { node: 'n2' } );
+	const step = put( 'step ladder: scoped @media rule', STEP );
+	const ladder = put( 'width ladder (padding-left): scoped @media rule', '@media (max-width: 599px) { & .x { padding-left: 4px; } }', { node: 'n3', covers: 'padding-left' } );
+	const stepGap = { node: 'n1', block: 'sgs/nav-bar-menu', slot: '.item', properties: [ 'gap' ], css: '@media (min-width: 900px) { & .item { gap: 4px; } }', how: 'step ladder', control: 'itemGap with a step at 900px', reason: 'custom-css: gap 900-up is a scoped @media rule in Additional CSS because itemGap holds one value per device tier; native once that setting takes a step at 900px' };
+	const label = put( 'step ladder: label', 'Step ladder: item 900-up gap: 4px;', { attr: 'sgsCustomCssNote' } );
+	const dir = fixture( [ [ 'header', 'r1', { rules: [], gaps: [], refused: [] }, [ stepGap ], [ gate, step, ladder, label ] ] ] );
+	const log = buildCustomCssLog( { client: 'demo', buildDir: dir } );
+	assert.deepEqual( log.rules.map( ( r ) => r.node ), [ 'n2', 'n1', 'n3' ], 'one rule per write that adds Custom CSS; the note and scope-key writes are no rule' );
+	assert.equal( log.rules[ 1 ].gap.control, 'itemGap with a step at 900px' );
+	assert.deepEqual( unjustifiedRules( log ), [], 'each carries the ground of the pass that wrote it' );
+	// A step ladder rule with no gap row has no ground of its own.
+	const bare = fixture( [ [ 'header', 'r1', { rules: [], gaps: [], refused: [] }, [], [ step ] ] ] );
+	const bad = unjustifiedRules( buildCustomCssLog( { client: 'demo', buildDir: bare } ) );
+	assert.equal( bad.length, 1 );
+	assert.match( bad[ 0 ].problems.join( ';' ), /no reason/ );
+	// A rule a later write replaced, and one that adds nothing, are no rule.
+	const none = fixture( [ [ 'header', 'r1', { rules: [], gaps: [], refused: [] }, [], [ { ...gate, supersededBy: 3 }, { ...ladder, before: ladder.after } ] ] ] );
+	assert.deepEqual( buildCustomCssLog( { client: 'demo', buildDir: none } ).rules, [] );
+	// The residual pass's own write is its rules' business: it is not counted twice.
+	const residual = fixture( [ [ 'home', 'r1', { rules: [ rule() ], gaps: [], refused: [] }, [ gap() ], [ { ...step, how: 'residual-css' } ] ] ] );
+	assert.equal( buildCustomCssLog( { client: 'demo', buildDir: residual } ).rules.length, 1 );
+	[ dir, bare, none, residual ].forEach( ( d ) => fs.rmSync( d, { recursive: true, force: true } ) );
 } );

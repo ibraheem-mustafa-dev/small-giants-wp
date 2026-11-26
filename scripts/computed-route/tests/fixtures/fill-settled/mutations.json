@@ -5,5 +5,5 @@
 	{ "file": "lib/fill-resolve-element.mjs", "find": "\t\t\tif ( auto.length ) {", "replace": "\t\t\tif ( false ) {", "why": "a declared auto margin is dropped silently" },
 	{ "file": "lib/fill-resolve-element.mjs", "find": "u.notPlain.length || Object.keys( u.draft ).length ? unmapped(", "replace": "false ? unmapped(", "why": "a declared var() width is settled as a used size instead of an UNMAPPED row" },
 	{ "file": "lib/fill-resolve-element.mjs", "find": "\t\t\tif ( undeclared.length ) {", "replace": "\t\t\tif ( false ) {", "why": "an undeclared used-value property is dropped silently" },
-	{ "file": "lib/fill-resolve-element.mjs", "find": "if ( 'equal' === res.status || 'equal' === eq?.status ) {", "replace": "if ( false ) {", "why": "an equal result ends with no record" }
+	{ "file": "lib/fill-resolve-element.mjs", "find": "if ( applies.length && ( 'equal' === res.status || 'equal' === eq?.status ) ) {", "replace": "if ( false ) {", "why": "an equal result ends with no record" }
 ]

@@ -190,6 +190,20 @@ test( 'MUST FAIL WITHOUT THE REFUSALS: display, an out-of-flow position with its
 	assert.equal( css( core ), undefined );
 } );
 
+test( 'MUST FAIL: a layout property is stated at every drawn width, not just as many widths as are drawn', () => {
+	// The element is display none at 375 and drawn at 768 and 1440; the draft states the width at 375 and 1440: two widths for two
+	// drawn widths, but 768 is not one of them.
+	const w = world();
+	w.reads.widths[ 375 ][ '0:.f__input' ].styles.display = 'none';
+	const r = run( w, [ row( { property: 'width', value: JSON.stringify( { 375: '100%', 1440: '100%' } ) } ) ] );
+	assert.equal( css( w ), undefined );
+	assert.match( r.refused[ 0 ].reason, /layout property and the draft states it only at 375, 1440/ );
+	// Stated at the two drawn widths it is complete.
+	const ok = world();
+	ok.reads.widths[ 375 ][ '0:.f__input' ].styles.display = 'none';
+	assert.deepEqual( run( ok, [ row( { property: 'width', value: JSON.stringify( { 768: '100%', 1440: '100%' } ) } ) ] ).refused, [] );
+} );
+
 test( 'negative control: a container property on the same layout is written; a visibility toggle is no home for a shown display', () => {
 	const w = world();
 	run( w, [ row( { property: 'column-gap', value: '8px' } ) ] );

@@ -10,8 +10,34 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const byText = ( a, b ) => ( a < b ? -1 : a > b ? 1 : 0 );
-// The reasons a rule may carry: FR-48-109's, or FR-48-50's visibility-by-width rule.
-const JUSTIFIED = /all five equivalence layers failed|no setting of the block|FR-48-50|FR-48-109|visibility by (?:screen )?width/i;
+// The reasons a rule may carry: FR-48-109's, FR-48-50's visibility-by-width rule, or the step ladder's (a setting holds one value
+// per device tier, and the draft changes between the read widths: lib/fill-step-rungs.mjs).
+const JUSTIFIED = /all five equivalence layers failed|no setting of the block|FR-48-50|FR-48-109|visibility by (?:screen )?width|holds one value per device tier/i;
+
+// The rules the other passes wrote into `sgsCustomCss` (the report's `writes`, `how: 'width-gate'`: the step ladder, the width
+// ladder and the width gate; the residual pass's own rules are `residualCss.rules`), one per write that adds text to the box: the
+// text it appended, the gap row of the same node whose rule that text holds, else the ground the writing pass itself proves
+// (the width gate writes only where the block has no tier-aligned hiding setting and no breakpoint setting; the width ladder only
+// where no setting holds the draft's per-width values). A step ladder rule has no ground of its own: only its gap row justifies it.
+const WRITERS = [
+	{ label: /^width gate/, reason: 'FR-48-50: the draft shows this element by screen width and the block has no tier-aligned hiding setting and no breakpoint setting', control: () => 'a hide-on-device setting or a breakpoint setting the block does not hold' },
+	{ label: /^width ladder/, reason: "no setting of the block holds the draft's per-width values on this part (FR-48-109)", control: ( w ) => `a per-width ${ w.covers ?? 'value' } setting` },
+	{ label: /^step ladder/, reason: '', control: () => '' },
+];
+export function customCssWrites( { surface, writes = [], gaps = [] } ) {
+	return writes.filter( ( w ) => 'sgsCustomCss' === w.attr && 'width-gate' === w.how && undefined === w.supersededBy ).flatMap( ( w ) => {
+		const before = String( w.before ?? '' );
+		const after = String( w.after ?? '' );
+		const css = ( after.startsWith( before ) ? after.slice( before.length ) : after ).trim();
+		const writer = WRITERS.find( ( x ) => x.label.test( String( w.prop ?? '' ) ) );
+		if ( ! css || ! writer ) {
+			return [];
+		}
+		const row = gaps.find( ( g ) => g.node === w.node && g.css && css.includes( g.css ) );
+		const control = row ? row.control : writer.control( w );
+		return [ { surface, node: w.node, block: w.block, part: w.slot ?? '', state: w.state ?? null, range: '', declarations: [ css ], css, reason: row ? row.reason : writer.reason, gap: control ? { control, reason: row ? row.reason : writer.reason } : null, source: String( w.prop ?? '' ) } ];
+	} );
+}
 
 // The latest run's fill-report.json per surface of one client's build folder: [ { surface, file } ].
 export function latestReports( buildDir ) {
@@ -32,10 +58,12 @@ export function buildCustomCssLog( { client, buildDir } ) {
 	for ( const { surface, file } of latestReports( buildDir ) ) {
 		let residual;
 		let gaps;
+		let writes;
 		try {
 			const report = JSON.parse( fs.readFileSync( file, 'utf8' ) );
 			residual = report.residualCss ?? {};
 			gaps = report.customCssGaps ?? [];
+			writes = report.writes ?? [];
 		} catch ( e ) {
 			log.unreadable.push( `${ file }: ${ String( e.message || e ).slice( 0, 120 ) }` );
 			continue;
@@ -46,6 +74,7 @@ export function buildCustomCssLog( { client, buildDir } ) {
 			const gap = gaps.find( ( g ) => g.node === r.node && g.block === r.block && ( g.slot ?? '' ) === ( r.part ?? '' ) && g.css === r.css && ( r.declarations ?? [] ).some( ( d ) => ( g.properties ?? [] ).includes( String( d ).split( ':' )[ 0 ].trim() ) ) ) ?? null;
 			log.rules.push( { surface, node: r.node, block: r.block, part: r.part ?? '', state: r.state ?? null, range: r.range ?? '', declarations: r.declarations ?? [], css: r.css ?? '', reason: r.reason ?? '', gap: gap ? { control: gap.control, reason: gap.reason } : null } );
 		}
+		log.rules.push( ...customCssWrites( { surface, writes, gaps } ) );
 		for ( const x of residual.refused ?? [] ) {
 			log.refused.push( { surface, node: x.node, block: x.block, slot: x.slot ?? '', property: x.property, state: x.state ?? null, value: x.value, reason: x.reason } );
 		}

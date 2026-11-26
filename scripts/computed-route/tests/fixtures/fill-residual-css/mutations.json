@@ -7,7 +7,7 @@
 	{"file":"lib/fill-residual-css.mjs","find":"a[ 0 ] > b[ 0 ] || ( a[ 0 ] === b[ 0 ] && a[ 1 ] > b[ 1 ] ) ? [ r, twin ] : [ twin, r ]","replace":"[ twin, r ]","why":"the outer wrapper would take the property the inner element paints"},
 	{"file":"lib/fill-residual-css.mjs","find":"if ( 'display' === prop ) {","replace":"if ( false ) {","why":"a display would be written over the block's own layout"},
 	{"file":"lib/fill-residual-css.mjs","find":"if ( PLACED_BY_POSITION.test( prop ) && unplaced.has( where ) ) {","replace":"if ( false ) {","why":"offsets of a refused out-of-flow element would be written"},
-	{"file":"lib/fill-residual-css.mjs","find":"if ( LAYOUT.test( prop ) && widths.length < drawn.length ) {","replace":"if ( false ) {","why":"one width's layout would be held at every width"},
+	{"file":"lib/fill-residual-css.mjs","find":"if ( LAYOUT.test( prop ) && ! drawn.every( ( w ) => widths.includes( w ) ) ) {","replace":"if ( false ) {","why":"one width's layout would be held at every width"},
 	{"file":"lib/fill-residual-css.mjs","find":"if ( differs.length ) {","replace":"if ( false ) {","why":"a container property would act on a different layout"},
 	{"file":"lib/fill-residual-css.mjs","find":"if ( out.bytes + bytes > cap ) {","replace":"if ( false ) {","why":"the page cap would not hold"},
 	{"file":"lib/fill-residual-css.mjs","find":"const spans = Array.isArray( row.modeWidths ) ? modeSpans( { read, widths, values, series } ) : widthSpans( { widths, values, series } );","replace":"const spans = { ranges: [ { range: [ 0, Infinity ], value: values[ widths.at( -1 ) ] } ], snaps: [] };","why":"a per-width value would be written as the widest one at every width"},

@@ -205,14 +205,17 @@ export function notPainted( prop, styles, snap = null, declared = null ) {
 const LAYOUT_ROLE = [ 'gridContainers', 'gridItemsAndBoxesWithinGridContainer', 'flexItemsAndInFlowPseudos', 'flexItemsGridItemsAbsolutelyPositionedContainerChildren', 'flexItemsGridItemsAndAbsolutelyPositionedBoxes', 'blockLevelBoxesAndAbsolutelyPositionedBoxesAndGridItems', 'multilineFlexContainers', 'blockContainersMultiColumnContainersFlexContainersGridContainers' ];
 export const INITIAL_UNSTATED = new Set( propertiesApplyingTo( LAYOUT_ROLE ) );
 
-// Whether a read value is the property's initial value with no declaration behind it. declared: the element's declared
-// longhands at the width ({ prop: value }), or null where the declared read failed (then nothing is judged).
-export function undeclaredInitial( prop, value, declared ) {
+// Whether a read value is the property's initial value with no declaration behind it, and the block's own default look paints
+// that same initial value (`paint`, its calibrated default paint of the property at the width). A block that paints another
+// value by default (a flex-grow of 1 in its stylesheet) is not left alone by an unstated initial value: the draft's `0` is what
+// the element computes there, so the resolver judges it. A paint that was not measured judges nothing. declared: the element's
+// declared longhands at the width ({ prop: value }), or null where the declared read failed (then nothing is judged).
+export function undeclaredInitial( prop, value, declared, paint ) {
 	if ( ! declared || ! INITIAL_UNSTATED.has( prop ) || Object.keys( declared ).some( ( k ) => k === prop || longhandsOf( k ).includes( prop ) ) ) {
 		return false;
 	}
 	const initial = initialOf( prop );
-	return null !== initial && sameCanonical( prop, value, initial );
+	return null !== initial && sameCanonical( prop, value, initial ) && sameCanonical( prop, paint, initial );
 }
 
 const GAP_PROPS = [ 'gap', 'row-gap', 'column-gap' ];
@@ -420,6 +423,27 @@ const clampOk = ( cal, writes ) => writes.length > 0 && writes.every( ( w ) => a
 // modeGaps? (the widths of a mode no setting answers, beside a written mode: byMode) }.
 // 'equal': the draft matches what the node shows at every tier, nothing to write.
 export function resolveProperty( ctx ) {
+	const r = resolveOne( ctx );
+	const gone = inapplicableAt( ctx );
+	return gone.length && ! r.inapplicable ? { ...r, inapplicable: gone } : r;
+}
+
+// The widths of `draft` at which `prop` applies to no box the element is (a grid template on a flex box, `flex-grow` on a block
+// child), each with why: [ { width, detail } ] (lib/css-equivalence/inert.mjs::appliesIn decides it from the element's own display
+// and position and its parent's display; an undecided case is not listed). A state's value and a painted layer are judged where
+// they are read, not by the resting element, and a node with no sibling reads has no context to judge by.
+export function inapplicableAt( { prop, draft, siblings = {}, state = null, paintState = null, contextAt = () => ( {} ) } ) {
+	if ( state || paintState || ! Object.keys( siblings ).length ) {
+		return [];
+	}
+	return Object.keys( draft ).flatMap( ( w ) => {
+		const c = { ...inertContextAt( siblings, null, w ), parentDisplay: contextAt( w ).parentDisplay };
+		const { applies, code } = appliesIn( prop, c );
+		return false === applies ? [ { width: Number( w ), detail: `at ${ w }: ${ prop } applies to ${ code } and the element is display ${ c.display ?? 'unknown' }${ c.position ? `, position ${ c.position }` : '' } with parent display ${ c.parentDisplay ?? 'unknown' }, so it paints nothing there` } ] : [];
+	} );
+}
+
+function resolveOne( ctx ) {
 	const { node, owned: given = OWNED.get( node ) ?? null, block, prop, draft: stated, baseline, slots, calibration, db, snapshot, log, fontPx = {}, siblings = {}, fluid = null, state = null, paintState = null, declared = {}, declaredFluid = null, contextAt = () => ( {} ), rest } = ctx;
 	// The skeleton's content selectors (Site Info's displayType) stay as written: a look never changes which parts a block renders.
 	const selectors = contentSelectors( { db, block, attributes: node.attributes, calibration } );
@@ -431,12 +455,12 @@ export function resolveProperty( ctx ) {
 	// position and its parent's display, and an undecided case stays written. A state's value and a painted layer are judged
 	// where they are read, not by the resting element.
 	let draft = stated;
-	if ( ! state && ! paintState && Object.keys( siblings ).length ) {
-		const inapplicable = Object.keys( draft ).filter( ( w ) => false === appliesIn( prop, { ...inertContextAt( siblings, null, w ), parentDisplay: contextAt( w ).parentDisplay } ).applies );
-		if ( inapplicable.length === Object.keys( draft ).length ) {
-			return { status: 'equal', slot: slots[ 0 ], inapplicable: true };
+	const gone = inapplicableAt( { prop, draft: stated, siblings, state, paintState, contextAt } );
+	if ( gone.length ) {
+		if ( gone.length === Object.keys( draft ).length ) {
+			return { status: 'equal', slot: slots[ 0 ], inapplicable: gone };
 		}
-		draft = Object.fromEntries( Object.entries( draft ).filter( ( [ w ] ) => ! inapplicable.includes( w ) ) );
+		draft = Object.fromEntries( Object.entries( draft ).filter( ( [ w ] ) => ! gone.some( ( g ) => String( g.width ) === w ) ) );
 	}
 	let firstGap = null;
 	for ( const slot of slots ) {

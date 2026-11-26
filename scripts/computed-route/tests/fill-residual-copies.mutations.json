@@ -1,0 +1,4 @@
+[
+	{"file": "lib/fill-residual-css.mjs", "find": "! loopBody && ! state && ( () => {", "replace": "! state && ( () => {", "why": "a body of a sc-for loop is taken for a fixed set of parts"},
+	{"file": "lib/fill-residual-css.mjs", "find": "return others.length > 0 && others.every( ( t ) => drawnValue( t ) !== drawnValue( target ) );", "replace": "return others.length > 0 && others.some( ( t ) => drawnValue( t ) !== drawnValue( target ) );", "why": "a copy sharing its value with another copy is written"}
+]

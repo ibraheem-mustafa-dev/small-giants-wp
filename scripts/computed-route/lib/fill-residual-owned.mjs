@@ -6,21 +6,37 @@ import { longhandsOf } from './css-families.mjs';
 
 const filled = ( v ) => null !== v && undefined !== v && '' !== v;
 
-// The owned properties of one block's settings: [ { attr, props } ] for each setting that names some (a block with none
-// gives []). A DB seeded before the column existed is refused, not read as "no setting owns anything".
+// The default a `block_attributes.default_value` cell holds (JSON text), or undefined where the setting has none.
+function defaultOf( cell ) {
+	if ( null === cell || undefined === cell || '' === cell ) {
+		return undefined;
+	}
+	try {
+		return JSON.parse( cell );
+	} catch {
+		return cell;
+	}
+}
+
+// The owned properties of one block's settings: [ { attr, props, fallback } ] for each setting that names some (`fallback`:
+// the setting's default, undefined where it has none; a block with none gives []). A DB seeded before the column existed is
+// refused, not read as "no setting owns anything".
 export function ownedProperties( db, block ) {
 	if ( ! db.prepare( 'PRAGMA table_info(block_attributes)' ).all().some( ( c ) => 'owns_css' === c.name ) ) {
 		throw new Error( 'the framework DB has no block_attributes.owns_css column: reseed it (/sgs-update)' );
 	}
-	return db.prepare( "SELECT attr_name, owns_css FROM block_attributes WHERE block_slug = ? AND owns_css IS NOT NULL AND source IN ( 'sgs', 'sgs-ext' )" ).all( block )
-		.map( ( r ) => ( { attr: r.attr_name, props: JSON.parse( r.owns_css ) } ) );
+	return db.prepare( "SELECT attr_name, owns_css, default_value FROM block_attributes WHERE block_slug = ? AND owns_css IS NOT NULL AND source IN ( 'sgs', 'sgs-ext' )" ).all( block )
+		.map( ( r ) => ( { attr: r.attr_name, props: JSON.parse( r.owns_css ), fallback: defaultOf( r.default_value ) } ) );
 }
 
-// The attribute of `attributes` (the node's settings) that owns `prop` and holds a value, or null. A shorthand a setting
-// owns owns its longhands.
+// The attribute of `attributes` (the node's settings) that owns `prop` and holds a value, or null. A setting the node does
+// not save holds its default, which the block's own stylesheet draws (the icon list's `markerType` defaults to `icon` and its
+// style.css draws `list-style: none` for it), so a rule would cancel that default too. A shorthand a setting owns owns its
+// longhands.
 export function ownedBySetting( db, block, prop, attributes ) {
-	for ( const { attr, props } of ownedProperties( db, block ) ) {
-		if ( filled( attributes?.[ attr ] ) && props.some( ( p ) => p === prop || longhandsOf( p ).includes( prop ) ) ) {
+	for ( const { attr, props, fallback } of ownedProperties( db, block ) ) {
+		const saved = attributes?.[ attr ];
+		if ( filled( null === saved || undefined === saved ? fallback : saved ) && props.some( ( p ) => p === prop || longhandsOf( p ).includes( prop ) ) ) {
 			return attr;
 		}
 	}

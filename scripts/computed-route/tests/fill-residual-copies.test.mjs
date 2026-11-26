@@ -74,6 +74,38 @@ test( 'negative controls: copies that differ, a part that is no loop body, no fa
 	assert.equal( runList( once, [ listRow( 'outline-style', 'solid' ) ], { calFor: () => oneCopy } ).refused.length, 1, 'the calibration draws one position of the part' );
 } );
 
+// A fixed set of parts: three copies of the item, each read on its own draft element with its own `prop` value (`values`).
+const copySlot = ( n ) => `${ ITEM }:nth-of-type(${ n })`;
+function copyWorld( prop, values ) {
+	const w = listWorld();
+	const targets = values.map( ( _, i ) => ( { id: `0:${ copySlot( i + 1 ) }`, index: 0, slot: copySlot( i + 1 ), finder: { tpl: 'Page/10#0' } } ) );
+	w.nodes[ 0 ].targets = [ w.nodes[ 0 ].targets[ 0 ], ...targets ];
+	values.forEach( ( v, i ) => W.forEach( ( x ) => ( w.reads.widths[ x ][ `0:${ copySlot( i + 1 ) }` ] = read( { [ prop ]: v }, i * 50 ) ) ) );
+	return { w, rows: values.map( ( v, i ) => ( { ...listRow( prop, v ), slot: copySlot( i + 1 ) } ) ) };
+}
+
+test( 'MUST FAIL: a fixed set of parts is written one rule per copy where every copy differs; a copy sharing its value with another stays with the loop, not written', () => {
+	const all = copyWorld( 'outline-style', [ 'solid', 'dashed', 'dotted' ] );
+	const a = runList( all.w, all.rows, { facts: null } );
+	assert.deepEqual( a.refused, [] );
+	assert.deepEqual( a.rules.map( ( r ) => r.part ), [ 1, 2, 3 ].map( copySlot ) );
+	const shared = copyWorld( 'outline-style', [ 'solid', 'solid', 'dashed' ] );
+	const b = runList( shared.w, shared.rows, { facts: null } );
+	assert.deepEqual( b.rules.map( ( r ) => r.part ), [ copySlot( 3 ) ], 'only the copy with a value of its own is written' );
+	assert.equal( b.refused.length, 2 );
+	assert.match( b.refused[ 0 ].reason, /names one copy of a repeated part/ );
+} );
+
+test( 'MUST FAIL: a body of a sc-for loop is never a fixed set, whatever its copies read', () => {
+	const loop = copyWorld( 'padding-left', [ '4px', '9px', '14px' ] );
+	const r = runList( loop.w, loop.rows, { facts: facts( { same: false } ) } );
+	assert.equal( css( loop.w ), undefined );
+	assert.equal( r.refused.length, 3 );
+	assert.match( r.refused[ 0 ].reason, /names one copy of a repeated part/ );
+	const fixed = copyWorld( 'padding-left', [ '4px', '9px', '14px' ] );
+	assert.equal( runList( fixed.w, fixed.rows, { facts: facts( { loop: false } ) } ).rules.length, 3, 'no sc-for: the same copies are a fixed set' );
+} );
+
 // ---- out-of-flow pieces ----
 // A box (the host) holding a text block whose root is absolutely placed: `hostPosition` is the box's draft position,
 // `boxPosition` the position the clone's box paints by default; `between` adds an unpositioned block in the middle.

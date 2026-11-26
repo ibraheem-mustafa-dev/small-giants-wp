@@ -196,9 +196,9 @@ test( 'MUST FAIL: the context reads stay among the properties the resolver judge
 	const reads = readsOf( { '0:': snap( { display: 'block' } ), '1:': snap( box ) } );
 	const r = fillTree( { tree, nodes: skeletonNodes( skeleton ), reads, db, snapshot, rawSnapshot: { settings: { custom: {} } }, calFor: ( b ) => CAL[ b ] ?? null, ledger: [], ledgerStates: [], origin: 'http://127.0.0.1:1' } );
 	// A property that applies to no box of this kind (appliesIn: justify-content on a block box with no columns) is settled as
-	// equal, never written and never raised as an UNMAPPED or held row.
+	// not painted at each width, naming why, never written and never raised as an UNMAPPED or held row.
 	const rows = [ ...r.unmapped, ...r.alreadyHeld ].filter( ( u ) => 'justify-content' === u.property && /-1$/.test( u.node ) );
 	assert.deepEqual( rows, [] );
-	assert.deepEqual( r.settled.filter( ( u ) => 'justify-content' === u.property && /-1$/.test( u.node ) ).map( ( u ) => u.reason ), [ 'equal' ] );
+	assert.deepEqual( r.settled.filter( ( u ) => 'justify-content' === u.property && /-1$/.test( u.node ) ).map( ( u ) => u.reason ), [ 'not-painted', 'not-painted', 'not-painted' ] );
 	assert.deepEqual( r.writes.filter( ( w ) => 'justify-content' === w.prop ), [] );
 } );

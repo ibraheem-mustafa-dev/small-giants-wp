@@ -1,0 +1,10 @@
+[
+	{"file": "lib/fill-report.mjs", "find": "'motion', 'rest-width', 'residual-css', 'parent-held' ];", "replace": "'motion', 'residual-css', 'parent-held' ];", "why": "rest-width is no known settled reason, so census conservation refuses the row"},
+	{"file": "lib/run-ledger-fill.mjs", "find": "'part-margin', 'motion', 'rest-width', 'layer-rotation' ];", "replace": "'part-margin', 'motion', 'layer-rotation' ];", "why": "a rest-width answer is recorded as judged equal, not written"},
+	{"file": "lib/fill-prop.mjs", "find": "return null !== initial && sameCanonical( prop, value, initial ) && sameCanonical( prop, paint, initial );", "replace": "return null !== initial && sameCanonical( prop, value, initial );", "why": "an unstated initial value is left alone even where the block paints another value by default"},
+	{"file": "lib/fill-resolve-element.mjs", "find": "defaultPaint( cal, target.slot, Number( w ), p ) ) ) {", "replace": "valueAt( snaps[ w ], p ) ) ) {", "why": "the caller passes the draft's own value as the block's default paint"},
+	{"file": "lib/fill-resolve-element.mjs", "find": "inapplicable.forEach( ( g ) => settled(", "replace": "[].forEach( ( g ) => settled(", "why": "a width the property does not apply at is dropped with no settled row"},
+	{"file": "lib/fill-resolve-element.mjs", "find": "const widths = applies;", "replace": "const widths = Object.keys( draft ).map( Number );", "why": "the equal row claims the widths the property does not apply at"},
+	{"file": "lib/fill-prop.mjs", "find": "return gone.length && ! r.inapplicable ? { ...r, inapplicable: gone } : r;", "replace": "return r;", "why": "the resolver does not report the inapplicable widths it dropped"},
+	{"file": "lib/fill-residual-owned.mjs", "find": "filled( null === saved || undefined === saved ? fallback : saved )", "replace": "filled( saved )", "why": "an unsaved setting owns nothing, so a rule may cancel the block's default marker"}
+]

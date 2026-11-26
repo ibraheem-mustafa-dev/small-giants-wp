@@ -7,7 +7,7 @@ import { usedValueTarget } from './solve-rows.mjs';
 import { PROPS, READ_WIDTHS, TIE_PROPS } from './fill-read.mjs';
 import { extraProps, usedValueDrafts, USED_VALUE } from './fill-declared.mjs';
 import { FLUID_WIDTHS } from './fill-values.mjs';
-import { INHERITED, resolveProperty, notPainted, undeclaredInitial, gapPaintsNothing, flexOnlyPaintsNothing, calibratedContext } from './fill-prop.mjs';
+import { INHERITED, resolveProperty, notPainted, undeclaredInitial, defaultPaint, gapPaintsNothing, flexOnlyPaintsNothing, calibratedContext } from './fill-prop.mjs';
 import { draftParents, unpairedPart } from './fill-part-pairing.mjs';
 import { gateFor, carriedFor } from './fill-fixture.mjs';
 import { fillEquivalent } from './fill-equivalents.mjs';
@@ -174,8 +174,8 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 		if ( layer ) {
 			return true;
 		}
-		if ( undeclaredInitial( p, valueAt( snaps[ w ], p ), st.reads.declared?.[ w ]?.[ target.id ] ?? null ) ) {
-			settled( st, rec, ref, { slot, property: p, value: String( valueAt( snaps[ w ], p ) ), widths: [ Number( w ) ], reason: 'not-painted', detail: `at ${ w }: ${ p } is its initial value and nothing in the draft's code declares it, so the block's own layout stands` } );
+		if ( undeclaredInitial( p, valueAt( snaps[ w ], p ), st.reads.declared?.[ w ]?.[ target.id ] ?? null, defaultPaint( cal, target.slot, Number( w ), p ) ) ) {
+			settled( st, rec, ref, { slot, property: p, value: String( valueAt( snaps[ w ], p ) ), widths: [ Number( w ) ], reason: 'not-painted', detail: `at ${ w }: ${ p } is its initial value, nothing in the draft's code declares it and the block's own default look paints the same, so the block's own layout stands` } );
 			return false;
 		}
 		if ( ! notPainted( p, snaps[ w ].styles || {}, snaps[ w ] ) ) {
@@ -301,6 +301,10 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 		// header colour at a category line inside the header) the resting settings do (its open fill, the line's colour).
 		const inState = target.state && ! layer ? resolveProperty( { ...input, state: target.state } ) : null;
 		const res = writesOwnSlot( inState, cal, target.slot ) ? inState : resolveProperty( input );
+		// A width where the property applies to no box the element is paints nothing there (lib/fill-prop.mjs::inapplicableAt): each
+		// is a settled row naming why, and the equal row below covers only the widths the property applies at.
+		const inapplicable = res.inapplicable ?? [];
+		inapplicable.forEach( ( g ) => settled( st, rec, ref, { slot, property: prop, value: String( draft[ g.width ] ), widths: [ g.width ], reason: 'not-painted', detail: g.detail } ) );
 		const eq = 'gap' === res.status && 'no-setting' === res.gap && ! layer ? fillEquivalent( st, rec, target, prop, draft, { baselineFn, apply } ) : null;
 		// A property no setting of the block holds (no-setting), stated plain at some widths and in another form at the rest
 		// (a hero's `82vh` on a phone, `min(84vh, 820px)` above), is one row stating every width's declared value, so the
@@ -311,15 +315,16 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 		if ( ! layer && 'display' === prop ) {
 			recordDisplay( st, rec, cal, target.slot, draft, 'written' === res.status ? ( w ) => draft[ w ] : 'equal' === res.status ? ( w ) => input.baseline( res.slot ?? slot, w ) : null );
 		}
-		if ( 'equal' === res.status || 'equal' === eq?.status ) {
+		const applies = Object.keys( draft ).map( Number ).filter( ( w ) => ! inapplicable.some( ( g ) => g.width === w ) );
+		if ( applies.length && ( 'equal' === res.status || 'equal' === eq?.status ) ) {
 			// Which baseline made it equal (lib/fill-resolve-state.mjs::equalBaseline), and for a calibrated default the context
 			// calibration measured it in (lib/fill-prop.mjs::calibratedContext). An equivalent setting's verdict names itself.
-			const widths = Object.keys( draft ).map( Number );
+			const widths = applies;
 			const at = res.slot ?? slot;
 			const baseline = 'equal' === res.status ? equalBaseline( baselineSourceFn( st, rec, cal, prop, ( w ) => fontPx[ w ] ), input.baseline, at, widths ) : 'equivalent';
 			const calibrated = 'calibrated-default' === baseline ? widths[ 0 ] : 'object' === typeof baseline && null !== baseline ? widths.find( ( w ) => 'calibrated-default' === baseline[ w ] ) : undefined;
 			const measured = undefined !== calibrated ? calibratedContext( cal, at, calibrated ) : null;
-			settled( st, rec, ref, { slot, property: prop, value: valueText( draft ), widths, reason: 'equal', baseline, ...( measured ? { measured } : {} ), detail: 'the element already shows this value at every width (its parent, the theme or its calibrated default paint)' } );
+			settled( st, rec, ref, { slot, property: prop, value: valueText( Object.fromEntries( widths.map( ( w ) => [ w, draft[ w ] ] ) ) ), widths, reason: 'equal', baseline, ...( measured ? { measured } : {} ), detail: 'the element already shows this value at every width (its parent, the theme or its calibrated default paint)' } );
 		}
 		if ( 'gap' === res.status && ( ! eq || 'gap' === eq.status ) ) {
 			const ran = 'no-setting' === res.gap ? checksRan( { layer, alternates, res, eq } ) : {};

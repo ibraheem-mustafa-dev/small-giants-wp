@@ -23,9 +23,19 @@ function perWidth( row ) {
 	return Object.fromEntries( READ_WIDTHS.map( ( w ) => [ w, row.value ] ) );
 }
 
-// opts: { unmapped, nodes, flat, refOf, mdb, db, calFor, schema }. Returns { writes, unmapped (the rows left), answered
+// The part's own draft width at each read width the row leaves out, when all of them are the row's `px` length: the one resting
+// width then holds at those widths too. `reads` is the draft read (lib/fill-read.mjs); no read of the element at a width the row
+// leaves out proves nothing, so that width is not covered.
+function leftOutHold( reads, target, widths, px ) {
+	return READ_WIDTHS.filter( ( w ) => ! widths.includes( w ) ).every( ( w ) => {
+		const at = reads?.widths?.[ w ]?.[ target.id ];
+		return at && ! at.missing && Math.abs( parseFloat( at.styles?.width ) - parseFloat( px ) ) < 1e-9;
+	} );
+}
+
+// opts: { unmapped, nodes, flat, refOf, mdb, db, calFor, schema, reads }. Returns { writes, unmapped (the rows left), answered
 // (the rows written) } in the shapes lib/fill.mjs's passes use.
-export function restWidthWrites( { unmapped, nodes, flat, refOf, mdb, db, calFor = () => null, schema } ) {
+export function restWidthWrites( { unmapped, nodes, flat, refOf, mdb, db, calFor = () => null, schema, reads } ) {
 	const out = { writes: [], unmapped: [], answered: [] };
 	const field = mdb.field( 'hover.state', 'values.restWidth' );
 	for ( const row of unmapped ) {
@@ -40,13 +50,19 @@ export function restWidthWrites( { unmapped, nodes, flat, refOf, mdb, db, calFor
 			out.unmapped.push( row );
 			continue;
 		}
+		// The one resting width is written for every screen: a row covering only some read widths states the others nothing, so the
+		// width is written only where the part's own draft width at the widths the row leaves out is that same value.
+		if ( ! leftOutHold( reads, t, Object.keys( at ).map( Number ), lengths[ 0 ] ) ) {
+			out.unmapped.push( { ...row, reason: `${ row.reason ?? 'no reason recorded' }; the row states ${ lengths[ 0 ] } at ${ Object.keys( at ).join( ', ' ) } only and the part's draft width at the other read widths is not ${ lengths[ 0 ] }, so one resting width would be wrong there` } );
+			continue;
+		}
 		const node = flat[ n.index ];
 		const held = node.attributes?.sgsMotion;
 		const doc = JSON.parse( JSON.stringify( held && 'object' === typeof held ? held : { v: 1, elements: {} } ) );
 		doc.elements ??= {};
 		const values = ( ( ( doc.elements[ target ] ??= {} ).hover ??= {} ).state ??= {} ).values ??= {};
 		if ( undefined !== values.restWidth && values.restWidth !== lengths[ 0 ] ) {
-			out.unmapped.push( { ...row, reason: `${ row.reason }; the part's hover state already rests at ${ values.restWidth }, which differs from the draft's ${ lengths[ 0 ] }` } );
+			out.unmapped.push( { ...row, reason: `${ row.reason ?? 'no reason recorded' }; the part's hover state already rests at ${ values.restWidth }, which differs from the draft's ${ lengths[ 0 ] }` } );
 			continue;
 		}
 		values.restWidth = lengths[ 0 ];

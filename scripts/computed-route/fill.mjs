@@ -388,7 +388,7 @@ export async function fillSurface( o ) {
 		result.writes.push( ...turned.writes );
 		result.settled.push( ...passSettled( moved.unmapped, turned.unmapped, 'layer-rotation', turned.answered ) );
 		// A part's fixed width no width setting holds is written as the part's hover state resting width (lib/fill-rest-width.mjs).
-		const rested = restWidthWrites( { unmapped: turned.unmapped, nodes, flat, refOf, mdb: motionDb( db ), db, calFor, schema: loadMotionSchema() } );
+		const rested = restWidthWrites( { unmapped: turned.unmapped, nodes, flat, refOf, mdb: motionDb( db ), db, calFor, schema: loadMotionSchema(), reads } );
 		result.writes.push( ...rested.writes );
 		result.settled.push( ...passSettled( turned.unmapped, rested.unmapped, 'rest-width', rested.answered ) );
 		moved.unmapped = rested.unmapped;

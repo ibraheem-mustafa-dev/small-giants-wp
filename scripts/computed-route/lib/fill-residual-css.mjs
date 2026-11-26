@@ -35,9 +35,10 @@ import { candidates } from './db.mjs';
 import { calSameBox } from './fill-same-box.mjs';
 import { WIDTHS, rowTarget, rowValues, perNode, regroup, answer } from './fill-regap.mjs';
 import { widthSpans, STATE_PSEUDO, safeCss, effectOf } from './fill-width-ladder.mjs';
-import { mediaRule, scopedCssPuts, snapEntry } from './fill-width-gate.mjs';
+import { mediaRule, scopedCssPuts, snapEntry, tplKey } from './fill-width-gate.mjs';
 import { setAttr } from './tree.mjs';
 import { copyClassSlot } from './fill-loop-copy.mjs';
+import { loopKeyOf } from './loop-body.mjs';
 import { placementHost } from './fill-placement-host.mjs';
 import { snapColour, snapFontFamily, snapLength, toPx } from './normalise.mjs';
 import { PX_TOL } from './css-equivalence/tolerance.mjs';
@@ -385,9 +386,16 @@ export function residualCssWrites( { nodes, flat, refOf, reads, db, unmapped, ca
 			// lib/fill-loop-copy.mjs::copyClassSlot gives the part's class where the copies are one `sc-for` loop body the draft draws
 			// alike at each width and the block draws the part at every copy; any other copy keeps the refusal.
 			const cssSlot = /:nth-of-type\(/.test( target.slot ) ? copyClassSlot( { slot: target.slot, target, prop, state, rec, cal, db, facts, rootComponent, paint: 'part' } ) : target.slot;
-			// A fixed set of parts (the burger's three bars) is no loop: where this copy's draft value differs from another copy's, the
-			// draft styles this copy alone and a rule on it is right. Copies that share the value stay the loop's to write.
-			const staticSet = /:nth-of-type\(/.test( cssSlot ) && rec.targets.some( ( t ) => t.id !== target.id && LOOSE( t.slot ) === LOOSE( target.slot ) && t.slot !== target.slot && widthsOf( rowValues( row, reads, t ) ) !== widthsOf( rowValues( row, reads, target ) ) );
+			// A fixed set of parts (the burger's three bars) is no loop: where the draft draws this copy's value at a width unlike every
+			// other copy's, the draft styles this copy alone and a rule on it is right. A copy that shares its value with another copy
+			// stays the loop's to write, and so does any body of a `sc-for` loop (the draft's facts), whatever its copies' values, and a
+			// state's value (the copies' states are not read apart).
+			const loopBody = !! ( facts && target.finder && loopKeyOf( facts, tplKey( target.finder, rootComponent ) ) );
+			const drawnValue = ( t ) => widthsOf( WIDTHS.map( ( w ) => reads.widths?.[ w ]?.[ t.id ]?.styles?.[ row.property ] ) );
+			const staticSet = /:nth-of-type\(/.test( cssSlot ) && ! loopBody && ! state && ( () => {
+				const others = rec.targets.filter( ( t ) => t.id !== target.id && LOOSE( t.slot ) === LOOSE( target.slot ) && t.slot !== target.slot );
+				return others.length > 0 && others.every( ( t ) => drawnValue( t ) !== drawnValue( target ) );
+			} )();
 			if ( /:nth-of-type\(/.test( cssSlot ) && ! staticSet ) {
 				refuse( r, `${ target.slot } names one copy of a repeated part; a rule there would style that copy alone` );
 				continue;
@@ -407,7 +415,7 @@ export function residualCssWrites( { nodes, flat, refOf, reads, db, unmapped, ca
 			}
 			// A layout property is stated at every width the element is drawn at: a width where it is display none states nothing.
 			const drawn = read.filter( ( w ) => state || 'none' !== reads.widths?.[ w ]?.[ target.id ]?.styles?.display );
-			if ( LAYOUT.test( prop ) && widths.length < drawn.length ) {
+			if ( LAYOUT.test( prop ) && ! drawn.every( ( w ) => widths.includes( w ) ) ) {
 				refuse( r, `${ prop } is a layout property and the draft states it only at ${ widths.join( ', ' ) }` );
 				continue;
 			}

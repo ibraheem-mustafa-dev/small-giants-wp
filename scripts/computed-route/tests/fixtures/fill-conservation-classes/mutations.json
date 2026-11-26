@@ -13,8 +13,8 @@
  },
  {
   "file": "lib/fill-resolve-element.mjs",
-  "find": "settled( st, rec, ref, { slot, property: prop, value: valueText( draft ), widths, reason: 'equal'",
-  "replace": "settled( st, rec, ref, { slot, property: prop, value: valueText( draft ), reason: 'equal'",
+  "find": "settled( st, rec, ref, { slot, property: prop, value: valueText( Object.fromEntries( widths.map( ( w ) => [ w, draft[ w ] ] ) ) ), widths, reason: 'equal'",
+  "replace": "settled( st, rec, ref, { slot, property: prop, value: valueText( Object.fromEntries( widths.map( ( w ) => [ w, draft[ w ] ] ) ) ), reason: 'equal'",
   "why": "the equal row carries no widths"
  },
  {

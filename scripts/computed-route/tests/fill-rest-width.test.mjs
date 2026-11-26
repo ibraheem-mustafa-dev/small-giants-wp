@@ -14,10 +14,12 @@ const ICON = '.sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-
 const bar = ( n ) => `${ ICON } > .sgs-nav-bar-menu__burger-bar-${ n }`;
 const nodes = [ { index: 0, name: 'sgs/nav-bar-menu', targets: [ { id: '0:', slot: '', finder: { tpl: 'Root/50#0' } }, ...[ 1, 2, 3 ].map( ( n ) => ( { id: `0:bar${ n }`, slot: bar( n ), finder: { tpl: `Root/${ 60 + n }#0` } } ) ) ] } ];
 const row = ( property, value, over = {} ) => ( { node: 'r0', block: 'sgs/nav-bar-menu', slot: bar( 3 ), property, value, state: null, reason: 'no-setting: test', ...over } );
-const run = ( unmapped, attributes = {} ) => {
+const run = ( unmapped, attributes = {}, reads ) => {
 	const flat = [ { name: 'sgs/nav-bar-menu', attributes, ref: 'r0' } ];
-	return { out: restWidthWrites( { unmapped, nodes, flat, refOf: ( x ) => x.ref, mdb: motionDb( db ), db, calFor: () => null, schema } ), motion: flat[ 0 ].attributes.sgsMotion };
+	return { out: restWidthWrites( { unmapped, nodes, flat, refOf: ( x ) => x.ref, mdb: motionDb( db ), db, calFor: () => null, schema, reads } ), motion: flat[ 0 ].attributes.sgsMotion };
 };
+// The draft read of the third bar: its width per read width.
+const readsOf = ( widthAt ) => ( { widths: Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, { '0:bar3': { styles: { width: widthAt[ w ] } } } ] ) ) } );
 
 test( 'MUST FAIL: the third bar\'s fixed 16px width is written as that part\'s hover state restWidth, and the row is answered', () => {
 	const { out, motion } = run( [ row( 'width', '16px' ) ] );
@@ -46,4 +48,28 @@ test( 'negative control: a differing resting width, a width that changes by tier
 	assert.equal( r.out.unmapped.length, kept.length );
 	assert.equal( r.out.writes.length, 0 );
 	assert.equal( r.motion, undefined );
+} );
+
+test( 'MUST FAIL: a row covering some read widths writes the one resting width only where the part is that width at the others', () => {
+	const part = '{"375":"16px","768":"16px"}';
+	// The bar is 22px at 1440: one restWidth of 16px would shrink it there, so the row stays raised and says why.
+	const wide = run( [ row( 'width', part ) ], {}, readsOf( { 375: '16px', 768: '16px', 1440: '22px' } ) );
+	assert.equal( wide.motion, undefined );
+	assert.equal( wide.out.writes.length, 0 );
+	assert.equal( wide.out.unmapped.length, 1 );
+	assert.match( wide.out.unmapped[ 0 ].reason, /states 16px at 375, 768 only and the part's draft width at the other read widths is not 16px/ );
+	// The bar is 16px at 1440 too: the row's value is the part's one resting width.
+	const same = run( [ row( 'width', part ) ], {}, readsOf( { 375: '16px', 768: '16px', 1440: '16px' } ) );
+	assert.equal( same.motion?.elements?.[ 'burger-bar-3' ]?.hover?.state?.values?.restWidth, '16px' );
+	assert.deepEqual( same.out.answered.map( ( a ) => a.widths ), [ [ 375, 768 ] ] );
+	// No read of the part at the missing width proves nothing.
+	assert.equal( run( [ row( 'width', part ) ] ).out.unmapped.length, 1 );
+} );
+
+test( 'a row with no reason still gives a refusal text without "undefined"', () => {
+	const held = { v: 1, elements: { 'burger-bar-3': { hover: { state: { values: { restWidth: '8px' } } } } } };
+	const r = run( [ row( 'width', '16px', { reason: undefined } ) ], { sgsMotion: held } );
+	assert.match( r.out.unmapped[ 0 ].reason, /^no reason recorded; the part's hover state already rests at 8px/ );
+	const part = run( [ row( 'width', '{"375":"16px"}', { reason: undefined } ) ], {}, readsOf( { 375: '16px', 768: '22px', 1440: '22px' } ) );
+	assert.ok( ! /undefined/.test( part.out.unmapped[ 0 ].reason ) );
 } );

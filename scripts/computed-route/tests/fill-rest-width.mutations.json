@@ -1,0 +1,5 @@
+[
+	{"file": "lib/fill-rest-width.mjs", "find": "if ( ! leftOutHold( reads, t, Object.keys( at ).map( Number ), lengths[ 0 ] ) ) {", "replace": "if ( false ) {", "why": "one resting width is written from a row covering only some widths"},
+	{"file": "lib/fill-rest-width.mjs", "find": "return at && ! at.missing && Math.abs( parseFloat( at.styles?.width ) - parseFloat( px ) ) < 1e-9;", "replace": "return true;", "why": "any width the row leaves out is taken as covered"},
+	{"file": "lib/fill-rest-width.mjs", "find": "reason: `${ row.reason ?? 'no reason recorded' }; the part's hover state already rests", "replace": "reason: `${ row.reason }; the part's hover state already rests", "why": "a row with no reason prints undefined in the refusal"}
+]
