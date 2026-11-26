@@ -10318,14 +10318,6 @@
     },
     {
       "slug": "sgs/cart",
-      "attr": "iconTriggerRadius",
-      "fields": {
-        "css_property": "border-radius",
-        "css_element": "icon"
-      }
-    },
-    {
-      "slug": "sgs/cart",
       "attr": "itemActionFontSize",
       "fields": {
         "css_property": "font-size",
@@ -10893,22 +10885,6 @@
     },
     {
       "slug": "sgs/cart",
-      "attr": "pillMinHeight",
-      "fields": {
-        "css_property": "min-height",
-        "css_element": "pill"
-      }
-    },
-    {
-      "slug": "sgs/cart",
-      "attr": "pillPadding",
-      "fields": {
-        "css_property": "padding",
-        "css_element": "pill"
-      }
-    },
-    {
-      "slug": "sgs/cart",
       "attr": "pillTextColour",
       "fields": {
         "css_property": "color",
@@ -10966,6 +10942,22 @@
         "css_property": "color",
         "role": "color",
         "css_element": "subtotalValue"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "triggerBorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "trigger"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "triggerPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "trigger"
       }
     },
     {
@@ -43802,10 +43794,10 @@
     },
     {
       "slug": "sgs/cart",
-      "attr": "iconTriggerSize",
+      "attr": "iconSize",
       "fields": {
-        "css_property": "min-height,min-width",
-        "css_element": "icon"
+        "css_property": "height,width",
+        "css_element": "iconGlyph"
       }
     },
     {
@@ -44013,14 +44005,6 @@
     },
     {
       "slug": "sgs/cart",
-      "attr": "pillBorderRadius",
-      "fields": {
-        "css_property": "border-radius",
-        "css_element": "pill"
-      }
-    },
-    {
-      "slug": "sgs/cart",
       "attr": "pillShadow",
       "fields": {
         "css_property": "box-shadow",
@@ -44092,6 +44076,14 @@
       "fields": {
         "css_property": "opacity",
         "css_element": "scrim"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "triggerSize",
+      "fields": {
+        "css_property": "min-height,min-width",
+        "css_element": "trigger"
       }
     },
     {
