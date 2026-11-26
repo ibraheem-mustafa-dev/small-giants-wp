@@ -74,7 +74,9 @@ export async function openPage( browser, { url, width, config } ) {
 	// A visitor's clicks after the opening steps (lib/part-look-opening.mjs: add to the basket, then the basket button), each on the
 	// shown element the draft stamps with that template number in one of the components named (`hosts`: the served page's own markup
 	// is stamped `Root` or its component's name; `host` names one); one that finds none fails the open.
-	for ( const click of config?.clicks || [] ) {
+	// A click naming a stamp per width (`byWidth`) takes this width's; a width with none fails the open.
+	for ( const step of config?.clicks || [] ) {
+		const click = step.byWidth ? step.byWidth[ width ] ?? { tpl: null, host: `(none at ${ width }px)` } : step;
 		const hosts = click.hosts ?? [ click.host ?? null ];
 		const done = await page.evaluate( ( { tpl, names } ) => {
 			const el = [ ...document.querySelectorAll( `[data-dc-tpl="${ CSS.escape( String( tpl ) ) }"]` ) ].find( ( e ) => names.includes( e.closest( '[data-sc-name]' )?.getAttribute( 'data-sc-name' ) ?? null ) && e.getClientRects().length > 0 );

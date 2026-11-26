@@ -91,17 +91,17 @@ test( 'MUST FAIL: with derive, a one-file draft surface opens on the route intak
 } );
 
 test( 'MUST FAIL: the visitor\'s way in adds on the product page, then presses the basket button the page shows at load', () => {
-	const load = { stamps: { trigger: { tpl: '88', host: 'Shop Root' } } };
+	const loads = { 1440: { stamps: { trigger: { tpl: '88', host: 'Shop Root' } } } };
 	const adds = [ { dc: 'Shop Root', tpl: '396' } ];
-	assert.deepEqual( visitorOpening( { adds, load, product: { file: 'Shop.dc.html', route: 'product' } } ), {
+	assert.deepEqual( visitorOpening( { adds, loads, product: { file: 'Shop.dc.html', route: 'product' } } ), {
 		label: 'add to the basket on the product page, then the basket button', script: null, file: 'Shop.dc.html', route: 'product',
-		clicks: [ { tpl: '396', hosts: [ 'Shop Root' ] }, { tpl: '396', hosts: [ 'Shop Root' ] }, { tpl: '88', host: 'Shop Root' } ],
+		clicks: [ { tpl: '396', hosts: [ 'Shop Root' ] }, { tpl: '396', hosts: [ 'Shop Root' ] }, { byWidth: { 1440: { tpl: '88', host: 'Shop Root' } } } ],
 	} );
-	assert.equal( visitorOpening( { adds, load, product: { file: 'Product.dc.html' } } ).route, null, 'a product page file needs no route' );
-	// Negative controls: no located add control, no basket button at load, no product page.
-	assert.equal( visitorOpening( { adds: [], load, product: { file: 'P.dc.html' } } ), null );
-	assert.equal( visitorOpening( { adds, load: { stamps: {} }, product: { file: 'P.dc.html' } } ), null );
-	assert.equal( visitorOpening( { adds, load, product: null } ), null );
+	assert.equal( visitorOpening( { adds, loads, product: { file: 'Product.dc.html' } } ).route, null, 'a product page file needs no route' );
+	// Negative controls: no located add control, no basket button at load at 1440, no product page.
+	assert.equal( visitorOpening( { adds: [], loads, product: { file: 'P.dc.html' } } ), null );
+	assert.equal( visitorOpening( { adds, loads: { 1440: { stamps: {} }, 375: loads[ 1440 ] }, product: { file: 'P.dc.html' } } ), null );
+	assert.equal( visitorOpening( { adds, loads, product: null } ), null );
 } );
 
 test( 'MUST FAIL: a read showing item lines is the filled drawer, even when a read of the empty drawer locates more parts', () => {
@@ -111,22 +111,33 @@ test( 'MUST FAIL: a read showing item lines is the filled drawer, even when a re
 	assert.equal( chooseOpenings( probes, [ 'panel' ] ).filled.label, 'documented with items', 'a group naming no filled part counts parts only' );
 } );
 
-test( 'MUST FAIL: the visitor\'s clicks reach a control stamped Root on the served page, and fail where the control is hidden', async () => {
+test( 'MUST FAIL: the visitor\'s clicks reach the page\'s own add control and the basket button each width draws', async () => {
 	const fixtures = path.join( path.dirname( fileURLToPath( import.meta.url ) ), 'fixtures', 'part-look' );
-	// The shop parts record locates the add control in the product page's own component ("Product/108"); the page stamps it Root.
-	const way = visitorOpening( { adds: [ { dc: 'Product', tpl: '108' } ], load: { stamps: { trigger: { tpl: '44', host: 'Root' } } }, product: { file: 'Product.dc.html' } } );
-	assert.deepEqual( way.clicks[ 0 ], { tpl: '108', hosts: [ 'Root', 'Product' ] } );
-	assert.deepEqual( visitorOpening( { adds: [ { dc: 'ProductCard', tpl: '7' } ], load: { stamps: { trigger: { tpl: '44', host: 'Root' } } }, product: { file: 'Product.dc.html' } } ).clicks[ 0 ].hosts, [ 'ProductCard' ], 'a control of another component keeps its own name' );
+	// The shop parts record locates the add control in the product page's own component ("Product/108"); the served page stamps the
+	// page's own markup Root, by that name, or not at all (here no data-sc-name is above it). The desktop and phone rows of the header
+	// draw their own basket buttons (44 shown from 501px, 45 below).
+	const loads = { 1440: { stamps: { trigger: { tpl: '44', host: 'Root' } } }, 768: { stamps: { trigger: { tpl: '44', host: 'Root' } } }, 375: { stamps: { trigger: { tpl: '45', host: 'Root' } } } };
+	const way = visitorOpening( { adds: [ { dc: 'Product', tpl: '108' } ], loads, product: { file: 'Product.dc.html' } } );
+	assert.deepEqual( way.clicks[ 0 ], { tpl: '108', hosts: [ 'Root', null, 'Product' ] } );
+	assert.deepEqual( way.clicks[ 2 ], { byWidth: { 375: { tpl: '45', host: 'Root' }, 768: { tpl: '44', host: 'Root' }, 1440: { tpl: '44', host: 'Root' } } } );
+	assert.deepEqual( visitorOpening( { adds: [ { dc: 'ProductCard', tpl: '7' } ], loads, product: { file: 'Product.dc.html' } } ).clicks[ 0 ].hosts, [ 'ProductCard' ], 'a control of another component keeps its own name' );
 	const { chromium } = await loadChromium();
 	const served = await serveDraft( fixtures, { index: 'visitor-click.html' } );
 	const browser = await chromium.launch( { headless: true } );
 	try {
 		const url = `${ served.url }visitor-click.html`;
-		const wide = await openPage( browser, { url, width: 1440, config: { clicks: way.clicks } } );
-		assert.deepEqual( await wide.page.evaluate( () => [ document.body.dataset.adds, document.body.dataset.opened ] ), [ '2', 'yes' ], 'added twice, then the basket opened' );
-		await wide.ctx.close();
-		// The basket button is hidden on a phone: the open fails there, and the visitor's way in is not taken.
-		await assert.rejects( openPage( browser, { url, width: 375, config: { clicks: way.clicks } } ), /no shown element stamped Root\/44 to click/ );
+		for ( const [ width, opened ] of [ [ 1440, 'desktop' ], [ 375, 'phone' ] ] ) {
+			const got = await openPage( browser, { url, width, config: { clicks: way.clicks } } );
+			assert.deepEqual( await got.page.evaluate( () => [ document.body.dataset.adds, document.body.dataset.opened ] ), [ '2', opened ], `added twice, then the ${ opened } basket button at ${ width }px` );
+			await got.ctx.close();
+		}
+		// The same controls inside the page's Root stamp are found too.
+		const stamped = await openPage( browser, { url: `${ served.url }visitor-click-root.html`, width: 1440, config: { clicks: way.clicks } } );
+		assert.deepEqual( await stamped.page.evaluate( () => [ document.body.dataset.adds, document.body.dataset.opened ] ), [ '2', 'desktop' ], 'an add control stamped Root' );
+		await stamped.ctx.close();
+		// A width whose page draws no basket button refuses the open there.
+		const noPhone = visitorOpening( { adds: [ { dc: 'Product', tpl: '108' } ], loads: { 1440: loads[ 1440 ], 768: loads[ 768 ], 375: { stamps: {} } }, product: { file: 'Product.dc.html' } } );
+		await assert.rejects( openPage( browser, { url, width: 375, config: { clicks: noPhone.clicks } } ), /no shown element stamped [(]none at 375px[)]/ );
 	} finally {
 		await browser.close();
 		await served.close();

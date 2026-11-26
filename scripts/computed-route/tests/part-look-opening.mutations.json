@@ -91,13 +91,13 @@
 	},
 	{
 		"file": "lib/part-look-opening.mjs",
-		"find": "if ( ! add?.tpl || ! trigger?.tpl || ! product?.file ) {",
+		"find": "if ( ! add?.tpl || ! loads[ 1440 ]?.stamps?.trigger?.tpl || ! product?.file ) {",
 		"replace": "if ( ! add?.tpl || ! product?.file ) {",
 		"why": "a draft with no basket button at load is clicked anyway"
 	},
 	{
 		"file": "lib/part-look-opening.mjs",
-		"find": "clicks: [ { tpl: add.tpl, hosts }, { tpl: add.tpl, hosts }, trigger ]",
+		"find": "clicks: [ { tpl: add.tpl, hosts }, { tpl: add.tpl, hosts }, { byWidth } ]",
 		"replace": "clicks: [ { tpl: add.tpl, hosts }, { tpl: add.tpl, hosts } ]",
 		"why": "the basket is filled but never opened"
 	},
@@ -133,7 +133,7 @@
 	},
 	{
 		"file": "lib/part-look-opening.mjs",
-		"find": "const hosts = add.dc === dcOf( product.file ) ? [ 'Root', add.dc ] : [ add.dc ];",
+		"find": "const hosts = add.dc === dcOf( product.file ) ? [ 'Root', null, add.dc ] : [ add.dc ];",
 		"replace": "const hosts = [ add.dc ];",
 		"why": "the add control in the page's own component is looked for under its component name, not Root"
 	},
@@ -160,5 +160,17 @@
 		"find": "\t\t\treturn await fn();\n\t\t} catch ( e ) {",
 		"replace": "\t\t\treturn await fn();\n\t\t} finally {\n\t\t}\n\t\tif ( false ) {\n\t\t\tconst e = null;",
 		"why": "a failed read stops every surface"
+	},
+	{
+		"file": "lib/part-look-opening.mjs",
+		"find": "[ 'Root', null, add.dc ]",
+		"replace": "[ 'Root', add.dc ]",
+		"why": "an add control with no component stamp above it is never found"
+	},
+	{
+		"file": "lib/part-look-run.mjs",
+		"find": "const click = step.byWidth ? step.byWidth[ width ] ?? { tpl: null, host: `(none at ${ width }px)` } : step;",
+		"replace": "const click = step.byWidth ? step.byWidth[ 1440 ] : step;",
+		"why": "the desktop basket button is clicked on a phone whose header draws its own"
 	}
 ]
