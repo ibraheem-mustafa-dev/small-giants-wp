@@ -58,5 +58,11 @@
 		"find": "( FITS[ kindOf.get( e ) ].includes( g.kind ) || ( 'words' === kindOf.get( e ) && filledPart( g ) && 'mark' === g.kind && fills( e ) ) )",
 		"replace": "FITS[ kindOf.get( e ) ].includes( g.kind )",
 		"why": "a painted part with no words recorded is never offered to a filled pill"
+	},
+	{
+		"file": "lib/skeleton-part-pairing.mjs",
+		"find": "} else if ( freeSlots.length ) {",
+		"replace": "} else if ( false ) {",
+		"why": "an element of a part the block draws at other positions than the draft is listed as unpaired instead of read at the part's first free slot"
 	}
 ]

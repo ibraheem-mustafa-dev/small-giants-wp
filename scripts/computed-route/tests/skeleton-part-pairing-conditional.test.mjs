@@ -136,3 +136,22 @@ test( 'a pill of words the draft fills or borders is the part the block paints (
 	// negative control: words that paint no box keep the plain words parts, and the painted mark is never offered
 	assert.deepEqual( run( [ 'padding' ] ).ambiguous.map( ( a ) => a.candidates ), [ [ '.link > .ornament', '.link > .text' ] ] );
 } );
+
+test( 'an element of a part the block draws at other positions than the draft is read at the part\'s first free slot, and a slot another finder holds is still said (MUST FAIL without the free slot: the pills are ambiguous)', () => {
+	// The block draws its badge on rows 2 and 4; the draft's pills sit on rows 3 and 5.
+	const L = ( k ) => `.l:nth-of-type(${ k })`;
+	const cal = {
+		elements: { '': at( 'nav' ), [ L( 1 ) ]: at( 'a' ), [ L( 2 ) ]: at( 'a' ), [ `${ L( 2 ) } > .b` ]: at( 'span', { 'background-color': 'rgb(249, 207, 110)' } ), [ L( 4 ) ]: at( 'a' ), [ `${ L( 4 ) } > .b` ]: at( 'span', { 'background-color': 'rgb(249, 207, 110)' } ) },
+		settings: { badgeBg: { slot: `${ L( 2 ) } > .b`, slots: [ `${ L( 2 ) } > .b`, `${ L( 4 ) } > .b` ], property: 'background-color' } }, text: {},
+	};
+	const pills = [ 2, 4 ].map( ( i ) => el( `Root/${ i * 10 + 1 }#0`, 'span', [], { words: `Deal ${ i }` } ) );
+	const rows = [ 0, 1, 2, 3, 4 ].map( ( i ) => el( `Root/${ i + 2 }#0`, 'a', 2 === i ? [ pills[ 0 ] ] : 4 === i ? [ pills[ 1 ] ] : [], { words: `Row ${ i }` } ) );
+	const run = ( taken = {} ) => pairAbsorbed( { host: el( 'Root/1#0', 'nav', rows, { w: 400 } ), absorbed: pills.map( ( x ) => ( { element: x, looks: [ 'background', 'border' ] } ) ), kids, calibration: cal, finder, taken } );
+	const made = run();
+	assert.deepEqual( made.ambiguous, [] );
+	assert.deepEqual( made.slots, { [ `${ L( 2 ) } > .b` ]: { tpl: 'Root/21#0' }, [ `${ L( 4 ) } > .b` ]: { tpl: 'Root/41#0' } } );
+	assert.deepEqual( made.paired.map( ( p ) => p.slots.length ), [ 1, 1 ] );
+	// every slot of the part held by another finder: the pills are said, not read
+	const held = run( { [ `${ L( 2 ) } > .b` ]: { tpl: 'Root/99#0' }, [ `${ L( 4 ) } > .b` ]: { tpl: 'Root/98#0' } } );
+	assert.deepEqual( [ held.slots, held.ambiguous.length ], [ {}, 2 ] );
+} );

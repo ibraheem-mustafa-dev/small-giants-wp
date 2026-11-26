@@ -704,10 +704,19 @@ function pairCore( { host, absorbed = [], kids, isNode = () => false, calibratio
 		const group = repGroup( e ).filter( ( x ) => x !== e );
 		const lands = [ ...slotLooks.keys() ].some( ( sl ) => instanceOf( e, [ ...sl.matchAll( NTH ) ].map( ( x ) => Number( x[ 1 ] ) ), { chain: chain.get( e ), parent, kids, host, repGroup } ) === e );
 		const readSlot = lands ? undefined : [ ...slotLooks.keys() ].sort().find( ( sl ) => ( ( r ) => r && group.includes( r ) && sameSort( r, e ) && r.tag === e.tag )( placedAt.get( sl ) ) );
+		const freeSlots = lands || readSlot ? [] : [ ...slotLooks.keys() ].sort().filter( ( sl ) => ! held.has( sl ) );
 		if ( readSlot ) {
 			out.paired.push( { key: e.key, part: g.head, slots: [] } );
 			const named = settings.filter( ( [ , s ] ) => ( ! s.state || 'current' === s.state ) && [ s?.slot, ...( s?.slots || [] ) ].includes( readSlot ) && ( null === looks || looks.includes( lookOfProperty( s.property, model.parts.get( templateOf( readSlot ) )?.tag ?? '' ) ) ) ).map( ( [ name ] ) => name );
 			out.siblings.push( { key: e.key, part: g.head, slot: readSlot, settings: [ ...new Set( named ) ], looks: looks ?? [], readBy: placedAt.get( readSlot ).key } );
+		} else if ( freeSlots.length ) {
+			// The block draws this part at other positions than the draft does (a badge on the second and fourth rows, where the
+			// draft's pills sit on the third and fifth): the element is read at the part's first free slot, as the block draws one
+			// look for the part.
+			out.slots[ freeSlots[ 0 ] ] = finder( e );
+			held.add( freeSlots[ 0 ] );
+			placedAt.set( freeSlots[ 0 ], e );
+			out.paired.push( { key: e.key, part: g.head, slots: [ freeSlots[ 0 ] ] } );
 		} else {
 			out.ambiguous.push( { key: e.key, candidates: [ g.head ], why: 'the draft has no element at any of the part\'s calibrated positions, or another finder holds them' } );
 		}
