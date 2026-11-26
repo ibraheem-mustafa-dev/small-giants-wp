@@ -1,8 +1,8 @@
 [
 	{
 		"file": "lib/fill-resolve.mjs",
-		"find": "\t\twriteDecided( st, rec, ref );\n\t\tif ( ! rec.targets.length ) {",
-		"replace": "\t\tif ( ! rec.targets.length ) {",
+		"find": "\t\twriteDecided( st, rec, ref );\n\t\tcarryUnmapped( st, rec, ref );\n\t\tif ( ! rec.targets.length ) {",
+		"replace": "\t\tcarryUnmapped( st, rec, ref );\n\t\tif ( ! rec.targets.length ) {",
 		"why": "a node with no read target (the basket count row) or an unreadable one is never written its decided settings"
 	},
 	{
@@ -22,5 +22,23 @@
 		"find": "\townedSettings( node, skeletonNode );\n\tfor ( const [ attr, value ] of Object.entries( skeletonNode?.decided || {} ) ) {\n\t\tif ( json( value ) !== json( node.attributes?.[ attr ] ) ) {",
 		"replace": "\townedSettings( node, skeletonNode );\n\tfor ( const [ attr, value ] of Object.entries( skeletonNode?.decided || {} ) ) {\n\t\tif ( true ) {",
 		"why": "a decided value the node already holds is written again"
+	},
+	{
+		"file": "lib/fill-resolve.mjs",
+		"find": "writeDecided( st, rec, ref );\n\t\tcarryUnmapped( st, rec, ref );",
+		"replace": "writeDecided( st, rec, ref );",
+		"why": "the settings a skeleton could not read are never listed as UNMAPPED rows"
+	},
+	{
+		"file": "lib/fill-skeleton.mjs",
+		"find": "node.unmapped.some( ( u ) => ! isStr( u?.property ) || ! isStr( u?.reason ) )",
+		"replace": "false",
+		"why": "a malformed unmapped list passes the skeleton check"
+	},
+	{
+		"file": "lib/fill-skeleton.mjs",
+		"find": "'handover', 'unmapped', ...ROW_KEYS ];",
+		"replace": "'handover', ...ROW_KEYS ];",
+		"why": "the tree Fill writes keeps the unmapped list"
 	}
 ]

@@ -273,6 +273,11 @@ export function skeletonProblems( tree ) {
 		if ( undefined !== node.draftFingerprint && ! ( node.draftFingerprint && 'object' === typeof node.draftFingerprint && isStr( node.draftFingerprint.tag ) ) ) {
 			problems.push( `${ label } draftFingerprint must be { tag, cls, styleHash }` );
 		}
+		// `unmapped`: the settings a skeleton rule could not read from the draft ({ property, reason }), listed in Fill's UNMAPPED rows
+		// for a node Fill cannot read (the basket count row, lib/template-piece-woo-layout.mjs::countRow).
+		if ( undefined !== node.unmapped && ( ! Array.isArray( node.unmapped ) || node.unmapped.some( ( u ) => ! isStr( u?.property ) || ! isStr( u?.reason ) ) ) ) {
+			problems.push( `${ label } unmapped must be a list of { property, reason }` );
+		}
 		problems.push( ...handoverProblems( node.handover, label ), ...rowProblems( node, label ) );
 	}
 	return problems;
@@ -280,7 +285,7 @@ export function skeletonProblems( tree ) {
 
 // `draftFingerprint` ({ tag, cls, styleHash }) is the skeleton writer's record of the draft element a tpl finder names;
 // Fill moves it into the surface's origin map (originMap) and strips it with the other draft keys.
-const DRAFT_KEYS = [ 'draftRef', 'draftSlotsOnly', 'draftSlots', 'draftSlotStates', 'draftBandWrappers', 'draftAbsorbed', 'draftOverlay', 'draftPieceParts', 'draftFingerprint', 'draftSlotReveals', 'itemTemplate', 'widthAlternatives', 'handover', ...ROW_KEYS ];
+const DRAFT_KEYS = [ 'draftRef', 'draftSlotsOnly', 'draftSlots', 'draftSlotStates', 'draftBandWrappers', 'draftAbsorbed', 'draftOverlay', 'draftPieceParts', 'draftFingerprint', 'draftSlotReveals', 'itemTemplate', 'widthAlternatives', 'handover', 'unmapped', ...ROW_KEYS ];
 
 // The origin map of a skeleton: for every node whose draftRef is a tpl finder, { [cr-ref]: { tpl, fingerprint, slots } }
 // (slots: the slot path to the tpl key of each tpl slot finder). `refs[i]` is the cr-ref of node i (tree.mjs::refOf).

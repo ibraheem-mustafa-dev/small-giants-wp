@@ -1,8 +1,8 @@
 [
 	{
 		"file": "lib/fill-resolve.mjs",
-		"find": "\t\twriteDecided( st, rec, ref );\n\t\tif ( ! rec.targets.length ) {",
-		"replace": "\t\tif ( ! rec.targets.length ) {",
+		"find": "\t\twriteDecided( st, rec, ref );\n\t\tcarryUnmapped( st, rec, ref );\n\t\tif ( ! rec.targets.length ) {",
+		"replace": "\t\tcarryUnmapped( st, rec, ref );\n\t\tif ( ! rec.targets.length ) {",
 		"why": "a steps node Fill cannot read loses the steps its rule decided"
 	}
 ]

@@ -11,9 +11,8 @@ import { loadFacts } from '../lib/skeleton-facts.mjs';
 import { proposeSkeleton } from '../lib/skeleton-propose.mjs';
 import { lintSkeleton } from '../lint.mjs';
 import { handoverProblems } from '../lib/fill-handover.mjs';
-import { skeletonProblems } from '../lib/fill-skeleton.mjs';
+import { skeletonProblems, skeletonNodes, cleanTree } from '../lib/fill-skeleton.mjs';
 import { fillTree } from '../lib/fill-resolve.mjs';
-import { skeletonNodes, cleanTree } from '../lib/fill-skeleton.mjs';
 import { addRefs } from '../lib/tree.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );

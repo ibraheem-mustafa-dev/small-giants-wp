@@ -5,7 +5,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { fillTree } from '../lib/fill-resolve.mjs';
-import { skeletonNodes, cleanTree } from '../lib/fill-skeleton.mjs';
+import { skeletonNodes, cleanTree, skeletonProblems } from '../lib/fill-skeleton.mjs';
 import { addRefs } from '../lib/tree.mjs';
 import { openDb } from '../lib/db.mjs';
 
@@ -36,9 +36,10 @@ test( 'negative controls: no decided setting writes nothing, and a value the nod
 	assert.deepEqual( verticalWrites( held ).filter( ( w ) => 'decided' === w.how ), [] );
 } );
 
-// A node Fill cannot read still carries what its skeleton rule decided, and hands over what its skeleton declared (2026-11-26): the
-// basket count row has no draft element, so no read targets it, and a numbered-steps block the draft hides at every width or has no
-// calibration is never read; fillTree used to write `decided` and the handover only in fillContent, which a node with no read never reaches.
+// A node Fill cannot read still carries what its skeleton rule decided, hands over what its skeleton declared, and lists the settings
+// its skeleton could not read as UNMAPPED rows: the basket count row has no draft element, so no read targets it, and a numbered-steps
+// block the draft hides at every width or has no calibration is never read. fillTree writes `decided` and carries `handover` and
+// `unmapped` for every node, read or not.
 function runTree( skeleton, widths = {} ) {
 	const tree = cleanTree( skeleton );
 	addRefs( tree, 'fx' );
@@ -78,4 +79,16 @@ test( 'MUST FAIL: the handover an unread node declares is carried, with its deta
 test( 'negative control: a read node\'s declared handover is carried once, not twice', () => {
 	const node = { name: 'sgs/hero', draftRef: '.a', attributes: {}, handover: [ { owner: 'content-page', kind: 'presence', detail: 'x' } ] };
 	assert.equal( runTree( [ node ], READ ).out.handover.length, 1 );
+} );
+
+test( 'MUST FAIL: the unmapped rows an unread node\'s skeleton declares are listed as UNMAPPED rows on that node, and a malformed list is a skeleton problem', () => {
+	const row = { name: 'sgs/container', attributes: {}, unmapped: [ { property: 'gap', reason: 'the heading size was not read' } ], innerBlocks: [] };
+	const r = runTree( [ row ], {} );
+	assert.deepEqual( r.out.unmapped.map( ( u ) => [ u.block, u.property, u.reason ] ), [ [ 'sgs/container', 'gap', 'the heading size was not read' ] ] );
+	assert.equal( r.out.handover.length, 0 );
+	assert.equal( r.tree[ 0 ].unmapped, undefined, 'the tree Fill writes does not carry the key' );
+	assert.deepEqual( skeletonProblems( [ row ] ), [] );
+	assert.match( skeletonProblems( [ { ...row, unmapped: [ { property: 'gap' } ] } ] ).join( '\n' ), /unmapped must be a list of \{ property, reason \}/ );
+	const read = runTree( [ { name: 'sgs/hero', draftRef: '.a', attributes: {}, unmapped: [ { property: 'align-items', reason: 'x' } ] } ], READ );
+	assert.equal( read.out.unmapped.filter( ( u ) => 'align-items' === u.property ).length, 1, 'a read node lists them once too' );
 } );

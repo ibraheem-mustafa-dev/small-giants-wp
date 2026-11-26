@@ -105,6 +105,15 @@ function carryHandover( st, rec, ref ) {
 	}
 }
 
+// The settings a node's skeleton could not read from the draft (`unmapped`, [ { property, reason } ]) are UNMAPPED rows, for every
+// node: the block has the setting, the draft did not give its value, and a node with no draft element (the basket count row) has
+// no read to report it.
+function carryUnmapped( st, rec, ref ) {
+	for ( const u of st.nodes[ rec.index ].node?.unmapped || [] ) {
+		unmapped( st, rec, ref, { property: u.property, value: '', reason: u.reason } );
+	}
+}
+
 // Presence, words and links for one node's elements, and its declared handover (step 5).
 function fillContent( st, rec, ref, cal ) {
 	const node = st.flat[ rec.index ];
@@ -222,6 +231,7 @@ export function fillTree( opts ) {
 	for ( const rec of st.nodes ) {
 		const ref = refOf( st.flat[ rec.index ] );
 		writeDecided( st, rec, ref );
+		carryUnmapped( st, rec, ref );
 		if ( ! rec.targets.length ) {
 			continue;
 		}
