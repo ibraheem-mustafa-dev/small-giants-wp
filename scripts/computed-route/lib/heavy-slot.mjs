@@ -28,7 +28,7 @@ export const BEAT_STALE_MS = 5 * 60 * 1000;
 const RECLAIM_LOCK_MS = 30 * 1000;
 // The room a third heavy run needs: CPU busy below this share, at least this much free memory and free space on C:.
 // Memory needs a wide margin: a run's look builder can grow by several GB after it starts.
-export const ROOM = { cpuBusy: 0.7, freeMemBytes: 12 * 1024 ** 3, freeCBytes: 10 * 1024 ** 3 };
+export const ROOM = { cpuBusy: 0.7, freeMemBytes: 8 * 1024 ** 3, freeCBytes: 10 * 1024 ** 3 };
 
 const ownerFile = ( p ) => path.join( p, 'owner.json' );
 
