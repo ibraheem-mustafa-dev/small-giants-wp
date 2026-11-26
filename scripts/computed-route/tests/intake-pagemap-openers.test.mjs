@@ -113,3 +113,26 @@ test( 'MUST FAIL: buy box marks only the flow entry of a product row, whichever 
 	assert.deepEqual( first.list.filter( ( o ) => 'flow' === o.kind ).map( ( o ) => o.words ), [ 'Add lenses', 'Add my prescription' ] );
 	assert.deepEqual( first.rows.find( ( r ) => 'product' === r.slug ).opens.find( ( o ) => 'flow' === o.kind ), { kind: 'flow', slug: 'choice-flow-lens-configurator', buyBox: true }, 'a buy-box control after a plain one still marks the entry' );
 } );
+
+// A target whose open states run on a named component (`dcLogic('Home').setState(…)`) is opened only by a control in that
+// component's draft (lib/intake-pagemap-flow-openers.mjs::openingComponents). On Mama's, the Home build form's subscribe state
+// matched the product page's own subscribe button, so the product row listed the Home form as a flow its buy box opens.
+function hintVariant( reach ) {
+	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'surface-openers-' ) );
+	fs.copyFileSync( path.join( FIX, 'Store.dc.html' ), path.join( dir, 'Store.dc.html' ) );
+	const hint = JSON.parse( fs.readFileSync( path.join( FIX, 'surfaces.json' ), 'utf8' ) );
+	hint.records.find( ( r ) => 'S-04' === r.id ).states.find( ( st ) => 'open' === st.name ).how_to_reach = reach;
+	fs.writeFileSync( path.join( dir, 'surfaces.json' ), JSON.stringify( hint ) );
+	return dir;
+}
+
+test( 'MUST FAIL: a flow whose open state runs on another component (dcLogic(\'Home\')) is opened by no control of the Store draft', () => {
+	const map = proposePageMap( { folder: hintVariant( "dcLogic('Home').setState({lens:{open:true}})" ) } );
+	assert.deepEqual( row( map, 'product' ).opens, [ { kind: 'modal', slug: 'modal-size-guide' } ] );
+	assert.equal( row( map, 'product' ).opensFlow, undefined );
+} );
+
+test( 'negative control: the same open state naming the Store component still lists the buy box\'s flow', () => {
+	const map = proposePageMap( { folder: hintVariant( "dcLogic('Store').setState({lens:{open:true}})" ) } );
+	assert.deepEqual( row( map, 'product' ).opens, [ { kind: 'modal', slug: 'modal-size-guide' }, { kind: 'flow', slug: 'choice-flow-lens-configurator', buyBox: true } ] );
+} );

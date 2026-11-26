@@ -1,4 +1,6 @@
 [
+ {"file":"lib/intake-pagemap-flow-openers.mjs","find":"( ! x.components || x.components.has( componentOf( d.file ) ) ) && sets.some(","replace":"sets.some(","why":"a flow whose open state runs on another component (dcLogic('Home')) is opened by a product button of this draft"},
+ {"file":"lib/intake-pagemap-flow-openers.mjs","find":"calls.every( ( c ) => 'string' === typeof c.component && '' !== c.component )","replace":"calls.some( ( c ) => 'string' === typeof c.component && '' !== c.component )","why":"one call naming a component scopes a call naming none to it"},
  {"file":"lib/intake-pagemap.mjs","find":"\tgaps.push( ...flowOpeners( { exp, rows, hint, pageOfTag: code.pageOfTag } ) );\n","replace":"","why":"the proposer never asks which flow a product page opens (the code before this rule)"},
  {"file":"lib/intake-pagemap-flow-openers.mjs","find":"return String( n.value );","replace":"return 'x';","why":"booleans and numbers lose their value"},
  {"file":"lib/intake-pagemap-flow-openers.mjs","find":"return JSON.stringify( n.value );","replace":"return n.value;","why":"a string value is not quoted, so it reads like a number"},

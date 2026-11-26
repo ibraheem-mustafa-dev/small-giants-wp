@@ -9,7 +9,8 @@
 // - an element's writes are the literal values its onClick handler's functions pass to setState, through the logic's
 //   own functions with their arguments bound (`openLens: () => setL({open:true})`,
 //   `setL = patch => this.setState(s => ({lens: Object.assign({}, s.lens, patch)}))`), object spreads and Object.assign;
-// - the element opens the flow when one function its handler names makes every opening write.
+// - the element opens the flow when one function its handler names makes every opening write, in the component the
+//   opening calls name (`dcLogic('Home').setState(…)` runs on Home only; a call naming none matches every draft).
 // A product page that opens two flows records neither and leaves a gap row, since a product links one flow.
 import { parseExpression } from '@babel/parser';
 import { attrOf, readBinding, isFn, keyName, propName, resolveName, subtree } from './intake-ast.mjs';
@@ -136,14 +137,19 @@ export function fnWrites( idx, fn, env = new Map() ) {
 	return out;
 }
 
+// A surfaces.json record's open states: every state but the closed and the default one.
+const openStates = ( record ) => ( record?.states || [] ).filter( ( st ) => ! /^(closed|default)$/i.test( st.name || '' ) );
+// A state's setState calls: its structured way in, else the calls its how_to_reach prose gives.
+const stateCalls = ( st ) => structuredReach( st )?.set ?? reachCalls( st.how_to_reach );
+
 // A surfaces.json record's opening writes: the writes every open state's how_to_reach setState calls make with the same
 // value, less a key the state describes as a condition. Empty when the record has no open state with such a call.
 export function openingWrites( record ) {
-	const open = ( record?.states || [] ).filter( ( st ) => ! /^(closed|default)$/i.test( st.name || '' ) );
+	const open = openStates( record );
 	const per = open.map( ( st ) => {
 		const skip = new Set( Object.entries( st.state_keys || {} ).filter( ( [ , v ] ) => CONDITION.test( String( v ) ) ).map( ( [ k ] ) => k ) );
 		const out = new Set();
-		for ( const c of structuredReach( st )?.set ?? reachCalls( st.how_to_reach ) ) {
+		for ( const c of stateCalls( st ) ) {
 			try {
 				parseExpression( `[${ c.args }]` ).elements.forEach( ( a ) => valueWrites( { idx: null, env: new Map() }, a, [], out ) );
 			} catch {
@@ -154,6 +160,18 @@ export function openingWrites( record ) {
 	} ).filter( ( s ) => s.size );
 	return per.length ? [ ...per[ 0 ] ].filter( ( w ) => per.every( ( s ) => s.has( w ) ) ) : [];
 }
+
+// The components a record's opening writes run on: each open state's how_to_reach call that names its component
+// (`dcLogic('Home').setState(…)`, lib/intake-reach-calls.mjs) runs on that component only, so only a handler in that
+// component's draft (`<name>.dc.html`, the runtime's file for component <name>) makes those writes. Null when a call names
+// no component (a plain `<ident>.setState`, a structured setState): its writes are matched in every draft, as before.
+export function openingComponents( record ) {
+	const calls = openStates( record ).flatMap( stateCalls );
+	return calls.length && calls.every( ( c ) => 'string' === typeof c.component && '' !== c.component ) ? new Set( calls.map( ( c ) => c.component ) ) : null;
+}
+
+// The component a draft file holds: `<name>.dc.html` holds component <name>.
+export const componentOf = ( file ) => String( file || '' ).replace( /\\/g, '/' ).split( '/' ).pop().replace( /\.dc\.html$/, '' );
 
 // The functions an onClick binding names (`{{ openLens }}`, `{{ item.pick }}`).
 export function handlerFns( idx, value ) {
@@ -173,7 +191,10 @@ export function handlerFns( idx, value ) {
 export function flowOpeners( { exp, rows, hint, pageOfTag } ) {
 	const records = new Map( ( hint?.records || [] ).map( ( r ) => [ r.id, r ] ) );
 	const flows = rows.filter( ( r ) => 'sgs_choice_flow' === r.postType && r.draftId )
-		.map( ( r ) => ( { row: r, writes: openingWrites( records.get( r.draftId.replace( /^surfaces\.json /, '' ) ) ) } ) )
+		.map( ( r ) => {
+			const record = records.get( r.draftId.replace( /^surfaces\.json /, '' ) );
+			return { row: r, writes: openingWrites( record ), components: openingComponents( record ) };
+		} )
 		.filter( ( f ) => f.writes.length );
 	const opened = new Map();
 	for ( const d of flows.length ? exp.drafts.filter( ( x ) => ! x.error && x.idx ) : [] ) {
@@ -181,7 +202,7 @@ export function flowOpeners( { exp, rows, hint, pageOfTag } ) {
 			const fns = handlerFns( d.idx, attrOf( t, 'onClick' ) );
 			const sets = fns.map( ( fn ) => fnWrites( d.idx, fn ) );
 			const page = pageOfTag( `${ d.file }:${ t.line }:${ t.col }` );
-			for ( const f of flows.filter( ( x ) => sets.some( ( s ) => x.writes.every( ( w ) => s.has( w ) ) ) ) ) {
+			for ( const f of flows.filter( ( x ) => ( ! x.components || x.components.has( componentOf( d.file ) ) ) && sets.some( ( s ) => x.writes.every( ( w ) => s.has( w ) ) ) ) ) {
 				opened.set( page, new Set( [ ...( opened.get( page ) || [] ), f.row.slug ] ) );
 			}
 		}

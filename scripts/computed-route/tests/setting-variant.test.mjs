@@ -33,8 +33,8 @@ test( 'MUST FAIL: every featured setting of both nav menus is limited to the fea
 test( 'negative control: a setting with no variant modifier above its part is offered to every node', () => {
 	assert.equal( variantOf( 'sgs/nav-bar-menu', 'itemBgHover' ), null );
 	assert.equal( variantOf( 'sgs/nav-bar-menu', 'itemBg' ), null );
-	assert.equal( variantOf( 'sgs/cart', 'pillBorderRadius' ), null, 'the cart pill and icon pair is the trigger settings\' own work, not a variant gate' );
-	assert.equal( variantOf( 'sgs/cart', 'iconTriggerRadius' ), null );
+	assert.equal( variantOf( 'sgs/cart', 'triggerBorderRadius' ), null, 'the cart pill and icon pair is the trigger settings\' own work, not a variant gate' );
+	assert.equal( variantOf( 'sgs/cart', 'pillBorderWidth' ), null );
 } );
 
 test( 'negative control: a block style variant of the element itself, and the current condition, are not item variants', () => {

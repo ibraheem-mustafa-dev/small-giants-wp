@@ -6,7 +6,8 @@
 // general form. Read from the draft code, never from prose:
 // - a target's opening writes are lib/intake-pagemap-flow-openers.mjs::openingWrites of its surfaces.json record;
 // - a control's writes are the literal setState writes of the functions its onClick binding names (::fnWrites);
-// - the control opens the target when its writes hold every opening write.
+// - the control opens the target when its writes hold every opening write, made in a component the opening calls run on
+//   (::openingComponents: `dcLogic('Home').setState(…)` runs on Home only; a call naming none runs anywhere).
 // The row holding a control is the innermost page-map surface whose draft root holds it (a header, footer, drawer, modal or
 // flow row), else the page row of its route (`pageOfTag`). A control inside the target's own surface (a form's topic chip) is
 // part of it and opens nothing. A control inside a part a block draws (the bag drawer the cart block draws) cannot be a button
@@ -19,7 +20,7 @@ import { fileURLToPath } from 'url';
 import { attrOf, readBinding, propName } from './intake-ast.mjs';
 import { fnsNamed } from './intake-census-map.mjs';
 import { elementTree, descendants, innerText, KIND_POST_TYPE } from './intake-pagemap-surfaces.mjs';
-import { openingWrites, fnWrites } from './intake-pagemap-flow-openers.mjs';
+import { openingWrites, openingComponents, componentOf, fnWrites } from './intake-pagemap-flow-openers.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 export const OPENABLE = JSON.parse( fs.readFileSync( path.join( HERE, '..', 'data', 'surface-openers.json' ), 'utf8' ) ).kinds;
@@ -65,7 +66,10 @@ function inBuyBox( node ) {
 export function surfaceOpeners( { exp, rows, hint, pageOfTag, surfaces = [] } ) {
 	const records = new Map( ( hint?.records || [] ).map( ( r ) => [ r.id, r ] ) );
 	const targets = rows.filter( ( r ) => OPENABLE[ r.postType ] && /^surfaces\.json /.test( r.draftId || '' ) )
-		.map( ( r ) => ( { row: r, kind: OPENABLE[ r.postType ], writes: openingWrites( records.get( r.draftId.replace( /^surfaces\.json /, '' ) ) ) } ) )
+		.map( ( r ) => {
+			const record = records.get( r.draftId.replace( /^surfaces\.json /, '' ) );
+			return { row: r, kind: OPENABLE[ r.postType ], writes: openingWrites( record ), components: openingComponents( record ) };
+		} )
 		.filter( ( t ) => t.writes.length );
 	const gaps = [];
 	const list = [];
@@ -90,7 +94,7 @@ export function surfaceOpeners( { exp, rows, hint, pageOfTag, surfaces = [] } ) 
 		const key = ( n ) => `${ d.file }:${ n.line }:${ n.col }`;
 		for ( const node of tree.nodes.filter( ( n ) => attrOf( n, 'onClick' ) ) ) {
 			const writes = new Set( handlerFns( d.idx, attrOf( node, 'onClick' ) ).flatMap( ( fn ) => [ ...fnWrites( d.idx, fn ) ] ) );
-			const hits = targets.filter( ( t ) => t.writes.every( ( w ) => writes.has( w ) ) );
+			const hits = targets.filter( ( t ) => ( ! t.components || t.components.has( componentOf( d.file ) ) ) && t.writes.every( ( w ) => writes.has( w ) ) );
 			if ( ! hits.length ) {
 				continue;
 			}

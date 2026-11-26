@@ -1,12 +1,13 @@
 // A block drawn one way on one device and another way on another (lib/fill-device-mode.mjs): the bag drawn as a pill on the
 // desktop and as an icon on the phone (sgs/cart triggerStyle pill, triggerStyleMobile icon). Calibration measures the pill's
-// border and radius settings in the pill variant only (`variants`), and the icon trigger's own radius in the icon variants; the
-// block's default paint differs by mode (the icon trigger's 4px corners, the pill's 999px). Before, Fill judged the node at every
-// width against the pill's paint and wrote the pill settings from the 1440 read, so the phone's outlined round capsule was lost
-// (the 999px radius held as the pill's default; the border only on the pill). Now each width is judged in the mode in force there:
-// the phone's radius goes to the icon trigger's own setting, and the phone's border, which no icon-mode setting holds, is a row of
-// the phone's widths alone that the residual pass writes as Custom CSS for those widths only. The fixture and the settings'
-// rows are the real ones (the setting record's fixtures.json, the framework DB); the calibration mirrors the cart's measured paint.
+// border settings in the pill variant only (`variants`), the icon trigger's background in the icon variants, and the trigger's
+// one corner radius for both modes (triggerBorderRadius) in every variant; the block's default paint differs by mode (the icon
+// trigger's 4px corners, the pill's 999px). Before, Fill judged the node at every width against the pill's paint and wrote the
+// pill settings from the 1440 read, so the phone's outlined round capsule was lost (the 999px radius held as the pill's default;
+// the border only on the pill). Now each width is judged in the mode in force there: the phone's radius goes to the shared
+// trigger radius for the phone's width, and the phone's border, which no icon-mode setting holds, is a row of the phone's widths
+// alone that the residual pass writes as Custom CSS for those widths only. The fixture and the settings' rows are the real ones
+// (the setting record's fixtures.json, the framework DB); the calibration mirrors the cart's measured paint.
 // Contacts no site (tools/run-tests.mjs).
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -44,9 +45,9 @@ const CAL = {
 	elements: { '': perW( { display: 'block' } ), [ T ]: perW( ICON ) },
 	paintStates: { pill: { when: { equals: { triggerStyle: 'pill' } }, elements: { [ T ]: perW( PILL ) } } },
 	settings: {
-		pillBorderRadius: set( 'border-radius', [ 1 ] ),
+		triggerBorderRadius: set( 'border-radius', [ 0, 1, 2, 3 ] ),
 		pillBorderWidth: set( 'border-width', [ 1 ] ),
-		iconTriggerRadius: set( 'border-radius', [ 0, 2, 3 ] ),
+		iconBg: { ...set( 'background-color', [ 0, 2, 3 ] ), slot: `${ T }::after`, slots: [ `${ T }::after` ] },
 	},
 	discovered: {},
 };
@@ -81,14 +82,16 @@ test( 'MUST FAIL: the node\'s calibration view paints each width in the mode in 
 	assert.equal( v.elements[ T ][ 768 ][ 'border-radius' ], '999px' );
 	assert.equal( v.elements[ T ][ 1440 ][ 'border-radius' ], '999px' );
 	assert.deepEqual( v.modeAt, { 375: [ 0, 2, 3 ], 768: [ 1 ], 1440: [ 1 ] } );
-	assert.deepEqual( notInForce( v, [ 375 ] ), [ 'pillBorderRadius', 'pillBorderWidth' ] );
-	assert.deepEqual( notInForce( v, [ 768, 1440 ] ), [ 'iconTriggerRadius' ] );
+	assert.deepEqual( notInForce( v, [ 375 ] ), [ 'pillBorderWidth' ] );
+	assert.deepEqual( notInForce( v, [ 768, 1440 ] ), [ 'iconBg' ] );
+	assert.deepEqual( notInForce( v, W ), [], 'every setting is in force at one width or another' );
 } );
 
-test( 'MUST FAIL: a round capsule on the phone over a pill above it is written to the icon trigger\'s own radius; the pill\'s radius is never the phone\'s', () => {
+test( 'MUST FAIL: a round capsule on the phone over a pill above it is written to the trigger\'s shared radius for the phone\'s width, with no row left over', () => {
 	const r = ask( PHONE_ICON, 'border-radius', '999px' );
 	assert.equal( r.status, 'written' );
-	assert.deepEqual( r.writes.map( ( w ) => [ w.attr, w.value ] ), [ [ 'iconTriggerRadius', '999px' ] ] );
+	assert.deepEqual( r.writes.map( ( w ) => [ w.attr, w.value ] ), [ [ 'triggerBorderRadius', '999px' ] ] );
+	assert.deepEqual( Object.keys( r.included ).map( Number ), [ 375 ], 'the pill already paints 999px above the phone' );
 	assert.equal( r.modeGaps, undefined );
 } );
 
@@ -112,7 +115,7 @@ test( 'negative control: the same border on a node drawn as a pill at every widt
 } );
 
 test( 'MUST FAIL: the phone\'s row holds its own width only, is not the width ladder\'s, is Custom CSS (the pill border is not in force there), and its rule covers the phone\'s range alone', () => {
-	const row = { node: 'n', block: BLOCK, slot: T, property: 'border-top-width', value: JSON.stringify( { 375: '1px' } ), reason: 'no-setting: no border-width setting on sgs/cart paints ".sgs-cart__trigger"', modeWidths: [ 375 ], notInForce: [ 'pillBorderRadius', 'pillBorderWidth' ] };
+	const row = { node: 'n', block: BLOCK, slot: T, property: 'border-top-width', value: JSON.stringify( { 375: '1px' } ), reason: 'no-setting: no border-width setting on sgs/cart paints ".sgs-cart__trigger"', modeWidths: [ 375 ], notInForce: [ 'pillBorderWidth' ] };
 	const reads = { widths: Object.fromEntries( W.map( ( w ) => [ w, { t: { styles: { 'border-top-width': '1px' } } } ] ) ) };
 	assert.deepEqual( rowValues( row, reads, { id: 't' } ), { 375: '1px' } );
 	assert.equal( isLadderRow( row ), false );
@@ -126,16 +129,19 @@ test( 'MUST FAIL: the phone\'s row holds its own width only, is not the width la
 } );
 
 // On the real Eye Care records (offline Fill, run 23) the two passes after the resolver undid the phone's capsule: the part
-// pairing refused iconTriggerRadius because the DB names its part `icon`, whose other settings (the icon's colour) calibration
-// measured on the glyph layer, and the held pass settled the phone's border row as painted by the pill border just written.
+// pairing refused the icon trigger's radius because the DB named its part `icon`, whose other settings (the icon's colour)
+// calibration measured on the glyph layer, and the held pass settled the phone's border row as painted by the pill border just
+// written. The cart's radius is now the trigger's own setting, so the pairing case here is the pill's label colour: the DB names
+// its part `pill`, whose other settings calibration measured on the trigger, while calibration measured the colour on the label.
 test( 'MUST FAIL: a setting calibration measured painting the read element itself is paired there, whatever the other settings of its DB part paint', () => {
-	const cal = { ...CAL, settings: { ...CAL.settings, iconColour: { ...set( 'color', [ 0, 2, 3 ] ), slot: `${ T }::after`, slots: [ `${ T }::after` ] }, iconBg: { ...set( 'background-color', [ 0, 2, 3 ] ), slot: `${ T }::after`, slots: [ `${ T }::after` ] }, iconColourGradient: { ...set( 'color', [ 0, 2, 3 ] ), slot: `${ T }::after`, slots: [ `${ T }::after` ] } } };
-	assert.equal( unpairedPart( { db, block: BLOCK, cal, attr: 'iconTriggerRadius', readSlot: T, prop: 'border-radius', value: '999px' } ), null );
+	const LABEL = `${ T } > .sgs-cart__pill-label`;
+	const cal = { ...CAL, settings: { ...CAL.settings, pillBgColour: set( 'background-color', [ 1 ] ), pillTextColour: { ...set( 'color', [ 1 ] ), slot: LABEL, slots: [ LABEL ] }, iconColour: { ...set( 'color', [ 0, 2, 3 ] ), slot: `${ T }::after`, slots: [ `${ T }::after` ] }, iconColourGradient: { ...set( 'color', [ 0, 2, 3 ] ), slot: `${ T }::after`, slots: [ `${ T }::after` ] } } };
+	assert.equal( unpairedPart( { db, block: BLOCK, cal, attr: 'pillTextColour', readSlot: LABEL, prop: 'color', value: 'rgb(0, 0, 0)' } ), null );
 	assert.match( String( unpairedPart( { db, block: BLOCK, cal, attr: 'iconBg', readSlot: T, prop: 'background-color', value: 'rgb(0, 0, 0)' } ) ), /^unpaired-part/, 'negative control: a setting measured on the glyph layer stays unpaired at the trigger' );
 } );
 
 test( 'MUST FAIL: a phone-only row is never settled by a setting not in force there, though that setting was written with the same value', () => {
-	const row = { slot: T, property: 'border-top-width', state: null, notInForce: [ 'pillBorderRadius', 'pillBorderWidth' ] };
+	const row = { slot: T, property: 'border-top-width', state: null, notInForce: [ 'pillBorderWidth' ] };
 	const writes = [ { attr: 'pillBorderWidth', how: 'single', after: { top: '1px', right: '1px', bottom: '1px', left: '1px' } } ];
 	assert.equal( coveredBySetting( row, { 375: '1px' }, writes, CAL ), null );
 	assert.match( String( coveredBySetting( { ...row, notInForce: undefined }, { 1440: '1px' }, writes, CAL ) ), /pillBorderWidth was written/, 'negative control: in force, the write covers the row' );
