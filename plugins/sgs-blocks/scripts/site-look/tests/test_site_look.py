@@ -95,6 +95,13 @@ def test_button_text_link_and_presence(tmp_path):
     assert look['presence']['iconPosition=only']['hides'] == ['.sgs-button__label']
 
 
+def blank_page():
+    """A stand-in page: an empty document, so the Reader can note the classes on it (Reader.seen)."""
+    from types import SimpleNamespace
+    from bs4 import BeautifulSoup
+    return SimpleNamespace(soup=BeautifulSoup('', 'html.parser'))
+
+
 def test_reader_holds_a_few_pages_not_every_page_it_read(monkeypatch):
     """MUST FAIL with SITE_LOOK_MUTATE=keep-pages: the Reader keeps the SL.PAGE_KEEP most recently used pages and drops the
     rest from its own memo and from the Pages' memo (a page it dropped is built again if asked for), so a block that reads
@@ -105,7 +112,7 @@ def test_reader_holds_a_few_pages_not_every_page_it_read(monkeypatch):
 
         def get(self, job, held=()):
             self.built += 1
-            self.memo[(job, frozenset(held), frozenset(), None, ())] = page = object()
+            self.memo[(job, frozenset(held), frozenset(), None, ())] = page = blank_page()
             return page
 
     monkeypatch.setattr(SL, 'settle', lambda page, res: None)
@@ -128,7 +135,7 @@ def test_reader_drops_the_least_recently_used_page(monkeypatch):
 
         def get(self, job, held=()):
             self.built += 1
-            self.memo[(job,)] = page = object()
+            self.memo[(job,)] = page = blank_page()
             return page
 
     monkeypatch.setattr(SL, 'settle', lambda page, res: None)
