@@ -96,6 +96,17 @@ describe( 'ResponsiveBoxControls, the shared Spacing panel', () => {
 		on.unmount();
 	} );
 
+	it( 'draws nothing extra by default, and draws `children` under the last row when passed', () => {
+		const plain = mount();
+		expect( plain.container.querySelector( '[data-extra]' ) ).toBeNull();
+		plain.unmount();
+		const extra = mount( { showContentWidth: true, children: h( 'div', { 'data-extra': 'gap' } ) } );
+		const rows = [ ...extra.container.querySelector( 'section' ).children ].map( ( e ) => e.getAttribute( 'data-override' ) || e.getAttribute( 'data-control' ) || e.getAttribute( 'data-extra' ) || e.tagName );
+		expect( rows[ rows.length - 1 ] ).toBe( 'gap' );
+		expect( rows.slice( 1, -1 ) ).toEqual( [ 'Padding', 'Margin', 'Content width' ] );
+		extra.unmount();
+	} );
+
 	it( 'reads the side defaults and the paired axes from the block', () => {
 		getBlockType.mockReturnValue( {
 			attributes: { padding: {}, margin: {} },

@@ -35,7 +35,8 @@ jest.mock( '@wordpress/components', () => {
 	const Box = ( tag ) => ( { children, label, title } ) => R.createElement( tag, { 'data-label': label || title }, children );
 	return {
 		Button: ( { children, onClick } ) => R.createElement( 'button', { type: 'button', onClick }, children ),
-		PanelBody: ( { children, className } ) => R.createElement( 'section', { className }, children ),
+		PanelBody: ( { children, className, title } ) =>
+			R.createElement( 'section', { className }, R.createElement( 'h3', null, title ), children ),
 		DropdownMenu: () => null,
 		MenuGroup: Box( 'div' ),
 		MenuItem: Box( 'button' ),
@@ -146,6 +147,20 @@ describe( 'an adopted slot\'s panels', () => {
 			} )
 		)
 	);
+
+	it( 'titleOverride names every panel it draws, and an empty one keeps each own title', () => {
+		global.__device = 'Desktop';
+		const attributes = { [ key( 'Source' ) ]: sourceFor( 'image' ) };
+		const titles = ( view ) => [ ...view.container.querySelectorAll( 'h3' ) ].map( ( n ) => n.textContent );
+		const named = mount( { attributes, kinds: [ 'image' ], context: 'element', titleOverride: 'Logo' } );
+		expect( titles( named ).length ).toBeGreaterThan( 0 );
+		expect( new Set( titles( named ) ) ).toEqual( new Set( [ 'Logo' ] ) );
+		named.unmount();
+		const plain = mount( { attributes, kinds: [ 'image' ], context: 'element' } );
+		expect( titles( plain ) ).not.toContain( 'Logo' );
+		expect( titles( plain ).length ).toBeGreaterThan( 0 );
+		plain.unmount();
+	} );
 
 	it( 'shows Playback for video and embed only', () => {
 		expect( basesOf( model( 'video' ) ) ).toContain( 'Playback' );

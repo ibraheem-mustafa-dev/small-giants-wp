@@ -5,18 +5,18 @@
  * is the separate `sgs/nav-drawer-menu` block. This block declares no
  * `usesContext` and never needs to detect what it is — it IS the bar.
  *
- * Panels with NO bar/drawer conflict (TypographyPanel, ItemsPanel, EffectsPanel,
- * FeaturedPanel, ColourRowExtras' BOTH-classified treatments,
+ * Panels with NO bar/drawer conflict (TypographyPanel, ItemsPanel, ItemEffectsPanel,
+ * LinkExtrasRows, FeaturedPanel, ColourRowExtras' BOTH-classified treatments,
  * useNavMenuSource, useItemHoverContrast, utils, ColourTreatment) moved to
  * `src/shared/nav-menu-panels/` and are imported from there by both blocks —
  * do not fork these; edit the shared copy (and re-check the sibling block
  * still needs the unchanged parts). Panels that are genuinely BAR-only
- * (BurgerPanel, MenuSettingsPanel, DropdownSettingsPanel,
- * NavMenuNotices, useDrawerNotice, and the bar-only treatments in
+ * (BurgerPanel with its BurgerScopeRows and BurgerDrawerRows, MenuSettingsPanel,
+ * DropdownSettingsPanel, SplitPanel, NavMenuNotices, useDrawerNotice, and the bar-only treatments in
  * `./BarColourRowExtras.js`) live in THIS directory, not shared.
- * `ListLayoutPanel` and `DropdownStylePanel` are shared components that take
- * a prop (`showColumnsControl` / `showSizingControls`) to omit the controls
- * that don't apply here — see each shared file's own docblock.
+ * `DropdownStylePanel` is a shared component that takes a prop
+ * (`showSizingControls`) to omit the controls that don't apply here — see the
+ * shared file's own docblock.
  *
  * NOT mounted here — both are DRAWER-only:
  *  - `SubmenuItemsPanel` (sublink marker icon/colour) — the marker CSS is
@@ -66,6 +66,8 @@ import {
 	ScrimControls,
 	scrimColourRow,
 	SeparatorsPanel,
+	ResponsiveBoxControls,
+	ResponsiveLengthControl,
 } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { resolveTier } from '../../utils';
@@ -87,13 +89,15 @@ import BurgerPanel from './BurgerPanel';
 import ButtonReachPanel from './ButtonReachPanel';
 import DropdownSettingsPanel from './DropdownSettingsPanel';
 import SplitPanel from './SplitPanel';
-import ListLayoutPanel from '../../shared/nav-menu-panels/ListLayoutPanel';
 import TypographyPanel from '../../shared/nav-menu-panels/TypographyPanel';
 import ItemsPanel from '../../shared/nav-menu-panels/ItemsPanel';
 import DropdownStylePanel from '../../shared/nav-menu-panels/DropdownStylePanel';
-import EffectsPanel from '../../shared/nav-menu-panels/EffectsPanel';
 import FeaturedPanel from '../../shared/nav-menu-panels/FeaturedPanel';
 import ItemEffectsPanel from '../../shared/nav-menu-panels/ItemEffectsPanel';
+import {
+	LinkSpacingRows,
+	BadgeSpacingRows,
+} from '../../shared/nav-menu-panels/LinkExtrasRows';
 // This block's OWN declared Sweep-eligibility source (FR-41-26) — read here
 // rather than inside the shared ColourRowExtras/ColourTreatment modules,
 // which do not statically import either block's manifest (see
@@ -201,10 +205,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	} = attributes;
 
 	// listColumns is intentionally NOT destructured/read here — it is
-	// DRAWER-only and is not declared on this block's attributes. The shared
-	// `ListLayoutPanel` (`src/shared/nav-menu-panels/ListLayoutPanel.js`) takes
-	// a `showColumnsControl` prop and this block passes `false`, so the
-	// "Columns" control is OMITTED here rather than rendered-and-inert.
+	// DRAWER-only and is not declared on this block's attributes, so the
+	// "Columns" control is not drawn here rather than rendered-and-inert.
 
 	const { menuOptions, isResolving, resolvedItems, toggleFeatured } =
 		useNavMenuSource( { ref, featuredItemIds, setAttributes } );
@@ -683,7 +685,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					menuOptions={ menuOptions }
 					isResolving={ isResolving }
 					setAttributes={ setAttributes }
-					collapsePoint={ collapsePoint }
 				/>
 
 				{ /* Wave B — data-source pick (which items render as
@@ -711,6 +712,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					triggerMagnetStrength={ triggerMagnetStrength }
 					burgerBarCount={ burgerBarCount }
 					burgerMorph={ burgerMorph }
+					collapsePoint={ collapsePoint }
+					drawerRef={ drawerRef }
 					setAttributes={ setAttributes }
 				/>
 
@@ -723,8 +726,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					navLabel={ navLabel }
 					itemSmartContrast={ itemSmartContrast }
 					setAttributes={ setAttributes }
-					drawerRef={ drawerRef }
-					drawerNeedsAttention={ showDrawerNotice }
 					submenuAlign={ submenuAlign }
 					megaAlign={ megaAlign }
 					submenuCaret={ submenuCaret }
@@ -746,6 +747,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 				<SplitPanel
 					justifyContent={ justifyContent }
+					flexWrap={ attributes.flexWrap }
 					splitAfterItemId={ splitAfterItemId }
 					splitSide={ splitSide }
 					showBurger={ showBurger }
@@ -758,24 +760,24 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			   Routing panels through a second wrapper component would blind
 			   inspector-scan rule 21's control corpus. ─────────────────────────── */ }
 			<InspectorControls group="styles">
-				<ListLayoutPanel
-					gap={ gap }
-					showColumnsControl={ false }
-					padding={ attributes.padding }
-					showMargin
-					margin={ attributes.margin }
-					showItemPadding
-					itemPadding={ attributes.itemPadding }
-					itemMinHeight={ attributes.itemMinHeight }
-					itemBadgePadding={ attributes.itemBadgePadding }
-					itemBadgeBorderRadius={ attributes.itemBadgeBorderRadius }
-					itemBadgeGap={ attributes.itemBadgeGap }
-					showSubmenuLinkPadding
-					submenuLinkPadding={ attributes.submenuLinkPadding }
-					showFlexWrap
-					flexWrap={ attributes.flexWrap }
+				{ /* The shared Spacing panel (Padding, Margin) plus the space between
+				   menu items, which is spacing too. No Max width: this block is
+				   ALWAYS a child (of a site-header-row or of sgs/nav-drawer) and
+				   the parent owns width (D540). */ }
+				<ResponsiveBoxControls
+					attributes={ attributes }
 					setAttributes={ setAttributes }
-				/>
+				>
+					<ResponsiveLengthControl
+						label={ __( 'Space between items', 'sgs-blocks' ) }
+						help={ __(
+							'Space between menu items at this device. Tablet and mobile follow desktop until set.',
+							'sgs-blocks'
+						) }
+						value={ gap }
+						onChange={ ( obj ) => setAttributes( { gap: obj } ) }
+					/>
+				</ResponsiveBoxControls>
 
 				<TypographyPanel
 					itemFontWeightCurrent={ itemFontWeightCurrent }
@@ -857,7 +859,22 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					submenuOpacity={ submenuOpacity }
 					submenuOpacityHover={ submenuOpacityHover }
 					setAttributes={ setAttributes }
-				/>
+				>
+					<LinkSpacingRows
+						itemPadding={ attributes.itemPadding }
+						itemMinHeight={ attributes.itemMinHeight }
+						setAttributes={ setAttributes }
+					/>
+					{ /* The bar has no Badge panel: a badge sits inside the item, so its spacing sits here. */ }
+					<BadgeSpacingRows
+						itemBadgePadding={ attributes.itemBadgePadding }
+						itemBadgeBorderRadius={
+							attributes.itemBadgeBorderRadius
+						}
+						itemBadgeGap={ attributes.itemBadgeGap }
+						setAttributes={ setAttributes }
+					/>
+				</ItemsPanel>
 
 				{ /* FR-41-37 — the lines between the top-level items (bar-only: a vertical
 				   list has no "next item to the right"). The shared Separators setting. */ }
@@ -875,6 +892,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					submenuTopOffset={ submenuTopOffset }
 					submenuMinWidth={ submenuMinWidth }
 					submenuPadding={ submenuPadding }
+					showSubmenuLinkPadding
+					submenuLinkPadding={ attributes.submenuLinkPadding }
 					submenuBorderWidth={ submenuBorderWidth }
 					submenuBorderStyle={ submenuBorderStyle }
 					submenuBorderRadius={ submenuBorderRadius }
@@ -991,16 +1010,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					itemMotionDuration={ itemMotionDuration }
 					itemMotionEasing={ itemMotionEasing }
 					itemMotionEasingCustom={ itemMotionEasingCustom }
-					setAttributes={ setAttributes }
-				/>
-
-				<EffectsPanel
+					showMagnet
 					itemMagnetEnabled={ itemMagnetEnabled }
-					setAttributes={ setAttributes }
 					magnetStrength={ itemMagnetStrength }
 					onMagnetStrengthChange={ ( val ) =>
 						setAttributes( { itemMagnetStrength: val } )
 					}
+					setAttributes={ setAttributes }
 				/>
 
 				<FeaturedPanel

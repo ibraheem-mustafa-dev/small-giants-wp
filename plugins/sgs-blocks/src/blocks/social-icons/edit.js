@@ -59,6 +59,7 @@ import { shapeUsesWidthOnly } from '../../utils/icon-shapes';
 import { templateFromSiteInfo, checklistRows, toggleLink } from './links';
 import { SocialIconLabelsPanel, rowLabelPreviewCss } from './labels';
 import RowShadowPanels, { rowShadowCanvasStyle } from './group-shadow';
+import { BrandHoverControl } from '../icon/shadow-panels';
 
 const LENGTH_UNITS = [
 	{ value: 'px', label: 'px' },
@@ -400,7 +401,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						</div>
 					) ) }
 				</PanelBody>
-				<PanelBody initialOpen={ false } title={ __( 'Icons', 'sgs-blocks' ) }>
+				<PanelBody
+					initialOpen={ false }
+					title={ __( 'Icons', 'sgs-blocks' ) }
+				>
 					<SelectControl
 						label={ __( 'Colours', 'sgs-blocks' ) }
 						help={
@@ -440,6 +444,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							/>
 						) }
 					</ResponsiveControl>
+					<BrandHoverControl
+						value={ attributes.childIconBrandHover }
+						onChange={ ( value ) =>
+							setAttributes( { childIconBrandHover: value } )
+						}
+					/>
 				</PanelBody>
 				<PanelBody
 					title={ __( 'Icon shape', 'sgs-blocks' ) }

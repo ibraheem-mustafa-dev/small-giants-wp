@@ -13,6 +13,7 @@
 import { __ } from '@wordpress/i18n';
 import { PanelBody, RangeControl, SelectControl } from '@wordpress/components';
 import { DesignTokenPicker, TierBorderControl } from '../../components';
+import { BadgeSpacingRows } from '../../shared/nav-menu-panels/LinkExtrasRows';
 
 /**
  * @param {Object}   props               Props.
@@ -114,6 +115,12 @@ export default function BadgePanel( {
 				label={ __( 'Badge border', 'sgs-blocks' ) }
 				value={ attributes.badgeBorder }
 				onChange={ ( next ) => setAttributes( { badgeBorder: next } ) }
+			/>
+			<BadgeSpacingRows
+				itemBadgePadding={ attributes.itemBadgePadding }
+				itemBadgeBorderRadius={ attributes.itemBadgeBorderRadius }
+				itemBadgeGap={ attributes.itemBadgeGap }
+				setAttributes={ setAttributes }
 			/>
 			<RangeControl
 				label={ __( 'Badge opacity', 'sgs-blocks' ) }

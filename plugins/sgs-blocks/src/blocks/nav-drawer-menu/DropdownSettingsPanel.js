@@ -8,8 +8,8 @@ import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
  * `navLabel` and `itemSmartContrast` apply to both the bar and the drawer
  * list, so `sgs/nav-bar-menu` carries its own copy of this Accessibility
  * panel. The bar's other two PanelBodies do not apply here:
- *   - "Menu panel" (the `drawerRef` picker, pairing a burger with the
- *     drawer it opens) is BAR-only — this block has no burger of its own.
+ *   - the "Panel this burger opens" picker (`drawerRef`, pairing a burger with the
+ *     drawer it opens, in the bar's "Menu Button" panel) is BAR-only — this block has no burger of its own.
  *   - "Dropdown menus" (`submenuAlign`/`submenuCaret`/`submenuCloseGrace`)
  *     is BAR-only — this block's accordion has no floating panel to align,
  *     no caret-disclosure-arrow choice (the `<details>` marker is the

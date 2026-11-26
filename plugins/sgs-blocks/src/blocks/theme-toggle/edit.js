@@ -166,24 +166,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 						</>
 					) }
-					{ ! hasDarkPalette && (
-						<Notice
-							status="warning"
-							isDismissible={ false }
-							className="sgs-theme-toggle-notice"
-						>
-							{ __(
-								'Dark colours are off for this site — this block will not render on the frontend until an automatic dark palette is enabled for this client (_sgsDark.enabled in the theme snapshot).',
-								'sgs-blocks'
-							) }
-						</Notice>
-					) }
-				</PanelBody>
-
-				<PanelBody
-					title={ __( 'Icon-only', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
 					<BooleanResponsiveControl
 						label={ __(
 							'Icon only (hide the label visually)',
@@ -203,6 +185,18 @@ export default function Edit( { attributes, setAttributes } ) {
 						} }
 						setAttributes={ setAttributes }
 					/>
+					{ ! hasDarkPalette && (
+						<Notice
+							status="warning"
+							isDismissible={ false }
+							className="sgs-theme-toggle-notice"
+						>
+							{ __(
+								'Dark colours are off for this site — this block will not render on the frontend until an automatic dark palette is enabled for this client (_sgsDark.enabled in the theme snapshot).',
+								'sgs-blocks'
+							) }
+						</Notice>
+					) }
 				</PanelBody>
 			</InspectorControls>
 

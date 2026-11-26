@@ -6,47 +6,27 @@ import {
 	TextControl,
 	ToggleControl,
 	RangeControl,
-	Notice,
 } from '@wordpress/components';
-import { useEntityRecords } from '@wordpress/core-data';
 import { ResponsiveOverride, SgsLengthControl } from '../../components';
-import CreateDrawerControl from './CreateDrawerControl';
-import { DRAWER_POST_TYPE, DRAWER_QUERY } from './create-drawer-seed';
 
 /**
- * SGS Nav Bar Menu (sgs/nav-bar-menu) — Settings tab panels: Accessibility, Menu
- * panel, Dropdown menus.
+ * SGS Nav Bar Menu (sgs/nav-bar-menu) — Settings tab panels: Accessibility, Dropdown menus.
  *
  * Sibling of MenuSettingsPanel.js; kept separate to stay under the project's
  * 250-line JS budget. Both are mounted from edit.js's `<InspectorControls>`
- * (default group) block.
+ * (default group) block. The "Panel this burger opens" picker (`drawerRef`)
+ * lives in the "Menu Button" panel (`BurgerDrawerRows.js`).
  *
- * drawerRef (Spec 37 FR-37-49) is a post-picker: a `SelectControl` populated
- * from PUBLISHED `sgs_drawer` posts, storing a POST ID. `0` means "no specific
- * pick" and falls back to the site's single Active-drawer pointer
- * (`Sgs_Active_Layout::AREA_DRAWER`, PHP-side). Same shape as
- * `sgs/modal`'s `modalRef` control (`modal/edit.js`) — same
- * `useEntityRecords( 'postType', …, { per_page: -1, status: ['publish'],
- * context: 'edit' } )` fetch, same manual-options-array-with-a-leading-
- * default-option shape, same dangling-reference `Notice` pattern.
- *
- * A new panel can also be created from here (FR-37-43's inline-creation clause)
- * — `CreateDrawerControl` saves a real `sgs_drawer` POST. There is no
- * "insert a drawer block into this page" path: a drawer is never an in-page
- * block.
- *
- * @param {Object}   root0                      Props.
- * @param {string}   root0.navLabel             The block's `navLabel` attribute.
- * @param {Function} root0.setAttributes        The block's attribute setter.
- * @param {number}   root0.drawerRef            The block's `drawerRef` attribute (a `sgs_drawer` post id, or 0).
- * @param {boolean}  root0.drawerNeedsAttention `showDrawerNotice` from useDrawerNotice() — opens the Menu panel section so the picker and the create action are in front of the operator when the burger opens nothing.
- * @param {string}   root0.submenuAlign         The block's `submenuAlign` attribute.
- * @param {Object}   root0.megaAlign            The block's `megaAlign` attribute (a tier object).
- * @param {boolean}  root0.submenuCaret         The block's `submenuCaret` attribute.
- * @param {number}   root0.submenuCloseGrace    The block's `submenuCloseGrace` attribute.
- * @param {number}   root0.submenuIntentDelay   The block's `submenuIntentDelay` attribute.
- * @param {string}   root0.submenuOpenOn        The block's `submenuOpenOn` attribute.
- * @param {boolean}  root0.submenuOpenOnFocus   The block's `submenuOpenOnFocus` attribute.
+ * @param {Object}   root0                    Props.
+ * @param {string}   root0.navLabel           The block's `navLabel` attribute.
+ * @param {Function} root0.setAttributes      The block's attribute setter.
+ * @param {string}   root0.submenuAlign       The block's `submenuAlign` attribute.
+ * @param {Object}   root0.megaAlign          The block's `megaAlign` attribute (a tier object).
+ * @param {boolean}  root0.submenuCaret       The block's `submenuCaret` attribute.
+ * @param {number}   root0.submenuCloseGrace  The block's `submenuCloseGrace` attribute.
+ * @param {number}   root0.submenuIntentDelay The block's `submenuIntentDelay` attribute.
+ * @param {string}   root0.submenuOpenOn      The block's `submenuOpenOn` attribute.
+ * @param {boolean}  root0.submenuOpenOnFocus The block's `submenuOpenOnFocus` attribute.
  */
 /**
  * Panel placements lined up with the page (Spec 36 FR-36-4 "Panel placement"),
@@ -71,8 +51,6 @@ export default function DropdownSettingsPanel( {
 	navLabel,
 	itemSmartContrast,
 	setAttributes,
-	drawerRef,
-	drawerNeedsAttention,
 	submenuAlign,
 	megaAlign,
 	submenuCaret,
@@ -89,36 +67,6 @@ export default function DropdownSettingsPanel( {
 	submenuOpenOnFocus,
 	itemHoverScope,
 } ) {
-	// Only PUBLISHED posts are offered — an unpublished one wouldn't resolve on
-	// the frontend either (render.php / Sgs_Drawer_Render::get_drawer_post_content()
-	// applies the same status check), so offering it here would be a picker
-	// option that silently opens nothing.
-	// DRAWER_QUERY is shared with useCreateDrawer's `invalidateResolution` call:
-	// core-data keys its resolution cache on the query arguments, so a query
-	// that differed by one key would leave a just-created panel missing from
-	// this list until a reload.
-	const { records: drawerPosts, isResolving: isResolvingDrawers } =
-		useEntityRecords( 'postType', DRAWER_POST_TYPE, DRAWER_QUERY );
-	const drawerRefOptions = [
-		{
-			label: __( "Site's active menu panel (default)", 'sgs-blocks' ),
-			value: 0,
-		},
-		...( drawerPosts || [] ).map( ( post ) => ( {
-			label:
-				post.title?.rendered ||
-				__( '(untitled menu panel)', 'sgs-blocks' ),
-			value: post.id,
-		} ) ),
-	];
-	const referencedDrawerPost = ( drawerPosts || [] ).find(
-		( post ) => post.id === drawerRef
-	);
-	// A non-zero drawerRef whose post is missing from the published list above
-	// — trashed, unpublished, or deleted since this block last saved —
-	// degrades the same way render.php does: nothing opens from the reference.
-	const drawerRefIsDangling =
-		0 !== drawerRef && ! isResolvingDrawers && ! referencedDrawerPost;
 	return (
 		<>
 			<PanelBody
@@ -166,42 +114,6 @@ export default function DropdownSettingsPanel( {
 					) }
 					__nextHasNoMarginBottom
 				/>
-			</PanelBody>
-
-			<PanelBody
-				title={ __( 'Menu panel', 'sgs-blocks' ) }
-				initialOpen={ true === drawerNeedsAttention }
-			>
-				<p style={ { marginTop: 0 } }>
-					{ __(
-						'Below the collapse size (see Burger Menu above) this menu becomes a burger button that opens a menu panel — on any device, including desktop if you choose Always. To change what visitors see in it, select that panel and edit its contents like any other block.',
-						'sgs-blocks'
-					) }
-				</p>
-				<SelectControl
-					label={ __( 'Panel this burger opens', 'sgs-blocks' ) }
-					value={ drawerRef }
-					options={ drawerRefOptions }
-					onChange={ ( val ) =>
-						setAttributes( { drawerRef: Number( val ) || 0 } )
-					}
-					help={ __(
-						'Leave on the default to use the panel set as active for the whole site. Pick a specific one only if this burger should open a different panel.',
-						'sgs-blocks'
-					) }
-					__nextHasNoMarginBottom
-					__next40pxDefaultSize
-				/>
-				{ drawerRefIsDangling && (
-					<Notice status="warning" isDismissible={ false }>
-						{ __(
-							'The chosen menu panel is missing, unpublished, or was deleted. This burger will open nothing until a valid one is chosen above.',
-							'sgs-blocks'
-						) }
-					</Notice>
-				) }
-
-				<CreateDrawerControl setAttributes={ setAttributes } />
 			</PanelBody>
 
 			<PanelBody

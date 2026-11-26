@@ -34,7 +34,7 @@ export default function NavMenuNotices( {
 					{ 0 === drawerState.total ? (
 						<p style={ { margin: 0 } }>
 							{ __(
-								'Below the collapse size this menu becomes a burger button — but there is no menu panel for it to open, so tapping it will do nothing. Choose a menu panel in this block’s Menu panel settings (you can create a new one there if your account allows it).',
+								'Below the collapse size this menu becomes a burger button — but there is no menu panel for it to open, so tapping it will do nothing. Choose a menu panel in this block’s Menu Button settings (you can create a new one there if your account allows it).',
 								'sgs-blocks'
 							) }
 						</p>

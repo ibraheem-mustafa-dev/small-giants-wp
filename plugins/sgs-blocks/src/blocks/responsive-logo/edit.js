@@ -19,6 +19,7 @@ import {
 	ResponsiveBoxControls,
 } from '../../components';
 import metadata from './block.json';
+import DarkLogoRows from './DarkLogoRows';
 
 // The attribute each device's width is stored in.
 const WIDTH_ATTR = {
@@ -171,76 +172,9 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<InspectorControls>
-				{ /* ── Panel 1: the logo switch, the logo per device, and the logo for dark backgrounds ── */ }
-				<PanelBody
-					title={ __( 'Logo switch', 'sgs-blocks' ) }
-					initialOpen
-				>
-					<p className="sgs-responsive-logo-editor__panel-hint">
-						{ __(
-							'Without a logo of its own, this block shows your site logo. Switch the editor to Tablet or Mobile to give a device its own file; a device without one shows the desktop logo.',
-							'sgs-blocks'
-						) }
-					</p>
-					{ siteLogoNote && (
-						<p className="sgs-responsive-logo-editor__panel-hint">
-							{ siteLogoNote }
-						</p>
-					) }
-					<SelectControl
-						label={ __( 'Switch to compact logo', 'sgs-blocks' ) }
-						value={ logoSwitchMode || 'mobile' }
-						options={ [
-							{
-								label: __( 'On mobile (≤767px)', 'sgs-blocks' ),
-								value: 'mobile',
-							},
-							{
-								label: __(
-									'On tablet & below (≤1023px)',
-									'sgs-blocks'
-								),
-								value: 'tablet',
-							},
-							{
-								label: __( 'Custom breakpoint', 'sgs-blocks' ),
-								value: 'custom',
-							},
-						] }
-						onChange={ ( val ) =>
-							setAttributes( { logoSwitchMode: val } )
-						}
-						help={ __(
-							'When the compact (tablet/mobile) logo replaces the desktop logo: on mobile, on tablet and below, or at a breakpoint you choose. Only applies once a tablet or mobile logo is set.',
-							'sgs-blocks'
-						) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-
-					{ 'custom' === logoSwitchMode && (
-						<RangeControl
-							label={ __(
-								'Custom breakpoint (px)',
-								'sgs-blocks'
-							) }
-							help={ __(
-								'Below this width the compact logo shows.',
-								'sgs-blocks'
-							) }
-							value={ logoSwitchCustomPx ?? 1024 }
-							onChange={ ( val ) =>
-								setAttributes( { logoSwitchCustomPx: val } )
-							}
-							min={ 320 }
-							max={ 2000 }
-							step={ 1 }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					) }
-				</PanelBody>
-
+				{ /* ── Panel 1: "Logo". The logo's own rows first, then what applies to the logo as a whole
+				   (the hints, the site-logo note), then the switch for a different logo on dark
+				   backgrounds with the dark logo's rows beneath it (`DarkLogoRows`). ── */ }
 				<MediaElementPanel
 					attributes={ attributes }
 					setAttributes={ setAttributes }
@@ -251,19 +185,31 @@ export default function Edit( { attributes, setAttributes } ) {
 					atoms={ LOGO_SLOT.atoms }
 					kinds={ LOGO_SLOT.kinds }
 					context={ LOGO_SLOT.context }
-				/>
-
-				{ /* ── Logo for dark backgrounds (U-13 §4.5). ── */ }
-				<MediaElementPanel
-					attributes={ attributes }
-					setAttributes={ setAttributes }
-					blockName="sgs/responsive-logo"
-					blockSlug="sgs/responsive-logo"
-					prefix="logoDark"
-					inGroup="settings"
-					atoms={ DARK_SLOT.atoms }
-					kinds={ DARK_SLOT.kinds }
-					context={ DARK_SLOT.context }
+					titleOverride={ __( 'Logo', 'sgs-blocks' ) }
+					openPanel="media"
+					panelContent={ {
+						media: (
+							<>
+								<p className="sgs-responsive-logo-editor__panel-hint">
+									{ __(
+										'Without a logo of its own, this block shows your site logo. Switch the editor to Tablet or Mobile to give a device its own file; a device without one shows the desktop logo.',
+										'sgs-blocks'
+									) }
+								</p>
+								{ siteLogoNote && (
+									<p className="sgs-responsive-logo-editor__panel-hint">
+										{ siteLogoNote }
+									</p>
+								) }
+								<DarkLogoRows
+									attributes={ attributes }
+									setAttributes={ setAttributes }
+									blockSlug="sgs/responsive-logo"
+									slot={ DARK_SLOT }
+								/>
+							</>
+						),
+					} }
 				/>
 
 				{ /* ── Panel 3: Sizing + behaviour ── */ }
@@ -378,6 +324,57 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						__nextHasNoMarginBottom
 					/>
+					<SelectControl
+						label={ __( 'Switch to compact logo', 'sgs-blocks' ) }
+						value={ logoSwitchMode || 'mobile' }
+						options={ [
+							{
+								label: __( 'On mobile (≤767px)', 'sgs-blocks' ),
+								value: 'mobile',
+							},
+							{
+								label: __(
+									'On tablet & below (≤1023px)',
+									'sgs-blocks'
+								),
+								value: 'tablet',
+							},
+							{
+								label: __( 'Custom breakpoint', 'sgs-blocks' ),
+								value: 'custom',
+							},
+						] }
+						onChange={ ( val ) =>
+							setAttributes( { logoSwitchMode: val } )
+						}
+						help={ __(
+							'When the compact (tablet/mobile) logo replaces the desktop logo: on mobile, on tablet and below, or at a breakpoint you choose. Only applies once a tablet or mobile logo is set.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					{ 'custom' === logoSwitchMode && (
+						<RangeControl
+							label={ __(
+								'Custom breakpoint (px)',
+								'sgs-blocks'
+							) }
+							help={ __(
+								'Below this width the compact logo shows.',
+								'sgs-blocks'
+							) }
+							value={ logoSwitchCustomPx ?? 1024 }
+							onChange={ ( val ) =>
+								setAttributes( { logoSwitchCustomPx: val } )
+							}
+							min={ 320 }
+							max={ 2000 }
+							step={ 1 }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					) }
 				</PanelBody>
 			</InspectorControls>
 

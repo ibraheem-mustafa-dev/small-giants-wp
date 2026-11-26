@@ -1,6 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { PanelBody } from '@wordpress/components';
 import { IconPicker } from '../../components';
+import SubmenuLinkPaddingRow from './SubmenuLinkPaddingRow';
 
 /**
  * SGS Nav Bar/Drawer Menu (shared, sgs/nav-bar-menu + sgs/nav-drawer-menu) — Styles tab: the "Submenu — Items" panel (Spec 36 §14
@@ -12,12 +13,14 @@ import { IconPicker } from '../../components';
  * the Typography panel's own "Submenu" target — a second live control writing either
  * would be a duplicate writer, which `check-duplicate-controls.js` bans.
  *
- * @param {Object}   root0                   Props.
- * @param {Object}   root0.sublinkMarkerIcon `sublinkMarkerIcon` — `{ source, name }`.
- * @param {Function} root0.setAttributes     The block's attribute setter.
+ * @param {Object}   root0                    Props.
+ * @param {Object}   root0.sublinkMarkerIcon  `sublinkMarkerIcon` — `{ source, name }`.
+ * @param {Object}   root0.submenuLinkPadding `submenuLinkPadding` — a tier object of {top,right,bottom,left} boxes.
+ * @param {Function} root0.setAttributes      The block's attribute setter.
  */
 export default function SubmenuItemsPanel( {
 	sublinkMarkerIcon,
+	submenuLinkPadding,
 	setAttributes,
 } ) {
 	return (
@@ -57,18 +60,15 @@ export default function SubmenuItemsPanel( {
 				) }
 			</p>
 
-			{ /* ⛔ A NAMED GAP, not a fabricated control (§9.8, §12). There is no
-			   submenu-LINK padding attribute on this block — `submenuPadding` belongs
-			   to the PANEL and lives in "Submenu — Container". Inventing one here would
-			   be a control writing to an attribute nothing declares or renders. The
-			   slot is named so the absence reads as a decision rather than an
-			   oversight. */ }
-			<p className="components-base-control__help">
-				{ __(
-					'Spacing: there is no separate spacing setting for an individual link yet — the panel’s own inner spacing, under Submenu — Container, is what sets the room around them.',
+			<SubmenuLinkPaddingRow
+				label={ __( 'Submenu link padding', 'sgs-blocks' ) }
+				help={ __(
+					'Padding inside each accordion sub-item. Empty keeps the default 0 16px.',
 					'sgs-blocks'
 				) }
-			</p>
+				value={ submenuLinkPadding }
+				setAttributes={ setAttributes }
+			/>
 		</PanelBody>
 	);
 }

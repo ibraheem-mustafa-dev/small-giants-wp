@@ -1,5 +1,5 @@
 /**
- * SGS Nav Drawer Menu (sgs/nav-drawer-menu) — Styles tab: "Section motion".
+ * SGS Nav Drawer Menu (sgs/nav-drawer-menu) — Settings tab: "Accordion open and close".
  * How an accordion section opens and closes: none, fade, fade and lift, height.
  * It runs on the `<details>` element's `::details-content` pseudo-element, which
  * the motion model cannot target, so it keeps its own attributes. Render side:
@@ -50,9 +50,15 @@ export default function SectionMotionPanel( { attributes, setAttributes } ) {
 
 	return (
 		<PanelBody
-			title={ __( 'Section motion', 'sgs-blocks' ) }
+			title={ __( 'Accordion open and close', 'sgs-blocks' ) }
 			initialOpen={ false }
 		>
+			<p className="components-base-control__help">
+				{ __(
+					'Row-by-row entrance, when the drawer opens, is in the Entrance and reveal panel.',
+					'sgs-blocks'
+				) }
+			</p>
 			<SelectControl
 				label={ __( 'Open and close animation', 'sgs-blocks' ) }
 				help={ __(

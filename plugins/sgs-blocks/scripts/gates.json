@@ -2732,6 +2732,24 @@
     "order": 250
   },
   {
+    "id": "check-nav-panels",
+    "cmd": "python scripts/check-nav-panels.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1000,
+    "order": 250
+  },
+  {
+    "id": "check-nav-panels-selftest",
+    "cmd": "python scripts/check-nav-panels.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1000,
+    "order": 250
+  },
+  {
     "id": "migrate-spacing-panel-selftest",
     "cmd": "node scripts/migrate-spacing-panel.js --self-test",
     "tier": "fast",

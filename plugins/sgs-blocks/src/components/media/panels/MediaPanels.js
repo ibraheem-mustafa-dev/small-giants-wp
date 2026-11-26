@@ -65,6 +65,7 @@ function useActiveDevice() {
  * @param {Object}   [props.panelContent] Panel id to caller-supplied content.
  * @param {string}   [props.device]       Overrides the editor's active device.
  * @param {string}   [props.label]        Names the slot in each panel title ("Before: Media") when a block mounts more than one.
+ * @param {string}   [props.titleOverride] Replaces every panel title this mount draws (a block that folds a second slot's rows into one panel and names it itself); empty keeps each panel's own title.
  * @param {string[]} [props.blockOwns]    Bases the block edits with its own control; their rows are left out.
  * @param {Function} [props.slotActions]  Extra actions for an image slot (`MediaSlotField`'s `extraActions`).
  * @param {string|string[]} [props.openPanel] Id (or ids, one per tab) of the panel that starts open (each tab's first panel); every other starts closed.
@@ -82,6 +83,7 @@ export default function MediaPanels( {
 	panelContent = {},
 	device: deviceOverride,
 	label = '',
+	titleOverride = '',
 	blockOwns = [],
 	group,
 	slotActions,
@@ -168,6 +170,8 @@ export default function MediaPanels( {
 			.map( ( [ key, def ] ) => [ key, def.default ] )
 	);
 
+	const titleOf = ( panel ) => titleOverride || panel.title();
+
 	const mount = ( group ) =>
 		model
 			.filter( ( entry ) => entry.panel.group === group )
@@ -181,9 +185,9 @@ export default function MediaPanels( {
 									? /* translators: 1: the slot's name, 2: the panel title. */ sprintf(
 											__( '%1$s: %2$s', 'sgs-blocks' ),
 											label,
-											panel.title()
+											titleOf( panel )
 									  )
-									: panel.title()
+									: titleOf( panel )
 							}
 							devices={ panelOwnDevices(
 								rows,
@@ -226,7 +230,7 @@ export default function MediaPanels( {
 								)
 							}
 							label={ resetLabel }
-							panelTitle={ panel.title() }
+							panelTitle={ titleOf( panel ) }
 						/>
 					) }
 					{ rows.map( ( row ) => (

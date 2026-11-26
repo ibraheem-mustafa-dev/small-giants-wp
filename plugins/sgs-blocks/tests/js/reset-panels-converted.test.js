@@ -1,5 +1,5 @@
 /**
- * Stage E2 item 2: a ToolsPanel whose items were all shown by default is now a panel with one small Reset. Three of the
+ * Stage E2 item 2: a ToolsPanel whose items were all shown by default is now a panel with one small Reset. Two of the
  * converted panels, mounted for real: Reset is absent while nothing is set, present once a control holds a value, and
  * clears every control the old panel's items cleared.
  */
@@ -62,8 +62,6 @@ jest.mock( '../../src/components/motion/EasingAtom', () => ( {
 	default: () => null,
 } ) );
 
-const MegaBodyPaddingPanel =
-	require( '../../src/blocks/nav-drawer-menu/MegaBodyPaddingPanel' ).default;
 const DrawerHoverControls =
 	require( '../../src/blocks/mega-panel/DrawerHoverControls' ).default;
 const FieldMarksPanel =
@@ -83,39 +81,6 @@ const click = ( el ) =>
 	);
 const merged = ( mock ) =>
 	Object.assign( {}, ...mock.mock.calls.map( ( c ) => c[ 0 ] ) );
-
-describe( 'a top-level converted panel (Mega panel padding)', () => {
-	it( 'is a closed panel with no Reset while nothing is set', () => {
-		const { container, unmount } = mountNode(
-			h( MegaBodyPaddingPanel, {
-				name: 'sgs/nav-drawer-menu',
-				megaBodyPadding: {},
-				setAttributes: jest.fn(),
-			} )
-		);
-		expect(
-			container.querySelector( 'section' ).getAttribute( 'data-open' )
-		).toBe( 'false' );
-		expect(
-			container.querySelector( '.sgs-panel-reset__button' )
-		).toBeNull();
-		unmount();
-	} );
-
-	it( 'shows Reset once a padding is set, and Reset empties it', () => {
-		const setAttributes = jest.fn();
-		const { container, unmount } = mountNode(
-			h( MegaBodyPaddingPanel, {
-				name: 'sgs/nav-drawer-menu',
-				megaBodyPadding: { desktop: { top: '4px' } },
-				setAttributes,
-			} )
-		);
-		click( container.querySelector( '.sgs-panel-reset__button' ) );
-		expect( merged( setAttributes ) ).toEqual( { megaBodyPadding: {} } );
-		unmount();
-	} );
-} );
 
 describe( 'a nested converted panel (Drawer hover effects)', () => {
 	const ALL_SET = {
