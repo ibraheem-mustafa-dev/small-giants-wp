@@ -1557,9 +1557,6 @@
 				"layerSource": null
 			}
 		],
-		"expectEmpty": {
-			"1": "a picture block with no picture prints nothing on the front end; the empty look is read through the paintStates entry"
-		},
 		"paintStates": [
 			{
 				"name": "empty",
