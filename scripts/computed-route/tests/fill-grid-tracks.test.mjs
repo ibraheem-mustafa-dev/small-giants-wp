@@ -63,10 +63,23 @@ test( 'MUST FAIL: the node tiers, its count setting and the write Fill made take
 	const attrs2 = { gridTemplateColumns: { desktop: '1fr 1fr' }, columns: { desktop: 2 } };
 	const priorCount = { node: 'n0', attr: 'columns', after: { desktop: 2 }, widths: [ 1440 ], how: 'declared' };
 	const r2 = gridTrackWrites( { ...tree( attrs2, [ 'a1', 'a2' ] ), m: two(), writes: [ priorCount ] } );
-	assert.deepEqual( [ priorCount.after, priorCount.retracked, r2.writes.map( ( w ) => w.attr ) ], [ { desktop: 1 }, [ 1440 ], [ 'gridTemplateColumns' ] ] );
+	assert.deepEqual( [ priorCount.after, priorCount.retracked, r2.writes.map( ( w ) => w.attr ) ], [ { desktop: 1 }, [ 1440, 768, 375 ], [ 'gridTemplateColumns' ] ] );
 	assert.deepEqual( confirmable( [ priorCount ] ), [], 'a write every width of which was rewritten is not judged' );
 	const bare = tree( { gridTemplateColumns: { desktop: '1fr 1fr' } }, [ 'a1', 'a2' ] );
 	assert.equal( gridTrackWrites( { ...bare, m: two(), writes: [] } ).writes.length, 1, 'with no write to replace, the rewrite is a write of its own' );
+} );
+
+test( 'MUST FAIL: a narrower tier that holds no value and inherits a rewritten tier is judged only where the rewrite did not reach it', () => {
+	const attrs = { gridTemplateColumns: { desktop: '1fr 1fr' } };
+	const prior = { node: 'n0', attr: 'gridTemplateColumns', after: structuredClone( attrs.gridTemplateColumns ), widths: [ 375, 768, 1440 ], how: 'declared' };
+	gridTrackWrites( { ...tree( attrs, [ 'a1', 'a2', 'a3', 'a4' ] ), m: two(), writes: [ prior ] } );
+	assert.deepEqual( [ ...prior.retracked ].sort( ( a, b ) => a - b ), [ 375, 768, 1440 ], 'tablet and mobile take the desktop tracks, so the resting draft tracks are no measure of them' );
+	assert.deepEqual( confirmable( [ prior ] ), [] );
+	// A tier with a value of its own is not reached by another tier's rewrite.
+	const own = { gridTemplateColumns: { desktop: '1fr 1fr', mobile: '1fr' } };
+	const priorOwn = { node: 'n0', attr: 'gridTemplateColumns', after: structuredClone( own.gridTemplateColumns ), widths: [ 375, 768, 1440 ], how: 'declared' };
+	gridTrackWrites( { ...tree( own, [ 'a1', 'a2', 'a3', 'a4' ] ), m: two(), writes: [ priorOwn ] } );
+	assert.deepEqual( [ ...priorOwn.retracked ].sort( ( a, b ) => a - b ), [ 768, 1440 ], 'mobile holds its own value, which was not rewritten' );
 } );
 
 test( 'MUST FAIL: a cell the draft shows only at some widths holds its items at those widths, so they are no orphans there', () => {

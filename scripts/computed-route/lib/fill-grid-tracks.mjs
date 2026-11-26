@@ -15,6 +15,19 @@
 import { gridTracks } from './skeleton-record.mjs';
 
 const TIER_WIDTH = { desktop: 1440, tablet: 768, mobile: 375 };
+// The widths a rewrite of a tier reaches: its own, and those of the narrower tiers that hold no value and inherit it.
+function reached( value, widths ) {
+	const out = new Set( widths );
+	let source = null;
+	for ( const [ tier, width ] of Object.entries( TIER_WIDTH ) ) {
+		if ( undefined !== value?.[ tier ] && '' !== value[ tier ] ) {
+			source = width;
+		} else if ( null !== source && out.has( source ) ) {
+			out.add( width );
+		}
+	}
+	return [ ...out ];
+}
 const within = ( m, key, ancestor ) => {
 	for ( let p = m.byKey[ key ]; p; p = m.byKey[ p.parentKey ] ) {
 		if ( p === ancestor ) {
@@ -114,11 +127,12 @@ export function gridTrackWrites( { nodes, flat, refOf, m, writes } ) {
 		const ref = refOf( w.node );
 		const now = structuredClone( w.node.attributes[ w.attr ] );
 		const prior = writes.filter( ( x ) => x.node === ref && w.attr === x.attr );
-		prior.forEach( ( x ) => Object.assign( x, { after: now, retracked: [ ...new Set( [ ...( x.retracked || [] ), w.width ] ) ] } ) );
+		const hit = reached( now, [ w.width ] );
+		prior.forEach( ( x ) => Object.assign( x, { after: now, retracked: [ ...new Set( [ ...( x.retracked || [] ), ...hit ] ) ] } ) );
 		if ( ! prior.length ) {
 			const mine = out.writes.find( ( x ) => x.node === ref && w.attr === x.attr );
-			mine ? Object.assign( mine, { after: now, widths: [ ...mine.widths, w.width ] } )
-				: out.writes.push( { node: ref, index: w.rec.index, block: w.rec.name, slot: '', prop: 'grid-template-columns', attr: w.attr, before: w.before, after: now, widths: [ w.width ], how: 'grid-tracks' } );
+			mine ? Object.assign( mine, { after: now, widths: [ ...new Set( [ ...mine.widths, ...hit ] ) ] } )
+				: out.writes.push( { node: ref, index: w.rec.index, block: w.rec.name, slot: '', prop: 'grid-template-columns', attr: w.attr, before: w.before, after: now, widths: hit, how: 'grid-tracks' } );
 		}
 	}
 	return out;

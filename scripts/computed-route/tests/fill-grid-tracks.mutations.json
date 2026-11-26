@@ -37,7 +37,7 @@
 	},
 	{
 		"file": "lib/fill-grid-tracks.mjs",
-		"find": "retracked: [ ...new Set( [ ...( x.retracked || [] ), w.width ] ) ]",
+		"find": "retracked: [ ...new Set( [ ...( x.retracked || [] ), ...hit ] ) ]",
 		"replace": "retracked: []",
 		"why": "the rewritten write would be judged against the draft's resting tracks at every width and reported as a divergence"
 	},
@@ -70,5 +70,11 @@
 		"find": "w.retracked ? { ...w, widths: ( w.widths || [] ).filter( ( x ) => ! w.retracked.includes( x ) ) } : w",
 		"replace": "w",
 		"why": "a rewritten write is judged against the draft at the widths the rewrite reached"
+	},
+	{
+		"file": "lib/fill-grid-tracks.mjs",
+		"find": "const hit = reached( now, [ w.width ] );",
+		"replace": "const hit = [ w.width ];",
+		"why": "a narrower tier that inherits the rewritten value is judged against the old draft tracks"
 	}
 ]
