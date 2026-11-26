@@ -2,7 +2,8 @@
 /**
  * The cart trigger sweep's rewrite: the icon button's and the text pill's separate padding, size and radius become one shared set.
  *
- * Pure functions with no WordPress dependency, so the sweep script and its test both load them.
+ * Pure functions with no WordPress dependency, so the sweep script and its test both load them; the three `*_rows` readers and the
+ * multisite message take the global `$wpdb` they are handed, and are shared by the sweep and the deploy guard so both read the same rows.
  *
  * Old settings                                     New setting
  *   pillPadding                                    triggerPadding
@@ -120,6 +121,36 @@ if ( ! function_exists( 'sgs_cart_trigger_sweep_old_keys' ) ) {
 			return null;
 		}
 		return preg_match( '/^\d+(?:\.\d+)?$/', $raw ) ? $raw . 'px' : $raw;
+	}
+
+	/**
+	 * Why the new size control would print a saved length differently from the old block, or '' when it prints the same.
+	 *
+	 * Mirrors `includes/helpers-icon.php::sgs_icon_length_value` (called with a 640px cap by the cart's size rule), which this file
+	 * cannot load: a length in a unit it does not list (vmin, ch, svh, pt) prints nothing, and a length over the cap is cut to it. A
+	 * function value (`var`, `calc`, `min`, `max`, `clamp`) goes through the same sanitiser as before and prints the same.
+	 * `tests/php/CartTriggerSharedSettingsTest.php` renders each kind of value through the real function to keep the two in step.
+	 *
+	 * @param string $css A CSS length from `sgs_cart_trigger_sweep_length()` or the icon size.
+	 * @return string The reason, '' when nothing changes.
+	 */
+	function sgs_cart_trigger_sweep_length_problem( string $css ): string {
+		if ( 1 === preg_match( '/^(?:var|calc|min|max|clamp)\(/i', $css ) ) {
+			return '';
+		}
+		if ( ! preg_match( '/^(\d+(?:\.\d+)?)(px|rem|em|%|vw|vh)?$/', $css, $m ) ) {
+			return 'the new size control prints nothing for a length in this form (it accepts px, rem, em, %, vw, vh and var, calc, min, max or clamp)';
+		}
+		$unit = '' === ( $m[2] ?? '' ) ? 'px' : $m[2];
+		$max  = array(
+			'px'  => 640,
+			'rem' => 40,
+			'em'  => 40,
+			'%'   => 100,
+			'vw'  => 100,
+			'vh'  => 100,
+		)[ $unit ];
+		return (float) $m[1] > $max ? 'the new size control cuts a length to ' . $max . $unit . ' at most' : '';
 	}
 
 	/**
@@ -245,7 +276,18 @@ if ( ! function_exists( 'sgs_cart_trigger_sweep_old_keys' ) ) {
 		}
 
 		// Size: a device writes the keys its style reads, and only when the cascade would not give the old result.
-		$old_size  = sgs_cart_trigger_sweep_old_size( $attrs, $modes );
+		$old_size = sgs_cart_trigger_sweep_old_size( $attrs, $modes );
+		$listed = array();
+		foreach ( $old_size as $device => $box ) {
+			foreach ( array( 'width', 'height' ) as $side ) {
+				$problem = null === $box[ $side ] ? '' : sgs_cart_trigger_sweep_length_problem( $box[ $side ] );
+				// A value a device inherits is listed once, at the device that sets it.
+				if ( '' !== $problem && ! isset( $listed[ $side . $box[ $side ] ] ) ) {
+					$listed[ $side . $box[ $side ] ] = true;
+					$conflicts[]                     = sprintf( 'size: the %s %s "%s" is kept, but %s', $device, $side, $box[ $side ], $problem );
+				}
+			}
+		}
 		$size      = array();
 		$inherit_w = null;
 		$inherit_h = null;
@@ -299,6 +341,58 @@ if ( ! function_exists( 'sgs_cart_trigger_sweep_old_keys' ) ) {
 			'attrs'     => array_merge( array_diff_key( $attrs, array_flip( $old_keys ) ), $new ),
 			'conflicts' => $conflicts,
 		);
+	}
+
+	/**
+	 * Why the sweep and the deploy guard refuse to run on a multisite network.
+	 *
+	 * @return string
+	 */
+	function sgs_cart_trigger_sweep_multisite_message(): string {
+		return 'This is a multisite network: the sweep reads the posts table of one site and would miss the content of every other site, so it does not run here. Sweep each site by hand with --url, then deploy.';
+	}
+
+	/**
+	 * Every row that can hold a basket: all posts but revisions and auto drafts, nested blocks included.
+	 *
+	 * @param object $wpdb The global `$wpdb`.
+	 * @return array|null The rows, or null when the query failed (a failed query is never an empty site: callers must stop).
+	 */
+	function sgs_cart_trigger_sweep_post_rows( $wpdb ): ?array {
+		$rows = $wpdb->get_results( 'SELECT ID, post_type, post_status, post_name, post_content FROM ' . $wpdb->posts . " WHERE post_type NOT IN ('revision','auto-draft') AND post_content LIKE '%wp:sgs/cart%' ORDER BY ID" ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- a literal clause and core's table name.
+		return is_array( $rows ) && '' === (string) $wpdb->last_error ? $rows : null;
+	}
+
+	/**
+	 * The places outside the posts table that hold a basket with an old trigger setting: `options` and `postmeta` rows. The sweep does
+	 * not rewrite them; it names them so nobody deploys over them.
+	 *
+	 * @param object $wpdb The global `$wpdb`.
+	 * @return array<int, array{label: string, blocks: int, keys: string[]}>|null The hits, or null when a query failed.
+	 */
+	function sgs_cart_trigger_sweep_outside_rows( $wpdb ): ?array {
+		$queries = array(
+			"SELECT CONCAT('option ', option_name) AS label, option_value AS content FROM " . $wpdb->options . " WHERE option_value LIKE '%wp:sgs/cart%'",
+			"SELECT CONCAT('post ', post_id, ' meta ', meta_key) AS label, meta_value AS content FROM " . $wpdb->postmeta . " WHERE meta_value LIKE '%wp:sgs/cart%'",
+		);
+		$hits    = array();
+		foreach ( $queries as $query ) {
+			$rows = $wpdb->get_results( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- literal clauses and core's table names.
+			if ( ! is_array( $rows ) || '' !== (string) $wpdb->last_error ) {
+				return null;
+			}
+			foreach ( $rows as $row ) {
+				$result = sgs_cart_trigger_sweep_content( (string) $row->content, static fn( array $a ): string => '' );
+				if ( $result['changed'] > 0 ) {
+					$hits[] = array(
+						'label'  => (string) $row->label,
+						'blocks' => $result['changed'],
+						'keys'   => array_keys( $result['keys'] ),
+					);
+				}
+			}
+		}
+		return $hits;
 	}
 
 	/**

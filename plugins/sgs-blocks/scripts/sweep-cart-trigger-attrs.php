@@ -20,6 +20,9 @@
  * is left as it is and listed by id, and the run exits with an error, unless `accept-conflicts` is also given (then the block keeps
  * the radius the line names and the other is lost). It is idempotent: a second run finds nothing.
  *
+ * It does not rewrite content outside the posts table (an `options` or `postmeta` row that holds a basket with an old setting): it names
+ * such rows (`NOT REWRITTEN`) so nobody deploys over them, and it stops on a multisite network or a database error.
+ *
  * Run (`apply`, `accept-conflicts` and `json` are positional words because eval-file passes those to the file and rejects other flags).
  * The scripts folder is not in the deploy payload, so on a site still running the old plugin copy this file to the server home with
  * its `lib/cart-trigger-sweep.php` beside it (`~/sweep-cart-trigger-attrs.php`, `~/lib/cart-trigger-sweep.php`) and run it from there:
@@ -107,7 +110,14 @@ function sgs_cart_trigger_sweep_run( array $words ): void {
 	$accept    = in_array( 'accept-conflicts', $words, true ) || '1' === getenv( 'SGS_SWEEP_ACCEPT_CONFLICTS' );
 	$json_only = in_array( 'json', $words, true );
 
-	$rows = $wpdb->get_results( 'SELECT ID, post_type, post_status, post_name, post_content FROM ' . $wpdb->posts . " WHERE post_type NOT IN ('revision','auto-draft') AND post_content LIKE '%wp:sgs/cart%' ORDER BY ID" ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- a literal clause and core's table name.
+	if ( is_multisite() ) {
+		WP_CLI::error( sgs_cart_trigger_sweep_multisite_message() );
+	}
+	$rows    = sgs_cart_trigger_sweep_post_rows( $wpdb );
+	$outside = sgs_cart_trigger_sweep_outside_rows( $wpdb );
+	if ( null === $rows || null === $outside ) {
+		WP_CLI::error( 'Database error, so the saved content could not be read (nothing was changed): ' . $wpdb->last_error );
+	}
 
 	$totals  = array(
 		'posts_scanned'  => count( $rows ),
@@ -119,6 +129,7 @@ function sgs_cart_trigger_sweep_run( array $words ): void {
 		'failed'         => 0,
 		'conflict_posts' => array(),
 		'held_back'      => array(),
+		'outside_posts'  => $outside,
 	);
 	$by_type = array();
 	foreach ( $rows as $row ) {
@@ -187,6 +198,9 @@ function sgs_cart_trigger_sweep_run( array $words ): void {
 		}
 		foreach ( $totals['conflicts'] as $line ) {
 			WP_CLI::log( '  NOT KEPT ' . $line );
+		}
+		foreach ( $outside as $hit ) {
+			WP_CLI::log( '  NOT REWRITTEN ' . $hit['label'] . ': ' . $hit['blocks'] . ' sgs/cart block(s) with old settings ' . implode( ', ', $hit['keys'] ) . ' (outside the posts table: edit it by hand; the deploy refuses until it is gone)' );
 		}
 		if ( array() !== $totals['conflict_posts'] ) {
 			WP_CLI::log( '  posts with a value that cannot be kept (apply leaves them unless accept-conflicts is given): ' . implode( ', ', array_map( static fn( int $id ): string => '#' . $id, $totals['conflict_posts'] ) ) );

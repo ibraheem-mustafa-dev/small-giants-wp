@@ -274,4 +274,108 @@ final class CartTriggerSharedSettingsTest extends TestCase {
 		$again = sgs_cart_trigger_sweep_content( $result['content'], static fn( array $a ): string => json_encode( $a ) );
 		$this->assertSame( 0, $again['changed'] );
 	}
+
+	/** @return array<string, array{0: mixed, 1: bool, 2: string}> A saved pill height, whether the sweep must list it, and what the new control prints ('' for nothing, 'any' for a function value). */
+	public static function pill_heights(): array {
+		return array(
+			'px'              => array( '20px', false, '20px' ),
+			'a number'        => array( 48, false, '48px' ),
+			'the px cap'      => array( '640px', false, '640px' ),
+			'over the px cap' => array( '700px', true, '640px' ),
+			'rem'             => array( '3rem', false, '3rem' ),
+			'over the rem cap' => array( '41rem', true, '40rem' ),
+			'percent'         => array( '50%', false, '50%' ),
+			'over 100 percent' => array( '120%', true, '100%' ),
+			'vmin'            => array( '20vmin', true, '' ),
+			'ch'              => array( '5ch', true, '' ),
+			'svh'             => array( '10svh', true, '' ),
+			'pt'              => array( '12pt', true, '' ),
+			'clamp'           => array( 'clamp(20px,5vw,40px)', false, 'any' ),
+			'calc'            => array( 'calc(100% - 10px)', false, 'any' ),
+			'var'             => array( 'var(--x)', false, 'any' ),
+		);
+	}
+
+	/**
+	 * The sweep lists a pill height the new size control prints differently, and the list agrees with the real renderer.
+	 *
+	 * @dataProvider pill_heights
+	 * @param mixed  $saved    The saved pill height.
+	 * @param bool   $listed   Whether the sweep must list it as a conflict.
+	 * @param string $prints   What the renderer prints after `min-height:`.
+	 */
+	public function test_a_pill_height_the_new_control_prints_differently_is_listed( $saved, bool $listed, string $prints ): void {
+		$result = sgs_cart_trigger_sweep_attrs( array( 'triggerStyle' => 'pill', 'pillMinHeight' => array( 'desktop' => $saved ) ) );
+		$this->assertSame( $listed, array() !== $result['conflicts'], var_export( $saved, true ) . ' conflicts: ' . implode( ' | ', $result['conflicts'] ) );
+		$css = $this->css( $result['attrs'] );
+		if ( 'any' === $prints ) {
+			$this->assertStringContainsString( 'min-height:', $css );
+		} elseif ( '' === $prints ) {
+			$this->assertStringNotContainsString( 'min-height', $css );
+		} else {
+			$this->assertStringContainsString( self::TRIGGER . '{min-height:' . $prints . ';}', $css );
+		}
+	}
+
+	public function test_an_icon_size_over_the_cap_is_listed_and_apply_holds_the_post_back(): void {
+		$result = sgs_cart_trigger_sweep_attrs( array( 'iconTriggerSize' => array( 'desktop' => 700 ) ) );
+		$this->assertCount( 2, $result['conflicts'] ); // Width and height.
+		$this->assertStringContainsString( self::TRIGGER . '{min-width:640px;min-height:640px;}', $this->css( $result['attrs'] ) );
+		$this->assertTrue( sgs_cart_trigger_sweep_blocked( $result['conflicts'], false ) );
+		$this->assertFalse( sgs_cart_trigger_sweep_blocked( $result['conflicts'], true ) );
+	}
+
+	/** A `$wpdb` stand-in: rows per table, or a failure. */
+	private function wpdb( array $by_table, string $error = '' ): object {
+		return new class( $by_table, $error ) {
+			public $posts    = 'wp_posts';
+			public $options  = 'wp_options';
+			public $postmeta = 'wp_postmeta';
+			public $last_error = '';
+			private array $by_table;
+			private string $error;
+			public function __construct( array $by_table, string $error ) {
+				$this->by_table = $by_table;
+				$this->error    = $error;
+			}
+			public function get_results( string $query ) {
+				if ( '' !== $this->error ) {
+					$this->last_error = $this->error;
+					return null;
+				}
+				foreach ( $this->by_table as $table => $rows ) {
+					if ( false !== strpos( $query, $table ) ) {
+						return $rows;
+					}
+				}
+				return array();
+			}
+		};
+	}
+
+	public function test_a_database_error_is_never_an_empty_site(): void {
+		$this->assertNull( sgs_cart_trigger_sweep_post_rows( $this->wpdb( array(), 'Table is marked as crashed' ) ) );
+		$this->assertNull( sgs_cart_trigger_sweep_outside_rows( $this->wpdb( array(), 'Table is marked as crashed' ) ) );
+		$this->assertSame( array(), sgs_cart_trigger_sweep_post_rows( $this->wpdb( array() ) ) );
+	}
+
+	public function test_an_old_key_in_an_option_or_post_meta_row_is_found(): void {
+		$old   = '<!-- wp:sgs/cart {"pillPadding":{"desktop":{"top":"1px"}}} /-->';
+		$new   = '<!-- wp:sgs/cart {"triggerPadding":{"desktop":{"top":"1px"}}} /-->';
+		$hits  = sgs_cart_trigger_sweep_outside_rows(
+			$this->wpdb(
+				array(
+					'wp_options'  => array( (object) array( 'label' => 'option a', 'content' => $old ), (object) array( 'label' => 'option b', 'content' => $new ) ),
+					'wp_postmeta' => array( (object) array( 'label' => 'post 9 meta _x', 'content' => $old ) ),
+				)
+			)
+		);
+		$this->assertSame( array( 'option a', 'post 9 meta _x' ), array_column( $hits, 'label' ) );
+		$this->assertSame( array( 'pillPadding' ), $hits[0]['keys'] );
+	}
+
+	public function test_the_multisite_refusal_says_what_to_do(): void {
+		$this->assertStringContainsString( 'multisite', sgs_cart_trigger_sweep_multisite_message() );
+		$this->assertStringContainsString( '--url', sgs_cart_trigger_sweep_multisite_message() );
+	}
 }
