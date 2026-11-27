@@ -4,6 +4,7 @@
 	"_not_gated": "total_gap (3363 live) is deliberately NOT gated. A GAP means an element's declared cluster names a CSS property the element has no attribute for — e.g. a container's `fill` cluster naming css:object-fit. That is COVERAGE, not a defect. Gating it would fail every build forever while measuring the wrong thing.",
 	"orphan_style_defect": 0,
 	"total_state_without_base": 4,
+	"native_without_supports": 23,
 	"_accepted": {
 		"orphan_style_defect": {
 			"count": 0,
@@ -33,6 +34,7 @@
 			]
 		}
 	},
+	"_native_without_supports": "attrMap entries that name a `native:<supports path>` the block's supports no longer declares (staleNativeMaps()). 2026-11-27: the 15 spacing entries the spacing panel migration left behind (card-grid, feature-grid, form-step, hero, post-grid, pricing-table, product-card, tabs, testimonial-slider) now name the owned `padding` / `margin` attributes. The 23 left are colour and text-align maps (native:color.text, native:color.background, native:typography.textAlign) on blocks that moved off those supports earlier; each needs its owned attribute named or the entry dropped, a per-block read. This number may only go DOWN.",
 	"_gated_at_zero": [
 		"orphan_unclassified — an attribute no mechanism can place at all",
 		"orphan_role_map_stale — the role map is out of date vs the DB"

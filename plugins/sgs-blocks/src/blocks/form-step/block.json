@@ -69,7 +69,7 @@
 					"prefix": "contentBand",
 					"attrMap": {
 						"css:max-width": "contentWidth",
-						"css:padding": "native:spacing.padding"
+						"css:padding": "padding"
 					}
 				}
 			},

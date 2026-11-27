@@ -149,7 +149,7 @@
 					"attrMap": {
 						"css:background-color": "backgroundColour",
 						"css:color": "textColour",
-						"css:margin": "native:spacing.margin",
+						"css:margin": "margin",
 						"css:max-width": "maxWidth",
 						"css:min-height": "minHeight",
 						"css:border-width": "borderWidth",

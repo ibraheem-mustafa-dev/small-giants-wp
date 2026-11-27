@@ -1,6 +1,6 @@
 /**
  * Editor-canvas mirror of what `SGS_Container_Wrapper::render()` paints on the
- * outer element of any block routed through it: gap, border (style, width,
+ * outer element of any block routed through it: gap, margin, border (style, width,
  * colour or gradient, per-tier corner radius), max-width, the grid/flex/stack
  * layout switch with its layout class, grid rows, and the content band
  * (`.sgs-container__inner`: contentWidth + padding, with the layout
@@ -23,7 +23,7 @@ import {
 import { tierLengthPreview } from './cssLength';
 import { tierValueOf } from './responsive';
 import { separatorsFlowPreview } from './separators';
-import { resolveBoxTierPreview } from './spacing-preview';
+import { resolveBoxTierPreview, tierBoxLonghands } from './spacing-preview';
 import { wrapperBorderPreview } from './wrapper-border-preview';
 
 const LAYOUTS = [ 'grid', 'flex', 'stack' ];
@@ -31,7 +31,7 @@ const LAYOUTS = [ 'grid', 'flex', 'stack' ];
 /**
  * @param {Object} attributes   Block attributes (the wrapper family: layout, columns,
  *                              gap, grid*, justify*, align*, flex*, maxWidth, contentWidth,
- *                              padding, border*).
+ *                              padding, margin, border*).
  * @param {string} [tier]       Previewed device tier from `usePreviewTier()`.
  * @param {Array}  [palette]    Theme colour palette, to resolve a border colour slug.
  * @param {Object} [extraStyle] Block-own outer declarations (a bespoke grid, say) that
@@ -59,6 +59,10 @@ export function containerWrapperPreview(
 	if ( maxWidth ) {
 		style.maxWidth = maxWidth;
 	}
+
+	// `margin` paints the outer element, as the wrapper's base and tier margin rules do: set sides only, as longhands,
+	// so an unset side keeps the stylesheet's value.
+	Object.assign( style, tierBoxLonghands( attrs.margin, tier, 'margin' ) );
 
 	Object.assign( style, wrapperBorderPreview( attrs, tier, palette ) );
 

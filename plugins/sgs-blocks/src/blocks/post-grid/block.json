@@ -173,7 +173,7 @@
           "attrMap": {
             "css:background-color": "native:color.background",
             "css:color": "native:color.text",
-            "css:margin": "native:spacing.margin",
+            "css:margin": "margin",
             "css:max-width": "maxWidth",
             "css:border-width": "borderWidth",
             "css:border-style": "borderStyle",
@@ -406,7 +406,7 @@
         	"prefix": "contentBand",
         	"attrMap": {
         		"css:max-width": "contentWidth",
-        		"css:padding": "native:spacing.padding"
+        		"css:padding": "padding"
         	}
         }
       },
