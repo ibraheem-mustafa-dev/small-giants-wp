@@ -60,12 +60,16 @@
 	 * TOC's active underline (WCAG 1.4.1) and stacks a second ::after underline.
 	 * .sgs-text-link opts in through its own selector above. A list link inside a
 	 * <nav> is a menu control, not running text (WooCommerce's account menu prints
-	 * plain <li><a> items that sgs/account draws as buttons), so it is left out too;
-	 * :where() keeps that exclusion at no specificity. */
+	 * plain <li><a> items that sgs/account draws as buttons), so it gets no sliding
+	 * underline (:not(:where(nav *)) on the ::after rules, at no specificity). It
+	 * keeps the text-decoration reset: that reset is what removes WooCommerce's own
+	 * underline on the account menu's active and hovered links
+	 * (`.woocommerce-account .woocommerce-MyAccount-navigation li.is-active a` and
+	 * `li a:hover`, both 0,3,2, beaten here by source order at the same specificity). */
 	.wp-block-navigation-item__content,
 	.sgs-text-link,
 	.entry-content p a:not([class*="sgs-"]),
-	.entry-content li a:not(.wp-block-button__link):not([class*="sgs-"]):not(:where(nav *)) {
+	.entry-content li a:not(.wp-block-button__link):not([class*="sgs-"]) {
 		position: relative;
 		text-decoration: none;
 	}
