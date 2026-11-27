@@ -481,6 +481,26 @@ def preset_literal_sites(path, s, idx):
     return out
 
 
+TOUCH_GUARD_RE = re.compile(r':where\(\s*:root:not\(\s*\.sgs-touch-input\s*\)\s*\)\s*')
+
+
+def source_selector(sel):
+    """The selector list as its source wrote it. The touch-hover build (Spec 38A FR-38A-17, scripts/hover-guard/)
+    adds a `.sgs-pressed` twin member and a `:where(:root:not(.sgs-touch-input))` guard to every :hover member; neither
+    is a different part, so a site keys on the source selector and the baseline stays valid across the transform."""
+    members, depth, cur = [], 0, ''
+    for ch in sel:
+        depth += ch in '([' and 1 or (ch in ')]' and -1 or 0)
+        if ch == ',' and depth == 0:
+            members.append(cur)
+            cur = ''
+        else:
+            cur += ch
+    members.append(cur)
+    kept = [TOUCH_GUARD_RE.sub('', m).strip() for m in members if '.sgs-pressed' not in m]
+    return ', '.join(m for m in kept if m) or sel
+
+
 def css_sites(path, s):
     """Blocks of CSS that read `--wp--custom--button-presets--<starter>--` for their own part."""
     out = []
@@ -490,7 +510,7 @@ def css_sites(path, s):
     for m in rx.finditer(s):
         brace = s.rfind('{', 0, m.start())
         sel_start = max(s.rfind('}', 0, brace), s.rfind('{', 0, brace), s.rfind(';', 0, brace)) + 1
-        sel = re.sub(r'\s+', ' ', s[sel_start:brace]).strip()
+        sel = source_selector(re.sub(r'\s+', ' ', s[sel_start:brace]).strip())
         if any(o['stem'] == sel and o['symbol'] == 'preset:' + m.group(1) for o in out):
             continue
         out.append({'file': path, 'line': line_of(s, m.start()), 'kind': 'css-preset-read',
@@ -1918,6 +1938,13 @@ def self_test():
         'plugins/sgs-blocks/src/blocks/inert/render.php': FX_INERT,
     }
     corpus = Corpus(dict(base_files))
+
+    # 0 the touch-hover build's twin and guard do not change a CSS site's key (FR-38A-17).
+    check('MUST FAIL without source_selector: a pressed twin and the touch guard key as the source selector',
+          source_selector('.x, .x.sgs-pressed, :where(:root:not(.sgs-touch-input)) .x:hover') == '.x, .x:hover'
+          and source_selector('.y:is(.a, .b):hover') == '.y:is(.a, .b):hover')
+    for m in css_sites('t.css', '.x.sgs-pressed, :where(:root:not(.sgs-touch-input)) .x:hover{color:var(--wp--custom--button-presets--primary--text)}'):
+        check('MUST FAIL without source_selector: a transformed rule reads as its source rule', m['stem'] == '.x:hover')
 
     # 1 positive: a hard-wired button is found, in the right category, with the comment ignored.
     sites = run_survey(corpus, cfg)

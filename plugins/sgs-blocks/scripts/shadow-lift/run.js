@@ -182,6 +182,10 @@ function selfTest() {
 	ok( ! / \.b:hover:hover/.test( mixed.css ), 'the already-guarded member (.b:hover) is not re-lifted' );
 	ok( mixed.skipped.some( ( s ) => 'transient-state-selector' === s.reason ), 'the already-:hover member (.b:hover) is reported as a transient-state selector, not lifted a second time' );
 
+	// --- touch press twins (FR-38A-17) ----------------------------------------------
+	const pressed = transformCss( '.c.sgs-pressed,:where(:root:not(.sgs-touch-input)) .c:hover{box-shadow:0 2px 4px #000}', 't.css', fixtures.mixedSelectorList.ctx );
+	ok( 0 === pressed.added && pressed.skipped.some( ( s ) => 'transient-state-selector' === s.reason && '.c.sgs-pressed' === s.selector ), 'MUST FAIL without the pressed rule: a .sgs-pressed twin is a state rule, not a resting shadow to lift' );
+
 	// --- preset variable resolution -------------------------------------------------
 	const slugTarget = transformCss( fixtures.presetVarSlugTarget.css, 't.css', fixtures.presetVarSlugTarget.ctx );
 	ok( slugTarget.css.includes( fixtures.presetVarSlugTarget.expectContains ), 'a slug-target hover map entry resolves to the target preset variable' );

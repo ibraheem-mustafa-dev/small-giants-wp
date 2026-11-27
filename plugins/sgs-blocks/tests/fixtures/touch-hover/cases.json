@@ -18,8 +18,8 @@
 		},
 		{
 			"name": "a generated per-instance rule inside a width query",
-			"in": "@media (max-width:767px){.sgs-btn-ab12.sgs-button:hover{background-color:#112233}}",
-			"out": "@media (max-width:767px){.sgs-btn-ab12.sgs-button.sgs-pressed,:where(:root:not(.sgs-touch-input)) .sgs-btn-ab12.sgs-button:hover{background-color:#112233}}"
+			"in": "@media (max-width:767.98px){.sgs-btn-ab12.sgs-button:hover{background-color:#112233}}",
+			"out": "@media (max-width:767.98px){.sgs-btn-ab12.sgs-button.sgs-pressed,:where(:root:not(.sgs-touch-input)) .sgs-btn-ab12.sgs-button:hover{background-color:#112233}}"
 		},
 		{
 			"name": "an ::after underline sweep",
