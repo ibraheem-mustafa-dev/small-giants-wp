@@ -22,7 +22,7 @@
 //   site-build       site-build.mjs --apply: every page-map row's post, menus and layout; held when every row has its id on this site.
 //   manifest         manifest.mjs --apply: surfaces.json; held when every layout row has a surface.
 //   looks            plugins/sgs-blocks/scripts/site-look/site_look.py --all: every block's site look for the client from its committed snapshot,
-//                    offline (no site), with the shop stylesheet when the page map has a shop (lib/setting-record.mjs::runsShop); the builder
+//                    offline (no site), with lib/setting-record.mjs::lookJobs workers (SGS_LOOK_JOBS overrides), with the shop stylesheet when the page map has a shop (lib/setting-record.mjs::runsShop); the builder
 //                    skips a look whose key has not moved; held when the snapshot, the block build, the fixtures and the builder are as last built.
 //   skeletons        intake.mjs --rerun-skeletons then --apply-review --go-through, only when this run read the draft or rebuilt the looks.
 //   surfaces         lib/clone-surface.mjs::cloneSurfaces on the header, footer and nav drawer (the basket drawer is the header's cart block), Solve included
@@ -34,7 +34,7 @@ import { applyPicksFile, cloneSurfaces } from './clone-surface.mjs';
 import { distroOf, runPreflight } from './foundation-preflight.mjs';
 import { heldByState } from './foundation-run.mjs';
 import { intakeCurrent, layoutSurfaces, pageMapBuilt, snapshotDiff, tokenOutput, wslPath } from './foundation-parts.mjs';
-import { runsShop, LOOK_JOBS } from './setting-record.mjs';
+import { runsShop, LOOK_JOBS, lookJobs } from './setting-record.mjs';
 import { FIXTURE_SITES } from './shop-fixture-sites.mjs';
 import { fixtureDefs } from './shop-fixtures.mjs';
 import { mediaAssets } from './media-upload.mjs';
@@ -65,7 +65,7 @@ export const commands = {
 	siteBuild: ( { client, site } ) => [ 'node', [ `${ ROUTE }/site-build.mjs`, client, '--site', site, '--apply' ] ],
 	manifest: ( { client, site } ) => [ 'node', [ `${ ROUTE }/manifest.mjs`, client, '--site', site, '--apply' ] ],
 	hideFixtures: ( { client, site } ) => [ 'node', [ `${ ROUTE }/shop-fixtures.mjs`, client, '--site', site, '--apply' ] ],
-	looks: ( { client, shop } ) => [ 'python', [ 'plugins/sgs-blocks/scripts/site-look/site_look.py', '--snapshot', `sites/${ client }/theme-snapshot.json`, '--site', client, '--out', `${ ROUTE }/site-look`, '--all', '--jobs', String( LOOK_JOBS ), ...( shop ? [ '--woocommerce' ] : [] ) ] ],
+	looks: ( { client, shop } ) => [ 'python', [ 'plugins/sgs-blocks/scripts/site-look/site_look.py', '--snapshot', `sites/${ client }/theme-snapshot.json`, '--site', client, '--out', `${ ROUTE }/site-look`, '--all', '--jobs', String( lookJobs() ), ...( shop ? [ '--woocommerce' ] : [] ) ] ],
 };
 
 // The one-line failure of a command that exited non-zero, with what to do next.

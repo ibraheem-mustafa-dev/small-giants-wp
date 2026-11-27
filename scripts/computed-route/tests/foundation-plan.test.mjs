@@ -9,7 +9,8 @@ import assert from 'node:assert/strict';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { LOOK_JOBS, STEP_IDS, buildSteps, commands } from '../lib/foundation-plan.mjs';
+import { STEP_IDS, buildSteps, commands } from '../lib/foundation-plan.mjs';
+import { lookJobs } from '../lib/setting-record.mjs';
 import { readState, runFoundation, stateFile } from '../lib/foundation-run.mjs';
 
 const GB = 1024 ** 3;
@@ -103,7 +104,10 @@ test( 'MUST FAIL: each step runs the command the plan names, with the client, si
 	assert.deepEqual( commands.media( { client: 'acme', site: SITE } )[ 1 ].slice( 1 ), [ 'acme', '--site', SITE, '--apply' ] );
 	assert.deepEqual( commands.siteBuild( { client: 'acme', site: SITE } )[ 1 ].slice( 1 ), [ 'acme', '--site', SITE, '--apply' ] );
 	assert.deepEqual( commands.manifest( { client: 'acme', site: SITE } )[ 1 ].slice( 1 ), [ 'acme', '--site', SITE, '--apply' ] );
-	assert.deepEqual( commands.looks( { client: 'acme', shop: false } ), [ 'python', [ 'plugins/sgs-blocks/scripts/site-look/site_look.py', '--snapshot', 'sites/acme/theme-snapshot.json', '--site', 'acme', '--out', 'scripts/computed-route/site-look', '--all', '--jobs', String( LOOK_JOBS ) ] ] );
+	assert.deepEqual( commands.looks( { client: 'acme', shop: false } ), [ 'python', [ 'plugins/sgs-blocks/scripts/site-look/site_look.py', '--snapshot', 'sites/acme/theme-snapshot.json', '--site', 'acme', '--out', 'scripts/computed-route/site-look', '--all', '--jobs', String( lookJobs() ) ] ] );
+	const held = process.env.SGS_LOOK_JOBS;
+	process.env.SGS_LOOK_JOBS = '5';
+	try { assert.equal( commands.looks( { client: 'acme', shop: false } )[ 1 ].at( -1 ), '5', "SGS_LOOK_JOBS sets the foundation's look workers" ); } finally { if ( held === undefined ) delete process.env.SGS_LOOK_JOBS; else process.env.SGS_LOOK_JOBS = held; }
 	assert.equal( commands.looks( { client: 'acme', shop: true } )[ 1 ].at( -1 ), '--woocommerce', 'a client with a shop takes the shop stylesheet' );
 	assert.deepEqual( commands.pushSnapshot( { client: 'acme', ssh: 'u@h', host: 'd.example' } )[ 1 ].slice( 1 ), [ '--client', 'acme', '--target', 'u@h', '--target-domain', 'd.example', '--yes' ] );
 	assert.deepEqual( commands.pluginBuild()[ 0 ], 'powershell' );
