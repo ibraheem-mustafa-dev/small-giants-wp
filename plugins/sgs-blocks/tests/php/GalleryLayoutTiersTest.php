@@ -140,7 +140,7 @@ final class GalleryLayoutTiersTest extends TestCase {
 	}
 
 	public function test_the_per_device_swipe_row_has_the_shadow_bleed_and_the_other_layouts_reset_it(): void {
-		$bleed = 'padding-block:var(--sgs-shadow-bleed,80px);margin-block:calc(-1 * var(--sgs-shadow-bleed,80px));';
+		$bleed = 'padding-block:var(--sgs-shadow-bleed-top,var(--sgs-shadow-bleed,80px)) var(--sgs-shadow-bleed-bottom,var(--sgs-shadow-bleed,80px));margin-block:calc(-1 * var(--sgs-shadow-bleed-top,var(--sgs-shadow-bleed,80px))) calc(-1 * var(--sgs-shadow-bleed-bottom,var(--sgs-shadow-bleed,80px)));';
 		foreach ( array( 'tablet', 'mobile' ) as $tier ) {
 			$decls = sgs_gallery_layout_declarations( $tier );
 			$this->assertStringContainsString( $bleed, $decls['scroll'], "the $tier swipe row keeps room for tilt, lift and shadow" );
@@ -154,6 +154,6 @@ final class GalleryLayoutTiersTest extends TestCase {
 	public function test_a_grid_on_desktop_and_a_swipe_row_on_phones_prints_the_bleed_in_the_mobile_rule(): void {
 		$css = sgs_gallery_layout_css( '.g', array( 'layout' => array( 'desktop' => 'grid', 'mobile' => 'scroll' ) ) );
 		$this->assertStringContainsString( 'overflow-x:auto', $css );
-		$this->assertStringContainsString( 'padding-block:var(--sgs-shadow-bleed,80px)', $css );
+		$this->assertStringContainsString( 'padding-block:var(--sgs-shadow-bleed-top,var(--sgs-shadow-bleed,80px)) var(--sgs-shadow-bleed-bottom,var(--sgs-shadow-bleed,80px))', $css );
 	}
 }

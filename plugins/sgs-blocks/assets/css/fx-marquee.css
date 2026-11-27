@@ -100,9 +100,10 @@
 	-webkit-mask-clip: no-clip;
 	mask-clip: no-clip;
 	/* The lane's own box also reaches past its items on the cross axis (a padding cancelled by a negative margin, so the
-	   layout does not move), so a tile's shadow sits inside the mask's box and paints even where no-clip is not honoured. */
-	padding-block: var(--sgs-marquee-bleed, var(--sgs-shadow-bleed, 80px));
-	margin-block: calc(-1 * var(--sgs-marquee-bleed, var(--sgs-shadow-bleed, 80px)));
+	   layout does not move), so a tile's shadow sits inside the mask's box and paints even where no-clip is not honoured. Each side is sized per instance
+	   from the tiles' shadows and motion (includes/helpers-shadow-bleed.php). */
+	padding-block: var(--sgs-marquee-bleed, var(--sgs-shadow-bleed-top, var(--sgs-shadow-bleed, 80px))) var(--sgs-marquee-bleed, var(--sgs-shadow-bleed-bottom, var(--sgs-shadow-bleed, 80px)));
+	margin-block: calc(-1 * var(--sgs-marquee-bleed, var(--sgs-shadow-bleed-top, var(--sgs-shadow-bleed, 80px)))) calc(-1 * var(--sgs-marquee-bleed, var(--sgs-shadow-bleed-bottom, var(--sgs-shadow-bleed, 80px))));
 	/* Marks the band for the click hand-off (assets/js/bleed-band-taps.js), so a tap on it reaches what it covers. */
 	--sgs-bleed-band: 1;
 	/* The band carries a click listener for iOS (bleed-band-taps.js), so it must not flash iOS's tap highlight. */
@@ -118,8 +119,10 @@
 [data-sgs-fx~="marquee"][data-sgs-marquee="on"][data-sgs-fx-marquee-edge-fade="true"][data-sgs-fx-marquee-direction="down"] [data-sgs-marquee-lane="on"] {
 	padding-block: 0;
 	margin-block: 0;
-	padding-inline: var(--sgs-marquee-bleed, var(--sgs-shadow-bleed, 80px));
-	margin-inline: calc(-1 * var(--sgs-marquee-bleed, var(--sgs-shadow-bleed, 80px)));
+	padding-left: var(--sgs-marquee-bleed, var(--sgs-shadow-bleed-left, var(--sgs-shadow-bleed, 80px)));
+	padding-right: var(--sgs-marquee-bleed, var(--sgs-shadow-bleed-right, var(--sgs-shadow-bleed, 80px)));
+	margin-left: calc(-1 * var(--sgs-marquee-bleed, var(--sgs-shadow-bleed-left, var(--sgs-shadow-bleed, 80px))));
+	margin-right: calc(-1 * var(--sgs-marquee-bleed, var(--sgs-shadow-bleed-right, var(--sgs-shadow-bleed, 80px))));
 	--sgs-bleed-band: 1;
 	/* The band carries a click listener for iOS (bleed-band-taps.js), so it must not flash iOS's tap highlight. */
 	-webkit-tap-highlight-color: transparent;

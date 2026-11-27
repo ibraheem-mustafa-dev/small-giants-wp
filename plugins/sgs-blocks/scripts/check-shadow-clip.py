@@ -41,6 +41,12 @@ beneath by the always-on hand-off, assets/js/bleed-band-taps.js. Refused (clip `
   - a stylesheet rule that reserves the bleed on a scroller (`overflow` auto or scroll on that selector) and gives it
     `pointer-events: none`: that takes the row's scrollbar and its gap swipe and wheel with it.
 
+THE SIZE RULE (2026-11-26): a band is as deep as its items' shadows and motion reach, not a fixed 80px.
+includes/helpers-shadow-bleed.php::sgs_shadow_bleed_render sets `--sgs-shadow-bleed-top|right|bottom|left` per block
+instance (render_block), and every band reads the side it pads through `var(--sgs-shadow-bleed-<side>, var(--sgs-shadow-bleed,
+80px))`. Refused (clip `tap-band`): a band rule (stylesheet or PHP emitter) whose padding or margin reads the bleed any other way,
+and every band when the sizer is missing or not loaded (sgs-blocks.php requires it and it registers its render_block filter).
+
 MODES
   --survey [--json]  every hit, every fixed rule and every allowed rule with its reason
   --check            exit 1 on any hit
@@ -251,6 +257,24 @@ def norm_sel(sel: str) -> str:
 
 
 HANDOFF_JS = "assets/js/bleed-band-taps.js"
+SIZER_PHP = "includes/helpers-shadow-bleed.php"
+SIDE_VAR_RE = re.compile(r"var\(\s*--sgs-shadow-bleed-(?:top|right|bottom|left)\s*,\s*var\(\s*--sgs-shadow-bleed\s*,\s*80px\s*\)\s*\)")
+UNSIZED = "bleed band not sized by the computed per-side variable: read it as `var(--sgs-shadow-bleed-<side>, var(--sgs-shadow-bleed, 80px))` (set per instance by " + SIZER_PHP + ")"
+
+
+def unsized(text: str) -> bool:
+    """True when the text reads the bleed other than through a per-side variable with the token as its fallback."""
+    return "--sgs-shadow-bleed" in SIDE_VAR_RE.sub("", text)
+
+
+def sizer_wired(root: Path) -> bool:
+    """True when the band sizer exists, registers its render_block filter outside a comment, and the plugin loads it."""
+    sizer, boot = root / SIZER_PHP, root / "sgs-blocks.php"
+    if not sizer.is_file() or not boot.is_file():
+        return False
+    code = strip_php_comments(sizer.read_text(encoding="utf-8"))
+    loads = re.search(r"require_once\s+SGS_BLOCKS_PATH\s*\.\s*'" + re.escape(SIZER_PHP) + "'", strip_php_comments(boot.read_text(encoding="utf-8")))
+    return bool(loads) and bool(re.search(r"add_filter\(\s*'render_block'\s*,\s*__NAMESPACE__\s*\.\s*'\\?sgs_shadow_bleed_render'", code))
 HANDOFF_PHP = "includes/class-sgs-blocks.php"
 
 
@@ -381,7 +405,7 @@ def last_compound(sel: str) -> str:
     return re.split(r"\s+(?![^\[]*\])|\s*>\s*", norm_sel(sel))[-1]
 
 
-def scan_bleed_css(rel: str, css: str, handoff: bool = True) -> list[dict]:
+def scan_bleed_css(rel: str, css: str, handoff: bool = True, sized: bool = True) -> list[dict]:
     """Every selector that reserves the bleed band, checked one by one: HIT when the hand-off is not wired, when the
     rule lacks the marker or the transparent tap highlight, when no restore rule names this band (its full selector or
     its last compound) with every control, or when the band scrolls and is made pointer-events:none (which takes the
@@ -412,13 +436,15 @@ def scan_bleed_css(rel: str, css: str, handoff: bool = True) -> list[dict]:
                 status, reason = "HIT", HIGHLIGHT_MISSING
             elif sel not in covered and last_compound(sel) not in covered:
                 status, reason = "HIT", RESTORE_MISSING
+            if unsized(" ".join(v for k, v in d.items() if BLEED_PAD_RE.match(k) or BLEED_MARGIN_RE.match(k))) or not sized:
+                status, reason = "HIT", UNSIZED if sized else "the band sizer " + SIZER_PHP + " is missing or not loaded, so every band keeps 80px"
             if sel in none_on and sel in scrolls:
                 status, reason = "HIT", "pointer-events:none on a scrolling bleed band takes its scrollbar, wheel and gap swipe: leave the pointer to the row (the hand-off clears the band)"
             found.append({"file": rel, "selector": sel, "clip": "tap-band", "status": status, "reason": reason})
     return found
 
 
-def scan_bleed_php(rel: str, php: str, handoff: bool = True) -> list[dict]:
+def scan_bleed_php(rel: str, php: str, handoff: bool = True, sized: bool = True) -> list[dict]:
     """Every band a PHP file emits, checked one by one: its own declarations (from the string or rule the bleed padding
     sits in to the end of that string or rule) carry the marker and the transparent tap highlight, and a band emitted
     with its own selector (`<name>{...}`) has a restore rule in the same file naming that selector with every control.
@@ -442,6 +468,8 @@ def scan_bleed_php(rel: str, php: str, handoff: bool = True) -> list[dict]:
             status, reason = "HIT", MARKER_MISSING
         elif not re.search(r"-webkit-tap-highlight-color:\s*transparent", seg):
             status, reason = "HIT", HIGHLIGHT_MISSING
+        elif unsized(seg) or not sized:
+            status, reason = "HIT", UNSIZED if sized else "the band sizer " + SIZER_PHP + " is missing or not loaded, so every band keeps 80px"
         elif name:
             ok = False
             for r in re.finditer(r":where\(([^{}]*?" + re.escape(name) + r")\)\s*:where\(([^{}]*)\)\s*\{\s*-webkit-tap-highlight-color:\s*initial", php):
@@ -468,10 +496,13 @@ def survey() -> list[dict]:
     theme_css = repo / "theme" / "sgs-theme" / "assets" / "css"
     bleed_css = sorted(set(css_files()) | set((ROOT / "src" / "blocks").glob("*/*.css"))) + sorted(theme_css.glob("*.css"))
     handoff = handoff_wired(ROOT)
+    sized = sizer_wired(ROOT)
     for f in bleed_css:
-        out += scan_bleed_css(f.relative_to(repo).as_posix(), f.read_text(encoding="utf-8"), handoff)
+        out += scan_bleed_css(f.relative_to(repo).as_posix(), f.read_text(encoding="utf-8"), handoff, sized)
     for f in sorted((ROOT / "includes").rglob("*.php")) + sorted((ROOT / "src" / "blocks").glob("*/render.php")):
-        out += scan_bleed_php(f.relative_to(repo).as_posix(), f.read_text(encoding="utf-8"), handoff)
+        if f.name == Path(SIZER_PHP).name:
+            continue  # the sizer itself names the variables it sets
+        out += scan_bleed_php(f.relative_to(repo).as_posix(), f.read_text(encoding="utf-8"), handoff, sized)
     return out
 
 
@@ -498,7 +529,7 @@ def self_test() -> int:
     del ALLOW[(r"t\.css", r"\.sgs-x__panel")]
     expect("php emitter without bleed caught", scan_php("t.php", "$css .= '.a __mega-panel-wrap{overflow-y:auto;}';", "__mega-panel-wrap{"), "HIT")
     expect("php emitter with bleed passes", scan_php("t.php", "$css .= '.a __mega-panel-wrap{overflow-y:auto;padding-inline:var(--sgs-shadow-bleed, 80px);}';", "__mega-panel-wrap{"), "FIXED")
-    band = ".sgs-x__grid{overflow-x:auto;padding-block:var(--sgs-shadow-bleed,80px);margin-block:calc(-1 * var(--sgs-shadow-bleed,80px));--sgs-bleed-band:1;-webkit-tap-highlight-color:transparent"
+    band = ".sgs-x__grid{overflow-x:auto;padding-block:var(--sgs-shadow-bleed-top,var(--sgs-shadow-bleed,80px)) var(--sgs-shadow-bleed-bottom,var(--sgs-shadow-bleed,80px));margin-block:calc(-1 * var(--sgs-shadow-bleed-top,var(--sgs-shadow-bleed,80px))) calc(-1 * var(--sgs-shadow-bleed-bottom,var(--sgs-shadow-bleed,80px)));--sgs-bleed-band:1;-webkit-tap-highlight-color:transparent"
     restore = ":where(.sgs-x__grid) :where(a,button,[role=button],input,select,textarea,label,summary){-webkit-tap-highlight-color:initial}"
     expect("bleed band without the marker caught", scan_bleed_css("t.css", band.replace(";--sgs-bleed-band:1", "") + "}" + restore, True), "HIT")
     expect("bleed band without the transparent tap highlight caught", scan_bleed_css("t.css", band.replace(";-webkit-tap-highlight-color:transparent", "") + "}" + restore, True), "HIT")
@@ -506,13 +537,13 @@ def self_test() -> int:
     expect("bleed band with the hand-off wired passes", scan_bleed_css("t.css", band + "}" + restore, True), "FIXED")
     expect("bleed band without the hand-off caught", scan_bleed_css("t.css", band + "}" + restore, False), "HIT")
     expect("scrolling band made pointer-events:none caught", scan_bleed_css("t.css", band + ";pointer-events:none}" + restore, True), "HIT")
-    expect("pointer-events:none on a band that does not scroll passes", scan_bleed_css("t.css", ".sgs-x__lane{padding-block:var(--sgs-shadow-bleed,80px);margin-block:calc(-1 * var(--sgs-shadow-bleed,80px));--sgs-bleed-band:1;-webkit-tap-highlight-color:transparent;pointer-events:none}" + restore.replace(".sgs-x__grid", ".sgs-x__lane"), True), "FIXED")
+    expect("pointer-events:none on a band that does not scroll passes", scan_bleed_css("t.css", ".sgs-x__lane{padding-block:var(--sgs-shadow-bleed-top,var(--sgs-shadow-bleed,80px));margin-block:calc(-1 * var(--sgs-shadow-bleed-top,var(--sgs-shadow-bleed,80px)));--sgs-bleed-band:1;-webkit-tap-highlight-color:transparent;pointer-events:none}" + restore.replace(".sgs-x__grid", ".sgs-x__lane"), True), "FIXED")
     expect("a bleed padding with no negative margin is not a band", scan_bleed_css("t.css", ".sgs-x__grid{padding-block:var(--sgs-shadow-bleed,80px)}"), None)
     full = ":where(.sgs-x__grid) :where(a, button, [role=\"button\"], input, select, textarea, label, summary){-webkit-tap-highlight-color:initial}"
     expect("a restore naming every control passes", scan_bleed_css("t.css", band + "}" + full, True), "FIXED")
     expect("a restore on an unrelated selector caught", scan_bleed_css("t.css", band + "}" + full.replace(".sgs-x__grid", ".sgs-y__grid"), True), "HIT")
     expect("a restore covering only summary caught", scan_bleed_css("t.css", band + "}:where(.sgs-x__grid) :where(summary){-webkit-tap-highlight-color:initial}", True), "HIT")
-    nav = ("$css .= $u . ' .' . $b . '__panel-wrap{overflow-y:auto;' . 'padding-bottom:var(--sgs-shadow-bleed, 80px);margin-bottom:calc(-1 * var(--sgs-shadow-bleed, 80px));--sgs-bleed-band:1;-webkit-tap-highlight-color:transparent;}';\n"
+    nav = ("$css .= $u . ' .' . $b . '__panel-wrap{overflow-y:auto;' . 'padding-bottom:var(--sgs-shadow-bleed-bottom, var(--sgs-shadow-bleed, 80px));margin-bottom:calc(-1 * var(--sgs-shadow-bleed-bottom, var(--sgs-shadow-bleed, 80px)));--sgs-bleed-band:1;-webkit-tap-highlight-color:transparent;}';\n"
            "$css .= ':where(' . $u . ' .' . $b . '__panel-wrap) :where(a,button,[role=\"button\"],input,select,textarea,label,summary){-webkit-tap-highlight-color:initial;}';")
     expect("a PHP band with its own restore passes", scan_bleed_php("t.php", nav, True), "FIXED")
     expect("a PHP band with its restore deleted caught", scan_bleed_php("t.php", nav.split("\n")[0], True), "HIT")
@@ -520,11 +551,15 @@ def self_test() -> int:
     got = [h["status"] for h in scan_bleed_php("t.php", two, True)]
     ok &= got == ["FIXED", "HIT"]
     print(("PASS " if got == ["FIXED", "HIT"] else "FAIL ") + "a second, unmarked PHP band in the same file caught -> " + str(got))
-    php_band = "return 'padding-block:var(--sgs-shadow-bleed,80px);margin-block:calc(-1 * var(--sgs-shadow-bleed,80px));--sgs-bleed-band:1;-webkit-tap-highlight-color:transparent;';"
+    php_band = "return 'padding-block:var(--sgs-shadow-bleed-top,var(--sgs-shadow-bleed,80px));margin-block:calc(-1 * var(--sgs-shadow-bleed-top,var(--sgs-shadow-bleed,80px)));--sgs-bleed-band:1;-webkit-tap-highlight-color:transparent;';"
     expect("php bleed band without the marker caught", scan_bleed_php("t.php", php_band.replace("--sgs-bleed-band:1;", ""), True), "HIT")
     expect("php bleed band without the transparent tap highlight caught", scan_bleed_php("t.php", php_band.replace("-webkit-tap-highlight-color:transparent;", ""), True), "HIT")
     expect("php bleed band without the hand-off caught", scan_bleed_php("t.php", php_band, False), "HIT")
     expect("php bleed band with the hand-off passes", scan_bleed_php("t.php", php_band, True), "FIXED")
+    expect("a band read as the fixed token, not the computed side, caught", scan_bleed_css("t.css", band.replace("var(--sgs-shadow-bleed-top,var(--sgs-shadow-bleed,80px))", "var(--sgs-shadow-bleed,80px)") + "}" + restore, True), "HIT")
+    expect("a band whose computed side lost its token fallback caught", scan_bleed_css("t.css", band.replace("var(--sgs-shadow-bleed-bottom,var(--sgs-shadow-bleed,80px))", "var(--sgs-shadow-bleed-bottom,var(--sgs-shadow-bleed,40px))") + "}" + restore, True), "HIT")
+    expect("a band without the sizer loaded caught", scan_bleed_css("t.css", band + "}" + restore, True, False), "HIT")
+    expect("a php band read as the fixed token caught", scan_bleed_php("t.php", "return 'padding-block:var(--sgs-shadow-bleed,80px);margin-block:calc(-1 * var(--sgs-shadow-bleed,80px));--sgs-bleed-band:1;-webkit-tap-highlight-color:transparent;';", True), "HIT")
     fn = "class A { public function enqueue_frontend_assets(): void {\n%s\n\t}\n}"
     call = "wp_enqueue_script( 'h', SGS_BLOCKS_URL . '" + HANDOFF_JS + "', array(), '1' );"
     for name, body, want in (
@@ -539,6 +574,7 @@ def self_test() -> int:
         ok &= got == want
         print(("PASS " if got == want else "FAIL ") + name + " -> " + str(got))
     expect("the framework's hand-off is wired", [{"status": "FIXED"}] if handoff_wired(ROOT) else [{"status": "HIT"}], "FIXED")
+    expect("the framework's band sizer is loaded", [{"status": "FIXED"}] if sizer_wired(ROOT) else [{"status": "HIT"}], "FIXED")
     print("self-test " + ("OK" if ok else "FAILED"))
     return 0 if ok else 1
 
