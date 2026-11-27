@@ -1503,7 +1503,7 @@ CONTENT_KEYS = ('text', 'presence', 'link')
 # The value forms whose marker the client's snapshot picks (lib/calibrate-markers.mjs::plainMarkers: the slug marker is the
 # client's own palette colour furthest from black and white), so whether it takes depends on that client's palette and
 # defaults: these are read with the client's own reading, never shared. Under the theme's palette the slug marker's colour
-# equals some blocks' default colour and the form reads as not taken (Indus, 11 blocks, 2026-11-26).
+# equals some blocks' default colour and the form reads as not taken (one client site, 11 blocks, 2026-11-26).
 CLIENT_FORMS = frozenset({'slug'})
 
 
