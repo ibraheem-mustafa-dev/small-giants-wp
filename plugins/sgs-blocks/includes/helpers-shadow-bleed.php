@@ -27,6 +27,7 @@ defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/helpers-global-settings.php';
 require_once __DIR__ . '/helpers-scoped-instance-vars.php';
+require_once __DIR__ . '/class-sgs-motion-registry.php';
 
 const SGS_BLEED_FALLBACK_PX = 80;
 const SGS_BLEED_ROOM_PX     = 2;
