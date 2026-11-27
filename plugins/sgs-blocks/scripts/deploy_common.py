@@ -96,6 +96,26 @@ TARGETS = {
         "kind": "test",
         "editor_mirror": "local-eye-care",
     },
+    # Small Giants Studio's own site: the clone target for its Claude Design draft (a fresh WordPress since
+    # 2026-11-27), built on its mirror local-sgs. Credentials: .claude/secrets/sgs-test.env (gitignored).
+    "sgs-test": {
+        "host": "lightgreen-whale-237337.hostingersite.com",
+        "wp_content": "domains/lightgreen-whale-237337.hostingersite.com/public_html/wp-content",
+        "explicit_opt_in_required": True,
+        "client": "small-giants-studio",
+        "kind": "test",
+        "editor_mirror": "local-sgs",
+    },
+    # MIC: the clone target for its Claude Design draft (a shop; a fresh WordPress since 2026-11-27), built on its
+    # mirror local-mic. Credentials: .claude/secrets/mic-test.env (gitignored).
+    "mic-test": {
+        "host": "palegreen-goose-450620.hostingersite.com",
+        "wp_content": "domains/palegreen-goose-450620.hostingersite.com/public_html/wp-content",
+        "explicit_opt_in_required": True,
+        "client": "mic",
+        "kind": "test",
+        "editor_mirror": "local-mic",
+    },
     # Mama's Munches: the client's LIVE shop since 2026-11-18 (real orders and customers). It was built as the
     # redesign's test site and keeps that target name and folder: mamasmunches.com's own folder on the server is a
     # link to this one, so the hosting entry named lightsalmon-... IS the live shop and must never be deleted.

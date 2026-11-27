@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Copies the repo's built plugins and theme into the local WSL mirror sites.
-# Usage (from Windows): wsl -d Ubuntu -u root -- bash /mnt/c/Users/Bean/Projects/small-giants-wp/scripts/local-wp/sync-build.sh <local-eye-care|local-sandybrown|local-indus|local-mamas|all>
+# Usage (from Windows): wsl -d Ubuntu -u root -- bash /mnt/c/Users/Bean/Projects/small-giants-wp/scripts/local-wp/sync-build.sh <local-eye-care|local-sandybrown|local-indus|local-mamas|local-sgs|local-mic|all>
 set -euo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
@@ -152,12 +152,12 @@ sync_site() {
 }
 
 case "$TARGET" in
-  local-eye-care|local-sandybrown|local-indus|local-mamas|local-mediatest*|all) check_build ;;
+  local-eye-care|local-sandybrown|local-indus|local-mamas|local-sgs|local-mic|local-mediatest*|all) check_build ;;
 esac
 
 case "$TARGET" in
-  local-eye-care|local-sandybrown|local-indus|local-mamas) sync_site "$TARGET" ;;
+  local-eye-care|local-sandybrown|local-indus|local-mamas|local-sgs|local-mic) sync_site "$TARGET" ;;
   local-mediatest*) [ -f "/var/www/$TARGET/.scratch-source" ] || { echo "$TARGET is not a scratch copy (scratch-mirror.sh)" >&2; exit 1; }; sync_site "$TARGET" ;;
-  all) sync_site local-eye-care; sync_site local-sandybrown; sync_site local-indus; sync_site local-mamas ;;
-  *) echo "Usage: $0 <local-eye-care|local-sandybrown|local-indus|local-mamas|all|local-mediatest-*>" >&2; exit 2 ;;
+  all) sync_site local-eye-care; sync_site local-sandybrown; sync_site local-indus; sync_site local-mamas; sync_site local-sgs; sync_site local-mic ;;
+  *) echo "Usage: $0 <local-eye-care|local-sandybrown|local-indus|local-mamas|local-sgs|local-mic|all|local-mediatest-*>" >&2; exit 2 ;;
 esac

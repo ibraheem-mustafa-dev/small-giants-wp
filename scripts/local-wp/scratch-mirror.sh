@@ -18,7 +18,7 @@
 # WooCommerce's own default content, with the same refusal (see reset_shop_pages below).
 set -euo pipefail
 
-MIRRORS="local-eye-care local-sandybrown local-indus local-mamas"
+MIRRORS="local-eye-care local-sandybrown local-indus local-mamas local-sgs local-mic"
 NAME_RE='^local-mediatest[a-z0-9-]*$'
 
 die() { echo "scratch-mirror: $*" >&2; exit 1; }

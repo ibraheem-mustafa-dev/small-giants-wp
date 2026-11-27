@@ -139,13 +139,13 @@ Brief `s-shop.md`: `part-look.mjs` as a run stage, a template card's `variantSty
 Depends on: rf7 and rf8 merged (rf8 is; rf7 is fixing its review faults). Status: built on top of rf7 (`fix/s-shop`, head `8aed0dbfe`), including the basket drawer's and the signed-in account's looks written by Fill; its sweep is running, then a code review, then batch 1.
 
 ### Task 16: SGS and MIC sites (main session, with Bean)
-Why: no draft, deploy target, route target, secrets file or local mirror exists for SGS or MIC. The LEDGER names their hosting entries (`lightgreen-whale-237337`, `palegreen-goose-450620`); nothing is created on the hosting account until Bean says so.
+Why: a clone can only target a site that exists, and SGS and MIC had none. Bean approved setting both up on 2026-11-27.
 
 Changes: Bean starts the two drafts once the pipeline is ready (Bean, 2026-11-25). Once they are in `sites/<client>/handoff/`, add each site to `deploy_common.py` `TARGETS`, `scripts/computed-route/calibration-targets.json` and `.claude/secrets/`; create its local mirror; run `provision-site-mail.py`.
 
 Done when: `site-run.mjs` can target each site.
 
-Depends on: the drafts. Status: waiting on the drafts.
+Status (2026-11-27): the sites are set up. `sgs-test` (`lightgreen-whale-237337`) and `mic-test` (`palegreen-goose-450620`) run WordPress 7.1.5 with admin `Claude`, an application password and FluentSMTP over the studio mailbox with the test redirect on; both are in `TARGETS` (kind `test`) and `calibration-targets.json`, with mirrors `local-sgs` (8085) and `local-mic` (8086) refreshed from them, and `site-run.mjs::prepareSite` resolves all four. Left: the drafts into `sites/<client>/handoff/`, then the first `build-deploy.py --target sgs-test,mic-test` and a `sync-build.sh` of each mirror; MIC's own mailbox when it exists.
 
 ### Task 10: Combined proof, rehearsal, deploys (main session)
 Changes:
