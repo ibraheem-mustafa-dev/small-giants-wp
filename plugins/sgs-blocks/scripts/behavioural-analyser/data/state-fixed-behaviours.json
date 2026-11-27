@@ -3105,6 +3105,26 @@
    "file": "plugins/sgs-blocks/src/blocks/buybox/style.css",
    "selector": ".sgs-buybox .sgs-buybox__express[data-state=\"unavailable\"]",
    "reason": "the express payment buttons dim and show a not-allowed cursor while the choices are incomplete, as fixed behaviour; the product-card store sets data-state and inert together, and it is not a look setting"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/trust-bar/style.css",
+   "selector": ".sgs-trust-bar .sgs-trust-bar__badge > .sgs-trust-bar__separator[hidden]",
+   "reason": "a separator the trust bar hides (the badge before it ends a row) leaves layout (display none); the hidden attribute is set by the block's markup and script, not a look"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/trust-bar/style.css",
+   "selector": ".sgs-trust-bar .sgs-trust-bar__separator[hidden]",
+   "reason": "a separator the trust bar hides (the badge before it ends a row) leaves layout (display none); the hidden attribute is set by the block's markup and script, not a look"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/business-info/style.css",
+   "selector": ".sgs-business-attribution .sgs-business-info__link:active",
+   "reason": "the footer credit's press look is its hover sweep, kept on :active so a site set to 'Off on touch screens' still shows it while pressed (Spec 38A FR-38A-17); fixed brand paint, no setting"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/business-info/style.css",
+   "selector": ".sgs-business-attribution .sgs-business-info__link:active::after",
+   "reason": "the footer credit's press look is its hover sweep, kept on :active so a site set to 'Off on touch screens' still shows it while pressed (Spec 38A FR-38A-17); fixed brand paint, no setting"
   }
  ]
 }

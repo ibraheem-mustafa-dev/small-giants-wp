@@ -149,7 +149,7 @@ if ( ! function_exists( 'sgs_separators_enqueue_fallback' ) ) {
 	 * @return void
 	 */
 	function sgs_separators_enqueue_fallback(): void {
-		if ( ! function_exists( 'wp_enqueue_script_module' ) || ! defined( 'SGS_BLOCKS_PATH' ) || ! defined( 'SGS_BLOCKS_URL' ) ) {
+		if ( ! defined( 'SGS_BLOCKS_PATH' ) || ! defined( 'SGS_BLOCKS_URL' ) ) {
 			return;
 		}
 		$js = 'build/shared/separators.js';
