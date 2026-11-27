@@ -64,9 +64,10 @@ class Roots:
 
 
 def _node_modules() -> Path:
-    """The plugin's packages for the Node collectors: $SGS_NODE_PATH when set (a worktree with no install of its own),
-    else the plugin's node_modules."""
-    return Path(os.environ.get("SGS_NODE_PATH") or PLUGIN / "node_modules")
+    """The plugin's packages for the Node collectors: its own node_modules, else $SGS_NODE_PATH (a worktree with no
+    install of its own)."""
+    own = PLUGIN / "node_modules"
+    return own if own.is_dir() or not os.environ.get("SGS_NODE_PATH") else Path(os.environ["SGS_NODE_PATH"])
 
 
 def real_roots() -> Roots:
