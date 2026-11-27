@@ -27,6 +27,10 @@ import state_vocabulary  # noqa: E402
 PLUGIN = HERE.parent.parent
 REPO = PLUGIN.parent.parent
 REGISTER = HERE / "data" / "state-fixed-behaviours.json"
+# The touch-hover contract (Spec 38A FR-38A-17): the guard the build puts before a mouse-only member, and the class
+# `assets/js/touch-input.js` sets while a finger presses an element.
+TOUCH_GUARD_RE = re.compile(r":where\(\s*:root:not\(\s*\.sgs-touch-input\s*\)\s*\)\s*")
+PRESSED_CLASS = ".sgs-pressed"
 # The reason `--baseline` writes for fixed paint nobody has triaged. A rule that consumes a published custom property is
 # not fixed paint, so this reason never clears one: it needs a specific reason (JS-set, motion runtime, ...) or a tagged setting.
 GENERIC_REASON = "fixed paint, no setting (baseline 2026-10-20)"
@@ -106,6 +110,9 @@ def norm_selector(selector: str) -> str:
     """A selector in the form both the source and the browser's CSSOM agree on, so a register entry written from source
     matches the live rule: spacing inside brackets and around combinators, quotes, `:first-child`, and per-block uids."""
     s = re.sub(r"\s+", " ", selector.replace("'", '"')).strip()
+    # The touch-hover guard (`:where(:root:not(.sgs-touch-input))`, FR-38A-17) adds no state and no specificity: the
+    # guarded rule is the rule the source wrote.
+    s = TOUCH_GUARD_RE.sub("", s).strip()
     s = re.sub(r"\(\s+", "(", s)
     s = re.sub(r"\s+\)", ")", s)
     s = re.sub(r"\s*([>+~])\s*", r"\1", s)
@@ -273,9 +280,22 @@ def generic_index(entries: list[dict]) -> frozenset[tuple[str, str]]:
     return frozenset((e["file"], norm_selector(e["selector"])) for e in entries if e.get("reason") == GENERIC_REASON)
 
 
+def register_selectors(selector: str) -> set[str]:
+    """The normalised selectors a register entry may be written as for this site. The touch-hover build transform
+    (Spec 38A FR-38A-17, `scripts/hover-guard/transform.js`) gives each `:hover` or `:active` member a `.sgs-pressed`
+    twin; the twin is the same look on a finger, so it is recorded under the source rule it copies."""
+    out = {norm_selector(selector)}
+    if PRESSED_CLASS in selector:
+        out |= {norm_selector(selector.replace(PRESSED_CLASS, state)) for state in (":hover", ":active")}
+    return out
+
+
 def classify(site: Site, tagged: dict[str | None, set[str]], by_file: set, by_selector: set, generic: frozenset = frozenset()) -> Mapping:
     """Map one site. `tagged`: block slug -> states tagged on its rows; key None holds every block's states."""
     families = set(site.families)
+    sels = register_selectors(site.selector)
+    in_file = any((site.file, s) in by_file for s in sels)
+    in_any = any(s in by_selector for s in sels)
     wanted = set().union(*(EQUIVALENT.get(s, {s}) for s in site.states))
     if site.setting_like:
         if site.publishers:  # the block whose PHP writes the property holds the setting, not the block that styles the rule
@@ -288,18 +308,17 @@ def classify(site: Site, tagged: dict[str | None, set[str]], by_file: set, by_se
         # state look; the setting holds the resting amount and the state is only the trigger.
         if site.transform_only and site.vars:
             return Mapping(site, "behaviour", "state-driven behaviour: the setting is the amount, the state is the trigger")
-        key = (site.file, norm_selector(site.selector))
         # A live scan's file is 'live:<sheet>', so its rule is matched to a generic entry by selector alone.
-        if key in generic or (site.origin == "live" and key[1] in {sel for _, sel in generic}):
+        if any((site.file, s) in generic for s in sels) or (site.origin == "live" and sels & {sel for _, sel in generic}):
             return Mapping(site, "unmapped", "generic baseline reason on a rule that consumes a published custom property (" + ", ".join(site.vars[:3]) + "): tag the setting's state or record a specific reason")
-        if key in by_file or (site.origin == "live" and norm_selector(site.selector) in by_selector):
+        if in_file or (site.origin == "live" and in_any):
             return Mapping(site, "register", "recorded")
         if families <= UNTAGGED_FAMILIES:
             return Mapping(site, "states-row", "family " + "/".join(sorted(families)))
         return Mapping(site, "unmapped", ("setting-like custom property (" + ", ".join(site.vars[:3]) + ") under a state with no tagged row") if site.vars else "setting output (generated per-page stylesheet) under a state with no tagged row")
     if families <= UNTAGGED_FAMILIES:
         return Mapping(site, "states-row", "fixed paint, family " + "/".join(sorted(families)))
-    if (site.file, norm_selector(site.selector)) in by_file or (site.origin == "live" and norm_selector(site.selector) in by_selector):
+    if in_file or (site.origin == "live" and in_any):
         return Mapping(site, "register", "recorded")
     return Mapping(site, "unmapped", "fixed paint under a state, not recorded in the register")
 

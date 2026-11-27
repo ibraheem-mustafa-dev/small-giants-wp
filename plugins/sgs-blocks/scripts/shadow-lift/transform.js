@@ -67,7 +67,9 @@
 const postcss = require( 'postcss' );
 const { SGS_HOVER_NOT_TOUCH } = require( '../hover-guard/transform.js' );
 
-const TRANSIENT_STATE = /:(hover|focus|focus-within|focus-visible|active)\b/i;
+// `.sgs-pressed` is the touch press state (assets/js/touch-input.js, Spec 38A FR-38A-17): the hover-guard build gives
+// every :hover and :active member a pressed twin, so a twin is a state rule, never a resting shadow to lift.
+const TRANSIENT_STATE = /:(hover|focus|focus-within|focus-visible|active)\b|\.sgs-pressed\b/i;
 const PSEUDO_ELEMENT = /::|:(before|after|first-line|first-letter)\b/i;
 const FORCED_QUERY = /forced-colors\s*:\s*active/i;
 

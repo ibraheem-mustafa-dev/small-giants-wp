@@ -4,7 +4,7 @@
         "header": "<div class=\"sgs-choice-flow__chrome-header\" data-product-name=\"\"><span class=\"sgs-choice-flow__chrome-eyebrow\" aria-live=\"polite\"></span><button type=\"button\" class=\"sgs-choice-flow__chrome-close sgs-choice-flow__chrome-close--icon\"><svg class=\"sgs-choice-flow__chrome-close-icon\" viewBox=\"0 0 24 24\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M6 6L18 18M18 6L6 18\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"/></svg><span class=\"sgs-choice-flow__chrome-close-label\">Close</span></button></div>",
         "rules": [
             ".sgs-choice-flow-UID.wp-block-sgs-choice-flow .sgs-choice-flow__nav-back{color:var(--wp--preset--color--text, currentColor);border-color:var(--wp--preset--color--border, currentColor);border-style:solid;border-width:2px 2px 2px 2px;border-top-left-radius:8px;border-top-right-radius:8px;border-bottom-right-radius:8px;border-bottom-left-radius:8px;}",
-            ":where(:root:not(.sgs-touch-input)) .sgs-choice-flow-UID.wp-block-sgs-choice-flow .sgs-choice-flow__nav-back:hover{color:var(--wp--preset--color--text, currentColor);border-color:var(--wp--preset--color--text, currentColor);}",
+            ".sgs-choice-flow-UID.wp-block-sgs-choice-flow .sgs-choice-flow__nav-back.sgs-pressed,:where(:root:not(.sgs-touch-input)) .sgs-choice-flow-UID.wp-block-sgs-choice-flow .sgs-choice-flow__nav-back:hover{color:var(--wp--preset--color--text, currentColor);border-color:var(--wp--preset--color--text, currentColor);}",
             ".sgs-choice-flow-UID.wp-block-sgs-choice-flow .sgs-choice-flow__nav-back:focus-visible{color:var(--wp--preset--color--text, currentColor);border-color:var(--wp--preset--color--text, currentColor);}"
         ]
     },
@@ -13,7 +13,7 @@
         "header": "<div class=\"sgs-choice-flow__chrome-header\" data-product-name=\"\"><span class=\"sgs-choice-flow__chrome-eyebrow\" aria-live=\"polite\"></span><button type=\"button\" class=\"sgs-choice-flow__chrome-close sgs-choice-flow__chrome-close--text\"><span class=\"sgs-choice-flow__chrome-close-text\">Close</span><span class=\"sgs-choice-flow__chrome-close-glyph\" aria-hidden=\"true\">&times;</span></button></div>",
         "rules": [
             ".sgs-choice-flow-UID.wp-block-sgs-choice-flow .sgs-choice-flow__nav-back{color:var(--wp--preset--color--text, currentColor);border-color:var(--wp--preset--color--border, currentColor);border-style:solid;border-width:2px 2px 2px 2px;border-top-left-radius:8px;border-top-right-radius:8px;border-bottom-right-radius:8px;border-bottom-left-radius:8px;}",
-            ":where(:root:not(.sgs-touch-input)) .sgs-choice-flow-UID.wp-block-sgs-choice-flow .sgs-choice-flow__nav-back:hover{color:var(--wp--preset--color--text, currentColor);border-color:var(--wp--preset--color--text, currentColor);}",
+            ".sgs-choice-flow-UID.wp-block-sgs-choice-flow .sgs-choice-flow__nav-back.sgs-pressed,:where(:root:not(.sgs-touch-input)) .sgs-choice-flow-UID.wp-block-sgs-choice-flow .sgs-choice-flow__nav-back:hover{color:var(--wp--preset--color--text, currentColor);border-color:var(--wp--preset--color--text, currentColor);}",
             ".sgs-choice-flow-UID.wp-block-sgs-choice-flow .sgs-choice-flow__nav-back:focus-visible{color:var(--wp--preset--color--text, currentColor);border-color:var(--wp--preset--color--text, currentColor);}"
         ]
     },
@@ -22,7 +22,7 @@
         "header": "",
         "rules": [
             ".sgs-choice-flow-UID.wp-block-sgs-choice-flow .sgs-choice-flow__nav-back{color:var(--wp--preset--color--text, currentColor);border-color:var(--wp--preset--color--border, currentColor);border-style:solid;border-width:2px 2px 2px 2px;border-top-left-radius:8px;border-top-right-radius:8px;border-bottom-right-radius:8px;border-bottom-left-radius:8px;}",
-            ":where(:root:not(.sgs-touch-input)) .sgs-choice-flow-UID.wp-block-sgs-choice-flow .sgs-choice-flow__nav-back:hover{color:var(--wp--preset--color--text, currentColor);border-color:var(--wp--preset--color--text, currentColor);}",
+            ".sgs-choice-flow-UID.wp-block-sgs-choice-flow .sgs-choice-flow__nav-back.sgs-pressed,:where(:root:not(.sgs-touch-input)) .sgs-choice-flow-UID.wp-block-sgs-choice-flow .sgs-choice-flow__nav-back:hover{color:var(--wp--preset--color--text, currentColor);border-color:var(--wp--preset--color--text, currentColor);}",
             ".sgs-choice-flow-UID.wp-block-sgs-choice-flow .sgs-choice-flow__nav-back:focus-visible{color:var(--wp--preset--color--text, currentColor);border-color:var(--wp--preset--color--text, currentColor);}"
         ]
     },
@@ -31,7 +31,7 @@
         "header": "",
         "rules": [
             ".sgs-choice-flow-UID.wp-block-sgs-choice-flow .sgs-choice-flow__nav-back{color:var(--wp--preset--color--text, currentColor);border-color:var(--wp--preset--color--border, currentColor);border-style:solid;border-width:2px 2px 2px 2px;border-top-left-radius:8px;border-top-right-radius:8px;border-bottom-right-radius:8px;border-bottom-left-radius:8px;}",
-            ":where(:root:not(.sgs-touch-input)) .sgs-choice-flow-UID.wp-block-sgs-choice-flow .sgs-choice-flow__nav-back:hover{color:var(--wp--preset--color--text, currentColor);border-color:var(--wp--preset--color--text, currentColor);}",
+            ".sgs-choice-flow-UID.wp-block-sgs-choice-flow .sgs-choice-flow__nav-back.sgs-pressed,:where(:root:not(.sgs-touch-input)) .sgs-choice-flow-UID.wp-block-sgs-choice-flow .sgs-choice-flow__nav-back:hover{color:var(--wp--preset--color--text, currentColor);border-color:var(--wp--preset--color--text, currentColor);}",
             ".sgs-choice-flow-UID.wp-block-sgs-choice-flow .sgs-choice-flow__nav-back:focus-visible{color:var(--wp--preset--color--text, currentColor);border-color:var(--wp--preset--color--text, currentColor);}"
         ]
     }

@@ -59,10 +59,10 @@
             "border-style:solid",
             "border-width:2px 2px 2px 2px"
         ],
-        " || .sgs-state-colour-UID.wp-block-sgs-container:focus-visible,.sgs-state-colour-UID.wp-block-sgs-container:has(:focus-visible)": [
+        " || .sgs-state-colour-UID.wp-block-sgs-container.sgs-pressed,:where(:root:not(.sgs-touch-input)) .sgs-state-colour-UID.wp-block-sgs-container:hover": [
             "border-color:var(--wp--preset--color--secondary,currentColor)"
         ],
-        " || :where(:root:not(.sgs-touch-input)) .sgs-state-colour-UID.wp-block-sgs-container:hover": [
+        " || .sgs-state-colour-UID.wp-block-sgs-container:focus-visible,.sgs-state-colour-UID.wp-block-sgs-container:has(:focus-visible)": [
             "border-color:var(--wp--preset--color--secondary,currentColor)"
         ]
     },
@@ -73,6 +73,12 @@
             "border-style:solid",
             "border-width:2px 2px 2px 2px",
             "position:relative"
+        ],
+        " || .sgs-cst-UID.wp-block-sgs-container.sgs-pressed,:where(:root:not(.sgs-touch-input)) .sgs-cst-UID.wp-block-sgs-container:hover": [
+            "border-color:transparent"
+        ],
+        " || .sgs-cst-UID.wp-block-sgs-container.sgs-pressed::before,:where(:root:not(.sgs-touch-input)) .sgs-cst-UID.wp-block-sgs-container:hover::before": [
+            "background:linear-gradient(45deg,#0f0,#ff0)"
         ],
         " || .sgs-cst-UID.wp-block-sgs-container::before": [
             "-webkit-mask-composite:xor",
@@ -91,12 +97,6 @@
             "border-color:transparent"
         ],
         " || .sgs-cst-UID.wp-block-sgs-container:focus-visible::before,.sgs-cst-UID.wp-block-sgs-container:has(:focus-visible)::before": [
-            "background:linear-gradient(45deg,#0f0,#ff0)"
-        ],
-        " || :where(:root:not(.sgs-touch-input)) .sgs-cst-UID.wp-block-sgs-container:hover": [
-            "border-color:transparent"
-        ],
-        " || :where(:root:not(.sgs-touch-input)) .sgs-cst-UID.wp-block-sgs-container:hover::before": [
             "background:linear-gradient(45deg,#0f0,#ff0)"
         ]
     },

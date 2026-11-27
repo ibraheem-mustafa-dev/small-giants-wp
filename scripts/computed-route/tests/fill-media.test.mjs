@@ -227,7 +227,7 @@ test( 'MUST FAIL: a stock address the map lacks, or holds only as a non-stock en
 // slot's Ratio and Height beside its Source: Indus's mega-menu cards draw their photo in an image placeholder that fills a fixed
 // box, and the clone's sgs/media wrote neither (the modules were built and never read an element).
 const SIZED = { ...SLOT, ratio: 'ratio', height: 'height' };
-const sized = ( declared, over = {} ) => img( 'assets/hero.png', 'x', { element: { computed: { position: 'static' }, hasText: false, declared, box: { w: 200, h: 150 }, natural: NATURAL, parent: { display: 'block', alignItems: '', definiteHeight: true }, ...over } } );
+const sized = ( declared, over = {} ) => img( 'assets/hero.png', 'x', { element: { computed: { position: 'static' }, hasText: false, declared, box: { w: 200, h: 150 }, natural: NATURAL, parent: { display: 'block', alignItems: '', definiteHeight: true }, ...over } } ); // scalar-tier-allow: a parent element's computed alignItems fact, not the card-grid attribute
 
 test( 'MUST FAIL: a picture that declares a ratio writes the Ratio of the slot; height 100% of a definite parent writes Height fill', () => {
 	const r = mediaDecisions( { slots: [ SIZED ], reads: at( sized( { 'aspect-ratio': '4 / 3' } ) ), media } );
@@ -253,10 +253,10 @@ test( 'negative control: no sizing is written for a slot with no Ratio or Height
 
 test( 'MUST FAIL: withSizing takes the parent facts the read found beside the picture over the root target of the skeleton parent', () => {
 	const e = withSizing( {
-		entry: { ...img( 'assets/hero.png' ), parent: { display: 'flex', alignItems: 'center', definiteHeight: false } }, snap: { rect: { x: 0, y: 0, w: 205, h: 110 } }, declared: { height: '100%' },
+		entry: { ...img( 'assets/hero.png' ), parent: { display: 'flex', alignItems: 'center', definiteHeight: false } }, snap: { rect: { x: 0, y: 0, w: 205, h: 110 } }, declared: { height: '100%' }, // scalar-tier-allow: a parent element's computed alignItems fact, not the card-grid attribute
 		parentSnap: { styles: { display: 'grid', 'align-items': 'stretch' } }, parentDeclared: { height: '110px' },
 	} );
-	assert.deepEqual( e.element.parent, { display: 'flex', alignItems: 'center', definiteHeight: false }, 'the wrapper above the picture is not its parent' );
+	assert.deepEqual( e.element.parent, { display: 'flex', alignItems: 'center', definiteHeight: false }, 'the wrapper above the picture is not its parent' ); // scalar-tier-allow: a parent element's computed alignItems fact, not the card-grid attribute
 } );
 
 test( 'MUST FAIL: what the draft states for a picture and the slot has no setting for is a note, not dropped', () => {
@@ -280,7 +280,7 @@ test( 'withSizing reads the declared sizes, the drawn box, the natural size and 
 	} );
 	assert.deepEqual( e.element.declared, { height: '100%', 'aspect-ratio': '4 / 3' }, 'only the sizing longhands' );
 	assert.deepEqual( [ e.element.box, e.element.natural ], [ { w: 205, h: 110 }, NATURAL ] );
-	assert.deepEqual( e.element.parent, { display: 'flex', alignItems: 'stretch', definiteHeight: true } );
+	assert.deepEqual( e.element.parent, { display: 'flex', alignItems: 'stretch', definiteHeight: true } ); // scalar-tier-allow: a parent element's computed alignItems fact, not the card-grid attribute
 	assert.equal( withSizing( { entry: img( 'assets/hero.png' ), snap: { missing: true }, declared: { height: '1px' } } ).element.declared, undefined, 'a read that missed' );
 	const indefinite = ( height ) => withSizing( { entry: img( 'assets/hero.png' ), snap: { rect: { w: 5, h: 5 } }, declared: { height: '100%' }, parentSnap: { styles: {} }, parentDeclared: { height } } ).element.parent.definiteHeight;
 	assert.deepEqual( [ indefinite( 'auto' ), indefinite( '50%' ), indefinite( undefined ), indefinite( '8rem' ) ], [ false, false, false, true ], 'only a length makes the parent height definite' );

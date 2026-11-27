@@ -152,7 +152,7 @@ sgs_separators_css(
 	$col,
 	array(
 		'list'   => '.g',
-		'layout' => 'flow',
+		'layout' => 'flow', // scalar-tier-allow: the separators context's list kind, not the gallery block's layout attribute
 	),
 	sgs_separators_caps( 'sgs/gallery' )
 );
@@ -162,7 +162,7 @@ sgs_separators_css(
 	$col,
 	array(
 		'list'      => '.g',
-		'layout'    => 'line',
+		'layout'    => 'line', // scalar-tier-allow: the separators context's list kind, not the gallery block's layout attribute
 		'item'      => '.g > i',
 		'direction' => 'row',
 		'gap_expr'  => array( 'column' => '8px' ),
@@ -175,7 +175,7 @@ sgs_separators_css(
 	array(),
 	array(
 		'list'   => '.g',
-		'layout' => 'flow',
+		'layout' => 'flow', // scalar-tier-allow: the separators context's list kind, not the gallery block's layout attribute
 	),
 	sgs_separators_caps( 'sgs/gallery' )
 );

@@ -70,10 +70,10 @@
             "border-style:solid",
             "border-width:2px 2px 2px 2px"
         ],
-        " || .sgs-proc-UID.sgs-process-steps:focus-visible": [
+        " || .sgs-proc-UID.sgs-process-steps.sgs-pressed,:where(:root:not(.sgs-touch-input)) .sgs-proc-UID.sgs-process-steps:hover": [
             "border-color:var(--wp--preset--color--secondary,currentColor)"
         ],
-        " || :where(:root:not(.sgs-touch-input)) .sgs-proc-UID.sgs-process-steps:hover": [
+        " || .sgs-proc-UID.sgs-process-steps:focus-visible": [
             "border-color:var(--wp--preset--color--secondary,currentColor)"
         ]
     },

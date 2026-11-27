@@ -63,10 +63,10 @@
         " || .wp-block-sgs-text.sgs-text-hover-UID": [
             "transition:color 300ms ease,background-color 300ms ease,box-shadow 300ms ease"
         ],
-        " || .wp-block-sgs-text.sgs-text-hover-UID:focus-visible": [
+        " || .wp-block-sgs-text.sgs-text-hover-UID.sgs-pressed,:where(:root:not(.sgs-touch-input)) .wp-block-sgs-text.sgs-text-hover-UID:hover": [
             "border-color:var(--wp--preset--color--secondary,currentColor)"
         ],
-        " || :where(:root:not(.sgs-touch-input)) .wp-block-sgs-text.sgs-text-hover-UID:hover": [
+        " || .wp-block-sgs-text.sgs-text-hover-UID:focus-visible": [
             "border-color:var(--wp--preset--color--secondary,currentColor)"
         ],
         "@media (prefers-reduced-motion:reduce) || .wp-block-sgs-text.sgs-text-hover-UID": [

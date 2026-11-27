@@ -224,6 +224,10 @@ def self_test() -> int:
         ("positive: the same entry with a specific reason is green", kinds(run(setting_css, {None: set(), "sgs/fx": set()}, [{"file": f, "selector": ".sgs-fx__btn:hover", "reason": "set by view.js"}])) == ["register"]),
         ("a bare helper name ('sgs-fx-hover-colour') counts as published, with its -hover and -gradient variants", se.is_published("--sgs-fx-hover-colour-gradient", None, {"*": {"--sgs-fx-hover-colour~"}}) and not se.is_published("--sgs-fx-other", None, {"*": {"--sgs-fx-hover-colour~"}})),
         ("a property published by another block's PHP counts, and that block's tags decide the mapping", kinds(run(setting_css, {None: {"hover"}, "sgs/fx": set(), "sgs/fx-child": {"hover"}}, [], f)) == ["unmapped"] and _cross_block_ok(walker, vocab, slugs)),
+        ("MUST FAIL without the guard rule: a touch-guarded rule matches the entry written for its source selector", kinds(run(":where(:root:not(.sgs-touch-input)) .sgs-fx__btn:hover{color:red}", tagged, [{"file": f, "selector": ".sgs-fx__btn:hover", "reason": "r"}])) == ["register"]),
+        ("MUST FAIL without the twin rule: a pressed twin matches the :hover or :active entry it copies, and nothing else", se.norm_selector(".sgs-fx__btn:hover::after") in se.register_selectors(".sgs-fx__btn.sgs-pressed::after")
+         and se.norm_selector(".sgs-fx__btn:active") in se.register_selectors(".sgs-fx__btn.sgs-pressed")
+         and se.register_selectors(".sgs-fx__btn:focus-visible") == {se.norm_selector(".sgs-fx__btn:focus-visible")}),
         ("baseline records fixed paint but never a setting-like site", _baseline_check(run(fixed_css, tagged, []) + run(setting_css, {None: set(), "sgs/fx": set()}, []))),
     ]
     failed = 0
