@@ -143,5 +143,25 @@
       "id": 98,
       "url": "http://localhost:8084/wp-content/uploads/2026/10/photo-tray-love.jpg"
     }
+  },
+  "sgs-test": {
+    "envFile": ".claude/secrets/sgs-test.env",
+    "envKey": "SGSTEST"
+  },
+  "local-sgs": {
+    "envFile": ".claude/secrets/local-sgs.env",
+    "envKey": "LOCALSGS",
+    "mirrorOf": "sgs-test",
+    "pluginDir": "//wsl.localhost/Ubuntu/var/www/local-sgs/wp-content/plugins/sgs-blocks"
+  },
+  "mic-test": {
+    "envFile": ".claude/secrets/mic-test.env",
+    "envKey": "MICTEST"
+  },
+  "local-mic": {
+    "envFile": ".claude/secrets/local-mic.env",
+    "envKey": "LOCALMIC",
+    "mirrorOf": "mic-test",
+    "pluginDir": "//wsl.localhost/Ubuntu/var/www/local-mic/wp-content/plugins/sgs-blocks"
   }
 }

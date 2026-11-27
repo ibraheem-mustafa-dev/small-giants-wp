@@ -3,7 +3,7 @@
 
   python scripts/render-check/render-check.py --from local-mamas --before <checkout|site> --after <checkout|site>
       [--step CMD]... [--seed-step CMD]... [--target mamas-test] [--accepted FILE|none] [--only state,state]
-      [--motion no-preference|reduce] [--jobs 6] [--keep] [--out DIR]
+      [--motion no-preference|reduce] [--jobs 6] [--keep] [--keep-shots] [--out DIR]
   python scripts/render-check/render-check.py --self-test [--main-build DIR] [--cards-build DIR]
 
 Two scratch copies of the mirror are made (scripts/local-wp/scratch-mirror.sh): side a gets the before build, side b
@@ -21,13 +21,16 @@ sites/<client>/render-accepted.<target>.json covers it ({"entries": [{"state", "
 
 Exit 0: every state reached, no unaccepted difference. 1: an unaccepted difference. 2: a state not reached on either
 side (a failed sign-in, an empty basket where a filled one was asked for). 3: the run could not be made. The copies are
-dropped in every case unless --keep. Report: <out>/report.md, report.json, pairs/.
+dropped in every case unless --keep. Report: <out>/report.md, report.json, pairs/. The raw captures (dom-r1, dom-r2,
+hash, hash-r2: 1.5 to 3 GB a whole-site run) are deleted once the report and its crop pairs are written, unless
+--keep-shots.
 """
 from __future__ import annotations
 
 import argparse
 import json
 import secrets
+import shutil
 import subprocess
 import sys
 import time
@@ -296,6 +299,10 @@ def run(a) -> int:
                     print(f"render-check: could not drop {n}: {e}", file=sys.stderr)
             meta["dropped"] = not left
         rc_report.write(run_dir, meta, locals().get("results", {}))
+        if not a.keep_shots:
+            # The crop pairs are cut from dom-r2 by rc_report.write above, so the raw captures go only after it.
+            for sub in ("dom-r1", "dom-r2", "hash", "hash-r2"):
+                shutil.rmtree(run_dir / sub, ignore_errors=True)
         print(f"render-check: exit {meta.get('exit')}: {meta.get('verdict')}\n  report {run_dir / 'report.md'}", flush=True)
 
 
@@ -313,6 +320,7 @@ def main() -> int:
     ap.add_argument("--motion", default="no-preference", choices=("no-preference", "reduce"))
     ap.add_argument("--jobs", type=int, default=6)
     ap.add_argument("--keep", action="store_true", help="leave the copies for inspection (drop them with scratch-mirror.sh)")
+    ap.add_argument("--keep-shots", action="store_true", help="keep the raw captures (dom-r1, dom-r2, hash, hash-r2) after the report")
     ap.add_argument("--out")
     ap.add_argument("--break-sign-in", action="store_true", help=argparse.SUPPRESS)
     ap.add_argument("--self-test", action="store_true")
