@@ -26,6 +26,7 @@ namespace SGS\Blocks;
 defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/helpers-global-settings.php';
+require_once __DIR__ . '/helpers-scoped-instance-vars.php';
 
 const SGS_BLEED_FALLBACK_PX = 80;
 const SGS_BLEED_ROOM_PX     = 2;
@@ -300,7 +301,7 @@ function sgs_shadow_bleed_render( string $block_content, array $block ): string 
 		return $block_content;
 	}
 	$sheets = array();
-	foreach ( (array) $type->style_handles as $handle ) {
+	foreach ( (array) ( $type->style_handles ?? array() ) as $handle ) {
 		$sheets[] = (string) \wp_styles()->get_data( $handle, 'path' );
 	}
 	$root = preg_match( '/^(?:\s*<(style|script)\b[^>]*>.*?<\/\1>)*\s*(<[a-zA-Z][^>]*>)/is', $block_content, $rm ) ? $rm[2] : '';
