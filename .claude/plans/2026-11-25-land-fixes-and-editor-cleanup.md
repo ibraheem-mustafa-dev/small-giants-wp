@@ -169,6 +169,8 @@ Changes:
 
 Done when: every named surface improves and none gets worse, the rehearsal passes within the time left, and Bean's eye check passes. Then clone SGS and MIC.
 
+Render check on `local-mamas`, live code `ed5effd01` to the batch (`c38545cf5`, run `E:/sgs-tmp/render-check/runs/20261127-104834-local-mamas`, with the cart trigger, button, ticker and spacing sweeps as steps on the after copy; the button sweep changed 9 posts, the others none): 33 states differ, every difference explained. Expected: the trust-bar band's inert `grid-template-columns` dropped; the footer gallery's bleed band sized (80px to about 14px, padding and negative margin cancel). Two visible fixes, both to Mama's draft and live-wrong since the 2026-11-22 deploy skipped the button sweep on Mama's: the sign-in and register buttons turn from pink with a black border to `#F9CF6E` with a `#3A2A22` border, hover `#FFFAF0` (`SignIn.dc.html`), and the buy box's Add to basket grows from 48px to 64px tall (`Product.dc.html`), so the buy box is 8px taller; crops `E:/sgs-tmp/tmp-batch1/pairs/` sent to Bean. The trustpilot arrow change from `fix/batch1-gates2` reaches no mirror page.
+
 Depends on: 2 to 9, 14 to 16. Status: started with the batch baseline sweep (see "Where it stands") and one Mama's update attempt that stopped on PHPStan memory (nothing uploaded); the rest waits on Tasks 2 to 9 and 14 to 16. Mama's live shop deploys once, from the tagged batch after this task's proof, run through `heavy-slot.mjs --front`.
 
 ## Editor lane (builds now, merges after Task 10's tag)
