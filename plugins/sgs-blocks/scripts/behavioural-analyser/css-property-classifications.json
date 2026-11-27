@@ -9464,6 +9464,13 @@
     },
     {
       "slug": "sgs/card-grid",
+      "attr": "margin",
+      "fields": {
+        "css_property": "margin-bottom,margin-left,margin-right,margin-top"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
       "attr": "maxWidth",
       "fields": {
         "css_property": "max-width",
@@ -9509,6 +9516,13 @@
       "fields": {
         "css_property": "text-transform",
         "css_element": "no-image-label"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "padding",
+      "fields": {
+        "css_property": "padding-bottom,padding-left,padding-right,padding-top"
       }
     },
     {
@@ -13476,11 +13490,25 @@
     },
     {
       "slug": "sgs/feature-grid",
+      "attr": "margin",
+      "fields": {
+        "css_property": "margin-bottom,margin-left,margin-right,margin-top"
+      }
+    },
+    {
+      "slug": "sgs/feature-grid",
       "attr": "maxWidth",
       "fields": {
         "css_property": "max-width",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/feature-grid",
+      "attr": "padding",
+      "fields": {
+        "css_property": "padding-bottom,padding-left,padding-right,padding-top"
       }
     },
     {
@@ -28699,6 +28727,13 @@
     },
     {
       "slug": "sgs/post-grid",
+      "attr": "margin",
+      "fields": {
+        "css_property": "margin-bottom,margin-left,margin-right,margin-top"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
       "attr": "maxWidth",
       "fields": {
         "css_property": "max-width",
@@ -28834,6 +28869,13 @@
       "attr": "order",
       "fields": {
         "css_property": "order"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "padding",
+      "fields": {
+        "css_property": "padding-bottom,padding-left,padding-right,padding-top"
       }
     },
     {
@@ -29668,11 +29710,25 @@
     },
     {
       "slug": "sgs/pricing-table",
+      "attr": "margin",
+      "fields": {
+        "css_property": "margin-bottom,margin-left,margin-right,margin-top"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
       "attr": "maxWidth",
       "fields": {
         "css_property": "max-width",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "padding",
+      "fields": {
+        "css_property": "padding-bottom,padding-left,padding-right,padding-top"
       }
     },
     {
@@ -31772,6 +31828,13 @@
       "fields": {
         "css_property": "grid-template-columns",
         "css_layer": "GRID"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "margin",
+      "fields": {
+        "css_property": "margin-bottom,margin-left,margin-right,margin-top"
       }
     },
     {
@@ -35745,11 +35808,25 @@
     },
     {
       "slug": "sgs/tabs",
+      "attr": "margin",
+      "fields": {
+        "css_property": "margin-bottom,margin-left,margin-right,margin-top"
+      }
+    },
+    {
+      "slug": "sgs/tabs",
       "attr": "maxWidth",
       "fields": {
         "css_property": "max-width",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/tabs",
+      "attr": "padding",
+      "fields": {
+        "css_property": "padding-bottom,padding-left,padding-right,padding-top"
       }
     },
     {
@@ -37351,11 +37428,25 @@
     },
     {
       "slug": "sgs/testimonial-slider",
+      "attr": "margin",
+      "fields": {
+        "css_property": "margin-bottom,margin-left,margin-right,margin-top"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
       "attr": "maxWidth",
       "fields": {
         "css_property": "max-width",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "padding",
+      "fields": {
+        "css_property": "padding-bottom,padding-left,padding-right,padding-top"
       }
     },
     {
@@ -39045,6 +39136,25 @@
     },
     {
       "slug": "sgs/trust-bar",
+      "attr": "labelColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "labelColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "label",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
       "attr": "labelFontFamily",
       "fields": {
         "css_property": "font-family",
@@ -39272,6 +39382,25 @@
         "role": "color",
         "css_layer": "OUTER",
         "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "titleColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "titleColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "title",
         "css_state": "hover"
       }
     },
@@ -42564,6 +42693,13 @@
       "fields": {
         "css_property": "color-gradient",
         "css_element": "brand-text"
+      }
+    },
+    {
+      "slug": "sgs/brand-strip",
+      "attr": "logoEvenSize",
+      "fields": {
+        "css_element": "logo"
       }
     },
     {
@@ -55130,29 +55266,10 @@
     },
     {
       "slug": "sgs/trust-bar",
-      "attr": "labelColour",
-      "fields": {
-        "css_property": "color",
-        "role": "color",
-        "css_element": "badge-label"
-      }
-    },
-    {
-      "slug": "sgs/trust-bar",
       "attr": "labelColourGradient",
       "fields": {
         "css_property": "background-image",
-        "css_element": "badge-label"
-      }
-    },
-    {
-      "slug": "sgs/trust-bar",
-      "attr": "labelColourHover",
-      "fields": {
-        "css_property": "color",
-        "role": "color",
-        "css_element": "badge-label",
-        "css_state": "hover"
+        "css_element": "label"
       }
     },
     {
@@ -55160,17 +55277,8 @@
       "attr": "labelColourHoverGradient",
       "fields": {
         "css_property": "background-image",
-        "css_element": "badge-label",
+        "css_element": "label",
         "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/trust-bar",
-      "attr": "titleColour",
-      "fields": {
-        "css_property": "color",
-        "role": "color",
-        "css_element": "title"
       }
     },
     {
@@ -55179,16 +55287,6 @@
       "fields": {
         "css_property": "background-image",
         "css_element": "title"
-      }
-    },
-    {
-      "slug": "sgs/trust-bar",
-      "attr": "titleColourHover",
-      "fields": {
-        "css_property": "color",
-        "role": "color",
-        "css_element": "title",
-        "css_state": "hover"
       }
     },
     {

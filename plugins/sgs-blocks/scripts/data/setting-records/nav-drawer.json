@@ -910,6 +910,21 @@
    ]
   },
   {
+   "setting": "backgroundOverlayColourHover",
+   "part": "sgs-bg-overlay",
+   "props": [
+    "background-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-nav-drawer.wp-block-sgs-nav-drawer.sgs-pressed > .sgs-bg-overlay",
+   "kind": "value",
+   "unproved": "rule-needs-absent-markup",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
    "setting": "backgroundOverlayGradient",
    "part": "sgs-bg-overlay",
    "props": [
@@ -1886,6 +1901,21 @@
    ]
   },
   {
+   "setting": "chromeButtonColourBackgroundHover",
+   "part": "sgs-pressed::after",
+   "props": [
+    "background-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-nav-drawer.wp-block-sgs-nav-drawer .sgs-nav-drawer__chrome .sgs-nav-drawer__chrome-slot.sgs-pressed::after",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
    "setting": "chromeButtonColourBorder",
    "part": "sgs-nav-drawer__chrome-slot",
    "props": [
@@ -1923,6 +1953,21 @@
    "tiers": [],
    "selector": ":where(:root:not(.sgs-touch-input)) .sgs-nav-drawer.wp-block-sgs-nav-drawer .sgs-nav-drawer__chrome .sgs-nav-drawer__chrome-slot:hover",
    "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "chromeButtonColourBorderHover",
+   "part": "sgs-pressed",
+   "props": [
+    "border-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-nav-drawer.wp-block-sgs-nav-drawer .sgs-nav-drawer__chrome .sgs-nav-drawer__chrome-slot.sgs-pressed",
+   "kind": "value",
+   "unproved": "part-not-rendered",
    "values": [
     "#13579b"
    ]
@@ -2012,6 +2057,21 @@
    ]
   },
   {
+   "setting": "chromeButtonColourTextHover",
+   "part": "sgs-pressed",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-nav-drawer.wp-block-sgs-nav-drawer .sgs-nav-drawer__chrome .sgs-nav-drawer__chrome-slot.sgs-pressed",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
    "setting": "chromeButtonColourTextHoverGradient",
    "part": "sgs-nav-drawer__chrome-slot",
    "props": [
@@ -2091,6 +2151,51 @@
    "tiers": [],
    "selector": ":where(:root:not(.sgs-touch-input)) .sgs-nav-drawer.wp-block-sgs-nav-drawer .sgs-nav-drawer__chrome .sgs-nav-drawer__chrome-slot:hover",
    "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "chromeButtonColourTextHoverGradient",
+   "part": "sgs-pressed",
+   "props": [
+    "background-clip"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-nav-drawer.wp-block-sgs-nav-drawer .sgs-nav-drawer__chrome .sgs-nav-drawer__chrome-slot.sgs-pressed",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "chromeButtonColourTextHoverGradient",
+   "part": "sgs-pressed",
+   "props": [
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-nav-drawer.wp-block-sgs-nav-drawer .sgs-nav-drawer__chrome .sgs-nav-drawer__chrome-slot.sgs-pressed",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "chromeButtonColourTextHoverGradient",
+   "part": "sgs-pressed",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-nav-drawer.wp-block-sgs-nav-drawer .sgs-nav-drawer__chrome .sgs-nav-drawer__chrome-slot.sgs-pressed",
+   "kind": "value",
+   "unproved": "part-not-rendered",
    "values": [
     "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
    ]
@@ -3081,7 +3186,7 @@
    ],
    "state": null,
    "tiers": [],
-   "selector": ".sgs-nav-drawer__chrome-slot--at-center",
+   "selector": ".sgs-nav-drawer__chrome-slot--at-end",
    "kind": "switched-on",
    "values": [
     "center",
@@ -3376,6 +3481,21 @@
    ]
   },
   {
+   "setting": "closeBgHover",
+   "part": "sgs-pressed",
+   "props": [
+    "background-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-nav-drawer.wp-block-sgs-nav-drawer .sgs-nav-drawer__close.sgs-pressed",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
    "setting": "closeBgHoverGradient",
    "part": "sgs-nav-drawer__close",
    "props": [
@@ -3399,6 +3519,21 @@
    "tiers": [],
    "selector": ":where(:root:not(.sgs-touch-input)) .sgs-nav-drawer.wp-block-sgs-nav-drawer .sgs-nav-drawer__close:hover",
    "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "closeBgHoverGradient",
+   "part": "sgs-pressed",
+   "props": [
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-nav-drawer.wp-block-sgs-nav-drawer .sgs-nav-drawer__close.sgs-pressed",
+   "kind": "value",
+   "unproved": "part-not-rendered",
    "values": [
     "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
    ]
@@ -4734,6 +4869,21 @@
    ]
   },
   {
+   "setting": "drawerTextColourHover",
+   "part": "sgs-pressed",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-nav-drawer.wp-block-sgs-nav-drawer .sgs-nav-drawer__body.sgs-pressed",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
    "setting": "drawerTextColourHoverGradient",
    "part": "sgs-nav-drawer__body",
    "props": [
@@ -4813,6 +4963,51 @@
    "tiers": [],
    "selector": ":where(:root:not(.sgs-touch-input)) .sgs-nav-drawer.wp-block-sgs-nav-drawer .sgs-nav-drawer__body:hover",
    "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "drawerTextColourHoverGradient",
+   "part": "sgs-pressed",
+   "props": [
+    "background-clip"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-nav-drawer.wp-block-sgs-nav-drawer .sgs-nav-drawer__body.sgs-pressed",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "drawerTextColourHoverGradient",
+   "part": "sgs-pressed",
+   "props": [
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-nav-drawer.wp-block-sgs-nav-drawer .sgs-nav-drawer__body.sgs-pressed",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "drawerTextColourHoverGradient",
+   "part": "sgs-pressed",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-nav-drawer.wp-block-sgs-nav-drawer .sgs-nav-drawer__body.sgs-pressed",
+   "kind": "value",
+   "unproved": "part-not-rendered",
    "values": [
     "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
    ]
@@ -5562,6 +5757,21 @@
    ]
   },
   {
+   "setting": "toggleCloseColourHover",
+   "part": "sgs-pressed",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-nav-drawer.wp-block-sgs-nav-drawer .sgs-nav-drawer__close.sgs-pressed",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
    "setting": "toggleCloseColourHoverGradient",
    "part": "sgs-nav-drawer__close",
    "props": [
@@ -5641,6 +5851,51 @@
    "tiers": [],
    "selector": ":where(:root:not(.sgs-touch-input)) .sgs-nav-drawer.wp-block-sgs-nav-drawer .sgs-nav-drawer__close:hover",
    "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "toggleCloseColourHoverGradient",
+   "part": "sgs-pressed",
+   "props": [
+    "background-clip"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-nav-drawer.wp-block-sgs-nav-drawer .sgs-nav-drawer__close.sgs-pressed",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "toggleCloseColourHoverGradient",
+   "part": "sgs-pressed",
+   "props": [
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-nav-drawer.wp-block-sgs-nav-drawer .sgs-nav-drawer__close.sgs-pressed",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "toggleCloseColourHoverGradient",
+   "part": "sgs-pressed",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-nav-drawer.wp-block-sgs-nav-drawer .sgs-nav-drawer__close.sgs-pressed",
+   "kind": "value",
+   "unproved": "part-not-rendered",
    "values": [
     "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
    ]
@@ -6222,6 +6477,15 @@
     "background-color"
    ],
    "hover",
+   []
+  ],
+  [
+   "backgroundOverlayColourHover",
+   "sgs-bg-overlay",
+   [
+    "background-color"
+   ],
+   null,
    []
   ],
   [
@@ -6814,6 +7078,15 @@
    []
   ],
   [
+   "chromeButtonColourBackgroundHover",
+   "sgs-pressed::after",
+   [
+    "background-color"
+   ],
+   null,
+   []
+  ],
+  [
    "chromeButtonColourBorder",
    "sgs-nav-drawer__chrome-slot",
    [
@@ -6838,6 +7111,15 @@
     "border-color"
    ],
    "hover",
+   []
+  ],
+  [
+   "chromeButtonColourBorderHover",
+   "sgs-pressed",
+   [
+    "border-color"
+   ],
+   null,
    []
   ],
   [
@@ -6917,6 +7199,15 @@
    []
   ],
   [
+   "chromeButtonColourTextHover",
+   "sgs-pressed",
+   [
+    "color"
+   ],
+   null,
+   []
+  ],
+  [
    "chromeButtonColourTextHoverGradient",
    "sgs-nav-drawer__chrome-slot",
    [
@@ -7012,6 +7303,55 @@
     "color"
    ],
    "hover",
+   []
+  ],
+  [
+   "chromeButtonColourTextHoverGradient",
+   "sgs-pressed",
+   [
+    "background-clip"
+   ],
+   null,
+   []
+  ],
+  [
+   "chromeButtonColourTextHoverGradient",
+   "sgs-pressed",
+   [
+    "background-image"
+   ],
+   null,
+   [
+    "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+   ]
+  ],
+  [
+   "chromeButtonColourTextHoverGradient",
+   "sgs-pressed",
+   [
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "chromeButtonColourTextHoverGradient",
+   "sgs-pressed",
+   [
+    "color"
+   ],
+   null,
+   [
+    "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+   ]
+  ],
+  [
+   "chromeButtonColourTextHoverGradient",
+   "sgs-pressed",
+   [
+    "color"
+   ],
+   null,
    []
   ],
   [
@@ -7700,6 +8040,15 @@
    []
   ],
   [
+   "closeBgHover",
+   "sgs-pressed",
+   [
+    "background-color"
+   ],
+   null,
+   []
+  ],
+  [
    "closeBgHoverGradient",
    "sgs-nav-drawer__close",
    [
@@ -7715,6 +8064,15 @@
     "background-image"
    ],
    "hover",
+   []
+  ],
+  [
+   "closeBgHoverGradient",
+   "sgs-pressed",
+   [
+    "background-image"
+   ],
+   null,
    []
   ],
   [
@@ -8424,6 +8782,15 @@
    []
   ],
   [
+   "drawerTextColourHover",
+   "sgs-pressed",
+   [
+    "color"
+   ],
+   null,
+   []
+  ],
+  [
    "drawerTextColourHoverGradient",
    "sgs-nav-drawer__body",
    [
@@ -8497,6 +8864,33 @@
     "color"
    ],
    "hover",
+   []
+  ],
+  [
+   "drawerTextColourHoverGradient",
+   "sgs-pressed",
+   [
+    "background-clip"
+   ],
+   null,
+   []
+  ],
+  [
+   "drawerTextColourHoverGradient",
+   "sgs-pressed",
+   [
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "drawerTextColourHoverGradient",
+   "sgs-pressed",
+   [
+    "color"
+   ],
+   null,
    []
   ],
   [
@@ -9034,6 +9428,15 @@
    []
   ],
   [
+   "toggleCloseColourHover",
+   "sgs-pressed",
+   [
+    "color"
+   ],
+   null,
+   []
+  ],
+  [
    "toggleCloseColourHoverGradient",
    "sgs-nav-drawer__close",
    [
@@ -9129,1243 +9532,1332 @@
     "color"
    ],
    "hover",
+   []
+  ],
+  [
+   "toggleCloseColourHoverGradient",
+   "sgs-pressed",
+   [
+    "background-clip"
+   ],
+   null,
+   []
+  ],
+  [
+   "toggleCloseColourHoverGradient",
+   "sgs-pressed",
+   [
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "toggleCloseColourHoverGradient",
+   "sgs-pressed",
+   [
+    "color"
+   ],
+   null,
    []
   ]
  ],
  "proofCache": [
   {
-   "fp": "cd8602caccf0ba65",
+   "fp": "70a50529cb383317",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "f1f6b7a0f78a82c3",
+   "fp": "f4ea0ff1e0206e30",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "3e040c65532f639a",
+   "fp": "27f56370ca615605",
    "v": "blind",
    "kind": "value",
    "cause": "script-set-token"
   },
   {
-   "fp": "185b674924c4ca79",
+   "fp": "564c9063f2add1e0",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "f11b1a62420155a9",
+   "fp": "6fec79b41794d736",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "baa0dff5169ebab4",
+   "fp": "55725e0cf50c36f4",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "5ba5446d56cb06fa",
+   "fp": "cab333f3813ee692",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "fa548b55835c74eb",
+   "fp": "829dbd8138c598bd",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "9128681b05790645",
+   "fp": "fa459c6f52888904",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "47f02fc7af56f972",
+   "fp": "157d33cb9b83d2ad",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "0e36a3938af2fd95",
+   "fp": "5fc1e953de03277c",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "0fe6d45dab8be50f",
+   "fp": "62e5e801578bbced",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "5401ceecb5879fff",
+   "fp": "5557e6125bb82708",
    "v": "blind",
    "kind": "value",
    "cause": "same-value-here"
   },
   {
-   "fp": "fae1340b14ad999d",
+   "fp": "d5eccdff17228244",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "dc04c271129e4e3f",
+   "fp": "cb93ff67cc30bb22",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "0961f8ab6692d73e",
+   "fp": "78013700ef1b78be",
    "v": "blind",
    "kind": "value",
    "cause": "same-value-here"
   },
   {
-   "fp": "b814a8ed5f261fc0",
+   "fp": "ed8023ed78bfae04",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "e8432395a3d2f874",
+   "fp": "40036d28cd7ecd0b",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "acb1b754e244f687",
+   "fp": "e10c4457e6301c38",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "1ef3465097d689ee",
+   "fp": "fe8c92335063dafc",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "24b9036a175075f1",
+   "fp": "ec4466a707ad1751",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "41e2902cceaebb96",
+   "fp": "66da021a5c331f41",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "43a43f9fe0d26ec6",
+   "fp": "5d88e3cd8bcf2460",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "bb0a74ebf47278a1",
+   "fp": "b300ca911fecaef4",
    "v": "removed"
   },
   {
-   "fp": "1e1d5ea2402110ac",
+   "fp": "2e9538bb104155cf",
    "v": "blind",
    "kind": "value",
    "cause": "script-set-token"
   },
   {
-   "fp": "5088f56d2847fcf6",
+   "fp": "3576130ba0782ecb",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "fe212198f8c78401",
+   "fp": "99208b261e8c774a",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "20e6b0773f00f2a5",
+   "fp": "895478876733d792",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "b17d21f32e624108",
+   "fp": "aeb30c2e5c623992",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "020b6ae8a77e5a4c",
+   "fp": "67ef55337d312798",
    "v": "removed"
   },
   {
-   "fp": "9a656a5e4227b6a8",
+   "fp": "853d343d3ddc5a13",
    "v": "removed"
   },
   {
-   "fp": "a7d42713044ee1d4",
+   "fp": "d3775488482f364d",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "0b855b6dc6b6ccd3",
+   "fp": "f2c31f759af1da20",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "f00569c9b1ee6db0",
+   "fp": "6fe78b60a421a407",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "7e4979f08977df4d",
+   "fp": "9aa3bc5289facb33",
    "v": "blind",
    "kind": "value",
    "cause": "same-value-here"
   },
   {
-   "fp": "ea8ef8ce47a2f2bf",
+   "fp": "70cb8f9000698cc7",
    "v": "blind",
    "kind": "value",
    "cause": "same-value-here"
   },
   {
-   "fp": "508a2d34a444d01a",
+   "fp": "72e07214dafdf55f",
    "v": "removed"
   },
   {
-   "fp": "9f74cb7569b2f7f2",
+   "fp": "372a9fc3ca3f9c39",
    "v": "removed"
   },
   {
-   "fp": "100eb2688826d196",
+   "fp": "8d8565f516510da9",
    "v": "removed"
   },
   {
-   "fp": "4b56fb3f6e7a2099",
+   "fp": "368baf879163b131",
    "v": "removed"
   },
   {
-   "fp": "21aa94ccad1c7947",
+   "fp": "c014628b734c721c",
    "v": "removed"
   },
   {
-   "fp": "2ff565dc00ef437b",
+   "fp": "849f8115d5798907",
    "v": "removed"
   },
   {
-   "fp": "60f0a4009f394256",
+   "fp": "bb0f85e11403b277",
    "v": "removed"
   },
   {
-   "fp": "082d0e5afede259a",
+   "fp": "8440b92152ba0f71",
    "v": "removed"
   },
   {
-   "fp": "01fee43c7925a435",
+   "fp": "a3d94c597f593ba1",
    "v": "blind",
    "kind": "value",
    "cause": "script-set-token"
   },
   {
-   "fp": "c1545e9cefe854a5",
+   "fp": "b34fd2545ff001b3",
    "v": "blind",
    "kind": "value",
    "cause": "script-set-token"
   },
   {
-   "fp": "e92d3c4b79bb303a",
+   "fp": "19e407d7ee7a9436",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "613bace690e66ccf",
+   "fp": "39b0a5f9cbe6bd74",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "82fcea3892d632e7",
+   "fp": "63a36be3237b3a01",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "8ea6426abb385548",
+   "fp": "53ba36eaea0fb3b0",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "14879cf5d05e141b",
+   "fp": "03df3a5299a9e383",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "0738dc37f3a43ef4",
+   "fp": "7a136d6a13364348",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "60d79349bf5d2df5",
+   "fp": "f2abf5e11ace55a4",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "e039201c6136c38a",
+   "fp": "5dd73349d1001d5e",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "c256f4515f2eb7c0",
+   "fp": "46cce3192909869f",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "a96300e3f6233f02",
+   "fp": "a7ee9579f0775bff",
+   "v": "blind",
+   "kind": "value",
+   "cause": "rule-needs-absent-markup"
+  },
+  {
+   "fp": "a19aaeb749800a12",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "e389574bf717fb7d",
+   "fp": "5b08ad58dfa33c1c",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "bd655f0f8ff7e3b9",
+   "fp": "6e2b9ddd9341a56f",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "d1a2961f5db44f04",
+   "fp": "b642fb3b41cad21f",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "945908a650f5f688",
+   "fp": "68d2651c1c84726e",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "4cd903828aa292a0",
+   "fp": "bb7d9e70adc774f6",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "c652ef1c17308b3d",
+   "fp": "3856812a146c405c",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "5c31db4dd9530331",
+   "fp": "7f39d9e9b5b80a21",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "ebbbf9954df30204",
+   "fp": "bfd1e8fbdb4daad8",
    "v": "removed"
   },
   {
-   "fp": "e35df619dfc933f4",
+   "fp": "d70d8e64caa3c4bd",
    "v": "removed"
   },
   {
-   "fp": "79f06d1ce6399e83",
+   "fp": "9fe039ef06e763e0",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "242976f2aea9c557",
+   "fp": "0dc1985f8047e3ac",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "608a6133a96310b9",
+   "fp": "ce9f33e97ac0f625",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "3944d9c490890490",
+   "fp": "76e6d89d68d36360",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "0104b5a38db28801",
+   "fp": "cce3f08439cc3aa0",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "553f507d7dd05122",
+   "fp": "357cc1e7fdd1f2ac",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "95bc45dd903f3dbb",
+   "fp": "d81002e69108cf67",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "3533cf017a2ae22b",
+   "fp": "3f3f83813772b9c9",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "f4441a7e147833bd",
+   "fp": "3ae7bdcab0f14519",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "23827cdd729a1b91",
+   "fp": "b404a0edc9a181ba",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "3723a113efd0f27f",
+   "fp": "6ad03e51fc483981",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "df903f45e64b6b87",
+   "fp": "a1629217e02718c9",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "f3ad078e3b18c466",
+   "fp": "7b4ae02c41131139",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "9d8c8f8e6df1d509",
+   "fp": "25631c032a67969a",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "856cab9601f998cd",
+   "fp": "9f460b0fd86c8893",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "6af8b3b825b8a915",
+   "fp": "403cee0c3d0976cc",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "5d8cf2ab65afb1ec",
+   "fp": "3076dbd160e3e48d",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "9fd3b2a02e13dcf7",
+   "fp": "57fa5c338050feec",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "d4dad68cccb6cfd6",
+   "fp": "e49e65898398f7fd",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "acab87b6b47518cc",
+   "fp": "957fb3f9a13a75c4",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "ef4ace493c6a741a",
+   "fp": "b791e16624b0b0de",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "e6ee441f3b7c4b85",
+   "fp": "9b2066959365f0cc",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "4b14465e7b0516aa",
+   "fp": "c347c702a0c9209f",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "b1784ef19c493779",
+   "fp": "b915b380eb62e495",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "ea6931f8c492332b",
+   "fp": "e9755759e0bb09e8",
    "v": "removed"
   },
   {
-   "fp": "fa9511428ae4bf98",
+   "fp": "685c9ad2e89dc327",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "83592f9f77b04f1d",
+   "fp": "602c5bc9773f2837",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "b92b53d3afd1a79d",
+   "fp": "56db7a67785f495d",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "45c0378c261550bf",
+   "fp": "76ae5c3ad5c6aa97",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "4616bfde5ecde412",
+   "fp": "b2cd56e17b85b846",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "30a62d202bb85746",
+   "fp": "d8957c879a555941",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "8101a85e40d9f3a8",
+   "fp": "cc9c0aa3c0a5a650",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "bb97b3be62189711",
+   "fp": "cacfec8252d35a86",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "443e6243a43efca6",
+   "fp": "fb296413593159bf",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "20865337cf2d7b52",
+   "fp": "14a8d6200c9aa87f",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "ab7be95af99e7d6d",
+   "fp": "61ebb2582e6fcf2d",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "a42bdd2b05ace37b",
+   "fp": "8d5f45194071440c",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "0fca64c848882f69",
+   "fp": "9743cd9cf9e4e32e",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "015077b5fe0a9e82",
+   "fp": "ed0bd15dc70a3e15",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "1a0663f523633370",
+   "fp": "f2f8a7c84e93e478",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "a25901fe12af49dc",
+   "fp": "5284513d33eff2c3",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "c9c370692fafefd5",
+   "fp": "fea54c6838e35584",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "8c415823df8641d3",
+   "fp": "bd129c2b67260c0a",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "031292989c5be4d9",
+   "fp": "ee40c7a82f8ab193",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "6879b44dce2432dc",
+   "fp": "00cc3972ce4108ce",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "343ac9b7ec6a5505",
+   "fp": "035a66184b1b7a2b",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "42c199ad37947bc9",
+   "fp": "af0f2ec8c715f44c",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "2dd8b0b6965b17a6",
+   "fp": "9068f7f887becdcf",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "b84567af1ee67ade",
+   "fp": "4c9112b8066ba4c9",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "e2f14c9c33a9988c",
+   "fp": "2f042b8234bb43a9",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "89ec64cc0063b5f6",
+   "fp": "945a02d357cf7d2f",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "fe2dcba996f5e4f8",
+   "fp": "6964d7bed8d1f51f",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "244492e6a410a90b",
+   "fp": "203241cfbe90e4fb",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "84c7f251a8e6cd26",
+   "fp": "f9fa89eae99c3d90",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "69401f13ecbdf3d6",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "77ad66ddf4ad34e3",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "40a616798246f1b2",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "35def987a98edaff",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "a578c44dacad5327",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "b16268f02fe4b782",
-   "v": "removed"
-  },
-  {
-   "fp": "642f1d67ecc04823",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "bb7659e4f17676aa",
-   "v": "removed"
-  },
-  {
-   "fp": "65127f48c478ed5a",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "4d4d797c377aaccc",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "60ce522871580785",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "bdfe2245f716d859",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "fa7fa8e6239b3fc2",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "240a0c1f7c4829dd",
-   "v": "removed"
-  },
-  {
-   "fp": "1424c75e6ce6d5e1",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "d1483d2a33e39668",
-   "v": "removed"
-  },
-  {
-   "fp": "d06933647bf6393c",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "34e2db6eaf175ece",
-   "v": "removed"
-  },
-  {
-   "fp": "6d548dedf8bcba7f",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "ec4fa317fff1aaee",
-   "v": "removed"
-  },
-  {
-   "fp": "476d7d1bbab19969",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "f52e13dce3437558",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "6560e38fd030c03d",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "0852b9a1edbe240d",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "c594e3964ea60c3f",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "d12254083279ca55",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "eddb54c11a529f58",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "f8e38100c41fbead",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "3c694f437b818b1d",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "e97cbe296f5440ad",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "6b924c65c05a1aa5",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "ca8c0f1b93d058d8",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "652b45b32b1235cb",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "4daaba8cda5c94b8",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "69aa014d72897c7d",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "f083dbff7639ab6d",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "2dbf02854861323b",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "f1a3686b0279ca0d",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "2a23399acbf305a9",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "2cf38009423ae790",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "a3fec4da19018523",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "93788514ecf389d6",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "6df1d5a06227fc2b",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "6f7bda51d1207361",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "42cd60e64ffd76a3",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "37016de406681f7e",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "863fe47ee44a31c9",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "11e407a079f817ab",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "f1697683709e4aec",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "26132e95c3faccf4",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "d31a9cfa42f5e5e0",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "8201ad00c940cda5",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "55265df282945962",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "9f936ae89e26f168",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "6d42e2e6e3eab0f4",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "3c08437987b8d8cc",
-   "v": "removed"
-  },
-  {
-   "fp": "4138343aa2810de2",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "60358a120e2aafbb",
-   "v": "removed"
-  },
-  {
-   "fp": "856a0dee4c8cef23",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "312762c5f1e231b4",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "9d2034ae22fabaa2",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "2e048e87cdfc1225",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "d39899920f0019f0",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "5088b106d37aa2f0",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "f14c256687ffd086",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "610e72ab0baa9d82",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "ca875e6e1b653e59",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "5ccf42bcb56922f4",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "432dc4a9f3b56e6a",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "290ca19023596a90",
+   "fp": "2d5ea7c894dbd5ab",
    "v": "blind",
    "kind": "value",
    "cause": "part-not-rendered"
   },
   {
-   "fp": "b577aff7bb187636",
+   "fp": "388a8027142739ac",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "29d28fb9a3907e59",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "dc48fc85d4a0ba23",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "547d0f500c40a271",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "4b05aa52e5d16882",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "4ba7c4a30b863453",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "06f73eda44863fe3",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "e852135d45d26484",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "11971f5ecfcec462",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "e8821e7cf4960d4e",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "f8e6b58b889a0cef",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "3446ea095c243b86",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "ebee7d8185bc74d3",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "3804f2c628cf156c",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "27a0bb5e0a0811f8",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "b0637ea0637404a7",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "72593f13f06eaa22",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "98813136582a24c1",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "963262f5ed4afb9b",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "e200854ff4360be2",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "1b59bd127aea50bf",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "f2624dd7eff9872a",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "e9d37bbe973c2c16",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "c417040a6983aec3",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "1e2412f82c991c0b",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "ea00ad48a15e7654",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "57e65b0dd30dd57d",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "c4120297cee1a709",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "464edcb58c7959c1",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "011cf53843be991f",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "1f6d72a6d8df2bff",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "c40c427e685a0b53",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "1e581a021291d600",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "8e2418f2fd08bb6c",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "ebc651408ca36e13",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "8573c35fb9c7e9cf",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "8a8f8c900c414452",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "c69d4cf4d41b81ea",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "603f915b9d36609d",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "c6c6e246a2db4eac",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "3d59ba807a656407",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "95e83c93dbec5aa4",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "9d337607fa95577e",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "7518698f270f06fd",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "2620df298a09ec6f",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "55e8fecd650842b6",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "8204d31a913a0809",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "756a67cff73c0e75",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "31de5dd3c0e49e51",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "9d7705f0de7d6868",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "87c47ebf15786839",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "24fb5b7c024430eb",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "0b9ed8052e8c03ab",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "15e54d8a9027536f",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "48c8a2b6ad1b8b81",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "7e424462e7b58338",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "95599b325551b732",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "bdb0ab1682988087",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "32f92a1415014f1b",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "da8c6f2a64177ee9",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "b3dd2c287c333865",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "cb283ea8e315e3a7",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "3f0da4718f635107",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "b390099e23136bc3",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "b71dc22f4709a021",
+   "fp": "b91652e2bbbd0293",
    "v": "removed"
   },
   {
-   "fp": "26f8c4d16f4cd63c",
+   "fp": "b35ba1b92109c00b",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "45893f4249921e2e",
+   "v": "removed"
+  },
+  {
+   "fp": "8b0608fdd532b927",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "6fe4e0861753f260",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "5c4cbd3c88c2162e",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "edcf8095ed47bacb",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "e1769779b4295ca0",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "f3fee1da505c7910",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "72f3c3031f0d46fe",
+   "v": "removed"
+  },
+  {
+   "fp": "21406b81cf5fe6ef",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "94837db2340da70c",
+   "v": "removed"
+  },
+  {
+   "fp": "b600f81857e664c8",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "9968844a744028dc",
+   "v": "removed"
+  },
+  {
+   "fp": "25cc0875765d4ba8",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "427e2a22f0e1aa93",
+   "v": "removed"
+  },
+  {
+   "fp": "f1a4deed03045f0a",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "9216e23f679e24a9",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "f0e9c57018c83e0a",
+   "v": "removed"
+  },
+  {
+   "fp": "1cc8854e53cb252f",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "f7039daba8e65f0a",
+   "v": "removed"
+  },
+  {
+   "fp": "4c9e89286077c20f",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "4a8e03cb7f4a671b",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "607eeeb9940a354a",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "af8a1b186c17d359",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "f97b8b40415477e2",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "39ac55322fc413c9",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "f1dba912e802c219",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "a2e2cfa9cd132c16",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "a5a6c91e32eb15d5",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "01e7a09a9c818f9c",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "15c1ef3ee775d3cf",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "ba657386101c4a07",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "53e2e6f1e5059287",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "ea35d0077643421b",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "de166713cdf67757",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "af09084beb517114",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "0f67902cdb8ad5b2",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "7ae0bfe16846e1f6",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "5ff1f56b0403f639",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "9589c7cd32b610f1",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "8243e87c64fb26b7",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "322083c6ad6befbc",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "5276029932f3e6ae",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "466618f0c0d3830d",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "ce00021ecf2ca7ae",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "181a9adcde1560ae",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "e43d2eed0b234849",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "f27c29d3abcabfdd",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "79f1b7d88491da70",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "54327960904f1d73",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "eb2fe56bfbe3721f",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "41a4e4475a76fe10",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "44c3514b80998c20",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "78396598d710ba9a",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "90e4e7132fa2cd25",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "64d3a191686342a6",
+   "v": "removed"
+  },
+  {
+   "fp": "63666e82bc62e8e1",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "3e760d3648f4550f",
+   "v": "removed"
+  },
+  {
+   "fp": "d53bf18e55eeed0c",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "5939b333dcc1dbcb",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "d7ea09551bb812c3",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "e4914cebe32d4d49",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "d9c0a2809c40b6ff",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "579d3b9cf72ba86e",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "4eb77ec8639e8f97",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "f009bfc7606cb3cd",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "a60828fa303ac1e6",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "04400b90ab3da949",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "852639b69e9f4308",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "e4f86924e8f1276f",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "633acb2817a01a46",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "1fac0a4385bb1d5f",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "6d2bd44259654df1",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "fe393246f2877b92",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "720e8f8394c1093d",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "3002ed0c2f33cba4",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "aa51dd6e9da8673d",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "95a369cc819bf6a6",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "f8f91f777b27d230",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "5f8df0006e34c35c",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "9f747f42d5ed7c20",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "c01cf881d39a1c5a",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "304f94a6a9124720",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "170163d7db881e7f",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "c2e0b1a73160763b",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "bb4c81e66053413b",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "fdea7c85af4b3431",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "700e9e4c9374dff6",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "eec8c0043c4bcd6a",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "21d291dabfb42691",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "074d02a52e4333f9",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "2ffa289fd07d7540",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "6251d6b5f94700a3",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "d2a22c9ab1c78f4e",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "74481ad7e7e12d0f",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "d284343e63198f78",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "e41e13d7ceeeecab",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "2cd037372263d66b",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "9f8409c195871dfa",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "6465e5ab90485a33",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "56a43e40b47a9a81",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "b5f3af9691d5680f",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "db9018a13eefbec3",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "f76c972c516aae0d",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "fe366a31a9bd1605",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "b38dbd995a548f41",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "6d216eac780f5e1d",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "e36b79763e85b1f3",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "37b7cb5a8d467361",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "1f230d309cf0ac8b",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "0b3273e7e7f3abc2",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "6d230d6c099e0f31",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "f6023b1e3f8168cb",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "984ab0cf51d14049",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "e3ee92b8e5980db7",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "58f4e168ec8e17b5",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "a27ce2a9c35cf8b3",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "2375c17f08026e8e",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "163fb7192393ce24",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "ea084229ddf0a4b3",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "803cc824f343d499",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "ceea0659678de3f3",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "4ccbb135f41d17ab",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "de4fb9b9ebb0811a",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "f53c8d15532ed0cb",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "f75c3115207dc262",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "4fdc365f5e339ba7",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "01ab160751b5b7aa",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "f7e2efdf9949215e",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "b0a807686c635957",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "6384d2e8b03daa70",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "141950c97246f184",
+   "v": "removed"
+  },
+  {
+   "fp": "38dc81f199c07714",
    "v": "refiled",
    "kind": "value",
    "to": [
@@ -10373,7 +10865,7 @@
    ]
   },
   {
-   "fp": "3a7f5eb25582fd15",
+   "fp": "781f796b266f0448",
    "v": "refiled",
    "kind": "value",
    "to": [
@@ -10381,7 +10873,7 @@
    ]
   },
   {
-   "fp": "f602f6fb167d0d66",
+   "fp": "acc164bc2e967cea",
    "v": "refiled",
    "kind": "value",
    "to": [
@@ -10389,361 +10881,385 @@
    ]
   },
   {
-   "fp": "6c995b61a6711af1",
+   "fp": "ea94027d5c8d1cc7",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "b906ca215aa0bf67",
+   "fp": "7257751fe36c2aaa",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "71fae1f4832e1c9f",
+   "fp": "ca77978dffeae646",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "6f202a090b642e90",
+   "fp": "b4f04b01acaf1756",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "611f6513e084afd6",
+   "fp": "f46d8f8d309e300c",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "69b34ce7a9aa059a",
+   "fp": "8566e2e305cd8352",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "6c1d242476fa80b6",
+   "fp": "8c41b2d637b825b2",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "f3fadd8087c2cd1b",
+   "fp": "5030875110e65030",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "9998d0f5575ead61",
+   "fp": "ced7f06619cfd2eb",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "22f20294b44b3aa1",
+   "fp": "638144a3f04ac181",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "014fd1433c4b662c",
+   "fp": "2158f5837ee6ad71",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "d4ca320781f0982b",
+   "fp": "1b140fb4c085916c",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "41b666e5fc7724ad",
+   "fp": "33982faf359b37fe",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "ad7aa08d89c76c53",
+   "fp": "be7c1626c01eca39",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "3e663c884a9a0b84",
+   "fp": "a157b1669c7487bf",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "9f6e0ea82b5e9cc4",
+   "fp": "31a2ea80f45463bd",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "f06c43355e47f1bb",
+   "fp": "83ed3c65db88cbd2",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "c5a9263a2f8bde24",
+   "fp": "742c4ac4d4eede6c",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "916a1670bae7f73c",
+   "fp": "c2a986e3725ce71b",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "146b28c7a29dbbc5",
+   "fp": "ec92e2644b176df5",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "5148f35699aa41a5",
+   "fp": "4ed4bdaa1af122dc",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "373d0883b1b520ed",
+   "fp": "fd5fa1df01d7ee2e",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "360d192b4decb395",
+   "fp": "b69fd7942f95c194",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "e1a20059205e6f0f",
+   "fp": "fdaf347977bcefe3",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "1b2d7dc0e1783980",
+   "fp": "69c8a2f448c75160",
    "v": "blind",
    "kind": "value",
    "cause": "rule-needs-absent-markup"
   },
   {
-   "fp": "ddb9392322d0e14a",
+   "fp": "02534877de0a6bbe",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "c870463a69dce739",
+   "fp": "d7170ee23314a137",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "4d39a8ab1bc93ca4",
+   "fp": "141bb05406c1fc9a",
    "v": "removed"
   },
   {
-   "fp": "d373286952188d9a",
+   "fp": "e4fa582a35ad4b83",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "ed8fc1f31b74ea29",
+   "fp": "5ef4e100470f30a6",
    "v": "removed"
   },
   {
-   "fp": "b46b2795b37851c1",
+   "fp": "412c4deb04ca2f78",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "8548cef9b4e91cfe",
+   "fp": "76d72cd66fba6509",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "e13c27d8d3acc7d9",
+   "fp": "1d8da889549e835b",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "bb4ff3e2f48c93b6",
+   "fp": "31772ce028e0b0da",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "df33e2e89ab0c7e6",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "994417413f77d210",
+   "fp": "0788f440d63bad3e",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "f892614b89978716",
+   "fp": "d124245dfbb14cfd",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "e6ccfbbc7ec066f6",
+   "fp": "5fc2cf13a6bc6c4d",
    "v": "removed"
   },
   {
-   "fp": "e2b1291ef7345bd0",
+   "fp": "67c745ab873d0240",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "d54426a739e180bf",
+   "fp": "23737b818154382c",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "3543d1cb1c15d86f",
+   "fp": "3fb0ef3f4c43cb82",
    "v": "removed"
   },
   {
-   "fp": "4c23f4736e370f4d",
+   "fp": "515004daa7996b5d",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "d04dd95e05af8c58",
+   "fp": "24d4787d58fb31e8",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "f366c7adce3b23cc",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "ac1099e68eeafde0",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "cc81852f516a91ea",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "556185d550d24d8f",
+   "fp": "bdf141d18e869684",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "714b49f14ff58e4b",
+   "fp": "a2e796e6c2c042fb",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "e7ddaa0259db92ae",
+   "fp": "25f55c4354325867",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "5e6d2aaf90aecfae",
+   "fp": "7ecd047e412bb0c2",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "4b8d1354cea18a72",
+   "fp": "de14f2a7c7850229",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "b9955e73d0642030",
+   "fp": "538f3aed56b50e0f",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "98de3db757473ba7",
+   "fp": "43de37343ed8e909",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "f9e3c3c049bdc9ab",
+   "fp": "26936dd7b8ab9480",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "4a19a096b2d588d0",
+   "fp": "1f70535381e5d718",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "1a757628e50c0358",
+   "fp": "9340c93ec9749f4d",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "1dd75e84ba664d17",
+   "fp": "cf7c6c4240443db5",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "f78c2bc5f10223a2",
+   "fp": "8a6cf60a9aa52643",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "d01aea1c4a9663d6",
+   "fp": "cc506444ecc29fb9",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "a65398513d2a43d8",
+   "fp": "e6b015dac8cbdcdf",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "b19194fabdd3bf47",
+   "fp": "102d5077993b4da9",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "73bdf6177e598154",
+   "fp": "f94e6567745b3103",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "83b12808f5c217e0",
+   "fp": "a976a75149ee9e7f",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "562eba27bf09c49c",
+   "fp": "24dc36c68e7ea7dd",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "7d9a34b0fbf5aeae",
+   "fp": "74ab6adf2ad1e64a",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "2ef127f4ee82079d",
+   "fp": "1b9aadbf776a2605",
    "v": "blind",
    "kind": "value",
    "cause": "rule-needs-absent-markup"
   },
   {
-   "fp": "98dfcf11779500d7",
+   "fp": "8dc7f352eb91ab57",
    "v": "blind",
    "kind": "value",
    "cause": "rule-needs-absent-markup"
   },
   {
-   "fp": "32cb5971ae9ffb47",
+   "fp": "5a49c4348e14b670",
    "v": "removed"
   },
   {
-   "fp": "be45623f2c1a2bcd",
+   "fp": "f22f2f6740e03058",
    "v": "removed"
   },
   {
-   "fp": "3e4999d947d4a890",
+   "fp": "c9f49b5be2aac54d",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "0797e1edd1860113",
+   "fp": "ed5f444cff8a8194",
    "v": "blind",
    "kind": "value",
    "cause": "rule-needs-absent-markup"
   },
   {
-   "fp": "b4c094d21193133f",
+   "fp": "71c893478caa72b7",
    "v": "blind",
    "kind": "value",
    "cause": "part-printed-elsewhere"
   },
   {
-   "fp": "fbc34678f04500e4",
+   "fp": "d2a28e9893ff9b41",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "96e1d3df98ca672e",
+   "fp": "63dea981e3ee0a4a",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "81d9e3abb035f490",
+   "fp": "482eb7fd32cdaa1b",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "67b520f7eb9bdaa6",
+   "fp": "1723e18d39d14461",
    "v": "refiled",
    "kind": "switched-on",
    "to": [
@@ -10752,170 +11268,194 @@
    ]
   },
   {
-   "fp": "05eb77033bf2eaa5",
+   "fp": "7c4b338444972932",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "3e1cde853718c903",
+   "fp": "1b66797001dab748",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "8e1b6bcae4a88604",
+   "fp": "4f7868ce109bddf6",
    "v": "blind",
    "kind": "switched-on",
    "cause": "same-value-here"
   },
   {
-   "fp": "d5248123a29ee419",
+   "fp": "12820152d9472b3f",
    "v": "blind",
    "kind": "switched-on",
    "cause": "part-not-rendered"
   },
   {
-   "fp": "8bb9689b6cadef4e",
+   "fp": "6e5a339f6370ad57",
    "v": "blind",
    "kind": "switched-on",
    "cause": "part-not-rendered"
   },
   {
-   "fp": "6c932d5166d1142c",
+   "fp": "bbeeba5002fab489",
    "v": "blind",
    "kind": "switched-on",
    "cause": "part-not-rendered"
   },
   {
-   "fp": "edffa9a67f3092f6",
+   "fp": "25abccefaaf5f1d3",
    "v": "blind",
    "kind": "switched-on",
    "cause": "part-not-rendered"
   },
   {
-   "fp": "972b6212753da5b6",
+   "fp": "1386542cd0f4e93f",
    "v": "removed"
   },
   {
-   "fp": "6466e1694bb045c3",
+   "fp": "a550308e1f6075fd",
    "v": "removed"
   },
   {
-   "fp": "18b1da82d30ccc80",
+   "fp": "a42ed47fa1c2dc35",
    "v": "removed"
   },
   {
-   "fp": "0454a24fe1b6b6bf",
+   "fp": "31a0f0f2de30ac41",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "9d27132013163da8",
+   "fp": "460fd1f4cab2ccc5",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "3ebb98a70212a67b",
+   "fp": "badc4f8f79b2f6ec",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "487829bd829a0b30",
+   "fp": "8220555eb1c047dd",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "a682454cd14ffa56",
+   "fp": "96a6ab3b4317326f",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "7ce2822124b5c85f",
+   "fp": "f32bb36d2932e197",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "e59733b611e71eb7",
+   "fp": "13f1e6c0e781d84b",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "5403c23671e50fcf",
+   "fp": "f84e9c825527eebe",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "8bd32ceb6ee70a2f",
+   "fp": "6a117a8cac783dc9",
    "v": "removed"
   },
   {
-   "fp": "7e73735996cdca4a",
+   "fp": "bc96327e0d942970",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "c017fa8ad3a169c6",
+   "fp": "024f4962577c6a7d",
    "v": "removed"
   },
   {
-   "fp": "ad87b94c7010b411",
+   "fp": "7b40c767d619a40a",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "4e0980b3959b7872",
+   "fp": "15e16228321c07eb",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "60ecd3baa1dd64e4",
+   "fp": "71ee27275e7e231a",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "ef0e855cfaaade40",
+   "fp": "c864edbf3b02bfb5",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "2a808d198193526f",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "b43195b1fdb4f0be",
+   "fp": "823f22e2277436db",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "0ce54cb8864d97d6",
+   "fp": "b8b60c6f7e4b1c3d",
    "v": "removed"
   },
   {
-   "fp": "b88bb9c368c9bda1",
+   "fp": "adac980209635a8c",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "e660e24161765558",
+   "fp": "b041bcf9fcd9b979",
    "v": "removed"
   },
   {
-   "fp": "451c3a9ba75735ec",
+   "fp": "ec7261f01201728c",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "e011f8668bef9d62",
+   "fp": "0da27c773c25fa1f",
    "v": "removed"
   },
   {
-   "fp": "a42e95fea52dac45",
+   "fp": "fe0083c346833cd6",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "2f17912a8d0bc208",
+   "fp": "8bccff4c2ccf9ccc",
    "v": "removed"
   },
   {
-   "fp": "a894293d577400ca",
+   "fp": "e72bec1c0c7a9841",
    "v": "proved",
    "kind": "switched-on"
+  },
+  {
+   "fp": "da1374e3d2c5c7b8",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "45a6d41dc02e0460",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "79701820903a38a6",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
   }
  ],
  "accounted": {
@@ -11028,31 +11568,31 @@
  },
  "stamp": {
   "version": 2,
-  "check": "22168bd75f259cb9",
+  "check": "e00a4c5087e7c125",
   "inputs": {
-   "assets/css/accordion-filter.css": "1bae515f798524b3",
-   "assets/css/device-toggle.css": "23d9bfd781a843c0",
-   "assets/css/extensions.css": "4849d9290eeec3d1",
-   "assets/css/fx-cursor-field.css": "0bbfb68e9e3fe204",
+   "assets/css/accordion-filter.css": "b47f7001b77434a1",
+   "assets/css/device-toggle.css": "621ccaaf18977596",
+   "assets/css/extensions.css": "68261542b66cbfbd",
+   "assets/css/fx-cursor-field.css": "88e4b4f46d949aa5",
    "assets/css/fx-curtain.css": "a3fcae4f7d77f407",
-   "assets/css/fx-generative-background.css": "00638d3f4d8adeae",
-   "assets/css/fx-glare.css": "36c5cec870cdc655",
+   "assets/css/fx-generative-background.css": "3007169fd5eee39a",
+   "assets/css/fx-glare.css": "1b3a7c992264aabc",
    "assets/css/fx-grid-dots.css": "c45c821c2d47454e",
    "assets/css/fx-horizontal-panel.css": "37c7acc1d00f5482",
    "assets/css/fx-lottie.css": "d69941471fd3c95a",
    "assets/css/fx-magnet.css": "5ffc378498ab5893",
-   "assets/css/fx-marquee.css": "2710593e4e4e88a8",
-   "assets/css/fx-morph.css": "73b9afd62a1133c3",
-   "assets/css/fx-motion-path.css": "480cd5641bd3681a",
+   "assets/css/fx-marquee.css": "0e29aa6e4237fb20",
+   "assets/css/fx-morph.css": "7f4b8c55fc7b37d8",
+   "assets/css/fx-motion-path.css": "2bb690d9a26828cc",
    "assets/css/fx-parallax.css": "6769abc3e93e3389",
    "assets/css/fx-particles.css": "1c80f9da72612db9",
    "assets/css/fx-ripple.css": "5fcf4e7a1b77fa8b",
    "assets/css/fx-scroll-progress.css": "8eb296b6e0bd3f9a",
-   "assets/css/fx-sheen.css": "3f77924556f66417",
+   "assets/css/fx-sheen.css": "e1b1e0f3c8578740",
    "assets/css/fx-surface-treatment.css": "46a43c357976973c",
-   "assets/css/fx-wave-gradient.css": "9a8c474181ba98bd",
+   "assets/css/fx-wave-gradient.css": "b9efd39226f115c3",
    "assets/css/gift-card.css": "7a29a487d1ea3fd0",
-   "assets/css/header-behaviours.css": "fca3a1bf15a3f13d",
+   "assets/css/header-behaviours.css": "2b2e178dbd08f48f",
    "assets/css/inline-formats.css": "38c1fcc6922fb2d5",
    "assets/css/media-base.css": "507debce6831e297",
    "assets/css/media-bg.css": "b00ff3667087b3e6",
@@ -11060,9 +11600,9 @@
    "assets/css/media-overlay.css": "6fa941823bc888de",
    "assets/css/media-video.css": "acfc1090b5dfcc3c",
    "assets/css/motion-pause.css": "1694d98cc208cb9d",
-   "assets/css/motion-thumbnails.css": "4bb286079e9466a5",
+   "assets/css/motion-thumbnails.css": "4320ebaee640358e",
    "assets/css/motion-triggers.css": "3fd7e6dcaa4f39a9",
-   "assets/css/motion.css": "f129d3e3cac572e9",
+   "assets/css/motion.css": "e62b5fd4d3736a78",
    "assets/css/slider-nav.css": "cadb6ab7a9551f5b",
    "assets/css/smooth-scroll.css": "892f59c62a4c00ea",
    "assets/css/view-transitions.css": "4a1dd6e06dc6df8e",
@@ -11072,11 +11612,11 @@
    "includes/choice-flow-term-details.php": "996ded889b0e0d2d",
    "includes/class-card-grid-template.php": "5d8e13453a51384d",
    "includes/class-configurator-meta.php": "aa73c17b1680d211",
-   "includes/class-custom-css-scoper.php": "c12d0fe387bffaed",
+   "includes/class-custom-css-scoper.php": "70640d0c5c8872ba",
    "includes/class-product-field-variations.php": "97b175d93c3c85c5",
    "includes/class-product-manifest.php": "99e771eac60671c1",
    "includes/class-sgs-breakpoints.php": "b3c1a56b8613ef5a",
-   "includes/class-sgs-container-wrapper.php": "eb50641bc169ad55",
+   "includes/class-sgs-container-wrapper.php": "6a57524526bef79c",
    "includes/class-sgs-focus-rests.php": "edabbe21b821491c",
    "includes/class-sgs-media-element.php": "ddb8a2a0235a729d",
    "includes/class-sgs-mega-menu-cpt.php": "d20b6d6d72af830f",
@@ -11089,9 +11629,10 @@
    "includes/class-turnstile.php": "0e8098400173a2e1",
    "includes/conditional-field.php": "570c2adea887fad9",
    "includes/conditional-visibility.php": "727e163ae3c2e34e",
-   "includes/container-pin-edge-css.php": "106d319c8ad0c702",
+   "includes/container-pin-edge-css.php": "4fc113fc485faaa1",
    "includes/container-scroll-row-css.php": "d1bfcfa233fc6bb1",
-   "includes/custom-css.php": "a8c5f86fe5b7599f",
+   "includes/custom-css-save.php": "9bc33ef70d94a702",
+   "includes/custom-css.php": "69f23130986ee617",
    "includes/device-visibility.php": "faf5e3341db8dfeb",
    "includes/float-position.php": "1892bf13b37d222b",
    "includes/forms/field-focus-css.php": "a8079c372161930e",
@@ -11120,22 +11661,22 @@
    "includes/helpers-button-icon-gap-hover.php": "772199df930fc7da",
    "includes/helpers-button-inner-kses.php": "6529a7214b03915c",
    "includes/helpers-button-note.php": "01156e55aa38ca12",
-   "includes/helpers-button-preset-names.php": "42e392b948a8bcc0",
+   "includes/helpers-button-preset-names.php": "ac2946868cbd056a",
    "includes/helpers-button-press.php": "cadd75d0b7a7f696",
    "includes/helpers-button-shared-rules.php": "7e7c43431f4fd41d",
    "includes/helpers-button-site-info-label.php": "31581ce7431120bf",
    "includes/helpers-button-style.php": "c86342566245b6d6",
    "includes/helpers-carousel-dots.php": "110c75f2e7cab342",
-   "includes/helpers-cart-panel-css.php": "7c06b9d430c523c8",
+   "includes/helpers-cart-panel-css.php": "904e05e182a9b15f",
    "includes/helpers-cart-panel-extras.php": "1e0a7279e3e5a4fd",
    "includes/helpers-cart-panel-items-css.php": "ea80924dbeace99a",
    "includes/helpers-cart-panel.php": "be6483dab310cdc9",
    "includes/helpers-colour-parse.php": "2705d7d2f6ab81f5",
-   "includes/helpers-colour-variants.php": "85d954f45e6b3d6e",
+   "includes/helpers-colour-variants.php": "2c59f4fe2ac9d9e7",
    "includes/helpers-colour-wcag.php": "e150b5a55ec1195c",
    "includes/helpers-configurator-pricing.php": "141b9154d20735bb",
    "includes/helpers-container-fit.php": "be39699a1b3dacaf",
-   "includes/helpers-container-separators.php": "647fc44ed3c88437",
+   "includes/helpers-container-separators.php": "c83e093b0bf45718",
    "includes/helpers-container.php": "b18aa0cfff812547",
    "includes/helpers-css-safety.php": "e2cb4ac716e263d7",
    "includes/helpers-css-sizing-keyword.php": "1e8ea3394b4489c2",
@@ -11148,7 +11689,7 @@
    "includes/helpers-gradient-tone.php": "8b6e9515d1009f01",
    "includes/helpers-grid-item.php": "66040be25e3cbb0d",
    "includes/helpers-hover-links.php": "595f48ab42af1a8a",
-   "includes/helpers-hover-state.php": "0953b306cc8e7d86",
+   "includes/helpers-hover-state.php": "7dbd634472e2bacc",
    "includes/helpers-icon-shadow.php": "d10e313f56673230",
    "includes/helpers-icon.php": "b36eb65779dd68d8",
    "includes/helpers-image-dimensions.php": "75c87a39f895bef5",
@@ -11172,13 +11713,14 @@
    "includes/helpers-responsive.php": "e4fca037ec7837c2",
    "includes/helpers-reviews-inline.php": "4a821f5be56b0a9e",
    "includes/helpers-row-behaviour.php": "ab25405ff36a6678",
-   "includes/helpers-scrim.php": "4d6a13f16243b91a",
+   "includes/helpers-scrim.php": "cf6f13d4bb652103",
    "includes/helpers-scrollbar.php": "07f9116d8e56353e",
-   "includes/helpers-separators-css.php": "478f6a4d7bcc5900",
+   "includes/helpers-separators-css.php": "e4045de423abbaa5",
    "includes/helpers-separators-hover-css.php": "39c8fcfb8c985128",
    "includes/helpers-separators-line-css.php": "baca16d155afb3d0",
-   "includes/helpers-separators.php": "50b7babb5815b580",
-   "includes/helpers-shadow-filter.php": "23446e1d5ca57fc4",
+   "includes/helpers-separators.php": "82b0697d9be51adc",
+   "includes/helpers-shadow-bleed.php": "f1e0806e11766831",
+   "includes/helpers-shadow-filter.php": "0f9cbd49870fcc64",
    "includes/helpers-shadow-hover.php": "9964c78f52c2c4d8",
    "includes/helpers-shadow-layers.php": "0bc69ba1c33750e0",
    "includes/helpers-shared-rules.php": "1ecf0e2ae2c88520",
@@ -11214,13 +11756,13 @@
    "includes/media/atoms/layout.php": "7068a92270a163de",
    "includes/media/atoms/link.php": "8a679137bd63b1e0",
    "includes/media/atoms/meaning.php": "a75a2f35076930ca",
-   "includes/media/atoms/media-padding.php": "8147fbcdd1c96b66",
+   "includes/media/atoms/media-padding.php": "616c11f74448f64e",
    "includes/media/atoms/object-fit.php": "ece87a4ab55d61df",
    "includes/media/atoms/opacity.php": "aef92991b97f22fe",
    "includes/media/atoms/overlay.php": "d94678c7a4abaae9",
-   "includes/media/atoms/shadow.php": "6624a129e5d6eb49",
+   "includes/media/atoms/shadow.php": "4c5476e54562154f",
    "includes/media/atoms/shape.php": "963101e79a102fd2",
-   "includes/media/atoms/sizing.php": "36f995eab7e2198d",
+   "includes/media/atoms/sizing.php": "0ee74391320a3777",
    "includes/media/atoms/source.php": "189a1afeb510648b",
    "includes/media/atoms/svg-presentation.php": "c38e235d9204c932",
    "includes/media/atoms/video-behaviour.php": "0999e2c061eb15ef",
@@ -11231,12 +11773,12 @@
    "includes/media/emit-none.php": "8903f751afba2ed0",
    "includes/media/hidden-render.php": "f39dff5458298df6",
    "includes/media/layout-width.php": "7d95ff80f9162ba7",
-   "includes/media/media-values.php": "31a59811c954486d",
+   "includes/media/media-values.php": "86a5f8452f7b2fc2",
    "includes/media/render-background.php": "093be1f920818d43",
    "includes/media/render-chrome.php": "b6d37ac64b046708",
    "includes/media/render-item-slot.php": "dacc480d11981004",
    "includes/media/render-picture.php": "31a9a0a48e9b5e16",
-   "includes/media/render-slot.php": "4b8161e8fe59b360",
+   "includes/media/render-slot.php": "b3c10be60de61718",
    "includes/media/render-sources.php": "67ecf4d89213d771",
    "includes/media/tier-embed.php": "32d8be4a7f8057e4",
    "includes/media/tier-svg.php": "204453d78ccf89a4",
@@ -11287,13 +11829,13 @@
    "includes/nav-drawer-chrome.php": "84b9b8488135a1f6",
    "includes/nav-menu-treatments.php": "c89b158a4f554c1a",
    "includes/price-trim-zeros.php": "18bf58dbdb99ca1d",
-   "includes/product-card-media.php": "ce1ddd81b9f568b1",
+   "includes/product-card-media.php": "4d824c704f9950c9",
    "includes/product-card-no-photo.php": "0873b87fda2f6ccc",
    "includes/product-collection-empty-detection.php": "f44b7ae2508d5f63",
    "includes/product-field-values.php": "ebd5a3deff129347",
    "includes/render-helpers.php": "019bc0678477e652",
    "includes/section-anchored-layers.php": "326a6d06b9486584",
-   "includes/shape-dividers.php": "f5d9fa3cabfdcc8c",
+   "includes/shape-dividers.php": "52002c58802c2630",
    "includes/sweep-css.php": "d8fbb9e23c9b1195",
    "includes/time-text.php": "ccfd867fe8d95a9a",
    "includes/trustpilot-helpers.php": "4166b2887e3c2cfc",
@@ -11304,21 +11846,21 @@
    "src/blocks/google-rating-badge/google-rating-badge-helpers.php": "c7015bf84f8d7bc5",
    "src/blocks/google-rating-badge/render.php": "eaa3ba92f84c24ea",
    "src/blocks/google-reviews/google-reviews-stars.php": "676c63e99af60aa4",
-   "src/blocks/icon-list/render.php": "193f159a12ecc388",
+   "src/blocks/icon-list/render.php": "b6473127ef483832",
    "src/blocks/nav-drawer/block.json": "515df27b5a612250",
    "src/blocks/nav-drawer/editor.css": "3bac1c6b1f497a6f",
    "src/blocks/nav-drawer/render.php": "9cda6c397383088e",
    "src/blocks/nav-drawer/style.css": "a4d3bb62556d7525",
    "src/shared/info-toggle.css": "210a5fa94dc11c4a",
-   "shipped:src/blocks/button/style.css": "569540699b9f3bbd",
-   "shipped:src/blocks/container/style.css": "7b071c27fd168f8c",
-   "shipped:src/blocks/icon-list/style.css": "46ca0d1a17613e6b",
-   "shipped:src/blocks/nav-drawer/style.css": "0d0511aad429b331",
+   "shipped:src/blocks/button/style.css": "f1e226b2478ebaa5",
+   "shipped:src/blocks/container/style.css": "6021e93777d32705",
+   "shipped:src/blocks/icon-list/style.css": "e2954d8698ade89c",
+   "shipped:src/blocks/nav-drawer/style.css": "312067fe88b82881",
    "fixture-entry": "22e84d3e39b09c6d",
    "fixture-shared": "61d9f70d4bb7e36a"
   },
-  "outputs": "c366457910014755",
-  "theme": "6a462dc6c8d2f34f",
+  "outputs": "07cb893421b87693",
+  "theme": "6688ec61768fd36a",
   "classes": [
    "dashicons",
    "dashicons-heart",
@@ -11461,6 +12003,8 @@
    "sgs-nav-drawer-1342cd3e-scrim",
    "sgs-nav-drawer-134370ee",
    "sgs-nav-drawer-134370ee-scrim",
+   "sgs-nav-drawer-1365acb1",
+   "sgs-nav-drawer-1365acb1-scrim",
    "sgs-nav-drawer-138d1835",
    "sgs-nav-drawer-138d1835-scrim",
    "sgs-nav-drawer-13fa05b2",
@@ -11496,8 +12040,6 @@
    "sgs-nav-drawer-1b0e0296-scrim",
    "sgs-nav-drawer-1b0e3ccc",
    "sgs-nav-drawer-1b0e3ccc-scrim",
-   "sgs-nav-drawer-1b8eba16",
-   "sgs-nav-drawer-1b8eba16-scrim",
    "sgs-nav-drawer-1bcdab70",
    "sgs-nav-drawer-1bcdab70-scrim",
    "sgs-nav-drawer-1bcf20f3",
@@ -11728,6 +12270,8 @@
    "sgs-nav-drawer-3f09e14b-scrim",
    "sgs-nav-drawer-3f95dd9a",
    "sgs-nav-drawer-3f95dd9a-scrim",
+   "sgs-nav-drawer-3fc2826e",
+   "sgs-nav-drawer-3fc2826e-scrim",
    "sgs-nav-drawer-3fd59957",
    "sgs-nav-drawer-3fd59957-scrim",
    "sgs-nav-drawer-41028fd6",
@@ -12320,6 +12864,8 @@
    "sgs-nav-drawer-b7e34c66-scrim",
    "sgs-nav-drawer-b88e4f2b",
    "sgs-nav-drawer-b88e4f2b-scrim",
+   "sgs-nav-drawer-b893de57",
+   "sgs-nav-drawer-b893de57-scrim",
    "sgs-nav-drawer-b8ad4e15",
    "sgs-nav-drawer-b8ad4e15-scrim",
    "sgs-nav-drawer-b8c3e23f",
@@ -12570,8 +13116,6 @@
    "sgs-nav-drawer-e6fddf0b-scrim",
    "sgs-nav-drawer-e711efb5",
    "sgs-nav-drawer-e711efb5-scrim",
-   "sgs-nav-drawer-e7488d56",
-   "sgs-nav-drawer-e7488d56-scrim",
    "sgs-nav-drawer-e75bd0ec",
    "sgs-nav-drawer-e75bd0ec-scrim",
    "sgs-nav-drawer-e78ccb4a",
@@ -12600,8 +13144,6 @@
    "sgs-nav-drawer-ead06bc2-scrim",
    "sgs-nav-drawer-eb2c04ad",
    "sgs-nav-drawer-eb2c04ad-scrim",
-   "sgs-nav-drawer-eb4b4dae",
-   "sgs-nav-drawer-eb4b4dae-scrim",
    "sgs-nav-drawer-eb599175",
    "sgs-nav-drawer-eb599175-scrim",
    "sgs-nav-drawer-eb7bae4e",
@@ -12790,6 +13332,7 @@
    "sgs-nd-logo-19b940fe",
    "sgs-nd-logo-19f40e3e",
    "sgs-nd-logo-19f60fa9",
+   "sgs-nd-logo-1a35fcaa",
    "sgs-nd-logo-1a3fc278",
    "sgs-nd-logo-1aac434b",
    "sgs-nd-logo-1b50126c",
@@ -12960,6 +13503,7 @@
    "sgs-nd-logo-5cfee54d",
    "sgs-nd-logo-5d3bb0bf",
    "sgs-nd-logo-5dcf1f7a",
+   "sgs-nd-logo-5e1060e6",
    "sgs-nd-logo-5e803b63",
    "sgs-nd-logo-5e9f4d87",
    "sgs-nd-logo-5fdecca5",
@@ -13204,7 +13748,6 @@
    "sgs-nd-logo-b70379db",
    "sgs-nd-logo-b727970b",
    "sgs-nd-logo-b79d3896",
-   "sgs-nd-logo-b7cbfebb",
    "sgs-nd-logo-b82a5f91",
    "sgs-nd-logo-ba2493d4",
    "sgs-nd-logo-bad9e144",
@@ -13270,7 +13813,6 @@
    "sgs-nd-logo-d0c89203",
    "sgs-nd-logo-d427b951",
    "sgs-nd-logo-d485187f",
-   "sgs-nd-logo-d51dc7fe",
    "sgs-nd-logo-d58389af",
    "sgs-nd-logo-d59de2e4",
    "sgs-nd-logo-d623a129",
@@ -13327,7 +13869,6 @@
    "sgs-nd-logo-eb40fb50",
    "sgs-nd-logo-eb584a1f",
    "sgs-nd-logo-eb64db4a",
-   "sgs-nd-logo-ecd42150",
    "sgs-nd-logo-ed9f6786",
    "sgs-nd-logo-edf50da5",
    "sgs-nd-logo-ef3fc192",
@@ -13352,6 +13893,7 @@
    "sgs-nd-logo-f7677276",
    "sgs-nd-logo-f7d03eda",
    "sgs-nd-logo-f83d5a1c",
+   "sgs-nd-logo-f85e147f",
    "sgs-nd-logo-f90092e4",
    "sgs-nd-logo-f923a350",
    "sgs-nd-logo-f926eac0",

@@ -4537,6 +4537,726 @@
    []
   ]
  ],
+ "proofCache": [
+  {
+   "fp": "87343e4b2d355883",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "f6a48d80dd5e4dde",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "80e25072991d045a",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "14d60e12283d3f3e",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "abc8e189a84bf8d8",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "cb03fa1efe34b668",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "1ed3cd76f7421259",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "4f6dd7a069bfc241",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "458e5ff596a46c18",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "1b048567c0b8c0c7",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "bd18a4e85670c83b",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "47365837b92f35fb",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "fe2d7a2b67b055b2",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "5405e65f108de153",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "680e8ab675b93310",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "093c55640822f6e8",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "ad12b4d9a4c78914",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "b8c36e18b9d36d66",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "49e84f111be6cceb",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "ca36e0800f4b80c4",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "10ca9d0afe3cc2ae",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "6a164b70d76a138d",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "5e6d83c761a021f5",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "23b6e1c58ff892b1",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "735b3c675c92a990",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "c6e40955a1a62fd4",
+   "v": "removed"
+  },
+  {
+   "fp": "d713df5d8a73706b",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "b91461cd4a598f73",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "57a583f596339455",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "e3a63475339d2d72",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "0f0a44c550eb741a",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "5df5ae2f0b1325d1",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "c83bdbe23ea45df3",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "f80e788d1a807018",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "90f570004a3e4035",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "568b3861936cf331",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "5173587af71b13bf",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "e2dd401761b4c4cc",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "6e63f9a3391599e2",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "ab46066d370b53fd",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "e072c4e3e50e6e01",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "5859571b22efb4ec",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "5fdfcfe5cbca0d01",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "7fdcccc6ea62c076",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "fa73907c26724cab",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "69deebeefe48d4af",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "7857b87202859940",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "ea439cd9df94547d",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "9b4cc463fe78b5a9",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "059785e4a9f01de0",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "7edc180a97ec0fa2",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "6b458aaecd64223c",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "5656dbcda706cd1e",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "29ffb2a36ae3108d",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "ab7ab1c466bbbcb9",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "da6d7bb54d4a3fd5",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "19ff29a911ee38df",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "3f563e561ea76d0a",
+   "v": "removed"
+  },
+  {
+   "fp": "db1ea098d5671588",
+   "v": "removed"
+  },
+  {
+   "fp": "ffd1c2a73cb2cc21",
+   "v": "removed"
+  },
+  {
+   "fp": "4c41142c7a278af0",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "2264c3922f129b5c",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "e41a247283533c8e",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "e9795f0c3f49e3d0",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "42c834335d6851c9",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "811916621ac2fe67",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "dd647d49225a4be9",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "a6df0fecf62f01ad",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "7820bbe56704cbf5",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "5f87ddd2e06a5099",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "90874f1378a769ee",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "fd6176761b8d8ef3",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "4f5096232b0fda06",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "3b45eb747c4bb214",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "69c8d65c5b32cb0b",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "c65e624c53f99a2e",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "d34741f75e5c9920",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "b15833bac9a63734",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "87c925aaebc445a6",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "e26f938c229603e3",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "f87516ac46e774ee",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "11450a44c4a8e661",
+   "v": "blind",
+   "kind": "switched-on",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "6b058452668fa697",
+   "v": "blind",
+   "kind": "switched-on",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "85d843c840178dc6",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "0d52458d5ff8c584",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "04f8e05da188a3ef",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "7e9989e13d1a30ef",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "a3f46dd9d98845fd",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "a056147cfdc77759",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "dd277ea5e6384d3c",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "7ae9622d2d8fc092",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "a8f460d48e325132",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "bf4251e010ecde3f",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "b673ce816adc4ca4",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "8e54d1c9d211bb7b",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "21db0367c50f362a",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "01e899d31c6a1455",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "162affd88ef69497",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "5347b0fc2dcb660e",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "58add169f8518a1c",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "ce8f0fea0cbc2573",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "a45ff3a5526495a3",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "9e4b967a801b3e4f",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "bd2e709d7fc48b0b",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "09ff8ad9c3893c65",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "42497d5d7f012f64",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "003264b806635d7e",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "d2f2b0aa27d17388",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "e30ebf253f45521c",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "03f03c8af73732b2",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "7d6889a70f2070df",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "0ceac2d4e7a6937f",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "10aa3e2a68551d11",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "4b6dc2946d555ae1",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "5c8931c6dac4be75",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "57263d464c8fb0d3",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "c0ebe34513b7701f",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "b38a602eb334e000",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "716d0aff110ef141",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "5b5f48f081630276",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "55069412eaf3b03c",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "2607201a271e8d5b",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "d8d493fbc0acdb51",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "afc6d0c509588666",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "46e87a2f6bc8d133",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "80312d3c5316de37",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "252763f890a368d5",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "58d91d6e9146cfd4",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "e507a39d0e66bcac",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "aab795ce640a4b9c",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "4a26be5200108ad8",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "c1153022d78e7b25",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "d8367e195a15b53c",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "c481fd6255a2099e",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "d42d11c227072e4f",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "321ee21bafbefc2c",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "6f10a66212fee787",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "c710aba39a86b598",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "fbde7f66167d1ffe",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "6d8d22fbea9126e6",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "b712f2570eff8597",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "9ff42a71051f7a68",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "f5eeb899b8bfc85c",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "14c64e88cd1651f3",
+   "v": "proved",
+   "kind": "value"
+  }
+ ],
  "accounted": {
   "testedNoPaint": [
    "deliveryLabel",
@@ -4586,30 +5306,31 @@
  },
  "stamp": {
   "version": 2,
+  "check": "e00a4c5087e7c125",
   "inputs": {
-   "assets/css/accordion-filter.css": "1bae515f798524b3",
-   "assets/css/device-toggle.css": "23d9bfd781a843c0",
-   "assets/css/extensions.css": "4849d9290eeec3d1",
-   "assets/css/fx-cursor-field.css": "0bbfb68e9e3fe204",
+   "assets/css/accordion-filter.css": "b47f7001b77434a1",
+   "assets/css/device-toggle.css": "621ccaaf18977596",
+   "assets/css/extensions.css": "68261542b66cbfbd",
+   "assets/css/fx-cursor-field.css": "88e4b4f46d949aa5",
    "assets/css/fx-curtain.css": "a3fcae4f7d77f407",
-   "assets/css/fx-generative-background.css": "00638d3f4d8adeae",
-   "assets/css/fx-glare.css": "36c5cec870cdc655",
+   "assets/css/fx-generative-background.css": "3007169fd5eee39a",
+   "assets/css/fx-glare.css": "1b3a7c992264aabc",
    "assets/css/fx-grid-dots.css": "c45c821c2d47454e",
    "assets/css/fx-horizontal-panel.css": "37c7acc1d00f5482",
    "assets/css/fx-lottie.css": "d69941471fd3c95a",
    "assets/css/fx-magnet.css": "5ffc378498ab5893",
-   "assets/css/fx-marquee.css": "2710593e4e4e88a8",
-   "assets/css/fx-morph.css": "73b9afd62a1133c3",
-   "assets/css/fx-motion-path.css": "480cd5641bd3681a",
+   "assets/css/fx-marquee.css": "0e29aa6e4237fb20",
+   "assets/css/fx-morph.css": "7f4b8c55fc7b37d8",
+   "assets/css/fx-motion-path.css": "2bb690d9a26828cc",
    "assets/css/fx-parallax.css": "6769abc3e93e3389",
    "assets/css/fx-particles.css": "1c80f9da72612db9",
    "assets/css/fx-ripple.css": "5fcf4e7a1b77fa8b",
    "assets/css/fx-scroll-progress.css": "8eb296b6e0bd3f9a",
-   "assets/css/fx-sheen.css": "3f77924556f66417",
+   "assets/css/fx-sheen.css": "e1b1e0f3c8578740",
    "assets/css/fx-surface-treatment.css": "46a43c357976973c",
-   "assets/css/fx-wave-gradient.css": "9a8c474181ba98bd",
+   "assets/css/fx-wave-gradient.css": "b9efd39226f115c3",
    "assets/css/gift-card.css": "7a29a487d1ea3fd0",
-   "assets/css/header-behaviours.css": "fca3a1bf15a3f13d",
+   "assets/css/header-behaviours.css": "2b2e178dbd08f48f",
    "assets/css/inline-formats.css": "38c1fcc6922fb2d5",
    "assets/css/media-base.css": "507debce6831e297",
    "assets/css/media-bg.css": "b00ff3667087b3e6",
@@ -4617,9 +5338,9 @@
    "assets/css/media-overlay.css": "6fa941823bc888de",
    "assets/css/media-video.css": "acfc1090b5dfcc3c",
    "assets/css/motion-pause.css": "1694d98cc208cb9d",
-   "assets/css/motion-thumbnails.css": "4bb286079e9466a5",
+   "assets/css/motion-thumbnails.css": "4320ebaee640358e",
    "assets/css/motion-triggers.css": "3fd7e6dcaa4f39a9",
-   "assets/css/motion.css": "f129d3e3cac572e9",
+   "assets/css/motion.css": "e62b5fd4d3736a78",
    "assets/css/slider-nav.css": "cadb6ab7a9551f5b",
    "assets/css/smooth-scroll.css": "892f59c62a4c00ea",
    "assets/css/view-transitions.css": "4a1dd6e06dc6df8e",
@@ -4631,7 +5352,7 @@
    "includes/choice-flow-term-details.php": "996ded889b0e0d2d",
    "includes/class-card-grid-template.php": "5d8e13453a51384d",
    "includes/class-configurator-meta.php": "aa73c17b1680d211",
-   "includes/class-custom-css-scoper.php": "c12d0fe387bffaed",
+   "includes/class-custom-css-scoper.php": "70640d0c5c8872ba",
    "includes/class-product-field-variations.php": "97b175d93c3c85c5",
    "includes/class-product-manifest.php": "99e771eac60671c1",
    "includes/class-sgs-breakpoints.php": "b3c1a56b8613ef5a",
@@ -4647,7 +5368,8 @@
    "includes/class-turnstile.php": "0e8098400173a2e1",
    "includes/conditional-field.php": "570c2adea887fad9",
    "includes/conditional-visibility.php": "727e163ae3c2e34e",
-   "includes/custom-css.php": "a8c5f86fe5b7599f",
+   "includes/custom-css-save.php": "9bc33ef70d94a702",
+   "includes/custom-css.php": "69f23130986ee617",
    "includes/device-visibility.php": "faf5e3341db8dfeb",
    "includes/float-position.php": "1892bf13b37d222b",
    "includes/forms/field-focus-css.php": "a8079c372161930e",
@@ -4671,18 +5393,18 @@
    "includes/helpers-brand-glyphs.php": "e9f728a3a2d126f1",
    "includes/helpers-brand-logo.php": "b02a52f78ec8fcf5",
    "includes/helpers-button-note.php": "01156e55aa38ca12",
-   "includes/helpers-button-preset-names.php": "42e392b948a8bcc0",
+   "includes/helpers-button-preset-names.php": "ac2946868cbd056a",
    "includes/helpers-button-style.php": "c86342566245b6d6",
    "includes/helpers-carousel-dots.php": "110c75f2e7cab342",
-   "includes/helpers-cart-panel-css.php": "7c06b9d430c523c8",
+   "includes/helpers-cart-panel-css.php": "904e05e182a9b15f",
    "includes/helpers-cart-panel-extras.php": "1e0a7279e3e5a4fd",
    "includes/helpers-cart-panel-items-css.php": "ea80924dbeace99a",
    "includes/helpers-cart-panel.php": "be6483dab310cdc9",
    "includes/helpers-colour-parse.php": "2705d7d2f6ab81f5",
-   "includes/helpers-colour-variants.php": "85d954f45e6b3d6e",
+   "includes/helpers-colour-variants.php": "2c59f4fe2ac9d9e7",
    "includes/helpers-colour-wcag.php": "e150b5a55ec1195c",
    "includes/helpers-configurator-pricing.php": "141b9154d20735bb",
-   "includes/helpers-container-separators.php": "647fc44ed3c88437",
+   "includes/helpers-container-separators.php": "c83e093b0bf45718",
    "includes/helpers-container.php": "b18aa0cfff812547",
    "includes/helpers-css-safety.php": "e2cb4ac716e263d7",
    "includes/helpers-css-sizing-keyword.php": "1e8ea3394b4489c2",
@@ -4694,7 +5416,7 @@
    "includes/helpers-global-settings.php": "98dfa765458e36fe",
    "includes/helpers-gradient-tone.php": "8b6e9515d1009f01",
    "includes/helpers-hover-links.php": "595f48ab42af1a8a",
-   "includes/helpers-hover-state.php": "0953b306cc8e7d86",
+   "includes/helpers-hover-state.php": "7dbd634472e2bacc",
    "includes/helpers-icon-shadow.php": "d10e313f56673230",
    "includes/helpers-icon.php": "b36eb65779dd68d8",
    "includes/helpers-image-dimensions.php": "75c87a39f895bef5",
@@ -4716,14 +5438,15 @@
    "includes/helpers-responsive.php": "e4fca037ec7837c2",
    "includes/helpers-reviews-inline.php": "4a821f5be56b0a9e",
    "includes/helpers-row-behaviour.php": "ab25405ff36a6678",
-   "includes/helpers-scoped-instance-vars.php": "d06bd15808c36509",
-   "includes/helpers-scrim.php": "4d6a13f16243b91a",
+   "includes/helpers-scoped-instance-vars.php": "b1b661528f6f8e47",
+   "includes/helpers-scrim.php": "cf6f13d4bb652103",
    "includes/helpers-scrollbar.php": "07f9116d8e56353e",
-   "includes/helpers-separators-css.php": "478f6a4d7bcc5900",
+   "includes/helpers-separators-css.php": "e4045de423abbaa5",
    "includes/helpers-separators-hover-css.php": "39c8fcfb8c985128",
    "includes/helpers-separators-line-css.php": "baca16d155afb3d0",
-   "includes/helpers-separators.php": "50b7babb5815b580",
-   "includes/helpers-shadow-filter.php": "23446e1d5ca57fc4",
+   "includes/helpers-separators.php": "82b0697d9be51adc",
+   "includes/helpers-shadow-bleed.php": "a2da929cb907f4a8",
+   "includes/helpers-shadow-filter.php": "0f9cbd49870fcc64",
    "includes/helpers-shadow-hover.php": "9964c78f52c2c4d8",
    "includes/helpers-shadow-layers.php": "0bc69ba1c33750e0",
    "includes/helpers-site-info-binding.php": "35fc8a8ca31be043",
@@ -4752,13 +5475,13 @@
    "includes/media/atoms/layout.php": "7068a92270a163de",
    "includes/media/atoms/link.php": "8a679137bd63b1e0",
    "includes/media/atoms/meaning.php": "a75a2f35076930ca",
-   "includes/media/atoms/media-padding.php": "8147fbcdd1c96b66",
+   "includes/media/atoms/media-padding.php": "616c11f74448f64e",
    "includes/media/atoms/object-fit.php": "ece87a4ab55d61df",
    "includes/media/atoms/opacity.php": "aef92991b97f22fe",
    "includes/media/atoms/overlay.php": "d94678c7a4abaae9",
-   "includes/media/atoms/shadow.php": "6624a129e5d6eb49",
+   "includes/media/atoms/shadow.php": "4c5476e54562154f",
    "includes/media/atoms/shape.php": "963101e79a102fd2",
-   "includes/media/atoms/sizing.php": "36f995eab7e2198d",
+   "includes/media/atoms/sizing.php": "0ee74391320a3777",
    "includes/media/atoms/source.php": "189a1afeb510648b",
    "includes/media/atoms/svg-presentation.php": "c38e235d9204c932",
    "includes/media/atoms/video-behaviour.php": "0999e2c061eb15ef",
@@ -4767,10 +5490,10 @@
    "includes/media/emit-none.php": "8903f751afba2ed0",
    "includes/media/hidden-render.php": "f39dff5458298df6",
    "includes/media/layout-width.php": "7d95ff80f9162ba7",
-   "includes/media/media-values.php": "31a59811c954486d",
+   "includes/media/media-values.php": "86a5f8452f7b2fc2",
    "includes/media/render-chrome.php": "b6d37ac64b046708",
    "includes/media/render-picture.php": "31a9a0a48e9b5e16",
-   "includes/media/render-slot.php": "4b8161e8fe59b360",
+   "includes/media/render-slot.php": "b3c10be60de61718",
    "includes/media/render-sources.php": "67ecf4d89213d771",
    "includes/media/tier-embed.php": "32d8be4a7f8057e4",
    "includes/media/tier-svg.php": "204453d78ccf89a4",
@@ -4817,23 +5540,20 @@
    "includes/motion/support-registration.php": "80a096f7c80fbe48",
    "includes/order-items/helpers-order-items.php": "6195693b65b59529",
    "includes/price-trim-zeros.php": "18bf58dbdb99ca1d",
-   "includes/product-card-media.php": "ce1ddd81b9f568b1",
+   "includes/product-card-media.php": "4d824c704f9950c9",
    "includes/product-card-no-photo.php": "0873b87fda2f6ccc",
    "includes/product-collection-empty-detection.php": "f44b7ae2508d5f63",
    "includes/product-field-values.php": "ebd5a3deff129347",
    "includes/render-helpers.php": "019bc0678477e652",
    "includes/section-anchored-layers.php": "326a6d06b9486584",
-   "includes/shape-dividers.php": "f5d9fa3cabfdcc8c",
+   "includes/shape-dividers.php": "52002c58802c2630",
    "includes/sweep-css.php": "d8fbb9e23c9b1195",
    "includes/time-text.php": "ccfd867fe8d95a9a",
    "includes/trustpilot-helpers.php": "4166b2887e3c2cfc",
    "includes/wishlist/class-wishlist-cards-rest.php": "798a1e92e1c2dc2a",
    "src/blocks/order-items/block.json": "3eae64f823c68549",
-   "src/blocks/order-items/edit.js": "28fcf4d1e2f2d552",
    "src/blocks/order-items/editor.css": "bfe402c51a5498c4",
-   "src/blocks/order-items/index.js": "e87f8de8a88574ff",
    "src/blocks/order-items/render.php": "ff5e0391a41d3a78",
-   "src/blocks/order-items/save.js": "3ed34545748c9713",
    "src/blocks/order-items/style.css": "f9b3b8262278f7ef",
    "src/shared/info-toggle.css": "210a5fa94dc11c4a",
    "shipped:src/blocks/order-items/style.css": "f9b3b8262278f7ef",
@@ -4843,7 +5563,7 @@
    "fixture-shared": "61d9f70d4bb7e36a"
   },
   "outputs": "231064bc226124c1",
-  "theme": "e598998f7770664e",
+  "theme": "8b10535903bb3963",
   "classes": [
    "amount",
    "sgs-child-sizing",
@@ -5144,7 +5864,6 @@
    "span",
    "style",
    "ul"
-  ],
-  "check": "22168bd75f259cb9"
+  ]
  }
 }

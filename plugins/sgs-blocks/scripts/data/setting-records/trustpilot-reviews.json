@@ -100,7 +100,7 @@
    "tiers": [
     "@media(max-width:1023.98px)"
    ],
-   "selector": ".sgs-trustpilot-reviews",
+   "selector": ".sgs-container",
    "kind": "value",
    "values": [
     {
@@ -120,7 +120,7 @@
    "tiers": [
     "@media(max-width:767.98px)"
    ],
-   "selector": ".sgs-trustpilot-reviews",
+   "selector": ".sgs-container",
    "kind": "value",
    "values": [
     {
@@ -138,7 +138,7 @@
    ],
    "state": null,
    "tiers": [],
-   "selector": ".sgs-trustpilot-reviews",
+   "selector": ".sgs-container",
    "kind": "value",
    "values": [
     {
@@ -148,6 +148,1105 @@
     },
     {
      "desktop": "center"
+    }
+   ]
+  },
+  {
+   "setting": "arrowBorderRadius",
+   "part": "sgs-trustpilot-reviews__arrow",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__arrow",
+   "kind": "value",
+   "values": [
+    {
+     "topLeft": "11px",
+     "topRight": "13px",
+     "bottomRight": "17px",
+     "bottomLeft": "19px"
+    }
+   ]
+  },
+  {
+   "setting": "arrowBorderRadius",
+   "part": "sgs-trustpilot-reviews__pause",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__pause",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    {
+     "topLeft": "11px",
+     "topRight": "13px",
+     "bottomRight": "17px",
+     "bottomLeft": "19px"
+    }
+   ]
+  },
+  {
+   "setting": "arrowBorderStyle",
+   "part": "sgs-trustpilot-reviews__arrow",
+   "props": [
+    "border-style"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__arrow",
+   "kind": "value",
+   "values": [
+    "dashed"
+   ]
+  },
+  {
+   "setting": "arrowBorderStyle",
+   "part": "sgs-trustpilot-reviews__pause",
+   "props": [
+    "border-style"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__pause",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "dashed"
+   ]
+  },
+  {
+   "setting": "arrowBorderWidth",
+   "part": "sgs-trustpilot-reviews__arrow",
+   "props": [
+    "border-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__arrow",
+   "kind": "value",
+   "values": [
+    {
+     "top": "11px",
+     "right": "13px",
+     "bottom": "17px",
+     "left": "19px"
+    }
+   ]
+  },
+  {
+   "setting": "arrowBorderWidth",
+   "part": "sgs-trustpilot-reviews__pause",
+   "props": [
+    "border-style"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__pause",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    {
+     "top": "11px",
+     "right": "13px",
+     "bottom": "17px",
+     "left": "19px"
+    }
+   ]
+  },
+  {
+   "setting": "arrowBorderWidth",
+   "part": "sgs-trustpilot-reviews__pause",
+   "props": [
+    "border-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__pause",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    {
+     "top": "11px",
+     "right": "13px",
+     "bottom": "17px",
+     "left": "19px"
+    }
+   ]
+  },
+  {
+   "setting": "arrowColourBackground",
+   "part": "sgs-trustpilot-reviews__arrow",
+   "props": [
+    "background-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__arrow",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "arrowColourBackground",
+   "part": "sgs-trustpilot-reviews__pause",
+   "props": [
+    "background-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__pause",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "arrowColourBackgroundHover",
+   "part": "sgs-pressed",
+   "props": [
+    "background-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__arrow.sgs-pressed",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "arrowColourBackgroundHover",
+   "part": "sgs-trustpilot-reviews__arrow",
+   "props": [
+    "background-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__arrow:focus-visible",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "arrowColourBackgroundHover",
+   "part": "sgs-trustpilot-reviews__arrow",
+   "props": [
+    "background-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__arrow:hover",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "arrowColourBackgroundHover",
+   "part": "sgs-trustpilot-reviews__pause",
+   "props": [
+    "background-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__pause:focus-visible",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "arrowColourBackgroundHover",
+   "part": "sgs-trustpilot-reviews__pause",
+   "props": [
+    "background-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__pause:hover",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "arrowColourBorder",
+   "part": "sgs-trustpilot-reviews__arrow",
+   "props": [
+    "border-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__arrow",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "arrowColourBorder",
+   "part": "sgs-trustpilot-reviews__pause",
+   "props": [
+    "border-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__pause",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderHover",
+   "part": "sgs-pressed",
+   "props": [
+    "border-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__arrow.sgs-pressed",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderHover",
+   "part": "sgs-trustpilot-reviews__arrow",
+   "props": [
+    "border-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__arrow:focus-visible",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderHover",
+   "part": "sgs-trustpilot-reviews__arrow",
+   "props": [
+    "border-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__arrow:hover",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderHover",
+   "part": "sgs-trustpilot-reviews__pause",
+   "props": [
+    "border-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__pause:focus-visible",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderHover",
+   "part": "sgs-trustpilot-reviews__pause",
+   "props": [
+    "border-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__pause:hover",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "arrowColourText",
+   "part": "sgs-trustpilot-reviews__arrow",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__arrow",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "arrowColourText",
+   "part": "sgs-trustpilot-reviews__pause",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__pause",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "arrowColourTextHover",
+   "part": "sgs-pressed",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__arrow.sgs-pressed",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "arrowColourTextHover",
+   "part": "sgs-trustpilot-reviews__arrow",
+   "props": [
+    "color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__arrow:focus-visible",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "arrowColourTextHover",
+   "part": "sgs-trustpilot-reviews__arrow",
+   "props": [
+    "color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__arrow:hover",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "arrowColourTextHover",
+   "part": "sgs-trustpilot-reviews__pause",
+   "props": [
+    "color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__pause:focus-visible",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "arrowColourTextHover",
+   "part": "sgs-trustpilot-reviews__pause",
+   "props": [
+    "color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__pause:hover",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "arrowShadow",
+   "part": "sgs-pressed",
+   "props": [
+    "box-shadow"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__arrow.sgs-pressed",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "arrowShadow",
+   "part": "sgs-trustpilot-reviews__arrow",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__arrow:focus-visible",
+   "kind": "switched-on",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "arrowShadow",
+   "part": "sgs-trustpilot-reviews__arrow",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__arrow:hover",
+   "kind": "switched-on",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "arrowShadow",
+   "part": "sgs-trustpilot-reviews__arrow",
+   "props": [
+    "box-shadow"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__arrow",
+   "kind": "switched-on",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "arrowShadow",
+   "part": "sgs-trustpilot-reviews__arrow",
+   "props": [
+    "outline"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (forced-colors:active)"
+   ],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__arrow:not(:focus-visible)",
+   "kind": "switched-on",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "arrowShadow",
+   "part": "sgs-trustpilot-reviews__arrow",
+   "props": [
+    "outline-offset"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (forced-colors:active)"
+   ],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__arrow:not(:focus-visible)",
+   "kind": "switched-on",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "arrowShadow",
+   "part": "sgs-trustpilot-reviews__pause",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__pause:focus-visible",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "arrowShadow",
+   "part": "sgs-trustpilot-reviews__pause",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__pause:hover",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "arrowShadow",
+   "part": "sgs-trustpilot-reviews__pause",
+   "props": [
+    "box-shadow"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__pause",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "arrowShadow",
+   "part": "sgs-trustpilot-reviews__pause",
+   "props": [
+    "outline"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (forced-colors:active)"
+   ],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__pause:not(:focus-visible)",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "arrowShadow",
+   "part": "sgs-trustpilot-reviews__pause",
+   "props": [
+    "outline-offset"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (forced-colors:active)"
+   ],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__pause:not(:focus-visible)",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "arrowShadowColour",
+   "part": "sgs-pressed",
+   "props": [
+    "box-shadow"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__arrow.sgs-pressed",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "arrowShadowColour",
+   "part": "sgs-trustpilot-reviews__arrow",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__arrow:focus-visible",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "arrowShadowColour",
+   "part": "sgs-trustpilot-reviews__arrow",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__arrow:hover",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "arrowShadowColour",
+   "part": "sgs-trustpilot-reviews__arrow",
+   "props": [
+    "box-shadow"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__arrow",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "arrowShadowColour",
+   "part": "sgs-trustpilot-reviews__pause",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__pause:focus-visible",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "arrowShadowColour",
+   "part": "sgs-trustpilot-reviews__pause",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__pause:hover",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "arrowShadowColour",
+   "part": "sgs-trustpilot-reviews__pause",
+   "props": [
+    "box-shadow"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__pause",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "arrowShadowColourHover",
+   "part": "sgs-pressed",
+   "props": [
+    "box-shadow"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__arrow.sgs-pressed",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "arrowShadowColourHover",
+   "part": "sgs-trustpilot-reviews__arrow",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__arrow:focus-visible",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "arrowShadowColourHover",
+   "part": "sgs-trustpilot-reviews__arrow",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__arrow:hover",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "arrowShadowColourHover",
+   "part": "sgs-trustpilot-reviews__pause",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__pause:focus-visible",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "arrowShadowColourHover",
+   "part": "sgs-trustpilot-reviews__pause",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__pause:hover",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "arrowShadowHover",
+   "part": "sgs-pressed",
+   "props": [
+    "box-shadow"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__arrow.sgs-pressed",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "arrowShadowHover",
+   "part": "sgs-trustpilot-reviews__arrow",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__arrow:focus-visible",
+   "kind": "switched-on",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "arrowShadowHover",
+   "part": "sgs-trustpilot-reviews__arrow",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__arrow:hover",
+   "kind": "switched-on",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "arrowShadowHover",
+   "part": "sgs-trustpilot-reviews__pause",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__pause:focus-visible",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "arrowShadowHover",
+   "part": "sgs-trustpilot-reviews__pause",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__pause:hover",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "arrowSize",
+   "part": "sgs-trustpilot-reviews__arrow",
+   "props": [
+    "height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__arrow",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "arrowSize",
+   "part": "sgs-trustpilot-reviews__arrow",
+   "props": [
+    "height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__arrow",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "arrowSize",
+   "part": "sgs-trustpilot-reviews__arrow",
+   "props": [
+    "height"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__arrow",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "arrowSize",
+   "part": "sgs-trustpilot-reviews__arrow",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__arrow",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "arrowSize",
+   "part": "sgs-trustpilot-reviews__arrow",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__arrow",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "arrowSize",
+   "part": "sgs-trustpilot-reviews__arrow",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__arrow",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "arrowSize",
+   "part": "sgs-trustpilot-reviews__pause",
+   "props": [
+    "height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__pause",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "arrowSize",
+   "part": "sgs-trustpilot-reviews__pause",
+   "props": [
+    "height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__pause",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "arrowSize",
+   "part": "sgs-trustpilot-reviews__pause",
+   "props": [
+    "height"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__pause",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "arrowSize",
+   "part": "sgs-trustpilot-reviews__pause",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__pause",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "arrowSize",
+   "part": "sgs-trustpilot-reviews__pause",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__pause",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "arrowSize",
+   "part": "sgs-trustpilot-reviews__pause",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__pause",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
     }
    ]
   },
@@ -208,6 +1307,21 @@
    ]
   },
   {
+   "setting": "backgroundColourHover",
+   "part": "sgs-pressed",
+   "props": [
+    "background-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews.sgs-pressed",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
    "setting": "backgroundColourHoverGradient",
    "part": "ROOT",
    "props": [
@@ -231,6 +1345,21 @@
    "tiers": [],
    "selector": ":where(:root:not(.sgs-touch-input)) .sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews:hover",
    "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "backgroundColourHoverGradient",
+   "part": "sgs-pressed",
+   "props": [
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews.sgs-pressed",
+   "kind": "value",
+   "unproved": "part-not-rendered",
    "values": [
     "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
    ]
@@ -614,6 +1743,70 @@
      "bottom": "17px",
      "left": "19px"
     }
+   ]
+  },
+  {
+   "setting": "cardStyle",
+   "part": "sgs-pressed",
+   "props": [
+    "border-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews--card-bordered .sgs-trustpilot-reviews__card.sgs-pressed",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "bordered",
+    "flat"
+   ]
+  },
+  {
+   "setting": "cardStyle",
+   "part": "sgs-pressed",
+   "props": [
+    "box-shadow"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews--card-bordered .sgs-trustpilot-reviews__card.sgs-pressed",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "bordered",
+    "flat"
+   ]
+  },
+  {
+   "setting": "cardStyle",
+   "part": "sgs-pressed",
+   "props": [
+    "transform"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews--card-bordered .sgs-trustpilot-reviews__card.sgs-pressed",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "bordered",
+    "flat"
+   ]
+  },
+  {
+   "setting": "cardStyle",
+   "part": "sgs-pressed",
+   "props": [
+    "z-index"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews--card-bordered .sgs-trustpilot-reviews__card.sgs-pressed",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "bordered",
+    "flat"
    ]
   },
   {
@@ -1057,6 +2250,317 @@
    ]
   },
   {
+   "setting": "dotActiveWidth",
+   "part": "sgs-trustpilot-reviews__dot",
+   "props": [
+    "min-width"
+   ],
+   "state": "active",
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__dot.is-active",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "dotActiveWidth",
+   "part": "sgs-trustpilot-reviews__dot",
+   "props": [
+    "min-width"
+   ],
+   "state": "active",
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__dot.is-active",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "dotActiveWidth",
+   "part": "sgs-trustpilot-reviews__dot",
+   "props": [
+    "min-width"
+   ],
+   "state": "active",
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__dot.is-active",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "dotActiveWidth",
+   "part": "sgs-trustpilot-reviews__dot",
+   "props": [
+    "width"
+   ],
+   "state": "active",
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__dot.is-active",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "dotActiveWidth",
+   "part": "sgs-trustpilot-reviews__dot",
+   "props": [
+    "width"
+   ],
+   "state": "active",
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__dot.is-active",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "dotActiveWidth",
+   "part": "sgs-trustpilot-reviews__dot",
+   "props": [
+    "width"
+   ],
+   "state": "active",
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__dot.is-active",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "dotBorderColour",
+   "part": "sgs-trustpilot-reviews__dot",
+   "props": [
+    "border-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__dot",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "dotBorderWidth",
+   "part": "sgs-trustpilot-reviews__dot",
+   "props": [
+    "border-style"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__dot",
+   "kind": "switched-on",
+   "values": [
+    "37px"
+   ]
+  },
+  {
+   "setting": "dotBorderWidth",
+   "part": "sgs-trustpilot-reviews__dot",
+   "props": [
+    "border-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__dot",
+   "kind": "value",
+   "values": [
+    "37px"
+   ]
+  },
+  {
+   "setting": "dotColour",
+   "part": "sgs-trustpilot-reviews__dot",
+   "props": [
+    "background-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__dot:not(.sgs-trustpilot-reviews__dot.is-active)",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "dotColourActive",
+   "part": "sgs-pressed",
+   "props": [
+    "background-color"
+   ],
+   "state": "active",
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__dot.is-active.sgs-pressed",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "dotColourActive",
+   "part": "sgs-trustpilot-reviews__dot",
+   "props": [
+    "background-color"
+   ],
+   "state": "active",
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__dot.is-active",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "dotColourHover",
+   "part": "sgs-pressed",
+   "props": [
+    "background-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__dot:not(.sgs-trustpilot-reviews__dot.is-active).sgs-pressed",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "dotColourHover",
+   "part": "sgs-trustpilot-reviews__dot",
+   "props": [
+    "background-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__dot:not(.sgs-trustpilot-reviews__dot.is-active):hover",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "dotGap",
+   "part": "sgs-trustpilot-reviews__dots",
+   "props": [
+    "gap"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__dots",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "dotGap",
+   "part": "sgs-trustpilot-reviews__dots",
+   "props": [
+    "gap"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__dots",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "dotGap",
+   "part": "sgs-trustpilot-reviews__dots",
+   "props": [
+    "gap"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__dots",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "dotRadius",
+   "part": "sgs-trustpilot-reviews__dot",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__dot",
+   "kind": "value",
+   "values": [
+    "37px"
+   ]
+  },
+  {
    "setting": "flexDirection",
    "part": "ROOT",
    "props": [
@@ -1108,7 +2612,7 @@
    "tiers": [
     "@media(max-width:1023.98px)"
    ],
-   "selector": ".sgs-trustpilot-reviews",
+   "selector": ".sgs-container",
    "kind": "value",
    "values": [
     {
@@ -1128,7 +2632,7 @@
    "tiers": [
     "@media(max-width:767.98px)"
    ],
-   "selector": ".sgs-trustpilot-reviews",
+   "selector": ".sgs-container",
    "kind": "value",
    "values": [
     {
@@ -1146,7 +2650,7 @@
    ],
    "state": null,
    "tiers": [],
-   "selector": ".sgs-trustpilot-reviews",
+   "selector": ".sgs-container",
    "kind": "value",
    "values": [
     {
@@ -1169,7 +2673,7 @@
    "tiers": [
     "@media(max-width:1023.98px)"
    ],
-   "selector": ".sgs-trustpilot-reviews",
+   "selector": ".sgs-container",
    "kind": "value",
    "values": [
     {
@@ -1189,7 +2693,7 @@
    "tiers": [
     "@media(max-width:767.98px)"
    ],
-   "selector": ".sgs-trustpilot-reviews",
+   "selector": ".sgs-container",
    "kind": "value",
    "values": [
     {
@@ -1207,7 +2711,7 @@
    ],
    "state": null,
    "tiers": [],
-   "selector": ".sgs-trustpilot-reviews",
+   "selector": ".sgs-container",
    "kind": "value",
    "values": [
     {
@@ -1230,7 +2734,7 @@
    "tiers": [
     "@media(max-width:1023.98px)"
    ],
-   "selector": ".sgs-trustpilot-reviews",
+   "selector": ".sgs-container",
    "kind": "value",
    "values": [
     {
@@ -1250,7 +2754,7 @@
    "tiers": [
     "@media(max-width:767.98px)"
    ],
-   "selector": ".sgs-trustpilot-reviews",
+   "selector": ".sgs-container",
    "kind": "value",
    "values": [
     {
@@ -1268,7 +2772,7 @@
    ],
    "state": null,
    "tiers": [],
-   "selector": ".sgs-trustpilot-reviews",
+   "selector": ".sgs-container",
    "kind": "value",
    "values": [
     {
@@ -2942,6 +4446,21 @@
    ]
   },
   {
+   "setting": "textColourHover",
+   "part": "sgs-pressed",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews a:not(.wp-element-button).sgs-pressed",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
    "setting": "textColourHoverGradient",
    "part": "ROOT a",
    "props": [
@@ -3054,6 +4573,51 @@
    ]
   },
   {
+   "setting": "textColourHoverGradient",
+   "part": "sgs-pressed",
+   "props": [
+    "background-clip"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews.sgs-pressed",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "textColourHoverGradient",
+   "part": "sgs-pressed",
+   "props": [
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews.sgs-pressed",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "textColourHoverGradient",
+   "part": "sgs-pressed",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews a:not(.wp-element-button).sgs-pressed",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
    "setting": "theme",
    "part": "sgs-trustpilot-reviews__arrow",
    "props": [
@@ -3109,7 +4673,7 @@
    ],
    "state": null,
    "tiers": [],
-   "selector": ".sgs-trustpilot-reviews--card-bordered .sgs-trustpilot-reviews__card",
+   "selector": ".sgs-trustpilot-reviews--card-flat .sgs-trustpilot-reviews__card",
    "kind": "switched-on",
    "values": [
     "dark"
@@ -3128,6 +4692,24 @@
    "kind": "switched-on",
    "values": [
     "dark"
+   ]
+  },
+  {
+   "setting": "variant",
+   "part": "ROOT",
+   "props": [
+    "-webkit-tap-highlight-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ":where(.sgs-trustpilot-reviews--carousel .sgs-trustpilot-reviews__track, .sgs-trustpilot-reviews--mini-carousel .sgs-trustpilot-reviews__track) :where(a, button, [role=\"button\"], input, select, textarea, label, summary)",
+   "kind": "value",
+   "unproved": "rule-needs-absent-markup",
+   "values": [
+    "grid",
+    "list",
+    "mini",
+    "mini-carousel"
    ]
   },
   {
@@ -3269,6 +4851,23 @@
    "setting": "variant",
    "part": "sgs-trustpilot-reviews__track",
    "props": [
+    "-webkit-tap-highlight-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-trustpilot-reviews--carousel .sgs-trustpilot-reviews__track",
+   "kind": "switched-on",
+   "values": [
+    "grid",
+    "list",
+    "mini",
+    "mini-carousel"
+   ]
+  },
+  {
+   "setting": "variant",
+   "part": "sgs-trustpilot-reviews__track",
+   "props": [
     "align-items"
    ],
    "state": null,
@@ -3290,7 +4889,7 @@
    ],
    "state": null,
    "tiers": [],
-   "selector": ".sgs-trustpilot-reviews.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__track::-webkit-scrollbar",
+   "selector": ".sgs-trustpilot-reviews--carousel .sgs-trustpilot-reviews__track",
    "kind": "value",
    "values": [
     "carousel",
@@ -3505,6 +5104,651 @@
    []
   ],
   [
+   "arrowBorderRadius",
+   "sgs-trustpilot-reviews__arrow",
+   [
+    "border-radius"
+   ],
+   null,
+   []
+  ],
+  [
+   "arrowBorderRadius",
+   "sgs-trustpilot-reviews__pause",
+   [
+    "border-radius"
+   ],
+   null,
+   []
+  ],
+  [
+   "arrowBorderStyle",
+   "sgs-trustpilot-reviews__arrow",
+   [
+    "border-style"
+   ],
+   null,
+   []
+  ],
+  [
+   "arrowBorderStyle",
+   "sgs-trustpilot-reviews__pause",
+   [
+    "border-style"
+   ],
+   null,
+   []
+  ],
+  [
+   "arrowBorderWidth",
+   "sgs-trustpilot-reviews__arrow",
+   [
+    "border-style"
+   ],
+   null,
+   []
+  ],
+  [
+   "arrowBorderWidth",
+   "sgs-trustpilot-reviews__arrow",
+   [
+    "border-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "arrowBorderWidth",
+   "sgs-trustpilot-reviews__pause",
+   [
+    "border-style"
+   ],
+   null,
+   []
+  ],
+  [
+   "arrowBorderWidth",
+   "sgs-trustpilot-reviews__pause",
+   [
+    "border-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "arrowColourBackground",
+   "sgs-trustpilot-reviews__arrow",
+   [
+    "background-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "arrowColourBackground",
+   "sgs-trustpilot-reviews__pause",
+   [
+    "background-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "arrowColourBackgroundHover",
+   "sgs-pressed",
+   [
+    "background-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "arrowColourBackgroundHover",
+   "sgs-trustpilot-reviews__arrow",
+   [
+    "background-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "arrowColourBackgroundHover",
+   "sgs-trustpilot-reviews__arrow",
+   [
+    "background-color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "arrowColourBackgroundHover",
+   "sgs-trustpilot-reviews__pause",
+   [
+    "background-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "arrowColourBackgroundHover",
+   "sgs-trustpilot-reviews__pause",
+   [
+    "background-color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "arrowColourBorder",
+   "sgs-trustpilot-reviews__arrow",
+   [
+    "border-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "arrowColourBorder",
+   "sgs-trustpilot-reviews__pause",
+   [
+    "border-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "arrowColourBorderHover",
+   "sgs-pressed",
+   [
+    "border-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "arrowColourBorderHover",
+   "sgs-trustpilot-reviews__arrow",
+   [
+    "border-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "arrowColourBorderHover",
+   "sgs-trustpilot-reviews__arrow",
+   [
+    "border-color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "arrowColourBorderHover",
+   "sgs-trustpilot-reviews__pause",
+   [
+    "border-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "arrowColourBorderHover",
+   "sgs-trustpilot-reviews__pause",
+   [
+    "border-color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "arrowColourText",
+   "sgs-trustpilot-reviews__arrow",
+   [
+    "color"
+   ],
+   null,
+   []
+  ],
+  [
+   "arrowColourText",
+   "sgs-trustpilot-reviews__pause",
+   [
+    "color"
+   ],
+   null,
+   []
+  ],
+  [
+   "arrowColourTextHover",
+   "sgs-pressed",
+   [
+    "color"
+   ],
+   null,
+   []
+  ],
+  [
+   "arrowColourTextHover",
+   "sgs-trustpilot-reviews__arrow",
+   [
+    "color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "arrowColourTextHover",
+   "sgs-trustpilot-reviews__arrow",
+   [
+    "color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "arrowColourTextHover",
+   "sgs-trustpilot-reviews__pause",
+   [
+    "color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "arrowColourTextHover",
+   "sgs-trustpilot-reviews__pause",
+   [
+    "color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "arrowShadow",
+   "sgs-pressed",
+   [
+    "box-shadow"
+   ],
+   null,
+   []
+  ],
+  [
+   "arrowShadow",
+   "sgs-trustpilot-reviews__arrow",
+   [
+    "box-shadow"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "arrowShadow",
+   "sgs-trustpilot-reviews__arrow",
+   [
+    "box-shadow"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "arrowShadow",
+   "sgs-trustpilot-reviews__arrow",
+   [
+    "box-shadow"
+   ],
+   null,
+   []
+  ],
+  [
+   "arrowShadow",
+   "sgs-trustpilot-reviews__arrow",
+   [
+    "outline"
+   ],
+   null,
+   [
+    "@media (forced-colors:active)"
+   ]
+  ],
+  [
+   "arrowShadow",
+   "sgs-trustpilot-reviews__arrow",
+   [
+    "outline-offset"
+   ],
+   null,
+   [
+    "@media (forced-colors:active)"
+   ]
+  ],
+  [
+   "arrowShadow",
+   "sgs-trustpilot-reviews__pause",
+   [
+    "box-shadow"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "arrowShadow",
+   "sgs-trustpilot-reviews__pause",
+   [
+    "box-shadow"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "arrowShadow",
+   "sgs-trustpilot-reviews__pause",
+   [
+    "box-shadow"
+   ],
+   null,
+   []
+  ],
+  [
+   "arrowShadow",
+   "sgs-trustpilot-reviews__pause",
+   [
+    "outline"
+   ],
+   null,
+   [
+    "@media (forced-colors:active)"
+   ]
+  ],
+  [
+   "arrowShadow",
+   "sgs-trustpilot-reviews__pause",
+   [
+    "outline-offset"
+   ],
+   null,
+   [
+    "@media (forced-colors:active)"
+   ]
+  ],
+  [
+   "arrowShadowColour",
+   "sgs-pressed",
+   [
+    "box-shadow"
+   ],
+   null,
+   []
+  ],
+  [
+   "arrowShadowColour",
+   "sgs-trustpilot-reviews__arrow",
+   [
+    "box-shadow"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "arrowShadowColour",
+   "sgs-trustpilot-reviews__arrow",
+   [
+    "box-shadow"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "arrowShadowColour",
+   "sgs-trustpilot-reviews__arrow",
+   [
+    "box-shadow"
+   ],
+   null,
+   []
+  ],
+  [
+   "arrowShadowColour",
+   "sgs-trustpilot-reviews__pause",
+   [
+    "box-shadow"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "arrowShadowColour",
+   "sgs-trustpilot-reviews__pause",
+   [
+    "box-shadow"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "arrowShadowColour",
+   "sgs-trustpilot-reviews__pause",
+   [
+    "box-shadow"
+   ],
+   null,
+   []
+  ],
+  [
+   "arrowShadowColourHover",
+   "sgs-pressed",
+   [
+    "box-shadow"
+   ],
+   null,
+   []
+  ],
+  [
+   "arrowShadowColourHover",
+   "sgs-trustpilot-reviews__arrow",
+   [
+    "box-shadow"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "arrowShadowColourHover",
+   "sgs-trustpilot-reviews__arrow",
+   [
+    "box-shadow"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "arrowShadowColourHover",
+   "sgs-trustpilot-reviews__pause",
+   [
+    "box-shadow"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "arrowShadowColourHover",
+   "sgs-trustpilot-reviews__pause",
+   [
+    "box-shadow"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "arrowShadowHover",
+   "sgs-pressed",
+   [
+    "box-shadow"
+   ],
+   null,
+   []
+  ],
+  [
+   "arrowShadowHover",
+   "sgs-trustpilot-reviews__arrow",
+   [
+    "box-shadow"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "arrowShadowHover",
+   "sgs-trustpilot-reviews__arrow",
+   [
+    "box-shadow"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "arrowShadowHover",
+   "sgs-trustpilot-reviews__pause",
+   [
+    "box-shadow"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "arrowShadowHover",
+   "sgs-trustpilot-reviews__pause",
+   [
+    "box-shadow"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "arrowSize",
+   "sgs-trustpilot-reviews__arrow",
+   [
+    "height"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "arrowSize",
+   "sgs-trustpilot-reviews__arrow",
+   [
+    "height"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "arrowSize",
+   "sgs-trustpilot-reviews__arrow",
+   [
+    "height"
+   ],
+   null,
+   []
+  ],
+  [
+   "arrowSize",
+   "sgs-trustpilot-reviews__arrow",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "arrowSize",
+   "sgs-trustpilot-reviews__arrow",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "arrowSize",
+   "sgs-trustpilot-reviews__arrow",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "arrowSize",
+   "sgs-trustpilot-reviews__pause",
+   [
+    "height"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "arrowSize",
+   "sgs-trustpilot-reviews__pause",
+   [
+    "height"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "arrowSize",
+   "sgs-trustpilot-reviews__pause",
+   [
+    "height"
+   ],
+   null,
+   []
+  ],
+  [
+   "arrowSize",
+   "sgs-trustpilot-reviews__pause",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "arrowSize",
+   "sgs-trustpilot-reviews__pause",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "arrowSize",
+   "sgs-trustpilot-reviews__pause",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
    "backgroundColour",
    "ROOT",
    [
@@ -3541,6 +5785,15 @@
    []
   ],
   [
+   "backgroundColourHover",
+   "sgs-pressed",
+   [
+    "background-color"
+   ],
+   null,
+   []
+  ],
+  [
    "backgroundColourHoverGradient",
    "ROOT",
    [
@@ -3556,6 +5809,15 @@
     "background-image"
    ],
    "hover",
+   []
+  ],
+  [
+   "backgroundColourHoverGradient",
+   "sgs-pressed",
+   [
+    "background-image"
+   ],
+   null,
    []
   ],
   [
@@ -3748,6 +6010,42 @@
    "ROOT",
    [
     "border-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "cardStyle",
+   "sgs-pressed",
+   [
+    "border-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "cardStyle",
+   "sgs-pressed",
+   [
+    "box-shadow"
+   ],
+   null,
+   []
+  ],
+  [
+   "cardStyle",
+   "sgs-pressed",
+   [
+    "transform"
+   ],
+   null,
+   []
+  ],
+  [
+   "cardStyle",
+   "sgs-pressed",
+   [
+    "z-index"
    ],
    null,
    []
@@ -4041,6 +6339,189 @@
    "sgs-trustpilot-reviews__track",
    [
     "grid-template-columns"
+   ],
+   null,
+   []
+  ],
+  [
+   "dotActiveWidth",
+   "sgs-trustpilot-reviews__dot",
+   [
+    "min-width"
+   ],
+   "active",
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "dotActiveWidth",
+   "sgs-trustpilot-reviews__dot",
+   [
+    "min-width"
+   ],
+   "active",
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "dotActiveWidth",
+   "sgs-trustpilot-reviews__dot",
+   [
+    "min-width"
+   ],
+   "active",
+   []
+  ],
+  [
+   "dotActiveWidth",
+   "sgs-trustpilot-reviews__dot",
+   [
+    "width"
+   ],
+   "active",
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "dotActiveWidth",
+   "sgs-trustpilot-reviews__dot",
+   [
+    "width"
+   ],
+   "active",
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "dotActiveWidth",
+   "sgs-trustpilot-reviews__dot",
+   [
+    "width"
+   ],
+   "active",
+   []
+  ],
+  [
+   "dotBorderColour",
+   "sgs-trustpilot-reviews__dot",
+   [
+    "border-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "dotBorderWidth",
+   "sgs-trustpilot-reviews__dot",
+   [
+    "border-style"
+   ],
+   null,
+   []
+  ],
+  [
+   "dotBorderWidth",
+   "sgs-trustpilot-reviews__dot",
+   [
+    "border-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "dotBorderWidth",
+   "sgs-trustpilot-reviews__dot",
+   [
+    "box-sizing"
+   ],
+   null,
+   []
+  ],
+  [
+   "dotColour",
+   "sgs-trustpilot-reviews__dot",
+   [
+    "background-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "dotColourActive",
+   "sgs-pressed",
+   [
+    "background-color"
+   ],
+   "active",
+   []
+  ],
+  [
+   "dotColourActive",
+   "sgs-trustpilot-reviews__dot",
+   [
+    "background-color"
+   ],
+   "active",
+   []
+  ],
+  [
+   "dotColourHover",
+   "sgs-pressed",
+   [
+    "background-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "dotColourHover",
+   "sgs-trustpilot-reviews__dot",
+   [
+    "background-color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "dotGap",
+   "sgs-trustpilot-reviews__dots",
+   [
+    "gap"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "dotGap",
+   "sgs-trustpilot-reviews__dots",
+   [
+    "gap"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "dotGap",
+   "sgs-trustpilot-reviews__dots",
+   [
+    "gap"
+   ],
+   null,
+   []
+  ],
+  [
+   "dotRadius",
+   "sgs-trustpilot-reviews__dot",
+   [
+    "border-radius"
    ],
    null,
    []
@@ -5110,6 +7591,15 @@
    []
   ],
   [
+   "textColourHover",
+   "sgs-pressed",
+   [
+    "color"
+   ],
+   null,
+   []
+  ],
+  [
    "textColourHoverGradient",
    "ROOT a",
    [
@@ -5223,6 +7713,55 @@
     "color"
    ],
    "hover",
+   []
+  ],
+  [
+   "textColourHoverGradient",
+   "sgs-pressed",
+   [
+    "background-clip"
+   ],
+   null,
+   []
+  ],
+  [
+   "textColourHoverGradient",
+   "sgs-pressed",
+   [
+    "background-image"
+   ],
+   null,
+   [
+    "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+   ]
+  ],
+  [
+   "textColourHoverGradient",
+   "sgs-pressed",
+   [
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "textColourHoverGradient",
+   "sgs-pressed",
+   [
+    "color"
+   ],
+   null,
+   [
+    "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+   ]
+  ],
+  [
+   "textColourHoverGradient",
+   "sgs-pressed",
+   [
+    "color"
+   ],
+   null,
    []
   ],
   [
@@ -5273,6 +7812,15 @@
    [
     "background-color",
     "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "variant",
+   "ROOT",
+   [
+    "-webkit-tap-highlight-color"
    ],
    null,
    []
@@ -5355,6 +7903,15 @@
    "sgs-trustpilot-reviews__subtitle",
    [
     "display"
+   ],
+   null,
+   []
+  ],
+  [
+   "variant",
+   "sgs-trustpilot-reviews__track",
+   [
+    "-webkit-tap-highlight-color"
    ],
    null,
    []
@@ -5472,902 +8029,1448 @@
  ],
  "proofCache": [
   {
-   "fp": "87aea86f0821a71d",
+   "fp": "0bc69481c54e3ff0",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "f87db37908c5e1f3",
+   "fp": "1c2351554a9d3306",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "7941544ae3a56956",
+   "fp": "69d63fe6882b9462",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "e85eb5eb63c2602b",
+   "fp": "6f4c4adbedf262fe",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "69442395ea1cd17f",
+   "fp": "075ce1f9522fbda0",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "216056017113a48d",
+   "fp": "9e87983aeda36ef4",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "e2f963b8d7a75f12",
+   "fp": "81f02d2f11d05d50",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "5a05f0732f0415a0",
+   "fp": "4947b7c6d75d01c3",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "64158c7282404f38",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "7b53a7ca1628c3e5",
-   "v": "proved",
-   "kind": "value"
+   "fp": "fd0fce051469004c",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
   },
   {
-   "fp": "82c725d0cbcb4f04",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "59f3b99e6b614bd2",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "49d3a03b71e4f537",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "013653bec3fdf2a0",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "0a0247a5ebd5b822",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "bcc8494b9c0e2ecc",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "d76092933e83321f",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "e4d53b9eba0834a0",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "c0c880aa650193cb",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "70a5791a3afd3664",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "5b3de9facd384320",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "b04be0554ff25bec",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "e613e5fa93c22a67",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "ceab2e2f01514f84",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "f5091ac79db0ff18",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "b641f8acb576d4cb",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "dcf4e8d5100177a4",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "6be939d2562e8b3c",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "1b13c2ff28b5f72f",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "5839b565caf0714c",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "2cb725af244fe52a",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "64ea2d569cbc499a",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "87a6d51869a3be23",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "1eeeaeb145593577",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "afe23229347a0e27",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "41078e1c3ff27c90",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "9a4c2b2e0d678e58",
+   "fp": "f987dab94a8984fa",
    "v": "removed"
   },
   {
-   "fp": "274b2f5304d2cd87",
+   "fp": "da98b7dd8ad41de0",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "f29712655b84017d",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "97e5e6a3936dcea7",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "360285bcb3edb3e6",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "aa6a68e901ddc231",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "f2053cb9c5cc63ba",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "eb5604b924b0a766",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "0a8de7d9fff7b121",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "1bf485e4653ea04b",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "fc536091c4816ada",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "5887ac1f30de90c2",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "622ff0077f7b6e98",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "b5914603cc4a7e94",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "fb67ffb3eed3f0f2",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "ac81aa3969693282",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "70034ee23342d8c5",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "9c51dfc618304261",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "4a9420d996e1f3d2",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "2e3905dbf282eb6a",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "f228fe6be2960cbf",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "fa1336fdfc2d1f00",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "de57341371c4dcfb",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "2989a34b3ef24995",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "6281a9b4667ad7ac",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "b138d73cfcacc18e",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "ba95a4778d819983",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "3faf344a292f4999",
+   "fp": "b8d28bf9aa27fa24",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "55984b06edad1067",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "e3519fa76a7b902b",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "c908a383e4f8432b",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "492c37eb1fa0fc0b",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "cf539d8dce38f204",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "d112cfdb202ed779",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "234e6a1eab29fec7",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "8d779066970d74a3",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "b05d1970a93b6bcd",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "c3472c4874eadd89",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "caa212ebd883b165",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "4feaa215b19cf98c",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "5286083b54967551",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "a22dc2f15ce8b266",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "dae9a0c5a172c5e2",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "bb52b8f07e48659d",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "d235f6a4832c9a40",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "3cb5c292bafcdec5",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "db120b266681256c",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "e72ac4402a2b7071",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "119ee997dd0b07a0",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "db8adf468c6d3ccb",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "8447bac43435fd2d",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "d3caf0029c5fe493",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "6692b5dcb60d4bf0",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "f2e2334e611bf316",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "fc3d77faa37d36c9",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "2111df1eb39f8936",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "53c24ade6d71d257",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "b37f04a4530c13bd",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "3efcdacc166b0961",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "d42b7dbbc0c7c4ec",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "d4830f864d537463",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "2d2b03c9330b449c",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "3ed1d6765f2e58fd",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "d1d62f8708b6d004",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "0ff0d7c9b6b56445",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "cc236974c78f8b07",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "70a904abbf8cdfb0",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "ab3c585cd02f32b0",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "792fb599d8d841a4",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "27960374c02a4e52",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "a14ebf66e3f8839b",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "b4e8286611526b27",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "84573485e290e8a5",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "e9732a58e7a09629",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "a1a8da2da6f7ac6e",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "0954525a21b86d09",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "703bbba667f00eeb",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "ad9eb92ab09cd21b",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "503e9e4aaf91511c",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "fb1927f8ef3777f4",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "be9aa5ac6cedc795",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "8f30cf4ada8665b0",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "155f2c3117cd74a3",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "d8ba863781b7b923",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "13c6d7ba74f338e8",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "ba8ccd8f3be390cf",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "3a0c732941027512",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "df12dfb0ab3cc925",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "89d083cb9d28051c",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "db23ee653b9cf90a",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "38231968325bf158",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "a009bd9b99bb8a95",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "5e7b69474d132872",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "e9b4110708ef172a",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "19c60d13d270beb2",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "7406dc81fbf99527",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "7d8626f3dc64d858",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "9b94ab5f66a90ad2",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "b36269e4195932c1",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "ae5d48d3029d9752",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "2e1d4da12448a0fb",
    "v": "removed"
   },
   {
-   "fp": "522e9f0a03457377",
+   "fp": "d2b6024b27e1c17c",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "35c1f9b8cbb3e454",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "f351398cefe22f5e",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "1ff43e3bf1e22a84",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "d2756f495bd3e5bd",
+   "fp": "789c34bfd27b11fa",
    "v": "removed"
   },
   {
-   "fp": "aac1fea8ecf0a7a7",
+   "fp": "46e6179885cc686c",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "db1ffb0ff330a99a",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "8ec0f21297086f32",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "ac09efa410d49c76",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "d16625ddc425a40a",
    "v": "removed"
   },
   {
-   "fp": "82a9bf6045d6b946",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "19f4f274f918b7bf",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "3aedd3a0c74ba5b3",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "519e63ec22f8d9ca",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "a66741f51d6c461f",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "14ad425af4f38b5a",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "b3031131b54fcb92",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "c0064bbb5b6066b8",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "fa7c22c38e5ee5cb",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "cbb494639d8dc04b",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "54e9c234845b16c9",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "c7258706bbf17ae9",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "f3480b8cc53ba6ce",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "36a6e8018f3cc76f",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "02000e367f6ce739",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "7644805ae28286b4",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "5e48f05b3662d0e8",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "e73149c8319a8dff",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "017a83fbd457f896",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "dee4235d0aaa1e37",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "2cf57c13a4a72d33",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "b1692479ed71451c",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "776800232ba889e9",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "e2275fc6f26c8cc7",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "6a3b3b124735a284",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "0d75e0fc6305749e",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "552c649f2d6202d7",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "6269a62f79c975f1",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "cc44f6cb78e95b35",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "38f397a34d5e8210",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "1475a5356e70445d",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "7a8a42e7ad1ea109",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "95221d630a042ad8",
-   "v": "proved",
-   "kind": "value"
-  },
-  {
-   "fp": "7407d16dd92a4720",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "24a37b67cbe0dbc5",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "1f7e6e63b2d74acf",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "cce01fc8071e7a8e",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "868c52f1be42f5ce",
-   "v": "proved",
-   "kind": "switched-on"
-  },
-  {
-   "fp": "f2849f06fafef97c",
+   "fp": "bc38c0c22a7bd401",
    "v": "removed"
   },
   {
-   "fp": "8e36a6cc601b7508",
-   "v": "removed"
-  },
-  {
-   "fp": "3b5cbee97ecb4be5",
+   "fp": "601f152e32d34297",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "93ed040353e5f945",
+   "fp": "65ad595c22900761",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "c6d9d2c937ae111a",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "7de526d7f969e394",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "40ede01de686699c",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "28220a17a7127efc",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "32521714b808dff8",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "c4b1ca558941d2cb",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "31f8d4ca30fbab61",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "cc2d786a79affc9b",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "9aa031728447878a",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "9b8dbdb0aa126cfa",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "9873e118d4c0d287",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "f57338ef899c4bd3",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "3f2ccc92fe8591b3",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "baee3e5abb40c9ce",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "5f9ebcc94304ef42",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "6449305d902e1602",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "88deb79734140a27",
+   "fp": "3d910c122bff4e12",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "f9f219f51273fdd6",
+   "fp": "8158492fb086c13a",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "885aa523336abb3d",
+   "fp": "0b9a4beaf0a7383b",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "02c11438bec9bc46",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "537e19fbe81b93d1",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "c409e0e9444d209e",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "76d5e36acafbb386",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "7eeb8b3671644731",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "43ac760389d4dbbc",
+   "v": "removed"
+  },
+  {
+   "fp": "ea8deed3e1aa8a4b",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "8620dcb68d5ece85",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "2601385ddc2a6a72",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "b950f2a57e9bf5fd",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "f5238a387e10f109",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "03378f46f8854afa",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "e9d694ef2c25709d",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "62da0b84eb154f0d",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "9fff3f97e7fe879e",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "8c26db30882188ad",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "2fe408f08094bec8",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "e0687bf318e9d71a",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "a65ea8fb9ee8809e",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "9891fd51100305a5",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "c772574dfc689606",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "4f2ec6752dbcde64",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "0e8b773020a216bb",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "8492e54c8202b399",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "bd9cf6757e2fc164",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "f7e3cfa8575070d5",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "3cfd5600188693c9",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "c7bfb7f4739574ad",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "df1c330651e6aaca",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "862abac3d7ecb609",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "1ce0d09a7e24b4fc",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "b28d80e2809c4837",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "c0e9157c9548b262",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "30681396de00603d",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "f8f420cb3bf74db4",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "38417a605b790c02",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "37095c8f87fb1d7d",
+   "v": "removed"
+  },
+  {
+   "fp": "c63dc68271dcabe4",
+   "v": "removed"
+  },
+  {
+   "fp": "c74b1a28bddae2b7",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "3eb2ad0a1b11ccfd",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "ae561aa5a7a30f88",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "9956c7027ecfda9f",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "8acf30a72657399e",
    "v": "blind",
    "kind": "value",
    "cause": "part-printed-elsewhere"
   },
   {
-   "fp": "b6dc3c6a42df60de",
+   "fp": "2880eea8b77827b4",
    "v": "blind",
    "kind": "value",
    "cause": "rule-needs-absent-markup"
   },
   {
-   "fp": "ff484aec935d22ef",
+   "fp": "4ad0bafe8212c22d",
    "v": "blind",
    "kind": "value",
    "cause": "rule-needs-absent-markup"
   },
   {
-   "fp": "a5cbc1fa9fe6096a",
+   "fp": "5759f3ff21dfc755",
    "v": "removed"
   },
   {
-   "fp": "be6e55a4b1a65493",
+   "fp": "a8be5fe339c6887c",
    "v": "removed"
   },
   {
-   "fp": "8d14e5d5d00b7913",
+   "fp": "0e779f9962db88d2",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "bb11e6ab851e194c",
+   "fp": "faa98ffc34d0e400",
    "v": "blind",
    "kind": "value",
    "cause": "rule-needs-absent-markup"
   },
   {
-   "fp": "78b0f2518d6470f2",
+   "fp": "3fc1280661499885",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "bb10e40786f961cb",
+   "fp": "5fdfeeb9a5622f9b",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "62ff459c3504c128",
+   "fp": "96a3545bbb73a5f2",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "60af864ab48f30d9",
+   "fp": "b645766f9ac5c27b",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "3f3df5fb1f010516",
+   "fp": "97aa6e68310d55a4",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "cc71184493b6925b",
+   "fp": "e39dc889ca428749",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "17f8914c8236d93a",
+   "fp": "db5f3ca60e8efee0",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "bcda90f8fb7f9931",
+   "fp": "546a178e130a0637",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "e0b9d501644c17cc",
+   "fp": "84c421eedc84be8e",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "fed57fbec96e11b4",
+   "fp": "eb1e1d990c0a0f41",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "5103e814d52d2f2a",
+   "fp": "7bdcd6e752b6ff38",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "263f900085e65c05",
+   "fp": "39bfd603f1685880",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "ca0a480dba095032",
+   "fp": "2edcbf97926d1ff7",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "8a23814682c4de49",
+   "fp": "84dabca1c6985d18",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "d38c2dfa31729251",
+   "fp": "e363cad07a9ed942",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "dcbb5d821ebea963",
+   "fp": "80a645d0ed794205",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "3b8a7dfaf4d3cb23",
+   "fp": "ab0e17b9dd4e8a72",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "35df8267319d2775",
+   "fp": "c745044d54374fac",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "f634c2610f528958",
+   "fp": "084f15fe2f763129",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "688b2aaabcbfa476",
+   "fp": "f190a7c781aea16a",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "93fddb241a96e8c9",
+   "fp": "3569017c62ed0186",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "167b42492609413e",
+   "fp": "414a3054251ba927",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "bd2cba7a742dc850",
+   "fp": "7d663f50b495ed8b",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "bfd9aa120509430d",
+   "fp": "207ffc61f85e1844",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "aa4ec39a36c0d9b2",
+   "fp": "dc5dcde1df8285e8",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "f5dcea56b6662c13",
+   "fp": "e9720a1a8ee86a56",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "59d530ab7d735dd6",
+   "fp": "b11d643a52a652be",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "efc28978abd0f841",
+   "fp": "fd2cebc8aea60948",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "db1221ee2b260eda",
+   "fp": "1eb793d66e2f6758",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "9c3b697890f5d0ef",
+   "fp": "0e4b1365d096cde1",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "395ad8af300de134",
+   "fp": "f9af87a1fecdcae0",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "ccf37b2ee225420d",
+   "fp": "c8b681c4db005313",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "db4246f0495ccf10",
+   "fp": "582c3b361c91f039",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "11ae9e84eff6f9e9",
+   "fp": "b8fde83af80c33b1",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "3db2dca972cc02df",
+   "fp": "2f7fba21ec3026a5",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "b245c7f2a01eacc2",
+   "fp": "717166ef307046a5",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "8d3dfd9452c85cac",
+   "fp": "4e5d209c9d1d58a7",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "f777c011bedf10e7",
+   "fp": "f080dfe7d74c2a5d",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "9696c35cadabf874",
+   "fp": "b26272d979381718",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "f67c528ce227f18e",
+   "fp": "eed27f4f52123975",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "aab2e812a839dfd5",
+   "fp": "f1cba798dfb31476",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "6a6fe2f047d598b2",
+   "fp": "624a75baa0b35174",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "2ff27a0d9b69b5c6",
+   "fp": "d8a6a72116e491d2",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "183e6f3b5f9dfed0",
+   "fp": "4dd85640d755b442",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "12f748fba5b91d3e",
+   "fp": "bb1d291719ff273b",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "3993e0392b3f2c1d",
+   "fp": "41bc160c446b0815",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "f8860042c112aa67",
+   "fp": "72b05586f13e5983",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "3fda91d3e644714b",
+   "fp": "48eacb636fbfa936",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "26635a4c92c483fe",
+   "fp": "2b8790c710981cc3",
    "v": "blind",
    "kind": "switched-on",
    "cause": "part-not-rendered"
   },
   {
-   "fp": "aff59855c389844c",
+   "fp": "9a1fb0e3390560a5",
    "v": "blind",
    "kind": "switched-on",
    "cause": "part-not-rendered"
   },
   {
-   "fp": "51df759e3c8e27e5",
+   "fp": "127e2038a57d8931",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "3ac683cc50b9804f",
+   "fp": "31be03153b27d911",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "617729d79c3294b3",
+   "fp": "b3a929d4195be9ff",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "3aaf1d9e013ace6c",
+   "fp": "4a51dca6f9f43ca7",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "9dd6810d20688673",
+   "fp": "27683c37d6a0c18e",
    "v": "blind",
    "kind": "switched-on",
    "cause": "part-not-rendered"
   },
   {
-   "fp": "bd9d7aa5ed5054e5",
+   "fp": "8dcbfcc852cf4fc0",
    "v": "blind",
    "kind": "switched-on",
    "cause": "part-not-rendered"
   },
   {
-   "fp": "fabbdd1b06dda1f9",
+   "fp": "9b89ed98f75cddd0",
    "v": "blind",
    "kind": "switched-on",
    "cause": "part-not-rendered"
   },
   {
-   "fp": "4e7d2272b58e3b6c",
+   "fp": "539937fc7ce1f522",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "e63b9402939e1ec8",
+   "fp": "4021e7f3eec6c8ea",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "4f4acbe8b19c5564",
+   "fp": "0de0911913956d17",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "bc349e4c84f79417",
+   "fp": "33ecfae270da90e2",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "9cb5cdf70e36cdcc",
+   "fp": "a21dfabaea48a846",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "d20f3f0b0a0ae411",
+   "fp": "f4ed753eeef60236",
    "v": "removed"
   },
   {
-   "fp": "ef9f136ec568764c",
+   "fp": "34d8e301e45133ef",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "e189d067803db54b",
+   "fp": "fd623932fabdd445",
    "v": "removed"
   },
   {
-   "fp": "33acbf785de04c85",
+   "fp": "c2840b99760a95e2",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "49664b5169bdd4ad",
+   "fp": "ea2e3deb970bbb90",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "7d65ad5381fd9875",
+   "fp": "7440fc62bfe9280c",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "50d17c09df02f1e6",
+   "fp": "a8cb0b7498003bf1",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "50b16e0383b40967",
+   "fp": "e7cd6137adfc0e6f",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "d4b2cb11b24cc831",
+   "fp": "7c20a65703de98a2",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "99ff059216500030",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "0a178a78d2801b3b",
+   "fp": "8f82daf1d8ad5579",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "f4fbf3695db6d5c8",
+   "fp": "b555aa00c01e375a",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "524b473299739863",
+   "fp": "89130c1913ee949e",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "24f24ac05a6e7e69",
+   "fp": "307869c8059caebb",
    "v": "removed"
   },
   {
-   "fp": "df09045f3afddc20",
+   "fp": "4a258da2fe782f81",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "86659efd3bcb5993",
+   "fp": "ed4380cfcf9aacaa",
    "v": "removed"
   },
   {
-   "fp": "b4a7acc15f56dfa1",
+   "fp": "9771cf810e5f2e29",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "eff1d99919ec5923",
+   "fp": "04ca48ec3e8a70c0",
    "v": "removed"
   },
   {
-   "fp": "f7ef7cb132de10bd",
+   "fp": "ec3ac9f8ecc4b727",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "4b782035c7db1c96",
+   "fp": "8b59d3a4c88ba3bb",
    "v": "removed"
   },
   {
-   "fp": "bb21d4e17fde3227",
+   "fp": "3a6ab791d6057c50",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "abb5d8d97b7b5b6e",
+   "fp": "9b54a3be21f3ace6",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "3252daefd0b3d635",
+   "v": "removed"
+  },
+  {
+   "fp": "178f993c7f3af2c0",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "8816210dca5794e7",
+   "v": "removed"
+  },
+  {
+   "fp": "19d48d1a3cb2ccf6",
+   "v": "blind",
+   "kind": "value",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "2e0c281a8e8ca870",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "234542b33d9df7a6",
+   "fp": "0d1f87b9a88544c7",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "f3b620e635d4dacf",
+   "fp": "50d411b475a0032c",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "f69736345c21918f",
+   "fp": "ac65a9d1488931ff",
    "v": "proved",
    "kind": "switched-on",
    "to": [
@@ -6375,102 +9478,116 @@
    ]
   },
   {
-   "fp": "6afea06d3afd2017",
+   "fp": "286ecdba763a66ed",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "2714fb308ac81a0b",
+   "fp": "2b79cdfff2cf4862",
+   "v": "blind",
+   "kind": "value",
+   "cause": "rule-needs-absent-markup",
+   "to": [
+    "sgs-trustpilot-reviews__track"
+   ]
+  },
+  {
+   "fp": "1cecc4525fa12c8b",
    "v": "blind",
    "kind": "value",
    "cause": "part-printed-elsewhere"
   },
   {
-   "fp": "932b66b9daff10cd",
+   "fp": "361a07183622050b",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "918a4dfe238fa055",
+   "fp": "d4113910388e24f0",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "32741c0af6d604f7",
+   "fp": "3eaab2ed52fec28f",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "a699abc20c7892be",
+   "fp": "de576e6cedadbe9d",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "e259dcabc116dfb1",
+   "fp": "57d4e4f0fd7b51c5",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "34b9fedb4e706f9e",
+   "fp": "db843bbf59641844",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "e568044692caa635",
+   "fp": "c2e0bd7934e0b6b4",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "8294b0f751b25ad1",
+   "fp": "81a5c277ff7dd1ff",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "b42c6f6ceebc70c9",
+   "fp": "aec7d72d79613141",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "1f88e98bcbb05ae5",
    "v": "proved",
    "kind": "value"
   },
   {
-   "fp": "6c5d2f8d8848a7ca",
+   "fp": "95c7dfaa669fd8ae",
    "v": "removed"
   },
   {
-   "fp": "144ce4cf2eaaed48",
+   "fp": "3c399919c426aaca",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "df1306dd4d97aa41",
+   "fp": "686fa491a679b51e",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "f452a97db5eb78ac",
+   "fp": "93c02236f5f6989f",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "69910c984cc34b9e",
+   "fp": "1bd94c4c693e63a6",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "9c6eb53fa5914128",
+   "fp": "0a6fc2e72be2e9cf",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "ecb236e1c6494cd1",
+   "fp": "703b43b9a4ccb130",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "7f4ae0895667f6b0",
+   "fp": "671c6ec979e98a63",
    "v": "proved",
    "kind": "switched-on"
   },
   {
-   "fp": "1b30d338fcff3dc3",
+   "fp": "76fe3f9b502f06c6",
    "v": "refiled",
    "kind": "value",
    "to": [
@@ -6478,7 +9595,7 @@
    ]
   },
   {
-   "fp": "89dab0718f296e0f",
+   "fp": "68dbd03947faaf82",
    "v": "proved",
    "kind": "switched-on"
   }
@@ -6539,6 +9656,10 @@
    {
     "setting": "justifyItems",
     "why": "a per-device value of unknown kind: the code compares it against no value the generator can use"
+   },
+   {
+    "setting": "dotSize",
+    "why": "a per-device value of unknown kind: the code compares it against no value the generator can use"
    }
   ],
   "partNotNamed": [
@@ -6566,31 +9687,31 @@
  },
  "stamp": {
   "version": 2,
-  "check": "22168bd75f259cb9",
+  "check": "e00a4c5087e7c125",
   "inputs": {
-   "assets/css/accordion-filter.css": "1bae515f798524b3",
-   "assets/css/device-toggle.css": "23d9bfd781a843c0",
-   "assets/css/extensions.css": "4849d9290eeec3d1",
-   "assets/css/fx-cursor-field.css": "0bbfb68e9e3fe204",
+   "assets/css/accordion-filter.css": "b47f7001b77434a1",
+   "assets/css/device-toggle.css": "621ccaaf18977596",
+   "assets/css/extensions.css": "68261542b66cbfbd",
+   "assets/css/fx-cursor-field.css": "88e4b4f46d949aa5",
    "assets/css/fx-curtain.css": "a3fcae4f7d77f407",
-   "assets/css/fx-generative-background.css": "00638d3f4d8adeae",
-   "assets/css/fx-glare.css": "36c5cec870cdc655",
+   "assets/css/fx-generative-background.css": "3007169fd5eee39a",
+   "assets/css/fx-glare.css": "1b3a7c992264aabc",
    "assets/css/fx-grid-dots.css": "c45c821c2d47454e",
    "assets/css/fx-horizontal-panel.css": "37c7acc1d00f5482",
    "assets/css/fx-lottie.css": "d69941471fd3c95a",
    "assets/css/fx-magnet.css": "5ffc378498ab5893",
-   "assets/css/fx-marquee.css": "2710593e4e4e88a8",
-   "assets/css/fx-morph.css": "73b9afd62a1133c3",
-   "assets/css/fx-motion-path.css": "480cd5641bd3681a",
+   "assets/css/fx-marquee.css": "0e29aa6e4237fb20",
+   "assets/css/fx-morph.css": "7f4b8c55fc7b37d8",
+   "assets/css/fx-motion-path.css": "2bb690d9a26828cc",
    "assets/css/fx-parallax.css": "6769abc3e93e3389",
    "assets/css/fx-particles.css": "1c80f9da72612db9",
    "assets/css/fx-ripple.css": "5fcf4e7a1b77fa8b",
    "assets/css/fx-scroll-progress.css": "8eb296b6e0bd3f9a",
-   "assets/css/fx-sheen.css": "3f77924556f66417",
+   "assets/css/fx-sheen.css": "e1b1e0f3c8578740",
    "assets/css/fx-surface-treatment.css": "46a43c357976973c",
-   "assets/css/fx-wave-gradient.css": "9a8c474181ba98bd",
+   "assets/css/fx-wave-gradient.css": "b9efd39226f115c3",
    "assets/css/gift-card.css": "7a29a487d1ea3fd0",
-   "assets/css/header-behaviours.css": "fca3a1bf15a3f13d",
+   "assets/css/header-behaviours.css": "2b2e178dbd08f48f",
    "assets/css/inline-formats.css": "38c1fcc6922fb2d5",
    "assets/css/media-base.css": "507debce6831e297",
    "assets/css/media-bg.css": "b00ff3667087b3e6",
@@ -6598,9 +9719,9 @@
    "assets/css/media-overlay.css": "6fa941823bc888de",
    "assets/css/media-video.css": "acfc1090b5dfcc3c",
    "assets/css/motion-pause.css": "1694d98cc208cb9d",
-   "assets/css/motion-thumbnails.css": "4bb286079e9466a5",
+   "assets/css/motion-thumbnails.css": "4320ebaee640358e",
    "assets/css/motion-triggers.css": "3fd7e6dcaa4f39a9",
-   "assets/css/motion.css": "f129d3e3cac572e9",
+   "assets/css/motion.css": "e62b5fd4d3736a78",
    "assets/css/slider-nav.css": "cadb6ab7a9551f5b",
    "assets/css/smooth-scroll.css": "892f59c62a4c00ea",
    "assets/css/view-transitions.css": "4a1dd6e06dc6df8e",
@@ -6610,11 +9731,11 @@
    "includes/choice-flow-term-details.php": "996ded889b0e0d2d",
    "includes/class-card-grid-template.php": "5d8e13453a51384d",
    "includes/class-configurator-meta.php": "aa73c17b1680d211",
-   "includes/class-custom-css-scoper.php": "c12d0fe387bffaed",
+   "includes/class-custom-css-scoper.php": "70640d0c5c8872ba",
    "includes/class-product-field-variations.php": "97b175d93c3c85c5",
    "includes/class-product-manifest.php": "99e771eac60671c1",
    "includes/class-sgs-breakpoints.php": "b3c1a56b8613ef5a",
-   "includes/class-sgs-container-wrapper.php": "eb50641bc169ad55",
+   "includes/class-sgs-container-wrapper.php": "6a57524526bef79c",
    "includes/class-sgs-focus-rests.php": "edabbe21b821491c",
    "includes/class-sgs-media-element.php": "ddb8a2a0235a729d",
    "includes/class-sgs-mega-menu-cpt.php": "d20b6d6d72af830f",
@@ -6628,7 +9749,8 @@
    "includes/conditional-field.php": "570c2adea887fad9",
    "includes/conditional-visibility.php": "727e163ae3c2e34e",
    "includes/container-scroll-row-css.php": "d1bfcfa233fc6bb1",
-   "includes/custom-css.php": "a8c5f86fe5b7599f",
+   "includes/custom-css-save.php": "9bc33ef70d94a702",
+   "includes/custom-css.php": "69f23130986ee617",
    "includes/device-visibility.php": "faf5e3341db8dfeb",
    "includes/float-position.php": "1892bf13b37d222b",
    "includes/forms/field-focus-css.php": "a8079c372161930e",
@@ -6651,20 +9773,23 @@
    "includes/helpers-box.php": "19664024d2ae69ca",
    "includes/helpers-brand-glyphs.php": "e9f728a3a2d126f1",
    "includes/helpers-brand-logo.php": "b02a52f78ec8fcf5",
+   "includes/helpers-button-focus.php": "9efebd417ab52bf8",
    "includes/helpers-button-note.php": "01156e55aa38ca12",
-   "includes/helpers-button-preset-names.php": "42e392b948a8bcc0",
+   "includes/helpers-button-preset-names.php": "ac2946868cbd056a",
+   "includes/helpers-button-preset.php": "8599bd3b690b7b6e",
+   "includes/helpers-button-press.php": "cadd75d0b7a7f696",
    "includes/helpers-button-style.php": "c86342566245b6d6",
    "includes/helpers-carousel-dots.php": "110c75f2e7cab342",
-   "includes/helpers-cart-panel-css.php": "7c06b9d430c523c8",
+   "includes/helpers-cart-panel-css.php": "904e05e182a9b15f",
    "includes/helpers-cart-panel-extras.php": "1e0a7279e3e5a4fd",
    "includes/helpers-cart-panel-items-css.php": "ea80924dbeace99a",
    "includes/helpers-cart-panel.php": "be6483dab310cdc9",
    "includes/helpers-colour-parse.php": "2705d7d2f6ab81f5",
-   "includes/helpers-colour-variants.php": "85d954f45e6b3d6e",
+   "includes/helpers-colour-variants.php": "2c59f4fe2ac9d9e7",
    "includes/helpers-colour-wcag.php": "e150b5a55ec1195c",
    "includes/helpers-configurator-pricing.php": "141b9154d20735bb",
    "includes/helpers-container-fit.php": "be39699a1b3dacaf",
-   "includes/helpers-container-separators.php": "647fc44ed3c88437",
+   "includes/helpers-container-separators.php": "c83e093b0bf45718",
    "includes/helpers-container.php": "b18aa0cfff812547",
    "includes/helpers-css-safety.php": "e2cb4ac716e263d7",
    "includes/helpers-css-sizing-keyword.php": "1e8ea3394b4489c2",
@@ -6676,8 +9801,9 @@
    "includes/helpers-global-settings.php": "98dfa765458e36fe",
    "includes/helpers-gradient-tone.php": "8b6e9515d1009f01",
    "includes/helpers-grid-item.php": "66040be25e3cbb0d",
+   "includes/helpers-hover-lift.php": "afe8248a691a6f4c",
    "includes/helpers-hover-links.php": "595f48ab42af1a8a",
-   "includes/helpers-hover-state.php": "0953b306cc8e7d86",
+   "includes/helpers-hover-state.php": "7dbd634472e2bacc",
    "includes/helpers-icon-shadow.php": "d10e313f56673230",
    "includes/helpers-icon.php": "b36eb65779dd68d8",
    "includes/helpers-image-dimensions.php": "75c87a39f895bef5",
@@ -6700,14 +9826,15 @@
    "includes/helpers-responsive.php": "e4fca037ec7837c2",
    "includes/helpers-reviews-inline.php": "4a821f5be56b0a9e",
    "includes/helpers-row-behaviour.php": "ab25405ff36a6678",
-   "includes/helpers-scoped-instance-vars.php": "d06bd15808c36509",
-   "includes/helpers-scrim.php": "4d6a13f16243b91a",
+   "includes/helpers-scoped-instance-vars.php": "b1b661528f6f8e47",
+   "includes/helpers-scrim.php": "cf6f13d4bb652103",
    "includes/helpers-scrollbar.php": "07f9116d8e56353e",
-   "includes/helpers-separators-css.php": "478f6a4d7bcc5900",
+   "includes/helpers-separators-css.php": "e4045de423abbaa5",
    "includes/helpers-separators-hover-css.php": "39c8fcfb8c985128",
    "includes/helpers-separators-line-css.php": "baca16d155afb3d0",
-   "includes/helpers-separators.php": "50b7babb5815b580",
-   "includes/helpers-shadow-filter.php": "23446e1d5ca57fc4",
+   "includes/helpers-separators.php": "82b0697d9be51adc",
+   "includes/helpers-shadow-bleed.php": "a2da929cb907f4a8",
+   "includes/helpers-shadow-filter.php": "0f9cbd49870fcc64",
    "includes/helpers-shadow-hover.php": "9964c78f52c2c4d8",
    "includes/helpers-shadow-layers.php": "0bc69ba1c33750e0",
    "includes/helpers-shared-rules.php": "1ecf0e2ae2c88520",
@@ -6739,13 +9866,13 @@
    "includes/media/atoms/layout.php": "7068a92270a163de",
    "includes/media/atoms/link.php": "8a679137bd63b1e0",
    "includes/media/atoms/meaning.php": "a75a2f35076930ca",
-   "includes/media/atoms/media-padding.php": "8147fbcdd1c96b66",
+   "includes/media/atoms/media-padding.php": "616c11f74448f64e",
    "includes/media/atoms/object-fit.php": "ece87a4ab55d61df",
    "includes/media/atoms/opacity.php": "aef92991b97f22fe",
    "includes/media/atoms/overlay.php": "d94678c7a4abaae9",
-   "includes/media/atoms/shadow.php": "6624a129e5d6eb49",
+   "includes/media/atoms/shadow.php": "4c5476e54562154f",
    "includes/media/atoms/shape.php": "963101e79a102fd2",
-   "includes/media/atoms/sizing.php": "36f995eab7e2198d",
+   "includes/media/atoms/sizing.php": "0ee74391320a3777",
    "includes/media/atoms/source.php": "189a1afeb510648b",
    "includes/media/atoms/svg-presentation.php": "c38e235d9204c932",
    "includes/media/atoms/video-behaviour.php": "0999e2c061eb15ef",
@@ -6756,11 +9883,11 @@
    "includes/media/emit-none.php": "8903f751afba2ed0",
    "includes/media/hidden-render.php": "f39dff5458298df6",
    "includes/media/layout-width.php": "7d95ff80f9162ba7",
-   "includes/media/media-values.php": "31a59811c954486d",
+   "includes/media/media-values.php": "86a5f8452f7b2fc2",
    "includes/media/render-background.php": "093be1f920818d43",
    "includes/media/render-chrome.php": "b6d37ac64b046708",
    "includes/media/render-picture.php": "31a9a0a48e9b5e16",
-   "includes/media/render-slot.php": "4b8161e8fe59b360",
+   "includes/media/render-slot.php": "b3c10be60de61718",
    "includes/media/render-sources.php": "67ecf4d89213d771",
    "includes/media/tier-embed.php": "32d8be4a7f8057e4",
    "includes/media/tier-svg.php": "204453d78ccf89a4",
@@ -6806,29 +9933,29 @@
    "includes/motion/scroll-ownership.php": "100e01e7fa3971db",
    "includes/motion/support-registration.php": "80a096f7c80fbe48",
    "includes/price-trim-zeros.php": "18bf58dbdb99ca1d",
-   "includes/product-card-media.php": "ce1ddd81b9f568b1",
+   "includes/product-card-media.php": "4d824c704f9950c9",
    "includes/product-card-no-photo.php": "0873b87fda2f6ccc",
    "includes/product-collection-empty-detection.php": "f44b7ae2508d5f63",
    "includes/product-field-values.php": "ebd5a3deff129347",
    "includes/render-helpers.php": "019bc0678477e652",
    "includes/section-anchored-layers.php": "326a6d06b9486584",
-   "includes/shape-dividers.php": "f5d9fa3cabfdcc8c",
+   "includes/shape-dividers.php": "52002c58802c2630",
    "includes/sweep-css.php": "d8fbb9e23c9b1195",
    "includes/time-text.php": "ccfd867fe8d95a9a",
    "includes/trustpilot-helpers.php": "4166b2887e3c2cfc",
    "includes/wishlist/class-wishlist-cards-rest.php": "798a1e92e1c2dc2a",
-   "src/blocks/trustpilot-reviews/block.json": "507ade3761f16f4e",
+   "src/blocks/trustpilot-reviews/block.json": "06bcf66aecfcc30e",
    "src/blocks/trustpilot-reviews/editor.css": "29074e192fac7ca8",
-   "src/blocks/trustpilot-reviews/render.php": "86fcf8bbe0131e29",
-   "src/blocks/trustpilot-reviews/style.css": "14c2e06d8b0d930d",
+   "src/blocks/trustpilot-reviews/render.php": "6d1833c540ee8b70",
+   "src/blocks/trustpilot-reviews/style.css": "087e18f61ecd4c93",
    "src/blocks/trustpilot-reviews/woocommerce-reviews.php": "33164eae6786b444",
    "src/shared/info-toggle.css": "210a5fa94dc11c4a",
-   "shipped:src/blocks/trustpilot-reviews/style.css": "434d33e151f2f8d1",
+   "shipped:src/blocks/trustpilot-reviews/style.css": "d927e605708f270f",
    "fixture-entry": "d7ed69e67d9780a4",
    "fixture-shared": "61d9f70d4bb7e36a"
   },
-  "outputs": "880e80cbdd5cb193",
-  "theme": "448c839b2794e1b6",
+  "outputs": "718524e52f6411d6",
+  "theme": "487259929e9cc3ed",
   "classes": [
    "has-global-padding",
    "is-active",
@@ -6842,8 +9969,10 @@
    "sgs-container--grid",
    "sgs-container--stack",
    "sgs-container-00d0ba1f",
+   "sgs-container-01aa5414",
    "sgs-container-01b75153",
    "sgs-container-037efacd",
+   "sgs-container-03c4c9b4",
    "sgs-container-042143b8",
    "sgs-container-04bbaa33",
    "sgs-container-06a5d501",
@@ -6856,21 +9985,26 @@
    "sgs-container-0a991a13",
    "sgs-container-0bd4ca73",
    "sgs-container-0c8d78d2",
+   "sgs-container-0cda2148",
    "sgs-container-0cf64159",
    "sgs-container-0d25b107",
    "sgs-container-109913d4",
+   "sgs-container-115b76d2",
    "sgs-container-1167dbbd",
    "sgs-container-13aa3af1",
    "sgs-container-144091ef",
    "sgs-container-16d1c889",
    "sgs-container-17ecc908",
    "sgs-container-18c7f108",
+   "sgs-container-1a03610b",
    "sgs-container-1af526c2",
    "sgs-container-1af96f3e",
+   "sgs-container-1b9c7ed0",
    "sgs-container-1e90fe77",
    "sgs-container-1f2a6bbc",
    "sgs-container-225dfcb6",
    "sgs-container-23b879b9",
+   "sgs-container-2612605e",
    "sgs-container-264187e0",
    "sgs-container-27da8371",
    "sgs-container-28e0cf63",
@@ -6879,16 +10013,21 @@
    "sgs-container-2b249a82",
    "sgs-container-2b2c7e0c",
    "sgs-container-2c8c169b",
+   "sgs-container-2e7be144",
    "sgs-container-2f620d37",
+   "sgs-container-2f7b7285",
    "sgs-container-2f80245c",
    "sgs-container-2f82cee3",
    "sgs-container-30230d66",
    "sgs-container-3089ef19",
+   "sgs-container-30970b1b",
    "sgs-container-313ee2ec",
    "sgs-container-32877997",
    "sgs-container-345fbc0f",
    "sgs-container-3715eca5",
+   "sgs-container-3937b6f5",
    "sgs-container-39a3cbc7",
+   "sgs-container-3bee8593",
    "sgs-container-3c3a5c31",
    "sgs-container-3cf9ba24",
    "sgs-container-3da22c22",
@@ -6910,12 +10049,15 @@
    "sgs-container-4a674267",
    "sgs-container-4abdc2ab",
    "sgs-container-4b8a1d78",
+   "sgs-container-4bfa378f",
    "sgs-container-4c1b2b7e",
    "sgs-container-4d6c1473",
    "sgs-container-4eb52ad5",
    "sgs-container-4ec2282e",
    "sgs-container-4efa064f",
    "sgs-container-4fee7c0e",
+   "sgs-container-51b6f144",
+   "sgs-container-52973b35",
    "sgs-container-5361ca67",
    "sgs-container-5464def7",
    "sgs-container-5554b678",
@@ -6927,11 +10069,13 @@
    "sgs-container-5b65b66e",
    "sgs-container-5bc33bae",
    "sgs-container-5d4b6a40",
+   "sgs-container-5f86d27d",
    "sgs-container-610fd50b",
    "sgs-container-61ac5483",
    "sgs-container-629467bb",
    "sgs-container-63408eb3",
    "sgs-container-63a70122",
+   "sgs-container-64c278aa",
    "sgs-container-6563f2d0",
    "sgs-container-6598a594",
    "sgs-container-67085e0a",
@@ -6940,14 +10084,17 @@
    "sgs-container-692db1b7",
    "sgs-container-6b16b570",
    "sgs-container-6b22a442",
+   "sgs-container-6b3b4f4c",
    "sgs-container-6bcf0db7",
    "sgs-container-6d533762",
    "sgs-container-6d8372f4",
    "sgs-container-6f55b79e",
    "sgs-container-6f97ba88",
    "sgs-container-70b78a07",
+   "sgs-container-70d90fa7",
    "sgs-container-71a15451",
    "sgs-container-7471513d",
+   "sgs-container-7479d16a",
    "sgs-container-74bb55a7",
    "sgs-container-7549b0eb",
    "sgs-container-760e4bb8",
@@ -6955,6 +10102,7 @@
    "sgs-container-7877c158",
    "sgs-container-798da75d",
    "sgs-container-79a7b149",
+   "sgs-container-7a80b793",
    "sgs-container-7b138708",
    "sgs-container-7b3e7d35",
    "sgs-container-7c6b0af4",
@@ -6963,6 +10111,8 @@
    "sgs-container-7d944a85",
    "sgs-container-7f27e33c",
    "sgs-container-7fed8c12",
+   "sgs-container-813b17dc",
+   "sgs-container-82db4e72",
    "sgs-container-83dff673",
    "sgs-container-8408f00c",
    "sgs-container-84bd1ffc",
@@ -6975,25 +10125,34 @@
    "sgs-container-89fee5e9",
    "sgs-container-8a1820a8",
    "sgs-container-8bbcba6d",
+   "sgs-container-8c66ede5",
+   "sgs-container-8c74c9ef",
    "sgs-container-8d59f2fe",
    "sgs-container-8d63db80",
    "sgs-container-8d8bb250",
    "sgs-container-8e7ddbe6",
    "sgs-container-9171464f",
    "sgs-container-91793c75",
+   "sgs-container-919475d0",
    "sgs-container-924c1c69",
+   "sgs-container-928dfbcb",
    "sgs-container-935a7940",
    "sgs-container-9360a922",
    "sgs-container-93e03a8c",
    "sgs-container-93ea13a6",
    "sgs-container-987d4466",
+   "sgs-container-9920ba4b",
+   "sgs-container-997b61bb",
    "sgs-container-99e5485c",
+   "sgs-container-9a07df59",
    "sgs-container-9a319ea5",
    "sgs-container-9c133fe8",
    "sgs-container-9d6097d4",
    "sgs-container-9da6468e",
    "sgs-container-9e2614aa",
    "sgs-container-9e337c53",
+   "sgs-container-9ea3aa56",
+   "sgs-container-9ecfdbc0",
    "sgs-container-a1176505",
    "sgs-container-a11ee57a",
    "sgs-container-a1ad6c78",
@@ -7001,13 +10160,17 @@
    "sgs-container-a485a0b7",
    "sgs-container-a4bc2bc8",
    "sgs-container-a4c2fca5",
+   "sgs-container-a4db3015",
    "sgs-container-a6325bf4",
+   "sgs-container-a6ed2c8f",
    "sgs-container-a788714f",
    "sgs-container-a8bc2e56",
    "sgs-container-a8e1fc4d",
    "sgs-container-a8fe0c5a",
    "sgs-container-aa2883c2",
+   "sgs-container-aacff6be",
    "sgs-container-ab41acaa",
+   "sgs-container-ac3817cb",
    "sgs-container-acbc313f",
    "sgs-container-acd9cac9",
    "sgs-container-ace0324e",
@@ -7029,9 +10192,12 @@
    "sgs-container-b789da25",
    "sgs-container-b9fdae86",
    "sgs-container-ba1e8bfb",
+   "sgs-container-bb7f462d",
+   "sgs-container-bd99d049",
    "sgs-container-bee52653",
    "sgs-container-c091c5e4",
    "sgs-container-c32dd925",
+   "sgs-container-c3a40a62",
    "sgs-container-c4c86600",
    "sgs-container-c6c24506",
    "sgs-container-c8187226",
@@ -7040,6 +10206,7 @@
    "sgs-container-c91a26be",
    "sgs-container-ca37fe09",
    "sgs-container-ca9afd9c",
+   "sgs-container-cb22a8c9",
    "sgs-container-cbbefcce",
    "sgs-container-cc2122c9",
    "sgs-container-cc3bd180",
@@ -7057,6 +10224,7 @@
    "sgs-container-d89e50b0",
    "sgs-container-da220605",
    "sgs-container-daa335ec",
+   "sgs-container-dc7afcb0",
    "sgs-container-de1438d7",
    "sgs-container-dec557fb",
    "sgs-container-df5750e8",
@@ -7066,11 +10234,14 @@
    "sgs-container-e131ee4f",
    "sgs-container-e154ea3a",
    "sgs-container-e1aa4249",
+   "sgs-container-e1c8a610",
    "sgs-container-e39c3da2",
    "sgs-container-e474bf9a",
    "sgs-container-e501c800",
    "sgs-container-e8dfe006",
+   "sgs-container-ea41763f",
    "sgs-container-ea7a7766",
+   "sgs-container-eaff265f",
    "sgs-container-ec27a1a2",
    "sgs-container-ed7039e7",
    "sgs-container-f0f762b3",
@@ -7082,6 +10253,7 @@
    "sgs-container-faac782d",
    "sgs-container-fb6a7ed3",
    "sgs-container-fbf9da57",
+   "sgs-container-fc67a940",
    "sgs-container-fd1db48b",
    "sgs-container-ff6da946",
    "sgs-container-ffd2e415",
@@ -7105,8 +10277,10 @@
    "sgs-trustpilot-reviews--theme-dark",
    "sgs-trustpilot-reviews--theme-light",
    "sgs-trustpilot-reviews-00d0ba1f",
+   "sgs-trustpilot-reviews-01aa5414",
    "sgs-trustpilot-reviews-01b75153",
    "sgs-trustpilot-reviews-037efacd",
+   "sgs-trustpilot-reviews-03c4c9b4",
    "sgs-trustpilot-reviews-042143b8",
    "sgs-trustpilot-reviews-04bbaa33",
    "sgs-trustpilot-reviews-06a5d501",
@@ -7119,21 +10293,26 @@
    "sgs-trustpilot-reviews-0a991a13",
    "sgs-trustpilot-reviews-0bd4ca73",
    "sgs-trustpilot-reviews-0c8d78d2",
+   "sgs-trustpilot-reviews-0cda2148",
    "sgs-trustpilot-reviews-0cf64159",
    "sgs-trustpilot-reviews-0d25b107",
    "sgs-trustpilot-reviews-109913d4",
+   "sgs-trustpilot-reviews-115b76d2",
    "sgs-trustpilot-reviews-1167dbbd",
    "sgs-trustpilot-reviews-13aa3af1",
    "sgs-trustpilot-reviews-144091ef",
    "sgs-trustpilot-reviews-16d1c889",
    "sgs-trustpilot-reviews-17ecc908",
    "sgs-trustpilot-reviews-18c7f108",
+   "sgs-trustpilot-reviews-1a03610b",
    "sgs-trustpilot-reviews-1af526c2",
    "sgs-trustpilot-reviews-1af96f3e",
+   "sgs-trustpilot-reviews-1b9c7ed0",
    "sgs-trustpilot-reviews-1e90fe77",
    "sgs-trustpilot-reviews-1f2a6bbc",
    "sgs-trustpilot-reviews-225dfcb6",
    "sgs-trustpilot-reviews-23b879b9",
+   "sgs-trustpilot-reviews-2612605e",
    "sgs-trustpilot-reviews-264187e0",
    "sgs-trustpilot-reviews-27da8371",
    "sgs-trustpilot-reviews-28e0cf63",
@@ -7142,16 +10321,21 @@
    "sgs-trustpilot-reviews-2b249a82",
    "sgs-trustpilot-reviews-2b2c7e0c",
    "sgs-trustpilot-reviews-2c8c169b",
+   "sgs-trustpilot-reviews-2e7be144",
    "sgs-trustpilot-reviews-2f620d37",
+   "sgs-trustpilot-reviews-2f7b7285",
    "sgs-trustpilot-reviews-2f80245c",
    "sgs-trustpilot-reviews-2f82cee3",
    "sgs-trustpilot-reviews-30230d66",
    "sgs-trustpilot-reviews-3089ef19",
+   "sgs-trustpilot-reviews-30970b1b",
    "sgs-trustpilot-reviews-313ee2ec",
    "sgs-trustpilot-reviews-32877997",
    "sgs-trustpilot-reviews-345fbc0f",
    "sgs-trustpilot-reviews-3715eca5",
+   "sgs-trustpilot-reviews-3937b6f5",
    "sgs-trustpilot-reviews-39a3cbc7",
+   "sgs-trustpilot-reviews-3bee8593",
    "sgs-trustpilot-reviews-3c3a5c31",
    "sgs-trustpilot-reviews-3cf9ba24",
    "sgs-trustpilot-reviews-3da22c22",
@@ -7173,12 +10357,15 @@
    "sgs-trustpilot-reviews-4a674267",
    "sgs-trustpilot-reviews-4abdc2ab",
    "sgs-trustpilot-reviews-4b8a1d78",
+   "sgs-trustpilot-reviews-4bfa378f",
    "sgs-trustpilot-reviews-4c1b2b7e",
    "sgs-trustpilot-reviews-4d6c1473",
    "sgs-trustpilot-reviews-4eb52ad5",
    "sgs-trustpilot-reviews-4ec2282e",
    "sgs-trustpilot-reviews-4efa064f",
    "sgs-trustpilot-reviews-4fee7c0e",
+   "sgs-trustpilot-reviews-51b6f144",
+   "sgs-trustpilot-reviews-52973b35",
    "sgs-trustpilot-reviews-5361ca67",
    "sgs-trustpilot-reviews-5464def7",
    "sgs-trustpilot-reviews-5554b678",
@@ -7190,11 +10377,13 @@
    "sgs-trustpilot-reviews-5b65b66e",
    "sgs-trustpilot-reviews-5bc33bae",
    "sgs-trustpilot-reviews-5d4b6a40",
+   "sgs-trustpilot-reviews-5f86d27d",
    "sgs-trustpilot-reviews-610fd50b",
    "sgs-trustpilot-reviews-61ac5483",
    "sgs-trustpilot-reviews-629467bb",
    "sgs-trustpilot-reviews-63408eb3",
    "sgs-trustpilot-reviews-63a70122",
+   "sgs-trustpilot-reviews-64c278aa",
    "sgs-trustpilot-reviews-6563f2d0",
    "sgs-trustpilot-reviews-6598a594",
    "sgs-trustpilot-reviews-67085e0a",
@@ -7203,14 +10392,17 @@
    "sgs-trustpilot-reviews-692db1b7",
    "sgs-trustpilot-reviews-6b16b570",
    "sgs-trustpilot-reviews-6b22a442",
+   "sgs-trustpilot-reviews-6b3b4f4c",
    "sgs-trustpilot-reviews-6bcf0db7",
    "sgs-trustpilot-reviews-6d533762",
    "sgs-trustpilot-reviews-6d8372f4",
    "sgs-trustpilot-reviews-6f55b79e",
    "sgs-trustpilot-reviews-6f97ba88",
    "sgs-trustpilot-reviews-70b78a07",
+   "sgs-trustpilot-reviews-70d90fa7",
    "sgs-trustpilot-reviews-71a15451",
    "sgs-trustpilot-reviews-7471513d",
+   "sgs-trustpilot-reviews-7479d16a",
    "sgs-trustpilot-reviews-74bb55a7",
    "sgs-trustpilot-reviews-7549b0eb",
    "sgs-trustpilot-reviews-760e4bb8",
@@ -7218,6 +10410,7 @@
    "sgs-trustpilot-reviews-7877c158",
    "sgs-trustpilot-reviews-798da75d",
    "sgs-trustpilot-reviews-79a7b149",
+   "sgs-trustpilot-reviews-7a80b793",
    "sgs-trustpilot-reviews-7b138708",
    "sgs-trustpilot-reviews-7b3e7d35",
    "sgs-trustpilot-reviews-7c6b0af4",
@@ -7226,6 +10419,8 @@
    "sgs-trustpilot-reviews-7d944a85",
    "sgs-trustpilot-reviews-7f27e33c",
    "sgs-trustpilot-reviews-7fed8c12",
+   "sgs-trustpilot-reviews-813b17dc",
+   "sgs-trustpilot-reviews-82db4e72",
    "sgs-trustpilot-reviews-83dff673",
    "sgs-trustpilot-reviews-8408f00c",
    "sgs-trustpilot-reviews-84bd1ffc",
@@ -7238,25 +10433,34 @@
    "sgs-trustpilot-reviews-89fee5e9",
    "sgs-trustpilot-reviews-8a1820a8",
    "sgs-trustpilot-reviews-8bbcba6d",
+   "sgs-trustpilot-reviews-8c66ede5",
+   "sgs-trustpilot-reviews-8c74c9ef",
    "sgs-trustpilot-reviews-8d59f2fe",
    "sgs-trustpilot-reviews-8d63db80",
    "sgs-trustpilot-reviews-8d8bb250",
    "sgs-trustpilot-reviews-8e7ddbe6",
    "sgs-trustpilot-reviews-9171464f",
    "sgs-trustpilot-reviews-91793c75",
+   "sgs-trustpilot-reviews-919475d0",
    "sgs-trustpilot-reviews-924c1c69",
+   "sgs-trustpilot-reviews-928dfbcb",
    "sgs-trustpilot-reviews-935a7940",
    "sgs-trustpilot-reviews-9360a922",
    "sgs-trustpilot-reviews-93e03a8c",
    "sgs-trustpilot-reviews-93ea13a6",
    "sgs-trustpilot-reviews-987d4466",
+   "sgs-trustpilot-reviews-9920ba4b",
+   "sgs-trustpilot-reviews-997b61bb",
    "sgs-trustpilot-reviews-99e5485c",
+   "sgs-trustpilot-reviews-9a07df59",
    "sgs-trustpilot-reviews-9a319ea5",
    "sgs-trustpilot-reviews-9c133fe8",
    "sgs-trustpilot-reviews-9d6097d4",
    "sgs-trustpilot-reviews-9da6468e",
    "sgs-trustpilot-reviews-9e2614aa",
    "sgs-trustpilot-reviews-9e337c53",
+   "sgs-trustpilot-reviews-9ea3aa56",
+   "sgs-trustpilot-reviews-9ecfdbc0",
    "sgs-trustpilot-reviews-a1176505",
    "sgs-trustpilot-reviews-a11ee57a",
    "sgs-trustpilot-reviews-a1ad6c78",
@@ -7264,13 +10468,17 @@
    "sgs-trustpilot-reviews-a485a0b7",
    "sgs-trustpilot-reviews-a4bc2bc8",
    "sgs-trustpilot-reviews-a4c2fca5",
+   "sgs-trustpilot-reviews-a4db3015",
    "sgs-trustpilot-reviews-a6325bf4",
+   "sgs-trustpilot-reviews-a6ed2c8f",
    "sgs-trustpilot-reviews-a788714f",
    "sgs-trustpilot-reviews-a8bc2e56",
    "sgs-trustpilot-reviews-a8e1fc4d",
    "sgs-trustpilot-reviews-a8fe0c5a",
    "sgs-trustpilot-reviews-aa2883c2",
+   "sgs-trustpilot-reviews-aacff6be",
    "sgs-trustpilot-reviews-ab41acaa",
+   "sgs-trustpilot-reviews-ac3817cb",
    "sgs-trustpilot-reviews-acbc313f",
    "sgs-trustpilot-reviews-acd9cac9",
    "sgs-trustpilot-reviews-ace0324e",
@@ -7292,9 +10500,12 @@
    "sgs-trustpilot-reviews-b789da25",
    "sgs-trustpilot-reviews-b9fdae86",
    "sgs-trustpilot-reviews-ba1e8bfb",
+   "sgs-trustpilot-reviews-bb7f462d",
+   "sgs-trustpilot-reviews-bd99d049",
    "sgs-trustpilot-reviews-bee52653",
    "sgs-trustpilot-reviews-c091c5e4",
    "sgs-trustpilot-reviews-c32dd925",
+   "sgs-trustpilot-reviews-c3a40a62",
    "sgs-trustpilot-reviews-c4c86600",
    "sgs-trustpilot-reviews-c6c24506",
    "sgs-trustpilot-reviews-c8187226",
@@ -7303,6 +10514,7 @@
    "sgs-trustpilot-reviews-c91a26be",
    "sgs-trustpilot-reviews-ca37fe09",
    "sgs-trustpilot-reviews-ca9afd9c",
+   "sgs-trustpilot-reviews-cb22a8c9",
    "sgs-trustpilot-reviews-cbbefcce",
    "sgs-trustpilot-reviews-cc2122c9",
    "sgs-trustpilot-reviews-cc3bd180",
@@ -7320,6 +10532,7 @@
    "sgs-trustpilot-reviews-d89e50b0",
    "sgs-trustpilot-reviews-da220605",
    "sgs-trustpilot-reviews-daa335ec",
+   "sgs-trustpilot-reviews-dc7afcb0",
    "sgs-trustpilot-reviews-de1438d7",
    "sgs-trustpilot-reviews-dec557fb",
    "sgs-trustpilot-reviews-df5750e8",
@@ -7329,11 +10542,14 @@
    "sgs-trustpilot-reviews-e131ee4f",
    "sgs-trustpilot-reviews-e154ea3a",
    "sgs-trustpilot-reviews-e1aa4249",
+   "sgs-trustpilot-reviews-e1c8a610",
    "sgs-trustpilot-reviews-e39c3da2",
    "sgs-trustpilot-reviews-e474bf9a",
    "sgs-trustpilot-reviews-e501c800",
    "sgs-trustpilot-reviews-e8dfe006",
+   "sgs-trustpilot-reviews-ea41763f",
    "sgs-trustpilot-reviews-ea7a7766",
+   "sgs-trustpilot-reviews-eaff265f",
    "sgs-trustpilot-reviews-ec27a1a2",
    "sgs-trustpilot-reviews-ed7039e7",
    "sgs-trustpilot-reviews-f0f762b3",
@@ -7345,6 +10561,7 @@
    "sgs-trustpilot-reviews-faac782d",
    "sgs-trustpilot-reviews-fb6a7ed3",
    "sgs-trustpilot-reviews-fbf9da57",
+   "sgs-trustpilot-reviews-fc67a940",
    "sgs-trustpilot-reviews-fd1db48b",
    "sgs-trustpilot-reviews-ff6da946",
    "sgs-trustpilot-reviews-ffd2e415",
