@@ -29,8 +29,8 @@ export const needsFinaliser = ( r ) => ! r.finalisedBy && ( ( r.low && ! r.actio
 
 // The request for every surface with such rows: { generated, client, prompt, picksFile, picksShape, context, counts,
 // surfaces: { <surface>: finaliseRequest(...) } }. intake.json keeps each row's tag, words, a 160-character snippet,
-// its top three candidates and its copies, not the full inventory, so each element is built from the row (candidate
-// evidence lines are absent); the row's parent, siblings and boxes (null on a row written without them) are copied in, and `neighbours` lists the rows before and after it in the surface.
+// its top three candidates with their evidence lines and its copies, not the full inventory, so each element is built from
+// the row; the row's parent, siblings and boxes (null on a row written without them) are copied in, and `neighbours` lists the rows before and after it in the surface.
 export function intakeFinaliseRequest( intake, { promptFile = FINALISER_PROMPT } = {} ) {
 	const surfaces = {};
 	for ( const [ surface, s ] of Object.entries( intake.skeletons || {} ) ) {

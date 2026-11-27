@@ -254,14 +254,14 @@ export function contextOf( inventory, proposal, key ) {
 	return { parent: parent ? ref( parent ) : null, siblings: near.map( ( { x } ) => ref( x ) ), siblingCount: sibs.length, boxes: boxes.length ? boxes : null };
 }
 
-// A proposal's rows as intake.json holds them (row id, the finaliser's context, the rule that settled each, and the site
+// A proposal's rows as intake.json holds them (row id, the top three candidates with their evidence lines, the finaliser's context, the rule that settled each, and the site
 // options a row sets in place of a block, which the site build applies: lib/site-build-options.mjs::skeletonSiteOptions).
 export const rowsOf = ( surface, proposal, inventory ) => rowsWith( surface, proposal, inventory, fingerprintsOf( inventory ) );
 
 const rowsWith = ( surface, proposal, inventory, fingerprints ) => proposal.rows.map( ( r ) => ( {
 	rowId: `skeleton:${ surface }:${ r.key }`, key: r.key, ...( fingerprints[ r.key ] ? { fingerprint: fingerprints[ r.key ] } : {} ), tag: r.tag, words: r.words, block: r.block, confidence: r.confidence, low: r.low, reason: r.reason, rule: r.rule ?? null,
 	...( r.into ? { into: r.into } : {} ), ...( r.handover ? { handover: r.handover } : {} ), ...( r.builtPost ? { builtPost: r.builtPost } : {} ), ...( r.missingFeature ? { missingFeature: r.missingFeature } : {} ), ...( r.siteOptions ? { siteOptions: r.siteOptions } : {} ),
-	candidates: r.candidates.slice( 0, 3 ).map( ( c ) => ( { block: c.block, score: c.score, share: c.share } ) ), action: r.action, snippet: r.snippet, screenshots: r.screenshots,
+	candidates: r.candidates.slice( 0, 3 ).map( ( c ) => ( { block: c.block, score: c.score, share: c.share, evidence: ( c.evidence || [] ).map( ( ev ) => ( 'string' === typeof ev ? ev : ev.text ) ) } ) ), action: r.action, snippet: r.snippet, screenshots: r.screenshots,
 	...contextOf( inventory, proposal, r.key ),
 } ) );
 
