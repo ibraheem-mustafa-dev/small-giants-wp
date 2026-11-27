@@ -58,11 +58,14 @@
 	 * specificity (0,3,2 for .entry-content li a:not(...)) would beat them inside
 	 * page or post content: it strips a menu item's hover text-decoration and the
 	 * TOC's active underline (WCAG 1.4.1) and stacks a second ::after underline.
-	 * .sgs-text-link opts in through its own selector above. */
+	 * .sgs-text-link opts in through its own selector above. A list link inside a
+	 * <nav> is a menu control, not running text (WooCommerce's account menu prints
+	 * plain <li><a> items that sgs/account draws as buttons), so it is left out too;
+	 * :where() keeps that exclusion at no specificity. */
 	.wp-block-navigation-item__content,
 	.sgs-text-link,
 	.entry-content p a:not([class*="sgs-"]),
-	.entry-content li a:not(.wp-block-button__link):not([class*="sgs-"]) {
+	.entry-content li a:not(.wp-block-button__link):not([class*="sgs-"]):not(:where(nav *)) {
 		position: relative;
 		text-decoration: none;
 	}
@@ -70,7 +73,7 @@
 	.wp-block-navigation-item__content::after,
 	.sgs-text-link::after,
 	.entry-content p a:not([class*="sgs-"])::after,
-	.entry-content li a:not(.wp-block-button__link):not([class*="sgs-"])::after {
+	.entry-content li a:not(.wp-block-button__link):not([class*="sgs-"]):not(:where(nav *))::after {
 		content: '';
 		position: absolute;
 		width: 100%;
@@ -89,8 +92,8 @@
 :where(:root:not(.sgs-touch-input)) .sgs-text-link:hover::after,
 .entry-content p a:not([class*="sgs-"]).sgs-pressed::after,
 :where(:root:not(.sgs-touch-input)) .entry-content p a:not([class*="sgs-"]):hover::after,
-.entry-content li a:not(.wp-block-button__link):not([class*="sgs-"]).sgs-pressed::after,
-:where(:root:not(.sgs-touch-input)) .entry-content li a:not(.wp-block-button__link):not([class*="sgs-"]):hover::after {
+.entry-content li a:not(.wp-block-button__link):not([class*="sgs-"]):not(:where(nav *)).sgs-pressed::after,
+:where(:root:not(.sgs-touch-input)) .entry-content li a:not(.wp-block-button__link):not([class*="sgs-"]):not(:where(nav *)):hover::after {
 		transform: scaleX(1);
 		transform-origin: bottom left;
 	}
