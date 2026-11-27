@@ -13,7 +13,8 @@
  * Prints one JSON object on stdout:
  *   { "<block folder>": { "<attribute>": { "values": [ ... ], "files": [ ... ] }
  *                                       | { "gap": "<why the list cannot be read statically>", "files": [ ... ] } } }
- * A list that is built at run time (a call, a filter, a computed value) is a `gap` with its reason, never a guess. An attribute
+ * A list that is built at run time (a call, a computed value) is a `gap` with its reason, never a guess; `LIST.filter( … )` of a
+ * readable list lists that list's values, since a filter only hides options. An attribute
  * with several controls takes the union of their lists; one unreadable control makes the whole attribute a gap.
  */
 
@@ -195,6 +196,11 @@ function optionValues( node, file, depth = 0 ) {
 		case 'ParenthesizedExpression':
 			return optionValues( node.expression, file, depth + 1 );
 		case 'CallExpression':
+			// `LIST.filter( … )` keeps a subset of LIST's options, so its allowed values are LIST's (a filter that hides an
+			// option at run time does not make the stored value invalid).
+			if ( node.callee.type === 'MemberExpression' && ! node.callee.computed && node.callee.property.name === 'filter' ) {
+				return optionValues( node.callee.object, file, depth + 1 );
+			}
 			throw new Unreadable( 'a list built at run time by a call' );
 		default:
 			throw new Unreadable( `a list built from a ${ node.type }` );

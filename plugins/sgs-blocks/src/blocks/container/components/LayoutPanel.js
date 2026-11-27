@@ -181,9 +181,6 @@ export function LayoutPanel( {
 	 */
 	const trimmedOut = ( slug, stored = false ) =>
 		! stored && isTrimmed( trimName, slug );
-	const layoutOptions = LAYOUT_OPTIONS.filter(
-		( opt ) => ! trimmedOut( opt.slug, opt.value === attributes.layout )
-	);
 	const showGridTemplateColumns = ! trimmedOut(
 		'layout.grid-template-columns',
 		storesTierValue( attributes.gridTemplateColumns )
@@ -248,7 +245,11 @@ export function LayoutPanel( {
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 				>
-					{ layoutOptions.map( ( opt ) => (
+					{ /* Filtered inline so the framework DB's source reader (dbschema/block-source-choices.js) reads LAYOUT_OPTIONS as the allowed values. */ }
+					{ LAYOUT_OPTIONS.filter(
+						( opt ) =>
+							! trimmedOut( opt.slug, opt.value === attributes.layout )
+					).map( ( opt ) => (
 						<ToggleGroupControlOption
 							key={ opt.value }
 							value={ opt.value }

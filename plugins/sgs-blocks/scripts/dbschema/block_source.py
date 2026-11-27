@@ -138,6 +138,7 @@ def _self_test() -> int:
             "mode": {"type": "string", "default": "a"},
             "tone": {"type": "string", "default": "x"},
             "dyn": {"type": "string", "default": "p"},
+            "kept": {"type": "string", "default": "round"},
             "rows": {"type": "array", "default": [{"title": "T", "date": "D"}]},
             "align": {"type": "object", "default": {}},
             "inline": {"type": "object", "default": {}},
@@ -152,6 +153,7 @@ def _self_test() -> int:
             "    <SelectControl value={ shape } options={ SHAPES } onChange={ () => {} } />\n"
             "    <ToggleGroupControl value={ mode }><ToggleGroupControlOption value=\"a\" /><ToggleGroupControlOption value=\"b\" /></ToggleGroupControl>\n"
             "    <SelectControl value={ dyn } options={ buildOptions() } />\n"
+            "    <ToggleGroupControl value={ kept }>{ SHAPES.filter( ( o ) => o.value !== mode ).map( ( o ) => <ToggleGroupControlOption value={ o.value } /> ) }</ToggleGroupControl>\n"
             "    <TierSelectControl value={ align } options={ SHAPES } />\n"
             "    <ResponsiveOverride value={ inline }>{ ( { ownValue } ) => <SelectControl value={ ownValue } options={ SHAPES } /> }</ResponsiveOverride>\n"
             "    <SelectControl value={ record } options={ SHAPES } />\n"
@@ -166,6 +168,7 @@ def _self_test() -> int:
         check("PHP allow-list plus its default", src.choices("demo", "tone", defs["tone"])[0] == ["y", "z", "x"])
         values, gap, _ = src.choices("demo", "dyn", defs["dyn"])
         check("a list built by a call is a named gap, not values", values is None and gap is not None and "call" in gap)
+        check("a filter of a constant list lists the constant's values", src.choices("demo", "kept", defs["kept"])[0] == ["round", "square"])
         check("a setting the source never lists is neither", src.choices("demo", "rows", defs["rows"]) == (None, None, []))
         check("a per-breakpoint component's options are the choices of one tier", src.choices("demo", "align", defs["align"])[0] == ["round", "square"])
         check("a ResponsiveOverride render-prop control reads the tier's choices", src.choices("demo", "inline", defs["inline"])[0] == ["round", "square"])
