@@ -91,6 +91,7 @@ const BURGER_MORPH_OPTIONS = [
  * @param {string}   root0.burgerMorph           `burgerMorph` — x | x-rotate | line | none.
  * @param {number}   root0.collapsePoint         `collapsePoint` — the width below which the links collapse into the burger.
  * @param {number}   root0.drawerRef             `drawerRef` — the menu panel (a `sgs_drawer` post id, or 0) the burger opens.
+ * @param {boolean}  root0.drawerNeedsAttention  True when the burger opens no menu panel (`useDrawerNotice().showDrawerNotice`): the panel then starts open, so the picker the notice points to is in view.
  * @param {Function} root0.setAttributes         The block's attribute setter.
  */
 export default function BurgerPanel( {
@@ -108,6 +109,7 @@ export default function BurgerPanel( {
 	burgerMorph,
 	collapsePoint,
 	drawerRef,
+	drawerNeedsAttention = false,
 	setAttributes,
 } ) {
 	// FR-U18-G1: this panel's `edit.js` caller does not pass `burgerWidth`
@@ -193,7 +195,7 @@ export default function BurgerPanel( {
 	return (
 		<PanelBody
 			title={ __( 'Menu Button', 'sgs-blocks' ) }
-			initialOpen={ false }
+			initialOpen={ drawerNeedsAttention }
 		>
 			<p style={ { marginTop: 0 } }>
 				{ __(

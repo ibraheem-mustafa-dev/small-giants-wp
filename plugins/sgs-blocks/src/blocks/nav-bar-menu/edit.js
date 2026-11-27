@@ -714,6 +714,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					burgerMorph={ burgerMorph }
 					collapsePoint={ collapsePoint }
 					drawerRef={ drawerRef }
+					drawerNeedsAttention={ showDrawerNotice }
 					setAttributes={ setAttributes }
 				/>
 

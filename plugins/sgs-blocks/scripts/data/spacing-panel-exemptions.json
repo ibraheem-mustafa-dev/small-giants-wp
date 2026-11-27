@@ -13,8 +13,6 @@
 		"src/blocks/mega-aside/edit.js::asidePadding": "The aside column's padding inside the 'Aside' panel, not the block's spacing."
 	},
 	"blocks": {
-		"nav-bar-menu": "Variant D (ListLayoutPanel): Stage E3.",
-		"nav-drawer-menu": "Variant D (ListLayoutPanel): Stage E3.",
 		"media": "Its padding is the media-padding atom of the media panels (components/media/atoms/media-padding.js), not a Spacing pair."
 	}
 }
