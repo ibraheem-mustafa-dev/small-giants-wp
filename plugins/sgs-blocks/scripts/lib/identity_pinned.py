@@ -23,6 +23,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import re
 import subprocess
 import sys
@@ -122,7 +123,8 @@ def npm_file(spec: str, plugin: Path = PLUGIN) -> tuple[Path | None, str]:
     parts = spec.split("/")
     pkg = "/".join(parts[:2]) if spec.startswith("@") else parts[0]
     sub = "/".join(parts[2:] if spec.startswith("@") else parts[1:])
-    base = plugin / "node_modules" / pkg
+    # $SGS_NODE_PATH: the installed packages of a worktree with no install of its own (the lock is still this plugin's).
+    base = (Path(os.environ["SGS_NODE_PATH"]) if os.environ.get("SGS_NODE_PATH") else plugin / "node_modules") / pkg
     pinned = (_lock(plugin).get(f"node_modules/{pkg}") or {}).get("version")
     try:
         installed = json.loads((base / "package.json").read_text(encoding="utf-8"))
