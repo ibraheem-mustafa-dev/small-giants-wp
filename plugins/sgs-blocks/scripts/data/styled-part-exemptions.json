@@ -250,7 +250,7 @@
   "parts_exemptions": [
     {
       "id": "trust-bar-badge-label",
-      "block": "sgs/trust-bar",
+      "block": "trust-bar",
       "part": "^badge-label$",
       "reason": "The block.json element `label` (labelColour, labelFontSize, labelFontWeight and the rest of the text cluster) paints both class names the badge text wears: render.php prints the same rule for `.sgs-trust-bar__label` and `.sgs-trust-bar__badge-label` ($label_sel, and sgs_text_states_css on `__badge-label`). The part has its settings; the detector cannot match `badge-label` to `label` because `label` is a generic word."
     }
