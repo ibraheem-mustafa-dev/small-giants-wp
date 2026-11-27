@@ -33,7 +33,12 @@
   },
   {
    "file": "plugins/sgs-blocks/assets/css/extensions.css",
-   "selector": ".entry-content li a:not(.wp-block-button__link):not([class*=\"sgs-\"]):hover::after",
+   "selector": ".entry-content li a:not(.wp-block-button__link):not([class*=\"sgs-\"]):not(:where(nav *)).sgs-pressed::after",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/extensions.css",
+   "selector": ":where(:root:not(.sgs-touch-input)) .entry-content li a:not(.wp-block-button__link):not([class*=\"sgs-\"]):not(:where(nav *)):hover::after",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
