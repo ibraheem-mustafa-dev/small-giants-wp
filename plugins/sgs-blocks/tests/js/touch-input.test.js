@@ -92,6 +92,34 @@ describe( 'touch-input', () => {
 		expect( root.classList.contains( 'sgs-touch-input' ) ).toBe( false );
 	} );
 
+	test( 'a second finger ends the press, and neither finger presses again', () => {
+		pointer( link, 'pointerdown', 'touch' );
+		expect( pressed() ).toContain( 'link' );
+		pointer( other, 'pointerdown', 'touch', { pointerId: 2, isPrimary: false } );
+		expect( pressed() ).toEqual( [] );
+		expect( root.classList.contains( 'sgs-touch-input' ) ).toBe( true );
+		under = other;
+		pointer( link, 'pointermove', 'touch' );
+		pointer( other, 'pointermove', 'touch', { pointerId: 2, isPrimary: false } );
+		expect( pressed() ).toEqual( [] );
+		pointer( other, 'pointerup', 'touch', { pointerId: 2, isPrimary: false } );
+		pointer( link, 'pointerup', 'touch' );
+		expect( pressed() ).toEqual( [] );
+	} );
+
+	test( 'a pen presses like a finger and clears on lift or cancel, and a pen move keeps the mouse halves off', () => {
+		pointer( link, 'pointerdown', 'pen' );
+		expect( pressed() ).toEqual( [ 'html', 'body', 'card', 'link' ] );
+		expect( root.classList.contains( 'sgs-touch-input' ) ).toBe( true );
+		pointer( link, 'pointermove', 'pen' );
+		expect( root.classList.contains( 'sgs-touch-input' ) ).toBe( true );
+		pointer( link, 'pointerup', 'pen' );
+		expect( pressed() ).toEqual( [] );
+		pointer( link, 'pointerdown', 'pen' );
+		pointer( link, 'pointercancel', 'pen' );
+		expect( pressed() ).toEqual( [] );
+	} );
+
 	test( '"Off on touch screens" turns the mouse halves off and presses nothing', () => {
 		root.setAttribute( 'data-sgs-touch-hover', 'desktop' );
 		pointer( link, 'pointerdown', 'touch' );

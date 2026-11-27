@@ -1,5 +1,5 @@
 {
-	"_comment": "The hover-on-touch contract (Spec 38A FR-38A-17), one case per kind of rule. Both implementations must turn `in` into `out` (whitespace after commas and around newlines ignored): scripts/hover-guard/transform.js::transformCss (tests/js/touch-hover-transform.test.js) and includes/helpers-hover-state.php::sgs_touch_hover_css (tests/php/TouchHoverContractTest.php). Running either on `out` changes nothing.",
+	"_comment": "The hover-on-touch contract (Spec 38A FR-38A-17), one case per kind of rule. Both implementations must turn `in` into `out` (whitespace after commas and around newlines ignored): scripts/hover-guard/transform.js::transformCss (tests/js/touch-hover-transform.test.js) and includes/helpers-hover-state.php::sgs_touch_hover_css (tests/php/TouchHoverContractTest.php). Running either on `out` changes nothing. `unreadable` lists input neither can rewrite: the PHP twin prints it as it came (and names the reason in the error log under WP_DEBUG), the JS audit reports each finding `kind` and fails the postbuild.",
 	"cases": [
 		{
 			"name": "a block motion rule already guarded gains its pressed half",
@@ -75,6 +75,108 @@
 			"name": "rules without :hover or :active, and keyframes, are untouched",
 			"in": ".p{color:green}@keyframes k{from{opacity:0}to{opacity:1}}",
 			"out": ".p{color:green}@keyframes k{from{opacity:0}to{opacity:1}}"
+		},
+		{
+			"name": "two mouse-only rules for one selector each get their own pressed half",
+			"in": "@media (hover:hover){.a:hover{color:red}}@media (hover:hover){.a:hover{background:blue}}",
+			"out": ".a.sgs-pressed{color:red}@media (hover:hover){.a:hover{color:red}}.a.sgs-pressed{background:blue}@media (hover:hover){.a:hover{background:blue}}"
+		},
+		{
+			"name": "a press look and a mouse-only hover rule for one selector keep both halves",
+			"in": ".a:active{transform:scale(.98)}@media (hover:hover){.a:hover{color:red}}",
+			"out": ".a:active,.a.sgs-pressed{transform:scale(.98)}.a.sgs-pressed{color:red}@media (hover:hover){.a:hover{color:red}}"
+		},
+		{
+			"name": "a base hover rule and a mouse-only hover rule for one selector keep both halves",
+			"in": ".btn:hover{color:red}@media (hover:hover){.btn:hover{transform:translateY(-2px)}}",
+			"out": ".btn.sgs-pressed,:where(:root:not(.sgs-touch-input)) .btn:hover{color:red}.btn.sgs-pressed{transform:translateY(-2px)}@media (hover:hover){.btn:hover{transform:translateY(-2px)}}"
+		},
+		{
+			"name": "a pressed half already in the sheet as the identical rule is not added again",
+			"in": ".a.sgs-pressed{color:red}@media (hover:hover){.a:hover{color:red}}",
+			"out": ".a.sgs-pressed{color:red}@media (hover:hover){.a:hover{color:red}}"
+		},
+		{
+			"name": "a mouse-only query that adds a width keeps the width around the pressed half",
+			"in": "@media (hover:hover) and (min-width:1024px){.a:hover{color:red}}",
+			"out": "@media (min-width:1024px){.a.sgs-pressed{color:red}}@media (hover:hover) and (min-width:1024px){.a:hover{color:red}}"
+		},
+		{
+			"name": "a mouse-only query that adds a motion preference keeps it around the pressed half",
+			"in": "@media (hover:hover) and (prefers-reduced-motion:no-preference){.a:hover{x:y}}",
+			"out": "@media (prefers-reduced-motion:no-preference){.a.sgs-pressed{x:y}}@media (hover:hover) and (prefers-reduced-motion:no-preference){.a:hover{x:y}}"
+		},
+		{
+			"name": "a mouse-only query written after the width keeps the width",
+			"in": "@media (min-width:1024px) and (hover:hover){.a:hover{color:red}}",
+			"out": "@media (min-width:1024px){.a.sgs-pressed{color:red}}@media (min-width:1024px) and (hover:hover){.a:hover{color:red}}"
+		},
+		{
+			"name": "a mouse-only query inside another at-rule keeps both around the pressed half",
+			"in": "@supports (display:grid){@media (hover:hover) and (min-width:600px){.a:hover{color:red}}}",
+			"out": "@supports (display:grid){@media (min-width:600px){.a.sgs-pressed{color:red}}@media (hover:hover) and (min-width:600px){.a:hover{color:red}}}"
+		},
+		{
+			"name": "a query that is not mouse-only (not, or) is an ordinary query",
+			"in": "@media not all and (hover:hover){.a:hover{x:y}}",
+			"out": "@media not all and (hover:hover){.a.sgs-pressed,:where(:root:not(.sgs-touch-input)) .a:hover{x:y}}"
+		},
+		{
+			"name": "a guarded press look gets an unguarded pressed twin",
+			"in": ":where(:root:not(.sgs-touch-input)) .a:active{transform:scale(.97)}",
+			"out": ":where(:root:not(.sgs-touch-input)) .a:active,.a.sgs-pressed{transform:scale(.97)}"
+		},
+		{
+			"name": "a press look inside a mouse-only query gets no twin",
+			"in": "@media (hover:hover){.a:active{x:y}}",
+			"out": "@media (hover:hover){.a:active{x:y}}"
+		},
+		{
+			"name": "a member that asks for a press and for no press gets no pressed half",
+			"in": ".a:active:not(:hover){x:y}",
+			"out": ":where(:root:not(.sgs-touch-input)) .a:active:not(:hover){x:y}"
+		},
+		{
+			"name": "a hover and a not-hover on one element get no pressed half",
+			"in": ".a:not(:hover):hover{x:y}.a:hover:not(:active){x:z}",
+			"out": ":where(:root:not(.sgs-touch-input)) .a:not(:hover):hover{x:y}:where(:root:not(.sgs-touch-input)) .a:hover:not(:active){x:z}"
+		},
+		{
+			"name": "a not-hovered sibling and a hovered one are two elements and keep their pressed half",
+			"in": ".a:not(:hover)+.b:hover{x:y}",
+			"out": ":where(:root.sgs-touch-input) .a:not(.sgs-pressed)+.b.sgs-pressed,:where(:root:not(.sgs-touch-input)) .a:not(:hover)+.b:hover{x:y}"
+		},
+		{
+			"name": "an escaped quote inside an attribute value is no state",
+			"in": "a[title=\"a\\\"b:hover\"]:hover{x:y}",
+			"out": "a[title=\"a\\\"b:hover\"].sgs-pressed,:where(:root:not(.sgs-touch-input)) a[title=\"a\\\"b:hover\"]:hover{x:y}"
+		}
+	],
+	"unreadable": [
+		{
+			"name": "a stylesheet whose braces do not balance",
+			"in": ".a:hover{color:red}}.b{color:blue}",
+			"kind": "unparsable-stylesheet"
+		},
+		{
+			"name": "a stylesheet that ends inside a rule",
+			"in": ".a:hover{color:red",
+			"kind": "unparsable-stylesheet"
+		},
+		{
+			"name": "CSS nesting with a hover under the rule",
+			"in": ".a{color:blue;&:hover{color:red}}",
+			"kind": "nested-rule"
+		},
+		{
+			"name": "CSS nesting under a rule that carries a hover",
+			"in": ".a:hover{color:red;.b{color:blue}}",
+			"kind": "nested-rule"
+		},
+		{
+			"name": "an at-rule nested in a rule that carries a hover",
+			"in": ".a:hover{color:red;@media (min-width:600px){color:blue}}",
+			"kind": "nested-rule"
 		}
 	]
 }
