@@ -201,11 +201,48 @@ INLINE_STANDINS = {'product': '--product-file', 'manifest': '--manifest-file', '
                    'postContent': '--post-content-file'}
 
 
+# How often a read or a rename is tried while Windows refuses it because another process has the file open or is renaming
+# onto it: several processes (a sweep's workers, look builders, checkouts) share one cache and render the same key at once.
+SHARE_TRIES = 10
+
+
+def writer_tag() -> str:
+    """A name part no other process or thread uses at the same time."""
+    return f'{os.getpid()}-{threading.get_ident()}'
+
+
+def read_held(f: Path) -> str | None:
+    """The file's text, read again while Windows refuses to open it for a moment; None when it is missing or stays refused."""
+    for attempt in range(SHARE_TRIES):
+        try:
+            return f.read_text(encoding='utf-8')
+        except PermissionError:
+            time.sleep(min(0.02 * 2 ** attempt, 0.5))
+        except OSError:
+            return None
+    return None
+
+
 def write_whole(f: Path, text: str) -> None:
-    """Write `text` to `f` so no reader ever sees part of it: a file beside it, renamed over it."""
-    tmp = f.with_name(f'{f.name}.{os.getpid()}-{threading.get_ident()}.tmp')
-    tmp.write_text(text, encoding='utf-8')
-    os.replace(tmp, f)
+    """Write `text` to `f` so no reader ever sees part of it: a file beside it, renamed over it. Windows refuses the rename
+    while another process has `f` open or is renaming onto it: it is tried again with a growing wait, and a rename still
+    refused is done when `f` holds a whole file, as every file here is named by its content key (another process wrote
+    the same render or stand-in)."""
+    tmp = f.with_name(f'{f.name}.{writer_tag()}.tmp')
+    try:
+        tmp.write_text(text, encoding='utf-8')
+        for attempt in range(SHARE_TRIES):
+            try:
+                os.replace(tmp, f)
+                return
+            except PermissionError:
+                if f.is_file():
+                    return
+                if attempt == SHARE_TRIES - 1:
+                    raise
+                time.sleep(min(0.05 * 2 ** attempt, 1.0))
+    finally:
+        tmp.unlink(missing_ok=True)
 
 
 # One lock per render key: render_many renders a context-providing block's children for every job, and jobs that hand
@@ -339,25 +376,37 @@ class Renderer:
     def _render_at(self, key: str, slug: str, attrs: dict, content: str, inner, extra: list) -> dict:
         """render() for one cache key, under that key's lock."""
         cf = self.cache / f'{key}.json'
-        if cf.is_file():
-            res = json.loads(cf.read_text(encoding='utf-8'))
+        text = read_held(cf) if cf.is_file() else None
+        if text is not None:
+            res = json.loads(text)
             # a render cached before renders reported their files, before the cache held PHP's own html (`raw`), or one a
             # file outside the code hash it read has changed under, is rendered again
             if 'included' in res and (res.get('raw') or 'processed-html' in MUTATE) and self._outside_current(res):
                 self.included.update(res['included'])
                 return self._processed(res) if res.get('raw') else res
-        af = self.cache / f'{key}.attrs.json'
+        # The files handed to PHP and the two it writes back carry this writer's own name part: another process rendering
+        # the same key at the same moment (the key lock holds threads only) writes its own, and they go once read.
+        side = f'{self.cache / key}.{writer_tag()}.'
+        af = Path(f'{side}attrs.json')
         af.write_text(json.dumps(attrs), encoding='utf-8')
-        inc = self.cache / f'{key}.included.json'
-        reads = self.cache / f'{key}.reads.json'
+        inc = Path(f'{side}included.json')
+        reads = Path(f'{side}reads.json')
+        try:
+            return self._render_side(key, slug, attrs, content, inner, extra, cf, side, af, inc, reads)
+        finally:
+            for f in (af, inc, reads, Path(f'{side}content.html'), Path(f'{side}inner.json')):
+                f.unlink(missing_ok=True)
+
+    def _render_side(self, key, slug, attrs, content, inner, extra, cf, side, af, inc, reads) -> dict:
+        """_render_at's render and caching, with the side files named."""
         cmd = ['php', '-d', f'auto_prepend_file={INCLUDED_HOOK}', str(self.harness), '--slug', slug, '--attrs-file', str(af),
                '--render-children', *extra]
         if content:
-            cfile = self.cache / f'{key}.content.html'
+            cfile = Path(f'{side}content.html')
             cfile.write_text(content, encoding='utf-8')
             cmd += ['--content-file', str(cfile)]
         if inner:
-            ifile = self.cache / f'{key}.inner.json'
+            ifile = Path(f'{side}inner.json')
             ifile.write_text(json.dumps(inner), encoding='utf-8')
             cmd += ['--inner-blocks-file', str(ifile)]
         t0 = time.time()
