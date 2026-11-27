@@ -25,8 +25,14 @@ def _crop_pair(a_png: Path, b_png: Path, a_box, b_box, dest: Path) -> bool:
     x1 = max(b[0] + b[2] for b in boxes) + PAD
     y1 = min(max(b[1] + b[3] for b in boxes) + PAD, y0 + 1600)
     a, b = Image.open(a_png).convert("RGB"), Image.open(b_png).convert("RGB")
-    ca = a.crop((int(x0), int(y0), int(min(x1, a.width)), int(min(y1, a.height))))
-    cb = b.crop((int(x0), int(y0), int(min(x1, b.width)), int(min(y1, b.height))))
+    # A box can lie past a screenshot's right or bottom edge (a ticker's off-screen copy): the pair shows only what
+    # both screenshots hold, and no pair is cut when that is nothing.
+    xa, ya = int(min(x1, a.width)), int(min(y1, a.height))
+    xb, yb = int(min(x1, b.width)), int(min(y1, b.height))
+    if min(xa, xb) <= int(x0) or min(ya, yb) <= int(y0):
+        return False
+    ca = a.crop((int(x0), int(y0), xa, ya))
+    cb = b.crop((int(x0), int(y0), xb, yb))
     out = Image.new("RGB", (ca.width + cb.width + 12, max(ca.height, cb.height)), (255, 0, 255))
     out.paste(ca, (0, 0))
     out.paste(cb, (ca.width + 12, 0))

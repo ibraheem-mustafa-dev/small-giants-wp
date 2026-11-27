@@ -4,7 +4,9 @@ Stage E3. Read `_common.md`, then `w-e3-shared.md` (base branch, two passes, wha
 
 **Your blocks:** nav-bar-menu, nav-drawer-menu, nav-drawer, mega-panel, mega-group, mega-aside, site-header, site-header-row, site-footer, site-footer-row, responsive-logo, language-switch, theme-toggle, social-icons, icon, breadcrumbs, whatsapp-cta.
 
-**Over 12 base colours (2026-11-25 count; W5's detector list wins):** nav-drawer-menu 32, nav-bar-menu 25. Each part's colours go to that part's panel (menu item, badge, submenu container, submenu items, mega panel, burger button); the main Colour panel keeps only whole-menu colours.
+**Over 12 base colours (nav-drawer-menu, nav-bar-menu, mega-panel, nav-drawer):** the menus' per-part colour panels are deferred to Task 30 with the same rule for every block over 12 (Bean, 2026-11-26); leave their Colour panels as they are. Everything else in this brief runs now.
+
+**Efficiency (Bean, 2026-11-26):** reuse W6's shared codemod `plugins/sgs-blocks/scripts/move-control.js` (driven by the register in `E:\sgs-tmp\general-cloning\investigate\i24-register\decisions.py`) for single-control moves, and Stage E2's census (`E:\sgs-tmp\general-cloninguild\w5-codemods\census-final.json`) instead of new runs. Controls that cross the shared nav components are edited by hand.
 
 **Shared files you own:** `plugins/sgs-blocks/src/shared/nav-menu-panels/` (including `ListLayoutPanel.js`, `SubmenuItemsPanel.js`, `SectionMotionPanel.js`), and one additive `titleOverride` prop on `src/components/MediaElementPanel.js` for the logo. Nothing else shared.
 
