@@ -116,10 +116,10 @@
         " || .sgs-testimonial-slider-UID.wp-block-sgs-testimonial-slider .sgs-testimonial-slider__track": [
             "--sgs-slides-visible:1"
         ],
-        " || .sgs-testimonial-slider-UID.wp-block-sgs-testimonial-slider:focus-visible": [
+        " || .sgs-testimonial-slider-UID.wp-block-sgs-testimonial-slider.sgs-pressed,:where(:root:not(.sgs-touch-input)) .sgs-testimonial-slider-UID.wp-block-sgs-testimonial-slider:hover": [
             "border-color:var(--wp--preset--color--secondary,currentColor)"
         ],
-        " || :where(:root:not(.sgs-touch-input)) .sgs-testimonial-slider-UID.wp-block-sgs-testimonial-slider:hover": [
+        " || .sgs-testimonial-slider-UID.wp-block-sgs-testimonial-slider:focus-visible": [
             "border-color:var(--wp--preset--color--secondary,currentColor)"
         ]
     },

@@ -177,10 +177,10 @@
             "border-style:solid",
             "border-width:2px 2px 2px 2px"
         ],
-        " || .sgs-hero-UID.wp-block-sgs-hero:focus-visible": [
+        " || .sgs-hero-UID.wp-block-sgs-hero.sgs-pressed,:where(:root:not(.sgs-touch-input)) .sgs-hero-UID.wp-block-sgs-hero:hover": [
             "border-color:var(--wp--preset--color--secondary,currentColor)"
         ],
-        " || :where(:root:not(.sgs-touch-input)) .sgs-hero-UID.wp-block-sgs-hero:hover": [
+        " || .sgs-hero-UID.wp-block-sgs-hero:focus-visible": [
             "border-color:var(--wp--preset--color--secondary,currentColor)"
         ],
         "@media (max-width:767.98px) || .sgs-hero-UID": [

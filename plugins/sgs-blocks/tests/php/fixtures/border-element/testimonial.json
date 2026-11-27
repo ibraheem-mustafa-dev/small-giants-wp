@@ -102,10 +102,10 @@
         " || .sgs-testimonial-UID.wp-block-sgs-testimonial .sgs-testimonial__name": [
             "font-weight:700"
         ],
-        " || .sgs-testimonial-UID.wp-block-sgs-testimonial:focus-visible": [
+        " || .sgs-testimonial-UID.wp-block-sgs-testimonial.sgs-pressed,:where(:root:not(.sgs-touch-input)) .sgs-testimonial-UID.wp-block-sgs-testimonial:hover": [
             "border-color:var(--wp--preset--color--secondary,currentColor)"
         ],
-        " || :where(:root:not(.sgs-touch-input)) .sgs-testimonial-UID.wp-block-sgs-testimonial:hover": [
+        " || .sgs-testimonial-UID.wp-block-sgs-testimonial:focus-visible": [
             "border-color:var(--wp--preset--color--secondary,currentColor)"
         ]
     },

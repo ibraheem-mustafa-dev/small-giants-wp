@@ -214,9 +214,9 @@ final class CommerceLookSummaryLayoutTest extends TestCase {
 	}
 
 	public function test_settings_that_are_unset_or_saved_on_a_mirror_print_what_they_printed_before_the_main_column_rule(): void {
-		// md5 of the output on main at b61afd542 for each attribute set (cart, checkout), captured before the main column rule existed.
+		// md5 of the output for each attribute set (cart, checkout) with the touch-hover contract (FR-38A-17: a .sgs-pressed twin on every hover rule). Removing the touch twins gives the output of main at b61afd542, captured before the main column rule existed.
 		$pins = array(
-			'unset'                => array( array(), 'd51f23bdca5d464ad81a24d600ffdab7', '154733c4168c36e0f9830b1b1d0cc59b' ),
+			'unset'                => array( array(), '1d139af717e159939786d26a1ce5750f', '489d2ea24e661257a0c2ce32bf25604b' ),
 			'a sidebar width only' => array(
 				array(
 					'sgsSidebarWidth' => array(
@@ -224,8 +224,8 @@ final class CommerceLookSummaryLayoutTest extends TestCase {
 						'tablet'  => '360px',
 					),
 				),
-				'a27bda2fc4e38da52705f29d5f1aeaaa',
-				'f94e73db0d7a2028dbba0fe008014ce7',
+				'7b110081285f1f83befd7ad31d70d879',
+				'911b44c7ebe2314852f8e5ebb9709ad8',
 			),
 		);
 		foreach ( $pins as $label => $pin ) {
@@ -246,14 +246,14 @@ final class CommerceLookSummaryLayoutTest extends TestCase {
 					'sgsSidebarWidth' => array( 'desktop' => 'calc((100% - 40px) * 0.4)' ),
 					'sgsColumnGap'    => array( 'desktop' => '40px' ),
 				),
-				'3a718d02fc9281cde37fb9c6222b14a3',
+				'7909bef372d35606e3b6959fcef66f2e',
 			),
 			'checkout' => array(
 				array(
 					'sgsSidebarWidth' => array( 'desktop' => '477px' ),
 					'sgsColumnGap'    => array( 'desktop' => '40px' ),
 				),
-				'c966cb38861232f097952c2ead739065',
+				'6d6ff22ad016b7c915dd5feb57648d39',
 			),
 		);
 		foreach ( $saved as $block => $pin ) {
