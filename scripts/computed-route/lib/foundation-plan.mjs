@@ -14,7 +14,7 @@
 //   apply-review     intake.mjs --apply-review --go-through (Bean's marks optional); held when the state says intake.json is as it left it.
 //   tokens           extract.py to sites/<client>/theme-snapshot.json when the client has none, else to a scratch file beside the state, compared with
 //                    the committed one (lib/foundation-parts.mjs::tokenOutput); re-extracted when the handoff or intake.json is newer than the output.
-//   plugin-build     npm run build (PowerShell) when the checkout's plugin build is missing or older than its sources; a local copy only.
+//   plugin-build     npm run build (PowerShell, execution policy bypassed for this process so npm.ps1 runs) when the checkout's plugin build is missing or older than its sources; a local copy only.
 //   sync             sync-build.sh: the plugin, the theme and the snapshot's theme.json onto a local copy; held when the copy's blocks equal the build.
 //   snapshot-push    push-theme-snapshot.py to a hosted site (a local copy takes the snapshot with the sync).
 //   site-info        provision-site-info-from-draft.py --intake --apply on the site (a copy through WSL, never its test site).
@@ -57,7 +57,7 @@ export const commands = {
 	applyReview: ( { client } ) => [ 'node', [ `${ ROUTE }/intake.mjs`, '--apply-review', client, '--go-through' ] ],
 	rerunSkeletons: ( { client } ) => [ 'node', [ `${ ROUTE }/intake.mjs`, '--rerun-skeletons', client ] ],
 	extract: ( { client, draft, out, trace } ) => [ 'python', [ 'plugins/sgs-blocks/scripts/theme-extractor/extract.py', '--client', client, '--draft', draft, '--intake', `sites/${ client }/build/intake/intake.json`, '--out', out, '--trace', trace ] ],
-	pluginBuild: () => [ 'powershell', [ '-NoProfile', '-Command', 'Set-Location plugins/sgs-blocks; npm run build' ] ],
+	pluginBuild: () => [ 'powershell', [ '-NoProfile', '-ExecutionPolicy', 'Bypass', '-Command', 'Set-Location plugins/sgs-blocks; npm run build' ] ],
 	sync: ( { site, repo, distro } ) => [ 'wsl', [ '-d', distro, '-u', 'root', '--', 'bash', `${ wslPath( repo ) }/scripts/local-wp/sync-build.sh`, site ] ],
 	pushSnapshot: ( { client, ssh, host } ) => [ 'python', [ 'plugins/sgs-blocks/scripts/push-theme-snapshot.py', '--client', client, '--target', ssh, '--target-domain', host, '--yes' ] ],
 	siteInfo: ( { client, site } ) => [ 'python', [ 'plugins/sgs-blocks/scripts/provision-site-info-from-draft.py', '--site', site, '--intake', `sites/${ client }/build/intake/intake.json`, '--handoff', `sites/${ client }/handoff`, '--apply' ] ],
