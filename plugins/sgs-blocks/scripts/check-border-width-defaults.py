@@ -97,6 +97,7 @@ EXCEPTIONAL = {
     "sgs-choice-flow__buy-now": "the primary preset's border width from the client's buttonPresets token (see sgs-choice-flow__continue)",
     "sgs-google-reviews__write-review": "copies Google's own outlined button styling, not a theme default (Bean, 2026-10-05)",
     "sgs-google-reviews__arrow": "copies Google's own outlined arrow styling, not a theme default (Bean, 2026-10-05)",
+    "sgs-trustpilot-reviews__arrow": "copies the review widget's outlined arrow (its card border token, --sgs-tp-card-border), as sgs-google-reviews__arrow copies Google's; kept at zero specificity in :where() so a set arrowBorderWidth wins",
     "sgs-google-reviews__see-all": "the filled pill's transparent 1px edge matches the outlined write-review pill's box; it paints no visible line",
     "sgs-notice-banner": "the accent edge is the banner's identity (each tone colours it); kept at zero specificity so the control wins",
 }

@@ -339,10 +339,7 @@
 	position: absolute;
 	top: 50%;
 	transform: translateY(-50%);
-	width: 44px;
-	height: 44px;
 	border-radius: 50%;
-	border: 1px solid var(--sgs-tp-card-border);
 	background: var(--sgs-tp-card-bg);
 	color: inherit;
 	cursor: pointer;
@@ -351,6 +348,14 @@
 	justify-content: center;
 	z-index: 2;
 	transition: background-color 200ms var(--wp--custom--easing--ease, ease), border-color 200ms var(--wp--custom--easing--ease, ease); /* sgs-motion: exact */
+}
+
+/* The arrow's box and border are settings' (`arrowSize`, `arrowBorderWidth`, printed by render.php through
+   sgs_carousel_controls_css): zero-specificity defaults, so a set value always wins. */
+:where(.sgs-trustpilot-reviews__arrow) {
+	width: var(--sgs-carousel-arrow-size, 44px);
+	height: var(--sgs-carousel-arrow-size, 44px);
+	border: 1px solid var(--sgs-tp-card-border);
 }
 
 .sgs-trustpilot-reviews__arrow:hover,
