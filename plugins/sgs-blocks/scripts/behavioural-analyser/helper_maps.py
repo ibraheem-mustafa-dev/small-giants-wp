@@ -55,7 +55,7 @@ class PrefixHelper:
 def css_vocabulary(db_props: "frozenset[str]", plugin_root: Path, iter_rule_blocks: Callable) -> frozenset[str]:
     """Real CSS property names: the DB's property vocabulary, every property
     declared in the plugin's own stylesheets, and the `known-css-properties`
-    list shipped in node_modules when it is installed."""
+    list shipped in node_modules when it is installed (else $SGS_NODE_PATH: a worktree with no install of its own)."""
     declared: set[str] = set()
     for path in sorted((plugin_root / "src").rglob("*")):
         if path.suffix not in (".css", ".scss") or "node_modules" in path.parts:
@@ -66,7 +66,10 @@ def css_vocabulary(db_props: "frozenset[str]", plugin_root: Path, iter_rule_bloc
             continue
         for _selector, body in iter_rule_blocks(text):
             declared.update(re.findall(r"(?:^|;)\s*(-?[a-z][a-z-]*[a-z])\s*:", body))
-    known = plugin_root / "node_modules" / "known-css-properties" / "data" / "all.json"
+    import os
+
+    own = plugin_root / "node_modules"
+    known = (own if own.is_dir() or not os.environ.get("SGS_NODE_PATH") else Path(os.environ["SGS_NODE_PATH"])) / "known-css-properties" / "data" / "all.json"
     vocab: set[str] = set(db_props)
     if known.is_file():
         import json

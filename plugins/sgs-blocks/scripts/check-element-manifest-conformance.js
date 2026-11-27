@@ -645,6 +645,37 @@ function analyseBlock( blockSlug, blockJson, clusterSets, findings, roleMap ) {
 	return true;
 }
 
+/**
+ * attrMap entries (base and every state) that name a `native:<supports path>` the block's `supports` no longer declares.
+ * Such an entry maps the element's property to nothing: a block that moved off a WordPress `supports` feature onto its own
+ * attribute (the spacing panel migration: `padding` / `margin`) must name that attribute instead, or the framework DB
+ * seeds the attribute with no element and the cloning route cannot place it.
+ *
+ * @param {string} blockSlug Block name.
+ * @param {Object} blockJson Parsed block.json.
+ * @return {Array<{block: string, element: string, state: string, member: string, path: string}>} One entry per stale map.
+ */
+function staleNativeMaps( blockSlug, blockJson ) {
+	const elements = get( blockJson, 'supports.sgs.elements' );
+	const supports = blockJson.supports || {};
+	const out = [];
+	if ( ! elements || typeof elements !== 'object' ) return out;
+	for ( const [ elementKey, element ] of Object.entries( elements ) ) {
+		const maps = [ [ '', ( element && element.attrMap ) || {} ] ];
+		for ( const [ state, spec ] of Object.entries( ( element && element.states ) || {} ) ) {
+			maps.push( [ state, ( spec && spec.attrMap ) || {} ] );
+		}
+		for ( const [ state, map ] of maps ) {
+			for ( const [ member, mapped ] of Object.entries( map ) ) {
+				if ( typeof mapped === 'string' && mapped.startsWith( 'native:' ) && ! get( supports, mapped.slice( 'native:'.length ) ) ) {
+					out.push( { block: blockSlug, element: elementKey, state, member, path: mapped.slice( 'native:'.length ) } );
+				}
+			}
+		}
+	}
+	return out;
+}
+
 // ---------------------------------------------------------------------------
 // REPORT
 // ---------------------------------------------------------------------------
@@ -751,6 +782,7 @@ function main() {
 	}
 
 	const findings = [];
+	const staleNative = [];
 	let manifestedCount = 0;
 	let skippedCount = 0;
 
@@ -764,6 +796,7 @@ function main() {
 		const blockJson = loadJson( blockJsonPath, null );
 		if ( ! blockJson || ! blockJson.name ) continue;
 
+		staleNative.push( ...staleNativeMaps( blockJson.name, blockJson ) );
 		const scanned = analyseBlock( blockJson.name, blockJson, clusterSets, findings, roleMap );
 		if ( scanned ) {
 			manifestedCount++;
@@ -816,10 +849,12 @@ function main() {
 		total_state_gap: totalStateGap,
 		total_state_without_base: totalStateWithoutBase,
 		total_state_by_design: totalStateByDesign,
+		// attrMap entries naming a `native:` supports path the block no longer declares (staleNativeMaps()).
+		native_without_supports: staleNative.length,
 	};
 
 	if ( process.argv.includes( '--json' ) ) {
-		process.stdout.write( JSON.stringify( { _meta: meta, findings }, null, 2 ) + '\n' );
+		process.stdout.write( JSON.stringify( { _meta: meta, findings, staleNative }, null, 2 ) + '\n' );
 	} else {
 		printHuman( meta, findings );
 	}
@@ -870,6 +905,13 @@ function main() {
 					`${ baseline.orphan_style_defect }`
 			);
 		}
+		if ( meta.native_without_supports > ( baseline.native_without_supports ?? 0 ) ) {
+			breaches.push(
+				`native_without_supports=${ meta.native_without_supports } exceeds baseline ${ baseline.native_without_supports ?? 0 } ` +
+					'(an attrMap entry names a `native:` supports path the block no longer declares: map the owned attribute instead): ' +
+					staleNative.map( ( f ) => `${ f.block } ${ f.element }${ f.state ? ' ' + f.state : '' } ${ f.member } -> native:${ f.path }` ).join( '; ' )
+			);
+		}
 		if ( meta.total_state_without_base > baseline.total_state_without_base ) {
 			breaches.push(
 				`total_state_without_base=${ meta.total_state_without_base } exceeds baseline ` +
@@ -890,6 +932,7 @@ function main() {
 			'[check-element-manifest-conformance] GATE PASS ' +
 				`(style-defect ${ meta.orphan_style_defect }/${ baseline.orphan_style_defect }, ` +
 				`state-without-base ${ meta.total_state_without_base }/${ baseline.total_state_without_base }, ` +
+				`native-without-supports ${ meta.native_without_supports }/${ baseline.native_without_supports ?? 0 }, ` +
 				'unclassified 0, role-map-stale 0)\n'
 		);
 		process.exitCode = 0;

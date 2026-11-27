@@ -9466,7 +9466,9 @@
       "slug": "sgs/card-grid",
       "attr": "margin",
       "fields": {
-        "css_property": "margin-bottom,margin-left,margin-right,margin-top"
+        "css_property": "margin",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -9522,7 +9524,9 @@
       "slug": "sgs/card-grid",
       "attr": "padding",
       "fields": {
-        "css_property": "padding-bottom,padding-left,padding-right,padding-top"
+        "css_property": "padding",
+        "css_layer": "CONTENT",
+        "css_element": "content-band"
       }
     },
     {
@@ -13492,7 +13496,9 @@
       "slug": "sgs/feature-grid",
       "attr": "margin",
       "fields": {
-        "css_property": "margin-bottom,margin-left,margin-right,margin-top"
+        "css_property": "margin",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -13508,7 +13514,9 @@
       "slug": "sgs/feature-grid",
       "attr": "padding",
       "fields": {
-        "css_property": "padding-bottom,padding-left,padding-right,padding-top"
+        "css_property": "padding",
+        "css_layer": "CONTENT",
+        "css_element": "content-band"
       }
     },
     {
@@ -21128,9 +21136,9 @@
       "slug": "sgs/hero",
       "attr": "margin",
       "fields": {
-        "css_property": "margin-bottom,margin-left,margin-right,margin-top",
-        "css_layer": "GRID_AREA",
-        "css_element": "split-media"
+        "css_property": "margin",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -28729,7 +28737,9 @@
       "slug": "sgs/post-grid",
       "attr": "margin",
       "fields": {
-        "css_property": "margin-bottom,margin-left,margin-right,margin-top"
+        "css_property": "margin",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -28875,7 +28885,9 @@
       "slug": "sgs/post-grid",
       "attr": "padding",
       "fields": {
-        "css_property": "padding-bottom,padding-left,padding-right,padding-top"
+        "css_property": "padding",
+        "css_layer": "CONTENT",
+        "css_element": "content-band"
       }
     },
     {
@@ -29712,7 +29724,9 @@
       "slug": "sgs/pricing-table",
       "attr": "margin",
       "fields": {
-        "css_property": "margin-bottom,margin-left,margin-right,margin-top"
+        "css_property": "margin",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -29728,7 +29742,9 @@
       "slug": "sgs/pricing-table",
       "attr": "padding",
       "fields": {
-        "css_property": "padding-bottom,padding-left,padding-right,padding-top"
+        "css_property": "padding",
+        "css_layer": "GRID",
+        "css_element": "inner"
       }
     },
     {
@@ -31834,7 +31850,8 @@
       "slug": "sgs/product-card",
       "attr": "margin",
       "fields": {
-        "css_property": "margin-bottom,margin-left,margin-right,margin-top"
+        "css_property": "margin",
+        "css_element": "wrapper"
       }
     },
     {
@@ -35810,7 +35827,9 @@
       "slug": "sgs/tabs",
       "attr": "margin",
       "fields": {
-        "css_property": "margin-bottom,margin-left,margin-right,margin-top"
+        "css_property": "margin",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -35826,7 +35845,9 @@
       "slug": "sgs/tabs",
       "attr": "padding",
       "fields": {
-        "css_property": "padding-bottom,padding-left,padding-right,padding-top"
+        "css_property": "padding",
+        "css_layer": "GRID",
+        "css_element": "inner"
       }
     },
     {
@@ -37430,7 +37451,9 @@
       "slug": "sgs/testimonial-slider",
       "attr": "margin",
       "fields": {
-        "css_property": "margin-bottom,margin-left,margin-right,margin-top"
+        "css_property": "margin",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -37446,7 +37469,9 @@
       "slug": "sgs/testimonial-slider",
       "attr": "padding",
       "fields": {
-        "css_property": "padding-bottom,padding-left,padding-right,padding-top"
+        "css_property": "padding",
+        "css_layer": "CONTENT",
+        "css_element": "content-band"
       }
     },
     {
@@ -46767,6 +46792,15 @@
         "css_property": "max-width",
         "css_layer": "CONTENT",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/form-step",
+      "attr": "padding",
+      "fields": {
+        "css_property": "padding",
+        "css_layer": "CONTENT",
+        "css_element": "content-band"
       }
     },
     {

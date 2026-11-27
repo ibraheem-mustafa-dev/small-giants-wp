@@ -1,8 +1,8 @@
 /**
  * Editor-canvas mirrors for the post grid's wrapper and card paint.
  *
- * render.php hands the block's width, border and radius to the shared container
- * wrapper (which caps the content band) and writes the card gradient as a
+ * render.php hands the block's width, padding, margin, border and radius to the shared container
+ * wrapper (which caps and pads the content band) and writes the card gradient as a
  * custom property; the canvas has no server render, so these build the same
  * values for the previewed device tier. Editor-only: the front end carries no
  * inline style.
@@ -15,6 +15,8 @@ import {
 	contentBandPreview,
 	wrapperBorderPreview,
 	isCssGradient,
+	resolveBoxTierPreview,
+	tierBoxLonghands,
 } from '../../utils';
 import { resolveColourToken } from '../../components';
 
@@ -32,11 +34,27 @@ export function postGridWrapperPreview( attributes, tier, palette ) {
 	if ( maxWidth ) {
 		rootStyle.maxWidth = maxWidth;
 	}
+	// The wrapper paints `margin` on the root and `padding` on the content band (post-grid declares contentWidth).
+	Object.assign(
+		rootStyle,
+		tierBoxLonghands( attributes.margin, tier, 'margin' )
+	);
+	const padding =
+		attributes.padding &&
+		'object' === typeof attributes.padding &&
+		! Array.isArray( attributes.padding )
+			? attributes.padding
+			: {};
 	const { hasBandProps, bandStyle } = contentBandPreview( {
 		contentWidth: resolveContentWidthPreview(
 			resolveResponsiveTier( attributes.contentWidth, tier )?.value
 		),
-		bandPadding: {},
+		bandPadding: resolveBoxTierPreview(
+			padding.desktop,
+			padding.tablet,
+			padding.mobile,
+			tier
+		),
 		style: rootStyle,
 		layout: 'stack',
 	} );

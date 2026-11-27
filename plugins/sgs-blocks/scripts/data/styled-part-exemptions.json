@@ -247,7 +247,14 @@
     "plugins/sgs-blocks/includes/woocommerce/commerce-look/summary-extras.js": "Checkout summary extras script: it finds WooCommerce's own coupon panel button to open it (sgsCouponOpen) and draws no button of its own; that button's look is the commerce look's coupon_label row.",
     "plugins/sgs-blocks/assets/js/gift-card-*.js": "Selects or enhances the gift card's existing button by class; prints no button of its own."
   },
-  "parts_exemptions": [],
+  "parts_exemptions": [
+    {
+      "id": "trust-bar-badge-label",
+      "block": "trust-bar",
+      "part": "^badge-label$",
+      "reason": "The block.json element `label` (labelColour, labelFontSize, labelFontWeight and the rest of the text cluster) paints both class names the badge text wears: render.php prints the same rule for `.sgs-trust-bar__label` and `.sgs-trust-bar__badge-label` ($label_sel, and sgs_text_states_css on `__badge-label`). The part has its settings; the detector cannot match `badge-label` to `label` because `label` is a generic word."
+    }
+  ],
   "parts_width_ok": {
     "plugins/sgs-blocks/src/blocks/*/editor.css": "Editor-only stylesheets (block.json editorStyle): the block editor canvas, never loaded on the front end.",
     "plugins/sgs-blocks/src/blocks/*/index.css": "Editor-only stylesheets (block.json editorStyle): the block editor canvas, never loaded on the front end.",

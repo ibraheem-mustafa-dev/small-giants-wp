@@ -63,12 +63,19 @@ class Roots:
                 return p.name
 
 
+def _node_modules() -> Path:
+    """The plugin's packages for the Node collectors: its own node_modules, else $SGS_NODE_PATH (a worktree with no
+    install of its own)."""
+    own = PLUGIN / "node_modules"
+    return own if own.is_dir() or not os.environ.get("SGS_NODE_PATH") else Path(os.environ["SGS_NODE_PATH"])
+
+
 def real_roots() -> Roots:
     return Roots(
         plugin=PLUGIN,
         theme=REPO / "theme" / "sgs-theme",
         db=DB_PATH,
-        node_modules=PLUGIN / "node_modules",
+        node_modules=_node_modules(),
     )
 
 
@@ -77,5 +84,5 @@ def fixture_roots(plugin_dir: Path, db: Path) -> Roots:
         plugin=plugin_dir,
         theme=plugin_dir / "_theme",
         db=db,
-        node_modules=PLUGIN / "node_modules",
+        node_modules=_node_modules(),
     )

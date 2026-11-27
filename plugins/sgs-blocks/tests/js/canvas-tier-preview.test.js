@@ -70,6 +70,15 @@ describe( 'containerWrapperPreview', () => {
 		expect( out.style.display ).toBeUndefined();
 	} );
 
+	it( 'paints the margin on the outer element at the tier, set sides only, as the wrapper does', () => {
+		const margin = { desktop: { top: '10px', bottom: '20px' }, mobile: { top: '4px' } };
+		expect( containerWrapperPreview( { margin }, 'desktop' ).style ).toMatchObject( { marginTop: '10px', marginBottom: '20px' } );
+		const mobile = containerWrapperPreview( { margin }, 'mobile' ).style;
+		expect( mobile ).toMatchObject( { marginTop: '4px', marginBottom: '20px' } );
+		expect( mobile.marginLeft ).toBeUndefined();
+		expect( containerWrapperPreview( { margin: { desktop: {} } }, 'desktop' ).style.marginTop ).toBeUndefined();
+	} );
+
 	it( 'paints a uniform desktop radius on all four corners, as sgs_border_radius_tiers() does', () => {
 		const uniform = containerWrapperPreview( { borderRadius: { desktop: '6px', tablet: { topLeft: '0' } } }, 'desktop' ).style;
 		expect( [ uniform.borderTopLeftRadius, uniform.borderTopRightRadius, uniform.borderBottomRightRadius, uniform.borderBottomLeftRadius ] ).toEqual( [ '6px', '6px', '6px', '6px' ] );

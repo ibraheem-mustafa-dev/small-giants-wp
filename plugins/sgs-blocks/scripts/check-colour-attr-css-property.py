@@ -69,7 +69,8 @@ from framework_db import framework_db_path  # noqa: E402
 ROOT = pathlib.Path(__file__).resolve().parent
 SURVEY_SCRIPT = ROOT / "colour-codemod" / "survey.js"
 GRADIENT_KEYS = ROOT / "data" / "gradient-paint-keys.json"
-MDN_PROPERTIES = ROOT.parent / "node_modules" / "mdn-data" / "css" / "properties.json"
+_OWN_NODE_MODULES = ROOT.parent / "node_modules"  # else $SGS_NODE_PATH: a worktree with no install of its own
+MDN_PROPERTIES = (_OWN_NODE_MODULES if _OWN_NODE_MODULES.is_dir() or not os.environ.get("SGS_NODE_PATH") else pathlib.Path(os.environ["SGS_NODE_PATH"])) / "mdn-data" / "css" / "properties.json"
 DEFAULT_DB = framework_db_path()
 REFUSED_VERDICT = "REFUSED:no-css_property"
 

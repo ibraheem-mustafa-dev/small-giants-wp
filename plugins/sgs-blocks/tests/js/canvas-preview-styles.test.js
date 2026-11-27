@@ -96,6 +96,16 @@ describe( 'post-grid preview', () => {
 		expect( cardGradientPreview( GRADIENT ) ).toEqual( { '--sgs-card-bg-gradient': GRADIENT } );
 		expect( cardGradientPreview( 'not a gradient' ) ).toEqual( {} );
 	} );
+
+	it( 'paints the margin on the root and the padding on the band at the tier', () => {
+		const attrs = { margin: { desktop: { bottom: '32px' } }, padding: { desktop: { top: '16px' }, mobile: { top: '8px' } } };
+		const desktop = postGridWrapperPreview( attrs, 'desktop', PALETTE );
+		expect( desktop.rootStyle.marginBottom ).toBe( '32px' );
+		expect( desktop.hasBandProps ).toBe( true );
+		expect( desktop.bandStyle.paddingTop ).toBe( '16px' );
+		expect( postGridWrapperPreview( attrs, 'mobile', PALETTE ).bandStyle.paddingTop ).toBe( '8px' );
+		expect( postGridWrapperPreview( {}, 'desktop', PALETTE ).hasBandProps ).toBe( false );
+	} );
 } );
 
 describe( 'tier background image preview', () => {
