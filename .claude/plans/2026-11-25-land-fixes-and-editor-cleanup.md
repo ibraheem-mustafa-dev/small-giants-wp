@@ -227,6 +227,8 @@ Why (2026-11-27): main fails 88 of its 5,322 PHP tests, 82 failures and 6 errors
 
 Done when: `vendor/bin/phpunit` (run from `plugins/sgs-blocks`) passes on main, each failure fixed at its cause (code, test or bootstrap), never by deleting the test; then the suite joins a gate tier so a red test blocks a build.
 
+Status (2026-11-27): 84 of the 88 fixed on `fix/php-suite-green` (worktree `E:\sgs-tmp\wt-php-suite-green`, head `f1a552ad9`, 15 commits off main `f6bd1d929`, not merged): one commit per cause (test bootstrap, stale test data after intended changes each cited by commit, isolation from other tests' file-scope stubs), no rendered output changed. Full suite: 5,325 tests, 4 failures. The 4 are `IconBrandGlyphTest` and wait for Bean: since `700160a26` (round 8) a brand-source Instagram icon in brand-glyph mode draws the filled glyph in flat `#E4405F` instead of the logo gradient, while a Lucide-source Instagram still gets the gradient. Merges after Task 10's tag; then the suite joins a gate tier.
+
 ### Task 29: Deferred: stored conditions and "show when"
 The setting record stores each setting's conditions in the DB (it computes them in `instances.py::preconditions` and discards them, `i17`). One shared rule hides controls with nothing to affect. The hand-built-panel and dead-control detectors (`i17`) and the panel census become gates, with an allowlist for the 10 intentionally different panels.
 
