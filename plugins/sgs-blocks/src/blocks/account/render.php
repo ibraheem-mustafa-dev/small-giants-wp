@@ -117,6 +117,12 @@ try {
 	\SGS\Blocks\Account_Endpoints::$active = null;
 }
 
+// A sign-in or register form's nonce belongs to the visitor's basket session, so a page showing one is never served from
+// a page cache (LiteSpeed_Compat::mark_response_nocache has the measured failure).
+if ( ! is_user_logged_in() && preg_match( '/name="woocommerce-(?:login|register)-nonce"/', $wc_output ) ) {
+	\SGS\Blocks\LiteSpeed_Compat::mark_response_nocache( 'sgs/account: a signed-out sign-in or register form' );
+}
+
 // Sign in / Create account tabs: only the two-column log-in form, never the card or an endpoint.
 $use_tabs = 'tabs' === $auth_layout && ! $show_card && sgs_account_registration_enabled() && ! is_user_logged_in();
 if ( $use_tabs ) {

@@ -140,27 +140,39 @@ class LiteSpeed_Compat {
 				continue;
 			}
 
-			// LiteSpeed's documented plugin API. No-op when LSCWP is absent.
-			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Third-party hook we are CALLING, not defining: LSCWP's documented public API (docs.litespeedtech.com/lscache/lscwp/api). An sgs_-prefixed name would be listened to by nothing.
-			\do_action(
-				'litespeed_control_set_nocache',
-				'sgs: personalised or rate-limited REST route (' . $route . ')'
-			);
-
-			// The cross-plugin WordPress convention, honoured by LSCWP, WP
-			// Rocket, W3TC and others. Covers the cache layers this plugin
-			// cannot name. Kept ALONGSIDE the LiteSpeed action rather than
-			// instead of it: they address DIFFERENT cache layers, so neither
-			// makes the other redundant. Only the LiteSpeed leg is verified on
-			// our own canary — the constant is unverified-here coverage.
-			if ( ! \defined( 'DONOTCACHEPAGE' ) ) {
-				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- DONOTCACHEPAGE is the shared WordPress cache-plugin convention, not our constant to name. Prefixing it would make every cache plugin ignore it.
-				\define( 'DONOTCACHEPAGE', true );
-			}
-
+			self::mark_response_nocache( 'sgs: personalised or rate-limited REST route (' . $route . ')' );
 			break;
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Keep the current response, a REST reply or a whole page, out of every server-side page cache.
+	 *
+	 * A page may call it while its blocks render: LSCWP and the DONOTCACHEPAGE readers decide when the response is
+	 * finished, not when its headers are first planned. `sgs/account` calls it when it prints WooCommerce's sign-in or
+	 * register form to a signed-out visitor, because that form's nonce belongs to the visitor's basket session
+	 * (WooCommerce's `nonce_user_logged_out` filter): a cached copy carries a session-less nonce, so a visitor with a
+	 * basket was sent back to the form, still signed out, with no message (Mama's live shop, 2026-11-27).
+	 *
+	 * @param string $reason Why, as LSCWP logs it.
+	 * @return void
+	 */
+	public static function mark_response_nocache( string $reason ) {
+		// LiteSpeed's documented plugin API. No-op when LSCWP is absent.
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Third-party hook we are CALLING, not defining: LSCWP's documented public API (docs.litespeedtech.com/lscache/lscwp/api). An sgs_-prefixed name would be listened to by nothing.
+		\do_action( 'litespeed_control_set_nocache', $reason );
+
+		// The cross-plugin WordPress convention, honoured by LSCWP, WP
+		// Rocket, W3TC and others. Covers the cache layers this plugin
+		// cannot name. Kept ALONGSIDE the LiteSpeed action rather than
+		// instead of it: they address DIFFERENT cache layers, so neither
+		// makes the other redundant. Only the LiteSpeed leg is verified on
+		// our own canary — the constant is unverified-here coverage.
+		if ( ! \defined( 'DONOTCACHEPAGE' ) ) {
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- DONOTCACHEPAGE is the shared WordPress cache-plugin convention, not our constant to name. Prefixing it would make every cache plugin ignore it.
+			\define( 'DONOTCACHEPAGE', true );
+		}
 	}
 }
