@@ -70,5 +70,23 @@
 		"find": "mediaSlot && ! slots[ mediaSlot ] && ( slots[ mediaSlot ] = finder( e ) );",
 		"replace": "void mediaSlot;",
 		"why": "the draft image would never reach the block's image settings"
+	},
+	{
+		"file": "lib/skeleton-part-slots.mjs",
+		"find": "held && ! out.slots[ held ] && ( out.slots[ held ] = container );",
+		"replace": "",
+		"why": "the item container's slot would not be given"
+	},
+	{
+		"file": "lib/skeleton-part-slots.mjs",
+		"find": "&& ! steps.slice( 0, -1 ).some( ( x ) => /:nth-of-type\\(/.test( x ) ) ? steps",
+		"replace": "? steps",
+		"why": "a slot below a repeated item would name a container"
+	},
+	{
+		"file": "lib/skeleton-part-slots.mjs",
+		"find": "\t\tif ( at === root ) {\n\t\t\treturn parent;",
+		"replace": "\t\tif ( at === root ) {\n\t\t\treturn null;",
+		"why": "a holder inside the block would never be found"
 	}
 ]

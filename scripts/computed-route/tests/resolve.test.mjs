@@ -266,6 +266,28 @@ test( 'MUST FAIL: a per-device discovered setting writes the value fitting each 
 	assert.equal( resolveDiscovered( { slot: '.x', prop: 'flex-grow', perWidth: { 1440: '1' } }, calibration ), null );
 } );
 
+test( 'MUST FAIL: a per-device mode is chosen at a width only where its other keyword effects agree with the draft there: an item snap alignment declared at every width is a swipe row only where the draft grid scrolls', () => {
+	const GRID = '.sgs-gallery__grid';
+	const ITEM = `${ GRID } > .sgs-gallery__item:nth-of-type(1)`;
+	const all = ( v ) => ( { 375: v, 768: v, 1440: v } );
+	const calibration = { discovered: { layout: {
+		'scroll-snap-align': { slots: [ ITEM ], tier: 'tier_object', values: { scroll: all( 'start' ), carousel: all( 'none' ) } },
+		'overflow-x': { slots: [ GRID ], tier: 'tier_object', values: { scroll: all( 'auto' ), carousel: all( 'visible' ) } },
+		'grid-auto-flow': { slots: [ GRID ], tier: 'tier_object', values: { scroll: all( 'column' ), carousel: all( 'row' ) } },
+		'grid-auto-columns': { slots: [ GRID ], tier: 'tier_object', values: { scroll: { 375: '375px', 768: '376px', 1440: '469.333px' } } },
+		'grid-template-columns': { slots: [ GRID ], tier: 'tier_object', values: { scroll: all( 'none' ) } },
+	} } };
+	// The draft: a six-column grid on tablet and desktop that becomes a sideways scroller below 768px, its items snapping at every width.
+	const grid = { 'overflow-x': { 375: 'auto', 768: 'visible', 1440: 'visible' }, 'grid-auto-flow': { 375: 'column', 768: 'row', 1440: 'row' }, 'grid-auto-columns': { 375: '147.391px', 768: 'auto', 1440: 'auto' }, 'grid-template-columns': { 375: '147.391px 147.391px', 768: '195px 195px', 1440: '195px 195px' } };
+	const drawnAt = ( s, p, w ) => ( s === GRID ? grid[ p ]?.[ w ] : undefined );
+	const row = { slot: ITEM, prop: 'scroll-snap-align', perWidth: all( 'start' ) };
+	assert.deepEqual( resolveDiscovered( { ...row, drawnAt }, calibration ).writes, [ { attr: 'layout', value: { desktop: '', mobile: 'scroll' }, merge: 'deep' } ], 'a swipe row on the phone, the grid above' );
+	assert.deepEqual( resolveDiscovered( row, calibration ).writes[ 0 ].value, { desktop: 'scroll' }, 'negative control: with no other element read there is nothing to contradict' );
+	const scrolls = ( s, p, w ) => ( s === GRID ? { 'overflow-x': 'auto', 'grid-auto-flow': 'column', 'grid-auto-columns': 'auto', 'grid-template-columns': '200px 200px' }[ p ] : undefined );
+	assert.deepEqual( resolveDiscovered( { ...row, drawnAt: scrolls }, calibration ).writes[ 0 ].value, { desktop: 'scroll' }, 'a grid that scrolls at every width is a swipe row everywhere: a track length, recorded or drawn, is no contradiction' );
+	assert.equal( resolveDiscovered( { ...row, drawnAt, state: 'hover' }, calibration ), null, 'a state row is not answered by resting discovery' );
+} );
+
 // A visibility toggle (an extension yes/no setting painting display) is no candidate for a draft that never hides the
 // element, and never takes a measured keyword (formatValue): flex is the named layout gap, none still reaches the toggle.
 test( 'a yes/no setting is never written from a measured display value', () => {

@@ -467,7 +467,7 @@ test( 'MUST FAIL: a drawer\'s <nav> whose only children are a loop of links is t
 	assert.deepEqual( [ page.action, page.rule ], [ 'unwrap', 'listWrapper' ], 'negative control: no navigation block on a page, so its nav is still unwrapped' );
 } );
 
-test( 'MUST FAIL: a grid of image links (logoGrid) reads its tiles\' look at the first link: the tile settings\' calibrated element is that link; a decisions entry naming a setting the block lacks is a problem', () => {
+test( 'MUST FAIL: a grid of image links (logoGrid) reads its tiles\' look at the first link and its image grid (columns, tracks, layout) at the draft element laying the links out: the tile settings\' calibrated element is that link; a decisions entry naming a setting the block lacks is a problem', () => {
 	const tile = ( src ) => N( 'a', { loop: true, attrs: { href: 'https://example.com/' } }, [ N( 'img', { attrs: { src, alt: '' } } ) ] );
 	const grid = N( 'section', {}, [ N( 'div', { style: 'display:grid' }, [ tile( 'a.jpg' ), tile( 'b.jpg' ), tile( 'c.jpg' ) ] ) ] );
 	const CAL = { tileBorderRadius: { slot: '.sgs-gallery__grid > .sgs-gallery__item:nth-of-type(1)' } };
@@ -476,7 +476,7 @@ test( 'MUST FAIL: a grid of image links (logoGrid) reads its tiles\' look at the
 	assert.ok( row, JSON.stringify( rows( r ).map( ( x ) => [ x.tag, x.block, x.rule ] ) ) );
 	const find = ( list ) => list.flatMap( ( n ) => ( 'sgs/gallery' === n.name ? [ n ] : find( n.innerBlocks || [] ) ) );
 	const node = find( JSON.parse( JSON.stringify( r.skeleton ) ) )[ 0 ];
-	assert.deepEqual( node.draftSlots, { [ CAL.tileBorderRadius.slot ]: { tpl: 'Root/3#0' } }, 'the first link is the first tile' );
+	assert.deepEqual( node.draftSlots, { [ CAL.tileBorderRadius.slot ]: { tpl: 'Root/3#0' }, '.sgs-gallery__grid': node.draftRef }, 'the first link is the first tile, and the draft element laying the links out is the image grid the tiles sit in' );
 	assert.equal( find( JSON.parse( JSON.stringify( run( grid, { calSettings: () => ( {} ) } ).skeleton ) ) )[ 0 ].draftSlots, undefined, 'negative control: no calibrated tile element, no slot' );
 	const bad = facts();
 	bad.decisions.rules.logoGrid = { ...bad.decisions.rules.logoGrid, itemSlots: [ 'noSuchTile' ] };

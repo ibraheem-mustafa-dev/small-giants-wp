@@ -16,7 +16,7 @@ import { collapsePoint, childSlots, unitSlots, slideSlots } from './skeleton-chi
 import { itemFieldSlots } from './skeleton-item-field-slots.mjs';
 import { currentSlide } from './skeleton-current-slide.mjs';
 import { wrapperLinkSlot } from './skeleton-wrapper-link-slot.mjs';
-import { mediaSelfSlot, partSlots, placePart, codeItemSlots, codeIconSlots, drawnSvgParts, itemSlots, chipSlots } from './skeleton-part-slots.mjs';
+import { mediaSelfSlot, partSlots, placePart, codeItemSlots, codeIconSlots, drawnSvgParts, itemSlots, itemHolder, chipSlots } from './skeleton-part-slots.mjs';
 import { recordFor, openersFor, recordView, surfaceContext } from './skeleton-record.mjs';
 import { formStepNodes, formStepContext } from './skeleton-form-steps.mjs';
 import { scIfFields } from './form-scif-fields.mjs';
@@ -315,7 +315,10 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		// draft element, is where the items' look is read (lib/skeleton-part-slots.mjs::codeItemSlots).
 		// A block whose items are the draft element's repeated children reads the item look at its first item
 		// (`rules.<rule>.itemSlots`, lib/skeleton-part-slots.mjs::itemSlots).
-		const codeSlots = r.codeItem ? codeItemSlots( { at: r.codeItem, settings: R[ r.rule ]?.items?.slots, calibrated: calSettings( block ) } ) : r.firstItem && m.byKey[ r.firstItem ] && R[ r.rule ]?.itemSlots ? itemSlots( { finder: finder( m.byKey[ r.firstItem ] ), settings: R[ r.rule ].itemSlots, calibrated: calSettings( block ) } ) : null;
+		// The draft element holding those items (the first item's parent, the draft element itself or an element inside it) is
+		// where the block's own item container is read (lib/skeleton-part-slots.mjs::itemSlots `container`).
+		const holder = r.firstItem ? itemHolder( m, m.byKey[ r.firstItem ], e ) : null;
+		const codeSlots = r.codeItem ? codeItemSlots( { at: r.codeItem, settings: R[ r.rule ]?.items?.slots, calibrated: calSettings( block ) } ) : r.firstItem && m.byKey[ r.firstItem ] && R[ r.rule ]?.itemSlots ? itemSlots( { finder: finder( m.byKey[ r.firstItem ] ), settings: R[ r.rule ].itemSlots, calibrated: calSettings( block ), container: holder ? finder( holder ) : null } ) : null;
 		codeSlots && Object.assign( slots, codeSlots.slots );
 		// The mode the rule chose from the draft (items that all hold an icon draw the bare-icon style) decides which part draws the
 		// icon, so the icon's settings are read at that style's svg, never at the part another style would draw.
