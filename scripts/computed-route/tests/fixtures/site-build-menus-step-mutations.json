@@ -4,7 +4,7 @@
 	{"file": "lib/site-build-menus-step.mjs", "find": " && ! asked.has( e.objectId )", "replace": "", "why": "a page the map asks the menu for is removed"},
 	{"file": "lib/site-build-menus-step.mjs", "find": "...plan.actions.filter( ( a ) => 'section' === a.type ),", "replace": "", "why": "the section pages are not set"},
 	{"file": "lib/site-build-menus-step.mjs", "find": "\t\t...superseded,\n", "replace": "", "why": "a superseded item is never removed"},
-	{"file": "lib/site-build-menus-step.mjs", "find": "...plan.actions.filter( ( a ) => 'menus' === a.phase ),", "replace": "...plan.actions.filter( ( a ) => 'site' !== a.phase ),", "why": "post rebuilds join the menus step"},
+	{"file": "lib/site-build-menus-step.mjs", "find": "...plan.actions.filter( ( a ) => 'menus' === a.phase && ", "replace": "...plan.actions.filter( ( a ) => 'site' !== a.phase && ", "why": "post rebuilds join the menus step"},
 	{"file": "lib/site-build-menus-step.mjs", "find": "[ a.id, a.page, a.object ]", "replace": "[ a.object ]", "why": "a section page naming a post with no id is not caught"},
 	{"file": "lib/site-build-menus-step.mjs", "find": "o.name.startsWith( 'nav_menu_locations[' )", "replace": "true", "why": "site options join the menus step"},
 	{"file": "lib/site-build-menus-step.mjs", "find": "\t\treturn 1;\n\t}\n\tfirst.plan.problems.forEach", "replace": "\t}\n\tfirst.plan.problems.forEach", "why": "a plan problem does not stop the step"},

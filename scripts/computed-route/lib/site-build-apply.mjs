@@ -343,6 +343,8 @@ export function applyPhase( actions, phase, { wp, build, onId, log = () => {}, r
 			refs[ a.key ] = porcelain( 'post' === a.kind
 				? wp( [ 'menu', 'item', 'add-post', String( val( a.menu ) ), String( val( a.object ) ), ...( a.title ? [ `--title=${ a.title }` ] : [] ), ...tail ] )
 				: wp( [ 'menu', 'item', 'add-custom', String( val( a.menu ) ), a.title, a.url || '#', ...tail ] ) );
+		} else if ( 'item-delete' === a.type ) {
+			wp( [ 'menu', 'item', 'delete', String( a.id ) ] );
 		} else if ( 'item-update' === a.type ) {
 			wp( [ 'menu', 'item', 'update', String( a.id ), `--position=${ a.position }`, `--parent-id=${ val( a.parent ) || 0 }`, ...( a.title ? [ `--title=${ a.title }` ] : [] ), ...( a.url ? [ `--link=${ a.url }` ] : [] ), ...( undefined !== a.description ? [ `--description=${ a.description }` ] : [] ) ] );
 		} else if ( 'location' === a.type ) {

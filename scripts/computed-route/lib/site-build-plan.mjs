@@ -4,8 +4,9 @@
 // footer posts, whose trees bind their menus), and `site` (parts 4 to 7; part 6 also switches WooCommerce's coming-soon mode off). Pure: no site access.
 // A value that names something not built yet is a ref ({ ref: 'post:<row key>' | 'menu:<name>' | 'item:<menu>:<key>' })
 // the executor resolves. The run only ever changes what it made: a stored id must name a post carrying that row's key
-// (`_sgs_site_build_row`), a menu it reuses must carry its own mark, and an item no row asks for is reported, never
-// deleted. A row without an id adopts the one post carrying its key (a page map an intake rerun reset, FR-48-17), else
+// (`_sgs_site_build_row`), a menu it reuses must carry its own mark, and an item no row asks for is reported and kept
+// after the page map's items, never deleted; the one item removed is a post item whose slot a custom link to the same
+// post (or the mega item whose section page it opens) now holds. A row without an id adopts the one post carrying its key (a page map an intake rerun reset, FR-48-17), else
 // is created; an unmarked post already holding its type and slug (another author's) stops the run, so it is never
 // duplicated or renamed `<slug>-2`, and a stored id naming a same-slug post that has no row key and no tree hash (one a
 // run saved before marking it) is marked and rebuilt. A rebuild never overwrites content a person changed since the build saved it.
@@ -399,7 +400,8 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 	}
 
 	// Menus (part 3): an item is matched by (menu, object id), a custom parent by its title; under the parent the map
-	// gives first, else wherever it now sits (then moved back), so a hand-moved item is never added twice.
+	// gives first, else wherever it now sits (then moved back), so a hand-moved item is never added twice. A menu's
+	// actions run in this order: its removals, its items in display order, then the items left in it.
 	for ( const [ name, list ] of Object.entries( wanted.menus ) ) {
 		const menu = menuOf( name );
 		const menuRef = menu ? menu.id : { ref: `menu:${ name }` };
@@ -408,15 +410,16 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 		}
 		const existing = [ ...( menu?.items || [] ) ];
 		const matched = {};
+		const own = [];
 		for ( const it of list ) {
 			const parentId = it.parentKey ? matched[ it.parentKey ] || { ref: `item:${ name }:${ it.parentKey }` } : 0;
 			const objectId = 'post' === it.kind ? ids[ it.rowKey ] : null;
-			const same = ( e ) => ( 'post' === it.kind ? objectId && e.objectId === objectId && e.object === it.postType : 'link' === it.kind ? 'custom' === e.type && addressOf( e.url ) === addressOf( it.url ) : 'custom' === e.type && e.title === it.title );
+			const same = ( e ) => ( 'post' === it.kind ? objectId && e.objectId === objectId && e.object === it.postType : 'link' === it.kind ? 'custom' === e.type && ( it.external ? e.url === it.url : addressOf( e.url ) === addressOf( it.url ) ) : 'custom' === e.type && e.title === it.title );
 			const exact = existing.findIndex( ( e ) => same( e ) && e.parent === ( 'number' === typeof parentId ? parentId : -1 ) );
 			const at = exact >= 0 ? exact : existing.findIndex( same );
 			const where = `menu "${ name }" item "${ it.label }"`;
 			if ( at < 0 ) {
-				actions.push( { phase: 'menus', type: 'item-add', menu: menuRef, key: `item:${ name }:${ it.key }`, kind: it.kind, object: 'post' === it.kind ? idOf( it.rowKey ) : null, title: it.title, ...( 'link' === it.kind ? { url: it.url } : {} ), ...( undefined !== it.description ? { description: it.description } : {} ), position: it.order, parent: parentId, say: `${ where }: add${ 'link' === it.kind ? ` a link to ${ it.url }` : 'label' === it.kind ? ' a label' : '' }${ it.description ? ` with the badge "${ it.description }"` : '' } at position ${ it.order }${ it.parentKey ? ` under "${ list.find( ( x ) => x.key === it.parentKey ).label }"` : '' }` } );
+				own.push( { phase: 'menus', type: 'item-add', menu: menuRef, key: `item:${ name }:${ it.key }`, kind: it.kind, object: 'post' === it.kind ? idOf( it.rowKey ) : null, title: it.title, ...( 'link' === it.kind ? { url: it.url } : {} ), ...( undefined !== it.description ? { description: it.description } : {} ), position: it.order, parent: parentId, say: `${ where }: add${ 'link' === it.kind ? ` a link to ${ it.url }` : 'label' === it.kind ? ' a label' : '' }${ it.description ? ` with the badge "${ it.description }"` : '' } at position ${ it.order }${ it.parentKey ? ` under "${ list.find( ( x ) => x.key === it.parentKey ).label }"` : '' }` } );
 				continue;
 			}
 			const e = existing.splice( at, 1 )[ 0 ];
@@ -434,10 +437,33 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 			const descOff = undefined !== it.description && ( e.description ?? '' ) !== it.description;
 			if ( e.order !== it.order || moved || ( titleOff && it.title ) || urlOff || descOff ) {
 				const what = [ e.order !== it.order ? `position ${ e.order } -> ${ it.order }` : '', moved ? `parent ${ e.parent } -> ${ shown( parentId ) }` : '', titleOff && it.title ? `title "${ e.title }" -> "${ it.title }"` : '', urlOff ? `link ${ e.url } -> ${ it.url }` : '', descOff ? `badge "${ e.description ?? '' }" -> "${ it.description }"` : '' ].filter( Boolean ).join( '; ' );
-				actions.push( { phase: 'menus', type: 'item-update', id: e.id, title: titleOff && it.title ? it.title : null, ...( urlOff ? { url: it.url } : {} ), ...( descOff ? { description: it.description } : {} ), position: it.order, parent: parentId, say: `${ where }: item ${ e.id }: ${ what }` } );
+				own.push( { phase: 'menus', type: 'item-update', id: e.id, title: titleOff && it.title ? it.title : null, ...( urlOff ? { url: it.url } : {} ), ...( descOff ? { description: it.description } : {} ), position: it.order, parent: parentId, say: `${ where }: item ${ e.id }: ${ what }` } );
 			}
 		}
-		existing.forEach( ( e ) => notes.push( `menu "${ name }" item ${ e.id } "${ e.title || `${ e.object } ${ e.objectId }` }" is not one any page-map row asks for; it is left in place` ) );
+		// An item opening the post of a row whose slot this menu now draws as a custom link (a draft link with a fragment or a
+		// query: lib/site-build-menus.mjs::desiredMenus) is that slot's old item, which the link replaces: it is removed. The
+		// menu is the site build's own (a menu it did not make stops the plan above).
+		// An item opening the section page of a mega item this menu holds is replaced the same way: the mega item holds its slot
+		// (lib/site-build-menus-step.mjs::supersededItems names the same items for the menus step).
+		const linkedPosts = new Set( list.filter( ( it ) => 'link' === it.kind && it.rowKey && ids[ it.rowKey ] ).map( ( it ) => ids[ it.rowKey ] ) );
+		const sectionPosts = new Set( list.filter( ( it ) => 'post' === it.kind && wanted.sections[ it.rowKey ] && ids[ wanted.sections[ it.rowKey ] ] ).map( ( it ) => ids[ wanted.sections[ it.rowKey ] ] ) );
+		const replaced = existing.filter( ( e ) => 'post_type' === e.type && ( linkedPosts.has( e.objectId ) || sectionPosts.has( e.objectId ) ) );
+		const removals = replaced.map( ( e ) => ( { phase: 'menus', type: 'item-delete', id: e.id, say: `menu "${ name }" item ${ e.id } "${ e.title || e.shown || `${ e.object } ${ e.objectId }` }": remove (${ linkedPosts.has( e.objectId ) ? 'a custom link to the same post\'s address' : 'the mega item whose section page it opens' } holds its slot)` } ) );
+		// Every other item no row asks for stays in the menu, after the items the page map asks for and in its own order, so the
+		// positions planned are the positions WordPress holds once the plan has run (WP-CLI renumbers a menu on every add,
+		// move and removal). An item already after them stays where it is; one among them moves to the first place after.
+		const left = existing.filter( ( e ) => ! replaced.includes( e ) ).sort( ( a, b ) => a.order - b.order );
+		let after = list.length;
+		for ( const e of left ) {
+			notes.push( `menu "${ name }" item ${ e.id } "${ e.title || e.shown || `${ e.object } ${ e.objectId }` }" is not one any page-map row asks for; it is left in place, after the page map's items` );
+			if ( e.order > after ) {
+				after = e.order;
+				continue;
+			}
+			after += 1;
+			own.push( { phase: 'menus', type: 'item-update', id: e.id, title: null, position: after, parent: e.parent, say: `menu "${ name }" item ${ e.id }: position ${ e.order } -> ${ after } (left in place, after the page map's items)` } );
+		}
+		actions.push( ...removals, ...own );
 		const loc = menuLocation( name, state.registeredLocations || [] );
 		if ( ! loc ) {
 			notes.push( `menu "${ name }" has no theme location; its surface binds it by ref` );

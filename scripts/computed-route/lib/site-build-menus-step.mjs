@@ -39,7 +39,8 @@ export function menusStep( plan, superseded = [] ) {
 	const actions = [
 		...plan.actions.filter( ( a ) => 'section' === a.type ),
 		...superseded,
-		...plan.actions.filter( ( a ) => 'menus' === a.phase ),
+		// The plan removes the same superseded items itself (lib/site-build-plan.mjs::planBuild), so each is removed once.
+		...plan.actions.filter( ( a ) => 'menus' === a.phase && ! ( 'item-delete' === a.type && superseded.some( ( s ) => s.id === a.id ) ) ),
 	];
 	const unresolved = [ ...new Set( actions.flatMap( ( a ) => [ a.id, a.page, a.object ] ).filter( isRef ).map( ( v ) => v.ref.replace( /^post:/, '' ) ) ) ];
 	return { actions, options: plan.options.filter( ( o ) => o.name.startsWith( 'nav_menu_locations[' ) ), unresolved };

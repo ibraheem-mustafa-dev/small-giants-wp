@@ -96,7 +96,7 @@ export function desiredMenus( rows, linkText = {}, surfaces = {}, menuLinks = { 
 		const parents = new Set( [ ...drawn, ...asked ].map( ( d ) => d.parentItem ).filter( Boolean ) );
 		for ( const d of drawn.filter( ( x ) => ! claimed.has( `${ x.parentItem || '' }\u0000${ x.position }` ) ) ) {
 			if ( d.url && ( null === d.rowKey || held.has( d.rowKey ) ) ) {
-				chosen.push( { row: null, rowKey: d.rowKey, menu: name, position: d.position, parentItem: d.parentItem, text: d.text, badge: d.badge, link: { text: d.text, url: d.url } } );
+				chosen.push( { row: null, rowKey: d.rowKey, menu: name, position: d.position, parentItem: d.parentItem, text: d.text, badge: d.badge, link: { text: d.text, url: d.url, external: Boolean( d.external ) } } );
 			} else if ( ! d.url && ! parents.has( d.text ) ) {
 				notes.push( `the ${ name } menu's draft item "${ d.text }" (position ${ d.position }${ d.parentItem ? ` under "${ d.parentItem }"` : '' }) adds no item: ${ d.why }` );
 			}
@@ -111,6 +111,7 @@ export function desiredMenus( rows, linkText = {}, surfaces = {}, menuLinks = { 
 			label: e.link.text,
 			title: e.link.text,
 			url: e.link.url,
+			...( e.link.external ? { external: true } : {} ),
 			...badge( e ),
 			position: e.position,
 			parentItem: e.parentItem,
@@ -202,11 +203,12 @@ export function disabledLabels( menuItems, kind, index = 0, surfaceId = null ) {
 	return labelsOf( ( menuItems || [] ).filter( ( m ) => m.menu === bound ) ).filter( ( l ) => ! l.parentItem ).map( ( l ) => l.text );
 }
 
-// A URL's path and query with the origin dropped, for comparing an item's stored address with the wanted one across hosts.
+// A URL's path, query and fragment with the origin dropped, for comparing an item's stored address with the wanted one
+// across hosts (`/help/#delivery` and `/help/#allergens` are two items).
 export const addressOf = ( url ) => {
 	try {
 		const u = new URL( url, 'http://site.invalid' );
-		return `${ u.pathname.replace( /\/+$/, '' ) }${ u.search }`;
+		return `${ u.pathname.replace( /\/+$/, '' ) }${ u.search }${ u.hash }`;
 	} catch {
 		return String( url );
 	}

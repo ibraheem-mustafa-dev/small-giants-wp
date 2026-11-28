@@ -1,0 +1,10 @@
+[
+	{ "file": "lib/site-build-plan.mjs", "find": "const replaced = existing.filter( ( e ) => 'post_type' === e.type && ( linkedPosts.has( e.objectId ) || sectionPosts.has( e.objectId ) ) );", "replace": "const replaced = [];", "why": "the row's old post item is left as an orphan" },
+	{ "file": "lib/site-build-plan.mjs", "find": "actions.push( ...removals, ...own );", "replace": "actions.push( ...own, ...removals );", "why": "the removals run after the adds and moves" },
+	{ "file": "lib/site-build-plan.mjs", "find": "if ( e.order > after ) {", "replace": "if ( e.order > 0 ) {", "why": "an item among the page map's items is never moved after them" },
+	{ "file": "lib/site-build-plan.mjs", "find": "\t\t\tafter += 1;\n", "replace": "", "why": "a moved item is planned onto the last page-map item's position" },
+	{ "file": "lib/site-build-plan.mjs", "find": "( it.external ? e.url === it.url : addressOf( e.url ) === addressOf( it.url ) )", "replace": "addressOf( e.url ) === addressOf( it.url )", "why": "an external address matches a site item with the same path" },
+	{ "file": "lib/site-build-menus.mjs", "find": "return `${ u.pathname.replace( /\\/+$/, '' ) }${ u.search }${ u.hash }`;", "replace": "return `${ u.pathname.replace( /\\/+$/, '' ) }${ u.search }`;", "why": "two links to one page's fragments are one item" },
+	{ "file": "lib/site-build-apply.mjs", "find": "\t\t\twp( [ 'menu', 'item', 'delete', String( a.id ) ] );\n\t\t} else if ( 'item-update' === a.type ) {", "replace": "\t\t} else if ( 'item-update' === a.type ) {", "why": "the writer never removes an item" },
+	{ "file": "lib/site-build-menus-step.mjs", "find": "! ( 'item-delete' === a.type && superseded.some( ( s ) => s.id === a.id ) )", "replace": "true", "why": "an item both rules name is removed twice" }
+]

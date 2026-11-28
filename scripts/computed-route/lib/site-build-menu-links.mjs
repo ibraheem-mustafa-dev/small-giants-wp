@@ -91,7 +91,7 @@ function itemAddress( ctx, catalogue, site, item, file ) {
 	for ( const t of item.targets || [] ) {
 		const r = resolveDraftLink( t, ctx, { file } );
 		if ( [ 'external', 'site', 'anchor' ].includes( r.kind ) ) {
-			return { url: r.value, rowKey: null };
+			return { url: r.value, rowKey: null, ...( 'external' === r.kind ? { external: true } : {} ) };
 		}
 		if ( 'address' !== r.kind ) {
 			why ??= 'unresolved' === r.kind ? r.why : null;
