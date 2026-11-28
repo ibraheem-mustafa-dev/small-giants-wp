@@ -20,7 +20,7 @@ import { tokenWrites } from './fill-token-ref.mjs';
 import { normalKeywords } from './fill-normal-keywords.mjs';
 import { gutterBaseline } from './fill-gutter.mjs';
 import { sweepResult } from './fill-underline-sweep.mjs';
-import { BOX_LOOK, parentDrawsBox } from './fill-shared-element.mjs';
+import { BOX_LOOK, parentDrawsBox, rootTwinProps } from './fill-shared-element.mjs';
 import { notInForce } from './fill-device-mode.mjs';
 import { GAP_PROPS, RADIUS_CORNERS, mergedRadius, valueText, json, alternateSlots, baselineFn, baselineSourceFn, equalBaseline, ledgerView, gapTarget, draftOf, recordDisplay } from './fill-resolve-state.mjs';
 
@@ -203,6 +203,8 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 	const boxed = layer ? new Set() : fillLayerBox( { st, rec, ref, target, snaps, apply } );
 	// A block reading the element its parent reads leaves the box look to the parent (lib/fill-shared-element.mjs).
 	const parentBox = ! layer && parentDrawsBox( st, rec, target );
+	// A part read at the node's own draft element reads only what the part's settings paint (lib/fill-shared-element.mjs::rootTwinProps).
+	const twin = layer ? null : rootTwinProps( cal, rec, target );
 	// A link drawn with no line whose underline grows on hover is the block's `sweep` underline (lib/fill-underline-sweep.mjs): the
 	// one write answers its text-decoration-line, and the gradient it grows from is the setting's own, so it is left out below.
 	const found = layer ? null : sweepResult( { db: st.db, cal, block: rec.name, slot, snaps, reads: st.reads, id: target.id } );
@@ -231,6 +233,10 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 		}
 		if ( sweep && ( 'text-decoration-line' === prop || 'background-image' === prop ) ) {
 			settled( st, rec, ref, { slot, property: prop, value: valueText( allDrafts[ prop ] || {} ), widths: Object.keys( allDrafts[ prop ] || {} ).map( Number ), reason: 'held-by-setting', detail: `${ sweep.writes[ 0 ].attr } sweep draws this underline (its line and the gradient it grows from)` } );
+			continue;
+		}
+		if ( twin && ! twin.has( prop ) && allDrafts[ prop ] && Object.keys( allDrafts[ prop ] ).length ) {
+			settled( st, rec, ref, { slot, property: prop, value: valueText( allDrafts[ prop ] ), widths: Object.keys( allDrafts[ prop ] ).map( Number ), reason: 'root-held', detail: `this draft element is the block's root too, and no setting of ${ target.slot } paints ${ prop }: the root target reads it once` } );
 			continue;
 		}
 		if ( parentBox && BOX_LOOK.test( prop ) && allDrafts[ prop ] && Object.keys( allDrafts[ prop ] ).length ) {
@@ -324,7 +330,14 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 		}
 		const fluid = fluidSamples( st, target, layer, prop );
 		const alternates = layer ? [] : alternateSlots( cal, prop, draft, rec.targets.map( ( t ) => t.slot ), target.slot );
-		const input = { node: st.flat[ rec.index ], block: rec.name, prop, draft, baseline: layer || '' !== target.slot ? baselineFn( st, rec, cal, prop, ( w ) => fontPx[ w ] ) : gutterBaseline( st, rec, prop, draft, allDrafts, baselineFn( st, rec, cal, prop, ( w ) => fontPx[ w ] ), cal ), slots: [ slot, ...alternates.filter( ( s ) => s !== slot ) ], calibration: cal, db: st.db, snapshot: st.snapshot, log: st.snaps, fontPx, siblings: allDrafts, fluid, declaredFluid: layer ? null : declaredFluid( st, target, prop, draft ), declared: layer ? {} : { ...agreedDeclared( st, target, prop, draft, fontPx ), ...normalDeclared }, contextAt };
+		// The draft's value of a property on another of the node's elements, read at its calibrated slot (a per-device mode is
+		// checked against all of them, lib/resolve.mjs::resolveDiscovered `drawnAt`); a painted layer is judged alone.
+		const drawnAt = layer ? null : ( at, p, w ) => {
+			const t = rec.targets.find( ( x ) => x.slot === at );
+			const s = t ? st.reads.widths?.[ w ]?.[ t.id ] : null;
+			return s && ! s.missing ? s.styles?.[ p ] : undefined;
+		};
+		const input = { node: st.flat[ rec.index ], block: rec.name, prop, draft, baseline: layer || '' !== target.slot ? baselineFn( st, rec, cal, prop, ( w ) => fontPx[ w ] ) : gutterBaseline( st, rec, prop, draft, allDrafts, baselineFn( st, rec, cal, prop, ( w ) => fontPx[ w ] ), cal ), slots: [ slot, ...alternates.filter( ( s ) => s !== slot ) ], calibration: cal, db: st.db, snapshot: st.snapshot, log: st.snaps, fontPx, siblings: allDrafts, fluid, declaredFluid: layer ? null : declaredFluid( st, target, prop, draft ), declared: layer ? {} : { ...agreedDeclared( st, target, prop, draft, fontPx ), ...normalDeclared }, contextAt, drawnAt };
 		// A path the block's fixture renders in a state at rest (target.state: the open unit's, lib/skeleton-child-slots.mjs::
 		// unitSlots) is resolved in that state first, so a setting of the state painting that path itself takes the read (an
 		// accordion's open shadow); otherwise (no setting of the state, or one that only reaches the path, such as the open

@@ -1,0 +1,8 @@
+[
+	{"file": "lib/resolve.mjs", "find": "same( values[ w ], at( perWidth, w ) ) && ! contradicts( v, w ) )", "replace": "same( values[ w ], at( perWidth, w ) ) )", "why": "a per-device mode would be chosen from one property alone, so tiles that snap at every width make the gallery a swipe row on desktop"},
+	{"file": "lib/fill-resolve-element.mjs", "find": "...normalDeclared }, contextAt, drawnAt };", "replace": "...normalDeclared }, contextAt };", "why": "the resolver would never see the node's other elements, so nothing could contradict a mode"},
+	{"file": "lib/fill-prop.mjs", "find": "siblings, ...( drawnAt ? { drawnAt } : {} ), declaredForm,", "replace": "siblings, declaredForm,", "why": "the other elements' reads would not reach the resolver"},
+	{"file": "lib/fill-resolve-element.mjs", "find": "const twin = layer ? null : rootTwinProps( cal, rec, target );", "replace": "const twin = null;", "why": "a part read at the root's own element would read the root's margin again and write it a second time"},
+	{"file": "lib/fill-shared-element.mjs", "find": "if ( ! root || json( root.finder ) !== json( target.finder ) || ! holds ) {", "replace": "if ( ! root || ! holds ) {", "why": "every part would be limited, not only one read at the root's own element"},
+	{"file": "lib/fill-shared-element.mjs", "find": "|| ! holds ) {", "replace": ") {", "why": "a leaf part read at the root's element (a form field's input) would lose the look its host block writes"}
+]

@@ -8,7 +8,7 @@ import { fileURLToPath } from 'url';
 import { openDb } from '../lib/db.mjs';
 import { loadFacts } from '../lib/skeleton-facts.mjs';
 import { proposeSkeleton } from '../lib/skeleton-propose.mjs';
-import { mediaSelfSlot, drawnSvgParts, codeItemSlots, codeIconSlots, ABSENT_PART } from '../lib/skeleton-part-slots.mjs';
+import { mediaSelfSlot, drawnSvgParts, codeItemSlots, codeIconSlots, itemSlots, itemHolder, ABSENT_PART } from '../lib/skeleton-part-slots.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
 const db = openDb();
@@ -167,4 +167,21 @@ test( 'codeIconSlots: a setting two ways of drawing share is read at the first i
 	const none = codeIconSlots( { at: [ 0 ], settings: [ 'colour', 'pseudo', 'missing' ], calibrated: { ...calibrated, colour: { slot: A( 1 ) } }, modeSettings: [ 'bareSize' ] } );
 	assert.deepEqual( [ none.slots, none.notes.length ], [ {}, 3 ], 'a setting with no slot at the chosen part, a pseudo-element slot and an unknown setting are notes' );
 	assert.deepEqual( codeIconSlots( { at: [ -1 ], settings: [ 'colour' ], calibrated } ).slots, {}, 'a path that is no index list gives no slot' );
+} );
+
+test( 'MUST FAIL: the element a block lays its items out on (its calibrated item slot\'s steps before the item) is read at the draft element holding the items, which may be the draft element itself; an item that is the draft element, a holder outside it, a slot below the item and a taken slot give none', () => {
+	const ITEM = '.sgs-gallery__grid > .sgs-gallery__item:nth-of-type(1)';
+	const calibrated = { tile: { slot: ITEM }, label: { slot: `${ ITEM } > .sgs-gallery__caption` }, root: { slot: '.sgs-gallery__item:nth-of-type(1)' }, cell: { slot: '.sgs-table > .sgs-table__row:nth-of-type(1) > .sgs-table__cell:nth-of-type(1)' } };
+	const item = { tpl: 'Root/3#0' };
+	const box = { tpl: 'Root/2#0' };
+	assert.deepEqual( itemSlots( { finder: item, settings: [ 'tile' ], calibrated, container: box } ).slots, { [ ITEM ]: item, '.sgs-gallery__grid': box }, 'the grid is the holder' );
+	assert.deepEqual( itemSlots( { finder: item, settings: [ 'tile' ], calibrated } ).slots, { [ ITEM ]: item }, 'no holder, no grid slot' );
+	assert.deepEqual( itemSlots( { finder: item, settings: [ 'label', 'root', 'cell' ], calibrated, container: box } ).slots, { [ `${ ITEM } > .sgs-gallery__caption` ]: item, '.sgs-gallery__item:nth-of-type(1)': item, [ calibrated.cell.slot ]: item }, 'a slot below the item, an item straight under the root and an item inside another repeated item name no container' );
+	// The holder is the first item's parent, inside the block's draft element or the element itself.
+	const els = { root: { key: 'root', parentKey: 'page' }, page: { key: 'page', parentKey: null }, row: { key: 'row', parentKey: 'root' }, a: { key: 'a', parentKey: 'row' }, b: { key: 'b', parentKey: 'root' } };
+	const m = { byKey: els };
+	assert.equal( itemHolder( m, els.b, els.root ), els.root, 'items laid out on the draft element itself' );
+	assert.equal( itemHolder( m, els.a, els.root ), els.row, 'items laid out on an element inside it' );
+	assert.equal( itemHolder( m, els.root, els.root ), null, 'an item that is the draft element has no holder in the block' );
+	assert.equal( itemHolder( m, els.root, els.row ), null, 'a parent outside the block is no holder' );
 } );

@@ -36,3 +36,10 @@ test( 'a nested block root is a step with no BEM element', () => {
 	assert.equal( reachesChildBlock( '' ), false );
 	assert.equal( reachesChildBlock( undefined ), false );
 } );
+
+test( 'MUST FAIL: a repeated item\'s display is never carried to the element laying the items out; the root\'s display still is', () => {
+	const grid = { discovered: { layout: { display: { slots: [ '.sgs-gallery__grid' ], tier: 'tier_object', values: { masonry: { 375: 'block', 768: 'block', 1440: 'block' } } } } } };
+	const ITEM = '.sgs-gallery__grid > .sgs-gallery__item:nth-of-type(1)';
+	assert.deepEqual( alternateSlots( grid, 'display', { 1440: 'block' }, [ '', ITEM ], ITEM ), [], 'a tile\'s blockified display is no masonry grid' );
+	assert.deepEqual( alternateSlots( grid, 'display', { 1440: 'grid' }, [ '', ITEM ], '' ), [ '.sgs-gallery__grid' ], 'negative control: the root\'s display is the grid\'s' );
+} );

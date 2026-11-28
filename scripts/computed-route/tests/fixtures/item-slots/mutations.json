@@ -2,5 +2,8 @@
 	{ "file": "lib/skeleton-rules.mjs", "find": "v( 'logoGrid', { block: R.logoGrid?.block, absorb: true, firstItem: kidsB[ 0 ].key } )", "replace": "v( 'logoGrid', { block: R.logoGrid?.block, absorb: true } )", "why": "a logo grid's tiles would never be read" },
 	{ "file": "lib/skeleton-classify.mjs", "find": "...( r.firstItem ? { firstItem: r.firstItem } : {} ), ", "replace": "", "why": "the first item would not reach the proposer" },
 	{ "file": "lib/skeleton-propose.mjs", "find": ": r.firstItem && m.byKey[ r.firstItem ] && R[ r.rule ]?.itemSlots ? itemSlots(", "replace": ": false ? itemSlots(", "why": "the tile settings' element would not be given" },
-	{ "file": "lib/skeleton-facts.mjs", "find": "x.itemSlots.filter( ( a ) => ! facts.attr( x.block ?? x.logoBlock, a ) )", "replace": "x.itemSlots.filter( ( a ) => false )", "why": "a tile setting the block lacks would pass the decisions check" }
+	{ "file": "lib/skeleton-facts.mjs", "find": "x.itemSlots.filter( ( a ) => ! facts.attr( x.block ?? x.logoBlock, a ) )", "replace": "x.itemSlots.filter( ( a ) => false )", "why": "a tile setting the block lacks would pass the decisions check" },
+	{"file": "lib/skeleton-propose.mjs", "find": "container: holder ? finder( holder ) : null", "replace": "container: null", "why": "the draft element laying the items out would never be read as the block's item container (a gallery's image grid), so its columns and layout spill into Custom CSS"},
+	{"file": "lib/skeleton-part-slots.mjs", "find": "held && ! out.slots[ held ] && ( out.slots[ held ] = container );", "replace": "", "why": "the item container's slot would not be given"},
+	{"file": "lib/skeleton-part-slots.mjs", "find": "\t\tif ( at === root ) {\n\t\t\treturn parent;", "replace": "\t\tif ( at === root ) {\n\t\t\treturn null;", "why": "a holder inside the block would never be found"}
 ]

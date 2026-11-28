@@ -316,16 +316,22 @@ function formatValue( { prop, raw, def, unit, fontPx, forms, prefer, snapshot, l
 	return { value: types.includes( 'number' ) && ! types.includes( 'string' ) ? round( px ) : `${ round( px ) }px` };
 }
 
+// A CSS keyword value (`auto`, `x mandatory`, `column`): no length, number, colour, function or comma list.
+const KEYWORD = /^[a-z]+(?:-[a-z]+)*(?: [a-z]+(?:-[a-z]+)*)*$/i;
+
 // A per-device discovered setting: each tier takes the value whose recorded effect equals the draft at that tier's
 // width (an unlisted value is the setting's empty state); a smaller tier is written only where it differs from the
-// tier above. Returns { writes }, a gap when a tier fits two values, or null when no tier fits any.
-function tierWrite( attr, d, perWidth, at, same ) {
+// tier above. A value fits a width only where none of its other recorded keyword effects contradicts what the draft
+// draws there (`contradicts( value, width )`): a swipe row's item snap alignment is no swipe row at a width where the
+// draft's grid neither scrolls nor flows into columns. Returns { writes }, a gap when a tier fits two values, or null when
+// no tier fits any.
+function tierWrite( attr, d, perWidth, at, same, contradicts = () => false ) {
 	const value = {};
 	for ( const [ t, w ] of [ [ 'desktop', 1440 ], [ 'tablet', 768 ], [ 'mobile', 375 ] ] ) {
 		if ( undefined === at( perWidth, w ) ) {
 			continue;
 		}
-		const fit = Object.entries( d.values ).filter( ( [ , values ] ) => undefined !== values[ w ] && same( values[ w ], at( perWidth, w ) ) ).map( ( [ v ] ) => v );
+		const fit = Object.entries( d.values ).filter( ( [ v, values ] ) => undefined !== values[ w ] && same( values[ w ], at( perWidth, w ) ) && ! contradicts( v, w ) ).map( ( [ v ] ) => v );
 		if ( fit.length > 1 ) {
 			return { gap: 'ambiguous', detail: `${ attr } values ${ fit.join( ', ' ) } all give the draft at ${ w }` };
 		}
@@ -370,11 +376,24 @@ export function defaultPaint( calibration, slot, prop, same = ( a, b ) => a === 
 // never prove an open or hover value. `owned` ({ attr: value }) names the settings a content writer decided from the draft
 // (an icon's source from its mark, lib/fill-icon.mjs): no other value of them is ever an answer, so a look the draft's own
 // element paints (an SVG's display) is never held by turning the icon into a source that draws no SVG.
-export function resolveDiscovered( { slot, prop, perWidth, siblings = {}, anyIndex = false, state = null, owned = null }, calibration ) {
+export function resolveDiscovered( { slot, prop, perWidth, siblings = {}, anyIndex = false, state = null, owned = null, drawnAt = null }, calibration ) {
 	const lp = ( p ) => ( anyIndex ? LOOSE( p ) : String( p ?? '' ) );
 	// The desktop tier is read at 1440 alone (FR-48-74): 1920 never stands in for it.
 	const at = ( pw, w ) => pw[ w ];
 	const same = ( a, b ) => String( a ).replace( /\s+/g, '' ) === String( b ).replace( /\s+/g, '' );
+	// What the draft draws for `p2` at width w on the element at calibrated path `s`: the row's own element from `siblings`,
+	// another element the node's draft was read at from `drawnAt( s, p2, w )` (undefined where the draft has no such element).
+	const drawn = ( s, p2, w ) => ( lp( s ) === lp( slot ) ? siblings[ p2 ]?.[ w ] : drawnAt?.( s, p2, w ) );
+	// Whether a per-device value's recorded keyword effects (a mode's signature: overflow-x auto, grid-auto-flow column; never a
+	// length, a number, a colour or a list, which depend on the box and the content) contradict the draft at width w on an
+	// element the draft was read at, the row's own property on its own element aside (lib/resolve.mjs::tierWrite).
+	const contradictsOf = ( props ) => ( value, w ) => Object.entries( props ).some( ( [ p2, e ] ) => {
+		const mine = e?.state ? undefined : e?.values?.[ value ]?.[ w ];
+		return undefined !== mine && KEYWORD.test( String( mine ) ) && ( e.slots || [] ).some( ( s ) => {
+			const got = p2 === prop && lp( s ) === lp( slot ) ? undefined : drawn( s, p2, w );
+			return undefined !== got && null !== got && KEYWORD.test( String( got ) ) && ! same( got, mine );
+		} );
+	} );
 	// base: the element's default paint of the property, what the value paints where it recorded nothing.
 	const fits = ( values, pw, base = {} ) => {
 		const ws = [ 375, 768, 1440 ].filter( ( w ) => undefined !== at( pw, w ) );
@@ -396,7 +415,7 @@ export function resolveDiscovered( { slot, prop, perWidth, siblings = {}, anyInd
 			continue;
 		}
 		if ( 'tier_object' === d.tier ) {
-			const w = owned && attr in owned ? null : tierWrite( attr, d, perWidth, at, same );
+			const w = owned && attr in owned ? null : tierWrite( attr, d, perWidth, at, same, state ? undefined : contradictsOf( props ) );
 			if ( w ) {
 				return w;
 			}

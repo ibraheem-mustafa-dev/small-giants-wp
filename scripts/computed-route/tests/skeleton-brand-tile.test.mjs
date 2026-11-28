@@ -20,8 +20,10 @@ test( 'MUST FAIL: a painted labelled tile makes the strip a name tile and its fi
 	const n = node( {} );
 	assert.deepEqual( n.attributes, { brandDisplay: 'logo-else-text', brandTextTile: true, logoLayout: 'tiles' }, 'the row layout draws no tile, so the rule sets the tile layout' );
 	assert.equal( n.decided.logoLayout, 'tiles', 'and owns it: a lone max-width read must never turn the layout to row' );
-	assert.deepEqual( Object.keys( n.draftSlots ), [ TILE ], 'the six tile settings share one calibrated slot, the first tile' );
+	const SET = TILE.split( ' > ' ).slice( 0, -1 ).join( ' > ' );
+	assert.deepEqual( Object.keys( n.draftSlots ), [ TILE, SET ], 'the six tile settings share one calibrated slot, the first tile; the strip set of tiles is the draft element laying them out' );
 	assert.ok( n.draftSlots[ TILE ], 'the slot names the draft tile' );
+	assert.ok( n.draftSlots[ SET ] && JSON.stringify( n.draftSlots[ SET ] ) !== JSON.stringify( n.draftSlots[ TILE ] ), 'the set is read at the parent of the tiles, not at a tile' );
 } );
 
 test( 'negative control: an unpainted tile, no calibrated tile slot, the rule removed and an unlabelled strip stay as before', () => {

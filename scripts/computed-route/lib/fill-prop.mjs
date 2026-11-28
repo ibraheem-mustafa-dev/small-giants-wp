@@ -424,7 +424,9 @@ const clampOk = ( cal, writes ) => writes.length > 0 && writes.every( ( w ) => a
 // at the five fluid widths, or null), state (a setting state, block_attributes.css_state; null for the resting look),
 // declared ({ width: value }: the code's value where it agrees with the draft value, written in its place, FR-48-36),
 // contextAt ( width => { parentDisplay }: the element's parent's display, where the caller reads it; the element's own
-// position and direction come from `siblings`) }.
+// position and direction come from `siblings`), drawnAt ( ( slot, prop, width ) => the draft's value of prop on the
+// node's element at that calibrated slot, undefined where the draft has none: a per-device mode is checked against the
+// node's other elements, lib/resolve.mjs::resolveDiscovered) }.
 // Returns { status: 'equal' | 'written' | 'gap', slot, writes?, included?, how?: 'tiers' | 'single' | 'clamp', fluid?, gap?, detail?,
 // modeGaps? (the widths of a mode no setting answers, beside a written mode: byMode) }.
 // 'equal': the draft matches what the node shows at every tier, nothing to write.
@@ -450,7 +452,7 @@ export function inapplicableAt( { prop, draft, siblings = {}, state = null, pain
 }
 
 function resolveOne( ctx ) {
-	const { node, owned: given = OWNED.get( node ) ?? null, block, prop, draft: stated, baseline, slots, calibration, db, snapshot, log, fontPx = {}, siblings = {}, fluid = null, state = null, paintState = null, declared = {}, declaredFluid = null, contextAt = () => ( {} ), rest } = ctx;
+	const { node, owned: given = OWNED.get( node ) ?? null, block, prop, draft: stated, baseline, slots, calibration, db, snapshot, log, fontPx = {}, siblings = {}, fluid = null, state = null, paintState = null, declared = {}, declaredFluid = null, contextAt = () => ( {} ), drawnAt = null, rest } = ctx;
 	// The skeleton's content selectors (Site Info's displayType) stay as written: a look never changes which parts a block renders.
 	const selectors = contentSelectors( { db, block, attributes: node.attributes, calibration } );
 	const owned = Object.keys( selectors ).length ? { ...selectors, ...( given || {} ) } : given;
@@ -491,7 +493,7 @@ function resolveOne( ctx ) {
 		const call = ( perWidth ) => {
 			sink.length = 0;
 			const declaredForm = Object.fromEntries( Object.keys( perWidth ).filter( ( w ) => undefined !== declared[ w ] ).map( ( w ) => [ w, declared[ w ] ] ) );
-			return resolve( { block, slot, anyIndex: false, tag: null, prop, state, perWidth, fontPx, current: node.attributes || {}, variants: node.drawnVariants || [], ...( owned ? { owned } : {} ), siblings, declaredForm, ...( rest ? { rest } : {} ), ...( paintState ? { paintState } : {} ), ...( declaredFluid ? { declared: declaredFluid } : {} ) }, { db, snapshot, calibration, log: sink } );
+			return resolve( { block, slot, anyIndex: false, tag: null, prop, state, perWidth, fontPx, current: node.attributes || {}, variants: node.drawnVariants || [], ...( owned ? { owned } : {} ), siblings, ...( drawnAt ? { drawnAt } : {} ), declaredForm, ...( rest ? { rest } : {} ), ...( paintState ? { paintState } : {} ), ...( declaredFluid ? { declared: declaredFluid } : {} ) }, { db, snapshot, calibration, log: sink } );
 		};
 		let r = call( included );
 		const split = 'no-setting' === r.gap ? byMode( { calibration, included, draft, call, sink, log, slot } ) : null;

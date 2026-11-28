@@ -1,0 +1,6 @@
+[
+	{"file": "lib/resolve.mjs", "find": "return undefined !== mine && KEYWORD.test( String( mine ) ) && ( e.slots || [] ).some(", "replace": "return undefined !== mine && ( e.slots || [] ).some(", "why": "a recorded track length would contradict every draft, so no grid that scrolls everywhere would be a swipe row"},
+	{"file": "lib/resolve.mjs", "find": "same( values[ w ], at( perWidth, w ) ) && ! contradicts( v, w ) )", "replace": "same( values[ w ], at( perWidth, w ) ) )", "why": "a per-device mode would be chosen from one property alone"},
+	{"file": "lib/resolve.mjs", "find": "tierWrite( attr, d, perWidth, at, same, state ? undefined : contradictsOf( props ) )", "replace": "tierWrite( attr, d, perWidth, at, same )", "why": "the contradiction check would never be handed to the tier writer"},
+	{"file": "lib/resolve.mjs", "find": "return undefined !== got && null !== got && KEYWORD.test( String( got ) ) && ! same( got, mine );", "replace": "return undefined !== got && null !== got && ! same( got, mine );", "why": "a drawn track list would contradict a recorded none, so a grid that scrolls would never be a swipe row"}
+]

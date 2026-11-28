@@ -227,13 +227,38 @@ export function codeIconSlots( { at, settings = [], calibrated = {}, modeSetting
 	return out;
 }
 
+// The draft element that holds a block's items: the first item's parent where that parent is the block's draft element
+// (`root`) or lies inside it, else null (an item that is the draft element itself has no holder in the block).
+// m: the inventory model ({ byKey }); item and root: inventory elements.
+export function itemHolder( m, item, root ) {
+	const parent = item && root ? m.byKey[ item.parentKey ] : null;
+	for ( let at = parent; at; at = m.byKey[ at.parentKey ] ) {
+		if ( at === root ) {
+			return parent;
+		}
+	}
+	return null;
+}
+
 // The draftSlots that read a block's item look at one draft element: each setting in `settings` gives its calibrated
 // element slot (never the root, never a pseudo-element) the `finder`. Returns { slots: { <path>: finder }, notes }.
-export function itemSlots( { finder, settings = [], calibrated = {}, what = 'the items’ look' } ) {
+// container: the finder of the draft element that holds the items (the first item's parent), or null. A setting
+// calibrated on the item itself (its slot ends in the item's `:nth-of-type` step) names, in the steps before it, the
+// block's own element laying the items out (a gallery's `.sgs-gallery__grid`): that element's settings (its columns, its
+// tracks, its layout) are read at the draft's container, which is the draft element itself where the draft lays the items
+// out on its own root. A container step that is the block's root needs no slot (the root is the draftRef).
+export function itemSlots( { finder, settings = [], calibrated = {}, what = 'the items’ look', container = null } ) {
 	const out = { slots: {}, notes: [] };
 	for ( const s of settings || [] ) {
 		const slot = calibrated[ s ]?.slot;
 		'string' === typeof slot && '' !== slot && ! slot.includes( '::' ) ? ( out.slots[ slot ] = finder ) : out.notes.push( `the calibration has no element slot for ${ s }, so ${ what } is not read for it` );
+	}
+	if ( container ) {
+		for ( const slot of Object.keys( out.slots ) ) {
+			const steps = slot.split( ' > ' );
+			const held = steps.length > 1 && /:nth-of-type\(1\)$/.test( steps.at( -1 ) ) && ! steps.slice( 0, -1 ).some( ( x ) => /:nth-of-type\(/.test( x ) ) ? steps.slice( 0, -1 ).join( ' > ' ) : null;
+			held && ! out.slots[ held ] && ( out.slots[ held ] = container );
+		}
 	}
 	return out;
 }

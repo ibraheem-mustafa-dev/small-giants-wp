@@ -54,7 +54,9 @@ export function alternateSlots( cal, prop, draft = {}, apart = null, own = '' ) 
 	// A layout setting calibration discovered painting display sits on the element laying out the children. A hide
 	// (display:none at any width) stays on the element's own slot: the layout element is not the one the draft hides.
 	if ( 'display' === prop ) {
-		if ( Object.values( draft ).some( ( v ) => 'none' === String( v ).trim() ) ) {
+		// One copy of a repeated item read as the element (its own last step is `:nth-of-type(n)`) is laid out by its container:
+		// a grid item's blockified display is never the container's layout (a gallery tile's `block` is no masonry grid).
+		if ( Object.values( draft ).some( ( v ) => 'none' === String( v ).trim() ) || /:nth-of-type\(\d+\)$/.test( String( own ?? '' ) ) ) {
 			return [];
 		}
 		// One copy of a repeated item (a step, a card: its last step is `:nth-of-type(n)`) lays out its own content, not the
