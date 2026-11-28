@@ -145,3 +145,41 @@ test( 'MUST FAIL: a setting is checked in the framework database, so WooCommerce
 	assert.deepEqual( out.writes.map( ( w ) => w.attr ), [ 'sgsChipCountPill', 'sgsChipSingle' ] );
 	assert.match( out.unmapped[ 0 ].reason, /has no noSuchSetting setting/ );
 } );
+
+// The shop's filter chips and sort select (WooCommerce's blocks, no calibration file): Fill's own pairing never reads them, so part-look's
+// look values are theirs too, the shadow colour beside its shadow. A calibrated block keeps only its mode rules.
+const look = ( attr, value, part, property, extra = {} ) => ( { attr, value, part, property, draft: { 1440: value, 768: value, 375: value }, defaultNotRead: true, ...extra } );
+const CHIP_RESULTS = () => ( {
+	'shop-chips': { block: 'woocommerce/product-filter-chips', build: {
+		writes: [ look( 'sgsChipBorderWidth', '2px', 'chip', 'border-width' ), look( 'sgsChipCountBackground', 'mm-cocoa', 'chip-count', 'background-color' ), look( 'sgsChipSelectedShadow', '3px 3px 0 0', 'chip-selected', 'box-shadow' ), look( 'sgsChipSelectedShadowColour', 'mm-cocoa', 'chip-selected', 'box-shadow (companion of sgsChipSelectedShadow)', { companionOf: 'sgsChipSelectedShadow' } ), mode( 'sgsChipCountPill', true ) ],
+		noSetting: [ { block: 'woocommerce/product-filter-chips', part: 'chip', selector: null, property: 'border-radius', draft: { 1440: { topLeft: 999 } }, state: 'rest' } ], gaps: [] } },
+	shop: { block: 'sgs/product-card', build: { writes: [ mode( 'showWishlist', false ), look( 'ctaColourBackground', 'mm-yellow', 'cta', 'background-color' ) ], noSetting: [ { part: 'cta', property: 'padding', draft: { 1440: 1 } } ], gaps: [] } },
+} );
+
+test( 'MUST FAIL: a block Fill\'s own pairing never reads takes part-look\'s look values and companions; a calibrated block keeps only its rules', () => {
+	const nodes = [ rec( 0, 'woocommerce/product-filter-chips' ), rec( 1, 'sgs/product-card', { itemTemplate: true } ) ];
+	const flat = flatOf( nodes );
+	const wantedHere = [ { surface: 'shop-chips', block: 'woocommerce/product-filter-chips', cross: false }, { surface: 'shop', block: 'sgs/product-card', cross: false } ];
+	const pairedByFill = ( block ) => 'sgs/product-card' === block;
+	const out = modeWrites( { results: CHIP_RESULTS(), wanted: wantedHere, nodes, flat, refOf: refOf( flat ), attrExists: () => true, pairedByFill } );
+	assert.deepEqual( out.writes.map( ( w ) => `${ w.node } ${ w.attr }=${ JSON.stringify( w.after ) } ${ w.how }` ), [
+		'cr-ref-0 sgsChipBorderWidth="2px" part-look-look', 'cr-ref-0 sgsChipCountBackground="mm-cocoa" part-look-look', 'cr-ref-0 sgsChipSelectedShadow="3px 3px 0 0" part-look-look', 'cr-ref-0 sgsChipSelectedShadowColour="mm-cocoa" part-look-look', 'cr-ref-0 sgsChipCountPill=true part-look-mode',
+		'cr-ref-1 showWishlist=false part-look-mode',
+	] );
+	assert.deepEqual( [ out.writes[ 0 ].slot, out.writes[ 0 ].widths ], [ 'chip', [ 375, 768, 1440 ] ] );
+	assert.equal( flat[ 1 ].attributes.ctaColourBackground, undefined, 'the card\'s look is its own pairing\'s' );
+	assert.deepEqual( out.unmapped, [], 'a look no setting holds stays in part-look\'s own report (part-look/report.md beside the fill report)' );
+	// Negative control: with no pairedByFill (every block read by Fill's own pairing), only the rules are written.
+	const plain = flatOf( nodes );
+	const old = modeWrites( { results: CHIP_RESULTS(), wanted: wantedHere, nodes, flat: plain, refOf: refOf( plain ), attrExists: () => true } );
+	assert.deepEqual( old.writes.map( ( w ) => w.attr ), [ 'sgsChipCountPill', 'showWishlist' ] );
+	assert.deepEqual( old.unmapped, [] );
+} );
+
+test( 'MUST FAIL: partLookModeWrites hands Fill\'s pairing test to the writer', async () => {
+	const nodes = [ rec( 0, 'woocommerce/product-filter-chips' ) ];
+	const flat = flatOf( nodes );
+	const report = { surfaces: CHIP_RESULTS(), refusals: [], failures: [], notes: [] };
+	const out = await partLookModeWrites( { client: 'x', repo: 'R', entry: { target: { template: 'archive-product' } }, nodes, flat, refOf: refOf( flat ), attrExists: () => true, pairedByFill: () => false, out: 'O', run: async () => ( { report } ) } );
+	assert.deepEqual( out.writes.map( ( w ) => w.attr ), [ 'sgsChipBorderWidth', 'sgsChipCountBackground', 'sgsChipSelectedShadow', 'sgsChipSelectedShadowColour', 'sgsChipCountPill' ] );
+} );

@@ -43,7 +43,7 @@ const FAMILY = {
 	'align-items': 'keyword', 'align-self': 'keyword', 'justify-content': 'keyword', 'flex-grow': 'keyword',
 	'font-size': 'number', 'line-height': 'number', 'letter-spacing': 'number',
 	width: 'length', height: 'length', 'min-height': 'length', 'min-width': 'length', 'max-width': 'length', gap: 'length', 'column-gap': 'length', 'margin-top': 'length', 'margin-bottom': 'length', 'padding-top': 'length',
-	margin: 'box', padding: 'box', 'border-width': 'box',
+	margin: 'box', padding: 'box', 'border-width': 'box', 'padding-inline': 'inline',
 	'border-radius': 'radius',
 	border: 'border', 'border-top': 'border', 'border-bottom': 'border', 'border-top-style': 'border',
 	'box-shadow': 'shadow',
@@ -189,6 +189,15 @@ export function primitive( property, styles, row = {}, keep = false ) {
 			const undeclared = 'padding' === property && SIDES.every( ( n ) => ! s( `decl:padding-${ n }` ) );
 			return undeclared && SIDES.every( ( n ) => box[ n ] === UA_BUTTON_PADDING[ n ] ) ? null : box;
 		}
+		case 'inline': {
+			// The left and right padding as one length (a select's padding-inline): none where the two differ, nothing at zero (a
+			// browser select's own padding).
+			const [ l, r ] = [ px( s( 'padding-left' ) ), px( s( 'padding-right' ) ) ];
+			if ( null === l || null === r || Math.abs( l - r ) > PX_TOL ) {
+				return undefined;
+			}
+			return isZero( l ) ? null : l;
+		}
 		case 'radius': {
 			const corners = Object.fromEntries( CORNERS.map( ( [ k, c ] ) => [ k, s( `border-${ c }-radius` ) ] ) );
 			if ( Object.values( corners ).some( ( v ) => /\s/.test( v ) || null === px( v ) ) ) {
@@ -314,6 +323,11 @@ export function toSetting( row, value, ctx ) {
 				return { why: `the draft's ${ row.css_property } is ${ value }, which no number holds` };
 			}
 			const unit = unitCompanion( row.attr_name, names );
+			// A text setting with no unit beside it holds the CSS length itself (`12px`); a bare number there is read as a spacing
+			// preset or dropped by the block's length sanitiser. A line height stays unitless.
+			if ( ! unit && 'string' === row.attr_type ) {
+				return { value: 'line-height' === row.css_property ? String( round( value ) ) : pxText( value ) };
+			}
 			const extra = unit ? { [ unit ]: 'line-height' === row.css_property ? '' : 'px' } : {};
 			return { value: round( value ), extra };
 		}
@@ -321,7 +335,14 @@ export function toSetting( row, value, ctx ) {
 			// A width of the whole viewport is held as 100% (statedSize); every other length is a number of pixels.
 			return { value: 'string' === typeof value ? value : pxText( value ) };
 		case 'box':
+			// A text setting holds one length for every side (`2px`): the four sides are written as one where they agree.
+			if ( 'string' === row.attr_type ) {
+				const sides = SIDES.map( ( s ) => value[ s ] );
+				return sides.every( ( v ) => Math.abs( v - sides[ 0 ] ) <= PX_TOL ) ? { value: pxText( sides[ 0 ] ) } : { why: `${ row.attr_name } holds one ${ row.css_property } for every side and the draft's sides differ (${ sides.map( pxText ).join( ' ' ) })` };
+			}
 			return { value: Object.fromEntries( SIDES.map( ( s ) => [ s, pxText( value[ s ] ) ] ) ) };
+		case 'inline':
+			return { value: pxText( value ) };
 		case 'radius': {
 			if ( 'object' === row.attr_type ) {
 				return { value: Object.fromEntries( Object.entries( value ).map( ( [ k, v ] ) => [ k, pxText( v ) ] ) ) };

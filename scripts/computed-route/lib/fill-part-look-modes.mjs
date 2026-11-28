@@ -12,6 +12,9 @@
 //   surface part-look reads it on (its `entryOf`, else its own name: `header`, `my-account`), and part-look opens it from the draft's
 //   own facts (`derive`, lib/part-look-opening.mjs), so no client file is needed. Its live `--verify` against a scratch copy stays the
 //   standalone command (`node scripts/computed-route/part-look.mjs`).
+// - A block Fill's own pairing never reads (it has no calibration file: WooCommerce's filter chips and catalog sorting, which the
+//   framework extends with look settings and part-look pairs by part) takes part-look's look values too, their companions with them,
+//   since part-look is the only reader of its looks. A calibrated block's looks stay Fill's own pairing's.
 // A setting the block lacks, a value the node already holds differently, a rule part-look leaves as a gap and a surface it refuses
 // are rows or notes, never written silently.
 import fs from 'node:fs';
@@ -54,8 +57,9 @@ export function partLookSurfacesFor( { locators, template, nodes, surfaceKey = n
 }
 
 // The mode writes of part-look's surfaces onto the tree. results: runPartLook's report surfaces ({ [surface]: { block, build } });
-// wanted: partLookSurfacesFor's list. Writes into the tree; returns { writes, unmapped, notes }.
-export function modeWrites( { results, wanted, nodes, flat, refOf, attrExists, modes = readData( 'part-look-modes.json' ) } ) {
+// wanted: partLookSurfacesFor's list; pairedByFill( block ): whether Fill's own pairing reads the block's looks (default: every
+// block, so only the mode rules are written). Writes into the tree; returns { writes, unmapped, notes }.
+export function modeWrites( { results, wanted, nodes, flat, refOf, attrExists, pairedByFill = () => true, modes = readData( 'part-look-modes.json' ) } ) {
 	const out = { writes: [], unmapped: [], notes: [] };
 	for ( const { surface, block, cross } of wanted ) {
 		const r = results?.[ surface ];
@@ -63,20 +67,23 @@ export function modeWrites( { results, wanted, nodes, flat, refOf, attrExists, m
 			continue;
 		}
 		const recs = nodes.filter( ( n ) => n.name === block && ( ! cross || loopCard( n ) ) );
-		// The rules' values only: the look writes are Fill's own pairing's, and a built-in button preset is lib/fill-preset.mjs's.
-		const decided = ( r.build.writes || [] ).filter( ( w ) => w.mode && ! w.preset );
+		// The rules' values, and the look values of a block Fill's own pairing never reads; a calibrated block's looks are Fill's own
+		// pairing's, and a built-in button preset is lib/fill-preset.mjs's.
+		const looks = ! pairedByFill( block );
+		const decided = ( r.build.writes || [] ).filter( ( w ) => ! w.preset && ( w.mode || looks ) );
 		for ( const rec of recs ) {
 			const node = flat[ rec.index ];
 			const ref = refOf( node );
 			for ( const w of decided ) {
-				const row = { node: ref, block, slot: '', property: w.property || '(mode)', value: json( w.value ), state: null };
+				const row = { node: ref, block, slot: w.mode ? '' : w.part || '', property: w.property || '(mode)', value: json( w.value ), state: null };
+				const what = w.mode ? ( w.evidence || 'mode rule' ) : `the draft's ${ w.part } ${ w.property }`;
 				// A write to one key of an object setting (`strings.orders`, the account's tab words) is that key of the setting, merged
 				// into what the node holds of it (part-look.mjs::mergeKeyWrites does the same for a site write).
 				const dot = w.attr.indexOf( '.' );
 				const top = dot < 0 ? w.attr : w.attr.slice( 0, dot );
 				const key = dot < 0 ? null : w.attr.slice( dot + 1 );
 				if ( ! attrExists( block, top ) ) {
-					out.unmapped.push( { ...row, reason: `part-look ${ surface }: ${ block } has no ${ top } setting (${ w.evidence || 'mode rule' })` } );
+					out.unmapped.push( { ...row, reason: `part-look ${ surface }: ${ block } has no ${ top } setting (${ what })` } );
 					continue;
 				}
 				const whole = node.attributes?.[ top ];
@@ -86,14 +93,14 @@ export function modeWrites( { results, wanted, nodes, flat, refOf, attrExists, m
 				}
 				const held = null === key ? whole : whole?.[ key ];
 				if ( undefined !== held && json( held ) !== json( w.value ) ) {
-					out.unmapped.push( { ...row, reason: `conflict: ${ w.attr } already holds ${ json( held ) }; part-look ${ surface } reads ${ json( w.value ) } (${ w.evidence || 'mode rule' })` } );
+					out.unmapped.push( { ...row, reason: `conflict: ${ w.attr } already holds ${ json( held ) }; part-look ${ surface } reads ${ json( w.value ) } (${ what })` } );
 					continue;
 				}
 				if ( undefined !== held ) {
 					continue;
 				}
 				const { before, after } = setAttr( node, { attr: top, value: null === key ? w.value : { ...( whole || {} ), [ key ]: w.value }, merge: 'replace' } );
-				out.writes.push( { node: ref, index: rec.index, block, slot: '', prop: row.property, attr: top, ...( null === key ? {} : { key } ), before, after, widths: [], how: 'part-look-mode', note: `part-look ${ surface }${ cross ? ' (read on this page\'s loop cards)' : '' }: ${ w.evidence || 'mode rule' }` } );
+				out.writes.push( { node: ref, index: rec.index, block, slot: row.slot, prop: row.property, attr: top, ...( null === key ? {} : { key } ), before, after, widths: w.mode ? [] : Object.keys( w.draft || {} ).map( Number ), how: w.mode ? 'part-look-mode' : 'part-look-look', note: `part-look ${ surface }${ cross ? ' (read on this page\'s loop cards)' : '' }: ${ what }` } );
 			}
 			for ( const g of ( r.build.gaps || [] ).filter( ( x ) => ruleSettingsOf( modes, block ).has( x.setting ) ) ) {
 				out.unmapped.push( { node: ref, block, slot: '', property: `(mode) ${ g.setting }`, value: json( g.evidence ?? null ), state: null, reason: `part-look ${ surface }: ${ g.what }` } );
@@ -109,7 +116,7 @@ export const settingDeclared = ( db ) => ( block, attr ) => !! db.prepare( 'SELE
 
 // Runs part-look's draft read for the surfaces this Fill surface reads and writes their mode rules (modeWrites). o: { client, repo,
 // entry (the surface's surfaces.json entry), nodes, flat, refOf, db (settings are checked in it; attrExists overrides), out (part-look's report folder), log, run
-// (runPartLook; a stand-in in tests), locators }. A read that throws, a refusal and a verify failure are notes, and nothing of that
+// (runPartLook; a stand-in in tests), locators, pairedByFill (modeWrites) }. A read that throws, a refusal and a verify failure are notes, and nothing of that
 // surface is written.
 export async function partLookModeWrites( o ) {
 	const wanted = partLookSurfacesFor( { locators: o.locators ?? readLocators(), template: o.entry?.target?.template ?? null, nodes: o.nodes, surfaceKey: o.surfaceKey ?? null } );
@@ -129,6 +136,6 @@ export async function partLookModeWrites( o ) {
 	const refused = [ ...( report.refusals || [] ), ...( report.failures || [] ) ];
 	// A refused surface's read is not evidence: its rules are not written.
 	const ok = wanted.filter( ( w ) => ! refused.some( ( f ) => f.startsWith( `${ w.surface }:` ) ) );
-	const got = modeWrites( { results: report.surfaces, wanted: ok, nodes: o.nodes, flat: o.flat, refOf: o.refOf, attrExists: o.attrExists ?? settingDeclared( o.db ) } );
+	const got = modeWrites( { results: report.surfaces, wanted: ok, nodes: o.nodes, flat: o.flat, refOf: o.refOf, attrExists: o.attrExists ?? settingDeclared( o.db ), pairedByFill: o.pairedByFill } );
 	return { ...got, notes: [ ...refused.map( ( f ) => `part-look refused ${ f }` ), ...( report.notes || [] ).map( ( n ) => `part-look ${ n }` ), ...got.notes ], surfaces: empty.surfaces };
 }
