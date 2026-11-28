@@ -185,6 +185,15 @@ function declaredTrackList( v ) {
 	return out.length ? out : null;
 }
 
+// The number of equal flexible tracks a declared column list lays out (`repeat(6, minmax(0, 1fr))`, `1fr 1fr 1fr`): a count
+// of columns sharing the row, which a column-count setting holds exactly. Null for any other list (unequal, fixed, content-sized,
+// auto-fit or not a list).
+export function equalFlexTracks( declared ) {
+	const list = declaredTrackList( String( declared ?? '' ).trim().replace( /\s*!important$/, '' ).replace( /\s+/g, ' ' ) );
+	const flex = ( t ) => /^\d*\.?\d+fr$/.test( t ) || /^minmax\(\s*(?:0|0px|auto)\s*,\s*\d*\.?\d+fr\s*\)$/.test( t );
+	return Array.isArray( list ) && list.length > 0 && list.every( ( t ) => t === list[ 0 ] ) && flex( list[ 0 ] ) ? list.length : null;
+}
+
 // The column tracks the draft's code declares, as the setting's value, where the declaration can be held as written and
 // is what the draft renders: { value } or null. A grid template setting prints its string through
 // includes/helpers-container.php::sgs_sanitize_grid_template, so a list of `fr`, `auto`, `min-content`, `max-content`,
