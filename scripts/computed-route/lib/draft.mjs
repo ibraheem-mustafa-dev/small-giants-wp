@@ -4,6 +4,10 @@
 import fs from 'fs';
 import http from 'http';
 import path from 'path';
+import { spawn } from 'child_process';
+import { fileURLToPath } from 'url';
+
+const SERVE_SCRIPT = path.join( path.dirname( fileURLToPath( import.meta.url ) ), '..', 'tools', 'serve-draft.mjs' );
 
 const TEXT = 'charset=utf-8';
 const TYPES = {
@@ -148,4 +152,28 @@ export async function serveDraft( folder, { index = null, host = '127.0.0.1', po
 		return closing;
 	};
 	return { url: `http://${ host }:${ bound }/`, port: bound, close };
+}
+
+// serveDraft in a child process (tools/serve-draft.mjs), with the same { url, port, close }: a server in the caller's process
+// answers only while that process's thread is free, and site-run.mjs proposes a surface synchronously (skeleton.mjs::proposeSurface,
+// minutes on a large page) while other surfaces' Fills load the draft from it. On 2026-11-28 five of a Mama's run's Fills timed out
+// on page.goto that way: the stalled request was the draft page itself, and one Fill run alone passed. close() ends the child and
+// resolves once it exited; the child also stops when this process ends, because its stdin closes.
+export function serveDraftApart( folder, { index = null, script = SERVE_SCRIPT } = {} ) {
+	return new Promise( ( resolve, reject ) => {
+		const child = spawn( process.execPath, [ script, folder, ...( index ? [ index ] : [] ) ], { stdio: [ 'pipe', 'pipe', 'pipe' ] } );
+		const exited = new Promise( ( done ) => child.once( 'exit', done ) );
+		let out = '';
+		let err = '';
+		child.stderr.on( 'data', ( d ) => ( err += d ) );
+		child.stdout.on( 'data', ( d ) => {
+			out += d;
+			const url = out.match( /^serving (http:\/\/\S+\/)\r?$/m )?.[ 1 ];
+			url && resolve( { url, port: Number( new URL( url ).port ), close: () => {
+				child.stdin.end();
+				return exited.then( () => undefined );
+			} } );
+		} );
+		exited.then( ( code ) => reject( new Error( `the draft server for ${ folder } stopped (exit ${ code }) before it served: ${ err.match( /^\w*Error: .*$/m )?.[ 0 ] || err.trim().split( /\r?\n/ ).pop() || 'no message' }` ) ) );
+	} );
 }

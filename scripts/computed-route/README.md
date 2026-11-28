@@ -1833,6 +1833,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `contentType(file)` → the Content-Type for a file name.
 - `resolveRequest(root, urlPath, index)` → `{ file }`, `{ redirect }` or `{ status }`; never a path outside `root`.
 - `serveDraft(folder, { index, host })` → `{ url, port, close }` on 127.0.0.1 at an ephemeral port.
+- `serveDraftApart(folder, { index })` → the same `{ url, port, close }` from a child process (`tools/serve-draft.mjs`), so it answers while the caller's thread is busy: `site-run.mjs` serves through it because it proposes a surface synchronously while other surfaces' Fills load the draft. The child stops on `close()` or when the caller ends.
 - `draftPageProblem(folder, index)` → why the folder serves no page at its root (no `index.html`, or the named `index` is absent), naming its `.dc.html` pages for `--draft-index`; null when it does. `assertDraftPage(folder, index)` → the folder, or throws that reason: Fill and `skeleton.mjs inventory` refuse such a folder, and `fill.mjs --serve` warns, because a reader opening the root matches nothing.
 
 ### `lib/fill-skeleton.mjs`

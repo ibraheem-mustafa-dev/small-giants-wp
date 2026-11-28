@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Phase 2 site run (Spec 48, plan 2026-10-23-cloning-tool-completion, Phase 2 step 4 and 5): every surface of one client
 // through inventory, skeleton propose, Fill, the build's dry run, the build, the applier and the parity walk, with one status
-// line per surface. A failed surface is logged and the run goes on. The draft folder is served once and each page surface opens at
+// line per surface. A failed surface is logged and the run goes on. The draft folder is served once, from a process of its own
+// (lib/draft.mjs::serveDraftApart, so a surface proposed on this thread never stalls another's draft load), and each page surface opens at
 // its hash route.
 // A surface's inventory root and opener come from its intake skeleton record: a surface that exists only while a draft state
 // holds (record `root.viaState`) takes the inventory intake saved with that state open
@@ -48,7 +49,7 @@ import fs from 'fs';
 import path from 'path';
 import { spawn } from 'child_process';
 import { fileURLToPath } from 'url';
-import { assertDraftPage, serveDraft } from './lib/draft.mjs';
+import { assertDraftPage, serveDraftApart } from './lib/draft.mjs';
 import { readInventory } from './lib/skeleton-inventory.mjs';
 import { handoffRecords } from './lib/skeleton-reveal.mjs';
 import { inventoryBranches } from './lib/skeleton-data-branches.mjs';
@@ -440,7 +441,7 @@ export async function main( argv ) {
 	const servers = new Map();
 	const serverFor = ( entry ) => {
 		const id = `${ entry.draftDir }|${ entry.draftIndex }`;
-		servers.has( id ) || servers.set( id, serveDraft( assertDraftPage( path.join( REPO, entry.draftDir ), entry.draftIndex ), { index: entry.draftIndex } ) );
+		servers.has( id ) || servers.set( id, serveDraftApart( assertDraftPage( path.join( REPO, entry.draftDir ), entry.draftIndex ), { index: entry.draftIndex } ) );
 		return servers.get( id );
 	};
 	const certs = process.env.NODE_EXTRA_CA_CERTS || 'C:\\Users\\Bean\\AppData\\Roaming\\Python\\Python313\\site-packages\\certifi\\cacert.pem';
