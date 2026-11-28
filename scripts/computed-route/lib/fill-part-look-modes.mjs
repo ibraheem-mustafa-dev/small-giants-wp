@@ -4,8 +4,10 @@
 // draft read (part-look.mjs::runPartLook, offline: it serves the draft itself and touches no site) for the part-look surfaces whose
 // block this surface's tree holds, and writes their mode rules' values onto every node of that block, so a site build writes them.
 // - A part-look surface applies when its page template (data/part-locators.json `template`) is this surface's target template.
-// - A card standing for every item of a loop (`itemTemplate`, the related products' cards on a product page) takes its block's rules
-//   from any part-look surface of that block, read on this surface's own draft page: the related cards are read where they are drawn.
+// - A loop card (`loopCard`: a card standing for every item of a loop, `itemTemplate`, as the related
+//   products' cards on a product page, or one tile of a loop of product tiles placed each as its own card, `loopItem`, as a page's
+//   gift or best-seller row) takes its block's rules from any part-look surface of that block, read on this surface's own draft
+//   page: the loop's cards are read where they are drawn. A lone card is no loop card: the cards read on the page are not its.
 // - A part-look surface with no page template (the header's basket drawer, the account page and its signed-in views) applies to the
 //   surface part-look reads it on (its `entryOf`, else its own name: `header`, `my-account`), and part-look opens it from the draft's
 //   own facts (`derive`, lib/part-look-opening.mjs), so no client file is needed. Its live `--verify` against a scratch copy stays the
@@ -21,6 +23,10 @@ const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const json = ( v ) => JSON.stringify( v ?? null );
 const readData = ( name ) => JSON.parse( fs.readFileSync( path.join( HERE, '..', 'data', name ), 'utf8' ) );
 export const readLocators = () => readData( 'part-locators.json' );
+// Whether a Fill node is a loop card: it stands for every item of a loop (`itemTemplate`) or is one tile of a loop the skeleton placed
+// tile by tile (`loopItem`, lib/skeleton-propose.mjs: the product tiles of rules.productTile).
+export const loopCard = ( rec ) => !! ( rec.node?.itemTemplate || rec.node?.loopItem );
+
 // The settings the mode rules of a block decide (data/part-look-modes.json): only their gaps are this writer's rows.
 export const ruleSettingsOf = ( modes, block ) => new Set( ( modes?.blocks?.[ block ]?.rules || [] ).map( ( r ) => r.setting ) );
 
@@ -40,7 +46,7 @@ export function partLookSurfacesFor( { locators, template, nodes, surfaceKey = n
 		}
 		if ( template && loc.template === template ) {
 			out.push( { surface, block: loc.block, cross: false } );
-		} else if ( of.some( ( r ) => r.node?.itemTemplate ) && ! out.some( ( s ) => s.block === loc.block ) && ! Object.values( locators.surfaces ).some( ( o ) => o.block === loc.block && o.template === template ) ) {
+		} else if ( of.some( loopCard ) && ! out.some( ( s ) => s.block === loc.block ) && ! Object.values( locators.surfaces ).some( ( o ) => o.block === loc.block && o.template === template ) ) {
 			out.push( { surface, block: loc.block, cross: true } );
 		}
 	}
@@ -56,7 +62,7 @@ export function modeWrites( { results, wanted, nodes, flat, refOf, attrExists, m
 		if ( ! r?.build ) {
 			continue;
 		}
-		const recs = nodes.filter( ( n ) => n.name === block && ( ! cross || n.node?.itemTemplate ) );
+		const recs = nodes.filter( ( n ) => n.name === block && ( ! cross || loopCard( n ) ) );
 		// The rules' values only: the look writes are Fill's own pairing's, and a built-in button preset is lib/fill-preset.mjs's.
 		const decided = ( r.build.writes || [] ).filter( ( w ) => w.mode && ! w.preset );
 		for ( const rec of recs ) {

@@ -66,6 +66,8 @@ test( 'MUST FAIL: each priced tile naming a catalogue product is an sgs/product-
 	assert.deepEqual( cards.map( ( c ) => c.attributes ), [ { sourceMode: 'wc-product', productId: 301 }, { sourceMode: 'wc-product', productId: 302 }, { sourceMode: 'wc-product', productId: 303 } ] );
 	assert.deepEqual( cards.map( ( c ) => c.draftRef?.tpl ), [ 'Root/4#0', 'Root/4#1', 'Root/4#2' ], 'each card reads its look at its own tile' );
 	assert.deepEqual( cards.map( ( c ) => c.innerBlocks ), [ [], [], [] ], 'the card draws the tile: its elements are absorbed' );
+	assert.deepEqual( cards.map( ( c ) => c.loopItem ), [ true, true, true ], 'each card is one tile of a loop, so Fill gives it the card rules read on the page (lib/fill-part-look-modes.mjs::loopCard)' );
+	assert.equal( all( skeleton, 'sgs/container' ).some( ( c ) => c.loopItem ), false, 'the listing is no tile' );
 	assert.deepEqual( proposal.productTiles, { tiles: { 'Root/4#0': '1', 'Root/4#1': '2', 'Root/4#2': '3' }, notes: [] } );
 	assert.ok( all( skeleton, 'sgs/heading' ).length, 'the row\'s heading stays the draft\'s own block' );
 	assert.equal( all( skeleton, 'sgs/wishlist-panel' ).length, 0, 'the listing is never the block that accepts only product cards' );

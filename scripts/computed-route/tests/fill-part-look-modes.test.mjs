@@ -6,6 +6,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { modeWrites, partLookModeWrites, partLookSurfacesFor, readLocators, settingDeclared } from '../lib/fill-part-look-modes.mjs';
 import { openDb } from '../lib/db.mjs';
+import { cleanTree } from '../lib/fill-skeleton.mjs';
 
 const LOCATORS = readLocators();
 const rec = ( index, name, node = {} ) => ( { index, name, node } );
@@ -52,6 +53,36 @@ test( 'MUST FAIL: a missing setting and a value held differently are rows; an eq
 	assert.deepEqual( out.unmapped.map( ( u ) => `${ u.node } ${ u.reason.split( ':' )[ 0 ] }` ), [ 'cr-ref-1 conflict', 'cr-ref-1 part-look shop', 'cr-ref-2 part-look shop' ] );
 	assert.match( out.unmapped[ 1 ].reason, /has no showSavingBadge setting/ );
 	assert.deepEqual( out.writes.map( ( w ) => `${ w.node } ${ w.attr }` ), [ 'cr-ref-1 showBrandOverlay', 'cr-ref-2 showBrandOverlay' ] );
+} );
+
+// A page (no WooCommerce template) whose row of product tiles the skeleton placed tile by tile (rules.productTile: `loopItem`).
+const TILES = () => [ rec( 0, 'sgs/container' ), rec( 1, 'sgs/product-card', { loopItem: true } ), rec( 2, 'sgs/product-card', { loopItem: true } ), rec( 3, 'sgs/product-card' ) ];
+
+test( 'MUST FAIL: a page\'s product tiles take the card rules read on that page, so a tile shows no pickers the draft does not draw', async () => {
+	assert.deepEqual( wanted( TILES(), null ), [ { surface: 'shop', block: 'sgs/product-card', cross: true } ], 'a page with no template' );
+	assert.deepEqual( wanted( TILES(), 'page' ), [ { surface: 'shop', block: 'sgs/product-card', cross: true } ] );
+	const nodes = TILES();
+	const flat = flatOf( nodes );
+	const results = { shop: { block: 'sgs/product-card', build: { writes: [ mode( 'showPickers', false ), mode( 'showLadder', false ), mode( 'cardContentSource', 'product' ) ], gaps: [] } } };
+	const out = modeWrites( { results, wanted: wanted( nodes, null ), nodes, flat, refOf: refOf( flat ), attrExists: () => true } );
+	assert.deepEqual( out.writes.map( ( w ) => `${ w.node } ${ w.attr }=${ JSON.stringify( w.after ) }` ), [
+		'cr-ref-1 showPickers=false', 'cr-ref-1 showLadder=false', 'cr-ref-1 cardContentSource="product"',
+		'cr-ref-2 showPickers=false', 'cr-ref-2 showLadder=false', 'cr-ref-2 cardContentSource="product"',
+	], 'the lone card (cr-ref-3) is no tile of the loop' );
+	// Fill reads the card rules on the page's own draft entry.
+	let asked = null;
+	const entry = { draftDir: 'sites/x/handoff', draftIndex: 'Gifts.dc.html', target: { postId: 9 } };
+	const run = async ( args ) => {
+		asked = args;
+		return { report: { surfaces: results, refusals: [], failures: [], notes: [] } };
+	};
+	const f2 = flatOf( nodes );
+	const got = await partLookModeWrites( { client: 'x', repo: 'R', entry, nodes, flat: f2, refOf: refOf( f2 ), attrExists: () => true, out: 'O', run } );
+	assert.deepEqual( [ asked.surfaces, asked.entries ], [ [ 'shop' ], { shop: entry } ] );
+	assert.equal( got.writes.length, 6 );
+	// Negative controls: a page whose cards are all lone cards reads nothing, and the marker never reaches the built tree.
+	assert.deepEqual( wanted( [ rec( 0, 'sgs/product-card' ), rec( 1, 'sgs/product-card' ) ], null ), [] );
+	assert.equal( 'loopItem' in cleanTree( [ { name: 'sgs/product-card', attributes: {}, loopItem: true, innerBlocks: [] } ] )[ 0 ], false );
 } );
 
 test( 'MUST FAIL: part-look reads the Fill surface\'s own draft entry, and a refused or failed read writes nothing', async () => {
