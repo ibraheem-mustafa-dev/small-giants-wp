@@ -9,6 +9,26 @@
 	border-width: var(--sgs-fl-chip-border-width);
 }
 
+.sgs-filter-look-preview--chip-font-size .wc-block-product-filter-chips__item {
+	font-size: var(--sgs-fl-chip-font-size);
+}
+
+.sgs-filter-look-preview--chip-radius .wc-block-product-filter-chips__item {
+	border-radius: var(--sgs-fl-chip-radius);
+}
+
+.sgs-filter-look-preview--chip-padding .wc-block-product-filter-chips__item {
+	padding: var(--sgs-fl-chip-padding);
+}
+
+.sgs-filter-look-preview--count-line-font-size {
+	font-size: var(--sgs-fl-count-line-font-size);
+}
+
+.sgs-filter-look-preview--count-line-weight {
+	font-weight: var(--sgs-fl-count-line-weight);
+}
+
 .sgs-filter-look-preview--chip-min-height .wc-block-product-filter-chips__item {
 	min-height: var(--sgs-fl-chip-min-height);
 }

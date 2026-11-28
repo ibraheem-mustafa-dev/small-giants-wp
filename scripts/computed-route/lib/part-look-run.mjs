@@ -19,9 +19,10 @@ import { readPress } from './part-look-press.mjs';
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 export const REPO = path.resolve( HERE, '..', '..', '..' );
 
-// The block's settings from the framework database: every row (for companion names and the part rows). Read-only.
+// The block's settings from the framework database: every row (for companion names and the part rows), the block's own
+// settings an SGS extension paints included (source 'native': WooCommerce's chip colours). Read-only.
 export function blockRows( block, db = openDb() ) {
-	const rows = db.prepare( "SELECT attr_name, attr_type, role, css_property, css_element, css_state, css_tier, is_responsive, tier_shape, enum_values, default_value FROM block_attributes WHERE block_slug = ? AND source IN ( 'sgs', 'sgs-ext' )" ).all( block ).map( ( r ) => ( { ...r } ) );
+	const rows = db.prepare( "SELECT attr_name, attr_type, role, css_property, css_element, css_state, css_tier, is_responsive, tier_shape, enum_values, default_value, source FROM block_attributes WHERE block_slug = ? AND source IN ( 'sgs', 'sgs-ext', 'native' )" ).all( block ).map( ( r ) => ( { ...r } ) );
 	return { rows, names: new Set( rows.map( ( r ) => r.attr_name ) ) };
 }
 

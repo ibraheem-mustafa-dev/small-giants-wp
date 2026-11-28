@@ -1,11 +1,12 @@
 /**
  * "Look" extension for WooCommerce's category chips and sort control.
  *
- * Adds settings to `woocommerce/product-filter-chips` (the chips of a category, attribute or brand filter)
- * and `woocommerce/catalog-sorting` (the "Sort by" select) ONLY. Every default is empty or off, which changes
+ * Adds settings to `woocommerce/product-filter-chips` (the chips of a category, attribute or brand filter),
+ * `woocommerce/catalog-sorting` (the "Sort by" select) and `woocommerce/product-results-count` (the "Showing all 5
+ * results" line) ONLY. Every default is empty or off, which changes
  * nothing; set values are painted on the frontend by includes/product-filter-look.php as scoped rules.
  *
- * Chips: `sgsChipFontWeight`, `sgsChipBorderWidth`, `sgsChipMinHeight`, `sgsChipPaintButtons` (print the colours picked on the block onto
+ * Chips: `sgsChipFontWeight`, `sgsChipFontSize`, `sgsChipBorderWidth`, `sgsChipRadius`, `sgsChipPadding`, `sgsChipMinHeight`, `sgsChipPaintButtons` (print the colours picked on the block onto
  * the chip buttons, resting and chosen), and a count pill (`sgsChipCountPill`, `sgsChipCountBackground`,
  * `sgsChipCountColour`, `sgsChipCountRadius`).
  * One at a time (`sgsChipSingle`): choosing a chip clears the filter's other chosen chips.
@@ -13,6 +14,7 @@
  * Sort: `sgsSortBackground`, `sgsSortBorderColour`, `sgsSortBorderWidth`, `sgsSortBorderRadius`, `sgsSortFontWeight`, `sgsSortFontFamily`,
  * `sgsSortHeight`, `sgsSortPaddingInline`, `sgsSortShadow` (+ `sgsSortShadowColour`), the hover fill and border colour
  * (`sgsSortHoverBackground`, `sgsSortHoverBorderColour`) and the keyboard-focus border colour (`sgsSortFocusBorderColour`).
+ * Results count: `sgsCountFontSize`, `sgsCountFontWeight`.
  *
  * @package SGS\Blocks
  */
@@ -28,6 +30,7 @@ import {
 import { useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import SgsLengthControl from '../../components/SgsLengthControl';
+import SgsBoxControl from '../../components/SgsBoxControl';
 import ShadowControl from '../../components/ShadowControl';
 import { resolveShadowPreviewComposed } from '../../utils';
 import { flattenPresetSetting } from '../../utils/presetSettings';
@@ -38,6 +41,7 @@ import './product-filter-look.scss';
 
 const CHIPS_BLOCK = 'woocommerce/product-filter-chips';
 const SORT_BLOCK = 'woocommerce/catalog-sorting';
+const COUNT_BLOCK = 'woocommerce/product-results-count';
 
 const LENGTH_UNITS = [
 	{ value: 'px', label: 'px' },
@@ -60,6 +64,21 @@ const WEIGHT_OPTIONS = [
 	{ value: '800', label: __( 'Extra bold (800)', 'sgs-blocks' ) },
 ];
 
+/**
+ * A padding box as one CSS shorthand for the editor preview (an unset side is 0), or '' when no side is set.
+ *
+ * @param {Object} box The {top,right,bottom,left} box.
+ * @return {string} The shorthand, or ''.
+ */
+const boxShorthand = ( box ) => {
+	const sides = [ 'top', 'right', 'bottom', 'left' ].map( ( side ) =>
+		box && 'object' === typeof box ? String( box[ side ] || '' ) : ''
+	);
+	return sides.some( Boolean )
+		? sides.map( ( side ) => side || '0' ).join( ' ' )
+		: '';
+};
+
 /** Guard against double registration (a CJS + ESM double-load would register every filter twice). */
 if ( ! window.__sgsFilterLookRegistered ) {
 	window.__sgsFilterLookRegistered = true;
@@ -74,7 +93,10 @@ if ( ! window.__sgsFilterLookRegistered ) {
 					attributes: {
 						...settings.attributes,
 						sgsChipFontWeight: { type: 'string', default: '' },
+						sgsChipFontSize: { type: 'string', default: '' },
 						sgsChipBorderWidth: { type: 'string', default: '' },
+						sgsChipRadius: { type: 'string', default: '' },
+						sgsChipPadding: { type: 'object', default: {} },
 						sgsChipMinHeight: { type: 'string', default: '' },
 						sgsChipPaintButtons: {
 							type: 'boolean',
@@ -127,6 +149,16 @@ if ( ! window.__sgsFilterLookRegistered ) {
 					},
 				};
 			}
+			if ( COUNT_BLOCK === name ) {
+				return {
+					...settings,
+					attributes: {
+						...settings.attributes,
+						sgsCountFontSize: { type: 'string', default: '' },
+						sgsCountFontWeight: { type: 'string', default: '' },
+					},
+				};
+			}
 			return settings;
 		}
 	);
@@ -165,7 +197,11 @@ if ( ! window.__sgsFilterLookRegistered ) {
 		( BlockEdit ) => ( props ) => {
 			const { name, attributes, setAttributes } = props;
 			const [ fontFamilies ] = useSettings( 'typography.fontFamilies' );
-			if ( CHIPS_BLOCK !== name && SORT_BLOCK !== name ) {
+			if (
+				CHIPS_BLOCK !== name &&
+				SORT_BLOCK !== name &&
+				COUNT_BLOCK !== name
+			) {
 				return <BlockEdit { ...props } />;
 			}
 			// The theme's fonts, stored by slug so the setting follows the client's theme.
@@ -194,6 +230,54 @@ if ( ! window.__sgsFilterLookRegistered ) {
 									setAttributes,
 									'sgsChipFontWeight'
 								) }
+								<SgsLengthControl
+									scale="font-size"
+									label={ __(
+										'Chip text size',
+										'sgs-blocks'
+									) }
+									value={ attributes.sgsChipFontSize || '' }
+									onChange={ ( val ) =>
+										setAttributes( {
+											sgsChipFontSize: val || '',
+										} )
+									}
+									help={ empty }
+								/>
+								<SgsLengthControl
+									scale="spacing"
+									label={ __(
+										'Chip corner radius',
+										'sgs-blocks'
+									) }
+									value={ attributes.sgsChipRadius || '' }
+									units={ LENGTH_UNITS }
+									onChange={ ( val ) =>
+										setAttributes( {
+											sgsChipRadius: val || '',
+										} )
+									}
+									help={ __(
+										'A radius of half the chip height or more draws a pill. Leave empty to keep the default.',
+										'sgs-blocks'
+									) }
+								/>
+								<SgsBoxControl
+									label={ __( 'Chip padding', 'sgs-blocks' ) }
+									values={
+										attributes.sgsChipPadding &&
+										'object' ===
+											typeof attributes.sgsChipPadding
+											? attributes.sgsChipPadding
+											: {}
+									}
+									units={ LENGTH_UNITS }
+									onChange={ ( next ) =>
+										setAttributes( {
+											sgsChipPadding: next || {},
+										} )
+									}
+								/>
 								<SgsLengthControl
 									scale="spacing"
 									label={ __(
@@ -225,7 +309,7 @@ if ( ! window.__sgsFilterLookRegistered ) {
 										} )
 									}
 									help={ __(
-										'The chip padding and text size are the block’s own Dimensions and Typography settings. Empty sizes a chip to its content.',
+										'Empty sizes a chip to its content.',
 										'sgs-blocks'
 									) }
 								/>
@@ -627,6 +711,30 @@ if ( ! window.__sgsFilterLookRegistered ) {
 								) }
 							</PanelBody>
 						) }
+						{ COUNT_BLOCK === name && (
+							<PanelBody
+								title={ __( 'Count look', 'sgs-blocks' ) }
+								initialOpen={ false }
+							>
+								<SgsLengthControl
+									scale="font-size"
+									label={ __( 'Text size', 'sgs-blocks' ) }
+									value={ attributes.sgsCountFontSize || '' }
+									onChange={ ( val ) =>
+										setAttributes( {
+											sgsCountFontSize: val || '',
+										} )
+									}
+									help={ empty }
+								/>
+								{ weightControl(
+									__( 'Font weight', 'sgs-blocks' ),
+									attributes,
+									setAttributes,
+									'sgsCountFontWeight'
+								) }
+							</PanelBody>
+						) }
 					</InspectorControls>
 				</>
 			);
@@ -692,7 +800,9 @@ if ( ! window.__sgsFilterLookRegistered ) {
 				} );
 			} );
 			if (
-				( CHIPS_BLOCK !== name && SORT_BLOCK !== name ) ||
+				( CHIPS_BLOCK !== name &&
+					SORT_BLOCK !== name &&
+					COUNT_BLOCK !== name ) ||
 				! attributes
 			) {
 				return <BlockListBlock { ...props } />;
@@ -707,7 +817,13 @@ if ( ! window.__sgsFilterLookRegistered ) {
 				const pill = true === attributes.sgsChipCountPill;
 				rows = [
 					[ 'chip-weight', attributes.sgsChipFontWeight ],
+					[ 'chip-font-size', attributes.sgsChipFontSize ],
 					[ 'chip-border-width', attributes.sgsChipBorderWidth ],
+					[ 'chip-radius', attributes.sgsChipRadius ],
+					[
+						'chip-padding',
+						boxShorthand( attributes.sgsChipPadding ),
+					],
 					[ 'chip-min-height', attributes.sgsChipMinHeight ],
 					[
 						'chip-fill',
@@ -787,6 +903,11 @@ if ( ! window.__sgsFilterLookRegistered ) {
 								attributes.sgsChipSelectedOffsetY || '0'
 							}`,
 					],
+				];
+			} else if ( COUNT_BLOCK === name ) {
+				rows = [
+					[ 'count-line-font-size', attributes.sgsCountFontSize ],
+					[ 'count-line-weight', attributes.sgsCountFontWeight ],
 				];
 			} else {
 				rows = [

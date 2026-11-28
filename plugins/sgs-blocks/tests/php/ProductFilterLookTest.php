@@ -1,6 +1,7 @@
 <?php
 /**
- * Tests: the "look" extension on woocommerce/product-filter-chips and woocommerce/catalog-sorting.
+ * Tests: the "look" extension on woocommerce/product-filter-chips, woocommerce/catalog-sorting and
+ * woocommerce/product-results-count.
  *
  * Set values print scoped rules on the chip buttons, the count and the sort select; an unset block is
  * returned byte for byte; the chips' stored colours reach the buttons only when sgsChipPaintButtons is on;
@@ -202,6 +203,39 @@ namespace {
 			$this->assertSame( self::CHIPS, \SGS\Blocks\sgs_inject_filter_look( self::CHIPS, array( 'blockName' => 'woocommerce/product-filter-chips', 'attrs' => array() ) ) );
 			$this->assertSame( self::SORT, \SGS\Blocks\sgs_inject_filter_look( self::SORT, array( 'blockName' => 'woocommerce/catalog-sorting', 'attrs' => array( 'sgsSortFontWeight' => '' ) ) ) );
 			$this->assertSame( self::SORT, \SGS\Blocks\sgs_inject_filter_look( self::SORT, array( 'blockName' => 'core/group', 'attrs' => array( 'sgsSortBorderRadius' => '999px' ) ) ) );
+		}
+
+		public function test_chip_text_size_corner_and_padding_print_on_the_buttons(): void {
+			$css = \SGS\Blocks\sgs_filter_look_chips_css(
+				array(
+					'sgsChipFontSize' => '15px',
+					'sgsChipRadius'   => '999px',
+					'sgsChipPadding'  => array(
+						'top'    => '0px',
+						'right'  => '18px',
+						'bottom' => '0px',
+						'left'   => '18px',
+					),
+				),
+				'sgs-look-1a2b3c4d'
+			);
+			$this->assertStringContainsString( '.sgs-filter-look.sgs-look-1a2b3c4d .wc-block-product-filter-chips__item{font-size:15px;border-radius:999px;padding-top:0px;padding-right:18px;padding-bottom:0px;padding-left:18px;}', $css );
+			// One side set prints that side alone; an unsafe or empty value prints nothing.
+			$this->assertStringContainsString( '__item{padding-left:12px;}', \SGS\Blocks\sgs_filter_look_chips_css( array( 'sgsChipPadding' => array( 'left' => '12px' ) ), 'sgs-look-1a2b3c4d' ) );
+			$this->assertSame( '', \SGS\Blocks\sgs_filter_look_chips_css( array( 'sgsChipFontSize' => '', 'sgsChipRadius' => '', 'sgsChipPadding' => array() ), 'sgs-look-1a2b3c4d' ) );
+			$this->assertSame( '', \SGS\Blocks\sgs_filter_look_chips_css( array( 'sgsChipRadius' => '9px;}x{y:z', 'sgsChipFontSize' => '1em}' ), 'sgs-look-1a2b3c4d' ) );
+		}
+
+		public function test_results_count_size_and_weight_print_on_the_line_and_nothing_when_unset(): void {
+			$css = \SGS\Blocks\sgs_filter_look_count_css( array( 'sgsCountFontSize' => '15px', 'sgsCountFontWeight' => '700' ), 'sgs-look-9c8b7a6d' );
+			$this->assertSame( '.sgs-filter-look.sgs-look-9c8b7a6d,.sgs-filter-look.sgs-look-9c8b7a6d .woocommerce-result-count{font-size:15px;font-weight:700;}', $css );
+			$this->assertSame( '', \SGS\Blocks\sgs_filter_look_count_css( array(), 'sgs-look-9c8b7a6d' ) );
+			$this->assertSame( '', \SGS\Blocks\sgs_filter_look_count_css( array( 'sgsCountFontSize' => '15px;}x{y:z' ), 'sgs-look-9c8b7a6d' ) );
+			$block = '<div class="sgs-look-9c8b7a6d wp-block-woocommerce-product-results-count"><p class="woocommerce-result-count">Showing all 5 results</p></div>';
+			$out   = \SGS\Blocks\sgs_inject_filter_look( $block, array( 'blockName' => 'woocommerce/product-results-count', 'attrs' => array( 'sgsCountFontWeight' => '700' ) ) );
+			$this->assertStringContainsString( '<style>.sgs-filter-look.sgs-look-9c8b7a6d,.sgs-filter-look.sgs-look-9c8b7a6d .woocommerce-result-count{font-weight:700;}</style>', $out );
+			$this->assertStringNotContainsString( 'style="', $out );
+			$this->assertSame( $block, \SGS\Blocks\sgs_inject_filter_look( $block, array( 'blockName' => 'woocommerce/product-results-count', 'attrs' => array() ) ) );
 		}
 
 		public function test_chip_least_height_prints_on_the_buttons_and_nothing_when_unset(): void {

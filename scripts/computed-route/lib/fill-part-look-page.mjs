@@ -45,7 +45,9 @@
 // lines), notPrecedesAnchor (the negation of precedesAnchor), beforeAnchor / afterAnchor (the match comes before / after an anchor's
 // element in the document: words in a box of their own beside a bar), firstChild (a matcher its first element child satisfies: a step
 // drawn as a section whose first child is its heading), clickable (a control, or an element the draft's template gives a click
-// handler, an onclick, role button or a pointer cursor: a quantity or save control drawn as a span), notShopPart (none of the shop parts record's elements for these ids).
+// handler, an onclick, role button or a pointer cursor: a quantity or save control drawn as a span), notShopPart (none of the shop parts record's elements for these ids),
+// countOf (an anchor name: the first whole number in its text is how many elements that anchor locates, and it sits outside them: a
+// listing's "5 treats to choose from").
 // `spec.pins` maps an anchor to { tpl, host }: the anchor is the shown element the draft stamps with that template number in that
 // component (a second read of the same page in another state takes the drawer the first read found). Each located element is
 // returned with its own { tpl, host } stamp.
@@ -387,6 +389,15 @@ export function findPartsInPage( { spec, names, props, pages } ) {
 		}
 		if ( undefined !== m.control && isControl( el ) !== m.control ) {
 			return false;
+		}
+		// The count of a listing: the first whole number in its text equals how many elements an anchor locates (the shop's
+		// cards), and it is not inside one of them.
+		if ( m.countOf ) {
+			const many = anchorEls( m.countOf );
+			const n = /\d+/.exec( textOf( el ) );
+			if ( ! many.length || ! n || Number( n[ 0 ] ) !== many.length || many.some( ( a ) => a.contains( el ) ) ) {
+				return false;
+			}
 		}
 		if ( m.linksTo ) {
 			const roles = [].concat( m.linksTo );

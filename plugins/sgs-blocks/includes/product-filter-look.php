@@ -1,14 +1,17 @@
 <?php
 /**
- * Look settings for WooCommerce's category chips and sort control.
+ * Look settings for WooCommerce's category chips, sort control and results count.
  *
- * `woocommerce/product-filter-chips` (the chips of a category, attribute or brand filter) and
- * `woocommerce/catalog-sorting` (the "Sort by" select) have no setting for a chip's border width or font
- * weight, the count beside a chip, or the sort select's border, radius, fill and weight. This extension adds them
- * to those two blocks ONLY, each empty by default; an empty value prints nothing, so a site that sets none of them
+ * `woocommerce/product-filter-chips` (the chips of a category, attribute or brand filter),
+ * `woocommerce/catalog-sorting` (the "Sort by" select) and `woocommerce/product-results-count` (the "Showing all 5
+ * results" line) have no setting for a chip's border width, corner, padding, text size or font weight, the count beside
+ * a chip, the sort select's border, radius, fill and weight, or the count line's size and weight that prints through a
+ * stylesheet (WooCommerce's own radius, padding and typography supports print inline style). This extension adds them
+ * to those three blocks ONLY, each empty by default; an empty value prints nothing, so a site that sets none of them
  * keeps WooCommerce's and the theme's look byte for byte.
  *
- * Chips (`sgsChipBorderWidth`, `sgsChipMinHeight`, `sgsChipFontWeight`, `sgsChipCountPill` with `sgsChipCountBackground`,
+ * Chips (`sgsChipBorderWidth`, `sgsChipRadius`, `sgsChipPadding` (a {top,right,bottom,left} box, each set side printed),
+ * `sgsChipMinHeight`, `sgsChipFontSize`, `sgsChipFontWeight`, `sgsChipCountPill` with `sgsChipCountBackground`,
  * `sgsChipCountColour`, `sgsChipCountRadius`, and `sgsChipPaintButtons`): WooCommerce stores the colours a client
  * picks on the chips block (`customChipBackground`, `customChipBorder`, `customChipText`, the same three
  * `customSelectedChip*`, or the palette slugs `chipBackground` and the rest) and hands them to its own stylesheet
@@ -46,6 +49,8 @@
  * `select.orderby`; `sgsSortHoverBackground` and `sgsSortHoverBorderColour` on its hover (and keyboard focus) through
  * `sgs_hover_state_rules()`, and `sgsSortFocusBorderColour` on `:focus-visible`.
  *
+ * Results count (`sgsCountFontSize`, `sgsCountFontWeight`): printed on the block's root and its count line.
+ *
  * The frontend rule is a scoped `<style>` tag, never a style="" attribute (Spec 32), on the block's own uid
  * class or a minted `sgs-filter-look-<8hex>` scope.
  *
@@ -60,6 +65,7 @@ require_once __DIR__ . '/product-filter-chip-chosen.php';
 
 const SGS_FILTER_LOOK_CHIPS_BLOCK = 'woocommerce/product-filter-chips';
 const SGS_FILTER_LOOK_SORT_BLOCK  = 'woocommerce/catalog-sorting';
+const SGS_FILTER_LOOK_COUNT_BLOCK = 'woocommerce/product-results-count';
 
 add_filter( 'render_block', __NAMESPACE__ . '\sgs_inject_filter_look', 11, 2 );
 add_filter( 'render_block', __NAMESPACE__ . '\sgs_filter_look_chips_markup', 9, 3 );
@@ -165,6 +171,16 @@ function sgs_filter_look_chips_css( array $attrs, string $scope ): string {
 	if ( '' !== $border_width ) {
 		$rest[] = 'border-width:' . $border_width;
 	}
+	$font_size = sgs_css_single_length_value( (string) ( $attrs['sgsChipFontSize'] ?? '' ) );
+	if ( '' !== $font_size ) {
+		$rest[] = 'font-size:' . $font_size;
+	}
+	$chip_radius = sgs_css_single_length_value( (string) ( $attrs['sgsChipRadius'] ?? '' ) );
+	if ( '' !== $chip_radius ) {
+		$rest[] = 'border-radius:' . $chip_radius;
+	}
+	require_once __DIR__ . '/helpers-box.php';
+	$rest = array_merge( $rest, sgs_box_object_longhand_list( $attrs['sgsChipPadding'] ?? null, 'padding' ) );
 
 	$chosen_look = sgs_filter_look_chosen_decls( $attrs );
 	$chosen      = array();
@@ -330,7 +346,29 @@ function sgs_filter_look_sort_css( array $attrs, string $scope ): string {
 }
 
 /**
- * Render-block filter: the look rule for the chips and sort blocks.
+ * The scoped CSS for a results count block's look settings: the size and weight of the count line.
+ *
+ * @param array<string, mixed> $attrs Stored block attributes.
+ * @param string               $scope Scope class name, no leading dot.
+ * @return string CSS text without a <style> wrapper; '' when nothing is set.
+ */
+function sgs_filter_look_count_css( array $attrs, string $scope ): string {
+	require_once __DIR__ . '/render-helpers.php';
+	$decls = array();
+	$size  = sgs_css_single_length_value( (string) ( $attrs['sgsCountFontSize'] ?? '' ) );
+	if ( '' !== $size ) {
+		$decls[] = 'font-size:' . $size;
+	}
+	$weight = sgs_font_weight_value( $attrs['sgsCountFontWeight'] ?? '' );
+	if ( '' !== $weight ) {
+		$decls[] = 'font-weight:' . $weight;
+	}
+	$root = '.sgs-filter-look.' . $scope;
+	return sgs_filter_look_rule( $root . ',' . $root . ' .woocommerce-result-count', $decls );
+}
+
+/**
+ * Render-block filter: the look rule for the chips, sort and results count blocks.
  *
  * @param mixed $block_content Rendered block HTML.
  * @param mixed $block         Parsed block.
@@ -354,6 +392,13 @@ function sgs_inject_filter_look( $block_content, $block ) {
 			$block_content,
 			'sgs-filter-look',
 			static fn( string $scope ): string => sgs_filter_look_sort_css( $attrs, $scope )
+		);
+	}
+	if ( SGS_FILTER_LOOK_COUNT_BLOCK === $name ) {
+		return sgs_inject_scoped_block_css(
+			$block_content,
+			'sgs-filter-look',
+			static fn( string $scope ): string => sgs_filter_look_count_css( $attrs, $scope )
 		);
 	}
 	return $block_content;

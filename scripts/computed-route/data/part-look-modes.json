@@ -212,7 +212,7 @@
 			]
 		},
 		"woocommerce/product-filter-chips": {
-			"_comment": "The shop's filter chips (F-6): a count drawn inside a chip is the chips block's count pill; the first chip pressed on load whose count is larger than every other chip's is the All chip (its words without the count are sgsChipAllLabel, its count pill sgsChipAllCount); a press of an unpressed chip that releases the pressed one is one at a time (sgsChipSingle), one that keeps it is several at a time. A row with no counts proves no All chip, so its label is left unwritten.",
+			"_comment": "The shop's filter chips (F-6): a count drawn inside a chip is the chips block's count pill; the first chip pressed on load whose count is larger than every other chip's is the All chip (its words without the count are sgsChipAllLabel, its count pill sgsChipAllCount); a press of an unpressed chip that releases the pressed one is one at a time (sgsChipSingle), one that keeps it is several at a time. A row with no counts proves no All chip, so its label is left unwritten. A chip colour the look pairing writes (WooCommerce's own customChip* settings) turns sgsChipPaintButtons on, which prints them on the chip buttons.",
 			"rules": [
 				{
 					"setting": "sgsChipCountPill",
@@ -257,6 +257,12 @@
 					"setting": "sgsChipSingle",
 					"value": false,
 					"whenFound": "chip-multiple"
+				},
+				{
+					"setting": "sgsChipPaintButtons",
+					"value": true,
+					"whenWritten": [ "customChipBackground", "customChipBorder", "customChipText", "customSelectedChipBackground", "customSelectedChipBorder", "customSelectedChipText" ],
+					"reason": "WooCommerce's chip colours paint the chip buttons only with this switch on (includes/product-filter-look.php)"
 				}
 			]
 		},

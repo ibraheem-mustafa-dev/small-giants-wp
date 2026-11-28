@@ -1,0 +1,13 @@
+{
+	"_comment": "Settings another plugin's block declares itself (its own block.json attributes) that an SGS extension paints, seeded as block_attributes rows with source 'native' (sgs-update-v2.py::_seed_native_setting_rows) so the cloning route can pair them with the draft by part (css_element) and property. Only settings SGS prints through its own scoped stylesheet belong here: WooCommerce's chip colours reach the chip buttons through includes/product-filter-look.php when sgsChipPaintButtons is on. Never a setting the block's own plugin prints as inline style (its style.* supports): R-47-10 refuses a core style attribute in a tree the route writes. A native colour setting holds a CSS colour, never an SGS palette slug.",
+	"blocks": {
+		"woocommerce/product-filter-chips": {
+			"customChipBackground": { "type": "string", "role": "color", "css_property": "background-color", "css_element": "chip" },
+			"customChipBorder": { "type": "string", "role": "color", "css_property": "border-color", "css_element": "chip" },
+			"customChipText": { "type": "string", "role": "color", "css_property": "color", "css_element": "chip" },
+			"customSelectedChipBackground": { "type": "string", "role": "color", "css_property": "background-color", "css_element": "chip-selected" },
+			"customSelectedChipBorder": { "type": "string", "role": "color", "css_property": "border-color", "css_element": "chip-selected" },
+			"customSelectedChipText": { "type": "string", "role": "color", "css_property": "color", "css_element": "chip-selected" }
+		}
+	}
+}

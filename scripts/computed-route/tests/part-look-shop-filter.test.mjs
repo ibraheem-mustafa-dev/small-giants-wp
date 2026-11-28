@@ -151,3 +151,64 @@ test( 'MUST FAIL: a sort select\'s equal left and right padding is its padding-i
 	assert.equal( await inline( '' ), undefined, 'the browser\'s own select padding is zero: nothing of the draft\'s' );
 	assert.equal( await inline( 'padding:0 18px 0 10px' ), undefined, 'one length cannot hold two sides that differ' );
 } );
+
+// WooCommerce's own chip colours (plugins/sgs-blocks/scripts/dbschema/native-setting-rows.json), as the source 'native' rows the reseed writes.
+const NATIVE = JSON.parse( fs.readFileSync( path.join( DATA, '..', '..', '..', 'plugins', 'sgs-blocks', 'scripts', 'dbschema', 'native-setting-rows.json' ), 'utf8' ) ).blocks;
+const nativeRowsOf = ( block ) => Object.entries( NATIVE[ block ] || {} ).map( ( [ name, a ] ) => ( { attr_name: name, attr_type: a.type, role: a.role, css_property: a.css_property, css_element: a.css_element, css_state: null, css_tier: null, is_responsive: 0, tier_shape: null, enum_values: null, default_value: null, source: 'native' } ) );
+const PALETTE = { palette: [ { slug: 'cream', colour: { r: 255, g: 250, b: 240, a: 1 } }, { slug: 'cocoa', colour: { r: 58, g: 42, b: 34, a: 1 } } ] };
+
+test( 'MUST FAIL: the chips take the draft\'s pill: corner, padding and text size, WooCommerce\'s own resting and chosen colours as CSS colours, and the paint switch', async () => {
+	const names = [ 'chip-list', 'chip', 'chip-selected', 'chip-count' ];
+	const got = await read( CHIPS(), 'shopchips', names );
+	const rows = [ ...rowsOf( 'woocommerce/product-filter-chips' ), ...nativeRowsOf( 'woocommerce/product-filter-chips' ) ];
+	const reads = Object.fromEntries( names.map( ( n ) => [ n, wide( got[ n ] ) ] ) );
+	const look = buildLook( { block: 'woocommerce/product-filter-chips', rows, names: rows.map( ( r ) => r.attr_name ), locators: LOC.groups.shopchips, reads, snapshot: PALETTE } );
+	const value = ( attr ) => look.writes.find( ( w ) => w.attr === attr )?.value;
+	assert.equal( value( 'sgsChipRadius' ), '999px' );
+	assert.deepEqual( value( 'sgsChipPadding' ), { top: '0px', right: '18px', bottom: '0px', left: '18px' } );
+	// A palette colour is the palette's own variable (a native setting holds a CSS colour, never an SGS slug); one off the palette
+	// stays its hex. The SGS count pill keeps its slug.
+	assert.equal( value( 'customChipBackground' ), 'var(--wp--preset--color--cream)' );
+	assert.equal( value( 'customChipBorder' ), 'var(--wp--preset--color--cocoa)' );
+	assert.equal( value( 'customSelectedChipBackground' ), '#F9CF6E' );
+	assert.equal( value( 'sgsChipCountBackground' ), 'cocoa' );
+	const written = new Set( look.writes.map( ( w ) => w.attr ) );
+	const modes = evaluateModes( { block: 'woocommerce/product-filter-chips', rules: MODES[ 'woocommerce/product-filter-chips' ].rules, rows, reads, written } );
+	assert.deepEqual( modes.writes.filter( ( w ) => 'sgsChipPaintButtons' === w.attr ).map( ( w ) => w.value ), [ true ] );
+	// Negative control: with no chip colour written the paint switch stays unwritten.
+	const bare = evaluateModes( { block: 'woocommerce/product-filter-chips', rules: MODES[ 'woocommerce/product-filter-chips' ].rules, rows, reads, written: new Set( [ 'sgsChipRadius' ] ) } );
+	assert.equal( bare.writes.find( ( w ) => 'sgsChipPaintButtons' === w.attr ), undefined );
+	assert.equal( bare.settings.sgsChipPaintButtons.code, 'notWritten' );
+} );
+
+test( 'MUST FAIL: a chip text size is read where the draft states it on the chip', async () => {
+	const got = await read( CHIPS().replace( /font-weight:700/g, 'font-weight:700;font-size:15px' ), 'shopchips', [ 'chip' ] );
+	const rows = rowsOf( 'woocommerce/product-filter-chips' );
+	const look = buildLook( { block: 'woocommerce/product-filter-chips', rows, names: rows.map( ( r ) => r.attr_name ), locators: LOC.groups.shopchips, reads: { chip: wide( got.chip ) } } );
+	assert.equal( look.writes.find( ( w ) => 'sgsChipFontSize' === w.attr )?.value, '15px' );
+} );
+
+// A shop page of three cards (a square picture link, a price, a button) and a line that counts them.
+const CARDS = ( n ) => Array.from( { length: n }, ( _, i ) => `<div class="card"><a href="#p${ i }" style="display:block;width:200px;height:200px"></a><h3>Treat ${ i }</h3><p>£${ i + 5 }.00</p><button>Add</button></div>` ).join( '' );
+const COUNTED = ( line, n = 3 ) => `<section><div><span style="font-size:15px;font-weight:700">${ line }</span><select><option>Featured</option></select></div><div style="display:flex">${ CARDS( n ) }</div></section>`;
+
+test( 'MUST FAIL: the results count is the line whose first number is the number of cards, paired with the count block\'s size and weight', async () => {
+	assert.deepEqual( Object.keys( LOC.surfaces[ 'shop-count' ] ).filter( ( k ) => '_comment' !== k ).map( ( k ) => LOC.surfaces[ 'shop-count' ][ k ] ), [ 'shopcount', 'woocommerce/product-results-count', 'shop', 'archive-product', false, 'shop' ] );
+	const got = await read( COUNTED( '3 treats to choose from' ), 'shopcount', [ 'results-count' ] );
+	assert.deepEqual( ( got[ 'results-count' ] || [] ).map( ( i ) => i.text ), [ '3 treats to choose from' ] );
+	const rows = rowsOf( 'woocommerce/product-results-count' );
+	assert.deepEqual( rows.map( ( r ) => r.attr_name ).sort(), [ 'sgsCountFontSize', 'sgsCountFontWeight' ] );
+	const look = buildLook( { block: 'woocommerce/product-results-count', rows, names: rows.map( ( r ) => r.attr_name ), locators: LOC.groups.shopcount, reads: { 'results-count': wide( got[ 'results-count' ] ) } } );
+	assert.deepEqual( Object.fromEntries( look.writes.map( ( w ) => [ w.attr, w.value ] ) ), { sgsCountFontSize: '15px', sgsCountFontWeight: '700' } );
+} );
+
+test( 'negative controls: a number that is not the card count, a page with no cards and a count inside a card are not the results count', async () => {
+	const none = async ( html ) => ( ( await read( html, 'shopcount', [ 'results-count' ] ) )[ 'results-count' ] || [] ).length;
+	assert.equal( await none( COUNTED( '4 treats to choose from' ) ), 0 );
+	assert.equal( await none( '<section><span>3 treats to choose from</span></section>' ), 0 );
+	assert.equal( await none( '<section><span>0 treats to choose from</span></section>' ), 0, 'no cards: not even a count of none' );
+	// A chip whose own count equals the number of cards (the All chip) is a control's count, not the line.
+	assert.equal( await none( COUNTED( '<button>All <span>3</span></button>' ) ), 0 );
+	assert.deepEqual( ( ( await read( COUNTED( '3 treats' ).replace( '<section>', '<section><button>All <span>3</span></button>' ), 'shopcount', [ 'results-count' ] ) )[ 'results-count' ] || [] ).map( ( i ) => i.text ), [ '3 treats' ] );
+	assert.equal( await none( `<section><div style="display:flex">${ CARDS( 1 ).replace( '<h3>', '<span>1 left</span><h3>' ) }</div></section>` ), 0 );
+} );

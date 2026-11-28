@@ -335,6 +335,61 @@ def test_filter_chip_and_sort_settings_are_seeded_on_their_own_block(tmp_path):
     assert _row(conn, "woocommerce/product-filter-chips", "sgsChipAllLabel")["css_property"] is None
 
 
+def test_chip_shape_and_results_count_settings_are_seeded_with_their_part(tmp_path):
+    """The chip's text size, corner and padding and the results count's size and weight (filterLook) are seeded with
+    their CSS property and part, the count's on WooCommerce's results count block only."""
+    conn = _fixture(tmp_path)
+    SGS._seed_extension_attr_rows(conn, tmp_path)
+    _apply_layers(conn)
+    for slug, attr, prop, element, kind in (
+        ("woocommerce/product-filter-chips", "sgsChipFontSize", "font-size", "chip", "string"),
+        ("woocommerce/product-filter-chips", "sgsChipRadius", "border-radius", "chip", "string"),
+        ("woocommerce/product-filter-chips", "sgsChipPadding", "padding", "chip", "object"),
+        ("woocommerce/product-results-count", "sgsCountFontSize", "font-size", "results-count", "string"),
+        ("woocommerce/product-results-count", "sgsCountFontWeight", "font-weight", "results-count", "string"),
+    ):
+        row = _row(conn, slug, attr)
+        assert (row["css_property"], row["css_element"], row["attr_type"]) == (prop, element, kind), f"{slug}.{attr}"
+    assert _attrs(conn, "woocommerce/product-results-count") == {"sgsCountFontSize", "sgsCountFontWeight"}
+
+
+def test_native_setting_rows_are_seeded_with_their_part_and_survive_the_reset(tmp_path):
+    """WooCommerce's own chip colours (dbschema/native-setting-rows.json) get source='native' rows under the chips
+    block, their CSS property and part written by layer 2.7, so part-look pairs the draft's chip fill, border and text."""
+    conn = _fixture(tmp_path)
+    SGS._seed_extension_attr_rows(conn, tmp_path)
+    counts = SGS._seed_native_setting_rows(conn)
+    assert counts["native_rows_inserted"] == 6 and not counts["native_rows_no_block"]
+    conn.execute("UPDATE block_attributes SET css_property = 'rogue' WHERE attr_name = 'customChipBackground'")
+    with patch.object(SGS, "_collect_native_setting_overrides", wraps=SGS._collect_native_setting_overrides) as layer:
+        _apply_layers(conn)
+        assert layer.called
+    for attr, prop, element in (
+        ("customChipBackground", "background-color", "chip"),
+        ("customChipBorder", "border-color", "chip"),
+        ("customChipText", "color", "chip"),
+        ("customSelectedChipBackground", "background-color", "chip-selected"),
+    ):
+        row = _row(conn, "woocommerce/product-filter-chips", attr)
+        assert (row["source"], row["css_property"], row["css_element"], row["role"]) == ("native", prop, element, "color"), attr
+    # A rerun is stable; a row dropped from the file is deleted; an attribute another source holds is never touched.
+    assert SGS._seed_native_setting_rows(conn)["native_rows_inserted"] == 0
+    rows_file = tmp_path / "native.json"
+    rows_file.write_text(json.dumps({"blocks": {"woocommerce/product-filter-chips": {"customChipText": {"type": "string"}, "sgsChipGap": {"type": "string"}}, "woocommerce/no-such-block": {"x": {"type": "string"}}}}), encoding="utf-8")
+    again = SGS._seed_native_setting_rows(conn, rows_path=rows_file)
+    assert again["native_rows_deleted"] == 5
+    assert again["native_rows_no_block"] == ["woocommerce/no-such-block.x"]
+    assert _attrs(conn, "woocommerce/product-filter-chips", "native") == {"customChipText"}
+    assert _row(conn, "woocommerce/product-filter-chips", "sgsChipGap")["source"] == "sgs-ext"
+
+
+def test_native_setting_rows_dry_run_writes_nothing(tmp_path):
+    conn = _fixture(tmp_path)
+    SGS._seed_extension_attr_rows(conn, tmp_path)
+    assert SGS._seed_native_setting_rows(conn, dry_run=True)["native_rows_inserted"] == 6
+    assert not _attrs(conn, "woocommerce/product-filter-chips", "native")
+
+
 def test_seed_rows_rows_are_removed_when_the_rule_goes(tmp_path):
     conn = _fixture(tmp_path)
     SGS._seed_extension_attr_rows(conn, tmp_path)
@@ -346,4 +401,4 @@ def test_seed_rows_rows_are_removed_when_the_rule_goes(tmp_path):
     left = {r[0] for r in conn.execute("SELECT slug FROM blocks WHERE source = 'woocommerce'").fetchall()}
     assert not left & {"woocommerce/cart", "woocommerce/checkout"}
     # The other seedRows rules (the filter chips and sort look) keep their blocks.
-    assert left == {"woocommerce/product-filter-chips", "woocommerce/catalog-sorting"}
+    assert left == {"woocommerce/product-filter-chips", "woocommerce/catalog-sorting", "woocommerce/product-results-count"}

@@ -2,7 +2,7 @@
 // Reads a client's shop look from its draft and says which settings of the Cart, Checkout, `sgs/account` and `sgs/cart` blocks it
 // would write (template-rework Task 4, Spec 48 FR-48-87).
 //
-//   node scripts/computed-route/part-look.mjs --client <slug> [--surface cart|checkout|my-account|header|product|shop|shop-chips|shop-sort|my-account-in|confirmation] [--site <scratch copy>]
+//   node scripts/computed-route/part-look.mjs --client <slug> [--surface cart|checkout|my-account|header|product|shop|shop-chips|shop-sort|shop-count|my-account-in|confirmation] [--site <scratch copy>]
 //                                             [--compare] [--write [--only <attr,attr>] [--dry-run]] [--out <dir>] [--headed]
 //
 // It serves the client's draft itself, opens each surface at 1440, 768 and 375, locates each part of the block by the structure
@@ -55,7 +55,7 @@ import { readLiveSignedIn, readSignedInParts, shootLiveSignedIn, signedInSeedOf 
 import { chooseEmptied, chooseOpenings, documentedOpenings, handoffRecords, pinsOf, probeOpenings, visitorAtEveryWidth, visitorOpening } from './lib/part-look-opening.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
-const SURFACES = [ 'cart', 'checkout', 'my-account', 'header', 'product', 'shop', 'shop-chips', 'shop-sort', 'my-account-in', 'confirmation' ];
+const SURFACES = [ 'cart', 'checkout', 'my-account', 'header', 'product', 'shop', 'shop-chips', 'shop-sort', 'shop-count', 'my-account-in', 'confirmation' ];
 const readJson = ( file ) => JSON.parse( fs.readFileSync( file, 'utf8' ) );
 const SELECTOR_TABLE = path.join( REPO, 'plugins', 'sgs-blocks', 'includes', 'woocommerce', 'commerce-look', 'selectors.json' );
 
@@ -308,7 +308,7 @@ export async function runPartLook( { client, repo = REPO, entries = {}, derive =
 		notes.push( ...builtinResult.notes.map( ( n ) => `${ surface }: ${ n }` ) );
 		// Content and mode settings (what a card draws, what its button says): rules over the located parts.
 		readsOf[ surface ] = reads;
-		const modes = evaluateModes( { block: loc.block, rules: modesData.blocks?.[ loc.block ]?.rules, rows: blockRowsOf, reads, others: readsOf } );
+		const modes = evaluateModes( { block: loc.block, rules: modesData.blocks?.[ loc.block ]?.rules, rows: blockRowsOf, reads, others: readsOf, written: new Set( build.writes.map( ( w ) => w.attr ) ) } );
 		// The account menu: which view each of the draft's tabs opens (lib/part-look-account-views.mjs).
 		const menuData = modesData.blocks?.[ loc.block ]?.menu;
 		if ( signedTabs && menuData ) {
@@ -470,7 +470,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	try {
 		const client = flag( '--client' );
 		if ( ! client ) {
-			throw new Error( 'usage: part-look.mjs --client <slug> [--surface cart|checkout|my-account|header|product|shop|shop-chips|shop-sort|my-account-in|confirmation] [--site <scratch copy>] [--compare] [--write [--only <attr,attr>] [--dry-run]] [--verify --seed <seed-out.json> [--login <user:pass>] [--strict]] [--out <dir>] [--headed]' );
+			throw new Error( 'usage: part-look.mjs --client <slug> [--surface cart|checkout|my-account|header|product|shop|shop-chips|shop-sort|shop-count|my-account-in|confirmation] [--site <scratch copy>] [--compare] [--write [--only <attr,attr>] [--dry-run]] [--verify --seed <seed-out.json> [--login <user:pass>] [--strict]] [--out <dir>] [--headed]' );
 		}
 		const surface = flag( '--surface' );
 		if ( surface && ! SURFACES.includes( surface ) ) {

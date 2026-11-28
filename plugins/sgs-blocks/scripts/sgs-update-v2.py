@@ -3003,6 +3003,106 @@ def _seed_extension_attr_rows(
     }
 
 
+_NATIVE_SETTING_ROWS_JSON = Path(__file__).resolve().parent / "dbschema" / "native-setting-rows.json"
+
+
+def _load_native_setting_rows(path: Path = _NATIVE_SETTING_ROWS_JSON) -> dict[str, dict[str, dict]]:
+    """{block_slug: {attr_name: spec}} from dbschema/native-setting-rows.json: settings another plugin's block declares
+    itself that an SGS extension paints. {} when the file is absent or unreadable."""
+    if not path.exists():
+        return {}
+    try:
+        return dict(json.loads(path.read_text(encoding="utf-8")).get("blocks") or {})
+    except Exception as exc:  # noqa: BLE001
+        print(f"Stage 1 (native-setting-rows): WARN failed to read {path.name}: {exc}")
+        return {}
+
+
+def _seed_native_setting_rows(
+    conn: sqlite3.Connection, dry_run: bool = False, rows_path: Path = _NATIVE_SETTING_ROWS_JSON
+) -> dict:
+    """Stage 1 sub-step B4: write `source='native'` block_attributes rows for the settings
+    dbschema/native-setting-rows.json lists (a WooCommerce block's own colour settings an SGS extension paints), so the
+    cloning route pairs them with the draft. A row is written only under a block the `blocks` table holds (the
+    extension seeder makes WooCommerce's blocks rows first); a native row no longer listed is deleted. An attribute
+    another source already holds is never touched. The routing columns are written by layer 2.7 of
+    `_apply_attr_classification_overrides` (`_collect_native_setting_overrides`), which survives its column reset.
+
+    Returns {"native_rows_inserted", "native_rows_updated", "native_rows_deleted", "native_rows_no_block"}.
+    """
+    c = conn.cursor()
+    wanted = {
+        (slug, attr): spec
+        for slug, attrs in _load_native_setting_rows(rows_path).items()
+        for attr, spec in (attrs or {}).items()
+    }
+    known_blocks = {r[0] for r in c.execute("SELECT slug FROM blocks").fetchall()}
+    existing = {
+        (slug, attr): source
+        for slug, attr, source in c.execute("SELECT block_slug, attr_name, source FROM block_attributes").fetchall()
+        if source == "native" or (slug, attr) in wanted
+    }
+    inserted = updated = 0
+    no_block: list[str] = []
+    for (slug, attr), spec in sorted(wanted.items()):
+        if slug not in known_blocks:
+            no_block.append(f"{slug}.{attr}")
+            continue
+        source = existing.get((slug, attr))
+        if source is not None and source != "native":
+            continue
+        values = (_canonical_attr_type(spec.get("type", "string")), json.dumps(spec["default"]) if "default" in spec else None)
+        if source is None:
+            inserted += 1
+            if not dry_run:
+                c.execute(
+                    "INSERT INTO block_attributes (block_slug, attr_name, attr_type, default_value, source) "
+                    "VALUES (?, ?, ?, ?, 'native')",
+                    (slug, attr) + values,
+                )
+        else:
+            updated += 1
+            if not dry_run:
+                c.execute(
+                    "UPDATE block_attributes SET attr_type = ?, default_value = ? WHERE block_slug = ? AND attr_name = ?",
+                    values + (slug, attr),
+                )
+    stale = [k for k, src in existing.items() if src == "native" and k not in wanted]
+    if not dry_run:
+        for slug, attr in stale:
+            c.execute(
+                "DELETE FROM block_attributes WHERE block_slug = ? AND attr_name = ? AND source = 'native'", (slug, attr)
+            )
+    if dry_run:
+        print(
+            f"Stage 1 (native-setting-rows) [dry-run]: would insert={inserted} update={updated} delete={len(stale)}"
+            + (f"; no blocks row for {', '.join(no_block)}" if no_block else "")
+        )
+    return {
+        "native_rows_inserted": inserted,
+        "native_rows_updated": updated,
+        "native_rows_deleted": len(stale),
+        "native_rows_no_block": no_block,
+    }
+
+
+def _collect_native_setting_overrides(
+    c: sqlite3.Cursor, rows_path: Path = _NATIVE_SETTING_ROWS_JSON
+) -> dict[tuple[str, str], dict[str, object]]:
+    """Layer 2.7 of `_apply_attr_classification_overrides`: {(block_slug, attr_name): routing fields} for every EXISTING
+    `source='native'` row, taken from dbschema/native-setting-rows.json."""
+    specs = _load_native_setting_rows(rows_path)
+    out: dict[tuple[str, str], dict[str, object]] = {}
+    for slug, attr in c.execute("SELECT block_slug, attr_name FROM block_attributes WHERE source = 'native'").fetchall():
+        spec = (specs.get(slug) or {}).get(attr)
+        if spec is None:
+            continue
+        fields = {f: spec[f] for f in _EXTENSION_ROUTING_FIELDS if spec.get(f) is not None}
+        if fields:
+            out[(slug, attr)] = fields
+    return out
+
+
 def _collect_extension_attr_overrides(
     c: sqlite3.Cursor, roster_path: Path = _EXTENSION_ROSTER_JSON
 ) -> dict[tuple[str, str], dict[str, object]]:
@@ -3075,6 +3175,10 @@ def _apply_attr_classification_overrides(
         combined.setdefault(key, {}).update(fields)
     # Layer 2.6: editor-extension attributes (source='sgs-ext'), from extension-roster.json.
     for key, fields in _collect_extension_attr_overrides(c).items():
+        combined.setdefault(key, {}).update(fields)
+    # Layer 2.7: another plugin's own block settings an SGS extension paints (source='native'), from
+    # dbschema/native-setting-rows.json.
+    for key, fields in _collect_native_setting_overrides(c).items():
         combined.setdefault(key, {}).update(fields)
     # Layer 3: hand-authored overrides — applied LAST so they win on any field
     # conflict with the derived layer (per-field merge, not whole-row replace).
@@ -3820,6 +3924,13 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
             f"updated={ext_row_counts['ext_rows_updated']} deleted={ext_row_counts['ext_rows_deleted']} "
             f"across {ext_row_counts['ext_rows_blocks']} block(s)."
         )
+        native_counts = _timed(timings, "native setting rows", _seed_native_setting_rows, conn, dry_run=False)
+        print(
+            f"Stage 1 (native-setting-rows): inserted={native_counts['native_rows_inserted']} "
+            f"updated={native_counts['native_rows_updated']} deleted={native_counts['native_rows_deleted']}"
+            + (f"; no blocks row for {', '.join(native_counts['native_rows_no_block'])}" if native_counts["native_rows_no_block"] else "")
+            + "."
+        )
 
         # --- Stage 1 sub-step C: apply per-attr classification overrides ---
         # (AFTER canonical assignment so overrides are the final writer, and AFTER
@@ -3946,6 +4057,7 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
             f"allowed_blocks_dynamic_skipped={ab_dynamic_skipped}."
         )
         _seed_extension_attr_rows(conn, blocks_dir, dry_run=True)
+        _seed_native_setting_rows(conn, dry_run=True)
         _apply_attr_classification_overrides(conn, blocks_dir, dry_run=True)
 
     return {

@@ -304,8 +304,12 @@ export function toSetting( row, value, ctx ) {
 		return { why: `${ row.attr_name } takes named values (${ String( row.enum_values ).replace( /[\[\]"]/g, '' ) }) and the route has no rule to name the draft's ${ row.css_property }` };
 	}
 	switch ( fam ) {
-		case 'colour':
-			return { value: slug( value, row.attr_name ) };
+		case 'colour': {
+			// A block's own colour setting (source 'native', WooCommerce's chip colours) holds a CSS colour, never an SGS palette
+			// slug: a palette colour is written as its preset variable, so it still follows the client's palette.
+			const held = slug( value, row.attr_name );
+			return { value: 'native' === row.source && held !== value && /^[a-z][a-z0-9-]*$/.test( held ) ? `var(--wp--preset--color--${ held })` : held };
+		}
 		case 'keyword':
 			if ( row.enum_values ) {
 				const allowed = String( row.enum_values ).replace( /^\[|\]$/g, '' ).split( /[,|]/ ).map( ( t ) => t.trim().replace( /^["']|["']$/g, '' ) );

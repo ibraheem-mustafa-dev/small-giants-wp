@@ -157,11 +157,14 @@
 		{
 			"id": "filterLook",
 			"file": "product-filter-look.js",
-			"rule": { "mode": "named", "blocks": [ "woocommerce/product-filter-chips", "woocommerce/catalog-sorting" ], "seedRows": true },
+			"rule": { "mode": "named", "blocks": [ "woocommerce/product-filter-chips", "woocommerce/catalog-sorting", "woocommerce/product-results-count" ], "seedRows": true },
 			"attributes": {
 				"sgsChipFontWeight": { "type": "string", "default": "", "role": "visual", "css_property": "font-weight", "css_element": "chip", "blocks": [ "woocommerce/product-filter-chips" ] },
 				"sgsChipBorderWidth": { "type": "string", "default": "", "role": "visual", "css_property": "border-width", "css_element": "chip", "blocks": [ "woocommerce/product-filter-chips" ] },
 				"sgsChipMinHeight": { "type": "string", "default": "", "role": "visual", "css_property": "min-height", "css_element": "chip", "blocks": [ "woocommerce/product-filter-chips" ] },
+				"sgsChipFontSize": { "type": "string", "default": "", "role": "visual", "css_property": "font-size", "css_element": "chip", "blocks": [ "woocommerce/product-filter-chips" ] },
+				"sgsChipRadius": { "type": "string", "default": "", "role": "visual", "css_property": "border-radius", "css_element": "chip", "blocks": [ "woocommerce/product-filter-chips" ] },
+				"sgsChipPadding": { "type": "object", "default": {}, "role": "layout", "css_property": "padding", "css_element": "chip", "blocks": [ "woocommerce/product-filter-chips" ] },
 				"sgsChipPaintButtons": { "type": "boolean", "default": false, "role": "visual", "blocks": [ "woocommerce/product-filter-chips" ] },
 				"sgsChipCountPill": { "type": "boolean", "default": false, "role": "visual", "blocks": [ "woocommerce/product-filter-chips" ] },
 				"sgsChipCountBackground": { "type": "string", "default": "", "role": "visual", "css_property": "background-color", "css_element": "chip-count", "blocks": [ "woocommerce/product-filter-chips" ] },
@@ -189,7 +192,9 @@
 				"sgsSortShadowColour": { "type": "string", "default": "", "role": "visual", "blocks": [ "woocommerce/catalog-sorting" ] },
 				"sgsSortHoverBackground": { "type": "string", "default": "", "role": "visual", "css_property": "background-color", "css_element": "sort-select", "css_state": "hover", "blocks": [ "woocommerce/catalog-sorting" ] },
 				"sgsSortHoverBorderColour": { "type": "string", "default": "", "role": "visual", "css_property": "border-color", "css_element": "sort-select", "css_state": "hover", "blocks": [ "woocommerce/catalog-sorting" ] },
-				"sgsSortFocusBorderColour": { "type": "string", "default": "", "role": "visual", "blocks": [ "woocommerce/catalog-sorting" ] }
+				"sgsSortFocusBorderColour": { "type": "string", "default": "", "role": "visual", "blocks": [ "woocommerce/catalog-sorting" ] },
+				"sgsCountFontSize": { "type": "string", "default": "", "role": "visual", "css_property": "font-size", "css_element": "results-count", "blocks": [ "woocommerce/product-results-count" ] },
+				"sgsCountFontWeight": { "type": "string", "default": "", "role": "visual", "css_property": "font-weight", "css_element": "results-count", "blocks": [ "woocommerce/product-results-count" ] }
 			}
 		},
 		{

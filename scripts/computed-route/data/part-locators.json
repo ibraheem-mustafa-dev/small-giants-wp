@@ -56,6 +56,15 @@
 			"basket": false,
 			"entryOf": "shop"
 		},
+		"shop-count": {
+			"_comment": "The shop's results count: WooCommerce's results count block, its sgsCount* look settings read from the draft's line that counts the listing's cards (the first whole number in its text is the number of cards).",
+			"group": "shopcount",
+			"block": "woocommerce/product-results-count",
+			"pageRole": "shop",
+			"template": "archive-product",
+			"basket": false,
+			"entryOf": "shop"
+		},
 		"shop-sort": {
 			"_comment": "The shop's sort select (F-6): WooCommerce's catalog sorting block, its sgsSort* look settings read from the draft's sort select on the shop page.",
 			"group": "shopsort",
@@ -3386,6 +3395,51 @@
 				}
 			},
 			"probe": "press"
+		},
+		"shopcount": {
+			"_comment": "The shop's results count: the smallest line of words, its own text, outside the cards and outside any control (a chip's own count is not it), whose first whole number is the number of cards on the page (the cards anchor is the product card group's). A line that counts anything else, or a page with no cards, is not it.",
+			"anchors": {
+				"cards": {
+					"from": "page",
+					"match": {
+						"hasAll": [
+							{
+								"tag": [
+									"a"
+								],
+								"square": true
+							},
+							{
+								"hasAmount": true,
+								"ownText": true
+							},
+							{
+								"tag": [
+									"button"
+								]
+							}
+						]
+					},
+					"smallest": true
+				}
+			},
+			"parts": {
+				"results-count": {
+					"from": "page",
+					"match": {
+						"countOf": "cards",
+						"ownText": true,
+						"control": false,
+						"hasAmount": false,
+						"text": "words",
+						"notInside": {
+							"control": true
+						}
+					},
+					"smallest": true,
+					"pick": "first"
+				}
+			}
 		},
 		"shopsort": {
 			"_comment": "The shop's sort select: the first select on the shop page (a select inside a product card is the card's own choice, not the sort).",

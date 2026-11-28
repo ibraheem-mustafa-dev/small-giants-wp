@@ -120,7 +120,7 @@ export function placeOf( a, b ) {
 // The label of a button without the amount it carries ("Add to basket · £21.50" is "Add to basket").
 export const labelOf = ( text ) => String( text ).replace( AMOUNT, '' ).replace( /[\s·•|–-]+$/, '' ).trim();
 
-export function evaluateModes( { block, rules, rows, reads, others = null } ) {
+export function evaluateModes( { block, rules, rows, reads, others = null, written = null } ) {
 	const out = { writes: [], gaps: [], settings: {} };
 	const known = new Set( rows.map( ( r ) => r.attr_name ) );
 	for ( const rule of rules || [] ) {
@@ -153,6 +153,12 @@ export function evaluateModes( { block, rules, rows, reads, others = null } ) {
 		}
 		if ( rule.whenFound && ! has( reads, rule.whenFound ) ) {
 			out.settings[ rule.setting ] = { code: 'notDrawn' };
+			continue;
+		}
+		// A switch that makes other settings paint (the chips' sgsChipPaintButtons for WooCommerce's chip colours) is on where the
+		// look pairing writes one of them (`written`: the attribute names the pairing wrote).
+		if ( rule.whenWritten && ! [].concat( rule.whenWritten ).some( ( a ) => written?.has( a ) ) ) {
+			out.settings[ rule.setting ] = { code: 'notWritten' };
 			continue;
 		}
 		if ( rule.whenStyle ) {
