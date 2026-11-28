@@ -4,7 +4,7 @@
 //   node scripts/computed-route/build-foundation.mjs <client> --site <target>
 //        [--plan] [--force step,step] [--through step] [--replace-snapshot] [--allow-missing-paint sgs/a,sgs/b] [--allow-unpicked] [--picks <file>]
 // The steps run in this order (lib/foundation-plan.mjs): preflight, handoff-check, intake-files, intake, apply-review, tokens, plugin-build, sync,
-// snapshot-push, site-info, media, site-build, manifest, looks, skeletons, surfaces. Each prints one line: `ok`, `skip` with the reason (its result is
+// snapshot-push, site-info, media, catalogue, site-build, manifest, fixtures, looks, skeletons, surfaces. Each prints one line: `ok`, `skip` with the reason (its result is
 // current, or it has nothing to do by design), `FAIL` with the next action, or `stop` when a step it depends on failed. A step that already holds a
 // current result is skipped, so a rerun after a failure costs little; the state is kept in sites/<client>/build/foundation/<site>.json (gitignored) and
 // each step's own logs in sites/<client>/build/qa/foundation/<stamp>/. Exit 0 when no step failed or stopped, 1 otherwise, 2 on a usage error.

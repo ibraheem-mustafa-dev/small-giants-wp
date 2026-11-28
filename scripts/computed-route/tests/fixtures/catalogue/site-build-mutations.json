@@ -1,10 +1,11 @@
 [
 	{ "file": "lib/site-build-catalogue.mjs", "find": "const ours = s.sku === p.sku;", "replace": "const ours = true;", "why": "a product found by slug with its own variations gets the catalogue's too" },
-	{ "file": "lib/site-build-catalogue.mjs", "find": "if ( 'simple' === p.type && '' === s.price ) {", "replace": "if ( false ) {", "why": "a missing price is not completed" },
+	{ "file": "lib/site-build-catalogue.mjs", "find": "if ( 'simple' === p.type && 'simple' === s.type && '' === s.price ) {", "replace": "if ( false ) {", "why": "a missing price is not completed" },
+	{ "file": "lib/site-build-catalogue.mjs", "find": "if ( 'simple' === p.type && 'simple' === s.type && '' === s.price ) {", "replace": "if ( 'simple' === p.type && '' === s.price ) {", "why": "a simple price is planned on a found product of another type, which WooCommerce reads as blank on every read, so a fresh read never plans 0" },
 	{ "file": "lib/site-build-catalogue.mjs", "find": "if ( s.draftMeta !== p.draftId ) {", "replace": "if ( false ) {", "why": "an adopted product never gets its draft id" },
 	{ "file": "lib/site-build-catalogue.mjs", "find": "const lack = p.variations.filter( ( v ) => ! s.variations.includes( v.sku ) );", "replace": "const lack = [];", "why": "a missing variation is not made" },
 	{ "file": "lib/site-build-catalogue.mjs", "find": "if ( s.fixture ) {", "replace": "if ( false ) {", "why": "a fixture product is completed" },
-	{ "file": "lib/site-build-catalogue.mjs", "find": "const products = ( catalogue ) => catalogue.products.filter( ( p ) => ! ( catalogue.dropped || [] ).includes( p.draftId ) );", "replace": "const products = ( catalogue ) => catalogue.products;", "why": "a dropped product is made" },
+	{ "file": "lib/site-build-catalogue.mjs", "find": "export const catalogueProducts = ( catalogue ) => catalogue.products.filter( ( p ) => ! ( catalogue.dropped || [] ).includes( p.draftId ) );", "replace": "export const catalogueProducts = ( catalogue ) => catalogue.products;", "why": "a dropped product is made" },
 	{ "file": "lib/site-build-catalogue.mjs", "find": "if ( ! state.woocommerce ) {", "replace": "if ( false ) {", "why": "a site without WooCommerce is planned" },
 	{ "file": "lib/site-build-catalogue.mjs", "find": "const productBase = ( state.productBase || 'product' ) !== want ? { from: state.productBase || 'product', to: want } : null;", "replace": "const productBase = null;", "why": "the manifest's product base is never set" },
 	{ "file": "lib/site-build-catalogue.mjs", "find": "notes.push( plugin ? ", "replace": "plugin && notes.push( plugin ? ", "why": "a standing gap is not said" },

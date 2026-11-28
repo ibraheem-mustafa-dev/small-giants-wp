@@ -19,8 +19,14 @@
 //   snapshot-push    push-theme-snapshot.py to a hosted site (a local copy takes the snapshot with the sync).
 //   site-info        provision-site-info-from-draft.py --intake --apply on the site (a copy through WSL, never its test site).
 //   media            media-upload.mjs --apply: the handoff's pictures into the site's library and the record the readers look up.
+//   catalogue        site-build.mjs --catalogue --apply (FR-48-92): every product of the draft catalogue (catalogue.json) made on the site, or found by
+//                    its SKU, and its id recorded in catalogue.json `sites.<site>`, which the skeletons' product cards and the site build's product
+//                    menu links read; for any client whose catalogue lists a product, on any site; held when the catalogue, the media map and the
+//                    site's recorded ids are as it last left them.
 //   site-build       site-build.mjs --apply: every page-map row's post, menus and layout; held when every row has its id on this site.
 //   manifest         manifest.mjs --apply: surfaces.json; held when every layout row has a surface.
+//   fixtures         shop-fixtures.mjs --apply: the route's own test products made if missing and hidden from the shop, for a client whose page map
+//                    has a shop or product row, on a fixture site only (lib/shop-fixture-sites.mjs).
 //   looks            plugins/sgs-blocks/scripts/site-look/site_look.py --all: every block's site look for the client from its committed snapshot,
 //                    offline (no site), with lib/setting-record.mjs::lookJobs workers (SGS_LOOK_JOBS overrides), with the shop stylesheet when the page map has a shop (lib/setting-record.mjs::runsShop); the builder
 //                    skips a look whose key has not moved; held when the snapshot, the block build, the fixtures and the builder are as last built.
@@ -38,8 +44,9 @@ import { runsShop, LOOK_JOBS, lookJobs } from './setting-record.mjs';
 import { FIXTURE_SITES } from './shop-fixture-sites.mjs';
 import { fixtureDefs } from './shop-fixtures.mjs';
 import { mediaAssets } from './media-upload.mjs';
+import { catalogueProducts } from './site-build-catalogue.mjs';
 
-export const STEP_IDS = [ 'preflight', 'handoff-check', 'intake-files', 'intake', 'apply-review', 'tokens', 'plugin-build', 'sync', 'snapshot-push', 'site-info', 'media', 'site-build', 'manifest', 'catalogue', 'looks', 'skeletons', 'surfaces' ];
+export const STEP_IDS = [ 'preflight', 'handoff-check', 'intake-files', 'intake', 'apply-review', 'tokens', 'plugin-build', 'sync', 'snapshot-push', 'site-info', 'media', 'catalogue', 'site-build', 'manifest', 'fixtures', 'looks', 'skeletons', 'surfaces' ];
 const ROUTE = 'scripts/computed-route';
 // The site look builder's worker processes (each renders a block's instances offline).
 export { LOOK_JOBS };
@@ -62,6 +69,7 @@ export const commands = {
 	pushSnapshot: ( { client, ssh, host } ) => [ 'python', [ 'plugins/sgs-blocks/scripts/push-theme-snapshot.py', '--client', client, '--target', ssh, '--target-domain', host, '--yes' ] ],
 	siteInfo: ( { client, site } ) => [ 'python', [ 'plugins/sgs-blocks/scripts/provision-site-info-from-draft.py', '--site', site, '--intake', `sites/${ client }/build/intake/intake.json`, '--handoff', `sites/${ client }/handoff`, '--apply' ] ],
 	media: ( { client, site } ) => [ 'node', [ `${ ROUTE }/media-upload.mjs`, client, '--site', site, '--apply' ] ],
+	catalogue: ( { client, site } ) => [ 'node', [ `${ ROUTE }/site-build.mjs`, client, '--site', site, '--catalogue', '--apply' ] ],
 	siteBuild: ( { client, site } ) => [ 'node', [ `${ ROUTE }/site-build.mjs`, client, '--site', site, '--apply' ] ],
 	manifest: ( { client, site } ) => [ 'node', [ `${ ROUTE }/manifest.mjs`, client, '--site', site, '--apply' ] ],
 	hideFixtures: ( { client, site } ) => [ 'node', [ `${ ROUTE }/shop-fixtures.mjs`, client, '--site', site, '--apply' ] ],
@@ -92,6 +100,7 @@ export function buildSteps( ctx ) {
 		pageMap: path.join( build, 'page-map.json' ),
 		pageMapSite: path.join( build, 'page-map.site' ),
 		surfaces: path.join( build, 'surfaces.json' ),
+		catalogue: path.join( build, 'catalogue.json' ),
 		snapshot: at( 'sites', client, 'theme-snapshot.json' ),
 		scratchSnapshot: path.join( build, 'foundation', 'theme-snapshot.extracted.json' ),
 		scratchTrace: path.join( build, 'foundation', 'theme-snapshot.extracted.trace.json' ),
@@ -127,7 +136,15 @@ export function buildSteps( ctx ) {
 		...[ 'theme.json', 'functions.php' ].map( ( n ) => at( 'theme', 'sgs-theme', n ) ),
 		...filesIn( at( 'theme', 'sgs-theme', 'assets', 'css' ), ( n ) => n.endsWith( '.css' ) ),
 	];
-	const catalogueFp = () => joinFp( site, fileSha( p.pageMap ), sha( JSON.stringify( fixtureDefs( client ) ) ), fileSha( path.join( build, 'media-map.json' ) ) );
+	const fixturesFp = () => joinFp( site, fileSha( p.pageMap ), sha( JSON.stringify( fixtureDefs( client ) ) ), fileSha( path.join( build, 'media-map.json' ) ) );
+	// The draft catalogue's inputs and what the step recorded for this site: the catalogue without its per-site records (the step writes
+	// them), the media map its pictures are found by, and the site's own product and attribute ids (a record removed runs it again).
+	const catalogueOf = () => readJson( p.catalogue );
+	const catalogueFp = () => {
+		const c = catalogueOf();
+		const { sites = {}, ...draft } = c ?? {};
+		return joinFp( site, sha( JSON.stringify( draft ) ), fileSha( path.join( build, 'media-map.json' ) ), sha( JSON.stringify( [ sites[ site ]?.products ?? null, sites[ site ]?.attributes ?? null ] ) ) );
+	};
 	const looksFp = async () => joinFp( client, snapshotSha(), await ports.buildDigest(), ...builderFiles().map( ( f ) => `${ path.relative( repo, f ) }:${ fileSha( f ) }` ), runsShop( client, repo ) );
 	const localOnly = ( what ) => ( local ? null : `${ site } is a hosted site: ${ what }` );
 
@@ -255,7 +272,21 @@ export function buildSteps( ctx ) {
 			run: () => cmd( 'media', commands.media( { client, site } ), `a 401 means the application password was refused: node ${ ROUTE }/tools/scratch-target.mjs list, then scratch-mirror.sh secrets ${ site }` ),
 		},
 		{
-			id: 'site-build', deps: [ 'media', 'site-info' ], title: 'site-build.mjs --apply: every page-map row\'s post, the menus and the layout',
+			// The client's own products (FR-48-92), on whatever site the foundation builds, before the site build: a product card on a page
+			// that is not the shop carries the product id recorded here (lib/skeleton-carried.mjs::carriedIds product), and a product row's
+			// menu entry links to the address recorded here (lib/site-build-menu-links.mjs). A product already on the site is found by its
+			// SKU and only completed, so a copy of a site that holds them records their ids under its own name.
+			id: 'catalogue', deps: [ 'media' ], title: 'site-build.mjs --catalogue --apply: the draft catalogue\'s products made on the site and their ids recorded',
+			applicable: () => {
+				const c = catalogueOf();
+				return c && Array.isArray( c.products ) && catalogueProducts( c ).length ? null : 'catalogue.json lists no product';
+			},
+			fingerprint: () => catalogueFp(),
+			holds: () => heldBy( 'catalogue', catalogueFp(), `the draft catalogue's products were made and their ids recorded for ${ site }` ),
+			run: () => cmd( 'catalogue', commands.catalogue( { client, site } ), 'it names each product step a fresh read still plans; rerun it: it finds the products already made by their SKU' ),
+		},
+		{
+			id: 'site-build', deps: [ 'media', 'site-info', 'catalogue' ], title: 'site-build.mjs --apply: every page-map row\'s post, the menus and the layout',
 			fingerprint: () => joinFp( fileSha( p.pageMap ), site ),
 			holds: () => ( pageMapBuilt( { rows: readJson( p.pageMap ), siteFile: fs.existsSync( p.pageMapSite ) ? fs.readFileSync( p.pageMapSite, 'utf8' ) : '', site, targets } ) ? `every page-map row has its id on ${ site }'s post ids` : null ),
 			run: () => cmd( 'site-build', commands.siteBuild( { client, site } ), 'the build writes each row\'s id as it goes, so rerun it: it adopts the posts already made' ),
@@ -270,11 +301,11 @@ export function buildSteps( ctx ) {
 			// The route's own test products are made when missing and catalogue-hidden (lib/shop-fixtures.mjs: a fixture found listed is hidden, a
 			// missing one is made hidden), so a client's shop shows only the client's products. What the step makes is the fixture definitions
 			// (their SKUs, prices, sizes) and the image the site's media map names, so a change to either runs it again.
-			id: 'catalogue', deps: [ 'site-build' ], title: 'shop-fixtures.mjs --apply: the test products made if missing and hidden from the shop',
+			id: 'fixtures', deps: [ 'site-build' ], title: 'shop-fixtures.mjs --apply: the test products made if missing and hidden from the shop',
 			applicable: () => ( ! runsShop( client, repo ) ? 'the page map has no shop or product row' : ! FIXTURE_SITES.includes( site ) ? `${ site } is not a fixture site (${ FIXTURE_SITES.join( ', ' ) })` : null ),
-			fingerprint: () => catalogueFp(),
-			holds: () => heldBy( 'catalogue', catalogueFp(), 'the test products were made and hidden for this page map and these fixture definitions' ),
-			run: () => cmd( 'catalogue', commands.hideFixtures( { client, site } ), 'it names the product it could not hide' ),
+			fingerprint: () => fixturesFp(),
+			holds: () => heldBy( 'fixtures', fixturesFp(), 'the test products were made and hidden for this page map and these fixture definitions' ),
+			run: () => cmd( 'fixtures', commands.hideFixtures( { client, site } ), 'it names the product it could not hide' ),
 		},
 		{
 			id: 'looks', deps: [ 'tokens', 'plugin-build', 'apply-review' ], title: `site_look.py --all: every block's site look for the client, offline`,

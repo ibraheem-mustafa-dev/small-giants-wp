@@ -41,7 +41,7 @@
 // saved page's markup instead of the site and prints the planned tree (no site is read or written). A whole build runs it last.
 // A `product` row's menu entry becomes a custom link item (the draft's link text, the product's recorded permalink and the
 // draft href's own query) once --catalogue has built the products on the site (lib/site-build-menu-links.mjs); until then it
-// is a note naming that step, so the order is --catalogue --apply, then the whole build or --menus.
+// is a note naming that step, so the order is --catalogue --apply, then the whole build or --menus (the foundation command runs them in that order).
 // Exit 0 done, 1 failure or a stopped run, 2 usage.
 import fs from 'fs';
 import path from 'path';

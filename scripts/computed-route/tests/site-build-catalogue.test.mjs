@@ -41,6 +41,20 @@ test( 'a found product lacking a price, an image, a variation or its draft id is
 	assert.match( plan.actions[ 1 ].say, /found by slug\) lacks price 12, image, its draft id$/ );
 } );
 
+test( 'MUST FAIL: a simple catalogue product found as another type keeps its type and is planned no simple price, so a fresh read after the apply plans 0', () => {
+	const { catalogue } = setup();
+	const box = catalogue.products.find( ( p ) => 'simple' === p.type );
+	// WooCommerce reads a variable product's own regular price as blank whatever is stored, so the found variable box always reads price ''.
+	const plan = planCatalogue( catalogue, site( [ found( box, { type: 'variable', price: '' } ) ] ) );
+	const act = plan.actions.find( ( a ) => box.draftId === a.draftId );
+	assert.equal( act.action, 'exists', act.say );
+	assert.ok( plan.notes.some( ( n ) => /is variable, the catalogue's is simple; its type is left/.test( n ) ) );
+	// negative control: the same blank price on a found simple product is still completed
+	assert.match( planCatalogue( catalogue, site( [ found( box, { price: '' } ) ] ) ).actions.find( ( a ) => box.draftId === a.draftId ).say, /lacks price 12$/ );
+	// the apply PHP sets the simple price only on a product that is simple
+	assert.match( catalogueApplyPhp( [], {}, {}, null, catalogue ), /'simple' === \$p\['type'\] && \$wc->is_type\( 'simple' \)/ );
+} );
+
 test( 'a product found by slug that has its own variations keeps them; one with none gets the catalogue\'s', () => {
 	const { catalogue } = setup();
 	const jar = catalogue.products[ 0 ];

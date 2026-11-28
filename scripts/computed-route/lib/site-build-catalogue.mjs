@@ -80,13 +80,17 @@ const keyOf = ( img ) => ( img ? img.url || img.asset : null );
 // A variable product SGS's product preflight will not publish: none of its attributes is a Google variesBy axis (the
 // catalogue's `no-variesby` gap row). It is made and kept a draft.
 export const heldDraft = ( p ) => 'variable' === p.type && p.attributes.length > 0 && ! p.attributes.some( ( a ) => a.variesBy );
-const products = ( catalogue ) => catalogue.products.filter( ( p ) => ! ( catalogue.dropped || [] ).includes( p.draftId ) );
+// The catalogue's products the step makes: every product the review did not drop (catalogue.json `dropped`).
+export const catalogueProducts = ( catalogue ) => catalogue.products.filter( ( p ) => ! ( catalogue.dropped || [] ).includes( p.draftId ) );
 
 // What one found product lacks of its catalogue record (names, for the plan line).
 function missing( p, s, state, catalogue ) {
 	const out = [];
 	const ours = s.sku === p.sku;
-	if ( 'simple' === p.type && '' === s.price ) {
+	// A found product of another type keeps its type (planCatalogue's note), so only a simple one takes the simple price: WooCommerce reads a
+	// variable product's own regular price as blank whatever is stored (WC_Product_Variable_Data_Store_CPT::read_product_data), so planning
+	// it there would plan it again on every read.
+	if ( 'simple' === p.type && 'simple' === s.type && '' === s.price ) {
 		out.push( `price ${ p.price }` );
 	}
 	const onPlaceholder = Boolean( s.image ) && s.image === ( state.images[ PHOTO_TO_COME ] || 0 );
@@ -148,7 +152,7 @@ export function planCatalogue( catalogue, state ) {
 	const want = catalogue.productBase || 'product';
 	const productBase = ( state.productBase || 'product' ) !== want ? { from: state.productBase || 'product', to: want } : null;
 	const actions = [];
-	for ( const p of products( catalogue ) ) {
+	for ( const p of catalogueProducts( catalogue ) ) {
 		const s = state.products.find( ( x ) => x.draftId === p.draftId ) || { id: 0 };
 		const step = { draftId: p.draftId, product: p, image: keyOf( p.image ) || PHOTO_TO_COME, photoToCome: ! p.image, gallery: p.gallery.map( keyOf ), hold: heldDraft( p ) };
 		const address = productAddress( catalogue, p );
@@ -222,7 +226,7 @@ const parseJson = ( text, what ) => {
 	return JSON.parse( s.slice( start ) );
 };
 
-export const readCatalogueState = ( runPhp, catalogue, images ) => parseJson( runPhp( catalogueStatePhp( products( catalogue ).map( ( p ) => ( { draftId: p.draftId, sku: p.sku, slug: p.slug } ) ), images, catalogue ) ), 'the catalogue read' );
+export const readCatalogueState = ( runPhp, catalogue, images ) => parseJson( runPhp( catalogueStatePhp( catalogueProducts( catalogue ).map( ( p ) => ( { draftId: p.draftId, sku: p.sku, slug: p.slug } ) ), images, catalogue ) ), 'the catalogue read' );
 
 // The uploads an apply needs: every image the site does not hold, with its bytes (an asset) or address.
 function uploadsFor( repo, images, state ) {
@@ -271,7 +275,7 @@ export function runCatalogue( { repo, client, site, runPhp, apply, log = console
 		error( `FAILED: sites/${ client }/build/catalogue.json is missing (run intake.mjs --catalogue ${ client } first)` );
 		return 1;
 	}
-	if ( ! products( catalogue ).length ) {
+	if ( ! catalogueProducts( catalogue ).length ) {
 		log( 'catalogue: the draft catalogue has no product to make' );
 		return 0;
 	}
@@ -300,7 +304,7 @@ export function runCatalogue( { repo, client, site, runPhp, apply, log = console
 	const done = parseJson( runPhp( catalogueApplyPhp( steps, images, uploadsFor( repo, images, state ), plan.productBase ? plan.productBase.to : null, catalogue ) ), 'the catalogue write' );
 	done.done.forEach( ( d ) => log( `  done: ${ d }` ) );
 	if ( plan.productBase ) {
-		const why = verifyProductBase( runPhp, plan.productBase.to, products( catalogue ).map( ( p ) => p.draftId ) );
+		const why = verifyProductBase( runPhp, plan.productBase.to, catalogueProducts( catalogue ).map( ( p ) => p.draftId ) );
 		why ? done.issues.push( `product base: ${ why }` ) : log( `  done: product base /${ plan.productBase.to } flushed; a product answers` );
 	}
 	done.issues.forEach( ( d ) => error( `  issue: ${ d }` ) );

@@ -201,18 +201,60 @@
 		"file": "lib/foundation-plan.mjs",
 		"find": "sha( JSON.stringify( fixtureDefs( client ) ) ), fileSha( path.join( build, 'media-map.json' ) ) );",
 		"replace": "fileSha( p.pageMap ) );",
-		"why": "a new fixture image or changed fixture definition leaves the catalogue step held"
+		"why": "a new fixture image or changed fixture definition leaves the fixtures step held"
 	},
 	{
 		"file": "lib/foundation-plan.mjs",
 		"find": "title: 'shop-fixtures.mjs --apply: the test products made if missing and hidden from the shop',",
 		"replace": "title: 'shop-fixtures.mjs --apply: the test products hidden from the shop',",
-		"why": "the catalogue step's title says it only hides the fixtures"
+		"why": "the fixtures step's title says it only hides the fixtures"
 	},
 	{
 		"file": "lib/foundation-plan.mjs",
-		"find": "fingerprint: () => catalogueFp(),",
+		"find": "fingerprint: () => fixturesFp(),",
 		"replace": "fingerprint: () => joinFp( site, fileSha( p.pageMap ) ),",
-		"why": "the step's fingerprint ignores the fixture state"
+		"why": "the fixtures step's fingerprint ignores the fixture state"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "return c && Array.isArray( c.products ) && catalogueProducts( c ).length ? null : 'catalogue.json lists no product';",
+		"replace": "return c && Array.isArray( c.products ) && catalogueProducts( c ).length && FIXTURE_SITES.includes( site ) ? null : 'catalogue.json lists no product';",
+		"why": "the client's catalogue is made only on a fixture site, so a new client site's product cards carry no product id"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "return c && Array.isArray( c.products ) && catalogueProducts( c ).length ? null : 'catalogue.json lists no product';",
+		"replace": "return c && Array.isArray( c.products ) && c.products.length ? null : 'catalogue.json lists no product';",
+		"why": "a catalogue whose every product was dropped at review still runs the step"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "'site-info', 'media', 'catalogue', 'site-build', 'manifest', 'fixtures', 'looks',",
+		"replace": "'site-info', 'media', 'site-build', 'manifest', 'catalogue', 'fixtures', 'looks',",
+		"why": "the catalogue runs after the site build, whose product menu links read its ids"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "id: 'site-build', deps: [ 'media', 'site-info', 'catalogue' ],",
+		"replace": "id: 'site-build', deps: [ 'media', 'site-info' ],",
+		"why": "the site build runs on after the catalogue failed"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "sha( JSON.stringify( [ sites[ site ]?.products ?? null, sites[ site ]?.attributes ?? null ] ) )",
+		"replace": "''",
+		"why": "a removed record of the site's product ids leaves the step held"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "const { sites = {}, ...draft } = c ?? {};",
+		"replace": "const { sites = {} } = c ?? {}; const draft = c;",
+		"why": "the step's own write of the ids (and another site's record) runs it again on every foundation run"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "catalogue: ( { client, site } ) => [ 'node', [ `${ ROUTE }/site-build.mjs`, client, '--site', site, '--catalogue', '--apply' ] ],",
+		"replace": "catalogue: ( { client, site } ) => [ 'node', [ `${ ROUTE }/site-build.mjs`, client, '--site', site, '--catalogue' ] ],",
+		"why": "the step runs the catalogue's dry run, which records no id"
 	}
 ]

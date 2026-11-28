@@ -57,6 +57,13 @@ function world( { hosted = false, committed = false, source = null, failExec = {
 				picks: () => args.includes( '--apply-picks' ) && ( ( pending = false ), files.intake() ),
 				tokens: () => write( path.join( repo, args[ args.indexOf( '--out' ) + 1 ] ), '{"version":3,"settings":{"custom":{"radius":"6px"}}}' ),
 				'site-build': () => ( write( path.join( build, 'page-map.json' ), JSON.stringify( [ { slug: 'header', postType: 'sgs_header', id: 10 }, { slug: 'footer', postType: 'sgs_footer', id: 12 }, { slug: 'drawer-menu', postType: 'sgs_drawer', id: 13 }, { slug: 'about', postType: 'page', id: 11 } ] ) ), write( path.join( build, 'page-map.site' ), site ) ),
+				// The catalogue step records the id of every product it made or found under the site's own name (lib/site-build-catalogue.mjs::recordSite).
+				catalogue: () => {
+					const f = path.join( build, 'catalogue.json' );
+					const c = JSON.parse( fs.readFileSync( f, 'utf8' ) );
+					c.sites = { ...c.sites, [ site ]: { builtAt: String( execs.length ), products: Object.fromEntries( c.products.map( ( x, i ) => [ x.draftId, { id: 70 + i } ] ) ) } };
+					write( f, JSON.stringify( c ) );
+				},
 				manifest: () => write( path.join( build, 'surfaces.json' ), JSON.stringify( { header: { intakeSurface: 'hdr', target: { postId: 10 } }, footer: { intakeSurface: 'ftr', target: { postId: 12 } }, ...( dropDrawer ? {} : { 'drawer-menu': { intakeSurface: 'drw', target: { postId: 13 } } } ) } ) ),
 			};
 			'plugin-build' === id && ( built.plugin = true );
@@ -122,7 +129,7 @@ test( 'MUST FAIL: a new client\'s chain runs every step in order, builds the sit
 	assert.deepEqual( w.execs.find( ( e ) => 'looks' === e.id ).args.slice( 1, 5 ), [ '--snapshot', 'sites/acme/theme-snapshot.json', '--site', 'acme' ] );
 	assert.equal( w.execs.find( ( e ) => 'intake' === e.id ).args.includes( '--record' ), true, 'no replay file yet, so the draft is recorded' );
 	assert.deepEqual( w.execs.filter( ( e ) => 'skeletons' === e.id ).map( ( e ) => e.args[ 1 ] ), [ '--rerun-skeletons', '--apply-review' ] );
-	assert.deepEqual( statusOf( r ), { preflight: 'ok', 'handoff-check': 'ok', 'intake-files': 'ok', intake: 'ok', 'apply-review': 'ok', tokens: 'ok', 'plugin-build': 'ok', sync: 'ok', 'snapshot-push': 'skip', 'site-info': 'ok', media: 'ok', 'site-build': 'ok', manifest: 'ok', catalogue: 'skip', looks: 'ok', skeletons: 'ok', surfaces: 'ok' } );
+	assert.deepEqual( statusOf( r ), { preflight: 'ok', 'handoff-check': 'ok', 'intake-files': 'ok', intake: 'ok', 'apply-review': 'ok', tokens: 'ok', 'plugin-build': 'ok', sync: 'ok', 'snapshot-push': 'skip', 'site-info': 'ok', media: 'ok', catalogue: 'skip', 'site-build': 'ok', manifest: 'ok', fixtures: 'skip', looks: 'ok', skeletons: 'ok', surfaces: 'ok' } );
 	assert.equal( w.launches.filter( ( a ) => 'inventory,propose' === a[ a.indexOf( '--stages' ) + 1 ] ).length, 0, 'no propose pass hunts for blocks to measure' );
 	const surfaces = w.launches.at( -1 );
 	assert.deepEqual( surfaces.slice( 0, 4 ), [ 'acme', '--site', SITE, '--only' ] );
@@ -422,12 +429,12 @@ test( 'MUST FAIL: the surfaces step runs Solve on each surface when the ports ca
 	assert.ok( r.lines.some( ( l ) => /^ok {3}header solve /.test( l ) ) );
 } );
 
-test( 'MUST FAIL: the catalogue step hides the test products on a shop client\'s fixture site and is not applicable on any other site or for a client with no shop', () => {
+test( 'MUST FAIL: the fixtures step hides the test products on a shop client\'s fixture site and is not applicable on any other site or for a client with no shop', () => {
 	assert.deepEqual( commands.hideFixtures( { client: 'acme', site: 'local-mamas' } ), [ 'node', [ 'scripts/computed-route/shop-fixtures.mjs', 'acme', '--site', 'local-mamas', '--apply' ] ] );
 	const applicable = ( { site, rows } ) => {
 		const w = world();
 		write( path.join( w.build, 'page-map.json' ), JSON.stringify( rows ) );
-		return buildSteps( { client: 'acme', site, repo: w.repo, targets, ports: w.ports, state: { steps: {} } } ).find( ( s ) => 'catalogue' === s.id ).applicable();
+		return buildSteps( { client: 'acme', site, repo: w.repo, targets, ports: w.ports, state: { steps: {} } } ).find( ( s ) => 'fixtures' === s.id ).applicable();
 	};
 	const shop = [ { slug: 'shop', postType: 'shop', id: 3 } ];
 	assert.equal( applicable( { site: 'local-mamas', rows: shop } ), null, 'a shop on a fixture site runs the step' );
@@ -435,10 +442,10 @@ test( 'MUST FAIL: the catalogue step hides the test products on a shop client\'s
 	assert.match( applicable( { site: 'indus-test', rows: shop } ), /not a fixture site/ );
 } );
 
-test( 'MUST FAIL: the catalogue step says it makes the fixtures as well as hides them, and runs again when the fixture definitions\' image or the page map changes', () => {
+test( 'MUST FAIL: the fixtures step says it makes the fixtures as well as hides them, and runs again when the fixture definitions\' image or the page map changes', () => {
 	const w = world();
 	write( path.join( w.build, 'page-map.json' ), JSON.stringify( [ { slug: 'shop', postType: 'shop', id: 3 } ] ) );
-	const step = () => buildSteps( { client: 'acme', site: 'local-mamas', repo: w.repo, targets, ports: w.ports, state: { steps: {} } } ).find( ( s ) => 'catalogue' === s.id );
+	const step = () => buildSteps( { client: 'acme', site: 'local-mamas', repo: w.repo, targets, ports: w.ports, state: { steps: {} } } ).find( ( s ) => 'fixtures' === s.id );
 	assert.match( step().title, /made if missing and hidden/ );
 	const before = step().fingerprint();
 	assert.equal( step().fingerprint(), before, 'the same inputs give the same fingerprint' );
@@ -447,4 +454,34 @@ test( 'MUST FAIL: the catalogue step says it makes the fixtures as well as hides
 	assert.notEqual( withImage, before, 'a new fixture image runs the step again' );
 	write( path.join( w.build, 'page-map.json' ), JSON.stringify( [ { slug: 'shop', postType: 'shop', id: 4 } ] ) );
 	assert.notEqual( step().fingerprint(), withImage, 'a changed page map runs it again' );
+} );
+
+test( 'MUST FAIL: a client whose draft catalogue lists a product has it made on any site before the site build, and the ids recorded for that site hold the step', async () => {
+	assert.deepEqual( commands.catalogue( { client: 'acme', site: SITE } ), [ 'node', [ 'scripts/computed-route/site-build.mjs', 'acme', '--site', SITE, '--catalogue', '--apply' ] ] );
+	assert.ok( STEP_IDS.indexOf( 'catalogue' ) > STEP_IDS.indexOf( 'media' ) && STEP_IDS.indexOf( 'catalogue' ) < STEP_IDS.indexOf( 'site-build' ), STEP_IDS.join( ',' ) );
+	const w = world();
+	const steps = ( site = SITE ) => buildSteps( { client: 'acme', site, repo: w.repo, targets, ports: w.ports, state: { steps: {} } } );
+	const step = ( site = SITE ) => steps( site ).find( ( s ) => 'catalogue' === s.id );
+	assert.ok( steps().find( ( s ) => 'site-build' === s.id ).deps.includes( 'catalogue' ), 'the site build waits for the product ids its menu links read' );
+	assert.match( step().applicable(), /lists no product/, 'negative control: no catalogue.json, nothing to make' );
+	const catalogue = path.join( w.build, 'catalogue.json' );
+	write( catalogue, JSON.stringify( { products: [ { draftId: 'box' }, { draftId: 'jar' } ], dropped: [ 'box', 'jar' ] } ) );
+	assert.match( step().applicable(), /lists no product/, 'negative control: every product dropped at review, nothing to make' );
+	write( catalogue, JSON.stringify( { products: [ { draftId: 'box' }, { draftId: 'jar' } ] } ) );
+	// A site that is not a fixture site (a new client site, a scratch copy) and a hosted site both run it: the fixture-site limit is the fixtures' alone.
+	assert.equal( step().applicable(), null );
+	assert.equal( step( 'acme-test' ).applicable(), null );
+	const first = await w.go();
+	assert.equal( statusOf( first ).catalogue, 'ok', first.lines.join( ' | ' ) );
+	assert.ok( ids( w.execs ).indexOf( 'catalogue' ) < ids( w.execs ).indexOf( 'site-build' ), ids( w.execs ).join( ',' ) );
+	assert.deepEqual( w.execs.find( ( e ) => 'catalogue' === e.id ).args.slice( 1 ), [ 'acme', '--site', SITE, '--catalogue', '--apply' ] );
+	assert.deepEqual( JSON.parse( fs.readFileSync( catalogue, 'utf8' ) ).sites[ SITE ].products, { box: { id: 70 }, jar: { id: 71 } } );
+	const again = await w.go();
+	assert.match( again.lines.find( ( l ) => /^skip catalogue/.test( l ) ) ?? '', /ids recorded for local-mediatest-acme/, again.lines.join( ' | ' ) );
+	// Another site's record, or this record's build time, leaves the step held; this site's record removed (a reset catalogue.json) runs it again.
+	const c = JSON.parse( fs.readFileSync( catalogue, 'utf8' ) );
+	write( catalogue, JSON.stringify( { ...c, sites: { [ SITE ]: { ...c.sites[ SITE ], builtAt: 'later' }, 'acme-test': { products: { box: { id: 9 } } } } } ) );
+	assert.ok( ( await w.go() ).lines.some( ( l ) => /^skip catalogue/.test( l ) ), 'another site\'s record leaves this site\'s step held' );
+	write( catalogue, JSON.stringify( { ...c, sites: {} } ) );
+	assert.equal( statusOf( await w.go() ).catalogue, 'ok', 'a removed record runs the step again' );
 } );

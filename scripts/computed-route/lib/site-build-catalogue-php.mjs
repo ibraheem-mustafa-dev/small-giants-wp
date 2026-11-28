@@ -232,7 +232,7 @@ foreach ( $steps as $s ) {
 		$wc->set_sku( $p['sku'] );
 		if ( null !== $p['shortDescription'] ) { $wc->set_short_description( $p['shortDescription'] ); }
 	}
-	if ( '' === (string) $wc->get_regular_price() && 'simple' === $p['type'] ) { $wc->set_regular_price( (string) $p['price'] ); }
+	if ( '' === (string) $wc->get_regular_price() && 'simple' === $p['type'] && $wc->is_type( 'simple' ) ) { $wc->set_regular_price( (string) $p['price'] ); }
 	$taxes = array();
 	if ( ! $wc->get_attributes() && $p['attributes'] && $wc->is_type( $p['type'] ) ) {
 		$list = array();

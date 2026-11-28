@@ -91,11 +91,12 @@ test( 'MUST FAIL: --through stops the run after the named step and says what it 
 	assert.deepEqual( bad.calls.made, [] );
 	const r = await run( [ 'acme', '--site', 'local-mediatest-acme', '--plan', '--through', 'site-build' ] );
 	assert.equal( r.code, 0, r.lines.join( ' | ' ) );
-	assert.ok( r.lines.some( ( l ) => /^through site-build: manifest, catalogue, looks, skeletons, surfaces left out$/.test( l ) ) );
+	assert.ok( r.lines.some( ( l ) => /^through site-build: manifest, fixtures, looks, skeletons, surfaces left out$/.test( l ) ) );
 	const ran = r.lines.filter( ( l ) => /^(plan|skip|ok) /.test( l ) ).map( ( l ) => l.split( ' ' ).filter( Boolean )[ 1 ] );
-	assert.ok( ran.includes( 'site-build' ) && ! ran.includes( 'manifest' ) && ! ran.includes( 'catalogue' ) && ! ran.includes( 'surfaces' ), ran.join( ',' ) );
+	assert.ok( ran.includes( 'site-build' ) && ! ran.includes( 'manifest' ) && ! ran.includes( 'fixtures' ) && ! ran.includes( 'surfaces' ), ran.join( ',' ) );
 	// negative control: without --through every step is planned
 	const all = await run( [ 'acme', '--site', 'local-mediatest-acme', '--plan' ] );
 	assert.ok( all.lines.some( ( l ) => /^(plan|skip) surfaces/.test( l ) ) );
-	assert.ok( all.lines.some( ( l ) => /^(plan|skip) catalogue/.test( l ) ), 'the catalogue step that hides the test products is planned' );
+	assert.ok( all.lines.some( ( l ) => /^(plan|skip) fixtures/.test( l ) ), 'the fixtures step that hides the test products is planned' );
+	assert.ok( all.lines.some( ( l ) => /^(plan|skip) catalogue/.test( l ) ), 'the catalogue step that makes the client\'s products is planned' );
 } );
