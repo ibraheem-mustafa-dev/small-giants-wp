@@ -9,7 +9,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { candidates, siblings, isPseudoProperty, listedProperties } from './db.mjs';
-import { parseLength, toPx, pxTo, snapColour, snapFontFamily, ratioSetting, tracksSetting, trackCount, declaredTracks, round } from './normalise.mjs';
+import { parseLength, toPx, pxTo, snapColour, snapFontFamily, ratioSetting, tracksSetting, trackCount, declaredTracks, equalFlexTracks, round } from './normalise.mjs';
 import { applyClamp } from './fill-values.mjs';
 import { familyOf, settingKey, foldParts, unfoldValue, physicalOf, storedKeys, reachedBy, canonicalName, paintedProps } from './css-families.mjs';
 import { declaredTiers, declaredUnit, declaredLength, resolveWeightKeyword, sizeKeyword, sizePercent, keywordForm, sizeShape, isSizeProperty, holdsString, holdsCount } from './resolve-declared.mjs';
@@ -714,6 +714,18 @@ export function resolve( input, ctx ) {
 	if ( others.length + bases.size > 1 ) {
 		tied = sideEffectFree( tied, { effectsOf: ( r ) => ctx.calibration.settings?.[ r.attr_name ]?.effects, slot, same: ( p, s ) => loose( p ) === s, siblings: input.siblings || {}, paintOf: ( p ) => defaultPaint( ctx.calibration, slot, p, ( a, b ) => loose( a ) === b ), equal: sameMeasured, isLength: ( v ) => !! parseLength( v ) } );
 		( { flat, others, bases } = split( tied ) );
+	}
+	const schema0 = blockSchema( block ) || {};
+	// A column list the draft's code declares as equal flexible tracks at every width it states (repeat(6, minmax(0, 1fr))) is a
+	// number of columns: the one setting holding a count of columns gives it exactly and stays fluid, where a track list setting
+	// would copy the string beside it.
+	if ( others.length + bases.size > 1 && 'grid-template-columns' === short && ! state ) {
+		const counting = tied.filter( ( r ) => holdsCount( schema0[ r.attr_name ], ctx.calibration.settings?.[ r.attr_name ]?.forms ) );
+		const stated = Object.keys( perWidth ).filter( ( w ) => [ 375, 768, 1440 ].includes( Number( w ) ) );
+		if ( 1 === counting.length && stated.length && stated.every( ( w ) => equalFlexTracks( input.declaredForm?.[ w ] ) ) ) {
+			tied = counting;
+			( { flat, others, bases } = split( tied ) );
+		}
 	}
 	if ( others.length + bases.size > 1 ) {
 		return { gap: 'ambiguous', detail: `${ [ ...others.map( ( r ) => r.attr_name ), ...bases ].join( ', ' ) } all paint ${ prop } on "${ slot }"` };

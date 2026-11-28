@@ -12,8 +12,9 @@ import { fillTree } from '../lib/fill-resolve.mjs';
 import { skeletonNodes, cleanTree } from '../lib/fill-skeleton.mjs';
 import { addRefs } from '../lib/tree.mjs';
 import { openDb } from '../lib/db.mjs';
-import { rootTwinProps } from '../lib/fill-shared-element.mjs';
+import { rootTwinProps, rootDefersTo } from '../lib/fill-shared-element.mjs';
 import { SETTLED } from '../lib/fill-report.mjs';
+import { equalFlexTracks } from '../lib/normalise.mjs';
 
 const db = openDb();
 const WIDTHS = [ 375, 768, 1440 ];
@@ -33,27 +34,41 @@ const cal = {
 	} },
 	link: {}, text: {}, presence: {},
 };
+// The draft's column tracks: implicit swipe-row cards on the phone (the code declares `none`), three and six equal flexible
+// columns above. The block holds both a column count (`columns`) and a track list (`gridTemplateColumns`) for them.
+const six = ( px ) => Array( 6 ).fill( px ).join( ' ' );
+const TRACKS = { 375: six( '147.391px' ), 768: '225.328px 225.328px 225.328px', 1440: six( '195px' ) };
+const DECLARED_TRACKS = { 375: 'none', 768: 'repeat(3, minmax(0, 1fr))', 1440: 'repeat(6, minmax(0, 1fr))' };
+const COLUMNS_CAL = {
+	...cal,
+	elements: { ...cal.elements, [ GRID ]: byWidth( { ...BOX, display: 'grid', 'grid-template-columns': '300px 300px 300px' } ) },
+	settings: {
+		...cal.settings,
+		columns: { slot: GRID, slots: [ GRID ], property: 'grid-auto-columns', properties: [ 'grid-auto-columns', 'grid-template-columns' ], state: null, forms: [], reachedAt: WIDTHS, effects: [] },
+		gridTemplateColumns: { slot: GRID, slots: [ GRID ], property: 'grid-template-columns', state: null, forms: [ 'repeat' ], reachedAt: WIDTHS, effects: [] },
+	},
+};
 const snap = ( styles ) => ( { styles, pseudo: {}, rect: { x: 0, y: 0, w: 300, h: 100 }, inFlow: true, words: '', href: null } );
 
 // The draft: one strip element, a grid at 768 and 1440 and a scroller at 375 (pulled out to the screen edge by a negative
 // margin), its tiles declaring a snap alignment at every width. `grid`: the strip is also the gallery's grid (the pairing).
-function run( { grid = true } = {} ) {
+function run( { grid = true, tracks = false } = {} ) {
 	const skeleton = [ { name: 'sgs/gallery', draftRef: '.strip', attributes: {}, draftSlots: { [ ITEM ]: '.tile', ...( grid ? { [ GRID ]: '.strip' } : {} ) } } ];
 	const nodes = skeletonNodes( skeleton );
 	const tree = cleanTree( skeleton );
 	addRefs( tree, 'footer' );
 	const id = ( slot ) => nodes[ 0 ].targets.find( ( t ) => t.slot === slot ).id;
-	const strip = ( w ) => ( { ...BOX, display: 'grid', ...( 375 === w ? { 'margin-left': '-20px', 'overflow-x': 'auto', 'grid-auto-flow': 'column' } : {} ), 'scroll-snap-type': 'x mandatory' } );
+	const strip = ( w ) => ( { ...BOX, display: 'grid', ...( 375 === w ? { 'margin-left': '-20px', 'overflow-x': 'auto', 'grid-auto-flow': 'column' } : {} ), 'scroll-snap-type': 'x mandatory', ...( tracks ? { 'grid-template-columns': TRACKS[ w ] } : {} ) } );
 	const widths = Object.fromEntries( WIDTHS.map( ( w ) => [ w, {
 		[ id( '' ) ]: snap( strip( w ) ),
 		...( grid ? { [ id( GRID ) ]: snap( strip( w ) ) } : {} ),
 		[ id( ITEM ) ]: snap( { ...BOX, 'scroll-snap-align': 'start' } ),
 	} ] ) );
 	// What the draft's code declares: the strip's scroller only below 768px, its snap type and the tiles' snap alignment everywhere.
-	const own = ( w ) => ( { 'overflow-x': 375 === w ? 'auto' : 'visible', 'grid-auto-flow': 375 === w ? 'column' : 'row', 'scroll-snap-type': 'x mandatory' } );
+	const own = ( w ) => ( { 'overflow-x': 375 === w ? 'auto' : 'visible', 'grid-auto-flow': 375 === w ? 'column' : 'row', 'scroll-snap-type': 'x mandatory', ...( tracks ? { 'grid-template-columns': DECLARED_TRACKS[ w ] } : {} ) } );
 	const declared = Object.fromEntries( WIDTHS.map( ( w ) => [ w, { [ id( '' ) ]: own( w ), ...( grid ? { [ id( GRID ) ]: own( w ) } : {} ), [ id( ITEM ) ]: { 'scroll-snap-align': 'start' } } ] ) );
 	const reads = { widths, declared, sweep: {}, origin: 'http://127.0.0.1:1' };
-	const out = fillTree( { tree, nodes, reads, db, snapshot: { palette: [], spacing: [], fontSizes: [] }, rawSnapshot: {}, calFor: () => cal, fixtures: null, ledger: [], ledgerStates: [], origin: 'http://127.0.0.1:1' } );
+	const out = fillTree( { tree, nodes, reads, db, snapshot: { palette: [], spacing: [], fontSizes: [] }, rawSnapshot: {}, calFor: () => ( tracks ? COLUMNS_CAL : cal ), fixtures: null, ledger: [], ledgerStates: [], origin: 'http://127.0.0.1:1' } );
 	return { out, node: tree[ 0 ] ?? tree };
 }
 
@@ -89,4 +104,35 @@ test( 'rootTwinProps: only a part read at the root\'s own element is limited, to
 	assert.equal( rootTwinProps( cal, inner, inner.targets[ 1 ] ), null, 'a container drawn on its own draft element keeps every property' );
 	const leaf = { targets: [ { id: '0:', slot: '', finder: '.strip' }, { id: `0:${ GRID }`, slot: GRID, finder: '.strip' } ] };
 	assert.equal( rootTwinProps( cal, leaf, leaf.targets[ 1 ] ), null, 'a part holding no other read part (a form field input) keeps every property' );
+} );
+
+test( 'MUST FAIL: equal flexible columns the code declares are the column count per device, the implicit phone cards are no template, and the root writes no track rule of its own', () => {
+	const { out, node } = run( { tracks: true } );
+	const rows = ( p ) => [ ...out.unmapped, ...out.writes ].filter( ( r ) => p === ( r.property ?? r.prop ) );
+	assert.deepEqual( node.attributes.columns, { desktop: 6, tablet: 3 }, JSON.stringify( rows( 'grid-template-columns' ) ) );
+	assert.equal( node.attributes.gridTemplateColumns, undefined, 'the track list setting is not written beside the count' );
+	assert.deepEqual( out.unmapped.filter( ( u ) => 'grid-template-columns' === u.property ), [], 'no ambiguous or unheld track row is left' );
+	const phone = ( out.settled || [] ).find( ( s ) => GRID === s.slot && 'grid-template-columns' === s.property && 'used-size' === s.reason );
+	assert.deepEqual( phone?.widths, [ 375 ], 'the implicit phone tracks are a layout result' );
+	assert.ok( ( out.settled || [] ).some( ( s ) => '' === s.slot && 'grid-template-columns' === s.property && 'part-held' === s.reason ), 'the root leaves the tracks to the grid' );
+	assert.deepEqual( layoutOf( out ), { mobile: 'scroll' }, 'the phone still scrolls' );
+	assert.ok( SETTLED.includes( 'part-held' ) );
+} );
+
+test( 'equalFlexTracks: a count only for equal flexible tracks', () => {
+	assert.equal( equalFlexTracks( 'repeat(6, minmax(0, 1fr))' ), 6 );
+	assert.equal( equalFlexTracks( '1fr 1fr 1fr' ), 3 );
+	for ( const v of [ '1fr 2fr', '195px 195px', 'none', 'repeat(auto-fit, minmax(0, 1fr))', 'minmax(200px, 1fr) minmax(200px, 1fr)', undefined ] ) {
+		assert.equal( equalFlexTracks( v ), null, String( v ) );
+	}
+} );
+
+test( 'rootDefersTo: the root leaves the grid only what no root setting paints; a gap setting painting both stays with the root', () => {
+	const withGap = { ...COLUMNS_CAL, settings: { ...COLUMNS_CAL.settings, gap: { slot: '', slots: [ '', GRID ], property: 'gap', state: null } } };
+	const rec = { targets: [ { id: '0:', slot: '', finder: '.strip' }, { id: `0:${ GRID }`, slot: GRID, finder: '.strip' }, { id: `0:${ ITEM }`, slot: ITEM, finder: '.tile' } ] };
+	const d = rootDefersTo( withGap, rec, rec.targets[ 0 ] );
+	assert.equal( d.slot, GRID );
+	assert.ok( d.props.has( 'grid-template-columns' ) && d.props.has( 'overflow-x' ), JSON.stringify( [ ...d.props ] ) );
+	assert.equal( d.props.has( 'column-gap' ), false, 'the root gap setting keeps its reading' );
+	assert.equal( rootDefersTo( withGap, rec, rec.targets[ 1 ] ), null, 'only the root defers' );
 } );

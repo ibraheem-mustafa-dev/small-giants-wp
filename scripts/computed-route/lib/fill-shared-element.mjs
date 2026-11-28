@@ -4,7 +4,8 @@
 // border, padding, clip-path and shadow twice, so the clone drew two nested boxes (a tag drawn double, its padding doubled).
 //   - parentDrawsBox: the node's root element is the one its parent's root reads, and the parent is a node Fill reads.
 //   - BOX_LOOK: the properties that make the box look (background, border and its radii, padding, clip-path, box-shadow).
-//   - rootTwinProps: a part of the block paired to the node's own draft element reads only what the part's settings paint.
+//   - rootTwinProps: a part of the block paired to the node's own draft element reads only what the part's settings paint;
+//     rootDefersTo: the root leaves that part the properties only the part's settings paint.
 // Never a block name, a slot name or a pixel value.
 import { snapsOf } from './fill-resolve-state.mjs';
 import { LOOSE } from './resolve.mjs';
@@ -52,10 +53,33 @@ export function rootTwinProps( cal, rec, target ) {
 			paintedProps( s ).forEach( ( p ) => [ p, ...longhandsOf( p ) ].forEach( ( q ) => out.add( q ) ) );
 		}
 	}
+	// A layout mode's own box mechanics at the part (a swipe row's shadow-bleed padding and its cancelling margin) are no
+	// reading of the draft's box: the draft's padding and margin stay the root's.
 	for ( const props of Object.values( cal?.discovered || {} ) ) {
 		for ( const [ p, e ] of Object.entries( props || {} ) ) {
-			e && ! e.state && ( e.slots || [] ).some( ( q ) => LOOSE( q ) === at ) && out.add( p );
+			e && ! e.state && ! BOX_LOOK.test( p ) && ! /^margin(?:-|$)/.test( p ) && ( e.slots || [] ).some( ( q ) => LOOSE( q ) === at ) && out.add( p );
 		}
 	}
 	return out;
+}
+
+// The root's half of the same pairing: on the root target of a node whose draft element is also one of its item containers
+// (rootTwinProps), the properties that container reads and no setting at the root paints (its tracks, its flow, its overflow)
+// are the container's, read there once; the root writes no rule of its own for them, which would land on an element that lays
+// nothing out. Returns { slot, props } for the container, or null.
+export function rootDefersTo( cal, rec, target ) {
+	if ( '' !== target?.slot ) {
+		return null;
+	}
+	const part = ( rec.targets || [] ).map( ( t ) => ( { t, props: rootTwinProps( cal, rec, t ) } ) ).find( ( x ) => x.props );
+	if ( ! part ) {
+		return null;
+	}
+	const own = new Set();
+	for ( const s of Object.values( cal?.settings || {} ) ) {
+		if ( s && ! s.state && ( s.slots || [ s.slot ] ).some( ( p ) => '' === LOOSE( p ?? '' ) ) ) {
+			paintedProps( s ).forEach( ( p ) => [ p, ...longhandsOf( p ) ].forEach( ( q ) => own.add( q ) ) );
+		}
+	}
+	return { slot: part.t.slot, props: new Set( [ ...part.props ].filter( ( p ) => ! own.has( p ) ) ) };
 }

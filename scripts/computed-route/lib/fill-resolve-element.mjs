@@ -20,7 +20,7 @@ import { tokenWrites } from './fill-token-ref.mjs';
 import { normalKeywords } from './fill-normal-keywords.mjs';
 import { gutterBaseline } from './fill-gutter.mjs';
 import { sweepResult } from './fill-underline-sweep.mjs';
-import { BOX_LOOK, parentDrawsBox, rootTwinProps } from './fill-shared-element.mjs';
+import { BOX_LOOK, parentDrawsBox, rootTwinProps, rootDefersTo } from './fill-shared-element.mjs';
 import { notInForce } from './fill-device-mode.mjs';
 import { GAP_PROPS, RADIUS_CORNERS, mergedRadius, valueText, json, alternateSlots, baselineFn, baselineSourceFn, equalBaseline, ledgerView, gapTarget, draftOf, recordDisplay } from './fill-resolve-state.mjs';
 
@@ -205,6 +205,7 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 	const parentBox = ! layer && parentDrawsBox( st, rec, target );
 	// A part read at the node's own draft element reads only what the part's settings paint (lib/fill-shared-element.mjs::rootTwinProps).
 	const twin = layer ? null : rootTwinProps( cal, rec, target );
+	const defers = layer ? null : rootDefersTo( cal, rec, target );
 	// A link drawn with no line whose underline grows on hover is the block's `sweep` underline (lib/fill-underline-sweep.mjs): the
 	// one write answers its text-decoration-line, and the gradient it grows from is the setting's own, so it is left out below.
 	const found = layer ? null : sweepResult( { db: st.db, cal, block: rec.name, slot, snaps, reads: st.reads, id: target.id } );
@@ -233,6 +234,10 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 		}
 		if ( sweep && ( 'text-decoration-line' === prop || 'background-image' === prop ) ) {
 			settled( st, rec, ref, { slot, property: prop, value: valueText( allDrafts[ prop ] || {} ), widths: Object.keys( allDrafts[ prop ] || {} ).map( Number ), reason: 'held-by-setting', detail: `${ sweep.writes[ 0 ].attr } sweep draws this underline (its line and the gradient it grows from)` } );
+			continue;
+		}
+		if ( defers?.props.has( prop ) && allDrafts[ prop ] && Object.keys( allDrafts[ prop ] ).length ) {
+			settled( st, rec, ref, { slot, property: prop, value: valueText( allDrafts[ prop ] ), widths: Object.keys( allDrafts[ prop ] ).map( Number ), reason: 'part-held', detail: `this draft element is the block's ${ defers.slot } too, whose settings paint ${ prop } and no root setting does: read there once` } );
 			continue;
 		}
 		if ( twin && ! twin.has( prop ) && allDrafts[ prop ] && Object.keys( allDrafts[ prop ] ).length ) {
@@ -317,6 +322,18 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 				// Nothing plain to write: the not-plain values are rows.
 				notPlain.forEach( ( row ) => unmapped( st, rec, ref, row ) );
 				continue;
+			}
+		}
+		// A column template the code declares `none` leaves the columns to grid-auto-columns: the computed list at that width is
+		// the implicit tracks the items made (a swipe row's six cards), a layout result and no template to write.
+		if ( ! layer && 'grid-template-columns' === prop ) {
+			const implicit = Object.keys( draft ).filter( ( w ) => 'none' === String( st.reads.declared?.[ w ]?.[ target.id ]?.[ prop ] ?? '' ).trim() );
+			if ( implicit.length ) {
+				settled( st, rec, ref, { slot, property: prop, value: valueText( Object.fromEntries( implicit.map( ( w ) => [ w, draft[ w ] ] ) ) ), widths: implicit.map( Number ), reason: 'used-size', detail: `the code declares grid-template-columns: none at ${ implicit.join( ', ' ) }px: the tracks are the implicit ones grid-auto-columns sizes` } );
+				draft = Object.fromEntries( Object.entries( draft ).filter( ( [ w ] ) => ! implicit.includes( w ) ) );
+				if ( ! Object.keys( draft ).length ) {
+					continue;
+				}
 			}
 		}
 		// A `normal` letter-spacing or line-height is written as the value it renders (lib/fill-normal-keywords.mjs), a line
