@@ -217,7 +217,7 @@ Done when: the SGS placeholder takes a test Cal.com booking, a contact form subm
 
 SGS (Bean, 2026-11-28): the new draft replaces the current Vercel site, everything except the MIC stall page at `/mic`, ported into its Next.js app; plan `2026-11-28-sgs-redesign-swap.md`.
 
-Depends on: none. Status: SGS prepared (2026-11-28; its checks are built and proven on the live site), waiting for Bean's draft; MIC not started.
+Depends on: none. Status: SGS prepared (2026-11-28; its checks are built and proven on the live site), waiting for Bean's draft; MIC done (2026-11-28): Bean's static redesign is live at the root of `mic-test`, every page checked in a browser (200, no console errors, fonts, images, phone menu, 404 page), WordPress left installed beneath it; how to clear it before the clone is in `sites/mic/CLAUDE.md`.
 
 ### Task 35: Clone faults seen on Mama's clone, fixed before SGS and MIC (2026-11-28)
 Why: the whole-site run on Mama's draft (see "Where it stands") came out clean, but the side-by-sides show faults that will hit SGS and MIC too. Fix each at its cause in the route, with a test that fails first (negative control), then reclone Mama's on the scratch copy (`local-mediatest-rc-mm`) and compare with the draft.

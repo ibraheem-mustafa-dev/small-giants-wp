@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Legal · Muslims In Construction</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="assets/css/mic.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>body{margin:0;background:#F3EEE4}</style>
+</helmet>
+<div class="mic" onPointerDown="{{tap}}" style="background: #F3EEE4; color: #0F1D1C">
+<dc-import name="Gauge" hint-size="46px,100%"></dc-import>
+<div style="position: sticky; top: 0; z-index: 60"><dc-import name="Header" active="none" tone="light" basket="{{basket}}" hint-size="100%,81px"></dc-import></div>
+<section data-sec="legal" data-label="Legal" ref="{{rf}}" class="sec {{v.legal}} bp" style="padding: 64px 0 130px; min-height: 1600px">
+<div class="wrap stack" style="gap: 34px; max-width: 1100px">
+<span class="mono r" style="color: #024E4A">Policies</span>
+<h1 class="disp r" style="--i: 1; font-size: clamp(56px, 8vw, 128px)">The <span class="serif c-teal">small print</span></h1>
+<div class="row r" role="tablist" aria-label="Policy" style="--i: 2; gap: 8px">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="3"><button class="chip" role="tab" aria-selected="{{t.on}}" onClick="{{t.pick}}">{{t.label}}</button></sc-for>
+</div>
+<article class="rise" role="tabpanel" style="background: #FBF8F2; border: 1px solid rgba(2,78,74,.16); border-radius: 28px; padding: clamp(24px, 5vw, 56px); display: flex; flex-direction: column; gap: 18px">
+<span class="mono" style="color: #46524F">Last updated: [date from the current policy]</span>
+<h2 class="disp" style="font-size: 56px">{{tab}}</h2>
+<p style="margin: 0; font-size: 18px; line-height: 1.7; color: #33403F">[The existing {{tabLower}} text from muslimsinconstruction.uk goes here, unchanged.]</p>
+<div class="stack" style="gap: 10px; border-left: 3px solid #D4A73C; padding-left: 20px"><strong>Questions about this policy?</strong><span style="color: #33403F">Email <a href="mailto:info@muslimsinconstruction.uk" style="color: #024E4A">info@muslimsinconstruction.uk</a></span></div>
+<p class="mono" style="margin: 0; color: #46524F; font-size: 12px">Muslims In Construction CIC · Company no. 16919811</p>
+</article>
+</div>
+</section>
+
+<dc-import name="Footer" hint-size="100%,760px"></dc-import>
+<sc-if value="{{sparkA}}" hint-placeholder-val="{{ false }}"><svg class="spark" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><polygon points="50,4 63,37 96,50 63,63 50,96 37,63 4,50 37,37"></polygon></svg><svg class="spark spark2" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><rect x="22" y="22" width="56" height="56" transform="rotate(45 50 50)" fill="none" stroke="#D4A73C" stroke-width="2"></rect></svg></sc-if>
+<sc-if value="{{sparkB}}" hint-placeholder-val="{{ false }}"><svg class="spark" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><polygon points="50,4 63,37 96,50 63,63 50,96 37,63 4,50 37,37"></polygon></svg><svg class="spark spark2" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><rect x="22" y="22" width="56" height="56" transform="rotate(45 50 50)" fill="none" stroke="#D4A73C" stroke-width="2"></rect></svg></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview": {"width": 1440, "height": 3400}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const self = this;
+    this.state = Object.assign({ v: {}, all: false, tap: 0, tx: 0, ty: 0, now: Date.now(), basket: 0 }, {"tab": "Privacy policy"});
+    this.io = (typeof IntersectionObserver !== 'undefined') ? new IntersectionObserver(function (es) {
+      const add = {};
+      es.forEach(function (e) { if (e.isIntersecting) { add[e.target.getAttribute('data-sec')] = 1; self.io.unobserve(e.target); } });
+      if (Object.keys(add).length) self.setState(function (s) { return { v: Object.assign({}, s.v, add) }; });
+    }, { threshold: 0.1, rootMargin: '0px 0px -6% 0px' }) : null;
+    this.rf = function (el) { if (el && self.io) self.io.observe(el); };
+    this.tap = function (e) { const r = e.currentTarget.getBoundingClientRect(); self.setState({ tap: self.state.tap + 1, tx: Math.round(e.clientX - r.left), ty: Math.round(e.clientY - r.top) }); };
+    this.rails = {};
+    this.railRef = function (k) { if (!self['_rr' + k]) self['_rr' + k] = function (el) { if (el) self.rails[k] = el; }; return self['_rr' + k]; };
+    this.scrollRail = function (k, d) { return function () { const el = self.rails[k]; if (el) el.scrollBy({ left: d * 380, behavior: 'smooth' }); }; };
+    this.set = function (patch) { return function () { self.setState(typeof patch === 'function' ? patch(self.state) : patch); }; };
+    this.toggle = function (key, id) { return function () { const o = Object.assign({}, self.state[key]); o[id] = !o[id]; const p = {}; p[key] = o; self.setState(p); }; };
+    this.prevent = function (patch) { return function (e) { if (e && e.preventDefault) e.preventDefault(); self.setState(patch); }; };
+  }
+  componentDidMount() {
+    const self = this;
+    if (this.io) { try { document.querySelectorAll('[data-sec]').forEach(function (el) { self.io.observe(el); }); } catch (e) {} }
+    this.safety = setTimeout(function () { if (!Object.keys(self.state.v).length) self.setState({ all: true }); }, 2200);
+    this.clock = setInterval(function () { self.setState({ now: Date.now() }); }, 30000);
+  }
+  componentWillUnmount() { clearTimeout(this.safety); clearInterval(this.clock); if (this.io) this.io.disconnect(); }
+  renderVals() {
+    const self = this, s = this.state;
+    const v = {}; ["legal"].forEach(function (k) { v[k] = (s.all || s.v[k]) ? 'in' : ''; });
+    const base = { v: v, rf: this.rf, tap: this.tap, tx: s.tx, ty: s.ty, sparkA: s.tap > 0 && s.tap % 2 === 1, sparkB: s.tap > 0 && s.tap % 2 === 0, basket: s.basket, add: function () { self.setState({ basket: self.state.basket + 1 }); } };
+    const page = (function () {
+const T = ['Privacy policy', 'Terms and conditions', 'Refunds and returns'];
+return { tabs: T.map(function (t) { return { label: t, on: s.tab === t ? 'true' : 'false', pick: self.set({ tab: t }) }; }), tab: s.tab, tabLower: s.tab.toLowerCase() };
+
+    }).call(this);
+    return Object.assign(base, page);
+  }
+}
+</script>
+</body>
+</html>

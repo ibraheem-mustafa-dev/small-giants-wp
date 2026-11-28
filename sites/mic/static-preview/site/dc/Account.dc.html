@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>My account · Muslims In Construction</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="assets/css/mic.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>body{margin:0;background:#041F1E}</style>
+</helmet>
+<div class="mic" onPointerDown="{{tap}}" style="background: #041F1E; color: #F3EBDD">
+<dc-import name="Gauge" hint-size="46px,100%"></dc-import>
+<div style="position: sticky; top: 0; z-index: 60"><dc-import name="Header" active="none" tone="dark" basket="{{basket}}" hint-size="100%,81px"></dc-import></div>
+<section data-sec="acct" data-label="My account" data-tone="dark" ref="{{rf}}" class="sec {{v.acct}}" style="position: relative; padding: 56px 0 130px; min-height: 1200px; overflow: hidden">
+<svg class="lat-edges" style="position: absolute; inset: 0; width: 100%; height: 100%; color: rgba(212,167,60,.1)" aria-hidden="true"><defs><pattern id="latAc" width="84" height="84" patternUnits="userSpaceOnUse"><g fill="none" stroke="currentColor" stroke-width="1.4"><polygon points="42,8 52,32 76,42 52,52 42,76 32,52 8,42 32,32"></polygon><rect x="23" y="23" width="38" height="38"></rect><rect x="23" y="23" width="38" height="38" transform="rotate(45 42 42)"></rect></g></pattern></defs><rect width="100%" height="100%" fill="url(#latAc)"></rect></svg>
+<div class="wrap stack" style="position: relative; gap: 34px">
+<sc-if value="{{signedIn}}" hint-placeholder-val="{{ true }}">
+<div class="row" style="justify-content: space-between; align-items: end; gap: 20px">
+<div class="stack" style="gap: 10px"><span class="eyebrow r" style="color: #D4A73C">My account</span><h1 class="disp r" style="--i: 1; font-size: clamp(56px, 7vw, 120px)">Assalamu <span class="serif c-gold">alaikum</span></h1><span class="r" style="--i: 2; color: #A9C9C4">[Member name] · member since [date]</span></div>
+<button class="btn btn-ghost btn-sm r" style="--i: 3" onClick="{{signOut}}">Sign out</button>
+</div>
+<div class="row r" role="tablist" aria-label="Account sections" style="--i: 3; gap: 8px">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="5"><button class="chip chip-d" role="tab" aria-selected="{{t.on}}" onClick="{{t.pick}}">{{t.label}}</button></sc-for>
+</div>
+<sc-if value="{{tOverview}}" hint-placeholder-val="{{ true }}">
+<div class="g2 rise" style="gap: 20px">
+<div class="press" style="position: relative; overflow: hidden; border-radius: 26px; background: linear-gradient(135deg, #024E4A, #08302E); border: 1px solid rgba(212,167,60,.5); padding: 30px; min-height: 260px; display: flex; flex-direction: column; justify-content: space-between">
+<svg class="spin" viewBox="0 0 100 100" style="position: absolute; right: -60px; top: -60px; width: 260px; opacity: .3" aria-hidden="true"><g fill="none" stroke="#D4A73C" stroke-width="1.4"><rect x="20" y="20" width="60" height="60"></rect><rect x="20" y="20" width="60" height="60" transform="rotate(45 50 50)"></rect><circle cx="50" cy="50" r="46"></circle></g></svg>
+<img src="assets/img/mic-logo-white.png" alt="" style="width: 150px; position: relative">
+<span class="stack" style="position: relative; gap: 4px"><span class="mono" style="color: #D4A73C">Member card · Free membership</span><span class="disp" style="font-size: 44px">[Member name]</span><span class="mono" style="color: #A9C9C4; font-size: 12px">No. [member number]</span></span>
+</div>
+<div class="stack" style="gap: 12px">
+<sc-for list="{{quick}}" as="q" hint-placeholder-count="3"><button onClick="{{q.go}}" class="press" style="display: flex; justify-content: space-between; align-items: center; padding: 22px 24px; border-radius: 18px; border: 1px solid rgba(243,235,221,.16); background: rgba(243,235,221,.05); color: #F3EBDD; font: inherit; text-align: left; cursor: pointer"><span class="stack" style="gap: 2px"><strong style="font-size: 18px">{{q.t}}</strong><span style="color: #A9C9C4; font-size: 14px">{{q.s}}</span></span><span style="color: #D4A73C; font-size: 22px" aria-hidden="true">→</span></button></sc-for>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{tTickets}}" hint-placeholder-val="{{ false }}">
+<div class="g2 rise" style="gap: 20px">
+<div class="tick-g" style="background: #F3EBDD; color: #041F1E; border-radius: 24px; overflow: hidden">
+<div class="stack" style="padding: 28px; gap: 12px"><span style="font-size: 12px; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; color: #7A5A12">E-ticket · Standard release</span><span class="disp" style="font-size: 46px">Gala &amp; Awards 2026</span><span>Sat 28 Nov 2026 · 6pm · Saffron Gallery, E15 4QZ</span><span class="mono" style="font-size: 12px">Guest: [Member name]</span></div>
+<div style="border-left: 2px dashed rgba(4,31,30,.3); display: grid; place-items: center; padding: 16px; background: #EADFC9"><svg width="140" height="140" viewBox="0 0 21 21" role="img" aria-label="Check-in QR code" shape-rendering="crispEdges"><path d="{{qr}}" fill="#041F1E"></path></svg></div>
+</div>
+<div class="stack" style="gap: 12px; justify-content: center"><p class="serif" style="margin: 0; font-size: 30px">Show this code at the door.</p><p style="margin: 0; color: #A9C9C4">Your QR code is also in your confirmation email. Tickets for future events appear here as soon as you book.</p><a class="btn btn-gold" href="events.html" style="align-self: flex-start">Browse events <span class="arr" aria-hidden="true">→</span></a></div>
+</div>
+</sc-if>
+<sc-if value="{{tOrders}}" hint-placeholder-val="{{ false }}">
+<div class="rise" style="overflow-x: auto; border: 1px solid rgba(243,235,221,.16); border-radius: 22px">
+<div role="table" aria-label="Orders" style="min-width: 620px"><div role="row" style="display: grid; grid-template-columns: 1fr 1fr 2.2fr 1fr 1fr; color: #D4A73C; font-weight: 800"><span role="columnheader" style="padding: 18px 22px">Order</span><span role="columnheader" style="padding: 18px 22px">Date</span><span role="columnheader" style="padding: 18px 22px">Items</span><span role="columnheader" style="padding: 18px 22px">Total</span><span role="columnheader" style="padding: 18px 22px">Status</span></div>
+<sc-for list="{{orders}}" as="o" hint-placeholder-count="2"><div role="row" style="display: grid; grid-template-columns: 1fr 1fr 2.2fr 1fr 1fr; border-top: 1px solid rgba(243,235,221,.12)"><span role="cell" style="padding: 18px 22px">{{o.no}}</span><span role="cell" style="padding: 18px 22px">{{o.date}}</span><span role="cell" style="padding: 18px 22px">{{o.items}}</span><span role="cell" style="padding: 18px 22px">{{o.total}}</span><span role="cell" style="padding: 18px 22px"><span class="mono" style="background: rgba(212,167,60,.18); color: #D4A73C; padding: 4px 10px; border-radius: 999px">{{o.status}}</span></span></div></sc-for></div>
+</div>
+</sc-if>
+<sc-if value="{{tMentor}}" hint-placeholder-val="{{ false }}">
+<div class="g2 rise" style="gap: 20px; align-items: center"><div class="stack" style="gap: 12px"><span class="mono" style="color: #D4A73C">Mentorship</span><p class="serif" style="margin: 0; font-size: 36px">You haven't applied yet.</p><p style="margin: 0; color: #A9C9C4">Apply for a mentor or sign up to mentor, and your match will show here.</p><a class="btn btn-gold" href="mentorship.html" style="align-self: flex-start">Go to mentorship <span class="arr" aria-hidden="true">→</span></a></div><img src="assets/img/networking-2.jpg" alt="" class="archc" style="width: 100%; max-width: 360px; aspect-ratio: 4 / 5; object-fit: cover; justify-self: center"></div>
+</sc-if>
+<sc-if value="{{tDetails}}" hint-placeholder-val="{{ false }}">
+<form class="g2 rise" onSubmit="{{saveDetails}}" style="gap: 14px; max-width: 900px"><div><label class="lbl" for="a-n" style="color: #A9C9C4">Name</label><input id="a-n" class="field field-d" type="text" autocomplete="name"></div><div><label class="lbl" for="a-e" style="color: #A9C9C4">Email</label><input id="a-e" class="field field-d" type="email" autocomplete="email"></div><div><label class="lbl" for="a-r" style="color: #A9C9C4">Role or trade</label><input id="a-r" class="field field-d" type="text"></div><div><label class="lbl" for="a-l" style="color: #A9C9C4">Location</label><input id="a-l" class="field field-d" type="text"></div><label class="row" style="grid-column: 1 / -1; gap: 10px; cursor: pointer; flex-wrap: nowrap"><input type="checkbox" checked style="width: 22px; height: 22px; accent-color: #D4A73C"> Email me about event releases</label><button class="btn btn-gold" type="submit" style="justify-self: start">Save changes</button></form>
+</sc-if>
+</sc-if>
+<sc-if value="{{signedOut}}" hint-placeholder-val="{{ false }}">
+<div class="g2 rise" style="gap: 56px; align-items: center; padding-top: 40px">
+<div class="stack" style="gap: 16px"><span class="eyebrow" style="color: #D4A73C">My account</span><h1 class="disp h2">Welcome <span class="serif c-gold">back</span></h1><p class="lead" style="margin: 0; color: rgba(243,235,221,.86)">Sign in to see your e-tickets, orders and membership.</p></div>
+<form onSubmit="{{signIn}}" class="stack" style="gap: 14px; background: #08302E; border: 1px solid rgba(212,167,60,.3); border-radius: 28px; padding: 34px"><div><label class="lbl" for="si-e" style="color: #A9C9C4">Email</label><input id="si-e" class="field field-d" type="email" autocomplete="email"></div><div><label class="lbl" for="si-p" style="color: #A9C9C4">Password</label><input id="si-p" class="field field-d" type="password" autocomplete="current-password"></div><button class="btn btn-gold btn-block" type="submit">Sign in</button><a href="get-involved.html" class="link" style="color: #D4A73C; align-self: center">New here? Join MIC for free</a></form>
+</div>
+</sc-if>
+</div>
+</section>
+
+<dc-import name="Footer" hint-size="100%,760px"></dc-import>
+<sc-if value="{{sparkA}}" hint-placeholder-val="{{ false }}"><svg class="spark" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><polygon points="50,4 63,37 96,50 63,63 50,96 37,63 4,50 37,37"></polygon></svg><svg class="spark spark2" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><rect x="22" y="22" width="56" height="56" transform="rotate(45 50 50)" fill="none" stroke="#D4A73C" stroke-width="2"></rect></svg></sc-if>
+<sc-if value="{{sparkB}}" hint-placeholder-val="{{ false }}"><svg class="spark" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><polygon points="50,4 63,37 96,50 63,63 50,96 37,63 4,50 37,37"></polygon></svg><svg class="spark spark2" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><rect x="22" y="22" width="56" height="56" transform="rotate(45 50 50)" fill="none" stroke="#D4A73C" stroke-width="2"></rect></svg></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview": {"width": 1440, "height": 4600}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const self = this;
+    this.state = Object.assign({ v: {}, all: false, tap: 0, tx: 0, ty: 0, now: Date.now(), basket: 0 }, {"tab": "Overview", "signedIn": true});
+    this.io = (typeof IntersectionObserver !== 'undefined') ? new IntersectionObserver(function (es) {
+      const add = {};
+      es.forEach(function (e) { if (e.isIntersecting) { add[e.target.getAttribute('data-sec')] = 1; self.io.unobserve(e.target); } });
+      if (Object.keys(add).length) self.setState(function (s) { return { v: Object.assign({}, s.v, add) }; });
+    }, { threshold: 0.1, rootMargin: '0px 0px -6% 0px' }) : null;
+    this.rf = function (el) { if (el && self.io) self.io.observe(el); };
+    this.tap = function (e) { const r = e.currentTarget.getBoundingClientRect(); self.setState({ tap: self.state.tap + 1, tx: Math.round(e.clientX - r.left), ty: Math.round(e.clientY - r.top) }); };
+    this.rails = {};
+    this.railRef = function (k) { if (!self['_rr' + k]) self['_rr' + k] = function (el) { if (el) self.rails[k] = el; }; return self['_rr' + k]; };
+    this.scrollRail = function (k, d) { return function () { const el = self.rails[k]; if (el) el.scrollBy({ left: d * 380, behavior: 'smooth' }); }; };
+    this.set = function (patch) { return function () { self.setState(typeof patch === 'function' ? patch(self.state) : patch); }; };
+    this.toggle = function (key, id) { return function () { const o = Object.assign({}, self.state[key]); o[id] = !o[id]; const p = {}; p[key] = o; self.setState(p); }; };
+    this.prevent = function (patch) { return function (e) { if (e && e.preventDefault) e.preventDefault(); self.setState(patch); }; };
+  }
+  componentDidMount() {
+    const self = this;
+    if (this.io) { try { document.querySelectorAll('[data-sec]').forEach(function (el) { self.io.observe(el); }); } catch (e) {} }
+    this.safety = setTimeout(function () { if (!Object.keys(self.state.v).length) self.setState({ all: true }); }, 2200);
+    this.clock = setInterval(function () { self.setState({ now: Date.now() }); }, 30000);
+  }
+  componentWillUnmount() { clearTimeout(this.safety); clearInterval(this.clock); if (this.io) this.io.disconnect(); }
+  renderVals() {
+    const self = this, s = this.state;
+    const v = {}; ["acct"].forEach(function (k) { v[k] = (s.all || s.v[k]) ? 'in' : ''; });
+    const base = { v: v, rf: this.rf, tap: this.tap, tx: s.tx, ty: s.ty, sparkA: s.tap > 0 && s.tap % 2 === 1, sparkB: s.tap > 0 && s.tap % 2 === 0, basket: s.basket, add: function () { self.setState({ basket: self.state.basket + 1 }); } };
+    const page = (function () {
+let qr = '';
+const fin = function (x, y, ox, oy) { return x >= ox && x < ox + 7 && y >= oy && y < oy + 7; };
+for (let y = 0; y < 21; y++) for (let x = 0; x < 21; x++) {
+  let on;
+  const f = [[0, 0], [14, 0], [0, 14]].find(function (o) { return fin(x, y, o[0], o[1]); });
+  if (f) { const dx = x - f[0], dy = y - f[1]; on = dx === 0 || dy === 0 || dx === 6 || dy === 6 || (dx >= 2 && dx <= 4 && dy >= 2 && dy <= 4); }
+  else on = ((x * 7 + y * 13 + x * y * 3) % 5) < 2;
+  if (on) qr += 'M' + x + ' ' + y + 'h1v1h-1Z';
+}
+const T = ['Overview', 'Tickets', 'Orders', 'Mentorship', 'Details'];
+return {
+  signedIn: s.signedIn, signedOut: !s.signedIn, signOut: self.set({ signedIn: false }), signIn: this.prevent({ signedIn: true, tab: 'Overview' }),
+  tabs: T.map(function (t) { return { label: t, on: s.tab === t ? 'true' : 'false', pick: self.set({ tab: t }) }; }),
+  tOverview: s.tab === 'Overview', tTickets: s.tab === 'Tickets', tOrders: s.tab === 'Orders', tMentor: s.tab === 'Mentorship', tDetails: s.tab === 'Details',
+  quick: [['My e-tickets', 'Gala & Awards 2026', 'Tickets'], ['Orders', '1 order', 'Orders'], ['Mentorship', 'Not started', 'Mentorship']].map(function (q) { return { t: q[0], s: q[1], go: self.set({ tab: q[2] }) }; }),
+  qr: qr,
+  orders: [{ no: '[#0000]', date: '[Date]', items: 'Polo shirt, T-shirt ×2, cap', total: '£62.97', status: 'Processing' }, { no: '[#0000]', date: '[Date]', items: 'Gala 2026 · Standard release', total: '£52.99', status: 'Complete' }],
+  saveDetails: this.prevent({})
+};
+
+    }).call(this);
+    return Object.assign(base, page);
+  }
+}
+</script>
+</body>
+</html>

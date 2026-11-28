@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MIC · Join band</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="assets/css/mic.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>body{margin:0}</style>
+</helmet>
+<section class="mic" onPointerMove="{{move}}" onPointerDown="{{move}}" style="background: #041F1E; color: #F3EBDD; position: relative; overflow: hidden; padding: 150px 0 140px">
+<svg style="position: absolute; inset: 0; width: 100%; height: 100%; color: rgba(243,235,221,.07)" class="lat-edges" aria-hidden="true"><defs><pattern id="latJ" width="84" height="84" patternUnits="userSpaceOnUse"><g fill="none" stroke="currentColor" stroke-width="1.4"><polygon points="42,8 52,32 76,42 52,52 42,76 32,52 8,42 32,32"></polygon><rect x="23" y="23" width="38" height="38"></rect><rect x="23" y="23" width="38" height="38" transform="rotate(45 42 42)"></rect><path d="M0 0L23 23M84 0L61 23M0 84L23 61M84 84L61 61M42 0V8M42 84V76M0 42H8M84 42H76"></path></g></pattern></defs><rect width="100%" height="100%" fill="url(#latJ)"></rect></svg>
+<svg class="hide-s" style="position: absolute; inset: 0; width: 100%; height: 100%; color: #D4A73C; -webkit-mask-image: radial-gradient(circle 340px at {{mx}}% {{my}}%, #000, transparent 70%), linear-gradient(90deg, #000, rgba(0,0,0,.5) 9%, transparent 18%, transparent 82%, rgba(0,0,0,.5) 91%, #000); mask-image: radial-gradient(circle 340px at {{mx}}% {{my}}%, #000, transparent 70%), linear-gradient(90deg, #000, rgba(0,0,0,.5) 9%, transparent 18%, transparent 82%, rgba(0,0,0,.5) 91%, #000); -webkit-mask-composite: source-in; mask-composite: intersect" aria-hidden="true"><rect width="100%" height="100%" fill="url(#latJ)"></rect></svg>
+<div style="position: absolute; left: {{mx}}%; top: {{my}}%; width: 700px; height: 700px; transform: translate(-50%, -50%); background: radial-gradient(circle, rgba(212,167,60,.14), transparent 60%); pointer-events: none; transition: left .35s cubic-bezier(.2,.7,.2,1), top .35s cubic-bezier(.2,.7,.2,1)"></div>
+<div class="wrap" style="position: relative; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 26px">
+<span class="eyebrow" style="color: #D4A73C">Join the network · free</span>
+<h2 class="disp h1" style="color: #F3EBDD">Lay <span class="serif" style="color: #D4A73C">your</span> brick</h2>
+<p class="lead" style="margin: 0; max-width: 600px; color: rgba(243,235,221,.86)">Free membership, our WhatsApp community, mentoring, and first word on tickets before they sell out. Open to everyone who shares our values.</p>
+<sc-if value="{{notJoined}}" hint-placeholder-val="{{ true }}">
+<form onSubmit="{{submit}}" class="g3" style="width: 100%; max-width: 980px; text-align: left; gap: 12px; align-items: end">
+<div><label for="jb-name" class="lbl" style="color: #A9C9C4">Name</label><input id="jb-name" class="field field-d" type="text" autocomplete="name" placeholder="Full name"></div>
+<div><label for="jb-email" class="lbl" style="color: #A9C9C4">Email</label><input id="jb-email" class="field field-d" type="email" autocomplete="email" placeholder="you@company.co.uk"></div>
+<div><label for="jb-role" class="lbl" style="color: #A9C9C4">Role or trade</label><input id="jb-role" class="field field-d" type="text" placeholder="e.g. Site manager"></div>
+<label style="grid-column: 1 / -1; display: flex; gap: 12px; align-items: center; font-size: 15px; color: rgba(243,235,221,.85); cursor: pointer"><input type="checkbox" style="width: 22px; height: 22px; accent-color: #D4A73C"> Add me to the mailing list for event releases</label>
+<button class="btn btn-gold btn-block" type="submit" style="grid-column: 1 / -1; min-height: 58px; font-size: 17px">Become a member <span class="arr" aria-hidden="true">→</span></button>
+</form>
+</sc-if>
+<sc-if value="{{joined}}" hint-placeholder-val="{{ false }}">
+<div class="stack" style="align-items: center; gap: 18px">
+<svg class="rise glowp spin" width="80" height="80" viewBox="0 0 100 100" aria-hidden="true"><polygon points="50,0 64.6,14.6 85.4,14.6 85.4,35.4 100,50 85.4,64.6 85.4,85.4 64.6,85.4 50,100 35.4,85.4 14.6,85.4 14.6,64.6 0,50 14.6,35.4 14.6,14.6 35.4,14.6" fill="#D4A73C"></polygon></svg>
+<p class="serif" style="margin: 0; font-size: 40px; color: #D4A73C">Welcome to MIC. Your brick is laid.</p>
+<p style="margin: 0; color: rgba(243,235,221,.86)">Check your inbox to confirm, then join the WhatsApp community.</p>
+<a class="btn btn-gold" href="get-involved.html">Open the WhatsApp community <span class="arr" aria-hidden="true">→</span></a>
+</div>
+</sc-if>
+</div>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":760}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { mx: 82, my: 40, joined: false }; }
+  renderVals() {
+    const self = this;
+    return {
+      move: function (e) { const r = e.currentTarget.getBoundingClientRect(); self.setState({ mx: ((e.clientX - r.left) / r.width * 100).toFixed(1), my: ((e.clientY - r.top) / r.height * 100).toFixed(1) }); },
+      mx: this.state.mx, my: this.state.my,
+      joined: this.state.joined, notJoined: !this.state.joined,
+      submit: function (e) { e.preventDefault(); self.setState({ joined: true }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

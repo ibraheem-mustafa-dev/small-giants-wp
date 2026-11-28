@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Checkout · Muslims In Construction</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="assets/css/mic.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>body{margin:0;background:#F3EEE4}</style>
+</helmet>
+<div class="mic" onPointerDown="{{tap}}" style="background: #F3EEE4; color: #0F1D1C">
+<dc-import name="Gauge" hint-size="46px,100%"></dc-import>
+<div style="position: sticky; top: 0; z-index: 60"><dc-import name="Header" active="shop" tone="light" basket="{{basket}}" hint-size="100%,81px"></dc-import></div>
+<section data-sec="co" data-label="Checkout" ref="{{rf}}" class="sec {{v.co}} bp" style="padding: 56px 0 130px; min-height: 1100px">
+<div class="wrap stack" style="gap: 32px">
+<sc-if value="{{notPlaced}}" hint-placeholder-val="{{ true }}">
+<div class="row" style="justify-content: space-between; align-items: end; gap: 20px">
+<h1 class="disp r" style="font-size: clamp(56px, 7vw, 110px)">Checkout</h1>
+<ol class="row r" style="--i: 1; list-style: none; margin: 0; padding: 0; gap: 8px" aria-label="Checkout steps"><sc-for list="{{steps}}" as="st" hint-placeholder-count="3"><li><button onClick="{{st.go}}" class="mono" aria-current="{{st.cur}}" style="padding: 10px 16px; border-radius: 999px; border: 0; background: {{st.bg}}; color: {{st.fg}}; font-weight: 600; cursor: pointer; min-height: 44px">{{st.n}} · {{st.label}}</button></li></sc-for></ol>
+</div>
+<div class="g2" style="gap: 40px; align-items: start">
+<form onSubmit="{{next}}" class="stack r" style="--i: 2; gap: 16px; background: #FBF8F2; border: 1px solid rgba(2,78,74,.16); border-radius: 28px; padding: 34px">
+<sc-if value="{{s1}}" hint-placeholder-val="{{ true }}">
+<div class="stack rise" style="gap: 14px"><h2 style="margin: 0; font-size: 26px; font-weight: 800">Your details</h2>
+<div class="g2" style="gap: 12px"><div><label class="lbl" for="c-fn">First name</label><input id="c-fn" class="field" type="text" autocomplete="given-name"></div><div><label class="lbl" for="c-ln">Last name</label><input id="c-ln" class="field" type="text" autocomplete="family-name"></div></div>
+<div><label class="lbl" for="c-em">Email</label><input id="c-em" class="field" type="email" autocomplete="email"></div>
+<div><label class="lbl" for="c-ph">Phone (optional)</label><input id="c-ph" class="field" type="tel" autocomplete="tel"></div>
+<label class="row" style="gap: 10px; font-size: 15px; cursor: pointer; flex-wrap: nowrap"><input type="checkbox" style="width: 22px; height: 22px; accent-color: #024E4A"> Create an account to track orders and keep your e-tickets</label></div>
+</sc-if>
+<sc-if value="{{s2}}" hint-placeholder-val="{{ false }}">
+<div class="stack rise" style="gap: 14px"><h2 style="margin: 0; font-size: 26px; font-weight: 800">Delivery</h2>
+<div><label class="lbl" for="c-a1">Address</label><input id="c-a1" class="field" type="text" autocomplete="address-line1"></div>
+<div class="g2" style="gap: 12px"><div><label class="lbl" for="c-city">Town or city</label><input id="c-city" class="field" type="text" autocomplete="address-level2"></div><div><label class="lbl" for="c-pc">Postcode</label><input id="c-pc" class="field" type="text" autocomplete="postal-code"></div></div>
+<div class="stack" role="radiogroup" aria-label="Delivery method" style="gap: 10px"><sc-for list="{{ships}}" as="sh" hint-placeholder-count="2"><button type="button" role="radio" aria-checked="{{sh.on}}" onClick="{{sh.pick}}" class="press" style="display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; border-radius: 16px; border: 2px solid {{sh.border}}; background: #FFFFFF; font: inherit; cursor: pointer; text-align: left"><span class="stack" style="gap: 2px"><strong>{{sh.label}}</strong><span style="color: #46524F; font-size: 14px">{{sh.note}}</span></span><span>{{sh.price}}</span></button></sc-for></div></div>
+</sc-if>
+<sc-if value="{{s3}}" hint-placeholder-val="{{ false }}">
+<div class="stack rise" style="gap: 14px"><h2 style="margin: 0; font-size: 26px; font-weight: 800">Payment</h2>
+<button type="button" class="btn btn-ink btn-block">Pay with Apple Pay or Google Pay</button>
+<div class="row" style="gap: 12px; color: #46524F; font-size: 14px"><span style="flex: 1; height: 1px; background: rgba(2,78,74,.2)"></span>or pay by card<span style="flex: 1; height: 1px; background: rgba(2,78,74,.2)"></span></div>
+<div><label class="lbl" for="c-card">Card number</label><input id="c-card" class="field" type="text" inputmode="numeric" autocomplete="cc-number" placeholder="Handled securely by the payment provider"></div>
+<div class="g2" style="gap: 12px"><div><label class="lbl" for="c-exp">Expiry</label><input id="c-exp" class="field" type="text" autocomplete="cc-exp" placeholder="MM / YY"></div><div><label class="lbl" for="c-cvc">Security code</label><input id="c-cvc" class="field" type="text" inputmode="numeric" autocomplete="cc-csc"></div></div>
+<label class="row" style="gap: 10px; font-size: 15px; cursor: pointer; flex-wrap: nowrap"><input type="checkbox" style="width: 22px; height: 22px; accent-color: #024E4A"> I agree to the <a href="legal.html" style="color: #024E4A">terms and conditions</a></label></div>
+</sc-if>
+<div class="row" style="justify-content: space-between; margin-top: 8px"><sc-if value="{{canBack}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn-line" onClick="{{back}}">← Back</button></sc-if><span></span><button class="btn btn-gold" type="submit">{{nextLabel}} <span class="arr" aria-hidden="true">→</span></button></div>
+</form>
+<aside class="r" style="--i: 3; background: #024E4A; color: #F3EBDD; border-radius: 28px; padding: 32px; display: flex; flex-direction: column; gap: 16px">
+<span class="eyebrow" style="color: #D4A73C">Order summary</span>
+<sc-for list="{{lines}}" as="l" hint-placeholder-count="3"><div class="row" style="justify-content: space-between; gap: 14px; flex-wrap: nowrap"><span class="row" style="gap: 12px; flex-wrap: nowrap"><img src="{{l.img}}" alt="" style="width: 52px; height: 62px; object-fit: cover; border-radius: 99px 99px 8px 8px"><span class="stack"><strong>{{l.name}}</strong><span style="font-size: 13px; color: #A9C9C4">{{l.opt}} · ×{{l.qty}}</span></span></span><strong>{{l.total}}</strong></div></sc-for>
+<div style="height: 1px; background: rgba(243,235,221,.2)"></div>
+<div class="row" style="justify-content: space-between"><span>Subtotal</span><span>£62.97</span></div>
+<div class="row" style="justify-content: space-between; color: #A9C9C4"><span>Delivery</span><span>{{shipPrice}}</span></div>
+<div class="row" style="justify-content: space-between; font-size: 22px"><strong>Total</strong><strong class="disp" style="font-size: 30px; color: #D4A73C">£62.97 + delivery</strong></div>
+</aside>
+</div>
+</sc-if>
+<sc-if value="{{placed}}" hint-placeholder-val="{{ false }}">
+<div class="stack rise" style="align-items: center; text-align: center; gap: 22px; padding: 60px 0">
+<svg class="glowp spin" width="120" height="120" viewBox="0 0 100 100" aria-hidden="true"><polygon points="50,0 64.6,14.6 85.4,14.6 85.4,35.4 100,50 85.4,64.6 85.4,85.4 64.6,85.4 50,100 35.4,85.4 14.6,85.4 14.6,64.6 0,50 14.6,35.4 14.6,14.6 35.4,14.6" fill="#D4A73C"></polygon></svg>
+<h1 class="disp" style="font-size: clamp(56px, 8vw, 120px)">JazakAllahu <span class="serif c-teal">khayran</span></h1>
+<p class="lead" style="margin: 0; max-width: 560px">Your order [order number] is confirmed. A receipt is on its way, and any event tickets arrive by email with a QR code for check-in.</p>
+<div class="row stack-s" style="justify-content: center"><a class="btn btn-deep" href="account.html">View my account</a><a class="btn btn-line" href="index.html">Back to home</a></div>
+</div>
+</sc-if>
+</div>
+</section>
+
+<dc-import name="Footer" hint-size="100%,760px"></dc-import>
+<sc-if value="{{sparkA}}" hint-placeholder-val="{{ false }}"><svg class="spark" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><polygon points="50,4 63,37 96,50 63,63 50,96 37,63 4,50 37,37"></polygon></svg><svg class="spark spark2" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><rect x="22" y="22" width="56" height="56" transform="rotate(45 50 50)" fill="none" stroke="#D4A73C" stroke-width="2"></rect></svg></sc-if>
+<sc-if value="{{sparkB}}" hint-placeholder-val="{{ false }}"><svg class="spark" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><polygon points="50,4 63,37 96,50 63,63 50,96 37,63 4,50 37,37"></polygon></svg><svg class="spark spark2" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><rect x="22" y="22" width="56" height="56" transform="rotate(45 50 50)" fill="none" stroke="#D4A73C" stroke-width="2"></rect></svg></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview": {"width": 1440, "height": 3600}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const self = this;
+    this.state = Object.assign({ v: {}, all: false, tap: 0, tx: 0, ty: 0, now: Date.now(), basket: 4 }, {"step": 1, "ship": "standard", "pay": "card", "placed": false});
+    this.io = (typeof IntersectionObserver !== 'undefined') ? new IntersectionObserver(function (es) {
+      const add = {};
+      es.forEach(function (e) { if (e.isIntersecting) { add[e.target.getAttribute('data-sec')] = 1; self.io.unobserve(e.target); } });
+      if (Object.keys(add).length) self.setState(function (s) { return { v: Object.assign({}, s.v, add) }; });
+    }, { threshold: 0.1, rootMargin: '0px 0px -6% 0px' }) : null;
+    this.rf = function (el) { if (el && self.io) self.io.observe(el); };
+    this.tap = function (e) { const r = e.currentTarget.getBoundingClientRect(); self.setState({ tap: self.state.tap + 1, tx: Math.round(e.clientX - r.left), ty: Math.round(e.clientY - r.top) }); };
+    this.rails = {};
+    this.railRef = function (k) { if (!self['_rr' + k]) self['_rr' + k] = function (el) { if (el) self.rails[k] = el; }; return self['_rr' + k]; };
+    this.scrollRail = function (k, d) { return function () { const el = self.rails[k]; if (el) el.scrollBy({ left: d * 380, behavior: 'smooth' }); }; };
+    this.set = function (patch) { return function () { self.setState(typeof patch === 'function' ? patch(self.state) : patch); }; };
+    this.toggle = function (key, id) { return function () { const o = Object.assign({}, self.state[key]); o[id] = !o[id]; const p = {}; p[key] = o; self.setState(p); }; };
+    this.prevent = function (patch) { return function (e) { if (e && e.preventDefault) e.preventDefault(); self.setState(patch); }; };
+  }
+  componentDidMount() {
+    const self = this;
+    if (this.io) { try { document.querySelectorAll('[data-sec]').forEach(function (el) { self.io.observe(el); }); } catch (e) {} }
+    this.safety = setTimeout(function () { if (!Object.keys(self.state.v).length) self.setState({ all: true }); }, 2200);
+    this.clock = setInterval(function () { self.setState({ now: Date.now() }); }, 30000);
+  }
+  componentWillUnmount() { clearTimeout(this.safety); clearInterval(this.clock); if (this.io) this.io.disconnect(); }
+  renderVals() {
+    const self = this, s = this.state;
+    const v = {}; ["co"].forEach(function (k) { v[k] = (s.all || s.v[k]) ? 'in' : ''; });
+    const base = { v: v, rf: this.rf, tap: this.tap, tx: s.tx, ty: s.ty, sparkA: s.tap > 0 && s.tap % 2 === 1, sparkB: s.tap > 0 && s.tap % 2 === 0, basket: s.basket, add: function () { self.setState({ basket: self.state.basket + 1 }); } };
+    const page = (function () {
+const labels = ['Details', 'Delivery', 'Payment'];
+const SH = [['standard', 'Standard delivery', '[Timescale from MIC]', '[£ from MIC]'], ['collect', 'Collect at an MIC event', 'Pick up at the next event you attend', 'Free']];
+const sh = SH.find(function (x) { return x[0] === s.ship; }) || SH[0];
+return {
+  placed: s.placed, notPlaced: !s.placed,
+  steps: labels.map(function (l, i) { const on = s.step === i + 1; return { n: i + 1, label: l, cur: on ? 'step' : 'false', bg: on ? '#024E4A' : (s.step > i + 1 ? '#D4A73C' : '#E9E2D4'), fg: on ? '#FFFFFF' : '#0F1D1C', go: function () { if (i + 1 < self.state.step) self.setState({ step: i + 1 }); } }; }),
+  s1: s.step === 1, s2: s.step === 2, s3: s.step === 3, canBack: s.step > 1,
+  back: function () { self.setState({ step: Math.max(1, self.state.step - 1) }); },
+  next: function (e) { e.preventDefault(); if (self.state.step < 3) self.setState({ step: self.state.step + 1 }); else self.setState({ placed: true, basket: 0 }); },
+  nextLabel: s.step < 3 ? 'Continue to ' + labels[s.step].toLowerCase() : 'Place order',
+  ships: SH.map(function (x) { const on = s.ship === x[0]; return { label: x[1], note: x[2], price: x[3], on: on ? 'true' : 'false', border: on ? '#024E4A' : 'rgba(2,78,74,.18)', pick: self.set({ ship: x[0] }) }; }),
+  shipPrice: sh[3],
+  lines: [['MIC Polo Shirt', 'White · M', 1, '£15.00', 'assets/img/shop-polo-white.jpg'], ['MIC T-Shirt', 'Black · L', 2, '£25.98', 'assets/img/shop-tee-black.jpg'], ['MIC Cap', 'White', 1, '£9.99', 'assets/img/shop-cap-white.jpg']].map(function (l) { return { name: l[0], opt: l[1], qty: l[2], total: l[3], img: l[4] }; })
+};
+
+    }).call(this);
+    return Object.assign(base, page);
+  }
+}
+</script>
+</body>
+</html>

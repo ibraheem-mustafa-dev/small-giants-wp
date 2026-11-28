@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MIC · Press and hold to build</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="assets/css/mic.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>body{margin:0}</style>
+</helmet>
+<div class="mic hold" style="background: transparent; position: relative; width: 100%; max-width: 640px; margin: 0 auto" onPointerDown="{{down}}" onPointerUp="{{up}}" onPointerLeave="{{up}}" onPointerCancel="{{up}}" onPointerMove="{{move}}" onContextMenu="{{noMenu}}">
+<div class="tilt" style="transform: perspective(1400px) rotateX({{rx}}deg) rotateY({{ry}}deg); cursor: pointer">
+<svg viewBox="0 0 640 640" style="width: 100%; height: auto; display: block; overflow: visible" role="img" aria-label="An illustrated building rising brick by brick into a dome shaped like the MIC hard hat, {{pctLabel}} built">
+<!-- blueprint grid -->
+<path class="draw" pathLength="1" style="animation-duration: 3s" d="M0 40H640M0 120H640M0 200H640M0 280H640M0 360H640M0 440H640M0 520H640M0 600H640M40 0V640M120 0V640M200 0V640M280 0V640M360 0V640M440 0V640M520 0V640M600 0V640" fill="none" stroke="#024E4A" stroke-width=".8" opacity=".22"></path>
+<circle class="draw spin" pathLength="1" cx="320" cy="320" r="300" fill="none" stroke="#024E4A" stroke-width="1" stroke-dasharray="3 7" opacity=".35" style="transform-origin: 320px 320px; animation: draw 2.4s cubic-bezier(.65,0,.35,1) forwards, spin 90s linear infinite"></circle>
+<!-- ground and slab -->
+<path class="draw" pathLength="1" d="M10 588H630" stroke="#0F1D1C" stroke-width="2" fill="none"></path>
+<path d="M30 600L50 588M70 600L90 588M110 600L130 588M150 600L170 588M190 600L210 588M230 600L250 588M270 600L290 588M310 600L330 588M350 600L370 588M390 600L410 588M430 600L450 588M470 600L490 588M510 600L530 588M550 600L570 588M590 600L610 588" stroke="#0F1D1C" stroke-width="1" opacity=".4"></path>
+<rect x="96" y="566" width="448" height="22" fill="#0F1D1C" style="opacity: {{slabO}}; transition: opacity .5s"></rect>
+<!-- scaffold -->
+<g class="strike" style="opacity: {{scafO}}; transform: translateY({{scafY}}px)" fill="none" stroke="#0F1D1C" stroke-width="2.5" stroke-linecap="round">
+<path d="{{scaffold}}" opacity=".55"></path>
+</g>
+<!-- bricks -->
+<path d="{{bricksDeep}}" fill="#024E4A"></path>
+<path d="{{bricksTeal}}" fill="#007F7C"></path>
+<path d="{{bricksNew}}" fill="#D4A73C"></path>
+<!-- door arch -->
+<path d="M290 566V456A30 30 0 0 1 350 456V566" fill="#F3EEE4" stroke="#D4A73C" stroke-width="3" style="opacity: {{doorO}}; transition: opacity .6s"></path>
+<!-- star windows -->
+<g style="opacity: {{winO}}; transition: opacity .8s" fill="#F3EEE4" stroke="#D4A73C" stroke-width="3">
+<polygon points="200,428 207,445 224,452 207,459 200,476 193,459 176,452 193,445"></polygon>
+<rect x="187" y="439" width="26" height="26" fill="none" transform="rotate(45 200 452)"></rect>
+<polygon points="440,428 447,445 464,452 447,459 440,476 433,459 416,452 433,445"></polygon>
+<rect x="427" y="439" width="26" height="26" fill="none" transform="rotate(45 440 452)"></rect>
+</g>
+<!-- brim -->
+<rect x="150" y="354" width="340" height="14" rx="3" fill="#0F1D1C" style="opacity: {{brimO}}; transition: opacity .5s"></rect>
+<!-- dome -->
+<path d="M180 354A140 140 0 0 1 460 354Z" fill="#007F7C" style="opacity: {{domeFillO}}; transition: opacity 1s"></path>
+<g style="opacity: {{domeFillO}}; transition: opacity 1s" fill="none" stroke="#F3EEE4" stroke-width="5"><path d="M250 354V262M390 354V262"></path><path d="M300 354V218H340V354"></path><path d="M180 330H460" opacity=".5"></path></g>
+<path d="M180 354A140 140 0 0 1 460 354" pathLength="1" fill="none" stroke="#0F1D1C" stroke-width="7" stroke-linecap="round" style="stroke-dasharray: 1; stroke-dashoffset: {{domeOff}}; transition: stroke-dashoffset .2s linear"></path>
+<!-- spanner minaret -->
+<g style="opacity: {{spanO}}">
+<rect x="472" y="{{spanY}}" width="22" height="{{spanH}}" fill="#0F1D1C"></rect>
+<g style="opacity: {{spanHeadO}}; transition: opacity .5s"><circle cx="483" cy="136" r="22" fill="none" stroke="#0F1D1C" stroke-width="14"></circle><rect x="474" y="104" width="18" height="26" fill="#F3EEE4"></rect></g>
+</g>
+<!-- finial -->
+<g style="opacity: {{finO}}; transition: opacity .6s; transform-origin: 320px 196px" class="glowp"><polygon points="320,172 327,189 344,196 327,203 320,220 313,203 296,196 313,189" fill="#D4A73C" stroke="#0F1D1C" stroke-width="2"></polygon></g>
+<sc-if value="{{done}}" hint-placeholder-val="{{ false }}">
+<g style="transform-origin: 320px 196px" fill="none" stroke="#D4A73C" stroke-width="3"><polygon class="burst" style="transform-origin: 320px 196px" points="320,166 330,186 350,196 330,206 320,226 310,206 290,196 310,186"></polygon><polygon class="burst" style="transform-origin: 320px 196px; animation-delay: .2s" points="320,166 330,186 350,196 330,206 320,226 310,206 290,196 310,186"></polygon><polygon class="burst" style="transform-origin: 320px 196px; animation-delay: .4s" points="320,166 330,186 350,196 330,206 320,226 310,206 290,196 310,186"></polygon></g>
+</sc-if>
+<!-- crane -->
+<g fill="none" stroke="#0F1D1C" stroke-width="2">
+<path d="M592 588V62M610 588V62M592 588L610 560L592 532L610 504L592 476L610 448L592 420L610 392L592 364L610 336L592 308L610 280L592 252L610 224L592 196L610 168L592 140L610 112L592 84L610 62"></path>
+<path d="M300 62H640M300 76H640M300 76L316 62L332 76L348 62L364 76L380 62L396 76L412 62L428 76L444 62L460 76L476 62L492 76L508 62L524 76L540 62L556 76L572 62L588 76"></path>
+<path d="M601 62L601 30L300 62M601 30L640 62"></path>
+</g>
+<rect x="584" y="82" width="34" height="24" fill="#D4A73C" stroke="#0F1D1C" stroke-width="2"></rect>
+<g class="sway" style="transform-origin: {{trolleyX}}px 76px">
+<rect x="{{trolleyXm}}" y="72" width="20" height="10" fill="#0F1D1C"></rect>
+<path d="M{{trolleyX}} 82V{{hookY}}" stroke="#0F1D1C" stroke-width="1.5"></path>
+<sc-if value="{{notDone}}" hint-placeholder-val="{{ true }}"><rect x="{{loadX}}" y="{{hookY}}" width="38" height="20" fill="#D4A73C" stroke="#0F1D1C" stroke-width="2"></rect></sc-if>
+<sc-if value="{{done}}" hint-placeholder-val="{{ false }}"><g><rect x="{{tagX}}" y="{{hookY}}" width="96" height="30" rx="4" fill="#0F1D1C"></rect><text x="{{trolleyX}}" y="{{tagTextY}}" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="13" font-weight="600" fill="#D4A73C" letter-spacing="1">JOIN MIC</text></g></sc-if>
+</g>
+<!-- annotations -->
+<g font-family="JetBrains Mono, monospace" font-size="12" fill="#024E4A" letter-spacing="1">
+<path d="M58 588V{{topY}}M52 588H64M52 {{topY}}H64" stroke="#024E4A" stroke-width="1.2" fill="none"></path>
+<text x="50" y="{{elevTextY}}" transform="rotate(-90 50 {{elevTextY}})" text-anchor="middle">EL. +{{elev}}</text>
+<text x="96" y="612">LEVEL 00 · FOUNDATION</text>
+<text x="370" y="612">COURSE {{course}} / 09</text>
+</g>
+</svg>
+</div>
+<div style="display: flex; align-items: center; gap: 14px; margin-top: 8px">
+<button class="btn {{btnCls}}" onClick="{{click}}" aria-label="{{btnAria}}" style="width: 64px; min-height: 64px; padding: 0; background: #0F1D1C; color: #F3EBDD">
+<svg width="64" height="64" viewBox="0 0 64 64" aria-hidden="true" style="position: absolute; inset: 0"><circle cx="32" cy="32" r="27" fill="none" stroke="rgba(243,235,221,.2)" stroke-width="4"></circle><circle cx="32" cy="32" r="27" fill="none" stroke="#D4A73C" stroke-width="4" pathLength="1" stroke-linecap="round" style="stroke-dasharray: 1; stroke-dashoffset: {{ringOff}}; transform: rotate(-90deg); transform-origin: 32px 32px"></circle></svg>
+<svg width="22" height="22" viewBox="0 0 100 100" aria-hidden="true" style="position: relative; transform: rotate({{ringRot}}deg)"><polygon points="50,0 64.6,14.6 85.4,14.6 85.4,35.4 100,50 85.4,64.6 85.4,85.4 64.6,85.4 50,100 35.4,85.4 14.6,85.4 14.6,64.6 0,50 14.6,35.4 14.6,14.6 35.4,14.6" fill="#D4A73C"></polygon></svg>
+</button>
+<span style="display: flex; flex-direction: column; gap: 2px"><strong style="font-size: 16px; color: #0F1D1C">{{hint}}</strong><span class="mono" style="font-size: 12px; color: #46524F">{{sub}}</span></span>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"startAt":{"editor":"range","min":0,"max":1,"step":0.05,"default":0.4},"$preview":{"width":640,"height":700}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { b: 0, rx: 0, ry: 0 };
+    this.b = 0; this.auto = 0; this.holding = false; this.af = 0; this.last = 0; this.downAt = 0;
+    const self = this;
+    this.tick = function (t) {
+      const dt = self.last ? Math.min(64, t - self.last) : 16; self.last = t;
+      let b = self.b;
+      if (self.holding) b = Math.min(1, b + dt / 2600);
+      else if (b < self.auto) b = Math.min(self.auto, b + dt / 2000);
+      self.b = b;
+      const q = Math.round(b * 240) / 240;
+      if (q !== self.state.b) self.setState({ b: q });
+      if ((self.holding && b < 1) || b < self.auto) self.af = requestAnimationFrame(self.tick); else { self.af = 0; self.last = 0; }
+    };
+    this.go = function () { if (!self.af) { self.last = 0; self.af = requestAnimationFrame(self.tick); } };
+  }
+  componentDidMount() { const self = this; this.t0 = setTimeout(function () { self.auto = self.props.startAt ?? 0.4; self.go(); }, 450); }
+  componentWillUnmount() { clearTimeout(this.t0); if (this.af) cancelAnimationFrame(this.af); }
+  renderVals() {
+    const self = this, b = this.state.b, N = 9, wallEnd = 0.62;
+    const clamp = function (x) { return Math.max(0, Math.min(1, x)); };
+    const courses = Math.min(N, Math.floor(b / wallEnd * N + 1e-6));
+    let deep = '', teal = '', fresh = '';
+    for (let k = 0; k < courses; k++) {
+      const y = 566 - 22 * (k + 1);
+      const off = k % 2 ? 20 : 0;
+      for (let x = 120 - off, i = 0; x < 520; x += 40, i++) {
+        const x0 = Math.max(120, x), x1 = Math.min(520, x + 38);
+        if (x1 - x0 < 6) continue;
+        if (k <= 5 && x1 > 288 && x0 < 352) continue;
+        const r = 'M' + x0 + ' ' + y + 'h' + (x1 - x0) + 'v20h-' + (x1 - x0) + 'Z';
+        if (k === courses - 1 && b < 1) fresh += r; else if ((i * 7 + k * 3) % 5 === 0) teal += r; else deep += r;
+      }
+    }
+    const wallTop = 566 - 22 * courses;
+    const domeP = clamp((b - 0.64) / 0.18), spanP = clamp((b - 0.8) / 0.14);
+    let topY = wallTop;
+    if (b >= 0.64) topY = 354 - 140 * domeP;
+    if (b >= 0.97) topY = 172;
+    const scafTop = Math.max(354, wallTop - 12);
+    let scaf = '';
+    if (b > 0.02) {
+      scaf += 'M106 588V' + scafTop + 'M534 588V' + scafTop;
+      for (let y = 566; y > scafTop; y -= 44) { scaf += 'M100 ' + y + 'H140M500 ' + y + 'H540'; if (y - 44 > scafTop) scaf += 'M106 ' + y + 'L134 ' + (y - 44) + 'M534 ' + y + 'L506 ' + (y - 44); }
+    }
+    const done = b >= 1;
+    const trolleyX = Math.round(done ? 420 : (courses % 2 ? 300 : 360));
+    const hookY = Math.round(done ? 240 : Math.max(110, topY - 70));
+    const elev = String(Math.round((588 - topY) * 12)).padStart(4, '0');
+    return {
+      down: function (e) { self.holding = true; self.downAt = Date.now(); self.go(); },
+      up: function () { self.holding = false; },
+      move: function (e) { if (e.pointerType === 'touch') return; const r = e.currentTarget.getBoundingClientRect(); self.setState({ ry: (((e.clientX - r.left) / r.width) - 0.5) * 10, rx: -(((e.clientY - r.top) / r.height) - 0.5) * 8 }); },
+      noMenu: function (e) { e.preventDefault(); },
+      click: function () {
+        if (Date.now() - self.downAt > 280) return;
+        if (self.b >= 1) { self.b = 0; self.auto = self.props.startAt ?? 0.4; self.setState({ b: 0 }); self.go(); }
+        else { self.auto = Math.min(1, self.b + 0.11); self.go(); }
+      },
+      rx: this.state.rx.toFixed(2), ry: this.state.ry.toFixed(2),
+      slabO: b > 0.01 ? 1 : 0, scafO: b > 0.02 && !done ? 1 : 0, scafY: done ? 30 : 0, scaffold: scaf || 'M0 0',
+      bricksDeep: deep || 'M0 0', bricksTeal: teal || 'M0 0', bricksNew: fresh || 'M0 0',
+      doorO: courses >= 6 ? 1 : 0, winO: courses >= 7 ? 1 : 0, brimO: b >= 0.64 ? 1 : 0,
+      domeOff: (1 - domeP).toFixed(3), domeFillO: b >= 0.86 ? 1 : 0,
+      spanO: spanP > 0 ? 1 : 0, spanY: Math.round(354 - 196 * spanP), spanH: Math.round(196 * spanP), spanHeadO: spanP >= 1 ? 1 : 0,
+      finO: b >= 0.97 ? 1 : 0, done: done, notDone: !done,
+      trolleyX: trolleyX, trolleyXm: trolleyX - 10, hookY: hookY, loadX: trolleyX - 19, tagX: trolleyX - 48, tagTextY: hookY + 20,
+      topY: Math.round(topY), elev: elev, elevTextY: Math.round((588 + topY) / 2), course: '0' + courses,
+      ringOff: (1 - b).toFixed(3), ringRot: Math.round(b * 360),
+      btnCls: done ? '' : 'press-hint',
+      hint: done ? 'Built together.' : 'Press and hold to build',
+      sub: done ? 'Tap to build again · Join MIC below' : 'Every member is a brick · ' + Math.round(b * 100) + '%',
+      btnAria: done ? 'Building complete. Activate to build again' : 'Build. Hold, or press repeatedly, to lay bricks',
+      pctLabel: Math.round(b * 100) + '%'
+    };
+  }
+}
+</script>
+</body>
+</html>

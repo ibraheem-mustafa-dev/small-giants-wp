@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MIC Polo Shirt · Shop</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="assets/css/mic.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>body{margin:0;background:#F3EEE4}</style>
+</helmet>
+<div class="mic" onPointerDown="{{tap}}" style="background: #F3EEE4; color: #0F1D1C">
+<dc-import name="Gauge" hint-size="46px,100%"></dc-import>
+<div style="position: sticky; top: 0; z-index: 60"><dc-import name="Header" active="shop" tone="light" basket="{{basket}}" hint-size="100%,81px"></dc-import></div>
+<section data-sec="prod" data-label="Shop · MIC Polo Shirt" ref="{{rf}}" class="sec {{v.prod}}" style="padding: 40px 0 120px">
+<div class="wrap stack" style="gap: 26px">
+<nav aria-label="Breadcrumb" class="mono r" style="color: #46524F"><a href="shop.html" style="color: #024E4A">Shop</a> / Clothing / MIC Polo Shirt</nav>
+<div class="g2" style="gap: 56px; align-items: start">
+<div class="stack" style="gap: 14px">
+<div class="archc r-wall press" style="aspect-ratio: 4 / 5; overflow: hidden; background: #E4E2DE"><img class="zoom" src="{{mainImg}}" alt="{{colour}} MIC polo shirt, front" style="width: 100%; height: 100%; object-fit: cover"></div>
+<div class="row" style="gap: 10px">
+<sc-for list="{{thumbs}}" as="t" hint-placeholder-count="2"><button onClick="{{t.pick}}" aria-label="Show {{t.label}}" aria-pressed="{{t.on}}" class="press" style="width: 92px; height: 112px; border-radius: 14px; overflow: hidden; border: 0; padding: 0; box-shadow: {{t.ring}}; background: #E4E2DE"><img src="{{t.img}}" alt="" style="width: 100%; height: 100%; object-fit: cover"></button></sc-for>
+<span class="mono" style="align-self: center; color: #46524F; font-size: 12px">Back and side views from MIC</span>
+</div>
+</div>
+<div class="stack" style="gap: 24px">
+<span class="eyebrow r" style="color: #024E4A">Official MIC merch</span>
+<h1 class="disp r" style="--i: 1; font-size: clamp(56px, 6vw, 100px)">MIC Polo <span class="serif c-teal">Shirt</span></h1>
+<span class="disp r" style="--i: 2; font-size: 56px; color: #024E4A">£15.00</span>
+<p class="lead r" style="--i: 3; margin: 0; color: #33403F">Smart and professional, the official Muslims in Construction polo is made for networking events, site visits or everyday wear, with the MIC logo embroidered on the chest.</p>
+<fieldset class="r" style="--i: 4; border: 0; margin: 0; padding: 0"><legend class="lbl" style="padding: 0">Colour · {{colour}}</legend><div class="row" style="gap: 10px"><sc-for list="{{colours}}" as="c" hint-placeholder-count="2"><button role="radio" aria-checked="{{c.on}}" onClick="{{c.pick}}" aria-label="{{c.label}}" style="width: 48px; height: 48px; border-radius: 99px; border: 0; background: {{c.c}}; box-shadow: {{c.ring}}; cursor: pointer"></button></sc-for></div></fieldset>
+<fieldset class="r" style="--i: 5; border: 0; margin: 0; padding: 0"><legend class="lbl" style="padding: 0">Size · {{size}}</legend><div class="row" role="radiogroup" aria-label="Size" style="gap: 8px"><sc-for list="{{sizes}}" as="z" hint-placeholder-count="5"><button class="chip" role="radio" aria-checked="{{z.on}}" onClick="{{z.pick}}" style="min-width: 60px">{{z.label}}</button></sc-for></div><a href="#details" class="link" style="display: inline-block; margin-top: 10px; color: #024E4A; font-size: 14px">Size guide</a></fieldset>
+<div class="row r" style="--i: 6; gap: 12px; flex-wrap: nowrap">
+<div class="row" style="gap: 4px; flex-wrap: nowrap; border: 1.5px solid rgba(2,78,74,.3); border-radius: 999px; padding: 4px"><button class="btn btn-sm" onClick="{{down}}" aria-label="Decrease quantity" style="width: 44px; padding: 0; background: transparent; color: #0F1D1C">−</button><span class="disp" style="font-size: 28px; min-width: 32px; text-align: center" aria-live="polite">{{qty}}</span><button class="btn btn-sm" onClick="{{up}}" aria-label="Increase quantity" style="width: 44px; padding: 0; background: transparent; color: #0F1D1C">+</button></div>
+<button class="btn btn-gold" onClick="{{addQty}}" style="flex: 1">{{addLabel}} <span class="arr" aria-hidden="true">→</span></button>
+</div>
+<sc-if value="{{added}}" hint-placeholder-val="{{ false }}"><div class="rise row" role="status" style="gap: 14px; background: #024E4A; color: #F3EBDD; border-radius: 18px; padding: 16px 20px; justify-content: space-between"><span>Added {{qty}} × {{colour}} polo, size {{size}}.</span><a class="btn btn-gold btn-sm" href="basket.html">View basket</a></div></sc-if>
+<div id="details" class="stack r" style="--i: 7; border-top: 1px solid rgba(2,78,74,.2)">
+<sc-for list="{{acc}}" as="a" hint-placeholder-count="3"><div style="border-bottom: 1px solid rgba(2,78,74,.2)"><button class="acc-b" onClick="{{a.toggle}}" aria-expanded="{{a.open}}"><span>{{a.t}}</span><span class="acc-i" style="transform: rotate({{a.rot}}deg); color: #024E4A" aria-hidden="true">+</span></button><sc-if value="{{a.isOpen}}" hint-placeholder-val="{{ false }}"><p class="rise" style="margin: 0 0 22px; color: #33403F; line-height: 1.6">{{a.b}}</p></sc-if></div></sc-for>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<section data-sec="rel" data-label="Shop · You might also like" ref="{{rf}}" class="sec {{v.rel}}" style="padding: 40px 0 130px; background: linear-gradient(180deg, #F3EEE4, #E9E2D4)">
+<div class="wrap stack" style="gap: 32px">
+<h2 class="disp h3 r">Complete the <span class="serif c-teal">kit</span></h2>
+<div class="g3">
+<sc-for list="{{related}}" as="p" hint-placeholder-count="2"><a href="product.html" class="press r stack" style="--i: {{p.i}}; gap: 14px; text-decoration: none; color: #0F1D1C"><span class="archc" style="display: block; aspect-ratio: 4 / 5; overflow: hidden; background: #E4E2DE"><img class="zoom" src="{{p.img}}" alt="{{p.alt}}" style="width: 100%; height: 100%; object-fit: cover"></span><span class="row" style="justify-content: space-between"><strong style="font-size: 20px">{{p.name}}</strong><span class="disp" style="font-size: 32px; color: #024E4A">{{p.price}}</span></span></a></sc-for>
+</div>
+</div>
+</section>
+
+<dc-import name="Footer" hint-size="100%,760px"></dc-import>
+<sc-if value="{{sparkA}}" hint-placeholder-val="{{ false }}"><svg class="spark" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><polygon points="50,4 63,37 96,50 63,63 50,96 37,63 4,50 37,37"></polygon></svg><svg class="spark spark2" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><rect x="22" y="22" width="56" height="56" transform="rotate(45 50 50)" fill="none" stroke="#D4A73C" stroke-width="2"></rect></svg></sc-if>
+<sc-if value="{{sparkB}}" hint-placeholder-val="{{ false }}"><svg class="spark" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><polygon points="50,4 63,37 96,50 63,63 50,96 37,63 4,50 37,37"></polygon></svg><svg class="spark spark2" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><rect x="22" y="22" width="56" height="56" transform="rotate(45 50 50)" fill="none" stroke="#D4A73C" stroke-width="2"></rect></svg></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview": {"width": 1440, "height": 4400}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const self = this;
+    this.state = Object.assign({ v: {}, all: false, tap: 0, tx: 0, ty: 0, now: Date.now(), basket: 0 }, {"colour": "White", "size": "M", "qty": 1, "added": false, "acc": {"desc": true}});
+    this.io = (typeof IntersectionObserver !== 'undefined') ? new IntersectionObserver(function (es) {
+      const add = {};
+      es.forEach(function (e) { if (e.isIntersecting) { add[e.target.getAttribute('data-sec')] = 1; self.io.unobserve(e.target); } });
+      if (Object.keys(add).length) self.setState(function (s) { return { v: Object.assign({}, s.v, add) }; });
+    }, { threshold: 0.1, rootMargin: '0px 0px -6% 0px' }) : null;
+    this.rf = function (el) { if (el && self.io) self.io.observe(el); };
+    this.tap = function (e) { const r = e.currentTarget.getBoundingClientRect(); self.setState({ tap: self.state.tap + 1, tx: Math.round(e.clientX - r.left), ty: Math.round(e.clientY - r.top) }); };
+    this.rails = {};
+    this.railRef = function (k) { if (!self['_rr' + k]) self['_rr' + k] = function (el) { if (el) self.rails[k] = el; }; return self['_rr' + k]; };
+    this.scrollRail = function (k, d) { return function () { const el = self.rails[k]; if (el) el.scrollBy({ left: d * 380, behavior: 'smooth' }); }; };
+    this.set = function (patch) { return function () { self.setState(typeof patch === 'function' ? patch(self.state) : patch); }; };
+    this.toggle = function (key, id) { return function () { const o = Object.assign({}, self.state[key]); o[id] = !o[id]; const p = {}; p[key] = o; self.setState(p); }; };
+    this.prevent = function (patch) { return function (e) { if (e && e.preventDefault) e.preventDefault(); self.setState(patch); }; };
+  }
+  componentDidMount() {
+    const self = this;
+    if (this.io) { try { document.querySelectorAll('[data-sec]').forEach(function (el) { self.io.observe(el); }); } catch (e) {} }
+    this.safety = setTimeout(function () { if (!Object.keys(self.state.v).length) self.setState({ all: true }); }, 2200);
+    this.clock = setInterval(function () { self.setState({ now: Date.now() }); }, 30000);
+  }
+  componentWillUnmount() { clearTimeout(this.safety); clearInterval(this.clock); if (this.io) this.io.disconnect(); }
+  renderVals() {
+    const self = this, s = this.state;
+    const v = {}; ["prod", "rel"].forEach(function (k) { v[k] = (s.all || s.v[k]) ? 'in' : ''; });
+    const base = { v: v, rf: this.rf, tap: this.tap, tx: s.tx, ty: s.ty, sparkA: s.tap > 0 && s.tap % 2 === 1, sparkB: s.tap > 0 && s.tap % 2 === 0, basket: s.basket, add: function () { self.setState({ basket: self.state.basket + 1 }); } };
+    const page = (function () {
+const IM = { White: 'assets/img/shop-polo-white.jpg', Black: 'assets/img/shop-polo-black.jpg' };
+const ring = function (on) { return on ? '0 0 0 3px #F3EEE4, 0 0 0 5px #024E4A' : 'inset 0 0 0 1.5px rgba(2,78,74,.3)'; };
+const acc = s.acc || {};
+return {
+  colour: s.colour, size: s.size, qty: s.qty, mainImg: IM[s.colour],
+  thumbs: ['White', 'Black'].map(function (k) { return { label: k + ' polo', img: IM[k], on: s.colour === k ? 'true' : 'false', ring: ring(s.colour === k), pick: self.set({ colour: k, added: false }) }; }),
+  colours: ['White', 'Black'].map(function (k) { return { label: k, c: k === 'White' ? '#FFFFFF' : '#111111', on: s.colour === k ? 'true' : 'false', ring: ring(s.colour === k), pick: self.set({ colour: k, added: false }) }; }),
+  sizes: ['S', 'M', 'L', 'XL', 'XXL'].map(function (z) { return { label: z, on: s.size === z ? 'true' : 'false', pick: self.set({ size: z, added: false }) }; }),
+  up: function () { self.setState({ qty: Math.min(20, self.state.qty + 1), added: false }); }, down: function () { self.setState({ qty: Math.max(1, self.state.qty - 1), added: false }); },
+  addQty: function () { self.setState({ basket: self.state.basket + self.state.qty, added: true }); },
+  addLabel: s.added ? 'Add more' : 'Add to basket · £' + (15 * s.qty).toFixed(2), added: s.added,
+  acc: [['desc', 'Description', 'The official Muslims in Construction polo shirt. Smart enough for events, comfortable on site, with the MIC logo embroidered on the chest. Available in white or black, sizes S to XXL.'], ['size', 'Size guide', '[Size chart from MIC]'], ['del', 'Delivery and returns', '[Delivery options and prices from MIC.] See our refunds and returns policy for full details.']].map(function (a) { const open = !!acc[a[0]]; return { t: a[1], b: a[2], open: open ? 'true' : 'false', isOpen: open, rot: open ? 45 : 0, toggle: self.toggle('acc', a[0]) }; }),
+  related: [{ i: 0, name: 'MIC T-Shirt', price: '£12.99', img: 'assets/img/shop-tee-black.jpg', alt: 'Black MIC T-shirt' }, { i: 1, name: 'MIC Cap', price: '£9.99', img: 'assets/img/shop-cap-white.jpg', alt: 'White MIC cap' }]
+};
+
+    }).call(this);
+    return Object.assign(base, page);
+  }
+}
+</script>
+</body>
+</html>

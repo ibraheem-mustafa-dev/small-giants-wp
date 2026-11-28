@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Muslims In Construction · Home</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="assets/css/mic.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>body{margin:0;background:#F3EEE4}</style>
+</helmet>
+<div class="mic" onPointerDown="{{tap}}" style="background: #F3EEE4">
+<dc-import name="Gauge" hint-size="46px,100%"></dc-import>
+<div style="position: sticky; top: 0; z-index: 60"><dc-import name="Header" active="home" tone="light" basket="{{basket}}" hint-size="100%,81px"></dc-import></div>
+
+<!-- HERO -->
+<section data-sec="hero" data-label="Level 00 · Set-out" ref="{{rf}}" class="sec {{v.hero}} bp" style="position: relative; padding: 48px 0 140px; background-color: #F3EEE4">
+<div class="wrap g2" style="align-items: center; gap: 48px">
+<div class="stack" style="gap: 28px">
+<span class="mono r" style="--i: 0; color: #024E4A; display: flex; gap: 14px; align-items: center"><span class="r-line" style="display: inline-block; width: 48px; height: 2px; background: #024E4A"></span>Level 00 · Set-out · UK network</span>
+<h1 class="disp" style="font-size: clamp(48px, 7.6vw, 124px); color: #0F1D1C"><span class="word" style="--i: 1">Building</span> <span class="word" style="--i: 2">excellence</span><br><span class="word serif" style="--i: 3; color: #007F7C">with faith</span><br><span class="word" style="--i: 4">as our</span> <span class="word" style="--i: 5">foundation</span></h1>
+<p class="lead r" style="--i: 6; margin: 0; max-width: 560px; color: #33403F">A UK network connecting, supporting and uplifting Muslims across construction and the built environment, from site to boardroom. Free to join, and open to everyone who shares our values.</p>
+<div class="row r stack-s" style="--i: 7">
+<a class="btn btn-gold" href="get-involved.html">Join MIC, it's free <span class="arr" aria-hidden="true">→</span></a>
+<a class="btn btn-line" href="events.html">See events</a>
+</div>
+<a href="gala-2026.html" class="press r" style="--i: 8; display: flex; align-items: center; gap: 14px; text-decoration: none; color: #0F1D1C; background: #FBF8F2; border: 1px solid rgba(2,78,74,.16); border-radius: 18px; padding: 14px 18px; max-width: 540px">
+<span class="pulse" style="width: 10px; height: 10px; border-radius: 99px; background: {{gala.dot}}; flex-shrink: 0"></span>
+<span class="stack" style="gap: 2px; flex: 1"><span class="mono" style="font-size: 12px; color: #46524F">{{gala.label}}</span><strong style="font-size: 16px">MIC Gala &amp; Awards 2026 · Saffron Gallery</strong></span>
+<span class="mono" style="color: #024E4A; font-weight: 600; white-space: nowrap">{{gala.short}}</span>
+</a>
+</div>
+<div class="r-s" style="--i: 3; padding-bottom: 40px"><dc-import name="BuildStage" hint-size="100%,640px"></dc-import></div>
+</div>
+<div class="mono bob hide-s" aria-hidden="true" style="position: absolute; left: 50%; bottom: 70px; transform: translateX(-50%); color: #024E4A; display: flex; flex-direction: column; align-items: center; gap: 8px">Scroll to rise<svg width="14" height="22" viewBox="0 0 14 22" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 1v19M1 14l6 6 6-6"></path></svg></div>
+</section>
+
+<!-- TAPE -->
+<div aria-label="Latest from MIC" style="position: relative; z-index: 5; margin: -40px -24px 0; transform: rotate(-1.6deg); background: #D4A73C; color: #1A1405; padding: 14px 0; overflow: hidden; box-shadow: 0 24px 40px -24px rgba(15,29,28,.55)">
+<div class="ticker">
+<sc-for list="{{ticker}}" as="t" hint-placeholder-count="10"><span class="disp" style="font-size: 30px; padding: 0 26px; display: inline-flex; gap: 26px; align-items: center; white-space: nowrap">{{t}}<svg width="18" height="18" viewBox="0 0 100 100" aria-hidden="true"><polygon points="50,0 64.6,14.6 85.4,14.6 85.4,35.4 100,50 85.4,64.6 85.4,85.4 64.6,85.4 50,100 35.4,85.4 14.6,85.4 14.6,64.6 0,50 14.6,35.4 14.6,14.6 35.4,14.6" fill="#1A1405"></polygon></svg></span></sc-for>
+</div>
+</div>
+
+<!-- NETWORK -->
+<section data-sec="net" data-label="Level 01 · The network" ref="{{rf}}" class="sec {{v.net}}" style="position: relative; padding: 150px 0 130px; background: linear-gradient(180deg, #F3EEE4, #E9E2D4)">
+<div class="wrap g2" style="align-items: end">
+<div class="stack" style="gap: 20px"><span class="mono r" style="color: #024E4A">Level 01 · The network</span><h2 class="disp h2 r" style="--i: 1">A network built<br>like a <span class="serif c-teal">wall</span></h2></div>
+<p class="lead r" style="--i: 2; margin: 0; color: #33403F">Every member strengthens the next. Engineers, surveyors, project managers, architects, site teams and students, from apprentices to directors, in the UK and across the Gulf.</p>
+</div>
+<div class="wrap stack" style="gap: 12px; margin-top: 72px">
+<div class="row stack-s" style="gap: 12px; flex-wrap: nowrap">
+<sc-for list="{{statsA}}" as="s" hint-placeholder-count="2"><div class="press r-wall" style="--i: {{s.i}}; flex: {{s.flex}}; background: {{s.bg}}; color: {{s.fg}}; border-radius: 10px; padding: 34px 36px; min-height: 220px; display: flex; flex-direction: column; justify-content: space-between; gap: 16px"><span class="disp" style="font-size: clamp(76px, 8vw, 136px)" aria-label="{{s.aria}}"><span class="count" style="--to: {{s.n}}" data-n="{{s.n}}"></span>{{s.suffix}}</span><span class="row" style="justify-content: space-between; align-items: end"><strong style="font-size: 18px; max-width: 260px; line-height: 1.35">{{s.label}}</strong><span class="mono" style="font-size: 12px; opacity: .75">{{s.src}}</span></span></div></sc-for>
+</div>
+<div class="row stack-s" style="gap: 12px; flex-wrap: nowrap; padding-left: 9%">
+<sc-for list="{{statsB}}" as="s" hint-placeholder-count="2"><div class="press r-wall" style="--i: {{s.i}}; flex: {{s.flex}}; background: {{s.bg}}; color: {{s.fg}}; border-radius: 10px; padding: 34px 36px; min-height: 220px; display: flex; flex-direction: column; justify-content: space-between; gap: 16px; border: {{s.border}}"><span class="disp" style="font-size: clamp(76px, 8vw, 136px)" aria-label="{{s.aria}}"><span class="count" style="--to: {{s.n}}" data-n="{{s.n}}"></span>{{s.suffix}}</span><span class="row" style="justify-content: space-between; align-items: end"><strong style="font-size: 18px; max-width: 260px; line-height: 1.35">{{s.label}}</strong><span class="mono" style="font-size: 12px; opacity: .75">{{s.src}}</span></span></div></sc-for>
+</div>
+</div>
+</section>
+
+<!-- EVENTS -->
+<section data-sec="events" data-label="Level 02 · Events" ref="{{rf}}" class="sec {{v.events}}" style="position: relative; padding: 40px 0 140px; background: #E9E2D4">
+<div class="wrap stack" style="gap: 48px">
+<div class="row" style="justify-content: space-between; align-items: end; gap: 28px">
+<div class="stack" style="gap: 18px"><span class="mono r" style="color: #024E4A">Level 02 · Events</span>
+<h2 class="disp h2 r" style="--i: 1">Every event<br>has <span class="r-s" style="--i: 4; display: inline-block"><span style="display: inline-block; transform: rotate(-5deg); border: 6px solid #0F1D1C; padding: 0 14px; border-radius: 10px; background: #D4A73C">sold out</span></span></h2></div>
+<p class="lead r" style="--i: 2; margin: 0; max-width: 430px; color: #33403F">Networking days, socials, careers workshops and a black-tie gala. Prayer space is part of every programme.</p>
+</div>
+<div class="g2" style="gap: 40px; align-items: center">
+<a href="gala-2026.html" class="press r-wall" style="--i: 1; display: block; position: relative; border-radius: 28px; overflow: hidden; aspect-ratio: 16 / 11; background: #041F1E">
+<img class="zoom" src="assets/img/gala25-dinner-hall.jpg" alt="Guests at round tables under chandeliers at the 2025 MIC Gala" style="width: 100%; height: 100%; object-fit: cover">
+<span class="tape" style="position: absolute; left: -40px; right: -40px; top: 34px; height: 44px; transform: rotate(-4deg); display: flex; align-items: center; justify-content: center"><span class="mono" style="background: #0F1D1C; color: #D4A73C; padding: 6px 14px; font-weight: 600">Sold out · all four releases</span></span>
+</a>
+<div class="stack r" style="--i: 2; gap: 20px">
+<span class="eyebrow" style="color: #024E4A">{{gala.label}}</span>
+<h3 class="disp h3">Gala &amp; Awards <span class="serif c-teal">2026</span></h3>
+<dl style="margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 10px 20px; font-size: 16px">
+<dt class="mono" style="color: #46524F">Date</dt><dd style="margin: 0; font-weight: 700">Saturday 28 November 2026, 6pm to 11pm</dd>
+<dt class="mono" style="color: #46524F">Venue</dt><dd style="margin: 0; font-weight: 700">Saffron Gallery, 341–351 High Street, London E15 4QZ</dd>
+<dt class="mono" style="color: #46524F">Dress</dt><dd style="margin: 0; font-weight: 700">Formal or evening attire</dd>
+<dt class="mono" style="color: #46524F">Includes</dt><dd style="margin: 0; font-weight: 700">Three-course dinner, keynotes, entertainment and the MIC Awards</dd>
+</dl>
+<span class="disp" style="font-size: 54px; color: #024E4A">{{gala.big}}</span>
+<div class="row"><a class="btn btn-deep" href="gala-2026.html">{{gala.cta}} <span class="arr" aria-hidden="true">→</span></a><a class="btn btn-line" href="gala-2026.html#interest">Register for 2027</a></div>
+</div>
+</div>
+<div class="row" style="justify-content: space-between">
+<h3 style="margin: 0; font-size: 24px; font-weight: 800">More from MIC</h3>
+<div class="row hide-s" style="gap: 8px"><button class="btn btn-line btn-sm" onClick="{{railEvPrev}}" aria-label="Scroll events left" style="width: 48px; padding: 0">←</button><button class="btn btn-line btn-sm" onClick="{{railEvNext}}" aria-label="Scroll events right" style="width: 48px; padding: 0">→</button></div>
+<span class="mono only-s" style="color: #024E4A">Swipe →</span>
+</div>
+</div>
+<div class="rail" ref="{{railEvRef}}" style="padding-left: max(20px, calc((100% - 1320px) / 2 + 56px)); scroll-padding-left: max(20px, calc((100% - 1320px) / 2 + 56px)); padding-right: 56px; margin-top: 24px">
+<sc-for list="{{events}}" as="e" hint-placeholder-count="5">
+<a href="{{e.href}}" class="press r" style="--i: {{e.i}}; width: 340px; text-decoration: none; color: #0F1D1C; display: flex; flex-direction: column; gap: 14px">
+<span style="display: block; position: relative; height: 230px; border-radius: 22px; overflow: hidden; background: #024E4A">
+<sc-if value="{{e.hasImg}}" hint-placeholder-val="{{ true }}"><img class="zoom" src="{{e.img}}" alt="{{e.alt}}" style="width: 100%; height: 100%; object-fit: cover"></sc-if>
+<sc-if value="{{e.noImg}}" hint-placeholder-val="{{ false }}"><span class="bp-dark" style="position: absolute; inset: 0; display: grid; place-items: center"><svg class="spinme" width="120" height="120" viewBox="0 0 100 100" aria-hidden="true" style="position: absolute; opacity: .25"><g fill="none" stroke="#D4A73C" stroke-width="1.5"><rect x="20" y="20" width="60" height="60"></rect><rect x="20" y="20" width="60" height="60" transform="rotate(45 50 50)"></rect></g></svg><span class="disp" style="font-size: 44px; color: #F3EBDD; position: relative">{{e.city}}</span><span class="mono" style="position: absolute; left: 14px; bottom: 12px; font-size: 12px; color: #A9C9C4">Event photo from MIC</span></span></sc-if>
+<span class="mono" style="position: absolute; top: 12px; left: 12px; background: {{e.chipBg}}; color: {{e.chipFg}}; padding: 6px 10px; border-radius: 999px; font-size: 12px; font-weight: 600">{{e.chip}}</span>
+</span>
+<span class="mono" style="color: #024E4A; font-size: 12px">{{e.date}} · {{e.city}}</span>
+<strong style="font-size: 21px; line-height: 1.25">{{e.title}}</strong>
+<span style="font-size: 15px; color: #33403F; line-height: 1.5">{{e.line}}</span>
+</a>
+</sc-for>
+</div>
+</section>
+
+<!-- PILLARS -->
+<section data-sec="pillars" data-label="Level 03 · Pillars" ref="{{rf}}" class="sec {{v.pillars}}" style="position: relative; padding: 120px 0 200px; background: linear-gradient(180deg, #E9E2D4, #F3EEE4)">
+<div class="wrap g2" style="align-items: end">
+<div class="stack" style="gap: 18px"><span class="mono r" style="color: #024E4A">Level 03 · What we stand on</span><h2 class="disp h2 r" style="--i: 1">Four pillars,<br>one <span class="serif c-teal">structure</span></h2></div>
+<p class="lead r" style="--i: 2; margin: 0; color: #33403F">Tap a brick to turn it over.</p>
+</div>
+<div class="wrap stack" style="gap: 12px; margin-top: 56px">
+<div class="row stack-s" style="gap: 12px; flex-wrap: nowrap">
+<sc-for list="{{pillarsA}}" as="p" hint-placeholder-count="2">
+<button class="flip press r-wall flip-tall" onClick="{{p.flip}}" aria-pressed="{{p.pressed}}" style="--i: {{p.i}}; flex: 1; height: 280px; border-radius: 12px">
+<span class="flip-in" style="display: block; transform: rotateY({{p.deg}}deg)">
+<span class="flip-f" style="display: flex; flex-direction: column; justify-content: space-between; padding: 30px 32px; border-radius: 12px; background: {{p.bg}}; color: {{p.fg}}"><span class="row" style="justify-content: space-between"><span class="mono" style="font-size: 12px">Pillar {{p.no}}</span><svg class="spinme" width="40" height="40" viewBox="0 0 100 100" aria-hidden="true"><g fill="none" stroke="{{p.accent}}" stroke-width="5"><rect x="20" y="20" width="60" height="60"></rect><rect x="20" y="20" width="60" height="60" transform="rotate(45 50 50)"></rect></g></svg></span><span class="disp" style="font-size: clamp(40px, 4vw, 60px)">{{p.title}}</span></span>
+<span class="flip-f flip-b" style="display: flex; flex-direction: column; justify-content: space-between; padding: 30px 32px; border-radius: 12px; background: {{p.bg2}}; color: {{p.fg2}}"><span class="mono" style="font-size: 12px">{{p.title}}</span><span class="serif" style="font-size: clamp(20px, 2.3vw, 32px); line-height: 1.25">{{p.body}}</span><span class="mono" style="font-size: 12px; opacity: .8">Tap to turn back</span></span>
+</span>
+</button>
+</sc-for>
+</div>
+<div class="row stack-s" style="gap: 12px; flex-wrap: nowrap; padding-left: 12%">
+<sc-for list="{{pillarsB}}" as="p" hint-placeholder-count="2">
+<button class="flip press r-wall flip-tall" onClick="{{p.flip}}" aria-pressed="{{p.pressed}}" style="--i: {{p.i}}; flex: 1; height: 280px; border-radius: 12px">
+<span class="flip-in" style="display: block; transform: rotateY({{p.deg}}deg)">
+<span class="flip-f" style="display: flex; flex-direction: column; justify-content: space-between; padding: 30px 32px; border-radius: 12px; background: {{p.bg}}; color: {{p.fg}}"><span class="row" style="justify-content: space-between"><span class="mono" style="font-size: 12px">Pillar {{p.no}}</span><svg class="spinme" width="40" height="40" viewBox="0 0 100 100" aria-hidden="true"><g fill="none" stroke="{{p.accent}}" stroke-width="5"><rect x="20" y="20" width="60" height="60"></rect><rect x="20" y="20" width="60" height="60" transform="rotate(45 50 50)"></rect></g></svg></span><span class="disp" style="font-size: clamp(40px, 4vw, 60px)">{{p.title}}</span></span>
+<span class="flip-f flip-b" style="display: flex; flex-direction: column; justify-content: space-between; padding: 30px 32px; border-radius: 12px; background: {{p.bg2}}; color: {{p.fg2}}"><span class="mono" style="font-size: 12px">{{p.title}}</span><span class="serif" style="font-size: clamp(20px, 2.3vw, 32px); line-height: 1.25">{{p.body}}</span><span class="mono" style="font-size: 12px; opacity: .8">Tap to turn back</span></span>
+</span>
+</button>
+</sc-for>
+</div>
+</div>
+</section>
+
+<!-- HADITH: day turns to dusk -->
+<section data-sec="hadith" data-label="Level 04 · Foundation" data-tone="dark" ref="{{rf}}" class="sec {{v.hadith}}" style="position: relative; overflow: hidden; padding: 230px 0 160px; background: linear-gradient(180deg, #F3EEE4 0%, #0B5B56 18%, #024E4A 30%, #024E4A 100%); color: #F3EBDD">
+<svg class="lat-edges" style="position: absolute; inset: 0; width: 100%; height: 100%; color: rgba(243,235,221,.09)" aria-hidden="true"><defs><pattern id="latHome" width="84" height="84" patternUnits="userSpaceOnUse"><g fill="none" stroke="currentColor" stroke-width="1.4"><polygon points="42,8 52,32 76,42 52,52 42,76 32,52 8,42 32,32"></polygon><rect x="23" y="23" width="38" height="38"></rect><rect x="23" y="23" width="38" height="38" transform="rotate(45 42 42)"></rect><path d="M0 0L23 23M84 0L61 23M0 84L23 61M84 84L61 61M42 0V8M42 84V76M0 42H8M84 42H76"></path></g></pattern></defs><rect width="100%" height="100%" fill="url(#latHome)"></rect></svg>
+<svg class="hide-s" viewBox="0 0 400 400" style="position: absolute; left: -140px; top: 280px; width: 520px; height: 520px" aria-hidden="true"><g fill="none" stroke="#D4A73C" stroke-width="1.4"><rect class="r-draw" pathLength="1" x="80" y="80" width="240" height="240"></rect><rect class="r-draw" style="--i: 1" pathLength="1" x="80" y="80" width="240" height="240" transform="rotate(45 200 200)"></rect><circle class="r-draw" style="--i: 2" pathLength="1" cx="200" cy="200" r="190"></circle><circle class="r-draw" style="--i: 3" pathLength="1" cx="200" cy="200" r="120"></circle></g></svg>
+<svg class="hide-s" viewBox="0 0 400 400" style="position: absolute; right: -140px; top: 420px; width: 520px; height: 520px" aria-hidden="true"><g fill="none" stroke="#D4A73C" stroke-width="1.4"><rect class="r-draw" style="--i: 1" pathLength="1" x="80" y="80" width="240" height="240"></rect><rect class="r-draw" style="--i: 2" pathLength="1" x="80" y="80" width="240" height="240" transform="rotate(45 200 200)"></rect><circle class="r-draw" style="--i: 3" pathLength="1" cx="200" cy="200" r="190"></circle></g></svg>
+<div class="wrap stack" style="position: relative; align-items: center; text-align: center; gap: 30px">
+<span class="mono r" style="color: #D4A73C">Level 04 · Why we build together</span>
+<p class="ar r" lang="ar" dir="rtl" style="--i: 1; margin: 0; font-size: clamp(38px, 5.4vw, 80px); line-height: 1.5; color: #D4A73C; text-shadow: 0 0 40px rgba(212,167,60,.3)">الْمُؤْمِنُ لِلْمُؤْمِنِ كَالْبُنْيَانِ يَشُدُّ بَعْضُهُ بَعْضًا</p>
+<p class="serif r" style="--i: 2; margin: 0; font-size: clamp(32px, 4.4vw, 64px); line-height: 1.12; max-width: 1040px">“The believers are like bricks of a building, each part strengthening the other.”</p>
+<span class="mono r" style="--i: 3; color: #A9C9C4">Sahih Muslim 2585</span>
+<div style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 6px; width: 100%; max-width: 900px; margin-top: 30px" aria-hidden="true">
+<sc-for list="{{bricks}}" as="b" hint-placeholder-count="20"><span class="r-wall" style="--i: {{b.i}}; grid-column: span {{b.span}}; height: 24px; border-radius: 3px; background: {{b.bg}}"></span></sc-for>
+</div>
+</div>
+</section>
+
+<!-- MENTORSHIP -->
+<section data-sec="mentor" data-label="Level 05 · Mentorship" data-tone="dark" ref="{{rf}}" class="sec {{v.mentor}}" style="position: relative; padding: 20px 0 140px; background: #024E4A; color: #F3EBDD">
+<div class="wrap g2" style="align-items: end">
+<div class="stack" style="gap: 18px"><span class="mono r" style="color: #D4A73C">Level 05 · Mentorship</span><h2 class="disp h2 r" style="--i: 1">Learn from people<br>who've <span class="serif c-gold">built it</span></h2></div>
+<p class="lead r" style="--i: 2; margin: 0; color: rgba(243,235,221,.86)">We match members with approved mentors across engineering, surveying, project management, architecture and site delivery. Choose a door.</p>
+</div>
+<div class="wrap row door-row" style="gap: 16px; flex-wrap: nowrap; margin-top: 56px; align-items: stretch">
+<sc-for list="{{doors}}" as="d" hint-placeholder-count="2">
+<div class="door archc r" style="--i: {{d.i}}; flex-grow: {{d.grow}}; flex-basis: 0; position: relative; overflow: hidden; min-height: 600px; background: #08302E; box-shadow: {{d.glow}}">
+<img class="kb" src="{{d.img}}" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .5">
+<span style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(4,31,30,.45) 0%, rgba(4,31,30,.78) 45%, rgba(4,31,30,.97) 80%)"></span>
+<button onClick="{{d.pick}}" aria-expanded="{{d.open}}" style="position: absolute; inset: 0; z-index: 1; background: transparent; border: 0; cursor: pointer; border-radius: inherit"><span class="sr">{{d.title}}: show details</span></button>
+<div class="stack" style="position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; padding: 36px; gap: 14px; pointer-events: none">
+<span class="eyebrow" style="color: #D4A73C">{{d.kicker}}</span>
+<span class="disp" style="font-size: clamp(44px, 4.6vw, 72px)">{{d.title}}</span>
+<div class="stack" style="gap: 12px; max-height: {{d.moreH}}px; overflow: hidden; opacity: {{d.moreO}}; transform: translateY({{d.moreY}}px); transition: max-height .8s cubic-bezier(.65,0,.35,1), opacity .6s .2s, transform .8s .2s cubic-bezier(.2,.7,.2,1)">
+<sc-for list="{{d.points}}" as="pt" hint-placeholder-count="3"><span class="row" style="gap: 12px; flex-wrap: nowrap; font-size: 17px; align-items: start"><span class="disp" style="color: #D4A73C; font-size: 24px">{{pt.n}}</span><span>{{pt.t}}</span></span></sc-for>
+<a class="btn btn-gold" href="mentorship.html" style="pointer-events: auto; align-self: flex-start; margin-top: 6px">{{d.cta}} <span class="arr" aria-hidden="true">→</span></a>
+</div>
+</div>
+</div>
+</sc-for>
+</div>
+</section>
+
+<!-- STORY -->
+<section data-sec="story" data-label="Level 06 · Our story" data-tone="dark" ref="{{rf}}" class="sec {{v.story}}" style="position: relative; padding: 120px 0 140px; background: linear-gradient(180deg, #024E4A, #041F1E 55%); color: #F3EBDD; overflow: hidden">
+<div class="wrap row" style="justify-content: space-between; align-items: end; gap: 24px">
+<div class="stack" style="gap: 18px"><span class="mono r" style="color: #D4A73C">Level 06 · Our story</span><h2 class="disp h2 r" style="--i: 1">How MIC <span class="serif c-gold">was</span> built</h2></div>
+<div class="row r" style="--i: 2; gap: 8px"><button class="btn btn-ghost btn-sm hide-s" onClick="{{railStPrev}}" aria-label="Scroll timeline left" style="width: 48px; padding: 0">←</button><button class="btn btn-ghost btn-sm hide-s" onClick="{{railStNext}}" aria-label="Scroll timeline right" style="width: 48px; padding: 0">→</button><a class="btn btn-gold btn-sm" href="about.html">Read our story <span class="arr" aria-hidden="true">→</span></a></div>
+</div>
+<ol class="rail" ref="{{railStRef}}" style="list-style: none; margin: 64px 0 0; padding-left: max(20px, calc((100% - 1320px) / 2 + 56px)); scroll-padding-left: max(20px, calc((100% - 1320px) / 2 + 56px)); padding-right: 56px; gap: 0">
+<sc-for list="{{story}}" as="st" hint-placeholder-count="8">
+<li class="r" style="--i: {{st.i}}; width: 340px; display: flex; flex-direction: column; gap: 16px; padding-right: 36px">
+<span style="display: flex; align-items: center; gap: 0"><svg class="glowp" width="22" height="22" viewBox="0 0 100 100" aria-hidden="true"><polygon points="50,0 64.6,14.6 85.4,14.6 85.4,35.4 100,50 85.4,64.6 85.4,85.4 64.6,85.4 50,100 35.4,85.4 14.6,85.4 14.6,64.6 0,50 14.6,35.4 14.6,14.6 35.4,14.6" fill="{{st.dot}}"></polygon></svg><span class="r-line" style="--i: {{st.i}}; flex: 1; height: 2px; background: rgba(212,167,60,.5); display: block"></span></span>
+<span class="disp" style="font-size: 58px; color: #D4A73C">{{st.when}}</span>
+<strong style="font-size: 22px; line-height: 1.2">{{st.title}}</strong>
+<span style="font-size: 16px; line-height: 1.55; color: rgba(243,235,221,.8)">{{st.body}}</span>
+</li>
+</sc-for>
+</ol>
+</section>
+
+<!-- PARTNERS -->
+<section data-sec="partners" data-label="Level 07 · Partners" data-tone="dark" ref="{{rf}}" class="sec {{v.partners}}" style="position: relative; padding: 30px 0 130px; background: #041F1E; color: #F3EBDD; overflow: hidden">
+<div style="overflow: hidden; border-top: 1px solid rgba(212,167,60,.25); border-bottom: 1px solid rgba(212,167,60,.25); padding: 26px 0" aria-label="Partners, sponsors and hosts">
+<div class="ticker" style="animation-duration: 60s"><sc-for list="{{partners}}" as="pn" hint-placeholder-count="12"><span class="disp {{pn.cls}}" style="font-size: clamp(44px, 6vw, 88px); padding: 0 34px; white-space: nowrap; color: {{pn.fg}}; --oc: {{pn.fg}}">{{pn.name}}</span></sc-for></div>
+</div>
+<div class="wrap g2" style="margin-top: 90px; align-items: end">
+<div class="stack" style="gap: 18px"><span class="mono r" style="color: #D4A73C">Level 07 · Partners</span><h2 class="disp h2 r" style="--i: 1">Back the <span class="serif c-gold">builders</span></h2></div>
+<div class="stack r" style="--i: 2; gap: 22px"><p class="lead" style="margin: 0; color: rgba(243,235,221,.86)">Put your organisation in front of the people building Britain. Sponsor the Gala and Awards, a regional event or a programme, and back a community that shows up.</p><div class="row stack-s"><a class="btn btn-gold" href="sponsors.html">Partner with MIC <span class="arr" aria-hidden="true">→</span></a><a class="btn btn-ghost" href="sponsors.html#report">Download the impact report</a></div></div>
+</div>
+</section>
+
+<!-- SHOP -->
+<section data-sec="shop" data-label="Level 08 · Shop" data-tone="dark" ref="{{rf}}" class="sec {{v.shop}}" style="position: relative; padding: 0 0 140px; background: #041F1E; color: #F3EBDD">
+<div class="wrap row" style="justify-content: space-between; align-items: end; gap: 24px">
+<div class="stack" style="gap: 18px"><span class="mono r" style="color: #D4A73C">Level 08 · Shop</span><h2 class="disp h2 r" style="--i: 1">Wear the <span class="serif c-gold">network</span></h2></div>
+<a class="btn btn-ghost r" style="--i: 2" href="shop.html">Visit the shop <span class="arr" aria-hidden="true">→</span></a>
+</div>
+<div class="wrap g3" style="margin-top: 56px">
+<sc-for list="{{products}}" as="pr" hint-placeholder-count="3">
+<article class="press r stack" style="--i: {{pr.i}}; gap: 16px">
+<a href="product.html" class="archc" style="display: block; aspect-ratio: 4 / 5; overflow: hidden; background: #E9E6E2"><img class="zoom" src="{{pr.img}}" alt="{{pr.alt}}" style="width: 100%; height: 100%; object-fit: cover"></a>
+<div class="row" style="justify-content: space-between; align-items: baseline"><a href="product.html" style="color: #F3EBDD; text-decoration: none; font-size: 20px; font-weight: 800">{{pr.name}}</a><span class="disp" style="font-size: 34px; color: #D4A73C">{{pr.price}}</span></div>
+<button class="btn btn-ghost btn-block" onClick="{{add}}">Add to basket</button>
+</article>
+</sc-for>
+</div>
+</section>
+
+<dc-import name="JoinBand" hint-size="100%,760px"></dc-import>
+<dc-import name="Footer" hint-size="100%,760px"></dc-import>
+
+<sc-if value="{{sparkA}}" hint-placeholder-val="{{ false }}"><svg class="spark" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><polygon points="50,4 63,37 96,50 63,63 50,96 37,63 4,50 37,37"></polygon></svg><svg class="spark spark2" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><rect x="22" y="22" width="56" height="56" transform="rotate(45 50 50)" fill="none" stroke="#D4A73C" stroke-width="2"></rect></svg></sc-if>
+<sc-if value="{{sparkB}}" hint-placeholder-val="{{ false }}"><svg class="spark" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><polygon points="50,4 63,37 96,50 63,63 50,96 37,63 4,50 37,37"></polygon></svg><svg class="spark spark2" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><rect x="22" y="22" width="56" height="56" transform="rotate(45 50 50)" fill="none" stroke="#D4A73C" stroke-width="2"></rect></svg></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":9400}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const self = this;
+    this.state = { v: {}, all: false, tap: 0, tx: 0, ty: 0, now: Date.now(), basket: 0, flips: {}, door: 'mentee' };
+    this.io = (typeof IntersectionObserver !== 'undefined') ? new IntersectionObserver(function (es) {
+      const add = {};
+      es.forEach(function (e) { if (e.isIntersecting) { add[e.target.getAttribute('data-sec')] = 1; self.io.unobserve(e.target); } });
+      if (Object.keys(add).length) self.setState(function (s) { return { v: Object.assign({}, s.v, add) }; });
+    }, { threshold: 0.1, rootMargin: '0px 0px -6% 0px' }) : null;
+    this.rf = function (el) { if (el && self.io) self.io.observe(el); };
+    this.tap = function (e) { const r = e.currentTarget.getBoundingClientRect(); self.setState({ tap: self.state.tap + 1, tx: Math.round(e.clientX - r.left), ty: Math.round(e.clientY - r.top) }); };
+    this.rails = {};
+    this.railRef = function (k) { return function (el) { if (el) self.rails[k] = el; }; };
+    this.railEvRef = this.railRef('ev'); this.railStRef = this.railRef('st');
+    this.scrollRail = function (k, d) { return function () { const el = self.rails[k]; if (el) el.scrollBy({ left: d * 380, behavior: 'smooth' }); }; };
+  }
+  componentDidMount() {
+    const self = this;
+    if (this.io) { try { document.querySelectorAll('[data-sec]').forEach(function (el) { self.io.observe(el); }); } catch (e) {} }
+    this.safety = setTimeout(function () { if (!Object.keys(self.state.v).length) self.setState({ all: true }); }, 2200);
+    this.clock = setInterval(function () { self.setState({ now: Date.now() }); }, 15000);
+  }
+  componentWillUnmount() { clearTimeout(this.safety); clearInterval(this.clock); if (this.io) this.io.disconnect(); }
+  renderVals() {
+    const self = this, s = this.state;
+    const v = {}; ['hero', 'net', 'events', 'pillars', 'hadith', 'mentor', 'story', 'partners', 'shop'].forEach(function (k) { v[k] = (s.all || s.v[k]) ? 'in' : ''; });
+    const start = Date.UTC(2026, 10, 28, 18), end = Date.UTC(2026, 10, 28, 23);
+    let gala;
+    if (s.now < start) { const m = Math.max(0, Math.round((start - s.now) / 60000)); const h = Math.floor(m / 60), mm = m % 60; const t = (h > 24 ? Math.floor(h / 24) + ' days' : (h ? h + 'h ' : '') + mm + 'm'); gala = { label: 'Tonight · Sold out', dot: '#D4A73C', short: 'Doors in ' + t, big: 'Doors in ' + t, cta: 'Event details' }; }
+    else if (s.now < end) gala = { label: 'Happening now · Saffron Gallery', dot: '#2BB673', short: 'Live now', big: 'Live now', cta: 'Follow the night' };
+    else gala = { label: 'That was Gala 2026 · Thank you', dot: '#007F7C', short: 'Winners', big: 'Thank you, London', cta: 'Winners and gallery' };
+    const flip = function (k) { return function () { const f = Object.assign({}, self.state.flips); f[k] = !f[k]; self.setState({ flips: f }); }; };
+    const pill = function (k, i, no, title, body, bg, fg, accent, bg2, fg2) { const on = !!s.flips[k]; return { i: i, no: no, title: title, body: body, bg: bg, fg: fg, accent: accent, bg2: bg2, fg2: fg2, deg: on ? 180 : 0, pressed: on ? 'true' : 'false', flip: flip(k) }; };
+    const door = function (k, i, kicker, title, img, cta, pts) { const open = s.door === k; return { i: i, kicker: kicker, title: title, img: img, cta: cta, points: pts, grow: open ? 1.7 : 1, open: open ? 'true' : 'false', moreO: open ? 1 : 0, moreY: open ? 0 : 20, moreH: open ? 460 : 0, glow: open ? '0 0 0 2px #D4A73C' : 'none', pick: function () { self.setState({ door: k }); } }; };
+    const pc = ['#D4A73C', '#007F7C', '#F3EBDD', '#0B6662', '#D4A73C', '#F3EBDD'];
+    const spans = [2, 3, 2, 3, 2, 3, 2, 2, 3, 2, 3, 2, 3, 2, 2, 3];
+    const partnerNames = ['Aziz Foundation', 'READ Foundation', 'The Skills Centre', 'Logic Air Ltd', 'Simply Ethical', 'Clearscan Environmental', 'Watertec Global', 'London South Bank University', 'Aston University', 'Sheffield Hallam University', 'BT Muslim Network', 'Islamic Relief UK', 'The Muath Trust', 'RICS', 'Small Giants Studio'];
+    return {
+      v: v, rf: this.rf, tap: this.tap, tx: s.tx, ty: s.ty, sparkA: s.tap > 0 && s.tap % 2 === 1, sparkB: s.tap > 0 && s.tap % 2 === 0,
+      basket: s.basket, add: function () { self.setState({ basket: self.state.basket + 1 }); },
+      gala: gala,
+      ticker: ['Gala & Awards 2026', 'Every release sold out', 'Build Her Circle for sisters in construction', 'Mentors wanted', 'Free membership', 'Gala & Awards 2026', 'Every release sold out', 'Build Her Circle for sisters in construction', 'Mentors wanted', 'Free membership'],
+      statsA: [
+        { i: 0, flex: 1.4, n: 700, suffix: '+', aria: '700 plus', label: 'professionals in the network', src: 'April 2025', bg: '#024E4A', fg: '#F3EBDD' },
+        { i: 1, flex: 1, n: 6, suffix: 'K', aria: '6 thousand', label: 'followers on LinkedIn', src: 'Nov 2026', bg: '#D4A73C', fg: '#1A1405' }
+      ],
+      statsB: [
+        { i: 2, flex: 1, n: 350, suffix: '+', aria: '350 plus', label: 'guests at our first gala', src: 'Gala 2025', bg: '#FBF8F2', fg: '#0F1D1C', border: '1.5px solid rgba(2,78,74,.2)' },
+        { i: 3, flex: 1.4, n: 4, suffix: '/4', aria: '4 of 4', label: 'Gala 2026 ticket releases sold out', src: 'Gala 2026', bg: '#007F7C', fg: '#FFFFFF', border: '0' }
+      ],
+      events: [
+        { i: 0, href: 'events.html', hasImg: false, noImg: true, img: '', alt: '', city: 'Online', date: 'Fortnightly', title: 'Build Her Circle', line: 'One-to-one networking for Muslim women in construction, open to sisters worldwide.', chip: 'Upcoming', chipBg: '#D4A73C', chipFg: '#1A1405' },
+        { i: 1, href: 'events.html', hasImg: true, noImg: false, img: 'assets/img/gala25-founders-backdrop.jpg', alt: 'The MIC founders in black tie at the Gala 2025 sponsor wall', city: 'London', date: '29 Nov 2025', title: 'Gala & Awards 2025', line: 'Our first gala, with over 350 guests in Perivale.', chip: 'Sold out', chipBg: '#0F1D1C', chipFg: '#F3EBDD' },
+        { i: 2, href: 'events.html', hasImg: false, noImg: true, img: '', alt: '', city: 'Sheffield', date: '8 Aug 2026', title: 'From Foundations to Skylines', line: 'Career pathways at Sheffield Hallam University.', chip: 'Past', chipBg: '#0F1D1C', chipFg: '#F3EBDD' },
+        { i: 3, href: 'events.html', hasImg: false, noImg: true, img: '', alt: '', city: 'Birmingham', date: '28 Mar 2026', title: 'Levelling Up Birmingham', line: 'A day of talks and networking at Aston University.', chip: 'Past', chipBg: '#0F1D1C', chipFg: '#F3EBDD' },
+        { i: 4, href: 'events.html', hasImg: false, noImg: true, img: '', alt: '', city: 'Birmingham', date: '16 Aug 2025', title: 'MIC Connect Birmingham', line: 'Over 130 professionals, students and leaders.', chip: 'Past', chipBg: '#0F1D1C', chipFg: '#F3EBDD' },
+        { i: 5, href: 'events.html', hasImg: false, noImg: true, img: '', alt: '', city: 'London', date: 'Apr 2025', title: 'Our first in-person event', line: 'London South Bank University. 200 people, sold out.', chip: 'Past · Sold out', chipBg: '#0F1D1C', chipFg: '#F3EBDD' }
+      ],
+      railEvRef: this.railEvRef, railStRef: this.railStRef,
+      railEvPrev: this.scrollRail('ev', -1), railEvNext: this.scrollRail('ev', 1), railStPrev: this.scrollRail('st', -1), railStNext: this.scrollRail('st', 1),
+      pillarsA: [
+        pill('p1', 0, '01', 'Building the Ummah', 'A professional home for Muslims in the built environment, from apprentices to directors, in the UK and beyond.', '#024E4A', '#F3EBDD', '#D4A73C', '#D4A73C', '#1A1405'),
+        pill('p2', 1, '02', 'Barakah Connections', 'Introductions that open doors: networking days, socials and our WhatsApp community.', '#FBF8F2', '#0F1D1C', '#007F7C', '#024E4A', '#F3EBDD')
+      ],
+      pillarsB: [
+        pill('p3', 2, '03', 'Deen and Development', 'Grow your career without compromising your faith. Prayer space is built into every event.', '#D4A73C', '#1A1405', '#0F1D1C', '#0F1D1C', '#F3EBDD'),
+        pill('p4', 3, '04', 'Uplifting Muslim Builders', 'Mentoring, advocacy and representation, so the next generation rises further and faster.', '#007F7C', '#FFFFFF', '#F3EBDD', '#FBF8F2', '#0F1D1C')
+      ],
+      bricks: spans.map(function (sp, i) { return { i: i, span: sp, bg: pc[i % pc.length] }; }),
+      doors: [
+        door('mentee', 0, 'For mentees', 'Find a mentor', 'assets/img/networking-2.jpg', 'Apply for a mentor', [{ n: '01', t: 'Tell us your role, goals and the help you want' }, { n: '02', t: 'We match you with an approved mentor in your field' }, { n: '03', t: 'Meet online or in person, at a pace that suits you both' }]),
+        door('mentor', 1, 'For mentors', 'Become a mentor', 'assets/img/speaker-panel.jpg', 'Sign up to mentor', [{ n: '01', t: 'Share your experience with someone a few steps behind you' }, { n: '02', t: 'We handle matching and check-ins' }, { n: '03', t: 'A few hours a month, online or in person' }])
+      ],
+      story: [
+        ['Jan 2024', 'MIC launches', 'Official social pages and a membership drive.'], ['Mar 2024', 'The survey', 'We asked Muslims in the industry what they needed most.'],
+        ['Apr 2024', 'Networking events', 'Members connect, collaborate and share resources.'], ['May 2024', 'Mentorship programme', 'Aspiring professionals paired with experienced leaders.'],
+        ['Jun 2024', 'Industry advocacy', 'Working with organisations on diversity and inclusion.'], ['Aug 2024', 'Community outreach', 'Supporting local initiatives for positive social impact.'],
+        ['Apr 2025', 'First in-person event', 'London South Bank University. 200 people. Sold out.'], ['Aug 2025', 'MIC Connect Birmingham', 'Our second in-person event, in the Midlands.'],
+        ['Nov 2025', 'The first gala', 'Black tie in Perivale with over 350 guests.'], ['Dec 2025', 'MIC becomes a CIC', 'Muslims In Construction CIC is incorporated.'],
+        ['2026', 'Birmingham and Sheffield', 'Levelling Up Birmingham at Aston, then From Foundations to Skylines at Sheffield Hallam.'], ['Nov 2026', 'Gala at Saffron Gallery', 'Four ticket releases, all sold out.']
+      ].map(function (x, i) { return { i: i, when: x[0], title: x[1], body: x[2], dot: i === 11 ? '#F0C766' : '#D4A73C' }; }),
+      partners: partnerNames.concat(partnerNames).map(function (n, i) { return { name: n, cls: i % 2 ? 'outline' : '', fg: n === 'Small Giants Studio' ? '#D4A73C' : '#F3EBDD' }; }),
+      products: [
+        { i: 0, name: 'MIC Polo Shirt', price: '£15.00', img: 'assets/img/shop-polo-white.jpg', alt: 'White MIC polo shirt with teal embroidered logo' },
+        { i: 1, name: 'MIC T-Shirt', price: '£12.99', img: 'assets/img/shop-tee-black.jpg', alt: 'Black MIC T-shirt with teal logo on the chest' },
+        { i: 2, name: 'MIC Cap', price: '£9.99', img: 'assets/img/shop-cap-white.jpg', alt: 'White MIC cap with a large teal logo' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

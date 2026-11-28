@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Team · Muslims In Construction</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="assets/css/mic.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>body{margin:0;background:#F3EEE4}</style>
+</helmet>
+<div class="mic" onPointerDown="{{tap}}" style="background: #F3EEE4; color: #0F1D1C">
+<dc-import name="Gauge" hint-size="46px,100%"></dc-import>
+<div style="position: sticky; top: 0; z-index: 60"><dc-import name="Header" active="about" tone="light" basket="{{basket}}" hint-size="100%,81px"></dc-import></div>
+<section data-sec="hero" data-label="Team · Level 00" ref="{{rf}}" class="sec {{v.hero}} bp" style="padding: 72px 0 90px">
+<div class="wrap stack" style="gap: 24px">
+<nav aria-label="Breadcrumb" class="mono r" style="color: #46524F"><a href="about.html" style="color: #024E4A">About</a> / Team</nav>
+<h1 class="disp" style="font-size: clamp(60px, 10vw, 168px)"><span class="word" style="--i: 1">The</span> <span class="word" style="--i: 2">people</span><br><span class="word serif" style="--i: 3; color: #007F7C">behind</span> <span class="word" style="--i: 4">MIC</span></h1>
+<p class="lead r" style="--i: 5; margin: 0; max-width: 720px; color: #33403F">A volunteer team of engineers, surveyors and project leaders who give their time so others can rise. “Verily, the believers are like bricks of a building, each part strengthening the other.” <span class="mono" style="font-size: 12px; color: #46524F">Sahih Muslim 2585</span></p>
+</div>
+</section>
+
+<section data-sec="founders" data-label="Team · Level 01 · Founders" ref="{{rf}}" class="sec {{v.founders}}" style="padding: 40px 0 140px; background: linear-gradient(180deg, #F3EEE4, #E9E2D4)">
+<div class="wrap stack" style="gap: 90px">
+<sc-for list="{{founders}}" as="f" hint-placeholder-count="3">
+<article class="g2" style="gap: 56px; align-items: center">
+<div class="archc r-wall press" style="--i: 0; order: {{f.order}}; aspect-ratio: 1 / 1; overflow: hidden; background: #D9D2C3; max-width: 560px; width: 100%; justify-self: center"><img class="zoom" src="{{f.img}}" alt="Portrait of {{f.name}}" style="width: 100%; height: 100%; object-fit: cover; object-position: top"></div>
+<div class="stack" style="gap: 18px">
+<span class="eyebrow r" style="--i: 1; color: #024E4A">{{f.role}}</span>
+<h2 class="disp r" style="--i: 2; font-size: clamp(56px, 6vw, 96px)">{{f.name}}</h2>
+<span class="mono r" style="--i: 3; color: #46524F">{{f.job}}</span>
+<p class="lead r" style="--i: 4; margin: 0; color: #33403F">{{f.bio}}</p>
+<div class="row r" style="--i: 5"><a class="btn btn-line btn-sm" href="{{f.li}}">LinkedIn profile <span class="arr" aria-hidden="true">→</span></a></div>
+</div>
+</article>
+</sc-for>
+</div>
+</section>
+
+<section data-sec="team" data-label="Team · Level 02 · Wider team" data-tone="dark" ref="{{rf}}" class="sec {{v.team}}" style="padding: 150px 0 140px; background: linear-gradient(180deg, #E9E2D4 0%, #024E4A 14%, #024E4A 100%); color: #F3EBDD">
+<div class="wrap stack" style="gap: 36px; padding-top: 40px">
+<div class="row" style="justify-content: space-between; align-items: end; gap: 24px">
+<div class="stack" style="gap: 16px"><span class="mono r" style="color: #D4A73C">Regional leads, operations and ambassadors</span><h2 class="disp h2 r" style="--i: 1">The wider <span class="serif c-gold">team</span></h2></div>
+<div class="row r" role="tablist" aria-label="Filter team" style="--i: 2; gap: 8px">
+<sc-for list="{{filters}}" as="fl" hint-placeholder-count="4"><button class="chip chip-d" role="tab" aria-selected="{{fl.on}}" onClick="{{fl.pick}}">{{fl.label}}</button></sc-for>
+</div>
+</div>
+<div class="g4" style="gap: 14px">
+<sc-for list="{{people}}" as="p" hint-placeholder-count="12">
+<a href="{{p.li}}" class="press r-s" style="--i: {{p.i}}; display: flex; align-items: center; gap: 16px; padding: 18px; border-radius: 16px; background: rgba(243,235,221,.06); border: 1px solid rgba(243,235,221,.14); text-decoration: none; color: #F3EBDD">
+<span style="position: relative; width: 64px; height: 64px; flex-shrink: 0; display: grid; place-items: center">
+<svg class="spinme" width="64" height="64" viewBox="0 0 100 100" aria-hidden="true" style="position: absolute; inset: 0"><polygon points="50,0 64.6,14.6 85.4,14.6 85.4,35.4 100,50 85.4,64.6 85.4,85.4 64.6,85.4 50,100 35.4,85.4 14.6,85.4 14.6,64.6 0,50 14.6,35.4 14.6,14.6 35.4,14.6" fill="{{p.bg}}"></polygon></svg>
+<span class="disp" style="position: relative; font-size: 24px; color: {{p.fg}}">{{p.ini}}</span>
+</span>
+<span class="stack" style="gap: 3px; min-width: 0"><strong style="font-size: 17px; line-height: 1.25">{{p.name}}</strong><span style="font-size: 14px; color: #A9C9C4">{{p.role}}</span><span class="mono" style="font-size: 12px; color: #D4A73C">LinkedIn →</span></span>
+</a>
+</sc-for>
+</div>
+<p class="mono" style="margin: 0; color: #A9C9C4; font-size: 12px">Headshots for the wider team to come from MIC</p>
+</div>
+</section>
+
+<section id="volunteer" data-sec="vol" data-label="Team · Level 03 · Volunteer" data-tone="dark" ref="{{rf}}" class="sec {{v.vol}}" style="padding: 40px 0 150px; background: #024E4A; color: #F3EBDD">
+<div class="wrap g2" style="align-items: center; gap: 56px">
+<div class="r-wall archc" style="aspect-ratio: 4 / 5; overflow: hidden; max-width: 480px; width: 100%; justify-self: center"><img class="kb" src="assets/img/networking-1.jpg" alt="A member talking with others at an MIC networking event" style="width: 100%; height: 100%; object-fit: cover"></div>
+<div class="stack" style="gap: 22px">
+<span class="mono r" style="color: #D4A73C">Join the MIC team</span>
+<h2 class="disp h2 r" style="--i: 1">Give a few <span class="serif c-gold">hours</span>, build a legacy</h2>
+<p class="lead r" style="--i: 2; margin: 0; color: rgba(243,235,221,.88)">We're always looking for people to help organise events, create content and grow the community. Whether you have a few hours a month or more, your skills and energy make a difference.</p>
+<div class="row r stack-s" style="--i: 3"><a class="btn btn-gold" href="get-involved.html">Volunteer with MIC <span class="arr" aria-hidden="true">→</span></a><a class="btn btn-ghost" href="mentorship.html">Become a mentor</a></div>
+</div>
+</div>
+</section>
+
+<dc-import name="Footer" hint-size="100%,760px"></dc-import>
+<sc-if value="{{sparkA}}" hint-placeholder-val="{{ false }}"><svg class="spark" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><polygon points="50,4 63,37 96,50 63,63 50,96 37,63 4,50 37,37"></polygon></svg><svg class="spark spark2" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><rect x="22" y="22" width="56" height="56" transform="rotate(45 50 50)" fill="none" stroke="#D4A73C" stroke-width="2"></rect></svg></sc-if>
+<sc-if value="{{sparkB}}" hint-placeholder-val="{{ false }}"><svg class="spark" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><polygon points="50,4 63,37 96,50 63,63 50,96 37,63 4,50 37,37"></polygon></svg><svg class="spark spark2" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><rect x="22" y="22" width="56" height="56" transform="rotate(45 50 50)" fill="none" stroke="#D4A73C" stroke-width="2"></rect></svg></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview": {"width": 1440, "height": 5600}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const self = this;
+    this.state = Object.assign({ v: {}, all: false, tap: 0, tx: 0, ty: 0, now: Date.now(), basket: 0 }, {"filter": "All", "open": {}});
+    this.io = (typeof IntersectionObserver !== 'undefined') ? new IntersectionObserver(function (es) {
+      const add = {};
+      es.forEach(function (e) { if (e.isIntersecting) { add[e.target.getAttribute('data-sec')] = 1; self.io.unobserve(e.target); } });
+      if (Object.keys(add).length) self.setState(function (s) { return { v: Object.assign({}, s.v, add) }; });
+    }, { threshold: 0.1, rootMargin: '0px 0px -6% 0px' }) : null;
+    this.rf = function (el) { if (el && self.io) self.io.observe(el); };
+    this.tap = function (e) { const r = e.currentTarget.getBoundingClientRect(); self.setState({ tap: self.state.tap + 1, tx: Math.round(e.clientX - r.left), ty: Math.round(e.clientY - r.top) }); };
+    this.rails = {};
+    this.railRef = function (k) { if (!self['_rr' + k]) self['_rr' + k] = function (el) { if (el) self.rails[k] = el; }; return self['_rr' + k]; };
+    this.scrollRail = function (k, d) { return function () { const el = self.rails[k]; if (el) el.scrollBy({ left: d * 380, behavior: 'smooth' }); }; };
+    this.set = function (patch) { return function () { self.setState(typeof patch === 'function' ? patch(self.state) : patch); }; };
+    this.toggle = function (key, id) { return function () { const o = Object.assign({}, self.state[key]); o[id] = !o[id]; const p = {}; p[key] = o; self.setState(p); }; };
+    this.prevent = function (patch) { return function (e) { if (e && e.preventDefault) e.preventDefault(); self.setState(patch); }; };
+  }
+  componentDidMount() {
+    const self = this;
+    if (this.io) { try { document.querySelectorAll('[data-sec]').forEach(function (el) { self.io.observe(el); }); } catch (e) {} }
+    this.safety = setTimeout(function () { if (!Object.keys(self.state.v).length) self.setState({ all: true }); }, 2200);
+    this.clock = setInterval(function () { self.setState({ now: Date.now() }); }, 30000);
+  }
+  componentWillUnmount() { clearTimeout(this.safety); clearInterval(this.clock); if (this.io) this.io.disconnect(); }
+  renderVals() {
+    const self = this, s = this.state;
+    const v = {}; ["hero", "founders", "team", "vol"].forEach(function (k) { v[k] = (s.all || s.v[k]) ? 'in' : ''; });
+    const base = { v: v, rf: this.rf, tap: this.tap, tx: s.tx, ty: s.ty, sparkA: s.tap > 0 && s.tap % 2 === 1, sparkB: s.tap > 0 && s.tap % 2 === 0, basket: s.basket, add: function () { self.setState({ basket: self.state.basket + 1 }); } };
+    const page = (function () {
+const LI = 'https://www.linkedin.com/company/muslims-in-construction/';
+const team = [
+  ['Haroon Ashraf', 'Regional Lead, North', 'Regional leads'], ['Fahed Shaikh', 'Regional Lead', 'Regional leads'], ['Ikram Hamud', 'Regional Lead, London', 'Regional leads'],
+  ['Soulymane Abdulmolla (Sully)', 'Regional Lead, Midlands', 'Regional leads'], ['Habibul Islam', 'Regional Lead, London', 'Regional leads'], ['Osama Bin Ayat', 'Operations Co-ordinator', 'Operations'],
+  ['Isaac Khalifa', 'Ambassador', 'Ambassadors'], ['Hannah Saiyed', 'Ambassador', 'Ambassadors'], ['Areen Doski', 'Ambassador', 'Ambassadors'], ['Abdul Said', 'Ambassador', 'Ambassadors'],
+  ['Nada Issa', 'Ambassador', 'Ambassadors'], ['Saqib Paracha', 'Ambassador', 'Ambassadors'], ['Sagal Rooble', 'Ambassador', 'Ambassadors'], ['Khalid Aideed', 'Ambassador', 'Ambassadors']
+];
+const cols = [['#D4A73C', '#1A1405'], ['#F3EBDD', '#024E4A'], ['#007F7C', '#FFFFFF']];
+const shown = team.filter(function (t) { return s.filter === 'All' || t[2] === s.filter; });
+return {
+  founders: [
+    { order: 0, img: 'assets/img/founder-abdullah-shah.jpg', name: 'Abdullah Shah', role: 'Co-founder · Chair', job: 'Senior Project Manager, Sudlows Consulting · CEng MCIBSE', li: LI, bio: 'A Chartered Engineer with extensive experience in building services engineering, delivering complex projects in the UK and the Middle East. Abs specialises in mission-critical infrastructure, modular construction and DfMA, and is dedicated to mentoring and building a more inclusive, forward-thinking industry.' },
+    { order: 1, img: 'assets/img/founder-ishaaq-mohamed.jpg', name: 'Ishaaq Mohamed', role: 'Co-founder', job: 'Senior Mechanical Engineer, T Clarke', li: LI, bio: 'Over six years on commercial and mixed-use buildings, from Stage 2 all the way to handover. Ishaaq knows early-stage design and the pressure of site, thrives on managing stakeholder interests and keeping programme and budget on track, and has a passion for volunteering.' },
+    { order: 0, img: 'assets/img/founder-zeshan-wassim.jpg', name: 'Zeshan Wassim', role: 'Co-founder · Vice-Chair', job: 'Senior Electrical Engineer, Sudlows Consulting', li: LI, bio: 'Over seven years in consultancy and contracting in the UK, including Crossrail. Now based in the UAE, Zeshan designs electrical systems for data centres across EMEA and APAC, and is dedicated to supporting the professional growth of Muslims in the built environment.' }
+  ],
+  filters: ['All', 'Regional leads', 'Operations', 'Ambassadors'].map(function (f) { return { label: f, on: s.filter === f ? 'true' : 'false', pick: self.set({ filter: f }) }; }),
+  people: shown.map(function (t, i) { const c = cols[i % 3]; const parts = t[0].replace(/\(.*\)/, '').trim().split(' '); return { i: i % 8, name: t[0], role: t[1], li: LI, bg: c[0], fg: c[1], ini: parts[0][0] + parts[parts.length - 1][0] }; })
+};
+
+    }).call(this);
+    return Object.assign(base, page);
+  }
+}
+</script>
+</body>
+</html>

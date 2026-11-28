@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Mentorship · Muslims In Construction</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="assets/css/mic.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>body{margin:0;background:#F3EEE4}</style>
+</helmet>
+<div class="mic" onPointerDown="{{tap}}" style="background: #F3EEE4; color: #0F1D1C">
+<dc-import name="Gauge" hint-size="46px,100%"></dc-import>
+<div style="position: sticky; top: 0; z-index: 60"><dc-import name="Header" active="mentorship" tone="light" basket="{{basket}}" hint-size="100%,81px"></dc-import></div>
+<section data-sec="hero" data-label="Mentorship · Level 00" ref="{{rf}}" class="sec {{v.hero}} bp" style="padding: 64px 0 120px">
+<div class="wrap g2" style="align-items: center; gap: 56px">
+<div class="stack" style="gap: 26px">
+<span class="mono r" style="color: #024E4A">Mentorship programme · since May 2024</span>
+<h1 class="disp" style="font-size: clamp(60px, 8vw, 132px)"><span class="word" style="--i: 1">Rise</span> <span class="word" style="--i: 2">with</span><br><span class="word serif" style="--i: 3; color: #007F7C">people who've</span><br><span class="word" style="--i: 4">built</span> <span class="word" style="--i: 5">it</span></h1>
+<p class="lead r" style="--i: 6; margin: 0; color: #33403F">We pair aspiring professionals with experienced leaders across construction and the built environment. Two routes, one community.</p>
+<div class="row r" role="tablist" aria-label="Choose your route" style="--i: 7; gap: 8px; background: #E9E2D4; padding: 6px; border-radius: 999px; align-self: flex-start">
+<sc-for list="{{routes}}" as="r" hint-placeholder-count="2"><button class="chip" role="tab" aria-selected="{{r.on}}" onClick="{{r.pick}}" style="border-color: transparent">{{r.label}}</button></sc-for>
+</div>
+</div>
+<div style="position: relative; height: 620px">
+<div class="archc r-wall" style="--i: 1; position: absolute; inset: 0 0 0 14%; overflow: hidden; background: #024E4A"><img class="kb" src="{{heroImg}}" alt="{{heroAlt}}" style="width: 100%; height: 100%; object-fit: cover"></div>
+<div class="r-s" style="--i: 4; position: absolute; left: 0; bottom: 50px; background: #D4A73C; color: #1A1405; border-radius: 20px; padding: 22px 24px; max-width: 280px; box-shadow: 0 30px 60px -30px rgba(4,31,30,.6)"><span class="mono" style="font-size: 12px">{{route.kicker}}</span><p class="serif" style="margin: 6px 0 0; font-size: 26px; line-height: 1.2">{{route.promise}}</p></div>
+</div>
+</div>
+</section>
+
+<section data-sec="how" data-label="Mentorship · Level 01 · How it works" ref="{{rf}}" class="sec {{v.how}}" style="padding: 120px 0 130px; background: linear-gradient(180deg, #F3EEE4, #E9E2D4)">
+<div class="wrap stack" style="gap: 56px">
+<div class="g2" style="align-items: end"><div class="stack" style="gap: 16px"><span class="mono r" style="color: #024E4A">How it works · {{route.label}}</span><h2 class="disp h2 r" style="--i: 1">Four stages, like <span class="serif c-teal">any build</span></h2></div><p class="lead r" style="--i: 2; margin: 0; color: #33403F">{{route.intro}}</p></div>
+<ol class="g4" style="list-style: none; margin: 0; padding: 0; gap: 16px">
+<sc-for list="{{stages}}" as="st" hint-placeholder-count="4">
+<li class="press r" style="--i: {{st.i}}; background: #FBF8F2; border: 1px solid rgba(2,78,74,.14); border-radius: 22px; padding: 28px; display: flex; flex-direction: column; gap: 18px; min-height: 360px">
+<svg viewBox="0 0 120 90" style="width: 120px; height: 90px" aria-hidden="true"><g fill="none" stroke="#024E4A" stroke-width="2.2" stroke-linecap="round"><path class="r-draw" pathLength="1" style="--i: {{st.i}}" d="{{st.icon}}"></path></g><path class="r-draw" pathLength="1" style="--i: {{st.i2}}" d="M6 84H114" stroke="#D4A73C" stroke-width="3" fill="none"></path></svg>
+<span class="mono" style="color: #024E4A">Stage {{st.no}} · {{st.stage}}</span>
+<strong style="font-size: 22px; line-height: 1.2">{{st.title}}</strong>
+<span style="font-size: 16px; line-height: 1.55; color: #33403F">{{st.body}}</span>
+</li>
+</sc-for>
+</ol>
+</div>
+</section>
+
+<section id="apply" data-sec="apply" data-label="Mentorship · Level 02 · Apply" data-tone="dark" ref="{{rf}}" class="sec {{v.apply}}" style="padding: 160px 0 130px; background: linear-gradient(180deg, #E9E2D4 0%, #024E4A 16%); color: #F3EBDD">
+<div class="wrap g2" style="gap: 56px; align-items: start; padding-top: 40px">
+<div class="stack" style="gap: 18px">
+<span class="mono r" style="color: #D4A73C">{{route.kicker}}</span>
+<h2 class="disp h2 r" style="--i: 1">{{route.formTitle}}</h2>
+<p class="lead r" style="--i: 2; margin: 0; color: rgba(243,235,221,.86)">{{route.formIntro}}</p>
+<p class="mono r" style="--i: 3; margin: 0; color: #A9C9C4; font-size: 12px">[Ask MIC: do mentors still sign up through the outside mentoring platform, or here?]</p>
+</div>
+<div class="r" style="--i: 2">
+<sc-if value="{{notSent}}" hint-placeholder-val="{{ true }}">
+<form onSubmit="{{send}}" class="stack" style="gap: 16px; background: #08302E; border: 1px solid rgba(212,167,60,.3); border-radius: 28px; padding: 34px">
+<div class="row" role="radiogroup" aria-label="Route" style="gap: 8px"><sc-for list="{{routes}}" as="r" hint-placeholder-count="2"><button type="button" role="radio" class="chip chip-d" aria-checked="{{r.on}}" onClick="{{r.pick}}">{{r.label}}</button></sc-for></div>
+<div class="g2" style="gap: 14px"><div><label class="lbl" for="m-name" style="color: #A9C9C4">Full name</label><input id="m-name" class="field field-d" type="text" autocomplete="name"></div><div><label class="lbl" for="m-email" style="color: #A9C9C4">Email</label><input id="m-email" class="field field-d" type="email" autocomplete="email"></div></div>
+<div><label class="lbl" for="m-role" style="color: #A9C9C4">Current role and company</label><input id="m-role" class="field field-d" type="text" autocomplete="organization-title"></div>
+<fieldset style="border: 0; margin: 0; padding: 0"><legend class="lbl" style="color: #A9C9C4; padding: 0">Your field</legend><div class="row" style="gap: 8px"><sc-for list="{{fields}}" as="f" hint-placeholder-count="6"><button type="button" class="chip chip-d" aria-pressed="{{f.on}}" onClick="{{f.toggle}}">{{f.label}}</button></sc-for></div></fieldset>
+<div><label class="lbl" for="m-goals" style="color: #A9C9C4">{{route.textLabel}}</label><textarea id="m-goals" class="field field-d"></textarea></div>
+<button class="btn btn-gold btn-block" type="submit">{{route.cta}} <span class="arr" aria-hidden="true">→</span></button>
+</form>
+</sc-if>
+<sc-if value="{{sent}}" hint-placeholder-val="{{ false }}"><div class="stack" style="gap: 14px; background: #08302E; border: 1px solid rgba(212,167,60,.3); border-radius: 28px; padding: 40px"><svg class="spin" width="60" height="60" viewBox="0 0 100 100" aria-hidden="true"><polygon points="50,0 64.6,14.6 85.4,14.6 85.4,35.4 100,50 85.4,64.6 85.4,85.4 64.6,85.4 50,100 35.4,85.4 14.6,85.4 14.6,64.6 0,50 14.6,35.4 14.6,14.6 35.4,14.6" fill="#D4A73C"></polygon></svg><p class="serif" style="margin: 0; font-size: 38px; color: #D4A73C">Application received.</p><p style="margin: 0; color: rgba(243,235,221,.86)">We'll be in touch to talk through your match, Insha'Allah.</p></div></sc-if>
+</div>
+</div>
+</section>
+
+<section data-sec="faq" data-label="Mentorship · Level 03 · Questions" data-tone="dark" ref="{{rf}}" class="sec {{v.faq}}" style="padding: 20px 0 140px; background: #024E4A; color: #F3EBDD">
+<div class="wrap g2" style="gap: 56px; align-items: start">
+<h2 class="disp h2 r">Good <span class="serif c-gold">questions</span></h2>
+<div class="stack r" style="--i: 1; border-top: 1px solid rgba(243,235,221,.2)">
+<sc-for list="{{faqs}}" as="q" hint-placeholder-count="4">
+<div style="border-bottom: 1px solid rgba(243,235,221,.2)">
+<button class="acc-b" onClick="{{q.toggle}}" aria-expanded="{{q.open}}"><span>{{q.q}}</span><span class="acc-i" style="transform: rotate({{q.rot}}deg); color: #D4A73C" aria-hidden="true">+</span></button>
+<sc-if value="{{q.isOpen}}" hint-placeholder-val="{{ false }}"><p class="rise" style="margin: 0 0 24px; font-size: 17px; line-height: 1.6; color: rgba(243,235,221,.86); max-width: 620px">{{q.a}}</p></sc-if>
+</div>
+</sc-for>
+</div>
+</div>
+</section>
+
+<dc-import name="Footer" hint-size="100%,760px"></dc-import>
+<sc-if value="{{sparkA}}" hint-placeholder-val="{{ false }}"><svg class="spark" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><polygon points="50,4 63,37 96,50 63,63 50,96 37,63 4,50 37,37"></polygon></svg><svg class="spark spark2" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><rect x="22" y="22" width="56" height="56" transform="rotate(45 50 50)" fill="none" stroke="#D4A73C" stroke-width="2"></rect></svg></sc-if>
+<sc-if value="{{sparkB}}" hint-placeholder-val="{{ false }}"><svg class="spark" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><polygon points="50,4 63,37 96,50 63,63 50,96 37,63 4,50 37,37"></polygon></svg><svg class="spark spark2" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><rect x="22" y="22" width="56" height="56" transform="rotate(45 50 50)" fill="none" stroke="#D4A73C" stroke-width="2"></rect></svg></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview": {"width": 1440, "height": 6400}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const self = this;
+    this.state = Object.assign({ v: {}, all: false, tap: 0, tx: 0, ty: 0, now: Date.now(), basket: 0 }, {"route": "mentee", "faq": {}, "sent": false});
+    this.io = (typeof IntersectionObserver !== 'undefined') ? new IntersectionObserver(function (es) {
+      const add = {};
+      es.forEach(function (e) { if (e.isIntersecting) { add[e.target.getAttribute('data-sec')] = 1; self.io.unobserve(e.target); } });
+      if (Object.keys(add).length) self.setState(function (s) { return { v: Object.assign({}, s.v, add) }; });
+    }, { threshold: 0.1, rootMargin: '0px 0px -6% 0px' }) : null;
+    this.rf = function (el) { if (el && self.io) self.io.observe(el); };
+    this.tap = function (e) { const r = e.currentTarget.getBoundingClientRect(); self.setState({ tap: self.state.tap + 1, tx: Math.round(e.clientX - r.left), ty: Math.round(e.clientY - r.top) }); };
+    this.rails = {};
+    this.railRef = function (k) { if (!self['_rr' + k]) self['_rr' + k] = function (el) { if (el) self.rails[k] = el; }; return self['_rr' + k]; };
+    this.scrollRail = function (k, d) { return function () { const el = self.rails[k]; if (el) el.scrollBy({ left: d * 380, behavior: 'smooth' }); }; };
+    this.set = function (patch) { return function () { self.setState(typeof patch === 'function' ? patch(self.state) : patch); }; };
+    this.toggle = function (key, id) { return function () { const o = Object.assign({}, self.state[key]); o[id] = !o[id]; const p = {}; p[key] = o; self.setState(p); }; };
+    this.prevent = function (patch) { return function (e) { if (e && e.preventDefault) e.preventDefault(); self.setState(patch); }; };
+  }
+  componentDidMount() {
+    const self = this;
+    if (this.io) { try { document.querySelectorAll('[data-sec]').forEach(function (el) { self.io.observe(el); }); } catch (e) {} }
+    this.safety = setTimeout(function () { if (!Object.keys(self.state.v).length) self.setState({ all: true }); }, 2200);
+    this.clock = setInterval(function () { self.setState({ now: Date.now() }); }, 30000);
+  }
+  componentWillUnmount() { clearTimeout(this.safety); clearInterval(this.clock); if (this.io) this.io.disconnect(); }
+  renderVals() {
+    const self = this, s = this.state;
+    const v = {}; ["hero", "how", "apply", "faq"].forEach(function (k) { v[k] = (s.all || s.v[k]) ? 'in' : ''; });
+    const base = { v: v, rf: this.rf, tap: this.tap, tx: s.tx, ty: s.ty, sparkA: s.tap > 0 && s.tap % 2 === 1, sparkB: s.tap > 0 && s.tap % 2 === 0, basket: s.basket, add: function () { self.setState({ basket: self.state.basket + 1 }); } };
+    const page = (function () {
+const R = {
+  mentee: { label: 'Mentee', kicker: 'For mentees', promise: 'A mentor in your field, matched by people who know the industry.', intro: 'Tell us where you want to go. We find someone who has been there and help you build the relationship.', formTitle: 'Apply for a mentor', formIntro: 'Students, apprentices, career changers and professionals at any stage are welcome.', textLabel: 'What would you like help with?', cta: 'Apply for a mentor' },
+  mentor: { label: 'Mentor', kicker: 'For mentors', promise: 'A few hours a month can change the direction of someone’s career.', intro: 'Share what you have learned with someone a few steps behind you. We handle the matching and check in along the way.', formTitle: 'Become a mentor', formIntro: 'Experienced professionals from any part of construction and the built environment.', textLabel: 'What experience could you share?', cta: 'Sign up to mentor' }
+};
+const route = R[s.route];
+const ICON = ['M20 84V30M20 30H100M100 30V84M40 30V18M80 30V18', 'M14 84V62H106V84M30 62V50M60 62V44M90 62V50', 'M20 84V20H100V84M20 52H100M60 20V84M20 20L60 52L100 20', 'M30 84V40L60 14L90 40V84M48 84V58H72V84M60 6V14'];
+const S = s.route === 'mentee'
+  ? [['Set-out', 'Tell us about you', 'Your role, your goals and the kind of support you want.'], ['Foundations', 'Get matched', 'We match you with an approved mentor in your field.'], ['Frame', 'Meet and grow', 'Meet online or in person, at a pace that suits you both.'], ['Topping out', 'Pass it on', 'When you are ready, mentor someone coming up behind you.']]
+  : [['Set-out', 'Tell us your experience', 'Your field, your years in the industry and what you could share.'], ['Foundations', 'Get approved', 'A quick conversation with the MIC team before matching.'], ['Frame', 'Meet your mentee', 'A few hours a month, online or in person.'], ['Topping out', 'See them rise', 'Celebrate their progress at MIC events and the Awards.']];
+const fieldsList = ['Engineering', 'Quantity surveying', 'Project management', 'Architecture', 'Site delivery', 'Other'];
+return {
+  routes: [['mentee', 'I want a mentor'], ['mentor', 'I want to mentor']].map(function (r) { return { label: r[1], on: s.route === r[0] ? 'true' : 'false', pick: self.set({ route: r[0] }) }; }),
+  route: route,
+  heroImg: s.route === 'mentee' ? 'assets/img/networking-2.jpg' : 'assets/img/speaker-panel.jpg',
+  heroAlt: s.route === 'mentee' ? 'Two members in conversation at an MIC event' : 'A speaker sharing her experience on an MIC panel',
+  stages: S.map(function (x, i) { return { i: i, i2: i + 1, no: '0' + (i + 1), stage: x[0], title: x[1], body: x[2], icon: ICON[i] }; }),
+  fields: fieldsList.map(function (f) { const on = !!(s.faq['f_' + f]); return { label: f, on: on ? 'true' : 'false', toggle: self.toggle('faq', 'f_' + f) }; }),
+  sent: s.sent, notSent: !s.sent, send: this.prevent({ sent: true }),
+  faqs: [
+    ['Who can apply for a mentor?', 'Anyone working in, studying for or moving into construction and the built environment. You do not need to be Muslim to join MIC, as long as you share our values.'],
+    ['Is mentoring free?', 'MIC membership is currently free. [Confirm with MIC whether mentoring has any cost.]'],
+    ['How are mentors approved?', '[Approval process from MIC.]'],
+    ['How much time does it take?', 'Most pairs meet a few times a month, online or in person. [Typical commitment from MIC.]']
+  ].map(function (q, i) { const open = !!s.faq['q' + i]; return { q: q[0], a: q[1], open: open ? 'true' : 'false', isOpen: open, rot: open ? 45 : 0, toggle: self.toggle('faq', 'q' + i) }; })
+};
+
+    }).call(this);
+    return Object.assign(base, page);
+  }
+}
+</script>
+</body>
+</html>

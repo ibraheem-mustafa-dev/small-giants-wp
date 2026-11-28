@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Sponsors and partners · Muslims In Construction</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="assets/css/mic.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>body{margin:0;background:#041F1E}</style>
+</helmet>
+<div class="mic" onPointerDown="{{tap}}" style="background: #041F1E; color: #F3EBDD">
+<dc-import name="Gauge" hint-size="46px,100%"></dc-import>
+<div style="position: sticky; top: 0; z-index: 60"><dc-import name="Header" active="sponsors" tone="dark" basket="{{basket}}" hint-size="100%,81px"></dc-import></div>
+<section data-sec="hero" data-label="Sponsors · Level 00" data-tone="dark" ref="{{rf}}" class="sec {{v.hero}}" style="position: relative; padding: 70px 0 120px; overflow: hidden">
+<svg class="lat-edges" style="position: absolute; inset: 0; width: 100%; height: 100%; color: rgba(212,167,60,.16)" aria-hidden="true"><defs><pattern id="latSp" width="84" height="84" patternUnits="userSpaceOnUse"><g fill="none" stroke="currentColor" stroke-width="1.4"><polygon points="42,8 52,32 76,42 52,52 42,76 32,52 8,42 32,32"></polygon><rect x="23" y="23" width="38" height="38"></rect><rect x="23" y="23" width="38" height="38" transform="rotate(45 42 42)"></rect></g></pattern></defs><rect width="100%" height="100%" fill="url(#latSp)"></rect></svg>
+<div class="wrap g2" style="position: relative; gap: 56px; align-items: center">
+<div class="stack" style="gap: 26px">
+<span class="eyebrow r" style="color: #D4A73C">Sponsors and partners</span>
+<h1 class="disp" style="font-size: clamp(64px, 9vw, 150px)"><span class="bulb" style="animation-delay: .1s">Back</span> <span class="bulb" style="animation-delay: .3s">the</span><br><span class="serif bulb" style="color: #D4A73C; animation-delay: .55s">builders</span></h1>
+<p class="lead r" style="--i: 3; margin: 0; color: rgba(243,235,221,.88)">Put your organisation in front of the people building Britain, and back one of the UK's leading professional networks for Muslims in construction.</p>
+<div class="row r stack-s" style="--i: 4"><a class="btn btn-gold" href="#enquire">Enquire about sponsorship <span class="arr" aria-hidden="true">→</span></a><a class="btn btn-ghost" href="#report">Impact report</a></div>
+</div>
+<div class="archc r-wall" style="--i: 2; aspect-ratio: 4 / 5; overflow: hidden; border: 1px solid rgba(212,167,60,.4); max-width: 540px; width: 100%; justify-self: end"><img class="kb" src="assets/img/gala25-founders-backdrop.jpg" alt="MIC founders at the Gala 2025 sponsor wall" style="width: 100%; height: 100%; object-fit: cover"></div>
+</div>
+</section>
+
+<section data-sec="reach" data-label="Sponsors · Level 01 · Reach" data-tone="dark" ref="{{rf}}" class="sec {{v.reach}}" style="padding: 60px 0 130px">
+<div class="wrap stack" style="gap: 56px">
+<h2 class="disp h2 r">Who you <span class="serif c-gold">reach</span></h2>
+<div class="g4" style="gap: 0; border-top: 1px solid rgba(212,167,60,.3)">
+<sc-for list="{{stats}}" as="st" hint-placeholder-count="4"><div class="r" style="--i: {{st.i}}; padding: 30px 26px 30px 0; display: flex; flex-direction: column; gap: 10px"><span class="disp" style="font-size: clamp(70px, 7vw, 110px); color: #D4A73C" aria-label="{{st.aria}}"><span class="count" style="--to: {{st.n}}" data-n="{{st.n}}"></span>{{st.suffix}}</span><span style="font-size: 16px; color: rgba(243,235,221,.85)">{{st.label}}</span></div></sc-for>
+</div>
+<div class="row" style="gap: 10px">
+<sc-for list="{{segments}}" as="sg" hint-placeholder-count="5"><span class="r-s press" style="--i: {{sg.i}}; padding: 14px 22px; border-radius: 999px; border: 1.5px solid rgba(212,167,60,.5); font-weight: 700">{{sg.t}}</span></sc-for>
+</div>
+<p class="mono" style="margin: 0; color: #A9C9C4; font-size: 12px">Latest audited numbers to come from MIC</p>
+</div>
+</section>
+
+<section data-sec="options" data-label="Sponsors · Level 02 · Options" ref="{{rf}}" class="sec {{v.options}}" style="padding: 140px 0; background: linear-gradient(180deg, #041F1E 0%, #F3EBDD 14%); color: #041F1E">
+<div class="wrap stack" style="gap: 40px; padding-top: 40px">
+<div class="g2" style="align-items: end"><h2 class="disp h2 r">Ways to <span class="serif c-teal">partner</span></h2><p class="lead r" style="--i: 1; margin: 0; color: #33403F">A limited number of sponsorship opportunities are available each year. Choose a route to see more.</p></div>
+<div class="g2" style="gap: 24px; align-items: stretch">
+<div class="stack" role="tablist" aria-label="Sponsorship routes" style="gap: 10px">
+<sc-for list="{{packs}}" as="p" hint-placeholder-count="4">
+<button role="tab" aria-selected="{{p.on}}" onClick="{{p.pick}}" class="press r" style="--i: {{p.i}}; text-align: left; border: 0; border-radius: 18px; padding: 22px 24px; background: {{p.bg}}; color: {{p.fg}}; font: inherit; display: flex; justify-content: space-between; align-items: center; gap: 16px; cursor: pointer">
+<span class="stack" style="gap: 4px"><span class="mono" style="font-size: 12px; opacity: .8">{{p.tag}}</span><span class="disp" style="font-size: 40px">{{p.name}}</span></span>
+<span class="acc-i" style="transform: rotate({{p.rot}}deg)" aria-hidden="true">→</span>
+</button>
+</sc-for>
+</div>
+<div class="r archc" style="--i: 2; background: #041F1E; color: #F3EBDD; padding: 170px clamp(24px, 4vw, 48px) 44px; display: flex; flex-direction: column; justify-content: flex-end; gap: 18px; position: relative; overflow: hidden; min-height: 560px">
+<svg class="spin" viewBox="0 0 100 100" style="position: absolute; top: 40px; left: 50%; width: 90px; margin-left: -45px" aria-hidden="true"><g fill="none" stroke="#D4A73C" stroke-width="2"><rect x="20" y="20" width="60" height="60"></rect><rect x="20" y="20" width="60" height="60" transform="rotate(45 50 50)"></rect><circle cx="50" cy="50" r="46"></circle></g></svg>
+<span class="eyebrow" style="color: #D4A73C">{{pack.tag}}</span>
+<span class="disp" style="font-size: 56px">{{pack.name}}</span>
+<p style="margin: 0; font-size: 17px; line-height: 1.6; color: rgba(243,235,221,.86)">{{pack.body}}</p>
+<span class="mono" style="color: #A9C9C4; font-size: 12px">[What's included and price from MIC]</span>
+<a class="btn btn-gold" href="#enquire" style="align-self: flex-start">Enquire about this <span class="arr" aria-hidden="true">→</span></a>
+</div>
+</div>
+</div>
+</section>
+
+<section data-sec="wall" data-label="Sponsors · Level 03 · Partners" ref="{{rf}}" class="sec {{v.wall}}" style="padding: 20px 0 140px; background: #F3EBDD; color: #041F1E">
+<div class="wrap stack" style="gap: 34px">
+<div class="row" style="justify-content: space-between; align-items: end"><h2 class="disp h2 r">Who's built <span class="serif c-teal">with us</span></h2><span class="mono r" style="--i: 1; color: #46524F">Logos with permission from MIC</span></div>
+<div class="g4" style="gap: 12px">
+<sc-for list="{{partners}}" as="pn" hint-placeholder-count="15"><div class="press r-wall" style="--i: {{pn.i}}; min-height: 120px; border-radius: 10px; background: {{pn.bg}}; color: {{pn.fg}}; display: flex; flex-direction: column; justify-content: space-between; padding: 18px 20px"><span class="mono" style="font-size: 12px; opacity: .75">{{pn.role}}</span><span class="disp" style="font-size: 30px; line-height: .95">{{pn.name}}</span></div></sc-for>
+</div>
+</div>
+</section>
+
+<section id="report" data-sec="report" data-label="Sponsors · Level 04 · Impact report" ref="{{rf}}" class="sec {{v.report}}" style="padding: 0 0 120px; background: #F3EBDD; color: #041F1E">
+<div class="wrap">
+<div class="r row stack-s" style="justify-content: space-between; gap: 24px; background: #D4A73C; border-radius: 28px; padding: 40px 44px">
+<div class="stack" style="gap: 8px"><span class="mono">Impact report · PDF</span><span class="disp" style="font-size: 56px">See what your support builds</span></div>
+<a class="btn btn-ink" href="#report"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3v12M6 10l6 6 6-6M4 20h16"></path></svg>Download</a>
+</div>
+</div>
+</section>
+
+<section id="enquire" data-sec="enquire" data-label="Sponsors · Level 05 · Enquire" data-tone="dark" ref="{{rf}}" class="sec {{v.enquire}}" style="padding: 160px 0 140px; background: linear-gradient(180deg, #F3EBDD 0%, #041F1E 16%); color: #F3EBDD">
+<div class="wrap g2" style="gap: 56px; align-items: start; padding-top: 40px">
+<div class="stack" style="gap: 18px"><span class="eyebrow r" style="color: #D4A73C">Sponsorship, partnerships and group bookings</span><h2 class="disp h2 r" style="--i: 1">Let's <span class="serif c-gold">talk</span></h2><p class="lead r" style="--i: 2; margin: 0; color: rgba(243,235,221,.86)">Tell us a little about your organisation and we'll come back with options. Or email <a class="link" href="mailto:info@muslimsinconstruction.uk" style="color: #D4A73C">info@muslimsinconstruction.uk</a>.</p></div>
+<div class="r" style="--i: 2">
+<sc-if value="{{notSent}}" hint-placeholder-val="{{ true }}">
+<form onSubmit="{{send}}" class="stack" style="gap: 14px; background: #08302E; border: 1px solid rgba(212,167,60,.3); border-radius: 28px; padding: 34px">
+<div class="g2" style="gap: 14px"><div><label class="lbl" for="s-org" style="color: #A9C9C4">Organisation</label><input id="s-org" class="field field-d" type="text" autocomplete="organization"></div><div><label class="lbl" for="s-name" style="color: #A9C9C4">Your name</label><input id="s-name" class="field field-d" type="text" autocomplete="name"></div></div>
+<div><label class="lbl" for="s-email" style="color: #A9C9C4">Work email</label><input id="s-email" class="field field-d" type="email" autocomplete="email"></div>
+<fieldset style="border: 0; margin: 0; padding: 0"><legend class="lbl" style="color: #A9C9C4; padding: 0">Interested in</legend><div class="row" style="gap: 8px"><sc-for list="{{ints}}" as="it" hint-placeholder-count="4"><button type="button" class="chip chip-d" aria-pressed="{{it.on}}" onClick="{{it.toggle}}">{{it.label}}</button></sc-for></div></fieldset>
+<div><label class="lbl" for="s-msg" style="color: #A9C9C4">Message</label><textarea id="s-msg" class="field field-d"></textarea></div>
+<button class="btn btn-gold btn-block" type="submit">Send enquiry <span class="arr" aria-hidden="true">→</span></button>
+</form>
+</sc-if>
+<sc-if value="{{sent}}" hint-placeholder-val="{{ false }}"><div class="stack" style="gap: 12px; background: #08302E; border-radius: 28px; padding: 40px"><p class="serif" style="margin: 0; font-size: 40px; color: #D4A73C">Thank you. We'll be in touch.</p><p style="margin: 0; color: rgba(243,235,221,.86)">A copy of your enquiry is on its way to your inbox.</p></div></sc-if>
+</div>
+</div>
+</section>
+
+<dc-import name="Footer" hint-size="100%,760px"></dc-import>
+<sc-if value="{{sparkA}}" hint-placeholder-val="{{ false }}"><svg class="spark" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><polygon points="50,4 63,37 96,50 63,63 50,96 37,63 4,50 37,37"></polygon></svg><svg class="spark spark2" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><rect x="22" y="22" width="56" height="56" transform="rotate(45 50 50)" fill="none" stroke="#D4A73C" stroke-width="2"></rect></svg></sc-if>
+<sc-if value="{{sparkB}}" hint-placeholder-val="{{ false }}"><svg class="spark" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><polygon points="50,4 63,37 96,50 63,63 50,96 37,63 4,50 37,37"></polygon></svg><svg class="spark spark2" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><rect x="22" y="22" width="56" height="56" transform="rotate(45 50 50)" fill="none" stroke="#D4A73C" stroke-width="2"></rect></svg></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview": {"width": 1440, "height": 7000}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const self = this;
+    this.state = Object.assign({ v: {}, all: false, tap: 0, tx: 0, ty: 0, now: Date.now(), basket: 0 }, {"pk": "gala", "ints": {"gala": true}, "sent": false});
+    this.io = (typeof IntersectionObserver !== 'undefined') ? new IntersectionObserver(function (es) {
+      const add = {};
+      es.forEach(function (e) { if (e.isIntersecting) { add[e.target.getAttribute('data-sec')] = 1; self.io.unobserve(e.target); } });
+      if (Object.keys(add).length) self.setState(function (s) { return { v: Object.assign({}, s.v, add) }; });
+    }, { threshold: 0.1, rootMargin: '0px 0px -6% 0px' }) : null;
+    this.rf = function (el) { if (el && self.io) self.io.observe(el); };
+    this.tap = function (e) { const r = e.currentTarget.getBoundingClientRect(); self.setState({ tap: self.state.tap + 1, tx: Math.round(e.clientX - r.left), ty: Math.round(e.clientY - r.top) }); };
+    this.rails = {};
+    this.railRef = function (k) { if (!self['_rr' + k]) self['_rr' + k] = function (el) { if (el) self.rails[k] = el; }; return self['_rr' + k]; };
+    this.scrollRail = function (k, d) { return function () { const el = self.rails[k]; if (el) el.scrollBy({ left: d * 380, behavior: 'smooth' }); }; };
+    this.set = function (patch) { return function () { self.setState(typeof patch === 'function' ? patch(self.state) : patch); }; };
+    this.toggle = function (key, id) { return function () { const o = Object.assign({}, self.state[key]); o[id] = !o[id]; const p = {}; p[key] = o; self.setState(p); }; };
+    this.prevent = function (patch) { return function (e) { if (e && e.preventDefault) e.preventDefault(); self.setState(patch); }; };
+  }
+  componentDidMount() {
+    const self = this;
+    if (this.io) { try { document.querySelectorAll('[data-sec]').forEach(function (el) { self.io.observe(el); }); } catch (e) {} }
+    this.safety = setTimeout(function () { if (!Object.keys(self.state.v).length) self.setState({ all: true }); }, 2200);
+    this.clock = setInterval(function () { self.setState({ now: Date.now() }); }, 30000);
+  }
+  componentWillUnmount() { clearTimeout(this.safety); clearInterval(this.clock); if (this.io) this.io.disconnect(); }
+  renderVals() {
+    const self = this, s = this.state;
+    const v = {}; ["hero", "reach", "options", "wall", "report", "enquire"].forEach(function (k) { v[k] = (s.all || s.v[k]) ? 'in' : ''; });
+    const base = { v: v, rf: this.rf, tap: this.tap, tx: s.tx, ty: s.ty, sparkA: s.tap > 0 && s.tap % 2 === 1, sparkB: s.tap > 0 && s.tap % 2 === 0, basket: s.basket, add: function () { self.setState({ basket: self.state.basket + 1 }); } };
+    const page = (function () {
+const P = [
+  ['gala', 'Flagship', 'Gala & Awards partner', 'Stand alongside the MIC Gala and Awards, our sold-out black-tie night celebrating excellence across construction and the built environment.'],
+  ['regional', 'Regional', 'Event partner', 'Support a community, career and connection day in London, Birmingham, Manchester or Sheffield, often hosted with universities.'],
+  ['programme', 'Programmes', 'Programme partner', 'Back mentoring, Build Her Circle or early careers workshops that help people get into and rise through the industry.'],
+  ['kind', 'In kind', 'Digital and in-kind partner', 'Give your expertise, space or services. Small Giants Studio supports our website, shop and ticketing this way.']
+];
+const cur = P.find(function (p) { return p[0] === s.pk; }) || P[0];
+const names = [['Aziz Foundation', 'Gala 2025'], ['READ Foundation', 'Gala 2025 · Birmingham'], ['The Skills Centre', 'Gala 2025'], ['Logic Air Ltd', 'Gala 2025'], ['Simply Ethical', 'Gala 2025'], ['Clearscan Environmental', 'Events'], ['Watertec Global', 'Birmingham 2026'], ['London South Bank University', 'Host'], ['Aston University', 'Host'], ['Sheffield Hallam University', 'Host'], ['BT Muslim Network', 'Collaboration'], ['Mishcon de Reya', 'Collaboration'], ['Islamic Relief UK', 'Birmingham 2025'], ['The Muath Trust', 'Host'], ['RICS', 'Host'], ['Small Giants Studio', 'Website, shop and ticketing']];
+const pal = [['#041F1E', '#F3EBDD'], ['#FBF8F2', '#041F1E'], ['#024E4A', '#F3EBDD'], ['#E9E2D4', '#041F1E']];
+return {
+  stats: [[700, '+', '700 plus', 'professionals in the network'], [6, 'K', '6 thousand', 'followers on LinkedIn'], [350, '+', '350 plus', 'guests at our first gala'], [4, '/4', '4 of 4', 'Gala 2026 releases sold out']].map(function (x, i) { return { i: i, n: x[0], suffix: x[1], aria: x[2], label: x[3] }; }),
+  segments: ['Engineers and surveyors', 'Project and commercial leaders', 'Architects', 'Students and early careers', 'Muslim women in construction', 'Employers and staff networks'].map(function (t, i) { return { i: i, t: t }; }),
+  packs: P.map(function (p, i) { const on = s.pk === p[0]; return { i: i, tag: p[1], name: p[2], on: on ? 'true' : 'false', bg: on ? '#041F1E' : '#FBF8F2', fg: on ? '#F3EBDD' : '#041F1E', rot: on ? 0 : -45, pick: self.set({ pk: p[0] }) }; }),
+  pack: { tag: cur[1], name: cur[2], body: cur[3] },
+  partners: names.map(function (n, i) { const sgs = n[0] === 'Small Giants Studio'; const c = sgs ? ['#D4A73C', '#1A1405'] : pal[i % 4]; return { i: i % 8, name: n[0], role: n[1], bg: c[0], fg: c[1] }; }),
+  ints: [['gala', 'Gala & Awards'], ['regional', 'Regional events'], ['programme', 'Programmes'], ['group', 'Group bookings']].map(function (x) { const on = !!(s.ints || {})[x[0]]; return { label: x[1], on: on ? 'true' : 'false', toggle: self.toggle('ints', x[0]) }; }),
+  sent: s.sent, notSent: !s.sent, send: this.prevent({ sent: true })
+};
+
+    }).call(this);
+    return Object.assign(base, page);
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>About · Muslims In Construction</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="assets/css/mic.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>body{margin:0;background:#F3EEE4}</style>
+</helmet>
+<div class="mic" onPointerDown="{{tap}}" style="background: #F3EEE4; color: #0F1D1C">
+<dc-import name="Gauge" hint-size="46px,100%"></dc-import>
+<div style="position: sticky; top: 0; z-index: 60"><dc-import name="Header" active="about" tone="light" basket="{{basket}}" hint-size="100%,81px"></dc-import></div>
+<section data-sec="hero" data-label="About · Level 00" ref="{{rf}}" class="sec {{v.hero}} bp" style="position: relative; padding: 64px 0 120px">
+<div class="wrap g2" style="align-items: center; gap: 56px">
+<div class="stack" style="gap: 26px">
+<span class="mono r" style="color: #024E4A">About MIC · Est. January 2024</span>
+<h1 class="disp" style="font-size: clamp(60px, 8vw, 132px)"><span class="word" style="--i: 1">Faith</span> <span class="word" style="--i: 2">laid</span> <span class="word" style="--i: 3">the</span><br><span class="word serif" style="--i: 4; color: #007F7C">foundation.</span><br><span class="word" style="--i: 5">We're</span> <span class="word" style="--i: 6">still</span> <span class="word" style="--i: 7">building.</span></h1>
+<p class="lead r" style="--i: 7; margin: 0; color: #33403F">Muslims in Construction is a professional network dedicated to empowering and connecting Muslims across the construction industry. We create spaces where people can thrive in their careers and in their faith, through mentorship, networking and knowledge sharing.</p>
+<div class="row r stack-s" style="--i: 8"><a class="btn btn-deep" href="team.html">Meet the team <span class="arr" aria-hidden="true">→</span></a><a class="btn btn-line" href="#report">Impact report</a></div>
+</div>
+<div style="position: relative; height: 640px">
+<div class="archc r-wall" style="--i: 2; position: absolute; right: 0; top: 0; width: 78%; height: 100%; overflow: hidden; background: #041F1E"><img class="kb" src="assets/img/gala25-founders-backdrop.jpg" alt="MIC founders in black tie at the 2025 gala" style="width: 100%; height: 100%; object-fit: cover"></div>
+<div class="r-s press" style="--i: 5; position: absolute; left: 0; bottom: 40px; width: 44%; aspect-ratio: 3 / 4; border-radius: 18px; overflow: hidden; border: 6px solid #FBF8F2; box-shadow: 0 30px 60px -30px rgba(4,31,30,.6); transform: rotate(-4deg)"><img class="zoom" src="assets/img/saffron-gallery-plan.jpg" alt="A hand-drawn venue plan being marked up before an MIC event" style="width: 100%; height: 100%; object-fit: cover"></div>
+<span class="mono r" style="--i: 6; position: absolute; left: 0; top: 30px; color: #024E4A">Fig. 01 · Set-out, by hand</span>
+</div>
+</div>
+</section>
+
+<section data-sec="values" data-label="About · Level 01 · Values" ref="{{rf}}" class="sec {{v.values}}" style="padding: 120px 0 140px; background: linear-gradient(180deg, #F3EEE4, #E9E2D4)">
+<div class="wrap g2" style="align-items: start; gap: 56px">
+<div class="stack" style="gap: 10px">
+<span class="mono r" style="color: #024E4A; margin-bottom: 16px">Founded on three principles</span>
+<sc-for list="{{values}}" as="val" hint-placeholder-count="3">
+<button class="r" onClick="{{val.pick}}" aria-pressed="{{val.on}}" style="--i: {{val.i}}; background: none; border: 0; padding: 4px 0; text-align: left; cursor: pointer; display: flex; align-items: center; gap: 22px; color: #0F1D1C">
+<svg width="34" height="34" viewBox="0 0 100 100" aria-hidden="true" style="transform: rotate({{val.rot}}deg); transition: transform .8s cubic-bezier(.65,0,.35,1)"><polygon points="50,0 64.6,14.6 85.4,14.6 85.4,35.4 100,50 85.4,64.6 85.4,85.4 64.6,85.4 50,100 35.4,85.4 14.6,85.4 14.6,64.6 0,50 14.6,35.4 14.6,14.6 35.4,14.6" fill="{{val.fill}}" stroke="#024E4A" stroke-width="5"></polygon></svg>
+<span class="disp {{val.cls}}" style="font-size: clamp(64px, 8vw, 128px); transition: color .5s; color: {{val.color}}; --oc: #7C8784">{{val.word}}</span>
+</button>
+</sc-for>
+</div>
+<div class="r" style="--i: 3; background: #024E4A; color: #F3EBDD; border-radius: 999px 999px 28px 28px; padding: 120px 44px 48px; min-height: 460px; display: flex; flex-direction: column; justify-content: flex-end; gap: 18px; overflow: hidden">
+<svg class="spin" viewBox="0 0 100 100" style="position: absolute; top: 34px; left: 50%; width: 90px; height: 90px; margin-left: -45px" aria-hidden="true"><g fill="none" stroke="#D4A73C" stroke-width="2"><rect x="20" y="20" width="60" height="60"></rect><rect x="20" y="20" width="60" height="60" transform="rotate(45 50 50)"></rect><circle cx="50" cy="50" r="45"></circle></g></svg>
+<span class="eyebrow" style="color: #D4A73C">{{valNow.word}}</span>
+<p class="serif" style="margin: 0; font-size: clamp(28px, 2.6vw, 40px); line-height: 1.2">{{valNow.body}}</p>
+<span class="mono" style="color: #A9C9C4; font-size: 12px">Tap a principle</span>
+</div>
+</div>
+</section>
+
+<section data-sec="story" data-label="About · Level 02 · Timeline" data-tone="dark" ref="{{rf}}" class="sec {{v.story}}" style="padding: 140px 0 150px; background: linear-gradient(180deg, #E9E2D4 0%, #024E4A 16%, #041F1E 60%); color: #F3EBDD; overflow: hidden">
+<div class="wrap row" style="justify-content: space-between; align-items: end; gap: 24px; padding-top: 60px">
+<div class="stack" style="gap: 16px"><span class="mono r" style="color: #D4A73C">What we've built so far</span><h2 class="disp h2 r" style="--i: 1">How MIC <span class="serif c-gold">was</span> built</h2></div>
+<div class="row r" style="--i: 2; gap: 8px"><button class="btn btn-ghost btn-sm" onClick="{{prev}}" aria-label="Earlier" style="width: 52px; padding: 0">←</button><button class="btn btn-gold btn-sm" onClick="{{next}}" aria-label="Later" style="width: 52px; padding: 0">→</button></div>
+</div>
+<ol class="rail" ref="{{railRefSt}}" style="list-style: none; margin: 70px 0 0; padding-left: max(20px, calc((100% - 1320px) / 2 + 56px)); scroll-padding-left: max(20px, calc((100% - 1320px) / 2 + 56px)); padding-right: 56px; gap: 0">
+<sc-for list="{{story}}" as="st" hint-placeholder-count="10">
+<li class="r" style="--i: {{st.i}}; width: 360px; display: flex; flex-direction: column; gap: 16px; padding-right: 32px">
+<span class="press" style="display: block; height: 220px; border-radius: 999px 999px 18px 18px; overflow: hidden; background: #08302E; position: relative">
+<sc-if value="{{st.hasImg}}" hint-placeholder-val="{{ false }}"><img class="zoom" src="{{st.img}}" alt="{{st.alt}}" style="width: 100%; height: 100%; object-fit: cover"></sc-if>
+<sc-if value="{{st.noImg}}" hint-placeholder-val="{{ true }}"><span class="bp-dark" style="position: absolute; inset: 0; display: grid; place-items: center"><span class="disp outline" style="font-size: 92px; color: #D4A73C">{{st.yy}}</span></span></sc-if>
+</span>
+<span style="display: flex; align-items: center"><svg class="glowp" width="20" height="20" viewBox="0 0 100 100" aria-hidden="true"><polygon points="50,0 64.6,14.6 85.4,14.6 85.4,35.4 100,50 85.4,64.6 85.4,85.4 64.6,85.4 50,100 35.4,85.4 14.6,85.4 14.6,64.6 0,50 14.6,35.4 14.6,14.6 35.4,14.6" fill="#D4A73C"></polygon></svg><span class="r-line" style="--i: {{st.i}}; flex: 1; height: 2px; background: rgba(212,167,60,.45); display: block"></span></span>
+<span class="disp" style="font-size: 52px; color: #D4A73C">{{st.when}}</span>
+<strong style="font-size: 22px; line-height: 1.2">{{st.title}}</strong>
+<span style="font-size: 16px; line-height: 1.55; color: rgba(243,235,221,.8)">{{st.body}}</span>
+</li>
+</sc-for>
+</ol>
+</section>
+
+<section data-sec="note" data-label="About · Level 03 · The idea" data-tone="dark" ref="{{rf}}" class="sec {{v.note}}" style="position: relative; padding: 60px 0 150px; background: #041F1E; color: #F3EBDD; overflow: hidden">
+<svg class="lat-edges" style="position: absolute; inset: 0; width: 100%; height: 100%; color: rgba(212,167,60,.1)" aria-hidden="true"><defs><pattern id="latAb" width="84" height="84" patternUnits="userSpaceOnUse"><g fill="none" stroke="currentColor" stroke-width="1.4"><polygon points="42,8 52,32 76,42 52,52 42,76 32,52 8,42 32,32"></polygon><rect x="23" y="23" width="38" height="38"></rect><rect x="23" y="23" width="38" height="38" transform="rotate(45 42 42)"></rect></g></pattern></defs><rect width="100%" height="100%" fill="url(#latAb)"></rect></svg>
+<div class="wrap stack" style="position: relative; align-items: center; text-align: center; gap: 28px; max-width: 1100px">
+<span class="mono r" style="color: #D4A73C">The idea</span>
+<p class="serif r" style="--i: 1; margin: 0; font-size: clamp(34px, 4.6vw, 70px); line-height: 1.1">It started with a simple idea: a space where Muslims in construction could connect, support one another and <span class="c-gold">belong.</span></p>
+<span class="mono r" style="--i: 2; color: #A9C9C4">Abs, Ishaaq and Zeshan · co-founders</span>
+</div>
+</section>
+
+<section id="report" data-sec="report" data-label="About · Level 04 · Impact" ref="{{rf}}" class="sec {{v.report}}" style="padding: 150px 0 140px; background: linear-gradient(180deg, #041F1E 0%, #E9E2D4 22%)">
+<div class="wrap g2" style="align-items: center; gap: 64px; padding-top: 60px">
+<div class="r-s press" style="--i: 1; justify-self: center; width: min(420px, 100%); aspect-ratio: 210 / 297; background: #024E4A; border-radius: 8px; box-shadow: 0 50px 80px -40px rgba(4,31,30,.7), 14px 14px 0 #D4A73C; padding: 36px; display: flex; flex-direction: column; justify-content: space-between; color: #F3EBDD; transform: rotate(-3deg); position: relative; overflow: hidden">
+<svg viewBox="0 0 200 200" style="position: absolute; right: -50px; top: -50px; width: 260px; opacity: .25" aria-hidden="true"><g fill="none" stroke="#D4A73C" stroke-width="1.5"><rect x="40" y="40" width="120" height="120"></rect><rect x="40" y="40" width="120" height="120" transform="rotate(45 100 100)"></rect><circle cx="100" cy="100" r="95"></circle></g></svg>
+<img src="assets/img/mic-logo-white.png" alt="" style="width: 160px; position: relative">
+<span class="stack" style="gap: 6px; position: relative"><span class="mono" style="color: #D4A73C">Impact report</span><span class="disp" style="font-size: 58px">Built<br>together</span><span class="mono" style="font-size: 12px; color: #A9C9C4">PDF from MIC</span></span>
+</div>
+<div class="stack r" style="--i: 2; gap: 22px">
+<span class="mono" style="color: #024E4A">Impact report</span>
+<h2 class="disp h2">What your <span class="serif c-teal">support</span> builds</h2>
+<p class="lead" style="margin: 0; color: #33403F">Looking to partner with or sponsor an organisation making a real difference? Our impact report covers who we reach, what we've delivered and where we're going next.</p>
+<div class="row stack-s"><a class="btn btn-deep" href="#report"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3v12M6 10l6 6 6-6M4 20h16"></path></svg>Download the impact report</a><a class="btn btn-line" href="sponsors.html">Partner with MIC</a></div>
+</div>
+</div>
+</section>
+
+<section data-sec="team" data-label="About · Level 05 · Team" ref="{{rf}}" class="sec {{v.team}}" style="padding: 20px 0 140px; background: #E9E2D4">
+<div class="wrap row" style="justify-content: space-between; align-items: end; gap: 24px">
+<div class="stack" style="gap: 16px"><span class="mono r" style="color: #024E4A">The people behind MIC</span><h2 class="disp h2 r" style="--i: 1">Started by three <span class="serif c-teal">engineers</span></h2></div>
+<a class="btn btn-deep r" style="--i: 2" href="team.html">Meet the full team <span class="arr" aria-hidden="true">→</span></a>
+</div>
+<div class="wrap g3" style="margin-top: 56px">
+<sc-for list="{{founders}}" as="f" hint-placeholder-count="3">
+<a href="team.html" class="press r stack" style="--i: {{f.i}}; gap: 16px; text-decoration: none; color: #0F1D1C">
+<span class="archc" style="display: block; aspect-ratio: 4 / 5; overflow: hidden; background: #D9D2C3"><img class="zoom" src="{{f.img}}" alt="Portrait of {{f.name}}" style="width: 100%; height: 100%; object-fit: cover; object-position: top"></span>
+<span class="eyebrow" style="color: #024E4A">{{f.role}}</span>
+<span class="disp" style="font-size: 44px">{{f.name}}</span>
+</a>
+</sc-for>
+</div>
+</section>
+
+<dc-import name="JoinBand" hint-size="100%,760px"></dc-import>
+<dc-import name="Footer" hint-size="100%,760px"></dc-import>
+<sc-if value="{{sparkA}}" hint-placeholder-val="{{ false }}"><svg class="spark" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><polygon points="50,4 63,37 96,50 63,63 50,96 37,63 4,50 37,37"></polygon></svg><svg class="spark spark2" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><rect x="22" y="22" width="56" height="56" transform="rotate(45 50 50)" fill="none" stroke="#D4A73C" stroke-width="2"></rect></svg></sc-if>
+<sc-if value="{{sparkB}}" hint-placeholder-val="{{ false }}"><svg class="spark" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><polygon points="50,4 63,37 96,50 63,63 50,96 37,63 4,50 37,37"></polygon></svg><svg class="spark spark2" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><rect x="22" y="22" width="56" height="56" transform="rotate(45 50 50)" fill="none" stroke="#D4A73C" stroke-width="2"></rect></svg></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview": {"width": 1440, "height": 7200}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const self = this;
+    this.state = Object.assign({ v: {}, all: false, tap: 0, tx: 0, ty: 0, now: Date.now(), basket: 0 }, {"val": "community"});
+    this.io = (typeof IntersectionObserver !== 'undefined') ? new IntersectionObserver(function (es) {
+      const add = {};
+      es.forEach(function (e) { if (e.isIntersecting) { add[e.target.getAttribute('data-sec')] = 1; self.io.unobserve(e.target); } });
+      if (Object.keys(add).length) self.setState(function (s) { return { v: Object.assign({}, s.v, add) }; });
+    }, { threshold: 0.1, rootMargin: '0px 0px -6% 0px' }) : null;
+    this.rf = function (el) { if (el && self.io) self.io.observe(el); };
+    this.tap = function (e) { const r = e.currentTarget.getBoundingClientRect(); self.setState({ tap: self.state.tap + 1, tx: Math.round(e.clientX - r.left), ty: Math.round(e.clientY - r.top) }); };
+    this.rails = {};
+    this.railRef = function (k) { if (!self['_rr' + k]) self['_rr' + k] = function (el) { if (el) self.rails[k] = el; }; return self['_rr' + k]; };
+    this.scrollRail = function (k, d) { return function () { const el = self.rails[k]; if (el) el.scrollBy({ left: d * 380, behavior: 'smooth' }); }; };
+    this.set = function (patch) { return function () { self.setState(typeof patch === 'function' ? patch(self.state) : patch); }; };
+    this.toggle = function (key, id) { return function () { const o = Object.assign({}, self.state[key]); o[id] = !o[id]; const p = {}; p[key] = o; self.setState(p); }; };
+    this.prevent = function (patch) { return function (e) { if (e && e.preventDefault) e.preventDefault(); self.setState(patch); }; };
+  }
+  componentDidMount() {
+    const self = this;
+    if (this.io) { try { document.querySelectorAll('[data-sec]').forEach(function (el) { self.io.observe(el); }); } catch (e) {} }
+    this.safety = setTimeout(function () { if (!Object.keys(self.state.v).length) self.setState({ all: true }); }, 2200);
+    this.clock = setInterval(function () { self.setState({ now: Date.now() }); }, 30000);
+  }
+  componentWillUnmount() { clearTimeout(this.safety); clearInterval(this.clock); if (this.io) this.io.disconnect(); }
+  renderVals() {
+    const self = this, s = this.state;
+    const v = {}; ["hero", "values", "story", "note", "report", "team"].forEach(function (k) { v[k] = (s.all || s.v[k]) ? 'in' : ''; });
+    const base = { v: v, rf: this.rf, tap: this.tap, tx: s.tx, ty: s.ty, sparkA: s.tap > 0 && s.tap % 2 === 1, sparkB: s.tap > 0 && s.tap % 2 === 0, basket: s.basket, add: function () { self.setState({ basket: self.state.basket + 1 }); } };
+    const page = (function () {
+const vals = [
+  ['community', 'Community', 'A home for Muslims across construction and the built environment, where every person strengthens the next, like bricks in a wall.'],
+  ['excellence', 'Excellence', 'High standards in our work and our character. We celebrate the people doing outstanding things across the industry.'],
+  ['opportunity', 'Opportunity', 'Mentoring, introductions and representation that open doors, especially for the next generation coming through.']
+];
+const cur = vals.find(function (x) { return x[0] === s.val; }) || vals[0];
+return {
+  values: vals.map(function (x, i) { const on = s.val === x[0]; return { i: i + 1, word: x[1], on: on ? 'true' : 'false', cls: on ? '' : 'outline', color: on ? '#024E4A' : '#7C8784', fill: on ? '#D4A73C' : 'transparent', rot: on ? 45 : 0, pick: self.set({ val: x[0] }) }; }),
+  valNow: { word: cur[1], body: cur[2] },
+  railRefSt: this.railRef('st'), prev: this.scrollRail('st', -1), next: this.scrollRail('st', 1),
+  story: [
+    ['Jan 2024', 'Launched', 'Official social media pages and a membership drive.'],
+    ['Mar 2024', 'Survey', 'Gathered insights from Muslim professionals in construction.'],
+    ['Apr 2024', 'Networking events', 'Connected members, fostered collaborations, shared resources.'],
+    ['May 2024', 'Mentorship programme', 'Paired aspiring professionals with experienced leaders.'],
+    ['Jun 2024', 'Industry advocacy', 'Engaged with organisations to promote diversity and inclusion.'],
+    ['Aug 2024', 'Community outreach', 'Supported local initiatives for positive social impact.'],
+    ['Apr 2025', 'First in-person event', 'London South Bank University. A sold-out event with 200 people.'],
+    ['Aug 2025', 'MIC Connect Birmingham', 'Our second in-person event, on 16 August 2025.'],
+    ['Nov 2025', 'The first gala', 'Black tie at Royal Nawaab, Perivale, with over 350 guests.', 'assets/img/gala25-mic-letters.jpg', 'Light-up MIC letters at the first gala'],
+    ['Dec 2025', 'MIC becomes a CIC', 'Muslims In Construction CIC is incorporated.'],
+    ['2026', 'Birmingham and Sheffield', 'Levelling Up Birmingham at Aston University, then From Foundations to Skylines at Sheffield Hallam.'],
+    ['Nov 2026', 'Gala at Saffron Gallery', 'Four ticket releases, all sold out.', 'assets/img/saffron-gallery-arches.jpg', 'Arched colonnade inside Saffron Gallery']
+  ].map(function (x, i) { return { i: i, when: x[0], title: x[1], body: x[2], img: x[3] || '', alt: x[4] || '', hasImg: !!x[3], noImg: !x[3], yy: x[0].slice(-2) }; }),
+  founders: [
+    { i: 0, img: 'assets/img/founder-abdullah-shah.jpg', name: 'Abdullah Shah', role: 'Co-founder · Chair' },
+    { i: 1, img: 'assets/img/founder-ishaaq-mohamed.jpg', name: 'Ishaaq Mohamed', role: 'Co-founder' },
+    { i: 2, img: 'assets/img/founder-zeshan-wassim.jpg', name: 'Zeshan Wassim', role: 'Co-founder · Vice-Chair' }
+  ]
+};
+
+    }).call(this);
+    return Object.assign(base, page);
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MIC · Elevation gauge</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="assets/css/mic.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>body{margin:0}</style>
+</helmet>
+<div class="gauge" aria-hidden="true" style="color: {{ink}}">
+<svg style="position: absolute; left: 0; top: 0; width: 46px; height: 100%" aria-hidden="true"><defs><pattern id="gTicks" width="46" height="24" patternUnits="userSpaceOnUse"><path d="M16 0H30M20 12H26" stroke="currentColor" stroke-width="1" opacity=".35"></path></pattern></defs><rect width="46" height="100%" fill="url(#gTicks)"></rect></svg>
+<div style="position: absolute; left: 22px; top: 0; bottom: 0; width: 2px; background: currentColor; opacity: .18"></div>
+<div style="position: absolute; left: 21px; top: 0; width: 4px; height: {{pct}}%; background: linear-gradient(180deg, #007F7C, #D4A73C); border-radius: 0 0 4px 4px; transition: height .2s linear"></div>
+<div style="position: absolute; left: 23px; top: {{pct}}%; transition: top .2s linear">
+<svg width="26" height="26" viewBox="0 0 100 100" style="position: absolute; left: -13px; top: -13px; transform: rotate({{rot}}deg); filter: drop-shadow(0 0 8px rgba(212,167,60,.8))"><polygon points="50,0 64.6,14.6 85.4,14.6 85.4,35.4 100,50 85.4,64.6 85.4,85.4 64.6,85.4 50,100 35.4,85.4 14.6,85.4 14.6,64.6 0,50 14.6,35.4 14.6,14.6 35.4,14.6" fill="#D4A73C" stroke="{{ink}}" stroke-width="5"></polygon></svg>
+<span class="mono" style="position: absolute; left: 6px; top: 22px; writing-mode: vertical-rl; white-space: nowrap; font-size: 12px; font-weight: 600; color: {{ink}}; opacity: .85">{{label}}</span>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"tone":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":46,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { pct: 100, label: 'Level 00', dark: false };
+    const self = this;
+    this.onScroll = function () {
+      if (self.raf) return;
+      self.raf = requestAnimationFrame(function () {
+        self.raf = 0;
+        const d = document.documentElement, h = d.scrollHeight - window.innerHeight;
+        const pct = h > 40 ? Math.min(100, Math.max(0, window.scrollY / h * 100)) : 100;
+        let label = self.state.label, dark = self.state.dark;
+        try {
+          const secs = document.querySelectorAll('[data-label]');
+          const mid = window.innerHeight * 0.5;
+          secs.forEach(function (el) { const r = el.getBoundingClientRect(); if (r.top <= mid && r.bottom > mid) { label = el.getAttribute('data-label'); dark = el.getAttribute('data-tone') === 'dark'; } });
+        } catch (e) {}
+        if (Math.abs(pct - self.state.pct) > 0.15 || label !== self.state.label || dark !== self.state.dark) self.setState({ pct: pct, label: label, dark: dark });
+      });
+    };
+  }
+  componentDidMount() { window.addEventListener('scroll', this.onScroll, { passive: true }); window.addEventListener('resize', this.onScroll); this.onScroll(); }
+  componentWillUnmount() { window.removeEventListener('scroll', this.onScroll); window.removeEventListener('resize', this.onScroll); }
+  renderVals() {
+    const dark = this.state.dark || (this.props.tone === 'dark');
+    return { pct: this.state.pct.toFixed(2), rot: (this.state.pct * 7.2).toFixed(1), label: this.state.label, ink: dark ? '#F3EBDD' : '#024E4A' };
+  }
+}
+</script>
+</body>
+</html>

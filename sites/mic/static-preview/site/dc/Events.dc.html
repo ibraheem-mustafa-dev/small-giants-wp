@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Events · Muslims In Construction</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="assets/css/mic.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>body{margin:0;background:#041F1E}</style>
+</helmet>
+<div class="mic" onPointerDown="{{tap}}" style="background: #041F1E; color: #F3EBDD">
+<dc-import name="Gauge" hint-size="46px,100%"></dc-import>
+<div style="position: sticky; top: 0; z-index: 60"><dc-import name="Header" active="events" tone="dark" basket="{{basket}}" hint-size="100%,81px"></dc-import></div>
+<section data-sec="hero" data-label="Events · Level 00" data-tone="dark" ref="{{rf}}" class="sec {{v.hero}}" style="position: relative; min-height: 680px; display: flex; align-items: flex-end; overflow: hidden">
+<img class="kb" src="assets/img/gala25-audience.jpg" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: brightness(.38)">
+<span style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(4,31,30,.3), #041F1E 92%)"></span>
+<svg class="lat-edges" style="position: absolute; inset: 0; width: 100%; height: 100%; color: rgba(212,167,60,.22)" aria-hidden="true"><defs><pattern id="latEv" width="84" height="84" patternUnits="userSpaceOnUse"><g fill="none" stroke="currentColor" stroke-width="1.4"><polygon points="42,8 52,32 76,42 52,52 42,76 32,52 8,42 32,32"></polygon><rect x="23" y="23" width="38" height="38"></rect><rect x="23" y="23" width="38" height="38" transform="rotate(45 42 42)"></rect></g></pattern></defs><rect width="100%" height="100%" fill="url(#latEv)"></rect></svg>
+<div class="wrap stack" style="position: relative; width: 100%; gap: 24px; padding-bottom: 80px">
+<span class="eyebrow r" style="color: #D4A73C">Events across the UK and online</span>
+<h1 class="disp" style="font-size: clamp(64px, 11vw, 190px)"><span class="bulb" style="animation-delay: .1s">Events</span> <span class="bulb" style="animation-delay: .35s">that</span><br><span class="serif bulb" style="color: #D4A73C; animation-delay: .6s">sell out</span></h1>
+<p class="lead r" style="--i: 3; margin: 0; max-width: 620px; color: rgba(243,235,221,.88)">Networking days, socials, careers workshops, online circles and our black-tie gala. Prayer space and Qur'an recitation are part of every programme.</p>
+</div>
+</section>
+
+<section data-sec="up" data-label="Events · Level 01 · Upcoming" data-tone="dark" ref="{{rf}}" class="sec {{v.up}}" style="padding: 60px 0 120px">
+<div class="wrap stack" style="gap: 36px">
+<div class="row" style="justify-content: space-between; align-items: end"><h2 class="disp h2 r">Coming <span class="serif c-gold">up</span></h2><span class="mono r" style="--i: 1; color: #A9C9C4">Updated weekly</span></div>
+<div class="g3">
+<sc-for list="{{upcoming}}" as="u" hint-placeholder-count="3">
+<a href="{{u.href}}" class="press r archc" style="--i: {{u.i}}; position: relative; overflow: hidden; min-height: 520px; display: flex; flex-direction: column; justify-content: flex-end; padding: 34px; text-decoration: none; color: #F3EBDD; background: #08302E; border: 1px solid rgba(212,167,60,.3)">
+<sc-if value="{{u.hasImg}}" hint-placeholder-val="{{ false }}"><img class="zoom" src="{{u.img}}" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .5"></sc-if>
+<span style="position: absolute; inset: 0; background: linear-gradient(180deg, transparent 30%, rgba(4,31,30,.95))"></span>
+<svg class="spin" viewBox="0 0 100 100" style="position: absolute; top: 46px; left: 50%; width: 80px; height: 80px; margin-left: -40px" aria-hidden="true"><g fill="none" stroke="#D4A73C" stroke-width="2"><rect x="20" y="20" width="60" height="60"></rect><rect x="20" y="20" width="60" height="60" transform="rotate(45 50 50)"></rect></g></svg>
+<span class="stack" style="position: relative; gap: 12px">
+<span class="mono" style="align-self: flex-start; background: {{u.chipBg}}; color: {{u.chipFg}}; padding: 6px 12px; border-radius: 999px; font-weight: 600">{{u.chip}}</span>
+<span class="eyebrow" style="color: #D4A73C">{{u.when}}</span>
+<span class="disp" style="font-size: 46px">{{u.title}}</span>
+<span style="font-size: 16px; line-height: 1.5; color: rgba(243,235,221,.85)">{{u.line}}</span>
+<span class="btn btn-gold btn-sm" style="align-self: flex-start; margin-top: 6px">{{u.cta}} <span class="arr" aria-hidden="true">→</span></span>
+</span>
+</a>
+</sc-for>
+</div>
+</div>
+</section>
+
+<section data-sec="past" data-label="Events · Level 02 · Past events" data-tone="dark" ref="{{rf}}" class="sec {{v.past}}" style="padding: 40px 0 130px; background: linear-gradient(180deg, #041F1E, #08302E)">
+<div class="wrap stack" style="gap: 32px">
+<div class="row" style="justify-content: space-between; align-items: end; gap: 20px">
+<h2 class="disp h2 r">Past <span class="serif c-gold">events</span></h2>
+<div class="row r" role="tablist" aria-label="Filter by place" style="--i: 1; gap: 8px">
+<sc-for list="{{cities}}" as="c" hint-placeholder-count="6"><button class="chip chip-d" role="tab" aria-selected="{{c.on}}" onClick="{{c.pick}}">{{c.label}}</button></sc-for>
+</div>
+</div>
+<div class="g3" style="gap: 22px">
+<sc-for list="{{past}}" as="p" hint-placeholder-count="9">
+<a href="{{p.href}}" class="press r-s stack" style="--i: {{p.i}}; gap: 14px; text-decoration: none; color: #F3EBDD">
+<span style="display: block; position: relative; aspect-ratio: 16 / 10; border-radius: 20px; overflow: hidden; background: #0B3936; border: 1px solid rgba(212,167,60,.18)">
+<sc-if value="{{p.hasImg}}" hint-placeholder-val="{{ true }}"><img class="zoom" src="{{p.img}}" alt="{{p.alt}}" style="width: 100%; height: 100%; object-fit: cover"></sc-if>
+<sc-if value="{{p.noImg}}" hint-placeholder-val="{{ false }}"><span class="bp-dark" style="position: absolute; inset: 0; display: grid; place-items: center"><span class="disp" style="font-size: 44px; color: #F3EBDD">{{p.city}}</span><span class="mono" style="position: absolute; left: 14px; bottom: 12px; font-size: 12px; color: #A9C9C4">Event photo from MIC</span></span></sc-if>
+<sc-if value="{{p.sold}}" hint-placeholder-val="{{ false }}"><span class="tape" style="position: absolute; right: -36px; top: 18px; width: 170px; height: 30px; transform: rotate(35deg); display: flex; align-items: center; justify-content: center"><span class="mono" style="background: #0F1D1C; color: #D4A73C; padding: 2px 8px; font-size: 12px; font-weight: 600">Sold out</span></span></sc-if>
+</span>
+<span class="mono" style="color: #D4A73C; font-size: 12px">{{p.date}} · {{p.place}}</span>
+<strong style="font-size: 21px; line-height: 1.25">{{p.title}}</strong>
+<span style="font-size: 15px; color: rgba(243,235,221,.78); line-height: 1.5">{{p.line}}</span>
+</a>
+</sc-for>
+</div>
+<sc-if value="{{none}}" hint-placeholder-val="{{ false }}"><p class="serif" style="font-size: 30px; color: #A9C9C4; margin: 0">Nothing here yet. Want MIC in your city? Get in touch.</p></sc-if>
+</div>
+</section>
+
+<section data-sec="notify" data-label="Events · Level 03 · Get notified" ref="{{rf}}" class="sec {{v.notify}}" style="padding: 130px 0; background: #D4A73C; color: #1A1405; position: relative; overflow: hidden">
+<div class="wrap g2" style="align-items: center; gap: 48px">
+<div class="stack" style="gap: 18px"><span class="mono r" style="color: #1A1405">Tickets go fast</span><h2 class="disp h2 r" style="--i: 1">Never miss a <span class="serif">release</span></h2><p class="lead r" style="--i: 2; margin: 0">Every release has sold out so far. Get first word on tickets, or tell us you'd like to host or sponsor an MIC event.</p></div>
+<sc-if value="{{notNotified}}" hint-placeholder-val="{{ true }}">
+<form onSubmit="{{notifyMe}}" class="stack r" style="--i: 3; gap: 12px">
+<label for="ev-email" class="lbl">Email</label>
+<input id="ev-email" class="field" type="email" autocomplete="email" placeholder="you@company.co.uk" style="border-radius: 999px; border-color: #1A1405">
+<div class="row stack-s"><button class="btn btn-ink" type="submit">Notify me <span class="arr" aria-hidden="true">→</span></button><a class="btn" href="contact.html" style="color: #1A1405; box-shadow: inset 0 0 0 1.5px #1A1405">Host an event with us</a></div>
+</form>
+</sc-if>
+<sc-if value="{{notified}}" hint-placeholder-val="{{ false }}"><p class="serif" style="margin: 0; font-size: 40px">You're on the list. Insha'Allah, see you soon.</p></sc-if>
+</div>
+</section>
+
+<dc-import name="Footer" hint-size="100%,760px"></dc-import>
+<sc-if value="{{sparkA}}" hint-placeholder-val="{{ false }}"><svg class="spark" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><polygon points="50,4 63,37 96,50 63,63 50,96 37,63 4,50 37,37"></polygon></svg><svg class="spark spark2" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><rect x="22" y="22" width="56" height="56" transform="rotate(45 50 50)" fill="none" stroke="#D4A73C" stroke-width="2"></rect></svg></sc-if>
+<sc-if value="{{sparkB}}" hint-placeholder-val="{{ false }}"><svg class="spark" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><polygon points="50,4 63,37 96,50 63,63 50,96 37,63 4,50 37,37"></polygon></svg><svg class="spark spark2" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><rect x="22" y="22" width="56" height="56" transform="rotate(45 50 50)" fill="none" stroke="#D4A73C" stroke-width="2"></rect></svg></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview": {"width": 1440, "height": 6400}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const self = this;
+    this.state = Object.assign({ v: {}, all: false, tap: 0, tx: 0, ty: 0, now: Date.now(), basket: 0 }, {"city": "All", "notify": false});
+    this.io = (typeof IntersectionObserver !== 'undefined') ? new IntersectionObserver(function (es) {
+      const add = {};
+      es.forEach(function (e) { if (e.isIntersecting) { add[e.target.getAttribute('data-sec')] = 1; self.io.unobserve(e.target); } });
+      if (Object.keys(add).length) self.setState(function (s) { return { v: Object.assign({}, s.v, add) }; });
+    }, { threshold: 0.1, rootMargin: '0px 0px -6% 0px' }) : null;
+    this.rf = function (el) { if (el && self.io) self.io.observe(el); };
+    this.tap = function (e) { const r = e.currentTarget.getBoundingClientRect(); self.setState({ tap: self.state.tap + 1, tx: Math.round(e.clientX - r.left), ty: Math.round(e.clientY - r.top) }); };
+    this.rails = {};
+    this.railRef = function (k) { if (!self['_rr' + k]) self['_rr' + k] = function (el) { if (el) self.rails[k] = el; }; return self['_rr' + k]; };
+    this.scrollRail = function (k, d) { return function () { const el = self.rails[k]; if (el) el.scrollBy({ left: d * 380, behavior: 'smooth' }); }; };
+    this.set = function (patch) { return function () { self.setState(typeof patch === 'function' ? patch(self.state) : patch); }; };
+    this.toggle = function (key, id) { return function () { const o = Object.assign({}, self.state[key]); o[id] = !o[id]; const p = {}; p[key] = o; self.setState(p); }; };
+    this.prevent = function (patch) { return function (e) { if (e && e.preventDefault) e.preventDefault(); self.setState(patch); }; };
+  }
+  componentDidMount() {
+    const self = this;
+    if (this.io) { try { document.querySelectorAll('[data-sec]').forEach(function (el) { self.io.observe(el); }); } catch (e) {} }
+    this.safety = setTimeout(function () { if (!Object.keys(self.state.v).length) self.setState({ all: true }); }, 2200);
+    this.clock = setInterval(function () { self.setState({ now: Date.now() }); }, 30000);
+  }
+  componentWillUnmount() { clearTimeout(this.safety); clearInterval(this.clock); if (this.io) this.io.disconnect(); }
+  renderVals() {
+    const self = this, s = this.state;
+    const v = {}; ["hero", "up", "past", "notify"].forEach(function (k) { v[k] = (s.all || s.v[k]) ? 'in' : ''; });
+    const base = { v: v, rf: this.rf, tap: this.tap, tx: s.tx, ty: s.ty, sparkA: s.tap > 0 && s.tap % 2 === 1, sparkB: s.tap > 0 && s.tap % 2 === 0, basket: s.basket, add: function () { self.setState({ basket: self.state.basket + 1 }); } };
+    const page = (function () {
+const past = [
+  ['gala-2026.html', 'Nov 2026', 'London', 'Saffron Gallery, Stratford', 'MIC Gala & Awards 2026', 'Dinner, keynotes and the MIC Awards. Four releases, all sold out.', 'assets/img/saffron-gallery-arches.jpg', 'Arched colonnade inside Saffron Gallery', true],
+  ['events.html', '21 Oct 2026', 'London', 'RICS, London', 'MIC at RICS', 'An evening event hosted at RICS in London.', '', '', false],
+  ['events.html', '15 Oct 2026', 'Birmingham', 'Birmingham', 'MIC Sisters arts social', 'A creative evening for sisters in construction, painting tote bags together.', '', '', false],
+  ['events.html', '8 Aug 2026', 'Sheffield', 'Sheffield Hallam University', 'From Foundations to Skylines', 'Career pathways and transitions across the built environment.', '', '', false],
+  ['events.html', '28 Mar 2026', 'Birmingham', 'Aston University', 'Levelling Up Birmingham', 'Talks, networking and prayer facilities on site. Supported by Watertec Global and READ Foundation.', '', '', false],
+  ['events.html', '29 Nov 2025', 'London', 'Royal Nawaab, Perivale', 'MIC Gala & Awards 2025', 'Our first black-tie gala, with over 350 guests.', 'assets/img/gala25-mic-letters.jpg', 'Light-up MIC letters at Gala 2025', true],
+  ['events.html', 'Sep 2025', 'London', 'London', 'MIC x BT Muslim Network', 'A cross-industry evening with BT Muslim Network.', '', '', false],
+  ['events.html', '16 Aug 2025', 'Birmingham', 'The Muath Trust', 'MIC Connect Birmingham', 'Over 130 professionals, students and leaders in the Midlands.', '', '', false],
+  ['events.html', 'Apr 2025', 'London', 'London South Bank University', 'Our first in-person event', '200 people at LSBU. Sold out.', '', '', true],
+  ['events.html', '[Date]', 'Manchester', 'Manchester', 'MIC Sunday Social', 'A relaxed Sunday meet-up for members in the North West.', '', '', false],
+  ['events.html', '[Date]', 'London', 'Mishcon de Reya', 'Introduction to Construction Arbitration', 'A practical session with Mishcon de Reya.', '', '', false],
+  ['events.html', '[Date]', 'Online', 'Online', 'Early Careers Workshop', 'CVs, applications and interviews for people starting out.', '', '', false]
+];
+const shown = past.filter(function (p) { return s.city === 'All' || p[2] === s.city; });
+return {
+  upcoming: [
+    { i: 0, href: 'events.html', hasImg: false, img: '', chip: 'Online · Free', chipBg: '#D4A73C', chipFg: '#1A1405', when: 'Fortnightly on Zoom', title: 'Build Her Circle', line: 'One-to-one networking for Muslim women in construction, open to sisters worldwide.', cta: 'Book a slot' },
+    { i: 1, href: 'gala-2026.html#interest', hasImg: true, img: 'assets/img/gala25-dinner-hall.jpg', chip: 'Register interest', chipBg: '#F3EBDD', chipFg: '#041F1E', when: 'November 2027 · London', title: 'Gala & Awards 2027', line: 'Be first in line when tickets, nominations and sponsorship open.', cta: 'Register interest' },
+    { i: 2, href: '#notify', hasImg: false, img: '', chip: 'Announcing soon', chipBg: '#F3EBDD', chipFg: '#041F1E', when: '2027 · [City from MIC]', title: 'Next regional event', line: 'Our next community, career and connection day. Get notified the moment tickets go live.', cta: 'Get notified' }
+  ],
+  cities: ['All', 'London', 'Birmingham', 'Sheffield', 'Manchester', 'Online'].map(function (c) { return { label: c, on: s.city === c ? 'true' : 'false', pick: self.set({ city: c }) }; }),
+  past: shown.map(function (p, i) { return { i: i % 6, href: p[0], date: p[1], city: p[2], place: p[3], title: p[4], line: p[5], img: p[6], alt: p[7], hasImg: !!p[6], noImg: !p[6], sold: p[8] }; }),
+  none: shown.length === 0,
+  notified: s.notify, notNotified: !s.notify, notifyMe: this.prevent({ notify: true })
+};
+
+    }).call(this);
+    return Object.assign(base, page);
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Contact · Muslims In Construction</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="assets/css/mic.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>body{margin:0;background:#F3EEE4}</style>
+</helmet>
+<div class="mic" onPointerDown="{{tap}}" style="background: #F3EEE4; color: #0F1D1C">
+<dc-import name="Gauge" hint-size="46px,100%"></dc-import>
+<div style="position: sticky; top: 0; z-index: 60"><dc-import name="Header" active="contact" tone="light" basket="{{basket}}" hint-size="100%,81px"></dc-import></div>
+<section data-sec="hero" data-label="Contact · Level 00" ref="{{rf}}" class="sec {{v.hero}} bp" style="padding: 64px 0 120px">
+<div class="wrap g2" style="gap: 56px; align-items: start">
+<div class="stack" style="gap: 24px">
+<span class="mono r" style="color: #024E4A">Get in touch</span>
+<h1 class="disp" style="font-size: clamp(64px, 9vw, 150px)"><span class="word" style="--i: 1">Let's</span> <span class="word" style="--i: 2">build</span><br><span class="word serif" style="--i: 3; color: #007F7C">together</span></h1>
+<p class="lead r" style="--i: 4; margin: 0; color: #33403F">Whether you're looking to volunteer, grow your career or collaborate with Muslims in Construction, we'd love to hear from you. Together we can strengthen our ummah and build a better future for our industry, Insha'Allah.</p>
+<div class="stack r" style="--i: 5; gap: 14px; margin-top: 10px">
+<a href="mailto:info@muslimsinconstruction.uk" class="press row" style="gap: 16px; flex-wrap: nowrap; text-decoration: none; color: #0F1D1C; background: #FBF8F2; border: 1px solid rgba(2,78,74,.16); border-radius: 18px; padding: 18px 20px"><span style="width: 48px; height: 48px; border-radius: 99px; background: #024E4A; display: grid; place-items: center; color: #F3EBDD; flex-shrink: 0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 7l9 6 9-6"></path></svg></span><span class="stack"><span class="mono" style="font-size: 12px; color: #46524F">Email</span><strong style="font-size: 18px">info@muslimsinconstruction.uk</strong></span></a>
+<div class="row" style="gap: 16px; flex-wrap: nowrap; background: #FBF8F2; border: 1px solid rgba(2,78,74,.16); border-radius: 18px; padding: 18px 20px"><span style="width: 48px; height: 48px; border-radius: 99px; background: #D4A73C; display: grid; place-items: center; flex-shrink: 0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A1405" stroke-width="1.8" aria-hidden="true"><path d="M12 21s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12Z"></path><circle cx="12" cy="9" r="2.5"></circle></svg></span><span class="stack"><span class="mono" style="font-size: 12px; color: #46524F">Where we are</span><strong style="font-size: 16px; line-height: 1.4">Mainly in the UK, with members in the UAE and across the Muslim world</strong></span></div>
+</div>
+</div>
+<div class="r" style="--i: 3">
+<sc-if value="{{notSent}}" hint-placeholder-val="{{ true }}">
+<form onSubmit="{{send}}" class="stack" style="gap: 16px; background: #024E4A; color: #F3EBDD; border-radius: 30px; padding: 36px; box-shadow: 0 40px 80px -40px rgba(4,31,30,.7)">
+<fieldset style="border: 0; margin: 0; padding: 0"><legend class="lbl" style="color: #A9C9C4; padding: 0">What's it about?</legend><div class="row" role="radiogroup" aria-label="Reason" style="gap: 8px"><sc-for list="{{reasons}}" as="r" hint-placeholder-count="6"><button type="button" role="radio" class="chip chip-d" aria-checked="{{r.on}}" onClick="{{r.pick}}">{{r.label}}</button></sc-for></div></fieldset>
+<div class="g2" style="gap: 12px"><div><label class="lbl" for="ct-n" style="color: #A9C9C4">Name</label><input id="ct-n" class="field field-d" type="text" autocomplete="name"></div><div><label class="lbl" for="ct-e" style="color: #A9C9C4">Email</label><input id="ct-e" class="field field-d" type="email" autocomplete="email"></div></div>
+<div><label class="lbl" for="ct-m" style="color: #A9C9C4">Message</label><textarea id="ct-m" class="field field-d" placeholder="{{hint}}"></textarea></div>
+<button class="btn btn-gold btn-block" type="submit">Send message <span class="arr" aria-hidden="true">→</span></button>
+<p class="mono" style="margin: 0; color: #A9C9C4; font-size: 12px">We'll get back to you as soon as we can.</p>
+</form>
+</sc-if>
+<sc-if value="{{sent}}" hint-placeholder-val="{{ false }}"><div class="stack rise" style="gap: 14px; background: #024E4A; color: #F3EBDD; border-radius: 30px; padding: 44px"><svg class="spin glowp" width="64" height="64" viewBox="0 0 100 100" aria-hidden="true"><polygon points="50,0 64.6,14.6 85.4,14.6 85.4,35.4 100,50 85.4,64.6 85.4,85.4 64.6,85.4 50,100 35.4,85.4 14.6,85.4 14.6,64.6 0,50 14.6,35.4 14.6,14.6 35.4,14.6" fill="#D4A73C"></polygon></svg><p class="serif" style="margin: 0; font-size: 40px; color: #D4A73C">Message sent.</p><p style="margin: 0">JazakAllahu khayran. We'll reply to you by email, Insha'Allah.</p><button class="btn btn-ghost btn-sm" onClick="{{again}}" style="align-self: flex-start">Send another</button></div></sc-if>
+</div>
+</div>
+</section>
+
+<section data-sec="faq" data-label="Contact · Level 01 · FAQ" data-tone="dark" ref="{{rf}}" class="sec {{v.faq}}" style="padding: 170px 0 140px; background: linear-gradient(180deg, #F3EEE4 0%, #024E4A 16%, #041F1E 70%); color: #F3EBDD">
+<div class="wrap g2" style="gap: 56px; align-items: start; padding-top: 30px">
+<div class="stack" style="gap: 16px"><span class="mono r" style="color: #D4A73C">Frequently asked questions</span><h2 class="disp h2 r" style="--i: 1">Good <span class="serif c-gold">questions</span></h2><div class="row r" style="--i: 2; gap: 10px"><a class="btn btn-ghost btn-sm" href="https://www.linkedin.com/company/muslims-in-construction/">LinkedIn</a><a class="btn btn-ghost btn-sm" href="https://www.instagram.com/muslimsinconstruction/">Instagram</a><a class="btn btn-ghost btn-sm" href="https://www.tiktok.com/@muslimsinconstruction23">TikTok</a><a class="btn btn-gold btn-sm" href="get-involved.html">WhatsApp community</a></div></div>
+<div class="stack r" style="--i: 2; border-top: 1px solid rgba(243,235,221,.2)">
+<sc-for list="{{faqs}}" as="q" hint-placeholder-count="8"><div style="border-bottom: 1px solid rgba(243,235,221,.2)"><button class="acc-b" onClick="{{q.toggle}}" aria-expanded="{{q.open}}"><span>{{q.q}}</span><span class="acc-i" style="transform: rotate({{q.rot}}deg); color: #D4A73C" aria-hidden="true">+</span></button><sc-if value="{{q.isOpen}}" hint-placeholder-val="{{ false }}"><p class="rise" style="margin: 0 0 24px; font-size: 17px; line-height: 1.6; color: rgba(243,235,221,.86)">{{q.a}}</p></sc-if></div></sc-for>
+</div>
+</div>
+</section>
+
+<dc-import name="Footer" hint-size="100%,760px"></dc-import>
+<sc-if value="{{sparkA}}" hint-placeholder-val="{{ false }}"><svg class="spark" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><polygon points="50,4 63,37 96,50 63,63 50,96 37,63 4,50 37,37"></polygon></svg><svg class="spark spark2" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><rect x="22" y="22" width="56" height="56" transform="rotate(45 50 50)" fill="none" stroke="#D4A73C" stroke-width="2"></rect></svg></sc-if>
+<sc-if value="{{sparkB}}" hint-placeholder-val="{{ false }}"><svg class="spark" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><polygon points="50,4 63,37 96,50 63,63 50,96 37,63 4,50 37,37"></polygon></svg><svg class="spark spark2" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><rect x="22" y="22" width="56" height="56" transform="rotate(45 50 50)" fill="none" stroke="#D4A73C" stroke-width="2"></rect></svg></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview": {"width": 1440, "height": 5000}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const self = this;
+    this.state = Object.assign({ v: {}, all: false, tap: 0, tx: 0, ty: 0, now: Date.now(), basket: 0 }, {"reason": "Partnering", "faq": {}, "sent": false});
+    this.io = (typeof IntersectionObserver !== 'undefined') ? new IntersectionObserver(function (es) {
+      const add = {};
+      es.forEach(function (e) { if (e.isIntersecting) { add[e.target.getAttribute('data-sec')] = 1; self.io.unobserve(e.target); } });
+      if (Object.keys(add).length) self.setState(function (s) { return { v: Object.assign({}, s.v, add) }; });
+    }, { threshold: 0.1, rootMargin: '0px 0px -6% 0px' }) : null;
+    this.rf = function (el) { if (el && self.io) self.io.observe(el); };
+    this.tap = function (e) { const r = e.currentTarget.getBoundingClientRect(); self.setState({ tap: self.state.tap + 1, tx: Math.round(e.clientX - r.left), ty: Math.round(e.clientY - r.top) }); };
+    this.rails = {};
+    this.railRef = function (k) { if (!self['_rr' + k]) self['_rr' + k] = function (el) { if (el) self.rails[k] = el; }; return self['_rr' + k]; };
+    this.scrollRail = function (k, d) { return function () { const el = self.rails[k]; if (el) el.scrollBy({ left: d * 380, behavior: 'smooth' }); }; };
+    this.set = function (patch) { return function () { self.setState(typeof patch === 'function' ? patch(self.state) : patch); }; };
+    this.toggle = function (key, id) { return function () { const o = Object.assign({}, self.state[key]); o[id] = !o[id]; const p = {}; p[key] = o; self.setState(p); }; };
+    this.prevent = function (patch) { return function (e) { if (e && e.preventDefault) e.preventDefault(); self.setState(patch); }; };
+  }
+  componentDidMount() {
+    const self = this;
+    if (this.io) { try { document.querySelectorAll('[data-sec]').forEach(function (el) { self.io.observe(el); }); } catch (e) {} }
+    this.safety = setTimeout(function () { if (!Object.keys(self.state.v).length) self.setState({ all: true }); }, 2200);
+    this.clock = setInterval(function () { self.setState({ now: Date.now() }); }, 30000);
+  }
+  componentWillUnmount() { clearTimeout(this.safety); clearInterval(this.clock); if (this.io) this.io.disconnect(); }
+  renderVals() {
+    const self = this, s = this.state;
+    const v = {}; ["hero", "faq"].forEach(function (k) { v[k] = (s.all || s.v[k]) ? 'in' : ''; });
+    const base = { v: v, rf: this.rf, tap: this.tap, tx: s.tx, ty: s.ty, sparkA: s.tap > 0 && s.tap % 2 === 1, sparkB: s.tap > 0 && s.tap % 2 === 0, basket: s.basket, add: function () { self.setState({ basket: self.state.basket + 1 }); } };
+    const page = (function () {
+const R = [['Volunteering', 'Tell us how you would like to help.'], ['Careers', 'Tell us where you are and where you want to go.'], ['Partnering', 'Tell us about your organisation and your idea.'], ['Sponsorship', 'Tell us which event or programme interests you.'], ['Tickets', 'Include your order number if you have one.'], ['Other', 'How can we help?']];
+const cur = R.find(function (r) { return r[0] === s.reason; }) || R[0];
+const F = [
+  ['What is Muslims in Construction (MIC)?', 'A professional and community network that connects, supports and uplifts Muslims working across the construction industry in the UK and beyond.'],
+  ['Do I need to be Muslim to join MIC?', 'No. While MIC’s values are rooted in Islamic principles, we welcome anyone in the construction industry who supports our mission and respects our values.'],
+  ['Is there a membership fee?', 'Membership is currently free. Some events may have a fee to cover costs.'],
+  ['How can I get involved?', 'Join our mailing list, attend events, volunteer at our initiatives, or contribute as a mentor or speaker.'],
+  ['Do you offer career support?', 'Yes. MIC provides networking opportunities, mentorship and resources to help members progress in their careers.'],
+  ['How can organisations collaborate with MIC?', 'We partner with organisations for events, sponsorships and joint initiatives. Email us with your proposal.'],
+  ['Where is MIC based?', 'MIC is UK-based, with members and activities in other regions, including the Middle East.'],
+  ['How do I stay updated on upcoming events?', 'Follow us on LinkedIn, Instagram, TikTok and WhatsApp, or subscribe to our mailing list.']
+];
+return {
+  reasons: R.map(function (r) { return { label: r[0], on: s.reason === r[0] ? 'true' : 'false', pick: self.set({ reason: r[0] }) }; }),
+  hint: cur[1], sent: s.sent, notSent: !s.sent, send: this.prevent({ sent: true }), again: self.set({ sent: false }),
+  faqs: F.map(function (q, i) { const open = !!(s.faq || {})[i]; return { q: q[0], a: q[1], open: open ? 'true' : 'false', isOpen: open, rot: open ? 45 : 0, toggle: self.toggle('faq', i) }; })
+};
+
+    }).call(this);
+    return Object.assign(base, page);
+  }
+}
+</script>
+</body>
+</html>

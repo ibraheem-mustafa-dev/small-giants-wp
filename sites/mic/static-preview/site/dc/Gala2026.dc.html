@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Gala & Awards 2026 · Muslims In Construction</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="assets/css/mic.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>body{margin:0;background:#041F1E}</style>
+</helmet>
+<div class="mic" onPointerDown="{{tap}}" style="background: #041F1E; color: #F3EBDD">
+<dc-import name="Gauge" hint-size="46px,100%"></dc-import>
+<div style="position: sticky; top: 0; z-index: 60"><dc-import name="Header" active="events" tone="dark" basket="{{basket}}" hint-size="100%,81px"></dc-import></div>
+<section data-sec="hero" data-label="Gala 2026 · Level 00" data-tone="dark" ref="{{rf}}" class="sec {{v.hero}}" style="position: relative; min-height: 900px; display: flex; align-items: flex-end; overflow: hidden">
+<img class="kb" src="assets/img/saffron-gallery-arches.jpg" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: brightness(.42)">
+<span style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(4,31,30,.35), rgba(4,31,30,.15) 35%, #041F1E 94%)"></span>
+<svg class="lat-edges" style="position: absolute; inset: 0; width: 100%; height: 100%; color: rgba(212,167,60,.25)" aria-hidden="true"><defs><pattern id="latGa" width="84" height="84" patternUnits="userSpaceOnUse"><g fill="none" stroke="currentColor" stroke-width="1.4"><polygon points="42,8 52,32 76,42 52,52 42,76 32,52 8,42 32,32"></polygon><rect x="23" y="23" width="38" height="38"></rect><rect x="23" y="23" width="38" height="38" transform="rotate(45 42 42)"></rect><path d="M0 0L23 23M84 0L61 23M0 84L23 61M84 84L61 61"></path></g></pattern></defs><rect width="100%" height="100%" fill="url(#latGa)"></rect></svg>
+<div class="wrap stack" style="position: relative; width: 100%; gap: 26px; padding-bottom: 72px">
+<nav aria-label="Breadcrumb" class="mono r" style="color: #A9C9C4"><a href="events.html" style="color: #D4A73C">Events</a> / Gala &amp; Awards 2026</nav>
+<span class="r" style="--i: 1; align-self: flex-start; background: {{chipBg}}; color: {{chipFg}}; padding: 8px 16px; border-radius: 999px; font-weight: 800; font-size: 13px; letter-spacing: .14em; text-transform: uppercase">{{chip}}</span>
+<h1 class="disp" style="font-size: clamp(72px, 13vw, 220px)"><span class="bulb" style="animation-delay: .2s">Gala</span> <span class="serif bulb" style="color: #D4A73C; font-size: .5em; animation-delay: .5s">&amp; Awards</span> <span class="bulb" style="animation-delay: .8s">2026</span></h1>
+<dl class="g4 r" style="--i: 3; margin: 0; gap: 0; border-top: 1px solid rgba(212,167,60,.35)">
+<sc-for list="{{facts}}" as="f" hint-placeholder-count="6"><div style="padding: 18px 18px 0 0; display: flex; flex-direction: column; gap: 6px"><dt class="eyebrow" style="font-size: 12px; color: #D4A73C">{{f.k}}</dt><dd style="margin: 0; font-weight: 700; font-size: 17px">{{f.v}}</dd></div></sc-for>
+</dl>
+<div class="row r stack-s" style="--i: 4"><a class="btn btn-gold" href="{{primaryHref}}">{{primaryCta}} <span class="arr" aria-hidden="true">→</span></a><a class="btn btn-ghost" href="#venue">Add to calendar</a></div>
+</div>
+</section>
+
+<sc-if value="{{isAfter}}" hint-placeholder-val="{{ true }}">
+<section data-sec="thanks" data-label="Gala 2026 · Thank you" data-tone="dark" ref="{{rf}}" class="sec {{v.thanks}}" style="padding: 120px 0 100px">
+<div class="wrap stack" style="align-items: center; text-align: center; gap: 22px">
+<span class="eyebrow r" style="color: #D4A73C">Jazakumullahu khayran</span>
+<h2 class="disp h1 r" style="--i: 1">Thank <span class="serif c-gold">you</span>, London</h2>
+<p class="lead r" style="--i: 2; margin: 0; max-width: 760px; color: rgba(243,235,221,.86)">To every guest, nominee, speaker, sponsor and volunteer who filled Saffron Gallery on 28 November: you made our second gala a night to remember. [Guest number from MIC] guests, four sold-out releases, one community.</p>
+</div>
+</section>
+<section id="winners" data-sec="winners" data-label="Gala 2026 · The MIC Awards" data-tone="dark" ref="{{rf}}" class="sec {{v.winners}}" style="padding: 40px 0 130px">
+<div class="wrap stack" style="gap: 40px">
+<div class="row" style="justify-content: space-between; align-items: end; gap: 20px"><div class="stack" style="gap: 14px"><span class="eyebrow r" style="color: #D4A73C">The MIC Awards 2026</span><h2 class="disp h2 r" style="--i: 1">And the <span class="serif c-gold">winners</span> are</h2></div><span class="mono r" style="--i: 2; color: #A9C9C4">Tap to open each envelope · {{revealed}} of 6</span></div>
+<div class="g3" style="gap: 18px">
+<sc-for list="{{awards}}" as="aw" hint-placeholder-count="6">
+<button class="flip r-s" onClick="{{aw.flip}}" aria-pressed="{{aw.pressed}}" aria-label="Award {{aw.n}}, {{aw.state}}" style="--i: {{aw.i}}; height: 300px">
+<span class="flip-in" style="display: block; transform: rotateY({{aw.deg}}deg)">
+<span class="flip-f" style="display: flex; flex-direction: column; justify-content: space-between; padding: 30px; border-radius: 26px; background: #08302E; border: 1px solid rgba(212,167,60,.4); overflow: hidden">
+<svg class="lat-top" style="position: absolute; inset: 0; width: 100%; height: 100%; color: rgba(212,167,60,.12)" aria-hidden="true"><rect width="100%" height="100%" fill="url(#latGa)"></rect></svg>
+<svg viewBox="0 0 300 300" preserveAspectRatio="none" style="position: absolute; inset: 0; width: 100%; height: 100%" aria-hidden="true"><path d="M0 0L150 140L300 0" fill="none" stroke="rgba(212,167,60,.5)" stroke-width="1.5" vector-effect="non-scaling-stroke"></path></svg>
+<span class="eyebrow" style="position: relative; font-size: 12px; color: #D4A73C">Award {{aw.n}}</span>
+<span class="stack" style="position: relative; gap: 8px"><span style="color: #A9C9C4; font-size: 15px">[Award category]</span><span class="serif" style="font-size: 36px; color: #F3EBDD">Open the envelope</span></span>
+</span>
+<span class="flip-f flip-b" style="display: flex; flex-direction: column; justify-content: space-between; padding: 30px; border-radius: 26px; background: #D4A73C; color: #1A1405">
+<span style="font-size: 12px; font-weight: 800; letter-spacing: .2em; text-transform: uppercase">Winner · Award {{aw.n}}</span>
+<span class="stack" style="gap: 6px"><span style="font-size: 15px; font-weight: 700">[Award category]</span><span class="disp" style="font-size: 52px">[Winner name]</span><span style="font-size: 15px">[Role, organisation]</span></span>
+</span>
+</span>
+</button>
+</sc-for>
+</div>
+</div>
+</section>
+<section id="gallery" data-sec="gallery" data-label="Gala 2026 · Gallery" data-tone="dark" ref="{{rf}}" class="sec {{v.gallery}}" style="padding: 20px 0 130px">
+<div class="wrap stack" style="gap: 30px">
+<div class="row" style="justify-content: space-between; align-items: end"><h2 class="disp h2 r">The night in <span class="serif c-gold">frames</span></h2><span class="mono r" style="--i: 1; color: #A9C9C4">Photos from MIC</span></div>
+<div class="g4-2" style="grid-auto-rows: 220px">
+<div class="r-wall archc" style="grid-row: span 2; border: 1px dashed rgba(212,167,60,.5); display: grid; place-items: center; color: #A9C9C4"><span class="mono">Gala 2026 photo</span></div>
+<div class="r-wall" style="--i: 1; grid-column: span 2; border-radius: 24px; border: 1px dashed rgba(212,167,60,.5); display: grid; place-items: center; color: #A9C9C4"><span class="mono">Gala 2026 photo · wide</span></div>
+<div class="r-wall archc" style="--i: 2; grid-row: span 2; border: 1px dashed rgba(212,167,60,.5); display: grid; place-items: center; color: #A9C9C4"><span class="mono">Gala 2026 photo</span></div>
+<div class="r-wall" style="--i: 3; border-radius: 24px; border: 1px dashed rgba(212,167,60,.5); display: grid; place-items: center; color: #A9C9C4"><span class="mono">Photo</span></div>
+<div class="r-wall" style="--i: 4; border-radius: 24px; border: 1px dashed rgba(212,167,60,.5); display: grid; place-items: center; color: #A9C9C4"><span class="mono">Photo</span></div>
+</div>
+<span class="eyebrow" style="color: #D4A73C; margin-top: 20px">Last year · Gala 2025, Perivale</span>
+<div class="rail" style="gap: 14px">
+<sc-for list="{{lastYear}}" as="ly" hint-placeholder-count="5"><div class="press r" style="--i: {{ly.i}}; width: 420px; aspect-ratio: 16 / 10; border-radius: 20px; overflow: hidden"><img class="zoom" src="{{ly.src}}" alt="{{ly.alt}}" style="width: 100%; height: 100%; object-fit: cover"></div></sc-for>
+</div>
+</div>
+</section>
+</sc-if>
+
+<sc-if value="{{isBefore}}" hint-placeholder-val="{{ false }}">
+<section data-sec="count" data-label="Gala 2026 · Countdown" data-tone="dark" ref="{{rf}}" class="sec {{v.count}}" style="padding: 80px 0">
+<div class="wrap row" style="justify-content: center; gap: 18px">
+<sc-for list="{{cd}}" as="c" hint-placeholder-count="4"><div class="r" style="--i: {{c.i}}; width: 170px; border: 1px solid rgba(212,167,60,.4); border-radius: 999px 999px 24px 24px; padding: 40px 0 22px; display: flex; flex-direction: column; align-items: center; gap: 6px"><span class="disp" style="font-size: 92px; color: #D4A73C; text-shadow: 0 0 24px rgba(212,167,60,.4)">{{c.v}}</span><span class="eyebrow" style="color: #A9C9C4; font-size: 12px">{{c.l}}</span></div></sc-for>
+</div>
+</section>
+<section id="tickets" data-sec="tickets" data-label="Gala 2026 · Tickets" data-tone="dark" ref="{{rf}}" class="sec {{v.tickets}}" style="padding: 60px 0 120px">
+<div class="wrap stack" style="gap: 36px">
+<div class="row" style="justify-content: space-between; align-items: end; gap: 20px">
+<div class="stack" style="gap: 14px"><span class="eyebrow r" style="color: #D4A73C">Tickets · Step {{step}} of 3</span><h2 class="disp h2 r" style="--i: 1">{{stepTitle}}</h2></div>
+<ol class="row r" style="--i: 2; list-style: none; margin: 0; padding: 0; gap: 8px" aria-label="Checkout steps">
+<sc-for list="{{steps}}" as="st" hint-placeholder-count="3"><li class="mono" style="padding: 10px 16px; border-radius: 999px; background: {{st.bg}}; color: {{st.fg}}; font-weight: 600">{{st.n}} · {{st.label}}</li></sc-for>
+</ol>
+</div>
+<sc-if value="{{step1}}" hint-placeholder-val="{{ true }}">
+<div class="g2" role="radiogroup" aria-label="Ticket release" style="gap: 16px">
+<sc-for list="{{tiers}}" as="t" hint-placeholder-count="4">
+<button role="radio" aria-checked="{{t.checked}}" aria-disabled="{{t.dis}}" onClick="{{t.pick}}" class="press r tier-g" style="--i: {{t.i}}; text-align: left; padding: 0; border: 2px solid {{t.border}}; background: {{t.bg}}; color: #041F1E; border-radius: 22px; overflow: hidden; position: relative; min-height: 170px; font: inherit">
+<span class="stack" style="padding: 26px; justify-content: space-between; gap: 12px"><span style="font-size: 12px; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; color: #7A5A12">{{t.tag}} · Sat 28 Nov</span><span class="disp" style="font-size: clamp(30px, 4vw, 50px)">{{t.name}}</span><span style="font-size: 14px">{{t.note}}</span></span>
+<span style="border-left: 2px dashed rgba(4,31,30,.3); display: grid; place-items: center; background: rgba(4,31,30,.05)"><span class="disp" style="font-size: clamp(28px, 3vw, 42px)">{{t.price}}</span></span>
+<sc-if value="{{t.sold}}" hint-placeholder-val="{{ true }}"><span class="stamp disp" style="position: absolute; right: 14px; top: 14px; border: 4px solid #9B2C2C; color: #9B2C2C; padding: 4px 14px; border-radius: 10px; font-size: clamp(22px, 2.6vw, 38px); background: rgba(243,235,221,.75)">Sold out</span></sc-if>
+</button>
+</sc-for>
+</div>
+<div class="row" style="justify-content: space-between; gap: 16px; border: 1px solid rgba(212,167,60,.35); border-radius: 22px; padding: 18px 22px">
+<span style="font-size: 17px">{{tierSummary}}</span>
+<div class="row" style="gap: 10px">
+<sc-if value="{{canBuy}}" hint-placeholder-val="{{ false }}"><span class="row" style="gap: 6px; flex-wrap: nowrap"><button class="btn btn-ghost btn-sm" onClick="{{qtyDown}}" aria-label="One fewer ticket" style="width: 44px; padding: 0">−</button><span class="disp" style="font-size: 30px; min-width: 30px; text-align: center" aria-live="polite">{{qty}}</span><button class="btn btn-ghost btn-sm" onClick="{{qtyUp}}" aria-label="One more ticket" style="width: 44px; padding: 0">+</button></span><button class="btn btn-gold" onClick="{{toStep2}}">Continue <span class="arr" aria-hidden="true">→</span></button></sc-if>
+<sc-if value="{{allSold}}" hint-placeholder-val="{{ true }}"><a class="btn btn-gold" href="#interest">Join the waitlist <span class="arr" aria-hidden="true">→</span></a></sc-if>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{step2}}" hint-placeholder-val="{{ false }}">
+<form onSubmit="{{toStep3}}" class="stack" style="gap: 18px">
+<sc-for list="{{attendees}}" as="a" hint-placeholder-count="1">
+<fieldset class="g3" style="border: 1px solid rgba(212,167,60,.35); border-radius: 22px; padding: 26px; margin: 0; gap: 14px"><legend class="eyebrow" style="color: #D4A73C; padding: 0 8px">Guest {{a.n}}</legend>
+<div><label class="lbl" for="g-n-{{a.n}}" style="color: #A9C9C4">Full name</label><input id="g-n-{{a.n}}" class="field field-d" type="text" autocomplete="name"></div>
+<div><label class="lbl" for="g-e-{{a.n}}" style="color: #A9C9C4">Email for e-ticket</label><input id="g-e-{{a.n}}" class="field field-d" type="email"></div>
+<div><label class="lbl" for="g-d-{{a.n}}" style="color: #A9C9C4">Dietary or access needs</label><input id="g-d-{{a.n}}" class="field field-d" type="text"></div>
+</fieldset>
+</sc-for>
+<div class="row" style="justify-content: space-between"><button class="btn btn-ghost" type="button" onClick="{{toStep1}}">← Back</button><button class="btn btn-gold" type="submit">Continue to payment <span class="arr" aria-hidden="true">→</span></button></div>
+</form>
+</sc-if>
+<sc-if value="{{step3}}" hint-placeholder-val="{{ false }}">
+<div class="g2" style="gap: 18px">
+<div class="stack" style="background: #F3EBDD; color: #041F1E; border-radius: 24px; padding: 30px; gap: 14px"><span class="eyebrow" style="color: #7A5A12">Order summary</span><div class="row" style="justify-content: space-between; font-size: 18px"><span>{{qty}} × {{tierName}}</span><strong>{{total}}</strong></div><div class="row" style="justify-content: space-between; color: #46524F"><span>Booking fee</span><span>[From MIC]</span></div><div style="height: 1px; background: rgba(4,31,30,.15)"></div><div class="row" style="justify-content: space-between; font-size: 22px"><strong>Total</strong><strong>{{total}}</strong></div><p style="margin: 0; font-size: 14px; color: #46524F">Tickets and merchandise share one basket and checkout. Your e-ticket and QR code arrive by email.</p></div>
+<div class="stack" style="border: 1px solid rgba(212,167,60,.35); border-radius: 24px; padding: 30px; gap: 12px"><span class="eyebrow" style="color: #D4A73C">Pay securely</span><a class="btn btn-gold btn-block" href="checkout.html">Apple Pay or Google Pay</a><a class="btn btn-ghost btn-block" href="checkout.html">Pay by card</a><button class="btn btn-ghost btn-sm" onClick="{{toStep2}}" style="align-self: flex-start">← Back</button></div>
+</div>
+</sc-if>
+</div>
+</section>
+<section data-sec="prog" data-label="Gala 2026 · Programme" data-tone="dark" ref="{{rf}}" class="sec {{v.prog}}" style="padding: 20px 0 120px">
+<div class="wrap g2" style="gap: 56px">
+<div class="stack" style="gap: 16px"><span class="eyebrow r" style="color: #D4A73C">Your ticket includes</span><h2 class="disp h2 r" style="--i: 1">The <span class="serif c-gold">night</span></h2><ul class="r" style="--i: 2; list-style: none; padding: 0; margin: 10px 0 0; display: flex; flex-direction: column; gap: 10px; font-size: 17px"><sc-for list="{{includes}}" as="inc" hint-placeholder-count="6"><li class="row" style="gap: 12px; flex-wrap: nowrap"><svg width="16" height="16" viewBox="0 0 100 100" aria-hidden="true"><polygon points="50,0 64.6,14.6 85.4,14.6 85.4,35.4 100,50 85.4,64.6 85.4,85.4 64.6,85.4 50,100 35.4,85.4 14.6,85.4 14.6,64.6 0,50 14.6,35.4 14.6,14.6 35.4,14.6" fill="#D4A73C"></polygon></svg>{{inc}}</li></sc-for></ul></div>
+<ol style="list-style: none; margin: 0; padding: 0 0 0 36px; position: relative"><span class="r-line" style="position: absolute; left: 7px; top: 8px; bottom: 8px; width: 2px; background: #D4A73C; transform-origin: top"></span>
+<sc-for list="{{agenda}}" as="a" hint-placeholder-count="6"><li class="r" style="--i: {{a.i}}; position: relative; padding: 0 0 32px"><span class="glowp" style="position: absolute; left: -36px; top: 4px; width: 16px; height: 16px; border-radius: 99px; background: #041F1E; border: 2px solid #D4A73C"></span><span class="eyebrow" style="font-size: 12px; color: #D4A73C">{{a.t}}</span><strong style="display: block; font-size: 24px; margin-top: 6px">{{a.title}}</strong><span style="color: rgba(243,235,221,.75)">{{a.d}}</span></li></sc-for>
+</ol>
+</div>
+</section>
+</sc-if>
+
+<section id="venue" data-sec="venue" data-label="Gala 2026 · Venue" data-tone="dark" ref="{{rf}}" class="sec {{v.venue}}" style="padding: 120px 0; background: #031716; border-top: 1px solid rgba(212,167,60,.25)">
+<div class="wrap g2" style="gap: 56px; align-items: center">
+<div class="stack" style="gap: 18px">
+<span class="eyebrow r" style="color: #D4A73C">Venue</span>
+<h2 class="disp h2 r" style="--i: 1">Saffron <span class="serif c-gold">Gallery</span></h2>
+<p class="lead r" style="--i: 2; margin: 0">341–351 High Street, London E15 4QZ</p>
+<dl class="r" style="--i: 3; margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 12px 24px; font-size: 16px"><dt class="eyebrow" style="font-size: 12px; color: #D4A73C">Dress</dt><dd style="margin: 0">Formal or evening attire</dd><dt class="eyebrow" style="font-size: 12px; color: #D4A73C">Parking</dt><dd style="margin: 0">Free parking at the venue</dd><dt class="eyebrow" style="font-size: 12px; color: #D4A73C">Check-in</dt><dd style="margin: 0">Have your QR code ready when you arrive</dd><dt class="eyebrow" style="font-size: 12px; color: #D4A73C">Prayer</dt><dd style="margin: 0">Prayer space on site</dd><dt class="eyebrow" style="font-size: 12px; color: #D4A73C">Access</dt><dd style="margin: 0">[Step-free details from MIC]</dd></dl>
+<div class="row r stack-s" style="--i: 4"><a class="btn btn-gold" href="#venue">Get directions <span class="arr" aria-hidden="true">→</span></a><a class="btn btn-ghost" href="#venue">Google Calendar</a><a class="btn btn-ghost" href="#venue">Apple or Outlook</a></div>
+</div>
+<div style="position: relative; height: 620px">
+<div class="archc r-wall" style="position: absolute; inset: 0 0 0 18%; overflow: hidden; border: 1px solid rgba(212,167,60,.35)"><img class="kb" src="assets/img/gala25-mic-letters.jpg" alt="Light-up MIC letters at the 2025 gala" style="width: 100%; height: 100%; object-fit: cover"></div>
+<div class="r-s press" style="--i: 3; position: absolute; left: 0; bottom: 30px; width: 44%; aspect-ratio: 3 / 4; border-radius: 18px; overflow: hidden; border: 6px solid #F3EBDD; transform: rotate(-4deg)"><img class="zoom" src="assets/img/saffron-gallery-plan.jpg" alt="Hand-drawn floor plan of Saffron Gallery" style="width: 100%; height: 100%; object-fit: cover"></div>
+</div>
+</div>
+</section>
+
+<section data-sec="spons" data-label="Gala 2026 · Sponsors" data-tone="dark" ref="{{rf}}" class="sec {{v.spons}}" style="padding: 110px 0">
+<div class="wrap stack" style="gap: 34px">
+<div class="stack" style="gap: 14px"><span class="eyebrow r" style="color: #D4A73C">{{sponsorKicker}}</span><h2 class="disp h2 r" style="--i: 1">With <span class="serif c-gold">thanks</span></h2></div>
+<div class="g4-2">
+<sc-for list="{{slots}}" as="sl" hint-placeholder-count="6"><div class="r-s" style="--i: {{sl}}; height: 120px; border-radius: 18px; border: 1px dashed rgba(212,167,60,.45); display: grid; place-items: center; color: #A9C9C4"><span class="mono" style="font-size: 12px">Sponsor logo from MIC</span></div></sc-for>
+<a href="https://smallgiantsstudio.co.uk" class="press r-s" style="--i: 6; grid-column: span 2; min-height: 120px; border-radius: 18px; background: #F3EBDD; color: #041F1E; display: flex; justify-content: space-between; align-items: center; padding: 0 26px; text-decoration: none"><span class="stack" style="gap: 4px"><span style="font-size: 12px; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; color: #7A5A12">Website, shop and ticketing partner</span><span class="disp" style="font-size: 36px">Small Giants Studio</span></span><span style="font-weight: 800; color: #024E4A">Visit →</span></a>
+</div>
+</div>
+</section>
+
+<section id="interest" data-sec="interest" data-label="Gala 2026 · Register for 2027" data-tone="dark" ref="{{rf}}" class="sec {{v.interest}}" style="padding: 0 0 130px">
+<div class="wrap">
+<div class="g2 r" style="position: relative; overflow: hidden; border-radius: 40px; border: 1px solid rgba(212,167,60,.4); background: #08302E; padding: 64px; gap: 48px; align-items: center">
+<svg class="lat-corner" style="position: absolute; inset: 0; width: 100%; height: 100%; color: rgba(212,167,60,.18)" aria-hidden="true"><rect width="100%" height="100%" fill="url(#latGa)"></rect></svg>
+<div class="stack" style="position: relative; gap: 16px"><span class="eyebrow" style="color: #D4A73C">{{interestKicker}}</span><h2 class="disp h2">{{interestTitle}}</h2><p class="lead" style="margin: 0; color: rgba(243,235,221,.86)">Every release has sold out so far. Register now to hear first when tickets, award nominations and sponsorship open.</p></div>
+<div style="position: relative">
+<sc-if value="{{notRegistered}}" hint-placeholder-val="{{ true }}">
+<form onSubmit="{{register}}" class="stack" style="gap: 14px">
+<fieldset style="border: 0; margin: 0; padding: 0"><legend class="lbl" style="color: #A9C9C4; padding: 0">I'm interested in</legend><div class="row" style="gap: 8px"><sc-for list="{{interests}}" as="i" hint-placeholder-count="3"><button type="button" class="chip chip-d" aria-pressed="{{i.on}}" onClick="{{i.toggle}}">{{i.label}}</button></sc-for></div></fieldset>
+<label for="gi-email" class="lbl" style="color: #A9C9C4">Email</label>
+<input id="gi-email" class="field field-d" type="email" autocomplete="email" placeholder="you@company.co.uk">
+<button class="btn btn-gold btn-block" type="submit">Register interest <span class="arr" aria-hidden="true">→</span></button>
+</form>
+</sc-if>
+<sc-if value="{{registered}}" hint-placeholder-val="{{ false }}"><p class="serif" style="margin: 0; font-size: 40px; color: #D4A73C">You're on the list. Insha'Allah, see you there.</p></sc-if>
+</div>
+</div>
+</div>
+</section>
+
+<dc-import name="Footer" hint-size="100%,760px"></dc-import>
+<sc-if value="{{sparkA}}" hint-placeholder-val="{{ false }}"><svg class="spark" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><polygon points="50,4 63,37 96,50 63,63 50,96 37,63 4,50 37,37"></polygon></svg><svg class="spark spark2" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><rect x="22" y="22" width="56" height="56" transform="rotate(45 50 50)" fill="none" stroke="#D4A73C" stroke-width="2"></rect></svg></sc-if>
+<sc-if value="{{sparkB}}" hint-placeholder-val="{{ false }}"><svg class="spark" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><polygon points="50,4 63,37 96,50 63,63 50,96 37,63 4,50 37,37"></polygon></svg><svg class="spark spark2" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><rect x="22" y="22" width="56" height="56" transform="rotate(45 50 50)" fill="none" stroke="#D4A73C" stroke-width="2"></rect></svg></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"eventState": {"editor": "enum", "options": ["After the night", "Before the night", "Auto (by clock)"], "default": "After the night", "section": "Event"}, "soldOut": {"editor": "boolean", "default": true, "section": "Event"}, "$preview": {"width": 1440, "height": 8200}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const self = this;
+    this.state = Object.assign({ v: {}, all: false, tap: 0, tx: 0, ty: 0, now: Date.now(), basket: 0 }, {"open": {}, "tier": null, "step": 1, "picks": {"attend": true}, "registered": false, "qty": 1});
+    this.io = (typeof IntersectionObserver !== 'undefined') ? new IntersectionObserver(function (es) {
+      const add = {};
+      es.forEach(function (e) { if (e.isIntersecting) { add[e.target.getAttribute('data-sec')] = 1; self.io.unobserve(e.target); } });
+      if (Object.keys(add).length) self.setState(function (s) { return { v: Object.assign({}, s.v, add) }; });
+    }, { threshold: 0.1, rootMargin: '0px 0px -6% 0px' }) : null;
+    this.rf = function (el) { if (el && self.io) self.io.observe(el); };
+    this.tap = function (e) { const r = e.currentTarget.getBoundingClientRect(); self.setState({ tap: self.state.tap + 1, tx: Math.round(e.clientX - r.left), ty: Math.round(e.clientY - r.top) }); };
+    this.rails = {};
+    this.railRef = function (k) { if (!self['_rr' + k]) self['_rr' + k] = function (el) { if (el) self.rails[k] = el; }; return self['_rr' + k]; };
+    this.scrollRail = function (k, d) { return function () { const el = self.rails[k]; if (el) el.scrollBy({ left: d * 380, behavior: 'smooth' }); }; };
+    this.set = function (patch) { return function () { self.setState(typeof patch === 'function' ? patch(self.state) : patch); }; };
+    this.toggle = function (key, id) { return function () { const o = Object.assign({}, self.state[key]); o[id] = !o[id]; const p = {}; p[key] = o; self.setState(p); }; };
+    this.prevent = function (patch) { return function (e) { if (e && e.preventDefault) e.preventDefault(); self.setState(patch); }; };
+  }
+  componentDidMount() {
+    const self = this;
+    if (this.io) { try { document.querySelectorAll('[data-sec]').forEach(function (el) { self.io.observe(el); }); } catch (e) {} }
+    this.safety = setTimeout(function () { if (!Object.keys(self.state.v).length) self.setState({ all: true }); }, 2200);
+    this.clock = setInterval(function () { self.setState({ now: Date.now() }); }, 1000);
+  }
+  componentWillUnmount() { clearTimeout(this.safety); clearInterval(this.clock); if (this.io) this.io.disconnect(); }
+  renderVals() {
+    const self = this, s = this.state;
+    const v = {}; ["hero", "thanks", "winners", "gallery", "count", "tickets", "prog", "venue", "spons", "interest"].forEach(function (k) { v[k] = (s.all || s.v[k]) ? 'in' : ''; });
+    const base = { v: v, rf: this.rf, tap: this.tap, tx: s.tx, ty: s.ty, sparkA: s.tap > 0 && s.tap % 2 === 1, sparkB: s.tap > 0 && s.tap % 2 === 0, basket: s.basket, add: function () { self.setState({ basket: self.state.basket + 1 }); } };
+    const page = (function () {
+const p2 = function (n) { return String(n).padStart(2, '0'); };
+const mode = this.props.eventState ?? 'After the night';
+const start = Date.UTC(2026, 10, 28, 18), end = Date.UTC(2026, 10, 28, 23);
+const isAfter = mode === 'Auto (by clock)' ? s.now >= end : mode === 'After the night';
+const soldOut = this.props.soldOut ?? true;
+const d = Math.max(0, Math.floor((start - s.now) / 1000));
+const tierData = [['early', 'Release 1', 'Early Bird', 45.99], ['standard', 'Release 2', 'Standard', 52.99], ['final', 'Release 3', 'Final Release', 60.00], ['extra', 'Release 4', 'Additional Release', 65.99]];
+const tiers = tierData.map(function (t, i) {
+  const sold = soldOut ? true : i < 2; const on = s.tier === t[0];
+  return { i: i, tag: t[1], name: t[2], price: '£' + t[3].toFixed(2), sold: sold, checked: on ? 'true' : 'false', dis: sold ? 'true' : 'false',
+    note: sold ? 'This release has sold out' : 'Dinner, keynotes, entertainment and the MIC Awards',
+    bg: on ? '#D4A73C' : (sold ? '#D9D2C3' : '#F3EBDD'), border: on ? '#F0C766' : 'transparent', pick: function () { if (!sold) self.setState({ tier: t[0] }); } };
+});
+const chosen = tierData.find(function (t) { return t[0] === s.tier; });
+const allSold = tiers.every(function (t) { return t.sold; });
+const att = []; for (let n = 1; n <= s.qty; n++) att.push({ n: n });
+return {
+  isAfter: isAfter, isBefore: !isAfter,
+  chip: isAfter ? 'That was Gala 2026 · Thank you' : 'Saturday 28 November · Sold out',
+  chipBg: isAfter ? '#F3EBDD' : '#D4A73C', chipFg: isAfter ? '#041F1E' : '#1A1405',
+  facts: [{ k: 'Date', v: 'Saturday 28 November 2026' }, { k: 'Time', v: '6pm to 11pm' }, { k: 'Venue', v: 'Saffron Gallery, London E15' }, { k: 'Dress code', v: 'Formal or evening attire' }],
+  primaryCta: isAfter ? 'See the winners' : (allSold ? 'Join the waitlist' : 'Get tickets'), primaryHref: isAfter ? '#winners' : (allSold ? '#interest' : '#tickets'),
+  awards: [1, 2, 3, 4, 5, 6].map(function (n, i) { const on = !!(s.open || {})[n]; return { i: i, n: p2(n), deg: on ? 180 : 0, pressed: on ? 'true' : 'false', state: on ? 'revealed' : 'sealed', flip: self.toggle('open', n) }; }),
+  revealed: Object.values(s.open || {}).filter(Boolean).length,
+  lastYear: [
+    ['assets/img/gala25-founders-backdrop.jpg', 'The MIC founders at the Gala 2025 sponsor wall'], ['assets/img/gala25-stage-read.jpg', 'A speaker on stage at Gala 2025'],
+    ['assets/img/gala25-audience.jpg', 'Guests at their tables at Gala 2025'], ['assets/img/gala25-greetings.jpg', 'Guests greeting each other at Gala 2025'], ['assets/img/gala25-dinner-hall.jpg', 'The dinner hall at Gala 2025']
+  ].map(function (x, i) { return { i: i, src: x[0], alt: x[1] }; }),
+  cd: [[Math.floor(d / 86400), 'Days'], [Math.floor(d % 86400 / 3600), 'Hours'], [Math.floor(d % 3600 / 60), 'Minutes'], [d % 60, 'Seconds']].map(function (x, i) { return { i: i, v: p2(x[0]), l: x[1] }; }),
+  step: s.step, step1: s.step === 1, step2: s.step === 2, step3: s.step === 3, stepTitle: ['Choose your release', 'Who is coming?', 'Payment'][s.step - 1],
+  steps: ['Ticket', 'Guests', 'Payment'].map(function (l, i) { const on = s.step === i + 1; return { n: i + 1, label: l, bg: on ? '#D4A73C' : 'rgba(243,235,221,.08)', fg: on ? '#1A1405' : '#F3EBDD' }; }),
+  tiers: tiers, allSold: allSold, canBuy: !allSold && !!chosen,
+  tierSummary: allSold ? 'Every release has sold out. Join the waitlist and we will email you if tickets are returned.' : (chosen ? 'Selected: ' + chosen[2] + ' · £' + chosen[3].toFixed(2) + ' each' : 'Pick a release to continue.'),
+  qty: s.qty, qtyUp: function () { self.setState({ qty: Math.min(10, self.state.qty + 1) }); }, qtyDown: function () { self.setState({ qty: Math.max(1, self.state.qty - 1) }); },
+  attendees: att, tierName: chosen ? chosen[2] : 'Ticket', total: chosen ? '£' + (chosen[3] * s.qty).toFixed(2) : '£0.00',
+  toStep1: self.set({ step: 1 }), toStep2: function () { if (self.state.tier) self.setState({ step: 2 }); }, toStep3: this.prevent({ step: 3 }),
+  includes: ['Three-course dinner', 'Full evening entertainment', 'Inspirational keynote speakers', 'Networking with industry professionals', 'The MIC Awards 2026', 'Prayer space throughout'],
+  agenda: [['6:00pm', 'Doors and welcome reception', 'Check in with the QR code on your e-ticket'], ['[Time]', 'Opening and Qur’an recitation', 'Welcome from the MIC founders'], ['[Time]', 'Keynotes', '[Speakers from MIC]'], ['[Time]', 'Three-course dinner', 'Served at your table'], ['[Time]', 'The MIC Awards 2026', 'Celebrating people making a positive impact across the industry'], ['11:00pm', 'Close', 'Networking until close']].map(function (a, i) { return { i: i, t: a[0], title: a[1], d: a[2] }; }),
+  sponsorKicker: isAfter ? 'Gala 2026 sponsors' : 'Supported by', slots: [0, 1, 2, 3, 4, 5],
+  interestKicker: isAfter ? 'Gala & Awards 2027' : 'Missed out?', interestTitle: isAfter ? 'First in line for 2027' : 'Join the waitlist',
+  interests: [['attend', 'Attending'], ['sponsor', 'Sponsoring'], ['nominate', 'Nominating someone']].map(function (x) { const on = !!(s.picks || {})[x[0]]; return { label: x[1], on: on ? 'true' : 'false', toggle: self.toggle('picks', x[0]) }; }),
+  notRegistered: !s.registered, registered: s.registered, register: this.prevent({ registered: true })
+};
+
+    }).call(this);
+    return Object.assign(base, page);
+  }
+}
+</script>
+</body>
+</html>

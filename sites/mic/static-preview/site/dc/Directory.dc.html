@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Directory (coming soon) · Muslims In Construction</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="assets/css/mic.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>body{margin:0;background:#F3EEE4}</style>
+</helmet>
+<div class="mic" onPointerDown="{{tap}}" style="background: #F3EEE4; color: #0F1D1C">
+<dc-import name="Gauge" hint-size="46px,100%"></dc-import>
+<div style="position: sticky; top: 0; z-index: 60"><dc-import name="Header" active="none" tone="light" basket="{{basket}}" hint-size="100%,81px"></dc-import></div>
+<section data-sec="hero" data-label="Directory · Under construction" ref="{{rf}}" class="sec {{v.hero}} bp" style="position: relative; padding: 70px 0 110px; overflow: hidden">
+<svg class="hide-s" viewBox="0 0 600 600" style="position: absolute; right: -40px; top: 40px; width: 620px; height: 620px" aria-hidden="true"><g fill="none" stroke="#0F1D1C" stroke-width="3" stroke-linecap="round" opacity=".55"><path class="r-draw" pathLength="1" d="M100 580V80M300 580V80M500 580V80"></path><path class="r-draw" pathLength="1" style="--i: 2" d="M80 520H520M80 420H520M80 320H520M80 220H520M80 120H520"></path><path class="r-draw" pathLength="1" style="--i: 4" d="M100 520L300 420M300 520L500 420M100 320L300 220M300 320L500 220"></path></g></svg>
+<div class="wrap stack" style="position: relative; gap: 24px; max-width: 1320px">
+<span class="mono r" style="color: #024E4A">Directory · Coming soon</span>
+<h1 class="disp" style="font-size: clamp(64px, 10vw, 170px)"><span class="word" style="--i: 1">Under</span><br><span class="word serif" style="--i: 2; color: #007F7C">construction</span></h1>
+<p class="lead r" style="--i: 3; margin: 0; max-width: 620px; color: #33403F">We're building a directory of industry experts, trustworthy tradespeople and aspiring professionals from across the MIC community. Register your interest and we'll let you know when listings open.</p>
+</div>
+</section>
+<div aria-hidden="true" style="position: relative; z-index: 4; margin: -26px -30px 0; transform: rotate(-2deg); height: 56px; overflow: hidden" class="tape"><div class="ticker" style="height: 100%; align-items: center"><sc-for list="{{tapeWords}}" as="t" hint-placeholder-count="10"><span class="disp" style="font-size: 26px; background: #0F1D1C; color: #D4A73C; padding: 4px 16px; margin: 0 22px; white-space: nowrap">{{t}}</span></sc-for></div></div>
+
+<section data-sec="kinds" data-label="Directory · Level 01 · Listings" ref="{{rf}}" class="sec {{v.kinds}}" style="padding: 130px 0; background: linear-gradient(180deg, #F3EEE4, #E9E2D4)">
+<div class="wrap stack" style="gap: 40px">
+<h2 class="disp h2 r">Three kinds of <span class="serif c-teal">listing</span></h2>
+<div class="g3" role="radiogroup" aria-label="Listing type">
+<sc-for list="{{kinds}}" as="k" hint-placeholder-count="3">
+<button role="radio" aria-checked="{{k.on}}" onClick="{{k.pick}}" class="press r archc" style="--i: {{k.i}}; text-align: left; border: 0; padding: 110px 30px 34px; min-height: 380px; background: {{k.bg}}; color: {{k.fg}}; box-shadow: {{k.ring}}; display: flex; flex-direction: column; justify-content: flex-end; gap: 14px; position: relative; overflow: hidden; font: inherit; cursor: pointer">
+<svg class="spinme" viewBox="0 0 100 100" style="position: absolute; top: 34px; left: 50%; width: 60px; margin-left: -30px" aria-hidden="true"><g fill="none" stroke="{{k.accent}}" stroke-width="4"><rect x="20" y="20" width="60" height="60"></rect><rect x="20" y="20" width="60" height="60" transform="rotate(45 50 50)"></rect></g></svg>
+<span class="disp" style="font-size: 44px">{{k.title}}</span>
+<span style="font-size: 16px; line-height: 1.55; opacity: .9">{{k.body}}</span>
+</button>
+</sc-for>
+</div>
+</div>
+</section>
+
+<section data-sec="reg" data-label="Directory · Level 02 · Register" data-tone="dark" ref="{{rf}}" class="sec {{v.reg}}" style="padding: 150px 0 140px; background: linear-gradient(180deg, #E9E2D4 0%, #024E4A 18%); color: #F3EBDD">
+<div class="wrap g2" style="gap: 56px; align-items: start; padding-top: 30px">
+<div class="stack" style="gap: 16px"><span class="mono r" style="color: #D4A73C">Register interest</span><h2 class="disp h2 r" style="--i: 1">Save your <span class="serif c-gold">spot</span></h2><p class="lead r" style="--i: 2; margin: 0; color: rgba(243,235,221,.86)">Listings will be checked by the MIC team before they go live, so the directory stays trustworthy.</p></div>
+<div class="r" style="--i: 2">
+<sc-if value="{{notSent}}" hint-placeholder-val="{{ true }}">
+<form onSubmit="{{send}}" class="stack" style="gap: 14px; background: #08302E; border: 1px solid rgba(212,167,60,.3); border-radius: 28px; padding: 34px">
+<div><label class="lbl" for="d-name" style="color: #A9C9C4">Name</label><input id="d-name" class="field field-d" type="text" autocomplete="name"></div>
+<div><label class="lbl" for="d-email" style="color: #A9C9C4">Email</label><input id="d-email" class="field field-d" type="email" autocomplete="email"></div>
+<div><label class="lbl" for="d-trade" style="color: #A9C9C4">Trade or role</label><input id="d-trade" class="field field-d" type="text" placeholder="e.g. Electrician, Birmingham"></div>
+<p style="margin: 0; font-size: 15px; color: #A9C9C4">Listing as: <strong style="color: #D4A73C">{{kindNow}}</strong></p>
+<button class="btn btn-gold btn-block" type="submit">Register interest <span class="arr" aria-hidden="true">→</span></button>
+</form>
+</sc-if>
+<sc-if value="{{sent}}" hint-placeholder-val="{{ false }}"><div class="stack" style="gap: 12px; background: #08302E; border-radius: 28px; padding: 40px"><p class="serif" style="margin: 0; font-size: 40px; color: #D4A73C">You're on the list.</p><p style="margin: 0">We'll email you when the directory opens.</p></div></sc-if>
+</div>
+</div>
+</section>
+
+<dc-import name="Footer" hint-size="100%,760px"></dc-import>
+<sc-if value="{{sparkA}}" hint-placeholder-val="{{ false }}"><svg class="spark" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><polygon points="50,4 63,37 96,50 63,63 50,96 37,63 4,50 37,37"></polygon></svg><svg class="spark spark2" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><rect x="22" y="22" width="56" height="56" transform="rotate(45 50 50)" fill="none" stroke="#D4A73C" stroke-width="2"></rect></svg></sc-if>
+<sc-if value="{{sparkB}}" hint-placeholder-val="{{ false }}"><svg class="spark" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><polygon points="50,4 63,37 96,50 63,63 50,96 37,63 4,50 37,37"></polygon></svg><svg class="spark spark2" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><rect x="22" y="22" width="56" height="56" transform="rotate(45 50 50)" fill="none" stroke="#D4A73C" stroke-width="2"></rect></svg></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview": {"width": 1440, "height": 4200}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const self = this;
+    this.state = Object.assign({ v: {}, all: false, tap: 0, tx: 0, ty: 0, now: Date.now(), basket: 0 }, {"kind": "Trusted tradesperson", "sent": false});
+    this.io = (typeof IntersectionObserver !== 'undefined') ? new IntersectionObserver(function (es) {
+      const add = {};
+      es.forEach(function (e) { if (e.isIntersecting) { add[e.target.getAttribute('data-sec')] = 1; self.io.unobserve(e.target); } });
+      if (Object.keys(add).length) self.setState(function (s) { return { v: Object.assign({}, s.v, add) }; });
+    }, { threshold: 0.1, rootMargin: '0px 0px -6% 0px' }) : null;
+    this.rf = function (el) { if (el && self.io) self.io.observe(el); };
+    this.tap = function (e) { const r = e.currentTarget.getBoundingClientRect(); self.setState({ tap: self.state.tap + 1, tx: Math.round(e.clientX - r.left), ty: Math.round(e.clientY - r.top) }); };
+    this.rails = {};
+    this.railRef = function (k) { if (!self['_rr' + k]) self['_rr' + k] = function (el) { if (el) self.rails[k] = el; }; return self['_rr' + k]; };
+    this.scrollRail = function (k, d) { return function () { const el = self.rails[k]; if (el) el.scrollBy({ left: d * 380, behavior: 'smooth' }); }; };
+    this.set = function (patch) { return function () { self.setState(typeof patch === 'function' ? patch(self.state) : patch); }; };
+    this.toggle = function (key, id) { return function () { const o = Object.assign({}, self.state[key]); o[id] = !o[id]; const p = {}; p[key] = o; self.setState(p); }; };
+    this.prevent = function (patch) { return function (e) { if (e && e.preventDefault) e.preventDefault(); self.setState(patch); }; };
+  }
+  componentDidMount() {
+    const self = this;
+    if (this.io) { try { document.querySelectorAll('[data-sec]').forEach(function (el) { self.io.observe(el); }); } catch (e) {} }
+    this.safety = setTimeout(function () { if (!Object.keys(self.state.v).length) self.setState({ all: true }); }, 2200);
+    this.clock = setInterval(function () { self.setState({ now: Date.now() }); }, 30000);
+  }
+  componentWillUnmount() { clearTimeout(this.safety); clearInterval(this.clock); if (this.io) this.io.disconnect(); }
+  renderVals() {
+    const self = this, s = this.state;
+    const v = {}; ["hero", "kinds", "reg"].forEach(function (k) { v[k] = (s.all || s.v[k]) ? 'in' : ''; });
+    const base = { v: v, rf: this.rf, tap: this.tap, tx: s.tx, ty: s.ty, sparkA: s.tap > 0 && s.tap % 2 === 1, sparkB: s.tap > 0 && s.tap % 2 === 0, basket: s.basket, add: function () { self.setState({ basket: self.state.basket + 1 }); } };
+    const page = (function () {
+const K = [
+  ['Industry expert', 'Industry experts', 'Consultants, specialists and leaders members can learn from and work with.', '#024E4A', '#F3EBDD', '#D4A73C'],
+  ['Trusted tradesperson', 'Trusted tradespeople', 'Reliable trades the community can hire with confidence, checked by MIC.', '#D4A73C', '#1A1405', '#0F1D1C'],
+  ['Aspiring professional', 'Aspiring professionals', 'Students, apprentices and career changers looking for placements and first roles.', '#FBF8F2', '#0F1D1C', '#007F7C']
+];
+const w = ['Directory coming soon', 'Under construction', 'Register interest', 'Checked listings'];
+return {
+  tapeWords: w.concat(w, w),
+  kinds: K.map(function (k, i) { const on = s.kind === k[0]; return { i: i, title: k[1], body: k[2], bg: k[3], fg: k[4], accent: k[5], on: on ? 'true' : 'false', ring: on ? '0 0 0 4px #F3EEE4, 0 0 0 7px #024E4A' : 'none', pick: self.set({ kind: k[0] }) }; }),
+  kindNow: s.kind, sent: s.sent, notSent: !s.sent, send: this.prevent({ sent: true })
+};
+
+    }).call(this);
+    return Object.assign(base, page);
+  }
+}
+</script>
+</body>
+</html>

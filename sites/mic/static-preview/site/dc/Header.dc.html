@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MIC · Site header and menu</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="assets/css/mic.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>body{margin:0}</style>
+</helmet>
+<div class="mic" style="background: transparent; color: {{fg}}; font-family: Manrope, sans-serif; overflow: visible">
+<div style="position: absolute; inset: 0; background: {{barBg}}; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid {{line}}; pointer-events: none" aria-hidden="true"></div>
+<div class="wrap" style="position: relative; display: flex; align-items: center; justify-content: space-between; height: 80px; gap: 24px">
+<a href="index.html" aria-label="Muslims In Construction, home" style="display: flex; align-items: center; flex-shrink: 0"><img src="{{logo}}" alt="Muslims In Construction" style="height: 44px; width: auto"></a>
+<nav class="hdr-nav" aria-label="Main">
+<sc-for list="{{links}}" as="l" hint-placeholder-count="6"><a href="{{l.href}}" aria-current="{{l.current}}">{{l.label}}</a></sc-for>
+</nav>
+<div style="display: flex; align-items: center; gap: 8px">
+<a href="basket.html" aria-label="Basket, {{count}} items" class="btn btn-sm" style="width: 48px; padding: 0; background: transparent; color: {{fg}}">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 8Z"></path><path d="M9 8V6a3 3 0 0 1 6 0v2"></path></svg>
+<span style="position: absolute; top: 4px; right: 2px; min-width: 19px; height: 19px; border-radius: 10px; background: #D4A73C; color: #1A1405; font-size: 12px; font-weight: 800; display: grid; place-items: center">{{count}}</span>
+</a>
+<a class="btn btn-sm hdr-join {{joinCls}}" href="get-involved.html">Join MIC <span class="arr" aria-hidden="true">→</span></a>
+<button class="btn btn-sm hdr-burger" onClick="{{openMenu}}" aria-expanded="{{openStr}}" aria-controls="mic-menu" aria-label="Open menu" style="width: 52px; padding: 0; background: {{burgerBg}}; color: {{burgerFg}}">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M10 17h10"></path></svg>
+</button>
+</div>
+</div>
+
+<sc-if value="{{open}}" hint-placeholder-val="{{ false }}">
+<div id="mic-menu" role="dialog" aria-modal="true" aria-label="Site menu" onKeyDown="{{menuKey}}" style="position: fixed; inset: 0; z-index: 300; background: #041F1E; color: #F3EBDD; overflow-y: auto; display: flex; flex-direction: column">
+<svg class="lat-edges" style="position: absolute; inset: 0; width: 100%; height: 100%; color: rgba(212,167,60,.22); pointer-events: none" aria-hidden="true"><defs><pattern id="latHdr" width="80" height="80" patternUnits="userSpaceOnUse"><g fill="none" stroke="currentColor" stroke-width="1.3"><polygon points="40,8 49.4,30.6 72,40 49.4,49.4 40,72 30.6,49.4 8,40 30.6,30.6"></polygon><rect x="22" y="22" width="36" height="36"></rect><rect x="22" y="22" width="36" height="36" transform="rotate(45 40 40)"></rect><path d="M0 0L22 22M80 0L58 22M0 80L22 58M80 80L58 58"></path></g></pattern></defs><rect width="100%" height="100%" fill="url(#latHdr)"></rect></svg>
+<div class="wrap" style="position: relative; width: 100%; display: flex; align-items: center; justify-content: space-between; height: 80px">
+<img src="assets/img/mic-logo-white.png" alt="Muslims In Construction" style="height: 44px; width: auto">
+<button class="btn btn-sm" onClick="{{closeMenu}}" aria-label="Close menu" style="width: 52px; padding: 0; background: #D4A73C; color: #1A1405"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+<nav aria-label="Menu" class="wrap" style="position: relative; width: 100%; flex: 1; display: flex; flex-direction: column; justify-content: center; padding-top: 24px; padding-bottom: 24px">
+<sc-for list="{{menuLinks}}" as="m" hint-placeholder-count="8">
+<a href="{{m.href}}" class="menu-item press" style="animation-delay: {{m.delay}}; display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 10px 0; border-bottom: 1px solid rgba(243,235,221,.12); text-decoration: none; color: #F3EBDD">
+<span style="display: flex; align-items: baseline; gap: 18px"><span class="mono" style="color: #D4A73C; font-size: 12px">{{m.no}}</span><span class="disp" style="font-size: clamp(44px, 9vw, 84px)">{{m.label}}</span></span>
+<span class="serif hide-s" style="font-size: 22px; color: #A9C9C4">{{m.note}}</span>
+</a>
+</sc-for>
+</nav>
+<div class="wrap" style="position: relative; width: 100%; padding-bottom: 32px; display: flex; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: space-between">
+<a class="btn btn-gold menu-item" href="get-involved.html" style="animation-delay: .55s">Join MIC, it's free <span class="arr" aria-hidden="true">→</span></a>
+<div class="menu-item" style="animation-delay: .65s; display: flex; gap: 18px; flex-wrap: wrap; font-weight: 700"><a href="account.html" style="color: #F3EBDD">My account</a><a href="directory.html" style="color: #F3EBDD">Directory</a><a href="https://www.linkedin.com/company/muslims-in-construction/" style="color: #F3EBDD">LinkedIn</a><a href="https://www.instagram.com/muslimsinconstruction/" style="color: #F3EBDD">Instagram</a><a href="https://www.tiktok.com/@muslimsinconstruction23" style="color: #F3EBDD">TikTok</a></div>
+</div>
+</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"active":{"editor":"enum","options":["home","events","about","mentorship","sponsors","shop","contact","none"],"default":"home"},"tone":{"editor":"enum","options":["light","dark"],"default":"light"},"basket":{"editor":"int","default":0},"$preview":{"width":1440,"height":81}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { open: false }; }
+  renderVals() {
+    const dark = (this.props.tone ?? 'light') === 'dark';
+    const active = this.props.active ?? 'home';
+    const nav = [['events', 'Events', 'events.html'], ['about', 'About', 'about.html'], ['mentorship', 'Mentorship', 'mentorship.html'], ['sponsors', 'Sponsors', 'sponsors.html'], ['shop', 'Shop', 'shop.html'], ['contact', 'Contact', 'contact.html']];
+    const menu = [
+      ['Home', 'index.html', 'Start here'], ['Events', 'events.html', 'Tickets and past events'], ['Gala 2026', 'gala-2026.html', 'Winners and gallery'],
+      ['About', 'about.html', 'Our story'], ['Team', 'team.html', 'The people behind MIC'], ['Mentorship', 'mentorship.html', 'Find or become a mentor'],
+      ['Sponsors', 'sponsors.html', 'Partner with us'], ['Get involved', 'get-involved.html', 'Join, volunteer, speak'], ['Shop', 'shop.html', 'Merch and tickets'], ['Contact', 'contact.html', 'Questions and FAQ']
+    ];
+    return {
+      barBg: dark ? 'rgba(4,31,30,.84)' : 'rgba(243,238,228,.86)',
+      fg: dark ? '#F3EBDD' : '#0F1D1C',
+      line: dark ? 'rgba(243,235,221,.1)' : 'rgba(2,78,74,.12)',
+      logo: dark ? 'assets/img/mic-logo-white.png' : 'assets/img/mic-logo-teal.png',
+      joinCls: dark ? 'btn-gold' : 'btn-deep',
+      burgerBg: dark ? '#D4A73C' : '#024E4A', burgerFg: dark ? '#1A1405' : '#FFFFFF',
+      links: nav.map(([k, label, href]) => ({ label, href, current: k === active ? 'page' : 'false' })),
+      menuLinks: menu.map(([label, href, note], i) => ({ label, href, note, no: String(i + 1).padStart(2, '0'), delay: (0.05 + i * 0.045).toFixed(2) + 's' })),
+      count: this.props.basket ?? 0,
+      open: this.state.open, openStr: this.state.open ? 'true' : 'false',
+      openMenu: () => { try { document.body.style.overflow = 'hidden'; } catch (e) {} this.setState({ open: true }); },
+      closeMenu: () => { try { document.body.style.overflow = ''; } catch (e) {} this.setState({ open: false }); },
+      menuKey: (e) => { if (e.key === 'Escape') { try { document.body.style.overflow = ''; } catch (err) {} this.setState({ open: false }); } }
+    };
+  }
+}
+</script>
+</body>
+</html>

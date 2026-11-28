@@ -1,0 +1,24 @@
+# BEGIN MIC static preview (2026-11-28): the static MIC redesign is served at the root; WordPress stays installed for wp-admin and the later clone. Remove this block and the static files when WordPress takes over the front end.
+DirectoryIndex index.html index.php
+ErrorDocument 404 /404.html
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteCond %{REQUEST_URI} !^/(wp-admin|wp-json|wp-content|wp-includes|wp-login\.php|wp-cron\.php|xmlrpc\.php|index\.php)
+RewriteCond %{QUERY_STRING} !(^|&)rest_route=
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ - [R=404,L]
+</IfModule>
+<IfModule mod_deflate.c>
+AddOutputFilterByType DEFLATE text/html text/css application/javascript text/javascript image/svg+xml
+</IfModule>
+<IfModule mod_expires.c>
+ExpiresActive On
+ExpiresByType font/woff2 "access plus 1 year"
+ExpiresByType image/jpeg "access plus 1 month"
+ExpiresByType image/png "access plus 1 month"
+ExpiresByType text/css "access plus 1 week"
+ExpiresByType application/javascript "access plus 1 week"
+</IfModule>
+# END MIC static preview
+

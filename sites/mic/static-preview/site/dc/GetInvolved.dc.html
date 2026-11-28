@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Get involved · Muslims In Construction</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="assets/css/mic.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>body{margin:0;background:#F3EEE4}</style>
+</helmet>
+<div class="mic" onPointerDown="{{tap}}" style="background: #F3EEE4; color: #0F1D1C">
+<dc-import name="Gauge" hint-size="46px,100%"></dc-import>
+<div style="position: sticky; top: 0; z-index: 60"><dc-import name="Header" active="none" tone="light" basket="{{basket}}" hint-size="100%,81px"></dc-import></div>
+<section data-sec="hero" data-label="Get involved · Level 00" ref="{{rf}}" class="sec {{v.hero}} bp" style="padding: 72px 0 80px">
+<div class="wrap g2" style="align-items: end; gap: 48px">
+<div class="stack" style="gap: 24px">
+<span class="mono r" style="color: #024E4A">Get involved · Five ways in</span>
+<h1 class="disp" style="font-size: clamp(60px, 9vw, 150px)"><span class="word" style="--i: 1">Pick</span> <span class="word" style="--i: 2">up</span> <span class="word" style="--i: 3">a</span><br><span class="word serif" style="--i: 4; color: #007F7C">trowel</span></h1>
+</div>
+<p class="lead r" style="--i: 5; margin: 0; color: #33403F">Membership is free and open to everyone in the industry who shares our values. Join, volunteer, mentor, speak or partner: every brick strengthens the wall.</p>
+</div>
+</section>
+
+<section data-sec="ways" data-label="Get involved · Level 01 · Ways in" ref="{{rf}}" class="sec {{v.ways}}" style="padding: 20px 0 140px; background: linear-gradient(180deg, #F3EEE4, #E9E2D4)">
+<div class="wrap stack" style="gap: 14px">
+<sc-for list="{{ways}}" as="w" hint-placeholder-count="5">
+<div id="{{w.id}}" class="r" style="--i: {{w.i}}; border-radius: 26px; background: {{w.bg}}; color: {{w.fg}}; overflow: hidden; transition: background .5s, color .5s; box-shadow: {{w.shadow}}">
+<button class="way-btn" onClick="{{w.pick}}" aria-expanded="{{w.open}}" style="width: 100%; display: flex; align-items: center; padding: 28px 32px; border: 0; background: transparent; color: inherit; text-align: left; cursor: pointer; font: inherit">
+<span class="disp way-no" style="font-size: 30px; color: {{w.numC}}">{{w.no}}</span>
+<span class="disp" style="font-size: clamp(30px, 5vw, 76px); flex: 1">{{w.title}}</span>
+<span class="serif hide-s" style="font-size: 24px; opacity: .8">{{w.sub}}</span>
+<span class="acc-i" style="transform: rotate({{w.rot}}deg); width: 52px; height: 52px" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg></span>
+</button>
+<sc-if value="{{w.isOpen}}" hint-placeholder-val="{{ false }}">
+<div class="g2 rise" style="gap: 32px; padding: 0 clamp(20px, 3vw, 32px) 34px clamp(20px, 8vw, 110px)">
+<p style="margin: 0; font-size: 18px; line-height: 1.6; opacity: .92">{{w.body}}</p>
+<div>
+<sc-if value="{{w.isDone}}" hint-placeholder-val="{{ false }}"><p class="serif" style="margin: 0; font-size: 34px; color: #D4A73C">{{w.thanks}}</p></sc-if>
+<sc-if value="{{w.isForm}}" hint-placeholder-val="{{ false }}">
+<form onSubmit="{{w.submit}}" class="stack" style="gap: 12px">
+<div class="g2" style="gap: 12px"><div><label class="lbl" for="gi-n-{{w.id}}">Name</label><input id="gi-n-{{w.id}}" class="field field-d" type="text" autocomplete="name"></div><div><label class="lbl" for="gi-e-{{w.id}}">Email</label><input id="gi-e-{{w.id}}" class="field field-d" type="email" autocomplete="email"></div></div>
+<sc-if value="{{w.hasChips}}" hint-placeholder-val="{{ false }}"><fieldset style="border: 0; margin: 0; padding: 0"><legend class="lbl" style="padding: 0">{{w.chipLabel}}</legend><div class="row" style="gap: 8px"><sc-for list="{{w.chips}}" as="c" hint-placeholder-count="4"><button type="button" class="chip chip-d" aria-pressed="{{c.on}}" onClick="{{c.toggle}}">{{c.label}}</button></sc-for></div></fieldset></sc-if>
+<sc-if value="{{w.hasText}}" hint-placeholder-val="{{ false }}"><div><label class="lbl" for="gi-t-{{w.id}}">{{w.textLabel}}</label><input id="gi-t-{{w.id}}" class="field field-d" type="text"></div></sc-if>
+<button class="btn btn-gold btn-block" type="submit">{{w.cta}} <span class="arr" aria-hidden="true">→</span></button>
+<sc-if value="{{w.isJoin}}" hint-placeholder-val="{{ false }}"><a class="btn btn-ghost btn-block" href="#join"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 20l1.3-4A8 8 0 1 1 8 19l-4 1Z"></path></svg>Join the WhatsApp community</a></sc-if>
+</form>
+</sc-if>
+<sc-if value="{{w.isLink}}" hint-placeholder-val="{{ false }}"><a class="btn btn-gold" href="{{w.href}}">{{w.cta}} <span class="arr" aria-hidden="true">→</span></a></sc-if>
+</div>
+</div>
+</sc-if>
+</div>
+</sc-for>
+</div>
+</section>
+
+<dc-import name="Footer" hint-size="100%,760px"></dc-import>
+<sc-if value="{{sparkA}}" hint-placeholder-val="{{ false }}"><svg class="spark" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><polygon points="50,4 63,37 96,50 63,63 50,96 37,63 4,50 37,37"></polygon></svg><svg class="spark spark2" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><rect x="22" y="22" width="56" height="56" transform="rotate(45 50 50)" fill="none" stroke="#D4A73C" stroke-width="2"></rect></svg></sc-if>
+<sc-if value="{{sparkB}}" hint-placeholder-val="{{ false }}"><svg class="spark" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><polygon points="50,4 63,37 96,50 63,63 50,96 37,63 4,50 37,37"></polygon></svg><svg class="spark spark2" viewBox="0 0 100 100" style="left: {{tx}}px; top: {{ty}}px" aria-hidden="true"><rect x="22" y="22" width="56" height="56" transform="rotate(45 50 50)" fill="none" stroke="#D4A73C" stroke-width="2"></rect></svg></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview": {"width": 1440, "height": 5600}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const self = this;
+    this.state = Object.assign({ v: {}, all: false, tap: 0, tx: 0, ty: 0, now: Date.now(), basket: 0 }, {"way": "join", "done": {}, "vol": {}});
+    this.io = (typeof IntersectionObserver !== 'undefined') ? new IntersectionObserver(function (es) {
+      const add = {};
+      es.forEach(function (e) { if (e.isIntersecting) { add[e.target.getAttribute('data-sec')] = 1; self.io.unobserve(e.target); } });
+      if (Object.keys(add).length) self.setState(function (s) { return { v: Object.assign({}, s.v, add) }; });
+    }, { threshold: 0.1, rootMargin: '0px 0px -6% 0px' }) : null;
+    this.rf = function (el) { if (el && self.io) self.io.observe(el); };
+    this.tap = function (e) { const r = e.currentTarget.getBoundingClientRect(); self.setState({ tap: self.state.tap + 1, tx: Math.round(e.clientX - r.left), ty: Math.round(e.clientY - r.top) }); };
+    this.rails = {};
+    this.railRef = function (k) { if (!self['_rr' + k]) self['_rr' + k] = function (el) { if (el) self.rails[k] = el; }; return self['_rr' + k]; };
+    this.scrollRail = function (k, d) { return function () { const el = self.rails[k]; if (el) el.scrollBy({ left: d * 380, behavior: 'smooth' }); }; };
+    this.set = function (patch) { return function () { self.setState(typeof patch === 'function' ? patch(self.state) : patch); }; };
+    this.toggle = function (key, id) { return function () { const o = Object.assign({}, self.state[key]); o[id] = !o[id]; const p = {}; p[key] = o; self.setState(p); }; };
+    this.prevent = function (patch) { return function (e) { if (e && e.preventDefault) e.preventDefault(); self.setState(patch); }; };
+  }
+  componentDidMount() {
+    const self = this;
+    if (this.io) { try { document.querySelectorAll('[data-sec]').forEach(function (el) { self.io.observe(el); }); } catch (e) {} }
+    this.safety = setTimeout(function () { if (!Object.keys(self.state.v).length) self.setState({ all: true }); }, 2200);
+    this.clock = setInterval(function () { self.setState({ now: Date.now() }); }, 30000);
+  }
+  componentWillUnmount() { clearTimeout(this.safety); clearInterval(this.clock); if (this.io) this.io.disconnect(); }
+  renderVals() {
+    const self = this, s = this.state;
+    const v = {}; ["hero", "ways"].forEach(function (k) { v[k] = (s.all || s.v[k]) ? 'in' : ''; });
+    const base = { v: v, rf: this.rf, tap: this.tap, tx: s.tx, ty: s.ty, sparkA: s.tap > 0 && s.tap % 2 === 1, sparkB: s.tap > 0 && s.tap % 2 === 0, basket: s.basket, add: function () { self.setState({ basket: self.state.basket + 1 }); } };
+    const page = (function () {
+const W = [
+  { id: 'join', title: 'Join MIC', sub: 'Free membership', body: 'Become a member for free. You get our WhatsApp community, the mailing list, mentoring and first word on tickets. Non-Muslims who share our values are very welcome.', cta: 'Become a member', thanks: 'Welcome to MIC. Check your inbox for the WhatsApp link.', form: true, chips: ['Add me to the mailing list'], chipLabel: 'Updates', text: 'Role or trade' },
+  { id: 'volunteer', title: 'Volunteer', sub: 'A few hours a month', body: 'Help organise events, create content and grow the community. Whether you have a few hours a month or more, your skills and energy make a difference.', cta: 'Sign up to volunteer', thanks: 'Thank you. The team will be in touch, Insha’Allah.', form: true, chips: ['Events', 'Content', 'Social media', 'Photography', 'Partnerships', 'Regional lead'], chipLabel: 'I could help with', text: 'Where are you based?' },
+  { id: 'mentor', title: 'Mentor', sub: 'Share what you know', body: 'Experienced professionals from any part of the industry can mentor someone a few steps behind them. We handle the matching.', cta: 'Go to mentorship', href: 'mentorship.html', link: true },
+  { id: 'speak', title: 'Speak', sub: 'At an MIC event', body: 'Share your story, expertise or a practical session at one of our networking days, workshops or the gala.', cta: 'Pitch a talk', thanks: 'Thank you. We’ll review your idea and come back to you.', form: true, chips: ['Keynote', 'Panel', 'Workshop', 'Online session'], chipLabel: 'Format', text: 'Your topic in a sentence' },
+  { id: 'partner', title: 'Partner', sub: 'Sponsor or collaborate', body: 'Organisations can sponsor the gala, a regional event or a programme, or collaborate on joint initiatives.', cta: 'See sponsorship options', href: 'sponsors.html', link: true }
+];
+const done = s.done || {}, vol = s.vol || {};
+return {
+  ways: W.map(function (w, i) {
+    const open = s.way === w.id;
+    return {
+      i: i, id: w.id, no: '0' + (i + 1), title: w.title, sub: w.sub, body: w.body, cta: w.cta, href: w.href || '#', thanks: w.thanks || '',
+      open: open ? 'true' : 'false', isOpen: open, rot: open ? 45 : 0,
+      bg: open ? '#024E4A' : '#FBF8F2', fg: open ? '#F3EBDD' : '#0F1D1C', numC: open ? '#D4A73C' : '#007F7C', shadow: open ? '0 30px 60px -30px rgba(4,31,30,.6)' : 'none',
+      pick: self.set({ way: open ? '' : w.id }),
+      isLink: !!w.link, isForm: !!w.form && !done[w.id], isDone: !!done[w.id], isJoin: w.id === 'join',
+      hasChips: !!w.chips, chipLabel: w.chipLabel || '', hasText: !!w.text, textLabel: w.text || '',
+      chips: (w.chips || []).map(function (c) { const k = w.id + ':' + c; const on = !!vol[k]; return { label: c, on: on ? 'true' : 'false', toggle: self.toggle('vol', k) }; }),
+      submit: function (e) { e.preventDefault(); const d = Object.assign({}, self.state.done); d[w.id] = true; self.setState({ done: d }); }
+    };
+  })
+};
+
+    }).call(this);
+    return Object.assign(base, page);
+  }
+}
+</script>
+</body>
+</html>
