@@ -12,14 +12,20 @@
 //     the skeleton writes that item's identifier as the site recorded it, lib/site-build-map.mjs::writeMenuMap `items`);
 //   - a `product` row's entry (a row that makes no post) is a custom link item with the draft's own link text, to the
 //     product's permalink plus the draft href's own query (lib/site-build-menu-links.mjs::menuLinksFor, `menuLinks`); an
-//     entry whose product is not built on the site yet makes no item and is reported with the reason.
+//     entry whose product is not built on the site yet makes no item and is reported with the reason;
+//   - every item is labelled with the draft's own words for its slot and carries the chip drawn beside them as its
+//     Description (`menuLinks.slots`, lib/site-build-menu-links.mjs::slotsFor); a page entry whose draft link carries a
+//     `#fragment` or a query is a custom link to that address;
+//   - a linked draft item no row entry holds is a custom link at its own position when it is a second link to a row the
+//     menu already holds (the page map gives a row one entry per menu) or an address no row holds (an external link); an
+//     item with no address on the site is a note with the reason.
 // Items come out in display order (each parent, then its children by position); `order` is the item's menu_order.
 import { megaPanelLabel } from './page-map-names.mjs';
 import { boundMenu, hasPost, menuSurfaceKind, rowKey, wpType } from './site-build-map.mjs';
 
 const labelOf = ( row ) => ( 'sgs_mega_menu' === row.postType ? megaPanelLabel( row.title ) : row.title );
 
-export function desiredMenus( rows, linkText = {}, surfaces = {}, menuLinks = { links: {}, pending: [], labels: [] } ) {
+export function desiredMenus( rows, linkText = {}, surfaces = {}, menuLinks = { links: {}, pending: [], labels: [], slots: {} } ) {
 	const problems = [];
 	const notes = [];
 	const menus = {};
@@ -44,6 +50,9 @@ export function desiredMenus( rows, linkText = {}, surfaces = {}, menuLinks = { 
 		const kind = menuSurfaceKind( name, surfaces );
 		const texts = { ...( 'header' === kind && ! names.some( ( n ) => 'drawer' === menuSurfaceKind( n, surfaces ) ) ? linkText.drawer : {} ), ...( linkText[ kind ] || {} ) };
 		const mine = entries.filter( ( e ) => e.menu === name );
+		// The draft's own items of this menu (lib/site-build-menu-links.mjs::slotsFor): each one's words, chip and address.
+		const drawn = menuLinks.slots?.[ name ] || [];
+		const drawnAt = ( parentItem, position ) => drawn.find( ( d ) => d.parentItem === ( parentItem || null ) && d.position === position ) || null;
 		const slots = new Map();
 		for ( const e of mine ) {
 			const slot = `${ e.parentItem || '' }\u0000${ e.position }`;
@@ -68,17 +77,41 @@ export function desiredMenus( rows, linkText = {}, surfaces = {}, menuLinks = { 
 				sections[ mega ] = page;
 				notes.push( `${ page }: the ${ where } is the "${ labelOf( megas[ 0 ].row ) }" mega item's; the page is that panel's section page and adds no item of its own` );
 			}
-			// The draft's own link text for the slot's route (a mega slot takes its section page's link), else the row's label.
-			const text = texts[ ( others[ 0 ] || megas[ 0 ] ).row.route ] || null;
-			chosen.push( Object.assign( megas[ 0 ] || others[ 0 ], { text } ) );
+			// The draft's own words for the item at this slot, else the draft's link text for the slot's route (a mega slot takes
+			// its section page's link), else the row's label. A page item whose draft link carries a fragment or a query
+			// (`Help.dc.html#delivery`) is a custom link to that address, since an item opening the post cannot carry either.
+			const own = drawnAt( group[ 0 ].parentItem, group[ 0 ].position );
+			const text = own?.text || texts[ ( others[ 0 ] || megas[ 0 ] ).row.route ] || null;
+			const pick = megas[ 0 ] || others[ 0 ];
+			const toAddress = ! megas.length && ! pick.link && own?.url && own.rowKey === rowKey( pick.row ) && /[?#]/.test( own.url );
+			chosen.push( Object.assign( pick, { text, badge: own?.badge || '' }, toAddress ? { link: { text, url: own.url } } : {} ) );
 		}
+		// A draft item no row entry holds is still the draft's item: a second link to a row the menu already holds (the page map
+		// gives a row one entry per menu: `Help.dc.html#allergens` beside `Help.dc.html`), or an address no row holds (an external
+		// or root-relative link). It is a custom link with the draft's words; one with no address on the site adds no item and is
+		// noted with the reason.
+		const asked = rows.flatMap( ( r ) => ( r.menus || [] ).filter( ( m ) => m.menu === name ).map( ( m ) => ( { ...m, key: rowKey( r ) } ) ) );
+		const claimed = new Set( asked.map( ( m ) => `${ m.parentItem || '' }\u0000${ m.position }` ) );
+		const held = new Set( asked.map( ( m ) => m.key ) );
+		const parents = new Set( [ ...drawn, ...asked ].map( ( d ) => d.parentItem ).filter( Boolean ) );
+		for ( const d of drawn.filter( ( x ) => ! claimed.has( `${ x.parentItem || '' }\u0000${ x.position }` ) ) ) {
+			if ( d.url && ( null === d.rowKey || held.has( d.rowKey ) ) ) {
+				chosen.push( { row: null, rowKey: d.rowKey, menu: name, position: d.position, parentItem: d.parentItem, text: d.text, badge: d.badge, link: { text: d.text, url: d.url } } );
+			} else if ( ! d.url && ! parents.has( d.text ) ) {
+				notes.push( `the ${ name } menu's draft item "${ d.text }" (position ${ d.position }${ d.parentItem ? ` under "${ d.parentItem }"` : '' }) adds no item: ${ d.why }` );
+			}
+		}
+		// A chip the draft draws beside the item's words is its Description (`sgs/nav-bar-menu` and `sgs/nav-drawer-menu` draw it
+		// as the item's badge).
+		const badge = ( e ) => ( e.badge ? { description: e.badge } : {} );
 		const item = ( e ) => ( e.link ? {
-			key: `link:${ rowKey( e.row ) }@${ e.parentItem || '' }`,
+			key: `link:${ e.row ? rowKey( e.row ) : e.rowKey || 'draft' }@${ e.parentItem || '' }#${ e.position }`,
 			kind: 'link',
-			rowKey: rowKey( e.row ),
+			rowKey: e.row ? rowKey( e.row ) : e.rowKey || null,
 			label: e.link.text,
 			title: e.link.text,
 			url: e.link.url,
+			...badge( e ),
 			position: e.position,
 			parentItem: e.parentItem,
 		} : {
@@ -90,6 +123,7 @@ export function desiredMenus( rows, linkText = {}, surfaces = {}, menuLinks = { 
 			// The stored item title: a mega item carries its label, a post item shows the post's own title ('') unless the
 			// draft's link text differs from it.
 			title: 'sgs_mega_menu' === e.row.postType ? e.text || labelOf( e.row ) : e.text && e.text !== e.row.title ? e.text : '',
+			...badge( e ),
 			position: e.position,
 			parentItem: e.parentItem,
 		} );

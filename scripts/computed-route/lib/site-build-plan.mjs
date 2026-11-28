@@ -416,7 +416,7 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 			const at = exact >= 0 ? exact : existing.findIndex( same );
 			const where = `menu "${ name }" item "${ it.label }"`;
 			if ( at < 0 ) {
-				actions.push( { phase: 'menus', type: 'item-add', menu: menuRef, key: `item:${ name }:${ it.key }`, kind: it.kind, object: 'post' === it.kind ? idOf( it.rowKey ) : null, title: it.title, ...( 'link' === it.kind ? { url: it.url } : {} ), ...( 'label' === it.kind ? { description: it.description } : {} ), position: it.order, parent: parentId, say: `${ where }: add${ 'link' === it.kind ? ` a link to ${ it.url }` : 'label' === it.kind ? ` a label${ it.description ? ` with the badge "${ it.description }"` : '' }` : '' } at position ${ it.order }${ it.parentKey ? ` under "${ list.find( ( x ) => x.key === it.parentKey ).label }"` : '' }` } );
+				actions.push( { phase: 'menus', type: 'item-add', menu: menuRef, key: `item:${ name }:${ it.key }`, kind: it.kind, object: 'post' === it.kind ? idOf( it.rowKey ) : null, title: it.title, ...( 'link' === it.kind ? { url: it.url } : {} ), ...( undefined !== it.description ? { description: it.description } : {} ), position: it.order, parent: parentId, say: `${ where }: add${ 'link' === it.kind ? ` a link to ${ it.url }` : 'label' === it.kind ? ' a label' : '' }${ it.description ? ` with the badge "${ it.description }"` : '' } at position ${ it.order }${ it.parentKey ? ` under "${ list.find( ( x ) => x.key === it.parentKey ).label }"` : '' }` } );
 				continue;
 			}
 			const e = existing.splice( at, 1 )[ 0 ];
@@ -429,8 +429,9 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 			}
 			const moved = 'number' !== typeof parentId || e.parent !== parentId;
 			const urlOff = 'link' === it.kind && e.url !== it.url;
-			// A label's chip words are the item's Description (post_content).
-			const descOff = 'label' === it.kind && ( e.description ?? '' ) !== it.description;
+			// An item's chip words are its Description (post_content); an item the draft draws no chip beside (no `description`) keeps
+			// whatever Description it holds, a label always takes its own ('' when it has none).
+			const descOff = undefined !== it.description && ( e.description ?? '' ) !== it.description;
 			if ( e.order !== it.order || moved || ( titleOff && it.title ) || urlOff || descOff ) {
 				const what = [ e.order !== it.order ? `position ${ e.order } -> ${ it.order }` : '', moved ? `parent ${ e.parent } -> ${ shown( parentId ) }` : '', titleOff && it.title ? `title "${ e.title }" -> "${ it.title }"` : '', urlOff ? `link ${ e.url } -> ${ it.url }` : '', descOff ? `badge "${ e.description ?? '' }" -> "${ it.description }"` : '' ].filter( Boolean ).join( '; ' );
 				actions.push( { phase: 'menus', type: 'item-update', id: e.id, title: titleOff && it.title ? it.title : null, ...( urlOff ? { url: it.url } : {} ), ...( descOff ? { description: it.description } : {} ), position: it.order, parent: parentId, say: `${ where }: item ${ e.id }: ${ what }` } );

@@ -189,6 +189,30 @@ export function plainLabel( text, c ) {
 	return { label, badge: c.children.map( ( k ) => innerText( text, k ) ).filter( Boolean ).join( ' ' ) };
 }
 
+// A nav link's own words: { label, badge }. A child marked aria-hidden (an arrow or icon drawn beside the words) is never
+// read; a child drawn as a box of its own (an inline style painting a background or border: a chip such as "10% off") is the
+// item's badge; any other child (a <span> or <strong> holding words) is part of the label.
+const CHIP = /(^|;)(background(-color)?|border(-width)?):(?!none|transparent|0(;|$))/;
+export function anchorWords( text, a ) {
+	const words = [];
+	const chips = [];
+	let at = a.end;
+	const put = ( s ) => words.push( s );
+	for ( const k of a.children ) {
+		put( text.slice( at, k.index ) );
+		at = Math.max( at, endOf( text, k ) );
+		if ( 'true' === attrOf( k, 'aria-hidden' ) ) {
+			continue;
+		}
+		const inner = innerText( text, k );
+		CHIP.test( style( k ) ) ? chips.push( inner ) : put( ` ${ inner } ` );
+	}
+	put( text.slice( at, a.close ?? a.end ) );
+	const label = decodeEntities( words.join( '' ).replace( /<[^>]*>/g, ' ' ).replace( /\{\{[\s\S]*?\}\}/g, ' ' ) ).replace( /\s+/g, ' ' ).trim();
+	const badge = chips.filter( Boolean ).join( ' ' );
+	return /[\p{L}\p{N}]/u.test( label ) ? { label, ...( badge ? { badge } : {} ) } : { label: innerText( text, a ) };
+}
+
 // The items of a menu scope in document order: each sc-for's elements, with nested sc-for lists over the item
 // (`item.links`) as children, and, inside a <nav> (`mode` 'nav'), its static anchors and, where `labels` holds, its
 // link-less labels (a disabled item: no targets, `disabled: true`, the chip words as `badge`). `mode` 'list' reads one
@@ -216,7 +240,8 @@ function readItems( d, tree, node, scope, roots, mode, labels = false ) {
 		} else if ( 'a' === c.name && 'nav' === mode ) {
 			const targets = targetsOf( d, c, scope, roots );
 			if ( targets.length ) {
-				items.push( anchored( { label: attrOf( c, 'aria-label' ) || innerText( tree.text, c ), targets, children: [] }, c ) );
+				const own = attrOf( c, 'aria-label' ) ? { label: attrOf( c, 'aria-label' ) } : anchorWords( tree.text, c );
+				items.push( anchored( { ...own, targets, children: [] }, c ) );
 			}
 		} else if ( 'a' !== c.name ) {
 			const plain = labels && 'nav' === mode ? plainLabel( tree.text, c ) : null;

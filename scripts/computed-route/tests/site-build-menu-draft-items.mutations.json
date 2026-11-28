@@ -1,0 +1,16 @@
+[
+	{"file": "lib/site-build-menus.mjs", "find": "const text = own?.text || texts[", "replace": "const text = texts[", "why": "a page item is labelled with the page title, not the draft's words"},
+	{"file": "lib/site-build-menus.mjs", "find": "const badge = ( e ) => ( e.badge ? { description: e.badge } : {} );", "replace": "const badge = () => ( {} );", "why": "a draft chip is not the item's Description"},
+	{"file": "lib/site-build-menus.mjs", "find": "&& /[?#]/.test( own.url );", "replace": "&& false;", "why": "a page link with a fragment or query opens the plain page"},
+	{"file": "lib/site-build-menus.mjs", "find": "if ( d.url && ( null === d.rowKey || held.has( d.rowKey ) ) ) {", "replace": "if ( false ) {", "why": "a draft item no row entry holds adds no item"},
+	{"file": "lib/site-build-menus.mjs", "find": "( null === d.rowKey || held.has( d.rowKey ) )", "replace": "true", "why": "a draft item to a row the page map left out of the menu is added anyway"},
+	{"file": "lib/site-build-menus.mjs", "find": "}@${ e.parentItem || '' }#${ e.position }`,", "replace": "}@${ e.parentItem || '' }`,", "why": "two link items of one row share a key"},
+	{"file": "lib/site-build-menus.mjs", "find": "} else if ( ! d.url && ! parents.has( d.text ) ) {", "replace": "} else if ( false ) {", "why": "a draft item with no address is not reported"},
+	{"file": "lib/site-build-menu-links.mjs", "find": "if ( [ 'external', 'site', 'anchor' ].includes( r.kind ) ) {", "replace": "if ( false ) {", "why": "an external address is no menu item"},
+	{"file": "lib/site-build-menu-links.mjs", "find": "return { url: `${ path }${ search }${ fragment }`, rowKey: row ? rowKey( row ) : null };", "replace": "return { url: path, rowKey: row ? rowKey( row ) : null };", "why": "the draft's fragment and query are dropped"},
+	{"file": "lib/site-build-menu-links.mjs", "find": "text: it.label || null,", "replace": "text: null,", "why": "the draft's words are not carried"},
+	{"file": "lib/site-build-plan.mjs", "find": "const descOff = undefined !== it.description && ", "replace": "const descOff = 'label' === it.kind && ", "why": "a page item's chip is never brought to the site"},
+	{"file": "lib/intake-pagemap-surfaces.mjs", "find": "if ( 'true' === attrOf( k, 'aria-hidden' ) ) {", "replace": "if ( false ) {", "why": "an aria-hidden arrow is read as words"},
+	{"file": "lib/intake-pagemap-surfaces.mjs", "find": "CHIP.test( style( k ) ) ? chips.push( inner ) : put( ` ${ inner } ` );", "replace": "put( ` ${ inner } ` );", "why": "a chip's words join the label"},
+	{"file": "lib/intake-pagemap-surfaces.mjs", "find": "const own = attrOf( c, 'aria-label' ) ? { label: attrOf( c, 'aria-label' ) } : anchorWords( tree.text, c );", "replace": "const own = { label: attrOf( c, 'aria-label' ) || innerText( tree.text, c ) };", "why": "a nav link's label is its whole text"}
+]
