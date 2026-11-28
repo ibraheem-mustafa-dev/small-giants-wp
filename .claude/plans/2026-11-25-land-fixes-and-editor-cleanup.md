@@ -215,7 +215,9 @@ Why: it was too late to clone SGS and MIC before the MIC gala on 2026-11-28, so 
 
 Done when: the SGS placeholder takes a test Cal.com booking, a contact form submission arrives in the studio mailbox, and the Evertreen viewer renders; the MIC placeholder is live; `/hello` and `/mic` still forward. Where each placeholder is hosted is decided by the session that builds it.
 
-Depends on: none. Status: not started.
+SGS (Bean, 2026-11-28): the new draft replaces the current Vercel site, everything except the MIC stall page at `/mic`, ported into its Next.js app; plan `2026-11-28-sgs-redesign-swap.md`.
+
+Depends on: none. Status: SGS prepared (2026-11-28; its checks are built and proven on the live site), waiting for Bean's draft; MIC not started.
 
 ### Task 35: Clone faults seen on Mama's clone, fixed before SGS and MIC (2026-11-28)
 Why: the whole-site run on Mama's draft (see "Where it stands") came out clean, but the side-by-sides show faults that will hit SGS and MIC too. Fix each at its cause in the route, with a test that fails first (negative control), then reclone Mama's on the scratch copy (`local-mediatest-rc-mm`) and compare with the draft.
