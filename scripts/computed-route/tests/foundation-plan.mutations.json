@@ -256,5 +256,11 @@
 		"find": "catalogue: ( { client, site } ) => [ 'node', [ `${ ROUTE }/site-build.mjs`, client, '--site', site, '--catalogue', '--apply' ] ],",
 		"replace": "catalogue: ( { client, site } ) => [ 'node', [ `${ ROUTE }/site-build.mjs`, client, '--site', site, '--catalogue' ] ],",
 		"why": "the step runs the catalogue's dry run, which records no id"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "heldByState( state, 'sync', joinFp( snapshotSha(), await ports.buildDigest(), await ports.syncDigest() ) )",
+		"replace": "heldByState( state, 'sync', joinFp( snapshotSha(), await ports.buildDigest() ) )",
+		"why": "a changed part outside the built blocks holds the sync"
 	}
 ]

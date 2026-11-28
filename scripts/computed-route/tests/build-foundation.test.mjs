@@ -34,6 +34,7 @@ const fakePorts = ( calls ) => ( opts ) => {
 		buildState: () => ( { present: true, stale: false } ),
 		buildsDiffer: async () => ( { differs: false, detail: '' } ),
 		buildDigest: async () => 'd',
+		syncDigest: async () => 's',
 		hostedPush: () => ( { ssh: 's', host: 'h' } ),
 	};
 };

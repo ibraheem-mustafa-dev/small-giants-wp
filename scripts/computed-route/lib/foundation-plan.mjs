@@ -3,7 +3,7 @@
 // through `ctx.ports`, so the whole chain runs under test with fakes:
 //   exec( id, cmd, args ) resolves { code, tail }; launch( args ) is lib/site-run-launch.mjs::launchSiteRun for site-run.mjs;
 //   sourceCheckout() is the folder holding the gitignored intake files; buildState() { present, stale }, buildsDiffer() { differs, detail },
-//   buildDigest() are the plugin build and the site's copy of it; hostedPush( site ) { ssh, host } is the hosted site's push target;
+//   buildDigest() are the plugin build and the site's copy of it; syncDigest() is one digest of everything the sync copies; hostedPush( site ) { ssh, host } is the hosted site's push target;
 //   plus the preflight probes (freeBytes, wslAnswers, credentials, restCheck).
 // The order, and what each step holds when it is already done:
 //   preflight        the checks of lib/foundation-preflight.mjs; never skipped.
@@ -15,7 +15,8 @@
 //   tokens           extract.py to sites/<client>/theme-snapshot.json when the client has none, else to a scratch file beside the state, compared with
 //                    the committed one (lib/foundation-parts.mjs::tokenOutput); re-extracted when the handoff or intake.json is newer than the output.
 //   plugin-build     npm run build (PowerShell, execution policy bypassed for this process so npm.ps1 runs) when the checkout's plugin build is missing or older than its sources; a local copy only.
-//   sync             sync-build.sh: the plugin, the theme and the snapshot's theme.json onto a local copy; held when the copy's blocks equal the build.
+//   sync             sync-build.sh: the plugin, the theme and the snapshot's theme.json onto a local copy; held when the copy's blocks equal the build
+//                    and every part the sync copies (ports.syncDigest) is what the last sync copied.
 //   snapshot-push    push-theme-snapshot.py to a hosted site (a local copy takes the snapshot with the sync).
 //   site-info        provision-site-info-from-draft.py --intake --apply on the site (a copy through WSL, never its test site).
 //   media            media-upload.mjs --apply: the handoff's pictures into the site's library and the record the readers look up.
@@ -242,10 +243,10 @@ export function buildSteps( ctx ) {
 		{
 			id: 'sync', deps: [ 'plugin-build', 'tokens' ], title: 'sync-build.sh: the plugin, the theme and the snapshot onto the copy',
 			applicable: () => localOnly( 'its plugin and theme come from build-deploy.py --target, and its snapshot from push-theme-snapshot.py' ),
-			fingerprint: async () => joinFp( snapshotSha(), await ports.buildDigest() ),
+			fingerprint: async () => joinFp( snapshotSha(), await ports.buildDigest(), await ports.syncDigest() ),
 			holds: async () => {
 				const d = await ports.buildsDiffer();
-				return ! d.differs && heldByState( state, 'sync', joinFp( snapshotSha(), await ports.buildDigest() ) ) ? 'the copy\'s blocks equal the build and its snapshot is the committed one' : null;
+				return ! d.differs && heldByState( state, 'sync', joinFp( snapshotSha(), await ports.buildDigest(), await ports.syncDigest() ) ) ? 'the copy\'s blocks equal the build, and the plugin, theme and snapshot are what the last sync copied' : null;
 			},
 			run: () => cmd( 'sync', commands.sync( { site, repo, distro } ), 'check WSL answers and the copy exists (scratch-mirror.sh list); a refused sync names the build it found' ),
 		},

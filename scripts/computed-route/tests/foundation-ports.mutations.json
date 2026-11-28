@@ -46,5 +46,17 @@
 		"find": "\t\t\tf.isDirectory() ? go( p ) : ( newest = Math.max( newest, stat( p ) ) );",
 		"replace": "\t\t\tf.isDirectory() ? go( p ) : ( newest = stat( p ) );",
 		"why": "the last file read, not the newest, is taken"
+	},
+	{
+		"file": "lib/foundation-ports.mjs",
+		"find": "\t\t...entries( path.join( plugin, 'build' ), new Set(), 'build/' ),\n",
+		"replace": "",
+		"why": "a changed editor extension beside build/blocks leaves the sync digest alone"
+	},
+	{
+		"file": "lib/foundation-ports.mjs",
+		"find": "const THEME_SKIP = new Set( [ 'theme.json', 'node_modules' ] );",
+		"replace": "const THEME_SKIP = new Set( [ 'node_modules' ] );",
+		"why": "the theme.json the sync writes changes the digest"
 	}
 ]

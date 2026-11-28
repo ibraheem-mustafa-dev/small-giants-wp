@@ -84,6 +84,7 @@ function world( { hosted = false, committed = false, source = null, failExec = {
 		buildState: () => ( { present: built.plugin, stale: false } ),
 		buildsDiffer: async () => ( { differs: ! built.synced, detail: 'x' } ),
 		buildDigest: async () => 'digest-1',
+		syncDigest: async () => 'sync-1',
 		hostedPush: () => ( { ssh: 'user@host', host: 'acme.example' } ),
 	};
 	const file = stateFile( { repo, client: 'acme', site } );
@@ -229,6 +230,18 @@ test( 'MUST FAIL: the looks are rebuilt when what they are drawn from changes (t
 	w.execs.length = 0;
 	await w.go();
 	assert.ok( ! ids( w.execs ).includes( 'looks' ), 'nothing changed: the looks hold' );
+} );
+
+// 2026-11-28: the chip settings live in build/extensions, beside build/blocks, so a block-only comparison held the sync and the copy kept the old editor code.
+test( 'MUST FAIL: the sync runs again when a part it copies outside the built blocks changes, and holds when nothing did', async () => {
+	const w = world();
+	assert.equal( ( await w.go() ).ok, true );
+	w.execs.length = 0;
+	await w.go();
+	assert.ok( ! ids( w.execs ).includes( 'sync' ), 'nothing changed: the sync holds' );
+	w.setPort( 'syncDigest', async () => 'sync-2' );
+	await w.go();
+	assert.ok( ids( w.execs ).includes( 'sync' ), 'a changed extension, PHP file or theme file syncs again' );
 } );
 
 // Code review 2026-11-23: the builder also reads the record's modules, its property list and the theme's stylesheets.

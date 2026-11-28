@@ -76,6 +76,43 @@ test( 'MUST FAIL: the built blocks differ from a site\'s copy when one is missin
 	assert.equal( ( await empty.buildsDiffer() ).differs, true, 'negative control: a checkout with no build differs from any site' );
 } );
 
+test( 'MUST FAIL: the sync digest changes with any part the sync copies that the site runs, and not with the theme.json the sync writes', async () => {
+	const repo = tmp();
+	const plugin = path.join( repo, 'plugins', 'sgs-blocks' );
+	const theme = path.join( repo, 'theme', 'sgs-theme' );
+	put( path.join( plugin, 'build', 'blocks', 'hero', 'block.json' ), '{}' );
+	put( path.join( plugin, 'build', 'extensions', 'index.js' ), 'a' );
+	put( path.join( plugin, 'includes', 'x.php' ), '<?php' );
+	put( path.join( plugin, 'sgs-blocks.php' ), '<?php' );
+	put( path.join( theme, 'functions.php' ), '<?php' );
+	put( path.join( theme, 'theme.json' ), '{}' );
+	const ports = realPorts( { repo, client: 'acme', site: 's', target: { pluginDir: tmp() }, logDir: path.join( repo, 'logs' ) } );
+	let last = await ports.syncDigest();
+	const changes = ( why ) => {
+		const now = ports.syncDigest();
+		return now.then( ( d ) => {
+			assert.notEqual( d, last, why );
+			last = d;
+		} );
+	};
+	put( path.join( plugin, 'build', 'extensions', 'index.js' ), 'b' );
+	await changes( 'an editor extension beside build/blocks' );
+	put( path.join( plugin, 'includes', 'x.php' ), '<?php //' );
+	await changes( 'the plugin PHP' );
+	put( path.join( plugin, 'sgs-blocks.php' ), '<?php //' );
+	await changes( 'the plugin main file' );
+	put( path.join( theme, 'functions.php' ), '<?php //' );
+	await changes( 'a theme file' );
+	put( path.join( plugin, 'build', 'blocks', 'hero', 'block.json' ), '{"x":1}' );
+	await changes( 'a built block' );
+	// negative controls
+	put( path.join( theme, 'theme.json' ), '{"y":1}' );
+	assert.equal( await ports.syncDigest(), last, 'the theme.json the sync replaces with the snapshot is left out' );
+	put( path.join( plugin, 'scripts', 'tool.py' ), 'x' );
+	put( path.join( plugin, 'src', 'blocks', 'hero', 'edit.js' ), 'x' );
+	assert.equal( await ports.syncDigest(), last, 'sources and scripts the site never runs are left out' );
+} );
+
 test( 'the gitignored intake files come from SGS_INTAKE_SOURCE when it is set; the newest modification time and free space are read from the folder', () => {
 	const repo = tmp();
 	const ports = realPorts( { repo, client: 'acme', site: 's', target: {}, logDir: path.join( repo, 'logs' ), env: { SGS_INTAKE_SOURCE: 'X:/main' } } );
