@@ -10,7 +10,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import test, { after, before } from 'node:test';
 import { fileURLToPath } from 'node:url';
-import { READ_PROPS, buildLook, findPartsInPage } from '../lib/fill-part-look.mjs';
+import { READ_PROPS, buildLook, findPartsInPage, toSetting } from '../lib/fill-part-look.mjs';
 import { evaluateModes } from '../lib/part-look-modes.mjs';
 import { loadChromium } from '../lib/fill-read.mjs';
 
@@ -81,6 +81,10 @@ test( 'MUST FAIL: the chip row\'s parts are found and paired with the chips bloc
 	assert.ok( value( 'sgsChipCountBackground' ), 'the count pill\'s fill is written' );
 	assert.ok( value( 'sgsChipSelectedShadow' ), 'the pressed chip\'s shadow is written' );
 	assert.ok( value( 'sgsChipGap' ), 'the row\'s gap is written' );
+	// The chips' text settings hold a CSS length each (the block's PHP reads one length): the border's four equal sides as one width,
+	// the count's size in px, never a per-side object or a bare number.
+	assert.equal( value( 'sgsChipBorderWidth' ), '2px' );
+	assert.equal( value( 'sgsChipCountFontSize' ), '12px' );
 	const modes = evaluateModes( { block: 'woocommerce/product-filter-chips', rules: MODES[ 'woocommerce/product-filter-chips' ].rules, rows, reads } );
 	assert.deepEqual( modes.writes.map( ( w ) => [ w.attr, w.value ] ), [ [ 'sgsChipCountPill', true ] ] );
 } );
@@ -120,8 +124,30 @@ test( 'MUST FAIL: the sort select is found and paired with the sorting block\'s 
 	// browser font is no look of the draft's (the page read's ua:font) and sgsSortFontFamily is not written.
 	assert.deepEqual( attrs, [ 'sgsSortBackground', 'sgsSortBorderColour', 'sgsSortBorderRadius', 'sgsSortBorderWidth', 'sgsSortFontWeight', 'sgsSortHeight' ] );
 	assert.equal( look.writes.find( ( w ) => 'sgsSortHeight' === w.attr ).value, '50px' );
+	assert.equal( look.writes.find( ( w ) => 'sgsSortBorderWidth' === w.attr ).value, '2px', 'a text setting takes the four equal sides as one width' );
 	assert.equal( look.settings.sgsSortFontFamily.status, 'not-written' );
 	assert.equal( look.settings.sgsSortHoverBackground.status, 'not-written' );
 	const only = await read( '<article><select><option>Size</option></select></article>', 'shopsort', [ 'sort-select' ] );
 	assert.equal( ( only[ 'sort-select' ] || [] ).length, 0 );
+} );
+
+test( 'MUST FAIL: a text setting of one length takes four equal sides as one width; sides that differ are a reason, not a write', () => {
+	const row = { attr_name: 'sgsChipBorderWidth', attr_type: 'string', css_property: 'border-width' };
+	assert.deepEqual( toSetting( row, { top: 2, right: 2, bottom: 2, left: 2 }, { names: new Set() } ), { value: '2px' } );
+	assert.match( toSetting( row, { top: 2, right: 1, bottom: 2, left: 1 }, { names: new Set() } ).why, /holds one border-width for every side and the draft's sides differ \(2px 1px 2px 1px\)/ );
+	assert.deepEqual( toSetting( { attr_name: 'x', attr_type: 'string', css_property: 'line-height' }, 1.45, { names: new Set() } ), { value: '1.45' } );
+	// Negative controls: an object setting keeps its sides, a number setting its number (with its unit beside it).
+	assert.deepEqual( toSetting( { ...row, attr_type: 'object' }, { top: 2, right: 1, bottom: 2, left: 1 }, { names: new Set() } ).value, { top: '2px', right: '1px', bottom: '2px', left: '1px' } );
+	assert.deepEqual( toSetting( { attr_name: 'f', attr_type: 'number', css_property: 'font-size' }, 12, { names: new Set( [ 'fUnit' ] ) } ), { value: 12, extra: { fUnit: 'px' } } );
+} );
+
+test( 'MUST FAIL: a sort select\'s equal left and right padding is its padding-inline; a browser select\'s zero and unequal sides are not written', async () => {
+	const rows = rowsOf( 'woocommerce/catalog-sorting' );
+	const inline = async ( style ) => {
+		const got = await read( `<label>Sort <select style="${ style }"><option>Featured</option></select></label>`, 'shopsort', [ 'sort-select' ] );
+		return buildLook( { block: 'woocommerce/catalog-sorting', rows, names: rows.map( ( r ) => r.attr_name ), locators: LOC.groups.shopsort, reads: { 'sort-select': wide( got[ 'sort-select' ] ) } } ).writes.find( ( w ) => 'sgsSortPaddingInline' === w.attr )?.value;
+	};
+	assert.equal( await inline( 'padding:0 18px' ), '18px' );
+	assert.equal( await inline( '' ), undefined, 'the browser\'s own select padding is zero: nothing of the draft\'s' );
+	assert.equal( await inline( 'padding:0 18px 0 10px' ), undefined, 'one length cannot hold two sides that differ' );
 } );

@@ -6,5 +6,11 @@
 	{"file": "data/part-locators.json", "find": "\t\t\t\t\t\t\"notInside\": {\n\t\t\t\t\t\t\t\"tag\": [\n\t\t\t\t\t\t\t\t\"article\"\n\t\t\t\t\t\t\t]\n\t\t\t\t\t\t}\n", "replace": "\t\t\t\t\t\t\"notInside\": {\n\t\t\t\t\t\t\t\"tag\": [\n\t\t\t\t\t\t\t\t\"nav\"\n\t\t\t\t\t\t\t]\n\t\t\t\t\t\t}\n", "why": "a card's own select is taken for the sort"},
 	{"file": "data/part-look-modes.json", "find": "\t\t\t\t\t\"setting\": \"sgsChipCountPill\",\n\t\t\t\t\t\"value\": false,", "replace": "\t\t\t\t\t\"setting\": \"sgsChipCountPill\",\n\t\t\t\t\t\"value\": true,", "why": "chips with no count still turn the pill on"},
 	{"file": "lib/fill-part-look.mjs", "find": "\t\t\tif ( '1' === s( 'ua:font' ) ) {\n\t\t\t\treturn null;\n\t\t\t}\n", "replace": "", "why": "a control's browser font is written as the draft's look"},
-	{"file": "lib/fill-part-look-page.mjs", "find": "&& ! declared( el, 'font-family' ) ? '1' : '' );", "replace": "? '1' : '' );", "why": "a control's stated font is read as the browser's"}
+	{"file": "lib/fill-part-look-page.mjs", "find": "&& ! declared( el, 'font-family' ) ? '1' : '' );", "replace": "? '1' : '' );", "why": "a control's stated font is read as the browser's"},
+	{"file":"lib/fill-part-look.mjs","find":"if ( 'string' === row.attr_type ) {\n\t\t\t\tconst sides","replace":"if ( false ) {\n\t\t\t\tconst sides","why":"a text border width is written as a per-side object, which the block reads as nothing"},
+	{"file":"lib/fill-part-look.mjs","find":"if ( ! unit && 'string' === row.attr_type ) {","replace":"if ( false ) {","why":"a text font size is written as a bare number, which the block reads as a spacing preset or nothing"},
+	{"file":"lib/fill-part-look.mjs","find":"sides.every( ( v ) => Math.abs( v - sides[ 0 ] ) <= PX_TOL )","replace":"true","why":"sides that differ are written as the top side alone"},
+	{"file":"lib/fill-part-look.mjs","find":"'border-width': 'box', 'padding-inline': 'inline',","replace":"'border-width': 'box',","why":"a select's padding-inline is not read, so the sort keeps WooCommerce's narrow padding"},
+	{"file":"lib/fill-part-look.mjs","find":"return isZero( l ) ? null : l;","replace":"return l;","why":"a browser select's zero padding is written as the draft's"},
+	{"file":"lib/fill-part-look.mjs","find":"if ( null === l || null === r || Math.abs( l - r ) > PX_TOL ) {","replace":"if ( null === l || null === r ) {","why":"unequal sides are written as the left side"}
 ]

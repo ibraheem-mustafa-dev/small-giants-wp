@@ -19,8 +19,8 @@
 	},
 	{
 		"file": "lib/fill-part-look-modes.mjs",
-		"find": "filter( ( w ) => w.mode && ! w.preset );",
-		"replace": "filter( ( w ) => w.mode );",
+		"find": "filter( ( w ) => ! w.preset && ( w.mode || looks ) );",
+		"replace": "filter( ( w ) => w.mode || looks );",
 		"why": "a built-in button preset is written as a mode rule"
 	},
 	{
@@ -85,8 +85,8 @@
 	},
 	{
 		"file": "lib/fill-part-look-modes.mjs",
-		"find": "attrExists: o.attrExists ?? settingDeclared( o.db ) } );",
-		"replace": "attrExists: o.attrExists ?? ( ( b ) => b.startsWith( 'sgs/' ) ) } );",
+		"find": "attrExists: o.attrExists ?? settingDeclared( o.db ), pairedByFill",
+		"replace": "attrExists: o.attrExists ?? ( ( b ) => b.startsWith( 'sgs/' ) ), pairedByFill",
 		"why": "settings are checked in block.json, which lists no WooCommerce block's extension settings"
 	},
 	{
@@ -94,5 +94,23 @@
 		"find": "!! db.prepare( 'SELECT 1 FROM block_attributes WHERE block_slug = ? AND attr_name = ?' ).get( block, attr );",
 		"replace": "!! db.prepare( 'SELECT 1 FROM block_attributes WHERE block_slug = ?' ).get( block );",
 		"why": "any setting of a known block counts as held"
+	},
+	{
+		"file": "lib/fill-part-look-modes.mjs",
+		"find": "const decided = ( r.build.writes || [] ).filter( ( w ) => ! w.preset && ( w.mode || looks ) );",
+		"replace": "const decided = ( r.build.writes || [] ).filter( ( w ) => ! w.preset && w.mode );",
+		"why": "the looks of a block no Fill pairing reads are dropped (the shop chips and sort keep WooCommerce's look)"
+	},
+	{
+		"file": "lib/fill-part-look-modes.mjs",
+		"find": "const looks = ! pairedByFill( block );",
+		"replace": "const looks = true;",
+		"why": "a calibrated block's looks are written over Fill's own pairing"
+	},
+	{
+		"file": "lib/fill-part-look-modes.mjs",
+		"find": "attrExists: o.attrExists ?? settingDeclared( o.db ), pairedByFill: o.pairedByFill } );",
+		"replace": "attrExists: o.attrExists ?? settingDeclared( o.db ) } );",
+		"why": "Fill's pairing test is not handed to the writer"
 	}
 ]
