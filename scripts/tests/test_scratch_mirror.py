@@ -9,12 +9,17 @@ import json
 import os
 import shutil
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
 
 SCRIPT = (Path(__file__).resolve().parents[1] / "local-wp" / "scratch-mirror.sh").as_posix()
-BASH = shutil.which("bash")
+# Git Bash, never the WSL launcher a PowerShell PATH finds first (it cannot open Windows paths): deploy_common.py::posix_bash.
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "plugins" / "sgs-blocks" / "scripts"))
+from deploy_common import posix_bash  # noqa: E402
+
+BASH = posix_bash()
 NAME = "local-mediatest-acme"
 KEY_A = "LOCALMEDIATESTACME"
 KEY_B = "LOCAL_MEDIATEST_ACME"

@@ -272,6 +272,7 @@ if ( ! window.__sgsFilterLookRegistered ) {
 											: {}
 									}
 									units={ LENGTH_UNITS }
+									presets
 									onChange={ ( next ) =>
 										setAttributes( {
 											sgsChipPadding: next || {},
