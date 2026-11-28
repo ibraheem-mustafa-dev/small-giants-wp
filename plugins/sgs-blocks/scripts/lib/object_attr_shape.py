@@ -722,6 +722,11 @@ def classify_object_attr_shape(
     decision order and rationale — ported verbatim from `sgs-update-v2.py`'s
     `_compute_is_responsive()` (D968), only the return values differ.
     """
+    # A type union that admits an object ("string or a per-device object", e.g. sgs/buybox galleryColumnGap) is
+    # classified as an object: the DB column holds one canonical scalar type, which would hide the object branch.
+    raw_type = attr_def.get("type") if isinstance(attr_def, dict) else None
+    if isinstance(raw_type, list) and "object" in raw_type:
+        attr_type = "object"
     if attr_type != "object":
         return flat_scalar_sibling_shape(attr_name, attr_type, attrs)
 

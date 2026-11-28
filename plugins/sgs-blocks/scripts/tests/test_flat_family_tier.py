@@ -63,6 +63,15 @@ def test_negative_controls_a_lone_number_a_boolean_family_and_an_array_stay_uncl
     assert [classify(n, attrs) for n in attrs] == [None] * 5
 
 
+def test_a_type_union_that_admits_an_object_is_classified_as_an_object():
+    # MUST FAIL before the fix: ["string","object"] reached the classifier as "string" (the DB's canonical type), so a
+    # setting that takes a flat value or a per-device object (sgs/buybox galleryColumnGap) was never per-device.
+    attrs = {"galleryColumnGap": {"type": ["string", "object"], "default": ""}}
+    assert classify("galleryColumnGap", attrs) == "tier_object"
+    # Negative control: a union without an object stays a scalar.
+    assert classify("size", {"size": {"type": ["number", "string"]}}) is None
+
+
 def test_an_object_attribute_is_classified_as_before():
     # `columns` has no sibling and no evidence: the elimination fallback, tier_object, exactly as before the change.
     assert classify("columns", STRIP) == "tier_object"
