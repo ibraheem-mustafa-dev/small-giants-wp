@@ -2483,6 +2483,22 @@
 			{},
 			{
 				"markerType": "icon"
+			},
+			{
+				"items": [
+					{
+						"text": "UV400 protection",
+						"url": "/shop/"
+					},
+					{
+						"text": "Anti-scratch hard coat",
+						"url": "/shop/"
+					},
+					{
+						"text": "Two-year guarantee on the lenses",
+						"url": "/shop/"
+					}
+				]
 			}
 		],
 		"preconditions": {
@@ -2513,7 +2529,7 @@
 				]
 			}
 		},
-		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json."
+		"notes": "Seeded by seed_fixtures.py from calibration's fixture file (retired 2026-11-23) and render-paths.json. Variant 2 links its items, so the site look draws the item link (`ROOT a`) that linkUnderline and its family paint, and the cloning route reads a link list's underline there (computed-route data/skeleton-decisions.json structural.linkList.itemSlots)."
 	},
 	"sgs/image-sequence": {
 		"attributes": {
