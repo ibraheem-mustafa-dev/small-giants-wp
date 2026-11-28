@@ -320,6 +320,24 @@ def test_a_part_the_record_places_that_no_render_draws_must_be_listed():
     assert SL.completeness({'undrawnParts': got}, 'm', {'sgs-m__badge': 'x', 'sgs-m__trailing': 'y'}) == []
 
 
+def test_the_link_list_draws_the_link_part_the_route_reads_its_underline_at(tmp_path):
+    """MUST FAIL while the list block's fixture draws no linked item: the cloning route reads a run of links' underline at the
+    first draft link, at the slots of the settings `structural.linkList.itemSlots` names (computed-route
+    lib/skeleton-write-units.mjs, data/skeleton-decisions.json). The record places those settings on the list's link (`ROOT a`),
+    so a look with no link gives them no slot: the route never reads the draft's underline and the clone keeps the browser's
+    (a footer menu underlined where the draft draws none)."""
+    import sqlite3
+    decisions = json.loads((SL.REPO / 'scripts' / 'computed-route' / 'data' / 'skeleton-decisions.json').read_text(encoding='utf-8'))
+    settings = decisions['structural']['linkList']['itemSlots']
+    db = sqlite3.connect(f'file:{SL.framework_db()}?mode=ro', uri=True)
+    block = db.execute("SELECT core_block_slug FROM html_tag_to_core_block WHERE html_tag = 'ul'").fetchone()[0]
+    short = block.split('/', 1)[1]
+    look = build(tmp_path, short)
+    paths = SL.record_paths(SL.record_of(short), look['elements'], look['pathClasses'])
+    unplaced = [s for s in settings if not paths.get(s, {}).get('')]
+    assert not unplaced, f'{block}: the look draws no element the record places {unplaced} on at rest'
+
+
 def test_look_key_follows_the_route_plan_of_per_value_renders():
     """The route decides which per-value instances a look reads (tools/site-look-bridge.mjs, lib/enum-read-plan.mjs), so both are
     among the files a look's key hashes; a look built before a change to either would keep the earlier choice of settings."""
