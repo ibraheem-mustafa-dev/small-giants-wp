@@ -35,6 +35,36 @@ export function sameDocument( from, to ) {
 	return String( to ).includes( '#' ) && withoutFragment( from ) === withoutFragment( to );
 }
 
+// Loads `target` and waits for its load event; a load that times out is made once more. On 2026-11-28 a draft read at 375 and
+// 768 then timed out at 1440 on the same page with the machine idle, and two of a run's fills failed that way, so a stalled
+// request is transient. The requests still open when the first load timed out are handed to `onRetry` (the walk's log), so the
+// next stall names its cause; a second timeout is thrown.
+export async function loadOnce( page, target, onRetry = () => {} ) {
+	const open = new Set();
+	const started = ( r ) => open.add( r );
+	const ended = ( r ) => open.delete( r );
+	page.on( 'request', started );
+	page.on( 'requestfinished', ended );
+	page.on( 'requestfailed', ended );
+	try {
+		await page.goto( target, { waitUntil: 'load' } );
+	} catch ( e ) {
+		if ( ! /Timeout .* exceeded/.test( String( e?.message ) ) ) {
+			throw e;
+		}
+		const stuck = [ ...open ].map( ( r ) => r.url() );
+		onRetry( stuck );
+		console.warn( `goto ${ target }: no load event before the timeout; ${ stuck.length } request(s) still open${ stuck.length ? `: ${ stuck.slice( 0, 6 ).join( ', ' ) }` : '' }; loading once more` );
+		open.clear();
+		await page.goto( 'about:blank' );
+		await page.goto( target, { waitUntil: 'load' } );
+	} finally {
+		page.off( 'request', started );
+		page.off( 'requestfinished', ended );
+		page.off( 'requestfailed', ended );
+	}
+}
+
 export function makeHelpers( page, side, { cb, RESOLVE, onAction } ) {
 	let inflight = 0;
 	page.on( 'request', () => inflight++ );
@@ -82,7 +112,7 @@ export function makeHelpers( page, side, { cb, RESOLVE, onAction } ) {
 			}
 			// A page with a payment widget (Stripe's fraud and wallet frames) never goes network-idle,
 			// so the load is the hard wait and idle is waited for as long as it comes.
-			await page.goto( target, { waitUntil: 'load' } );
+			await loadOnce( page, target, ( stuck ) => h.log.push( { type: 'goto-retry', target: url, stuck } ) );
 			await page.waitForLoadState( 'networkidle' ).catch( () => {} );
 			await waitOutHostCheck( page );
 			h.routed = 'draft' === side && String( url ).includes( '#@state/' );

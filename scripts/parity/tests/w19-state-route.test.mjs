@@ -66,6 +66,8 @@ const stubPage = ( log ) => ( {
 	waitForLoadState: async () => {},
 	goto: async ( url ) => log.push( `goto ${ url }` ),
 	on: () => {},
+	off: () => {},
+	url: () => 'about:blank',
 	evaluate: async ( fn, arg ) => {
 		if ( Array.isArray( arg ) ) {
 			log.push( `sample wait=${ arg[ 4 ] } root=${ arg[ 0 ] }` );
